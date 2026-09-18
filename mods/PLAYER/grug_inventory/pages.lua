@@ -125,13 +125,13 @@ local function character_content(player)
 		and grug_classes.get_pool_breakdown(player, "mana") or nil
 
 	local lines = {
-		("HP %d=B%dxC%.2fx(100+G%g+T%g)%%"):format(
+		("HP %d=B%dxC%.2fx(100+G%g+T%g+S%g)%%"):format(
 			hp.final, hp.base, hp.class_factor, hp.gear_percent,
-			hp.talent_percent),
+			hp.talent_percent, hp.status_percent),
 		mana and
-			("Mana %d=B%dxC%.2fx(100+G%g+T%g)%%"):format(
+			("Mana %d=B%dxC%.2fx(100+G%g+T%g+S%g)%%"):format(
 				mana.final, mana.base, mana.class_factor, mana.gear_percent,
-				mana.talent_percent)
+				mana.talent_percent, mana.status_percent)
 			or "Rage 100=fixed; no C/G/T scaling",
 	}
 
@@ -195,7 +195,7 @@ sfinv.register_page("grug_inventory:help", {
 		local text = table.concat({
 			"Character formulas",
 			"Base pool = 20 + 5 x level + 0.66 x level squared (rounded).",
-			"The Character pool lines read maximum = B x C x (100 + G + T)%, where B is the base pool, C the class factor, G the gear percentage and T the talent percentage.",
+			"The Character pool lines read maximum = B x C x (100 + G + T + S)%, where B is the base pool, C the class factor, G the gear percentage, T the talent percentage and S the active status percentage.",
 			"Caster mana uses the neutral base pool, then adds mana percentages. Rage is always 0-100.",
 			"Strength adds floor(Strength / 10) as flat melee damage.",
 			"Intelligence adds floor(Intelligence / 10) as spell power: flat spell damage and a percentage bonus to healing and absorbs.",
@@ -208,6 +208,8 @@ sfinv.register_page("grug_inventory:help", {
 			"At level 60, an item-level 70 weapon gives about 9% more effective swing damage than item level 60, while item level 50 gives about 7% less, before enchants.",
 			"Healing and absorbs are percentages of the caster's neutral base pool; spell power is a percentage bonus.",
 			"Mana costs are percentages of the unmodified neutral base pool. Enchants and talents do not make a spell cost more.",
+			"Mana regeneration is 1 + 0.15 x level per second. The Troll multiplier applies only out of combat. Combat gives one quarter of the unmodified rate; Cold Focus multiplies that combat rate.",
+			"A food's instant heal and regeneration wait until you are out of combat. Its pool, Crit, armor and spell-damage bonuses remain active.",
 			"The Character page keeps only the live HP and class-resource derivations beside the model and equipment.",
 		}, "\n\n")
 		return sfinv.make_formspec(player, context,
@@ -317,6 +319,10 @@ end)
 -- open Character page (inventory_equipment.md §1). Rare event; refresh()
 -- itself no-ops on any other page.
 grug_core.register_on_equipment_change(function(player, listname)
+	grug_inventory.refresh(player)
+end)
+
+grug_core.register_on_status_modifiers_changed(function(player)
 	grug_inventory.refresh(player)
 end)
 

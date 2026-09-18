@@ -407,7 +407,7 @@ There are three `core.get_timeofday` call sites under `mods/`:
    unprovoked night-truce race perk (`init.lua:563-569`).
 2. Vendored mobs_redo stores the clock during environmental processing
    (`mods/ENTITIES/mobs/api.lua:1050-1057`). Its `docile_by_day` predicate uses
-   the stored value between 0.2 and 0.8 (`api.lua:1513-1517`).
+   the stored value between 0.2 and 0.8 (`api.lua:1515-1519`).
 3. Spawn-time day/night filtering is separate: when `day_toggle` is present,
    mobs_redo reads the clock and maps 4500..19500 of a 24000-unit day to
    daylight, rejecting a night-only row in that interval or a day-only row

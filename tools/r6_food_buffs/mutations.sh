@@ -1,14 +1,10 @@
 #!/usr/bin/env bash
-# Reproducible FU6 mutation checks. Each mutation is applied only to a private
-# temporary copy of the final production bytes; the worktree is never edited.
 set -euo pipefail
 export LC_ALL=C
 
-repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)"
-cd "$repo"
-
-lua_bin="${MUTATION_LUA_BIN:-/usr/bin/luajit}"
-scratch="$(mktemp -d /tmp/grug-r6-food-mutations.XXXXXX)"
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)"
+lua_bin="${MUTATION_LUA_BIN:-luajit}"
+scratch="$(mktemp -d /tmp/grug-r6-status-mutations.XXXXXX)"
 cleanup() {
 	rm -rf -- "$scratch"
 }
@@ -16,104 +12,97 @@ trap cleanup EXIT
 
 copy_case() {
 	local name="$1"
-	local root="$scratch/$name"
+	local target="$scratch/$name"
 	local file
 	for file in \
 		mods/CORE/grug_core/hud_layout.lua \
 		mods/CORE/grug_core/status.lua \
 		mods/CORE/grug_core/combat.lua \
-		mods/ITEMS/grug_food/init.lua \
 		mods/PLAYER/grug_abilities/init.lua \
 		mods/PLAYER/grug_abilities/kits.lua
 	do
-		mkdir -p -- "$root/$(dirname "$file")"
-		cp -- "$file" "$root/$file"
+		mkdir -p -- "$target/$(dirname "$file")"
+		cp -- "$root/$file" "$target/$file"
 	done
-	printf '%s\n' "$root"
+	printf '%s\n' "$target"
 }
 
 replace_once() {
 	python3 - "$1" "$2" "$3" <<'PYTHON'
 import sys
-
 path, old, new = sys.argv[1:]
-with open(path) as source:
+with open(path, encoding="utf-8") as source:
     text = source.read()
 assert text.count(old) == 1, "mutation anchor hit %d times" % text.count(old)
-with open(path, "w") as target:
+with open(path, "w", encoding="utf-8") as target:
     target.write(text.replace(old, new))
 PYTHON
 }
 
 run_kat() {
-	GRUG_R6_MUTATION_ROOT="$1" "$lua_bin" -e \
-		'io.write(dofile("tools/r6_food_buffs/kat.lua")(os.getenv("GRUG_R6_MUTATION_ROOT")))'
+	R6_ROOT="$1" R6_KAT="$root/tools/r6_food_buffs/kat.lua" "$lua_bin" -e \
+		'io.write(dofile(os.getenv("R6_KAT"))(os.getenv("R6_ROOT")))'
 }
 
-run_mutation() {
+mutate() {
 	local name="$1"
-	local root
-	local expected
-	root="$(copy_case "$name")"
+	local target expected output
+	target="$(copy_case "$name")"
 	case "$name" in
 		mana)
-			replace_once "$root/mods/PLAYER/grug_abilities/init.lua" \
-				$'\tlocal after = math.min(maximum,\n\t\tbefore + math.max(0, tonumber(amount) or 0))' \
-				$'\tlocal after = before -- mutation: restoration is disabled'
-			expected="restore_mana returns actual amounts, clamps and updates the HUD"
-			;;
-		food_math)
-			replace_once "$root/mods/ITEMS/grug_food/init.lua" \
-				'math.floor(maximum * percent / 100)' \
-				'math.ceil(maximum * percent / 100)'
-			expected="tick math 325 x 2%"
-			;;
+		replace_once "$target/mods/PLAYER/grug_abilities/init.lua" \
+			$'\tlocal after = math.min(maximum,\n\t\tbefore + math.max(0, tonumber(amount) or 0))' \
+			$'\tlocal after = before -- mutation: restoration disabled'
+		expected="restore_mana returns actual amounts, clamps and updates the HUD"
+		;;
 		status_order)
-			replace_once "$root/mods/CORE/grug_core/status.lua" \
-				'return a.kind == "buff"' 'return a.kind == "debuff"'
-			expected="buffs sort before debuffs"
-			;;
+		replace_once "$target/mods/CORE/grug_core/status.lua" \
+			'return a.kind == "buff"' 'return a.kind == "debuff"'
+		expected="buffs sort before debuffs"
+		;;
 		status_cap)
-			replace_once "$root/mods/CORE/grug_core/status.lua" \
-				'local STATUS_HUD_LIMIT = 8' 'local STATUS_HUD_LIMIT = 9'
-			expected="HUD list capped at eight lines"
-			;;
+		replace_once "$target/mods/CORE/grug_core/status.lua" \
+			'local STATUS_HUD_LIMIT = 8' 'local STATUS_HUD_LIMIT = 9'
+		expected="HUD list capped at eight lines"
+		;;
 		hud_write)
-			replace_once "$root/mods/CORE/grug_core/status.lua" \
-				'if text ~= hud.text then' 'if true then'
-			expected="HUD text writes only when changed"
-			;;
+		replace_once "$target/mods/CORE/grug_core/status.lua" \
+			'if text ~= hud.text then' 'if true then'
+		expected="HUD text writes only when changed"
+		;;
+		potion_mirror)
+		replace_once "$target/mods/CORE/grug_core/status.lua" \
+			'if left > 0 then' 'if false then'
+		expected="persistent potion cooldown mirrored"
+		;;
+		renew_cleanup)
+		replace_once "$target/mods/PLAYER/grug_abilities/kits.lua" \
+			$'core.register_on_dieplayer(function(player)\n\trenews[player:get_player_name()] = nil\nend)' \
+			$'core.register_on_dieplayer(function(player)\n\t-- mutation: private Renew record retained\nend)'
+		expected="death clears Renew status and private record"
+		;;
 		*)
-			echo "unknown mutation: $name" >&2
-			return 2
-			;;
+		echo "unknown mutation: $name" >&2
+		return 2
+		;;
 	esac
-
-	echo "== MUTATION: $name =="
-	local output
-	output="$(run_kat "$root")"
-	printf '%s\n' "$output"
-	if [[ "$output" != *"$expected"* || "$output" != *"FAIL "* ]]; then
-		echo "expected failure was not observed: $expected" >&2
+	output="$(run_kat "$target")"
+	printf '== %s ==\n%s\n' "$name" "$output"
+	if [[ "$output" != *"FAIL "* || "$output" != *"$expected"* ]]; then
+		echo "expected failure not observed: $expected" >&2
 		return 1
 	fi
 }
 
-selection="${1:-all}"
-echo "== BASELINE =="
-baseline="$(run_kat "$repo")"
-printf '%s\n' "$baseline"
-if [[ "$baseline" != *$'\nPASS'* ]]; then
-	echo "baseline KAT failed" >&2
-	exit 1
-fi
-echo
+baseline="$(run_kat "$root")"
+printf '== baseline ==\n%s\n' "$baseline"
+[[ "$baseline" == *$'\nPASS' ]] || exit 1
 
+selection="${1:-all}"
 if [[ "$selection" == "all" ]]; then
-	for mutation in mana food_math status_order status_cap hud_write; do
-		run_mutation "$mutation"
-		echo
+	for name in mana status_order status_cap hud_write potion_mirror renew_cleanup; do
+		mutate "$name"
 	done
 else
-	run_mutation "$selection"
+	mutate "$selection"
 fi

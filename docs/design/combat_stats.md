@@ -1,6 +1,6 @@
 # Combat, Attributes & Progression Mechanics
 
-Decided spec (last revised 2026-09-17; established 2026-08-06).
+Decided spec (last revised 2026-09-18; established 2026-08-06).
 Implementation: WP3 (classes/stats pipeline),
 WP4 (abilities/threat tools), WP6 (mob tiers/speed), WP5+WP7 (item/
 consumable values), WP35 (weapon slot and the two-handed rule), WP38
@@ -57,6 +57,9 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   own interval, read from the registered hand item rather than assumed.
 - **Spell power** = floor(Int/10). It is a flat term for damaging spells and
   a percentage bonus for pool-derived healing and absorbs.
+- **Timed spell damage** is a separate percentage multiplier on the fully
+  assembled hostile spell formula. It never enters spell power and therefore
+  never raises healing or absorbs.
 - **Damage level scalar** = `P(L) / (8 × B(L))`, where
   `B(L) = round(4 + 0.35L) + floor((10 + 3(L−1))/10)` is the own-level
   baseline sword plus Warrior melee bonus. Damage assembles weapon/ability,
@@ -129,6 +132,9 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   (`grug_inventory/equipment.lua:173-185,330-338`);
   weapon base damage ≈ 4 + 0.35×level (level-60 weapon ≈ 25; itemization
   details → items/crafting design).
+- **Consumables use the same `_grug_ilvl` decision helper.** Food, potions and
+  elixirs are refused on use below that character level with `Requires level
+  N.`, consume nothing, and may not duplicate the comparison or level source.
 
 Anchors (computed):
 
@@ -153,11 +159,24 @@ for WP11 lane X3 and are not combat consumers yet.
 
 The Character page contains only two live maximum-pool derivations: HP and
 mana, or HP and fixed Rage. Each compact line carries final value, base pool,
-HP class factor where applicable, and separate gear/talent percentages; the
-HUD bars are the sole display of current pool values. The Help page owns the
-formula prose for pools, Strength, Intelligence, Dexterity and the three capped
-stats. Melee bonus, spell power and attributes are formulas there, not extra
-Character-page rows.
+HP class factor where applicable, and separate gear/talent/status percentages;
+the HUD bars are the sole display of current pool values. The Help page owns
+the formula prose for pools, Strength, Intelligence, Dexterity and the three
+capped stats. Melee bonus, spell power and attributes are formulas there, not
+extra Character-page rows.
+
+Active timed statuses are an additional stat source. `grug_core.set_status`
+accepts only `hp_pool_percent`, `mana_pool_percent`, `crit_percent`, `armor`
+and `spell_damage_percent`; unknown keys reject the whole status. Values sum
+across active status ids before the ordinary caps. Replacing the `food` status
+therefore replaces its contribution, while a future `elixir` status stacks
+with it even on the same key. HP/mana pool percentages use the same base,
+class factor and final rounding as talent percentages. Every modifier change,
+expiry and clear runs the normal stat refresh: maximum HP is updated and
+current HP clamped, the private mana ledger is clamped, and the resource HUD
+and open Character page refresh. `spell_damage_percent` is consumed only by
+hostile spell damage formulas; unlike Intelligence spell power, it has no
+effect on support formulas.
 
 Two optional target-race systems use the central pipeline:
 
@@ -310,11 +329,13 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   6% of the caster's base mana and starts a server-authoritative **1.0 s cast
   interval**, then snapshots the cast-time eye direction and spawns one straight
   projectile at **20 m/s**. It has no homing, gravity or splash, deals
-  **baseline weapon damage + spell power** through the damage fit, and disappears on its first attackable target, a
-  blocking node or **20 m** travelled. A shot into empty space is still a cast
-  and still spends mana. Friendly players/allied entities and dropped items are
-  ignored instead of body-blocking it. Input inside the cast interval is
-  refused without spending mana; the interval is a cadence, not a cooldown,
+  **baseline weapon damage + spell power**, multiplied by active timed spell
+  damage percentages, through the damage fit, and disappears on its first
+  attackable target, a blocking node or **20 m** travelled. A shot into empty
+  space is still a cast and still spends mana. Friendly players/allied entities
+  and dropped items are ignored instead of body-blocking it. Input inside the
+  cast interval is refused without spending mana; the interval is a cadence,
+  not a cooldown,
   has no wear bar and cannot be shortened by cooldown talents.
 - **Active Fireballs are bounded per owner session.** At most eight may exist
   for one owner/session; the ninth spawn fails before entity creation and does
@@ -411,7 +432,7 @@ Normal tier at level L:
   contact run remains `reach × 0.6`, hence **1.8 m** for an ordinary attacker.
   Telegraphs continue to derive their geometry from the live reach; the
   ordinary elite/rare cone therefore reaches **4.5 m**
-  (`grug_abilities/kits.lua:308,379,417`; `mobs/api.lua:2690-2819`;
+  (`grug_abilities/kits.lua:308,379,417`; `mobs/api.lua:2709-2838`;
   `grug_mobs/telegraph.lua:93,181`). The explicit ordinary reach sites are
   `grug_mobs/bandit.lua:61`, `bear.lua:23`, `boar.lua:10`,
   `boar_variants.lua:22`, `bog_ooze.lua:23`, `crocodile.lua:43`,
@@ -696,7 +717,7 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   *Rationale, because the defect was invisible on paper*: the following
   pre-patch coordinates refer to commit `77261837` (2026-09-15). Vendored mobs_redo
   zeroed the mob's velocity as soon as the target was inside `reach`
-  (`api.lua:2498` before the patch — the number this file carried,
+  (`api.lua:2524` before the patch — the number this file carried,
   `:2493`, had drifted) while `punch_timer` accumulated **only in that same
   branch** (`:2500-2502` before the patch, printed here as `:2495-2497`;
   default interval 1 s at `:3771`, printed as `:3768`). A receding target
@@ -726,36 +747,39 @@ design (`group_attack` stays on).
 
 - Natural regen: **0.5% max HP/s out of combat, 0 in combat** — in-combat
   healing is the healer's/potion's job.
-- **Food restore buff** (R9, decided 2026-09-17, replacing the 2026-08-13
-  model; `items_crafting.md` §3.7 carries the cooking side). Eating grants a
-  runtime-only **180 s** buff with one tick every **10 s**. The tick fires
-  only out of combat against the shared `grug_core.in_combat` window; combat
-  skips the due tick without canceling or pausing the buff. Eating in combat
-  is allowed. Only one food buff may run at once and the most recent serving
-  replaces it. Relogging drops it.
-  **Self-consumption ruling (2026-09-17, late evening):** food and potions use
-  the character's maximum HP or mana, so a full food buff refills every
-  character in the same number of ticks; the neutral base pool is used for
-  mana costs and caster-output heals/absorbs, never for self-consumption.
-  - Raw/plain restores **2 %** of maximum HP per tick; simply cooked restores
-    **5 %**; well cooked restores **10 %**. Every tick restores at
-    least 1 HP. Vanilla `item_eat` instant healing is removed completely.
-  - Mana food mirrors the quality percentage against maximum mana. It does
-    nothing, reports why and is not consumed for a rage class.
-  - Wild Cocoa is raw mana food. Apples, blueberries, raw fish, raw meat and
-    every other raw gathering food restore HP; Cooked Fish and every cooked
-    item are simply cooked HP food. No item is well cooked until WP10 assigns
-    that tier.
+- **Food v2 restore buff** (R7.1/R7.2, decided 2026-09-18; supersedes R9 from
+  2026-09-17; `items_crafting.md` §3.7 owns the tier table). Eating grants a
+  runtime-only **180 s** buff with one tick every **5 s**. Only one food status
+  may run; the latest replaces it. Every food has fixed instant HP by tier.
+  Out of combat that heal applies immediately. In combat the serving may be
+  eaten, but the heal waits exactly once for the first out-of-combat moment,
+  checked every second, and regeneration ticks do nothing. The unpaid instant
+  heal survives the buff's 180-second expiry; regeneration and secondary
+  modifiers still end on time.
+  A newer serving replaces, rather than adds to, an unpaid instant heal. Death
+  or leaving clears it. Combat never cancels or pauses the duration, and
+  secondary status modifiers remain active in combat.
+  - Raw/unprocessed food regenerates **1%** of maximum HP per tick at every
+    tier. A mana raw food instead uses maximum mana. Wild Cocoa is the current
+    mana raw food and is refused without a mana pool.
+  - Dishes read their HP, mana or split regeneration plus secondary modifiers
+    from tier data. Current cooked fish and meat are T1 HP dishes.
   - The natural replacement cadence is about **20 servings per hour**.
 - **Healing potion**: instant **30% max HP, 60 s cooldown** (Alchemist
   craft; weak 15% variant sold by vendors). The potion holds the
   in-combat monopoly and is paid for in cooldown; a dish may restore
   more in total, but only out of combat and over seconds. Each food tick
   due during combat is skipped while the 180-second buff keeps running.
-- Mana regen: 2%/s out of combat, 0.5%/s in combat.
-- Food/potions are **percent-based** — level-agnostic, no consumable item
-  treadmill in the MVP. The neutral base pool spans 26 at level 1 to 2696 at
-  level 60, while class factors and pool percentages remain independent.
+- Mana regeneration is **`1 + 0.15 × level` mana/s** out of combat (1.15 at
+  L1, 2.5 at L10, 5.5 at L30, 10 at L60), multiplied by the Troll
+  `ooc_regen_mult` perk. In combat it is one quarter of the **unmodified**
+  curve; the Troll perk does not apply. Cold Focus multiplies that in-combat
+  rate by **`1 + 2 × bonus`**, preserving its old +20% per-rank relative effect
+  (rank 5 doubles the combat rate).
+- Food regeneration and pool bonuses are percent-based, but consumables now
+  have tier minimum levels through `_grug_ilvl`. The neutral base pool spans
+  26 at level 1 to 2696 at level 60, while class factors and pool percentages
+  remain independent.
   Plain-looking HP and Mana enchants are internally percentages of the base
   pool and show both that percentage and its current-level absolute value.
 - Every timed effect on the player is shown through the **buff/debuff text

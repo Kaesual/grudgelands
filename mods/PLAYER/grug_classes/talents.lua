@@ -544,8 +544,8 @@ grug_classes.register_talent({
 grug_classes.register_talent({
 	id = "cold_focus", tree = "rime", chain = "ward", tier = 1,
 	name = "Cold Focus",
-	description = "In-combat mana regeneration 0.5%/s becomes " ..
-		"0.6 / 0.7 / 0.8 / 0.9 / 1.0 %/s.",
+	description = "In-combat mana regeneration is increased by " ..
+		"20 / 40 / 60 / 80 / 100%.",
 	effects = {combat_mana_regen_add = {0.1, 0.2, 0.3, 0.4, 0.5}},
 })
 grug_classes.register_talent({

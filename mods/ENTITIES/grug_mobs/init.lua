@@ -526,14 +526,14 @@ function grug_mobs.register_mob(name, def)
 		--
 		-- The cancel IS mobs_redo's do_punch contract, and this is the one place
 		-- where the AGENTS.md gotcha ("any truthy return cancels the punch, the
-		-- api.lua comment claims the opposite") is the FEATURE. api.lua:3203-3207
+		-- api.lua comment claims the opposite") is the FEATURE. api.lua:3204-3208
 		-- reads `if self.do_punch and not self:do_punch(...) == false then
 		-- return true end`, which parses as `(not result) == false` — i.e. it
 		-- bails on a TRUTHY result. That `return true` sits BEFORE the weapon
-		-- wear (api.lua:3259-3338), before hit sound and blood particles
-		-- (api.lua:3352-3415), before health subtraction (api.lua:3417-3444)
+		-- wear (api.lua:3260-3339), before hit sound and blood particles
+		-- (api.lua:3361-3424), before health subtraction (api.lua:3418-3445)
 		-- and check_for_death (api.lua:3441), before knockback
-		-- (api.lua:3446-3481) and before the retaliation + group alert
+		-- (api.lua:3455-3490) and before the retaliation + group alert
 		-- that would otherwise hand the evader a fresh target
 		-- (api.lua:3506-3538). So: no
 		-- damage, no wear, no feedback, no aggro — exactly the spec.
@@ -600,7 +600,7 @@ function grug_mobs.register_mob(name, def)
 		-- First-tick level/stat assignment + per-activation nametag hook.
 		grug_mobs.ensure_init(self)
 		-- Runs before do_states/general_attack in the same step
-		-- (api.lua:3907-3934), so the aggro fields the api.lua patches read
+		-- (api.lua:3908-3935), so the aggro fields the api.lua patches read
 		-- are always in place in time.
 		grug_mobs.apply_aggro_fields(self, aggro_cfg)
 		tick_speed_effects(self, dtime)

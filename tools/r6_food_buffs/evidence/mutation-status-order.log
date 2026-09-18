@@ -1,4 +1,4 @@
 Command: tools/r6_food_buffs/mutations.sh status_order
 Expected failure: buffs sort before debuffs
-Observed: FAIL buffs sort before debuffs; shield + food + potion HUD text
+Observed: FAIL buffs sort before debuffs
 Result: PASS (mutation detected against a temporary copy of the final bytes)

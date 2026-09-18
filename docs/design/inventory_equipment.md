@@ -12,9 +12,9 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   the homepage**. It has the equipment slots and 3D model preview (formspec
   `model[]`) plus exactly two compact, live derivation lines above them: one
   for maximum HP and one for mana or rage. HP and mana show the resulting
-  maximum and abbreviate base pool, class factor and gear/talent percentage
-  bonuses as B/C/G/T; Help expands that legend. Rage names its fixed 100-point
-  rule. The lines consume
+  maximum and abbreviate base pool, class factor and gear/talent/status
+  percentage bonuses as B/C/G/T/S; Help expands that legend. Rage names its
+  fixed 100-point rule. The lines consume
   `grug_classes.get_pool_breakdown` and do not recompute the stats. Formula
   explanations and the remaining stat guidance live on the existing Help
   page; effective/raw Crit, Dodge and Armor remain in the Talents header.
@@ -278,6 +278,10 @@ only mirrored into the registry for display.
   second, capped at eight lines. Each line is `Name  1:23`; a numeric value
   may follow the name, as in `Shield 12  0:09`. Durations under ten minutes
   use `m:ss`; longer durations use the largest fitting unit.
+- Food labels state the active effect, for example `Food +1% HP/5s` or
+  `Food +2% HP, +4% Mana/5s, +2% HP pool`. The regeneration text remains
+  visible during combat even though those ticks pause; the item tooltip
+  explains that secondary bonuses remain active.
 - One throttled 1 s pass owns timed ticks, expiry and display refresh. It
   calls `hud_change` only when the complete rendered text changed; an idle
   player generates no repeated HUD packets.

@@ -20,9 +20,12 @@ Decided instead:
   **not** included: it is terrain, not arrival area.
 - At most **two** emerges run at a time. A start counts as ready only when
   every block of its volume reported a terminal action; `EMERGE_CANCELLED`
-  (server shutdown) and `EMERGE_ERRORED` never mark one ready. Nothing is
-  persisted, so a restart simply re-requests and already generated blocks
-  return from disk.
+  (server shutdown) and `EMERGE_ERRORED` never mark one ready. After all six
+  succeed, `grug_core` writes the per-world mod-storage marker
+  `starts_preloaded_v1`. A fresh world has no marker. Later server starts mark
+  all six ready without calling `core.emerge_area` and log exactly one action
+  line: `[grug_core] start areas already generated`. A failed or interrupted
+  first run never writes the marker and retries normally on the next start.
 - Character creation keeps its existing flow, but its final step — the single
   teleport plus class commit — passes **two** gates. Gate one: all six starts
   are ready, not only the player's own. Gate two, unchanged from WP45: this
@@ -65,7 +68,8 @@ price of the all-six gate; the retry button is the way out.
 
 Measured on a fresh world, headless, 2026-09-14: 13.6 s to the first start and
 **42.6 s to 6/6**, logged at ACTION level as one line per start plus one
-summary line. No per-block logging.
+summary line. No per-block logging. The persisted skip was added on 2026-09-18;
+the original measurement remains the cold-world baseline.
 
 ## Decision 2 — no hostile spawns inside the six start footprints
 

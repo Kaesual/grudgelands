@@ -55,6 +55,15 @@ grug_inventory = {}
 grug_core = {
 	mono_time = function() return 0 end,
 	notify_equipment_change = function() end,
+	status_modifier_sum = function() return 0 end,
+	can_use_item_level = function(_, stack)
+		local definition = core.registered_items[stack:get_name()]
+		local required = definition and definition._grug_ilvl
+		if type(required) ~= "number" or required <= 0 then
+			return true, nil, player_level
+		end
+		return player_level >= required, required, player_level
+	end,
 }
 grug_classes = {
 	class_ids = {"warrior", "mage", "priest"},

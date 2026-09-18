@@ -183,6 +183,7 @@ return function(repo)
 			local growth = class_defs[player.class].growth.int
 			return math.floor((10 + growth * (player.level - 1)) / 10)
 		end,
+		get_spell_damage_percent = function() return 0 end,
 		get_melee_bonus = function() return 1 end,
 		get_max_mana = function() return 30 end,
 		register_on_class_chosen = function(fn)
@@ -234,6 +235,7 @@ return function(repo)
 
 	load_in(ability_env, "mods/CORE/grug_core/combat.lua")
 	ability_env.grug_core.get_player_level = function(player) return player.level end
+	ability_env.grug_core.register_on_status_modifiers_changed = function() end
 	load_in(ability_env, "mods/PLAYER/grug_abilities/init.lua")
 
 	local abilities = ability_env.grug_abilities
@@ -486,10 +488,12 @@ return function(repo)
 		get_max_hp = function() return 30 end,
 		get_pool_breakdown = function(player, pool)
 			return {base = 26, class_factor = pool == "hp" and 1 or 1,
-				gear_percent = 0, talent_percent = 0, final = 30}
+				gear_percent = 0, talent_percent = 0, status_percent = 0,
+				final = 30}
 		end,
 		get_melee_bonus = function() return 1 end,
 		get_spell_power_bonus = function() return 1 end,
+		get_spell_damage_percent = function() return 0 end,
 		get_crit_chance = function() return 0.06 end,
 		get_dodge_chance = function() return 0.01 end,
 	}
@@ -508,6 +512,7 @@ return function(repo)
 		grug_xp = {get_level = function() return 1 end,
 			register_on_level_change = function() end},
 		grug_core = {register_on_equipment_change = function() end,
+			register_on_status_modifiers_changed = function() end,
 			get_armor_percent = function() return 0 end},
 		player_api = {registered_models = {['character.b3d'] = {
 			textures = {"character.png"}}}},
@@ -534,9 +539,9 @@ return function(repo)
 	if mutation == 3 then
 		formspec = formspec:gsub("HP 30=", "HP 20 / 30 ", 1)
 	end
-	want(formspec:find("HP 30=B26xC1.00x(100+G0+T0)%", 1, true)
+	want(formspec:find("HP 30=B26xC1.00x(100+G0+T0+S0)%", 1, true)
 		~= nil, "Character page shows Max HP derivation")
-	want(formspec:find("Mana 30=B26xC1.00x(100+G0+T0)%", 1, true) ~= nil,
+	want(formspec:find("Mana 30=B26xC1.00x(100+G0+T0+S0)%", 1, true) ~= nil,
 		"Character page shows Max Mana")
 	want(formspec:find("HP %d+ / %d+") == nil,
 		"Character page never shows current/max HP")
@@ -560,6 +565,8 @@ return function(repo)
 	want(help_formspec:find(
 		"At level 60, an item-level 70 weapon gives about 9% more effective swing damage than item level 60, while item level 50 gives about 7% less, before enchants.",
 		1, true) ~= nil, "Help page shows the measured L60 item-level examples")
+	want(help_formspec:find("S the active status percentage", 1, true) ~= nil,
+		"Help page defines the active status pool term")
 	want(help_formspec:find("Crit multiplies damage by 1.5.", 1, true) ~= nil,
 		"Help page explains Crit")
 	want(help_formspec:find("Dodge avoids the hit entirely.", 1, true) ~= nil,
