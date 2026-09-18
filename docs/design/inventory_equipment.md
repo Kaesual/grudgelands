@@ -268,6 +268,10 @@ only mirrored into the registry for display.
   second, capped at eight lines. Each line is `Name  1:23`; a numeric value
   may follow the name, as in `Shield 12  0:09`. Durations under ten minutes
   use `m:ss`; longer durations use the largest fitting unit.
+- Food labels state the active effect, for example `Food +1% HP/5s` or
+  `Food +2% HP, +4% Mana/5s, +2% HP pool`. The regeneration text remains
+  visible during combat even though those ticks pause; the item tooltip
+  explains that secondary bonuses remain active.
 - One throttled 1 s pass owns timed ticks, expiry and display refresh. It
   calls `hud_change` only when the complete rendered text changed; an idle
   player generates no repeated HUD packets.

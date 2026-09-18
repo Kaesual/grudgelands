@@ -133,11 +133,16 @@ the goal-level view.
   fit, maximum-pool Character/Help displays, effective ability/weapon tooltips,
   total friendly-skill fallback and 5% suffocation are live. The first
   `grug_core.status` registry and top-right text list drive three-minute food
-  buffs; all three cooking qualities are registered, with current foods using
-  raw/plain or simply-cooked. Ordinary dry shore banks end at `water_y`, and
+  buffs; the historical three-quality food model shipped here and was replaced
+  by Round 7 Food v2 below. Ordinary dry shore banks end at `water_y`, and
   every start anchor has surface level 1 through 100 m and level 2 through
   150 m. The media-candidate report imports nothing and awaits the user's
   per-candidate decisions.
+- [x] **Round 7 Food v2 core (2026-09-18):** six data-driven food tiers,
+  fixed instant HP, five-second raw/dish regeneration, combat deferral,
+  status-stat modifiers and shared consumable level gates are live. Mana
+  regeneration uses the level-linear absolute curve, and completed start-area
+  preload is now marked per world so later server starts skip the emerge.
 
 ### Next prerequisite roots
 
@@ -181,8 +186,9 @@ the goal-level view.
   design-unblocked (A1/A3/A4/A5/E21 decided 2026-08-13, incl. the revised
   food-restore model); with WP26 ticked above it now follows WP44 alone, since
   WP33 and WP43 are shipped too. Round 6 already shipped the runtime status
-  registry/text list and registered all three cooking qualities; WP10 owns the
-  profession and recipe books, well-cooked dishes and later icon presentation.
+  registry/text list and Food v2 tier framework; Round 8 owns the real dish
+  tables and recipes, while WP10 owns profession books and later icon
+  presentation.
 - [ ] **WP13 — in progress:** final starts, capitals, settlements, camps,
   kings/guards and both all-six-gem apex camps on shipped WP40 geometry and
   WP43 materials. **All six start settlements are built** (2026-09-14) on one
