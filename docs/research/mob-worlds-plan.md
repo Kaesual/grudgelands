@@ -98,7 +98,7 @@ spawns in band 3.
 
 | Zone (levels) | Day | Night | Rare / 24 h |
 |---|---|---|---|
-| Dawnmere Fields (1–10) | b1: Boar, Rabbit (C), **Wild Turkey** (C, *animalia*); b2: Stag (P), Fox; b3: Wolf | b1: Giant Rat; b2: Zombie; b3: Giant Spider | — |
+| Dawnmere Fields (1–10) | b1: Boar, Rabbit (C), **Wild Turkey** (C, *animalia*); b2: Stag (P), Fox; b3: Wolf (24 h) | b1: Giant Rat; b2: Zombie; b3: Giant Spider | — |
 | Goldmead Vale (11–20) | Boar, Stag (P), Fox, Wild Turkey (C); Bandit camp | Wolf, Giant Spider, **Poacher** (*retint* Bandit Archer, roaming, ranged) | Grimtusk |
 | Whitebridge Shire (21–30) | Bear, Stag (P), Wolf; Mirefolk camp (24 h) | Giant Spider, **Wisp** (*mobs_mc* vex, swamp flier), Poacher | — |
 | Ashenward March (31–40) | Bear, Wolf, Bandit + Bandit Archer camp | Skeleton Archer, **Ashen Treant** (*mobs_monster* tree monster, burned wood), Wisp | Old Whitefang |
@@ -108,7 +108,7 @@ spawns in band 3.
 
 | Zone (levels) | Day | Night | Rare / 24 h |
 |---|---|---|---|
-| Silverleaf Glades (1–10) | b1: Boar, Rabbit (C), **Song Bird** (C, *retint* gull mesh); b2: Stag (P), Fox; b3: Wolf | b1: Giant Rat; b2: Giant Spider; b3: Poacher | — |
+| Silverleaf Glades (1–10) | b1: Boar, Rabbit (C), **Song Bird** (C, *retint* gull mesh); b2: Stag (P), Fox; b3: Wolf (24 h) | b1: Giant Rat; b2: Giant Spider; b3: Poacher | — |
 | Starbough Vale (11–20) | Boar, Stag (P), Fox; Bandit camp | Wolf, Giant Spider, Poacher | — |
 | Lethariel's neighbours Lorindor / Moonfall Wood (21–30) | Stag (P; Lorindor keeps its exact-mob rule), Bear, Wolf; Mirefolk camp (Lorindor) | Giant Spider, Wisp, Poacher | — |
 | Glassroot Wilds (31–40) | Bear, Jungle Lynx, Serpent; Bandit camp | Panther, Jungle Spider, Wisp | — |
@@ -118,7 +118,7 @@ spawns in band 3.
 
 | Zone (levels) | Day | Night | Rare / 24 h |
 |---|---|---|---|
-| Stillgrave Hollow (1–10) | b1: Plague Boar, Hare (C), Bone Weevil (C); b2: Gaunt Stag (P); b3: Blightfang Wolf | Zombie (24 h in blight — identity, kept); b2: Giant Rat; b3: Skeleton Archer | — |
+| Stillgrave Hollow (1–10) | b1: Plague Boar, Hare (C), Bone Weevil (C); b2: Gaunt Stag (P); b3: Blightfang Wolf (24 h) | Zombie (24 h in blight — identity, kept); b2: Giant Rat; b3: Skeleton Archer | — |
 | Mournfen (11–20) | Plague Boar, Gaunt Stag (P), Bog Fowl (C), Crocodile (24 h); Bandit camp, Mirefolk camp | Zombie (24 h), Skeleton Archer, Wisp | — |
 | Ossuary Reach (21–30) | Plaguehide Bear, Gaunt Stag (P), Blightfang Wolf | Skeleton Archer, Pale Spider, **Gravewood Treant** (*mobs_monster* tree monster, bone tint) | — |
 | Blackwind Rise (31–40) | Plaguehide Bear, Blightfang Wolf; Bandit camp | Skeleton Archer, Gravewood Treant, Pale Spider | Marrowclaw |
@@ -128,8 +128,8 @@ spawns in band 3.
 
 | Zone (levels) | Day | Night | Rare / 24 h |
 |---|---|---|---|
-| Sunscar Flats (1–10) | b1: Boar, Hare (C), **Plains Runner** (C, *animalworld* nandu); b2: Zebra (P); b3: Hyena | b1: Giant Rat; b2: **Scorpion** (*animalworld*, poison); b3: **Sun-Dried Husk** (*retint* Zombie) | — |
-| Redtusk Savanna (11–20) | Boar, Zebra (P), Hyena; Bandit camp | Scorpion, Sun-Dried Husk, Hyena (packs hunt at night too: 24 h) | Ashmaw |
+| Sunscar Flats (1–10) | b1: Boar, Hare (C), **Plains Runner** (C, *animalworld* nandu); b2: Zebra (P); b3: Hyena (24 h) | b1: Giant Rat; b2: **Scorpion** (*animalworld*, poison); b3: **Sun-Dried Husk** (*retint* Zombie) | — |
+| Redtusk Savanna (11–20) | Boar, Zebra (P), Hyena; Bandit camp | Scorpion, Sun-Dried Husk, Hyena (24 h) | Ashmaw |
 | Speargrass Reach (21–30) | Hyena, Vulture, Zebra (P), **Speargrass Tiger** (*animalworld*, day stalker) | Scorpion, Mesa Golem (E, 24 h), Goblin Raiders | — |
 | Bannerbreak Mesa (31–40) | Vulture, Mesa Golem (E), Bandit + Bandit Archer camp | Scorpion, Skeleton Raider, Goblin Raiders | Dustwing |
 | The Shattered Line (41–50) | Vulture, Speargrass Tiger, War Construct (E, 24 h) | Skeleton Raider, Scorpion, Sun-Dried Husk | Captain Bonerattle |
@@ -184,15 +184,24 @@ Nether's fire cast is distinct from the mine's.
 | Clock | Families |
 |---|---|
 | day | Boar and tints, Rabbit/Hare, Fox, Ibex, Stag/Gaunt Stag, Zebra, Tapir, Mountain Ram, Crag Eagle/Vulture, Bear/Plaguehide Bear, Jungle Ape, Jungle Lynx, Serpent, Speargrass Tiger, critters (Turkey, Song Bird, Plains Runner, Bone Weevil, Bog Fowl, Parrot, Gull) |
-| night | Giant Rat, Zombie outside blight, Wolf/Blightfang Wolf, Giant/Pale/Jungle Spider, Skeleton Archer, Frost Stray, Poacher, Goblin Raiders, Snow Leopard, Panther, Scorpion, Sun-Dried Husk, Viper, Wisp, Bog Witch, Ashen/Gravewood Treant, Skeleton Raider, Rift Spawn |
-| any | Zombie in blight, Hyena from 11–20, Crocodile, Bog Ooze, Mirefolk, Bandit camps, Stone/Mesa Golem, War Construct, Carrion Crow, Shore Crab/Reef Lurker, Kraken, all rares, all underground, kings, dragons |
+| night | Giant Rat, Zombie outside blight, Giant/Pale/Jungle Spider, Skeleton Archer, Frost Stray, Poacher, Goblin Raiders, Snow Leopard, Panther, Scorpion, Sun-Dried Husk, Viper, Wisp, Bog Witch, Ashen/Gravewood Treant, Skeleton Raider, Rift Spawn |
+| any | Wolf/Blightfang Wolf (24 h, `biomes_mobs.md` §3.1, unchanged), Hyena (24 h at every level, unchanged), Zombie in blight, Crocodile, Bog Ooze, Mirefolk, Bandit camps, Stone/Mesa Golem, War Construct, Carrion Crow, Shore Crab/Reef Lurker, Kraken, all rares, all underground, kings, dragons |
+
+A family may need more than one clock: Zombie is `night` in settled and war
+palettes and `any` in blight. The role field therefore accepts either one
+value or a table keyed by palette family (`clock = {settled = "night",
+war = "night", blight = "any"}`); the policy stamps the matching row. Wolf
+and Hyena stay 24 h everywhere and appear in both columns of §3 by
+design: the night cast lists what a player meets at night, not what is
+night-only.
 
 ## 7. Boss tier
 
 **Two overworld dragons** (`world.md` §4b, one chassis, two variants):
 the draconis **Ice Dragon** on The Wyrmglass Crown (snowy crags island) and
 the draconis **Jungle Wyvern** on Stormscale Summit (jungle island). Only
-their meshes, textures and sounds are harvested (MIT); behaviour is ours on
+their meshes, textures and sounds are harvested (MIT code; media D-UNCLEAR in
+the evidence doc, decision §11.7); behaviour is ours on
 mobs_redo: stationary arena with three perches, telegraphed **breath line**
 (`dogshoot` with a projectile entity, 2 s wind-up) and **ground slam** AoE,
 level 60 boss tier (×20 HP), 30-min wall-clock respawn with the 60 s
@@ -231,7 +240,7 @@ dragons.
 | Frost Stray | shipped Skeleton Archer | snowy crags night | dogshoot | retint | already licensed |
 | Poacher | shipped Bandit Archer | Human/Elf forests night, roaming | dogshoot, no camp | skin variant | already licensed |
 | Wisp | mobs_mc `vex` | swamps, elf forest night, flier | flickers (short blink toward target, melee) | mcl_mobs → mobs_redo port | VL-MODEL: model GPLv3 (22i), textures CC BY-SA 4.0 / MIT, sounds per file (`mobs_mc/LICENSE-media.md`) — the classes the shipped Zombie, Skeleton and Wolf already use |
-| Ashen / Gravewood Treant | mobs_monster `tree_monster` | Ashenward; bone forest night | roots (slow aura 30 %, radius 3) | drop-in, two tints | MM-PER-FILE: mesh and both textures WTFPL (Pavel_S/PilzAdam, `mobs_monster/license.txt:52-66`), sound WTFPL (`:88-96`); its `default_wood.png` is UNCLEAR and not needed |
+| Ashen / Gravewood Treant | mobs_monster `tree_monster` | Ashenward; bone forest night | roots (slow aura 30 %, radius 3) | drop-in, two tints | MM-PER-FILE: mesh and both textures WTFPL (Pavel_S/PilzAdam, `mobs_monster/license.txt:52-66`), sound WTFPL (`:88-96`); `default_wood.png` is minetest_game CC BY-SA 3.0 (evidence doc) |
 | War Construct | mobs_mc `iron_golem` | Broken Causeway, Shattered Line, 24 h elite | slams (telegraphed) | port | VL-MODEL: model GPLv3 (22i), textures CC BY-SA 4.0 / MIT, sounds per file (`mobs_mc/LICENSE-media.md`) — the classes the shipped Zombie, Skeleton and Wolf already use |
 | Bog Witch | mobs_mc `witch` | swamps 21+, front, night | hexes (dogshoot bottle: poison or 30 % slow 4 s) | port + bottle projectile | VL-MODEL: model GPLv3 (22i), textures CC BY-SA 4.0 / MIT, sounds per file (`mobs_mc/LICENSE-media.md`) — the classes the shipped Zombie, Skeleton and Wolf already use; `shoot` animation and a potion projectile exist upstream |
 | Rift Spawn | mobs_mc `stalker` (VoxeLibre's creeper: `fuse` animation, `explode` attack) | 51–60 zones night; below −1000 | hisses (2 s telegraph) and bursts (AoE, no terrain damage) | port; mobs_redo `explode` with terrain damage off | VL-MODEL: model GPLv3 (22i), textures CC BY-SA 4.0 / MIT, sounds per file — the classes the shipped Zombie, Skeleton and Wolf already use |
@@ -240,7 +249,6 @@ dragons.
 | Sun-Dried Husk | shipped Zombie | savanna/badlands night | never leashes | retint | already licensed |
 | Speargrass Tiger | animalworld `tiger` | savanna 21–50 day | stalks | mobs_redo-native | AW-MEDIA-MIT: models, textures, animation MIT (`animalworld/LICENSE:24-27`); sounds UNCLEAR (`:33-41`) → import without upstream sounds |
 | Tapir | animalworld `tapir` | jungle edge (P) | grazes | mobs_redo-native | AW-MEDIA-MIT: models, textures, animation MIT (`animalworld/LICENSE:24-27`); sounds UNCLEAR (`:33-41`) → import without upstream sounds |
-| Giant Frog | animalia `frog` | jungle edge / swamp (C) | flees | port | MIT |
 | Viper | animalworld `viper` | jungle edge night | poisons | mobs_redo-native | AW-MEDIA-MIT: models, textures, animation MIT (`animalworld/LICENSE:24-27`); sounds UNCLEAR (`:33-41`) → import without upstream sounds |
 | Shore Crab / Reef Lurker | animalworld `crab` | beaches (P neutral) / 45–60 elite | retaliates | mobs_redo-native | AW-MEDIA-MIT: models, textures, animation MIT (`animalworld/LICENSE:24-27`); sounds UNCLEAR (`:33-41`) → import without upstream sounds |
 | Spiderling | shipped Giant Spider | caves 0 to −100 | webs (weak) | ×0.5 scale | already licensed |
@@ -249,7 +257,7 @@ dragons.
 | Glowwing | animalworld `dragonfly` | −300 to −500 flier | dives | mobs_redo-native, glow tint | AW-MEDIA-MIT: models, textures, animation MIT (`animalworld/LICENSE:24-27`); sounds UNCLEAR (`:33-41`) → import without upstream sounds |
 | Crystal Shard | mobs_monster `mese_monster` | −300 to −700 | dogshoot (shard) | drop-in, retint | MM-PER-FILE: mesh + `mobs_mese_monster_purple.png` CC0 (SirrobZeroone), sound WTFPL; `zmobs_mese_monster.png` UNCLEAR → purple texture only, own shard projectile texture |
 | Dungeon Master | mobs_monster `dungeon_master` | −500 to −1000 | dogshoot (fireball) | drop-in | MM-PER-FILE: mesh + `mobs_dungeon_master.png` WTFPL, `_2.png` CC0, `_4.png` CC BY-SA 4.0, fireball sound WTFPL |
-| Lava Flan | mobs_monster `lava_flan` | −700 and below | engulfs (ooze verb, fire) | drop-in | MM-PER-FILE: mesh + three textures CC BY-SA 3.0 (AspireMint), sound WTFPL; its flame/smoke particle textures are UNCLEAR → own particles |
+| Lava Flan | mobs_monster `lava_flan` | −700 and below | engulfs (ooze verb, fire) | drop-in | MM-PER-FILE: mesh + three textures CC BY-SA 3.0 (AspireMint), sound WTFPL; `fire_basic_flame.png` and `tnt_smoke.png` are minetest_game media, cleared per the evidence doc |
 | Ember Wisp | retint of the Wisp (mobs_mc `vex`) | −700 and below, flier | dogshoot (ember) | tint + projectile; replaces mobs_monster's Fire Spirit, which has no mesh and UNCLEAR textures (evidence doc) | as Wisp |
 | Stone Mite | shipped Cave Crawler | −700 and below | swarms | hostile variant | already licensed |
 | Land Guard | mobs_monster `land_guard` | below −1000, elite | slams | drop-in | MM-PER-FILE: reuses the Dungeon Master mesh (WTFPL) with three CC0 textures (wwar), sound WTFPL |
@@ -278,7 +286,7 @@ roles, LICENSE-media rows, one headless boot, KAT rows for the policy.
    this one is Poacher, Frost Stray, Sun-Dried Husk, Song Bird, Spiderling,
    Blood Bat, Stone Mite (retints and scales of shipped meshes).
 3. **Start-zone day and night** (six starts feel different): Fox, Ibex,
-   Wild Turkey, Plains Runner, Tapir, Giant Frog, Giant Rat, Scorpion,
+   Wild Turkey, Plains Runner, Tapir, Giant Rat, Scorpion,
    Viper.
 4. **Night families 11–40**: Goblin Raiders + Slinger, Snow Leopard, Wisp,
    Treant (two tints), Bog Witch.
@@ -286,7 +294,7 @@ roles, LICENSE-media rows, one headless boot, KAT rows for the policy.
    the user asked for after Round 7; kings need the six royal skins.
 6. **Underground wave**: Goblin Miners (shares package 4's port), Oerkki,
    Glowwing, Crystal Shard, Dungeon Master.
-7. **Deep wave**: Lava Flan, Fire Spirit, Land Guard, Rift Spawn.
+7. **Deep wave**: Lava Flan, Ember Wisp, Land Guard, Rift Spawn.
 8. **Front and coast**: War Construct, Speargrass Tiger, Shore Crab / Reef
    Lurker.
 
@@ -300,7 +308,8 @@ continue as long as the round runs.
 | Night rows carry `max_light = 5` + `day_toggle = false` by hand, per row | `biomes_mobs.md` §4 | one family-level `clock` role stamps the convention; fallbacks per palette; night `aoc` factor (§2) | a zone with no night family has an empty night today; per-row gates drift |
 | Shore Crab "deferred until a licensed model is sourced" | §3.1, §8.3 | animalworld `crab` as the source (pending per-file check) | the source now exists in a pinned project |
 | Zombie is the settled night family everywhere | §3.1 | Zombie stays as fallback; starts get Giant Rat at band 1 | a start zone's first night should be survivable at level 1–3 |
-| Hyena is 24 h from L10 | §3.1 | unchanged | listed for completeness: it is the Throng's night predator too |
+| Hyena is 24 h from L10; Wolf is 24 h | §3.1 | unchanged (both `any` in §6) | listed because §3 shows them in both casts |
+| Zombie: night; 24 h in blight | §3.1 | unchanged; expressed as a per-palette clock table (§6) | one family, two clocks |
 | "One dragon per continent" retired → two islands | `world.md` §4b | unchanged; names the draconis variants per island | asset decision |
 
 ## 11. Decisions for the user
