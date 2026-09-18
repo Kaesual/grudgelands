@@ -5,7 +5,7 @@
 
 return {
 	schema = "grug_wp40_r6_census_roster_v1",
-	selection_sha256 = "6857118a87e4f7c78d2070bac3f1893f968d4b84cbe6e3b2175bff982f7d4c57",
+	selection_sha256 = "b6aa4744888f43f4386573e375668688c986e0fbbb62d8c7a64770acb9c04bf6",
 	rows = {
 		{"dwarf", "frontier", -65, -89, "00012a576dcae53c98a32cff273b66b962e3fb46bf24624ff34bfe0c5c5c303d", "elandor_stormvault_heights", 31, 40},
 		{"dwarf", "frontier", -53, -105, "003c66a777929f6bdb008b3d56cb308be168c1c945cdcb69fb3cf6769d764f27", "elandor_stormvault_heights", 31, 40},
@@ -52,7 +52,7 @@ return {
 		{"undead", "frontier", 31, -62, "0057599a37fa15a970dfd542f2e31dc22107e61afe7c2fb7fe4dc59fa76795b9", "kragmar_blackwind_rise", 31, 40},
 		{"undead", "frontier", 46, -93, "005fbe269a800f7cb0169f5a5e8f292440762e0ecd020197e5c06d10270a4362", "kragmar_blackwind_rise", 31, 40},
 		{"undead", "lower", 126, -106, "0003e8c81b3ab3d7474be8bf33d7d8a12f1925aa2936d5dc34a878644dd976c7", "kragmar_mournfen", 11, 20},
-		{"undead", "lower", 146, -121, "0012b89c04c804fb583f205a36f7ad98d734049ea205a5ae83f93524dcbde2d2", "kragmar_stillgrave_hollow", 1, 10},
+		{"undead", "lower", 144, -112, "0023d37f0eda5861848b055b4a9efd06469a18ec1abe74f880adc7087e776d7f", "kragmar_stillgrave_hollow", 1, 10},
 		{"undead", "lower", 149, -143, "001df6edaf8630eb1304a969b5416ef8bd2115a1793d040f1a8480337eec4258", "kragmar_mournfen", 11, 20},
 		{"undead", "lower", 171, -144, "0002213157e8f5c7a077833e88038cb1f33cead859c6ead22fa3011368f77386", "kragmar_stillgrave_hollow", 1, 10},
 	},
