@@ -650,6 +650,18 @@ ocean edge and the enemy border (warning band, hard dismount).
     the design names no duration for the absorb shield; the absorb seam
     requires one, so the trinket's 120 s cooldown doubles as the maximum
     lifetime of an unconsumed shield.
+45. **Handover to an Astra orchestrator; push allowed** (user 2026-09-19
+    late evening): the Fable orchestrator finishes MAP-C and TRINKETS
+    (review, merge, gates, sync), pushes main, and prepares the start
+    prompt for a GPT-6 Astra orchestrator (handover package in
+    ~/projects/grudgelands-orchestration/w9/). Both orchestrators may push
+    main once validation and sync are green. Playtest 12 happens right
+    after those two merges, before the mapgen chain; the user discusses
+    its findings with the Astra orchestrator, fixes go to Round 10 unless
+    blocking. The MAP-C measurement (1.09x wall clock with the coast band
+    on, planner -9 %, writer +44 %) closes the mapgen discussion; R9-PERF
+    starts directly afterwards, implemented by an Astra subagent (the
+    orchestrator only orchestrates), reviews stay on GPT-5.6 Sol.
 
 ## 5. MAP-C protocol: what must not repeat from Round 8
 

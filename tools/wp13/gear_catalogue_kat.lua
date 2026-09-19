@@ -402,9 +402,9 @@ function M.run(repo)
 					def._grug_trinket_cooldown == contract.cooldown,
 					name .. " authored identity fields differ")
 				check(type(def._grug_trinket_special) == "string" and
-					def._grug_trinket_special:find(
-						"inert until the trinket effects lane", 1, true),
-					name .. " inert special description differs")
+					def._grug_trinket_special ~= "" and
+					not def._grug_trinket_special:find("inert", 1, true),
+					name .. " live special description missing or marked inert")
 				trinket_count = trinket_count + 1
 			end
 		end
