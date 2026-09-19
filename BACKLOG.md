@@ -302,6 +302,30 @@ cave/ore generation, which `mapgen-control.md` rejected.
 Only with that data is the v7 plateau (caves everywhere under the
 surface) worth revisiting; Round 9 shipped MAP-C without it (ruling 35).
 
+### WP49 — R7 source-audit refreeze on a fixed mapgen roster
+
+**Status (2026-09-19):** decided, not scheduled (Round 9 ruling 43,
+option A). `tools/wp40/r7/source_audit.sh` derives its "changed production
+Lua" roster as every `mods/` Lua file added or modified since `d6002a2`
+plus untracked files, and asserts the count frozen on 2026-09-15 (157,
+`changed_production_lua.txt`). Today's main derives 293, so the prefreeze
+audit exits 1 on main; nothing runs it (static.sh only runs `run.sh unit`,
+`final_micro.sh` does not call it). The R7 micro fixture executes exactly
+the roster and has hand-built environments only for those 157 modules, so
+the roster cannot be refreshed from the derivation without extending the
+fixture to ~136 unrelated modules (mobs, WP13 capitals, jobs, professions)
+that have their own KATs.
+
+**Plan:** replace the derivation with a fixed mapgen roster: the WP40
+modules (`mods/MAPGEN/grug_mapgen/wp40/`, `wp13/` capital cores used by
+R7) and their direct dependencies, listed explicitly in
+`changed_production_lua.txt`, with the audit asserting that every listed
+file exists and every WP40 module is listed (no baseline diff). Update the
+README procedure, the count assertions (`source_audit.sh`, `final_micro.sh`,
+`micro_kat_cli.lua`, fixture defaults) and re-run `run.sh static` to
+refreeze. One small lane, after Round 9 (DOCS or MAP-B follow-up); the
+final micro stays the sole PUC gate meanwhile.
+
 ### First-public-release gates
 
 **Open; owner: the project coordinator preparing the first public release.**
