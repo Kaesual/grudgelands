@@ -123,8 +123,8 @@ mutate() {
 		;;
 		troll_combat)
 		replace_once "$target/mods/PLAYER/grug_abilities/init.lua" \
-			'return rate * 0.25 * (1 + 2 * bonus)' \
-			'return rate * (grug_classes.get_race_perk(player, "ooc_regen_mult") or 1) * 0.25 * (1 + 2 * bonus)'
+			'return combat_rate * (1 + 2 * bonus)' \
+			'return combat_rate * (grug_classes.get_race_perk(player, "ooc_regen_mult") or 1) * (1 + 2 * bonus)'
 		expected="mana regen curve L1"
 		;;
 		preload)

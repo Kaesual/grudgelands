@@ -181,6 +181,54 @@ refusal and mana spend on a miss. Disable `/combatdebug` and confirm the log is
 silent. Include one hostile-player pass for dodge/absorb/PvP refusal and one
 short high-rate Fireball burst to expose projectile cleanup/performance.
 
+### WP46 — Terrain-damage guard: explosions, fire and lava never damage settlements or POIs
+
+**Open (user requirement 2026-09-19); not part of Round 9. Plan first, then one lane.**
+
+Requirement: explosions (mobs and players) must not damage cities, starts and
+POIs, and fire must never spread into them — a burning or destroyed authored
+block could only be repaired by an admin. Today nothing in the game destroys
+terrain: there is no `fire` and no `tnt` mod, lava is natural only (no
+bucket), the Rift Spawn explodes with terrain radius 0, and the dragon
+rime/scorch effects write only into air and restore it by timer. The risk is
+future content (Nether V2 fire, later explosive mobs, TNT, lava buckets).
+
+Plan (decided direction, details in the lane brief):
+
+1. **One guard predicate in `grug_core`**, actor-neutral:
+   `grug_core.world_alterable(pos)` = not inside any settlement claim (the
+   six capitals with precinct and outer ring, the six starts, every POI and
+   landmark footprint, housing claims) — the same authority
+   `world_protected_for_faction` already uses in `protection.lua`, without a
+   player name. Every effect that changes nodes on its own (not through a
+   player's dig/place, which `core.is_protected` already covers) calls it per
+   node: mob explosions, fire spread, lava flow into non-natural nodes,
+   boss ground effects.
+2. **mobs_redo `explode` GRUG PATCH:** terrain damage stays radius 0 for every
+   mob in V1 (a KAT rejects any mob def with `explosion_radius > 0`); if a
+   later design wants craters, the patched `mobs:boom` skips every node the
+   guard refuses.
+3. **Fire policy:** V1 ships no fire mod. When fire arrives (Nether), spread
+   is an ABM that (a) asks the guard per target node, (b) has a burn budget
+   per flame (finite lifetime), and (c) never ignites nodes of the settlement
+   palettes; "eternal flame" nodes exist only as authored decoration without
+   spread.
+4. **Lava:** mapgen keeps natural lava outside settlement and POI exclusions
+   (verify with the WP40 exclusion predicates); a lava bucket, if ever added,
+   is placement and therefore already covered by `core.is_protected`.
+5. **Static gate:** `tools/static.sh`-style sweep failing on any new
+   `explosion_radius`, `fire:`, `tnt` or `lava_source` placement in
+   `mods/*/grug_*` that does not reference the guard.
+6. **Repair safety net:** an admin command that re-projects an authored
+   settlement blueprint at its anchor (the WP40/WP13 projection is
+   deterministic), so any damage that slips through is reversible without
+   hand repair.
+
+Acceptance: KAT proving the guard over all twelve settlements and a POI
+sample (inside → refused, one node outside → allowed), the explosion KAT,
+the static sweep, and a headless probe detonating a Rift Spawn at a capital
+wall with zero node changes.
+
 ### First-public-release gates
 
 **Open; owner: the project coordinator preparing the first public release.**

@@ -361,12 +361,14 @@ local function regen_row(root, failures)
 		"function grug_abilities.mana_regen_rate", 1, true))
 	local last = assert(source:find("\nfunction grug_abilities.mana_cost", first, true))
 	local level = 1
+	local maximum = 26
 	local cold = 0
 	local troll = 1
 	local environment = {
 		grug_abilities = {},
 		grug_core = {get_player_level = function() return level end},
 		grug_classes = {
+			get_max_mana = function() return maximum end,
 			get_race_perk = function() return troll end,
 			get_talent_bonus = function() return cold end,
 		},
@@ -376,9 +378,17 @@ local function regen_row(root, failures)
 	setfenv(chunk, environment)
 	chunk()
 	local rows = {}
-	local levels = {1, 10, 30, 60}
+	local levels = {
+		{level = 1, maximum = 26},
+		{level = 10, maximum = 136},
+		{level = 20, maximum = 384},
+		{level = 30, maximum = 764},
+		{level = 40, maximum = 1276},
+		{level = 60, maximum = 2696},
+	}
 	for index = 1, #levels do
-		level = levels[index]
+		level = levels[index].level
+		maximum = levels[index].maximum
 		cold = 0
 		troll = 1
 		local ooc = environment.grug_abilities.mana_regen_rate({}, false)
@@ -392,12 +402,13 @@ local function regen_row(root, failures)
 		cold = 0.5
 		local troll_focused = environment.grug_abilities.mana_regen_rate({}, true)
 		local expected = 1 + 0.15 * level
+		local expected_combat = math.max(expected * 0.25, maximum * 0.0025)
 		if math.abs(ooc - expected) > 0.000001 or
-				math.abs(combat - expected * 0.25) > 0.000001 or
-			math.abs(focused - expected * 0.5) > 0.000001 or
+				math.abs(combat - expected_combat) > 0.000001 or
+			math.abs(focused - expected_combat * 2) > 0.000001 or
 			math.abs(troll_ooc - expected * 1.5) > 0.000001 or
-			math.abs(troll_combat - expected * 0.25) > 0.000001 or
-			math.abs(troll_focused - expected * 0.5) > 0.000001 then
+			math.abs(troll_combat - expected_combat) > 0.000001 or
+			math.abs(troll_focused - expected_combat * 2) > 0.000001 then
 			failures[#failures + 1] = "mana regen curve L" .. level
 		end
 		rows[#rows + 1] = ("L%d=%.4f/%.4f/%.4f/%.4f/%.4f/%.4f"):format(
