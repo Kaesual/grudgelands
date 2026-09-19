@@ -546,6 +546,13 @@ ocean edge and the enemy border (warning band, hard dismount).
 32. **Mount prices** (2026-09-19): coordinator placeholders until WP44
     measures them — T1 200, T2 1 500, T3 24 000, T4 100 000 copper
     (10 gold; the user lowered T4 from the proposed 15 gold).
+33. **Tier rule for material chains** (2026-09-19): for conversion
+    recipes whose output is an intermediate material (not gear) the
+    output's tier defines the recipe tier; the tier-N ingredient rule of
+    `items_crafting.md` §2.3 keeps applying to gear recipes. The six
+    conversions (Cured/Heavy/Scaled/Nightscale Leather, Silk and
+    Stormweave Bolt) therefore sit on their designed tiers; no synthetic
+    aliases, no new ingredients.
 
 ## 5. MAP-C protocol: what must not repeat from Round 8
 
