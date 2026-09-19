@@ -26,7 +26,11 @@ local cases = {
 		coast_profile = "beach/1/25/false/11/2/-62/sea_lowland/1/lowland"},
 	{id = "plate_surface", relief = "lowland", x = -1696, z = -2522},
 	{id = "plate_deep", relief = "lowland", x = -1696, y = -37, z = -2522},
+	{id = "snowy_crags_opening", relief = "highland", x = -2196, z = -1031,
+		snowy_opening = true},
 }
+
+local snowy_witness_found = false
 
 local function inspect(case, origin)
 	local terrain_y = grug_zones.terrain_height_at(case.x, case.z)
@@ -50,24 +54,53 @@ local function inspect(case, origin)
 			"surface=" .. node_name(case.x, terrain_y, case.z)})
 	end
 	local found
-	for z = origin.z, origin.z + 79 do
-		for x = origin.x, origin.x + 79 do
-			local y = grug_zones.terrain_height_at(x, z)
-			if grug_zones.water_class_at(x, z) == "land" and
-					node_name(x, y, z) == "air" and
-					node_name(x, y - 1, z) == "air" and
+	if case.snowy_opening then
+		for z = origin.z, origin.z + 79 do
+			for x = origin.x, origin.x + 79 do
+				local y = grug_zones.terrain_height_at(x, z)
+				local above = node_name(x, y + 1, z)
+				if grug_zones.biome_at(x, z) == "grug_crags_snowy" and
+						grug_zones.water_class_at(x, z) == "land" and
+						node_name(x, y, z) == "air" and above ~= "default:snow" and
+						above ~= "ignore" then
+					found = {x = x, y = y, z = z}
+					break
+				end
+			end
+			if found then break end
+		end
+	else
+		for z = origin.z, origin.z + 79 do
+			for x = origin.x, origin.x + 79 do
+				local y = grug_zones.terrain_height_at(x, z)
+				local surface_air = node_name(x, y, z) == "air"
+				local deep_open = surface_air and node_name(x, y - 1, z) == "air" and
 					node_name(x, y - 2, z) == "air" and
 					node_name(x, y - 3, z) == "air" and
-					node_name(x, y - 4, z) == "air" then
-				found = {x = x, y = y, z = z}
-				break
+					node_name(x, y - 4, z) == "air"
+				if grug_zones.water_class_at(x, z) == "land" and deep_open then
+					found = {x = x, y = y, z = z}
+					break
+				end
 			end
+			if found then break end
 		end
-		if found then break end
 	end
 	if found then
-		action({"case=natural_opening", "region=" .. case.id, "x=" .. found.x,
-			"y=" .. found.y, "z=" .. found.z, "run=5_air"})
+		if case.snowy_opening then
+			local above = node_name(found.x, found.y + 1, found.z)
+			action({"case=snowy_crags_opening", "region=" .. case.id,
+				"biome=" .. tostring(grug_zones.biome_at(found.x, found.z)),
+				"x=" .. found.x, "y=" .. found.y, "z=" .. found.z,
+				"surface=air", "above=" .. above})
+			if above == "default:snow" or above == "ignore" then
+				error("MAP-C snowy opening retained snow at T+1", 0)
+			end
+			snowy_witness_found = true
+		else
+			action({"case=natural_opening", "region=" .. case.id, "x=" .. found.x,
+				"y=" .. found.y, "z=" .. found.z, "run=5_air"})
+		end
 	else
 		action({"case=natural_opening", "region=" .. case.id, "result=none"})
 	end
@@ -78,15 +111,23 @@ local function run_next()
 	current = current + 1
 	local case = cases[current]
 	if not case then
+		if not snowy_witness_found then
+			error("MAP-C snowy-crags opening witness is absent", 0)
+		end
 		action({"case=complete", "mgv7_spflags=" ..
 			tostring(core.get_mapgen_setting("mgv7_spflags"))})
 		core.request_shutdown("MAP-C witness complete", false, 0)
 		return
 	end
+	if case.snowy_opening and snowy_witness_found then
+		core.after(0, run_next)
+		return
+	end
 	local y = case.y or grug_zones.terrain_height_at(case.x, case.z)
 	local origin = {x = chunk_origin(case.x), y = chunk_origin(y),
 		z = chunk_origin(case.z)}
-	local maxp = {x = origin.x + 79, y = origin.y + 79, z = origin.z + 79}
+	local maxp = {x = origin.x + 79,
+		y = origin.y + (case.snowy_opening and 80 or 79), z = origin.z + 79}
 	core.emerge_area(origin, maxp, function(_, _, remaining)
 		if remaining ~= 0 then return end
 		inspect(case, origin)
