@@ -795,10 +795,11 @@ design (`group_attack` stays on).
   instant potions are unchanged.
 - Mana regeneration is **`1 + 0.15 × level` mana/s** out of combat (1.15 at
   L1, 2.5 at L10, 5.5 at L30, 10 at L60), multiplied by the Troll
-  `ooc_regen_mult` perk. In combat it is one quarter of the **unmodified**
-  curve; the Troll perk does not apply. Cold Focus multiplies that in-combat
-  rate by **`1 + 2 × bonus`**, preserving its old +20% per-rank relative effect
-  (rank 5 doubles the combat rate).
+  `ooc_regen_mult` perk. In combat the untalented base rate is
+  **`max(0.25 × (1 + 0.15 × level), 0.0025 × maximum mana)`**; the Troll
+  perk does not apply. Cold Focus multiplies whichever in-combat term wins by
+  **`1 + 2 × bonus`**, preserving its old +20% per-rank relative effect (rank
+  5 doubles the combat rate).
 - Food regeneration and pool bonuses are percent-based, but consumables now
   have tier minimum levels through `_grug_ilvl`. The neutral base pool spans
   26 at level 1 to 2696 at level 60, while class factors and pool percentages
