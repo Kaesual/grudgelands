@@ -602,6 +602,12 @@ ocean edge and the enemy border (warning band, hard dismount).
     the input-authoritative registry; documented as placeholder; a later
     package adds output selection at the station or the design gives each
     identity its own distinguishing ingredient.
+40. **MAP-C performance tolerance +20 %, coast band ON** (user 2026-09-19):
+    with the WP48 levers identified, MAP-C may cost up to 20 % more emerge
+    wall clock than main (mean of two fresh pairs); the coast band ships
+    enabled by default (`grug_mapgen_r9_coast_band_enabled = true`; the
+    R8 evaluator stays byte-identical behind `false`). Supersedes the
+    tolerances of rulings 35/36 for this lane.
 
 ## 5. MAP-C protocol: what must not repeat from Round 8
 
