@@ -6,16 +6,18 @@ local tiers = {
 	{key = "light", name = "Light", output = "grug_mobs:light_leather",
 		inputs = {"mobs:leather", THREAD}, recipe_tier = 1},
 	{key = "cured", name = "Cured", output = C .. "cured_leather",
-		inputs = {"grug_mobs:light_leather", THREAD}, recipe_tier = 1},
+		inputs = {"grug_mobs:light_leather", THREAD}, recipe_tier = 2,
+		material = true},
 	{key = "heavy", name = "Heavy", output = "grug_mobs:heavy_leather",
-		inputs = {C .. "cured_leather", THREAD}, recipe_tier = 2},
+		inputs = {C .. "cured_leather", THREAD}, recipe_tier = 3, material = true},
 	{key = "scaled", name = "Scaled", output = "grug_mobs:scaled_hide",
-		inputs = {"grug_mobs:heavy_leather", THREAD}, recipe_tier = 3},
+		inputs = {"grug_mobs:heavy_leather", THREAD}, recipe_tier = 4,
+		material = true},
 	{key = "sleek", name = "Sleek", output = C .. "sleek_leather",
 		inputs = {"grug_mobs:sleek_pelt", THREAD}, recipe_tier = 5},
 	{key = "nightscale", name = "Nightscale", output = C .. "nightscale_leather",
 		inputs = {"grug_mobs:scaled_hide", "grug_mobs:sleek_pelt"},
-		recipe_tier = 5},
+		recipe_tier = 6, material = true},
 }
 
 for tier = 1, #tiers do
@@ -35,6 +37,7 @@ for tier = 1, #tiers do
 	P.register_recipe("leatherworker", {tier = row.recipe_tier,
 		station = "tanning_rack",
 		inputs = {row.inputs}, output = row.output,
+		material = row.material,
 		hint = "Tan at a Tanning Rack"})
 
 	local grip = P.register_item(C .. "weapon_grip_" .. row.key,

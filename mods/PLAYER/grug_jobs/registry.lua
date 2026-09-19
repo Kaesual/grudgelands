@@ -559,6 +559,9 @@ function grug_jobs.register_recipe(definition)
 	if definition.in_place ~= nil and type(definition.in_place) ~= "boolean" then
 		fail(profession .. " T" .. tier .. " in_place flag differs")
 	end
+	if definition.material ~= nil and type(definition.material) ~= "boolean" then
+		fail(profession .. " T" .. tier .. " material flag differs")
+	end
 	local inputs = flatten_inputs(definition.inputs)
 	if #inputs == 0 then fail(profession .. " T" .. tier .. " recipe has no input") end
 	local has_own_tier = false
@@ -570,12 +573,16 @@ function grug_jobs.register_recipe(definition)
 				inputs[index])
 		end
 	end
-	if not has_own_tier then
+	local output = item_name(definition.output)
+	if output == "" then fail(profession .. " recipe needs an output") end
+	if definition.material then
+		if ingredient_tiers[output] ~= tier then
+			fail(output .. " material output tier differs from recipe tier")
+		end
+	elseif not has_own_tier then
 		fail(profession .. " T" .. tier ..
 			" recipe needs at least one declared T" .. tier .. " ingredient")
 	end
-	local output = item_name(definition.output)
-	if output == "" then fail(profession .. " recipe needs an output") end
 	if definition.in_place and
 			(station ~= "grid" or not contains_exact_input(inputs, output)) then
 		fail(output .. " in-place recipe must use the grid and consume its output")
@@ -622,6 +629,7 @@ function grug_jobs.register_recipe(definition)
 		hint = definition.hint,
 		time = definition.time,
 		in_place = definition.in_place == true,
+		material = definition.material == true,
 		universal_output_routes = universal_routes,
 		shapeless = definition.shapeless == true,
 		shaped = definition.shapeless ~= true and

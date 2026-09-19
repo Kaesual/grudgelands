@@ -94,9 +94,11 @@ local function refined_description(stack, family)
 		damage = math.max(1, math.floor(damage * 1.15 + 0.5))
 		caps.damage_groups.fleshy = damage
 		meta:set_tool_capabilities(caps)
+		local hands = tonumber(definition._grug_hands) or 1
+		local suffix = hands >= 2 and ", two-handed" or ""
 		meta:set_string("description", "Honed " .. first .. level .. "\n" ..
-			core.colorize(STAT_COLOR, string.format("%d damage, %.1f s swing",
-				damage, caps.full_punch_interval or 1.4)))
+			core.colorize(STAT_COLOR, string.format("%d damage, %.1f s swing%s",
+				damage, caps.full_punch_interval or 1.4, suffix)))
 	else
 		local armor = definition._grug_armor or 0
 		armor = math.max(1, math.floor(armor * 1.15 + 0.5))

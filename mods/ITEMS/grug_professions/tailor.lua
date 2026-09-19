@@ -23,9 +23,9 @@ local tiers = {
 		inputs = {"grug_mobs:heavy_cloth", "grug_mobs:heavy_cloth", THREAD}},
 	{key = "silkweave", name = "Silkweave", source = "grug_mobs:spider_silk",
 		inputs = {C .. "bolt_heavy", "grug_mobs:spider_silk", THREAD}},
-	{key = "silk", name = "Silk", recipe_tier = 4,
+	{key = "silk", name = "Silk", recipe_tier = 5, material = true,
 		inputs = {"grug_mobs:spider_silk", "grug_mobs:spider_silk", THREAD}},
-	{key = "stormweave", name = "Stormweave", recipe_tier = 5,
+	{key = "stormweave", name = "Stormweave", recipe_tier = 6, material = true,
 		inputs = {"grug_mobs:spider_silk", "grug_gathering:stormkelp", THREAD}},
 }
 
@@ -44,6 +44,7 @@ for tier = 1, #tiers do
 	P.register_recipe("tailor", {tier = row.recipe_tier or tier,
 		station = "tailor_bench",
 		inputs = grid(row.inputs), output = bolt,
+		material = row.material,
 		hint = "Weave at a Tailor Bench"})
 
 	for _, slot in ipairs({"head", "chest", "legs", "feet"}) do

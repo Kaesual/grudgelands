@@ -51,5 +51,6 @@ return function(repo)
 	end
 	local runner = dofile(repo .. "/tools/r9_prof/catalog_kat_lib.lua")
 	return runner(repo, {profession = "blacksmith", recipes = recipes,
-		refinement = {output = "grug_gear:sword_bronze", word = "Honed"}})
+		refinement = {output = "grug_gear:greataxe_bronze", word = "Honed",
+			two_handed = true}})
 end

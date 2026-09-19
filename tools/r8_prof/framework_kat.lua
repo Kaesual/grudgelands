@@ -281,6 +281,7 @@ return function(repo)
 	grug_jobs.register_ingredient_tier("test:t3", 3)
 	grug_jobs.register_ingredient_tier("test:raw_path", 1)
 	grug_jobs.register_ingredient_tier("test:universal_t1", 1)
+	grug_jobs.register_ingredient_tier("test:material_t2", 2)
 	core.registered_items["test:pine"] = {groups = {wood = 1}}
 	core.registered_items["test:oak"] = {groups = {wood = 1}}
 	universal["test:universal"] = {{method = "normal", items = {"test:base"},
@@ -306,6 +307,16 @@ return function(repo)
 	check(in_place_recipe.in_place and
 		#(core.get_all_craft_recipes("test:refinable") or {}) == 2,
 		"in-place recipe did not share its universal output")
+	local material_recipe = grug_jobs.register_recipe({profession = "cooking",
+		tier = 2, station = "grid", inputs = {"test:t1"},
+		output = "test:material_t2", material = true, hint = "Convert material"})
+	local lower_tier_gear_ok = pcall(grug_jobs.register_recipe, {
+		profession = "cooking", tier = 2, station = "grid", inputs = {"test:t1"},
+		output = "test:gear_t2", hint = "Craft gear"})
+	check(material_recipe.material and not lower_tier_gear_ok,
+		"material tier exception escaped into gear")
+	line("material_tier", "lower_input_accepted_at_output_tier",
+		"gear_lower_input_refused")
 
 	local function refused(label, definition)
 		local ok = pcall(grug_jobs.register_recipe, definition)

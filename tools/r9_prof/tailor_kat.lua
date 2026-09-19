@@ -2,9 +2,9 @@
 
 return function(repo)
 	local recipes = {}
-	local function add(tier, station, output, inputs)
+	local function add(tier, station, output, inputs, material)
 		recipes[#recipes + 1] = {tier = tier, station = station,
-			output = output, inputs = inputs}
+			output = output, inputs = inputs, material = material}
 	end
 	local C = "grug_professions:"
 	local thread = C .. "thread"
@@ -13,14 +13,15 @@ return function(repo)
 		{"woven", {"grug_mobs:linen_cloth", "grug_mobs:linen_cloth", thread}},
 		{"heavy", {"grug_mobs:heavy_cloth", "grug_mobs:heavy_cloth", thread}},
 		{"silkweave", {C .. "bolt_heavy", "grug_mobs:spider_silk", thread}},
-		{"silk", {"grug_mobs:spider_silk", "grug_mobs:spider_silk", thread}, 4},
+		{"silk", {"grug_mobs:spider_silk", "grug_mobs:spider_silk", thread},
+			5, true},
 		{"stormweave", {"grug_mobs:spider_silk",
-			"grug_gathering:stormkelp", thread}, 5},
+			"grug_gathering:stormkelp", thread}, 6, true},
 	}
 	for tier = 1, 6 do
 		local key, inputs = bolts[tier][1], bolts[tier][2]
 		local bolt = C .. "bolt_" .. key
-		add(bolts[tier][3] or tier, "tailor_bench", bolt, inputs)
+		add(bolts[tier][3] or tier, "tailor_bench", bolt, inputs, bolts[tier][4])
 		for _, slot in ipairs({"head", "chest", "legs", "feet"}) do
 			local gear = "grug_gear:" .. slot .. "_cloth_" .. key
 			add(tier, "grid", gear, {gear, bolt})

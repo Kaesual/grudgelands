@@ -140,6 +140,7 @@ return function(repo, spec)
 				tool_capabilities = {full_punch_interval = 1,
 					damage_groups = {fleshy = tier + 4}, groupcaps = {}},
 				_grug_quality = 1,
+				_grug_hands = family == "greataxe" and 2 or 1,
 			})
 		end
 		for _, slot in ipairs({"head", "chest", "legs", "feet"}) do
@@ -204,6 +205,8 @@ return function(repo, spec)
 			"actual output duplicated: " .. recipe.output_name)
 		actual_outputs[recipe.output_name] = true
 		check(recipe.tier == row.tier, recipe.output_name .. " tier differs")
+		check(recipe.material == (row.material == true),
+			recipe.output_name .. " material flag differs")
 		check(recipe.station == row.station,
 			recipe.output_name .. " station differs")
 		check(sorted_inputs(recipe.inputs) == sorted_inputs(row.inputs),
@@ -228,7 +231,12 @@ return function(repo, spec)
 			check(tier == nil or tier <= recipe.tier,
 				recipe.output_name .. " hides a higher-tier input")
 		end
-		check(own_tier, recipe.output_name .. " lacks its own-tier ingredient")
+		if recipe.material then
+			check(grug_jobs.ingredient_tier(recipe.output_name) == recipe.tier,
+				recipe.output_name .. " material output tier differs")
+		else
+			check(own_tier, recipe.output_name .. " lacks its own-tier ingredient")
+		end
 
 		local concrete = {}
 		if recipe.shaped then
@@ -318,6 +326,11 @@ return function(repo, spec)
 		check(output:get_meta():get_string("description"):find(
 			spec.refinement.word, 1, true) ~= nil,
 			"refinement word is absent")
+		if spec.refinement.two_handed then
+			check(output:get_meta():get_string("description"):find(
+				", two-handed", 1, true) ~= nil,
+				"refinement discarded the two-handed suffix")
+		end
 		check(output:get_wear() == 12345, "refinement discarded base wear")
 		check(output:get_meta():get_string("prior_meta") == "preserved",
 			"refinement discarded base metadata")

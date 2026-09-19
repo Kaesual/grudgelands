@@ -2,27 +2,27 @@
 
 return function(repo)
 	local recipes = {}
-	local function add(tier, output, inputs)
+	local function add(tier, output, inputs, material)
 		recipes[#recipes + 1] = {tier = tier, station = "tanning_rack",
-			output = output, inputs = inputs}
+			output = output, inputs = inputs, material = material}
 	end
 	local C = "grug_professions:"
 	local thread = C .. "thread"
 	local grades = {
 		{"light", "grug_mobs:light_leather", {"mobs:leather", thread}},
 		{"cured", C .. "cured_leather",
-			{"grug_mobs:light_leather", thread}, 1},
+			{"grug_mobs:light_leather", thread}, 2, true},
 		{"heavy", "grug_mobs:heavy_leather",
-			{C .. "cured_leather", thread}, 2},
+			{C .. "cured_leather", thread}, 3, true},
 		{"scaled", "grug_mobs:scaled_hide",
-			{"grug_mobs:heavy_leather", thread}, 3},
+			{"grug_mobs:heavy_leather", thread}, 4, true},
 		{"sleek", C .. "sleek_leather", {"grug_mobs:sleek_pelt", thread}},
 		{"nightscale", C .. "nightscale_leather",
-			{"grug_mobs:scaled_hide", "grug_mobs:sleek_pelt"}, 5},
+			{"grug_mobs:scaled_hide", "grug_mobs:sleek_pelt"}, 6, true},
 	}
 	for tier = 1, 6 do
 		local key, leather, inputs = grades[tier][1], grades[tier][2], grades[tier][3]
-		add(grades[tier][4] or tier, leather, inputs)
+		add(grades[tier][4] or tier, leather, inputs, grades[tier][5])
 		local grip = C .. "weapon_grip_" .. key
 		add(tier, grip, {leather, leather})
 		if tier >= 2 then
