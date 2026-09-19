@@ -70,7 +70,8 @@ grug_mounts.MODELS = {
 		icon = "grug_mobs_stag.png",
 		visual_size = {x = 8, y = 8},
 		collisionbox = {-0.55, -0.01, -0.55, 0.55, 1.8, 0.55},
-		attach_y = 5.2, eye_y = 3,
+		-- Attachment offsets inherit parent scale: 1.9 * 8 / 10 = 1.52 nodes.
+		attach_y = 1.9, eye_y = 3,
 		animation = {stand = {1, 59, 10}, move = {100, 119, 40}},
 	},
 	orc = {

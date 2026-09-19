@@ -47,6 +47,8 @@ core.after(0, function()
 			local entity = object and object:get_luaentity()
 			if not ok or not object or fake.attached ~= object or not entity or
 					object:get_properties().static_save ~= false or
+					object:get_properties().pointable ~= true or
+					entity._grug_rider ~= fake or
 					object:get_armor_groups().immortal ~= 1 then
 				core.log("error", "R9_MOUNTS_PROBE attach failed: " .. tostring(message))
 				core.request_shutdown("R9 mounts probe failed", false, 0)
@@ -57,7 +59,8 @@ core.after(0, function()
 			grug_mounts.dismount(fake, nil, true, true)
 			grug_visuals.apply = apply_visuals
 			core.log("action", "R9_MOUNTS_PROBE PASS entity=grug_mounts:mount " ..
-				"rider=fake attached=true static_save=false armor=immortal cleanup=true")
+				"rider=fake attached=true pointable=true rider_proxy=true " ..
+				"static_save=false armor=immortal cleanup=true")
 			core.request_shutdown("R9 mounts probe complete", false, 0.1)
 		end)
 end)

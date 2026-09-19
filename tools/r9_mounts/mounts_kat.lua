@@ -134,6 +134,7 @@ return function(root)
 		local object = {valid = true, pos = clone_table(pos),
 			velocity = {x = 0, y = 0, z = 0}, yaw = 0}
 		function object:is_valid() return self.valid end
+		function object:is_player() return false end
 		function object:get_pos() return clone_table(self.pos) end
 		function object:set_pos(value) self.pos = clone_table(value) end
 		function object:get_velocity() return clone_table(self.velocity) end
@@ -250,7 +251,15 @@ return function(root)
 	grug_factions = {
 		get_faction = function(player) return player.faction end,
 		register_on_faction_chosen = function(func) callbacks.faction = func end,
+		hostile = function(first, second)
+			return first.faction ~= nil and second.faction ~= nil and
+				first.faction ~= second.faction
+		end,
+		same_faction = function(first, second)
+			return first.faction ~= nil and first.faction == second.faction
+		end,
 	}
+	grug_mobs = {is_noncombatant = function() return false end}
 	grug_classes = {
 		get_race = function(player) return player.race end,
 		register_on_race_chosen = function(func) callbacks.race = func end,
@@ -442,18 +451,19 @@ return function(root)
 	assert(grug_mounts.mount(rider, 3))
 	record = grug_mounts.active[rider.name]
 	assert(record.object.armor.immortal == 1)
-	assert(grug_mounts.entity_definition.initial_properties.pointable == false)
+	assert(grug_mounts.entity_definition.initial_properties.pointable == true)
 	assert(grug_mounts.entity_definition.initial_properties.static_save == false)
 	assert(grug_mounts.entity_definition.drops == nil)
+	assert(record.object.entity._grug_rider == rider)
 	assert(math.abs(rider.properties.visual_size.x - 0.3) < 0.000001 and
 		math.abs(rider.properties.visual_size.y - 0.3) < 0.000001)
 	grug_visuals.apply(rider)
 	assert(math.abs(rider.properties.visual_size.x - 0.3) < 0.000001 and
 		math.abs(rider.properties.visual_size.y - 0.3) < 0.000001)
 
-	-- A non-pointable mount never appears in the engine ray. Both swing items
-	-- and hostile direct casts use this shared real-code acquisition seam and
-	-- therefore acquire the still-attached rider's own hitbox.
+	-- The rendered mount hitbox is the real ray target. Both swing items and
+	-- hostile direct casts use the shared production acquisition seam, which
+	-- resolves that live attachment to the rider.
 	local attacker = new_player("attacker", 60, "throng", "orc")
 	local ray_hits = {}
 	core.raycast = function()
@@ -464,25 +474,52 @@ return function(root)
 		end
 	end
 	dofile(root .. "/mods/CORE/grug_core/combat_ray.lua")
-	local function acquire_with(_ability_kind)
+	local function acquire_mount_hit()
 		local origin = grug_core.combat_eye_pos(attacker)
-		ray_hits = {{type = "object", ref = rider,
+		ray_hits = {{type = "object", ref = record.object,
 			intersection_point = {x = origin.x, y = origin.y, z = origin.z + 2}}}
 		return grug_core.combat_ray(attacker, 4)
 	end
-	local swing_target = acquire_with("swing_item")
-	local cast_target = acquire_with("hostile_direct_cast")
+	local swing_target = acquire_mount_hit()
+	local cast_target = acquire_mount_hit()
 	assert(swing_target.status == "target" and swing_target.target == rider)
 	assert(cast_target.status == "target" and cast_target.target == rider)
+	assert(swing_target.pointed.ref == record.object and
+		cast_target.pointed.ref == record.object)
 
-	-- Refused friendly fire produces no accepted HP change; a zero accepted
-	-- change also leaves the rider mounted. Only a real HP loss dismounts.
-	assert(grug_mounts.active[rider.name] ~= nil)
-	for _, callback in ipairs(callbacks.hp) do callback(rider, 0, {}) end
-	assert(grug_mounts.active[rider.name] ~= nil)
-	rider.hp = rider.hp - 5
-	for _, callback in ipairs(callbacks.hp) do callback(rider, -5, {}) end
-	assert(rider.hp == 95 and grug_mounts.active[rider.name] == nil)
+	-- Swept projectiles retain the mount intersection point but settle on the
+	-- rider through the production collision seam.
+	grug_projectiles = {}
+	dofile(root .. "/mods/ENTITIES/grug_projectiles/collision.lua")
+	local projectile = {}
+	local origin = {x = 0, y = 0, z = 0}
+	ray_hits = {{type = "object", ref = record.object,
+		intersection_point = {x = 0, y = 0, z = 2}}}
+	local projectile_hit = grug_projectiles.trace_segment(attacker, projectile,
+		origin, {x = 0, y = 0, z = 4})
+	assert(projectile_hit.kind == "object" and projectile_hit.target == rider and
+		projectile_hit.pointed.ref == record.object)
+
+	-- mobs_redo redirects a melee hit on an attached player to get_attach().
+	-- The pointable mount forwards it through PlayerRef:punch; only accepted HP
+	-- loss reaches the existing final HP callback and dismounts.
+	local function attached_mob_melee(target, puncher)
+		local redirected = target:get_attach() or target
+		redirected:get_luaentity():on_punch(puncher, 1,
+			{damage_groups = {fleshy = 5}}, {x = 1, y = 0, z = 0})
+	end
+	local friendly_mob = new_object({x = 0, y = 0, z = 0})
+	rider.punch_result = "friendly"
+	attached_mob_melee(rider, friendly_mob)
+	assert(rider.punches == 1 and rider.was_attached_when_punched and
+		grug_mounts.active[rider.name] ~= nil)
+	rider.punch_result = "zero"
+	attached_mob_melee(rider, friendly_mob)
+	assert(rider.punches == 2 and grug_mounts.active[rider.name] ~= nil)
+	rider.punch_result = "damage"
+	attached_mob_melee(rider, friendly_mob)
+	assert(rider.punches == 3 and rider.hp == 95 and
+		grug_mounts.active[rider.name] == nil)
 	assert(math.abs(rider.properties.visual_size.x - 0.9) < 0.000001 and
 		math.abs(rider.properties.visual_size.y - 0.9) < 0.000001)
 
@@ -512,8 +549,18 @@ return function(root)
 		grug_mobs_boar = {1, 82}, grug_mobs_wolf = {1, 92},
 		grug_mobs_eagle = {1, 350}, grug_mobs_cave_bat = {1, 81},
 	}
+	local expected_attachment_heights = {
+		t1_accord = 1.26, t1_throng = 1.26, human = 1.26,
+		dwarf = 1.2325, elf = 1.52, orc = 1.271, undead = 1.428,
+		troll = 1.189, expert_accord = 1.86, master_accord = 2.56,
+		expert_throng = 1.92, master_throng = 2.856,
+	}
 	local audit_b3d = dofile(root .. "/tools/r9_mounts/b3d_audit.lua")
 	for _, model in pairs(grug_mounts.MODELS) do
+		local effective_attachment = model.attach_y * model.visual_size.y / 10
+		assert(math.abs(effective_attachment -
+			expected_attachment_heights[model.id]) < 0.000001,
+			model.id .. " effective attachment height differs")
 		if not seen[model.mesh] then
 			seen[model.mesh] = true
 			local path

@@ -333,6 +333,33 @@ local function zones_factory(dependencies)
 		error("WP40 R4 unknown flight-boundary primitive", 0)
 	end
 
+	local function bay_member(row, x, z)
+		local samples = row.centreline
+		for index = 1, #samples do
+			local sample = samples[index]
+			local dx, dz = x - sample.x, z - sample.z
+			if dx * dx + dz * dz <= sample.half_width * sample.half_width then
+				return true
+			end
+		end
+		for index = 1, #samples - 1 do
+			local a, b = samples[index], samples[index + 1]
+			local vx, vz = b.x - a.x, b.z - a.z
+			local length_squared = vx * vx + vz * vz
+			local wx, wz = x - a.x, z - a.z
+			local dot = wx * vx + wz * vz
+			if dot >= 0 and dot <= length_squared then
+				local cross = wx * vz - wz * vx
+				local width = a.half_width +
+					(b.half_width - a.half_width) * dot / length_squared
+				if cross * cross <= width * width * length_squared then
+					return true
+				end
+			end
+		end
+		return false
+	end
+
 	local function rectangle_boundary_distance(x, z, row)
 		if x >= row.min_x and x <= row.max_x and
 				z >= row.min_z and z <= row.max_z then
@@ -1300,7 +1327,8 @@ local function zones_factory(dependencies)
 			local raw_z = finite_number(position.z, "flight-boundary query z")
 			local x, _, z, outside = normalize_position(position,
 				"flight-boundary query")
-			local water_class, macro_region, owner = classification_values(x, z, outside)
+			local water_class, macro_region, owner, bay_id =
+				classification_values(x, z, outside)
 			if (water_class ~= "land" and water_class ~= "planned_water") or
 					not owner then
 				return 0, "ocean"
@@ -1400,6 +1428,20 @@ local function zones_factory(dependencies)
 							local raw_boundary_z = raw_z + boundary_z - warped.z
 							consider_boundary(distance, raw_boundary_x, raw_boundary_z,
 								boundary_x - warped.x, boundary_z - warped.z, "ocean")
+						end
+					end
+					if bay_id then
+						for bay_index = 1, #source.bays do
+							local bay = source.bays[bay_index]
+							if bay.id == bay_id then
+								local cut_z = bay.deep_ocean_cut_z
+								if bay_member(bay, warped.x, cut_z) then
+									local raw_boundary_z = raw_z + cut_z - warped.z
+									consider_boundary(math.abs(warped.z - cut_z), raw_x,
+										raw_boundary_z, 0, cut_z - warped.z, "ocean")
+								end
+								break
+							end
 						end
 					end
 				end

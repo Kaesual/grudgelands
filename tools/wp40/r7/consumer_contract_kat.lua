@@ -620,6 +620,12 @@ check(math.abs(inside_distance - 47.9) < 0.001 and inside_kind == "enemy",
 	"production oblique 47.9-node witness differs")
 check(math.abs(outside_distance - 48.1) < 0.001 and outside_kind == "enemy",
 	"production oblique 48.1-node witness differs")
+local bay_distance, bay_kind = production_zones.flight_boundary_distance(
+	{x = -820, y = 100, z = -3040}, "accord")
+check(production_zones.water_class_at(-820, -3040) == "planned_water" and
+	production_zones.water_class_at(-820, -3041) == "deep_ocean" and
+	bay_distance <= 48 and bay_kind == "ocean",
+	"production subtractive bay-mouth flight boundary differs")
 
 rawset(_G, "core", saved_core)
 rawset(_G, "grug_core", saved_grug_core)

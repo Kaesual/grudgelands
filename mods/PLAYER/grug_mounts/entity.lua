@@ -102,6 +102,7 @@ function grug_mounts.dismount(player, reason, hard, skip_animation)
 		if entity then
 			entity._grug_removing = true
 			entity.driver = nil
+			entity._grug_rider = nil
 		end
 	end
 	player:set_detach()
@@ -247,7 +248,7 @@ local entity_definition = {
 	initial_properties = {
 		physical = true,
 		collide_with_objects = false,
-		pointable = false,
+		pointable = true,
 		visual = "mesh",
 		mesh = "grug_mounts_horse.b3d",
 		textures = {"grug_mobs_blank.png"},
@@ -314,6 +315,13 @@ local entity_definition = {
 		else land_step(self, control, yaw, dtime) end
 	end,
 
+	on_punch = function(self, puncher, time_from_last_punch, tool_capabilities, dir)
+		local player = self._grug_rider
+		if valid_player(player) and player:get_attach() == self.object then
+			player:punch(puncher, time_from_last_punch, tool_capabilities, dir)
+		end
+	end,
+
 	on_death = function(self)
 		local player = self.driver
 		if valid_player(player) then grug_mounts.dismount(player, nil, false) end
@@ -358,6 +366,7 @@ function grug_mounts.spawn_entity(player, tier_id, pos, skip_animation)
 	local entity = object:get_luaentity()
 	if not entity then object:remove() return false, "The mount failed to activate." end
 	entity.driver = player
+	entity._grug_rider = player
 	active[name] = {object = object, tier = tier_id, flying = tier.mode == "flight",
 		model = model}
 	attach(player, object, model, skip_animation)
