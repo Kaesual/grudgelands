@@ -241,12 +241,13 @@ local function zones_factory(dependencies)
 		local length_squared = vx * vx + vz * vz
 		if length_squared == 0 then
 			local dx, dz = x - a.x, z - a.z
-			return math.sqrt(dx * dx + dz * dz)
+			return math.sqrt(dx * dx + dz * dz), a.x, a.z
 		end
 		local ratio = ((x - a.x) * vx + (z - a.z) * vz) / length_squared
 		if ratio < 0 then ratio = 0 elseif ratio > 1 then ratio = 1 end
 		local dx, dz = x - (a.x + ratio * vx), z - (a.z + ratio * vz)
-		return math.sqrt(dx * dx + dz * dz)
+		return math.sqrt(dx * dx + dz * dz),
+			a.x + ratio * vx, a.z + ratio * vz
 	end
 
 	-- Exact Euclidean distance to an axis-aligned ellipse. A fixed ternary
@@ -265,7 +266,12 @@ local function zones_factory(dependencies)
 			local left, right = low + third, high - third
 			if squared(left) <= squared(right) then high = right else low = left end
 		end
-		return math.sqrt(squared((low + high) / 2))
+		local angle = (low + high) / 2
+		local qx, qz = row.center.x + a * math.cos(angle),
+			row.center.z + b * math.sin(angle)
+		if x < row.center.x then qx = 2 * row.center.x - qx end
+		if z < row.center.z then qz = 2 * row.center.z - qz end
+		return math.sqrt(squared(angle)), qx, qz
 	end
 
 	local function rounded_rectangle_boundary_distance(x, z, row)
@@ -279,12 +285,46 @@ local function zones_factory(dependencies)
 		local outside_x, outside_z = math.max(qx, 0), math.max(qz, 0)
 		local signed = math.sqrt(outside_x * outside_x + outside_z * outside_z) +
 			math.min(math.max(qx, qz), 0) - radius
-		return math.abs(signed)
+		local local_x, local_z = x - center_x, z - center_z
+		local clamped_x = math.max(-inner_x, math.min(inner_x, local_x))
+		local clamped_z = math.max(-inner_z, math.min(inner_z, local_z))
+		local vx, vz = local_x - clamped_x, local_z - clamped_z
+		local length = math.sqrt(vx * vx + vz * vz)
+		local boundary_x, boundary_z
+		if length > 0 then
+			boundary_x = center_x + clamped_x + vx * radius / length
+			boundary_z = center_z + clamped_z + vz * radius / length
+		else
+			local dx, dz = inner_x + radius - math.abs(local_x),
+				inner_z + radius - math.abs(local_z)
+			if dx <= dz then
+				boundary_x = center_x + (local_x < 0 and -1 or 1) *
+					(inner_x + radius)
+				boundary_z = z
+			else
+				boundary_x = x
+				boundary_z = center_z + (local_z < 0 and -1 or 1) *
+					(inner_z + radius)
+			end
+		end
+		return math.abs(signed), boundary_x, boundary_z
 	end
 
 	local function primitive_boundary_distance(x, z, row)
 		if row.kind == "capsule" then
-			return math.abs(point_segment_distance(x, z, row.a, row.b) - row.radius)
+			local center_distance, center_x, center_z =
+				point_segment_distance(x, z, row.a, row.b)
+			local nx, nz
+			if center_distance > 0 then
+				nx, nz = (x - center_x) / center_distance,
+					(z - center_z) / center_distance
+			else
+				local vx, vz = row.b.x - row.a.x, row.b.z - row.a.z
+				local length = math.sqrt(vx * vx + vz * vz)
+				nx, nz = -vz / length, vx / length
+			end
+			return math.abs(center_distance - row.radius),
+				center_x + nx * row.radius, center_z + nz * row.radius
 		elseif row.kind == "ellipse" then
 			return ellipse_boundary_distance(x, z, row)
 		elseif row.kind == "rounded_rect" then
@@ -296,12 +336,21 @@ local function zones_factory(dependencies)
 	local function rectangle_boundary_distance(x, z, row)
 		if x >= row.min_x and x <= row.max_x and
 				z >= row.min_z and z <= row.max_z then
-			return math.min(x - row.min_x, row.max_x - x,
-				z - row.min_z, row.max_z - z)
+			local distances = {x - row.min_x, row.max_x - x,
+				z - row.min_z, row.max_z - z}
+			local best, edge = distances[1], 1
+			for index = 2, 4 do
+				if distances[index] < best then best, edge = distances[index], index end
+			end
+			if edge == 1 then return best, row.min_x, z end
+			if edge == 2 then return best, row.max_x, z end
+			if edge == 3 then return best, x, row.min_z end
+			return best, x, row.max_z
 		end
-		local dx = math.max(row.min_x - x, 0, x - row.max_x)
-		local dz = math.max(row.min_z - z, 0, z - row.max_z)
-		return math.sqrt(dx * dx + dz * dz)
+		local qx = math.max(row.min_x, math.min(row.max_x, x))
+		local qz = math.max(row.min_z, math.min(row.max_z, z))
+		local dx, dz = x - qx, z - qz
+		return math.sqrt(dx * dx + dz * dz), qx, qz
 	end
 	local FUNCTIONAL_KINDS = {
 		anchor_platform = true,
@@ -1257,11 +1306,26 @@ local function zones_factory(dependencies)
 				return 0, "ocean"
 			end
 			local current = zone_by_numeric[owner]
-			local function legal(record)
+			local function legal_record(record)
 				return record.territory_rule == "holy_grounds" or
 					record.territory_rule == actor_faction .. "_home"
 			end
-			if not legal(current) then return 0, "enemy" end
+			if not legal_record(current) then return 0, "enemy" end
+			local function legal_at(sample_x, sample_z)
+				local sample_outside
+				sample_x, sample_z, sample_outside = normalize_xz(sample_x, sample_z,
+					"flight-boundary witness")
+				local sample_water, _, sample_owner = classification_values(
+					sample_x, sample_z, sample_outside)
+				if sample_water ~= "land" and sample_water ~= "planned_water" then
+					return false, "ocean"
+				end
+				local sample_record = sample_owner and zone_by_numeric[sample_owner]
+				if not sample_record or not legal_record(sample_record) then
+					return false, "enemy"
+				end
+				return true, nil
+			end
 
 			local nearest, nearest_kind
 			local function consider(distance, kind)
@@ -1270,13 +1334,29 @@ local function zones_factory(dependencies)
 					nearest, nearest_kind = distance, kind
 				end
 			end
+			local function consider_boundary(distance, boundary_x, boundary_z,
+					normal_x, normal_z, fallback_kind)
+				if not distance or not boundary_x or not normal_x then return end
+				local length = math.sqrt(normal_x * normal_x + normal_z * normal_z)
+				if length == 0 then return end
+				normal_x, normal_z = normal_x / length, normal_z / length
+				local first_legal, first_kind = legal_at(
+					boundary_x + normal_x * 1.5, boundary_z + normal_z * 1.5)
+				local second_legal, second_kind = legal_at(
+					boundary_x - normal_x * 1.5, boundary_z - normal_z * 1.5)
+				if first_legal ~= second_legal then
+					consider(distance, first_legal and second_kind or first_kind or
+						fallback_kind)
+				end
+			end
 
 			local warped = horizontal.warp_at(x, z)
 			if warped then
 				warped.x, warped.z = warped.x + raw_x - x, warped.z + raw_z - z
 				for candidate_id = 1, #zone_records do
 					local candidate = zone_by_numeric[candidate_id]
-					if candidate.macro_region == macro_region and not legal(candidate) then
+					if candidate.macro_region == macro_region and
+							not legal_record(candidate) then
 						local own_hub, other_hub = warped_zone_hubs[owner],
 							warped_zone_hubs[candidate_id]
 						local dx, dz = other_hub.x - own_hub.x,
@@ -1288,21 +1368,38 @@ local function zones_factory(dependencies)
 							local other_score = (warped.x - other_hub.x) ^ 2 +
 								(warped.z - other_hub.z) ^ 2 -
 								source.zones[candidate_id].bias
-							consider(math.abs(other_score - own_score) / denominator,
+							local score_difference = other_score - own_score
+							local gradient_x, gradient_z = -2 * dx, -2 * dz
+							local gradient_squared = gradient_x * gradient_x +
+								gradient_z * gradient_z
+							local boundary_x = warped.x - score_difference * gradient_x /
+								gradient_squared
+							local boundary_z = warped.z - score_difference * gradient_z /
+								gradient_squared
+							local raw_boundary_x = raw_x + boundary_x - warped.x
+							local raw_boundary_z = raw_z + boundary_z - warped.z
+							consider_boundary(math.abs(score_difference) / denominator,
+								raw_boundary_x, raw_boundary_z, gradient_x, gradient_z,
 								"enemy")
 						end
 					end
 				end
 
 				if macro_region == "holy_grounds" then
-					consider(rectangle_boundary_distance(raw_x, raw_z,
-						source.holy_grounds), "enemy")
+					local distance, boundary_x, boundary_z =
+						rectangle_boundary_distance(raw_x, raw_z, source.holy_grounds)
+					consider_boundary(distance, boundary_x, boundary_z,
+						boundary_x - raw_x, boundary_z - raw_z, "enemy")
 				else
 					for primitive_index = 1, #source.land_primitives do
 						local primitive = source.land_primitives[primitive_index]
 						if primitive.region == macro_region then
-							consider(primitive_boundary_distance(warped.x, warped.z,
-								primitive), "ocean")
+							local distance, boundary_x, boundary_z =
+								primitive_boundary_distance(warped.x, warped.z, primitive)
+							local raw_boundary_x = raw_x + boundary_x - warped.x
+							local raw_boundary_z = raw_z + boundary_z - warped.z
+							consider_boundary(distance, raw_boundary_x, raw_boundary_z,
+								boundary_x - warped.x, boundary_z - warped.z, "ocean")
 						end
 					end
 				end

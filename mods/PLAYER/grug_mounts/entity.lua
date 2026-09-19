@@ -9,6 +9,30 @@ local function valid_player(player)
 	return player and player.is_player and player:is_player()
 end
 
+local function counter_scale(player, record, visual_size)
+	if not record or not record.model then return end
+	visual_size = visual_size or record.rider_visual_size or {x = 1, y = 1}
+	record.rider_visual_size = {x = visual_size.x, y = visual_size.y}
+	player:set_properties({visual_size = {
+		x = visual_size.x / record.model.visual_size.x,
+		y = visual_size.y / record.model.visual_size.y,
+	}})
+end
+
+if core.global_exists("grug_visuals") and type(grug_visuals.apply) == "function" then
+	local apply_visuals = grug_visuals.apply
+	grug_visuals.apply = function(player)
+		local result = apply_visuals(player)
+		if valid_player(player) then
+			local record = active[player:get_player_name()]
+			if record then
+				counter_scale(player, record, result and result.visual_size)
+			end
+		end
+		return result
+	end
+end
+
 local function position_node(pos)
 	return {x = math.floor(pos.x + 0.5), y = math.floor(pos.y + 0.5),
 		z = math.floor(pos.z + 0.5)}
@@ -223,7 +247,7 @@ local entity_definition = {
 	initial_properties = {
 		physical = true,
 		collide_with_objects = false,
-		pointable = true,
+		pointable = false,
 		visual = "mesh",
 		mesh = "grug_mounts_horse.b3d",
 		textures = {"grug_mobs_blank.png"},
@@ -290,14 +314,6 @@ local entity_definition = {
 		else land_step(self, control, yaw, dtime) end
 	end,
 
-	on_punch = function(self, puncher, time_from_last_punch, tool_capabilities, dir)
-		local player = self.driver
-		if not valid_player(player) then return end
-		if puncher and puncher.is_valid and puncher:is_valid() then
-			player:punch(puncher, time_from_last_punch, tool_capabilities, dir)
-		end
-	end,
-
 	on_death = function(self)
 		local player = self.driver
 		if valid_player(player) then grug_mounts.dismount(player, nil, false) end
@@ -319,6 +335,9 @@ grug_mounts.entity_definition = entity_definition
 
 local function attach(player, object, model, skip_animation)
 	local name = player:get_player_name()
+	local record = active[name]
+	local properties = player:get_properties() or {}
+	counter_scale(player, record, properties.visual_size)
 	player_api.player_attached[name] = true
 	player:set_attach(object, "", {x = 0, y = model.attach_y, z = 0},
 		{x = 0, y = 0, z = 0})
@@ -339,7 +358,8 @@ function grug_mounts.spawn_entity(player, tier_id, pos, skip_animation)
 	local entity = object:get_luaentity()
 	if not entity then object:remove() return false, "The mount failed to activate." end
 	entity.driver = player
-	active[name] = {object = object, tier = tier_id, flying = tier.mode == "flight"}
+	active[name] = {object = object, tier = tier_id, flying = tier.mode == "flight",
+		model = model}
 	attach(player, object, model, skip_animation)
 	return true
 end

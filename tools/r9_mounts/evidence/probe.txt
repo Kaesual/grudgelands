@@ -25,7 +25,7 @@ ACTION[Main]: [grug_traders] troll capital vendors come from the sockets of keza
 ACTION[Main]: [grug_traders] undead capital vendors come from the sockets of nhal_veyr
 ACTION[Main]: [grug_traders] 12 settlements indexed for profession vendor appearance
 ACTION[Main]: [grug_traders] drop audit: 3 mob(s) use a `drops` FUNCTION and cannot be walked statically (grug_mobs:bandit, grug_mobs:bandit_archer, grug_mobs:poacher); their items are audited from the hardcoded FUNCTION_DROPS list
-ACTION[Main]: World at [/tmp/grudgelands-headless.jP8KVu/world]
+ACTION[Main]: World at [/tmp/grudgelands-headless.zCeEQl/world]
 ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:32206.
 ACTION[Server]: [grug_core] start preload: emerging 6 start areas (128 x 128 nodes each, 2 at a time)
 ACTION[Emerge-0]: R9_MOUNTS_PROBE PASS entity=grug_mounts:mount rider=fake attached=true static_save=false armor=immortal cleanup=true
@@ -36,8 +36,8 @@ successful disposable probe requests immediate shutdown instead of waiting for
 the six unrelated player-start emerges.
 
 Evidence hashes:
-169ad4b97ee0ace1ddcfdb7cf4f521b43482abbe4357747019558bab8a7d7e1b  server.log
-62d9a0723f015458908c24827d1bcd37b598c666ed8a84bc552bf208931bb8fc  mods/PLAYER/grug_mounts/entity.lua
-351d0d9fc96e42af35043abffe2a407d8ebcb33136898f5d518a552e05894cff  mods/PLAYER/grug_mounts/catalog.lua
-0627f24f6099364f63c362ab727a25683ae67a496ee9ca26211648176083529a  mods/MAPGEN/grug_mapgen/wp40/zones.lua
-b687302c2ded08da6e994916b9b652f0d8d2536dc99faf6e84a642f520e86487  tools/r9_mounts/probe/init.lua
+056861464c50c413b9f69dc46c3cf145f45cd214e9867702fe8db2849d56742e  server.log
+03457b9615419dc615338d9322e4dc38b490d88da2bc3408cbe0722e8679b16d  mods/PLAYER/grug_mounts/entity.lua
+4bd3b79b7f84d3225e37cc67af21afd67964aa1176c6753ad7aecea2222940ba  mods/PLAYER/grug_mounts/catalog.lua
+a795bec9b8d5a185e30f81781a99fa945b9abbd8ebf1c1ad631141a1c0abf6b7  mods/MAPGEN/grug_mapgen/wp40/zones.lua
+b68bdf6f9a42de89be58c879afae2b5bbb1e8ad79dc57995eebe1908c0bce807  tools/r9_mounts/probe/init.lua

@@ -69,7 +69,9 @@ return function(root)
 		local player = {
 			name = name, level = level, faction = faction, race = race,
 			balance = 1000000, pos = {x = -100, y = 20, z = -100},
-			velocity = {x = 2, y = 3, z = 4}, properties = {hp_max = 100},
+			velocity = {x = 2, y = 3, z = 4},
+			properties = {hp_max = 100, eye_height = 1.625,
+				visual_size = {x = 0.9, y = 0.9}},
 			inventory = setmetatable({main = {}}, Inventory),
 			control = {}, hud = {}, hp = 100,
 		}
@@ -103,6 +105,10 @@ return function(root)
 		function player:get_properties() return clone_table(self.properties) end
 		function player:get_player_control() return self.control end
 		function player:get_look_horizontal() return 0 end
+		function player:get_look_dir() return {x = 0, y = 0, z = 1} end
+		function player:get_eye_offset() return {x = 0, y = 0, z = 0} end
+		function player:get_hp() return self.hp end
+		function player:get_luaentity() return nil end
 		function player:hud_add(def)
 			local id = #self.hud + 1
 			self.hud[id] = clone_table(def)
@@ -199,10 +205,39 @@ return function(root)
 	end
 
 	vector = {
+		new = function(x, y, z)
+			if type(x) == "table" then return clone_table(x) end
+			return {x = x, y = y, z = z}
+		end,
 		add = function(a, b) return {x = a.x + b.x, y = a.y + b.y, z = a.z + b.z} end,
+		multiply = function(a, scale)
+			return {x = a.x * scale, y = a.y * scale, z = a.z * scale}
+		end,
+		distance = function(a, b)
+			local x, y, z = a.x - b.x, a.y - b.y, a.z - b.z
+			return math.sqrt(x * x + y * y + z * z)
+		end,
+		normalize = function(a)
+			local length = math.sqrt(a.x * a.x + a.y * a.y + a.z * a.z)
+			return length == 0 and {x = 0, y = 0, z = 0} or
+				{x = a.x / length, y = a.y / length, z = a.z / length}
+		end,
 	}
 	player_api = {player_attached = {}, set_animation = function() end}
-	grug_core = {in_combat = function() return combat end}
+	grug_core = {
+		in_combat = function() return combat end,
+		get_player_faction = function(name)
+			local player = players[name]
+			return player and player.faction or nil
+		end,
+	}
+	grug_visuals = {
+		apply = function(player)
+			local visual_size = {x = 0.9, y = 0.9}
+			player:set_properties({visual_size = visual_size})
+			return {visual_size = visual_size}
+		end,
+	}
 	grug_xp = {get_level = function(player) return player.level end}
 	grug_money = {
 		take = function(player, amount)
@@ -407,23 +442,49 @@ return function(root)
 	assert(grug_mounts.mount(rider, 3))
 	record = grug_mounts.active[rider.name]
 	assert(record.object.armor.immortal == 1)
+	assert(grug_mounts.entity_definition.initial_properties.pointable == false)
 	assert(grug_mounts.entity_definition.initial_properties.static_save == false)
 	assert(grug_mounts.entity_definition.drops == nil)
-	local attacker = {is_valid = function() return true end}
-	rider.punch_result = "friendly"
-	record.object.entity:on_punch(attacker, 1, {damage_groups = {fleshy = 5}},
-		{x = 1, y = 0, z = 0}, 5)
-	assert(rider.punches == 1 and rider.was_attached_when_punched and
-		grug_mounts.active[rider.name] ~= nil)
-	rider.punch_result = "zero"
-	record.object.entity:on_punch(attacker, 1, {damage_groups = {fleshy = 0}},
-		{x = 1, y = 0, z = 0}, 0)
-	assert(rider.punches == 2 and grug_mounts.active[rider.name] ~= nil)
-	rider.punch_result = "damage"
-	record.object.entity:on_punch(attacker, 1, {damage_groups = {fleshy = 5}},
-		{x = 1, y = 0, z = 0}, 5)
-	assert(rider.punches == 3 and rider.hp == 95 and
-		grug_mounts.active[rider.name] == nil)
+	assert(math.abs(rider.properties.visual_size.x - 0.3) < 0.000001 and
+		math.abs(rider.properties.visual_size.y - 0.3) < 0.000001)
+	grug_visuals.apply(rider)
+	assert(math.abs(rider.properties.visual_size.x - 0.3) < 0.000001 and
+		math.abs(rider.properties.visual_size.y - 0.3) < 0.000001)
+
+	-- A non-pointable mount never appears in the engine ray. Both swing items
+	-- and hostile direct casts use this shared real-code acquisition seam and
+	-- therefore acquire the still-attached rider's own hitbox.
+	local attacker = new_player("attacker", 60, "throng", "orc")
+	local ray_hits = {}
+	core.raycast = function()
+		local index = 0
+		return function()
+			index = index + 1
+			return ray_hits[index]
+		end
+	end
+	dofile(root .. "/mods/CORE/grug_core/combat_ray.lua")
+	local function acquire_with(_ability_kind)
+		local origin = grug_core.combat_eye_pos(attacker)
+		ray_hits = {{type = "object", ref = rider,
+			intersection_point = {x = origin.x, y = origin.y, z = origin.z + 2}}}
+		return grug_core.combat_ray(attacker, 4)
+	end
+	local swing_target = acquire_with("swing_item")
+	local cast_target = acquire_with("hostile_direct_cast")
+	assert(swing_target.status == "target" and swing_target.target == rider)
+	assert(cast_target.status == "target" and cast_target.target == rider)
+
+	-- Refused friendly fire produces no accepted HP change; a zero accepted
+	-- change also leaves the rider mounted. Only a real HP loss dismounts.
+	assert(grug_mounts.active[rider.name] ~= nil)
+	for _, callback in ipairs(callbacks.hp) do callback(rider, 0, {}) end
+	assert(grug_mounts.active[rider.name] ~= nil)
+	rider.hp = rider.hp - 5
+	for _, callback in ipairs(callbacks.hp) do callback(rider, -5, {}) end
+	assert(rider.hp == 95 and grug_mounts.active[rider.name] == nil)
+	assert(math.abs(rider.properties.visual_size.x - 0.9) < 0.000001 and
+		math.abs(rider.properties.visual_size.y - 0.9) < 0.000001)
 
 	local price_viewer = new_player("price_viewer", 60, "accord", "human")
 	local extension = callbacks.trainer({action = "formspec", player = price_viewer,

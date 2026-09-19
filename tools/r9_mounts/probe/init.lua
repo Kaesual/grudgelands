@@ -6,7 +6,8 @@ function meta:get_string(key)
 end
 function meta:get_int() return 0 end
 
-local fake = {name = "r9_mount_probe", velocity = {x = 0, y = 0, z = 0}}
+local fake = {name = "r9_mount_probe", velocity = {x = 0, y = 0, z = 0},
+	properties = {visual_size = {x = 1, y = 1}}}
 function fake:is_player() return true end
 function fake:get_player_name() return self.name end
 function fake:get_meta() return meta end
@@ -14,6 +15,10 @@ function fake:set_attach(object) self.attached = object end
 function fake:get_attach() return self.attached end
 function fake:set_detach() self.attached = nil end
 function fake:set_eye_offset() end
+function fake:get_properties() return self.properties end
+function fake:set_properties(values)
+	for key, value in pairs(values) do self.properties[key] = value end
+end
 function fake:get_player_control() return {} end
 function fake:get_look_horizontal() return 0 end
 function fake:get_velocity() return self.velocity end
