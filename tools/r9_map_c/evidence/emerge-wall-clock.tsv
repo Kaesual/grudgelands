@@ -46,3 +46,7 @@ fix1_coast_off_pair2/plan_us	32774176	28351896	-4422280	0.865068
 fix1_coast_off_pair2/writer_us	21690308	27519865	5829557	1.268763
 fix1_coast_off_mean/measured_elapsed_ratio	-	-	-	1.048676
 fix1_coast_off_mean/callback_total_ratio	-	-	-	1.062459
+ruling40_all_on/measured_elapsed_us	69700828	75969673	6268845	1.089939
+ruling40_all_on/callback_total_us	53438519	59635338	6196819	1.115962
+ruling40_all_on/plan_us	32509402	29438142	-3071260	0.905527
+ruling40_all_on/writer_us	20929117	30197196	9268079	1.442832

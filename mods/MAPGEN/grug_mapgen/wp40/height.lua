@@ -177,11 +177,11 @@ local function height_factory(dependencies)
 	-- helper table; Lua 5.1's construct closure is at its 60-upvalue ceiling.
 	deterministic.r8_coast_rules = new_coast_rules
 	local core_api = rawget(_G, "core")
-	deterministic.r9_coast_band_enabled = false
+	deterministic.r9_coast_band_enabled = true
 	if core_api and core_api.settings and
 			type(core_api.settings.get_bool) == "function" then
 		deterministic.r9_coast_band_enabled = core_api.settings:get_bool(
-			"grug_mapgen_r9_coast_band_enabled", false)
+			"grug_mapgen_r9_coast_band_enabled", true)
 	end
 	local raw_sha256 = assert(dependencies.raw_sha256,
 		"WP40 simple-map height SHA-256 dependency missing")

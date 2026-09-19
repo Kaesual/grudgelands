@@ -33,7 +33,6 @@ grug_atmosphere_zones (Drive the atmosphere from the player's zone) bool true
 
 [Map generation]
 
-#    Experimental deterministic coast profiles. The current implementation
-#    remains available for analytic testing, but its real-engine planner cost
-#    exceeds the production emerge-time gate.
-grug_mapgen_r9_coast_band_enabled (Enable experimental coast profiles) bool false
+#    Deterministic wide coast profiles ship enabled under Round 9's
+#    20 percent soft emerge-time gate.
+grug_mapgen_r9_coast_band_enabled (Enable wide coast profiles) bool true

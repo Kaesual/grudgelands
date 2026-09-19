@@ -19,6 +19,11 @@ local cases = {
 	{id = "wet", relief = "wetland_delta", x = -1800, z = 2050},
 	{id = "rolling", relief = "rolling_hills", x = -1800, z = -2050},
 	{id = "mountain", relief = "mountain", x = -3150, z = 0},
+	{id = "opening_search_a", relief = "lowland", x = -2085, z = -2783},
+	{id = "opening_search_b", relief = "lowland", x = -2225, z = -2637},
+	{id = "opening_search_c", relief = "lowland", x = -1422, z = -2470},
+	{id = "coast_band", relief = "lowland", x = 1784, z = -2960,
+		coast_profile = "beach/1/25/false/11/2/-62/sea_lowland/1/lowland"},
 	{id = "plate_surface", relief = "lowland", x = -1696, z = -2522},
 	{id = "plate_deep", relief = "lowland", x = -1696, y = -37, z = -2522},
 }
@@ -37,6 +42,13 @@ local function inspect(case, origin)
 		"surface=" .. node_name(case.x, terrain_y, case.z),
 		"below=" .. node_name(case.x, terrain_y - 1, case.z),
 		"above=" .. node_name(case.x, terrain_y + 1, case.z)})
+	if case.coast_profile then
+		action({"case=coast_band_active", "x=" .. case.x, "z=" .. case.z,
+			"profile=" .. case.coast_profile,
+			"enabled=" .. tostring(core.settings:get_bool(
+				"grug_mapgen_r9_coast_band_enabled", true)),
+			"surface=" .. node_name(case.x, terrain_y, case.z)})
+	end
 	local found
 	for z = origin.z, origin.z + 79 do
 		for x = origin.x, origin.x + 79 do

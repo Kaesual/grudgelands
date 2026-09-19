@@ -138,3 +138,7 @@ performance_fix1 before emerge=69453581 callback=53317490 plan=31389288 writer=2
 performance_gate FAIL 1.03 tolerance; ruling35 STOP after final parser/SETGLOBAL and before static/KAT/prefreeze/witness/pin/final_micro/headless sequence
 performance_fix1_pair2 before emerge=70785084 callback=54464484 plan=32774176 writer=21690308 after emerge=72335475 callback=55871761 plan=28351896 writer=27519865 ratios=1.021903/1.025838/0.865068/1.268763
 performance_ruling36 pair1_wall=1.075449 pair2_wall=1.021903 mean_wall=1.048676 PASS_at_1.05 pair1_callback=1.099079 pair2_callback=1.025838 mean_callback=1.062459
+ruling40 coast_band production_default=true settingtypes_default=true R8_false_path=retained
+performance_ruling40_pair1 before emerge=69700828 callback=53438519 plan=32509402 writer=20929117 after emerge=75969673 callback=59635338 plan=29438142 writer=30197196 ratios=1.089939/1.115962/0.905527/1.442832 PASS_below_1.15
+ruling40_engine_witness seed=0 wet/rolling/mountain regions retained; natural opening at (-2082,28,-2782) has air at T through T-4; coast (1784,-2960) has beach width 25, enabled=true, and sand; plate (-1696,-2522) preserves air y=-37..-34
+roster_ruling_run11 restored changed_production_lua.txt and all roster-count assertions to main 29941a9b values: changed=157, micro_union=187; the d6002a2-derived source audit is stale on main and its dedicated refreeze is escalated outside MAP-C

@@ -42,6 +42,12 @@ return function(root)
 	end
 	local wp40 = root .. "/mods/MAPGEN/grug_mapgen/wp40"
 	local common = dofile(root .. "/tools/wp40/r6/common.lua")
+	local saved_core = rawget(_G, "core")
+	_G.core = {settings = {get_bool = function(_, name, default)
+		check(name == "grug_mapgen_r9_coast_band_enabled" and default == true,
+			"production coast default differs")
+		return false
+	end}}
 	local zones_module = dofile(wp40 .. "/zones.lua")({source = source,
 		schemas = dofile(wp40 .. "/schemas.lua"),
 		canonical = dofile(wp40 .. "/canonical.lua"),
@@ -52,6 +58,7 @@ return function(root)
 		height_factory = dofile(wp40 .. "/height.lua"),
 		raw_sha256 = common.new_sha256()})
 	local _, coast_off_planner = zones_module.new_with_planner_source_runtime("0", 1)
+	_G.core = saved_core
 	local production_r8_columns = {
 		{1784, -2960, "beach/1/8/false/11/2/-62/sea_ordinary/1/lowland"},
 		{1800, -2960, "beach/2/9/false/11/4/37/sea_ordinary/1/lowland"},
