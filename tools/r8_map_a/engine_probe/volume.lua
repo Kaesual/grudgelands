@@ -148,16 +148,17 @@ return function()
 			options = options}
 	end
 
-	-- Select at most one complete option per candidate whose union equals the
-	-- complete observed solid-to-air change set.  A shared voxel is therefore
-	-- excused only by an option belonging to another candidate that the same
-	-- exact audit actually selected; alternatives of one candidate can never
-	-- excuse each other.
+	-- Select at most one complete option per candidate.  A selected candidate's
+	-- actual changes must equal that option plus voxels owned by other selected
+	-- candidates.  The best valid assignment minimizes unexplained changes, then
+	-- minimizes owners; alternatives of one candidate can never excuse each
+	-- other.
 	function module.audit(records)
 		local actual, actual_count, first_actual = {}, 0, nil
-		local coverers = {}
+		local active, record_by_id = {}, {}
 		for record_index = 1, #records do
 			local record = records[record_index]
+			record_by_id[record.id] = record
 			for position_key in pairs(record.actual) do
 				if not actual[position_key] then
 					actual[position_key], actual_count = true, actual_count + 1
@@ -166,97 +167,122 @@ return function()
 					end
 				end
 			end
-			for option_index = 1, #record.options do
-				local option = record.options[option_index]
-				for position_key in pairs(option.changes) do
-					local rows = coverers[position_key]
-					if not rows then rows = {}; coverers[position_key] = rows end
-					rows[#rows + 1] = option
-				end
+			if record.actual_count > 0 and #record.options > 0 then
+				active[#active + 1] = record
 			end
 		end
 
-		local chosen, covered, covered_count = {}, {}, 0
-		local solution
-		local function choose_uncovered()
-			local selected, selected_rows
-			for position_key in pairs(actual) do
-				if not covered[position_key] then
-					local usable = {}
-					for _, option in ipairs(coverers[position_key] or {}) do
-						if not chosen[option.candidate_id] then
-							usable[#usable + 1] = option
+		local chosen, best, best_unexpected, best_count = {}, nil, nil, nil
+		local function evaluate()
+			local owners, selected_count = {}, 0
+			for candidate_id, option in pairs(chosen) do
+				selected_count = selected_count + 1
+				for position_key in pairs(option.changes) do
+					assert(actual[position_key],
+						"R8-MAP-A complete option escaped observed changes")
+					local rows = owners[position_key]
+					if not rows then rows = {}; owners[position_key] = rows end
+					rows[candidate_id] = true
+				end
+			end
+			for candidate_id, option in pairs(chosen) do
+				for position_key in pairs(record_by_id[candidate_id].actual) do
+					if not option.changes[position_key] then
+						local other = false
+						for owner_id in pairs(owners[position_key] or {}) do
+							if owner_id ~= candidate_id then other = true end
 						end
-					end
-					if #usable == 0 then return position_key, usable end
-					if not selected_rows or #usable < #selected_rows then
-						selected, selected_rows = position_key, usable
+						if not other then return end
 					end
 				end
 			end
-			return selected, selected_rows
+			local unexpected = 0
+			for position_key in pairs(actual) do
+				if not owners[position_key] then unexpected = unexpected + 1 end
+			end
+			if best_unexpected == nil or unexpected < best_unexpected or
+					(unexpected == best_unexpected and selected_count < best_count) then
+				best, best_unexpected, best_count = {}, unexpected, selected_count
+				for candidate_id, option in pairs(chosen) do best[candidate_id] = option end
+			end
 		end
-		local function search()
-			if covered_count == actual_count then
-				solution = {}
-				for candidate_id, option in pairs(chosen) do
-					solution[candidate_id] = option
-				end
-				return true
+		local function search(index)
+			local record = active[index]
+			if not record then evaluate(); return end
+			for option_index = 1, #record.options do
+				chosen[record.id] = record.options[option_index]
+				search(index + 1)
 			end
-			local _, options = choose_uncovered()
-			if not options or #options == 0 then return false end
-			table.sort(options, function(left, right)
-				if left.change_count ~= right.change_count then
-					return left.change_count > right.change_count
-				end
-				return left.candidate_id < right.candidate_id
-			end)
-			for _, option in ipairs(options) do
-				local added = {}
-				chosen[option.candidate_id] = option
-				for position_key in pairs(option.changes) do
-					-- A prepared complete option may contain only observed changes.
-					if not actual[position_key] then
-						chosen[option.candidate_id] = nil
-						return false
-					end
-					if not covered[position_key] then
-						covered[position_key] = true
-						covered_count = covered_count + 1
-						added[#added + 1] = position_key
-					end
-				end
-				if search() then return true end
-				for index = 1, #added do
-					covered[added[index]] = nil
-					covered_count = covered_count - 1
-				end
-				chosen[option.candidate_id] = nil
-			end
-			return false
+			chosen[record.id] = nil
+			search(index + 1)
 		end
+		search(1)
 
-		if actual_count == 0 then solution = {} else search() end
-		if solution then
-			local accepted_count = 0
-			for _ in pairs(solution) do accepted_count = accepted_count + 1 end
-			return {accepted = solution, accepted_count = accepted_count,
-				unexpected_candidates = 0, unexpected_voxels = 0}
+		local explained, accepted_explained = {}, {}
+		for _, option in pairs(best or {}) do
+			for position_key in pairs(option.changes) do
+				explained[position_key], accepted_explained[position_key] = true, true
+			end
 		end
-		local unexpected_records = {}
-		local unexpected_candidates = 0
+		-- A rejected transaction is still compared with its closest complete
+		-- lumen so the unexpected-voxel count is the set difference, not the
+		-- entire malformed transaction.  Its lumen never becomes an accepted
+		-- owner and therefore cannot excuse another candidate.
 		for record_index = 1, #records do
 			local record = records[record_index]
-			if record.actual_count > 0 then
-				unexpected_records[record.id] = record.actual_count
-				unexpected_candidates = unexpected_candidates + 1
+			if not (best or {})[record.id] and record.actual_count > 0 then
+				local closest, closest_extra
+				for option_index = 1, #record.options do
+					local option, extra = record.options[option_index], 0
+					for position_key in pairs(record.actual) do
+						if not option.changes[position_key] and
+								not accepted_explained[position_key] then
+							extra = extra + 1
+						end
+					end
+					if closest_extra == nil or extra < closest_extra then
+						closest, closest_extra = option, extra
+					end
+				end
+				if closest then
+					for position_key in pairs(closest.changes) do
+						explained[position_key] = true
+					end
+				end
 			end
 		end
-		return {accepted = {}, accepted_count = 0,
+		local unexpected_records, unexpected_candidates, first_unexpected = {}, 0, nil
+		local record_order = {}
+		for record_index = 1, #records do record_order[record_index] = records[record_index] end
+		table.sort(record_order, function(left, right) return left.id < right.id end)
+		for position_key in pairs(actual) do
+			if not explained[position_key] then
+				if not first_unexpected or position_key < first_unexpected then
+					first_unexpected = position_key
+				end
+				for record_index = 1, #record_order do
+					local record = record_order[record_index]
+					if record.actual[position_key] then
+						unexpected_records[record.id] =
+							(unexpected_records[record.id] or 0) + 1
+						break
+					end
+				end
+			end
+		end
+		for _ in pairs(unexpected_records) do
+			unexpected_candidates = unexpected_candidates + 1
+		end
+		local final_unexpected = 0
+		for position_key in pairs(actual) do
+			if not explained[position_key] then final_unexpected = final_unexpected + 1 end
+		end
+		return {accepted = best or {}, accepted_count = best_count or 0,
 			unexpected_candidates = unexpected_candidates,
-			unexpected_voxels = actual_count, unexpected_records = unexpected_records,
-			first_unexpected = first_actual}
+			unexpected_voxels = final_unexpected,
+			unexpected_records = unexpected_records,
+			first_unexpected = first_unexpected or first_actual,
+			uncovered_by_any = final_unexpected}
 	end
 
 	-- Single-candidate convenience used by the portable mutation KAT.  The

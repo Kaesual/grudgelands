@@ -342,6 +342,11 @@ local function finish()
 		core.log("action", "GRUG_R8_MAP_A_WRITER_BASELINE_FILE\t" .. path)
 	else
 		local audited = volume.audit(normal_records)
+		if audited.unexpected_voxels > 0 then
+			core.log("action", "GRUG_R8_MAP_A_AUDIT\tactual=" ..
+				audited.unexpected_voxels .. "\tuncovered_by_any=" ..
+				tostring(audited.uncovered_by_any))
+		end
 		for record_index = 1, #normal_records do
 			local record = normal_records[record_index]
 			local total = totals[record.region_id]
@@ -352,6 +357,10 @@ local function finish()
 			local unexpected_voxels = audited.unexpected_records and
 				audited.unexpected_records[record.id] or 0
 			if unexpected_voxels > 0 then
+				core.log("action", "GRUG_R8_MAP_A_RECORD\t" .. record.id ..
+					"\tactual=" .. record.actual_count .. "\toptions=" ..
+					#record.options .. "\tfirst_option=" ..
+					tostring(record.options[1] and record.options[1].change_count))
 				total.unexpected_carves = total.unexpected_carves + 1
 				total.unexpected_voxels = total.unexpected_voxels + unexpected_voxels
 				core.log("action", "GRUG_R8_MAP_A_UNEXPECTED\t" .. record.id ..

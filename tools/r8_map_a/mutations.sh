@@ -58,7 +58,7 @@ sed -i 's/return complete/return true/' \
 expect_rejected proof_box_edge
 
 reset_tree
-sed -i 's/unexpected_voxels = actual_count/unexpected_voxels = 0/' \
+sed -i 's/unexpected = unexpected + 1/unexpected = unexpected + 0/' \
 	"$tmp/tree/tools/r8_map_a/engine_probe/volume.lua"
 expect_rejected checker_unexpected
 
@@ -70,7 +70,7 @@ sed -i \
 expect_rejected checker_partial_lumen
 
 reset_tree
-sed -i 's/candidate_id = id,/candidate_id = id .. "\/" .. option_index,/' \
+sed -i 's/audited.unexpected_voxels > 0,/audited.unexpected_voxels > 0 and #(proof.connected_targets or {}) < 2,/' \
 	"$tmp/tree/tools/r8_map_a/engine_probe/volume.lua"
 expect_rejected checker_dual_lumen
 
