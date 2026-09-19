@@ -265,6 +265,8 @@ return function(root)
 		giant_rat = "night", scorpion = "night", viper = "night", goblin_raider = "night",
 		goblin_slinger = "night", goblin_hound = "night", snow_leopard = "night", wisp = "night",
 		ashen_treant = "night", gravewood_treant = "night",
+		war_construct = "any", speargrass_tiger = "day", bog_witch = "night",
+		rift_spawn = "night",
 	}
 	local explicit = {
 		Fox = "fox", Ibex = "ibex", ["Wild Turkey"] = "wild_turkey",
@@ -273,6 +275,17 @@ return function(root)
 		["Frost Stray"] = "frost_stray", ["Sun-Dried Husk"] = "sun_dried_husk",
 		["Song Bird"] = "song_bird", ["Snow Leopard"] = "snow_leopard", Wisp = "wisp",
 		["Ashen Treant"] = "ashen_treant", ["Gravewood Treant"] = "gravewood_treant",
+	}
+	local explicit_routes = {
+		war_construct = {front_broken_causeway = true, front_shattered_line = true},
+		speargrass_tiger = {kragmar_speargrass_reach = true,
+			front_shattered_line = true},
+		bog_witch = {kragmar_thunderroot_wilds = true,
+			front_broken_causeway = true, front_gravesalt_escarpment = true,
+			front_stormscale_summit = true},
+		rift_spawn = {front_wyrmglass_crown = true,
+			front_gravesalt_escarpment = true, front_skyglass_canopy = true,
+			front_stormscale_summit = true},
 	}
 	local fallbacks = {settled = "zombie", war = "zombie", forest = "skeleton_archer",
 		mountain = "skeleton_archer", jungle = "jungle_spider", swamp = "bog_ooze"}
@@ -344,6 +357,12 @@ return function(root)
 				if role == wanted_clock or role == "any" then add(result, short) end
 			end
 		end
+		for short, routes in pairs(explicit_routes) do
+			if routes[zone.id] then
+				local role = clock_for(short, nil)
+				if role == wanted_clock or role == "any" then add(result, short) end
+			end
+		end
 		if zone.text:find("Goblin Raid", 1, true) and wanted_clock == "night" then
 			add(result, "goblin_raider"); add(result, "goblin_slinger"); add(result, "goblin_hound")
 		end
@@ -358,6 +377,12 @@ return function(root)
 			end
 			for _, short in pairs(explicit) do
 				if result["grug_mobs:" .. short] and clock_for(short, nil) == "night" then
+					night_count = night_count + 1
+				end
+			end
+			for short, routes in pairs(explicit_routes) do
+				if routes[zone.id] and result["grug_mobs:" .. short] and
+						clock_for(short, nil) == "night" then
 					night_count = night_count + 1
 				end
 			end
@@ -419,6 +444,6 @@ return function(root)
 	assert(production.spawn_clock_allows("grug_mobs:zombie", {x = 500, y = 1, z = 500}),
 		"blight Zombie lost its any-clock exception")
 
-	return "r8_mob1_clock_v3|zones=38|band_casts=228|production_roles=1|" ..
+	return "r8_mob1_clock_v4|zones=38|band_casts=228|production_roles=1|" ..
 		"doc_band_oracle=1|doc_palettes=1|night_factor=5/4\n"
 end

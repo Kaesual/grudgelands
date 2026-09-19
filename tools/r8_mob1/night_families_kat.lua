@@ -69,7 +69,6 @@ return function(root)
 		assert(row.active_object_count == expected[short].aoc,
 			"night aoc differs for " .. short)
 	end
-	assert(arrows["grug_mobs:hex_bottle"] == nil)
 	assert(definitions["grug_mobs:goblin_raider"]._kat_swarm)
 	local slinger = definitions["grug_mobs:goblin_slinger"]
 	assert(slinger.attack_type == "dogshoot" and
@@ -113,5 +112,5 @@ return function(root)
 		assert(ledger_text:find("`" .. mesh .. "`", 1, true), mesh)
 	end
 
-	return "r8_mob1_night_v1|families=7|rows=7|meshes=4|blocked=bog_witch\n"
+	return "r8_mob1_night_v1|families=7|rows=7|meshes=4\n"
 end

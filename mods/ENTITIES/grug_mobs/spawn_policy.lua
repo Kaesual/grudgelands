@@ -84,6 +84,7 @@ local ZONE_MOB_PALETTES = {
 	kragmar_gor_drazhak = {},
 	kragmar_speargrass_reach = {
 		savanna = true, mountain = true, scorpion = true, goblin_raid = true,
+		speargrass_tiger = true,
 	},
 	kragmar_bannerbreak_mesa = {
 		mountain = true, war = true, scorpion = true, goblin_raid = true,
@@ -102,18 +103,25 @@ local ZONE_MOB_PALETTES = {
 	kragmar_totemwater_reach = {
 		jungle_edge = true, swamp = true, tapir = true, wisp = true,
 	},
-	kragmar_thunderroot_wilds = {jungle = true},
+	kragmar_thunderroot_wilds = {jungle = true, bog_witch = true},
 	front_wyrmglass_crown = {
 		mountain = true, war = true, frost_stray = true, snow_leopard = true,
+		rift_spawn = true,
 	},
-	front_gravesalt_escarpment = {forest = true, war = true},
-	front_broken_causeway = {war = true, wisp = true},
+	front_gravesalt_escarpment = {
+		forest = true, war = true, bog_witch = true, rift_spawn = true,
+	},
+	front_broken_causeway = {
+		war = true, wisp = true, war_construct = true, bog_witch = true,
+	},
 	front_shattered_line = {
 		mountain = true, war = true, sun_dried_husk = true,
-		scorpion = true,
+		scorpion = true, war_construct = true, speargrass_tiger = true,
 	},
-	front_skyglass_canopy = {jungle = true, war = true},
-	front_stormscale_summit = {jungle = true, war = true},
+	front_skyglass_canopy = {jungle = true, war = true, rift_spawn = true},
+	front_stormscale_summit = {
+		jungle = true, war = true, bog_witch = true, rift_spawn = true,
+	},
 }
 
 -- A mob may name more than one Section 8 family where the catalog says so.
@@ -181,6 +189,10 @@ local MOB_PALETTES = {
 	["grug_mobs:wisp"] = {wisp = true},
 	["grug_mobs:ashen_treant"] = {ashen_treant = true},
 	["grug_mobs:gravewood_treant"] = {gravewood_treant = true},
+	["grug_mobs:war_construct"] = {war_construct = true},
+	["grug_mobs:speargrass_tiger"] = {speargrass_tiger = true},
+	["grug_mobs:bog_witch"] = {bog_witch = true},
+	["grug_mobs:rift_spawn"] = {rift_spawn = true},
 }
 
 -- Kraken has an independent authority instead of a named-zone mob palette:
@@ -203,6 +215,16 @@ local UNDERGROUND_MOBS = {
 	["grug_mobs:blood_bat"] = true,
 	["grug_mobs:stone_mite"] = true,
 	["grug_mobs:giant_rat"] = true,
+	["grug_mobs:goblin_miner"] = true,
+	["grug_mobs:goblin_miner_slinger"] = true,
+	["grug_mobs:oerkki"] = true,
+	["grug_mobs:glowwing"] = true,
+	["grug_mobs:crystal_shard"] = true,
+	["grug_mobs:dungeon_master"] = true,
+	["grug_mobs:lava_flan"] = true,
+	["grug_mobs:ember_wisp"] = true,
+	["grug_mobs:land_guard"] = true,
+	["grug_mobs:rift_spawn"] = true,
 }
 
 local RACE_FACTIONS = {
@@ -573,11 +595,21 @@ function grug_mobs.spawn_policy_allows(mob_name, pos)
 	if pos.y < 0 then
 		return false
 	end
-	-- Section 3.1's universal Beach/Strait roster is separate from Section
-	-- 8's named-zone palettes. Authenticate that one logical biome directly;
-	-- a beach host does not enable any other mob family.
+	-- The Gull follows the logical beach palette. Crab rows are narrower:
+	-- their only host is dry `default:sand`, and their central level band
+	-- distinguishes neutral shores from the elite coast roster. The node host
+	-- is enforced by mobs_redo before this allocation-free policy callback.
 	if mob_name == "grug_mobs:gull" then
 		return grug_zones.biome_at(pos.x, pos.z) == "grug_beach"
+	end
+	if mob_name == "grug_mobs:shore_crab" or
+			mob_name == "grug_mobs:reef_lurker" then
+		local level = grug_zones.mob_level_at(pos)
+		if not level then return false end
+		if mob_name == "grug_mobs:shore_crab" then
+			return level >= 1 and level <= 5
+		end
+		return level >= 45 and level <= 60
 	end
 	local mob_palettes = MOB_PALETTES[mob_name]
 	if not mob_palettes then
