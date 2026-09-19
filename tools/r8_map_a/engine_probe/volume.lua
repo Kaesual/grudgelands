@@ -97,38 +97,62 @@ return function()
 		local positions, count = possible(candidate, proof.valid_targets or {})
 		assert(count == proof.possible_voxels,
 			"R8-MAP-A possible writer volume differs")
-		local expected = proof.eligible and lumen(candidate, proof.target) or {}
-		local expected_count, expected_air = 0, true
-		for _, row in pairs(expected) do
-			expected_count = expected_count + 1
-			if node_name(row[1], row[2], row[3]) ~= "air" then expected_air = false end
-		end
-		if proof.eligible then
-			assert(expected_count == proof.voxel_count,
-				"R8-MAP-A expected lumen volume differs")
-		end
-		local expected_changes, unexpected_voxels, first_unexpected = 0, 0, nil
 		local solid_rows = comparison_solids or proof.baseline_solids or {}
-		for index = 1, #solid_rows do
-			local position_key = solid_rows[index]
-			assert(positions[position_key],
-				"R8-MAP-A baseline solid escaped possible volume")
-			local x, y, z = parse_key(position_key)
-			if node_name(x, y, z) == "air" then
-				if expected[position_key] then
-					expected_changes = expected_changes + 1
-				elseif globally_expected and globally_expected[position_key] then
-					-- Candidate volumes may overlap.  A voxel independently
-					-- authorized by another baseline proof is not an extra carve.
-				else
-					unexpected_voxels = unexpected_voxels + 1
-					if not first_unexpected then first_unexpected = position_key end
+		local options = proof.connected_targets or {}
+		if proof.eligible and #options == 0 then
+			options = {{target = proof.target, voxel_count = proof.voxel_count}}
+		end
+		local best_unexpected, best_first
+		for option_index = 1, #options do
+			local option = options[option_index]
+			local expected = lumen(candidate, option.target)
+			local expected_count, expected_air = 0, true
+			for _, row in pairs(expected) do
+				expected_count = expected_count + 1
+				if node_name(row[1], row[2], row[3]) ~= "air" then
+					expected_air = false
+				end
+			end
+			assert(expected_count == option.voxel_count,
+				"R8-MAP-A expected lumen volume differs")
+			local expected_changes, unexpected_voxels, first_unexpected = 0, 0, nil
+			for index = 1, #solid_rows do
+				local position_key = solid_rows[index]
+				assert(positions[position_key],
+					"R8-MAP-A baseline solid escaped possible volume")
+				local x, y, z = parse_key(position_key)
+				if node_name(x, y, z) == "air" then
+					if expected[position_key] then
+						expected_changes = expected_changes + 1
+					elseif globally_expected and globally_expected[position_key] then
+						-- Candidate volumes may overlap.  A voxel independently
+						-- authorized by another baseline proof is not an extra carve.
+					else
+						unexpected_voxels = unexpected_voxels + 1
+						if not first_unexpected then first_unexpected = position_key end
+					end
+				end
+			end
+			if expected_air and expected_changes > 0 and unexpected_voxels == 0 then
+				return true, true, false, 0, nil
+			end
+			if best_unexpected == nil or unexpected_voxels < best_unexpected then
+				best_unexpected, best_first = unexpected_voxels, first_unexpected
+			end
+		end
+		if best_unexpected == nil then
+			best_unexpected = 0
+			for index = 1, #solid_rows do
+				local position_key = solid_rows[index]
+				local x, y, z = parse_key(position_key)
+				if node_name(x, y, z) == "air" and not
+						(globally_expected and globally_expected[position_key]) then
+					best_unexpected = best_unexpected + 1
+					if not best_first then best_first = position_key end
 				end
 			end
 		end
-		local carved = proof.eligible and expected_air and expected_changes > 0
-		return carved, carved, unexpected_voxels > 0, unexpected_voxels,
-			first_unexpected
+		return false, false, best_unexpected > 0, best_unexpected, best_first
 	end
 
 	return module

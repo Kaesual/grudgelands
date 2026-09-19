@@ -19,7 +19,7 @@ assert(not (native_baseline_mode and writer_baseline_mode),
 local native_baseline, writer_baseline
 if not native_baseline_mode then
 	native_baseline = dofile(modpath .. "/baseline.lua")
-	assert(native_baseline.schema == "grug_r8_map_a_native_baseline_v2" and
+	assert(native_baseline.schema == "grug_r8_map_a_native_baseline_v3" and
 		native_baseline.seed == engine_seed and
 		native_baseline.revision == cases.revision,
 		"R8-MAP-A native baseline differs")
@@ -277,7 +277,7 @@ local function baseline_plan(candidate)
 		end
 	end
 	local valid_lumens, component_rejections, first_invalid = 0, 0, nil
-	local valid_targets, accepted = {}, nil
+	local valid_targets, connected_targets, accepted = {}, {}, nil
 	for target_index = 1, #targets do
 		local target = targets[target_index]
 		local voxels, lumen, invalid = lumen_for(candidate, target[1], target[2],
@@ -286,19 +286,25 @@ local function baseline_plan(candidate)
 		if voxels then
 			valid_lumens = valid_lumens + 1
 			valid_targets[#valid_targets + 1] = target
-			if not accepted then
-				local connected, outside, component, sky =
-					component_proof(candidate, target, lumen)
-				if connected then
+			local connected, outside, component, sky =
+				component_proof(candidate, target, lumen)
+			if connected then
+				connected_targets[#connected_targets + 1] = {target = target,
+					voxel_count = #voxels, outside = outside,
+					component = component, sky = sky}
+				if not accepted then
 					accepted = {eligible = true, target = target, voxel_count = #voxels,
 						outside = outside, component = component, sky = sky}
-				else
-					component_rejections = component_rejections + 1
 				end
+			else
+				component_rejections = component_rejections + 1
 			end
 		end
 	end
-	if accepted then return accepted, valid_targets end
+	if accepted then
+		accepted.connected_targets = connected_targets
+		return accepted, valid_targets
+	end
 	local air_targets = #targets
 	local reason = air_targets == 0 and "no_air_target" or
 		valid_lumens == 0 and "no_valid_lumen" or "component_rejected"
@@ -338,7 +344,7 @@ end
 local current = 0
 local function finish()
 	if native_baseline_mode then
-		local payload = {schema = "grug_r8_map_a_native_baseline_v2",
+		local payload = {schema = "grug_r8_map_a_native_baseline_v3",
 			revision = cases.revision, seed = engine_seed, results = results}
 		local path = core.get_worldpath() .. "/r8_map_a_baseline.lua"
 		assert(core.safe_file_write(path, core.serialize(payload)),
