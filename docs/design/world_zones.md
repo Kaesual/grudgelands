@@ -825,14 +825,14 @@ exists for the exact macro rectangle and flight policy, not protection.
 | `kragmar_sunscar_flats` | Sunscar Flats | Orc | 1–10 peaceful | savanna 95 / badlands 5 | Dry golden grass, shade rocks and shallow waterholes; settled mobs; day Plains Runner, night Giant Rat and band-2 Scorpion, band-3 Sun-Dried Husk; **S** |
 | `kragmar_redtusk_savanna` | Redtusk Savanna | Orc | 11–20 peaceful | savanna 75 / badlands 25 | Red gullies, acacia wells and hunting roads; settled/savanna mobs, sunleaf; night Scorpion and Sun-Dried Husk; **V, O, B, R:Ashmaw** |
 | `kragmar_gor_drazhak` | Gor Drazhak | Orc | capital, civic L20–30 profile, peaceful | savanna 60 / badlands 40 | Adobe-and-basalt fortress at a mesa crossroads; no ambient hostiles; **C** |
-| `kragmar_speargrass_reach` | Speargrass Reach | Orc | 21–30 peaceful | savanna 55 / badlands 40 / swamp 5 | Tall cutting grass, dry rivers and hunting stones; savanna/mountain mobs; night Scorpion/Goblin Raid; **V, O, M** |
+| `kragmar_speargrass_reach` | Speargrass Reach | Orc | 21–30 peaceful | savanna 55 / badlands 40 / swamp 5 | Tall cutting grass, dry rivers and hunting stones; savanna/mountain mobs; day Speargrass Tiger; night Scorpion/Goblin Raid; **V, O, M** |
 | `kragmar_bannerbreak_mesa` | Bannerbreak Mesa | Orc | 31–40 **contested** | badlands 70 / savanna 25 / swamp 5 | Wind-torn standards, red trenches and siege ramps; mountain/war mobs, night Scorpion/Goblin Raid, dragonweed; **O×2, B, K×2, R:Dustwing** |
 | `kragmar_kapok_cradle` | Kapok Cradle | Troll | 1–10 peaceful | jungle edge 90 / swamp 10 | Sheltered jungle basin beneath one giant kapok; settled/jungle-edge mobs; day band-2 Tapir, night Giant Rat and band-2 Viper; **S** |
 | `kragmar_raincall_basin` | Raincall Basin | Troll | 11–20 peaceful | jungle edge 65 / deep jungle 15 / swamp 20 | Monsoon pools and waterfall stairs; settled/jungle-edge mobs, day Tapir, night Viper, sunleaf; **V, O, B** |
 | `kragmar_kezamba` | Kezamba | Troll | capital, civic L20–30 profile, peaceful | jungle edge 75 / deep jungle 20 / swamp 5 | Stilt-and-stone city around a stepped cenote; no ambient hostiles; **C** |
 | `kragmar_whispering_reedlands` | Whispering Reedlands | Troll | 21–30 peaceful | jungle edge 45 / deep jungle 25 / swamp 30 | Flooded reed maze crossed by raised totem paths; jungle-edge/swamp mobs, day Tapir, night Wisp, marshbloom; **V, O, M, W** |
 | `kragmar_totemwater_reach` | Totemwater Reach | Troll | 21–30 peaceful | jungle edge 35 / deep jungle 45 / swamp 20 | Broad river delta marked by colossal carved totems; jungle-edge/swamp mobs, day Tapir, night Wisp; **O** |
-| `kragmar_thunderroot_wilds` | Thunderroot Wilds | Troll | 31–40 **contested** | deep jungle 55 / east badlands 30 / swamp 15 | Storm forest with exposed roots and ochre stone islands; jungle mobs; **O, B** |
+| `kragmar_thunderroot_wilds` | Thunderroot Wilds | Troll | 31–40 **contested** | deep jungle 55 / east badlands 30 / swamp 15 | Storm forest with exposed roots and ochre stone islands; jungle mobs; night Bog Witch; **O, B** |
 
 ### 8.3 Battlegrounds and offshore dragon islands
 
@@ -844,12 +844,24 @@ and terrain rules without deriving political ownership from cultural origin.
 
 | Stable id | Display name | Race region | Level | Biome roll weights | Identity, content and reserved POIs |
 |---|---|---|---|---|---|
-| `front_wyrmglass_crown` | The Wyrmglass Crown | Dwarf | 60 | crags 55 / snowy crags 30 / beach 15 | Offshore ring-mountain island, crystalline fault terraces and dragon hoard; mountain/war mobs; night Frost Stray/Snow Leopard; **D/M6, K×1** |
-| `front_gravesalt_escarpment` | Gravesalt Escarpment | Undead | 51–59 | bone forest 55 / blight 15 / swamp 15 / beach 15 | White salt cliffs cut with tomb galleries and a coastal war road; forest/war mobs, stormkelp; **K×2** |
-| `front_broken_causeway` | The Broken Causeway | Human | 31–40 | meadows 40 / deep forest 25 / swamp 35 | Collapsed royal road over marsh and river: raised causeway, ford and aqueduct path form three routes; war mobs; night Wisp; **K×3, R:Captain Bonerattle** |
-| `front_shattered_line` | The Shattered Line | Orc | 41–50 | badlands 65 / savanna 20 / swamp 15 | Main battlefield of breached walls, western trenches, eastern siege ramp and burned no-man's-land; mountain/war mobs; night Scorpion and Sun-Dried Husk; **K×3, R:Captain Bonerattle** |
+| `front_wyrmglass_crown` | The Wyrmglass Crown | Dwarf | 60 | crags 55 / snowy crags 30 / beach 15 | Offshore ring-mountain island, crystalline fault terraces and dragon hoard; mountain/war mobs; night Frost Stray/Snow Leopard/Rift Spawn; **D/M6, K×1** |
+| `front_gravesalt_escarpment` | Gravesalt Escarpment | Undead | 51–59 | bone forest 55 / blight 15 / swamp 15 / beach 15 | White salt cliffs cut with tomb galleries and a coastal war road; forest/war mobs; night Bog Witch/Rift Spawn; stormkelp; **K×2** |
+| `front_broken_causeway` | The Broken Causeway | Human | 31–40 | meadows 40 / deep forest 25 / swamp 35 | Collapsed royal road over marsh and river: raised causeway, ford and aqueduct path form three routes; war mobs; 24 h War Construct; night Wisp/Bog Witch; **K×3, R:Captain Bonerattle** |
+| `front_shattered_line` | The Shattered Line | Orc | 41–50 | badlands 65 / savanna 20 / swamp 15 | Main battlefield of breached walls, western trenches, eastern siege ramp and burned no-man's-land; mountain/war mobs; day Speargrass Tiger; 24 h War Construct; night Scorpion and Sun-Dried Husk; **K×3, R:Captain Bonerattle** |
 | `front_skyglass_canopy` | The Skyglass Canopy | Elf | 51–59 | jungle fringe 60 / deep forest 25 / elf forest 15 | Cloud forest above pale escarpments, hanging roots and two high approaches; high-jungle/war mobs, crimson lotus; **K×2, R:Silkfang** |
-| `front_stormscale_summit` | Stormscale Summit | Troll | 60 | deep jungle 50 / east badlands 20 / swamp 15 / beach 15 | Offshore jungle-clad volcanic island, thunder terraces and dragon hoard; high-jungle/war mobs, stormkelp; **D/M6, K×1, R:Emerald Coil** |
+| `front_stormscale_summit` | Stormscale Summit | Troll | 60 | deep jungle 50 / east badlands 20 / swamp 15 / beach 15 | Offshore jungle-clad volcanic island, thunder terraces and dragon hoard; high-jungle/war mobs; night Bog Witch/Rift Spawn; stormkelp; **D/M6, K×1, R:Emerald Coil** |
+
+Underground casts ignore the surface clock. Light and the exact y band drive
+spawning, and flying families have no near-ground bias.
+
+| Depth band | Level band | Cast |
+|---|---|---|
+| 0 to −100 | 1–6 | Cave Bat, Cave Crawler, Giant Rat and Spiderling |
+| −100 to −300 | 6–18 | Giant Spider, Lost Miner, Blood Bat, Goblin Miner and Goblin Miner Slinger |
+| −300 to −500 | 18–30 | Stone Golem, Oerkki, Glowwing and Crystal Shard |
+| −500 to −700 | 30–42 | Dungeon Master, Crystal Shard, Oerkki and Stone Golem |
+| −700 to −1000 | 42–60 contested T5 | Lava Flan, Ember Wisp, Dungeon Master and Stone Mite |
+| Below −1000 | 60 contested T6 | Lava Flan, Ember Wisp, Land Guard and Rift Spawn |
 
 ### 8.4 Binding relief and landmark assignment
 
