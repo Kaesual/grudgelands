@@ -21,8 +21,35 @@ return function(repo)
 	local mutation = tonumber(os.getenv("R6_BALANCE_MUTATION") or "") or 0
 	local saved_arg = arg
 	arg = {repo, "--r6-data"}
-	local data = dofile(repo .. "/tools/r5_progression/ttk_measure.lua")
+	local saved_loadfile = loadfile
+	loadfile = function(path)
+		local chunk, message = saved_loadfile(path)
+		if not chunk or path ~= repo .. "/mods/ITEMS/grug_gear/init.lua" then
+			return chunk, message
+		end
+		local wrapper
+		wrapper = function(...)
+			local env = getfenv(wrapper)
+			env.core.get_current_modname = function() return "grug_gear" end
+			env.core.get_modpath = function(name)
+				if name == "grug_gear" then
+					return repo .. "/mods/ITEMS/grug_gear"
+				end
+			end
+			env.dofile = function(subpath)
+				local subchunk = assert(saved_loadfile(subpath))
+				setfenv(subchunk, env)
+				return subchunk()
+			end
+			setfenv(chunk, env)
+			return chunk(...)
+		end
+		return wrapper
+	end
+	local ok, data = pcall(dofile, repo .. "/tools/r5_progression/ttk_measure.lua")
+	loadfile = saved_loadfile
 	arg = saved_arg
+	if not ok then error(data, 0) end
 
 	local function fail(message)
 		error("r6 balance: " .. message, 0)
@@ -399,6 +426,10 @@ return function(repo)
 	local equipment_notices = 0
 	local gear_core = stub({
 		registered_items = gear_items,
+		get_current_modname = function() return "grug_gear" end,
+		get_modpath = function(name)
+			if name == "grug_gear" then return repo .. "/mods/ITEMS/grug_gear" end
+		end,
 		colorize = function(_, value) return value end,
 		register_tool = function(name, def) gear_items[name] = def end,
 		register_craftitem = function(name, def) gear_items[name] = def end,
@@ -433,6 +464,11 @@ return function(repo)
 		end},
 	}, {__index = _G})
 	gear_env._G = gear_env
+	gear_env.dofile = function(path)
+		local chunk = assert(loadfile(path))
+		setfenv(chunk, gear_env)
+		return chunk()
+	end
 	local gear_chunk = assert(loadfile(repo .. "/mods/ITEMS/grug_gear/init.lua"))
 	setfenv(gear_chunk, gear_env)
 	gear_chunk()

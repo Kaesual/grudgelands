@@ -39,11 +39,22 @@ local EXPECTED_LEATHER = {"Light", "Cured", "Heavy", "Scaled", "Sleek",
 local RETIRED_ADJECTIVES = {"Crude", "Plain", "Tempered", "Reinforced",
 	"Superior", "Grand"}
 
+local WEAPON_FAMILIES = {"sword", "dagger", "greataxe", "staff", "wand",
+	"scepter", "orb"}
 local WEAPON_NOUNS = {sword = "Sword", dagger = "Dagger",
-	greataxe = "Greataxe", staff = "Staff"}
-local WEAPON_FACTOR = {sword = 1.0, dagger = 0.7, greataxe = 1.5, staff = 1.2}
-local WEAPON_FPI = {sword = 1.0, dagger = 0.7, greataxe = 1.4, staff = 1.4}
-local WEAPON_HANDS = {sword = 1, dagger = 1, greataxe = 2, staff = 2}
+	greataxe = "Greataxe", staff = "Staff", wand = "Wand",
+	scepter = "Scepter", orb = "Orb"}
+local WEAPON_FACTOR = {sword = 1.0, dagger = 0.7, greataxe = 1.5, staff = 1.2,
+	wand = 1.0, scepter = 1.0, orb = 1.0}
+local WEAPON_FPI = {sword = 1.0, dagger = 0.7, greataxe = 1.4, staff = 1.4,
+	wand = 1.0, scepter = 1.0, orb = 1.0}
+local WEAPON_HANDS = {sword = 1, dagger = 1, greataxe = 2, staff = 2,
+	wand = 1, scepter = 1, orb = 1}
+local WEAPON_GROUP = {sword = "sword", dagger = "sword", greataxe = "axe",
+	staff = "staff", wand = "wand", scepter = "scepter", orb = "orb"}
+local CASTER_IMAGE = {wand = "default_mese_crystal_fragment.png^[colorize:",
+	scepter = "default_stick.png^[colorize:",
+	orb = "default_mese_crystal.png^[colorize:"}
 
 local ARMOR_NOUNS = {
 	metal = {head = "Helm", chest = "Chestplate", legs = "Greaves",
@@ -88,6 +99,11 @@ local function load_gear(repo)
 	function core_stub.register_on_mods_loaded(fn)
 		mods_loaded[#mods_loaded + 1] = fn
 	end
+	function core_stub.get_modpath(name)
+		if name == "grug_gear" then return repo .. "/mods/ITEMS/grug_gear" end
+		return repo
+	end
+	function core_stub.get_current_modname() return "grug_gear" end
 	-- The stat line is colorized; the fixture compares the NAME, which is the
 	-- first line, so an identity colorize keeps the comparison honest without
 	-- teaching the fixture the engine's escape codes.
@@ -224,9 +240,11 @@ function M.run(repo)
 		end,
 	}
 	local trinket_lines = gear.describe_stack_base(trinket_stack, 20, false)
-	check(#trinket_lines == 1 and trinket_lines[1] == special_meta.grug_trinket_special,
+	-- R9-PROF-B: the item-level line precedes the authored special.
+	check(#trinket_lines == 2 and trinket_lines[1] == "Item level 20" and
+		trinket_lines[2] == special_meta.grug_trinket_special,
 		"trinket authored special did not survive base-description regeneration")
-	row("wp13_gear_trinket_special", trinket_lines[1] or "missing")
+	row("wp13_gear_trinket_special", trinket_lines[2] or "missing")
 
 	--
 	-- A. the material ladders
@@ -251,7 +269,7 @@ function M.run(repo)
 	--
 	-- B. the full catalogue, item by item
 	--
-	-- 24 weapons + 48 armor pieces + the starter staff, each listed with the
+	-- 42 weapons + 48 armor pieces + the starter staff, each listed with the
 	-- display name a player reads, the ilvl and the stat the generator gave it.
 	-- The stat is recomputed here from items_crafting.md §3.2 / §3.1 so the
 	-- rename cannot have moved a number sideways.
@@ -262,7 +280,7 @@ function M.run(repo)
 		local material = gear.MATERIALS[bracket]
 		local base = round(4 + 0.35 * br.ilvl)
 
-		for _, family in ipairs({"sword", "dagger", "greataxe", "staff"}) do
+		for _, family in ipairs(WEAPON_FAMILIES) do
 			local name = gear.weapon_item(family, bracket)
 			local def = items[name]
 			check(def ~= nil, "no such item: " .. tostring(name))
@@ -283,11 +301,18 @@ function M.run(repo)
 				check((def._grug_hands or 1) == WEAPON_HANDS[family],
 					name .. " declares the wrong hand count")
 				check(def._grug_ilvl == br.ilvl, name .. " has the wrong ilvl")
-				check(def.inventory_image == "grug_gear_item_" .. family ..
-					"_" .. material.metal.key .. ".png",
+				local expected_image = CASTER_IMAGE[family] and
+					(CASTER_IMAGE[family] .. gear.BRACKET_TINT[bracket] .. ":115") or
+					("grug_gear_item_" .. family .. "_" .. material.metal.key .. ".png")
+				check(def.inventory_image == expected_image,
 					name .. " does not use its own material sprite")
 				check((def.groups or {}).grug_equip_weapon == 1,
 					name .. " is not weapon-slot eligible")
+				check((def.groups or {})[WEAPON_GROUP[family]] == 1,
+					name .. " lacks its family group")
+				check(((def.groups or {}).grug_caster_weapon == 1) ==
+					(CASTER_IMAGE[family] ~= nil),
+					name .. " caster group differs")
 				listed[#listed + 1] = name .. "\t" .. expect_name .. "\t" ..
 					br.ilvl .. "\t" .. damage
 			end
@@ -330,8 +355,63 @@ function M.run(repo)
 		row("wp13_gear_item", entry)
 	end
 	row("wp13_gear_count", #listed)
-	check(#listed == 72, "the catalogue holds " .. #listed ..
-		" items, expected 72")
+	check(#listed == 90, "the catalogue holds " .. #listed ..
+		" items, expected 90")
+
+	-- The six core identities are one definition per tier. Their authored
+	-- passive remains descriptive data for the follow-up effects lane.
+	local trinket_contract = {
+		manawell = {form = "amulet", kind = "mana_regen", stacking = "additive",
+			cap = 1, values = {0.05, 0.10, 0.15, 0.25, 0.35, 0.50}},
+		last_light = {form = "amulet", kind = "last_light_absorb",
+			stacking = "highest", cooldown = 120, values = {3, 4, 5, 6, 8, 10}},
+		battlebeat = {form = "ring", kind = "battlebeat_rage",
+			stacking = "additive", cap = 4,
+			values = {0.25, 0.50, 0.75, 1.00, 1.50, 2.00}},
+		apothecary_loop = {form = "ring", kind = "potion_amount",
+			stacking = "additive", cap = 30,
+			values = {2.5, 5, 7.5, 10, 12.5, 15}},
+		mercy_seal = {form = "medallion", kind = "outgoing_healing",
+			stacking = "additive", cap = 12, values = {1, 2, 3, 4, 5, 6}},
+		reclaimers_mark = {form = "medallion", kind = "reclaimer",
+			stacking = "highest", cooldown = 10, values = {1, 1.5, 2, 2.5, 3, 4},
+			rage = {1, 2, 3, 4, 5, 6}},
+	}
+	local trinket_count = 0
+	for identity, contract in pairs(trinket_contract) do
+		for tier = 1, 6 do
+			local name = "grug_gear:" .. identity .. "_t" .. tier
+			local def = items[name]
+			check(def ~= nil, "missing trinket " .. name)
+			if def then
+				local ilvl = gear.BRACKETS[tier].ilvl
+				check((def.groups or {}).grug_equip_trinket == 1 and
+					def.stack_max == 1 and def._grug_quality_family == "trinket" and
+					def._grug_quality == 1, name .. " generic fields differ")
+				check(def._grug_ilvl == ilvl and def._grug_bracket == tier and
+					def.description:find("Item level " .. ilvl, 1, true),
+					name .. " did not preserve its authored item level")
+				check(def._grug_trinket_identity == identity and
+					def._grug_trinket_form == contract.form and
+					def._grug_trinket_kind == contract.kind and
+					def._grug_trinket_value == contract.values[tier] and
+					def._grug_trinket_rage ==
+						(contract.rage and contract.rage[tier] or nil) and
+					def._grug_trinket_stacking == contract.stacking and
+					def._grug_trinket_cap == contract.cap and
+					def._grug_trinket_cooldown == contract.cooldown,
+					name .. " authored identity fields differ")
+				check(type(def._grug_trinket_special) == "string" and
+					def._grug_trinket_special:find(
+						"inert until the trinket effects lane", 1, true),
+					name .. " inert special description differs")
+				trinket_count = trinket_count + 1
+			end
+		end
+	end
+	row("wp13_gear_trinkets", trinket_count)
+	check(trinket_count == 36, "the catalogue holds " .. trinket_count ..
+		" trinkets, expected 36")
 
 	--
 	-- C. the below-ladder starters
@@ -392,7 +472,7 @@ function M.run(repo)
 	-- items that read identically in a trade window.
 	local seen, duplicates = {}, 0
 	for bracket = 1, 6 do
-		for _, family in ipairs({"sword", "dagger", "greataxe", "staff"}) do
+		for _, family in ipairs(WEAPON_FAMILIES) do
 			local label = first_line(
 				items[gear.weapon_item(family, bracket)].description)
 			if seen[label] then
@@ -447,10 +527,10 @@ function M.run(repo)
 		local cat = gear.catalog[bracket]
 		check(#cat.fixed == 9, "bracket " .. bracket .. " has " ..
 			#cat.fixed .. " fixed items, expected 9")
-		check(#cat.extras == 3, "bracket " .. bracket .. " has " ..
-			#cat.extras .. " rotating items, expected 3")
-		check(#cat.all == 12, "bracket " .. bracket .. " has " .. #cat.all ..
-			" items, expected 12")
+		check(#cat.extras == 6, "bracket " .. bracket .. " has " ..
+			#cat.extras .. " rotating items, expected 6")
+		check(#cat.all == 15, "bracket " .. bracket .. " has " .. #cat.all ..
+			" items, expected 15")
 		local sword = gear.weapon_item("sword", bracket)
 		check(gear.get_price(sword) == br.price.weapon,
 			sword .. " is not priced at the bracket's weapon price")

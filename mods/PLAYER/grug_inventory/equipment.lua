@@ -39,6 +39,31 @@ for _, list in ipairs(ARMOR_LISTS) do
 	is_armor_list[list] = true
 end
 
+local OTHER_TRINKET_LIST = {
+	grug_trinket1 = "grug_trinket2",
+	grug_trinket2 = "grug_trinket1",
+}
+
+local function trinket_identity(stack)
+	if not stack or stack:is_empty() then return nil end
+	local def = core.registered_items[stack:get_name()]
+	return def and def._grug_trinket_identity or nil
+end
+
+local function allow_unique_trinket(inventory, to_list, stack, action, info)
+	local incoming = trinket_identity(stack)
+	if not incoming then return true end
+	local other_list = OTHER_TRINKET_LIST[to_list]
+	local other = inventory:get_stack(other_list, 1)
+	-- Moving the sole equipped stack between the two generic trinket slots
+	-- vacates its source. It is not a second copy of the identity.
+	if action == "move" and info.from_list == other_list and
+			info.from_index == 1 and (info.count or 0) >= other:get_count() then
+		return true
+	end
+	return trinket_identity(other) ~= incoming
+end
+
 function grug_inventory.is_equipment_list(listname)
 	return slot_group[listname] ~= nil
 end
@@ -336,6 +361,9 @@ core.register_allow_player_inventory_action(function(player, action, inventory, 
 			if not allow_hands(player, inventory, to_list, stack, action, info) then
 				return 0
 			end
+		elseif OTHER_TRINKET_LIST[to_list] and
+				not allow_unique_trinket(inventory, to_list, stack, action, info) then
+			return 0
 		end
 		return 1 -- slots hold exactly one item
 	end
