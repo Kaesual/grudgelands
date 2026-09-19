@@ -10,14 +10,26 @@ local volume = dofile(modpath .. "/volume.lua")()
 local engine_seed = core.get_mapgen_setting("seed")
 assert(cases.schema == "grug_r8_map_a_engine_cases_v2" and
 	cases.seed == engine_seed, "R8-MAP-A engine cases differ")
-local baseline_mode = core.settings:get_bool(
+local native_baseline_mode = core.settings:get_bool(
 	"grug_mapgen_r8_native_baseline", false)
-local baseline
-if not baseline_mode then
-	baseline = dofile(modpath .. "/baseline.lua")
-	assert(baseline.schema == "grug_r8_map_a_native_baseline_v2" and
-		baseline.seed == engine_seed and baseline.revision == cases.revision,
+local writer_baseline_mode = core.settings:get_bool(
+	"grug_mapgen_r8_cave_writer_disabled", false)
+assert(not (native_baseline_mode and writer_baseline_mode),
+	"R8-MAP-A baseline modes overlap")
+local native_baseline, writer_baseline
+if not native_baseline_mode then
+	native_baseline = dofile(modpath .. "/baseline.lua")
+	assert(native_baseline.schema == "grug_r8_map_a_native_baseline_v2" and
+		native_baseline.seed == engine_seed and
+		native_baseline.revision == cases.revision,
 		"R8-MAP-A native baseline differs")
+end
+if not native_baseline_mode and not writer_baseline_mode then
+	writer_baseline = dofile(modpath .. "/writer_baseline.lua")
+	assert(writer_baseline.schema == "grug_r8_map_a_writer_baseline_v1" and
+		writer_baseline.seed == engine_seed and
+		writer_baseline.revision == cases.revision,
+		"R8-MAP-A writer-disabled baseline differs")
 end
 
 local COMPONENT_RADIUS, COMPONENT_MINIMUM = 12, 24
@@ -296,12 +308,12 @@ local function baseline_plan(candidate)
 end
 
 local globally_expected = {}
-if not baseline_mode then
+if not native_baseline_mode then
 	for region_index = 1, #cases.regions do
 		local region = cases.regions[region_index]
 		for candidate_index = 1, #region.candidates do
 			local candidate = region.candidates[candidate_index]
-			local proof = baseline.results[candidate_key(region, candidate)]
+			local proof = native_baseline.results[candidate_key(region, candidate)]
 			assert(proof, "R8-MAP-A candidate absent while building carve allowlist")
 			if proof.eligible then
 				for position_key in pairs(volume.lumen(candidate, proof.target)) do
@@ -325,19 +337,28 @@ end
 
 local current = 0
 local function finish()
-	if baseline_mode then
+	if native_baseline_mode then
 		local payload = {schema = "grug_r8_map_a_native_baseline_v2",
 			revision = cases.revision, seed = engine_seed, results = results}
 		local path = core.get_worldpath() .. "/r8_map_a_baseline.lua"
 		assert(core.safe_file_write(path, core.serialize(payload)),
 			"R8-MAP-A baseline write failed")
 		core.log("action", "GRUG_R8_MAP_A_BASELINE_FILE\t" .. path)
+	elseif writer_baseline_mode then
+		local payload = {schema = "grug_r8_map_a_writer_baseline_v1",
+			revision = cases.revision, seed = engine_seed, results = results}
+		local path = core.get_worldpath() .. "/r8_map_a_writer_baseline.lua"
+		assert(core.safe_file_write(path, core.serialize(payload)),
+			"R8-MAP-A writer baseline write failed")
+		core.log("action", "GRUG_R8_MAP_A_WRITER_BASELINE_FILE\t" .. path)
 	end
 	for region_index = 1, #cases.regions do
 		local region = cases.regions[region_index]
 		local total = totals[region.id]
 		core.log("action", table.concat({"GRUG_R8_MAP_A",
-			baseline_mode and "baseline" or "after", cases.revision, engine_seed,
+			native_baseline_mode and "native_baseline" or
+				(writer_baseline_mode and "writer_baseline" or "after"),
+			cases.revision, engine_seed,
 			region.id, total.candidates, total.carved, total.connected,
 			total.eligible, total.unexpected_carves, total.unexpected_voxels}, "\t"))
 		local reason_rows = {}
@@ -350,7 +371,7 @@ local function finish()
 				table.concat(reason_rows, ","))
 		end
 	end
-	if not baseline_mode then
+	if not native_baseline_mode and not writer_baseline_mode then
 		for region_index = 1, #cases.regions do
 			local total = totals[cases.regions[region_index].id]
 			assert(total.unexpected_carves == 0 and total.unexpected_voxels == 0,
@@ -383,7 +404,7 @@ local function next_candidate()
 		if remaining ~= 0 then return end
 		local row_key = candidate_key(item.region, candidate)
 		local total = totals[item.region.id]
-		if baseline_mode then
+		if native_baseline_mode then
 			local proof, valid_targets = baseline_plan(candidate)
 			proof.valid_targets = valid_targets
 			proof.possible_voxels, proof.baseline_solids = volume.capture(candidate,
@@ -393,16 +414,35 @@ local function next_candidate()
 			if not proof.eligible then
 				total.reasons[proof.reason] = (total.reasons[proof.reason] or 0) + 1
 			end
-		else
-			local proof = baseline.results[row_key]
-			assert(proof, "R8-MAP-A candidate absent from baseline: " .. row_key)
+		elseif writer_baseline_mode then
+			local proof = native_baseline.results[row_key]
+			assert(proof, "R8-MAP-A candidate absent from native baseline: " .. row_key)
+			local possible_voxels, baseline_solids = volume.capture(candidate,
+				proof.valid_targets or {}, current_node_name)
+			assert(possible_voxels == proof.possible_voxels,
+				"R8-MAP-A writer baseline volume differs")
+			results[row_key] = {possible_voxels = possible_voxels,
+				baseline_solids = baseline_solids}
 			if proof.eligible then total.eligible = total.eligible + 1 end
-			local carved, connected, unexpected, unexpected_voxels =
-				volume.inspect(candidate, proof, current_node_name, globally_expected)
+		else
+			local proof = native_baseline.results[row_key]
+			assert(proof, "R8-MAP-A candidate absent from baseline: " .. row_key)
+			local writer_proof = writer_baseline.results[row_key]
+			assert(writer_proof and writer_proof.possible_voxels ==
+				proof.possible_voxels,
+				"R8-MAP-A candidate absent from writer baseline: " .. row_key)
+			if proof.eligible then total.eligible = total.eligible + 1 end
+			local carved, connected, unexpected, unexpected_voxels, first_unexpected =
+				volume.inspect(candidate, proof, current_node_name, globally_expected,
+					writer_proof.baseline_solids)
 			if carved then total.carved = total.carved + 1 end
 			if connected then total.connected = total.connected + 1 end
 			if unexpected then total.unexpected_carves = total.unexpected_carves + 1 end
 			total.unexpected_voxels = total.unexpected_voxels + unexpected_voxels
+			if unexpected then
+				core.log("action", "GRUG_R8_MAP_A_UNEXPECTED\t" .. row_key ..
+					"\t" .. unexpected_voxels .. "\t" .. tostring(first_unexpected))
+			end
 		end
 		core.after(0, next_candidate)
 	end)

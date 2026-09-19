@@ -92,7 +92,8 @@ return function()
 		return count, solids
 	end
 
-	function module.inspect(candidate, proof, node_name, globally_expected)
+	function module.inspect(candidate, proof, node_name, globally_expected,
+			comparison_solids)
 		local positions, count = possible(candidate, proof.valid_targets or {})
 		assert(count == proof.possible_voxels,
 			"R8-MAP-A possible writer volume differs")
@@ -106,9 +107,10 @@ return function()
 			assert(expected_count == proof.voxel_count,
 				"R8-MAP-A expected lumen volume differs")
 		end
-		local expected_changes, unexpected_voxels = 0, 0
-		for index = 1, #(proof.baseline_solids or {}) do
-			local position_key = proof.baseline_solids[index]
+		local expected_changes, unexpected_voxels, first_unexpected = 0, 0, nil
+		local solid_rows = comparison_solids or proof.baseline_solids or {}
+		for index = 1, #solid_rows do
+			local position_key = solid_rows[index]
 			assert(positions[position_key],
 				"R8-MAP-A baseline solid escaped possible volume")
 			local x, y, z = parse_key(position_key)
@@ -120,11 +122,13 @@ return function()
 					-- authorized by another baseline proof is not an extra carve.
 				else
 					unexpected_voxels = unexpected_voxels + 1
+					if not first_unexpected then first_unexpected = position_key end
 				end
 			end
 		end
 		local carved = proof.eligible and expected_air and expected_changes > 0
-		return carved, carved, unexpected_voxels > 0, unexpected_voxels
+		return carved, carved, unexpected_voxels > 0, unexpected_voxels,
+			first_unexpected
 	end
 
 	return module
