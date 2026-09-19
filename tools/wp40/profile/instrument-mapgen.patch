@@ -1,8 +1,11 @@
 --- a/mods/MAPGEN/grug_mapgen/wp40/r7_mapgen.lua
 +++ b/mods/MAPGEN/grug_mapgen/wp40/r7_mapgen.lua
-@@ -61,10 +61,67 @@
+@@ -61,16 +61,73 @@
  local built = runtime.build(native.identities(), payload.manifest_sha256)
  if built.full_seed ~= payload.full_seed then fail("main/emerge seed differs") end
+ local native_baseline = core.settings and
+ 	type(core.settings.get_bool) == "function" and
+ 	core.settings:get_bool("grug_mapgen_r8_native_baseline", false) or false
  
 +-- GRUG WP40 PROFILE: this block is installed only in a disposable snapshot.
 +local profile_callback_count = 0
@@ -42,6 +45,9 @@
 +	profile_callback_count = profile_callback_count + 1
  	minp = plain_engine_position(minp, "generated minp")
  	maxp = plain_engine_position(maxp, "generated maxp")
+ 	-- Measurement-only comparison mode: retain the untouched v7 VM bytes so
+ 	-- the external R8 cave checker can prove the component the real writer saw.
+ 	if native_baseline then return end
 +	local callback_started = core.get_us_time()
  	local plan, generation = built.session.plan_slice(minp, maxp)
 -	local result = built.writer.apply(vmanip, minp, maxp, plan, generation)
