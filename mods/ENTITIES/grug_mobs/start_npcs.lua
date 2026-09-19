@@ -990,6 +990,24 @@ local function bounded_spots(group, home_index, walker)
 	return out, index
 end
 
+local function install_profession_trainer_name(entity, profession)
+	local jobs = rawget(_G, "grug_jobs")
+	local definition = jobs and type(jobs.PROFESSIONS) == "table" and
+		jobs.PROFESSIONS[profession]
+	if not definition or type(definition.name) ~= "string" or
+			definition.name == "" then return false end
+	entity._grug_npc_name = definition.name .. " Trainer"
+	return true
+end
+
+grug_mobs.install_profession_trainer_name = install_profession_trainer_name
+
+function grug_mobs.install_profession_trainer(entity, slot)
+	entity._grug_profession = slot.profession
+	install_profession_trainer_name(entity, slot.profession)
+	entity._grug_walker = false
+end
+
 -- Every field installed here is a plain number, string or flat table, so it
 -- survives unload/reload inside the mob's staticdata (AGENTS.md's WP6 rule:
 -- never an ObjectRef, never a function).
@@ -1098,8 +1116,7 @@ local function install(entity, row, slot)
 	elseif slot.role == "king" then
 		entity._grug_home = {x = slot.pos.x, y = slot.pos.y, z = slot.pos.z}
 	elseif slot.role == "trainer" then
-		entity._grug_profession = slot.profession
-		entity._grug_walker = false
+		grug_mobs.install_profession_trainer(entity, slot)
 	end
 end
 

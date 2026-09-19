@@ -69,6 +69,9 @@ function grug_jobs.learn(player, profession)
 	end
 	set_int(meta, META_LEVEL .. profession, 1)
 	set_int(meta, META_CRAFTS .. profession, 0)
+	if type(grug_jobs.discover_tier_one_inputs) == "function" then
+		grug_jobs.discover_tier_one_inputs(player, profession)
+	end
 	local text = "Learned " .. definition.name .. "."
 	message(player, text)
 	return true, text
