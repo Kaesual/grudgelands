@@ -9,7 +9,7 @@
 --   damage = 2 + 0.3*L + 0.005*L^2   XP = 10*L
 --   elite: x3 HP, x1.8 dmg, x4 XP, armor 80, scale x1.6, gold tint
 --   rare:  x5 HP, x2.2 dmg, x6 XP, armor 70, scale x2,   violet tint
---   boss:  x20 HP only (Kraken and the fixed island dragons)
+--   boss:  18000 HP flat (fixed apex encounter budget)
 --
 -- ENGINE vs. DEF CONTRACT (the one rule for the whole mod):
 --   * HP (hp_min/hp_max/health), damage and XP are ALWAYS engine-owned.
@@ -78,7 +78,8 @@ local TIERS = {
 	-- UTF-8 written literally: \u{} escapes are LuaJIT-only (luanti-lua.md).
 	rare = {hp = 5, dmg = 2.2, xp = 6, armor = 70, scale = 2,
 		tint = "#a64dff:90", prefix = "★ ", telegraph = true},
-	boss = {hp = 20, dmg = 1, xp = 1, armor = nil, scale = 1,
+	boss = {hp = 1, dmg = 1, xp = 1, armor = nil, scale = 1,
+		hp_flat = 18000,
 		tint = nil, prefix = "Boss "},
 }
 
@@ -104,12 +105,10 @@ end
 -- Derived stats for a level/tier pair. Single source of truth — every
 -- other place asks here instead of repeating a formula.
 --
--- `hp_flat`/`xp_flat` are the critter tier's opt-out of the multiplier model
--- (header): a flat value REPLACES the formula for that one stat and leaves
--- the other two alone, so `normal`/`elite`/`rare`/`boss` — which carry neither
--- field — go through exactly the arithmetic they always did. Damage stays
--- formula-derived even for a critter: it never attacks, so the number is
--- never read, and inventing a second exception for it would be noise.
+-- `hp_flat`/`xp_flat` opt a tier out of the multiplier model for that one
+-- stat. The critter tier fixes both reward stats; the boss tier fixes HP while
+-- retaining formula-derived damage and XP. Normal/elite/rare keep the original
+-- multiplier arithmetic.
 function grug_mobs.stats_for(level, tier)
 	local t = tier_def(tier)
 	return t.hp_flat or math.floor((20 + 5 * level + 0.66 * level * level)
