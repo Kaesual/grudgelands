@@ -125,6 +125,21 @@ local function give_or_queue(player, stack)
 		"Boss loot is waiting for free inventory space.")
 end
 
+local boss_reward_hooks = {}
+
+function grug_mobs.register_boss_reward_hook(fn)
+	table.insert(boss_reward_hooks, fn)
+end
+
+local function give_hook_rewards(player, id, self)
+	for _, fn in ipairs(boss_reward_hooks) do
+		local rewards = fn(self, id, player) or {}
+		for index = 1, #rewards do
+			give_or_queue(player, rewards[index])
+		end
+	end
+end
+
 core.register_on_joinplayer(function(player)
 	local meta = player:get_meta()
 	local pending = core.deserialize(meta:get_string(pending_key())) or {}
@@ -167,6 +182,7 @@ local function settle_boss(id, self, race)
 				else
 					give_or_queue(player, ItemStack("grug_mobs:scaled_hide 4"))
 				end
+				give_hook_rewards(player, id, self)
 				meta:set_int(key, now + LOOT_LOCKOUT)
 			end
 		end
@@ -188,6 +204,9 @@ function grug_mobs.boss_leash_reset(self)
 		end
 		return
 	elseif self and self._grug_boss_id then
+		if grug_mobs.cancel_dragon_action then
+			grug_mobs.cancel_dragon_action(self)
+		end
 		grug_mobs.boss_attempt_reset(self._grug_boss_id)
 	end
 end
@@ -197,19 +216,6 @@ core.register_craftitem("grug_mobs:fallen_crown", {
 	inventory_image = "grug_mobs_item_fallen_crown.png",
 	stack_max = 1,
 	groups = {grug_rare_trophy = 1},
-})
-
-grug_mobs.register_simple_arrow("grug_mobs:ice_breath", {
-	texture = "grug_mobs_rock.png^[colorize:#8ee8ff:210",
-	velocity = 22, size = {x = 1.4, y = 1.4}, glow = 10,
-	tail = true, tail_texture = "grug_mobs_rock.png^[colorize:#b8f4ff:220",
-	lifetime = 2,
-})
-grug_mobs.register_simple_arrow("grug_mobs:storm_breath", {
-	texture = "grug_mobs_rock.png^[colorize:#72e890:210",
-	velocity = 22, size = {x = 1.4, y = 1.4}, glow = 8,
-	tail = true, tail_texture = "grug_mobs_rock.png^[colorize:#a0f2aa:220",
-	lifetime = 2,
 })
 
 local function shoot(self, target, arrow, offset_angle)
@@ -260,108 +266,12 @@ local function hit_players(self, radius, multiplier, cone, knockback, faction)
 	end
 end
 
-local function dragon_tick(self, dtime, arrow)
-	self.temp = self.temp or {}
-	local cast = self.temp.grug_boss_cast
-	if cast then
-		self:set_velocity(0)
-		cast.left = cast.left - dtime
-		if cast.left <= 0 then
-			if cast.kind == "slam" then
-				hit_players(self, 7, 3, false, 7)
-			else
-				shoot(self, cast.target, arrow, 0)
-			end
-			self.temp.grug_boss_cast = nil
-			self.temp.grug_boss_cooldown = 5
-		end
-		return
-	end
-	self.temp.grug_boss_cooldown = math.max(0,
-		(self.temp.grug_boss_cooldown or 2) - dtime)
-	local target = self.attack
-	local pos = self.object:get_pos()
-	local target_pos = target and target:get_pos()
-	if target_pos and self.temp.grug_boss_cooldown <= 0 then
-		local dx, dz = target_pos.x - pos.x, target_pos.z - pos.z
-		local near = dx * dx + dz * dz <= 49
-		self.temp.grug_boss_cast = {kind = near and "slam" or "breath",
-			target = target, left = 2}
-		self:set_animation(near and "punch" or "shoot", true)
-		self:set_velocity(0)
-	end
-	self.temp.grug_perch_clock = (self.temp.grug_perch_clock or 0) + dtime
-	if not target and self.temp.grug_perch_clock >= 15 and self._grug_perches then
-		self.temp.grug_perch_clock = 0
-		self.temp.grug_perch = (self.temp.grug_perch or 1) % 3 + 1
-		grug_mobs.place_on_ground(self.object,
-			self._grug_perches[self.temp.grug_perch])
-	end
-end
-
-local function dragon_def(id, opts)
-	return {
-		description = opts.description,
-		clock = "any", type = "monster",
-		_grug_fixed_level = 60, _grug_tier = "boss",
-		_grug_leash_range = 36,
-		attack_type = "dogfight", attack_players = true,
-		pathfinding = 1, reach = 5, group_attack = false,
-		walk_velocity = 0, run_velocity = 0,
-		jump = false, fear_height = 0, view_range = 32,
-		visual = "mesh", mesh = opts.mesh, textures = {opts.textures},
-		visual_size = opts.size, collisionbox = opts.box,
-		makes_footstep_sound = true, fall_damage = false,
-		animation = opts.animation,
-		drops = {}, water_damage = 0, lava_damage = 0, light_damage = 0,
-		after_activate = function(self)
-			self._grug_boss_id = "dragon:" .. id
-			storage:set_string("boss:dragon:" .. id .. ":alive", "1")
-		end,
-		do_custom = function(self, dtime)
-			self._grug_boss_id = "dragon:" .. id
-			dragon_tick(self, dtime, opts.arrow)
-		end,
-		on_die = function(self)
-			settle_boss("dragon:" .. id, self, nil)
-			storage:set_string("boss:dragon:" .. id .. ":alive", "")
-			storage:set_string("boss:dragon:" .. id .. ":due",
-				tostring(os.time() + RESPAWN_DRAGON))
-			storage:set_string("boss:dragon:" .. id .. ":warned", "")
-		end,
-	}
-end
-
-grug_mobs.register_mob("grug_mobs:ice_dragon", dragon_def("wyrmglass", {
-	description = "Wyrmglass Ice Dragon", mesh = "grug_mobs_ice_dragon.b3d",
-	textures = {"grug_mobs_ice_dragon.png^grug_mobs_dragon_shading.png"},
-	size = {x = 4, y = 4}, box = {-1.5, 0, -1.5, 1.5, 4, 1.5},
-	arrow = "grug_mobs:ice_breath",
-	animation = {
-		stand_start = 1, stand_end = 59, stand_speed = 20,
-		walk_start = 211, walk_end = 249, walk_speed = 20,
-		run_start = 211, run_end = 249, run_speed = 30,
-		punch_start = 121, punch_end = 159, punch_speed = 20,
-		shoot_start = 61, shoot_end = 119, shoot_speed = 20,
-		die_start = 571, die_end = 579, die_speed = 20,
-	},
-}))
-
-grug_mobs.register_mob("grug_mobs:jungle_wyvern", dragon_def("stormscale", {
-	description = "Stormscale Jungle Wyvern",
-	mesh = "grug_mobs_jungle_wyvern.b3d",
-	textures = {"grug_mobs_jungle_wyvern.png"},
-	size = {x = 4, y = 4}, box = {-1.2, 0, -1.2, 1.2, 3.2, 1.2},
-	arrow = "grug_mobs:storm_breath",
-	animation = {
-		stand_start = 1, stand_end = 59, stand_speed = 20,
-		walk_start = 91, walk_end = 119, walk_speed = 20,
-		run_start = 181, run_end = 209, run_speed = 30,
-		punch_start = 61, punch_end = 89, punch_speed = 20,
-		shoot_start = 241, shoot_end = 279, shoot_speed = 20,
-		die_start = 281, die_end = 299, die_speed = 20,
-	},
-}))
+grug_mobs.register_dragon_bosses({
+	storage = storage,
+	settle = settle_boss,
+	player_enemy_of = player_enemy_of,
+	respawn = RESPAWN_DRAGON,
+})
 
 local function royal_objects(id, radius, pos)
 	local result = {}
@@ -600,7 +510,7 @@ for race, row in pairs(RACES) do
 	grug_mobs.register_mob("grug_mobs:king_" .. race_id,
 		king_def(race_id, race_row))
 	local guard = grug_mobs.guard_definition(row.faction,
-		row.name .. " Royal Guard", "grug_mobs_royal_" .. race_id .. ".png")
+		row.name .. " Royal Guard", "grug_mobs_royal_guard_" .. race_id .. ".png")
 	local base_tick = guard.do_custom
 	guard._grug_fixed_level = 60
 	guard._grug_tier = "elite"
@@ -610,10 +520,10 @@ for race, row in pairs(RACES) do
 	guard._grug_no_leash = true
 	guard._grug_leash_range = nil
 	guard._grug_visual = function(self)
-		return {skin = "grug_mobs_royal_" .. race_id .. ".png",
+		return {skin = "grug_mobs_royal_guard_" .. race_id .. ".png",
 			level = self._grug_level, weapon_family = "sword"}
 	end
-	guard.textures = {{"grug_mobs_royal_" .. race_id .. ".png"}}
+	guard.textures = {{"grug_mobs_royal_guard_" .. race_id .. ".png"}}
 	guard.do_custom = function(self, dtime)
 		self._grug_royal_race = self._grug_royal_race or race_id
 		return royal_guard_tick(base_tick, self, dtime)

@@ -690,37 +690,62 @@ local function prepare_overlay(fail, descriptor, overlay)
 end
 
 local CAPITAL_SOURCE_SCHEMA = "grug_wp13_capital_source_v1"
-local BREWING_STAND = "grug_brewing:brewing_stand"
+local CAPITAL_STATIONS = {
+	{profession = "blacksmith", node = "grug_jobs:forge", x = 0, y = 1, z = -8},
+	{profession = "alchemist", node = "grug_brewing:brewing_stand",
+		x = 2, y = 1, z = -12},
+	{profession = "tailor", node = "grug_jobs:tailor_bench",
+		x = 0, y = 1, z = -16},
+	{profession = "leatherworker", node = "grug_jobs:tanning_rack",
+		x = 2, y = 1, z = -20},
+	{profession = "woodcarver", node = "grug_jobs:carving_bench",
+		x = 0, y = 1, z = -24},
+	{profession = "goldsmith", node = "grug_jobs:jewellers_bench",
+		x = 2, y = 1, z = -28},
+}
 
--- R8-ALCH's station is part of every capital core, immediately east of the
--- Alchemist trainer socket. Core builders deliberately reserved this air cell;
--- projection owns the replacement so all six independently authored capitals
--- receive the same service without changing their building libraries.
-local function capital_core_with_brewing_stand(fail, build)
+-- Every capital core carries the same public profession stations immediately
+-- east of the matching trainer. Core builders reserve these air cells;
+-- projection owns their replacement so the six independent libraries stay
+-- unchanged and one table remains the placement authority.
+local function capital_core_with_stations(fail, build)
 	return function()
 		local blueprint = build()
-		local found = false
+		local wanted = {}
+		for index = 1, #CAPITAL_STATIONS do
+			local station = CAPITAL_STATIONS[index]
+			local key = station.x .. ":" .. station.y .. ":" .. station.z
+			if wanted[key] then fail("capital station cells overlap") end
+			wanted[key] = station
+		end
+		local found = {}
 		for index = 1, #(blueprint.cells or {}) do
 			local cell = blueprint.cells[index]
-			if cell.x == 2 and cell.y == 1 and cell.z == -12 then
+			local key = cell.x .. ":" .. cell.y .. ":" .. cell.z
+			local station = wanted[key]
+			if station then
 				if cell.name ~= "air" then
-					fail("brewing-stand cell is not reserved air")
+					fail(station.profession .. " station cell is not reserved air")
 				end
-				cell.name = BREWING_STAND
+				cell.name = station.node
 				cell.param2 = 0
-				found = true
-				break
+				found[key] = true
 			end
 		end
-		if not found then fail("brewing-stand cell is absent") end
-		local present = false
+		local palette = {}
 		for index = 1, #(blueprint.palette or {}) do
-			if blueprint.palette[index] == BREWING_STAND then present = true break end
+			palette[blueprint.palette[index]] = true
 		end
-		if not present then
-			blueprint.palette[#blueprint.palette + 1] = BREWING_STAND
-			table.sort(blueprint.palette, M.less_bytes)
+		for key, station in pairs(wanted) do
+			if not found[key] then
+				fail(station.profession .. " station cell is absent")
+			end
+			if not palette[station.node] then
+				blueprint.palette[#blueprint.palette + 1] = station.node
+				palette[station.node] = true
+			end
 		end
+		table.sort(blueprint.palette, M.less_bytes)
 		return blueprint
 	end
 end
@@ -778,7 +803,7 @@ function M.descriptors(profile, source)
 	add({id = "core", prefix = profile.key .. "_core", kind = "anchor",
 		bounds = primary, blueprint_schema = source.core.schema,
 		identity_schema = profile.identity_schema,
-		build = capital_core_with_brewing_stand(fail, source.core.build)})
+		build = capital_core_with_stations(fail, source.core.build)})
 	for index = 1, #source.plots do
 		local plot = source.plots[index]
 		if type(plot) ~= "table" or type(plot.id) ~= "string" or plot.id == "" or

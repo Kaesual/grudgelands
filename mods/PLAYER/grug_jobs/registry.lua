@@ -18,11 +18,30 @@ grug_jobs.PRIMARY_PROFESSIONS = {
 }
 grug_jobs.SECONDARY_PROFESSIONS = {"cooking"}
 grug_jobs.STATIONS = {
-	grid = true,
-	furnace = true,
-	dual_furnace = true,
-	brewing_stand = true,
+	grid = {display_name = "Crafting Grid"},
+	furnace = {display_name = "Furnace", node = "default:furnace"},
+	dual_furnace = {display_name = "Dual Furnace",
+		node = "grug_smelting:dual_furnace"},
+	brewing_stand = {display_name = "Brewing Stand", profession = "alchemist",
+		node = "grug_brewing:brewing_stand"},
+	forge = {display_name = "Forge", profession = "blacksmith",
+		node = "grug_jobs:forge"},
+	tanning_rack = {display_name = "Tanning Rack", profession = "leatherworker",
+		node = "grug_jobs:tanning_rack"},
+	tailor_bench = {display_name = "Tailor Bench", profession = "tailor",
+		node = "grug_jobs:tailor_bench"},
+	carving_bench = {display_name = "Carving Bench", profession = "woodcarver",
+		node = "grug_jobs:carving_bench"},
+	jewellers_bench = {display_name = "Jeweller's Bench", profession = "goldsmith",
+		node = "grug_jobs:jewellers_bench"},
 }
+
+function grug_jobs.station_info(station)
+	local definition = grug_jobs.STATIONS[station]
+	if type(definition) ~= "table" then return nil end
+	return {id = station, display_name = definition.display_name,
+		profession = definition.profession, node = definition.node}
+end
 
 grug_jobs.recipes = {}
 
@@ -31,6 +50,7 @@ local recipes_by_output = {}
 local recipes_by_profession = {}
 local station_handlers = {}
 local ambiguous_crafts_logged = {}
+local in_place_universal_routes = {}
 local registration_phase
 local registry_metrics = {
 	matrix_checks = 0,
@@ -137,6 +157,98 @@ local function inputs_match(declared, actual)
 	local wanted = flatten_inputs(declared)
 	local got = flatten_inputs(actual)
 	return can_match_all(wanted, got, group_matches)
+end
+
+local function maximum_numeric_key(value)
+	local maximum = 0
+	for key in pairs(value or {}) do
+		if type(key) == "number" and key % 1 == 0 and key > maximum then
+			maximum = key
+		end
+	end
+	return maximum
+end
+
+local function matrix_from_nested(value)
+	local matrix = {}
+	local height = maximum_numeric_key(value)
+	local width = 0
+	for row = 1, height do
+		local row_value = type(value[row]) == "table" and value[row] or {}
+		width = math.max(width, maximum_numeric_key(row_value))
+		matrix[row] = row_value
+	end
+	return matrix, width, height
+end
+
+local function matrix_from_grid(value, width)
+	local matrix = {}
+	local maximum = maximum_numeric_key(value)
+	local height = math.max(1, math.ceil(maximum / width))
+	for row = 1, height do
+		matrix[row] = {}
+		for column = 1, width do
+			matrix[row][column] = value[(row - 1) * width + column]
+		end
+	end
+	return matrix, width, height
+end
+
+local function trim_matrix(matrix, width, height)
+	local min_row, max_row, min_column, max_column
+	for row = 1, height do
+		for column = 1, width do
+			if item_name(matrix[row] and matrix[row][column]) ~= "" then
+				min_row = min_row and math.min(min_row, row) or row
+				max_row = max_row and math.max(max_row, row) or row
+				min_column = min_column and math.min(min_column, column) or column
+				max_column = max_column and math.max(max_column, column) or column
+			end
+		end
+	end
+	if not min_row then return {}, 0, 0 end
+	local result = {}
+	for row = min_row, max_row do
+		local target = {}
+		for column = min_column, max_column do
+			target[#target + 1] = item_name(matrix[row] and matrix[row][column])
+		end
+		result[#result + 1] = target
+	end
+	return result, max_column - min_column + 1, max_row - min_row + 1
+end
+
+-- Shaped recipes use the same placement rule as the engine grid: surrounding
+-- empty rows and columns only move the pattern, while every slot inside the
+-- trimmed rectangle is authoritative. Shapeless recipes retain the registry's
+-- maximum-matching group semantics.
+local function shaped_inputs_match(declared, actual)
+	local declared_matrix, declared_width, declared_height =
+		matrix_from_nested(declared)
+	local actual_matrix, actual_width, actual_height
+	if type(actual[1]) == "table" and
+		(type(actual[1].get_name) ~= "function") then
+		actual_matrix, actual_width, actual_height = matrix_from_nested(actual)
+	else
+		actual_matrix, actual_width, actual_height = matrix_from_grid(actual, 3)
+	end
+	local wanted, wanted_width, wanted_height = trim_matrix(declared_matrix,
+		declared_width, declared_height)
+	local got, got_width, got_height = trim_matrix(actual_matrix,
+		actual_width, actual_height)
+	if wanted_width ~= got_width or wanted_height ~= got_height then return false end
+	for row = 1, wanted_height do
+		for column = 1, wanted_width do
+			local token = wanted[row][column]
+			local name = got[row][column]
+			if token == "" then
+				if name ~= "" then return false end
+			elseif name == "" or not group_matches(token, name) then
+				return false
+			end
+		end
+	end
+	return true
 end
 
 local function new_comparison_phase()
@@ -337,11 +449,13 @@ local function output_route_count(output, station)
 	return count
 end
 
-local function refuse_existing_output(output, phase)
+local function refuse_existing_output(output, phase, in_place)
 	local recipes = engine_corpus(phase).by_output[output] or {}
 	local owned_engine = output_route_count(output, "grid") +
 		output_route_count(output, "furnace")
-	if #recipes > owned_engine then
+	local universal_routes = math.max(0, #recipes - owned_engine)
+	if not in_place and (universal_routes > 0 or
+			(in_place_universal_routes[output] or 0) > 0) then
 		fail("profession output " .. output ..
 			" already has a universal engine recipe")
 	end
@@ -349,6 +463,14 @@ local function refuse_existing_output(output, phase)
 		fail("profession output " .. output ..
 			" already has a dual-furnace recipe")
 	end
+	return universal_routes
+end
+
+local function contains_exact_input(inputs, output)
+	for index = 1, #inputs do
+		if inputs[index] == output then return true end
+	end
+	return false
 end
 
 function grug_jobs.register_ingredient_tier(item, tier)
@@ -431,6 +553,15 @@ function grug_jobs.register_recipe(definition)
 			type(definition.inputs) ~= "string" then
 		fail(profession .. " T" .. tier .. " recipe needs inputs")
 	end
+	if definition.shapeless ~= nil and type(definition.shapeless) ~= "boolean" then
+		fail(profession .. " T" .. tier .. " shapeless flag differs")
+	end
+	if definition.in_place ~= nil and type(definition.in_place) ~= "boolean" then
+		fail(profession .. " T" .. tier .. " in_place flag differs")
+	end
+	if definition.material ~= nil and type(definition.material) ~= "boolean" then
+		fail(profession .. " T" .. tier .. " material flag differs")
+	end
 	local inputs = flatten_inputs(definition.inputs)
 	if #inputs == 0 then fail(profession .. " T" .. tier .. " recipe has no input") end
 	local has_own_tier = false
@@ -442,12 +573,20 @@ function grug_jobs.register_recipe(definition)
 				inputs[index])
 		end
 	end
-	if not has_own_tier then
+	local output = item_name(definition.output)
+	if output == "" then fail(profession .. " recipe needs an output") end
+	if definition.material then
+		if ingredient_tiers[output] ~= tier then
+			fail(output .. " material output tier differs from recipe tier")
+		end
+	elseif not has_own_tier then
 		fail(profession .. " T" .. tier ..
 			" recipe needs at least one declared T" .. tier .. " ingredient")
 	end
-	local output = item_name(definition.output)
-	if output == "" then fail(profession .. " recipe needs an output") end
+	if definition.in_place and
+			(station ~= "grid" or not contains_exact_input(inputs, output)) then
+		fail(output .. " in-place recipe must use the grid and consume its output")
+	end
 	local output_routes = recipes_by_output[output]
 	if output_routes then
 		for index = 1, #output_routes do
@@ -462,7 +601,8 @@ function grug_jobs.register_recipe(definition)
 		end
 	end
 	local phase = registration_comparison_phase()
-	refuse_existing_output(output, phase)
+	local universal_routes = refuse_existing_output(output, phase,
+		definition.in_place == true)
 	refuse_input_collision(station, definition.inputs, output, phase,
 		dual_recipe_list())
 	local input_key = normalized_inputs(definition.inputs)
@@ -488,9 +628,20 @@ function grug_jobs.register_recipe(definition)
 		output_name = output,
 		hint = definition.hint,
 		time = definition.time,
+		in_place = definition.in_place == true,
+		material = definition.material == true,
+		universal_output_routes = universal_routes,
+		shapeless = definition.shapeless == true,
+		shaped = definition.shapeless ~= true and
+			type(definition.inputs) == "table" and
+			type(definition.inputs[1]) == "table" and
+			type(definition.inputs[1].get_name) ~= "function",
 		id = station .. "\0" .. input_key .. "\0" .. output,
 		input_key = input_key,
 	}
+	if recipe.in_place then
+		in_place_universal_routes[output] = universal_routes
+	end
 	grug_jobs.recipes[#grug_jobs.recipes + 1] = recipe
 	if not output_routes then
 		output_routes = {}
@@ -543,9 +694,14 @@ function grug_jobs.recipe_for_craft(station, output, inputs)
 	local found
 	for index = 1, #grug_jobs.recipes do
 		local candidate = grug_jobs.recipes[index]
-		if candidate.station == station and inputs_match(candidate.inputs, inputs) then
-			if found then return ambiguous_craft(station, inputs) end
-			found = candidate
+		if candidate.station == station then
+			local matches = candidate.shaped and
+				shaped_inputs_match(candidate.inputs, inputs) or
+				(not candidate.shaped and inputs_match(candidate.inputs, inputs))
+			if matches then
+				if found then return ambiguous_craft(station, inputs) end
+				found = candidate
+			end
 		end
 	end
 	return found
@@ -562,7 +718,8 @@ function grug_jobs.validate_recipe_collisions()
 		local recipe = grug_jobs.recipes[index]
 		local engine = corpus.by_output[recipe.output_name] or {}
 		local expected_engine = output_route_count(recipe.output_name, "grid") +
-			output_route_count(recipe.output_name, "furnace")
+			output_route_count(recipe.output_name, "furnace") +
+			(in_place_universal_routes[recipe.output_name] or 0)
 		if #engine ~= expected_engine then
 			fail("profession output " .. recipe.output_name ..
 				" collides with a universal engine recipe")

@@ -481,6 +481,107 @@ ocean edge and the enemy border (warning band, hard dismount).
     slug `gpt-6-astra`, Codex CLI ≥ 0.155; an earlier probe with the
     wrong slug and the old CLI 0.147 failed); every other lane and every
     review on GPT-5.6 Sol.
+21. **Stone plate** (2026-09-19, after MAP-C step 0): the plate at y = −37..T
+    near starts and capitals comes from the opcode-21 `OP_PATH_FILL` of the
+    704-node anchor grade squares, which lacks the native-air preservation
+    of opcode 27 (`map_adapter.lua` ~899–902, `planner.lua` ~1361; probe on
+    seed 0, R8 cave-mouth writer proven innocent). Ruling: anchor-grade
+    fills preserve native air like opcode 27; routes, foundations and
+    causeways stay solid. MAP-C implementation Go with `PLATEAU_Y = 441`.
+22. **Recipe discovery T1** (audit finding 12): learning a profession marks
+    its T1 inputs seen, so T1 recipes are visible at once; the
+    ingredient rule applies from the first craft on.
+23. **Mana floor** (audit finding 19): option A of the cooking/alchemy plan
+    (in combat `max(¼ OOC, 0.25 % max mana/s)`) is implemented in Round 9
+    as a small lane (R9-MANA) with its own review.
+24. **Early wave 2** (2026-09-19): ENCH, MOUNTS and FARM (mechanics, with
+    the crop-soil node registered by FARM and placed later by MAP-B) start
+    right after the PROF-A substrate merge, parallel to MAP-C.
+25. **Mount warning band** (audit finding 16): 48-node warning band on the
+    LEGAL side of the line, hard dismount at the first node beyond it,
+    same model for ocean and enemy territory; the 10-second grace and the
+    100-node maximum trip are removed; `mounts.md` follows.
+26. **Mount rules** (audit finding 17): the mount entity is invulnerable
+    and drops nothing (damage hits the rider and dismounts); mounting is
+    refused during the 5-second combat window; flying mounts cannot take
+    off underground; flight ceiling y = 600 everywhere regardless of the
+    surface; after a hard mid-air dismount the player falls straight down
+    with no residual velocity.
+27. **Kraken** stays tier normal (level 100, 7 120 HP); the flat 18 000 HP
+    applies to the boss tier only (the two dragons).
+28. **Trinkets and caster weapons as gear items** (orchestrator ruling
+    2026-09-19 after the PROF-B blocker; the user may veto): `grug_gear`
+    has no caster 1H family and no trinket items, and the registry allows
+    one recipe per output and station, so §3.6b's "six identities over six
+    tiers" cannot be expressed through stack metadata. PROF-B adds the
+    caster 1H family (wand/scepter/orb, §3.2 row) to `grug_gear`'s
+    `WEAPONS` table and registers the six core trinket identities of §6.2
+    as one item per identity AND tier (36 ids, the same per-tier pattern
+    the other gear uses); ENCH's quality roll applies on top. The
+    Blacksmith fitting cross-buy references PROF-A's fitting item names,
+    so PROF-B resumes after the PROF-A run-2 merge.
+29. **Refinement durability deferred to WP22** (orchestrator ruling
+    2026-09-19 after the PROF-A catalog review; the user may veto): the
+    +100 % durability of `items_crafting.md` §6b.2 needs one per-stack
+    wear multiplier across dig and combat wear, which WP22 (durability and
+    repair) owns; Round 9 ships refinement with the persistent
+    `grug_refined` marker and the stat bonus only. Gear identities still
+    missing in `grug_gear` (24 leather armor pieces, the shield line, the
+    three spell tomes, the 32-slot Huge Bag) are a follow-up gear lane
+    after Round 9, not invented by the catalog lanes.
+30. **MAP-C performance STOP** (2026-09-19): with the plateau at 441 the
+    emerge wall clock rose 42 % (writer 21 s → 51 s over the profiler
+    corpus) because the Lua writer resolves every solid voxel above the
+    surface one by one; engine VM and lighting shares stayed small. User
+    ruling: ONE reviewed bulk-clear attempt (uniform native stone above the
+    surface cap becomes air without per-voxel resolution, equivalence KAT,
+    same before/after measurement, gate after ≤ before); if it fails, the
+    orchestrator asks again (options: low plateau at sea level with the
+    MAP-A mouth writer back on, mid plateau ~200, or accept the slowdown).
+31. **In-place refinement recipes** (orchestrator ruling 2026-09-19):
+    the registry accepts a grid recipe that consumes its own exact output
+    item (refinement) although that output has a universal engine recipe
+    (`in_place` flag; everything else in the collision rules unchanged),
+    so pick refinements can exist beside the universal pick recipes.
+32. **Mount prices** (2026-09-19): coordinator placeholders until WP44
+    measures them — T1 200, T2 1 500, T3 24 000, T4 100 000 copper
+    (10 gold; the user lowered T4 from the proposed 15 gold).
+33. **Tier rule for material chains** (2026-09-19): for conversion
+    recipes whose output is an intermediate material (not gear) the
+    output's tier defines the recipe tier; the tier-N ingredient rule of
+    `items_crafting.md` §2.3 keeps applying to gear recipes. The six
+    conversions (Cured/Heavy/Scaled/Nightscale Leather, Silk and
+    Stormweave Bolt) therefore sit on their designed tiers; no synthetic
+    aliases, no new ingredients.
+34. **Mapgen pause after the clean measurement** (user 2026-09-19): after
+    Astra's clean before / 441 / 128 measurement on an idle host, ALL
+    mapgen work (MAP-C, CAP, MAP-B) pauses; the results are discussed with
+    the user before any further mapgen step. The plateau measurements
+    taken under host load (441 +46 %, 200 +70 %, 128 +29 %) are confounded
+    and not a basis for a decision.
+35. **MAP-C without the plateau** (user 2026-09-19, supersedes 30/34 for
+    this round): the plateau cost is per MODIFIED voxel in the writer's
+    Lua post-processing (dirty-intent scan, light-context scan, replay),
+    not per resolved voxel, so bulk clearing could not help; measurements
+    under load are not the issue. MAP-C reverts the NoiseParams/flags to
+    the previous native inputs and keeps everything else: opcode-21 plate
+    fix, 3-node skin with natural openings, coast band, README pin
+    procedure, engine-faithful sentinel KAT, refreshed source-audit
+    roster. One profiler/emerge pair as the gate (≈ main expected), then
+    witness, pin refresh, final micro, review. CAP and MAP-B follow as
+    planned. A later performance package owns the writer post-processing
+    loops and the mapgen-environment / multi-emerge-thread question
+    (`core.register_mapgen_script`, today `num_emerge_threads = 1` is
+    pinned); the plateau is revisited only with that data.
+36. **Coast band cost** (2026-09-19, after the per-feature attribution):
+    without the plateau the skin and the plate fix are within the ±6 %
+    noise of a single profiler pair; the coast band alone costs ~12 s of
+    planner time (33 %). User ruling: ONE optimisation attempt on the
+    coast band (profile first, semantics byte-identical, gate ≤ +5 % with a
+    second pair between +5 % and +8 %); if it fails, the coast band ships
+    behind a production switch that is off by default and MAP-C finishes
+    with skin, openings, plate fix, pin procedure and KATs. The 3 %
+    tolerance of ruling 35 is replaced by 5 % (measured noise).
 
 ## 5. MAP-C protocol: what must not repeat from Round 8
 

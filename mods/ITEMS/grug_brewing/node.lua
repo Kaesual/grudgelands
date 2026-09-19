@@ -4,25 +4,35 @@ local VIAL = "vessels:glass_bottle"
 local STAND_FORM = "grug_brewing:stand"
 local recipes = {}
 local recipe_list = {}
-local public_positions = {}
+local station_factory
+if type(core.get_modpath) == "function" then
+	station_factory = dofile(core.get_modpath("grug_jobs") ..
+		"/station_nodes.lua")
+	station_factory.register_nodes()
+else
+	-- Minimal standalone seam for the focused brewing-node fixture. A live
+	-- engine always supplies get_modpath and therefore uses the shared factory.
+	local public = {}
+	station_factory = {
+		register_public_position = function(station, pos)
+			public[station .. "\0" .. pos.x .. ":" .. pos.y .. ":" .. pos.z] = true
+		end,
+		is_public_station = function(station, pos)
+			return public[station .. "\0" .. pos.x .. ":" .. pos.y .. ":" ..
+				pos.z] == true
+		end,
+	}
+end
 
 grug_brewing.NODE = INACTIVE
 grug_brewing.NODE_ACTIVE = ACTIVE
 
-local function pos_key(pos)
-	return pos.x .. ":" .. pos.y .. ":" .. pos.z
-end
-
 function grug_brewing.register_public_position(pos)
-	if type(pos) ~= "table" or type(pos.x) ~= "number" or
-			type(pos.y) ~= "number" or type(pos.z) ~= "number" then
-		error("grug_brewing: public position differs", 0)
-	end
-	public_positions[pos_key(pos)] = true
+	station_factory.register_public_position("brewing_stand", pos)
 end
 
 local function may_access(pos, player)
-	if public_positions[pos_key(pos)] then return true end
+	if station_factory.is_public_station("brewing_stand", pos) then return true end
 	return player and player.is_player and player:is_player() and
 		not core.is_protected(pos, player:get_player_name())
 end
@@ -309,11 +319,18 @@ local function register(name, active)
 		description = "Brewing Stand",
 		drawtype = "nodebox",
 		node_box = {type = "fixed", fixed = {
-			{-0.38, -0.5, -0.38, 0.38, -0.4, 0.38},
-			{-0.08, -0.4, -0.08, 0.08, 0.3, 0.08},
-			{-0.35, 0.2, -0.35, 0.35, 0.32, 0.35},
+			{-0.5, -0.5, -0.4375, 0.5, -0.375, -0.3125},
+			{-0.1875, -0.5, -0.3125, 0.1875, -0.375, 0.5},
+			{-0.0625, -0.375, -0.0625, 0.0625, 0.5, 0.0625},
 		}},
-		tiles = {"default_steel_block.png^[colorize:#805020:55"},
+		tiles = {
+			"grug_brewing_top.png",
+			"grug_brewing_base.png",
+			"grug_brewing_side.png",
+			"grug_brewing_side.png",
+			"grug_brewing_side.png",
+			"grug_brewing_side.png^[transformFX",
+		},
 		paramtype = "light", paramtype2 = "facedir", is_ground_content = false,
 		groups = groups, sounds = default.node_sound_metal_defaults(), drop = INACTIVE,
 		light_source = active and 6 or 0,

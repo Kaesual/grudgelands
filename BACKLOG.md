@@ -181,6 +181,115 @@ refusal and mana spend on a miss. Disable `/combatdebug` and confirm the log is
 silent. Include one hostile-player pass for dodge/absorb/PvP refusal and one
 short high-rate Fireball burst to expose projectile cleanup/performance.
 
+### WP46 — Terrain-damage guard: explosions, fire and lava never damage settlements or POIs
+
+**Open (user requirement 2026-09-19); not part of Round 9. Plan first, then one lane.**
+
+Requirement: explosions (mobs and players) must not damage cities, starts and
+POIs, and fire must never spread into them — a burning or destroyed authored
+block could only be repaired by an admin. Today nothing in the game destroys
+terrain: there is no `fire` and no `tnt` mod, lava is natural only (no
+bucket), the Rift Spawn explodes with terrain radius 0, and the dragon
+rime/scorch effects write only into air and restore it by timer. The risk is
+future content (Nether V2 fire, later explosive mobs, TNT, lava buckets).
+
+Plan (decided direction, details in the lane brief):
+
+1. **One guard predicate in `grug_core`**, actor-neutral:
+   `grug_core.world_alterable(pos)` = not inside any settlement claim (the
+   six capitals with precinct and outer ring, the six starts, every POI and
+   landmark footprint, housing claims) — the same authority
+   `world_protected_for_faction` already uses in `protection.lua`, without a
+   player name. Every effect that changes nodes on its own (not through a
+   player's dig/place, which `core.is_protected` already covers) calls it per
+   node: mob explosions, fire spread, lava flow into non-natural nodes,
+   boss ground effects.
+2. **mobs_redo `explode` GRUG PATCH:** terrain damage stays radius 0 for every
+   mob in V1 (a KAT rejects any mob def with `explosion_radius > 0`); if a
+   later design wants craters, the patched `mobs:boom` skips every node the
+   guard refuses.
+3. **Fire policy:** V1 ships no fire mod. When fire arrives (Nether), spread
+   is an ABM that (a) asks the guard per target node, (b) has a burn budget
+   per flame (finite lifetime), and (c) never ignites nodes of the settlement
+   palettes; "eternal flame" nodes exist only as authored decoration without
+   spread.
+4. **Lava:** mapgen keeps natural lava outside settlement and POI exclusions
+   (verify with the WP40 exclusion predicates); a lava bucket, if ever added,
+   is placement and therefore already covered by `core.is_protected`.
+5. **Static gate:** `tools/static.sh`-style sweep failing on any new
+   `explosion_radius`, `fire:`, `tnt` or `lava_source` placement in
+   `mods/*/grug_*` that does not reference the guard.
+6. **Repair safety net:** an admin command that re-projects an authored
+   settlement blueprint at its anchor (the WP40/WP13 projection is
+   deterministic), so any damage that slips through is reversible without
+   hand repair.
+
+Acceptance: KAT proving the guard over all twelve settlements and a POI
+sample (inside → refused, one node outside → allowed), the explosion KAT,
+the static sweep, and a headless probe detonating a Rift Spawn at a capital
+wall with zero node changes.
+
+### WP47 — Skills tab: draggable skill list, no auto-insertion, bound skill items
+
+**Open (user idea 2026-09-19); not part of Round 9, candidate for the polish round.**
+
+Problem: skills are tool items; a newly learned skill is inserted into the
+inventory, which collides with a full inventory, and unwanted skill items
+have no clean way out.
+
+Plan (orchestrator recommendation: an own sfinv tab "Skills", not a sub-tab
+of Talents — a separate concept, one cheap registered page, the tab bar has
+room):
+
+1. The Skills page shows an infinite source list of every skill the player
+   may personally use (class kit plus talent-unlocked skills, filtered by
+   class, level and talent state). Dragging into the inventory creates a
+   copy, refused when the same skill already lies anywhere in the inventory
+   (no duplicates).
+2. Putting a skill item back into the list or dropping it destroys the item;
+   no item entity is ever spawned (`on_drop` override). Moving a skill item
+   into any external inventory (chests) is refused — the same bound-item
+   rule R9-MOUNTS introduced for mount items; share the helper.
+3. Learning a skill no longer inserts it; it appears in the list and a chat
+   line announces it. Losing a skill (respec, talent change) removes its
+   copies from the inventory.
+4. **Bags too:** the bound-item refusal covers every external inventory,
+   including bag inventories (the Tailor's 8/16/24-slot bags and the
+   32-slot Huge Bag), not only chests.
+5. **Mounts are skills here (user ruling 2026-09-19):** every owned mount
+   tier appears in the Skills list as a draggable skill item, and with this
+   mechanic buying T2 or T4 no longer destroys T1 or T3 — the player keeps
+   all owned mount skills (each tier has its own mesh) and chooses which
+   ones to carry. This supersedes the atomic T1→T2 / T3→T4 replacement of
+   Round 9 ruling 5/§4.25 once WP47 ships; until then R9-MOUNTS keeps the
+   replacement. `mounts.md` follows when WP47 lands.
+6. KAT over the allow/on inventory-action callbacks (copy, duplicate
+   refusal, destroy on put/drop, chest and bag refusal, removal on unlearn,
+   mount tiers listed and retained).
+
+### WP48 — Mapgen writer performance and parallel emerge
+
+**Open (from the Round 9 MAP-C plateau attempt, 2026-09-19).** The WP40
+writer spends its time in Lua post-processing per MODIFIED voxel (dirty-
+intent scan, light-context scan, replay), with apparent fixed costs per
+touched chunk slice: a v7 plateau that turns the whole sky below 441 into
+stone-to-air writes raised emerge time by 30–70 % regardless of height,
+and a bulk-clear fast path for the per-voxel resolution did not help
+(evidence in `tools/r9_map_c/evidence/`). Two levers, measured with the
+profiler's phase records before any change:
+
+1. Make the post-processing loops proportional to changed runs instead of
+   whole slices (benefits main today: the writer is ~21 of 68 s over the
+   profiler corpus).
+2. Move the deterministic per-chunk mapgen into Luanti's mapgen
+   environment (`core.register_mapgen_script`, emerge-thread Lua states)
+   and lift the pinned `num_emerge_threads = 1`; requires the global
+   state (manifests, memoisation, mod storage) to become per-thread or
+   read-only.
+
+Only with that data is the v7 plateau (caves everywhere under the
+surface) worth revisiting; Round 9 shipped MAP-C without it (ruling 35).
+
 ### First-public-release gates
 
 **Open; owner: the project coordinator preparing the first public release.**
