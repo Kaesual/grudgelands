@@ -49,6 +49,13 @@ local function settlement_factory()
 		if water_class ~= "land" or run < 4 or context.excluded_at(x, z) then
 			return false, run, terrain_y
 		end
+		-- Native sky is also air.  Authorize an opening only when R5 retained
+		-- every central cell as cave air instead of filling it to authored land.
+		for depth = 1, 4 do
+			if not context.preserved_native_air_at(x, terrain_y - depth, z) then
+				return false, run, terrain_y
+			end
+		end
 		for direction = 1, 4 do
 			local dx = direction == 1 and 1 or direction == 2 and -1 or 0
 			local dz = direction == 3 and 1 or direction == 4 and -1 or 0
@@ -72,7 +79,8 @@ local function settlement_factory()
 		local owned_max = math.min(band_max, max_y)
 		return owned_min <= owned_max and owned_min or nil,
 			owned_min <= owned_max and owned_max or nil,
-			terrain_y >= min_y and terrain_y <= max_y
+			terrain_y >= min_y and terrain_y <= max_y,
+			terrain_y + 1 >= min_y and terrain_y + 1 <= max_y
 	end
 
 	local function new_r8_strata(full_seed, source)
@@ -2169,6 +2177,21 @@ local function settlement_factory()
 				return original_data[index] == native_air_cid and
 					CLASS_AIR or CLASS_UNKNOWN
 			end
+			function skin_context.preserved_native_air_at(x, y, z)
+				if x < eminx or x > emaxx or y < eminy or y > emaxy or
+						z < eminz or z > emaxz then return false end
+				local index = index_at(x, y, z)
+				if original_data[index] ~= native_air_cid or
+						final_data[index] ~= native_air_cid then return false end
+				local column = column_index(x, z)
+				local rbase = y >= min_y and y <= max_y and
+					run_at(plan, column, y) or nil
+				-- Owned cells must have traversed the cave-preserving terrain-fill
+				-- policy.  Below-owner halo cells are already the committed result
+				-- of the preceding slice, which is the dust-only boundary case.
+				return y < min_y or rbase ~= nil and
+					plan.r5_plan.run_values[rbase + 4] == 27
+			end
 			function skin_context.excluded_at(x, z)
 				local water_class, _, _, _, _, _, _, _, _, functional_kind, _, _, _,
 					_, _, _, _, _, _, hard_foundation =
@@ -2183,9 +2206,9 @@ local function settlement_factory()
 						_, _, _, _, _, _, _, _, _, hard_foundation =
 							planner_source.column_values_at(x, z)
 					local excluded, opened = false, false
-					local skin_min, _, surface_owned =
+					local skin_min, _, surface_owned, dust_owned =
 						r9_surface_skin_owned_range(terrain_y, min_y, max_y)
-					if skin_min ~= nil or surface_owned then
+					if skin_min ~= nil or surface_owned or dust_owned then
 						local has_native_air = false
 						for depth = 1, 3 do
 							local y = terrain_y - depth

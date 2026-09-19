@@ -34,7 +34,7 @@ return function(root)
 			runs[skin_key(x, z)], heights[skin_key(x, z)] = 0, 10
 		end
 	end
-	local excluded, water = {}, {}
+	local excluded, water, filled_by_plan = {}, {}, {}
 	local skin_context = {
 		column_at = function(x, z)
 			return water[skin_key(x, z)] and "planned_water" or "land",
@@ -43,6 +43,11 @@ return function(root)
 		native_class_at = function(x, y, z)
 			local height = heights[skin_key(x, z)] or 10
 			return y >= height - (runs[skin_key(x, z)] or 0) and y < height and 1 or 6
+		end,
+		preserved_native_air_at = function(x, y, z)
+			local height = heights[skin_key(x, z)] or 10
+			return y >= height - (runs[skin_key(x, z)] or 0) and y < height and
+				not filled_by_plan[skin_key(x, z) .. "/" .. y]
 		end,
 		excluded_at = function(x, z) return excluded[skin_key(x, z)] == true end,
 	}
@@ -55,6 +60,10 @@ return function(root)
 	for z = -1, 1 do for x = -1, 1 do runs[skin_key(x, z)] = 4 end end
 	check(settlement.r9_surface_skin_open(skin_context, 0, 0),
 		"3x3 native-air opening was rejected")
+	for y = 6, 9 do filled_by_plan[skin_key(0, 0) .. "/" .. y] = true end
+	check(not settlement.r9_surface_skin_open(skin_context, 0, 0),
+		"native sky air filled by the plan opened")
+	for y = 6, 9 do filled_by_plan[skin_key(0, 0) .. "/" .. y] = nil end
 	runs[skin_key(-1, -1)] = 3
 	check(not settlement.r9_surface_skin_open(skin_context, 0, 0),
 		"short 3x3 corner opened")
@@ -70,15 +79,20 @@ return function(root)
 	for z = -1, 1 do for x = -2, 0 do runs[skin_key(x, z)] = 4 end end
 	check(settlement.r9_surface_skin_open(skin_context, -1, 0),
 		"owner-edge 3x3 opening lost its halo")
-	local bottom_min, bottom_max, bottom_surface =
+	local bottom_min, bottom_max, bottom_surface, bottom_dust =
 		settlement.r9_surface_skin_owned_range(12, 10, 89)
-	local top_min, top_max, top_surface =
+	local top_min, top_max, top_surface, top_dust =
 		settlement.r9_surface_skin_owned_range(92, 10, 89)
-	local absent_min, absent_max, absent_surface =
+	local absent_min, absent_max, absent_surface, absent_dust =
 		settlement.r9_surface_skin_owned_range(93, 10, 89)
+	local dust_min, dust_max, dust_surface, dust_only =
+		settlement.r9_surface_skin_owned_range(9, 10, 89)
 	check(bottom_min == 10 and bottom_max == 11 and bottom_surface and
+		bottom_dust and
 		top_min == 89 and top_max == 89 and not top_surface and
-		absent_min == nil and absent_max == nil and not absent_surface,
+		not top_dust and absent_min == nil and absent_max == nil and
+		not absent_surface and not absent_dust and dust_min == nil and
+		dust_max == nil and not dust_surface and dust_only,
 		"surface skin owner-slice intersections differ")
 	local integrated = dofile(root ..
 		"/tools/wp40/quality/gravewood_writer_fixture.lua")(root, root, false)
@@ -86,6 +100,10 @@ return function(root)
 		"integrated writer retained the exact surface at an opening")
 	check(integrated:find("dust_at_t_plus_1=absent", 1, true) ~= nil,
 		"integrated writer retained dust above an opening")
+	check(integrated:find("planned_fill_surface=intact", 1, true) ~= nil,
+		"integrated sky-air fill removed the surface")
+	check(integrated:find("dust_only_slice=air", 1, true) ~= nil,
+		"dust-only slice was not classified as an opening")
 
 	-- The exact post-change selector gates used by production: the chosen width
 	-- owns the complete beach/rim, while ordinary wet beds retain their sand patch.
@@ -287,7 +305,9 @@ return function(root)
 
 	return table.concat({"schema\tgrug_r8_map_a_writer_kat_v2",
 		"plate\topcode=21/role=11/policy=3/y=-37..-33",
-		"surface_skin\tlower=1/all9=1/negative=3/owner_edge=1/slices=2/air_at_t=1",
+		"surface_skin\tlower=1/all9=1/negative=" ..
+			"isolated,filled_sky,short_corner,excluded,water/owner_edge=1/" ..
+			"slices=bottom,top,dust_only/air_at_t=1",
 		"surface\tsea=1/fresh_rim=4/wet_sand=1",
 		"strata\twritten=" .. written .. "/floor_clipped=" .. clipped ..
 			"/native_gravel=preserved",

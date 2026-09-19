@@ -149,3 +149,10 @@ freshwater_rims wetland_delta/lowland/rolling_hills force beach on every run; pl
 opening_dust surface_skin_column=2 skips P7 dust; integrated fixture supplies default:snow at T+1 and proves it remains air
 lattice_cost classified_values remains 46x46=2116 per built chunk; exact cached results grow from 20x20 to 80x80 and selection comparisons from 291600 to 4665600 per build; subsequent column lookup remains O(1) with no new classified_values call
 engine_witness seed=0 snowy_crags opening=(-2196,125,-1031) surface=air above=air
+
+fix_round_3_run13
+opening_preservation native CLASS_AIR is necessary but no longer sufficient; the central T-1..T-4 cells must remain air after nested R5, and owned cells must belong to opcode 27 terrain fill, so authored sky filled by R5 cannot remove the surface at T
+slice_dust_ownership classification also runs when only T+1 is owned; the integrated fixture sets T=min_y-1 with committed cave air in the lower halo and proves snow remains absent at min_y
+engine_witness_seed0 corrected decision removes all three prior one-node false openings and restores the snowy-crags surface; seed0 has no connected natural opening in the bounded corpus
+engine_witness_seed1 connected natural openings at (-2052,18,-2795) and (-2240,24,-2643) have air at T through T-4 and default:stone floors at T-7
+snowy_deviation seeds 0 and 1 contain no connected grug_crags_snowy opening in the bounded witness corpus; default:snow suppression is authenticated by tools/wp40/quality/gravewood_writer_fixture.lua, and the engine witness reports fixture_only explicitly

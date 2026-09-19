@@ -5,36 +5,38 @@ ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=natural_opening region=rolling resu
 ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=mountain relief=mountain x=-3150 z=0 terrain_y=262 surface=default:stone below=default:stone above=air
 ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=natural_opening region=mountain result=none
 ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=opening_search_a relief=lowland x=-2085 z=-2783 terrain_y=28 surface=grug_nodes:dirt_with_forest_litter below=default:dirt above=air
-ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=natural_opening region=opening_search_a x=-2082 y=28 z=-2782 run=5_air
+ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=natural_opening region=opening_search_a result=none
 ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=opening_search_b relief=lowland x=-2225 z=-2637 terrain_y=20 surface=default:dirt_with_coniferous_litter below=default:stone above=air
-ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=natural_opening region=opening_search_b x=-2222 y=19 z=-2637 run=5_air
+ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=natural_opening region=opening_search_b result=none
 ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=opening_search_c relief=lowland x=-1422 z=-2470 terrain_y=41 surface=default:dirt_with_coniferous_litter below=default:dirt above=air
-ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=natural_opening region=opening_search_c x=-1426 y=44 z=-2484 run=5_air
+ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=natural_opening region=opening_search_c result=none
 ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=coast_band relief=lowland x=1784 z=-2960 terrain_y=1 surface=default:sand below=default:sandstone above=air
 ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=coast_band_active x=1784 z=-2960 profile=beach/1/25/false/11/2/-62/sea_lowland/1/lowland enabled=true surface=default:sand
 ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=natural_opening region=coast_band result=none
 ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=plate_surface relief=lowland x=-1696 z=-2522 terrain_y=48 surface=default:dirt_with_coniferous_litter below=air above=air
 ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=natural_opening region=plate_surface result=none
 ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=plate x=-1696 z=-2522 terrain_y=48 nodes=-37:air,-36:air,-35:air,-34:air,-33:default:stone
-ACTION[Server]: GRUG_R9_MAP_C_WITNESS case=complete mgv7_spflags=mountains, ridges, nofloatlands, caverns
+ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=snowy_crags_opening relief=highland x=-2196 z=-1031 terrain_y=125 surface=default:snowblock below=default:gravel above=default:snow
+ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=snowy_crags_opening region=snowy_crags_opening result=none
 ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=wet relief=wetland_delta x=-1800 z=2050 terrain_y=14 surface=default:stone below=default:stone above=air
 ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=natural_opening region=wet result=none
-ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=rolling relief=rolling_hills x=-1800 z=-2050 terrain_y=55 surface=default:stone below=default:stone above=air
+ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=rolling relief=rolling_hills x=-1800 z=-2050 terrain_y=75 surface=default:stone below=default:stone above=air
 ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=natural_opening region=rolling result=none
-ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=mountain relief=mountain x=-3150 z=0 terrain_y=262 surface=default:stone below=default:stone above=air
+ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=mountain relief=mountain x=-3150 z=0 terrain_y=219 surface=default:stone below=default:stone above=air
 ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=natural_opening region=mountain result=none
-ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=opening_search_a relief=lowland x=-2085 z=-2783 terrain_y=28 surface=grug_nodes:dirt_with_forest_litter below=default:dirt above=air
-ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=natural_opening region=opening_search_a x=-2082 y=28 z=-2782 run=5_air
-ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=opening_search_b relief=lowland x=-2225 z=-2637 terrain_y=20 surface=default:dirt_with_coniferous_litter below=default:stone above=air
-ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=natural_opening region=opening_search_b x=-2222 y=19 z=-2637 run=5_air
-ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=opening_search_c relief=lowland x=-1422 z=-2470 terrain_y=41 surface=default:dirt_with_coniferous_litter below=default:dirt above=air
-ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=natural_opening region=opening_search_c x=-1426 y=44 z=-2484 run=5_air
-ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=coast_band relief=lowland x=1784 z=-2960 terrain_y=1 surface=default:sand below=default:sandstone above=air
-ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=coast_band_active x=1784 z=-2960 profile=beach/1/25/false/11/2/-62/sea_lowland/1/lowland enabled=true surface=default:sand
+ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=opening_search_a relief=lowland x=-2085 z=-2783 terrain_y=20 surface=default:dirt_with_grass below=default:dirt above=air
+ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=natural_opening region=opening_search_a x=-2052 y=18 z=-2795 surface=air below_1_to_4=air floor=default:stone floor_depth=7
+ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=opening_search_b relief=lowland x=-2225 z=-2637 terrain_y=25 surface=default:dirt_with_coniferous_litter below=default:dirt above=air
+ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=natural_opening region=opening_search_b x=-2240 y=24 z=-2643 surface=air below_1_to_4=air floor=default:stone floor_depth=7
+ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=opening_search_c relief=lowland x=-1422 z=-2470 terrain_y=23 surface=grug_nodes:dirt_with_forest_litter below=default:dirt above=air
+ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=natural_opening region=opening_search_c result=none
+ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=coast_band relief=lowland x=1784 z=-2960 terrain_y=1 surface=default:dirt below=default:gravel above=air
+ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=coast_band_active x=1784 z=-2960 profile=beach/1/25/false/11/2/-62/sea_lowland/1/lowland enabled=true surface=default:dirt
 ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=natural_opening region=coast_band result=none
-ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=plate_surface relief=lowland x=-1696 z=-2522 terrain_y=48 surface=default:dirt_with_coniferous_litter below=air above=air
+ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=plate_surface relief=lowland x=-1696 z=-2522 terrain_y=27 surface=default:gravel below=default:gravel above=air
 ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=natural_opening region=plate_surface result=none
-ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=plate x=-1696 z=-2522 terrain_y=48 nodes=-37:air,-36:air,-35:air,-34:air,-33:default:stone
-ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=snowy_crags_opening relief=highland x=-2196 z=-1031 terrain_y=125 surface=air below=default:gravel above=air
-ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=snowy_crags_opening region=snowy_crags_opening biome=grug_crags_snowy x=-2196 y=125 z=-1031 surface=air above=air
+ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=plate x=-1696 z=-2522 terrain_y=27 nodes=-37:default:stone,-36:default:stone,-35:default:stone,-34:default:stone,-33:default:stone
+ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=snowy_crags_opening relief=highland x=-2196 z=-1031 terrain_y=126 surface=default:gravel below=default:gravel above=air
+ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=snowy_crags_opening region=snowy_crags_opening result=none
+ACTION[Server]: GRUG_R9_MAP_C_WITNESS case=snowy_crags_dust result=fixture_only fixture=tools/wp40/quality/gravewood_writer_fixture.lua
 ACTION[Server]: GRUG_R9_MAP_C_WITNESS case=complete mgv7_spflags=mountains, ridges, nofloatlands, caverns

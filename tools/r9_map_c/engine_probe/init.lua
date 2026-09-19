@@ -31,6 +31,20 @@ local cases = {
 }
 
 local snowy_witness_found = false
+local natural_witness_found = false
+
+local function connected_opening_at(x, y, z)
+	for depth = 0, 4 do
+		if node_name(x, y - depth, z) ~= "air" then return false end
+	end
+	for depth = 5, 32 do
+		local floor = node_name(x, y - depth, z)
+		if floor ~= "air" and floor ~= "ignore" then
+			return true, floor, depth
+		end
+	end
+	return false
+end
 
 local function inspect(case, origin)
 	local terrain_y = grug_zones.terrain_height_at(case.x, case.z)
@@ -59,11 +73,13 @@ local function inspect(case, origin)
 			for x = origin.x, origin.x + 79 do
 				local y = grug_zones.terrain_height_at(x, z)
 				local above = node_name(x, y + 1, z)
+				local connected, floor, floor_depth = connected_opening_at(x, y, z)
 				if grug_zones.biome_at(x, z) == "grug_crags_snowy" and
 						grug_zones.water_class_at(x, z) == "land" and
-						node_name(x, y, z) == "air" and above ~= "default:snow" and
+						connected and above ~= "default:snow" and
 						above ~= "ignore" then
-					found = {x = x, y = y, z = z}
+					found = {x = x, y = y, z = z, floor = floor,
+						floor_depth = floor_depth}
 					break
 				end
 			end
@@ -73,13 +89,10 @@ local function inspect(case, origin)
 		for z = origin.z, origin.z + 79 do
 			for x = origin.x, origin.x + 79 do
 				local y = grug_zones.terrain_height_at(x, z)
-				local surface_air = node_name(x, y, z) == "air"
-				local deep_open = surface_air and node_name(x, y - 1, z) == "air" and
-					node_name(x, y - 2, z) == "air" and
-					node_name(x, y - 3, z) == "air" and
-					node_name(x, y - 4, z) == "air"
-				if grug_zones.water_class_at(x, z) == "land" and deep_open then
-					found = {x = x, y = y, z = z}
+				local connected, floor, floor_depth = connected_opening_at(x, y, z)
+				if grug_zones.water_class_at(x, z) == "land" and connected then
+					found = {x = x, y = y, z = z, floor = floor,
+						floor_depth = floor_depth}
 					break
 				end
 			end
@@ -92,17 +105,23 @@ local function inspect(case, origin)
 			action({"case=snowy_crags_opening", "region=" .. case.id,
 				"biome=" .. tostring(grug_zones.biome_at(found.x, found.z)),
 				"x=" .. found.x, "y=" .. found.y, "z=" .. found.z,
-				"surface=air", "above=" .. above})
+				"surface=air", "below_1_to_4=air", "floor=" .. found.floor,
+				"floor_depth=" .. found.floor_depth,
+				"above=" .. above})
 			if above == "default:snow" or above == "ignore" then
 				error("MAP-C snowy opening retained snow at T+1", 0)
 			end
 			snowy_witness_found = true
 		else
 			action({"case=natural_opening", "region=" .. case.id, "x=" .. found.x,
-				"y=" .. found.y, "z=" .. found.z, "run=5_air"})
+				"y=" .. found.y, "z=" .. found.z, "surface=air",
+				"below_1_to_4=air", "floor=" .. found.floor,
+				"floor_depth=" .. found.floor_depth})
+			natural_witness_found = true
 		end
 	else
-		action({"case=natural_opening", "region=" .. case.id, "result=none"})
+		action({"case=" .. (case.snowy_opening and "snowy_crags_opening" or
+			"natural_opening"), "region=" .. case.id, "result=none"})
 	end
 end
 
@@ -111,8 +130,12 @@ local function run_next()
 	current = current + 1
 	local case = cases[current]
 	if not case then
+		if not natural_witness_found then
+			error("MAP-C connected natural-opening witness is absent", 0)
+		end
 		if not snowy_witness_found then
-			error("MAP-C snowy-crags opening witness is absent", 0)
+			action({"case=snowy_crags_dust", "result=fixture_only",
+				"fixture=tools/wp40/quality/gravewood_writer_fixture.lua"})
 		end
 		action({"case=complete", "mgv7_spflags=" ..
 			tostring(core.get_mapgen_setting("mgv7_spflags"))})
