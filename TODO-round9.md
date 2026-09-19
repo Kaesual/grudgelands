@@ -393,6 +393,14 @@ Wave 2 (after wave 1 merges):
   then giant bat retint), the higher tier nobler in colour; no dragons as
   mounts (dragons stay rare bosses). Each mesh with a licence row and an
   animation audit as in MOB1.
+- **R9-PERF** (added by ruling 41, after the MAP-C merge, before CAP): the
+  byte-preserving writer/planner improvements of WP48 steps 1–4 with an
+  output-equivalence KAT and one profiler pair; no pin change expected
+  (the source projection hashes catalogs, not Lua source).
+- **R9-TRINKETS** (added by ruling 38, after the PROF-B merge): the six
+  core trinket special effects at the mana / hit / healing / kill-XP /
+  potion seams via the equipment-change cache, caps and shared cooldowns
+  per `items_crafting.md` §6.2; removes the inert tooltip marker.
 - **R9-DOCS** at the end, as always: the AUDIT report's rulings, contract text for MAP-C (world_zones.md
   §7.6 cave-mouth paragraph shrinks to the skin rule; §13.1 plateau and
   flags), ROADMAP, AGENTS.md paragraphs for BOSS/UI, deletion of the MAP-A
@@ -598,6 +606,33 @@ ocean edge and the enemy border (warning band, hard dismount).
     the input-authoritative registry; documented as placeholder; a later
     package adds output selection at the station or the design gives each
     identity its own distinguishing ingredient.
+40. **MAP-C performance tolerance +20 %, coast band ON** (user 2026-09-19):
+    with the WP48 levers identified, MAP-C may cost up to 20 % more emerge
+    wall clock than main (mean of two fresh pairs); the coast band ships
+    enabled by default (`grug_mapgen_r9_coast_band_enabled = true`; the
+    R8 evaluator stays byte-identical behind `false`). Supersedes the
+    tolerances of rulings 35/36 for this lane.
+41. **Soft performance limit and the R9-PERF lane** (user 2026-09-19): the
+    20 % of ruling 40 is not a hard limit — the lane reports the numbers
+    and stops only for a genuine surprise; the improvements the read-only
+    exploration found (`docs/research/mapgen-performance-exploration.md`,
+    BACKLOG WP48 steps 1–4: trustworthy comparison, the two liquid-column
+    short-circuits, lattice tile retention + classification memoisation,
+    discarded inner R5 lighting) become a short byte-preserving lane
+    **R9-PERF** right after the MAP-C merge in the serial mapgen chain,
+    before CAP and MAP-B, verified by an output-equivalence KAT and one
+    profiler pair. Dirty-region replay and emerge threads stay out (the
+    latter blocked by Luanti #9357). Model: GPT-6 Astra (user allowance
+    2026-09-19, the second lane besides MAP-C); review on GPT-5.6 Sol. The
+    serial mapgen chain is therefore MAP-C → PERF → CAP → MAP-B.
+42. **Mount warning by classification probing** (orchestrator ruling
+    2026-09-19 after MOUNTS review 5; the user may veto): the analytic
+    flight-boundary distance over warped zones and bay silhouettes is
+    withdrawn from the zone contract. The 48-node warning is computed by
+    probing the flight-legality classification itself along 16 directions
+    at 1/2/4/8/16/32/48 nodes once per second: exact for any adjacent
+    illegal column, within ±4 nodes at range; the hard dismount stays
+    exact at the current node.
 
 ## 5. MAP-C protocol: what must not repeat from Round 8
 
