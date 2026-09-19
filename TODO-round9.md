@@ -18,7 +18,10 @@ escalating complexity.
   already ships (`grug_cooking:*`, tiers decided), zones and bands per
   `docs/research/cooking-alchemy-plan.md` §3.2/§3.3; second soil per zone;
   tilled crop soil at village fields (scenery). WP40 lane, exclusive on the
-  mapgen fixtures.
+  mapgen fixtures. Harness: the standard gates, both interpreters, the final
+  micro pair, six-start gate and six capitals after the merge, plus a light
+  placement count per plant in a few headless regions; NOT MAP-A's baseline
+  world campaign (that was specific to the cave-mouth proof).
 - **Bog Witch** (deferred: the pinned mesh lacks the shooting/death frames):
   ship with a licensed mesh that has the frames, or a retint of a shipped
   humanoid with `shoot_*` mapped to real frames.
@@ -31,7 +34,7 @@ escalating complexity.
 - Mob packages 6–8 of `docs/research/mob-worlds-plan.md` §9 (underground,
   deep, front/coast).
 
-## 2. Proposed lanes (orchestrator's cut)
+## 2. Lanes (decided 2026-09-18; the cut is the orchestrator's)
 
 Wave 1 (parallel, disjoint code areas):
 
@@ -63,8 +66,6 @@ Wave 2 (after wave 1 merges):
   crafted-quality chances (§5.1, §6.4), refinement as the enchant
   prerequisite (§6b.3). Touches `grug_gear` and the loot path; meets the
   catalogs only at "a crafted item gets its quality roll".
-- **R9-DOCS** at the end, as always.
-
 - **R9-MOUNTS (WP31)** — wave 2, user ruling 2026-09-18 (see §4.5): riding
   mechanics (ephemeral mount entity as the player's mounted state, hotbar
   trigger, four tiers 15/30/45/60 taught and sold by the job trainers, T2
@@ -80,6 +81,7 @@ Wave 2 (after wave 1 merges):
   then giant bat retint), the higher tier nobler in colour; no dragons as
   mounts (dragons stay rare bosses). Each mesh with a licence row and an
   animation audit as in MOB1.
+- **R9-DOCS** at the end, as always.
 
 Not in Round 9: housing (WP24, Round 10), Scout (Round 10), **Nether (V2:
 user decision 2026-09-18, the Nether is the main part of the first big
@@ -91,7 +93,9 @@ Nether seams)**.
 Plants growing in their zones; learn Blacksmith and Tailor, craft one item
 per reachable tier at the capital stations, refine and enchant it; a night
 underground at three depth bands; a farm plot from seed to harvest; the
-Bog Witch.
+Bog Witch; buy the T1 mount at the trainer, ride, reach level 30 in a test
+world for the race mount, and test a flying tier at the ocean edge and the
+enemy border (warning band, hard dismount).
 
 ## 4. User rulings of 2026-09-18 (evening)
 
