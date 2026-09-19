@@ -50,7 +50,9 @@ boot its own port block (≥ 32160, spacing 5).
 
 - **R9-MAP-C — terrain: v7 plateau, wide coast band, surface skin with
   natural cave openings** (added 2026-09-19 after the Playtest 11 mapgen
-  findings; user rulings in §4.7–§4.12). WP40 lane, exclusive on the mapgen
+  findings; user rulings in §4.7–§4.12). Note for fresh worlds only: the
+  mgv7 flags and noise params live in the game's `minetest.conf` and are
+  applied by `r7_native.lua`; existing worlds keep their `map_meta.txt`. WP40 lane, exclusive on the mapgen
   fixtures; MAP-B starts only after its merge. Goal: fast progress and
   *less* mapgen complexity, no new performance cost; larger problems are
   escalated to the user instead of solved by invention.
@@ -83,7 +85,18 @@ boot its own port block (≥ 32160, spacing 5).
     AND the column is on a slope (a cardinal neighbour at least 2 nodes
     lower); on flat ground the skin stays unless the void is open across
     the 3×3 neighbourhood (a visible sinkhole, never a one-column shaft).
-    Column-local, deterministic, no flood fill. **Never inside start
+    Column-local, deterministic, no flood fill. Precise form: let `r` be the
+    number of consecutive native-air voxels from `H − 1` downward in the
+    immutable input. Skin band = `[H − 3, H − 1]`; every native-air voxel in
+    the band becomes host rock ("skin") unless the column opens. The column
+    opens (no surface node at `H`, no skin, the hole leads into the cave)
+    when `r ≥ 4` AND (a cardinal neighbour's `H` is at least 2 lower, OR all
+    nine columns of the 3×3 have `r ≥ 4`). Air runs that start deeper than
+    the band are untouched (their roof is already ≥ 3). **Water columns
+    (sea, lake, river: `T` is a bed) get the skin below the bed and never
+    open**, so no lake drains into a cave. The band is clipped at y = −37
+    (broad writes never go below it, contract §7.6); columns with `H ≤ −34`
+    keep today's behaviour. **Never inside start
     aprons, capital rings and precincts, settlements, POIs, landmarks,
     routes and their corridors, functional surfaces, foundations, housing
     and static exclusions: there the skin always stays** (user ruling
@@ -92,7 +105,9 @@ boot its own port block (≥ 32160, spacing 5).
   - **Coast band:** per shore run (existing 48-node runs) a beach 20–28
     nodes deep rising one node every 2–5 nodes, then a 16–24 node linear
     blend into the relief so the terrain falls towards the beach as a
-    natural hill; no slope cap. Distance to water for the far band comes
+    natural hill; no slope cap. Sand (with sandstone beneath, as today)
+    covers the whole beach depth; the blend zone carries the ordinary
+    biome surface. Distance to water for the far band comes
     from a world-aligned 4-node lattice (chunk-independent, integral), not
     from per-column rays; the exact near search stays only for the bank
     rule and the first beach steps. Inland columns must do less work than
@@ -120,13 +135,22 @@ boot its own port block (≥ 32160, spacing 5).
     the WP40 profiler (`tools/wp40/profile/run.sh`, Lua share) AND the
     wall-clock emerge of a fixed region before/after (engine share: the
     plateau adds stone, caves and ores up to the plate; `nomountains` and
-    `noridges` save 3D noise) — gate: not slower than main, target faster;
+    `noridges` save 3D noise) — gate: not slower than main, target faster.
+    Emerge timer: reuse `tools/r8_map_a/engine_probe` or the six-start
+    launcher if either can time a fixed emerge; otherwise add one small
+    headless script (a bounded `core.emerge_area` with a completion
+    callback that logs the elapsed time; under 40 lines), same region and
+    seed on both sides, fresh world each time;
     `final_micro.sh` (LuaJIT first); PUC only the named KATs, once, last;
     six-start gate and six capitals after the merge. One review at xhigh,
     at most one fix round under the Augenmaß rule; a second is escalated.
-  - **Model:** GPT Astra 6 for implementation if the model id exists in
-    the Codex CLI (user allowance 2026-09-19, this lane only); review on
-    Sol.
+  - **Model:** GPT-5.6 Sol (the user allowed GPT Astra 6 for this lane on
+    2026-09-19, but the Codex CLI rejects `gpt-astra-6` under the ChatGPT
+    account: "model is not supported", probed 2026-09-19); review on Sol.
+  - **Profiler patch:** run `tools/wp40/profile/run.sh` on main BEFORE the
+    first change to record the baseline and to confirm the instrumentation
+    patch still applies; if the lane moves the anchored function, refresh
+    `tools/wp40/profile/instrument-mapgen.patch` as R8-HARNESS did.
 - **R9-MAP-B** — as carried (WP40 only), **starts after the MAP-C merge**
   and rebases on it: the cave-air host mode of P9G-2 needs the new cave
   model. Adds **coral sprinkles** (user request 2026-09-19): in sea
@@ -157,7 +181,9 @@ boot its own port block (≥ 32160, spacing 5).
   11; `grug_mobs/bosses.lua` only, plus licence rows and textures). User
   rulings §4.13–§4.16.
   - **Dragons move.** Both dragons walk and fly at their own discretion
-    through mobs_redo (`fly`), flight faster than walking, both faster than
+    through mobs_redo (`fly` toggled per state in `do_custom`, `fly_in`
+    air; if mobs_redo cannot switch `fly` at runtime, keep permanent flight
+    with a low hover for "walking" and say so in the lane notes), flight faster than walking, both faster than
     any player movement including sprint so nobody simply outruns them;
     leash stays 36. Takeoff when the target is farther than about 12
     nodes; **dive slam**: short telegraph, velocity onto the target, impact
@@ -335,9 +361,9 @@ ocean edge and the enemy border (warning band, hard dismount).
     character band).
 19. **Brewing** (2026-09-19): VoxeLibre brewing stand node; two reagents
     stay; catalysts are backlog. Fishing: no separate test.
-20. **Models** (2026-09-19): MAP-C implementation on GPT Astra 6 (check the
-    model id in the Codex CLI first; if absent, Sol), every other lane and
-    every review on GPT-5.6 Sol.
+20. **Models** (2026-09-19): the user allowed GPT Astra 6 for MAP-C; the
+    Codex CLI rejects `gpt-astra-6` under the ChatGPT account (probed
+    2026-09-19), so every lane and every review runs on GPT-5.6 Sol.
 
 ## 5. MAP-C protocol: what must not repeat from Round 8
 
