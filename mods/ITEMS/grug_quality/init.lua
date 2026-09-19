@@ -15,6 +15,7 @@
 --   grug_roll_window   last §6.3 source window (diagnostic/provenance)
 --   grug_roll_seed     exact PcgRandom seed used for the last affix roll
 --   grug_craft_roll    recipe id whose station output was already finalized
+--   grug_trinket_special authored passive text preserved across regeneration
 --
 -- Derived consumer keys are rebuilt from grug_ench and are not authorities:
 --   _grug_strength, _grug_dexterity, _grug_intelligence,
@@ -543,11 +544,22 @@ local function mastery_slots(player)
 	return 1
 end
 
+function grug_items.can_craft_quality(player, recipe)
+	local mode = recipe and (recipe.quality_mode or recipe._grug_quality_mode)
+	if mode == "masterwork" and mastery_slots(player) < 3 then
+		return false, "Expert mastery is required for Masterwork quality."
+	end
+	return true
+end
+
 function grug_items.apply_crafted_quality(stack, mode, player, seed)
 	if not stack or stack:is_empty() or not family_for(stack) then return false end
 	mode = mode or "base"
 	local row = grug_items.CRAFTED_QUALITY[mode]
 	if not row then return false, "unknown crafted quality" end
+	if mode == "masterwork" and mastery_slots(player) < 3 then
+		return false, "Expert mastery is required for Masterwork quality."
+	end
 	local meta = stack:get_meta()
 	ensure_base_name(stack)
 	meta:set_int("grug_quality", row.quality)
@@ -574,6 +586,8 @@ end
 -- object; an ordinary recipe defaults to the §6.4 Common base result.
 function grug_items.crafted_output(stack, player, recipe, seed)
 	local mode = recipe and (recipe.quality_mode or recipe._grug_quality_mode)
+	local allowed, reason = grug_items.can_craft_quality(player, recipe)
+	if not allowed then return false, reason end
 	local marker = recipe and recipe.id or ""
 	local meta = stack and not stack:is_empty() and stack:get_meta() or nil
 	if meta and marker ~= "" and meta:get_string("grug_craft_roll") == marker then
@@ -605,22 +619,33 @@ local function gear_stack(itemname, ilvl, quality, window, rng, seed)
 end
 
 function grug_items.roll_mob_gear(self, seed)
+	if not self or self._grug_no_quality_loot then return {} end
 	local tier = self and self._grug_tier or "normal"
 	if tier == "critter" then return {} end
-	local source = (self and self._grug_royal_king) and "boss" or tier
+	local boss_id = self._grug_boss_id
+	local ledger_boss = type(boss_id) == "string" and
+		(boss_id:match("^king:") or boss_id:match("^dragon:"))
+	local source = (ledger_boss or self._grug_royal_king) and "boss" or tier
 	if not grug_items.DROP_CHANCES[source] then source = "normal" end
 	local row = grug_items.DROP_CHANCES[source]
-	local level = clamp(math.floor(tonumber(self and self._grug_level) or 1), 1, 60)
-	local material_tier = clamp(math.floor((level - 1) / 10) + 1, 1, 6)
+	local ilvl
+	if type(boss_id) == "string" and boss_id:match("^king:") then
+		ilvl = 70
+	elseif type(boss_id) == "string" and boss_id:match("^dragon:") then
+		ilvl = 75
+	else
+		ilvl = clamp(math.floor(tonumber(self._grug_level) or 1), 1, 60)
+	end
+	local material_tier = clamp(math.floor((ilvl - 1) / 10) + 1, 1, 6)
 	local catalog = grug_gear.catalog[material_tier]
 	local items = catalog and catalog.all or {}
 	if #items == 0 then return {} end
 	local rng, used_seed = rng_for(seed,
-		(self and self.name or "mob") .. ":" .. source .. ":" .. level)
+		(self.name or "mob") .. ":" .. source .. ":" .. ilvl)
 	local out = {}
 	local function add(quality)
 		local itemname = items[rng:next(1, #items)]
-		out[#out + 1] = gear_stack(itemname, level, quality, row.window, rng,
+		out[#out + 1] = gear_stack(itemname, ilvl, quality, row.window, rng,
 			used_seed + #out * 104729)
 	end
 	if random_chance(rng, row.uncommon) then add(2) end
@@ -632,6 +657,7 @@ end
 -- player-tag/enemy-kill predicate. It drops concrete ItemStacks so their meta
 -- survives, including on bosses whose ordinary string-drop list is empty.
 grug_mobs.register_kill_loot_hook(function(self, tagger_name)
+	if self._grug_boss_id or self._grug_royal_king then return end
 	local rolled = grug_items.roll_mob_gear(self)
 	local pos = self.object and self.object:get_pos()
 	if not pos then return end
@@ -645,6 +671,10 @@ grug_mobs.register_kill_loot_hook(function(self, tagger_name)
 	end
 end)
 
+grug_mobs.register_boss_reward_hook(function(self)
+	return grug_items.roll_mob_gear(self)
+end)
+
 -- Affix aggregates that do not already have a native per-stack consumer.
 -- Cache invalidation wraps the one equipment write seam before its deliberately
 -- first grug_classes consumer runs, so max-pool clamping sees current rolls.
@@ -655,7 +685,8 @@ local function equipment_totals(player)
 	local cached = aggregate_cache[name]
 	if cached then return cached end
 	local totals = {str = 0, dex = 0, int = 0, crit_percent = 0,
-		dodge_percent = 0, armor_percent = 0, refined_armor = 0}
+		dodge_percent = 0, armor_percent = 0, max_hp_percent = 0,
+		max_mana_percent = 0, refined_armor = 0}
 	local inventory = player:get_inventory()
 	for _, slot in ipairs(grug_inventory.equipment_slots) do
 		local stack = inventory:get_stack(slot.list, 1)
@@ -667,6 +698,10 @@ local function equipment_totals(player)
 				totals[affix.stat] = (totals[affix.stat] or 0) + affix.value
 			end
 			local def = stack:get_definition() or {}
+			totals.max_hp_percent = totals.max_hp_percent +
+				(tonumber(def._grug_max_hp_percent) or 0)
+			totals.max_mana_percent = totals.max_mana_percent +
+				(tonumber(def._grug_max_mana_percent) or 0)
 			local armor = tonumber(def._grug_armor) or 0
 			if armor > 0 and meta:get_int("grug_refined") == 1 then
 				local _, described = grug_gear.describe_stack_base(stack,
@@ -689,6 +724,13 @@ grug_inventory.equipment_changed = function(player, listname)
 	return original_equipment_changed(player, listname)
 end
 grug_inventory.invalidate_armor = grug_inventory.equipment_changed
+
+grug_classes.get_equipment_pool_percent = function(player, pool)
+	local totals = equipment_totals(player)
+	if pool == "hp" then return totals.max_hp_percent or 0 end
+	if pool == "mana" then return totals.max_mana_percent or 0 end
+	return 0
+end
 
 -- Dropped gear may carry an off-anchor ilvl above its registered material
 -- item's catalog anchor. Preserve the shared gate for definition-only items,

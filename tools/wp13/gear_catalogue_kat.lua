@@ -213,6 +213,20 @@ function M.run(repo)
 
 	local loaded = load_gear(repo)
 	local gear, items = loaded.gear, loaded.items
+	local special_meta = {grug_trinket_special = "Restores 2 Rage on an accepted hit"}
+	local trinket_stack = {
+		get_definition = function()
+			return {groups = {grug_equip_trinket = 1},
+				_grug_trinket_special = "definition fallback"}
+		end,
+		get_meta = function()
+			return {get_string = function(_, key) return special_meta[key] or "" end}
+		end,
+	}
+	local trinket_lines = gear.describe_stack_base(trinket_stack, 20, false)
+	check(#trinket_lines == 1 and trinket_lines[1] == special_meta.grug_trinket_special,
+		"trinket authored special did not survive base-description regeneration")
+	row("wp13_gear_trinket_special", trinket_lines[1] or "missing")
 
 	--
 	-- A. the material ladders

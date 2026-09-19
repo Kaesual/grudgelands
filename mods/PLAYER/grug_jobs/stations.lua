@@ -20,6 +20,14 @@ local function deny_resolution(player, reason)
 	deny_message(player, "ambiguous_grid", "Cannot craft: " .. reason)
 end
 
+local function quality_permission(player, recipe)
+	local quality_api = rawget(_G, "grug_items")
+	if quality_api and type(quality_api.can_craft_quality) == "function" then
+		return quality_api.can_craft_quality(player, recipe)
+	end
+	return true
+end
+
 local function grid_permission(itemstack, player, old_craft_grid)
 	local recipe, resolution_error = grug_jobs.recipe_for_craft(
 		"grid", itemstack, old_craft_grid)
@@ -29,6 +37,7 @@ local function grid_permission(itemstack, player, old_craft_grid)
 	end
 	if not recipe then return nil end
 	local allowed, reason = grug_jobs.can_craft_recipe(player, recipe)
+	if allowed then allowed, reason = quality_permission(player, recipe) end
 	if allowed then return nil end
 	deny(player, recipe, reason)
 	return ItemStack("")
@@ -94,6 +103,7 @@ local function final_grid_craft(itemstack, player, old_craft_grid)
 	end
 	if not recipe then return nil end
 	local allowed, reason = grug_jobs.can_craft_recipe(player, recipe)
+	if allowed then allowed, reason = quality_permission(player, recipe) end
 	if not allowed then
 		-- Predict is the normal veto, before the engine decrements anything. This
 		-- callback is the fail-closed emergency path after decrement: never put the

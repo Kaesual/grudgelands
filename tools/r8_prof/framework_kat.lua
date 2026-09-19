@@ -9,7 +9,8 @@ return function(repo)
 	local saved = {core = rawget(_G, "core"), grug_jobs = rawget(_G, "grug_jobs"),
 		grug_xp = rawget(_G, "grug_xp"), default = rawget(_G, "default"),
 		ItemStack = rawget(_G, "ItemStack"), grug_mobs = rawget(_G, "grug_mobs"),
-		grug_smelting = rawget(_G, "grug_smelting")}
+		grug_smelting = rawget(_G, "grug_smelting"),
+		grug_items = rawget(_G, "grug_items")}
 	local function restore()
 		rawset(_G, "core", saved.core)
 		rawset(_G, "grug_jobs", saved.grug_jobs)
@@ -18,6 +19,7 @@ return function(repo)
 		rawset(_G, "ItemStack", saved.ItemStack)
 		rawset(_G, "grug_mobs", saved.grug_mobs)
 		rawset(_G, "grug_smelting", saved.grug_smelting)
+		rawset(_G, "grug_items", saved.grug_items)
 	end
 	local function fail(message)
 		restore()
@@ -297,6 +299,16 @@ return function(repo)
 		output = "test:dish", hint = "Crafting grid"})
 	check(recipe.output_name == "test:dish" and #registered == 1,
 		"valid grid recipe was not installed")
+	recipe.quality_mode = "masterwork"
+	grug_items = {
+		can_craft_quality = function(player_value)
+			if player_value.level < 31 then
+				return false, "Expert mastery is required for Masterwork quality."
+			end
+			return true
+		end,
+		crafted_output = function() return true end,
+	}
 
 	local function refused(label, definition)
 		local ok = pcall(grug_jobs.register_recipe, definition)
@@ -452,6 +464,13 @@ return function(repo)
 		"same-input collision refusal damaged the universal recipe")
 	local predicted = core.craft_predict(ItemStack("test:dish"), locked, dish_grid)
 	check(predicted and predicted:is_empty(), "grid recipe predicted without book")
+	local quality_novice = player("quality_novice", 30)
+	grug_jobs.learn(quality_novice, "cooking")
+	local quality_refused = core.craft_predict(ItemStack("test:dish"),
+		quality_novice, dish_grid)
+	check(quality_refused:is_empty() and
+		chats[#chats]:find("Expert mastery", 1, true),
+		"grid prediction did not refuse below-Expert Masterwork")
 	grug_jobs.learn(locked, "cooking")
 	check(not core.craft_predict(ItemStack("test:dish"), locked,
 		dish_grid):is_empty(),
@@ -474,7 +493,8 @@ return function(repo)
 		"allowed craft was not recorded")
 	line("permission", "locked_refused", "learned_allowed",
 		"above_level_refused", "requirement_named", "last_in_real_chain",
-		"emergency_no_restore", "universal_still_craftable", "craft_recorded")
+		"masterwork_preconsume_refused", "emergency_no_restore",
+		"universal_still_craftable", "craft_recorded")
 
 	local late_predict = function(itemstack, player_value, grid)
 		if grug_jobs._inputs_match({"test:t2"}, grid) then

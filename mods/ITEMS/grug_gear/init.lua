@@ -246,7 +246,12 @@ local ARMOR_SLOTS = {
 function grug_gear.describe_stack_base(stack, ilvl, refined)
 	local def = stack:get_definition() or {}
 	local groups = def.groups or {}
-	if (groups.grug_equip_trinket or 0) > 0 then return {}, {} end
+	if (groups.grug_equip_trinket or 0) > 0 then
+		local special = stack:get_meta():get_string("grug_trinket_special")
+		if special == "" then special = tostring(def._grug_trinket_special or "") end
+		if special == "" then return {}, {} end
+		return {core.colorize(STAT_COLOR, special)}, {trinket_special = special}
+	end
 	local lines = {}
 	if ilvl then lines[#lines + 1] = "Item level " .. ilvl end
 	if (groups.grug_equip_weapon or 0) > 0 then

@@ -4,7 +4,7 @@
 return function(repo)
 	local globals = {"core", "PcgRandom", "ItemStack", "grug_items",
 		"grug_gear", "grug_mobs", "grug_inventory", "grug_classes",
-		"grug_xp", "grug_core"}
+		"grug_xp", "grug_core", "grug_zones", "mobs"}
 	local saved = {}
 	for index = 1, #globals do saved[globals[index]] = rawget(_G, globals[index]) end
 	local function restore()
@@ -82,7 +82,7 @@ return function(repo)
 		parts[#parts + 1] = "}"
 		return table.concat(parts)
 	end
-	local leave_callbacks = {}
+	local leave_callbacks, ground_drops = {}, {}
 	core = {}
 	function core.serialize(value) return serialize(value) end
 	function core.deserialize(text)
@@ -93,6 +93,7 @@ return function(repo)
 	function core.get_us_time() return 123456789 end
 	function core.get_gametime() return 123 end
 	function core.add_item(_, stack)
+		ground_drops[#ground_drops + 1] = ItemStack(stack)
 		return {stack = ItemStack(stack), set_velocity = function() end}
 	end
 	function core.register_on_leaveplayer(callback)
@@ -134,6 +135,12 @@ return function(repo)
 		local lines = {}
 		if ilvl then lines[#lines + 1] = "Item level " .. ilvl end
 		local def = stack:get_definition()
+		if ((def.groups or {}).grug_equip_trinket or 0) > 0 then
+			local special = stack:get_meta():get_string("grug_trinket_special")
+			if special == "" then special = def._grug_trinket_special or "" end
+			if special ~= "" then lines[#lines + 1] = special end
+			return lines
+		end
 		local damage = def.tool_capabilities and
 			def.tool_capabilities.damage_groups.fleshy
 		local armor = def._grug_armor
@@ -148,10 +155,17 @@ return function(repo)
 	end
 	function grug_gear.initialize_weapon_tooltip() return false end
 
-	local installed_kill_hook
+	local installed_kill_hook, installed_boss_reward_hook
+	local registered_mobs = {}
 	grug_mobs = {register_kill_loot_hook = function(callback)
 		installed_kill_hook = callback
+	end, register_boss_reward_hook = function(callback)
+		installed_boss_reward_hook = callback
+	end, register_mob = function(name, definition)
+		registered_mobs[name] = definition
 	end}
+	grug_zones = {water_class_at = function() return "deep_ocean" end}
+	mobs = {spawn = function() end}
 	local equipment_slots = {
 		{list = "grug_head"}, {list = "grug_chest"}, {list = "grug_legs"},
 		{list = "grug_feet"}, {list = "grug_weapon"}, {list = "grug_offhand"},
@@ -168,6 +182,7 @@ return function(repo)
 		get_dodge_chance_raw = function() return 0.01 end,
 		get_talent_bonus = function() return 0 end,
 		pool_percent_amount = function(_, _, percent) return percent * 10 end,
+		get_equipment_pool_percent = function() return 0 end,
 	}
 	grug_core = {status_modifier_sum = function() return 0 end,
 		get_player_level = function(player) return player.level or 1 end,
@@ -178,9 +193,14 @@ return function(repo)
 				player.level or 1
 		end}
 
+	dofile(repo .. "/mods/ENTITIES/grug_mobs/kraken.lua")
+	check(registered_mobs["grug_mobs:kraken"]._grug_no_quality_loot == true,
+		"production Kraken lacks its authoritative no-quality-loot field")
 	dofile(repo .. "/mods/ITEMS/grug_quality/init.lua")
 	check(type(grug_items) == "table", "global API was not published")
 	check(type(installed_kill_hook) == "function", "mob kill-loot hook was not installed")
+	check(type(installed_boss_reward_hook) == "function",
+		"boss-ledger reward hook was not installed")
 
 	local report = {}
 	local function row(...)
@@ -271,6 +291,8 @@ return function(repo)
 		"crafterless world source did not arrive refined and enchanted")
 	local trinket = ItemStack("test:trinket")
 	trinket:get_meta():set_int("grug_quality", 3)
+	trinket:get_meta():set_string("grug_trinket_special",
+		"Restores 2 Rage on an accepted hit")
 	check(grug_items.roll_enchants(trinket, 20, "rare", 4, 77),
 		"trinket exception was refused")
 	local trinket_affixes = grug_items.get_affixes(trinket)
@@ -280,6 +302,9 @@ return function(repo)
 		crit_percent = true}
 	check(prefix_ok[trinket_affixes[1].stat] and
 		suffix_ok[trinket_affixes[2].stat], "trinket channels crossed pools")
+	check(trinket:get_meta():get_string("description"):find(
+		"Restores 2 Rage on an accepted hit", 1, true),
+		"trinket authored special was lost during regeneration")
 	row("trinket", "one prefix", "one suffix", "unrefined exception")
 
 	-- D. §6.4's exact crafted-quality source table and mastery slot counts.
@@ -295,6 +320,15 @@ return function(repo)
 		crafted.masterwork.maximum == 4 and
 		crafted.masterwork.window == "crafted-masterwork",
 		"masterwork crafted row differs")
+	local refused_masterwork = ItemStack("test:melee")
+	local masterwork_ok, masterwork_reason = grug_items.apply_crafted_quality(
+		refused_masterwork, "masterwork", {level = 30}, 900)
+	check(not masterwork_ok and masterwork_reason:find("Expert", 1, true) and
+		#grug_items.get_affixes(refused_masterwork) == 0,
+		"below-Expert crafter was promoted into Masterwork slots")
+	local permission_ok = grug_items.can_craft_quality({level = 30},
+		{quality_mode = "masterwork"})
+	check(not permission_ok, "Masterwork pre-consumption permission did not refuse")
 	for _, sample in ipairs({{level = 1, mode = "fine", count = 1},
 		{level = 16, mode = "fine", count = 2},
 		{level = 31, mode = "masterwork", count = 3},
@@ -318,12 +352,24 @@ return function(repo)
 	check(drop.boss.uncommon == 0 and drop.boss.rare == 100 and
 		drop.boss.window == "boss", "boss chance row differs")
 	local king = {_grug_tier = "elite", _grug_royal_king = true,
+		_grug_boss_id = "king:dwarf",
 		_grug_level = 65, name = "test:king"}
 	local king_drops = grug_items.roll_mob_gear(king, 11)
 	check(#king_drops == 1 and king_drops[1]:get_name() == tier_item[6] and
-		king_drops[1]:get_meta():get_int("grug_ilvl") == 60 and
+		king_drops[1]:get_meta():get_int("grug_ilvl") == 70 and
 		king_drops[1]:get_meta():get_int("grug_quality") == 3,
-		"King drop did not clamp to T6 ilvl 60 Rare")
+		"King ledger reward was not T6 ilvl 70 Rare")
+	local dragon = {_grug_tier = "boss", _grug_boss_id = "dragon:wyrmglass",
+		_grug_level = 60, name = "test:dragon"}
+	local dragon_drops = installed_boss_reward_hook(dragon)
+	check(#dragon_drops == 1 and dragon_drops[1]:get_name() == tier_item[6] and
+		dragon_drops[1]:get_meta():get_int("grug_ilvl") == 75 and
+		dragon_drops[1]:get_meta():get_int("grug_quality") == 3,
+		"dragon ledger reward was not T6 ilvl 75 Rare")
+	local kraken = grug_items.roll_mob_gear({_grug_tier = "normal",
+		_grug_level = 100, _grug_no_quality_loot = true,
+		name = "grug_mobs:kraken"}, 1)
+	check(#kraken == 0, "lootless Kraken gained quality gear")
 	local critter = grug_items.roll_mob_gear({_grug_tier = "critter",
 		_grug_level = 1}, 1)
 	check(#critter == 0, "food-only critter gained gear")
@@ -360,7 +406,12 @@ return function(repo)
 			return {x = 0, y = 0, z = 0}
 		end}}
 	installed_kill_hook(hook_mob, "tagger")
-	row("drop", "3/20+3/100+25/100", "tag hook concrete stack", "King ilvl 60")
+	local ground_before = #ground_drops
+	installed_kill_hook(king, "tagger")
+	installed_kill_hook(dragon, "tagger")
+	check(#ground_drops == ground_before,
+		"ledger boss escaped into the generic ground-drop hook")
+	row("drop", "3/20+3/100+25/100", "ledger hook", "King 70 Dragon 75")
 
 	-- F. Determinism, prefix/suffix naming and description idempotence.
 	local function rolled(seed)
@@ -413,9 +464,18 @@ return function(repo)
 
 	-- G. The new per-stack stats reach the existing aggregate consumers.
 	local equipped = rolled(12345)
+	local pool_stack = ItemStack("test:caster")
+	pool_stack:get_meta():set_string("grug_ench", core.serialize({
+		{stat = "max_hp_percent", value = 4},
+		{stat = "max_mana_percent", value = 3},
+	}))
+	definitions["test:caster"]._grug_max_hp_percent = 2
+	local inventory_reads = 0
 	local inventory = {}
 	function inventory:get_stack(listname)
+		inventory_reads = inventory_reads + 1
 		if listname == "grug_weapon" then return ItemStack(equipped) end
+		if listname == "grug_offhand" then return ItemStack(pool_stack) end
 		return ItemStack("")
 	end
 	local player = {level = 60,
@@ -430,7 +490,23 @@ return function(repo)
 	end
 	check(attributes.str == 10 + totals.str and attributes.dex == 10 + totals.dex and
 		attributes.int == 10 + totals.int, "attribute consumers missed affixes")
-	row("consumers", "attributes", "crit/dodge/armor wrappers installed")
+	local reads_after_fill = inventory_reads
+	local expected_hp, expected_mana = 2, 0
+	for _, stack in ipairs({equipped, pool_stack}) do
+		for _, slot in ipairs(grug_items.get_affixes(stack)) do
+			if slot.stat == "max_hp_percent" then
+				expected_hp = expected_hp + slot.value
+			elseif slot.stat == "max_mana_percent" then
+				expected_mana = expected_mana + slot.value
+			end
+		end
+	end
+	check(grug_classes.get_equipment_pool_percent(player, "hp") == expected_hp and
+		grug_classes.get_equipment_pool_percent(player, "mana") == expected_mana,
+		"pool percentages missed the equipment cache")
+	check(inventory_reads == reads_after_fill,
+		"cached pool percentage accessor rescanned equipment")
+	row("consumers", "attributes", "crit/dodge/armor/pools cached")
 
 	restore()
 	return table.concat(report)
