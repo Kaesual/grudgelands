@@ -131,6 +131,7 @@ function grug_trinkets.after_player_hit(player, hp_change, reason)
 end
 
 function grug_trinkets.xp_eligible_kill(player)
+	if player:get_hp() <= 0 then return end
 	local effect = record(player, RECLAIMER_KIND)
 	if not effect or not cooldown_ready(player, RECLAIMER_KIND,
 			effect.cooldown) then

@@ -1235,11 +1235,16 @@ local function finish_authoritative_swing(context, result)
 	if result.cancelled or not result.landed then
 		return false
 	end
-	if grug_core.trinket_weapon_hit then grug_core.trinket_weapon_hit(context.player) end
+	local function grant_battlebeat()
+		if grug_core.trinket_weapon_hit then
+			grug_core.trinket_weapon_hit(context.player)
+		end
+	end
 	if not context.proc then
 		if result.grant_rage then
 			grug_abilities.add_rage(context.player, swing_rage(context.player))
 		end
+		grant_battlebeat()
 		return false
 	end
 	if not spend(context.player, context.proc.cost) then
@@ -1251,6 +1256,7 @@ local function finish_authoritative_swing(context, result)
 		if result.grant_rage then
 			grug_abilities.add_rage(context.player, swing_rage(context.player))
 		end
+		grant_battlebeat()
 		return false
 	end
 	grug_abilities.reset_charge(context.player, context.proc)
@@ -1267,6 +1273,7 @@ local function finish_authoritative_swing(context, result)
 	if result.grant_rage then
 		grug_abilities.add_rage(context.player, swing_rage(context.player))
 	end
+	grant_battlebeat()
 	return true
 end
 
