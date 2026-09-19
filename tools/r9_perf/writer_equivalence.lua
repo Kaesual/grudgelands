@@ -1,9 +1,80 @@
--- Bounded real R5+R6 transactions; identical tooling can target frozen production.
--- Compare complete emerged buffers, external calls, intent and dirty metrics.
+-- Bounded real R5 planner/writer plus R6 successor fixture equivalence.
+-- Target immutable production modules with identical current fixture tooling.
 return function(repo, production_repo)
+	production_repo = production_repo or repo
+	local wp40 = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
+	local allocator_factory = dofile(wp40 .. "/counting_allocator.lua")
+	local planner_factory = dofile(production_repo ..
+		"/mods/MAPGEN/grug_mapgen/wp40/planner.lua")
+	local planner_module = planner_factory(allocator_factory)
+	local manifest = dofile(wp40 .. "/mapgen_manifest.lua").validate(
+		dofile(wp40 .. "/r7_r6_manifest.lua")().r5_manifest_values)
+	local allocator = allocator_factory.new("grug_wp40_r5_planner_allocator_v1")
+	local stable_refs = {"hydro_1", "hydro_2", "hydro_3", "hydro_4", "join"}
+	local hydrology = {
+		"hydro_1", "profile_2", 2, 3, 2,
+		"hydro_2", "profile_4", 4, 3, 2,
+		"hydro_3", "profile_8", 8, 3, 2,
+		"hydro_4", "profile_12", 12, 3, 2,
+	}
+	local interfaces = {"join", "rapid", 0, 1, 2, 1, 3}
+	local members = {1, 2}
+	local lookup = allocator:new_map("relational_lookup", 20)
+	local function put(key, value)
+		allocator:map_put(lookup, "relational_lookup", key, value)
+	end
+	put("schema", "grug_wp40_r5_relational_lookup_v1")
+	put("allocator_identity", allocator)
+	put("stable_refs", stable_refs)
+	put("hydrology_ids", hydrology)
+	put("hydrology_profile_ids", hydrology)
+	put("hydrology_depths", hydrology)
+	put("hydrology_bed_seal_layers", hydrology)
+	put("hydrology_bank_seal_nodes", hydrology)
+	put("interface_ids", interfaces)
+	put("interface_kinds", interfaces)
+	put("interface_hydrology_ordinals", interfaces)
+	put("interface_upper_ordinals", interfaces)
+	put("interface_lower_ordinals", interfaces)
+	put("interface_member_start", interfaces)
+	put("interface_members", members)
+	for index = 1, 4 do put(stable_refs[index], index + index * 513) end
+	put("join", 5 + 513 * 513)
+
+	local state = {mode = "mixed", calls = 0, fail_x = false, fail_z = false}
+	local source = {schema = "grug_wp40_r5_planner_source_v1"}
+	function source.column_values_at(x, z)
+		state.calls = state.calls + 1
+		if x == state.fail_x and z == state.fail_z then error("injected source error", 0) end
+		if state.mode == "mixed" and (x + z * 2) % 5 == 0 then
+			return "planned_water", 1, "zone", "biome", "race", 8, 10,
+				"hydro_1", 2, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, false
+		end
+		return "land", 1, "zone", "biome", "race", 8, nil, nil, nil,
+			nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, false
+	end
+	function source.hydrology_metric_values_at() return nil end
+	function source.surface_cave_run_at() return nil end
+	function source.surface_cave_candidate_at_cell() return nil end
+	function source.surface_cave_cell_at() return 0, 0 end
+	function source.surface_cave_constants() return 80, -30912, 24, 2, 24 end
+	function source.coast_profile_at() return nil end
+	function source.landmark_excluded_at() return false end
+	function source.metrics() return {} end
+	local identity = {}
+	local planner = planner_module.new(source, manifest, lookup, allocator, identity)
+	allocator:seal_construction()
+
 	local loader = dofile(repo .. "/tools/wp40/r6/offline.lua")(repo, production_repo)
+	local contract, cids = loader.fixtures.new_content_contract()
+	local stone = assert(cids["default:stone"])
 	local heightmap = loader.heightmap(-31007)
-	local loaded = loader.new_capture("0", heightmap, false)
+	local adapter_allocator = allocator_factory.new("grug_wp40_r5_adapter_allocator_v1")
+	local adapter_module = dofile(production_repo ..
+		"/mods/MAPGEN/grug_mapgen/wp40/map_adapter.lua")(allocator_factory)
+	local adapter = adapter_module.new(manifest, contract.r5,
+		loader.fixtures.context(heightmap), adapter_allocator, identity)
+	adapter_allocator:seal_construction()
 	local rows = {}
 	local function digest(values)
 		local blocks, parts = {}, {}
@@ -18,17 +89,17 @@ return function(repo, production_repo)
 		return loader.common.hex(loader.raw_sha256(table.concat(blocks)))
 	end
 	for case = 1, 3 do
-		local minp = {x = -432, y = case == 1 and 48 or -4, z = -1552}
+		local minp = {x = -32, y = case == 1 and 48 or -4, z = -32}
 		local maxp = {x = minp.x + 79, y = minp.y + 15, z = minp.z + 79}
-		local plan, generation = loaded.session.plan_slice(minp, maxp)
+		local plan, generation = planner:plan_slice(minp, maxp)
 		local ex, ey, ez = 112, 48, 112
 		local data, param2, light = {}, {}, {}
 		for z = minp.z - 16, maxp.z + 16 do
 			for y = minp.y - 16, maxp.y + 16 do
 				for x = minp.x - 16, maxp.x + 16 do
 					local index = #data + 1
-					data[index] = case == 1 and 1 or
-						(y < 0 and 1 or (y == 0 and 10 or 0))
+					data[index] = case == 1 and stone or
+						(y < 0 and stone or (y == 0 and 10 or 0))
 					param2[index], light[index] = 0, y > 0 and 15 or 0
 					if case == 3 and x == minp.x - 16 then data[index] = 65535 end
 				end
@@ -37,30 +108,23 @@ return function(repo, production_repo)
 		assert(#data == ex * ey * ez)
 		local vm, _, observer = loader.vm_module.new({minp = minp, maxp = maxp,
 			data = data, param2 = param2, light = light, heightmap = heightmap,
-			content_contract = loaded.content_contract, water_level = 1,
-			ignore_cid = loaded.content_contract.ignore_cid, verify_inactive_tail = false})
-		loaded.settlement_fixture.arm_private_capture()
-		local result = loaded.session.apply_fixture(vm, minp, maxp, plan, generation)
-		local capture = loaded.settlement_fixture.take_private_capture()
-		local snapshot, metrics = observer.snapshot(), loaded.session.metrics()
+			content_contract = contract, water_level = 1,
+			ignore_cid = contract.ignore_cid, verify_inactive_tail = false})
+		local result = adapter:apply(vm, minp, maxp, plan, generation, "offline_fixture")
+		local snapshot, metrics = observer.snapshot(), adapter:metrics()
 		rows[#rows + 1] = "case\t" .. case .. "\t" .. result .. "\n"
 		for _, key in ipairs({"data", "param2", "light", "trace"}) do
 			rows[#rows + 1] = key .. "\t" .. digest(snapshot[key]) .. "\n"
 		end
-		-- Capture exposes canonical private tuples, including each intent field.
-		local keys = {}
-		for key, value in pairs(capture) do
-			if type(value) == "string" and key:find("sha256", 1, true) then
-				keys[#keys + 1] = key
-			end
-		end
-		table.sort(keys)
-		assert(#keys > 0, "private capture digest missing")
-		for _, key in ipairs(keys) do rows[#rows + 1] = key .. "\t" .. capture[key] .. "\n" end
+		local runs = {}
+		for index = 1, plan.run_count * 9 do runs[index] = plan.run_values[index] end
+		rows[#rows + 1] = "plan_intent\t" .. digest(runs) .. "\n"
 		for _, key in ipairs({"modified_voxels", "content_dirty_columns",
 			"param2_dirty_columns", "light_dirty_columns", "liquid_dirty_columns"}) do
-			rows[#rows + 1] = key .. "\t" .. tostring(metrics.settlement[key]) .. "\n"
+			rows[#rows + 1] = key .. "\t" .. tostring(metrics[key]) .. "\n"
 		end
 	end
+	rows[#rows + 1] = dofile(repo .. "/tools/wp40/quality/gravewood_writer_fixture.lua")(
+		repo, production_repo, false)
 	return table.concat(rows)
 end

@@ -15,7 +15,7 @@ mkdir -p "$output"
 # Bind all shipped files and current tools; reference checkouts remain read-only.
 (cd "$repo" && {
 	rg --files mods tools/wp40 tools/wp43 tools/wp13 tools/r6_shore \
-		tools/r8_map_a \
+		tools/r8_map_a tools/r9_perf \
 		tools/r7_level_bands tools/r9_farm
 	printf '%s\n' game.conf minetest.conf tools/check_fresh_server.py
 	printf '%s\n' tools/gen_mob_item_textures.py
