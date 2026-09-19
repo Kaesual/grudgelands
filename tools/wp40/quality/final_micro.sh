@@ -48,16 +48,16 @@ sha256sum "$repo/tools/bin/lua51" "$(command -v luajit)" >"$output/interpreters.
 chrt --idle 0 ionice -c3 luajit \
 	"$repo/tools/wp13/final_micro.lua" "$repo" "$output/wp13.tsv" luajit \
 	>"$output/wp13.log" 2>&1
-# Independent immutable inputs; two of the seven permitted interpreter slots.
-chrt --idle 0 ionice -c3 "$repo/tools/bin/lua51" \
-	"$repo/tools/wp40/quality/final_micro.lua" "$repo" >"$output/puc.tsv" 2>"$output/puc.log" &
-puc_pid=$!
+# Run the broader LuaJIT half first so fixture/load failures stop before the
+# bounded fallback-interpreter process starts.
+lj_status=0
 chrt --idle 0 ionice -c3 luajit \
-	"$repo/tools/wp40/quality/final_micro.lua" "$repo" >"$output/luajit.tsv" 2>"$output/luajit.log" &
-lj_pid=$!
-puc_status=0; wait "$puc_pid" || puc_status=$?
-lj_status=0; wait "$lj_pid" || lj_status=$?
-[[ "$puc_status" -eq 0 && "$lj_status" -eq 0 ]]
+	"$repo/tools/wp40/quality/final_micro.lua" "$repo" >"$output/luajit.tsv" 2>"$output/luajit.log" || lj_status=$?
+[[ "$lj_status" -eq 0 ]]
+puc_status=0
+chrt --idle 0 ionice -c3 "$repo/tools/bin/lua51" \
+	"$repo/tools/wp40/quality/final_micro.lua" "$repo" >"$output/puc.tsv" 2>"$output/puc.log" || puc_status=$?
+[[ "$puc_status" -eq 0 ]]
 cmp "$output/puc.tsv" "$output/luajit.tsv"
 (cd "$repo" && sha256sum -c "$output/inputs.sha256") >"$output/inputs-check.txt"
 sha256sum "$output/puc.tsv" "$output/luajit.tsv" >"$output/output.sha256"

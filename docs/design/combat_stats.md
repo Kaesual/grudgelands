@@ -543,9 +543,8 @@ Normal tier at level L:
   remains nil and permits no guard post. Ordinary and royal guards inside
   remain exactly 60. `_grug_fixed_level` is the sole explicit fixed-entity
   mechanism and bypasses positional and post-role fields only for a deliberately
-  designed fixed entity. Its current implemented use is the Kraken Guard at
-  L100; WP13 later uses the same mechanism for the not-yet-implemented king at
-  L65. No second king-specific fixed-level path exists.
+  designed fixed entity. Its implemented uses are the Kraken Guard at L100 and
+  every WP13 king at L65. No second king-specific fixed-level path exists.
 
 | Mob level | HP | Dmg/hit | XP |
 |-----------|----|---------|----|

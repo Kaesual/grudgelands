@@ -9,6 +9,18 @@ support them, plus the first mob wave; the foundations are built so that
 play-evening feedback becomes data changes, not rework. Feedback on the
 creative details comes from the user after playtests, not before.
 
+**Closed 2026-09-19.** Round 8 delivered MISC (`fbcf8ed2`), PROF
+(`e1bdb6af`), TAGS (`12886ada`), MOB1 (`8bc5c7e2`), COOK (`817b6c4e`),
+HEDGE (`17a56f7c`), FIXTURE (`974a2660`), ALCH (`b69eeb64`) and MAP-A
+(`1e165a0a`). MAP-B moved unchanged to Round 9; the Bog Witch was deferred
+because its candidate mesh has unusable animation frames, and Sovereign's
+Flask remains pending. Review follow-ups carried forward are a real
+`r7_manifest.new` receipt in the resource micro-fixture and the one-voxel cave
+writer exactness deviation; the proposed foreign-mod profession registrar was
+explicitly not added under the decided ownership rule. These and the remaining
+content work are tracked in the orchestrator's
+[Round 9 proposal](TODO-round9.md).
+
 Inputs: `docs/research/cooking-alchemy-plan.md`,
 `docs/research/mob-worlds-plan.md`,
 `docs/research/plants-and-potions-reference.md`,
@@ -261,10 +273,14 @@ housing (WP24), mounts (WP31).
 
 ## 6. Playtest 11 (after Round 8, fresh world)
 
-Walk one start zone to its capital: coast profiles, sand, subsurface
-variety, cave mouths, plants; learn Cooking at the start trainer, see the
-book slots in the crafting UI, cook one dish per reachable tier (grid and
-furnace, both patterns); fish in a pond and at the sea; learn Alchemy in
-the capital, brew a potion and an elixir; a night in a zone with a new
-night family; a king fight; the buff list under food plus elixir; the
-capital hedge ring intact.
+Use two clients to verify per-viewer player nametags and their 25/30-node
+visibility boundary. At each class, inspect Strike's tooltip; then use a start
+trainer and the profession-book UI. Walk a start zone by day and night to see
+its new families, continue to its capital, verify the complete boundary ring,
+and fight a king with its royal guards; visit or summon both dragon families.
+Inspect the four coast profiles, sand, shallow strata and connected cave
+mouths. Cook reachable dishes through both the grid and raw-assembly furnace
+routes, fish in several level bands, and use a capital Alchemist trainer and
+brewing stand for one potion and one elixir. The fifteen plant ingredients are
+creative-inventory items in this round; world placement and crop soil are the
+carried Round 9 MAP-B work.
