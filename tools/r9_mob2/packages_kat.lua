@@ -204,8 +204,13 @@ return function(root)
 					return {x = hazard.out_of_range and 4 or 1, y = 0, z = 0}
 				end,
 				get_hp = function() return 20 end,
-				get_player_name = function() return "rift_target" end,
-				get_luaentity = function() return nil end,
+				get_player_name = function()
+					assert(not hazard.npc, "NPC target entered player invisibility check")
+					return "rift_target"
+				end,
+				get_luaentity = function()
+					return hazard.npc and {_cmi_is_mob = true, type = "npc"} or nil
+				end,
 				punch = function(_, source, _, toolcaps)
 					assert(source == rift_object and toolcaps.damage_groups.fleshy == 17,
 						"Rift Spawn used a second or unscaled damage path")
@@ -214,7 +219,9 @@ return function(root)
 			}
 		end
 		hazard.fallback_objects = target and {target} or {}
-		core.is_player = function(object) return object == target end
+		core.is_player = function(object)
+			return object == target and not hazard.npc
+		end
 		core.get_objects_inside_radius = function(_, radius)
 			assert(radius == 3.5)
 			return target and {rift_object, target} or {rift_object}
@@ -254,6 +261,7 @@ return function(root)
 	for _, hazard in ipairs({
 		{name = "ordinary"}, {name = "water-adjacent", water = true},
 		{name = "protected", protected = true},
+		{name = "combatant-NPC", npc = true},
 	}) do
 		local _, result = rift_step_case(hazard)
 		assert(result.hits == 1 and result.particles == 1 and
@@ -458,7 +466,7 @@ return function(root)
 			"UNCLEAR source entered ledger: " .. unclear[1])
 	end
 
-	return "r9_mob2_packages_v3|families=15|rows=16|copied_media=26|textures=" ..
+	return "r9_mob2_packages_v4|families=15|rows=16|copied_media=26|textures=" ..
 		texture_count .. "|" ..
 		"bog_witch_keys=" .. key_low .. ".." .. key_high .. "\n"
 end

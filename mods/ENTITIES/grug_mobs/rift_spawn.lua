@@ -16,9 +16,10 @@ end
 local function valid_burst_target(self, pos)
 	local target = self.attack
 	local target_pos = target and target:get_pos()
-	if not target or not core.is_player(target) or not target_pos or
+	local target_is_player = target and core.is_player(target)
+	if not target or not target_pos or
 			target:get_hp() <= 0 or
-			(mobs.is_invisible and mobs:is_invisible(self,
+			(target_is_player and mobs.is_invisible and mobs:is_invisible(self,
 				target:get_player_name())) then
 		self:stop_attack()
 		return false
