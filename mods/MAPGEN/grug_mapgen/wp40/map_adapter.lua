@@ -1202,7 +1202,8 @@ local function adapter_factory(allocator_factory)
 								if z > light_max_z then light_max_z = z end
 							end
 							local liquid_dirty = false
-							if content_changed or param2_changed then
+							if dirty_liquid[column] == 0 and
+									(content_changed or param2_changed) then
 								if old_family > 0 or final_family > 0 or
 										old_kind ~= final_kind or
 										old_family ~= final_family or

@@ -3286,7 +3286,7 @@ local function settlement_factory()
 							local voxel_liquid = old_family > 0 or new_family > 0 or
 								old_liquid ~= new_liquid or old_family ~= new_family or
 								old_level ~= new_level
-							if not voxel_liquid and old_flood ~= new_flood then
+							if not column_liquid and not voxel_liquid and old_flood ~= new_flood then
 								for face = 1, 6 do
 									local nx, ny, nz = x + FACE_X[face], y + FACE_Y[face],
 										z + FACE_Z[face]

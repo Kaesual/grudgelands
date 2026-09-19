@@ -1,11 +1,11 @@
 -- Engine-free constructor for disabled WP40 R6 sessions and tool seams.
 
-return function(repo)
+return function(repo, production_repo)
 	local common = dofile(repo .. "/tools/wp40/r6/common.lua")
 	local raw_sha256 = common.new_sha256()
 	local fixtures = dofile(repo .. "/tools/wp40/r6/fixtures.lua")(
 		repo, common, raw_sha256)
-	local directory = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
+	local directory = (production_repo or repo) .. "/mods/MAPGEN/grug_mapgen/wp40"
 	local source = dofile(directory .. "/source/simple_map.lua")
 	local schemas = dofile(directory .. "/schemas.lua")
 	local canonical = dofile(directory .. "/canonical.lua")
