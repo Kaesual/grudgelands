@@ -573,6 +573,15 @@ ocean edge and the enemy border (warning band, hard dismount).
     loops and the mapgen-environment / multi-emerge-thread question
     (`core.register_mapgen_script`, today `num_emerge_threads = 1` is
     pinned); the plateau is revisited only with that data.
+36. **Coast band cost** (2026-09-19, after the per-feature attribution):
+    without the plateau the skin and the plate fix are within the ±6 %
+    noise of a single profiler pair; the coast band alone costs ~12 s of
+    planner time (33 %). User ruling: ONE optimisation attempt on the
+    coast band (profile first, semantics byte-identical, gate ≤ +5 % with a
+    second pair between +5 % and +8 %); if it fails, the coast band ships
+    behind a production switch that is off by default and MAP-C finishes
+    with skin, openings, plate fix, pin procedure and KATs. The 3 %
+    tolerance of ruling 35 is replaced by 5 % (measured noise).
 
 ## 5. MAP-C protocol: what must not repeat from Round 8
 
