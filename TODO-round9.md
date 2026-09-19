@@ -196,9 +196,10 @@ headless boot its own port block (≥ 32160, spacing 5). A Sol plan review
     region and seed, fresh world each time. Gate: not slower than main,
     target faster. Six-start gate and six capitals after the merge. One
     Sol review at xhigh, at most one fix round under the Augenmaß rule; a
-    second is escalated. Model: GPT-5.6 Sol (the user allowed GPT Astra 6
-    on 2026-09-19, but the Codex CLI rejects `gpt-astra-6` under the
-    ChatGPT account, probed the same day).
+    second is escalated. Model: **GPT-6 Astra for the implementation runs
+    of this lane** (user allowance 2026-09-19; Codex slug `gpt-6-astra`,
+    needs Codex CLI ≥ 0.155, updated to 0.155.1 and probed OK the same
+    day); review on GPT-5.6 Sol.
 - **R9-CAP — capital core fixes** (added 2026-09-19; **runs after the MAP-C
   merge, before MAP-B**, because it changes the WP13 core templates and the
   R7 capital-core bounds and therefore the source projection). Ownership:
@@ -460,9 +461,10 @@ ocean edge and the enemy border (warning band, hard dismount).
     character band).
 19. **Brewing** (2026-09-19): VoxeLibre brewing stand node; two reagents
     stay; catalysts are backlog. Fishing: no separate test.
-20. **Models** (2026-09-19): the user allowed GPT Astra 6 for MAP-C; the
-    Codex CLI rejects `gpt-astra-6` under the ChatGPT account (probed
-    2026-09-19), so every lane and every review runs on GPT-5.6 Sol.
+20. **Models** (2026-09-19): MAP-C implementation on GPT-6 Astra (Codex
+    slug `gpt-6-astra`, Codex CLI ≥ 0.155; an earlier probe with the
+    wrong slug and the old CLI 0.147 failed); every other lane and every
+    review on GPT-5.6 Sol.
 
 ## 5. MAP-C protocol: what must not repeat from Round 8
 
