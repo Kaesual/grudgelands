@@ -203,7 +203,7 @@ assert_equal(table.concat({hp_elite, damage_elite, xp_elite}, ","),
 	"8088,68.4,2400", "elite multipliers")
 assert_equal(table.concat({hp_rare, damage_rare, xp_rare}, ","),
 	"13480,83.6,3600", "rare multipliers")
-assert_equal(hp_boss, 53920, "boss HP multiplier")
+assert_equal(hp_boss, 18000, "boss flat HP")
 local critter_hp, _, critter_xp = grug_mobs.stats_for(60, "critter")
 assert_equal(critter_hp, 1, "critter HP")
 assert_equal(critter_xp, 0, "critter XP")
@@ -213,7 +213,7 @@ local tag = grug_mobs.tag_text({
 	description = "Test", _grug_level = 60, _grug_tier = "boss",
 	health = 2300, hp_max = hp_boss,
 })
-assert_equal(tag, "Boss Test [Lv 60] 2.3k/54k", "tag k-format")
+assert_equal(tag, "Boss Test [Lv 60] 2.3k/18k", "tag k-format")
 record("tag", {tag})
 
 grug_mobs.register_level_cfg("test:mob", {})
