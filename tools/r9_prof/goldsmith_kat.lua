@@ -131,10 +131,85 @@ return function(repo)
 							(contract.rage and contract.rage[tier] or nil),
 						name .. " stacking contract differs")
 					context.check(type(definition._grug_trinket_special) == "string" and
-						definition._grug_trinket_special ~= "",
+						definition._grug_trinket_special:find(
+							"inert until the trinket effects lane", 1, true),
 						name .. " special text missing")
 				end
 			end
+
+			local node = context.core.registered_nodes["grug_jobs:jewellers_bench"]
+			local pos = {x = 8, y = 2, z = -4}
+			node.on_construct(pos)
+			local inventory = context.meta_for(pos):get_inventory()
+			local trinket_recipe = grug_jobs.recipe_for_output(
+				"grug_gear:manawell_t4", "jewellers_bench")
+			context.check(trinket_recipe.quality_mode == "fine",
+				"trinket recipe did not retain its crafted-fine quality mode")
+			for row = 1, #trinket_recipe.inputs do
+				for column = 1, 3 do
+					local token = trinket_recipe.inputs[row][column] or ""
+					inventory:set_stack("craft", (row - 1) * 3 + column,
+						context.stack(token))
+				end
+			end
+			node.on_metadata_inventory_put(pos)
+			local station_player = {level = 30,
+				is_player = function() return true end,
+				get_player_name = function() return "gold-station-kat" end,
+				get_meta = function() return {} end}
+			local offered = inventory:get_stack("output", 1)
+			context.check(node.allow_metadata_inventory_take(pos, "output", 1,
+				offered, station_player) == 1, "station refused trinket take")
+			local rolled = inventory:get_stack("output", 1)
+			local affixes = grug_items.get_affixes(rolled)
+			local prefix = {str = true, int = true, dex = true}
+			local suffix = {max_hp_percent = true, max_mana_percent = true,
+				crit_percent = true}
+			context.check(#affixes == 2 and prefix[affixes[1].stat] and
+				suffix[affixes[2].stat],
+				"station trinket did not roll one legal prefix and suffix")
+			context.check(rolled:get_meta():get_string("grug_roll_window") ==
+				"crafted-fine" and rolled:get_meta():get_int("grug_refined") == 0,
+				"station trinket used the wrong source window or refinement state")
+			context.check(rolled:get_meta():get_int("grug_ilvl") == 30 and
+				rolled:get_meta():get_string("description"):find(
+					"inert until the trinket effects lane", 1, true),
+				"station trinket lost its item level or authored special")
+
+			local allow = context.allow_inventory
+			context.check(type(allow) == "function", "equipment allow hook missing")
+			local equipped = {grug_trinket1 = context.stack("grug_gear:manawell_t1"),
+				grug_trinket2 = context.stack("")}
+			local equip_inventory = {get_stack = function(_, listname)
+				return context.stack(equipped[listname] or "")
+			end}
+			local equip_player = {get_player_name = function() return "equip-kat" end}
+			context.check(allow(equip_player, "put", equip_inventory, {
+				listname = "grug_trinket2",
+				stack = context.stack("grug_gear:manawell_t4")}) == 0,
+				"put allowed a second tier of the same trinket identity")
+			context.check(allow(equip_player, "put", equip_inventory, {
+				listname = "grug_trinket2",
+				stack = context.stack("grug_gear:manawell_t1")}) == 0,
+				"put allowed a second identical trinket stack")
+			context.check(allow(equip_player, "put", equip_inventory, {
+				listname = "grug_trinket2",
+				stack = context.stack("grug_gear:last_light_t1")}) == 1,
+				"put refused a different trinket identity")
+			context.check(allow(equip_player, "move", equip_inventory, {
+				from_list = "grug_trinket1", from_index = 1,
+				to_list = "grug_trinket2", count = 1}) == 1,
+				"moving the sole trinket between generic slots was refused")
+			local main = context.stack("grug_gear:manawell_t6")
+			equip_inventory.get_stack = function(_, listname)
+				if listname == "main" then return context.stack(main) end
+				return context.stack(equipped[listname] or "")
+			end
+			context.check(allow(equip_player, "move", equip_inventory, {
+				from_list = "main", from_index = 1, to_list = "grug_trinket2",
+				count = 1}) == 0,
+				"move allowed a second tier of the same trinket identity")
+
 			context.check(type(context.harvest_callback) == "function",
 				"goldsmith bonus harvest hook missing")
 			local awarded = {}
@@ -142,7 +217,7 @@ return function(repo)
 				awarded[#awarded + 1] = item
 				return context.stack("")
 			end}
-			local player = {goldsmith = true, profession_level = 1,
+			local player = {goldsmith = true, profession_level = 6, level = 15,
 				is_player = function() return true end,
 				get_inventory = function() return inventory end,
 				get_pos = function() return {x = 0, y = 0, z = 0} end}
@@ -153,7 +228,7 @@ return function(repo)
 				#awarded == 1, "Apprentice 10% bonus boundary failed")
 			context.check(not grug_artisans.settle_goldsmith_bonus(event, 11) and
 				#awarded == 1, "Apprentice bonus exceeded 10%")
-			player.profession_level = 2
+			player.level = 16
 			context.check(grug_artisans.settle_goldsmith_bonus(event, 20) and
 				#awarded == 2, "Journeyman 20% bonus boundary failed")
 			context.check(not grug_artisans.settle_goldsmith_bonus(event, 21) and

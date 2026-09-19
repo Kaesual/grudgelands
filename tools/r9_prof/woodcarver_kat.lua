@@ -89,19 +89,26 @@ return function(repo)
 			end
 
 			local output = "grug_gear:wand_bronze"
+			local refinement = grug_jobs.recipe_for_output(output, "grid")
+			context.check(refinement.quality_mode == "refinement",
+				"refinement recipe did not retain its quality mode")
 			local base = context.stack(output)
 			base:set_wear(12345)
 			base:get_meta():set_string("prior_meta", "preserved")
 			local old_grid = {base, context.stack("grug_artisans:seasoned_wood")}
 			for index = 3, 9 do old_grid[index] = context.stack("") end
 			local crafted = context.stack(output)
+			local player = {level = 15, woodcarver = true,
+				get_player_name = function() return "wood-kat" end}
 			for index = 1, #context.craft_callbacks do
-				crafted = context.craft_callbacks[index](crafted, nil, old_grid) or crafted
+				crafted = context.craft_callbacks[index](crafted, player, old_grid) or crafted
 			end
 			context.check(crafted:get_meta():get_int("grug_refined") == 1,
 				"grid refinement did not mark the weapon")
 			context.check(crafted:get_wear() == 12345 and
 				crafted:get_meta():get_string("prior_meta") == "preserved",
 				"grid refinement discarded stack state")
+			context.check(crafted:get_tool_capabilities().damage_groups.fleshy == 6,
+				"terminal quality callback did not preserve +15% refined damage")
 		end})
 end

@@ -78,6 +78,10 @@ local trinkets = {
 	{key = "reclaimers_mark", settings = 6, g1 = "garnet", g4 = "ruby"},
 }
 
+-- Round 9 ruling 39: the identity-specific Setting counts are a temporary
+-- collision key for the input-authoritative station registry. Replace them
+-- with station output selection or one authored per-identity ingredient.
+
 local function trinket_gems(row, tier)
 	if tier == 1 then return {M .. "cut_quartz"} end
 	if tier <= 3 then return {M .. "cut_" .. row.g1} end
@@ -94,10 +98,13 @@ for tier = 1, 6 do
 		for setting_index = 1, row.settings do inputs[#inputs + 1] = setting end
 		local gems = trinket_gems(row, tier)
 		for gem_index = 1, #gems do inputs[#inputs + 1] = gems[gem_index] end
-		A.register_recipe("goldsmith", {tier = tier,
+		local recipe = A.register_recipe("goldsmith", {tier = tier,
 			station = "jewellers_bench", inputs = grid(inputs),
 			output = grug_gear.trinket_item(row.key, tier),
 			hint = "Assemble at a Jeweller's Bench"})
+		-- Trinkets are the fixed two-affix exception: one prefix and one suffix
+		-- in the crafted-fine window, never ordinary refinement state.
+		recipe.quality_mode = "fine"
 	end
 end
 
@@ -150,8 +157,7 @@ function grug_artisans.settle_goldsmith_bonus(event, roll)
 			not grug_jobs.has(player, "goldsmith") then
 		return false
 	end
-	local level = grug_jobs.profession_level(player, "goldsmith")
-	local chance = level >= 2 and 20 or 10
+	local chance = grug_items.mastery_band(player) >= 2 and 20 or 10
 	roll = math.floor(tonumber(roll) or 101)
 	if roll < 1 or roll > chance then return false end
 	local inventory = player:get_inventory()

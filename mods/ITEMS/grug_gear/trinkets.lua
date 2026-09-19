@@ -56,7 +56,8 @@ for identity_index = 1, #identities do
 	for tier = 1, 6 do
 		local value = identity.values[tier]
 		local rage = identity.rage and identity.rage[tier] or nil
-		local special = identity.line(value, rage)
+		local special = identity.line(value, rage) ..
+			" (inert until the trinket effects lane)"
 		core.register_craftitem(grug_gear.trinket_item(identity.key, tier), {
 			description = TIER_NAMES[tier] .. " " .. identity.name ..
 				"\nItem level " .. ILVLS[tier] .. "\n" ..

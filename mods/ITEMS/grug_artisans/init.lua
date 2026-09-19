@@ -51,6 +51,7 @@ function grug_artisans.register_refinement(tier, base, wood_grade)
 		in_place = true,
 		hint = "Refine in the inventory grid",
 	})
+	recipe.quality_mode = "refinement"
 	refinement_recipes[recipe.id] = true
 	return recipe
 end

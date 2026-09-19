@@ -536,7 +536,7 @@ function grug_items.set_refined(stack, refined)
 	return true
 end
 
-local function mastery_slots(player)
+function grug_items.mastery_band(player)
 	local level = grug_xp.get_level(player)
 	if level >= 46 then return 4 end
 	if level >= 31 then return 3 end
@@ -546,7 +546,7 @@ end
 
 function grug_items.can_craft_quality(player, recipe)
 	local mode = recipe and (recipe.quality_mode or recipe._grug_quality_mode)
-	if mode == "masterwork" and mastery_slots(player) < 3 then
+	if mode == "masterwork" and grug_items.mastery_band(player) < 3 then
 		return false, "Expert mastery is required for Masterwork quality."
 	end
 	return true
@@ -557,26 +557,30 @@ function grug_items.apply_crafted_quality(stack, mode, player, seed)
 	mode = mode or "base"
 	local row = grug_items.CRAFTED_QUALITY[mode]
 	if not row then return false, "unknown crafted quality" end
-	if mode == "masterwork" and mastery_slots(player) < 3 then
+	if mode == "masterwork" and grug_items.mastery_band(player) < 3 then
 		return false, "Expert mastery is required for Masterwork quality."
 	end
 	local meta = stack:get_meta()
+	local family = family_for(stack)
 	ensure_base_name(stack)
 	meta:set_int("grug_quality", row.quality)
-	meta:set_int("grug_refined", row.refined and 1 or 0)
+	-- Trinkets have their fixed prefix/suffix channels but no refinement state
+	-- (§6.2), even when their crafted source uses the `fine` roll window.
+	local refined = row.refined and family ~= "trinket"
+	meta:set_int("grug_refined", refined and 1 or 0)
 	meta:set_string("grug_ench", "")
 	local ilvl = effective_ilvl(stack)
 	if ilvl then
 		write_item_level_meta(stack, meta, ilvl)
 	end
 	if row.window then
-		local slots = mastery_slots(player)
+		local slots = grug_items.mastery_band(player)
 		local count = mode == "fine" and math.min(2, slots) or slots
 		count = clamp(count, row.minimum, row.maximum)
 		return grug_items.roll_enchants(stack, ilvl, row.window, count, seed)
 	end
 	local totals = write_derived(meta, {})
-	apply_capabilities(stack, totals, row.refined)
+	apply_capabilities(stack, totals, refined)
 	grug_items.regenerate_description(stack, player)
 	return true
 end

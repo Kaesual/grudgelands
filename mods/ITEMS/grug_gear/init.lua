@@ -502,7 +502,7 @@ grug_gear.STARTER_STAFF = STARTER_STAFF
 -- grug_inventory names neither item twice.
 grug_gear.STARTER_SWORD = "default:sword_stone"
 
-dofile(core.get_modpath(core.get_current_modname()) .. "/trinkets.lua")
+dofile(core.get_modpath("grug_gear") .. "/trinkets.lua")
 
 core.log("action", "[grug_gear] " .. NUM_BRACKETS .. " bracket catalogs: " ..
 	tool_count .. " weapons + " .. craftitem_count .. " armor pieces")

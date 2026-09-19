@@ -3,7 +3,8 @@
 return function(repo, spec)
 	local globals = {"core", "ItemStack", "grug_core", "grug_inventory",
 		"grug_gear", "grug_jobs", "grug_items", "grug_materials",
-		"grug_artisans", "grug_professions", "grug_classes", "grug_xp"}
+		"grug_artisans", "grug_professions", "grug_classes", "grug_xp",
+		"grug_mobs", "PcgRandom", "default"}
 	local saved = {}
 	for index = 1, #globals do
 		local name = globals[index]
@@ -32,6 +33,12 @@ return function(repo, spec)
 				for key, child in pairs(value or {}) do out[key] = child end
 				return out
 			end
+		end
+		local function copy(value)
+			if type(value) ~= "table" then return value end
+			local out = {}
+			for key, child in pairs(value) do out[copy(key)] = copy(child) end
+			return out
 		end
 
 		local Meta = {}
@@ -69,6 +76,12 @@ return function(repo, spec)
 		function Stack:get_meta() return self.meta end
 		function Stack:get_wear() return self.wear or 0 end
 		function Stack:set_wear(value) self.wear = value end
+		function Stack:take_item(amount)
+			amount = math.min(self.count, tonumber(amount) or 1)
+			self.count = self.count - amount
+			if self.count <= 0 then self.name, self.count = "", 0 end
+			return self
+		end
 		function Stack:get_definition() return core.registered_items[self.name] or {} end
 		function Stack:get_tool_capabilities()
 			return self.capabilities or self:get_definition().tool_capabilities or {}
@@ -77,7 +90,10 @@ return function(repo, spec)
 
 		local engine_recipes, mods_loaded = {}, {}
 		local craft_predicts, craft_callbacks = {}, {}
+		local allow_inventory_callbacks = {}
 		local registration_count = {}
+		local serialized, serial = {}, 0
+		local node_meta = {}
 		local current_mod = "grug_gear"
 		core = {registered_items = {}, registered_nodes = {},
 			registered_craft_predicts = craft_predicts,
@@ -90,6 +106,15 @@ return function(repo, spec)
 			end
 			return nil
 		end
+		function core.serialize(value)
+			serial = serial + 1
+			local key = "kat:" .. serial
+			serialized[key] = copy(value)
+			return key
+		end
+		function core.deserialize(value) return copy(serialized[value]) end
+		function core.get_us_time() return 123456789 end
+		function core.get_gametime() return 123 end
 		local function register(name, definition)
 			name = name:gsub("^:", "")
 			registration_count[name] = (registration_count[name] or 0) + 1
@@ -98,6 +123,11 @@ return function(repo, spec)
 		end
 		core.register_craftitem = register
 		core.register_tool = register
+		function core.register_node(name, definition)
+			name = name:gsub("^:", "")
+			core.registered_nodes[name] = definition
+			core.registered_items[name] = definition
+		end
 		function core.override_item(name, changes)
 			local definition = assert(core.registered_items[name], name)
 			for key, value in pairs(changes) do definition[key] = value end
@@ -126,10 +156,79 @@ return function(repo, spec)
 		end
 		function core.register_on_item_pickup() end
 		function core.register_on_leaveplayer() end
+		function core.register_on_joinplayer() end
+		function core.register_on_player_inventory_action() end
+		function core.register_allow_player_inventory_action(callback)
+			allow_inventory_callbacks[#allow_inventory_callbacks + 1] = callback
+		end
+		function core.register_lbm() end
+		function core.after(_, callback) callback() end
+		function core.formspec_escape(text) return text end
+		function core.is_protected() return false end
+		function core.remove_node() end
 		function core.colorize(_, text) return text end
 		function core.chat_send_player() end
 		function core.log() end
 		function core.add_item(_, item) return {item = item} end
+
+		local Inventory = {}
+		Inventory.__index = Inventory
+		function Inventory:set_size(listname, size)
+			self.sizes[listname] = size
+			self.lists[listname] = self.lists[listname] or {}
+		end
+		function Inventory:get_size(listname) return self.sizes[listname] or 0 end
+		function Inventory:get_stack(listname, index)
+			return stack((self.lists[listname] or {})[index] or "")
+		end
+		function Inventory:set_stack(listname, index, value)
+			self.lists[listname] = self.lists[listname] or {}
+			self.lists[listname][index] = stack(value)
+		end
+		function Inventory:get_list(listname)
+			local out = {}
+			for index = 1, self:get_size(listname) do
+				out[index] = self:get_stack(listname, index)
+			end
+			return out
+		end
+		function Inventory:is_empty(listname)
+			for index = 1, self:get_size(listname) do
+				if not self:get_stack(listname, index):is_empty() then return false end
+			end
+			return true
+		end
+		local function meta_for(pos)
+			local key = pos.x .. ":" .. pos.y .. ":" .. pos.z
+			if not node_meta[key] then
+				local inv = setmetatable({sizes = {}, lists = {}}, Inventory)
+				node_meta[key] = {strings = {}, ints = {}, inventory = inv}
+			end
+			local record = node_meta[key]
+			return {
+				get_inventory = function() return record.inventory end,
+				get_string = function(_, name) return record.strings[name] or "" end,
+				set_string = function(_, name, value) record.strings[name] = value end,
+				get_int = function(_, name) return record.ints[name] or 0 end,
+				set_int = function(_, name, value) record.ints[name] = value end,
+			}
+		end
+		core.get_meta = meta_for
+
+		PcgRandom = function(seed)
+			local state = math.floor(tonumber(seed) or 1) % 2147483647
+			return {next = function(_, minimum, maximum)
+				state = (state * 48271) % 2147483647
+				return minimum + state % (maximum - minimum + 1)
+			end}
+		end
+		default = {
+			get_hotbar_bg = function() return "" end,
+			get_inventory_drops = function() end,
+			set_inventory_action_loggers = function() end,
+			node_sound_metal_defaults = function() return {} end,
+			node_sound_wood_defaults = function() return {} end,
+		}
 
 		local function base(name, definition)
 			core.registered_items[name] = definition or {description = name}
@@ -145,10 +244,28 @@ return function(repo, spec)
 		base("default:wood", {description = "Wood", groups = {wood = 1}})
 
 		grug_core = {register_on_equipment_change = function() end,
-			level_scale = function() return 1 end}
+			notify_equipment_change = function() end,
+			level_scale = function() return 1 end,
+			mono_time = function() return 123 end,
+			can_use_item_level = function() return true end,
+			status_modifier_sum = function() return 0 end}
 		grug_inventory = {}
+		grug_classes = {
+			class_ids = {"warrior", "mage", "priest"},
+			get_armor_rank = function() return 3 end,
+			get_class_def = function() return {name = "KAT"} end,
+			get_talent_bonus = function() return 0 end,
+			get_melee_bonus = function() return 0 end,
+			register_on_class_chosen = function() end,
+			pool_percent_amount = function(_, _, value) return value end,
+		}
+		grug_xp = {get_level = function(player) return player and player.level or 1 end}
+		grug_mobs = {register_kill_loot_hook = function() end,
+			register_boss_reward_hook = function() end}
 		current_mod = "grug_gear"
 		dofile(repo .. "/mods/ITEMS/grug_gear/init.lua")
+		current_mod = "grug_quality"
+		dofile(repo .. "/mods/ITEMS/grug_quality/init.lua")
 
 		local material_items = {
 			"grug_materials:quartz", "grug_materials:cut_quartz",
@@ -183,12 +300,6 @@ return function(repo, spec)
 			register_on_harvest = function(callback) harvest_callback = callback end,
 		}
 		grug_professions = {}
-		grug_items = {
-			set_refined = function(value, refined)
-				value:get_meta():set_int("grug_refined", refined and 1 or 0)
-				return true
-			end,
-		}
 
 		grug_jobs = {}
 		dofile(repo .. "/mods/PLAYER/grug_jobs/registry.lua")
@@ -198,18 +309,26 @@ return function(repo, spec)
 		grug_jobs.profession_level = function(player)
 			return player.profession_level or 1
 		end
+		grug_jobs.can_craft_recipe = function() return true end
+		grug_jobs.record_craft = function() end
+		grug_jobs.station_book_button = function() return "" end
+		grug_jobs.open_book = function() end
+		dofile(repo .. "/mods/PLAYER/grug_jobs/stations.lua")
 		for _, station in ipairs({"grid", "forge", "tanning_rack", "tailor_bench",
 				"carving_bench", "jewellers_bench"}) do
-			grug_jobs.register_station(station, {
-				register_recipe = station == "grid" and function(recipe)
-					core.register_craft({output = recipe.output, recipe = recipe.inputs})
-				end or function() end,
-			})
+			if station ~= "grid" then
+				grug_jobs.register_station(station, {register_recipe = function() end})
+			end
 		end
 
 		current_mod = "grug_artisans"
 		dofile(repo .. "/mods/ITEMS/grug_artisans/init.lua")
 		for index = 1, #mods_loaded do mods_loaded[index]() end
+
+		local station_factory = dofile(repo ..
+			"/mods/PLAYER/grug_jobs/station_nodes.lua")
+		station_factory.register_nodes()
+		dofile(repo .. "/mods/PLAYER/grug_inventory/equipment.lua")
 
 		local actual = grug_jobs.recipes_for(spec.profession)
 		check(#actual == #spec.recipes, "recipe count differs: " .. #actual ..
@@ -335,7 +454,9 @@ return function(repo, spec)
 		if spec.verify then
 			spec.verify({check = check, core = core, stack = stack,
 				actual = actual, craft_callbacks = craft_callbacks,
-				craft_predicts = craft_predicts, harvest_callback = harvest_callback})
+				craft_predicts = craft_predicts, harvest_callback = harvest_callback,
+				allow_inventory = allow_inventory_callbacks[1],
+				meta_for = meta_for})
 		end
 		return string.format("PASS r9 %s catalog recipes=%d outputs=%d\n",
 			spec.profession, #actual, (function()
