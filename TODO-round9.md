@@ -623,6 +623,14 @@ ocean edge and the enemy border (warning band, hard dismount).
     before CAP and MAP-B, verified by an output-equivalence KAT and one
     profiler pair. Dirty-region replay and emerge threads stay out (the
     latter blocked by Luanti #9357).
+42. **Mount warning by classification probing** (orchestrator ruling
+    2026-09-19 after MOUNTS review 5; the user may veto): the analytic
+    flight-boundary distance over warped zones and bay silhouettes is
+    withdrawn from the zone contract. The 48-node warning is computed by
+    probing the flight-legality classification itself along 16 directions
+    at 1/2/4/8/16/32/48 nodes once per second: exact for any adjacent
+    illegal column, within ±4 nodes at range; the hard dismount stays
+    exact at the current node.
 
 ## 5. MAP-C protocol: what must not repeat from Round 8
 
