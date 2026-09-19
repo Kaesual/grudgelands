@@ -32,28 +32,41 @@ playtest is complete. Mapgen findings are already in `TODO-round9.md`
   bars on top of the battlements are rotated 90° wrong (param2); the
   x-oriented segments are right. WP13 precinct ring.
 - (5b) **Walls overlap the core buildings** in most capitals (the wall
-  wins, looks broken). Options: move the conflicting buildings one or two
-  nodes inward (risk: new conflicts with neighbouring buildings), or move
-  the whole ring and its gates two nodes outward. The user prefers the
-  simpler one; the lane decides after checking how gates are cut where
-  routes enter (routes are solved in WP40 with fixed capital fittings, so
-  the outward move must not touch a route pin).
+  wins, looks broken). Ruling 2026-09-19: move the core ring and its gates
+  two nodes outward (user: the core ring is not connected to the WP40 route
+  pins, which lie far outside the outer ring; the only routes into the core
+  are the outer ring's straightforward alleys). WP13 code only.
 - (6a) **Royal guards without crowns**; only the king wears one.
 - (6b) **Two royal guards instead of four** (four are too hard).
 - (7a) **Dragons twice as large**, collision box scaled with the visual
   (today `size` 4 / box ±1.5 × 4 and ±1.2 × 3.2).
-- (7b) **Dragon behaviour reads as broken:** flying animation, no
-  movement, damage after a short wait. Cause: the dragons are authored as
-  stationary hoard guardians (`walk_velocity` and `run_velocity` 0, breath
-  projectile up to 32 nodes). Needs a user ruling: keep stationary with a
-  clearer telegraph (breath particles, roar), or let them move/fly within
-  the leash (36 nodes).
+- (7b) **Dragons must move** (ruling 2026-09-19): walk or fly at their own
+  discretion, faster than any player movement so nobody simply runs away;
+  today they are stationary hoard guardians (`walk_velocity`/`run_velocity`
+  0). Their breath projectiles are invisible and leave no ground effect:
+  both must become visible. Further boss ideas are under discussion (see
+  the chat of 2026-09-19); prefer cool-and-simple. Candidate lane R9-BOSS
+  (dragons + the royal-guard changes), wave 1, parallel to MOB2.
 - (7c) **Dragon HP 54 000 → 18 000** for V1 testing.
 - Dragon positions: Wyrmglass Ice Dragon (west island) at x = −3260,
   z = −40; Stormscale Jungle Wyvern (east island) at x = 3260, z = −40.
 
-## Still to test
+## Decided on 2026-09-19 for the remaining points
 
-- (8) Cooking v1 through the grid and the raw-assembly furnace route.
-- (9) Fishing in several level bands.
-- (10) Alchemy v1: trainer, brewing stand, one potion and one elixir.
+- (8) Cooking is tested after the next round, once the rebuilt recipe
+  books exist. Book detail: the **Close button returns to the crafting
+  UI**, it does not close the inventory.
+- **Recipe discovery (proposal, awaiting the user's yes):** a recipe is
+  listed in the book when (a) its tier is unlocked and (b) the player has
+  held every ingredient at least once (a per-player "seen items" set from a
+  cheap periodic inventory scan, since code-side pickups bypass the
+  inventory-action callback). Learning a profession marks its T1 recipes
+  as discovered so the book is never empty; undiscovered recipes per tier
+  are shown as a count. Tier unlock stays as built: crafts at the current
+  tier only, automatic at the threshold, capped by the character band.
+- (9) Fishing: not tested separately; feedback comes from the friends'
+  playtest evenings.
+- (10) Brewing stand takes two reagents plus a vial. Backlog, not Round 9:
+  an optional third "catalyst" slot with a handful of generic catalysts
+  that modify any potion (duration, doubled output) — one function, no
+  per-recipe work — if more variety is wanted later.
