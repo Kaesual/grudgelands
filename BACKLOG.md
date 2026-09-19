@@ -287,6 +287,18 @@ profiler's phase records before any change:
    state (manifests, memoisation, mod storage) to become per-thread or
    read-only.
 
+**Lever 2 is blocked by the engine (verified 2026-09-19):** Luanti issue
+#9357 ("Mapgen: unfinished y-slices with num_emerge_threads > 1", open,
+label non-trivial) makes v7/valleys/carpathian lose biome nodes, ores and
+caves in the topmost/lowermost y-slice of mapchunks and truncates
+decorations when more than one emerge thread runs; the engine therefore
+enables multithreading by default only for singlenode
+(`reference_projects/luanti/src/emerge.cpp:180-187`). The mapgen already
+runs in the mapgen environment (`register_mapgen_script`), so the Lua side
+is ready, but `num_emerge_threads = 1` stays pinned until the engine fixes
+#9357 (PR #16224 pending) or the project moves to singlenode with its own
+cave/ore generation, which `mapgen-control.md` rejected.
+
 Only with that data is the v7 plateau (caves everywhere under the
 surface) worth revisiting; Round 9 shipped MAP-C without it (ruling 35).
 

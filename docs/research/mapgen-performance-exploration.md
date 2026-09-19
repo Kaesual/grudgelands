@@ -2,6 +2,13 @@
 
 Exploratory read-only analysis by GPT-6 Astra on the R9-MAP-C lane state 63b64752 (plateau attempts, coast band attribution) with the pinned engine source. Report only; no code changed. Feeds BACKLOG WP48 (writer post-processing, parallel emerge) and any later plateau decision. Measurements labelled analytic are LuaJIT probes on the portable harness, not engine runs.
 
+**Orchestrator note (2026-09-19):** section 4's parallel-emerge estimate is
+conditional on an engine fix. Luanti issue #9357 (open) breaks v7 with
+`num_emerge_threads > 1` (missing biome nodes, ores and caves in a chunk's
+top/bottom y-slice, truncated decorations); the engine enables multiple
+threads by default only for singlenode (`src/emerge.cpp:180-187`). The
+pin stays until that issue is resolved. See BACKLOG.md WP48.
+
 ## Summary
 
 1. **Coast caching is the strongest immediate lever:** a provisional **6–10 s saving** against the current 78.9 s corpus warrants testing.
