@@ -124,6 +124,13 @@ local function register_station_node(station, info, visual)
 				"Cannot craft " .. recipe.output_name .. ": " .. reason)
 			return 0
 		end
+		local quality_api = rawget(_G, "grug_items")
+		if quality_api and type(quality_api.crafted_output) == "function" then
+			local output = ItemStack(stack)
+			if quality_api.crafted_output(output, player, recipe) then
+				core.get_meta(pos):get_inventory():set_stack(listname, index, output)
+			end
+		end
 		return stack:get_count()
 	end
 	local function on_take(pos, listname, index, stack, player)

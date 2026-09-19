@@ -238,6 +238,73 @@ local ARMOR_SLOTS = {
 	{key = "feet",  share = 0.16},
 }
 
+-- Public description-regeneration seam for grug_quality. It returns every
+-- definition-derived line below the display name, recomputing the base stat at
+-- a per-stack ilvl instead of copying a bracket anchor. Refinement changes the
+-- base contribution here; affixes and name coloring remain grug_quality's
+-- per-stack work.
+function grug_gear.describe_stack_base(stack, ilvl, refined)
+	local def = stack:get_definition() or {}
+	local groups = def.groups or {}
+	if (groups.grug_equip_trinket or 0) > 0 then return {}, {} end
+	local lines = {}
+	if ilvl then lines[#lines + 1] = "Item level " .. ilvl end
+	if (groups.grug_equip_weapon or 0) > 0 then
+		local family = stack:get_name():match("^grug_gear:([a-z]+)_")
+		local base_caps = def.tool_capabilities or {}
+		local damage = family and grug_gear.weapon_damage_at_level(ilvl or
+			def._grug_ilvl or 1, family) or
+			(base_caps.damage_groups and base_caps.damage_groups.fleshy or 0)
+		if refined and damage > 0 then damage = math.floor(damage * 1.15 + 0.5) end
+		if damage > 0 then
+			lines[#lines + 1] = core.colorize(STAT_COLOR, weapon_stats(damage,
+				base_caps.full_punch_interval or 1.4, def._grug_hands or 1))
+		end
+		return lines, {damage = damage,
+			full_punch_interval = base_caps.full_punch_interval or 1.4}
+	end
+	local rank = tonumber(groups.grug_armor_class)
+	if rank then
+		local line_key = rank == 3 and "metal" or rank == 2 and "leather" or
+			"cloth"
+		local slot_key
+		for _, slot in ipairs(ARMOR_SLOTS) do
+			if (groups["grug_equip_" .. slot.key] or 0) > 0 then
+				slot_key = slot.key
+				break
+			end
+		end
+		local line
+		for _, candidate in ipairs(ARMOR_LINES) do
+			if candidate.key == line_key then line = candidate break end
+		end
+		local share
+		for _, candidate in ipairs(ARMOR_SLOTS) do
+			if candidate.key == slot_key then share = candidate.share break end
+		end
+		local armor
+		if line and share and ilvl then
+			armor = math.max(1, math.floor((line.base + line.per_ilvl * ilvl)
+				* share + 0.5))
+		else
+			armor = tonumber(def._grug_armor) or 0
+		end
+		if refined and armor > 0 then armor = math.floor(armor * 1.15 + 0.5) end
+		if armor > 0 then
+			lines[#lines + 1] = core.colorize(STAT_COLOR, armor_stats(armor))
+		end
+		return lines, {armor = armor}
+	end
+	local description = tostring(def.description or "")
+	for line in description:gmatch("[^\n]+") do
+		if line ~= description:match("^[^\n]+") and
+				not line:match("^Effective at level %d+:") then
+			lines[#lines + 1] = line
+		end
+	end
+	return lines, {}
+end
+
 --
 -- Prices. `get_price` is what the player pays a vendor, `get_sell_price` the
 -- vendor buy-back at 25% (also mirrored into `_grug_sell_price`, the field
@@ -519,20 +586,26 @@ function grug_gear.initialize_weapon_tooltip(stack, player)
 	if not class_api or not xp_api or not stack or stack:is_empty() then
 		return false
 	end
+	local meta = stack:get_meta()
+	local original_description = meta:get_string("description")
+	local quality_api = rawget(_G, "grug_items")
+	if quality_api and
+			type(quality_api.regenerate_description) == "function" then
+		quality_api.regenerate_description(stack, player)
+	end
 	local def = stack:get_definition()
 	if not def or not def.groups or (def.groups.grug_equip_weapon or 0) <= 0 then
-		return false
+		return meta:get_string("description") ~= original_description
 	end
 	local caps = stack:get_tool_capabilities() or {}
 	local damage = caps.damage_groups and caps.damage_groups.fleshy or 0
 	if type(damage) ~= "number" or damage <= 0 then
-		return false
+		return meta:get_string("description") ~= original_description
 	end
 	local level = xp_api.get_level(player)
 	local effective = math.max(1, math.floor(
 		(damage + class_api.get_melee_bonus(player))
 		* grug_core.level_scale(level)))
-	local meta = stack:get_meta()
 	local base = meta:get_string("description")
 	if base == "" then
 		base = def.description or stack:get_name()
@@ -541,10 +614,10 @@ function grug_gear.initialize_weapon_tooltip(stack, player)
 	local desired = base ..
 		("\nEffective at level %d: %d damage per swing"):format(level, effective)
 	if meta:get_string("description") == desired then
-		return false
+		return desired ~= original_description
 	end
 	meta:set_string("description", desired)
-	return true
+	return desired ~= original_description
 end
 
 -- Refresh every weapon stack the player can see, including the one just moved

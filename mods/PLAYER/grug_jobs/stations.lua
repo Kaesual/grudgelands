@@ -102,8 +102,12 @@ local function final_grid_craft(itemstack, player, old_craft_grid)
 		deny(player, recipe, reason)
 		return ItemStack("")
 	end
+	local quality_api = rawget(_G, "grug_items")
+	if quality_api and type(quality_api.crafted_output) == "function" then
+		quality_api.crafted_output(itemstack, player, recipe)
+	end
 	grug_jobs.record_craft(player, recipe.profession, recipe.tier)
-	return nil
+	return itemstack
 end
 
 core.register_craft_predict(final_grid_predict)

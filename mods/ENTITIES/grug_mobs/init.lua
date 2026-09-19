@@ -236,9 +236,28 @@ function grug_mobs.award_kill_xp(self)
 	return true
 end
 
+-- Kill-loot hooks run at the shared death boundary rather than inside
+-- mobs_redo's string-only drop rows. This lets per-stack quality metadata
+-- survive and also covers bosses whose ordinary drop list is intentionally
+-- empty. The player-tag/enemy-kill authority remains aggro.lua's one predicate.
+local kill_loot_hooks = {}
+
+function grug_mobs.register_kill_loot_hook(fn)
+	table.insert(kill_loot_hooks, fn)
+end
+
 -- Called by the shared mobs_redo death boundary before it chooses on_die,
 -- on_death, a death animation or the ordinary smoke/removal fallback.
 function grug_mobs.settle_mob_death(self)
+	self.temp = self.temp or {}
+	if not self.temp.grug_kill_loot_settled then
+		self.temp.grug_kill_loot_settled = true
+		local tagger = grug_mobs.player_drop_tagger
+			and grug_mobs.player_drop_tagger(self)
+		if tagger then
+			for _, fn in ipairs(kill_loot_hooks) do fn(self, tagger) end
+		end
+	end
 	return grug_mobs.award_kill_xp(self)
 end
 
