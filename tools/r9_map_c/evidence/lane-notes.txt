@@ -41,3 +41,15 @@ after_plan_us 33612638
 after_writer_us 50779062
 after_emerge_elapsed_us 99275939
 result FAIL after_exceeds_before; plateau slowdown STOP triggered before engine witness and final pin refresh
+
+performance_stop_bulk_attempt
+scope opcode=26 role=1 policy=1 ymax=maxp.y uniform_native_stone=true param2=0
+before_callback_total_us 52073722
+before_plan_us 31413515
+before_writer_us 20660207
+before_emerge_elapsed_us 68020996
+after_callback_total_us 93663129
+after_plan_us 35557871
+after_writer_us 58105258
+after_emerge_elapsed_us 108893340
+result FAIL after_exceeds_before; one-attempt limit reached

@@ -72,6 +72,46 @@ local function preserved_native_cave(opcode, policy, class_id, heightmap_value,
 		y <= heightmap_value
 end
 
+local function uniform_native_stone(data, param2, first, stride, count,
+		native_stone_cid)
+	local index = first
+	for _ = 1, count do
+		if data[index] ~= native_stone_cid or param2[index] ~= 0 then return false end
+		index = index + stride
+	end
+	return true
+end
+
+local function bulk_clear_equivalence_fixture(columns, native_stone_cid, air_cid)
+	local generic_data, generic_param2, generic_intent = {}, {}, {}
+	local bulk_data, bulk_param2, bulk_intent, eligible = {}, {}, {}, {}
+	for column = 1, #columns do
+		local source = columns[column]
+		generic_data[column], generic_param2[column], generic_intent[column] = {}, {}, {}
+		bulk_data[column], bulk_param2[column], bulk_intent[column] = {}, {}, {}
+		for y = 1, #source.data do
+			local cid, p2 = source.data[y], source.param2[y]
+			local changed = cid ~= air_cid or p2 ~= 0
+			generic_data[column][y] = air_cid
+			generic_param2[column][y] = 0
+			generic_intent[column][y] = changed and 1 or 0
+			bulk_data[column][y], bulk_param2[column][y] = cid, p2
+			bulk_intent[column][y] = 0
+		end
+		eligible[column] = uniform_native_stone(source.data, source.param2, 1, 1,
+			#source.data, native_stone_cid)
+		for y = 1, #source.data do
+			local changed = bulk_data[column][y] ~= air_cid or
+				bulk_param2[column][y] ~= 0
+			bulk_data[column][y] = air_cid
+			bulk_param2[column][y] = 0
+			bulk_intent[column][y] = changed and 1 or 0
+		end
+	end
+	return generic_data, generic_param2, generic_intent,
+		bulk_data, bulk_param2, bulk_intent, eligible
+end
+
 local function adapter_factory(allocator_factory)
 	local MAX_SAFE = 9007199254740991
 	local PLAN_SCHEMA = "grug_wp40_r5_column_run_plan_v1"
@@ -106,7 +146,9 @@ local function adapter_factory(allocator_factory)
 	local R_INTERFACE = 8
 	local R_AUX = 9
 
+	local OP_TERRAIN_CLEAR = 26
 	local ROLE_AIR = 1
+	local ROLE_PATH_CORE = 11
 	local ROLE_ORDINARY_WATER_SOURCE = 10
 	local ROLE_RIVER_WATER_SOURCE = 13
 	local ROLE_STRATUM_AT_Y = 14
@@ -567,6 +609,8 @@ local function adapter_factory(allocator_factory)
 			K.MAX_COLUMNS)
 		local dirty_liquid = new_full_array("adapter_dirty_liquid_columns",
 			K.MAX_COLUMNS)
+		local bulk_clear_y_min = new_full_array("adapter_bulk_clear_y_min",
+			K.MAX_COLUMNS)
 		local scratch = new_full_array("adapter_phase_scratch",
 			K.SCRATCH_CAPACITY)
 		local metric_values = new_full_array("adapter_metrics_state", K.METRIC_COUNT)
@@ -1019,6 +1063,7 @@ local function adapter_factory(allocator_factory)
 				dirty_param2[index] = 0
 				dirty_light[index] = 0
 				dirty_liquid[index] = 0
+				bulk_clear_y_min[index] = K.HEIGHTMAP_SENTINEL
 			end
 			for index = 1, K.SCRATCH_CAPACITY do scratch[index] = 0 end
 
@@ -1037,6 +1082,45 @@ local function adapter_factory(allocator_factory)
 					end
 				end
 			end
+			local air_target_base = cache_target(K.ROLE_AIR, minp.y, 0, minp.y)
+			local air_target_constant = true
+			for y = minp.y + 1, maxp.y do
+				local base = cache_target(K.ROLE_AIR, y, 0, minp.y)
+				for field = 1, K.TARGET_STRIDE do
+					if scratch[base + field] ~= scratch[air_target_base + field] then
+						air_target_constant = false
+						break
+					end
+				end
+			end
+			local stone_target_base = cache_target(ROLE_PATH_CORE, minp.y, 0, minp.y)
+			local air_cid = scratch[air_target_base + 1] - 1
+			local native_stone_cid = scratch[stone_target_base + 1] - 1
+			local air_param2_mode = scratch[air_target_base + 3]
+			local bulk_contract_ready = air_target_constant and
+				scratch[air_target_base + 2] == K.TARGET_AIR and
+				(air_param2_mode == K.PARAM2_PRESERVE or
+					air_param2_mode == K.PARAM2_EXACT and
+						scratch[air_target_base + 4] == 1) and
+				scratch[air_target_base + 5] == K.CLASS_AIR and
+				scratch[air_target_base + 6] == 0 and
+				scratch[air_target_base + 7] == K.LIQUID_NONE and
+				scratch[air_target_base + 8] == 0 and
+				scratch[air_target_base + 9] == 1 and
+				scratch[air_target_base + 10] == 1 and
+				scratch[air_target_base + 11] == 1 and
+				scratch[air_target_base + 12] == 1 and
+				scratch[air_target_base + 13] == 0 and
+				scratch[stone_target_base + 2] == K.TARGET_SOLID and
+				scratch[stone_target_base + 5] == K.CLASS_NATURAL_HOST and
+				scratch[stone_target_base + 6] == 0 and
+				scratch[stone_target_base + 7] == K.LIQUID_NONE and
+				scratch[stone_target_base + 8] == 0 and
+				scratch[stone_target_base + 9] == 0 and
+				scratch[stone_target_base + 10] == 0 and
+				scratch[stone_target_base + 11] == 0 and
+				scratch[stone_target_base + 12] == 0 and
+				scratch[stone_target_base + 13] == 0
 			local emerged_min, emerged_max = vm_call0(vm_get_emerged_area,
 				K.M_VM_GET_EMERGED, vm)
 			metric_add(K.M_EMERGED_EXTERNAL, 2)
@@ -1161,8 +1245,35 @@ local function adapter_factory(allocator_factory)
 					local after = plan.column_start[column + 1]
 					for run = first, after - 1 do
 						local run_base = (run - 1) * K.RUN_STRIDE
-						for y = plan.run_values[run_base + K.R_Y_MIN],
-								plan.run_values[run_base + K.R_Y_MAX] do
+						local run_y_min = plan.run_values[run_base + K.R_Y_MIN]
+						local run_y_max = plan.run_values[run_base + K.R_Y_MAX]
+						local bulk_clear = bulk_contract_ready and
+							plan.run_values[run_base + K.R_OPCODE] == OP_TERRAIN_CLEAR and
+							plan.run_values[run_base + K.R_ROLE] == K.ROLE_AIR and
+							plan.run_values[run_base + K.R_POLICY] == K.POLICY_CUT_NATURAL and
+							run_y_max == maxp.y
+						if bulk_clear then
+							bulk_clear = uniform_native_stone(data_buffer, param2_buffer,
+								buffer_index(x, run_y_min, z), y_stride,
+								run_y_max - run_y_min + 1, native_stone_cid)
+						end
+						if bulk_clear then
+							bulk_clear_y_min[column] = run_y_min
+							modified_voxels = modified_voxels + run_y_max - run_y_min + 1
+							content_dirty_columns = content_dirty_columns +
+								mark_column(dirty_content, column)
+							light_dirty_columns = light_dirty_columns +
+								mark_column(dirty_light, column)
+							liquid_dirty_columns = liquid_dirty_columns +
+								mark_column(dirty_liquid, column)
+							if x < light_min_x then light_min_x = x end
+							if run_y_min < light_min_y then light_min_y = run_y_min end
+							if z < light_min_z then light_min_z = z end
+							if x > light_max_x then light_max_x = x end
+							if run_y_max > light_max_y then light_max_y = run_y_max end
+							if z > light_max_z then light_max_z = z end
+						else
+						for y = run_y_min, run_y_max do
 							local index = buffer_index(x, y, z)
 							local old_cid = data_buffer[index]
 							local old_p2 = param2_buffer[index]
@@ -1237,6 +1348,7 @@ local function adapter_factory(allocator_factory)
 									mark_column(dirty_liquid, column)
 							end
 						end
+						end
 					end
 				end
 			end
@@ -1265,6 +1377,10 @@ local function adapter_factory(allocator_factory)
 					if x >= minp.x and x <= maxp.x and y >= minp.y and
 							y <= maxp.y and z >= minp.z and z <= maxp.z then
 						local column = column_index(x, z)
+						if bulk_clear_y_min[column] ~= K.HEIGHTMAP_SENTINEL and
+								y >= bulk_clear_y_min[column] then
+							return air_cid, 0, true
+						end
 						local run_base = run_for_y(plan, column, y)
 						if run_base ~= nil then
 							final_cid, final_p2 = resolve_voxel(plan, run_base, y,
@@ -1358,14 +1474,25 @@ local function adapter_factory(allocator_factory)
 					for run = plan.column_start[column],
 							plan.column_start[column + 1] - 1 do
 						local run_base = (run - 1) * K.RUN_STRIDE
-						for y = plan.run_values[run_base + K.R_Y_MIN],
-								plan.run_values[run_base + K.R_Y_MAX] do
-							local index = buffer_index(x, y, z)
-							local final_cid, final_p2 = resolve_voxel(plan, run_base, y,
-								minp.y, heightmap[column], data_buffer[index],
-								param2_buffer[index])
-							data_buffer[index] = final_cid
-							param2_buffer[index] = final_p2
+						local run_y_min = plan.run_values[run_base + K.R_Y_MIN]
+						local run_y_max = plan.run_values[run_base + K.R_Y_MAX]
+						if bulk_clear_y_min[column] == run_y_min and
+								run_y_max == maxp.y then
+							local index = buffer_index(x, run_y_min, z)
+							for _ = run_y_min, run_y_max do
+								data_buffer[index] = air_cid
+								param2_buffer[index] = 0
+								index = index + y_stride
+							end
+						else
+							for y = run_y_min, run_y_max do
+								local index = buffer_index(x, y, z)
+								local final_cid, final_p2 = resolve_voxel(plan, run_base, y,
+									minp.y, heightmap[column], data_buffer[index],
+									param2_buffer[index])
+								data_buffer[index] = final_cid
+								param2_buffer[index] = final_p2
+							end
 						end
 					end
 				end
@@ -1541,4 +1668,5 @@ local function adapter_factory(allocator_factory)
 	return {new = new}
 end
 
-return adapter_factory, replacement_outcome_fixture, preserved_native_cave
+return adapter_factory, replacement_outcome_fixture, preserved_native_cave,
+	bulk_clear_equivalence_fixture
