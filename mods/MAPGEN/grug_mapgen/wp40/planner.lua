@@ -323,6 +323,10 @@ local function planner_factory(allocator_factory)
 		column_values_at = true,
 		hydrology_metric_values_at = true,
 		surface_cave_run_at = true,
+		surface_cave_candidate_at_cell = true,
+		surface_cave_cell_at = true,
+		surface_cave_constants = true,
+		coast_profile_at = true,
 		metrics = true,
 	}
 	local RELATION_FIELDS = {
@@ -449,6 +453,8 @@ local function planner_factory(allocator_factory)
 				type(planner_source.column_values_at) ~= "function" or
 				type(planner_source.hydrology_metric_values_at) ~= "function" or
 				type(planner_source.surface_cave_run_at) ~= "function" or
+				type(planner_source.surface_cave_candidate_at_cell) ~= "function" or
+				type(planner_source.coast_profile_at) ~= "function" or
 				type(planner_source.metrics) ~= "function" then
 			fail("fail_source", "planner source API differs")
 		end

@@ -25,12 +25,27 @@
 #   boot, a ROOT re-use included, and lands inside the scratch tree like
 #   everything else -- no directory of the repo is written.
 #   GAME_PATCH=<file> applies one disposable patch to the staged game only.
+#   R8_CAVE_WRITER_DISABLED=1 disables only the R8 cave-mouth transaction for
+#   the revision-bound native-baseline probe; every other mapgen pass remains.
+#   R8_NATIVE_BASELINE=1 disables the complete authored writer so a probe can
+#   inspect the unchanged native-v7 VM input.
 set -euo pipefail
 export LC_ALL=C
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
 timeout_s="${1:-90}"; shift || true
 port="${PORT:-$((32800 + RANDOM % 200))}"
 seed="${SEED:-}"
+
+[[ "${R8_CAVE_WRITER_DISABLED:-0}" == "0" ||
+	"${R8_CAVE_WRITER_DISABLED:-0}" == "1" ]] || {
+	echo "R8_CAVE_WRITER_DISABLED must be 0 or 1" >&2
+	exit 2
+}
+[[ "${R8_NATIVE_BASELINE:-0}" == "0" ||
+	"${R8_NATIVE_BASELINE:-0}" == "1" ]] || {
+	echo "R8_NATIVE_BASELINE must be 0 or 1" >&2
+	exit 2
+}
 [[ -z "$seed" || "$seed" =~ ^(0|[1-9][0-9]*)$ ]] || {
 	echo "SEED must be canonical unsigned decimal" >&2
 	exit 2
@@ -92,6 +107,12 @@ printf 'gameid = grudgelands\nbackend = sqlite3\nplayer_backend = sqlite3\nauth_
 printf 'port = %s\nbind_address = 127.0.0.1\nserver_announce = false\n' "$port" >"$root/server.conf"
 if [[ -n "$seed" ]]; then
 	printf 'fixed_map_seed = %s\n' "$seed" >>"$root/server.conf"
+fi
+if [[ "${R8_CAVE_WRITER_DISABLED:-0}" == "1" ]]; then
+	printf 'grug_mapgen_r8_cave_writer_disabled = true\n' >>"$root/server.conf"
+fi
+if [[ "${R8_NATIVE_BASELINE:-0}" == "1" ]]; then
+	printf 'grug_mapgen_r8_native_baseline = true\n' >>"$root/server.conf"
 fi
 # One log per boot: a re-used ROOT keeps the previous boot's log instead of
 # appending to it, so the two can be read apart.

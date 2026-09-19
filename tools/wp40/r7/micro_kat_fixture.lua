@@ -1071,7 +1071,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	for name, mask in accepted_block:gmatch('{"([^"]+)", (%d+)}') do
 		accepted_rows[#accepted_rows + 1] = {name, assert(tonumber(mask))}
 	end
-	check(#accepted_rows == 78, "accepted-content population differs")
+	check(#accepted_rows == 82, "accepted-content population differs")
 	local cultural_rows, p9g_rows = catalog.cultural_sources(), catalog.p9g_sources()
 	local semantic_names = {"air", "ignore", "default:water_source",
 		"default:water_flowing", "default:river_water_source",
@@ -1218,7 +1218,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	local hearthpine_config = settlement_module.config(hearthpine_prepared,
 		content_set.settlement, raw_sha256)
 	check(content_set.production_semantic_digest ==
-		"e23aea3c8bca6ffb28622a10e019324ad09930d5fed618c98da3d94e32f5bd76",
+		"9b7a978d178352521ae61fb87b897c5f79e12838b0829caa229ad90832ddedb8",
 		"production semantic identity differs: " .. content_set.production_semantic_digest)
 	check(content_set.p9g_semantic_digest ==
 		"450c35e94af32721768d3771454db89dbdb43099660b2118c178a3ca6b438d49",
@@ -1249,20 +1249,28 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	local r5_values = r5_manifest_module.validate(r6_manifest.r5_manifest_values)
 	local r5_digest = hex_sha256(r5_manifest_module.canonical_bytes(r5_values))
 	local gathering_manifest = catalog.manifest()
+	local successor_windows = manifest_module.successor_windows_for_evidence(
+		#content_set.production.content_names, #content_set.settlement.content_names)
+	check(successor_windows.p9g_min == 89 and successor_windows.p9g_max == 100 and
+		successor_windows.anchor_min == 101 and successor_windows.anchor_max == 102 and
+		successor_windows.settlement_min == 103,
+		"real manifest successor windows differ")
 	local cultural_registrations = catalog.cultural_registrations()
 	local cultural_digests = {}
 	for index = 1, #cultural_registrations do
 		cultural_digests[index] = cultural_registrations[index].digest
 	end
 	local p9g_delta = {schema = "grug_wp40_r7_p9g_delta_v1", opcode = 35,
-		class = 10, policy = 11, successor_ref_min = 85,
-		successor_ref_max = 96, order = "after_r6_p9_before_run_derivation",
+		class = 10, policy = 11, successor_ref_min = successor_windows.p9g_min,
+		successor_ref_max = successor_windows.p9g_max,
+		order = "after_r6_p9_before_run_derivation",
 		overwrite = false, catalog_sha256 = gathering_manifest.sha256}
 	local p9g_delta_digest = manifest_module.graph_digest_for_evidence(p9g_delta)
 	local anchor_roster_sha256 = string.rep("8", 64)
 	local anchor_delta = {schema = "grug_wp40_r7_anchor_delta_v1", opcode = 36,
-		class = 12, policy = 12, successor_ref_min = 97,
-		successor_ref_max = 98, order = "after_p9g_before_run_derivation",
+		class = 12, policy = 12, successor_ref_min = successor_windows.anchor_min,
+		successor_ref_max = successor_windows.anchor_max,
+		order = "after_p9g_before_run_derivation",
 		overwrite = false, roster_sha256 = anchor_roster_sha256,
 		root = "anchor_y_plus_one", support = "settled_predecessor_support_v1",
 		capital_count = 6, outpost_count = 24, bandit_count = 12,
@@ -1276,8 +1284,9 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		anchor_id = "anchor_001", blueprint_id = hearthpine_descriptor.id,
 		blueprint_kind = hearthpine_descriptor.kind,
 		blueprint_sha256 = hearthpine_config.identity.sha256,
-		content_sha256 = content_set.settlement_digest, successor_ref_min = 99,
-		successor_ref_max = 98 + #content_set.settlement.content_names,
+		content_sha256 = content_set.settlement_digest,
+		successor_ref_min = successor_windows.settlement_min,
+		successor_ref_max = successor_windows.settlement_max,
 		population = hearthpine_config.identity.cell_count,
 		population_kind = "cells",
 		reach_min_x = hearthpine_config.identity.min_x,
@@ -1611,9 +1620,9 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		check(accepted_by_name[name] ~= nil,
 			"Stage-B normalization introduced a foreign name")
 	end
-	check(#accepted_content_rows == 78 and normalized_population == 78 and
+	check(#accepted_content_rows == 82 and normalized_population == 82 and
 		substitution_count == 6,
-		"Stage-B 84-to-78 name projection differs")
+		"Stage-B 88-to-82 name projection differs")
 	local normalized, accepted = {}, {}
 	for index = 1, #cultural_registrations do
 		local registration = cultural_registrations[index]
@@ -1631,7 +1640,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		seed_identity = "micro-seed-0",
 		production_r6_content_sha256 = content_set.production_digest,
 		accepted_r6_projection_sha256 = accepted_digest,
-		name_map_population = 84, cultural_name_map_population = 6,
+		name_map_population = 88, cultural_name_map_population = 6,
 		cultural_substitution_count = substitution_count,
 		inherited_cultural_access_count = 12,
 		normalized_artifact_sha256 = normalized_digest,
@@ -1866,16 +1875,18 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	function content_wrapper.param2_kind() return "none" end
 	local empty_anchor_config = {new = function()
 		return {bind_plan = function() end,
-			settle = function()
+			settle = function(_, context)
+				context.write_anchor(2, -701, 0, support_cid, 0, 1, 7)
 				return {schema = "grug_wp40_r7_anchor_ledger_v1",
-					roster_sha256 = anchor_roster_sha256, operations = {}, written = 0}
+					roster_sha256 = anchor_roster_sha256, operations = {}, written = 1}
 			end, metrics = function() return {schema = "micro_anchor_metrics"} end,
 			roster = function() return {sha256 = anchor_roster_sha256} end}
 	end}
 	local empty_hearthpine_config = {key = "hearthpine", new = function()
 		return {key = "hearthpine", bind_plan = function() end,
-			settle = function()
-				return {schema = "grug_wp13_hearthpine_ledger_v1", written = 0}
+			settle = function(_, context)
+				context.write_hearthpine(3, -701, 0, support_cid, 0, 1, 1)
+				return {schema = "grug_wp13_hearthpine_ledger_v1", written = 1}
 			end, metrics = function()
 				return {schema = "grug_wp13_hearthpine_metrics_v1"}
 			end}
@@ -1969,6 +1980,10 @@ return function(repo, changed_roster_relative, expected_changed_count)
 				schema = "grug_wp40_r5_planner_source_v1",
 				column_values_at = function() return "land", nil end,
 				surface_cave_run_at = function() return nil end,
+				surface_cave_candidate_at_cell = function() return nil end,
+				surface_cave_cell_at = function() return 0, 0 end,
+				surface_cave_constants = function() return 80, -30912, 24, 2, 24 end,
+				coast_profile_at = function() return nil end,
 				metrics = function()
 					return {runtime_column_cache_limit = 65536,
 						runtime_column_cache_entries = 0,
@@ -2177,6 +2192,10 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		return "land", 1, "micro_no_zone", corn_biome, "human", -701
 	end
 	function planner_source.surface_cave_run_at() return nil end
+	function planner_source.surface_cave_candidate_at_cell() return nil end
+	function planner_source.surface_cave_cell_at() return 0, 0 end
+	function planner_source.surface_cave_constants() return 80, -30912, 24, 2, 24 end
+	function planner_source.coast_profile_at() return nil end
 	local source_anchor = {id = "micro_apex", position = {x = 10000, z = 10000}}
 	local source = {claim_exclusions = {{id = "micro_resource_exclusion",
 		recipe_id = "hard_start_core_v1"}}, routes = {}, hard_protection = {},
@@ -2284,6 +2303,12 @@ return function(repo, changed_roster_relative, expected_changed_count)
 			tostring(run_count)}, "/"))
 	local first_calls = observer.metrics()
 	local first_snapshot = observer.snapshot()
+	local actual_successor_refs = settlement_fixture.last_successor_refs()
+	check(actual_successor_refs.anchor_min == successor_windows.anchor_min and
+		actual_successor_refs.anchor_max == successor_windows.anchor_min and
+		actual_successor_refs.settlement_min == successor_windows.settlement_min and
+		actual_successor_refs.settlement_max == successor_windows.settlement_min,
+		"actual writer aux windows differ from real manifest windows")
 	local function snapshot_index(snapshot, x, y, z)
 		return ((z - snapshot.emin.z) * axis * axis) +
 			((y - snapshot.emin.y) * axis) + (x - snapshot.emin.x) + 1
@@ -2369,6 +2394,10 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		successor_metrics.schema == "grug_wp40_r7_successor_metrics_v1",
 		"shared writer metrics differ")
 	row("production/owner_transaction", applied .. "/" .. tostring(run_count))
+	row("production/successor_refs", table.concat({successor_windows.p9g_min,
+		successor_windows.p9g_max, actual_successor_refs.anchor_min,
+		actual_successor_refs.anchor_max, actual_successor_refs.settlement_min,
+		actual_successor_refs.settlement_max}, "/"))
 	row("production/runtime_proof_material", "omitted/0/0")
 	row("production/commit_calls", table.concat({first_calls.vm_set_data_calls,
 		first_calls.vm_set_param2_calls, first_calls.vm_set_light_data_calls,

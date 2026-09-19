@@ -93,17 +93,17 @@ stage_a.rejected_count = 7
 local stage_b = {
 	schema = "grug_wp40_r7_stage_b_receipt_v1", seed_slot = 1,
 	seed_identity = "seed-1", production_r6_content_sha256 = digest_a,
-	accepted_r6_projection_sha256 = digest_b, name_map_population = 84,
+	accepted_r6_projection_sha256 = digest_b, name_map_population = 88,
 	cultural_name_map_population = 6, cultural_substitution_count = 9,
 	inherited_cultural_access_count = 12,
 	normalized_artifact_sha256 = digest_b, candidate_decisions_sha256 = digest_a,
 	accepted_candidate_decisions_sha256 = digest_a, equal = true,
 }
 contract.validate_stage_b(stage_b)
-stage_b.name_map_population = 83
+stage_b.name_map_population = 87
 expect_failure(function() contract.validate_stage_b(stage_b) end,
 	"total name map differs")
-stage_b.name_map_population = 84
+stage_b.name_map_population = 88
 
 local cases = {}
 for _, name in ipairs(contract.integration_cases()) do cases[name] = true end

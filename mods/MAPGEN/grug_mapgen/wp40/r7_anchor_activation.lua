@@ -212,7 +212,7 @@ return function(roster_factory, anchor_content)
 								final_cid = cid, final_param2 = param2, final_occupancy = -2,
 								final_opcode = 36, final_feature = row.numeric_id,
 								final_interface = 0,
-								final_aux = (96 + row.content_ref - 1) * 256 + param2}
+								final_aux = (100 + row.content_ref - 1) * 256 + param2}
 						end
 						written = written + 1
 					end

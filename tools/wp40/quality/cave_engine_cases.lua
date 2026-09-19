@@ -1,9 +1,10 @@
--- Seed-0 integration corpus. Two adjacent owners contain one whole real tube.
+-- Seed-0 integration corpus.  The first owner contains the measured connected
+-- sinkhole witness from the R8-MAP-A seed-0 engine run (2026-09-18).
 -- Keep ten owners so the existing profile harness validates the same population.
 assert(core.settings:get("grug_wp40_profile_seed") == "0", "cave corpus requires seed 0")
 local cases = {
-	{id="cave_west", x=1643, y=72, z=-1983, expected_nodes={}},
-	{id="cave_east", x=1674, y=72, z=-1983},
+	{id="connected_sinkhole", x=-1840, y=37, z=-2862, expected_nodes={}},
+	{id="capital_region_probe", x=2247, y=38, z=-1749},
 	{id="pine_hearthpine_south", x=-1800, y="surface", z=-2470},
 	{id="human_capital", x=0, y="surface", z=-1500},
 	{id="elandor_front", x=0, y="surface", z=-250},
@@ -13,16 +14,33 @@ local cases = {
 	{id="wyrmglass_island", x=-3260, y="surface", z=-40},
 	{id="deep_cross_border", x=-1691, y=-842, z=191},
 }
--- Witness generated independently by the production candidate search.
--- This tube extends east; all 32 radius-2 circular sections must remain air.
-for forward=0,31 do
-	local center_y=73-math.floor(forward/4)
-	for side=-2,2 do
-		local radius_y=math.floor(math.sqrt(4-side*side))
-		for y=center_y-radius_y,center_y+radius_y do
-			cases[1].expected_nodes[#cases[1].expected_nodes+1] = {
-				x=1643+forward, y=y, z=-1983+side, name="air"}
-		end
+-- Measured against the authored-writer-disabled native-v7 seed-0 baseline:
+-- target -1834/19/-2867, 124 exact lumen voxels, 703 native component voxels
+-- outside the lumen and 706 total component voxels.  Checking the whole lumen
+-- makes a closed mouth or partial surface scar fail this engine fixture.
+local target_x, target_y, target_z = -1834, 19, -2867
+local steps, seen = cases[1].y + 1 - target_y, {}
+local function rounded(numerator, denominator)
+	if numerator < 0 then
+		return -math.floor((-numerator * 2 + denominator) / (denominator * 2))
 	end
+	return math.floor((numerator * 2 + denominator) / (denominator * 2))
 end
+for step = 0, steps do
+	local y = cases[1].y + 1 - step
+	local center_x = cases[1].x + rounded((target_x - cases[1].x) * step, steps)
+	local center_z = cases[1].z + rounded((target_z - cases[1].z) * step, steps)
+	local radius = step <= 2 and 2 or 1
+	for dx = -radius, radius do for dz = -radius, radius do
+		if dx * dx + dz * dz <= radius * radius then
+			local key = (center_x + dx) .. "/" .. y .. "/" .. (center_z + dz)
+			if not seen[key] then
+				seen[key] = true
+				cases[1].expected_nodes[#cases[1].expected_nodes + 1] = {
+					x = center_x + dx, y = y, z = center_z + dz, name = "air"}
+			end
+		end
+	end end
+end
+assert(#cases[1].expected_nodes == 124, "connected sinkhole lumen differs")
 return cases

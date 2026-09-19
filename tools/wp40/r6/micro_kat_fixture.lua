@@ -284,6 +284,9 @@ return function(repo)
 			fake_source.hard_route_probe == "hard" and x == 0 and z == 0
 	end
 	function fake_source.surface_cave_run_at() return nil end
+	function fake_source.surface_cave_candidate_at_cell() return nil end
+	function fake_source.surface_cave_cell_at() return nil end
+	function fake_source.coast_profile_at() return nil end
 	local horizontal = {}
 	function horizontal.static_exclusion_values_at(x, z)
 		if fake_source.hard_route_probe and x == 0 and z == 0 then
@@ -328,7 +331,13 @@ return function(repo)
 	for index = 1, #kat_resources do add_stable(kat_resources[index].key) end
 	for index = 1, #cultural do add_stable(cultural[index].key) end
 	for index = 1, #decorations do add_stable(decorations[index].id) end
+	add_stable(race)
 	table.sort(stable_refs, hash.less_bytes)
+	local race_ref
+	for index = 1, #stable_refs do
+		if stable_refs[index] == race then race_ref = index break end
+	end
+	check(race_ref, "race planner ref is absent")
 	local settlement, settlement_fixture = settlement_factory.new({
 		full_seed_string = "0", r5_adapter = r5_adapter, content = content,
 		templates = templates, hash = hash, horizontal = horizontal,
@@ -342,6 +351,10 @@ return function(repo)
 		generation = generation + 1
 		local column_count = (maxp.x - minp.x + 1) * (maxp.z - minp.z + 1)
 		local column_values = fixed_array(column_count * 12, 0)
+		for column = 1, column_count do
+			local base = (column - 1) * 12
+			column_values[base + 1], column_values[base + 4] = 1, race_ref
+		end
 		local column_start, run_values = {}, {}
 		if with_predecessors then
 			for column = 1, column_count do
@@ -614,11 +627,15 @@ return function(repo)
 		collisions_by_resource[resource] =
 			(collisions_by_resource[resource] or 0) + value.collisions
 	end
-	check(shortfall_total == 2, "short-vein witness differs")
+	check(shortfall_total == 2, "short-vein witness differs: " ..
+		tostring(shortfall_total))
 	check(collision_total == 2 and (collisions_by_resource.ore_1 or 0) == 0 and
 			(collisions_by_resource.ore_2 or 0) == 0 and
 			(collisions_by_resource.ore_3 or 0) == 2,
-		"resource collision owner accounting differs")
+			"resource collision owner accounting differs: " ..
+			table.concat({collision_total, collisions_by_resource.ore_1 or 0,
+				collisions_by_resource.ore_2 or 0,
+				collisions_by_resource.ore_3 or 0}, "/"))
 	row("short_vein", shortfall_total)
 	row("resource_collision", collision_total)
 	for index = 1, #kat_resources do
@@ -672,12 +689,18 @@ return function(repo)
 	local band_content = {}
 	function band_content.content_contract() return contract end
 	function band_content.surfaces() return clone(surfaces) end
+	function band_content.new_surface_selector()
+		return content.new_surface_selector()
+	end
 	function band_content.resources() return clone(band_resources) end
 	function band_content.cultural() return clone(cultural) end
 	function band_content.decorations() return clone(decorations) end
 	function band_content.wp43_projection() return clone(projection) end
 	function band_content.content_ref(name) return refs[name] end
 	function band_content.param2_kind(content_ref) return param2_kinds[content_ref] end
+	function band_content.decoration_cover(_, biome, support_ref)
+		return content.decoration_cover(nil, biome, support_ref)
+	end
 	local band_settlement, band_fixture = settlement_factory.new({
 		full_seed_string = "0", r5_adapter = r5_adapter, content = band_content,
 		templates = templates, hash = hash, horizontal = horizontal,

@@ -30,6 +30,16 @@ return function(root)
 				end
 			end
 		end
+		-- MAP-A extends the production content projection beyond the historical
+		-- runtime fixture vocabulary.  Register those authentic default-node
+		-- definitions in this bounded ALCH manifest/settlement integration stub.
+		for _, name in ipairs({"default:clay", "default:desert_stone",
+				"default:mossycobble", "default:sandstone"}) do
+			if not settlement_seen[name] then
+				settlement_seen[name] = true
+				settlement_names[#settlement_names + 1] = name
+			end
+		end
 		table.sort(settlement_names, settlement.less_bytes)
 		local regular_dofile = dofile
 		local support_names = {"beds", "doors", "dye", "stairs", "vessels",

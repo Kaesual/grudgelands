@@ -89,6 +89,8 @@ local function planner_factory()
 				planner_source.schema ~= "grug_wp40_r5_planner_source_v1" or
 				type(planner_source.column_values_at) ~= "function" or
 				type(planner_source.surface_cave_run_at) ~= "function" or
+				type(planner_source.surface_cave_candidate_at_cell) ~= "function" or
+				type(planner_source.coast_profile_at) ~= "function" or
 				type(r5_planner) ~= "table" or type(r5_planner.plan_slice) ~= "function" or
 				type(horizontal) ~= "table" or
 				type(horizontal.static_exclusion_values_at) ~= "function" or

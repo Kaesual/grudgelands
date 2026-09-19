@@ -171,7 +171,7 @@ for index = 1, 42 do
 		operation.support_y == row.y and operation.final_opcode == 36 and
 		operation.support_cid == 66 and operation.support_occupancy == 0 and
 		operation.final_feature == row.numeric_id and
-		operation.final_aux == (96 + row.content_ref - 1) * 256 and
+		operation.final_aux == (100 + row.content_ref - 1) * 256 and
 		write[1] == row.x and write[2] == row.y + 1 and write[3] == row.z and
 		write[4] == 500 + row.content_ref and write[6] == row.content_ref and
 		write[7] == row.numeric_id, "operation differs at " .. index)

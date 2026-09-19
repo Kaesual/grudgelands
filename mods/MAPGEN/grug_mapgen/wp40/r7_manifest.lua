@@ -26,12 +26,15 @@ return function(canonical, raw_sha256, settlement_order)
 	-- five of the twenty-one decoded records move their `min_y`/`max_y` by one and
 	-- nothing else in the projection changes. Was
 	-- `de79b1fe983d8b5a...`, with `decoded_templates` `ab77c5efa9587823...`.
+	-- R8-MAP-A, 2026-09-18: four shipped shallow-terrain nodes extend the
+	-- accepted/production content vocabularies. Geometry and horizontal layout
+	-- inputs are unchanged; the content limb and this roll-up move together.
 	-- R8-ALCH, 2026-09-18: the gathering source identity additionally names
 	-- Ember Moss through its Cooking-owned itemstring in the fail-closed herb
 	-- vocabulary. Placement/content semantics remain unchanged; only the
 	-- authenticated gathering limb and this roll-up move again.
 	local SOURCE_PROJECTION_SHA256 =
-		"5cca66b4c7d9d4026ed0a21fd9d7e38a3a289f93c05fcde3cb3de893e58369bd"
+		"1fcdf06bace3cc7679e8959087d4b361da164c1a6ff920cdb60e7f4473022c47"
 	local FIELD_HEAD = {
 		"schema", "full_seed", "r5_schema", "r5_manifest_sha256",
 		"r5_artifact_sha256", "r6_schema", "r6_contract_sha256",
@@ -232,6 +235,19 @@ return function(canonical, raw_sha256, settlement_order)
 	end
 
 	local module = {}
+	local function successor_windows(production_count, settlement_count)
+		if type(production_count) ~= "number" or production_count % 1 ~= 0 or
+				production_count < 1 or type(settlement_count) ~= "number" or
+				settlement_count % 1 ~= 0 or settlement_count < 1 then
+			fail("successor window population differs")
+		end
+		return {p9g_min = production_count + 1,
+			p9g_max = production_count + 12,
+			anchor_min = production_count + 13,
+			anchor_max = production_count + 14,
+			settlement_min = production_count + 15,
+			settlement_max = production_count + 14 + settlement_count}
+	end
 	function module.new(inputs)
 		if type(inputs) ~= "table" or getmetatable(inputs) ~= nil then
 			fail("input graph differs")
@@ -283,7 +299,7 @@ return function(canonical, raw_sha256, settlement_order)
 			fail("gathering identity differs")
 		end
 		if inputs.production_content.semantic_digest ~=
-				"e23aea3c8bca6ffb28622a10e019324ad09930d5fed618c98da3d94e32f5bd76" or
+				"9b7a978d178352521ae61fb87b897c5f79e12838b0829caa229ad90832ddedb8" or
 				inputs.p9g_content.semantic_digest ~=
 				"450c35e94af32721768d3771454db89dbdb43099660b2118c178a3ca6b438d49" then
 			fail("frozen content semantics differ")
@@ -447,9 +463,9 @@ return function(canonical, raw_sha256, settlement_order)
 		if frozen.r6_catalog ~=
 				"71686cbaff9a2b6acb0415a3eda0ebc2d056412db1879c1bf4fcb162e14f4f74" or
 			frozen.accepted_r6_content ~=
-				"2486aac15521fbacdfa733f832aac615b799aa8d13c818525d1ce75221fad7d6" or
+				"466abcd49cac58c68aabf26b17e0ae3925425e1396ab73bc61f8d27de8cf996b" or
 			frozen.decoded_templates ~=
-				"3734b3e2e3203c61a2f08fdc7ee5abd7a8d3f7d00ae585c206aabc7c4ca7d42d" or
+				"faa8fdd2beabd0807b5a41cd207163bbbb741fa8ee263a212bd7fbe34f2ff4df" or
 			frozen.wp43_projection ~=
 				"c8088a4b6802c0fc1a74d8826e3df0bb49b64f9ab4c6e93bcbd66aa2a16b9895" or
 			frozen.cultural ~=
@@ -457,18 +473,26 @@ return function(canonical, raw_sha256, settlement_order)
 			frozen.consumer_payload ~=
 				"c6132247f268c6def7d5f8c60a1de7d93e52d99c5da9367526182c0d89d902b7" or
 			graph_digest(frozen) ~= SOURCE_PROJECTION_SHA256 then
-			fail("frozen source projection differs")
+			fail("frozen source projection differs: accepted=" ..
+				frozen.accepted_r6_content .. " decoded=" .. frozen.decoded_templates ..
+				" wp43=" .. frozen.wp43_projection .. " cultural=" .. frozen.cultural ..
+				" consumer=" .. frozen.consumer_payload ..
+				" projection=" .. graph_digest(frozen))
 		end
+		local windows = successor_windows(#inputs.accepted_r6_rows + 6,
+			settlement_content.count)
 		local p9g_delta = {
 			schema = "grug_wp40_r7_p9g_delta_v1", opcode = 35,
-			class = 10, policy = 11, successor_ref_min = 85,
-			successor_ref_max = 96, order = "after_r6_p9_before_run_derivation",
+			class = 10, policy = 11, successor_ref_min = windows.p9g_min,
+			successor_ref_max = windows.p9g_max,
+			order = "after_r6_p9_before_run_derivation",
 			overwrite = false, catalog_sha256 = gathering.sha256,
 		}
 		local anchor_delta = {
 			schema = "grug_wp40_r7_anchor_delta_v1", opcode = 36,
-			class = 12, policy = 12, successor_ref_min = 97,
-			successor_ref_max = 98, order = "after_p9g_before_run_derivation",
+			class = 12, policy = 12, successor_ref_min = windows.anchor_min,
+			successor_ref_max = windows.anchor_max,
+			order = "after_p9g_before_run_derivation",
 			overwrite = false, roster_sha256 = inputs.anchor_roster_sha256,
 			root = "anchor_y_plus_one",
 			support = "settled_predecessor_support_v1",
@@ -498,8 +522,8 @@ return function(canonical, raw_sha256, settlement_order)
 					blueprint_id = entry.id, blueprint_kind = entry.kind,
 					blueprint_sha256 = entry.identity.sha256,
 					content_sha256 = settlement_content.digest,
-					successor_ref_min = 99,
-					successor_ref_max = 98 + settlement_content.count,
+					successor_ref_min = windows.settlement_min,
+					successor_ref_max = windows.settlement_max,
 					population = entry.kind == "overlay" and
 						entry.identity.run_count or entry.identity.cell_count,
 					population_kind = entry.kind == "overlay" and "runs" or "cells",
@@ -586,6 +610,12 @@ return function(canonical, raw_sha256, settlement_order)
 	-- tools can bind the same typed graph without duplicating its encoding.
 	function module.graph_digest_for_evidence(value)
 		return graph_digest(value)
+	end
+	function module.successor_windows_for_evidence(production_count, settlement_count)
+		local values = successor_windows(production_count, settlement_count)
+		local result = {}
+		for key, value in pairs(values) do result[key] = value end
+		return result
 	end
 
 	function module.validate(receipt, expected_sha256)

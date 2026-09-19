@@ -14,6 +14,23 @@ that baseline.
 
 ## Current simple-map V1e gate
 
+The R8-MAP-A terrain rule KAT (2026-09-18) lives at
+`tools/r8_map_a/kat.lua`. It is a function-style portable fixture called with
+an absolute repository root and is part of `quality/final_micro.lua` under
+both LuaJIT and PUC Lua 5.1. It checks stable coast-run identities, freshwater
+fallback, the post-change sand/wet-bed selector, 200 deterministic
+shallow-strata columns and the compact cave-candidate placement contract. Its
+`writer_kat.lua` companion drives the production strata and cave seams over
+immutable CID arrays, including y=-37, native gravel ore, closed components
+and sky bridges; `mutations.sh` proves the five corresponding failures. The LuaJIT-only
+`tools/r8_map_a/measure.lua` performs the fixed-layout per-run/per-zone census;
+`quality/cave_engine_cases.lua` remains the measured engine witness for native
+cave connection. `tools/r8_map_a/engine_probe/` uses an authored-writer-disabled
+native-v7 baseline and revision-bound offline exclusion masks to reconstruct each exact
+owner-local lumen independently, replay the writer's 64-target search bound,
+exclude baseline sky components and compare that proof with the carved world. Revision-bound cases,
+commands, result logs and hashes live in `tools/r8_map_a/evidence/`.
+
 Run:
 
 ```sh

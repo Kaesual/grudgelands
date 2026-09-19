@@ -1,0 +1,12 @@
+staged probe: probe-seed1-after
+headless boot: FAIL (port 31076, 1800 s)
+log: /tmp/grudgelands-headless.dGxA6M/server.7.log
+86:ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:31076.
+100:ERROR[Main]: ServerError: AsyncErr: Lua: Runtime error from mod 'grug_r8_map_a_engine_probe' in callback environment_Step(): ...M/user/games/grudgelands/mods/probe-seed1-after/init.lua:394: R8-MAP-A unexpected cave carve detected
+101:ERROR[Main]: stack traceback:
+102:ERROR[Main]: 	[C]: in function 'assert'
+103:ERROR[Main]: 	...M/user/games/grudgelands/mods/probe-seed1-after/init.lua:394: in function 'finish'
+104:ERROR[Main]: 	...M/user/games/grudgelands/mods/probe-seed1-after/init.lua:404: in function 'func'
+105:ERROR[Main]: 	/app/share/luanti/builtin/common/after.lua:140: in function </app/share/luanti/builtin/common/after.lua:117>
+106:ERROR[Main]: 	/app/share/luanti/builtin/common/register.lua:27: in function </app/share/luanti/builtin/common/register.lua:13>
+kept: /tmp/grudgelands-headless.dGxA6M

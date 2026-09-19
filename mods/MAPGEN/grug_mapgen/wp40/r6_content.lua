@@ -1,6 +1,28 @@
 -- Closed WP40 R6 catalogs and injected content-contract validation.
 
-return function(manifest_values, content_contract, wp43_projection)
+local function coast_surface_rule(profile, freshwater, distance)
+	if profile ~= "beach" and profile ~= "bluff" and profile ~= "cliff" and
+			profile ~= "terraced_cliff" then return nil end
+	if freshwater and profile ~= "beach" and profile ~= "bluff" then return nil end
+	if freshwater and profile == "beach" and distance > 2 then return nil end
+	if profile == "beach" then return "default:sand", "default:sandstone", 3 end
+	if profile == "bluff" then return "biome_lip", "default:gravel", 3 end
+	return "biome_lip", "default:stone", 3
+end
+
+local function coast_profile_applies(profile, distance, width, freshwater)
+	return profile ~= nil and distance <= width and
+		(not freshwater or profile ~= "beach" or distance <= 2)
+end
+
+local function wet_bed_names(id, bed)
+	if id == "grug_swamp" then
+		return {bed, bed, "default:gravel", "default:stone"}
+	end
+	return {bed, "default:sand", "default:gravel", "default:stone"}
+end
+
+local function content_factory(manifest_values, content_contract, wp43_projection)
 	local MAX_SAFE = 9007199254740991
 	local PARAM2_KINDS = {none = true, facedir = true, wallmounted = true,
 		colorfacedir = true, colorwallmounted = true, ["4dir"] = true,
@@ -608,8 +630,20 @@ return function(manifest_values, content_contract, wp43_projection)
 		for index = 1, #full_seed do
 			phase = (phase * 131 + string.byte(full_seed, index)) % 65521
 		end
-		local variants = {}
+		local variants, coast_variants = {}, {}
 		local wet_variants, beach_shores = {}, {}
+		local function ordinary_filler(id, base)
+			if id == "grug_beach" then return "default:sand" end
+			if id == "grug_savanna" then return "default:dry_dirt" end
+			if id == "grug_badlands" or id == "grug_badlands_east" then
+				return "grug_nodes:mesa_clay"
+			end
+			if id == "grug_swamp" then return "grug_nodes:mud" end
+			if id == "grug_crags" or id == "grug_crags_snowy" then
+				return "default:gravel"
+			end
+			return "default:dirt"
+		end
 		for id, base in pairs(surface_by_id) do
 			local palette = fertile_palettes[id] or {base.top, base.top, base.top}
 			local names = {palette[1], palette[2], "default:gravel", "default:stone", palette[3]}
@@ -621,6 +655,9 @@ return function(manifest_values, content_contract, wp43_projection)
 					row.top = names[kind]
 					row.top_ref = require_role(row.top, 1, p7_classes, "patch top")
 					row.filler_depth = depth
+					row.filler = ordinary_filler(id, base)
+					row.filler_ref = require_role(row.filler, 1, p7_classes,
+						"ordinary filler")
 					if kind == 3 or kind == 4 then
 						row.filler = row.top
 						row.filler_ref = row.top_ref
@@ -631,18 +668,32 @@ return function(manifest_values, content_contract, wp43_projection)
 			end
 			variants[id] = rows
 			wet_variants[id] = {}
-			local wet_names
-			if id == "grug_swamp" then
-				wet_names = {base.bed, base.bed, "default:gravel", "default:stone"}
-			else
-				wet_names = {base.bed, "default:sand", "default:gravel", "default:stone"}
-			end
+			local wet_names = wet_bed_names(id, base.bed)
 			for wet_index = 1, #wet_names do
 				local wet = deep_copy(base)
 				wet.bed = wet_names[wet_index]
 				wet.bed_ref = require_role(wet.bed, 1, p7_classes, "varied water bed")
 				wet_variants[id][wet_index] = wet
 			end
+		end
+		local function coast_row(base, top, filler, depth)
+			local row = deep_copy(base)
+			row.top, row.filler, row.filler_depth = top, filler, depth
+			row.top_ref = require_role(top, 1, p7_classes, "coast top")
+			row.filler_ref = require_role(filler, 1, p7_classes, "coast filler")
+			row.dust, row.dust_ref = "-", 0
+			return row
+		end
+		for id, base in pairs(surface_by_id) do
+			local lip = ordinary_filler(id, base)
+			local sandstone = content_ref_by_name["default:sandstone"] and
+				"default:sandstone" or "default:stone"
+			coast_variants[id] = {
+				beach = coast_row(base, "default:sand", sandstone, 3),
+				bluff = coast_row(base, lip, "default:gravel", 3),
+				cliff = coast_row(base, lip, "default:stone", 3),
+				terraced_cliff = coast_row(base, lip, "default:stone", 3),
+			}
 		end
 		for shore_index, shore_name in ipairs({"default:sand", "default:sand",
 				"default:sand", "default:gravel"}) do
@@ -677,6 +728,14 @@ return function(manifest_values, content_contract, wp43_projection)
 		return function(id, x, z, water_y, terrain_y)
 			local base = surface_by_id[id]
 			if not base then return nil end
+			local profile, distance, width, freshwater
+			if type(planner_source.coast_profile_at) == "function" then
+				profile, distance, width, freshwater =
+					planner_source.coast_profile_at(x, z)
+			end
+			if coast_profile_applies(profile, distance, width, freshwater) then
+				return coast_variants[id][profile]
+			end
 			local detail = noise(x, z, 8, 29712151)
 			local patch = math.floor((3 * noise(x, z, 32, 19349663) + detail) / 4)
 			if water_y ~= nil and water_y > terrain_y then
@@ -717,6 +776,9 @@ return function(manifest_values, content_contract, wp43_projection)
 			return variants[id][kind][depth]
 		end
 	end
+	function module.coast_surface_rule(profile, freshwater, distance)
+		return coast_surface_rule(profile, freshwater, distance)
+	end
 	function module.resource(key) return deep_copy(resource_by_key[key]) end
 	function module.cultural_for_race(race) return deep_copy(cultural_by_race[race]) end
 	function module.cultural_for_key(key) return deep_copy(cultural_by_key[key]) end
@@ -731,3 +793,6 @@ return function(manifest_values, content_contract, wp43_projection)
 	function module.wp43_projection() return deep_copy(wp43_projection) end
 	return module
 end
+
+return content_factory, coast_surface_rule, {coast_profile_applies = coast_profile_applies,
+	wet_bed_names = wet_bed_names}

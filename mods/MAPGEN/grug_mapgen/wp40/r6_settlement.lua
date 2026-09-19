@@ -15,6 +15,8 @@ local function settlement_factory()
 	local FACE_X = {1, -1, 0, 0, 0, 0}
 	local FACE_Y = {0, 0, 1, -1, 0, 0}
 	local FACE_Z = {0, 0, 0, 0, 1, -1}
+	local R8_CAVE_COMPONENT_RADIUS = 12
+	local R8_CAVE_COMPONENT_MINIMUM = 24
 
 	local function fail(code, message)
 		error(code .. ": " .. message, 0)
@@ -27,6 +29,335 @@ local function settlement_factory()
 			fail(code or "fail_bound", label .. " is not an exact bounded integer")
 		end
 		return value
+	end
+
+	local function new_r8_strata(full_seed, source)
+		local secondary_by_biome = {
+			grug_savanna = "default:sandstone",
+			grug_badlands = "grug_materials:basalt",
+			grug_badlands_east = "grug_materials:basalt",
+			grug_meadows = "default:desert_stone",
+			grug_pine_hills = "grug_materials:slate",
+			grug_jungle_edge = "default:mossycobble",
+			grug_deep_jungle = "default:mossycobble",
+			grug_jungle_fringe = "default:mossycobble",
+			grug_swamp = "default:mossycobble",
+			grug_beach = "default:sandstone",
+			grug_crags = "grug_materials:slate",
+			grug_crags_snowy = "grug_materials:slate",
+			grug_elf_forest = "default:desert_stone",
+			grug_deep_forest = "default:desert_stone",
+			grug_blight = "grug_materials:basalt",
+			grug_bone_forest = "grug_materials:basalt",
+		}
+		local zone_relief = {}
+		for zone_index = 1, #(source.zones or {}) do
+			zone_relief[source.zones[zone_index].id] =
+				source.zones[zone_index].primary_relief_id
+		end
+		local phase = 0
+		for index = 1, #full_seed do
+			phase = (phase * 131 + string.byte(full_seed, index)) % 65521
+		end
+		local function draw(x, z, salt)
+			local value = (x * 374761 + z * 668265 + phase * 69069 + salt) % 16777213
+			value = (value * value) % 16777213
+			return (value * 48271) % 16777213
+		end
+		local result = {}
+		function result.material_at(zone_id, biome, filler_depth, x, z, depth)
+			local first_depth = filler_depth + 1
+			if depth < first_depth or depth > 40 then return nil end
+			local secondary_start = math.max(first_depth, 8 + draw(x, z, 19349663) % 4)
+			local gravel_start = math.max(first_depth, 18 + draw(x, z, 83492791) % 4)
+			local pocket_start = math.max(first_depth, 29 + draw(x, z, 297121507) % 5)
+			if depth >= secondary_start and depth <= secondary_start + 2 then
+				return secondary_by_biome[biome] or "default:desert_stone"
+			end
+			if depth >= gravel_start and depth <= gravel_start + 2 then
+				return "default:gravel"
+			end
+			if depth >= pocket_start and depth <= pocket_start + 1 then
+				return (biome == "grug_swamp" or zone_relief[zone_id] == "wetland_delta") and
+					"default:clay" or "default:dirt"
+			end
+			return nil
+		end
+		function result.secondary_for(biome)
+			return secondary_by_biome[biome] or "default:desert_stone"
+		end
+		return result
+	end
+
+	-- Shared by the production VM writer and the portable immutable-CID fixture.
+	-- The immutable native input, rather than the already settled terrain, is the
+	-- only provenance accepted here.  In particular, gravel is never inferred to
+	-- be filler from its CID because native gravel ore has the identical CID.
+	local function r8_apply_strata(context)
+		local written, clipped = 0, 0
+		for z = context.min_z, context.max_z do
+			for x = context.min_x, context.max_x do
+				local water_class, _, zone_id, biome, _, terrain_y, water_y, _, _,
+					functional_kind, _, _, _, transition_kind, _, _, _, _, _, hard =
+						context.column_values_at(x, z)
+				if water_class == "land" and zone_id and biome and water_y == nil and
+						functional_kind == nil and transition_kind == nil and not hard and
+						context.static_exclusion_values_at(x, z) == nil and
+						not context.housing_excluded_at(x, z) then
+					local surface = context.select_surface(biome, x, z, water_y, terrain_y)
+					local filler_depth = surface and surface.filler_depth or 4
+					for depth = filler_depth + 1, 40 do
+						local y = terrain_y - depth
+						if y < context.floor_y then
+							clipped = clipped + 1
+						elseif y >= context.min_y and y <= context.max_y then
+							local target = context.strata.material_at(zone_id, biome,
+								filler_depth, x, z, depth)
+							if target then
+								local index = context.index_at(x, y, z)
+								if context.original_data[index] == context.stone_cid then
+									local ref = context.content_ref(target)
+									if not ref then
+										fail("fail_content_manifest", "R8 stratum target is absent")
+									end
+									context.write(x, y, z, ref)
+									written = written + 1
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+		return written, clipped
+	end
+
+	local function r8_cave_round(numerator, denominator)
+		if numerator < 0 then
+			return -math.floor((-numerator * 2 + denominator) / (denominator * 2))
+		end
+		return math.floor((numerator * 2 + denominator) / (denominator * 2))
+	end
+
+	local function r8_cave_proof_box_inside(min_x, min_y, min_z,
+			max_x, max_y, max_z, target_x, target_y, target_z)
+		local complete = target_x - R8_CAVE_COMPONENT_RADIUS >= min_x and
+			target_x + R8_CAVE_COMPONENT_RADIUS <= max_x and
+			target_y - R8_CAVE_COMPONENT_RADIUS >= min_y and
+			target_y + R8_CAVE_COMPONENT_RADIUS <= max_y and
+			target_z - R8_CAVE_COMPONENT_RADIUS >= min_z and
+			target_z + R8_CAVE_COMPONENT_RADIUS <= max_z
+		return complete
+	end
+
+	-- Reconstruct one complete lumen from immutable native input.  Acceptance
+	-- requires at least 24 native-air voxels outside that lumen in the target's
+	-- complete radius-12 component.  Targets whose complete proof box is not in
+	-- the immutable owner input are rejected instead of treating an owner edge as
+	-- evidence of continuation.  The same flood scans the baseline surface
+	-- derived from immutable CIDs and rejects any component voxel above it, so a
+	-- terrain opening or sky bridge can never authorize a carve.
+	local function r8_plan_cave(context, cave)
+		local min_x, min_y, min_z = context.min_x, context.min_y, context.min_z
+		local max_x, max_y, max_z = context.max_x, context.max_y, context.max_z
+		if not cave or cave.mouth_x < min_x or cave.mouth_x > max_x or
+				cave.mouth_z < min_z or cave.mouth_z > max_z or
+				cave.mouth_y < min_y or cave.mouth_y > max_y or cave.minimum_y < min_y then
+			return nil, "outside_owner"
+		end
+		local search_x = cave.kind == "hillside" and
+			cave.mouth_x + cave.direction_x * (cave.length - 1) or cave.mouth_x
+		local search_z = cave.kind == "hillside" and
+			cave.mouth_z + cave.direction_z * (cave.length - 1) or cave.mouth_z
+		local eligible_columns, eligible_heights = {}, {}
+		local function coordinate_key(x, y, z)
+			if z == nil then return tostring(x) .. "/" .. tostring(y) end
+			return tostring(x) .. "/" .. tostring(y) .. "/" .. tostring(z)
+		end
+		local function eligible_column(x, z)
+			local key = coordinate_key(x, z)
+			if eligible_columns[key] ~= nil then return eligible_columns[key] end
+			local water_class, _, zone_id, _, _, terrain_y, water_y, hydrology_id, _,
+				functional_kind, _, _, _, transition_kind, _, _, _, _, _, hard =
+					context.column_values_at(x, z)
+			local eligible = water_class == "land" and zone_id == cave.zone_id and
+				water_y == nil and hydrology_id == nil and functional_kind == nil and
+				transition_kind == nil and not hard and
+				context.static_exclusion_values_at(x, z) == nil and
+				not context.housing_excluded_at(x, z)
+			eligible_columns[key], eligible_heights[key] = eligible, terrain_y
+			return eligible
+		end
+
+		local targets = {}
+		local search_radius = cave.search_radius or cave.radius
+		for radius_squared = 0, search_radius * search_radius do
+			if #targets >= 64 then break end
+			for dz = -search_radius, search_radius do
+				if #targets >= 64 then break end
+				for dx = -search_radius, search_radius do
+					if dx * dx + dz * dz == radius_squared then
+						local x, z = search_x + dx, search_z + dz
+						if x >= min_x and x <= max_x and z >= min_z and z <= max_z and
+								eligible_column(x, z) then
+							local search_surface = select(6, context.column_values_at(x, z))
+							local native_roof = 0
+							for depth = 1, cave.maximum_depth do
+								local y = math.min(cave.mouth_y, search_surface) - depth
+								if y >= min_y then
+									local index = context.index_at(x, y, z)
+									local class_id = context.classify(context.original_data[index],
+										context.original_param2[index])
+									if class_id == CLASS_AIR and native_roof >= 3 then
+										targets[#targets + 1] = {x, y, z}
+										break
+									elseif class_id == CLASS_NATURAL_HOST or
+											class_id == CLASS_NATURAL_SURFACE or
+											class_id == CLASS_WP43_STRATUM then
+										native_roof = native_roof + 1
+									elseif class_id ~= CLASS_AIR then
+										native_roof = 0
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+
+		for target_index = 1, #targets do
+			local target_x, target_y, target_z = unpack(targets[target_index])
+			local voxels, lumen, valid = {}, {}, true
+			local function offer_voxel(x, y, z)
+				local key = coordinate_key(x, y, z)
+				if lumen[key] then return end
+				lumen[key] = true
+				if x < min_x or x > max_x or y < min_y or y > max_y or
+						z < min_z or z > max_z or not eligible_column(x, z) then
+					valid = false return
+				end
+				local column_key = coordinate_key(x, z)
+				local mouth_dx, mouth_dz = x - cave.mouth_x, z - cave.mouth_z
+				if y > eligible_heights[column_key] and not
+						(mouth_dx * mouth_dx + mouth_dz * mouth_dz <= 4 and
+							y <= cave.mouth_y + 1) then
+					valid = false return
+				end
+				local index = context.index_at(x, y, z)
+				local class_id = context.classify(context.original_data[index],
+					context.original_param2[index])
+				if class_id ~= CLASS_AIR and class_id ~= CLASS_NATURAL_HOST and
+						class_id ~= CLASS_NATURAL_SURFACE and
+						class_id ~= CLASS_NATURAL_VEGETATION and
+						class_id ~= CLASS_WP43_STRATUM then
+					valid = false return
+				end
+				voxels[#voxels + 1] = {x, y, z}
+			end
+			if cave.kind == "sinkhole" then
+				local steps = cave.mouth_y + 1 - target_y
+				for step = 0, steps do
+					local y = cave.mouth_y + 1 - step
+					local center_x = cave.mouth_x + r8_cave_round(
+						(target_x - cave.mouth_x) * step, steps)
+					local center_z = cave.mouth_z + r8_cave_round(
+						(target_z - cave.mouth_z) * step, steps)
+					local radius = step <= 2 and 2 or 1
+					for dx = -radius, radius do for dz = -radius, radius do
+						if dx * dx + dz * dz <= radius * radius then
+							offer_voxel(center_x + dx, y, center_z + dz)
+						end
+					end end
+				end
+			else
+				for step = 0, cave.length - 1 do
+					local center_x = cave.mouth_x + r8_cave_round(
+						(target_x - cave.mouth_x) * step, cave.length - 1)
+					local center_y = cave.mouth_y + 1 + r8_cave_round(
+						(target_y - cave.mouth_y - 1) * step, cave.length - 1)
+					local center_z = cave.mouth_z + r8_cave_round(
+						(target_z - cave.mouth_z) * step, cave.length - 1)
+					for side = -cave.radius, cave.radius do
+						local absolute_side = math.abs(side)
+						local half = absolute_side == 0 and cave.radius or
+							(absolute_side < cave.radius and cave.radius - 1 or 0)
+						for dy = -half, half do
+							offer_voxel(center_x - cave.direction_z * side,
+								center_y + dy, center_z + cave.direction_x * side)
+						end
+					end
+				end
+			end
+
+			local proof_box_inside = r8_cave_proof_box_inside(min_x, min_y, min_z,
+				max_x, max_y, max_z, target_x, target_y, target_z)
+			if valid and proof_box_inside then
+				local proof_min_x = target_x - R8_CAVE_COMPONENT_RADIUS
+				local proof_max_x = target_x + R8_CAVE_COMPONENT_RADIUS
+				local proof_min_y = target_y - R8_CAVE_COMPONENT_RADIUS
+				local proof_max_y = target_y + R8_CAVE_COMPONENT_RADIUS
+				local proof_min_z = target_z - R8_CAVE_COMPONENT_RADIUS
+				local proof_max_z = target_z + R8_CAVE_COMPONENT_RADIUS
+				local surface_cache = {}
+				local function native_surface_at(x, z)
+					local key = coordinate_key(x, z)
+					local cached = surface_cache[key]
+					if cached ~= nil then return cached ~= false and cached or nil end
+					for y = max_y, min_y, -1 do
+						local index = context.index_at(x, y, z)
+						local class_id = context.classify(context.original_data[index],
+							context.original_param2[index])
+						if class_id ~= CLASS_AIR and class_id ~= CLASS_LIQUID and
+								class_id ~= CLASS_IGNORE then
+							surface_cache[key] = y
+							return y
+						end
+					end
+					surface_cache[key] = false
+					return nil
+				end
+				local target_key = coordinate_key(target_x, target_y, target_z)
+				local queue, visited, head = {{target_x, target_y, target_z}},
+					{[target_key] = true}, 1
+				local outside_count, touches_sky, continues = 0, false, false
+				while queue[head] do
+					local row = queue[head]
+					head = head + 1
+					local surface_y = native_surface_at(row[1], row[3])
+					if surface_y == nil or row[2] > surface_y then touches_sky = true end
+					if row[1] == proof_min_x or row[1] == proof_max_x or
+							row[2] == proof_min_y or row[2] == proof_max_y or
+							row[3] == proof_min_z or row[3] == proof_max_z then
+						continues = true
+					end
+					if not lumen[coordinate_key(row[1], row[2], row[3])] then
+						outside_count = outside_count + 1
+					end
+					for direction = 1, 6 do
+						local x, y, z = row[1] + FACE_X[direction],
+							row[2] + FACE_Y[direction], row[3] + FACE_Z[direction]
+						local key = coordinate_key(x, y, z)
+						if not visited[key] and x >= proof_min_x and x <= proof_max_x and
+								y >= proof_min_y and y <= proof_max_y and
+								z >= proof_min_z and z <= proof_max_z then
+							local index = context.index_at(x, y, z)
+							if context.classify(context.original_data[index],
+									context.original_param2[index]) == CLASS_AIR then
+								visited[key] = true
+								queue[#queue + 1] = {x, y, z}
+							end
+						end
+					end
+				end
+				if continues and not touches_sky and
+						outside_count >= R8_CAVE_COMPONENT_MINIMUM then
+					return voxels, "connected", {target_x, target_y, target_z,
+						outside_count, #queue}
+				end
+			end
+		end
+		return nil, #targets == 0 and "no_native_air" or "no_continuing_component"
 	end
 
 	local function exact_fields(value, allowed, label, code)
@@ -303,6 +634,11 @@ local function settlement_factory()
 		local planner_source = dependencies.planner_source
 		local cultural_registrations = dependencies.cultural_registrations
 		local source = dependencies.source
+		local r8_strata = new_r8_strata(full_seed, source)
+		local core_api = rawget(_G, "core")
+		local r8_cave_writer_disabled = core_api and core_api.settings and
+			type(core_api.settings.get_bool) == "function" and
+			core_api.settings:get_bool("grug_mapgen_r8_cave_writer_disabled", false) or false
 		local allocator = dependencies.counting_allocator
 		local successor_tail = dependencies.successor_tail
 		local planner_stable_refs = dependencies.planner_stable_refs
@@ -314,6 +650,9 @@ local function settlement_factory()
 				type(horizontal) ~= "table" or
 				type(planner_source) ~= "table" or
 				type(planner_source.surface_cave_run_at) ~= "function" or
+				type(planner_source.surface_cave_candidate_at_cell) ~= "function" or
+				type(planner_source.surface_cave_cell_at) ~= "function" or
+				type(planner_source.coast_profile_at) ~= "function" or
 				type(source) ~= "table" or
 				(successor_tail ~= nil and (type(successor_tail) ~= "table" or
 					type(successor_tail.settle) ~= "function")) then
@@ -548,6 +887,8 @@ local function settlement_factory()
 				"r6_settlement_resource_host_base", evidence_only and 1 or 80 * 80 * 80, 0),
 			resource_excluded_column = retained_array(
 				"r6_settlement_resource_excluded_column", 6400, false),
+			successor_refs = {p9g_min = 0, p9g_max = 0, anchor_min = 0,
+				anchor_max = 0, settlement_min = 0, settlement_max = 0},
 		}
 		if capture_enabled then
 			transaction_state.private_capture = {armed = false, value = false}
@@ -1559,6 +1900,13 @@ local function settlement_factory()
 			regional_allowed = regional_allowed, coordinate_less = coordinate_less,
 			run_class_policy = run_class_policy,
 			capture_private_buffers = capture_private_buffers,
+			r8_strata = r8_strata, r8_surfaces = surfaces,
+			r8_select_surface = select_surface, r8_horizontal = horizontal,
+			r8_apply_strata = r8_apply_strata, r8_plan_cave = r8_plan_cave,
+			r8_cave_writer_disabled = r8_cave_writer_disabled,
+			r5_adapter = r5_adapter,
+			r8_templates = templates, r8_full_seed = full_seed,
+			r8_hash = hash, r8_cultural_registration = cultural_registration,
 			template_rotation = runtime_mode and (templates.rotation_runtime or
 				templates.rotation) or
 				templates.rotation}
@@ -1599,6 +1947,10 @@ local function settlement_factory()
 			if call_mode == "fixture" or call_mode == "production" then
 				last_ledger, last_run_count = false, 0
 			end
+			local successor_refs = transaction_state.successor_refs
+			successor_refs.p9g_min, successor_refs.p9g_max = 0, 0
+			successor_refs.anchor_min, successor_refs.anchor_max = 0, 0
+			successor_refs.settlement_min, successor_refs.settlement_max = 0, 0
 			if type(plan) ~= "table" or
 					plan.schema ~= "grug_wp40_r6_refinement_plan_v1" or
 					not plan.valid or plan.generation ~= plan_generation or
@@ -1712,7 +2064,7 @@ local function settlement_factory()
 			function shadow.calc_lighting() end
 			function shadow.set_light_data() end
 			function shadow.update_liquids() end
-			local r5_result = r5_adapter:apply(shadow, minp, maxp, plan.r5_plan,
+			local r5_result = helpers.r5_adapter:apply(shadow, minp, maxp, plan.r5_plan,
 				plan.r5_generation, call_mode == "production" and
 					"engine_fixture" or "offline_fixture")
 			if type(r5_result) ~= "string" then
@@ -1819,6 +2171,54 @@ local function settlement_factory()
 				end
 			end
 
+			if contract.schema == "grug_wp40_r7_production_r6_content_v1" then
+			-- R8 shallow strata.  The shared writer seam accepts only immutable
+			-- native stone; native gravel ore is therefore never CID-ambiguous.
+			local stone_ref = content.content_ref("default:stone")
+			if not stone_ref then
+				fail("fail_content_manifest", "native stone is absent")
+			end
+			helpers.r8_apply_strata({min_x = min_x, min_y = min_y, min_z = min_z,
+				max_x = max_x, max_y = max_y, max_z = max_z, floor_y = -37,
+				original_data = original_data,
+				stone_cid = contract.content_cids[stone_ref], index_at = index_at,
+				column_values_at = planner_source.column_values_at,
+				static_exclusion_values_at = helpers.r8_horizontal.static_exclusion_values_at,
+				housing_excluded_at = helpers.housing_excluded_at,
+				select_surface = helpers.r8_select_surface, strata = helpers.r8_strata,
+				content_ref = content.content_ref,
+				write = function(x, y, z, ref)
+					write_intent(x, y, z, ref, 0, 2, 0, 0, 1, false)
+				end})
+
+			-- R8 connected mouths.  The immutable-input helper reconstructs the
+			-- complete lumen and proves a continuing, non-sky native component
+			-- before this transaction changes a single voxel.
+			if not helpers.r8_cave_writer_disabled then
+				local cell_x, cell_z = planner_source.surface_cave_cell_at(min_x, min_z)
+				local cave = planner_source.surface_cave_candidate_at_cell(cell_x, cell_z)
+				local voxels = helpers.r8_plan_cave({min_x = min_x, min_y = min_y,
+					min_z = min_z,
+					max_x = max_x, max_y = max_y, max_z = max_z,
+					original_data = original_data, original_param2 = original_param2,
+					index_at = index_at, classify = classify,
+					column_values_at = planner_source.column_values_at,
+					static_exclusion_values_at =
+						helpers.r8_horizontal.static_exclusion_values_at,
+					housing_excluded_at = helpers.housing_excluded_at}, cave)
+				if voxels then
+					local air_cid = contract.r5.resolve(1, 0, 0)
+					for voxel = 1, #voxels do
+						local row = voxels[voxel]
+						local index = index_at(row[1], row[2], row[3])
+						final_data[index], final_param2[index] = air_cid, 0
+						intent_opcode[index], intent_feature[index],
+							intent_interface[index], intent_aux[index] = 26, 0, 0, 0
+						occupancy[index] = 1
+					end
+					end
+				end
+			end
 			local function inside_owner(x, y, z)
 				return x >= min_x and x <= max_x and y >= min_y and y <= max_y and
 					z >= min_z and z <= max_z and x >= -3740 and x <= 3740 and
@@ -2017,7 +2417,7 @@ local function settlement_factory()
 											"resource_budget_remainder_v1", resource.key, cell_x,
 											cell_y, cell_z, host_name, tier, band)
 										local budget, numerator, budget_denominator, base_budget,
-											remainder = hash.budget(eligible, 1, denominator,
+											remainder = helpers.r8_hash.budget(eligible, 1, denominator,
 											multiplier_numerator, multiplier_denominator,
 											remainder_digest)
 										local root_draw = budget > 0 and helpers.prepare_root_draw(
@@ -2124,7 +2524,7 @@ local function settlement_factory()
 											ledger.resources[key] = {eligible = eligible, numerator = numerator,
 												denominator = budget_denominator, base = base_budget,
 												remainder = remainder,
-												remainder_digest = hash.hex(remainder_digest),
+													remainder_digest = helpers.r8_hash.hex(remainder_digest),
 												budget = budget, planned = planned, accepted = accepted,
 												collisions = collisions, shortfall = shortfall,
 												target_nodes = budget, placed_nodes = placed}
@@ -2143,7 +2543,7 @@ local function settlement_factory()
 			-- committing any cell so one registration cannot partially settle.
 			for accepted_index = 1, #accepted_cultural do
 				local accepted = accepted_cultural[accepted_index]
-				local registration = cultural_registration[accepted.row.key]
+				local registration = helpers.r8_cultural_registration[accepted.row.key]
 				if registration then
 					local allowed = true
 					for part = 1, #registration.cells do
@@ -2221,7 +2621,8 @@ local function settlement_factory()
 								local slice_destination_y = {}
 								local destination_y = template.min_y
 								for y = 1, template.size_y do
-									if templates.probability_include(full_seed, row.id,
+									if helpers.r8_templates.probability_include(
+											helpers.r8_full_seed, row.id,
 											root_x, root_y, root_z, rotation, "slice",
 											0, y - 1, 0, template.y_slice_probabilities[y]) then
 										slice_destination_y[y] = destination_y
@@ -2236,7 +2637,8 @@ local function settlement_factory()
 												template.size_y + (y - 1) * template.size_x + x
 											local node = template.cells[source_index]
 											local included = placed_y ~= nil and node.name ~= "air" and
-												templates.probability_include(full_seed, row.id,
+											helpers.r8_templates.probability_include(
+												helpers.r8_full_seed, row.id,
 													root_x, root_y, root_z, rotation, "node",
 													x - 1, y - 1, z - 1, node.probability)
 											cells[#cells + 1] = {x = template.min_x + x - 1,
@@ -2431,6 +2833,12 @@ local function settlement_factory()
 					intent_opcode[index], intent_feature[index], intent_interface[index] =
 						35, feature_ref, 0
 					local successor_ref = #contract.content_names + local_ref
+					if successor_refs.p9g_min == 0 or successor_ref < successor_refs.p9g_min then
+						successor_refs.p9g_min = successor_ref
+					end
+					if successor_ref > successor_refs.p9g_max then
+						successor_refs.p9g_max = successor_ref
+					end
 					intent_aux[index] = (successor_ref - 1) * 256 + param2
 					occupancy[index] = -2
 				end
@@ -2451,6 +2859,13 @@ local function settlement_factory()
 					intent_opcode[index], intent_feature[index], intent_interface[index] =
 						36, feature_ref, 0
 					local successor_ref = #contract.content_names + 12 + local_ref
+					if successor_refs.anchor_min == 0 or
+							successor_ref < successor_refs.anchor_min then
+						successor_refs.anchor_min = successor_ref
+					end
+					if successor_ref > successor_refs.anchor_max then
+						successor_refs.anchor_max = successor_ref
+					end
 					intent_aux[index] = (successor_ref - 1) * 256 + param2
 					occupancy[index] = -2
 				end
@@ -2475,6 +2890,13 @@ local function settlement_factory()
 					intent_opcode[index], intent_feature[index], intent_interface[index] =
 						37, feature_ref, 0
 					local successor_ref = #contract.content_names + 12 + 2 + local_ref
+					if successor_refs.settlement_min == 0 or
+							successor_ref < successor_refs.settlement_min then
+						successor_refs.settlement_min = successor_ref
+					end
+					if successor_ref > successor_refs.settlement_max then
+						successor_refs.settlement_max = successor_ref
+					end
 					intent_aux[index] = (successor_ref - 1) * 256 + param2
 					occupancy[index] = -2
 				end
@@ -2581,7 +3003,7 @@ local function settlement_factory()
 						fail("fail_ledger", "private capture was not armed exactly once")
 					end
 					capture_state.armed = false
-					capture_state.value = helpers.capture_private_buffers(hash, {
+					capture_state.value = helpers.capture_private_buffers(helpers.r8_hash, {
 						min_x = min_x, min_y = min_y, min_z = min_z,
 						max_x = max_x, max_y = max_y, max_z = max_z,
 					}, index_at, {data = final_data, param2 = final_param2,
@@ -2918,6 +3340,9 @@ local function settlement_factory()
 		function fixture.last_light_seed_runs()
 			return last_light_seed_runs
 		end
+		function fixture.last_successor_refs()
+			return copy_map(transaction_state.successor_refs)
+		end
 		function fixture.run_values()
 			local result = {}
 			local count = last_run_count
@@ -2956,7 +3381,12 @@ local function settlement_factory()
 	return {new = function(dependencies) return new(dependencies, nil, nil, nil) end,
 		new_runtime = function(dependencies) return new(dependencies, nil, nil, true) end,
 		new_evidence = function(dependencies) return new(dependencies, true, nil, nil) end,
-		new_capture = function(dependencies) return new(dependencies, nil, true, nil) end}
+		new_capture = function(dependencies) return new(dependencies, nil, true, nil) end,
+		r8_strata_new = new_r8_strata, r8_apply_strata = r8_apply_strata,
+		r8_plan_cave = r8_plan_cave,
+		r8_cave_proof_box_inside = r8_cave_proof_box_inside,
+		r8_cave_component_radius = R8_CAVE_COMPONENT_RADIUS,
+		r8_cave_component_minimum = R8_CAVE_COMPONENT_MINIMUM}
 end
 
 return settlement_factory()

@@ -1,0 +1,9 @@
+mutation	run_stability	rejected	luajit: ...-mutations.f2EJbg/tree/tools/r8_map_a/mutation_probe.lua:8: run identity lost its stable class
+mutation	floor_guard	rejected	luajit: R8-MAP-A writer KAT: strata write/clip counts differ
+mutation	ore_preservation	rejected	luajit: R8-MAP-A writer KAT: strata write/clip counts differ
+mutation	cave_connection	rejected	luajit: R8-MAP-A writer KAT: closed native pocket was accepted
+mutation	proof_box_edge	rejected	luajit: R8-MAP-A writer KAT: owner-edge target received a complete proof box
+mutation	checker_unexpected	rejected	luajit: R8-MAP-A writer KAT: exact baseline-backed lumen was not recognized
+mutation	checker_partial_lumen	rejected	luajit: R8-MAP-A writer KAT: partial lumen was hidden
+mutation	checker_dual_lumen	rejected	luajit: R8-MAP-A writer KAT: two alternatives of one candidate were hidden
+mutation	surface_integration	rejected	luajit: R8-MAP-A writer KAT: wet-bed sand selector differs

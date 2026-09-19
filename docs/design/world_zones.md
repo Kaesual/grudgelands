@@ -476,6 +476,33 @@ WP40 replaces it with the complete catalog and contracts below.
   gravel and stone; mud remains the dominant swamp bed. Dry continental beach
   shores are mostly sand with sparse gravel patches. Deep-ocean and immutable
   channel beds retain the authored biome material without patch variation.
+- **Coast profiles and sand (2026-09-18):** an exposed-water shore run is a
+  48-node interval along the axis perpendicular to its nearest cardinal water
+  contact, split again wherever its stable water kind or relief-fallback class
+  changes. Its identity is `(zone_id, orientation, signed run index,
+  water/relief class)`; the full seed string selects exactly one profile for
+  that identity, and the outer four nodes of the 48-node interval blend the
+  adjacent interval. Ordinary sea runs target 40% beach, 25% bluff, 20% cliff
+  and 15% terraced cliff. Freshwater and low-relief sea runs select only beach
+  or bluff; the low-relief class means local relief below seven nodes or a
+  primary relief of `wetland_delta`. The first
+  dry bank column remains at water level. Behind it, beaches rise between 1:4
+  and 1:8 through a 4--10-node sand band; bluffs rise at 1:1 or 2:1 with a
+  gravel/stone face and biome-soil lip; cliffs have a seed-irregular top edge,
+  may lean back one node per 2--4 nodes of rise and may expose ledges; terraced
+  cliffs use two or three 3--5-node steps. Start cores, capital envelopes,
+  coastal housing cores, routes and corridors, bridges, causeways, fords,
+  route decks, culverts, POI spurs, named landmarks and civic water retain
+  their established grade and material priority.
+- **Near-water sand rule (2026-09-18):** a sea-beach band has sand on top and
+  three filler nodes of `default:sandstone`; a freshwater beach has only a
+  one- or two-node sand lip. Outside those bands, only the existing
+  `grug_beach` surface row may place dry surface sand. Every zone with an
+  ordinary profile-eligible shore retains a deterministic beach run; civic,
+  landmark and other functional shore exemptions retain their authored
+  material, while existing `grug_beach` areas remain available. Sand therefore
+  remains a local furnace input for glass without becoming a general inland
+  filler.
 
 ### 7.5 Paths, anchors and housing
 
@@ -575,14 +602,49 @@ WP40 replaces it with the complete catalog and contracts below.
   a maximum one-node step while exact pins and water clearance remain fixed.
   This travel guarantee does not constrain roadside banks. Derived bridge
   decks and route records use the solved heights.
-- Sparse hillside entrances use 192-node cells, a one-quarter candidate gate,
-  radius 2 and length 32. A mouth at y >= 16 needs an uphill rise >= 6; the
-  axis descends one node every four steps, and its final 16 sections retain
-  roof thickness >= 3. The complete tube plus a two-node halo must be dry,
-  ordinary land in one zone, outside water, transitions, functional surfaces,
-  foundations, exclusions and housing. P5 cuts the tube with priority 5;
-  prospective and actual P7 support cannot re-cap it. A closed end is valid;
-  connection to native underground caves is not guaranteed.
+- **Connected cave mouths (2026-09-18):** the offline planner selects
+  deterministic candidates in world-aligned 80-node cells with a three-quarter
+  gate. Each owner-local candidate is either a radius-2, length-24 hillside
+  entrance or a flat-ground sinkhole and has a maximum connection depth of 24
+  nodes. A sinkhole searches at most 24 horizontal nodes within that same
+  mapchunk; its fixed offline mouth apron and the exact path selected by the
+  writer are dry ordinary land in one zone and exclude
+  start aprons, water, transitions, functional surfaces, foundations, routes
+  and their corridors, settlements, static exclusions and housing. The
+  planner never authorizes a cut. In the candidate's one 80-node mapchunk, the
+  writer inspects the immutable native-v7 input and carves only when it finds
+  native cave air beneath at least three natural roof nodes within the depth
+  bound and every new lumen voxel is native air, natural vegetation, natural
+  surface, ordinary host rock or the native depth-stratum host. Native ore and
+  resource records, liquids, dungeon/foreign blocks and unknown content remain
+  transaction vetoes.
+  At most the first 64 candidate air targets are considered in deterministic
+  nearest-first order;
+  an intervening ore, dungeon block or excluded column rejects only that path,
+  not a later valid target. Outside the fixed mouth funnel, the path may not
+  rise above the final local terrain. The target's unchanged native-air
+  component is flood-filled in a radius-12 box around the target. At least 24
+  component voxels must lie outside the planned lumen and the component must
+  reach that proof box's boundary; a closed or isolated pocket is therefore
+  invalid. The complete target ±12 box must lie inside the candidate's
+  unchanged owner input; a target too close to any owner boundary is rejected,
+  and a clipped owner edge never proves continuation. The same bounded flood
+  derives the native surface from immutable
+  input CIDs and rejects the whole candidate if any component voxel reaches
+  native surface air or sky. The lumen already intersects the accepted native
+  component, and every carved voxel joins one occupancy transaction so a later
+  pass cannot re-cap it. Candidate ownership, bounded proof volume and use of
+  only the candidate's input mapchunk make the decision independent of emerge
+  order.
+  The engine witness (2026-09-18) captures a separate authored-writer-disabled
+  native-v7 comparison world. Its checker reconstructs the exact owner-local
+  lumen from revision-bound candidate and exclusion bytes, then applies this
+  same complete-box component, continuation and sky proof before inspecting the
+  carved world. A second comparison world disables only the cave writer, so
+  coast grading and every other authored operation are present on both sides of
+  the carve comparison. Across every candidate's full possible lumen volume,
+  the checker accepts only a lumen whose target has the independent native
+  continuation proof and rejects any other writer-caused air voxel.
 - **Fresh-world surface and vegetation refinement (2026-09-13):** logical
   biome ownership stays unchanged. Dry surfaces combine coherent 32-node and
   8-node material fields at weights 3:1; filler depth varies from 1–4 nodes
@@ -640,6 +702,20 @@ WP40 replaces it with the complete catalog and contracts below.
   unavailable content remains a transaction veto. Native dungeons stay
   unconditionally disjoint below the authored range, and no second competing
   terrain writer runs.
+- **Shallow subsurface strata (2026-09-18):** below top soil and filler, the
+  first 40 nodes contain deterministic three-node secondary-stone bands,
+  three-node gravel lenses and two-node dirt pockets; wetland-delta and swamp
+  pockets use `default:clay`. Palette secondaries are sandstone under savanna,
+  basalt under badlands, desert stone as the existing closest limestone under
+  meadows, slate under pine hills and mossy cobble as the existing closest
+  mossy stone under jungle. Equivalent authored palettes choose one of those
+  shipped nodes. This pass replaces only immutable-input native stone; a
+  filler CID is never accepted because native gravel ore shares the ordinary
+  gravel CID. It skips air, liquids, ores, dungeon blocks,
+  functional volumes and every protected/excluded surface. Its depth loop is
+  clipped at y = -37, so the floor bites into the lower part of a nominal
+  40-node shaft wherever `surface_y - 40 < -37`. The six native ore records
+  and five deep native strata remain unchanged and authoritative below it.
 - Every land zone declares exactly one primary relief profile:
 
   | Relief id | Elevation above water level |
@@ -655,8 +731,9 @@ WP40 replaces it with the complete catalog and contracts below.
   base. Biome patches do not implicitly change relief.
 - Ordinary profile transitions are smooth. A cliff, ravine, escarpment,
   waterfall basin or other abrupt macro feature exists only through a named
-  authored landmark. Start, capital, housing, route and fixed-anchor grading
-  overrides general relief in that order of functional necessity.
+  authored landmark or the bounded coast profiles of §7.4. Start, capital,
+  housing, route and fixed-anchor grading overrides general relief in that
+  order of functional necessity. **(2026-09-18)**
 - On an authored route's complete full-weight visible surface, route grading
   wins over start, capital and guaranteed coastal-core fitting; those grades
   retain their stated priority everywhere outside that surface, and exact
