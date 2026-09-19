@@ -53,6 +53,7 @@ function grug_professions.register_refinement(profession, tier, family, base,
 		station = "grid",
 		inputs = {{base, material}},
 		output = base,
+		in_place = true,
 		hint = "Refine in the inventory grid",
 	})
 	refinement_recipes[recipe.id] = family

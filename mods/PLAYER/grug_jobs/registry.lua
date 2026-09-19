@@ -50,6 +50,7 @@ local recipes_by_output = {}
 local recipes_by_profession = {}
 local station_handlers = {}
 local ambiguous_crafts_logged = {}
+local in_place_universal_routes = {}
 local registration_phase
 local registry_metrics = {
 	matrix_checks = 0,
@@ -448,11 +449,13 @@ local function output_route_count(output, station)
 	return count
 end
 
-local function refuse_existing_output(output, phase)
+local function refuse_existing_output(output, phase, in_place)
 	local recipes = engine_corpus(phase).by_output[output] or {}
 	local owned_engine = output_route_count(output, "grid") +
 		output_route_count(output, "furnace")
-	if #recipes > owned_engine then
+	local universal_routes = math.max(0, #recipes - owned_engine)
+	if not in_place and (universal_routes > 0 or
+			(in_place_universal_routes[output] or 0) > 0) then
 		fail("profession output " .. output ..
 			" already has a universal engine recipe")
 	end
@@ -460,6 +463,14 @@ local function refuse_existing_output(output, phase)
 		fail("profession output " .. output ..
 			" already has a dual-furnace recipe")
 	end
+	return universal_routes
+end
+
+local function contains_exact_input(inputs, output)
+	for index = 1, #inputs do
+		if inputs[index] == output then return true end
+	end
+	return false
 end
 
 function grug_jobs.register_ingredient_tier(item, tier)
@@ -545,6 +556,9 @@ function grug_jobs.register_recipe(definition)
 	if definition.shapeless ~= nil and type(definition.shapeless) ~= "boolean" then
 		fail(profession .. " T" .. tier .. " shapeless flag differs")
 	end
+	if definition.in_place ~= nil and type(definition.in_place) ~= "boolean" then
+		fail(profession .. " T" .. tier .. " in_place flag differs")
+	end
 	local inputs = flatten_inputs(definition.inputs)
 	if #inputs == 0 then fail(profession .. " T" .. tier .. " recipe has no input") end
 	local has_own_tier = false
@@ -562,6 +576,10 @@ function grug_jobs.register_recipe(definition)
 	end
 	local output = item_name(definition.output)
 	if output == "" then fail(profession .. " recipe needs an output") end
+	if definition.in_place and
+			(station ~= "grid" or not contains_exact_input(inputs, output)) then
+		fail(output .. " in-place recipe must use the grid and consume its output")
+	end
 	local output_routes = recipes_by_output[output]
 	if output_routes then
 		for index = 1, #output_routes do
@@ -576,7 +594,8 @@ function grug_jobs.register_recipe(definition)
 		end
 	end
 	local phase = registration_comparison_phase()
-	refuse_existing_output(output, phase)
+	local universal_routes = refuse_existing_output(output, phase,
+		definition.in_place == true)
 	refuse_input_collision(station, definition.inputs, output, phase,
 		dual_recipe_list())
 	local input_key = normalized_inputs(definition.inputs)
@@ -602,6 +621,8 @@ function grug_jobs.register_recipe(definition)
 		output_name = output,
 		hint = definition.hint,
 		time = definition.time,
+		in_place = definition.in_place == true,
+		universal_output_routes = universal_routes,
 		shapeless = definition.shapeless == true,
 		shaped = definition.shapeless ~= true and
 			type(definition.inputs) == "table" and
@@ -610,6 +631,9 @@ function grug_jobs.register_recipe(definition)
 		id = station .. "\0" .. input_key .. "\0" .. output,
 		input_key = input_key,
 	}
+	if recipe.in_place then
+		in_place_universal_routes[output] = universal_routes
+	end
 	grug_jobs.recipes[#grug_jobs.recipes + 1] = recipe
 	if not output_routes then
 		output_routes = {}
@@ -686,7 +710,8 @@ function grug_jobs.validate_recipe_collisions()
 		local recipe = grug_jobs.recipes[index]
 		local engine = corpus.by_output[recipe.output_name] or {}
 		local expected_engine = output_route_count(recipe.output_name, "grid") +
-			output_route_count(recipe.output_name, "furnace")
+			output_route_count(recipe.output_name, "furnace") +
+			(in_place_universal_routes[recipe.output_name] or 0)
 		if #engine ~= expected_engine then
 			fail("profession output " .. recipe.output_name ..
 				" collides with a universal engine recipe")

@@ -290,6 +290,9 @@ return function(repo)
 		items = {"test:universal_t1", "test:base"},
 		output = "test:universal_inputs"}}
 	core.registered_items["test:universal_inputs"] = {description = "Universal inputs"}
+	universal["test:refinable"] = {{method = "normal", items = {"test:base"},
+		output = "test:refinable"}}
+	core.registered_items["test:refinable"] = {description = "Refinable"}
 	check(table.concat(grug_jobs.CRAFTS_TO_ADVANCE, ",") == "10,15,20,25,30",
 		"craft thresholds differ")
 	local recipe = grug_jobs.register_recipe({profession = "cooking", tier = 1,
@@ -297,6 +300,12 @@ return function(repo)
 		output = "test:dish", hint = "Crafting grid"})
 	check(recipe.output_name == "test:dish" and #registered == 1,
 		"valid grid recipe was not installed")
+	local in_place_recipe = grug_jobs.register_recipe({profession = "cooking", tier = 1,
+		station = "grid", inputs = {{"test:refinable", "test:t1"}},
+		output = "test:refinable", in_place = true, hint = "Refine in grid"})
+	check(in_place_recipe.in_place and
+		#(core.get_all_craft_recipes("test:refinable") or {}) == 2,
+		"in-place recipe did not share its universal output")
 
 	local function refused(label, definition)
 		local ok = pcall(grug_jobs.register_recipe, definition)
@@ -324,6 +333,16 @@ return function(repo)
 	refused("universal input collision", {profession = "cooking", tier = 1,
 		station = "grid", inputs = {"test:universal_t1", "test:base"},
 		output = "test:profession_override", hint = "Grid"})
+	local non_grid_ok = pcall(grug_jobs.register_recipe, {profession = "cooking",
+		tier = 1, station = "forge", inputs = {"test:refinable", "test:t1"},
+		output = "test:refinable", in_place = true, hint = "Forge"})
+	local missing_self_ok = pcall(grug_jobs.register_recipe, {profession = "cooking",
+		tier = 1, station = "grid", inputs = {"test:t1", "test:base"},
+		output = "test:missing_self", in_place = true, hint = "Grid"})
+	check(not non_grid_ok and not missing_self_ok,
+		"invalid in-place recipe was accepted")
+	line("in_place", "universal_output_accepted", "ordinary_collision_refused",
+		"non_grid_refused", "missing_output_input_refused")
 	local overlap_recipe = grug_jobs.register_recipe({profession = "cooking", tier = 1,
 		station = "grid", inputs = {"test:t1", "group:wood", "test:oak"},
 		output = "test:overlap_a", hint = "Grid"})
