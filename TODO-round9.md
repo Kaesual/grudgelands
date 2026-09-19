@@ -553,6 +553,12 @@ ocean edge and the enemy border (warning band, hard dismount).
     conversions (Cured/Heavy/Scaled/Nightscale Leather, Silk and
     Stormweave Bolt) therefore sit on their designed tiers; no synthetic
     aliases, no new ingredients.
+34. **Mapgen pause after the clean measurement** (user 2026-09-19): after
+    Astra's clean before / 441 / 128 measurement on an idle host, ALL
+    mapgen work (MAP-C, CAP, MAP-B) pauses; the results are discussed with
+    the user before any further mapgen step. The plateau measurements
+    taken under host load (441 +46 %, 200 +70 %, 128 +29 %) are confounded
+    and not a basis for a decision.
 
 ## 5. MAP-C protocol: what must not repeat from Round 8
 
