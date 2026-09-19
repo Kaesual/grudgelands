@@ -559,6 +559,20 @@ ocean edge and the enemy border (warning band, hard dismount).
     the user before any further mapgen step. The plateau measurements
     taken under host load (441 +46 %, 200 +70 %, 128 +29 %) are confounded
     and not a basis for a decision.
+35. **MAP-C without the plateau** (user 2026-09-19, supersedes 30/34 for
+    this round): the plateau cost is per MODIFIED voxel in the writer's
+    Lua post-processing (dirty-intent scan, light-context scan, replay),
+    not per resolved voxel, so bulk clearing could not help; measurements
+    under load are not the issue. MAP-C reverts the NoiseParams/flags to
+    the previous native inputs and keeps everything else: opcode-21 plate
+    fix, 3-node skin with natural openings, coast band, README pin
+    procedure, engine-faithful sentinel KAT, refreshed source-audit
+    roster. One profiler/emerge pair as the gate (≈ main expected), then
+    witness, pin refresh, final micro, review. CAP and MAP-B follow as
+    planned. A later performance package owns the writer post-processing
+    loops and the mapgen-environment / multi-emerge-thread question
+    (`core.register_mapgen_script`, today `num_emerge_threads = 1` is
+    pinned); the plateau is revisited only with that data.
 
 ## 5. MAP-C protocol: what must not repeat from Round 8
 
