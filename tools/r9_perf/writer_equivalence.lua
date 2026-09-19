@@ -1,6 +1,6 @@
 -- Bounded real R5 planner/writer plus R6 successor fixture equivalence.
 -- Target immutable production modules with identical current fixture tooling.
-return function(repo, production_repo)
+return function(repo, production_repo, check_composition, compact)
 	production_repo = production_repo or repo
 	local wp40 = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
 	local allocator_factory = dofile(wp40 .. "/counting_allocator.lua")
@@ -81,18 +81,18 @@ return function(repo, production_repo)
 		for index = 1, #values do
 			parts[#parts + 1] = tostring(values[index]) .. ","
 			if #parts == 1024 then
-				blocks[#blocks + 1] = loader.raw_sha256(table.concat(parts))
+				blocks[#blocks + 1] = table.concat(parts)
 				parts = {}
 			end
 		end
-		blocks[#blocks + 1] = loader.raw_sha256(table.concat(parts))
+		blocks[#blocks + 1] = table.concat(parts)
 		return loader.common.hex(loader.raw_sha256(table.concat(blocks)))
 	end
-	for case = 1, 3 do
+	for case = 1, compact and 1 or 3 do
 		local minp = {x = -32, y = case == 1 and 48 or -4, z = -32}
-		local maxp = {x = minp.x + 79, y = minp.y + 15, z = minp.z + 79}
+		local maxp = {x = minp.x + 79, y = minp.y + (compact and 0 or 15), z = minp.z + 79}
 		local plan, generation = planner:plan_slice(minp, maxp)
-		local ex, ey, ez = 112, 48, 112
+		local ex, ey, ez = 112, compact and 33 or 48, 112
 		local data, param2, light = {}, {}, {}
 		for z = minp.z - 16, maxp.z + 16 do
 			for y = minp.y - 16, maxp.y + 16 do
@@ -112,6 +112,27 @@ return function(repo, production_repo)
 			ignore_cid = contract.ignore_cid, verify_inactive_tail = false})
 		local result = adapter:apply(vm, minp, maxp, plan, generation, "offline_fixture")
 		local snapshot, metrics = observer.snapshot(), adapter:metrics()
+		if check_composition then
+			local deferred, _, deferred_observer = loader.vm_module.new({
+				minp = minp, maxp = maxp, data = data, param2 = param2, light = light,
+				heightmap = heightmap, content_contract = contract, water_level = 1,
+				ignore_cid = contract.ignore_cid, verify_inactive_tail = false})
+			local deferred_result = adapter:apply(deferred, minp, maxp, plan,
+				generation, "offline_fixture", "outer_transaction")
+			local projected = deferred_observer.snapshot()
+			assert(deferred_result == result, "composed dirty result changed")
+			assert(digest(projected.data) == digest(snapshot.data) and
+				digest(projected.param2) == digest(snapshot.param2),
+				"composed content projection differs")
+			assert(projected.calls.get_light_data == 0 and
+				projected.calls.set_lighting == 0 and projected.calls.calc_lighting == 0 and
+				projected.calls.set_light_data == 0, "discarded inner lighting still ran")
+			assert(projected.calls.update_liquids == snapshot.calls.update_liquids,
+				"composition changed liquid intent")
+			assert(not pcall(adapter.apply, adapter, deferred, minp, maxp, plan,
+				generation, "offline_fixture", "unknown_owner"),
+				"invalid lighting owner was accepted")
+		end
 		rows[#rows + 1] = "case\t" .. case .. "\t" .. result .. "\n"
 		for _, key in ipairs({"data", "param2", "light", "trace"}) do
 			rows[#rows + 1] = key .. "\t" .. digest(snapshot[key]) .. "\n"
@@ -124,7 +145,9 @@ return function(repo, production_repo)
 			rows[#rows + 1] = key .. "\t" .. tostring(metrics[key]) .. "\n"
 		end
 	end
-	rows[#rows + 1] = dofile(repo .. "/tools/wp40/quality/gravewood_writer_fixture.lua")(
-		repo, production_repo, false)
+	if not compact then
+		rows[#rows + 1] = dofile(repo .. "/tools/wp40/quality/gravewood_writer_fixture.lua")(
+			repo, production_repo, false)
+	end
 	return table.concat(rows)
 end

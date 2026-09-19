@@ -123,6 +123,7 @@ cp -- "$cases_file" "$game_dir/mods/grug_wp40_profile_probe/cases.lua"
 sha256sum "$result_dir/snapshot-files.sha256" >"$result_dir/snapshot.digest"
 sha256sum "$script_dir/run.sh" "$script_dir/patch_snapshot.sh" \
 	"$script_dir/instrument-mapgen.patch" "$script_dir/probe/init.lua" \
+	"$script_dir/compare.py" \
 	"$cases_file" "$script_dir/probe/mod.conf" \
 	"$script_dir/summarize_callbacks.awk" "$script_dir/patch_settlement_stages.sh" \
 	"$script_dir/instrument-settlement-stages.patch" \

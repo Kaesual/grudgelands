@@ -135,8 +135,7 @@ The expected global-write result is exactly the probe's single mod table.
 The v2 small sample digest uses explicit `outside_owner` sentinels whenever a
 sample lies outside its requested 80-cube owner. Cold generation can populate
 transient neighbouring halos which a disk-only request does not load; these
-are not valid persistence comparisons. The full owner digest remains the
-unchanged stronger comparison. Optional `expected_nodes` on diagnostic corpus
+are not valid persistence comparisons. The full generated-owner digest provides the stronger comparison. Optional `expected_nodes` on diagnostic corpus
 rows assert exact node names after all requests, before shutdown, without
 requesting any additional generation; the dedicated quality cave corpus uses
 this to check the entire tube after P7/P8/P9 settlement.

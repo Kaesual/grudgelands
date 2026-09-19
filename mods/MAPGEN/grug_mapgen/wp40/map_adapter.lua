@@ -984,7 +984,15 @@ local function adapter_factory(allocator_factory)
 			call_max.z = max_z
 		end
 
-		local function apply_impl(vm, minp, maxp, plan, plan_generation, call_mode)
+		local function apply_impl(vm, minp, maxp, plan, plan_generation, call_mode,
+				lighting_owner)
+			if lighting_owner ~= nil and lighting_owner ~= "outer_transaction" then
+				fail("fail_call_mode", "lighting owner differs")
+			end
+			-- R6 settles the immutable R5 projection plus successors and validates
+			-- one final light context before committing. Standalone R5 owns its
+			-- complete light transaction; composition explicitly delegates it.
+			local owns_lighting = lighting_owner == nil
 			require_manifest(manifest)
 			local x_count, y_count, z_count, column_count =
 				validate_plan(plan, plan_generation, minp, maxp, call_mode)
@@ -1246,7 +1254,7 @@ local function adapter_factory(allocator_factory)
 			local seed_y
 			local box_min_x, box_min_y, box_min_z
 			local box_max_x, box_max_y, box_max_z
-			if light_dirty_columns > 0 then
+			if owns_lighting and light_dirty_columns > 0 then
 				box_min_x = math.max(light_min_x - 15, emerged_min.x)
 				box_min_y = math.max(light_min_y - 15, emerged_min.y)
 				box_min_z = math.max(light_min_z - 15, emerged_min.z)
@@ -1390,7 +1398,7 @@ local function adapter_factory(allocator_factory)
 			if param2_dirty_columns > 0 then
 				vm_call1(vm_set_param2_data, K.M_VM_SET_PARAM2, vm, param2_buffer)
 			end
-			if light_dirty_columns > 0 then
+			if owns_lighting and light_dirty_columns > 0 then
 				light_value.day = 0
 				light_value.night = 0
 				set_call_box(box_min_x, box_min_y, box_min_z,
@@ -1486,14 +1494,14 @@ local function adapter_factory(allocator_factory)
 		end
 
 		local function apply(self, vm, minp, maxp, plan, plan_generation,
-				call_mode)
+				call_mode, lighting_owner)
 			if not rawequal(self, adapter) then
 				fail("fail_status", "adapter receiver differs")
 			end
 			local entered = pcall(allocator.enter_hotpath, allocator, K.HOTPATH_NAME)
 			if not entered then fail("fail_status", "adapter is not sealed") end
 			local ok, result = pcall(apply_impl, vm, minp, maxp, plan,
-				plan_generation, call_mode)
+				plan_generation, call_mode, lighting_owner)
 			local left = pcall(allocator.leave_hotpath, allocator, K.HOTPATH_NAME)
 			if not left then fail("fail_status", "adapter hotpath is unbalanced") end
 			if not ok then error(result, 0) end
