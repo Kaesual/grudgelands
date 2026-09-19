@@ -514,3 +514,62 @@ range 31+ is unreachable for us: breeding is not registered.
 The **Carrion Crow** also gained a clip in this round without touching its
 mesh: `punch` aliased onto the fly range 140..160 of `grug_mobs_gull.b3d`
 (measured 1..160, §8's table), so its retaliation as passive prey reads.
+
+---
+
+## 9. Round 9 mob packages 6–8
+
+No upstream sound was copied. All source paths below are inside the pinned
+`reference_projects/` checkout and every imported file is byte-identical to
+that source. Ember Wisp, Bog Witch and both Goblin Miner roles are runtime
+retints/reuses of media already listed above and add no file.
+
+### 9.1 mobs_monster — commit `adc76336bf596ea49b86cb45b852848f108e1ebd`
+
+License evidence: `license.txt:23-86`, the per-file rows summarized in §5.
+
+| File | Source path | Author | License |
+|------|-------------|--------|---------|
+| `grug_mobs_oerkki.b3d` | `models/mobs_oerkki.b3d` | Pavel_S / PilzAdam | WTFPL |
+| `grug_mobs_oerkki.png` | `textures/mobs_oerkki.png` | Pavel_S / PilzAdam | WTFPL |
+| `grug_mobs_oerkki4.png` | `textures/mobs_oerkki4.png` | SkyBuilder1717 | CC BY-SA 4.0 |
+| `grug_mobs_crystal_shard.b3d` | `models/mobs_mese_monster.b3d` | SirrobZeroone | CC0 1.0 |
+| `grug_mobs_crystal_shard.png` | `textures/mobs_mese_monster_purple.png` | SirrobZeroone | CC0 1.0 |
+| `grug_mobs_dungeon_master.b3d` | `models/mobs_dungeon_master.b3d` | Pavel_S / PilzAdam | WTFPL |
+| `grug_mobs_dungeon_master.png` | `textures/mobs_dungeon_master.png` | Pavel_S / PilzAdam | WTFPL |
+| `grug_mobs_dungeon_master2.png` | `textures/mobs_dungeon_master2.png` | wwar | CC0 1.0 |
+| `grug_mobs_dungeon_master4.png` | `textures/mobs_dungeon_master4.png` | SkyBuilder1717 | CC BY-SA 4.0 |
+| `grug_mobs_lava_flan.b3d` | `models/zmobs_lava_flan.b3d` | AspireMint | CC BY-SA 3.0 |
+| `grug_mobs_lava_flan.png` | `textures/zmobs_lava_flan.png` | AspireMint | CC BY-SA 3.0 |
+| `grug_mobs_lava_flan2.png` | `textures/zmobs_lava_flan2.png` | AspireMint | CC BY-SA 3.0 |
+| `grug_mobs_lava_flan3.png` | `textures/zmobs_lava_flan3.png` | AspireMint | CC BY-SA 3.0 |
+| `grug_mobs_land_guard.png` | `textures/mobs_land_guard.png` | wwar | CC0 1.0 |
+| `grug_mobs_land_guard2.png` | `textures/mobs_land_guard2.png` | wwar | CC0 1.0 |
+| `grug_mobs_land_guard3.png` | `textures/mobs_land_guard3.png` | wwar | CC0 1.0 |
+
+### 9.2 animalworld — commit `ac835da96681774679ace90656812aab67e25b5c`
+
+License evidence: `LICENSE:24-27`; models, textures and animation are MIT by
+Liil/Wilhelmine. The unclear sound set was excluded.
+
+| File | Source path | Author | License |
+|------|-------------|--------|---------|
+| `grug_mobs_glowwing.b3d` | `models/Dragonfly.b3d` | Liil/Wilhelmine | MIT |
+| `grug_mobs_glowwing.png` | `textures/texturedragonfly.png` | Liil/Wilhelmine | MIT |
+| `grug_mobs_speargrass_tiger.b3d` | `models/Tiger.b3d` | Liil/Wilhelmine | MIT |
+| `grug_mobs_speargrass_tiger.png` | `textures/texturetiger.png` | Liil/Wilhelmine | MIT |
+| `grug_mobs_shore_crab.b3d` | `models/Crab.b3d` | Liil/Wilhelmine | MIT |
+| `grug_mobs_shore_crab.png` | `textures/texturecrab.png` | Liil/Wilhelmine | MIT |
+
+### 9.3 VoxeLibre — commit `c2dbc520ff4e1637072d33b06c3a2404e0f08df7`
+
+License evidence: `mods/ENTITIES/mobs_mc/LICENSE-media.md:16-79` and top-level
+`LEGAL.md`: models by 22i are GPL-3.0-or-later; the mob textures use the
+ledger's default Pixel Perfection/XSSheep CC BY-SA 4.0 grant.
+
+| File | Source path | Author | License |
+|------|-------------|--------|---------|
+| `grug_mobs_war_construct.b3d` | `mods/ENTITIES/mobs_mc/models/mobs_mc_iron_golem.b3d` | 22i | GPL-3.0-or-later |
+| `grug_mobs_war_construct.png` | `textures/mobs_mc_iron_golem.png` | XSSheep / VoxeLibre contributors | CC BY-SA 4.0 |
+| `grug_mobs_rift_spawn.b3d` | `mods/ENTITIES/mobs_mc/models/vl_stalker.b3d` | 22i | GPL-3.0-or-later |
+| `grug_mobs_rift_spawn.png` | `textures/vl_stalker_default.png` | XSSheep / VoxeLibre contributors | CC BY-SA 4.0 |
