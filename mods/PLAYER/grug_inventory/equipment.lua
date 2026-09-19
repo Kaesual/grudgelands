@@ -400,6 +400,7 @@ local function compute_equipped_armor(player)
 		if not stack:is_empty() then
 			local def = core.registered_items[stack:get_name()]
 			local armor = def and def._grug_armor
+			armor = grug_inventory.armor_points_of and grug_inventory.armor_points_of(stack, armor) or armor
 			if type(armor) == "number" and armor > 0 then
 				total = total + armor
 			end
