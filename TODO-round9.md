@@ -529,6 +529,23 @@ ocean edge and the enemy border (warning band, hard dismount).
     missing in `grug_gear` (24 leather armor pieces, the shield line, the
     three spell tomes, the 32-slot Huge Bag) are a follow-up gear lane
     after Round 9, not invented by the catalog lanes.
+30. **MAP-C performance STOP** (2026-09-19): with the plateau at 441 the
+    emerge wall clock rose 42 % (writer 21 s → 51 s over the profiler
+    corpus) because the Lua writer resolves every solid voxel above the
+    surface one by one; engine VM and lighting shares stayed small. User
+    ruling: ONE reviewed bulk-clear attempt (uniform native stone above the
+    surface cap becomes air without per-voxel resolution, equivalence KAT,
+    same before/after measurement, gate after ≤ before); if it fails, the
+    orchestrator asks again (options: low plateau at sea level with the
+    MAP-A mouth writer back on, mid plateau ~200, or accept the slowdown).
+31. **In-place refinement recipes** (orchestrator ruling 2026-09-19):
+    the registry accepts a grid recipe that consumes its own exact output
+    item (refinement) although that output has a universal engine recipe
+    (`in_place` flag; everything else in the collision rules unchanged),
+    so pick refinements can exist beside the universal pick recipes.
+32. **Mount prices** (2026-09-19): coordinator placeholders until WP44
+    measures them — T1 200, T2 1 500, T3 24 000, T4 100 000 copper
+    (10 gold; the user lowered T4 from the proposed 15 gold).
 
 ## 5. MAP-C protocol: what must not repeat from Round 8
 
