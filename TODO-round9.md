@@ -185,7 +185,9 @@ boot its own port block (≥ 32160, spacing 5).
     air; if mobs_redo cannot switch `fly` at runtime, keep permanent flight
     with a low hover for "walking" and say so in the lane notes), flight faster than walking, both faster than
     any player movement including sprint so nobody simply outruns them;
-    leash stays 36. Takeoff when the target is farther than about 12
+    leash raised from 36 to 64 and view range from 32 to 48 (orchestrator's
+    choice: a 36-node leash would make running away trivial; the user may
+    veto), HP reset on leash as today. Takeoff when the target is farther than about 12
     nodes; **dive slam**: short telegraph, velocity onto the target, impact
     with the existing knockback.
   - **Visible breath as a cone:** three projectiles with spread, each with a
@@ -197,8 +199,9 @@ boot its own port block (≥ 32160, spacing 5).
     position, impact about 1.5 s later; dodgeable.
   - **Wing gust** about every 12 s: knockback plus a short slow for
     everything in melee range (reuse the slam knockback).
-  - **Enrage at 50 % HP:** roar, glow, shorter cooldowns, and **at most two
-    adds**: whelps, i.e. the boss mesh scaled to roughly a third with low HP
+  - **Enrage at 50 % HP:** "roar" as a chat line to players in range plus
+    a particle burst (no sounds are vendored, WP6/T4 decision), glow,
+    shorter cooldowns, and **at most two adds**: whelps, i.e. the boss mesh scaled to roughly a third with low HP
     and low damage, no skills, same walk-and-fly movement (flight faster),
     despawn when the boss dies. Fallback if the scaled mesh looks wrong:
     two existing mobs (Frost Stray / Emerald Coil).
@@ -208,7 +211,8 @@ boot its own port block (≥ 32160, spacing 5).
     at once are fine, thousands are not; every spawner has a bounded count
     and lifetime, no per-tick unbounded spawns.
   - **Royal groups:** guards without crowns (only the king wears one); two
-    royal guards instead of four; nothing else changes.
+    royal guards instead of four, using two of the four authored throne
+    sockets (WP13 socket data untouched); nothing else changes.
   - No boss HUD (the nametag already shows HP).
   - Harness: `final_micro.sh` (load-time registrations), headless boot,
     a committed evidence note of one dragon fight from a headless probe or
