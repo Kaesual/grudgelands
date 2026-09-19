@@ -1,8 +1,10 @@
 # TODO — Round 9: terrain (MAP-C), plant placement, the five primary profession catalogs, mob wave 2, farming, enchant rolls, mounts
 
-Written 2026-09-18 (evening) while Round 8 was closing; **DECIDED with the
-user the same evening** (§4 holds the rulings). Round 9 starts after
-Playtest 11 and the user's Go. Working
+
+Written 2026-09-18 (evening) while Round 8 was closing, **DECIDED with the
+user the same evening** (§4.1–§4.6); **extended 2026-09-19 after Playtest
+11** with lane MAP-C, BOSS, CAP and UI (§4.7–§4.20, §5). Round 9 starts
+after the user's Go; the remaining Playtest 11 points are settled. Working
 rules as in rounds 5–8 (Codex GPT-5.6 Sol implements and reviews, the
 orchestrator runs every gate, `--no-ff` merges, sync only through
 `tools/sync_to_luanti.sh`, push only on the user's word; mechanics and
@@ -40,9 +42,11 @@ escalating complexity.
   evidence under `tools/r8_map_a/evidence/` become historical and leave the
   gates. No exactness fix is needed.
 
-## 2. Lanes (decided 2026-09-18; the cut is the orchestrator's)
+## 2. Lanes (decided 2026-09-18, extended 2026-09-19; the cut is the orchestrator's)
 
-Wave 1 (parallel, disjoint code areas; MAP-B follows MAP-C, see there):
+Wave 1 (parallel, disjoint code areas; MAP-B follows MAP-C, see there).
+Seven lanes; the orchestrator serialises the gates and gives every headless
+boot its own port block (≥ 32160, spacing 5).
 
 - **R9-MAP-C — terrain: v7 plateau, wide coast band, surface skin with
   natural cave openings** (added 2026-09-19 after the Playtest 11 mapgen
@@ -60,6 +64,13 @@ Wave 1 (parallel, disjoint code areas; MAP-B follows MAP-C, see there):
     survives only below v7's height; above it our fill is cave-free), which
     also explains the one-node lids of Playtest 11 and the holes in the
     lowered coast cliffs. If (c) does not confirm, stop and report.
+    (d) **Stone plate at y = −34/−35** (Playtest 11: every cave is crossed
+    by a one-node stone layer there): find which pass writes host rock into
+    native cave air at that row (suspects: the R8 strata pass, depth band
+    40 nodes below the surface; the fill floor at y = −37) and fix it in
+    this lane; the new skin rule must not add a second plate. **Step 0 is
+    its own short read-only Codex run; its report goes to the user before
+    the implementation run starts** (design may change on (a)).
   - **v7 plateau:** v7 terrain as a flat plate above our maximum `H`
     (terrain noise amplitude 0, offset = max `H` + margin), so our layer
     always cuts and never fills, and native cave density under our surface
@@ -85,7 +96,12 @@ Wave 1 (parallel, disjoint code areas; MAP-B follows MAP-C, see there):
     from a world-aligned 4-node lattice (chunk-independent, integral), not
     from per-column rays; the exact near search stays only for the bank
     rule and the first beach steps. Inland columns must do less work than
-    today, not more.
+    today, not more. Exempt columns (static exclusions, housing, landmark
+    footprints, functional grades, routes and their corridors, start and
+    capital fittings) keep their height exactly as today; the band blends
+    towards them with the existing collar/grade rules and must not open a
+    cliff at an exemption edge. If that blending turns out to need a new
+    mechanism, stop and escalate instead of inventing one.
   - **Beach and rim shares by relief profile, no forced numbers:** wetland
     and lowland mostly beach, rolling hills medium, plateau and highland
     little, mountain none (bluff/cliff/terraced with gravel or shingle
@@ -137,6 +153,78 @@ Wave 1 (parallel, disjoint code areas; MAP-B follows MAP-C, see there):
   spawn evidence; `final_micro.sh` mandatory because of load-time
   registrations).
 
+- **R9-BOSS — dragons and royal groups** (added 2026-09-19 from Playtest
+  11; `grug_mobs/bosses.lua` only, plus licence rows and textures). User
+  rulings §4.13–§4.16.
+  - **Dragons move.** Both dragons walk and fly at their own discretion
+    through mobs_redo (`fly`), flight faster than walking, both faster than
+    any player movement including sprint so nobody simply outruns them;
+    leash stays 36. Takeoff when the target is farther than about 12
+    nodes; **dive slam**: short telegraph, velocity onto the target, impact
+    with the existing knockback.
+  - **Visible breath as a cone:** three projectiles with spread, each with a
+    particle trail. Impact leaves a **ground effect**: the ice dragon lays
+    rime patches (short-lived node with a node timer, slows), the wyvern
+    strikes lightning with a scorch mark. Temporary nodes plus particles,
+    no new system.
+  - **Telegraphed lightning** (wyvern): particle ring at the player's
+    position, impact about 1.5 s later; dodgeable.
+  - **Wing gust** about every 12 s: knockback plus a short slow for
+    everything in melee range (reuse the slam knockback).
+  - **Enrage at 50 % HP:** roar, glow, shorter cooldowns, and **at most two
+    adds**: whelps, i.e. the boss mesh scaled to roughly a third with low HP
+    and low damage, no skills, same walk-and-fly movement (flight faster),
+    despawn when the boss dies. Fallback if the scaled mesh looks wrong:
+    two existing mobs (Frost Stray / Emerald Coil).
+  - **Size doubled** with the collision box scaled to the visual; **HP 54 000
+    → 18 000**; kill and respawn announcements as today.
+  - **Particle budget** (user 2026-09-19, web build): hundreds of particles
+    at once are fine, thousands are not; every spawner has a bounded count
+    and lifetime, no per-tick unbounded spawns.
+  - **Royal groups:** guards without crowns (only the king wears one); two
+    royal guards instead of four; nothing else changes.
+  - No boss HUD (the nametag already shows HP).
+  - Harness: `final_micro.sh` (load-time registrations), headless boot,
+    a committed evidence note of one dragon fight from a headless probe or
+    the user's playtest; review Sol.
+- **R9-CAP — capital core fixes** (added 2026-09-19; WP13 code only,
+  `mods/MAPGEN/grug_mapgen/wp13/`): (a) Undead capital walls: the iron bars
+  on the battlements of the z-oriented segments are rotated 90° wrong
+  (param2), the x-oriented segments are right; (b) **core ring and its gates
+  move two nodes outward** so walls no longer cut through the core
+  buildings (user ruling: the core ring is not connected to the WP40 route
+  pins; the only routes into the core are the outer ring's straightforward
+  alleys). Verify with the six-capitals gate and a screenshot-free headless
+  count of wall/building overlaps per capital (before > 0, after = 0).
+- **R9-UI — recipe books, trainers, discovery, brewing stand** (added
+  2026-09-19; `grug_jobs/ui.lua`, `trainers.lua` display only,
+  `grug_brewing/node.lua` + media). User rulings §4.17–§4.19.
+  - **Book rebuilt in the VoxeLibre craft-guide layout:** top the list of
+    craftable items with a text search; bottom the 3×3 grid with the arrow
+    and the output showing the exact placement, the station as an icon
+    beside the grid; left/right arrows cycle alternative recipes of the same
+    output. The project is GPLv3, VoxeLibre's `mcl_craftguide` is GPLv3:
+    it may be studied or adapted with attribution (AGENTS.md third-party
+    rules). The `grug_jobs` registry, tier rule and craft gate stay.
+  - **Close returns to the crafting UI**, never closes the inventory.
+  - **Trainers carry their profession** ("Cook", "Cooking Trainer"), read
+    from the profession's registered name so PROF-A/B trainers get it for
+    free.
+  - **Recipe discovery:** a recipe is *listed* when its tier is unlocked
+    AND the player has held every ingredient at least once (per-player
+    "seen items" set from a periodic inventory scan, about every 2 s,
+    because code-side pickups bypass the inventory-action callback).
+    Learning a profession marks its T1 recipes discovered; each tier shows
+    the count of undiscovered recipes. Crafting itself stays gated by tier
+    only. Search covers discovered recipes.
+  - **Brewing stand node replaced by VoxeLibre's brewing stand** (nodebox +
+    textures of `mcl_brewing`, media CC BY-SA 4.0 to be verified in the
+    source repo per AGENTS.md, `LICENSE-media.md` rows); formspec and
+    recipe logic unchanged (two reagents + vial; catalysts are backlog).
+  - Shared-file rule: PROF-A/PROF-B do not touch `ui.lua`; UI does not add
+    catalog rows; the orchestrator merges UI first if both are ready.
+  - Harness: gates, `final_micro.sh`, headless boot, review Sol.
+
 Wave 2 (after wave 1 merges):
 
 - **R9-FARM (WP32)** — farming as a player activity: crop soil (from MAP-B)
@@ -163,21 +251,34 @@ Wave 2 (after wave 1 merges):
   then giant bat retint), the higher tier nobler in colour; no dragons as
   mounts (dragons stay rare bosses). Each mesh with a licence row and an
   animation audit as in MOB1.
-- **R9-DOCS** at the end, as always.
+- **R9-DOCS** at the end, as always: contract text for MAP-C (world_zones.md
+  §7.6 cave-mouth paragraph shrinks to the skin rule; §13.1 plateau and
+  flags), ROADMAP, AGENTS.md paragraphs for BOSS/UI, deletion of the MAP-A
+  mouth writer if MAP-C left it behind its switch.
 
-Not in Round 9: housing (WP24, Round 10), Scout (Round 10), **Nether (V2:
-user decision 2026-09-18, the Nether is the main part of the first big
-content update after V1, with its own mapgen and story; no V1 lane builds
-Nether seams)**.
+Not in Round 9: housing (WP24, Round 10), Scout (Round 10), brewing
+catalysts (backlog), fishing changes (feedback from the friends' playtest
+evenings), **Nether (V2: user decision 2026-09-18, the Nether is the main
+part of the first big content update after V1, with its own mapgen and
+story; no V1 lane builds Nether seams)**.
 
 ## 3. Playtest 12 (after Round 9, fresh world)
 
-Plants growing in their zones; learn Blacksmith and Tailor, craft one item
-per reachable tier at the capital stations, refine and enchant it; a night
-underground at three depth bands; a farm plot from seed to harvest; the
-Bog Witch; buy the T1 mount at the trainer, ride, reach level 30 in a test
-world for the race mount, and test a flying tier at the ocean edge and the
-enemy border (warning band, hard dismount).
+Terrain first: coasts with wide beaches that the land falls towards, no
+sand on mountain coasts or the Troll capital's lake, cliffs without holes,
+caves with three-node walls that open on hillsides and never inside a city
+or POI, no stone plate at y = −35, corals in shallow sea. Then: plants
+growing in their zones; the rebuilt recipe book (search, grid placement,
+alternative recipes, Close back to crafting, discovery counts); learn
+Blacksmith and Tailor, craft one item per reachable tier at the capital
+stations, refine and enchant it; Cooking through both routes (deferred from
+Playtest 11); a night underground at three depth bands; a farm plot from
+seed to harvest; the Bog Witch; a dragon fight (movement, visible breath,
+ground effects, lightning telegraph, gust, enrage with two whelps) and a
+king with two guards; capital walls clear of the core buildings; the
+VoxeLibre brewing stand; buy the T1 mount at the trainer, ride, reach
+level 30 in a test world for the race mount, and test a flying tier at the
+ocean edge and the enemy border (warning band, hard dismount).
 
 ## 4. User rulings of 2026-09-18 (evening)
 
@@ -216,3 +317,68 @@ enemy border (warning band, hard dismount).
     frequencies.
 12. **Escalation** (2026-09-19): larger problems in the mapgen lanes go to
     the user instead of being solved by an invented mechanism.
+13. **Dragons** (2026-09-19): all six proposals accepted (movement and
+    flight, dive slam, cone breath with ground effects, telegraphed
+    lightning, wing gust, enrage with adds); boss HUD dropped; adds at most
+    two, no skills, clearly smaller and weaker, walk and fly with flight
+    faster; size doubled with the hitbox; HP 18 000 for V1.
+14. **Particle budget** (2026-09-19): particles are welcome; keep the total
+    in the hundreds, never thousands (web build).
+15. **Royal groups** (2026-09-19): guards without crowns, two guards.
+16. **Capital walls** (2026-09-19): core ring and gates two nodes outward;
+    Undead z-wall bars rotation fixed.
+17. **Recipe book** (2026-09-19): VoxeLibre craft-guide layout; Close
+    returns to the crafting UI; trainers named after their profession.
+18. **Recipe discovery** (2026-09-19): listed when tier unlocked AND every
+    ingredient held once; tier unlock stays as built (current-tier crafts
+    only, automatic at the threshold `CRAFTS_TO_ADVANCE`, capped by the
+    character band).
+19. **Brewing** (2026-09-19): VoxeLibre brewing stand node; two reagents
+    stay; catalysts are backlog. Fishing: no separate test.
+20. **Models** (2026-09-19): MAP-C implementation on GPT Astra 6 (check the
+    model id in the Codex CLI first; if absent, Sol), every other lane and
+    every review on GPT-5.6 Sol.
+
+## 5. MAP-C protocol: what must not repeat from Round 8
+
+The MAP-A lane took about 16 hours; almost none of it was implementation.
+The following are binding for MAP-C and MAP-B (orchestrator and worker):
+
+1. **Forbidden commands in briefs and lanes:** `tools/wp40/r6/run.sh` (the
+   full census; a brief line naming it cost hours), any baseline world
+   campaign, any PUC run before the final LuaJIT pass. The brief lists
+   these verbatim.
+2. **No single tool run longer than 20 minutes** without the orchestrator's
+   explicit OK in the thread; the worker reports what it is about to run
+   and the expected duration first.
+3. **Step 0 as its own read-only run** with a report to the user (seas
+   written by us? max `H`? diagnosis confirmed? stone-plate pass found?).
+   No implementation until the user has seen it.
+4. **One pin refresh**, at the end, with the documented procedure in
+   `tools/wp40/README.md`; never ad hoc, never twice. `SOURCE_PROJECTION_SHA256`
+   and the fixture pins change once.
+5. **`final_micro.sh` is the only accepted micro gate** (a direct
+   `luajit tools/wp40/r7/micro_kat.lua <root>` is a false pass); LuaJIT
+   first, PUC named KATs once at the very end.
+6. **Gates order** for the orchestrator: `gates.sh` (static.sh, fresh-server
+   check, all KATs under LuaJIT, 60 s headless boot on an own port), then
+   `final_micro.sh`, then the engine witness, then profiler + emerge
+   wall-clock, then PUC named KATs, then merge, then six-start gate and six
+   capitals. Six-start runs from a script whose command line does not name
+   the output directory (pgrep self-match, exit 144).
+7. **Review:** one Sol review at xhigh with the Augenmaß scope; at most one
+   fix round; a second means the orchestrator stops and reports to the user
+   with the finding list. Model-capacity failures (`turn.failed`) are
+   relaunched, not counted.
+8. **Shared files:** MAP-C and MAP-B are the only lanes touching
+   `mods/MAPGEN/grug_mapgen/wp40/`, `tools/wp40/`, `tools/r8_map_a/` and the
+   fixtures; CAP touches only `wp13/`; nothing else in wave 1 touches
+   mapgen. New palette nodes need `node_semantics_fixture` entries.
+9. **Escalation over invention:** any of these stops the lane with a report
+   instead of a workaround: seas depend on native ocean; the coast band
+   needs a new exemption-blend mechanism; the plateau slows emerge; the
+   skin rule needs a flood fill; a fixture that cannot be re-pinned with the
+   documented procedure.
+10. **Time budget:** step 0 under 30 minutes; implementation run under
+    3 hours of wall time; gates and witness under 1 hour; review under
+    1 hour. The orchestrator checks the thread at each boundary.
