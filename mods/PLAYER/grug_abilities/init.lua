@@ -16,6 +16,11 @@ local clear_swing_progress -- assigned after the swing-clock declaration
 local reset_swing_boundary -- assigned after the swing-clock declaration
 local swing_progress -- assigned after ability registration helpers
 local attempt_swing -- assigned after the swing-clock declaration
+
+local function refuse_mounted_attack(player)
+	return grug_core.refuse_mounted_attack and
+		grug_core.refuse_mounted_attack(player) == true
+end
 local swing_input_latch = {} -- player name -> one direct hostile object click
 local swing_pickup_dig = {} -- player name -> LMB was held on the last swing pass
 
@@ -1301,6 +1306,9 @@ attempt_swing = function(player, selected, held, latched)
 	if not held and not latched then
 		return false
 	end
+	if refuse_mounted_attack(player) then
+		return false
+	end
 
 	local weapon = grug_core.get_equipped_weapon(player) or ItemStack("")
 	local weapon_damage, fpi = grug_abilities.swing_stats(player, weapon)
@@ -1537,6 +1545,9 @@ function grug_abilities.try_cast(user, def, pointed_thing)
 	-- Swing items have no on_use and never enter this function. Their native
 	-- object punches are input only; the authoritative clock owns damage.
 	if def.kind ~= "cast" then
+		return
+	end
+	if refuse_mounted_attack(user) then
 		return
 	end
 	-- Universal abilities have no class to be (E1) — without this a Mage

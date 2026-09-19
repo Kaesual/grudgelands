@@ -1,10 +1,7 @@
 # Mounts — Riding, Speed Tiers & No-Mount Zones
 
-Decided 2026-08-07; revised 2026-08-11 for open-world housing, the authored
-front and the level-15/30/45/60 travel ladder. **Nothing here is built yet**:
-this file is the spec a later work package implements, not a description of
-shipped behaviour. It exists so that the WP can be cut without re-opening the
-design.
+Decided 2026-08-07; revised 2026-08-11 for open-world housing and the authored
+front, and 2026-09-18 for the Round-9 entity, border and safety rules.
 
 Neighbouring rules: the named-zone faction front `world_zones.md`, travel plus
 ocean/dragon-island integration in `world.md`, the complete open-world Claim
@@ -24,7 +21,8 @@ universal skills `professions.md` §1, the mob speed pillar
   riding is a role on the existing job trainer, exactly like Cooking and
   First Aid — no dedicated stable master and no Quartermaster involvement in
   the MVP). A learned step is **player state, permanent and per character**,
-  and it hands over the owner-bound mount item of that step.
+  and its purchase hands over the owner-bound mount item represented by that
+  step.
 - WP13 reserves only a **cosmetic stable/hitching-post dressing slot** near
   the job trainer's court in the Market/Professions capital quadrant. It is
   ordinary mutable, claim-excluded dressing, never a functional anchor; a
@@ -47,6 +45,14 @@ character state:
 | Expert | 45 | slow flying mount | +75 % | 7 nodes/s |
 | Master | 60 | fast flying mount | +150 % | 10 nodes/s |
 
+| Tier | Character identity | Mount family |
+|---|---|---|
+| T1 | Accord / Throng | faction-coloured horse |
+| T2 | Human / Dwarf / Elf | horse / ibex / stag |
+| T2 | Orc / Undead / Troll | boar / grave wolf / tiger |
+| T3 | Accord / Throng | eagle / cave bat |
+| T4 | Accord / Throng | Steller's sea eagle / giant blood bat |
+
 - Percentages are relative to a player's **default walking speed of 4
   nodes/s** (engine default `movement_speed_walk = 4`,
   `reference_projects/luanti/src/defaultsettings.cpp:520`; the game
@@ -66,6 +72,16 @@ character state:
 - Each exact character-level anchor is both the visibility and purchase gate.
   Price is calibrated by reliable net earning time rather than preserving the
   obsolete 1s/8s/30s/60s table.
+- Inventory representation is **one item per movement mode**. Buying
+  Journeyman atomically replaces the Apprentice land item; buying Master
+  atomically replaces the Expert flying item. Persistent ownership is the
+  authority, and restoration recreates only the highest owned land and flying
+  items rather than reproducing superseded tiers.
+- T1 is a faction-coloured horse. T2 is a Human horse, Dwarf ibex, Elf stag,
+  Orc boar, Undead grave wolf and Troll tiger. Accord flight uses an eagle at
+  T3 and the larger, nobler-coloured Steller's sea eagle at T4; Throng flight
+  uses a cave bat at T3 and a larger, nobler-coloured giant blood bat at T4.
+  Dragons are never mounts.
 
 *Rationale for reusing the names*: the four names already carry a meaning for
 every player. A fifth vocabulary for four sequential purchases would be pure
@@ -107,11 +123,12 @@ arbitrary fixed-price wall.
   (`mods/ENTITIES/mobs/crafts.lua:119`, `:138`, `:231`) — are removed with the
   vendored-recipe cleanup. A mount is a purchase, exactly like a tome or
   a permanent character upgrade.
-- **Each purchased tier is an owner-bound inventory/hotbar item.** The item is
-  the summon/dismount action; it is never consumed, removed from the inventory
-  or dropped into the world while mounting or dismounting. Permanent player
-  state is the authority for ownership, so the trainer can restore a missing
-  representation without permitting duplicates or trading.
+- **The highest purchased tier of each movement mode is an owner-bound
+  inventory/hotbar item.** The item is the summon/dismount action; it is never
+  consumed or dropped. Permanent player state is the authority for ownership,
+  so the trainer can restore a missing representation without permitting
+  duplicates or trading. The two atomic replacement steps are defined in
+  §1.1.
 - Using the item on foot creates one ephemeral mount entity at the player's
   exact position and rotation. The entity takes over that position as the
   movement and collision authority, and the player's visible character is
@@ -152,6 +169,14 @@ arbitrary fixed-price wall.
 - **Entering a no-mount zone dismounts you** (§4) — via the same detach and
   entity-removal transaction.
 - **Taking damage dismounts you** (§3.1) — the same detach path again.
+- Mounting is refused while `grug_core.in_combat(player)` reports the active
+  five-second combat window.
+- A mounted player cannot use abilities, casts or combat swings. They must
+  dismount before attacking.
+- The entity is invulnerable, carries no drops and never persists in static
+  data. A punch aimed at the attached entity is transferred to the rider and
+  then dismounts them; direct player damage dismounts through a player
+  HP-change observer.
 
 ### 3.1 Incoming damage dismounts the rider (decided 2026-08-08)
 
@@ -163,17 +188,28 @@ arbitrary fixed-price wall.
   is that it lands at the moment of the hit.
 - The dismount uses the **same detach path** as every other one (§3), so
   the rider is set down on a free neighbouring node rather than inside
-  the mount's model.
+  the mount's model. The hard geographic mid-air dismount is the exception:
+  it keeps the rider at the boundary position and clears all residual velocity
+  so gravity begins a straight fall.
 - **Implementation note (engine fact, recorded 2026-08-13):** mobs_redo
   punches *what the player is attached to* —
   `local target = self.attack:get_attach() or self.attack`
-  (`mods/ENTITIES/mobs/api.lua:2808-2813`) — so a mob's melee swing lands on
+  (`mods/ENTITIES/mobs/api.lua:2793-2798`) — so a mob's melee swing lands on
   the mount entity and the rider loses no HP from it. That swallowed swing is
-  what has to trigger the dismount; damage aimed at the player directly (our
-  own PvP pipeline, projectiles, drowning, environment) reaches the rider
-  normally. The rule above therefore needs **two** hooks, the mount entity's
-  `on_punch` and the central HP-change hook in `grug_core` — the same seam
-  pair `boats.md` §6 uses for the identical rule on water.
+  transferred to the rider and triggers the dismount; damage aimed at the
+  player directly (our own PvP pipeline, projectiles, drowning, environment)
+  reaches the rider normally. The rule therefore uses **two** hooks: the mount
+  entity's `on_punch` and a player HP-change observer.
+
+### 3.2 Flight start and ceiling
+
+- A flying mount cannot take off while the player is below
+  `grug_zones.terrain_height_at(x,z)`. This is the underground rule; it is
+  independent of node names and cave shape.
+- The flight ceiling is exactly **y = 600** in every zone. Upward input stops
+  there and any integration overshoot is clamped back to y = 600.
+- Geographic hard dismounts in mid-air have no glide, slow descent or grace:
+  the rider's complete velocity is cleared and ordinary gravity takes over.
 
 **Why this rule exists: it is what keeps the speed pillar intact.**
 `combat_stats.md` §3 gives aggressive mobs `run_velocity` **4.6** against
@@ -233,8 +269,9 @@ other.
 Mount legality is derived from the authored territory and ocean-column lookup,
 never from literal coordinates. Horizontal classification applies at every y:
 climbing above a boundary never changes its rule. Land riding, flight, ocean
-warning and forced dismount are separate states returned by one central lookup
-owned by WP40.
+warning and forced dismount are separate consumer states derived from
+`grug_zones.water_class_at(x,z)` and the horizontal
+`grug_zones.at(pos).territory_rule` record.
 
 ### 4.1 Ocean: warned edge, then forced flight dismount
 
@@ -246,18 +283,21 @@ owned by WP40.
   because they contain water nodes or connect to the outer sea. The four
   declared outer bay-mouth caps are deep ocean and use this section's warning
   and forced-dismount rule.
-- A flying mount cannot be summoned in an ocean column. A flyer leaving legal
-  land first enters a visible warning band exactly **48 horizontal nodes**
-  wide. The HUD warns that continuing will force a dismount; returning to legal
-  land clears the warning immediately.
+- A flying mount cannot be summoned in an ocean column. Once per second, the
+  visible warning probes the same flight-legality rule as the hard dismount in
+  16 horizontal directions at 1, 2, 4, 8, 16, 32 and 48 nodes. This samples at
+  most 112 columns per rider per second, detects adjacent illegality exactly
+  and resolves the 48-node warning reach to within plus or minus 4 nodes at
+  range. HUD text and one chat notice warn that crossing will force a dismount;
+  moving clear of every sampled illegal column removes the warning.
 - Width is spatial, not a timer, so the +75% and +150% flyers receive the same
-  geographic boundary. At the far edge, entry into the hard no-flight column
-  dismounts immediately with no second grace period, at every y.
-- WP40 derives flight from the exact channel geometry in `world_zones.md` §7.
+  boundary. The **first ocean node** is already illegal and dismounts
+  immediately at every y, with no grace, slow descent or maximum-trip rule.
+- WP40 supplies the exact channel geometry through the public zone queries.
   Both shore-side warning bands leave a certified hard no-flight strip at least
   **104 nodes** wide, so neither island is reachable by flying mount from a
-  continent. The hard strip and dismount behavior must also prevent
-  high-altitude post-dismount drift from carrying a player onto the island.
+  continent. Clearing residual velocity on the hard dismount prevents
+  high-altitude drift onto the island.
 - The two dragon islands remain boat destinations. Their complete water
   channels are immutable at every depth, and the flight classification may not
   accidentally create a bridge, tunnel or aerial-access exception.
@@ -290,14 +330,9 @@ owned by WP40.
   - **A flying mount cannot be summoned there.** The mount action is
     refused outright with a message because a deliberate action needs no grace
     period.
-  - **A rider who crosses the border while flying is dismounted after
-    the existing 10-second warned grace.** Turning back cancels it; letting it
-    run out sets the rider
-    down where they are — on enemy ground, inside the enemy's guard
-    field, on foot. WP40 must validate the Master tier's 100-node maximum
-    grace travel against
-    every authored border approach; no narrow zone or boundary may turn the
-    grace period into delivery past the intended defenders.
+  - The same **48-node legal-side warning band** as the ocean boundary applies.
+    The first node beyond the line is illegal and hard-dismounts immediately.
+    There is no ten-second grace and no 100-node maximum-trip allowance.
 - The two **land** tiers are untouched by this rule, and the two flying
   tiers (Expert, Master — §1.1) are untouched by it at home and throughout the
   Battlegrounds (§4.2).
@@ -311,22 +346,23 @@ defence instead of engaging with it. `world.md` §6's ban on enemy-territory
 waypoints closes the same bypass for teleportation.
 
 **The mechanism is the central territory/zone lookup, never a hand-picked
-coordinate.** The target `grug_zones.faction_at(pos)` returns `"accord"`,
-`"throng"` or nil independently from `race_region`; its companion mount/ocean
-classification supplies the warning and hard-flight states. Flight is refused
-wherever faction lookup equals the **opposing** id of the rider's own faction
-(`grug_factions.get_faction(player)`,
-`mods/PLAYER/grug_factions/init.lua:20-26`; the opposing id from
-`grug_core.opposing_faction`, `grug_core/init.lua:576-578`). Literal coordinates
-are invalid once the authored zone graph replaces WP18. A character without a
-faction cannot have bought a mount, so the nil case needs no rule of its own.
+coordinate.** `grug_zones.water_class_at(x,z)` separates authored ocean from
+land and planned inland water; the horizontal
+`grug_zones.at(pos).territory_rule` record allows only the rider's own
+`accord_home`/`throng_home` rule and `holy_grounds`. Every other territory is
+flight-restricted. Depth-sensitive civic protection does not alter this
+horizontal flight decision. The rider's identity comes from
+`grug_factions.get_faction(player)`. Literal coordinates are invalid once the
+authored zone graph replaces WP18. A character without a faction cannot have
+bought a mount, so the nil case needs no rule of its own.
 
-**Ocean is a separate and stricter classification.** The enemy-territory rule
-does not legalize flight over neutral water: §4.1 warns and then dismounts at
-every altitude. Read along a legal invasion path, the system is therefore own
-land → flyable Battlegrounds → warned enemy border → forced ground travel; the
-dragon islands instead require a boat because their ocean channel reaches the
-hard no-flight state first.
+**Ocean is a separate classification with the same border transaction.** The
+enemy-territory rule does not legalize flight over neutral water: §4.1 warns on
+the legal side and dismounts at the first ocean node at every altitude. Read
+along a legal invasion path, the system is therefore own land → flyable
+Battlegrounds → warned enemy border → forced ground travel; the dragon islands
+instead require a boat because their ocean channel reaches the hard no-flight
+state first.
 
 ## 5. Reference implementations & licences
 

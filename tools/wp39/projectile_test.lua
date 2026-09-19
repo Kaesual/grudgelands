@@ -182,6 +182,7 @@ local function player(name, faction)
 	function obj:get_pos() return self.pos end
 	function obj:get_look_dir() return {x=1,y=0,z=0} end
 	function obj:get_luaentity() return nil end
+	function obj:get_attach() return self.attached end
 	return obj
 end
 
@@ -268,6 +269,19 @@ result = trace({point(owner, 0), point(projectile, 0), point(ally, 0.5),
 assert(result.kind == "object" and result.target == hostile)
 assert(trace({point(civilian, 2)}) == nil,
 	"noncombatant terminated a hostile projectile")
+
+local mounted_enemy = player("mounted_enemy", "throng")
+mounted_enemy.pos = {x = 2, y = 0, z = 0}
+local mount = plain_entity("grug_mounts:mount", mounted_enemy.pos)
+mount.ent._grug_rider = mounted_enemy
+mounted_enemy.attached = mount
+result = trace({point(mount, 2)})
+assert(result.kind == "object" and result.target == mounted_enemy and
+	result.pointed.ref == mount)
+mounted_enemy.attached = nil
+assert(trace({point(mount, 2)}) == nil,
+	"detached mount retained projectile rider proxy")
+
 result = trace({node("grass", 1), point(hostile, 2)})
 assert(result.kind == "object" and result.target == hostile)
 result = trace({point(hostile, 3), node("stone", 2)})

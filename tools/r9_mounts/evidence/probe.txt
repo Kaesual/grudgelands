@@ -1,0 +1,51 @@
+R9-MOUNTS engine probe evidence
+Date: 2026-09-19
+
+Command:
+PORT=32206 PROBE=tools/r9_mounts/probe KEEP=1 nice -n 19 bash tools/luanti_headless.sh 240
+
+Result: exit 0; headless boot PASS; zero ERROR/ModError lines.
+Post-run `pgrep -f '^luanti.bin'`: no output.
+
+Raw `grep 'ACTION' server.log` summary:
+ACTION[Main]: [grug_materials] 12 tools completing the six-tier pick/axe/shovel ladder
+ACTION[Main]: [grug_gear] 6 bracket catalogs: 24 weapons + 48 armor pieces
+ACTION[Main]: [grug_quality] deterministic PcgRandom quality rolls enabled
+ACTION[Main]: [grug_professions] registered Blacksmith, Leatherworker and Tailor catalogs
+ACTION[Main]: [grug_materials] registry audit passed: 6 tiers, 15 resources, 12 processed forms, 6 race regions
+ACTION[Main]: [grug_smelting] recipe audit passed: 5 cooking, 5 dualfurn, 12 storage pairs, 1 station
+ACTION[Main]: [grug_visuals] 48 armor pieces indexed for overlays, 2 art lines x 4 slots
+ACTION[Main]: [grug_mobs] settlement work activities: tools 7, weapon families 1, all registered
+ACTION[Main]: [grug_fishing] tables=6 entries=18 weight=100 bite=3..10s rod_uses=64
+ACTION[Main]: [grug_inventory] starter weapons: mage=grug_gear:staff_wood (2H), priest=grug_gear:staff_wood (2H), warrior=default:sword_stone
+ACTION[Main]: [grug_traders] 12 profession shelves, 122 offers, all registered
+ACTION[Main]: [grug_traders] dwarf capital vendors come from the sockets of dur_brannoc
+ACTION[Main]: [grug_traders] elf capital vendors come from the sockets of lethariel
+ACTION[Main]: [grug_traders] human capital vendors come from the sockets of highcourt
+ACTION[Main]: [grug_traders] orc capital vendors come from the sockets of gor_drazhak
+ACTION[Main]: [grug_traders] troll capital vendors come from the sockets of kezamba
+ACTION[Main]: [grug_traders] undead capital vendors come from the sockets of nhal_veyr
+ACTION[Main]: [grug_traders] 12 settlements indexed for profession vendor appearance
+ACTION[Main]: [grug_traders] drop audit: 3 mob(s) use a `drops` FUNCTION and cannot be walked statically (grug_mobs:bandit, grug_mobs:bandit_archer, grug_mobs:poacher); their items are audited from the hardcoded FUNCTION_DROPS list
+ACTION[Main]: World at [/tmp/grudgelands-headless.SoVpme/world]
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:32206.
+ACTION[Server]: [grug_core] start preload: emerging 6 start areas (128 x 128 nodes each, 2 at a time)
+ACTION[Emerge-0]: R9_MOUNTS_PROBE PASS entity=grug_mounts:mount rider=fake attached=true pointable=true rider_proxy=true static_save=false armor=immortal cleanup=true
+ACTION[Main]: Server: Shutting down
+
+The following start-preload cancellation warnings are expected because the
+successful disposable probe requests immediate shutdown instead of waiting for
+the six unrelated player-start emerges.
+
+Evidence hashes:
+196edace849c420263c9dcd17e89f10e8cbe44bd1538955937e5314c48194491  server.log
+f2f4d0c7cfb4a9003a79f0ee9cd5ad4195e2db8b74e24d14636f7f19a8f8823f  mods/CORE/grug_core/combat.lua
+909d3108d840d7cd4b90eb63d8cc5d04371d356355c0191c7e401214cff905e1  mods/CORE/grug_core/combat_ray.lua
+ea189193767a1f8baa3eaaba327c5867d3d5659b431692d00785af41dfc2dc19  mods/CORE/grug_core/zone_authority.lua
+9c350b7e6e644373d17727d84e6717e2eef34d11bedf8899544bd29103b69990  mods/ENTITIES/grug_projectiles/collision.lua
+69f899f14b543c9e9fdcbdc6f9736830d1f6500aca4fd3a2d16b0420faad5c05  mods/PLAYER/grug_abilities/init.lua
+e5033f642491ce342d308b1997883082b4f4618094c21e9da12ace28b9af016c  mods/PLAYER/grug_mounts/entity.lua
+fac9af82e74b0ca08ca8b2b4b5460c1426e92dd5228c5ceae8a24b1dfadad05c  mods/PLAYER/grug_mounts/catalog.lua
+35c45a3cf7dde3a6849bf5993ca4f612ee7c00fd0786f6e7b0c7d43fba89e38b  mods/MAPGEN/grug_mapgen/wp40/zones.lua
+4ecd15b291ad474495493c4ecbedf79fb89c4cbbe5ff160c5ed6016319ce2069  mods/MAPGEN/grug_mapgen/wp40/r7_zone_overlay.lua
+49f7b22cfa644965d967b3178fb38323d870742b334d25ab31e5b49a386bf8cb  tools/r9_mounts/probe/init.lua
