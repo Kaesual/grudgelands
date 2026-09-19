@@ -12,7 +12,13 @@ when it is about to delegate across CLIs; AGENTS.md carries only the pointer
 to this procedure.
 
 Verified against `codex-cli 0.147.0` and the Claude Code CLI on 2026-09-17;
-re-check the `--help` output when a version changes.
+re-check the `--help` output when a version changes. 2026-09-19: the
+standalone Codex CLI was updated to 0.155.1 (`codex update`) because
+`gpt-6-astra` refuses older clients ("model requires a newer version of
+Codex"); `codex exec --ephemeral -s read-only --json -o` was re-verified
+for `gpt-6-astra` and `gpt-5.6-sol`, the remaining commands of §5 were not
+re-run. Model slugs come from `~/.codex/models_cache.json` (`gpt-6-astra`,
+not `gpt-astra-6`).
 
 ## 1. Roles and invariants
 
