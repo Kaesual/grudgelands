@@ -33,6 +33,12 @@ escalating complexity.
   (same byte comparison, earlier failure signal). Tools-only change.
 - Mob packages 6–8 of `docs/research/mob-worlds-plan.md` §9 (underground,
   deep, front/coast).
+- **Cave-mouth writer exactness** (R8-MAP-A, measured 2026-09-19 with the
+  exact evidence checker): in seed 1 one of ten carved mouths wrote one voxel
+  that belongs to an alternative lumen of the same candidate (116 carved,
+  115 = the accepted lumen); connectivity is 100 %, the deviation is one air
+  node. The writer's transaction must equal exactly the selected lumen; the
+  committed seed-1 checker run exits 1 until then. First item of R9-MAP-B.
 
 ## 2. Lanes (decided 2026-09-18; the cut is the orchestrator's)
 
