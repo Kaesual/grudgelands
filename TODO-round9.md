@@ -393,6 +393,10 @@ Wave 2 (after wave 1 merges):
   then giant bat retint), the higher tier nobler in colour; no dragons as
   mounts (dragons stay rare bosses). Each mesh with a licence row and an
   animation audit as in MOB1.
+- **R9-TRINKETS** (added by ruling 38, after the PROF-B merge): the six
+  core trinket special effects at the mana / hit / healing / kill-XP /
+  potion seams via the equipment-change cache, caps and shared cooldowns
+  per `items_crafting.md` §6.2; removes the inert tooltip marker.
 - **R9-DOCS** at the end, as always: the AUDIT report's rulings, contract text for MAP-C (world_zones.md
   §7.6 cave-mouth paragraph shrinks to the skin rule; §13.1 plateau and
   flags), ROADMAP, AGENTS.md paragraphs for BOSS/UI, deletion of the MAP-A
@@ -598,6 +602,12 @@ ocean edge and the enemy border (warning band, hard dismount).
     the input-authoritative registry; documented as placeholder; a later
     package adds output selection at the station or the design gives each
     identity its own distinguishing ingredient.
+40. **MAP-C performance tolerance +20 %, coast band ON** (user 2026-09-19):
+    with the WP48 levers identified, MAP-C may cost up to 20 % more emerge
+    wall clock than main (mean of two fresh pairs); the coast band ships
+    enabled by default (`grug_mapgen_r9_coast_band_enabled = true`; the
+    R8 evaluator stays byte-identical behind `false`). Supersedes the
+    tolerances of rulings 35/36 for this lane.
 
 ## 5. MAP-C protocol: what must not repeat from Round 8
 
