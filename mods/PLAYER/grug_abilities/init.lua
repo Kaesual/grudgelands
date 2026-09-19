@@ -128,15 +128,17 @@ end
 function grug_abilities.mana_regen_rate(player, in_combat)
 	local level = math.max(1, grug_core.get_player_level(player))
 	local rate = 1 + 0.15 * level
+	local trinket = grug_core.trinket_mana_regen and
+		grug_core.trinket_mana_regen(player) or 0
 	if in_combat then
 		local bonus = grug_classes.get_talent_bonus(player,
 			"combat_mana_regen_add")
 		local combat_rate = math.max(rate * 0.25,
 			grug_classes.get_max_mana(player) * 0.0025)
-		return combat_rate * (1 + 2 * bonus)
+		return combat_rate * (1 + 2 * bonus) + trinket
 	end
 	return rate *
-		(grug_classes.get_race_perk(player, "ooc_regen_mult") or 1)
+		(grug_classes.get_race_perk(player, "ooc_regen_mult") or 1) + trinket
 end
 
 function grug_abilities.mana_cost(player, percent)
@@ -1233,6 +1235,7 @@ local function finish_authoritative_swing(context, result)
 	if result.cancelled or not result.landed then
 		return false
 	end
+	if grug_core.trinket_weapon_hit then grug_core.trinket_weapon_hit(context.player) end
 	if not context.proc then
 		if result.grant_rage then
 			grug_abilities.add_rage(context.player, swing_rage(context.player))

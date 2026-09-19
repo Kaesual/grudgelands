@@ -1137,6 +1137,9 @@ function grug_core.heal_player(healer, target, amount, opts)
 	-- Consumables arrive with their max-HP-derived amount. The support seam is
 	-- retained but is an identity for both.
 	amount = math.floor(grug_core.scale_player_value(healer, amount))
+	if grug_core.trinket_outgoing_heal then
+		amount = math.floor(grug_core.trinket_outgoing_heal(healer, amount))
+	end
 	if not opts.no_crit and math.random() < grug_core.get_crit_chance(healer) then
 		amount = math.floor(amount * 1.5)
 		crit_particles(target:get_pos())
@@ -1304,3 +1307,10 @@ core.register_on_player_hpchange(function(player, hp_change, reason)
 	end
 	return hp_change
 end, true)
+
+-- Non-modifier callbacks receive the final change after dodge, armor and
+-- absorption. The engine has not stored it yet, so the consumer predicts the
+-- post-hit HP and can reject lethal hits without reviving the player.
+core.register_on_player_hpchange(function(player, hp_change, reason)
+	if grug_core.trinket_after_hit then grug_core.trinket_after_hit(player, hp_change, reason) end
+end, false)
