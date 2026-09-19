@@ -671,8 +671,21 @@ grug_mobs.register_kill_loot_hook(function(self, tagger_name)
 	end
 end)
 
-grug_mobs.register_boss_reward_hook(function(self)
-	return grug_items.roll_mob_gear(self)
+grug_mobs.register_boss_reward_hook(function(self, id, player)
+	local rewards = grug_items.roll_mob_gear(self)
+	for index = 1, #rewards do
+		local stack = rewards[index]
+		if grug_gear and
+				type(grug_gear.initialize_weapon_tooltip) == "function" then
+			-- This initializer first regenerates every quality description with
+			-- the receiving player, then adds the effective-level line for
+			-- weapons.  Do this before give_or_queue may serialize the stack.
+			grug_gear.initialize_weapon_tooltip(stack, player)
+		else
+			grug_items.regenerate_description(stack, player)
+		end
+	end
+	return rewards
 end)
 
 -- Affix aggregates that do not already have a native per-stack consumer.

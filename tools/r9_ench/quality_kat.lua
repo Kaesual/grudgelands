@@ -36,6 +36,8 @@ return function(repo)
 	end
 
 	local definitions = {}
+	local serialized_stacks = {}
+	local serialized_stack_id = 0
 	local Stack = {}
 	Stack.__index = Stack
 	local function new_meta(owner)
@@ -58,6 +60,9 @@ return function(repo)
 			return setmetatable({name = value.name, count = value.count,
 				values = clone(value.values), caps = clone(value.caps)}, Stack)
 		end
+		if type(value) == "string" and serialized_stacks[value] then
+			return make_stack(serialized_stacks[value])
+		end
 		local text = tostring(value or "")
 		return setmetatable({name = text:match("^%s*([^%s]+)") or "",
 			count = text == "" and 0 or 1, values = {}, caps = nil}, Stack)
@@ -70,6 +75,12 @@ return function(repo)
 	function Stack:get_meta() return new_meta(self) end
 	function Stack:get_tool_capabilities()
 		return clone(self.caps or (self:get_definition().tool_capabilities or {}))
+	end
+	function Stack:to_string()
+		serialized_stack_id = serialized_stack_id + 1
+		local key = "quality_kat_stack_" .. serialized_stack_id
+		serialized_stacks[key] = make_stack(self)
+		return key
 	end
 	ItemStack = make_stack
 
@@ -153,7 +164,16 @@ return function(repo)
 		end
 		return lines
 	end
-	function grug_gear.initialize_weapon_tooltip() return false end
+	function grug_gear.initialize_weapon_tooltip(stack, player)
+		grug_items.regenerate_description(stack, player)
+		local groups = stack:get_definition().groups or {}
+		if (groups.grug_equip_weapon or 0) > 0 then
+			local meta = stack:get_meta()
+			meta:set_string("description", meta:get_string("description") ..
+				"\nEffective at level " .. player.level .. ": 99 damage per swing")
+		end
+		return true
+	end
 
 	local installed_kill_hook, installed_boss_reward_hook
 	local registered_mobs = {}
@@ -361,11 +381,49 @@ return function(repo)
 		"King ledger reward was not T6 ilvl 70 Rare")
 	local dragon = {_grug_tier = "boss", _grug_boss_id = "dragon:wyrmglass",
 		_grug_level = 60, name = "test:dragon"}
-	local dragon_drops = installed_boss_reward_hook(dragon)
+	local dragon_drops = installed_boss_reward_hook(dragon,
+		"dragon:wyrmglass", {level = 60})
 	check(#dragon_drops == 1 and dragon_drops[1]:get_name() == tier_item[6] and
 		dragon_drops[1]:get_meta():get_int("grug_ilvl") == 75 and
 		dragon_drops[1]:get_meta():get_int("grug_quality") == 3,
 		"dragon ledger reward was not T6 ilvl 75 Rare")
+	local weapon_reward = ItemStack("test:tier6")
+	weapon_reward:get_meta():set_int("grug_quality", 3)
+	weapon_reward:get_meta():set_int("grug_refined", 1)
+	weapon_reward:get_meta():set_int("grug_ilvl", 75)
+	weapon_reward:get_meta():set_string("grug_ench", core.serialize({
+		{stat = "max_hp_percent", value = 4},
+	}))
+	local armor_reward = ItemStack("test:cloth")
+	armor_reward:get_meta():set_int("grug_quality", 3)
+	armor_reward:get_meta():set_int("grug_refined", 1)
+	armor_reward:get_meta():set_int("grug_ilvl", 70)
+	armor_reward:get_meta():set_string("grug_ench", core.serialize({
+		{stat = "max_mana_percent", value = 3},
+	}))
+	local real_roll_mob_gear = grug_items.roll_mob_gear
+	grug_items.roll_mob_gear = function()
+		return {ItemStack(weapon_reward), ItemStack(armor_reward)}
+	end
+	local reward_player = {level = 42}
+	local initialized = installed_boss_reward_hook(dragon, "dragon:wyrmglass",
+		reward_player)
+	grug_items.roll_mob_gear = real_roll_mob_gear
+	local immediate_weapon = ItemStack(initialized[1])
+	local immediate_armor = ItemStack(initialized[2])
+	local queued_weapon = ItemStack(initialized[1]:to_string())
+	local queued_armor = ItemStack(initialized[2]:to_string())
+	for _, stack in ipairs({immediate_weapon, queued_weapon}) do
+		local text = stack:get_meta():get_string("description")
+		check(text:find("Effective at level 42", 1, true) and
+			text:find("(40 at your level)", 1, true),
+			"boss weapon lost its player-aware description")
+	end
+	for _, stack in ipairs({immediate_armor, queued_armor}) do
+		check(stack:get_meta():get_string("description"):find(
+			"(30 at your level)", 1, true),
+			"boss armor lost its player-aware pool contribution")
+	end
 	local kraken = grug_items.roll_mob_gear({_grug_tier = "normal",
 		_grug_level = 100, _grug_no_quality_loot = true,
 		name = "grug_mobs:kraken"}, 1)
@@ -411,7 +469,8 @@ return function(repo)
 	installed_kill_hook(dragon, "tagger")
 	check(#ground_drops == ground_before,
 		"ledger boss escaped into the generic ground-drop hook")
-	row("drop", "3/20+3/100+25/100", "ledger hook", "King 70 Dragon 75")
+	row("drop", "3/20+3/100+25/100", "ledger hook", "King 70 Dragon 75",
+		"immediate+queued player descriptions")
 
 	-- F. Determinism, prefix/suffix naming and description idempotence.
 	local function rolled(seed)

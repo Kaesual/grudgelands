@@ -7,14 +7,14 @@ Result:
 PASS (port 32200, 60 s); 0 ERROR/ModError lines; no remaining luanti.bin process.
 
 Retained log:
-/tmp/grudgelands-headless.sdH5zZ/server.log
+retained-headless-run/server.log
 
 ACTION summary:
 ACTION[Main]: [grug_gear] 6 bracket catalogs: 24 weapons + 48 armor pieces
 ACTION[Main]: [grug_quality] deterministic PcgRandom quality rolls enabled
 ACTION[Main]: [grug_materials] registry audit passed: 6 tiers, 15 resources, 12 processed forms, 6 race regions
 ACTION[Main]: [grug_inventory] starter weapons: mage=grug_gear:staff_wood (2H), priest=grug_gear:staff_wood (2H), warrior=default:sword_stone
-ACTION[Main]: World at [/tmp/grudgelands-headless.sdH5zZ/world]
+ACTION[Main]: World at [retained-headless-run/world]
 ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:32200.
 ACTION[Emerge-0]: [grug_core] start area ready: dwarf (1/6, 18.6 s)
 ACTION[Emerge-0]: [grug_core] start area ready: human (2/6, 27.0 s)
