@@ -84,6 +84,8 @@ return function(root)
 		"/tools/wp40/quality/gravewood_writer_fixture.lua")(root, root, false)
 	check(integrated:find("opening_surface\tair_at_t=pass", 1, true) ~= nil,
 		"integrated writer retained the exact surface at an opening")
+	check(integrated:find("dust_at_t_plus_1=absent", 1, true) ~= nil,
+		"integrated writer retained dust above an opening")
 
 	-- The exact post-change selector gates used by production: the chosen width
 	-- owns the complete beach/rim, while ordinary wet beds retain their sand patch.

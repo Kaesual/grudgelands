@@ -136,6 +136,39 @@ local function new_coast_rules(full_seed_string)
 		end
 		return cache
 	end
+	function result.nearest_lattice_sample(query_x, query_z, sample_min_x,
+			sample_min_z, sample_class, sample_level, sample_freshwater)
+		local query_lattice_x = math.floor(query_x / 4)
+		local query_lattice_z = math.floor(query_z / 4)
+		local best_squared, best_orientation, best_level, best_freshwater
+		-- The traversal retains the smallest exact (dx,dz) on an equal squared
+		-- distance: lattice_dx and lattice_dz are monotone translations of it.
+		for lattice_dx = -13, 13 do
+			for lattice_dz = -13, 13 do
+				local lattice_x = query_lattice_x + lattice_dx
+				local lattice_z = query_lattice_z + lattice_dz
+				local sample_index = (lattice_z - sample_min_z) * 46 +
+					(lattice_x - sample_min_x) + 1
+				local dx, dz = lattice_x * 4 - query_x, lattice_z * 4 - query_z
+				local squared = dx * dx + dz * dz
+				if squared > 256 and squared <= 2704 and
+						sample_class[sample_index] ~= "land" and
+						sample_level[sample_index] ~= nil and
+						(best_squared == nil or squared < best_squared) then
+					best_squared = squared
+					if math.abs(dx) >= math.abs(dz) then
+						best_orientation = dx >= 0 and 1 or 2
+					else
+						best_orientation = dz >= 0 and 3 or 4
+					end
+					best_level = sample_level[sample_index]
+					best_freshwater = sample_freshwater[sample_index]
+				end
+			end
+		end
+		return best_squared, best_orientation, best_level,
+			best_freshwater == true
+	end
 	function result.profile(owner, orientation, run, freshwater, relief_profile, relief)
 		local run_class = result.run_class(freshwater, relief_profile, relief)
 		local relief_salts = {wetland_delta = 104729, lowland = 130363,
@@ -150,9 +183,14 @@ local function new_coast_rules(full_seed_string)
 			relief_profile == "rolling_hills" and 45 or
 			relief_profile == "plateau" and 18 or
 			relief_profile == "highland" and 8 or 0
-		if freshwater and (relief_profile == "plateau" or
-				relief_profile == "highland" or relief_profile == "mountain") then
-			beach_share = 0
+		if freshwater then
+			if relief_profile == "wetland_delta" or relief_profile == "lowland" or
+					relief_profile == "rolling_hills" then
+				beach_share = 100
+			elseif relief_profile == "plateau" or relief_profile == "highland" or
+					relief_profile == "mountain" then
+				beach_share = 0
+			end
 		end
 		if draw < beach_share then profile = "beach"
 		elseif draw < beach_share + 34 then profile = "bluff"
@@ -5200,7 +5238,7 @@ local function height_factory(dependencies)
 				local query_min_x, query_min_z = chunk_x * 20, chunk_z * 20
 				local sample_min_x, sample_min_z = query_min_x - 13, query_min_z - 13
 				local sample_class, sample_level, sample_freshwater = {}, {}, {}
-				local nearest_distance, nearest_orientation = {}, {}
+				local nearest_squared, nearest_orientation = {}, {}
 				local nearest_level, nearest_freshwater = {}, {}
 				for lattice_z = sample_min_z, sample_min_z + 45 do
 					for lattice_x = sample_min_x, sample_min_x + 45 do
@@ -5217,51 +5255,31 @@ local function height_factory(dependencies)
 						end
 					end
 				end
-				for query_z = query_min_z, query_min_z + 19 do
-					for query_x = query_min_x, query_min_x + 19 do
-						local query_index = (query_z - query_min_z) * 20 +
-							(query_x - query_min_x) + 1
-						local best_squared, best_orientation, best_level, best_freshwater
-						-- dx-major traversal is the specified row-major (dx,dz) tie break.
-						for dx = -13, 13 do
-							for dz = -13, 13 do
-								local squared = dx * dx + dz * dz
-								if squared > 16 and squared <= 169 then
-									local sample_index = (query_z + dz - sample_min_z) * 46 +
-										(query_x + dx - sample_min_x) + 1
-									if sample_class[sample_index] ~= "land" and
-											sample_level[sample_index] ~= nil and
-											(best_squared == nil or squared < best_squared) then
-										best_squared = squared
-										if math.abs(dx) >= math.abs(dz) then
-											best_orientation = dx >= 0 and 1 or 2
-										else
-											best_orientation = dz >= 0 and 3 or 4
-										end
-										best_level = sample_level[sample_index]
-										best_freshwater = sample_freshwater[sample_index]
-									end
-								end
-							end
-						end
-						nearest_distance[query_index] = best_squared and
-							math.floor(math.sqrt(best_squared * 16) + 0.5) or false
+				local world_min_x, world_min_z = chunk_x * 80, chunk_z * 80
+				for query_z = world_min_z, world_min_z + 79 do
+					for query_x = world_min_x, world_min_x + 79 do
+						local query_index = (query_z - world_min_z) * 80 +
+							(query_x - world_min_x) + 1
+						local best_squared, best_orientation, best_level, best_freshwater =
+							coast_rules.nearest_lattice_sample(query_x, query_z,
+								sample_min_x, sample_min_z, sample_class, sample_level,
+								sample_freshwater)
+						nearest_squared[query_index] = best_squared or false
 						nearest_orientation[query_index] = best_orientation or false
 						nearest_level[query_index] = best_level or false
 						nearest_freshwater[query_index] = best_freshwater == true
 					end
 				end
-				return {distance = nearest_distance, orientation = nearest_orientation,
+				return {squared = nearest_squared, orientation = nearest_orientation,
 					level = nearest_level, freshwater = nearest_freshwater}
 			end
 			local function lattice_shore_at(x, z)
-				local lattice_x, lattice_z = floor_div(x, 4), floor_div(z, 4)
 				local chunk_x, chunk_z = floor_div(x, 80), floor_div(z, 80)
 				local lattice = lattice_cache.get(chunk_x, chunk_z, build_lattice)
-				local index = (lattice_z - chunk_z * 20) * 20 +
-					(lattice_x - chunk_x * 20) + 1
-				local distance = lattice.distance[index]
-				if not distance then return nil end
+				local index = (z - chunk_z * 80) * 80 + (x - chunk_x * 80) + 1
+				local squared = lattice.squared[index]
+				if not squared then return nil end
+				local distance = math.floor(math.sqrt(squared) + 0.5)
 				return distance, lattice.orientation[index], lattice.level[index],
 					lattice.freshwater[index]
 			end

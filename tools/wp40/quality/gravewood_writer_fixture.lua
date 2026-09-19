@@ -335,18 +335,34 @@ return function(repo, production_repo, verify_compressed)
 	-- R5 first places the exact surface host at T=4; the R9 opening must replace
 	-- that predecessor intent with air rather than merely skipping P7 and skin.
 	local opening_columns = {}
+	local opening_column_start, opening_run_values = {}, {}
+	local snow_ref = check(content.content_ref("default:snow"),
+		"opening dust reference missing")
 	for index = 1, 6400 * 12 do opening_columns[index] = 0 end
 	for column = 1, 6400 do
 		local base = (column - 1) * 12
 		opening_columns[base + 5], opening_columns[base + 7],
-			opening_columns[base + 8] = 4, 1,
-			content.content_ref(definitions[1].host)
+			opening_columns[base + 8], opening_columns[base + 12] = 4, 1,
+			content.content_ref(definitions[1].host), snow_ref
+		local first = (column - 1) * 2 + 1
+		opening_column_start[column] = first
+		local surface_base, sky_base = (first - 1) * 9, first * 9
+		opening_run_values[surface_base + 1], opening_run_values[surface_base + 2] = 4, 4
+		opening_run_values[surface_base + 3], opening_run_values[surface_base + 4] = 7, 28
+		opening_run_values[sky_base + 1], opening_run_values[sky_base + 2] = 5, 31
+		opening_run_values[sky_base + 3], opening_run_values[sky_base + 4] = 1, 26
+		for field = 5, 9 do
+			opening_run_values[surface_base + field] = 0
+			opening_run_values[sky_base + field] = 0
+		end
 	end
+	opening_column_start[6401] = 12801
 	local opening_plan = {schema = plan.schema,
 		construction_identity = plan.construction_identity, generation = plan.generation,
 		valid = true, min_x = plan.min_x, min_y = plan.min_y, min_z = plan.min_z,
 		max_x = plan.max_x, max_y = plan.max_y, max_z = plan.max_z,
-		r5_plan = plan.r5_plan, r5_generation = plan.r5_generation,
+		r5_plan = {column_start = opening_column_start,
+			run_values = opening_run_values}, r5_generation = plan.r5_generation,
 		column_values = opening_columns, column_count = plan.column_count,
 		candidate_cell_values = {}, candidate_cell_count = 0,
 		candidate_values = {}, candidate_count = 0, stable_refs = plan.stable_refs}
@@ -362,9 +378,11 @@ return function(repo, production_repo, verify_compressed)
 		(opening_root.x - opening_snapshot.emin.x) + 1
 	check(opening_snapshot.data[opening_index] == 0,
 		"surface opening retained the R5 solid node at T")
+	check(opening_snapshot.data[opening_index + 112] == 0,
+		"surface opening retained dust at T+1")
 	local rows = {"schema\tgrug_wp40_gravewood_writer_v1",
 		"templates\t2\tclass=1", "rotations\t8\tmandatory_wood=pass",
-		"opening_surface\tair_at_t=pass",
+		"opening_surface\tair_at_t=pass\tdust_at_t_plus_1=absent",
 		"writer\t" .. result .. "\toptional_leaves=" .. leaf_written ..
 			"\tnonoverwrite=pass"}
 	local bytes = table.concat(rows, "\n") .. "\n"

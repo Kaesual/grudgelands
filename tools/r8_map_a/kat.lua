@@ -97,6 +97,28 @@ return function(root)
 		end
 	end
 	check(builds == 12, "four-entry lattice cache rebuilt a resident chunk")
+	local sample_class, sample_level, sample_freshwater = {}, {}, {}
+	local sample_min = -13
+	local function lattice_water(lattice_x, lattice_z, level, freshwater)
+		local index = (lattice_z - sample_min) * 46 +
+			(lattice_x - sample_min) + 1
+		sample_class[index], sample_level[index] = "water", level
+		sample_freshwater[index] = freshwater == true
+	end
+	lattice_water(5, 0, 11, false)
+	local exact_squared, exact_orientation, exact_level =
+		coast.nearest_lattice_sample(3, 3, sample_min, sample_min,
+			sample_class, sample_level, sample_freshwater)
+	check(exact_squared == 298 and exact_orientation == 1 and exact_level == 11,
+		"non-aligned query did not retain exact world-coordinate distance")
+	sample_class, sample_level, sample_freshwater = {}, {}, {}
+	lattice_water(-4, 4, 21, false)
+	lattice_water(5, -3, 22, true)
+	local tie_squared, tie_orientation, tie_level, tie_freshwater =
+		coast.nearest_lattice_sample(2, 2, sample_min, sample_min,
+			sample_class, sample_level, sample_freshwater)
+	check(tie_squared == 520 and tie_orientation == 2 and tie_level == 21 and
+			not tie_freshwater, "equal-distance lattice tie order differs")
 	local stable_profile, stable_class = coast.profile(2, 1, -44, false,
 		"highland", 24)
 	check(coast.run_key(2, 1, -44, stable_class) == "2/1/-44/sea_highland",
@@ -131,7 +153,8 @@ return function(root)
 		elseif relief_id == "plateau" or relief_id == "highland" then
 			check(fresh_beaches == 0, relief_id .. " freshwater rim selected sand")
 		else
-			check(fresh_beaches > 0, relief_id .. " freshwater sand rim is absent")
+			check(fresh_beaches == 2001,
+				relief_id .. " freshwater run selected a non-beach rim")
 		end
 	end
 	check(relief_beaches.wetland_delta > relief_beaches.lowland and

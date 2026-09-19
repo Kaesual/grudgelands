@@ -2278,7 +2278,8 @@ local function settlement_factory()
 						end
 					end
 					local dust_y = terrain_y + 1
-					if dust_ref ~= 0 and surface_kind == 1 and dust_y >= min_y and
+					if dust_ref ~= 0 and surface_kind == 1 and
+							surface_skin_column[column] ~= 2 and dust_y >= min_y and
 							dust_y <= max_y then
 						local rbase = run_at(plan, column, dust_y)
 						local index = index_at(x, dust_y, z)
