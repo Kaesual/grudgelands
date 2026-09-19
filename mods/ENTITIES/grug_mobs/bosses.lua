@@ -125,6 +125,21 @@ local function give_or_queue(player, stack)
 		"Boss loot is waiting for free inventory space.")
 end
 
+local boss_reward_hooks = {}
+
+function grug_mobs.register_boss_reward_hook(fn)
+	table.insert(boss_reward_hooks, fn)
+end
+
+local function give_hook_rewards(player, id, self)
+	for _, fn in ipairs(boss_reward_hooks) do
+		local rewards = fn(self, id, player) or {}
+		for index = 1, #rewards do
+			give_or_queue(player, rewards[index])
+		end
+	end
+end
+
 core.register_on_joinplayer(function(player)
 	local meta = player:get_meta()
 	local pending = core.deserialize(meta:get_string(pending_key())) or {}
@@ -167,6 +182,7 @@ local function settle_boss(id, self, race)
 				else
 					give_or_queue(player, ItemStack("grug_mobs:scaled_hide 4"))
 				end
+				give_hook_rewards(player, id, self)
 				meta:set_int(key, now + LOOT_LOCKOUT)
 			end
 		end

@@ -9,7 +9,8 @@ return function(repo)
 	local saved = {core = rawget(_G, "core"), grug_jobs = rawget(_G, "grug_jobs"),
 		grug_xp = rawget(_G, "grug_xp"), default = rawget(_G, "default"),
 		ItemStack = rawget(_G, "ItemStack"), grug_mobs = rawget(_G, "grug_mobs"),
-		grug_smelting = rawget(_G, "grug_smelting")}
+		grug_smelting = rawget(_G, "grug_smelting"),
+		grug_items = rawget(_G, "grug_items")}
 	local function restore()
 		rawset(_G, "core", saved.core)
 		rawset(_G, "grug_jobs", saved.grug_jobs)
@@ -18,6 +19,7 @@ return function(repo)
 		rawset(_G, "ItemStack", saved.ItemStack)
 		rawset(_G, "grug_mobs", saved.grug_mobs)
 		rawset(_G, "grug_smelting", saved.grug_smelting)
+		rawset(_G, "grug_items", saved.grug_items)
 	end
 	local function fail(message)
 		restore()
@@ -281,6 +283,7 @@ return function(repo)
 	grug_jobs.register_ingredient_tier("test:t3", 3)
 	grug_jobs.register_ingredient_tier("test:raw_path", 1)
 	grug_jobs.register_ingredient_tier("test:universal_t1", 1)
+	grug_jobs.register_ingredient_tier("test:material_t2", 2)
 	core.registered_items["test:pine"] = {groups = {wood = 1}}
 	core.registered_items["test:oak"] = {groups = {wood = 1}}
 	universal["test:universal"] = {{method = "normal", items = {"test:base"},
@@ -290,6 +293,9 @@ return function(repo)
 		items = {"test:universal_t1", "test:base"},
 		output = "test:universal_inputs"}}
 	core.registered_items["test:universal_inputs"] = {description = "Universal inputs"}
+	universal["test:refinable"] = {{method = "normal", items = {"test:base"},
+		output = "test:refinable"}}
+	core.registered_items["test:refinable"] = {description = "Refinable"}
 	check(table.concat(grug_jobs.CRAFTS_TO_ADVANCE, ",") == "10,15,20,25,30",
 		"craft thresholds differ")
 	local recipe = grug_jobs.register_recipe({profession = "cooking", tier = 1,
@@ -297,6 +303,32 @@ return function(repo)
 		output = "test:dish", hint = "Crafting grid"})
 	check(recipe.output_name == "test:dish" and #registered == 1,
 		"valid grid recipe was not installed")
+	recipe.quality_mode = "masterwork"
+	grug_items = {
+		can_craft_quality = function(player_value)
+			if player_value.level < 31 then
+				return false, "Expert mastery is required for Masterwork quality."
+			end
+			return true
+		end,
+		crafted_output = function() return true end,
+	}
+	local in_place_recipe = grug_jobs.register_recipe({profession = "cooking", tier = 1,
+		station = "grid", inputs = {{"test:refinable", "test:t1"}},
+		output = "test:refinable", in_place = true, hint = "Refine in grid"})
+	check(in_place_recipe.in_place and
+		#(core.get_all_craft_recipes("test:refinable") or {}) == 2,
+		"in-place recipe did not share its universal output")
+	local material_recipe = grug_jobs.register_recipe({profession = "cooking",
+		tier = 2, station = "grid", inputs = {"test:t1"},
+		output = "test:material_t2", material = true, hint = "Convert material"})
+	local lower_tier_gear_ok = pcall(grug_jobs.register_recipe, {
+		profession = "cooking", tier = 2, station = "grid", inputs = {"test:t1"},
+		output = "test:gear_t2", hint = "Craft gear"})
+	check(material_recipe.material and not lower_tier_gear_ok,
+		"material tier exception escaped into gear")
+	line("material_tier", "lower_input_accepted_at_output_tier",
+		"gear_lower_input_refused")
 
 	local function refused(label, definition)
 		local ok = pcall(grug_jobs.register_recipe, definition)
@@ -324,6 +356,16 @@ return function(repo)
 	refused("universal input collision", {profession = "cooking", tier = 1,
 		station = "grid", inputs = {"test:universal_t1", "test:base"},
 		output = "test:profession_override", hint = "Grid"})
+	local non_grid_ok = pcall(grug_jobs.register_recipe, {profession = "cooking",
+		tier = 1, station = "forge", inputs = {"test:refinable", "test:t1"},
+		output = "test:refinable", in_place = true, hint = "Forge"})
+	local missing_self_ok = pcall(grug_jobs.register_recipe, {profession = "cooking",
+		tier = 1, station = "grid", inputs = {"test:t1", "test:base"},
+		output = "test:missing_self", in_place = true, hint = "Grid"})
+	check(not non_grid_ok and not missing_self_ok,
+		"invalid in-place recipe was accepted")
+	line("in_place", "universal_output_accepted", "ordinary_collision_refused",
+		"non_grid_refused", "missing_output_input_refused")
 	local overlap_recipe = grug_jobs.register_recipe({profession = "cooking", tier = 1,
 		station = "grid", inputs = {"test:t1", "group:wood", "test:oak"},
 		output = "test:overlap_a", hint = "Grid"})
@@ -452,6 +494,13 @@ return function(repo)
 		"same-input collision refusal damaged the universal recipe")
 	local predicted = core.craft_predict(ItemStack("test:dish"), locked, dish_grid)
 	check(predicted and predicted:is_empty(), "grid recipe predicted without book")
+	local quality_novice = player("quality_novice", 30)
+	grug_jobs.learn(quality_novice, "cooking")
+	local quality_refused = core.craft_predict(ItemStack("test:dish"),
+		quality_novice, dish_grid)
+	check(quality_refused:is_empty() and
+		chats[#chats]:find("Expert mastery", 1, true),
+		"grid prediction did not refuse below-Expert Masterwork")
 	grug_jobs.learn(locked, "cooking")
 	check(not core.craft_predict(ItemStack("test:dish"), locked,
 		dish_grid):is_empty(),
@@ -474,7 +523,8 @@ return function(repo)
 		"allowed craft was not recorded")
 	line("permission", "locked_refused", "learned_allowed",
 		"above_level_refused", "requirement_named", "last_in_real_chain",
-		"emergency_no_restore", "universal_still_craftable", "craft_recorded")
+		"masterwork_preconsume_refused", "emergency_no_restore",
+		"universal_still_craftable", "craft_recorded")
 
 	local late_predict = function(itemstack, player_value, grid)
 		if grug_jobs._inputs_match({"test:t2"}, grid) then

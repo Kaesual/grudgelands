@@ -1,0 +1,12 @@
+R9-MOB2 package 8 headless spawn evidence
+command: KEEP=1 PORT=32178 SEED=15912857179583385436 PROBE="$PWD/tools/r9_mob2/package_spawn_probe" nice -n 19 bash tools/luanti_headless.sh 120
+port: 32178
+seed: 15912857179583385436
+launcher: headless boot: PASS (port 32178, 120 s)
+ERROR_or_ModError_lines: 0
+
+ACTION[Server]: R9_MOB2_PACKAGE_SPAWN package=8 name=grug_mobs:war_construct zone=front_broken_causeway level=40 x=-750 y=11 z=0
+ACTION[Server]: R9_MOB2_PACKAGE_SPAWN package=8 name=grug_mobs:speargrass_tiger zone=kragmar_speargrass_reach level=25 x=-1300 y=61 z=1100
+ACTION[Server]: R9_MOB2_PACKAGE_SPAWN package=8 name=grug_mobs:shore_crab zone=elandor_hearthpine_vale level=1 x=-2100 y=2 z=-2850
+ACTION[Server]: R9_MOB2_PACKAGE_SPAWN package=8 name=grug_mobs:reef_lurker zone=front_stormscale_summit level=60 x=3152 y=2 z=-332
+ACTION[Server]: R9_MOB2_PACKAGE_RESULT package=8 families=4 result=PASS

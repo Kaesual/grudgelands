@@ -569,8 +569,7 @@ end
 --   (b) normal mob: loot only with a live player tag (damaged by a player
 --       within the last 60 s) — no seeding a wolf and letting guards farm it
 --
-function grug_mobs._item_drop_filter(self, drops)
-	local tagger
+function grug_mobs.player_drop_tagger(self)
 	if self._grug_faction then
 		local killer = self.cause_of_death and self.cause_of_death.puncher
 		if not killer or not core.is_player(killer) then
@@ -580,15 +579,20 @@ function grug_mobs._item_drop_filter(self, drops)
 		if not kf or kf ~= grug_core.opposing_faction(self._grug_faction) then
 			return nil
 		end
-		tagger = killer:get_player_name()
+		return killer:get_player_name()
 	else
 		local tag = self._grug_player_tag
 		if not tag or not tag.name or
 				(tag.until_t or 0) < core.get_gametime() then
 			return nil
 		end
-		tagger = tag.name
+		return tag.name
 	end
+end
+
+function grug_mobs._item_drop_filter(self, drops)
+	local tagger = grug_mobs.player_drop_tagger(self)
+	if not tagger then return nil end
 	local copy = {}
 	for i = 1, #drops do
 		copy[i] = table.copy(drops[i])

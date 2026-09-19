@@ -236,9 +236,28 @@ function grug_mobs.award_kill_xp(self)
 	return true
 end
 
+-- Kill-loot hooks run at the shared death boundary rather than inside
+-- mobs_redo's string-only drop rows. This lets per-stack quality metadata
+-- survive and also covers bosses whose ordinary drop list is intentionally
+-- empty. The player-tag/enemy-kill authority remains aggro.lua's one predicate.
+local kill_loot_hooks = {}
+
+function grug_mobs.register_kill_loot_hook(fn)
+	table.insert(kill_loot_hooks, fn)
+end
+
 -- Called by the shared mobs_redo death boundary before it chooses on_die,
 -- on_death, a death animation or the ordinary smoke/removal fallback.
 function grug_mobs.settle_mob_death(self)
+	self.temp = self.temp or {}
+	if not self.temp.grug_kill_loot_settled then
+		self.temp.grug_kill_loot_settled = true
+		local tagger = grug_mobs.player_drop_tagger
+			and grug_mobs.player_drop_tagger(self)
+		if tagger then
+			for _, fn in ipairs(kill_loot_hooks) do fn(self, tagger) end
+		end
+	end
 	return grug_mobs.award_kill_xp(self)
 end
 
@@ -791,6 +810,19 @@ dofile(modpath .. "/cave_crawler.lua")
 dofile(modpath .. "/zero_asset_variants.lua")
 dofile(modpath .. "/start_zone_families.lua")
 dofile(modpath .. "/night_families.lua")
+dofile(modpath .. "/goblin_miners.lua")
+dofile(modpath .. "/oerkki.lua")
+dofile(modpath .. "/glowwing.lua")
+dofile(modpath .. "/crystal_shard.lua")
+dofile(modpath .. "/dungeon_master.lua")
+dofile(modpath .. "/lava_flan.lua")
+dofile(modpath .. "/ember_wisp.lua")
+dofile(modpath .. "/land_guard.lua")
+dofile(modpath .. "/rift_spawn.lua")
+dofile(modpath .. "/war_construct.lua")
+dofile(modpath .. "/speargrass_tiger.lua")
+dofile(modpath .. "/shore_crab.lua")
+dofile(modpath .. "/bog_witch.lua")
 dofile(modpath .. "/bone_weevil.lua")
 dofile(modpath .. "/bog_fowl.lua")
 -- After the mob files: a rare spec names an already registered mob.
