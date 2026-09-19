@@ -29,8 +29,8 @@ escalating complexity.
   exists.
 - **Micro fixture receipt** (`tools/wp40/r7/micro_kat_fixture.lua` still
   builds the manifest receipt itself instead of calling `r7_manifest.new`).
-- **`final_micro.sh` order**: run LuaJIT first, PUC only when LuaJIT passed
-  (same byte comparison, earlier failure signal). Tools-only change.
+- ~~`final_micro.sh` order~~ delivered by R8-DOCS (LuaJIT first, PUC only
+  after a LuaJIT pass).
 - Mob packages 6–8 of `docs/research/mob-worlds-plan.md` §9 (underground,
   deep, front/coast).
 - **Cave-mouth writer exactness** (R8-MAP-A, measured 2026-09-19 with the
