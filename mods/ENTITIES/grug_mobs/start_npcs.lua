@@ -1003,6 +1003,12 @@ end
 
 grug_mobs.install_profession_trainer_name = install_profession_trainer_name
 
+function grug_mobs.install_profession_trainer(entity, slot)
+	entity._grug_profession = slot.profession
+	install_profession_trainer_name(entity, slot.profession)
+	entity._grug_walker = false
+end
+
 -- Every field installed here is a plain number, string or flat table, so it
 -- survives unload/reload inside the mob's staticdata (AGENTS.md's WP6 rule:
 -- never an ObjectRef, never a function).
@@ -1111,9 +1117,7 @@ local function install(entity, row, slot)
 	elseif slot.role == "king" then
 		entity._grug_home = {x = slot.pos.x, y = slot.pos.y, z = slot.pos.z}
 	elseif slot.role == "trainer" then
-		entity._grug_profession = slot.profession
-		install_profession_trainer_name(entity, slot.profession)
-		entity._grug_walker = false
+		grug_mobs.install_profession_trainer(entity, slot)
 	end
 end
 

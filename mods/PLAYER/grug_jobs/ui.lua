@@ -370,6 +370,19 @@ function grug_jobs._book_recipe_cells(recipe)
 	return cells
 end
 
+function grug_jobs._book_recipe_background_cells(recipe)
+	if recipe.station == "grid" or PROFESSION_STATIONS[recipe.station] then
+		local cells = {}
+		for row = 1, 3 do
+			for column = 1, 3 do
+				cells[#cells + 1] = {column = column, row = row}
+			end
+		end
+		return cells
+	end
+	return grug_jobs._book_recipe_cells(recipe)
+end
+
 local function append_recipe(fs, recipe, alternative, alternative_count)
 	local station_icon, station_item = grug_jobs.book_station_icon(recipe.station)
 	if station_item then
@@ -381,11 +394,11 @@ local function append_recipe(fs, recipe, alternative, alternative_count)
 	end
 	fs[#fs + 1] = ("tooltip[0.25,6.55;0.85,0.85;%s]"):format(
 		esc(title_for("station", recipe.station):gsub(" Recipes$", "")))
-	for column = 1, 3 do
-		for row = 1, 3 do
-			fs[#fs + 1] = ("box[%.2f,%.2f;0.82,0.82;#20202066]"):format(
-				1.25 + (column - 1) * 0.9, 5.65 + (row - 1) * 0.9)
-		end
+	local backgrounds = grug_jobs._book_recipe_background_cells(recipe)
+	for index = 1, #backgrounds do
+		local cell = backgrounds[index]
+		fs[#fs + 1] = ("box[%.2f,%.2f;0.82,0.82;#20202066]"):format(
+			1.25 + (cell.column - 1) * 0.9, 5.65 + (cell.row - 1) * 0.9)
 	end
 	local cells = grug_jobs._book_recipe_cells(recipe)
 	for index = 1, #cells do
@@ -426,8 +439,9 @@ local function make_formspec(player, book, station, state)
 	if not selected or not alternatives[selected] then selected = outputs[1] end
 	state.output = selected
 	local choices = selected and alternatives[selected] or nil
-	state.alternative = math.max(1, math.min(tonumber(state.alternative) or 1,
-		choices and #choices or 1))
+	local alternative_count = choices and #choices or 1
+	state.alternative = ((tonumber(state.alternative) or 1) - 1) %
+		alternative_count + 1
 	local counts = grug_jobs.book_undiscovered_counts(player, records)
 	local fs = {
 		"formspec_version[4]size[10,9.8]",
@@ -554,6 +568,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		sessions[name] = nil
 		if core.close_formspec then core.close_formspec(name, BOOK_FORM) end
 		sfinv.set_page(player, "sfinv:crafting")
+		core.show_formspec(name, "", player:get_inventory_formspec())
 		return true
 	end
 	local redraw = false
@@ -579,7 +594,6 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	end
 	if fields.grug_jobs_alt_prev then
 		state.alternative = state.alternative - 1
-		if state.alternative < 1 then state.alternative = 999999 end
 		redraw = true
 	elseif fields.grug_jobs_alt_next then
 		state.alternative = state.alternative + 1

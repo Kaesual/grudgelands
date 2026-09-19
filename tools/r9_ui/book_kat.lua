@@ -160,6 +160,7 @@ return function(root)
 	local player = {
 		level = 60,
 		get_player_name = function() return "tester" end,
+		get_inventory_formspec = function() return "inventory-crafting-formspec" end,
 		get_meta = function() return metadata end,
 		get_inventory = function()
 			return {get_list = function(_, listname) return inventory[listname] end}
@@ -253,16 +254,48 @@ return function(root)
 	check(#dual == 2 and dual[1].row == 2 and dual[2].column == 3 and
 		#brewing == 3 and brewing[3].column == 2 and brewing[3].row == 3,
 		"custom station slot layouts differ")
+	local layout_rows = {}
+	local layout_cases = {
+		{"grid", 9, {"test:a"}},
+		{"forge", 9, {"test:a"}},
+		{"tanning_rack", 9, {"test:a"}},
+		{"tailor_bench", 9, {"test:a"}},
+		{"carving_bench", 9, {"test:a"}},
+		{"jewellers_bench", 9, {"test:a"}},
+		{"furnace", 1, {"test:a"}},
+		{"dual_furnace", 2, {"test:a", "test:b"}},
+		{"brewing_stand", 3, {"test:a", "test:b", "test:ore"}},
+	}
+	for index = 1, #layout_cases do
+		local row = layout_cases[index]
+		local backgrounds = grug_jobs._book_recipe_background_cells({
+			station = row[1], flat_inputs = row[3], display_items = row[3],
+			display_width = 1,
+		})
+		check(#backgrounds == row[2], row[1] .. " background slot count differs")
+		layout_rows[#layout_rows + 1] = row[1] .. "=" .. #backgrounds
+	end
 
 	grug_jobs.open_book(player, "blacksmith")
 	check(shown[#shown].formspec:find("1 / 2", 1, true),
 		"same-output alternatives were not grouped")
+	hooks.receive[1](player, "grug_jobs:book", {grug_jobs_alt_prev = true})
+	check(shown[#shown].formspec:find("2 / 2", 1, true),
+		"alternative previous action did not wrap from first to last")
+	hooks.receive[1](player, "grug_jobs:book", {grug_jobs_alt_next = true})
+	check(shown[#shown].formspec:find("1 / 2", 1, true),
+		"alternative next action did not wrap from last to first")
 	hooks.receive[1](player, "grug_jobs:book", {grug_jobs_alt_next = true})
 	check(shown[#shown].formspec:find("2 / 2", 1, true),
 		"alternative next action did not cycle")
+	hooks.receive[1](player, "grug_jobs:book", {grug_jobs_alt_next = true})
+	check(shown[#shown].formspec:find("1 / 2", 1, true),
+		"alternative next action did not wrap after the full cycle")
 	hooks.receive[1](player, "grug_jobs:book", {grug_jobs_close = true})
-	check(pages[#pages] == "sfinv:crafting" and closed == 1,
-		"Close did not return through sfinv.set_page")
+	check(pages[#pages] == "sfinv:crafting" and closed == 1 and
+		shown[#shown].formname == "" and
+		shown[#shown].formspec == "inventory-crafting-formspec",
+		"Close did not visibly return to the crafting inventory")
 
 	restore()
 	return table.concat({
@@ -271,8 +304,8 @@ return function(root)
 		"format=sorted_serialized_item_array",
 		"cache=width,method,shapeless",
 		"exact_grid=pass",
-		"alternatives=2",
-		"stations=9",
-		"close=sfinv:crafting\n",
+		"alternatives=2 wrap=both",
+		"stations=" .. table.concat(layout_rows, ","),
+		"close=sfinv:crafting+visible\n",
 	}, " ")
 end
