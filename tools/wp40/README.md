@@ -40,11 +40,7 @@ luajit -e 'wp40_ffi=require("ffi")' \
 PORT="${PORT:?assigned isolated port required}" nice -n 19 \
   bash tools/luanti_headless.sh 60
 
-# 4. Audit the current production Lua roster and the six setters/config flags.
-bash tools/wp40/r7/source_audit.sh "$PWD" \
-  /tmp/wp40-r7-native-refresh-source-audit.tsv prefreeze
-
-# 5. Run the package's named LuaJIT KATs and static gates before this final
+# 4. Run the package's named LuaJIT KATs and static gates before this final
 #    command. The directory must not exist; this is the sole PUC runtime run.
 test ! -e /tmp/wp40-r7-native-refresh-final
 bash tools/wp40/quality/final_micro.sh \
@@ -63,11 +59,6 @@ All occurrences of the noise digest, feature token and exact live flag set in
 production modules, fixtures and validators are hand-edited and reviewed.
 `NATIVE_DIGEST` changes only when the native ore/strata allowlist changes, not
 when NoiseParams or v7 flags change.
-
-Refresh `tools/wp40/r7/changed_production_lua.txt` from the exact pipeline in
-`source_audit.sh` whenever its `d6002a2`-relative production population moves;
-review the additions and deletions before updating the asserted count. The
-audit is a current-tree inventory, not a historical artifact identity.
 
 `quality/final_micro.sh` compares byte-identical LuaJIT and PUC output, but its
 WP13 seam pre-step currently validates the manifest factory/roster seam and
