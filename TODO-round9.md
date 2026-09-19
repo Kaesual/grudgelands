@@ -393,6 +393,10 @@ Wave 2 (after wave 1 merges):
   then giant bat retint), the higher tier nobler in colour; no dragons as
   mounts (dragons stay rare bosses). Each mesh with a licence row and an
   animation audit as in MOB1.
+- **R9-TRINKETS** (added by ruling 38, after the PROF-B merge): the six
+  core trinket special effects at the mana / hit / healing / kill-XP /
+  potion seams via the equipment-change cache, caps and shared cooldowns
+  per `items_crafting.md` §6.2; removes the inert tooltip marker.
 - **R9-DOCS** at the end, as always: the AUDIT report's rulings, contract text for MAP-C (world_zones.md
   §7.6 cave-mouth paragraph shrinks to the skin rule; §13.1 plateau and
   flags), ROADMAP, AGENTS.md paragraphs for BOSS/UI, deletion of the MAP-A
