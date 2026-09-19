@@ -520,6 +520,15 @@ ocean edge and the enemy border (warning band, hard dismount).
     the other gear uses); ENCH's quality roll applies on top. The
     Blacksmith fitting cross-buy references PROF-A's fitting item names,
     so PROF-B resumes after the PROF-A run-2 merge.
+29. **Refinement durability deferred to WP22** (orchestrator ruling
+    2026-09-19 after the PROF-A catalog review; the user may veto): the
+    +100 % durability of `items_crafting.md` §6b.2 needs one per-stack
+    wear multiplier across dig and combat wear, which WP22 (durability and
+    repair) owns; Round 9 ships refinement with the persistent
+    `grug_refined` marker and the stat bonus only. Gear identities still
+    missing in `grug_gear` (24 leather armor pieces, the shield line, the
+    three spell tomes, the 32-slot Huge Bag) are a follow-up gear lane
+    after Round 9, not invented by the catalog lanes.
 
 ## 5. MAP-C protocol: what must not repeat from Round 8
 
