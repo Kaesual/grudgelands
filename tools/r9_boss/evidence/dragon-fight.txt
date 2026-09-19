@@ -1,0 +1,27 @@
+R9-BOSS Wyrmglass headless fight probe
+Date: 2026-09-19
+Command: PORT=32181 PROBE="$PWD/tools/r9_boss/dragon_fight_probe" KEEP=1 nice -n 19 bash tools/luanti_headless.sh 240
+Result: PASS; zero ERROR/ModError lines; pgrep -f '^luanti.bin' empty after exit.
+World/log retained by the run at: /tmp/grudgelands-headless.ryVkv9/server.log
+
+The probe emerged and transiently forceloaded a bounded volume around the
+production Wyrmglass anchor. The production heartbeat remained the sole dragon
+spawner. A probe-only engine ObjectRef was classified as a hostile player and
+held 20 nodes from the spawn, allowing the real dragon do_custom callback to
+exercise its runtime movement and cast state without an external client.
+
+ACTION[Main]: R9_BOSS_DRAGON_PROBE loaded
+ACTION[Emerge-0]: R9_BOSS_DRAGON_READY anchor=-3260,-40
+ACTION[Server]: R9_BOSS_DRAGON_SPAWN name=grug_mobs:ice_dragon count=1 x=-3260 y=235 z=-40
+ACTION[Server]: R9_BOSS_DRAGON_TARGET kind=probe_hostile distance=20
+ACTION[Server]: R9_BOSS_DRAGON_STATE t=0.1 state=initializing fly=false x=-3260.0 y=235.0 z=-40.0
+ACTION[Server]: R9_BOSS_DRAGON_STATE t=0.2 state=air fly=true x=-3260.0 y=235.0 z=-40.0
+ACTION[Server]: R9_BOSS_DRAGON_STATE t=1.6 state=landing fly=false x=-3248.9 y=238.3 z=-40.0
+ACTION[Server]: R9_BOSS_DRAGON_STATE t=2.7 state=ground fly=false x=-3240.6 y=235.1 z=-40.0
+ACTION[Server]: R9_BOSS_DRAGON_STATE t=2.8 state=ground:breath fly=false x=-3239.9 y=234.5 z=-40.0
+ACTION[Server]: R9_BOSS_DRAGON_STATE t=53.7 state=air fly=true x=-3235.5 y=234.5 z=-28.9
+ACTION[Server]: R9_BOSS_DRAGON_STATE t=53.9 state=air:dive_warn fly=true x=-3236.2 y=235.5 z=-30.6
+ACTION[Server]: R9_BOSS_DRAGON_STATE t=55.0 state=air:dive fly=true x=-3236.2 y=235.5 z=-30.6
+ACTION[Server]: R9_BOSS_DRAGON_STATE t=55.5 state=landing fly=false x=-3239.3 y=235.2 z=-38.2
+ACTION[Server]: R9_BOSS_DRAGON_STATE t=55.6 state=ground fly=false x=-3239.9 y=235.1 z=-39.7
+ACTION[Server]: R9_BOSS_DRAGON_RESULT ticks=60 flight=1 cast=1 final=ground hp_max=18000 spawns=1
