@@ -136,3 +136,5 @@ source_audit_roster final derived population=289 (267 plus 22 main-merge Lua fil
 performance_baseline old frozen baseline not reused because merge commit 3a8cb6f9 added 22 production Lua inputs; fresh main baseline is b720e562
 performance_fix1 before emerge=69453581 callback=53317490 plan=31389288 writer=21928202 after emerge=74693803 callback=58600113 plan=30354152 writer=28245961 ratios=1.075449/1.099079/0.967023/1.288111
 performance_gate FAIL 1.03 tolerance; ruling35 STOP after final parser/SETGLOBAL and before static/KAT/prefreeze/witness/pin/final_micro/headless sequence
+performance_fix1_pair2 before emerge=70785084 callback=54464484 plan=32774176 writer=21690308 after emerge=72335475 callback=55871761 plan=28351896 writer=27519865 ratios=1.021903/1.025838/0.865068/1.268763
+performance_ruling36 pair1_wall=1.075449 pair2_wall=1.021903 mean_wall=1.048676 PASS_at_1.05 pair1_callback=1.099079 pair2_callback=1.025838 mean_callback=1.062459
