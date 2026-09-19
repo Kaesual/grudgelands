@@ -45,6 +45,7 @@ local TEXTURES = "mods/PLAYER/grug_visuals/textures/"
 local function load_sources(repo)
 	local items = {}
 	local logs = {}
+	local current_mod = "grug_gear"
 	local noop = function() end
 
 	local core_stub = {}
@@ -79,11 +80,13 @@ local function load_sources(repo)
 	function core_stub.colorize(_, text)
 		return text
 	end
-	function core_stub.get_modpath()
-		return repo
+	function core_stub.get_modpath(name)
+		if name == "grug_gear" then return repo .. "/mods/ITEMS/grug_gear" end
+		if name == "grug_visuals" then return repo .. "/mods/PLAYER/grug_visuals" end
+		return nil
 	end
 	function core_stub.get_current_modname()
-		return "grug_visuals"
+		return current_mod
 	end
 	setmetatable(core_stub, {__index = function(t, key)
 		rawset(t, key, noop)
@@ -109,7 +112,8 @@ local function load_sources(repo)
 	end
 
 	local ok, err = pcall(function()
-		for _, path in ipairs({repo .. "/" .. GEAR, repo .. "/" .. COMPOSE}) do
+		for index, path in ipairs({repo .. "/" .. GEAR, repo .. "/" .. COMPOSE}) do
+			current_mod = index == 1 and "grug_gear" or "grug_visuals"
 			local chunk, load_err = loadfile(path)
 			if not chunk then
 				error("cannot load " .. path .. ": " .. tostring(load_err), 0)

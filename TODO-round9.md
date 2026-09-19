@@ -393,6 +393,14 @@ Wave 2 (after wave 1 merges):
   then giant bat retint), the higher tier nobler in colour; no dragons as
   mounts (dragons stay rare bosses). Each mesh with a licence row and an
   animation audit as in MOB1.
+- **R9-PERF** (added by ruling 41, after the MAP-C merge, before CAP): the
+  byte-preserving writer/planner improvements of WP48 steps 1–4 with an
+  output-equivalence KAT and one profiler pair; no pin change expected
+  (the source projection hashes catalogs, not Lua source).
+- **R9-TRINKETS** (added by ruling 38, after the PROF-B merge): the six
+  core trinket special effects at the mana / hit / healing / kill-XP /
+  potion seams via the equipment-change cache, caps and shared cooldowns
+  per `items_crafting.md` §6.2; removes the inert tooltip marker.
 - **R9-DOCS** at the end, as always: the AUDIT report's rulings, contract text for MAP-C (world_zones.md
   §7.6 cave-mouth paragraph shrinks to the skin rule; §13.1 plateau and
   flags), ROADMAP, AGENTS.md paragraphs for BOSS/UI, deletion of the MAP-A
@@ -582,6 +590,66 @@ ocean edge and the enemy border (warning band, hard dismount).
     behind a production switch that is off by default and MAP-C finishes
     with skin, openings, plate fix, pin procedure and KATs. The 3 %
     tolerance of ruling 35 is replaced by 5 % (measured noise).
+37. **No attacking while mounted** (2026-09-19, after MOUNTS review 4):
+    mounted players cannot trigger abilities or swings (dismount first);
+    the mount's selection box covers the seated rider, forwarded punches
+    apply the returned tool wear, flight legality uses the horizontal zone
+    record at every y. `mounts.md` follows.
+38. **Trinket special effects are a follow-up lane** (R9-TRINKETS, after
+    PROF-B): Round 9 ships the 36 trinkets with stat affixes and the
+    authored special line marked inert in the tooltip; the six consumers
+    (Manawell, Mercy Seal, Last Light, Battlebeat, Reclaimer's Mark,
+    Apothecary Loop) get their own lane at the mana / hit / healing /
+    kill-XP / potion seams with caps and cooldowns.
+39. **Trinket Setting counts** are a Round 9 placeholder: identity-specific
+    Setting counts (1–6) keep the six recipes per tier collision-free in
+    the input-authoritative registry; documented as placeholder; a later
+    package adds output selection at the station or the design gives each
+    identity its own distinguishing ingredient.
+40. **MAP-C performance tolerance +20 %, coast band ON** (user 2026-09-19):
+    with the WP48 levers identified, MAP-C may cost up to 20 % more emerge
+    wall clock than main (mean of two fresh pairs); the coast band ships
+    enabled by default (`grug_mapgen_r9_coast_band_enabled = true`; the
+    R8 evaluator stays byte-identical behind `false`). Supersedes the
+    tolerances of rulings 35/36 for this lane.
+41. **Soft performance limit and the R9-PERF lane** (user 2026-09-19): the
+    20 % of ruling 40 is not a hard limit — the lane reports the numbers
+    and stops only for a genuine surprise; the improvements the read-only
+    exploration found (`docs/research/mapgen-performance-exploration.md`,
+    BACKLOG WP48 steps 1–4: trustworthy comparison, the two liquid-column
+    short-circuits, lattice tile retention + classification memoisation,
+    discarded inner R5 lighting) become a short byte-preserving lane
+    **R9-PERF** right after the MAP-C merge in the serial mapgen chain,
+    before CAP and MAP-B, verified by an output-equivalence KAT and one
+    profiler pair. Dirty-region replay and emerge threads stay out (the
+    latter blocked by Luanti #9357). Model: GPT-6 Astra (user allowance
+    2026-09-19, the second lane besides MAP-C); review on GPT-5.6 Sol. The
+    serial mapgen chain is therefore MAP-C → PERF → CAP → MAP-B.
+42. **Mount warning by classification probing** (orchestrator ruling
+    2026-09-19 after MOUNTS review 5; the user may veto): the analytic
+    flight-boundary distance over warped zones and bay silhouettes is
+    withdrawn from the zone contract. The 48-node warning is computed by
+    probing the flight-legality classification itself along 16 directions
+    at 1/2/4/8/16/32/48 nodes once per second: exact for any adjacent
+    illegal column, within ±4 nodes at range; the hard dismount stays
+    exact at the current node.
+43. **R7 source-audit roster stays frozen at 157; refreeze is backlog WP49,
+    option A** (orchestrator finding, user 2026-09-19 late evening): the
+    audit's `d6002a2`-relative derivation yields 293 production Lua files
+    on today's main against the 157 frozen on 2026-09-15, so
+    `source_audit.sh ... prefreeze` already exits 1 on main and no gate
+    runs it; the R7 micro fixture can only execute the 157 modules it has
+    environments for. MAP-C restores main's roster and counts (Astra had
+    refreshed them to 289 per the README), `final_micro.sh` remains the
+    gate, and no Round 9 lane refreshes the roster. WP49 later replaces
+    the derivation with a fixed mapgen roster (WP40 modules and their
+    direct neighbours) so audit and fixture agree again; not option B
+    (extend the fixture to ~136 unrelated modules) and not option C
+    (freeze the audit as a historical artefact).
+44. **Last Light shield lifetime = 120 s** (user 2026-09-19 late evening):
+    the design names no duration for the absorb shield; the absorb seam
+    requires one, so the trinket's 120 s cooldown doubles as the maximum
+    lifetime of an unconsumed shield.
 
 ## 5. MAP-C protocol: what must not repeat from Round 8
 

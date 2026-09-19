@@ -61,8 +61,18 @@ local function player_relation(player, target)
 	return "neutral"
 end
 
+local function rider_proxy(target)
+	local entity = target and target.get_luaentity and target:get_luaentity()
+	local rider = entity and entity._grug_rider
+	if rider and rider.is_player and rider:is_player() and rider:get_hp() > 0 and
+			rider:get_attach() == target then
+		return rider
+	end
+	return target
+end
+
 local function classify_object(player, origin, range, pointed)
-	local target = pointed.ref
+	local target = rider_proxy(pointed.ref)
 	local distance = intersection_distance(origin, pointed, target)
 	local result = {
 		status = "aim_miss",

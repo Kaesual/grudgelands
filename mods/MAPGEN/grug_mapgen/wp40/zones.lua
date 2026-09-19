@@ -235,6 +235,7 @@ local function zones_factory(dependencies)
 		planned_water = true,
 		coastal_shelf = true,
 	}
+
 	local FUNCTIONAL_KINDS = {
 		anchor_platform = true,
 		bridge_deck = true,
@@ -456,6 +457,7 @@ local function zones_factory(dependencies)
 		local horizontal = horizontal_module.new(full_seed_string)
 		if type(horizontal) ~= "table" or
 				type(horizontal.classification_values_at) ~= "function" or
+				type(horizontal.warp_at) ~= "function" or
 				type(horizontal.difficulty_for_macro_at) ~= "function" or
 				type(horizontal.polyline_corridor_member) ~= "function" or
 				type(horizontal.housing_eligible_at) ~= "function" or
@@ -546,7 +548,6 @@ local function zones_factory(dependencies)
 			zone_by_numeric[zone_index] = record
 			zone_by_id[row.id] = record
 		end
-
 		local neighbor_ids = {}
 		for zone_index = 1, #source.zones do neighbor_ids[zone_index] = {} end
 		local neighbor_seen = {}
