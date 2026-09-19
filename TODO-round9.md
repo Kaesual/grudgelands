@@ -45,7 +45,7 @@ escalating complexity.
 ## 2. Lanes (decided 2026-09-18, extended 2026-09-19, reviewed 2026-09-19; the cut is the orchestrator's)
 
 Wave 1 (parallel, disjoint code areas): **MAP-C, PROF-A (substrate first),
-PROF-B, MOB2, BOSS, UI**. Serial mapgen chain after MAP-C merges:
+PROF-B, MOB2, BOSS, UI**, plus the read-only **AUDIT** lane. Serial mapgen chain after MAP-C merges:
 **CAP, then MAP-B** (every link changes the WP40 source projection, so each
 runs `final_micro.sh` at its end and the merge re-measures the literal as
 R8-MAP-A did). The orchestrator serialises the gates and gives every
@@ -351,6 +351,22 @@ headless boot its own port block (≥ 32160, spacing 5). A Sol plan review
     regions (sockets vs. trainer retag), the orchestrator merges.
   - Harness: gates, `final_micro.sh`, headless boot, review Sol.
 
+- **R9-AUDIT — design-doc drift report** (user proposal 2026-09-19;
+  GPT-5.6 Sol, `--ephemeral -s read-only`, no file changes). Question: do
+  the decisions of rounds 5–9 and the shipped code agree with the design
+  docs, or has the user's decision-making drifted from them? Sources:
+  `docs/design/*.md`, `docs/research/*plan*.md`, `AGENTS.md`, `ROADMAP.md`,
+  `TODO-round7.md`, `TODO-round8.md`, `TODO-round9.md` (rounds 5 and 6 are
+  folded; their decisions live in the merge commits `git log --merges` and
+  in the docs they changed), and the code. Deliverable: a report in the
+  thread (the orchestrator commits it as `docs/research/round9-design-drift.md`)
+  listing each mismatch as "ruling X (round N, file:line) vs. doc Y §Z" with
+  a proposed resolution (doc follows the decision / decision violates the
+  doc and needs a ruling / already aligned). No doc edits: the user rules
+  per item, R9-DOCS applies the doc changes at the end; a finding that
+  touches a running lane is forwarded to that lane's thread at once. Runs
+  from the start of wave 1; one run, no fix round.
+
 Wave 2 (after wave 1 merges):
 
 - **R9-FARM (WP32)** — farming as a player activity: crop soil (from MAP-B)
@@ -377,7 +393,7 @@ Wave 2 (after wave 1 merges):
   then giant bat retint), the higher tier nobler in colour; no dragons as
   mounts (dragons stay rare bosses). Each mesh with a licence row and an
   animation audit as in MOB1.
-- **R9-DOCS** at the end, as always: contract text for MAP-C (world_zones.md
+- **R9-DOCS** at the end, as always: the AUDIT report's rulings, contract text for MAP-C (world_zones.md
   §7.6 cave-mouth paragraph shrinks to the skin rule; §13.1 plateau and
   flags), ROADMAP, AGENTS.md paragraphs for BOSS/UI, deletion of the MAP-A
   mouth writer if MAP-C left it behind its switch.
