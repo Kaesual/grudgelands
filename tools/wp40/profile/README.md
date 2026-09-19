@@ -79,6 +79,7 @@ elapsed time for each VoxelManip method. Logging occurs after the timing
 timestamps. Luanti's `profiler_print_interval = 1` output independently records
 native `Mapgen::makeChunk`, `Lua on_generated`, disk loading, lighting, server
 steps, and saving.
+The patch hunk is anchored on the R8 native-baseline preamble and callback.
 
 The probe records end-to-end `emerge_area` time and action counts per owner. A
 small ordered node/param2 sample digest is computed only after all timed
