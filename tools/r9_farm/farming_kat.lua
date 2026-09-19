@@ -20,8 +20,9 @@ return function(repo)
 	end
 	check(#plant_keys == 15, "Cooking plant population differs")
 
-	local world, timers = {}, {}
+	local world, timers, metadata = {}, {}, {}
 	local crafts, lbms, mods_loaded = {}, {}, {}
+	local protected, protection_violations = {}, 0
 	local function pos_key(pos)
 		return table.concat({pos.x, pos.y, pos.z}, "/")
 	end
@@ -72,20 +73,40 @@ return function(repo)
 		world[pos_key(pos)] = {name = node.name, param2 = node.param2}
 	end
 	core_mock.swap_node = core_mock.set_node
+	function core_mock.get_meta(pos)
+		local key = pos_key(pos)
+		local values = metadata[key]
+		if not values then
+			values = {}
+			metadata[key] = values
+		end
+		return {
+			get_float = function(_, name) return values[name] or 0 end,
+			set_float = function(_, name, value) values[name] = value end,
+		}
+	end
 	function core_mock.get_node_timer(pos)
 		local key = pos_key(pos)
 		local timer = timers[key]
 		if timer then return timer end
-		timer = {started = false, timeout = false, start_count = 0}
+		timer = {started = false, timeout = 0, elapsed = 0,
+			start_count = 0, set_count = 0}
 		function timer:start(timeout)
-			self.started, self.timeout = true, timeout
+			self.started, self.timeout, self.elapsed = true, timeout, 0
 			self.start_count = self.start_count + 1
 		end
+		function timer:set(timeout, elapsed)
+			self.started, self.timeout, self.elapsed = timeout ~= 0, timeout, elapsed
+			self.set_count = self.set_count + 1
+		end
 		function timer:stop()
-			self.started = false
+			self.started, self.timeout, self.elapsed = false, 0, 0
 		end
 		function timer:is_started()
 			return self.started
+		end
+		function timer:get_elapsed()
+			return self.elapsed
 		end
 		timers[key] = timer
 		return timer
@@ -106,9 +127,11 @@ return function(repo)
 		end
 		return nil
 	end
-	function core_mock.is_protected() return false end
+	function core_mock.is_protected(pos)
+		return protected[pos_key(pos)] == true
+	end
 	function core_mock.record_protection_violation()
-		error("R9 farming KAT: unexpected protection violation", 0)
+		protection_violations = protection_violations + 1
 	end
 	function core_mock.is_creative_enabled() return false end
 	function core_mock.sound_play() end
@@ -120,11 +143,23 @@ return function(repo)
 	}
 
 	register_item("air", {buildable_to = true, walkable = false}, "node")
-	register_item("default:dirt", {description = "Dirt", groups = {soil = 1}}, "node")
-	register_item("default:dry_dirt",
-		{description = "Dry Dirt", groups = {soil = 1}}, "node")
-	register_item("default:dirt_with_grass",
-		{description = "Dirt with Grass", groups = {soil = 1}}, "node")
+	local dirt_family = {
+		"default:dirt",
+		"default:dirt_with_grass",
+		"default:dirt_with_grass_footsteps",
+		"default:dirt_with_dry_grass",
+		"default:dirt_with_snow",
+		"default:dirt_with_rainforest_litter",
+		"default:dirt_with_coniferous_litter",
+		"default:dry_dirt",
+		"default:dry_dirt_with_dry_grass",
+	}
+	for index = 1, #dirt_family do
+		register_item(dirt_family[index],
+			{description = dirt_family[index], groups = {soil = 1}}, "node")
+	end
+	register_item("test:soil", {description = "Grouped Soil", groups = {soil = 2}},
+		"node")
 	register_item("default:stone", {description = "Stone", groups = {}}, "node")
 	register_item("default:water_source",
 		{description = "Water", groups = {water = 1}}, "node")
@@ -223,6 +258,11 @@ return function(repo)
 		return setmetatable({name = name, count = count or 1, wear = 0},
 			{__index = stack_methods})
 	end
+	local function expire_crop(pos, elapsed)
+		core_mock.get_node_timer(pos):stop()
+		local definition = core_mock.registered_nodes[core_mock.get_node(pos).name]
+		return definition.on_timer(pos, elapsed)
+	end
 	local player = {get_player_name = function() return "farmer" end}
 	local soil_pos = {x = 0, y = 0, z = 0}
 	local crop_pos = {x = 0, y = 1, z = 0}
@@ -236,14 +276,13 @@ return function(repo)
 	core_mock.registered_items[crop.seed].on_place(seeds, player, pointed)
 	check(seeds.count == 0 and core_mock.get_node(crop_pos).name == crop.stages[1],
 		"seed planting differs")
-	check(core_mock.get_node_timer(crop_pos):is_started() and
-		core_mock.get_node_timer(crop_pos).timeout == 200,
-		"crop timer did not start")
+	check(not core_mock.get_node_timer(crop_pos):is_started(),
+		"dry crop timer did not pause")
 
 	local first_stage = core_mock.registered_nodes[crop.stages[1]]
-	check(first_stage.on_timer(crop_pos, 600) == true and
+	check(expire_crop(crop_pos, 600) == false and
 		core_mock.get_node(crop_pos).name == crop.stages[1],
-		"dry soil did not stall growth")
+		"stale dry callback credited growth")
 	local replacement_seed = stack(crop.seed, 1)
 	core_mock.registered_items[crop.seed].on_place(replacement_seed, player, pointed)
 	check(replacement_seed.count == 1 and
@@ -253,14 +292,18 @@ return function(repo)
 	core_mock.registered_nodes[farming.SOIL_DRY].on_timer(soil_pos, 15)
 	check(core_mock.get_node(soil_pos).name == farming.SOIL_WET,
 		"soil did not become wet at radius three")
-	check(core_mock.get_node_timer(crop_pos).timeout == 200 and
-		core_mock.get_node_timer(crop_pos).start_count == 2,
-		"hydration did not discard dry elapsed time")
-	check(first_stage.on_timer(crop_pos, 400) == true and
+	check(core_mock.get_node_timer(crop_pos):is_started() and
+		core_mock.get_node_timer(crop_pos).timeout == 200 and
+		core_mock.get_node_timer(crop_pos).elapsed == 0,
+		"hydration did not resume crop timer")
+	check(expire_crop(crop_pos, 599) == false and
 		core_mock.get_node(crop_pos).name == crop.stages[3],
-		"late timer did not advance two stages")
-	local third_stage = core_mock.registered_nodes[crop.stages[3]]
-	check(third_stage.on_timer(crop_pos, 400) == false and
+		"non-multiple late timer did not advance two stages")
+	check(core_mock.get_node_timer(crop_pos):is_started() and
+		core_mock.get_node_timer(crop_pos).elapsed == 199 and
+		core_mock.get_meta(crop_pos):get_float("wet_progress") == 199,
+		"non-multiple late timer did not carry its remainder")
+	check(expire_crop(crop_pos, 200) == false and
 		core_mock.get_node(crop_pos).name == crop.stages[4],
 		"late timer did not clamp at maturity")
 
@@ -274,41 +317,95 @@ return function(repo)
 	check(returned_seed.count == 0 and
 		core_mock.get_node(crop_pos).name == crop.stages[1],
 		"harvest seed did not replant")
+	check(expire_crop(crop_pos, 200) == false and
+		core_mock.get_node(crop_pos).name == crop.stages[2] and
+		core_mock.get_node_timer(crop_pos):is_started() and
+		core_mock.get_node_timer(crop_pos).elapsed == 0,
+		"plain stage timer did not restart from zero")
 
+	core_mock.get_node_timer(crop_pos).elapsed = 75
 	world[pos_key({x = 3, y = 0, z = 0})] = {name = "air"}
 	core_mock.registered_nodes[farming.SOIL_WET].on_timer(soil_pos, 15)
-	check(core_mock.get_node(soil_pos).name == farming.SOIL_DRY,
-		"soil did not dry after water removal")
+	check(core_mock.get_node(soil_pos).name == farming.SOIL_DRY and
+		not core_mock.get_node_timer(crop_pos):is_started() and
+		core_mock.get_meta(crop_pos):get_float("wet_progress") == 75,
+		"drying did not pause wet crop progress")
+	world[pos_key({x = 3, y = 0, z = 0})] = {name = "default:water_source"}
+	core_mock.registered_nodes[farming.SOIL_DRY].on_timer(soil_pos, 15)
+	check(core_mock.get_node(soil_pos).name == farming.SOIL_WET and
+		core_mock.get_node_timer(crop_pos):is_started() and
+		core_mock.get_node_timer(crop_pos).elapsed == 75,
+		"rewetting did not resume wet crop progress")
+	check(expire_crop(crop_pos, 200) == false and
+		core_mock.get_node(crop_pos).name == crop.stages[3] and
+		core_mock.get_node_timer(crop_pos).elapsed == 0,
+		"resumed crop timer did not finish one stage")
+
+	-- Model nodetimer.cpp's collection of all expired timers before callbacks:
+	-- the crop timer is absent when the soil callback dries the node, then its
+	-- already queued callback arrives with a large elapsed value.
+	local overdue_soil = {x = 30, y = 0, z = 0}
+	local overdue_crop = {x = 30, y = 1, z = 0}
+	local overdue_water = {x = 33, y = 0, z = 0}
+	world[pos_key(overdue_soil)] = {name = farming.SOIL_DRY}
+	world[pos_key(overdue_crop)] = {name = "air"}
+	world[pos_key(overdue_water)] = {name = "default:water_source"}
+	local overdue_seed = stack(crop.seed, 1)
+	core_mock.registered_items[crop.seed].on_place(overdue_seed, player,
+		{type = "node", under = overdue_soil, above = overdue_crop})
+	check(core_mock.get_node(overdue_soil).name == farming.SOIL_WET and
+		core_mock.get_node_timer(overdue_crop):is_started(),
+		"overdue callback fixture did not start wet")
+	core_mock.get_node_timer(overdue_crop):stop()
+	world[pos_key(overdue_water)] = {name = "air"}
+	core_mock.registered_nodes[farming.SOIL_WET].on_timer(overdue_soil, 15)
+	check(first_stage.on_timer(overdue_crop, 599) == false and
+		core_mock.get_node(overdue_crop).name == crop.stages[1] and
+		not core_mock.get_node_timer(overdue_crop):is_started() and
+		core_mock.get_meta(overdue_crop):get_float("wet_progress") == 0,
+		"simultaneous overdue dry callback credited stale elapsed")
+	world[pos_key(overdue_water)] = {name = "default:water_source"}
+	core_mock.registered_nodes[farming.SOIL_DRY].on_timer(overdue_soil, 15)
+	check(core_mock.get_node_timer(overdue_crop):is_started() and
+		core_mock.get_node_timer(overdue_crop).elapsed == 0,
+		"stale callback did not leave a resumable crop")
 
 	local hoe = core_mock.registered_items["grug_farming:hoe"]
 	local hoe_stack = stack("grug_farming:hoe", 1)
-	local hoe_under = {x = 10, y = 0, z = 0}
-	local hoe_above = {x = 10, y = 1, z = 0}
-	world[pos_key(hoe_under)] = {name = "default:dirt"}
-	world[pos_key(hoe_above)] = {name = "air"}
-	hoe.on_use(hoe_stack, player,
-		{type = "node", under = hoe_under, above = hoe_above})
-	check(core_mock.get_node(hoe_under).name == farming.SOIL_DRY and
-		hoe_stack.wear > 0, "hoe did not till dirt")
-	local refusal_nodes = {"default:stone", "default:dirt_with_grass"}
-	for index = 1, #refusal_nodes do
-		local under = {x = 10 + index, y = 0, z = 0}
-		local above = {x = 10 + index, y = 1, z = 0}
-		world[pos_key(under)] = {name = refusal_nodes[index]}
+	local tillable_nodes = {}
+	for index = 1, #dirt_family do tillable_nodes[index] = dirt_family[index] end
+	tillable_nodes[#tillable_nodes + 1] = "test:soil"
+	for index = 1, #tillable_nodes do
+		local under = {x = 100 + index, y = 0, z = 0}
+		local above = {x = 100 + index, y = 1, z = 0}
+		world[pos_key(under)] = {name = tillable_nodes[index]}
 		world[pos_key(above)] = {name = "air"}
+		local wear_before = hoe_stack.wear
 		hoe.on_use(hoe_stack, player,
 			{type = "node", under = under, above = above})
-		check(core_mock.get_node(under).name == refusal_nodes[index],
-			"hoe converted non-dirt " .. refusal_nodes[index])
+		check(core_mock.get_node(under).name == farming.SOIL_DRY and
+			hoe_stack.wear > wear_before,
+			"hoe did not till grouped soil " .. tillable_nodes[index])
 	end
-	local dry_under = {x = 13, y = 0, z = 0}
-	local dry_above = {x = 13, y = 1, z = 0}
-	world[pos_key(dry_under)] = {name = "default:dry_dirt"}
-	world[pos_key(dry_above)] = {name = "air"}
+	local stone_under = {x = 120, y = 0, z = 0}
+	local stone_above = {x = 120, y = 1, z = 0}
+	world[pos_key(stone_under)] = {name = "default:stone"}
+	world[pos_key(stone_above)] = {name = "air"}
+	local refusal_wear = hoe_stack.wear
 	hoe.on_use(hoe_stack, player,
-		{type = "node", under = dry_under, above = dry_above})
-	check(core_mock.get_node(dry_under).name == farming.SOIL_DRY,
-		"hoe did not till dry dirt")
+		{type = "node", under = stone_under, above = stone_above})
+	check(core_mock.get_node(stone_under).name == "default:stone" and
+		hoe_stack.wear == refusal_wear, "hoe converted stone")
+	local protected_under = {x = 121, y = 0, z = 0}
+	local protected_above = {x = 121, y = 1, z = 0}
+	world[pos_key(protected_under)] = {name = "default:dirt_with_grass"}
+	world[pos_key(protected_above)] = {name = "air"}
+	protected[pos_key(protected_under)] = true
+	hoe.on_use(hoe_stack, player,
+		{type = "node", under = protected_under, above = protected_above})
+	check(core_mock.get_node(protected_under).name == "default:dirt_with_grass" and
+		hoe_stack.wear == refusal_wear and protection_violations == 1,
+		"hoe ignored protection")
 
 	for index = 1, #mods_loaded do mods_loaded[index]() end
 	restore()

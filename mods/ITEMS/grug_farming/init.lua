@@ -12,6 +12,9 @@ local WATER_RADIUS = 3
 local STAGES = 4
 local STAGE_SECONDS = 200
 local HOE_USES = 64
+local CROP_PROGRESS_META = "wet_progress"
+
+local crop_by_node = {}
 
 grug_farming.SOIL_DRY = SOIL_DRY
 grug_farming.SOIL_WET = SOIL_WET
@@ -24,20 +27,49 @@ local function start_soil_timer(pos)
 	core.get_node_timer(pos):start(SOIL_INTERVAL)
 end
 
+local function growing_crop_at(pos)
+	local state = crop_by_node[core.get_node(pos).name]
+	if state and state.stage < STAGES then return state end
+	return nil
+end
+
+local function pause_crop_timer(pos)
+	if not growing_crop_at(pos) then return end
+	local timer = core.get_node_timer(pos)
+	if not timer:is_started() then return end
+	core.get_meta(pos):set_float(CROP_PROGRESS_META, timer:get_elapsed())
+	timer:stop()
+end
+
+local function resume_crop_timer(pos)
+	if not growing_crop_at(pos) then return end
+	local timer = core.get_node_timer(pos)
+	if timer:is_started() then return end
+	local elapsed = core.get_meta(pos):get_float(CROP_PROGRESS_META)
+	timer:set(STAGE_SECONDS, elapsed)
+end
+
+local function start_crop_timer(pos)
+	core.get_meta(pos):set_float(CROP_PROGRESS_META, 0)
+	local below = {x = pos.x, y = pos.y - 1, z = pos.z}
+	if core.get_node(below).name == SOIL_WET then
+		core.get_node_timer(pos):set(STAGE_SECONDS, 0)
+	else
+		core.get_node_timer(pos):stop()
+	end
+end
+
 local function soil_timer(pos)
 	local node = core.get_node(pos)
 	local wet = core.find_node_near(pos, WATER_RADIUS, {"group:water"}) ~= nil
 	local wanted = wet and SOIL_WET or SOIL_DRY
 	if node.name ~= wanted then
 		core.swap_node(pos, {name = wanted})
-		-- A dry interval must never become credited growth merely because water
-		-- arrived just before the crop callback. Hydration changes start a fresh
-		-- stage interval; genuinely late intervals that stayed wet still catch up.
 		local above = {x = pos.x, y = pos.y + 1, z = pos.z}
-		local crop_definition = core.registered_nodes[core.get_node(above).name]
-		local groups = crop_definition and crop_definition.groups or {}
-		if groups.grug_farming_crop == 1 and groups.growing == 1 then
-			core.get_node_timer(above):start(STAGE_SECONDS)
+		if wanted == SOIL_WET then
+			resume_crop_timer(above)
+		else
+			pause_crop_timer(above)
 		end
 	end
 	return true
@@ -98,7 +130,6 @@ core.register_lbm({
 })
 
 local crops = {}
-local crop_by_node = {}
 local crop_keys = {}
 
 local function add_crop(key, description, item, image)
@@ -146,21 +177,31 @@ for _, key in ipairs({"potato", "corn"}) do
 	add_crop(key, description, item, definition.inventory_image)
 end
 
-local function start_crop_timer(pos)
-	core.get_node_timer(pos):start(STAGE_SECONDS)
-end
-
 local function crop_timer(pos, elapsed)
 	local node = core.get_node(pos)
 	local state = crop_by_node[node.name]
 	if not state or state.stage >= STAGES then return false end
 	local below = {x = pos.x, y = pos.y - 1, z = pos.z}
-	if core.get_node(below).name ~= SOIL_WET then return true end
+	-- Expired timers are removed before Luanti invokes any callbacks. If the
+	-- soil callback dried this crop first, this stale callback must credit no
+	-- part of its elapsed value and must not restart while dry.
+	if core.get_node(below).name ~= SOIL_WET then return false end
 	local advance = math.floor(elapsed / STAGE_SECONDS)
-	if advance < 1 then return true end
+	local remainder = elapsed % STAGE_SECONDS
+	if advance < 1 then
+		core.get_meta(pos):set_float(CROP_PROGRESS_META, elapsed)
+		core.get_node_timer(pos):set(STAGE_SECONDS, elapsed)
+		return false
+	end
 	local next_stage = math.min(STAGES, state.stage + advance)
 	core.swap_node(pos, {name = state.crop.stages[next_stage]})
-	return next_stage < STAGES
+	if next_stage >= STAGES then
+		core.get_meta(pos):set_float(CROP_PROGRESS_META, 0)
+		return false
+	end
+	core.get_meta(pos):set_float(CROP_PROGRESS_META, remainder)
+	core.get_node_timer(pos):set(STAGE_SECONDS, remainder)
+	return false
 end
 
 local function place_seed(row)
@@ -259,16 +300,17 @@ end
 
 grug_farming.CROPS = crops
 
-local tillable = { ["default:dirt"] = true, ["default:dry_dirt"] = true }
-
 local function hoe_on_use(itemstack, user, pointed_thing)
 	if not user or not pointed_thing or pointed_thing.type ~= "node" then
 		return itemstack
 	end
 	local under = pointed_thing.under
 	local above = pointed_thing.above
+	local under_name = core.get_node(under).name
+	local under_definition = core.registered_nodes[under_name]
+	local under_groups = under_definition and under_definition.groups or {}
 	if above.x ~= under.x or above.y ~= under.y + 1 or above.z ~= under.z or
-			not tillable[core.get_node(under).name] or
+			(tonumber(under_groups.soil) or 0) < 1 or
 			core.get_node(above).name ~= "air" then
 		return itemstack
 	end
