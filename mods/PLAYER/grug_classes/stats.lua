@@ -39,29 +39,11 @@ function grug_classes.pool_percent_amount(player, pool, percent)
 		* (tonumber(percent) or 0) / 100)
 end
 
--- Equipment enchants are per-stack data. No shipped item carries these fields
--- yet, but the percentage contract is live now so the future roller has one
--- consumer rather than teaching every pool formula about item metadata.
-local function equipment_pool_percent(player, field)
-	local inventory_api = rawget(_G, "grug_inventory")
-	if not inventory_api or not inventory_api.equipment_slots then
-		return 0
-	end
-	local inventory = player:get_inventory()
-	if not inventory or type(inventory.get_stack) ~= "function" then
-		return 0
-	end
-	local total = 0
-	for _, slot in ipairs(inventory_api.equipment_slots) do
-		local stack = inventory:get_stack(slot.list, 1)
-		if stack and not stack:is_empty() then
-			local def = stack:get_definition() or {}
-			total = total + (tonumber(def[field]) or 0)
-			local meta = stack:get_meta()
-			total = total + (tonumber(meta:get_string(field)) or 0)
-		end
-	end
-	return total
+-- grug_quality overrides this with its equipment-change cache. Keeping the
+-- stub here preserves the dependency direction while ensuring the 0.5 s mana
+-- loop never scans ItemStack metadata.
+function grug_classes.get_equipment_pool_percent(player, pool)
+	return 0
 end
 
 function grug_classes.get_pool_breakdown(player, pool)
@@ -72,13 +54,13 @@ function grug_classes.get_pool_breakdown(player, pool)
 	local status_percent
 	if pool == "hp" then
 		factor = grug_classes.get_hp_class_factor(player)
-		gear_percent = equipment_pool_percent(player, "_grug_max_hp_percent")
+		gear_percent = grug_classes.get_equipment_pool_percent(player, "hp")
 		talent_percent = grug_classes.get_talent_bonus(player,
 			"max_hp_percent_add")
 		status_percent = grug_core.status_modifier_sum(player,
 			"hp_pool_percent")
 	elseif pool == "mana" then
-		gear_percent = equipment_pool_percent(player, "_grug_max_mana_percent")
+		gear_percent = grug_classes.get_equipment_pool_percent(player, "mana")
 		talent_percent = grug_classes.get_talent_bonus(player,
 			"max_mana_percent_add")
 		status_percent = grug_core.status_modifier_sum(player,
