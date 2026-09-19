@@ -21,3 +21,11 @@ ruling35_after WP40_PROFILE_GAME_ROOT=$PWD WP40_PROFILE_OUTPUT=/tmp/map-c-profil
 ruling35_after_complete requested=10 completed=10 callbacks=97 generated=8 disk=0 memory=1242 cancelled=0 errored=0 measured_elapsed_us=78916001
 ruling35_baseline reused=/tmp/map-c-profile-before-bulk-1 reason=frozen_baseline_game_and_harness_inputs_unchanged measured_elapsed_us=68020996 callback_total_us=52073722 plan_us=31413515 writer_us=20660207
 ruling35_result FAIL emerge_ratio=1.160171 callback_ratio=1.191666 tolerance=1.03
+feature_off=surface_skin WP40_PROFILE_GAME_ROOT=$PWD WP40_PROFILE_OUTPUT=/tmp/map-c-profile-feature-skin-off-1 WP40_PROFILE_SEED=0 WP40_PROFILE_PORT_BASE=32160 WP40_PROFILE_TIMEOUT=500 nice -n 19 bash tools/wp40/profile/run.sh flatpak run --filesystem=/tmp --command=luanti org.luanti.luanti
+feature_off=surface_skin_complete requested=10 completed=10 callbacks=97 generated=8 disk=0 memory=1242 cancelled=0 errored=0 measured_elapsed_us=83284404
+feature_off=coast_band WP40_PROFILE_GAME_ROOT=$PWD WP40_PROFILE_OUTPUT=/tmp/map-c-profile-feature-coast-off-1 WP40_PROFILE_SEED=0 WP40_PROFILE_PORT_BASE=32160 WP40_PROFILE_TIMEOUT=500 nice -n 19 bash tools/wp40/profile/run.sh flatpak run --filesystem=/tmp --command=luanti org.luanti.luanti
+feature_off=coast_band_complete requested=10 completed=10 callbacks=97 generated=8 disk=0 memory=1242 cancelled=0 errored=0 measured_elapsed_us=66466700
+feature_off=anchor_grade_preservation WP40_PROFILE_GAME_ROOT=$PWD WP40_PROFILE_OUTPUT=/tmp/map-c-profile-feature-plate-off-1 WP40_PROFILE_SEED=0 WP40_PROFILE_PORT_BASE=32160 WP40_PROFILE_TIMEOUT=500 nice -n 19 bash tools/wp40/profile/run.sh flatpak run --filesystem=/tmp --command=luanti org.luanti.luanti
+feature_off=anchor_grade_preservation_complete requested=10 completed=10 callbacks=97 generated=8 disk=0 memory=1242 cancelled=0 errored=0 measured_elapsed_us=74366715
+feature_attribution_baseline reused=/tmp/map-c-profile-before-bulk-1 reason=frozen_baseline_game_profile_harness_seed_and_corpus_unchanged
+feature_guards production_files_restored=byte_identical skin=r6_settlement coast=height plate=map_adapter

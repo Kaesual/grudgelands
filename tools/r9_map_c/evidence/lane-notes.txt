@@ -87,3 +87,14 @@ after emerge_elapsed_us=78916001 callback_total_us=62054499 plan_us=35040422 wri
 ratios emerge=1.160171 callback=1.191666 plan=1.115457 writer=1.307541
 result FAIL after exceeds before by more than the ruling-35 tolerance of 3 percent; engine witness, final pin-refresh audit, final_micro, and final 60-second headless boot not run
 source_audit_preflight FAIL derived changed production Lua population=267 while ruling 35 requires retaining the refreshed 268-file roster; mapgen_manifest.lua returned byte-for-byte to its d6002a2 state when its plateau-only feature token was reverted
+
+feature_attribution_measurement
+baseline reused /tmp/map-c-profile-before-bulk-1 because frozen baseline game, profile harness, seed, and corpus are unchanged
+all_on emerge=78916001 callback=62054499 plan=35040422 writer=27014077
+feature_off=surface_skin emerge=83284404 callback=66595745 plan=35865706 writer=30730039 versus_all_on=1.055355/1.073182/1.023552/1.137557
+feature_off=coast_band emerge=66466700 callback=50329807 plan=23242699 writer=27087108 versus_all_on=0.842246/0.811058/0.663311/1.002703
+feature_off=anchor_grade_preservation emerge=74366715 callback=57965277 plan=32707950 writer=25257327 versus_all_on=0.942353/0.934103/0.933435/0.934969
+reading coast band carries a measured 33.669 percent of all-on planner time and no positive writer share; anchor-grade preservation removal lowers both planner and writer by about 6.5 percent, so the single-pair result cannot isolate its resolver-only theoretical location from run variance; surface-skin removal is slower in every metric and establishes no positive attributable cost in this pair
+measurement_guards surface skin used a local false guard around opening classification and skin writes in r6_settlement.lua; coast used an early nil return in height.lua coast_profile_at; anchor preservation used a false opcode-21 branch in map_adapter.lua preserved_native_cave; all guards removed byte-for-byte after their run
+coast_guard_note an initial local-upvalue form exceeded height.lua's existing 60-upvalue ceiling in luac51 and was discarded before any engine run; the measured early-return form parsed under plain Lua 5.1
+source_audit_roster aligned to post-revert truth in commit 2b372a7a: changed production Lua 267, combined micro inputs 297, mapgen_manifest.lua removed; prefreeze source audit PASS

@@ -20,3 +20,15 @@ ruling35/measured_elapsed_us	68020996	78916001	10895005	1.160171
 ruling35/callback_total_us	52073722	62054499	9980777	1.191666
 ruling35/plan_us	31413515	35040422	3626907	1.115457
 ruling35/writer_us	20660207	27014077	6353870	1.307541
+feature_off=surface_skin/measured_elapsed_us	68020996	83284404	15263408	1.224393
+feature_off=surface_skin/callback_total_us	52073722	66595745	14522023	1.278874
+feature_off=surface_skin/plan_us	31413515	35865706	4452191	1.141729
+feature_off=surface_skin/writer_us	20660207	30730039	10069832	1.487402
+feature_off=coast_band/measured_elapsed_us	68020996	66466700	-1554296	0.977150
+feature_off=coast_band/callback_total_us	52073722	50329807	-1743915	0.966511
+feature_off=coast_band/plan_us	31413515	23242699	-8170816	0.739895
+feature_off=coast_band/writer_us	20660207	27087108	6426901	1.311076
+feature_off=anchor_grade_preservation/measured_elapsed_us	68020996	74366715	6345719	1.093291
+feature_off=anchor_grade_preservation/callback_total_us	52073722	57965277	5891555	1.113139
+feature_off=anchor_grade_preservation/plan_us	31413515	32707950	1294435	1.041206
+feature_off=anchor_grade_preservation/writer_us	20660207	25257327	4597120	1.222511
