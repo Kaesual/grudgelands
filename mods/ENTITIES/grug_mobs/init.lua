@@ -227,6 +227,7 @@ function grug_mobs.award_kill_xp(self)
 			end
 			if xp > 0 then
 				grug_xp.add_xp(player, xp, "kill")
+				if grug_core.trinket_xp_kill then grug_core.trinket_xp_kill(player) end
 				core.chat_send_player(player:get_player_name(),
 					core.colorize("#aa66ff", "+" .. xp .. " XP"))
 			end

@@ -24,6 +24,14 @@ local function consume(itemstack)
 	return itemstack
 end
 
+local function instant_potion_amount(player, maximum)
+	local amount = maximum * grug_alchemy.POTION_PERCENT / 100
+	if grug_core.trinket_instant_potion then
+		amount = grug_core.trinket_instant_potion(player, amount)
+	end
+	return math.max(1, math.floor(amount + 0.5))
+end
+
 local function player_ready(itemstack, player)
 	if not player or not player.is_player or not player:is_player() or
 			player:get_hp() <= 0 then return false end
@@ -52,8 +60,7 @@ local function potion_use(kind, cooldown)
 					"You are already at full health.")
 				return
 			end
-			local amount = math.max(1,
-				math.floor(maximum * grug_alchemy.POTION_PERCENT / 100 + 0.5))
+			local amount = instant_potion_amount(player, maximum)
 			grug_core.heal_player(player, player, amount, {no_crit = true})
 		else
 			local maximum = grug_classes.get_max_mana(player)
@@ -65,7 +72,7 @@ local function potion_use(kind, cooldown)
 			-- Deliberately consume at full mana: the ruling removes the
 			-- full-resource refusal from the mana half.
 			grug_abilities.restore_mana(player,
-				math.max(1, math.floor(maximum * grug_alchemy.POTION_PERCENT / 100 + 0.5)))
+				instant_potion_amount(player, maximum))
 		end
 		grug_traders.start_potion_cooldown(player, cooldown)
 		return consume(itemstack)

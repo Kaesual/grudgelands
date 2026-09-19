@@ -131,9 +131,9 @@ return function(repo)
 							(contract.rage and contract.rage[tier] or nil),
 						name .. " stacking contract differs")
 					context.check(type(definition._grug_trinket_special) == "string" and
-						definition._grug_trinket_special:find(
-							"inert until the trinket effects lane", 1, true),
-						name .. " special text missing")
+						definition._grug_trinket_special ~= "" and
+						not definition._grug_trinket_special:find("inert", 1, true),
+						name .. " special text missing or still marked inert")
 				end
 			end
 
@@ -173,7 +173,7 @@ return function(repo)
 				"station trinket used the wrong source window or refinement state")
 			context.check(rolled:get_meta():get_int("grug_ilvl") == 30 and
 				rolled:get_meta():get_string("description"):find(
-					"inert until the trinket effects lane", 1, true),
+					"+0.25 Mana per second", 1, true),
 				"station trinket lost its item level or authored special")
 			context.check(rolled:get_meta():get_string("description"):find(
 				"Item level 30", 1, true) ~= nil,
