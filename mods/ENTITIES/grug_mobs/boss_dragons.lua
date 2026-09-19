@@ -146,6 +146,16 @@ grug_mobs.place_dragon_ground_effect = place_ground_effect
 
 local effect_clock = 0
 local scorch_clock = 0
+local function effect_node_at_feet(pos)
+	local feet = vector.round(pos)
+	local node = core.get_node_or_nil(feet)
+	if node and node.name == "air" then
+		feet.y = feet.y - 1
+		node = core.get_node_or_nil(feet)
+	end
+	return node
+end
+
 core.register_globalstep(function(dtime)
 	effect_clock = effect_clock + dtime
 	scorch_clock = scorch_clock + dtime
@@ -157,8 +167,7 @@ core.register_globalstep(function(dtime)
 	for _, player in ipairs(core.get_connected_players()) do
 		local pos = player:get_pos()
 		if pos and player:get_hp() > 0 then
-			local feet = rounded_column(pos, math.floor(pos.y - 0.1))
-			local node = core.get_node_or_nil(feet)
+			local node = effect_node_at_feet(pos)
 			if node and node.name == RIME then
 				grug_mobs.slow_player(player, 0.5, 0.6)
 			elseif do_scorch and node and node.name == SCORCH then

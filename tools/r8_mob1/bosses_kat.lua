@@ -27,6 +27,18 @@ return function(root)
 		return math.floor(pos.x + 0.5) .. ":" .. math.floor(pos.y + 0.5) ..
 			":" .. math.floor(pos.z + 0.5)
 	end
+	local function engine_round(value)
+		if value < 0 then
+			local integer = math.ceil(value)
+			return integer - (value - integer <= -0.5 and 1 or 0)
+		end
+		local integer = math.floor(value)
+		return integer + (value - integer >= 0.5 and 1 or 0)
+	end
+	vector = {round = function(pos)
+		return {x = engine_round(pos.x), y = engine_round(pos.y),
+			z = engine_round(pos.z)}
+	end}
 	local function object_at(pos, name)
 		local object = {pos = {x = pos.x, y = pos.y, z = pos.z}, removed = false,
 			velocity = {x = 0, y = 0, z = 0}, acceleration = {x = 0, y = 0, z = 0},
@@ -410,7 +422,9 @@ return function(root)
 		"enemy"))
 	assert(node_map["0:1:0"] == "grug_mobs:dragon_rime" and
 		timers["0:1:0"].duration == 8)
-	enemy.pos = {x = 0, y = 2, z = 0}
+	-- A player origin sits half a node above the effect. Engine rounding selects
+	-- the air node above, so the foot lookup must also inspect the node below.
+	enemy.pos = {x = 0, y = 1.5, z = 0}
 	connected_players = {enemy}
 	globalsteps[1](0.25)
 	assert(enemy.slow_factor == 0.6, "rime did not apply its 40 percent slow")
@@ -567,26 +581,91 @@ return function(root)
 	boss_step(10)
 	assert(spawn_count == 1, "alive gate permitted a duplicate heartbeat spawn")
 
-	local start_file = assert(io.open(root ..
-		"/mods/ENTITIES/grug_mobs/start_npcs.lua", "rb"))
-	local start_text = assert(start_file:read("*a"))
-	start_file:close()
-	assert(start_text:find('register_start_socket_role("king"', 1, true))
-	local royal_region = assert(start_text:match(
-		"local ROYAL_GUARD_SOCKET = %b{}"))
-	for _, id in ipairs({"throne_guard_west", "throne_guard_east"}) do
-		assert(royal_region:find(id, 1, true), "missing royal socket " .. id)
+	-- Resolve the six real capital socket lists through start_npcs.lua itself.
+	-- The isolated registry mirrors settlement_sockets.lua's compiled output;
+	-- inspecting the resulting rows proves which entity each production slot
+	-- received without running the placement heartbeat.
+	local wp13 = root .. "/mods/MAPGEN/grug_mapgen/wp13"
+	local capital_module = {dwarf = "dur_brannoc", human = "highcourt",
+		elf = "lethariel", undead = "nhal_veyr", orc = "gor_drazhak",
+		troll = "kezamba"}
+	local identities, settlements, socket_lists, capital_anchors = {}, {}, {}, {}
+	local function dir_to_yaw(dir)
+		return math.atan2(dir.z, dir.x) - math.pi / 2
 	end
-	assert(not royal_region:find("door_guard_", 1, true),
-		"door guard still resolves as a royal guard")
-	local capital_file = assert(io.open(root ..
-		"/mods/MAPGEN/grug_mapgen/wp13/capitals.lua", "rb"))
-	local capital_text = assert(capital_file:read("*a"))
-	capital_file:close()
-	for _, id in ipairs({"door_guard_west", "door_guard_east"}) do
-		assert(capital_text:find(id, 1, true), "authored door socket disappeared: " .. id)
+	for race, module_name in pairs(capital_module) do
+		local faction = "kat_" .. race
+		local anchor = {x = #settlements * 1000, y = 40, z = 0}
+		local blueprint = dofile(wp13 .. "/" .. module_name .. ".lua")(wp13).core()
+		local compiled = {}
+		for index, socket in ipairs(blueprint.landmarks.sockets) do
+			compiled[index] = {id = socket.id, role = socket.role,
+				group = socket.group, order = socket.order, kind = socket.kind,
+				tags = socket.tags, activity = socket.activity,
+				profession = socket.profession, spawn = socket.spawn ~= false,
+				pos = {x = anchor.x + socket.x, y = anchor.y + socket.y,
+					z = anchor.z + socket.z}, yaw = dir_to_yaw(socket.dir)}
+		end
+		local key = "kat_capital_" .. race
+		identities[#identities + 1] = {race_id = race, faction_id = faction}
+		settlements[#settlements + 1] = {key = key, race_id = race,
+			anchor = anchor}
+		socket_lists[key] = compiled
+		capital_anchors[race] = anchor
 	end
-	assert(2 * 6 == 12, "royal guard census changed")
+	local resolver_loaded
+	local resolver_storage = {
+		get_string = function() return "" end,
+		set_string = function() end,
+	}
+	local resolver_mobs = {storage = resolver_storage}
+	local resolver_core = {
+		registered_entities = setmetatable({}, {__index = function() return {} end}),
+		register_globalstep = function() end,
+		register_on_mods_loaded = function(fn) resolver_loaded = fn end,
+		after = function() end,
+		log = function() end,
+		pos_to_string = function(pos)
+			return pos.x .. "," .. pos.y .. "," .. pos.z
+		end,
+	}
+	local resolver_grug_core = {
+		start_identities = function() return identities end,
+		settlement_socket_settlements = function() return settlements end,
+		settlement_sockets_at = function(key) return socket_lists[key] end,
+		start_anchor = function() return nil end,
+		capital_anchor = function(_, race) return capital_anchors[race] end,
+		register_on_starts_progress = function() end,
+	}
+	local resolver_env = {core = resolver_core, grug_core = resolver_grug_core,
+		grug_mobs = resolver_mobs, mobs = {mob_class = {}}}
+	setmetatable(resolver_env, {__index = _G})
+	setfenv(assert(loadfile(root ..
+		"/mods/ENTITIES/grug_mobs/start_npcs.lua")), resolver_env)()
+	assert(resolver_loaded, "start NPC resolver did not register its load callback")
+	resolver_loaded()
+	local resolved_rows
+	for index = 1, 20 do
+		local name, value = debug.getupvalue(resolver_mobs.start_npc_census, index)
+		if not name then break end
+		if name == "rows" then resolved_rows = value end
+	end
+	assert(resolved_rows and #resolved_rows == 6,
+		"production resolver did not build all six capital rows")
+	local royal_guards, door_guards = 0, 0
+	for _, row in ipairs(resolved_rows) do
+		for _, slot in ipairs(row.slots) do
+			if slot.entity == "grug_mobs:royal_guard_" .. row.race_id then
+				royal_guards = royal_guards + 1
+			elseif (slot.id == "door_guard_west" or
+					slot.id == "door_guard_east") and
+					slot.entity == "grug_mobs:guard_" .. row.faction_id then
+				door_guards = door_guards + 1
+			end
+		end
+	end
+	assert(royal_guards == 12, "royal guard resolver census changed")
+	assert(door_guards == 12, "ordinary door guard resolver census changed")
 
 	local ledger = assert(io.open(root ..
 		"/mods/ENTITIES/grug_mobs/LICENSE-media.md", "rb"))
