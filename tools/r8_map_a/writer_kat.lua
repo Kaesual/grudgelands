@@ -114,10 +114,78 @@ return function(root)
 	check(sky_voxels == nil and sky_reason == "no_continuing_component",
 		"native sky bridge was accepted")
 
+	-- A closed 50-voxel native pocket touches the immutable owner's x=-16
+	-- edge.  The old clipped proof box mistook that artificial boundary for
+	-- continuation; the complete target +/-12 box cannot be proved here.
+	local edge_data, edge_param2 = baseline("closed")
+	local edge_count = 0
+	local function edge_air(x, y, z)
+		if edge_data[cave_index(x, y, z)] ~= 0 then edge_count = edge_count + 1 end
+		edge_data[cave_index(x, y, z)] = 0
+	end
+	for z = -2, 2 do for y = -5, -4 do for x = -16, -13 do
+		edge_air(x, y, z)
+	end end end
+	for y = -3, 3 do edge_air(-16, y, 0) end
+	for x = -15, -13 do edge_air(x, -3, 0) end
+	check(edge_count == 50, "owner-edge pocket population differs")
+	local edge_cave = {kind = "hillside", zone_id = "zone", mouth_x = 0,
+		mouth_y = 7, mouth_z = 0, direction_x = -1, direction_z = 0,
+		length = 17, radius = 2, minimum_y = -14, search_radius = 0,
+		maximum_depth = 10}
+	local edge_voxels, edge_reason = settlement.r8_plan_cave(
+		cave_context(edge_data, edge_param2), edge_cave)
+	check(not settlement.r8_cave_proof_box_inside(min_x, min_y, min_z,
+		max_x, max_y, max_z, -16, 3, 0),
+		"owner-edge target received a complete proof box")
+	check(edge_voxels == nil and edge_reason == "no_continuing_component",
+		"owner-edge closed native pocket was accepted")
+
+	-- The independent comparison covers every structurally valid target, even
+	-- when the native proof rejected the candidate.  An extra carve in a later
+	-- possible lumen is therefore separate from the accepted exact lumen.
+	local volume = dofile(root ..
+		"/tools/r8_map_a/engine_probe/volume.lua")()
+	local volume_candidate = {kind = "sinkhole", mouth_x = 0, mouth_y = 7,
+		mouth_z = 0, maximum_depth = 10}
+	local target_a, target_b = {0, 3, 0}, {6, 3, 0}
+	local possible_count, baseline_solids = volume.capture(volume_candidate,
+		{target_a, target_b}, function() return "default:stone" end)
+	local expected_positions = volume.lumen(volume_candidate, target_a)
+	local expected_count = 0
+	for _ in pairs(expected_positions) do
+		expected_count = expected_count + 1
+	end
+	local proof_volume = {eligible = true, target = target_a,
+		voxel_count = expected_count, valid_targets = {target_a, target_b},
+		possible_voxels = possible_count, baseline_solids = baseline_solids}
+	local carved, connected, unexpected, unexpected_voxels = volume.inspect(
+		volume_candidate, proof_volume, function(x, y, z)
+			return expected_positions[volume.key(x, y, z)] and "air" or "default:stone"
+		end)
+	check(carved and connected and not unexpected and unexpected_voxels == 0,
+		"exact baseline-backed lumen was not recognized")
+	local _, _, extra, extra_voxels = volume.inspect(volume_candidate,
+		proof_volume, function() return "air" end)
+	check(extra and extra_voxels > 0,
+		"unexpected carve outside accepted lumen was hidden")
+	local rejected_proof = {eligible = false, valid_targets = {target_a},
+		possible_voxels = 0, baseline_solids = {}}
+	rejected_proof.possible_voxels, rejected_proof.baseline_solids = volume.capture(
+		volume_candidate, rejected_proof.valid_targets,
+		function() return "default:stone" end)
+	local rejected_carved, _, rejected_unexpected = volume.inspect(volume_candidate,
+		rejected_proof, function() return "air" end)
+	check(not rejected_carved and rejected_unexpected,
+		"rejected candidate carve was hidden")
+
 	return table.concat({"schema\tgrug_r8_map_a_writer_kat_v1",
 		"surface\tsea=1/fresh_lip=2/wet_sand=1",
 		"strata\twritten=" .. written .. "/floor_clipped=" .. clipped ..
 			"/native_gravel=preserved",
 		"caves\tconnected=" .. #voxels .. "/closed=rejected/sky=rejected/" ..
-			"component=" .. proof[4]}, "\n") .. "\n"
+			"edge_pocket=rejected/" ..
+			"component=" .. proof[4],
+		"checker\texact=connected/unexpected=" .. extra_voxels ..
+			"/rejected=detected"}, "\n") .. "\n"
 end

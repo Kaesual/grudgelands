@@ -15,8 +15,8 @@ local cases = {
 	{id="deep_cross_border", x=-1691, y=-842, z=191},
 }
 -- Measured against the authored-writer-disabled native-v7 seed-0 baseline:
--- target -1834/19/-2867, 124 exact lumen voxels, 592 native component voxels
--- outside the lumen and 597 total component voxels.  Checking the whole lumen
+-- target -1834/19/-2867, 124 exact lumen voxels, 703 native component voxels
+-- outside the lumen and 706 total component voxels.  Checking the whole lumen
 -- makes a closed mouth or partial surface scar fail this engine fixture.
 local target_x, target_y, target_z = -1834, 19, -2867
 local steps, seen = cases[1].y + 1 - target_y, {}

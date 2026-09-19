@@ -6,6 +6,7 @@ grug_r8_map_a_engine_probe = {}
 
 local modpath = core.get_modpath(core.get_current_modname())
 local cases = dofile(modpath .. "/cases.lua")
+local volume = dofile(modpath .. "/volume.lua")()
 local engine_seed = core.get_mapgen_setting("seed")
 assert(cases.schema == "grug_r8_map_a_engine_cases_v2" and
 	cases.seed == engine_seed, "R8-MAP-A engine cases differ")
@@ -14,7 +15,7 @@ local baseline_mode = core.settings:get_bool(
 local baseline
 if not baseline_mode then
 	baseline = dofile(modpath .. "/baseline.lua")
-	assert(baseline.schema == "grug_r8_map_a_native_baseline_v1" and
+	assert(baseline.schema == "grug_r8_map_a_native_baseline_v2" and
 		baseline.seed == engine_seed and baseline.revision == cases.revision,
 		"R8-MAP-A native baseline differs")
 end
@@ -30,6 +31,10 @@ end
 
 local function key(x, y, z)
 	return x .. "/" .. y .. "/" .. z
+end
+
+local function current_node_name(x, y, z)
+	return core.get_node({x = x, y = y, z = z}).name
 end
 
 local function candidate_key(region, candidate)
@@ -161,12 +166,20 @@ end
 local function component_proof(candidate, target, lumen)
 	local owner_max_x, owner_max_y, owner_max_z = candidate.owner_min_x + 79,
 		candidate.owner_min_y + 79, candidate.owner_min_z + 79
-	local min_x = math.max(candidate.owner_min_x, target[1] - COMPONENT_RADIUS)
-	local max_x = math.min(owner_max_x, target[1] + COMPONENT_RADIUS)
-	local min_y = math.max(candidate.owner_min_y, target[2] - COMPONENT_RADIUS)
-	local max_y = math.min(owner_max_y, target[2] + COMPONENT_RADIUS)
-	local min_z = math.max(candidate.owner_min_z, target[3] - COMPONENT_RADIUS)
-	local max_z = math.min(owner_max_z, target[3] + COMPONENT_RADIUS)
+	if target[1] - COMPONENT_RADIUS < candidate.owner_min_x or
+			target[1] + COMPONENT_RADIUS > owner_max_x or
+			target[2] - COMPONENT_RADIUS < candidate.owner_min_y or
+			target[2] + COMPONENT_RADIUS > owner_max_y or
+			target[3] - COMPONENT_RADIUS < candidate.owner_min_z or
+			target[3] + COMPONENT_RADIUS > owner_max_z then
+		return false, 0, 0, false
+	end
+	local min_x, max_x = target[1] - COMPONENT_RADIUS,
+		target[1] + COMPONENT_RADIUS
+	local min_y, max_y = target[2] - COMPONENT_RADIUS,
+		target[2] + COMPONENT_RADIUS
+	local min_z, max_z = target[3] - COMPONENT_RADIUS,
+		target[3] + COMPONENT_RADIUS
 	local surface_cache = {}
 	local function baseline_surface(x, z)
 		local column_key = x .. "/" .. z
@@ -215,7 +228,7 @@ end
 
 local function baseline_plan(candidate)
 	if candidate.minimum_y < candidate.owner_min_y then
-		return {eligible = false, reason = "outside_owner"}
+		return {eligible = false, reason = "outside_owner"}, {}
 	end
 	local excluded = excluded_lookup(candidate)
 	local search_x = candidate.kind == "hillside" and candidate.mouth_x +
@@ -252,6 +265,7 @@ local function baseline_plan(candidate)
 		end
 	end
 	local valid_lumens, component_rejections, first_invalid = 0, 0, nil
+	local valid_targets, accepted = {}, nil
 	for target_index = 1, #targets do
 		local target = targets[target_index]
 		local voxels, lumen, invalid = lumen_for(candidate, target[1], target[2],
@@ -259,44 +273,34 @@ local function baseline_plan(candidate)
 		if invalid and not first_invalid then first_invalid = invalid end
 		if voxels then
 			valid_lumens = valid_lumens + 1
-			local connected, outside, component, sky =
-				component_proof(candidate, target, lumen)
-			if connected then
-				return {eligible = true, target = target, voxel_count = #voxels,
-					outside = outside, component = component, sky = sky}
+			valid_targets[#valid_targets + 1] = target
+			if not accepted then
+				local connected, outside, component, sky =
+					component_proof(candidate, target, lumen)
+				if connected then
+					accepted = {eligible = true, target = target, voxel_count = #voxels,
+						outside = outside, component = component, sky = sky}
+				else
+					component_rejections = component_rejections + 1
+				end
 			end
-			component_rejections = component_rejections + 1
 		end
 	end
+	if accepted then return accepted, valid_targets end
 	local air_targets = #targets
 	local reason = air_targets == 0 and "no_air_target" or
 		valid_lumens == 0 and "no_valid_lumen" or "component_rejected"
 	return {eligible = false, reason = reason, air_targets = air_targets,
 		valid_lumens = valid_lumens, component_rejections = component_rejections,
-		first_invalid = first_invalid}
-end
-
-local function carved_against_baseline(candidate, proof)
-	if not proof or not proof.eligible then return false, false, 0 end
-	local voxels = lumen_for(candidate, proof.target[1], proof.target[2],
-		proof.target[3], excluded_lookup(candidate))
-	if not voxels or #voxels ~= proof.voxel_count then return false, false, 0 end
-	local air = 0
-	for index = 1, #voxels do
-		local row = voxels[index]
-		if core.get_node({x = row[1], y = row[2], z = row[3]}).name ~= "air" then
-			return false, false, air
-		end
-		air = air + 1
-	end
-	return true, true, air
+		first_invalid = first_invalid}, valid_targets
 end
 
 local work, totals, results = {}, {}, {}
 for region_index = 1, #cases.regions do
 	local region = cases.regions[region_index]
 	totals[region.id] = {candidates = #region.candidates, carved = 0,
-		connected = 0, eligible = 0, reasons = {}}
+		connected = 0, eligible = 0, unexpected_carves = 0,
+		unexpected_voxels = 0, reasons = {}}
 	for candidate_index = 1, #region.candidates do
 		work[#work + 1] = {region = region, candidate = region.candidates[candidate_index]}
 	end
@@ -305,7 +309,7 @@ end
 local current = 0
 local function finish()
 	if baseline_mode then
-		local payload = {schema = "grug_r8_map_a_native_baseline_v1",
+		local payload = {schema = "grug_r8_map_a_native_baseline_v2",
 			revision = cases.revision, seed = engine_seed, results = results}
 		local path = core.get_worldpath() .. "/r8_map_a_baseline.lua"
 		assert(core.safe_file_write(path, core.serialize(payload)),
@@ -318,7 +322,7 @@ local function finish()
 		core.log("action", table.concat({"GRUG_R8_MAP_A",
 			baseline_mode and "baseline" or "after", cases.revision, engine_seed,
 			region.id, total.candidates, total.carved, total.connected,
-			total.eligible}, "\t"))
+			total.eligible, total.unexpected_carves, total.unexpected_voxels}, "\t"))
 		local reason_rows = {}
 		for reason, count in pairs(total.reasons) do
 			reason_rows[#reason_rows + 1] = reason .. "=" .. count
@@ -327,6 +331,13 @@ local function finish()
 		if #reason_rows > 0 then
 			core.log("action", "GRUG_R8_MAP_A_REASONS\t" .. region.id .. "\t" ..
 				table.concat(reason_rows, ","))
+		end
+	end
+	if not baseline_mode then
+		for region_index = 1, #cases.regions do
+			local total = totals[cases.regions[region_index].id]
+			assert(total.unexpected_carves == 0 and total.unexpected_voxels == 0,
+				"R8-MAP-A unexpected cave carve detected")
 		end
 	end
 	core.request_shutdown("R8-MAP-A cave measurement complete", false, 0.1)
@@ -356,7 +367,10 @@ local function next_candidate()
 		local row_key = candidate_key(item.region, candidate)
 		local total = totals[item.region.id]
 		if baseline_mode then
-			local proof = baseline_plan(candidate)
+			local proof, valid_targets = baseline_plan(candidate)
+			proof.valid_targets = valid_targets
+			proof.possible_voxels, proof.baseline_solids = volume.capture(candidate,
+				valid_targets, current_node_name)
 			results[row_key] = proof
 			if proof.eligible then total.eligible = total.eligible + 1 end
 			if not proof.eligible then
@@ -366,9 +380,12 @@ local function next_candidate()
 			local proof = baseline.results[row_key]
 			assert(proof, "R8-MAP-A candidate absent from baseline: " .. row_key)
 			if proof.eligible then total.eligible = total.eligible + 1 end
-			local carved, connected = carved_against_baseline(candidate, proof)
+			local carved, connected, unexpected, unexpected_voxels =
+				volume.inspect(candidate, proof, current_node_name)
 			if carved then total.carved = total.carved + 1 end
 			if connected then total.connected = total.connected + 1 end
+			if unexpected then total.unexpected_carves = total.unexpected_carves + 1 end
+			total.unexpected_voxels = total.unexpected_voxels + unexpected_voxels
 		end
 		core.after(0, next_candidate)
 	end)

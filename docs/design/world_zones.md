@@ -626,7 +626,10 @@ WP40 replaces it with the complete catalog and contracts below.
   component is flood-filled in a radius-12 box around the target. At least 24
   component voxels must lie outside the planned lumen and the component must
   reach that proof box's boundary; a closed or isolated pocket is therefore
-  invalid. The same bounded flood derives the native surface from immutable
+  invalid. The complete target ±12 box must lie inside the candidate's
+  unchanged owner input; a target too close to any owner boundary is rejected,
+  and a clipped owner edge never proves continuation. The same bounded flood
+  derives the native surface from immutable
   input CIDs and rejects the whole candidate if any component voxel reaches
   native surface air or sky. The lumen already intersects the accepted native
   component, and every carved voxel joins one occupancy transaction so a later
@@ -636,7 +639,10 @@ WP40 replaces it with the complete catalog and contracts below.
   The engine witness (2026-09-18) captures a separate authored-writer-disabled
   native-v7 comparison world. Its checker reconstructs the exact owner-local
   lumen from revision-bound candidate and exclusion bytes, then applies this
-  same component, continuation and sky proof before inspecting the carved world.
+  same complete-box component, continuation and sky proof before inspecting the
+  carved world. It compares the unchanged and authored worlds across every
+  candidate's full possible lumen volume and rejects any carved voxel outside
+  the one independently accepted lumen.
 - **Fresh-world surface and vegetation refinement (2026-09-13):** logical
   biome ownership stays unchanged. Dry surfaces combine coherent 32-node and
   8-node material fields at weights 3:1; filler depth varies from 1–4 nodes

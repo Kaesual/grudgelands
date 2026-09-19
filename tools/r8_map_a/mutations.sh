@@ -7,13 +7,16 @@ trap 'rm -rf -- "$tmp"' EXIT
 
 reset_tree() {
 	rm -rf -- "$tmp/tree"
-	mkdir -p "$tmp/tree/mods/MAPGEN/grug_mapgen/wp40" "$tmp/tree/tools/r8_map_a"
+	mkdir -p "$tmp/tree/mods/MAPGEN/grug_mapgen/wp40" \
+		"$tmp/tree/tools/r8_map_a/engine_probe"
 	cp "$repo/mods/MAPGEN/grug_mapgen/wp40/height.lua" \
 		"$repo/mods/MAPGEN/grug_mapgen/wp40/r6_content.lua" \
 		"$repo/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua" \
 		"$tmp/tree/mods/MAPGEN/grug_mapgen/wp40/"
 	cp "$repo/tools/r8_map_a/writer_kat.lua" \
 		"$repo/tools/r8_map_a/mutation_probe.lua" "$tmp/tree/tools/r8_map_a/"
+	cp "$repo/tools/r8_map_a/engine_probe/volume.lua" \
+		"$tmp/tree/tools/r8_map_a/engine_probe/"
 }
 
 expect_rejected() {
@@ -48,6 +51,16 @@ sed -i -e 's/if continues and not touches_sky and/if not touches_sky and/' \
 	-e 's/outside_count >= R8_CAVE_COMPONENT_MINIMUM/outside_count >= 1/' \
 	"$tmp/tree/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua"
 expect_rejected cave_connection
+
+reset_tree
+sed -i 's/return complete/return true/' \
+	"$tmp/tree/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua"
+expect_rejected proof_box_edge
+
+reset_tree
+sed -i 's/unexpected_voxels = unexpected_voxels + 1/unexpected_voxels = unexpected_voxels + 0/' \
+	"$tmp/tree/tools/r8_map_a/engine_probe/volume.lua"
+expect_rejected checker_unexpected
 
 reset_tree
 sed -i 's/return {bed, "default:sand",/return {bed, bed,/' \

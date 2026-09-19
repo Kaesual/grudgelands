@@ -139,9 +139,22 @@ local function settlement_factory()
 		return math.floor((numerator * 2 + denominator) / (denominator * 2))
 	end
 
+	local function r8_cave_proof_box_inside(min_x, min_y, min_z,
+			max_x, max_y, max_z, target_x, target_y, target_z)
+		local complete = target_x - R8_CAVE_COMPONENT_RADIUS >= min_x and
+			target_x + R8_CAVE_COMPONENT_RADIUS <= max_x and
+			target_y - R8_CAVE_COMPONENT_RADIUS >= min_y and
+			target_y + R8_CAVE_COMPONENT_RADIUS <= max_y and
+			target_z - R8_CAVE_COMPONENT_RADIUS >= min_z and
+			target_z + R8_CAVE_COMPONENT_RADIUS <= max_z
+		return complete
+	end
+
 	-- Reconstruct one complete lumen from immutable native input.  Acceptance
 	-- requires at least 24 native-air voxels outside that lumen in the target's
-	-- bounded radius-12 component.  The same flood scans the baseline surface
+	-- complete radius-12 component.  Targets whose complete proof box is not in
+	-- the immutable owner input are rejected instead of treating an owner edge as
+	-- evidence of continuation.  The same flood scans the baseline surface
 	-- derived from immutable CIDs and rejects any component voxel above it, so a
 	-- terrain opening or sky bridge can never authorize a carve.
 	local function r8_plan_cave(context, cave)
@@ -277,13 +290,15 @@ local function settlement_factory()
 				end
 			end
 
-			if valid then
-				local proof_min_x = math.max(min_x, target_x - R8_CAVE_COMPONENT_RADIUS)
-				local proof_max_x = math.min(max_x, target_x + R8_CAVE_COMPONENT_RADIUS)
-				local proof_min_y = math.max(min_y, target_y - R8_CAVE_COMPONENT_RADIUS)
-				local proof_max_y = math.min(max_y, target_y + R8_CAVE_COMPONENT_RADIUS)
-				local proof_min_z = math.max(min_z, target_z - R8_CAVE_COMPONENT_RADIUS)
-				local proof_max_z = math.min(max_z, target_z + R8_CAVE_COMPONENT_RADIUS)
+			local proof_box_inside = r8_cave_proof_box_inside(min_x, min_y, min_z,
+				max_x, max_y, max_z, target_x, target_y, target_z)
+			if valid and proof_box_inside then
+				local proof_min_x = target_x - R8_CAVE_COMPONENT_RADIUS
+				local proof_max_x = target_x + R8_CAVE_COMPONENT_RADIUS
+				local proof_min_y = target_y - R8_CAVE_COMPONENT_RADIUS
+				local proof_max_y = target_y + R8_CAVE_COMPONENT_RADIUS
+				local proof_min_z = target_z - R8_CAVE_COMPONENT_RADIUS
+				local proof_max_z = target_z + R8_CAVE_COMPONENT_RADIUS
 				local surface_cache = {}
 				local function native_surface_at(x, z)
 					local key = coordinate_key(x, z)
@@ -3369,6 +3384,7 @@ local function settlement_factory()
 		new_capture = function(dependencies) return new(dependencies, nil, true, nil) end,
 		r8_strata_new = new_r8_strata, r8_apply_strata = r8_apply_strata,
 		r8_plan_cave = r8_plan_cave,
+		r8_cave_proof_box_inside = r8_cave_proof_box_inside,
 		r8_cave_component_radius = R8_CAVE_COMPONENT_RADIUS,
 		r8_cave_component_minimum = R8_CAVE_COMPONENT_MINIMUM}
 end
