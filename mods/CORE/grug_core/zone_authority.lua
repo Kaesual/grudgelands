@@ -19,7 +19,6 @@ local PUBLIC_METHODS = {
 	"guard_level_at",
 	"terrain_height_at",
 	"water_class_at",
-	"flight_boundary_distance",
 	"nearest_route_at",
 	"nearest_hydrology_at",
 	"housing_eligible_at",

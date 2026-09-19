@@ -1,5 +1,13 @@
 local ENTITY_NAME = "grug_mounts:mount"
-local WARNING_INTERVAL = 0.25
+local WARNING_INTERVAL = 1
+local WARNING_DISTANCES = {1, 2, 4, 8, 16, 32, 48}
+local WARNING_DIRECTIONS = {}
+for index = 0, 15 do
+	local angle = index * math.pi / 8
+	WARNING_DIRECTIONS[#WARNING_DIRECTIONS + 1] = {
+		x = math.cos(angle), z = math.sin(angle),
+	}
+end
 local active = {}
 local activating_players = {}
 
@@ -144,11 +152,15 @@ function grug_mounts.flight_state(player, pos)
 end
 
 function grug_mounts.warning_state(player, pos)
-	local legal = grug_mounts.flight_state(player, pos)
-	if not legal then return nil end
-	local faction = grug_factions.get_faction(player)
-	local distance, kind = grug_zones.flight_boundary_distance(pos, faction)
-	if distance and distance <= grug_mounts.WARNING_WIDTH then return kind end
+	local sample = {x = pos.x, y = pos.y, z = pos.z}
+	for _, distance in ipairs(WARNING_DISTANCES) do
+		for _, direction in ipairs(WARNING_DIRECTIONS) do
+			sample.x = pos.x + direction.x * distance
+			sample.z = pos.z + direction.z * distance
+			local legal, kind = grug_mounts.flight_state(player, sample)
+			if not legal then return kind end
+		end
+	end
 	return nil
 end
 

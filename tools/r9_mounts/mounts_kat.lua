@@ -282,8 +282,12 @@ return function(root)
 	}
 	grug_jobs = {register_trainer_hook = function(func) callbacks.trainer = func end}
 	grug_zones = {
-		water_class_at = function(x)
+		water_class_at = function(x, z)
 			if zone_mode == "ocean" and x >= 0 then return "deep_ocean" end
+			if zone_mode == "review_bay" and x <= 615 and
+					math.abs(z + 2200) < 0.01 then
+				return "deep_ocean"
+			end
 			return "land"
 		end,
 		territory_rule_at = function(pos)
@@ -309,14 +313,10 @@ return function(root)
 				return {territory_rule = "throng_home"}
 			elseif zone_mode == "protected_contested" then
 				return {territory_rule = "contested_land"}
+			elseif zone_mode == "oblique" and pos.x + pos.z >= 0 then
+				return {territory_rule = "throng_home"}
 			end
 			return {territory_rule = "accord_home"}
-		end,
-		flight_boundary_distance = function(pos)
-			if zone_mode == "oblique" then
-				return math.abs(pos.x + pos.z) / math.sqrt(2), "enemy"
-			end
-			return math.abs(pos.x), "ocean"
 		end,
 		terrain_height_at = function() return surface_height end,
 	}
@@ -451,6 +451,46 @@ return function(root)
 		{x = -47.9 * math.sqrt(2), y = 30, z = 0}) == "enemy")
 	assert(grug_mounts.warning_state(rider,
 		{x = -48.1 * math.sqrt(2), y = 30, z = 0}) == nil)
+	zone_mode = "open"
+	local flight_state = grug_mounts.flight_state
+	local probe_count = 0
+	grug_mounts.flight_state = function(...)
+		probe_count = probe_count + 1
+		return flight_state(...)
+	end
+	assert(grug_mounts.warning_state(rider, {x = -100, y = 30, z = -100}) == nil)
+	assert(probe_count == 112, "warning probe budget differs: " .. probe_count)
+	grug_mounts.flight_state = flight_state
+	zone_mode = "review_bay"
+	assert(grug_mounts.flight_state(rider, {x = 616, y = 100, z = -2200}))
+	assert(not grug_mounts.flight_state(rider, {x = 615, y = 100, z = -2200}))
+	assert(grug_mounts.warning_state(rider,
+		{x = 616, y = 100, z = -2200}) == "ocean",
+		"reviewer bay-edge witness did not warn")
+	local wp40 = root .. "/mods/MAPGEN/grug_mapgen/wp40"
+	local common = dofile(root .. "/tools/wp40/r6/common.lua")
+	local production_source = dofile(wp40 .. "/source/simple_map.lua")
+	local production_module = dofile(wp40 .. "/zones.lua")({
+		source = production_source,
+		schemas = dofile(wp40 .. "/schemas.lua"),
+		canonical = dofile(wp40 .. "/canonical.lua"),
+		deterministic = dofile(wp40 .. "/deterministic.lua"),
+		index128 = dofile(wp40 .. "/index128.lua"),
+		horizontal_factory = dofile(wp40 .. "/simple_map.lua"),
+		coupled_grade = dofile(wp40 .. "/coupled_grade.lua")(),
+		height_factory = dofile(wp40 .. "/height.lua"),
+		raw_sha256 = common.new_sha256(),
+	})
+	local fixture_zones = grug_zones
+	grug_zones = production_module.new_with_planner_source_runtime("0", 1)
+	assert(grug_zones.flight_boundary_distance == nil,
+		"retired flight-boundary API remains public")
+	assert(grug_mounts.flight_state(rider, {x = 616, y = 100, z = -2200}))
+	assert(not grug_mounts.flight_state(rider, {x = 615, y = 100, z = -2200}))
+	assert(grug_mounts.warning_state(rider,
+		{x = 616, y = 100, z = -2200}) ~= nil,
+		"production reviewer bay-edge witness did not warn")
+	grug_zones = fixture_zones
 
 	surface_height = 20
 	rider.pos = {x = -100, y = 19, z = -100}
@@ -460,6 +500,23 @@ return function(root)
 	rider.pos = {x = -100, y = 30, z = -100}
 	assert(grug_mounts.mount(rider, 3))
 	local record = grug_mounts.active[rider.name]
+	zone_mode = "open"
+	rider.control = {}
+	local warning_state = grug_mounts.warning_state
+	local warning_calls = 0
+	grug_mounts.warning_state = function(...)
+		warning_calls = warning_calls + 1
+		return warning_state(...)
+	end
+	for _ = 1, 3 do record.object.entity:on_step(0.25) end
+	assert(warning_calls == 0, "warning scan ran before one second")
+	record.object.entity:on_step(0.25)
+	assert(warning_calls == 1, "warning scan did not run at one second")
+	record.object.entity:on_step(0.5)
+	assert(warning_calls == 1, "warning scan ran twice within one second")
+	record.object.entity:on_step(0.5)
+	assert(warning_calls == 2, "warning scan cadence differs")
+	grug_mounts.warning_state = warning_state
 	record.object.pos = {x = -100, y = 601, z = -100}
 	rider.control = {jump = true}
 	record.object.entity:on_step(0.1)
@@ -666,6 +723,7 @@ return function(root)
 			model.id .. " animation exceeds its mesh")
 	end
 
-	return "r9_mounts_v2|tiers=4|models=12|warning=48|ceiling=600|assets=" ..
+	return "r9_mounts_v3|tiers=4|models=12|warning=48|warning_probes=112|" ..
+		"warning_interval=1|ceiling=600|assets=" ..
 		tostring((function() local count = 0 for _ in pairs(seen) do count = count + 1 end return count end)()) .. "\n"
 end

@@ -270,7 +270,8 @@ Mount legality is derived from the authored territory and ocean-column lookup,
 never from literal coordinates. Horizontal classification applies at every y:
 climbing above a boundary never changes its rule. Land riding, flight, ocean
 warning and forced dismount are separate consumer states derived from
-`grug_zones.water_class_at` and `territory_rule_at`.
+`grug_zones.water_class_at(x,z)` and the horizontal
+`grug_zones.at(pos).territory_rule` record.
 
 ### 4.1 Ocean: warned edge, then forced flight dismount
 
@@ -282,10 +283,13 @@ warning and forced dismount are separate consumer states derived from
   because they contain water nodes or connect to the outer sea. The four
   declared outer bay-mouth caps are deep ocean and use this section's warning
   and forced-dismount rule.
-- A flying mount cannot be summoned in an ocean column. The visible warning
-  band lies entirely on the **legal side** and is exactly **48 horizontal
-  nodes** wide. HUD text and one chat notice warn that crossing will force a
-  dismount; returning beyond the legal-side band clears the warning.
+- A flying mount cannot be summoned in an ocean column. Once per second, the
+  visible warning probes the same flight-legality rule as the hard dismount in
+  16 horizontal directions at 1, 2, 4, 8, 16, 32 and 48 nodes. This samples at
+  most 112 columns per rider per second, detects adjacent illegality exactly
+  and resolves the 48-node warning reach to within plus or minus 4 nodes at
+  range. HUD text and one chat notice warn that crossing will force a dismount;
+  moving clear of every sampled illegal column removes the warning.
 - Width is spatial, not a timer, so the +75% and +150% flyers receive the same
   boundary. The **first ocean node** is already illegal and dismounts
   immediately at every y, with no grace, slow descent or maximum-trip rule.
@@ -343,12 +347,11 @@ waypoints closes the same bypass for teleportation.
 
 **The mechanism is the central territory/zone lookup, never a hand-picked
 coordinate.** `grug_zones.water_class_at(x,z)` separates authored ocean from
-land and planned inland water; `territory_rule_at(pos)` allows only the rider's
-own `accord_home`/`throng_home` rule and `holy_grounds`. Every other territory
-is flight-restricted. A `hard_protected` capital node inherits its horizontal
-zone's `faction_at` result for this flight decision, so civic protection inside
-the rider's own home does not become a no-flight hole. The rider's identity
-comes from
+land and planned inland water; the horizontal
+`grug_zones.at(pos).territory_rule` record allows only the rider's own
+`accord_home`/`throng_home` rule and `holy_grounds`. Every other territory is
+flight-restricted. Depth-sensitive civic protection does not alter this
+horizontal flight decision. The rider's identity comes from
 `grug_factions.get_faction(player)`. Literal coordinates are invalid once the
 authored zone graph replaces WP18. A character without a faction cannot have
 bought a mount, so the nil case needs no rule of its own.

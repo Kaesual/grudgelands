@@ -221,9 +221,6 @@ function session.water_class_at(x, z)
 	elseif x == 102 then return "coastal_shelf" end
 	return "land"
 end
-function session.flight_boundary_distance(pos, faction_id)
-	return pos.x + pos.z, faction_id == "accord" and "enemy" or "ocean"
-end
 function session.nearest_route_at(x, z) return nil end
 function session.nearest_hydrology_at(x, z) return nil end
 function session.housing_eligible_at(x, z) return false end
@@ -257,7 +254,7 @@ local public_methods = {"get", "at", "neighbors", "travel_links", "anchor",
 	"id_at", "biome_at", "race_region_at", "faction_at",
 	"territory_rule_at", "pvp_rule_at", "surface_mob_level_at",
 	"mob_level_at", "guard_level_at", "terrain_height_at", "water_class_at",
-	"flight_boundary_distance", "nearest_route_at", "nearest_hydrology_at",
+	"nearest_route_at", "nearest_hydrology_at",
 	"housing_eligible_at"}
 for i = 1, #public_methods do
 	check(type(grug_zones[public_methods[i]]) == "function",
@@ -269,10 +266,6 @@ check(not pcall(function() grug_zones.get = false end),
 check(grug_zones.get("zone") == "get:zone", "public get delegation differs")
 check(grug_zones.at({x = 7, y = 0, z = 0}) == "at:7",
 	"public at delegation differs")
-local boundary_distance, boundary_kind = grug_zones.flight_boundary_distance(
-	{x = 7, y = 0, z = 5}, "accord")
-check(boundary_distance == 12 and boundary_kind == "enemy",
-	"public flight-boundary delegation differs")
 
 local dwarf_start = grug_core.start_position("accord", "dwarf")
 check(dwarf_start and dwarf_start.y == 21, "stable start position differs")
@@ -585,47 +578,6 @@ check(read_file("mods/ENTITIES/grug_mobs/kraken.lua"):find(
 check(read_file("mods/ENTITIES/grug_mobs/bandit.lua"):find(
 	"grug_zones.surface_mob_level_at", 1, true) ~= nil,
 	"direct surface-level authority is absent")
-
--- The warning margin reads the same bounded seed-0 R7 zone session that the
--- live mapgen publishes. Additive primitive seams are not coastlines: this
--- witness is more than 250 legal columns from any legal-to-illegal boundary,
--- although its closest individual primitive edge is only 23 nodes away.
-local wp40 = root .. "/mods/MAPGEN/grug_mapgen/wp40"
-local production_source = dofile(wp40 .. "/source/simple_map.lua")
-local production_module = dofile(wp40 .. "/zones.lua")({
-	source = production_source,
-	schemas = dofile(wp40 .. "/schemas.lua"),
-	canonical = dofile(wp40 .. "/canonical.lua"),
-	deterministic = dofile(wp40 .. "/deterministic.lua"),
-	index128 = dofile(wp40 .. "/index128.lua"),
-	horizontal_factory = dofile(wp40 .. "/simple_map.lua"),
-	coupled_grade = dofile(wp40 .. "/coupled_grade.lua")(),
-	height_factory = dofile(wp40 .. "/height.lua"),
-	raw_sha256 = raw_sha256,
-})
-local production_zones = production_module.new_with_planner_source_runtime("0", 1)
-local interior_distance = production_zones.flight_boundary_distance(
-	{x = 650, y = 100, z = -1720}, "accord")
-check(interior_distance == nil or interior_distance > 250,
-	"additive land-union seam became a false flight boundary")
-
--- This hostile political boundary is oblique (both normal components are
--- non-zero). The production query resolves the two sides of the 48-node
--- warning threshold without a directional ray approximation.
-local inside_distance, inside_kind = production_zones.flight_boundary_distance(
-	{x = 1619.996256, y = 100, z = -1149.988194}, "accord")
-local outside_distance, outside_kind = production_zones.flight_boundary_distance(
-	{x = 1620.056704, y = 100, z = -1150.178860}, "accord")
-check(math.abs(inside_distance - 47.9) < 0.001 and inside_kind == "enemy",
-	"production oblique 47.9-node witness differs")
-check(math.abs(outside_distance - 48.1) < 0.001 and outside_kind == "enemy",
-	"production oblique 48.1-node witness differs")
-local bay_distance, bay_kind = production_zones.flight_boundary_distance(
-	{x = -820, y = 100, z = -3040}, "accord")
-check(production_zones.water_class_at(-820, -3040) == "planned_water" and
-	production_zones.water_class_at(-820, -3041) == "deep_ocean" and
-	bay_distance <= 48 and bay_kind == "ocean",
-	"production subtractive bay-mouth flight boundary differs")
 
 rawset(_G, "core", saved_core)
 rawset(_G, "grug_core", saved_grug_core)

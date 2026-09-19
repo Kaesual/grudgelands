@@ -1780,7 +1780,6 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	function session.guard_level_at() return 10 end
 	function session.terrain_height_at() return 20 end
 	function session.water_class_at() return "land" end
-	function session.flight_boundary_distance() return 80, "enemy" end
 	function session.nearest_route_at() return nil end
 	function session.nearest_hydrology_at() return nil end
 	function session.housing_eligible_at() return false end
@@ -1801,8 +1800,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	local start = grug_core.start_position("accord", "human")
 	local rare = grug_core.rare_route("grimtusk")
 	check(start and start.y == 21 and rare and #rare == 3 and
-		grug_zones.biome_at(start.x, start.z) == "grug_meadows" and
-		grug_zones.flight_boundary_distance(start, "accord") == 80,
+		grug_zones.biome_at(start.x, start.z) == "grug_meadows",
 		"representative stable query/anchor differs")
 	check(protection_core.is_protected({hard = false}, "alice") == false and
 		protection_core.is_protected({hard = true}, "alice") == true and
