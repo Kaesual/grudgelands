@@ -1,5 +1,14 @@
 local FORMNAME = "grug_jobs:trainer"
 local sessions = {}
+local trainer_hook
+
+-- One extension seam for universal services taught by every job trainer.
+-- The mount module owns the only current registration.
+function grug_jobs.register_trainer_hook(callback)
+	assert(type(callback) == "function" and trainer_hook == nil,
+		"job trainer hook may be registered exactly once")
+	trainer_hook = callback
+end
 
 local function esc(value)
 	return core.formspec_escape(tostring(value or ""))
@@ -7,6 +16,9 @@ end
 
 local function trainer_formspec(player, profession, confirming)
 	local definition = grug_jobs.PROFESSIONS[profession]
+	local extension = trainer_hook and trainer_hook({
+		action = "formspec", player = player, profession = profession,
+	}) or nil
 	local known = grug_jobs.has(player, profession)
 	local status
 	if known then
@@ -18,7 +30,7 @@ local function trainer_formspec(player, profession, confirming)
 		status = "Learn " .. definition.name .. "?"
 	end
 	local fs = {
-		"size[5.5,3.2]",
+		extension and extension.size or "size[5.5,3.2]",
 		("label[0.35,0.35;%s Trainer]"):format(esc(definition.name)),
 		("label[0.35,0.95;%s]"):format(esc(status)),
 	}
@@ -33,6 +45,9 @@ local function trainer_formspec(player, profession, confirming)
 			:format(esc(definition.name))
 	end
 	fs[#fs + 1] = "button_exit[4.0,2.35;1.1,0.55;grug_jobs_close;Close]"
+	if extension and extension.fragments then
+		for _, fragment in ipairs(extension.fragments) do fs[#fs + 1] = fragment end
+	end
 	return table.concat(fs)
 end
 
@@ -61,7 +76,14 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	local name = player:get_player_name()
 	local session = sessions[name]
 	if not valid_session(player, session) then sessions[name] = nil return true end
-	if fields.grug_jobs_learn then
+	local extension_handled = trainer_hook and trainer_hook({
+		action = "fields", player = player, profession = session.profession,
+		fields = fields,
+	})
+	if extension_handled then
+		core.show_formspec(name, FORMNAME,
+			trainer_formspec(player, session.profession, false))
+	elseif fields.grug_jobs_learn then
 		grug_jobs.learn(player, session.profession)
 		core.show_formspec(name, FORMNAME,
 			trainer_formspec(player, session.profession, false))

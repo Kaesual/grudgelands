@@ -1,0 +1,23 @@
+R9-MOUNTS engine probe evidence
+Date: 2026-09-19
+
+Command:
+PORT=32206 PROBE=tools/r9_mounts/probe KEEP=1 nice -n 19 bash tools/luanti_headless.sh 240
+
+Result: exit 0; headless boot PASS; zero ERROR/ModError lines.
+Post-run `pgrep -f '^luanti.bin'`: no output.
+
+Relevant server.log lines:
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:32206.
+ACTION[Emerge-0]: R9_MOUNTS_PROBE PASS entity=grug_mounts:mount rider=fake attached=true static_save=false armor=immortal cleanup=true
+ACTION[Main]: Server: Shutting down
+
+The following start-preload cancellation warnings are expected because the
+successful disposable probe requests immediate shutdown instead of waiting for
+the six unrelated player-start emerges.
+
+Evidence hashes:
+e1ffa076be92892a32c0f83951570327ee26969fea392c5274e3e6243a5c3331  server.log
+8cefcddc9808e7c25091584780282141ef58449daf855a86efe83582f4733099  mods/PLAYER/grug_mounts/entity.lua
+fdba07f2497a4db59b1fbc1542c29fcca34206f79cb8cefac48992f5c02a4be6  mods/PLAYER/grug_mounts/catalog.lua
+b687302c2ded08da6e994916b9b652f0d8d2536dc99faf6e84a642f520e86487  tools/r9_mounts/probe/init.lua
