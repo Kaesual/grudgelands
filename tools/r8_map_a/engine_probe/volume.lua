@@ -92,7 +92,7 @@ return function()
 		return count, solids
 	end
 
-	function module.inspect(candidate, proof, node_name)
+	function module.inspect(candidate, proof, node_name, globally_expected)
 		local positions, count = possible(candidate, proof.valid_targets or {})
 		assert(count == proof.possible_voxels,
 			"R8-MAP-A possible writer volume differs")
@@ -115,6 +115,9 @@ return function()
 			if node_name(x, y, z) == "air" then
 				if expected[position_key] then
 					expected_changes = expected_changes + 1
+				elseif globally_expected and globally_expected[position_key] then
+					-- Candidate volumes may overlap.  A voxel independently
+					-- authorized by another baseline proof is not an extra carve.
 				else
 					unexpected_voxels = unexpected_voxels + 1
 				end

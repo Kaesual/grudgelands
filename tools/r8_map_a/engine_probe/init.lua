@@ -295,6 +295,23 @@ local function baseline_plan(candidate)
 		first_invalid = first_invalid}, valid_targets
 end
 
+local globally_expected = {}
+if not baseline_mode then
+	for region_index = 1, #cases.regions do
+		local region = cases.regions[region_index]
+		for candidate_index = 1, #region.candidates do
+			local candidate = region.candidates[candidate_index]
+			local proof = baseline.results[candidate_key(region, candidate)]
+			assert(proof, "R8-MAP-A candidate absent while building carve allowlist")
+			if proof.eligible then
+				for position_key in pairs(volume.lumen(candidate, proof.target)) do
+					globally_expected[position_key] = true
+				end
+			end
+		end
+	end
+end
+
 local work, totals, results = {}, {}, {}
 for region_index = 1, #cases.regions do
 	local region = cases.regions[region_index]
@@ -381,7 +398,7 @@ local function next_candidate()
 			assert(proof, "R8-MAP-A candidate absent from baseline: " .. row_key)
 			if proof.eligible then total.eligible = total.eligible + 1 end
 			local carved, connected, unexpected, unexpected_voxels =
-				volume.inspect(candidate, proof, current_node_name)
+				volume.inspect(candidate, proof, current_node_name, globally_expected)
 			if carved then total.carved = total.carved + 1 end
 			if connected then total.connected = total.connected + 1 end
 			if unexpected then total.unexpected_carves = total.unexpected_carves + 1 end
