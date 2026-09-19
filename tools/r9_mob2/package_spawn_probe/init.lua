@@ -144,6 +144,20 @@ local function high_beach()
 	error("no level 45-60 beach coordinate")
 end
 
+local function speargrass_point()
+	for z = 1100, 1900, 8 do
+		for x = -1300, -500, 8 do
+			local pos = {x = x, y = 2, z = z}
+			local level = grug_zones.mob_level_at(pos)
+			if grug_zones.id_at(x, z) == "kragmar_speargrass_reach" and
+					level and level >= 21 and level <= 30 then
+				return x, z
+			end
+		end
+	end
+	error("no level 21-30 Speargrass Reach coordinate")
+end
+
 local cells
 if package == 6 then
 	cells = {
@@ -165,12 +179,13 @@ elseif package == 7 then
 else
 	local low_x, low_z = low_beach()
 	local high_x, high_z = high_beach()
+	local tiger_x, tiger_z = speargrass_point()
 	cells = {
 		{name = "grug_mobs:war_construct", x = -750,
 			y = grug_zones.terrain_height_at(-750, 0), z = 0,
 			node = "grug_nodes:mud"},
-		{name = "grug_mobs:speargrass_tiger", x = -900,
-			y = grug_zones.terrain_height_at(-900, 1500), z = 1500,
+		{name = "grug_mobs:speargrass_tiger", x = tiger_x,
+			y = grug_zones.terrain_height_at(tiger_x, tiger_z), z = tiger_z,
 			node = "default:dry_dirt_with_dry_grass"},
 		{name = "grug_mobs:shore_crab", x = low_x, y = 1, z = low_z,
 			node = "default:sand"},

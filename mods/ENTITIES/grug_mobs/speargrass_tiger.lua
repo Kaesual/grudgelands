@@ -1,8 +1,14 @@
 -- Speargrass Tiger: daytime savanna stalker.
 
+local function speargrass_band(pos)
+	local level = grug_zones.mob_level_at(pos)
+	return level and level >= 21 and level <= 50
+end
+
 local tiger = {
 	description = "Speargrass Tiger", clock = "day", type = "monster",
 	_grug_tier = "normal", attack_type = "dogfight", attack_players = true,
+	_grug_spawn_check = speargrass_band,
 	group_attack = false, reach = 3, pathfinding = 1,
 	walk_velocity = 2, run_velocity = 4.6, jump = true, jump_height = 6,
 	stepheight = 2, fear_height = 6, view_range = 14,

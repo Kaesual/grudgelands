@@ -2,9 +2,9 @@
 -- fly_in keeps the surface-only near-ground bias out of underground flight.
 
 grug_mobs.register_simple_arrow("grug_mobs:ember_entity", {
-	texture = "fire_basic_flame.png", velocity = 10,
+	texture = "mobs_tnt_smoke.png^[colorize:#ff5a1e:170", velocity = 10,
 	size = {x = 0.6, y = 0.6}, glow = 10, tail = true,
-	tail_texture = "fire_basic_flame.png", lifetime = 5,
+	tail_texture = "mobs_tnt_smoke.png^[colorize:#ff5a1e:170", lifetime = 5,
 })
 
 local wisp = {

@@ -117,36 +117,115 @@ return function(root)
 		type(rift.do_custom) == "function" and rift.sounds and
 		rift.sounds.fuse == "default_cool_lava",
 		"Rift Spawn is not a terrain-safe two-second explode mob")
-	local burst_hits, burst_particles = 0, 0
-	local rift_object = {
-		get_pos = function() return {x = 0, y = 0, z = 0} end,
-		get_luaentity = function() return nil end,
-	}
-	local victim = {
-		get_luaentity = function() return nil end,
-		punch = function(_, source, _, toolcaps)
-			assert(source == rift_object and toolcaps.damage_groups.fleshy == 17)
-			burst_hits = burst_hits + 1
-		end,
-	}
-	core.is_player = function(object) return object == victim end
-	core.get_objects_inside_radius = function(_, radius)
-		assert(radius == 3.5)
-		return {rift_object, victim}
+	local function copy(value)
+		if type(value) ~= "table" then return value end
+		local result = {}
+		for key, child in pairs(value) do result[key] = copy(child) end
+		return result
 	end
-	core.add_particlespawner = function(def)
-		assert(def.amount == 32 and def.time == 0.25)
-		burst_particles = burst_particles + 1
+	local function real_mobs_step(def, fields, dtime, hazard)
+		local env = setmetatable({}, {__index = _G})
+		env._G = env
+		env.table = copy(table)
+		env.table.copy = copy
+		local registered_entities = {}
+		local api_core = {
+			LIGHT_MAX = 14, registered_aliases = {}, registered_items = {},
+			registered_tools = {}, registered_craftitems = {},
+			registered_nodes = {air = {walkable = false, groups = {}},
+				ignore = {walkable = false, groups = {}}},
+			settings = {
+				get = function(_, name)
+					if name == "mob_active_limit" then return "600" end
+					return nil
+				end,
+				get_bool = function(_, name) return name == "enable_damage" end,
+			},
+		}
+		env.core, env.minetest = api_core, api_core
+		api_core.get_translator = function() return function(text) return text end end
+		api_core.global_exists = function(name) return rawget(env, name) ~= nil end
+		api_core.get_modpath = function(name)
+			if name == "mobs" then return root .. "/mods/ENTITIES/mobs" end
+		end
+		api_core.check_player_privs = function() return false end
+		api_core.formspec_escape = function(text) return text end
+		api_core.get_connected_players = function() return {} end
+		api_core.get_objects_inside_radius = function()
+			return hazard.fallback_objects
+		end
+		api_core.find_node_near = function() return hazard.water and {} or nil end
+		api_core.is_protected = function() return hazard.protected end
+		api_core.register_entity = function(name, entity_def)
+			registered_entities[name:gsub("^:", "")] = entity_def
+		end
+		setmetatable(api_core, {__index = function(_, name)
+			if name:match("^register_") then return function() end end
+			return function() end
+		end})
+		env.vector = {
+			direction = function() end, multiply = function() end,
+			subtract = function() end, add = function() end,
+		}
+		env.ItemStack = function()
+			return {get_name = function() return "" end,
+				get_definition = function() return {} end}
+		end
+		setfenv(assert(loadfile(root .. "/mods/ENTITIES/mobs/api.lua")), env)()
+		env.mobs:register_mob("grug_mobs:rift_step_kat", def)
+		local prototype = assert(registered_entities["grug_mobs:rift_step_kat"])
+		local entity = setmetatable(fields, {__index = prototype})
+		entity:on_step(dtime, {})
+		return entity
 	end
 	vector = {offset = function(pos, x, y, z)
 		return {x = pos.x + x, y = pos.y + y, z = pos.z + z}
 	end}
-	local rift_instance = {v_start = true, timer = 1.9, explosion_timer = 2,
-		damage = 17, object = rift_object}
-	rift.do_custom(rift_instance, 0.1)
-	rift.do_custom(rift_instance, 0.1)
-	assert(burst_hits == 1 and burst_particles == 1,
-		"Rift Spawn entity burst is not exact-once")
+	for _, hazard in ipairs({
+		{name = "ordinary"}, {name = "water-adjacent", water = true},
+		{name = "protected", protected = true},
+	}) do
+		local burst_hits, burst_particles, burst_sounds, removals = 0, 0, 0, 0
+		local rift_object = {
+			get_pos = function() return {x = 0, y = 0, z = 0} end,
+			get_luaentity = function() return nil end,
+			get_yaw = function() return 0 end,
+			remove = function() removals = removals + 1 end,
+		}
+		local victim = {
+			get_pos = function() return {x = 1, y = 0, z = 0} end,
+			get_luaentity = function() return nil end,
+			punch = function(_, source, _, toolcaps)
+				assert(source == rift_object and toolcaps.damage_groups.fleshy == 17,
+					"Rift Spawn used a second or unscaled damage path")
+				burst_hits = burst_hits + 1
+			end,
+		}
+		hazard.fallback_objects = {victim}
+		core.is_player = function(object) return object == victim end
+		core.get_objects_inside_radius = function(_, radius)
+			assert(radius == 3.5)
+			return {rift_object, victim}
+		end
+		core.add_particlespawner = function(def)
+			assert(def.amount == 32 and def.time == 0.25)
+			burst_particles = burst_particles + 1
+		end
+		core.sound_play = function(name, spec)
+			assert(name == "default_item_smoke" and spec.max_hear_distance == 32)
+			burst_sounds = burst_sounds + 1
+		end
+		local rift_instance = {
+			v_start = true, timer = 1.9, timer1 = 0, explosion_timer = 2,
+			damage = 17, state = "attack", node_timer = 0,
+			env_damage_timer = 0, pause_timer = 0, object = rift_object,
+			falling = function() return false end,
+		}
+		real_mobs_step(rift, rift_instance, 0.1, hazard)
+		assert(burst_hits == 1 and burst_particles == 1 and
+			burst_sounds == 1 and removals == 1,
+			"Rift Spawn real on_step was not terminal exact-once: " .. hazard.name)
+	end
 	local rift_cave, rift_surface = false, false
 	for i = 1, #rows do
 		if rows[i].name == "grug_mobs:rift_spawn" then
@@ -180,6 +259,12 @@ return function(root)
 				"route rejected for " .. short .. ": " .. routes[i])
 		end
 	end
+	local tiger_check = definitions["grug_mobs:speargrass_tiger"]._grug_spawn_check
+	for _, boundary in ipairs({{20, false}, {21, true}, {50, true}, {51, false}}) do
+		level = boundary[1]
+		assert(not not tiger_check(surface_pos) == boundary[2],
+			"Speargrass Tiger level boundary failed at " .. level)
+	end
 	zone_id, biome, level, timeofday = "elandor_hearthpine_vale", "grug_beach", 3, 0.5
 	assert(grug_mobs.spawn_policy_allows("grug_mobs:shore_crab", surface_pos))
 	assert(definitions["grug_mobs:shore_crab"]._grug_spawn_check(surface_pos))
@@ -197,6 +282,33 @@ return function(root)
 		handle:close()
 		return body
 	end
+	local media_roots = {
+		root .. "/mods/ENTITIES/grug_mobs/textures/",
+		root .. "/mods/ENTITIES/mobs/textures/",
+		root .. "/mods/BASE/default/textures/",
+		root .. "/mods/BASE/vessels/textures/",
+	}
+	local function shipped_texture(name)
+		for i = 1, #media_roots do
+			local handle = io.open(media_roots[i] .. name, "rb")
+			if handle then handle:close(); return true end
+		end
+		return false
+	end
+	local texture_count, texture_seen = 0, {}
+	for i = 1, #files do
+		local body = read(root .. "/mods/ENTITIES/grug_mobs/" .. files[i])
+		for reference in body:gmatch("[\"']([^\"']-%.png[^\"']*)[\"']") do
+			local name = assert(reference:match("^([^%^]+%.png)"), reference)
+			assert(shipped_texture(name),
+				"missing entity/projectile/particle texture: " .. name)
+			if not texture_seen[name] then
+				texture_seen[name] = true
+				texture_count = texture_count + 1
+			end
+		end
+	end
+	assert(texture_count > 20, "new-family texture inventory was not exercised")
 	local function i32(s, at)
 		local a, b, c, d = s:byte(at, at + 3)
 		local value = a + b * 256 + c * 65536 + d * 16777216
@@ -299,6 +411,7 @@ return function(root)
 			"UNCLEAR source entered ledger: " .. unclear[1])
 	end
 
-	return "r9_mob2_packages_v1|families=15|rows=16|copied_media=26|" ..
+	return "r9_mob2_packages_v2|families=15|rows=16|copied_media=26|textures=" ..
+		texture_count .. "|" ..
 		"bog_witch_keys=" .. key_low .. ".." .. key_high .. "\n"
 end

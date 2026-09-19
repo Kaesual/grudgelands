@@ -1,9 +1,6 @@
--- Rift Spawn: two-second visual fuse, entity damage only. Setting the
--- mobs_redo node-damage radius to zero keeps terrain intact while the separate
--- entity burst below delivers damage once. mobs_redo's no-TNT fallback uses
--- only the node radius for entity physics, so its own entity radius stays zero
--- as well; this avoids both a silent burst now and double damage if a TNT API
--- is ever shipped.
+-- Rift Spawn: two-second visual fuse, entity damage only. The custom burst is
+-- terminal because mobs_redo promotes a zero node radius near water or inside
+-- protection and its fallback boom would otherwise punch nearby objects again.
 
 local RIFT_RADIUS = 3.5
 
@@ -14,7 +11,7 @@ local function burst_due(self, dtime)
 	if (self.timer or 0) + dtime * 2 <= (self.explosion_timer or 2) then return end
 	self._grug_rift_burst = true
 	local pos = self.object and self.object:get_pos()
-	if not pos then return end
+	if not pos then return false end
 	for _, object in ipairs(core.get_objects_inside_radius(pos, RIFT_RADIUS)) do
 		local ent = object:get_luaentity()
 		if object ~= self.object and (core.is_player(object) or
@@ -33,6 +30,12 @@ local function burst_due(self, dtime)
 		exptime = {min = 0.3, max = 0.8}, size = {min = 2, max = 5},
 		texture = "mobs_tnt_smoke.png^[colorize:#6d36b5:70", glow = 5,
 	})
+	core.sound_play(self.sounds.explode, {
+		pos = pos,
+		max_hear_distance = self.sounds.distance or 32,
+	}, true)
+	self.object:remove()
+	return false
 end
 
 local rift = {

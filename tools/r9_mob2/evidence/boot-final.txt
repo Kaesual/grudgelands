@@ -1,0 +1,3 @@
+ACTION[Main]: [grug_mobs] settlement work activities: tools 7, weapon families 1, all registered
+ACTION[Main]: [grug_traders] 12 profession shelves, 74 offers, all registered
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:32175.
