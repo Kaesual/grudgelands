@@ -114,6 +114,7 @@ end
 
 local function adapter_factory(allocator_factory)
 	local MAX_SAFE = 9007199254740991
+	local BULK_TERRAIN_CLEAR_ENABLED = false
 	local PLAN_SCHEMA = "grug_wp40_r5_column_run_plan_v1"
 	local CONTENT_SCHEMA = "grug_wp40_r5_content_contract_v1"
 	local CONTEXT_SCHEMA = "grug_wp40_r5_mapgen_context_v1"
@@ -1097,7 +1098,8 @@ local function adapter_factory(allocator_factory)
 			local air_cid = scratch[air_target_base + 1] - 1
 			local native_stone_cid = scratch[stone_target_base + 1] - 1
 			local air_param2_mode = scratch[air_target_base + 3]
-			local bulk_contract_ready = air_target_constant and
+			local bulk_contract_ready = BULK_TERRAIN_CLEAR_ENABLED and
+				air_target_constant and
 				scratch[air_target_base + 2] == K.TARGET_AIR and
 				(air_param2_mode == K.PARAM2_PRESERVE or
 					air_param2_mode == K.PARAM2_EXACT and
