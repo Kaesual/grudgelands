@@ -175,6 +175,9 @@ return function(repo)
 				rolled:get_meta():get_string("description"):find(
 					"inert until the trinket effects lane", 1, true),
 				"station trinket lost its item level or authored special")
+			context.check(rolled:get_meta():get_string("description"):find(
+				"Item level 30", 1, true) ~= nil,
+				"station trinket description lost its item-level line")
 
 			local allow = context.allow_inventory
 			context.check(type(allow) == "function", "equipment allow hook missing")

@@ -255,8 +255,13 @@ function grug_gear.describe_stack_base(stack, ilvl, refined)
 	if (groups.grug_equip_trinket or 0) > 0 then
 		local special = stack:get_meta():get_string("grug_trinket_special")
 		if special == "" then special = tostring(def._grug_trinket_special or "") end
-		if special == "" then return {}, {} end
-		return {core.colorize(STAT_COLOR, special)}, {trinket_special = special}
+		-- Trinkets keep the item-level line above their authored special
+		-- (review finding, R9-PROF-B): the special alone hid the ilvl.
+		local trinket_lines = {}
+		if ilvl then trinket_lines[#trinket_lines + 1] = "Item level " .. ilvl end
+		if special == "" then return trinket_lines, {} end
+		trinket_lines[#trinket_lines + 1] = core.colorize(STAT_COLOR, special)
+		return trinket_lines, {trinket_special = special}
 	end
 	local lines = {}
 	if ilvl then lines[#lines + 1] = "Item level " .. ilvl end
