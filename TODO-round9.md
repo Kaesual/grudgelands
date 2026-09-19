@@ -622,7 +622,9 @@ ocean edge and the enemy border (warning band, hard dismount).
     **R9-PERF** right after the MAP-C merge in the serial mapgen chain,
     before CAP and MAP-B, verified by an output-equivalence KAT and one
     profiler pair. Dirty-region replay and emerge threads stay out (the
-    latter blocked by Luanti #9357).
+    latter blocked by Luanti #9357). Model: GPT-6 Astra (user allowance
+    2026-09-19, the second lane besides MAP-C); review on GPT-5.6 Sol. The
+    serial mapgen chain is therefore MAP-C → PERF → CAP → MAP-B.
 42. **Mount warning by classification probing** (orchestrator ruling
     2026-09-19 after MOUNTS review 5; the user may veto): the analytic
     flight-boundary distance over warped zones and bay silhouettes is
