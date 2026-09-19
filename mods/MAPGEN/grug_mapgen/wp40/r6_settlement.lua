@@ -31,6 +31,40 @@ local function settlement_factory()
 		return value
 	end
 
+	local function r9_native_air_run(context, x, z)
+		local _, terrain_y = context.column_at(x, z)
+		local run = 0
+		for depth = 1, 4 do
+			if context.native_class_at(x, terrain_y - depth, z) ~= CLASS_AIR then break end
+			run = run + 1
+		end
+		return run, terrain_y
+	end
+
+	-- Pure immutable-input decision shared by production and the portable 3x3
+	-- fixture. Exclusions are supplied by the existing claim/fitting authorities.
+	local function r9_surface_skin_open(context, x, z)
+		local water_class = context.column_at(x, z)
+		local run, terrain_y = r9_native_air_run(context, x, z)
+		if water_class ~= "land" or run < 4 or context.excluded_at(x, z) then
+			return false, run, terrain_y
+		end
+		for direction = 1, 4 do
+			local dx = direction == 1 and 1 or direction == 2 and -1 or 0
+			local dz = direction == 3 and 1 or direction == 4 and -1 or 0
+			local _, neighbor_y = context.column_at(x + dx, z + dz)
+			if neighbor_y <= terrain_y - 2 then return true, run, terrain_y end
+		end
+		for dz = -1, 1 do
+			for dx = -1, 1 do
+				if r9_native_air_run(context, x + dx, z + dz) < 4 then
+					return false, run, terrain_y
+				end
+			end
+		end
+		return true, run, terrain_y
+	end
+
 	local function new_r8_strata(full_seed, source)
 		local secondary_by_biome = {
 			grug_savanna = "default:sandstone",
@@ -636,9 +670,12 @@ local function settlement_factory()
 		local source = dependencies.source
 		local r8_strata = new_r8_strata(full_seed, source)
 		local core_api = rawget(_G, "core")
-		local r8_cave_writer_disabled = core_api and core_api.settings and
-			type(core_api.settings.get_bool) == "function" and
-			core_api.settings:get_bool("grug_mapgen_r8_cave_writer_disabled", false) or false
+		local r8_cave_writer_disabled = true
+		if core_api and core_api.settings and
+				type(core_api.settings.get_bool) == "function" then
+			r8_cave_writer_disabled = core_api.settings:get_bool(
+				"grug_mapgen_r8_cave_writer_disabled", true)
+		end
 		local allocator = dependencies.counting_allocator
 		local successor_tail = dependencies.successor_tail
 		local planner_stable_refs = dependencies.planner_stable_refs
@@ -653,6 +690,7 @@ local function settlement_factory()
 				type(planner_source.surface_cave_candidate_at_cell) ~= "function" or
 				type(planner_source.surface_cave_cell_at) ~= "function" or
 				type(planner_source.coast_profile_at) ~= "function" or
+				type(planner_source.landmark_excluded_at) ~= "function" or
 				type(source) ~= "table" or
 				(successor_tail ~= nil and (type(successor_tail) ~= "table" or
 					type(successor_tail.settle) ~= "function")) then
@@ -681,8 +719,11 @@ local function settlement_factory()
 			contract.r5.resolve(10, 0, 0)
 		local river_water_cid, river_water_kind, river_water_param2 =
 			contract.r5.resolve(13, 0, 0)
+		local native_air_cid, native_air_kind, native_air_param2 =
+			contract.r5.resolve(1, 0, 0)
 		if ordinary_water_kind ~= 2 or river_water_kind ~= 2 or
-				ordinary_water_param2 ~= 0 or river_water_param2 ~= 0 then
+				ordinary_water_param2 ~= 0 or river_water_param2 ~= 0 or
+				native_air_kind ~= 0 or native_air_param2 ~= 0 then
 			fail("fail_content_manifest", "prospective water targets differ")
 		end
 		local surfaces = content.surfaces()
@@ -887,6 +928,8 @@ local function settlement_factory()
 				"r6_settlement_resource_host_base", evidence_only and 1 or 80 * 80 * 80, 0),
 			resource_excluded_column = retained_array(
 				"r6_settlement_resource_excluded_column", 6400, false),
+			surface_skin_column = retained_array(
+				"r6_settlement_surface_skin_column", 6400, 0),
 			successor_refs = {p9g_min = 0, p9g_max = 0, anchor_min = 0,
 				anchor_max = 0, settlement_min = 0, settlement_max = 0},
 		}
@@ -2094,6 +2137,64 @@ local function settlement_factory()
 				if occupant then occupancy[index] = occupant end
 			end
 
+			local surface_skin_column = transaction_state.surface_skin_column
+			local function surface_skin_excluded(x, z, water_class, functional_kind,
+					hard_foundation)
+				local _, static_id = helpers.r8_horizontal.static_exclusion_values_at(x, z)
+				return (water_class == "land" and static_id ~= nil) or
+					helpers.housing_excluded_at(x, z) or
+					planner_source.landmark_excluded_at(x, z) or
+					functional_kind ~= nil or hard_foundation
+			end
+			local skin_context = {}
+			function skin_context.column_at(x, z)
+				local water_class, _, _, _, _, terrain_y =
+					planner_source.column_values_at(x, z)
+				return water_class, terrain_y
+			end
+			function skin_context.native_class_at(x, y, z)
+				if x < eminx or x > emaxx or y < eminy or y > emaxy or
+						z < eminz or z > emaxz then return CLASS_UNKNOWN end
+				local index = index_at(x, y, z)
+				return original_data[index] == native_air_cid and
+					CLASS_AIR or CLASS_UNKNOWN
+			end
+			function skin_context.excluded_at(x, z)
+				local water_class, _, _, _, _, _, _, _, _, functional_kind, _, _, _,
+					_, _, _, _, _, _, hard_foundation =
+						planner_source.column_values_at(x, z)
+				return surface_skin_excluded(x, z, water_class, functional_kind,
+					hard_foundation)
+			end
+			for z = min_z, max_z do
+				for x = min_x, max_x do
+					local column = column_index(x, z)
+					local water_class, _, _, _, _, terrain_y, _, _, _, functional_kind,
+						_, _, _, _, _, _, _, _, _, hard_foundation =
+							planner_source.column_values_at(x, z)
+					local excluded, opened = false, false
+					if terrain_y >= min_y and terrain_y <= max_y then
+						local has_native_air = false
+						for depth = 1, 3 do
+							local y = terrain_y - depth
+							if y >= eminy and original_data[index_at(x, y, z)] ==
+									native_air_cid then
+								has_native_air = true
+								break
+							end
+						end
+						if has_native_air then
+							excluded = surface_skin_excluded(x, z, water_class,
+								functional_kind, hard_foundation)
+							if not excluded and water_class == "land" then
+								opened = r9_surface_skin_open(skin_context, x, z)
+							end
+						end
+					end
+					surface_skin_column[column] = excluded and 0 or (opened and 2 or 1)
+				end
+			end
+
 			-- P7: exact R5 P5 predecessor refinement.
 			-- These horizontal decisions are invariant for the complete column and
 			-- the planner has already frozen water/race values in its retained plan.
@@ -2110,7 +2211,8 @@ local function settlement_factory()
 					local filler_depth = plan.column_values[base + 11]
 					local dust_ref = plan.column_values[base + 12]
 					local dry_start_grade
-					if top_ref ~= 0 and terrain_y >= min_y and terrain_y <= max_y then
+					if top_ref ~= 0 and terrain_y >= min_y and terrain_y <= max_y and
+							surface_skin_column[column] ~= 2 then
 						local rbase = run_at(plan, column, terrain_y)
 						local predecessor = rbase and plan.r5_plan.run_values[rbase + 4]
 						if predecessor == 22 then
@@ -2166,6 +2268,40 @@ local function settlement_factory()
 								plan.r5_plan.run_values[rbase + 4] == 26 and
 								classify(final_data[index], final_param2[index]) == CLASS_AIR then
 							write_intent(x, dust_y, z, dust_ref, 0, 33, 0, 0, 2, false)
+						end
+					end
+				end
+			end
+
+			-- R9 surface skin. The opening decision above used immutable native data
+			-- before P7. Fill only native air that the R5 resolver actually preserved;
+			-- exact foundations, water, paths and clears therefore remain untouched.
+			local skin_host_ref = content.content_ref("default:stone")
+			if not skin_host_ref then
+				fail("fail_content_manifest", "surface skin host rock is absent")
+			end
+			for z = min_z, max_z do
+				for x = min_x, max_x do
+					local column = column_index(x, z)
+					if surface_skin_column[column] == 1 then
+						local terrain_y = select(6, planner_source.column_values_at(x, z))
+						for y = math.max(-37, terrain_y - 3), terrain_y - 1 do
+							if y >= min_y and y <= max_y then
+								local index = index_at(x, y, z)
+								local rbase = run_at(plan, column, y)
+								local opcode = rbase and plan.r5_plan.run_values[rbase + 4]
+								local feature_ref = rbase and plan.r5_plan.run_values[rbase + 7] or 0
+								local feature_id = feature_ref ~= 0 and
+									plan.r5_plan.stable_refs[feature_ref] or nil
+								local anchor_grade = type(feature_id) == "string" and
+									(feature_id:match("^anchor_00[1-9]$") ~= nil or
+										feature_id:match("^anchor_01[0-2]$") ~= nil)
+							if original_data[index] == native_air_cid and
+										final_data[index] == original_data[index] and
+										(opcode == 27 or opcode == 21 and anchor_grade) then
+									write_intent(x, y, z, skin_host_ref, 0, 2, 0, 0, 1, false)
+								end
+							end
 						end
 					end
 				end
@@ -3385,6 +3521,7 @@ local function settlement_factory()
 		r8_strata_new = new_r8_strata, r8_apply_strata = r8_apply_strata,
 		r8_plan_cave = r8_plan_cave,
 		r8_cave_proof_box_inside = r8_cave_proof_box_inside,
+		r9_surface_skin_open = r9_surface_skin_open,
 		r8_cave_component_radius = R8_CAVE_COMPONENT_RADIUS,
 		r8_cave_component_minimum = R8_CAVE_COMPONENT_MINIMUM}
 end

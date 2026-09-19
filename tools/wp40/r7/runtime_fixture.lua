@@ -121,7 +121,7 @@ return function(repo, seed_identity, content_only)
 		chunksize = "5", mgv7_dungeon_ymin = "-31000",
 		mgv7_dungeon_ymax = "-193",
 		mg_flags = "biomes,caves,decorations,dungeons,light,ores",
-		mgv7_spflags = "caverns,mountains,nofloatlands,ridges",
+		mgv7_spflags = "nomountains, noridges, nofloatlands, caverns",
 		seed = seed_identity or "0",
 	}
 	local core_api = {registered_nodes = registered_nodes, CONTENT_AIR = 0,
@@ -152,7 +152,7 @@ return function(repo, seed_identity, content_only)
 	local native_identities = {
 		noise_schema = "grug_wp40_r7_noiseparams_v1",
 		noise_digest =
-			"5a1183a0db4dcbf7c2fce382e907660bfd26e53325d370f62a2d9e78c04d8738",
+			"0c16a9e54e78b3cac5d15545bf236a76945c634d21dcf4250afc435e0c1bb38c",
 		native_schema = "grug_wp40_r7_native_allowlist_v1",
 		native_digest =
 			"d1fe4ac1c7cbe5525af65bde48cc4309870c01e4d474785f2cf0cda3d2639480",

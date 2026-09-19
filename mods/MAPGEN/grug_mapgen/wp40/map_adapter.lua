@@ -58,6 +58,20 @@ local function replacement_outcome_fixture(...)
 		ordinary_family_id, river_family_id)
 end
 
+local function anchor_grade_feature(feature_id)
+	return type(feature_id) == "string" and
+		(feature_id:match("^anchor_00[1-9]$") ~= nil or
+			feature_id:match("^anchor_01[0-2]$") ~= nil)
+end
+
+local function preserved_native_cave(opcode, policy, class_id, heightmap_value,
+		y, feature_id)
+	return policy == 3 and
+		(opcode == 27 or opcode == 21 and anchor_grade_feature(feature_id)) and
+		(class_id == 1 or class_id == 4) and heightmap_value ~= -31007 and
+		y <= heightmap_value
+end
+
 local function adapter_factory(allocator_factory)
 	local MAX_SAFE = 9007199254740991
 	local PLAN_SCHEMA = "grug_wp40_r5_column_run_plan_v1"
@@ -319,7 +333,7 @@ local function adapter_factory(allocator_factory)
 				manifest.engine_emerge_setting ~= "num_emerge_threads" or
 				manifest.mg_flags ~=
 					"biomes,caves,decorations,dungeons,light,ores" or
-				manifest.mgv7_spflags ~= "caverns,mountains,ridges" or
+				manifest.mgv7_spflags ~= "caverns" or
 				manifest.mgv7_dungeon_ymin ~= -31000 or
 				manifest.mgv7_dungeon_ymax ~= -193 or
 				manifest.authored_floor ~= -37 or
@@ -896,10 +910,10 @@ local function adapter_factory(allocator_factory)
 			if class_id == K.CLASS_IGNORE then
 				fail("fail_content_ignore", "classified owner content is ignore")
 			end
-			local preserved_by_heightmap = opcode == 27 and
-				policy == K.POLICY_FILL_VOID and
-					(class_id == K.CLASS_AIR or class_id == K.CLASS_LIQUID) and
-					heightmap_value ~= K.HEIGHTMAP_SENTINEL and y <= heightmap_value
+			local feature_ref = plan.run_values[run_base + K.R_FEATURE]
+			local feature_id = feature_ref ~= 0 and plan.stable_refs[feature_ref] or nil
+			local preserved_by_heightmap = preserved_native_cave(opcode, policy,
+				class_id, heightmap_value, y, feature_id)
 			local outcome
 			if preserved_by_heightmap then
 				outcome = K.OUTCOME_NOOP
@@ -1023,7 +1037,6 @@ local function adapter_factory(allocator_factory)
 					end
 				end
 			end
-
 			local emerged_min, emerged_max = vm_call0(vm_get_emerged_area,
 				K.M_VM_GET_EMERGED, vm)
 			metric_add(K.M_EMERGED_EXTERNAL, 2)
@@ -1528,4 +1541,4 @@ local function adapter_factory(allocator_factory)
 	return {new = new}
 end
 
-return adapter_factory, replacement_outcome_fixture
+return adapter_factory, replacement_outcome_fixture, preserved_native_cave

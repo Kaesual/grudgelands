@@ -34,7 +34,7 @@ return function(canonical, raw_sha256, settlement_order)
 	-- vocabulary. Placement/content semantics remain unchanged; only the
 	-- authenticated gathering limb and this roll-up move again.
 	local SOURCE_PROJECTION_SHA256 =
-		"1fcdf06bace3cc7679e8959087d4b361da164c1a6ff920cdb60e7f4473022c47"
+		"be8bcc1eb9b3c063974791a6a6c658aa590cf970506ccdae2c51329a8aa0fa25"
 	local FIELD_HEAD = {
 		"schema", "full_seed", "r5_schema", "r5_manifest_sha256",
 		"r5_artifact_sha256", "r6_schema", "r6_contract_sha256",
@@ -285,7 +285,7 @@ return function(canonical, raw_sha256, settlement_order)
 		local native = inputs.native_identities
 		if native.noise_schema ~= "grug_wp40_r7_noiseparams_v1" or
 			native.noise_digest ~=
-				"5a1183a0db4dcbf7c2fce382e907660bfd26e53325d370f62a2d9e78c04d8738" or
+				"0c16a9e54e78b3cac5d15545bf236a76945c634d21dcf4250afc435e0c1bb38c" or
 			native.native_schema ~= "grug_wp40_r7_native_allowlist_v1" or
 			native.native_digest ~=
 				"d1fe4ac1c7cbe5525af65bde48cc4309870c01e4d474785f2cf0cda3d2639480" then

@@ -1780,6 +1780,9 @@ local function zones_factory(dependencies)
 			function planner_source.coast_profile_at(x, z)
 				return height.coast_profile_at(x, z)
 			end
+			function planner_source.landmark_excluded_at(x, z)
+				return height.landmark_excluded_at(x, z)
+			end
 
 			function planner_source.metrics()
 				local height_metrics = height.metrics()

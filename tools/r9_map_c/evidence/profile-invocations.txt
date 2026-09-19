@@ -1,0 +1,6 @@
+schema grug_r9_map_c_profile_invocations_v1
+before WP40_PROFILE_GAME_ROOT=/tmp/map-c-profile-before-game WP40_PROFILE_OUTPUT=/tmp/map-c-profile-before-3 WP40_PROFILE_SEED=0 WP40_PROFILE_PORT_BASE=32160 WP40_PROFILE_TIMEOUT=500 nice -n 19 bash /tmp/map-c-profile-before-tools/tools/wp40/profile/run.sh flatpak run --filesystem=/tmp --command=luanti org.luanti.luanti
+after WP40_PROFILE_GAME_ROOT=$PWD WP40_PROFILE_OUTPUT=/tmp/map-c-profile-after-3 WP40_PROFILE_SEED=0 WP40_PROFILE_PORT_BASE=32160 WP40_PROFILE_TIMEOUT=500 nice -n 19 bash tools/wp40/profile/run.sh flatpak run --filesystem=/tmp --command=luanti org.luanti.luanti
+before_complete requested=10 completed=10 callbacks=97 generated=8 disk=0 memory=1242 cancelled=0 errored=0 measured_elapsed_us=69638153
+after_complete requested=10 completed=10 callbacks=97 generated=8 disk=0 memory=1242 cancelled=0 errored=0 measured_elapsed_us=99275939
+result FAIL after_exceeds_before

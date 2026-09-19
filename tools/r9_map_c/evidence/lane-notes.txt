@@ -1,0 +1,43 @@
+schema grug_r9_map_c_lane_notes_v1
+
+plate_trace
+coordinate -1696,-2522
+seed 0
+owner_slice -112..-33
+planner_winner_y_-37..-33 opcode=21 role=11 policy=3 feature=anchor_001
+resolver_rule mods/MAPGEN/grug_mapgen/wp40/map_adapter.lua:61-72,913-919
+kat tools/r8_map_a/writer_kat.lua:13-32
+
+surface_skin_exclusion_mapping
+start_apron/capital_ring/capital_precinct/settlement/poi/route/corridor -> horizontal.static_exclusion_values_at
+path/functional/coastal/start/capital_fitting -> functional_kind ~= nil
+foundation -> hard_foundation
+housing -> housing_mask_id_at
+landmark -> landmark_excluded_at
+implementation mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua:2141-2169
+surface_rule mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua:46-74
+pass_order mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua:2140-2335
+
+pin_table
+minetest.conf:30 mgv7_spflags mountains,ridges,caverns,nofloatlands -> nomountains,noridges,caverns,nofloatlands
+mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:14-18 NOISE_DIGEST 5a1183a0db4dcbf7c2fce382e907660bfd26e53325d370f62a2d9e78c04d8738 -> 0c16a9e54e78b3cac5d15545bf236a76945c634d21dcf4250afc435e0c1bb38c; NATIVE_DIGEST unchanged d1fe4ac1c7cbe5525af65bde48cc4309870c01e4d474785f2cf0cda3d2639480
+mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:180-239 terrain_base/terrain_alt -> offset=441 scale=0 identical constants
+mods/MAPGEN/grug_mapgen/wp40/r7_manifest.lua:36-38 SOURCE_PROJECTION_SHA256 1fcdf06bace3cc7679e8959087d4b361da164c1a6ff920cdb60e7f4473022c47 -> be8bcc1eb9b3c063974791a6a6c658aa590cf970506ccdae2c51329a8aa0fa25
+mods/MAPGEN/grug_mapgen/wp40/{r7_manifest.lua,mapgen_manifest.lua,map_adapter.lua,planner.lua,r7_r6_manifest.lua} canonical feature token caverns,mountains,ridges -> caverns
+mods/MAPGEN/grug_mapgen/wp40/r7_runtime.lua:62-75 exact engine readback pinned as nomountains, noridges, nofloatlands, caverns
+tools/wp40/{fixtures/headless-baseline.conf,profile/run.sh,r8/run.sh} live flags -> nomountains,noridges,caverns,nofloatlands
+tools/wp40/r7/{native_inputs_kat.lua,runtime_fixture.lua,micro_kat_fixture.lua,source_audit.sh} noise/flag/count pins updated
+tools/wp40/r6/fixtures.lua and all R5/R6/R7 planner/content fixture manifest tokens -> caverns
+tools/wp40/r7/changed_production_lua.txt baseline-relative roster 157 -> 268
+tools/r8_map_a/evidence and every tools/wp40/evidence R5-R8 directory unchanged immutable history
+
+performance_stop
+before_callback_total_us 53159000
+before_plan_us 32158183
+before_writer_us 21000817
+before_emerge_elapsed_us 69638153
+after_callback_total_us 84391700
+after_plan_us 33612638
+after_writer_us 50779062
+after_emerge_elapsed_us 99275939
+result FAIL after_exceeds_before; plateau slowdown STOP triggered before engine witness and final pin refresh

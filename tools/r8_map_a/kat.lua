@@ -17,52 +17,63 @@ return function(root)
 	local coast = coast_factory("0")
 	local stable_profile, stable_class = coast.profile(2, 1, -44, false,
 		"highland", 24)
-	check(coast.run_key(2, 1, -44, stable_class) == "2/1/-44/sea_ordinary",
+	check(coast.run_key(2, 1, -44, stable_class) == "2/1/-44/sea_highland",
 		"ordinary run identity differs")
 	local low_profile, low_class = coast.profile(2, 1, -44, false,
 		"wetland_delta", 24)
-	check(low_class == "sea_low" and
+	check(low_class == "sea_wetland_delta" and
 		coast.run_key(2, 1, -44, low_class) ~=
 		coast.run_key(2, 1, -44, stable_class), "fallback run was not split")
 	check(stable_profile == coast.profile(2, 1, -44, false, "highland", 7),
 		"one stable run changed profile")
-	local counts = {beach = 0, bluff = 0, cliff = 0, terraced_cliff = 0}
-	local total = 0
-	for owner = 1, 38 do
-		for orientation = 1, 4 do
-			for run = -80, 80 do
-				local profile = coast.profile(owner, orientation, run, false,
-					"highland", 24)
-				counts[profile] = counts[profile] + 1
-				total = total + 1
-				check(profile == coast.profile(owner, orientation, run, false,
-					"highland", 24), "profile is not deterministic")
-			end
+	local relief_ids = {"wetland_delta", "lowland", "rolling_hills", "plateau",
+		"highland", "mountain"}
+	local relief_beaches, counts = {},
+		{beach = 0, bluff = 0, cliff = 0, terraced_cliff = 0}
+	for relief_index = 1, #relief_ids do
+		local relief_id = relief_ids[relief_index]
+		local sea_beaches, fresh_beaches = 0, 0
+		for run = -1000, 1000 do
+			local profile = coast.profile(7, 2, run, false, relief_id, 24)
+			local freshwater = coast.profile(7, 2, run, true, relief_id, 24)
+			counts[profile] = counts[profile] + 1
+			if profile == "beach" then sea_beaches = sea_beaches + 1 end
+			if freshwater == "beach" then fresh_beaches = fresh_beaches + 1 end
+			check(profile == coast.profile(7, 2, run, false, relief_id, 24),
+				"profile is not deterministic")
+		end
+		relief_beaches[relief_id] = sea_beaches
+		if relief_id == "mountain" then
+			check(sea_beaches == 0 and fresh_beaches == 0,
+				"mountain shore selected sand")
+		elseif relief_id == "plateau" or relief_id == "highland" then
+			check(fresh_beaches == 0, relief_id .. " freshwater rim selected sand")
+		else
+			check(fresh_beaches > 0, relief_id .. " freshwater sand rim is absent")
 		end
 	end
-	local expected = {beach = 40, bluff = 25, cliff = 20, terraced_cliff = 15}
-	for profile, percentage in pairs(expected) do
-		local actual = counts[profile] * 100 / total
-		check(math.abs(actual - percentage) <= 2,
-			profile .. " synthetic mix differs")
+	check(relief_beaches.wetland_delta > relief_beaches.lowland and
+		relief_beaches.lowland > relief_beaches.rolling_hills and
+		relief_beaches.rolling_hills > relief_beaches.plateau and
+		relief_beaches.plateau > relief_beaches.highland and
+		relief_beaches.highland > relief_beaches.mountain,
+		"six relief-profile beach shares are not descending")
+	for draw = 0, 999 do
+		local width, rise, blend = coast.band(draw, "beach", false)
+		check(width >= 20 and width <= 28 and rise >= 2 and rise <= 5 and
+			blend >= 16 and blend <= 24, "sea beach band bounds differ")
+		local fresh_width = coast.band(draw, "beach", true)
+		check(fresh_width >= 2 and fresh_width <= 4,
+			"freshwater beach rim bounds differ")
 	end
-	for run = -1000, 1000 do
-		local freshwater = coast.profile(7, 2, run, true, "rolling_hills", 20)
-		check(freshwater == "beach" or freshwater == "bluff",
-			"freshwater selected abrupt profile")
-		local low = coast.profile(18, 4, run, false, "wetland_delta", 30)
-		check(low == "beach" or low == "bluff", "wetland fallback differs")
-	end
-
 	local top, filler, depth = coast_surface_rule("beach", false, 7)
 	check(top == "default:sand" and filler == "default:sandstone" and depth == 3,
 		"sea beach material differs")
-	check(coast_surface_rule("beach", true, 2) == "default:sand" and
-		coast_surface_rule("beach", true, 3) == nil,
-		"freshwater sand lip differs")
+	check(coast_surface_rule("beach", true, 4) == "default:sand",
+		"freshwater sand rim differs")
 	check(select(2, coast_surface_rule("bluff", false, 3)) == "default:gravel" and
 		select(2, coast_surface_rule("cliff", false, 3)) == "default:stone" and
-		coast_surface_rule("cliff", true, 1) == nil,
+		select(2, coast_surface_rule("cliff", true, 1)) == "default:stone",
 		"non-beach coast material differs")
 
 	local strata = settlement.r8_strata_new("0", source)
@@ -103,6 +114,10 @@ return function(root)
 	return table.concat({"schema\tgrug_r8_map_a_kat_v1",
 		"profile_mix\t" .. counts.beach .. "/" .. counts.bluff .. "/" ..
 			counts.cliff .. "/" .. counts.terraced_cliff,
+		"relief_beaches\t" .. table.concat({relief_beaches.wetland_delta,
+			relief_beaches.lowland, relief_beaches.rolling_hills,
+			relief_beaches.plateau, relief_beaches.highland,
+			relief_beaches.mountain}, "/"),
 		"strata\t200/min_distinct=" .. distinct_min .. "/clay_hits=" .. clay_columns ..
 			"/floor_clips=" .. clipped,
 		cave_rows, writer_rows}, "\n")

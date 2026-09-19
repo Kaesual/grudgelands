@@ -1,0 +1,6 @@
+schema	grug_r9_map_c_emerge_wall_clock_v1
+metric	before_us	after_us	delta_us	ratio
+measured_elapsed_us	69638153	99275939	29637786	1.425594
+callback_total_us	53159000	84391700	31232700	1.587532
+plan_us	32158183	33612638	1454455	1.045228
+writer_us	21000817	50779062	29778245	2.418900

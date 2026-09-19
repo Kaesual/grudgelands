@@ -287,6 +287,7 @@ return function(repo)
 	function fake_source.surface_cave_candidate_at_cell() return nil end
 	function fake_source.surface_cave_cell_at() return nil end
 	function fake_source.coast_profile_at() return nil end
+	function fake_source.landmark_excluded_at() return false end
 	local horizontal = {}
 	function horizontal.static_exclusion_values_at(x, z)
 		if fake_source.hard_route_probe and x == 0 and z == 0 then

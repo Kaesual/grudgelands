@@ -37,6 +37,7 @@ return function(repo, planner_repo)
 		surface_cave_cell_at = function() return 0, 0 end,
 		surface_cave_constants = function() return 80, -30912, 24, 2, 24 end,
 		coast_profile_at = function() return nil end,
+		landmark_excluded_at = function() return false end,
 		metrics = function() return {runtime_column_cache_hits = 0,
 			runtime_column_cache_misses = calls} end}
 	local surface = {id = "biome", top = "fixture:soil", shore = "fixture:soil",

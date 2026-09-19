@@ -97,7 +97,8 @@ return function(repo, production_repo, verify_compressed)
 	end, surface_cave_run_at = function() return nil end,
 		surface_cave_candidate_at_cell = function() return nil end,
 		surface_cave_cell_at = function() return 0, 0 end,
-		coast_profile_at = function() return nil end}
+		coast_profile_at = function() return nil end,
+		landmark_excluded_at = function() return false end}
 	local horizontal = {static_exclusion_values_at = function() return nil end,
 		housing_mask_id_at = function() return nil end}
 	local anchor = {id = "gravewood_anchor", position = {x = 10000, z = 10000}}

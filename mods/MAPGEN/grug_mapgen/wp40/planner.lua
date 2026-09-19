@@ -327,6 +327,7 @@ local function planner_factory(allocator_factory)
 		surface_cave_cell_at = true,
 		surface_cave_constants = true,
 		coast_profile_at = true,
+		landmark_excluded_at = true,
 		metrics = true,
 	}
 	local RELATION_FIELDS = {
@@ -482,7 +483,7 @@ local function planner_factory(allocator_factory)
 				validated_manifest.engine_emerge_setting ~= "num_emerge_threads" or
 				validated_manifest.mg_flags ~=
 					"biomes,caves,decorations,dungeons,light,ores" or
-				validated_manifest.mgv7_spflags ~= "caverns,mountains,ridges" or
+				validated_manifest.mgv7_spflags ~= "caverns" or
 				validated_manifest.mgv7_dungeon_ymin ~= -31000 or
 				validated_manifest.mgv7_dungeon_ymax ~= -193 or
 				validated_manifest.authored_floor ~= AUTHORED_FLOOR or
