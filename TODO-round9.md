@@ -582,6 +582,22 @@ ocean edge and the enemy border (warning band, hard dismount).
     behind a production switch that is off by default and MAP-C finishes
     with skin, openings, plate fix, pin procedure and KATs. The 3 %
     tolerance of ruling 35 is replaced by 5 % (measured noise).
+37. **No attacking while mounted** (2026-09-19, after MOUNTS review 4):
+    mounted players cannot trigger abilities or swings (dismount first);
+    the mount's selection box covers the seated rider, forwarded punches
+    apply the returned tool wear, flight legality uses the horizontal zone
+    record at every y. `mounts.md` follows.
+38. **Trinket special effects are a follow-up lane** (R9-TRINKETS, after
+    PROF-B): Round 9 ships the 36 trinkets with stat affixes and the
+    authored special line marked inert in the tooltip; the six consumers
+    (Manawell, Mercy Seal, Last Light, Battlebeat, Reclaimer's Mark,
+    Apothecary Loop) get their own lane at the mana / hit / healing /
+    kill-XP / potion seams with caps and cooldowns.
+39. **Trinket Setting counts** are a Round 9 placeholder: identity-specific
+    Setting counts (1–6) keep the six recipes per tier collision-free in
+    the input-authoritative registry; documented as placeholder; a later
+    package adds output selection at the station or the design gives each
+    identity its own distinguishing ingredient.
 
 ## 5. MAP-C protocol: what must not repeat from Round 8
 
