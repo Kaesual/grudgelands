@@ -6,7 +6,8 @@
 return function(repo, catalog, expected_names)
 	local saved = {}
 	local globals = {"core", "minetest", "default", "grug_materials",
-		"grug_trees", "grug_brewing", "ItemStack", "vector", "stairs"}
+		"grug_trees", "grug_brewing", "grug_jobs", "ItemStack", "vector",
+		"stairs"}
 	for index = 1, #globals do
 		local name = globals[index]
 		saved[name] = rawget(_G, name)
@@ -134,6 +135,7 @@ return function(repo, catalog, expected_names)
 				grug_nodes = repo .. "/mods/ITEMS/grug_nodes",
 				grug_gathering = repo .. "/mods/ITEMS/grug_gathering",
 				grug_brewing = repo .. "/mods/ITEMS/grug_brewing",
+				grug_jobs = repo .. "/mods/PLAYER/grug_jobs",
 			}
 			return roots[name]
 		end
@@ -249,6 +251,28 @@ return function(repo, catalog, expected_names)
 		current_modname = "grug_brewing"
 		dofile(repo .. "/mods/ITEMS/grug_brewing/init.lua")
 
+		current_modname = "grug_jobs"
+		local station_info = {
+			forge = {display_name = "Forge", profession = "blacksmith",
+				node = "grug_jobs:forge"},
+			tanning_rack = {display_name = "Tanning Rack",
+				profession = "leatherworker", node = "grug_jobs:tanning_rack"},
+			tailor_bench = {display_name = "Tailor Bench", profession = "tailor",
+				node = "grug_jobs:tailor_bench"},
+			carving_bench = {display_name = "Carving Bench",
+				profession = "woodcarver", node = "grug_jobs:carving_bench"},
+			jewellers_bench = {display_name = "Jeweller's Bench",
+				profession = "goldsmith", node = "grug_jobs:jewellers_bench"},
+		}
+		rawset(_G, "grug_jobs", {
+			station_info = function(station) return station_info[station] end,
+			station_book_button = function() return "" end,
+			register_station = function() end,
+			register_ingredient_tier = function() end,
+			register_recipe = function() end,
+		})
+		dofile(repo .. "/mods/PLAYER/grug_jobs/station_nodes.lua")
+
 		local definitions = {}
 		local seen = {}
 		for index = 1, #expected_names do
@@ -291,6 +315,7 @@ return function(repo, catalog, expected_names)
 				"mods/ITEMS/grug_nodes/init.lua",
 				"mods/ITEMS/grug_gathering/nodes.lua",
 				"mods/ITEMS/grug_brewing/init.lua",
+				"mods/PLAYER/grug_jobs/station_nodes.lua",
 			}}
 	end
 
