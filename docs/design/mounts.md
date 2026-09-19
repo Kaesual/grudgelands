@@ -171,6 +171,8 @@ arbitrary fixed-price wall.
 - **Taking damage dismounts you** (§3.1) — the same detach path again.
 - Mounting is refused while `grug_core.in_combat(player)` reports the active
   five-second combat window.
+- A mounted player cannot use abilities, casts or combat swings. They must
+  dismount before attacking.
 - The entity is invulnerable, carries no drops and never persists in static
   data. A punch aimed at the attached entity is transferred to the rider and
   then dismounts them; direct player damage dismounts through a player
@@ -192,7 +194,7 @@ arbitrary fixed-price wall.
 - **Implementation note (engine fact, recorded 2026-08-13):** mobs_redo
   punches *what the player is attached to* —
   `local target = self.attack:get_attach() or self.attack`
-  (`mods/ENTITIES/mobs/api.lua:2808-2813`) — so a mob's melee swing lands on
+  (`mods/ENTITIES/mobs/api.lua:2793-2798`) — so a mob's melee swing lands on
   the mount entity and the rider loses no HP from it. That swallowed swing is
   transferred to the rider and triggers the dismount; damage aimed at the
   player directly (our own PvP pipeline, projectiles, drowning, environment)

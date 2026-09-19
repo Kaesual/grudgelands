@@ -133,16 +133,12 @@ function grug_mounts.flight_state(player, pos)
 	if faction ~= "accord" and faction ~= "throng" then
 		return false, "enemy"
 	end
-	local territory = grug_zones.territory_rule_at(pos)
+	-- Zone ownership is horizontal.  Altitude is handled independently by the
+	-- underground takeoff and y=600 ceiling rules below.
+	local zone = grug_zones.at(pos)
+	local territory = zone and zone.territory_rule
 	if territory == "holy_grounds" or territory == faction .. "_home" then
 		return true, nil
-	end
-	if territory == "hard_protected" then
-		local zone = grug_zones.at(pos)
-		if zone and (zone.territory_rule == "holy_grounds" or
-				zone.territory_rule == faction .. "_home") then
-			return true, nil
-		end
 	end
 	return false, "enemy"
 end
@@ -253,7 +249,7 @@ local entity_definition = {
 		mesh = "grug_mounts_horse.b3d",
 		textures = {"grug_mobs_blank.png"},
 		collisionbox = {-0.7, -0.01, -0.7, 0.7, 1.59, 0.7},
-		selectionbox = {-0.7, -0.01, -0.7, 0.7, 1.59, 0.7},
+		selectionbox = {-0.7, -0.01, -0.7, 0.7, 3.06, 0.7},
 		static_save = false,
 		hp_max = 100000,
 	},
@@ -277,7 +273,7 @@ local entity_definition = {
 			mesh = model.mesh, textures = model.textures,
 			visual_size = model.visual_size,
 			collisionbox = model.collisionbox,
-			selectionbox = model.collisionbox,
+			selectionbox = model.selectionbox,
 		})
 		set_animation(self, "stand")
 	end,
@@ -318,7 +314,17 @@ local entity_definition = {
 	on_punch = function(self, puncher, time_from_last_punch, tool_capabilities, dir)
 		local player = self._grug_rider
 		if valid_player(player) and player:get_attach() == self.object then
-			player:punch(puncher, time_from_last_punch, tool_capabilities, dir)
+			local wear = player:punch(puncher, time_from_last_punch,
+				tool_capabilities, dir)
+			-- PlayerRef:punch returns the wear earned by this nested hit. Re-fetch
+			-- after the call because callbacks may have changed the wielded stack.
+			if type(wear) == "number" and wear > 0 and valid_player(puncher) then
+				local stack = puncher:get_wielded_item()
+				if stack and not stack:is_empty() then
+					stack:add_wear(wear)
+					puncher:set_wielded_item(stack)
+				end
+			end
 		end
 	end,
 

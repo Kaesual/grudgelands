@@ -10,6 +10,7 @@ local ray_queue = {}
 local ray_calls = 0
 local globalsteps = {}
 local logs = {}
+local chat_messages = {}
 local callbacks = {
 	join = {}, leave = {}, die = {}, respawn = {}, hpchange = {},
 	punchplayer = {}, mods_loaded = {}, equipment = {},
@@ -191,7 +192,7 @@ core = {
 	line_of_sight = function() return true end,
 	get_objects_inside_radius = function() return {} end,
 	after = function() end,
-	chat_send_player = function() end,
+	chat_send_player = function(name, message) chat_messages[name] = message end,
 	colorize = function(_, text) return text end,
 	add_particle = function() end,
 	add_particlespawner = function() end,
@@ -316,6 +317,7 @@ function Player:get_eye_offset() return vector.new(0, 0, 0) end
 function Player:get_look_dir() return vector.new(self.look) end
 function Player:get_look_horizontal() return 0 end
 function Player:get_player_control() return {dig = self.dig} end
+function Player:get_attach() return self.attached end
 function Player:get_inventory() return self.inventory end
 function Player:get_wield_index() return self.wield end
 function Player:get_wielded_item()
@@ -505,6 +507,48 @@ local function reticle(player)
 	end
 	error("missing ready reticle")
 end
+
+-- Ruling 37: both combat entry categories reject a live mounted rider. The
+-- swing pass may perform its bounded pickup ray first, but it performs no
+-- combat ray and settles no hit; casts do not enter their callback at all.
+local function attach_test_mount(player)
+	local entity = {_grug_rider = player}
+	local object = {valid = true}
+	function object:is_valid() return self.valid end
+	function object:get_luaentity() return entity end
+	player.attached = object
+	return object
+end
+
+local mounted_warrior = new_player("mounted_warrior", "warrior", "accord")
+mounted_warrior.equipped_weapon = "test:weapon_a"
+for _, fn in ipairs(callbacks.join) do fn(mounted_warrior) end
+select_item(mounted_warrior, "grug_abilities:strike")
+mounted_warrior.dig = true
+attach_test_mount(mounted_warrior)
+local connected_before_mount_test = connected
+connected = {mounted_warrior}
+local mount_ray_calls = ray_calls
+local mount_target_punches = enemy_a.punches
+queue_ray({pointed(enemy_a)})
+swing_pass()
+assert(enemy_a.punches == mount_target_punches and
+	chat_messages.mounted_warrior == "Dismount before attacking.")
+assert(ray_calls == mount_ray_calls + 1,
+	"mounted swing reached the combat ray after its pickup ray")
+connected = connected_before_mount_test
+
+local mounted_mage = new_player("mounted_mage", "mage", "accord")
+for _, fn in ipairs(callbacks.join) do fn(mounted_mage) end
+attach_test_mount(mounted_mage)
+local mounted_cast_called = false
+grug_abilities.try_cast(mounted_mage, {
+	id = "mounted_kat", name = "Mounted KAT", kind = "cast",
+	universal = true, target_kind = "self", cost = {}, cooldown = 0,
+	cast = function() mounted_cast_called = true return true end,
+}, nil)
+assert(not mounted_cast_called and
+	chat_messages.mounted_mage == "Dismount before attacking.")
 
 -- Core transaction identity is exact attacker + ray target and claim-once.
 local transaction = grug_core.begin_authoritative_swing(hero, enemy_a, {})

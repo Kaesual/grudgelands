@@ -20,6 +20,8 @@ return function(root)
 	local Stack = {}
 	Stack.__index = Stack
 	function Stack:get_name() return self.name end
+	function Stack:get_wear() return self.wear or 0 end
+	function Stack:add_wear(amount) self.wear = (self.wear or 0) + amount end
 	function Stack:get_meta()
 		local owner = self
 		return {
@@ -29,7 +31,8 @@ return function(root)
 	end
 	function Stack:is_empty() return self.name == "" end
 	function Stack:copy()
-		local out = setmetatable({name = self.name, meta = {}}, Stack)
+		local out = setmetatable({name = self.name, wear = self.wear or 0,
+			meta = {}}, Stack)
 		for key, value in pairs(self.meta) do out.meta[key] = value end
 		return out
 	end
@@ -37,7 +40,7 @@ return function(root)
 	function ItemStack(value)
 		if getmetatable(value) == Stack then return value:copy() end
 		local name = tostring(value or ""):match("^(%S*)") or ""
-		return setmetatable({name = name, meta = {}}, Stack)
+		return setmetatable({name = name, wear = 0, meta = {}}, Stack)
 	end
 
 	local Inventory = {}
@@ -87,6 +90,13 @@ return function(root)
 			}
 		end
 		function player:get_inventory() return self.inventory end
+		function player:get_wielded_item()
+			return self.inventory:get_stack("main", self.wield_index or 1)
+		end
+		function player:set_wielded_item(stack)
+			self.wield_writes = (self.wield_writes or 0) + 1
+			self.inventory:set_stack("main", self.wield_index or 1, stack)
+		end
 		function player:get_pos() return clone_table(self.pos) end
 		function player:set_pos(pos) self.pos = clone_table(pos) end
 		function player:get_velocity() return clone_table(self.velocity) end
@@ -116,15 +126,21 @@ return function(root)
 		end
 		function player:hud_change(id, stat, value) self.hud[id][stat] = value end
 		function player:hud_remove(id) self.hud[id] = nil end
-		function player:punch(_, _, _, _)
+		function player:punch(puncher, _, _, _)
 			self.punches = (self.punches or 0) + 1
 			self.was_attached_when_punched = self.attached ~= nil
+			if self.replace_attacker_wield then
+				puncher.inventory:set_stack("main", puncher.wield_index or 1,
+					ItemStack(self.replace_attacker_wield))
+				self.replace_attacker_wield = nil
+			end
 			if self.punch_result == "zero" then
 				for _, callback in ipairs(callbacks.hp) do callback(self, 0, {}) end
 			elseif self.punch_result == "damage" then
 				self.hp = self.hp - 5
 				for _, callback in ipairs(callbacks.hp) do callback(self, -5, {}) end
 			end
+			return self.punch_wear or 0
 		end
 		players[name] = player
 		return player
@@ -271,6 +287,7 @@ return function(root)
 			return "land"
 		end,
 		territory_rule_at = function(pos)
+			if zone_mode == "vertical" and pos.y < 0 then return "contested_land" end
 			if zone_mode == "battleground" then return "holy_grounds" end
 			if zone_mode == "protected" or zone_mode == "protected_enemy" or
 					zone_mode == "protected_contested" or
@@ -281,9 +298,13 @@ return function(root)
 			return "accord_home"
 		end,
 		at = function(pos)
-			if zone_mode == "battleground_protected" and
+			if zone_mode == "battleground" then
+				return {territory_rule = "holy_grounds"}
+			elseif zone_mode == "battleground_protected" and
 					(pos.x == -2000 or pos.x == 2000) then
 				return {territory_rule = "holy_grounds"}
+			elseif zone_mode == "enemy" and pos.z >= 0 then
+				return {territory_rule = "throng_home"}
 			elseif zone_mode == "protected_enemy" then
 				return {territory_rule = "throng_home"}
 			elseif zone_mode == "protected_contested" then
@@ -415,6 +436,10 @@ return function(root)
 	zone_mode = "protected_contested"
 	legal, kind = grug_mounts.flight_state(rider, {x = 10, y = 30, z = 10})
 	assert(not legal and kind == "enemy")
+	zone_mode = "vertical"
+	assert(grug_mounts.flight_state(rider, {x = -100, y = 100, z = -100}))
+	assert(grug_mounts.flight_state(rider, {x = -100, y = -701, z = -100}),
+		"horizontal home ownership changed with altitude")
 	zone_mode = "enemy"
 	legal, kind = grug_mounts.flight_state(rider, {x = 10, y = 30, z = 1})
 	assert(not legal and kind == "enemy")
@@ -461,23 +486,54 @@ return function(root)
 	assert(math.abs(rider.properties.visual_size.x - 0.3) < 0.000001 and
 		math.abs(rider.properties.visual_size.y - 0.3) < 0.000001)
 
-	-- The rendered mount hitbox is the real ray target. Both swing items and
-	-- hostile direct casts use the shared production acquisition seam, which
-	-- resolves that live attachment to the rider.
+	-- Build ray hits from the actual selection geometry. This proves that the
+	-- pointable mount covers the rendered rider instead of fabricating a hit.
 	local attacker = new_player("attacker", 60, "throng", "orc")
-	local ray_hits = {}
-	core.raycast = function()
-		local index = 0
+	local box_indices = {x = {1, 4}, y = {2, 5}, z = {3, 6}}
+	local function segment_box_hit(origin, destination, box, position)
+		local enter, leave = 0, 1
+		for _, axis in ipairs({"x", "y", "z"}) do
+			local delta = destination[axis] - origin[axis]
+			local indices = box_indices[axis]
+			local lower = position[axis] + box[indices[1]]
+			local upper = position[axis] + box[indices[2]]
+			if math.abs(delta) < 0.0000001 then
+				if origin[axis] < lower or origin[axis] > upper then return nil end
+			else
+				local first = (lower - origin[axis]) / delta
+				local second = (upper - origin[axis]) / delta
+				if first > second then first, second = second, first end
+				enter = math.max(enter, first)
+				leave = math.min(leave, second)
+				if enter > leave then return nil end
+			end
+		end
+		return {
+			x = origin.x + (destination.x - origin.x) * enter,
+			y = origin.y + (destination.y - origin.y) * enter,
+			z = origin.z + (destination.z - origin.z) * enter,
+		}
+	end
+	local mount_pos = record.object:get_pos()
+	local seat_y = record.model.attach_y * record.model.visual_size.y / 10
+	local aim_y = mount_pos.y + seat_y + 1.4
+	attacker.pos = {x = mount_pos.x, y = aim_y - attacker.properties.eye_height,
+		z = mount_pos.z - 3}
+	attacker.look_dir = {x = 0, y = 0, z = 1}
+	function attacker:get_look_dir() return clone_table(self.look_dir) end
+	core.raycast = function(origin, destination)
+		local hit = segment_box_hit(origin, destination,
+			record.object.properties.selectionbox, mount_pos)
+		local yielded = false
 		return function()
-			index = index + 1
-			return ray_hits[index]
+			if yielded or not hit then return nil end
+			yielded = true
+			return {type = "object", ref = record.object,
+				intersection_point = hit}
 		end
 	end
 	dofile(root .. "/mods/CORE/grug_core/combat_ray.lua")
 	local function acquire_mount_hit()
-		local origin = grug_core.combat_eye_pos(attacker)
-		ray_hits = {{type = "object", ref = record.object,
-			intersection_point = {x = origin.x, y = origin.y, z = origin.z + 2}}}
 		return grug_core.combat_ray(attacker, 4)
 	end
 	local swing_target = acquire_mount_hit()
@@ -492,11 +548,9 @@ return function(root)
 	grug_projectiles = {}
 	dofile(root .. "/mods/ENTITIES/grug_projectiles/collision.lua")
 	local projectile = {}
-	local origin = {x = 0, y = 0, z = 0}
-	ray_hits = {{type = "object", ref = record.object,
-		intersection_point = {x = 0, y = 0, z = 2}}}
+	local origin = {x = mount_pos.x, y = aim_y, z = mount_pos.z - 3}
 	local projectile_hit = grug_projectiles.trace_segment(attacker, projectile,
-		origin, {x = 0, y = 0, z = 4})
+		origin, {x = mount_pos.x, y = aim_y, z = mount_pos.z + 3})
 	assert(projectile_hit.kind == "object" and projectile_hit.target == rider and
 		projectile_hit.pointed.ref == record.object)
 
@@ -508,17 +562,35 @@ return function(root)
 		redirected:get_luaentity():on_punch(puncher, 1,
 			{damage_groups = {fleshy = 5}}, {x = 1, y = 0, z = 0})
 	end
+	local tool_attacker = new_player("tool_attacker", 60, "throng", "orc")
+	tool_attacker.inventory.main[1] = ItemStack("test:old_tool")
+	rider.punch_result = "zero"
+	rider.punch_wear = 321
+	rider.replace_attacker_wield = "test:replacement_tool"
+	attached_mob_melee(rider, tool_attacker)
+	assert(tool_attacker:get_wielded_item():get_name() == "test:replacement_tool" and
+		tool_attacker:get_wielded_item():get_wear() == 321 and
+		tool_attacker.wield_writes == 1,
+		"forwarded wear was not written to the post-punch wielded stack")
+	tool_attacker.inventory.main[1] = ItemStack("grug_abilities:strike")
+	rider.punch_wear = 0
+	local writes_before = tool_attacker.wield_writes
+	attached_mob_melee(rider, tool_attacker)
+	assert(tool_attacker:get_wielded_item():get_wear() == 0 and
+		tool_attacker.wield_writes == writes_before,
+		"use-zero ability stack received forwarded wear")
+	local punches_before = rider.punches
 	local friendly_mob = new_object({x = 0, y = 0, z = 0})
 	rider.punch_result = "friendly"
 	attached_mob_melee(rider, friendly_mob)
-	assert(rider.punches == 1 and rider.was_attached_when_punched and
+	assert(rider.punches == punches_before + 1 and rider.was_attached_when_punched and
 		grug_mounts.active[rider.name] ~= nil)
 	rider.punch_result = "zero"
 	attached_mob_melee(rider, friendly_mob)
-	assert(rider.punches == 2 and grug_mounts.active[rider.name] ~= nil)
+	assert(rider.punches == punches_before + 2 and grug_mounts.active[rider.name] ~= nil)
 	rider.punch_result = "damage"
 	attached_mob_melee(rider, friendly_mob)
-	assert(rider.punches == 3 and rider.hp == 95 and
+	assert(rider.punches == punches_before + 3 and rider.hp == 95 and
 		grug_mounts.active[rider.name] == nil)
 	assert(math.abs(rider.properties.visual_size.x - 0.9) < 0.000001 and
 		math.abs(rider.properties.visual_size.y - 0.9) < 0.000001)
@@ -561,6 +633,17 @@ return function(root)
 		assert(math.abs(effective_attachment -
 			expected_attachment_heights[model.id]) < 0.000001,
 			model.id .. " effective attachment height differs")
+		local rider_ray_y = effective_attachment + 1.79
+		assert(segment_box_hit({x = -4, y = rider_ray_y, z = 0},
+			{x = 4, y = rider_ray_y, z = 0}, model.selectionbox,
+			{x = 0, y = 0, z = 0}),
+			model.id .. " selection box misses the seated rider")
+		assert(not segment_box_hit({x = -4, y = model.selectionbox[5] + 0.01, z = 0},
+			{x = 4, y = model.selectionbox[5] + 0.01, z = 0},
+			model.selectionbox, {x = 0, y = 0, z = 0}),
+			model.id .. " geometric ray helper accepted a ray above the box")
+		assert(model.selectionbox[5] > model.collisionbox[5],
+			model.id .. " has no dedicated rider selection region")
 		if not seen[model.mesh] then
 			seen[model.mesh] = true
 			local path

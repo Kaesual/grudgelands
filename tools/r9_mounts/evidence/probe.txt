@@ -27,7 +27,7 @@ ACTION[Main]: [grug_traders] troll capital vendors come from the sockets of keza
 ACTION[Main]: [grug_traders] undead capital vendors come from the sockets of nhal_veyr
 ACTION[Main]: [grug_traders] 12 settlements indexed for profession vendor appearance
 ACTION[Main]: [grug_traders] drop audit: 3 mob(s) use a `drops` FUNCTION and cannot be walked statically (grug_mobs:bandit, grug_mobs:bandit_archer, grug_mobs:poacher); their items are audited from the hardcoded FUNCTION_DROPS list
-ACTION[Main]: World at [/tmp/grudgelands-headless.rgMygE/world]
+ACTION[Main]: World at [/tmp/grudgelands-headless.O5T2Rf/world]
 ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:32206.
 ACTION[Server]: [grug_core] start preload: emerging 6 start areas (128 x 128 nodes each, 2 at a time)
 ACTION[Emerge-0]: R9_MOUNTS_PROBE PASS entity=grug_mounts:mount rider=fake attached=true pointable=true rider_proxy=true static_save=false armor=immortal cleanup=true
@@ -38,10 +38,12 @@ successful disposable probe requests immediate shutdown instead of waiting for
 the six unrelated player-start emerges.
 
 Evidence hashes:
-ba848c2fce529702fb6c5a642a0d97fb85d698a0cb6d9b31233eb12d28dd6a8b  server.log
+6e93e1c1f6c34391108ab82988a69c5019ae5712da4b0021330cae3367e6657d  server.log
+f2f4d0c7cfb4a9003a79f0ee9cd5ad4195e2db8b74e24d14636f7f19a8f8823f  mods/CORE/grug_core/combat.lua
 909d3108d840d7cd4b90eb63d8cc5d04371d356355c0191c7e401214cff905e1  mods/CORE/grug_core/combat_ray.lua
 9c350b7e6e644373d17727d84e6717e2eef34d11bedf8899544bd29103b69990  mods/ENTITIES/grug_projectiles/collision.lua
-aab886bf4f5610d18b26976b034c19d9dfbca9be3d27b62f10194aeffd1eb95c  mods/PLAYER/grug_mounts/entity.lua
-26c762918c2e7a1b7eb8f7720a3a6d45e7d9cc7b25425c7017c1332e6778b09f  mods/PLAYER/grug_mounts/catalog.lua
+69f899f14b543c9e9fdcbdc6f9736830d1f6500aca4fd3a2d16b0420faad5c05  mods/PLAYER/grug_abilities/init.lua
+bcbc7c0b8c47133b0c4b6a2aca841db1245a4b20aa79d6490931b124de3a90a4  mods/PLAYER/grug_mounts/entity.lua
+fac9af82e74b0ca08ca8b2b4b5460c1426e92dd5228c5ceae8a24b1dfadad05c  mods/PLAYER/grug_mounts/catalog.lua
 8d8a3567061a436fbee8546582c7e9248d5dbd4b92c958c106821b566d14b6f4  mods/MAPGEN/grug_mapgen/wp40/zones.lua
 49f7b22cfa644965d967b3178fb38323d870742b334d25ab31e5b49a386bf8cb  tools/r9_mounts/probe/init.lua

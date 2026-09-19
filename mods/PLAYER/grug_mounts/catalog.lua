@@ -146,6 +146,23 @@ grug_mounts.MODELS = {
 	},
 }
 
+-- Selection geometry is deliberately taller than collision geometry.  The
+-- mount remains the physical body, while its pointable box also covers an
+-- ordinary full-height player rendered above the model-specific seat.
+local RIDER_RENDER_HEIGHT = 1.8
+local RIDER_HALF_WIDTH = 0.6
+for _, model in pairs(grug_mounts.MODELS) do
+	local box = model.collisionbox
+	local seat_y = model.attach_y * model.visual_size.y / 10
+	model.selectionbox = {
+		math.min(box[1], -RIDER_HALF_WIDTH), box[2],
+		math.min(box[3], -RIDER_HALF_WIDTH),
+		math.max(box[4], RIDER_HALF_WIDTH),
+		math.max(box[5], seat_y + RIDER_RENDER_HEIGHT),
+		math.max(box[6], RIDER_HALF_WIDTH),
+	}
+end
+
 function grug_mounts.model_for(player, tier_id)
 	local tier = grug_mounts.TIERS[tier_id]
 	if not tier then return nil end
