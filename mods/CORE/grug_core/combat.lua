@@ -23,6 +23,35 @@ function grug_core.get_player_level(player)
 	return 1
 end
 
+-- Mounted combat stays a Core-side query so the ability mod does not need a
+-- reverse dependency on grug_mounts.  The rider marker is live runtime state:
+-- an arbitrary attachment, a stale object or somebody else's mount is not a
+-- mounted player.
+local mounted_refusal_notice = {}
+
+function grug_core.player_has_live_mount(player)
+	if not (player and player.get_attach) then return false end
+	local object = player:get_attach()
+	if not object or not object.is_valid or not object:is_valid() then
+		return false
+	end
+	local entity = object:get_luaentity()
+	return entity ~= nil and entity._grug_rider == player
+end
+
+function grug_core.refuse_mounted_attack(player)
+	if not grug_core.player_has_live_mount(player) then return false end
+	local name = player:get_player_name()
+	local object = player:get_attach()
+	local now = core.get_us_time()
+	local notice = mounted_refusal_notice[name]
+	if not notice or notice.object ~= object or now - notice.at >= 1000000 then
+		core.chat_send_player(name, "Dismount before attacking.")
+		mounted_refusal_notice[name] = {object = object, at = now}
+	end
+	return true
+end
+
 -- Shared minimum-level decision for every item-backed gate. Gear, food and
 -- future potions/elixirs all publish `_grug_ilvl`; callers own only their
 -- context-specific refusal text.

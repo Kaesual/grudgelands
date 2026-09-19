@@ -633,6 +633,35 @@ ocean edge and the enemy border (warning band, hard dismount).
     at 1/2/4/8/16/32/48 nodes once per second: exact for any adjacent
     illegal column, within ±4 nodes at range; the hard dismount stays
     exact at the current node.
+43. **R7 source-audit roster stays frozen at 157; refreeze is backlog WP49,
+    option A** (orchestrator finding, user 2026-09-19 late evening): the
+    audit's `d6002a2`-relative derivation yields 293 production Lua files
+    on today's main against the 157 frozen on 2026-09-15, so
+    `source_audit.sh ... prefreeze` already exits 1 on main and no gate
+    runs it; the R7 micro fixture can only execute the 157 modules it has
+    environments for. MAP-C restores main's roster and counts (Astra had
+    refreshed them to 289 per the README), `final_micro.sh` remains the
+    gate, and no Round 9 lane refreshes the roster. WP49 later replaces
+    the derivation with a fixed mapgen roster (WP40 modules and their
+    direct neighbours) so audit and fixture agree again; not option B
+    (extend the fixture to ~136 unrelated modules) and not option C
+    (freeze the audit as a historical artefact).
+44. **Last Light shield lifetime = 120 s** (user 2026-09-19 late evening):
+    the design names no duration for the absorb shield; the absorb seam
+    requires one, so the trinket's 120 s cooldown doubles as the maximum
+    lifetime of an unconsumed shield.
+45. **Handover to an Astra orchestrator; push allowed** (user 2026-09-19
+    late evening): the Fable orchestrator finishes MAP-C and TRINKETS
+    (review, merge, gates, sync), pushes main, and prepares the start
+    prompt for a GPT-6 Astra orchestrator (handover package in
+    ~/projects/grudgelands-orchestration/w9/). Both orchestrators may push
+    main once validation and sync are green. Playtest 12 happens right
+    after those two merges, before the mapgen chain; the user discusses
+    its findings with the Astra orchestrator, fixes go to Round 10 unless
+    blocking. The MAP-C measurement (1.09x wall clock with the coast band
+    on, planner -9 %, writer +44 %) closes the mapgen discussion; R9-PERF
+    starts directly afterwards, implemented by an Astra subagent (the
+    orchestrator only orchestrates), reviews stay on GPT-5.6 Sol.
 
 ## 5. MAP-C protocol: what must not repeat from Round 8
 

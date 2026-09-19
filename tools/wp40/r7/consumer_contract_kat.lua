@@ -254,7 +254,8 @@ local public_methods = {"get", "at", "neighbors", "travel_links", "anchor",
 	"id_at", "biome_at", "race_region_at", "faction_at",
 	"territory_rule_at", "pvp_rule_at", "surface_mob_level_at",
 	"mob_level_at", "guard_level_at", "terrain_height_at", "water_class_at",
-	"nearest_route_at", "nearest_hydrology_at", "housing_eligible_at"}
+	"nearest_route_at", "nearest_hydrology_at",
+	"housing_eligible_at"}
 for i = 1, #public_methods do
 	check(type(grug_zones[public_methods[i]]) == "function",
 		"public R4 method is absent")

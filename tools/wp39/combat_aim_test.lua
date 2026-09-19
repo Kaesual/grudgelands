@@ -64,6 +64,7 @@ local function player(name, pos)
 	function obj:is_player() return true end
 	function obj:get_hp() return self.hp end
 	function obj:get_luaentity() return nil end
+	function obj:get_attach() return self.attached end
 	return obj
 end
 
@@ -165,5 +166,23 @@ local enemy_player = player("enemy", {x = 0, y = 0, z = 2})
 ray_hits = {point(enemy_player, 2)}
 result = grug_core.combat_ray(attacker, 4)
 assert(result.status == "target" and result.relation == "hostile")
+
+-- A mount keeps the rendered hitbox, while the shared ray resolves its live
+-- attachment to the rider for swing and direct-cast settlement.
+local mounted_enemy = player("enemy", {x = 0, y = 0, z = 2})
+local mount_entity = {_grug_rider = mounted_enemy}
+local mount = {pos = {x = 0, y = 0, z = 2}}
+function mount:get_pos() return self.pos end
+function mount:is_player() return false end
+function mount:get_luaentity() return mount_entity end
+mounted_enemy.attached = mount
+ray_hits = {point(mount, 2)}
+result = grug_core.combat_ray(attacker, 4)
+assert(result.status == "target" and result.target == mounted_enemy and
+	result.pointed.ref == mount and result.object_kind == "player")
+mounted_enemy.attached = nil
+ray_hits = {point(mount, 2)}
+result = grug_core.combat_ray(attacker, 4)
+assert(result.status == "aim_miss" and result.reason == "object")
 
 print("combat_aim_test: ok")

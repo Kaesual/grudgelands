@@ -15,25 +15,37 @@ local function hit_distance(origin, pointed)
 	return point and vector.distance(origin, point) or nil, point
 end
 
+local function rider_proxy(obj)
+	local entity = obj and obj.get_luaentity and obj:get_luaentity()
+	local rider = entity and entity._grug_rider
+	if rider and rider.is_player and rider:is_player() and rider:get_hp() > 0 and
+			rider:get_attach() == obj then
+		return rider
+	end
+	return obj
+end
+
 local function attackable_object(owner, projectile, obj)
 	if not obj or obj == owner or obj == projectile or not obj:get_pos() then
-		return false
+		return nil
 	end
+	obj = rider_proxy(obj)
+	if obj == owner then return nil end
 	if obj:is_player() then
 		-- Factionless players are neutral, not hostile. They neither take the
 		-- hit nor body-block it.
-		return obj:get_hp() > 0 and grug_factions.hostile(owner, obj)
+		return obj:get_hp() > 0 and grug_factions.hostile(owner, obj) and obj or nil
 	end
 	local ent = obj:get_luaentity()
 	if not ent or ent.name == "__builtin:item" or not ent._cmi_is_mob
 			or (ent.health or 0) <= 0 then
-		return false
+		return nil
 	end
 	if grug_mobs.is_noncombatant(ent) then
-		return false
+		return nil
 	end
 	-- Factionless mobs remain attackable, matching direct ability targeting.
-	return not grug_factions.same_faction(owner, obj)
+	return not grug_factions.same_faction(owner, obj) and obj or nil
 end
 
 local function nearer(candidate, best)
@@ -70,15 +82,15 @@ function grug_projectiles.trace_segment(owner, projectile, origin, destination)
 					node = node and node.name or "unknown",
 				} or nil
 			end
-		elseif pointed.type == "object"
-				and attackable_object(owner, projectile, pointed.ref) then
+		elseif pointed.type == "object" then
+			local target = attackable_object(owner, projectile, pointed.ref)
 			local distance, point = hit_distance(origin, pointed)
-			candidate = distance and {
+			candidate = target and distance and {
 				kind = "object",
 				distance = distance,
 				point = point,
 				pointed = pointed,
-				target = pointed.ref,
+				target = target,
 			} or nil
 		end
 		if candidate and candidate.distance <= segment_length + DISTANCE_EPSILON
