@@ -543,6 +543,9 @@ ocean edge and the enemy border (warning band, hard dismount).
     item (refinement) although that output has a universal engine recipe
     (`in_place` flag; everything else in the collision rules unchanged),
     so pick refinements can exist beside the universal pick recipes.
+32. **Mount prices** (2026-09-19): coordinator placeholders until WP44
+    measures them — T1 200, T2 1 500, T3 24 000, T4 100 000 copper
+    (10 gold; the user lowered T4 from the proposed 15 gold).
 
 ## 5. MAP-C protocol: what must not repeat from Round 8
 

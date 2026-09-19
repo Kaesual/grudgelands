@@ -229,6 +229,33 @@ sample (inside → refused, one node outside → allowed), the explosion KAT,
 the static sweep, and a headless probe detonating a Rift Spawn at a capital
 wall with zero node changes.
 
+### WP47 — Skills tab: draggable skill list, no auto-insertion, bound skill items
+
+**Open (user idea 2026-09-19); not part of Round 9, candidate for the polish round.**
+
+Problem: skills are tool items; a newly learned skill is inserted into the
+inventory, which collides with a full inventory, and unwanted skill items
+have no clean way out.
+
+Plan (orchestrator recommendation: an own sfinv tab "Skills", not a sub-tab
+of Talents — a separate concept, one cheap registered page, the tab bar has
+room):
+
+1. The Skills page shows an infinite source list of every skill the player
+   may personally use (class kit plus talent-unlocked skills, filtered by
+   class, level and talent state). Dragging into the inventory creates a
+   copy, refused when the same skill already lies anywhere in the inventory
+   (no duplicates).
+2. Putting a skill item back into the list or dropping it destroys the item;
+   no item entity is ever spawned (`on_drop` override). Moving a skill item
+   into any external inventory (chests) is refused — the same bound-item
+   rule R9-MOUNTS introduced for mount items; share the helper.
+3. Learning a skill no longer inserts it; it appears in the list and a chat
+   line announces it. Losing a skill (respec, talent change) removes its
+   copies from the inventory.
+4. KAT over the allow/on inventory-action callbacks (copy, duplicate
+   refusal, destroy on put/drop, chest refusal, removal on unlearn).
+
 ### First-public-release gates
 
 **Open; owner: the project coordinator preparing the first public release.**
