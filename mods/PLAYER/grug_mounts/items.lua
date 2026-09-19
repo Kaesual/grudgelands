@@ -21,6 +21,23 @@ local function refuse_drop(itemstack, dropper)
 	return itemstack
 end
 
+local function mount_stack(stack)
+	return stack and core.get_item_group(stack:get_name(), "grug_mount") > 0
+end
+
+-- A take is the outbound half of a player-to-external inventory transfer.
+-- Puts remain allowed so owner-bound stacks stranded by an interrupted move
+-- can be recovered; the post-action reconciliation removes stale duplicates.
+core.register_allow_player_inventory_action(function(_, action, _, info)
+	if action == "take" and mount_stack(info.stack) then return 0 end
+end)
+
+core.register_on_player_inventory_action(function(player, action, _, info)
+	if action == "put" and mount_stack(info.stack) then
+		grug_mounts.reconcile_items(player)
+	end
+end)
+
 for tier_id = 1, 4 do
 	local tier = grug_mounts.TIERS[tier_id]
 	core.register_craftitem(tier.item, {

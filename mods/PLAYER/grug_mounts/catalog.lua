@@ -3,9 +3,10 @@ local blank = "grug_mobs_blank.png"
 grug_mounts.WARNING_WIDTH = 48
 grug_mounts.FLIGHT_CEILING = 600
 
--- WP44 owns the measured copper outputs. An empty entry deliberately disables
--- that sale instead of reviving the retired fixed price table.
-grug_mounts.PRICES = {}
+-- WP44 replaces these coordinator placeholders with the measured 15 min,
+-- 45 min, 2 h and 5 h income values.
+grug_mounts.COORDINATOR_PLACEHOLDER_PRICES = {200, 1500, 24000, 150000}
+grug_mounts.PRICES = grug_mounts.COORDINATOR_PLACEHOLDER_PRICES
 
 grug_mounts.TIERS = {
 	[1] = {id = 1, key = "apprentice", name = "Apprentice Riding",

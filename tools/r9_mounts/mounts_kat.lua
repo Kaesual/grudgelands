@@ -3,7 +3,8 @@ return function(root)
 
 	local serialized, serial_id = {}, 0
 	local registered_entities, registered_items = {}, {}
-	local callbacks = {hp = {}, die = {}, leave = {}, shutdown = {}, join = {}}
+	local callbacks = {hp = {}, die = {}, leave = {}, shutdown = {}, join = {},
+		allow_inventory = {}, inventory = {}}
 	local players = {}
 	local zone_mode = "ocean"
 	local surface_height = 0
@@ -67,7 +68,7 @@ return function(root)
 		local meta_values = {}
 		local player = {
 			name = name, level = level, faction = faction, race = race,
-			balance = 10000, pos = {x = -100, y = 20, z = -100},
+			balance = 1000000, pos = {x = -100, y = 20, z = -100},
 			velocity = {x = 2, y = 3, z = 4}, properties = {hp_max = 100},
 			inventory = setmetatable({main = {}}, Inventory),
 			control = {}, hud = {}, hp = 100,
@@ -111,6 +112,13 @@ return function(root)
 		function player:hud_remove(id) self.hud[id] = nil end
 		function player:punch(_, _, _, _)
 			self.punches = (self.punches or 0) + 1
+			self.was_attached_when_punched = self.attached ~= nil
+			if self.punch_result == "zero" then
+				for _, callback in ipairs(callbacks.hp) do callback(self, 0, {}) end
+			elseif self.punch_result == "damage" then
+				self.hp = self.hp - 5
+				for _, callback in ipairs(callbacks.hp) do callback(self, -5, {}) end
+			end
 		end
 		players[name] = player
 		return player
@@ -161,6 +169,16 @@ return function(root)
 		register_on_leaveplayer = function(func) callbacks.leave[#callbacks.leave + 1] = func end,
 		register_on_shutdown = function(func) callbacks.shutdown[#callbacks.shutdown + 1] = func end,
 		register_on_joinplayer = function(func) callbacks.join[#callbacks.join + 1] = func end,
+		register_allow_player_inventory_action = function(func)
+			callbacks.allow_inventory[#callbacks.allow_inventory + 1] = func
+		end,
+		register_on_player_inventory_action = function(func)
+			callbacks.inventory[#callbacks.inventory + 1] = func
+		end,
+		get_item_group = function(name, group)
+			local definition = registered_items[name]
+			return definition and definition.groups and definition.groups[group] or 0
+		end,
 		get_player_by_name = function(name) return players[name] end,
 		after = function(_, func, ...) func(...) end,
 		get_node_or_nil = function() return {name = "air"} end,
@@ -210,20 +228,38 @@ return function(root)
 		end,
 		territory_rule_at = function(pos)
 			if zone_mode == "battleground" then return "holy_grounds" end
-			if zone_mode == "protected" or zone_mode == "protected_enemy" then
+			if zone_mode == "protected" or zone_mode == "protected_enemy" or
+					zone_mode == "protected_contested" or
+					zone_mode == "battleground_protected" then
 				return "hard_protected"
 			end
 			if zone_mode == "enemy" and pos.z >= 0 then return "throng_home" end
 			return "accord_home"
 		end,
-		faction_at = function()
-			return zone_mode == "protected_enemy" and "throng" or "accord"
+		at = function(pos)
+			if zone_mode == "battleground_protected" and
+					(pos.x == -2000 or pos.x == 2000) then
+				return {territory_rule = "holy_grounds"}
+			elseif zone_mode == "protected_enemy" then
+				return {territory_rule = "throng_home"}
+			elseif zone_mode == "protected_contested" then
+				return {territory_rule = "contested_land"}
+			end
+			return {territory_rule = "accord_home"}
+		end,
+		flight_boundary_distance = function(pos)
+			if zone_mode == "oblique" then
+				return math.abs(pos.x + pos.z) / math.sqrt(2), "enemy"
+			end
+			return math.abs(pos.x), "ocean"
 		end,
 		terrain_height_at = function() return surface_height end,
 	}
 
 	dofile(root .. "/mods/PLAYER/grug_mounts/init.lua")
-	grug_mounts.PRICES = {[1] = 100, [2] = 200, [3] = 300, [4] = 400}
+	assert(grug_mounts.PRICES == grug_mounts.COORDINATOR_PLACEHOLDER_PRICES)
+	assert(grug_mounts.PRICES[1] == 200 and grug_mounts.PRICES[2] == 1500 and
+		grug_mounts.PRICES[3] == 24000 and grug_mounts.PRICES[4] == 150000)
 
 	local buyer = new_player("buyer", 60, "accord", "human")
 	assert(grug_mounts.purchase(buyer, 1))
@@ -244,6 +280,58 @@ return function(root)
 	assert(names[grug_mounts.TIERS[2].item] == 1)
 	assert(names[grug_mounts.TIERS[4].item] == 1)
 	assert(names[grug_mounts.TIERS[3].item] == nil)
+	local function mount_count(player, mode)
+		local count, stale = 0, 0
+		for index = 1, #player.inventory.main do
+			local stack = player.inventory.main[index]
+			local definition = registered_items[stack:get_name()]
+			if definition and definition._grug_mount_tier then
+				local tier = grug_mounts.TIERS[definition._grug_mount_tier]
+				if tier.mode == mode then count = count + 1 end
+				if grug_mounts.highest_owned(player, tier.mode) ~=
+						definition._grug_mount_tier then
+					stale = stale + 1
+				end
+			end
+		end
+		return count, stale
+	end
+	local outbound = buyer.inventory.main[1]:copy()
+	for _, callback in ipairs(callbacks.allow_inventory) do
+		assert(callback(buyer, "take", buyer.inventory,
+			{listname = "main", index = 1, stack = outbound}) == 0)
+	end
+	for _, callback in ipairs(callbacks.allow_inventory) do
+		assert(callback(buyer, "move", buyer.inventory,
+			{from_list = "main", to_list = "main", from_index = 1,
+				to_index = 2, count = 1}) == nil)
+	end
+	-- A stale stack left in an external inventory before this rule can still be
+	-- recovered. Relog first restores the canonical item; the subsequent put is
+	-- reconciled immediately and cannot create a second usable mount.
+	local chest_stack = ItemStack(grug_mounts.TIERS[1].item)
+	chest_stack:get_meta():set_string("grug_mounts:owner", "buyer")
+	for _, callback in ipairs(callbacks.join) do callback(buyer) end
+	buyer.inventory.main[3] = chest_stack
+	for _, callback in ipairs(callbacks.inventory) do
+		callback(buyer, "put", buyer.inventory,
+			{listname = "main", index = 3, stack = chest_stack})
+	end
+	local land_count, stale_count = mount_count(buyer, "land")
+	assert(land_count == 1 and stale_count == 0)
+
+	local upgrader = new_player("upgrader", 60, "accord", "human")
+	assert(grug_mounts.purchase(upgrader, 1))
+	local stashed = upgrader.inventory.main[1]:copy()
+	assert(grug_mounts.purchase(upgrader, 2))
+	upgrader.inventory.main[2] = stashed
+	for _, callback in ipairs(callbacks.inventory) do
+		callback(upgrader, "put", upgrader.inventory,
+			{listname = "main", index = 2, stack = stashed})
+	end
+	land_count, stale_count = mount_count(upgrader, "land")
+	assert(land_count == 1 and stale_count == 0 and
+		upgrader.inventory.main[1]:get_name() == grug_mounts.TIERS[2].item)
 	local thief = new_player("thief", 60, "accord", "human")
 	thief:get_meta():set_int("grug_mounts:land_tier", 2)
 	local stolen = buyer.inventory.main[1]
@@ -272,17 +360,28 @@ return function(root)
 
 	zone_mode = "battleground"
 	assert(grug_mounts.flight_state(rider, {x = 10, y = 30, z = 10}))
+	zone_mode = "battleground_protected"
+	assert(grug_mounts.flight_state(rider, {x = -2000, y = 100, z = 0}))
+	assert(grug_mounts.flight_state(rider, {x = 2000, y = 100, z = 0}))
 	zone_mode = "protected"
 	assert(grug_mounts.flight_state(rider, {x = 10, y = 30, z = 10}))
 	zone_mode = "protected_enemy"
 	local legal, kind = grug_mounts.flight_state(rider, {x = 10, y = 30, z = 10})
 	assert(not legal and kind == "enemy")
+	zone_mode = "protected_contested"
+	legal, kind = grug_mounts.flight_state(rider, {x = 10, y = 30, z = 10})
+	assert(not legal and kind == "enemy")
 	zone_mode = "enemy"
 	legal, kind = grug_mounts.flight_state(rider, {x = 10, y = 30, z = 1})
 	assert(not legal and kind == "enemy")
 	zone_mode = "ocean"
-	assert(grug_mounts.warning_state(rider, {x = -48, y = 30, z = 0}) == "ocean")
-	assert(grug_mounts.warning_state(rider, {x = -49, y = 30, z = 0}) == nil)
+	assert(grug_mounts.warning_state(rider, {x = -47.9, y = 30, z = 0}) == "ocean")
+	assert(grug_mounts.warning_state(rider, {x = -48.1, y = 30, z = 0}) == nil)
+	zone_mode = "oblique"
+	assert(grug_mounts.warning_state(rider,
+		{x = -47.9 * math.sqrt(2), y = 30, z = 0}) == "enemy")
+	assert(grug_mounts.warning_state(rider,
+		{x = -48.1 * math.sqrt(2), y = 30, z = 0}) == nil)
 
 	surface_height = 20
 	rider.pos = {x = -100, y = 19, z = -100}
@@ -296,6 +395,7 @@ return function(root)
 	rider.control = {jump = true}
 	record.object.entity:on_step(0.1)
 	assert(record.object.pos.y == 600 and record.object.velocity.y == 0)
+	zone_mode = "ocean"
 	record.object.pos = {x = 0, y = 100, z = -100}
 	rider.velocity = {x = 3, y = 4, z = 5}
 	record.object.entity:on_step(0.1)
@@ -310,13 +410,29 @@ return function(root)
 	assert(grug_mounts.entity_definition.initial_properties.static_save == false)
 	assert(grug_mounts.entity_definition.drops == nil)
 	local attacker = {is_valid = function() return true end}
+	rider.punch_result = "friendly"
 	record.object.entity:on_punch(attacker, 1, {damage_groups = {fleshy = 5}},
 		{x = 1, y = 0, z = 0}, 5)
-	assert(rider.punches == 1 and grug_mounts.active[rider.name] == nil)
+	assert(rider.punches == 1 and rider.was_attached_when_punched and
+		grug_mounts.active[rider.name] ~= nil)
+	rider.punch_result = "zero"
+	record.object.entity:on_punch(attacker, 1, {damage_groups = {fleshy = 0}},
+		{x = 1, y = 0, z = 0}, 0)
+	assert(rider.punches == 2 and grug_mounts.active[rider.name] ~= nil)
+	rider.punch_result = "damage"
+	record.object.entity:on_punch(attacker, 1, {damage_groups = {fleshy = 5}},
+		{x = 1, y = 0, z = 0}, 5)
+	assert(rider.punches == 3 and rider.hp == 95 and
+		grug_mounts.active[rider.name] == nil)
 
-	local extension = callbacks.trainer({action = "formspec", player = buyer,
+	local price_viewer = new_player("price_viewer", 60, "accord", "human")
+	local extension = callbacks.trainer({action = "formspec", player = price_viewer,
 		profession = "blacksmith"})
 	assert(extension.size == "size[9.25,5.15]" and #extension.fragments >= 7)
+	local trainer_text = table.concat(extension.fragments, "|")
+	for _, price in ipairs(grug_mounts.PRICES) do
+		assert(trainer_text:find("Buy " .. price .. "c", 1, true))
+	end
 
 	local ledgers = {
 		[root .. "/mods/PLAYER/grug_mounts/LICENSE-media.md"] = true,
@@ -359,6 +475,6 @@ return function(root)
 			model.id .. " animation exceeds its mesh")
 	end
 
-	return "r9_mounts_v1|tiers=4|models=12|warning=48|ceiling=600|assets=" ..
+	return "r9_mounts_v2|tiers=4|models=12|warning=48|ceiling=600|assets=" ..
 		tostring((function() local count = 0 for _ in pairs(seen) do count = count + 1 end return count end)()) .. "\n"
 end

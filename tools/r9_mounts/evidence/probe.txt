@@ -7,8 +7,27 @@ PORT=32206 PROBE=tools/r9_mounts/probe KEEP=1 nice -n 19 bash tools/luanti_headl
 Result: exit 0; headless boot PASS; zero ERROR/ModError lines.
 Post-run `pgrep -f '^luanti.bin'`: no output.
 
-Relevant server.log lines:
+Raw `grep 'ACTION' server.log` summary:
+ACTION[Main]: [grug_materials] 12 tools completing the six-tier pick/axe/shovel ladder
+ACTION[Main]: [grug_gear] 6 bracket catalogs: 24 weapons + 48 armor pieces
+ACTION[Main]: [grug_materials] registry audit passed: 6 tiers, 15 resources, 12 processed forms, 6 race regions
+ACTION[Main]: [grug_smelting] recipe audit passed: 5 cooking, 5 dualfurn, 12 storage pairs, 1 station
+ACTION[Main]: [grug_visuals] 48 armor pieces indexed for overlays, 2 art lines x 4 slots
+ACTION[Main]: [grug_mobs] settlement work activities: tools 7, weapon families 1, all registered
+ACTION[Main]: [grug_fishing] tables=6 entries=18 weight=100 bite=3..10s rod_uses=64
+ACTION[Main]: [grug_inventory] starter weapons: mage=grug_gear:staff_wood (2H), priest=grug_gear:staff_wood (2H), warrior=default:sword_stone
+ACTION[Main]: [grug_traders] 12 profession shelves, 74 offers, all registered
+ACTION[Main]: [grug_traders] dwarf capital vendors come from the sockets of dur_brannoc
+ACTION[Main]: [grug_traders] elf capital vendors come from the sockets of lethariel
+ACTION[Main]: [grug_traders] human capital vendors come from the sockets of highcourt
+ACTION[Main]: [grug_traders] orc capital vendors come from the sockets of gor_drazhak
+ACTION[Main]: [grug_traders] troll capital vendors come from the sockets of kezamba
+ACTION[Main]: [grug_traders] undead capital vendors come from the sockets of nhal_veyr
+ACTION[Main]: [grug_traders] 12 settlements indexed for profession vendor appearance
+ACTION[Main]: [grug_traders] drop audit: 3 mob(s) use a `drops` FUNCTION and cannot be walked statically (grug_mobs:bandit, grug_mobs:bandit_archer, grug_mobs:poacher); their items are audited from the hardcoded FUNCTION_DROPS list
+ACTION[Main]: World at [/tmp/grudgelands-headless.jP8KVu/world]
 ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:32206.
+ACTION[Server]: [grug_core] start preload: emerging 6 start areas (128 x 128 nodes each, 2 at a time)
 ACTION[Emerge-0]: R9_MOUNTS_PROBE PASS entity=grug_mounts:mount rider=fake attached=true static_save=false armor=immortal cleanup=true
 ACTION[Main]: Server: Shutting down
 
@@ -17,7 +36,8 @@ successful disposable probe requests immediate shutdown instead of waiting for
 the six unrelated player-start emerges.
 
 Evidence hashes:
-e1ffa076be92892a32c0f83951570327ee26969fea392c5274e3e6243a5c3331  server.log
-8cefcddc9808e7c25091584780282141ef58449daf855a86efe83582f4733099  mods/PLAYER/grug_mounts/entity.lua
-fdba07f2497a4db59b1fbc1542c29fcca34206f79cb8cefac48992f5c02a4be6  mods/PLAYER/grug_mounts/catalog.lua
+169ad4b97ee0ace1ddcfdb7cf4f521b43482abbe4357747019558bab8a7d7e1b  server.log
+62d9a0723f015458908c24827d1bcd37b598c666ed8a84bc552bf208931bb8fc  mods/PLAYER/grug_mounts/entity.lua
+351d0d9fc96e42af35043abffe2a407d8ebcb33136898f5d518a552e05894cff  mods/PLAYER/grug_mounts/catalog.lua
+0627f24f6099364f63c362ab727a25683ae67a496ee9ca26211648176083529a  mods/MAPGEN/grug_mapgen/wp40/zones.lua
 b687302c2ded08da6e994916b9b652f0d8d2536dc99faf6e84a642f520e86487  tools/r9_mounts/probe/init.lua

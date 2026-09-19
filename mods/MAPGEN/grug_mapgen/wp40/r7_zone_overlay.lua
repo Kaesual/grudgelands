@@ -39,6 +39,7 @@ return function(session, roster)
 	end
 	local wrapped = {}
 	for key, value in pairs(session) do wrapped[key] = value end
+	wrapped.flight_boundary_distance = session.flight_boundary_distance
 	function wrapped.territory_rule_at(position)
 		if functional_protected(position) then return "hard_protected" end
 		return session.territory_rule_at(position)

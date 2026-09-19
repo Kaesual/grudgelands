@@ -235,6 +235,74 @@ local function zones_factory(dependencies)
 		planned_water = true,
 		coastal_shelf = true,
 	}
+
+	local function point_segment_distance(x, z, a, b)
+		local vx, vz = b.x - a.x, b.z - a.z
+		local length_squared = vx * vx + vz * vz
+		if length_squared == 0 then
+			local dx, dz = x - a.x, z - a.z
+			return math.sqrt(dx * dx + dz * dz)
+		end
+		local ratio = ((x - a.x) * vx + (z - a.z) * vz) / length_squared
+		if ratio < 0 then ratio = 0 elseif ratio > 1 then ratio = 1 end
+		local dx, dz = x - (a.x + ratio * vx), z - (a.z + ratio * vz)
+		return math.sqrt(dx * dx + dz * dz)
+	end
+
+	-- Exact Euclidean distance to an axis-aligned ellipse. A fixed ternary
+	-- solve over its convex quadrant puts the numeric error far below a map
+	-- coordinate's precision, including points on either principal axis.
+	local function ellipse_boundary_distance(x, z, row)
+		local px, pz = math.abs(x - row.center.x), math.abs(z - row.center.z)
+		local a, b = row.radius_x, row.radius_z
+		local function squared(angle)
+			local dx, dz = px - a * math.cos(angle), pz - b * math.sin(angle)
+			return dx * dx + dz * dz
+		end
+		local low, high = 0, math.pi / 2
+		for _ = 1, 64 do
+			local third = (high - low) / 3
+			local left, right = low + third, high - third
+			if squared(left) <= squared(right) then high = right else low = left end
+		end
+		return math.sqrt(squared((low + high) / 2))
+	end
+
+	local function rounded_rectangle_boundary_distance(x, z, row)
+		local radius = row.radius
+		local center_x, center_z = (row.min_x + row.max_x) / 2,
+			(row.min_z + row.max_z) / 2
+		local inner_x = (row.max_x - row.min_x) / 2 - radius
+		local inner_z = (row.max_z - row.min_z) / 2 - radius
+		local qx, qz = math.abs(x - center_x) - inner_x,
+			math.abs(z - center_z) - inner_z
+		local outside_x, outside_z = math.max(qx, 0), math.max(qz, 0)
+		local signed = math.sqrt(outside_x * outside_x + outside_z * outside_z) +
+			math.min(math.max(qx, qz), 0) - radius
+		return math.abs(signed)
+	end
+
+	local function primitive_boundary_distance(x, z, row)
+		if row.kind == "capsule" then
+			return math.abs(point_segment_distance(x, z, row.a, row.b) - row.radius)
+		elseif row.kind == "ellipse" then
+			return ellipse_boundary_distance(x, z, row)
+		elseif row.kind == "rounded_rect" then
+			return rounded_rectangle_boundary_distance(x, z, row)
+		end
+		error("WP40 R4 unknown flight-boundary primitive", 0)
+	end
+
+	local function rectangle_boundary_distance(x, z, row)
+		if x >= row.min_x and x <= row.max_x and
+				z >= row.min_z and z <= row.max_z then
+			return math.min(x - row.min_x, row.max_x - x,
+				z - row.min_z, row.max_z - z)
+		end
+		local dx = math.max(row.min_x - x, 0, x - row.max_x)
+		local dz = math.max(row.min_z - z, 0, z - row.max_z)
+		return math.sqrt(dx * dx + dz * dz)
+	end
 	local FUNCTIONAL_KINDS = {
 		anchor_platform = true,
 		bridge_deck = true,
@@ -456,6 +524,7 @@ local function zones_factory(dependencies)
 		local horizontal = horizontal_module.new(full_seed_string)
 		if type(horizontal) ~= "table" or
 				type(horizontal.classification_values_at) ~= "function" or
+				type(horizontal.warp_at) ~= "function" or
 				type(horizontal.difficulty_for_macro_at) ~= "function" or
 				type(horizontal.polyline_corridor_member) ~= "function" or
 				type(horizontal.housing_eligible_at) ~= "function" or
@@ -545,6 +614,14 @@ local function zones_factory(dependencies)
 			zone_records[zone_index] = record
 			zone_by_numeric[zone_index] = record
 			zone_by_id[row.id] = record
+		end
+		local warped_zone_hubs = {}
+		for zone_index = 1, #source.zones do
+			warped_zone_hubs[zone_index] = horizontal.warp_at(
+				source.zones[zone_index].hub.x, source.zones[zone_index].hub.z)
+			if not warped_zone_hubs[zone_index] then
+				fail("zone hub has no warped flight-boundary coordinate")
+			end
 		end
 
 		local neighbor_ids = {}
@@ -1157,6 +1234,80 @@ local function zones_factory(dependencies)
 			local x, _, z, outside = normalize_position(position, "zone query")
 			local _, _, owner = classification_values(x, z, outside)
 			return owner and deep_copy(zone_by_numeric[owner]) or nil
+		end
+
+		-- Horizontal distance from a currently legal flying column to the nearest
+		-- authored legal/illegal boundary. Geometry is evaluated directly: power
+		-- bisectors cover oblique territory lines, while the source primitives
+		-- cover straight and curved coastlines without radial sampling.
+		local function flight_boundary_distance(position, actor_faction)
+			if actor_faction ~= "accord" and actor_faction ~= "throng" then
+				return 0, "enemy"
+			end
+			if type(position) ~= "table" then
+				fail("flight-boundary query is not a position")
+			end
+			local raw_x = finite_number(position.x, "flight-boundary query x")
+			local raw_z = finite_number(position.z, "flight-boundary query z")
+			local x, _, z, outside = normalize_position(position,
+				"flight-boundary query")
+			local water_class, macro_region, owner = classification_values(x, z, outside)
+			if (water_class ~= "land" and water_class ~= "planned_water") or
+					not owner then
+				return 0, "ocean"
+			end
+			local current = zone_by_numeric[owner]
+			local function legal(record)
+				return record.territory_rule == "holy_grounds" or
+					record.territory_rule == actor_faction .. "_home"
+			end
+			if not legal(current) then return 0, "enemy" end
+
+			local nearest, nearest_kind
+			local function consider(distance, kind)
+				if distance and distance >= 0 and
+						(nearest == nil or distance < nearest) then
+					nearest, nearest_kind = distance, kind
+				end
+			end
+
+			local warped = horizontal.warp_at(x, z)
+			if warped then
+				warped.x, warped.z = warped.x + raw_x - x, warped.z + raw_z - z
+				for candidate_id = 1, #zone_records do
+					local candidate = zone_by_numeric[candidate_id]
+					if candidate.macro_region == macro_region and not legal(candidate) then
+						local own_hub, other_hub = warped_zone_hubs[owner],
+							warped_zone_hubs[candidate_id]
+						local dx, dz = other_hub.x - own_hub.x,
+							other_hub.z - own_hub.z
+						local denominator = 2 * math.sqrt(dx * dx + dz * dz)
+						if denominator > 0 then
+							local own_score = (warped.x - own_hub.x) ^ 2 +
+								(warped.z - own_hub.z) ^ 2 - source.zones[owner].bias
+							local other_score = (warped.x - other_hub.x) ^ 2 +
+								(warped.z - other_hub.z) ^ 2 -
+								source.zones[candidate_id].bias
+							consider(math.abs(other_score - own_score) / denominator,
+								"enemy")
+						end
+					end
+				end
+
+				if macro_region == "holy_grounds" then
+					consider(rectangle_boundary_distance(raw_x, raw_z,
+						source.holy_grounds), "enemy")
+				else
+					for primitive_index = 1, #source.land_primitives do
+						local primitive = source.land_primitives[primitive_index]
+						if primitive.region == macro_region then
+							consider(primitive_boundary_distance(warped.x, warped.z,
+								primitive), "ocean")
+						end
+					end
+				end
+			end
+			return nearest, nearest_kind
 		end
 
 		function session.neighbors(zone_id)
@@ -1809,6 +1960,9 @@ local function zones_factory(dependencies)
 		end
 
 		construction_complete = true
+		setmetatable(session, {__index = {
+			flight_boundary_distance = flight_boundary_distance,
+		}})
 		return session, planner_source
 	end
 

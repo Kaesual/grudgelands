@@ -1,19 +1,9 @@
 local ENTITY_NAME = "grug_mounts:mount"
 local WARNING_INTERVAL = 0.25
-local WARNING_RAYS = 32
 local active = {}
-local warning_offsets = {}
 local activating_players = {}
 
 grug_mounts.active = active
-
-for index = 0, WARNING_RAYS - 1 do
-	local angle = index * math.pi * 2 / WARNING_RAYS
-	warning_offsets[#warning_offsets + 1] = {
-		x = math.cos(angle) * grug_mounts.WARNING_WIDTH,
-		z = math.sin(angle) * grug_mounts.WARNING_WIDTH,
-	}
-end
 
 local function valid_player(player)
 	return player and player.is_player and player:is_player()
@@ -122,8 +112,12 @@ function grug_mounts.flight_state(player, pos)
 	if territory == "holy_grounds" or territory == faction .. "_home" then
 		return true, nil
 	end
-	if territory == "hard_protected" and grug_zones.faction_at(pos) == faction then
-		return true, nil
+	if territory == "hard_protected" then
+		local zone = grug_zones.at(pos)
+		if zone and (zone.territory_rule == "holy_grounds" or
+				zone.territory_rule == faction .. "_home") then
+			return true, nil
+		end
 	end
 	return false, "enemy"
 end
@@ -131,11 +125,9 @@ end
 function grug_mounts.warning_state(player, pos)
 	local legal = grug_mounts.flight_state(player, pos)
 	if not legal then return nil end
-	for _, offset in ipairs(warning_offsets) do
-		local sample = {x = pos.x + offset.x, y = pos.y, z = pos.z + offset.z}
-		local sample_legal, kind = grug_mounts.flight_state(player, sample)
-		if not sample_legal then return kind end
-	end
+	local faction = grug_factions.get_faction(player)
+	local distance, kind = grug_zones.flight_boundary_distance(pos, faction)
+	if distance and distance <= grug_mounts.WARNING_WIDTH then return kind end
 	return nil
 end
 
@@ -301,7 +293,6 @@ local entity_definition = {
 	on_punch = function(self, puncher, time_from_last_punch, tool_capabilities, dir)
 		local player = self.driver
 		if not valid_player(player) then return end
-		grug_mounts.dismount(player, nil, false)
 		if puncher and puncher.is_valid and puncher:is_valid() then
 			player:punch(puncher, time_from_last_punch, tool_capabilities, dir)
 		end
