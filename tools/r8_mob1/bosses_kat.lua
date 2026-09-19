@@ -422,9 +422,12 @@ return function(root)
 		"enemy"))
 	assert(node_map["0:1:0"] == "grug_mobs:dragon_rime" and
 		timers["0:1:0"].duration == 8)
-	-- A player origin sits half a node above the effect. Engine rounding selects
-	-- the air node above, so the foot lookup must also inspect the node below.
-	enemy.pos = {x = 0, y = 1.5, z = 0}
+	-- A standing player's origin rests half a node above the ground node at
+	-- y=0 (collision box from relative y=0, node top at 0.5), i.e. at y=0.5
+	-- with the effect node at y=1: vector.round maps 0.5 to the effect node
+	-- itself. The old floor(pos.y - 0.1) lookup read the ground node and
+	-- missed; this fixture must fail for that lookup.
+	enemy.pos = {x = 0, y = 0.5, z = 0}
 	connected_players = {enemy}
 	globalsteps[1](0.25)
 	assert(enemy.slow_factor == 0.6, "rime did not apply its 40 percent slow")
