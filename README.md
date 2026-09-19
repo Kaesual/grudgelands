@@ -7,7 +7,7 @@ built as a standalone Lua game rather than a mod pack.
 > **Status: in development.** The world, mobs, three classes, combat,
 > equipment, XP, the first money/vendor economy and the shared profession
 > framework are playable. The final named-zone map is implemented and awaiting
-> release/runtime gates; quests, the six primary and Alchemy recipe catalogs, open-world housing
+> release/runtime gates; quests, five primary recipe catalogs, open-world housing
 > and geographic PvP are not built. See
 > [Current State](#current-state).
 
@@ -17,7 +17,8 @@ built as a standalone Lua game rather than a mod pack.
 
 The **Accord** holds southern **Elandor** and the **Throng** northern
 **Kragmar**. Their war over territory and pride is generations old. What is
-new is the ancient demonic threat reaching upward through the Nether: it
+new is the ancient demonic threat reaching upward through the Nether: V1
+foreshadows it, while the walkable Nether is the main V2 content update. It
 endangers both factions without uniting them, so each side follows an
 equivalent campaign in parallel and competition.
 
@@ -144,7 +145,9 @@ gems, Rough-to-Cut processing, Settings, both trinket slots and the exact
 natural-gem yield bonus. Mining, smelting and universal base-item crafting
 remain open to everyone through the General book. Cooking already has its
 six-tier three-role dish ladder, raw assembled-dish path and furnace
-refinements; its new plants are inventory items awaiting world placement.
+refinements; its new plants are inventory items awaiting Round 9 world
+placement. Alchemy has its 21 potions and elixirs plus the capital brewing
+stand; the other five primary catalogs follow in Round 9.
 
 The gathering contract closes twelve one-cell herb, spice and food sources,
 eight reused tree/food sources and six cultural sources. Healing herbs fail
@@ -244,7 +247,7 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 
 ## Current State
 
-*Last updated: 2026-09-18. Derived from [BACKLOG.md](BACKLOG.md) and
+*Last updated: 2026-09-19. Derived from [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md); those are the status sources of truth.*
 
 **Shipped (22 of 49 work packages):** WP0–WP4, WP6, WP7, WP15, WP18, WP19,
@@ -266,19 +269,25 @@ start areas, which a fresh world emerges once and records in mod storage. WP40's
 [development acceptance](docs/research/wp40-completion.md) now includes the first
 terrain/performance correction round and green native plus browser-local
 Lua-5.1 user tests; slower browser generation is accepted for this server game.
+Round 8 adds per-viewer player nametags, shared profession books and trainers,
+Cooking and Alchemy v1, new day/night mob families, two dragons and six kings
+with their guards. It also closes every capital boundary ring and adds four
+coast profiles, sand, shallow strata and connected cave mouths; plant placement
+and crop soil carry into Round 9.
 WP16 is canceled and is not counted as shipped. WP-Scout, WP-HUD and WP-Speed
 are counted in the 49; only WP-Scout remains open.
 
-**Not in the game yet:** quests, the six primary profession catalogs, the
-Alchemy recipe content and brewing stand, talent keystones, capstones and their four new
+**Not in the game yet:** quests, the five remaining primary profession
+catalogs, talent keystones, capstones and their four new
 abilities (WP11 X3), parties,
 the remaining recovery/rest systems, offhand items, affixes, durability, final structures, travel/map, Claim Stone housing,
-mounts and bosses remain unbuilt. X1, X2 and X4 of the talent trees are in the
+mounts and the remaining boss encounters remain unbuilt. X1, X2 and X4 of the talent trees are in the
 game; X4's respec prices remain coordinator placeholders. Geographic PvP,
 bounded war-front life and the rebased economy are also pending. Remaining
 mount and deep-content decisions live in [the crafting/mount TODO](TODO-design-crafting-rework.md)
-and [the depth TODO](TODO-design-depth.md); the next two rounds are planned in
-[TODO-round7.md](TODO-round7.md) and [TODO-round8.md](TODO-round8.md); the [boat contract](docs/design/boats.md)
+and [the depth TODO](TODO-design-depth.md); Round 8 is closed in
+[TODO-round8.md](TODO-round8.md), and [TODO-round9.md](TODO-round9.md) carries
+the next round; the [boat contract](docs/design/boats.md)
 and [PvP-death XP exemption](docs/design/progression.md) are already decided.
 
 **In progress:** WP11 phase 1 has shipped its talent registry, 48 talents,
@@ -289,7 +298,8 @@ T1–T6 ladder, six raw assembled dishes, three basic furnace refinements and
 the current raw-food tiers. WP10's shared `grug_jobs` framework is live: two
 primary slots plus Cooking, persistent T1–T6 craft progression, complete UI
 books, grid/station permission gates and trainers in every start and capital;
-Alchemy remains in Round 8 and the six primary catalogs in Round 9. WP13 has built
+Alchemy v1 adds its capital stand and 21-item potion/elixir catalog, while the
+five remaining primary catalogs follow in Round 9. WP13 has built
 **all six start settlements and all six capitals**. The starts share one reusable building library with per-race
 palettes -- small dense houses with doors, pane windows, stair roofs,
 furnished interiors and exterior dressing -- and each is a different
@@ -342,7 +352,9 @@ mirefolk camps, 16 clash anchors, 2 dragon arenas, 2 apex camps and 10
 rare-route pads. The mirefolk camps, clash anchors and dragon arenas are
 dressing only here -- WP42 and WP23 own what happens in them -- and the apex
 camps' twelve renewable sockets are WP34's. The six kings and their royal
-guards are unbuilt too.
+guards now occupy the capital sockets; each king owns the shared reset,
+participation and respawn clock for its four-guard group. A final boundary pass
+keeps all six capital rings continuous except at their four authored gates.
 
 **Fishing** arrived with the same round: `grug_fishing` adds a craftable rod
 that lasts 64 catches, furnace-cooked fish and six catch tables selected by the
@@ -361,8 +373,9 @@ economy.
 
 **Media remains decision-gated:**
 [the Round 6 candidate report](docs/research/reference-media-candidates.md)
-records provenance and suitability only. No candidate was imported; each one
-still awaits the user's explicit per-candidate decision.
+records provenance and suitability only and authorizes no import by itself.
+The assets approved separately for Round 8 are recorded in the repository's
+licence ledgers; all other candidates still require an explicit decision.
 
 **Release boundary:** WP40 is completed as development work; it does not declare
 our first public release or end fresh-server mode. Current-candidate resource

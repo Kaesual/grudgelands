@@ -637,8 +637,9 @@ kites into terrain, sidesteps pathfinding exploits), telegraphed attacks
 - **Phase 2+ — additional regional apex creatures**, same code, own
   kits: e.g. jungle giant serpent (poison pools, submerges), blight bone
   colossus (knockback slam, summons adds). The dragon stays the biggest.
-- **Phase 3 — the Nether dragon lord** as the demonic story capstone
-  (story.md; only if the population supports larger raids).
+- **V2 — the Nether dragon lord** as part of the first large post-V1 content
+  update, whose Nether has its own mapgen, story line and mob cast; the Fire
+  Dragon and the wider Nether encounter reserve stay reserved until then.
 
 ## 4c. Deep T5/T6 is contested endgame territory
 

@@ -90,6 +90,10 @@ the goal-level view.
   ancient demonic threat reaches upward through the Nether. Both factions face
   it in parallel without becoming allies.
 
+**V1 boundary (decided 2026-09-18):** V1 comprises Rounds 1–9, open-world
+housing (WP24), mounts (WP31), the first-public-release gates and final polish.
+The Nether is not part of V1.
+
 ## Phase 1 — Playable core and world foundation
 
 ### Shipped foundation
@@ -189,19 +193,18 @@ the goal-level view.
   registry/text list and Food v2 tier framework. Round 8 now has WP10's shared
   profession registry, T1–T6 progression, UI books, station gates and trainer
   sockets plus Cooking's eighteen dishes, raw/furnace paths and plant-item
-  catalog; its Alchemy lane still adds that catalog and brewing stand, while
-  Round 9 adds the six primary catalogs.
-- [ ] **WP13 — in progress:** final starts, capitals, settlements, camps,
-  kings/guards and both all-six-gem apex camps on shipped WP40 geometry and
+  catalog. Alchemy v1 now adds its 21 potions/elixirs and the capital brewing
+  stands; Round 9 adds the remaining five primary catalogs.
+- [ ] **WP13 — in progress:** final starts, capitals, settlements, camps and
+  both all-six-gem apex camps on shipped WP40 geometry and
   WP43 materials. **All six start settlements are built** (2026-09-14) on one
   reusable building library with per-race palettes, together with the
   atmosphere layer and a licence-audited decorative building kit: Hearthpine
   Vale (dwarf), Dawnmere Fields (human), Silverleaf Glade (elf), Stillgrave
   Hollow (undead), Sunscar Camp (orc) and Kapok Cradle (troll). The four
   parallel lanes were merged onto one branch and given one combined
-  review-fix round. Every start awaits the user's GUI playtest; capitals,
-  villages, outposts, camps and the king/guard content are the rest of the
-  package.
+  review-fix round. Every start awaits the user's GUI playtest; capitals are
+  built, while villages, outposts and camps remain in the package.
   The **capital parts library** followed the same day: eighteen generators
   (king's hall with throne room, curtain wall, tower, gatehouse, market
   square, colonnade, temple, barracks, scriptorium, granary, stable,
@@ -257,9 +260,10 @@ the goal-level view.
   with a shipwright's plot and display boat, 24 outposts, 12 bandit camps, 6
   mining camps, 4 mirefolk camps, 16 clash anchors, 2 dragon arenas, 2 apex
   camps and 10 rare-route pads, where the mirefolk camps, clash anchors and
-  dragon arenas are WP13 dressing only and WP42/WP23 own their encounters;
-  and the six kings with their royal guards — no king entity exists yet, only
-  the `king` socket in every capital core.
+  dragon arenas are WP13 dressing only and WP42/WP23 own their encounters.
+  The six level-65 kings and their four level-60 royal guards per capital now
+  occupy the authored sockets, and the post-content boundary walker closes
+  every capital ring while preserving only its four gate bands.
 - [x] WP33: gathering plants, signature woods and cultural sources on final
   zone/race-region ownership; accepted with WP40 R7 on 2026-09-02.
 - [ ] WP34: deep spawn pressure, corrected depth-level curve, camp-only
@@ -298,14 +302,12 @@ remain explicit coverage limits. Full tracking lives in
 
 - [ ] Paladin, Rogue, Warlock and Shaman; decide the separate ranged-weapon
   class direction before activating the already-catalogued bow family.
-- [ ] Farming inside active claims: only cooking foods and universal spices
-  become crops; healing herbs, cultural materials, ores and found-only foods
-  do not.
 - [ ] Coastal-shelf life: coral, kelp, fish, coastal materials and shore
   wildlife inside the authored editable shelf, without redefining deep ocean
   or the dragon channels.
-- [ ] Walkable Nether content and later demonic bosses after its focused
-  design questions are resolved.
+- [ ] **V2's main content update: the walkable Nether**, with its own mapgen,
+  story line and mob cast. The Fire Dragon and the Nether reserve from the mob
+  plan remain reserve content for that update.
 - [ ] Dungeons, regional apex encounters, reputation and player trading.
 
 ## Phase 3 — Polish
