@@ -181,31 +181,43 @@ return function(root)
 	vector = {offset = function(pos, x, y, z)
 		return {x = pos.x + x, y = pos.y + y, z = pos.z + z}
 	end}
-	for _, hazard in ipairs({
-		{name = "ordinary"}, {name = "water-adjacent", water = true},
-		{name = "protected", protected = true},
-	}) do
-		local burst_hits, burst_particles, burst_sounds, removals = 0, 0, 0, 0
+	local function rift_step_case(hazard)
+		local burst_hits, burst_particles, burst_sounds, removals, stops =
+			0, 0, 0, 0, 0
 		local rift_object = {
 			get_pos = function() return {x = 0, y = 0, z = 0} end,
 			get_luaentity = function() return nil end,
 			get_yaw = function() return 0 end,
 			remove = function() removals = removals + 1 end,
-		}
-		local victim = {
-			get_pos = function() return {x = 1, y = 0, z = 0} end,
-			get_luaentity = function() return nil end,
-			punch = function(_, source, _, toolcaps)
-				assert(source == rift_object and toolcaps.damage_groups.fleshy == 17,
-					"Rift Spawn used a second or unscaled damage path")
-				burst_hits = burst_hits + 1
+			set_texture_mod = function(_, value)
+				assert(value == "", "Rift Spawn did not clear its fuse texture")
+			end,
+			set_properties = function(_, properties)
+				assert(properties.glow == 3,
+					"Rift Spawn did not restore its unfused glow")
 			end,
 		}
-		hazard.fallback_objects = {victim}
-		core.is_player = function(object) return object == victim end
+		local target
+		if not hazard.nil_target then
+			target = {
+				get_pos = function()
+					return {x = hazard.out_of_range and 4 or 1, y = 0, z = 0}
+				end,
+				get_hp = function() return 20 end,
+				get_player_name = function() return "rift_target" end,
+				get_luaentity = function() return nil end,
+				punch = function(_, source, _, toolcaps)
+					assert(source == rift_object and toolcaps.damage_groups.fleshy == 17,
+						"Rift Spawn used a second or unscaled damage path")
+					burst_hits = burst_hits + 1
+				end,
+			}
+		end
+		hazard.fallback_objects = target and {target} or {}
+		core.is_player = function(object) return object == target end
 		core.get_objects_inside_radius = function(_, radius)
 			assert(radius == 3.5)
-			return {rift_object, victim}
+			return target and {rift_object, target} or {rift_object}
 		end
 		core.add_particlespawner = function(def)
 			assert(def.amount == 32 and def.time == 0.25)
@@ -217,14 +229,49 @@ return function(root)
 		end
 		local rift_instance = {
 			v_start = true, timer = 1.9, timer1 = 0, explosion_timer = 2,
-			damage = 17, state = "attack", node_timer = 0,
+			damage = 17, glow = 3, state = "attack", node_timer = 0,
 			env_damage_timer = 0, pause_timer = 0, object = rift_object,
+			attack = target,
 			falling = function() return false end,
+			line_of_sight = function(_, mob_eye, target_eye)
+				assert(mob_eye.y == 0.5 and target_eye.y == 0.5,
+					"Rift Spawn did not use mobs_redo explode LOS geometry")
+				return not hazard.blocked_los
+			end,
+			stop_attack = function(self)
+				stops = stops + 1
+				self.attack = nil
+				self.v_start = false
+				self.timer = 0
+				self.blinktimer = 0
+				self.state = "stand"
+			end,
 		}
 		real_mobs_step(rift, rift_instance, 0.1, hazard)
-		assert(burst_hits == 1 and burst_particles == 1 and
-			burst_sounds == 1 and removals == 1,
+		return rift_instance, {hits = burst_hits, particles = burst_particles,
+			sounds = burst_sounds, removals = removals, stops = stops}
+	end
+	for _, hazard in ipairs({
+		{name = "ordinary"}, {name = "water-adjacent", water = true},
+		{name = "protected", protected = true},
+	}) do
+		local _, result = rift_step_case(hazard)
+		assert(result.hits == 1 and result.particles == 1 and
+			result.sounds == 1 and result.removals == 1 and result.stops == 0,
 			"Rift Spawn real on_step was not terminal exact-once: " .. hazard.name)
+	end
+	for _, hazard in ipairs({
+		{name = "nil-target", nil_target = true, stop = true},
+		{name = "out-of-range", out_of_range = true},
+		{name = "blocked-LOS", blocked_los = true},
+	}) do
+		local instance, result = rift_step_case(hazard)
+		assert(result.hits == 0 and result.particles == 0 and
+			result.sounds == 0 and result.removals == 0 and
+			result.stops == (hazard.stop and 1 or 0) and
+			instance.v_start == false and instance.timer == 0 and
+			instance._grug_rift_burst == nil,
+			"Rift Spawn did not cancel its invalid fuse: " .. hazard.name)
 	end
 	local rift_cave, rift_surface = false, false
 	for i = 1, #rows do
@@ -411,7 +458,7 @@ return function(root)
 			"UNCLEAR source entered ledger: " .. unclear[1])
 	end
 
-	return "r9_mob2_packages_v2|families=15|rows=16|copied_media=26|textures=" ..
+	return "r9_mob2_packages_v3|families=15|rows=16|copied_media=26|textures=" ..
 		texture_count .. "|" ..
 		"bog_witch_keys=" .. key_low .. ".." .. key_high .. "\n"
 end

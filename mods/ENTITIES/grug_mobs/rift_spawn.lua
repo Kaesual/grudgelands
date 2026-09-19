@@ -4,14 +4,49 @@
 
 local RIFT_RADIUS = 3.5
 
+local function reset_fuse(self)
+	self.v_start = false
+	self.timer = 0
+	self.blinktimer = 0
+	self.blinkstatus = false
+	self.object:set_texture_mod("")
+	self.object:set_properties({glow = self.glow})
+end
+
+local function valid_burst_target(self, pos)
+	local target = self.attack
+	local target_pos = target and target:get_pos()
+	if not target or not core.is_player(target) or not target_pos or
+			target:get_hp() <= 0 or
+			(mobs.is_invisible and mobs:is_invisible(self,
+				target:get_player_name())) then
+		self:stop_attack()
+		return false
+	end
+	local dx = target_pos.x - pos.x
+	local dy = target_pos.y - pos.y
+	local dz = target_pos.z - pos.z
+	local distance = math.sqrt(dx * dx + dy * dy + dz * dz)
+	local mob_eye = {x = pos.x, y = pos.y + 0.5, z = pos.z}
+	local target_eye = {x = target_pos.x, y = target_pos.y + 0.5,
+		z = target_pos.z}
+	if distance > self.reach or
+			self:line_of_sight(mob_eye, target_eye) ~= true then
+		reset_fuse(self)
+		return false
+	end
+	return true
+end
+
 local function burst_due(self, dtime)
 	if not self.v_start or self._grug_rift_burst then return end
 	-- mobs_redo advances this timer once in on_step and once in its explode
 	-- state after do_custom returns. Predict that same due boundary here.
 	if (self.timer or 0) + dtime * 2 <= (self.explosion_timer or 2) then return end
-	self._grug_rift_burst = true
 	local pos = self.object and self.object:get_pos()
 	if not pos then return false end
+	if not valid_burst_target(self, pos) then return false end
+	self._grug_rift_burst = true
 	for _, object in ipairs(core.get_objects_inside_radius(pos, RIFT_RADIUS)) do
 		local ent = object:get_luaentity()
 		if object ~= self.object and (core.is_player(object) or
