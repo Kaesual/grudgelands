@@ -481,6 +481,45 @@ ocean edge and the enemy border (warning band, hard dismount).
     slug `gpt-6-astra`, Codex CLI ≥ 0.155; an earlier probe with the
     wrong slug and the old CLI 0.147 failed); every other lane and every
     review on GPT-5.6 Sol.
+21. **Stone plate** (2026-09-19, after MAP-C step 0): the plate at y = −37..T
+    near starts and capitals comes from the opcode-21 `OP_PATH_FILL` of the
+    704-node anchor grade squares, which lacks the native-air preservation
+    of opcode 27 (`map_adapter.lua` ~899–902, `planner.lua` ~1361; probe on
+    seed 0, R8 cave-mouth writer proven innocent). Ruling: anchor-grade
+    fills preserve native air like opcode 27; routes, foundations and
+    causeways stay solid. MAP-C implementation Go with `PLATEAU_Y = 441`.
+22. **Recipe discovery T1** (audit finding 12): learning a profession marks
+    its T1 inputs seen, so T1 recipes are visible at once; the
+    ingredient rule applies from the first craft on.
+23. **Mana floor** (audit finding 19): option A of the cooking/alchemy plan
+    (in combat `max(¼ OOC, 0.25 % max mana/s)`) is implemented in Round 9
+    as a small lane (R9-MANA) with its own review.
+24. **Early wave 2** (2026-09-19): ENCH, MOUNTS and FARM (mechanics, with
+    the crop-soil node registered by FARM and placed later by MAP-B) start
+    right after the PROF-A substrate merge, parallel to MAP-C.
+25. **Mount warning band** (audit finding 16): 48-node warning band on the
+    LEGAL side of the line, hard dismount at the first node beyond it,
+    same model for ocean and enemy territory; the 10-second grace and the
+    100-node maximum trip are removed; `mounts.md` follows.
+26. **Mount rules** (audit finding 17): the mount entity is invulnerable
+    and drops nothing (damage hits the rider and dismounts); mounting is
+    refused during the 5-second combat window; flying mounts cannot take
+    off underground; flight ceiling y = 600 everywhere regardless of the
+    surface; after a hard mid-air dismount the player falls straight down
+    with no residual velocity.
+27. **Kraken** stays tier normal (level 100, 7 120 HP); the flat 18 000 HP
+    applies to the boss tier only (the two dragons).
+28. **Trinkets and caster weapons as gear items** (orchestrator ruling
+    2026-09-19 after the PROF-B blocker; the user may veto): `grug_gear`
+    has no caster 1H family and no trinket items, and the registry allows
+    one recipe per output and station, so §3.6b's "six identities over six
+    tiers" cannot be expressed through stack metadata. PROF-B adds the
+    caster 1H family (wand/scepter/orb, §3.2 row) to `grug_gear`'s
+    `WEAPONS` table and registers the six core trinket identities of §6.2
+    as one item per identity AND tier (36 ids, the same per-tier pattern
+    the other gear uses); ENCH's quality roll applies on top. The
+    Blacksmith fitting cross-buy references PROF-A's fitting item names,
+    so PROF-B resumes after the PROF-A run-2 merge.
 
 ## 5. MAP-C protocol: what must not repeat from Round 8
 
