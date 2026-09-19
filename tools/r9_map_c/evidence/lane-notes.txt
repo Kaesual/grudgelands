@@ -74,3 +74,16 @@ plateau=128 writer_us=40021058 vm_methods_us=4066366 lua_writer_residual_us=3595
 native_calc_lighting_us before=461942 plateau=441=738934 plateau=200=739540 plateau=128=744378
 reading intent_bookkeeping/replay is the supported phase name: native light propagation stays near 0.74 s and plan time stays near 32..34 s, while 89.84..93.94 percent is the combined uninstrumented Lua semantic/dirty-intent scan, expanded light-shadow context scan, and replay
 occupancy belongs to planning and is ruled out by stable plan_us; dirty intent bookkeeping is in map_adapter.lua:1199-1356, light-shadow preparation is map_adapter.lua:1362-1468, replay is map_adapter.lua:1470-1501; the current profiler cannot split those three Lua loops further
+
+ruling_35
+plateau withdrawn by user ruling 35; native terrain NoiseParams, live v7 flags, canonical feature token, and their pins restored to the pre-plateau production values
+independent MAP-C work retained: anchor-grade native-air preservation, surface skin, coast band, disabled MAP-A mouth writer, engine-faithful sentinel projection, exact old-flag readback validation, pin-refresh documentation, source-audit roster, and staged headless configuration
+experimental bulk terrain clear retained behind BULK_TERRAIN_CLEAR_ENABLED=false and covered by the writer equivalence KAT
+
+ruling_35_performance_stop
+baseline reused /tmp/map-c-profile-before-bulk-1 because frozen baseline game, profile harness, seed, and corpus inputs are unchanged
+before emerge_elapsed_us=68020996 callback_total_us=52073722 plan_us=31413515 writer_us=20660207
+after emerge_elapsed_us=78916001 callback_total_us=62054499 plan_us=35040422 writer_us=27014077
+ratios emerge=1.160171 callback=1.191666 plan=1.115457 writer=1.307541
+result FAIL after exceeds before by more than the ruling-35 tolerance of 3 percent; engine witness, final pin-refresh audit, final_micro, and final 60-second headless boot not run
+source_audit_preflight FAIL derived changed production Lua population=267 while ruling 35 requires retaining the refreshed 268-file roster; mapgen_manifest.lua returned byte-for-byte to its d6002a2 state when its plateau-only feature token was reverted

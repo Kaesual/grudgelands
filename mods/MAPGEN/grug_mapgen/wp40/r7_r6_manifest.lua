@@ -211,7 +211,7 @@ return function()
 			heightmap_order = "x_fast_z_outer", emerge_threads = 1,
 			engine_emerge_setting = "num_emerge_threads",
 			mg_flags = "biomes,caves,decorations,dungeons,light,ores",
-			mgv7_spflags = "caverns", mgv7_dungeon_ymin = -31000,
+			mgv7_spflags = "caverns,mountains,ridges", mgv7_dungeon_ymin = -31000,
 			mgv7_dungeon_ymax = -193, authored_floor = -37,
 			force_native_dungeon = false,
 		},

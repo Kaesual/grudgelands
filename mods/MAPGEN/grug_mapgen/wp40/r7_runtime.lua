@@ -70,9 +70,9 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		exact_integer_setting("mgv7_dungeon_ymax", -193)
 		flag_set("mg_flags", {biomes = true, caves = true, decorations = true,
 			dungeons = true, light = true, ores = true})
-		flag_set("mgv7_spflags", {nomountains = true, noridges = true,
+		flag_set("mgv7_spflags", {mountains = true, ridges = true,
 			caverns = true, nofloatlands = true},
-			"nomountains, noridges, nofloatlands, caverns")
+			"mountains, ridges, nofloatlands, caverns")
 		local settings_kind = type(core_api.settings)
 		if settings_kind ~= "table" and settings_kind ~= "userdata" then
 			fail("global settings object differs")

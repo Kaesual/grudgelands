@@ -376,7 +376,7 @@ local function adapter_factory(allocator_factory)
 				manifest.engine_emerge_setting ~= "num_emerge_threads" or
 				manifest.mg_flags ~=
 					"biomes,caves,decorations,dungeons,light,ores" or
-				manifest.mgv7_spflags ~= "caverns" or
+				manifest.mgv7_spflags ~= "caverns,mountains,ridges" or
 				manifest.mgv7_dungeon_ymin ~= -31000 or
 				manifest.mgv7_dungeon_ymax ~= -193 or
 				manifest.authored_floor ~= -37 or

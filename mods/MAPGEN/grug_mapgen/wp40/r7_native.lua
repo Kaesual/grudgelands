@@ -12,7 +12,7 @@ local module = {}
 local MAX_SAFE = 9007199254740991
 local NOISE_SCHEMA = "grug_wp40_r7_noiseparams_v1"
 local NOISE_DIGEST =
-	"0c16a9e54e78b3cac5d15545bf236a76945c634d21dcf4250afc435e0c1bb38c"
+	"5a1183a0db4dcbf7c2fce382e907660bfd26e53325d370f62a2d9e78c04d8738"
 local NATIVE_SCHEMA = "grug_wp40_r7_native_allowlist_v1"
 local NATIVE_DIGEST =
 	"d1fe4ac1c7cbe5525af65bde48cc4309870c01e4d474785f2cf0cda3d2639480"
@@ -179,15 +179,15 @@ end
 
 local function noise_terrain_base()
 	return {
-		offset = 441, scale = 0, spread = {x = 600, y = 600, z = 600},
+		offset = 14, scale = 70, spread = {x = 600, y = 600, z = 600},
 		seed = 82341, octaves = 5, persist = 0.6, lacunarity = 2.0,
 	}
 end
 
 local function noise_terrain_alt()
 	return {
-		offset = 441, scale = 0, spread = {x = 600, y = 600, z = 600},
-		seed = 82341, octaves = 5, persist = 0.6, lacunarity = 2.0,
+		offset = 10, scale = 25, spread = {x = 600, y = 600, z = 600},
+		seed = 5934, octaves = 5, persist = 0.6, lacunarity = 2.0,
 	}
 end
 
@@ -225,15 +225,15 @@ end
 
 local NOISE_SPECS = {
 	{
-		name = "mgv7_np_terrain_base", offset = 441, scale = 0,
+		name = "mgv7_np_terrain_base", offset = 14, scale = 70,
 		spread_x = 600, spread_y = 600, spread_z = 600,
 		seed = 82341, octaves = 5, persist = FLOAT32_POINT_SIX,
 		lacunarity = 2, flags = "defaults", lexical_persist = "0.6",
 	},
 	{
-		name = "mgv7_np_terrain_alt", offset = 441, scale = 0,
+		name = "mgv7_np_terrain_alt", offset = 10, scale = 25,
 		spread_x = 600, spread_y = 600, spread_z = 600,
-		seed = 82341, octaves = 5, persist = FLOAT32_POINT_SIX,
+		seed = 5934, octaves = 5, persist = FLOAT32_POINT_SIX,
 		lacunarity = 2, flags = "defaults", lexical_persist = "0.6",
 	},
 	{

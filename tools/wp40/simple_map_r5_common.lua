@@ -391,7 +391,7 @@ common.MANIFEST = {
 	engine_emerge_setting = {type = "ascii", value = "num_emerge_threads"},
 	mg_flags = {type = "token_set",
 		value = "biomes,caves,decorations,dungeons,light,ores"},
-	mgv7_spflags = {type = "token_set", value = "caverns"},
+	mgv7_spflags = {type = "token_set", value = "caverns,mountains,ridges"},
 	mgv7_dungeon_ymin = {type = "integer", value = -31000},
 	mgv7_dungeon_ymax = {type = "integer", value = -193},
 	authored_floor = {type = "integer", value = -37},

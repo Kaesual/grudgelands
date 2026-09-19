@@ -141,7 +141,7 @@ assert(state.callbacks == 0 and state.publications == 0,
 local identities = native.identities()
 assert(identities.noise_schema == "grug_wp40_r7_noiseparams_v1")
 assert(identities.noise_digest ==
-	"0c16a9e54e78b3cac5d15545bf236a76945c634d21dcf4250afc435e0c1bb38c")
+	"5a1183a0db4dcbf7c2fce382e907660bfd26e53325d370f62a2d9e78c04d8738")
 assert(identities.native_schema == "grug_wp40_r7_native_allowlist_v1")
 assert(identities.native_digest ==
 	"d1fe4ac1c7cbe5525af65bde48cc4309870c01e4d474785f2cf0cda3d2639480")

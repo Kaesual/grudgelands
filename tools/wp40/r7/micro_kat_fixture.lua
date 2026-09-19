@@ -460,7 +460,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		chunksize = "5", mgv7_dungeon_ymin = "-31000",
 		mgv7_dungeon_ymax = "-193",
 		mg_flags = "biomes,caves,decorations,dungeons,light,ores",
-		mgv7_spflags = "nomountains, noridges, nofloatlands, caverns", seed = "0",
+		mgv7_spflags = "mountains, ridges, nofloatlands, caverns", seed = "0",
 	}
 	local runtime_settings_proxy = newproxy(true)
 	local runtime_core = {settings = runtime_settings_proxy}

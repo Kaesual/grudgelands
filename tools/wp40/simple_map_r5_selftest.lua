@@ -91,7 +91,7 @@ local manifest_values = {
 	emerge_threads = 1,
 	engine_emerge_setting = "num_emerge_threads",
 	mg_flags = "biomes,caves,decorations,dungeons,light,ores",
-	mgv7_spflags = "caverns",
+	mgv7_spflags = "caverns,mountains,ridges",
 	mgv7_dungeon_ymin = -31000,
 	mgv7_dungeon_ymax = -193,
 	authored_floor = -37,
@@ -112,7 +112,7 @@ local expected_manifest_bytes =
 	"emerge_threads\t1\n" ..
 	"engine_emerge_setting\tnum_emerge_threads\n" ..
 	"mg_flags\tbiomes,caves,decorations,dungeons,light,ores\n" ..
-	"mgv7_spflags\tcaverns\n" ..
+	"mgv7_spflags\tcaverns,mountains,ridges\n" ..
 	"mgv7_dungeon_ymin\t-31000\n" ..
 	"mgv7_dungeon_ymax\t-193\n" ..
 	"authored_floor\t-37\n" ..

@@ -75,7 +75,7 @@ config_value() {
 config_keys=(water_level mapgen_limit chunksize num_emerge_threads mg_flags \
 	mgv7_spflags mgv7_dungeon_ymin mgv7_dungeon_ymax)
 config_values=(1 31007 5 1 biomes,caves,decorations,dungeons,light,ores \
-	nomountains,noridges,caverns,nofloatlands -31000 -193)
+	mountains,ridges,caverns,nofloatlands -31000 -193)
 for index in 0 1 2 3 4 5 6 7; do
 	actual="$(config_value "${config_keys[$index]}")" || {
 		echo "WP40 R7 source audit: config key population differs: ${config_keys[$index]}" >&2
