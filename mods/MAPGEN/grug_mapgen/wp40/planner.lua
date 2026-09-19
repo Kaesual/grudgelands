@@ -327,6 +327,7 @@ local function planner_factory(allocator_factory)
 		surface_cave_cell_at = true,
 		surface_cave_constants = true,
 		coast_profile_at = true,
+		landmark_excluded_at = true,
 		metrics = true,
 	}
 	local RELATION_FIELDS = {

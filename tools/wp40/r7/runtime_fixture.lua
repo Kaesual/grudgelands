@@ -121,7 +121,7 @@ return function(repo, seed_identity, content_only)
 		chunksize = "5", mgv7_dungeon_ymin = "-31000",
 		mgv7_dungeon_ymax = "-193",
 		mg_flags = "biomes,caves,decorations,dungeons,light,ores",
-		mgv7_spflags = "caverns,mountains,nofloatlands,ridges",
+		mgv7_spflags = "mountains, ridges, nofloatlands, caverns",
 		seed = seed_identity or "0",
 	}
 	local core_api = {registered_nodes = registered_nodes, CONTENT_AIR = 0,

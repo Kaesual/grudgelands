@@ -460,7 +460,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		chunksize = "5", mgv7_dungeon_ymin = "-31000",
 		mgv7_dungeon_ymax = "-193",
 		mg_flags = "biomes,caves,decorations,dungeons,light,ores",
-		mgv7_spflags = "mountains,ridges,caverns,nofloatlands", seed = "0",
+		mgv7_spflags = "mountains, ridges, nofloatlands, caverns", seed = "0",
 	}
 	local runtime_settings_proxy = newproxy(true)
 	local runtime_core = {settings = runtime_settings_proxy}
@@ -1984,6 +1984,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 				surface_cave_cell_at = function() return 0, 0 end,
 				surface_cave_constants = function() return 80, -30912, 24, 2, 24 end,
 				coast_profile_at = function() return nil end,
+				landmark_excluded_at = function() return false end,
 				metrics = function()
 					return {runtime_column_cache_limit = 65536,
 						runtime_column_cache_entries = 0,
@@ -2196,6 +2197,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	function planner_source.surface_cave_cell_at() return 0, 0 end
 	function planner_source.surface_cave_constants() return 80, -30912, 24, 2, 24 end
 	function planner_source.coast_profile_at() return nil end
+	function planner_source.landmark_excluded_at() return false end
 	local source_anchor = {id = "micro_apex", position = {x = 10000, z = 10000}}
 	local source = {claim_exclusions = {{id = "micro_resource_exclusion",
 		recipe_id = "hard_start_core_v1"}}, routes = {}, hard_protection = {},

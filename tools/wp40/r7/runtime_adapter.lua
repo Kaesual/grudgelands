@@ -1788,7 +1788,9 @@ local function heightmap_for_band(raw, min_y, max_y)
 	for index = 1, 6400 do
 		local value = integer(raw[index], -31007, 31007,
 			"raw analytic heightmap value")
-		if value >= min_y and value <= max_y then
+		if value > max_y then
+			projected[index] = max_y
+		elseif value >= min_y then
 			projected[index] = value
 		else
 			projected[index] = HEIGHTMAP_SENTINEL
@@ -1806,7 +1808,7 @@ function module.heightmap_projection_kat()
 	local projected = heightmap_for_band(raw, min_y, max_y)
 	if #projected ~= 6400 or projected[1] ~= HEIGHTMAP_SENTINEL or
 			projected[2] ~= min_y or projected[3] ~= max_y or
-			projected[4] ~= HEIGHTMAP_SENTINEL then
+			projected[4] ~= max_y then
 		fail("heightmap projection boundary/order KAT differs")
 	end
 	for index = 5, 6400 do

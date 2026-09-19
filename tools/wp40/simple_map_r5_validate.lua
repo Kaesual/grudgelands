@@ -89,6 +89,7 @@ return function(common)
 		surface_cave_cell_at=true,
 		surface_cave_constants=true,
 		coast_profile_at=true,
+		landmark_excluded_at=true,
 		metrics=true,
 	}
 	local PUBLIC_LOAD_FIELDS = {

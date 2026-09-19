@@ -15,16 +15,20 @@ local function new_coast_rules(full_seed_string)
 		return (value * 48271) % PRIME
 	end
 	function result.run_class(freshwater, relief_profile, relief)
-		if freshwater then return "fresh" end
-		if relief_profile == "wetland_delta" or relief < 7 then return "sea_low" end
-		return "sea_ordinary"
+		if freshwater then return "fresh_" .. relief_profile end
+		return "sea_" .. relief_profile
 	end
 	function result.run_key(owner, orientation, run, run_class)
 		return tostring(owner) .. "/" .. tostring(orientation) .. "/" .. tostring(run) ..
 			"/" .. run_class
 	end
-	function result.profile(owner, orientation, run, freshwater, relief_profile, relief)
-		local run_class = result.run_class(freshwater, relief_profile, relief)
+	function result.r8_profile(owner, orientation, run, freshwater, relief_profile,
+			relief)
+		local run_class
+		if freshwater then run_class = "fresh"
+		elseif relief_profile == "wetland_delta" or relief < 7 then
+			run_class = "sea_low"
+		else run_class = "sea_ordinary" end
 		local class_salt = run_class == "fresh" and 104729 or
 			run_class == "sea_low" and 130363 or 155921
 		local draw = result.hash(owner, orientation, run, 19349663 + class_salt) % 100
@@ -34,6 +38,163 @@ local function new_coast_rules(full_seed_string)
 		elseif draw < 40 then profile = "beach"
 		elseif draw < 65 then profile = "bluff"
 		elseif draw < 85 then profile = "cliff"
+		else profile = "terraced_cliff" end
+		return profile, run_class, class_salt
+	end
+	function result.r8_target(owner, orientation, selected_run, profile, class_salt,
+			distance, incoming, water_y, axis, round_ratio)
+		local draw = result.hash(owner, orientation, selected_run, 83492791 + class_salt)
+		local width, target
+		if profile == "beach" then
+			width = 4 + draw % 7
+			local denominator = 4 + math.floor(draw / 7) % 5
+			target = water_y + math.floor((distance - 1) / denominator)
+		elseif profile == "bluff" then
+			width = 6 + draw % 4
+			local rise = 1 + math.floor(draw / 11) % 2
+			target = water_y + (distance - 1) * rise
+		elseif profile == "cliff" then
+			width = 5 + draw % 3
+			local irregular = result.hash(owner, orientation, selected_run,
+				axis * 17 + 480752697 + class_salt) % 5 - 2
+			local setback = 2 + math.floor(draw / 13) % 3
+			local top = math.max(7, incoming - water_y) + irregular
+			local rise = math.min(top, 1 + math.max(0, distance - 2) * setback)
+			if distance > 2 and result.hash(owner, orientation, selected_run,
+					axis * 31 + distance * 43 + class_salt) % 11 == 0 then
+				rise = math.max(1, rise - setback)
+			end
+			target = water_y + rise
+		else
+			local steps = 2 + draw % 2
+			local step_height = 3 + math.floor(draw / 7) % 3
+			local step_width = 3 + math.floor(draw / 17) % 3
+			width = steps * step_width + 1
+			target = water_y + math.min(steps, math.floor((distance - 2) /
+				step_width) + 1) * step_height
+		end
+		if distance == 1 then target = water_y end
+		if distance > width then
+			local blend = distance - width
+			if blend >= 4 then return incoming, width end
+			target = round_ratio(target * (4 - blend) + incoming * blend, 4)
+		end
+		return target, width
+	end
+	function result.r8_column(owner, orientation, run, freshwater, relief_profile,
+			relief, distance, incoming, water_y, axis, round_ratio)
+		local profile, run_class, class_salt = result.r8_profile(owner, orientation,
+			run, freshwater, relief_profile, relief)
+		local target, width = result.r8_target(owner, orientation, run, profile,
+			class_salt, distance, incoming, water_y, axis, round_ratio)
+		local offset = axis % 48
+		if offset < 0 then offset = offset + 48 end
+		if offset < 4 or offset >= 44 then
+			local neighbor = offset < 4 and run - 1 or run + 1
+			local other_profile, _, other_salt = result.r8_profile(owner, orientation,
+				neighbor, freshwater, relief_profile, relief)
+			local other = result.r8_target(owner, orientation, neighbor, other_profile,
+				other_salt, distance, incoming, water_y, axis, round_ratio)
+			local weight = offset < 4 and 4 - offset or offset - 43
+			target = round_ratio(target * (4 - weight) + other * weight, 4)
+		end
+		return profile, distance, width, freshwater,
+			result.run_key(owner, orientation, run, run_class), target, relief_profile
+	end
+	function result.band(draw, profile, freshwater)
+		if profile ~= "beach" then return nil, nil, 4 end
+		local width = freshwater and 2 + draw % 3 or 20 + draw % 9
+		local denominator = 2 + math.floor(draw / 9) % 4
+		local blend = freshwater and 4 or 16 + math.floor(draw / 37) % 9
+		return width, denominator, blend
+	end
+	function result.new_lattice_cache(limit)
+		local entries, clock = {}, 0
+		local cache = {}
+		function cache.get(chunk_x, chunk_z, build)
+			clock = clock + 1
+			for index = 1, #entries do
+				local entry = entries[index]
+				if entry.chunk_x == chunk_x and entry.chunk_z == chunk_z then
+					entry.used = clock
+					return entry.value
+				end
+			end
+			local value = build(chunk_x, chunk_z)
+			local replacement = #entries + 1
+			if replacement > limit then
+				replacement = 1
+				for index = 2, #entries do
+					if entries[index].used < entries[replacement].used then
+						replacement = index
+					end
+				end
+			end
+			entries[replacement] = {chunk_x = chunk_x, chunk_z = chunk_z,
+				used = clock, value = value}
+			return value
+		end
+		return cache
+	end
+	function result.nearest_lattice_sample(query_x, query_z, sample_min_x,
+			sample_min_z, sample_class, sample_level, sample_freshwater)
+		local query_lattice_x = math.floor(query_x / 4)
+		local query_lattice_z = math.floor(query_z / 4)
+		local best_squared, best_orientation, best_level, best_freshwater
+		-- The traversal retains the smallest exact (dx,dz) on an equal squared
+		-- distance: lattice_dx and lattice_dz are monotone translations of it.
+		for lattice_dx = -13, 13 do
+			for lattice_dz = -13, 13 do
+				local lattice_x = query_lattice_x + lattice_dx
+				local lattice_z = query_lattice_z + lattice_dz
+				local sample_index = (lattice_z - sample_min_z) * 46 +
+					(lattice_x - sample_min_x) + 1
+				local dx, dz = lattice_x * 4 - query_x, lattice_z * 4 - query_z
+				local squared = dx * dx + dz * dz
+				if squared > 256 and squared <= 2704 and
+						sample_class[sample_index] ~= "land" and
+						sample_level[sample_index] ~= nil and
+						(best_squared == nil or squared < best_squared) then
+					best_squared = squared
+					if math.abs(dx) >= math.abs(dz) then
+						best_orientation = dx >= 0 and 1 or 2
+					else
+						best_orientation = dz >= 0 and 3 or 4
+					end
+					best_level = sample_level[sample_index]
+					best_freshwater = sample_freshwater[sample_index]
+				end
+			end
+		end
+		return best_squared, best_orientation, best_level,
+			best_freshwater == true
+	end
+	function result.profile(owner, orientation, run, freshwater, relief_profile, relief)
+		local run_class = result.run_class(freshwater, relief_profile, relief)
+		local relief_salts = {wetland_delta = 104729, lowland = 130363,
+			rolling_hills = 155921, plateau = 196613, highland = 225287,
+			mountain = 262147}
+		local class_salt = (relief_salts[relief_profile] or 294001) +
+			(freshwater and 524287 or 0)
+		local draw = result.hash(owner, orientation, run, 19349663 + class_salt) % 100
+		local profile
+		local beach_share = relief_profile == "wetland_delta" and 75 or
+			relief_profile == "lowland" and 65 or
+			relief_profile == "rolling_hills" and 45 or
+			relief_profile == "plateau" and 18 or
+			relief_profile == "highland" and 8 or 0
+		if freshwater then
+			if relief_profile == "wetland_delta" or relief_profile == "lowland" or
+					relief_profile == "rolling_hills" then
+				beach_share = 100
+			elseif relief_profile == "plateau" or relief_profile == "highland" or
+					relief_profile == "mountain" then
+				beach_share = 0
+			end
+		end
+		if draw < beach_share then profile = "beach"
+		elseif draw < beach_share + 34 then profile = "bluff"
+		elseif draw < beach_share + 70 then profile = "cliff"
 		else profile = "terraced_cliff" end
 		return profile, run_class, class_salt
 	end
@@ -53,6 +214,13 @@ local function height_factory(dependencies)
 	-- Store the portable R8 rule factory on the already-captured deterministic
 	-- helper table; Lua 5.1's construct closure is at its 60-upvalue ceiling.
 	deterministic.r8_coast_rules = new_coast_rules
+	local core_api = rawget(_G, "core")
+	deterministic.r9_coast_band_enabled = true
+	if core_api and core_api.settings and
+			type(core_api.settings.get_bool) == "function" then
+		deterministic.r9_coast_band_enabled = core_api.settings:get_bool(
+			"grug_mapgen_r9_coast_band_enabled", true)
+	end
 	local raw_sha256 = assert(dependencies.raw_sha256,
 		"WP40 simple-map height SHA-256 dependency missing")
 	local horizontal = assert(dependencies.horizontal_session,
@@ -3622,6 +3790,9 @@ local function height_factory(dependencies)
 			function session.coast_profile_at(x, z)
 				return derived_water_evidence.coast_profile_at(x, z)
 			end
+			function session.landmark_excluded_at(x, z)
+				return derived_water_evidence.landmark_excluded_at(x, z)
+			end
 			function session.functional_surface_values_at(x, z)
 				return final_functional_values_at(x, z)
 			end
@@ -3975,6 +4146,10 @@ local function height_factory(dependencies)
 
 		function session.coast_profile_at(x, z)
 			return derived_water_evidence.coast_profile_at(x, z)
+		end
+
+		function session.landmark_excluded_at(x, z)
+			return derived_water_evidence.landmark_excluded_at(x, z)
 		end
 
 		function session.functional_surface_values_at(x, z)
@@ -5039,16 +5214,81 @@ local function height_factory(dependencies)
 		-- form a seam.  All arithmetic in this query is integral.
 		do
 			local coast_rules = deterministic.r8_coast_rules(full_seed_string)
+			local coast_band_enabled = deterministic.r9_coast_band_enabled
 			local direction_x, direction_z = {1, -1, 0, 0}, {0, 0, 1, -1}
 			local coast_hash = coast_rules.hash
 			local selected_profile = coast_rules.profile
+			local selected_band = coast_rules.band
+			local lattice_cache = coast_rules.new_lattice_cache(4)
+			local function landmark_excluded_at(x, z)
+				local candidates = bucket_at(landmark_grid, x, z)
+				if candidates then
+					for index = 1, #candidates do
+						local landmark = candidates[index]
+						if landmark_weight(landmark, x, z) > 0 and
+								owner_affinity_q_at(landmark.zone_numeric_id, x, z) > 0 then
+							return true
+						end
+					end
+				end
+				return false
+			end
+			derived_water_evidence.landmark_excluded_at = landmark_excluded_at
+			local function build_lattice(chunk_x, chunk_z)
+				local query_min_x, query_min_z = chunk_x * 20, chunk_z * 20
+				local sample_min_x, sample_min_z = query_min_x - 13, query_min_z - 13
+				local sample_class, sample_level, sample_freshwater = {}, {}, {}
+				local nearest_squared, nearest_orientation = {}, {}
+				local nearest_level, nearest_freshwater = {}, {}
+				for lattice_z = sample_min_z, sample_min_z + 45 do
+					for lattice_x = sample_min_x, sample_min_x + 45 do
+						local index = (lattice_z - sample_min_z) * 46 +
+							(lattice_x - sample_min_x) + 1
+						local world_x, world_z = lattice_x * 4, lattice_z * 4
+						local class, _, _, bay_id, hydrology_id =
+							classified_values(world_x, world_z)
+						sample_class[index] = class
+						if class ~= "land" then
+							sample_level[index] = pregrade_water_surface_at(world_x, world_z,
+								class, bay_id, hydrology_id)
+							sample_freshwater[index] = hydrology_id ~= nil and bay_id == nil
+						end
+					end
+				end
+				local world_min_x, world_min_z = chunk_x * 80, chunk_z * 80
+				for query_z = world_min_z, world_min_z + 79 do
+					for query_x = world_min_x, world_min_x + 79 do
+						local query_index = (query_z - world_min_z) * 80 +
+							(query_x - world_min_x) + 1
+						local best_squared, best_orientation, best_level, best_freshwater =
+							coast_rules.nearest_lattice_sample(query_x, query_z,
+								sample_min_x, sample_min_z, sample_class, sample_level,
+								sample_freshwater)
+						nearest_squared[query_index] = best_squared or false
+						nearest_orientation[query_index] = best_orientation or false
+						nearest_level[query_index] = best_level or false
+						nearest_freshwater[query_index] = best_freshwater == true
+					end
+				end
+				return {squared = nearest_squared, orientation = nearest_orientation,
+					level = nearest_level, freshwater = nearest_freshwater}
+			end
+			local function lattice_shore_at(x, z)
+				local chunk_x, chunk_z = floor_div(x, 80), floor_div(z, 80)
+				local lattice = lattice_cache.get(chunk_x, chunk_z, build_lattice)
+				local index = (z - chunk_z * 80) * 80 + (x - chunk_x * 80) + 1
+				local squared = lattice.squared[index]
+				if not squared then return nil end
+				local distance = math.floor(math.sqrt(squared) + 0.5)
+				return distance, lattice.orientation[index], lattice.level[index],
+					lattice.freshwater[index]
+			end
 			local function target_for(profile, distance, incoming, water_y, owner,
-					orientation, run, axis, class_salt)
+					orientation, run, axis, class_salt, freshwater)
 				local draw = coast_hash(owner, orientation, run, 83492791 + class_salt)
-				local width, target
+				local width, target, denominator
 				if profile == "beach" then
-					width = 4 + draw % 7
-					local denominator = 4 + math.floor(draw / 7) % 5
+					width, denominator = selected_band(draw, profile, freshwater)
 					target = water_y + math.floor((distance - 1) / denominator)
 				elseif profile == "bluff" then
 					width = 6 + draw % 4
@@ -5076,9 +5316,13 @@ local function height_factory(dependencies)
 				end
 				if distance == 1 then target = water_y end
 				if distance > width then
-					local blend = distance - width
-					if blend >= 4 then return incoming, width end
-					target = round_ratio(target * (4 - blend) + incoming * blend, 4)
+					local offset = distance - width
+					local _, _, blend_width = selected_band(draw, profile, freshwater)
+					if offset >= blend_width then return incoming, width end
+					local edge = profile == "beach" and
+						(water_y + math.floor((width - 1) / denominator)) or target
+					target = round_ratio(edge * (blend_width - offset) +
+						incoming * offset, blend_width)
 				end
 				return target, width
 			end
@@ -5090,16 +5334,7 @@ local function height_factory(dependencies)
 					(horizontal.static_exclusion_values_at(x, z) ~= nil) or
 					(type(horizontal.housing_mask_id_at) == "function" and
 						horizontal.housing_mask_id_at(x, z) ~= nil) then return nil end
-				local landmark_candidates = bucket_at(landmark_grid, x, z)
-				if landmark_candidates then
-					for landmark_index = 1, #landmark_candidates do
-						local landmark = landmark_candidates[landmark_index]
-						if landmark_weight(landmark, x, z) > 0 and
-								owner_affinity_q_at(landmark.zone_numeric_id, x, z) > 0 then
-							return nil
-						end
-					end
-				end
+				if landmark_excluded_at(x, z) then return nil end
 				local best_distance, orientation, water_y, freshwater
 				for direction = 1, 4 do
 					for distance = 1, 16 do
@@ -5118,6 +5353,9 @@ local function height_factory(dependencies)
 						end
 					end
 				end
+				if best_distance == nil and coast_band_enabled then
+					best_distance, orientation, water_y, freshwater = lattice_shore_at(x, z)
+				end
 				if best_distance == nil then return nil end
 				local axis = orientation <= 2 and z or x
 				local run = floor_div(axis, 48)
@@ -5125,17 +5363,22 @@ local function height_factory(dependencies)
 					water_class, owner, nil, nil)
 				local relief_profile = source.zones[owner].primary_relief_id
 				local relief = math.max(0, incoming - water_y)
+				if not coast_band_enabled then
+					return coast_rules.r8_column(owner, orientation, run, freshwater,
+						relief_profile, relief, best_distance, incoming, water_y, axis,
+						round_ratio)
+				end
 				local profile, run_class, class_salt = selected_profile(owner,
 					orientation, run, freshwater, relief_profile, relief)
 				local target, width = target_for(profile, best_distance, incoming, water_y,
-					owner, orientation, run, axis, class_salt)
+					owner, orientation, run, axis, class_salt, freshwater)
 				local offset = floor_mod(axis, 48)
 				if offset < 4 or offset >= 44 then
 					local neighbor = offset < 4 and run - 1 or run + 1
 					local other_profile, _, other_salt = selected_profile(owner,
 						orientation, neighbor, freshwater, relief_profile, relief)
 					local other = target_for(other_profile, best_distance, incoming, water_y,
-						owner, orientation, neighbor, axis, other_salt)
+						owner, orientation, neighbor, axis, other_salt, freshwater)
 					local weight = offset < 4 and 4 - offset or offset - 43
 					target = round_ratio(target * (4 - weight) + other * weight, 4)
 				end

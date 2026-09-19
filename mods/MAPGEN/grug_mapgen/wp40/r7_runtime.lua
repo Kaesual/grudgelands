@@ -38,9 +38,12 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		return value
 	end
 
-	local function flag_set(name, expected)
+	local function flag_set(name, expected, expected_raw)
 		local raw = core_api.get_mapgen_setting(name)
 		if type(raw) ~= "string" then fail("mapgen flag setting " .. name .. " differs") end
+		if expected_raw ~= nil and raw ~= expected_raw then
+			fail("mapgen flag setting " .. name .. " canonical form differs: " .. raw)
+		end
 		local actual, count = {}, 0
 		for token in raw:gmatch("[^,%s]+") do
 			if actual[token] then fail("duplicate mapgen flag " .. token) end
@@ -51,7 +54,9 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			expected_count = expected_count + 1
 			if not actual[token] then fail("missing mapgen flag " .. token) end
 		end
-		if count ~= expected_count then fail("mapgen flag population differs for " .. name) end
+		if count ~= expected_count then
+			fail("mapgen flag population differs for " .. name .. ": " .. raw)
+		end
 	end
 
 	local function validate_live_scalars()
@@ -66,7 +71,8 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		flag_set("mg_flags", {biomes = true, caves = true, decorations = true,
 			dungeons = true, light = true, ores = true})
 		flag_set("mgv7_spflags", {mountains = true, ridges = true,
-			caverns = true, nofloatlands = true})
+			caverns = true, nofloatlands = true},
+			"mountains, ridges, nofloatlands, caverns")
 		local settings_kind = type(core_api.settings)
 		if settings_kind ~= "table" and settings_kind ~= "userdata" then
 			fail("global settings object differs")

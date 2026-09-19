@@ -1,0 +1,158 @@
+schema grug_r9_map_c_lane_notes_v1
+
+plate_trace
+coordinate -1696,-2522
+seed 0
+owner_slice -112..-33
+planner_winner_y_-37..-33 opcode=21 role=11 policy=3 feature=anchor_001
+resolver_rule mods/MAPGEN/grug_mapgen/wp40/map_adapter.lua:61-72,913-919
+kat tools/r8_map_a/writer_kat.lua:13-32
+
+surface_skin_exclusion_mapping
+start_apron/capital_ring/capital_precinct/settlement/poi/route/corridor -> horizontal.static_exclusion_values_at
+path/functional/coastal/start/capital_fitting -> functional_kind ~= nil
+foundation -> hard_foundation
+housing -> housing_mask_id_at
+landmark -> landmark_excluded_at
+implementation mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua:2141-2169
+surface_rule mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua:46-74
+pass_order mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua:2140-2335
+
+pin_table
+minetest.conf:30 mgv7_spflags mountains,ridges,caverns,nofloatlands -> nomountains,noridges,caverns,nofloatlands
+mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:14-18 NOISE_DIGEST 5a1183a0db4dcbf7c2fce382e907660bfd26e53325d370f62a2d9e78c04d8738 -> 0c16a9e54e78b3cac5d15545bf236a76945c634d21dcf4250afc435e0c1bb38c; NATIVE_DIGEST unchanged d1fe4ac1c7cbe5525af65bde48cc4309870c01e4d474785f2cf0cda3d2639480
+mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:180-239 terrain_base/terrain_alt -> offset=441 scale=0 identical constants
+mods/MAPGEN/grug_mapgen/wp40/r7_manifest.lua:36-38 SOURCE_PROJECTION_SHA256 1fcdf06bace3cc7679e8959087d4b361da164c1a6ff920cdb60e7f4473022c47 -> be8bcc1eb9b3c063974791a6a6c658aa590cf970506ccdae2c51329a8aa0fa25
+mods/MAPGEN/grug_mapgen/wp40/{r7_manifest.lua,mapgen_manifest.lua,map_adapter.lua,planner.lua,r7_r6_manifest.lua} canonical feature token caverns,mountains,ridges -> caverns
+mods/MAPGEN/grug_mapgen/wp40/r7_runtime.lua:62-75 exact engine readback pinned as nomountains, noridges, nofloatlands, caverns
+tools/wp40/{fixtures/headless-baseline.conf,profile/run.sh,r8/run.sh} live flags -> nomountains,noridges,caverns,nofloatlands
+tools/wp40/r7/{native_inputs_kat.lua,runtime_fixture.lua,micro_kat_fixture.lua,source_audit.sh} noise/flag/count pins updated
+tools/wp40/r6/fixtures.lua and all R5/R6/R7 planner/content fixture manifest tokens -> caverns
+tools/wp40/r7/changed_production_lua.txt baseline-relative roster 157 -> 268
+tools/r8_map_a/evidence and every tools/wp40/evidence R5-R8 directory unchanged immutable history
+
+performance_stop
+before_callback_total_us 53159000
+before_plan_us 32158183
+before_writer_us 21000817
+before_emerge_elapsed_us 69638153
+after_callback_total_us 84391700
+after_plan_us 33612638
+after_writer_us 50779062
+after_emerge_elapsed_us 99275939
+result FAIL after_exceeds_before; plateau slowdown STOP triggered before engine witness and final pin refresh
+
+performance_stop_bulk_attempt
+scope opcode=26 role=1 policy=1 ymax=maxp.y uniform_native_stone=true param2=0
+before_callback_total_us 52073722
+before_plan_us 31413515
+before_writer_us 20660207
+before_emerge_elapsed_us 68020996
+after_callback_total_us 93663129
+after_plan_us 35557871
+after_writer_us 58105258
+after_emerge_elapsed_us 108893340
+result FAIL after_exceeds_before; one-attempt limit reached
+
+plateau_height_measurement
+mode plain per-voxel path; BULK_TERRAIN_CLEAR_ENABLED=false in commit edf7fde4
+baseline reused /tmp/map-c-profile-before-bulk-1 because its frozen baseline game and harness inputs are unchanged
+plateau=128 temporary_noise_digest 32ea7011c498330a12f8c50926eb66f399e0305bb504517978d792e4f1a7b7c4
+plateau=128 temporary_source_projection c497d479b75e05cce4c886e45fd1cfc077bd6e23315c5934caf3723c03a2c051
+plateau=128 emerge_elapsed_us 87796218 callback_total_us 72198501 plan_us 32177443 writer_us 40021058
+plateau=200 temporary_noise_digest caa0f22abd3b110e77a0479ec6d4a59939e3e495305180e0bfd8549108ac68b8
+plateau=200 temporary_source_projection 47c5c71d0e66220839ef10047f337e25aa6050faeff00af55a792f7501785aff
+plateau=200 emerge_elapsed_us 115999901 callback_total_us 101497115 plan_us 32925001 writer_us 68572114
+production_restore both terrain offsets and all temporary pins restored byte-for-byte to committed plateau=441 before evidence edits
+
+writer_phase_reading
+profiler_scope callback writer_us plus separately timed VoxelManip methods; no internal Lua writer phase timers
+before writer_us=20660207 vm_methods_us=3323878 lua_writer_residual_us=17336329 residual_percent=83.91
+plateau=441 writer_us=50779062 vm_methods_us=4038421 lua_writer_residual_us=46740641 residual_percent=92.05
+plateau=200 writer_us=68572114 vm_methods_us=4152839 lua_writer_residual_us=64419275 residual_percent=93.94
+plateau=128 writer_us=40021058 vm_methods_us=4066366 lua_writer_residual_us=35954692 residual_percent=89.84
+native_calc_lighting_us before=461942 plateau=441=738934 plateau=200=739540 plateau=128=744378
+reading intent_bookkeeping/replay is the supported phase name: native light propagation stays near 0.74 s and plan time stays near 32..34 s, while 89.84..93.94 percent is the combined uninstrumented Lua semantic/dirty-intent scan, expanded light-shadow context scan, and replay
+occupancy belongs to planning and is ruled out by stable plan_us; dirty intent bookkeeping is in map_adapter.lua:1199-1356, light-shadow preparation is map_adapter.lua:1362-1468, replay is map_adapter.lua:1470-1501; the current profiler cannot split those three Lua loops further
+
+ruling_35
+plateau withdrawn by user ruling 35; native terrain NoiseParams, live v7 flags, canonical feature token, and their pins restored to the pre-plateau production values
+independent MAP-C work retained: anchor-grade native-air preservation, surface skin, coast band, disabled MAP-A mouth writer, engine-faithful sentinel projection, exact old-flag readback validation, pin-refresh documentation, source-audit roster, and staged headless configuration
+experimental bulk terrain clear retained behind BULK_TERRAIN_CLEAR_ENABLED=false and covered by the writer equivalence KAT
+
+ruling_35_performance_stop
+baseline reused /tmp/map-c-profile-before-bulk-1 because frozen baseline game, profile harness, seed, and corpus inputs are unchanged
+before emerge_elapsed_us=68020996 callback_total_us=52073722 plan_us=31413515 writer_us=20660207
+after emerge_elapsed_us=78916001 callback_total_us=62054499 plan_us=35040422 writer_us=27014077
+ratios emerge=1.160171 callback=1.191666 plan=1.115457 writer=1.307541
+result FAIL after exceeds before by more than the ruling-35 tolerance of 3 percent; engine witness, final pin-refresh audit, final_micro, and final 60-second headless boot not run
+source_audit_preflight FAIL derived changed production Lua population=267 while ruling 35 requires retaining the refreshed 268-file roster; mapgen_manifest.lua returned byte-for-byte to its d6002a2 state when its plateau-only feature token was reverted
+
+feature_attribution_measurement
+baseline reused /tmp/map-c-profile-before-bulk-1 because frozen baseline game, profile harness, seed, and corpus are unchanged
+all_on emerge=78916001 callback=62054499 plan=35040422 writer=27014077
+feature_off=surface_skin emerge=83284404 callback=66595745 plan=35865706 writer=30730039 versus_all_on=1.055355/1.073182/1.023552/1.137557
+feature_off=coast_band emerge=66466700 callback=50329807 plan=23242699 writer=27087108 versus_all_on=0.842246/0.811058/0.663311/1.002703
+feature_off=anchor_grade_preservation emerge=74366715 callback=57965277 plan=32707950 writer=25257327 versus_all_on=0.942353/0.934103/0.933435/0.934969
+reading coast band carries a measured 33.669 percent of all-on planner time and no positive writer share; anchor-grade preservation removal lowers both planner and writer by about 6.5 percent, so the single-pair result cannot isolate its resolver-only theoretical location from run variance; surface-skin removal is slower in every metric and establishes no positive attributable cost in this pair
+measurement_guards surface skin used a local false guard around opening classification and skin writes in r6_settlement.lua; coast used an early nil return in height.lua coast_profile_at; anchor preservation used a false opcode-21 branch in map_adapter.lua preserved_native_cave; all guards removed byte-for-byte after their run
+coast_guard_note an initial local-upvalue form exceeded height.lua's existing 60-upvalue ceiling in luac51 and was discarded before any engine run; the measured early-return form parsed under plain Lua 5.1
+source_audit_roster aligned to post-revert truth in commit 2b372a7a: changed production Lua 267, combined micro inputs 297, mapgen_manifest.lua removed; prefreeze source audit PASS
+
+coast_optimisation_profile
+portable_corpus seed=0 nine profiler surface regions, 80x80 columns each, direct coast_profile_at queries
+before total_seconds=1.653205 eligible_profile_calls=8932 near_search_seconds=0.849600 far_search_calls=7298 far_search_seconds=0.677940 profile_compute_seconds=0.014198
+lattice before_builds=163 classifications=344908 sample_seconds=0.505924 nearest_seconds=0.170276 total_seconds=0.676345
+diagnosis single-entry lattice storage thrashes while row-order queries alternate among the up to four 80-node lattice chunks touched by one mapchunk; lattice rebuilding accounts for 99.765 percent of far-search time
+one_attempt four-entry deterministic LRU stores completed lattice results; builder, origin, period, radius, dx-major tie order, profiles, and shares are unchanged
+portable_after total_seconds=0.809635 ratio=0.489735; mixed stone/cave/water negative-coordinate fixture in tools/r8_map_a/kat.lua is byte-equal between direct rebuilds and cached reads
+real_engine_after emerge_elapsed_us=78708459 callback_total_us=62526405 plan_us=33030722 writer_us=29495683
+real_engine_baseline emerge_elapsed_us=68020996 callback_total_us=52073722 plan_us=31413515 writer_us=20660207
+real_engine_ratios emerge=1.157113 callback=1.200776 plan=1.051483 writer=1.427657
+gate FAIL above the 1.08 no-second-pair boundary; coast implementation retained behind grug_mapgen_r9_coast_band_enabled=false
+engine_witness seed=0 wet/rolling/mountain surface regions and plate surface/deep slices; no natural opening occurred in those witness regions; exact ACTION rows are in engine-witness.txt
+
+final_pin_refresh
+NOISE_DIGEST old=5a1183a0db4dcbf7c2fce382e907660bfd26e53325d370f62a2d9e78c04d8738 new=5a1183a0db4dcbf7c2fce382e907660bfd26e53325d370f62a2d9e78c04d8738
+NATIVE_DIGEST old=d1fe4ac1c7cbe5525af65bde48cc4309870c01e4d474785f2cf0cda3d2639480 new=d1fe4ac1c7cbe5525af65bde48cc4309870c01e4d474785f2cf0cda3d2639480
+SOURCE_PROJECTION_SHA256 old=1fcdf06bace3cc7679e8959087d4b361da164c1a6ff920cdb60e7f4473022c47 new=1fcdf06bace3cc7679e8959087d4b361da164c1a6ff920cdb60e7f4473022c47
+feature_token old=caverns,mountains,ridges new=caverns,mountains,ridges
+live_flag_literal old=mountains,ridges,caverns,nofloatlands new=mountains,ridges,caverns,nofloatlands engine_readback=mountains, ridges, nofloatlands, caverns
+source_audit prefreeze PASS source_set_sha256=eaba3f43dee1be7f459f567dbb5af5f2c3009d4e3eb4a27563bb1ca7132ea36f
+
+final_micro
+attempt_1 /tmp/map-c-final-micro-1 FAIL LuaJIT tree-slice fixture lacked the production default:stone surface-skin host content ref
+fixture_fix_1 added default:stone to the tree-slice content contract and classifier
+attempt_2 /tmp/map-c-final-micro-2 FAIL LuaJIT because the fixture's all-air native input put its tree through the new T-3..T-1 skin band
+fixture_fix_2 seeded native stone at y=1..3 in the tree-slice fixture; focused LuaJIT fixture PASS digest=fdfb2f0db29461ae9ccc98d4bb0602034f9a176143fad00fdb502dd45f017ff5
+no_attempt_3 the brief permits only one retry after a missing fixture production node; final PUC/LuaJIT byte comparison remains unproven
+
+fix_round_1
+opening_surface production writer replaces the R5 exact surface intent at T with opcode-26 air; integrated Gravewood writer fixture asserts air at T
+skin_slice_intersection classification covers the owned T-3..T-1 intersection when T is above the owner slice; bottom and top boundaries are in writer_kat
+coast_off restored the frozen R8 cardinal search, profile shares, widths, and four-node blend; six production planner columns match frozen R8 tuples
+bulk_experiment removed completely from map_adapter construction, resolution, lighting context, replay, exports, and writer KAT; historical evidence rows retained
+source_audit_roster final derived population=289 (267 plus 22 main-merge Lua files); combined micro inputs=313 because six additions already belonged to micro_inputs.txt
+performance_baseline old frozen baseline not reused because merge commit 3a8cb6f9 added 22 production Lua inputs; fresh main baseline is b720e562
+performance_fix1 before emerge=69453581 callback=53317490 plan=31389288 writer=21928202 after emerge=74693803 callback=58600113 plan=30354152 writer=28245961 ratios=1.075449/1.099079/0.967023/1.288111
+performance_gate FAIL 1.03 tolerance; ruling35 STOP after final parser/SETGLOBAL and before static/KAT/prefreeze/witness/pin/final_micro/headless sequence
+performance_fix1_pair2 before emerge=70785084 callback=54464484 plan=32774176 writer=21690308 after emerge=72335475 callback=55871761 plan=28351896 writer=27519865 ratios=1.021903/1.025838/0.865068/1.268763
+performance_ruling36 pair1_wall=1.075449 pair2_wall=1.021903 mean_wall=1.048676 PASS_at_1.05 pair1_callback=1.099079 pair2_callback=1.025838 mean_callback=1.062459
+ruling40 coast_band production_default=true settingtypes_default=true R8_false_path=retained
+performance_ruling40_pair1 before emerge=69700828 callback=53438519 plan=32509402 writer=20929117 after emerge=75969673 callback=59635338 plan=29438142 writer=30197196 ratios=1.089939/1.115962/0.905527/1.442832 PASS_below_1.15
+ruling40_engine_witness seed=0 wet/rolling/mountain regions retained; natural opening at (-2082,28,-2782) has air at T through T-4; coast (1784,-2960) has beach width 25, enabled=true, and sand; plate (-1696,-2522) preserves air y=-37..-34
+roster_ruling_run11 restored changed_production_lua.txt and all roster-count assertions to main 29941a9b values: changed=157, micro_union=187; the d6002a2-derived source audit is stale on main and its dedicated refreeze is escalated outside MAP-C
+
+fix_round_2_run12
+lattice_exact_world_delta query=(3,3) sample=(20,0) squared=298 vector=(17,-3); equal-distance selection retains smallest exact (dx,dz)
+freshwater_rims wetland_delta/lowland/rolling_hills force beach on every run; plateau/highland/mountain retain non-sand rims
+opening_dust surface_skin_column=2 skips P7 dust; integrated fixture supplies default:snow at T+1 and proves it remains air
+lattice_cost classified_values remains 46x46=2116 per built chunk; exact cached results grow from 20x20 to 80x80 and selection comparisons from 291600 to 4665600 per build; subsequent column lookup remains O(1) with no new classified_values call
+engine_witness seed=0 snowy_crags opening=(-2196,125,-1031) surface=air above=air
+
+fix_round_3_run13
+opening_preservation native CLASS_AIR is necessary but no longer sufficient; the central T-1..T-4 cells must remain air after nested R5, and owned cells must belong to opcode 27 terrain fill, so authored sky filled by R5 cannot remove the surface at T
+slice_dust_ownership classification also runs when only T+1 is owned; the integrated fixture sets T=min_y-1 with committed cave air in the lower halo and proves snow remains absent at min_y
+engine_witness_seed0 corrected decision removes all three prior one-node false openings and restores the snowy-crags surface; seed0 has no connected natural opening in the bounded corpus
+engine_witness_seed1 connected natural openings at (-2052,18,-2795) and (-2240,24,-2643) have air at T through T-4 and default:stone floors at T-7
+snowy_deviation seeds 0 and 1 contain no connected grug_crags_snowy opening in the bounded witness corpus; default:snow suppression is authenticated by tools/wp40/quality/gravewood_writer_fixture.lua, and the engine witness reports fixture_only explicitly

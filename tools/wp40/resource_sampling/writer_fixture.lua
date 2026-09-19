@@ -55,6 +55,8 @@ return function(repo, expanded)
 	for index = 1, #resource_specs do
 		add("test:ore_" .. resource_specs[index][1], 200 + index, 4)
 	end
+	local stone_cid = 300
+	add("default:stone", stone_cid, 1)
 	local contract = {schema = "grug_wp40_r6_content_contract_v1",
 		ignore_cid = 65535, ordinary_water_family_id = 1,
 		river_water_family_id = 2, content_names = names,
@@ -72,6 +74,9 @@ return function(repo, expanded)
 		if cid == 0 then return 1, 0, 0, 0, true, true, true, true, 0 end
 		if cid == 10 then return 4, 1, 1, 0, false, true, true, true, 0 end
 		if cid == 65535 then return 3, 0, 0, 0, false, false, false, false, 0 end
+		if cid == stone_cid then
+			return 6, 0, 0, 0, false, false, false, false, 0
+		end
 		for index = 1, 6 do
 			if cid == cids[index] then
 				return 6, 0, 0, 0, false, false, false, false, 0
@@ -126,6 +131,9 @@ return function(repo, expanded)
 	function planner_source.surface_cave_candidate_at_cell() return nil end
 	function planner_source.surface_cave_cell_at() return 0, 0 end
 	function planner_source.coast_profile_at() return nil end
+	-- This fixture owns only the deep resource oracle. Keep the unrelated
+	-- surface-skin pass excluded while still providing its complete content seam.
+	function planner_source.landmark_excluded_at() return true end
 	local horizontal = {}
 	function horizontal.static_exclusion_values_at() return nil end
 	function horizontal.housing_mask_id_at() return nil end

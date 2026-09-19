@@ -91,13 +91,16 @@ return function(repo, production_repo, verify_compressed)
 		contract.content_cids[content.content_ref(names[3])],
 	}
 
+	local fixture_terrain_y = 4
 	local planner_source = {column_values_at = function(_, z)
-		return "land", 1, "fixture", z > 0 and surface2.id or surface.id, "none", 4,
+		return "land", 1, "fixture", z > 0 and surface2.id or surface.id, "none",
+			fixture_terrain_y,
 			nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, false
 	end, surface_cave_run_at = function() return nil end,
 		surface_cave_candidate_at_cell = function() return nil end,
 		surface_cave_cell_at = function() return 0, 0 end,
-		coast_profile_at = function() return nil end}
+		coast_profile_at = function() return nil end,
+		landmark_excluded_at = function() return false end}
 	local horizontal = {static_exclusion_values_at = function() return nil end,
 		housing_mask_id_at = function() return nil end}
 	local anchor = {id = "gravewood_anchor", position = {x = 10000, z = 10000}}
@@ -133,7 +136,7 @@ return function(repo, production_repo, verify_compressed)
 			roots[#roots + 1] = check(found, "rotation witness missing")
 		end
 	end
-	local r5_adapter = {apply = function(_, shadow)
+	local r5_adapter = {apply = function(_, shadow, _, _, r5_plan)
 		local data, minp, maxp = {}, shadow:get_emerged_area()
 		shadow:get_data(data)
 		minp, maxp = shadow:get_emerged_area()
@@ -143,6 +146,10 @@ return function(repo, production_repo, verify_compressed)
 				(root.x - minp.x) + 1
 			local host_ref = content.content_ref(definitions[root.catalog].host)
 			data[index] = contract.content_cids[host_ref]
+			if r5_plan.fixture_fill_below then
+				for y = 0, 3 do data[index - (4 - y) * ex] =
+					contract.content_cids[host_ref] end
+			end
 		end
 		shadow:set_data(data)
 		return "gravewood_r5_ready"
@@ -223,8 +230,16 @@ return function(repo, production_repo, verify_compressed)
 	local blocked_index = (blocked.z - emerged_min.z) * 112 * 64 +
 		(blocked.y - emerged_min.y) * 112 + (blocked.x - emerged_min.x) + 1
 	local blocked_cid = contract.content_cids[content.content_ref(definitions[1].host)]
+	local native_data = filled(volume, 0)
+	for z = minp.z, maxp.z do
+		for y = 1, 3 do
+			for x = minp.x, maxp.x do
+				native_data[(z + 48) * 112 * 64 + (y + 16) * 112 + x + 49] = cids[1]
+			end
+		end
+	end
 	local vm, _, observer = vm_module.new({minp = minp, maxp = maxp,
-		data = filled(volume, 0), param2 = filled(volume, 0), light = filled(volume, 0),
+		data = native_data, param2 = filled(volume, 0), light = filled(volume, 0),
 		heightmap = filled(6400, -31007), content_contract = contract, water_level = 1,
 		ignore_cid = contract.ignore_cid, verify_inactive_tail = false})
 	local result = settlement:apply(vm, minp, maxp, plan, 1, "fixture")
@@ -322,8 +337,113 @@ return function(repo, production_repo, verify_compressed)
 	settlement:apply(blocked_vm, minp, maxp, blocked_plan, 1, "fixture")
 	check(blocked_observer.snapshot().data[blocked_index] == blocked_cid,
 		"occupied destination was overwritten")
+	-- The opening transaction uses the real writer with a 3x3 native-air band.
+	-- R5 first places the exact surface host at T=4; the R9 opening must replace
+	-- that predecessor intent with air rather than merely skipping P7 and skin.
+	local opening_columns = {}
+	local opening_column_start, opening_run_values = {}, {}
+	local snow_ref = check(content.content_ref("default:snow"),
+		"opening dust reference missing")
+	for index = 1, 6400 * 12 do opening_columns[index] = 0 end
+	for column = 1, 6400 do
+		local base = (column - 1) * 12
+		opening_columns[base + 5], opening_columns[base + 7],
+			opening_columns[base + 8], opening_columns[base + 12] = 4, 1,
+			content.content_ref(definitions[1].host), snow_ref
+		local first = (column - 1) * 3 + 1
+		opening_column_start[column] = first
+		local fill_base, surface_base, sky_base = (first - 1) * 9, first * 9,
+			(first + 1) * 9
+		opening_run_values[fill_base + 1], opening_run_values[fill_base + 2] = 0, 3
+		opening_run_values[fill_base + 3], opening_run_values[fill_base + 4] = 5, 27
+		opening_run_values[surface_base + 1], opening_run_values[surface_base + 2] = 4, 4
+		opening_run_values[surface_base + 3], opening_run_values[surface_base + 4] = 7, 28
+		opening_run_values[sky_base + 1], opening_run_values[sky_base + 2] = 5, 31
+		opening_run_values[sky_base + 3], opening_run_values[sky_base + 4] = 1, 26
+		for field = 5, 9 do
+			opening_run_values[fill_base + field] = 0
+			opening_run_values[surface_base + field] = 0
+			opening_run_values[sky_base + field] = 0
+		end
+	end
+	opening_column_start[6401] = 19201
+	local opening_plan = {schema = plan.schema,
+		construction_identity = plan.construction_identity, generation = plan.generation,
+		valid = true, min_x = plan.min_x, min_y = plan.min_y, min_z = plan.min_z,
+		max_x = plan.max_x, max_y = plan.max_y, max_z = plan.max_z,
+		r5_plan = {column_start = opening_column_start,
+			run_values = opening_run_values}, r5_generation = plan.r5_generation,
+		column_values = opening_columns, column_count = plan.column_count,
+		candidate_cell_values = {}, candidate_cell_count = 0,
+		candidate_values = {}, candidate_count = 0, stable_refs = plan.stable_refs}
+	local opening_vm, _, opening_observer = vm_module.new({minp = minp, maxp = maxp,
+		data = filled(volume, 0), param2 = filled(volume, 0), light = filled(volume, 0),
+		heightmap = filled(6400, -31007), content_contract = contract, water_level = 1,
+		ignore_cid = contract.ignore_cid, verify_inactive_tail = false})
+	settlement:apply(opening_vm, minp, maxp, opening_plan, 1, "fixture")
+	local opening_snapshot = opening_observer.snapshot()
+	local opening_root = roots[1]
+	local opening_index = (opening_root.z - opening_snapshot.emin.z) * 112 * 64 +
+		(4 - opening_snapshot.emin.y) * 112 +
+		(opening_root.x - opening_snapshot.emin.x) + 1
+	check(opening_snapshot.data[opening_index] == 0,
+		"surface opening retained the R5 solid node at T")
+	for depth = 1, 4 do
+		check(opening_snapshot.data[opening_index - depth * 112] == 0,
+			"preserved cave-air run was filled at depth " .. depth)
+	end
+	check(opening_snapshot.data[opening_index + 112] == 0,
+		"surface opening retained dust at T+1")
+
+	-- Native sky air is not an opening when the terrain-fill plan replaces it.
+	local filled_plan = {}
+	for key, value in pairs(opening_plan) do filled_plan[key] = value end
+	filled_plan.r5_plan = {column_start = opening_column_start,
+		run_values = opening_run_values, fixture_fill_below = true}
+	local filled_vm, _, filled_observer = vm_module.new({minp = minp, maxp = maxp,
+		data = filled(volume, 0), param2 = filled(volume, 0), light = filled(volume, 0),
+		heightmap = filled(6400, -31007), content_contract = contract, water_level = 1,
+		ignore_cid = contract.ignore_cid, verify_inactive_tail = false})
+	settlement:apply(filled_vm, minp, maxp, filled_plan, 1, "fixture")
+	check(filled_observer.snapshot().data[opening_index] == cids[1],
+		"planned native-sky fill incorrectly removed the surface")
+
+	-- The next vertical owner must still classify an opening when only T+1 is
+	-- owned.  Its lower halo contains the committed cave-air run.
+	local dust_columns, dust_starts, dust_runs = {}, {}, {}
+	for index = 1, 6400 * 12 do dust_columns[index] = 0 end
+	for column = 1, 6400 do
+		local base, run_base = (column - 1) * 12, (column - 1) * 9
+		dust_columns[base + 5], dust_columns[base + 7], dust_columns[base + 8],
+			dust_columns[base + 12] = -1, 1,
+			content.content_ref(definitions[1].host), snow_ref
+		dust_starts[column] = column
+		dust_runs[run_base + 1], dust_runs[run_base + 2] = 0, 31
+		dust_runs[run_base + 3], dust_runs[run_base + 4] = 1, 26
+		for field = 5, 9 do dust_runs[run_base + field] = 0 end
+	end
+	dust_starts[6401] = 6401
+	local dust_plan = {}
+	for key, value in pairs(opening_plan) do dust_plan[key] = value end
+	dust_plan.r5_plan = {column_start = dust_starts, run_values = dust_runs}
+	dust_plan.column_values = dust_columns
+	local dust_vm, _, dust_observer = vm_module.new({minp = minp, maxp = maxp,
+		data = filled(volume, 0), param2 = filled(volume, 0), light = filled(volume, 0),
+		heightmap = filled(6400, -31007), content_contract = contract, water_level = 1,
+		ignore_cid = contract.ignore_cid, verify_inactive_tail = false})
+	fixture_terrain_y = -1
+	settlement:apply(dust_vm, minp, maxp, dust_plan, 1, "fixture")
+	fixture_terrain_y = 4
+	local dust_snapshot = dust_observer.snapshot()
+	local dust_index = (0 - dust_snapshot.emin.z) * 112 * 64 +
+		(0 - dust_snapshot.emin.y) * 112 + (0 - dust_snapshot.emin.x) + 1
+	check(dust_snapshot.data[dust_index] == 0,
+		"dust-only owner wrote snow over an opening")
 	local rows = {"schema\tgrug_wp40_gravewood_writer_v1",
 		"templates\t2\tclass=1", "rotations\t8\tmandatory_wood=pass",
+		"opening_surface\tair_at_t=pass\tair_t_minus_1_to_4=pass\t" ..
+			"dust_at_t_plus_1=absent\tplanned_fill_surface=intact\t" ..
+			"dust_only_slice=air",
 		"writer\t" .. result .. "\toptional_leaves=" .. leaf_written ..
 			"\tnonoverwrite=pass"}
 	local bytes = table.concat(rows, "\n") .. "\n"

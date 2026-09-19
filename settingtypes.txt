@@ -5,9 +5,8 @@
 # Context annotations (`[server]` and friends) are valid only in builtin's own
 # file and are INVALID here (builtin/settingtypes.txt:19-21).
 #
-# This file is read by the main menu, not by the server: the runtime default
-# lives in the `core.settings:get_bool(..., true)` call that reads the setting
-# (mods/CORE/grug_core/atmosphere.lua).
+# This file is read by the main menu, not by the server: each runtime default
+# lives in the `core.settings:get_bool` call that reads its setting.
 
 [Atmosphere]
 
@@ -31,3 +30,9 @@ grug_atmosphere_enabled (Enable Grudgelands atmosphere presets) bool true
 #    but nobody is moved between them automatically.
 #    Requires the master switch above.
 grug_atmosphere_zones (Drive the atmosphere from the player's zone) bool true
+
+[Map generation]
+
+#    Deterministic wide coast profiles ship enabled under Round 9's
+#    20 percent soft emerge-time gate.
+grug_mapgen_r9_coast_band_enabled (Enable wide coast profiles) bool true

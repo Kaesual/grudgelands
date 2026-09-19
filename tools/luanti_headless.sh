@@ -104,7 +104,14 @@ if [[ -n "${PROBE:-}" ]]; then
 	echo "staged probe: $(basename "$probe")"
 fi
 printf 'gameid = grudgelands\nbackend = sqlite3\nplayer_backend = sqlite3\nauth_backend = sqlite3\n' >"$world/world.mt"
-printf 'port = %s\nbind_address = 127.0.0.1\nserver_announce = false\n' "$port" >"$root/server.conf"
+# This wrapper pre-creates world.mt, so initialize its isolated configuration
+# from the game's defaults before adding harness-only controls.
+if [[ -f "$game/minetest.conf" ]]; then
+	cp "$game/minetest.conf" "$root/server.conf"
+else
+	: >"$root/server.conf"
+fi
+printf 'port = %s\nbind_address = 127.0.0.1\nserver_announce = false\n' "$port" >>"$root/server.conf"
 if [[ -n "$seed" ]]; then
 	printf 'fixed_map_seed = %s\n' "$seed" >>"$root/server.conf"
 fi

@@ -344,8 +344,9 @@ local function read_and_validate_noise()
 		validate_noise_table(value, spec)
 	end
 	local bytes = canonical_noise_bytes()
-	if sha256_hex(bytes) ~= NOISE_DIGEST then
-		fail("noise canonical digest differs")
+	local digest = sha256_hex(bytes)
+	if digest ~= NOISE_DIGEST then
+		fail("noise canonical digest differs: actual=" .. digest)
 	end
 	return bytes
 end

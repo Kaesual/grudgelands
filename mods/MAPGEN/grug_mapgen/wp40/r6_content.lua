@@ -3,16 +3,13 @@
 local function coast_surface_rule(profile, freshwater, distance)
 	if profile ~= "beach" and profile ~= "bluff" and profile ~= "cliff" and
 			profile ~= "terraced_cliff" then return nil end
-	if freshwater and profile ~= "beach" and profile ~= "bluff" then return nil end
-	if freshwater and profile == "beach" and distance > 2 then return nil end
 	if profile == "beach" then return "default:sand", "default:sandstone", 3 end
 	if profile == "bluff" then return "biome_lip", "default:gravel", 3 end
 	return "biome_lip", "default:stone", 3
 end
 
 local function coast_profile_applies(profile, distance, width, freshwater)
-	return profile ~= nil and distance <= width and
-		(not freshwater or profile ~= "beach" or distance <= 2)
+	return profile ~= nil and distance <= width
 end
 
 local function wet_bed_names(id, bed)
