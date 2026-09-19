@@ -640,9 +640,11 @@ WP40 replaces it with the complete catalog and contracts below.
   native-v7 comparison world. Its checker reconstructs the exact owner-local
   lumen from revision-bound candidate and exclusion bytes, then applies this
   same complete-box component, continuation and sky proof before inspecting the
-  carved world. It compares the unchanged and authored worlds across every
-  candidate's full possible lumen volume and rejects any carved voxel outside
-  the one independently accepted lumen.
+  carved world. A second comparison world disables only the cave writer, so
+  coast grading and every other authored operation are present on both sides of
+  the carve comparison. Across every candidate's full possible lumen volume,
+  the checker accepts only a lumen whose target has the independent native
+  continuation proof and rejects any other writer-caused air voxel.
 - **Fresh-world surface and vegetation refinement (2026-09-13):** logical
   biome ownership stays unchanged. Dry surfaces combine coherent 32-node and
   8-node material fields at weights 3:1; filler depth varies from 1–4 nodes
