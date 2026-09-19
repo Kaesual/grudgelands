@@ -267,6 +267,29 @@ room):
    refusal, destroy on put/drop, chest and bag refusal, removal on unlearn,
    mount tiers listed and retained).
 
+### WP48 — Mapgen writer performance and parallel emerge
+
+**Open (from the Round 9 MAP-C plateau attempt, 2026-09-19).** The WP40
+writer spends its time in Lua post-processing per MODIFIED voxel (dirty-
+intent scan, light-context scan, replay), with apparent fixed costs per
+touched chunk slice: a v7 plateau that turns the whole sky below 441 into
+stone-to-air writes raised emerge time by 30–70 % regardless of height,
+and a bulk-clear fast path for the per-voxel resolution did not help
+(evidence in `tools/r9_map_c/evidence/`). Two levers, measured with the
+profiler's phase records before any change:
+
+1. Make the post-processing loops proportional to changed runs instead of
+   whole slices (benefits main today: the writer is ~21 of 68 s over the
+   profiler corpus).
+2. Move the deterministic per-chunk mapgen into Luanti's mapgen
+   environment (`core.register_mapgen_script`, emerge-thread Lua states)
+   and lift the pinned `num_emerge_threads = 1`; requires the global
+   state (manifests, memoisation, mod storage) to become per-thread or
+   read-only.
+
+Only with that data is the v7 plateau (caves everywhere under the
+surface) worth revisiting; Round 9 shipped MAP-C without it (ruling 35).
+
 ### First-public-release gates
 
 **Open; owner: the project coordinator preparing the first public release.**
