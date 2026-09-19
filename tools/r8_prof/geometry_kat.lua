@@ -1,15 +1,21 @@
--- Geometry KAT for the crafting book slots and a paged 40-recipe book.
+-- Geometry KAT for crafting-page book slots and the item-grid recipe book.
 
 return function(repo)
 	local saved = {core = rawget(_G, "core"), grug_jobs = rawget(_G, "grug_jobs"),
 		sfinv = rawget(_G, "sfinv"), grug_smelting = rawget(_G, "grug_smelting")}
-	local function restore() for key, value in pairs(saved) do rawset(_G, key, value) end end
+	local function restore()
+		rawset(_G, "core", saved.core)
+		rawset(_G, "grug_jobs", saved.grug_jobs)
+		rawset(_G, "sfinv", saved.sfinv)
+		rawset(_G, "grug_smelting", saved.grug_smelting)
+	end
 	local function fail(message) restore() error("r8 profession geometry: " .. message, 0) end
 	local function check(value, message) if not value then fail(message) end end
 	local mutation = tonumber(os.getenv("R8_PROF_GEOMETRY_MUTATION") or "") or 0
 
 	local callbacks = {}
-	core = {registered_items = {}}
+	local core = {registered_items = {}, registered_nodes = {}}
+	rawset(_G, "core", core)
 	function core.formspec_escape(value)
 		if mutation == 2 then return tostring(value) end
 		return tostring(value):gsub("\\", "\\\\"):gsub("]", "\\]")
@@ -29,7 +35,8 @@ return function(repo)
 		end
 		return {}
 	end
-	sfinv = {pages = {['sfinv:crafting'] = {}}}
+	local sfinv = {pages = {['sfinv:crafting'] = {}}}
+	rawset(_G, "sfinv", sfinv)
 	function sfinv.override_page(name, definition) sfinv.pages[name] = definition end
 	function sfinv.make_formspec(player, context, content) return "size[8,9.1]" .. content end
 	function sfinv.set_page() end
@@ -45,7 +52,8 @@ return function(repo)
 		core.registered_items[input] = {description = index == 1 and
 			"Input X];button[0,0;1,1;pwn;Pwn]" or "Input " .. index}
 		recipes[index] = {profession = "cooking", tier = tier, station = "grid",
-			flat_inputs = {input, input}, output = output, output_name = output,
+			inputs = {{input, input}}, flat_inputs = {input, input}, width = 2,
+			output = output, output_name = output,
 			hint = index == 1 and "Hint X];button[0,0;1,1;pwn;Pwn]" or
 				"Crafting grid"}
 	end
@@ -55,7 +63,7 @@ return function(repo)
 		description = "Universal same inputs"}
 	core.registered_items["test:universal_t1"] = {description = "Tier input"}
 	core.registered_items["test:universal_base"] = {description = "Base input"}
-	grug_jobs = {
+	local grug_jobs = {
 		PROFESSIONS = {blacksmith = {name = "Blacksmith", class = "primary"},
 			alchemist = {name = "Alchemist", class = "primary"},
 			cooking = {name = "Cooking", class = "secondary"}},
@@ -67,6 +75,7 @@ return function(repo)
 		recipe_for_craft = function() return nil end,
 		station_handler = function() return nil end,
 	}
+	rawset(_G, "grug_jobs", grug_jobs)
 	function grug_jobs.primary_at(player, slot) return player.primaries[slot] end
 	function grug_jobs.has(player, profession) return player.learned[profession] == true end
 	function grug_jobs.profession_level(player, profession) return player.prof_level or 1 end
@@ -75,7 +84,7 @@ return function(repo)
 	dofile(repo .. "/mods/PLAYER/grug_jobs/ui.lua")
 
 	local function player(primaries, cooking)
-		return {primaries = primaries, learned = {cooking = cooking}, prof_level = 3,
+		return {primaries = primaries, learned = {cooking = cooking}, prof_level = 6,
 			get_player_name = function() return "layout" end}
 	end
 	local scenarios = {
@@ -93,8 +102,8 @@ return function(repo)
 		local rows = {}
 		for kind, x, y, w, h in formspec:gmatch(
 			"([%a_]+)%[([%d%.%-]+),([%d%.%-]+);([%d%.%-]+),([%d%.%-]+);") do
-			if kind == "image_button" or kind == "button" or
-					kind == "button_exit" then
+			if kind == "image_button" or kind == "item_image_button" or
+					kind == "button" or kind == "button_exit" or kind == "field" then
 				rows[#rows + 1] = {kind = kind, x = tonumber(x), y = tonumber(y),
 					w = tonumber(w), h = tonumber(h)}
 			end
@@ -131,31 +140,43 @@ return function(repo)
 
 	local actor = scenarios[4][2]
 	local formspec, page, pages = grug_jobs.book_formspec(actor, "cooking", nil, 1)
-	check(page == 1 and pages == 7, "40 recipes did not paginate to seven pages")
-	local rows = select(2, formspec:gsub("box%[", ""))
-	check(rows == 6, "first book page does not show six rows")
+	check(page == 1 and pages == 3,
+		"40 recipe outputs did not paginate at fourteen items per page")
+	local page_one_items = select(2, formspec:gsub("item_image_button%[", ""))
+	check(page_one_items == 14, "first item page does not contain fourteen outputs")
+	local last_formspec, last_page = grug_jobs.book_formspec(actor, "cooking", nil, 3)
+	local last_items = select(2, last_formspec:gsub("item_image_button%[", ""))
+	check(last_page == 3 and last_items == 12,
+		"last item page does not contain the remaining twelve outputs")
+	check(formspec:find("field[0.3,0.72;3.7,0.7;grug_jobs_search", 1, true) and
+		formspec:find("grug_jobs_do_search", 1, true) and
+		formspec:find("grug_jobs_clear_search", 1, true),
+		"search field or actions left the book header")
+	local searched, search_page, search_pages = grug_jobs.book_formspec(actor,
+		"cooking", nil, 1, "output x")
+	local searched_items = select(2, searched:gsub("item_image_button%[", ""))
+	check(search_page == 1 and search_pages == 1 and searched_items == 1,
+		"text search did not reduce the output grid")
+	local grid_slots = select(2, formspec:gsub(
+		"box%[[%d%.]+,[%d%.]+;0%.82,0%.82;#20202066%]", ""))
+	check(grid_slots == 9, "selected grid recipe does not show nine grid cells")
 	check(formspec:find("X];button[", 1, true) == nil and
 		formspec:find("X\\]\\;button\\[", 1, true) ~= nil,
 		"book text was not formspec-escaped")
 	local controls = rectangles(formspec)
-	check(#controls == 3, "book page navigation control count differs")
 	for index = 1, #controls do
 		inside(controls[index].x, controls[index].y, controls[index].w,
-			controls[index].h, 8, 9.1, "book navigation")
+			controls[index].h, 10, 9.8, "book control")
 		for other = index + 1, #controls do
 			check(not overlap(controls[index], controls[other]),
-				"book navigation controls overlap")
+				"book controls overlap")
 		end
 	end
-	for row = 1, 6 do
-		local y = 0.70 + (row - 1) * 1.12
-		inside(0.15, y, 7.7, 1.02, 8, 9.1, "book row " .. row)
-		if row > 1 then
-			local previous = 0.70 + (row - 2) * 1.12
-			check(previous + 1.02 <= y, "book rows overlap")
-		end
-	end
-	report[#report + 1] = "book\trecipes=40\tpages=7\trows=6\tinside\tnonoverlap\n"
+	inside(1.25, 5.65, 2.62, 2.62, 10, 9.8, "selected recipe grid")
+	inside(4.15, 6.55, 0.9, 0.7, 10, 9.8, "recipe arrow")
+	inside(5.25, 6.35, 1.1, 1.1, 10, 9.8, "recipe output")
+	report[#report + 1] = "book\trecipes=40\tcapacity=14\tpages=3\t" ..
+		"last=12\tsearch=1\tgrid=3x3\tinside\tnonoverlap\n"
 	local general = grug_jobs.book_records(actor, "general")
 	check(#general == 2 and general[1].output_name == "test:universal" and
 		general[2].output_name == "test:universal_same_inputs",
