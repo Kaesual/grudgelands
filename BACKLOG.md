@@ -253,8 +253,19 @@ room):
 3. Learning a skill no longer inserts it; it appears in the list and a chat
    line announces it. Losing a skill (respec, talent change) removes its
    copies from the inventory.
-4. KAT over the allow/on inventory-action callbacks (copy, duplicate
-   refusal, destroy on put/drop, chest refusal, removal on unlearn).
+4. **Bags too:** the bound-item refusal covers every external inventory,
+   including bag inventories (the Tailor's 8/16/24-slot bags and the
+   32-slot Huge Bag), not only chests.
+5. **Mounts are skills here (user ruling 2026-09-19):** every owned mount
+   tier appears in the Skills list as a draggable skill item, and with this
+   mechanic buying T2 or T4 no longer destroys T1 or T3 — the player keeps
+   all owned mount skills (each tier has its own mesh) and chooses which
+   ones to carry. This supersedes the atomic T1→T2 / T3→T4 replacement of
+   Round 9 ruling 5/§4.25 once WP47 ships; until then R9-MOUNTS keeps the
+   replacement. `mounts.md` follows when WP47 lands.
+6. KAT over the allow/on inventory-action callbacks (copy, duplicate
+   refusal, destroy on put/drop, chest and bag refusal, removal on unlearn,
+   mount tiers listed and retained).
 
 ### First-public-release gates
 
