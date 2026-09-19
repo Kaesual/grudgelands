@@ -3,7 +3,7 @@
 -- their own bracket and every bracket below it.
 --
 -- Everything in here is GENERATED from the design curves, never hand-listed:
--- 4 weapon families x 6 brackets = 24 tools, plus 2 armor lines x 4 slots x
+-- 7 weapon families x 6 brackets = 42 tools, plus 2 armor lines x 4 slots x
 -- 6 brackets = 48 craftitems. All Common, therefore all without enchants
 -- (§3.8) and 10-15% behind crafted gear of the same era by construction.
 --
@@ -176,8 +176,8 @@ end
 -- DECLARATION here, never a check -- grug_gear registers items, the equipment
 -- lists are the only place that knows what a free hand is.
 --
--- greataxe and staff are the two-handers; sword and dagger are one-handed, and
--- so is the caster 1H (wand/tome) once §3.2's caster family exists. Anything
+-- greataxe and staff are the two-handers; sword, dagger and every caster 1H
+-- family are one-handed. Anything
 -- that does not declare the field at all counts as one-handed, which is what
 -- keeps the rule additive for torches, shields and every future offhand item.
 local WEAPONS = {
@@ -186,6 +186,12 @@ local WEAPONS = {
 	{key = "dagger",   noun = "Dagger",   fpi = 0.7, factor = 0.7, hands = 1, group = "sword"},
 	{key = "greataxe", noun = "Greataxe", fpi = 1.4, factor = 1.5, hands = 2, group = "axe"},
 	{key = "staff",    noun = "Staff",    fpi = 1.4, factor = 1.2, hands = 2, group = "staff"},
+	{key = "wand",     noun = "Wand",     fpi = 1.0, factor = 1.0, hands = 1, group = "wand", caster = true,
+		image = "default_mese_crystal_fragment.png^[colorize:"},
+	{key = "scepter",  noun = "Scepter",  fpi = 1.0, factor = 1.0, hands = 1, group = "scepter", caster = true,
+		image = "default_stick.png^[colorize:"},
+	{key = "orb",      noun = "Orb",      fpi = 1.0, factor = 1.0, hands = 1, group = "orb", caster = true,
+		image = "default_mese_crystal.png^[colorize:"},
 }
 
 function grug_gear.weapon_damage_at_level(ilvl, family)
@@ -379,13 +385,15 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 		-- without a second slot.
 		local groups = {grug_gear = 1, grug_equip_weapon = 1}
 		groups[w.group] = 1
+		if w.caster then groups.grug_caster_weapon = 1 end
+		local image = "grug_gear_item_" .. w.key .. "_" .. metal.key .. ".png"
+		if w.image then image = w.image .. BRACKET_TINT[bracket] .. ":115" end
 		core.register_tool(itemname, {
 			description = describe(metal.name, w.noun, br.ilvl,
 				weapon_stats(damage, w.fpi, w.hands)),
 			-- One sprite per family AND material, all in the one diagonal
 			-- convention (grip bottom-left) the wield transform is derived for.
-			inventory_image = "grug_gear_item_" .. w.key .. "_" ..
-				metal.key .. ".png",
+			inventory_image = image,
 			groups = groups,
 			stack_max = 1,
 			tool_capabilities = {
@@ -445,7 +453,7 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 		end
 	end
 
-	-- `all` = the full bracket (12 items), the pool the Uncommon roll of
+	-- `all` = the full bracket (15 items), the pool the Uncommon roll of
 	-- §3.8 draws from; fixed first so the order stays stable for the UI.
 	for _, itemname in ipairs(cat.fixed) do
 		table.insert(cat.all, itemname)
@@ -493,6 +501,8 @@ grug_gear.STARTER_STAFF = STARTER_STAFF
 -- The Warrior half of the same pair, published so the starter-kit grant in
 -- grug_inventory names neither item twice.
 grug_gear.STARTER_SWORD = "default:sword_stone"
+
+dofile(core.get_modpath(core.get_current_modname()) .. "/trinkets.lua")
 
 core.log("action", "[grug_gear] " .. NUM_BRACKETS .. " bracket catalogs: " ..
 	tool_count .. " weapons + " .. craftitem_count .. " armor pieces")

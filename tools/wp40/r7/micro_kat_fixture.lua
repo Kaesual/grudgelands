@@ -117,6 +117,13 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	end
 
 	local function tracking_dofile(path)
+		-- The focused WP13 gear/visual fixture predates grug_gear's split
+		-- catalog and maps every mod path to the repository root.  Keep that
+		-- fixture's engine stub small while still executing the real transitive
+		-- registration file added by R9-PROF-B.
+		if path == repo .. "/trinkets.lua" then
+			path = repo .. "/mods/ITEMS/grug_gear/trinkets.lua"
+		end
 		local function mark_return(...)
 			mark_executed(path)
 			return ...
@@ -2468,7 +2475,9 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	collectgarbage("collect")
 	tracking_dofile(repo .. "/tools/wp13/character_visuals_kat.lua")(repo)
 	collectgarbage("collect")
-	tracking_dofile(repo .. "/tools/wp13/gear_catalogue_kat.lua")(repo)
+	tracking_dofile(repo .. "/tools/r9_prof/woodcarver_kat.lua")(repo)
+	collectgarbage("collect")
+	tracking_dofile(repo .. "/tools/r9_prof/goldsmith_kat.lua")(repo)
 	collectgarbage("collect")
 	tracking_dofile(repo .. "/tools/wp40/quality/vendor_fixture.lua")(repo)
 	collectgarbage("collect")
