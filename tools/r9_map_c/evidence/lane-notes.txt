@@ -98,3 +98,31 @@ reading coast band carries a measured 33.669 percent of all-on planner time and 
 measurement_guards surface skin used a local false guard around opening classification and skin writes in r6_settlement.lua; coast used an early nil return in height.lua coast_profile_at; anchor preservation used a false opcode-21 branch in map_adapter.lua preserved_native_cave; all guards removed byte-for-byte after their run
 coast_guard_note an initial local-upvalue form exceeded height.lua's existing 60-upvalue ceiling in luac51 and was discarded before any engine run; the measured early-return form parsed under plain Lua 5.1
 source_audit_roster aligned to post-revert truth in commit 2b372a7a: changed production Lua 267, combined micro inputs 297, mapgen_manifest.lua removed; prefreeze source audit PASS
+
+coast_optimisation_profile
+portable_corpus seed=0 nine profiler surface regions, 80x80 columns each, direct coast_profile_at queries
+before total_seconds=1.653205 eligible_profile_calls=8932 near_search_seconds=0.849600 far_search_calls=7298 far_search_seconds=0.677940 profile_compute_seconds=0.014198
+lattice before_builds=163 classifications=344908 sample_seconds=0.505924 nearest_seconds=0.170276 total_seconds=0.676345
+diagnosis single-entry lattice storage thrashes while row-order queries alternate among the up to four 80-node lattice chunks touched by one mapchunk; lattice rebuilding accounts for 99.765 percent of far-search time
+one_attempt four-entry deterministic LRU stores completed lattice results; builder, origin, period, radius, dx-major tie order, profiles, and shares are unchanged
+portable_after total_seconds=0.809635 ratio=0.489735; mixed stone/cave/water negative-coordinate fixture in tools/r8_map_a/kat.lua is byte-equal between direct rebuilds and cached reads
+real_engine_after emerge_elapsed_us=78708459 callback_total_us=62526405 plan_us=33030722 writer_us=29495683
+real_engine_baseline emerge_elapsed_us=68020996 callback_total_us=52073722 plan_us=31413515 writer_us=20660207
+real_engine_ratios emerge=1.157113 callback=1.200776 plan=1.051483 writer=1.427657
+gate FAIL above the 1.08 no-second-pair boundary; coast implementation retained behind grug_mapgen_r9_coast_band_enabled=false
+engine_witness seed=0 wet/rolling/mountain surface regions and plate surface/deep slices; no natural opening occurred in those witness regions; exact ACTION rows are in engine-witness.txt
+
+final_pin_refresh
+NOISE_DIGEST old=5a1183a0db4dcbf7c2fce382e907660bfd26e53325d370f62a2d9e78c04d8738 new=5a1183a0db4dcbf7c2fce382e907660bfd26e53325d370f62a2d9e78c04d8738
+NATIVE_DIGEST old=d1fe4ac1c7cbe5525af65bde48cc4309870c01e4d474785f2cf0cda3d2639480 new=d1fe4ac1c7cbe5525af65bde48cc4309870c01e4d474785f2cf0cda3d2639480
+SOURCE_PROJECTION_SHA256 old=1fcdf06bace3cc7679e8959087d4b361da164c1a6ff920cdb60e7f4473022c47 new=1fcdf06bace3cc7679e8959087d4b361da164c1a6ff920cdb60e7f4473022c47
+feature_token old=caverns,mountains,ridges new=caverns,mountains,ridges
+live_flag_literal old=mountains,ridges,caverns,nofloatlands new=mountains,ridges,caverns,nofloatlands engine_readback=mountains, ridges, nofloatlands, caverns
+source_audit prefreeze PASS source_set_sha256=eaba3f43dee1be7f459f567dbb5af5f2c3009d4e3eb4a27563bb1ca7132ea36f
+
+final_micro
+attempt_1 /tmp/map-c-final-micro-1 FAIL LuaJIT tree-slice fixture lacked the production default:stone surface-skin host content ref
+fixture_fix_1 added default:stone to the tree-slice content contract and classifier
+attempt_2 /tmp/map-c-final-micro-2 FAIL LuaJIT because the fixture's all-air native input put its tree through the new T-3..T-1 skin band
+fixture_fix_2 seeded native stone at y=1..3 in the tree-slice fixture; focused LuaJIT fixture PASS digest=fdfb2f0db29461ae9ccc98d4bb0602034f9a176143fad00fdb502dd45f017ff5
+no_attempt_3 the brief permits only one retry after a missing fixture production node; final PUC/LuaJIT byte comparison remains unproven

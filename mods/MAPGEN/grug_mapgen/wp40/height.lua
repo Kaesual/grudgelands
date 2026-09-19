@@ -29,6 +29,34 @@ local function new_coast_rules(full_seed_string)
 		local blend = freshwater and 4 or 16 + math.floor(draw / 37) % 9
 		return width, denominator, blend
 	end
+	function result.new_lattice_cache(limit)
+		local entries, clock = {}, 0
+		local cache = {}
+		function cache.get(chunk_x, chunk_z, build)
+			clock = clock + 1
+			for index = 1, #entries do
+				local entry = entries[index]
+				if entry.chunk_x == chunk_x and entry.chunk_z == chunk_z then
+					entry.used = clock
+					return entry.value
+				end
+			end
+			local value = build(chunk_x, chunk_z)
+			local replacement = #entries + 1
+			if replacement > limit then
+				replacement = 1
+				for index = 2, #entries do
+					if entries[index].used < entries[replacement].used then
+						replacement = index
+					end
+				end
+			end
+			entries[replacement] = {chunk_x = chunk_x, chunk_z = chunk_z,
+				used = clock, value = value}
+			return value
+		end
+		return cache
+	end
 	function result.profile(owner, orientation, run, freshwater, relief_profile, relief)
 		local run_class = result.run_class(freshwater, relief_profile, relief)
 		local relief_salts = {wetland_delta = 104729, lowland = 130363,
@@ -69,6 +97,13 @@ local function height_factory(dependencies)
 	-- Store the portable R8 rule factory on the already-captured deterministic
 	-- helper table; Lua 5.1's construct closure is at its 60-upvalue ceiling.
 	deterministic.r8_coast_rules = new_coast_rules
+	local core_api = rawget(_G, "core")
+	deterministic.r9_coast_band_enabled = false
+	if core_api and core_api.settings and
+			type(core_api.settings.get_bool) == "function" then
+		deterministic.r9_coast_band_enabled = core_api.settings:get_bool(
+			"grug_mapgen_r9_coast_band_enabled", false)
+	end
 	local raw_sha256 = assert(dependencies.raw_sha256,
 		"WP40 simple-map height SHA-256 dependency missing")
 	local horizontal = assert(dependencies.horizontal_session,
@@ -5066,9 +5101,7 @@ local function height_factory(dependencies)
 			local coast_hash = coast_rules.hash
 			local selected_profile = coast_rules.profile
 			local selected_band = coast_rules.band
-			local lattice_chunk_x, lattice_chunk_z
-			local lattice_nearest_distance, lattice_nearest_orientation = {}, {}
-			local lattice_nearest_level, lattice_nearest_freshwater = {}, {}
+			local lattice_cache = coast_rules.new_lattice_cache(4)
 			local function landmark_excluded_at(x, z)
 				local candidates = bucket_at(landmark_grid, x, z)
 				if candidates then
@@ -5083,10 +5116,12 @@ local function height_factory(dependencies)
 				return false
 			end
 			derived_water_evidence.landmark_excluded_at = landmark_excluded_at
-			local function rebuild_lattice(chunk_x, chunk_z)
+			local function build_lattice(chunk_x, chunk_z)
 				local query_min_x, query_min_z = chunk_x * 20, chunk_z * 20
 				local sample_min_x, sample_min_z = query_min_x - 13, query_min_z - 13
 				local sample_class, sample_level, sample_freshwater = {}, {}, {}
+				local nearest_distance, nearest_orientation = {}, {}
+				local nearest_level, nearest_freshwater = {}, {}
 				for lattice_z = sample_min_z, sample_min_z + 45 do
 					for lattice_x = sample_min_x, sample_min_x + 45 do
 						local index = (lattice_z - sample_min_z) * 46 +
@@ -5129,27 +5164,26 @@ local function height_factory(dependencies)
 								end
 							end
 						end
-						lattice_nearest_distance[query_index] = best_squared and
+						nearest_distance[query_index] = best_squared and
 							math.floor(math.sqrt(best_squared * 16) + 0.5) or false
-						lattice_nearest_orientation[query_index] = best_orientation or false
-						lattice_nearest_level[query_index] = best_level or false
-						lattice_nearest_freshwater[query_index] = best_freshwater == true
+						nearest_orientation[query_index] = best_orientation or false
+						nearest_level[query_index] = best_level or false
+						nearest_freshwater[query_index] = best_freshwater == true
 					end
 				end
-				lattice_chunk_x, lattice_chunk_z = chunk_x, chunk_z
+				return {distance = nearest_distance, orientation = nearest_orientation,
+					level = nearest_level, freshwater = nearest_freshwater}
 			end
 			local function lattice_shore_at(x, z)
 				local lattice_x, lattice_z = floor_div(x, 4), floor_div(z, 4)
 				local chunk_x, chunk_z = floor_div(x, 80), floor_div(z, 80)
-				if lattice_chunk_x ~= chunk_x or lattice_chunk_z ~= chunk_z then
-					rebuild_lattice(chunk_x, chunk_z)
-				end
+				local lattice = lattice_cache.get(chunk_x, chunk_z, build_lattice)
 				local index = (lattice_z - chunk_z * 20) * 20 +
 					(lattice_x - chunk_x * 20) + 1
-				local distance = lattice_nearest_distance[index]
+				local distance = lattice.distance[index]
 				if not distance then return nil end
-				return distance, lattice_nearest_orientation[index],
-					lattice_nearest_level[index], lattice_nearest_freshwater[index]
+				return distance, lattice.orientation[index], lattice.level[index],
+					lattice.freshwater[index]
 			end
 			local function target_for(profile, distance, incoming, water_y, owner,
 					orientation, run, axis, class_salt, freshwater)
@@ -5197,6 +5231,7 @@ local function height_factory(dependencies)
 
 			derived_water_evidence.coast_profile_at = function(x, z, supplied_incoming)
 				coordinate(x, "coast query x") coordinate(z, "coast query z")
+				if not deterministic.r9_coast_band_enabled then return nil end
 				local water_class, _, owner = classified_values(x, z)
 				if water_class ~= "land" or owner == nil or
 					(horizontal.static_exclusion_values_at(x, z) ~= nil) or

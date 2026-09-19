@@ -15,6 +15,29 @@ return function(root)
 		"/mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua")
 
 	local coast = coast_factory("0")
+	local cache = coast.new_lattice_cache(4)
+	local builds = 0
+	local function mixed_lattice(chunk_x, chunk_z)
+		builds = builds + 1
+		local values = {}
+		for index = 1, 16 do
+			local mixed = (chunk_x * 37 + chunk_z * 19 + index * 11) % 7
+			values[index] = mixed < 2 and "water" or mixed == 2 and "cave" or "stone"
+		end
+		return values
+	end
+	local sequence = {{-2, -1}, {-1, -1}, {-2, 0}, {-1, 0}, {-2, -1},
+		{-1, -1}, {-2, 0}, {-1, 0}}
+	for sequence_index = 1, #sequence do
+		local chunk_x, chunk_z = sequence[sequence_index][1], sequence[sequence_index][2]
+		local reference = mixed_lattice(chunk_x, chunk_z)
+		local optimized = cache.get(chunk_x, chunk_z, mixed_lattice)
+		for index = 1, #reference do
+			check(reference[index] == optimized[index],
+				"cached lattice differs from mixed reference fixture")
+		end
+	end
+	check(builds == 12, "four-entry lattice cache rebuilt a resident chunk")
 	local stable_profile, stable_class = coast.profile(2, 1, -44, false,
 		"highland", 24)
 	check(coast.run_key(2, 1, -44, stable_class) == "2/1/-44/sea_highland",

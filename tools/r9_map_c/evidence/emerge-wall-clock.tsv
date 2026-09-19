@@ -32,3 +32,7 @@ feature_off=anchor_grade_preservation/measured_elapsed_us	68020996	74366715	6345
 feature_off=anchor_grade_preservation/callback_total_us	52073722	57965277	5891555	1.113139
 feature_off=anchor_grade_preservation/plan_us	31413515	32707950	1294435	1.041206
 feature_off=anchor_grade_preservation/writer_us	20660207	25257327	4597120	1.222511
+coast_optimised/measured_elapsed_us	68020996	78708459	10687463	1.157113
+coast_optimised/callback_total_us	52073722	62526405	10452683	1.200776
+coast_optimised/plan_us	31413515	33030722	1617207	1.051483
+coast_optimised/writer_us	20660207	29495683	8835476	1.427657

@@ -16,8 +16,9 @@ return function(repo, settlement_path)
 	local pine_id, synthetic_id = "pine_hills_pine_tree", "tree_slice_synthetic"
 	local support_name, pine_tree_name = "test:variant_soil", "default:pine_tree"
 	local pine_needles_name, marker_name = "default:pine_needles", "test:slice_marker"
-	local names = {support_name, pine_tree_name, pine_needles_name, marker_name}
-	local cids, masks, refs = {100, 101, 102, 103}, {9, 8, 8, 8}, {}
+	local names = {support_name, pine_tree_name, pine_needles_name, marker_name,
+		"default:stone"}
+	local cids, masks, refs = {100, 101, 102, 103, 104}, {9, 8, 8, 8, 9}, {}
 	for index = 1, #names do refs[names[index]] = index end
 	local contract = {schema = "grug_wp40_r6_content_contract_v1",
 		ignore_cid = 65535, ordinary_water_family_id = 1,
@@ -37,6 +38,7 @@ return function(repo, settlement_path)
 		if cid == 10 then return 4, 1, 1, 0, false, true, true, true, 0 end
 		if cid == 65535 then return 3, 0, 0, 0, false, false, false, false, 0 end
 		if cid == cids[1] then return 7, 0, 0, 0, false, false, false, false, 0 end
+		if cid == cids[5] then return 7, 0, 0, 0, false, false, false, false, 0 end
 		if cid == cids[3] then return 8, 0, 0, 0, false, false, false, false, 0 end
 		if cid == cids[2] or cid == cids[4] then
 			return 6, 0, 0, 0, false, false, false, false, 0
@@ -355,8 +357,17 @@ return function(repo, settlement_path)
 		return result
 	end
 	local volume = 112 * 112 * 112
+	local native_data = fixed_array(volume, 0)
+	for z = owner_min.z, owner_max.z do
+		for y = 1, 3 do
+			for x = owner_min.x, owner_max.x do
+				local index = (z + 48) * 112 * 112 + (y + 16) * 112 + x + 49
+				native_data[index] = cids[5]
+			end
+		end
+	end
 	local vm, _, observer = vm_module.new({minp = owner_min, maxp = owner_max,
-		data = fixed_array(volume, 0), param2 = fixed_array(volume, 0),
+		data = native_data, param2 = fixed_array(volume, 0),
 		light = fixed_array(volume, 0), heightmap = fixed_array(6400, -31007),
 		content_contract = contract, water_level = 1,
 		ignore_cid = contract.ignore_cid, verify_inactive_tail = false})

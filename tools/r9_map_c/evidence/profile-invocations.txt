@@ -29,3 +29,6 @@ feature_off=anchor_grade_preservation WP40_PROFILE_GAME_ROOT=$PWD WP40_PROFILE_O
 feature_off=anchor_grade_preservation_complete requested=10 completed=10 callbacks=97 generated=8 disk=0 memory=1242 cancelled=0 errored=0 measured_elapsed_us=74366715
 feature_attribution_baseline reused=/tmp/map-c-profile-before-bulk-1 reason=frozen_baseline_game_profile_harness_seed_and_corpus_unchanged
 feature_guards production_files_restored=byte_identical skin=r6_settlement coast=height plate=map_adapter
+coast_optimised WP40_PROFILE_GAME_ROOT=$PWD WP40_PROFILE_OUTPUT=/tmp/map-c-profile-coast-opt-1 WP40_PROFILE_SEED=0 WP40_PROFILE_PORT_BASE=32160 WP40_PROFILE_TIMEOUT=500 nice -n 19 bash tools/wp40/profile/run.sh flatpak run --filesystem=/tmp --command=luanti org.luanti.luanti
+coast_optimised_complete requested=10 completed=10 callbacks=97 generated=8 disk=0 memory=1242 cancelled=0 errored=0 measured_elapsed_us=78708459 callback_total_us=62526405 plan_us=33030722 writer_us=29495683
+coast_optimised_result FAIL emerge_ratio=1.157113 callback_ratio=1.200776 boundary=1.08 production_switch=grug_mapgen_r9_coast_band_enabled=false

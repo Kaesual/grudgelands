@@ -1,0 +1,10 @@
+ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=wet relief=wetland_delta x=-1800 z=2050 terrain_y=14 surface=default:stone below=default:stone above=air
+ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=natural_opening region=wet result=none
+ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=rolling relief=rolling_hills x=-1800 z=-2050 terrain_y=55 surface=default:stone below=default:stone above=air
+ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=natural_opening region=rolling result=none
+ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=mountain relief=mountain x=-3150 z=0 terrain_y=262 surface=default:stone below=default:stone above=air
+ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=natural_opening region=mountain result=none
+ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=plate_surface relief=lowland x=-1696 z=-2522 terrain_y=48 surface=default:dirt_with_coniferous_litter below=air above=air
+ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=natural_opening region=plate_surface result=none
+ACTION[Emerge-0]: GRUG_R9_MAP_C_WITNESS case=plate x=-1696 z=-2522 terrain_y=48 nodes=-37:air,-36:air,-35:air,-34:air,-33:default:stone
+ACTION[Server]: GRUG_R9_MAP_C_WITNESS case=complete mgv7_spflags=mountains, ridges, nofloatlands, caverns
