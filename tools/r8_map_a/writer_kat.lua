@@ -156,8 +156,14 @@ return function(root)
 	for _ in pairs(expected_positions) do
 		expected_count = expected_count + 1
 	end
+	local alternative_positions = volume.lumen(volume_candidate, target_b)
+	local alternative_count = 0
+	for _ in pairs(alternative_positions) do
+		alternative_count = alternative_count + 1
+	end
 	local proof_volume = {eligible = true, target = target_a,
 		voxel_count = expected_count, valid_targets = {target_a, target_b},
+		connected_targets = {{target = target_a, voxel_count = expected_count}},
 		possible_voxels = possible_count, baseline_solids = baseline_solids}
 	local carved, connected, unexpected, unexpected_voxels = volume.inspect(
 		volume_candidate, proof_volume, function(x, y, z)
@@ -165,10 +171,31 @@ return function(root)
 		end)
 	check(carved and connected and not unexpected and unexpected_voxels == 0,
 		"exact baseline-backed lumen was not recognized")
+	local partial_key = next(expected_positions)
+	local partial_carved, _, partial_unexpected, partial_voxels = volume.inspect(
+		volume_candidate, proof_volume, function(x, y, z)
+			return volume.key(x, y, z) == partial_key and "air" or "default:stone"
+		end)
+	check(not partial_carved and partial_unexpected and partial_voxels > 0,
+		"partial lumen was hidden")
 	local _, _, extra, extra_voxels = volume.inspect(volume_candidate,
 		proof_volume, function() return "air" end)
 	check(extra and extra_voxels > 0,
 		"unexpected carve outside accepted lumen was hidden")
+	local dual_proof = {eligible = true, target = target_a,
+		voxel_count = expected_count, valid_targets = {target_a, target_b},
+		connected_targets = {
+			{target = target_a, voxel_count = expected_count},
+			{target = target_b, voxel_count = alternative_count},
+		}, possible_voxels = possible_count, baseline_solids = baseline_solids}
+	local dual_carved, _, dual_unexpected, dual_voxels = volume.inspect(
+		volume_candidate, dual_proof, function(x, y, z)
+			local position_key = volume.key(x, y, z)
+			return (expected_positions[position_key] or
+				alternative_positions[position_key]) and "air" or "default:stone"
+		end)
+	check(not dual_carved and dual_unexpected and dual_voxels > 0,
+		"two alternatives of one candidate were hidden")
 	local rejected_proof = {eligible = false, valid_targets = {target_a},
 		possible_voxels = 0, baseline_solids = {}}
 	rejected_proof.possible_voxels, rejected_proof.baseline_solids = volume.capture(
@@ -179,13 +206,14 @@ return function(root)
 	check(not rejected_carved and rejected_unexpected,
 		"rejected candidate carve was hidden")
 
-	return table.concat({"schema\tgrug_r8_map_a_writer_kat_v1",
+	return table.concat({"schema\tgrug_r8_map_a_writer_kat_v2",
 		"surface\tsea=1/fresh_lip=2/wet_sand=1",
 		"strata\twritten=" .. written .. "/floor_clipped=" .. clipped ..
 			"/native_gravel=preserved",
 		"caves\tconnected=" .. #voxels .. "/closed=rejected/sky=rejected/" ..
 			"edge_pocket=rejected/" ..
 			"component=" .. proof[4],
-		"checker\texact=connected/unexpected=" .. extra_voxels ..
+		"checker\texact=connected/partial=" .. partial_voxels ..
+			"/dual=" .. dual_voxels .. "/unexpected=" .. extra_voxels ..
 			"/rejected=detected"}, "\n") .. "\n"
 end

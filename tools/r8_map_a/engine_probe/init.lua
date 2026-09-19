@@ -313,24 +313,7 @@ local function baseline_plan(candidate)
 		first_invalid = first_invalid}, valid_targets
 end
 
-local globally_expected = {}
-if not native_baseline_mode then
-	for region_index = 1, #cases.regions do
-		local region = cases.regions[region_index]
-		for candidate_index = 1, #region.candidates do
-			local candidate = region.candidates[candidate_index]
-			local proof = native_baseline.results[candidate_key(region, candidate)]
-			assert(proof, "R8-MAP-A candidate absent while building carve allowlist")
-			if proof.eligible then
-				for position_key in pairs(volume.lumen(candidate, proof.target)) do
-					globally_expected[position_key] = true
-				end
-			end
-		end
-	end
-end
-
-local work, totals, results = {}, {}, {}
+local work, totals, results, normal_records = {}, {}, {}, {}
 for region_index = 1, #cases.regions do
 	local region = cases.regions[region_index]
 	totals[region.id] = {candidates = #region.candidates, carved = 0,
@@ -357,6 +340,25 @@ local function finish()
 		assert(core.safe_file_write(path, core.serialize(payload)),
 			"R8-MAP-A writer baseline write failed")
 		core.log("action", "GRUG_R8_MAP_A_WRITER_BASELINE_FILE\t" .. path)
+	else
+		local audited = volume.audit(normal_records)
+		for record_index = 1, #normal_records do
+			local record = normal_records[record_index]
+			local total = totals[record.region_id]
+			if audited.accepted[record.id] then
+				total.carved = total.carved + 1
+				total.connected = total.connected + 1
+			end
+			local unexpected_voxels = audited.unexpected_records and
+				audited.unexpected_records[record.id] or 0
+			if unexpected_voxels > 0 then
+				total.unexpected_carves = total.unexpected_carves + 1
+				total.unexpected_voxels = total.unexpected_voxels + unexpected_voxels
+				core.log("action", "GRUG_R8_MAP_A_UNEXPECTED\t" .. record.id ..
+					"\t" .. unexpected_voxels .. "\t" ..
+					tostring(audited.first_unexpected))
+			end
+		end
 	end
 	for region_index = 1, #cases.regions do
 		local region = cases.regions[region_index]
@@ -438,17 +440,10 @@ local function next_candidate()
 				proof.possible_voxels,
 				"R8-MAP-A candidate absent from writer baseline: " .. row_key)
 			if proof.eligible then total.eligible = total.eligible + 1 end
-			local carved, connected, unexpected, unexpected_voxels, first_unexpected =
-				volume.inspect(candidate, proof, current_node_name, globally_expected,
-					writer_proof.baseline_solids)
-			if carved then total.carved = total.carved + 1 end
-			if connected then total.connected = total.connected + 1 end
-			if unexpected then total.unexpected_carves = total.unexpected_carves + 1 end
-			total.unexpected_voxels = total.unexpected_voxels + unexpected_voxels
-			if unexpected then
-				core.log("action", "GRUG_R8_MAP_A_UNEXPECTED\t" .. row_key ..
-					"\t" .. unexpected_voxels .. "\t" .. tostring(first_unexpected))
-			end
+			local record = volume.prepare(row_key, candidate, proof,
+				current_node_name, writer_proof.baseline_solids)
+			record.region_id = item.region.id
+			normal_records[#normal_records + 1] = record
 		end
 		core.after(0, next_candidate)
 	end)

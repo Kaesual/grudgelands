@@ -58,9 +58,21 @@ sed -i 's/return complete/return true/' \
 expect_rejected proof_box_edge
 
 reset_tree
-sed -i 's/unexpected_voxels = unexpected_voxels + 1/unexpected_voxels = unexpected_voxels + 0/' \
+sed -i 's/unexpected_voxels = actual_count/unexpected_voxels = 0/' \
 	"$tmp/tree/tools/r8_map_a/engine_probe/volume.lua"
 expect_rejected checker_unexpected
+
+reset_tree
+sed -i \
+	-e 's/if baseline_solid\[position_key\] then/if baseline_solid[position_key] and node_name(row[1], row[2], row[3]) == "air" then/' \
+	-e 's/if expected_air and #change_rows > 0/if #change_rows > 0/' \
+	"$tmp/tree/tools/r8_map_a/engine_probe/volume.lua"
+expect_rejected checker_partial_lumen
+
+reset_tree
+sed -i 's/candidate_id = id,/candidate_id = id .. "\/" .. option_index,/' \
+	"$tmp/tree/tools/r8_map_a/engine_probe/volume.lua"
+expect_rejected checker_dual_lumen
 
 reset_tree
 sed -i 's/return {bed, "default:sand",/return {bed, bed,/' \
