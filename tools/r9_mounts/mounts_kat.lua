@@ -259,7 +259,7 @@ return function(root)
 	dofile(root .. "/mods/PLAYER/grug_mounts/init.lua")
 	assert(grug_mounts.PRICES == grug_mounts.COORDINATOR_PLACEHOLDER_PRICES)
 	assert(grug_mounts.PRICES[1] == 200 and grug_mounts.PRICES[2] == 1500 and
-		grug_mounts.PRICES[3] == 24000 and grug_mounts.PRICES[4] == 150000)
+		grug_mounts.PRICES[3] == 24000 and grug_mounts.PRICES[4] == 100000)
 
 	local buyer = new_player("buyer", 60, "accord", "human")
 	assert(grug_mounts.purchase(buyer, 1))
