@@ -312,7 +312,6 @@ local FAMILY_ORDER = {"guards", "flair", "vendor", "quest", "royal"}
 
 local ROYAL_GUARD_SOCKET = {
 	throne_guard_west = true, throne_guard_east = true,
-	door_guard_west = true, door_guard_east = true,
 }
 
 -- Which NPC family (start_villagers.lua) a role is nametagged as. A work
