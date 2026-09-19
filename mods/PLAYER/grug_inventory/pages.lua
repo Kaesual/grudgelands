@@ -208,7 +208,7 @@ sfinv.register_page("grug_inventory:help", {
 			"At level 60, an item-level 70 weapon gives about 9% more effective swing damage than item level 60, while item level 50 gives about 7% less, before enchants.",
 			"Healing and absorbs are percentages of the caster's neutral base pool; spell power is a percentage bonus.",
 			"Mana costs are percentages of the unmodified neutral base pool. Enchants and talents do not make a spell cost more.",
-			"Mana regeneration is 1 + 0.15 x level per second. The Troll multiplier applies only out of combat. Combat gives one quarter of the unmodified rate; Cold Focus multiplies that combat rate.",
+			"Mana regeneration is 1 + 0.15 x level per second out of combat. The Troll multiplier applies only out of combat. In combat you regenerate the larger of one quarter of that rate and 0.25% of your maximum mana per second; Cold Focus multiplies that combat rate.",
 			"A food's instant heal and regeneration wait until you are out of combat. Its pool, Crit, armor and spell-damage bonuses remain active.",
 			"The Character page keeps only the live HP and class-resource derivations beside the model and equipment.",
 		}, "\n\n")

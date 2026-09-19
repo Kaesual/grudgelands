@@ -121,16 +121,19 @@ local function clamp_mana(player)
 	mana[name] = math.max(0, math.min(maximum, mana[name] or 0))
 end
 
--- Absolute mana per second. The pool grows quadratically, while this curve is
--- deliberately linear so food matters more at high level. Cold Focus keeps
--- the same relative 20% per rank effect it had on the old in-combat rate.
+-- Absolute mana per second. Out of combat the deliberately linear curve keeps
+-- food relevant at high level. In combat a maximum-mana floor prevents that
+-- curve from falling too far behind the growing pool. Cold Focus keeps the
+-- same relative 20% per rank effect it had on the old in-combat rate.
 function grug_abilities.mana_regen_rate(player, in_combat)
 	local level = math.max(1, grug_core.get_player_level(player))
 	local rate = 1 + 0.15 * level
 	if in_combat then
 		local bonus = grug_classes.get_talent_bonus(player,
 			"combat_mana_regen_add")
-		return rate * 0.25 * (1 + 2 * bonus)
+		local combat_rate = math.max(rate * 0.25,
+			grug_classes.get_max_mana(player) * 0.0025)
+		return combat_rate * (1 + 2 * bonus)
 	end
 	return rate *
 		(grug_classes.get_race_perk(player, "ooc_regen_mult") or 1)

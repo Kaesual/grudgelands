@@ -6,6 +6,7 @@ grug_jobs = {}
 local modpath = core.get_modpath(core.get_current_modname())
 dofile(modpath .. "/registry.lua")
 dofile(modpath .. "/state.lua")
+dofile(modpath .. "/discovery.lua")
 dofile(modpath .. "/ui.lua")
 dofile(modpath .. "/stations.lua")
 local station_factory = dofile(modpath .. "/station_nodes.lua")

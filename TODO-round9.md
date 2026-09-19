@@ -509,6 +509,17 @@ ocean edge and the enemy border (warning band, hard dismount).
     with no residual velocity.
 27. **Kraken** stays tier normal (level 100, 7 120 HP); the flat 18 000 HP
     applies to the boss tier only (the two dragons).
+28. **Trinkets and caster weapons as gear items** (orchestrator ruling
+    2026-09-19 after the PROF-B blocker; the user may veto): `grug_gear`
+    has no caster 1H family and no trinket items, and the registry allows
+    one recipe per output and station, so §3.6b's "six identities over six
+    tiers" cannot be expressed through stack metadata. PROF-B adds the
+    caster 1H family (wand/scepter/orb, §3.2 row) to `grug_gear`'s
+    `WEAPONS` table and registers the six core trinket identities of §6.2
+    as one item per identity AND tier (36 ids, the same per-tier pattern
+    the other gear uses); ENCH's quality roll applies on top. The
+    Blacksmith fitting cross-buy references PROF-A's fitting item names,
+    so PROF-B resumes after the PROF-A run-2 merge.
 
 ## 5. MAP-C protocol: what must not repeat from Round 8
 
