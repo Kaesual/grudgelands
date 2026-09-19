@@ -36,6 +36,16 @@ local function chunk_origin(value)
 	return (math.floor((block + 2) / 5) * 5 - 2) * 16
 end
 
+local storage = core.get_mod_storage()
+local generated_owners, generated_keys = {}, {}
+local verification_owners = phase == "disk" and
+	core.deserialize(storage:get_string("generated_owners")) or nil
+if phase == "disk" and full_digest_enabled and
+		(type(verification_owners) ~= "table" or #verification_owners == 0) then
+	fail("cold generated-owner manifest is absent")
+end
+local verification_index = 0
+local measured_finished_us
 local resolved = {}
 local seen = {}
 for index = 1, #cases do
@@ -75,8 +85,15 @@ local completed = 0
 local finished = false
 local loaded_us = core.get_us_time()
 
-core.register_on_generated(function()
+core.register_on_generated(function(minp, maxp)
 	generated_callbacks = generated_callbacks + 1
+	if maxp.x - minp.x ~= 79 or maxp.y - minp.y ~= 79 or
+			maxp.z - minp.z ~= 79 then fail("generated owner bounds differ") end
+	local key = minp.x .. "," .. minp.y .. "," .. minp.z
+	if generated_keys[key] then fail("duplicate generated owner " .. key) end
+	generated_keys[key] = true
+	generated_owners[#generated_owners + 1] = {id = key, key = key,
+		origin = {x = minp.x, y = minp.y, z = minp.z}}
 end)
 
 local function sampled_digest()
@@ -126,7 +143,7 @@ local function append_u32(parts, value)
 		math.floor(value / 16777216) % 256)
 end
 
-local function full_owner_digest()
+local function full_owner_digest(owners)
 	local names = {}
 	for name in pairs(core.registered_nodes) do names[#names + 1] = name end
 	table.sort(names)
@@ -169,11 +186,11 @@ local function full_owner_digest()
 		end
 		return core.sha256(table.concat(raw_blocks), false)
 	end
-	local owner_digests = {"grug_wp40_profile_full_owner_v1",
+	local owner_digests = {"grug_wp40_profile_all_owners_v2",
 		expected_seed, vocabulary_digest}
 	local voxel_count = 0
-	for case_index = 1, #resolved do
-		local case = resolved[case_index]
+	for case_index = 1, #owners do
+		local case = owners[case_index]
 		local minp = case.origin
 		local maxp = {x = minp.x + 79, y = minp.y + 79, z = minp.z + 79}
 		local vm = core.get_voxel_manip(minp, maxp)
@@ -231,7 +248,37 @@ run_next = function()
 	current = current + 1
 	local case = resolved[current]
 	if not case then
-		local measured_finished_us = core.get_us_time()
+		-- Preloads run independently of the corpus requests. Do not freeze the
+		-- owner manifest while one can still publish another callback.
+		local ready, total = grug_core.starts_ready()
+		if grug_core.starts_preload_failed() then fail("start preload failed") end
+		if ready ~= total then core.after(0.05, run_next) return end
+		if not measured_finished_us then
+			measured_finished_us = core.get_us_time()
+			if phase == "cold" then
+				table.sort(generated_owners, function(a, b) return a.key < b.key end)
+				verification_owners = generated_owners
+				storage:set_string("generated_owners", core.serialize(verification_owners))
+			end
+		end
+		-- Reload precisely the cold generated-owner set; no new regions. These
+		-- diagnostic requests are excluded from the measured corpus interval.
+		if phase == "disk" and full_digest_enabled then
+			verification_index = verification_index + 1
+			local owner = verification_owners[verification_index]
+			if owner then
+				local minp = owner.origin
+				core.emerge_area(minp, {x = minp.x + 79, y = minp.y + 79,
+					z = minp.z + 79}, function(_, action, remaining)
+					if action ~= core.EMERGE_FROM_DISK and
+							action ~= core.EMERGE_FROM_MEMORY then
+						fail("owner verification did not load existing blocks")
+					end
+					if remaining == 0 then core.after(0, run_next) end
+				end)
+				return
+			end
+		end
 		local diagnostic_started_us = measured_finished_us
 		local callbacks_before_diagnostic = generated_callbacks
 		local expected_node_count = 0
@@ -248,7 +295,7 @@ run_next = function()
 		local digest, sample_count = sampled_digest()
 		local full_digest, vocabulary_digest, full_voxels = "disabled", "-", 0
 		if full_digest_enabled then
-			full_digest, vocabulary_digest, full_voxels = full_owner_digest()
+			full_digest, vocabulary_digest, full_voxels = full_owner_digest(verification_owners)
 		end
 		if generated_callbacks ~= callbacks_before_diagnostic then
 			fail("post-timing diagnostics triggered map generation")
@@ -265,6 +312,7 @@ run_next = function()
 			"full_digest=" .. full_digest,
 			"full_vocabulary_digest=" .. vocabulary_digest,
 			"full_voxels=" .. full_voxels,
+			"full_owners=" .. (full_digest_enabled and #verification_owners or 0),
 			"measured_elapsed_us=" .. (measured_finished_us - loaded_us),
 			"diagnostic_us=" .. (core.get_us_time() - diagnostic_started_us)})
 		core.request_shutdown("WP40 profile " .. phase .. " complete", false, 0.1)

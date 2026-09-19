@@ -310,8 +310,10 @@ if [[ "$full_digest" == "1" ]]; then
 		"$cold_full_digest" == "$disk_full_digest" &&
 		"$cold_vocabulary_digest" =~ ^[0-9a-f]{64}$ &&
 		"$cold_vocabulary_digest" == "$disk_vocabulary_digest" &&
-		"$cold_full_voxels" -eq 5120000 &&
-		"$disk_full_voxels" -eq 5120000 ]] || {
+		"$(field "$cold_complete" full_owners)" -eq "$cold_callbacks" &&
+		"$(field "$disk_complete" full_owners)" -eq "$cold_callbacks" &&
+		"$cold_full_voxels" -eq "$((cold_callbacks * 512000))" &&
+		"$disk_full_voxels" -eq "$cold_full_voxels" ]] || {
 		echo "WP40 profile: post-timing full owner digests differ" >&2
 		exit 1
 	}
@@ -331,7 +333,7 @@ fi
 	exit 1
 }
 {
-	printf 'schema\tgrug_wp40_real_engine_profile_v1\n'
+	printf 'schema\tgrug_wp40_real_engine_profile_v2\n'
 	printf 'cold_generated_blocks\t%s\n' "$(field "$cold_complete" generated)"
 	printf 'cold_mapgen_callbacks\t%s\n' "$cold_callbacks"
 	printf 'disk_loaded_blocks\t%s\n' "$(field "$disk_complete" disk)"
@@ -340,6 +342,7 @@ fi
 	printf 'full_digest\t%s\n' "$cold_full_digest"
 	printf 'full_vocabulary_digest\t%s\n' "$cold_vocabulary_digest"
 	printf 'full_voxels\t%s\n' "$cold_full_voxels"
+	printf 'full_owners\t%s\n' "$(field "$cold_complete" full_owners)"
 	printf 'snapshot_manifest_sha256\t%s\n' \
 		"$(awk '{print $1}' "$result_dir/snapshot.digest")"
 } >"$result_dir/summary.tsv"

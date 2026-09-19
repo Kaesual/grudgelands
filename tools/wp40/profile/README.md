@@ -59,7 +59,8 @@ WP40_PROFILE_FULL_DIGEST=1 \
 The full digest canonically binds the sorted content-ID/name vocabulary once,
 then hashes content, `param2`, and light for every voxel in each 80-cube owner.
 It processes one owner and small byte batches at a time. Both engine phases
-must produce the same digest over 5,120,000 owner voxels. Run the optimized
+must produce the same digest over every generated owner (49,664,000 voxels for
+the historical 97-owner startup-plus-corpus case). Run the optimized
 snapshot with the same seed, cases, engine image, and setting, then compare the
 two `summary.tsv` full-digest fields.
 
@@ -84,10 +85,13 @@ The patch hunk is anchored on the R8 native-baseline preamble and callback.
 The probe records end-to-end `emerge_area` time and action counts per owner. A
 small ordered node/param2 sample digest is computed only after all timed
 requests finish. `WP40_PROFILE_FULL_DIGEST=1` additionally reads the already
-loaded owner VoxelManip data after the measured finish and hashes canonical
+loaded generated-owner VoxelManip data after the measured finish and hashes canonical
 content names, `param2`, and light. The completion record separates
 `measured_elapsed_us` from `diagnostic_us`; neither digest runs in a mapgen
-callback or an emerge request. The disk restart must reproduce every enabled
+callback or an emerge request. The probe waits for all start preloads to finish before freezing a sorted
+generated-owner manifest in mod storage. The disk phase diagnostically reloads
+precisely that set before hashing, one owner at a time. No extra regions are
+generated. The disk restart must reproduce every enabled
 digest and must produce zero mapgen callbacks. The default sample detects gross
 output or persistence drift without paying the full diagnostic cost.
 
@@ -151,3 +155,51 @@ harness and snapshot SHA-256 manifests, and named in `environment.tsv`.
 The cave corpus requires seed 0 and proves 416 air voxels in a tube crossing
 two owners during both cold generation and disk-only reload. It is a separate
 correctness corpus, not the default timing comparison.
+
+## R9 byte-preserving comparison procedure
+
+Use the same checked-in profiler tooling for **both** immutable game snapshots,
+including the baseline `2a308891`. Enable `WP40_PROFILE_FULL_DIGEST=1`, leave
+`WP40_PROFILE_STAGES=0`, keep seed 0 and the default corpus, use the same engine
+image and launcher, and record host load alongside each invocation. For R9-PERF
+reserve `WP40_PROFILE_PORT_BASE=32610` (cold 32610, disk 32611); the historical
+default 32160 is not this lane's port allocation. Run at idle priority with
+`nice -n 19`; never profile while the user's playtest is active.
+
+For each frozen step, collect one fresh pair, alternating A/B and B/A order
+between steps. Every run gets an absent output directory and a new world; its own disk
+restart authenticates persistence. A is that step's immediately preceding
+snapshot, B is the step snapshot. Do not reuse old A runs for another step.
+Pass occurrences of each label in matching pair order:
+
+```sh
+python3 tools/wp40/profile/compare.py --pair-labels before after \
+  before=/tmp/step1-pair1-a after=/tmp/step1-pair1-b \
+  after=/tmp/step1-pair2-b before=/tmp/step1-pair2-a
+```
+
+The comparator requires equal full corpus digests, vocabulary, sample digest,
+seed, engine version, instrumentation hashes and callback owner sets. It
+matches callbacks by owner, never by arrival order. `corpus` denotes the ten
+explicit requested owners; `startup_other` denotes all other generated owners
+(87 in the historical 97-callback run). These are spatial populations, not
+causal attribution to an individual emerge request: startup and corpus queues
+overlap, and an explicit request may generate zero new chunks. `all` covers
+both populations. `fresh_start` elapsed time includes initialization and the
+preloads; none of these rows claims steady-state exploration latency.
+
+Report every paired ratio for planner, writer, callback totals and fresh-start
+elapsed time. The comparator can also report median and min/max dispersion
+when repeated pairs are explicitly authorized; one pair establishes no noise
+interval or statistical significance.
+The study's separate quiescent exploration campaign is not added in this lane.
+
+Coverage: the full content/param2/light digest and reload comparison cover
+**every generated owner**, including startup owners outside the ten explicit
+corpus requests, in canonical owner-key order. The explicit corpus retains its
+sample digest. Hashing retains only one owner's channel buffers at a time;
+its work scales with the generated-owner count (approximately 9.7 times the
+old ten-owner diagnostic for the historical corpus). Record `diagnostic_us`
+separately and respect the lane's 20-minute tool-run bound. Portable writer
+equivalence additionally checks liquid intent and lighting transaction context,
+which an engine voxel digest alone cannot prove.
