@@ -6,7 +6,7 @@ return function(root)
 	end
 	local settlement = dofile(root ..
 		"/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua")
-	local _, _, preserves_native, bulk_clear_fixture = dofile(root ..
+	local _, _, preserves_native = dofile(root ..
 		"/mods/MAPGEN/grug_mapgen/wp40/map_adapter.lua")
 	local _, _, surface_rules = dofile(root ..
 		"/mods/MAPGEN/grug_mapgen/wp40/r6_content.lua")
@@ -25,31 +25,6 @@ return function(root)
 		not preserves_native(9, 3, 1, -33, -35, "route_001") and
 		not preserves_native(21, 3, 1, -31007, -35, "anchor_001"),
 		"plate preservation escaped anchor grades or a valid heightmap")
-
-	-- The two owner-edge columns and the uniform middle column take the bulk
-	-- path. Native cave air, a non-stone native node, and nonzero param2 force
-	-- the complete column back through the ordinary per-voxel result.
-	local sky_columns = {
-		{data = {10, 10, 10, 10}, param2 = {0, 0, 0, 0}},
-		{data = {10, 0, 10, 10}, param2 = {0, 0, 0, 0}},
-		{data = {10, 10, 10, 10}, param2 = {0, 0, 0, 0}},
-		{data = {10, 12, 10, 10}, param2 = {0, 0, 0, 0}},
-		{data = {10, 10, 10, 10}, param2 = {0, 0, 1, 0}},
-	}
-	local generic_data, generic_param2, generic_intent,
-		bulk_data, bulk_param2, bulk_intent, bulk_eligible =
-			bulk_clear_fixture(sky_columns, 10, 0)
-	for column = 1, #sky_columns do
-		for y = 1, #sky_columns[column].data do
-			check(generic_data[column][y] == bulk_data[column][y] and
-				generic_param2[column][y] == bulk_param2[column][y] and
-				generic_intent[column][y] == bulk_intent[column][y],
-				"bulk clear differs at " .. column .. "/" .. y)
-		end
-	end
-	check(bulk_eligible[1] and not bulk_eligible[2] and bulk_eligible[3] and
-		not bulk_eligible[4] and not bulk_eligible[5],
-		"bulk clear eligibility or fallback differs")
 
 	-- Mixed immutable 3x3 native columns, including an owner-edge halo case.
 	local runs, heights = {}, {}
@@ -95,6 +70,20 @@ return function(root)
 	for z = -1, 1 do for x = -2, 0 do runs[skin_key(x, z)] = 4 end end
 	check(settlement.r9_surface_skin_open(skin_context, -1, 0),
 		"owner-edge 3x3 opening lost its halo")
+	local bottom_min, bottom_max, bottom_surface =
+		settlement.r9_surface_skin_owned_range(12, 10, 89)
+	local top_min, top_max, top_surface =
+		settlement.r9_surface_skin_owned_range(92, 10, 89)
+	local absent_min, absent_max, absent_surface =
+		settlement.r9_surface_skin_owned_range(93, 10, 89)
+	check(bottom_min == 10 and bottom_max == 11 and bottom_surface and
+		top_min == 89 and top_max == 89 and not top_surface and
+		absent_min == nil and absent_max == nil and not absent_surface,
+		"surface skin owner-slice intersections differ")
+	local integrated = dofile(root ..
+		"/tools/wp40/quality/gravewood_writer_fixture.lua")(root, root, false)
+	check(integrated:find("opening_surface\tair_at_t=pass", 1, true) ~= nil,
+		"integrated writer retained the exact surface at an opening")
 
 	-- The exact post-change selector gates used by production: the chosen width
 	-- owns the complete beach/rim, while ordinary wet beds retain their sand patch.
@@ -296,8 +285,7 @@ return function(root)
 
 	return table.concat({"schema\tgrug_r8_map_a_writer_kat_v2",
 		"plate\topcode=21/role=11/policy=3/y=-37..-33",
-		"bulk_clear\tequivalent=5/fallback=3/owner_edge=2",
-		"surface_skin\tlower=1/all9=1/negative=3/owner_edge=1",
+		"surface_skin\tlower=1/all9=1/negative=3/owner_edge=1/slices=2/air_at_t=1",
 		"surface\tsea=1/fresh_rim=4/wet_sand=1",
 		"strata\twritten=" .. written .. "/floor_clipped=" .. clipped ..
 			"/native_gravel=preserved",

@@ -65,6 +65,16 @@ local function settlement_factory()
 		return true, run, terrain_y
 	end
 
+	local function r9_surface_skin_owned_range(terrain_y, min_y, max_y)
+		local band_min = math.max(-37, terrain_y - 3)
+		local band_max = terrain_y - 1
+		local owned_min = math.max(band_min, min_y)
+		local owned_max = math.min(band_max, max_y)
+		return owned_min <= owned_max and owned_min or nil,
+			owned_min <= owned_max and owned_max or nil,
+			terrain_y >= min_y and terrain_y <= max_y
+	end
+
 	local function new_r8_strata(full_seed, source)
 		local secondary_by_biome = {
 			grug_savanna = "default:sandstone",
@@ -2173,7 +2183,9 @@ local function settlement_factory()
 						_, _, _, _, _, _, _, _, _, hard_foundation =
 							planner_source.column_values_at(x, z)
 					local excluded, opened = false, false
-					if terrain_y >= min_y and terrain_y <= max_y then
+					local skin_min, _, surface_owned =
+						r9_surface_skin_owned_range(terrain_y, min_y, max_y)
+					if skin_min ~= nil or surface_owned then
 						local has_native_air = false
 						for depth = 1, 3 do
 							local y = terrain_y - depth
@@ -2212,7 +2224,13 @@ local function settlement_factory()
 					local dust_ref = plan.column_values[base + 12]
 					local dry_start_grade
 					if top_ref ~= 0 and terrain_y >= min_y and terrain_y <= max_y and
-							surface_skin_column[column] ~= 2 then
+							surface_skin_column[column] == 2 then
+						local index = index_at(x, terrain_y, z)
+						final_data[index], final_param2[index] = native_air_cid, 0
+						intent_opcode[index], intent_feature[index],
+							intent_interface[index], intent_aux[index] = 26, 0, 0, 0
+						occupancy[index] = 1
+					elseif top_ref ~= 0 and terrain_y >= min_y and terrain_y <= max_y then
 						local rbase = run_at(plan, column, terrain_y)
 						local predecessor = rbase and plan.r5_plan.run_values[rbase + 4]
 						if predecessor == 22 then
@@ -3522,6 +3540,7 @@ local function settlement_factory()
 		r8_plan_cave = r8_plan_cave,
 		r8_cave_proof_box_inside = r8_cave_proof_box_inside,
 		r9_surface_skin_open = r9_surface_skin_open,
+		r9_surface_skin_owned_range = r9_surface_skin_owned_range,
 		r8_cave_component_radius = R8_CAVE_COMPONENT_RADIUS,
 		r8_cave_component_minimum = R8_CAVE_COMPONENT_MINIMUM}
 end

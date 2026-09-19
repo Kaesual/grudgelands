@@ -224,8 +224,16 @@ return function(repo, production_repo, verify_compressed)
 	local blocked_index = (blocked.z - emerged_min.z) * 112 * 64 +
 		(blocked.y - emerged_min.y) * 112 + (blocked.x - emerged_min.x) + 1
 	local blocked_cid = contract.content_cids[content.content_ref(definitions[1].host)]
+	local native_data = filled(volume, 0)
+	for z = minp.z, maxp.z do
+		for y = 1, 3 do
+			for x = minp.x, maxp.x do
+				native_data[(z + 48) * 112 * 64 + (y + 16) * 112 + x + 49] = cids[1]
+			end
+		end
+	end
 	local vm, _, observer = vm_module.new({minp = minp, maxp = maxp,
-		data = filled(volume, 0), param2 = filled(volume, 0), light = filled(volume, 0),
+		data = native_data, param2 = filled(volume, 0), light = filled(volume, 0),
 		heightmap = filled(6400, -31007), content_contract = contract, water_level = 1,
 		ignore_cid = contract.ignore_cid, verify_inactive_tail = false})
 	local result = settlement:apply(vm, minp, maxp, plan, 1, "fixture")
@@ -323,8 +331,40 @@ return function(repo, production_repo, verify_compressed)
 	settlement:apply(blocked_vm, minp, maxp, blocked_plan, 1, "fixture")
 	check(blocked_observer.snapshot().data[blocked_index] == blocked_cid,
 		"occupied destination was overwritten")
+	-- The opening transaction uses the real writer with a 3x3 native-air band.
+	-- R5 first places the exact surface host at T=4; the R9 opening must replace
+	-- that predecessor intent with air rather than merely skipping P7 and skin.
+	local opening_columns = {}
+	for index = 1, 6400 * 12 do opening_columns[index] = 0 end
+	for column = 1, 6400 do
+		local base = (column - 1) * 12
+		opening_columns[base + 5], opening_columns[base + 7],
+			opening_columns[base + 8] = 4, 1,
+			content.content_ref(definitions[1].host)
+	end
+	local opening_plan = {schema = plan.schema,
+		construction_identity = plan.construction_identity, generation = plan.generation,
+		valid = true, min_x = plan.min_x, min_y = plan.min_y, min_z = plan.min_z,
+		max_x = plan.max_x, max_y = plan.max_y, max_z = plan.max_z,
+		r5_plan = plan.r5_plan, r5_generation = plan.r5_generation,
+		column_values = opening_columns, column_count = plan.column_count,
+		candidate_cell_values = {}, candidate_cell_count = 0,
+		candidate_values = {}, candidate_count = 0, stable_refs = plan.stable_refs}
+	local opening_vm, _, opening_observer = vm_module.new({minp = minp, maxp = maxp,
+		data = filled(volume, 0), param2 = filled(volume, 0), light = filled(volume, 0),
+		heightmap = filled(6400, -31007), content_contract = contract, water_level = 1,
+		ignore_cid = contract.ignore_cid, verify_inactive_tail = false})
+	settlement:apply(opening_vm, minp, maxp, opening_plan, 1, "fixture")
+	local opening_snapshot = opening_observer.snapshot()
+	local opening_root = roots[1]
+	local opening_index = (opening_root.z - opening_snapshot.emin.z) * 112 * 64 +
+		(4 - opening_snapshot.emin.y) * 112 +
+		(opening_root.x - opening_snapshot.emin.x) + 1
+	check(opening_snapshot.data[opening_index] == 0,
+		"surface opening retained the R5 solid node at T")
 	local rows = {"schema\tgrug_wp40_gravewood_writer_v1",
 		"templates\t2\tclass=1", "rotations\t8\tmandatory_wood=pass",
+		"opening_surface\tair_at_t=pass",
 		"writer\t" .. result .. "\toptional_leaves=" .. leaf_written ..
 			"\tnonoverwrite=pass"}
 	local bytes = table.concat(rows, "\n") .. "\n"

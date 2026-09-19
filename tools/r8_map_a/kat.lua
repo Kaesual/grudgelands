@@ -15,6 +15,58 @@ return function(root)
 		"/mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua")
 
 	local coast = coast_factory("0")
+	local r8_columns = {
+		{{2, 1, -44, false, "highland", 24, 1, 30, 1, -2112},
+			"beach/1/6/false/2/1/-44/sea_ordinary/1/highland"},
+		{{2, 1, -44, false, "highland", 24, 7, 30, 1, -2112},
+			"beach/7/6/false/2/1/-44/sea_ordinary/1/highland"},
+		{{2, 1, -44, false, "wetland_delta", 4, 12, 15, 1, -2112},
+			"bluff/12/8/false/2/1/-44/sea_low/17/wetland_delta"},
+		{{7, 2, 13, true, "lowland", 12, 4, 20, 3, 624},
+			"beach/4/6/true/7/2/13/fresh/6/lowland"},
+		{{9, 4, -3, false, "mountain", 30, 16, 45, 1, -145},
+			"cliff/16/5/false/9/4/-3/sea_ordinary/45/mountain"},
+		{{3, 3, 0, false, "rolling_hills", 11, 9, 22, 1, 47},
+			"beach/9/8/false/3/3/0/sea_ordinary/12/rolling_hills"},
+	}
+	local function fixture_round(numerator, denominator)
+		return math.floor((numerator + math.floor(denominator / 2)) / denominator)
+	end
+	for index = 1, #r8_columns do
+		local args = r8_columns[index][1]
+		local actual = {coast.r8_column(args[1], args[2], args[3], args[4], args[5],
+			args[6], args[7], args[8], args[9], args[10], fixture_round)}
+		for field = 1, #actual do actual[field] = tostring(actual[field]) end
+		check(table.concat(actual, "/") == r8_columns[index][2],
+			"coast-off column differs from the frozen R8 reference")
+	end
+	local wp40 = root .. "/mods/MAPGEN/grug_mapgen/wp40"
+	local common = dofile(root .. "/tools/wp40/r6/common.lua")
+	local zones_module = dofile(wp40 .. "/zones.lua")({source = source,
+		schemas = dofile(wp40 .. "/schemas.lua"),
+		canonical = dofile(wp40 .. "/canonical.lua"),
+		deterministic = dofile(wp40 .. "/deterministic.lua"),
+		index128 = dofile(wp40 .. "/index128.lua"),
+		horizontal_factory = dofile(wp40 .. "/simple_map.lua"),
+		coupled_grade = dofile(wp40 .. "/coupled_grade.lua")(),
+		height_factory = dofile(wp40 .. "/height.lua"),
+		raw_sha256 = common.new_sha256()})
+	local _, coast_off_planner = zones_module.new_with_planner_source_runtime("0", 1)
+	local production_r8_columns = {
+		{1784, -2960, "beach/1/8/false/11/2/-62/sea_ordinary/1/lowland"},
+		{1800, -2960, "beach/2/9/false/11/4/37/sea_ordinary/1/lowland"},
+		{1824, -2960, "terraced_cliff/3/16/false/11/4/38/sea_ordinary/1/lowland"},
+		{1832, -2960, "terraced_cliff/4/16/false/11/4/38/sea_ordinary/6/lowland"},
+		{1872, -2960, "bluff/2/6/false/11/4/39/sea_ordinary/6/lowland"},
+		{1880, -2960, "bluff/2/6/false/11/4/39/sea_ordinary/2/lowland"},
+	}
+	for index = 1, #production_r8_columns do
+		local expected = production_r8_columns[index]
+		local actual = {coast_off_planner.coast_profile_at(expected[1], expected[2])}
+		for field = 1, #actual do actual[field] = tostring(actual[field]) end
+		check(table.concat(actual, "/") == expected[3],
+			"disabled coast band differs from the production R8 column")
+	end
 	local cache = coast.new_lattice_cache(4)
 	local builds = 0
 	local function mixed_lattice(chunk_x, chunk_z)
@@ -135,6 +187,7 @@ return function(root)
 
 	local writer_rows = dofile(root .. "/tools/r8_map_a/writer_kat.lua")(root)
 	return table.concat({"schema\tgrug_r8_map_a_kat_v1",
+		"coast_off_reference\tpure=6/production=6",
 		"profile_mix\t" .. counts.beach .. "/" .. counts.bluff .. "/" ..
 			counts.cliff .. "/" .. counts.terraced_cliff,
 		"relief_beaches\t" .. table.concat({relief_beaches.wetland_delta,

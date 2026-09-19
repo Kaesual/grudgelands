@@ -126,3 +126,13 @@ fixture_fix_1 added default:stone to the tree-slice content contract and classif
 attempt_2 /tmp/map-c-final-micro-2 FAIL LuaJIT because the fixture's all-air native input put its tree through the new T-3..T-1 skin band
 fixture_fix_2 seeded native stone at y=1..3 in the tree-slice fixture; focused LuaJIT fixture PASS digest=fdfb2f0db29461ae9ccc98d4bb0602034f9a176143fad00fdb502dd45f017ff5
 no_attempt_3 the brief permits only one retry after a missing fixture production node; final PUC/LuaJIT byte comparison remains unproven
+
+fix_round_1
+opening_surface production writer replaces the R5 exact surface intent at T with opcode-26 air; integrated Gravewood writer fixture asserts air at T
+skin_slice_intersection classification covers the owned T-3..T-1 intersection when T is above the owner slice; bottom and top boundaries are in writer_kat
+coast_off restored the frozen R8 cardinal search, profile shares, widths, and four-node blend; six production planner columns match frozen R8 tuples
+bulk_experiment removed completely from map_adapter construction, resolution, lighting context, replay, exports, and writer KAT; historical evidence rows retained
+source_audit_roster final derived population=289 (267 plus 22 main-merge Lua files); combined micro inputs=313 because six additions already belonged to micro_inputs.txt
+performance_baseline old frozen baseline not reused because merge commit 3a8cb6f9 added 22 production Lua inputs; fresh main baseline is b720e562
+performance_fix1 before emerge=69453581 callback=53317490 plan=31389288 writer=21928202 after emerge=74693803 callback=58600113 plan=30354152 writer=28245961 ratios=1.075449/1.099079/0.967023/1.288111
+performance_gate FAIL 1.03 tolerance; ruling35 STOP after final parser/SETGLOBAL and before static/KAT/prefreeze/witness/pin/final_micro/headless sequence

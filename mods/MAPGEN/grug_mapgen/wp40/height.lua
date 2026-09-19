@@ -22,6 +22,85 @@ local function new_coast_rules(full_seed_string)
 		return tostring(owner) .. "/" .. tostring(orientation) .. "/" .. tostring(run) ..
 			"/" .. run_class
 	end
+	function result.r8_profile(owner, orientation, run, freshwater, relief_profile,
+			relief)
+		local run_class
+		if freshwater then run_class = "fresh"
+		elseif relief_profile == "wetland_delta" or relief < 7 then
+			run_class = "sea_low"
+		else run_class = "sea_ordinary" end
+		local class_salt = run_class == "fresh" and 104729 or
+			run_class == "sea_low" and 130363 or 155921
+		local draw = result.hash(owner, orientation, run, 19349663 + class_salt) % 100
+		local profile
+		if run_class ~= "sea_ordinary" then
+			profile = draw < 60 and "beach" or "bluff"
+		elseif draw < 40 then profile = "beach"
+		elseif draw < 65 then profile = "bluff"
+		elseif draw < 85 then profile = "cliff"
+		else profile = "terraced_cliff" end
+		return profile, run_class, class_salt
+	end
+	function result.r8_target(owner, orientation, selected_run, profile, class_salt,
+			distance, incoming, water_y, axis, round_ratio)
+		local draw = result.hash(owner, orientation, selected_run, 83492791 + class_salt)
+		local width, target
+		if profile == "beach" then
+			width = 4 + draw % 7
+			local denominator = 4 + math.floor(draw / 7) % 5
+			target = water_y + math.floor((distance - 1) / denominator)
+		elseif profile == "bluff" then
+			width = 6 + draw % 4
+			local rise = 1 + math.floor(draw / 11) % 2
+			target = water_y + (distance - 1) * rise
+		elseif profile == "cliff" then
+			width = 5 + draw % 3
+			local irregular = result.hash(owner, orientation, selected_run,
+				axis * 17 + 480752697 + class_salt) % 5 - 2
+			local setback = 2 + math.floor(draw / 13) % 3
+			local top = math.max(7, incoming - water_y) + irregular
+			local rise = math.min(top, 1 + math.max(0, distance - 2) * setback)
+			if distance > 2 and result.hash(owner, orientation, selected_run,
+					axis * 31 + distance * 43 + class_salt) % 11 == 0 then
+				rise = math.max(1, rise - setback)
+			end
+			target = water_y + rise
+		else
+			local steps = 2 + draw % 2
+			local step_height = 3 + math.floor(draw / 7) % 3
+			local step_width = 3 + math.floor(draw / 17) % 3
+			width = steps * step_width + 1
+			target = water_y + math.min(steps, math.floor((distance - 2) /
+				step_width) + 1) * step_height
+		end
+		if distance == 1 then target = water_y end
+		if distance > width then
+			local blend = distance - width
+			if blend >= 4 then return incoming, width end
+			target = round_ratio(target * (4 - blend) + incoming * blend, 4)
+		end
+		return target, width
+	end
+	function result.r8_column(owner, orientation, run, freshwater, relief_profile,
+			relief, distance, incoming, water_y, axis, round_ratio)
+		local profile, run_class, class_salt = result.r8_profile(owner, orientation,
+			run, freshwater, relief_profile, relief)
+		local target, width = result.r8_target(owner, orientation, run, profile,
+			class_salt, distance, incoming, water_y, axis, round_ratio)
+		local offset = axis % 48
+		if offset < 0 then offset = offset + 48 end
+		if offset < 4 or offset >= 44 then
+			local neighbor = offset < 4 and run - 1 or run + 1
+			local other_profile, _, other_salt = result.r8_profile(owner, orientation,
+				neighbor, freshwater, relief_profile, relief)
+			local other = result.r8_target(owner, orientation, neighbor, other_profile,
+				other_salt, distance, incoming, water_y, axis, round_ratio)
+			local weight = offset < 4 and 4 - offset or offset - 43
+			target = round_ratio(target * (4 - weight) + other * weight, 4)
+		end
+		return profile, distance, width, freshwater,
+			result.run_key(owner, orientation, run, run_class), target, relief_profile
+	end
 	function result.band(draw, profile, freshwater)
 		if profile ~= "beach" then return nil, nil, 4 end
 		local width = freshwater and 2 + draw % 3 or 20 + draw % 9
@@ -5097,6 +5176,7 @@ local function height_factory(dependencies)
 		-- form a seam.  All arithmetic in this query is integral.
 		do
 			local coast_rules = deterministic.r8_coast_rules(full_seed_string)
+			local coast_band_enabled = deterministic.r9_coast_band_enabled
 			local direction_x, direction_z = {1, -1, 0, 0}, {0, 0, 1, -1}
 			local coast_hash = coast_rules.hash
 			local selected_profile = coast_rules.profile
@@ -5231,7 +5311,6 @@ local function height_factory(dependencies)
 
 			derived_water_evidence.coast_profile_at = function(x, z, supplied_incoming)
 				coordinate(x, "coast query x") coordinate(z, "coast query z")
-				if not deterministic.r9_coast_band_enabled then return nil end
 				local water_class, _, owner = classified_values(x, z)
 				if water_class ~= "land" or owner == nil or
 					(horizontal.static_exclusion_values_at(x, z) ~= nil) or
@@ -5256,7 +5335,7 @@ local function height_factory(dependencies)
 						end
 					end
 				end
-				if best_distance == nil then
+				if best_distance == nil and coast_band_enabled then
 					best_distance, orientation, water_y, freshwater = lattice_shore_at(x, z)
 				end
 				if best_distance == nil then return nil end
@@ -5266,6 +5345,11 @@ local function height_factory(dependencies)
 					water_class, owner, nil, nil)
 				local relief_profile = source.zones[owner].primary_relief_id
 				local relief = math.max(0, incoming - water_y)
+				if not coast_band_enabled then
+					return coast_rules.r8_column(owner, orientation, run, freshwater,
+						relief_profile, relief, best_distance, incoming, water_y, axis,
+						round_ratio)
+				end
 				local profile, run_class, class_salt = selected_profile(owner,
 					orientation, run, freshwater, relief_profile, relief)
 				local target, width = target_for(profile, best_distance, incoming, water_y,

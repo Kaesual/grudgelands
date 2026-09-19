@@ -10,7 +10,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	local saved_dofile = dofile
 	changed_roster_relative = changed_roster_relative or
 		"tools/wp40/r7/changed_production_lua.txt"
-	expected_changed_count = expected_changed_count or 157
+	expected_changed_count = expected_changed_count or 289
 	if type(changed_roster_relative) ~= "string" or
 		changed_roster_relative:sub(1, 1) == "/" or
 		changed_roster_relative:find("..", 1, true) or
