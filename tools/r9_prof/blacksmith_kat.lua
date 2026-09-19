@@ -17,6 +17,9 @@ return function(repo)
 	local reagents = {false, "grug_mobs:venom_gland", "grug_mobs:slime_gel",
 		"grug_mobs:croc_tooth", "grug_gathering:stormkelp",
 		"grug_mobs:stone_core"}
+	local picks = {"default:pick_bronze", "grug_materials:pick_iron",
+		"default:pick_steel", "grug_materials:pick_silversteel",
+		"grug_materials:pick_embersteel", "grug_materials:pick_abyssal_steel"}
 	for tier = 1, 6 do
 		local key, bar = metals[tier][1], metals[tier][2]
 		local fitting = "grug_professions:metal_fittings_" .. key
@@ -25,6 +28,7 @@ return function(repo)
 			local gear = "grug_gear:" .. family .. "_" .. key
 			add(tier, "grid", gear, {gear, fitting})
 		end
+		add(tier, "grid", picks[tier], {picks[tier], fitting})
 		for _, slot in ipairs({"head", "chest", "legs", "feet"}) do
 			local gear = "grug_gear:" .. slot .. "_metal_" .. key
 			add(tier, "grid", gear, {gear, fitting})

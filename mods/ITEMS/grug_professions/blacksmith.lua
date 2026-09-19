@@ -20,6 +20,15 @@ local reagents = {
 	[6] = "grug_mobs:stone_core",
 }
 
+local picks = {
+	"default:pick_bronze",
+	"grug_materials:pick_iron",
+	"default:pick_steel",
+	"grug_materials:pick_silversteel",
+	"grug_materials:pick_embersteel",
+	"grug_materials:pick_abyssal_steel",
+}
+
 for tier = 1, #tiers do
 	local row = tiers[tier]
 	P.register_ingredient(row.bar, tier)
@@ -36,6 +45,7 @@ for tier = 1, #tiers do
 		P.register_refinement("blacksmith", tier, "weapon",
 			G .. family .. "_" .. row.key, fitting)
 	end
+	P.register_refinement("blacksmith", tier, "weapon", picks[tier], fitting)
 	for _, slot in ipairs({"head", "chest", "legs", "feet"}) do
 		P.register_refinement("blacksmith", tier, "metal_armor",
 			G .. slot .. "_metal_" .. row.key, fitting)

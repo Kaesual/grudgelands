@@ -11,18 +11,18 @@ return function(repo)
 	local grades = {
 		{"light", "grug_mobs:light_leather", {"mobs:leather", thread}},
 		{"cured", C .. "cured_leather",
-			{"group:grug_leather_curing_hide", thread}},
+			{"grug_mobs:light_leather", thread}, 1},
 		{"heavy", "grug_mobs:heavy_leather",
-			{"group:grug_leather_heavy_hide", thread}},
+			{C .. "cured_leather", thread}, 2},
 		{"scaled", "grug_mobs:scaled_hide",
-			{"group:grug_leather_scaled_hide", thread}},
+			{"grug_mobs:heavy_leather", thread}, 3},
 		{"sleek", C .. "sleek_leather", {"grug_mobs:sleek_pelt", thread}},
 		{"nightscale", C .. "nightscale_leather",
-			{"group:grug_leather_nightscale_hide", C .. "sleek_leather"}},
+			{"grug_mobs:scaled_hide", "grug_mobs:sleek_pelt"}, 5},
 	}
 	for tier = 1, 6 do
 		local key, leather, inputs = grades[tier][1], grades[tier][2], grades[tier][3]
-		add(tier, leather, inputs)
+		add(grades[tier][4] or tier, leather, inputs)
 		local grip = C .. "weapon_grip_" .. key
 		add(tier, grip, {leather, leather})
 		if tier >= 2 then

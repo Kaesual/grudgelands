@@ -1,17 +1,26 @@
 -- Shared stub runner for the three independently specified R9 catalog KATs.
 
 return function(repo, spec)
-	local saved = {core = rawget(_G, "core"), ItemStack = rawget(_G, "ItemStack"),
-		grug_jobs = rawget(_G, "grug_jobs"),
-		grug_professions = rawget(_G, "grug_professions"),
-		grug_inventory = rawget(_G, "grug_inventory"),
-		grug_gear = rawget(_G, "grug_gear"),
-		grug_traders = rawget(_G, "grug_traders")}
-	local function restore()
-		for name, value in pairs(saved) do rawset(_G, name, value) end
+	local names = {"core", "ItemStack", "grug_jobs", "grug_professions",
+		"grug_inventory", "grug_gear", "grug_traders"}
+	local saved = {}
+	for index = 1, #names do
+		local name = names[index]
+		saved[index] = {name = name, present = rawget(_G, name) ~= nil,
+			value = rawget(_G, name)}
 	end
+	local function restore()
+		for index = 1, #saved do
+			local row = saved[index]
+			if row.present then
+				rawset(_G, row.name, row.value)
+			else
+				rawset(_G, row.name, nil)
+			end
+		end
+	end
+	local function run()
 	local function fail(message)
-		restore()
 		error("r9 " .. spec.profession .. " catalog: " .. message, 0)
 	end
 	local function check(value, message) if not value then fail(message) end end
@@ -29,7 +38,7 @@ return function(repo, spec)
 	local function stack(value)
 		if type(value) == "table" and getmetatable(value) == Stack then
 			local result = setmetatable({name = value.name, count = value.count,
-				capabilities = value.capabilities}, Stack)
+				capabilities = value.capabilities, wear = value.wear}, Stack)
 			result.meta = setmetatable({ints = {}, strings = {}, owner = result}, Meta)
 			for k, v in pairs(value.meta.ints) do result.meta.ints[k] = v end
 			for k, v in pairs(value.meta.strings) do result.meta.strings[k] = v end
@@ -44,6 +53,8 @@ return function(repo, spec)
 	end
 	function Stack:get_name() return self.name end
 	function Stack:get_count() return self.count end
+	function Stack:get_wear() return self.wear or 0 end
+	function Stack:set_wear(value) self.wear = value end
 	function Stack:is_empty() return self.name == "" or self.count == 0 end
 	function Stack:get_meta() return self.meta end
 	function Stack:get_definition() return core.registered_items[self.name] or {} end
@@ -113,9 +124,16 @@ return function(repo, spec)
 
 	local metals = {"bronze", "iron", "steel", "silversteel", "embersteel",
 		"abyssal_steel"}
+	local picks = {"default:pick_bronze", "grug_materials:pick_iron",
+		"default:pick_steel", "grug_materials:pick_silversteel",
+		"grug_materials:pick_embersteel", "grug_materials:pick_abyssal_steel"}
 	local cloth = {"patch", "woven", "heavy", "silkweave", "silk",
 		"stormweave"}
 	for tier = 1, 6 do
+		base(picks[tier], {description = metals[tier] .. " pick\nItem level " .. tier,
+			tool_capabilities = {full_punch_interval = 1,
+				damage_groups = {fleshy = tier + 2}, groupcaps = {}},
+			_grug_quality = 1})
 		for _, family in ipairs({"sword", "dagger", "greataxe"}) do
 			base("grug_gear:" .. family .. "_" .. metals[tier], {
 				description = metals[tier] .. " " .. family .. "\nItem level " .. tier,
@@ -279,6 +297,16 @@ return function(repo, spec)
 		local row = expected[spec.refinement.output]
 		local grid = {}
 		for index = 1, #row.inputs do grid[index] = stack(row.inputs[index]) end
+		local base_stack
+		for index = 1, #grid do
+			if grid[index]:get_name() == spec.refinement.output then
+				base_stack = grid[index]
+				break
+			end
+		end
+		check(base_stack ~= nil, "refinement does not contain its base stack")
+		base_stack:set_wear(12345)
+		base_stack:get_meta():set_string("prior_meta", "preserved")
 		local output = stack(spec.refinement.output)
 		local callback_result
 		for index = 1, #crafts do
@@ -290,9 +318,23 @@ return function(repo, spec)
 		check(output:get_meta():get_string("description"):find(
 			spec.refinement.word, 1, true) ~= nil,
 			"refinement word is absent")
+		check(output:get_wear() == 12345, "refinement discarded base wear")
+		check(output:get_meta():get_string("prior_meta") == "preserved",
+			"refinement discarded base metadata")
+		local base_armor = output:get_definition()._grug_armor
+		if base_armor then
+			check(grug_inventory.armor_points_of(output, base_armor) ==
+				output:get_meta():get_int("grug_refined_armor"),
+				"refined armor was not folded into the cache hook")
+		end
 	end
 
-	restore()
 	return string.format("PASS r9 %s catalog recipes=%d outputs=%d\n",
 		spec.profession, #actual, #spec.recipes)
+	end
+
+	local ok, result = pcall(run)
+	restore()
+	if not ok then error(result, 0) end
+	return result
 end

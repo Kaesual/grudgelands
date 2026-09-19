@@ -4,15 +4,18 @@ local THREAD = C .. "thread"
 
 local tiers = {
 	{key = "light", name = "Light", output = "grug_mobs:light_leather",
-		inputs = {"mobs:leather", THREAD}},
-	{key = "cured", name = "Cured", output = C .. "cured_leather"},
+		inputs = {"mobs:leather", THREAD}, recipe_tier = 1},
+	{key = "cured", name = "Cured", output = C .. "cured_leather",
+		inputs = {"grug_mobs:light_leather", THREAD}, recipe_tier = 1},
 	{key = "heavy", name = "Heavy", output = "grug_mobs:heavy_leather",
-	},
+		inputs = {C .. "cured_leather", THREAD}, recipe_tier = 2},
 	{key = "scaled", name = "Scaled", output = "grug_mobs:scaled_hide",
-	},
+		inputs = {"grug_mobs:heavy_leather", THREAD}, recipe_tier = 3},
 	{key = "sleek", name = "Sleek", output = C .. "sleek_leather",
-		inputs = {"grug_mobs:sleek_pelt", THREAD}},
-	{key = "nightscale", name = "Nightscale", output = C .. "nightscale_leather"},
+		inputs = {"grug_mobs:sleek_pelt", THREAD}, recipe_tier = 5},
+	{key = "nightscale", name = "Nightscale", output = C .. "nightscale_leather",
+		inputs = {"grug_mobs:scaled_hide", "grug_mobs:sleek_pelt"},
+		recipe_tier = 5},
 }
 
 for tier = 1, #tiers do
@@ -26,22 +29,11 @@ for tier = 1, #tiers do
 	P.register_ingredient(row.output, tier)
 	if tier == 1 then
 		P.register_ingredient("mobs:leather", tier)
-	elseif tier == 2 then
-		row.inputs = {P.register_ingredient_role("grug_mobs:light_leather",
-			"grug_leather_curing_hide", tier), THREAD}
-	elseif tier == 3 then
-		row.inputs = {P.register_ingredient_role(C .. "cured_leather",
-			"grug_leather_heavy_hide", tier), THREAD}
-	elseif tier == 4 then
-		row.inputs = {P.register_ingredient_role("grug_mobs:heavy_leather",
-			"grug_leather_scaled_hide", tier), THREAD}
 	elseif tier == 5 then
 		P.register_ingredient("grug_mobs:sleek_pelt", tier)
-	else
-		row.inputs = {P.register_ingredient_role("grug_mobs:scaled_hide",
-			"grug_leather_nightscale_hide", tier), C .. "sleek_leather"}
 	end
-	P.register_recipe("leatherworker", {tier = tier, station = "tanning_rack",
+	P.register_recipe("leatherworker", {tier = row.recipe_tier,
+		station = "tanning_rack",
 		inputs = {row.inputs}, output = row.output,
 		hint = "Tan at a Tanning Rack"})
 

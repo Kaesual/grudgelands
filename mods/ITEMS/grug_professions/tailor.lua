@@ -23,8 +23,10 @@ local tiers = {
 		inputs = {"grug_mobs:heavy_cloth", "grug_mobs:heavy_cloth", THREAD}},
 	{key = "silkweave", name = "Silkweave", source = "grug_mobs:spider_silk",
 		inputs = {C .. "bolt_heavy", "grug_mobs:spider_silk", THREAD}},
-	{key = "silk", name = "Silk"},
-	{key = "stormweave", name = "Stormweave"},
+	{key = "silk", name = "Silk", recipe_tier = 4,
+		inputs = {"grug_mobs:spider_silk", "grug_mobs:spider_silk", THREAD}},
+	{key = "stormweave", name = "Stormweave", recipe_tier = 5,
+		inputs = {"grug_mobs:spider_silk", "grug_gathering:stormkelp", THREAD}},
 }
 
 for tier = 1, #tiers do
@@ -35,17 +37,12 @@ for tier = 1, #tiers do
 		":105", {grug_profession_material = 1, grug_tailor_bolt = tier})
 	if tier <= 4 then
 		P.register_ingredient(row.source, tier)
-	elseif tier == 5 then
-		local silk = P.register_ingredient_role("grug_mobs:spider_silk",
-			"grug_tailor_pure_silk", tier)
-		row.inputs = {silk, silk, THREAD}
-	else
-		local storm = P.register_ingredient_role("grug_gathering:stormkelp",
-			"grug_tailor_storm_fiber", tier)
-		row.inputs = {"grug_mobs:spider_silk", storm, THREAD}
+	elseif tier == 6 then
+		P.register_ingredient("grug_gathering:stormkelp", 5)
 	end
 	P.register_ingredient(bolt, tier)
-	P.register_recipe("tailor", {tier = tier, station = "tailor_bench",
+	P.register_recipe("tailor", {tier = row.recipe_tier or tier,
+		station = "tailor_bench",
 		inputs = grid(row.inputs), output = bolt,
 		hint = "Weave at a Tailor Bench"})
 

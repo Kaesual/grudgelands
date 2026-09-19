@@ -13,15 +13,14 @@ return function(repo)
 		{"woven", {"grug_mobs:linen_cloth", "grug_mobs:linen_cloth", thread}},
 		{"heavy", {"grug_mobs:heavy_cloth", "grug_mobs:heavy_cloth", thread}},
 		{"silkweave", {C .. "bolt_heavy", "grug_mobs:spider_silk", thread}},
-		{"silk", {"group:grug_tailor_pure_silk",
-			"group:grug_tailor_pure_silk", thread}},
+		{"silk", {"grug_mobs:spider_silk", "grug_mobs:spider_silk", thread}, 4},
 		{"stormweave", {"grug_mobs:spider_silk",
-			"group:grug_tailor_storm_fiber", thread}},
+			"grug_gathering:stormkelp", thread}, 5},
 	}
 	for tier = 1, 6 do
 		local key, inputs = bolts[tier][1], bolts[tier][2]
 		local bolt = C .. "bolt_" .. key
-		add(tier, "tailor_bench", bolt, inputs)
+		add(bolts[tier][3] or tier, "tailor_bench", bolt, inputs)
 		for _, slot in ipairs({"head", "chest", "legs", "feet"}) do
 			local gear = "grug_gear:" .. slot .. "_cloth_" .. key
 			add(tier, "grid", gear, {gear, bolt})

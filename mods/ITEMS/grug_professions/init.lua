@@ -1,5 +1,6 @@
 -- R9 primary-profession content. One mod owns three catalog files so their
 -- shared supplies, refinement metadata and collision checks have one source.
+-- WP22 consumes the persistent grug_refined marker for the doubled wear budget.
 
 grug_professions = {
 	CATALOGS = {blacksmith = {}, leatherworker = {}, tailor = {}},
@@ -32,16 +33,6 @@ function grug_professions.register_ingredient(item, tier)
 	grug_jobs.register_ingredient_tier(item, tier)
 	grug_professions.INGREDIENT_TIERS[item] = tier
 	return item
-end
-
-function grug_professions.register_ingredient_role(item, group, tier)
-	local definition = assert(core.registered_items[item],
-		"grug_professions: missing role item " .. item)
-	local groups = {}
-	for name, value in pairs(definition.groups or {}) do groups[name] = value end
-	groups[group] = 1
-	core.override_item(item, {groups = groups})
-	return grug_professions.register_ingredient("group:" .. group, tier)
 end
 
 function grug_professions.register_recipe(profession, definition)
@@ -148,32 +139,30 @@ core.register_craft_predict(function(itemstack, player, old_grid)
 end)
 
 core.register_on_craft(function(itemstack, player, old_grid)
-	local _, family = refinement_for(itemstack, old_grid)
+	local recipe, family = refinement_for(itemstack, old_grid)
 	if not family then return nil end
-	refined_description(itemstack, family)
-	if family == "weapon" and grug_gear.initialize_weapon_tooltip then
-		grug_gear.initialize_weapon_tooltip(itemstack, player)
-	end
-	return itemstack
-end)
-
--- Armor definitions are immutable shared identities. The refinement bonus is
--- per-stack, so add only the stored delta to the existing equipment total.
-local base_equipped_armor = grug_inventory.get_equipped_armor
-function grug_inventory.get_equipped_armor(player)
-	local total = base_equipped_armor(player)
-	if not player or not player.get_inventory then return total end
-	local inventory = player:get_inventory()
-	for _, listname in ipairs({"grug_head", "grug_chest", "grug_legs", "grug_feet"}) do
-		local stack = inventory:get_stack(listname, 1)
-		if not stack:is_empty() and stack:get_meta():get_int("grug_refined") == 1 then
-			local definition = stack:get_definition()
-			local base = definition._grug_armor or 0
-			local refined = stack:get_meta():get_int("grug_refined_armor")
-			if refined > base then total = total + refined - base end
+	local base
+	for index = 1, #old_grid do
+		local stack = old_grid[index]
+		if stack and stack:get_name() == recipe.output_name then
+			base = ItemStack(stack)
+			break
 		end
 	end
-	return total
+	if not base then return nil end
+	refined_description(base, family)
+	if family == "weapon" and grug_gear.initialize_weapon_tooltip then
+		grug_gear.initialize_weapon_tooltip(base, player)
+	end
+	return base
+end)
+
+-- Called while grug_inventory builds its invalidation-backed armor cache.
+function grug_inventory.armor_points_of(stack, armor)
+	if stack:get_meta():get_int("grug_refined") ~= 1 then return armor end
+	local refined = stack:get_meta():get_int("grug_refined_armor")
+	if refined > (armor or 0) then return refined end
+	return armor
 end
 
 core.register_on_mods_loaded(function()
