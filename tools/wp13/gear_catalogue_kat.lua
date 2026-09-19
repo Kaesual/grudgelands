@@ -240,9 +240,11 @@ function M.run(repo)
 		end,
 	}
 	local trinket_lines = gear.describe_stack_base(trinket_stack, 20, false)
-	check(#trinket_lines == 1 and trinket_lines[1] == special_meta.grug_trinket_special,
+	-- R9-PROF-B: the item-level line precedes the authored special.
+	check(#trinket_lines == 2 and trinket_lines[1] == "Item level 20" and
+		trinket_lines[2] == special_meta.grug_trinket_special,
 		"trinket authored special did not survive base-description regeneration")
-	row("wp13_gear_trinket_special", trinket_lines[1] or "missing")
+	row("wp13_gear_trinket_special", trinket_lines[2] or "missing")
 
 	--
 	-- A. the material ladders
