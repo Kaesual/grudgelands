@@ -9,3 +9,11 @@ bulk_after WP40_PROFILE_GAME_ROOT=$PWD WP40_PROFILE_OUTPUT=/tmp/map-c-profile-af
 bulk_before_complete requested=10 completed=10 callbacks=97 generated=8 disk=0 memory=1242 cancelled=0 errored=0 measured_elapsed_us=68020996
 bulk_after_complete requested=10 completed=10 callbacks=97 generated=8 disk=0 memory=1242 cancelled=0 errored=0 measured_elapsed_us=108893340
 bulk_result FAIL after_exceeds_before
+plateau=128 temporary_noise_digest=32ea7011c498330a12f8c50926eb66f399e0305bb504517978d792e4f1a7b7c4 temporary_source_projection=c497d479b75e05cce4c886e45fd1cfc077bd6e23315c5934caf3723c03a2c051
+plateau=128 WP40_PROFILE_GAME_ROOT=$PWD WP40_PROFILE_OUTPUT=/tmp/map-c-profile-plateau-128-2 WP40_PROFILE_SEED=0 WP40_PROFILE_PORT_BASE=32160 WP40_PROFILE_TIMEOUT=500 nice -n 19 bash tools/wp40/profile/run.sh flatpak run --filesystem=/tmp --command=luanti org.luanti.luanti
+plateau=128_complete requested=10 completed=10 callbacks=97 generated=8 disk=0 memory=1242 cancelled=0 errored=0 measured_elapsed_us=87796218
+plateau=200 temporary_noise_digest=caa0f22abd3b110e77a0479ec6d4a59939e3e495305180e0bfd8549108ac68b8 temporary_source_projection=47c5c71d0e66220839ef10047f337e25aa6050faeff00af55a792f7501785aff
+plateau=200 WP40_PROFILE_GAME_ROOT=$PWD WP40_PROFILE_OUTPUT=/tmp/map-c-profile-plateau-200-2 WP40_PROFILE_SEED=0 WP40_PROFILE_PORT_BASE=32160 WP40_PROFILE_TIMEOUT=500 nice -n 19 bash tools/wp40/profile/run.sh flatpak run --filesystem=/tmp --command=luanti org.luanti.luanti
+plateau=200_complete requested=10 completed=10 callbacks=97 generated=8 disk=0 memory=1242 cancelled=0 errored=0 measured_elapsed_us=115999901
+measurement_baseline reused=/tmp/map-c-profile-before-bulk-1 reason=frozen_baseline_game_and_harness_inputs_unchanged measured_elapsed_us=68020996 callback_total_us=52073722 plan_us=31413515 writer_us=20660207
+measurement_mode bulk_terrain_clear_enabled=false commit=edf7fde4 production_plateau_restored=441

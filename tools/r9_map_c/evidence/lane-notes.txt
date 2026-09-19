@@ -53,3 +53,24 @@ after_plan_us 35557871
 after_writer_us 58105258
 after_emerge_elapsed_us 108893340
 result FAIL after_exceeds_before; one-attempt limit reached
+
+plateau_height_measurement
+mode plain per-voxel path; BULK_TERRAIN_CLEAR_ENABLED=false in commit edf7fde4
+baseline reused /tmp/map-c-profile-before-bulk-1 because its frozen baseline game and harness inputs are unchanged
+plateau=128 temporary_noise_digest 32ea7011c498330a12f8c50926eb66f399e0305bb504517978d792e4f1a7b7c4
+plateau=128 temporary_source_projection c497d479b75e05cce4c886e45fd1cfc077bd6e23315c5934caf3723c03a2c051
+plateau=128 emerge_elapsed_us 87796218 callback_total_us 72198501 plan_us 32177443 writer_us 40021058
+plateau=200 temporary_noise_digest caa0f22abd3b110e77a0479ec6d4a59939e3e495305180e0bfd8549108ac68b8
+plateau=200 temporary_source_projection 47c5c71d0e66220839ef10047f337e25aa6050faeff00af55a792f7501785aff
+plateau=200 emerge_elapsed_us 115999901 callback_total_us 101497115 plan_us 32925001 writer_us 68572114
+production_restore both terrain offsets and all temporary pins restored byte-for-byte to committed plateau=441 before evidence edits
+
+writer_phase_reading
+profiler_scope callback writer_us plus separately timed VoxelManip methods; no internal Lua writer phase timers
+before writer_us=20660207 vm_methods_us=3323878 lua_writer_residual_us=17336329 residual_percent=83.91
+plateau=441 writer_us=50779062 vm_methods_us=4038421 lua_writer_residual_us=46740641 residual_percent=92.05
+plateau=200 writer_us=68572114 vm_methods_us=4152839 lua_writer_residual_us=64419275 residual_percent=93.94
+plateau=128 writer_us=40021058 vm_methods_us=4066366 lua_writer_residual_us=35954692 residual_percent=89.84
+native_calc_lighting_us before=461942 plateau=441=738934 plateau=200=739540 plateau=128=744378
+reading intent_bookkeeping/replay is the supported phase name: native light propagation stays near 0.74 s and plan time stays near 32..34 s, while 89.84..93.94 percent is the combined uninstrumented Lua semantic/dirty-intent scan, expanded light-shadow context scan, and replay
+occupancy belongs to planning and is ruled out by stable plan_us; dirty intent bookkeeping is in map_adapter.lua:1199-1356, light-shadow preparation is map_adapter.lua:1362-1468, replay is map_adapter.lua:1470-1501; the current profiler cannot split those three Lua loops further
