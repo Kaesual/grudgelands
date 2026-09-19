@@ -393,6 +393,10 @@ Wave 2 (after wave 1 merges):
   then giant bat retint), the higher tier nobler in colour; no dragons as
   mounts (dragons stay rare bosses). Each mesh with a licence row and an
   animation audit as in MOB1.
+- **R9-PERF** (added by ruling 41, after the MAP-C merge, before CAP): the
+  byte-preserving writer/planner improvements of WP48 steps 1–4 with an
+  output-equivalence KAT and one profiler pair; no pin change expected
+  (the source projection hashes catalogs, not Lua source).
 - **R9-TRINKETS** (added by ruling 38, after the PROF-B merge): the six
   core trinket special effects at the mana / hit / healing / kill-XP /
   potion seams via the equipment-change cache, caps and shared cooldowns
@@ -608,6 +612,17 @@ ocean edge and the enemy border (warning band, hard dismount).
     enabled by default (`grug_mapgen_r9_coast_band_enabled = true`; the
     R8 evaluator stays byte-identical behind `false`). Supersedes the
     tolerances of rulings 35/36 for this lane.
+41. **Soft performance limit and the R9-PERF lane** (user 2026-09-19): the
+    20 % of ruling 40 is not a hard limit — the lane reports the numbers
+    and stops only for a genuine surprise; the improvements the read-only
+    exploration found (`docs/research/mapgen-performance-exploration.md`,
+    BACKLOG WP48 steps 1–4: trustworthy comparison, the two liquid-column
+    short-circuits, lattice tile retention + classification memoisation,
+    discarded inner R5 lighting) become a short byte-preserving lane
+    **R9-PERF** right after the MAP-C merge in the serial mapgen chain,
+    before CAP and MAP-B, verified by an output-equivalence KAT and one
+    profiler pair. Dirty-region replay and emerge threads stay out (the
+    latter blocked by Luanti #9357).
 
 ## 5. MAP-C protocol: what must not repeat from Round 8
 
