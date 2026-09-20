@@ -1432,6 +1432,21 @@ local function run_checks(repo)
 	equal(clock.ammo, ammo_before, "failed spawn consumes no arrow")
 	equal(clock.consumed, consumed_before, "failed spawn records no payment")
 
+	local partial_user = make_player("draw_partial", "scout", 60)
+	clock.attack_speed = 0
+	clock.players[partial_user:get_player_name()] = partial_user
+	partial_user:get_inventory().grug_weapon[1] = make_stack("grug_gear:bow_wood")
+	partial_user._wield = make_stack("grug_abilities:loose")
+	partial_user._control.dig = true
+	abilities.try_cast(partial_user, registered.loose, nil)
+	clock.us = clock.us + 250000
+	partial_user._control.dig = false
+	clock.scout_globalstep(0.25)
+	local partial = clock.spawn_batches[#clock.spawn_batches][1]
+	equal(partial.speed, 20, "half draw scales arrow impulse linearly")
+	equal(partial.data.damage, 11,
+		"half draw scales bow plus ranged damage linearly")
+
 	-- True weapon changes and lifecycle exits cancel the held action.
 	fail_user._control.dig = true
 	abilities.try_cast(fail_user, registered.loose, nil)
@@ -1444,6 +1459,12 @@ local function run_checks(repo)
 	for _, callback in ipairs(clock.die_callbacks) do callback(fail_user) end
 	check(not abilities.scout_draw_active(fail_user),
 		"death did not cancel the held draw")
+	fail_user._control.dig = true
+	abilities.try_cast(fail_user, registered.loose, nil)
+	fail_user._wield = make_stack("grug_abilities:sprint")
+	clock.scout_globalstep(0.05)
+	check(not abilities.scout_draw_active(fail_user),
+		"wield change did not cancel the held draw")
 
 	-- Opening pays only for the target's rear hemisphere. The proc consumes
 	-- the authoritative main-hand context and includes Fine Edge exactly once.
