@@ -10,6 +10,8 @@ local M = {}
 local function build_env(repo, clock)
 	local function noop() end
 	local core = {}
+	function core.register_on_player_hpchange() end
+	function core.get_item_group() return 0 end
 	function core.get_us_time()
 		return clock.us
 	end
@@ -41,8 +43,9 @@ local function build_env(repo, clock)
 			warrior = {id = "warrior", name = "Warrior"},
 			mage = {id = "mage", name = "Mage"},
 			priest = {id = "priest", name = "Priest"},
+			scout = {id = "scout", name = "Scout"},
 		},
-		class_ids = {"warrior", "mage", "priest"},
+		class_ids = {"warrior", "mage", "priest", "scout"},
 	}
 	function classes.get_class(player)
 		return player._class
@@ -93,6 +96,12 @@ local function build_env(repo, clock)
 	end
 
 	local grug_core = {}
+	function grug_core.get_armor_rating(player) return player._armor or 60 end
+	function grug_core.get_player_level(player) return player._level end
+	function grug_core.armor_reduction(rating, level, cap)
+		return math.min(cap, rating / (rating + 85 * level + 400))
+	end
+
 	function grug_core.get_armor_percent(player)
 		return player._armor or 60
 	end
@@ -102,6 +111,7 @@ local function build_env(repo, clock)
 	end
 
 	local sfinv = {pages = {}, pages_unordered = {}, contexts = {}}
+	function sfinv.get_nav_fs() return "" end
 	local function seed_page(name, title)
 		local def = {name = name, title = title, get = noop}
 		sfinv.pages[name] = def
@@ -148,6 +158,14 @@ local function build_env(repo, clock)
 end
 
 local function load_into(env, path)
+	local root = path:match("^(.-)/mods/")
+	if root then
+		env.core.get_modpath = function() return root .. "/mods/PLAYER/grug_classes" end
+		env.core.get_current_modname = function() return "grug_classes" end
+		env.dofile = function(file)
+			local loader = assert(loadfile(file)); setfenv(loader, env); return loader()
+		end
+	end
 	local chunk, load_error = loadfile(path)
 	if not chunk then
 		return false, load_error
@@ -220,6 +238,7 @@ local function run_checks(repo)
 	local env = build_env(repo, clock)
 	for _, relative in ipairs({
 		"mods/PLAYER/grug_classes/talents.lua",
+		"mods/PLAYER/grug_inventory/ui.lua",
 		"mods/PLAYER/grug_classes/talents_ui.lua",
 	}) do
 		local ok, problem = load_into(env, repo .. "/" .. relative)
@@ -427,8 +446,8 @@ local function run_checks(repo)
 		"locked talent has no click target")
 	check(fs:find("Crit 30.0/42.0% (30)", 1, true) ~= nil,
 		"raw crit is shown beside effective crit")
-	check(fs:find("Armor 60/67% (60)", 1, true) ~= nil,
-		"raw armor is shown beside effective armor")
+	check(fs:find("Armor 60.0 x 1.00 + 0.0 = 60.0 (own-level", 1, true) ~= nil,
+		"armor rating breakdown and own-level reduction are shown")
 	check(fs:find("1.5% = 49 HP", 1, true) ~= nil and
 		fs:find("6% = 194 HP", 1, true) ~= nil,
 		"Weathered tooltip shows percent and current L60 absolute HP")

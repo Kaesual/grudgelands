@@ -1,0 +1,2 @@
+mods/PLAYER/grug_inventory/init.lua
+2	[5]	SETGLOBAL	0 -1	; grug_inventory

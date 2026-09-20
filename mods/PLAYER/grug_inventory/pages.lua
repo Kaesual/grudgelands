@@ -1,5 +1,5 @@
 -- sfinv pages: Character (new homepage) and Bags. sfinv uses legacy
--- formspec coordinates; the content area spans roughly y 0.3–5.0.
+-- formspec coordinates; shared content ends before y=7.0.
 
 local function esc(text)
 	return core.formspec_escape(text)
@@ -57,14 +57,14 @@ end
 -- grug_inventory.equipment_slots, so a new slot is one entry there plus one
 -- row here.
 local SLOT_POS = {
-	grug_head = {6, 0.9},
-	grug_chest = {6, 1.9},
-	grug_legs = {6, 2.9},
-	grug_feet = {6, 3.9},
-	grug_weapon = {7, 0.9},
-	grug_offhand = {7, 1.9},
-	grug_trinket1 = {7, 2.9},
-	grug_trinket2 = {7, 3.9},
+	grug_head = {8.3, 1.1},
+	grug_chest = {8.3, 2.3},
+	grug_legs = {8.3, 3.5},
+	grug_feet = {8.3, 4.7},
+	grug_weapon = {9.3, 1.1},
+	grug_offhand = {9.3, 2.3},
+	grug_trinket1 = {9.3, 3.5},
+	grug_trinket2 = {9.3, 4.7},
 }
 
 -- Ghost icon per slot: drawn under an EMPTY slot's item (inventory_equipment.md
@@ -146,13 +146,17 @@ local function character_content(player)
 
 	local mesh, textures = preview_model(player)
 	local fs = {
-		("model[0,0.85;2.4,4.0;grug_preview;%s;%s;0,160]"):format(
+		("model[0,0.85;2.4,5.4;grug_preview;%s;%s;0,160]"):format(
 			esc(mesh), esc_texture_list(textures)),
+		("label[2.75,0.50;Maximum HP: %d]"):format(hp.final),
+		("label[2.75,0.95;%s]"):format(esc(mana and
+			("Maximum mana: " .. mana.final) or "Maximum rage: 100")),
+		("label[2.75,1.40;Armor: %.1f]"):format(armor.result),
+		("label[2.75,1.85;Own-level reduction: %.1f%%]"):format(armor_reduction),
+		"label[2.75,2.45;Pool and armor details]",
+		"textarea[2.90,2.85;4.95,3.5;;;" .. esc(table.concat(lines, "\n\n")) .. "]",
+		"label[8.3,0.50;Armor]label[9.3,0.50;Gear]",
 	}
-	for i, line in ipairs(lines) do
-		table.insert(fs, ("label[0,%.2f;%s]"):format(-0.2 + i * 0.4,
-			esc(line)))
-	end
 
 	for _, slot in ipairs(grug_inventory.equipment_slots) do
 		local pos = SLOT_POS[slot.list]
@@ -202,6 +206,12 @@ sfinv.register_page("grug_inventory:help", {
 	title = "Help",
 	get = function(self, player, context)
 		local text = table.concat({
+			"Welcome to Grudgelands",
+			"Gather wood, stone and useful materials around your starting area. Open Crafting > Basics to inspect starter recipes, then craft a weapon and equip it on the Character page.",
+			"Put a combat skill on your hotbar and use it to fight nearby creatures. Your weapon belongs in the Weapon equipment slot; skills use that weapon. Recover between fights and use food for a five-minute buff.",
+			"Basics shows starter recipes immediately. Finding a recipe's main material reveals further recipes, even when it is carried in a bag. This only reveals instructions: crafting itself has no character-level requirement.",
+			"Open Skills to recover an unlocked skill or purchased mount by dragging its icon into your inventory. An icon already in your inventory or a bag cannot be copied. Drop unused skill icons to remove them safely; their unlocks remain available in Skills.",
+			"Visit city profession trainers for specialized crafts and equipment repair. Riding trainers in capital stables teach riding. Cooking has its own recipe book; new profession recipes stay in their profession's book.",
 			"Character formulas",
 			"Base pool = 20 + 5 x level + 0.66 x level squared (rounded).",
 			"The Character pool lines read maximum = B x C x (100 + G + T + S)%, where B is the base pool, C the class factor, G the gear percentage, T the talent percentage and S the active status percentage.",
@@ -222,7 +232,7 @@ sfinv.register_page("grug_inventory:help", {
 			"The Character page keeps only the live HP and class-resource derivations beside the model and equipment.",
 		}, "\n\n")
 		return sfinv.make_formspec(player, context,
-			"textarea[0.2,0.25;7.8,4.75;;;" .. esc(text) .. "]", true)
+			"textarea[0.2,0.25;10.0,6.5;;;" .. esc(text) .. "]", true)
 	end,
 })
 
@@ -237,7 +247,7 @@ local function bags_content(player, context)
 	local has_quiver = core.get_item_group(
 		inv:get_stack("grug_offhand", 1):get_name(), "grug_quiver") > 0
 	if has_quiver then
-		table.insert(fs, "label[4.3,0.1;Quiver]list[current_player;grug_quiver_content;4.3,0.35;4,1;]")
+		table.insert(fs, "label[8.3,0.1;Quiver]list[current_player;grug_quiver_content;8.3,0.35;2,2;]")
 		table.insert(fs, "listring[current_player;grug_quiver_content]listring[current_player;main]")
 	end
 	for i = 1, grug_inventory.BAG_COUNT do

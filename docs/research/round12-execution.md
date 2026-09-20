@@ -22,8 +22,9 @@ reviewed integrated main build at final delivery.
 | FARM | native Sol / `wp32-r12-farm` / `/tmp/grug-r12-farm` | active |
 | SKILLS | native Sol / `wp47-r12-skills` / `/tmp/grug-r12-skills` | active |
 | ART | native Sol / `wp29-r12-art` / `/tmp/grug-r12-art` | active |
-| TALENTS | native Sol; consumes frozen Skills eligibility seam | queued |
-| UI / RECIPES | native Sol; shared page/Creative owner | queued |
+| TALENTS | native Sol / `wp11-r12-talents` / `/tmp/grug-r12-talents` | implementation candidate, behavior validation active |
+| UI | root Astra / integration branch | implemented, review queued |
+| RECIPES | native Sol / `wp12-recipes` / `/tmp/grug-r12-recipes` | active |
 | FOOD | root Astra / integration branch | implemented, review queued |
 | POSE | root Astra / integration branch | implemented, review queued |
 | Independent code/visual reviews | separate non-author agents | queued |
@@ -80,3 +81,30 @@ version 0.20.2; archive SHA256
 `332108fbedea5ea74f226c3bdae0ebfe2087d80f6252b06a63c6b2cc0bfa2d6e`.
 No media import is authorized without verified per-file provenance and a
 permanent reference pin; existing pinned alternatives remain preferred.
+
+## First reviews and second wave
+
+Independent Sol reviewer passed FOOD and POSE. ART `b44093bd` needs two Medium
+corrections (broader opposing axe blade; include existing cooked meat/fish in
+gallery). FARM `a1f1541f` needs whole-organism missing/foreign-helper refusal
+and distinct berry/cane/bamboo silhouettes; original author is correcting it.
+SKILLS `900102d7` review found missing talent unlock notice, equipment-stray
+cleanup/notifier gaps, owner guard on catalog delete and late-detached audit.
+Root owns these corrections after UI commit. Review reports currently under
+`/tmp/grug-r12-{food-pose-art,farm,skills}-review.md`; archive at integration.
+
+UI candidate uses a game-owned shared 10.4×11.1 form, content ending before 7.0
+and main inventory at y=7.2/8.35. Character has separate model/stats/gear columns;
+Talents has wider controls, wrapped tooltips and taller description, Help begins
+with onboarding and Creative Food derives from edible groups. Recipes consumes
+`grug_inventory.wrap_text(text,width)` and owns jobs files exclusively.
+Existing focused layout/talent UI fixtures were brought to current Scout and
+armor-rating API mocks, then pass layout bounds and purchase/respec behavior.
+Source/static gates pass. No GUI readability claim until user playtest.
+
+TALENTS author published `8478e603` but required behavior/native validation is
+not complete. It now owns a separate serialized Whitehot cost hook commit in
+its own checkout: `cost_for(player,cost,ability_id)` snapshots Fireball at 3%
+while Whitehot is active before affordability/spend. Original Skills frozen
+review bytes stay unchanged. Do not integrate X3 as complete on source-pattern
+tests alone; required consumer and bounded native checks remain.
