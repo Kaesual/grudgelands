@@ -19,6 +19,9 @@ return function(params)
 		woodcarver = true, goldsmith = true}
 	local faction = {human = "accord", dwarf = "accord", elf = "accord",
 		orc = "throng", undead = "throng", troll = "throng"}
+	local service_roles = {public_station = true, trainer = true,
+		riding_trainer = true, mount_display = true, gear_display = true}
+	local villager_entity = "grug_mobs:villager_" .. race
 	-- Production capital_displays.lua positions the catalog's authored stand
 	-- frame so this measured foot coordinate lands 0.02 nodes above the saved
 	-- floor. Keep the witness independent of that private implementation table:
@@ -31,6 +34,7 @@ return function(params)
 		troll = -0.016625724, undead = -0.018340415}
 
 	local plot_by_id, boxes, plot_count = {}, {}, 0
+	local canonical_ids = {}
 	for _, plot in ipairs(plots) do plot_by_id[plot.id] = plot end
 	for service, plot_id in pairs(expected_plots) do
 		local plot = plot_by_id[plot_id]
@@ -47,6 +51,26 @@ return function(params)
 			min_z = anchor.z + plot.z + bounds.min.z,
 			max_z = anchor.z + plot.z + bounds.max.z}
 		plot_count = plot_count + 1
+		local prefix = plot_id .. "/" .. plot_id .. "_"
+		if service == "riding" then
+			canonical_ids[prefix .. "riding"] = "riding_trainer"
+			for tier = 1, 4 do
+				canonical_ids[prefix .. "mount_" .. tier] = "mount_display"
+			end
+		else
+			canonical_ids[prefix .. "station"] = "public_station"
+			if service == "forge" then
+				canonical_ids[prefix .. "weaponsmith"] = "trainer"
+				canonical_ids[prefix .. "armorsmith"] = "trainer"
+				canonical_ids[prefix .. "weapon"] = "gear_display"
+				canonical_ids[prefix .. "armor"] = "gear_display"
+			else
+				canonical_ids[prefix .. service] = "trainer"
+				if service == "goldsmith" then
+					canonical_ids[prefix .. "jewel"] = "gear_display"
+				end
+			end
+		end
 	end
 	if plot_count ~= 8 then fail("service plot count differs: " .. plot_count) end
 
@@ -56,7 +80,7 @@ return function(params)
 	local seen_profession, seen_station, seen_mount, seen_gear = {}, {}, {}, {}
 	local function owning_plot(socket)
 		for plot_id, box in pairs(boxes) do
-			if socket.id:sub(1, #plot_id + 1) == plot_id .. "_" then return box end
+			if socket.id:sub(1, #plot_id + 1) == plot_id .. "/" then return box end
 		end
 		return nil
 	end
@@ -69,9 +93,13 @@ return function(params)
 	end
 	for _, socket in ipairs(sockets) do
 		local box = owning_plot(socket)
-		if box and (socket.role == "public_station" or socket.role == "trainer" or
-				socket.role == "riding_trainer" or socket.role == "mount_display" or
-				socket.role == "gear_display") then
+		if service_roles[socket.role] then
+			if not box then
+				fail("service socket is outside mapped premises: " .. socket.id)
+			end
+			if canonical_ids[socket.id] ~= socket.role then
+				fail("service socket canonical id/role differs: " .. socket.id)
+			end
 			expect_position(socket, box)
 			selected[#selected + 1] = {socket = socket, box = box}
 			if socket.role == "public_station" then
@@ -116,8 +144,14 @@ return function(params)
 		for index = 1, #a do if a[index] ~= b[index] then return false end end
 		return true
 	end
+	local function close_number(a, b)
+		return type(a) == "number" and type(b) == "number" and
+			a == a and b == b and a ~= math.huge and a ~= -math.huge and
+			b ~= math.huge and b ~= -math.huge and math.abs(a - b) <= 0.00001
+	end
 	local function same_pair(a, b)
-		return type(a) == "table" and a.x == b.x and a.y == b.y
+		return type(a) == "table" and type(b) == "table" and
+			close_number(a.x, b.x) and close_number(a.y, b.y)
 	end
 	local function expected_mount(tag)
 		local tier = tonumber(tag)
@@ -187,7 +221,10 @@ return function(params)
 			for _, object in ipairs(objects) do
 				local entity = object:get_luaentity()
 				if entity and entity._grug_start == key and
-						expected_entities[entity._grug_socket] then
+						service_roles[entity._grug_socket_role] then
+					if not expected_entities[entity._grug_socket] then
+						fail("unexpected service entity: " .. tostring(entity._grug_socket))
+					end
 					if found[entity._grug_socket] then
 						fail("duplicate service entity: " .. entity._grug_socket)
 					end
@@ -211,11 +248,13 @@ return function(params)
 			fail("service entity left its authored position: " .. socket.id)
 		end
 		if socket.role == "trainer" then
-			if entity._grug_profession ~= socket.profession or entity._grug_walker ~= false then
+			if entity.name ~= villager_entity or entity._grug_display_race ~= nil or
+					entity._grug_profession ~= socket.profession or entity._grug_walker ~= false then
 				fail("trainer configuration differs: " .. socket.id)
 			end
 		elseif socket.role == "riding_trainer" then
-			if entity._grug_npc_name ~= "Riding Trainer" or entity._grug_walker ~= false then
+			if entity.name ~= villager_entity or entity._grug_display_race ~= nil or
+					entity._grug_npc_name ~= "Riding Trainer" or entity._grug_walker ~= false then
 				fail("Riding trainer configuration differs")
 			end
 		else
@@ -226,12 +265,24 @@ return function(params)
 				fail("display persisted configuration differs: " .. socket.id)
 			end
 			local props = entity.object:get_properties()
+			local armor = entity.object:get_armor_groups()
+			if props.physical ~= false or props.pointable ~= false or
+					props.collide_with_objects ~= false or
+					not same_list(props.collisionbox, {0, 0, 0, 0, 0, 0}) or
+					type(armor) ~= "table" or armor.immortal ~= 1 then
+				fail("display intrinsic properties differ: " .. socket.id)
+			end
 			if socket.role == "mount_display" then
 				local model, model_id = expected_mount(tag)
+				local frames, speed, blend, loop = entity.object:get_animation()
+				local stand = model.animation and model.animation.stand
 				if props.visual ~= "mesh" or props.mesh ~= model.mesh or
 						not same_list(props.textures, model.textures) or
 						not same_pair(props.visual_size, model.visual_size) or
-						props.nametag ~= model.description then
+						props.nametag ~= model.description or not stand or
+						not same_pair(frames, {x = stand[1], y = stand[1]}) or
+						not close_number(speed, 0) or not close_number(blend, 0) or
+						loop ~= false then
 					fail("mount display catalog properties differ: " .. socket.id)
 				end
 				local expected_y = entity._grug_display_floor + 0.02 -
@@ -294,17 +345,21 @@ return function(params)
 					local attempts = 0
 					local function retry()
 						attempts = attempts + 1
-						for _, row in ipairs(selected) do validate_node(row) end
+						local nodes_loaded = true
+						for _, row in ipairs(selected) do
+							local loaded = validate_node(row)
+							if not loaded then nodes_loaded = false end
+						end
 						local found, missing = inspect_entities()
-						if #missing == 0 then
+						if nodes_loaded and #missing == 0 then
 							for id, socket in pairs(expected_entities) do
 								validate_entity(socket, found[id])
 							end
 							write_report(found, attempts); release(); return done()
 						end
 						if attempts >= 16 then
-							release(); fail("service entities absent after bounded heartbeat retries: " ..
-								table.concat(missing, ","))
+							release(); fail("service nodes/entities absent after bounded heartbeat retries: " ..
+								(nodes_loaded and table.concat(missing, ",") or "unloaded-node"))
 						end
 						core.after(1, retry)
 					end
