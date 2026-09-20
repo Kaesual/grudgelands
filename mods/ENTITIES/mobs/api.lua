@@ -3593,7 +3593,10 @@ end
 function mob_class:mob_staticdata()
 
 	-- mark mob for terminal removal when out of range unless tamed
-	if remove_far and self.remove_ok
+	-- GRUG PATCH: authored world bosses own a persistent encounter slot. Far
+	-- culling them leaves that slot's alive ledger set while activation consumes
+	-- the terminal marker, so the boss can never return.
+	if remove_far and self.remove_ok and not self._grug_no_far_despawn
 	and self.type ~= "npc" and self.state ~= "attack"
 	and not self.tamed and self.lifetimer < 20000
 	and mobs:despawn_distance_decision(
@@ -4074,6 +4077,9 @@ function mobs:register_mob(name, def)
 		runaway_from = def.runaway_from,
 		owner_loyal = def.owner_loyal,
 		pushable = def.pushable,
+		-- GRUG PATCH: explicit authored-encounter exemption from ordinary far-mob
+		-- culling. This plain field also survives current-version reactivation.
+		_grug_no_far_despawn = def._grug_no_far_despawn == true,
 		stay_near = def.stay_near,
 		randomly_turn = def.randomly_turn ~= false,
 		ignore_invisibility = def.ignore_invisibility,

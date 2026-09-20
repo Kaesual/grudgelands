@@ -252,7 +252,8 @@ return function(root)
 	}
 	for short, mesh in pairs(dragons) do
 		local def = assert(registered["grug_mobs:" .. short], short)
-		assert(def._grug_fixed_level == 60 and def._grug_tier == "boss")
+		assert(def._grug_fixed_level == 60 and def._grug_tier == "boss" and
+			def._grug_no_far_despawn == true)
 		assert(def.hp_min == nil and def.hp_max == nil and def.damage == nil)
 		assert(def.mesh == mesh and def.animation and def.clock == "any")
 		assert(def.walk_velocity == 5.2 and def.run_velocity == 6.5 and

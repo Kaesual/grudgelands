@@ -106,7 +106,11 @@ return function(root, options)
 			self.velocity.y = self.velocity.y + value.y
 			self.velocity.z = self.velocity.z + value.z
 		end
-		function player:set_attach(object) self.attached = object end
+		function player:set_attach(object, bone, position, rotation)
+			self.attached = object
+			self.attach_position = clone_table(position)
+			self.attach_rotation = clone_table(rotation)
+		end
 		function player:get_attach() return self.attached end
 		function player:set_detach() self.attached = nil end
 		function player:set_eye_offset() end
@@ -115,7 +119,7 @@ return function(root, options)
 		end
 		function player:get_properties() return clone_table(self.properties) end
 		function player:get_player_control() return self.control end
-		function player:get_look_horizontal() return 0 end
+		function player:get_look_horizontal() return self.look_yaw or 0 end
 		function player:get_look_dir() return {x = 0, y = 0, z = 1} end
 		function player:get_eye_offset() return {x = 0, y = 0, z = 0} end
 		function player:get_hp() return self.hp end
@@ -165,6 +169,7 @@ return function(root, options)
 		function object:set_attach(parent, bone, position, rotation, force_visible)
 			self.parent, self.attach_position, self.force_visible = parent, position,
 				force_visible
+			self.attach_rotation = rotation
 		end
 		function object:get_attach() return self.parent end
 		function object:get_luaentity() return self.entity end
@@ -448,6 +453,15 @@ return function(root, options)
 	assert(land_record.object.properties.stepheight == 1.01 and
 		land_record.visual:get_attach() == rider and
 		land_record.visual.force_visible == false)
+	rider.look_yaw = math.pi / 3
+	rider.control = {}
+	land_record.object.entity:on_step(0.1)
+	assert(math.abs(land_record.object.yaw) < 0.000001 and
+		math.abs(rider.attach_rotation.y - 60) < 0.000001,
+		"stationary rider attachment did not follow look yaw")
+	assert(land_record.visual:get_attach() == rider and
+		land_record.visual.force_visible == false,
+		"look-yaw update broke first-person visual-child contract")
 	assert(rider.statuses.mount.label == "T1 Mount, +60% Speed")
 	assert(grug_mounts.dismount(rider, "manual", false) and
 		rider.statuses.mount == nil and not land_record.visual:is_valid())

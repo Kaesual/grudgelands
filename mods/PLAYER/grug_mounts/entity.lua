@@ -191,6 +191,29 @@ local function set_animation(self, name)
 	self._grug_animation = name
 end
 
+local function angle_delta(a, b)
+	local delta = (a - b) % (math.pi * 2)
+	if delta > math.pi then delta = delta - math.pi * 2 end
+	return delta
+end
+
+-- The physical controller owns translation only. A player attached with zero
+-- relative rotation keeps a stale rendered body yaw on the client even though
+-- controller velocity already follows the camera. Put the requested yaw on the
+-- rider attachment itself; the visible mount is the rider's child so both turn
+-- together, while that child remains automatically hidden in first person.
+local function orient_rider(self, player, yaw)
+	if self._grug_attach_yaw and
+			math.abs(angle_delta(yaw, self._grug_attach_yaw)) < math.rad(0.5) then
+		return
+	end
+	local model = self._grug_model
+	local seat = model.attach_y * model.visual_size.y
+	player:set_attach(self.object, "", {x = 0, y = seat, z = 0},
+		{x = 0, y = math.deg(yaw), z = 0})
+	self._grug_attach_yaw = yaw
+end
+
 local function land_step(self, control, yaw, dtime)
 	local tier = grug_mounts.TIERS[self._grug_tier]
 	local velocity = self.object:get_velocity() or {x = 0, y = 0, z = 0}
@@ -213,7 +236,7 @@ local function land_step(self, control, yaw, dtime)
 		local definition = node and core.registered_nodes[node.name]
 		if definition and definition.walkable then y_velocity = 6.5 end
 	end
-	self.object:set_yaw(yaw)
+	self.object:set_yaw(0)
 	self.object:set_velocity({x = -math.sin(yaw) * signed, y = y_velocity,
 		z = math.cos(yaw) * signed})
 	self.object:set_acceleration({x = 0, y = -9.81, z = 0})
@@ -233,7 +256,7 @@ local function flight_step(self, control, yaw)
 		pos.y = grug_mounts.FLIGHT_CEILING
 		self.object:set_pos(pos)
 	end
-	self.object:set_yaw(yaw)
+	self.object:set_yaw(0)
 	self.object:set_acceleration({x = 0, y = 0, z = 0})
 	self.object:set_velocity({x = -math.sin(yaw) * tier.speed * direction,
 		y = vertical, z = math.cos(yaw) * tier.speed * direction})
@@ -316,6 +339,7 @@ local entity_definition = {
 		end
 		local control = player:get_player_control()
 		local yaw = player:get_look_horizontal() or self.object:get_yaw() or 0
+		orient_rider(self, player, yaw)
 		if tier.mode == "flight" then flight_step(self, control, yaw)
 		else land_step(self, control, yaw, dtime) end
 	end,
@@ -386,7 +410,7 @@ local function attach(player, object, model, skip_animation)
 	player_api.player_attached[name] = true
 	local seat = model.attach_y * model.visual_size.y
 	player:set_attach(object, "", {x = 0, y = seat, z = 0},
-		{x = 0, y = 0, z = 0})
+		{x = 0, y = math.deg(player:get_look_horizontal() or 0), z = 0})
 	player:set_eye_offset({x = 0, y = model.eye_y, z = 0}, {x = 0, y = 0, z = 0})
 	if not skip_animation then player_api.set_animation(player, "sit", 30) end
 end

@@ -266,6 +266,18 @@ want(terminal_data._grug_despawn_terminal == true and
 		terminal_data.name == nil,
 	"far unload did not store the exact terminal marker")
 
+-- Authored world bosses remain current-version persistent at the same hard
+-- distance. Their encounter ledger owns death/respawn, so ambient culling must
+-- not turn a live boss into a terminal marker behind that ledger's back.
+local authored = entity_at(128, {_grug_no_far_despawn = true})
+authored:mob_activate("", {}, 0)
+engine_staticdata(authored) -- first ordinary save installs remove_ok
+local authored_data = engine_staticdata(authored)
+want(authored_data._grug_despawn_terminal == nil and
+		authored_data._grug_no_far_despawn == true,
+	"authored boss was terminally culled at far unload distance")
+engine_deactivate(authored, false)
+
 -- Loading that stored marker creates a transient Lua entity. Production
 -- mob_activate must disable static saving and remove it immediately without a
 -- second counter debit, leaving no entity to save or reactivate again.
@@ -385,4 +397,4 @@ io.write("spawn_despawn\tPASS\tmin=48\tmax=128\t" ..
 	"create=1\tresave=1\tprotected_unload=0\treload_zero=1\t" ..
 	"far=0\tremove=0\tdeath=0\trejected_limit=600\t" ..
 	"wrapper_track=1\twrapper_xp=1\twrapper_debit=1\t" ..
-	"terminal_absent\n")
+	"authored_persistent=1\tterminal_absent\n")

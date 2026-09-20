@@ -792,6 +792,7 @@ local function dragon_def(id, opts, callbacks)
 		description = opts.description,
 		clock = "any", type = "monster",
 		_grug_fixed_level = 60, _grug_tier = "boss",
+		_grug_no_far_despawn = true,
 		_grug_leash_range = TUNING.leash,
 		attack_type = "dogfight", attack_players = true,
 		attack_monsters = false, attack_animals = false, attack_npcs = false,
