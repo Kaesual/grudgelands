@@ -24,7 +24,8 @@ end
 local roster = {schema = "grug_wp40_r7_anchor_roster_v1",
 	sha256 = string.rep("a", 64), rows = rows}
 local function roster_factory() return roster end
-local anchor_content = {schema = "grug_wp40_r7_anchor_content_v1"}
+local anchor_content = {schema = "grug_wp40_r7_anchor_content_v1",
+	successor_base_ref = 124}
 function anchor_content.resolve_anchor(ref, param2)
 	check((ref == 1 or ref == 2) and param2 == 0, "content resolver input differs")
 	return 500 + ref, 1, 1, 0, 32
@@ -171,7 +172,7 @@ for index = 1, 42 do
 		operation.support_y == row.y and operation.final_opcode == 36 and
 		operation.support_cid == 66 and operation.support_occupancy == 0 and
 		operation.final_feature == row.numeric_id and
-		operation.final_aux == (100 + row.content_ref - 1) * 256 and
+		operation.final_aux == (124 + row.content_ref - 1) * 256 and
 		write[1] == row.x and write[2] == row.y + 1 and write[3] == row.z and
 		write[4] == 500 + row.content_ref and write[6] == row.content_ref and
 		write[7] == row.numeric_id, "operation differs at " .. index)
@@ -239,9 +240,17 @@ local hearthpine_config = {key = "hearthpine", new = function()
 			return {schema = "grug_wp13_hearthpine_ledger_v1"}
 		end, metrics = function() return {} end}
 end}
+local world_config = {new = function()
+	return {bind = function() order[#order + 1] = "world_plan" end,
+		settle = function(value)
+			check(type(value.write_p9g) == "function", "world writer is absent")
+			order[#order + 1] = "world_settle"
+			return {schema = "grug_world_content_ledger_v1"}
+		end, metrics = function() return {} end}
+end}
 local successor = dofile(wp40 .. "/r7_successor.lua")(
 	p9g_config, anchor_config, {hearthpine_config},
-	{hearthpine_config.key}).new({})
+	{hearthpine_config.key}, world_config).new({})
 local composed_context = {write_anchor = function() end,
 	write_hearthpine = function() end}
 for _, key in ipairs({"schema", "plan", "generation", "call_mode", "min_x",
@@ -252,8 +261,8 @@ for _, key in ipairs({"schema", "plan", "generation", "call_mode", "min_x",
 successor:plan_slice({}, {}, {}, 1)
 local composed = successor:settle(composed_context)
 check(composed.schema == "grug_wp40_r7_successor_ledger_v1" and
-	table.concat(order, ",") == table.concat({"p9g_plan", "anchor_plan",
-		"hearthpine_plan", "p9g_settle", "anchor_settle",
+	table.concat(order, ",") == table.concat({"p9g_plan", "world_plan", "anchor_plan",
+		"hearthpine_plan", "p9g_settle", "world_settle", "anchor_settle",
 		"hearthpine_settle"}, ","),
 	"successor order differs")
 

@@ -42,16 +42,24 @@ return function(repo)
 	local manifest = catalog.manifest()
 	assert(common.hex(sha(manifest.canonical_bytes)) == manifest.sha256)
 	local rows, index_by_name, salt_index = catalog.p9g_sources(), {}, nil
-	local p9g = {schema = "grug_wp40_r7_p9g_content_v1", content_names = {}, content_cids = {}}
+	local p9g = {schema = "grug_wp40_r7_p9g_content_v2", content_names = {}, content_cids = {}}
 	for index, row in ipairs(rows) do
 		p9g.content_names[index], p9g.content_cids[index] = row.source_node, 1000 + index
 		index_by_name[row.source_node] = index
 		if row.key == "rock_salt" then salt_index = index end
 	end
+	local world_catalog = dofile(wp40 .. "/world_content_catalog.lua")
+	assert(#rows == 12 and #world_catalog.names == 22)
+	for offset, name in ipairs(world_catalog.names) do
+		local index = offset + 12
+		p9g.content_names[index], p9g.content_cids[index] = name, 1000 + index
+		index_by_name[name] = index
+	end
+	assert(#p9g.content_names == 34)
 	function p9g.content_ref(name) return index_by_name[name] end
 	function p9g.resolve_p9g(index) return 1000 + index, 1, 1, 0, 8 end
 	local names = {}
-	for index = 1, 88 do names[index] = "fixture:" .. index end
+	for index = 1, 90 do names[index] = "fixture:" .. index end
 	local production = {schema = "grug_wp40_r7_production_r6_content_v1",
 		content_names = names, ignore_cid = 127,
 		r5 = {resolve = function() return 0, 0, 0 end}}
