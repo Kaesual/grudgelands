@@ -114,7 +114,7 @@ end
 
 -- Support and consumable amounts arrive here after deriving their absolute
 -- value from a current-level HP/base pool. This identity seam is deliberately
--- retained so heal_player/set_absorb keep their stable structure while making
+-- retained so heal_player/add_absorb keep their stable structure while making
 -- a second level multiplication impossible.
 function grug_core.scale_player_value(player, amount)
 	return math.max(0, amount or 0)
@@ -647,6 +647,7 @@ end
 
 local hit_mob_callbacks = {}
 local ability_action_id
+local ability_settlement
 
 function grug_core.register_on_player_hit_mob(func)
 	table.insert(hit_mob_callbacks, func)
@@ -671,7 +672,11 @@ function grug_core.run_player_hit_mob(player, mob_ent, damage, applied, fraction
 	for _, func in ipairs(hit_mob_callbacks) do
 		func(player, mob_ent, damage, applied, fraction)
 	end
-	if grug_core.in_ability_punch and ability_action_id and (damage or 0) > 0 then
+	if grug_core.in_ability_punch and ability_settlement
+			and ability_settlement.attacker == player
+			and mob_ent and mob_ent.object == ability_settlement.target
+			and (damage or 0) > 0 then
+		ability_settlement.accepted = true
 		grug_core.run_settled_outgoing_action(player, ability_action_id, "damage")
 	end
 end
@@ -682,7 +687,9 @@ end
 -- with a full punch interval (factor 1), so armor groups, knockback and
 -- mob death handling (XP/loot via on_death) keep working.
 -- opts: {threat_mult = n} extra threat factor (tank abilities ×3).
--- Returns the damage dealt (0 on dodge).
+-- Returns published pre-armor damage (0 on pre-punch refusal). Accepted-hit
+-- effects use opts.on_accepted(amount, critical, action_id), called exactly
+-- once after the matching mob acceptance or actual player HP loss.
 --
 
 local function crit_particles(pos)
@@ -1127,11 +1134,14 @@ function grug_core.deal_ability_damage(attacker, target, amount, opts)
 	if critical then
 		amount = math.floor(amount * 1.5)
 		crit_particles(target:get_pos())
-		if opts.on_crit then opts.on_crit(attacker, target) end
 	end
 	grug_core.mark_in_combat(attacker)
 	-- pcall + flag restore: an error mid-punch must not leave the sticky
 	-- flag set (that would silently kill rage generation server-wide).
+	local previous_punch, previous_action, previous_level, previous_settlement =
+		grug_core.in_ability_punch, ability_action_id, ability_attacker_level, ability_settlement
+	local settlement = {attacker = attacker, target = target}
+	ability_settlement = settlement
 	grug_core.in_ability_punch = true
 	ability_action_id = opts.action_id or {}
 	ability_attacker_level = opts.attacker_level or
@@ -1156,15 +1166,20 @@ function grug_core.deal_ability_damage(attacker, target, amount, opts)
 		damage_groups = {fleshy = amount},
 	}, nil)
 	local settled_action = ability_action_id
-	ability_action_id = nil
-	ability_attacker_level = nil
-	grug_core.in_ability_punch = false
+	ability_action_id = previous_action
+	ability_attacker_level = previous_level
+	ability_settlement = previous_settlement
+	grug_core.in_ability_punch = previous_punch
 	if not ok then
 		core.log("warning", "[grug_core] ability punch failed: " .. tostring(err))
 		return 0
 	end
 	if target:is_player() and target:get_hp() < hp_before then
+		settlement.accepted = true
 		grug_core.run_settled_outgoing_action(attacker, settled_action, "damage")
+	end
+	if settlement.accepted and opts.on_accepted then
+		opts.on_accepted(amount, critical, settled_action)
 	end
 	-- BONUS-ONLY threat site. The punch above already ran through grug_mobs'
 	-- accepted hit hook -> run_player_hit_mob, which added the base threat
@@ -1172,7 +1187,7 @@ function grug_core.deal_ability_damage(attacker, target, amount, opts)
 	-- double-count the base for every ability, so only the extra factor of a
 	-- tank ability (×3 -> +2×damage) is added on top; ×1 adds nothing.
 	local mult = opts.threat_mult or 1
-	if mult ~= 1 then
+	if settlement.accepted and mult ~= 1 then
 		-- Affront (skill_trees.md §2.1) raises the TANK multiplier only: an
 		-- ability that carries no multiplier stays at ×1 and adds nothing.
 		-- This is the cast site; the swing site is grug_abilities/init.lua.
@@ -1234,10 +1249,9 @@ function grug_core.heal_player(healer, target, amount, opts)
 end
 
 --
--- Absorb shields (Power Word: Shield, classes.md §5). One shield per
--- player; a new one replaces the old (no stacking). Soaked lazily by the
--- central hp change modifier below — no timer entity, the expiry is
--- checked whenever the shield would matter.
+-- Named absorb contributions (skill_trees.md §3.11): independent lifetimes,
+-- same-source refresh, capped at maximum HP and consumed shortest-lived first.
+-- Contribution modifiers expire with their owner; no parallel status timer.
 --
 
 local absorbs = {} -- player name -> source id -> {amount = n, expiry = us time}
@@ -1249,7 +1263,7 @@ end
 
 -- Durability/action consumers subscribe here. `action_id` must be unique for
 -- that player's live session and reused across every result of one action.
--- Damage owners publish explicitly; heal_player/set_absorb publish only when
+-- Damage owners publish explicitly; heal_player/add_absorb publish only when
 -- their caller supplies that shared identity. Consumers deduplicate it, so an
 -- aura may report several effective targets without multiplying action wear.
 local settled_outgoing_callbacks = {}
@@ -1273,7 +1287,7 @@ function grug_core.register_on_settled_incoming_hit(func)
 	table.insert(settled_incoming_callbacks, func)
 end
 
-function grug_core.add_absorb(player, id, amount, duration, source, action_id)
+function grug_core.add_absorb(player, id, amount, duration, source, action_id, modifiers)
 	amount = grug_core.scale_player_value(source or player, amount)
 	local expiry = core.get_us_time() + duration * 1e6
 	local name = player:get_player_name()
@@ -1288,11 +1302,14 @@ function grug_core.add_absorb(player, id, amount, duration, source, action_id)
 	amount = math.max(0, math.min(amount,
 		(tonumber(properties.hp_max) or amount) - existing))
 	if amount <= 0 then
+		absorbs[name][id] = nil
 		return 0
 	end
 	absorbs[name][id] = {
 		amount = amount,
 		expiry = expiry,
+		modifiers = modifiers,
+		source = source and source:get_player_name(),
 	}
 	local status_expiry = expiry
 	for _, entry in pairs(absorbs[name]) do
@@ -1320,9 +1337,24 @@ function grug_core.add_absorb(player, id, amount, duration, source, action_id)
 	return amount
 end
 
-function grug_core.set_absorb(player, amount, duration, source, action_id)
-	grug_core.add_absorb(player, "power_word_shield", amount, duration,
-		source, action_id)
+function grug_core.absorb_modifier(player, key)
+	grug_core.get_absorb(player)
+	local total = 0
+	for _, entry in pairs(absorbs[player:get_player_name()] or {}) do
+		total = total + (entry.modifiers and entry.modifiers[key] or 0)
+	end
+	return total
+end
+
+-- Respec/death/leave remove caster-owned talent modifiers, including shields
+-- on another class. The underlying absorb retains its independent lifetime.
+function grug_core.clear_absorb_modifiers(source)
+	local name = source:get_player_name()
+	for _, entries in pairs(absorbs) do
+		for _, entry in pairs(entries) do
+			if entry.source == name then entry.modifiers = nil end
+		end
+	end
 end
 
 -- Remaining absorb amount (0 when none/expired).
@@ -1337,7 +1369,7 @@ function grug_core.get_absorb(player)
 	end
 	local total, t = 0, core.get_us_time()
 	for id, entry in pairs(entries) do
-		if t > entry.expiry or entry.amount <= 0 then
+		if t >= entry.expiry or entry.amount <= 0 then
 			entries[id] = nil
 		else
 			total = total + entry.amount
@@ -1460,7 +1492,10 @@ core.register_on_player_hpchange(function(player, hp_change, reason)
 		local entries = absorbs[name]
 		local ordered = {}
 		for id, entry in pairs(entries) do ordered[#ordered + 1] = {id, entry} end
-		table.sort(ordered, function(a, b) return a[2].expiry < b[2].expiry end)
+		table.sort(ordered, function(a, b)
+			if a[2].expiry == b[2].expiry then return a[1] < b[1] end
+			return a[2].expiry < b[2].expiry
+		end)
 		local remaining = -hp_change
 		for index = 1, #ordered do
 			local id, entry = ordered[index][1], ordered[index][2]

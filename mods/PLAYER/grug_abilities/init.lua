@@ -158,6 +158,9 @@ function grug_abilities.cost_for(player, cost, ability_id)
 		if ability_id == "fireball" and
 				grug_classes.talent_window_active(player, "whitehot") then
 			percent = 3
+		elseif ability_id == "smite" and
+				grug_classes.get_talent_bonus(player, "smite_absorb") > 0 then
+			percent = 6
 		end
 		return {mana = grug_abilities.mana_cost(player, percent)}
 	end
@@ -1288,7 +1291,7 @@ local function finish_authoritative_swing(context, result)
 			(result.damage or 0) * (context.threat_mult - 1))
 	end
 	if context.post then
-		context.post()
+		context.post(context)
 	end
 	-- Pay the proc before granting the swing's rage. At the 100 cap this keeps
 	-- the landed swing's grant instead of silently discarding it before Mighty

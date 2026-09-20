@@ -129,6 +129,7 @@ function grug_classes.get_dodge_chance_raw(player)
 	return 0.001 * grug_classes.get_attributes(player).dex
 		+ 0.01 * (grug_classes.get_talent_bonus(player, "dodge_chance_add")
 			+ grug_classes.get_talent_bonus(player, "dodge_chance_window")
+			+ grug_core.absorb_modifier(player, "dodge_percent")
 			+ grug_core.status_modifier_sum(player, "dodge_percent")
 			+ grug_classes.get_scout_dodge_add(player))
 end

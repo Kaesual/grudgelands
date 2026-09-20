@@ -966,6 +966,10 @@ function grug_classes.talent_trigger_ready(player, talent_id, cooldown)
 end
 
 function grug_classes.clear_talent_windows(player)
+	if grug_classes.talent_window_active(player, "hold_ground") then
+		grug_core.clear_move_immunity(player)
+	end
+	grug_core.clear_absorb_modifiers(player)
 	windows[player:get_player_name()] = nil
 end
 
@@ -1169,6 +1173,7 @@ end
 
 core.register_on_leaveplayer(function(player)
 	local name = player:get_player_name()
+	grug_classes.clear_talent_windows(player)
 	cache[name] = nil
 	windows[name] = nil
 end)

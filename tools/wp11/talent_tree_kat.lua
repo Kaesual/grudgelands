@@ -241,6 +241,8 @@ local function build_env(repo, clock)
 	function grug_core.get_absorb(player)
 		return clock.absorb or 0
 	end
+	function grug_core.absorb_modifier() return 0 end
+	function grug_core.clear_absorb_modifiers() end
 	function grug_core.get_equipped_weapon(player)
 		return player:get_inventory():get_stack("grug_weapon", 1)
 	end

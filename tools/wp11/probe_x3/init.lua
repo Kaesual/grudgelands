@@ -1,34 +1,10 @@
-local failures = 0
-local function check(value, message)
-	if not value then
-		failures = failures + 1
-		core.log("error", "WP11X3 FAIL " .. message)
-	end
-end
-
+-- Isolated native-engine behavior probe. Only engine-facing player/object,
+-- clock and ray adapters are synthetic: talent parsing, cast/swing dispatch,
+-- projectile callbacks, damage settlement, statuses, movement and repair are
+-- the production modules loaded by the game. No user world/player is touched.
+local path = core.get_modpath(core.get_current_modname())
+-- The bounded combat probe never generates the six startup mapgen areas.
+grug_core.request_starts_preload = function() end
 core.register_on_mods_loaded(function()
-	check(jit and type(jit.version) == "string", "LuaJIT runtime")
-	if jit and jit.version then
-		core.log("action", "WP11X3 runtime " .. jit.version)
-	end
-	for _, id in ipairs({"hold_ground", "cinderfall", "glacial_ward",
-			"word_of_ruin"}) do
-		local def = grug_abilities.registered[id]
-		check(def ~= nil, "registered " .. id)
-		check(def and def.talent_gated == true, "talent gate " .. id)
-		check(def and type(def.cast) == "function", "cast " .. id)
-	end
-	check(grug_abilities.registered.hamstring.talent_gated,
-		"Hamstring remains talent gated")
-	check(grug_abilities.registered.renew.talent_gated,
-		"Renew remains talent gated")
-	check(type(grug_core.add_absorb) == "function", "named absorb API")
-	check(type(grug_classes.try_trigger_talent_window) == "function",
-		"window cooldown API")
-	check(type(grug_abilities.cost_for) == "function", "resolved cost API")
-	if failures == 0 then
-		core.log("action", "WP11X3 RESULT PASS")
-	else
-		error("WP11X3 RESULT FAIL " .. failures)
-	end
+	core.after(0, function() dofile(path .. "/scenarios.lua") end)
 end)
