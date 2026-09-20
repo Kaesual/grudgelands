@@ -153,6 +153,13 @@ return function(params)
 		return type(a) == "table" and type(b) == "table" and
 			close_number(a.x, b.x) and close_number(a.y, b.y)
 	end
+	local function same_numeric_list(a, b)
+		if type(a) ~= "table" or type(b) ~= "table" or #a ~= #b then return false end
+		for index = 1, #a do
+			if not close_number(a[index], b[index]) then return false end
+		end
+		return true
+	end
 	local function expected_mount(tag)
 		local tier = tonumber(tag)
 		local side = assert(faction[race])
@@ -268,7 +275,6 @@ return function(params)
 			local armor = entity.object:get_armor_groups()
 			if props.physical ~= false or props.pointable ~= false or
 					props.collide_with_objects ~= false or
-					not same_list(props.collisionbox, {0, 0, 0, 0, 0, 0}) or
 					type(armor) ~= "table" or armor.immortal ~= 1 then
 				fail("display intrinsic properties differ: " .. socket.id)
 			end
@@ -279,6 +285,7 @@ return function(params)
 				if props.visual ~= "mesh" or props.mesh ~= model.mesh or
 						not same_list(props.textures, model.textures) or
 						not same_pair(props.visual_size, model.visual_size) or
+						not same_numeric_list(props.collisionbox, model.collisionbox) or
 						props.nametag ~= model.description or not stand or
 						not same_pair(frames, {x = stand[1], y = stand[1]}) or
 						not close_number(speed, 0) or not close_number(blend, 0) or
@@ -294,6 +301,9 @@ return function(params)
 				local item = expected_gear(tag)
 				if props.visual ~= "wielditem" or props.textures[1] ~= item then
 					fail("gear display item differs: " .. socket.id)
+				end
+				if not same_numeric_list(props.collisionbox, {0, 0, 0, 0, 0, 0}) then
+					fail("gear display collision box differs: " .. socket.id)
 				end
 				if math.abs(p.y - socket.pos.y) > 0.25 then
 					fail("gear display grounding differs: " .. socket.id)

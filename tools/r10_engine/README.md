@@ -30,7 +30,8 @@ digests and explicit delta table.
 `service_witness_kat.lua` is a bounded LuaJIT development fixture. It derives
 the eight premises and their local sockets through the real
 `capital_services.lua`, applies the production `plot_id/socket_id` projection,
-and exercises the witness with engine-style float round trips. Mutations prove
+and calls the real `configure_capital_display` on fake ObjectRefs which preserve
+engine-style float round trips. Mutations prove
 that an outside/extra service, unloaded node, wrong-race trainer, mutable display
 or materially wrong scale cannot produce PASS. It is not an engine substitute
 and is not a second PUC runtime gate.
