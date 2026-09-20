@@ -5,6 +5,7 @@ local ARROW_GRAVITY = -9.81
 local ARROW_SPEED = 40
 local DRAW_STEP = 0.05
 local draws = {}
+local draw_wear_steps = {}
 local next_action = 0
 
 local function action_id(player, ability)
@@ -87,7 +88,7 @@ grug_projectiles.register(ARROW_PROJECTILE, {
 	end,
 })
 
-local function launch(player, ability, count, fraction, effect)
+local function launch(player, ability, count, fraction, effect, captured)
 	local bow = equipped_bow(player)
 	local base_damage = arrow_damage(player)
 	if not bow or not base_damage then
@@ -102,8 +103,7 @@ local function launch(player, ability, count, fraction, effect)
 	if not origin or not direction or vector.length(direction) <= 0 then
 		return false, "Cannot determine your aim."
 	end
-	local id = action_id(player, ability)
-	local receipt = repair_receipt(player, id)
+	local receipt = captured or repair_receipt(player, action_id(player, ability))
 	local range = effect.range or 25
 	local damage = math.floor((base_damage + (effect.damage_add or 0)) * fraction)
 	local common = {
@@ -166,7 +166,50 @@ local function loose_effect(player, full_draw)
 end
 
 local function clear_draw(player)
-	draws[player:get_player_name()] = nil
+	local name = player:get_player_name()
+	local rec = draws[name]
+	if rec then cancel_receipt(player, rec.action_id) end
+	draws[name] = nil
+	draw_wear_steps[name] = nil
+	local inv = player:get_inventory()
+	for index, stack in ipairs(inv and inv:get_list("main") or {}) do
+		if stack:get_name() == "grug_abilities:loose" and stack:get_wear() ~= 0 then
+			stack:set_wear(0)
+			inv:set_stack("main", index, stack)
+			break
+		end
+	end
+end
+
+local function bow_identity(stack)
+	if not stack or stack:is_empty() then return nil end
+	local item_id = stack:get_meta():get_string("_grug_repair_item_id")
+	return stack:get_name() .. "|" .. item_id
+end
+
+local function set_draw_wear(player, fraction)
+	local name = player:get_player_name()
+	local step = math.max(0, math.min(10, math.floor(fraction * 10)))
+	if draw_wear_steps[name] == step then return end
+	draw_wear_steps[name] = step
+	local inv = player:get_inventory()
+	for index, stack in ipairs(inv and inv:get_list("main") or {}) do
+		if stack:get_name() == "grug_abilities:loose" then
+			stack:set_wear(math.floor((10 - step) / 10 * 65534))
+			inv:set_stack("main", index, stack)
+			return
+		end
+	end
+end
+
+local function effective_draw_time(player)
+	local base = math.max(0.1, 0.5 -
+		grug_classes.get_talent_bonus(player, "draw_time_sub"))
+	local items = rawget(_G, "grug_items")
+	local totals = items and items.get_equipment_affix_totals and
+		items.get_equipment_affix_totals(player) or {}
+	local speed = math.max(0, tonumber(totals.attack_speed_percent) or 0)
+	return base / (1 + speed / 100)
 end
 
 local function start_draw(player)
@@ -177,27 +220,44 @@ local function start_draw(player)
 	if grug_inventory.ammo_count(player) < 1 then
 		return false, "You need an arrow."
 	end
+	local receipt = repair_receipt(player, action_id(player, "loose"))
+	bow = equipped_bow(player)
+	if not bow then
+		cancel_receipt(player, receipt)
+		return false, "Equip a usable bow in your Weapon slot."
+	end
 	draws[name] = {
 		player = player,
 		started = core.get_us_time(),
-		bow = ItemStack(bow),
+		bow = bow_identity(bow),
+		action_id = receipt,
 	}
+	set_draw_wear(player, 0)
 	return true
 end
 
 local function release_draw(player, rec)
-	clear_draw(player)
 	local bow = equipped_bow(player)
-	if not bow or not bow:equals(rec.bow) then return end
-	local draw_time = math.max(0.1, 0.5 -
-		grug_classes.get_talent_bonus(player, "draw_time_sub"))
+	if not bow or bow_identity(bow) ~= rec.bow then
+		clear_draw(player)
+		return
+	end
+	draws[player:get_player_name()] = nil
+	draw_wear_steps[player:get_player_name()] = nil
+	local draw_time = effective_draw_time(player)
 	local fraction = math.min(1,
 		math.max(0, (core.get_us_time() - rec.started) / (draw_time * 1e6)))
 	-- A press and release observed at the same monotonic timestamp has no
 	-- impulse and therefore no projectile action or ammunition cost.
-	if fraction <= 0 then return end
+	if fraction <= 0 then
+		cancel_receipt(player, rec.action_id)
+		set_draw_wear(player, 1)
+		return
+	end
 	local effect = loose_effect(player, fraction >= 1)
-	local ok, err = launch(player, "loose", effect.count, fraction, effect)
+	local ok, err = launch(player, "loose", effect.count, fraction, effect,
+		rec.action_id)
+	set_draw_wear(player, 1)
 	if not ok then grug_abilities.flash(player, err) end
 end
 
@@ -218,6 +278,10 @@ core.register_globalstep(function(dtime)
 				draws[name] = nil
 			elseif not player:get_player_control().dig then
 				release_draw(player, rec)
+			else
+				local fraction = math.min(1, (core.get_us_time() - rec.started) /
+					(effective_draw_time(player) * 1e6))
+				set_draw_wear(player, fraction)
 			end
 		end
 	end
@@ -227,7 +291,13 @@ core.register_on_dieplayer(clear_draw)
 core.register_on_leaveplayer(clear_draw)
 
 grug_core.register_on_equipment_change(function(player, listname)
-	if listname == nil or listname == "grug_weapon" then clear_draw(player) end
+	if listname == nil or listname == "grug_weapon" then
+		local rec = draws[player:get_player_name()]
+		local bow = equipped_bow(player)
+		if rec and (not bow or bow_identity(bow) ~= rec.bow) then
+			clear_draw(player)
+		end
+	end
 end)
 
 grug_abilities.register_ability({
@@ -310,7 +380,7 @@ grug_abilities.register_ability({
 		local percent = grug_classes.get_talent_bonus(user,
 			"opening_multiplier")
 		return math.floor(ctx.weapon_damage * percent / 100)
-			+ ctx.melee_bonus
+			+ ctx.melee_bonus + ctx.melee_damage_add
 	end,
 })
 

@@ -53,18 +53,22 @@
 local M = {}
 
 local SOURCES = {
+	scout_class = "mods/PLAYER/grug_classes/scout.lua",
+	scout_talents = "mods/PLAYER/grug_classes/scout_talents.lua",
 	stats = "mods/PLAYER/grug_classes/stats.lua",
 	talents = "mods/PLAYER/grug_classes/talents.lua",
 	abilities = "mods/PLAYER/grug_abilities/init.lua",
 	kits = "mods/PLAYER/grug_abilities/kits.lua",
 	equipment = "mods/PLAYER/grug_inventory/equipment.lua",
 	combat = "mods/CORE/grug_core/combat.lua",
+	scout_abilities = "mods/PLAYER/grug_abilities/scout.lua",
 }
 
 -- Files a lane-X2 effect key may be read from. talents.lua is deliberately
 -- NOT here: it is where the key is DECLARED, so finding it there would prove
 -- nothing about a consumer.
-local CONSUMER_SOURCES = {"stats", "abilities", "kits", "equipment", "combat"}
+local CONSUMER_SOURCES = {"scout_class", "stats", "abilities", "kits",
+	"scout_abilities", "equipment", "combat"}
 
 --
 -- Deterministic number formatting. Both interpreters print through C printf,
@@ -207,6 +211,10 @@ local function build_env(repo, clock)
 		registered_races = {},
 		class_ids = {"warrior", "mage", "priest"},
 	}
+	function grug_classes.register_class(def)
+		grug_classes.registered_classes[def.id] = def
+		grug_classes.class_ids[#grug_classes.class_ids + 1] = def.id
+	end
 	function grug_classes.get_class(player)
 		return player._class
 	end
@@ -225,7 +233,10 @@ local function build_env(repo, clock)
 		return player._level or 1
 	end
 
-	local grug_projectiles = stub_table({})
+	local grug_projectiles = stub_table({registered = {}})
+	function grug_projectiles.register(id, def)
+		grug_projectiles.registered[id] = def
+	end
 	function grug_projectiles.spawn(id, params)
 		clock.spawned = params
 		return true
@@ -253,6 +264,12 @@ local function build_env(repo, clock)
 		rawget = rawget, rawset = rawset, rawequal = rawequal,
 	}
 	env._G = env
+	env.dofile = function(path)
+		if not path:find("/scout_talents.lua$", 1, false) then return end
+		local chunk = assert(loadfile(repo .. "/" .. SOURCES.scout_talents))
+		setfenv(chunk, env)
+		return chunk()
+	end
 	return env
 end
 
@@ -414,7 +431,8 @@ local function run_checks(repo)
 
 	local clock = {us = 0, chat = {}, commands = {}, absorb = 0}
 	local env = build_env(repo, clock)
-	for _, key in ipairs({"stats", "talents", "abilities", "kits", "equipment"}) do
+	for _, key in ipairs({"scout_class", "stats", "talents", "abilities",
+			"kits", "scout_abilities", "equipment"}) do
 		local err = load_into(env, repo, SOURCES[key])
 		if err then
 			check(false, err)
@@ -428,8 +446,8 @@ local function run_checks(repo)
 	-- 1. Shape.
 	--
 	local trees, talents = classes.registered_trees, classes.registered_talents
-	equal(#classes.talent_ids, 48, "talent registrations")
-	equal(#classes.tree_ids, 6, "tree registrations")
+	equal(#classes.talent_ids, 64, "talent registrations")
+	equal(#classes.tree_ids, 8, "tree registrations")
 	local ranks_per_class, trees_per_class = {}, {}
 	for _, tree_id in ipairs(classes.tree_ids) do
 		local tree = trees[tree_id]
@@ -597,7 +615,7 @@ local function run_checks(repo)
 			new_skills = new_skills + 1
 		end
 	end
-	equal(new_skills, 6, "new-skill keystones across the three shipped classes")
+	equal(new_skills, 8, "new-skill keystones across the four shipped classes")
 	for _, tree_id in ipairs(classes.tree_ids) do
 		local per_tree = 0
 		for _, def in ipairs(trees[tree_id].talents) do

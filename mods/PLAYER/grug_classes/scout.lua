@@ -18,7 +18,7 @@ grug_classes.register_class({
 -- four-second window; Untouchable uses the talent registry's timed bonus.
 function grug_classes.start_sidestep(player)
 	sidestep_expiry[player:get_player_name()] = core.get_us_time() + 4e6
-	if grug_classes.talent_rank(player, "shake_loose") > 0 then
+	if grug_classes.get_talent_bonus(player, "root_slow_immunity") > 0 then
 		grug_core.set_move_immunity(player, 4)
 	end
 end

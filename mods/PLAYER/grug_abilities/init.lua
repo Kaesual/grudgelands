@@ -870,8 +870,12 @@ function grug_abilities.description_prefix(player, def)
 	else
 		cost_line = "free"
 	end
+	local timing = def._grug_timing_line
+	if player and def.kind == "swing" and def.charge then
+		timing = grug_abilities.effective_charge(player, def) .. " s charge"
+	end
 	return def.name .. " (" .. def._grug_owner_line .. ")\n" ..
-		cost_line .. ", " .. def._grug_timing_line .. "\n"
+		cost_line .. ", " .. timing .. "\n"
 end
 
 -- Apply one player's effective numeric description to an ability stack in
@@ -1025,6 +1029,15 @@ end
 
 local charges = {} -- player name -> {ability id -> ready_at us time}
 
+function grug_abilities.effective_charge(player, def)
+	local duration = def.charge or 0
+	if def.charge_talent then
+		duration = duration - grug_classes.get_talent_bonus(player,
+			def.charge_talent)
+	end
+	return math.max(0, duration)
+end
+
 -- A def WITHOUT def.charge is always ready (Mighty Blow: limited by its
 -- resource alone). An absent record means charged (the join/grant state).
 function grug_abilities.charge_ready(player, def)
@@ -1045,7 +1058,8 @@ function grug_abilities.reset_charge(player, def)
 	end
 	local name = player:get_player_name()
 	charges[name] = charges[name] or {}
-	charges[name][def.id] = core.get_us_time() + def.charge * 1e6
+	charges[name][def.id] = core.get_us_time()
+		+ grug_abilities.effective_charge(player, def) * 1e6
 	charge_steps[name] = charge_steps[name] or {}
 	charge_steps[name][def.id] = 0
 	set_item_wear(player, def.id, 65534)
@@ -1062,7 +1076,7 @@ function grug_abilities.charge_fraction(player, def)
 	if remaining <= 0 then
 		return 1
 	end
-	return 1 - remaining / def.charge
+	return 1 - remaining / grug_abilities.effective_charge(player, def)
 end
 
 -- Authoritative swing clock (classes.md §2b). Native object punches from a
@@ -1399,7 +1413,9 @@ attempt_swing = function(player, selected, held, latched)
 		punch_attack_uses = 0,
 	}
 	local melee_bonus = grug_classes.get_melee_bonus(player)
-	local raw_damage = weapon_damage + melee_bonus
+	local melee_damage_add = grug_classes.get_talent_bonus(player,
+		"melee_damage_add")
+	local raw_damage = weapon_damage + melee_bonus + melee_damage_add
 	local proc
 	local post
 	local threat_mult = 1
@@ -1410,15 +1426,19 @@ attempt_swing = function(player, selected, held, latched)
 	if selected.proc_swing
 			and grug_abilities.charge_ready(player, selected)
 			and affordable(player, selected.cost) then
-		local proc_damage
-		proc_damage, threat_mult, post = selected.proc_swing(player, target, {
+		local proc_damage, proc_threat, proc_post = selected.proc_swing(player,
+			target, {
 			weapon_damage = weapon_damage,
 			fpi = fpi,
 			melee_bonus = melee_bonus,
+			melee_damage_add = melee_damage_add,
 		})
-		raw_damage = proc_damage
-		proc = selected
-		threat_mult = threat_mult or 1
+		if proc_damage ~= nil then
+			raw_damage = proc_damage
+			proc = selected
+			threat_mult = proc_threat or 1
+			post = proc_post
+		end
 		-- Affront raises a tank multiplier only; the cast-side equivalent stays
 		-- in grug_core/combat.lua's deal_ability_damage.
 		if threat_mult ~= 1 then
@@ -2810,3 +2830,4 @@ grug_xp.register_on_level_change(function(player, old_level, new_level)
 end)
 
 dofile(core.get_modpath(core.get_current_modname()) .. "/kits.lua")
+dofile(core.get_modpath(core.get_current_modname()) .. "/scout.lua")
