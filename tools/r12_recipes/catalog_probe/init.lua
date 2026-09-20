@@ -63,10 +63,24 @@ core.register_on_mods_loaded(function()
 	assert(#basics == 596, "Basics route count differs: " .. #basics)
 	local starter_count, dual_count = 0, 0
 	local bronze_armor = {}
+	local expected_starter_tools = {
+		["default:axe_stone"] = 1, ["default:axe_wood"] = 1,
+		["default:pick_stone"] = 1, ["default:pick_wood"] = 1,
+		["default:shovel_stone"] = 1, ["default:shovel_wood"] = 1,
+		["default:sword_stone"] = 1, ["default:sword_wood"] = 1,
+		["grug_farming:hoe_bronze"] = 2,
+	}
+	local starter_tools = {}
 	for index = 1, #basics do
 		local recipe = basics[index]
 		local declaration = assert(recipe.basics_presentation)
 		if declaration.starter then starter_count = starter_count + 1 end
+		if expected_starter_tools[recipe.output_name] then
+			assert(declaration.starter,
+				recipe.output_name .. " route is not starter")
+			starter_tools[recipe.output_name] =
+				(starter_tools[recipe.output_name] or 0) + 1
+		end
 		if recipe.station == "dual_furnace" then
 			dual_count = dual_count + 1
 			assert(declaration.main_material == recipe.flat_inputs[1],
@@ -83,7 +97,11 @@ core.register_on_mods_loaded(function()
 	end
 	local armor_count = 0
 	for _ in pairs(bronze_armor) do armor_count = armor_count + 1 end
-	assert(dual_count == 5 and armor_count == 4 and starter_count == 63,
+	for output, route_count in pairs(expected_starter_tools) do
+		assert(starter_tools[output] == route_count,
+			output .. " starter route count differs")
+	end
+	assert(dual_count == 5 and armor_count == 4 and starter_count == 73,
 		("Basics anchors differ: dual=%d armor=%d starter=%d")
 		:format(dual_count, armor_count, starter_count))
 	local refinements = {}
@@ -108,7 +126,7 @@ core.register_on_mods_loaded(function()
 		assert(recipe and recipe.profession == "cooking" and recipe.tier == 1,
 			"Cooking furnace authority differs: " .. authorities[index][1])
 	end
-	core.log("action", ("[r12recipe] AUDIT catalog=830 basics=%d starter=%d dual=%d bronze_armor=%d cooking_authority=3")
+	core.log("action", ("[r12recipe] AUDIT catalog=830 basics=%d starter=%d starter_tools=10 dual=%d bronze_armor=%d cooking_authority=3")
 		:format(#basics, starter_count, dual_count, armor_count))
 	core.log("action", "[r12recipe] DONE")
 	core.request_shutdown("recipe catalog complete", false, 0)

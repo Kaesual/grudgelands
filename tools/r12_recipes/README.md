@@ -8,11 +8,16 @@ starter visibility or one concrete/group main material. The production startup
 audit rejects missing, stale and duplicate identities before a player opens the
 book.
 
+The 73 starter routes include all existing wooden, stone and Bronze universal
+tool/weapon routes, including both mirrored Bronze-hoe recipes. The separate
+wooden staff and bow starter items have no registered crafting routes, so they
+do not appear in this exact route catalog.
+
 Focused LuaJIT fixtures cover the complete declaration set, the five alloy main
 materials, all four T1 Bronze armor starters, professional exclusions, mutation
 failures, persistent discovery across bags/crafting/trade and station-icon
 formspec placement. `catalog_probe` independently enumerates the live engine
-registry and asserts the complete 830-route catalog, 596 Basics routes, 63
+registry and asserts the complete 830-route catalog, 596 Basics routes, 73
 starters, five alloys, four Bronze armor outputs and real `recipe_for_craft`
 Cooking provenance for Bread, Cooked Meat and Cooked Fish.
 `furnace_authority_kat.lua` passes those three outputs through the real

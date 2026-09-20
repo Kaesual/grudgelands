@@ -27,9 +27,22 @@ local records = records_from(policy)
 local basics = policy.bind(records)
 assert(#records == 830 and #basics == 596)
 local starter, bronze_armor, dual = 0, 0, 0
+local expected_starter_tools = {
+	["default:axe_stone"] = 1, ["default:axe_wood"] = 1,
+	["default:pick_stone"] = 1, ["default:pick_wood"] = 1,
+	["default:shovel_stone"] = 1, ["default:shovel_wood"] = 1,
+	["default:sword_stone"] = 1, ["default:sword_wood"] = 1,
+	["grug_farming:hoe_bronze"] = 2,
+}
+local starter_tools = {}
 for index = 1, #basics do
 	local recipe, declaration = basics[index], basics[index].basics_presentation
 	if declaration.starter then starter = starter + 1 end
+	if expected_starter_tools[recipe.output_name] then
+		assert(declaration.starter)
+		starter_tools[recipe.output_name] =
+			(starter_tools[recipe.output_name] or 0) + 1
+	end
 	if recipe.output_name:match("^grug_gear:[a-z]+_metal_bronze$") then
 		assert(declaration.starter); bronze_armor = bronze_armor + 1
 	end
@@ -41,7 +54,10 @@ for index = 1, #basics do
 	assert(recipe.output_name ~= "mobs:meat")
 	assert(recipe.output_name ~= "grug_fishing:cooked_fish")
 end
-assert(starter == 63 and bronze_armor == 4 and dual == 5)
+for output, route_count in pairs(expected_starter_tools) do
+	assert(starter_tools[output] == route_count, output .. " starter routes differ")
+end
+assert(starter == 73 and bronze_armor == 4 and dual == 5)
 
 local stale = load_policy()
 local stale_records = records_from(stale)
@@ -60,4 +76,5 @@ duplicate_records[#duplicate_records + 1] = duplicate_records[1]
 assert(not pcall(duplicate.bind, duplicate_records), "duplicate route passed")
 
 print("R12 RECIPES presentation PASS routes=830 general=596 profession=234 " ..
-	"starter=63 dual=5 bronze_armor=4 audit=missing+stale+duplicate")
+	"starter=73 starter_tools=10 dual=5 bronze_armor=4 " ..
+	"audit=missing+stale+duplicate")
