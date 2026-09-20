@@ -4,7 +4,8 @@ return function(repo)
  local dir=repo.."/mods/MAPGEN/grug_mapgen/wp40"
  local content,api=dofile(repo.."/tools/r10_map_b/content_fixture.lua")(repo)
  local catalog=dofile(dir.."/world_content_catalog.lua")
- local config=dofile(dir.."/world_content.lua")(catalog,content.p9g)
+ local config=dofile(dir.."/world_content.lua")(catalog,content.p9g,
+  dofile(dir.."/habitat_registry.lua"))
  local cases={
   {"bamboo_shoot","kragmar_kapok_cradle","grug_jungle_edge","grug_nodes:mud",3,30,"planned_water"},
   {"blightberry","kragmar_mournfen","grug_blight","grug_nodes:blight_dirt",15,30},

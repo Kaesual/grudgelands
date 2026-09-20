@@ -110,6 +110,7 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	local r6_factory = dofile(wp40_directory .. "/r6.lua")
 	local r7_content_factory = dofile(wp40_directory .. "/r7_content.lua")
 	local world_catalog = dofile(wp40_directory .. "/world_content_catalog.lua")
+	local habitat_registry = dofile(wp40_directory .. "/habitat_registry.lua")
 	local world_factory = dofile(wp40_directory .. "/world_content.lua")
 	local consumer_payload_factory = dofile(
 		wp40_directory .. "/r7_consumer_payload.lua")
@@ -264,11 +265,13 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		end
 		local successor
 		if not authority_only then
-			local p9g_successor = r7_p9g_factory(catalog, content_set.p9g, raw_sha256)
+			local p9g_successor = r7_p9g_factory(catalog, content_set.p9g, raw_sha256,
+				habitat_registry)
 			local anchor_successor = r7_anchor_activation_factory(
 				r7_anchor_roster_factory, content_set.anchors)
 			successor = r7_successor_factory(p9g_successor, anchor_successor,
-				settlement_configs, settlement_keys, world_factory(world_catalog, content_set.p9g))
+				settlement_configs, settlement_keys,
+				world_factory(world_catalog, content_set.p9g, habitat_registry))
 		end
 		local authored_source = dofile(wp40_directory .. "/source/catalog.lua")
 		local consumer_payload = consumer_payload_factory(source,

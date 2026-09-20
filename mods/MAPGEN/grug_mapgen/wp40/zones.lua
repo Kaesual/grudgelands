@@ -1791,6 +1791,20 @@ local function zones_factory(dependencies)
 			function planner_source.landmark_excluded_at(x, z)
 				return height.landmark_excluded_at(x, z)
 			end
+			-- Narrow read-only runtime bridge. These are the same geometry owners the
+			-- planner and writer consume; ecology must not reconstruct their shapes.
+			function planner_source.static_exclusion_values_at(x, z)
+				return horizontal.static_exclusion_values_at(x, z)
+			end
+			function planner_source.housing_mask_id_at(x, z)
+				return horizontal.housing_mask_id_at(x, z)
+			end
+			function planner_source.functional_surface_values_at(x, z)
+				return height.functional_surface_values_at(x, z)
+			end
+			function planner_source.hard_row_at(x, y, z)
+				return hard_row_at(x, y, z)
+			end
 
 			function planner_source.metrics()
 				local height_metrics = height.metrics()

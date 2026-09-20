@@ -137,5 +137,5 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 		production_enabled = true, writer_count = 1,
 		manifest_sha256 = built.manifest.sha256, full_seed = built.full_seed,
 		settlement_sockets = socket_count,
-		zones = rawget(_G, "grug_zones")}
+		zones = rawget(_G, "grug_zones"), planner_source = built.planner_source}
 end
