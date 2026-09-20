@@ -907,32 +907,30 @@ end
 -- to 32 so the quantizer is never the binding constraint.
 local WEAR_STEPS = 32
 
-local slot_cache = {} -- player name -> {ability id -> main list index}
 local wear_steps = {} -- player name -> {ability id -> last written step}
 local charge_steps = {} -- player name -> {ability id -> last written charge step}
+
+local function representation_lists()
+	local lists = {"main"}
+	if core.global_exists("grug_inventory") then
+		for i = 1, grug_inventory.BAG_COUNT do
+			lists[#lists + 1] = grug_inventory.content_list(i)
+		end
+	end
+	return lists
+end
 
 local function set_item_wear(player, ability_id, wear)
 	local inv = player:get_inventory()
 	local itemname = "grug_abilities:" .. ability_id
-	local name = player:get_player_name()
-	slot_cache[name] = slot_cache[name] or {}
-	local idx = slot_cache[name][ability_id]
-	if idx then
-		local stack = inv:get_stack("main", idx)
-		if stack:get_name() == itemname then
-			stack:set_wear(wear)
-			inv:set_stack("main", idx, stack)
-			return
-		end
-		slot_cache[name][ability_id] = nil
-	end
-	local list = inv:get_list("main") or {}
-	for i, stack in ipairs(list) do
-		if stack:get_name() == itemname then
-			slot_cache[name][ability_id] = i
-			stack:set_wear(wear)
-			inv:set_stack("main", i, stack)
-			return
+	for _, listname in ipairs(representation_lists()) do
+		for i = 1, inv:get_size(listname) do
+			local stack = inv:get_stack(listname, i)
+			if stack:get_name() == itemname then
+				stack:set_wear(wear)
+				inv:set_stack(listname, i, stack)
+				return
+			end
 		end
 	end
 end
@@ -1991,21 +1989,15 @@ end
 -- token is stale.
 local function sync_skins(player, slot)
 	local inv = player:get_inventory()
-	local list = inv and inv:get_list("main")
-	if not list then
-		return
-	end
 	local source_of = skin_source_cache(player)
-	for i = 1, #list do
-		local stack = list[i]
-		local def = item_defs[stack:get_name()]
-		if def and (slot == nil or def.slot == slot) then
-			local changed = apply_skin(stack, def, source_of(def))
-			if def.slot == "weapon" and apply_swing_caps(stack, def, player) then
-				changed = true
-			end
-			if changed then
-				inv:set_stack("main", i, stack)
+	for _, listname in ipairs(representation_lists()) do
+		for i = 1, inv:get_size(listname) do
+			local stack = inv:get_stack(listname, i)
+			local def = item_defs[stack:get_name()]
+			if def and (slot == nil or def.slot == slot) then
+				local changed = apply_skin(stack, def, source_of(def))
+				if def.slot == "weapon" and apply_swing_caps(stack, def, player) then changed = true end
+				if changed then inv:set_stack(listname, i, stack) end
 			end
 		end
 	end
@@ -2016,15 +2008,13 @@ end
 -- inventory write per changed ability. No globalstep or cast path calls this.
 local function sync_descriptions(player)
 	local inv = player:get_inventory()
-	local list = inv and inv:get_list("main")
-	if not list then
-		return
-	end
-	for i = 1, #list do
-		local stack = list[i]
-		local def = item_defs[stack:get_name()]
-		if def and grug_abilities.update_stack_description(stack, def, player) then
-			inv:set_stack("main", i, stack)
+	for _, listname in ipairs(representation_lists()) do
+		for i = 1, inv:get_size(listname) do
+			local stack = inv:get_stack(listname, i)
+			local def = item_defs[stack:get_name()]
+			if def and grug_abilities.update_stack_description(stack, def, player) then
+				inv:set_stack(listname, i, stack)
+			end
 		end
 	end
 end
@@ -2215,7 +2205,11 @@ local function grant_initial_kit(player)
 		local def = grug_abilities.registered[ability_id]
 		if not def.talent_gated then
 			local stack = grug_abilities.stack_for(player, ability_id)
-			if stack then
+			local exists = false
+			for _, listname in ipairs(representation_lists()) do
+				if inv:contains_item(listname, "grug_abilities:" .. ability_id) then exists = true end
+			end
+			if stack and not exists then
 				local slot = inv:get_stack("main", index)
 				if slot:is_empty() then inv:set_stack("main", index, stack)
 				else inv:add_item("main", stack) end
@@ -2732,7 +2726,6 @@ core.register_on_leaveplayer(function(player)
 	targets[name] = nil
 	wear_steps[name] = nil
 	charge_steps[name] = nil
-	slot_cache[name] = nil
 	bar_huds[name] = nil
 	predicted_hp[name] = nil
 	flash_huds[name] = nil

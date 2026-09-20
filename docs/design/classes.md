@@ -414,6 +414,22 @@ it, including one that has not picked a class yet.
 - **Hostile players are valid targets**, through the same friendly-fire
   check, dodge pre-roll and threat report as every other ability.
 
+## 2d. Ability entitlement and the Skills catalogue
+
+A character permanently sees every currently unlocked active ability in the
+Inventory > Skills catalogue. Initial class creation grants the universal and
+base-class starter kit once. Later talent unlocks are acquired manually from
+Skills; talent changes, joins and equipment changes never recreate a deleted
+representation. Losing a talent removes its representation.
+
+Ability items may live in `main` or the character's four owned bag-content
+lists. `craft`, equipment, quivers, bag slots, nodes, detached inventories and
+other characters refuse them. Dropping one deletes the representation without
+changing entitlement or combat state; dragging it back to its matching Skills
+entry does the same. Recovery is available only when no copy exists in `main`,
+`craft` or any owned bag, and snapshots current skin, description, range and
+cooldown/charge display. Server ledgers remain authoritative.
+
 ## 2c. What an ability item looks like
 
 Decided 2026-08-08, shipped with WP35. This **answers** §6's old deferral

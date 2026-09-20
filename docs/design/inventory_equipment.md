@@ -293,3 +293,18 @@ only mirrored into the registry for display.
   elements, countdown text, green/red category frames and matching Character
   page tooltips. Effects keep using the same central registry rather than
   gaining per-consumer status stores.
+
+## 5. Skills page and bound representations
+
+The sfinv **Skills** page follows Talents and lists all currently unlocked active
+abilities plus every purchased riding tier. Its detached catalogue is an
+infinite source and matching deletion destination. A drag to the visible main
+inventory succeeds only when the exact item is absent from `main`, `craft` and
+all four owned bag-content lists and main has room.
+
+Ability and mount representations carry `grug_bound_skill`. Player inventory
+moves allow only `main` and owned bag contents; all node metadata inventories,
+other detached inventories, crafting and equipment refuse them. Source takes
+remain allowed so Q/drop reaches the item's deletion-only callback. Entitlement,
+cooldowns, charge, resources and active mounts are independent of the disposable
+item stack.

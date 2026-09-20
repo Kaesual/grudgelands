@@ -860,6 +860,8 @@ is the single place a window lives; nothing else in the design needs state.
 
 ### 3.4 Granting a new skill, and replacing an existing one
 
+A newly ranked active-skill talent adds its ability to the Skills catalogue and announces that location; it does not insert an item. Full respec removes representations that are no longer unlocked. Re-ranking exposes the ability for manual recovery. Passive and replacement talents remain read-only information and never create dummy items.
+
 **Two mechanisms, and ruling 13 makes the second one carry most of the
 design.**
 
@@ -882,11 +884,11 @@ base ability at the key it has today — the concern the file's own comment
 raises at `init.lua:1712-1715`. Renew is the exception: it is *not* appended,
 it is already the fourth entry of `by_class["priest"]` (`kits.lua:651`, after
 Smite `:572`, Flash Heal `:596` and Power Word: Shield `:623`), so a gated def
-unlocked later could still shift it. The rule that makes the guarantee true
-for every class: **a talent-granted ability is placed in the first free slot
-after the base kit, in unlock order, not at its `kit_of` index.** Under ruling
-10 at most two such abilities exist per build, so this is now one rule
-covering two slots rather than a shuffling problem.
+unlocked later could still shift it. The rule that makes the guarantee true for every class is now simpler:
+**a talent-granted ability appears in Inventory > Skills and is acquired
+manually.** Its registration order determines catalogue order but never moves
+an existing hotbar item. Under ruling 10 at most two such abilities exist per
+build.
 
 **A replacement** (the eight replacing keystones and the two replacing
 capstones) is **not** a registration and touches none of the above. The
