@@ -344,3 +344,27 @@ approved four class skills plus universal Strike mean5base/7maximum, not the
 old Strike+3/6 table row. The approved plan/scout §2 govern implementation;
 root will reconcile that status/table with final delivery docs. No new design
 choice is required. Main/runtime still R10ac232ec2; no Round11 sync/push yet.
+
+
+### Scout independent integration findings
+
+Astra's preliminary source review of `08f6f8b2` plus gameplay fixture
+`d4ace47e` found1High4Medium, all being corrected by the native Sol Scout
+owner before final acceptance. Initial report scout-initial.md.
+
+- Opening's mana_percent cost is not resolved on the held-swing path; snapshot
+  the effective cost for eligibility and accepted settlement.
+- Snare/Pinning mistake published damage for accepted HP-loss settlement.
+- Delayed Loose release does not recheck mounted state.
+- Existing grug_quality equipment_changed wrapper drops REPAIR's third reason,
+  defeating the independently tested direct notifier seam in the full game.
+- Shake Loose suppresses existing slows for4seconds but does not dispel them;
+  a longer pre-existing slow returns, contrary to the accepted talent rule.
+
+The worker owns narrow corrective core/movement/quality hooks as needed; other
+agents remain read-only on these files. Actual combined-consumer regression
+fixtures must cover every finding (cost/settlement, quality wrapper+clock/draw,
+real movement aggregator), not substitute success stubs for the tested boundary.
+The quality finding is a cross-package REPAIR integration defect; retain this
+record rather than treating its prior isolated acceptance as whole-game proof.
+Final Astra review and the bounded native engine witness still remain required.
