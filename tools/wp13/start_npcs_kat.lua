@@ -144,6 +144,10 @@ return function(repo)
 		-- A district plot's socket, prefixed with its plot id by the seam.
 		{id = "market_granary/market_granary_gate_idle", role = "idle",
 			tags = {"door"}, x = 72, y = 1, z = -40, dir = {x = 0, z = 1}},
+		-- Plain static entity: ObjectRef:set_yaw exists, while the luaentity
+		-- deliberately has none of mobs_redo's methods.
+		{id = "market_stable/mount_t1", role = "mount_display", tags = {"1"},
+			x = 82, y = 1, z = -42, dir = {x = 1, z = 0}},
 	}
 	local SOCKETS = {
 		{id = "gate_west", role = "guard_post", x = -4, y = 1, z = 59,
@@ -236,6 +240,7 @@ return function(repo)
 		["grug_mobs:villager_dwarf"] = true,
 		["grug_mobs:elder_dwarf"] = true,
 		["grug_traders:vendor_race_dwarf"] = true,
+		["grug_mobs:capital_display"] = true,
 	}
 
 	--
@@ -418,6 +423,10 @@ return function(repo)
 		}
 		mob.object = object
 		mob.was_active = true
+		if name == "grug_mobs:capital_display" then
+			mob._grug_capital_display = true
+			return mob
+		end
 		function mob:yaw_to_pos(target)
 			self.walk_target = {x = target.x, z = target.z}
 		end
@@ -471,6 +480,12 @@ return function(repo)
 		-- init.lua's own ground correction, which is not part of this fixture.
 		function grug_mobs.place_on_ground(object, pos)
 			object:set_pos(pos)
+		end
+		function grug_mobs.configure_capital_display(entity)
+			check(entity._grug_capital_display == true,
+				"display configure received a mob")
+			entity.object:set_yaw(entity._grug_face_yaw)
+			harness.display_configures = (harness.display_configures or 0) + 1
 		end
 		function grug_mobs.ensure_tag_carrier(entity)
 			entity._kat_tag_carrier = entity._kat_tag_carrier or {}
@@ -783,6 +798,9 @@ return function(repo)
 		dofile(mod .. "verbs.lua")
 		dofile(mod .. "start_villagers.lua")
 		dofile(mod .. "start_npcs.lua")
+		grug_mobs.register_start_socket_role("mount_display", function()
+			return "grug_mobs:capital_display"
+		end)
 		grug_mobs.register_start_socket_role("trainer", function(socket, start)
 			return "grug_mobs:villager_" .. start.race_id
 		end)
@@ -1223,6 +1241,20 @@ return function(repo)
 		"a capital villager was given another composition's idle spots")
 	check(entity_at("core_spare") == nil,
 		"the capital placed an NPC on a spare socket")
+	local display = entity_at("market_stable/mount_t1")
+	check(display ~= nil and display._grug_capital_display == true,
+		"the capital did not place its plain display entity")
+	check(type(display.set_yaw) == "nil",
+		"the display fixture accidentally supplied a mobs_redo set_yaw method")
+	check(math.abs(display.yaw - dir_to_yaw({x = 1, z = 0})) < 1e-9,
+		"the plain display did not receive its authored ObjectRef yaw")
+	check(harness.display_configures == 1,
+		"the display appearance was configured more or less than once")
+	local ordinary = entity_at("hall_guard")
+	check(ordinary and ordinary.target_yaw == ordinary._grug_face_yaw,
+		"ordinary mobs lost the pending-yaw cancellation on placement")
+	line("capital_display", "plain_entity", "objectref_yaw", "configured_once",
+		"mob_pending_yaw_preserved")
 	-- And the START beside it is untouched: the two settlements of one race
 	-- keep separate markers, which is why the key and not the race is the
 	-- marker's identity.
