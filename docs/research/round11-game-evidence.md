@@ -4,7 +4,9 @@ Date: 2026-09-20
 Implementation model: native GPT-5.6 Sol  
 Base: `45fbc477`  
 Design commit: `a898c30c0c962f3da931581d3329f9ed5b582a1d`  
-Runtime candidate: `45d63092f9ba4b1e33d960b519d9d2e8d5d891fe`
+Runtime commits: `45d63092f9ba4b1e33d960b519d9d2e8d5d891fe`, followed by
+the pinned-engine yaw-convention correction
+`bdaf87204c25a368c60b54b37d0139f2bc651213`
 
 ## Scope
 
@@ -52,7 +54,9 @@ The four focused rows passed:
 - real boss definitions and encounter lifecycle: two dragons carry the
   exemption, death/respawn and alive-gate cases remain covered;
 - real mount entity/catalog path in compact mode: stationary 60-degree look
-  becomes rider relative attachment yaw, controller translation stays neutral,
+  becomes the engine-correct −60-degree relative attachment rotation
+  (`content_cao.cpp:978-979` negates free CAO rotation while `:1467-1471`
+  applies attachment rotation directly), controller translation stays neutral,
   and the visible child remains attached with `forced_visible=false`;
 - real capital-display registration: a ground display advances to, pauses at
   and reverses between authored endpoints; a flying display loops its stand
