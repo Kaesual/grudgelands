@@ -306,7 +306,7 @@ end
 -- shelf above. This preserves its price, hourly rotation and quality roll;
 -- in particular, Tanner does not own a copied list of the leather ladder.
 -- A Bowyer hour may omit bows because bows are one of the five rotating extra
--- families and only three are offered (§3.8). An Uncommon survives a filtered
+-- families and only four are offered (§3.8). An Uncommon survives a filtered
 -- view only when the rolled item belongs to that shop's family.
 local BRACKET_FILTERS = {
 	bow = function(def)
