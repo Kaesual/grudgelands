@@ -335,7 +335,9 @@ Details + line numbers in [docs/research/](docs/research/).
   two primary slots, player-meta progression and the UI-only recipe books.
   Content mods first call `register_ingredient_tier(item, tier)`, then
   `register_recipe{profession, tier, station, inputs, output, hint}`; every
-  recipe must contain a declared ingredient of its own tier. **Basics** is the
+  gear recipe must contain a declared ingredient of its own tier. For an
+  intermediate-material conversion, the output tier is the recipe tier; it
+  does not invent a same-tier input solely to satisfy the gear rule. **Basics** is the
   exclusive profession-free category; every recipe route appears in exactly
   one book. Weaponsmith and Armorsmith have separate authorization/progression
   but share station id `forge` and node `grug_jobs:forge`; there is no

@@ -371,11 +371,12 @@ fresh-server mode; Lua 5.1 remains supported throughout development.
 
 ### Readiness (updated 2026-09-20)
 
-The backlog contains **46 stable work-package numbers, WP0–WP45, plus
-WP-Scout, WP-HUD and WP-Speed: 49 work packages in all**. Exactly **22 are
+The backlog tracks **50 numbered identities, WP0–WP49, plus WP-Scout, WP-HUD
+and WP-Speed: 53 work-package identities in all**. Exactly **22 are
 shipped**: WP0–WP4, WP6, WP7, WP15, WP18, WP19, WP25, WP26, WP33, WP35,
 WP36, WP38, WP39, WP40, WP43, WP45, WP-HUD and WP-Speed. WP16 is a canceled
-tombstone and is not shipped. WP11 and WP13 are in progress; design-ready
+tombstone and is not shipped; the remaining 30 are open or in progress. WP11
+and WP13 are in progress; design-ready
 means a package's game-design contract is fixed, not that its implementation
 dependencies or engineering gates are complete.
 

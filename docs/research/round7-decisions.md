@@ -1,4 +1,9 @@
-# TODO — Round 7: planning the plant, recipe and mob worlds, plus the small fixes that are already clear
+# Round 7 historical decisions
+
+> **Historical archive:** This file preserves the Round-7 rulings and execution
+> plan as written. Current authority lives in `docs/design/`, BACKLOG and the
+> active execution record. Old lane, model, CLI, approval and gate instructions
+> below are not current process instructions.
 
 Decided with the user on 2026-09-18 after Playtest 9 (main `070abcae`, round 6
 complete). Round 7 starts on 2026-09-19. It is a **planning round with a

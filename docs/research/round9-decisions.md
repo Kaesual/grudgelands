@@ -1,4 +1,9 @@
-# TODO — Round 9: terrain (MAP-C), plant placement, the five primary profession catalogs, mob wave 2, farming, enchant rolls, mounts
+# Round 9 historical decisions
+
+> **Historical archive:** This file preserves the Round-9 rulings and execution
+> plan as written. Current authority lives in `docs/design/`, BACKLOG and
+> `round10-execution.md`. Old lane, model, CLI, approval and gate instructions
+> below are not current process instructions.
 
 
 Written 2026-09-18 (evening) while Round 8 was closing, **DECIDED with the

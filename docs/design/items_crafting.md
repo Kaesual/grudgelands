@@ -1929,9 +1929,10 @@ roll window, but never changes the fixed channel count or multiplies a special.
 This is the explicit exception to §6b's ordinary refine-before-enchant rule.
 
 Register exactly six ordinary core identities, each craftable in T1–T6.
-Setting, tier, item level, required level, affix rolls, special strength,
-generated display name/color and image composition are authored per tier,
-yielding 36 registered ids (six identities across six tiers):
+Identity, Setting, tier, item level, required level, special strength and base
+image are static fields of 36 registered ids (six identities across six tiers).
+Random affix rolls, refinement/quality state and the resulting generated display
+name and color remain per-stack data.
 
 | Visual family | Core identities |
 |---|---|
@@ -1976,11 +1977,10 @@ yield, durability and vendor bonuses are excluded from the six-special MVP.
 A future race-taunt trinket would consume its one authored-special channel,
 not add a fourth channel; no such placeholder ships now.
 
-**Implementation status (Round 9):** all six special consumers are live. Their
-equipment summary is rebuilt on equipment-change events and read from cached
-per-character state on hot paths; it does not rescan inventories per tick or
-hit. The same-identity-per-character exclusion and every cap/cooldown above are
-enforced by the shared trinket owner.
+The shared trinket owner rebuilds an event-driven per-character equipment cache
+when equipment changes. Hot mana, heal, hit, kill and potion paths read that
+cache and never rescan equipment per tick or event. It enforces the
+same-identity-per-character exclusion and every cap/cooldown above.
 
 ### 6.3 Roll ranges by the item's ilvl bracket and source window
 

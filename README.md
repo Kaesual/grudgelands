@@ -243,9 +243,12 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 [ROADMAP.md](ROADMAP.md); a final status sweep is required after Round-10
 integration.*
 
-**Shipped foundation:** 22 of the 49 stable work packages are complete: WP0–WP4,
+**Shipped foundation:** 22 of 53 tracked work-package identities are complete:
+WP0–WP4,
 WP6, WP7, WP15, WP18, WP19, WP25, WP26, WP33, WP35, WP36, WP38, WP39, WP40,
-WP43, WP45, WP-HUD and WP-Speed. They provide three classes, combat, mobs, the
+WP43, WP45, WP-HUD and WP-Speed. The denominator comprises numbered WP0–WP49
+plus WP-Scout, WP-HUD and WP-Speed; canceled tombstone WP16 is tracked but is
+not shipped. The shipped packages provide three classes, combat, mobs, the
 named-zone world, canonical materials, gathering, equipment slots, currency,
 Cooking/Alchemy infrastructure, status/food systems and safe character creation.
 Round-9 MOB2/BOSS, trinket effects, mana, farming mechanics and map/performance

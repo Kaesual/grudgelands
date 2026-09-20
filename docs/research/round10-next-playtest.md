@@ -12,8 +12,9 @@ do not replace these GUI observations.
    only in Cooking, with concrete alternatives such as `Carrot or Cassava`
    instead of an internal `group:` token.
 2. Craft a Bronze Sword (`grug_gear:sword_bronze`) with two Bronze Bars above
-   one wooden stick, then repeat with the same-tier metal rod. Confirm shifted,
-   reversed or extra-gem layouts fail. Check one pick, both axe orientations,
+   one wooden stick, then repeat with the same-tier metal rod. Confirm wrong
+   order, wrong counts and extra-gem layouts fail; valid translated and
+   explicitly mirrored variants remain accepted. Check one pick, both axe orientations,
    both Farmer's Hoe orientations and one 5/8/7/4 armor layout.
 3. In one capital, learn Weaponsmith and use the shared **Forge**. The preview
    must name and describe the +15% refined result before Apply. Apply once,
