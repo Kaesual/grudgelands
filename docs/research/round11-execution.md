@@ -222,3 +222,30 @@ A fresh independent reviewer must check its final contract changes.
 Root prepared `round11-next-playtest.md` as a draft, not a readiness claim.
 Main/runtime remain `ac232ec2`; no Round11 sync or push yet. User's no-PUC and
 minimal-test budget remain binding. Continue all packages through delivery.
+
+
+### FARM accepted / SCOUT preparation
+
+FARM `a6889da2` independently CLEAN (Sol reviewer, root water/hoe base plus Sol
+ecology implementation, initial 1M/1L evidence-only findings, one correction
+round, elapsed unknown). Integrated as `b5c4238d`; the only merge conflict was
+two additive media-license sections, both retained. Seed presentation hooks
+now resolve against accepted ART's 17-family map. The focused crop fixture was
+rerun successfully at the integration seam. Reviews archived as farm-initial.md
+and farm-final.md.
+
+SCOUT native Sol `r11_scout`, isolated `.claude/worktrees/r11-scout` branch
+`wp11-r11-scout` from `b5c4238d`. It may draft independent new modules now;
+shared files wait for corrected REPAIR freeze and dependency merge. All16
+Quarry/Veil consumers, four base abilities, arrows/draw/transactions, starter,
+Bowyer bracket and Tanner shelf remain mandatory. No independent review yet.
+
+SPEC first review of `da3a4958` requested4Medium corrections: Scout greataxe,
+stale leather/Rogue/poison clauses, old talent/Unbroken status and an overstrong
+audit conclusion. Original author `r11_art_review` owns the corrections;
+independent reviewer `r11_farm_review` remains separate. Report spec-initial.md.
+
+Root is preparing `tools/r11_integration/engine_probe` for one bounded final
+LuaJIT engine boot: complete registrations and native water callbacks in one
+scratch block, with automatic six-capital preload disabled in the disposable
+probe only. No mapgen census or user-world writes; no engine result claimed yet.
