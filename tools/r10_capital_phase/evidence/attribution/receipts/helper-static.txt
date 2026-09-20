@@ -1,0 +1,7 @@
+parser PASS tools/r10_capital_phase/project_mask.lua
+parser PASS tools/r10_capital_phase/height_columns.lua
+SWEEP 1 (review any comment/tool-only hits)
+SWEEP 2 (review any comment/tool-only hits)
+SWEEP 3 (review any comment/tool-only hits)
+SWEEP 4 (review any comment/tool-only hits)
+SWEEP 5 (review any comment/tool-only hits)

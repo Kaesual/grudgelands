@@ -30,6 +30,7 @@ projection reproduces all four historical hashes exactly.
 Full WP13 LuaJIT development suite passed before adding the focused phase
 identity/validation assertions; that integration fixture is checked separately
 on final source. Parser, SETGLOBAL and five sweeps cover changed Lua. No PUC
-runtime was run in this lane. Engine acceptance and complete historical delta
-attribution remain pending at this source checkpoint. Root owns the replacement
-final engine fleet, final compact interpreter pair and independent review.
+runtime was run in this lane. The source-checkpoint pending engine/attribution work is superseded by
+[ATTRIBUTION.md](ATTRIBUTION.md), which records the final engine comparison and
+zero unexplained coordinates. Root owns independent attribution review and the
+final compact interpreter pair.
