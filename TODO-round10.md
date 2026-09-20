@@ -8,11 +8,12 @@ Delete this TODO once the remaining questions are settled and the work is
 represented in design/BACKLOG. The bounded Round 9 PERF package is complete
 and integrated; its remaining mapgen successors are still pending.
 
-**Hold for independent drift audit (user 2026-09-20):** compare the current
-repository with tested baseline `2a308891`. Do not implement gameplay
-corrections from this file until the audit findings have been presented to and
-discussed with the user. The package boundaries below remain proposals, not
-accepted architecture.
+**Implementation authorized (user 2026-09-20):** after the audit discussion,
+the user accepted all nine final recommendations and requested autonomous
+delivery through the next playtest. The earlier audit hold is lifted. The
+[execution record](docs/research/round10-execution.md) records those decisions,
+scope, package dependencies and completion gates and supersedes the remaining
+proposal/open-question wording below while it is folded into `docs/design/`.
 
 The completed [Playtest 12 design-to-code audit](docs/research/playtest12-audit/README.md)
 records seven source-confirmed implementation deviations and four unresolved
