@@ -724,6 +724,9 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   alternating sides on consecutive failures, then tests LOS again. Immediately
   before moving, the actual selected side is checked for a cliff or dangerous
   ground; the other side is tried once, and if both are unsafe the mob stands.
+  Support probes skip harmless non-walkable vegetation to inspect the actual
+  ground below it. Vegetation must not halt a chase or sidestep on solid ground,
+  or make a real drop, dangerous ground or unknown/unloaded terrain traversable.
   The `reach × 0.6` contact stop applies only while the target is visible; a
   blocked melee mob keeps following its path regardless of contact distance.
   Reaching the last waypoint with LOS still blocked drops that exhausted path,

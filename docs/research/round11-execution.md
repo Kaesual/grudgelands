@@ -1,5 +1,10 @@
 # Round 11 execution checkpoint
 
+**Active correction:** the user confirmed that vegetation stops mob pursuit.
+Resume from [vegetation chase fix](round11-vegetation-chase-fix.md), on
+`wp11-vegetation-chase-fix`. The delivered checkpoints below remain historical
+while that bounded correction is implemented and independently reviewed.
+
 **Current followup delivery:** main merge `43531fdf` is independently clean,
 synchronized and pushed. All 1,900 installed runtime files match the delivered
 source. The first playtest accepted the beach fix; the additional bow, trainer,

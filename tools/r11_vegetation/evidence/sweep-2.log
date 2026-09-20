@@ -1,0 +1,2 @@
+mods/ENTITIES/grug_mobs/target_frame.lua:113:			-- UTF-8 written literally: \u{} escapes are LuaJIT-only
+mods/ENTITIES/grug_mobs/levels.lua:78:	-- UTF-8 written literally: \u{} escapes are LuaJIT-only (luanti-lua.md).

@@ -1,0 +1,4 @@
+mods/CORE/grug_core/atmosphere_zones.lua:340:-- Sea level is y = 1 (minetest.conf water_level, mirrored in the authored
+mods/CORE/grug_core/atmosphere.lua:10:-- the game-directory minetest.conf merely shifts client defaults for a locally
+mods/CORE/grug_core/atmosphere.lua:155:		-- lighting on in our minetest.conf, so this preset is opt-in twice.
+mods/ENTITIES/mobs/api.lua:4703:	if mobs_griefing and not minetest.is_protected(pos, "") then

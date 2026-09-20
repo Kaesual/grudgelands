@@ -105,6 +105,11 @@ Restart Luanti after synchronization to load the changed code and media.
 
 ## Scout
 
+Vegetation regression check: ranged-hit a boar standing among grass/crops as
+Scout and as Priest. It must approach across supported terrain instead of only
+turning toward the attacker. Also observe idle roaming beside a real drop:
+harmless vegetation must not bypass the ambient one-block descent limit.
+
 1. Create a Scout: leather eligibility, mana, wooden bow equipped, 200 arrows
    and a stone sword in main, no required starter quiver. Verify class selection
    and both talent trees are available.

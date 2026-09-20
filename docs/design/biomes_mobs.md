@@ -891,6 +891,12 @@ guard keeps ambient populations out of ravines without adding wide scans or
 full pathfinding. Combat, fleeing, authored patrols and scripted return routes
 retain their separate movement contracts.
 
+Ground-support checks pass through harmless non-walkable vegetation and require
+actual walkable support within the allowed descent. Plants themselves are
+neither support nor a cliff; vegetation over a deep drop remains unsafe.
+Unknown/unloaded nodes and dangerous ground remain unsafe. The same rule
+applies to combat pursuit and the bounded lateral escape probe.
+
 Three behaviour classes, not two. The split is by **size and role**, not by
 who runs away:
 
