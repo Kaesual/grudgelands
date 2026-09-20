@@ -230,7 +230,7 @@ end
 local ARMOR_LINES = {
 	{key = "metal", rank = 3, base = 5.6, per_ilvl = 0.86667, register = true,
 		nouns = {head = "Helm", chest = "Chestplate", legs = "Greaves", feet = "Sabatons"}},
-	{key = "leather", rank = 2, base = 3.2667, per_ilvl = 0.64444, register = false,
+	{key = "leather", rank = 2, base = 3.2667, per_ilvl = 0.64444, register = true,
 		nouns = {head = "Hood", chest = "Jerkin", legs = "Pants", feet = "Boots"}},
 	{key = "cloth", rank = 1, base = 2.3333, per_ilvl = 0.22222, register = true,
 		nouns = {head = "Cowl", chest = "Robe", legs = "Leggings", feet = "Slippers"}},

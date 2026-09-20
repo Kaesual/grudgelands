@@ -3,7 +3,8 @@ local function fail(message)
 end
 
 grug_jobs.PROFESSIONS = {
-	blacksmith = {name = "Blacksmith", class = "primary"},
+	weaponsmith = {name = "Weaponsmith", class = "primary"},
+	armorsmith = {name = "Armorsmith", class = "primary"},
 	alchemist = {name = "Alchemist", class = "primary"},
 	tailor = {name = "Tailor", class = "primary"},
 	leatherworker = {name = "Leatherworker", class = "primary"},
@@ -13,8 +14,8 @@ grug_jobs.PROFESSIONS = {
 }
 
 grug_jobs.PRIMARY_PROFESSIONS = {
-	"blacksmith", "alchemist", "tailor", "leatherworker", "woodcarver",
-	"goldsmith",
+	"weaponsmith", "armorsmith", "alchemist", "tailor", "leatherworker",
+	"woodcarver", "goldsmith",
 }
 grug_jobs.SECONDARY_PROFESSIONS = {"cooking"}
 grug_jobs.STATIONS = {
@@ -24,7 +25,8 @@ grug_jobs.STATIONS = {
 		node = "grug_smelting:dual_furnace"},
 	brewing_stand = {display_name = "Brewing Stand", profession = "alchemist",
 		node = "grug_brewing:brewing_stand"},
-	forge = {display_name = "Forge", profession = "blacksmith",
+	forge = {display_name = "Forge", professions = {weaponsmith = true,
+		armorsmith = true},
 		node = "grug_jobs:forge"},
 	tanning_rack = {display_name = "Tanning Rack", profession = "leatherworker",
 		node = "grug_jobs:tanning_rack"},
@@ -40,7 +42,8 @@ function grug_jobs.station_info(station)
 	local definition = grug_jobs.STATIONS[station]
 	if type(definition) ~= "table" then return nil end
 	return {id = station, display_name = definition.display_name,
-		profession = definition.profession, node = definition.node}
+		profession = definition.profession, professions = definition.professions,
+		node = definition.node}
 end
 
 grug_jobs.recipes = {}
@@ -101,6 +104,7 @@ local function normalized_inputs(value)
 end
 
 local function group_matches(token, actual)
+	if token == actual then return true end
 	local groups = token:match("^group:(.+)$")
 	if not groups then return token == actual end
 	if type(core.get_item_group) ~= "function" then return token == actual end
@@ -473,6 +477,16 @@ local function contains_exact_input(inputs, output)
 	return false
 end
 
+local function contains_upgrade_kit(inputs)
+	for index = 1, #inputs do
+		local name = item_name(inputs[index])
+		if name ~= "" and (core.get_item_group(name, "grug_upgrade_kit") or 0) > 0 then
+			return true
+		end
+	end
+	return false
+end
+
 function grug_jobs.register_ingredient_tier(item, tier)
 	local name = item_name(item)
 	if name == "" then fail("an ingredient needs an itemstring") end
@@ -583,16 +597,18 @@ function grug_jobs.register_recipe(definition)
 		fail(profession .. " T" .. tier ..
 			" recipe needs at least one declared T" .. tier .. " ingredient")
 	end
-	if definition.in_place and
-			(station ~= "grid" or not contains_exact_input(inputs, output)) then
-		fail(output .. " in-place recipe must use the grid and consume its output")
+	if definition.in_place and not contains_exact_input(inputs, output) then
+		fail(output .. " in-place recipe must consume its output")
 	end
 	local output_routes = recipes_by_output[output]
 	if output_routes then
 		for index = 1, #output_routes do
 			local route = output_routes[index]
 			if route.station == station then
-				fail("duplicate profession output " .. output .. " at " .. station)
+				if not (definition.in_place and route.in_place and
+					definition.operation ~= route.operation) then
+					fail("duplicate profession output " .. output .. " at " .. station)
+				end
 			end
 			if route.profession ~= profession or route.tier ~= tier then
 				fail("profession output " .. output ..
@@ -630,6 +646,11 @@ function grug_jobs.register_recipe(definition)
 		time = definition.time,
 		in_place = definition.in_place == true,
 		material = definition.material == true,
+		operation = definition.operation,
+		family = definition.family,
+		operation_material = definition.operation_material,
+		operation_reagent = definition.operation_reagent,
+		quality_mode = definition.quality_mode,
 		universal_output_routes = universal_routes,
 		shapeless = definition.shapeless == true,
 		shaped = definition.shapeless ~= true and
@@ -640,7 +661,8 @@ function grug_jobs.register_recipe(definition)
 		input_key = input_key,
 	}
 	if recipe.in_place then
-		in_place_universal_routes[output] = universal_routes
+		in_place_universal_routes[output] = math.max(
+			in_place_universal_routes[output] or 0, universal_routes)
 	end
 	grug_jobs.recipes[#grug_jobs.recipes + 1] = recipe
 	if not output_routes then
@@ -720,9 +742,22 @@ function grug_jobs.validate_recipe_collisions()
 		local expected_engine = output_route_count(recipe.output_name, "grid") +
 			output_route_count(recipe.output_name, "furnace") +
 			(in_place_universal_routes[recipe.output_name] or 0)
-		if #engine ~= expected_engine then
+		local late_self_upgrade = 0
+		if #engine > expected_engine then
+			for engine_index = 1, #engine do
+				local candidate = engine[engine_index]
+				local candidate_inputs = flatten_inputs(candidate.items or {})
+				if contains_exact_input(candidate_inputs, recipe.output_name) and
+						contains_upgrade_kit(candidate_inputs) then
+					late_self_upgrade = late_self_upgrade + 1
+				end
+			end
+		end
+		if #engine ~= expected_engine + late_self_upgrade then
 			fail("profession output " .. recipe.output_name ..
-				" collides with a universal engine recipe")
+				" collides with a universal engine recipe (engine=" .. #engine ..
+				", expected=" .. expected_engine .. ", upgrade=" ..
+				late_self_upgrade .. ")")
 		end
 		if recipe.station == "grid" or recipe.station == "furnace" then
 			local wanted_method = recipe.station == "grid" and "normal" or "cooking"
@@ -805,6 +840,7 @@ grug_jobs._item_name = item_name
 grug_jobs._flatten_inputs = flatten_inputs
 grug_jobs._normalized_inputs = normalized_inputs
 grug_jobs._inputs_match = inputs_match
+grug_jobs._group_matches = group_matches
 grug_jobs._input_languages_overlap = function(first, second)
 	return input_languages_overlap(first, second, registration_comparison_phase())
 end

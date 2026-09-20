@@ -4,7 +4,7 @@ return function(repo, spec)
 	local globals = {"core", "ItemStack", "grug_core", "grug_inventory",
 		"grug_gear", "grug_jobs", "grug_items", "grug_materials",
 		"grug_artisans", "grug_professions", "grug_classes", "grug_xp",
-		"grug_mobs", "PcgRandom", "default"}
+		"grug_mobs", "PcgRandom", "default", "vector"}
 	local saved = {}
 	for index = 1, #globals do
 		local name = globals[index]
@@ -26,6 +26,10 @@ return function(repo, spec)
 			error("r9 " .. spec.profession .. " catalog: " .. message, 0)
 		end
 		local function check(value, message) if not value then fail(message) end end
+		vector = {distance = function(first, second)
+			local dx, dy, dz = first.x-second.x, first.y-second.y, first.z-second.z
+			return math.sqrt(dx*dx+dy*dy+dz*dz)
+		end}
 
 		if not table.copy then
 			function table.copy(value)
@@ -132,13 +136,16 @@ return function(repo, spec)
 			local definition = assert(core.registered_items[name], name)
 			for key, value in pairs(changes) do definition[key] = value end
 		end
-		function core.register_craft(definition)
+	function core.register_craft(definition)
 			local output = definition.output:match("^([^%s]+)")
 			local list = engine_recipes[output] or {}
 			list[#list + 1] = {method = definition.type == "cooking" and
 				"cooking" or "normal", items = definition.recipe,
 				output = definition.output}
 			engine_recipes[output] = list
+		end
+		function core.clear_craft(definition)
+			if definition and definition.output then engine_recipes[definition.output] = nil end
 		end
 		function core.get_all_craft_recipes(output) return engine_recipes[output] end
 		function core.get_item_group(name, group)
@@ -242,6 +249,7 @@ return function(repo, spec)
 					damage_groups = {fleshy = 4}, groupcaps = {}}})
 		end
 		base("default:wood", {description = "Wood", groups = {wood = 1}})
+		base("default:coal_lump", {description = "Coal Lump"})
 
 		grug_core = {register_on_equipment_change = function() end,
 			notify_equipment_change = function() end,
@@ -465,7 +473,6 @@ return function(repo, spec)
 				return count
 			end)())
 	end
-
 	local ok, result = pcall(run)
 	restore()
 	if not ok then error(result, 0) end

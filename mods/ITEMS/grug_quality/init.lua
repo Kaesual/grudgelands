@@ -91,6 +91,8 @@ local WINDOWS = {
 	elite = {0.30, 0.90},
 	rare = {0.50, 1.00},
 	["crafted-masterwork"] = {0.60, 1.00},
+	["tempered-once"] = {0.50, 0.95},
+	["tempered-twice"] = {0.60, 1.00},
 	boss = {0.80, 1.00},
 }
 
@@ -237,6 +239,10 @@ local function family_for(stack)
 	if rank == 2 then return "leather_armor" end
 	if rank == 1 then return "cloth_armor" end
 	if (groups.grug_equip_offhand or 0) > 0 then return "caster_weapon" end
+	if (groups.pickaxe or 0) > 0 or (groups.shovel or 0) > 0 or
+			(groups.axe or 0) > 0 or (groups.hoe or 0) > 0 then
+		return "tool"
+	end
 	return nil
 end
 
@@ -356,6 +362,7 @@ end
 
 local REFINEMENT_WORD = {
 	melee_weapon = "Honed", caster_weapon = "Honed",
+	tool = "Honed",
 	metal_armor = "Reinforced", leather_armor = "Reinforced",
 	cloth_armor = "Ornate",
 }
@@ -534,6 +541,153 @@ function grug_items.set_refined(stack, refined)
 	apply_capabilities(stack, totals, refined == true)
 	grug_items.regenerate_description(stack)
 	return true
+end
+
+function grug_items.append_affix(stack, window, seed, player)
+	if not stack or stack:is_empty() then return false, "empty item" end
+	local family = family_for(stack)
+	if not family or family == "trinket" then return false, "item cannot take affixes" end
+	local meta = stack:get_meta()
+	if meta:get_int("grug_refined") ~= 1 then return false, "Refine the item first." end
+	local affixes = read_affixes(meta)
+	local maximum = math.min(4, grug_items.mastery_band(player))
+	if #affixes >= maximum then
+		return false, "Your mastery cannot fill another affix slot."
+	end
+	local used = {}
+	for index = 1, #affixes do used[affixes[index].stat] = true end
+	local candidates = {}
+	for index = 1, #(POOLS[family] or {}) do
+		local stat = POOLS[family][index]
+		if not used[stat] then candidates[#candidates + 1] = stat end
+	end
+	if #candidates == 0 then return false, "No legal affix remains." end
+	window = window or (#affixes >= 2 and "crafted-masterwork" or "crafted-fine")
+	if not WINDOWS[window] then return false, "unknown roll window" end
+	local rng, used_seed = rng_for(seed, stack:get_name() .. ":append:" ..
+		(#affixes + 1))
+	local stat = candidates[rng:next(1, #candidates)]
+	local ilvl = effective_ilvl(stack)
+	if not ilvl then return false, "item has no item level" end
+	affixes[#affixes + 1] = {stat = stat,
+		value = roll_value(stat, ilvl, window, rng)}
+	meta:set_int("grug_quality", #affixes <= 2 and 2 or 3)
+	meta:set_string("grug_ench", core.serialize(affixes))
+	meta:set_string("grug_roll_window", window)
+	meta:set_int("grug_roll_seed", used_seed)
+	local totals = write_derived(meta, affixes)
+	apply_capabilities(stack, totals, true)
+	grug_items.regenerate_description(stack, player)
+	return true, used_seed
+end
+
+function grug_items.apply_station_operation(recipe, inputs, player)
+	if type(recipe) ~= "table" or not recipe.in_place then
+		return nil, "This is not an item operation."
+	end
+	local source
+	for index = 1, #inputs do
+		local stack = inputs[index]
+		if stack and stack:get_name() == recipe.output_name then
+			if source then return nil, "Insert exactly one item to improve." end
+			source = ItemStack(stack)
+			source:set_count(1)
+		end
+	end
+	if not source then return nil, "Insert the item to improve." end
+	if recipe.family and family_for(source) ~= recipe.family and
+			not (recipe.family == "weapon" and
+				(family_for(source) == "melee_weapon" or
+				family_for(source) == "caster_weapon")) then
+		return nil, "That profession does not own this item family."
+	end
+	if recipe.operation == "refinement" then
+		if source:get_meta():get_int("grug_refined") == 1 then
+			return nil, "That item is already refined."
+		end
+		if #read_affixes(source:get_meta()) > 0 then
+			return nil, "An enchanted item cannot be refined again."
+		end
+		grug_items.set_refined(source, true)
+		return source
+	elseif recipe.operation == "add_affix" then
+		local ok, reason = grug_items.append_affix(source, nil, nil, player)
+		if not ok then return nil, reason end
+		return source
+	end
+	return nil, "Unknown item operation."
+end
+
+function grug_items.preview_station_operation(recipe, stack)
+	local preview = ItemStack(stack)
+	preview:set_count(1)
+	if recipe and recipe.operation == "refinement" and
+			preview:get_meta():get_int("grug_refined") ~= 1 then
+		grug_items.set_refined(preview, true)
+	elseif recipe and recipe.operation == "add_affix" then
+		local meta = preview:get_meta()
+		local description = meta:get_string("description")
+		if description == "" then
+			description = (preview:get_definition() or {}).description or
+				preview:get_name()
+		end
+		meta:set_string("description", description .. "\n" ..
+			core.colorize("#9aa0a6", "Next legal affix (rolled on Apply)"))
+	end
+	return preview
+end
+
+function grug_items.can_apply_upgrade_kit(stack, mode)
+	if not stack or stack:is_empty() then return false, "empty item" end
+	local family = family_for(stack)
+	if not family or family == "tool" then
+		return false, "This kit does not fit that item."
+	end
+	local meta = stack:get_meta()
+	if family ~= "trinket" and meta:get_int("grug_refined") ~= 1 then
+		return false, "Refine the item first."
+	end
+	local affixes = read_affixes(meta)
+	if mode == "imbue" then
+		if #affixes > 0 then return false, "Only an unenchanted item can be imbued." end
+	elseif mode == "temper" then
+		if #affixes == 0 then return false, "Only an enchanted item can be tempered." end
+		local upgrades = meta:get_int("grug_upgrades")
+		if upgrades >= 2 then return false, "That item has already been tempered twice." end
+	else
+		return false, "Unknown upgrade-kit operation."
+	end
+	return true
+end
+
+function grug_items.apply_upgrade_kit(stack, mode, seed)
+	local allowed, reason = grug_items.can_apply_upgrade_kit(stack, mode)
+	if not allowed then return false, reason end
+	local meta = stack:get_meta()
+	local affixes = read_affixes(meta)
+	if mode == "imbue" then
+		meta:set_int("grug_quality", 2)
+		return grug_items.roll_enchants(stack, nil, "crafted-fine", nil, seed)
+	elseif mode == "temper" then
+		local upgrades = meta:get_int("grug_upgrades")
+		local window = upgrades == 0 and "tempered-once" or "tempered-twice"
+		local rng, used_seed = rng_for(seed, stack:get_name() .. ":temper:" ..
+			(upgrades + 1))
+		local ilvl = effective_ilvl(stack)
+		if not ilvl then return false, "item has no item level" end
+		for index = 1, #affixes do
+			affixes[index].value = roll_value(affixes[index].stat, ilvl, window, rng)
+		end
+		meta:set_int("grug_upgrades", upgrades + 1)
+		meta:set_string("grug_ench", core.serialize(affixes))
+		meta:set_string("grug_roll_window", window)
+		meta:set_int("grug_roll_seed", used_seed)
+		local totals = write_derived(meta, affixes)
+		apply_capabilities(stack, totals, family_for(stack) ~= "trinket")
+		grug_items.regenerate_description(stack)
+		return true, used_seed
+	end
+	return false, "Unknown upgrade-kit operation."
 end
 
 function grug_items.mastery_band(player)

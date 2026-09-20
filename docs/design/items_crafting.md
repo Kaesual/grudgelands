@@ -548,7 +548,8 @@ from `grug_gear`. Consequences, all binding:
   weapons, armor. This is the deliberate "Minecraft feel", and it is what
   makes mining and smelting worth doing for a player with no crafting
   profession at all.
-  Base swords use two same-tier bars over a wood stick, with a same-tier
+  Four wood sticks use the familiar two-plank vertical recipe; the old
+  one-plank shortcut is removed. Base swords use two same-tier bars over a wood stick, with a same-tier
   metal rod accepted in the handle slot. Pickaxes, axes, shovels and the
   existing Farmer's Hoe use their canonical Minecraft shapes; axes and the hoe
   accept both mirrored orientations. The exact non-Minecraft shapes are dagger = one

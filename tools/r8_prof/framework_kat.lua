@@ -362,10 +362,10 @@ return function(repo)
 	local missing_self_ok = pcall(grug_jobs.register_recipe, {profession = "cooking",
 		tier = 1, station = "grid", inputs = {"test:t1", "test:base"},
 		output = "test:missing_self", in_place = true, hint = "Grid"})
-	check(not non_grid_ok and not missing_self_ok,
+	check(non_grid_ok and not missing_self_ok,
 		"invalid in-place recipe was accepted")
 	line("in_place", "universal_output_accepted", "ordinary_collision_refused",
-		"non_grid_refused", "missing_output_input_refused")
+		"station_operation_accepted", "missing_output_input_refused")
 	local overlap_recipe = grug_jobs.register_recipe({profession = "cooking", tier = 1,
 		station = "grid", inputs = {"test:t1", "group:wood", "test:oak"},
 		output = "test:overlap_a", hint = "Grid"})
@@ -384,6 +384,12 @@ return function(repo)
 		"final audit accepted a later universal input collision")
 	universal["test:late_universal"] = nil
 	core.registered_items["test:late_universal"] = nil
+	universal["test:refinable"][#universal["test:refinable"] + 1] = {
+		method = "normal", items = {"test:refinable", "test:t1"},
+		output = "test:refinable"}
+	check(not pcall(grug_jobs.validate_recipe_collisions),
+		"final audit accepted a self-consuming non-kit collision")
+	table.remove(universal["test:refinable"])
 	check(grug_jobs.validate_recipe_collisions(),
 		"final audit did not recover after collision fixture removal")
 	line("registry", "recipes=" .. #grug_jobs.recipes, "engine=" .. #registered,
@@ -391,7 +397,7 @@ return function(repo)
 		"late_collision_audited")
 
 	local crafter = player("crafter", 60)
-	check(grug_jobs.learn(crafter, "blacksmith"), "first primary refused")
+	check(grug_jobs.learn(crafter, "weaponsmith"), "first primary refused")
 	check(grug_jobs.learn(crafter, "alchemist"), "second primary refused")
 	check(not grug_jobs.learn(crafter, "tailor"), "third primary accepted")
 	check(grug_jobs.learn(crafter, "cooking"), "secondary refused")
