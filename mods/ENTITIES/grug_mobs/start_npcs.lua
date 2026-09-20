@@ -1147,19 +1147,25 @@ local function place(row, slot)
 	-- The ground correction mobs:add_mob skips (init.lua place_on_ground).
 	grug_mobs.place_on_ground(object, slot.pos)
 	install(entity, row, slot)
-	grug_mobs.face_yaw(entity, slot.yaw)
-	-- Both of these exist because `core.add_entity` activates the entity
-	-- synchronously: its `after_activate` has already run, with none of the
-	-- fields `install` has just written. The facing is one, the settlement's own
-	-- name for its people is the other.
-	if grug_mobs.start_npc_retag then
-		grug_mobs.start_npc_retag(entity)
-	end
-	-- And whatever else has to be decided from the fields `install` just wrote
-	-- (see `register_start_npc_restyle`): today that is the profession
-	-- vendors' skin, which follows the settlement and not the entity.
-	for index = 1, #restylers do
-		restylers[index](entity)
+	-- A capital display is a plain Luanti entity, not a mobs_redo mob. Its
+	-- configure hook above writes the authored yaw through ObjectRef:set_yaw and
+	-- owns its complete appearance; the mob-only helpers below must never be
+	-- dispatched to it. In particular, a plain luaentity has no `self:set_yaw`.
+	if not entity._grug_capital_display then
+		grug_mobs.face_yaw(entity, slot.yaw)
+		-- Both of these exist because `core.add_entity` activates the entity
+		-- synchronously: its `after_activate` has already run, with none of the
+		-- fields `install` has just written. The facing is one, the settlement's own
+		-- name for its people is the other.
+		if grug_mobs.start_npc_retag then
+			grug_mobs.start_npc_retag(entity)
+		end
+		-- And whatever else has to be decided from the fields `install` just wrote
+		-- (see `register_start_npc_restyle`): today that is the profession
+		-- vendors' skin, which follows the settlement and not the entity.
+		for index = 1, #restylers do
+			restylers[index](entity)
+		end
 	end
 	-- Claim the socket at once. The families claim on activation, which for THIS
 	-- entity happened before it had a socket at all.
