@@ -662,6 +662,7 @@ grug_inventory.STARTER_WEAPON = {
 	warrior = grug_gear.STARTER_SWORD,
 	mage = grug_gear.STARTER_STAFF,
 	priest = grug_gear.STARTER_STAFF,
+	scout = grug_gear.STARTER_BOW,
 }
 local CLASS_STARTER_WEAPON = grug_inventory.STARTER_WEAPON
 
@@ -709,6 +710,17 @@ grug_classes.register_on_class_chosen(function(player, class_id)
 		-- Server-side equipment write: caches, stats, ability skins, the
 		-- Character page and the visible weapon all hang off this one call.
 		grug_inventory.equipment_changed(player, WEAPON_LIST)
+	end
+	if class_id == "scout" then
+		-- The class selection inventory is normally empty. Keep the fallback
+		-- lossless nevertheless: a full inventory drops the owed starter item
+		-- at the player instead of silently deleting it.
+		for _, item in ipairs({"default:sword_stone", "grug_gear:arrow 20"}) do
+			local leftover = inv:add_item("main", ItemStack(item))
+			if not leftover:is_empty() then
+				core.add_item(player:get_pos(), leftover)
+			end
+		end
 	end
 	local def = core.registered_items[itemname]
 	local label = ((def and def.description) or itemname):gsub("\n.*", "")

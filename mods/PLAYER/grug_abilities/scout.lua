@@ -229,6 +229,7 @@ local function start_draw(player)
 	draws[name] = {
 		player = player,
 		started = core.get_us_time(),
+		bow_name = bow:get_name(),
 		bow = bow_identity(bow),
 		action_id = receipt,
 	}
@@ -269,13 +270,13 @@ core.register_globalstep(function(dtime)
 	for name, rec in pairs(draws) do
 		local player = core.get_player_by_name(name)
 		if not player or player ~= rec.player or player:get_hp() <= 0 then
-			draws[name] = nil
+			clear_draw(rec.player)
 		else
 			local wield = player:get_wielded_item()
 			local def = grug_abilities.registered.loose
 			if not def or wield:get_name() ~= "grug_abilities:loose" or
 					not equipped_bow(player) then
-				draws[name] = nil
+				clear_draw(player)
 			elseif not player:get_player_control().dig then
 				release_draw(player, rec)
 			else
@@ -290,12 +291,19 @@ end)
 core.register_on_dieplayer(clear_draw)
 core.register_on_leaveplayer(clear_draw)
 
-grug_core.register_on_equipment_change(function(player, listname)
+grug_core.register_on_equipment_change(function(player, listname, reason)
 	if listname == nil or listname == "grug_weapon" then
 		local rec = draws[player:get_player_name()]
 		local bow = equipped_bow(player)
-		if rec and (not bow or bow_identity(bow) ~= rec.bow) then
-			clear_draw(player)
+		if rec then
+			if reason == "durability_metadata" and bow and
+					bow:get_name() == rec.bow_name then
+				-- REPAIR assigned identity or wear to the same usable bow. Keep
+				-- the held clock, but refresh the release-time identity snapshot.
+				rec.bow = bow_identity(bow)
+			elseif not bow or bow_identity(bow) ~= rec.bow then
+				clear_draw(player)
+			end
 		end
 	end
 end)
