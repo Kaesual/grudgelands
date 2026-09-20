@@ -592,9 +592,9 @@ end
 -- excludes capitals by construction. Without this, a change to `avenue.run`
 -- would move every node of every capital road and no gate would notice.
 --
--- The digest is taken over the ROAD cells alone -- the overlay's own palette --
--- so the surrounding terrain, which is WP40's and moves for WP40's reasons,
--- does not make the value churn.
+-- The digest filters by overlay palette names, not authored-cell ownership.
+-- Shared names such as default:tree can also come from native terrain; any
+-- digest change therefore needs coordinate and source attribution.
 local road_names = {}
 if overlay then
 	for index = 1, #overlay.names do road_names[overlay.names[index]] = true end

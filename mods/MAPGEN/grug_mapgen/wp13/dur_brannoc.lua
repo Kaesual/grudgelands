@@ -302,15 +302,16 @@ local function loader(directory)
 	-- wall: the curtain's centre line is at +-256 and its gate tunnel runs
 	-- through the whole seven-node thickness, so a road that stopped at the
 	-- centre line would stop inside the gate.
+	-- Keep lamp and pier cadence independent of the inner avenue endpoint.
 	local GATE_OUT = 261
 	M.avenues = {
 		{id = "avenue_south", axis = "z", at = 0, from = -GATE_OUT, to = -(RADIUS + 1),
 			gate = "gate_south"},
-		{id = "avenue_north", axis = "z", at = 0, from = RADIUS + 1, to = GATE_OUT,
+		{id = "avenue_north", axis = "z", at = 0, from = RADIUS + 1, to = GATE_OUT, lamp_phase = 48,
 			gate = "gate_north"},
 		{id = "avenue_west", axis = "x", at = 0, from = -GATE_OUT, to = -(RADIUS + 1),
 			gate = "gate_west"},
-		{id = "avenue_east", axis = "x", at = 0, from = RADIUS + 1, to = GATE_OUT,
+		{id = "avenue_east", axis = "x", at = 0, from = RADIUS + 1, to = GATE_OUT, lamp_phase = 48,
 			gate = "gate_east"},
 	}
 

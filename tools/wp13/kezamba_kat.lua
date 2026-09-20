@@ -968,7 +968,7 @@ return function(repo)
 			local function spec_for(from, to)
 				return {id = run.id, axis = run.axis, at = run.at, from = from,
 					to = to, width = avenue.WIDTH,
-					lamp_spacing = avenue.LAMP_SPACING, lamp_phase = run.from,
+					lamp_spacing = avenue.LAMP_SPACING, lamp_phase = run.lamp_phase or run.from,
 					reach = avenue.REACH}
 			end
 			local whole = kezamba.overlay_run(avenue, road,
@@ -1090,7 +1090,7 @@ return function(repo)
 			local piece = kezamba.overlay_run(avenue, road,
 				{id = run.id, axis = run.axis, at = run.at, from = run.from,
 					to = run.to, width = avenue.WIDTH,
-					lamp_spacing = avenue.LAMP_SPACING, lamp_phase = run.from,
+					lamp_spacing = avenue.LAMP_SPACING, lamp_phase = run.lamp_phase or run.from,
 					reach = avenue.REACH}, surface)
 			for _, cell in ipairs(piece.cells) do
 				digest_source[#digest_source + 1] = table.concat({run.id,

@@ -105,7 +105,7 @@ for _, spec in ipairs(capital.overlay_runs(lanes)) do
 	-- without one is refused rather than railed down the middle.
 	local piece = capital.overlay_run(avenue, road,
 		{id = spec.id, axis = spec.axis, at = spec.at, from = spec.from,
-			to = spec.to, lamp_phase = spec.from, width = avenue.WIDTH,
+			to = spec.to, lamp_phase = spec.lamp_phase or spec.from, width = avenue.WIDTH,
 			lamp_spacing = avenue.LAMP_SPACING, reach = avenue.REACH}, flat)
 	for _, cell in ipairs(piece.cells) do
 		emit(cell.x, cell.y, cell.z, cell.name, cell.param2)

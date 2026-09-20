@@ -782,16 +782,16 @@ return function(repo)
 	end
 	local whole = overlay.run({id = run.id, axis = run.axis, at = run.at,
 		from = run.from, to = run.to, width = overlay.width,
-		lamp_spacing = overlay.lamp_spacing, lamp_phase = run.from,
+		lamp_spacing = overlay.lamp_spacing, lamp_phase = run.lamp_phase or run.from,
 		reach = overlay.reach}, surface)
 	local cut = math.floor((run.from + run.to) / 2)
 	local low = overlay.run({id = run.id, axis = run.axis, at = run.at,
 		from = run.from, to = cut, width = overlay.width,
-		lamp_spacing = overlay.lamp_spacing, lamp_phase = run.from,
+		lamp_spacing = overlay.lamp_spacing, lamp_phase = run.lamp_phase or run.from,
 		reach = overlay.reach}, surface)
 	local high = overlay.run({id = run.id, axis = run.axis, at = run.at,
 		from = cut + 1, to = run.to, width = overlay.width,
-		lamp_spacing = overlay.lamp_spacing, lamp_phase = run.from,
+		lamp_spacing = overlay.lamp_spacing, lamp_phase = run.lamp_phase or run.from,
 		reach = overlay.reach}, surface)
 	assert(#low.cells + #high.cells == #whole.cells,
 		"the two pieces of a run are not the whole run")

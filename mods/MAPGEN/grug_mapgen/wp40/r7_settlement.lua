@@ -616,6 +616,9 @@ local function prepare_overlay(fail, descriptor, overlay)
 		integer(run.at, "run centre line", -1023, 1023)
 		integer(run.from, "run start", -1023, 1023)
 		integer(run.to, "run end", run.from, 1023)
+		local lamp_phase = run.lamp_phase
+		if lamp_phase == nil then lamp_phase = run.from end
+		integer(lamp_phase, "run lamp phase", -1023, 1023)
 		if run.axis == "x" then
 			stretch(run.from, run.to, run.at - half, run.at + half)
 		else
@@ -630,10 +633,10 @@ local function prepare_overlay(fail, descriptor, overlay)
 		-- of them moves the identity; nothing else can move a junction, a
 		-- passage or a verge clearance.
 		runs[index] = {id = run.id, axis = run.axis, at = run.at,
-			from = run.from, to = run.to, junctions = run.junctions,
+			from = run.from, to = run.to, lamp_phase = lamp_phase, junctions = run.junctions,
 			plain_verge = run.plain_verge, clear_verge = run.clear_verge}
 		bytes[#bytes + 1] = table.concat({"run", index, run.id, run.axis,
-			run.at, run.from, run.to}, "\t") .. "\n"
+			run.at, run.from, run.to, lamp_phase}, "\t") .. "\n"
 	end
 	-- THE OVERLAY'S REACH, and the protection it has to stay inside.
 	--
@@ -1430,7 +1433,7 @@ function M.config(prepared, content, raw_sha256)
 									at = run.at, from = low, to = high,
 									width = blueprint.width,
 									lamp_spacing = blueprint.lamp_spacing,
-									lamp_phase = run.from, reach = blueprint.reach,
+									lamp_phase = run.lamp_phase, reach = blueprint.reach,
 									-- The route geometry over this run's columns. A
 									-- run built without it is the road this seam
 									-- built before there was a crossing rule, which

@@ -745,7 +745,7 @@ return function(repo)
 		local surface = wall_surface()
 		local piece = palisade.run(orc, {id = spec.id, axis = spec.axis,
 			at = spec.at, from = spec.from, to = spec.to, width = avenue.WIDTH,
-			lamp_spacing = avenue.LAMP_SPACING, lamp_phase = spec.from,
+			lamp_spacing = avenue.LAMP_SPACING, lamp_phase = spec.lamp_phase or spec.from,
 			reach = avenue.REACH}, surface, plan)
 		wall_cells = wall_cells + #piece.cells
 		wall_columns = wall_columns + piece.columns
@@ -1008,7 +1008,7 @@ return function(repo)
 		local piece = capital.overlay_run(avenue, orc,
 			{id = spec.id, axis = spec.axis, at = spec.at, from = spec.from,
 				to = spec.to, width = avenue.WIDTH,
-				lamp_spacing = avenue.LAMP_SPACING, lamp_phase = spec.from,
+				lamp_spacing = avenue.LAMP_SPACING, lamp_phase = spec.lamp_phase or spec.from,
 				reach = avenue.REACH}, ramp_surface)
 		road_cells = road_cells + #piece.cells
 		rail_cells = rail_cells + piece.street.rails

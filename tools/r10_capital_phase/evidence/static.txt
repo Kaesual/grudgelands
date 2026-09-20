@@ -1,0 +1,70 @@
+parser PASS mods/MAPGEN/grug_mapgen/wp13/dur_brannoc.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp13/gor_drazhak_quadrants.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp13/highcourt.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp13/kezamba.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp13/lethariel.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp13/nhal_veyr.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua
+parser PASS tools/wp13/capital_probe/init.lua
+	2	[44]	SETGLOBAL	0 -1	; grug_wp13_capital_probe
+parser PASS tools/wp13/dump_capital_plan.lua
+parser PASS tools/wp13/dump_highcourt.lua
+parser PASS tools/wp13/dur_brannoc_kat.lua
+parser PASS tools/wp13/gor_drazhak_kat.lua
+parser PASS tools/wp13/highcourt_kat.lua
+parser PASS tools/wp13/integration_fixture.lua
+parser PASS tools/wp13/kezamba_kat.lua
+parser PASS tools/wp13/kezamba_lots.lua
+parser PASS tools/wp13/lane_crossing_kat.lua
+parser PASS tools/wp13/lethariel_kat.lua
+parser PASS tools/wp13/lethariel_plots.lua
+parser PASS tools/wp13/nhal_veyr_kat.lua
+parser PASS tools/wp13/nhal_veyr_plots.lua
+parser PASS tools/wp13/seam_kat.lua
+parser PASS tools/wp13/street_geometry.lua
+parser PASS tools/wp13/street_kat.lua
+parser PASS tools/wp13/walkability.lua
+parser PASS tools/r10_capital_phase/project.lua
+SWEEP 1 (review any comment/tool-only hits)
+SWEEP 2 (review any comment/tool-only hits)
+SWEEP 3 (review any comment/tool-only hits)
+SWEEP 4 (review any comment/tool-only hits)
+mods/MAPGEN/grug_mapgen/wp13/kezamba.lua:11:-- is an answer to it: "Kezamba | troll | stilted cenote terrace, step 3 | stilt
+tools/wp13/lethariel_plots.lua:323:		local text = table.concat(rows, "|")
+tools/wp13/lethariel_plots.lua:559:		local joined = table.concat(rows, "|")
+mods/MAPGEN/grug_mapgen/wp13/nhal_veyr.lua:1302:	--     cap(p) = gate_y + |p - gate_at|      (gate_y = the free terrain at
+tools/wp13/kezamba_lots.lua:377:-- (1) Its first version took the greatest |reference - surface| over the whole
+SWEEP 5 (review any comment/tool-only hits)
+tools/wp13/dump_highcourt.lua:43:	os.exit(2)
+tools/wp13/dump_highcourt.lua:76:	os.exit(2)
+tools/wp13/dump_highcourt.lua:97:	os.exit(0)
+tools/wp13/dump_highcourt.lua:113:		os.exit(2)
+tools/wp13/dump_highcourt.lua:220:	os.exit(2)
+tools/wp13/nhal_veyr_plots.lua:525:	os.exit(1)
+tools/wp13/lethariel_plots.lua:269:		os.exit(1)
+tools/wp13/lethariel_plots.lua:272:	os.exit(0)
+tools/wp13/lethariel_plots.lua:331:	if failures > 0 then os.exit(1) end
+tools/wp13/lethariel_plots.lua:334:	os.exit(0)
+tools/wp13/lethariel_plots.lua:472:		os.exit(1)
+tools/wp13/lethariel_plots.lua:476:	os.exit(0)
+tools/wp13/lethariel_plots.lua:566:	if failures > 0 then os.exit(1) end
+tools/wp13/lethariel_plots.lua:569:	os.exit(0)
+tools/wp13/lethariel_plots.lua:746:		os.exit(1)
+tools/wp13/lethariel_plots.lua:749:	os.exit(0)
+tools/wp13/lethariel_plots.lua:847:		os.exit(1)
+tools/wp13/lethariel_plots.lua:850:	os.exit(0)
+tools/wp13/lethariel_plots.lua:881:	os.exit(0)
+tools/wp13/lethariel_plots.lua:964:	os.exit(0)
+tools/wp13/lethariel_plots.lua:995:	os.exit(0)
+tools/wp13/lethariel_plots.lua:1040:	os.exit(1)
+tools/wp13/kezamba_lots.lua:188:	os.exit(0)
+tools/wp13/kezamba_lots.lua:257:	os.exit(0)
+tools/wp13/kezamba_lots.lua:367:	os.exit(unrepairable == 0 and 0 or 1)
+tools/wp13/kezamba_lots.lua:481:		os.exit(1)
+tools/wp13/kezamba_lots.lua:486:	os.exit(0)
+tools/wp13/kezamba_lots.lua:710:		os.exit(1)
+tools/wp13/kezamba_lots.lua:715:	os.exit(0)
+tools/wp13/kezamba_lots.lua:726:	os.exit(0)
+tools/wp13/kezamba_lots.lua:743:	os.exit(0)
+tools/wp13/kezamba_lots.lua:806:		os.exit(1)
+tools/wp13/kezamba_lots.lua:837:	os.exit(1)

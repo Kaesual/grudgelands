@@ -159,7 +159,7 @@ return function(repo)
 		local union = {}
 		for _, side in ipairs({{spec.from, at}, {at + 1, spec.to}}) do
 			local piece = build({id = spec.id, from = side[1], to = side[2],
-				lamp_phase = spec.from}, ground, decks)
+				lamp_phase = spec.lamp_phase or spec.from}, ground, decks)
 			for _, cell in ipairs(piece.cells) do
 				union[cell.x .. ":" .. cell.y .. ":" .. cell.z] =
 					cell.name .. ":" .. cell.param2

@@ -401,7 +401,7 @@ if mode == "--routes" then
 			local piece = capital.overlay_run(avenue, road_palette, {
 				id = run.id, axis = run.axis, at = run.at, from = run.from,
 				to = run.to, width = avenue.WIDTH,
-				lamp_spacing = avenue.LAMP_SPACING, lamp_phase = run.from,
+				lamp_spacing = avenue.LAMP_SPACING, lamp_phase = run.lamp_phase or run.from,
 				reach = avenue.REACH, wet = wet_at,
 				junctions = attached_junctions[run.id]}, at)
 			-- The BUILT road, read off its own cells: the top of the centre
@@ -649,7 +649,7 @@ if mode == "--bodies" then
 		local piece = capital.overlay_run(avenue, road_palette, {
 			id = run.id, axis = run.axis, at = run.at, from = run.from,
 			to = run.to, width = avenue.WIDTH,
-			lamp_spacing = avenue.LAMP_SPACING, lamp_phase = run.from,
+			lamp_spacing = avenue.LAMP_SPACING, lamp_phase = run.lamp_phase or run.from,
 			reach = avenue.REACH, wet = wet_at,
 			junctions = attached_junctions[run.id]}, at)
 		local own = 0
@@ -823,7 +823,7 @@ if mode == "--gates" then
 				from = -grove.GATE_HALF, to = grove.GATE_HALF,
 				width = avenue_module.WIDTH,
 				lamp_spacing = avenue_module.LAMP_SPACING,
-				lamp_phase = run.from, reach = avenue_module.REACH},
+				lamp_phase = run.lamp_phase or run.from, reach = avenue_module.REACH},
 				at, plan)
 			local gate = piece.gates[1]
 			assert(gate, run.id .. " built no threshold")
