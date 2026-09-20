@@ -999,7 +999,10 @@ function mob_class:is_at_cliff()
 	-- retain each definition's authored fear_height.
 	local ambient = self.state == "stand" or self.state == "walk"
 	if self.fly or (self.fear_height == 0 and not ambient) then return end
-	local fear_height = ambient and 2 or self.fear_height
+	-- One and a half nodes reaches one-step-lower support across signed exact
+	-- contacts and small collision clearance, but cannot include support two
+	-- full nodes below the feet after floatToInt endpoint rounding.
+	local fear_height = ambient and 1.5 or self.fear_height
 
 	local yaw = self.object:get_yaw() ; if not yaw then return end
 	local prop = self.object:get_properties()

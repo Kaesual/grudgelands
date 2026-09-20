@@ -13,8 +13,16 @@ local function is_node_dangerous() return probe.dangerous end
 return mob_class.is_at_cliff
 ]]))
 
-	local probe = {node = "test:stone", dangerous = false, free_fall = false,
+	local probe = {node = "test:stone", dangerous = false,
 		blocker = {x = 0, y = -1, z = 1}, calls = 0}
+	local support_y
+	-- Pinned numeric.h floatToInt: exact halves round away from zero.  The
+	-- vertical-only walk models the inclusive endpoint behavior relevant to
+	-- this probe; X/Z stay inside the same forward column.
+	local function float_to_int(value)
+		if value > 0 then return math.floor(value + 0.5) end
+		return math.ceil(value - 0.5)
+	end
 	local core = {
 		registered_nodes = {
 			["test:stone"] = {walkable = true},
@@ -24,7 +32,17 @@ return mob_class.is_at_cliff
 		line_of_sight = function(first_pos, last_pos)
 			probe.calls = probe.calls + 1
 			probe.first, probe.last = first_pos, last_pos
-			return probe.free_fall, probe.blocker
+			local first_y = float_to_int(first_pos.y)
+			local last_y = float_to_int(last_pos.y)
+			local step = first_y <= last_y and 1 or -1
+			for y = first_y, last_y, step do
+				if y == support_y then
+					probe.blocker = {x = float_to_int(first_pos.x), y = y,
+						z = float_to_int(first_pos.z)}
+					return false, probe.blocker
+				end
+			end
+			return true
 		end,
 	}
 	local environment = {core = core, probe = probe, math = math,
@@ -40,17 +58,32 @@ return mob_class.is_at_cliff
 			get_properties = function()
 				return {collisionbox = {-0.4, -1, -0.4, 0.4, 1, 0.4}}
 			end,
-			get_pos = function() return {x = 4, y = 10, z = -3} end,
+			get_pos = function() return {x = 4, y = 11.5, z = -3} end,
 		},
 	}
 
-	assert(is_at_cliff(mob) == false, "walkable one-node support rejected")
-	assert(probe.calls == 1 and probe.first.y == 9 and probe.last.y == 7 and
+	local function check_boundary(feet, flat, label)
+		mob.object.get_pos = function() return {x = 4, y = feet + 1, z = -3} end
+		support_y = flat
+		assert(is_at_cliff(mob) == false, label .. " flat support rejected")
+		support_y = flat - 1
+		assert(is_at_cliff(mob) == false, label .. " one-node descent refused")
+		support_y = flat - 2
+		assert(is_at_cliff(mob) == true, label .. " two-node descent accepted")
+		support_y = flat - 3
+		assert(is_at_cliff(mob) == true, label .. " deep descent accepted")
+	end
+	check_boundary(10.5, 10, "positive half")
+	assert(probe.first.y == 10.5 and probe.last.y == 9 and
 		probe.first.x == 4 and probe.first.z == -2.1,
-		"ambient two-node forward probe endpoints differ")
-	probe.free_fall = true
-	assert(is_at_cliff(mob) == true, "deep all-air drop accepted")
-	probe.free_fall, probe.node = false, "test:water"
+		"ambient one-and-a-half-node forward probe endpoints differ")
+	check_boundary(-10.5, -11, "negative half")
+	check_boundary(0.5, 0, "zero crossing")
+	check_boundary(10.5001, 10, "positive clearance")
+	check_boundary(10.4999, 10, "negative clearance")
+	-- Continue predicate coverage from the negative signed contact.
+	mob.object.get_pos = function() return {x = 4, y = -9.5, z = -3} end
+	support_y, probe.node = -12, "test:water"
 	assert(is_at_cliff(mob) == true, "non-walkable blocker accepted as support")
 	probe.node = "test:missing"
 	assert(is_at_cliff(mob) == true, "unregistered blocker accepted or dereferenced")
@@ -64,8 +97,8 @@ return mob_class.is_at_cliff
 	mob.fly, mob.state = false, "attack"
 	assert(is_at_cliff(mob) == nil and probe.calls == before,
 		"fear-zero combat unexpectedly used ambient cliff probe")
-	mob.state, mob.fear_height, probe.node = "attack", 3, "test:stone"
-	assert(is_at_cliff(mob) == false and probe.last.y == 6,
+	mob.state, mob.fear_height, probe.node, support_y = "attack", 3, "test:stone", -13
+	assert(is_at_cliff(mob) == false and probe.last.y == -13.5,
 		"authored non-ambient fear height changed")
-	return "r10/cliff\twalkable=pass\tdeep=pass\tnonwalkable=pass\tmissing=pass\tdanger=pass\texceptions=pass\n"
+	return "r10/cliff\tflat=pass\tone=pass\ttwo=refused\tsigned-half=pass\tnonwalkable=pass\tmissing=pass\tdanger=pass\texceptions=pass\n"
 end
