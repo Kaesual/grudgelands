@@ -108,3 +108,30 @@ its own checkout: `cost_for(player,cost,ability_id)` snapshots Fireball at 3%
 while Whitehot is active before affordability/spend. Original Skills frozen
 review bytes stay unchanged. Do not integrate X3 as complete on source-pattern
 tests alone; required consumer and bounded native checks remain.
+
+## Integrated candidates and active review gates
+
+Root integrated independently approved FARM (`bd7c96ab`, `630d1d70`) and ART
+(`301dcefc`, `81874bdb`). UI `562c1e48` independently passed. FOOD/POSE passed.
+Review reports are archived under `round12-reviews/` (initial findings retained).
+
+SKILLS commits `006ff5bb`, `932cde07`, root correction `eaac9849` now include
+real callback/normalization/mount/transfer/cooldown tests and authoritative
+cast/swing entitlement checks. Farm author, independent of Skills code, is
+rechecking corrections. Recipe author Sol is correcting its initial review's
+3 High +1 Medium findings on `wp12-recipes`: alloy main materials, Cooking
+refinement provenance, Bronze armor starters, and complete runtime catalog
+coverage. It must use the existing isolated Flatpak headless launcher rather
+than claim an absent standalone binary prevents validation.
+
+X3 candidate commits `8478e603`, `5a3e8894`, `5799c524` in
+`/tmp/grug-r12-talents` include behavior tests and a bounded native LuaJIT probe.
+A fresh native Astra reviewer `r12_x3_review` is auditing actual settlement and
+all decided consumers. Not integrated before its review closes. Root's
+`tools/wp39/combat_integration_test.lua` owns the shared mock update and already
+passes the real existing settlement scenarios under current Skills lifecycle.
+
+Remaining: re-review Skills/Recipes/X3; integrate their final corrections;
+final focused consumer/static/native catalog and registration checks; fresh
+report-only UX; update status/backlog/roadmap/README, close TODO; main merge,
+sync/push and next playtest delivery. No Round12 bytes installed yet.
