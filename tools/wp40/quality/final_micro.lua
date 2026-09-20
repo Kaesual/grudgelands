@@ -29,6 +29,7 @@ for _, relative in ipairs({
 	"tools/r10_world/material_salt_fixture.lua",
 	"tools/r10_cap/services_micro.lua",
 	"tools/r10_cap/furnace_micro.lua",
+	"tools/r10_cap/purchase_micro.lua",
 	"tools/r9_perf/cache_fixture.lua",
 	"tools/r9_perf/lighting_fixture.lua",
 	"tools/r9_farm/farming_kat.lua",

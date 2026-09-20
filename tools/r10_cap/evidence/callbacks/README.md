@@ -26,3 +26,15 @@ The vendored furnace patch only changes the protection authorization seam.
 Existing timers and the Cooking output extraction/progression wrappers remain
 intact. Authored furnace sockets require a live nearby player and the actual
 expected furnace node even if ordinary node protection happens to permit use.
+
+## Review evidence correction
+
+The first checkpoint mocked purchase in the ACL fixture. The additional
+`purchase_micro.lua` now invokes the actual start_villagers right-click, dedicated
+Riding dialog and receive-fields callback, mount catalog/state/items, and money
+module. It checks level/prerequisite/full-inventory/insufficient-money refusal,
+all four sequential purchases, exact debit and duplicate refusal, real owner-bound
+ItemStack use/drop callbacks, and every actual profession UI without Riding.
+The added sources and mount init wiring are bound in inputs.sha256. All three
+fixtures run in one LuaJIT process and restore globals; the global final runner
+includes this bounded production purchase path too. No PUC runtime was run.

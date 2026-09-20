@@ -2,3 +2,4 @@ cap_riding_acl	PASS
 cap_inert_nodes	14
 cap_display_reload	24
 cap_public_furnace	activation+timer+acl+Cooking	PASS
+cap_purchase_chain	click+state+money+owner+profession_separation	PASS
