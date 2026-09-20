@@ -758,11 +758,13 @@ The base boat must therefore be priced below the five cheapest `group:wood`
 members by construction, and both boats verified by test rather than by the
 audit's silence.
 
-### 3.1 Armor curve (decided; shipped as the generated curve in WP7)
+### 3.1 Armor rating curve (base values shipped in WP7; mitigation revised 2026-09-20)
 
-1 armor point = 1% damage reduction; equipped pieces sum, **clamped at
-the 60% cap** (combat_stats §2: endgame plate 60%, cloth ~15%). Set
-totals (4 pieces: chest/legs/head/feet split ≈ 35/27/22/16%):
+Armor values are raw rating, not percentage points. Equipped base rating,
+refinement, affixes, finishes and statuses aggregate before
+`combat_stats.md` §2 resolves that total against attacker level and caps only
+the resulting reduction at 70%. The generated four-piece set totals use the
+existing chest/legs/head/feet split (approximately 35/27/22/16%):
 
 **Column relabel, 2026-08-07 — no number changed.** These columns used to
 be headed "T1–T4", which now collides with the six gear tiers of §3.0.
@@ -775,13 +777,13 @@ Headed by their ilvl from here on.
 | Metal (Armorsmith) | 16 | 29 | 42 | 55 | 19/15/12/9 |
 | Leather (Leatherworker) | 11 | 20 | 30 | 40 | 14/11/9/6 |
 | Cloth (Tailor) | 5 | 8 | 11 | 15 | 5/4/3/3 |
-| Shield (Armorsmith, Journeyman+, Warrior) | — | 4 | 5 | 5 | — |
+| Shield | — | — | — | — | matching-tier unrefined metal-set total |
 
-Check at 60 after the player-side pressure fit: full plate+shield = 60% →
-normal-mob hit 99 → 40 effective vs 3235 HP (≈81 hits); cloth Mage 15% →
-85 effective vs 2426 HP (≈29 hits) — tank/squishy
-spread as designed. Drop gear uses the same table at its ilvl bracket;
-quality adds enchants, never base armor.
+The six live catalog anchors at ilvl 3/10/20/30/40/50 produce cloth set
+ratings 4/5/6/8/11/14, leather 5/10/17/23/29/36 and metal
+8/14/23/32/40/49. A plain shield contributes the matching tier's complete
+unrefined metal-set rating: 8/14/23/32/40/49. Drop gear uses the same curve at
+its ilvl; quality adds affixes without changing the base curve.
 
 **Off-tier ilvls: linear interpolation** (recorded 2026-08-07 with WP7).
 The vendor brackets sit at ilvl 3/10/20/30/40/50 (§3.8) — ilvls the tier
@@ -923,8 +925,8 @@ level-51–60 zones on both continents; no new mob is required).
 
 **Refines and enchants**: leather armor, all four slots. Base recipes use
 the §3.1 shapes at jerkin 8 / pants 7 / hood 5 / boots 4 leather. Its MVP
-wearer is the **Warrior** (light avoidance set, §3.8 — decided
-2026-08-13); the Rogue joins in Phase 2.
+wearers are the **Warrior** (light avoidance set, §3.8 — decided
+2026-08-13) and the **Scout**.
 
 **Exclusive recipes** (mastery cut decided 2026-08-13, §2.1): **weapon
 grips** at Apprentice — 2 leather of the item's tier, the
@@ -966,7 +968,8 @@ robe 8 / leggings 7 / cowl 5 / slippers 4 bolts.
   recipe line that is fully decided.
 - **Embroidery kits** (§7): imbue at Journeyman, temper at Expert
   (mastery cut decided 2026-08-13, §2.1). With one bag size per tier and
-  the tome at J/E/M, the Tailor's signature row is full at every tier.
+  the later bag sizes and embroidery operations keep the Tailor's signature
+  row occupied across the mastery bands.
 
 ### 3.6 Alchemist (brewing stand) — potions and elixirs
 
@@ -1011,7 +1014,7 @@ their recipe tier: **1, 11, 21, 31, 41, 51**.
 | T4 | Elixir of Vigor IV | Crimson Lotus | Crocodile Tooth | +10% maximum HP for 15 min |
 | T4 | Elixir of Focus IV | Crimson Lotus | Venom Sac | +10% maximum mana for 15 min |
 | T4 | Elixir of Precision IV | Crimson Lotus | Shiny Scale | +2 percentage points crit for 15 min |
-| T4 | Stoneskin Elixir | Shiny Scale | Crocodile Tooth | +4% armor for 30 min |
+| T4 | Stoneskin Elixir | Shiny Scale | Crocodile Tooth | +4 armor rating for 30 min |
 | T5 | Elixir of Vigor V | Crimson Lotus | Ember Moss | +15% maximum HP for 15 min |
 | T5 | Elixir of Focus V | Cave Cap | Ember Moss | +15% maximum mana for 15 min |
 | T5 | Elixir of Precision V | Shiny Scale | Ember Moss | +3 percentage points crit for 15 min |
@@ -1354,16 +1357,17 @@ changes:
 - **Shipped armor lines: metal, cloth and leather** (leather decided
   2026-08-13, superseding 2026-08-07's "does not ship"). The rank rule
   grants each class its own rank **and everything below**
-  (`inventory_equipment.md` §2: Warrior 3 / Mage 1 / Priest 1), so
-  leather (rank 2) ships as the **Warrior's light set**: §6.2's leather
-  pool (+Dex, +max HP%, +crit%, +dodge%) against metal's (+Str, +max HP%,
-  +armor%, +dodge%) is a real mitigation-versus-avoidance choice, and
+  (`inventory_equipment.md` §2: Warrior 3 / Scout 2 / Mage 1 / Priest 1), so
+  leather (rank 2) is the **Scout's armor line** and remains a legal light set
+  for the Warrior. §6.2's leather pool (+Dex, +max HP%, +max Mana%, +crit%,
+  +dodge%) against metal's (+Str, +max HP%, +armor rating, +dodge%) is a real
+  mitigation-versus-avoidance choice, and
   §3.1 already prices leather below metal at equal tier, so plate stays
   the mitigation king. The curve sits in the generator; the 24 leather
   registrations land with WP29's catalog merge. Under the §3.0.3 merge
   this covers the **craft** ladder too — one catalog, so the line ships
-  vendor and craft at once (§3.4). The Rogue (Phase 2) later joins as
-  the intended primary wearer.
+  vendor and craft at once (§3.4). The Scout replaces the retired separate
+  Rogue plan; no later Rogue wearer is implied.
 - Cultural-region vendor presentation and the same-race purchase discount
   layer on top without changing catalog strength or buy-back (§8.2).
 
@@ -1507,7 +1511,7 @@ explicit conversion, not a generic +1%:
 | Maximum HP | +1% of the base pool |
 | Maximum Mana | +1% of the base pool |
 | Crit / Dodge | +1 percentage point |
-| Armor | +1 armor point (= 1 percentage point before cap) |
+| Armor | +1 raw armor rating |
 
 Primary attributes and the current-level absolute values of HP/Mana
 percentages round half-up to whole numbers. HP/Mana lines show both the
@@ -1529,11 +1533,11 @@ The resulting T6 per-stack values are:
 | Troll | +15 Int | +4% Mana | +2% HP | +3% HP | +3% Dodge | +2% Dodge |
 | Undead | +15 Int | +4% Crit | +2% Mana | +3% Mana | +9 Int | +2% Crit |
 
-All finish, affix, attribute and base-equipment sources add before the existing
-final caps: Crit 30%, Dodge 30% and armor 60%. Overcap remains on its source
-stacks but has no combat effect. The Talents header displays effective/raw
-values and caps, for example `Armor 60/67% (60)`; there is no reroll, overflow
-conversion, diminishing-return curve or cap increase. The theoretical T6
+All finish, affix, attribute and base-equipment sources add before their final
+consumers. Crit and Dodge cap at 30%. Armor remains uncapped as raw rating;
+attacker-level mitigation alone caps at 70%. The Talents header displays raw
+rating and same-level reduction; there is no reroll or overflow conversion.
+The theoretical T6
 cultural-only mixed-set maxima are approximately +14.8 Crit percentage points
 (including compatible Dexterity), +9.9 Dodge points and +7 armor points.
 
@@ -1693,9 +1697,9 @@ appears in a drop's name (§6b.4).
 
 **Which item drops is one uniform draw over the concrete registered base
 items of the mob's own tier** (stated 2026-08-13) — the bracket's whole
-item list, with no slot pre-selection and no per-family weighting, so a
-tier with four weapon families and eight armor pieces drops a weapon a
-third of the time. No weighted table exists anywhere in this design.
+current item list, with no slot pre-selection and no per-family weighting.
+Adding a registered family therefore changes the resulting proportions; no
+fixed family count or weighted table exists anywhere in this design.
 
 What the windows guarantee exactly is the **expected value per affix**:
 `world` 0.30 and `crafted-fine` 0.55, `elite` 0.60, `rare` 0.75 and
@@ -1975,9 +1979,9 @@ Two consequences, both intended:
   to a T1 item", read from the roll table's side. What the Master's rank
   still buys on that sword is access to the later value operations (§6b.5),
   not a bigger number per slot.
-- **An Apprentice fills one slot even on a T6 item.** Mastery decides
-  *how many* affixes a crafter may put on an item (§6b.5), never *how
-  big* they are: an Apprentice working T6 stock produces a one-affix
+- **An Apprentice fills the prefix even on a T6 item.** Mastery decides
+  which slot/value operation a crafter may perform (§6b.5), never how big
+  the roll is: an Apprentice working T6 stock produces a one-affix
   item whose single roll is a full 46–60 roll.
 
 **Mob drops have no crafter at all**, which is the other half of the
@@ -1994,7 +1998,7 @@ comparable.
 | +Max Mana% | 1–2 | 2–3 | 3–4 | 4–5 |
 | +Crit% / +Dodge% | 0.5–1.0 | 0.5–1.5 | 1.0–2.0 | 1.5–3.0 |
 | +Attack speed% | 3–6 | 4–8 | 6–12 | 8–16 |
-| +Armor% (armor only) | 1–2 | 1–3 | 2–4 | 3–6 |
+| +Armor rating (armor/shield families) | 1–2 | 1–3 | 2–4 | 3–6 |
 
 The endgame ordinary-affix budget is therefore approximately **+5% per
 equipped slot × eight slots = +40%** when every slot is dedicated to one
@@ -2017,13 +2021,12 @@ intended +50–60% fully equipped ceiling.
 | crafted-masterwork | 0.60–1.00 | crafted Rare incl. Grudgeforged items |
 | boss | 0.80–1.00 | apex hoards, race Kings |
 
-**Combined cap policy (re-run 2026-08-12).** Ordinary affixes, trinket
+**Combined cap policy (revised 2026-09-20).** Ordinary affixes, trinket
 prefixes/suffixes, cultural finishes, attributes and base equipment all add
-before the unchanged final caps: Crit 30%, Dodge 30% and armor 60%. Values over
-a cap remain on their source stacks but add no combat power. The Talents header
-shows effective/raw Crit, Dodge and Armor with their caps, and no automatic
-reroll, overflow conversion, diminishing return or cap increase hides the
-waste.
+before their consumers. Crit and Dodge cap at 30%. Armor sources add uncapped
+raw rating; `combat_stats.md` §2 converts that rating against attacker level
+and caps only final reduction at 70%. The Talents header shows Crit/Dodge
+effective and raw values plus raw armor rating and same-level reduction.
 
 The old eight-identical-affix-slot calculation is retired: each trinket now has
 one primary prefix and one HP/Mana/Crit suffix rather than four ordinary slots.
@@ -2031,11 +2034,10 @@ At T6, two trinkets can therefore add at most two direct Crit suffixes, while
 the six ordinary combat stacks retain their family pools. Cultural finishes
 add at most approximately +14.8 Crit points (including compatible Dexterity),
 +9.9 Dodge points or +7 armor points across a freely mixed T6 six-slot set.
-These maxima can intentionally overcap a specialized build. Full plate plus a
-shield may already reach 60% armor, so Dwarf armor finishes can be partly or
-fully wasted there and remain useful to lighter, incomplete or two-handed
-configurations. The cap/demand audit evaluates all three source channels
-together and verifies at least two desirable finish cells per culture.
+These maxima can intentionally push a same-level build to the 70% reduction
+cap. Surplus rating remains useful against higher-level attackers. The
+cap/demand audit evaluates all three source channels together and verifies at
+least two desirable finish cells per culture.
 
 ### 6.4 Crafted quality (how crafting reaches Uncommon/Rare)
 
@@ -2081,12 +2083,12 @@ is expressed in the item **name** by a family word:
 |---|---|---|
 | Weapons, tools | **Honed** | Honed Stone Sword |
 | Metal & leather armor, shields | **Reinforced** | Reinforced Iron Chestplate |
-| Cloth armor, spell tomes | **Ornate** | Ornate Robe |
+| Cloth armor, Goldsmith spellbooks | **Ornate** | Ornate Robe |
 
 **Bags are not refinable** (A3, decided 2026-08-13): a bag has no
 damage, armor or wear value for §6b.2's bonus to touch, and the four
 mastery sizes 8/16/24/32 already are the bag line's progression. The
-Ornate word is reserved for cloth armor and spell tomes.
+Ornate word is reserved for cloth armor and Goldsmith spellbooks.
 
 A profession may only refine the families it owns (§3.3–§3.6b). No
 player without the profession can produce a refined item by any means.
@@ -2105,7 +2107,7 @@ player without the profession can produce a refined item by any means.
 - The bonus is applied to the item's own base value and shown in the grey
   stat line (§6.1). It does not scale with mastery tier; a Master's
   refinement is worth the same +15 % as an Apprentice's. What mastery
-  buys is **slots** (§6b.5), not a bigger bonus.
+  buys is later slot/value operations (§6b.5), not a bigger bonus.
 
 ### 6b.3 Only refined items can be enchanted
 
@@ -2152,9 +2154,10 @@ Enchants are expressed in the item name as **prefixes and suffixes**.
   item family iff its stat is in that family's pool (armor-rating words
   can therefore appear only on metal armor and shields), and the trinket
   exception in §6.2 constrains its two slots the same way. Every word
-  maps to exactly one stat — there is **no poison stat** in this game
-  (see §6.2 and `combat_stats.md` §2; poison arrives with the Rogue in
-  Phase 2, `classes.md` §6), and an affix word for a stat nothing
+  maps to exactly one stat — there is **no player poison stat** in this game
+  (see §6.2 and `combat_stats.md` §2). The separate Rogue plan is retired and
+  the Scout explicitly has no poison in V1; a future poison mechanic would
+  require a new decision. An affix word for a stat nothing
   consumes is a bug, not flavour.
 - Examples: *Stone Sword of the Ox* and *Lucky Stone Sword of the Bear*.
 - **The refinement word disappears as soon as an affix is present.** An
@@ -2366,27 +2369,30 @@ Mounts at levels 15/30/45/60 target **15 minutes / 45 minutes / 2 hours /
 are derived only after those rates are measured; the retired fixed
 1s/8s/30s/60s table is not a fallback.
 
-## 9. Bow and arrow item foundation (inactive Phase-2 substrate)
+## 9. Bow and arrow item foundation
 
 **Its consumer exists on paper since 2026-09-16**: the Scout's base kit opens
 with a bow shot ([scout.md](scout.md) §2, rulings 7 and 12 of
 [skill_trees.md](skill_trees.md) §5) and the arrow is **ballistic** — gravity
 and a draw-time impulse, while Fireball stays straight (`combat_stats.md`
-§2, `classes.md` §2b). Nothing below changes for it, and nothing below is
-built: WP-Scout's bow lane is the package that would build it.
+§2, `classes.md` §2b). Round 11 has delivered the registered bow, arrow and
+quiver item foundation below. The SCOUT package still owns draw, launch and
+hit settlement.
 
 Item path (source: `mcl_bows`, code **LGPL 3.0 or GPL 3.0** — VoxeLibre
 dual-licences every mod, `LEGAL.md:25-28`, and both are on `AGENTS.md`'s
 permitted list ✓; media: **textures CC BY-SA 4.0**, sounds **two CC0** plus
 **one CC BY 3.0** (`mcl_bows_hit_player.ogg`, tim.kahn) — so exactly **one**
 attribution-requiring sound, not two; port ≈ 1000 lines incl.
-`vl_projectile`, §1.2):
+`vl_projectile`, §1.2). The item/ammunition foundation is active; the Scout
+ability consumer remains the separately scheduled SCOUT package:
 
 - **Bow family on the weapon curve**: full-charge damage = the 1H curve
   (8/13/19/24 at ilvl 12/27/42/57) at 25 m range, charge 0.5 s (mcl
-  hold-pattern), partial charge scales linearly, enchant pool = melee
-  weapons (attack speed → charge speed). One bow per material tier,
-  material-named like everything else (§3.0.3).
+  hold-pattern), partial charge scales linearly. One bow per material tier,
+  material-named like everything else (§3.0.3). Its ordinary affix pool is
+  Dexterity, Crit, draw speed, HP and Mana; draw speed uses the weapon-family
+  attack-speed channel to shorten charge time.
 - **Arrows** as stackable ammo + entity (vl_projectile template);
   craft 20/batch: 1 iron bar + 4 sticks + 4 feathers (sharp feathers —
   eagle/vulture drops finally get their reagent role). The optional quiver is
@@ -2423,7 +2429,9 @@ professions). Recommendation: **accept for the MVP** (leather is not
 worn by MVP classes' endgame sets; the flask is consumable, not
 permanent power) and add mirrored recipes in Phase 2 when the Rogue
 makes top leather PvP-relevant.
-**Decided as recommended (2026-08-06).**
+**Decided as recommended (2026-08-06), then superseded 2026-09-16.** The
+Scout replaces the separate Rogue, wears leather in V1 and does not introduce
+poison; no Phase-2 Rogue mirror is current scope.
 
 **P3 — Potion/elixir/food exclusivity.** Healing and mana potions share one
 60 s cooldown. One active elixir and one food restore buff may coexist with
@@ -2472,10 +2480,12 @@ controls crafting permission while locked rows remain visible. Quest and boss
 recipes land in the same book, and universal base recipes remain in the
 Basics book (§2.2/§2.3).
 
-**D5 — Refinement is the profession's product.** +15 % base damage or
-armor and +100 % durability; only refined items can be enchanted; affixes
-are 2 prefixes + 2 suffixes, and mastery tier is how many of the four a
-crafter can fill. 15 % was chosen against 25 % because a refined tier-n
+**D5 — Refinement is the profession's product.** The 2026-08-07 form used
++15 % base damage or armor and +100 % durability; only refined items could be
+enchanted; affixes were 2 prefixes + 2 suffixes, with mastery filling the four.
+**Superseded 2026-09-20:** ordinary gear now has one prefix and one suffix,
+and Expert/Master temper values rather than adding slots (§0, §6b.5). The
+15 % refinement and doubled durability remain. 15 % was chosen against 25 % because a refined tier-n
 item must not beat an unrefined tier-n+1 item — §3.8 shows it holds at
 every step of the ladder. The refinement word drops out of the name once
 an affix is present, since only refined items can carry one (§6b).
@@ -2499,7 +2509,7 @@ professions with no wearable output of its own.
 
 **D8 — The enchant roll band follows the ITEM, not the crafter.** §6.3's
 four bands are picked by the item's **ilvl**; the crafter's mastery
-decides only **how many** affix slots may be filled (§6b.5). D1 had left
+decides only which affix/value operation is available (§6b.5). D1 had left
 the sentence readable both ways ("read as a crafter … read as an item"),
 and the two readings diverge, because mastery follows the *character's
 level* while ilvl follows the *item's material tier*. The crafter
@@ -2529,15 +2539,17 @@ speed%, which are the identity of the armor and melee-weapon rows.
 Consequence, stated rather than discovered later: the §6.3 worst case
 for crit rises from ≈ 30 % on 6 slots to ≈ 36 % on 8 and now **clamps**
 against the 30 % cap of `combat_stats.md` §2 instead of landing on it.
-Dodge (≈ 19 %) and the 60 % armor cap are untouched, because trinkets
-roll neither.
+Dodge (≈ 19 %) was untouched by that decision because trinkets roll neither.
+The referenced 60% armor cap was later superseded by Round 11's attacker-level
+rating formula and universal 70% reduction cap.
 
 **D12 — There is no poison stat** (resolves the poison half of A2).
 §6b.4's *of the snake* (+poison) was an off-hand example, not a
 decision: poison appears in no §6.2 pool, no §6.3 row and nowhere in
 `combat_stats.md`. The example is now *of the cat* (+dodge), and poison
-is booked as the **Rogue's signature damage type for Phase 2**
-(`classes.md` §6). Poison as a *mob* effect (the serpent, and the
+was then booked as the **Rogue's signature damage type for Phase 2**. That
+plan is superseded by the Scout, which has no poison in V1 (`classes.md` §6;
+`scout.md` §1). Poison as a *mob* effect (the serpent, and the
 Alchemist's Antivenom that cures it) is unaffected — that is a mob verb,
 not a player stat.
 

@@ -4,7 +4,7 @@
 built two trees of five talents per class on a 20-point budget. The user's
 rulings of **2026-09-16** (§5) replace the budget, the tree size, the tier
 shape, the capstone rule and the respec seam, and add a fourth class. This
-revision rebuilds the proposal on those rulings.
+revision rebuilds the decided design on those rulings.
 
 **Status, 2026-09-17: lanes X1, X2 and X4 of §4 are implemented.** X1/X2
 (round 4, lane W1) shipped `mods/PLAYER/grug_classes/talents.lua` with the 48 talents of the three
@@ -15,8 +15,11 @@ the thirty numeric consumers of §3.8 and the code halves of rulings 19, 20 and
 and level-up notice; `/talents` remains read-only and the interim `/talent` and
 `/respec` commands are gone. WP44 has not published measured income yet, so
 X4's six prices remain the explicitly named coordinator placeholder in
-`talents_ui.lua`, not accepted measured values. Lane X3 is still open, so the
-keystones, capstones and cap overrides remain unimplemented. The X1/X2 record:
+`talents_ui.lua`, not accepted measured values. Lane X3 remains open except
+for the targeted Round 11 armor slice: Ironbound's rating bonus and Unbroken's
+×1.40 rating multiplier plus bounded +15-rating emergency window are delivered
+under the universal 70% reduction cap. Other keystones, capstones and cap
+overrides remain unimplemented. The X1/X2 record:
 `docs/research/wp11-talents-phase1.md`.
 
 Companion files written with this revision:
@@ -29,7 +32,7 @@ Companion files written with this revision:
   ranged-mob task card of the same session. Not part of WP11; it is named
   here because the Scout's kiting and stealth read on top of it.
 
-The decided frame this proposal must fit is quoted where it binds. Where a
+The decided frame this design must fit is quoted where it binds. Where a
 user ruling of 2026-09-16 **supersedes** a decided sentence, the sentence is
 named with its file and line and the correction is made in that file's own
 commit (§5.3).
@@ -42,19 +45,17 @@ commit (§5.3).
   source.
 - `classes.md` §5 (`:459`): "Renew *(talent)* … Unlocked via the Holy tree
   (WP11)." Still true; Renew is the Mercy tree's first keystone (§2.5).
-- `economy.md` §4 (`:92`): "**Talent respec:** repeatable at the class
-  trainer, rising with level". **Ruling 4 supersedes the location**: there is
-  no class trainer. `economy.md:92` and `items_crafting.md` §8.3 (`:2380`)
-  are *not* this lane's files and still carry the retired seam — see §7, task 3.
-- `AGENTS.md:66-71`: `docs/design/` holds *decided* design with no open
-  questions. This file carries an open-decisions section (§6) because the
-  lane brief asked for the proposal and its decisions in one deliverable;
-  ruling 24 settles that an open question may live in its own design doc, which is why §6 is here.
+- `economy.md` §4 and `items_crafting.md` §8.3 now implement ruling 4's
+  decided location: respec is performed in the talent UI, with no class
+  trainer or NPC. The older trainer sentence survives only in labelled
+  supersession history.
+- `AGENTS.md` requires `docs/design/` to contain decided rules only. Section 6
+  is therefore a closed decision record; it contains no current open question.
 - `AGENTS.md:844`: "Never copy WoW assets/names 1:1 — Blizzard IP. Own
   assets, own names with a recognizable character." Ruling 5 makes this
   binding for every talent name; §2.11 is the audit.
 
-Everything this proposal says about the code is a `file:line` citation into
+Everything this design says about the code is a `file:line` citation into
 `mods/` at **`70dda602`**, re-resolved after this file was written; nothing
 under `mods/` is changed by this lane, so those numbers are the same on both.
 Citations into the four **design docs this lane edits** (`combat_stats.md`,
@@ -70,7 +71,7 @@ numbers as `main:NNN` and quotes the sentence in full.
 ### 1.1 Four classes, two trees, two chains per tree
 
 Three classes ship (`grug_classes/init.lua:136`, `:146`, `:156`); the fourth,
-**Scout**, is planned now and implemented later (ruling 7,
+**Scout**, is decided and remains pending implementation (ruling 7,
 [scout.md](scout.md)). Each class gets two trees, and — new in revision 2 —
 **each tree holds two rough playstyle directions, called chains** (ruling 2).
 A chain is a straight line of four talents: two numeric, then a keystone,
@@ -216,10 +217,9 @@ loss to the level floor), so a point is never taken back by dying.
 
 - **Where: in the talent UI itself. There is no class trainer and no NPC.**
   Ruling 4 is explicit. This supersedes the location half of `progression.md`
-  §2 (`:48-54`) and `economy.md` §4 (`:92`). The consequence to accept:
-  `world.md:408`'s class trainers lose their stated purpose, and
-  `docs/research/wp13-npc-sockets-contract.md` §8.4 never needs a `trainer`
-  vendor kind.
+  §2 and `economy.md` §4. Those living sections and `world.md` now state the
+  no-trainer rule; `docs/research/wp13-npc-sockets-contract.md` §8.4 never
+  needs a `trainer` vendor kind.
 - **What: a full reset.** Ruling 20 — a respec sets every rank to 0 and
   returns all 30 points. No partial or single-tree respec: one button, one
   price, nothing to argue about over which half was refunded.
@@ -1101,8 +1101,8 @@ free-first assertion fail.
 | `grug_core/` the speed aggregator | **prerequisite, not this WP** — §3.9. Hold Ground's and Shake Loose's root/slow immunity are flags it owns, and the Scout's Sprint is a modifier in it | — |
 | `tools/wp11/talent_tree_kat.lua` | **new** — §3.7 | medium |
 | `tools/wp11/talent_ui_kat.lua` | **new** — X4 interactions, transaction and render checks | medium |
-| `docs/design/combat_stats.md` §2 | the **cap-override paragraph** of §2.10 — the one decided-doc amendment the talent system forces | small |
-| `docs/design/classes.md`, `progression.md`, `economy.md`, `items_crafting.md`, `README.md` | the "base value" wording of §2.10 and the retired class-trainer respec seam (§7, task 3) | small |
+| `docs/design/combat_stats.md` §2 | the common cap-override rule; Round 11 has filled its Unbroken armor case, while the remaining consumers belong to X3/SCOUT | small |
+| `docs/design/classes.md`, `progression.md`, `economy.md`, `items_crafting.md`, `README.md` | the "base value" wording of §2.10 and the no-class-trainer respec rule | small |
 
 ### 3.9 The movement aggregator (ruling 11) — a prerequisite this WP does not own
 
@@ -1286,7 +1286,7 @@ landed.
 |---|---|---|---|
 | **X1 — the model** | `talents.lua`: registry, the 48 talent registrations of the three shipped classes (data only, no consumer), points, the two gate kinds, spend/respec rules, persistence with the validating read path, the window table of §3.2, `get_talent_bonus` / `talent_rank`, the `on_talents_changed` callback, and the whole KAT of §3.7 except group 5's consumer half. Ships with **zero gameplay effect** — every talent is inert. | — | M |
 | **X2 — the numeric consumers** | The **30** talents of the three shipped classes that are neither keystone nor capstone, at the sites of the §3.8 table. **Twenty-five are a one-line read where the table says; five hook the three central per-player seams of §3.2** (Grudge, Quick Step, Swift Word and Onset on `arm_cooldown`; Far Cast on the spawn call and `get_range`), and each of those needs its own no-talent regression case (KAT group 8). Completes KAT groups 5 and 6. Touches shared files, so it is one lane and not split by class. | X1 | M |
-| **X3 — keystones and capstones** | **Four** new ability registrations (Hold Ground, Cinderfall, Glacial Ward, Word of Ruin); the `talent_gated` flag on the **two shipped abilities that become keystones**, Renew (already flagged) and Hamstring (`kits.lua:350`, ruling 19), plus their rank scaling; the grant predicate at the three `talent_gated` sites and the append-after-base-kit rule of §3.4; **seven replacements** written inside the shipped abilities' own bodies (Bellow, Broadstroke, Brand, Frostbind, Turn Aside, Recompense, Hearten) and the rule-breaking finisher Tendon Cut; the **five capstone effects** of the three shipped classes; the **two cap-override** paths they need (`stats.lua:45` for crit, `equipment.lua:480` with `combat.lua:38` for armor — the dodge cap is the Scout's) and the `combat_stats.md` §2 amendment of §2.10; an engine probe per new ability and per replacement. **Hold Ground's root/slow immunity needs the §3.9 aggregator first.** | X1, §3.9 for one talent | L |
+| **X3 — keystones and capstones (open except delivered armor slice)** | **Four** new ability registrations (Hold Ground, Cinderfall, Glacial Ward, Word of Ruin); the `talent_gated` flag on the **two shipped abilities that become keystones**, Renew (already flagged) and Hamstring (`kits.lua:350`, ruling 19), plus their rank scaling; the grant predicate at the three `talent_gated` sites and the append-after-base-kit rule of §3.4; **seven replacements** written inside the shipped abilities' own bodies (Bellow, Broadstroke, Brand, Frostbind, Turn Aside, Recompense, Hearten) and the rule-breaking finisher Tendon Cut; the remaining capstone effects and cap-override paths. Round 11 already delivered Ironbound and Unbroken's armor-rating multiplier/window, so X3 must preserve and consume that implementation rather than recreate it. The remaining crit override is in `stats.lua:45`; the Scout dodge override belongs to S3. Each remaining ability/replacement needs its specified probe. **Hold Ground's root/slow immunity needs the §3.9 aggregator first.** | X1, §3.9 for one talent | L |
 | **X4 — UI, level-up and respec (implemented 2026-09-17)** | The sfinv Talents page of §3.5, the two `mod.conf` edges, the level-up chat line with its `old_level ~= nil` guard, the respec transaction against `grug_money.take`, the price of ruling 22 (§1.4), and the raw-vs-effective display `combat_stats.md:104-108` requires — including the **raised cap** while a rule-breaker runs. The six price values remain a coordinator placeholder until WP44 publishes the measured ledger outputs. | X1 | M |
 
 X3 is the only lane that owes a runtime test on a headless server; X1, X2 and
@@ -1479,7 +1479,7 @@ Original 5.2, 5.3, 5.8 and 5.12 were already closed by rulings 1, 2/3, 4 and
 10 respectively, and are recorded there.
 
 **Sixth round, 2026-09-16 (interactive).** The user answered the five items
-that were still open after the fifth round. **Nothing in this proposal is
+that were still open after the fifth round. **Nothing in this design is
 undecided any more.**
 
 25. **Warrior rage: option (b) — lower the income and add decay.**
@@ -1520,7 +1520,7 @@ checkout. Line numbers elsewhere in this file are branch-relative.
 | 1 | `progression.md main:28` "**1 talent point every 3 levels** (20 points total at 60)" **and** `combat_stats.md main:14` "the class skill tree (**1 skill point per level**)". Revision 1's open decision about which one won is closed: **neither**. |
 | 2 | `progression.md main:29-30` "talent trees hold 2 trees × 5 talents × 3 ranks = 30 ranks per class — you can fill two thirds: real choices, no full clear (WP11)" and `BACKLOG.md main:34`'s repetition of it |
 | 3 | `progression.md main:31-35` "**9 of 10 talents are numeric modifiers** (cheap to build, easy to balance); **exactly one capstone per tree**, unlocked at 8+ points in that tree, and **every capstone is a NEW active 'main skill'** … (e.g. Priest Holy capstone: Renew; further capstones designed with WP11)" |
-| 4 | `progression.md main:36-37` "**Respec at the class trainer for gold**, price rising with level — repeatable per-character gold sink and the class trainer's purpose", together with `economy.md:92`, `items_crafting.md:2380` and `world.md:408`, which this lane does not own and which still say it — §7, task 3 |
+| 4 | `progression.md main:36-37` "**Respec at the class trainer for gold**, price rising with level — repeatable per-character gold sink and the class trainer's purpose", together with the former matching text in `economy.md`, `items_crafting.md` and `world.md`. All living sections now state the no-trainer rule. |
 | 5 | revision 1's naming open decision, for talents |
 | 7 | `classes.md main:466-470` "**Poison → arrives with the Rogue in Phase 2** (noted 2026-08-08). Poison is intended as the **Rogue's signature damage type** … and the Rogue is the Phase 2 class" — the Phase-2 Rogue is **superseded by the Scout**, and with it the poison plan. The bullet is now `classes.md:475-487` on this branch and quotes its own retired text. |
 
@@ -1538,19 +1538,18 @@ it stood before this lane, the bare number is where it is on this branch.
 | `docs/design/classes.md` | the pointer paragraph; the Phase-2 Rogue bullet (`main:466-470`, now `:470-482`) marked superseded by the Scout |
 | `BACKLOG.md` | the WP11 row (`main:34`) and the respec-price note (`main:539-540`, now `:542-550`) |
 
-**Not this lane's files, and therefore still wrong after this lane**:
-`economy.md:92`, `items_crafting.md:2380`, `world.md:408` and
-`docs/research/post-wp40-readiness.md:81` still send the player to a class
-trainer. §7 carries them as a follow-up task.
+The living sections of `economy.md`, `items_crafting.md` and `world.md` have
+since been corrected. `docs/research/post-wp40-readiness.md` is a historical
+readiness record rather than current design authority.
 
 ---
 
-## 6. Open decisions for the user
+## 6. Closed decision record
 
 **No open decisions as of 2026-09-16.** Six rounds of rulings closed all
 thirteen questions of revision 1 and the five that survived into revision 2;
-§5 carries each with its ruling text, and §7 carries the work that decisions
-create in files this lane does not own.
+§5 carries each with its ruling text, and §7 carries remaining implementation
+work.
 
 The heading stays for whatever the first playtest raises. When something new
 goes here it should carry, as the user's meta-instruction of 2026-09-16
@@ -1578,11 +1577,9 @@ are listed so that the merge does not leave the repo contradicting itself.
 | # | Task | Why it cannot be done here |
 |---|---|---|
 | 1 | Amend `mounts.md` §3.1's pillar paragraph and `combat_stats.md` §3 to say the 4.4 > 4.0 inequality holds **except** for named, long-cooldown skills, of which Sprint is the first at **+25 % for 10 s every 300 s**; the Swiftness Draught's +8 % stays as it is | rulings 10 and 29 decided it; neither file is this lane's |
-| 2 | Add `combat_stats.md` §2's **cap-override paragraph** (§2.10): caps are absolute except for a named, time-limited, single-source override, and the Talents header shows the raised cap while it runs | decided by ruling 10; it is WP11 lane X3's edit, not this lane's |
-| 3 | Retire the class trainer in `economy.md:92`, `items_crafting.md:2380`, `world.md:408` and `docs/research/post-wp40-readiness.md:81` | ruling 4 decided it; four files, none of them this lane's |
+| 2 | Implement the remaining named cap overrides without replacing Round 11's delivered Unbroken armor path: the Mage crit override belongs to X3 and the Scout dodge override to S3 | the common cap rule is decided and documented; only these consumers remain |
 | 4 | Correct the five shipped comments that assume a class change (`grug_inventory/equipment.lua:57`, `:501`, `:579`, `grug_core/combat.lua:110`, `grug_abilities/init.lua:1775-1776`) and remove the `/class` registration at `grug_classes/selection.lua:594-595` — **not** the `:554-592` helper, which `/race` still needs | ruling 20 decided it; it is code, and this lane is docs-only (§3.10 lists the sites) |
 | 5 | Rename the two remaining "Holy tree" mentions to Mercy — the Renew row at `classes.md:464` and the comment at `mods/PLAYER/grug_abilities/kits.lua:650` | bookkeeping after ruling 5's tree names; one is code |
-| 6 | Correct `items_crafting.md:2425-2426`'s mcl_bows media line: two CC0 sounds and one CC BY 3.0, not "two attribution sounds, CC BY-SA 4.0" ([scout.md](scout.md) §4.1) | not this lane's file, and a `LICENSE-media.md` row copied from it would be wrong |
 | 7 | Fix three drifted citations **into** `mods/ENTITIES/mobs/api.lua`, held by three other files: `mounts.md:165` points at api.lua 2525-2526 where the line is **2531**, and the comments at `grug_mobs/golem.lua:67` and `grug_mobs/skeleton_archer.lua:65` both point at api.lua 2249 where the line is **2366** | found while writing `docs/research/mob-pressure-task-card.md`, which carries them; two are code comments |
 | 8 | **Re-tune Warrior rage** (ruling 25): swing **12 → 8** at all five `add_rage` sites (`grug_abilities/init.lua:939`, `:950`, `:966`, `:1915`, `:2099`), hit taken **4 → 3** (`:2109-2110`), and a **5 rage/s out-of-combat decay** on the existing `grug_core.in_combat` window (read at `:2201`). `classes.md` §3's table and its "+12 rage per auto-hit" tuning note (`:418`, `:430`) move with it. **Fallback if (b) overshoots**: leave the income alone and raise the prices instead — Mighty Blow 25 → 35, Hamstring 10 → 15 | it is `classes.md` §3 tuning plus code, for the WP11 / mob-pressure round; WP11's talents must then be re-checked against whichever number lands, because Stoke, Heavy Hand and Broadstroke all assume rage is a limiter |
 | 9 | Add the **ranged damage term** to `combat_stats.md` §2 (ruling 28): `weapon damage + floor(Dex/10)`, published as `grug_classes.get_ranged_bonus` beside `get_melee_bonus` (`grug_classes/stats.lua:34-36`) | a third damage term in a decided file; it lands with the Scout's lane S3, not with WP11 |
