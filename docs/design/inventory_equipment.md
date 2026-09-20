@@ -241,10 +241,12 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   metal, cloth or leather armor. Plain feedstock preparation for cloth, leather
   and processed wood is also profession-free. Professional fittings, grips and
   other improvement materials remain trade goods but are never base-item inputs.
-- Profession recipes use their owning station. Weaponsmith and Armorsmith share
-  one Forge; Leatherworker uses the Tanning Rack, Tailor the Tailor Bench and
-  Woodcarver the Carving Bench. Refinement and Add Affix are transactional
-  in-place operations on one concrete stack and preserve its metadata and wear.
+- Equipment refinement and Add Affix use their owning profession station.
+  Weaponsmith and Armorsmith share one Forge; Leatherworker uses the Tanning
+  Rack, Tailor the Tailor Bench and Woodcarver the Carving Bench. These are
+  transactional in-place operations on one concrete stack and preserve its
+  metadata and wear. Other profession recipes retain their explicit grid,
+  furnace, dual-furnace or brewing-stand route.
 - Learned profession and T1–T6 profession level gate professional operations.
   Universal Basics routes have neither gate and award no profession progress.
 - Recipe books display human item descriptions. A group slot lists concrete

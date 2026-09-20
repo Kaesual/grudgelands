@@ -1,109 +1,114 @@
 -- Independent oracle for the accepted universal Basics equipment grids.
--- Usage: luajit -e 'io.write(dofile("tools/r10_equip/base_recipes_kat.lua")("."))'
+-- Shapes are transcribed from the pinned sources cited in r10-equipment.md;
+-- production recipe tables are deliberately not reused here.
 return function(repo)
-	local saved = {core = core, grug_professions = grug_professions,
-		grug_gear = grug_gear}
-	local crafts, items = {}, {}
-	core = {registered_items = {["grug_farming:hoe"] = {}}}
-	local clears = {}
-	function core.clear_craft(def) clears[def.output] = (clears[def.output] or 0) + 1 end
+	local saved = {core=core, grug_professions=grug_professions, grug_gear=grug_gear}
+	local crafts, yields, items, clears = {}, {}, {}, {}
+	core = {registered_items = {["grug_farming:hoe"]={}}}
+	function core.clear_craft(def) clears[def.output]=(clears[def.output] or 0)+1 end
 	function core.register_craft(def)
-		local output = def.output:match("^([^%s]+)")
-		crafts[output] = crafts[output] or {}
-		crafts[output][#crafts[output] + 1] = def.recipe
+		local output, count=def.output:match("^([^%s]+)%s*(%d*)$")
+		crafts[output]=crafts[output] or {}; yields[output]=yields[output] or {}
+		crafts[output][#crafts[output]+1]=def.recipe
+		yields[output][#yields[output]+1]=tonumber(count) or 1
 	end
-	grug_professions = {register_item = function(name) items[name] = true return name end}
-	grug_gear = {
-		BRACKET_TINT = {"a", "b", "c", "d", "e", "f"},
-		MATERIALS = {
-			{metal={name="Bronze"}}, {metal={name="Iron"}},
-			{metal={name="Steel"}}, {metal={name="Silversteel"}},
-			{metal={name="Embersteel"}}, {metal={name="Abyssal Steel"}},
-		},
-	}
-	local ok, problem = pcall(dofile, repo ..
-		"/mods/ITEMS/grug_professions/base_recipes.lua")
+	grug_professions={register_item=function(name) items[name]=true return name end}
+	grug_gear={BRACKET_TINT={"a","b","c","d","e","f"}, MATERIALS={
+		{metal={name="Bronze"}},{metal={name="Iron"}},{metal={name="Steel"}},
+		{metal={name="Silversteel"}},{metal={name="Embersteel"}},
+		{metal={name="Abyssal Steel"}},}}
+	local ok, problem=pcall(dofile,repo.."/mods/ITEMS/grug_professions/base_recipes.lua")
 	if not ok then
-		core, grug_professions, grug_gear = saved.core, saved.grug_professions,
-			saved.grug_gear
-		error(problem, 0)
+		core,grug_professions,grug_gear=saved.core,saved.grug_professions,saved.grug_gear
+		error(problem,0)
 	end
 	local function fail(message)
-		core, grug_professions, grug_gear = saved.core, saved.grug_professions,
-			saved.grug_gear
-		error("r10 base recipes: " .. message, 0)
+		core,grug_professions,grug_gear=saved.core,saved.grug_professions,saved.grug_gear
+		error("r10 base recipes: "..message,0)
 	end
-	local function flat(recipe)
-		local out = {}
-		for row = 1, #recipe do
-			for column = 1, #recipe[row] do
-				local item = recipe[row][column]
-				if item and item ~= "" then out[#out + 1] = item end
+	local function signature(recipe)
+		local rows={}
+		for row=1,#recipe do rows[row]=table.concat(recipe[row],"|") end
+		return table.concat(rows,"/")
+	end
+	local function shape(material,mask)
+		local recipe={}
+		for row=1,#mask do
+			recipe[row]={}
+			for column=1,#mask[row] do
+				recipe[row][column]=mask[row][column]==1 and material or ""
 			end
 		end
-		return table.concat(out, ",")
+		return recipe
 	end
-	local metals = {"bronze", "iron", "steel", "silversteel", "embersteel",
-		"abyssal_steel"}
-	local bars = {}
-	local axes = {"default:axe_bronze", "grug_materials:axe_iron",
-		"default:axe_steel", "grug_materials:axe_silversteel",
-		"grug_materials:axe_embersteel", "grug_materials:axe_abyssal_steel"}
-	for tier = 1, 6 do bars[tier] = "grug_materials:" .. metals[tier] .. "_bar" end
-	local armor_counts = {head=5, chest=8, legs=7, feet=4}
-	local checked = 0
-	local sticks = crafts["default:stick"]
-	if clears["default:stick"] ~= 1 or not sticks or #sticks ~= 1 or
-			#sticks[1] ~= 2 or #sticks[1][1] ~= 1 or #sticks[1][2] ~= 1 or
-			flat(sticks[1]) ~= "group:wood,group:wood" then
-		fail("stick path is not exactly two vertical planks")
-	end
-	for tier = 1, 6 do
-		local metal, bar = metals[tier], bars[tier]
-		local rod = "grug_professions:metal_rod_" .. metal
-		if not items[rod] then fail("missing rod " .. rod) end
-		local sword = crafts["grug_gear:sword_" .. metal]
-		if #sword ~= 2 or flat(sword[1]) ~= table.concat({bar,bar,"group:stick"},",") or
-				flat(sword[2]) ~= table.concat({bar,bar,rod},",") then
-			fail(metal .. " sword routes differ")
-		end
-		local axe_routes = crafts[axes[tier]]
-		if not axe_routes or #axe_routes ~= 2 then
-			fail(metal .. " axe lacks its mirrored recipe")
-		end
-		local expected = {
-			dagger = bar .. ",group:stick",
-			greataxe = table.concat({bar,bar,bar,bar,"group:stick",bar,"group:stick"},","),
-			wand = "grug_artisans:" .. ({"seasoned","polished","hardened","inlaid","lacquered","heartwood"})[tier] .. "_wood,group:stick",
-			scepter = bar .. ",grug_artisans:" .. ({"seasoned","polished","hardened","inlaid","lacquered","heartwood"})[tier] .. "_wood,group:stick",
-		}
-		for family, sequence in pairs(expected) do
-			local routes = crafts["grug_gear:" .. family .. "_" .. metal]
-			if not routes or #routes ~= 2 or flat(routes[1]) ~= sequence then
-				fail(metal .. " " .. family .. " differs")
+	local checked=0
+	local function expect(output,expected,amounts)
+		local actual=crafts[output]
+		if not actual or #actual~=#expected then fail(output.." route count differs") end
+		for index=1,#expected do
+			if signature(actual[index])~=signature(expected[index]) then
+				fail(output.." route "..index.." 2D shape differs")
+			end
+			if yields[output][index]~=(amounts and amounts[index] or 1) then
+				fail(output.." route "..index.." output count differs")
 			end
 		end
-		local wood = "grug_artisans:" .. ({"seasoned","polished","hardened","inlaid","lacquered","heartwood"})[tier] .. "_wood"
-		local orb = crafts["grug_gear:orb_" .. metal]
-		if not orb or #orb ~= 1 or flat(orb[1]) ~= table.concat({wood,wood,wood,wood},",") then
-			fail(metal .. " orb is not four wood")
-		end
-		if flat(orb[1]):find("diamond", 1, true) then fail(metal .. " orb has a gem") end
-		local staff = crafts["grug_gear:staff_" .. metal]
-		if not staff or flat(staff[1]) ~= table.concat({wood,wood,wood},",") then
-			fail(metal .. " staff differs")
-		end
-		for slot, count in pairs(armor_counts) do
-			local recipe = crafts["grug_gear:" .. slot .. "_metal_" .. metal]
-			local actual = 0
-			for _ in flat(recipe[1]):gmatch("[^,]+") do actual = actual + 1 end
-			if actual ~= count then fail(metal .. " " .. slot .. " count differs") end
-		end
-		checked = checked + 1
+		checked=checked+1
 	end
-	local hoes=crafts["grug_farming:hoe"]
-	if not hoes or #hoes~=2 then fail("Farmer's Hoe lacks mirrored recipes") end
-	core, grug_professions, grug_gear = saved.core, saved.grug_professions,
-		saved.grug_gear
-	return "r10_base_recipes\t" .. checked .. " tiers\tcanonical grids\tPASS\n"
+	local masks={head={{1,1,1},{1,0,1}},chest={{1,0,1},{1,1,1},{1,1,1}},
+		legs={{1,1,1},{1,0,1},{1,0,1}},feet={{1,0,1},{1,0,1}}}
+	local metals={"bronze","iron","steel","silversteel","embersteel","abyssal_steel"}
+	local cloth={"patch","woven","heavy","silkweave","silk","stormweave"}
+	local leather={"light","cured","heavy","scaled","sleek","nightscale"}
+	local woods={"seasoned","polished","hardened","inlaid","lacquered","heartwood"}
+	local picks={"default:pick_bronze","grug_materials:pick_iron","default:pick_steel",
+		"grug_materials:pick_silversteel","grug_materials:pick_embersteel",
+		"grug_materials:pick_abyssal_steel"}
+	local axes={"default:axe_bronze","grug_materials:axe_iron","default:axe_steel",
+		"grug_materials:axe_silversteel","grug_materials:axe_embersteel",
+		"grug_materials:axe_abyssal_steel"}
+	local shovels={"default:shovel_bronze","grug_materials:shovel_iron",
+		"default:shovel_steel","grug_materials:shovel_silversteel",
+		"grug_materials:shovel_embersteel","grug_materials:shovel_abyssal_steel"}
+	local hides={"grug_mobs:light_leather","grug_professions:cured_leather",
+		"grug_mobs:heavy_leather","grug_mobs:scaled_hide",
+		"grug_professions:sleek_leather","grug_professions:nightscale_leather"}
+	expect("default:stick",{{{"group:wood"},{"group:wood"}}},{4})
+	if clears["default:stick"]~=1 then fail("old stick route was not cleared") end
+	for tier=1,6 do
+		local metal=metals[tier]; local bar="grug_materials:"..metal.."_bar"
+		local rod="grug_professions:metal_rod_"..metal; local stick="group:stick"
+		if not items[rod] then fail("missing rod "..rod) end
+		expect(rod,{{{bar},{bar}}},{4})
+		expect("grug_gear:sword_"..metal,{{{bar},{bar},{stick}},{{bar},{bar},{rod}}})
+		expect(picks[tier],{{{bar,bar,bar},{"",stick,""},{"",stick,""}}})
+		expect(shovels[tier],{{{bar},{stick},{stick}}})
+		expect(axes[tier],{{{bar,bar},{bar,stick},{"",stick}},
+			{{bar,bar},{stick,bar},{stick,""}}})
+		local materials={metal={key=metal,item=bar},
+			cloth={key=cloth[tier],item="grug_professions:bolt_"..cloth[tier]},
+			leather={key=leather[tier],item=hides[tier]}}
+		for line,material in pairs(materials) do
+			for slot,mask in pairs(masks) do
+				expect("grug_gear:"..slot.."_"..line.."_"..material.key,
+					{shape(material.item,mask)})
+			end
+		end
+		local wood="grug_artisans:"..woods[tier].."_wood"
+		expect("grug_gear:dagger_"..metal,{{{"",bar,""},{"",stick,""}},
+			{{"",bar,""},{"",rod,""}}})
+		expect("grug_gear:greataxe_"..metal,{{{bar,bar,bar},{bar,stick,bar},{"",stick,""}},
+			{{bar,bar,bar},{bar,rod,bar},{"",rod,""}}})
+		expect("grug_gear:wand_"..metal,{{{"",wood,""},{"",stick,""}},
+			{{"",wood,""},{"",rod,""}}})
+		expect("grug_gear:scepter_"..metal,{{{"",bar,""},{"",wood,""},{"",stick,""}},
+			{{"",bar,""},{"",wood,""},{"",rod,""}}})
+		expect("grug_gear:orb_"..metal,{{{"",wood,""},{wood,"",wood},{"",wood,""}}})
+		expect("grug_gear:staff_"..metal,{{{"",wood,""},{"",wood,""},{"",wood,""}}})
+	end
+	expect("grug_farming:hoe",{
+		{{"group:wood","group:wood",""},{"","default:stick",""},{"","default:stick",""}},
+		{{"","group:wood","group:wood"},{"","default:stick",""},{"","default:stick",""}},})
+	core,grug_professions,grug_gear=saved.core,saved.grug_professions,saved.grug_gear
+	return "r10_base_recipes\t6 tiers\t"..checked.." exact outputs\t2D+yields\tPASS\n"
 end
