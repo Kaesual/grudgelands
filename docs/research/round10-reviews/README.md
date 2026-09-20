@@ -23,6 +23,17 @@ the reports; the final dated candidate disposition supersedes earlier verdicts.
 | Runtime authority refresh | GPT-6 Astra | GPT-5.6 Sol | Source hash in report | [CLEAN](authority-refresh-review.md) | 0 |
 | CLOSE | GPT-5.6 Sol, focused correction by GPT-6 Astra | GPT-5.6 Sol | `557f942e` | [CLEAN conditional on ART](close-review.md); dependency present in integration `c6df7d4f` | 1 |
 
+Post-integration gates found a display-placement High, corrected in `561a9c2b`
+and independently [reviewed with a real engine witness](display-placement-review.md).
+The following six-capital runtime review is [scoped to source `2fcda608`](final-capital-engine-review.md);
+its numeric transcription mistakes are corrected by the
+[machine-extracted addendum](final-capital-engine-review-correction-2026-09-20.md).
+The original report remains intact. [Six-start evidence](six-start-engine-review.md)
+passes for the same source; neither report certifies later source bytes.
+A separate unintended outer lamp/pier movement is corrected by
+[`ccd10d96`, independently CLEAN SOURCE](capital-phase-review.md); corrected
+engine runs and historical overlay attribution remain pending.
+
 Every row has zero remaining Critical/High findings. Observed elapsed delivery
 time is `unknown`; it is not reconstructed from chat timestamps. The separate
 ART license preflight found two High candidate-source holds before the formal
