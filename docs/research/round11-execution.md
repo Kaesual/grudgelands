@@ -249,3 +249,31 @@ Root is preparing `tools/r11_integration/engine_probe` for one bounded final
 LuaJIT engine boot: complete registrations and native water callbacks in one
 scratch block, with automatic six-capital preload disabled in the disposable
 probe only. No mapgen census or user-world writes; no engine result claimed yet.
+
+
+### SPEC accepted / REPAIR cadence correction
+
+SPEC `ee6c3f6a` independently CLEAN and integrated (Sol author, root final one-row
+correction; independent Sol reviewer; initial4M then1L, two correction rounds,
+elapsedunknown). Report spec-final.md. All reviewed active-doc authority
+contradictions are closed; the Scout trader consumers remain explicit work.
+
+REPAIR correction `c53a512d` fixes exact lifetime arithmetic, generic broken
+on_use, persistent concrete item receipts, shared heal/absorb action identities,
+real runtime KAT coverage and all current vendor66-marker crossreferences.
+Second independent review confirmed one High integration defect: metadata-only
+wear/identity writes trigger the full ItemStack weapon-change comparator and
+restart held-swing cadence/late carry. A separate alleged table-ID rejection
+was retracted after direct LuaJIT expression and first-debit checks; preserve
+that correction in repair-second.md rather than counting it as a product bug.
+
+Native Sol `r11_repair_fix` owns the narrow cadence/notifier correction in
+r11-repair. Scout merged the frozen dependency as `760a3d23` after its isolated
+new-module checkpoint `b495e2a8`, but pauses shared abilities/init.lua and
+inventory/equipment.lua until the corrective handoff. Other Scout implementation
+continues. Final acceptance still requires independent REPAIR and SCOUT reviews.
+
+Root's bounded engine probe is committed `bb166bf5`; read-only fixture review
+is active before execution. Flatpak `luanti --version` confirms Luanti5.17.0
+with LuaJIT2.1.1784272936 (OpenResty); no PUC runtime is planned or executed.
+Main/runtime stay `ac232ec2`; no Round11 sync or push yet.
