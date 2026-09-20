@@ -32,11 +32,11 @@ Round 11 baseline code, not the new design.
 - Recipe presentation/Help, inventory/talent readability and food findability,
   original-class WP11 talent consumers, and a report-only newcomer UX audit.
 
-## Remaining gate
+## Execution authorized
 
-The concrete annexes and independent plan review are complete, with no open
-findings or user design questions. Await the user's explicit round Go. No
-gameplay, assets or runtime-installation changes have started.
+The user explicitly gave Go. The concrete annexes and independent plan review
+are complete, with no open findings or user design questions. Execution is tracked
+in `docs/research/round12-execution.md`.
 
 After approval, fold all final rules into living design, record execution state
 and package ownership, and delete this TODO once no design questions remain.
