@@ -408,9 +408,26 @@ return function(root)
 	-- acquisition pass. Landing without a target must still settle to ground.
 	local entering = dragon_for("grug_mobs:ice_dragon", nil,
 		{x = 0, y = 1, z = 0})
+	entering.temp.grug_dragon = {mode = "ground", primary = 2, gust = 12,
+		rest_destination = {x = 8, y = 1, z = 0}}
 	function entering:general_attack() self.attack = enemy end
 	ice_def.do_custom(entering, 1)
-	assert(entering.attack == enemy, "idle dragon did not reacquire entering hostile")
+	assert(entering.attack == enemy,
+		"walking dragon did not reacquire entering hostile")
+	-- Run the captured production definition through mobs_redo's real on_step.
+	-- Its do_custom=false boundary must still acquire before the upstream
+	-- general_attack site that the return bypasses.
+	local full_step = dragon_for("grug_mobs:ice_dragon", nil,
+		{x = 0, y = 1, z = 0})
+	full_step.temp.grug_dragon = {mode = "ground", primary = 2, gust = 12,
+		rest_destination = {x = 8, y = 1, z = 0}}
+	full_step.node_timer, full_step.env_damage_timer = -100, 0
+	full_step.pause_timer, full_step.timer, full_step.timer1 = 0, 0, 0
+	full_step.falling = function() return false end
+	full_step.general_attack = function(self) self.attack = enemy end
+	full_step = real_mobs_step(ice_def, full_step, 1)
+	assert(full_step.attack == enemy,
+		"real mobs_redo on_step skipped dragon acquisition while walking")
 	entering.attack = nil
 	entering.temp.grug_dragon.mode = "landing"
 	ice_def.do_custom(entering, 0.1, {touching_ground = true})

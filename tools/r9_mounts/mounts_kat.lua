@@ -1,4 +1,5 @@
-return function(root)
+return function(root, options)
+	options = options or {}
 	assert(type(root) == "string" and root:sub(1, 1) == "/")
 
 	local serialized, serial_id = {}, 0
@@ -690,6 +691,8 @@ return function(root)
 		assert(trainer_text:find("Buy " .. price .. "c", 1, true))
 	end
 
+	local seen = {}
+	if not options.compact then
 	local ledgers = {
 		[root .. "/mods/PLAYER/grug_mounts/LICENSE-media.md"] = true,
 		[root .. "/mods/ENTITIES/grug_mobs/LICENSE-media.md"] = true,
@@ -700,7 +703,6 @@ return function(root)
 		ledger_text = ledger_text .. assert(file:read("*a"))
 		file:close()
 	end
-	local seen = {}
 	local expected_ranges = {
 		grug_mounts_horse = {1, 41}, grug_mounts_tiger = {1, 300},
 		grug_mobs_ibex = {1, 400}, grug_mobs_stag = {1, 150},
@@ -750,6 +752,7 @@ return function(root)
 		assert(model.animation.stand[2] <= maximum and
 			model.animation.move[2] <= maximum,
 			model.id .. " animation exceeds its mesh")
+	end
 	end
 
 	return "r9_mounts_v3|tiers=4|models=12|warning=48|warning_probes=112|" ..

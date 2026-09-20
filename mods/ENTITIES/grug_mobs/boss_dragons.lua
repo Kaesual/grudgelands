@@ -595,6 +595,15 @@ local function start_primary(self, state, target, target_pos, opts, airborne)
 end
 
 local function perch_tick(self, state, dtime, moveresult)
+	state.acquire = (state.acquire or 0) + dtime
+	if state.acquire >= 1 then
+		state.acquire = 0
+		-- do_custom owns every targetless rest/walk step and therefore bypasses
+		-- mobs_redo's later acquisition pass. Reuse that same bounded method
+		-- before any rest-route early return.
+		if self.general_attack then self:general_attack() end
+		if self.attack then return false end
+	end
 	local destination = state.rest_destination
 	if destination then
 		local pos = self.object and self.object:get_pos()
@@ -628,14 +637,6 @@ local function perch_tick(self, state, dtime, moveresult)
 		return false
 	end
 	state.perch = (state.perch or 0) + dtime
-	state.acquire = (state.acquire or 0) + dtime
-	if state.acquire >= 1 then
-		state.acquire = 0
-		-- do_custom owns idle movement and therefore bypasses mobs_redo's later
-		-- acquisition pass. Reuse the same bounded acquisition method here.
-		if self.general_attack then self:general_attack() end
-		if self.attack then return false end
-	end
 	if state.perch < 15 or not self._grug_perches or #self._grug_perches < 2 then
 		stop_object(self)
 		return false
