@@ -2,7 +2,7 @@
 """Build labelled native and nearest-neighbour before/after review plates."""
 
 from pathlib import Path
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageChops
 import hashlib
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -70,6 +70,13 @@ def main():
             Image.open(COOK / ("grug_cooking_" + name + ".png")).convert("RGBA")))
     food_rows.append(("bread", colorize(clay, "#d8a552", 145),
         Image.open(COOK / "grug_cooking_bread.png").convert("RGBA")))
+    meat_path = ROOT / "mods/ENTITIES/mobs/textures/mobs_meat.png"
+    fish_path = ROOT / "mods/ENTITIES/grug_mobs/textures/grug_mobs_item_raw_fish.png"
+    meat = Image.open(meat_path).convert("RGBA")
+    fish = Image.open(fish_path).convert("RGBA")
+    cooked_fish = ImageChops.multiply(fish, Image.new("RGBA", fish.size, "#d59a5a"))
+    food_rows.extend([("cooked_meat (retained)", meat, meat),
+        ("cooked_fish (retained)", cooked_fish, cooked_fish)])
     sheet(food_rows, 1, EVIDENCE / "food-before-after-native.png")
     sheet(food_rows, 6, EVIDENCE / "food-before-after-6x.png", 2)
 
@@ -86,11 +93,16 @@ def main():
         weapon_rows.append(("greataxe_" + material, old, new))
     sheet(weapon_rows, 1, EVIDENCE / "weapons-before-after-native.png")
     sheet(weapon_rows, 8, EVIDENCE / "weapons-before-after-8x.png", 2)
+    # Regenerate all supplemental plates, so no superseded visual remains.
+    sheet([(label, after, after) for label, before, after in food_rows],
+          8, EVIDENCE / "food-after-8x.png", 2)
+    sheet([(label, after, after) for label, before, after in weapon_rows],
+          10, EVIDENCE / "weapons-after-10x.png", 2)
 
     files = sorted(list(COOK.glob("grug_cooking_dish_*.png")) +
         list(COOK.glob("grug_cooking_raw_*.png")) + [COOK / "grug_cooking_bread.png"] +
         list(GEAR.glob("grug_gear_item_wand_*.png")) +
-        list(GEAR.glob("grug_gear_item_greataxe_*.png")))
+        list(GEAR.glob("grug_gear_item_greataxe_*.png")) + [meat_path, fish_path])
     lines = []
     for path in files:
         lines.append(hashlib.sha256(path.read_bytes()).hexdigest() + "  " +

@@ -21,3 +21,10 @@ before/after galleries plus a SHA-256 manifest.
 POSE contract: both new weapon families use the existing diagonal tool axis,
 grip near `(3.4, 12.6)`, business end upper-right. They need no special pose
 metadata beyond the authored wand/axe family transforms.
+
+Review correction: the Greataxe head now uses equal broad blade polygons
+reflected across the diagonal haft, with a centered eye and preserved grip.
+The gallery also includes retained Cooked Meat and Cooked Fish, resolving the
+latter's actual `multiply:#d59a5a` texture expression. Its source images are
+included in the 39-file asset/source manifest. All supplemental plates regenerate
+with the canonical galleries; there are 27 food entries and 12 weapon entries.

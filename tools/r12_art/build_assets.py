@@ -124,11 +124,17 @@ def greataxe(pal):
     im = canvas(); d = ImageDraw.Draw(im)
     d.line((1,15,11,5), fill=OUTLINE, width=3); d.line((2,14,11,5), fill=WOOD[2], width=1)
     d.rectangle((1,12,3,15), fill=OUTLINE); d.point((2,13), fill=WOOD[3])
-    # Broad opposing blades around a centered eye; no point above the head.
-    d.polygon([(5,3),(8,1),(11,2),(12,4),(10,7),(7,8),(5,7),(3,9),(1,8),(2,5)], fill=OUTLINE)
-    d.polygon([(6,3),(8,2),(10,3),(11,4),(9,6),(7,7),(6,6)], fill=pal[2])
-    d.polygon([(5,4),(3,6),(2,7),(3,8),(5,6)], fill=pal[1])
-    d.point((8,2), fill=pal[3]); d.point((10,3), fill=pal[3]); d.rectangle((6,5,8,7), fill=pal[0])
+    # Equal broad blades reflected across the diagonal haft (x+y=16).
+    # The eye is on the shaft at (10,6); neither side is just a rear spur.
+    outer = [(10,5),(10,3),(8,1),(5,1),(3,3),(4,6),(6,8),(8,8)]
+    inner = [(9,5),(9,3),(7,2),(5,2),(4,3),(5,6),(6,7),(8,7)]
+    edge = [(5,2),(4,3),(5,6),(6,7)]
+    reflect = lambda points: [(16-y,16-x) for x,y in points]
+    for polygon in (outer, reflect(outer)): d.polygon(polygon, fill=OUTLINE)
+    d.polygon(inner, fill=pal[2]); d.polygon(reflect(inner), fill=pal[2])
+    for points in (edge, reflect(edge)): d.line(points, fill=pal[3], width=1)
+    d.polygon([(9,5),(10,4),(12,6),(11,7)], fill=OUTLINE)
+    d.line((10,5,11,6), fill=pal[0], width=1)
     return im
 
 
