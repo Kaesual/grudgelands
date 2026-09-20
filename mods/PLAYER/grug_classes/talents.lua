@@ -96,6 +96,20 @@ local EFFECT_KEYS = {
 	word_of_ruin_damage = "X3",
 	drain_ratio_override = "X3",
 	smite_absorb = "X3",
+	-- Round 11 Scout consumers.
+	loose_damage_add = "grug_abilities/scout.lua Loose",
+	loose_second_arrow = "grug_abilities/scout.lua Twin Shot",
+	loose_range_add = "grug_abilities/scout.lua Longshot",
+	arrow_refund_chance = "grug_abilities/scout.lua Loose settlement",
+	draw_time_sub = "grug_abilities/scout.lua draw clock",
+	pinning_root = "grug_abilities/scout.lua Pinning Shot",
+	dodge_chance_add = "grug_classes/stats.lua dodge",
+	melee_damage_add = "grug_abilities/init.lua authoritative swing",
+	opening_multiplier = "grug_abilities/scout.lua Opening",
+	opening_charge_sub = "grug_abilities/init.lua effective charge",
+	sidestep_cooldown_sub = "grug_abilities/init.lua effective cooldown",
+	root_slow_immunity = "grug_classes/scout.lua Shake Loose",
+	dodge_cap_override = "grug_classes/stats.lua dodge cap",
 }
 
 local POOL_EFFECT_KIND = {
@@ -139,6 +153,7 @@ local WINDOW_KEYS = {
 	whitehot_window = true,
 	dodge_chance_window = true,
 	drain_ratio_override = true,
+	dodge_cap_override = true,
 }
 
 grug_classes.TALENT_WINDOW_KEYS = WINDOW_KEYS
@@ -693,6 +708,7 @@ grug_classes.register_talent({
 	effects = {max_hp_percent_add = {0.3, 0.6, 0.9}},
 })
 
+dofile(core.get_modpath(core.get_current_modname()) .. "/scout_talents.lua")
 grug_classes.audit_talents()
 
 --
