@@ -931,7 +931,7 @@ the Tailor's T4 silkweave precedent (serpents and panthers carry the
 level-51–60 zones on both continents; no new mob is required).
 
 **Refines and enchants**: leather armor, all four slots. Base recipes use
-the §3.1 shapes at jerkin 6 / pants 5 / hood 4 / boots 3 leather. Its MVP
+the §3.1 shapes at jerkin 8 / pants 7 / hood 5 / boots 4 leather. Its MVP
 wearer is the **Warrior** (light avoidance set, §3.8 — decided
 2026-08-13); the Rogue joins in Phase 2.
 
@@ -961,7 +961,7 @@ unchanged, and the T6 bolt gives the level-45–60 coast zones an economic
 pull.
 
 **Refines and enchants**: cloth armor, all four slots. Base recipes:
-robe 6 / leggings 5 / cowl 4 / slippers 3 bolts.
+robe 8 / leggings 7 / cowl 5 / slippers 4 bolts.
 
 **Exclusive recipes**:
 
@@ -1065,8 +1065,9 @@ from Phase 2 (§9 — this replaces the old "Bowyer = Leatherworker split"
 assignment; the quiver stays Leatherworker, §3.4).
 
 **Cross-buy: the Woodcarver buys metal fittings from the Weaponsmith.**
-The §3.2 family is literally called "metal-shod staff"; from T2 up every
-caster weapon needs a Weaponsmith-made fitting of its own tier. That is
+The §3.2 family is literally called "metal-shod staff"; from T2 up its
+professional refinement needs a Weaponsmith-made fitting of the item's tier.
+Universal plain caster weapons never require a professional component. That is
 the same deliberate supply loop the Leatherworker and Tailor already run
 in professions.md §3 — a profession that cannot finish its own top item
 alone is what keeps the market alive.
