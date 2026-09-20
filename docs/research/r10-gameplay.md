@@ -52,6 +52,11 @@ The frozen candidate must retain these checks:
   `tools/r10_gameplay/potion_kat.lua`;
 - one final compact PUC-5.1/LuaJIT digest pair after review freezes the bytes.
 
+The final compact pair produced byte-identical output with SHA-256
+`55469b34055a8eb2e65c169edff61e42bfe956eb5977a62ae43ff0dd61133900`.
+The complete mount fixture remains a LuaJIT development check because its B3D
+asset audit is deliberately outside the compact fallback-runtime boundary.
+
 GUI acceptance on a fresh world: ride T1 and T2 land mounts over slabs and one
 full block without jump, confirm a two-block wall and low ceiling block them,
 and switch first/third person while another player observes. Confirm the status
