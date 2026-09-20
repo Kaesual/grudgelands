@@ -14,6 +14,7 @@ the reports; the final dated candidate disposition supersedes earlier verdicts.
 | ART integration | GPT-6 Astra | GPT-5.6 Sol | `c91f0711` | [CLEAN](art-integration-review.md) | 0 |
 | CAP | GPT-6 Astra | GPT-5.6 Sol | `b80b2037` | [CLEAN SOURCE](cap-review.md), final integrated gates pending | 2 focused preflight rounds |
 | FARM | GPT-5.6 Sol | GPT-5.6 Sol | `806b0c0f` | [CLEAN](farm-review.md), integrated pair pending | 0 |
+| Shared MAP-B fixture adaptation | GPT-6 Astra | GPT-5.6 Sol | `0c03af16` | [CLEAN](shared-fixtures-review.md); full MAP-B source review pending | 0 |
 | Integrated final-runner composition | GPT-6 Astra | GPT-5.6 Sol | `9a5afb48` | [CLEAN](final-runner-review.md); MAP-B addition pending | 0 |
 | ENGINE witnesses | GPT-5.6 Sol | GPT-5.6 Sol | `59b98f38` | [CLEAN SOURCE](engine-gates-review.md), five Medium and one Low findings closed; final engine fleet pending | 2 |
 | CLOSE status reconciliation | GPT-5.6 Sol | GPT-5.6 Sol | `e05562ef` | [CLEAN DOCS](close-final-review.md), one Medium finding closed; final delivery fields pending | 1 |

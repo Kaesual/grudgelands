@@ -2,7 +2,7 @@
 local repo = assert(arg[1], "repository root required")
 local jit_info = rawget(_G, "jit")
 io.stderr:write(_VERSION, "\t", jit_info and jit_info.version or "PUC", "\n")
-io.write("schema\tgrug_round10_integrated_final_micro_v2\n")
+io.write("schema\tgrug_round10_integrated_final_micro_v3\n")
 for _, relative in ipairs({
 	"tools/wp40/tree_slices/fixture.lua",
 	"tools/wp40/quality/gravewood_fixture.lua",
@@ -29,7 +29,9 @@ for _, relative in ipairs({
 	"tools/r10_world/material_salt_fixture.lua",
 	"tools/r9_perf/cache_fixture.lua",
 	"tools/r9_perf/lighting_fixture.lua",
-	"tools/r9_farm/farming_kat.lua",
+	-- The shared registration fixture returns the original FARM check too.
+	"tools/r10_map_b/registration_fixture.lua",
+	"tools/r10_map_b/placement_fixture.lua",
 	"tools/r10_farm/final_micro.lua",
 }) do
 	io.write((dofile(repo .. "/" .. relative)(repo)))

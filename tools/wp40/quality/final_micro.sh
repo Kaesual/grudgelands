@@ -19,7 +19,7 @@ mkdir -p "$output"
 		tools/r7_level_bands tools/r9_farm tools/r10_farm \
 		tools/r10_equip tools/r10_art tools/r10_gameplay \
 		tools/r6_food_buffs tools/r8_mob1 tools/r9_mounts tools/wp39 \
-		tools/r8_prof tools/r9_prof tools/r9_ench
+		tools/r8_prof tools/r9_prof tools/r9_ench tools/r10_map_b
 	printf '%s\n' game.conf minetest.conf tools/check_fresh_server.py
 	printf '%s\n' tools/gen_mob_item_textures.py
 	printf '%s\n' reference_projects/luanti/src/client/content_mapblock.cpp
@@ -37,7 +37,9 @@ for sentinel in game.conf mods/MAPGEN/grug_mapgen/wp40/height.lua \
 	tools/r10_farm/final_micro.lua tools/r10_world/cave_boundary_fixture.lua \
 	tools/r10_equip/evidence/final_micro.lua tools/r10_cap/services_micro.lua \
 	tools/r10_cap/purchase_micro.lua tools/r10_art/mount_icon_kat.lua \
-	tools/r10_gameplay/cliff_kat.lua tools/r8_prof/trainer_sockets_kat.lua; do
+	tools/r10_gameplay/cliff_kat.lua tools/r8_prof/trainer_sockets_kat.lua \
+	tools/r10_map_b/registration_fixture.lua tools/r10_map_b/placement_fixture.lua \
+	mods/ITEMS/grug_nodes/crop_soil.lua mods/ITEMS/grug_nodes/crop_visual.lua; do
 	rg -F -x -q "$sentinel" "$output/input-paths.txt"
 done
 (cd "$repo" && sha256sum "${inputs[@]}") >"$output/inputs.sha256"
