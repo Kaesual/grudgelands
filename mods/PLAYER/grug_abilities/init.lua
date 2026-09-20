@@ -2466,7 +2466,8 @@ core.register_on_punchplayer(function(player, hitter, tflp, tool_capabilities, d
 	end
 	local crit_damage, _, critical = grug_core.roll_melee_crit(
 		hitter, full_damage)
-	local armored_damage = grug_core.apply_player_armor(player, crit_damage)
+	local armored_damage = grug_core.apply_player_armor(player, crit_damage,
+		grug_core.get_player_level(hitter))
 	local proc_extra = 0
 	local raw = armored_damage * fraction + proc_extra
 	if authoritative then
