@@ -12,8 +12,9 @@ copy wild_grain "$farm/farming_wheat.png"
 copy carrot "$farm/farming_carrot.png"
 copy cassava "$farm/farming_potato.png"
 copy wild_onion "$farm/crops_onion.png"
-magick "$x/x_farming_carrot.png" -fill '#c02018' -colorize 40% -strip \
-	"$out/grug_cooking_fire_pepper.png"
+magick "$root/docs/research/r10-visuals/sources/fire-pepper-imagegen.png" \
+	-trim -filter point -resize 14x14 -gravity center -background none \
+	-extent 16x16 -strip "$out/grug_cooking_fire_pepper.png"
 copy pumpkin "$x/x_farming_pumpkin_mash.png"
 copy blightberry "$farm/farming_blackberry.png"
 copy sunberry "$farm/ethereal_strawberry.png"

@@ -17,8 +17,9 @@ same licence as their respective source.
 ## R10 plant harvest icons
 
 The exact deterministic mapping is `tools/r10_art/import_harvest_icons.sh`.
-Every output is a byte-preserving copy except Fire Pepper's documented baked
-red grade.
+Every foreign-source output is a byte-preserving copy. Fire Pepper is a
+project-owned generated source with its exact prompt stored beside it, then
+mechanically trimmed and downsampled by that script.
 
 | Output concept | Pinned source | Author | License | Treatment |
 |---|---|---|---|---|
@@ -26,7 +27,7 @@ red grade.
 | Carrot | `farming` `1a918c7a`, `textures/farming_carrot.png` | Gambit | CC BY 3.0 | copy |
 | Cassava | `farming` `1a918c7a`, `textures/farming_potato.png` | Doc | CC BY 3.0 | copy |
 | Wild Onion | `farming` `1a918c7a`, `textures/crops_onion.png` | Oz-tal | CC BY-SA 3.0 | copy |
-| Fire Pepper | `x_farming` `ac5f69d5`, `textures/x_farming_carrot.png` | SaKeL | CC BY-SA 4.0 | `#c02018` 40% baked colorize |
+| Fire Pepper | `docs/research/r10-visuals/sources/fire-pepper-imagegen.png`; prompt beside it | Grudgelands project | CC0 1.0 | point-filter trim/downsample to 14×14; centered 16×16 extent; metadata stripped |
 | Pumpkin | `x_farming` `ac5f69d5`, `textures/x_farming_pumpkin_mash.png` | SaKeL | CC BY-SA 4.0 | copy |
 | Blightberry | `farming` `1a918c7a`, `textures/farming_blackberry.png` | Felfa | CC0 1.0 | copy |
 | Sunberry | `farming` `1a918c7a`, `textures/ethereal_strawberry.png` | Hugues Ross | CC BY-SA 4.0 | copy |

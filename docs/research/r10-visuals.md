@@ -41,6 +41,14 @@ family. Existing readable cooking dishes, alchemy containers, metal bars,
 profession components, fish and trinket art remain in place; this pass changes
 only the observed wrong-object or generic-harvest placeholders.
 
+Fire Pepper likewise uses a project-owned image-generation source rather than
+the earlier red carrot substitution. Its prompt asks for one curved red chili
+with a green stem, transparent background and readable 16x16 pixel-art form.
+The immutable original and prompt live under `r10-visuals/sources/`;
+`tools/r10_art/import_harvest_icons.sh` performs only the deterministic
+point-filter trim, 14x14 downsample, centered 16x16 extent and metadata strip.
+The source manifest records all three hashes.
+
 ## Farming
 
 All 17 registered crop families now bind four actual growth textures via
