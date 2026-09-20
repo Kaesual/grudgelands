@@ -5,13 +5,14 @@
 
 grug_farming = {}
 
+dofile(core.get_modpath(core.get_current_modname()) .. "/bucket.lua")
+
 local SOIL_DRY = "grug_farming:soil"
 local SOIL_WET = "grug_farming:soil_wet"
 local SOIL_INTERVAL = 15
 local WATER_RADIUS = 3
 local STAGES = 4
 local STAGE_SECONDS = 200
-local HOE_USES = 64
 local CROP_PROGRESS_META = "wet_progress"
 
 local crop_by_node = {}
@@ -259,51 +260,9 @@ end
 
 grug_farming.CROPS = crops
 
-local function hoe_on_use(itemstack, user, pointed_thing)
-	if not user or not pointed_thing or pointed_thing.type ~= "node" then
-		return itemstack
-	end
-	local under = pointed_thing.under
-	local above = pointed_thing.above
-	local under_name = core.get_node(under).name
-	local under_definition = core.registered_nodes[under_name]
-	local under_groups = under_definition and under_definition.groups or {}
-	if above.x ~= under.x or above.y ~= under.y + 1 or above.z ~= under.z or
-			(tonumber(under_groups.soil) or 0) < 1 or
-			core.get_node(above).name ~= "air" then
-		return itemstack
-	end
-	local player_name = user:get_player_name()
-	if core.is_protected(under, player_name) then
-		core.record_protection_violation(under, player_name)
-		return itemstack
-	end
-	core.set_node(under, {name = SOIL_DRY})
-	start_soil_timer(under)
-	soil_timer(under)
-	core.sound_play("default_dig_crumbly", {pos = under, gain = 0.5}, true)
-	if not core.is_creative_enabled(player_name) then
-		itemstack:add_wear(math.floor(65535 / HOE_USES + 0.5))
-	end
-	return itemstack
-end
-
-core.register_tool("grug_farming:hoe", {
-	description = "Farmer's Hoe\nTier 1",
-	inventory_image = "default_tool_steelaxe.png^[colorize:#79552f:120",
-	groups = {hoe = 1, grug_farming_hoe = 1},
-	_grug_tier = 1,
-	damage_groups = {fleshy = 1},
-	on_use = hoe_on_use,
-})
-
-core.register_craft({
-	output = "grug_farming:hoe",
-	recipe = {
-		{"group:wood", "group:wood", ""},
-		{"", "default:stick", ""},
-		{"", "default:stick", ""},
-	},
+dofile(core.get_modpath(core.get_current_modname()) .. "/hoes.lua")({
+ start_soil_timer = start_soil_timer,
+ soil_timer = soil_timer,
 })
 
 core.register_on_mods_loaded(function()
