@@ -31,16 +31,22 @@ local function trainer_formspec(player, profession, confirming)
 		fs[#fs + 1] = ("button[0.35,1.65;2.2,0.7;grug_jobs_learn;Learn %s]")
 			:format(esc(definition.name))
 	end
+	local session = sessions[player:get_player_name()]
+	local repair = rawget(_G, "grug_repair")
+	if not confirming and repair and session and
+			repair.can_open_trainer(player, session.entity) then
+		fs[#fs + 1] = "button[2.8,1.65;2.2,0.7;grug_jobs_repair;Repair equipment]"
+	end
 	fs[#fs + 1] = "button_exit[4.0,2.35;1.1,0.55;grug_jobs_close;Close]"
 	return table.concat(fs)
 end
 
-function grug_jobs.open_trainer(player, profession, position)
+function grug_jobs.open_trainer(player, profession, position, entity)
 	if not player or not player:is_player() or not grug_jobs.PROFESSIONS[profession] then
 		return false
 	end
 	local name = player:get_player_name()
-	sessions[name] = {profession = profession,
+	sessions[name] = {profession = profession, entity = entity,
 		position = {x = position.x, y = position.y, z = position.z}}
 	core.show_formspec(name, FORMNAME, trainer_formspec(player, profession, false))
 	return true
@@ -60,7 +66,10 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	local name = player:get_player_name()
 	local session = sessions[name]
 	if not valid_session(player, session) then sessions[name] = nil return true end
-	if fields.grug_jobs_learn then
+	if fields.grug_jobs_repair then
+		local repair = rawget(_G, "grug_repair")
+		if repair then repair.open_trainer(player, session.entity) end
+	elseif fields.grug_jobs_learn then
 		grug_jobs.learn(player, session.profession)
 		core.show_formspec(name, FORMNAME,
 			trainer_formspec(player, session.profession, false))
