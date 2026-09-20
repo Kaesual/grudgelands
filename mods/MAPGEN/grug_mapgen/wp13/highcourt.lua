@@ -92,7 +92,7 @@ local function loader(directory)
 	-- now the roster's own market district, the same table it always was.
 	M.quadrants = districts.quadrants
 
-	local RADIUS = 47
+	local RADIUS = 49
 	local SCHEMA = "grug_wp13_highcourt_core_v1"
 
 	-- The city's own patrol loop (the sockets contract's `group`), and every
@@ -246,11 +246,11 @@ local function loader(directory)
 			spec = {patrol_group = "highcourt_gate_west_tower",
 				deck_group = "highcourt_gate_west_tower", order = 2}},
 		{id = "gate_north", module = "capitals", make = "gatehouse",
-			x = -6, z = 41, turns = 2, palette = "white", roof = "slate",
+			x = -6, z = 43, turns = 2, palette = "white", roof = "slate",
 			spec = {patrol_group = "highcourt_gate_north_tower",
 				deck_group = "highcourt_gate_north_tower", order = 2}},
 		{id = "gate_east", module = "capitals", make = "gatehouse",
-			x = 41, z = -6, turns = 3, palette = "white", roof = "slate",
+			x = 43, z = -6, turns = 3, palette = "white", roof = "slate",
 			spec = {patrol_group = "highcourt_gate_east_tower",
 				deck_group = "highcourt_gate_east_tower", order = 2}},
 

@@ -18,7 +18,7 @@ return function(repo, engine_tsv)
 	local lagoon = dofile(wp13 .. "/kezamba_lagoon.lua")()
 	local precinct_ring = dofile(wp13 .. "/precinct_ring.lua")
 
-	local RADIUS = 46
+	local RADIUS = 48
 	local GATE_HALF = 6
 	local function key(x, y, z) return x .. ":" .. y .. ":" .. z end
 	local function is_gate(x, z)
@@ -54,7 +54,7 @@ return function(repo, engine_tsv)
 	local function expect_corner_detours(buf, label, material_at)
 		for _, sx in ipairs({-1, 1}) do
 			for _, sz in ipairs({-1, 1}) do
-				local cx, cz = sx * 45, sz * 45
+				local cx, cz = sx * 47, sz * 47
 				for offset = -2, 2 do
 					for _, point in ipairs({{cx + offset, cz - 2},
 							{cx + 2, cz + offset}, {cx + offset, cz + 2},
@@ -176,9 +176,10 @@ return function(repo, engine_tsv)
 			id = "lethariel", style = "silverwood_hedge_or_mere",
 			capital = dofile(wp13 .. "/lethariel.lua")(wp13),
 			water = function(x, z)
-				-- MERE[46] is {-35,46}; the authored one-column shore margin
-				-- therefore replaces the north ring from x=-36 through x=46.
-				return z == RADIUS and x >= -36 and x <= RADIUS
+				-- MERE[48] is {-36,49}; the authored one-column shore margin
+				-- therefore replaces the north ring from x=-37 through x=48.
+				return (z == RADIUS and x >= -37 and x <= RADIUS) or
+					(x == RADIUS and z == 47)
 			end,
 			check = function(buf, label, x, z)
 				expect(buf, label, x, 1, z, "grug_trees:silverwood_tree")
@@ -236,7 +237,7 @@ return function(repo, engine_tsv)
 			end
 		end
 	end
-	assert(walked_count == 316 and expected_count == 316,
+	assert(walked_count == 332 and expected_count == 332,
 		"precinct walker coordinate population differs")
 
 	local function check_ring(buf, spec, label)
@@ -266,7 +267,7 @@ return function(repo, engine_tsv)
 		if spec.corner_material then
 			expect_corner_detours(buf, label, spec.corner_material)
 		end
-		assert(protected + gates + corners + water == 368,
+		assert(protected + gates + corners + water == 384,
 			label .. ": ring population differs")
 		assert(gates == 52, label .. ": authored gate population differs")
 		return protected, gates, corners, water
@@ -274,7 +275,7 @@ return function(repo, engine_tsv)
 
 	local report = {}
 	report[#report + 1] = table.concat({"precinct_ring_walk", walked_count,
-		368 - walked_count}, "\t") .. "\n"
+		384 - walked_count}, "\t") .. "\n"
 	local buffers = {}
 	for _, spec in ipairs(specs) do
 		local buf = generated_buffer(spec.capital)
@@ -283,6 +284,20 @@ return function(repo, engine_tsv)
 		report[#report + 1] = table.concat({"precinct_ring", spec.id,
 			spec.style, protected, gates, corners, water}, "\t") .. "\n"
 	end
+
+	-- Unconnected flat panes retain authored orientation. A z-running wall
+	-- needs a quarter turn while an x-running wall uses the default plane.
+	local bar_count = 0
+	for _, cell in ipairs(specs[4].capital.core().cells) do
+		if cell.name == "xpanes:bar_flat" and cell.y == 3 and
+				(math.abs(cell.x) == RADIUS or math.abs(cell.z) == RADIUS) then
+			local expected = math.abs(cell.z) == RADIUS and 0 or 3
+			assert(cell.param2 == expected, "Nhal Veyr ring bar axis differs")
+			bar_count = bar_count + 1
+		end
+	end
+	assert(bar_count > 0, "Nhal Veyr ring bar fixture is empty")
+	report[#report + 1] = "precinct_ring_bar_axis\t" .. bar_count .. "\tPASS\n"
 
 	-- A later district writer is exactly the class of operation that exposed
 	-- the playtest defect. Put one of its cells through the ring, require the
@@ -319,7 +334,7 @@ return function(repo, engine_tsv)
 	-- material cell out of Dur Brannoc's south-west drum, then reconstruct it.
 	local dur_spec = specs[2]
 	local dur_mutated = generated_buffer(dur_spec.capital)
-	dur_mutated:put(-47, 2, -47, parts.AIR, 0)
+	dur_mutated:put(-49, 2, -49, parts.AIR, 0)
 	ok = pcall(check_ring, dur_mutated, dur_spec, "dur brannoc corner mutation")
 	assert(not ok, "corner-hole mutation escaped the ring KAT")
 	local dur_restored = generated_buffer(dur_spec.capital)

@@ -76,7 +76,7 @@ local function loader(directory)
 
 	local M = {}
 
-	local RADIUS = 47
+	local RADIUS = 49
 	local SCHEMA = "grug_wp13_kezamba_core_v1"
 	local WATCH = "kezamba_watch"
 

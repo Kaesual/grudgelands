@@ -60,7 +60,7 @@ local M = {}
 -- three places; they are data now and nothing else changed about them.
 M.BOUNDS = {
 	start = {min = {x = -63, y = -2, z = -63}, max = {x = 63, y = 24, z = 63}},
-	capital_core = {min = {x = -47, y = -2, z = -47}, max = {x = 47, y = 40, z = 47}},
+	capital_core = {min = {x = -49, y = -2, z = -49}, max = {x = 49, y = 40, z = 49}},
 	capital_plot = {min = {x = -15, y = -6, z = -15}, max = {x = 15, y = 24, z = 15}},
 	-- The avenues are the one blueprint that legitimately leaves the civic
 	-- core: they run to the gate stations at +-256. Their authorized volume is

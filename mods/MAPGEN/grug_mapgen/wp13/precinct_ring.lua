@@ -11,7 +11,7 @@
 
 local M = {}
 
-M.RADIUS = 46
+M.RADIUS = 48
 M.GATE_HALF = 6
 
 function M.is_gate(x, z, gate_half)

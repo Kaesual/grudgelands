@@ -72,7 +72,7 @@ local function loader(directory)
 	-- `tools/wp13/capital_lots.lua` asks it for the lots themselves.
 	M.quadrants = districts.quadrants
 
-	local RADIUS = 47
+	local RADIUS = 49
 	local SCHEMA = "grug_wp13_dur_brannoc_core_v1"
 
 	-- The city's own patrol loop. The four gatehouses keep a two-waypoint
@@ -173,11 +173,11 @@ local function loader(directory)
 			spec = {patrol_group = "dur_brannoc_gate_west_tower",
 				deck_group = "dur_brannoc_gate_west_tower", order = 2}},
 		{id = "gate_north", module = "capitals", make = "gatehouse",
-			x = -6, z = 41, turns = 2, palette = "dwarf", roof = "slate",
+			x = -6, z = 43, turns = 2, palette = "dwarf", roof = "slate",
 			spec = {patrol_group = "dur_brannoc_gate_north_tower",
 				deck_group = "dur_brannoc_gate_north_tower", order = 2}},
 		{id = "gate_east", module = "capitals", make = "gatehouse",
-			x = 41, z = -6, turns = 3, palette = "dwarf", roof = "slate",
+			x = 43, z = -6, turns = 3, palette = "dwarf", roof = "slate",
 			spec = {patrol_group = "dur_brannoc_gate_east_tower",
 				deck_group = "dur_brannoc_gate_east_tower", order = 2}},
 
@@ -794,7 +794,7 @@ local function loader(directory)
 		-- detour and the first parapet column beyond the skip joins straight into
 		-- it. This is an authored corner substitution, not an occupied-cell stop.
 		local drums = 0
-		for _, corner in ipairs({{-45, -45}, {45, -45}, {-45, 45}, {45, 45}}) do
+		for _, corner in ipairs({{-47, -47}, {47, -47}, {-47, 47}, {47, 47}}) do
 			local cx, cz = corner[1], corner[2]
 			if layout.free_area(buf, cx - 2, cz - 2, cx + 2, cz + 2, 8) then
 				buf:ring(cx - 2, cz - 2, cx + 2, cz + 2, 1, 7, STONE)
