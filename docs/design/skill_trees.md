@@ -297,7 +297,7 @@ review gates remain unchanged.
 | 1 | **Ironbound** | Wall | 1 | 5 | — | +1 / 2 / 3 / 4 / 5 armor rating | armor-rating aggregate | `armor_rating_add` |
 | 2 | **Weathered** | Wall | 2 | 4 | — | max HP +1.5 / 3 / 4.5 / 6% of the class base pool | `grug_classes/stats.lua` | `max_hp_percent_add` |
 | 3 | **Hold Ground** *(keystone)* | Wall | 3 | 3 | **new skill** ‼ | cast, 25 rage, self; absorbs 20% / 30% / 40% of the class-neutral base pool for 8 s, **and for those 8 s the Warrior cannot be rooted or slowed**. *Limit: 8 s, **60 s cooldown**.* | new; `grug_core.add_absorb`; the immunity is a flag the speed aggregator of §3.9 already has to read | — |
-| 4 | **Unbroken** *(capstone)* | Wall | 4 | **1** | **effect** ‼ | permanently multiplies total armor rating by **1.40** after the Warrior commits 21 points to Bulwark. The first hit in **180 s** that would take the Warrior below 20% max HP then adds **15 rating after the multiplier** for 8 s. The universal 70% reduction cap remains. | armor-rating aggregate plus the hp-change threshold/window | `armor_rating_multiplier`, `armor_rating_add_low_hp` |
+| 4 | **Unbroken** *(capstone)* | Wall | 4 | **1** | **effect** ‼ | permanently multiplies total armor rating by **1.65** after the Warrior commits 21 points to Bulwark. The first hit in **180 s** that would take the Warrior below 20% max HP then adds **15 rating after the multiplier** for 8 s. The universal 70% reduction cap remains. | armor-rating aggregate plus the hp-change threshold/window | `armor_rating_multiplier`, `armor_rating_add_low_hp` |
 | 5 | **Spite** | Anvil | 1 | 5 | — | +1 / 2 / 3 / 4 / 5 rage per hit taken (base 3) | `grug_abilities/init.lua:2491-2495` | `rage_per_hit_taken_add` |
 | 6 | **Affront** | Anvil | 2 | 4 | — | tank-ability threat ×3 → ×3.25 / 3.5 / 3.75 / 4.0 | casts in `grug_core/combat.lua:1083-1089`; authoritative swings in `grug_abilities/init.lua:1383-1389` | `threat_mult_add` |
 | 7 | **Bellow** *(keystone)* | Anvil | 3 | 3 | **replaces Taunt** | Taunt stops being single-target: it forces **every** hostile mob within 6 / 8 / 10 m onto the Warrior for its 3 s, same key, same 8 s cooldown | `kits.lua:437-465`, the cast body, run over a hostile-radius loop | `taunt_radius` |
@@ -516,7 +516,7 @@ revision carried as an open decision on the hotbar, and it leaves WP14's shield 
 
 | Tree | Rule-breaker besides the capstone | Capstone breaks a rule? |
 |---|---|---|
-| Bulwark | **Hold Ground** — root/slow immunity, 8 s, 60 s cd | yes — Unbroken permanently multiplies total rating ×1.40 after the exclusive 21-point commitment; its +15-rating emergency window lasts 8 s / 180 s |
+| Bulwark | **Hold Ground** — root/slow immunity, 8 s, 60 s cd | yes — Unbroken permanently multiplies total rating ×1.65 after the exclusive 21-point commitment; its +15-rating emergency window lasts 8 s / 180 s |
 | Ruin | **Tendon Cut** — root off a swing, 12 s internal cd | yes — Ruination, crit cap → 50 %, 10 s / 120 s |
 | Ember | none | yes — Whitehot, half mana cost, 8 s / 120 s |
 | Rime | none | no |
@@ -742,7 +742,7 @@ grug_classes.register_talent({
 grug_classes.register_talent({
     id = "unbroken", tree = "bulwark", chain = "wall", tier = 4,
     capstone = true,                     -- exactly one per TREE, on its chain
-    effects = {armor_rating_multiplier = {1.40},
+    effects = {armor_rating_multiplier = {1.65},
                armor_rating_add_low_hp = {15}},
 })
 ```
@@ -941,7 +941,7 @@ the sfinv area only if the two trees are **tabbed rather than side by side**:
 | Character | Bags | Talents |                        (sfinv tabs)
 +---------------------------------------------------------------+
 | Warrior      [ BULWARK 21 ] [ Ruin 9 ]      Points left: 0     |
-| Crit 30/42% (30)                  Armor rating 294 (210 x1.40) |
+| Crit 30/42% (30)                  Armor rating 299 (181 x1.65) |
 | Dodge 20/20% (30)                                             |
 |                                            [ Respec  --  1s25c]|
 |      WALL                       ANVIL                          |
@@ -950,7 +950,7 @@ the sfinv area only if the two trees are **tabbed rather than side by side**:
 | T3 | Hold Ground *  3/3 |   | Bellow *       0/3 |     (>=12)  |
 | T4 | Unbroken **    1/1 |   | Grudge         0/3 |     (>=20)  |
 |                                                               |
-| Unbroken -- rank 1/1: total armor rating x1.40; below 20% HP, |
+| Unbroken -- rank 1/1: total armor rating x1.65; below 20% HP, |
 | +15 rating after the multiplier for 8 s / 180 s.             |
 +---------------------------------------------------------------+
 ```
@@ -1081,7 +1081,7 @@ free-first assertion fail.
 | `grug_abilities/kits.lua` (new section) | **4 new ability registrations** for the three shipped classes — Hold Ground, Cinderfall, Glacial Ward, Word of Ruin (§2.9) | medium |
 | `grug_abilities/kits.lua:350` | one `talent_gated = true` on the **shipped Hamstring**, which ruling 19 moves out of the Warrior's base kit and into Ruin's keystone | 1 line |
 | `grug_abilities/kits.lua:340-344, 368-374, 389-404, 429, 488-490, 583-592, 612-614, 639-640` | **the seven replacements** of the three shipped classes — six replacing keystones (Bellow, Broadstroke, Brand, Frostbind, Turn Aside, Recompense) and the replacing capstone Hearten — plus the rule-breaking finisher Tendon Cut; each a read inside the shipped ability's own body, no registration (§3.4) | medium |
-| `grug_inventory/equipment.lua` armor aggregate | Ironbound rating and Unbroken's deep-tree ×1.40 plus emergency +15 | small |
+| `grug_inventory/equipment.lua` armor aggregate | Ironbound rating and Unbroken's deep-tree ×1.65 plus emergency +15 | small |
 | `grug_core/combat.lua` and `grug_abilities/init.lua` | attacker-level armor formula; heal threat factor; the threat multiplier on **both** its sites (cast and swing) | small |
 | `grug_core/` the speed aggregator | **prerequisite, not this WP** — §3.9. Hold Ground's and Shake Loose's root/slow immunity are flags it owns, and the Scout's Sprint is a modifier in it | — |
 | `tools/wp11/talent_tree_kat.lua` | **new** — §3.7 | medium |

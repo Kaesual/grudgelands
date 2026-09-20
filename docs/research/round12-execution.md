@@ -196,7 +196,7 @@ runtime payload bytes match the native staging manifest.
 
 Completion/status docs, gallery and next-playtest checklist are prepared.
 New user-reported shared world-station ownership is investigated and tracked in
-`TODO-station-ownership.md`; the user explicitly kept its implementation outside
+`../design/crafting_equipment_revision.md`; the user explicitly kept its implementation outside
 this round. Current remaining actions: final commit, main merge, sync and push.
 
 ## Delivery receipt — final authority
@@ -215,5 +215,5 @@ the user's GUI playtest via `round12-next-playtest.md`; do not start the separat
 station-ownership proposal or UX recommendations without their next scope decision.
 Completion, gallery, review reports and the newly reported station audit are
 linked from `round12-completion.md` and BACKLOG. The planning TODO was closed;
-`TODO-station-ownership.md` deliberately remains open. No user-world migration
+`../design/crafting_equipment_revision.md` deliberately remains open. No user-world migration
 or edits were performed, and no PUC runtime ran.

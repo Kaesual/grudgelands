@@ -72,7 +72,7 @@ grug_inventory.QUIVER_LIST = "grug_quiver_content"
 core.register_craftitem("grug_inventory:quiver", {
 	description = "Quiver (4 arrow stacks)",
 	inventory_image = "grug_inventory_quiver.png^[resize:64x64",
-	stack_max = 1, _grug_hands = 0,
+	stack_max = 1, _grug_hands = 0, _grug_tier = 1,
 	groups = {grug_equip_offhand = 1, grug_quiver = 1},
 })
 
@@ -109,10 +109,18 @@ local function main_arrow_capacity(inventory, occupied_index)
 	return capacity
 end
 
+local function usable_ammo_lists(inventory)
+	local quiver = inventory:get_stack("grug_offhand", 1)
+	if equipped_quiver(inventory) and quiver:get_wear() < 65535 then
+		return {grug_inventory.QUIVER_LIST, "main"}
+	end
+	return {"main"}
+end
+
 function grug_inventory.ammo_count(player)
 	local inv = player:get_inventory()
 	local count = 0
-	for _, list in ipairs({grug_inventory.QUIVER_LIST, "main"}) do
+	for _, list in ipairs(usable_ammo_lists(inv)) do
 		for _, stack in ipairs(inv:get_list(list) or {}) do
 			if is_arrow(stack) then count = count + stack:get_count() end
 		end
@@ -124,7 +132,8 @@ function grug_inventory.get_equipped_quiver(player)
 	local inv = player and player:get_inventory()
 	if not inv then return nil end
 	local stack = inv:get_stack("grug_offhand", 1)
-	if core.get_item_group(stack:get_name(), "grug_quiver") == 0 then return nil end
+	if core.get_item_group(stack:get_name(), "grug_quiver") == 0 or
+		stack:get_wear() >= 65535 then return nil end
 	return ItemStack(stack)
 end
 
@@ -140,7 +149,7 @@ function grug_inventory.consume_ammo(player, count)
 	if count < 1 or grug_inventory.ammo_count(player) < count then return false end
 	local inv = player:get_inventory()
 	local left = count
-	for _, list in ipairs({grug_inventory.QUIVER_LIST, "main"}) do
+	for _, list in ipairs(usable_ammo_lists(inv)) do
 		for index, stack in ipairs(inv:get_list(list) or {}) do
 			if left > 0 and is_arrow(stack) then
 				local take = math.min(left, stack:get_count())
@@ -232,7 +241,8 @@ core.register_allow_player_inventory_action(function(player, action, inventory, 
 
 	if to_list then
 		if to_list == grug_inventory.QUIVER_LIST then
-			if not equipped_quiver(inventory) then return 0 end
+			if not equipped_quiver(inventory) or
+				inventory:get_stack("grug_offhand", 1):get_wear() >= 65535 then return 0 end
 			return is_arrow(stack) and (info.count or stack:get_count()) or 0
 		end
 		local to_bag = bag_slot_index(to_list)

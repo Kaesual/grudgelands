@@ -6,18 +6,23 @@ WP22 delivery and does not rebase the WP44 economy or calibrate mining speeds.
 
 ## Eligible items and wear
 
-Ordinary weapons, shields, spellbooks, four armor slots, gathering tools and
-hoes are repairable. Trinkets, bags, quivers, ability tokens, mount skills,
-consumables and decorative items neither wear nor enter repair quotes.
+Ordinary weapons, shields, spellbooks, quivers, four armor slots, gathering
+tools and hoes are repairable. Trinkets, bags, ability tokens, mount skills,
+consumables and decorative items do not wear.
 
-Combat equipment lasts **3000 qualifying events**, or **6000 when refined**.
-One settled outgoing action wears the main hand and its spellbook once, even
-when it hits multiple victims or creates multiple projectiles. It must cause
-actual damage, effective in-combat healing or an effective in-combat shield
-grant. Incoming armor and shield wear once per combat event that actually
-lowers HP after dodge and absorb. Misses, canceled casts, complete absorption,
-falls, drowning, death and out-of-combat healing do not spend combat durability.
-Creative skips wear. Tools keep their own authored mining/hoeing use budgets.
+The material budgets and exact event rules are defined in
+[the equipment revision](crafting_equipment_revision.md#equipment-and-lifetime).
+Combat equipment has 1000/1500/2000/2500/3000/4000 qualifying uses across T1–T6.
+Outgoing settled damage or effective in-combat healing wears only the main
+weapon, once per action. Incoming settled nonlethal combat HP loss wears one
+random intact item among the four armor slots and offhand. Pure absorb grants,
+fully absorbed hits and Creative do not spend wear. Existing combat settlement
+semantics remain; no extra fall/environmental wear hook is added.
+
+Broken quivers keep their stored arrows retrievable, but do not supply automatic
+ammunition or accept new arrows until repaired. Tool/hoe budgets are
+30/60/300/600/1000/1500/2000/3000 from Wood through Abyssal Steel; mining depth
+penalties remain separate.
 
 At zero durability keep the concrete stack, name and all metadata. Disable
 its base effects, affixes and operation until repaired. A broken bow cannot
@@ -55,9 +60,8 @@ material costs.
 Use the existing regular gear purchase catalog and fixed stock as authority
 for sold items. Unsold weapons/tools use their matching material-tier weapon
 reference; shields/books use that tier's other-slot reference. Keep wooden and
-stone fixed-stock prices; a wooden hoe uses the wooden tool price. Quality
-multipliers are **1 / 3 / 6** for Common / Uncommon / Rare. Refined Common keeps
-the Common price; its lifetime doubles instead. Above-ladder items use the T6
+stone fixed-stock prices; wooden/stone hoes use their corresponding tool prices. Quality
+multipliers are **1 / 3 / 6** for Common / Uncommon / Rare. Above-ladder items use the T6
 slot reference and quality multiplier. Missing catalog identities fail the
 catalog audit and service rather than receiving free repair.
 
@@ -71,8 +75,7 @@ No buy-back, income, mount or Housing price rebase is implicit in repair.
 At application time revalidate the provider's identity, distance and service
 access, sufficient ledger funds, and every exact quoted stack and its wear.
 A stale form or changed item aborts without debit or inventory mutation.
-Commit the ledger payment and inventory restoration together. Preserve affixes,
-refinement, cultural information and item identity. No partial repair-all,
+Commit the ledger payment and inventory restoration together. Preserve affixes, cultural information and item identity. No partial repair-all,
 duplication, stack destruction or unnoticed metadata replacement is allowed.
 
 Material-based self repair and differentiated profession repair remain later

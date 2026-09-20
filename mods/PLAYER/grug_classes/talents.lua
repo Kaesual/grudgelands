@@ -361,7 +361,7 @@ grug_classes.register_talent({
 	id = "unbroken", tree = "bulwark", chain = "wall", tier = 4,
 	capstone = true, window = true,
 	name = "Unbroken",
-	description = "+40% total armor rating. Once every 180 s, a hit that " ..
+	description = "+65% total armor rating. Once every 180 s, a hit that " ..
 		"would take you below 20% health grants +15 armor rating for 8 s.",
 	effects = {armor_rating_add_low_hp = {15}},
 })

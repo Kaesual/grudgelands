@@ -74,10 +74,10 @@ Two free main professions per player, unchanged. The roster is organised
 | Profession | Material chain T1–T6 | Owns exclusively |
 |---|---|---|
 | **Weaponsmith** | Bronze → Iron → Steel → Silversteel → Embersteel → Abyssal Steel | Physical weapons and mining tools |
-| **Armorsmith** | Bronze → Iron → Steel → Silversteel → Embersteel → Abyssal Steel | Metal armor and shield refinement/affixes; plain shields are Basics |
+| **Armorsmith** | Bronze → Iron → Steel → Silversteel → Embersteel → Abyssal Steel | Metal armor and shield enchantments; plain shields are Basics |
 | **Leatherworker** | light → cured → heavy → scaled → sleek → nightscale leather | Leather armor, leather bags and the quiver |
 | **Tailor** | patch → woven → heavy → silkweave → silk → stormweave bolts | Cloth armor and cloth bags |
-| **Woodcarver** | any `group:wood`, graded Seasoned → Polished → Hardened → Inlaid → Lacquered → Heartwood | Staff, wand and bow refinement/affixes; plain items are Basics |
+| **Woodcarver** | any `group:wood`, graded Seasoned → Polished → Hardened → Inlaid → Lacquered → Heartwood | Staff, wand and bow enchantments; plain items are Basics |
 | **Goldsmith** | Gold + Quartz + the six regional G1/G2 gems | Both trinket slots, spellbooks, gem refinement, Settings and jewelry components |
 | **Alchemist** | healing herbs + spices | Potions, elixirs, apothecary gear — **gathers its own herbs** |
 
@@ -156,7 +156,7 @@ symmetric: four mastery tiers each, six material groups each.**
 
 The active caster roster is two-handed staff or one-handed wand plus a
 Goldsmith spellbook. Plain staff/wand recipes are Basics; Woodcarver owns their
-refinement and affixes. Scepters and orbs are absent from fresh V1 worlds.
+enchantments. Scepters and orbs are absent from fresh V1 worlds.
 
 ## 3. Cross-profession supply loops
 
@@ -168,8 +168,8 @@ need small amounts of leather for some recipes, Alchemists a bit for
 their alchemist gear — trade, not self-sufficiency.
 
 Added 2026-08-07, the same pattern in the other direction: **the
-Woodcarver buys metal fittings from the Weaponsmith.** Professional refinement of every caster weapon
-from T2 up needs a Weaponsmith-made fitting of its own tier
+Woodcarver buys metal fittings from the Weaponsmith.** Every Woodcarver enchant operation
+needs a Weaponsmith-made fitting of its enchant tier
 (`items_crafting.md` §3.6a) — the §3.2 family is literally called
 "metal-shod staff".
 
@@ -192,20 +192,16 @@ Revised 2026-08-07 twice over:
   player** through six bracket catalogs, one per material tier
   (`items_crafting.md` §3.8). Bands are 1-based: bracket 1 is levels
   1–10.
-- **"Everything above is player-crafted" is now "everything above the
-  base tier is player-*refined*".** Under the one-item-per-concept rule
-  (`items_crafting.md` §3.0.3) the vendor's gear and the base craft
-  ladder are the same items, so the old sentence would have read as
-  "vendors sell what crafters make", which is true and useless. The
-  correct line is sharper: **a vendor can never sell a refined or an
-  enchanted item.** Refinement is profession-only, enchanting requires
-  refinement (`items_crafting.md` §6b.1/§6b.3), and no vendor stocks
-  either.
+- Vendors sell plain base equipment, never professionally enchanted gear.
+  Base and enchanted items have the same material lifetime; enchantments add
+  the explicitly chosen stats, with no hidden refinement bonus.
 
-This does not weaken the crafting economy, it defines its lower edge: a
-player without access to a Tailor is clothed but wearing plain cloth with
-half the durability and no affixes, and every refined or enchanted piece
-in the game still comes from a crafter or a boss.
+The [current station/enchant contract](crafting_equipment_revision.md) defines
+all fixed-tier operations and their costs. Profession progress comes from the
+qualified preparation/craft, only at the character's current profession tier.
+Automatic furnace, dual-furnace and brewing completion is universal and grants
+no progress. Alchemists prepare mixtures in their inventory 3x3 grid; cooks
+prepare profession dishes before universal baking. Simple roasting is Basics.
 
 ## 5. Phase 2+
 
@@ -227,11 +223,10 @@ of cloth or leather users who also want a professionally improved weapon.
   taught, levelled or unlocked at one, and the six crafting professions of §2
   are unaffected by which shops a city has.
 - **Enchanter as a separate profession is dropped too**: enchanting is
-  what every profession does to its own refined items
+  what equipment professions do to their own item families
   (`items_crafting.md` §6b), not a seventh profession that would take a
   cut of all six.
-- **The bow foundation now has the Scout consumer.** Six tier bows and the
-  wooden starter are active V1 equipment. Woodcarver improves bows;
+- **The bow foundation now has the Scout consumer.** Six tier bows beginning at Bronze are active V1 equipment. Woodcarver improves bows;
   Leatherworker makes the optional four-stack quiver.
 - Cultural finishing is the scalable race/profession hook
   (`items_crafting.md` §4): a crafter applies only their own culture's fixed

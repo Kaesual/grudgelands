@@ -97,7 +97,7 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   level. It is not itself a percentage; endgame plate and shields remain useful
   against enemies above level 60.
 - **How armor resolves** (rating model adopted 2026-09-20): armor rating sums
-  over head/chest/legs/feet, an equipped shield, refinement, affixes, cultural
+  over head/chest/legs/feet, an equipped shield, affixes, cultural
   finish, statuses and talents. Which armor a
   character may wear at all is the class rank of
   `inventory_equipment.md` §2.
@@ -111,7 +111,7 @@ anything). Item enchants (+Str etc.) are the player-driven part.
     onto a projectile. Unattributed and environmental damage has no attacker
     level and bypasses armor.
   - **Bulwark specialization:** learning the mutually exclusive 21-point
-    Unbroken capstone multiplies the final aggregated rating by **1.40**. Its
+    Unbroken capstone multiplies the final aggregated rating by **1.65**. Its
     existing low-HP trigger then adds **15 rating after that multiplier** for
     8 seconds, at most once per 180 seconds. It never raises the 70% cap.
   - It applies **only to `reason.type == "punch"`**. There is no

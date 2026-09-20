@@ -214,6 +214,13 @@ local function normalized_profession_records(profession, station)
 	local source = grug_jobs.recipes_for(profession, station)
 	local result = {}
 	for index = 1, #source do result[index] = cached_record(source[index]) end
+	if grug_jobs.station_operations then
+		for _, operation in ipairs(grug_jobs.station_operations(station)) do
+			if operation.profession == profession then
+				result[#result + 1] = cached_record(operation)
+			end
+		end
+	end
 	return result
 end
 
@@ -266,7 +273,8 @@ local function listed_records(player, records, search)
 	local result = {}
 	for index = 1, #records do
 		local recipe = records[index]
-		local text = (recipe.output_name .. " " .. item_label(recipe.output_name)):lower()
+		local text = (recipe.output_name .. " " .. item_label(recipe.output_name) ..
+			" " .. (recipe.label or "") .. " " .. (recipe.hint or "")):lower()
 		if recipe_unlocked(player, recipe) and recipe_discovered(player, recipe) and
 				(search == "" or text:find(search, 1, true)) then
 			result[#result + 1] = recipe
@@ -278,7 +286,8 @@ end
 local function output_groups(records)
 	local order, groups = {}, {}
 	for index = 1, #records do
-		local name = records[index].output_name
+		local name = records[index].operation == "enchant" and records[index].id or
+			records[index].output_name
 		if not groups[name] then groups[name] = {} order[#order + 1] = name end
 		groups[name][#groups[name] + 1] = records[index]
 	end
@@ -444,9 +453,14 @@ local function append_recipe(fs, recipe, alternative, alternative_count)
 	fs[#fs + 1] = ("item_image[5.25,6.35;1.1,1.1;%s]"):format(
 		esc(recipe.output_name))
 	local count = output_count(recipe.output)
-	fs[#fs + 1] = ("label[5.18,7.55;%s]"):format(esc(item_label(recipe.output_name) ..
+	local result_label = recipe.label or item_label(recipe.output_name):match("^[^\n]+")
+	fs[#fs + 1] = ("textarea[5.18,7.55;4.4,0.85;;;%s]"):format(esc(result_label ..
 		(count > 1 and (" x" .. count) or "")))
-	fs[#fs + 1] = ("label[1.25,8.52;%s]"):format(esc(recipe.hint))
+	local hint = recipe.hint or ""
+	if recipe.operation == "enchant" then
+		hint = "Select this enchant at the station. Add your equipment and these materials. " .. hint
+	end
+	fs[#fs + 1] = ("textarea[1.25,8.45;8.1,1.0;;;%s]"):format(esc(hint))
 	if recipe.shapeless then fs[#fs + 1] = "label[4.18,5.75;Shapeless]" end
 	fs[#fs + 1] = "button[6.75,6.35;0.65,0.65;grug_jobs_alt_prev;<]"
 	fs[#fs + 1] = "button[8.55,6.35;0.65,0.65;grug_jobs_alt_next;>]"
@@ -472,7 +486,7 @@ local function make_formspec(player, book, station, state)
 		alternative_count + 1
 	local counts = grug_jobs.book_undiscovered_counts(player, records)
 	local fs = {
-		"formspec_version[4]size[10,9.8]",
+		"formspec_version[4]size[10,10.4]",
 		("label[0.25,0.25;%s]"):format(esc(title_for(book, station))),
 		("field[0.3,0.72;3.7,0.7;grug_jobs_search;;%s]"):format(esc(state.search)),
 		"field_close_on_enter[grug_jobs_search;false]",
@@ -489,9 +503,9 @@ local function make_formspec(player, book, station, state)
 			local column = (slot - 1) % 7
 			local row = math.floor((slot - 1) / 7)
 			fs[#fs + 1] = ("item_image_button[%.2f,%.2f;1,1;%s;grug_jobs_item_%d;]"):format(
-				0.30 + column * 1.35, 1.45 + row * 1.25, esc(name), slot)
+				0.30 + column * 1.35, 1.45 + row * 1.25, esc(alternatives[name][1].output_name), slot)
 			fs[#fs + 1] = ("tooltip[grug_jobs_item_%d;%s]"):format(slot,
-				esc(item_label(name)))
+				esc(alternatives[name][1].label or item_label(name)))
 		end
 	end
 	local count_text = {}
@@ -505,7 +519,7 @@ local function make_formspec(player, book, station, state)
 	else
 		fs[#fs + 1] = "label[3.05,6.65;No discovered recipes match.]"
 	end
-	fs[#fs + 1] = "button[8.25,8.92;1.45,0.65;grug_jobs_close;Close]"
+	fs[#fs + 1] = "button[8.25,9.6;1.45,0.65;grug_jobs_close;Close]"
 	return table.concat(fs), state.page, pages, outputs
 end
 

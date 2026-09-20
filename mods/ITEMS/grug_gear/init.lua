@@ -201,7 +201,7 @@ local WEAPONS = {
 	-- `fixed` = always on sale; the rest are the rotation pool of §3.8.
 	{key = "sword",    noun = "Sword",    fpi = 1.0, factor = 1.0, hands = 1, group = "sword", fixed = true},
 	{key = "dagger",   noun = "Dagger",   fpi = 0.7, factor = 0.7, hands = 1, group = "sword"},
-	{key = "greataxe", noun = "Greataxe", fpi = 1.4, factor = 1.5, hands = 2, group = "axe"},
+	{key = "greataxe", noun = "Battle Axe", fpi = 1.4, factor = 1.5, hands = 2, group = "axe"},
 	{key = "staff",    noun = "Staff",    fpi = 1.4, factor = 1.2, hands = 2, group = "staff"},
 	{key = "wand",     noun = "Wand",     fpi = 1.0, factor = 1.0, hands = 1, group = "wand", caster = true},
 	{key = "bow",      noun = "Bow",      fpi = 1.0, factor = 1.0, hands = 2,
@@ -258,10 +258,9 @@ local ARMOR_SLOTS = {
 
 -- Public description-regeneration seam for grug_quality. It returns every
 -- definition-derived line below the display name, recomputing the base stat at
--- a per-stack ilvl instead of copying a bracket anchor. Refinement changes the
--- base contribution here; affixes and name coloring remain grug_quality's
--- per-stack work.
-function grug_gear.describe_stack_base(stack, ilvl, refined)
+-- a per-stack ilvl instead of copying a bracket anchor. Affixes and name
+-- coloring remain grug_quality's per-stack work.
+function grug_gear.describe_stack_base(stack, ilvl)
 	local def = stack:get_definition() or {}
 	local groups = def.groups or {}
 	if (groups.grug_equip_trinket or 0) > 0 then
@@ -283,7 +282,6 @@ function grug_gear.describe_stack_base(stack, ilvl, refined)
 		local damage = family and grug_gear.weapon_damage_at_level(ilvl or
 			def._grug_ilvl or 1, family) or
 			(base_caps.damage_groups and base_caps.damage_groups.fleshy or 0)
-		if refined and damage > 0 then damage = math.floor(damage * 1.15 + 0.5) end
 		if damage > 0 then
 			lines[#lines + 1] = core.colorize(STAT_COLOR, weapon_stats(damage,
 				base_caps.full_punch_interval or 1.4, def._grug_hands or 1))
@@ -293,13 +291,19 @@ function grug_gear.describe_stack_base(stack, ilvl, refined)
 	end
 	if (groups.grug_shield or 0) > 0 then
 		local rating = tonumber(def._grug_armor) or 0
-		if refined then rating = math.floor(rating * 1.15 + 0.5) end
+		if ilvl then
+			rating = 0
+			local line = ARMOR_LINES[1]
+			for _, slot in ipairs(ARMOR_SLOTS) do
+				rating = rating + math.max(1, math.floor(
+					(line.base + line.per_ilvl * ilvl) * slot.share + 0.5))
+			end
+		end
 		lines[#lines + 1] = core.colorize(STAT_COLOR, rating .. " armor rating")
 		return lines, {armor = rating}
 	end
 	if (groups.grug_spellbook or 0) > 0 then
 		local mana = tonumber(def._grug_max_mana_percent) or 0
-		if refined then mana = mana * 1.15 end
 		lines[#lines + 1] = core.colorize(STAT_COLOR,
 			"+" .. string.format("%.2g", mana) .. "% maximum Mana")
 		return lines, {max_mana_percent = mana}
@@ -330,7 +334,6 @@ function grug_gear.describe_stack_base(stack, ilvl, refined)
 		else
 			armor = tonumber(def._grug_armor) or 0
 		end
-		if refined and armor > 0 then armor = math.floor(armor * 1.15 + 0.5) end
 		if armor > 0 then
 			lines[#lines + 1] = core.colorize(STAT_COLOR, armor_stats(armor))
 		end
@@ -370,11 +373,11 @@ end
 
 local REPAIR_STARTER_PRICE = {
 	["default:pick_wood"] = 5, ["default:shovel_wood"] = 5,
-	["default:axe_wood"] = 5, ["default:sword_wood"] = 5,
+	["default:axe_wood"] = 5,
 	["grug_farming:hoe"] = 5,
 	["default:pick_stone"] = 10, ["default:shovel_stone"] = 10,
-	["default:axe_stone"] = 10, ["default:sword_stone"] = 15,
-	["grug_gear:staff_wood"] = 15, ["grug_gear:bow_wood"] = 15,
+	["default:axe_stone"] = 10, ["grug_farming:hoe_stone"] = 10,
+	["grug_inventory:quiver"] = grug_gear.BRACKETS[1].price.other,
 }
 local REPAIR_TIER_TOOL = {}
 for tier, names in ipairs({
@@ -479,6 +482,7 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 				groupcaps = {},
 			},
 			_grug_ilvl = br.ilvl,
+			_grug_req_level = bracket == 1 and 1 or br.ilvl,
 			_grug_bracket = bracket,
 			_grug_quality = 1,
 			_grug_hands = w.hands,
@@ -578,134 +582,21 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 	end
 end
 
---
--- The two BELOW-LADDER starters (items_crafting.md §3.0.1: "Wood and Stone gear
--- stays below the generated ilvl anchors and carries no level requirement").
---
--- `default` ships the wood and stone swords and they stay exactly as they are.
--- It ships no staff at all, so a Priest or a Mage had no starter weapon of
--- their own family -- the class kit handed every class the stone sword. This
--- is the missing half: one wooden staff, the caster's stone-sword equivalent,
--- two-handed like every staff (§3.2's caster 2H row).
---
--- NO `_grug_ilvl` and no bracket: it is not part of the generated catalog, it
--- is never on a vendor bracket tab, and WP5's level requirement must never bite
--- on it. Its damage is the starter step read off the same curve the ladder
--- uses: the stone sword's 4 fleshy as the 1H value, times the staff family's
--- x1.2, rounded the §3.2 way -- 5 at a 1.4 s swing.
-local STARTER_STAFF = "grug_gear:staff_wood"
-local STARTER_BOW = "grug_gear:bow_wood"
+-- Class starter equipment uses the first ordinary material tier.
+grug_gear.STARTER_STAFF = "grug_gear:staff_bronze"
+grug_gear.STARTER_BOW = "grug_gear:bow_bronze"
+grug_gear.STARTER_SWORD = "grug_gear:sword_bronze"
 
-core.register_tool(STARTER_STAFF, {
-	description = "Wooden Staff\n" ..
-		core.colorize(STAT_COLOR, weapon_stats(5, 1.4, 2)),
-	inventory_image = "grug_gear_item_staff_wood.png",
-	groups = {grug_gear = 1, grug_equip_weapon = 1, staff = 1, flammable = 2},
-	stack_max = 1,
-	tool_capabilities = {
-		full_punch_interval = 1.4,
-		damage_groups = {fleshy = 5},
-		max_drop_level = 0,
-		groupcaps = {},
-	},
-	_grug_quality = 1,
-	_grug_hands = 2,
-	_grug_sell_price = 3,
-})
-
-grug_gear.STARTER_STAFF = STARTER_STAFF
-core.register_tool(STARTER_BOW, {
-	description = "Wooden Bow\n" .. core.colorize(STAT_COLOR,
-		weapon_stats(4, 1.0, 2)),
-	inventory_image = "grug_gear_bow_wood.png",
-	groups = {grug_gear = 1, grug_equip_weapon = 1, bow = 1, grug_bow = 1,
-		flammable = 2},
-	stack_max = 1,
-	tool_capabilities = {full_punch_interval = 1.0,
-		damage_groups = {fleshy = 4}, max_drop_level = 0, groupcaps = {}},
-	_grug_quality = 1, _grug_hands = 2, _grug_bow_draw_time = 0.5,
-	_grug_bow_range = 25, _grug_sell_price = 3,
-})
-grug_gear.STARTER_BOW = STARTER_BOW
 core.register_craftitem("grug_gear:arrow", {
 	description = "Arrow", inventory_image = "grug_gear_arrow.png",
 	groups = {grug_arrow = 1}, stack_max = 200, _grug_sell_price = 1,
 })
--- The Warrior half of the same pair, published so the starter-kit grant in
--- grug_inventory names neither item twice.
-grug_gear.STARTER_SWORD = "default:sword_stone"
-
 dofile(core.get_modpath("grug_gear") .. "/trinkets.lua")
 
 core.log("action", "[grug_gear] " .. NUM_BRACKETS .. " bracket catalogs: " ..
 	tool_count .. " weapons + " .. craftitem_count .. " armor pieces")
 
---
--- The vendored `default` swords and axes are weapon-slot eligible too
--- (weapon-slot design B3, decided 2026-08-08).
---
--- WHY, since these are not our items: with the no-fallback rule of B1 the
--- weapon slot is the ONLY source of melee damage, and a fresh character owns
--- exactly one weapon — the `default:sword_stone` of the starter kit
--- (grug_factions). Without this list that character would have no melee
--- damage at all until their first vendor visit.
---
--- PICKAXES AND SHOVELS ARE DELIBERATELY ABSENT: mining tools stay mining
--- tools, and punching a mob with a pick keeps working through the ordinary
--- wielded-item path either way.
---
--- Mese and Diamond tools are outside the current content roster, and since
--- WP13's round-2 merge the BRONZE and STEEL swords are too: those two concepts
--- are now `grug_gear:sword_bronze` and `grug_gear:sword_steel` and
--- `grug_materials/content_curation.lua` unregisters the `default` ones
--- (§3.0.3's "no `default` stone sword standing next to a Crude Sword", applied
--- to the two steps the ladder actually covers). The wood and stone swords stay:
--- they are the below-ladder starters, not a second copy of a ladder item.
---
--- `core.override_item` REPLACES a named field wholesale, it does not merge
--- (AGENTS.md, learned in WP25): handing it `groups = {grug_equip_weapon = 1}`
--- would drop `sword`/`axe`/`flammable` and break every recipe and burn time
--- that reads them. The current table is therefore read back off the
--- registration and copied — which also means this survives WP29's re-tiering
--- of those groups without anyone remembering to update a hand-copied literal.
---
--- ALL TWELVE ARE ONE-HANDED, the vendored axes included (B4, decided here).
--- The tempting reading is "an axe is two-handed", but a `default:` axe is a
--- hatchet, not our Greataxe: it hits for 4 fleshy at a 1.0 s interval where
--- the sword of the same tier hits for 6 at 0.8 s (default/tools.lua:265-278
--- vs :359-372), i.e. it is strictly WORSE in combat and could not pay for the
--- offhand it would block. It is also the woodcutting tool every character
--- carries permanently, so a 2H axe would take the torch away from anyone who
--- owns one — an arbitrary tax, not the deliberate trade combat_stats.md §7
--- asks for. The two-handed statement belongs to the family that is actually
--- paid for by ×1.5 damage: grug_gear's Greataxe. The field is still written
--- explicitly rather than left to the "no field = one-handed" default, so the
--- decision is visible at the site it applies to.
-local VENDORED_WEAPONS = {
-	"default:sword_wood", "default:sword_stone",
-	"default:axe_wood", "default:axe_stone", "default:axe_bronze",
-	"default:axe_steel",
-}
-
-for _, itemname in ipairs(VENDORED_WEAPONS) do
-	local def = core.registered_items[itemname]
-	if not def then
-		-- Not fatal: the list shrinks with WP28/WP29, and a stale entry must
-		-- say so rather than crash the game.
-		core.log("warning", "[grug_gear] cannot make " .. itemname ..
-			" weapon-slot eligible: no such item")
-	else
-		local groups = table.copy(def.groups or {})
-		groups.grug_equip_weapon = 1
-		core.override_item(itemname, {groups = groups, _grug_hands = 1})
-	end
-end
-
--- Run after every item mod has registered. The weapon slot also accepts the
--- deeper material-ladder hatchets from grug_materials, which loads alongside
--- this mod and is deliberately not a dependency. Retrofitting by the slot
--- group here covers those axes as well as the vendored starters and generated
--- gear without a second hand-maintained name list.
+-- Refresh weapon descriptions after all item registrations.
 core.register_on_mods_loaded(function()
 	for itemname, def in pairs(core.registered_items) do
 		if def.groups and def.groups.grug_equip_weapon then

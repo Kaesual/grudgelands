@@ -8,12 +8,13 @@
 -- the same two concepts as `grug_gear:sword_bronze` and `grug_gear:sword_steel`
 -- on the one material ladder. Only the swords go -- the bronze and steel
 -- PICK/AXE/SHOVEL are the ladder's own T1 and T3 rungs (see tools.lua), and
--- `default:sword_wood`/`_stone` stay as the below-ladder starters.
+-- Wood and Stone remain only as gathering tools.
 local REMOVED_TOOLS = {
 	"default:pick_mese", "default:shovel_mese", "default:axe_mese",
 	"default:sword_mese", "default:pick_diamond", "default:shovel_diamond",
 	"default:axe_diamond", "default:sword_diamond",
 	"default:sword_bronze", "default:sword_steel",
+	"default:sword_wood", "default:sword_stone",
 }
 
 local REMOVED_PROCESSED = {

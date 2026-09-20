@@ -349,20 +349,23 @@ Details + line numbers in [docs/research/](docs/research/).
   `has`, `profession_level`, `crafts_in_tier`, `character_tier`,
   `record_craft` and `can_craft_recipe`. `profession_level` returns 0 when
   unlearned and effective T1–T6 when learned. Grid output is vetoed before the
-  engine craft; current furnaces have no acting player in their timers, so
-  their per-player gate and progression run on output extraction.
+  engine craft. Authored workspaces have persistent per-player/per-station data;
+  player-placed stations share inputs with individually qualified output views.
+  Automatic furnace/dual/brewing processing is universal and grants no progress;
+  the protected preparation step grants current-tier progress instead.
   One output may have one route per station when every route agrees on
   profession and tier; `recipe_for_output(output, station)` resolves the
   station-specific route. This is how a Cooking grid dish and its raw-assembly
   furnace path meet at the same edible item.
-  A later custom station (including the brewing stand) must call
-  `can_craft_recipe` before its output leaves and `record_craft` after each
-  successful craft on that same take path.
+  Grid and selected enchant commits revalidate qualification and inputs before
+  consuming anything and record progress once after settlement. Alchemists make
+  mixtures in their inventory grid; Brewing Stands finish them universally.
   Basics declares each exact engine route as starter or with one main material;
   the complete runtime catalog is audited against `basics_routes.lua` at startup.
-  Discovery changes visibility only. Cooking owns Bread, Cooked Meat and Cooked
-  Fish in both the book and furnace extraction; `existing_engine_recipe = true`
-  registers verified existing engine provenance without duplicate installation.
+  Discovery changes visibility only. Bread, Cooked Meat and Cooked Fish are
+  universal Basics roasting; protected Cooking dishes keep their book provenance.
+  `docs/design/crafting_equipment_revision.md` governs current stations, named
+  fixed-tier enchantments (including trinkets), equipment separation and wear.
   Station icons appear below the recipe arrow, outside ingredient slots.
   `grug_jobs.open_trainer(player, profession, pos)` serves the seven primaries
   and Cooking. Capital-only Riding uses `grug_mounts.open_trainer(player, entity)`

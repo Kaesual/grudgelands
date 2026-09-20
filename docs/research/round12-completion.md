@@ -68,7 +68,7 @@ remove each other's work. Timer-based production can consume ingredients before
 output-take profession authorization and leave results the supplier cannot take.
 Normal digging refuses nonempty stations. This architecture needs a separate
 multiplayer ownership/early-authorization package; see
-[the open decision brief](../../TODO-station-ownership.md). The user explicitly
+[the open decision brief](../design/crafting_equipment_revision.md). The user explicitly
 instructed completion of Round12 without implementing this additional scope.
 
 ## Independent review and calibration

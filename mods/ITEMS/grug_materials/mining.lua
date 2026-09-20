@@ -16,22 +16,22 @@ grug_materials.SHORTFALL_MULTIPLIERS = {
 -- speed/durability calibration; consumers should build capabilities from this
 -- table instead of copying its values.
 grug_materials.PICK_PROFILES = {
-	[1] = {tier = 1, key = "bronze", ordinary_time = 0.45, uses = 180,
+	[1] = {tier = 1, key = "bronze", ordinary_time = 0.45, uses = 300,
 		punch_attack_uses = 180,
 		cracky_times = {[1] = 2.25, [2] = 0.90, [3] = 0.45}},
-	[2] = {tier = 2, key = "iron", ordinary_time = 0.425, uses = 180,
+	[2] = {tier = 2, key = "iron", ordinary_time = 0.425, uses = 600,
 		punch_attack_uses = 180,
 		cracky_times = {[1] = 2.125, [2] = 0.85, [3] = 0.425}},
-	[3] = {tier = 3, key = "steel", ordinary_time = 0.40, uses = 180,
+	[3] = {tier = 3, key = "steel", ordinary_time = 0.40, uses = 1000,
 		punch_attack_uses = 180,
 		cracky_times = {[1] = 2.00, [2] = 0.80, [3] = 0.40}},
-	[4] = {tier = 4, key = "silversteel", ordinary_time = 0.35, uses = 240,
+	[4] = {tier = 4, key = "silversteel", ordinary_time = 0.35, uses = 1500,
 		punch_attack_uses = 240,
 		cracky_times = {[1] = 1.75, [2] = 0.70, [3] = 0.35}},
-	[5] = {tier = 5, key = "embersteel", ordinary_time = 0.30, uses = 300,
+	[5] = {tier = 5, key = "embersteel", ordinary_time = 0.30, uses = 2000,
 		punch_attack_uses = 300,
 		cracky_times = {[1] = 1.50, [2] = 0.60, [3] = 0.30}},
-	[6] = {tier = 6, key = "abyssal_steel", ordinary_time = 0.25, uses = 360,
+	[6] = {tier = 6, key = "abyssal_steel", ordinary_time = 0.25, uses = 3000,
 		punch_attack_uses = 360,
 		cracky_times = {[1] = 1.25, [2] = 0.50, [3] = 0.25}},
 }

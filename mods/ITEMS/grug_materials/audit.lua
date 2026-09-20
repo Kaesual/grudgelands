@@ -136,12 +136,7 @@ core.register_on_mods_loaded(function()
 		["default:pick_bronze"] = 1,
 		["default:pick_steel"] = 1,
 	}
-	local active_punch_uses = {
-		["default:pick_wood"] = 10,
-		["default:pick_stone"] = 20,
-		["default:pick_bronze"] = 60,
-		["default:pick_steel"] = 60,
-	}
+
 	for name, expected in pairs(active_max_drop_levels) do
 		local def = core.registered_items[name]
 		local actual = def and def.tool_capabilities and
@@ -149,7 +144,7 @@ core.register_on_mods_loaded(function()
 		if actual ~= expected then
 			fail("unexpected max_drop_level on " .. name)
 		end
-		if def.tool_capabilities.punch_attack_uses ~= active_punch_uses[name] then
+		if def.tool_capabilities.punch_attack_uses ~= 0 then
 			fail("unexpected punch_attack_uses on " .. name)
 		end
 	end

@@ -56,16 +56,13 @@ grug_traders.register_stock({item = "default:torch", price = 1, category = "good
 grug_traders.register_stock({item = "default:pick_wood", price = 5, category = "tools"})
 grug_traders.register_stock({item = "default:shovel_wood", price = 5, category = "tools"})
 grug_traders.register_stock({item = "default:axe_wood", price = 5, category = "tools"})
-grug_traders.register_stock({item = "default:sword_wood", price = 5, category = "tools"})
 grug_traders.register_stock({item = "default:pick_stone", price = 10, category = "tools"})
 grug_traders.register_stock({item = "default:shovel_stone", price = 10, category = "tools"})
 grug_traders.register_stock({item = "default:axe_stone", price = 10, category = "tools"})
-grug_traders.register_stock({item = "default:sword_stone", price = 15, category = "tools"})
 -- The caster's half of the same below-ladder starter pair (WP13 round 2): a
 -- Priest or Mage who loses the staff its class grant gave it must be able to
 -- buy the same thing back, exactly as a Warrior can buy the stone sword above.
 -- Same price, because it is the same rung.
-grug_traders.register_stock({item = "grug_gear:staff_wood", price = 15, category = "tools"})
 grug_traders.register_stock({item = "default:pick_bronze", price = 40, category = "tools"})
 
 -- WP10 (jobs/professions) adds the job supplies of §3.7/§8.2 from its own mod,

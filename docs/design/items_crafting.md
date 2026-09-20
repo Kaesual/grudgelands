@@ -5,7 +5,7 @@ points P1–P4 are recorded in §10).
 
 **Reworked 2026-08-07** (crafting rework session): the material ladder is
 now six tiers (§3.0), the tome chain is replaced by one UI recipe book per
-profession (§2.2), professions **refine and enchant** instead of owning
+profession (§2.2), professions **enchant** instead of owning
 the item catalog (§3.3–§3.6b, §6b), and there is **exactly one item per
 concept** — the vendor bracket catalog and the base craft ladder are the
 same, material-named items (§3.0.3). Resolutions in §10.
@@ -46,7 +46,7 @@ ladders are independent; §2.1 spells out how they meet.
   Trinkets use their fixed one-prefix/one-suffix/one-special exception (§6.2).
 - Vendors sell simple (Common) gear — available but painfully expensive;
   better gear comes from **crafting** or **special bosses**. *Sharpened
-  2026-08-07*: "crafting" means **refinement + enchanting** (§6b) — the
+  2026-08-07*: "crafting" means **enchanting** (§6b) — the
   plain base item is the same item the vendor sells (§3.0.3).
 - Items are **upgradeable via crafting within limits**: an upgraded
   mediocre item never becomes a top item. No upgrade failure chance.
@@ -72,7 +72,7 @@ ladders are independent; §2.1 spells out how they meet.
   may fill the same role. The vendor bracket catalog *is* the base craft
   ladder, and both are material-named (§3.0.3).
 - **Everyone crafts the base items of every material tier**; professions
-  refine and enchant them and hold a few exclusive recipes per mastery
+  enchant them and hold a few exclusive recipes per mastery
   tier (§3.3–§3.6b, §6b).
 
 ## 1. Reference research (2026-08-06)
@@ -253,38 +253,25 @@ new rule, all three were implicit before:
    rule: nothing stops a level-50 Master from smithing a T1 Bronze Sword
    (ilvl 3), and that sword rolls in the first band. §6.3 spells out the
    two consequences.
-2. **Mastery decides which enchant/value operation a crafter can perform** —
-   Apprentice prefix, Journeyman suffix, Expert first temper/masterwork values,
-   Master second temper (§6b.5). It does *not*
-   decide which material tier you may touch; that is the gear ladder and
-   the digging-depth gate (§3.0.4).
-3. **Mastery does not grant recipe permission.** The four mastery bands remain
-   the refinement/enchant-slot ladder of §6b.5. Every authored recipe instead
-   carries one T1–T6 profession tier, and profession level alone decides
-   whether it is craftable. Universal base recipes remain outside both gates
-   (§3.0.3).
+2. **Profession tier gates enchant operations.** Every legal prefix and suffix
+   is available in each T1–T6 tier; no mastery suffix gate or temper step remains.
+3. **Mastery retains specialist recipes**, such as bag capacities and spellbooks;
+   it does not add enchant slots. Recipe profession tier and explicitly declared
+   specialist prerequisites govern crafting. Universal Basics routes are ungated.
 
-**The signature table is decided (2026-08-13)** — per-profession detail
-in §3.3–§3.6b, the kit rule in §7. Deliberately thin cells are design,
-not gaps: filler recipes would collide with decided systems (repair is
-WP22's ledger sink, light sources are R2-gated, combat buff consumables
-belong to the Alchemist's no-treadmill line). Material tier is always
-the book group's business; this table cuts only mastery:
+| Profession | Retained specialist products |
+|---|---|
+| Weaponsmith | Metal fittings; physical-weapon enchantments |
+| Armorsmith | Metal-armor and shield enchantments |
+| Leatherworker | Weapon grips; 8/16/24/32-slot leather bags; quiver; leather enchants |
+| Tailor | 8/16/24/32-slot cloth bags; cloth enchants |
+| Woodcarver | Staff, wand and bow enchantments |
+| Goldsmith | Rough→Cut gems; Settings; trinkets; spellbooks; ornaments; named enchants |
+| Alchemist | Profession-gated mixtures for universal Brewing Stand finishing |
 
-| Profession | Apprentice | Journeyman | Expert | Master |
-|---|---|---|---|---|
-| Weaponsmith | metal fittings | whetstone imbue kit | whetstone temper kit | — |
-| Armorsmith | — | — | armor-polish imbue/first-temper access | armor-polish second temper |
-| Leatherworker | weapon grips; 8-slot leather bag; quiver | 16-slot leather bag; leather-armor imbue kit | 24-slot leather bag; leather first temper | 32-slot leather bag; leather second temper |
-| Tailor | 8-slot cloth bag | 16-slot cloth bag; embroidery imbue kit | 24-slot cloth bag; embroidery first temper | 32-slot cloth bag; embroidery second temper |
-| Woodcarver | — (plain caster weapons and bows are universal) | wood-oil imbue kit | wood-oil first temper | wood-oil second temper |
-| Goldsmith | Rough→Cut refinement; Settings (§3.6b ladder) | trinket assembly; spellbooks; gem-setting imbue kit | gem-setting first temper; ornament components | gem-setting second temper |
-| Alchemist | §3.6 Apprentice row | §3.6 Journeyman row; Apothecary Hood; imbuing-oil imbue kit | §3.6 Expert row; Apothecary Garb; imbuing-oil temper kit | §3.6 Master row; Master's Regalia |
-
-Costs follow only existing patterns — fittings 2 bars (§3.3), grips 2
-leather of the item's tier (professions.md §3's cross-buy as a concrete
-component item), kits ≈ 1 tier reagent + tier materials (§7), bags/
-tomes/consumables unchanged. No new numbers are introduced here.
+Fixed enchant tier bonuses/costs follow §6b and
+[the current contract](crafting_equipment_revision.md#enchanting). Removed
+Imbue/Temper recipes do not survive as mastery unlocks.
 
 ### 2.2 Recipe books are UI (revised 2026-09-18)
 
@@ -347,7 +334,7 @@ tomes/consumables unchanged. No new numbers are introduced here.
 roughly 100–200 minutes. The five current-tier craft thresholds are
 10 / 15 / 20 / 25 / 30 (§2.3), so a player who works two professions beside
 questing has a predictable craft goal in every band without a separate
-redemption item or discovery grind. A pure fighter instead buys refined and
+redemption item or discovery grind. A pure fighter instead buys enchanted and
 enchanted gear from crafters; both paths remain inside the 10–20 h envelope.
 **Intended gear cadence: a visible upgrade every 45–90 min** (quest
 rewards + 3% world drops between the six material tiers, §3.0),
@@ -611,7 +598,7 @@ from `grug_gear`. Consequences, all binding:
   leather. All three lines and all six material tiers are registered and
   universal.
 - A profession never gets a *parallel* item. What a profession adds on
-  top of the base item is the **refinement, the enchant and the special
+  top of the base item is the **enchantment and the special
   variant** (§6b), plus its handful of exclusive recipes.
 
 #### 3.0.4 Natural depth, harvest tier and cosmetic strata
@@ -777,7 +764,7 @@ audit's silence.
 ### 3.1 Armor rating curve (base values shipped in WP7; mitigation revised 2026-09-20)
 
 Armor values are raw rating, not percentage points. Equipped base rating,
-refinement, affixes, finishes and statuses aggregate before
+affixes, finishes and statuses aggregate before
 `combat_stats.md` §2 resolves that total against attacker level and caps only
 the resulting reduction at 70%. The generated four-piece set totals use the
 existing chest/legs/head/feet split (approximately 35/27/22/16%):
@@ -793,12 +780,12 @@ Headed by their ilvl from here on.
 | Metal (Armorsmith) | 16 | 29 | 42 | 55 | 19/15/12/9 |
 | Leather (Leatherworker) | 11 | 20 | 30 | 40 | 14/11/9/6 |
 | Cloth (Tailor) | 5 | 8 | 11 | 15 | 5/4/3/3 |
-| Shield | — | — | — | — | matching-tier unrefined metal-set total |
+| Shield | — | — | — | — | matching-tier base metal-set total |
 
 The six live catalog anchors at ilvl 3/10/20/30/40/50 produce cloth set
 ratings 4/5/6/8/11/14, leather 5/10/17/23/29/36 and metal
 8/14/23/32/40/49. A plain shield contributes the matching tier's complete
-unrefined metal-set rating: 8/14/23/32/40/49. Drop gear uses the same curve at
+base metal-set rating: 8/14/23/32/40/49. Drop gear uses the same curve at
 its ilvl; quality adds affixes without changing the base curve.
 
 **Off-tier ilvls: linear interpolation** (recorded 2026-08-07 with WP7).
@@ -866,7 +853,7 @@ also generates the vendor bracket weapons of §3.8.
 The active caster roster is the two-handed staff or the one-handed wand plus a
 Goldsmith spellbook. Scepters and orbs are absent on fresh servers: no item,
 recipe, loot or vendor identity remains. Staves and wands use universal plain
-Basics recipes; Woodcarver owns their refinement and affixes. Bows are likewise
+Basics recipes; Woodcarver owns their enchantments. Bows are likewise
 universal plain Basics, with Woodcarver owning their improvement operations.
 
 For weapons, the catalogue's `_grug_ilvl` is also the minimum character level
@@ -881,7 +868,7 @@ craftable by everyone. What each section now lists is three things —
 
 1. the **material chain** the profession refines through (unchanged; it
    is still the profession's progression and its trade good),
-2. the **item families** the profession may **refine, enchant and turn
+2. the **item families** the profession may **enchant and turn
    into special variants** (§6b) — its exclusive claim on the *quality*
    of an item, not on its existence,
 3. its **exclusive recipes**, a handful per mastery tier: things nobody
@@ -900,19 +887,15 @@ six-tier ladder, and **§10 P1's "gem-tempered steel" is retired with it**
 — the T4 metal is Silversteel from a real new ore, which is exactly the
 "new ore post-MVP" option P1 held open.
 
-**Weaponsmith refines and enchants** physical weapons and refines mining tools.
-**Armorsmith refines and enchants** metal armor and shields. Plain base recipes
+**Weaponsmith enchants** physical weapons. Gathering tools have no combat enchants.
+**Armorsmith enchants** metal armor and shields. Plain base recipes
 remain universal: swords cost two bars plus a handle; picks cost three bars;
 armor uses the canonical 5/8/7/4 head/chest/legs/feet layouts. Metal fittings
 are Weaponsmith trade goods used for professional improvement, never base gear.
 
-**Exclusive recipes**: **metal fittings** at Apprentice (the Woodcarver
-cross-buy, §3.6a); the whetstone imbue kit; the whetstone temper and
-armor-polish imbue kits at
-Expert; the armor-polish temper kit at Master (§7's kit rule); and the
-cultural/PvP operations of §4 as earned unlocks (§2.2).
-Plain shields use their canonical universal Basics grid; Armorsmith alone
-refines and enchants them.
+**Exclusive recipes**: **metal fittings** and named family-legal enchantments.
+Plain shields use their universal Basics grid; Armorsmith owns their enchants.
+Cultural/PvP operations remain separate future delivery.
 
 Ore access follows §3.0.4's three separate checks: territory/protection, the
 pick's exact maximum natural y-depth and the resource's independent minimum
@@ -920,14 +903,8 @@ harvest tier. Cosmetic strata never grant access. Natural distribution comes
 from §3.0.1 and the column's `race_region`, not from a tier-matched stratum or
 a lead-metal-band rule.
 
-> **Superseded 2026-08-07 (§3.0.3):** ~~"Vendor floor sells up to the
-> bronze pick — iron+ picks are smith products (mining stays open to
-> all, the TOOL is the trade good)."~~ Every pick on the ladder is a base
-> recipe now, so the Weaponsmith has no exclusive claim on iron+ picks. Vendor stock
-> is unchanged — the bronze pick stays the vendor's top tool (§3.7); a
-> higher pick is **crafted, not bought**. The trade good is the
-> **refined** pick: +100 % durability (§6b.2) is worth more on a mining
-> tool than on anything else in the game.
+Every pick is a universal base recipe. Higher-tier tools improve their mining
+access and lifetime; no professional refinement step exists.
 
 ### 3.4 Leatherworker (tanning rack) — leather
 
@@ -939,7 +916,7 @@ decided 2026-08-13: **T5 sleek leather** (from the panther's sleek pelt —
 the Tailor's T4 silkweave precedent (serpents and panthers carry the
 level-51–60 zones on both continents; no new mob is required).
 
-**Refines and enchants**: leather armor, all four slots. Base recipes use
+**Enchants**: leather armor, all four slots. Base recipes use
 the §3.1 shapes at jerkin 8 / pants 7 / hood 5 / boots 4 leather. Its MVP
 wearers are the **Warrior** (light avoidance set, §3.8 — decided
 2026-08-13) and the **Scout**.
@@ -970,7 +947,7 @@ stormweave bolt** — stormkelp (coast 45–60, both continents,
 unchanged, and the T6 bolt gives the level-45–60 coast zones an economic
 pull.
 
-**Refines and enchants**: cloth armor, all four slots. Base recipes:
+**Enchants**: cloth armor, all four slots. Base recipes:
 robe 8 / leggings 7 / cowl 5 / slippers 4 bolts.
 
 **Exclusive recipes**:
@@ -1058,7 +1035,7 @@ reach every grade by construction, and the per-race woods stay a cosmetic/
 cultural skin on top, never a tier gate. These grade words are the item
 names WP29 uses (§3.8), such as a Hardened Staff.
 
-**Refines and enchants**: staves, wands and bows.
+**Enchants**: staves, wands and bows.
 
 **Exclusive recipes** (mastery cut decided 2026-08-13, §2.1): the
 Apprentice cell is deliberately empty because plain staves, wands and bows are
@@ -1067,7 +1044,7 @@ Expert and second temper at Master. The quiver stays Leatherworker (§3.4).
 
 **Cross-buy: the Woodcarver buys metal fittings from the Weaponsmith.**
 The §3.2 family is literally called "metal-shod staff"; from T2 up its
-professional refinement needs a Weaponsmith-made fitting of the item's tier.
+professional enchanting needs a Weaponsmith-made fitting of the enchant tier.
 Universal plain caster weapons never require a professional component. That is
 the same deliberate supply loop the Leatherworker and Tailor already run
 in professions.md §3 — a profession that cannot finish its own top item
@@ -1204,10 +1181,10 @@ Neither of these costs a main profession slot (professions.md §1).
   | T6 | Hunter | raw meat + Wild Cocoa + Fire Pepper or Wild Onion | Cocoa-Rubbed Game |
 
   **Both furnace patterns.** Raw meat → Cooked Meat, ordinary Raw Fish →
-  Cooked Fish and Wild Grain → Bread are Cooking-owned furnace refinements;
-  they stay in the Cooking book and never appear in Basics. Every tier also
+  Cooked Fish and Wild Grain → Bread are universal Basics routes with no
+  profession progression. Every tier also
   has one Cooking grid recipe for an inedible raw assembly; its
-  profession-gated furnace route meets the direct grid route at the same edible
+  universal furnace finishing route meets the direct grid route at the same edible
   Hearty dish:
 
   | Tier | Raw assembly inputs | Furnace output |
@@ -1259,7 +1236,7 @@ changes:
   table and `grug_gear.MATERIALS`.
 - **Selling a base item is not selling "the low tier of crafting".** It
   is selling the same item a crafter starts from. What a vendor can never
-  sell is a **refined** or **enchanted** item (§6b) — that is the whole
+  sell is a **enchanted** item (§6b) — that is the whole
   of the crafting advantage now, stated as a rule instead of as a number
   comparison.
 
@@ -1280,7 +1257,6 @@ changes:
 | Material tier | T1 | T2 | T3 | T4 | T5 | T6 |
 | ilvl | 3 | 10 | 20 | 30 | 40 | 50 |
 | 1H weapon dmg (§3.2 curve) | 5 | 8 | 11 | 15 | 18 | 22 |
-| refined, +15 % (§6b.2) | 6 | 9 | 13 | 17 | 21 | 25 |
 
   **T4–T6 regional-G2 base cost.** Every ordinary crafted combat weapon,
   armor piece and offhand at these tiers consumes one specific Cut G2 gem in
@@ -1297,7 +1273,7 @@ changes:
   two-handed weapon consumes its tier's main-hand gem and its offhand gem,
   preserving the demand of the displaced slot. Pickaxes, shovels, axes and
   other gathering tools, bars, furnaces and repair are
-  excluded. Refinement and ordinary affixes do not charge the base G2 again.
+  excluded. Ordinary affixes do not charge the base G2 again.
   Species grants no hidden stat; it is the recipe's material identity.
   Trinkets use their explicit symmetric recipes in §3.6b/§6.2.
 
@@ -1314,28 +1290,18 @@ changes:
   floor for contesting the source but is audited so it cannot erase crafted
   G2 demand.
 
-  **The refined row is the whole design in one line** (added 2026-08-07,
-  computed from the row above with §3.2's half-up rounding). A refined
-  item of tier n is strictly better than a base item of tier n — and
-  strictly **worse** than a base item of tier n+1: 6 < 8, 9 < 11,
-  13 < 15, 17 < 18, 21 < 22. That is exactly the constraint the rework was
-  chosen for (+15 %, not +25 %), and it holds across the whole ladder
-  with no exception. A refined item therefore never lets a player skip a
-  tier; it makes the tier they are in worth staying in.
-
   Rationale for having the vendor ladder at all: on a small server the
   crafter for your armor class may simply not exist — the floor stops a
   player from going naked, it does not compete. Superseded 2026-08-07:
   the old "±15 % of crafted gear of the same era" comparison, and the
   older "10–15 % behind" before it. Under the merge there is nothing to
   compare — vendor gear and base crafted gear are the same item, and the
-  crafter's edge is refinement and enchants (§6b), not a base number.
+  crafter's edge is enchantments (§6b), not a base number.
 - **Rotation**: the core stock is fixed; each bracket additionally shows
   a handful of **rotating gear slots**, re-rolled hourly. Roughly **one
   rotation in five carries a single Uncommon item**, rolled in the
   **world window** (frac 0.00–0.60, §6.3 — the weakest rolls in the
-  game; expected 0.30 against crafted-fine's 0.55, though the ranges do
-  overlap between 0.30 and 0.60) and priced above the Common
+  game; crafted enchantments instead have fixed tier values) and priced above the Common
   baseline by the authoritative quality multiplier. That is
   the "today the trader had something good" moment, without a second
   gear source.
@@ -1454,7 +1420,7 @@ WP33 creates no temporary T4 tool or duplicate tier taxonomy.
 ### 4.2 Cultural finishing
 
 A cultural finish is a permanent per-stack workstation operation. It preserves
-the base item, material tier, refinement, quality, durability, ordinary
+the base item, material tier, quality, durability, ordinary
 prefixes/suffixes, masterwork state and PvP-special data; it creates no kit or
 parallel registered item.
 
@@ -1707,9 +1673,7 @@ involved. The two systems never meet.
 | Named rare (armor 70) | 100% | 25% | rare |
 | Apex boss / race King | — | 100% | boss |
 
-A dropped item that carries enchants is by definition also **refined**
-(§6b.3 admits no other state) — which is why the refinement word never
-appears in a drop's name (§6b.4).
+Found enchantments do not imply a separate refined state.
 
 **Which item drops is one uniform draw over the concrete registered base
 items of the mob's own tier** (stated 2026-08-13) — the bracket's whole
@@ -1717,24 +1681,14 @@ current item list, with no slot pre-selection and no per-family weighting.
 Adding a registered family therefore changes the resulting proportions; no
 fixed family count or weighted table exists anywhere in this design.
 
-What the windows guarantee exactly is the **expected value per affix**:
-`world` 0.30 and `crafted-fine` 0.55, `elite` 0.60, `rare` 0.75 and
-`crafted-masterwork` 0.80. They **overlap by design**, so no per-item
-ordering follows from them — a lucky named-rare roll beats an unlucky
-masterwork on a single item, and that is intended.
+Found source windows have expected fractions world 0.30, elite 0.60,
+rare 0.75 and boss 0.90. They overlap; a single lower-source roll can exceed a
+higher-source roll. Crafted enchantments instead use the fixed tier table in
+[the current contract](crafting_equipment_revision.md#enchanting).
 
-Whole-item strength uses at most two affixes. Uncommon has one; Rare has one
-prefix and one suffix. Source windows may overlap by design, so a strong boss
-roll can beat a weak masterwork roll. Expert unlocks masterwork values and the
-first temper; Master unlocks the second temper.
+WP5 still owes the loot/economy audit: found gear must not erase demand for
+crafted G2 gear. No removed masterwork/temper workflow is assumed by that audit.
 
-**Boss loot is not an ordinary found source but a deliberate peer of
-crafting**, at `boss` 0.80-1.00 against `crafted-masterwork` 0.60-1.00:
-§6.4's two top windows. What WP5 still owes is the **audit** that the rates in the
-table above, at elite and high-tier sources, do not flood the market far
-enough to erase demand for crafted G2 gear and named-rare trophies; if that
-audit contradicts the table, the table is what changes, and it changes in
-this document.
 
 ### 5.2 Named rares (spawn rules decided in biomes_mobs §3.3)
 
@@ -1858,20 +1812,14 @@ plain meta float named `full_punch_interval` is not read by the engine —
 and every other capability of the base item is preserved unchanged. Enchant count: **Uncommon rolls exactly one affix; Rare rolls exactly one prefix and one suffix** — the decided budgets, and from 2026-08-07 also the prefix and
 suffix count of §6b. Found/vendor Uncommon sources receive one affix and Rare
 sources receive both channels. Crafted results use the same exact shape;
-mastery controls which operation is available (§6b.5), not a random count.
+the chosen channels determine the count (§6b.5).
 
 Cultural finish and PvP-special lines are displayed separately, naming their
 culture/target and exact value. Trinkets are the exception to the ordinary
-base/refinement model: §6.2 gives them no base-stat line, refinement or
-durability, only their one prefix, one suffix and authored special.
+base-stat model: §6.2 gives them no base-stat line or durability, but two selectable enchant channels and an authored special.
 
-**Refinement and the base-stat line** (2026-08-07): a refined item's grey
-line shows the **refined** number — the +15 % damage or armor of §6b.2,
-rounded half-up like every other value on the curve, and the doubled
-durability. Refinement is a property of the item, not a roll, so it goes
-into meta alongside `grug_quality` as a plain boolean; the description
-pipeline reads it exactly like the ilvl. The affix words themselves live
-in the **name**, not in the stat lines (§6b.4).
+The base-stat line uses the concrete item's level. Chosen affixes add only
+their explicit values; there is no hidden damage/armor/lifetime multiplier.
 
 **Hand-off from the vendor catalogs** (WP7 → WP5, 2026-08-07): vendor
 gear ships with the item-def fields **`_grug_ilvl`, `_grug_bracket` and
@@ -1905,26 +1853,24 @@ both the percentage and the absolute current-level contribution.
 
 #### Trinket exception: one prefix, one suffix, one special
 
-A passive trinket has exactly:
+A passive trinket has one authored identity special plus two enchant channels:
 
-- one prefix rolling **Strength, Intelligence or Dexterity**;
-- one suffix rolling **maximum HP, maximum Mana or Crit**;
-- one authored trinket special.
+- prefix choices: **Strength, Intelligence or Dexterity**;
+- suffix choices: **maximum HP, maximum Mana or Crit**.
 
-The pools make nine possible prefix/suffix pairs and structurally prevent a
-duplicate stat. Armor, Dodge and attack speed are excluded. Rolls reuse
-§6.3's ordinary equipment ranges for the item's ilvl band and source window;
-prefix and suffix roll independently. A trinket has **no separate base-stat
-line, armor, durability or refinement state**. Material tier scales only the
-authored special. Common/Uncommon/Rare presentation may communicate source and
-roll window, but never changes the fixed channel count or multiplies a special.
-This is the explicit exception to §6b's ordinary refine-before-enchant rule.
+The pools make nine possible completed prefix/suffix pairs and structurally
+prevent duplicate stats. Armor, Dodge and attack speed are excluded. Goldsmiths
+craft the base item with empty channels, then select fixed-tier enchantments at
+the Jeweller's Bench, just like other professions. Either channel may be filled
+first or replaced; target tier must be at least enchant tier. No crafted roll is
+random. Found-item random rolls remain separate loot behavior.
 
-Register exactly six ordinary core identities, each craftable in T1–T6.
-Identity, Setting, tier, item level, required level, special strength and base
-image are static fields of 36 registered ids (six identities across six tiers).
-Random affix rolls, refinement/quality state and the resulting generated display
-name and color remain per-stack data.
+A trinket has no separate base-stat line, armor, durability or refinement state.
+Its material tier scales the authored special; enchanting does not change that
+special. Ordinary quality follows the number of applied enchants. Register six
+core identities across six tiers, for 36 item ids. Identity, Setting, tier, item
+level, required level, special strength and image are static; chosen enchants and
+generated names remain per-stack metadata.
 
 | Visual family | Core identities |
 |---|---|
@@ -2031,10 +1977,8 @@ intended +50–60% fully equipped ceiling.
 | Window | frac | Used by |
 |---|---|---|
 | world | 0.00–0.60 | normal-mob drops |
-| crafted-fine | 0.30–0.80 | crafted Uncommon ("fine" recipes) |
 | elite | 0.30–0.90 | elite drops, dungeon/crate loot |
 | rare | 0.50–1.00 | named-rare drops |
-| crafted-masterwork | 0.60–1.00 | crafted Rare incl. Grudgeforged items |
 | boss | 0.80–1.00 | apex hoards, race Kings |
 
 **Combined cap policy (revised 2026-09-20).** Ordinary affixes, trinket
@@ -2055,230 +1999,78 @@ cap. Surplus rating remains useful against higher-level attackers. The
 cap/demand audit evaluates all three source channels together and verifies at
 least two desirable finish cells per culture.
 
-### 6.4 Crafted quality (how crafting reaches Uncommon/Rare)
+### 6.4 Crafted quality
 
-Re-stated 2026-08-07 against the refinement model of §6b; the windows and
-the quality thresholds are unchanged.
+Base recipes produce Common gear and are universally craftable. One enchant
+makes ordinary equipment Uncommon; one prefix plus one suffix makes it Rare.
+There is no refinement prerequisite, bonus or separate Imbue/Temper path.
+Crafted values are fixed by enchant tier, as specified in
+[the current enchanting contract](crafting_equipment_revision.md#enchanting).
+Found-item random windows and trinket authored specials retain their own rules.
 
-- **Base recipes → Common**, no enchants, craftable by everyone
-  (§3.0.3). This is the reliable, repairable baseline and the item a
-  vendor sells.
-- **Refinement → Common, refined** (§6b.1/§6b.2). Still Common — a
-  refined item has no enchants yet, so it cannot be blue. Professions
-  only.
-- **Fine recipes** = refine + **exactly one prefix** plus an authored tier reagent
-  (venom sac, slime gel, sleek pelt, etc.) → **Uncommon**, crafted-fine
-  window. A generic Cut Gem is not charged automatically: T4–T6 base combat
-  gear already pays its specific G2, and refinement/affix application never
-  repeats that tax.
-- **Masterwork recipes** = refine + **one prefix and one suffix** (Expert/Master only;
-  + one qualifying named-rare trophy or Fallen Crown in the trophy slot) →
-  **Rare**, crafted-masterwork window. The trophy is consumed when the final
-  masterwork state is applied; an Abyssal Steel item names that state
-  **Grudgeforged**. Cultural finishes and PvP specials remain separate and may
-  coexist. This keeps "better gear comes
-  from crafting or hard bosses" literally true: the two top windows are
-  crafted-masterwork 0.60–1.00 and boss 0.80–1.00.
+## 6b. Enchantments
 
-The mapping is exact: §0's **Uncommon = one enchant, Rare = prefix + suffix**.
-Trinkets follow §6.2's separately fixed prefix/suffix/special contract.
+### 6b.1 Profession ownership
 
-## 6b. Refinement, affixes and special variants (decided 2026-08-07)
+Apply enchantments at the owning profession station to the concrete stack.
+Everyone can craft base gear; qualified professionals can apply or replace its
+legal enchants. Tools are not weapons and receive no ordinary combat enchants.
 
-This is what a profession is *for*. Everyone crafts the base item
-(§3.0.3); a profession makes it better, and every step below is
-profession-only.
+### 6b.2 Fixed tier bonuses
 
-### 6b.1 Only professions refine
+The nine stat curves, material costs and 420 operations are defined in
+[the current contract](crafting_equipment_revision.md#enchanting). Bonuses depend
+on enchant tier, never a higher target tier. No extra base-damage or lifetime
+multiplier exists.
 
-A base item becomes a **refined** item through its authored profession recipe.
-Its station is declared by that recipe and shown in the book. The refinement
-is expressed in the item **name** by a family word:
+### 6b.3 Eligibility
 
-| Family | Refinement word | Example |
-|---|---|---|
-| Weapons, tools | **Honed** | Honed Stone Sword |
-| Metal & leather armor, shields | **Reinforced** | Reinforced Iron Chestplate |
-| Cloth armor, Goldsmith spellbooks | **Ornate** | Ornate Robe |
-
-**Bags are not refinable** (A3, decided 2026-08-13): a bag has no
-damage, armor or wear value for §6b.2's bonus to touch, and the four
-mastery sizes 8/16/24/32 already are the bag line's progression. The
-Ornate word is reserved for cloth armor and Goldsmith spellbooks.
-
-A profession may only refine the families it owns (§3.3–§3.6b). No
-player without the profession can produce a refined item by any means.
-
-### 6b.2 The refinement bonus
-
-**+15 % base damage** (or the armor equivalent) and **+100 % durability.**
-
-- **15 %, not 25 %** — deliberately chosen so that a refined item of tier
-  n never beats an unrefined item of tier n+1. §3.8 carries the full
-  ladder check; it holds at every step.
-- **+100 % durability** doubles WP22's 3000-combat-event wear budget
-  (§8.3) to 6000 cleanly — no new constant, and it makes refinement worth
-  buying even on an item whose damage number a player does not care
-  about (a pick, §3.3).
-- The bonus is applied to the item's own base value and shown in the grey
-  stat line (§6.1). It does not scale with mastery tier; a Master's
-  refinement is worth the same +15 % as an Apprentice's. What mastery
-  buys is later slot/value operations (§6b.5), not a bigger bonus.
-
-### 6b.3 Only refined items can be enchanted
-
-**A plain base item can never carry an enchant.** Refinement is the
-prerequisite for every affix, without exception. This is the single rule
-that makes refinement worth doing at all, and it is why "enchanted"
-implies "refined" everywhere else in this document.
-
-**Found items keep their own enchants** (§5.1). "Only professions can
-enchant" restricts who may *apply* an affix; it says nothing about items
-that arrived pre-enchanted from a mob.
+Each ordinary enchantable item has one prefix and one suffix from T1. Either
+channel may be filled first. Target tier must be at least enchant tier. The
+family pools in §6.2 decide legal stats; a stat cannot occupy both channels.
 
 ### 6b.4 The prefix/suffix naming system
 
-Enchants are expressed in the item name as **prefixes and suffixes**.
-
-- **Maximum one prefix plus one suffix = two ordinary enchant slots.** That is the hard
-  ceiling for any item in the game.
-- The first affix occupies the prefix channel and the second the suffix channel.
-  Both draw from the item's same legal family pool, use that stat's word for
-  the channel, and cannot repeat a stat. The name therefore regenerates
-  deterministically while all eighteen words remain useful.
-- **Prefixes** name a stat the item gives its wielder as an adjective;
-  **suffixes** do the same in the genitive. The complete vocabulary is
-  decided (2026-08-13): **exactly one prefix word and one suffix word
-  per §6.3 stat, no synonyms** — the word says which stat,
-  unambiguously:
-
-  | Stat | Prefix | Suffix |
-  |---|---|---|
-  | +Str | Heavy | of the Bear |
-  | +Dex | Quick | of the Fox |
-  | +Int | Clever | of the Owl |
-  | +Max HP% | Stout | of the Ox |
-  | +Max Mana% | Attuned | of the Raven |
-  | +crit% | Lucky | of the Eagle |
-  | +attack speed% | Swift | of the Hornet |
-  | +dodge% | Elusive | of the Cat |
-  | +armor% | Stalwart | of the Tortoise |
-
-  **The stat names are §6.2's own, verbatim** (aligned 2026-08-08: the
-  ox used to be written "+health", which is not a stat this game has).
-  **§6.2 remains the sole legality source**: an affix is legal on an
-  item family iff its stat is in that family's pool (armor-rating words
-  can therefore appear only on metal armor and shields), and the trinket
-  exception in §6.2 constrains its two slots the same way. Every word
-  maps to exactly one stat — there is **no player poison stat** in this game
-  (see §6.2 and `combat_stats.md` §2). The separate Rogue plan is retired and
-  the Scout explicitly has no poison in V1; a future poison mechanic would
-  require a new decision. An affix word for a stat nothing
-  consumes is a bug, not flavour.
-- Examples: *Stone Sword of the Ox* and *Lucky Stone Sword of the Bear*.
-- **The refinement word disappears as soon as an affix is present.** An
-  enchanted sword is "Stone Sword of the Ox", never "Honed Stone Sword of
-  the Ox". Since only refined items can be enchanted (§6b.3), the refined
-  state is *implied* by any affix — the word would carry no information
-  and would crowd out the affixes that do.
-- **An enchanted item still declares its refined state in the tooltip**
-  (decided 2026-08-13): one grey line, "Refined", above the affix lines —
-  no name-length cost, no art. A refined but unenchanted item needs no
-  such line; its name still carries the refinement word. §6b.7's special
-  variants state their authored effect in the same tooltip block.
-- The affix **words** are the display layer; the rolled **values** live
-  in `grug_ench` exactly as before (§6.1) and are shown one per line
-  under the grey stat lines. The word says which stat, the line says how
-  much.
-
-### 6b.5 Mastery tier = slot and value operations
-
-| Mastery | Operation unlocked |
-|---|---|
-| Apprentice | prefix; crafted-fine values |
-| Journeyman | suffix; Imbue kit |
-| Expert | first temper; masterwork values |
-| Master | second and final temper |
-
-An Apprentice can fill the prefix on a refined item; a Journeyman can add the suffix. Expert and Master improve values through the first and second temper without creating more slots. This is the second reason
-mastery matters (the first is the exclusive recipes, §2.1) and it is what
-makes a Master crafter worth seeking out on a server.
-
-Affixes are added one at a time at the owning profession station. The
-transaction consumes the refined concrete item, one same-tier professional
-material and the authored tier reagent; it appends one random legal stat, never
-duplicates an existing stat, preserves all prior values and stack metadata, and
-awards one craft credit only after successful settlement. Character levels
-1/16/31/46 unlock prefix, suffix, first temper/masterwork values and second
-temper respectively.
-
-### 6b.6 Ordinary-equipment quality follows the slot count
-
-No new rule — §6.1's budgets, read through the affix model:
-
-| Affixes | Quality | Colour |
+| Stat | Prefix | Suffix |
 |---|---|---|
-| 0 | Common | white |
-| 1 | Uncommon | blue |
-| 2 | Rare | yellow |
+| Strength | Heavy | of the Bear |
+| Dexterity | Quick | of the Fox |
+| Intelligence | Clever | of the Owl |
+| Maximum HP (%) | Stout | of the Ox |
+| Maximum Mana (%) | Attuned | of the Raven |
+| Crit (percentage points) | Lucky | of the Eagle |
+| Attack speed (%) | Swift | of the Hornet |
+| Dodge (percentage points) | Elusive | of the Cat |
+| Armor rating | Stalwart | of the Tortoise |
 
-An Apprentice can produce Uncommon ordinary items; Journeyman adds the suffix
-needed for Rare. Expert and Master improve values without adding slots. The
-roll **values** come from the §6.3 band of
-the **item's** ilvl (sharpened 2026-08-08), in the crafted-fine or
-crafted-masterwork window (§6.4): mastery gates operations, never the item's
-value band. Trinket quality instead
-communicates source/roll window and never changes its fixed two-affix-plus-
-special shape (§6.2).
+Words are identical across tiers; the tooltip states the concrete fixed value.
+Examples: *Bronze Sword of the Ox*, *Lucky Bronze Sword of the Bear*. No refined
+state or marker exists.
+
+### 6b.5 Qualification and replacement
+
+Qualification and progression use the enchant recipe tier. Both channels are
+available at every tier; mastery does not gate suffix access. Select the named
+operation, inspect the exact preview, then apply it with its material cost.
+Replacement preserves the other channel, wear and unrelated stack metadata.
+An identical no-op is refused without cost or progress.
+
+### 6b.6 Quality follows slot count
+
+Zero/one/two ordinary affixes correspond to Common/Uncommon/Rare. Found-item
+random windows stay separate from fixed crafted values. Trinket quality does
+not alter its independently defined prefix/suffix/special structure.
 
 ### 6b.7 Special variants
 
-A profession can turn a **refined but not yet enchanted** item into a
-**special variant** with an effect of its own — an "Iron Frost Armor"
-that slows attackers, for instance.
+No third ordinary enchant slot is included. Existing trinket specials remain.
+Future cultural/PvP finishes and masterwork scope stay in WP5 and require their
+own delivery; the removed refinement workflow is not a prerequisite.
 
-- An ordinary special variant **keeps its full one-prefix/one-suffix slots on
-  top of its one authored effect.** The effect is not one of the two. It is
-  also distinct from §4's cultural-finish and PvP-special metadata; every
-  legal combination participates in the combined cap audit.
-- The input must be unenchanted: the special variant is a step *between*
-  refinement and enchanting, not an alternative to either.
-- **Visual treatment**: adapt VoxeLibre's armor **trim/colouring** system
-  (`mcl_armor/trims.lua`, §1.2) — a template item plus a colour overlay
-  baked onto the armor texture, e.g. Iron armor carrying a diamond trim.
-  That gives every special variant a look without one texture per
-  combination.
-- **Tooltip statement** (decided 2026-08-13 with the refined-marker
-  rule): a special variant states its authored effect as one grey
-  tooltip line in the same block as §6b.4's "Refined" line, above the
-  affix lines — the effect is readable without art or name cost.
+## 7. Upgrade mechanics
 
-## 7. Upgrade mechanics (resolves the old §2 — no failure chance)
-
-Two kit types per profession, applied to one concrete item while preserving its metadata; effects on the
-item's OWN family only (whetstones/armor
-polish = Armorsmith, whetstones = Weaponsmith, armor kits = Leatherworker, embroidery = Tailor,
-wood oils = Woodcarver, gem settings = Goldsmith, imbuing oils =
-apothecary gear):
-
-- **Imbue kit** (per material tier): **refined** Common → Uncommon and rolls
-  exactly one prefix in the crafted-fine window. The maker's mastery gates
-  which kit exists. Cost ≈ 1 tier reagent + tier
-  materials. *Sharpened 2026-08-07*: the input must be **refined**
-  (§6b.3) — a kit is a way to apply affixes, and affixes need a refined
-  item like every other route to them. The kit is bought from a
-  profession; applying it is not.
-- **Temper kit** (Expert/Master): re-rolls all affix VALUES on an
-  Uncommon/Rare item; first application (Expert) window 0.50–0.95, 2nd 0.60–1.00,
-  **max 2** (`grug_upgrades` meta). Never changes affix count or quality
-  tier — an imbued Common (now Uncommon, one affix) stays structurally
-  below a fresh Rare (two affixes): the decided "upgraded mediocre item
-  never becomes a top item", enforced structurally, not by caps.
-- **Kit mastery rule** (decided 2026-08-13): imbue kits unlock at
-  Journeyman and temper kits at Expert; a profession's second kit
-  family — the Armorsmith's armor polish — sits one tier later (imbue
-  Expert, temper Master). §2.1's signature table is the authoritative
-  cut.
+Use the explicit named enchant replacement workflow in §6b.5. There are no
+Imbue/Temper kits, random crafted application rolls or separate refinement steps.
 
 ## 8. Prices and money pacing
 
@@ -2416,7 +2208,7 @@ consumer are active:
   a Leatherworker Offhand item with four arrow-only slots (§3.4). The current
   Bowyer offer is 3c per arrow (2c after the same-race discount), with 1c
   buy-back; purchase remains strictly above buy-back after rounding.
-- **Plain production is Basics; Woodcarver owns refinement and affixes.** The
+- **Plain production is Basics; Woodcarver owns enchantments.** The
   Scout consumes the family in V1. The Leatherworker's Apprentice quiver is an
   optional four-stack Offhand convenience; shooting still reads `main` when no
   quiver is equipped.

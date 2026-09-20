@@ -80,25 +80,13 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     blocked ground can mask a resting drop's native selection box, a fresh
     Swing LMB press additionally restores builtin-item pickup through a 4 m
     first-visible-object server ray; nodes and other objects stop that ray.
-  - **Eligible is whatever carries the item group `grug_equip_weapon`**:
-    all six `grug_gear` weapon families (sword, dagger, greataxe, staff, wand
-    and bow) at
-    all six material tiers, the below-ladder starters
-    (`default:sword_wood`, `default:sword_stone`, `grug_gear:staff_wood`) and
-    every **hatchet** — the four vendored `default:` axes plus the four
-    `grug_materials` ones that complete the tool ladder. It was twelve
-    vendored items when this was written and is **six today**: WP25/WP43
-    deleted the mese and diamond tiers and WP13's round-2 merge retired
-    `default:sword_bronze`/`_steel` in favour of `grug_gear:sword_bronze` and
-    `grug_gear:sword_steel` (`items_crafting.md` §3.0.3).
-    `grug_gear/init.lua`'s `VENDORED_WEAPONS` is the live list, and it shrinks
-    to nothing by construction as WP28/WP29 fold those items into the material
-    ladder. Mining tools stay mining tools — **picks and shovels are not
-    eligible**.
+  - **Eligible items carry `grug_equip_weapon`**: sword, dagger, Battle Axe,
+    staff, wand and bow across the six metal tiers. Wood/Stone weapons are
+    absent. All gathering tools, including Woodcutting Axes, are excluded.
   - **A fresh character starts with its class's weapon already in the slot**
-    (decided 2026-09-15, playtest round 2). A **Warrior** gets the stone sword,
-    a **Priest** and a **Mage** the wooden staff, and a **Scout** the wooden
-    bow; the grant fires once per
+    (decided 2026-09-15, playtest round 2). A **Warrior** gets the Bronze Sword,
+    a **Priest** and a **Mage** the Bronze Staff, and a **Scout** the Bronze
+    Bow plus a backup Bronze Sword and 200 arrows; the grant fires once per
     character when the class is chosen — not at faction choice, where no class
     exists yet — and writes the equipment list server-side through
     `grug_inventory.equipment_changed`, so the ability skins and the visible
@@ -110,8 +98,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   - **No class gate.** Weapon families are class *flavor*, not a power
     ladder (`items_crafting.md` §8.2), so a Mage may equip a greataxe and
     simply gains nothing from it. The **only** gate on this slot is the
-    generated item's `_grug_ilvl`, enforced directly as the minimum character
-    level (`grug_inventory/equipment.lua:173-185,330-338`).
+    item's minimum level. Ordinary T1 weapons use level 1 despite base-stat
+    item level 3; elevated found-item levels retain their own requirement.
   - The slot is **family-agnostic** — it holds whatever carries the group,
     including the current bow family, without a second slot.
   - **No migration**: weapons stay valid `main` items and nothing of a
@@ -122,12 +110,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     it survives for a character that took its weapon back out.
 - **Hand count — the mechanism for `combat_stats.md` §7's two-handed rule**
   (decided 2026-08-08): every weapon declares `_grug_hands` —
-  **greataxe 2, staff 2, bow 2, sword 1, dagger 1, wand 1**; the
-  below-ladder **wooden staff is 2**, like every staff), and
-  every surviving `default:` sword and every hatchet **1** (a hatchet is not the
-  Greataxe: 4 fleshy at a 1.0 s interval against the same tier's sword at 6
-  and 0.8 s, i.e. strictly worse in combat, and it is the woodcutting tool
-  every character carries). An item **without** the field counts as
+  **Battle Axe 2, staff 2, bow 2, sword 1, dagger 1, wand 1**.
+  An item **without** the field counts as
   one-handed, which is what keeps the rule additive for torches, shields
   and every future offhand item.
   - The rule is one sentence in **both** directions: **the two occupied
@@ -161,7 +145,7 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   rule controlling their combined effect.
 - **Equipment effect channels are separate per stack** (integrated
   2026-08-12):
-  - Ordinary equipment retains its refinement plus at most one prefix and one
+  - Ordinary equipment has at most one prefix and one
     suffix, with no repeated stat. Trinkets retain their fixed exception.
   - Exactly the six combat families weapon, offhand, head, chest, legs and feet
     may additionally carry one **cultural finish**. The finish is an in-place,
@@ -236,13 +220,14 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   A two-handed bow explicitly permits the zero-hand quiver; shield, book and
   torch remain illegal beside it. One-handed melee may retain the quiver, while
   staff and greataxe require empty Offhand. The quiver has four arrow-only
-  slots of up to 200 arrows each (800 total) and no combat stat, affix,
-  refinement or wear. Removing a filled quiver
+  slots of up to 200 arrows each (800 total) and no combat stat or affix.
+  It wears as an offhand; a broken quiver permits arrow retrieval but no refill
+  or automatic ammunition until repaired. Removing a filled quiver
   transfers all arrows to `main` atomically or refuses unchanged if they do not
   all fit.
 - No item drop on death (unchanged; death costs XP, not gear).
 
-## 4. Crafting model (revised 2026-09-20)
+## 4. Crafting model (revised 2026-09-21)
 
 - **Basics** is the exclusive category for profession-free recipes. Every recipe
   route belongs to exactly one category: Basics or its owning profession.
@@ -253,12 +238,14 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   metal, cloth or leather armor. Plain feedstock preparation for cloth, leather
   and processed wood is also profession-free. Professional fittings, grips and
   other improvement materials remain trade goods but are never base-item inputs.
-- Equipment refinement and Add Affix use their owning profession station.
+- Named enchant application and replacement use the owning profession station.
   Weaponsmith and Armorsmith share one Forge; Leatherworker uses the Tanning
   Rack, Tailor the Tailor Bench and Woodcarver the Carving Bench. These are
   transactional in-place operations on one concrete stack and preserve its
   metadata and wear. Other profession recipes retain their explicit grid,
   furnace, dual-furnace or brewing-stand route.
+- Personal/shared workspaces, viewer-qualified output and universal automatic
+  processing follow [the current station contract](crafting_equipment_revision.md#workspaces-and-production).
 - Learned profession and T1–T6 profession level gate professional operations.
   Universal Basics routes have neither gate and award no profession progress.
 - Recipe books display human item descriptions. A group slot lists concrete

@@ -6,7 +6,7 @@ local live_quotes = setmetatable({}, {__mode = "k"})
 function grug_repair.eligible(stack)
 	if not stack or stack:is_empty() then return false end
 	local groups = (stack:get_definition() or {}).groups or {}
-	for _, group in ipairs({"grug_equip_weapon", "grug_shield", "grug_spellbook",
+	for _, group in ipairs({"grug_equip_weapon", "grug_shield", "grug_spellbook", "grug_quiver",
 		"grug_equip_head", "grug_equip_chest", "grug_equip_legs", "grug_equip_feet",
 		"pickaxe", "axe", "shovel", "hoe"}) do
 		if (groups[group] or 0) > 0 then return true end
@@ -88,7 +88,7 @@ function grug_repair.apply(player, quote)
 		meta:set_int("_grug_wear_remainder", 0)
 		local encoded = meta:get_string("_grug_repair_caps")
 		local saved = encoded ~= "" and core.deserialize(encoded) or nil
-		if meta.set_tool_capabilities then
+		if encoded ~= "" and meta.set_tool_capabilities then
 			meta:set_tool_capabilities(type(saved) == "table" and saved or nil)
 		end
 		meta:set_string("_grug_repair_caps", "")

@@ -198,6 +198,9 @@ core = {
 	end,
 	get_node_or_nil = function(pos) return {name = pos.name or "stone"} end,
 	line_of_sight = function() return true end,
+	get_item_group = function(name, group)
+		return ((core.registered_items[name] or {}).groups or {})[group] or 0
+	end,
 	get_objects_inside_radius = function() return {} end,
 	after = function() end,
 	chat_send_player = function(name, message) chat_messages[name] = message end,

@@ -132,9 +132,8 @@ come through contested and deep columns, the two apex camps and player trade.
 
 There is [one item per concept](docs/design/inventory_equipment.md): the
 vendor baseline and universal craft ladder are the same material-named items.
-Professions improve them through refinement, ordinary affixes, one optional
-cultural finish and a separate target-race PvP-special channel instead of
-creating parallel catalogs. The equipped weapon slot is the sole source of a
+Professions improve them through named prefix/suffix enchantments; future
+cultural finishes remain separate work rather than parallel base catalogs. The equipped weapon slot is the sole source of a
 skill's damage and appearance; the Character page also carries four armor
 slots, an offhand, two trinkets and four bags; the approved Round-11 catalog
 adds equivalent cloth and leather bag lines. The Skills tab lists unlocked
@@ -153,20 +152,19 @@ of 20% of its reference purchase price. The Round 11 foundation is delivered; Ro
 Weaponsmith, Armorsmith, Leatherworker, Tailor, Woodcarver, Goldsmith and
 Alchemist. Characters choose two; Cooking is an unlimited secondary and First
 Aid stays universal. Profession level advances independently through six
-material tiers, while four mastery bands control improvement slots and selected
-exclusive recipes.
+material tiers, while four mastery bands retain selected specialist recipes.
+[The current crafting/equipment contract](docs/design/crafting_equipment_revision.md)
+defines personal/shared workspaces, fixed-tier enchants and material lifetimes.
 
 Plain feedstocks and familiar base weapons, tools and metal, leather and cloth
 armor belong exclusively to **Basics** and require no profession. Starter routes
 are visible immediately; later routes appear after first acquiring their main
 material, without gating crafting. Each
 profession owns only its improvement and specialist routes; Weaponsmith and
-Armorsmith share the Forge with separate authorization. Cooking keeps its
-ordinary grid and furnace routes, including Bread, Cooked Meat and Cooked Fish.
-All food statuses last five minutes. The integrated, independently reviewed equipment work completes these catalogs,
-terminal refinement, direct affix application and the retained kit model. MAP-B is
-integrated and independently reviewed. Final interpreter parity and delivery
-are complete; GUI acceptance remains pending.
+Armorsmith share the Forge with separate authorization. Cooking owns protected dish preparation; automatic baking and brewing are
+universal, while simple Bread, Cooked Meat and Cooked Fish belong to Basics.
+All food statuses last five minutes. Round 13 implements the simplified
+station/enchant model; its combined verification is still in progress.
 
 ### Economy
 
@@ -259,7 +257,7 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 
 ## Current State
 
-*Last updated: 2026-09-20. Derived from [BACKLOG.md](BACKLOG.md) and
+*Last updated: 2026-09-21. Derived from [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md); [Round 12 technical delivery](docs/research/round12-completion.md)
 is complete. GUI acceptance is in progress; the first
 [playtest corrections](docs/research/round12-playtest-followups.md) address Skills
@@ -292,10 +290,12 @@ Lua-5.1 and isolated native checks pass; PUC runtime was explicitly excluded.
 Use the [Round12 fresh-world checklist](docs/research/round12-next-playtest.md)
 and [art gallery](docs/research/round12-gallery.md); the separate UX review is
 source/heuristic evidence and leaves four proposals for later selection.
-Shared world-station inventories also need the newly identified
-[ownership followup](TODO-station-ownership.md) before multiplayer acceptance.
-The followup discussion now covers personal/shared station modes and revised
-[tool and combat-equipment lifetimes](TODO-tool-lifetimes.md); neither is implemented.
+**Round 13 in progress:** approved personal/shared workspaces, protected
+preparation with universal automatic finishing, named fixed-tier enchantments
+without refinement, Bronze starter weapons and tiered durability. Native Astra
+implementation and independent reviews are tracked in
+[the execution record](docs/research/round13-execution.md); this work has not yet
+been synchronized for playtesting.
 
 Historical round records live under [docs/research/](docs/research/); current
 rules live in `docs/design/` and remaining work in BACKLOG/ROADMAP or topic TODOs.

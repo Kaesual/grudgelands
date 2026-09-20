@@ -442,7 +442,13 @@ local function compute_equipped_armor(player)
 		if not stack:is_empty() and not grug_core.equipment_is_broken(stack) then
 			local def = core.registered_items[stack:get_name()]
 			local armor = def and def._grug_armor
-			armor = grug_inventory.armor_points_of and grug_inventory.armor_points_of(stack, armor) or armor
+			local gear = rawget(_G, "grug_gear")
+			if gear and gear.describe_stack_base then
+				local ilvl = stack:get_meta():get_int("grug_ilvl")
+				if ilvl <= 0 then ilvl = def and def._grug_ilvl end
+				local _, stats = gear.describe_stack_base(stack, ilvl)
+				armor = stats.armor or armor
+			end
 			if type(armor) == "number" and armor > 0 then
 				total = total + armor
 			end
@@ -531,13 +537,13 @@ function grug_inventory.get_equipped_offhand(player)
 	return stack and not grug_core.equipment_is_broken(stack) and stack or nil
 end
 
--- Base fallback until grug_quality adds shield, refinement and affix rating.
+-- Base fallback until grug_quality adds shield and affix rating.
 function grug_core.get_armor_rating(player)
 	local base = grug_inventory.get_equipped_armor(player)
 		+ grug_classes.get_talent_bonus(player, "armor_percent_add")
 		+ grug_core.status_modifier_sum(player, "armor")
 	local multiplier = grug_classes.talent_rank(player, "unbroken") > 0
-		and 1.40 or 1
+		and grug_core.PROTECTION_ARMOR_MULTIPLIER or 1
 	return base * multiplier + grug_classes.get_talent_bonus(player,
 		"armor_rating_add_low_hp")
 end
@@ -715,7 +721,7 @@ grug_classes.register_on_class_chosen(function(player, class_id)
 		-- The class selection inventory is normally empty. Keep the fallback
 		-- lossless nevertheless: a full inventory drops the owed starter item
 		-- at the player instead of silently deleting it.
-		for _, item in ipairs({"default:sword_stone", "grug_gear:arrow 200"}) do
+		for _, item in ipairs({grug_gear.STARTER_SWORD, "grug_gear:arrow 200"}) do
 			local leftover = inv:add_item("main", ItemStack(item))
 			if not leftover:is_empty() then
 				core.add_item(player:get_pos(), leftover)

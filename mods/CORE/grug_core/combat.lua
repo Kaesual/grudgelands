@@ -1,3 +1,6 @@
+-- Protection specialization preserves the top-tank target without refinement.
+grug_core.PROTECTION_ARMOR_MULTIPLIER = 1.65
+
 -- Damage pipeline & combat state (docs/design/classes.md §2,
 -- combat_stats.md §2/§4). Ability damage and heals run through the helpers
 -- here so crit/dodge rolls and threat live in one place. WP6 replaced the
@@ -61,7 +64,7 @@ function grug_core.can_use_item_level(player, item)
 		item_name = item and item.get_name and item:get_name() or ""
 	end
 	local definition = core.registered_items[item_name]
-	local required = definition and definition._grug_ilvl
+	local required = definition and (definition._grug_req_level or definition._grug_ilvl)
 	if type(required) ~= "number" or required <= 0 then
 		return true, nil, grug_core.get_player_level(player)
 	end

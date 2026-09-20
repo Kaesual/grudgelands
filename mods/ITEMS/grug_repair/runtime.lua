@@ -20,7 +20,9 @@ local function creative(player)
 end
 
 local function combat_lifetime(stack)
-	return stack:get_meta():get_int("grug_refined") == 1 and 6000 or 3000
+	local def = stack:get_definition() or {}
+	local tier = tonumber(def._grug_bracket or def._grug_tier) or 1
+	return ({1000, 1500, 2000, 2500, 3000, 4000})[tier] or 4000
 end
 
 local function wear_stack(player, list, index)
@@ -89,11 +91,7 @@ function grug_repair.wear_outgoing(player, action_id)
 		return true
 	end
 	wear_stack(player, "grug_weapon", 1)
-	local offhand = player:get_inventory():get_stack("grug_offhand", 1)
-	if core.get_item_group(offhand:get_name(), "grug_spellbook") > 0 then
-		wear_stack(player, "grug_offhand", 1)
-	end
-	return true
+
 end
 
 function grug_repair.capture_action(player, action_id)
@@ -101,10 +99,9 @@ function grug_repair.capture_action(player, action_id)
 		"captured durability action requires a string id")
 	local rows = {}
 	local inv = player:get_inventory()
-	for _, list in ipairs({"grug_weapon", "grug_offhand"}) do
+	for _, list in ipairs({"grug_weapon"}) do
 		local stack = inv:get_stack(list, 1)
-		local allowed = list == "grug_weapon" and grug_repair.eligible(stack) or
-			core.get_item_group(stack:get_name(), "grug_spellbook") > 0
+		local allowed = grug_repair.eligible(stack)
 		if allowed then
 			local meta = stack:get_meta()
 			local id = meta:get_string(ITEM_ID)
@@ -132,19 +129,22 @@ function grug_repair.settle_captured_action(player, receipt, kind)
 	grug_core.run_settled_outgoing_action(player, receipt, kind)
 end
 
-grug_core.register_on_settled_outgoing_action(function(player, action_id)
+grug_core.register_on_settled_outgoing_action(function(player, action_id, kind)
+	if kind == "absorb" then return end
 	grug_repair.wear_outgoing(player, action_id)
 end)
 
 grug_core.register_on_settled_incoming_hit(function(player)
 	if creative(player) then return end
-	for _, list in ipairs({"grug_head", "grug_chest", "grug_legs", "grug_feet"}) do
-		wear_stack(player, list, 1)
+	local candidates = {}
+	local inv = player:get_inventory()
+	for _, list in ipairs({"grug_head", "grug_chest", "grug_legs", "grug_feet", "grug_offhand"}) do
+		local stack = inv:get_stack(list, 1)
+		if grug_repair.eligible(stack) and not grug_core.equipment_is_broken(stack) then
+			candidates[#candidates + 1] = list
+		end
 	end
-	local offhand = player:get_inventory():get_stack("grug_offhand", 1)
-	if core.get_item_group(offhand:get_name(), "grug_shield") > 0 then
-		wear_stack(player, "grug_offhand", 1)
-	end
+	if #candidates > 0 then wear_stack(player, candidates[math.random(#candidates)], 1) end
 end)
 
 core.register_on_leaveplayer(function(player)
@@ -173,8 +173,16 @@ core.register_on_mods_loaded(function()
 					if original then
 						stack = original(stack, user, node, digparams) or stack
 					elseif not core.is_creative_enabled(user:get_player_name()) then
-						stack:set_wear(math.min(65535,
-							stack:get_wear() + (digparams.wear or 0)))
+						local uses = def._grug_tool_uses
+						if uses and (digparams.wear or 0) > 0 then
+							local meta = stack:get_meta()
+							local amount = meta:get_int(WEAR_REMAINDER) + 65535
+							meta:set_int(WEAR_REMAINDER, amount % uses)
+							stack:set_wear(math.min(65535, stack:get_wear() + math.floor(amount / uses)))
+						else
+							stack:set_wear(math.min(65535,
+								stack:get_wear() + (digparams.wear or 0)))
+						end
 					end
 					disable_broken_operation(stack)
 					return stack

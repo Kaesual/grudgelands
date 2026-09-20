@@ -42,9 +42,9 @@ its seed; mature removal also returns its one ingredient. Cultivated regrowth is
 independent of the slow natural-source renewal below and never creates wild
 renewal debt.
 
-The wooden hoe and six metal-tier hoes perform exactly the same conversion of
+Wooden, Stone and six metal-tier hoes perform exactly the same conversion of
 eligible earth to farm soil. Their use budgets are respectively
-**64 / 128 / 192 / 256 / 384 / 512 / 768**. Only an actual new conversion spends
+**30 / 60 / 300 / 600 / 1000 / 1500 / 2000 / 3000**. Only an actual new conversion spends
 a use; failed interaction, already-tilled soil and Creative do not. Their grid
 shape and material count follow pinned VoxeLibre. They have hoe art and keep
 their stack at exhaustion, refusing further conversion until repaired under

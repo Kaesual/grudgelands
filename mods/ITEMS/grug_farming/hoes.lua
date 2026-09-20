@@ -1,6 +1,6 @@
--- Seven plain hoes share one soil operation; tiers change lifetime only.
+-- Eight plain hoes share one soil operation; tiers change lifetime only.
 return function(callbacks)
- local uses_by_tier = {128,192,256,384,512,768}
+ local uses_by_tier = {300,600,1000,1500,2000,3000}
  local hoe_tints = {
   bronze="#b97842:95", iron="#8b9298:72", steel="#c4ccd3:35",
   silversteel="#d9e0e3:70", embersteel="#a43d21:105",
@@ -48,9 +48,9 @@ return function(callbacks)
   core.register_tool(name,{
    description=description.."\n"..uses.." uses",
    inventory_image=image,
-   groups={hoe=1,grug_farming_hoe=1},
+   groups={hoe=1,grug_farming_hoe=1,grug_gathering_tool=1},
    _grug_tier=tier, _grug_hoe_uses=uses,
-   tool_capabilities={full_punch_interval=1,damage_groups={fleshy=1},
+   tool_capabilities={full_punch_interval=1,damage_groups={fleshy=0},
     punch_attack_uses=0,groupcaps={}},
    on_use=hoe_on_use,
   })
@@ -61,8 +61,10 @@ return function(callbacks)
     {row[1],row[2]}}})
   end
  end
- register("grug_farming:hoe","Wooden Hoe",1,64,"group:wood",
+ register("grug_farming:hoe","Wooden Hoe",1,30,"group:wood",
   "grug_farming_woodhoe.png")
+ register("grug_farming:hoe_stone","Stone Hoe",1,60,"group:stone",
+  "grug_farming_steelhoe.png^[colorize:#777777:100")
  for tier=1,#grug_materials.TIERS do
   local row=grug_materials.TIERS[tier]
   register("grug_farming:hoe_"..row.key,row.name.." Hoe",tier,uses_by_tier[tier],

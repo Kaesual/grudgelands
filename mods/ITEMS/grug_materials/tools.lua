@@ -78,7 +78,7 @@ for _, id in ipairs(TIERS_WITH_TOOLS) do
 
 	local axe = AXE_PROFILES[id]
 	core.register_tool("grug_materials:axe_" .. tier.key, {
-		description = tier.name .. " Axe",
+		description = tier.name .. " Woodcutting Axe",
 		inventory_image = texture(tier.key, "axe"),
 		tool_capabilities = {
 			full_punch_interval = 1.0,
@@ -89,12 +89,7 @@ for _, id in ipairs(TIERS_WITH_TOOLS) do
 			damage_groups = {fleshy = 4},
 		},
 		sound = {breaks = "default_tool_breaks"},
-		-- A hatchet, one-handed, weapon-slot eligible -- the same ruling
-		-- grug_gear's VENDORED_WEAPONS list already applies to default's four
-		-- axes, applied to the four that join them. It is NOT the Greataxe:
-		-- that is grug_gear's two-handed x1.5 family (inventory_equipment.md §2).
-		groups = {axe = 1, grug_equip_weapon = 1},
-		_grug_hands = 1,
+		groups = {axe = 1},
 	})
 
 	local shovel = SHOVEL_PROFILES[id]

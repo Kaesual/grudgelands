@@ -2330,6 +2330,9 @@ core.register_on_punchplayer(function(player, hitter, tflp, tool_capabilities, d
 	if grug_core.in_ability_punch then
 		return
 	end
+	-- Gathering tools never authorize native PvP damage or Strength bonuses.
+	if core.get_item_group(hitter:get_wielded_item():get_name(),
+			"grug_gathering_tool") > 0 then return true end
 	-- Mounted native tool/fist packets are refused before they can claim a
 	-- swing, move clocks, accumulate damage, grant rage or refresh targeting.
 	local mounts = rawget(_G, "grug_mounts")
