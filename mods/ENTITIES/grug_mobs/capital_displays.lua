@@ -48,9 +48,11 @@ local function walk_points(self,key,foot_y)
   elseif socket.id==wanted[2] then found[2]=socket.pos end
  end
  if not found[1] or not found[2] then return nil end
+ -- Sockets name the node above the floor. start_npcs uses slot.pos.y-0.5
+ -- for the visible top face, and waypoints must use that same surface.
  for index=1,2 do
   found[index]={x=found[index].x,
-   y=found[index].y+0.02-foot_y,z=found[index].z}
+   y=found[index].y-0.5+0.02-foot_y,z=found[index].z}
  end
  return found
 end

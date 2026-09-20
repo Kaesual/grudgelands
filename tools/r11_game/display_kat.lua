@@ -42,36 +42,45 @@ end
 
 local ground={object=object({x=0,y=10,z=0}),_grug_start="capital",
  _grug_socket="mount_1",_grug_socket_role="mount_display",
- _grug_display_race="human",_grug_display_tag="1",_grug_display_floor=10,
- _grug_face_yaw=0}
+ _grug_display_race="human",_grug_display_tag="1",_grug_display_floor=9.5,
+ _grug_face_yaw=0,_grug_placed_at=1}
 grug_mobs.configure_capital_display(ground)
 assert(ground._grug_display_walk_points and ground.object.animation.speed==25)
-assert(math.abs(ground.object.pos.y-(10.02+0.01152582889405449))<1e-12 and
+assert(math.abs(ground.object.pos.y-(9.52+0.01152582889405449))<1e-12 and
  math.abs(ground._grug_display_walk_points[1].y-ground.object.pos.y)<1e-12,
  "ground display did not use the full move-clip foot minimum")
 ground._grug_display_pause=0
+local floor_before=ground.object.pos.y
 def.on_step(ground,0.1)
+assert(math.abs(ground.object.pos.y-floor_before)<1e-12,"first walk jumped half a node")
 assert(ground.object.pos.z<0 and ground.object.animation.speed==90,
  "ground display did not walk toward authored endpoint")
 for _=1,80 do def.on_step(ground,0.1) end
 assert(ground.object.pos.z==-4 and ground._grug_display_walk_target==2 and
  ground._grug_display_pause>0,"ground display did not pause and reverse in bounds")
 
+local saved=def.get_staticdata(ground)
+local restored={object=object(ground.object:get_pos())}
+def.on_activate(restored,saved)
+assert(math.abs(restored.object.pos.y-floor_before)<1e-12 and
+ restored._grug_display_walk_target==ground._grug_display_walk_target,
+ "current-version display reload changed floor or walk target")
+
 local kezamba={object=object({x=5,y=10,z=-3}),_grug_start="capital",
  _grug_socket="mount_2",_grug_socket_role="mount_display",
- _grug_display_race="troll",_grug_display_tag="2",_grug_display_floor=10,
- _grug_face_yaw=0}
+ _grug_display_race="troll",_grug_display_tag="2",_grug_display_floor=9.5,
+ _grug_face_yaw=0,_grug_placed_at=1}
 grug_mobs.configure_capital_display(kezamba)
 assert(kezamba._grug_display_walk_points[1].z==-3 and
  kezamba._grug_display_walk_points[2].z==-2,
  "Kezamba T2 display did not retain its shorter authored lane")
-assert(math.abs(kezamba.object.pos.y-(10.02+0.058341372000002084))<1e-12,
+assert(math.abs(kezamba.object.pos.y-(9.52+0.058341372000002084))<1e-12,
  "Kezamba T2 display did not use the full move-clip foot minimum")
 
 local air={object=object({x=5,y=10,z=0}),_grug_start="capital",
  _grug_socket="mount_3",_grug_socket_role="mount_display",
- _grug_display_race="human",_grug_display_tag="3",_grug_display_floor=10,
- _grug_face_yaw=0}
+ _grug_display_race="human",_grug_display_tag="3",_grug_display_floor=9.5,
+ _grug_face_yaw=0,_grug_placed_at=1}
 grug_mobs.configure_capital_display(air)
 assert(air._grug_display_walk_points==nil and air.object.animation.range.x==1 and
  air.object.animation.range.y==100 and air.object.animation.speed==60 and

@@ -84,3 +84,12 @@ land and flying mounts while stationary and moving in first and third person,
 and from a second client if available; leave and return to a dragon lair after
 at least one save/unload cycle; and watch every capital's ground lanes and
 grounded flyers through a reload.
+
+### Integration floor correction
+
+Independent review caught an additional Medium at the real spawn/socket seam:
+`start_npcs` defines display floor as socketY minus0.5, whereas walk endpoints
+used socketY directly. Root corrected endpoints to the same top-face convention
+and the fixture now uses the actual production floor offset, checks the first
+step has no half-node jump, and checks reload preserves floor and walk target.
+Current VENDOR crossreferences also consistently report65markers.
