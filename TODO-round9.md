@@ -412,7 +412,19 @@ evenings), **Nether (V2: user decision 2026-09-18, the Nether is the main
 part of the first big content update after V1, with its own mapgen and
 story; no V1 lane builds Nether seams)**.
 
-## 3. Playtest 12 (after Round 9, fresh world)
+## 3. Playtest 12 (baseline after MAP-C and TRINKETS, fresh world)
+
+Actual tested baseline: `2a308891`. The user completed this playtest on
+2026-09-20, before PERF, CAP and MAP-B. Consequently the coral/plant placement
+and capital-wall checks in the original checklist below are still pending.
+
+Findings and accepted follow-ups are tracked in [TODO-round10.md](TODO-round10.md).
+The concrete thin-cave-roof example is world `test`, seed
+`4151598227737528026`, approximately `(-71, 19, -2458)`. A read-only source
+query places it inside `exclude:anchor:anchor_002:01`, Dawnmere's 256-node
+fitting/blend envelope. The skin/opening pass skips that envelope; this is a
+source-level explanation to investigate, not an engine reproduction or an
+authorization to remove settlement protection.
 
 Terrain first: coasts with wide beaches that the land falls towards, no
 sand on mountain coasts or the Troll capital's lake, cliffs without holes,
@@ -430,7 +442,7 @@ VoxeLibre brewing stand; buy the T1 mount at the trainer, ride, reach
 level 30 in a test world for the race mount, and test a flying tier at the
 ocean edge and the enemy border (warning band, hard dismount).
 
-## 4. User rulings of 2026-09-18 (evening)
+## 4. User rulings of 2026-09-18 through 2026-09-20
 
 1. **Lane cut** as in §2: two profession lanes (PROF-A, PROF-B); farming and
    enchant rolls in wave 2 of this round.
@@ -662,6 +674,66 @@ ocean edge and the enemy border (warning band, hard dismount).
     on, planner -9 %, writer +44 %) closes the mapgen discussion; R9-PERF
     starts directly afterwards, implemented by an Astra subagent (the
     orchestrator only orchestrates), reviews stay on GPT-5.6 Sol.
+
+46. **PERF overlaps Playtest 12** (user 2026-09-19/20): Astra implements in
+    its isolated worktree while the user playtests the installed baseline.
+    Comparative engine measurements, full gate fleets and final micro wait
+    until the playtest ends. The user explicitly released that hold on
+    2026-09-20. Main/install remained unchanged during the playtest.
+47. **Basics is an exclusive recipe-book category** (user 2026-09-20):
+    replace the catch-all interpretation of General with the English label
+    **Basics**, containing only profession-free recipes. Every recipe route
+    belongs to exactly one book; Cooking recipes never also appear in Basics.
+    Display group slots in player language, such as `Carrot or Cassava`,
+    without enumerating a Cartesian product of ingredient choices. Arrows
+    remain for genuinely different complete recipe routes.
+48. **Canonical base crafting shapes and quantities** (user 2026-09-20):
+    read typical recipes from pinned VoxeLibre, never guess. Minecraft is
+    authoritative only for ingredient quantities and positions in the grid;
+    use Grudgelands' materials and progression. Base weapons, tools and cloth,
+    leather and metal armor are universal. A tier sword uses two bars above
+    a wooden stick or a same-tier metal rod. The three armor material lines
+    use the same familiar armor layouts. No parallel duplicate item identities.
+49. **Retain and complete the refinement/affix plan** (user 2026-09-20):
+    professions improve the universal base item. Keep the decided +15% bonus
+    and prefix/suffix model in `items_crafting.md` §6b; the conversational
+    +2-damage example did not replace it. Complete the missing player workflow
+    and show the refined before/after item and effect in the book/station.
+    The existing WP22 durability deferral is not silently lifted.
+50. **Weaponsmith and Armorsmith split moves into current work** (user
+    2026-09-20): split Blacksmith into two primary professions. This supersedes
+    `professions.md` §5's V1 no-split decision. The unchanged two-primary-slot
+    rule yields seven primaries; exact shared-component/station ownership is
+    resolved in the Round 10 plan before implementation. Fresh-server mode:
+    no old Blacksmith aliases or player-data migration.
+51. **Familiar stations and existing plant artwork** (user 2026-09-20):
+    keep Cooking's ordinary grid/furnace model and understandable profession
+    transformations. Replace generic recolored food/crop placeholders with
+    appropriate available artwork from the pinned farming/x_farming references,
+    including distinct crop stages, through the existing per-file import and
+    media-ledger procedure. Do not import an entire foreign gameplay system.
+52. **Safe free roaming** (user 2026-09-20): roaming ground mobs/NPCs should
+    not voluntarily walk into a drop deeper than one node. Reuse the existing
+    forward cliff probe, without an additional broad pathfinding pass. Combat,
+    fleeing and scripted-route behavior are not silently redefined.
+53. **Visible dragon rest-spot travel** (user 2026-09-20): dragons walk
+    visibly between their authored resting spots instead of teleporting between
+    them. Combat abilities require a valid hostile target; dragon-specific
+    area/projectile targeting respects `peaceful_player` as ordinary acquisition
+    already does. Routine idle travel has no teleport fallback.
+54. **Mount visibility, status and automatic stepping** (user 2026-09-20):
+    the rider sees no mount mesh in first person, sees it in third person, and
+    other players still see it. Display the mounted tier and actual speed bonus
+    in the existing top-right status list.
+    Land mounts automatically climb half-node and one-node rises while moving
+    forward without jumping; higher ledges do not become auto-climbable.
+55. **T1 mount speed +60%** (user 2026-09-20): increase T1 from 6 to
+    6.4 nodes/s against the 4-node/s walking baseline and derive its status text
+    as `T1 Mount, +60% Speed`. Other tiers keep their decided speeds.
+56. **Investigate thin cave roofs** (user 2026-09-20): investigate the
+    recorded Dawnmere example and distinguish visible settlement footprint
+    from the wider fitting/blend exclusions. No new opening rule, protected
+    footprint change or voxel-output change is included in byte-preserving PERF.
 
 ## 5. MAP-C protocol: what must not repeat from Round 8
 
