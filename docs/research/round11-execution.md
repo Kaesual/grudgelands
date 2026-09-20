@@ -1,8 +1,7 @@
 # Round 11 execution checkpoint
 
-Date: 2026-09-20. Status: **GO RECEIVED — SPEC FOLD IN PROGRESS**.
-Runtime baseline: `ac232ec2`. Runtime implementation has not begun. Integration branch: `wp11-r11-integration`. Runtime implementation starts after
-the relevant living-spec fold. No personal-world mutation is authorized.
+Date: 2026-09-20. Status: **IMPLEMENTATION / INDEPENDENT PACKAGE REVIEWS IN PROGRESS**.
+Runtime baseline: `ac232ec2`. Integration branch: `wp11-r11-integration`. GAME is accepted and integrated; other packages remain in isolated branches. No personal-world mutation is authorized.
 
 The [independent plan review](round11-plan/review/report.md) is CLEAN on v3:
 0 Critical / 0 High / 0 Medium / 0 Low open. Two initial Medium contradictions
@@ -132,3 +131,35 @@ copied into ART `mods/PLAYER/grug_inventory/textures/grug_inventory_quiver.png`.
 Actual1254x1254transparentRGBA, visuallyacceptedroot, notyetcommitted/consumed.
 RemainingART uses licensedreferenceassets. Read imagegen skill only if needed;
 no CLI/APIfallback was used.
+
+### Review checkpoint after worker rotation
+
+- GAME accepted/integrated at43c09f39; final report committed445e04c9.
+- GEAR frozen d0190d4a; fresh native Sol `r11_gear_review` independently reviews.
+- WORLD-CAP frozen6270c80d; fresh native Sol `r11_world_review` independently reviews.
+  Actual8450columns show peaks7→0/9→0, actual planner6columns and48serviceplots
+  pass; source/output hashes recorded in round11-world-evidence.md.
+- FARM ecology now native Sol `r11_game_review/farm_ecology_impl2`; coordinator
+  parent ended its turn to free a slot. Concrete geometry bridge resolved;
+  parent/child both ineligible for independent FARM acceptance.
+- ART root authored station assets c76e6bba and merged frozen GEAR into ART only.
+  Final gear images/seed maps/Silversteel/bow pose remain in progress.
+- COMBAT, REPAIR and SCOUT remain required, not started. Integration has not
+  merged GEAR/WORLD/FARM/ART, main remains R10, no sync or push yet.
+
+### Accepted WORLD / active second wave
+
+WORLD6270c80d independently CLEAN by fresh nativeSol, merged into integration.
+Report archivedround11-plan/review/world-final.md; authorAstra, zero findings,
+zero correction rounds, elapsedunknown. Five textured views remain GUIlimited.
+GEARreview found1Medium+2Low, correctedbyrootAstra18bbeacb: sharedmasterybook
+gate, throttledfullquiverrefusal, actualfilledtransfer/unchangedrefusal fixture.
+Focused independent rereview awaitsfree worker slot; reportgear-initial.md.
+ART now nativeSol `r11_world_review` in r11-art withrootassets+GEARmerged;
+rootno longeredits ART. Durablebriefround11-art-brief.md.
+COMBAT nativeSol `r11_combat`, isolatedwp4-r11-combat worktree r11-combat based
+integration445e04c9+GEARd0190d4a, formula/provenance/talents/bossconsumers.
+AgreedneutralREPAIRseams: register_on_settled_outgoing_action /
+run_settled_outgoing_action(player,action_id,kind), register_on_settled_incoming_hit.
+Root preparesREPAIR independentfiles whileCOMBATpublishes finaleventowners.
+FARM childcontinuesecology. NoPUCruntime, no broadcensus, no main/sync/pushyet.
