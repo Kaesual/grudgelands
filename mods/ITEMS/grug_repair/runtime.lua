@@ -1,9 +1,8 @@
 local WEAR_REMAINDER = "_grug_wear_remainder"
 local ACTION_LIMIT = 256
 local settled = {}
-local captured = {}
-local item_serial = 0
 local ITEM_ID = "_grug_repair_item_id"
+local storage = core.get_mod_storage()
 
 local function disable_broken_operation(stack)
 	if stack:get_wear() < 65535 then return end
@@ -32,10 +31,10 @@ local function wear_stack(player, list, index)
 		return false
 	end
 	local meta = stack:get_meta()
-	local amount = tonumber(meta:get_string(WEAR_REMAINDER)) or 0
-	amount = amount + 65535 / combat_lifetime(stack)
-	local whole = math.floor(amount)
-	meta:set_string(WEAR_REMAINDER, tostring(amount - whole))
+	local lifetime = combat_lifetime(stack)
+	local amount = meta:get_int(WEAR_REMAINDER) + 65535
+	local whole = math.floor(amount / lifetime)
+	meta:set_int(WEAR_REMAINDER, amount % lifetime)
 	stack:set_wear(math.min(65535, stack:get_wear() + whole))
 	disable_broken_operation(stack)
 	inv:set_stack(list, index, stack)
@@ -46,12 +45,14 @@ local function wear_stack(player, list, index)
 end
 
 local function remember(player, action_id)
+	local key = type(action_id) == "table" and action_id.id or action_id
+	if key == nil then return false end
 	local name = player:get_player_name()
 	local state = settled[name]
 	if not state then state = {order = {}, ids = {}}; settled[name] = state end
-	if state.ids[action_id] then return false end
-	state.ids[action_id] = true
-	state.order[#state.order + 1] = action_id
+	if state.ids[key] then return false end
+	state.ids[key] = true
+	state.order[#state.order + 1] = key
 	if #state.order > ACTION_LIMIT then
 		state.ids[table.remove(state.order, 1)] = nil
 	end
@@ -63,10 +64,8 @@ end
 -- SCOUT uses capture_action/settle_captured_action below for that case.
 function grug_repair.wear_outgoing(player, action_id)
 	if not remember(player, action_id) then return false end
-	local by_player = captured[player:get_player_name()]
-	local rows = by_player and by_player[action_id]
+	local rows = type(action_id) == "table" and action_id.item_ids or nil
 	if rows then
-		by_player[action_id] = nil
 		local inv = player:get_inventory()
 		local lists = {"grug_weapon", "grug_offhand", "main"}
 		for bag = 1, grug_inventory.BAG_COUNT do
@@ -96,6 +95,8 @@ function grug_repair.wear_outgoing(player, action_id)
 end
 
 function grug_repair.capture_action(player, action_id)
+	assert(type(action_id) == "string" and action_id ~= "",
+		"captured durability action requires a string id")
 	local rows = {}
 	local inv = player:get_inventory()
 	for _, list in ipairs({"grug_weapon", "grug_offhand"}) do
@@ -106,8 +107,10 @@ function grug_repair.capture_action(player, action_id)
 			local meta = stack:get_meta()
 			local id = meta:get_string(ITEM_ID)
 			if id == "" then
-				item_serial = item_serial + 1
-				id = player:get_player_name() .. ":" .. tostring(item_serial)
+				local serial = tonumber(storage:get_string("item_serial")) or 0
+				serial = serial + 1
+				storage:set_string("item_serial", tostring(serial))
+				id = "repair:" .. tostring(serial)
 				meta:set_string(ITEM_ID, id)
 				inv:set_stack(list, 1, stack)
 				grug_inventory.equipment_changed(player, list)
@@ -115,38 +118,19 @@ function grug_repair.capture_action(player, action_id)
 			rows[#rows + 1] = id
 		end
 	end
-	local name = player:get_player_name()
-	captured[name] = captured[name] or {}
-	local state = captured[name]
-	state[action_id] = rows
-	local count = 0
-	for id in pairs(state) do
-		count = count + 1
-		if count > ACTION_LIMIT then state[id] = nil; break end
-	end
+	return {id = action_id, item_ids = rows}
 end
 
 function grug_repair.cancel_action(player, action_id)
-	local state = captured[player:get_player_name()]
-	if state then state[action_id] = nil end
+	-- Capture receipts are inert values until settlement.
+end
+
+function grug_repair.settle_captured_action(player, receipt, kind)
+	grug_core.run_settled_outgoing_action(player, receipt, kind)
 end
 
 grug_core.register_on_settled_outgoing_action(function(player, action_id)
 	grug_repair.wear_outgoing(player, action_id)
-end)
-
-grug_core.register_on_effective_heal(function(healer, target, amount)
-	if healer and healer:is_player() and amount > 0 and
-			grug_core.in_combat(healer) then
-		grug_core.run_settled_outgoing_action(healer, {}, "heal")
-	end
-end)
-
-grug_core.register_on_effective_absorb(function(source, target, amount)
-	if source and source:is_player() and amount > 0 and
-			grug_core.in_combat(source) then
-		grug_core.run_settled_outgoing_action(source, {}, "absorb")
-	end
 end)
 
 grug_core.register_on_settled_incoming_hit(function(player)
@@ -162,7 +146,6 @@ end)
 
 core.register_on_leaveplayer(function(player)
 	settled[player:get_player_name()] = nil
-	captured[player:get_player_name()] = nil
 end)
 
 core.register_on_mods_loaded(function()
@@ -174,6 +157,13 @@ core.register_on_mods_loaded(function()
 				missing[#missing + 1] = name
 			end
 			if def.type == "tool" then
+				local on_use = def.on_use
+				if on_use then
+					core.override_item(name, {on_use = function(stack, user, pointed)
+						if grug_core.equipment_is_broken(stack) then return stack end
+						return on_use(stack, user, pointed) or stack
+					end})
+				end
 				local original = def.after_use
 				core.override_item(name, {after_use = function(stack, user, node, digparams)
 					if grug_core.equipment_is_broken(stack) then return stack end

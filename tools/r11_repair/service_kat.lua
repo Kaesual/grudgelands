@@ -22,7 +22,8 @@ local definitions = {
 local Stack = {}; Stack.__index = Stack
 local function stack(value)
 	local result = type(value) == "table" and copy(value) or
-		{name = value or "", wear = 0, count = value and value ~= "" and 1 or 0, meta = {}}
+		{name = value or "", wear = 0, count = value and value ~= "" and 1 or 0,
+			meta = {}, caps = {damage_groups = {fleshy = 0}}}
 	return setmetatable(result, Stack)
 end
 function Stack:is_empty() return self.name == "" or self.count == 0 end
@@ -40,6 +41,7 @@ function Stack:get_meta()
 		set_int = function(_, k, v) values[k] = tostring(v) end,
 		get_string = function(_, k) return values[k] or "" end,
 		set_string = function(_, k, v) values[k] = v ~= "" and v or nil end,
+		set_tool_capabilities = function(_, value) self.caps = copy(value) end,
 	}
 end
 _G.ItemStack = stack
@@ -50,6 +52,7 @@ _G.core = {
 	register_on_player_receive_fields = function(f) receivers[#receivers+1] = f end,
 	formspec_escape = function(s) return s end, chat_send_player = function() end,
 	show_formspec = function(_,name,content) forms[#forms+1] = {name,content} end,
+	deserialize = function(value) return copy(value) end,
 }
 local lists, writes, fail_at = {}, 0, nil
 local inv = {}
@@ -110,6 +113,7 @@ end
 local provider={kind="trainer",entity=npc,object=npc.object,settlement="highcourt",
 	socket="smith",profession="weaponsmith"}
 reset()
+lists.grug_chest[1].meta._grug_repair_caps = {damage_groups = {fleshy = 7}}
 assert(grug_repair.cost(lists.main[1])==1)
 assert(grug_repair.cost(lists.grug_weapon[1])==11) -- just over half missing
 assert(grug_repair.cost(lists.grug_chest[1])==100)
@@ -126,6 +130,9 @@ grug_money.register_on_change(function()
 end)
 assert(grug_repair.apply(player,q) and observed and notices==1)
 assert(lists.grug_weapon[1].meta.affixes=="preserve me" and lists.main[3].wear==32000)
+assert(lists.grug_chest[1].caps.damage_groups.fleshy==7 and
+	lists.grug_chest[1].meta._grug_repair_caps==nil,
+	"repair did not restore exact saved capabilities")
 assert(not grug_repair.apply(player,q) and funds==868)
 reset()
 q=assert(grug_repair.quote(player,provider))
@@ -149,4 +156,4 @@ reset();assert(grug_repair.open_trainer(player,npc))
 local old_form=forms[#forms][1];assert(grug_repair.open_trainer(player,npc))
 assert(receivers[1](player,old_form,{all=true}) and funds==1000 and writes==0)
 hp=0;assert(not grug_repair.can_open_trainer(player,npc))
-io.write("PASS repair service: purchase-price rounding, quality, owned lists, metadata, atomic ledger, stale items/forms, funds, rollback, provider access/lifecycle\n")
+io.write("PASS repair service: purchase-price rounding, quality, owned lists, metadata/capability restoration, atomic ledger, stale items/forms, funds, rollback, provider access/lifecycle\n")

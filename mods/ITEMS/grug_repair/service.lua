@@ -85,7 +85,7 @@ function grug_repair.apply(player, quote)
 		local stack = ItemStack(row.expected)
 		stack:set_wear(0)
 		local meta = stack:get_meta()
-		meta:set_string("_grug_wear_remainder", "")
+		meta:set_int("_grug_wear_remainder", 0)
 		local encoded = meta:get_string("_grug_repair_caps")
 		local saved = encoded ~= "" and core.deserialize(encoded) or nil
 		if meta.set_tool_capabilities then

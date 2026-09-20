@@ -552,7 +552,7 @@ grug_abilities.register_ability({
 		local action_id = user:get_player_name() .. ":fireball:" ..
 			tostring(fireball_action_serial)
 		local repair = rawget(_G, "grug_repair")
-		if repair then repair.capture_action(user, action_id) end
+		local repair_receipt = repair and repair.capture_action(user, action_id)
 		local spawned = grug_projectiles.spawn("fireball", {
 			owner = user,
 			origin = origin,
@@ -565,7 +565,7 @@ grug_abilities.register_ability({
 			data = {
 				-- Tinder (skill_trees.md §2.3). Brand's splash is lane X3's.
 				damage = fireball_values(user).damage,
-				action_id = action_id,
+				action_id = repair_receipt or action_id,
 			},
 		})
 		if not spawned then
@@ -774,7 +774,8 @@ grug_abilities.register_ability({
 			return false, "Target is dead."
 		end
 		-- Gentle Hand (skill_trees.md §2.5); Hearten's splash is lane X3's.
-		grug_core.heal_player(user, target, def.values(user).heal)
+		grug_core.heal_player(user, target, def.values(user).heal,
+			{action_id = {}})
 		burst(target:get_pos(), "mobs_heart_particle.png", 8)
 		return true
 	end,
@@ -820,7 +821,7 @@ grug_abilities.register_ability({
 		-- joins the base before the central level scalar. The 15 s duration is
 		-- unscaled. Turn Aside's dodge window is lane X3's.
 		grug_core.set_absorb(target, def.values(user).absorb,
-			15 + grug_classes.get_talent_bonus(user, "shield_duration_add"), user)
+			15 + grug_classes.get_talent_bonus(user, "shield_duration_add"), user, {})
 		burst(target:get_pos(), "default_item_smoke.png^[multiply:#ffe9a0", 8)
 		return true
 	end,
@@ -868,6 +869,7 @@ grug_abilities.register_ability({
 			ticks = 4,
 			amount = def.values(user).heal,
 			healer = user:get_player_name(),
+			action_id = {},
 		}
 		if grug_core.set_status then
 			grug_core.set_status(target, "renew", {
@@ -898,7 +900,8 @@ core.register_globalstep(function(dtime)
 			end
 		else
 			local healer = core.get_player_by_name(renew.healer) or target
-			grug_core.heal_player(healer, target, renew.amount)
+			grug_core.heal_player(healer, target, renew.amount,
+				{action_id = renew.action_id})
 			burst(target:get_pos(), "mobs_heart_particle.png", 3)
 			renew.ticks = renew.ticks - 1
 			if renew.ticks <= 0 then
