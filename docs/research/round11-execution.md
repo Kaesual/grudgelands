@@ -1,7 +1,7 @@
 # Round 11 execution checkpoint
 
 Date: 2026-09-20. Status: **IMPLEMENTATION / INDEPENDENT PACKAGE REVIEWS IN PROGRESS**.
-Runtime baseline: `ac232ec2`. Integration branch: `wp11-r11-integration`. GAME is accepted and integrated; other packages remain in isolated branches. No personal-world mutation is authorized.
+Runtime baseline: `ac232ec2`. Integration branch: `wp11-r11-integration`. GAME, WORLD-CAP, GEAR, COMBAT and ART are accepted and integrated; FARM, REPAIR, SCOUT and final SPEC reconciliation remain open. No personal-world mutation is authorized.
 
 The [independent plan review](round11-plan/review/report.md) is CLEAN on v3:
 0 Critical / 0 High / 0 Medium / 0 Low open. Two initial Medium contradictions
@@ -195,3 +195,30 @@ exactexistingquerydelegates. DirectworkerownsallFARMsuccessorwork.
 Round11TODOdeleted: userGoand living-specfoldcomplete; runtimepackagesstillopen.
 Rootnoticed staleD2four-affix textinitems_crafting despiteR11topsections; final
 active-doc authorityaudit required beforedelivery.
+
+
+### FARM and REPAIR first reviews / SPEC reconciliation
+
+FARM frozen `e5486a85`, then evidence-only correction `a6889da2`: independent
+native Sol found one Medium stale input-hash manifest and one Low trailing
+blank line; no material product-code defect. Both corrected by root, focused
+rereview active (`r11_farm_review`). Reviewer reran only targeted LuaJIT gates
+and parser; no PUC runtime. Initial report `/tmp/grudgelands-r11-farm-review.md`.
+
+REPAIR frozen `2ad85b15`: fresh independent Sol found four High defects (last
+combat-wear event rounding; broken hoe operation; persistent projectile item-ID
+collision after restart; per-target heal/absorb wear), one Medium missing actual
+wear-runtime proof and one Low stale vendor ledger. Direct native Sol
+`r11_repair_fix` owns corrections in r11-repair; no acceptance or merge yet.
+Initial report `/tmp/grudgelands-r11-repair-review.md`. SCOUT waits for corrected
+shared-file/interface freeze; do not build on the rejected event semantics.
+
+SPEC reconciliation is native Sol `r11_art_review`, isolated `r11-spec` branch
+`wp11-r11-spec-audit` from `bc112522`. Owns active design-doc contradictions and
+AGENTS technical primer only; root owns status files/checkpoint. It must retain
+historical evidence and separate still-open Scout consumers from shipped gear.
+A fresh independent reviewer must check its final contract changes.
+
+Root prepared `round11-next-playtest.md` as a draft, not a readiness claim.
+Main/runtime remain `ac232ec2`; no Round11 sync or push yet. User's no-PUC and
+minimal-test budget remain binding. Continue all packages through delivery.
