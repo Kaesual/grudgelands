@@ -73,6 +73,9 @@ return function(repo)
 
 	local engine_recipes, mods_loaded = {}, {}
 	core = {registered_items = {}, registered_nodes = {}}
+	function core.get_modpath(name)
+		if name == "grug_jobs" then return repo .. "/mods/PLAYER/grug_jobs" end
+	end
 	function core.register_node(name, definition)
 		name = name:gsub("^:", "")
 		core.registered_nodes[name], core.registered_items[name] = definition, definition

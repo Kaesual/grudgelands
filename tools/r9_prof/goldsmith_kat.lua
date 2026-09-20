@@ -2,9 +2,9 @@
 
 return function(repo)
 	local recipes = {}
-	local function add(tier, station, output, inputs, material)
+	local function add(tier, station, output, inputs, material, in_place)
 		recipes[#recipes + 1] = {tier = tier, station = station, output = output,
-			inputs = inputs, material = material}
+			inputs = inputs, material = material, in_place = in_place}
 	end
 	local function grid(inputs)
 		local result = {}
@@ -65,6 +65,17 @@ return function(repo)
 	end
 	for tier = 1, 6 do
 		local setting = "grug_artisans:setting_" .. settings[tier][1]
+		local metal = ({"bronze", "iron", "steel", "silversteel", "embersteel",
+			"abyssal_steel"})[tier]
+		local book = "grug_gear:spellbook_" .. metal
+		local reagent = tier == 1 and "default:coal_lump" or
+			({"", "grug_mobs:venom_gland", "grug_mobs:slime_gel",
+				"grug_mobs:croc_tooth", "grug_gathering:stormkelp",
+				"grug_mobs:stone_core"})[tier]
+		add(tier, "jewellers_bench", book,
+			{{setting, "grug_professions:parchment"}})
+		add(tier, "jewellers_bench", book, {{book, setting}}, false, true)
+		add(tier, "jewellers_bench", book, {{book, setting, reagent}}, false, true)
 		for index = 1, #trinkets do
 			local row, inputs = trinkets[index], {}
 			for count = 1, row[2] do inputs[#inputs + 1] = setting end

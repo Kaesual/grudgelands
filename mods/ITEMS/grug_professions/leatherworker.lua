@@ -75,3 +75,23 @@ for tier = 1, #tiers do
 			hint = "Tan at a Tanning Rack"})
 	end
 end
+
+local bag_outputs = {
+	"grug_inventory:bag_leather_pouch", "grug_inventory:bag_leather_satchel",
+	"grug_inventory:bag_leather_pack", "grug_inventory:bag_leather_rucksack",
+}
+local bag_tiers = {1, 2, 4, 5}
+for index = 1, #bag_outputs do
+	local tier = bag_tiers[index]
+	local leather = tiers[tier].output
+	P.register_recipe("leatherworker", {tier = tier, station = "tanning_rack",
+		inputs = {{leather, leather, leather}, {leather, THREAD, leather},
+			{leather, leather, leather}}, output = bag_outputs[index],
+		mastery_required = index,
+		hint = "Sew at a Tanning Rack"})
+end
+P.register_recipe("leatherworker", {tier = 1, station = "tanning_rack",
+	inputs = {{"grug_mobs:light_leather", "grug_mobs:light_leather", THREAD},
+		{"grug_mobs:light_leather", "", "grug_mobs:light_leather"}},
+	output = "grug_inventory:quiver", mastery_required = 1,
+	hint = "Sew at a Tanning Rack"})

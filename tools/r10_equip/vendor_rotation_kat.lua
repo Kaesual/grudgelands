@@ -26,7 +26,7 @@ return function(repo)
 	grug_items={roll_enchants=function() return true end}
 	grug_money={}; grug_xp={get_level=function()return 60 end}
 	local fixed={}; for index=1,13 do fixed[index]="test:fixed"..index end
-	local extras={}; for _,family in ipairs({"dagger","greataxe","staff","wand","scepter","orb"}) do
+	local extras={}; for _,family in ipairs({"dagger","greataxe","staff","wand","bow"}) do
 		extras[#extras+1]="test:"..family.."_bronze"
 	end
 	local all={}; for _,v in ipairs(fixed)do all[#all+1]=v end
@@ -49,7 +49,7 @@ return function(repo)
 			local entry=shelf[index]
 			if entry.uncommon then uncommon=uncommon+1 else
 				local family=entry.item:match("test:([a-z]+)_bronze")
-				if family=="wand" or family=="scepter" or family=="orb" then
+				if family=="wand" then
 					caster_count=caster_count+1; caster_seen[family]=true; family="caster1h"
 				end
 				if conceptual[family] then fail("conceptual family duplicated") end
@@ -58,8 +58,8 @@ return function(repo)
 		end
 		if not roller and caster_count>1 then fail("multiple caster 1H forms on shelf") end
 	end
-	if not (caster_seen.wand and caster_seen.scepter and caster_seen.orb) then
-		fail("deterministic caster sub-selection did not cover all forms")
+	if not caster_seen.wand then
+		fail("active caster sub-selection omitted wand")
 	end
 	if uncommon==0 or uncommon>=60 then fail("one-in-five Uncommon exception absent") end
 	restore()

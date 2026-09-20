@@ -74,6 +74,10 @@ for tier = 1, #tiers do
 		P.register_add_affix("armorsmith", tier, "metal_armor", item, row.bar,
 			reagents[tier])
 	end
+	local shield = G .. "shield_" .. row.key
+	P.register_refinement("armorsmith", tier, "shield", shield, row.bar)
+	P.register_add_affix("armorsmith", tier, "shield", shield, row.bar,
+		reagents[tier])
 
 	if tier >= 2 then
 		P.register_ingredient(reagents[tier], tier)

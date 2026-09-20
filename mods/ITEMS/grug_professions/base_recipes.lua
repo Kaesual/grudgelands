@@ -94,15 +94,19 @@ for tier = 1, #tiers do
 	register(wand, {{"", wood, ""}, {"", "group:stick", ""}})
 	core.register_craft({output = wand,
 		recipe = {{"", wood, ""}, {"", rod, ""}}})
-	local scepter = G .. "scepter_" .. row.metal
-	register(scepter, {{"", row.bar, ""}, {"", wood, ""},
-		{"", "group:stick", ""}})
-	core.register_craft({output = scepter, recipe = {{"", row.bar, ""},
-		{"", wood, ""}, {"", rod, ""}}})
-	register(G .. "orb_" .. row.metal, {{"", wood, ""},
-		{wood, "", wood}, {"", wood, ""}})
 	register(G .. "staff_" .. row.metal, {{"", wood, ""},
 		{"", wood, ""}, {"", wood, ""}})
+	local bow = G .. "bow_" .. row.metal
+	register(bow, {{"", wood, C .. "thread"},
+		{wood, "", C .. "thread"}, {"", wood, C .. "thread"}})
+	core.register_craft({output = bow, recipe = {
+		{C .. "thread", wood, ""}, {C .. "thread", "", wood},
+		{C .. "thread", wood, ""}}})
+	register(G .. "shield_" .. row.metal, {
+		{"group:wood", row.bar, "group:wood"},
+		{"group:wood", "group:wood", "group:wood"},
+		{"", "group:wood", ""},
+	})
 
 	local materials = {
 		metal = row.bar,
@@ -119,6 +123,13 @@ for tier = 1, #tiers do
 		end
 	end
 end
+
+core.clear_craft({output = G .. "arrow"})
+core.register_craft({type = "shapeless", output = G .. "arrow 20", recipe = {
+	M .. "iron_bar", "group:stick", "group:stick", "group:stick", "group:stick",
+	"grug_mobs:sharp_feather", "grug_mobs:sharp_feather",
+	"grug_mobs:sharp_feather", "grug_mobs:sharp_feather",
+}})
 
 if core.registered_items["grug_farming:hoe"] then
 	register("grug_farming:hoe", {

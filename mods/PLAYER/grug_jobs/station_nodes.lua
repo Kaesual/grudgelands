@@ -4,6 +4,8 @@ if brewing and brewing._grug_station_factory then
 end
 
 local factory = {}
+local station_visuals = dofile(core.get_modpath("grug_jobs") ..
+	"/station_visuals.lua")
 local PUBLIC_STATIONS = {
 	furnace = true,
 	brewing_stand = true,
@@ -78,16 +80,16 @@ local function formspec(station, operation)
 	local operation_hint = operation == "add_affix" and
 		"label[6.2,1.25;Adds one random legal affix]" or
 		(operation and "label[6.2,1.25;Exact improved result]" or "")
-	return "formspec_version[3]size[10,10]" ..
+	return "formspec_version[3]size[11.5,10]" ..
 		"label[1.5,0.35;" .. core.formspec_escape(info.display_name) .. "]" ..
 		"label[1.5,0.75;" .. input_label .. "]list[context;craft;1.5,1.1;3,3;]" ..
 		"image[5.0,2.05;1,1;gui_furnace_arrow_bg.png^[transformR270]" ..
 		"label[6.2,0.75;" .. output_label .. "]list[context;output;6.2,2.05;1,1;]" ..
-		"list[current_player;main;1,5.15;8,1;]" ..
-		"list[current_player;main;1,6.4;8,3;8]" ..
+		"list[current_player;main;1.75,5.15;8,1;]" ..
+		"list[current_player;main;1.75,6.4;8,3;8]" ..
 		"listring[context;output]listring[current_player;main]" ..
 		"listring[context;craft]listring[current_player;main]" ..
-		default.get_hotbar_bg(1, 5.15) ..
+		default.get_hotbar_bg(1.75, 5.15) ..
 		jobs.station_book_button(station) ..
 		(operation and "button[7.45,2.0;1.8,0.8;grug_jobs_apply;" ..
 			action_label .. "]" or "") .. operation_hint
@@ -253,11 +255,11 @@ local function register_station_node(station, info, visual)
 		description = info.display_name,
 		drawtype = "nodebox",
 		node_box = {type = "fixed", fixed = visual.boxes},
-		tiles = {visual.texture},
+		tiles = visual.tiles or {visual.texture},
 		paramtype = "light", paramtype2 = "facedir",
 		is_ground_content = false,
 		groups = visual.groups,
-		sounds = visual.sounds(),
+		sounds = type(visual.sounds) == "function" and visual.sounds() or visual.sounds,
 		_grug_station = station,
 		_grug_grid_size = 9,
 		on_construct = function(pos) initialize(pos, station) end,
@@ -303,10 +305,19 @@ local STATION_INFO = {
 		node = "grug_jobs:jewellers_bench"},
 }
 
+local function station_visual(station, fallback)
+	local authored = station_visuals[station]
+	if not authored then return fallback end
+	return {texture = authored.texture or fallback.texture,
+		tiles = authored.tiles, boxes = authored.boxes or fallback.boxes,
+		groups = authored.groups or fallback.groups,
+		sounds = authored.sounds or fallback.sounds}
+end
+
 function factory.register_nodes()
 	if nodes_registered then return end
 	nodes_registered = true
-	register_station_node("forge", STATION_INFO.forge, {
+	register_station_node("forge", STATION_INFO.forge, station_visual("forge", {
 		texture = "default_steel_block.png^[colorize:#34251f:70",
 		boxes = {
 			{-0.5, -0.5, -0.5, 0.5, -0.12, 0.5},
@@ -314,8 +325,8 @@ function factory.register_nodes()
 			{-0.18, 0.08, -0.12, 0.18, 0.35, 0.12},
 		},
 		groups = {cracky = 2}, sounds = default.node_sound_metal_defaults,
-	})
-	register_station_node("tanning_rack", STATION_INFO.tanning_rack, {
+	}))
+	register_station_node("tanning_rack", STATION_INFO.tanning_rack, station_visual("tanning_rack", {
 		texture = "default_wood.png^[colorize:#704020:55",
 		boxes = {
 			{-0.46, -0.5, -0.1, -0.34, 0.45, 0.1},
@@ -324,22 +335,22 @@ function factory.register_nodes()
 			{-0.5, 0.34, -0.1, 0.5, 0.46, 0.1},
 		},
 		groups = {choppy = 2}, sounds = default.node_sound_wood_defaults,
-	})
-	register_station_node("tailor_bench", STATION_INFO.tailor_bench, {
+	}))
+	register_station_node("tailor_bench", STATION_INFO.tailor_bench, station_visual("tailor_bench", {
 		texture = "default_wood.png^[colorize:#735493:75",
 		boxes = wood_boxes,
 		groups = {choppy = 2}, sounds = default.node_sound_wood_defaults,
-	})
-	register_station_node("carving_bench", STATION_INFO.carving_bench, {
+	}))
+	register_station_node("carving_bench", STATION_INFO.carving_bench, station_visual("carving_bench", {
 		texture = "default_wood.png^[colorize:#315f35:45",
 		boxes = wood_boxes,
 		groups = {choppy = 2}, sounds = default.node_sound_wood_defaults,
-	})
-	register_station_node("jewellers_bench", STATION_INFO.jewellers_bench, {
+	}))
+	register_station_node("jewellers_bench", STATION_INFO.jewellers_bench, station_visual("jewellers_bench", {
 		texture = "default_steel_block.png^[colorize:#c69a35:105",
 		boxes = wood_boxes,
 		groups = {cracky = 2}, sounds = default.node_sound_metal_defaults,
-	})
+	}))
 
 	core.register_lbm({
 		label = "Activate profession stations",
