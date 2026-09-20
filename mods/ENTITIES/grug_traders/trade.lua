@@ -81,9 +81,8 @@ local function general_shelf(vendor)
 	return grug_traders.stock
 end
 
--- Does this vendor sell equipment at all? Only the two original families and
--- the smith do (items_crafting.md §3.0.3: the bracket catalog IS the base
--- craft ladder, and a baker is not on it).
+-- Does this vendor sell equipment at all? Profession vendors opt into full or
+-- filtered views of the authoritative bracket catalog.
 local function sells_gear(vendor)
 	return vendor ~= nil and (vendor.stock == nil or vendor.brackets == true)
 end
@@ -108,7 +107,7 @@ local function current_offer(player, session, vendor, discount)
 	if not bracket or bracket < 1 or bracket > grug_traders.max_bracket(player) then
 		return offer
 	end
-	for _, entry in ipairs(grug_traders.bracket_stock(vendor.salt, bracket)) do
+	for _, entry in ipairs(grug_traders.vendor_bracket_stock(vendor, bracket)) do
 		offer[#offer + 1] = {
 			item = entry.item,
 			base = entry.price,
@@ -171,7 +170,7 @@ local function render_buy(parts, player, session, vendor, discount)
 	-- has unlocked (items_crafting.md §3.8: own bracket and every one below).
 	local max_bracket = grug_traders.max_bracket(player)
 	local tabs = {{id = "general", label = "General"}}
-	-- A profession vendor other than the smith shows ONE tab: it sells no
+	-- A profession vendor without bracket stock shows ONE tab: it sells no
 	-- equipment, and a row of bracket buttons that all answer "nothing on this
 	-- shelf" is worse than no row at all.
 	if not sells_gear(vendor) then
@@ -212,10 +211,9 @@ local function render_buy(parts, player, session, vendor, discount)
 	if #offer == 0 then
 		parts[#parts + 1] = "label[0.6,3.0;The vendor has nothing on this shelf.]"
 	end
-	-- Required form height. Today every bracket shelf is 11 entries (9 fixed
-	-- + 2 rotating) = 2 rows and stays below FORM_H, but WP10's job supplies
-	-- extend the General tab and a third row must grow the window instead of
-	-- falling out of it.
+	-- Required form height. The full bracket shelf is 17 entries (13 fixed + 4
+	-- rotating); filtered profession views are smaller. General-tab supplies
+	-- may also extend to a third row, so derive the window from the actual view.
 	local grid_rows = math.ceil(#offer / GRID_COLS)
 	return 2.9 + grid_rows * 2.5 + 1.2
 end
