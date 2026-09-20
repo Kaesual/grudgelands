@@ -73,7 +73,7 @@ for name in pairs(products) do names[#names+1]=name end
 table.sort(names)
 for _,name in ipairs(names) do
  local product=products[name]
- local front="default_wood.png^("..product[2]..")"
+ local front="wool_white.png^("..product[2]..")"
  node("product_"..name,product[1].." Product Display","default_wood.png",
   {-.5,-.5,-.12,.5,.5,.12},{paramtype2="facedir",
    tiles={"default_wood.png","default_wood.png","default_wood.png",

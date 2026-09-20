@@ -1,5 +1,5 @@
 """Bounded authored ground clips, integer-frame mesh bounds and yaw sweep.
-Fractional-frame visual acceptance remains a GUI check; 0.1 node margin is
+Fractional-frame visual acceptance remains a GUI check; 0.01 node margin is
 conservative numeric clearance, not a proof of arbitrary animation interpolation.
 """
 import sys,json
