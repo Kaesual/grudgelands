@@ -1,8 +1,8 @@
 # Round 12 completion
 
 Date: 2026-09-20. Technical implementation and independent review complete.
-Delivery actions (main merge, runtime sync and push) are recorded in the final
-execution checkpoint. GUI acceptance remains the user's next playtest.
+Main merge `81364e85`, runtime sync and authorized GitHub push are complete;
+the final [execution checkpoint](round12-execution.md) records the receipt. GUI acceptance remains the user's next playtest.
 
 ## Delivered scope
 

@@ -1,7 +1,7 @@
 # Round 12 execution checkpoint
 
 Date: 2026-09-20. User explicitly said **Go** after the independent plan review.
-Status: TECHNICALLY COMPLETE; final main/sync/push delivery in progress. Integration branch `wp12-round12`, starting main `3fdd6b35`.
+Status: COMPLETE, installed and pushed. Historical integration branch `wp12-round12`, starting main `3fdd6b35`.
 Authority: `round12-plan/README.md`, three package annexes and corrected review.
 Frozen planning hashes remain historical and must not be rewritten during work.
 
@@ -17,18 +17,17 @@ reviewed integrated main build at final delivery.
 
 ## Work ownership and state
 
-| Package | Worker / branch / checkout | State |
+| Package | Implementation / independent review | Final state |
 |---|---|---|
-| FARM | native Sol / `wp32-r12-farm` / `/tmp/grug-r12-farm` | active |
-| SKILLS | native Sol / `wp47-r12-skills` / `/tmp/grug-r12-skills` | active |
-| ART | native Sol / `wp29-r12-art` / `/tmp/grug-r12-art` | active |
-| TALENTS | native Sol / `wp11-r12-talents` / `/tmp/grug-r12-talents` | implementation candidate, behavior validation active |
-| UI | root Astra / integration branch | implemented, review queued |
-| RECIPES | native Sol / `wp12-recipes` / `/tmp/grug-r12-recipes` | active |
-| FOOD | root Astra / integration branch | implemented, review queued |
-| POSE | root Astra / integration branch | implemented, review queued |
-| Independent code/visual reviews | separate non-author agents | queued |
-| UX | independent report-only integrated-candidate audit | queued |
+| FARM | native Sol / different native Sol | clean, delivered |
+| SKILLS | native Sol + root Astra corrections / independent Sol | clean, delivered |
+| ART | native Sol + root Astra blade correction / independent Sol | clean, delivered |
+| TALENTS | native Sol + separate Astra corrections / independent Astra | clean, delivered; final merged seam rechecked |
+| UI, FOOD, POSE | root Astra / independent Sol | clean, delivered |
+| RECIPES | native Sol / independent Sol | clean after two corrections, delivered |
+| UX | independent Sol, report-only | report delivered; four proposals remain for user selection |
+| Shared-station followup | read-only source audit | open design, explicitly outside Round12 |
+
 
 Workers first fold their approved rules into assigned living design sections,
 then implement. Root owns cross-package integration, checkpoint/status docs and
@@ -39,14 +38,14 @@ or copied into worker commits. Worktree reference gitlinks remain untouched.
 
 ## Completion checklist
 
-- [ ] Living specifications reflect the approved round and TODO is closed.
-- [ ] All package implementations and focused evidence complete.
-- [ ] Independent reviews and visual acceptance complete, no open blockers.
-- [ ] Integrated startup/consumer checks pass on final bytes.
-- [ ] UX findings returned as report, without unapproved scope expansion.
-- [ ] Main merge, runtime sync, GitHub push, art gallery, next-playtest checklist.
+- [x] Living specifications reflect the approved round and TODO is closed.
+- [x] All package implementations and focused evidence complete.
+- [x] Independent reviews and visual acceptance complete, no open blockers.
+- [x] Integrated startup/consumer checks pass on final bytes.
+- [x] UX findings returned as report, without unapproved scope expansion.
+- [x] Main merge, runtime sync, GitHub push, art gallery, next-playtest checklist.
 
-Next: dispatch first-wave workers; root freezes UI/Skills seams, folds shared
+Historical initial handoff: dispatch first-wave workers; root freezes UI/Skills seams, folds shared
 specs, then advances remaining packages as worker slots free. Persist exact
 heads, findings and next actions here at every significant handoff.
 
@@ -199,3 +198,22 @@ Completion/status docs, gallery and next-playtest checklist are prepared.
 New user-reported shared world-station ownership is investigated and tracked in
 `TODO-station-ownership.md`; the user explicitly kept its implementation outside
 this round. Current remaining actions: final commit, main merge, sync and push.
+
+## Delivery receipt — final authority
+
+**Round12 is complete and ready for the next user playtest.** Integration
+`5918e9fa` merged to main with merge commit
+`81364e85619ec892bc20018639363313905e0575`. `tools/sync_to_luanti.sh` ran from
+main and the installed game matches all 1,961 entries of the reviewed runtime
+manifest byte-for-byte. `git push origin main` succeeded to
+`github.com/Kaesual/grudgelands` (`3fdd6b35..81364e85`). Subsequent receipt edits
+are documentation-only and do not alter installed/tested runtime bytes.
+
+All earlier queued/active/pending paragraphs are chronological review history,
+not outstanding work. There are no active implementation tasks. Next action is
+the user's GUI playtest via `round12-next-playtest.md`; do not start the separate
+station-ownership proposal or UX recommendations without their next scope decision.
+Completion, gallery, review reports and the newly reported station audit are
+linked from `round12-completion.md` and BACKLOG. The planning TODO was closed;
+`TODO-station-ownership.md` deliberately remains open. No user-world migration
+or edits were performed, and no PUC runtime ran.
