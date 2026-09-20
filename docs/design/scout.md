@@ -1,9 +1,8 @@
-# Scout — the fourth class (PROPOSAL, 2026-09-16, NOT DECIDED)
+# Scout — the fourth class
 
-**PROPOSAL, written with [skill_trees.md](skill_trees.md) revision 2.** The
-user's ruling 7 of 2026-09-16 creates a fourth class, **Scout**, in leather
-armour, with two trees — ranged (bow) and melee — **planned now and
-implemented later**. Rulings 8 and 9 added invisibility rules and the Sprint
+The accepted Round 11 design creates a fourth class, **Scout**, in leather
+armour, with two trees — ranged (bow) and melee. Rulings 8 and 9 added
+invisibility rules and the Sprint
 idea; **rulings 12 and 14 then cut the class back to its simplest workable
 form**, which is what this file now describes. Nothing here is implemented and
 nothing in `mods/` was changed for it.
@@ -89,10 +88,17 @@ What is deliberately **not** in the base kit: a melee finisher (it is Veil's
 keystone, `skill_trees.md` §2.8), a root (Quarry's keystone), and stealth of
 any kind (§8).
 
-## 3. The bow does not exist
+## 3. Bow and ammunition contract
 
-Measured, not looked up. `mods/ENTITIES/grug_traders/stock.lua:428-435`
-records a headless dump of all 1012 registered item names:
+Round 11 activates six universal plain tier bows plus one below-ladder wooden
+starter bow. Woodcarver owns bow refinement and affixes, not the plain recipe.
+Bows are two-handed and may share Offhand only with the zero-hand quiver.
+Shooting works without a quiver: ammunition is consumed atomically from the
+equipped quiver first and then `main`. The Scout starts with its wooden bow
+equipped and receives 20 arrows plus a stone sword in `main`; it does not start
+with a quiver.
+
+Historical baseline measured before Round 11:
 
 > "**THERE IS NO BOW.** Nothing in the 1012 is a bow, a stave, a bowstring or
 > a quiver — the only archery items in the game are `grug_mobs:arrow`
@@ -106,15 +112,14 @@ The bowyer shelf therefore sells arrows, sticks and feathers
 
 What **is** decided and waiting:
 
-- `items_crafting.md` §9 (`:2423-2445`) is a complete inactive substrate:
-  bow family on the 1H weapon curve (8/13/19/24 damage at ilvl 12/27/42/57),
+- `items_crafting.md` §9 defines the active substrate: bow family on the 1H
+  weapon curve (8/13/19/24 damage at ilvl 12/27/42/57),
   **25 m range, 0.5 s charge**, partial charge scales linearly, enchant pool =
   melee weapons (attack speed → charge speed), one bow per material tier,
   material-named under §3.0.3. Arrows craft 20 per batch from 1 iron bar +
-  4 sticks + 4 sharp feathers. **Producer: the Woodcarver.** Quiver =
-  Leatherworker bag-slot item. Its closing line is the one this class
-  answers: "No current or committed class consumes a bow baseline… until a
-  class package explicitly adopts it."
+  4 sticks + 4 sharp feathers. Plain bows and arrows are Basics; Woodcarver
+  owns bow refinement/affixes. Leatherworker makes the optional four-stack
+  Offhand quiver at Apprentice.
 - `combat_stats.md:249-252`: "Bows reuse the infrastructure later… a bow is
   drawn up to a maximum and releases a ballistic arrow whose initial impulse
   comes from draw time; gravity supplies the trajectory."
@@ -128,9 +133,10 @@ A player bow should **not** reuse it — mob arrows carry `stamp_arrow_damage`
 (`skeleton_archer.lua:68`) and the mob level pipeline — but it is the working
 reference for the entity shape.
 
-## 4. Leather armour exists on paper only
+## 4. Leather armour
 
-`mods/ITEMS/grug_gear/init.lua:77-79`, in the generator's own words:
+Leather armor and its 24-item six-tier line shipped in Round 10. The following
+quoted passage records the older baseline and is not current implementation:
 
 > "leather — the Leatherworker's six leather grades (§3.4). Registered
 > **`false`** below (its only wearer, the Rogue, is Phase 2) but **NAMED**
@@ -226,7 +232,7 @@ Ruling 12 in one table. Nothing here is rejected; it is sequenced.
 | **Poison** | 7 and 12 | nowhere. `classes.md:475-487`'s Phase-2 Rogue plan is retired in this lane's `classes.md` commit, so no work package owns a player poison stat any more |
 | **Traps** | 12 | nowhere. Ruling 7 allowed them "if cheap"; ruling 12 removed the option, and they were the one idea in the class that needed a placed-entity lifecycle |
 | **A third resource** | 14: the Scout uses mana | nowhere; §1 |
-| **A quiver item** | not ruled — simply not needed for v1 | `professions.md:52` already assigns it to the Leatherworker "later"; arrows stack in the main inventory until then |
+| **A starter quiver** | omitted: the Scout starts without one | The Leatherworker's optional four-stack quiver ships in V1; arrows also work directly from `main` (§3) |
 | **A dedicated leather overlay** | 12: "leather borrows the cloth cut" | `character_visuals.md:71-73` already says so; the art is a later pass |
 
 What that leaves is a class made entirely of numbers, durations and flags on

@@ -23,7 +23,7 @@ local reagents = {
 	[6] = "grug_mobs:stone_core",
 }
 
-local families = {"wand", "scepter", "orb", "staff"}
+local families = {"wand", "staff", "bow"}
 
 A.register_ingredient("group:wood", 1)
 A.register_ingredient("grug_materials:cut_diamond", 4)

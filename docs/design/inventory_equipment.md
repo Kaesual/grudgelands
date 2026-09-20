@@ -157,8 +157,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   rule controlling their combined effect.
 - **Equipment effect channels are separate per stack** (integrated
   2026-08-12):
-  - Ordinary equipment retains its refinement plus up to two prefixes and two
-    suffixes.
+  - Ordinary equipment retains its refinement plus at most one prefix and one
+    suffix, with no repeated stat. Trinkets retain their fixed exception.
   - Exactly the six combat families weapon, offhand, head, chest, legs and feet
     may additionally carry one **cultural finish**. The finish is an in-place,
     deterministic culture/family effect; trinkets are never eligible. Different
@@ -197,7 +197,7 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     < metal 3** (item group `grug_armor_class`). Items without the
     group are unaffected.
   - Each character class has a **maximum rank** and may wear its own
-    rank **and everything below**: **Warrior 3, Mage 1, Priest 1**. A
+    rank **and everything below**: **Warrior 3, Scout 2, Mage 1, Priest 1**. A
     character without a class counts as cloth (rank 1). This
     below-inclusive rule is load-bearing since 2026-08-13: leather
     (rank 2) ships as the **Warrior's light avoidance set**
@@ -220,17 +220,22 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
 ## 3. Bags (WoW model, LotT implementation pattern)
 
 - **Base inventory stays 32 slots** (must not feel cramped); **4 bag
-  slots** extend it. **Four sizes, one per mastery tier** (revised
-  2026-08-07 — the huge bag is new): **small 8 / medium 16 / large 24 /
-  huge 32** slots (`bagslots` group; bag slots + contents are
+  slots** extend it. Cloth and leather each have four named variants, one per
+  mastery tier: **8 / 16 / 24 / 32** slots (`bagslots` group; bag slots + contents are
   player-inventory lists, see above). Four huge bags therefore add 128
-  slots — the Master tailor's flagship product, and the reason the bag
-  line stays interesting to the end of the mastery ladder.
-- **Bags are Tailor products on all four mastery tiers**
-  (`items_crafting.md` §2.1 for the tiers, §3.5 for the recipes) — cloth
-  farming feeds the tailor economy. The **small 8-slot bag is the
+  slots. The parallel cloth/leather catalog is an explicit one-item-per-concept
+  exception; neither material grants stats, affixes or extra capacity.
+- Cloth bags are Tailor products and leather bags are Leatherworker products.
+  The **small 8-slot cloth bag is the
   exception and stays vendor-sellable**: it is the floor tier of its
   item category (professions.md §4), so it is bought, not crafted-only.
+- Offhand accepts shields, Goldsmith spellbooks and the Leatherworker quiver.
+  A two-handed bow explicitly permits the zero-hand quiver; shield, book and
+  torch remain illegal beside it. One-handed melee may retain the quiver, while
+  staff and greataxe require empty Offhand. The quiver has four arrow-only
+  slots and no combat stat, affix, refinement or wear. Removing a filled quiver
+  transfers all arrows to `main` atomically or refuses unchanged if they do not
+  all fit.
 - No item drop on death (unchanged; death costs XP, not gear).
 
 ## 4. Crafting model (revised 2026-09-20)

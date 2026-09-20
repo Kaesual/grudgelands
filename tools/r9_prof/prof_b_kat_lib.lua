@@ -105,6 +105,7 @@ return function(repo, spec)
 		function core.get_current_modname() return current_mod end
 		function core.get_modpath(name)
 			if name == "grug_gear" then return repo .. "/mods/ITEMS/grug_gear" end
+			if name == "grug_jobs" then return repo .. "/mods/PLAYER/grug_jobs" end
 			if name == "grug_artisans" then
 				return repo .. "/mods/ITEMS/grug_artisans"
 			end
@@ -250,6 +251,7 @@ return function(repo, spec)
 		end
 		base("default:wood", {description = "Wood", groups = {wood = 1}})
 		base("default:coal_lump", {description = "Coal Lump"})
+		base("grug_professions:parchment", {description = "Parchment"})
 
 		grug_core = {register_on_equipment_change = function() end,
 			notify_equipment_change = function() end,
@@ -341,18 +343,18 @@ return function(repo, spec)
 		local actual = grug_jobs.recipes_for(spec.profession)
 		check(#actual == #spec.recipes, "recipe count differs: " .. #actual ..
 			" != " .. #spec.recipes)
-		local function recipe_key(station, output)
-			return station .. "\0" .. output
-		end
 		local function sorted_inputs(inputs)
 			local flat = grug_jobs._flatten_inputs(inputs)
 			table.sort(flat)
 			return table.concat(flat, "|")
 		end
+		local function recipe_key(station, output, inputs)
+			return station .. "::" .. output .. "::" .. sorted_inputs(inputs)
+		end
 		local expected, expected_outputs = {}, {}
 		for index = 1, #spec.recipes do
 			local row = spec.recipes[index]
-			local key = recipe_key(row.station, row.output)
+			local key = recipe_key(row.station, row.output, row.inputs)
 			check(not expected[key], "expected route duplicated: " .. key)
 			expected[key] = row
 			expected_outputs[row.output] = true
@@ -371,7 +373,7 @@ return function(repo, spec)
 		end
 		for index = 1, #actual do
 			local recipe = actual[index]
-			local key = recipe_key(recipe.station, recipe.output_name)
+			local key = recipe_key(recipe.station, recipe.output_name, recipe.inputs)
 			local row = expected[key]
 			check(row ~= nil, "unexpected route " .. key)
 			check(not actual_routes[key], "actual route duplicated: " .. key)

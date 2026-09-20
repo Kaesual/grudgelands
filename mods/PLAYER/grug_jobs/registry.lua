@@ -576,6 +576,12 @@ function grug_jobs.register_recipe(definition)
 	if definition.material ~= nil and type(definition.material) ~= "boolean" then
 		fail(profession .. " T" .. tier .. " material flag differs")
 	end
+	if definition.mastery_required ~= nil and
+			(type(definition.mastery_required) ~= "number" or
+			definition.mastery_required % 1 ~= 0 or
+			definition.mastery_required < 1 or definition.mastery_required > 4) then
+		fail(profession .. " recipe mastery_required differs")
+	end
 	local inputs = flatten_inputs(definition.inputs)
 	if #inputs == 0 then fail(profession .. " T" .. tier .. " recipe has no input") end
 	local has_own_tier = false
@@ -605,7 +611,7 @@ function grug_jobs.register_recipe(definition)
 		for index = 1, #output_routes do
 			local route = output_routes[index]
 			if route.station == station then
-				if not (definition.in_place and route.in_place and
+				if not ((definition.in_place or route.in_place) and
 					definition.operation ~= route.operation) then
 					fail("duplicate profession output " .. output .. " at " .. station)
 				end
@@ -651,6 +657,7 @@ function grug_jobs.register_recipe(definition)
 		operation_material = definition.operation_material,
 		operation_reagent = definition.operation_reagent,
 		quality_mode = definition.quality_mode,
+		mastery_required = definition.mastery_required,
 		universal_output_routes = universal_routes,
 		shapeless = definition.shapeless == true,
 		shaped = definition.shapeless ~= true and

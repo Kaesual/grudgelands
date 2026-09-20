@@ -225,6 +225,12 @@ local function bags_content(player, context)
 	local inv = player:get_inventory()
 	local selected = context.grug_bag or 1
 	local fs = {}
+	local has_quiver = core.get_item_group(
+		inv:get_stack("grug_offhand", 1):get_name(), "grug_quiver") > 0
+	if has_quiver then
+		table.insert(fs, "label[4.3,0.1;Quiver]list[current_player;grug_quiver_content;4.3,0.35;4,1;]")
+		table.insert(fs, "listring[current_player;grug_quiver_content]listring[current_player;main]")
+	end
 	for i = 1, grug_inventory.BAG_COUNT do
 		local x = (i - 1) * 2 + 0.3
 		table.insert(fs, ("list[current_player;%s;%.1f,0.35;1,1;]"):format(
@@ -301,9 +307,9 @@ sfinv.pages_unordered = ordered
 -- changes (the list contents themselves update live anyway).
 --
 
-function grug_inventory.refresh(player)
+function grug_inventory.refresh(player, force)
 	local context = sfinv.get_or_create_context(player)
-	if context.page == "grug_inventory:character" or
+	if force or context.page == "grug_inventory:character" or
 			context.page == "grug_inventory:bags" then
 		sfinv.set_page(player, context.page)
 	end
