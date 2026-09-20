@@ -200,8 +200,11 @@ return function(repo)
 		{list = "grug_feet"}, {list = "grug_weapon"}, {list = "grug_offhand"},
 		{list = "grug_trinket1"}, {list = "grug_trinket2"},
 	}
+	local forwarded_equipment_reason
 	grug_inventory = {equipment_slots = equipment_slots,
-		equipment_changed = function() end,
+		equipment_changed = function(_, _, reason)
+			forwarded_equipment_reason = reason
+		end,
 		get_equipped_armor = function() return 0 end}
 	grug_inventory.invalidate_armor = grug_inventory.equipment_changed
 	grug_xp = {get_level = function(player) return player.level or 1 end}
@@ -214,6 +217,7 @@ return function(repo)
 		get_equipment_pool_percent = function() return 0 end,
 	}
 	grug_core = {status_modifier_sum = function() return 0 end,
+		equipment_is_broken = function() return false end,
 		get_player_level = function(player) return player.level or 1 end,
 		can_use_item_level = function(player, item)
 			local def = item:get_definition()
@@ -633,7 +637,10 @@ return function(repo)
 	local player = {level = 60,
 		get_player_name = function() return "quality_player" end,
 		get_inventory = function() return inventory end}
-	grug_inventory.equipment_changed(player, "grug_weapon")
+	grug_inventory.equipment_changed(player, "grug_weapon",
+		"durability_metadata")
+	check(forwarded_equipment_reason == "durability_metadata",
+		"quality wrapper dropped the equipment-change reason")
 	local attributes = grug_classes.get_attributes(player)
 	local totals = {str = 0, dex = 0, int = 0}
 	for index = 1, #grug_items.get_affixes(equipped) do

@@ -317,6 +317,28 @@ return function(repo)
 	near(p.physics.speed, 1, "back to the baseline after immunity")
 	say("immunity", "discards_root_and_negatives", "ok")
 
+	-- Shake Loose dispels penalties that predate its immunity; they must not
+	-- resume when the four-second window ends. Positive modifiers survive.
+	grug_core.set_move_modifier(p, "old_slow", {speed = -0.40}, 7)
+	grug_core.set_move_modifier(p, "sprint", {speed = 0.25}, 10)
+	grug_core.set_root(p, 7)
+	grug_core.clear_negative_move_modifiers(p)
+	want(grug_core.get_move_modifier(p, "old_slow") == nil,
+		"Shake Loose dispel retained an old slow")
+	want(not grug_core.get_move_state(p).rooted,
+		"Shake Loose dispel retained an old root")
+	near(p.physics.speed, 1.25, "Shake Loose dispel preserves Sprint")
+	grug_core.set_move_immunity(p, 4)
+	grug_core.set_move_modifier(p, "new_slow", {speed = -0.40}, 7)
+	near(p.physics.speed, 1.25,
+		"a new slow stays inert during Shake Loose immunity")
+	advance(4.5)
+	near(p.physics.speed, 0.85,
+		"a new slow follows the existing post-immunity remainder contract")
+	grug_core.clear_move_modifier(p, "new_slow")
+	grug_core.clear_move_modifier(p, "sprint")
+	say("dispel", "old_negative_removed", "positive_preserved", "ok")
+
 	--
 	-- 6. The exclusive hold: precedence, counting, exact release, gravity,
 	--    and NO snapshot.

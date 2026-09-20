@@ -431,9 +431,46 @@ grug_projectiles.register("limited_error", {
 	speed = 20, max_distance = 20, lifetime = 2, active_limit = 1,
 	on_hit = function() error("intentional limited callback failure") end,
 })
+local batch_hits = 0
+grug_projectiles.register("batch", {
+	speed = 20, max_distance = 20, lifetime = 2, active_limit = 2,
+	on_hit = function() batch_hits = batch_hits + 1 end,
+})
+grug_projectiles.register("batch_tight", {
+	speed = 20, max_distance = 20, lifetime = 2, active_limit = 1,
+	on_hit = function() batch_hits = batch_hits + 1 end,
+})
 local limited = player("limited", "accord")
 online.limited = limited
 run_callbacks(callbacks.join, limited)
+
+local launch = {owner=limited, origin={x=0,y=0,z=0},
+	direction={x=1,y=0,z=0}}
+local batch_before = #entities
+assert(grug_projectiles.spawn_batch("batch_tight", {launch, launch},
+	function() error("must not commit a partial batch") end) == false)
+assert(#entities == batch_before + 1 and entities[#entities].object.removed)
+assert(batch_hits == 0, "rolled-back partial batch invoked on_hit")
+-- The first sibling's token was released before returning.
+local reopened = spawn("batch_tight", {owner=limited})
+registered_entity.on_deactivate(reopened, false)
+
+local committed = 0
+batch_before = #entities
+assert(grug_projectiles.spawn_batch("batch", {launch, launch}, function()
+	committed = committed + 1
+	return false
+end) == false)
+assert(committed == 1 and #entities == batch_before + 2)
+assert(entities[#entities].object.removed and entities[#entities - 1].object.removed)
+assert(batch_hits == 0, "commit-refused batch invoked on_hit")
+assert(grug_projectiles.spawn_batch("batch", {launch, launch}, function()
+	committed = committed + 1
+	return true
+end) == true and committed == 2)
+local batch_one, batch_two = entities[#entities - 1], entities[#entities]
+registered_entity.on_deactivate(batch_one, false)
+registered_entity.on_deactivate(batch_two, false)
 
 -- The distinct hit settlement path releases before both successful and
 -- failing callbacks; a callback-triggered spawn could therefore use the slot.

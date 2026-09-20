@@ -208,6 +208,7 @@ grug_classes.register_race({
 })
 
 local modpath = core.get_modpath(core.get_current_modname())
+dofile(modpath .. "/scout.lua")
 dofile(modpath .. "/stats.lua")
 dofile(modpath .. "/perks.lua")
 dofile(modpath .. "/talents.lua")
