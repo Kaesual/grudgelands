@@ -1,6 +1,6 @@
 -- Bounded Gravewood integration through production R6 templates and writer.
 
-return function(repo, production_repo, verify_compressed)
+return function(repo, production_repo, verify_compressed, check_light_validation)
 	production_repo = production_repo or repo
 	local function check(value, message)
 		if not value then error("gravewood writer fixture: " .. message, 0) end
@@ -40,6 +40,14 @@ return function(repo, production_repo, verify_compressed)
 		production_repo .. "/mods/BASE/default/schematics",
 		production_repo .. "/mods/ITEMS/grug_trees/schematics")
 	local contract = actual_content.content_contract()
+	local invalid_light_cid = 60000
+	if check_light_validation then
+		local classify = contract.classify
+		contract.classify = function(cid, param2)
+			if cid == invalid_light_cid then error("injected invalid light context", 0) end
+			return classify(cid, param2)
+		end
+	end
 	contract.classify_runtime = contract.classify_runtime or contract.classify
 	local surface = {id = "gravewood_fixture", top = definitions[1].host,
 		filler = definitions[1].host, filler_depth = 1, shore = definitions[1].host,
@@ -258,6 +266,28 @@ return function(repo, production_repo, verify_compressed)
 			tostring(aggregate and aggregate.accepted) .. "/" ..
 			table.concat(rejection_rows, ","))
 	end
+	local settled_runs = settlement_fixture.run_values()
+	if check_light_validation then
+		-- This halo cell is inside the combined tree light box, outside every
+		-- template and outside the owner. It must be validated before setters.
+		local invalid = filled(volume, 0)
+		for index = 1, volume do invalid[index] = native_data[index] end
+		invalid[(-16 + 48) * 112 * 64 + (10 + 16) * 112 + (-33 + 48) + 1] =
+			invalid_light_cid
+		local bad_vm, _, bad_observer = vm_module.new({minp = minp, maxp = maxp,
+			data = invalid, param2 = filled(volume, 0), light = filled(volume, 0),
+			heightmap = filled(6400, -31007), content_contract = contract, water_level = 1,
+			ignore_cid = contract.ignore_cid, verify_inactive_tail = false})
+		local ok, message = pcall(settlement.apply, settlement, bad_vm,
+			minp, maxp, plan, 1, "fixture")
+		check(not ok and tostring(message):find("fail_lighting_context", 1, true),
+			"invalid combined halo light context was accepted: " .. tostring(message))
+		local calls = bad_observer.snapshot().calls
+		check(calls.set_data == 0 and calls.set_param2_data == 0 and
+			calls.set_lighting == 0 and calls.calc_lighting == 0 and
+			calls.set_light_data == 0 and calls.update_liquids == 0,
+			"invalid light context reached an external setter")
+	end
 	local snapshot = observer.snapshot()
 	local ex, ey = snapshot.emax.x - snapshot.emin.x + 1,
 		snapshot.emax.y - snapshot.emin.y + 1
@@ -439,6 +469,18 @@ return function(repo, production_repo, verify_compressed)
 		(0 - dust_snapshot.emin.y) * 112 + (0 - dust_snapshot.emin.x) + 1
 	check(dust_snapshot.data[dust_index] == 0,
 		"dust-only owner wrote snow over an opening")
+	local function array_digest(values)
+		local blocks, parts = {}, {}
+		for index = 1, #values do
+			parts[#parts + 1] = tostring(values[index]) .. ","
+			if #parts == 1024 then
+				blocks[#blocks + 1] = table.concat(parts)
+				parts = {}
+			end
+		end
+		blocks[#blocks + 1] = table.concat(parts)
+		return common.hex(raw_sha256(table.concat(blocks)))
+	end
 	local rows = {"schema\tgrug_wp40_gravewood_writer_v1",
 		"templates\t2\tclass=1", "rotations\t8\tmandatory_wood=pass",
 		"opening_surface\tair_at_t=pass\tair_t_minus_1_to_4=pass\t" ..
@@ -446,6 +488,10 @@ return function(repo, production_repo, verify_compressed)
 			"dust_only_slice=air",
 		"writer\t" .. result .. "\toptional_leaves=" .. leaf_written ..
 			"\tnonoverwrite=pass"}
+	for _, channel in ipairs({"data", "param2", "light", "trace"}) do
+		rows[#rows + 1] = channel .. "_sha256\t" .. array_digest(snapshot[channel])
+	end
+	rows[#rows + 1] = "intent_runs_sha256\t" .. array_digest(settled_runs)
 	local bytes = table.concat(rows, "\n") .. "\n"
 	return bytes .. "digest\t" .. common.hex(raw_sha256(bytes)) .. "\n"
 end

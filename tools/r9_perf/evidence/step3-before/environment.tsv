@@ -1,0 +1,13 @@
+kernel	Linux 7.2.5-200.fc44.x86_64 x86_64 GNU/Linux
+processors	16
+memory_kib	61352424
+seed	0
+cases_file	/home/jan/projects/grudgelands/.claude/worktrees/r9-perf/tools/wp40/profile/probe/cases.lua
+port_base	32618
+phase_timeout_seconds	1100
+dedicated_binary	0
+settlement_stages	0
+full_digest	1
+source_game	/tmp/grudgelands-wp40-profile-run.kvejPcn6/archive
+source_archive	/tmp/grudgelands-r9-perf-20260919/measurement/snapshots/d49ce8ec.tar
+luanti_user_path	/tmp/grudgelands-wp40-profile-run.kvejPcn6/user

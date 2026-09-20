@@ -133,6 +133,12 @@ The Nether is not part of V1.
   2026-09-13. See the [completion record](docs/research/wp40-completion.md).
   This development completion leaves the explicitly separated first-public-
   release gates below open and does not end fresh-server mode.
+- [x] **R9-PERF bounded writer pass (2026-09-20):** three single-thread
+  optimizations preserve all 97 measured owners and every content, param2 and
+  light channel while reducing the measured sequence endpoint by 17.26%.
+  [The completion record](docs/research/r9-perf-completion.md) owns the evidence
+  and limits. WP48 remains open for broader post-processing work; parallel
+  emerge remains blocked by the pinned engine issue.
 - [x] **Round 6 integration (2026-09-17):** the shared HP/mana pool and damage
   fit, maximum-pool Character/Help displays, effective ability/weapon tooltips,
   total friendly-skill fallback and 5% suffocation are live. The first

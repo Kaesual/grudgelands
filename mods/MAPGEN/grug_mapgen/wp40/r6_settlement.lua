@@ -2113,21 +2113,17 @@ local function settlement_factory()
 			function shadow.set_param2_data(_, buffer)
 				for index = 1, volume do final_param2[index] = buffer[index] end
 			end
-			function shadow.get_light_data(_, buffer)
-				-- Nested R5 lighting is not committed; R6 derives one combined final
-				-- light transaction after successor replay.  A closed valid scratch
-				-- buffer keeps that projection read-only and avoids an early external
-				-- light read whose bytes cannot affect P2-P6 data/param2 settlement.
-				for index = 1, volume do buffer[index] = 0 end
-				return buffer
+			local function discarded_light_call()
+				fail("fail_vm_contract", "composed R5 attempted an inner light transaction")
 			end
-			function shadow.set_lighting() end
-			function shadow.calc_lighting() end
-			function shadow.set_light_data() end
+			shadow.get_light_data = discarded_light_call
+			shadow.set_lighting = discarded_light_call
+			shadow.calc_lighting = discarded_light_call
+			shadow.set_light_data = discarded_light_call
 			function shadow.update_liquids() end
 			local r5_result = helpers.r5_adapter:apply(shadow, minp, maxp, plan.r5_plan,
 				plan.r5_generation, call_mode == "production" and
-					"engine_fixture" or "offline_fixture")
+					"engine_fixture" or "offline_fixture", "outer_transaction")
 			if type(r5_result) ~= "string" then
 				fail("fail_settlement", "nested R5 result differs")
 			end
@@ -3286,7 +3282,7 @@ local function settlement_factory()
 							local voxel_liquid = old_family > 0 or new_family > 0 or
 								old_liquid ~= new_liquid or old_family ~= new_family or
 								old_level ~= new_level
-							if not voxel_liquid and old_flood ~= new_flood then
+							if not column_liquid and not voxel_liquid and old_flood ~= new_flood then
 								for face = 1, 6 do
 									local nx, ny, nz = x + FACE_X[face], y + FACE_Y[face],
 										z + FACE_Z[face]
@@ -3346,16 +3342,23 @@ local function settlement_factory()
 				for index = 1, volume do
 					integer(original_light[index], "VM light", 0, 255, "fail_vm_contract")
 				end
-				-- Fresh border MapBlocks may remain CONTENT_IGNORE until a later
-				-- emerge. They are read-only context; only the owner must be complete.
+				-- This is the authoritative context of R5 plus all successors.
+				-- Classify every non-ignore entry before any external setter; the
+				-- composed R5 intentionally does not validate discarded lighting.
+				-- Fresh ignore halo blocks remain legal read-only context.
 				for z = box_min_z, box_max_z do
 					for y = box_min_y, box_max_y do
 						for x = box_min_x, box_max_x do
-							if final_data[index_at(x, y, z)] == contract.ignore_cid and
-									x >= min_x and x <= max_x and
-									y >= min_y and y <= max_y and
-									z >= min_z and z <= max_z then
-								fail("fail_content_ignore", "required light context is ignore")
+							local index = index_at(x, y, z)
+							local cid = final_data[index]
+							if cid == contract.ignore_cid then
+								if x >= min_x and x <= max_x and
+										y >= min_y and y <= max_y and
+										z >= min_z and z <= max_z then
+									fail("fail_content_ignore", "required light context is ignore")
+								end
+							else
+								classify(cid, final_param2[index], "fail_lighting_context")
 							end
 						end
 					end

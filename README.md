@@ -247,7 +247,7 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 
 ## Current State
 
-*Last updated: 2026-09-19. Derived from [BACKLOG.md](BACKLOG.md) and
+*Last updated: 2026-09-20. Derived from [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md); those are the status sources of truth.*
 
 **Shipped (22 of 49 work packages):** WP0–WP4, WP6, WP7, WP15, WP18, WP19,
@@ -269,6 +269,10 @@ start areas, which a fresh world emerges once and records in mod storage. WP40's
 [development acceptance](docs/research/wp40-completion.md) now includes the first
 terrain/performance correction round and green native plus browser-local
 Lua-5.1 user tests; slower browser generation is accepted for this server game.
+The bounded [R9-PERF writer pass](docs/research/r9-perf-completion.md) preserves
+all measured output channels and reduces its measured sequence endpoint by
+17.26%; WP48 remains open for broader post-processing and engine-blocked
+parallel emerge work.
 Round 8 adds per-viewer player nametags, shared profession books and trainers,
 Cooking and Alchemy v1, new day/night mob families, two dragons and six kings
 with their guards. It also closes every capital boundary ring and adds four

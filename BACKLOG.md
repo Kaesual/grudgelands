@@ -299,6 +299,20 @@ is ready, but `num_emerge_threads = 1` stays pinned until the engine fixes
 #9357 (PR #16224 pending) or the project moves to singlenode with its own
 cave/ore generation, which `mapgen-control.md` rejected.
 
+**R9-PERF substep implemented (2026-09-20):** three bounded
+single-thread writer optimizations are complete: already-dirty liquid columns
+short-circuit repeated neighbor scans, exact horizontal classification uses a
+bounded FIFO while the lattice LRU grows from 4 to 16 entries, and composed R5
+lighting is delegated to the final R6 transaction while standalone R5 keeps its
+own lighting. All cold/disk measurements retain the same 97 owners, 49,664,000
+voxels and content/param2/light digest. The measured sequence endpoint falls
+from 77.572800 s to 64.187408 s (-17.26%); it reuses sequence endpoints and is
+descriptive rather than a replicated fourth pair. The independent review found
+no findings. Evidence, exact limits and the final PUC/LuaJIT parity digest are
+recorded in [the R9-PERF completion record](docs/research/r9-perf-completion.md).
+WP48 remains open: the engine threading block and broader changed-run
+post-processing work are unchanged.
+
 Only with that data is the v7 plateau (caves everywhere under the
 surface) worth revisiting; Round 9 shipped MAP-C without it (ruling 35).
 

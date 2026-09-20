@@ -1,6 +1,42 @@
 -- Engine-free deterministic vertical model for the accepted WP40 simple map.
 -- All construction is session-local; scalar query seams allocate no records.
 
+-- Seed/session-local FIFO. Numeric coordinate keys avoid string allocation;
+-- explicit tuple length preserves nil holes, false and short ocean results.
+local function new_classification_cache(classify, limit)
+	assert(type(limit) == "number" and limit >= 1 and limit % 1 == 0)
+	local by_x, slots, cursor, count = {}, {}, 1, 0
+	local hits, misses, evictions = 0, 0, 0
+	local function tuple(...) return {n = select("#", ...), ...} end
+	local function query(x, z)
+		local row = by_x[x]
+		local entry = row and row[z]
+		if entry then
+			hits = hits + 1
+			return unpack(entry.value, 1, entry.value.n)
+		end
+		-- Compute before eviction: a failed classifier must not publish a row.
+		local value = tuple(classify(x, z))
+		misses = misses + 1
+		local old = slots[cursor]
+		if old then
+			local old_row = by_x[old.x]
+			old_row[old.z] = nil
+			if next(old_row) == nil then by_x[old.x] = nil end
+			evictions = evictions + 1
+		else
+			count = count + 1
+		end
+		row = by_x[x]
+		if not row then row = {} by_x[x] = row end
+		entry = {x = x, z = z, value = value}
+		row[z], slots[cursor] = entry, entry
+		cursor = cursor % limit + 1
+		return unpack(value, 1, value.n)
+	end
+	return query, function() return count, hits, misses, evictions end
+end
+
 local function new_coast_rules(full_seed_string)
 	local PRIME = 16777213
 	local phase = 0
@@ -108,7 +144,9 @@ local function new_coast_rules(full_seed_string)
 		local blend = freshwater and 4 or 16 + math.floor(draw / 37) % 9
 		return width, denominator, blend
 	end
+	result.new_classification_cache = new_classification_cache
 	function result.new_lattice_cache(limit)
+		assert(type(limit) == "number" and limit >= 1 and limit % 1 == 0)
 		local entries, clock = {}, 0
 		local cache = {}
 		function cache.get(chunk_x, chunk_z, build)
@@ -2110,9 +2148,8 @@ local function height_factory(dependencies)
 			return axis_transition_values_at(x, z)
 		end
 
-		local function classified_values(x, z)
-			return horizontal.classification_values_at(x, z)
-		end
+		local classified_values = deterministic.r8_coast_rules(full_seed_string).
+			new_classification_cache(horizontal.classification_values_at, 65536)
 
 		local function pregrade_water_surface_at(x, z, water_class, bay_id,
 				hydrology_id)
@@ -5219,7 +5256,9 @@ local function height_factory(dependencies)
 			local coast_hash = coast_rules.hash
 			local selected_profile = coast_rules.profile
 			local selected_band = coast_rules.band
-			local lattice_cache = coast_rules.new_lattice_cache(4)
+			-- An engine owner straddles four world-anchored tiles. Retain the
+			-- 4x4 tile footprint of neighboring owners, still bounded per session.
+			local lattice_cache = coast_rules.new_lattice_cache(16)
 			local function landmark_excluded_at(x, z)
 				local candidates = bucket_at(landmark_grid, x, z)
 				if candidates then

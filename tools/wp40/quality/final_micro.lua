@@ -25,6 +25,8 @@ for _, relative in ipairs({
 	"tools/r6_shore/kat.lua",
 	"tools/r7_level_bands/kat.lua",
 	"tools/r8_map_a/kat.lua",
+	"tools/r9_perf/cache_fixture.lua",
+	"tools/r9_perf/lighting_fixture.lua",
 	"tools/r9_farm/farming_kat.lua",
 }) do
 	io.write((dofile(repo .. "/" .. relative)(repo)))
