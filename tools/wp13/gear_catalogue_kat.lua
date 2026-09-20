@@ -51,6 +51,10 @@ local WEAPON_HANDS = {sword = 1, dagger = 1, greataxe = 2, staff = 2,
 local WEAPON_GROUP = {sword = "sword", dagger = "sword", greataxe = "axe",
 	staff = "staff", wand = "wand", bow = "bow"}
 local CASTER_IMAGE = {wand = "default_mese_crystal_fragment.png^[colorize:"}
+local BOW_IMAGE = {"grug_gear_bow_lebethron.png", "grug_gear_bow_birch.png",
+	"grug_gear_bow_birch.png^[hsl:0:-20:16", "grug_gear_bow_mallorn.png",
+	"grug_gear_bow_alder.png^[colorize:#b94a24:38",
+	"grug_gear_bow_birch.png^[colorize:#69458c:92"}
 
 local ARMOR_NOUNS = {
 	metal = {head = "Helm", chest = "Chestplate", legs = "Greaves",
@@ -303,7 +307,7 @@ function M.run(repo)
 					(CASTER_IMAGE[family] .. gear.BRACKET_TINT[bracket] .. ":115") or
 					("grug_gear_item_" .. family .. "_" .. material.metal.key .. ".png")
 				if family == "bow" then
-					expected_image = "grug_gear_item_staff_" .. material.metal.key .. ".png"
+					expected_image = BOW_IMAGE[bracket]
 				end
 				check(def.inventory_image == expected_image,
 					name .. " does not use its own material sprite")
@@ -424,7 +428,8 @@ function M.run(repo)
 	local starter_bow = items[gear.STARTER_BOW]
 	check(starter_bow and starter_bow._grug_hands == 2 and
 		(starter_bow.groups or {}).grug_bow == 1 and
-		starter_bow._grug_ilvl == nil,
+		starter_bow._grug_ilvl == nil and
+		starter_bow.inventory_image == "grug_gear_bow_wood.png",
 		"the wooden starter bow contract differs")
 
 	-- Every weapon-slot item with fleshy damage uses the same base-stat line,
@@ -543,11 +548,14 @@ function M.run(repo)
 		local shield = items["grug_gear:shield_" .. metal]
 		local book = items["grug_gear:spellbook_" .. metal]
 		check(shield and shield.groups.grug_equip_offhand == 1 and
-			shield.groups.grug_shield == 1 and shield._grug_armor > 0,
+			shield.groups.grug_shield == 1 and shield._grug_armor > 0 and
+			shield.inventory_image == "grug_gear_shield_" .. metal .. ".png",
 			"tier " .. bracket .. " shield contract differs")
 		check(book and book.groups.grug_equip_offhand == 1 and
 			book.groups.grug_spellbook == 1 and book._grug_max_mana_percent ==
-			math.ceil(bracket / 2), "tier " .. bracket .. " spellbook contract differs")
+			math.ceil(bracket / 2) and book.inventory_image:find(
+			"grug_gear_spellbook.png", 1, true) == 1,
+			"tier " .. bracket .. " spellbook contract differs")
 		check(gear.get_sell_price(sword) ==
 			math.max(1, math.floor(br.price.weapon * 0.25)),
 			sword .. " does not buy back at 25%")

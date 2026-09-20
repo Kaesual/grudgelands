@@ -16,3 +16,14 @@ The source allow-list is exactly the table above. The deny-list is every other
 file in the two farming repositories: no recipe, model, sound, node code, or
 unlisted texture is imported. All node IDs, stage counts and farming mechanics
 remain local and unchanged.
+
+## Round 11 seed inventory silhouettes
+
+Nine unchanged renamed source sprites from pinned `x_farming`
+`ac5f69d5103d4af841b1a5ed3a0b49a4e19d0c84`, authored by SaKeL under
+CC BY-SA 4.0 (`LICENSE.txt:463` and its per-file list):
+`x_farming_{barley,beetroot,carrot,corn,cotton,melon,potato,pumpkin,strawberry}_seed.png`.
+They ship locally as `grug_farming_seed_<family>.png`. The pure
+`seed_visuals.lua` map assigns all 17 crops one of these seed silhouettes;
+native color modifiers distinguish fantasy families that deliberately share a
+shape. Harvest icons and growth nodes are unchanged.

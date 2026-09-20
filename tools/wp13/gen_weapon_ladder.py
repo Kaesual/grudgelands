@@ -79,8 +79,8 @@ MATERIALS = [
         (104, 104, 104), (147, 147, 147), (166, 166, 166),
         (220, 220, 220), (234, 234, 234), (255, 255, 255)]),
     ("silversteel", "Silversteel", [
-        (108, 124, 142), (146, 164, 184), (166, 184, 204),
-        (214, 228, 242), (230, 240, 250), (250, 253, 255)]),
+		(112, 118, 124), (151, 158, 166), (174, 181, 189),
+		(220, 226, 232), (236, 241, 246), (253, 255, 255)]),
     # Dark red-orange BODY with a bright ember core, rather than the even warm
     # orange it had: that ramp sat on top of Bronze's and the two tiers were
     # hard to tell apart (round-2 review). The bottom four steps are nearly

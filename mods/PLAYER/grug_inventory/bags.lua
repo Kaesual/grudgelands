@@ -56,10 +56,10 @@ core.register_craftitem("grug_inventory:bag_large", {
 
 local extra_bags = {
 	{"bag_great", "Great Cloth Bag", 32, "grug_inventory_bag_large.png"},
-	{"bag_leather_pouch", "Leather Pouch", 8, "grug_inventory_bag_small.png"},
-	{"bag_leather_satchel", "Leather Satchel", 16, "grug_inventory_bag_medium.png"},
-	{"bag_leather_pack", "Leather Pack", 24, "grug_inventory_bag_large.png"},
-	{"bag_leather_rucksack", "Leather Rucksack", 32, "grug_inventory_bag_large.png"},
+	{"bag_leather_pouch", "Leather Pouch", 8, "grug_inventory_bag_small.png^[colorize:#6b4428:58"},
+	{"bag_leather_satchel", "Leather Satchel", 16, "grug_inventory_bag_medium.png^[colorize:#6b4428:58"},
+	{"bag_leather_pack", "Leather Pack", 24, "grug_inventory_bag_large.png^[colorize:#6b4428:58"},
+	{"bag_leather_rucksack", "Leather Rucksack", 32, "grug_inventory_bag_large.png^[colorize:#6b4428:58"},
 }
 for _, row in ipairs(extra_bags) do
 	core.register_craftitem("grug_inventory:" .. row[1], {
@@ -71,7 +71,7 @@ end
 grug_inventory.QUIVER_LIST = "grug_quiver_content"
 core.register_craftitem("grug_inventory:quiver", {
 	description = "Quiver (4 arrow stacks)",
-	inventory_image = "grug_inventory_bag_small.png^[colorize:#6b4428:70",
+	inventory_image = "grug_inventory_quiver.png^[resize:64x64",
 	stack_max = 1, _grug_hands = 0,
 	groups = {grug_equip_offhand = 1, grug_quiver = 1},
 })

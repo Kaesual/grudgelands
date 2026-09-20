@@ -93,8 +93,12 @@ for _, line in ipairs(grug_visuals.LINES) do
 	for _, slot in ipairs(SLOTS) do
 		OVERLAY[line][slot] = {}
 		for bracket, materials in ipairs(grug_gear.MATERIALS) do
-			OVERLAY[line][slot][bracket] = "grug_visuals_" .. line .. "_" ..
-				slot .. "_" .. materials[line].key .. ".png"
+			local texture = "grug_visuals_" .. line .. "_" .. slot .. "_" ..
+				materials[line].key .. ".png"
+			if line == "metal" and materials[line].key == "silversteel" then
+				texture = texture .. "^[hsl:0:-90:5"
+			end
+			OVERLAY[line][slot][bracket] = texture
 		end
 	end
 end
