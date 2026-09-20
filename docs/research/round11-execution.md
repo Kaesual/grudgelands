@@ -163,3 +163,35 @@ AgreedneutralREPAIRseams: register_on_settled_outgoing_action /
 run_settled_outgoing_action(player,action_id,kind), register_on_settled_incoming_hit.
 Root preparesREPAIR independentfiles whileCOMBATpublishes finaleventowners.
 FARM childcontinuesecology. NoPUCruntime, no broadcensus, no main/sync/pushyet.
+
+### Accepted GEAR and COMBAT / REPAIR handoff
+
+GEAR18bbeacb nowindependently CLEAN, mergedintegration. Initialreview1M2L,
+rootAstra correctedall, freshnativeSol focusedrereview clean; reportgear-final.md.
+COMBAT3a9f0ce0 independently CLEAN (authorSol, reviewerfreshSol, zero findings),
+mergedintegration; reportcombat-final.md. Sourcebaseafa8d883/code4dbb65be.
+ARTfirstreview1Medium incorrectIron/EmberShieldsourcecolors; authorfixed28ef659a
+withruntimegrades+actualtreatedpreview; sameindependentreviewer focusedpending.
+REPAIR rootservice4054776c addsgrug_repair service/providers+atomicmoneytransaction
++trainerUI. Realservicefixture coversquotes/metadata/funds/provider/stalefroms/
+writefailure rollback. COMBAT dependencymergedinrepair, nowsoleworker nativeSol
+`r11_combat_review` ownsallremainingwear/broken-state/actionhooks. Rootnoedits.
+REPAIRhandoff includes projectileconcreteweapon identity and cadence/no-doublewear
+risks; fullpackage includingrootservice needsfreshreviewafterfreeze.
+FARM scheduling correction: nestedchild remainedpending_init withoutsourceedits;
+rootinterruptedand replacedwithdirectnativeSol `r11_farm_direct`. It nowsoleowns
+farmworktree; no furthernesteddelegation. Allthreeactiveworkersdirect.
+SCOUT implementationfollowsREPAIRsharedfilefreeze; stillrequired.
+NoPUC/no main/sync/push. Currentmain remainsac232ec2.
+
+### ART accepted / authority reconciliation
+
+ART28ef659a independently CLEAN after1Mmaterialcolorfinding andonefixround.
+Merged intointegration; allstationmedia/gearassets/seed_visuals nowavailable.
+GEARandCOMBAT alsoacceptedandintegration, reportsarchived.
+FARMdirectworker reported inherited14cb3a14 fromnestedworker (priornoeditstatus
+wastransient); its aggregatebridge duplicatedhabitatlogic, nowbeingcorrectedto
+exactexistingquerydelegates. DirectworkerownsallFARMsuccessorwork.
+Round11TODOdeleted: userGoand living-specfoldcomplete; runtimepackagesstillopen.
+Rootnoticed staleD2four-affix textinitems_crafting despiteR11topsections; final
+active-doc authorityaudit required beforedelivery.
