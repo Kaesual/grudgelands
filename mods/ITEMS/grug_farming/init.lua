@@ -238,7 +238,6 @@ local function place_seed(row)
 	end
 end
 
-local stage_tints = {140, 95, 45, 0}
 for index = 1, #crops do
 	local row = crops[index]
 	core.register_craftitem(row.seed, {
@@ -255,9 +254,7 @@ for index = 1, #crops do
 	})
 	for stage = 1, STAGES do
 		local mature = stage == STAGES
-		local tint = stage_tints[stage]
-		local tile = row.image
-		if tint > 0 then tile = tile .. "^[colorize:#47713c:" .. tint end
+		local tile = "grug_farming_" .. row.key .. "_" .. stage .. ".png"
 		local drop
 		local groups = {snappy = 3, flammable = 2, attached_node = 1, plant = 1,
 			grug_farming_crop = 1, not_in_creative_inventory = 1}
@@ -270,14 +267,38 @@ for index = 1, #crops do
 			on_construct = start_crop_timer
 			on_timer = crop_timer
 		end
+		local is_salt = row.key == "salt_crust"
+		local tiles = {tile}
+		local drawtype = "plantlike"
+		local visual_scale = 0.55 + stage * 0.15
+		local node_box
+		if is_salt then
+			drawtype = "nodebox"
+			visual_scale = 1
+			tiles = {{name = tile, animation = {type = "vertical_frames",
+				aspect_w = 16, aspect_h = 16, length = 2}},
+				"grug_farming_salt_crust_bottom.png",
+				"grug_farming_salt_crust_" .. stage .. "_side.png"}
+			local boxes = {
+				{{-0.5, -0.5, -0.5, 0.5, -0.375, 0.5}},
+				{{-0.5, -0.5, -0.5, 0.5, -0.375, 0.5}},
+				{{-0.5, -0.5, -0.5, 0.5, -0.375, 0.5},
+					{-0.0625, -0.5, -0.0625, 0.0625, -0.25, 0.0625}},
+				{{-0.5, -0.5, -0.5, 0.5, -0.375, 0.5},
+					{-0.1875, -0.375, -0.1875, 0.1875, -0.25, 0.1875},
+					{-0.0625, -0.25, -0.0625, 0.0625, -0.125, 0.0625}},
+			}
+			node_box = {type = "fixed", fixed = boxes[stage]}
+		end
 		core.register_node(row.stages[stage], {
 			description = row.description .. " Crop" .. (mature and "" or
 				" (Stage " .. stage .. ")"),
-			drawtype = "plantlike",
-			tiles = {tile},
+			drawtype = drawtype,
+			tiles = tiles,
 			inventory_image = tile,
 			wield_image = tile,
-			visual_scale = 0.55 + stage * 0.15,
+			visual_scale = visual_scale,
+			node_box = node_box,
 			paramtype = "light",
 			sunlight_propagates = true,
 			walkable = false,

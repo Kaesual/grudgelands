@@ -42,8 +42,9 @@ for tier_id = 1, 4 do
 	local tier = grug_mounts.TIERS[tier_id]
 	core.register_craftitem(tier.item, {
 		description = tier.name,
-		inventory_image = tier.mode == "land" and "grug_mounts_horse_brown.png" or
-			"grug_mobs_eagle.png",
+		inventory_image = ({"grug_mounts_icon_t1_accord.png",
+			"grug_mounts_icon_human.png", "grug_mounts_icon_expert_accord.png",
+			"grug_mounts_icon_master_accord.png"})[tier_id],
 		stack_max = 1,
 		groups = {grug_mount = tier_id, not_in_creative_inventory = 1},
 		_grug_mount_tier = tier_id,

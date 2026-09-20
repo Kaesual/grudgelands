@@ -376,7 +376,6 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 	local cat = {fixed = {}, extras = {}, all = {}}
 	grug_gear.catalog[bracket] = cat
 
-	local tint = "^[multiply:" .. BRACKET_TINT[bracket]
 	local metal = grug_gear.MATERIALS[bracket].metal
 
 	for _, w in ipairs(WEAPONS) do
@@ -437,7 +436,7 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 					description = describe(grade.name, line.nouns[slot.key],
 						br.ilvl, armor_stats(armor)),
 					inventory_image = "grug_gear_item_" .. slot.key .. "_" ..
-						line.key .. ".png" .. tint,
+						line.key .. "_" .. grade.key .. ".png",
 					groups = {
 						["grug_equip_" .. slot.key] = 1,
 						grug_armor_class = line.rank,

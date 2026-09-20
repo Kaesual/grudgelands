@@ -234,9 +234,33 @@ return function(repo)
 		check(#row.stages == 4, "growth chain differs for " .. row.key)
 		for stage = 1, 4 do
 			local definition = core_mock.registered_nodes[row.stages[stage]]
+			local expected_tile = "grug_farming_" .. row.key .. "_" .. stage .. ".png"
 			check(definition and definition._grug_crop_harvest == row.harvest_item and
 				definition._grug_crop_stage == stage,
 				"growth stage differs for " .. row.key)
+			local bound_tile = type(definition.tiles[1]) == "table" and
+				definition.tiles[1].name or definition.tiles[1]
+			check(bound_tile == expected_tile and
+				definition.inventory_image == expected_tile and
+				definition.wield_image == expected_tile,
+				"growth art binding differs for " .. row.key)
+			if row.key == "salt_crust" then
+				check(definition.drawtype == "nodebox" and definition.node_box and
+					type(definition.tiles[1]) == "table" and
+					definition.tiles[1].animation.type == "vertical_frames" and
+					definition.walkable == false,
+					"salt crust node visual differs at stage " .. stage)
+				for _, name in ipairs({"grug_farming_salt_crust_" .. stage .. "_side.png",
+					"grug_farming_salt_crust_bottom.png"}) do
+					local extra = io.open(repo .. "/mods/ITEMS/grug_farming/textures/" .. name, "rb")
+					check(extra ~= nil, "salt crust node texture missing: " .. name)
+					if extra then extra:close() end
+				end
+			end
+			local media = io.open(repo .. "/mods/ITEMS/grug_farming/textures/" ..
+				expected_tile, "rb")
+			check(media ~= nil, "growth art is missing for " .. row.key)
+			if media then media:close() end
 			check((stage < 4 and definition.groups.growing == 1 and
 				definition.on_timer ~= nil) or (stage == 4 and
 				definition.groups.growing == nil and definition.on_timer == nil),

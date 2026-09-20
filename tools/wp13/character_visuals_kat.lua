@@ -17,11 +17,11 @@
 --      table (identity, not equality) and the cache grows by exactly the number
 --      of distinct keys.
 --   3  COVERAGE: every race x art line x slot x bracket combination composes,
---      including the full 6 x 2 x 6 = 72 four-piece sets and every one of the
---      6 x 2 x 4 x 6 = 288 single-piece looks.
+--      including the full 6 x 3 x 6 = 108 four-piece sets and every one of the
+--      6 x 3 x 4 x 6 = 432 single-piece looks.
 --   4  the composed strings are WELL FORMED for the engine's texture-modifier
---      splitter (balanced parentheses, no trailing backslash, `[multiply`
---      always inside its own group).
+--      splitter (balanced parentheses, no trailing backslash, and any legacy
+--      `[multiply` remains inside its own group).
 --   5  every texture name a composition refers to EXISTS ON DISK.
 --   6  stature stays inside the visual-only window and does not depend on gear.
 --   7  an unknown race falls back to human; a spec with only a skin keeps it
