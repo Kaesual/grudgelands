@@ -265,6 +265,8 @@ dofile(core.get_modpath(core.get_current_modname()) .. "/hoes.lua")({
  soil_timer = soil_timer,
 })
 
+dofile(core.get_modpath(core.get_current_modname()) .. "/ecology.lua")()
+
 core.register_on_mods_loaded(function()
 	if #crops ~= #grug_cooking.PLANTS + 2 then
 		error("grug_farming: crop population differs", 0)

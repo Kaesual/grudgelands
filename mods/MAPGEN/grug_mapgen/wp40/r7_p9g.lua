@@ -501,11 +501,13 @@ return function(catalog, p9g_content, raw_sha256)
 						if eligible > metrics.peak_eligible_per_cell then
 							metrics.peak_eligible_per_cell = eligible
 						end
+						local density = row.key == "rock_salt" and row.fill_denominator or
+							row.fill_denominator * 2
 						local remainder = digest("gathering_budget_remainder_v1", full_seed,
 							row.id, cell_x, cell_z, row.fill_numerator,
-							row.fill_denominator)
+							density)
 						local budget = hash.budget(eligible, row.fill_numerator,
-							row.fill_denominator, 1, 1, remainder)
+							density, 1, 1, remainder)
 						sort_prefix(rank_scratch, eligible)
 						local group
 						if emit_ledger then

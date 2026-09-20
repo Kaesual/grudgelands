@@ -1791,6 +1791,23 @@ local function zones_factory(dependencies)
 			function planner_source.landmark_excluded_at(x, z)
 				return height.landmark_excluded_at(x, z)
 			end
+			local function ecology_values_at(x, y, z)
+				local _, _, zone_id, biome_id, _, terrain_y =
+					planner_source.column_values_at(x, z)
+				local functional_kind, functional_y =
+					height.functional_surface_values_at(x, z)
+				return zone_id, biome_id, terrain_y,
+					horizontal.static_exclusion_values_at(x, z, "vegetation") ~= nil,
+					horizontal.housing_mask_id_at(x, z) ~= nil,
+					functional_kind ~= nil and y >= functional_y,
+					hard_row_at(x, y, z) ~= nil or hard_row_at(x, y - 1, z) ~= nil
+			end
+			-- Keep the frozen planner's exact raw field set intact. The runtime-only
+			-- bridge is inherited, so planner validation and historical fixtures see
+			-- precisely the original contract while r7_loader can publish the query.
+			setmetatable(planner_source, {__index = {
+				ecology_values_at = ecology_values_at,
+			}})
 
 			function planner_source.metrics()
 				local height_metrics = height.metrics()

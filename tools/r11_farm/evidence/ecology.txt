@@ -1,0 +1,21 @@
+Round 11 FARM ecology evidence
+Date: 2026-09-20
+
+LuaJIT development checks:
+- luajit tools/r11_farm/ecology_kat.lua .
+  R11_ECOLOGY_OK 27-renewables/exact-baseline/debt/due/budgets
+- luajit tools/r11_farm/water_kat.lua .
+  R11_WATER_OK guards/flood/16000-boundary-events/bucket-transactions
+- luajit tools/r11_farm/hoes_kat.lua .
+  R11_HOES_OK seven-exact-lifetimes/broken-preservation/repair/Creative/protection
+- bash tools/wp40/r7/run.sh unit
+  PASS: R7 contract, native inputs, WP33 catalog/harvest, consumer and anchor gates.
+
+Static checks:
+- All mods/*/grug_* Lua parses with tools/bin/luac51 -p.
+- Changed pure mod modules contain no SETGLOBAL opcode.
+- All five docs/research/luanti-lua.md sweeps were inspected; reported matches
+  are pre-existing comments, strings and command parameter help only.
+
+No PUC runtime was run. The package is awaiting independent review and the
+coordinator's final-byte parity gate.

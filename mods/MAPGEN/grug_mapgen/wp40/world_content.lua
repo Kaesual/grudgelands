@@ -72,7 +72,8 @@ return function(catalog, content)
           local allowed=hosts[i][biome] or hosts[i].any
           if row.mode=="surface" and allowed and allowed[below] and level and
            level>=row.min and level<=row.max and (#row.zones==0 or zones[i][zone]) and
-           hash(x,y,z,i)%row.density==0 and shore(ctx,row,x,ground,z) then
+           hash(x,y,z,i)%(row.key=="salt_crust" and row.density or row.density*2)==0 and
+           shore(ctx,row,x,ground,z) then
            write(i,x,y,z,0);break
           end
          end
@@ -90,7 +91,8 @@ return function(catalog, content)
         local low=math.max(ctx.min_y+1,row.min)
         local high=math.min(ctx.max_y,row.max,ground-2)
         for y=low,high do
-         if hash(x,y,z,i)%row.density==0 and ctx.cave_content_allowed_at(x,y,z) then
+         if hash(x,y,z,i)%(row.key=="salt_crust" and row.density or row.density*2)==0 and
+          ctx.cave_content_allowed_at(x,y,z) then
           local cid,p2,occupancy=ctx.settled_at(x,y,z)
           local below=ctx.settled_at(x,y-1,z)
           if cid==air and p2==0 and occupancy==0 and hosts[i].stone[below] then write(i,x,y,z,0) end
