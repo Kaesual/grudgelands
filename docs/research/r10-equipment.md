@@ -44,9 +44,12 @@ The pinned VoxeLibre source is the independent shape authority:
   the 5/8/7/4 head/chest/legs/feet layouts.
 
 `tools/r10_equip/base_recipes_kat.lua` encodes these expectations separately
-from the production recipe tables, including exact material counts, both axe
-and hoe orientations, same-tier rod alternatives, the two-plank stick route and
-the absence of a gemstone in the four-wood orb.
+from the production recipe tables. It compares exact two-dimensional recipes
+and output amounts for all six tiers of swords, picks, axes, shovels and every
+metal, cloth and leather armor slot, plus both existing hoe orientations, the
+four-stick and four-rod yields, and the delegated non-Minecraft weapon shapes.
+It also rejects the old one-plank stick route and a gemstone in the four-wood
+orb.
 
 ## Integration dependencies
 
@@ -63,5 +66,7 @@ the absence of a gemstone in the four-wood orb.
 The final candidate is checked with Lua 5.1 parsing, the SETGLOBAL inspection,
 all five portability/security sweeps, the fresh-server source audit, focused
 LuaJIT fixtures and one compact byte-identical LuaJIT/PUC 5.1 digest pair. The
-commands and immutable logs are recorded in `/tmp/grudgelands-r10/equip/evidence`.
-An independent reviewer must inspect the frozen commit before integration.
+real-code fixtures also prove source-stack metadata preservation and terminal
+craft-callback composition. The reproducible runner, provenance and immutable
+logs are recorded under `tools/r10_equip/evidence/`. An independent source
+review of the frozen commit remains required before integration.
