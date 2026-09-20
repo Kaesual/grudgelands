@@ -93,22 +93,26 @@ return function(repo)
   local appearances=0
   for _,race in ipairs({'human','dwarf','elf','orc','undead','troll'}) do
    for tier=1,4 do
-    local props={};local animation
+    local props={};local animation;local object_pos={x=0,y=101,z=0}
     local obj={set_properties=function(_,p) props=p end,
      set_armor_groups=function(_,a) assert(a.immortal==1) end,
      set_yaw=function() end,set_animation=function(_,a) animation=a end,
-     get_pos=function(self) return not self.removed and {x=0,y=0,z=0} or nil end,
+     get_pos=function(self) return not self.removed and {x=object_pos.x,y=object_pos.y,z=object_pos.z} or nil end,
+     set_pos=function(_,p) object_pos=p end,
      remove=function(self) self.removed=true end}
     local ent=setmetatable({object=obj,_grug_socket_role='mount_display',
-     _grug_display_race=race,_grug_display_tag=tostring(tier),
+     _grug_display_race=race,_grug_display_tag=tostring(tier),_grug_display_floor=100.5,
      _grug_start='highcourt',_grug_socket=race..'_mount'..tier,_grug_placed_at=1},
      {__index=def})
     grug_mobs.configure_capital_display(ent)
     assert(props.visual=='mesh' and props.mesh and #props.textures>0)
     assert(animation.x==animation.y)
+    local grounded_y=object_pos.y
+    grug_mobs.configure_capital_display(ent);assert(object_pos.y==grounded_y)
     local snapshot=ent:get_staticdata();local restored=setmetatable({object=obj},{__index=def})
     restored:on_activate(snapshot)
-    assert(restored._grug_display_tag==tostring(tier))
+    assert(restored._grug_display_tag==tostring(tier) and object_pos.y==grounded_y)
+    grug_mobs.configure_capital_display(restored);assert(object_pos.y==grounded_y)
     local duplicate_obj={get_pos=obj.get_pos,remove=obj.remove,
      set_armor_groups=function() end}
     local duplicate=setmetatable({object=duplicate_obj},{__index=def})

@@ -1125,6 +1125,7 @@ local function install(entity, row, slot)
 	elseif slot.role == "mount_display" or slot.role == "gear_display" then
 		entity._grug_display_race = row.race_id
 		entity._grug_display_tag = slot.tag
+		entity._grug_display_floor = slot.pos.y - 0.5
 		grug_mobs.configure_capital_display(entity)
 	elseif slot.role == "riding_trainer" then
 		entity._grug_npc_name = "Riding Trainer"

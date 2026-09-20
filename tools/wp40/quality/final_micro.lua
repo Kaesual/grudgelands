@@ -27,6 +27,7 @@ for _, relative in ipairs({
 	"tools/r8_map_a/kat.lua",
 	"tools/r10_world/cave_boundary_fixture.lua",
 	"tools/r10_world/material_salt_fixture.lua",
+	"tools/r10_cap/geometry_micro.lua",
 	"tools/r10_cap/services_micro.lua",
 	"tools/r10_cap/furnace_micro.lua",
 	"tools/r10_cap/purchase_micro.lua",

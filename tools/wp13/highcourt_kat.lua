@@ -32,6 +32,7 @@
 -- Plain Lua 5.1; the same bytes must run under LuaJIT and PUC 5.1.
 
 return function(repo)
+	local public_socket=dofile(repo.."/tools/r10_cap/public_socket_oracle.lua")
 	local wp13 = repo .. "/mods/MAPGEN/grug_mapgen/wp13"
 	local parts = dofile(wp13 .. "/parts.lua")
 	local palettes = dofile(wp13 .. "/palette.lua")
@@ -280,8 +281,8 @@ return function(repo)
 			-- and the difference between the two is whether the composition
 			-- says so and can prove the lining.
 			--
-			assert(not cell.name:find("lava"), label .. " writes lava")
-			if cell.name:find("water") then
+			local definition=world.nodes[cell.name]
+			if definition and definition.liquidtype and definition.liquidtype~="none" then
 				assert(spec.water and WATER and cell.name == WATER,
 					label .. " writes a liquid")
 				water_cells[#water_cells + 1] = cell
@@ -724,7 +725,8 @@ return function(repo)
 			assert(entry.dir and entry.dir.x == dx and entry.dir.z == dz,
 				label .. ": socket " .. entry.id ..
 					" publishes a dir that is not its own facing")
-			assert(free(entry.x, entry.y, entry.z) and
+			assert((public_socket(entry,node(entry.x,entry.y,entry.z)) or
+				free(entry.x, entry.y, entry.z)) and
 					free(entry.x, entry.y + 1, entry.z),
 				label .. ": socket " .. entry.id .. " has no headroom at " ..
 					entry.x .. "," .. entry.y .. "," .. entry.z)
@@ -935,7 +937,7 @@ return function(repo)
 	-- ------------------------------------------------------------------
 	local core = highcourt.core()
 	local CORE = {
-		reach = 47, ymin = -2, ymax = 40, budget = 150000,
+		reach = 49, ymin = -2, ymax = 40, budget = 150000,
 		min_lights = 40, min_doors = 12, loops = 5,
 		-- The four gatehouses' chamber floors (90 cells at y = 6) and their
 		-- fighting decks (220 at y = 11). Nothing else in the core is a
@@ -984,8 +986,8 @@ return function(repo)
 	-- silently place nothing -- a band that finds no paving or a corner with no
 	-- open ground. The protected hedge has the exact 316 non-gate columns; its
 	-- number proves no placed core content subtracted from it.
-	for _, row in ipairs({{"nave_floor", 90}, {"orchard_trees", 11},
-			{"hedge_cells", 316}}) do
+	for _, row in ipairs({{"nave_floor", 90}, {"orchard_trees", 10},
+			{"hedge_cells", 332}}) do
 		assert(core.landmarks[row[1]] == row[2], "the core's " .. row[1] ..
 			" population is " .. tostring(core.landmarks[row[1]]) ..
 			", not " .. row[2])
@@ -993,7 +995,7 @@ return function(repo)
 
 	-- The four gate openings and their avenues: five wide, walkable end to
 	-- end, and each one really reaching its gate at the core edge.
-	local RADIUS = 47
+	local RADIUS = 49
 	for _, gate in ipairs({"south", "north", "east", "west"}) do
 		local box = assert(core.landmarks["avenue_" .. gate],
 			"highcourt core has no avenue_" .. gate)
@@ -1630,7 +1632,8 @@ return function(repo)
 		for role in pairs(spec.roles) do
 			assert(role == "guard_post" or role == "guard_patrol" or
 				role == "idle" or role == "quest" or role == "vendor" or
-				role == "work",
+				role == "work" or role=="trainer" or role=="riding_trainer" or
+				role=="mount_display" or role=="gear_display" or role=="public_station",
 				entry.id .. " publishes the role " .. role ..
 					", which no district plot may own")
 		end

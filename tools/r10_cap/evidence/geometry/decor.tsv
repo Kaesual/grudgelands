@@ -1,0 +1,92 @@
+node	grug_decor:capital_counter	default_wood.png	-	nodebox
+box	grug_decor:capital_counter	-0.5	0.1	-0.5	0.5	0.35	0.5
+box	grug_decor:capital_counter	-0.4	-0.5	-0.4	-0.25	0.1	-0.25
+box	grug_decor:capital_counter	0.25	-0.5	-0.4	0.4	0.1	-0.25
+box	grug_decor:capital_counter	-0.4	-0.5	0.25	-0.25	0.1	0.4
+box	grug_decor:capital_counter	0.25	-0.5	0.25	0.4	0.1	0.4
+node	grug_decor:capital_anvil	default_steel_block.png	-	nodebox
+box	grug_decor:capital_anvil	-0.3	-0.5	-0.3	0.3	-0.3	0.3
+box	grug_decor:capital_anvil	-0.16	-0.3	-0.16	0.16	0.2	0.16
+box	grug_decor:capital_anvil	-0.5	0.2	-0.3	0.5	0.4	0.3
+node	grug_decor:capital_quench	default_wood.png	-	nodebox
+box	grug_decor:capital_quench	-0.5	-0.5	-0.5	0.5	-0.3	0.5
+box	grug_decor:capital_quench	-0.5	-0.3	-0.5	-0.35	0.25	0.5
+box	grug_decor:capital_quench	0.35	-0.3	-0.5	0.5	0.25	0.5
+box	grug_decor:capital_quench	-0.35	-0.3	-0.5	0.35	0.25	-0.35
+box	grug_decor:capital_quench	-0.35	-0.3	0.35	0.35	0.25	0.5
+node	grug_decor:capital_trough	default_wood.png	-	nodebox
+box	grug_decor:capital_trough	-0.5	0.1	-0.5	0.5	0.35	0.5
+box	grug_decor:capital_trough	-0.4	-0.5	-0.4	-0.25	0.1	-0.25
+box	grug_decor:capital_trough	0.25	-0.5	-0.4	0.4	0.1	-0.25
+box	grug_decor:capital_trough	-0.4	-0.5	0.25	-0.25	0.1	0.4
+box	grug_decor:capital_trough	0.25	-0.5	0.25	0.4	0.1	0.4
+node	grug_decor:capital_lava	default_lava.png	-	nodebox
+box	grug_decor:capital_lava	-0.5	-0.5	-0.5	0.5	-0.35	0.5
+node	grug_decor:capital_bedding	default_dry_grass.png	-	nodebox
+box	grug_decor:capital_bedding	-0.5	-0.5	-0.5	0.5	0.5	0.5
+node	grug_decor:capital_rail	default_wood.png	-	nodebox
+box	grug_decor:capital_rail	-0.08	-0.5	-0.5	0.08	-0.2	0.5
+box	grug_decor:capital_rail	-0.08	0.15	-0.5	0.08	0.35	0.5
+box	grug_decor:capital_rail	-0.13	-0.5	-0.13	0.13	0.5	0.13
+node	grug_decor:capital_loom	default_wood.png|wool_white.png	grug_decor_capital_loom.obj	mesh
+box	grug_decor:capital_loom	-0.5	-0.5	-0.15	-0.35	0.5	0.15
+box	grug_decor:capital_loom	0.35	-0.5	-0.15	0.5	0.5	0.15
+box	grug_decor:capital_loom	-0.5	0.35	-0.15	0.5	0.5	0.15
+box	grug_decor:capital_loom	-0.35	-0.2	-0.05	0.35	0.35	0.05
+node	grug_decor:capital_cloth	wool_white.png	-	nodebox
+box	grug_decor:capital_cloth	-0.45	-0.5	-0.4	0.45	-0.25	0.4
+box	grug_decor:capital_cloth	-0.35	-0.25	-0.3	0.35	0	0.3
+node	grug_decor:capital_herbs	default_papyrus.png	-	plantlike
+box	grug_decor:capital_herbs	-0.4	-0.5	-0.4	0.4	0.4	0.4
+node	grug_decor:capital_hides	default_wood.png|grug_mobs_item_light_leather.png	grug_decor_capital_hides.obj	mesh
+box	grug_decor:capital_hides	-0.5	-0.5	-0.1	-0.35	0.5	0.1
+box	grug_decor:capital_hides	0.35	-0.5	-0.1	0.5	0.5	0.1
+box	grug_decor:capital_hides	-0.5	0.35	-0.1	0.5	0.5	0.1
+box	grug_decor:capital_hides	-0.35	-0.15	-0.05	0.35	0.35	0.05
+node	grug_decor:capital_timber	default_tree.png	-	nodebox
+box	grug_decor:capital_timber	-0.5	-0.5	-0.45	0.5	-0.15	-0.05
+box	grug_decor:capital_timber	-0.5	-0.5	0.05	0.5	-0.15	0.45
+box	grug_decor:capital_timber	-0.5	-0.15	-0.2	0.5	0.2	0.2
+node	grug_decor:capital_carving	default_wood.png	-	nodebox
+box	grug_decor:capital_carving	-0.5	0.1	-0.5	0.5	0.35	0.5
+box	grug_decor:capital_carving	-0.4	-0.5	-0.4	-0.25	0.1	-0.25
+box	grug_decor:capital_carving	0.25	-0.5	-0.4	0.4	0.1	-0.25
+box	grug_decor:capital_carving	-0.4	-0.5	0.25	-0.25	0.1	0.4
+box	grug_decor:capital_carving	0.25	-0.5	0.25	0.4	0.1	0.4
+node	grug_decor:capital_case	default_glass.png	-	nodebox
+box	grug_decor:capital_case	-0.5	-0.5	-0.5	0.5	0.2	0.5
+node	:grug_jobs:forge	default_steel_block.png^[colorize:#34251f:70	-	nodebox
+box	:grug_jobs:forge	-0.5	-0.5	-0.5	0.5	-0.12	0.5
+box	:grug_jobs:forge	-0.32	-0.12	-0.2	0.32	0.08	0.2
+box	:grug_jobs:forge	-0.18	0.08	-0.12	0.18	0.35	0.12
+node	:grug_jobs:tanning_rack	default_wood.png^[colorize:#704020:55	-	nodebox
+box	:grug_jobs:tanning_rack	-0.46	-0.5	-0.1	-0.34	0.45	0.1
+box	:grug_jobs:tanning_rack	0.34	-0.5	-0.1	0.46	0.45	0.1
+box	:grug_jobs:tanning_rack	-0.34	-0.38	-0.04	0.34	0.34	0.04
+box	:grug_jobs:tanning_rack	-0.5	0.34	-0.1	0.5	0.46	0.1
+node	:grug_jobs:tailor_bench	default_wood.png^[colorize:#735493:75	-	nodebox
+box	:grug_jobs:tailor_bench	-0.5	-0.5	-0.45	0.5	-0.36	0.45
+box	:grug_jobs:tailor_bench	-0.43	-0.36	-0.38	-0.31	0.25	-0.26
+box	:grug_jobs:tailor_bench	0.31	-0.36	-0.38	0.43	0.25	-0.26
+box	:grug_jobs:tailor_bench	-0.43	-0.36	0.26	-0.31	0.25	0.38
+box	:grug_jobs:tailor_bench	0.31	-0.36	0.26	0.43	0.25	0.38
+node	:grug_jobs:carving_bench	default_wood.png^[colorize:#315f35:45	-	nodebox
+box	:grug_jobs:carving_bench	-0.5	-0.5	-0.45	0.5	-0.36	0.45
+box	:grug_jobs:carving_bench	-0.43	-0.36	-0.38	-0.31	0.25	-0.26
+box	:grug_jobs:carving_bench	0.31	-0.36	-0.38	0.43	0.25	-0.26
+box	:grug_jobs:carving_bench	-0.43	-0.36	0.26	-0.31	0.25	0.38
+box	:grug_jobs:carving_bench	0.31	-0.36	0.26	0.43	0.25	0.38
+node	:grug_jobs:jewellers_bench	default_steel_block.png^[colorize:#c69a35:105	-	nodebox
+box	:grug_jobs:jewellers_bench	-0.5	-0.5	-0.45	0.5	-0.36	0.45
+box	:grug_jobs:jewellers_bench	-0.43	-0.36	-0.38	-0.31	0.25	-0.26
+box	:grug_jobs:jewellers_bench	0.31	-0.36	-0.38	0.43	0.25	-0.26
+box	:grug_jobs:jewellers_bench	-0.43	-0.36	0.26	-0.31	0.25	0.38
+box	:grug_jobs:jewellers_bench	0.31	-0.36	0.26	0.43	0.25	0.38
+node	grug_brewing:brewing_stand	grug_brewing_top.png|grug_brewing_base.png|grug_brewing_side.png|grug_brewing_side.png|grug_brewing_side.png|grug_brewing_side.png^[transformFX	-	nodebox
+box	grug_brewing:brewing_stand	-0.5	-0.5	-0.4375	0.5	-0.375	-0.3125
+box	grug_brewing:brewing_stand	-0.1875	-0.5	-0.3125	0.1875	-0.375	0.5
+box	grug_brewing:brewing_stand	-0.0625	-0.375	-0.0625	0.0625	0.5	0.0625
+node	grug_brewing:brewing_stand_active	grug_brewing_top.png|grug_brewing_base.png|grug_brewing_side.png|grug_brewing_side.png|grug_brewing_side.png|grug_brewing_side.png^[transformFX	-	nodebox
+box	grug_brewing:brewing_stand_active	-0.5	-0.5	-0.4375	0.5	-0.375	-0.3125
+box	grug_brewing:brewing_stand_active	-0.1875	-0.5	-0.3125	0.1875	-0.375	0.5
+box	grug_brewing:brewing_stand_active	-0.0625	-0.375	-0.0625	0.0625	0.5	0.0625

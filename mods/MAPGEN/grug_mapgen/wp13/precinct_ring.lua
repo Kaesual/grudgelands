@@ -1,6 +1,6 @@
 -- Shared geometry for the protected boundary of a capital's civic core.
 --
--- The ring lies one column inside the 95 x 95 core pad, at +/-46. Structural
+-- The ring lies one column inside the 99 x 99 core pad, at +/-48. Structural
 -- content is authored before it, so a house, orchard, green or prop cannot
 -- silently cut the boundary. Later free-cell dressing respects it. Only the
 -- four thirteen-column gatehouse/threshold bands are omitted here. A capital

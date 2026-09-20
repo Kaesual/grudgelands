@@ -233,13 +233,13 @@ local function loader(directory)
 	-- straddles the gate point, so the road ends on it.
 	local GATE_OUT = 256
 	M.avenues = {
-		{id = "avenue_south", axis = "z", at = 0, from = -GATE_OUT, to = -48,
+		{id = "avenue_south", axis = "z", at = 0, from = -GATE_OUT, to = -(RADIUS + 1),
 			gate = "gate_south"},
-		{id = "avenue_north", axis = "z", at = 0, from = 48, to = GATE_OUT,
+		{id = "avenue_north", axis = "z", at = 0, from = RADIUS + 1, to = GATE_OUT,
 			gate = "gate_north"},
-		{id = "avenue_west", axis = "x", at = 0, from = -GATE_OUT, to = -48,
+		{id = "avenue_west", axis = "x", at = 0, from = -GATE_OUT, to = -(RADIUS + 1),
 			gate = "gate_west"},
-		{id = "avenue_east", axis = "x", at = 0, from = 48, to = GATE_OUT,
+		{id = "avenue_east", axis = "x", at = 0, from = RADIUS + 1, to = GATE_OUT,
 			gate = "gate_east"},
 	}
 

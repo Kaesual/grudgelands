@@ -30,7 +30,7 @@ return function(repo)
 		"sunscar", "kapok"}
 	local capitals = {"highcourt", "dur_brannoc", "lethariel", "gor_drazhak",
 		"kezamba", "nhal_veyr"}
-	local professions = {blacksmith = true, alchemist = true, tailor = true,
+	local professions = {weaponsmith = true, armorsmith = true, alchemist = true, tailor = true,
 		leatherworker = true, woodcarver = true, goldsmith = true, cooking = true}
 	local mutation = tonumber(os.getenv("R8_PROF_SOCKET_MUTATION") or "") or 0
 	local report = {"registry\ttrainer accepted\tprofession copied\tunknown refused\n"}
@@ -95,12 +95,14 @@ return function(repo)
 			profile.blueprint_file
 		local source = dofile(path)
 		if type(source) == "function" then source = source() end
-		local blueprint = source.schema == "grug_wp13_capital_source_v1" and
-			source.core.build() or source
 		local cells = {}
-		for index = 1, #blueprint.cells do
-			local cell = blueprint.cells[index]
-			cells[cell.x .. ":" .. cell.y .. ":" .. cell.z] = cell.name
+		for _,descriptor in ipairs(settlement.descriptors(profile,source)) do
+			if descriptor.kind~="overlay" then
+				local blueprint=descriptor.build();local offset=descriptor.offset or {x=0,z=0}
+				for _,cell in ipairs(blueprint.cells) do
+					cells[(cell.x+offset.x)..":"..cell.y..":"..(cell.z+offset.z)]=cell.name
+				end
+			end
 		end
 		return cells
 	end
@@ -133,7 +135,15 @@ return function(repo)
 		local all_rows = projected(capitals[index])
 		local rows = trainer_rows(all_rows)
 		local cells = authored_cells(capitals[index])
-		check(#rows == 7, capitals[index] .. " does not have seven trainers")
+		local riding, stations = 0, 0
+		for _, row in ipairs(all_rows) do
+			if row.role == "riding_trainer" then
+				riding = riding + 1
+				check_ground(capitals[index], cells, row)
+			elseif row.role == "public_station" then stations = stations + 1 end
+		end
+		check(riding == 1 and stations == 7, capitals[index] .. " Riding/public station roster differs")
+		check(#rows == 8, capitals[index] .. " does not have eight trainers")
 		local seen = {}
 		for row_index = 1, #rows do
 			local row = rows[row_index]
@@ -141,20 +151,19 @@ return function(repo)
 				capitals[index] .. " has an invalid trainer")
 			check(not seen[row.profession], capitals[index] .. " repeats a trainer")
 			seen[row.profession] = true
-			check(row.y == 1 and math.abs(row.x) == 1 and row.z <= -8 and
-				row.z >= -32, capitals[index] .. " trainer left the south avenue")
+			check(row.y == 1 and row.id:find("/",1,true) and
+				(math.abs(row.x)>49 or math.abs(row.z)>49),
+				capitals[index] .. " trainer is not in an outer plot")
 			check_ground(capitals[index], cells, row)
 		end
 		local alchemist
 		for row_index = 1, #rows do
 			if rows[row_index].profession == "alchemist" then alchemist = rows[row_index] end
 		end
-		check(alchemist.x == 1 and alchemist.z == -12,
-			capitals[index] .. " alchemist position differs")
+		check(alchemist~=nil, capitals[index] .. " alchemist missing")
 		local total = check_duplicate_positions(capitals[index], all_rows)
 		report[#report + 1] = table.concat({"capital", capitals[index],
-			"trainers=7", "ground+headroom", "alchemist=1,1,-12",
-			"stand=2,1,-12", "trainer_unique_against=" .. total}, "\t") .. "\n"
+			"trainers=8+riding=1+stations=7", "outerplots+ground+headroom", "trainer_unique_against=" .. total}, "\t") .. "\n"
 	end
 	return table.concat(report)
 end

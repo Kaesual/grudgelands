@@ -35,7 +35,9 @@ node("rail","Stable Partition","default_wood.png",
  {-.13,-.5,-.13,.13,.5,.13}})
 node("loom","Cloth Loom","default_wood.png",
  {{-.5,-.5,-.15,-.35,.5,.15},{.35,-.5,-.15,.5,.5,.15},
- {-.5,.35,-.15,.5,.5,.15},{-.35,-.2,-.05,.35,.35,.05}})
+ {-.5,.35,-.15,.5,.5,.15},{-.35,-.2,-.05,.35,.35,.05}},
+ {drawtype="mesh",mesh="grug_decor_capital_loom.obj",
+  tiles={"default_wood.png","wool_white.png"}})
 node("cloth","Folded Cloth","wool_white.png",
  {{-.45,-.5,-.4,.45,-.25,.4},{-.35,-.25,-.3,.35,0,.3}})
 node("herbs","Herb Display","default_papyrus.png",
@@ -43,7 +45,9 @@ node("herbs","Herb Display","default_papyrus.png",
   use_texture_alpha="clip",sunlight_propagates=true})
 node("hides","Drying Hide","default_wood.png",
  {{-.5,-.5,-.1,-.35,.5,.1},{.35,-.5,-.1,.5,.5,.1},
- {-.5,.35,-.1,.5,.5,.1},{-.35,-.15,-.05,.35,.35,.05}})
+ {-.5,.35,-.1,.5,.5,.1},{-.35,-.15,-.05,.35,.35,.05}},
+ {drawtype="mesh",mesh="grug_decor_capital_hides.obj",use_texture_alpha="clip",
+  tiles={"default_wood.png","grug_mobs_item_light_leather.png"}})
 node("timber","Timber Stack","default_tree.png",
  {{-.5,-.5,-.45,.5,-.15,-.05},{-.5,-.5,.05,.5,-.15,.45},
  {-.5,-.15,-.2,.5,.2,.2}})

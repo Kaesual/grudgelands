@@ -167,10 +167,10 @@ local function loader(directory)
 		-- The forecourts the four gatehouses open onto: a gate chamber's
 		-- door is in its city face and its doorstep is one node beyond the
 		-- part's own footprint, so the composition owes each of them paving.
-		{-8, -40, 8, -38, "lane"},
-		{-8, 38, 8, 40, "lane"},
-		{38, -8, 40, 8, "lane"},
-		{-40, -8, -38, 8, "lane"},
+		{-8, -(RADIUS - 7), 8, -38, "lane"},
+		{-8, 38, 8, RADIUS - 7, "lane"},
+		{38, -8, RADIUS - 7, 8, "lane"},
+		{-(RADIUS - 7), -8, -38, 8, "lane"},
 		-- The market's north walk, from the great avenue to the square.
 		{-36, -6, -3, -4, "lane"},
 		-- The waypoint plaza's approach, from the great avenue east.
@@ -384,7 +384,7 @@ local function loader(directory)
 	-- These are not cells: they are the runs `avenue.lua` projects onto
 	-- whatever surface the terrain has, and the successor calls it per chunk.
 	-- The gate stations sit at +-256 on each axis (WP40); the core edge is
-	-- at +-47, so a run starts one node clear of it.
+	-- at +-RADIUS, so each run starts one node clear of it.
 	--
 	-- THEY REACH 261, not the gate station at 256, since the wall ring landed:
 	-- the curtain's centre line is at +-256 and its gate tunnel runs through
@@ -393,13 +393,13 @@ local function loader(directory)
 	-- the same reason.
 	local GATE_OUT = 261
 	M.avenues = {
-		{id = "avenue_south", axis = "z", at = 0, from = -GATE_OUT, to = -48,
+		{id = "avenue_south", axis = "z", at = 0, from = -GATE_OUT, to = -(RADIUS + 1),
 			gate = "gate_south"},
-		{id = "avenue_north", axis = "z", at = 0, from = 48, to = GATE_OUT,
+		{id = "avenue_north", axis = "z", at = 0, from = RADIUS + 1, to = GATE_OUT,
 			gate = "gate_north"},
-		{id = "avenue_west", axis = "x", at = 0, from = -GATE_OUT, to = -48,
+		{id = "avenue_west", axis = "x", at = 0, from = -GATE_OUT, to = -(RADIUS + 1),
 			gate = "gate_west"},
-		{id = "avenue_east", axis = "x", at = 0, from = 48, to = GATE_OUT,
+		{id = "avenue_east", axis = "x", at = 0, from = RADIUS + 1, to = GATE_OUT,
 			gate = "gate_east"},
 	}
 

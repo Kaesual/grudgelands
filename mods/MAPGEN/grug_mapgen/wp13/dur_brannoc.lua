@@ -126,9 +126,10 @@ local function loader(directory)
 		-- The gate forecourts: a gate chamber's door is in its city face and
 		-- its doorstep is one node beyond the part's own footprint. The north
 		-- gate's forecourt is the back lane, which already reaches it.
-		{-8, -40, 8, -38, "lane"},
-		{38, -8, 40, 8, "lane"},
-		{-40, -8, -38, 8, "lane"},
+		{-8, -(RADIUS - 7), 8, -38, "lane"},
+		{-8, 38, 8, RADIUS - 7, "lane"},
+		{38, -8, RADIUS - 7, 8, "lane"},
+		{-(RADIUS - 7), -8, -38, 8, "lane"},
 		-- The travel plaza's approach off the east avenue.
 		{4, -13, 11, -11, "lane"},
 		-- The west quarter: the cistern court's walk and the temple's.
@@ -303,13 +304,13 @@ local function loader(directory)
 	-- centre line would stop inside the gate.
 	local GATE_OUT = 261
 	M.avenues = {
-		{id = "avenue_south", axis = "z", at = 0, from = -GATE_OUT, to = -48,
+		{id = "avenue_south", axis = "z", at = 0, from = -GATE_OUT, to = -(RADIUS + 1),
 			gate = "gate_south"},
-		{id = "avenue_north", axis = "z", at = 0, from = 48, to = GATE_OUT,
+		{id = "avenue_north", axis = "z", at = 0, from = RADIUS + 1, to = GATE_OUT,
 			gate = "gate_north"},
-		{id = "avenue_west", axis = "x", at = 0, from = -GATE_OUT, to = -48,
+		{id = "avenue_west", axis = "x", at = 0, from = -GATE_OUT, to = -(RADIUS + 1),
 			gate = "gate_west"},
-		{id = "avenue_east", axis = "x", at = 0, from = 48, to = GATE_OUT,
+		{id = "avenue_east", axis = "x", at = 0, from = RADIUS + 1, to = GATE_OUT,
 			gate = "gate_east"},
 	}
 

@@ -3,7 +3,15 @@
 local FACTION={human="accord",dwarf="accord",elf="accord",
  orc="throng",undead="throng",troll="throng"}
 local SAVED={"_grug_start","_grug_socket","_grug_placed_at","_grug_face_yaw",
- "_grug_socket_role","_grug_display_race","_grug_display_tag"}
+ "_grug_socket_role","_grug_display_race","_grug_display_tag","_grug_display_floor"}
+
+-- Posed foot Y in nodes: catalog stand[1], full B3D skin, visual_size / BS.
+-- Reproduced by tools/r10_cap/b3d_pose.py; never changes rideable mount physics.
+local FOOT_Y={dwarf=-0.011460670,elf=-0.000000103,
+ expert_accord=-0.160746604,expert_throng=0.636211494,
+ human=-0.001113216,master_accord=-0.214328805,master_throng=0.890696092,
+ orc=-0.006643265,t1_accord=-0.001113216,t1_throng=-0.001113216,
+ troll=-0.016625724,undead=-0.018340415}
 
 local function valid_saved(data)
  if type(data)~="table" or type(data._grug_start)~="string" or
@@ -12,7 +20,8 @@ local function valid_saved(data)
  end
  if data._grug_socket_role=="mount_display" then
   local tier=tonumber(data._grug_display_tag)
-  return FACTION[data._grug_display_race]~=nil and tier~=nil and
+  return type(data._grug_display_floor)=="number" and
+   FACTION[data._grug_display_race]~=nil and tier~=nil and
    tier>=1 and tier<=4 and tier==math.floor(tier)
  end
  return data._grug_socket_role=="gear_display" and
@@ -31,6 +40,9 @@ function grug_mobs.configure_capital_display(self)
   self.object:set_properties({visual="mesh",mesh=model.mesh,textures=model.textures,
    visual_size=model.visual_size,collisionbox=model.collisionbox,
    nametag=model.description})
+  local pos=self.object:get_pos()
+  pos.y=assert(self._grug_display_floor)+0.02-assert(FOOT_Y[key])
+  self.object:set_pos(pos)
   local frame=model.animation.stand[1]
   self.object:set_animation({x=frame,y=frame},0,0,false)
  else

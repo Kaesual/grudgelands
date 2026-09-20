@@ -62,7 +62,7 @@ return function(repo)
 		start_bounds.min.z == -63 and start_bounds.max.z == 63,
 		"the start bounds are no longer the literal the seam replaced")
 	local core_bounds = settlement.BOUNDS.capital_core
-	assert(core_bounds.min.x == -47 and core_bounds.max.x == 47 and
+	assert(core_bounds.min.x == -49 and core_bounds.max.x == 49 and
 		core_bounds.min.y == -2 and core_bounds.max.y == 40,
 		"the capital core bounds differ from contract section 2.1")
 	local plot_bounds = settlement.BOUNDS.capital_plot
