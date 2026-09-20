@@ -19,7 +19,7 @@ Flask remains pending. Review follow-ups carried forward are a real
 writer exactness deviation; the proposed foreign-mod profession registrar was
 explicitly not added under the decided ownership rule. These and the remaining
 content work are tracked in the orchestrator's
-[Round 9 proposal](TODO-round9.md).
+[Round 9 record](round9-decisions.md).
 
 Inputs: `docs/research/cooking-alchemy-plan.md`,
 `docs/research/mob-worlds-plan.md`,

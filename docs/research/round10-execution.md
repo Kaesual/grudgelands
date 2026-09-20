@@ -69,7 +69,7 @@ second soils, field soil, sea-only coral/kelp and the existing farming loop.
 
 ## Resumption procedure and evidence
 
-Read this file, `TODO-round10.md`, current git/worktree state, then each active
+Read this file, the archived `round10-decisions.md`, current git/worktree state, then each active
 lane's brief and terminal/live evidence in `/tmp/grudgelands-r10/`. A mirrored
 durable orchestration directory lives at
 `/home/jan/projects/grudgelands-orchestration/w9/round10-execution/`.

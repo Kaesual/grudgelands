@@ -186,9 +186,12 @@ The Nether is not part of V1.
 
 ### Dependent world and item loop
 
-- [ ] WP27–WP30: base armor; the
-  six-tier gear/tool merge; safe removal of superseded vendored recipes; and
-  trader-catalog migration onto WP44 prices.
+- [ ] WP27–WP30: base armor; the six-tier gear/tool merge; safe removal of
+  superseded vendored recipes; and trader-catalog migration onto WP44 prices.
+  The independently reviewed Round-10 EQUIP candidate now supplies universal
+  base equipment, seven profession catalogs and the retained improvement
+  workflow, but the whole chain remains open through integration, art and the
+  WP44 price migration.
 - [ ] WP5 is design-unblocked (A2 affix vocabulary and A6 refined marker
   decided 2026-08-13, `items_crafting.md` §§6b.4/6b.7) and **startable now**:
   all three dependencies are shipped and the executable card is
@@ -200,7 +203,9 @@ The Nether is not part of V1.
   profession registry, T1–T6 progression, UI books, station gates and trainer
   sockets plus Cooking's eighteen dishes, raw/furnace paths and plant-item
   catalog. Alchemy v1 now adds its 21 potions/elixirs and the capital brewing
-  stands; Round 9 adds the remaining five primary catalogs.
+  stands. The reviewed Round-10 EQUIP candidate adds all seven primary
+  catalogs, exclusive Basics provenance and station improvement operations;
+  it remains staged for atomic capital/art integration.
 - [ ] **WP13 — in progress:** final starts, capitals, settlements, camps and
   both all-six-gem apex camps on shipped WP40 geometry and
   WP43 materials. **All six start settlements are built** (2026-09-14) on one

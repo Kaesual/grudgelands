@@ -418,7 +418,8 @@ Actual tested baseline: `2a308891`. The user completed this playtest on
 2026-09-20, before PERF, CAP and MAP-B. Consequently the coral/plant placement
 and capital-wall checks in the original checklist below are still pending.
 
-Findings and accepted follow-ups are tracked in [TODO-round10.md](TODO-round10.md).
+Findings and accepted follow-ups are retained in the
+[Round 10 record](round10-decisions.md).
 The concrete thin-cave-roof example is world `test`, seed
 `4151598227737528026`, approximately `(-71, 19, -2458)`. A read-only source
 query places it inside `exclude:anchor:anchor_002:01`, Dawnmere's 256-node

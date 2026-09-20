@@ -1930,8 +1930,8 @@ This is the explicit exception to §6b's ordinary refine-before-enchant rule.
 
 Register exactly six ordinary core identities, each craftable in T1–T6.
 Setting, tier, item level, required level, affix rolls, special strength,
-generated display name/color and image composition are per-stack data, yielding
-six item ids rather than 36:
+generated display name/color and image composition are authored per tier,
+yielding 36 registered ids (six identities across six tiers):
 
 | Visual family | Core identities |
 |---|---|
@@ -1962,8 +1962,8 @@ the same specials; it remains subject to that special's authored two-slot rule.
   internally.
 - Mercy Seal runs through the central outgoing-heal path.
 - Last Light triggers after a survived hit leaves the wearer below 25% maximum
-  HP. It grants an absorb from post-hit maximum HP and cannot save an already
-  lethal hit.
+  HP. It grants an absorb from post-hit maximum HP for at most 120 seconds,
+  sharing that 120-second cooldown, and cannot save an already lethal hit.
 - Reclaimer's Mark triggers only on an XP-eligible kill, settles its shared
   cooldown first, then restores HP plus maximum-Mana percentage for Mage/
   Priest or HP plus flat Rage for Warrior. Gray kills grant nothing.
@@ -1975,6 +1975,12 @@ Direct damage procs, ability cooldown reduction, movement speed, gathering
 yield, durability and vendor bonuses are excluded from the six-special MVP.
 A future race-taunt trinket would consume its one authored-special channel,
 not add a fourth channel; no such placeholder ships now.
+
+**Implementation status (Round 9):** all six special consumers are live. Their
+equipment summary is rebuilt on equipment-change events and read from cached
+per-character state on hot paths; it does not rescan inventories per tick or
+hit. The same-identity-per-character exclusion and every cap/cooldown above are
+enforced by the shared trinket owner.
 
 ### 6.3 Roll ranges by the item's ilvl bracket and source window
 

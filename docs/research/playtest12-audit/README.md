@@ -1,5 +1,15 @@
 # Playtest 12 design-to-code audit — 2026-09-20
 
+> **Round-10 disposition:** All four decisions below were subsequently settled:
+> retain the sole one-in-five expensive Uncommon vendor exception, preserve all
+> three Rock Salt endpoints on appropriate rocky support, use functional cave
+> footprints rather than broad blend envelopes, and scale falls by
+> `ceil(max_hp * native_damage / 20)` before Dwarf reduction and absorb. The
+> seven implementation deviations have candidate corrections in EQUIP, GAME
+> and WORLD; [round10-closeout.md](../round10-closeout.md) records their exact
+> review/integration state. This report remains evidence for the Playtest-12
+> baseline and does not itself claim those candidates are delivered on main.
+
 **Discussion inventory, not authorization to implement corrections.** The user
 requested independent GPT-5.6 Sol audits because shipped behavior appeared to
 diverge from previously decided design. Three fresh read-only reviewers checked
