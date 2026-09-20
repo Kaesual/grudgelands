@@ -1,0 +1,21 @@
+docs/research/round10-reviews/banner-fixture-review.md:59: new blank line at EOF.
+docs/research/round10-reviews/map-b-review.md:53: trailing whitespace.
++The shared crop visual function returns fresh tables, preserves the 17-family / 
+tools/r10_cap/evidence/geometry/alchemy-capital-attempt1.log:2: new blank line at EOF.
+tools/r10_cap/evidence/geometry/alchemy-capital-final.log:44: new blank line at EOF.
+tools/r10_cap/evidence/geometry/geometry-micro-development.log:23: new blank line at EOF.
+tools/r10_cap/evidence/geometry/services-regressions1.log:26: new blank line at EOF.
+tools/r10_cap/evidence/geometry/wp13-full-development.tsv:348: trailing whitespace.
++street_capital	highcourt	15	38	0	
+tools/r10_cap/evidence/geometry/wp13-full-development.tsv:351: trailing whitespace.
++street_capital	lethariel	15	24	0	
+tools/r10_cap/evidence/geometry/wp13-full-development.tsv:352: trailing whitespace.
++street_capital	kezamba	8	16	0	
+tools/r10_integration/evidence/development/full-development-luajit.txt:103: trailing whitespace.
++edge	infeasible			
+tools/r10_map_b/evidence/acceptance-addendum/r6-corrected.log:42: new blank line at EOF.
+tools/r10_map_b/evidence/source-checkpoint/placement.log:26: new blank line at EOF.
+tools/r10_map_b/evidence/source-checkpoint/registration-final.log:10: new blank line at EOF.
+tools/r10_map_b/evidence/source-checkpoint/regressions-corrected-2.log:77: new blank line at EOF.
+tools/r10_map_b/evidence/source-checkpoint/template-refs.log:6: new blank line at EOF.
+tools/r10_map_b/evidence/source-checkpoint/writer.log:4: new blank line at EOF.

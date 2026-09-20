@@ -1,0 +1,277 @@
+schema	grug_round10_integrated_final_micro_v3
+schema	grug_wp40_tree_slice_micro_kat_v1
+asset_sha256	3d91afa7dd3fbf6d15c295716af5409d3d77b0dff1464d623ef91433fdfd508f
+pine_rotation	1
+pine_source_slices	1100001110111111
+pine_destination_y	5,6,7,8,9,10,11,12,13,14,15
+probability_calls_sha256	f200ee32e8e3c8e8940ff671b2987937647a80fda8a16d14585b9c90a0eb0f7e
+evidence_reserved	400/8
+synthetic_destination	5,6,7/node_gap_at_6_x18
+live_result	applied_cl
+digest	fdfb2f0db29461ae9ccc98d4bb0602034f9a176143fad00fdb502dd45f017ff5
+schema	grug_wp40_gravewood_fixture_v1
+small	7x7x7	wood=17	leaves=5	wood_prob=254	leaf_prob=96	sha256=d9ed79784879da9dd29a03a1221f87e0a292d933373061798ed27d9b4f272cd0
+tall	7x9x7	wood=23	leaves=8	wood_prob=254	leaf_prob=96	sha256=ae5c035abc0e03317c1014d5373113a2d09ed7944865075fdfd45504febbc2f8
+rotations	4	connected=pass	preflight=pass
+growth	shared_assets=pass	template_route=pass	leaves_no_drop=pass
+banner_faces	3072	opaque	front_back_match
+schema	grug_wp40_gravewood_writer_v1
+templates	2	class=1
+rotations	8	mandatory_wood=pass
+opening_surface	air_at_t=pass	air_t_minus_1_to_4=pass	dust_at_t_plus_1=absent	planned_fill_surface=intact	dust_only_slice=air	generic_land_grade=open	anchor_fill_21=open	natural_landmark=open	foundation=intact
+writer	applied_cl	optional_leaves=18	nonoverwrite=pass
+data_sha256	6ef1acf6257e90013ac46ab9a420e482248a75b1b45a51ec03864f86251e9b2e
+param2_sha256	ce3433641a2d7028d94e89003f78b9d77e1797af3974bfed607d01ec6531ab52
+light_sha256	ae36e70eaa3736aa1722937e32e1f0949262a76d4edff0b6273f91ede6e28aa6
+trace_sha256	3684f7ba062807251f8a2e608914a1f3878154e9b0cab239fa2a9cdc947b3f26
+intent_runs_sha256	46eb758992e8e0a8156fee5c4ba69a38c88fd32763057b48083dfcda49a57543
+digest	848f015a89230086d5df40c5c77ac9f6ace817a5878f008b30e094eb601bf088
+schema	grug_wp40_flight_nudge_v1
+cases	high,low,canyon,unknown,water,attack,root,nonair,lifecycle,probe
+result	pass
+schema	grug_wp40_coupled_grade_oracle_v1
+cases	294
+nodes	1040
+edges	867
+digest	2013808385
+scale	768	line,fan
+coupled_grade_oracle	ok
+schema	grug_wp40_resource_hash_primitives_v2
+domains	12
+framing	count7/binary/bounds
+arithmetic	words/reduce/budget/byte_order/hex
+resource_hash_primitives	ok
+schema	grug_wp40_resource_sampling_fixture_v1
+known	423,2149,26,10,1,1
+prefix_sha256	a127dca374d593fa5ecf01362887734e1c84b3e9cb83cd3cb0caf2dd24709891
+rejection	ok
+exhaustion	4096
+bounds	ok
+writer_fields	7
+smoke	skipped_compact
+resource_sampling_fixture	ok
+schema	grug_wp40_resource_rank_diff_v1
+mode	compact
+status	applied_c
+cases	H0/H1/H4096/B0/normal/budget_conservation/claims/inactive/region_empty/reuse/no_r5
+h4096	4096/1
+b0	1/0/0
+own_claim	4/0
+short_frontier	3/1
+exhausted	1/4/4
+raw_calls	19
+old_root_calls	0
+shuffle_calls	6
+census	4096/1/1
+census_sha256	05ee0e3f9b746288dfba9922fce0f35c6050446f4f2ecfbd9407e6ec28bfe126
+raw_framing_sha256	0caf694e2b7beee7be50cc71b1efbb87377cd4794c383b941a3e7351036f4bc0
+vm_canonical_sha256	81d38a946e13f982d07147754b22e91e4bc094b6a456b6373d0a20a125bd269d
+reused_vm_sha256	39b33ca3e308beb205277c7a66e800b33c2ce7cf6aac78a810362890c0cc969f
+digest	4b18d70e78fc90c554ee9e4a1daf21fa5de894e0102fc830312225f662c9247d
+schema	grug_wp40_quality_surface_v3
+grug_badlands	3
+grug_badlands_east	3
+grug_beach	1
+grug_blight	3
+grug_bone_forest	3
+grug_crags	2
+grug_crags_snowy	3
+grug_deep_forest	4
+grug_deep_jungle	4
+grug_elf_forest	4
+grug_jungle_edge	4
+grug_jungle_fringe	4
+grug_meadows	4
+grug_pine_hills	4
+grug_savanna	4
+grug_swamp	1
+samples	1296
+seed_differences	412
+slope_changes	36
+output_sha256	a2a65a88c32d3cbb58da5ce5ae687fa24779c5c68259b489ea671b447b5c9037
+schema	grug_wp40_biome_cover_fixture_v1
+checks	225024
+variant_templates	14
+variant_simple	66
+thinned	347
+candidates_sha256	9c96826b6bc08c07a28e934d79f902f46ab57b7786d9de5a13a5b12cf662b5be
+grug_wp40_simple_map_height_v5
+preferred	40
+preferred	10
+preferred	50
+edge	28	52	40	40
+edge	infeasible			
+edge	-9	19	-5	15
+schema	grug_wp40_quality_caves_v2
+hillside	-154/23/-791
+sinkhole	-702/100/-801
+ordered_population	284
+cache_evictions	313
+actual	compact
+schema	grug_wp40_planner_throughput_fixture_v1
+mixed_eligible	0
+dry_eligible	256
+mixed_budget_candidates	0/0
+dry_budget_candidates	256/256
+edge_budget_candidates	144/144
+mixed_candidates_digest	1111111111111111111111111111111111111111111111111111111111111111
+dry_candidates_digest	2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f
+edge_candidates_digest	c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1
+repeat_eligible	0
+queries_per_cell	400
+schema	grug_wp40_r5_wet_cache_fixture_v1
+mixed_bytes	1713
+dry_bytes	1628
+mixed_digest	14637360
+dry_digest	9167105
+bound_digest	2402327
+mixed_calls	90
+dry_calls	94
+repeat_calls	90
+recovery_calls	90
+bound_calls	13444
+vendor_current_version	PASS	player-appearance,book,chest,creative,torch,stairs,furnace,mob-reload,mob-reset-reload,mount
+schema	grug_fresh_server_materials_fixture_v1
+vendor_registrations	53_removed
+storage_derivatives	22_canonical
+material_aliases	0
+recipe_inputs	canonical
+handoff	validated
+result	pass
+wp13_blueprint	hearthpine	61932	46389	41	74	1232	9	10	10	0	180	15588	18	3
+wp13_blueprint	dawnmere	66361	44440	54	98	1467	9	12	10	0	27	15410	18	3
+wp13_blueprint	silverleaf	71495	53191	48	113	1350	9	11	10	0	109	15631	18	3
+wp13_blueprint	stillgrave	51641	37717	44	78	1292	5	7	8	2	74	15672	18	3
+wp13_blueprint	sunscar	57227	44102	43	112	1352	10	10	11	0	48	15957	18	3
+wp13_blueprint	kapok	72535	51967	42	87	837	8	9	9	0	110	16094	18	3
+schema	grug_r6_shore_kat_v1
+shore	hearthpine_coast	82	102	102	0	0	0	0	0
+shore	dawnmere_start	406	594	594	0	0	0	0	0
+shore	goldmead_river	291	460	437	2	0	21	23	2
+shore	wyrmglass_landing	241	327	327	0	0	0	0	0
+shore	kezamba_cenote	412	579	579	0	0	0	0	0
+total	1432	2062	23
+schema	grug_r7_level_bands_kat_v2
+zone	1	elandor_hearthpine_vale	-2550	-2550	-2050	2	5	8
+zone	2	elandor_copperfell_foothills	-2050	-2050	-1500	12	15	18
+zone	3	elandor_dur_brannoc	-1500	-1500	-700	21	25	28
+zone	4	elandor_frostbarrow_shelf	-1500	-1500	-700	22	25	28
+zone	5	elandor_stormvault_heights	-700	-700	-250	32	35	39
+zone	6	elandor_dawnmere_fields	-2550	-2550	-2050	2	5	8
+zone	7	elandor_goldmead_vale	-2050	-2050	-1500	12	15	18
+zone	8	elandor_highcourt	-1500	-1500	-700	21	25	28
+zone	9	elandor_whitebridge_shire	-1500	-1500	-700	22	25	28
+zone	10	elandor_ashenward_march	-700	-700	-250	32	35	39
+zone	11	elandor_silverleaf_glades	-2550	-2550	-2050	2	5	8
+zone	12	elandor_starbough_vale	-2050	-2050	-1500	12	15	18
+zone	13	elandor_lethariel	-1500	-1500	-700	21	25	28
+zone	14	elandor_lorindor	-1500	-1500	-700	22	25	28
+zone	15	elandor_moonfall_wood	-1500	-1500	-700	22	25	28
+zone	16	elandor_glassroot_wilds	-700	-700	-250	32	35	39
+zone	17	kragmar_stillgrave_hollow	2550	2550	2050	2	5	8
+zone	18	kragmar_mournfen	2050	2050	1500	12	15	18
+zone	19	kragmar_nhal_veyr	1500	1500	700	21	25	28
+zone	20	kragmar_ossuary_reach	1500	1500	700	22	25	28
+zone	21	kragmar_blackwind_rise	700	700	250	32	35	39
+zone	22	kragmar_sunscar_flats	2550	2550	2050	2	5	8
+zone	23	kragmar_redtusk_savanna	2050	2050	1500	12	15	18
+zone	24	kragmar_gor_drazhak	1500	1500	700	21	25	28
+zone	25	kragmar_speargrass_reach	1500	1500	700	22	25	28
+zone	26	kragmar_bannerbreak_mesa	700	700	250	32	35	39
+zone	27	kragmar_kapok_cradle	2550	2550	2050	2	5	8
+zone	28	kragmar_raincall_basin	2050	2050	1500	12	15	18
+zone	29	kragmar_kezamba	1500	1500	700	21	25	28
+zone	30	kragmar_whispering_reedlands	1500	1500	700	22	25	28
+zone	31	kragmar_totemwater_reach	1500	1500	700	22	25	28
+zone	32	kragmar_thunderroot_wilds	700	700	250	32	35	39
+zone	33	front_wyrmglass_crown	0	0	0	60	60	60
+zone	34	front_gravesalt_escarpment	250	0	0	52	55	58
+zone	35	front_broken_causeway	-250	0	0	32	35	38
+zone	36	front_shattered_line	250	0	0	42	45	48
+zone	37	front_skyglass_canopy	-250	0	0	52	55	58
+zone	38	front_stormscale_summit	0	0	0	60	60	60
+lateral	elandor_mainland	-2550	-2549	1	6	-900	-1	1	1
+lateral	elandor_mainland	-2550	-2549	1	6	-900	0	1	1
+lateral	elandor_mainland	-2550	-2549	1	6	-900	1	6	1
+lateral	elandor_mainland	-2550	-2549	6	11	900	-1	6	1
+lateral	elandor_mainland	-2550	-2549	6	11	900	0	6	1
+lateral	elandor_mainland	-2550	-2549	6	11	900	1	11	1
+lateral	elandor_mainland	-2050	-2049	2	7	-900	-1	2	11
+lateral	elandor_mainland	-2050	-2049	2	7	-900	0	2	11
+lateral	elandor_mainland	-2050	-2049	2	7	-900	1	7	11
+lateral	elandor_mainland	-2050	-2049	7	12	900	-1	7	11
+lateral	elandor_mainland	-2050	-2049	7	12	900	0	7	11
+lateral	elandor_mainland	-2050	-2049	7	12	900	1	12	11
+lateral	elandor_mainland	-1500	-1499	4	3	-2100	-1	4	21
+lateral	elandor_mainland	-1500	-1499	4	3	-2100	0	3	20
+lateral	elandor_mainland	-1500	-1499	4	3	-2100	1	3	20
+lateral	elandor_mainland	-1500	-1499	3	9	-1350	-1	3	20
+lateral	elandor_mainland	-1500	-1499	3	9	-1350	0	3	20
+lateral	elandor_mainland	-1500	-1499	3	9	-1350	1	9	21
+lateral	elandor_mainland	-1500	-1499	9	8	-450	-1	9	21
+lateral	elandor_mainland	-1500	-1499	9	8	-450	0	8	20
+lateral	elandor_mainland	-1500	-1499	9	8	-450	1	8	20
+lateral	elandor_mainland	-1500	-1499	8	14	450	-1	8	20
+lateral	elandor_mainland	-1500	-1499	8	14	450	0	8	20
+lateral	elandor_mainland	-1500	-1499	8	14	450	1	14	21
+lateral	elandor_mainland	-1500	-1499	14	13	1350	-1	14	21
+lateral	elandor_mainland	-1500	-1499	14	13	1350	0	13	20
+lateral	elandor_mainland	-1500	-1499	14	13	1350	1	13	20
+lateral	elandor_mainland	-1500	-1499	13	15	2100	-1	13	20
+lateral	elandor_mainland	-1500	-1499	13	15	2100	0	13	20
+lateral	elandor_mainland	-1500	-1499	13	15	2100	1	15	21
+lateral	elandor_mainland	-700	-699	5	10	-900	-1	5	31
+lateral	elandor_mainland	-700	-699	5	10	-900	0	5	31
+lateral	elandor_mainland	-700	-699	5	10	-900	1	10	31
+lateral	elandor_mainland	-700	-699	10	16	900	-1	10	31
+lateral	elandor_mainland	-700	-699	10	16	900	0	10	31
+lateral	elandor_mainland	-700	-699	10	16	900	1	16	31
+lateral	kragmar_mainland	700	699	21	26	-900	-1	21	31
+lateral	kragmar_mainland	700	699	21	26	-900	0	21	31
+lateral	kragmar_mainland	700	699	21	26	-900	1	26	31
+lateral	kragmar_mainland	700	699	26	32	900	-1	26	31
+lateral	kragmar_mainland	700	699	26	32	900	0	26	31
+lateral	kragmar_mainland	700	699	26	32	900	1	32	31
+lateral	kragmar_mainland	1500	1499	20	19	-2100	-1	20	21
+lateral	kragmar_mainland	1500	1499	20	19	-2100	0	19	20
+lateral	kragmar_mainland	1500	1499	20	19	-2100	1	19	20
+lateral	kragmar_mainland	1500	1499	19	25	-1350	-1	19	20
+lateral	kragmar_mainland	1500	1499	19	25	-1350	0	19	20
+lateral	kragmar_mainland	1500	1499	19	25	-1350	1	25	21
+lateral	kragmar_mainland	1500	1499	25	24	-450	-1	25	21
+lateral	kragmar_mainland	1500	1499	25	24	-450	0	24	20
+lateral	kragmar_mainland	1500	1499	25	24	-450	1	24	20
+lateral	kragmar_mainland	1500	1499	24	30	450	-1	24	20
+lateral	kragmar_mainland	1500	1499	24	30	450	0	24	20
+lateral	kragmar_mainland	1500	1499	24	30	450	1	30	21
+lateral	kragmar_mainland	1500	1499	30	29	1350	-1	30	21
+lateral	kragmar_mainland	1500	1499	30	29	1350	0	29	20
+lateral	kragmar_mainland	1500	1499	30	29	1350	1	29	20
+lateral	kragmar_mainland	1500	1499	29	31	2100	-1	29	20
+lateral	kragmar_mainland	1500	1499	29	31	2100	0	29	20
+lateral	kragmar_mainland	1500	1499	29	31	2100	1	31	21
+lateral	kragmar_mainland	2050	2049	18	23	-900	-1	18	11
+lateral	kragmar_mainland	2050	2049	18	23	-900	0	18	11
+lateral	kragmar_mainland	2050	2049	18	23	-900	1	23	11
+lateral	kragmar_mainland	2050	2049	23	28	900	-1	23	11
+lateral	kragmar_mainland	2050	2049	23	28	900	0	23	11
+lateral	kragmar_mainland	2050	2049	23	28	900	1	28	11
+lateral	kragmar_mainland	2550	2549	17	22	-900	-1	17	1
+lateral	kragmar_mainland	2550	2549	17	22	-900	0	17	1
+lateral	kragmar_mainland	2550	2549	17	22	-900	1	22	1
+lateral	kragmar_mainland	2550	2549	22	27	900	-1	22	1
+lateral	kragmar_mainland	2550	2549	22	27	900	0	22	1
+lateral	kragmar_mainland	2550	2549	22	27	900	1	27	1
+lateral	holy_grounds	0	-125	34	35	-1375	-1	34	59
+lateral	holy_grounds	0	-125	34	35	-1375	0	34	59
+lateral	holy_grounds	0	-125	34	35	-1375	1	35	35
+lateral	holy_grounds	0	-125	35	36	0	-1	35	35
+lateral	holy_grounds	0	-125	35	36	0	0	35	35
+lateral	holy_grounds	0	-125	35	36	0	1	36	50
+lateral	holy_grounds	0	-125	36	37	1375	-1	36	50
+lateral	holy_grounds	0	-125	36	37	1375	0	36	50
+lateral	holy_grounds	0	-125	36	37	1375	1	37	55
+start	dwarf	-1800	-2550	1	2	3	6	10	15	elandor_copperfell_foothills
+start	human	0	-2550	1	2	3	6	10	15	elandor_goldmead_vale
+start	elf	1800	-2550	1	2	3	6	10	15	elandor_starbough_vale
+start	undead	-1800	2550	1	2	3	6	10
