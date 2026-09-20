@@ -3306,7 +3306,28 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 	if use_tr and weapon_def.original_description then
 		toolranks.new_afteruse(weapon, hitter, nil, {wear = wear})
 	else
-		weapon:add_wear(wear)
+		-- GRUG PATCH (Round 11 repair): owned tools and weapons remain as the
+		-- same concrete stack at exhaustion so their metadata can be repaired.
+		-- ItemStack:add_wear deletes a tool when it crosses 65535.
+		local groups = weapon_def.groups or {}
+		local keep_broken = (groups.grug_equip_weapon or 0) > 0 or
+			(groups.pickaxe or 0) > 0 or (groups.axe or 0) > 0 or
+			(groups.shovel or 0) > 0 or (groups.hoe or 0) > 0
+		if keep_broken and wear > 0 then
+			weapon:set_wear(math.min(65535, weapon:get_wear() + wear))
+			if weapon:get_wear() >= 65535 then
+				local meta = weapon:get_meta()
+				if meta:get_string("_grug_repair_caps") == "" then
+					meta:set_string("_grug_repair_caps",
+						core.serialize(weapon:get_tool_capabilities()))
+				end
+				meta:set_tool_capabilities({full_punch_interval = 1.4,
+					damage_groups = {fleshy = 0}, groupcaps = {},
+					punch_attack_uses = 0})
+			end
+		else
+			weapon:add_wear(wear)
+		end
 	end
 	if grug_wear_id and weapon:is_empty() then
 		grug_core.forget_melee_wear(hitter, grug_wear_id)

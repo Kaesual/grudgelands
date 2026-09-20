@@ -298,32 +298,45 @@ end
 -- cannot leak -- a Lua error inside an engine callback takes the server down
 -- with it, so there is no "next call" left to block.
 local notifying = {} -- player name -> true while its callback loop runs
-local notify_pending = {} -- player name -> true when a nested call arrived
+local notify_pending = {} -- player name -> nested reason; false means unspecified/mixed
+local notify_reason = {} -- player name -> reason, false means unspecified/mixed
 local warned_unconditional = false
 
 local function run_equipment_callbacks(player, listname)
+	local name = player:get_player_name()
 	for _, func in ipairs(equipment_change_callbacks) do
-		func(player, listname)
+		func(player, listname, notify_reason[name] or nil)
 	end
 end
 
 -- Internal: grug_inventory fires this from grug_inventory.equipment_changed,
 -- after it dropped its caches, so a callback already reads the NEW equipment.
-function grug_core.notify_equipment_change(player, listname)
+function grug_core.notify_equipment_change(player, listname, reason)
 	local name = player:get_player_name()
 	if notifying[name] then
-		notify_pending[name] = true
+		local nested_reason = reason or false
+		if notify_pending[name] == nil then
+			notify_pending[name] = nested_reason
+		elseif notify_pending[name] ~= nested_reason then
+			notify_pending[name] = false
+		end
+		if notify_reason[name] ~= nested_reason then
+			notify_reason[name] = false
+		end
 		return
 	end
 	notifying[name] = true
+	notify_reason[name] = reason or false
 	run_equipment_callbacks(player, listname)
-	if notify_pending[name] then
+	if notify_pending[name] ~= nil then
+		local pending_reason = notify_pending[name] or nil
 		notify_pending[name] = nil
 		-- Second and final pass: whatever a consumer changed from inside the
 		-- first one is now visible to all of them. `nil` because the nested
 		-- write is by definition a different list than the one that started it.
+		notify_reason[name] = pending_reason or false
 		run_equipment_callbacks(player, nil)
-		if notify_pending[name] and not warned_unconditional then
+		if notify_pending[name] ~= nil and not warned_unconditional then
 			warned_unconditional = true
 			core.log("warning", "[grug_core] an on_equipment_change consumer " ..
 				"calls equipment_changed unconditionally -- the notification " ..
@@ -332,6 +345,8 @@ function grug_core.notify_equipment_change(player, listname)
 		notify_pending[name] = nil
 	end
 	notifying[name] = nil
+	notify_pending[name] = nil
+	notify_reason[name] = nil
 end
 
 -- Flat weapon-damage bonus from Strength (combat_stats.md §2:
@@ -631,6 +646,7 @@ end
 --
 
 local hit_mob_callbacks = {}
+local ability_action_id
 
 function grug_core.register_on_player_hit_mob(func)
 	table.insert(hit_mob_callbacks, func)
@@ -654,6 +670,9 @@ function grug_core.run_player_hit_mob(player, mob_ent, damage, applied, fraction
 	end
 	for _, func in ipairs(hit_mob_callbacks) do
 		func(player, mob_ent, damage, applied, fraction)
+	end
+	if grug_core.in_ability_punch and ability_action_id and (damage or 0) > 0 then
+		grug_core.run_settled_outgoing_action(player, ability_action_id, "damage")
 	end
 end
 
@@ -1112,6 +1131,7 @@ function grug_core.deal_ability_damage(attacker, target, amount, opts)
 	-- pcall + flag restore: an error mid-punch must not leave the sticky
 	-- flag set (that would silently kill rage generation server-wide).
 	grug_core.in_ability_punch = true
+	ability_action_id = opts.action_id or {}
 	ability_attacker_level = opts.attacker_level or
 		grug_core.get_player_level(attacker)
 	-- `punch_attack_uses = 0` is not cosmetic: mobs_redo's on_punch runs an
@@ -1127,16 +1147,22 @@ function grug_core.deal_ability_damage(attacker, target, amount, opts)
 	-- from the hotbar until a relog
 	-- re-granted it. api.lua:2927-3538 reads exactly this field as "no wear",
 	-- so one line switches the whole path off for every ability punch.
+	local hp_before = target:get_hp()
 	local ok, err = pcall(target.punch, target, attacker, 1.4, {
 		full_punch_interval = 1.4,
 		punch_attack_uses = 0,
 		damage_groups = {fleshy = amount},
 	}, nil)
+	local settled_action = ability_action_id
+	ability_action_id = nil
 	ability_attacker_level = nil
 	grug_core.in_ability_punch = false
 	if not ok then
 		core.log("warning", "[grug_core] ability punch failed: " .. tostring(err))
 		return 0
+	end
+	if target:is_player() and target:get_hp() < hp_before then
+		grug_core.run_settled_outgoing_action(attacker, settled_action, "damage")
 	end
 	-- BONUS-ONLY threat site. The punch above already ran through grug_mobs'
 	-- accepted hit hook -> run_player_hit_mob, which added the base threat
@@ -1197,6 +1223,10 @@ function grug_core.heal_player(healer, target, amount, opts)
 		for i = 1, #effective_heal_callbacks do
 			effective_heal_callbacks[i](healer, target, effective)
 		end
+		if opts.action_id and healer and healer:is_player() and
+				grug_core.in_combat(healer) then
+			grug_core.run_settled_outgoing_action(healer, opts.action_id, "heal")
+		end
 	end
 	return effective
 end
@@ -1215,11 +1245,11 @@ function grug_core.register_on_effective_absorb(func)
 	table.insert(effective_absorb_callbacks, func)
 end
 
--- Durability/action consumers subscribe here, while the ability or swing that
--- owns the transaction publishes exactly once. `action_id` must be unique for
--- that player's live session and reused across every victim/projectile settled
--- by the same action. Core deliberately does not emit from per-target damage,
--- healing or absorb callbacks because those sites would multiply AoE wear.
+-- Durability/action consumers subscribe here. `action_id` must be unique for
+-- that player's live session and reused across every result of one action.
+-- Damage owners publish explicitly; heal_player/set_absorb publish only when
+-- their caller supplies that shared identity. Consumers deduplicate it, so an
+-- aura may report several effective targets without multiplying action wear.
 local settled_outgoing_callbacks = {}
 
 function grug_core.register_on_settled_outgoing_action(func)
@@ -1241,7 +1271,7 @@ function grug_core.register_on_settled_incoming_hit(func)
 	table.insert(settled_incoming_callbacks, func)
 end
 
-function grug_core.set_absorb(player, amount, duration, source)
+function grug_core.set_absorb(player, amount, duration, source, action_id)
 	amount = grug_core.scale_player_value(source or player, amount)
 	local expiry = core.get_us_time() + duration * 1e6
 	absorbs[player:get_player_name()] = {
@@ -1250,6 +1280,11 @@ function grug_core.set_absorb(player, amount, duration, source)
 	}
 	for index = 1, #effective_absorb_callbacks do
 		effective_absorb_callbacks[index](source or player, player, amount)
+	end
+	local owner = source or player
+	if amount > 0 and action_id and owner:is_player() and
+			grug_core.in_combat(owner) then
+		grug_core.run_settled_outgoing_action(owner, action_id, "absorb")
 	end
 	if grug_core.set_status then
 		grug_core.set_status(player, "shield", {
