@@ -212,10 +212,11 @@ Key implementation patterns we adopt:
 
 ## 2. Profession progression: the two ladders & the recipe book
 
-**Revised 2026-09-18:** the recipe book is UI and exposes the complete catalog;
+**Revised 2026-09-18:** the profession recipe book is UI and exposes its catalog;
 profession level is the sole recipe-permission progression. There are no book
 items, per-recipe unlocks, keystone redemptions or ingredient-discovery
-unlocks.
+unlocks for profession recipe permission. The 2026-09-20 Basics visibility
+amendment below is a presentation rule, not a crafting-permission unlock.
 
 ### 2.1 The two ladders (mastery vs. gear) — made explicit 2026-08-07
 
@@ -299,6 +300,14 @@ tomes/consumables unchanged. No new numbers are introduced here.
 - The Basics book derives its entries from existing non-profession engine and
   dual-furnace recipes. Those recipes remain registered by their owning mods
   and are not re-registered by the profession framework.
+- **Basics visibility (user decision 2026-09-20):** starter recipes are visible
+  immediately. Additional universal recipes become visible after the first
+  acquisition of their main material, rather than requiring every auxiliary
+  ingredient to have been seen. This discovery remains recorded. Visibility
+  never gates crafting: a level-1 character with the inputs may craft an
+  Abyssal Steel base item. Character level does not reveal recipe tiers;
+  material tier remains a catalog classification and item-level use/equip
+  restrictions remain separate. Professional recipes keep their owning books.
 - Every furnace, dual furnace and brewing stand carries the same book button,
   filtered to recipes for that station. Grid recipes remain beside the normal
   3×3 grid.

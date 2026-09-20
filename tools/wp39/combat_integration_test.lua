@@ -3,6 +3,10 @@
 -- grug_abilities/init.lua and kits.lua are loaded unchanged.
 
 local repo = arg[1] or "."
+-- Adjacent animation dependency; its concrete selector is covered separately
+-- by the bow presentation fixture, while this fixture owns combat settlement.
+player_api = {register_control_animation_override = function() end}
+grug_inventory = {is_bow = function() return false end}
 local now = 0
 local connected = {}
 local players_by_name = {}
@@ -386,6 +390,7 @@ local function new_mob(name, faction)
 end
 function Mob:get_guid() return "mob:" .. self.name end
 function Mob:get_pos() return self.position and vector.new(self.position) end
+function Mob:get_hp() return self.entity.health end
 function Mob:is_player() return false end
 function Mob:get_luaentity() return self.entity end
 function Mob:punch(hitter, _, caps)
@@ -442,7 +447,7 @@ end
 grug_core.get_equipped_offhand = function() return ItemStack("") end
 grug_core.get_crit_chance = function(player) return player.crit or 0 end
 grug_core.get_dodge_chance = function(player) return player.dodge or 0 end
-grug_core.get_armor_percent = function(player) return player.armor or 0 end
+grug_core.get_armor_rating = function(player) return player.armor or 0 end
 grug_core.get_melee_bonus = grug_classes.get_melee_bonus
 grug_core.get_player_level = function(player) return player.level or 1 end
 grug_core.combat_debug_enabled = function() return false end
@@ -765,9 +770,9 @@ assert(grug_abilities.get_rage(hero) == grug_abilities.RAGE_PER_SWING)
 
 -- The full authoritative PvP equivalent resolves crit before armor, then one
 -- integer HP change. At L1 weapon B: floor(8 * 0.65) = 5, then 1.5 crit
--- and 50% armor settle to 4.
+-- and 50% armor (20.5 rating against a level-1 attacker) settle to 4.
 hero.crit = 1
-hostile_player.armor = 50
+hostile_player.armor = 20.5
 grug_abilities.add_rage(hero, -100)
 hostile_hp = hostile_player:get_hp()
 now = 16000000
@@ -965,6 +970,7 @@ function cast_drop_ent:on_punch() self.picked = self.picked + 1 end
 local cast_drop = {}
 function cast_drop:get_luaentity() return cast_drop_ent end
 spawn_before = #projectile_spawns
+queue_ray({pointed(cast_drop, 3)})
 core.registered_items["grug_abilities:fireball"].on_use(
 	ItemStack("grug_abilities:fireball"), hostile_player,
 	{type = "object", ref = cast_drop})

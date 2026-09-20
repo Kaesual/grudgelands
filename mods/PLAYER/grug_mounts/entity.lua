@@ -216,19 +216,33 @@ local function orient_rider(self, player, yaw)
 	self._grug_attach_yaw = yaw
 end
 
+-- Camera-relative horizontal input. Backpedalling keeps its existing 35%
+-- speed, while strafing and forward travel use full speed. Normalizing the
+-- requested direction prevents W+A/W+D from gaining diagonal speed.
+local function horizontal_input(control, yaw)
+	local forward = 0
+	if control.up then forward = 1 elseif control.down then forward = -0.35 end
+	local side = 0
+	if control.right then side = 1 elseif control.left then side = -1 end
+	local length = math.sqrt(forward * forward + side * side)
+	if length == 0 then return 0, 0, 0 end
+	local scale = math.max(math.abs(forward), math.abs(side))
+	forward = forward / length
+	side = side / length
+	return -math.sin(yaw) * forward + math.cos(yaw) * side,
+		math.cos(yaw) * forward + math.sin(yaw) * side, scale
+end
+
 local function land_step(self, control, yaw, dtime)
 	local tier = grug_mounts.TIERS[self._grug_tier]
 	local velocity = self.object:get_velocity() or {x = 0, y = 0, z = 0}
-	local direction = 0
-	if control.up then direction = 1 elseif control.down then direction = -0.35 end
-	local target = tier.speed * direction
+	local input_x, input_z, input_scale = horizontal_input(control, yaw)
+	local target = tier.speed * input_scale
 	local rate = tier.speed * 5 * dtime
 	local horizontal = math.sqrt(velocity.x * velocity.x + velocity.z * velocity.z)
-	local signed = horizontal
-	if direction < 0 then signed = -horizontal end
-	if signed < target then signed = math.min(target, signed + rate)
-	elseif signed > target then signed = math.max(target, signed - rate) end
-	if direction == 0 then signed = 0 end
+	if horizontal < target then horizontal = math.min(target, horizontal + rate)
+	elseif horizontal > target then horizontal = math.max(target, horizontal - rate) end
+	if input_scale == 0 then horizontal = 0 end
 	local y_velocity = velocity.y
 	if control.jump and math.abs(y_velocity) < 0.05 then
 		local pos = self.object:get_pos()
@@ -239,16 +253,15 @@ local function land_step(self, control, yaw, dtime)
 		if definition and definition.walkable then y_velocity = 6.5 end
 	end
 	self.object:set_yaw(0)
-	self.object:set_velocity({x = -math.sin(yaw) * signed, y = y_velocity,
-		z = math.cos(yaw) * signed})
+	self.object:set_velocity({x = input_x * horizontal, y = y_velocity,
+		z = input_z * horizontal})
 	self.object:set_acceleration({x = 0, y = -9.81, z = 0})
-	set_animation(self, direction == 0 and "stand" or "move")
+	set_animation(self, input_scale == 0 and "stand" or "move")
 end
 
 local function flight_step(self, control, yaw)
 	local tier = grug_mounts.TIERS[self._grug_tier]
-	local direction = 0
-	if control.up then direction = 1 elseif control.down then direction = -0.35 end
+	local input_x, input_z, input_scale = horizontal_input(control, yaw)
 	local vertical = 0
 	if control.jump then vertical = tier.speed * 0.6
 	elseif control.sneak then vertical = -tier.speed * 0.6 end
@@ -260,9 +273,9 @@ local function flight_step(self, control, yaw)
 	end
 	self.object:set_yaw(0)
 	self.object:set_acceleration({x = 0, y = 0, z = 0})
-	self.object:set_velocity({x = -math.sin(yaw) * tier.speed * direction,
-		y = vertical, z = math.cos(yaw) * tier.speed * direction})
-	set_animation(self, direction == 0 and vertical == 0 and "stand" or "move")
+	self.object:set_velocity({x = input_x * tier.speed * input_scale,
+		y = vertical, z = input_z * tier.speed * input_scale})
+	set_animation(self, input_scale == 0 and vertical == 0 and "stand" or "move")
 end
 
 local entity_definition = {

@@ -40,7 +40,9 @@ Core principles:
   item's native selection box. A fresh LMB press therefore checks the first
   visible object on the same 4 m eye ray server-side and calls the builtin
   pickup path only when it is a dropped item. Cast skills retain the WP38
-  `on_use` pickup bridge; clicking loot does **not** cast.
+  `on_use` pickup bridge with the same server-checked 4 m maximum and first-visible
+  blocker rule. Combat range and range talents never extend pickup reach;
+  clicking loot does **not** cast.
 - **No global cooldown** (removed 2026-08-09 with the proc model of §2b;
   it was 1.0 s from 2026-08-06 to WP35). A GCD existed to stop instant
   chaining, and the two limiters that replaced it do that job better and

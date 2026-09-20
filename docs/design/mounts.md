@@ -145,6 +145,13 @@ arbitrary fixed-price wall.
   movement and collision authority, and the player's visible character is
   attached on top. While mounted, movement controls drive only the mount entity;
   the player's independent movement is disabled.
+- A/D strafe relative to the camera on both ground and flying mounts. Forward
+  and sideways movement use full tier speed; reverse alone retains 35%.
+  Horizontal diagonals are normalized to prevent a speed bonus. Flight ascent
+  and descent retain their existing controls and speed.
+- Right-clicking an interactive NPC/entity while holding the mount item invokes
+  that interaction without also summoning or dismissing the mount. Air
+  right-click and the existing primary-use toggle remain available.
 - **A mount is therefore an entity the player is attached to.** The player calls
   `player:set_attach(mount_entity, ...)`
   (`reference_projects/luanti/doc/lua_api.md:8948`); while attached the

@@ -11,6 +11,14 @@ Use a fresh world. For the supplied beach witnesses use seed
 Creative intentionally suppresses wear. Diagnostic setup can use `/giveme`,
 `/xp`, `/money`, `/talents` and `/combatdebug`; use in-game help for arguments.
 
+## Latest interaction checks
+
+The [interaction followups](round11-interaction-followups.md) add three checks
+following a restart: ability pickup stops at 4 m and respects walls; A/D works
+on ground and flying mounts without a horizontal diagonal speed bonus; holding
+a mount while right-clicking a trainer opens only the trainer UI. Reverse alone
+remains slower. The prior vegetation pursuit fix is user-accepted.
+
 ## First-playtest followup checks
 
 The [followup record](round11-playtest-followups.md) covers the additional build,

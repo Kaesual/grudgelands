@@ -13,6 +13,20 @@ local function use_mount(itemstack, user)
 	return itemstack
 end
 
+-- Luanti handles an object right-click by invoking the wielded item's
+-- on_secondary_use first and the object's on_rightclick second
+-- (serverpackethandler.cpp). Let interactive entities own that click so a
+-- trainer/NPC cannot both open its UI and activate the held mount.
+local function use_mount_secondary(itemstack, user, pointed_thing)
+	if pointed_thing and pointed_thing.type == "object" and pointed_thing.ref then
+		local entity = pointed_thing.ref:get_luaentity()
+		if entity and type(entity.on_rightclick) == "function" then
+			return itemstack
+		end
+	end
+	return use_mount(itemstack, user)
+end
+
 local function refuse_drop(itemstack, dropper)
 	if dropper and dropper:is_player() then
 		core.chat_send_player(dropper:get_player_name(),
@@ -49,7 +63,7 @@ for tier_id = 1, 4 do
 		groups = {grug_mount = tier_id, not_in_creative_inventory = 1},
 		_grug_mount_tier = tier_id,
 		on_use = use_mount,
-		on_secondary_use = use_mount,
+		on_secondary_use = use_mount_secondary,
 		on_drop = refuse_drop,
 	})
 end

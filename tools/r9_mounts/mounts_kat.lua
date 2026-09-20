@@ -428,6 +428,36 @@ return function(root, options)
 	registered_items[stolen:get_name()].on_use(stolen, thief)
 	assert(grug_mounts.active.thief == nil and
 		thief.last_chat == "That mount is not bound to this character.")
+	local buyer_mount = buyer.inventory.main[1]
+	local buyer_mount_def = registered_items[buyer_mount:get_name()]
+	local interactive = new_object(buyer:get_pos())
+	interactive.entity = {on_rightclick = function() end}
+	buyer_mount_def.on_secondary_use(buyer_mount, buyer,
+		{type = "object", ref = interactive})
+	assert(grug_mounts.active.buyer == nil,
+		"interactive entity click also activated the held mount")
+	buyer_mount_def.on_secondary_use(buyer_mount, buyer, nil)
+	assert(grug_mounts.active.buyer ~= nil,
+		"air secondary use did not activate the held mount")
+	local buyer_record = grug_mounts.active.buyer
+	buyer.look_yaw = 0
+	buyer.control = {left = true}
+	buyer_record.object.entity:on_step(0.1)
+	assert(buyer_record.object.velocity.x < 0 and
+		math.abs(buyer_record.object.velocity.z) < 0.000001,
+		"land mount did not strafe left relative to view")
+	buyer.control = {up = true, left = true}
+	buyer_record.object.entity:on_step(0.1)
+	local land_diagonal_speed = math.sqrt(buyer_record.object.velocity.x ^ 2 +
+		buyer_record.object.velocity.z ^ 2)
+	assert(math.abs(land_diagonal_speed - grug_mounts.TIERS[2].speed) < 0.000001,
+		"land diagonal input changed horizontal speed")
+	buyer.control = {down = true}
+	buyer_record.object.entity:on_step(0.2)
+	assert(math.abs(buyer_record.object.velocity.z +
+		grug_mounts.TIERS[2].speed * 0.35) < 0.000001,
+		"land backpedal speed changed")
+	grug_mounts.dismount(buyer, nil, true)
 
 	for tier_id = 1, 4 do
 		local tier = grug_mounts.TIERS[tier_id]
@@ -597,6 +627,23 @@ return function(root, options)
 	record.object.entity:on_step(0.5)
 	assert(warning_calls == 2, "warning scan cadence differs")
 	grug_mounts.warning_state = warning_state
+	rider.look_yaw = 0
+	rider.control = {right = true}
+	record.object.entity:on_step(0.1)
+	assert(math.abs(record.object.velocity.x - grug_mounts.TIERS[3].speed) < 0.000001 and
+		math.abs(record.object.velocity.z) < 0.000001,
+		"flying mount did not strafe right relative to view")
+	rider.control = {up = true, right = true}
+	record.object.entity:on_step(0.1)
+	local diagonal_speed = math.sqrt(record.object.velocity.x ^ 2 +
+		record.object.velocity.z ^ 2)
+	assert(math.abs(diagonal_speed - grug_mounts.TIERS[3].speed) < 0.000001,
+		"flying diagonal input changed horizontal speed")
+	rider.control = {down = true}
+	record.object.entity:on_step(0.1)
+	assert(math.abs(record.object.velocity.z +
+		grug_mounts.TIERS[3].speed * 0.35) < 0.000001,
+		"flying backpedal speed changed")
 	record.object.pos = {x = -100, y = 601, z = -100}
 	rider.control = {jump = true}
 	record.object.entity:on_step(0.1)
