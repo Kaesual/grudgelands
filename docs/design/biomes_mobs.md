@@ -1172,8 +1172,8 @@ spawn row or palette membership.
 
 | Boss family | Clock | Location / level | Encounter | Visual source |
 |-------------|-------|------------------|-----------|---------------|
-| Wyrmglass Ice Dragon | any | Wyrmglass dragon anchor, fixed L60 boss | three-perch arena; 2 s breath-line / ground-slam telegraphs; persistent 30 min wall-clock respawn with 60 s warning | draconis ice dragon, sapphire, MIT |
-| Stormscale Jungle Wyvern | any | Stormscale dragon anchor, fixed L60 boss | same shared encounter chassis, storm breath variant | draconis jungle wyvern, jade, MIT |
+| Wyrmglass Ice Dragon | any | Wyrmglass dragon anchor, fixed L70 boss | three-perch arena; 2 s breath-line / ground-slam telegraphs; persistent 30 min wall-clock respawn with 60 s warning | draconis ice dragon, sapphire, MIT |
+| Stormscale Jungle Wyvern | any | Stormscale dragon anchor, fixed L70 boss | same shared encounter chassis, storm breath variant | draconis jungle wyvern, jade, MIT |
 | Six race Kings | any | authored `king` socket in each capital, fixed L65 elite | one race-specific signature each; four fixed L60 elite royal guards; group reset and persistent 15 min wall-clock respawn | `character.b3d` + six generated royal skins |
 
 The current gear catalogue has sword, dagger, greataxe and staff visuals only;

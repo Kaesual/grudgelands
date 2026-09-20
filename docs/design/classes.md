@@ -10,15 +10,14 @@ kits in WP11.
 Attribute/derived-stat formulas: `combat_stats.md` §1/§2; threat values:
 `combat_stats.md` §4.
 
-**The WP11 side of these kits is proposed, not decided.**
-[skill_trees.md](skill_trees.md) (PROPOSAL, revision 2, 2026-09-16) carries
+**The WP11 skill-tree design is decided.**
+[skill_trees.md](skill_trees.md) carries
 two trees per class derived from the kits below, the talents that improve
 their numbers, and the keystones and capstones that add new main skills —
 Renew among them, as §5 already decided. A **fourth class, the Scout**
-([scout.md](scout.md)), is proposed in the same pass: leather armour, a bow
-and a blade, planned now and implemented later. Both files carry one shared
-list of open decisions. Nothing in this file changes until those are
-answered — except for two things WP11 changes outright. The numbers in the
+([scout.md](scout.md)): leather armour, a bow and a blade. A melee Scout uses
+the equipped main hand as the sole weapon-damage source; an offhand never adds
+a second strike, damage roll or talent axis. The numbers in the
 §3-§5 tables become the **untalented base** values; and by the user's ruling
 of 2026-09-16 the **Warrior's base kit drops to three abilities** (Charge,
 Mighty Blow, Taunt), so that every class starts with Strike plus three:
