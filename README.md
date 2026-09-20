@@ -5,8 +5,8 @@ classes, XP, quests, professions, housing, an item economy and geographic PvP,
 built as a standalone Lua game rather than a mod pack.
 
 > **Status: in development.** The world, mobs, three classes, combat,
-> equipment, XP, money/vendors, Cooking, Alchemy and the seven-primary
-> profession/equipment candidate are playable or staged for the current integration.
+> equipment, XP, money/vendors, Cooking, Alchemy and the integrated seven-primary
+> profession/equipment work are playable in the private candidate.
 > The named-zone world is implemented and still has explicit release/runtime gates;
 > quests, open-world housing and geographic PvP are not built. See
 > [Current State](#current-state).
@@ -145,10 +145,9 @@ Plain feedstocks and familiar base weapons, tools and metal, leather and cloth
 armor belong exclusively to **Basics** and require no profession. Each
 profession owns only its improvement and specialist routes; Weaponsmith and
 Armorsmith share the Forge with separate authorization. Cooking keeps its
-ordinary grid and furnace routes. The reviewed equipment candidate completes
-these catalogs, terminal refinement, direct affix application and the retained
-kit model; it remains staged with the capital-services and art dependencies
-until final integration.
+ordinary grid and furnace routes. The integrated, independently reviewed equipment work completes these catalogs,
+terminal refinement, direct affix application and the retained kit model. MAP-B,
+final technical gates, main delivery and GUI acceptance remain pending.
 
 ### Economy
 
@@ -215,13 +214,14 @@ on sight, and enemies use the threat/chase model. Both factions receive every
 universal input; race woods and cultural materials stay intentionally
 asymmetric.
 
-[Mounts](docs/design/mounts.md) have a reviewed Round-10 candidate staged for
-final integration and GUI acceptance. Riding unlocks at levels 15/30/45/60; T1
+[Mounts](docs/design/mounts.md) have integrated, independently reviewed Round-10
+runtime, capital-service and art changes; final technical gates and GUI
+acceptance remain. Riding unlocks at levels 15/30/45/60; T1
 moves at 6.4 nodes/s (+60%), while later land/flight tiers retain 8/7/10. The
 owner's mesh is hidden only in first person, an untimed status shows tier and
 actual speed, land mounts step over half/full blocks, and all mounted attacks are
-refused. Capital-only Riding Trainers, twelve rendered icons and the six stable
-layouts belong to the still-active CAP/ART integration.
+refused. Capital-only Riding Trainers, twelve rendered icons and all six stable layouts
+are integrated in the private candidate.
 
 [Boats](docs/design/boats.md) are specified but not built, and they are
 deliberately not an earned unlock: the base boat is five wood on any
@@ -273,7 +273,7 @@ are integrated; final world placement and soils remain MAP-B work.
 **Not yet:** quests, parties, remaining recovery/offhand work, WP22 durability,
 WP24 Housing, WP41 geographic PvP, WP42 fronts, WP46, WP47, WP49, Scout and the
 first-public-release gates remain open. WP44 still owns the complete economy
-rebase despite the staged vendor correction. GUI acceptance remains required
+rebase despite the integrated vendor correction. GUI acceptance remains required
 for crafting/refinement, six-capital services, mount cameras/steps, falls,
 ambient/dragon behavior, farming, cave witnesses and final art.
 
