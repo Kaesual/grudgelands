@@ -57,10 +57,11 @@ differ. So the anisotropy went and the **body shape belongs to the skin art**,
 which the engine cannot shear. The derivation is in
 `mods/PLAYER/grug_visuals/wield_geometry.lua`.
 
-**The collision box and the eye height never change.** Stature is a look, not a
-rule: every race walks through the two-node doors of its own houses, takes the
-same damage from the same fall and fits the same boat seat. Nothing in combat,
-building or movement may be derived from it.
+**The collision box and the eye height never change.** Visual stature keeps
+all races within the same two-node door and boat-seat geometry. It does not
+change the fall calculation or other combat, building or movement rules.
+Fall damage follows [combat_stats.md](combat_stats.md), including the Dwarf's
+20% reduction after maximum-HP scaling and before absorb.
 
 Humanoid **mobs keep the size their own definition sets** (the mirefolk are
 deliberately short, an elite guard is deliberately large). Their scale belongs
