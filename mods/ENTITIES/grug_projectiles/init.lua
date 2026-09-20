@@ -169,7 +169,7 @@ end
 --           speed=number?, max_distance=number?, lifetime=number?,
 --           acceleration=vector?}. Runtime entity state contains only copied
 -- primitives/tables/vectors and the owner's name/session identity.
-function grug_projectiles.spawn(id, params)
+local function spawn_one(id, params)
 	local def = definitions[id]
 	local owner = params and params.owner
 	if not def or not owner or not owner:is_player() or owner:get_hp() <= 0 then
@@ -234,13 +234,60 @@ function grug_projectiles.spawn(id, params)
 		return false
 	end
 	debug_event(owner_name, "spawn", id, speed, max_distance)
-	return true
+	return object
+end
+
+function grug_projectiles.spawn(id, params)
+	return spawn_one(id, params) and true or false
 end
 
 local function release_projectile(self)
 	local token = self._grug_active_token
 	self._grug_active_token = nil
 	release_active(token)
+end
+
+-- Spawn a complete multi-projectile action, then commit its external cost.
+-- No entity can step until this synchronous call returns. If any spawn or the
+-- commit fails, every already-created sibling is marked settled, releases its
+-- active token exactly once, and is removed without invoking an on_hit.
+function grug_projectiles.spawn_batch(id, launches, commit)
+	if type(launches) ~= "table" or #launches < 1 or
+			(commit ~= nil and type(commit) ~= "function") then
+		return false
+	end
+	local objects = {}
+	local function rollback()
+		for index = 1, #objects do
+			local object = objects[index]
+			local entity = object and object:get_luaentity()
+			if entity and not entity._grug_settled then
+				entity._grug_settled = true
+				release_projectile(entity)
+			end
+			if object and object:get_pos() then object:remove() end
+		end
+	end
+	for index = 1, #launches do
+		local object = spawn_one(id, launches[index])
+		if not object then
+			rollback()
+			return false
+		end
+		objects[#objects + 1] = object
+	end
+	if commit then
+		local ok, accepted = pcall(commit)
+		if not ok or accepted ~= true then
+			rollback()
+			if not ok then
+				core.log("error", "[grug_projectiles] batch commit failed for " ..
+					tostring(id) .. ": " .. tostring(accepted))
+			end
+			return false
+		end
+	end
+	return true
 end
 
 local function remove_projectile(self, event, value_a, value_b)
