@@ -54,8 +54,8 @@ character state:
 |---|---|---|---|---|
 | Apprentice | 15 | slow land mount | +60 % | 6.4 nodes/s |
 | Journeyman | 30 | fast land mount | +100 % | 8 nodes/s |
-| Expert | 45 | slow flying mount | +75 % | 7 nodes/s |
-| Master | 60 | fast flying mount | +150 % | 10 nodes/s |
+| Expert | 45 | slow flying mount | +100 % | 8 nodes/s |
+| Master | 60 | fast flying mount | +200 % | 12 nodes/s |
 
 | Tier | Character identity | Mount family |
 |---|---|---|
@@ -74,10 +74,9 @@ character state:
   slowest mount is still 6.4). That is deliberate, and it is exactly why
   **incoming damage dismounts the rider** (§3.1): the speed is
   permanent, the immunity to the mob game is not.
-- The two flying tiers are the late-game milestones. Expert is deliberately
-  slower than the level-30 fast land mount: its +75% buys direct aerial routes
-  and terrain access, not the next linear speed step. Master buys both flight
-  and the top +150% travel speed.
+- The two flying tiers are the late-game milestones. Expert matches the
+  level-30 fast land mount at +100% and adds direct aerial routes and terrain
+  access. Master reaches +200% travel speed (user playtest ruling 2026-09-20).
 - **Flight buys terrain at home and over the shared Battlegrounds, not in enemy
   territory or across ocean.** The two land tiers remain legal in enemy
   territory; §4 owns the complete geographic rule.
@@ -245,7 +244,7 @@ whole mob game is built on top of that one inequality: the **25 m soft
 de-aggro** (`combat_stats.md` §3 — a chasing mob drops to walk speed, so
 fleeing is hard but not impossible) and the **45 m chase give-up** and
 **40 m leash** of `combat_stats.md` §4 all assume the mob can close the
-distance. A mount does **6–10 nodes/s
+distance. A mount does **6.4–12 nodes/s
 permanently** (§1.1) and is therefore faster than every mob in the game.
 Without this rule a mounted player is simply immune to the mob game: no
 chase can ever be won, the soft de-aggro and the leash become
@@ -267,16 +266,14 @@ that is what skills are for… The rule: **the bigger the break, the stronger
 the limit**, usually cooldown or duration." *(Quoted verbatim; it says 4.4
 because ruling 2 of the same day moved the aggressive band to 4.6, and the
 numbers derived from it below are stated against the shipped 4.6.)* The first
-such skill is the Scout's **Sprint**, **+25 % for 10 s on a 300 s cooldown**
-(ruling 29, `scout.md` §2): 5.0 nodes/s against every aggressive mob's 4.6,
-for ten seconds in every five minutes — the user's words, "a deliberate
-special, not an every-fight button". The margin the skill buys is 0.4 nodes/s
-rather than the 0.6 it would have bought at the old band, which is the ruling
-working as written: the break is real and it is smaller than the cooldown.
+such skill is the Scout's **Sprint**, **+50 % for 10 s on a 300 s cooldown**
+(user playtest amendment 2026-09-20, `scout.md` §2): 6.0 nodes/s against ordinary
+aggressive mobs' 4.6, for ten seconds in every five minutes. Its 1.4 nodes/s
+margin is temporary; it does not replace a mount's permanent travel speed.
 The exception is deliberately narrow: it covers named, time-limited,
 long-cooldown abilities and nothing permanent or cheap. The
 **Swiftness Draught's +10 % for 5 s stays below the mob band** (4.0 × 1.10 =
-4.4 < 4.6), and a mount keeps paying for its permanent 6–10 nodes/s with the
+4.4 < 4.6), and a mount keeps paying for its permanent 6.4–12 nodes/s with the
 dismount rule above.
 
 **And it stops being a formality once ranged attackers exist.** Today a
@@ -316,7 +313,7 @@ warning and forced dismount are separate consumer states derived from
   and resolves the 48-node warning reach to within plus or minus 4 nodes at
   range. HUD text and one chat notice warn that crossing will force a dismount;
   moving clear of every sampled illegal column removes the warning.
-- Width is spatial, not a timer, so the +75% and +150% flyers receive the same
+- Width is spatial, not a timer, so the +100% and +200% flyers receive the same
   boundary. The **first ocean node** is already illegal and dismounts
   immediately at every y, with no grace, slow descent or maximum-trip rule.
 - WP40 supplies the exact channel geometry through the public zone queries.

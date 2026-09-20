@@ -1,5 +1,9 @@
 # Round 11 execution checkpoint
 
+**Current followup work:** the first playtest has returned corrections and
+accepted the beach fix. Resume from [playtest followups](round11-playtest-followups.md);
+the checkpoint below records the original Round 11 delivery.
+
 Date: 2026-09-20. Status: **DELIVERED — READY FOR THE NEXT USER PLAYTEST**.
 All Round 11 packages, independent reviews and bounded technical gates are
 complete. Main merge `737f25b4` is synchronized to the personal Luanti game

@@ -715,7 +715,7 @@ grug_classes.register_on_class_chosen(function(player, class_id)
 		-- The class selection inventory is normally empty. Keep the fallback
 		-- lossless nevertheless: a full inventory drops the owed starter item
 		-- at the player instead of silently deleting it.
-		for _, item in ipairs({"default:sword_stone", "grug_gear:arrow 20"}) do
+		for _, item in ipairs({"default:sword_stone", "grug_gear:arrow 200"}) do
 			local leftover = inv:add_item("main", ItemStack(item))
 			if not leftover:is_empty() then
 				core.add_item(player:get_pos(), leftover)

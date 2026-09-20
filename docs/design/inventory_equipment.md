@@ -232,7 +232,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   A two-handed bow explicitly permits the zero-hand quiver; shield, book and
   torch remain illegal beside it. One-handed melee may retain the quiver, while
   staff and greataxe require empty Offhand. The quiver has four arrow-only
-  slots and no combat stat, affix, refinement or wear. Removing a filled quiver
+  slots of up to 200 arrows each (800 total) and no combat stat, affix,
+  refinement or wear. Removing a filled quiver
   transfers all arrows to `main` atomically or refuses unchanged if they do not
   all fit.
 - No item drop on death (unchanged; death costs XP, not gear).

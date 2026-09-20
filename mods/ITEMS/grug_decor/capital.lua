@@ -63,6 +63,7 @@ local products = {
  armorsmith={"Armorsmith", "grug_gear_item_chest_metal_bronze.png"},
  tailor={"Tailor", "grug_gear_item_chest_cloth_patch.png"},
  leatherworker={"Leatherworker", "grug_gear_item_chest_leather_light.png"},
+ leatherworker_exterior={"Leatherworker", "[combine:32x16:0,0=grug_gear_item_chest_leather_light.png:16,0=grug_mobs_item_light_leather.png"},
  woodcarver={"Woodcarver", "grug_gear_item_staff_wood.png"},
  goldsmith={"Goldsmith", "default_mese_crystal_fragment.png^[colorize:#4a8bd8:150"},
  alchemist={"Alchemist", "grug_traders_item_potion_healing_weak.png"},

@@ -351,6 +351,10 @@ local function build_env(repo, clock)
 		clock.refunded = clock.refunded + count
 		return true
 	end
+	local player_api = {}
+	function player_api.register_control_animation_override(callback)
+		clock.player_animation_callback = callback
+	end
 
 	local env = {
 		core = core_stub, minetest = core_stub,
@@ -362,6 +366,7 @@ local function build_env(repo, clock)
 		grug_mobs = stub_table(),
 		grug_inventory = grug_inventory,
 		grug_projectiles = grug_projectiles,
+		player_api = player_api,
 		grug_repair = {
 			capture_action = function(player, id)
 				clock.captured = clock.captured + 1
@@ -628,7 +633,9 @@ local function run_checks(repo)
 	local env = build_env(repo, clock)
 	for _, itemname in ipairs({"grug_gear:bow_wood", "default:sword_stone",
 			"grug_gear:staff_wood", "grug_gear:arrow"}) do
-		env.core.registered_items[itemname] = {description = itemname}
+		env.core.registered_items[itemname] = {description = itemname,
+			inventory_image = itemname == "grug_gear:bow_wood" and
+				"grug_gear_bow_wood.png" or ""}
 	end
 	for _, key in ipairs({"scout_class", "stats", "talents", "abilities",
 			"kits", "scout_abilities", "equipment"}) do
@@ -1364,6 +1371,10 @@ local function run_checks(repo)
 		"Sprint dispatcher installs its movement modifier")
 	equal(clock.move_effect and clock.move_effect.duration, 10,
 		"Sprint lasts ten seconds")
+	equal(clock.move_effect and clock.move_effect.modifier.speed, 0.50,
+		"Sprint adds fifty percent movement speed")
+	check(registered.sprint.description:find("50%% faster", 1, false) ~= nil,
+		"Sprint description publishes fifty percent movement speed")
 
 	-- Loose starts through try_cast, then releases on the server-observed
 	-- control edge and the current look vector. Fletching (0.30 s) and +20%
@@ -1372,12 +1383,26 @@ local function run_checks(repo)
 	clock.players[quarry:get_player_name()] = quarry
 	quarry:get_inventory().grug_weapon[1] = make_stack("grug_gear:bow_wood")
 	quarry._wield = make_stack("grug_abilities:loose")
+	quarry:get_inventory().main[1] = quarry._wield
 	quarry._control.dig = true
 	local old_random = math.random
 	math.random = function() return 1 end
 	abilities.try_cast(quarry, registered.loose, nil)
 	check(abilities.scout_draw_active(quarry),
 		"Loose dispatcher did not start the held draw")
+	local loose_stack
+	for _, stack in ipairs(quarry:get_inventory():get_list("main")) do
+		if stack:get_name() == "grug_abilities:loose" then loose_stack = stack end
+	end
+	check(loose_stack:get_meta():get_string("wield_image"):find(
+		"grug_abilities_bow_draw_0.png", 1, true) == 1,
+		"Loose starts with the first visible bow draw stage")
+	equal(clock.player_animation_callback(quarry, quarry._control), "stand",
+		"held Loose suppresses the standing mine animation")
+	quarry._control.up = true
+	equal(clock.player_animation_callback(quarry, quarry._control), "walk",
+		"held Loose suppresses the walking mine animation")
+	quarry._control.up = false
 	-- First REPAIR capture adds persistent identity metadata. Its reason-aware
 	-- equipment notification refreshes the snapshot without dropping the draw.
 	env.grug_inventory.equipment_changed(quarry, "grug_weapon",
@@ -1386,9 +1411,16 @@ local function run_checks(repo)
 		"durability metadata cancelled a same-bow draw")
 	clock.us = clock.us + 250000
 	quarry._look = {x = 1, y = 0, z = 0}
-	quarry._control.dig = false
 	clock.scout_globalstep(0.25)
+	check(loose_stack:get_meta():get_string("wield_image"):find(
+		"grug_abilities_bow_draw_2.png", 1, true) == 1,
+		"full held Loose reaches the third visible bow draw stage")
+	quarry._control.dig = false
+	clock.scout_globalstep(0.05)
 	math.random = old_random
+	equal(loose_stack:get_meta():get_string("wield_image"),
+		"grug_gear_bow_wood.png",
+		"full Loose release restores the equipped bow wield image")
 	local twin = clock.spawn_batches[#clock.spawn_batches]
 	equal(twin and #twin, 2, "Twin Shot spawns two siblings at full draw")
 	equal(clock.consumed, 2, "Twin Shot atomically consumes two arrows")
@@ -1460,6 +1492,7 @@ local function run_checks(repo)
 	clock.players[partial_user:get_player_name()] = partial_user
 	partial_user:get_inventory().grug_weapon[1] = make_stack("grug_gear:bow_wood")
 	partial_user._wield = make_stack("grug_abilities:loose")
+	partial_user:get_inventory().main[1] = partial_user._wield
 	partial_user._control.dig = true
 	abilities.try_cast(partial_user, registered.loose, nil)
 	clock.us = clock.us + 250000
@@ -1469,6 +1502,15 @@ local function run_checks(repo)
 	equal(partial.speed, 20, "half draw scales arrow impulse linearly")
 	equal(partial.data.damage, 11,
 		"half draw scales bow plus ranged damage linearly")
+	local partial_loose
+	for _, stack in ipairs(partial_user:get_inventory():get_list("main")) do
+		if stack:get_name() == "grug_abilities:loose" then partial_loose = stack end
+	end
+	equal(partial_loose:get_meta():get_string("wield_image"),
+		"grug_gear_bow_wood.png",
+		"Loose release restores the equipped bow wield image")
+	equal(clock.player_animation_callback(partial_user, partial_user._control), nil,
+		"released Loose clears its animation override")
 
 	-- True weapon changes and lifecycle exits cancel the held action.
 	fail_user._control.dig = true
@@ -1477,11 +1519,15 @@ local function run_checks(repo)
 	env.grug_inventory.equipment_changed(fail_user, "grug_weapon")
 	check(not abilities.scout_draw_active(fail_user),
 		"a true bow swap did not cancel the held draw")
+	equal(clock.player_animation_callback(fail_user, fail_user._control), nil,
+		"weapon swap clears the held-draw animation override")
 	fail_user:get_inventory().grug_weapon[1] = make_stack("grug_gear:bow_wood")
 	abilities.try_cast(fail_user, registered.loose, nil)
 	for _, callback in ipairs(clock.die_callbacks) do callback(fail_user) end
 	check(not abilities.scout_draw_active(fail_user),
 		"death did not cancel the held draw")
+	equal(clock.player_animation_callback(fail_user, fail_user._control), nil,
+		"death clears the held-draw animation override")
 	fail_user._control.dig = true
 	abilities.try_cast(fail_user, registered.loose, nil)
 	fail_user._wield = make_stack("grug_abilities:sprint")
@@ -1544,8 +1590,8 @@ local function run_checks(repo)
 	end
 	equal(starter_items["default:sword_stone"], 1,
 		"Scout starter stone sword is in main")
-	equal(starter_items["grug_gear:arrow"], 20,
-		"Scout starter receives twenty arrows")
+	equal(starter_items["grug_gear:arrow"], 200,
+		"Scout starter receives two hundred arrows")
 	row("wp11_scout_gameplay", "talents", 16, "twin", 2,
 		"range", twin and twin[1].max_distance or 0,
 		"ammo_after_refund", clock.ammo)

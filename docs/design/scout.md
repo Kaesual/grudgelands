@@ -79,7 +79,7 @@ ceiling of two talent buttons puts the worst case at 7 of 8.
 | **Loose** | cast | 1 arrow | none (ammo-limited) | Requires a bow in the weapon slot. A **ballistic** arrow along the cast-time crosshair, 25 m, initial impulse from a bounded draw time, gravity supplying the trajectory | `grug_projectiles` — swept collision, owner validation, the per-owner active cap and max-distance cleanup are all shipped (`classes.md:287-290`); only gravity is new, and `combat_stats.md:249-252` already specifies it |
 | **Snare Shot** | cast | 8 % base mana + 1 arrow | 12 s | The arrow slows the target by 50 % for 4 s | `grug_mobs.slow` for mobs and the player movement aggregator — the same two paths Hamstring uses (`kits.lua:421-430`) |
 | **Sidestep** | cast | 10 % base mana | 30 s | Dodge chance **+15** percentage points for 4 s, **inside** the 30 % cap. A base ability has no ranks; the Veil tree shortens its cooldown (Slip Away) and replaces it (Shake Loose) | `grug_classes.get_crit_chance`'s twin `get_dodge_chance` (`grug_classes/stats.lua:128-140`) and the timed-window table of `skill_trees.md` §3.2 |
-| **Sprint** ‼ | cast | 15 % base mana | **300 s** | Movement speed **+25 % for 10 s** — 5.0 nodes/s against the ordinary aggressive band's 4.6 | the speed aggregator of `skill_trees.md` §3.9, as one named modifier with its own duration |
+| **Sprint** ‼ | cast | 15 % base mana | **300 s** | Movement speed **+50 % for 10 s** — 6.0 nodes/s against the ordinary aggressive band's 4.6 | the speed aggregator of `skill_trees.md` §3.9, as one named modifier with its own duration |
 
 **Sprint is a rule-breaker in the base kit, and it is the clearest example of
 ruling 10** — "skills may explicitly break the base inequalities… the bigger
@@ -101,7 +101,7 @@ starter bow. Woodcarver owns bow refinement and affixes, not the plain recipe.
 Bows are two-handed and may share Offhand only with the zero-hand quiver.
 Shooting works without a quiver: ammunition is consumed atomically from the
 equipped quiver first and then `main`. The Scout starts with its wooden bow
-equipped and receives 20 arrows plus a stone sword in `main`; it does not start
+equipped and receives 200 arrows plus a stone sword in `main`; it does not start
 with a quiver.
 
 Historical baseline measured before Round 11:
@@ -272,7 +272,7 @@ that must keep moving while its attack clock runs is the other consumer. The
 Scout's former "speed and stealth" lane collapses into the class lane once it
 exists.
 
-### 6.2 Sprint breaks a decided pillar, deliberately — **needs a rule**
+### 6.2 Sprint is a deliberate, bounded speed exception
 
 `mounts.md:173-190` states it outright: ordinary aggressive mobs run **4.6** against a
 player's **4.0** (`combat_stats.md:310-315`), and the 25 m soft de-aggro, the
@@ -281,13 +281,13 @@ distance". It is why the Swiftness Draught is capped at **+8 % for 15 s**
 (`items_crafting.md` §10 P4: `4.0 × 1.08 = 4.32 < 4.6`) and why any damage
 dismounts a rider.
 
-At +25 % a sprinting Scout runs 5.0 and outruns every aggressive mob for ten
-seconds. **Ruling 10 permits exactly this** — the break is the point, the
-five-minute cooldown is the price. What is still open is the paperwork:
-`mounts.md` §3.1 and `combat_stats.md` §3 have to say that the inequality
-holds *except* for named, long-cooldown skills, or the next reader files
-Sprint as a bug. Neither file is this lane's; `skill_trees.md` §7 task 1
-carries it, and the exact numbers are ruling 29: **+25 % for 10 s on a 300 s cooldown**.
+At +50 % a sprinting Scout runs 6.0 nodes/s and outruns ordinary aggressive
+mobs for ten seconds. Ruling 10 permits this deliberate exception; the
+five-minute cooldown remains its limit. The user increased Sprint from +25% to
+**+50% on 2026-09-20**, superseding only ruling 29's speed amount. Duration
+remains 10 seconds, cooldown 300 seconds and cost 15% of the base mana pool.
+The shared movement aggregator's existing additive modifiers and 1.5 speed cap
+still apply; this change does not raise the cap.
 
 ### 6.3 Faster mobs versus the Mage's kiting fantasy — **needs a rule**
 

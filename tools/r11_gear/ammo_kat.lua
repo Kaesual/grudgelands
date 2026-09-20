@@ -13,7 +13,7 @@ return function(repo)
  local dropped={}
  _G.core={registered_items=defs,register_craftitem=function(n,d)defs[n]=d end,get_item_group=function(n,g)return((defs[n]or{}).groups or{})[g]or 0 end,register_on_joinplayer=function()end,register_on_leaveplayer=function()end,get_us_time=function()return clock end,chat_send_player=function(_,text)messages[#messages+1]=text end,register_allow_player_inventory_action=function(f)allow[#allow+1]=f end,register_on_player_inventory_action=function(f)changed[#changed+1]=f end,add_item=function(_,stack)dropped[#dropped+1]=ItemStack(stack)end}
  _G.grug_inventory={refresh=function()end}
- defs["grug_gear:arrow"]={stack_max=99,groups={grug_arrow=1}}
+ defs["grug_gear:arrow"]={stack_max=200,groups={grug_arrow=1}}
  dofile(repo.."/mods/PLAYER/grug_inventory/bags.lua")
  local Inv={};Inv.__index=Inv
  function Inv:new()return setmetatable({lists={main={},grug_offhand={ItemStack("grug_inventory:quiver")},grug_quiver_content={ItemStack("grug_gear:arrow 3"),ItemStack("grug_gear:arrow 2")}}},self)end
@@ -21,7 +21,7 @@ return function(repo)
  function Inv:get_stack(n,i)return ItemStack((self.lists[n]or{})[i]or"")end
  function Inv:set_stack(n,i,s)self.lists[n]=self.lists[n]or{};self.lists[n][i]=ItemStack(s)end
  function Inv:is_empty(n)for _,s in ipairs(self:get_list(n))do if not s:is_empty()then return false end end return true end
- function Inv:add_item(n,s)local list=self.lists[n];local left=ItemStack(s);local size=n=="grug_quiver_content"and 4 or 8;for i=1,size do local x=list[i]or ItemStack("");if x:is_empty()then list[i]=ItemStack(left);return ItemStack("")elseif x:get_name()==left:get_name()then local k=math.min(99-x.c,left.c);x.c=x.c+k;left.c=left.c-k;list[i]=x;if left.c==0 then return ItemStack("")end end end;return left end
+ function Inv:add_item(n,s)local list=self.lists[n];local left=ItemStack(s);local size=n=="grug_quiver_content"and 4 or 8;for i=1,size do local x=list[i]or ItemStack("");if x:is_empty()then local k=math.min(left:get_stack_max(),left.c);list[i]=ItemStack(left);list[i].c=k;left.c=left.c-k;if left.c==0 then return ItemStack("")end elseif x:get_name()==left:get_name()then local k=math.min(x:get_stack_max()-x.c,left.c);x.c=x.c+k;left.c=left.c-k;list[i]=x;if left.c==0 then return ItemStack("")end end end;return left end
  local inv=Inv:new();for i=1,8 do inv.lists.main[i]=ItemStack("")end
  local player={get_inventory=function()return inv end,get_player_name=function()return "archer" end,get_pos=function()return{x=0,y=0,z=0}end}
  assert(grug_inventory.ammo_count(player)==5)
@@ -37,16 +37,32 @@ return function(repo)
   "refund without equipped quiver did not use main")
  inv.lists.grug_offhand[1]=ItemStack("grug_inventory:quiver")
  for i=1,8 do inv.lists.main[i]=ItemStack("")end
- inv.lists.main[1]=ItemStack("grug_gear:arrow 1")
+ inv.lists.main[1]=ItemStack("grug_gear:arrow 199")
  inv.lists.grug_quiver_content={ItemStack("grug_gear:arrow 40"),ItemStack("grug_gear:arrow 70")}
  local info={from_list="grug_offhand",from_index=1,to_list="main",to_index=2,count=1}
  assert(allow[1](player,"move",inv,info)==nil)
  inv.lists.main[2]=ItemStack("grug_inventory:quiver");inv.lists.grug_offhand[1]=ItemStack("")
  changed[1](player,"move",inv,info)
- assert(inv:is_empty("grug_quiver_content")and grug_inventory.ammo_count(player)==111)
+ assert(inv:is_empty("grug_quiver_content")and grug_inventory.ammo_count(player)==309)
+ assert(inv.lists.main[1]:get_count()==200 and inv.lists.main[3]:get_count()==109,
+  "filled-quiver transfer did not respect the 200-arrow boundary")
+ -- One empty destination fits a full arrow stack, but not 201 arrows.
+ inv=Inv:new()
+ for i=1,8 do inv.lists.main[i]=ItemStack("grug_gear:arrow 200")end
+ inv.lists.main[2]=ItemStack("");inv.lists.main[3]=ItemStack("")
+ inv.lists.grug_quiver_content={ItemStack("grug_gear:arrow 200"),ItemStack("grug_gear:arrow 1")}
+ assert(allow[1](player,"move",inv,info)==0,
+  "quiver removal exceeded the one free 200-arrow destination")
+ inv.lists.grug_quiver_content[2]=ItemStack("")
+ assert(allow[1](player,"move",inv,info)==nil,
+  "one empty slot must accept all 200 arrows from a quiver")
+ inv.lists.main[2]=ItemStack("grug_inventory:quiver");inv.lists.grug_offhand[1]=ItemStack("")
+ changed[1](player,"move",inv,info)
+ assert(inv:is_empty("grug_quiver_content")and inv.lists.main[3]:get_count()==200)
+ messages={};clock=clock+2000000
  -- Full main inventory leaves every list untouched, including offhand.
  inv=Inv:new()
- for i=1,8 do inv.lists.main[i]=ItemStack("grug_gear:arrow 99")end
+ for i=1,8 do inv.lists.main[i]=ItemStack("grug_gear:arrow 200")end
  local function snapshot()
   local rows={}
   for _,name in ipairs({"main","grug_offhand","grug_quiver_content"})do
@@ -62,9 +78,9 @@ return function(repo)
  assert(allow[1](player,"take",inv,{listname="grug_offhand",stack=ItemStack("grug_inventory:quiver")})==0)
  assert(#messages==2 and snapshot()==before)
  -- A post-launch refund can never be lost even if both inventories fill.
- inv.lists.grug_quiver_content={ItemStack("grug_gear:arrow 99"),
-  ItemStack("grug_gear:arrow 99"),ItemStack("grug_gear:arrow 99"),
-  ItemStack("grug_gear:arrow 99")}
+ inv.lists.grug_quiver_content={ItemStack("grug_gear:arrow 200"),
+  ItemStack("grug_gear:arrow 200"),ItemStack("grug_gear:arrow 200"),
+  ItemStack("grug_gear:arrow 200")}
  assert(grug_inventory.refund_ammo(player,2)and #dropped==1 and
   dropped[1]:get_count()==2)
  return "ammo\tquiver-first\tmain-fallback\trefund-quiver-first\trefund-safe-overflow\tfilled-transfer\tfull-main-atomic-refusal\tthrottled-message\n"

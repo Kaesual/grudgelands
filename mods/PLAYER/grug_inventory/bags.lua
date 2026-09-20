@@ -96,10 +96,11 @@ end
 
 local function main_arrow_capacity(inventory, occupied_index)
 	local capacity = 0
+	local arrow_stack_max = ItemStack("grug_gear:arrow"):get_stack_max()
 	for index, stack in ipairs(inventory:get_list("main") or {}) do
 		if index ~= occupied_index then
 			if stack:is_empty() then
-				capacity = capacity + 99
+				capacity = capacity + arrow_stack_max
 			elseif is_arrow(stack) then
 				capacity = capacity + math.max(0, stack:get_stack_max() - stack:get_count())
 			end

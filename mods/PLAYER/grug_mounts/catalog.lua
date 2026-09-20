@@ -16,10 +16,10 @@ grug_mounts.TIERS = {
 		level = 30, mode = "land", speed = 8,
 		item = "grug_mounts:journeyman_mount"},
 	[3] = {id = 3, key = "expert", name = "Expert Riding",
-		level = 45, mode = "flight", speed = 7,
+		level = 45, mode = "flight", speed = 8,
 		item = "grug_mounts:expert_mount"},
 	[4] = {id = 4, key = "master", name = "Master Riding",
-		level = 60, mode = "flight", speed = 10,
+		level = 60, mode = "flight", speed = 12,
 		item = "grug_mounts:master_mount"},
 }
 

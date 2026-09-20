@@ -577,6 +577,7 @@ local function build_rows()
 				key = record.key, kind = kind, anchor = record.anchor,
 				slots = {}, by_socket = {}, pending = 0, idle_groups = {},
 				patrols = {}, totals = {}, placed_count = {}, spare_count = 0,
+				ready = false,
 				-- socket id -> true for the residents that WALK (section 8.3),
 				-- plus the two counts a census reports the share from.
 				walkers = {}, walker_count = 0, resident_count = 0,
@@ -727,6 +728,11 @@ local function build_rows()
 						end
 						row.totals[slot.family] = row.totals[slot.family] + 1
 						if slot.placed then
+							-- A persisted socket marker is current-world proof that this
+							-- capital was already authored and served. It restores the
+							-- readiness latch after restart even when the player resumes
+							-- beside an outer shop and the core mapblock stays unloaded.
+							if kind == "capital" then row.ready = true end
 							row.placed_count[slot.family] =
 								row.placed_count[slot.family] + 1
 						end
@@ -1181,9 +1187,27 @@ end
 -- of a capital always carries the guard banner the anchor writer put there, so
 -- a generated capital cannot answer "air" by accident either.
 local function settlement_ready(row)
+	-- Once the capital anchor OR one of its authored socket blocks is loaded,
+	-- keep serving pending district sockets. Requiring the core and an outer
+	-- shop simultaneously strands that trainer when a player walks between the
+	-- two; requiring the core first also breaks a direct arrival at a district.
+	-- `get_node_or_nil` still rejects unloaded/ignore blocks, and `serve` repeats
+	-- the same check at the individual socket before placement.
+	if row.ready then return true end
 	if row.kind == "start" then return grug_core.start_ready(row.race_id) end
 	local node = core.get_node_or_nil(row.anchor)
-	return node ~= nil and node.name ~= "ignore"
+	if node ~= nil and node.name ~= "ignore" then
+		row.ready = true
+		return true
+	end
+	for index = 1, #row.slots do
+		node = core.get_node_or_nil(row.slots[index].pos)
+		if node ~= nil and node.name ~= "ignore" then
+			row.ready = true
+			return true
+		end
+	end
+	return false
 end
 
 --
