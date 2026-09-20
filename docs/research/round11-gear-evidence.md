@@ -24,6 +24,6 @@ find mods/*/grug_* -name '*.lua' -print0 | xargs -0 /home/jan/projects/grudgelan
 find tools/r9_ench tools/r9_prof tools/r10_equip tools/r11_gear tools/wp13 -name '*.lua' -print0 | xargs -0 /home/jan/projects/grudgelands/tools/bin/luac51 -p
 ```
 
-The current LuaJIT receipt is `tools/r11_gear/evidence/luajit.log`, SHA-256 `cb48e628fbc7c12de6be82a7ba0699d186bfbe979765808c7f700ce69b14e6de`. The mod parser gate and the five required Lua 5.1 sweeps passed; sweep hits were existing comments/strings. The only changed-mod `SETGLOBAL` writes are the established `grug_artisans`, `grug_gear`, and `grug_items` module globals.
+The current LuaJIT receipt is `tools/r11_gear/evidence/luajit.log`, SHA-256 `56484ba34a7e36138c82e607862fd028725adefc1cb690669f1ac56d69243a3f`. The mod parser gate and the five required Lua 5.1 sweeps passed; sweep hits were existing comments/strings. The only changed-mod `SETGLOBAL` writes are the established `grug_artisans`, `grug_gear`, and `grug_items` module globals.
 
 Final media is pending the Round 11 ART lane. Provisional registrations reuse shipped staff, chest, book, stick and bag images for bows, shields, spellbooks, arrows, quivers and the new bag identities. Independent source review is also pending; this author evidence does not claim it.

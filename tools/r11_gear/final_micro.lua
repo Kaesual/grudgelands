@@ -6,6 +6,7 @@ local tests = {
  "tools/r10_equip/vendor_rotation_kat.lua",
 	"tools/wp13/gear_catalogue_kat.lua",
 	"tools/r9_prof/goldsmith_kat.lua",
+	"tools/r9_prof/stations_kat.lua",
  "tools/r11_gear/ammo_kat.lua",
 }
 for _, path in ipairs(tests) do io.write(assert(dofile(repo .. "/" .. path))(repo)) end

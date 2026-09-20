@@ -132,4 +132,13 @@ wp13_gear_vendored	default:axe_bronze,default:axe_steel,default:axe_stone,defaul
 wp13_gear_prices	3:50/40/25 10:70/56/35 20:98/78/49 30:137/110/69 40:192/154/96 50:269/215/134
 wp13_gear_result	PASS	0
 PASS r9 goldsmith catalog recipes=80 outputs=68
+stations	ids=5	nodes=5	grid=3x3	book_button
+recipes	housing_t3=5	acyclic	shaped+shapeless	station_isolated
+operation	near+ACL	exact-once	full-inventory-no-roll
+capitals	count=6	stations_each=7	authored_outer_socket	reachable	shared_forge
+weaponsmith	forge	grug_jobs:forge	0,1,-8
+leatherworker	tanning_rack	grug_jobs:tanning_rack	2,1,-20
+tailor	tailor_bench	grug_jobs:tailor_bench	0,1,-16
+woodcarver	carving_bench	grug_jobs:carving_bench	0,1,-24
+goldsmith	jewellers_bench	grug_jobs:jewellers_bench	2,1,-28
 ammo	quiver-first	main-fallback	atomic-unequip
