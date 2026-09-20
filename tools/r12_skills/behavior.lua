@@ -59,9 +59,14 @@ assert(inv:get_stack("grug_bag1_content", 2):get_wear() == cooldown_stack:get_we
 assert(not grug_abilities.ready(player, "charge"), "recovery reset cooldown")
 assert(core.registered_items["grug_abilities:strike"].on_drop(ItemStack("grug_abilities:strike"), player):is_empty())
 
-local talent_callbacks, notices, allow_action = {}, {}, nil
+local talent_callbacks, notices, allow_action, on_action = {}, {}, nil, nil
+local destination_puts = 0
 core.chat_send_player = function(_, text) notices[#notices + 1] = text end
 core.register_allow_player_inventory_action = function(fn) allow_action = fn end
+core.register_on_player_inventory_action = function(fn) on_action = fn end
+core.register_on_player_inventory_action(function(_, action)
+	if action == "put" then destination_puts = destination_puts + 1 end
+end)
 core.register_craftitem = function(name, def) core.registered_items[name] = def end
 core.formspec_escape = function(s) return s end
 core.registered_nodes = {['test:chest'] = {allow_metadata_inventory_put = function() return -1 end}}
@@ -122,19 +127,35 @@ local strike_index = index_of("grug_abilities:strike")
 local strike = catalog:get_stack("catalog", strike_index)
 assert(callbacks.allow_take(catalog, "catalog", strike_index, strike, player) == 0, "bag duplicate accepted")
 remove_all(strike:get_name())
-assert(callbacks.allow_take(catalog, "catalog", strike_index, strike, player) == -1)
 -- Luanti creates a fresh InvRef userdata for the destination-side player
 -- callback. Reproduce the complete cross-inventory transaction: detached
 -- infinite source allow_take, distinct destination wrapper allow_put, move,
--- then detached on_take. The catalog source must remain unchanged.
+-- then source on_take and destination on_put. The catalog source remains.
 local destination_ref = setmetatable({owner_name = player:get_player_name()}, {
 	__index = function(_, key) return inv[key] or inventory_type[key] end,
 })
+local callback_order = {}
 local destination_allow = allow_action(player, "put", destination_ref,
 	{listname = "main", index = 1, stack = strike})
+callback_order[#callback_order + 1] = "destination_allow_put"
 assert(destination_allow == nil, "player-owned destination wrapper rejected")
+local source_allow = callbacks.allow_take(catalog, "catalog", strike_index, strike, player)
+callback_order[#callback_order + 1] = "source_allow_take"
+assert(source_allow == -1, "catalog source is not infinite")
+catalog:set_stack("catalog", strike_index, ItemStack(""))
 inv:set_stack("main", 1, strike)
+if source_allow == -1 then
+	catalog:set_stack("catalog", strike_index, strike)
+end
 callbacks.on_take(catalog, "catalog", strike_index, strike, player)
+callback_order[#callback_order + 1] = "source_on_take"
+on_action(player, "put", destination_ref,
+	{listname = "main", index = 1, stack = strike})
+callback_order[#callback_order + 1] = "destination_on_put"
+assert(destination_puts == 1, "destination on_put notification was not delivered")
+assert(table.concat(callback_order, ",") ==
+	"destination_allow_put,source_allow_take,source_on_take,destination_on_put",
+	"cross-inventory callback order diverged from IMoveAction")
 assert(inv:get_stack("main", 1):get_name() == "grug_abilities:strike",
 	"catalog recovery transaction did not reach main")
 assert(catalog:get_stack("catalog", strike_index):get_name() == "grug_abilities:strike",
