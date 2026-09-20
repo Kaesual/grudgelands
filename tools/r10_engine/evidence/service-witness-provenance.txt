@@ -1,0 +1,8 @@
+candidate_parent=1fcceaae65c9ee6dd84d88f3180068aa6c17d70f
+interpreter=/usr/bin/luajit
+LuaJIT 2.1.1767980792 -- Copyright (C) 2005-2026 Mike Pall. https://luajit.org/
+command=luajit tools/r10_engine/run_service_witness_kat.lua <repo> <scratch>
+21d42ff8b72a1ab7043aa92d2cb5fad7a1d4dd2b045076426431a6d98a69254b  tools/r10_engine/service_witness_kat.lua
+7689f61ebb7287bf0705e2e5fecd8f7689c3ba059d15bb4f8215ca6c58c88528  tools/r10_engine/run_service_witness_kat.lua
+2de446bd1208975312a65bb30b4db03fa4790872cf65b7a6c4af2c0afb8710cf  tools/wp13/capital_probe/service_witness.lua
+afd93e967ccf989908285b7864424c7bf52fcc3bfdec59fb4a1fd971fc2595bc  mods/ENTITIES/grug_mobs/capital_displays.lua

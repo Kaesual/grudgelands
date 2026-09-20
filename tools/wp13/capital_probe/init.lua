@@ -142,7 +142,7 @@ local function raw_sha256(bytes)
 	return digest
 end
 
-local source, plots, overlay
+local source, plots, overlay, core_composition
 if not ground_only then
 	source = timed("module_load", function()
 		local loaded = dofile(wp40 .. "/" .. profile.blueprint_file)
@@ -151,7 +151,7 @@ if not ground_only then
 	-- Built and dropped: what is measured is the build, which is exactly the
 	-- work the emerge thread does on the first mapchunk that touches the
 	-- envelope.
-	timed("core", source.core.build)
+	core_composition = timed("core", source.core.build)
 	plots = {}
 	for index = 1, #source.plots do
 		local plot = source.plots[index]
@@ -548,12 +548,10 @@ local function corpus()
 	local warm_y = grug_zones.terrain_height_at(1500, 700)
 	add("warmup", "warmup", chunk_origin(1500), chunk_origin(warm_y),
 		chunk_origin(700))
-	-- THE SAME TERRAIN WITHOUT THIS PACKAGE'S CELLS. Lethariel is a capital too,
-	-- so WP40 fits, flattens, terraces and protects it exactly like the subject --
-	-- and it has no WP13 blueprints at all. The difference between the two
-	-- capitals' mapchunks is therefore the cost of the capital SETTLEMENT, which
-	-- is what this package owns; comparing a capital mapchunk with open land
-	-- would charge the terracing to the seam.
+	-- AN ORDINARY REFERENCE CAPITAL. Lethariel now carries the same eight service
+	-- plots as every capital, so it is not a "no WP13 blueprints" isolation
+	-- control. It remains a useful same-class timing reference beside the subject;
+	-- the report labels it `control_capital` and makes no package-only cost claim.
 	local control_capital = grug_core.capital_anchor("accord", "elf")
 	if type(control_capital) ~= "table" then fail("control capital differs") end
 	add_box("control_capital_lethariel", "control_capital", {
@@ -1100,25 +1098,30 @@ local function dump_done()
 end
 
 local function alchemy_report()
-	local trainer
+	local trainer, station
 	local sockets = grug_core.settlement_sockets_at(KEY)
 	for index = 1, #sockets do
 		local socket = sockets[index]
 		if socket.role == "trainer" and socket.profession == "alchemist" then
 			trainer = socket
-			break
+		elseif socket.role == "public_station" and socket.tags and
+				socket.tags[1] == "brewing_stand" then
+			station = socket
 		end
 	end
 	if not trainer then fail("Alchemist trainer socket is absent") end
-	local stand_pos = {x = anchor_x + 2, y = anchor_y + 1, z = anchor_z - 12}
+	if not station then fail("public brewing-stand socket is absent") end
+	local stand_pos = station.pos
 	local stand_node = core.get_node(stand_pos)
 	if stand_node.name ~= grug_brewing.NODE and
 			stand_node.name ~= grug_brewing.NODE_ACTIVE then
 		fail("brewing stand is absent beside Alchemist trainer: " .. stand_node.name)
 	end
-	if trainer.pos.x + 1 ~= stand_pos.x or trainer.pos.y ~= stand_pos.y or
-			trainer.pos.z ~= stand_pos.z then
-		fail("brewing stand is not beside Alchemist trainer")
+	local dx, dy, dz = trainer.pos.x - stand_pos.x, trainer.pos.y - stand_pos.y,
+		trainer.pos.z - stand_pos.z
+	if trainer.id:match("^(.-)_alchemist$") ~=
+			station.id:match("^(.-)_station$") or dx * dx + dy * dy + dz * dz > 25 then
+		fail("public brewing stand is outside its Alchemist service room/range")
 	end
 
 	-- A disposable PlayerMeta-compatible store drives the real trainer field
@@ -1209,7 +1212,7 @@ local function alchemy_report()
 		"book_tiers=" .. table.concat(tier_text, ","), "profession_level=2"})
 end
 
-local function report_complete()
+local function finalize_report()
 	finished = true
 	local function summarise(kind)
 		local count, total, worst, best, first = 0, 0, 0, nil, nil
@@ -1276,6 +1279,47 @@ local function report_complete()
 	end
 	log(parts)
 	core.request_shutdown("WP13 capital probe complete", false, 0.2)
+end
+
+local service_started = false
+local function report_complete()
+	if mode ~= "full" or plots == nil then return finalize_report() end
+	if service_started then fail("service witness started twice") end
+	service_started = true
+	local anchor = {x = anchor_x, y = anchor_y, z = anchor_z}
+	local core_box = {min_x = anchor_x - 49, max_x = anchor_x + 49,
+		min_y = anchor_y, max_y = anchor_y + 4,
+		min_z = anchor_z - 49, max_z = anchor_z + 49}
+	local trouble = 0
+	core.emerge_area({x = core_box.min_x, y = core_box.min_y, z = core_box.min_z},
+		{x = core_box.max_x, y = core_box.max_y, z = core_box.max_z},
+		function(_, action, calls_remaining)
+			if action == core.EMERGE_ERRORED or action == core.EMERGE_CANCELLED then
+				trouble = trouble + 1
+			end
+			if calls_remaining ~= 0 then return end
+			core.after(0, function()
+				if trouble ~= 0 then fail("precinct emerge failed: " .. trouble) end
+				local hold_state = {held = 0, unheld = 0}
+				local anchor_hold = hold_box(hold_state, core_box)
+				if hold_state.unheld ~= 0 then
+					release_box(anchor_hold); fail("precinct forceload refused")
+				end
+				assert(loadfile(core.get_modpath("grug_wp13_capital_probe") ..
+					"/precinct_witness.lua"))()({key = KEY, anchor = anchor,
+					composition = core_composition, worldpath = worldpath,
+					fail = fail, log = log})
+				local run_services = assert(loadfile(core.get_modpath(
+					"grug_wp13_capital_probe") .. "/service_witness.lua"))()({
+					key = KEY, race = profile.race, plots = plots, anchor = anchor,
+					worldpath = worldpath, wp13 = wp40:gsub("/wp40$", "/wp13"),
+					fail = fail, log = log})
+				run_services(function()
+					release_box(anchor_hold)
+					finalize_report()
+				end)
+			end)
+		end)
 end
 
 -- Each BOX of a region is emerged, held, read and released in turn, and the

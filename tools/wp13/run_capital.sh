@@ -169,7 +169,7 @@ set -e
 [[ -f "$log" ]] || { echo "run_capital: no server log" >&2; exit 1; }
 
 for dump in core plot district fill avenue approach rampart corner gate wall \
-		surface scan grid field; do
+		surface scan grid field services precinct; do
 	[[ -f "$world/$key-$dump.tsv" ]] && cp "$world/$key-$dump.tsv" "$output/"
 done
 grep 'GRUG_WP13_CAPITAL' "$log" >"$output/probe.txt" || true
@@ -219,7 +219,31 @@ printf 'exit=%s errors=%s complete=%s log=%s\n' \
 # therefore explicitly allowed to find nothing, and a label with no digest is
 # skipped with a line saying so.
 if [[ "$mode" == "full" ]]; then
+	services="$output/$key-services.tsv"
+	precinct="$output/$key-precinct.tsv"
+	[[ -f "$services" && -f "$precinct" ]] || {
+		echo "WP13 $key: service/precinct machine report is absent" >&2; exit 1;
+	}
+	[[ "$(awk 'NR>1 {n++} END {print n+0}' "$services")" -eq 23 ]] || {
+		echo "WP13 $key: service report row count differs" >&2; exit 1;
+	}
+	for spec in 'public_station 7' 'trainer 8' 'riding_trainer 1' \
+			'mount_display 4' 'gear_display 3'; do
+		role="${spec% *}"; wanted="${spec#* }"
+		actual="$(awk -F '\t' -v role="$role" 'NR>1 && $5==role {n++} END {print n+0}' "$services")"
+		[[ "$actual" -eq "$wanted" ]] || {
+			echo "WP13 $key: service role $role is $actual, expected $wanted" >&2; exit 1;
+		}
+	done
+	[[ "$(grep -c 'GRUG_WP13_CAPITAL event=services .* status=PASS' "$log" || true)" -eq 1 &&
+		"$(grep -c 'GRUG_WP13_CAPITAL event=precinct .* status=PASS' "$log" || true)" -eq 1 &&
+		"$(grep -c 'GRUG_WP13_CAPITAL event=alchemy ' "$log" || true)" -eq 1 ]] || {
+		echo "WP13 $key: service/precinct/alchemy completion marker differs" >&2; exit 1;
+	}
 	: >"$output/overlay-digests.txt"
+	printf 'capital\tseed\tlabel\told_digest\tnew_digest\told_cells\tnew_cells\told_package\tcandidate\tstatus\n' \
+		>"$output/overlay-delta.tsv"
+	candidate="$(git -C "$repo" rev-parse HEAD)"
 	status_digest=0
 	# `corner` is the region the wave-2 review asked for: the four places two
 	# wall runs meet, which `wall.lua` section 1b reconciles and which NO OTHER
@@ -268,14 +292,27 @@ if [[ "$mode" == "full" ]]; then
 		expected_file="$repo/tools/wp13/evidence/20260915-capital-terrain/$key/${label}-digest-$seed.txt"
 		if [[ -f "$expected_file" ]]; then
 			expected="$(awk 'NR==1 {print $1}' "$expected_file")"
+			expected_cells="$(awk 'NR==1 {for(i=1;i<=NF;i++) if($i ~ /^overlay_cells=/) {sub(/^overlay_cells=/,"",$i); print $i}}' "$expected_file")"
+			expected_package="$(awk 'NR==1 {for(i=1;i<=NF;i++) if($i ~ /^package=/) {sub(/^package=/,"",$i); print $i}}' "$expected_file")"
 			if [[ "$digest" != "$expected" ]]; then
+				printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\tchanged-review-required\n' \
+					"$key" "$seed" "$label" "$expected" "$digest" \
+					"${expected_cells:--}" "${cells:--}" "${expected_package:--}" "$candidate" \
+					>>"$output/overlay-delta.tsv"
 				printf 'WP13 %s: the built %s moved.\n  now      %s\n  expected %s (%s)\n' \
 					"$key" "$label" "$digest" "$expected" "$expected_file" >&2
 				status_digest=1
 			else
+				printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\tmatch\n' \
+					"$key" "$seed" "$label" "$expected" "$digest" \
+					"${expected_cells:--}" "${cells:--}" "${expected_package:--}" "$candidate" \
+					>>"$output/overlay-delta.tsv"
 				echo "$label overlay digest matches the committed value"
 			fi
 		else
+			printf '%s\t%s\t%s\t-\t%s\t-\t%s\t-\t%s\tunfrozen\n' \
+				"$key" "$seed" "$label" "$digest" "${cells:--}" "$candidate" \
+				>>"$output/overlay-delta.tsv"
 			echo "$label overlay digest recorded (no committed value for seed $seed yet)"
 		fi
 	done
