@@ -39,7 +39,7 @@ local function wear_stack(player, list, index)
 	disable_broken_operation(stack)
 	inv:set_stack(list, index, stack)
 	if grug_inventory.is_equipment_list(list) then
-		grug_inventory.equipment_changed(player, list)
+		grug_inventory.equipment_changed(player, list, "durability_metadata")
 	end
 	return true
 end
@@ -113,7 +113,8 @@ function grug_repair.capture_action(player, action_id)
 				id = "repair:" .. tostring(serial)
 				meta:set_string(ITEM_ID, id)
 				inv:set_stack(list, 1, stack)
-				grug_inventory.equipment_changed(player, list)
+				grug_inventory.equipment_changed(player, list,
+					"durability_metadata")
 			end
 			rows[#rows + 1] = id
 		end
