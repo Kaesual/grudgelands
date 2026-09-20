@@ -259,3 +259,13 @@ grug_cooking.REFINEMENTS = {
 	{tier = 1, input = C .. "wild_grain", output = "grug_cooking:bread",
 		station = "furnace", hint = "Furnace"},
 }
+
+-- These recipes already exist in their owning engine mods. Register their
+-- exact provenance with Jobs without installing a duplicate engine recipe, so
+-- furnace extraction enforces Cooking and awards progression.
+for index = 1, #grug_cooking.REFINEMENTS do
+	local row = grug_cooking.REFINEMENTS[index]
+	grug_jobs.register_recipe({profession = "cooking", tier = row.tier,
+		station = row.station, inputs = {row.input}, output = row.output,
+		hint = row.hint, existing_engine_recipe = true})
+end

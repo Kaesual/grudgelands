@@ -42,8 +42,6 @@ for index = 1, #basics do
 	assert(recipe.output_name ~= "grug_fishing:cooked_fish")
 end
 assert(starter == 63 and bronze_armor == 4 and dual == 5)
-local cooking = policy.records_for_profession("cooking")
-assert(#cooking == 3, "Cooking refinement ownership differs")
 
 local stale = load_policy()
 local stale_records = records_from(stale)

@@ -1,7 +1,7 @@
 -- Exact presentation and ownership policy for the current engine recipe
 -- catalog. Craft registration remains in each content mod; this table only
 -- decides which book presents an already registered route.
-local M = {declarations = {}, profession_records = {}}
+local M = {declarations = {}}
 
 function M.route_key(recipe)
 	local signature = table.concat(recipe.display_items or recipe.inputs or {}, "\1")
@@ -42,21 +42,12 @@ function M.bind(records)
 			recipe.basics_route_key = key
 			recipe.basics_presentation = declaration
 			general[#general + 1] = recipe
-		elseif declaration.profession then
-			recipe.profession = declaration.profession
-			local list = M.profession_records[declaration.profession]
-			if not list then list = {}; M.profession_records[declaration.profession] = list end
-			list[#list + 1] = recipe
 		end
 	end
 	for key in pairs(M.declarations) do
 		assert(used[key], "stale Basics catalog declaration: " .. key)
 	end
 	return general
-end
-
-function M.records_for_profession(profession)
-	return M.profession_records[profession] or {}
 end
 
 function M.counts()

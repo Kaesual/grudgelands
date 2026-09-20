@@ -214,14 +214,6 @@ local function normalized_profession_records(profession, station)
 	local source = grug_jobs.recipes_for(profession, station)
 	local result = {}
 	for index = 1, #source do result[index] = cached_record(source[index]) end
-	local presentation = grug_jobs.basics_presentation
-	local extras = presentation and
-		presentation.records_for_profession(profession) or {}
-	for index = 1, #extras do
-		if station == nil or extras[index].station == station then
-			result[#result + 1] = extras[index]
-		end
-	end
 	return result
 end
 

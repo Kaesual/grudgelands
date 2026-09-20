@@ -4,4 +4,4 @@ sweep-2 lines=2
 sweep-3 lines=0
 sweep-4 lines=245
 sweep-5 lines=3
-SETGLOBAL lines=0
+SETGLOBAL lines=1

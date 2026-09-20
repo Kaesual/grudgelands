@@ -1,3 +1,4 @@
 R12 RECIPES presentation PASS routes=830 general=596 profession=234 starter=63 dual=5 bronze_armor=4 audit=missing+stale+duplicate
 R12 RECIPES discovery PASS bag+craft+group+persistence preview-excluded
 R12 RECIPES formspec PASS furnace-below-arrow guidance
+R12 RECIPES furnace authority PASS unlearned=denied learned=3 progression=3

@@ -12,13 +12,17 @@ Focused LuaJIT fixtures cover the complete declaration set, the five alloy main
 materials, all four T1 Bronze armor starters, professional exclusions, mutation
 failures, persistent discovery across bags/crafting/trade and station-icon
 formspec placement. `catalog_probe` independently enumerates the live engine
-registry and asserts 596/234 ownership, 63 starter routes, five alloys, four
-Bronze armor outputs and no Bread/Cooked Meat/Cooked Fish leakage.
+registry and asserts the complete 830-route catalog, 596 Basics routes, 63
+starters, five alloys, four Bronze armor outputs and real `recipe_for_craft`
+Cooking provenance for Bread, Cooked Meat and Cooked Fish.
+`furnace_authority_kat.lua` passes those three outputs through the real
+extraction wrapper: an unlearned player is denied, while a learned cook can
+take them and receives three craft credits.
 
 Run the isolated engine audit with:
 
 ```sh
-PORT=32346 PROBE="$PWD/tools/r12_recipes/catalog_probe" KEEP=1 \
+PORT=32348 PROBE="$PWD/tools/r12_recipes/catalog_probe" KEEP=1 \
   nice -n 19 bash tools/luanti_headless.sh 120
 ```
 

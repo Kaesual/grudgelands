@@ -47,7 +47,6 @@ function grug_jobs.mark_seen(player, items)
 	if changed then save_seen(player, seen) end
 	return changed
 end
-function grug_jobs.discover_tier_one_inputs() return false end
 local function scan_player(player)
 	if not player or not player.get_inventory then return false end
 	local inventory = player:get_inventory(); if not inventory then return false end

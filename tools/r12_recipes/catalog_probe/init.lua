@@ -42,8 +42,9 @@ core.register_on_mods_loaded(function()
 			if station then
 				local width = tonumber(recipe.width) or 0
 				local shapeless = recipe.method == "normal" and width == 0
-				local owner = grug_jobs.recipe_for_craft(station, output,
-					recipe.items or {}) and "profession" or "general"
+				local owned = grug_jobs.recipe_for_craft(station, output,
+					recipe.items or {})
+				local owner = owned and owned.profession or "general"
 				emit(station, output, recipe.method, width, shapeless,
 					recipe.items or {}, owner)
 			end
@@ -51,8 +52,9 @@ core.register_on_mods_loaded(function()
 	end
 	if rawget(_G, "grug_smelting") then
 		for _, recipe in ipairs(grug_smelting.RECIPES or {}) do
-			local owner = grug_jobs.recipe_for_craft("dual_furnace", recipe.output,
-				recipe.inputs) and "profession" or "general"
+			local owned = grug_jobs.recipe_for_craft("dual_furnace", recipe.output,
+				recipe.inputs)
+			local owner = owned and owned.profession or "general"
 			emit("dual_furnace", item_name(recipe.output), "dual_furnace", 2,
 				true, recipe.inputs, owner)
 		end
@@ -95,7 +97,18 @@ core.register_on_mods_loaded(function()
 	assert(refinements["grug_cooking:bread"] and refinements["mobs:meat"] and
 		refinements["grug_fishing:cooked_fish"],
 		"Cooking refinement is absent from its owning book")
-	core.log("action", ("[r12recipe] AUDIT general=%d profession=234 starter=%d dual=%d bronze_armor=%d")
+	local authorities = {
+		{"grug_cooking:bread", "grug_cooking:wild_grain"},
+		{"mobs:meat", "mobs:meat_raw"},
+		{"grug_fishing:cooked_fish", "grug_mobs:raw_fish"},
+	}
+	for index = 1, #authorities do
+		local recipe = grug_jobs.recipe_for_craft("furnace",
+			authorities[index][1], {authorities[index][2]})
+		assert(recipe and recipe.profession == "cooking" and recipe.tier == 1,
+			"Cooking furnace authority differs: " .. authorities[index][1])
+	end
+	core.log("action", ("[r12recipe] AUDIT catalog=830 basics=%d starter=%d dual=%d bronze_armor=%d cooking_authority=3")
 		:format(#basics, starter_count, dual_count, armor_count))
 	core.log("action", "[r12recipe] DONE")
 	core.request_shutdown("recipe catalog complete", false, 0)
