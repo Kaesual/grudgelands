@@ -146,6 +146,22 @@ notify(-10, {type = "node_damage"})
 notify(0, {type = "punch"})
 equal(incoming, 1, "lethal/environment/zero incoming exclusions")
 
+local equipment_reasons = {}
+local nested_once = false
+grug_core.register_on_equipment_change(function(owner, listname, reason)
+	if not nested_once then
+		nested_once = true
+		grug_core.notify_equipment_change(owner, listname, reason)
+	end
+end)
+grug_core.register_on_equipment_change(function(_, _, reason)
+	equipment_reasons[#equipment_reasons + 1] = reason
+end)
+grug_core.notify_equipment_change(player, "grug_weapon", "durability_metadata")
+equal(#equipment_reasons, 2, "nested equipment notification coalescing")
+equal(equipment_reasons[1], "durability_metadata", "outer equipment reason")
+equal(equipment_reasons[2], "durability_metadata", "coalesced equipment reason")
+
 local source = assert(io.open(repo ..
 	"/mods/ENTITIES/grug_mobs/boss_dragons.lua", "r")):read("*a")
 check(source:find('_grug_fixed_level = 70', 1, true) ~= nil,

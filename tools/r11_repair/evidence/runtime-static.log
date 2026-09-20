@@ -1,8 +1,10 @@
 luac51 parser PASS
-production changed files SETGLOBAL: none
+other production changed files SETGLOBAL: none
+mods/PLAYER/grug_abilities/init.lua SETGLOBAL: grug_abilities (established mod global)
 tools/r11_combat/armor_kat.lua SETGLOBAL: vector, core, grug_core (engine mocks)
 tools/r11_repair/service_kat.lua SETGLOBAL: ItemStack, core, grug_* (engine mocks)
 tools/r11_repair/runtime_kat.lua SETGLOBAL: ItemStack, core, grug_* (engine mocks)
+tools/wp39/swing_aim_test.lua SETGLOBAL: engine/mod mocks
 sweep 1: no matches
 sweep 2: no matches
 sweep 3: no matches

@@ -141,15 +141,21 @@ check(operations == 0 and returned:get_wear() == 65535,
 
 lists.grug_weapon[1] = fresh_weapon(false)
 local heal_action = {id = "heal:one"}
+local before_heal = lists.grug_weapon[1].wear
 callbacks.outgoing(player, heal_action, "heal")
 local once = lists.grug_weapon[1].wear
+check(once == before_heal + 21,
+	"shared heal action did not debit the expected durability")
 callbacks.outgoing(player, heal_action, "heal")
 callbacks.outgoing(player, heal_action, "absorb")
 check(lists.grug_weapon[1].wear == once,
 	"one multi-target heal/absorb action spent more than once")
 local ordinary_action = {}
+local before_ordinary = lists.grug_weapon[1].wear
 callbacks.outgoing(player, ordinary_action, "damage")
 local ordinary_once = lists.grug_weapon[1].wear
+check(ordinary_once == before_ordinary + 22,
+	"ordinary table action identity did not debit the expected durability")
 callbacks.outgoing(player, ordinary_action, "damage")
 check(lists.grug_weapon[1].wear == ordinary_once,
 	"ordinary table action identity without id did not debit exactly once")

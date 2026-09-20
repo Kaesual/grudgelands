@@ -89,19 +89,21 @@ local slot_cache = {} -- player name -> {[list] = ItemStack or false}
 -- join), and a writer that remembered one and forgot the other would leave a
 -- swapped weapon dealing the old damage until relog.
 --
--- `listname` is optional and is passed straight through to the hook consumers
+-- `listname` and `reason` are optional and pass through to hook consumers.
+-- `reason = "durability_metadata"` identifies a same-stack wear/identity write;
+-- consumers must still treat a broken-state transition as a concrete change.
 -- (see grug_core.register_on_equipment_change): the one equipment list that
 -- changed, or nil for "unknown / more than one". The CACHES are always dropped
 -- wholesale regardless -- two table writes are cheaper than a caller who names
 -- one list and quietly wrote two.
-function grug_inventory.equipment_changed(player, listname)
+function grug_inventory.equipment_changed(player, listname, reason)
 	if not player or not player.is_player or not player:is_player() then
 		return
 	end
 	local name = player:get_player_name()
 	armor_cache[name] = nil
 	slot_cache[name] = nil
-	grug_core.notify_equipment_change(player, listname)
+	grug_core.notify_equipment_change(player, listname, reason)
 end
 
 -- WP7 name, kept because AGENTS.md and the WP7 armor pipeline document it.

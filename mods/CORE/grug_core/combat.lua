@@ -298,32 +298,45 @@ end
 -- cannot leak -- a Lua error inside an engine callback takes the server down
 -- with it, so there is no "next call" left to block.
 local notifying = {} -- player name -> true while its callback loop runs
-local notify_pending = {} -- player name -> true when a nested call arrived
+local notify_pending = {} -- player name -> nested reason; false means unspecified/mixed
+local notify_reason = {} -- player name -> reason, false means unspecified/mixed
 local warned_unconditional = false
 
 local function run_equipment_callbacks(player, listname)
+	local name = player:get_player_name()
 	for _, func in ipairs(equipment_change_callbacks) do
-		func(player, listname)
+		func(player, listname, notify_reason[name] or nil)
 	end
 end
 
 -- Internal: grug_inventory fires this from grug_inventory.equipment_changed,
 -- after it dropped its caches, so a callback already reads the NEW equipment.
-function grug_core.notify_equipment_change(player, listname)
+function grug_core.notify_equipment_change(player, listname, reason)
 	local name = player:get_player_name()
 	if notifying[name] then
-		notify_pending[name] = true
+		local nested_reason = reason or false
+		if notify_pending[name] == nil then
+			notify_pending[name] = nested_reason
+		elseif notify_pending[name] ~= nested_reason then
+			notify_pending[name] = false
+		end
+		if notify_reason[name] ~= nested_reason then
+			notify_reason[name] = false
+		end
 		return
 	end
 	notifying[name] = true
+	notify_reason[name] = reason or false
 	run_equipment_callbacks(player, listname)
-	if notify_pending[name] then
+	if notify_pending[name] ~= nil then
+		local pending_reason = notify_pending[name] or nil
 		notify_pending[name] = nil
 		-- Second and final pass: whatever a consumer changed from inside the
 		-- first one is now visible to all of them. `nil` because the nested
 		-- write is by definition a different list than the one that started it.
+		notify_reason[name] = pending_reason or false
 		run_equipment_callbacks(player, nil)
-		if notify_pending[name] and not warned_unconditional then
+		if notify_pending[name] ~= nil and not warned_unconditional then
 			warned_unconditional = true
 			core.log("warning", "[grug_core] an on_equipment_change consumer " ..
 				"calls equipment_changed unconditionally -- the notification " ..
@@ -332,6 +345,8 @@ function grug_core.notify_equipment_change(player, listname)
 		notify_pending[name] = nil
 	end
 	notifying[name] = nil
+	notify_pending[name] = nil
+	notify_reason[name] = nil
 end
 
 -- Flat weapon-damage bonus from Strength (combat_stats.md §2:

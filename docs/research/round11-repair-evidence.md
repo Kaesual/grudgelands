@@ -48,6 +48,10 @@ Verification on the frozen candidate:
   heal/absorb action identities,
   creative exclusion, and persisted concrete projectile item across restart
   and equipment/bag swaps, including persistent serial uniqueness;
+- `tools/wp39/swing_aim_test.lua` under LuaJIT: pass — the real ability
+  equipment consumer preserves late carry and a queued input latch across wear,
+  identity assignment and repeated durability notifications, while real swaps
+  and broken/unbroken transitions reset the clock;
 - `tools/r11_repair/service_kat.lua` under LuaJIT: pass — includes restoration
   of saved tool capabilities while preserving unrelated metadata;
 - `tools/r11_combat/armor_kat.lua` under LuaJIT: pass — effective heal/absorb
