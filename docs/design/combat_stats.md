@@ -92,14 +92,27 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   (`mods/CORE/grug_core/combat.lua:29-65`).
 - **Crit** = 5% + 0.1%×Dex, **cap 30%**; a crit deals ×1.5 damage
 - **Dodge** = 0.1%×Dex, **cap 30%**; a dodge avoids the hit entirely
-- Player armor (gear) reduces incoming damage; endgame plate reaches the
-  **60% reduction cap**, cloth ~15%.
-- **How armor resolves** (it was inert until WP7; recorded 2026-08-07):
-  armor points **sum over the four armor slots** (head/chest/legs/feet —
-  offhand and trinkets contribute nothing until WP14's shields),
-  **1 point = 1 % damage reduction**, **hard cap 60 %**. Which armor a
+- Player armor is a numerical **rating** evaluated against the attacker's
+  level. It is not itself a percentage; endgame plate and shields remain useful
+  against enemies above level 60.
+- **How armor resolves** (rating model adopted 2026-09-20): armor rating sums
+  over head/chest/legs/feet, an equipped shield, refinement, affixes, cultural
+  finish, statuses and talents. Which armor a
   character may wear at all is the class rank of
   `inventory_equipment.md` §2.
+  - For attacker level `L >= 1`, `K(L) = 20 + 0.5×min(L,60) +
+    8.5×max(L−60,0)`. Reduction is
+    `min(0.70, rating / (rating + K(L)))`. All raw rating enters that formula;
+    only the resulting reduction is capped. Overcap rating against an
+    equal-level enemy therefore remains useful against a stronger enemy.
+  - The attacker level is the live Grudgelands mob/NPC level, the attacking
+    player's character level in PvP, or the immutable attacker level stamped
+    onto a projectile. Unattributed and environmental damage has no attacker
+    level and bypasses armor.
+  - **Bulwark specialization:** learning the mutually exclusive 21-point
+    Unbroken capstone multiplies the final aggregated rating by **1.40**. Its
+    existing low-HP trigger then adds **15 rating after that multiplier** for
+    8 seconds, at most once per 180 seconds. It never raises the 70% cap.
   - It applies **only to `reason.type == "punch"`**. There is no
     damage-type system, so that IS the whole definition of "physical":
     fall damage has its own race perk (world.md §7) and drowning, lava
@@ -154,12 +167,13 @@ mcl_damage-style, unified damage reasons). Flat caps, no
 diminishing-returns curves.
 
 Equipment sources, ordinary affixes and cultural finishes add before final
-consumer caps. The caps remain 30% Crit, 30% Dodge and 60% armor. Values above
-a cap remain present on their stacks but have no further combat effect. The
-Talents header exposes effective/raw Crit, Dodge and Armor with the cap in
-parentheses, for example `Armor 60/67% (60)`. There is no shipped automatic
-overflow conversion or cap raise; the cap-override talent keys remain reserved
-for WP11 lane X3 and are not combat consumers yet.
+consumer caps. Crit and Dodge remain capped at 30%; armor reduction is capped
+at 70% after the attacker-level formula. Raw armor rating is never discarded.
+The Character/Talents UI exposes raw rating, the active Bulwark multiplier,
+the resulting rating and reduction evaluated against the player's own character
+level. This same-level display does not change with the selected target or the
+last attacker.
+Unbroken does not override the reduction cap.
 
 The Character page contains only two live maximum-pool derivations: HP and
 mana, or HP and fixed Rage. Each compact line carries final value, base pool,
@@ -172,7 +186,8 @@ extra Character-page rows.
 Active timed statuses are an additional stat source. `grug_core.set_status`
 accepts only `hp_pool_percent`, `mana_pool_percent`, `crit_percent`, `armor`
 and `spell_damage_percent`; unknown keys reject the whole status. Values sum
-across active status ids before the ordinary caps. Replacing the `food` status
+across active status ids before the ordinary caps. `armor` means rating, not a
+percentage. Replacing the `food` status
 therefore replaces its contribution, while a future `elixir` status stacks
 with it even on the same key. HP/mana pool percentages use the same base,
 class factor and final rounding as talent percentages. Every modifier change,
