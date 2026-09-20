@@ -54,3 +54,11 @@ identical values; historical oracles remain untouched. The [v3 runtime/static
 review](final-v3-runtime-review.md) is preserved at its original conditional
 verdict; these two later reviews close its geometry condition. Final interpreter
 parity and delivery are still pending at this checkpoint.
+
+## Accepted final interpreter and engine evidence
+
+[Final independent evidence review](final-evidence-review.md): CLEAN, zero
+findings. The accepted35432bdf PUC5.1/LuaJIT outputs are byte-identical, all7888
+inputs unchanged; capital attribution/current expectations and four start phases
+close the prior conditional runtime verdict. Both additional attribution Lua
+helpers have zero-SETGLOBAL disassemblies here. User GUI acceptance remains open.
