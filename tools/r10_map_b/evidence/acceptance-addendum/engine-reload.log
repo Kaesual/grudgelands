@@ -1,0 +1,5 @@
+staged probe: engine_probe
+headless boot: PASS (port 32753, 180 s)
+log: /tmp/grudgelands-headless.cKFIBR/server.2.log
+235:ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:32753.
+kept: /tmp/grudgelands-headless.cKFIBR

@@ -1,0 +1,9 @@
+FAIL	fail_content_ignore: required light context is ignore
+stack traceback:
+	[C]: in function 'error'
+	/tmp/grudgelands-r10/map-b/baseline-r6-settlement.lua:3507: in function 'apply'
+	...s-r10/map-b/dev-tree/tools/wp40/r6/micro_kat_fixture.lua:599: in function <...s-r10/map-b/dev-tree/tools/wp40/r6/micro_kat_fixture.lua:3>
+	tools/wp40/r6/micro_kat.lua:5: in function <tools/wp40/r6/micro_kat.lua:3>
+	[C]: in function 'xpcall'
+	(command line):1: in main chunk
+	[C]: at 0x555c4b20ab00

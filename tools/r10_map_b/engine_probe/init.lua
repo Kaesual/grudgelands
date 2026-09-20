@@ -1,4 +1,5 @@
--- Isolated fresh-world readback; no player/world mutation and no content policy.
+-- Isolated scratch-world readback and explicitly labeled hydration stimulus.
+-- The probe never changes production content policy or accesses player worlds.
 local seed="4151598227737528026"
 assert(core.get_mapgen_setting("seed")==seed)
 local cases={
@@ -8,6 +9,7 @@ local cases={
  {id="shattered_wild",x=620,z=140,r=39},
  {id="native_cave",x=0,z=-2400,r=39,low=-208,high=-129},
  {id="native_deep",x=0,z=-2400,r=39,low=-848,high=-769},
+ {id="shallow_reef",x=-1856,z=-3000,r=39,low=-12,high=2},
 }
 local rows={"schema\tgrug_r10_map_b_engine_v1","seed\t"..seed}
 local held={};local soil={};local index=0
@@ -23,6 +25,7 @@ local function finish()
  end
  record("soil_activation",#soil,wet,dry,started,near)
  assert(#soil>0 and started==#soil,"VM field soil timers did not activate")
+ assert(near>0 and wet>0 and dry>0,"wet/dry engine witness must be nonvacuous")
  for _,pos in ipairs(held) do core.forceload_free_block(pos,true) end
  record("complete",#cases);save()
  core.log("action","[R10_MAP_B] COMPLETE")
@@ -63,6 +66,18 @@ local function read_case(case)
    if blocks[k] then selected[#selected+1]=pos end
   end
   soil=selected;record("soil_sample",population,#soil,#held)
+  local natural_near=0
+  for _,pos in ipairs(soil) do
+   if core.find_node_near(pos,3,{"group:water"}) then natural_near=natural_near+1 end
+  end
+  record("initial_near_water",natural_near)
+  -- Authored fields are dry here. Stimulate one actual VM-written field soil
+  -- through ordinary water presence; the other held blocks remain dry controls.
+  -- This is a scratch-only test stimulus, not permission to edit civic fields.
+  local target=assert(soil[1]);local water={x=target.x,y=target.y+1,z=target.z}
+  core.set_node(water,{name="default:water_source"})
+  record("probe_water_stimulus",water.x,water.y,water.z)
+  record("soil_origin","actual authored VM output; water is probe-supplied")
  end
  save();core.log("action","[R10_MAP_B] read "..case.id)
  next_case()

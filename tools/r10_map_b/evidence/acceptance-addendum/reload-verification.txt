@@ -1,0 +1,3 @@
+PASS wet12/dry16/timers28/near12 persisted and reactivated
+PASS six non-field case digests identical after wet-state reload
+Field pre-stimulus readback changes dry3267→dry3255+wet12 as expected; after-timer wet/dry counts remain identical.

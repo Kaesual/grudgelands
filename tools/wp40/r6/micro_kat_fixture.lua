@@ -589,6 +589,15 @@ return function(repo)
 	plan.candidate_cell_values[1], plan.candidate_cell_values[2] = 0, 0
 	plan.candidate_cell_values[3], plan.candidate_cell_values[4] = 1, 2
 	data, param2, light, index_at = vm_arrays(ignore_min, ignore_max, 0)
+	-- Native stone below the analytical surface prevents unrelated surface-skin
+	-- repair writes. This case isolates a byte-equal support and ignore rejection.
+	for z = ignore_min.z - 16, ignore_max.z + 16 do
+		for x = ignore_min.x - 16, ignore_max.x + 16 do
+			for y = ignore_min.y - 16, 3 do
+				data[index_at(x, y, z)] = cids[15]
+			end
+		end
+	end
 	data[index_at(ignore_root[1], 4, ignore_root[2])] =
 		contract.content_cids[ignore_host_ref]
 	data[index_at(ignore_root[1], 5, ignore_root[2])] = contract.ignore_cid
