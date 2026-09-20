@@ -169,3 +169,23 @@ arrive with the offhand work.
 The state of the implementation — what is already tuned and what still needs a
 look in the client — lives in the increment record,
 [wp13-character-visuals.md](../research/wp13-character-visuals.md).
+
+## 6. Round 11 item and station presentation
+
+Decided 2026-09-20. Silversteel reads as bright neutral silver with subtle cold
+shadows across inventory icons, worn armor and the metal parts of weapons and
+tools; keep the accepted weapon silhouettes. New bows use an explicit bow pose
+consistent with their real sprite geometry, rather than assuming the diagonal
+tool grip fits them.
+
+Use individually licensed and visually inspected pinned-reference media for
+seed silhouettes, hoes, the Tailor loom and the shared smith anvil. The
+Goldsmith uses a muted gold anvil head on a dark base; Woodcarver uses an upright
+bench. Cloth/leather bag variants may share a readable shape with a material
+color distinction. Shields, books, bows and the quiver have representative
+inventory art; never use an unwrapped 3D-model texture as an item icon.
+
+Protected exterior product frames and interior stands identify all capital
+professions, following [settlements.md](settlements.md). Fixed display items
+are scenery, with no removable inventory or collectible drop. The open stable
+and its living mount displays follow [mounts.md](mounts.md).

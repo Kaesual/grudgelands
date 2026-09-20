@@ -39,6 +39,9 @@ announcement changes this rule; see [AGENTS.md](../../AGENTS.md#fresh-server-dev
 | [`scout.md`](scout.md) | The fourth class (Scout): mana, leather, a four-ability base kit built only from shipped mechanics, the ballistic bow the game does not have yet, the conflicts its Sprint has with the mob-speed pillar, and stealth deferred whole to §8. | **PROPOSAL** (2026-09-16), the user's rulings 7/12/14/27 built in; implemented by WP-Scout, which is open. |
 | [`story.md`](story.md) | Nether-darkness premise, parallel faction questlines, minimum-level gates, level-20 Housing Steward introduction, killable kings and environmental storytelling. | **decided premise and story frame**; quest catalogs land with WP8/WP9. |
 
+| [`farming.md`](farming.md) | Cultivation, seven hoe lifetimes, halved wild-plant density, bounded depletion renewal, water-only buckets and the protected-water-flow prerequisite. | **decided** (2026-09-20); Round 11 implementation. |
+| [`durability_repair.md`](durability_repair.md) | Combat/tool wear, broken effects, city trainer service, atomic quotes and current purchase-price repair at at most 20%. | **decided** (2026-09-20); bounded WP22 implementation, future Housing hook. |
+
 ## Round 6 supporting records
 
 These research notes are evidence and implementation records, not design

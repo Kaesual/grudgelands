@@ -196,6 +196,16 @@ The Nether is not part of V1.
   v1) remains open. Its Sprint consumes the movement aggregator already
   shipped by WP-Speed.
 
+### Round 11 approved work (in progress)
+
+The [approved plan](docs/research/round11-plan/README.md) delivers playtest fixes,
+Scout with both trees, ordinary offhands and bags, two family-filtered affixes,
+attacker-level armor with the deep-Bulwark tank multiplier, limited gear repair,
+and [farming/renewal/buckets](docs/design/farming.md). Living design precedes
+code; every package receives independent review. PUC runtime is explicitly
+waived for this round, with plain-5.1 parser/static and targeted LuaJIT checks
+retained. Larger WP11/WP14/WP22/WP24/WP44/WP46 scopes remain separately open.
+
 ### Round 10 bounded corrections
 
 The independently reviewed delivery includes exclusive Basics and

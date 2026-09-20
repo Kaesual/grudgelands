@@ -59,3 +59,20 @@ plan and annexes; no fallback runtime proof is claimed. Ordinary tasks use Sol.
 Root owns orchestration/checkpoint, integration, BACKLOG/ROADMAP/README and
 remaining cross-package spec reconciliation. Worker branches are recorded when
 created. No CLI delegation and no Claude in this session.
+
+### Active initial lanes (all based on 45fbc477)
+
+- `r9_perf` — native Astra, `wp40-r11-world-cap`, worktree
+  `.claude/worktrees/r11-world`: WORLD-CAP and its world_zones/settlements/mounts
+  living-spec fold. SPEC commit `7e63e965`; beach diagnosis and CAP in progress.
+- `playtest_professions` — native Sol, `wp14-r11-aff-gear`, worktree
+  `.claude/worktrees/r11-gear`: AFF-GEAR, item/price catalog and
+  items_crafting/inventory_equipment/professions/scout equipment spec.
+- `playtest_creatures_camera` — native Sol, `wp23-r11-game`, worktree
+  `.claude/worktrees/r11-game`: GAME runtime and combat_stats/classes/skill_trees/
+  biomes_mobs spec fold. COMBAT runtime follows GEAR, not concurrent ownership.
+- Root: farming/durability living specs, economy/world R4/visual amendments,
+  indexes and round status. No runtime code owned by root yet.
+
+Each worker writes its own package evidence. No worker may sync, push or merge
+main. Reviews will use a different author from implementation.

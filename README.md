@@ -136,7 +136,14 @@ Professions improve them through refinement, ordinary affixes, one optional
 cultural finish and a separate target-race PvP-special channel instead of
 creating parallel catalogs. The equipped weapon slot is the sole source of a
 skill's damage and appearance; the Character page also carries four armor
-slots, an offhand, two trinkets and four Tailor-made bags.
+slots, an offhand, two trinkets and four bags; the approved Round-11 catalog
+adds equivalent cloth and leather bag lines.
+
+[Farming](docs/design/farming.md) defines crop cultivation, tiered hoe lifetime,
+water-only buckets and slow bounded renewal of depleted wild plants.
+[Durability and repair](docs/design/durability_repair.md) keeps broken gear and
+lets every city profession trainer repair it for copper, with a maximum price
+of 20% of its reference purchase price. These Round-11 additions are in progress.
 
 [Seven primary professions](docs/design/professions.md) are cut by material:
 Weaponsmith, Armorsmith, Leatherworker, Tailor, Woodcarver, Goldsmith and
@@ -246,7 +253,7 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 
 *Last updated: 2026-09-20. Derived from [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md); Round 10 technical delivery is complete and
-GUI acceptance remains pending.*
+Round 11 is approved and implementation is in progress after user playtest feedback.*
 
 **Shipped foundation:** 22 of 53 tracked work-package identities are complete:
 WP0–WP4,
@@ -271,7 +278,11 @@ the six-capital service/precinct/Alchemy witnesses and six-start order/reload
 checks pass. Final interpreter parity, main delivery, synchronization and push
 are complete; GUI acceptance remains pending.
 
-**In progress:** WP13 has all six starts and capitals but still owns most of the
+**In progress:** [Round 11](docs/research/round11-plan/README.md) addresses the
+playtest defects and adds Scout, offhands, family-specific affixes, armor rating,
+plant renewal, buckets and simple repair. The approved source rules are being
+folded into living design before each implementation; no Round-11 completion
+or GUI acceptance is claimed yet. WP13 has all six starts and capitals but still owns most of the
 100-anchor POI roster; its Round-10 capital work moves trainers into themed outer
 premises and adds dedicated stables. WP11 has X1/X2/X4 and still lacks X3.
 WP10's framework, Cooking, Alchemy and integrated equipment/catalog work are
