@@ -117,8 +117,12 @@ anything). Item enchants (+Str etc.) are the player-driven part.
     swing or ability seams.
     Both then enter the modifier for dodge and absorb and use a namespaced
     `custom_type` that skips
-    only the already-performed armor step. Fall damage is separate: its race
-    perk runs before absorb. A shield therefore always soaks *post*-mitigation
+    only the already-performed armor step. Fall damage is separate: a native
+    negative fall change of `r` settles as `ceil(max_hp × r / 20)`. Native zero
+    stays zero and there is no 100%-of-pool cap. This preserves the engine's
+    impact-derived input rather than reconstructing block distance. The Dwarf
+    multiplier of 0.8 then rounds up, followed by absorb; armor and dodge never
+    apply. A shield therefore always soaks *post*-mitigation
     damage, i.e. shield points are worth full damage rather than pre-armor
     damage.
   - **Rounding: the reduced damage rounds up**, so armor alone can never
