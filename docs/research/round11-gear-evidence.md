@@ -24,6 +24,17 @@ find mods/*/grug_* -name '*.lua' -print0 | xargs -0 /home/jan/projects/grudgelan
 find tools/r9_ench tools/r9_prof tools/r10_equip tools/r11_gear tools/wp13 -name '*.lua' -print0 | xargs -0 /home/jan/projects/grudgelands/tools/bin/luac51 -p
 ```
 
-The current LuaJIT receipt is `tools/r11_gear/evidence/luajit.log`, SHA-256 `56484ba34a7e36138c82e607862fd028725adefc1cb690669f1ac56d69243a3f`. The mod parser gate and the five required Lua 5.1 sweeps passed; sweep hits were existing comments/strings. The only changed-mod `SETGLOBAL` writes are the established `grug_artisans`, `grug_gear`, and `grug_items` module globals.
+The current LuaJIT receipt is `tools/r11_gear/evidence/luajit.log`, SHA-256 `df5bf986c8b1eb730345ce3655c6704f4abc429a570850c815d365fc2dc4ea32`. The mod parser gate and the five required Lua 5.1 sweeps passed; sweep hits were existing comments/strings. The only changed-mod `SETGLOBAL` writes are the established `grug_artisans`, `grug_gear`, and `grug_items` module globals.
 
 Final media is pending the Round 11 ART lane. Provisional registrations reuse shipped staff, chest, book, stick and bag images for bows, shields, spellbooks, arrows, quivers and the new bag identities. Independent source review is also pending; this author evidence does not claim it.
+
+## Independent review correction
+
+Fresh native Sol review found one Medium (recipe books ignored mastery) and
+two Low findings (silent filled-quiver refusal, insufficient transaction test).
+Root Astra corrected the shared progression predicate and added a throttled
+refusal message. Real state/UI fixtures cover level15/16, profession removal
+and station-access independence. The ammo fixture now transfers110 remaining
+quiver arrows, and verifies byte-identical lists on full-main move/take refusal.
+LuaJIT targeted fixtures, parser, SETGLOBAL and five changed-file sweeps passed;
+no PUC runtime. Independent focused rereview is pending.

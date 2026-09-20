@@ -234,7 +234,7 @@ end
 
 local function recipe_unlocked(player, recipe)
 	return recipe.profession == "general" or
-		grug_jobs.profession_level(player, recipe.profession) >= recipe.tier
+		grug_jobs.recipe_progress_unlocked(player, recipe)
 end
 
 local function recipe_discovered(player, recipe)

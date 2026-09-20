@@ -158,7 +158,9 @@ function grug_jobs.record_craft(player, profession, tier)
 	return false, current
 end
 
-function grug_jobs.can_craft_recipe(player, recipe)
+-- Shared progression authority for recipe books and the actual craft gate.
+-- Station-specific access is checked separately at the point of crafting.
+function grug_jobs.recipe_progress_unlocked(player, recipe)
 	if type(recipe) ~= "table" or not grug_jobs.has(player, recipe.profession) then
 		return false, "Learn " ..
 			(recipe and grug_jobs.PROFESSIONS[recipe.profession] and
@@ -171,8 +173,15 @@ function grug_jobs.can_craft_recipe(player, recipe)
 			" tier " .. recipe.tier .. " required."
 	end
 	if recipe.mastery_required and mastery_band(player) < recipe.mastery_required then
-		return false, "Profession mastery band " .. recipe.mastery_required .. " required."
+		local names = {"Apprentice", "Journeyman", "Expert", "Master"}
+		return false, names[recipe.mastery_required] .. " mastery required."
 	end
+	return true
+end
+
+function grug_jobs.can_craft_recipe(player, recipe)
+	local unlocked, reason = grug_jobs.recipe_progress_unlocked(player, recipe)
+	if not unlocked then return false, reason end
 	local handler = grug_jobs.station_handler(recipe.station)
 	if handler and handler.can_use then
 		local allowed, reason = handler.can_use(player, recipe)
