@@ -61,8 +61,9 @@ Check one new skill per tree before deeper balance testing:
 - Mage Ember: Cinderfall at the crosshair's first contact, Brand splash,
   Whitehot's temporary damage and mana-cost changes.
 - Mage Rime: Glacial Ward, Frostbind with its Slow description/control change,
-  Turn Aside while its absorb is active, Rimebite's Shatter replacement.
-- Priest Mercy: gated Renew and Hearten's group-heal extension.
+  Rimebite's Shatter replacement.
+- Priest Mercy: gated Renew, Hearten's group-heal extension, and Turn Aside
+  granting dodge to the target only while its Power Word: Shield holds.
 - Priest Reckoning: Word of Ruin damage/drain, Recompense absorb/cost and the
   low-health Last Word window.
 

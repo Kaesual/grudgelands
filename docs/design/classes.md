@@ -30,11 +30,15 @@ Core principles:
 - **Instant abilities + cooldowns, no cast times in the MVP.** Cast bars
   (and pushback) may come later for selected spells; the Home Stone's 10 s
   cast ([housing.md](housing.md) §4) is its own mechanic and stays.
-- **Abilities are hotbar items** (indestructible, not droppable/tradeable,
-  locked to the main inventory; granted at class pick, except §2b's
-  universal Strike, which is granted on join). Left click = attack or cast
-  at the pointed target; the item's wear bar displays the skill's **charge
-  bar** (§2b). What the item *looks* like is §2c.
+- **Abilities use indestructible, bound inventory representations.** The base
+  kit, including Strike, is inserted once at character creation. Representations
+  may be carried in main inventory or owned bags; dropping or returning one to
+  Skills deletes only that copy, without a world drop or lost entitlement.
+  The Skills catalogue restores an unlocked ability only when no carried copy
+  exists. External storage, equipment slots and trading refuse these items.
+  Reconnect and talent changes normalize existing copies without re-granting
+  discarded ones. Left click attacks or casts; the wear bar shows the skill's
+  charge or cooldown. Appearance follows §2c.
 - **An ability item picks up dropped items like a weapon does.** Swing skills
   have no `on_use`, but their no-dig pointabilities can mask a ground-level
   item's native selection box. A fresh LMB press therefore checks the first

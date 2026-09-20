@@ -366,7 +366,7 @@ because the fix belongs to `classes.md` §3 rather than to WP11.
 | 3 | **Brand** *(keystone)* | Blaze | 3 | 3 | **replaces Fireball** | Fireball's impact splashes `2 / 3 / 4 + floor(spell power / 2)` to every other hostile within 2 m. Same key, same 6% base-mana cost, same 1 s cast interval, same straight flight | `kits.lua` (the projectile's on-hit) plus its radius loop | `fireball_splash` |
 | 4 | **Whitehot** *(capstone)* | Blaze | 4 | **1** | **effect** ‼ | the first Fireball that **crits** starts an 8 s window in which Fireball costs **3% instead of 6% base mana** and deals **+6**. *Limit: 8 s, **120 s cooldown** on the trigger.* | the central cost seam and Fireball values | `whitehot_window` |
 | 5 | **Deep Well** | Cinder | 1 | 5 | — | max mana +3 / 6 / 9 / 12 / 15 % | `grug_classes/stats.lua:67-105` | `max_mana_percent_add` |
-| 6 | **Far Cast** | Cinder | 2 | 4 | — | Fireball maximum distance 20 m → 21.5 / 23 / 24.5 / 26 m | two per-player reads, neither at a registration constant: the spawn call (`kits.lua:534-547`, since `grug_projectiles/init.lua:195` prefers `params.max_distance` over the registered `kits.lua:470-479`), and targeting reach in `grug_abilities.get_range` (`init.lua:267-276`), whose item-meta override `sync_kit` refreshes (`grug_abilities/init.lua:2181-2197`) | `fireball_range_add` |
+| 6 | **Far Cast** | Cinder | 2 | 4 | — | Fireball maximum distance 20 m → 21.5 / 23 / 24.5 / 26 m | two per-player reads, neither at a registration constant: the spawn call (`kits.lua:534-547`, since `grug_projectiles/init.lua:195` prefers `params.max_distance` over the registered `kits.lua:470-479`), and targeting reach in `grug_abilities.get_range` (`init.lua:267-276`), whose item-meta override `normalize_kit` refreshes (`grug_abilities/init.lua:2181-2197`) | `fireball_range_add` |
 | 7 | **Cinderfall** *(keystone)* | Cinder | 3 | 3 | **new skill** | cast, 12% base mana, 10 s cooldown, 20 m; a burst at the first thing the crosshair ray meets, dealing `5 / 7 / 9 + spell power` to every hostile within 3 m of it | new; `grug_core.combat_ray` plus the radius loop | — |
 | 8 | **Ashfall** | Cinder | 4 | 3 | — | Cinderfall's radius 3 m → 4 / 5 / 6 m | the new Cinderfall registration | `cinderfall_radius_add` |
 
@@ -784,7 +784,7 @@ one of its kind:
 |---|---|---|
 | Grudge, Quick Step, Swift Word | `cooldown` in the ability def | `grug_abilities/init.lua:1233`, the sole `arm_cooldown(user, def, def.cooldown)` call |
 | Onset | `cooldown` in the ability def — Charge's, `kits.lua:299` | the same `arm_cooldown` call, `grug_abilities/init.lua:1233` |
-| Far Cast | `max_distance` in the projectile registration (`kits.lua:413`) and `range` in the ability def (`:446`) | flight: the spawn call (`kits.lua:453-460`), since `grug_projectiles/init.lua:195` prefers `params.max_distance`; targeting reach: `grug_abilities.get_range` (`init.lua:170-177`), the twin of the elf `ability_range_bonus` perk, whose item-meta override `sync_kit` already refreshes (`grug_abilities/init.lua:1827-1831`) |
+| Far Cast | `max_distance` in the projectile registration (`kits.lua:413`) and `range` in the ability def (`:446`) | flight: the spawn call (`kits.lua:453-460`), since `grug_projectiles/init.lua:195` prefers `params.max_distance`; targeting reach: `grug_abilities.get_range` (`init.lua:170-177`), the twin of the elf `ability_range_bonus` perk, whose item-meta override `normalize_kit` refreshes (`grug_abilities/init.lua:1827-1831`) |
 
 The Scout adds two more, both onto sites already in the
 table: **Slip Away** (Sidestep's cooldown → `init.lua:1233`) and **Follow
@@ -865,30 +865,18 @@ A newly ranked active-skill talent adds its ability to the Skills catalogue and 
 **Two mechanisms, and ruling 13 makes the second one carry most of the
 design.**
 
-**A new skill** (the eight new-skill keystones of §2.9) is an ordinary
-`grug_abilities` registration with `talent_gated = true`, exactly like Renew
-today (`kits.lua:656`). **Three** existing sites test that flag, and the file
-itself states they must never disagree (`grug_abilities/init.lua:1705-1710`):
+**A new skill** is an ordinary `grug_abilities` registration with
+`talent_gated = true` and its owning talent ID. The shared
+`grug_abilities.is_unlocked(player, id)` predicate checks class membership and
+positive talent rank; catalogue listing, recovery, normalization and actual
+cast/swing execution all use that authority. Possessing a forged or stale
+representation never grants an ability.
 
-- `kit_of(class)` drops every `talent_gated` def in both of its loops, the
-  universal one (`init.lua:1719`) and the class one (`:1724`). It becomes
-  `kit_of(class, player)` and keeps a gated def when
-  `grug_classes.talent_rank(player, def.talent) > 0`.
-- The purge branch in `sync_kit` (`init.lua:1808-1810`) uses the same
-  predicate, or a granted skill would be destroyed on the next sync.
-
-`kit_of` has exactly one caller (`init.lua:1858`) and the grant loop passes
-its index straight to `grant_at`, so a def's position in that list **is** its
-hotbar key. Registering the new abilities after the class section keeps every
-base ability at the key it has today — the concern the file's own comment
-raises at `init.lua:1712-1715`. Renew is the exception: it is *not* appended,
-it is already the fourth entry of `by_class["priest"]` (`kits.lua:651`, after
-Smite `:572`, Flash Heal `:596` and Power Word: Shield `:623`), so a gated def
-unlocked later could still shift it. The rule that makes the guarantee true for every class is now simpler:
-**a talent-granted ability appears in Inventory > Skills and is acquired
-manually.** Its registration order determines catalogue order but never moves
-an existing hotbar item. Under ruling 10 at most two such abilities exist per
-build.
+A talent-granted ability appears in Inventory > Skills and is recovered
+manually. Registration order determines catalogue order but never moves an
+existing hotbar item. Under ruling 10 at most two such abilities exist per
+build. Base-kit insertion occurs once at character creation; later unlocks
+announce catalogue availability and do not require a free inventory slot.
 
 **A replacement** (the eight replacing keystones and the two replacing
 capstones) is **not** a registration and touches none of the above. The
@@ -901,15 +889,11 @@ hotbar: of the **twenty-four** keystones and capstones, **sixteen** — the ten
 replacements and the six effects — cost zero new registrations, zero new
 items and zero grant logic.
 
-Re-granting is driven by a new callback mirroring `register_on_class_chosen`
-(`grug_classes/init.lua:68`, consumed at `grug_abilities/init.lua:1881`):
-
-```lua
-grug_classes.register_on_talents_changed(function(player) sync_kit(player) end)
-```
-
-It fires on every spend and on respec. A replacement needs no re-grant at all
-— the next cast simply reads a different number.
+Talent spending and respec invoke `grug_abilities.normalize_kit(player)`.
+This removes stale or duplicate representations and refreshes surviving item
+metadata without filling discarded slots. The Skills catalogue refreshes its
+entitlement list and announces new entries. Replacements need no additional
+item: the next cast reads the current talent rank.
 
 **Hotbar budget** (`classes.md` §2b reserves keys 1-8). Under rulings 13 and
 19 the ceiling is **base kit + 2**. Warrior, Mage and Priest start with
@@ -1205,8 +1189,8 @@ that makes them wrong.
 | Site | What it is | What ruling 20 does to it |
 |---|---|---|
 | `grug_classes/selection.lua:594-595` | the `/class` registration — one call to the generic `register_set_command` helper | **that call is removed**, and nothing else. `:554-592` is the helper itself and `:596-597` registers `/race`, which ruling 20 does not touch; deleting the range would take both with it |
-| `grug_abilities/init.lua:1772-1780` | `sync_kit`'s class-change purge — it wipes kit items when the class no longer matches | **kept**, and it becomes the respec path's purge instead: a full talent reset has to take back the two talent-granted buttons (§3.4), which is the same operation |
-| `grug_abilities/init.lua:1775-1776` | the comment inside that very function: "Join, class pick and **class SWITCH** all land here. A class switch wipes runtime cooldowns, charges, targets and the attack clock before re-granting" | corrected. **This is the fifth comment**, and the only one of the five that describes live behaviour rather than a future WP: after ruling 20 the third of its three entry paths cannot occur |
+| `grug_abilities/init.lua:1772-1780` | `normalize_kit` entitlement purge — removes unavailable kit representations | **kept**, and it becomes the respec path's purge instead: a full talent reset has to take back the two talent-granted buttons (§3.4), which is the same operation |
+| `grug_abilities/init.lua` lifecycle | Separate one-time character kit insertion from normalization | Class switching is unavailable. Join and talent changes normalize existing representations; neither re-grants discarded skills. Skills recovery preserves cooldown and charge state. |
 | `grug_inventory/equipment.lua:57` | "the class-change unequip below, later WP11 respec / WP14…" | comment corrected: there is no class change, and a talent respec never unequips anything |
 | `grug_inventory/equipment.lua:501` | "Admin-only today, **player-reachable with WP11's respec**" | the promise is **withdrawn**. The class-restriction unequip path becomes unreachable by design, and the comment must say so rather than point at a WP11 that will not deliver it |
 | `grug_inventory/equipment.lua:579` | "a Warrior who respecs to Mage" | comment corrected: that character cannot exist |
@@ -1288,7 +1272,7 @@ landed.
 |---|---|---|---|
 | **X1 — the model** | `talents.lua`: registry, the 48 talent registrations of the three shipped classes (data only, no consumer), points, the two gate kinds, spend/respec rules, persistence with the validating read path, the window table of §3.2, `get_talent_bonus` / `talent_rank`, the `on_talents_changed` callback, and the whole KAT of §3.7 except group 5's consumer half. Ships with **zero gameplay effect** — every talent is inert. | — | M |
 | **X2 — the numeric consumers** | The **30** talents of the three shipped classes that are neither keystone nor capstone, at the sites of the §3.8 table. **Twenty-five are a one-line read where the table says; five hook the three central per-player seams of §3.2** (Grudge, Quick Step, Swift Word and Onset on `arm_cooldown`; Far Cast on the spawn call and `get_range`), and each of those needs its own no-talent regression case (KAT group 8). Completes KAT groups 5 and 6. Touches shared files, so it is one lane and not split by class. | X1 | M |
-| **X3 — keystones and capstones (open except delivered armor slice)** | **Four** new ability registrations (Hold Ground, Cinderfall, Glacial Ward, Word of Ruin); the `talent_gated` flag on the **two shipped abilities that become keystones**, Renew (already flagged) and Hamstring (`kits.lua:350`, ruling 19), plus their rank scaling; the grant predicate at the three `talent_gated` sites and the append-after-base-kit rule of §3.4; **seven replacements** written inside the shipped abilities' own bodies (Bellow, Broadstroke, Brand, Frostbind, Turn Aside, Recompense, Hearten) and the rule-breaking finisher Tendon Cut; the remaining capstone effects and cap-override paths. Round 11 already delivered Ironbound and Unbroken's armor-rating multiplier/window, so X3 must preserve and consume that implementation rather than recreate it. The remaining crit override is in `stats.lua:45`; the Scout dodge override is delivered. Each remaining ability/replacement needs its specified probe. **Hold Ground's root/slow immunity needs the §3.9 aggregator first.** | X1, §3.9 for one talent | L |
+| **X3 — keystones and capstones (open except delivered armor slice)** | **Four** new ability registrations (Hold Ground, Cinderfall, Glacial Ward, Word of Ruin); the `talent_gated` flag on the **two shipped abilities that become keystones**, Renew (already flagged) and Hamstring (`kits.lua:350`, ruling 19), plus their rank scaling; the shared entitlement predicate and manual Skills recovery rule of §3.4; **seven replacements** written inside the shipped abilities' own bodies (Bellow, Broadstroke, Brand, Frostbind, Turn Aside, Recompense, Hearten) and the rule-breaking finisher Tendon Cut; the remaining capstone effects and cap-override paths. Round 11 already delivered Ironbound and Unbroken's armor-rating multiplier/window, so X3 must preserve and consume that implementation rather than recreate it. The remaining crit override is in `stats.lua:45`; the Scout dodge override is delivered. Each remaining ability/replacement needs its specified probe. **Hold Ground's root/slow immunity needs the §3.9 aggregator first.** | X1, §3.9 for one talent | L |
 | **X4 — UI, level-up and respec (implemented 2026-09-17)** | The sfinv Talents page of §3.5, the two `mod.conf` edges, the level-up chat line with its `old_level ~= nil` guard, the respec transaction against `grug_money.take`, the price of ruling 22 (§1.4), and the raw-vs-effective display `combat_stats.md:104-108` requires — including the **raised cap** while a rule-breaker runs. The six price values remain a coordinator placeholder until WP44 publishes the measured ledger outputs. | X1 | M |
 
 X3 is the only lane that owes a runtime test on a headless server; X1, X2 and
