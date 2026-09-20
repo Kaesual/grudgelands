@@ -12,3 +12,11 @@ textures; `gear-inputs.sha256` binds the source inputs. This replaces the CAP
 candidate's old armor contact sheet for visual binding only; no mesh, clearance,
 layout or runtime change was made. Root visually inspected the new bronze chest.
 The contact sheet is not an engine wielditem screenshot.
+
+A separate full LuaJIT development attempt at `9ea7ef28` stopped with exit1
+at `tools/r10_world/material_salt_fixture.lua:43`: ART changed authenticated
+Corn/Potato icon fields in the gathering catalog while its declared source pin
+remained at the WORLD checkpoint. Earlier fixtures passed; this is explicitly
+not a passed full run. The strict hash assertion is retained. The coordinated
+final catalog/semantic/source-projection pin refresh follows MAP-B integration,
+then the full final runner must pass on its frozen inputs.
