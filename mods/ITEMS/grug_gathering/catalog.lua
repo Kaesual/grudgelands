@@ -89,7 +89,7 @@ local P9G = {
 		host("grug_meadows", "default:dirt_with_grass"),
 		host("grug_savanna", "default:dry_dirt_with_dry_grass"),
 	}, "none", "food", nil, true,
-		"default_dry_grass_3.png^[colorize:#d9ad35:95"),
+		"grug_gathering_corn.png"),
 	p9g("wp33_crimson_lotus_source_v1", "crimson_lotus", "Crimson Lotus", 1024, {
 		"front_skyglass_canopy", "front_stormscale_summit",
 	}, {
@@ -149,7 +149,7 @@ local P9G = {
 		"elandor_goldmead_vale", "elandor_whitebridge_shire",
 		"front_broken_causeway",
 	}, {host("grug_meadows", "default:dirt_with_grass")}, "none", "food", nil,
-		true, "default_clay_lump.png^[colorize:#b58b55:95"),
+		true, "grug_gathering_potato.png"),
 	p9g("wp33_rock_salt_source_v1", "rock_salt", "Rock Salt", 1024, {
 		"front_gravesalt_escarpment", "front_stormscale_summit",
 		"front_wyrmglass_crown",

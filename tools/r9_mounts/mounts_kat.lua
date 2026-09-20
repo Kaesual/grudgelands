@@ -672,6 +672,7 @@ return function(root)
 		file:close()
 	end
 	local seen = {}
+	local seen_icons = {}
 	local expected_ranges = {
 		grug_mounts_horse = {1, 41}, grug_mounts_tiger = {1, 300},
 		grug_mobs_ibex = {1, 400}, grug_mobs_stag = {1, 150},
@@ -686,6 +687,16 @@ return function(root)
 	}
 	local audit_b3d = dofile(root .. "/tools/r9_mounts/b3d_audit.lua")
 	for _, model in pairs(grug_mounts.MODELS) do
+		assert(type(model.icon) == "string" and
+			model.icon:match("^grug_mounts_icon_[%w_]+%.png$"),
+			model.id .. " has no rendered inventory icon")
+		assert(not seen_icons[model.icon], model.id .. " shares a rendered icon")
+		seen_icons[model.icon] = true
+		local icon_file = assert(io.open(root ..
+			"/mods/PLAYER/grug_mounts/textures/" .. model.icon, "rb"))
+		icon_file:close()
+		assert(ledger_text:find("`grug_mounts_icon_*.png`", 1, true),
+			"rendered mount icons have no ledger row")
 		local effective_attachment = model.attach_y * model.visual_size.y / 10
 		assert(math.abs(effective_attachment -
 			expected_attachment_heights[model.id]) < 0.000001,
@@ -722,6 +733,9 @@ return function(root)
 			model.animation.move[2] <= maximum,
 			model.id .. " animation exceeds its mesh")
 	end
+	local icon_count = 0
+	for _ in pairs(seen_icons) do icon_count = icon_count + 1 end
+	assert(icon_count == 12, "mount icon count differs")
 
 	return "r9_mounts_v3|tiers=4|models=12|warning=48|warning_probes=112|" ..
 		"warning_interval=1|ceiling=600|assets=" ..

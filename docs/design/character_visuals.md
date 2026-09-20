@@ -68,14 +68,12 @@ to the mob engine, which owns it across tier promotions and world reloads.
 
 ## 3. Visible armor
 
-Two armor lines ship — **cloth** and **metal**, the two `grug_gear` registers —
-and each has one overlay per slot: head, chest, legs, feet. Leather borrows the
-cloth cut until its own art exists, because it has no wearer before the Rogue.
-
-An overlay is drawn once in its tier's colour, and the six tiers are one tint
-apart: the same six colours the armor item icons use, so a Bronze helm looks
-bronze on the icon and on the head. A character therefore shows exactly what it
-is wearing, per slot, at the tier it bought.
+Three armor lines ship — **cloth**, **leather** and **metal** — and each has one
+overlay per slot and material tier: head, chest, legs and feet. Inventory art
+and worn art are separate assets made for their respective layouts. Every tier
+has a baked material treatment and silhouette details from one coherent source
+family; runtime tinting is not the tier ladder. A character therefore shows the
+same armor line, slot and material tier that its equipped item names.
 
 NPCs that have no inventory wear a **whole line at one tier** instead:
 

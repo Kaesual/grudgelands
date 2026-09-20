@@ -587,3 +587,15 @@ skins. All files are CC0 1.0 by the **Grudgelands project**.
 | `grug_mobs_royal_guard_undead.png` | `grug_visuals_skin_undead.png` | violet tabard; no crown |
 | `grug_mobs_royal_guard_orc.png` | `grug_visuals_skin_orc.png` | red tabard; no crown |
 | `grug_mobs_royal_guard_troll.png` | `grug_visuals_skin_troll.png` | teal tabard; no crown |
+
+## 9. R10 inventory loot corrections
+
+| File | Pinned source / author | License | Modification |
+|---|---|---|---|
+| `grug_mobs_item_zombie_flesh.png` | VoxeLibre `c2dbc520`, `mcl_mobitems_rotten_flesh.png`, XSSheep chain | CC BY-SA 4.0 | renamed, byte-identical |
+| `grug_mobs_item_feather.png` | VoxeLibre `c2dbc520`, `mcl_mobitems_feather.png`, XSSheep chain | CC BY-SA 4.0 | renamed, byte-identical |
+| `grug_mobs_item_slime_gel.png` | VoxeLibre `c2dbc520`, `mcl_mobitems_slimeball.png`, XSSheep chain | CC BY-SA 4.0 | renamed, byte-identical |
+| `grug_mobs_item_light_leather.png` | animalia `5895f403`, `animalia_leather.png`, ElCeejo | MIT | renamed, byte-identical |
+| `grug_mobs_item_heavy_leather.png` | animalworld `ac835da9`, `abearpelt.png`, Liil/Wilhelmine | MIT | renamed, byte-identical |
+| `grug_mobs_item_sleek_pelt.png` | animalworld `ac835da9`, `aboarpelt.png`, Liil/Wilhelmine | MIT | renamed, byte-identical |
+| `grug_mobs_item_boar_tusk.png` | Grudgelands R10 image-generation output | CC0 1.0 | authored as one curved ivory 16×16-readable pixel-art tusk on transparency; mechanically downsampled to 16×16 |

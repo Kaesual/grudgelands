@@ -42,3 +42,12 @@ auditable.
 | Tiger (Troll T2) | 1–300 | stand 1–100, movement 100–200 | animated; upstream stand and walk ranges |
 | Eagle / Steller's sea eagle (Accord T3/T4) | 1–350 | stand 1–100, flight 150–250 | animated; inside keyed range |
 | Cave bat / giant bat (Throng T3/T4) | 1–81 | stand/flight 1–40 | animated; inside keyed range |
+
+## R10 inventory renders
+
+The twelve `grug_mounts_icon_*.png` files are offline Eevee renders of the
+shipped model/texture/tint combinations listed above. They inherit each row's
+model and texture licenses. `tools/r10_art/render_mount_icons.sh` converts the
+B3D mechanically for Blender, preserves the horse blank/body/blank buffers and
+the boar Skin/blank-Saddle slots, renders with nearest-neighbour textures, and
+writes static 64×64 PNGs. No generated geometry is shipped.

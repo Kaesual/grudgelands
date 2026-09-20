@@ -238,7 +238,6 @@ local function place_seed(row)
 	end
 end
 
-local stage_tints = {140, 95, 45, 0}
 for index = 1, #crops do
 	local row = crops[index]
 	core.register_craftitem(row.seed, {
@@ -255,9 +254,7 @@ for index = 1, #crops do
 	})
 	for stage = 1, STAGES do
 		local mature = stage == STAGES
-		local tint = stage_tints[stage]
-		local tile = row.image
-		if tint > 0 then tile = tile .. "^[colorize:#47713c:" .. tint end
+		local tile = "grug_farming_" .. row.key .. "_" .. stage .. ".png"
 		local drop
 		local groups = {snappy = 3, flammable = 2, attached_node = 1, plant = 1,
 			grug_farming_crop = 1, not_in_creative_inventory = 1}

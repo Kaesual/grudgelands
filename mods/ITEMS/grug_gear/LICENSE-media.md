@@ -40,29 +40,16 @@ per file); vendored at the commit recorded in [VENDOR.md](../../../VENDOR.md).
 | `grug_gear_item_staff_<material>.png` (6) | authored map, same palette | banded shaft with a faceted head |
 | `grug_gear_item_staff_wood.png` | the staff map, wood ramp | the below-ladder starter staff |
 
-## Own pixel art — CC0 1.0
+## R10 armor inventory families
 
-Original 16×16 art of this project, **not** derived from any vendored or
-third-party asset. Authored as ASCII maps plus a palette in
-`tools/gen_mob_item_textures.py` (list `GEAR_ICONS`) and generated
-deterministically — re-running the script reproduces every PNG byte for byte.
+The 72 tier/slot inventory icons replace the former generated placeholders.
+Metal and leather derive from VoxeLibre `c2dbc520ff4e1637072d33b06c3a2404e0f08df7`: base armor textures follow the XSSheep/Pixel Perfection CC BY-SA 4.0 chain; armor trim overlays are by Aeonix_Aeon under CC BY 4.0. Metal selects six familiar material silhouettes; bronze and embersteel
+receive baked copper/red material grades. Leather uses the four dedicated
+`mcl_armor_inv_<part>_leather.png` files and the dedicated 16x16
+`<part>_trim.png` inventory trim, then bakes one of six material palettes.
 
-**License: CC0 1.0 Universal** (<https://creativecommons.org/publicdomain/zero/1.0/>).
-
-Four base arts remain — the four metal armor slots. (The four weapon arts this
-table used to list were retired in WP13's playtest round 2; see the CC BY-SA
-section above.) The cloth line **reuses the metal arts with a cloth palette**
-(same trick as `FEATHER`/`BOLT` in the mob icons), and the six tiers are
-differentiated at runtime by a `^[multiply:<tint>` modifier — one PNG per slot
-and line, not one per tier.
-
-| File | Author | License | Notes |
-|------|--------|---------|-------|
-| `grug_gear_item_head_metal.png` | Grudgelands project | CC0 1.0 | generator, art `ARMOR_HEAD`, metal palette |
-| `grug_gear_item_chest_metal.png` | Grudgelands project | CC0 1.0 | generator, art `ARMOR_CHEST`, metal palette |
-| `grug_gear_item_legs_metal.png` | Grudgelands project | CC0 1.0 | generator, art `ARMOR_LEGS`, metal palette |
-| `grug_gear_item_feet_metal.png` | Grudgelands project | CC0 1.0 | generator, art `ARMOR_FEET`, metal palette |
-| `grug_gear_item_head_cloth.png` | Grudgelands project | CC0 1.0 | generator, art `ARMOR_HEAD`, cloth palette (violet) |
-| `grug_gear_item_chest_cloth.png` | Grudgelands project | CC0 1.0 | generator, art `ARMOR_CHEST`, cloth palette |
-| `grug_gear_item_legs_cloth.png` | Grudgelands project | CC0 1.0 | generator, art `ARMOR_LEGS`, cloth palette |
-| `grug_gear_item_feet_cloth.png` | Grudgelands project | CC0 1.0 | generator, art `ARMOR_FEET`, cloth palette |
+Cloth derives from complete `lottclothes` sets at Lord of the Test
+`f164140154945f0b356521ae721a86e9c7a0e0cf`, CC BY-SA 3.0. Amaz authored the Elven files and `cloak_mordor`; Flipsels authored the other selected files.
+`tools/r10_art/build_armor_assets.sh` records every exact source-to-output
+mapping and deterministic composition command. The four unsuffixed leather
+icons are byte copies of the Light tier required by the logical catalog.
