@@ -277,3 +277,22 @@ Root's bounded engine probe is committed `bb166bf5`; read-only fixture review
 is active before execution. Flatpak `luanti --version` confirms Luanti5.17.0
 with LuaJIT2.1.1784272936 (OpenResty); no PUC runtime is planned or executed.
 Main/runtime stay `ac232ec2`; no Round11 sync or push yet.
+
+
+### Scout trader parallel split
+
+The bounded engine fixture independently passed static/native-contract review
+at `bb166bf5`; report engine-probe-static.md. Execution still waits for final
+SCOUT/REPAIR bytes. This is not an engine-runtime pass.
+
+Scout class/projectile work now includes frozen checkpoints `ad85d7fc` (batch
+spawn rollback/token accounting) and `fd7b9cca` (public ammunition refund).
+Its two paused shared files remain under the REPAIR cadence correction.
+
+To shorten the critical path, native Sol `r11_farm_review` now implements only
+Scout trader stock/UI in isolated `.claude/worktrees/r11-scout-traders`, branch
+`wp11-r11-scout-traders` from `6bd8a6b8`. It did not author Scout runtime and
+will not review its own trader slice. Scout worker confirmed no trader edits.
+Trader acceptance remains the approved Bowyer bow bracket/player-arrow supply
+and Tanner leather grades using existing price/rotation machinery; no economy
+rebase. Root integrates only after an independent review.
