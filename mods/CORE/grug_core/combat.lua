@@ -631,6 +631,7 @@ end
 --
 
 local hit_mob_callbacks = {}
+local ability_action_id
 
 function grug_core.register_on_player_hit_mob(func)
 	table.insert(hit_mob_callbacks, func)
@@ -654,6 +655,9 @@ function grug_core.run_player_hit_mob(player, mob_ent, damage, applied, fraction
 	end
 	for _, func in ipairs(hit_mob_callbacks) do
 		func(player, mob_ent, damage, applied, fraction)
+	end
+	if grug_core.in_ability_punch and ability_action_id and (damage or 0) > 0 then
+		grug_core.run_settled_outgoing_action(player, ability_action_id, "damage")
 	end
 end
 
@@ -1112,6 +1116,7 @@ function grug_core.deal_ability_damage(attacker, target, amount, opts)
 	-- pcall + flag restore: an error mid-punch must not leave the sticky
 	-- flag set (that would silently kill rage generation server-wide).
 	grug_core.in_ability_punch = true
+	ability_action_id = opts.action_id or {}
 	ability_attacker_level = opts.attacker_level or
 		grug_core.get_player_level(attacker)
 	-- `punch_attack_uses = 0` is not cosmetic: mobs_redo's on_punch runs an
@@ -1127,16 +1132,22 @@ function grug_core.deal_ability_damage(attacker, target, amount, opts)
 	-- from the hotbar until a relog
 	-- re-granted it. api.lua:2927-3538 reads exactly this field as "no wear",
 	-- so one line switches the whole path off for every ability punch.
+	local hp_before = target:get_hp()
 	local ok, err = pcall(target.punch, target, attacker, 1.4, {
 		full_punch_interval = 1.4,
 		punch_attack_uses = 0,
 		damage_groups = {fleshy = amount},
 	}, nil)
+	local settled_action = ability_action_id
+	ability_action_id = nil
 	ability_attacker_level = nil
 	grug_core.in_ability_punch = false
 	if not ok then
 		core.log("warning", "[grug_core] ability punch failed: " .. tostring(err))
 		return 0
+	end
+	if target:is_player() and target:get_hp() < hp_before then
+		grug_core.run_settled_outgoing_action(attacker, settled_action, "damage")
 	end
 	-- BONUS-ONLY threat site. The punch above already ran through grug_mobs'
 	-- accepted hit hook -> run_player_hit_mob, which added the base threat
@@ -1197,6 +1208,10 @@ function grug_core.heal_player(healer, target, amount, opts)
 		for i = 1, #effective_heal_callbacks do
 			effective_heal_callbacks[i](healer, target, effective)
 		end
+		if opts.action_id and healer and healer:is_player() and
+				grug_core.in_combat(healer) then
+			grug_core.run_settled_outgoing_action(healer, opts.action_id, "heal")
+		end
 	end
 	return effective
 end
@@ -1215,11 +1230,11 @@ function grug_core.register_on_effective_absorb(func)
 	table.insert(effective_absorb_callbacks, func)
 end
 
--- Durability/action consumers subscribe here, while the ability or swing that
--- owns the transaction publishes exactly once. `action_id` must be unique for
--- that player's live session and reused across every victim/projectile settled
--- by the same action. Core deliberately does not emit from per-target damage,
--- healing or absorb callbacks because those sites would multiply AoE wear.
+-- Durability/action consumers subscribe here. `action_id` must be unique for
+-- that player's live session and reused across every result of one action.
+-- Damage owners publish explicitly; heal_player/set_absorb publish only when
+-- their caller supplies that shared identity. Consumers deduplicate it, so an
+-- aura may report several effective targets without multiplying action wear.
 local settled_outgoing_callbacks = {}
 
 function grug_core.register_on_settled_outgoing_action(func)
@@ -1241,7 +1256,7 @@ function grug_core.register_on_settled_incoming_hit(func)
 	table.insert(settled_incoming_callbacks, func)
 end
 
-function grug_core.set_absorb(player, amount, duration, source)
+function grug_core.set_absorb(player, amount, duration, source, action_id)
 	amount = grug_core.scale_player_value(source or player, amount)
 	local expiry = core.get_us_time() + duration * 1e6
 	absorbs[player:get_player_name()] = {
@@ -1250,6 +1265,11 @@ function grug_core.set_absorb(player, amount, duration, source)
 	}
 	for index = 1, #effective_absorb_callbacks do
 		effective_absorb_callbacks[index](source or player, player, amount)
+	end
+	local owner = source or player
+	if amount > 0 and action_id and owner:is_player() and
+			grug_core.in_combat(owner) then
+		grug_core.run_settled_outgoing_action(owner, action_id, "absorb")
 	end
 	if grug_core.set_status then
 		grug_core.set_status(player, "shield", {

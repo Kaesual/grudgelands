@@ -1240,6 +1240,7 @@ local function finish_authoritative_swing(context, result)
 	if result.cancelled or not result.landed then
 		return false
 	end
+	grug_core.run_settled_outgoing_action(context.player, context, "damage")
 	local function grant_battlebeat()
 		if grug_core.trinket_weapon_hit then
 			grug_core.trinket_weapon_hit(context.player)

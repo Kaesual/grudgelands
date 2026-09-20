@@ -1,0 +1,13 @@
+luac51 parser PASS
+mods/PLAYER/grug_money/init.lua SETGLOBAL ['2\t[1]\tSETGLOBAL\t0 -1\t; grug_money']
+mods/PLAYER/grug_jobs/trainers.lua SETGLOBAL []
+mods/ENTITIES/grug_mobs/start_villagers.lua SETGLOBAL []
+mods/ITEMS/grug_repair/service.lua SETGLOBAL []
+mods/ITEMS/grug_repair/providers.lua SETGLOBAL []
+mods/ITEMS/grug_repair/init.lua SETGLOBAL ['2\t[1]\tSETGLOBAL\t0 -1\t; grug_repair']
+tools/r11_repair/service_kat.lua SETGLOBAL []
+sweep 1: no matches
+sweep 2: no matches
+sweep 3: no matches
+sweep 4: no matches
+sweep 5: no matches

@@ -54,6 +54,7 @@ local player = {
 	is_player = function() return true end,
 	get_player_name = function() return "target" end,
 	get_hp = function(self) return self.hp end,
+	set_hp = function(self, value) self.hp = value end,
 	get_properties = function() return {hp_max = 1000} end,
 	get_pos = function() return {x = 0, y = 0, z = 0} end,
 }
@@ -68,6 +69,13 @@ local function resolve(change, reason)
 		end
 	end
 	return change
+end
+local function notify(change, reason)
+	for index = 1, #hp_callbacks do
+		if not hp_callbacks[index].modifier then
+			hp_callbacks[index].fn(player, change, reason)
+		end
+	end
 end
 local pvp = {level = 70, is_player = function() return true end}
 equal(resolve(-100, {type = "punch", object = pvp}), -40,
@@ -92,6 +100,51 @@ equal(resolve(-12.5, {type = "node_damage"}), -12.5,
 grug_core.get_armor_rating = function() return 0 end
 equal(grug_core.apply_player_armor(player, 3.25, 70), 3.25,
 	"no-rating fraction remains unrounded")
+
+local settlements = {}
+grug_core.register_on_settled_outgoing_action(function(owner, action_id, kind)
+	settlements[#settlements + 1] = {owner, action_id, kind}
+end)
+grug_core.scale_player_value = function(_, value) return value end
+grug_core.get_crit_chance = function() return 0 end
+grug_core.add_heal_threat = noop
+local in_combat = true
+grug_core.in_combat = function() return in_combat end
+local heal_action = {}
+player.hp = 900
+equal(grug_core.heal_player(player, player, 25, {action_id = heal_action}), 25,
+	"effective heal")
+equal(#settlements, 1, "effective in-combat heal settlement count")
+check(settlements[1][2] == heal_action and settlements[1][3] == "heal",
+	"heal action identity")
+equal(grug_core.heal_player(player, player, 0, {action_id = {}}), 0,
+	"zero heal")
+equal(#settlements, 1, "zero heal exclusion")
+in_combat = false
+grug_core.heal_player(player, player, 10, {action_id = {}})
+equal(#settlements, 1, "out-of-combat heal exclusion")
+in_combat = true
+local absorb_action = {}
+grug_core.set_absorb(player, 30, 10, player, absorb_action)
+equal(#settlements, 2, "effective in-combat absorb settlement count")
+check(settlements[2][2] == absorb_action and settlements[2][3] == "absorb",
+	"absorb action identity")
+grug_core.set_absorb(player, 0, 10, player, {})
+equal(#settlements, 2, "zero absorb exclusion")
+in_combat = false
+grug_core.set_absorb(player, 10, 10, player, {})
+equal(#settlements, 2, "out-of-combat absorb exclusion")
+in_combat = true
+
+local incoming = 0
+grug_core.register_on_settled_incoming_hit(function() incoming = incoming + 1 end)
+player.hp = 100
+notify(-10, {type = "punch"})
+equal(incoming, 1, "nonlethal combat incoming settlement")
+notify(-100, {type = "punch"})
+notify(-10, {type = "node_damage"})
+notify(0, {type = "punch"})
+equal(incoming, 1, "lethal/environment/zero incoming exclusions")
 
 local source = assert(io.open(repo ..
 	"/mods/ENTITIES/grug_mobs/boss_dragons.lua", "r")):read("*a")
