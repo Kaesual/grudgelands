@@ -16,12 +16,13 @@ end
 
 local function entries(player)
 	local result = {}
-	for _, id in ipairs(grug_abilities.unlocked_ids(player)) do
-		result[#result + 1] = {kind = "ability", id = id,
+	for index, id in ipairs(grug_abilities.unlocked_ids(player)) do
+		assert(index <= 8, "Skills ability row exceeds the decided class-kit limit")
+		result[index] = {kind = "ability", id = id,
 			stack = grug_abilities.stack_for(player, id)}
 	end
 	for _, id in ipairs(grug_mounts.owned_tier_ids(player)) do
-		result[#result + 1] = {kind = "mount", id = id,
+		result[8 + id] = {kind = "mount", id = id,
 			stack = grug_mounts.stack_for(player, id)}
 	end
 	return result
@@ -37,12 +38,12 @@ local function rebuild(player, announce)
 	local inv = detached[name]
 	if not inv then return end
 	local previous = {}
-	for _, entry in ipairs(slots[name] or {}) do
+	for _, entry in pairs(slots[name] or {}) do
 		if entry.kind == "ability" then previous[entry.id] = true end
 	end
 	local rows = entries(player)
 	if announce == true then
-		for _, entry in ipairs(rows) do
+		for _, entry in pairs(rows) do
 			local def = entry.kind == "ability" and grug_abilities.registered[entry.id]
 			if def and def.talent_gated and not previous[entry.id] then
 				core.chat_send_player(name, def.name .. " unlocked. Open Inventory > Skills to use it.")
@@ -52,7 +53,7 @@ local function rebuild(player, announce)
 	slots[name] = rows
 	inv:set_size("catalog", 16)
 	for i = 1, 16 do inv:set_stack("catalog", i, ItemStack("")) end
-	for i, entry in ipairs(rows) do inv:set_stack("catalog", i, entry.stack) end
+	for i, entry in pairs(rows) do inv:set_stack("catalog", i, entry.stack) end
 end
 
 grug_skills.rebuild = rebuild
@@ -109,13 +110,17 @@ end
 local function content(player)
 	grug_skills.guard_destinations()
 	rebuild(player)
-	return "label[0.25,0.2;Active skills and mounts]" ..
-		"list[detached:" .. core.formspec_escape(inv_name(player:get_player_name())) ..
-		";catalog;0.25,0.65;8,2;]" ..
-		"label[0.25,2.8;Drag an unlocked skill to inventory, or back here to remove it.]" ..
-		"label[0.25,3.25;Passive and replacement talents]" ..
-		"textarea[0.25,3.65;8.1,2.0;;;" ..
-		core.formspec_escape(passive_text(player)) .. "]"
+	local location = "detached:" .. core.formspec_escape(inv_name(player:get_player_name()))
+	return "label[0.25,0.2;Abilities]" ..
+		"list[" .. location .. ";catalog;0.25,0.65;8,1;0]" ..
+		"label[0.25,1.85;Purchased mounts]" ..
+		"list[" .. location .. ";catalog;0.25,2.25;4,1;8]" ..
+		"label[0.25,3.35;Passive and replacement talents]" ..
+		"textarea[0.25,3.75;9.9,2.3;;;" ..
+		core.formspec_escape(passive_text(player)) .. "]" ..
+		"textarea[0.25,6.15;9.9,0.7;;;" ..
+		"Drag an unlocked ability or mount to inventory. Drop its icon or drag it back here to remove it.]"
+
 end
 
 grug_skills.page_content = content

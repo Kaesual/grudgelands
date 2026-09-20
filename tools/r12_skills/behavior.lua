@@ -128,7 +128,8 @@ assert(allow_action(player, "put", inv, {listname = "craft", stack = strike}) ==
 assert(allow_action(player, "put", inv, {listname = "grug_bag1_content", stack = strike}) == nil)
 assert(allow_action(player, "take", inv, {listname = "main", stack = strike}) == nil)
 core.detached_inventories.late_chest = {allow_put = function() return -1 end}
-grug_skills.page_content(player)
+local page_form = grug_skills.page_content(player)
+assert(page_form:find(";8,1;0]", 1, true) and page_form:find(";4,1;8]", 1, true))
 assert(core.detached_inventories.late_chest.allow_put(nil, nil, nil, strike, player) == 0)
 assert(core.detached_inventories.late_chest.allow_put(nil, nil, nil, ItemStack("test:ordinary"), player) == -1)
 assert(core.registered_nodes['test:chest'].allow_metadata_inventory_put(nil, nil, nil, strike, player) == 0)

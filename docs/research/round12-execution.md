@@ -135,3 +135,27 @@ Remaining: re-review Skills/Recipes/X3; integrate their final corrections;
 final focused consumer/static/native catalog and registration checks; fresh
 report-only UX; update status/backlog/roadmap/README, close TODO; main merge,
 sync/push and next playtest delivery. No Round12 bytes installed yet.
+
+## Current checkpoint: reviewed packages and final corrections
+
+Skills is independently clean at `eaac9849`. The separate UX reviewer also
+approved the subsequent Q1 starter-weapon onboarding correction and Q2 separate
+Abilities/Mounts catalog rows (real Skills behavior fixture PASS). Q3 trainer
+wording, Q4 unlearn wrapping and P1/P2 style suggestions remain report-only.
+FARM, ART, FOOD, POSE and UI have independently clean review outcomes; earlier
+"active/pending" entries above are chronological history, not current gates.
+
+RECIPES initial review remains 3 High / 1 Medium; Sol author is correcting the
+full runtime catalog and Cooking ownership. X3 independent Astra review found
+5 High / 5 Medium defects: accepted-action settlement, shield contribution
+lifecycle, wear identity, physical impact location and insufficient consumer
+proof, plus exact design numbers/modifiers. A separate Astra implementer now
+owns `/tmp/grug-r12-talents`, including its own abilities init cost/context
+seams and repair opaque-token deduplication. Root owns the shared wp39 fixture;
+root Skills entitlement changes must survive integration. Original independent
+reviewer must re-review X3 corrections. No package is marked shipped yet.
+
+Root has prepared `tools/r12_integration/probe_round12` for an isolated final
+native catalog/registration smoke after both remaining packages integrate;
+this probe has not run yet. Gallery and next-playtest drafts are in
+`round12-gallery.md` and `round12-next-playtest.md`. No Round12 runtime sync.

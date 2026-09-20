@@ -207,7 +207,7 @@ sfinv.register_page("grug_inventory:help", {
 	get = function(self, player, context)
 		local text = table.concat({
 			"Welcome to Grudgelands",
-			"Gather wood, stone and useful materials around your starting area. Open Crafting > Basics to inspect starter recipes, then craft a weapon and equip it on the Character page.",
+			"Your starter weapon is already equipped on the Character page. Gather wood, stone and useful materials nearby, then open Crafting > Basics to make a useful tool or your next weapon. Equip replacement weapons in the Weapon slot.",
 			"Put a combat skill on your hotbar and use it to fight nearby creatures. Your weapon belongs in the Weapon equipment slot; skills use that weapon. Recover between fights and use food for a five-minute buff.",
 			"Basics shows starter recipes immediately. Finding a recipe's main material reveals further recipes, even when it is carried in a bag. This only reveals instructions: crafting itself has no character-level requirement.",
 			"Open Skills to recover an unlocked skill or purchased mount by dragging its icon into your inventory. An icon already in your inventory or a bag cannot be copied. Drop unused skill icons to remove them safely; their unlocks remain available in Skills.",
