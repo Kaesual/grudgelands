@@ -4,6 +4,7 @@ core = {registered_items={ ["test:ore"]={description="Ore"}, ["test:bar"]={descr
 	registered_nodes={ ["default:furnace"]={} },
 	formspec_escape=function(v) return tostring(v) end,
 	get_all_craft_recipes=function(name) if name=="test:bar" then return {{method="cooking",width=1,items={"test:ore"},output="test:bar"}} end return {} end,
+	register_on_mods_loaded=function(fn) callbacks.mods_loaded=fn end,
 	register_on_player_receive_fields=function(fn) callbacks.fields=fn end,
 	register_on_leaveplayer=function() end, show_formspec=function() end,
 	get_item_group=function() return 0 end,
@@ -14,7 +15,7 @@ grug_jobs={PROFESSIONS={},PRIMARY_SLOTS=2,STATIONS={furnace={node="default:furna
 	_item_name=function(v) return tostring(v):match("^([^%s]+)") end,
 	_flatten_inputs=function(v) return v end, recipe_for_craft=function() return nil end,
 	recipes_for=function() return {} end, has=function() return false end,
-	basics_presentation={bind=function(rows) for _,r in ipairs(rows) do r.basics_presentation={starter=true} end end},
+	basics_presentation={bind=function(rows) for _,r in ipairs(rows) do r.basics_presentation={starter=true} end return rows end},
 	recipe_discovered=function() return true end, primary_at=function() return nil end}
 dofile(root.."/mods/PLAYER/grug_jobs/ui.lua")
 local player={get_player_name=function() return "formspec" end}

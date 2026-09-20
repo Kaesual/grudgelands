@@ -147,8 +147,7 @@ local function engine_general_recipes()
 				local engine = recipes[recipe_index]
 				local station = engine.method == "cooking" and "furnace" or
 					(engine.method == "normal" and "grid" or nil)
-				if station and not grug_jobs.recipe_for_craft(station, name,
-						engine.items or {}) then
+				if station and name ~= "" then
 					local record = engine_record(name, engine, station)
 					local key = table.concat({station, name, record.method,
 						tostring(record.width), tostring(record.shapeless),
@@ -165,8 +164,7 @@ local function engine_general_recipes()
 	if smelting and type(smelting.RECIPES) == "table" then
 		for index = 1, #smelting.RECIPES do
 			local recipe = smelting.RECIPES[index]
-			if not grug_jobs.recipe_for_craft("dual_furnace", recipe.output,
-					recipe.inputs) then
+			do
 				local inputs = {}
 				for input = 1, #(recipe.inputs or {}) do
 					inputs[input] = grug_jobs._item_name(recipe.inputs[input])
@@ -190,11 +188,17 @@ local function engine_general_recipes()
 		return table.concat(a.display_items, "\0") < table.concat(b.display_items, "\0")
 	end)
 	if grug_jobs.basics_presentation then
-		grug_jobs.basics_presentation.bind(result)
+		result = grug_jobs.basics_presentation.bind(result)
 	end
 	general_cache = result
 	return result
 end
+
+-- Audit the complete current engine catalog during startup, before a player
+-- can open Basics. Later calls reuse these frozen records.
+core.register_on_mods_loaded(function()
+	engine_general_recipes()
+end)
 
 local function copied_filtered(source, station)
 	local result = {}
@@ -210,6 +214,14 @@ local function normalized_profession_records(profession, station)
 	local source = grug_jobs.recipes_for(profession, station)
 	local result = {}
 	for index = 1, #source do result[index] = cached_record(source[index]) end
+	local presentation = grug_jobs.basics_presentation
+	local extras = presentation and
+		presentation.records_for_profession(profession) or {}
+	for index = 1, #extras do
+		if station == nil or extras[index].station == station then
+			result[#result + 1] = extras[index]
+		end
+	end
 	return result
 end
 

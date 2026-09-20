@@ -1203,10 +1203,10 @@ Neither of these costs a main profession slot (professions.md §1).
   | T6 | Caster | 2 Wild Cocoa + Rock Salt | Jungle Cocoa |
   | T6 | Hunter | raw meat + Wild Cocoa + Fire Pepper or Wild Onion | Cocoa-Rubbed Game |
 
-  **Both furnace patterns.** The three universal refinements appear in the
-  Basics book with a Furnace hint and need no profession: raw meat → Cooked
-  Meat, ordinary Raw Fish → Cooked Fish, and Wild Grain → Bread. Separately,
-  every tier has one Cooking grid recipe for an inedible raw assembly; its
+  **Both furnace patterns.** Raw meat → Cooked Meat, ordinary Raw Fish →
+  Cooked Fish and Wild Grain → Bread are Cooking-owned furnace refinements;
+  they stay in the Cooking book and never appear in Basics. Every tier also
+  has one Cooking grid recipe for an inedible raw assembly; its
   profession-gated furnace route meets the direct grid route at the same edible
   Hearty dish:
 
