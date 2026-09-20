@@ -59,6 +59,15 @@ The vegetation fix is user-accepted. The approved Basics discovery rule and
 unapproved next-round scope are distinguished in
 [Round 12 planning](TODO-round12-planning.md); no broader round has started.
 
+## Round 12 planning
+
+The user accepted expanded farming, WP47 Skills, food/art/held presentation,
+Basics/onboarding/UI improvements and the remaining WP11 consumers. The
+[execution plan](docs/research/round12-plan/README.md) records package boundaries,
+confirmed clarifications and independent review. Implementation still awaits the
+explicit round Go; no new WP is marked shipped. The independent UX lane reports
+only, and no broader Housing/economy/war-front work is added.
+
 ## Phase 1 (MVP)
 
 | WP | Title | Status | Depends on |
@@ -274,43 +283,29 @@ sample (inside → refused, one node outside → allowed), the explosion KAT,
 the static sweep, and a headless probe detonating a Rift Spawn at a capital
 wall with zero node changes.
 
-### WP47 — Skills tab: draggable skill list, no auto-insertion, bound skill items
+### WP47 — Skills tab, disposable bound representations, retained mount tiers
 
-**Open (user idea 2026-09-19); not part of Round 9, candidate for the polish round.**
+**Planned for Round 12; implementation awaits the user's round Go.**
+Concrete contract: [Skills/pose annex](docs/research/round12-plan/skills-pose.md)
+and [integration ownership](docs/research/round12-plan/README.md).
 
-Problem: skills are tool items; a newly learned skill is inserted into the
-inventory, which collides with a full inventory, and unwanted skill items
-have no clean way out.
+- A separate Skills tab displays currently unlocked class/talent abilities and
+  all purchased mount tiers. Drag recovery creates one carried representation
+  only if none exists in main, craft or any owned bag-content list.
+- Drop or return-to-catalog deletes the representation without a world drop,
+  lost entitlement or cooldown reset. Own bags are allowed; external inventories
+  remain forbidden. This supersedes the former recommendation to forbid bags.
+- Preserve the one-time new-character base kit. Later talent unlocks and riding
+  purchases announce Skills availability without automatic inventory insertion;
+  full inventory cannot prevent learning. Reconnect does not restore deleted
+  representations. Respec removes copies and catalog entries no longer unlocked.
+- T2/T4 no longer replace T1/T3. Every purchased tier remains recoverable at its
+  original speed; ownership remains server-authoritative and transfers are denied.
+- Focused transactional/lifecycle checks cover drag recovery, duplicate refusal,
+  deletion, own-bag moves, external-transfer refusal, stale entitlement, original
+  mount speeds and authoritative cooldown/charge continuity.
 
-Plan (orchestrator recommendation: an own sfinv tab "Skills", not a sub-tab
-of Talents — a separate concept, one cheap registered page, the tab bar has
-room):
-
-1. The Skills page shows an infinite source list of every skill the player
-   may personally use (class kit plus talent-unlocked skills, filtered by
-   class, level and talent state). Dragging into the inventory creates a
-   copy, refused when the same skill already lies anywhere in the inventory
-   (no duplicates).
-2. Putting a skill item back into the list or dropping it destroys the item;
-   no item entity is ever spawned (`on_drop` override). Moving a skill item
-   into any external inventory (chests) is refused — the same bound-item
-   rule R9-MOUNTS introduced for mount items; share the helper.
-3. Learning a skill no longer inserts it; it appears in the list and a chat
-   line announces it. Losing a skill (respec, talent change) removes its
-   copies from the inventory.
-4. **Bags too:** the bound-item refusal covers every external inventory,
-   including bag inventories (the Tailor's 8/16/24-slot bags and the
-   32-slot Huge Bag), not only chests.
-5. **Mounts are skills here (user ruling 2026-09-19):** every owned mount
-   tier appears in the Skills list as a draggable skill item, and with this
-   mechanic buying T2 or T4 no longer destroys T1 or T3 — the player keeps
-   all owned mount skills (each tier has its own mesh) and chooses which
-   ones to carry. This supersedes the atomic T1→T2 / T3→T4 replacement of
-   Round 9 ruling 5/§4.25 once WP47 ships; until then R9-MOUNTS keeps the
-   replacement. `mounts.md` follows when WP47 lands.
-6. KAT over the allow/on inventory-action callbacks (copy, duplicate
-   refusal, destroy on put/drop, chest and bag refusal, removal on unlearn,
-   mount tiers listed and retained).
+These are target rules for the approved scope; runtime has not changed yet.
 
 ### WP48 — Mapgen writer performance and parallel emerge
 

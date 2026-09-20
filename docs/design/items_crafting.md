@@ -1131,7 +1131,7 @@ Neither of these costs a main profession slot (professions.md §1).
   T1 and shows the complete T1–T6 catalog; profession level gates crafting and
   `_grug_ilvl` gates eating independently. There is no Cooking Fire.
 
-  **Food v2 shipped values.** A serving lasts **180 s**, ticks every **5 s**,
+  **Food restore values** (duration amended 2026-09-20). A serving lasts **300 s**, ticks every **5 s**,
   and the newest food replaces the old one. Instant healing and regeneration
   wait while the player is in combat; secondary modifiers remain active.
 

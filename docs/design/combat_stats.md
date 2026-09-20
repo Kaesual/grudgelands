@@ -785,12 +785,12 @@ design (`group_attack` stays on).
   healing is the healer's/potion's job.
 - **Food v2 restore buff** (R7.1/R7.2, decided 2026-09-18; supersedes R9 from
   2026-09-17; `items_crafting.md` §3.7 owns the tier table). Eating grants a
-  runtime-only **180 s** buff with one tick every **5 s**. Only one food status
+  runtime-only **300 s** buff with one tick every **5 s**. Only one food status
   may run; the latest replaces it. Every food has fixed instant HP by tier.
   Out of combat that heal applies immediately. In combat the serving may be
   eaten, but the heal waits exactly once for the first out-of-combat moment,
   checked every second, and regeneration ticks do nothing. The unpaid instant
-  heal survives the buff's 180-second expiry; regeneration and secondary
+  heal survives the buff's 300-second expiry; regeneration and secondary
   modifiers still end on time.
   A newer serving replaces, rather than adds to, an unpaid instant heal. Death
   or leaving clears it. Combat never cancels or pauses the duration, and
@@ -800,12 +800,12 @@ design (`group_attack` stays on).
     Food restores mana only through the Caster dishes.
   - Dishes read their HP, mana or split regeneration plus secondary modifiers
     from tier data. Current cooked fish and meat are T1 HP dishes.
-  - The natural replacement cadence is about **20 servings per hour**.
+  - The natural replacement cadence is about **12 servings per hour**.
 - **Healing potion**: instant **30% max HP, 60 s cooldown** (Alchemist
   craft; weak 15% variant sold by vendors). The potion holds the
   in-combat monopoly and is paid for in cooldown; a dish may restore
   more in total, but only out of combat and over seconds. Each food tick
-  due during combat is skipped while the 180-second buff keeps running.
+  due during combat is skipped while the 300-second buff keeps running.
 - **Alchemy v1** (2026-09-18): Healing and Mana Potions restore 30% of their
   current maximum pool and share one persistent 60-second clock. Their Greater
   T3 pair retains the 30% amount but starts that same clock for 45 seconds;

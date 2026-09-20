@@ -225,6 +225,15 @@ The vegetation fix is user-accepted. The approved Basics discovery rule and
 unapproved next-round scope are distinguished in
 [Round 12 planning](TODO-round12-planning.md); no broader round has started.
 
+### Round 12 planning
+
+The user accepted expanded farming, WP47 Skills, food/art/held presentation,
+Basics/onboarding/UI improvements and the remaining WP11 consumers. The
+[execution plan](docs/research/round12-plan/README.md) records package boundaries,
+confirmed clarifications and independent review. Implementation still awaits the
+explicit round Go; no new WP is marked shipped. The independent UX lane reports
+only, and no broader Housing/economy/war-front work is added.
+
 ### Round 10 bounded corrections
 
 The independently reviewed delivery includes exclusive Basics and
