@@ -104,13 +104,10 @@ for tier = 1, 6 do
 		for setting_index = 1, row.settings do inputs[#inputs + 1] = setting end
 		local gems = trinket_gems(row, tier)
 		for gem_index = 1, #gems do inputs[#inputs + 1] = gems[gem_index] end
-		local recipe = A.register_recipe("goldsmith", {tier = tier,
+		A.register_recipe("goldsmith", {tier = tier,
 			station = "jewellers_bench", inputs = grid(inputs),
 			output = grug_gear.trinket_item(row.key, tier),
 			hint = "Assemble at a Jeweller's Bench"})
-		-- Trinkets are the fixed two-affix exception: one prefix and one suffix
-		-- in the crafted-fine window.
-		recipe.quality_mode = "fine"
 	end
 end
 

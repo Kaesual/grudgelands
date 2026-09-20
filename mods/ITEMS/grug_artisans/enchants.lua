@@ -15,3 +15,6 @@ grug_professions.register_enchants("woodcarver", "carving_bench", "caster_weapon
 	woods, staves, fittings)
 grug_professions.register_enchants("woodcarver", "carving_bench", "bow", woods, bows, fittings)
 grug_professions.register_enchants("goldsmith", "jewellers_bench", "spellbook", settings, books)
+local trinkets = {}
+for tier = 1, 6 do trinkets[tier] = grug_gear.trinket_item("manawell", tier) end
+grug_professions.register_enchants("goldsmith", "jewellers_bench", "trinket", settings, trinkets)

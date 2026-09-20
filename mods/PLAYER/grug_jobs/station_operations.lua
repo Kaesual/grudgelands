@@ -7,7 +7,7 @@ function grug_jobs.register_station_operation(definition)
 	local recipe = table.copy(definition)
 	assert(type(recipe.id) == "string" and not by_id[recipe.id],
 		"station operation id must be unique")
-	assert(recipe.operation == "enchant" and grug_items.POOLS[recipe.family],
+	assert(recipe.operation == "enchant",
 		"station operation family differs")
 	assert(recipe.enchant_channel == "prefix" or recipe.enchant_channel == "suffix",
 		"station operation channel differs")
@@ -15,8 +15,10 @@ function grug_jobs.register_station_operation(definition)
 		recipe.tier >= 1 and recipe.tier <= 6, "station operation tier differs")
 	assert(grug_jobs.PROFESSIONS[recipe.profession], "station operation profession differs")
 	assert(grug_jobs.station_info(recipe.station), "station operation station differs")
+	local pool = grug_items.enchant_pool(recipe.family, recipe.enchant_channel)
+	assert(pool, "station operation family differs")
 	local legal
-	for _, stat in ipairs(grug_items.POOLS[recipe.family]) do
+	for _, stat in ipairs(pool) do
 		if stat == recipe.enchant_stat then legal = true end
 	end
 	assert(legal, "station operation stat differs")

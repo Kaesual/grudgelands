@@ -9,7 +9,7 @@ local REAGENTS = {"default:coal_lump", "grug_mobs:venom_gland", "grug_mobs:slime
 function P.register_enchants(profession, station, family, materials, representatives, extra)
 	for tier = 1, 6 do
 		for _, channel in ipairs({"prefix", "suffix"}) do
-			for _, stat in ipairs(grug_items.POOLS[family]) do
+			for _, stat in ipairs(grug_items.enchant_pool(family, channel)) do
 				local definition = grug_items.AFFIXES[stat]
 				local value = grug_items.enchant_value(stat, tier)
 				local material_inputs = {materials[tier], REAGENTS[tier]}

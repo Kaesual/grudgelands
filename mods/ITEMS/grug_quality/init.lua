@@ -12,7 +12,6 @@
 --   grug_base_name     uncolored, unaffixed definition name used on rebuild
 --   grug_roll_window   last §6.3 source window (diagnostic/provenance)
 --   grug_roll_seed     exact PcgRandom seed used for the last affix roll
---   grug_craft_roll    recipe id whose station output was already finalized
 --   grug_trinket_special authored passive text preserved across regeneration
 --
 -- Derived consumer keys are rebuilt from grug_ench and are not authorities:
@@ -90,7 +89,6 @@ local BANDS = {
 
 local WINDOWS = {
 	world = {0.00, 0.60},
-	["crafted-fine"] = {0.30, 0.80},
 	elite = {0.30, 0.90},
 	rare = {0.50, 1.00},
 	boss = {0.80, 1.00},
@@ -103,13 +101,6 @@ grug_items.DROP_CHANCES = {
 	elite = {uncommon = 20, rare = 3, window = "elite"},
 	rare = {uncommon = 100, rare = 25, window = "rare"},
 	boss = {uncommon = 0, rare = 100, window = "boss"},
-}
-
--- Only the trinket assembly exception rolls crafted affixes. Ordinary
--- equipment uses named, fixed-value station operations.
-grug_items.CRAFTED_QUALITY = {
-	base = {quality = 1},
-	fine = {quality = 2, window = "crafted-fine"},
 }
 
 local ENCHANT_VALUES = {
@@ -134,6 +125,11 @@ grug_items.ENCHANT_VALUES = ENCHANT_VALUES
 grug_items.QUALITY = QUALITY
 grug_items.AFFIXES = AFFIX
 grug_items.POOLS = POOLS
+
+-- Trinket identity specials do not change the two channel-specific pools.
+function grug_items.enchant_pool(family, channel)
+	return POOLS[family == "trinket" and ("trinket_" .. channel) or family]
+end
 grug_items.BANDS = BANDS
 grug_items.WINDOWS = WINDOWS
 
@@ -626,59 +622,23 @@ function grug_items.mastery_band(player)
 	return 1
 end
 
-function grug_items.can_craft_quality(player, recipe)
-	local mode = recipe and (recipe.quality_mode or recipe._grug_quality_mode)
-	if mode and mode ~= "base" and mode ~= "fine" then
-		return false, "Unknown crafted quality."
-	end
-	return true
-end
-
-function grug_items.apply_crafted_quality(stack, mode, player, seed)
+-- Every crafted equipment base is deterministic Common gear with empty
+-- channels. Authored identity specials are retained by description generation.
+function grug_items.crafted_output(stack, player)
 	if not stack or stack:is_empty() or not family_for(stack) then return false end
-	mode = mode or "base"
-	local row = grug_items.CRAFTED_QUALITY[mode]
-	if not row then return false, "unknown crafted quality" end
-	if mode == "fine" and family_for(stack) ~= "trinket" then
-		return false, "Ordinary equipment uses named enchantments."
-	end
 	local meta = stack:get_meta()
 	ensure_base_name(stack)
-	meta:set_int("grug_quality", row.quality)
+	meta:set_int("grug_quality", 1)
 	meta:set_string("grug_ench", "")
 	local ilvl = effective_ilvl(stack)
 	if ilvl then write_item_level_meta(stack, meta, ilvl) end
-	if row.window then
-		return grug_items.roll_enchants(stack, ilvl, row.window, 2, seed)
-	end
 	local totals = write_derived(meta, {})
 	apply_capabilities(stack, totals)
 	grug_items.regenerate_description(stack, player)
-	return true
-end
-
--- One entry point for both grug_jobs output seams. Catalogs may attach
--- `quality_mode` (base or the trinket-only fine mode) to their retained recipe
--- object; an ordinary recipe defaults to the §6.4 Common base result.
-function grug_items.crafted_output(stack, player, recipe, seed)
-	local mode = recipe and (recipe.quality_mode or recipe._grug_quality_mode)
-	local allowed, reason = grug_items.can_craft_quality(player, recipe)
-	if not allowed then return false, reason end
-	local marker = recipe and recipe.id or ""
-	local meta = stack and not stack:is_empty() and stack:get_meta() or nil
-	if meta and marker ~= "" and meta:get_string("grug_craft_roll") == marker then
-		return false, "already rolled"
-	end
-	local changed, detail = grug_items.apply_crafted_quality(stack,
-		mode or "base", player, seed)
-	if changed and meta and marker ~= "" then
-		meta:set_string("grug_craft_roll", marker)
-	end
-	if changed and grug_gear and
-			type(grug_gear.initialize_weapon_tooltip) == "function" then
+	if grug_gear and type(grug_gear.initialize_weapon_tooltip) == "function" then
 		grug_gear.initialize_weapon_tooltip(stack, player)
 	end
-	return changed, detail
+	return true
 end
 
 local function gear_stack(itemname, ilvl, quality, window, rng, seed)

@@ -213,6 +213,7 @@ return function(repo)
 	grug_inventory.invalidate_armor = grug_inventory.equipment_changed
 	grug_xp = {get_level = function(player) return player.level or 1 end}
 	grug_classes = {
+		get_melee_bonus = function() return 0 end,
 		get_attributes = function() return {str = 10, dex = 10, int = 10} end,
 		get_crit_chance_raw = function() return 0.06 end,
 		get_dodge_chance_raw = function() return 0.01 end,
@@ -221,6 +222,7 @@ return function(repo)
 		get_equipment_pool_percent = function() return 0 end,
 	}
 	grug_core = {PROTECTION_ARMOR_MULTIPLIER = 1.65,
+		level_scale = function() return 1 end,
 		status_modifier_sum = function() return 0 end,
 		equipment_is_broken = function() return false end,
 		get_player_level = function(player) return player.level or 1 end,
@@ -309,7 +311,7 @@ return function(repo)
 	end
 	check(grug_jobs.profession_level(player, "weaponsmith") == 6, "profession progression setup")
 	local operations = grug_jobs.station_operations()
-	check(#operations == 420, "complete named catalog must have 420 operations")
+	check(#operations == 456, "complete named catalog must have 456 operations")
 	local masters = {weaponsmith = player}
 	local tested = 0
 	for _, recipe in ipairs(operations) do
@@ -337,7 +339,7 @@ return function(repo)
 		check(grid[1]:get_meta():get_string("grug_ench") == "", "catalog preview mutated target")
 		tested = tested + 1
 	end
-	check(tested == 420, "catalog application coverage")
+	check(tested == 456, "catalog application coverage")
 	local operation = assert(grug_jobs.station_operation("enchant:melee_weapon:suffix:str:t1"))
 	local target = ItemStack("grug_gear:sword_abyssal_steel")
 	target:set_wear(12345)
@@ -386,7 +388,7 @@ return function(repo)
 	check(grug_jobs.learn(novice, "weaponsmith"), "novice learning")
 	-- Root's canonical starter definition grants level-one use at item level 3.
 	definitions["grug_gear:sword_bronze"]._grug_req_level = 1
-	check(grug_items.apply_crafted_quality(low, "base", novice), "starter initialization")
+	check(grug_items.crafted_output(low, novice), "starter initialization")
 	check(low:get_meta():get_int("grug_req_level") == 1 and grug_core.can_use_item_level(novice, low),
 		"fresh Bronze starter blocked at level one")
 	local novice_plan = assert(grug_items.operation_plan(operation, inputs(operation, low), novice))
@@ -424,11 +426,52 @@ return function(repo)
 	check(grug_items.roll_enchants(found, 75, "boss", nil, 7), "found roll failed")
 	check(#grug_items.get_affixes(found) == 2 and found:get_meta():get_string("grug_refined") == "",
 		"found gear lost affixes or created refined marker")
+	local jewelry_bases = 0
+	local goldsmith = masters.goldsmith
+	local jewelry_prefix = grug_jobs.station_operation("enchant:trinket:prefix:int:t1")
+	local jewelry_suffix = grug_jobs.station_operation("enchant:trinket:suffix:crit_percent:t1")
+	local jewelry_replace = grug_jobs.station_operation("enchant:trinket:prefix:dex:t1")
+	check(not grug_jobs.station_operation("enchant:trinket:suffix:int:t1") and
+		not grug_jobs.station_operation("enchant:trinket:prefix:crit_percent:t1"),
+		"trinket channel pools leaked")
+	for _, recipe in ipairs(grug_jobs.recipes) do
+		local base = ItemStack(recipe.output_name)
+		if grug_items.family_for(base) == "trinket" then
+			jewelry_bases = jewelry_bases + 1
+			local special = base:get_definition()._grug_trinket_special
+			check(recipe.quality_mode == nil, "crafted random trinket route survived")
+			check(grug_items.crafted_output(base, goldsmith, recipe), "base trinket craft failed")
+			check(#grug_items.get_affixes(base) == 0 and base:get_meta():get_int("grug_quality") == 1,
+				"crafted trinket has random affixes or non-Common quality")
+			local repeat_base = ItemStack(recipe.output_name)
+			check(grug_items.crafted_output(repeat_base, goldsmith, recipe) and
+				serialize(base) == serialize(repeat_base), "base trinket craft is nondeterministic")
+			local with_suffix = assert(grug_items.operation_plan(jewelry_suffix,
+				inputs(jewelry_suffix, base), goldsmith)).output
+			local with_both = assert(grug_items.operation_plan(jewelry_prefix,
+				inputs(jewelry_prefix, with_suffix), goldsmith)).output
+			local replaced = assert(grug_items.operation_plan(jewelry_replace,
+				inputs(jewelry_replace, with_both), goldsmith)).output
+			local affixes = grug_items.get_affixes(replaced)
+			check(#affixes == 2 and affixes[1].stat == "dex" and affixes[1].value == 2 and
+				affixes[2].stat == "crit_percent" and affixes[2].value == 0.5,
+				"trinket replacement changed opposite channel or scaled target")
+			check(not grug_items.operation_plan(jewelry_replace,
+				inputs(jewelry_replace, replaced), goldsmith), "trinket no-op accepted")
+			check(replaced:get_wear() == 0 and replaced:get_meta():get_string("description"):find(special, 1, true),
+				"trinket special/wear changed")
+			check(base:get_meta():get_string("grug_roll_window") == "" and
+				base:get_meta():get_string("grug_craft_roll") == "", "crafted roll metadata survived")
+		end
+	end
+	check(jewelry_bases == 36, "trinket base identity catalog incomplete")
 	local trinket = ItemStack(grug_gear.trinket_item("last_light", 6))
-	check(grug_items.apply_crafted_quality(trinket, "fine", player, 7), "trinket assembly failed")
+	check(grug_items.roll_enchants(trinket, 75, "boss", nil, 7), "found trinket roll failed")
 	local trinket_affixes = grug_items.get_affixes(trinket)
 	check(#trinket_affixes == 2 and trinket_affixes[1].channel == "prefix" and
-		trinket_affixes[2].channel == "suffix", "trinket exception lost fixed channels")
+		trinket_affixes[2].channel == "suffix", "found trinket lost fixed channels")
+	check(grug_items.apply_crafted_quality == nil and grug_items.CRAFTED_QUALITY == nil and
+		grug_items.WINDOWS["crafted-fine"] == nil, "crafted RNG workflow survived")
 	check(grug_items.set_refined == nil and grug_items.append_affix == nil and
 		grug_items.apply_upgrade_kit == nil, "retired operation API survived")
 	for _, recipe in ipairs(grug_jobs.recipes) do
@@ -440,5 +483,5 @@ return function(repo)
 	end
 	table.copy = old_table_copy
 	restore()
-	return "PASS r13 enchants operations=420 applications=420 suffix-first fixed-tier replacement no-op profession family materials metadata broken found trinket starter-level speed-replacement\n"
+	return "PASS r13 enchants operations=456 applications=456 suffix-first fixed-tier replacement no-op profession family materials metadata broken found trinket-bases=36 trinket-channels starter-level speed-replacement\n"
 end

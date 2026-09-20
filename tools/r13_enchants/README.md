@@ -8,7 +8,7 @@ review and the coordinator's combined station/equipment integration checks.
 ## Catalog and station contract
 
 `grug_jobs.station_operations(station)` returns the selected-operation catalog;
-with no station it returns all 420 entries. `station_operation(id)` resolves one
+with no station it returns all 456 entries. `station_operation(id)` resolves one
 canonical object. These entries never participate in ordinary recipe matching.
 Each entry contains `id`, `profession`, `station`, `tier`, `operation = "enchant"`,
 `family`, `enchant_channel`, `enchant_stat`, `enchant_value`, `label`, `hint`,
@@ -26,8 +26,9 @@ progress once. Ineligible plans and identical replacements consume nothing.
 
 The explicit channel is part of each `grug_ench` record, including found rolls.
 It permits a suffix before a prefix without position-based ambiguity. No
-old-format reader or migration is included. Found random windows and the fixed
-trinket channel exception remain; ordinary applications use fixed tier values.
+old-format reader or migration is included. Found random windows remain separate. Crafted trinkets start Common with empty
+channels and unchanged authored specials; their three prefix choices and three
+suffix choices use the same fixed tier values as ordinary applications.
 Broken item operations preserve wear, retain disabled capabilities and refresh
 the repair service's usable-capability snapshot. Gathering tools are excluded.
 
@@ -40,11 +41,12 @@ luajit -e 'io.write(dofile("tools/r13_enchants/final_micro.lua")("."))'
 ```
 
 The fixture loads the real gear, quality, Jobs registry/state, profession and
-artisan catalogs. It validates all 420 operation applications and startup
+artisan catalogs. It validates all 456 operation applications and startup
 material references, suffix-first display, fixed strength on higher-tier gear,
 replacement and opposite-channel preservation, no-op refusal, profession/item
 tier/material/family rejection, wear/identity preservation, broken capability
-snapshot, found/trinket rolls, Bronze level-one initialization and removal of
+snapshot, separate found/trinket rolls, all 36 deterministic trinket base recipes
+and their channel/replacement/special preservation, Bronze level-one initialization and removal of
 retired operations. It uses bounded engine stubs and does not claim engine UI,
 station transaction or durability-service runtime acceptance.
 
@@ -69,3 +71,7 @@ and the opposite channel's stat, and confirm refusals preserve inputs. Enchant a
 broken weapon and confirm it remains unusable until paid repair; the repaired
 item must have the new enchant. Check all named operations in the book and use
 a newly created level-one character's Bronze weapon before and after enchanting.
+
+Craft a base trinket and verify empty channels plus its authored special. Apply
+a chosen prefix and suffix at the Jeweller's Bench, then replace one channel.
+The special and opposite channel must remain unchanged.
