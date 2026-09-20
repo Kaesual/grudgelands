@@ -54,3 +54,28 @@ node("timber","Timber Stack","default_tree.png",
 node("carving","Carving Bench","default_wood.png",table_box)
 node("case","Jeweller's Display Case","default_glass.png",
  {-.5,-.5,-.5,.5,.2,.5},{use_texture_alpha="clip",sunlight_propagates=true})
+
+-- Fixed product plaques use existing shipped item artwork; the enclosing
+-- frame/counter is authored by CAP. They have the same no-inventory/no-drop
+-- contract as every other capital prop, not a player-editable item frame.
+local products = {
+ weaponsmith={"Weaponsmith", "grug_gear_item_sword_bronze.png"},
+ armorsmith={"Armorsmith", "grug_gear_item_chest_metal_bronze.png"},
+ tailor={"Tailor", "grug_gear_item_chest_cloth_patch.png"},
+ leatherworker={"Leatherworker", "grug_gear_item_chest_leather_light.png"},
+ woodcarver={"Woodcarver", "grug_gear_item_staff_wood.png"},
+ goldsmith={"Goldsmith", "default_mese_crystal_fragment.png^[colorize:#4a8bd8:150"},
+ alchemist={"Alchemist", "grug_traders_item_potion_healing_weak.png"},
+ cooking={"Cooking", "default_clay_lump.png^[colorize:#d8a552:145"},
+}
+local names={}
+for name in pairs(products) do names[#names+1]=name end
+table.sort(names)
+for _,name in ipairs(names) do
+ local product=products[name]
+ local front="wool_white.png^("..product[2]..")"
+ node("product_"..name,product[1].." Product Display","default_wood.png",
+  {-.5,-.5,-.12,.5,.5,.12},{paramtype2="facedir",
+   tiles={"default_wood.png","default_wood.png","default_wood.png",
+    "default_wood.png",front,front}})
+end

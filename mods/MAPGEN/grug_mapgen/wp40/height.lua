@@ -174,6 +174,23 @@ local function new_coast_rules(full_seed_string)
 		end
 		return cache
 	end
+	-- The fallback's Euclidean distance is useful, but the dominant component
+	-- of a nearest four-node sample aliases on diagonal shores. Keep its
+	-- distance and resolve run orientation from an actual cardinal contact.
+	function result.cardinal_orientation(x, z, fallback, water_at)
+		local best_distance, orientation = 53, fallback
+		for direction = 1, 4 do
+			local dx = direction == 1 and 1 or direction == 2 and -1 or 0
+			local dz = direction == 3 and 1 or direction == 4 and -1 or 0
+			for distance = 17, best_distance - 1 do
+				if water_at(x + dx * distance, z + dz * distance) then
+					best_distance, orientation = distance, direction
+					break
+				end
+			end
+		end
+		return orientation
+	end
 	function result.nearest_lattice_sample(query_x, query_z, sample_min_x,
 			sample_min_z, sample_class, sample_level, sample_freshwater)
 		local query_lattice_x = math.floor(query_x / 4)
@@ -5318,6 +5335,11 @@ local function height_factory(dependencies)
 				return {squared = nearest_squared, orientation = nearest_orientation,
 					level = nearest_level, freshwater = nearest_freshwater}
 			end
+			local function cardinal_water_at(x, z)
+				local class, _, _, bay_id, hydrology_id = classified_values(x, z)
+				return class ~= "land" and pregrade_water_surface_at(x, z,
+					class, bay_id, hydrology_id) ~= nil
+			end
 			local function lattice_shore_at(x, z)
 				local chunk_x, chunk_z = floor_div(x, 80), floor_div(z, 80)
 				local lattice = lattice_cache.get(chunk_x, chunk_z, build_lattice)
@@ -5325,7 +5347,8 @@ local function height_factory(dependencies)
 				local squared = lattice.squared[index]
 				if not squared then return nil end
 				local distance = math.floor(math.sqrt(squared) + 0.5)
-				return distance, lattice.orientation[index], lattice.level[index],
+				return distance, coast_rules.cardinal_orientation(x, z,
+					lattice.orientation[index], cardinal_water_at), lattice.level[index],
 					lattice.freshwater[index]
 			end
 			local function target_for(profile, distance, incoming, water_y, owner,

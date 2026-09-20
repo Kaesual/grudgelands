@@ -227,7 +227,7 @@ local function loader(directory)
 		for key, value in pairs(plot.spec or {}) do spec[key] = value end
 		spec.id = plot.id
 		if services.service("highcourt", plot.id) == "riding" then
-			spec.w, spec.d, spec.wall_h, spec.roof, spec.rise = 21, 17, 5, "gable", 4
+			spec.w, spec.d, spec.open_shelter = 21, 17, true
 		end
 		if roof_palette then spec.roof_palette = roof_palette end
 		local part, turns, rw, rd, ox, oz
@@ -400,7 +400,13 @@ local function loader(directory)
 			entry.dir = {x = dx, z = dz}
 		end
 
-		services.decorate("highcourt", plot.id, buf, palette, sockets)
+		if spec.open_shelter then
+			-- Generic shopfront lamps/benches must not become extra shelter
+			-- posts or intrude into the open stable's public approach.
+			buf:clear(x0, 1, z0, x1, clear_to, z1)
+			parts.stamp(buf, part, ox, 0, oz, turns)
+		end
+		services.decorate("highcourt", plot.id, buf, palette, sockets, area)
 		parts.resolve_panes(buf)
 
 		local source, count = buf:cells()
