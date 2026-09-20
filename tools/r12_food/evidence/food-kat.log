@@ -1,0 +1,1 @@
+R12 FOOD PASS routes=24 duration=300 tick=5 old-expiry=active final-expiry=cleared deferred=once replacement=latest tooltips=5min

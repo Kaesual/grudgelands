@@ -19,11 +19,12 @@ reviewed integrated main build at final delivery.
 
 | Package | Worker / branch / checkout | State |
 |---|---|---|
-| FARM | native Sol / `wp32-r12-farm` / `/tmp/grug-r12-farm` | queued |
-| SKILLS | native Sol / `wp47-r12-skills` / `/tmp/grug-r12-skills` | queued |
-| ART | native Sol / `wp29-r12-art` / `/tmp/grug-r12-art` | queued |
+| FARM | native Sol / `wp32-r12-farm` / `/tmp/grug-r12-farm` | active |
+| SKILLS | native Sol / `wp47-r12-skills` / `/tmp/grug-r12-skills` | active |
+| ART | native Sol / `wp29-r12-art` / `/tmp/grug-r12-art` | active |
 | TALENTS | native Sol; consumes frozen Skills eligibility seam | queued |
-| UI / RECIPES / FOOD | native Sol; shared page/Creative owner | queued |
+| UI / RECIPES | native Sol; shared page/Creative owner | queued |
+| FOOD | root Astra / integration branch | implemented, review queued |
 | POSE | root or native Sol after ART grip conventions | queued |
 | Independent code/visual reviews | separate non-author agents | queued |
 | UX | independent report-only integrated-candidate audit | queued |
@@ -47,3 +48,16 @@ or copied into worker commits. Worktree reference gitlinks remain untouched.
 Next: dispatch first-wave workers; root freezes UI/Skills seams, folds shared
 specs, then advances remaining packages as worker slots free. Persist exact
 heads, findings and next actions here at every significant handoff.
+
+## FOOD candidate
+
+Root changed `grug_food.DURATION` to 300 and made tooltip duration derive from
+that value. `tools/r12_food/kat.lua` loads real food and status modules and
+checks all 24 tier/role combinations, five-second cadence, the old/new expiry
+boundaries and exactly-once deferred instant healing after expiry. PASS; static
+parser checks 326 files, only declared/harness globals, five sweeps no live
+forbidden constructs, 13 unchanged primary reference pins. Evidence in
+`tools/r12_food/evidence/`. Independent review pending; not yet shipped.
+The historical R7 combined fixture failed on a pre-existing armor accessor
+lookup before its food checks; it was left unchanged and a focused current
+fixture replaced it for this bounded change. No broader harness repair added.

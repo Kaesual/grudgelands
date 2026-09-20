@@ -519,8 +519,7 @@ Details + line numbers in [docs/research/](docs/research/).
   and the modifier-change callback drives the same HP/mana clamp and HUD/page
   refresh path as talents. `grug_food.TIERS` owns fixed instant HP, minimum
   level and the Hearty/Caster/Hunter dish data; raw foods, including Wild
-  Cocoa, always regenerate 1% HP per 5 s. Food lasts 300 s (Round 12 decision;
-  duration implementation pending); its instant heal
+  Cocoa, always regenerate 1% HP per 5 s. Food lasts 300 s; its instant heal
   and regeneration defer/pause in combat, secondary modifiers do not, and the
   latest food replaces the previous one. `grug_core.can_use_item_level` is the
   shared `_grug_ilvl` gate for the Weapon slot and all consumables. Potions
