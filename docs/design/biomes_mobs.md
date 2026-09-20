@@ -880,6 +880,12 @@ and its nearby-player lifetime refresh uses 47 nodes
 
 ### 3.0 Critters vs. passive prey vs. enemies (decided 2026-08-08)
 
+Idle and freely roaming ground mobs and NPCs choose only motion whose existing
+bounded forward probe finds a descent of at most one node. This cheap local
+guard keeps ambient populations out of ravines without adding wide scans or
+full pathfinding. Combat, fleeing, authored patrols and scripted return routes
+retain their separate movement contracts.
+
 Three behaviour classes, not two. The split is by **size and role**, not by
 who runs away:
 

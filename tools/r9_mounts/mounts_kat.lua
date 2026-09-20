@@ -1,4 +1,5 @@
-return function(root)
+return function(root, options)
+	options = options or {}
 	assert(type(root) == "string" and root:sub(1, 1) == "/")
 
 	local serialized, serial_id = {}, 0
@@ -161,6 +162,11 @@ return function(root)
 		function object:set_properties(value) self.properties = clone_table(value) end
 		function object:set_armor_groups(value) self.armor = clone_table(value) end
 		function object:set_animation(value, speed) self.animation = {value, speed} end
+		function object:set_attach(parent, bone, position, rotation, force_visible)
+			self.parent, self.attach_position, self.force_visible = parent, position,
+				force_visible
+		end
+		function object:get_attach() return self.parent end
 		function object:get_luaentity() return self.entity end
 		function object:remove() self.valid = false end
 		return object
@@ -243,6 +249,14 @@ return function(root)
 	player_api = {player_attached = {}, set_animation = function() end}
 	grug_core = {
 		in_combat = function() return combat end,
+		set_status = function(player, id, def)
+			player.statuses = player.statuses or {}
+			player.statuses[id] = clone_table(def)
+			return player.statuses[id]
+		end,
+		clear_status = function(player, id)
+			if player.statuses then player.statuses[id] = nil end
+		end,
 		get_player_faction = function(name)
 			local player = players[name]
 			return player and player.faction or nil
@@ -422,6 +436,15 @@ return function(root)
 	local mounted, message = grug_mounts.mount(rider, 1)
 	assert(not mounted and message:find("combat", 1, true))
 	combat = false
+	assert(grug_mounts.TIERS[1].speed == 6.4)
+	assert(grug_mounts.mount(rider, 1))
+	local land_record = grug_mounts.active[rider.name]
+	assert(land_record.object.properties.stepheight == 1.01 and
+		land_record.visual:get_attach() == rider and
+		land_record.visual.force_visible == false)
+	assert(rider.statuses.mount.label == "T1 Mount, +60% Speed")
+	assert(grug_mounts.dismount(rider, "manual", false) and
+		rider.statuses.mount == nil and not land_record.visual:is_valid())
 
 	zone_mode = "battleground"
 	assert(grug_mounts.flight_state(rider, {x = 10, y = 30, z = 10}))
@@ -467,6 +490,7 @@ return function(root)
 	assert(grug_mounts.warning_state(rider,
 		{x = 616, y = 100, z = -2200}) == "ocean",
 		"reviewer bay-edge witness did not warn")
+	if not options.compact then
 	local wp40 = root .. "/mods/MAPGEN/grug_mapgen/wp40"
 	local common = dofile(root .. "/tools/wp40/r6/common.lua")
 	local production_source = dofile(wp40 .. "/source/simple_map.lua")
@@ -491,6 +515,7 @@ return function(root)
 		{x = 616, y = 100, z = -2200}) ~= nil,
 		"production reviewer bay-edge witness did not warn")
 	grug_zones = fixture_zones
+	end
 
 	surface_height = 20
 	rider.pos = {x = -100, y = 19, z = -100}
@@ -534,14 +559,21 @@ return function(root)
 	record = grug_mounts.active[rider.name]
 	assert(record.object.armor.immortal == 1)
 	assert(grug_mounts.entity_definition.initial_properties.pointable == true)
+	assert(grug_mounts.entity_definition.initial_properties.visual_size.x == 1)
 	assert(grug_mounts.entity_definition.initial_properties.static_save == false)
 	assert(grug_mounts.entity_definition.drops == nil)
 	assert(record.object.entity._grug_rider == rider)
-	assert(math.abs(rider.properties.visual_size.x - 0.3) < 0.000001 and
-		math.abs(rider.properties.visual_size.y - 0.3) < 0.000001)
+	assert(math.abs(rider.properties.visual_size.x - 0.9) < 0.000001 and
+		math.abs(rider.properties.visual_size.y - 0.9) < 0.000001)
+	assert(record.visual and record.visual:get_attach() == rider and
+		record.visual.force_visible == false)
+	assert(record.object.properties.stepheight == nil or
+		record.object.properties.stepheight == 0)
+	assert(rider.statuses.mount.label == "T3 Mount, +75% Speed" and
+		rider.statuses.mount.untimed == true)
 	grug_visuals.apply(rider)
-	assert(math.abs(rider.properties.visual_size.x - 0.3) < 0.000001 and
-		math.abs(rider.properties.visual_size.y - 0.3) < 0.000001)
+	assert(math.abs(rider.properties.visual_size.x - 0.9) < 0.000001 and
+		math.abs(rider.properties.visual_size.y - 0.9) < 0.000001)
 
 	-- Build ray hits from the actual selection geometry. This proves that the
 	-- pointable mount covers the rendered rider instead of fabricating a hit.
@@ -661,6 +693,8 @@ return function(root)
 		assert(trainer_text:find("Buy " .. price .. "c", 1, true))
 	end
 
+	local seen = {}
+	if not options.compact then
 	local ledgers = {
 		[root .. "/mods/PLAYER/grug_mounts/LICENSE-media.md"] = true,
 		[root .. "/mods/ENTITIES/grug_mobs/LICENSE-media.md"] = true,
@@ -671,7 +705,6 @@ return function(root)
 		ledger_text = ledger_text .. assert(file:read("*a"))
 		file:close()
 	end
-	local seen = {}
 	local expected_ranges = {
 		grug_mounts_horse = {1, 41}, grug_mounts_tiger = {1, 300},
 		grug_mobs_ibex = {1, 400}, grug_mobs_stag = {1, 150},
@@ -721,6 +754,7 @@ return function(root)
 		assert(model.animation.stand[2] <= maximum and
 			model.animation.move[2] <= maximum,
 			model.id .. " animation exceeds its mesh")
+	end
 	end
 
 	return "r9_mounts_v3|tiers=4|models=12|warning=48|warning_probes=112|" ..

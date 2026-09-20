@@ -5,7 +5,7 @@ local function run(root)
 	local failures = {}
 	local now = 0
 	local connected = {}
-	local hooks = {join = {}, leave = {}, die = {}, step = {}}
+	local hooks = {join = {}, leave = {}, die = {}, step = {}, hp = {}}
 
 	local function check(condition, message)
 		if not condition then failures[#failures + 1] = message end
@@ -25,7 +25,9 @@ local function run(root)
 		register_on_leaveplayer = function(fn) hooks.leave[#hooks.leave + 1] = fn end,
 		register_on_dieplayer = function(fn) hooks.die[#hooks.die + 1] = fn end,
 		register_globalstep = function(fn) hooks.step[#hooks.step + 1] = fn end,
-		register_on_player_hpchange = function() end,
+		register_on_player_hpchange = function(fn, modifier)
+			hooks.hp[#hooks.hp + 1] = {fn = fn, modifier = modifier}
+		end,
 		register_on_mods_loaded = function() end,
 		is_player = function(object)
 			return object and object.is_player and object:is_player()
@@ -149,6 +151,18 @@ return grug_abilities
 	local hero = player("hero", 10, 0)
 	connected[1] = hero
 	for index = 1, #hooks.join do hooks.join[index](hero) end
+	local damage_modifier
+	for index = 1, #hooks.hp do
+		if hooks.hp[index].modifier then damage_modifier = hooks.hp[index].fn end
+	end
+	check(damage_modifier and damage_modifier(hero, -5, {type = "fall"}) == -25,
+		"fall damage scales native five to 25% of max HP")
+	grug_core.get_race_perk = function(_, key)
+		return key == "fall_damage_mult" and 0.8 or nil
+	end
+	check(damage_modifier and damage_modifier(hero, -5, {type = "fall"}) == -20,
+		"Dwarf fall reduction resolves after pool scaling")
+	grug_core.get_race_perk = function() return nil end
 
 	local potion_left = 41
 	environment.grug_traders = {
@@ -198,6 +212,16 @@ return grug_abilities
 	for index = 1, #hooks.step do hooks.step[index](1) end
 	check(after_first == before + 1 and hero.hud_writes == after_first,
 		"HUD text writes only when changed")
+	local untimed = grug_core.set_status(hero, "mount", {
+		label = "T1 Mount, +60% Speed", kind = "buff", untimed = true,
+	})
+	check(untimed and grug_core.status_text(hero):find(
+		"T1 Mount, +60% Speed", 1, true) and not grug_core.status_text(hero):find(
+		"T1 Mount, +60% Speed  ", 1, true),
+		"runtime-only mount status has no countdown")
+	check(not grug_core.set_status(hero, "bad_untimed", {
+		label = "bad", untimed = true, modifiers = {armor = 1},
+	}), "untimed UI status rejects modifiers")
 
 	for index = 1, #hooks.die do hooks.die[index](hero) end
 	local renew = grug_abilities.registered.renew

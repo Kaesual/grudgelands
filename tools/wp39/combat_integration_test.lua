@@ -795,6 +795,18 @@ local function ordinary_punch(target, fraction)
 	assert(handled == true)
 end
 
+local mounted = true
+grug_mounts = {is_mounted = function(player)
+	return player == hero and mounted
+end}
+local mounted_hp = hostile_two:get_hp()
+local mounted_rage = grug_abilities.get_rage(hero)
+ordinary_punch(hostile_two, 1)
+assert(hostile_two:get_hp() == mounted_hp and
+	grug_abilities.get_rage(hero) == mounted_rage,
+	"mounted ordinary PvP packet must have no damage or rage side effects")
+mounted = false
+
 -- An ordinary hostile player punch has no authoritative transaction. Its full
 -- equivalent therefore crosses the same scalar in the PvP callback, still
 -- before its fractional contribution enters the accumulator.
