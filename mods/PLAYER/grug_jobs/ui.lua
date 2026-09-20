@@ -147,8 +147,7 @@ local function engine_general_recipes()
 				local engine = recipes[recipe_index]
 				local station = engine.method == "cooking" and "furnace" or
 					(engine.method == "normal" and "grid" or nil)
-				if station and not grug_jobs.recipe_for_craft(station, name,
-						engine.items or {}) then
+				if station and name ~= "" then
 					local record = engine_record(name, engine, station)
 					local key = table.concat({station, name, record.method,
 						tostring(record.width), tostring(record.shapeless),
@@ -165,8 +164,7 @@ local function engine_general_recipes()
 	if smelting and type(smelting.RECIPES) == "table" then
 		for index = 1, #smelting.RECIPES do
 			local recipe = smelting.RECIPES[index]
-			if not grug_jobs.recipe_for_craft("dual_furnace", recipe.output,
-					recipe.inputs) then
+			do
 				local inputs = {}
 				for input = 1, #(recipe.inputs or {}) do
 					inputs[input] = grug_jobs._item_name(recipe.inputs[input])
@@ -189,9 +187,18 @@ local function engine_general_recipes()
 		if a.station ~= b.station then return a.station < b.station end
 		return table.concat(a.display_items, "\0") < table.concat(b.display_items, "\0")
 	end)
+	if grug_jobs.basics_presentation then
+		result = grug_jobs.basics_presentation.bind(result)
+	end
 	general_cache = result
 	return result
 end
+
+-- Audit the complete current engine catalog during startup, before a player
+-- can open Basics. Later calls reuse these frozen records.
+core.register_on_mods_loaded(function()
+	engine_general_recipes()
+end)
 
 local function copied_filtered(source, station)
 	local result = {}
@@ -238,6 +245,7 @@ local function recipe_unlocked(player, recipe)
 end
 
 local function recipe_discovered(player, recipe)
+	if recipe.profession ~= "general" then return true end
 	return type(grug_jobs.recipe_discovered) ~= "function" or
 		grug_jobs.recipe_discovered(player, recipe)
 end
@@ -385,15 +393,13 @@ end
 
 local function append_recipe(fs, recipe, alternative, alternative_count)
 	local station_icon, station_item = grug_jobs.book_station_icon(recipe.station)
-	if station_item then
-		fs[#fs + 1] = ("item_image[0.25,6.55;0.85,0.85;%s]"):format(
+	if recipe.station ~= "grid" then
+		local element = station_item and "item_image" or "image"
+		fs[#fs + 1] = ("%s[4.18,7.38;0.72,0.72;%s]"):format(element,
 			esc(station_icon))
-	else
-		fs[#fs + 1] = ("image[0.25,6.55;0.85,0.85;%s]"):format(
-			esc(station_icon))
+		fs[#fs + 1] = ("tooltip[4.18,7.38;0.72,0.72;%s]"):format(
+			esc(title_for("station", recipe.station):gsub(" Recipes$", "")))
 	end
-	fs[#fs + 1] = ("tooltip[0.25,6.55;0.85,0.85;%s]"):format(
-		esc(title_for("station", recipe.station):gsub(" Recipes$", "")))
 	local backgrounds = grug_jobs._book_recipe_background_cells(recipe)
 	for index = 1, #backgrounds do
 		local cell = backgrounds[index]
@@ -421,7 +427,15 @@ local function append_recipe(fs, recipe, alternative, alternative_count)
 					end
 				end
 				table.sort(names)
-				label = #names > 0 and table.concat(names, " or ") or cell.token
+				if #names > 0 then
+					local shown = {}
+					for n = 1, math.min(4, #names) do shown[#shown + 1] = names[n] end
+					label = table.concat(shown, " or ")
+					if #names > #shown then label = label .. "\n+" .. (#names - #shown) .. " more" end
+				else label = cell.token end
+			end
+			if rawget(_G, "grug_inventory") and grug_inventory.wrap_text then
+				label = grug_inventory.wrap_text(label, 58)
 			end
 			fs[#fs + 1] = ("tooltip[%.2f,%.2f;0.82,0.82;%s]"):format(x, y,
 				esc(label))
@@ -482,8 +496,9 @@ local function make_formspec(player, book, station, state)
 	end
 	local count_text = {}
 	for tier = 1, 6 do count_text[#count_text + 1] = "T" .. tier .. ": " .. counts[tier] end
-	fs[#fs + 1] = ("label[0.30,4.18;Undiscovered — %s]"):format(
+	fs[#fs + 1] = ("label[0.30,4.02;Undiscovered — %s]"):format(
 		esc(table.concat(count_text, "   ")))
+	fs[#fs + 1] = "label[0.30,4.35;Acquire the main material to reveal more recipes.]"
 	fs[#fs + 1] = "box[0.25,4.65;9.5,0.04;#8c6b3ccc]"
 	if choices then
 		append_recipe(fs, choices[state.alternative], state.alternative, #choices)
@@ -512,6 +527,11 @@ function grug_jobs.open_book(player, book, station, page)
 	end
 	local formspec = make_formspec(player, book, station, state)
 	core.show_formspec(name, BOOK_FORM, formspec)
+end
+
+function grug_jobs.refresh_open_book(player)
+	local state = sessions[player:get_player_name()]
+	if state then grug_jobs.open_book(player, state.book, state.station) end
 end
 
 local function slot_button(fs, x, y, field, profession, empty_label)

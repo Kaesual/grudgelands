@@ -44,8 +44,10 @@ local function wear_stack(player, list, index)
 	return true
 end
 
+-- Captured projectiles carry a stable string id; synchronous accepted actions
+-- use their opaque table itself, shared by damage/heal/absorb/cleave results.
 local function remember(player, action_id)
-	local key = type(action_id) == "table" and action_id.id or action_id
+	local key = type(action_id) == "table" and (action_id.id or action_id) or action_id
 	if key == nil then return false end
 	local name = player:get_player_name()
 	local state = settled[name]

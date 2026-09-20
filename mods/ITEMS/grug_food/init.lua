@@ -3,7 +3,7 @@
 
 grug_food = {}
 
-grug_food.DURATION = 180
+grug_food.DURATION = 300
 grug_food.INTERVAL = 5
 
 grug_food.TIERS = {
@@ -179,7 +179,8 @@ local function tooltip_for(tier, effect)
 	end
 	if #regen > 0 then
 		lines[#lines + 1] = "Regenerates " .. table.concat(regen, " and ") ..
-			(" every %d s for 3 min."):format(grug_food.INTERVAL)
+			(" every %d s for %g min."):format(grug_food.INTERVAL,
+				grug_food.DURATION / 60)
 	end
 	local bonuses = modifier_parts(effect.modifiers, true)
 	if #bonuses > 0 then
@@ -226,7 +227,7 @@ end
 core.register_on_dieplayer(clear_pending_instant)
 core.register_on_leaveplayer(clear_pending_instant)
 
--- The status registry deliberately removes food and its modifiers at 180 s.
+-- The status registry deliberately removes food and its modifiers at the configured duration.
 -- Check only players that still have an unpaid instant heal, so a long combat
 -- can end later without extending the buff or scanning every connected player.
 core.register_globalstep(function(dtime)

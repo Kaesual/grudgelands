@@ -127,7 +127,7 @@ function grug_trinkets.after_player_hit(player, hp_change, reason)
 	local amount = math.max(1, math.floor(maximum * effect.value / 100 + 0.5))
 	-- Section 6.2 names no separate shield lifetime. The authored 120-second
 	-- shared cooldown is therefore also the lifetime of an unconsumed shield.
-	grug_core.set_absorb(player, amount, effect.cooldown, player)
+	grug_core.add_absorb(player, "last_light", amount, effect.cooldown, player)
 end
 
 function grug_trinkets.xp_eligible_kill(player)

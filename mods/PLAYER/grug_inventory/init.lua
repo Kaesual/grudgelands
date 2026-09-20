@@ -7,4 +7,5 @@ grug_inventory = {}
 local modpath = core.get_modpath(core.get_current_modname())
 dofile(modpath .. "/equipment.lua")
 dofile(modpath .. "/bags.lua")
+dofile(modpath .. "/ui.lua")
 dofile(modpath .. "/pages.lua")

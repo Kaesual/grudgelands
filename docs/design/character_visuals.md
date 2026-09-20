@@ -115,9 +115,13 @@ in one sprite convention**: 16×16, long axis on the image's diagonal, grip at t
 bottom left — minetest_game's own tool convention. Two conventions would need
 two transforms, and one of them would be wrong.
 
-**An item that is not a weapon or a tool is held upright instead**: a torch, an
-apple, a sapling or a bag is an ordinary icon with no diagonal and no grip, so
-it is held by its centre, standing up, its face vertical like a blade's.
+**Unprofiled items use a centred forward pose** (Round 12): rotate the previous
+upright fallback 90 degrees forward around its centre grip. Torches, apples,
+saplings and bags receive this fallback unless their definition supplies an
+explicit `_grug_wield_pose`. An explicit valid pose wins, followed by existing
+bow/axe/tool family dispatch; the forward pose is last. The upright pose remains
+available explicitly. This changes third-person/world character attachments,
+including humanoid NPCs, not the engine's separate first-person wieldmesh.
 
 **An axe is held edge-down** (decided 2026-09-16, playtest round 5: "the axe
 blades of the Dur Brannoc residents point the wrong way"). The convention above
@@ -130,11 +134,12 @@ the swing** — nothing else about the weapon moves, and a sword, dagger, pick,
 shovel or rod cannot tell the two rolls apart at all (their art is symmetric
 about the axis, measured).
 
-So there are **three poses, and they are the three kinds of art**: the diagonal
-tool, the diagonal tool whose working edge has a side, and the anonymous icon.
-Which one an item gets is read off the families it declares — sword / axe /
-pickaxe / shovel / staff / fishing rod, with the axe family taking the rolled
-pose.
+Existing diagonal-tool, edge-down axe and bow poses retain their exact grip,
+rotation and stature compensation. Generic items use the forward fallback;
+upright is an explicit opt-in. Family selection uses sword / axe / pickaxe /
+shovel / staff / fishing rod and weapon/bow groups, with bow then axe priority.
+Invalid explicit pose values fail the startup audit rather than silently changing
+appearance.
 
 **The weapon is the same weapon in every hand.** The attachment inherits the
 wielder's stature (§2), so the entity's size divides it out; a dwarf's sword and
@@ -190,3 +195,19 @@ Protected exterior product frames and interior stands identify all capital
 professions, following [settlements.md](settlements.md). Fixed display items
 are scenery, with no removable inventory or collectible drop. The open stable
 and its living mount displays follow [mounts.md](mounts.md).
+
+### Round 12 inventory-art families
+
+Cooking results use recipe-specific silhouettes at native 16x16 scale rather
+than role-colourized ingredient placeholders. Bowls, pots, platters, jars,
+mugs, whole fish and tied raw preparations may share a family vocabulary, but
+each result remains distinguishable beside the Cooking catalog. Jungle Cocoa
+is a steaming brown drink, never a fruit silhouette. Raw ingredient icons
+remain unchanged.
+
+Wands have a short grip and shaft with a faceted magical focus, distinct from
+a loose crystal, dagger or staff. Greataxes have a broad opposing double-bit
+head and must not read as a spear or halberd. Both families keep one silhouette
+across all six tier palettes and the established diagonal convention: grip at
+approximately `(3.4, 12.6)` in 16x16 sprite coordinates, business end toward
+the upper right. Accepted swords, one-handed axes and armor are unchanged.

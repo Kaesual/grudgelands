@@ -1,0 +1,9 @@
+Round 12 R12-R Recipes verification (2026-09-20)
+
+- Plain Lua 5.1 parser passed for all first-party mod Lua and changed tools.
+- SETGLOBAL inspection found only the declared grug_jobs global in init.lua.
+- All five Lua compatibility/sandbox sweeps were inspected; matches are existing comments/data.
+- LuaJIT discovery_kat: bag, craft, group token, persistence and craft-preview exclusion PASS.
+- LuaJIT presentation_kat: explicit starter, gear material, conversion and ambiguous-route audit PASS.
+- LuaJIT formspec_kat: furnace indicator below arrow and discovery guidance PASS.
+- No PUC runtime or broad suite ran under the Round 12 session override.

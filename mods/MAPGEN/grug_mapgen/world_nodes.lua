@@ -2,7 +2,7 @@
 return function(engine, directory, nodes, gathering)
  local catalog=dofile(directory.."/wp40/world_content_catalog.lua")
  for _,row in ipairs(catalog.plants) do
-  local def=nodes.crop_visual(row.key,4,default.node_sound_leaves_defaults())
+  local def=nodes.crop_visual(row.key,4,default.node_sound_leaves_defaults(),"wild")
   def.description=(row.key:gsub("_"," "):gsub("%a[%w]*",function(word)
    return word:sub(1,1):upper()..word:sub(2)
   end)).." (Wild)"

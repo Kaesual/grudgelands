@@ -561,7 +561,7 @@ function M.run(repo)
 	local POSE = geometry.POSE
 	check(type(POSE) == "table" and POSE.tool == "tool" and
 		POSE.edge_down == "edge_down" and POSE.bow == "bow" and
-		POSE.upright == "upright",
+		POSE.upright == "upright" and POSE.forward == "forward",
 		GEOMETRY .. " does not publish the four pose names")
 	local axe_hanging = measure("wp13_wield_axe_hanging",
 		wield_transform(1, POSE.edge_down), 0, 1)
@@ -661,10 +661,10 @@ function M.run(repo)
 		{"grug_gear:bow_bronze", {bow = 1, grug_bow = 1,
 			grug_equip_weapon = 1}, POSE.bow},
 		-- Anonymous icons: no declared family, no diagonal, no grip pixel.
-		{"default:stick", {}, POSE.upright},
-		{"default:torch", {torch = 1, attached_node = 1}, POSE.upright},
-		{"grug_mobs:raw_fish", {food_fish_raw = 1}, POSE.upright},
-		{"grug_abilities:strike", {grug_ability = 1}, POSE.upright},
+		{"default:stick", {}, POSE.forward},
+		{"default:torch", {torch = 1, attached_node = 1}, POSE.forward},
+		{"grug_mobs:raw_fish", {food_fish_raw = 1}, POSE.forward},
+		{"grug_abilities:strike", {grug_ability = 1}, POSE.forward},
 	}
 	local function group_of(itemname, group)
 		for _, case in ipairs(POSE_CASES) do
@@ -716,6 +716,22 @@ function M.run(repo)
 	-- the upright convention (the weapon's ends are the middles of the top and
 	-- bottom edges, its axis the image's +y), the sprite centre lands on the
 	-- fist and the icon's own up points at model up.
+	check(pose_for("default:torch", group_of, POSE.upright) == POSE.upright,
+		"explicit upright pose must override generic forward")
+	check(pose_for("default:sword_steel", group_of, POSE.upright) == POSE.upright,
+		"explicit pose must override weapon group")
+	check(not pcall(pose_for, "default:torch", group_of, "unknown"),
+		"invalid explicit pose must fail loudly")
+	local forward = wield_transform(1, POSE.forward)
+	local generic = measure("r12_wield_forward", {
+		pos = forward.pos, rot = forward.rot, size = forward.size,
+		grip_fraction_x = 0, grip_fraction_y = 0,
+		ends = {hilt = {0, -0.5}, tip = {0, 0.5}},
+		axis = {0, 1, 0},
+	}, 0, 1)
+	close(generic.tip[1], 0, 0.002, "generic forward lateral alignment")
+	close(generic.tip[2], 0, 0.002, "generic forward vertical alignment")
+	check(generic.tip[3] > 0, "generic icon top must point forward")
 	local upright = wield_transform(1, POSE.upright)
 	local bow = wield_transform(1, POSE.bow)
 	check(bow.rot.x == 90 and bow.rot.y == 45 and bow.rot.z == -90,

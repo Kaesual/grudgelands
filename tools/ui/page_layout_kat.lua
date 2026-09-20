@@ -28,8 +28,8 @@ local LEGACY_UNIT_PX = 48
 local LABEL_HEIGHT = LABEL_LINE_PX / LEGACY_UNIT_PX
 local LABEL_BYTE_WIDTH = 9 / LEGACY_UNIT_PX
 local FORM_MARGIN = 0.10
-local EXPECTED_FORM_W = 8
-local EXPECTED_FORM_H = 9.1
+local EXPECTED_FORM_W = 10.4
+local EXPECTED_FORM_H = 11.1
 local EXPECTED_TAB_X = 0
 local EXPECTED_TAB_Y = 0
 -- The vendored legacy sfinv template places its three-row main list at 6.35;
@@ -55,6 +55,14 @@ for _, slot in ipairs(EQUIPMENT_SLOTS) do
 end
 
 local function load_into(env, path)
+	local root = path:match("^(.-)/mods/")
+	if root then
+		env.core.get_modpath = function() return root .. "/mods/PLAYER/grug_classes" end
+		env.core.get_current_modname = function() return "grug_classes" end
+		env.dofile = function(file)
+			local loader = assert(loadfile(file)); setfenv(loader, env); return loader()
+		end
+	end
 	local chunk, load_error = loadfile(path)
 	if not chunk then
 		return false, load_error
@@ -93,6 +101,8 @@ end
 local function build_env()
 	local hooks = {mods_loaded = {}, status_modifiers = {}}
 	local core = {}
+	function core.register_on_player_hpchange() end
+	function core.get_item_group() return 0 end
 	function core.get_us_time()
 		return 1000000
 	end
@@ -119,8 +129,9 @@ local function build_env()
 			warrior = {id = "warrior", name = "Warrior", resource = "rage"},
 			mage = {id = "mage", name = "Mage", resource = "mana"},
 			priest = {id = "priest", name = "Priest", resource = "mana"},
+			scout = {id = "scout", name = "Scout", resource = "mana"},
 		},
-		class_ids = {"warrior", "mage", "priest"},
+		class_ids = {"warrior", "mage", "priest", "scout"},
 	}
 	function classes.get_class(player)
 		return player._class
@@ -177,6 +188,14 @@ local function build_env()
 	end
 
 	local grug_core = {}
+	function grug_core.absorb_modifier() return 0 end
+	function grug_core.clear_absorb_modifiers() end
+	function grug_core.get_armor_rating(player) return player._armor or 60 end
+	function grug_core.get_player_level(player) return player._level end
+	function grug_core.armor_reduction(rating, level, cap)
+		return math.min(cap, rating / (rating + 85 * level + 400))
+	end
+
 	function grug_core.get_armor_percent(player)
 		return player._armor
 	end
@@ -303,7 +322,8 @@ local function geometry(formspec)
 			local w, h = parse_pair(size or "")
 			if x and y and w and h then
 				box = {x = x, y = y, w = w, h = h,
-					kind = kind, index = index}
+					kind = kind, index = index,
+					text = body:match("^[^;]+;[^;]+;[^;]*;[^;]*;(.*)$") or ""}
 			end
 		elseif kind == "list" then
 			local location, listname, position, size =
@@ -388,8 +408,8 @@ local function overlap_failures(page_name, class_id, level, formspec)
 				and FORM_MARGIN or 0
 			local legacy_lower_main = element.kind == "list" and
 				element.location == "current_player" and
-				element.listname == "main" and element.x == 0 and
-				element.y == 6.35 and element.w == 8 and element.h == 3
+				element.listname == "main" and element.x == 1.2 and
+				element.y == 8.35 and element.w == 8 and element.h == 3
 			local bottom_allowance = legacy_lower_main
 				and LEGACY_LIST_BOTTOM_ALLOWANCE or 0
 			if element.x < 0 or element.y < 0 or
@@ -484,6 +504,7 @@ local function run_checks(repo)
 	for _, relative in ipairs({
 		"mods/BASE/sfinv/api.lua",
 		"mods/PLAYER/grug_classes/talents.lua",
+		"mods/PLAYER/grug_inventory/ui.lua",
 		"mods/PLAYER/grug_inventory/pages.lua",
 		"mods/PLAYER/grug_classes/talents_ui.lua",
 	}) do
@@ -529,13 +550,13 @@ local function run_checks(repo)
 				local changed
 				if mutation == 1 then
 					formspec, changed = formspec:gsub(
-						"button%[5%.65,1%.30;2%.15,0%.5;grug_talent_respec;",
-						"button[8.65,1.30;2.15,0.5;grug_talent_respec;", 1)
+						"button%[7%.55,1%.30;2%.65,0%.5;grug_talent_respec;",
+						"button[11.65,1.30;2.65,0.5;grug_talent_respec;", 1)
 				elseif mutation == 2 then
 					formspec, changed = formspec:gsub("tabheader%[0,0;",
 						"tabheader[99,99;", 1)
 				elseif mutation == 3 then
-					formspec, changed = formspec:gsub("size%[8,9%.1%]",
+					formspec, changed = formspec:gsub("size%[10%.4,11%.1%]",
 						"size[8,5]", 1)
 				elseif mutation == 4 then
 					formspec, changed = formspec:gsub("%+S[%d%.%-]+", "")
@@ -550,8 +571,8 @@ local function run_checks(repo)
 					found[#found + 1] = ("character/%s/L%d omits active status term S")
 						:format(class_id, level)
 				end
-				if page_spec.name == "character" and text_count ~= 2 then
-					found[#found + 1] = ("character/%s/L%d has %d text boxes, expected two")
+				if page_spec.name == "character" and text_count ~= 8 then
+					found[#found + 1] = ("character/%s/L%d has %d text boxes, expected eight")
 						:format(class_id, level, text_count)
 				end
 				for _, failure in ipairs(found) do

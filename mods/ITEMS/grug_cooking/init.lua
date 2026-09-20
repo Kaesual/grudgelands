@@ -86,19 +86,11 @@ for group, members in pairs(INGREDIENT_GROUPS) do
 	for index = 1, #members do add_item_group(members[index], group) end
 end
 
-local TIER_COLORS = {"#a97945", "#bb8055", "#8f6b52", "#72928a", "#667f91",
-	"#80649b"}
-local ROLE_IMAGES = {
-	hearty = "default_clay_lump.png^[colorize:",
-	caster = "default_apple.png^[colorize:",
-	hunter = "grug_mobs_item_raw_fish.png^[colorize:",
-}
-
 local function dish(id, description, tier, role, inputs)
 	return {id = id, item = "grug_cooking:" .. id, description = description,
 		tier = tier, role = role, inputs = inputs, station = "grid",
 		hint = "Crafting grid",
-		image = ROLE_IMAGES[role] .. TIER_COLORS[tier] .. ":125"}
+		image = "grug_cooking_dish_" .. id .. ".png"}
 end
 
 local G = "grug_gathering:"
@@ -233,8 +225,7 @@ for index = 1, #RAW_ASSEMBLIES do
 	core.register_craftitem(row.item, {
 		description = "Raw " .. core.registered_items[row.output].description:match("^[^\n]+") ..
 			"\nInedible. Cook this assembled dish in a furnace.",
-		inventory_image = "default_clay_lump.png^[colorize:" ..
-			TIER_COLORS[row.tier] .. ":175",
+		inventory_image = "grug_cooking_" .. row.id .. ".png",
 		groups = {grug_raw_dish = 1},
 		_grug_tier = row.tier,
 	})
@@ -252,7 +243,7 @@ grug_cooking.INGREDIENT_TIERS = INGREDIENT_TIERS
 
 core.register_craftitem("grug_cooking:bread", {
 	description = "Bread",
-	inventory_image = "default_clay_lump.png^[colorize:#d8a552:145",
+	inventory_image = "grug_cooking_bread.png",
 	_grug_tier = 1,
 })
 assert(grug_food.register_item("grug_cooking:bread", 1, "dish", "hearty"),
@@ -268,3 +259,13 @@ grug_cooking.REFINEMENTS = {
 	{tier = 1, input = C .. "wild_grain", output = "grug_cooking:bread",
 		station = "furnace", hint = "Furnace"},
 }
+
+-- These recipes already exist in their owning engine mods. Register their
+-- exact provenance with Jobs without installing a duplicate engine recipe, so
+-- furnace extraction enforces Cooking and awards progression.
+for index = 1, #grug_cooking.REFINEMENTS do
+	local row = grug_cooking.REFINEMENTS[index]
+	grug_jobs.register_recipe({profession = "cooking", tier = row.tier,
+		station = row.station, inputs = {row.input}, output = row.output,
+		hint = row.hint, existing_engine_recipe = true})
+end

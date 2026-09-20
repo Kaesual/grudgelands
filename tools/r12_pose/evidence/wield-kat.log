@@ -1,0 +1,36 @@
+wp13_wield_bone	Arm_Right	3.150,11.550,0.000	x->-1.000,0.000,0.000	y->0.000,-1.000,0.000	z->0.000,0.000,1.000
+wp13_wield_arm	model_y	6.300..12.600	reach	5.250	fist_centre_bone_y	4.200
+wp13_wield_face	uv	8..16x8..16	normal	0.000,0.000,1.000
+wp13_wield_numbers	pos	0.000,4.200,2.602	rot	90.000,-45.000,90.000	size	0.320,0.320
+wp13_wield_hanging	hand	3.150,7.350,0.000	hilt-hand	0.000,0.000,-1.923	grip-hand	0.000,0.000,0.000	tip-hand	0.000,0.000,7.128	blade	0.000,0.000,1.000	flat	-1.000,0.000,0.000	head	0.000,1.000,0.000
+wp13_wield_raised90	hand	3.150,11.550,4.200	hilt-hand	0.000,-1.923,0.000	grip-hand	0.000,0.000,0.000	tip-hand	0.000,7.128,0.000	blade	0.000,1.000,0.000	flat	-1.000,0.000,0.000	head	0.000,0.000,-1.000
+wp13_wield_axe_hanging	hand	3.150,7.350,0.000	hilt-hand	0.000,0.000,-1.923	grip-hand	0.000,0.000,0.000	tip-hand	0.000,0.000,7.128	blade	0.000,0.000,1.000	flat	1.000,0.000,0.000	head	0.000,-1.000,0.000
+wp13_wield_axe_raised90	hand	3.150,11.550,4.200	hilt-hand	0.000,-1.923,0.000	grip-hand	0.000,0.000,0.000	tip-hand	0.000,7.128,0.000	blade	0.000,1.000,0.000	flat	1.000,0.000,0.000	head	0.000,0.000,1.000
+wp13_wield_axe_0.90	hand	3.150,7.350,0.000	hilt-hand	0.000,0.000,-1.923	grip-hand	0.000,0.000,0.000	tip-hand	0.000,0.000,7.128	blade	0.000,0.000,1.000	flat	1.000,0.000,0.000	head	0.000,-1.000,0.000
+wp13_wield_pose	default:sword_steel	tool
+wp13_wield_pose	default:pick_bronze	tool
+wp13_wield_pose	default:shovel_stone	tool
+wp13_wield_pose	default:axe_stone	edge_down
+wp13_wield_pose	grug_gear:sword_steel	tool
+wp13_wield_pose	grug_gear:dagger_steel	tool
+wp13_wield_pose	grug_gear:staff_steel	tool
+wp13_wield_pose	grug_gear:greataxe_steel	edge_down
+wp13_wield_pose	grug_materials:axe_iron	edge_down
+wp13_wield_pose	grug_materials:axe_abyssal_steel	edge_down
+wp13_wield_pose	grug_materials:pick_iron	tool
+wp13_wield_pose	grug_materials:shovel_embersteel	tool
+wp13_wield_pose	grug_fishing:rod	tool
+wp13_wield_pose	grug_gear:bow_bronze	bow
+wp13_wield_pose	default:stick	forward
+wp13_wield_pose	default:torch	forward
+wp13_wield_pose	grug_mobs:raw_fish	forward
+wp13_wield_pose	grug_abilities:strike	forward
+wp13_wield_stature_0.90	hand	3.150,7.350,0.000	hilt-hand	0.000,0.000,-1.923	grip-hand	0.000,0.000,0.000	tip-hand	0.000,0.000,7.128	blade	0.000,0.000,1.000	flat	-1.000,0.000,0.000	head	0.000,1.000,0.000
+wp13_wield_stature_1.12	hand	3.150,7.350,0.000	hilt-hand	0.000,0.000,-1.923	grip-hand	0.000,0.000,0.000	tip-hand	0.000,0.000,7.128	blade	0.000,0.000,1.000	flat	-1.000,0.000,0.000	head	0.000,1.000,0.000
+r12_wield_forward	hand	3.150,7.350,0.000	hilt-hand	0.000,0.000,-3.200	grip-hand	0.000,0.000,0.000	tip-hand	0.000,0.000,3.200	blade	0.000,0.000,1.000	flat	-1.000,0.000,0.000	head	0.000,0.707,0.707
+wp13_wield_upright	hand	3.150,7.350,0.000	hilt-hand	0.000,-3.200,0.000	grip-hand	0.000,0.000,0.000	tip-hand	0.000,3.200,0.000	blade	0.000,1.000,0.000	flat	-1.000,0.000,0.000	head	0.000,0.707,-0.707
+wp13_wield_upright_0.90	hand	3.150,7.350,0.000	hilt-hand	0.000,-3.200,0.000	grip-hand	0.000,0.000,0.000	tip-hand	0.000,3.200,0.000	blade	0.000,1.000,0.000	flat	-1.000,0.000,0.000	head	0.000,0.707,-0.707
+wp13_wield_uncompensated_0.90	hand	3.150,7.350,0.000	hilt-hand	0.000,0.000,-1.731	grip-hand	0.000,0.000,0.000	tip-hand	0.000,0.000,6.415	blade	0.000,0.000,1.000	flat	-1.000,0.000,0.000	head	0.000,1.000,0.000
+wp13_wield_old_convention	hand	3.150,7.350,0.000	hilt-hand	0.000,3.200,-0.598	grip-hand	0.000,1.840,0.762	tip-hand	0.000,-3.200,5.802	blade	0.000,-0.707,0.707	flat	-1.000,0.000,0.000	head	0.000,0.707,0.707
+wp13_wield_photographed	hand	3.150,7.350,0.000	hilt-hand	0.000,-1.300,-3.700	grip-hand	0.000,-1.300,-3.012	tip-hand	0.000,-1.300,0.700	blade	0.000,0.000,1.000	flat	0.000,-1.000,0.000	head	-0.707,0.000,0.707
+wp13_wield_result	PASS	0

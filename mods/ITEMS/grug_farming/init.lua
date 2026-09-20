@@ -14,8 +14,12 @@ local WATER_RADIUS = 3
 local STAGES = 4
 local STAGE_SECONDS = 200
 local CROP_PROGRESS_META = "wet_progress"
+local CROP_PLANTER_META = "grug_crop_planter"
 
 local crop_by_node = {}
+local helper_by_node = {}
+local profiles = dofile(core.get_modpath(core.get_current_modname()) ..
+	"/crop_profiles.lua")
 
 grug_farming.SOIL_DRY = SOIL_DRY
 grug_farming.SOIL_WET = SOIL_WET
@@ -123,6 +127,7 @@ local function add_crop(key, description, item, image)
 		stage_count = STAGES,
 		stage_seconds = STAGE_SECONDS,
 		seed_source = item,
+		profile = assert(profiles[key], "grug_farming: missing profile " .. key),
 	}
 	for stage = 1, STAGES do
 		row.stages[stage] = "grug_farming:" .. key .. "_" .. stage
@@ -147,6 +152,59 @@ for _, key in ipairs({"potato", "corn"}) do
 	add_crop(key, description, item, definition.inventory_image)
 end
 
+local function copy_pos(pos, dy)
+	return {x = pos.x, y = pos.y + (dy or 0), z = pos.z}
+end
+
+local function height_for(row, stage)
+	return row.profile.heights and row.profile.heights[stage] or 1
+end
+
+local function helper_name(row, stage, level)
+	return "grug_farming:" .. row.key .. "_" .. stage .. "_upper_" .. level
+end
+
+local function owned_helper(node_name, root_pos, pos, row)
+	local helper = helper_by_node[node_name]
+	return helper and helper.crop == row and
+		pos.x == root_pos.x and pos.z == root_pos.z and
+		pos.y - helper.level == root_pos.y
+end
+
+local function protection_ok(pos, player_name)
+	if not core.is_protected(pos, player_name) then return true end
+	if player_name ~= "" then core.record_protection_violation(pos, player_name) end
+	return false
+end
+
+local function transition_crop(pos, state, next_stage, player_name)
+	local row = state.crop
+	local old_height = height_for(row, state.stage)
+	local new_height = height_for(row, next_stage)
+	local maximum = math.max(old_height, new_height)
+	if not protection_ok(pos, player_name) then return false end
+	for level = 1, maximum - 1 do
+		local upper = copy_pos(pos, level)
+		local node = core.get_node_or_nil(upper)
+		if not node or not protection_ok(upper, player_name) then return false end
+		local owned = owned_helper(node.name, pos, upper, row)
+		if level < new_height and not owned then
+			local definition = core.registered_nodes[node.name]
+			if not definition or not definition.buildable_to then return false end
+		end
+	end
+	for level = 1, maximum - 1 do
+		local upper = copy_pos(pos, level)
+		local node = core.get_node(upper)
+		if owned_helper(node.name, pos, upper, row) then core.remove_node(upper) end
+	end
+	core.swap_node(pos, {name = row.stages[next_stage]})
+	for level = 1, new_height - 1 do
+		core.set_node(copy_pos(pos, level), {name = helper_name(row, next_stage, level)})
+	end
+	return true
+end
+
 local function crop_timer(pos, elapsed)
 	local node = core.get_node(pos)
 	local state = crop_by_node[node.name]
@@ -164,7 +222,14 @@ local function crop_timer(pos, elapsed)
 		return false
 	end
 	local next_stage = math.min(STAGES, state.stage + advance)
-	core.swap_node(pos, {name = state.crop.stages[next_stage]})
+	local player_name = core.get_meta(pos):get_string(CROP_PLANTER_META)
+	if not transition_crop(pos, state, next_stage, player_name) then
+		core.get_meta(pos):set_float(CROP_PROGRESS_META,
+			math.max(0, STAGE_SECONDS - SOIL_INTERVAL))
+		core.get_node_timer(pos):set(STAGE_SECONDS,
+			math.max(0, STAGE_SECONDS - SOIL_INTERVAL))
+		return false
+	end
 	if next_stage >= STAGES then
 		core.get_meta(pos):set_float(CROP_PROGRESS_META, 0)
 		return false
@@ -208,6 +273,7 @@ local function place_seed(row)
 		soil_timer(under)
 		start_soil_timer(under)
 		core.set_node(above, {name = row.stages[1]})
+		core.get_meta(above):set_string(CROP_PLANTER_META, player_name)
 		start_crop_timer(above)
 		core.sound_play("default_place_node", {pos = above, gain = 0.35}, true)
 		if not core.is_creative_enabled(player_name) then itemstack:take_item(1) end
@@ -215,8 +281,100 @@ local function place_seed(row)
 	end
 end
 
+local function root_for(pos, node_name)
+	local state = crop_by_node[node_name]
+	if state then return pos, state end
+	local helper = helper_by_node[node_name]
+	if not helper then return nil end
+	local root = copy_pos(pos, -helper.level)
+	local root_state = crop_by_node[core.get_node(root).name]
+	if not root_state or root_state.crop ~= helper.crop or
+		root_state.stage ~= helper.stage then return nil end
+	return root, root_state
+end
+
+local function whole_crop_positions(root, state)
+	local result = {root}
+	for level = 1, height_for(state.crop, state.stage) - 1 do
+		local pos = copy_pos(root, level)
+		local node = core.get_node_or_nil(pos)
+		if not node then return nil end
+		local expected = helper_name(state.crop, state.stage, level)
+		if node.name ~= expected or
+				not owned_helper(node.name, root, pos, state.crop) then return nil end
+		result[#result + 1] = pos
+	end
+	return result
+end
+
+local function give_harvest(player, pos, item)
+	if core.is_creative_enabled(player:get_player_name()) then return end
+	local leftover = player:get_inventory():add_item("main", item)
+	if not leftover:is_empty() then core.add_item(pos, leftover) end
+end
+
+local function dig_crop(pos, node, digger)
+	if not digger or not digger:is_player() then return end
+	local root, state = root_for(pos, node.name)
+	if not root then return end
+	local name = digger:get_player_name()
+	local positions = whole_crop_positions(root, state)
+	if not positions then return end
+	for index = 1, #positions do
+		if not protection_ok(positions[index], name) then return end
+	end
+	for index = #positions, 2, -1 do core.remove_node(positions[index]) end
+	core.remove_node(root)
+	if not core.is_creative_enabled(name) then
+		local drops = {state.crop.seed}
+		if state.stage == STAGES then drops[#drops + 1] = state.crop.harvest_item end
+		core.handle_node_drops(root, drops, digger)
+	end
+end
+
+local function harvest_crop(pos, node, clicker, itemstack)
+	if not clicker or not clicker:is_player() or
+		clicker:get_player_control().sneak then return itemstack end
+	local root, state = root_for(pos, node.name)
+	if not root or state.stage ~= STAGES or not state.crop.profile.regrow_stage then
+		return itemstack
+	end
+	local name = clicker:get_player_name()
+	local positions = whole_crop_positions(root, state)
+	if not positions then return itemstack end
+	for index = 1, #positions do
+		if not protection_ok(positions[index], name) then return itemstack end
+	end
+	local next_stage = state.crop.profile.regrow_stage
+	if not transition_crop(root, state, next_stage, name) then return itemstack end
+	core.get_meta(root):set_string(CROP_PLANTER_META, name)
+	start_crop_timer(root)
+	give_harvest(clicker, root, state.crop.harvest_item)
+	return itemstack
+end
+
 for index = 1, #crops do
 	local row = crops[index]
+	for stage = 1, STAGES do
+		for level = 1, height_for(row, stage) - 1 do
+			local name = helper_name(row, stage, level)
+			helper_by_node[name] = {crop = row, stage = stage, level = level}
+			local visual = grug_nodes.crop_visual(row.key, stage,
+				default.node_sound_leaves_defaults(),
+				{mode = "cultivated", segment = level})
+			visual.description = row.description .. " Crop (upper)"
+			visual.groups = {snappy = 3, flammable = 2, plant = 1,
+				grug_farming_crop_helper = 1, not_in_creative_inventory = 1}
+			visual.drop = ""
+			visual.buildable_to = false
+			visual.on_dig = dig_crop
+			visual.on_rightclick = harvest_crop
+			visual._grug_crop = row.key
+			visual._grug_crop_stage = stage
+			visual._grug_crop_root_offset = -level
+			core.register_node(name, visual)
+		end
+	end
 	core.register_craftitem(row.seed, {
 		description = row.description .. " Seeds",
 		inventory_image = assert(seed_visuals[row.key],
@@ -246,7 +404,8 @@ for index = 1, #crops do
 		end
 
 		local definition = grug_nodes.crop_visual(row.key, stage,
-			default.node_sound_leaves_defaults())
+			default.node_sound_leaves_defaults(),
+			{mode = "cultivated", segment = 0})
 		local gameplay = {
 			description = row.description .. " Crop" .. (mature and "" or
 				" (Stage " .. stage .. ")"),
@@ -254,6 +413,8 @@ for index = 1, #crops do
 			drop = drop,
 			on_construct = on_construct,
 			on_timer = on_timer,
+			on_dig = dig_crop,
+			on_rightclick = harvest_crop,
 			_grug_crop = row.key,
 			_grug_crop_stage = stage,
 			_grug_crop_harvest = row.harvest_item,
@@ -264,6 +425,29 @@ for index = 1, #crops do
 end
 
 grug_farming.CROPS = crops
+
+local crop_root_names = {}
+for index = 1, #crops do
+	for stage = 1, STAGES do
+		crop_root_names[#crop_root_names + 1] = crops[index].stages[stage]
+	end
+end
+
+-- Voxel persistence normally restores the complete plant. This activation
+-- repairs only current-version helper geometry belonging to a loaded root; it
+-- neither scans for orphans nor recognizes any historical format.
+core.register_lbm({
+	label = "Activate current cultivated crop geometry",
+	name = "grug_farming:activate_crop_geometry",
+	nodenames = crop_root_names,
+	run_at_every_load = true,
+	action = function(pos, node)
+		local state = crop_by_node[node.name]
+		if not state or not state.crop.profile.heights then return end
+		transition_crop(pos, state, state.stage,
+			core.get_meta(pos):get_string(CROP_PLANTER_META))
+	end,
+})
 
 dofile(core.get_modpath(core.get_current_modname()) .. "/hoes.lua")({
  start_soil_timer = start_soil_timer,

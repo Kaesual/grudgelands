@@ -1,0 +1,6 @@
+staged probe: probe_x3
+headless boot: PASS (port 32934, 40 s)
+log: /tmp/grudgelands-headless.0WFvQ4/server.log
+235:ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:32934.
+kept: /tmp/grudgelands-headless.0WFvQ4
+ACTION[Server]: WP11X3 RESULT PASS checks=110 runtime=LuaJIT 2.1.1784272936

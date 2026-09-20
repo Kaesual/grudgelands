@@ -181,16 +181,17 @@ The Nether is not part of V1.
   Stone and mount costs.
 - [ ] **WP37 — Surface density:** apply the already-decided 0.75 multiplier
   and re-run the spawn-budget audit.
-- [ ] **WP11 — skill trees, lanes X1/X2/X4 shipped (2026-09-17):** the model,
+- [ ] **WP11 — skill trees, lanes X1–X4 implemented:** the model,
   thirty numeric consumers, sfinv talent page, paid full-reset respec and
   level-up hint are in the game; `/talents` remains a read-only summary.
-  Respec bracket values remain coordinator placeholders. Round 11 adds complete Scout trees and Ironbound/Unbroken. Still open: the
-  original three classes' remaining lane X3 keystones, capstones and abilities.
+  Respec bracket values remain coordinator placeholders. Round 11 adds complete Scout trees and Ironbound/Unbroken. Round 12 completes the original classes' X3 consumers. Only measured WP44 respec-price calibration remains open.
 - [ ] **WP14 / WP20 / WP21 / WP8:** carried
   light, parties, recovery/rest and the quest framework are independently
   ready behind their shipped prerequisites. Design revision 2 landed 2026-09-16
   ([skill_trees.md](docs/design/skill_trees.md)); implementation phase 1 and
-  X4 are shipped, while X3 remains.
+  X4 and the Round 12 X3 consumers are delivered.
+- [x] **WP47 — Skills:** disposable bound representations, manual recovery,
+  every purchased mount tier at its original speed; delivered in Round 12.
 - [x] **WP-Scout:** fourth class, leather, bow and blade, four base abilities
   and both complete trees delivered in Round 11; no stealth in V1. Sprint
   consumes the existing movement aggregator. GUI acceptance remains pending.
@@ -221,18 +222,19 @@ and stop pursuing mobs; real ground/hazard checks remain enforced.
 The [interaction followups](docs/research/round11-interaction-followups.md) are
 reviewed and delivered: ability pickup is limited to 4 m, ground/flying mounts
 support A/D, and trainer right-click no longer also activates the held mount.
-The vegetation fix is user-accepted. The approved Basics discovery rule and
-unapproved next-round scope are distinguished in
-[Round 12 planning](TODO-round12-planning.md); no broader round has started.
+The vegetation fix is user-accepted. The subsequent approved round is complete;
+see [Round 12 completion](docs/research/round12-completion.md).
 
-### Round 12 planning
+### Round 12 delivered
 
-The user accepted expanded farming, WP47 Skills, food/art/held presentation,
-Basics/onboarding/UI improvements and the remaining WP11 consumers. The
-[execution plan](docs/research/round12-plan/README.md) records package boundaries,
-confirmed clarifications and independent review. Implementation still awaits the
-explicit round Go; no new WP is marked shipped. The independent UX lane reports
-only, and no broader Housing/economy/war-front work is added.
+The independently reviewed round delivers WP47 Skills and retained mount tiers,
+seventeen-family farming, five-minute food, Basics main-material discovery,
+Cooking authority, larger UI/Help/Food navigation, held presentation, revised
+art and the remaining original-class X3 consumers. [Completion and evidence](docs/research/round12-completion.md)
+record the bounded native/static checks and report-only UX findings. GUI acceptance
+uses the [next-playtest checklist](docs/research/round12-next-playtest.md).
+WP11 remains open for WP44's measured respec prices; broader Housing/economy
+and war-front work were not included.
 
 ### Round 10 bounded corrections
 

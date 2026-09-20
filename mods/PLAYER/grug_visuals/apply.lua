@@ -79,7 +79,7 @@ local function drawable(itemname)
 		core.registered_items[itemname] ~= nil
 end
 
--- WHICH OF THE THREE POSES an item is held in. The tables and the rule are in
+-- WHICH POSE an item is held in. The tables and the rule are in
 -- `wield_geometry.lua` next to the derivation they belong to -- they ARE the
 -- sprite convention -- and that is also what lets `wield_transform_kat.lua`
 -- check the mapping without an engine. All this file owns is the lookup that
@@ -128,7 +128,8 @@ local function sync_wield(holder, parent, itemname, stature)
 	-- move together.
 	local pose = nil
 	if itemname then
-		pose = pose_for(itemname, get_item_group)
+		pose = pose_for(itemname, get_item_group,
+			core.registered_items[itemname]._grug_wield_pose)
 	end
 	if obj and (holder._grug_wield_stature ~= stature or
 			holder._grug_wield_pose ~= pose) then
@@ -439,6 +440,11 @@ end
 -- check nobody notices breaking.
 --
 core.register_on_mods_loaded(function()
+	for name, definition in pairs(core.registered_items) do
+		if definition._grug_wield_pose ~= nil then
+			pose_for(name, get_item_group, definition._grug_wield_pose)
+		end
+	end
 	local count = grug_visuals.index_armor(core.registered_items)
 	core.log("action", "[grug_visuals] " .. count ..
 		" armor pieces indexed for overlays, " ..

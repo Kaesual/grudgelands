@@ -1,0 +1,22 @@
+mods/PLAYER/grug_abilities/init.lua
+2	[6]	SETGLOBAL	0 -1	; grug_abilities
+mods/PLAYER/grug_skills/init.lua
+2	[1]	SETGLOBAL	0 -1	; grug_skills
+tools/wp39/combat_integration_test.lua
+9	[8]	SETGLOBAL	1 -4	; player_api
+25	[12]	SETGLOBAL	1 -6	; grug_inventory
+54	[38]	SETGLOBAL	11 -25	; vector
+93	[84]	SETGLOBAL	12 -38	; ItemStack
+237	[210]	SETGLOBAL	13 -47	; core
+239	[212]	SETGLOBAL	13 -102	; grug_core
+274	[240]	SETGLOBAL	14 -103	; grug_classes
+276	[242]	SETGLOBAL	14 -122	; grug_factions
+289	[252]	SETGLOBAL	14 -126	; grug_xp
+299	[260]	SETGLOBAL	15 -128	; grug_mobs
+311	[272]	SETGLOBAL	18 -132	; grug_projectiles
+1822	[830]	SETGLOBAL	63 -321	; grug_mounts
+tools/r12_skills/behavior.lua
+273	[80]	SETGLOBAL	15 -72	; sfinv
+293	[86]	SETGLOBAL	15 -85	; grug_money
+301	[88]	SETGLOBAL	15 -87	; grug_mounts
+427	[103]	SETGLOBAL	15 -112	; grug_skills

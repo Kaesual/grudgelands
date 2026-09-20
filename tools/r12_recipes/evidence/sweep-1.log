@@ -1,0 +1,19 @@
+mods/CORE/grug_core/starts_preload.lua:110:-- shutdown EmergeThread::cancelPendingItems holds m_queue_mutex while it runs
+mods/CORE/grug_core/combat_ray.lua:15:-- Camera::update rotates its local X/Z offset with player yaw
+mods/CORE/grug_core/atmosphere_zones.lua:51:-- Server::setSky/setClouds/setLighting (server.cpp:3661-3709) each store the
+mods/CORE/grug_core/atmosphere.lua:13:-- COST: one packet per call. l_object.cpp:2879 calls Server::setLighting,
+mods/ENTITIES/grug_mobs/zombie.lua:181:-- rebuilds ABMHandler once per ABM interval inside ServerEnvironment::step
+mods/ENTITIES/grug_mobs/zombie.lua:183:-- ids (blockmodifier.cpp:92, NodeDefManager::getIds) — long after every mod
+mods/ENTITIES/grug_mobs/start_npcs.lua:840:-- position it is handed (`ServerEnvironment::getBlockStatus`,
+mods/ENTITIES/grug_mobs/kraken.lua:75:	-- `SkinnedMesh::getMaxFrameNumber` answers from the keys
+mods/ENTITIES/grug_mobs/init.lua:44:-- .textures to cover every buffer (content_cao.cpp, GenericCAO::addToScene)
+mods/ENTITIES/grug_mobs/camps.lua:422:-- nodetimer.cpp NodeTimerList::step hands the overshoot to the callback).
+mods/ITEMS/grug_fishing/init.lua:46:-- ours -- `ItemStack::addWear` CLEARS the stack when the next step would pass
+mods/MAPGEN/grug_mapgen/wp40/r6_templates.lua:278:		-- surface node: `Decoration::placeDeco` passes the heightmap value itself
+mods/MAPGEN/grug_mapgen/wp40/r6_templates.lua:279:		-- and `DecoSchematic::generate` only adds `place_offset_y` to it
+mods/MAPGEN/grug_mapgen/wp40/compiler.lua:122:	-- that directory (ModApiUtil::l_get_dir_list, 5.17.0 and submodule HEAD
+mods/MAPGEN/grug_mapgen/wp40/compiler.lua:124:	-- API_FCT(get_dir_list) in ModApiUtil::Initialize -- the server environment
+mods/PLAYER/grug_abilities/init.lua:2300:-- enable_pvp = false means this callback never fires at all: PlayerSAO::punch
+mods/PLAYER/grug_visuals/wield_geometry.lua:29:--    quaternion convention (`quaternion::getMatrix_transposed`, used by
+mods/PLAYER/grug_visuals/wield_geometry.lua:30:--    `core::Transform::buildMatrix`) cannot change the answer. The bone's own
+mods/PLAYER/grug_visuals/wield_geometry.lua:86:--    (`matrix4::setRotationRadians`, used by `GenericCAO::updateAttachments`,

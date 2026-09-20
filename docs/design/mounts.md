@@ -83,11 +83,11 @@ character state:
 - Each exact character-level anchor is both the visibility and purchase gate.
   Price is calibrated by reliable net earning time rather than preserving the
   obsolete 1s/8s/30s/60s table.
-- Inventory representation is **one item per movement mode**. Buying
-  Journeyman atomically replaces the Apprentice land item; buying Master
-  atomically replaces the Expert flying item. Persistent ownership is the
-  authority, and restoration recreates only the highest owned land and flying
-  items rather than reproducing superseded tiers.
+- Inventory representation is **one recoverable item per bought tier**. Buying
+  a higher tier retains every preceding tier, and each item summons its original
+  tier at its original speed. Persistent highest-tier metadata remains the
+  ownership authority; missing representations are recovered manually from the
+  Skills page and are never recreated on join or purchase.
 - T1 is a faction-coloured horse. T2 is a Human horse, Dwarf ibex, Elf stag,
   Orc boar, Undead grave wolf and Troll tiger. Accord flight uses an eagle at
   T3 and the larger, nobler-coloured Steller's sea eagle at T4; Throng flight
@@ -134,12 +134,12 @@ arbitrary fixed-price wall.
   (`mods/ENTITIES/mobs/crafts.lua:119`, `:138`, `:231`) — are removed with the
   vendored-recipe cleanup. A mount is a purchase, exactly like a tome or
   a permanent character upgrade.
-- **The highest purchased tier of each movement mode is an owner-bound
-  inventory/hotbar item.** The item is the summon/dismount action; it is never
-  consumed or dropped. Permanent player state is the authority for ownership,
-  so the trainer can restore a missing representation without permitting
-  duplicates or trading. The two atomic replacement steps are defined in
-  §1.1.
+- **Every purchased tier has an owner-bound inventory/hotbar representation.**
+  The item is the summon/dismount action. Dropping it deletes only that
+  representation; permanent player state remains authoritative and the item can
+  be recovered from Skills. Representations may be kept in `main` or the
+  character's own bag contents, never traded or stored externally. Purchase and
+  join never insert a missing item automatically.
 - Using the item on foot creates one ephemeral mount entity at the player's
   exact position and rotation. The entity takes over that position as the
   movement and collision authority, and the player's visible character is

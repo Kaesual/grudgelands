@@ -27,7 +27,7 @@
 --   5  KEY COVERAGE   every talent effect key is in the closed vocabulary,
 --                     every vocabulary key belongs to a talent, and every key
 --                     THIS LANE owns is read by a real consumer source file.
---                     Lane X3's keys are counted and named, not required.
+--                     X3 keys are required now that their consumers ship.
 --   6  CAP INVARIANTS crit and dodge stay <= 30% and armor <= 60% with every
 --                     shipped numeric talent maxed and no window running, and
 --                     a talent change re-applies derived stats -- the APPLIED
@@ -241,6 +241,8 @@ local function build_env(repo, clock)
 	function grug_core.get_absorb(player)
 		return clock.absorb or 0
 	end
+	function grug_core.absorb_modifier() return 0 end
+	function grug_core.clear_absorb_modifiers() end
 	function grug_core.get_equipped_weapon(player)
 		return player:get_inventory():get_stack("grug_weapon", 1)
 	end
@@ -981,7 +983,7 @@ local function run_checks(repo)
 	-- 5. Effect-key coverage.
 	--
 	local vocabulary = classes.TALENT_EFFECT_KEYS
-	local used, mine, theirs = {}, {}, {}
+	local used, consumed = {}, {}
 	for _, id in ipairs(classes.talent_ids) do
 		for key in pairs(talents[id].effects) do
 			check(vocabulary[key] ~= nil, "talent " .. id .. " uses key '" ..
@@ -1000,24 +1002,18 @@ local function run_checks(repo)
 		vocabulary_size = vocabulary_size + 1
 		check(used[key], "vocabulary key '" .. key ..
 			"' belongs to no talent at all")
-		if owner == "X3" then
-			theirs[#theirs + 1] = key
-		else
-			mine[#mine + 1] = key
-			local found = false
-			for _, name in ipairs(CONSUMER_SOURCES) do
-				if source_text[name]:find('"' .. key .. '"', 1, true) then
-					found = true
-				end
+		local found = false
+		for _, name in ipairs(CONSUMER_SOURCES) do
+			if source_text[name]:find('"' .. key .. '"', 1, true) then
+				found = true
 			end
-			check(found, "effect key '" .. key ..
-				"' is declared but no consumer source reads it")
 		end
+		check(found, "effect key '" .. key ..
+			"' is declared but no consumer source reads it (owner " .. owner .. ")")
+		consumed[#consumed + 1] = key
 	end
-	table.sort(mine)
-	table.sort(theirs)
-	row("wp11_keys", vocabulary_size, "consumed", #mine, "pending_x3", #theirs)
-	row("wp11_keys_pending", table.concat(theirs, " "))
+	table.sort(consumed)
+	row("wp11_keys", vocabulary_size, "consumed", #consumed, "pending", 0)
 
 	--
 	-- 6. Cap/rating invariants, with every shipped numeric talent maxed and no

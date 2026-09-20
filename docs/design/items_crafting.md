@@ -300,10 +300,17 @@ tomes/consumables unchanged. No new numbers are introduced here.
 - The Basics book derives its entries from existing non-profession engine and
   dual-furnace recipes. Those recipes remain registered by their owning mods
   and are not re-registered by the profession framework.
-- **Basics visibility (user decision 2026-09-20):** starter recipes are visible
-  immediately. Additional universal recipes become visible after the first
-  acquisition of their main material, rather than requiring every auxiliary
-  ingredient to have been seen. This discovery remains recorded. Visibility
+- **Basics visibility (user decision 2026-09-20):** an explicit starter set is
+  visible immediately: bootstrap wood/stick/torch/chest/furnace/wooden-hoe
+  routes, every universal T1 weapon/tool/shield and metal/cloth/leather armor,
+  the universal arrow, and T1 profession-free feedstock preparations. Additional
+  universal recipes become visible after the first acquisition of their
+  explicitly declared main material, rather than requiring every auxiliary
+  ingredient to have been seen. Declarations are keyed by complete station,
+  output, method/shape and input signature; missing, stale or ambiguous routes
+  fail the catalog audit. Concrete acquired item names are persisted from all
+  player-owned inventory lists, and group declarations match any acquired
+  concrete member. This discovery remains recorded. Visibility
   never gates crafting: a level-1 character with the inputs may craft an
   Abyssal Steel base item. Character level does not reveal recipe tiers;
   material tier remains a catalog classification and item-level use/equip
@@ -1196,10 +1203,10 @@ Neither of these costs a main profession slot (professions.md §1).
   | T6 | Caster | 2 Wild Cocoa + Rock Salt | Jungle Cocoa |
   | T6 | Hunter | raw meat + Wild Cocoa + Fire Pepper or Wild Onion | Cocoa-Rubbed Game |
 
-  **Both furnace patterns.** The three universal refinements appear in the
-  Basics book with a Furnace hint and need no profession: raw meat → Cooked
-  Meat, ordinary Raw Fish → Cooked Fish, and Wild Grain → Bread. Separately,
-  every tier has one Cooking grid recipe for an inedible raw assembly; its
+  **Both furnace patterns.** Raw meat → Cooked Meat, ordinary Raw Fish →
+  Cooked Fish and Wild Grain → Bread are Cooking-owned furnace refinements;
+  they stay in the Cooking book and never appear in Basics. Every tier also
+  has one Cooking grid recipe for an inedible raw assembly; its
   profession-gated furnace route meets the direct grid route at the same edible
   Hearty dish:
 

@@ -576,6 +576,10 @@ function grug_jobs.register_recipe(definition)
 	if definition.material ~= nil and type(definition.material) ~= "boolean" then
 		fail(profession .. " T" .. tier .. " material flag differs")
 	end
+	if definition.existing_engine_recipe ~= nil and
+			type(definition.existing_engine_recipe) ~= "boolean" then
+		fail(profession .. " T" .. tier .. " existing_engine_recipe differs")
+	end
 	if definition.mastery_required ~= nil and
 			(type(definition.mastery_required) ~= "number" or
 			definition.mastery_required % 1 ~= 0 or
@@ -622,11 +626,32 @@ function grug_jobs.register_recipe(definition)
 			end
 		end
 	end
-	local phase = registration_comparison_phase()
-	local universal_routes = refuse_existing_output(output, phase,
-		definition.in_place == true)
-	refuse_input_collision(station, definition.inputs, output, phase,
-		dual_recipe_list())
+	local phase = definition.existing_engine_recipe and new_comparison_phase() or
+		registration_comparison_phase()
+	local universal_routes = 0
+	if definition.existing_engine_recipe then
+		local wanted_method = engine_method(station)
+		if not wanted_method then
+			fail(output .. " existing engine recipe needs grid or furnace")
+		end
+		local engine = engine_corpus(phase).by_output[output] or {}
+		local provenance = 0
+		for index = 1, #engine do
+			if engine[index].method == wanted_method and
+					input_languages_overlap(definition.inputs,
+						engine[index].items or {}, phase) then
+				provenance = provenance + 1
+			end
+		end
+		if provenance ~= 1 or #engine ~= 1 then
+			fail(output .. " existing engine recipe provenance differs")
+		end
+	else
+		universal_routes = refuse_existing_output(output, phase,
+			definition.in_place == true)
+		refuse_input_collision(station, definition.inputs, output, phase,
+			dual_recipe_list())
+	end
 	local input_key = normalized_inputs(definition.inputs)
 	for index = 1, #grug_jobs.recipes do
 		local previous = grug_jobs.recipes[index]
@@ -658,6 +683,7 @@ function grug_jobs.register_recipe(definition)
 		operation_reagent = definition.operation_reagent,
 		quality_mode = definition.quality_mode,
 		mastery_required = definition.mastery_required,
+		existing_engine_recipe = definition.existing_engine_recipe == true,
 		universal_output_routes = universal_routes,
 		shapeless = definition.shapeless == true,
 		shaped = definition.shapeless ~= true and
@@ -683,7 +709,7 @@ function grug_jobs.register_recipe(definition)
 		recipes_by_profession[profession] = list
 	end
 	list[#list + 1] = recipe
-	install_recipe(recipe)
+	if not recipe.existing_engine_recipe then install_recipe(recipe) end
 	return recipe
 end
 

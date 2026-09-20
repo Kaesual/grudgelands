@@ -36,9 +36,23 @@ per file); vendored at the commit recorded in [VENDOR.md](../../../VENDOR.md).
 |---|---|---|
 | `grug_gear_item_sword_{bronze,iron,steel,silversteel,embersteel,abyssal_steel}.png` | `default_tool_steelsword.png` | per-material grey ramp; handle unchanged |
 | `grug_gear_item_dagger_<material>.png` (6) | authored map, same palette | shortened blade on the sword's hilt |
-| `grug_gear_item_greataxe_<material>.png` (6) | authored map, same palette | bearded head on a full-length haft |
+| `grug_gear_item_greataxe_<material>.png` (6) | Round 12 project-authored map, same palette | broad double-bit head on a full-length haft |
 | `grug_gear_item_staff_<material>.png` (6) | authored map, same palette | banded shaft with a faceted head |
 | `grug_gear_item_staff_wood.png` | the staff map, wood ramp | the below-ladder starter staff |
+
+## Round 12 wand and Greataxe replacement — CC0 1.0
+
+The six `grug_gear_item_wand_<material>.png` files and replacement pixels of
+the six `grug_gear_item_greataxe_<material>.png` files are original
+Grudgelands art, generated deterministically from explicit pixel geometry and
+project palettes in `tools/r12_art/build_assets.py`. They are dedicated to the
+public domain under CC0 1.0 Universal. The old CC BY-SA bearded Greataxe shape
+is fully replaced; no pixels from it or minetest_game remain in these files.
+
+An archived OpenAI-generated concept sheet informed only the short-wand and
+double-bit-axe direction; it is not a shipped texture source. Both families
+use one stable silhouette across all six palettes and the diagonal
+bottom-left grip convention.
 
 ## R10 armor inventory families
 

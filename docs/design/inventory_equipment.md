@@ -8,20 +8,24 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
 
 ## 1. Character screen (the "i" key)
 
-- Built on sfinv pages (`sfinv.register_page`); the **Character page is
-  the homepage**. It has the equipment slots and 3D model preview (formspec
-  `model[]`) plus exactly two compact, live derivation lines above them: one
-  for maximum HP and one for mana or rage. HP and mana show the resulting
-  maximum and abbreviate base pool, class factor and gear/talent/status
-  percentage bonuses as B/C/G/T/S; Help expands that legend. Rage names its
-  fixed 100-point rule. The lines consume
-  `grug_classes.get_pool_breakdown` and do not recompute the stats. Formula
-  explanations and the remaining stat guidance live on the existing Help
-  page; effective/raw Crit, Dodge and Armor remain in the Talents header.
-- Every Character-page `label[]`, `textarea[]` or `hypertext[]` box is clear
-  of every equipment/main-inventory `list[]`, `image[]` and `item_image[]`
-  box. The pool lines occupy the strip above the model and the equipment grid,
-  rather than sharing horizontal space with the slots.
+- Built on sfinv pages; **Character is the homepage**. Shared pages use a
+  10.4 × 11.1 legacy-coordinate form with the hotbar at `(1.2, 7.2)` and
+  the remaining inventory at `(1.2, 8.35)`. Content ends before y=7.0.
+  Character, Bags, Talents, Skills, Crafting, Help and Creative share this
+  boundary. The base inventory remains 32 slots.
+- Character separates the model, concise live HP/resource/armor values and
+  equipment into three columns. Pool derivations use
+  `grug_classes.get_pool_breakdown` in a wrapped, scrollable text area;
+  long descriptions never share a rectangle with the model or slots.
+  Help explains the B/C/G/T/S formula legend.
+- Talents shows both chains with identically sized available/locked controls,
+  four ranks rows, and a taller wrapped selected-description area. Tooltips
+  wrap at word boundaries. Selection, purchase and respec rules are unchanged.
+- Help opens with gathering, Basics, crafting/equipping, Skills, combat and
+  city services. Starter recipes are visible immediately; acquiring their
+  main material reveals later recipes without restricting crafting permission.
+- Creative includes a searchable, paged Food category derived from registered
+  edible-food groups, including raw ingredients and cooked results.
 - **Every equipment slot says what it is, without hovering** (decided
   2026-08-09, WP38). Eight identical empty cells plus a hover tooltip is
   not enough. Preferred: a **ghost icon per empty slot** — the slot's type
@@ -289,3 +293,18 @@ only mirrored into the registry for display.
   elements, countdown text, green/red category frames and matching Character
   page tooltips. Effects keep using the same central registry rather than
   gaining per-consumer status stores.
+
+## 5. Skills page and bound representations
+
+The sfinv **Skills** page follows Talents and lists all currently unlocked active
+abilities plus every purchased riding tier. Its detached catalogue is an
+infinite source and matching deletion destination. A drag to the visible main
+inventory succeeds only when the exact item is absent from `main`, `craft` and
+all four owned bag-content lists and main has room.
+
+Ability and mount representations carry `grug_bound_skill`. Player inventory
+moves allow only `main` and owned bag contents; all node metadata inventories,
+other detached inventories, crafting and equipment refuse them. Source takes
+remain allowed so Q/drop reaches the item's deletion-only callback. Entitlement,
+cooldowns, charge, resources and active mounts are independent of the disposable
+item stack.

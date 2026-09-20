@@ -1,0 +1,8 @@
+Round 12 WP47 Skills verification (2026-09-20)
+
+Parser: all mods/*/grug_* Lua parsed with tools/bin/luac51 -p.
+Global audit: changed mod files expose only grug_abilities and grug_skills.
+Five Lua 5.1/sandbox sweeps: no new executable-code findings; reported matches are pre-existing comments/data.
+LuaJIT focused source contract: tools/r12_skills/skills_kat.lua => r12-skills-ok.
+LuaJIT adjacent contracts: wp13 ability_rightclick_kat, wp11 talent_tree_kat, and r10_art art_kat passed.
+No PUC runtime was executed, per the Round 12 session override.

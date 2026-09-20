@@ -1,0 +1,354 @@
+
+
+-------------
+  Separator
+-------------
+
+WARNING[Main]: /!\ You are using the old mod storage files backend. This backend is deprecated and may be removed in a future release /!\
+WARNING[Main]: Switching to SQLite3 is advised, please read https://docs.luanti.org/for-server-hosts/database-backends.
+ACTION[Main]: [grug_materials] 12 tools completing the six-tier pick/axe/shovel ladder
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:pick_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:shovel_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:axe_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sword_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:pick_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:shovel_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:axe_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sword_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sword_bronze'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sword_steel'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:copper_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:tin_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:bronze_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:steel_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:gold_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:goldblock'])
+WARNING[Main]: No craft recipe known for output 'default:stone_with_mese'
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:stone_with_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_crystal'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_crystal_fragment'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:meselamp'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_acacia_wood'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_junglewood'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_pine_wood'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_aspen_wood'])
+WARNING[Main]: No craft recipe known for output 'default:stone_with_diamond'
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:stone_with_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:diamondblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sign_wall_steel'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:ladder_steel'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_goldblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_goldblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_goldblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_goldblock'])
+ACTION[Main]: [grug_gear] 6 bracket catalogs: 36 weapons + 72 armor pieces
+ACTION[Main]: [grug_quality] deterministic PcgRandom quality rolls enabled
+WARNING[Main]: No craft recipe known for output 'grug_gear:sword_bronze'
+WARNING[Main]: No craft recipe known for output 'grug_gear:dagger_bronze'
+WARNING[Main]: No craft recipe known for output 'grug_gear:greataxe_bronze'
+WARNING[Main]: No craft recipe known for output 'grug_gear:wand_bronze'
+WARNING[Main]: No craft recipe known for output 'grug_gear:staff_bronze'
+WARNING[Main]: No craft recipe known for output 'grug_gear:bow_bronze'
+WARNING[Main]: No craft recipe known for output 'grug_gear:shield_bronze'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_metal_bronze'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_metal_bronze'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_metal_bronze'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_metal_bronze'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_cloth_patch'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_cloth_patch'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_cloth_patch'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_cloth_patch'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_leather_light'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_leather_light'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_leather_light'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_leather_light'
+WARNING[Main]: No craft recipe known for output 'grug_gear:sword_iron'
+WARNING[Main]: No craft recipe known for output 'grug_materials:pick_iron'
+WARNING[Main]: No craft recipe known for output 'grug_materials:shovel_iron'
+WARNING[Main]: No craft recipe known for output 'grug_materials:axe_iron'
+WARNING[Main]: No craft recipe known for output 'grug_gear:dagger_iron'
+WARNING[Main]: No craft recipe known for output 'grug_gear:greataxe_iron'
+WARNING[Main]: No craft recipe known for output 'grug_gear:wand_iron'
+WARNING[Main]: No craft recipe known for output 'grug_gear:staff_iron'
+WARNING[Main]: No craft recipe known for output 'grug_gear:bow_iron'
+WARNING[Main]: No craft recipe known for output 'grug_gear:shield_iron'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_metal_iron'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_metal_iron'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_metal_iron'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_metal_iron'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_cloth_woven'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_cloth_woven'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_cloth_woven'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_cloth_woven'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_leather_cured'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_leather_cured'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_leather_cured'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_leather_cured'
+WARNING[Main]: No craft recipe known for output 'grug_gear:sword_steel'
+WARNING[Main]: No craft recipe known for output 'default:pick_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:dagger_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:greataxe_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:wand_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:staff_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:bow_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:shield_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_metal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_metal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_metal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_metal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_cloth_heavy'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_cloth_heavy'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_cloth_heavy'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_cloth_heavy'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_leather_heavy'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_leather_heavy'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_leather_heavy'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_leather_heavy'
+WARNING[Main]: No craft recipe known for output 'grug_gear:sword_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_materials:pick_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_materials:shovel_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_materials:axe_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:dagger_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:greataxe_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:wand_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:staff_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:bow_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:shield_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_metal_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_metal_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_metal_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_metal_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_cloth_silkweave'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_cloth_silkweave'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_cloth_silkweave'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_cloth_silkweave'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_leather_scaled'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_leather_scaled'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_leather_scaled'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_leather_scaled'
+WARNING[Main]: No craft recipe known for output 'grug_gear:sword_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_materials:pick_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_materials:shovel_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_materials:axe_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:dagger_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:greataxe_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:wand_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:staff_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:bow_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:shield_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_metal_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_metal_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_metal_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_metal_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_cloth_silk'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_cloth_silk'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_cloth_silk'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_cloth_silk'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_leather_sleek'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_leather_sleek'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_leather_sleek'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_leather_sleek'
+WARNING[Main]: No craft recipe known for output 'grug_gear:sword_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_materials:pick_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_materials:shovel_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_materials:axe_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:dagger_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:greataxe_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:wand_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:staff_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:bow_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:shield_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_metal_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_metal_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_metal_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_metal_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_cloth_stormweave'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_cloth_stormweave'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_cloth_stormweave'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_cloth_stormweave'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_leather_nightscale'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_leather_nightscale'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_leather_nightscale'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_leather_nightscale'
+WARNING[Main]: No craft recipe known for output 'grug_gear:arrow'
+WARNING[Main]: No craft recipe known for output 'grug_mobs:light_leather'
+WARNING[Main]: No craft recipe known for output 'grug_professions:cured_leather'
+WARNING[Main]: No craft recipe known for output 'grug_mobs:heavy_leather'
+WARNING[Main]: No craft recipe known for output 'grug_mobs:scaled_hide'
+WARNING[Main]: No craft recipe known for output 'grug_professions:sleek_leather'
+WARNING[Main]: No craft recipe known for output 'grug_professions:nightscale_leather'
+WARNING[Main]: No craft recipe known for output 'grug_professions:bolt_patch'
+WARNING[Main]: No craft recipe known for output 'grug_professions:bolt_woven'
+WARNING[Main]: No craft recipe known for output 'grug_professions:bolt_heavy'
+WARNING[Main]: No craft recipe known for output 'grug_professions:bolt_silkweave'
+WARNING[Main]: No craft recipe known for output 'grug_professions:bolt_silk'
+WARNING[Main]: No craft recipe known for output 'grug_professions:bolt_stormweave'
+ACTION[Main]: [grug_professions] registered Weaponsmith, Armorsmith, Leatherworker and Tailor catalogs
+WARNING[Main]: No craft recipe known for output 'grug_artisans:seasoned_wood'
+WARNING[Main]: No craft recipe known for output 'grug_artisans:polished_wood'
+WARNING[Main]: No craft recipe known for output 'grug_artisans:hardened_wood'
+WARNING[Main]: No craft recipe known for output 'grug_artisans:inlaid_wood'
+WARNING[Main]: No craft recipe known for output 'grug_artisans:lacquered_wood'
+WARNING[Main]: No craft recipe known for output 'grug_artisans:heartwood_wood'
+ACTION[Main]: [grug_artisans] registered Woodcarver and Goldsmith catalogs
+ACTION[Main]: [grug_materials] registry audit passed: 6 tiers, 15 resources, 12 processed forms, 6 race regions
+ACTION[Main]: [grug_smelting] recipe audit passed: 5 cooking, 5 dualfurn, 12 storage pairs, 1 station
+ACTION[Main]: [grug_visuals] 72 armor pieces indexed for overlays, 3 art lines x 4 slots
+ACTION[Main]: [grug_mobs] settlement work activities: tools 7, weapon families 1, all registered
+ACTION[Main]: [grug_fishing] tables=6 entries=18 weight=100 bite=3..10s rod_uses=64
+ACTION[Main]: [grug_inventory] starter weapons: mage=grug_gear:staff_wood (2H), priest=grug_gear:staff_wood (2H), scout=grug_gear:bow_wood (2H), warrior=default:sword_stone
+ACTION[Main]: [grug_traders] 12 profession shelves, 122 offers, all registered
+ACTION[Main]: [grug_traders] dwarf capital vendors come from the sockets of dur_brannoc
+ACTION[Main]: [grug_traders] elf capital vendors come from the sockets of lethariel
+ACTION[Main]: [grug_traders] human capital vendors come from the sockets of highcourt
+ACTION[Main]: [grug_traders] orc capital vendors come from the sockets of gor_drazhak
+ACTION[Main]: [grug_traders] troll capital vendors come from the sockets of kezamba
+ACTION[Main]: [grug_traders] undead capital vendors come from the sockets of nhal_veyr
+ACTION[Main]: [grug_traders] 12 settlements indexed for profession vendor appearance
+ACTION[Main]: [grug_traders] drop audit: 3 mob(s) use a `drops` FUNCTION and cannot be walked statically (grug_mobs:bandit, grug_mobs:bandit_archer, grug_mobs:poacher); their items are audited from the hardcoded FUNCTION_DROPS list
+WARNING[Main]: [grug_traders] no vendor price for dropped item 'default:apple' (dropped by grug_mobs:ashen_treant, grug_mobs:gravewood_treant) — add a _grug_sell_price to its def or a grug_traders.set_price override; traders must buy every mob drop (economy.md §3)
+WARNING[Main]: [grug_traders] no vendor price for dropped item 'default:stick' (dropped by grug_mobs:ashen_treant, grug_mobs:gravewood_treant) — add a _grug_sell_price to its def or a grug_traders.set_price override; traders must buy every mob drop (economy.md §3)
+ACTION[Main]: World at [/tmp/grudgelands-headless.0WFvQ4/world]
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:32934.
+ACTION[Server]: WP11X3 CHECK Recompense 6% cost: 162 != 162
+ACTION[Server]: WP11X3 CHECK accepted Smite grants Recompense
+ACTION[Server]: WP11X3 CHECK Smite plus absorb wears once: 21 != 21
+ACTION[Server]: WP11X3 CHECK cooldown prevents second payment: 2534 != 2534
+ACTION[Server]: WP11X3 CHECK cancelled Smite grants no absorb: 0 != 0
+ACTION[Server]: WP11X3 CHECK cancelled Smite spends no durability: 0 != 0
+ACTION[Server]: WP11X3 CHECK plain Smite 5%: 135 != 135
+ACTION[Server]: WP11X3 CHECK cancelled drain cannot heal: 100 != 100
+ACTION[Server]: WP11X3 CHECK cancelled drain cannot trigger Last Word
+ACTION[Server]: WP11X3 CHECK Last Word accepted prearmor 150% drain: 358 != 358
+ACTION[Server]: WP11X3 CHECK drain damage and heal wear once: 21 != 21
+ACTION[Server]: WP11X3 CHECK Last Word expires: 0 != 0
+ACTION[Server]: WP11X3 CHECK Last Word ICD holds
+ACTION[Server]: WP11X3 CHECK real rank 3 Turn Aside on Warrior: 20 != 20
+ACTION[Server]: WP11X3 CHECK friendly shield gives caster no dodge: 0 != 0
+ACTION[Server]: WP11X3 CHECK Turn Aside respects cap
+ACTION[Server]: WP11X3 CHECK shield absorbs exactly its remainder: -0 != 0
+ACTION[Server]: WP11X3 CHECK consumed PWS removes Turn Aside: 0 != 0
+ACTION[Server]: WP11X3 CHECK untalented refresh removes Turn Aside: 0 != 0
+ACTION[Server]: WP11X3 CHECK expired contribution removes Turn Aside: 0 != 0
+ACTION[Server]: WP11X3 CHECK caster respec clears remote Turn Aside: 0 != 0
+ACTION[Server]: WP11X3 CHECK Last Light and PWS coexist: 160 != 160
+ACTION[Server]: WP11X3 CHECK same source refresh: 140 != 140
+ACTION[Server]: WP11X3 CHECK earliest contribution consumed first: 0 != 0
+ACTION[Server]: WP11X3 CHECK long Last Light survives: 100 != 100
+ACTION[Server]: WP11X3 CHECK total absorb cap: 3235 != 3235
+ACTION[Server]: WP11X3 CHECK Hold Ground cost once: 75 != 75
+ACTION[Server]: WP11X3 CHECK Hold Ground immunity
+ACTION[Server]: WP11X3 CHECK Hold Ground neutral pool without spellpower: 1078.4 != 1078.4
+ACTION[Server]: WP11X3 CHECK Hold Ground rejects root
+ACTION[Server]: WP11X3 CHECK respec ends Hold Ground
+ACTION[Server]: WP11X3 CHECK admin reset ends Hold Ground
+ACTION[Server]: WP11X3 CHECK Cinderfall ground contact damages nearby hostile
+ACTION[Server]: WP11X3 CHECK Cinderfall Ashfall rank3 radius excludes beyond6m: 100000 != 100000
+ACTION[Server]: WP11X3 CHECK Cinderfall friendly first contact bursts
+ACTION[Server]: WP11X3 CHECK empty Cinderfall costs nothing: 2452 != 2452
+ACTION[Server]: WP11X3 CHECK Frostbind roots at distant hostile
+ACTION[Server]: WP11X3 CHECK Rimebite deals actual damage
+ACTION[Server]: WP11X3 CHECK Glacial Ward actual absorb
+ACTION[Server]: WP11X3 CHECK Bellow taunts within10m
+ACTION[Server]: WP11X3 CHECK Bellow excludes beyond10m
+ACTION[Server]: WP11X3 CHECK Bellow excludes friend
+ACTION[Server]: WP11X3 CHECK Hearten 65% on other ally: 589 != 589
+ACTION[Server]: WP11X3 CHECK Hearten single cost: 216 != 216
+ACTION[Server]: WP11X3 CHECK Cinderfall assembled spell multiplier: 321 != 321
+ACTION[Server]: WP11X3 CHECK Word of Ruin assembled spell multiplier: 258 != 258
+ACTION[Server]: WP11X3 CHECK Rimebite assembled spell multiplier: 164 != 164
+ACTION[Server]: WP11X3 CHECK spell potion never multiplies absorb: 636.256 != 636.256
+ACTION[Server]: WP11X3 CHECK Brand cost rank1: 162 != 162
+ACTION[Server]: WP11X3 CHECK Brand formula rank1: 133 != 133
+ACTION[Server]: WP11X3 CHECK Brand fixed2m rank1: 100000 != 100000
+ACTION[Server]: WP11X3 CHECK Brand primary+splash one wear rank1: 21 != 21
+ACTION[Server]: WP11X3 CHECK projectile repeat settlement inert: 99867 != 99867
+ACTION[Server]: WP11X3 CHECK Brand cost rank2: 162 != 162
+ACTION[Server]: WP11X3 CHECK Brand formula rank2: 141 != 141
+ACTION[Server]: WP11X3 CHECK Brand fixed2m rank2: 100000 != 100000
+ACTION[Server]: WP11X3 CHECK Brand primary+splash one wear rank2: 21 != 21
+ACTION[Server]: WP11X3 CHECK projectile repeat settlement inert: 99859 != 99859
+ACTION[Server]: WP11X3 CHECK Brand cost rank3: 162 != 162
+ACTION[Server]: WP11X3 CHECK Brand formula rank3: 156 != 156
+ACTION[Server]: WP11X3 CHECK Brand fixed2m rank3: 100000 != 100000
+ACTION[Server]: WP11X3 CHECK Brand primary+splash one wear rank3: 21 != 21
+ACTION[Server]: WP11X3 CHECK projectile repeat settlement inert: 99844 != 99844
+ACTION[Server]: WP11X3 CHECK cancelled Fireball crit cannot trigger Whitehot
+ACTION[Server]: WP11X3 CHECK accepted Fireball crit triggers Whitehot
+ACTION[Server]: WP11X3 CHECK Whitehot cost snapshot3%: 81 != 81
+ACTION[Server]: WP11X3 CHECK Whitehot expiry
+ACTION[Server]: WP11X3 CHECK Whitehot cost restores6%: 162 != 162
+ACTION[Server]: WP11X3 CHECK Whitehot ICD after expiry
+ACTION[Server]: [combatdebug][x3_probe_25][swing_readiness] held=true latched=false ready=true now=130558330471 next_due=0 fpi=1
+ACTION[Server]: [combatdebug][x3_probe_25][swing_ray] status=target reason=hostile target=entity:probe:cleave kind=mob relation=hostile distance=2.0002249873452 range=3 blocker=none
+ACTION[Server]: [combatdebug][x3_probe_25][swing_attempt] target=entity:probe:cleave fpi=1 late=0 next_due=130559330471
+ACTION[Server]: [combatdebug][x3_probe_25][swing_settlement] proc=mighty_blow cancelled=false landed=true damage=366 rage=true
+ACTION[Server]: [combatdebug][x3_probe_25][swing_outcome] landed=true cancelled=false damage=366
+ACTION[Server]: WP11X3 CHECK held clock attempts primary
+ACTION[Server]: WP11X3 CHECK Broadstroke real accepted swing cleaves
+ACTION[Server]: WP11X3 CHECK Broadstroke accepted+refused targets wear once: 21 != 21
+ACTION[Server]: WP11X3 CHECK Mighty Blow one cost plus talented swing rage: 87 != 87
+ACTION[Server]: WP11X3 CHECK Ruination accepted primary trigger
+ACTION[Server]: WP11X3 CHECK Ruination raises crit cap50%: 0.5 != 0.5
+ACTION[Server]: WP11X3 CHECK Ruination restores crit cap30%: 0.3 != 0.3
+ACTION[Server]: WP11X3 CHECK Ruination ICD after expiry
+ACTION[Server]: WP11X3 CHECK Tendon Cut roots accepted swing
+ACTION[Server]: WP11X3 CHECK Tendon Cut ICD independent of charge
+ACTION[Server]: WP11X3 CHECK fully absorbed Word cannot drain: 50 != 50
+ACTION[Server]: WP11X3 CHECK full absorb cannot wear outgoing equipment: 0 != 0
+ACTION[Server]: WP11X3 CHECK full absorb cannot start Last Word
+ACTION[Server]: WP11X3 CHECK dodged Smite cannot shield: 0 != 0
+ACTION[Server]: WP11X3 CHECK death lifecycle initial Turn Aside: 20 != 20
+ACTION[Server]: WP11X3 CHECK death lifecycle clears remote Turn Aside: 0 != 0
+ACTION[Server]: WP11X3 CHECK death ends Hold Ground
+ACTION[Server]: WP11X3 CHECK leave lifecycle initial Turn Aside: 20 != 20
+ACTION[Server]: WP11X3 CHECK leave lifecycle clears remote Turn Aside: 0 != 0
+ACTION[Server]: WP11X3 CHECK leave ends Hold Ground
+ACTION[Server]: WP11X3 CHECK insufficient Recompense mana unchanged: 1 != 1
+ACTION[Server]: WP11X3 CHECK insufficient mana never punches: nil != nil
+ACTION[Server]: WP11X3 CHECK insufficient mana does not arm cooldown
+ACTION[Server]: [combatdebug][x3_probe_37][cast_ray] ability=cinderfall status=target reason=hostile target=entity:probe:center distance=8.0000562498022 range=20
+ACTION[Server]: WP11X3 CHECK Cinderfall base3m inside boundary
+ACTION[Server]: WP11X3 CHECK Cinderfall base3m outside boundary: 100000 != 100000
+ACTION[Server]: [combatdebug][x3_probe_37][cast_ray] ability=cinderfall status=aim_miss reason=out_of_range target=entity:probe:center distance=21.00002142856 range=20
+ACTION[Server]: WP11X3 CHECK Cinderfall range21 refused: 2776 != 2776
+ACTION[Server]: WP11X3 CHECK out of range leaves cooldown ready
+ACTION[Server]: WP11X3 CHECK Renew four real ticks rank1: 965 != 965
+ACTION[Server]: WP11X3 CHECK Renew stops after12s rank1: 965 != 965
+ACTION[Server]: WP11X3 CHECK Renew four real ticks rank2: 1085 != 1085
+ACTION[Server]: WP11X3 CHECK Renew stops after12s rank2: 1085 != 1085
+ACTION[Server]: WP11X3 CHECK Renew four real ticks rank3: 1205 != 1205
+ACTION[Server]: WP11X3 CHECK Renew stops after12s rank3: 1205 != 1205
+ACTION[Server]: WP11X3 CHECK self Turn Aside counted once
+ACTION[Server]: WP11X3 CHECK Second Skin exact24s expiry: 0 != 0
+ACTION[Server]: WP11X3 CHECK unrelated mob callback cannot accept Smite: 0 != 0
+ACTION[Server]: WP11X3 CHECK nested damage restores exact outer settlement: 1 != 1
+ACTION[Server]: WP11X3 CHECK Unbroken existing threshold retained
+ACTION[Server]: WP11X3 CHECK Unbroken existing rating window retained
+ACTION[Server]: WP11X3 CHECK Scout Sidestep ordinary cap retained: 0.3 != 0.3
+ACTION[Server]: WP11X3 CHECK Scout existing dodge override retained
+ACTION[Server]: WP11X3 RESULT PASS checks=110 runtime=LuaJIT 2.1.1784272936
+ACTION[Main]: Server: Shutting down

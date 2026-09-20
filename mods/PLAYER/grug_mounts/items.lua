@@ -27,30 +27,9 @@ local function use_mount_secondary(itemstack, user, pointed_thing)
 	return use_mount(itemstack, user)
 end
 
-local function refuse_drop(itemstack, dropper)
-	if dropper and dropper:is_player() then
-		core.chat_send_player(dropper:get_player_name(),
-			"Owner-bound mounts cannot be dropped.")
-	end
-	return itemstack
+local function delete_drop()
+	return ItemStack("")
 end
-
-local function mount_stack(stack)
-	return stack and core.get_item_group(stack:get_name(), "grug_mount") > 0
-end
-
--- A take is the outbound half of a player-to-external inventory transfer.
--- Puts remain allowed so owner-bound stacks stranded by an interrupted move
--- can be recovered; the post-action reconciliation removes stale duplicates.
-core.register_allow_player_inventory_action(function(_, action, _, info)
-	if action == "take" and mount_stack(info.stack) then return 0 end
-end)
-
-core.register_on_player_inventory_action(function(player, action, _, info)
-	if action == "put" and mount_stack(info.stack) then
-		grug_mounts.reconcile_items(player)
-	end
-end)
 
 for tier_id = 1, 4 do
 	local tier = grug_mounts.TIERS[tier_id]
@@ -60,10 +39,10 @@ for tier_id = 1, 4 do
 			"grug_mounts_icon_human.png", "grug_mounts_icon_expert_accord.png",
 			"grug_mounts_icon_master_accord.png"})[tier_id],
 		stack_max = 1,
-		groups = {grug_mount = tier_id, not_in_creative_inventory = 1},
+		groups = {grug_mount = tier_id, grug_bound_skill = 1, not_in_creative_inventory = 1},
 		_grug_mount_tier = tier_id,
 		on_use = use_mount,
 		on_secondary_use = use_mount_secondary,
-		on_drop = refuse_drop,
+		on_drop = delete_drop,
 	})
 end

@@ -241,15 +241,17 @@ local GRIP_FRACTION_Y = 0.5 - GRIP_V / SPRITE_PIXELS
 local DEG = math.pi / 180
 local ROOT_HALF = math.sqrt(0.5)
 
--- The three poses, and nothing else may name one. `POSE.tool` is the diagonal
+-- Registered pose names, including the generic forward fallback. `POSE.tool` is the diagonal
 -- tool convention of sections 6 and 7; `POSE.edge_down` is that same transform
 -- rolled 180 degrees about the blade for art whose working edge is drawn off
--- the long axis (section 10); `POSE.upright` is the anonymous-icon pose below.
+-- the long axis (section 10); centered icons use the forward fallback or an
+-- explicitly requested upright pose.
 local POSE = {
 	tool = "tool",
 	edge_down = "edge_down",
 	bow = "bow",
 	upright = "upright",
+	forward = "forward",
 }
 grug_visuals.POSE = POSE
 
@@ -267,7 +269,7 @@ grug_visuals.POSE = POSE
 -- down-right side, so the plain tool pose is what makes the line hang down.
 -- A new family joins by declaring its group, the same way it joins the weapon
 -- slot; anything that declares none -- `mobs:lasso`, a torch, an apple, an
--- ability orb -- is an anonymous icon and gets `POSE.upright` with no
+-- ability orb -- is an anonymous icon and gets `POSE.forward` with no
 -- exception list.
 --
 -- `EDGE_DOWN` is the subset of those whose working edge is drawn OFF the long
@@ -284,7 +286,12 @@ grug_visuals.BOW_GROUP = BOW_GROUP
 -- `group_value(itemname, group)` is `core.get_item_group` in the engine and a
 -- table lookup in the fixture. Passed in rather than closed over so that the
 -- once-a-second wield poll allocates nothing.
-function grug_visuals.pose_for(itemname, group_value)
+function grug_visuals.pose_for(itemname, group_value, explicit)
+	if explicit ~= nil then
+		assert(type(explicit) == "string" and POSE[explicit] == explicit,
+			"grug_visuals: invalid explicit wield pose for " .. tostring(itemname))
+		return explicit
+	end
 	for _, group in ipairs(BOW_GROUP) do
 		if (group_value(itemname, group) or 0) > 0 then
 			return POSE.bow
@@ -300,14 +307,14 @@ function grug_visuals.pose_for(itemname, group_value)
 			return POSE.tool
 		end
 	end
-	return POSE.upright
+	return POSE.forward
 end
 
 -- The attachment for a parent whose (uniform) stature scale is `stature`.
 -- nil / 0 means "do not compensate" -- the weapon then scales with its wielder.
 --
--- `pose` is one of `grug_visuals.POSE`; nil means `tool`. There are exactly
--- three because there are exactly three kinds of held art. Sections 6 and 7
+-- `pose` is one of `grug_visuals.POSE`; nil means `tool`. Named values let
+-- explicit profiles and generic fallback share one dispatcher. Sections 6 and 7
 -- derive the hand from the diagonal tool convention: the weapon runs along the
 -- image's anti-diagonal and the grip is a specific pixel on it. Section 10 adds
 -- the roll for the one family that cannot be drawn on that diagonal. A torch,
@@ -317,16 +324,17 @@ end
 -- of the fist and rolled 45 degrees, because both the offset and the roll are
 -- the sprite diagonal's.
 --
--- So a non-tool is held the only way an anonymous icon can be: its CENTRE in
+-- A centered icon puts its CENTRE in
 -- the fist (`pos = HAND`, no grip offset -- the image has no privileged point)
--- and its own up standing up. Asking, in bone-local terms, for
+-- with no diagonal grip offset. The explicit upright profile asks for
 --
 --   image up (entity +y) -> (0, -1, 0)   = model +y, up
 --   the flat's normal    -> (1, 0, 0)    = model -x, sideways, as the blade's
 --
 -- gives the unique triple **x = 90, y = -90, z = 90** -- the same x and z as
 -- the tool pose, which is the reassuring part: only the sprite's own built-in
--- angle differs.
+-- angle differs. The generic forward profile changes y to 0, rotating image
+-- up toward model +z (forward) by 90 degrees around the same centered grip.
 function grug_visuals.wield_transform(stature, pose)
 	local k = tonumber(stature)
 	if not k or k <= 0 then
@@ -342,15 +350,15 @@ function grug_visuals.wield_transform(stature, pose)
 	if pose == nil then
 		pose = POSE.tool
 	elseif pose ~= POSE.tool and pose ~= POSE.edge_down and pose ~= POSE.bow and
-			pose ~= POSE.upright then
+			pose ~= POSE.upright and pose ~= POSE.forward then
 		error("grug_visuals.wield_transform: unknown pose " .. tostring(pose), 2)
 	end
 
-	if pose == POSE.upright then
+	if pose == POSE.upright or pose == POSE.forward then
 		return {
 			bone = BONE,
 			pos = {x = HAND.x, y = HAND.y, z = HAND.z},
-			rot = {x = 90, y = -90, z = 90},
+			rot = {x = 90, y = pose == POSE.forward and 0 or -90, z = 90},
 			size = {x = size, y = size},
 			pose = pose,
 			stature = k,

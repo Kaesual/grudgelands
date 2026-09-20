@@ -400,8 +400,19 @@ grug_abilities.register_ability({
 		-- rank; 1.5 exactly without it. Broadstroke's cleave is lane X3's.
 		local mult = 1.5 + 0.05 * grug_classes.get_talent_bonus(user,
 			"mighty_blow_multiplier_add")
-		return math.floor(ctx.weapon_damage * mult) + ctx.melee_bonus, 3,
-			function() burst(tpos, "mobs_blood.png", 6) end
+		local damage = math.floor(ctx.weapon_damage * mult) + ctx.melee_bonus
+		return damage, 3, function(action_id)
+			burst(tpos, "mobs_blood.png", 6)
+			if grug_classes.get_talent_bonus(user, "mighty_blow_cleave") > 0 then
+				for _, obj in ipairs(core.get_objects_inside_radius(tpos, 3)) do
+					if obj ~= target and grug_abilities.valid_target(user, obj, "hostile") then
+						grug_core.deal_ability_damage(user, obj,
+							math.floor(damage / 2), {threat_mult = 3, action_id = action_id})
+					end
+				end
+			end
+			grug_classes.try_trigger_talent_window(user, "ruination", 10, 120)
+		end
 	end,
 })
 
@@ -435,11 +446,18 @@ grug_abilities.register_ability({
 		local ent = mob_ent(target)
 		local tpos = target:get_pos()
 		return ctx.weapon_damage + ctx.melee_bonus, 3, function()
+			local slow_time = 5 + grug_classes.get_talent_bonus(user,
+				"hamstring_slow_add")
+			local root_time = grug_classes.get_talent_bonus(user, "hamstring_root")
+			if root_time > 0 and not grug_classes.talent_trigger_ready(user,
+					"tendon_cut", 12) then root_time = 0 end
 			if ent then
-				grug_mobs.slow(ent, 5, 0.5)
+				if root_time > 0 then grug_mobs.root(ent, root_time) end
+				grug_mobs.slow(ent, slow_time, 0.5)
 			elseif target:get_hp() > 0 then
-				apply_player_speed_stages(target, {{speed = 0.5, time = 5}},
-					"hamstring")
+				if root_time > 0 then grug_core.set_root(target, root_time) end
+				grug_core.set_move_modifier(target, "hamstring", {speed = -0.5},
+					root_time + slow_time)
 			end
 			burst(tpos, "mobs_blood.png", 4)
 		end
@@ -459,6 +477,19 @@ grug_abilities.register_ability({
 	cooldown_talent = "taunt_cooldown_sub", -- Grudge (skill_trees.md §2.1)
 	range = 8,
 	cast = function(user, pointed, def)
+		local radius = grug_classes.get_talent_bonus(user, "taunt_radius")
+		if radius > 0 then
+			local affected = false
+			for _, obj in ipairs(core.get_objects_inside_radius(user:get_pos(), radius)) do
+				if grug_abilities.valid_target(user, obj, "hostile") then
+					local ent = mob_ent(obj)
+					if ent and ent.attack_type then
+						ent:do_attack(user, true); grug_core.taunt(ent, user); affected = true
+					end
+				end
+			end
+			return affected, affected and nil or "No hostile target in range."
+		end
 		local target = current_enemy_target(user, def)
 		if not target then
 			return false, "No hostile target in your crosshair."
@@ -482,6 +513,13 @@ grug_abilities.register_ability({
 
 local fireball_action_serial = 0
 
+local function talent_rank_value(user, talent_id, effect_key, fallback)
+	local def = grug_classes.registered_talents[talent_id]
+	local rank = grug_classes.talent_rank(user, talent_id)
+	local values = def and def.effects and def.effects[effect_key]
+	return values and values[rank] or fallback
+end
+
 grug_projectiles.register("fireball", {
 	speed = 20,
 	max_distance = 20,
@@ -501,7 +539,22 @@ grug_projectiles.register("fireball", {
 	},
 	on_hit = function(owner, target, data, point, attacker_level)
 		grug_core.deal_ability_damage(owner, target, data.damage,
-			{attacker_level = attacker_level, action_id = data.action_id})
+			{attacker_level = attacker_level, action_id = data.action_id,
+				on_accepted = function(_, critical)
+					if not critical then return end
+					grug_classes.try_trigger_talent_window(owner,
+						"whitehot", talent_rank_value(owner, "whitehot",
+							"whitehot_window", 8), 120)
+				end})
+		local splash = data.splash or 0
+		if splash > 0 then
+			for _, obj in ipairs(core.get_objects_inside_radius(point, 2)) do
+				if obj ~= target and grug_abilities.valid_target(owner, obj, "hostile") then
+					grug_core.deal_ability_damage(owner, obj, data.splash_damage,
+						{attacker_level = attacker_level, action_id = data.action_id})
+				end
+			end
+		end
 	end,
 })
 
@@ -510,12 +563,13 @@ grug_projectiles.register("fireball", {
 -- cooldown. It is directional:
 -- target acquisition belongs to the projectile, not cast-time enemy memory.
 local function fireball_values(user)
+	local window = grug_classes.talent_window_active(user, "whitehot") and 6 or 0
 	return {
 		damage = spell_damage_value(user,
 			grug_core.baseline_weapon_damage(
 				grug_core.get_player_level(user))
 			+ grug_classes.get_spell_power_bonus(user)
-			+ grug_classes.get_talent_bonus(user, "fireball_damage_add")),
+			+ grug_classes.get_talent_bonus(user, "fireball_damage_add") + window),
 	}
 end
 
@@ -563,8 +617,12 @@ grug_abilities.register_ability({
 			max_distance = 20 + grug_classes.get_talent_bonus(user,
 				"fireball_range_add"),
 			data = {
-				-- Tinder (skill_trees.md §2.3). Brand's splash is lane X3's.
+				-- Primary and Brand damage snapshot complete spell formulas at launch.
 				damage = fireball_values(user).damage,
+				splash = grug_classes.get_talent_bonus(user, "fireball_splash"),
+				splash_damage = spell_damage_value(user, grug_classes.get_talent_bonus(user,
+					"fireball_splash") + math.floor(
+					grug_classes.get_spell_power_bonus(user) / 2)),
 				action_id = repair_receipt or action_id,
 			},
 		})
@@ -597,8 +655,16 @@ grug_abilities.register_ability({
 	cost = {mana_percent = 10},
 	cooldown = 12,
 	range = 4,
-	cast = function(user)
+	cast = function(user, pointed, def)
 		local pos = user:get_pos()
+		local ranged = grug_classes.get_talent_bonus(user, "frost_nova_ranged")
+		if ranged > 0 then
+			local target = current_enemy_target(user, {
+				id = def.id, target_kind = "hostile", range = 20,
+			})
+			if not target then return false, "No hostile target in your crosshair." end
+			pos = target:get_pos()
+		end
 		-- Deep Chill and Hoarfrost (skill_trees.md §2.4); 0 each without the
 		-- talent, so the shipped 4 s root and 3 s slow are exact. Frostbind's
 		-- ranged origin and Rimebite's damage are lane X3's.
@@ -606,8 +672,17 @@ grug_abilities.register_ability({
 			"frost_nova_root_add")
 		local slow_time = 3 + grug_classes.get_talent_bonus(user,
 			"frost_nova_slow_add")
-		for _, obj in ipairs(core.get_objects_inside_radius(pos, 5)) do
+		local radius = ranged > 0 and ranged or 5
+		local action_id = {}
+		for _, obj in ipairs(core.get_objects_inside_radius(pos, radius)) do
 			if grug_abilities.valid_target(user, obj, "hostile") then
+				local control_damage = grug_classes.get_talent_bonus(user,
+					"control_damage_add")
+				if control_damage > 0 then
+					grug_core.deal_ability_damage(user, obj, spell_damage_value(user, control_damage
+						+ math.floor(grug_classes.get_spell_power_bonus(user) / 2)),
+						{action_id = action_id})
+				end
 				if obj:is_player() then
 					apply_player_speed_stages(obj, {
 						{speed = 0.1, jump = 0.3, time = root_time},
@@ -738,7 +813,15 @@ grug_abilities.register_ability({
 		burst(target:get_pos(), "default_item_smoke.png^[multiply:#ffe9a0")
 		-- Sharpened Word, and Warded Wrath while an absorb is up
 		-- (skill_trees.md §2.6). Recompense's absorb is lane X3's.
-		grug_core.deal_ability_damage(user, target, def.values(user).damage)
+		local absorb = grug_classes.get_talent_bonus(user, "smite_absorb")
+		grug_core.deal_ability_damage(user, target, def.values(user).damage, {
+			on_accepted = function(_, _, action_id)
+				if absorb > 0 then
+					grug_core.add_absorb(user, "recompense", support_value(user, absorb),
+						15, user, action_id)
+				end
+			end,
+		})
 		return true
 	end,
 })
@@ -774,8 +857,19 @@ grug_abilities.register_ability({
 			return false, "Target is dead."
 		end
 		-- Gentle Hand (skill_trees.md §2.5); Hearten's splash is lane X3's.
-		grug_core.heal_player(user, target, def.values(user).heal,
-			{action_id = {}})
+		local amount = def.values(user).heal
+		local action_id = {}
+		grug_core.heal_player(user, target, amount,
+			{action_id = action_id})
+		local splash = grug_classes.get_talent_bonus(user, "flash_heal_splash")
+		if splash > 0 then
+			for _, obj in ipairs(core.get_objects_inside_radius(target:get_pos(), 8)) do
+				if obj ~= target and grug_abilities.valid_target(user, obj, "friendly") then
+					grug_core.heal_player(user, obj,
+						math.floor(amount * splash / 100), {action_id = action_id})
+				end
+			end
+		end
 		burst(target:get_pos(), "mobs_heart_particle.png", 8)
 		return true
 	end,
@@ -784,7 +878,7 @@ grug_abilities.register_ability({
 -- Base-kit shield (kit tuning 2026-08-06, replaces Renew): an absorb
 -- plays differently from a second heal and makes the Priest useful
 -- BEFORE damage lands. The soak itself lives in grug_core's central hp
--- change modifier (grug_core.set_absorb).
+-- change modifier (grug_core.add_absorb).
 grug_abilities.register_ability({
 	id = "power_word_shield",
 	class = "priest",
@@ -820,8 +914,9 @@ grug_abilities.register_ability({
 		-- Warding Faith and Second Skin (skill_trees.md §2.5); their flat add
 		-- joins the base before the central level scalar. The 15 s duration is
 		-- unscaled. Turn Aside's dodge window is lane X3's.
-		grug_core.set_absorb(target, def.values(user).absorb,
-			15 + grug_classes.get_talent_bonus(user, "shield_duration_add"), user, {})
+		grug_core.add_absorb(target, "power_word_shield", def.values(user).absorb,
+			15 + grug_classes.get_talent_bonus(user, "shield_duration_add"), user, {},
+			{dodge_percent = talent_rank_value(user, "turn_aside", "dodge_chance_window", 0)})
 		burst(target:get_pos(), "default_item_smoke.png^[multiply:#ffe9a0", 8)
 		return true
 	end,
@@ -921,3 +1016,98 @@ end)
 core.register_on_dieplayer(function(player)
 	renews[player:get_player_name()] = nil
 end)
+
+-- WP11 X3 talent-granted active skills. Entitlement is owned by the Skills
+-- catalog through `talent_gated`; registering these definitions never inserts
+-- or recreates an inventory representation.
+grug_abilities.register_ability({
+	id = "hold_ground", class = "warrior", talent_gated = true,
+	kind = "cast", target_kind = "self", name = "Hold Ground",
+	description = "Spend 25 rage to gain an absorb and root/slow immunity for 8 s.",
+	color = "#c89b55", cost = {rage = 25}, cooldown = 60, range = 4,
+	values = function(user)
+		return {absorb = grug_core.base_pool(grug_core.get_player_level(user))
+			* grug_classes.get_talent_bonus(user, "hold_ground_absorb") / 100}
+	end,
+	cast = function(user, pointed, def)
+		grug_core.add_absorb(user, "hold_ground", def.values(user).absorb, 8,
+			user, {})
+		grug_core.set_move_immunity(user, 8)
+		grug_classes.start_talent_window(user, "hold_ground", 8)
+		burst(user:get_pos(), "default_item_smoke.png^[multiply:#c89b55", 14)
+		return true
+	end,
+})
+
+grug_abilities.register_ability({
+	id = "cinderfall", class = "mage", talent_gated = true,
+	kind = "cast", target_kind = "hostile", name = "Cinderfall",
+	description = "Burst at the first aimed contact, damaging hostiles around it.",
+	color = "#d85b2d", cost = {mana_percent = 12}, cooldown = 10, range = 20,
+	cast = function(user, pointed, def)
+		local ray = grug_core.combat_ray(user, grug_abilities.get_range(user, def))
+		debug_cast_ray(user, def, ray)
+		local pos = ray.pointed and ray.pointed.intersection_point
+		if not pos or not ray.distance or ray.distance > ray.range then
+			return false, "No contact in your crosshair."
+		end
+		local damage = spell_damage_value(user,
+			grug_classes.get_talent_bonus(user, "cinderfall_damage")
+			+ grug_classes.get_spell_power_bonus(user))
+		local radius = 3 + grug_classes.get_talent_bonus(user,
+			"cinderfall_radius_add")
+		local action_id = {}
+		for _, obj in ipairs(core.get_objects_inside_radius(pos, radius)) do
+			if grug_abilities.valid_target(user, obj, "hostile") then
+				grug_core.deal_ability_damage(user, obj, damage,
+					{action_id = action_id})
+			end
+		end
+		burst(pos, "mobs_fire_particle.png", 18)
+		return true
+	end,
+})
+
+grug_abilities.register_ability({
+	id = "glacial_ward", class = "mage", talent_gated = true,
+	kind = "cast", target_kind = "self", name = "Glacial Ward",
+	description = "Surround yourself with a spell-powered absorb for 10 s.",
+	color = "#8bd8f0", cost = {mana_percent = 10}, cooldown = 30, range = 4,
+	values = function(user)
+		return {absorb = support_value(user,
+			grug_classes.get_talent_bonus(user, "glacial_ward_absorb"))}
+	end,
+	cast = function(user, pointed, def)
+		grug_core.add_absorb(user, "glacial_ward", def.values(user).absorb, 10,
+			user, {})
+		burst(user:get_pos(), "mobs_bubble_particle.png^[multiply:#8bd8f0", 14)
+		return true
+	end,
+})
+
+grug_abilities.register_ability({
+	id = "word_of_ruin", class = "priest", talent_gated = true,
+	kind = "cast", target_kind = "hostile", name = "Word of Ruin",
+	description = "Damage the aimed enemy and heal yourself from the damage.",
+	color = "#a66bd4", cost = {mana_percent = 8}, cooldown = 12, range = 20,
+	cast = function(user, pointed, def)
+		local target = current_enemy_target(user, def)
+		if not target then return false, "No hostile target in your crosshair." end
+		local damage = spell_damage_value(user,
+			grug_classes.get_talent_bonus(user, "word_of_ruin_damage")
+			+ grug_classes.get_spell_power_bonus(user))
+		grug_core.deal_ability_damage(user, target, damage, {
+			on_accepted = function(dealt, _, action_id)
+				local properties = user:get_properties() or {}
+				if user:get_hp() < (tonumber(properties.hp_max) or 0) * 0.25 then
+					grug_classes.try_trigger_talent_window(user, "last_word", 8, 180)
+				end
+				local ratio = grug_classes.get_talent_bonus(user, "drain_ratio_override")
+				if ratio <= 0 then ratio = 50 end
+				grug_core.heal_player(user, user, math.floor(dealt * ratio / 100),
+					{no_crit = true, action_id = action_id})
+			end,
+		})
+		return true
+	end,
+})

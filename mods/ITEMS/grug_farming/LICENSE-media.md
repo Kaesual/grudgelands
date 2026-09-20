@@ -12,10 +12,35 @@ stages per family. Exact copies and stage selections are reproducible through
 | sugar cane, bamboo | shipped `default_papyrus.png`, minetest_game `b5243f3e` | CC BY-SA 3.0, minetest_game contributors | upright plantlike tile copied or baked with 28% green colour grade; engine stage scale supplies growth |
 | cave cap | `goblins` `ce27b15f`, `goblins_mushroom_brown*.png`, Francisco Athens | CC BY-SA 3.0 | four authored mushroom stages copied/renamed |
 
-The source allow-list is exactly the table above. The deny-list is every other
-file in the two farming repositories: no recipe, model, sound, node code, or
-unlisted texture is imported. All node IDs, stage counts and farming mechanics
-remain local and unchanged.
+Round 12 derives five cultivated Corn segment tiles from the already recorded
+stage-3/stage-4 `x_farming` Corn sources. `tools/r12_farming/build_corn_segments.sh`
+performs only point-filter vertical expansion and exact 16×16 slicing. The
+original author, CC BY-SA 4.0 license and pinned `ac5f69d5` source remain the
+same; wild Corn continues to use the unsliced mature tile.
+
+Round 12 also replaces the three shared berry silhouettes and the repeated
+vertical stalk tiles. Blightberry stages are unchanged renamed copies of
+`farming_blackberry_{1..4}.png` from pinned `farming` commit
+`1a918c7ae3778c3406ad91de6b83a174facad8f0`; Felfa released those files as
+CC0 (`license.txt:200-203`). Sunberry stages are point-filter resized
+derivatives of `farming_raspberry_{1..4}.png` from the same commit; Doc authored
+them under CC BY 3.0 (`license.txt:112-127`). Jungle Berry stages are unchanged
+renamed copies of VoxeLibre `mcl_farming_sweet_berry_bush_{0..3}.png` at
+`c2dbc520ff4e1637072d33b06c3a2404e0f08df7`; the mcl_farming README identifies
+its graphics as CC BY-SA 4.0 and VoxeLibre's LEGAL file attributes the base
+texture set to XSSheep/Pixel Perfection and contributors.
+
+Sugar Cane's new staged sprites and vertical slices remain derivatives of the
+already listed minetest_game `default_papyrus.png`. Bamboo's staged shoot,
+leaf overlays and vertical slices derive from that papyrus source and VoxeLibre
+`mcl_bamboo_bamboo_shoot.png` at `c2dbc520`; the mcl_bamboo README attributes
+its images to Nicu under CC BY-SA. The exact
+point-filter resize/slice operations for all of these assets are reproducible
+through `tools/r12_farming/build_family_silhouettes.sh`.
+
+The source allow-list is the table and Round 12 additions above. No recipe,
+model, sound or upstream node code is imported. All node IDs, stage counts and
+farming mechanics remain local.
 
 ## Round 11 seed inventory silhouettes
 
