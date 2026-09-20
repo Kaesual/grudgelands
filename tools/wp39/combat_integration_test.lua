@@ -6,7 +6,10 @@ local repo = arg[1] or "."
 -- Adjacent animation dependency; its concrete selector is covered separately
 -- by the bow presentation fixture, while this fixture owns combat settlement.
 player_api = {register_control_animation_override = function() end}
-grug_inventory = {is_bow = function() return false end}
+grug_inventory = {is_bow = function() return false end, BAG_COUNT = 4,
+	content_list = function(i) return "grug_bag" .. i .. "_content" end,
+	equipment_slots = {{list = "grug_weapon"}, {list = "grug_offhand"}},
+	equipment_changed = function(player) player.equipment_notices = (player.equipment_notices or 0) + 1 end}
 local now = 0
 local connected = {}
 local players_by_name = {}
@@ -91,6 +94,7 @@ function ItemStack(value)
 	return stack
 end
 
+function Stack:to_string() return self.name .. ":" .. self.wear end
 function Stack:get_name() return self.name end
 function Stack:is_empty() return self.name == "" end
 function Stack:get_wear() return self.wear end
@@ -186,7 +190,7 @@ core = {
 	register_allow_player_inventory_action = function() end,
 	get_connected_players = function() return connected end,
 	get_player_by_name = function(name) return players_by_name[name] end,
-	global_exists = function() return false end,
+	global_exists = function(name) return name == "grug_inventory" end,
 	is_player = function(obj) return obj and obj:is_player() or false end,
 	raycast = function()
 		ray_calls = ray_calls + 1
@@ -213,6 +217,7 @@ grug_classes = {
 	get_talent_bonus = function(player, key)
 		return player.talent_bonuses and player.talent_bonuses[key] or 0
 	end,
+	talent_rank = function(player, id) return (player.talent_ranks or {})[id] or 0 end,
 	registered_classes = {
 		warrior = {name = "Warrior"},
 		mage = {name = "Mage"},
@@ -287,7 +292,18 @@ function Inventory:get_list(name)
 	return result
 end
 function Inventory:get_lists()
-	return {main = self:get_list("main")}
+	local lists = {}
+	for name, list in pairs(self) do
+		if type(list) == "table" then lists[name] = self:get_list(name) end
+	end
+	return lists
+end
+function Inventory:contains_item(listname, item)
+	local name = ItemStack(item):get_name()
+	for _, stack in ipairs(self:get_list(listname)) do
+		if stack:get_name() == name then return true end
+	end
+	return false
 end
 function Inventory:add_item(name, stack)
 	for i = 1, #self[name] do
@@ -461,6 +477,10 @@ dofile(repo .. "/mods/CORE/grug_core/hud_layout.lua")
 dofile(repo .. "/mods/PLAYER/grug_abilities/init.lua")
 for _, fn in ipairs(callbacks.mods_loaded) do fn() end
 
+if arg[2] == "skills-fixture" then
+	return {new_player = new_player, class_callbacks = class_callbacks,
+		callbacks = callbacks, set_time = function(value) now = value end}
+end
 local hero = new_player("hero", "warrior", "accord")
 hero.equipped_weapon = "test:weapon_a"
 local enemy_a = new_mob("enemy_a", "throng")
@@ -471,6 +491,7 @@ local classless = new_player("classless", nil, "accord")
 connected = {hero, ally, hostile_player}
 for _, player in ipairs(connected) do
 	for _, fn in ipairs(callbacks.join) do fn(player) end
+	for _, fn in ipairs(class_callbacks) do fn(player, player.class_id) end
 end
 hero.inventory.writes = 0
 ally.inventory.writes = 0
@@ -528,6 +549,7 @@ end
 local mounted_warrior = new_player("mounted_warrior", "warrior", "accord")
 mounted_warrior.equipped_weapon = "test:weapon_a"
 for _, fn in ipairs(callbacks.join) do fn(mounted_warrior) end
+for _, fn in ipairs(class_callbacks) do fn(mounted_warrior, mounted_warrior.class_id) end
 select_item(mounted_warrior, "grug_abilities:strike")
 mounted_warrior.dig = true
 attach_test_mount(mounted_warrior)
@@ -545,6 +567,7 @@ connected = connected_before_mount_test
 
 local mounted_mage = new_player("mounted_mage", "mage", "accord")
 for _, fn in ipairs(callbacks.join) do fn(mounted_mage) end
+for _, fn in ipairs(class_callbacks) do fn(mounted_mage, mounted_mage.class_id) end
 attach_test_mount(mounted_mage)
 local mounted_cast_called = false
 grug_abilities.try_cast(mounted_mage, {
@@ -669,6 +692,7 @@ enemy_a.mode = "accepted"
 -- keystone; the kit item arrives with the talent grant (WP11 phase 2). The
 -- test hands it over directly, since the settlement rules under test are the
 -- ability's own and do not depend on how it was granted.
+hero.talent_ranks = {hamstring = 1}
 hero.inventory.main[#hero.inventory.main + 1] = ItemStack("grug_abilities:hamstring")
 select_item(hero, "grug_abilities:hamstring")
 grug_abilities.add_rage(hero, 40)

@@ -1128,7 +1128,8 @@ end
 
 local function selected_swing_def(player)
 	local def = item_defs[player:get_wielded_item():get_name()]
-	return (def and def.kind == "swing") and def or nil
+	return (def and def.kind == "swing" and
+		grug_abilities.is_unlocked(player, def.id)) and def or nil
 end
 
 local function valid_swing_enemy(player, target, def)
@@ -1587,6 +1588,10 @@ function grug_abilities.try_cast(user, def, pointed_thing)
 	if not def.universal and grug_classes.get_class(user) ~= def.class then
 		grug_abilities.flash(user, "You are no " ..
 			grug_classes.registered_classes[def.class].name .. ".")
+		return
+	end
+	if not grug_abilities.is_unlocked(user, def.id) then
+		grug_abilities.flash(user, "This skill is not unlocked.")
 		return
 	end
 	-- Cast skills: ready check, affordable check, cast, spend, arm the
@@ -2179,24 +2184,26 @@ end
 
 function grug_abilities.normalize_kit(player)
 	local inv = player:get_inventory()
-	local have = {}
+	local have, equipment_changed = {}, false
 	for listname, list in pairs(inv:get_lists()) do
-		if not equipment_list[listname] then
-			for i, stack in ipairs(list) do
-				local def = item_defs[stack:get_name()]
-				if def then
-					if not allowed_storage(listname) or
-							not grug_abilities.is_unlocked(player, def.id) or have[def.id] then
-						inv:set_stack(listname, i, ItemStack(""))
-					else
-						have[def.id] = true
-						local fresh = grug_abilities.stack_for(player, def.id)
-						if fresh then inv:set_stack(listname, i, fresh) end
+		for i, stack in ipairs(list) do
+			local def = item_defs[stack:get_name()]
+			if def then
+				if not allowed_storage(listname) or
+						not grug_abilities.is_unlocked(player, def.id) or have[def.id] then
+					inv:set_stack(listname, i, ItemStack(""))
+					if equipment_list[listname] then equipment_changed = true end
+				else
+					have[def.id] = true
+					local fresh = grug_abilities.stack_for(player, def.id)
+					if fresh and fresh:to_string() ~= stack:to_string() then
+						inv:set_stack(listname, i, fresh)
 					end
 				end
 			end
 		end
 	end
+	if equipment_changed then grug_inventory.equipment_changed(player) end
 end
 
 local function grant_initial_kit(player)

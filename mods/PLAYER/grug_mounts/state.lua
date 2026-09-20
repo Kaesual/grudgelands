@@ -32,7 +32,7 @@ function grug_mounts.stack_for(player, tier_id)
 		local meta = stack:get_meta()
 		meta:set_string("grug_mounts:owner", player:get_player_name())
 		meta:set_string("description", model.description .. "\n" .. tier.name ..
-			(" — %d nodes/s"):format(tier.speed))
+			(" — %g nodes/s"):format(tier.speed))
 		meta:set_string("inventory_image", model.icon)
 	end
 	return stack
@@ -52,6 +52,8 @@ end
 
 function grug_mounts.reconcile_items(player)
 	local inv, have = player:get_inventory(), {}
+	local equipment, changed = {}, false
+	for _, slot in ipairs(grug_inventory.equipment_slots) do equipment[slot.list] = true end
 	for listname, list in pairs(inv:get_lists()) do
 		for index, stack in ipairs(list) do
 			local def = core.registered_items[stack:get_name()]
@@ -61,6 +63,7 @@ function grug_mounts.reconcile_items(player)
 				if not allowed_storage(listname) or owner ~= player:get_player_name() or
 						not grug_mounts.owns_tier(player, tier_id) or have[tier_id] then
 					inv:set_stack(listname, index, ItemStack(""))
+					if equipment[listname] then changed = true end
 				else
 					have[tier_id] = true
 					inv:set_stack(listname, index, grug_mounts.stack_for(player, tier_id))
@@ -68,6 +71,7 @@ function grug_mounts.reconcile_items(player)
 			end
 		end
 	end
+	if changed then grug_inventory.equipment_changed(player) end
 	return true
 end
 

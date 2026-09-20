@@ -21,6 +21,8 @@ local function entitled(player, stack)
 		stack:get_meta():get_string("grug_mounts:owner") == player:get_player_name()
 end
 
+grug_skills.is_entitled = entitled
+
 core.register_allow_player_inventory_action(function(player, action, inventory, info)
 	if action == "move" then
 		local stack = inventory:get_stack(info.from_list, info.from_index)

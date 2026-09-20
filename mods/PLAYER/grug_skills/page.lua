@@ -32,11 +32,23 @@ local function current_stack(player, entry)
 	return grug_mounts.stack_for(player, entry.id)
 end
 
-local function rebuild(player)
+local function rebuild(player, announce)
 	local name = player:get_player_name()
 	local inv = detached[name]
 	if not inv then return end
+	local previous = {}
+	for _, entry in ipairs(slots[name] or {}) do
+		if entry.kind == "ability" then previous[entry.id] = true end
+	end
 	local rows = entries(player)
+	if announce == true then
+		for _, entry in ipairs(rows) do
+			local def = entry.kind == "ability" and grug_abilities.registered[entry.id]
+			if def and def.talent_gated and not previous[entry.id] then
+				core.chat_send_player(name, def.name .. " unlocked. Open Inventory > Skills to use it.")
+			end
+		end
+	end
 	slots[name] = rows
 	inv:set_size("catalog", 16)
 	for i = 1, 16 do inv:set_stack("catalog", i, ItemStack("")) end
@@ -71,7 +83,8 @@ local function create(player)
 			if not actor or actor:get_player_name() ~= name or listname ~= "catalog" then return 0 end
 			local entry = slots[name] and slots[name][index]
 			local fresh = entry and current_stack(actor, entry)
-			if fresh and fresh:get_name() == stack:get_name() then return -1 end
+			if fresh and fresh:get_name() == stack:get_name() and
+					grug_skills.is_entitled(actor, stack) then return -1 end
 			return 0
 		end,
 	}
@@ -94,6 +107,7 @@ local function passive_text(player)
 end
 
 local function content(player)
+	grug_skills.guard_destinations()
 	rebuild(player)
 	return "label[0.25,0.2;Active skills and mounts]" ..
 		"list[detached:" .. core.formspec_escape(inv_name(player:get_player_name())) ..
@@ -116,7 +130,9 @@ core.register_on_leaveplayer(function(player)
 	local name = player:get_player_name(); core.remove_detached_inventory(inv_name(name)); detached[name] = nil; slots[name] = nil
 end)
 grug_classes.register_on_class_chosen(rebuild)
-if grug_classes.register_on_talents_changed then grug_classes.register_on_talents_changed(rebuild) end
+if grug_classes.register_on_talents_changed then
+	grug_classes.register_on_talents_changed(function(player) rebuild(player, true) end)
+end
 grug_classes.register_on_race_chosen(rebuild)
 grug_factions.register_on_faction_chosen(rebuild)
 grug_mounts.register_on_owned_tiers_changed(rebuild)
