@@ -299,8 +299,10 @@ local function whole_crop_positions(root, state)
 		local pos = copy_pos(root, level)
 		local node = core.get_node_or_nil(pos)
 		if not node then return nil end
-		local name = node.name
-		if owned_helper(name, root, pos, state.crop) then result[#result + 1] = pos end
+		local expected = helper_name(state.crop, state.stage, level)
+		if node.name ~= expected or
+				not owned_helper(node.name, root, pos, state.crop) then return nil end
+		result[#result + 1] = pos
 	end
 	return result
 end

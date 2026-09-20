@@ -266,6 +266,29 @@ return function(repo)
 			core_mock.get_node(corn_top).name == top_name,
 			"unloaded middle segment allowed partial corn removal")
 		unloaded[key(pos(420, 2, 0))] = nil
+		local corn_middle = pos(420, 2, 0)
+		local middle_name = core_mock.get_node(corn_middle).name
+		local before_drops = #handled_drops
+		for _, bad_name in ipairs({"air", "default:dirt",
+				"grug_farming:corn_3_upper_1",
+				"grug_farming:bamboo_shoot_4_upper_1"}) do
+			world[key(corn_middle)] = {name = bad_name}
+			core_mock.registered_nodes[corn.stages[4]].on_dig(corn_root,
+				core_mock.get_node(corn_root), player)
+			check(core_mock.get_node(corn_root).name == corn.stages[4] and
+				core_mock.get_node(corn_top).name == top_name and
+				core_mock.get_node(corn_middle).name == bad_name and
+				#handled_drops == before_drops,
+				"root dig accepted invalid middle segment " .. bad_name)
+			core_mock.registered_nodes[top_name].on_dig(corn_top,
+				core_mock.get_node(corn_top), player)
+			check(core_mock.get_node(corn_root).name == corn.stages[4] and
+				core_mock.get_node(corn_top).name == top_name and
+				core_mock.get_node(corn_middle).name == bad_name and
+				#handled_drops == before_drops,
+				"upper dig accepted invalid middle segment " .. bad_name)
+		end
+		world[key(corn_middle)] = {name = middle_name}
 		core_mock.registered_nodes[top_name].on_dig(corn_top,
 			core_mock.get_node(corn_top), player)
 		check(core_mock.get_node(corn_root).name == "air" and

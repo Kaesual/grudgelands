@@ -30,9 +30,11 @@ return function(key, stage, sounds, context)
 	local is_salt = shape == "salt"
 	local segment = type(context) == "table" and context.segment or nil
 	local mode = type(context) == "table" and context.mode or context
+	local segmented = mode == "cultivated" and segment ~= nil and
+		((key == "corn" and stage >= 3) or key == "sugar_cane" or
+			key == "bamboo_shoot")
 	local tile = "grug_farming_" .. key .. "_" .. stage ..
-		(key == "corn" and segment and stage >= 3 and
-			("_segment_" .. segment) or "") .. ".png"
+		(segmented and ("_segment_" .. segment) or "") .. ".png"
 	local tiles = {tile}
 	local drawtype = "plantlike"
 	local visual_scale = mode == "wild" and 1.15 or 1

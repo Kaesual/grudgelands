@@ -23,8 +23,8 @@ for key in "${keys[@]}"; do
 		for ((level=0; level<height; level++)); do
 			y=$((384 - level * 128))
 			segment_src=$src
-			if [[ $key == corn && $stage -ge 3 ]]; then
-				segment_src="$repo/mods/ITEMS/grug_farming/textures/grug_farming_corn_${stage}_segment_${level}.png"
+			if [[ ($key == corn && $stage -ge 3) || $key == sugar_cane || $key == bamboo_shoot ]]; then
+				segment_src="$repo/mods/ITEMS/grug_farming/textures/grug_farming_${key}_${stage}_segment_${level}.png"
 			fi
 			convert "$segment_src" -filter point -resize 128x128 "$tmpdir/sprite.png"
 			convert "$dst" "$tmpdir/sprite.png" -geometry "+8+$y" -composite "$dst"

@@ -35,17 +35,21 @@ Hades submodule nor a Hades license claim. Hades remains research only until a
 future selected-file import first receives a permanent pin and exact authorship
 and license verification.
 
-The existing 68 stage textures remain the source set. Five new Corn segment
-tiles are deterministic derivatives of the already licensed and pinned
-`x_farming` stage-3/stage-4 Corn textures. The owning media ledger records the
-operation and `tools/r12_farming/build_corn_segments.sh` reproduces it.
+Five Corn segment tiles are deterministic derivatives of the already licensed
+and pinned `x_farming` stage-3/stage-4 Corn textures. The revised berry stages
+use three independently shaped, pinned source families. Cane and Bamboo use
+distinct staged base/shoot/stalk art plus exact vertical slices, so their
+cultivated multi-node forms no longer repeat one full-stalk tile. The owning
+media ledger records the sources and operations;
+`tools/r12_farming/build_corn_segments.sh` and
+`tools/r12_farming/build_family_silhouettes.sh` reproduce them.
 
 The enlarged actual-asset plate is
 `tools/r12_farming/evidence/crop-stages-17x4.png` (592×2788, SHA-256
-`d6a7f24794dd8066acf2975ef8d19dde40f6269d74ac02d300a53fa458e33e03`).
+`0e49d7c8aae7d2fe3372dd1f3b5c9a6f02b4fb1a723430ba2b608b63ec837a89`).
 The registered-height composition plate is
 `tools/r12_farming/evidence/crop-geometry-17x4.png` (592×9044, SHA-256
-`38510b7466f97442473c7ddeda5161b1043be490832570e3b8c4f5a99b2ac8d1`).
+`09368412e7e12b293aea586864b9298b7a506e8d80d2ec331fca3a2ee4c62747`).
 Both were visually inspected. The first shows recognizable four-stage source
 art for every family; the second makes the 1/2/3-node Corn, 1/2/3/4-node Cane
 and 1/1/2/3-node Bamboo ladders explicit. These are offline plates, not a claim
@@ -63,12 +67,15 @@ No PUC runtime or broad suite ran, per the active Round 12 session override.
   manifest data.
 - `tools/r12_farming/family_profiles_kat.lua` under LuaJIT reports 17 families,
   68 visual stages and PASS.
+- `tools/r12_farming/visual_assets_kat.sh` reports three distinct mature berry
+  alpha masks and eight distinct Cane/Bamboo stage masks.
 - `tools/r12_farming/integration_kat.lua` under LuaJIT loads the real farming
   registration and reports 17 complete loops plus PASS. The underlying fixture
   now covers each immature seed-only drop, every mature helper ladder, every
   regrowth reset, blocker refusal/resume, protected-root upper-dig refusal,
-  unloaded-middle-segment refusal, exact-once whole mature Corn removal,
-  wet/dry progress and planting protection.
+  unloaded, missing, ordinary-foreign, wrong-stage and wrong-family middle
+  segment refusal from both root and upper dig entry points, exact-once whole
+  mature Corn removal, wet/dry progress and planting protection.
 - `git diff --check` passes.
 
 ## Runtime test plan
