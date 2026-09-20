@@ -17,19 +17,38 @@ player-owned; this issue concerns node-based workstations.
 
 Detailed source audit: [shared station inventory audit](docs/research/shared-station-ownership-audit.md).
 
-## Proposed direction, not yet decided
+## User proposal and coordinator feedback — 2026-09-20
 
-- Public city stations expose persistent personal working inventories/jobs,
-  allowing simultaneous users without ingredient/result theft or slot blocking.
-- Validate recipe/profession eligibility before consuming ingredients or fuel;
-  revalidate at execution/collection with a defined cancellation policy.
-- Bind inputs/results and profession credit to the same owner. Closing the UI,
-  disconnect, death, unload and restart must not lose or duplicate anything.
-- Define safe cancellation/recovery and full-inventory handling.
-- Decide separately whether player/Housing stations allow deliberate shared work
-  with trusted players. Do not silently impose private city behavior on Housing.
-- Audit every deletion/blast path so it cannot bypass job ownership or recipe
-  authorization. Reuse WP46 protection boundaries where applicable.
+The user proposes two fixed modes, selected by placement provenance rather than
+player configuration. These clarify the intended discussion; implementation has
+not begun and the full transaction contract is still open.
+
+- Authored capital/POI stations: persistent personal working inventories per
+  player and station. Other players cannot see or take those contents.
+- All player-placed stations: shared node inventories, in both Housing and the
+  open world. Player crafting never creates a personal-mode station.
+- Housing's Protector Stone controls area-wide access, including chests and
+  stations. No additional per-station access configuration is proposed.
+- Player-placed world stations/chests outside Housing are openly accessible,
+  subject to the existing global world-placement/protection rules.
+- Show a concise mode/access explanation in the station UI. Suggested labels:
+  “Personal workspace” and “Shared station”; shared wording explicitly refers to
+  players who have access to the surrounding area.
+
+Coordinator recommendation: adopt that split. Require recipe/profession
+eligibility before consuming inputs/fuel and record the initiating crafter.
+For shared stations, any area-authorized player may collect a legally produced
+result, even without that profession; profession credit belongs to its crafter,
+not its collector. This replaces the current late extraction gate. Personal
+stations allow only their corresponding player to collect. Define cancellation,
+full-inventory handling, profession loss, disconnect and offline timing without
+loss/duplication. Authored loot chests remain a separate design question and do
+not automatically become personal through this station rule.
+
+Open transaction details include when automated production binds its crafter,
+fuel reservation, interrupted work, recovery and the exact moment of awarding
+profession progress. No personal inventory may silently teleport contents
+between different physical stations.
 
 ## Next planning package
 

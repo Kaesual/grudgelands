@@ -261,7 +261,9 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 
 *Last updated: 2026-09-20. Derived from [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md); [Round 12 technical delivery](docs/research/round12-completion.md)
-is complete. GUI acceptance is the next user playtest.*
+is complete. GUI acceptance is in progress; the first
+[playtest corrections](docs/research/round12-playtest-followups.md) address Skills
+recovery and missing starter tool recipes.*
 
 **Shipped foundation:** 24 of 53 tracked identities are complete: WP0–WP4,
 WP6, WP7, WP15, WP18, WP19, WP25, WP26, WP33, WP35, WP36, WP38, WP39, WP40,

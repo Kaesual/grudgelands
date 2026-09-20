@@ -69,6 +69,10 @@ uses the [next-playtest checklist](docs/research/round12-next-playtest.md).
 WP11 remains open for WP44's measured respec prices; broader Housing/economy
 and war-front work were not included.
 
+The first [playtest followups](docs/research/round12-playtest-followups.md) fix
+Skills catalog recovery and immediate Wood/Stone starter recipe visibility.
+They do not change lifetime budgets or station ownership.
+
 ## Phase 1 (MVP)
 
 | WP | Title | Status | Depends on |
@@ -308,6 +312,15 @@ and [integration ownership](docs/research/round12-plan/README.md).
   mount speeds and authoritative cooldown/charge continuity.
 
 These rules are implemented and independently reviewed; GUI acceptance remains separate.
+
+### Starter tool lifetime calibration
+
+**Open numbers discussion (2026-09-20).** The user wants short-lived wooden and
+stone bootstrap tools, then substantially longer-lived metal tools; Wood,
+Stone and Bronze retain T1 pick access. Current values and the unapproved
+24/64/512 starting proposal are in [the lifetime brief](TODO-tool-lifetimes.md).
+Recipe visibility corrections are independent of that calibration; no durability
+or Stone Hoe implementation is authorized by the brief.
 
 ### Shared world-station ownership followup
 

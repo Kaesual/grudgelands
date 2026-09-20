@@ -387,6 +387,11 @@ Details + line numbers in [docs/research/](docs/research/).
   recovery, normalization and actual cast/swing execution. `normalize_kit`
   removes stale copies without re-granting missing ones. Purchased mount tiers
   remain individually available at their original speeds.
+  Do not compare InvRef userdata for inventory ownership: engine callbacks can
+  create a fresh wrapper for the same underlying inventory. Authenticate
+  `inventory:get_location()` (type and player name), then the allowed list and
+  current entitlement. Cross-inventory tests must include both callback sides
+  in engine order, not only direct catalogue callbacks.
 - **Mount runtime**: ownership is player meta; the summoned controller and its
   visible child are ephemeral. The child is hidden only from its local rider in
   first person. `grug_mounts.dismount` is the shared cleanup path for manual,
