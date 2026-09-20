@@ -152,6 +152,27 @@ function grug_inventory.consume_ammo(player, count)
 	return left == 0
 end
 
+-- Return one successful shot action's complete ammunition count. Prefer the
+-- equipped quiver, then main; if both filled between launch and refund, place
+-- the remainder at the player's feet instead of silently losing it.
+function grug_inventory.refund_ammo(player, count)
+	count = math.floor(tonumber(count) or 0)
+	if count < 1 then return false end
+	local inv = player and player:get_inventory()
+	if not inv then return false end
+	local leftover = ItemStack("grug_gear:arrow " .. count)
+	if grug_inventory.get_equipped_quiver(player) then
+		leftover = inv:add_item(grug_inventory.QUIVER_LIST, leftover)
+	end
+	if not leftover:is_empty() then
+		leftover = inv:add_item("main", leftover)
+	end
+	if not leftover:is_empty() then
+		core.add_item(player:get_pos(), leftover)
+	end
+	return true
+end
+
 --
 -- List setup & rules
 --
