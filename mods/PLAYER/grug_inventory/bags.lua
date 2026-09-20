@@ -167,6 +167,11 @@ core.register_on_joinplayer(function(player)
 	end
 end)
 
+local quiver_notice_at = {}
+core.register_on_leaveplayer(function(player)
+	quiver_notice_at[player:get_player_name()] = nil
+end)
+
 core.register_allow_player_inventory_action(function(player, action, inventory, info)
 	local from_list, to_list, stack
 	if action == "move" then
@@ -192,6 +197,13 @@ core.register_allow_player_inventory_action(function(player, action, inventory, 
 	if from_list == "grug_offhand" and equipped_quiver(inventory) then
 		local occupied = action == "move" and to_list == "main" and info.to_index or nil
 		if main_arrow_capacity(inventory, occupied) < quiver_arrow_count(inventory) then
+			local name = player:get_player_name()
+			local now = core.get_us_time()
+			if not quiver_notice_at[name] or now - quiver_notice_at[name] >= 2000000 then
+				quiver_notice_at[name] = now
+				core.chat_send_player(name,
+					"Make room in your main inventory for all arrows before removing the quiver.")
+			end
 			return 0
 		end
 	end
