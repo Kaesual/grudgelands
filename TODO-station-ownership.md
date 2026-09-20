@@ -51,22 +51,29 @@ crafter is superseded by the user's new proposal:
 - No production eligibility is bound to whoever happened to insert an ingredient.
 
 An explicitly requested native GPT-6 Astra [audit](docs/research/station-viewer-rules-audit.md)
-checked this against current recipe/engine paths. Open issues include the automatic Brewing Stand, raw/final
-Cooking double progress, simple roasted foods, custom refinement stations,
-per-player previews over shared inventories, and partial-stack progress receipts.
+checked this against current recipe/engine paths. The Brewing Stand and raw/final
+Cooking progress decisions are resolved below; implementation still needs simple
+roasted foods, custom affix stations, per-player previews over shared inventories
+and exact-once progress settlement.
 Authored loot chests remain separate and do not automatically become personal.
 
-Coordinator recommendations pending user answers:
+User decisions received 2026-09-21 (design approved; implementation awaits round Go):
 
-1. Alchemy follows the same qualified-preparation/free-automatic-finish split
+- Alchemists craft prepared potion mixtures in their personal inventory 3x3
+  grid. Anyone may finish those mixtures at the Brewing Stand.
+- Only collection of the profession-gated preparation awards profession
+  progress, subject to the existing exact-current-tier rule. Finishing in an
+  oven or Brewing Stand awards none. No initiating-crafter ownership is needed.
+
+Coordinator recommendations and remaining details:
+
+1. Alchemy follows the accepted qualified-preparation/free-automatic-finish split
    as Cooking. This needs new prepared mixtures and is a real content change,
-   not merely removing the existing Brewing Stand output gate. Alternative:
-   separately design a profession-gated brewing exception.
+   not merely removing the existing Brewing Stand output gate.
 2. Award progress on collection of the profession-gated preparation only;
-   automatic finishing then gives no second credit. Alternative: only the final
-   result awards credit to an eligible collector. The user was asked explicitly.
+   automatic finishing then gives no second credit (accepted above).
 3. Simple roasting of meat/fish/grain remains universal under the furnace rule.
-   If preparation-only credit is selected, these universal conversions give no
+   Under the selected preparation-only credit rule, these conversions give no
    Cooking progression. Prepared dishes remain Cooking-exclusive to assemble.
 4. Custom refinement/affix Apply transactions retain their metadata-preserving
    commit and commit-time roll. Viewer eligibility also controls their preview

@@ -66,9 +66,21 @@ a feedback/discussion round first.
   non-broken candidates and shield participation before implementation.
 - Add the missing Stone Hoe. Wood/Stone/Bronze tools all retain T1 access.
 
-Open details: the existing refinement lifetime multiplier (currently x2; user
-asked asynchronously), shields/spellbooks, and retention of deeper-mining wear
-penalties. Current 3000/6000 weapon budgets mean this proposal reduces early-tier
+The user rejected any refinement lifetime bonus on 2026-09-21. Use the proposed
+tier budgets without an x2 multiplier; removal of refinement itself is under
+[separate discussion](TODO-equipment-enchanting.md).
+
+The user's revised wear proposal supersedes the earlier incoming-hit description:
+only the main-hand weapon wears for outgoing damage or healing. Incoming damage
+spends one use on one randomly selected intact equipped item among the four armor
+slots and the offhand; do not distinguish offensive/defensive offhands. Fully
+absorbed hits should count too, including PvP. Fall damage may count; the user
+prefers whichever rule is simpler. Exact dodge/cancellation, effective healing,
+environmental damage and previously non-repairable offhand (quiver) handling need
+to be stated in the final contract. No code changes are authorized yet.
+
+Open details also include retention of deeper-mining wear penalties.
+Current 3000/6000 weapon budgets mean this proposal reduces early-tier
 weapon lifetime; randomly selecting armor reduces aggregate armor wear. Exact
 event rules should preserve one outgoing wear debit per settled action, not per
 victim/projectile, and no combat wear for falls or environmental damage.
