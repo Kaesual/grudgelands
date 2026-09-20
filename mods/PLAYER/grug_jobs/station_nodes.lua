@@ -5,6 +5,7 @@ end
 
 local factory = {}
 local PUBLIC_STATIONS = {
+	furnace = true,
 	brewing_stand = true,
 	forge = true,
 	tanning_rack = true,
@@ -31,6 +32,20 @@ end
 
 function factory.is_public_station(station, pos)
 	return public_positions[station .. "\0" .. pos_key(pos)] == true
+end
+
+-- The vendored furnace keeps its complete timer/extraction chain; this is
+-- only the explicit authored public-position exception to node protection.
+function factory.can_access_public_furnace(pos, player)
+	if not factory.is_public_station("furnace", pos) or not player or
+			not player.is_player or not player:is_player() or player:get_hp() <= 0 then
+		return false
+	end
+	local at = player:get_pos()
+	if not at or vector.distance(at, pos) > 8 then return false end
+	local node = core.get_node_or_nil(pos)
+	return node ~= nil and (node.name == "default:furnace" or
+		node.name == "default:furnace_active")
 end
 
 local function may_access(station, pos, player)
@@ -379,6 +394,24 @@ function factory.install_jobs(jobs)
 	factory.register_nodes()
 	jobs.register_public_position = factory.register_public_position
 	jobs.is_public_station = factory.is_public_station
+	jobs.can_access_public_furnace = factory.can_access_public_furnace
+	core.register_lbm({
+		label = "Activate authored public cooking hearths",
+		name = "grug_jobs:activate_public_hearths",
+		nodenames = {"default:furnace", "default:furnace_active"},
+		run_at_every_load = true,
+		action = function(pos)
+			if not factory.is_public_station("furnace", pos) then return end
+			local node = core.get_node_or_nil(pos)
+			if not node or (node.name ~= "default:furnace" and
+					node.name ~= "default:furnace_active") then return end
+			local inv = core.get_meta(pos):get_inventory()
+			if inv:get_size("src") == 0 and inv:get_size("fuel") == 0 and
+					inv:get_size("dst") == 0 then
+				core.registered_nodes["default:furnace"].on_construct(pos)
+			end
+		end,
+	})
 	for station, info in pairs(STATION_INFO) do
 		local station_id, station_info = station, info
 		jobs.register_station(station_id, {
@@ -407,15 +440,9 @@ function factory.install_jobs(jobs)
 			local sockets = grug_core.settlement_sockets_at(settlements[index].key)
 			for socket_index = 1, #sockets do
 				local socket = sockets[socket_index]
-				for station in pairs(PUBLIC_STATIONS) do
-					local info = jobs.station_info(station)
-						if info and socket.role == "trainer" and
-								(socket.profession == info.profession or
-								(info.professions and info.professions[socket.profession])) then
-						jobs.register_public_position(station, {
-							x = socket.pos.x + 1, y = socket.pos.y, z = socket.pos.z,
-						})
-					end
+				local station = socket.tags and socket.tags[1]
+				if socket.role == "public_station" and PUBLIC_STATIONS[station] then
+					jobs.register_public_position(station, socket.pos)
 				end
 			end
 		end

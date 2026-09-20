@@ -140,6 +140,32 @@ return function(root)
 			error("R8-ALCH capital KAT: real manifest constructor differs", 0)
 		end
 		local consumed = runtime.settlement_sockets(built)
+		local owner={forge={weaponsmith=true,armorsmith=true},tailor_bench={tailor=true},
+			brewing_stand={alchemist=true},tanning_rack={leatherworker=true},
+			carving_bench={woodcarver=true},jewellers_bench={goldsmith=true},furnace={cooking=true}}
+		for _,capital in ipairs(consumed) do
+			if capital.slot=="capital" then
+				local stations=0
+				for _,station in ipairs(capital.sockets) do
+					if station.role=="public_station" then
+						stations=stations+1;local expected=assert(owner[station.tags[1]])
+						local near={}
+						for _,trainer in ipairs(capital.sockets) do
+							if trainer.role=="trainer" and expected[trainer.profession] then
+								local dx,dy,dz=trainer.x-station.x,trainer.y-station.y,trainer.z-station.z
+								assert(dx*dx+dy*dy+dz*dz<=8,"terrain-resolved public station reach differs")
+								near[trainer.profession]=true
+							end
+						end
+						for profession in pairs(expected) do assert(near[profession]) end
+						io.stderr:write(table.concat({"actual_station",capital.key,station.tags[1],
+							station.x+capital.anchor.x,station.y+capital.anchor.y,
+							station.z+capital.anchor.z},"\t"),"\n")
+					end
+				end
+				assert(stations==7)
+			end
+		end
 		local highcourt
 		for index = 1, #consumed do
 			if consumed[index].key == "highcourt" then highcourt = consumed[index] end
@@ -161,28 +187,33 @@ return function(root)
 		if profile.slot == "capital" then
 			local source = dofile(mapgen .. "/wp40/" .. profile.blueprint_file)()
 			local descriptors = settlement.descriptors(profile, source)
-			local core_descriptor
-			for descriptor_index = 1, #descriptors do
-				if descriptors[descriptor_index].id == "core" then
-					core_descriptor = descriptors[descriptor_index]
+			local count, trainer, station = 0
+			for _, descriptor in ipairs(descriptors) do
+				if descriptor.kind ~= "overlay" then
+					local blueprint = descriptor.build()
+					for _, socket in ipairs(blueprint.landmarks.sockets or {}) do
+						if socket.role == "public_station" and socket.tags[1] == "brewing_stand" then
+							assert(descriptor.id ~= "core", "alchemy must use its outer plot")
+							for _, cell in ipairs(blueprint.cells) do
+								if cell.x == socket.x and cell.y == socket.y and cell.z == socket.z and
+									cell.name == "grug_brewing:brewing_stand" then count = count + 1 end
+							end
+							station = socket
+						elseif socket.role == "trainer" and socket.profession == "alchemist" then
+							trainer = socket
+						end
+					end
 				end
 			end
-			local blueprint = core_descriptor.build()
-			local count = 0
-			for cell_index = 1, #blueprint.cells do
-				local cell = blueprint.cells[cell_index]
-				if cell.x == 2 and cell.y == 1 and cell.z == -12 and
-						cell.name == "grug_brewing:brewing_stand" then count = count + 1 end
-			end
 			if mutation == "capital" and #found == 0 then count = 0 end
-			if count ~= 1 then
-				error("R8-ALCH capital KAT: " .. profile.key ..
-					" brewing stand differs", 0)
-			end
-			found[#found + 1] = profile.key .. "=(2,1,-12)"
+			assert(count == 1 and trainer and station, "R8-ALCH capital KAT: unique station/trainer differs")
+			local dx, dy, dz = trainer.x-station.x, trainer.y-station.y, trainer.z-station.z
+			assert(dx*dx+dy*dy+dz*dz <= 8, "alchemy station out of interaction reach")
+			found[#found + 1] = profile.key .. "=outer-plot-public-station"
+
 		end
 	end
 	if #found ~= 6 then error("R8-ALCH capital KAT: capital count differs", 0) end
 	return "R8-ALCH capital KAT PASS " .. table.concat(found, " ") ..
-		" trainer=(1,1,-12)\n"
+		" trainer=authored-nearby\n"
 end

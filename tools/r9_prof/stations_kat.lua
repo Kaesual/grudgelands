@@ -291,57 +291,45 @@ return function(repo)
 			capitals = capitals + 1
 			local source = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/" ..
 				profile.blueprint_file)()
-			local original, original_cells = source.core.build(), {}
-			for index = 1, #original.cells do
-				local cell = original.cells[index]
-				original_cells[cell.x .. ":" .. cell.y .. ":" .. cell.z] = cell.name
-			end
-			local descriptors = settlement.descriptors(profile, source)
-			local projected
-			local blueprints = {}
-			for index = 1, #descriptors do
-				local descriptor = descriptors[index]
-				if descriptor.kind ~= "overlay" then
-					local blueprint = descriptor.build()
-					blueprints[#blueprints + 1] = {descriptor = descriptor,
-						landmarks = blueprint.landmarks, reference = blueprint.reference}
-					if descriptor.id == "core" then projected = blueprint end
+			local descriptors=settlement.descriptors(profile,source)
+			local blueprints,cells={},{}
+			for _,descriptor in ipairs(descriptors) do
+				if descriptor.kind~="overlay" then
+					local blueprint=descriptor.build();local offset=descriptor.offset or {x=0,z=0}
+					blueprints[#blueprints+1]={descriptor=descriptor,landmarks=blueprint.landmarks,
+						reference=blueprint.reference}
+					for _,cell in ipairs(blueprint.cells) do
+						cells[(cell.x+offset.x)..":"..cell.y..":"..(cell.z+offset.z)]=cell.name
+					end
 				end
 			end
-			local projected_cells, station_cells = {}, {}
-			for index = 1, #projected.cells do
-				local cell = projected.cells[index]
-				projected_cells[cell.x .. ":" .. cell.y .. ":" .. cell.z] = cell.name
-				if node_names[cell.name] or cell.name == "grug_brewing:brewing_stand" then
-					station_cells[#station_cells + 1] = cell.x .. ":" .. cell.y .. ":" .. cell.z
+			local prepared={schema="grug_wp13_settlement_prepared_v1",profile=profile,blueprints=blueprints}
+			local sockets=settlement.sockets(prepared,{x=0,y=20,z=0},function() return 20 end)
+			local station_nodes={forge="grug_jobs:forge",tailor_bench="grug_jobs:tailor_bench",
+				tanning_rack="grug_jobs:tanning_rack",carving_bench="grug_jobs:carving_bench",
+				jewellers_bench="grug_jobs:jewellers_bench",brewing_stand="grug_brewing:brewing_stand",
+				furnace="default:furnace"}
+			local public,count={},0
+			for _,socket in ipairs(sockets) do
+				if socket.role=="public_station" then
+					local id=socket.tags[1];count=count+1
+					check(station_nodes[id] and not public[id],profile.key.." duplicate/unknown station")
+					check(cells[socket.x..":"..socket.y..":"..socket.z]==station_nodes[id],
+						profile.key.." authored public node differs")
+					check(socket.id:find("/",1,true)~=nil,profile.key.." station remained in core")
+					public[id]=socket
 				end
 			end
-			check(#station_cells == 6, profile.key .. " station count differs")
-			local occupied = {}
-			for index = 1, #expected do
-				local row = expected[index]
-				local cell_key = row.x .. ":" .. row.y .. ":" .. row.z
-				check(math.abs(row.x - row.trainer_x) +
-					math.abs(row.z - row.trainer_z) == 1,
-					profile.key .. " " .. row.station .. " is not trainer-adjacent")
-				check(original_cells[cell_key] == "air" and
-					projected_cells[cell_key] == row.node and not occupied[cell_key],
-					profile.key .. " " .. row.station .. " projection differs")
-				occupied[cell_key] = true
-			end
-			local brewing_key = "2:1:-12"
-			check(original_cells[brewing_key] == "air" and
-				projected_cells[brewing_key] == "grug_brewing:brewing_stand" and
-				not occupied[brewing_key], profile.key .. " brewing stand differs")
-			occupied[brewing_key] = true
-			local prepared = {schema = "grug_wp13_settlement_prepared_v1",
-				profile = profile, blueprints = blueprints}
-			local sockets = settlement.sockets(prepared, {x = 0, y = 20, z = 0},
-				function() return 20 end)
-			for index = 1, #sockets do
-				local socket = sockets[index]
-				check(not occupied[socket.x .. ":" .. socket.y .. ":" .. socket.z],
-					profile.key .. " station overlaps socket " .. socket.id)
+			check(count==7,profile.key.." station count differs")
+			local profession_station={weaponsmith="forge",armorsmith="forge",tailor="tailor_bench",
+				leatherworker="tanning_rack",woodcarver="carving_bench",goldsmith="jewellers_bench",
+				alchemist="brewing_stand",cooking="furnace"}
+			for _,socket in ipairs(sockets) do
+				if socket.role=="trainer" then
+					local at=assert(public[profession_station[socket.profession]])
+					local distance=(at.x-socket.x)^2+(at.y-socket.y)^2+(at.z-socket.z)^2
+					check(distance>0 and distance<=8,profile.key.." trainer/station reach differs")
+				end
 			end
 		end
 	end
@@ -350,7 +338,7 @@ return function(repo)
 	local report = {"stations\tids=5\tnodes=5\tgrid=3x3\tbook_button\n",
 		"recipes\thousing_t3=5\tacyclic\tshaped+shapeless\tstation_isolated\n",
 		"operation\tnear+ACL\texact-once\tfull-inventory-no-roll\n",
-		"capitals\tcount=6\tstations_each=6\tformer_air\tadjacent\tdistinct\n"}
+		"capitals\tcount=6\tstations_each=7\tauthored_outer_socket\treachable\tshared_forge\n"}
 	for index = 1, #expected do
 		local row = expected[index]
 		report[#report + 1] = table.concat({row.profession, row.station, row.node,

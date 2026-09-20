@@ -129,13 +129,13 @@ local function loader()
 	-- runs, and no route cell or bridge deck is needed inside the envelope.
 	local GATE_OUT = 261
 	M.AVENUES = {
-		{id = "avenue_south", axis = "z", at = 0, from = -GATE_OUT, to = -48,
+		{id = "avenue_south", axis = "z", at = 0, from = -GATE_OUT, to = -50,
 			gate = "gate_south"},
-		{id = "avenue_north", axis = "z", at = 0, from = 48, to = GATE_OUT,
+		{id = "avenue_north", axis = "z", at = 0, from = 50, to = GATE_OUT,
 			gate = "gate_north"},
-		{id = "avenue_west", axis = "x", at = 0, from = -GATE_OUT, to = -48,
+		{id = "avenue_west", axis = "x", at = 0, from = -GATE_OUT, to = -50,
 			gate = "gate_west"},
-		{id = "avenue_east", axis = "x", at = 0, from = 48, to = GATE_OUT,
+		{id = "avenue_east", axis = "x", at = 0, from = 50, to = GATE_OUT,
 			gate = "gate_east"},
 	}
 

@@ -50,6 +50,9 @@ M.SOURCES = {
 	{mod = "walls", path = "mods/BASE/walls", files = {"init.lua"}},
 	{mod = "xpanes", path = "mods/BASE/xpanes", files = {"init.lua"}},
 	{mod = "grug_decor", path = "mods/ITEMS/grug_decor", files = {"init.lua"}},
+	{mod = "grug_jobs", path = "mods/PLAYER/grug_jobs", files = {"station_nodes.lua"}},
+	{mod = "grug_brewing", path = "mods/ITEMS/grug_brewing", files = {"node.lua"},
+		seed = "grug_brewing"},
 	-- `grug_materials` last: its derivative nodes are clones of vendored
 	-- definitions, so the sources above must already be in the registry.
 	-- `overrides.lua`, `content_curation.lua` and `audit.lua` are not run:
@@ -90,7 +93,7 @@ end
 
 local MOD_GLOBALS = {"default", "stairs", "doors", "beds", "wool", "vessels",
 	"walls", "xpanes", "grug_decor", "dye", "grug_materials", "grug_trees",
-	"grug_nodes"}
+	"grug_nodes", "grug_brewing"}
 
 -- Load every source under a stub `core` and return what it registered.
 -- `repo` is the repository root; the result is
@@ -223,7 +226,8 @@ function M.load(repo)
 					error("wp13 stub registry: cannot load " .. path .. ": " ..
 						tostring(load_err), 0)
 				end
-				chunk()
+				local result=chunk()
+				if source.mod=="grug_jobs" then result.register_nodes() end
 			end
 		end
 	end)

@@ -65,7 +65,7 @@ local function loader(directory)
 
 	local M = {}
 
-	local RADIUS = 47
+	local RADIUS = 49
 	local SCHEMA = "grug_wp13_lethariel_core_v1"
 
 	-- The city's own patrol loop.
@@ -91,7 +91,7 @@ local function loader(directory)
 		[38] = {-30, 32}, [39] = {-31, 34}, [40] = {-32, 35},
 		[41] = {-32, 37}, [42] = {-33, 39}, [43] = {-33, 40},
 		[44] = {-34, 42}, [45] = {-34, 44}, [46] = {-35, 46},
-		[47] = {-35, 47},
+		[47] = {-35, 47}, [48] = {-36, 49}, [49] = {-36, 49},
 	}
 	-- One node of natural shore between anything this composition lays and the
 	-- water itself, so a rounding difference in a future WP40 revision costs a
@@ -207,7 +207,7 @@ local function loader(directory)
 			spec = {patrol_group = "lethariel_gate_west_tower",
 				deck_group = "lethariel_gate_west_tower", order = 2}},
 		{id = "gate_east", module = "capitals", make = "gatehouse",
-			x = 41, z = -6, turns = 3, palette = "pale", roof = "pale",
+			x = 43, z = -6, turns = 3, palette = "pale", roof = "pale",
 			spec = {patrol_group = "lethariel_gate_east_tower",
 				deck_group = "lethariel_gate_east_tower", order = 2}},
 
@@ -340,13 +340,13 @@ local function loader(directory)
 	-- same number Highcourt and Dur Brannoc use for their gates.
 	local GATE_OUT = 261
 	M.avenues = {
-		{id = "avenue_south", axis = "z", at = 0, from = -GATE_OUT, to = -48,
+		{id = "avenue_south", axis = "z", at = 0, from = -GATE_OUT, to = -(RADIUS + 1),
 			gate = "gate_south"},
 		{id = "avenue_north", axis = "z", at = 0, from = 22, to = GATE_OUT,
 			gate = "gate_north"},
-		{id = "avenue_west", axis = "x", at = 0, from = -GATE_OUT, to = -48,
+		{id = "avenue_west", axis = "x", at = 0, from = -GATE_OUT, to = -(RADIUS + 1),
 			gate = "gate_west"},
-		{id = "avenue_east", axis = "x", at = 0, from = 48, to = GATE_OUT,
+		{id = "avenue_east", axis = "x", at = 0, from = RADIUS + 1, to = GATE_OUT,
 			gate = "gate_east"},
 	}
 

@@ -60,7 +60,7 @@ local M = {}
 -- three places; they are data now and nothing else changed about them.
 M.BOUNDS = {
 	start = {min = {x = -63, y = -2, z = -63}, max = {x = 63, y = 24, z = 63}},
-	capital_core = {min = {x = -47, y = -2, z = -47}, max = {x = 47, y = 40, z = 47}},
+	capital_core = {min = {x = -49, y = -2, z = -49}, max = {x = 49, y = 40, z = 49}},
 	capital_plot = {min = {x = -15, y = -6, z = -15}, max = {x = 15, y = 24, z = 15}},
 	-- The avenues are the one blueprint that legitimately leaves the civic
 	-- core: they run to the gate stations at +-256. Their authorized volume is
@@ -79,11 +79,8 @@ M.BOUNDS = {
 -- walking up and down one avenue never pays a rebuild.
 M.IDLE_RELEASE = 64
 
--- Profession trainers are core-landmark sockets rather than district-plot
--- residents. Starts carry Cooking only; capitals carry the complete roster.
--- The capital line stands along the five-wide south avenue. The Alchemist at
--- (1, 1, -12) deliberately leaves (2, 1, -12) beside it for R8-ALCH's
--- brewing stand. These are landmarks, not identity bytes.
+-- Starts carry Cooking at a core landmark. Capital services are authored in
+-- their themed outer plots, including explicit public-station node sockets.
 local START_TRAINERS = {
 	hearthpine = {x = 2, y = 1, z = 10, dir = {x = -1, z = 0}},
 	dawnmere = {x = 2, y = 1, z = 10, dir = {x = -1, z = 0}},
@@ -92,15 +89,7 @@ local START_TRAINERS = {
 	sunscar = {x = 2, y = 1, z = -10, dir = {x = -1, z = 0}},
 	kapok = {x = 2, y = 1, z = -10, dir = {x = -1, z = 0}},
 }
-local CAPITAL_TRAINERS = {
-	{profession = "blacksmith", x = -1, y = 1, z = -8},
-	{profession = "alchemist", x = 1, y = 1, z = -12},
-	{profession = "tailor", x = -1, y = 1, z = -16},
-	{profession = "leatherworker", x = 1, y = 1, z = -20},
-	{profession = "woodcarver", x = -1, y = 1, z = -24},
-	{profession = "goldsmith", x = 1, y = 1, z = -28},
-	{profession = "cooking", x = -1, y = 1, z = -32},
-}
+
 
 -- Fixed order. The successor settles the roster in this order, and the
 -- manifest publishes one identity block per blueprint of each row in the same
@@ -690,66 +679,6 @@ local function prepare_overlay(fail, descriptor, overlay)
 end
 
 local CAPITAL_SOURCE_SCHEMA = "grug_wp13_capital_source_v1"
-local CAPITAL_STATIONS = {
-	{profession = "blacksmith", node = "grug_jobs:forge", x = 0, y = 1, z = -8},
-	{profession = "alchemist", node = "grug_brewing:brewing_stand",
-		x = 2, y = 1, z = -12},
-	{profession = "tailor", node = "grug_jobs:tailor_bench",
-		x = 0, y = 1, z = -16},
-	{profession = "leatherworker", node = "grug_jobs:tanning_rack",
-		x = 2, y = 1, z = -20},
-	{profession = "woodcarver", node = "grug_jobs:carving_bench",
-		x = 0, y = 1, z = -24},
-	{profession = "goldsmith", node = "grug_jobs:jewellers_bench",
-		x = 2, y = 1, z = -28},
-}
-
--- Every capital core carries the same public profession stations immediately
--- east of the matching trainer. Core builders reserve these air cells;
--- projection owns their replacement so the six independent libraries stay
--- unchanged and one table remains the placement authority.
-local function capital_core_with_stations(fail, build)
-	return function()
-		local blueprint = build()
-		local wanted = {}
-		for index = 1, #CAPITAL_STATIONS do
-			local station = CAPITAL_STATIONS[index]
-			local key = station.x .. ":" .. station.y .. ":" .. station.z
-			if wanted[key] then fail("capital station cells overlap") end
-			wanted[key] = station
-		end
-		local found = {}
-		for index = 1, #(blueprint.cells or {}) do
-			local cell = blueprint.cells[index]
-			local key = cell.x .. ":" .. cell.y .. ":" .. cell.z
-			local station = wanted[key]
-			if station then
-				if cell.name ~= "air" then
-					fail(station.profession .. " station cell is not reserved air")
-				end
-				cell.name = station.node
-				cell.param2 = 0
-				found[key] = true
-			end
-		end
-		local palette = {}
-		for index = 1, #(blueprint.palette or {}) do
-			palette[blueprint.palette[index]] = true
-		end
-		for key, station in pairs(wanted) do
-			if not found[key] then
-				fail(station.profession .. " station cell is absent")
-			end
-			if not palette[station.node] then
-				blueprint.palette[#blueprint.palette + 1] = station.node
-				palette[station.node] = true
-			end
-		end
-		table.sort(blueprint.palette, M.less_bytes)
-		return blueprint
-	end
-end
-
 local function identity_schema_of(fail, blueprint_schema)
 	if type(blueprint_schema) ~= "string" or
 			not blueprint_schema:match("_v%d+$") then
@@ -803,7 +732,7 @@ function M.descriptors(profile, source)
 	add({id = "core", prefix = profile.key .. "_core", kind = "anchor",
 		bounds = primary, blueprint_schema = source.core.schema,
 		identity_schema = profile.identity_schema,
-		build = capital_core_with_stations(fail, source.core.build)})
+		build = source.core.build})
 	for index = 1, #source.plots do
 		local plot = source.plots[index]
 		if type(plot) ~= "table" or type(plot.id) ~= "string" or plot.id == "" or
@@ -1041,14 +970,7 @@ function M.sockets(prepared, anchor, height_at)
 		rows[#rows + 1] = {id = "trainer_cooking", role = "trainer",
 			profession = "cooking", x = position.x, y = position.y,
 			z = position.z, dir = position.dir}
-	elseif profile.slot == "capital" then
-		for index = 1, #CAPITAL_TRAINERS do
-			local trainer = CAPITAL_TRAINERS[index]
-			rows[#rows + 1] = {id = "trainer_" .. trainer.profession,
-				role = "trainer", profession = trainer.profession,
-				x = trainer.x, y = trainer.y, z = trainer.z,
-				dir = {x = trainer.x < 0 and 1 or -1, z = 0}}
-		end
+
 	end
 	return rows
 end

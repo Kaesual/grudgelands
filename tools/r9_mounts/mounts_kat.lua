@@ -218,7 +218,8 @@ return function(root, options)
 			local player = players[name]
 			if player then player.last_chat = message end
 		end,
-		show_formspec = function() end,
+		show_formspec = function(_, name, text) callbacks.shown={name=name,text=text} end,
+		register_on_player_receive_fields = function(fn) callbacks.riding_fields=fn end,
 	}
 
 	function core.add_entity(pos, name, staticdata)
@@ -293,12 +294,13 @@ return function(root, options)
 			return first.faction ~= nil and first.faction == second.faction
 		end,
 	}
-	grug_mobs = {is_noncombatant = function() return false end}
+	grug_mobs = {is_noncombatant = function() return false end,
+		register_start_socket_role=function() end}
 	grug_classes = {
 		get_race = function(player) return player.race end,
 		register_on_race_chosen = function(func) callbacks.race = func end,
 	}
-	grug_jobs = {register_trainer_hook = function(func) callbacks.trainer = func end}
+	grug_jobs = {}
 	grug_zones = {
 		water_class_at = function(x, z)
 			if zone_mode == "ocean" and x >= 0 then return "deep_ocean" end
@@ -724,10 +726,13 @@ return function(root, options)
 		math.abs(rider.properties.visual_size.y - 0.9) < 0.000001)
 
 	local price_viewer = new_player("price_viewer", 60, "accord", "human")
-	local extension = callbacks.trainer({action = "formspec", player = price_viewer,
-		profession = "blacksmith"})
-	assert(extension.size == "size[9.25,5.15]" and #extension.fragments >= 7)
-	local trainer_text = table.concat(extension.fragments, "|")
+	grug_core.settlement_sockets_at=function() return {{id="riding",role="riding_trainer",
+		pos=price_viewer:get_pos()}} end
+	local trainer={_grug_start="highcourt",_grug_socket="riding",
+		_grug_socket_role="riding_trainer",object={get_pos=function() return price_viewer:get_pos() end}}
+	assert(grug_mounts.open_trainer(price_viewer,trainer))
+	assert(callbacks.shown.name:find("grug_mounts:riding:",1,true)==1)
+	local trainer_text=callbacks.shown.text
 	for _, price in ipairs(grug_mounts.PRICES) do
 		assert(trainer_text:find("Buy " .. price .. "c", 1, true))
 	end

@@ -38,6 +38,7 @@
 
 local function loader(directory)
 	local parts = dofile(directory .. "/parts.lua")
+	local services = dofile(directory .. "/capital_services.lua")
 	local palettes = dofile(directory .. "/palette.lua")
 	local buildings = dofile(directory .. "/buildings.lua")(directory)
 	local capitals = dofile(directory .. "/capitals.lua")(directory)
@@ -164,6 +165,9 @@ local function loader(directory)
 		local spec = {}
 		for key, value in pairs(plot.spec or {}) do spec[key] = value end
 		spec.id = plot.id
+		if services.service("kezamba", plot.id) == "riding" then
+			spec.w, spec.d, spec.wall_h, spec.roof, spec.rise = 21, 17, 5, "gable", 4
+		end
 
 		local part, turns, rw, rd, ox, oz
 		local x0, z0, x1, z1
@@ -310,6 +314,7 @@ local function loader(directory)
 			entry.dir = {x = dx, z = dz}
 		end
 
+		services.decorate("kezamba", plot.id, buf, palette, sockets)
 		parts.resolve_panes(buf)
 
 		local source, count = buf:cells()

@@ -167,7 +167,7 @@ need small amounts of leather for some recipes, Alchemists a bit for
 their alchemist gear — trade, not self-sufficiency.
 
 Added 2026-08-07, the same pattern in the other direction: **the
-Woodcarver buys metal fittings from the Weaponsmith.** Every caster weapon
+Woodcarver buys metal fittings from the Weaponsmith.** Professional refinement of every caster weapon
 from T2 up needs a Weaponsmith-made fitting of its own tier
 (`items_crafting.md` §3.6a) — the §3.2 family is literally called
 "metal-shod staff".

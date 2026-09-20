@@ -44,6 +44,7 @@
 -- union compared to the whole.
 
 return function(repo)
+	local public_socket=dofile(repo.."/tools/r10_cap/public_socket_oracle.lua")
 	local wp13 = repo .. "/mods/MAPGEN/grug_mapgen/wp13"
 	local wp40 = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
 	local parts = dofile(wp13 .. "/parts.lua")
@@ -235,6 +236,8 @@ return function(repo)
 	-- shared helpers
 	-- ------------------------------------------------------------------
 
+	FEATURE.carve["grug_jobs:carving_bench"]=true
+
 	local function index_cells(cells)
 		local at = {}
 		for index = 1, #cells do
@@ -300,7 +303,9 @@ return function(repo)
 			-- every socket of this capital stands on a cell of its own
 			-- composition, which is what makes this test meaningful.
 			for _, level in ipairs({entry.y, entry.y + 1}) do
-				assert(not occupied(entry.x, level, entry.z), label ..
+				assert((level==entry.y and public_socket(entry,
+					(cell_at(entry.x,level,entry.z) or {}).name)) or
+					not occupied(entry.x, level, entry.z), label ..
 					": the socket " .. entry.id .. " is blocked at y " .. level)
 			end
 			local below = cell_at(entry.x, entry.y - 1, entry.z)
@@ -489,8 +494,8 @@ return function(repo)
 		CORE_BUDGET)
 	do
 		local L = core.landmarks
-		assert(L.palisade_columns == 226, "the core's dry palisade has " ..
-			tostring(L.palisade_columns) .. " columns, not 226")
+		assert(L.palisade_columns == 238, "the core's dry palisade has " ..
+			tostring(L.palisade_columns) .. " columns, not 238")
 		local at = index_cells(core.cells)
 		local function cell_at(x, y, z) return at[x .. ":" .. y .. ":" .. z] end
 
@@ -602,8 +607,8 @@ return function(repo)
 			"ground under the anchor")
 
 		-- The four gate mouths stand on the pad and are walkable.
-		for _, gate in ipairs({{"gate_south", 0, -47}, {"gate_north", 0, 47},
-				{"gate_west", -47, 0}, {"gate_east", 47, 0}}) do
+		for _, gate in ipairs({{"gate_south", 0, -49}, {"gate_north", 0, 49},
+				{"gate_west", -49, 0}, {"gate_east", 49, 0}}) do
 			local landmark = L[gate[1]]
 			assert(type(landmark) == "table" and landmark.x == gate[2] and
 				landmark.z == gate[3],

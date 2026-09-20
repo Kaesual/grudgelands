@@ -5,7 +5,8 @@
 -- exact upstream commits and LICENSE-media.md for per-file media provenance.
 -- Mechanics are NOT harvested: this mod registers no crafts, no ABMs, no LBMs,
 -- no node timers, no formspecs and no inventories, and it never writes nodes at
--- runtime. Every node here is an ordinary decorative, diggable node.
+-- runtime. The ordinary kit is diggable; capital service props are intrinsically
+-- immutable and have no item/drop route (capital.lua).
 --
 -- `_grug_sell_price` is deliberately unset (0 = not sellable); decorative
 -- crafting is owned by a later work package.
@@ -19,3 +20,5 @@ dofile(modpath .. "/castle.lua")
 dofile(modpath .. "/cottages.lua")
 dofile(modpath .. "/darkage.lua")
 dofile(modpath .. "/xdecor.lua")
+
+dofile(modpath .. "/capital.lua")

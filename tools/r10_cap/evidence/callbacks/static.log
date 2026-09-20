@@ -1,0 +1,62 @@
+parser PASS mods/BASE/default/furnace.lua
+parser PASS mods/CORE/grug_core/settlement_sockets.lua
+parser PASS mods/ENTITIES/grug_mobs/capital_displays.lua
+parser PASS mods/ENTITIES/grug_mobs/init.lua
+	2	[1]	SETGLOBAL	0 -1	; grug_mobs
+parser PASS mods/ENTITIES/grug_mobs/start_npcs.lua
+parser PASS mods/ENTITIES/grug_mobs/start_villagers.lua
+parser PASS mods/ITEMS/grug_alchemy/recipes.lua
+parser PASS mods/ITEMS/grug_decor/capital.lua
+parser PASS mods/ITEMS/grug_decor/init.lua
+	2	[14]	SETGLOBAL	0 -1	; grug_decor
+parser PASS mods/PLAYER/grug_jobs/registry.lua
+parser PASS mods/PLAYER/grug_jobs/state.lua
+parser PASS mods/PLAYER/grug_jobs/station_nodes.lua
+parser PASS mods/PLAYER/grug_jobs/stations.lua
+parser PASS mods/PLAYER/grug_jobs/trainers.lua
+parser PASS mods/PLAYER/grug_mounts/catalog.lua
+parser PASS mods/PLAYER/grug_mounts/trainer.lua
+parser PASS tools/r10_cap/furnace_micro.lua
+	2	[18]	SETGLOBAL	0 -1	; ItemStack
+	80	[57]	SETGLOBAL	9 -10	; core
+	99	[71]	SETGLOBAL	9 -39	; default
+	101	[72]	SETGLOBAL	9 -47	; grug_items
+	103	[72]	SETGLOBAL	9 -48	; grug_brewing
+	107	[72]	SETGLOBAL	9 -49	; grug_jobs
+	111	[73]	SETGLOBAL	9 -51	; vector
+	115	[74]	SETGLOBAL	9 -53	; grug_xp
+	122	[76]	SETGLOBAL	9 -55	; grug_core
+parser PASS tools/r10_cap/services_micro.lua
+	70	[27]	SETGLOBAL	11 -16	; core
+	74	[31]	SETGLOBAL	11 -34	; grug_core
+	78	[32]	SETGLOBAL	11 -36	; grug_factions
+	82	[33]	SETGLOBAL	11 -38	; grug_xp
+	86	[34]	SETGLOBAL	11 -40	; grug_money
+	97	[37]	SETGLOBAL	11 -43	; grug_mounts
+	118	[40]	SETGLOBAL	13 -52	; grug_mobs
+	124	[41]	SETGLOBAL	13 -54	; mobs
+	446	[85]	SETGLOBAL	20 -100	; grug_gear
+parser PASS tools/wp40/quality/final_micro.lua
+parser PASS mods/PLAYER/grug_mounts/init.lua
+	2	[3]	SETGLOBAL	0 -1	; grug_mounts
+parser PASS mods/PLAYER/grug_mounts/state.lua
+parser PASS mods/PLAYER/grug_mounts/items.lua
+parser PASS mods/PLAYER/grug_money/init.lua
+	2	[1]	SETGLOBAL	0 -1	; grug_money
+parser PASS tools/r10_cap/purchase_micro.lua
+	18	[27]	SETGLOBAL	1 -8	; ItemStack
+	67	[67]	SETGLOBAL	5 -15	; core
+	73	[68]	SETGLOBAL	5 -31	; grug_mobs
+	78	[69]	SETGLOBAL	5 -34	; mobs
+	84	[72]	SETGLOBAL	5 -36	; grug_core
+	90	[74]	SETGLOBAL	5 -39	; grug_factions
+	96	[76]	SETGLOBAL	5 -42	; grug_classes
+	100	[77]	SETGLOBAL	5 -45	; grug_xp
+	150	[87]	SETGLOBAL	9 -63	; grug_mounts
+	428	[127]	SETGLOBAL	14 -102	; grug_jobs
+SWEEP 1 (review any comment/tool-only hits)
+SWEEP 2 (review any comment/tool-only hits)
+SWEEP 3 (review any comment/tool-only hits)
+SWEEP 4 (review any comment/tool-only hits)
+mods/ENTITIES/grug_mobs/init.lua:69:--   def._grug_tier        — "normal" (default) | "elite" | "rare" | "boss"
+SWEEP 5 (review any comment/tool-only hits)

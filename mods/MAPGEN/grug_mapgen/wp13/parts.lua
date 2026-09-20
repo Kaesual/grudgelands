@@ -78,6 +78,14 @@ local PARAM2_KIND = {
 	["xpanes:pane_flat"] = M.FACEDIR,
 	["xpanes:bar_flat"] = M.FACEDIR,
 	["xpanes:obsidian_pane_flat"] = M.FACEDIR,
+	-- Authored public stations retain their front through district rotation.
+	["default:furnace"] = M.FACEDIR,
+	["grug_brewing:brewing_stand"] = M.FACEDIR,
+	["grug_jobs:forge"] = M.FACEDIR,
+	["grug_jobs:tailor_bench"] = M.FACEDIR,
+	["grug_jobs:tanning_rack"] = M.FACEDIR,
+	["grug_jobs:carving_bench"] = M.FACEDIR,
+	["grug_jobs:jewellers_bench"] = M.FACEDIR,
 	-- static decor furniture whose front tile faces the room
 	["grug_decor:xdecor_barrel"] = M.FACEDIR,
 	["grug_decor:xdecor_empty_shelf"] = M.FACEDIR,
@@ -273,6 +281,7 @@ end
 -- only nodes that read as a wall. A nodebox, a mesh, a plant or a pane is
 -- not one of them, and neither is a full cube that light passes through.
 local FULL_SOLID = {
+	["default:furnace"] = true,
 	["default:acacia_tree"] = true,
 	["default:acacia_wood"] = true,
 	["default:brick"] = true,
