@@ -65,15 +65,39 @@ return function(repo, production_repo, check_composition, compact)
 	local planner = planner_module.new(source, manifest, lookup, allocator, identity)
 	allocator:seal_construction()
 
-	local loader = dofile(repo .. "/tools/wp40/r6/offline.lua")(repo, production_repo)
-	local contract, cids = loader.fixtures.new_content_contract()
-	local stone = assert(cids["default:stone"])
-	local heightmap = loader.heightmap(-31007)
+	local contract, stone, heightmap, context, common, raw_sha256, vm_module
+	if compact then
+		-- The compact composition test needs catalog semantics, not compressed
+		-- MTS voxels. Reuse the existing portable header-only catalog fixture;
+		-- offline.lua eagerly decodes MTS with FFI and is LuaJIT-only.
+		local _, content = dofile(repo .. "/tools/wp40/quality/surface_fixture.lua")(repo)
+		contract = content.content_contract()
+		stone = assert(contract.content_cids[content.content_ref("default:stone")])
+		heightmap = {}
+		for index = 1, 6400 do heightmap[index] = -31007 end
+		context = {schema = "grug_wp40_r5_mapgen_context_v1"}
+		function context.get_heightmap() return heightmap end
+		function context.metrics()
+			return {heightmap_fetch_calls = 0, heightmap_external_table_allocations = 0,
+				metrics_result_table_allocations = 0}
+		end
+		common = dofile(repo .. "/tools/wp40/r6/common.lua")
+		raw_sha256 = common.new_sha256()
+		vm_module = dofile(repo .. "/tools/wp40/simple_map_r5_vm.lua")
+	else
+		local loader = dofile(repo .. "/tools/wp40/r6/offline.lua")(repo, production_repo)
+		local cids
+		contract, cids = loader.fixtures.new_content_contract()
+		stone = assert(cids["default:stone"])
+		heightmap = loader.heightmap(-31007)
+		context = loader.fixtures.context(heightmap)
+		common, raw_sha256, vm_module = loader.common, loader.raw_sha256, loader.vm_module
+	end
 	local adapter_allocator = allocator_factory.new("grug_wp40_r5_adapter_allocator_v1")
 	local adapter_module = dofile(production_repo ..
 		"/mods/MAPGEN/grug_mapgen/wp40/map_adapter.lua")(allocator_factory)
 	local adapter = adapter_module.new(manifest, contract.r5,
-		loader.fixtures.context(heightmap), adapter_allocator, identity)
+		context, adapter_allocator, identity)
 	adapter_allocator:seal_construction()
 	local rows = {}
 	local function digest(values)
@@ -86,7 +110,7 @@ return function(repo, production_repo, check_composition, compact)
 			end
 		end
 		blocks[#blocks + 1] = table.concat(parts)
-		return loader.common.hex(loader.raw_sha256(table.concat(blocks)))
+		return common.hex(raw_sha256(table.concat(blocks)))
 	end
 	for case = 1, compact and 1 or 3 do
 		local minp = {x = -32, y = case == 1 and 48 or -4, z = -32}
@@ -106,14 +130,14 @@ return function(repo, production_repo, check_composition, compact)
 			end
 		end
 		assert(#data == ex * ey * ez)
-		local vm, _, observer = loader.vm_module.new({minp = minp, maxp = maxp,
+		local vm, _, observer = vm_module.new({minp = minp, maxp = maxp,
 			data = data, param2 = param2, light = light, heightmap = heightmap,
 			content_contract = contract, water_level = 1,
 			ignore_cid = contract.ignore_cid, verify_inactive_tail = false})
 		local result = adapter:apply(vm, minp, maxp, plan, generation, "offline_fixture")
 		local snapshot, metrics = observer.snapshot(), adapter:metrics()
 		if check_composition then
-			local deferred, _, deferred_observer = loader.vm_module.new({
+			local deferred, _, deferred_observer = vm_module.new({
 				minp = minp, maxp = maxp, data = data, param2 = param2, light = light,
 				heightmap = heightmap, content_contract = contract, water_level = 1,
 				ignore_cid = contract.ignore_cid, verify_inactive_tail = false})
