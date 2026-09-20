@@ -1,0 +1,46 @@
+[
+  {
+    "capital": "gor_drazhak",
+    "label": "avenue",
+    "sha256": "be42065870a0ad4d9c0ff86f0bf3d994639092113ccbb7336436af580554ff3c",
+    "count": 15462,
+    "expected_sha256": "b5d947a639e85d56a1de207474257d35cf5e14a0018513ce3b8e92c835bd7714",
+    "expected_count": 15549,
+    "extras": 11853,
+    "old_write_conflicts": 35,
+    "match": false
+  },
+  {
+    "capital": "gor_drazhak",
+    "label": "rampart",
+    "sha256": "6a3d9219d83fa9b95c0ca3aaa3dff7bd665e4dc82e4e8ff6a8e2bdea6a477ac5",
+    "count": 10685,
+    "expected_sha256": "6a3d9219d83fa9b95c0ca3aaa3dff7bd665e4dc82e4e8ff6a8e2bdea6a477ac5",
+    "expected_count": 10685,
+    "extras": 105,
+    "old_write_conflicts": 0,
+    "match": true
+  },
+  {
+    "capital": "gor_drazhak",
+    "label": "corner",
+    "sha256": "9d30229d372804d2a87440b73f1da5cbe2b24345e9f9c3a4a43dcde32834b7a1",
+    "count": 10798,
+    "expected_sha256": "9d30229d372804d2a87440b73f1da5cbe2b24345e9f9c3a4a43dcde32834b7a1",
+    "expected_count": 10798,
+    "extras": 3046,
+    "old_write_conflicts": 0,
+    "match": true
+  },
+  {
+    "capital": "lethariel",
+    "label": "avenue",
+    "sha256": "73c663c604a76e74cd13caf8229f8ea74d9336b8245b32f282e4710e3be65fb4",
+    "count": 4849,
+    "expected_sha256": "a0d99054886bfb13cd7db3ed561f9261740d79810b2d2beda01e5c685a9e6f9c",
+    "expected_count": 4887,
+    "extras": 1922,
+    "old_write_conflicts": 18,
+    "match": false
+  }
+]

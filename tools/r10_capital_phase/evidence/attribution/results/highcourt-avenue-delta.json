@@ -1,0 +1,11440 @@
+[
+  {
+    "position": [
+      41,
+      -2,
+      -6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      -2,
+      -5
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      -2,
+      -4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      -2,
+      -3
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      -2,
+      -2
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      -2,
+      -1
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      -2,
+      0
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      -2,
+      1
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      -2,
+      2
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      -2,
+      3
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      -2,
+      4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      -2,
+      5
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      -2,
+      6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      -1,
+      -6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      -1,
+      -5
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      -1,
+      -4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      -1,
+      -3
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      -1,
+      -2
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      -1,
+      -1
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      -1,
+      0
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      -1,
+      1
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      -1,
+      2
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      -1,
+      3
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      -1,
+      4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      -1,
+      5
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      -1,
+      6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      0,
+      -6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      0,
+      -5
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      0,
+      -4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      0,
+      -3
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      0,
+      -2
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      0,
+      -1
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      0,
+      0
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      0,
+      1
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      0,
+      2
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      0,
+      3
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      0,
+      4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      0,
+      5
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      0,
+      6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      1,
+      -6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      1,
+      -4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      1,
+      -3
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      1,
+      3
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      1,
+      4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      1,
+      6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      2,
+      -6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      2,
+      -4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      2,
+      -3
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      2,
+      3
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      2,
+      4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      2,
+      6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      4,
+      -6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      4,
+      -5
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      4,
+      -4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      4,
+      -3
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      4,
+      3
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      4,
+      4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      4,
+      5
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      4,
+      6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      5,
+      -6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      5,
+      -5
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      5,
+      -4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      5,
+      -3
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      5,
+      -2
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      5,
+      2
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      5,
+      3
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      5,
+      4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      5,
+      5
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      5,
+      6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      6,
+      -6
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      6,
+      -5
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      6,
+      -4
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      6,
+      -3
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      6,
+      -2
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      6,
+      -1
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      6,
+      0
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      6,
+      1
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      6,
+      2
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      6,
+      3
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      6,
+      4
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      6,
+      5
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      6,
+      6
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      7,
+      -6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      7,
+      -5
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      7,
+      -4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      7,
+      -3
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      7,
+      -2
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      7,
+      -1
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      7,
+      0
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      7,
+      1
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      7,
+      2
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      7,
+      3
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      7,
+      4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      7,
+      5
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      7,
+      6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      8,
+      -6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      8,
+      -5
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      8,
+      -4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      8,
+      -2
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      8,
+      -1
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      8,
+      1
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      8,
+      2
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      8,
+      4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      8,
+      5
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      8,
+      6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      9,
+      -6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      9,
+      -5
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      9,
+      -4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      9,
+      -2
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      9,
+      -1
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      9,
+      1
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      9,
+      2
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      9,
+      4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      9,
+      5
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      41,
+      9,
+      6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      -2,
+      -6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      -2,
+      -5
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      -2,
+      -4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      -2,
+      -3
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      -2,
+      -2
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      -2,
+      -1
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      -2,
+      0
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      -2,
+      1
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      -2,
+      2
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      -2,
+      3
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      -2,
+      4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      -2,
+      5
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      -2,
+      6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      -1,
+      -6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      -1,
+      -5
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      -1,
+      -4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      -1,
+      -3
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      -1,
+      -2
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      -1,
+      -1
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      -1,
+      0
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      -1,
+      1
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      -1,
+      2
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      -1,
+      3
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      -1,
+      4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      -1,
+      5
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      -1,
+      6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      0,
+      -6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      0,
+      -5
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      0,
+      -4
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      0,
+      -3
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      0,
+      -2
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      0,
+      -1
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      0,
+      0
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      0,
+      1
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      0,
+      2
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      0,
+      3
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      0,
+      4
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      0,
+      5
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      0,
+      6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      1,
+      -6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      1,
+      -3
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      1,
+      3
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      1,
+      6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      2,
+      -6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      2,
+      -3
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      2,
+      3
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      2,
+      6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      3,
+      -3
+    ],
+    "old": [
+      "grug_decor:castle_arrowslit_stonebrick",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      3,
+      3
+    ],
+    "old": [
+      "grug_decor:castle_arrowslit_stonebrick",
+      "2"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      4,
+      -6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      4,
+      -5
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      4,
+      -4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      4,
+      -3
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      4,
+      3
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      4,
+      4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      4,
+      5
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      4,
+      6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      5,
+      -6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      5,
+      -5
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      5,
+      -4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      5,
+      -3
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      5,
+      -2
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      5,
+      2
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      5,
+      3
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      5,
+      4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      5,
+      5
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      5,
+      6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      6,
+      -6
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      6,
+      -5
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      6,
+      -4
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      6,
+      -3
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      6,
+      -2
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      6,
+      -1
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      6,
+      0
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      6,
+      1
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      6,
+      2
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      6,
+      3
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      6,
+      4
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      6,
+      5
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      6,
+      6
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      7,
+      -6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      7,
+      -4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      7,
+      6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      8,
+      -6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      8,
+      -3
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      8,
+      6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      9,
+      -6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      9,
+      -2
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      9,
+      6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      42,
+      10,
+      -1
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      0,
+      -5
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      0,
+      -4
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      0,
+      4
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      0,
+      5
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      1,
+      -4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      1,
+      4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      2,
+      -4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      2,
+      4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      7,
+      -6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      7,
+      -5
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      7,
+      -4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      7,
+      -3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      7,
+      -2
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      7,
+      -1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      7,
+      0
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      7,
+      1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      7,
+      2
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      7,
+      3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      7,
+      4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      7,
+      5
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      7,
+      6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      8,
+      -6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      8,
+      -5
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      8,
+      -4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      8,
+      -2
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      8,
+      -1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      8,
+      1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      8,
+      2
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      8,
+      4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      8,
+      5
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      8,
+      6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      9,
+      -5
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      9,
+      -4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      9,
+      -2
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      9,
+      -1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      9,
+      1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      9,
+      2
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      9,
+      4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      43,
+      9,
+      5
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      44,
+      3,
+      -3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_arrowslit_stonebrick",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      44,
+      3,
+      3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_arrowslit_stonebrick",
+      "2"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      44,
+      7,
+      -6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      44,
+      7,
+      -4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      44,
+      7,
+      6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      44,
+      8,
+      -6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      44,
+      8,
+      -3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      44,
+      8,
+      6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      44,
+      9,
+      -2
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      44,
+      10,
+      -1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      46,
+      3,
+      -5
+    ],
+    "old": [
+      "default:torch_wall",
+      "2"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      46,
+      3,
+      -3
+    ],
+    "old": [
+      "grug_decor:castle_arrowslit_stonebrick",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      46,
+      3,
+      3
+    ],
+    "old": [
+      "grug_decor:castle_arrowslit_stonebrick",
+      "2"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      46,
+      3,
+      5
+    ],
+    "old": [
+      "default:torch_wall",
+      "2"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      46,
+      4,
+      -2
+    ],
+    "old": [
+      "default:torch_wall",
+      "5"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      46,
+      4,
+      2
+    ],
+    "old": [
+      "default:torch_wall",
+      "4"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      46,
+      7,
+      -6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      46,
+      7,
+      6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      46,
+      8,
+      -6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      46,
+      8,
+      6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      0,
+      -5
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      0,
+      -4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      0,
+      4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      0,
+      5
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      1,
+      -5
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      1,
+      -4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      1,
+      4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      1,
+      5
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      2,
+      -5
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      2,
+      -4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      2,
+      4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      2,
+      5
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      7,
+      -6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      7,
+      -5
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      7,
+      -4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      7,
+      -3
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      7,
+      -2
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      7,
+      -1
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      7,
+      0
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      7,
+      1
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      7,
+      2
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      7,
+      3
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      7,
+      4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      7,
+      5
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      7,
+      6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      8,
+      -6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      8,
+      -5
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      8,
+      -4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      8,
+      -3
+    ],
+    "old": [
+      "grug_decor:castle_arrowslit_stonebrick",
+      "1"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      8,
+      -2
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      8,
+      -1
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      8,
+      0
+    ],
+    "old": [
+      "grug_decor:castle_arrowslit_stonebrick",
+      "1"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      8,
+      1
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      8,
+      2
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      8,
+      3
+    ],
+    "old": [
+      "grug_decor:castle_arrowslit_stonebrick",
+      "1"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      8,
+      4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      8,
+      5
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      8,
+      6
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      9,
+      -5
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      9,
+      -4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      9,
+      -3
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      9,
+      -2
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      9,
+      -1
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      9,
+      0
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      9,
+      1
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      9,
+      2
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      9,
+      3
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      9,
+      4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      47,
+      9,
+      5
+    ],
+    "old": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "new": null,
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      -2,
+      -6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      -2,
+      -5
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      -2,
+      -4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      -2,
+      -3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      -2,
+      -2
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      -2,
+      -1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      -2,
+      0
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      -2,
+      1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      -2,
+      2
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      -2,
+      3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      -2,
+      4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      -2,
+      5
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      -2,
+      6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      -1,
+      -6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      -1,
+      -5
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      -1,
+      -4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      -1,
+      -3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      -1,
+      -2
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      -1,
+      -1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      -1,
+      0
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      -1,
+      1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      -1,
+      2
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      -1,
+      3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      -1,
+      4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      -1,
+      5
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      -1,
+      6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      0,
+      -6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      0,
+      -5
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      0,
+      -4
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      0,
+      -3
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      0,
+      -2
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      0,
+      2
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      0,
+      3
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      0,
+      4
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      0,
+      5
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      0,
+      6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      1,
+      -6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      1,
+      -3
+    ],
+    "old": [
+      "default:tree",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      1,
+      3
+    ],
+    "old": [
+      "default:tree",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      1,
+      6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      2,
+      -6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      2,
+      -3
+    ],
+    "old": [
+      "default:tree",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      2,
+      3
+    ],
+    "old": [
+      "default:tree",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      2,
+      6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      3,
+      -5
+    ],
+    "old": null,
+    "new": [
+      "default:torch_wall",
+      "2"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      3,
+      -3
+    ],
+    "old": [
+      "default:torch",
+      "1"
+    ],
+    "new": [
+      "grug_decor:castle_arrowslit_stonebrick",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      3,
+      3
+    ],
+    "old": [
+      "default:torch",
+      "1"
+    ],
+    "new": [
+      "grug_decor:castle_arrowslit_stonebrick",
+      "2"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      3,
+      5
+    ],
+    "old": null,
+    "new": [
+      "default:torch_wall",
+      "2"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      4,
+      -6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      4,
+      -5
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      4,
+      -4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      4,
+      -3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      4,
+      -2
+    ],
+    "old": null,
+    "new": [
+      "default:torch_wall",
+      "5"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      4,
+      2
+    ],
+    "old": null,
+    "new": [
+      "default:torch_wall",
+      "4"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      4,
+      3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      4,
+      4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      4,
+      5
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      4,
+      6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      5,
+      -6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      5,
+      -5
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      5,
+      -4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      5,
+      -3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      5,
+      -2
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      5,
+      2
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      5,
+      3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      5,
+      4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      5,
+      5
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      5,
+      6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      6,
+      -6
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      6,
+      -5
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      6,
+      -4
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      6,
+      -3
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      6,
+      -2
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      6,
+      -1
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      6,
+      0
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      6,
+      1
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      6,
+      2
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      6,
+      3
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      6,
+      4
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      6,
+      5
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      6,
+      6
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      7,
+      -6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      7,
+      6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      8,
+      -6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      8,
+      6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      9,
+      -6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      48,
+      9,
+      6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      -2,
+      -6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      -2,
+      -5
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      -2,
+      -4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      -2,
+      -3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      -2,
+      -2
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      -2,
+      -1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      -2,
+      0
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      -2,
+      1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      -2,
+      2
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      -2,
+      3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      -2,
+      4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      -2,
+      5
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      -2,
+      6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      -1,
+      -6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      -1,
+      -5
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      -1,
+      -4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      -1,
+      -3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      -1,
+      -2
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      -1,
+      -1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      -1,
+      0
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      -1,
+      1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      -1,
+      2
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      -1,
+      3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      -1,
+      4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      -1,
+      5
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      -1,
+      6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      0,
+      -6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      0,
+      -5
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      0,
+      -4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      0,
+      -3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      0,
+      -2
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      0,
+      2
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      0,
+      3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      0,
+      4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      0,
+      5
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      0,
+      6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      1,
+      -6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      1,
+      -5
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      1,
+      -4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      1,
+      -3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      1,
+      3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      1,
+      4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      1,
+      5
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      1,
+      6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      2,
+      -6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      2,
+      -5
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      2,
+      -4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      2,
+      -3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      2,
+      3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      2,
+      4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      2,
+      5
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      2,
+      6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      4,
+      -6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      4,
+      -5
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      4,
+      -4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      4,
+      -3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      4,
+      3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      4,
+      4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      4,
+      5
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      4,
+      6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      5,
+      -6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      5,
+      -5
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      5,
+      -4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      5,
+      -3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      5,
+      -2
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      5,
+      2
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      5,
+      3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      5,
+      4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      5,
+      5
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      5,
+      6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      6,
+      -6
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      6,
+      -5
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      6,
+      -4
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      6,
+      -3
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      6,
+      -2
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      6,
+      -1
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      6,
+      0
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      6,
+      1
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      6,
+      2
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      6,
+      3
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      6,
+      4
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      6,
+      5
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      6,
+      6
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      7,
+      -6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      7,
+      -5
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      7,
+      -4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      7,
+      -3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      7,
+      -2
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      7,
+      -1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      7,
+      0
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      7,
+      1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      7,
+      2
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      7,
+      3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      7,
+      4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      7,
+      5
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      7,
+      6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      8,
+      -6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      8,
+      -5
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      8,
+      -4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      8,
+      -3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_arrowslit_stonebrick",
+      "1"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      8,
+      -2
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      8,
+      -1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      8,
+      0
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_arrowslit_stonebrick",
+      "1"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      8,
+      1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      8,
+      2
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      8,
+      3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_arrowslit_stonebrick",
+      "1"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      8,
+      4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      8,
+      5
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      8,
+      6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      9,
+      -6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      9,
+      -5
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      9,
+      -4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      9,
+      -3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      9,
+      -2
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      9,
+      -1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      9,
+      0
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      9,
+      1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      9,
+      2
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      9,
+      3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      9,
+      4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      9,
+      5
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      49,
+      9,
+      6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall",
+      "0"
+    ],
+    "category": "accepted_inner_projection"
+  },
+  {
+    "position": [
+      124,
+      2,
+      2
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      125,
+      2,
+      1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      125,
+      2,
+      2
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      126,
+      2,
+      0
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      126,
+      2,
+      1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      126,
+      2,
+      2
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      126,
+      3,
+      2
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      126,
+      4,
+      -3
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      126,
+      4,
+      3
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      126,
+      5,
+      -3
+    ],
+    "old": null,
+    "new": [
+      "default:fence_wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      126,
+      5,
+      3
+    ],
+    "old": null,
+    "new": [
+      "default:fence_wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      127,
+      2,
+      -1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      127,
+      2,
+      0
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      127,
+      2,
+      1
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      127,
+      2,
+      2
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      127,
+      3,
+      1
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      127,
+      3,
+      2
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      127,
+      4,
+      -3
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      127,
+      4,
+      3
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      127,
+      5,
+      -3
+    ],
+    "old": null,
+    "new": [
+      "default:fence_wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      127,
+      5,
+      3
+    ],
+    "old": null,
+    "new": [
+      "default:fence_wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      128,
+      -2,
+      3
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      128,
+      2,
+      -1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      128,
+      2,
+      0
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      128,
+      2,
+      1
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      128,
+      3,
+      0
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      128,
+      3,
+      1
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      129,
+      1,
+      -1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      129,
+      2,
+      -2
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      129,
+      2,
+      0
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      130,
+      0,
+      -1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      130,
+      1,
+      -2
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      130,
+      1,
+      -1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      131,
+      -1,
+      0
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      131,
+      -1,
+      1
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      131,
+      0,
+      0
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      131,
+      0,
+      1
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      132,
+      -2,
+      -1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      132,
+      -2,
+      1
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      132,
+      -2,
+      2
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      132,
+      -1,
+      0
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      132,
+      -1,
+      1
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      132,
+      -1,
+      2
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      132,
+      0,
+      -3
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      132,
+      0,
+      3
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      132,
+      1,
+      -3
+    ],
+    "old": null,
+    "new": [
+      "default:fence_wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      132,
+      1,
+      3
+    ],
+    "old": null,
+    "new": [
+      "default:fence_wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      133,
+      -3,
+      -1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      133,
+      -3,
+      0
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      133,
+      -3,
+      2
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      133,
+      -2,
+      -2
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      133,
+      -2,
+      -1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      133,
+      -2,
+      1
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      133,
+      -2,
+      2
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      133,
+      -1,
+      -3
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      133,
+      -1,
+      -2
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "3"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      133,
+      -1,
+      -1
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "3"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      133,
+      -1,
+      0
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "3"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      133,
+      -1,
+      1
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "3"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      133,
+      -1,
+      2
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "3"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      133,
+      -1,
+      3
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      133,
+      0,
+      -3
+    ],
+    "old": null,
+    "new": [
+      "default:fence_wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      133,
+      0,
+      3
+    ],
+    "old": null,
+    "new": [
+      "default:fence_wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      134,
+      -4,
+      0
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      134,
+      -4,
+      1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      134,
+      -4,
+      2
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      134,
+      -3,
+      -2
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      134,
+      -3,
+      -1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      134,
+      -3,
+      0
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      134,
+      -2,
+      -2
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "3"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      134,
+      -2,
+      -1
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "3"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      134,
+      -2,
+      0
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "3"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      134,
+      -2,
+      1
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "3"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      134,
+      -2,
+      2
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "3"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      134,
+      -1,
+      -2
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "3"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      134,
+      -1,
+      -1
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "3"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      134,
+      -1,
+      0
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "3"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      134,
+      -1,
+      1
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "3"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      134,
+      -1,
+      2
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "3"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      135,
+      -4,
+      -1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      135,
+      -4,
+      0
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      135,
+      -4,
+      1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      135,
+      -3,
+      -2
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "3"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      135,
+      -3,
+      -1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "3"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      135,
+      -3,
+      0
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "3"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      135,
+      -3,
+      1
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "3"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      135,
+      -3,
+      2
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "3"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      135,
+      -2,
+      -2
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      135,
+      -2,
+      -1
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      135,
+      -2,
+      0
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      135,
+      -2,
+      1
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      135,
+      -2,
+      2
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      135,
+      -1,
+      -5
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      135,
+      0,
+      -7
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      135,
+      0,
+      -6
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      135,
+      0,
+      -5
+    ],
+    "old": null,
+    "new": [
+      "default:fence_wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      135,
+      1,
+      -8
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      135,
+      1,
+      -7
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": [
+      "default:fence_wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      135,
+      1,
+      -6
+    ],
+    "old": null,
+    "new": [
+      "default:fence_wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      135,
+      2,
+      -10
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      135,
+      2,
+      -8
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": [
+      "default:fence_wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      135,
+      2,
+      -7
+    ],
+    "old": [
+      "default:fence_wood",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      135,
+      3,
+      -10
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": [
+      "default:tree",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      135,
+      3,
+      -8
+    ],
+    "old": [
+      "default:fence_wood",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      135,
+      4,
+      -12
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      135,
+      5,
+      -12
+    ],
+    "old": null,
+    "new": [
+      "default:fence_wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      135,
+      5,
+      -10
+    ],
+    "old": [
+      "default:tree",
+      "0"
+    ],
+    "new": [
+      "default:torch",
+      "1"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      135,
+      6,
+      -10
+    ],
+    "old": [
+      "default:torch",
+      "1"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      136,
+      -5,
+      2
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      136,
+      -4,
+      -2
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      136,
+      -4,
+      -1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      136,
+      -4,
+      0
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      136,
+      -3,
+      -4
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      136,
+      -3,
+      -3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      136,
+      -3,
+      -1
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      136,
+      -3,
+      0
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      136,
+      -3,
+      1
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      136,
+      -3,
+      2
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      136,
+      -3,
+      3
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": [
+      "default:tree",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      136,
+      -2,
+      -5
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      136,
+      -2,
+      -4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      136,
+      -2,
+      -3
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      136,
+      -2,
+      -2
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      136,
+      -2,
+      -1
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      136,
+      -2,
+      0
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      136,
+      -2,
+      1
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      136,
+      -2,
+      2
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      136,
+      -2,
+      3
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": [
+      "default:tree",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      136,
+      -1,
+      -5
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      136,
+      -1,
+      -4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      136,
+      -1,
+      3
+    ],
+    "old": [
+      "default:tree",
+      "0"
+    ],
+    "new": [
+      "default:torch",
+      "1"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      136,
+      0,
+      3
+    ],
+    "old": [
+      "default:tree",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      136,
+      1,
+      -8
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      136,
+      1,
+      -7
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      136,
+      1,
+      3
+    ],
+    "old": [
+      "default:torch",
+      "1"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      136,
+      2,
+      -10
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      136,
+      2,
+      -9
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      136,
+      2,
+      -8
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      136,
+      3,
+      -11
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      136,
+      3,
+      -10
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      137,
+      -5,
+      1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      137,
+      -4,
+      -3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      137,
+      -4,
+      -2
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      137,
+      -4,
+      -1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      137,
+      -4,
+      2
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      137,
+      -4,
+      3
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      137,
+      -3,
+      -4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      137,
+      -3,
+      -3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      137,
+      -3,
+      -2
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      137,
+      -3,
+      -1
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      137,
+      -3,
+      0
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      137,
+      -3,
+      1
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      137,
+      -3,
+      3
+    ],
+    "old": null,
+    "new": [
+      "default:fence_wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      137,
+      -2,
+      -6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      137,
+      -2,
+      -5
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      137,
+      -2,
+      -4
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      137,
+      -2,
+      -3
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      137,
+      -2,
+      -2
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      137,
+      -2,
+      -1
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      137,
+      -2,
+      0
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      137,
+      -2,
+      1
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      137,
+      -2,
+      2
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      137,
+      -2,
+      3
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      137,
+      -1,
+      -5
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      137,
+      -1,
+      -4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      137,
+      -1,
+      3
+    ],
+    "old": [
+      "default:fence_wood",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      137,
+      1,
+      -9
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      137,
+      1,
+      -8
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      137,
+      1,
+      -7
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      137,
+      2,
+      -11
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      137,
+      2,
+      -9
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      137,
+      2,
+      -8
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      137,
+      3,
+      -11
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      137,
+      3,
+      -10
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      138,
+      -5,
+      0
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      138,
+      -4,
+      -3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      138,
+      -4,
+      -2
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      138,
+      -4,
+      1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      138,
+      -4,
+      2
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      138,
+      -4,
+      3
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      138,
+      -3,
+      -5
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      138,
+      -3,
+      -4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      138,
+      -3,
+      -3
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      138,
+      -3,
+      -2
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      138,
+      -3,
+      -1
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      138,
+      -3,
+      0
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      138,
+      -3,
+      3
+    ],
+    "old": null,
+    "new": [
+      "default:fence_wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      138,
+      -2,
+      -7
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      138,
+      -2,
+      -6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      138,
+      -2,
+      -4
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      138,
+      -2,
+      -3
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      138,
+      -2,
+      -2
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      138,
+      -2,
+      -1
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      138,
+      -2,
+      0
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      138,
+      -2,
+      1
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      138,
+      -2,
+      2
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      138,
+      -2,
+      3
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      138,
+      -1,
+      -5
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      138,
+      -1,
+      -4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      138,
+      -1,
+      3
+    ],
+    "old": [
+      "default:fence_wood",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      138,
+      1,
+      -10
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      138,
+      1,
+      -8
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      138,
+      1,
+      -7
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      138,
+      2,
+      -12
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      138,
+      2,
+      -9
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      138,
+      2,
+      -8
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      138,
+      3,
+      -11
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      138,
+      3,
+      -10
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      139,
+      -5,
+      -1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      139,
+      -4,
+      -4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      139,
+      -4,
+      -3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      139,
+      -4,
+      0
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      139,
+      -4,
+      1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      139,
+      -4,
+      2
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      139,
+      -4,
+      3
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      139,
+      -3,
+      -5
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      139,
+      -3,
+      -3
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      139,
+      -3,
+      -2
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      139,
+      -3,
+      -1
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      139,
+      -3,
+      3
+    ],
+    "old": null,
+    "new": [
+      "default:fence_wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      139,
+      -2,
+      -6
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      139,
+      -2,
+      -4
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      139,
+      -2,
+      -3
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      139,
+      -2,
+      -2
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      139,
+      -2,
+      -1
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      139,
+      -2,
+      0
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      139,
+      -2,
+      1
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      139,
+      -2,
+      2
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      139,
+      -2,
+      3
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      139,
+      -1,
+      -7
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      139,
+      -1,
+      -6
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      139,
+      -1,
+      -5
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      139,
+      -1,
+      -4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      139,
+      -1,
+      3
+    ],
+    "old": [
+      "default:fence_wood",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      139,
+      0,
+      -10
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      139,
+      1,
+      -11
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      139,
+      1,
+      -10
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      139,
+      1,
+      -8
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      139,
+      1,
+      -7
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      139,
+      2,
+      -10
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      139,
+      2,
+      -9
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      139,
+      2,
+      -8
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      139,
+      3,
+      -11
+    ],
+    "old": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      139,
+      3,
+      -10
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      140,
+      -5,
+      -2
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      140,
+      -4,
+      -4
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      140,
+      -4,
+      -1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      140,
+      -4,
+      0
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      140,
+      -4,
+      1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      140,
+      -4,
+      2
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      140,
+      -4,
+      3
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      140,
+      -3,
+      -5
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      140,
+      -3,
+      -3
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      140,
+      -3,
+      -2
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      140,
+      -3,
+      3
+    ],
+    "old": null,
+    "new": [
+      "default:fence_wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      140,
+      -2,
+      -6
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      140,
+      -2,
+      -5
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      140,
+      -2,
+      -4
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      140,
+      -2,
+      -3
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      140,
+      -2,
+      -2
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "3"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      140,
+      -2,
+      -1
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "3"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      140,
+      -2,
+      0
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "3"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      140,
+      -2,
+      1
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "3"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      140,
+      -2,
+      2
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "3"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      140,
+      -2,
+      3
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      140,
+      -1,
+      -6
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      140,
+      -1,
+      -5
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      140,
+      -1,
+      -4
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      140,
+      -1,
+      3
+    ],
+    "old": [
+      "default:fence_wood",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      140,
+      0,
+      -10
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      140,
+      0,
+      -7
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      140,
+      1,
+      -10
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      140,
+      1,
+      -8
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      140,
+      1,
+      -7
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      140,
+      2,
+      -12
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      140,
+      2,
+      -10
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      140,
+      2,
+      -9
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      140,
+      2,
+      -8
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      140,
+      3,
+      -12
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      140,
+      3,
+      -11
+    ],
+    "old": [
+      "default:brick",
+      "0"
+    ],
+    "new": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      140,
+      3,
+      -10
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "2"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      141,
+      -4,
+      -3
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      141,
+      -4,
+      -2
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      141,
+      -4,
+      -1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      141,
+      -4,
+      0
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      141,
+      -4,
+      1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      141,
+      -4,
+      2
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      141,
+      -4,
+      3
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      141,
+      -3,
+      -3
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": [
+      "default:fence_wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      141,
+      -3,
+      -2
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "3"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      141,
+      -3,
+      -1
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "3"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      141,
+      -3,
+      0
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "3"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      141,
+      -3,
+      1
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "3"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      141,
+      -3,
+      2
+    ],
+    "old": [
+      "grug_decor:castle_stonewall_stair",
+      "3"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      141,
+      -3,
+      3
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": [
+      "default:fence_wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      141,
+      -2,
+      -10
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      141,
+      -2,
+      -3
+    ],
+    "old": [
+      "default:fence_wood",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      141,
+      -2,
+      3
+    ],
+    "old": [
+      "default:fence_wood",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      141,
+      -1,
+      -5
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      141,
+      0,
+      -7
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      141,
+      0,
+      -6
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      141,
+      0,
+      -5
+    ],
+    "old": null,
+    "new": [
+      "default:fence_wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      141,
+      1,
+      -8
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      141,
+      1,
+      -7
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": [
+      "default:fence_wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      141,
+      1,
+      -6
+    ],
+    "old": null,
+    "new": [
+      "default:fence_wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      141,
+      2,
+      -8
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": [
+      "default:fence_wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      141,
+      2,
+      -7
+    ],
+    "old": [
+      "default:fence_wood",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      141,
+      3,
+      -10
+    ],
+    "old": [
+      "default:wood",
+      "0"
+    ],
+    "new": [
+      "default:tree",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      141,
+      3,
+      -8
+    ],
+    "old": [
+      "default:fence_wood",
+      "0"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      141,
+      4,
+      -12
+    ],
+    "old": null,
+    "new": [
+      "default:wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      141,
+      5,
+      -12
+    ],
+    "old": null,
+    "new": [
+      "default:fence_wood",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      141,
+      5,
+      -10
+    ],
+    "old": [
+      "default:tree",
+      "0"
+    ],
+    "new": [
+      "default:torch",
+      "1"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      141,
+      6,
+      -10
+    ],
+    "old": [
+      "default:torch",
+      "1"
+    ],
+    "new": null,
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      195,
+      -5,
+      8
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      196,
+      -5,
+      7
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      197,
+      -5,
+      6
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      198,
+      -5,
+      5
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      199,
+      -5,
+      3
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      199,
+      -5,
+      4
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      200,
+      -5,
+      2
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      201,
+      -5,
+      1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      202,
+      -5,
+      -1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      202,
+      -5,
+      0
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      203,
+      -5,
+      -2
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      205,
+      -5,
+      2
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      206,
+      -5,
+      2
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      207,
+      -5,
+      1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      207,
+      -5,
+      2
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      208,
+      -5,
+      0
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      208,
+      -5,
+      1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      208,
+      -5,
+      3
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      209,
+      -5,
+      -2
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      209,
+      -5,
+      -1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      209,
+      -5,
+      0
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      209,
+      -5,
+      2
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      210,
+      -5,
+      -2
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      210,
+      -5,
+      0
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      210,
+      -5,
+      1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      211,
+      -5,
+      -1
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      211,
+      -5,
+      0
+    ],
+    "old": null,
+    "new": [
+      "grug_decor:castle_pavement_brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  },
+  {
+    "position": [
+      212,
+      -5,
+      -2
+    ],
+    "old": null,
+    "new": [
+      "default:brick",
+      "0"
+    ],
+    "category": "prior_world_authored_projection"
+  }
+]
