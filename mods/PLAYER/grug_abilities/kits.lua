@@ -515,6 +515,13 @@ grug_abilities.register_ability({
 
 local fireball_action_serial = 0
 
+local function talent_rank_value(user, talent_id, effect_key, fallback)
+	local def = grug_classes.registered_talents[talent_id]
+	local rank = grug_classes.talent_rank(user, talent_id)
+	local values = def and def.effects and def.effects[effect_key]
+	return values and values[rank] or fallback
+end
+
 grug_projectiles.register("fireball", {
 	speed = 20,
 	max_distance = 20,
@@ -537,7 +544,8 @@ grug_projectiles.register("fireball", {
 			{attacker_level = attacker_level, action_id = data.action_id,
 				on_crit = function()
 					grug_classes.try_trigger_talent_window(owner,
-						"whitehot", 8, 120)
+						"whitehot", talent_rank_value(owner, "whitehot",
+							"whitehot_window", 8), 120)
 				end})
 		local splash = data.splash or 0
 		if splash > 0 then
@@ -666,13 +674,15 @@ grug_abilities.register_ability({
 		local slow_time = 3 + grug_classes.get_talent_bonus(user,
 			"frost_nova_slow_add")
 		local radius = ranged > 0 and ranged or 5
+		local action_id = {}
 		for _, obj in ipairs(core.get_objects_inside_radius(pos, radius)) do
 			if grug_abilities.valid_target(user, obj, "hostile") then
 				local control_damage = grug_classes.get_talent_bonus(user,
 					"control_damage_add")
 				if control_damage > 0 then
 					grug_core.deal_ability_damage(user, obj, control_damage
-						+ math.floor(grug_classes.get_spell_power_bonus(user) / 2))
+						+ math.floor(grug_classes.get_spell_power_bonus(user) / 2),
+						{action_id = action_id})
 				end
 				if obj:is_player() then
 					apply_player_speed_stages(obj, {
@@ -846,14 +856,15 @@ grug_abilities.register_ability({
 		end
 		-- Gentle Hand (skill_trees.md §2.5); Hearten's splash is lane X3's.
 		local amount = def.values(user).heal
+		local action_id = {}
 		grug_core.heal_player(user, target, amount,
-			{action_id = {}})
+			{action_id = action_id})
 		local splash = grug_classes.get_talent_bonus(user, "flash_heal_splash")
 		if splash > 0 then
 			for _, obj in ipairs(core.get_objects_inside_radius(target:get_pos(), 8)) do
 				if obj ~= target and grug_abilities.valid_target(user, obj, "friendly") then
 					grug_core.heal_player(user, obj,
-						math.floor(amount * splash / 100), {action_id = {}})
+						math.floor(amount * splash / 100), {action_id = action_id})
 				end
 			end
 		end
@@ -1046,9 +1057,11 @@ grug_abilities.register_ability({
 			+ grug_classes.get_spell_power_bonus(user)
 		local radius = 3 + grug_classes.get_talent_bonus(user,
 			"cinderfall_radius_add")
+		local action_id = {}
 		for _, obj in ipairs(core.get_objects_inside_radius(pos, radius)) do
 			if grug_abilities.valid_target(user, obj, "hostile") then
-				grug_core.deal_ability_damage(user, obj, damage)
+				grug_core.deal_ability_damage(user, obj, damage,
+					{action_id = action_id})
 			end
 		end
 		burst(pos, "mobs_fire_particle.png", 18)
@@ -1087,11 +1100,13 @@ grug_abilities.register_ability({
 		end
 		local damage = grug_classes.get_talent_bonus(user, "word_of_ruin_damage")
 			+ grug_classes.get_spell_power_bonus(user)
-		local dealt = grug_core.deal_ability_damage(user, target, damage)
+		local action_id = {}
+		local dealt = grug_core.deal_ability_damage(user, target, damage,
+			{action_id = action_id})
 		local ratio = grug_classes.get_talent_bonus(user, "drain_ratio_override")
 		if ratio <= 0 then ratio = 50 end
 		grug_core.heal_player(user, user, math.floor(dealt * ratio / 100),
-			{no_crit = true, action_id = {}})
+			{no_crit = true, action_id = action_id})
 		return true
 	end,
 })

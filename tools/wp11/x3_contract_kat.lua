@@ -25,11 +25,12 @@ end
 assert(core:find("function grug_core.add_absorb", 1, true))
 assert(core:find("table.sort(ordered", 1, true), "absorb soak order absent")
 assert(stats:find('"crit_cap_override"', 1, true), "crit cap override absent")
-assert(kits:find('"whitehot", 8, 120', 1, true), "Whitehot trigger absent")
+assert(kits:find('"whitehot_window", 8', 1, true) and
+	kits:find('), 120)', 1, true), "Whitehot trigger absent")
 assert(kits:find("and 6 or 0", 1, true), "Whitehot damage absent")
 
--- Serialized Skills-owner integration gate. The merged candidate must replace
--- this expected failure with the frozen resolved-cost hook before acceptance.
+-- Serialized Skills-owner integration gate: the resolved-cost hook must stay
+-- present when this package is replayed after the frozen Skills candidate.
 local whitehot_cost = abilities:find("whitehot", 1, true) and
 	abilities:find("mana_percent", 1, true)
 assert(whitehot_cost,

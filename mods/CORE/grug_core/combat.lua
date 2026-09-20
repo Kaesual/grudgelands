@@ -1287,10 +1287,17 @@ function grug_core.add_absorb(player, id, amount, duration, source, action_id)
 	local properties = player:get_properties() or {}
 	amount = math.max(0, math.min(amount,
 		(tonumber(properties.hp_max) or amount) - existing))
+	if amount <= 0 then
+		return 0
+	end
 	absorbs[name][id] = {
 		amount = amount,
 		expiry = expiry,
 	}
+	local status_expiry = expiry
+	for _, entry in pairs(absorbs[name]) do
+		status_expiry = math.max(status_expiry, entry.expiry)
+	end
 	for index = 1, #effective_absorb_callbacks do
 		effective_absorb_callbacks[index](source or player, player, amount)
 	end
@@ -1302,7 +1309,7 @@ function grug_core.add_absorb(player, id, amount, duration, source, action_id)
 	if grug_core.set_status then
 		grug_core.set_status(player, "shield", {
 			label = "Shield",
-			expiry_us = expiry,
+			expiry_us = status_expiry,
 			value = function(target)
 				local remaining = grug_core.get_absorb(target)
 				return remaining > 0 and remaining or false
@@ -1310,6 +1317,7 @@ function grug_core.add_absorb(player, id, amount, duration, source, action_id)
 			kind = "buff",
 		})
 	end
+	return amount
 end
 
 function grug_core.set_absorb(player, amount, duration, source, action_id)
@@ -1335,7 +1343,12 @@ function grug_core.get_absorb(player)
 			total = total + entry.amount
 		end
 	end
-	if total <= 0 then absorbs[name] = nil end
+	if total <= 0 then
+		absorbs[name] = nil
+		if grug_core.clear_status then
+			grug_core.clear_status(player, "shield")
+		end
+	end
 	return total
 end
 

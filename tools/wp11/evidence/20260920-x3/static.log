@@ -1,0 +1,21 @@
+== changed parser ==
+mods/PLAYER/grug_abilities/kits.lua PASS
+mods/PLAYER/grug_abilities/init.lua PASS
+mods/PLAYER/grug_classes/stats.lua PASS
+mods/PLAYER/grug_classes/talents.lua PASS
+mods/CORE/grug_core/combat.lua PASS
+tools/wp11/talent_tree_kat.lua PASS
+tools/wp11/x3_behavior_kat.lua PASS
+tools/wp11/x3_contract_kat.lua PASS
+tools/wp11/probe_x3/init.lua PASS
+== SETGLOBAL changed mod files ==
+mods/PLAYER/grug_abilities/kits.lua
+mods/PLAYER/grug_abilities/init.lua
+	2	[6]	SETGLOBAL	0 -1	; grug_abilities
+mods/PLAYER/grug_classes/stats.lua
+mods/PLAYER/grug_classes/talents.lua
+mods/CORE/grug_core/combat.lua
+== full grug mod parser ==
+PASS
+== tools parser ==
+PASS
