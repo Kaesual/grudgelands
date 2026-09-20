@@ -76,3 +76,33 @@ created. No CLI delegation and no Claude in this session.
 
 Each worker writes its own package evidence. No worker may sync, push or merge
 main. Reviews will use a different author from implementation.
+
+### Mid-round checkpoint
+
+- GAME `56148dec`: runtime complete, independent native Sol review initially
+  found same-level preview wording (fixed) and then missing vendor patch ledger
+  (fix in progress). CAP supplied measured move-minimum floor offsets to be
+  integrated before final review. Review `/tmp/grudgelands-r11-game-review.md`;
+  preserve it in repo on acceptance. No GAME merge yet.
+- WORLD-CAP `0ff61733`: SPEC + capital geometry committed. Beach actual cause is
+  fallback coast orientation/run aliasing on diagonal shore lattice sampling,
+  not the initially suspected generic exclusion. Two65×65 witness experiments
+  remove narrow peaks7→0 and9→0; targeted real-planner proof pending.
+- AFF-GEAR SPEC `79d5f304`; runtime/catalog in progress. Owns additionally
+  grug_artisans/{woodcarver,goldsmith,init}.lua and trader stock retired-family
+  consumers. Armor affix totals API `.armor_rating`, shield base `_grug_armor`;
+  COMBAT owns final conversion after GEAR.
+- Root FARM water/hoe slice `e3469484`, worktree `.claude/worktrees/r11-farm`,
+  branch `wp33-r11-farm`: protected ordinary/river bucket and seven repairable
+  hoes, bounded water guard, neutral system mutation API. Real-module LuaJIT
+  water/hoes17crop tests pass under1s each, parser/SETGLOBAL/sweeps pass.
+  Awaiting independent review, ecology/density and integrated engine checks.
+- Root SPEC `16b7449c` introduced farming.md and durability_repair.md, revised
+  world R4/economy/visual rules and derived status/indexes. Other live-spec folds
+  remain on worker branches pending acceptance. Round TODO deletes on integration.
+
+Next: finish GAME findings and independent rereview, release its implementation
+worker to FARM ecology while GEAR continues. WORLD then independent review; ART
+media via new files/patches, not simultaneous registration writes. Later COMBAT,
+REPAIR and SCOUT still required. No partial-package final answer or playtest-ready
+claim; no sync/main/push has occurred in this round.
