@@ -13,7 +13,8 @@ Creative intentionally suppresses wear. Diagnostic setup can use `/giveme`,
 
 ## First-playtest followup checks
 
-The [followup record](round11-playtest-followups.md) covers the additional build.
+The [followup record](round11-playtest-followups.md) covers the additional build,
+merged as `43531fdf`, synchronized and pushed after a clean independent review.
 Restart Luanti after synchronization to load the changed code and media.
 
 - A new Scout receives 200 arrows; inventory and quiver slots accept 200 each.

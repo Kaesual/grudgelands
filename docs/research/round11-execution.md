@@ -1,8 +1,11 @@
 # Round 11 execution checkpoint
 
-**Current followup work:** the first playtest has returned corrections and
-accepted the beach fix. Resume from [playtest followups](round11-playtest-followups.md);
-the checkpoint below records the original Round 11 delivery.
+**Current followup delivery:** main merge `43531fdf` is independently clean,
+synchronized and pushed. All 1,900 installed runtime files match the delivered
+source. The first playtest accepted the beach fix; the additional bow, trainer,
+mount, Sprint and 200-arrow changes await the focused post-restart checks in
+[playtest followups](round11-playtest-followups.md). All workers are finished.
+The checkpoint below records the original Round 11 delivery.
 
 Date: 2026-09-20. Status: **DELIVERED — READY FOR THE NEXT USER PLAYTEST**.
 All Round 11 packages, independent reviews and bounded technical gates are

@@ -1,7 +1,7 @@
 # Round 11 first playtest followups
 
 Date: 2026-09-20. Baseline: `28b118c4` on main.
-Branch: `wp11-playtest-followups`. Status: independently clean; final integration pending.
+Branch: `wp11-playtest-followups`. Status: delivered on main, synchronized and pushed.
 User explicitly authorized fixing these points while continuing the playtest.
 No user world edits; existing fresh-server policy remains. Native Sol workers,
 root orchestration and independent native Sol review; no Claude/own-provider CLI.
@@ -57,9 +57,14 @@ review, then report which changes require restarting Luanti.
 
 ## Delivery checkpoint
 
-All implementation slices are frozen and the [independent review](round11-followup-review.md)
-is PASS with no open findings. Final focused LuaJIT/static gates pass. Main
-merge, synchronization and push remain the final delivery step.
+Implementation commit `706b31e9`, main merge `43531fdf`. The
+[independent review](round11-followup-review.md) is PASS with no open findings;
+final focused LuaJIT/static gates pass. Main is synchronized to the personal
+Luanti game installation and pushed to `Kaesual/grudgelands`. All 1,900 installed
+runtime files match the delivered source byte-for-byte. No user world changed.
+All workers have finished; the next action is the user's post-restart playtest.
+The new exterior Leatherworker plaque applies to newly generated premises;
+normal current-world trainer activation is covered without a world migration.
 
 Calibration: implementers native GPT-5.6 Sol (bow/trainer) and root GPT-6 Astra
 (catalog/ammo/integration); independent reviewer native GPT-5.6 Sol. Zero

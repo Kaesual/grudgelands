@@ -253,7 +253,7 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 
 *Last updated: 2026-09-20. Derived from [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md); Round 11 technical delivery is complete;
-the next fresh-world GUI playtest remains the user acceptance gate.*
+the first playtest and focused followup checks remain the GUI acceptance gate.*
 
 **Shipped foundation:** 23 of 53 tracked identities are complete: WP0–WP4,
 WP6, WP7, WP15, WP18, WP19, WP25, WP26, WP33, WP35, WP36, WP38, WP39, WP40,
@@ -270,6 +270,12 @@ Reported beach columns, dragon persistence, mount orientation, station windows
 and book refresh are corrected; open animated stables and profession displays
 extend all six capitals. Targeted LuaJIT, plain-5.1 static and isolated native
 engine checks pass; PUC runtime was explicitly waived for this round.
+
+The first-playtest [followups](docs/research/round11-playtest-followups.md) add
+directional arrow meshes, bow draw stages, reliable outer-district trainers and
+the requested Sprint/mount speeds. Arrows stack to 200 and new Scouts receive
+200. The beach fix is user-accepted; bow feel still needs GUI confirmation,
+including the documented initial LMB camera gesture.
 
 **In progress:** WP11 still owns the original three classes' remaining X3
 abilities and capstones; Scout completion does not close that broader package.
