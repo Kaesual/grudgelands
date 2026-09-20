@@ -25,7 +25,7 @@ reviewed integrated main build at final delivery.
 | TALENTS | native Sol; consumes frozen Skills eligibility seam | queued |
 | UI / RECIPES | native Sol; shared page/Creative owner | queued |
 | FOOD | root Astra / integration branch | implemented, review queued |
-| POSE | root or native Sol after ART grip conventions | queued |
+| POSE | root Astra / integration branch | implemented, review queued |
 | Independent code/visual reviews | separate non-author agents | queued |
 | UX | independent report-only integrated-candidate audit | queued |
 
@@ -61,3 +61,22 @@ forbidden constructs, 13 unchanged primary reference pins. Evidence in
 The historical R7 combined fixture failed on a pre-existing armor accessor
 lookup before its food checks; it was left unchanged and a focused current
 fixture replaced it for this bounded change. No broader harness repair added.
+
+## POSE candidate and frozen Skills seam
+
+POSE changes only generic third-person/world attachment fallback; explicit
+metadata and existing weapon/tool groups take priority. Real B3D geometry KAT
+and required static gates pass; evidence is under `tools/r12_pose/`. ART retained
+the existing diagonal grip for wands and double-bit Greataxes. Review pending.
+
+SKILLS published entitlement API at worker commit
+`ca55d4a576b82c666aa8f4829b9ae45809a4da8d`: `is_unlocked(player,id)`,
+`unlocked_ids(player)`, `stack_for(player,id)`, `normalize_kit(player)`. TALENTS
+may target this seam but must not concurrently edit abilities init.
+
+Hades research download (not an imported or pinned source):
+`https://content.luanti.org/packages/Wuzzy/hades_revisited/releases/35045/download/`,
+version 0.20.2; archive SHA256
+`332108fbedea5ea74f226c3bdae0ebfe2087d80f6252b06a63c6b2cc0bfa2d6e`.
+No media import is authorized without verified per-file provenance and a
+permanent reference pin; existing pinned alternatives remain preferred.
