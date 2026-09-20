@@ -57,7 +57,7 @@ return function(repo)
 	end
 	local names = {"kat:top", "kat:filler", "kat:shore", "kat:bed",
 		"kat:dust", "kat:ore_a", "kat:ore_b", "kat:ore_c", "kat:template",
-		"kat:tall", "kat:simple", "kat:tier5", "kat:tier6", "kat:tier1"}
+		"kat:tall", "kat:simple", "kat:tier5", "kat:tier6", "kat:tier1", "default:stone"}
 	local cids, masks, refs, classes, param2_kinds = {}, {}, {}, {}, {}
 	for index = 1, #names do
 		refs[names[index]], cids[index] = index, 100 + index
@@ -67,6 +67,7 @@ return function(repo)
 			(index <= 8 and 10 or (index <= 11 and 8 or 11)))
 		param2_kinds[index] = index == 9 and "facedir" or "none"
 	end
+	classes[cids[15]] = 7 -- Actual surface-skin host required by the production writer.
 	classes[0], classes[10], classes[65535] = 1, 4, 3
 	local cid_by_name = {air = 0, ["default:water_source"] = 10}
 	for index = 1, #names do cid_by_name[names[index]] = cids[index] end

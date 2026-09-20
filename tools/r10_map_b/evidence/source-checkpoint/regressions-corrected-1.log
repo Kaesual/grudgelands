@@ -1,0 +1,6 @@
+FAIL	tools/wp40/r6/micro_kat.lua	fail_content_ignore: required light context is ignore
+luajit: (command line):1: assertion failed!
+stack traceback:
+	[C]: in function 'assert'
+	(command line):1: in main chunk
+	[C]: at 0x555bed46db00

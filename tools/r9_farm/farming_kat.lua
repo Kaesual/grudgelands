@@ -1,4 +1,4 @@
-return function(repo)
+return function(repo, observe)
 	local function check(value, message)
 		if not value then error("R9 farming KAT: " .. message, 0) end
 		return value
@@ -36,6 +36,7 @@ return function(repo)
 	}
 
 	local function register_item(name, definition, kind)
+		name = name:gsub("^:", "")
 		definition.name = name
 		definition.type = kind
 		definition.groups = definition.groups or {}
@@ -186,16 +187,22 @@ return function(repo)
 	local saved_default = rawget(_G, "default")
 	local saved_cooking = rawget(_G, "grug_cooking")
 	local saved_farming = rawget(_G, "grug_farming")
+	local saved_nodes = rawget(_G, "grug_nodes")
 	local function restore()
 		rawset(_G, "core", saved_core)
 		rawset(_G, "default", saved_default)
 		rawset(_G, "grug_cooking", saved_cooking)
 		rawset(_G, "grug_farming", saved_farming)
+		rawset(_G, "grug_nodes", saved_nodes)
 	end
 	rawset(_G, "core", core_mock)
 	rawset(_G, "default", default_mock)
 	rawset(_G, "grug_cooking", {PLANTS = cooking_plants})
 	rawset(_G, "grug_farming", nil)
+ rawset(_G, "grug_nodes", {
+  crop_visual = dofile(repo .. "/mods/ITEMS/grug_nodes/crop_visual.lua"),
+  bind_crop_soil_callbacks = dofile(repo .. "/mods/ITEMS/grug_nodes/crop_soil.lua")(core_mock, default),
+ })
 
 	local ok, result = pcall(dofile, repo .. "/mods/ITEMS/grug_farming/init.lua")
 	if not ok then
@@ -432,6 +439,7 @@ return function(repo)
 		"hoe ignored protection")
 
 	for index = 1, #mods_loaded do mods_loaded[index]() end
+	if observe then observe(core_mock, farming, grug_nodes) end
 	restore()
 
 	return table.concat({

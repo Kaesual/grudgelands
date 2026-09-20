@@ -47,7 +47,7 @@ return function(repo)
 			-- green a pad carries. When that test was a substring of a node
 			-- name it silently changed answer as soon as a start introduced
 			-- a soil spelled differently: Dawnmere lost 286 tufts and 139
-			-- bushes to `grug_nodes:tilled_soil` and every fixture stayed
+			-- bushes to `grug_farming:soil` and every fixture stayed
 			-- green. These counts are the assertion that would not have.
 			ground_cover = {{"default:fern_1", 665}, {"default:grass_1", 1982}},
 			carts = 0,
@@ -101,13 +101,13 @@ return function(repo)
 			-- population: a furrow written out of `ground_patch` is the one
 			-- and only name default's "Grass spread" ABM acts on, so the
 			-- fields greened over in the running world while the blueprint
-			-- stayed correct. They are `grug_nodes:tilled_soil` now, which
+			-- stayed correct. They are `grug_farming:soil` now, which
 			-- that ABM cannot reach, and the row below is what says so: the
 			-- pad has to carry a field, not just bare earth between plots.
 			-- 162 worn-earth patches remain, which is what `ground_patch` is
 			-- actually for.
 			ground = {{"default:dirt_with_grass", 6000},
-				{"grug_nodes:tilled_soil", 3000},
+				{"grug_farming:soil", 3000},
 				{"default:dirt", 100}, {"default:gravel", 20}},
 			min_destinations = 9, min_doors = 8, min_rooms = 9,
 			min_lights = 8, min_oriented = 8,
@@ -135,7 +135,7 @@ return function(repo)
 			spare = 3,
 			-- `sit` needs no feature (section 8.1), so only the field is named.
 			features = {
-				farm = {["grug_nodes:tilled_soil"] = true},
+				farm = {["grug_farming:soil"] = true},
 			},
 		},
 		{

@@ -31,6 +31,11 @@ function grug_gathering.cultural_registrations()
 	return catalog.cultural_registrations()
 end
 
+-- Share the existing authorization path with Cooking-owned wild sources.
+function grug_gathering.source_can_dig(row)
+	return harvest.can_dig(row)
+end
+
 function grug_gathering.register_herb_authorizer(callback)
 	return harvest.register_herb_authorizer(callback)
 end

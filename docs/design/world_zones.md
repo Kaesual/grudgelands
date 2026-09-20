@@ -1198,11 +1198,11 @@ compatible biome patch outside these ids grants no source.
 | Crimson Lotus | `front_skyglass_canopy`; `front_stormscale_summit` |
 | Sunleaf | `elandor_goldmead_vale`; `elandor_starbough_vale`; `kragmar_raincall_basin`; `kragmar_redtusk_savanna` |
 | Marshbloom | `elandor_lorindor`; `elandor_whitebridge_shire`; `kragmar_ossuary_reach`; `kragmar_whispering_reedlands` |
-| Stormkelp | `front_gravesalt_escarpment`; `front_skyglass_canopy`; `front_stormscale_summit`; `front_wyrmglass_crown` |
+| Stormkelp | `front_gravesalt_escarpment`; `front_shattered_line` (swamp mud only); `front_skyglass_canopy`; `front_stormscale_summit`; `front_wyrmglass_crown` |
 | Potato | `elandor_ashenward_march`; `elandor_dawnmere_fields`; `elandor_goldmead_vale`; `elandor_whitebridge_shire`; `front_broken_causeway` |
 | Corn | `elandor_ashenward_march`; `elandor_dawnmere_fields`; `elandor_goldmead_vale`; `elandor_whitebridge_shire`; `front_broken_causeway`; `front_shattered_line`; `kragmar_bannerbreak_mesa`; `kragmar_redtusk_savanna`; `kragmar_speargrass_reach`; `kragmar_sunscar_flats` |
 | Melon | `elandor_glassroot_wilds`; `front_skyglass_canopy`; `front_stormscale_summit`; `kragmar_kapok_cradle`; `kragmar_raincall_basin`; `kragmar_thunderroot_wilds`; `kragmar_totemwater_reach`; `kragmar_whispering_reedlands` |
-| Mushroom | `elandor_ashenward_march`; `elandor_glassroot_wilds`; `elandor_lorindor`; `elandor_moonfall_wood`; `elandor_whitebridge_shire`; `front_broken_causeway`; `front_gravesalt_escarpment`; `front_skyglass_canopy`; `front_stormscale_summit`; `kragmar_blackwind_rise`; `kragmar_ossuary_reach`; `kragmar_thunderroot_wilds`; `kragmar_totemwater_reach`; `kragmar_whispering_reedlands` |
+| Mushroom | `elandor_ashenward_march`; `elandor_glassroot_wilds`; `elandor_lorindor`; `elandor_moonfall_wood`; `elandor_whitebridge_shire`; `front_broken_causeway`; `front_gravesalt_escarpment`; `front_skyglass_canopy`; `front_stormscale_summit`; `kragmar_blackwind_rise`; `kragmar_ossuary_reach`; `kragmar_speargrass_reach` (swamp mud only); `kragmar_thunderroot_wilds`; `kragmar_totemwater_reach`; `kragmar_whispering_reedlands` |
 | Wild Cocoa | `front_skyglass_canopy`; `front_stormscale_summit` |
 | Rock Salt | `front_gravesalt_escarpment`; `front_stormscale_summit`; `front_wyrmglass_crown` |
 
@@ -1689,3 +1689,64 @@ tag anybody.
   exact opposing-target filter, player-involvement loot rule and unchanged
   ordinary-guard behavior. A headless soak observes all eight zones at once
   before the user's visual battlefield test.
+
+### Round 10 Cooking wild sources, field soil and shallow reefs
+
+All fifteen Cooking plant identities below have independent wild source nodes
+`grug_mapgen:<key>_source`, yielding `grug_cooking:<key>`. Their farm seed/stage
+identities remain `grug_farming:seed_<key>` and `<key>_1`…`<key>_4`.
+Potato/Corn retain the exact separate WP33 sources above. All seventeen families
+are farmable on legal editable ground. Salt Crust is neither Rock Salt nor an
+alias, and Frost Melon is distinct from the existing gathering Melon.
+
+The six starts are Hearthpine, Dawnmere, Silverleaf, Stillgrave, Sunscar and
+Kapok. Their paired level-11–20 homes are Copperfell, Goldmead, Starbough,
+Mournfen, Redtusk and Raincall. "Accord" and "Throng" subsets select the first
+and last three respectively. Bands use the existing cumulative thirds: start
+bands 1–2 mean levels 1–6 and bands 2–3 mean 4–10.
+
+| Key | Named zones / level or depth | Logical hosts and actual support | Shore / density |
+|---|---|---|---|
+| wild_grain | six starts 4–10; six homes 11–20 | meadow, pine, elf, savanna, blight, jungle-edge ordinary viable soil variants | none; 1/256 |
+| carrot | three Accord starts 1–6 | meadow, pine, elf viable soils | none; 1/256 |
+| cassava | three Throng starts 1–6 | savanna, blight, jungle-edge viable soils | none; 1/256 |
+| wild_onion | Accord starts and paired homes | deep forest, pine, elf viable soils | none; 1/512 |
+| fire_pepper | Throng starts and paired homes | badlands mesa clay, savanna/blight/jungle-edge viable soils | none; 1/512 |
+| pumpkin | six paired homes 11–20 | meadow soil, swamp mud, blight soil | none; 1/256 |
+| blightberry | Mournfen 11–20 | blight viable soil | none; 1/256 |
+| sunberry | Redtusk 11–20 | savanna viable soil | none; 1/256 |
+| jungle_berry | Raincall 11–20 | jungle-edge viable soil | none; 1/256 |
+| frost_melon | Frostbarrow, Whitebridge 21–30 | crags gravel or swamp mud at a freshwater margin | fresh cardinal contact; 1/256 |
+| sugar_cane | every named zone and band with a shore | shore sand only; no rock support | fresh or sea cardinal contact; 1/256 |
+| bamboo_shoot | every named zone with matching shore host | jungle-edge, deep-jungle or swamp; sand or mud | fresh or sea cardinal contact; 1/256 |
+| cave_cap | continental cave air at y −500…−100 | actual stone/granite/slate/basalt support | no surface placement; 1/768 |
+| salt_crust | Shattered Line bands 2–3, levels 44–50 | badlands mesa clay | none; 1/512 |
+| ember_moss | continental cave air at y ≤ −701 | actual emberrock support | no surface placement; 1/1024 |
+
+A viable soil is a matching nonrock fertile patch of that logical biome;
+ordinary dirt, relevant litter, mud, dry dirt, moss soil and ash soil do not
+turn an unrelated logical biome into a host. Actual final support is checked,
+not assumed from the nominal biome. Surface sources stand above that support;
+cave sources require real preserved air above real exposed stone. No source
+may replace a functional surface, foundation, route, housing exclusion or water.
+Cave eligibility follows the purpose-specific WORLD guards, not broad natural
+landmark envelopes. Candidate rejection does not move, retry or refill it.
+
+The accepted Mushroom set additionally includes `kragmar_speargrass_reach` on
+its swamp-mud host. Stormkelp additionally includes `front_shattered_line`,
+restricted there to swamp-mud shores. Other closed WP33 rows remain unchanged.
+
+Second-soil patches use coherent existing terrain variation: meadow dirt,
+pine gravel, savanna dry/cracked earth, jungle mud, blight ash ground and elf
+moss soil. Ash ground and moss soil reuse shipped licensed textures; neither
+adds an ore, currency or separate farming progression. Mountain/rocky shore
+rules retain priority. Authored settlement fields use actual dry/wet farming
+soil, with the existing current-load timer activation and nearby-water rule.
+Capital protection remains effective; editable ground requires no housing.
+
+Shallow reefs use deterministic 16-node reef-cell patches plus column selection,
+only in sea water with bed depth 2–10. The six default coral variants and rooted
+sand-with-kelp replace eligible natural bed nodes, with their actual rooted
+geometry/height semantics. Lakes, rivers, planned freshwater and functional
+surfaces receive no reef content. There is one terrain/VM writer and no competing
+engine decoration pass or global density/census target.

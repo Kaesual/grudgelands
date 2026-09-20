@@ -330,6 +330,8 @@ return function(repo, common, raw_sha256)
 			end
 		end
 		for index = 1, #projection.tiers do role(projection.tiers[index].node, 1) end
+		role("grug_nodes:ash_ground", 1)
+		role("grug_nodes:dirt_with_moss", 1)
 		-- Synthetic WP33 fixture registrations reuse one reviewed solid node.
 		role("grug_nodes:bone_pile", 16)
 		for name in pairs(masks) do names[#names + 1] = name end
@@ -339,7 +341,8 @@ return function(repo, common, raw_sha256)
 		local cid_by_name = {air = 0, ["default:water_source"] = 10,
 			["default:river_water_source"] = 11}
 		local next_cid = 1000
-		local resource_set, stratum_set, vegetation_set, surface_set = {}, {}, {}, {}
+		local resource_set, stratum_set, vegetation_set, surface_set = {}, {}, {}, {
+			["grug_nodes:ash_ground"] = true, ["grug_nodes:dirt_with_moss"] = true}
 		for index = 1, #projection.resources do resource_set[projection.resources[index].natural_node] = true end
 		for index = 1, #projection.tiers do stratum_set[projection.tiers[index].node] = true end
 		for index = 1, #surfaces do

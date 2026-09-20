@@ -11,6 +11,7 @@ return function(repo)
 	local function pos(x, y, z) return {x = x, y = y, z = z} end
 	local core_mock = {registered_items = {}, registered_nodes = {}}
 	local function register(name, definition)
+		name = name:gsub("^:", "")
 		definition.groups = definition.groups or {}
 		core_mock.registered_items[name] = definition
 		if definition._kat_node then core_mock.registered_nodes[name] = definition end
@@ -116,7 +117,7 @@ return function(repo)
 			{__index = stack_methods})
 	end
 	local player = {get_player_name = function() return "farmer" end}
-	local global_names = {"core", "default", "grug_cooking", "grug_farming"}
+	local global_names = {"core", "default", "grug_cooking", "grug_farming", "grug_nodes"}
 	local saved, present = {}, {}
 	for _, name in ipairs(global_names) do
 		present[name] = rawget(_G, name) ~= nil
@@ -132,6 +133,10 @@ return function(repo)
 		node_sound_leaves_defaults = function() return {} end})
 	rawset(_G, "grug_cooking", {PLANTS = plants})
 	rawset(_G, "grug_farming", nil)
+ rawset(_G, "grug_nodes", {
+  crop_visual = dofile(repo .. "/mods/ITEMS/grug_nodes/crop_visual.lua"),
+  bind_crop_soil_callbacks = dofile(repo .. "/mods/ITEMS/grug_nodes/crop_soil.lua")(core_mock, default),
+ })
 
 	local ok, result = pcall(function()
 		assert(loadfile(repo .. "/mods/ITEMS/grug_farming/init.lua"))()

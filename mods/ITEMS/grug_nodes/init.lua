@@ -10,7 +10,7 @@
 -- ImageMagick operations.
 --
 -- WP18 registers the nodes only; grug_mapgen (T4) wires them into the biome
--- definitions. The mod exposes no API, so it declares no global table.
+-- definitions. The shared crop-definition seam also lives below world/jobs content.
 
 -- Groups shared by the whole dirt family.
 --
@@ -89,49 +89,6 @@ core.register_node("grug_nodes:mud", {
 	description = "Swamp Mud",
 	tiles = {"grug_nodes_mud.png"},
 	groups = dirt_groups({mud = 1}),
-	sounds = default.node_sound_dirt_defaults(),
-})
-
--- Tilled soil: the furrow node an AUTHORED field is written out of (WP13,
--- Dawnmere Fields). It exists because `default:dirt` does not survive being
--- laid out as a crop furrow: default's "Grass spread" ABM
--- (mods/BASE/default/functions.lua) has `nodenames = {"default:dirt"}` and
--- exactly that one name, so every lit furrow in the human start turned into
--- `default:dirt_with_grass` within minutes and the fields became lawn. A
--- separate node is never in that ABM's `nodenames`, and carrying no
--- `spreading_dirt_type` keeps it out of the "Grass covered" ABM as well, in
--- both directions: it is neither a target nor a source of grass spread.
---
--- Three deliberate differences from the biome tops above, all of them
--- because this is ground a settlement AUTHORS rather than ground the mapgen
--- generates:
---
---   * no `grug_materials.natural_groups()`. That helper stamps
---     `grug_natural = 1`, which is what `grug_materials.is_natural_node`
---     reads to put a node under the mining transaction's pick-tier and depth
---     gating (grug_materials/mining.lua). A farmer's furrow inside a start is
---     not an excavation. The startup audit only requires the converse -- that
---     every name in `NATURAL_GROUND_NODES` carries the marker
---     (grug_materials/audit.lua) -- so a node outside that roster is free not
---     to, and this node is deliberately not added to the roster.
---   * no `soil = 1`. That group is what `default.can_grow` asks for before it
---     grows a sapling; a ploughed field is not a tree nursery.
---   * `is_ground_content = false`, because cave and tunnel carving must not
---     eat an authored field.
---
--- The texture is `default_dirt.png` darkened at runtime -- turned earth is
--- damp earth. No new PNG is generated, so there is no new media row to
--- attribute; see LICENSE-media.md.
-core.register_node("grug_nodes:tilled_soil", {
-	description = "Tilled Soil",
-	tiles = {
-		"default_dirt.png^[colorize:#2b1d0e:70",
-		"default_dirt.png",
-		"default_dirt.png^[colorize:#2b1d0e:35",
-	},
-	groups = {crumbly = 3},
-	drop = "default:dirt",
-	is_ground_content = false,
 	sounds = default.node_sound_dirt_defaults(),
 })
 
@@ -272,3 +229,22 @@ core.register_node("grug_nodes:bone_pile", {
 	groups = {snappy = 3, attached_node = 1},
 	sounds = default.node_sound_gravel_defaults(),
 })
+
+-- Round-10 secondary ground; existing default media, no new resource identity.
+core.register_node("grug_nodes:ash_ground", {
+ description="Ash Ground", tiles={"default_gravel.png^[colorize:#45403e:145"},
+ groups=dirt_groups(), drop="default:dirt",
+ is_ground_content=true, sounds=default.node_sound_dirt_defaults(),
+})
+core.register_node("grug_nodes:dirt_with_moss", {
+ description="Moss Soil", tiles={"default_moss.png","default_dirt.png",
+  "default_dirt.png^default_moss_side.png"},
+ groups=dirt_groups(), drop="default:dirt",
+ is_ground_content=true, sounds=default.node_sound_dirt_defaults(),
+})
+
+-- Crop definitions must precede R7's synchronous content/authority construction.
+grug_nodes = {}
+local crop_path = core.get_modpath("grug_nodes")
+grug_nodes.crop_visual = dofile(crop_path .. "/crop_visual.lua")
+grug_nodes.bind_crop_soil_callbacks = dofile(crop_path .. "/crop_soil.lua")(core, default)

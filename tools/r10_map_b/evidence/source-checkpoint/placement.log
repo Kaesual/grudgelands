@@ -1,0 +1,26 @@
+world_plants	15
+reef_variants	7
+negative_boundaries	PASS
+1031	31	0	grug_mapgen:sunberry_source	25
+105	31	0	grug_mapgen:fire_pepper_source	19
+1079	31	0	grug_mapgen:frost_melon_source	20
+114	31	0	grug_mapgen:cassava_source	16
+1231	-800	0	grug_mapgen:ember_moss_source	18
+1245	31	0	grug_mapgen:carrot_source	15
+139	-6	3	default:coral_green	0	30
+153	31	0	grug_mapgen:blightberry_source	14
+1660	31	0	grug_mapgen:salt_crust_source	23
+18	31	0	grug_mapgen:wild_grain_source	26
+215	-6	31	default:coral_skeleton	0	33
+220	-6	29	default:sand_with_kelp	80	34
+3978	-200	0	grug_mapgen:cave_cap_source	17
+402	31	0	grug_mapgen:wild_onion_source	27
+450	31	0	grug_mapgen:pumpkin_source	22
+5	31	0	grug_mapgen:bamboo_shoot_source	13
+50	-6	0	default:coral_orange	0	31
+55	-6	0	default:coral_pink	0	32
+56	-6	12	default:coral_cyan	0	29
+57	31	0	grug_mapgen:sugar_cane_source	24
+61	-6	13	default:coral_brown	0	28
+66	31	0	grug_mapgen:jungle_berry_source	21
+

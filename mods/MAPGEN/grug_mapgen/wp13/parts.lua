@@ -331,7 +331,7 @@ local FULL_SOLID = {
 	["grug_nodes:dirt_with_silver_litter"] = true,
 	-- The authored furrow of a crop field: a plain opaque cube, so a torch
 	-- may hang on it and a wall may stand on it like any other soil.
-	["grug_nodes:tilled_soil"] = true,
+	["grug_farming:soil"] = true,
 	["grug_trees:gravewood_tree"] = true,
 	["grug_trees:gravewood_wood"] = true,
 	["grug_trees:silverwood_tree"] = true,
@@ -373,14 +373,14 @@ end
 -- the flora and orchard clearance rules, the meadow and the mud flat -- and
 -- all six used to ask it as `name:find("dirt")`, a substring of a node name.
 -- That is not a property; it is a spelling, and it answered `false` for
--- `grug_nodes:tilled_soil` the moment Dawnmere's furrows stopped being
+-- `grug_farming:soil` the moment Dawnmere's furrows stopped being
 -- `default:dirt`, silently taking 425 tufts and bushes out of the fields with
 -- it. Nobody had decided that -- the substring had.
 --
 -- Written down, the rule is: a plant seeds itself in ground the MAPGEN
 -- generates, never in ground a settlement authored. Every name below is in
 -- `grug_materials.NATURAL_GROUND_NODES` and `library_kat` reads that roster
--- out of the source and proves it. `grug_nodes:tilled_soil` is deliberately
+-- out of the source and proves it. `grug_farming:soil` is deliberately
 -- absent, and so is deliberately outside that roster: a ploughed furrow is
 -- kept weed-free, which is also what a field is supposed to look like.
 -- `grug_nodes:mud` is absent for the older reason that the substring never
