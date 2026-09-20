@@ -32,3 +32,41 @@ No duplicate ART farming call, unsafe wrapper invocation, missing known dependen
 ## Required final additions
 
 After MAP-B freezes, add its bounded returned fixtures, tool root and sentinel exactly as supplied by that lane. Then freeze the complete input manifest and run the single final interpreter pair. Any relevant runner, fixture or production-byte change after that point invalidates both outputs.
+
+## Focused MAP-B composition rereview — 2026-09-20
+
+**CLEAN — 0 Critical, 0 High, 0 Medium, 0 Low findings.**
+
+- Runner candidate `70f04ceb` against `0c03af16`; review scope is the
+  `final_micro.lua` / `final_micro.sh` delta. The other three commit files only
+  archive the already completed independent shared-fixture review.
+- No interpreter was run. The final PUC/LuaJIT pair remains pending on frozen
+  integrated bytes.
+
+The v3 composition removes the direct `r9_farm/farming_kat.lua` entry and runs
+it exactly once through `registration_fixture.lua`. That wrapper uses the
+fixture's observation callback after FARM's real `on_mods_loaded` callbacks and
+before global restoration, then loads the real gathering harvest seam and real
+`world_nodes.lua`. It verifies all 68 registered stage visuals, all 15 wild
+source definitions, independent wild-node lifecycle/groups and non-aliased
+visual tables. `r10_farm/final_micro.lua` remains a distinct 17-family
+completion/protection fixture and does not invoke the R9 KAT, so no farming
+lifecycle is duplicated.
+
+`placement_fixture.lua` constructs the actual `world_content.lua` tail with the
+real catalog and a real `r7_content.lua` resolver supplied by
+`content_fixture.lua`. It covers all 15 plant routes, seven reef variants,
+their real successor references and negative protection, housing, occupancy,
+support, band, zone, shoreline, liquid and replay boundaries. The full writer,
+runtime, template and pin derivation suites correctly remain LuaJIT-only and
+are not pulled into the portable pair.
+
+The shell adds `tools/r10_map_b` to the immutable input roster and explicitly
+requires both portable fixtures plus the shared `crop_soil.lua` and
+`crop_visual.lua` production seams. Existing roots already bind all shipped
+`mods`, so the directly loaded world catalog, world tail, world node registrar,
+gathering harvest and R7 content dependencies are hash-covered. Both returned
+fixtures obey the existing `(repo)` aggregation contract, emit deterministic
+text and run before the standalone WP39 fixture. No argument/global hazard,
+duplicate ART/FARM wrapper, missing actual-API seam in the portable scope or
+post-WP39 execution was found.
