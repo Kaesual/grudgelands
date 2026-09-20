@@ -220,11 +220,9 @@ end
 -- interior points of a fit anchored on T1/T4 -- reported as findings; the
 -- vendor brackets stop at ilvl 50 and none of them touches those cells.
 --
--- Only metal and cloth ship (decided 2026-08-07): the MVP classes are
--- Warrior (rank 3) / Mage (rank 1) / Priest (rank 1), so nothing can wear
--- rank 2 and 24 leather items would be dead weight. The leather curve stays
--- here so the coefficients never have to be re-derived -- it is registered
--- with the Rogue (Phase 2) / the WP5 drop tables.
+-- Round 10 registers all three material lines across six tiers. Universal
+-- base recipes include leather; class armor-rank eligibility still governs
+-- wearing a piece independently of who can craft it.
 --
 
 local ARMOR_LINES = {
