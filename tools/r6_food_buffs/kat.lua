@@ -125,7 +125,7 @@ return grug_abilities
 	function Player:get_player_name() return self.name end
 	function Player:get_hp() return self.hp end
 	function Player:set_hp(value) self.hp = value end
-	function Player:get_properties() return {hp_max = 100, eye_height = 1.5} end
+	function Player:get_properties() return {hp_max = self.hp_max or 100, eye_height = 1.5} end
 	function Player:get_pos() return {x = 0, y = 0, z = 0} end
 	function Player:hud_add(definition)
 		self.next_hud = self.next_hud + 1
@@ -155,8 +155,25 @@ return grug_abilities
 	for index = 1, #hooks.hp do
 		if hooks.hp[index].modifier then damage_modifier = hooks.hp[index].fn end
 	end
-	check(damage_modifier and damage_modifier(hero, -5, {type = "fall"}) == -25,
-		"fall damage scales native five to 25% of max HP")
+	local dodge_calls, armor_calls = 0, 0
+	grug_core.get_dodge_chance = function() dodge_calls = dodge_calls + 1 return 1 end
+	grug_core.get_armor_percent = function() armor_calls = armor_calls + 1 return 60 end
+	check(damage_modifier and damage_modifier(hero, 0, {type = "fall"}) == 0,
+		"zero native fall damage remains zero")
+	hero.hp_max = 100
+	check(damage_modifier(hero, -0.2, {type = "fall"}) == -1 and
+		damage_modifier(hero, -5, {type = "fall"}) == -25,
+		"fractional and five-point fall severities use ceiling pool scaling")
+	hero.hp_max = 40
+	check(damage_modifier(hero, -1, {type = "fall"}) == -2,
+		"low maximum HP keeps the same fall percentage")
+	hero.hp_max = 3000
+	check(damage_modifier(hero, -1, {type = "fall"}) == -150 and
+		damage_modifier(hero, -21, {type = "fall"}) == -3150,
+		"high maximum HP scales equally and severe falls remain uncapped")
+	check(dodge_calls == 0 and armor_calls == 0,
+		"fall damage bypasses dodge and equipped armor")
+	hero.hp_max = 100
 	grug_core.get_race_perk = function(_, key)
 		return key == "fall_damage_mult" and 0.8 or nil
 	end

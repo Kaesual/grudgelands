@@ -284,8 +284,17 @@ local entity_definition = {
 
 	on_step = function(self, dtime)
 		local player = self.driver
-		if not valid_player(player) or player:get_attach() ~= self.object then
+		if not valid_player(player) then
 			if not self._grug_removing then self.object:remove() end
+			return
+		end
+		if player:get_attach() ~= self.object then
+			local record = active[self._grug_owner]
+			if record and record.object == self.object then
+				grug_mounts.dismount(player, nil, true)
+			elseif not self._grug_removing then
+				self.object:remove()
+			end
 			return
 		end
 		local record = active[self._grug_owner]

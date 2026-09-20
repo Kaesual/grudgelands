@@ -1021,7 +1021,7 @@ function mob_class:is_at_cliff()
 
 	local def = core.registered_nodes[bnode.name]
 
-	return (not def and def.walkable)
+	return not def or not def.walkable
 end
 
 -- check for nodes or groups inside mob collision area
