@@ -22,7 +22,7 @@ Once a question is decided: fold it into the design doc named in its
 question from this file. When nothing open is left, delete the file
 (AGENTS.md "Documentation layers").
 
-Groups: **B** material calibration · **C** profession identity · **D** mounts.
+Groups: **B** material calibration · **D** ocean survival.
 
 ## B. Material calibration
 
@@ -35,46 +35,16 @@ table and runtime-calibrated by WP22 against representative ordinary rock
 (pattern: `docs/research/wp6_spawn_budget.md`) — never vendored-profile
 reuse, never the retired engine `leveldiff` coupling.
 
-Open here: **only the six effective `times` and `uses` sets themselves.**
+Open here: **only the six effective `times` and `uses` sets themselves.** WP29
+authors the design table with the final tool catalog; WP22 owns runtime
+calibration and any evidence-driven adjustment of those values. This separates
+design authorship from runtime calibration without moving either package's
+existing responsibility.
 
 *Lands in*: `items_crafting.md` §3.0.4.
-**Decision:** _open_ (the `times` and `uses` numbers). Owner:
-**WP22** — the six-tier pick catalog and familiar universal recipes now exist;
-WP22 runtime-calibrates only dig times and durability (BACKLOG WP22 row).
-
----
-
-## C. Profession identity
-
-This is not a gap in a list. It is a consequence the rework produced
-deliberately, and it leaves one profession standing on very little in the MVP.
-It wants a decision, not an author.
-
-### C12 — Does the bow foundation receive a playable ranged class?
-
-The item foundation is already decided: bows follow the material weapon curve,
-arrows are stackable ammunition, the Woodcarver owns bows and the Leatherworker
-owns quivers. The current MVP classes and the named Phase-2 additions contain
-no Hunter-like bow user, so those registrations would have no designed combat
-consumer.
-
-Options:
-
-- **(a) Add a Hunter-like ranged class** and author its resource, baseline
-  attack, abilities, armor rank and talent identity around the bow foundation.
-- **(b) Keep the foundation inactive** until a later class package explicitly
-  adopts it; no player-facing bow, arrow or quiver recipe ships in advance.
-- **(c) Assign bows to one already planned Phase-2 class**, then revise that
-  class's kit around a ranged baseline rather than adding another class.
-
-Recommendation: **(b)** until a class package can evaluate (a) and (c) against
-the complete seven-class role roster. It preserves the license-checked item
-work without shipping a dead equipment line or silently redesigning a class.
-
-*Lands in*: `docs/design/classes.md`, `docs/design/items_crafting.md` §9 and
-`docs/design/professions.md` §5.
-**Decision:** _open_ — blocks any playable bow consumer, not the existing item
-foundation or its profession ownership.
+**Decision:** _open_ (the `times` and `uses` numbers). Owners: **WP29** authors
+the table; **WP22** runtime-calibrates dig times and durability (BACKLOG WP22
+and WP29 rows).
 
 ---
 
@@ -100,5 +70,4 @@ Round-10 mount decisions.
 | # | Question | Blocks |
 |---|---|---|
 | B22 | The six picks' explicit dig-speed `times` and durability `uses` | WP29/WP22 |
-| C12 | Whether the bow foundation receives a Hunter-like or existing ranged class | future class/bow package |
 | D18 | Optional unmounted swimmer exhaustion behavior | deferred ocean-survival package |
