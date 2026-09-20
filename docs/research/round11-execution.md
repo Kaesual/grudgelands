@@ -1,9 +1,9 @@
 # Round 11 execution checkpoint
 
-**Active correction:** the user confirmed that vegetation stops mob pursuit.
-Resume from [vegetation chase fix](round11-vegetation-chase-fix.md), on
-`wp11-vegetation-chase-fix`. The delivered checkpoints below remain historical
-while that bounded correction is implemented and independently reviewed.
+**Latest delivery:** the [vegetation chase fix](round11-vegetation-chase-fix.md)
+is independently clean, merged as `ff7f43db`, synchronized and pushed.
+All workers are finished. The next action is the post-restart Scout/Priest
+boar pursuit check among plants. Older delivery checkpoints follow below.
 
 **Current followup delivery:** main merge `43531fdf` is independently clean,
 synchronized and pushed. All 1,900 installed runtime files match the delivered

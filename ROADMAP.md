@@ -213,6 +213,9 @@ outer-district trainer activation, a leather/armor exterior sign, T3/T4 mount
 speed +100%/+200%, Scout Sprint +50%, and 200-arrow stacks/start supply. The
 beach correction is user-accepted; remaining GUI checks continue. LMB's initial
 first-person camera gesture remains an explicit engine limitation.
+The subsequent [vegetation pursuit regression](docs/research/round11-vegetation-chase-fix.md)
+is also reviewed and delivered: harmless plants no longer masquerade as cliffs
+and stop pursuing mobs; real ground/hazard checks remain enforced.
 
 ### Round 10 bounded corrections
 

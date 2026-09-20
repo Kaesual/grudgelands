@@ -1,7 +1,7 @@
 # Round 11 vegetation pursuit regression
 
 Date: 2026-09-20. Baseline: `dcd2e462`; branch:
-`wp11-vegetation-chase-fix`. State: independently clean; final integration pending.
+`wp11-vegetation-chase-fix`. State: delivered on main, synchronized and pushed.
 
 The user reports that boars hit from range by either Scout or Priest turn
 toward the attacker but do not approach. They subsequently confirmed that
@@ -36,8 +36,8 @@ are outside this correction.
   actual pursuit branch; source review verifies that the escape probe consumes
   the same tested support helper. Plain-5.1 parser, SETGLOBAL and five sweeps.
   No PUC runtime, broad mapgen suite, seed population or performance run.
-- Source freeze and [independent review](round11-vegetation-review.md) are clean;
-  final integration is pending. Runtime acceptance:
+- Source freeze and [independent review](round11-vegetation-review.md) are clean.
+  Runtime acceptance:
   after restarting Luanti, ranged-hit a boar amid plants as Scout and Priest;
   it must approach across supported terrain. Check that ordinary idle roaming
   still avoids a drop deeper than one block.
@@ -69,3 +69,8 @@ independent reviewer native GPT-5.6 Sol. Final review: 0 Critical, 0 High,
 liquid boundaries and replaced a mirrored pursuit test with the real branch;
 review required only narrowing the escape evidence claim. Observed elapsed
 wall time unknown.
+
+Delivery: implementation `501dd82c`, main merge `ff7f43db`; synchronized to the
+personal Luanti game folder and pushed to `Kaesual/grudgelands`. All 1,900
+installed runtime files match main byte-for-byte. No user world changed.
+Workers are finished; the next action is the post-restart GUI retry above.

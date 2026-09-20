@@ -275,7 +275,9 @@ The first-playtest [followups](docs/research/round11-playtest-followups.md) add
 directional arrow meshes, bow draw stages, reliable outer-district trainers and
 the requested Sprint/mount speeds. Arrows stack to 200 and new Scouts receive
 200. The beach fix is user-accepted; bow feel still needs GUI confirmation,
-including the documented initial LMB camera gesture.
+including the documented initial LMB camera gesture. The subsequent
+[vegetation fix](docs/research/round11-vegetation-chase-fix.md) restores mob
+pursuit through harmless plants while preserving cliff protection.
 
 **In progress:** WP11 still owns the original three classes' remaining X3
 abilities and capstones; Scout completion does not close that broader package.
