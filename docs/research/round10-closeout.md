@@ -1,7 +1,7 @@
 # Round 9/10 decision reconciliation preflight
 
 Read-only snapshot: main `1831ec68`; candidate inputs EQUIP `b8dc0db3`, GAME
-`d4138bf0`, WORLD `7f009e87`; CAP active; ART and MAP-B incomplete. Authority
+`b887124d`, WORLD `7f009e87`; CAP active; ART and MAP-B incomplete. Authority
 order used here is user ruling, decided design, then implementation evidence.
 No candidate is called shipped by this preflight.
 

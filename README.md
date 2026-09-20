@@ -254,8 +254,8 @@ work are present as delivered subpackages without changing whole-WP counts.
 **Staged Round-10 candidates:** EQUIP is independently clean and completes
 Basics, seven primaries, universal base recipes, terminal improvements, kits and
 vendor rotation. WORLD has a clean source review with its global parity gate
-still pending; GAME's final signed cliff-boundary fix and replacement parity are
-still being frozen. CAP is active, while ART and MAP-B remain incomplete, so
+still pending; GAME is independently clean at `b887124d` after two Medium fix
+rounds, with byte-identical final parity evidence. CAP is active, while ART and MAP-B remain incomplete, so
 these candidates are not yet reported as main delivery or playtest-ready.
 
 **In progress:** WP13 has all six starts and capitals but still owns most of the
