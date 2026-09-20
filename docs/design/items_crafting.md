@@ -40,7 +40,9 @@ ladders are independent; §2.1 spells out how they meet.
 - **Quality tiers: Common (white), Uncommon (blue), Rare (yellow),
   Unique (orange)**. MVP ships without Uniques, but quality field +
   enchant list live in item meta from day one.
-- **Ordinary equipment:** Uncommon = 1–2 weak enchantments; Rare = 3–4.
+- **Ordinary equipment:** Uncommon = exactly one affix; Rare = exactly one
+  prefix plus one suffix. The same family pool is legal on either side and a
+  stat may not repeat. Common has none.
   Trinkets use their fixed one-prefix/one-suffix/one-special exception (§6.2).
 - Vendors sell simple (Common) gear — available but painfully expensive;
   better gear comes from **crafting** or **special bosses**. *Sharpened
@@ -250,8 +252,9 @@ new rule, all three were implicit before:
    rule: nothing stops a level-50 Master from smithing a T1 Bronze Sword
    (ilvl 3), and that sword rolls in the first band. §6.3 spells out the
    two consequences.
-2. **Mastery decides how many enchant slots a crafter can fill** —
-   Apprentice 1, Journeyman 2, Expert 3, Master 4 (§6b.5). It does *not*
+2. **Mastery decides which enchant/value operation a crafter can perform** —
+   Apprentice prefix, Journeyman suffix, Expert first temper/masterwork values,
+   Master second temper (§6b.5). It does *not*
    decide which material tier you may touch; that is the gear ladder and
    the digging-depth gate (§3.0.4).
 3. **Mastery does not grant recipe permission.** The four mastery bands remain
@@ -270,11 +273,11 @@ the book group's business; this table cuts only mastery:
 | Profession | Apprentice | Journeyman | Expert | Master |
 |---|---|---|---|---|
 | Weaponsmith | metal fittings | whetstone imbue kit | whetstone temper kit | — |
-| Armorsmith | — | shield | armor-polish imbue kit | armor-polish temper kit |
-| Leatherworker | weapon grips | leather-armor imbue kit | leather temper kit | quiver (cataloged; ships with §9) |
-| Tailor | 8-slot bag | 16-slot bag; spell tome +10; embroidery imbue kit | 24-slot bag; spell tome +20; embroidery temper kit | 32-slot bag; spell tome +30 |
-| Woodcarver | — (the base caster ladder is the Apprentice value) | wood-oil imbue kit | wood-oil temper kit | bows (cataloged; ship with §9) |
-| Goldsmith | Rough→Cut refinement; Settings (§3.6b ladder) | trinket assembly (all six §6.2 identities); gem-setting imbue kit | gem-setting temper kit; ornament components | — (§4 cultural jewelry services ride §2.2's earned unlocks) |
+| Armorsmith | — | — | armor-polish imbue/first-temper access | armor-polish second temper |
+| Leatherworker | weapon grips; 8-slot leather bag; quiver | 16-slot leather bag; leather-armor imbue kit | 24-slot leather bag; leather first temper | 32-slot leather bag; leather second temper |
+| Tailor | 8-slot cloth bag | 16-slot cloth bag; embroidery imbue kit | 24-slot cloth bag; embroidery first temper | 32-slot cloth bag; embroidery second temper |
+| Woodcarver | — (plain caster weapons and bows are universal) | wood-oil imbue kit | wood-oil first temper | wood-oil second temper |
+| Goldsmith | Rough→Cut refinement; Settings (§3.6b ladder) | trinket assembly; spellbooks; gem-setting imbue kit | gem-setting first temper; ornament components | gem-setting second temper |
 | Alchemist | §3.6 Apprentice row | §3.6 Journeyman row; Apothecary Hood; imbuing-oil imbue kit | §3.6 Expert row; Apothecary Garb; imbuing-oil temper kit | §3.6 Master row; Master's Regalia |
 
 Costs follow only existing patterns — fittings 2 bars (§3.3), grips 2
@@ -332,9 +335,11 @@ redemption item or discovery grind. A pure fighter instead buys refined and
 enchanted gear from crafters; both paths remain inside the 10–20 h envelope.
 **Intended gear cadence: a visible upgrade every 45–90 min** (quest
 rewards + 3% world drops between the six material tiers, §3.0),
-and at 60 the professions stay load-bearing via repair (§8), consumables
+and at 60 the professions stay load-bearing via consumables
 (elixirs/bandages/potions), upgrade kits (§7), masterworks and race
-signatures (§4).
+signatures (§4). V1 repair is universal and gold-only at every profession
+trainer; material/profession repair remains later work (§8 and
+[durability_repair.md](durability_repair.md)).
 
 ## 3. Materials, curves and the profession catalogs
 
@@ -551,12 +556,11 @@ from `grug_gear`. Consequences, all binding:
   Four wood sticks use the familiar two-plank vertical recipe; the old
   one-plank shortcut is removed. Base swords use two same-tier bars over a wood stick, with a same-tier
   metal rod accepted in the handle slot. Pickaxes, axes, shovels and the
-  existing Farmer's Hoe use their canonical Minecraft shapes; axes and the hoe
+  Farmer's Hoes use their canonical Minecraft shapes; axes and hoes
   accept both mirrored orientations. The exact non-Minecraft shapes are dagger = one
   material over one handle; greataxe = five material units symmetrically around
-  two vertical handles; wand = one processed wood over one handle; scepter = one
-  metal, one processed wood and one handle in a column; orb = four processed
-  wood in a diamond silhouette; staff = three processed wood in a column. No
+  two vertical handles; wand = one processed wood over one handle; staff =
+  three processed wood in a column. No
   base recipe adds a gem or professional fitting beyond those stated shapes.
   **This supersedes §3.3's** "vendor floor sells up to the bronze pick —
   iron+ picks are smith products" (see the marked line there).
@@ -696,19 +700,9 @@ check. It returns structured failure data for the shared feedback path.
 Callers always apply protection first; no other mod hard-codes a depth boundary,
 harvest tier or stratum node name.
 
-**Pick speed/durability frame (the B22 shape, decided 2026-08-13 — the
-numbers stay open):** effective dig speed on ordinary rock and total
-durability each follow **one monotonic six-point curve** — every
-higher-tier pick is strictly faster than the previous, including inside
-its own current band, and no tier reuses a vendored profile unchanged.
-Wood and Stone starter picks sit deliberately **below Bronze in speed**
-while sharing T1's depth cap. The concrete `times`/`uses` literals are
-authored as a table by WP29 and **runtime-calibrated by WP22** against
-representative ordinary rock (the `wp6_spawn_budget.md` measurement
-pattern) — never derived on paper, and never through the retired engine
-`leveldiff` coupling. Until that calibration lands, no document freezes
-a `times` or `uses` value (`TODO-design-crafting-rework.md` B22 holds
-the open numbers).
+Pick profiles retain their authored monotonic ladder. Hoe identities, uses,
+soil conversion, water buckets and wild renewal are authoritative in
+[farming.md](farming.md); this document owns only their Basics recipes.
 
 #### 3.0.5 The two boat recipes (decided 2026-08-13)
 
@@ -834,10 +828,11 @@ fpi = full_punch_interval. Columns are **ilvl sample points**, relabelled
 | Family | fpi | dmg factor | ilvl 12 | 27 | 42 | 57 |
 |---|---|---|---|---|---|---|
 | 1H sword / mace / axe | 1.0 | ×1.0 | 8 | 13 | 19 | 24 |
-| Wand / scepter / orb (caster 1H) | 1.0 | ×1.0 | 8 | 13 | 19 | 24 |
+| Wand (caster 1H) | 1.0 | ×1.0 | 8 | 13 | 19 | 24 |
 | Dagger | 0.7 | ×0.7 | 6 | 9 | 13 | 17 |
 | 2H greataxe / warhammer | 1.4 | ×1.5 | 12 | 20 | 29 | 36 |
 | Metal-shod staff (caster 2H) | 1.4 | ×1.2 | 10 | 16 | 23 | 29 |
+| Bow (physical 2H) | charged | ×1.0 | 8 | 13 | 19 | 24 |
 
 **Rounding rule** (made explicit 2026-08-07): **round the 1H value
 half-up, then apply the family factor and round half-up again** — never
@@ -850,16 +845,11 @@ also generates the vendor bracket weapons of §3.8.
 
 2H DPS ≈ 1.07× of 1H — pays for the empty offhand.
 
-**Caster weapons are craftable from 2026-08-07.** The old text left wands
-and orbs **drop-only**, which meant a Mage or Priest had no craftable
-weapon at all — the one real hole in the catalog. The **Woodcarver**
-(§3.6a) closes it: wands, scepters and orbs are the caster **main-hand
-1H** family and ride the existing 1H row (same fpi, same factor — the
-weapon families are class flavor, not a power ladder, §8.2); staves stay
-the caster 2H on the staff row, and "metal-shod" is literal — the
-Woodcarver buys the fitting from a Weaponsmith (§3.6a). Orbs are **not**
-an offhand: the offhand is the Tailor's spell tome or the Armorsmith's
-shield and nothing else (§3.5, §3.3), so there is no duplicate.
+The active caster roster is the two-handed staff or the one-handed wand plus a
+Goldsmith spellbook. Scepters and orbs are absent on fresh servers: no item,
+recipe, loot or vendor identity remains. Staves and wands use universal plain
+Basics recipes; Woodcarver owns their refinement and affixes. Bows are likewise
+universal plain Basics, with Woodcarver owning their improvement operations.
 
 For weapons, the catalogue's `_grug_ilvl` is also the minimum character level
 for the Weapon slot. The slot filter enforces it directly; a weapon without an
@@ -898,12 +888,13 @@ remain universal: swords cost two bars plus a handle; picks cost three bars;
 armor uses the canonical 5/8/7/4 head/chest/legs/feet layouts. Metal fittings
 are Weaponsmith trade goods used for professional improvement, never base gear.
 
-**Exclusive recipes** (mastery cut decided 2026-08-13, §2.1): **metal
-fittings** at Apprentice (the Woodcarver cross-buy, §3.6a); **shields**
-at Journeyman (no other profession makes an offhand of metal) plus the
-whetstone imbue kit; the whetstone temper and armor-polish imbue kits at
+**Exclusive recipes**: **metal fittings** at Apprentice (the Woodcarver
+cross-buy, §3.6a); the whetstone imbue kit; the whetstone temper and
+armor-polish imbue kits at
 Expert; the armor-polish temper kit at Master (§7's kit rule); and the
 cultural/PvP operations of §4 as earned unlocks (§2.2).
+Plain shields use their canonical universal Basics grid; Armorsmith alone
+refines and enchants them.
 
 Ore access follows §3.0.4's three separate checks: territory/protection, the
 pick's exact maximum natural y-depth and the resource's independent minimum
@@ -939,15 +930,16 @@ wearer is the **Warrior** (light avoidance set, §3.8 — decided
 grips** at Apprentice — 2 leather of the item's tier, the
 professions.md §3 cross-buy as a concrete component item; the
 leather-armor imbue kit at Journeyman and its temper kit at Expert
-(§7); and at Master the **quiver** — a bag-slot item that holds only
-arrows, catalogued here and shipping with §9's Phase-2 bow decision.
-The bow itself is a Woodcarver product (§3.6a, §9), the quiver is not.
+(§7). At Apprentice it also makes the four-stack **quiver**, an Offhand item
+that stores arrows but grants no stat, affix, refinement or combat bonus, plus
+the 8-slot Leather Pouch. Its 16/24/32-slot leather bags follow at
+Journeyman/Expert/Master. Plain bows are Basics; Woodcarver owns their quality.
 
 Supply loop as decided: the ×5 leather tag (professions.md §3), Tailors
 buy leather for bags, Alchemists for apothecary gear, Woodcarvers for
 grips.
 
-### 3.5 Tailor (tailor bench) — cloth, bags, the caster offhand
+### 3.5 Tailor (tailor bench) — cloth and cloth bags
 
 **Material chain**: 2 cloth + thread → bolt. Authored grades are **T1 linen
 scrap → patch bolt** (zombies drop scraps from L1 — Tailors start in safe
@@ -972,11 +964,6 @@ robe 8 / leggings 7 / cowl 5 / slippers 4 bolts.
   bolts + 4 spider silk + 2 heavy leather, and the 32-slot ("huge bag")
   is the Master-tier addition of 2026-08-07. Bags are the one signature
   recipe line that is fully decided.
-- **The spell tome (offhand)** from Journeyman up: +1% / +2% / +3% max mana
-  at Journeyman / Expert / Master, cloth + parchment + leather binding.
-  It is one of exactly **two** offhands in the game; the other is the
-  Armorsmith's shield (§3.3). Different item, different armor class, no
-  duplicate.
 - **Embroidery kits** (§7): imbue at Journeyman, temper at Expert
   (mastery cut decided 2026-08-13, §2.1). With one bag size per tier and
   the tome at J/E/M, the Tailor's signature row is full at every tier.
@@ -1038,12 +1025,10 @@ for the Human signature line in §4 and is not registered until that signature
 effect exists. Apothecary armor items and imbuing oils remain later catalog
 work; the two-piece runtime seam above is already authoritative.
 
-### 3.6a Woodcarver (carving bench) — wood, and every caster weapon
+### 3.6a Woodcarver (carving bench) — wood, bows and caster weapons
 
-New profession, 2026-08-07 (professions.md §2). It exists because §3.2
-left wands and orbs drop-only: before the Woodcarver, a Mage or Priest
-had **no craftable weapon at all**, which is the only outright hole the
-old roster had.
+Woodcarver owns quality operations for the active wooden weapon families:
+staff, wand and bow. Their plain recipes remain universal Basics.
 
 **Material chain**: wood, including the per-race woods of biomes_mobs §5 —
 silverwood and gravewood among them. Signature woods remain cultural inputs,
@@ -1052,17 +1037,14 @@ not a mandatory universal tier ladder. The six processed grades are decided
 Heartwood** (T1→T6), each craftable from any `group:wood` — both continents
 reach every grade by construction, and the per-race woods stay a cosmetic/
 cultural skin on top, never a tier gate. These grade words are the item
-names WP29 uses (§3.8): a Hardened Staff, a Heartwood Orb.
+names WP29 uses (§3.8), such as a Hardened Staff.
 
-**Refines and enchants**: staves, wands, scepters, orbs — the whole
-caster weapon family of §3.2, main hand, 1H and 2H.
+**Refines and enchants**: staves, wands and bows.
 
 **Exclusive recipes** (mastery cut decided 2026-08-13, §2.1): the
-Apprentice cell is deliberately empty — the base caster ladder itself is
-the Apprentice value (§3.0.3); **wood-oil kits** (§7) arrive at
-Journeyman (imbue) and Expert (temper); **bows** are the Master line
-from Phase 2 (§9 — this replaces the old "Bowyer = Leatherworker split"
-assignment; the quiver stays Leatherworker, §3.4).
+Apprentice cell is deliberately empty because plain staves, wands and bows are
+Basics (§3.0.3); **wood-oil kits** (§7) arrive at Journeyman, first temper at
+Expert and second temper at Master. The quiver stays Leatherworker (§3.4).
 
 **Cross-buy: the Woodcarver buys metal fittings from the Weaponsmith.**
 The §3.2 family is literally called "metal-shod staff"; from T2 up its
@@ -1154,9 +1136,9 @@ Neither of these costs a main profession slot (professions.md §1).
   mana at the listed rate. Every raw edible regenerates 1% maximum HP per tick;
   Wild Cocoa is HP food, not mana food. Rock Salt and Salt Crust are inedible.
 
-  **Cooking plant sources.** The exact Round-10 wild-source and farming
-  contract is in `world_zones.md`, "Cooking wild sources, field soil and shallow
-  reefs". Their `Raw tier` is the band of the lowest source;
+  **Cooking plant sources.** The current farming and renewal contract is in
+  [farming.md](farming.md), with geographic projection in `world_zones.md`.
+  Their `Raw tier` is the band of the lowest source;
   `Recipe tier` is the profession ingredient tier and may deliberately differ.
 
   | Item | Raw tier | Recipe tier | Food rule | Planned source |
@@ -1351,14 +1333,9 @@ changes:
     re-roll would only permute the display order. The slot count is
     **always strictly below the pool size** — that is the rule, the
     number follows from §3.2.
-    **Applied 2026-08-07**: §3.2 gained the caster 1H family
-    (wand / scepter / orb, §3.6a), so the pool is now **4** — dagger,
-    greataxe, staff, caster 1H — and the slot count rises from 2 to
-    **3**, exactly as the rule above already prescribed. Casters can now
-    buy a floor weapon, which the old three-family pool never allowed.
-    When caster 1H is selected, `(real hour, vendor, bracket)` also selects
-    exactly one of wand, scepter and orb; those three visual forms remain one
-    conceptual rotation family.
+    The active extra pool is **five** families — dagger, greataxe, staff, wand
+    and bow — with fewer rotating slots than families. Scepters and orbs are
+    not aliases or visual variants.
   - The **1-in-5 Uncommon is rolled per vendor and per bracket** (so two
     vendors in the same hour differ, and a player's own brackets differ
     from each other), replaces one of the rotating slots and is priced
@@ -1726,15 +1703,10 @@ What the windows guarantee exactly is the **expected value per affix**:
 ordering follows from them — a lucky named-rare roll beats an unlucky
 masterwork on a single item, and that is intended.
 
-Whole-item strength is a separate question because the affix *count* enters
-it, and the ordering is deliberately not total. A Master's four-slot
-masterwork stands above every ordinary found source. An **Expert's
-three-slot masterwork does not**: a named rare rolls 3 or 4 affixes at 70/30
-(3.3 on average), so its expected 3.3 x 0.75 sits slightly above the
-Expert's 3 x 0.80. That overlap is accepted, and measuring it is part of
-WP5's drop audit. §0's promise is about the **best** items — the Master
-masterwork and the boss hoard — not about every crafted item outranking
-every drop.
+Whole-item strength uses at most two affixes. Uncommon has one; Rare has one
+prefix and one suffix. Source windows may overlap by design, so a strong boss
+roll can beat a weak masterwork roll. Expert unlocks masterwork values and the
+first temper; Master unlocks the second temper.
 
 **Boss loot is not an ordinary found source but a deliberate peer of
 crafting**, at `boss` 0.80-1.00 against `crafted-masterwork` 0.60-1.00:
@@ -1863,15 +1835,10 @@ swings per second, which is the only reading under which §6.3's 3–16%
 band is a linear DPS gain; `fpi × (1 − p)` would pay more than it says.
 The override must be written as a **complete** tool-capability table — a
 plain meta float named `full_punch_interval` is not read by the engine —
-and every other capability of the base item is preserved unchanged. Enchant count: **Uncommon rolls 1–2 (60/40), Rare 3–4
-(70/30)** — the decided budgets, and from 2026-08-07 also the prefix and
-suffix count of §6b. **Those two probabilities govern sources that have no
-crafter** — mob drops and vendor stock (sharpened 2026-08-13). A *crafted*
-item's affix count is not rolled at all: it is exactly the number of slots
-the crafter's mastery may fill (§6b.5), which is also what makes an
-Apprentice's work Uncommon and a Master's Rare (§6b.6). Both readings spend
-the same 1–4 budget; only the source decides whether the count is rolled or
-determined.
+and every other capability of the base item is preserved unchanged. Enchant count: **Uncommon rolls exactly one affix; Rare rolls exactly one prefix and one suffix** — the decided budgets, and from 2026-08-07 also the prefix and
+suffix count of §6b. Found/vendor Uncommon sources receive one affix and Rare
+sources receive both channels. Crafted results use the same exact shape;
+mastery controls which operation is available (§6b.5), not a random count.
 
 Cultural finish and PvP-special lines are displayed separately, naming their
 culture/target and exact value. Trinkets are the exception to the ordinary
@@ -1897,14 +1864,19 @@ preserves the requirement while rebuilding the description.
 
 | Family | Pool |
 |---|---|
-| Melee weapons | +Str, +Dex, +attack speed%, +crit%, +max HP% |
-| Caster weapons/offhands | +Int, +max mana%, +crit%, +max HP% |
-| Metal armor | +Str, +max HP%, +armor%, +dodge% |
-| Leather armor | +Dex, +max HP%, +crit%, +dodge% |
-| Cloth armor | +Int, +max mana%, +max HP%, +crit% |
+| Sword, dagger, greataxe | +Str, +Dex, +attack speed%, +crit%, +max HP%, +max Mana% |
+| Bow | +Dex, +crit%, +attack/draw speed%, +max HP%, +max Mana% |
+| Staff, wand | +Int, +max Mana%, +crit%, +max HP% |
+| Shield | +Str, +Dex, +max HP%, +armor rating |
+| Goldsmith spellbook | +Int, +max Mana%, +crit%, +max HP% |
+| Metal armor | +Str, +max HP%, +armor rating |
+| Leather armor | +Dex, +max HP%, +max Mana%, +crit%, +dodge% |
+| Cloth armor | +Int, +max Mana%, +max HP%, +crit% |
+| Quiver, bags | none |
 
-Ordinary equipment keeps the no-duplicate-stat rule inside its up-to-four
-prefix/suffix slots. Cultural finish and PvP-special stats are separate named
+Ordinary equipment keeps the no-duplicate-stat rule across its prefix and
+suffix. Either channel draws from the same family pool. Cultural finish and
+PvP-special stats are separate named
 sources and may match an ordinary affix; all sources add before final caps.
 Every HP/Mana affix is stored as a percentage: HP uses the current-level base
 pool after the HP class factor, while Mana uses the class-neutral base pool.
@@ -2001,8 +1973,8 @@ Two consequences, both intended:
   band — +1–3 Str, not +6–12. **The item is what is weak, not the
   crafter**, and this is the same rule as "a T2 enchant cannot be applied
   to a T1 item", read from the roll table's side. What the Master's rank
-  still buys on that sword is the **slot count** (all four, §6b.5) and
-  the crafted-masterwork window below, not a bigger number per slot.
+  still buys on that sword is access to the later value operations (§6b.5),
+  not a bigger number per slot.
 - **An Apprentice fills one slot even on a T6 item.** Mastery decides
   *how many* affixes a crafter may put on an item (§6b.5), never *how
   big* they are: an Apprentice working T6 stock produces a one-affix
@@ -2076,12 +2048,12 @@ the quality thresholds are unchanged.
 - **Refinement → Common, refined** (§6b.1/§6b.2). Still Common — a
   refined item has no enchants yet, so it cannot be blue. Professions
   only.
-- **Fine recipes** = refine + **1–2 affixes** plus an authored tier reagent
+- **Fine recipes** = refine + **exactly one prefix** plus an authored tier reagent
   (venom sac, slime gel, sleek pelt, etc.) → **Uncommon**, crafted-fine
   window. A generic Cut Gem is not charged automatically: T4–T6 base combat
   gear already pays its specific G2, and refinement/affix application never
   repeats that tax.
-- **Masterwork recipes** = refine + **3–4 affixes** (Expert/Master only;
+- **Masterwork recipes** = refine + **one prefix and one suffix** (Expert/Master only;
   + one qualifying named-rare trophy or Fallen Crown in the trophy slot) →
   **Rare**, crafted-masterwork window. The trophy is consumed when the final
   masterwork state is applied; an Abyssal Steel item names that state
@@ -2090,10 +2062,8 @@ the quality thresholds are unchanged.
   from crafting or hard bosses" literally true: the two top windows are
   crafted-masterwork 0.60–1.00 and boss 0.80–1.00.
 
-The mapping is exact: §0's **Uncommon = 1–2 enchants, Rare = 3–4** and
-§6b.4's **2 prefixes + 2 suffixes = 4 slots** are the same budget counted
-two ways. Trinkets follow §6.2's fixed two-affix exception rather than this
-ordinary equipment count.
+The mapping is exact: §0's **Uncommon = one enchant, Rare = prefix + suffix**.
+Trinkets follow §6.2's separately fixed prefix/suffix/special contract.
 
 ## 6b. Refinement, affixes and special variants (decided 2026-08-07)
 
@@ -2152,18 +2122,12 @@ that arrived pre-enchanted from a mob.
 
 Enchants are expressed in the item name as **prefixes and suffixes**.
 
-- **Maximum 2 prefixes + 2 suffixes = 4 enchant slots.** That is the hard
+- **Maximum one prefix plus one suffix = two ordinary enchant slots.** That is the hard
   ceiling for any item in the game.
-- **Which side a rolled affix takes is positional, not random** (decided
-  2026-08-13): the four slots are filled in the fixed order **prefix,
-  suffix, prefix, suffix**. One affix is a prefix, two are one of each,
-  three are two prefixes and one suffix, four are the full pair. The side
-  therefore follows from the slot number, an affix never changes side when
-  a higher-mastery crafter fills a later slot (§6b.5), and the description
-  pipeline can regenerate a name deterministically — which §6.1 requires.
-  Both word lists stay fully in play; a stat-fixed assignment (attributes
-  always prefix, secondaries always suffix) was rejected because it would
-  retire nine of the eighteen decided words.
+- The first affix occupies the prefix channel and the second the suffix channel.
+  Both draw from the item's same legal family pool, use that stat's word for
+  the channel, and cannot repeat a stat. The name therefore regenerates
+  deterministically while all eighteen words remain useful.
 - **Prefixes** name a stat the item gives its wielder as an adjective;
   **suffixes** do the same in the genitive. The complete vocabulary is
   decided (2026-08-13): **exactly one prefix word and one suffix word
@@ -2185,19 +2149,14 @@ Enchants are expressed in the item name as **prefixes and suffixes**.
   **The stat names are §6.2's own, verbatim** (aligned 2026-08-08: the
   ox used to be written "+health", which is not a stat this game has).
   **§6.2 remains the sole legality source**: an affix is legal on an
-  item family iff its stat is in that family's pool (the +armor% words
-  can therefore only ever appear on metal armor), and the trinket
+  item family iff its stat is in that family's pool (armor-rating words
+  can therefore appear only on metal armor and shields), and the trinket
   exception in §6.2 constrains its two slots the same way. Every word
   maps to exactly one stat — there is **no poison stat** in this game
   (see §6.2 and `combat_stats.md` §2; poison arrives with the Rogue in
   Phase 2, `classes.md` §6), and an affix word for a stat nothing
   consumes is a bug, not flavour.
-- **Two suffixes combine into one phrase**: "of Bear and Ox" — the "the"
-  is dropped when combining, because "of the Bear and the Ox" reads
-  badly. One suffix keeps it: "of the Ox".
-- Examples: *Stone Sword of the Ox*, *Lucky Stone Sword of the Bear*,
-  *Heavy Lucky Stone Sword*, *Heavy Lucky Stone Sword of Bear and Ox*
-  (a full four-slot Master piece).
+- Examples: *Stone Sword of the Ox* and *Lucky Stone Sword of the Bear*.
 - **The refinement word disappears as soon as an affix is present.** An
   enchanted sword is "Stone Sword of the Ox", never "Honed Stone Sword of
   the Ox". Since only refined items can be enchanted (§6b.3), the refined
@@ -2213,18 +2172,16 @@ Enchants are expressed in the item name as **prefixes and suffixes**.
   under the grey stat lines. The word says which stat, the line says how
   much.
 
-### 6b.5 Mastery tier = fillable slots
+### 6b.5 Mastery tier = slot and value operations
 
-| Mastery | Fillable enchant slots |
+| Mastery | Operation unlocked |
 |---|---|
-| Apprentice | 1 |
-| Journeyman | 2 |
-| Expert | 3 |
-| Master | 4 |
+| Apprentice | prefix; crafted-fine values |
+| Journeyman | suffix; Imbue kit |
+| Expert | first temper; masterwork values |
+| Master | second and final temper |
 
-An Apprentice can put one affix on a refined item; a Master can fill all
-four. The slots are the item's — a Master can add a second affix to a
-one-affix item an Apprentice made, up to four. This is the second reason
+An Apprentice can fill the prefix on a refined item; a Journeyman can add the suffix. Expert and Master improve values through the first and second temper without creating more slots. This is the second reason
 mastery matters (the first is the exclusive recipes, §2.1) and it is what
 makes a Master crafter worth seeking out on a server.
 
@@ -2233,7 +2190,8 @@ transaction consumes the refined concrete item, one same-tier professional
 material and the authored tier reagent; it appends one random legal stat, never
 duplicates an existing stat, preserves all prior values and stack metadata, and
 awards one craft credit only after successful settlement. Character levels
-1/16/31/46 permit 1/2/3/4 filled slots respectively.
+1/16/31/46 unlock prefix, suffix, first temper/masterwork values and second
+temper respectively.
 
 ### 6b.6 Ordinary-equipment quality follows the slot count
 
@@ -2242,14 +2200,15 @@ No new rule — §6.1's budgets, read through the affix model:
 | Affixes | Quality | Colour |
 |---|---|---|
 | 0 | Common | white |
-| 1–2 | Uncommon | blue |
-| 3–4 | Rare | yellow |
+| 1 | Uncommon | blue |
+| 2 | Rare | yellow |
 
-So an Apprentice and a Journeyman produce Uncommon ordinary items; an Expert
-and a Master produce Rare ones. The roll **values** come from the §6.3 band of
+An Apprentice can produce Uncommon ordinary items; Journeyman adds the suffix
+needed for Rare. Expert and Master improve values without adding slots. The
+roll **values** come from the §6.3 band of
 the **item's** ilvl (sharpened 2026-08-08), in the crafted-fine or
-crafted-masterwork window (§6.4): mastery buys the number of slots on
-this table, never the size of what goes into one. Trinket quality instead
+crafted-masterwork window (§6.4): mastery gates operations, never the item's
+value band. Trinket quality instead
 communicates source/roll window and never changes its fixed two-affix-plus-
 special shape (§6.2).
 
@@ -2259,8 +2218,8 @@ A profession can turn a **refined but not yet enchanted** item into a
 **special variant** with an effect of its own — an "Iron Frost Armor"
 that slows attackers, for instance.
 
-- An ordinary special variant **keeps its full 2 prefix + 2 suffix slots on
-  top of its one authored effect.** The effect is not one of the four. It is
+- An ordinary special variant **keeps its full one-prefix/one-suffix slots on
+  top of its one authored effect.** The effect is not one of the two. It is
   also distinct from §4's cultural-finish and PvP-special metadata; every
   legal combination participates in the combined cap audit.
 - The input must be unenchanted: the special variant is a step *between*
@@ -2283,21 +2242,18 @@ polish = Armorsmith, whetstones = Weaponsmith, armor kits = Leatherworker, embro
 wood oils = Woodcarver, gem settings = Goldsmith, imbuing oils =
 apothecary gear):
 
-- **Imbue kit** (per material tier): **refined** Common → Uncommon; rolls
-  1–2 affixes in the crafted-fine window, and **that count is rolled 60/40
-  like any crafterless source** (§6.1, sharpened 2026-08-13): the kit is
-  applied without a crafter present, which is exactly why §7 describes its
-  outcome as a range instead of a mastery slot count. The maker's mastery
-  gates which kit exists at all, not how many affixes it lands. Cost ≈ 1 tier reagent + tier
+- **Imbue kit** (per material tier): **refined** Common → Uncommon and rolls
+  exactly one prefix in the crafted-fine window. The maker's mastery gates
+  which kit exists. Cost ≈ 1 tier reagent + tier
   materials. *Sharpened 2026-08-07*: the input must be **refined**
   (§6b.3) — a kit is a way to apply affixes, and affixes need a refined
   item like every other route to them. The kit is bought from a
   profession; applying it is not.
 - **Temper kit** (Expert/Master): re-rolls all affix VALUES on an
-  Uncommon/Rare item; 1st application window 0.50–0.95, 2nd 0.60–1.00,
+  Uncommon/Rare item; first application (Expert) window 0.50–0.95, 2nd 0.60–1.00,
   **max 2** (`grug_upgrades` meta). Never changes affix count or quality
-  tier — an imbued Common (now Uncommon, 1–2 affixes) stays strictly
-  below a fresh Rare (3–4 affixes): the decided "upgraded mediocre item
+  tier — an imbued Common (now Uncommon, one affix) stays structurally
+  below a fresh Rare (two affixes): the decided "upgraded mediocre item
   never becomes a top item", enforced structurally, not by caps.
 - **Kit mastery rule** (decided 2026-08-13): imbue kits unlock at
   Journeyman and temper kits at Expert; a profession's second kit
@@ -2359,11 +2315,9 @@ rows are deleted; no Dowsing Rod or Gem Detector is sold or crafted.
 
 ### 8.3 Recurring sinks
 
-- **Repair:** broken gear stops functioning but is never destroyed. Repair
-  cost scales with item level/quality on the same tiered money axis. The wear
-  target remains approximately 3,000 combat events per ordinary item and
-  6,000 for a refined item; exact prices participate in the reliable-net-
-  income measurement rather than using the retired flat formula.
+- **Repair:** [durability_repair.md](durability_repair.md) is authoritative for
+  eligible identities, exact wear events, non-destruction, the 3,000/6,000
+  budgets, all-trainer service and the money-only 20%-of-reference-price quote.
 - **Respec:** repeatable **in the talent UI, with no class trainer and no
   NPC** (ruling 4 of 2026-09-16, `skill_trees.md` §5). It costs **five
   minutes of measured reliable net solo income** at the character's bracket,
@@ -2435,17 +2389,12 @@ attribution-requiring sound, not two; port ≈ 1000 lines incl.
   material-named like everything else (§3.0.3).
 - **Arrows** as stackable ammo + entity (vl_projectile template);
   craft 20/batch: 1 iron bar + 4 sticks + 4 feathers (sharp feathers —
-  eagle/vulture drops finally get their reagent role). Quiver =
-  Leatherworker bag-slot item holding only arrows (§3.4).
-- **Producer: the Woodcarver** (decided 2026-08-07). This replaces the
-  old "Bowyer = Leatherworker split" assignment — the Woodcarver already
-  owns every other wooden ranged/caster weapon (§3.6a), so the bow needs
-  no new profession and the Bowyer split is dropped from professions.md
-  §5 entirely.
-- No current or committed class consumes a bow baseline. The item/ammo/entity
-  foundation is license-clean and has an owner, but it creates no player-facing
-  bow, arrow or quiver registrations or recipes until a class package explicitly
-  adopts it.
+  eagle/vulture drops finally get their reagent role). The optional quiver is
+  a Leatherworker Offhand item with four arrow-only slots (§3.4).
+- **Plain production is Basics; Woodcarver owns refinement and affixes.** The
+  Scout consumes the family in V1. The Leatherworker's Apprentice quiver is an
+  optional four-stack Offhand convenience; shooting still reads `main` when no
+  quiver is equipped.
 
 ## 10. Historical decision log (non-authoritative)
 

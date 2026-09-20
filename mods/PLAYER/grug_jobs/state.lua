@@ -4,6 +4,14 @@ local META_LEARNED = "grug_jobs:learned:"
 local META_LEVEL = "grug_jobs:level:"
 local META_CRAFTS = "grug_jobs:crafts:"
 
+local function mastery_band(player)
+	local level = grug_xp.get_level(player)
+	if level >= 46 then return 4 end
+	if level >= 31 then return 3 end
+	if level >= 16 then return 2 end
+	return 1
+end
+
 grug_jobs.CRAFTS_TO_ADVANCE = {10, 15, 20, 25, 30}
 
 local function set_string(meta, key, value)
@@ -74,6 +82,7 @@ function grug_jobs.learn(player, profession)
 	end
 	local text = "Learned " .. definition.name .. "."
 	message(player, text)
+	if grug_inventory and grug_inventory.refresh then grug_inventory.refresh(player, true) end
 	return true, text
 end
 
@@ -95,6 +104,7 @@ function grug_jobs.unlearn(player, profession)
 	set_int(meta, META_CRAFTS .. profession, 0)
 	local text = "Unlearned " .. definition.name .. "; its progression was lost."
 	message(player, text)
+	if grug_inventory and grug_inventory.refresh then grug_inventory.refresh(player, true) end
 	return true, text
 end
 
@@ -148,7 +158,9 @@ function grug_jobs.record_craft(player, profession, tier)
 	return false, current
 end
 
-function grug_jobs.can_craft_recipe(player, recipe)
+-- Shared progression authority for recipe books and the actual craft gate.
+-- Station-specific access is checked separately at the point of crafting.
+function grug_jobs.recipe_progress_unlocked(player, recipe)
 	if type(recipe) ~= "table" or not grug_jobs.has(player, recipe.profession) then
 		return false, "Learn " ..
 			(recipe and grug_jobs.PROFESSIONS[recipe.profession] and
@@ -160,6 +172,16 @@ function grug_jobs.can_craft_recipe(player, recipe)
 		return false, grug_jobs.PROFESSIONS[recipe.profession].name ..
 			" tier " .. recipe.tier .. " required."
 	end
+	if recipe.mastery_required and mastery_band(player) < recipe.mastery_required then
+		local names = {"Apprentice", "Journeyman", "Expert", "Master"}
+		return false, names[recipe.mastery_required] .. " mastery required."
+	end
+	return true
+end
+
+function grug_jobs.can_craft_recipe(player, recipe)
+	local unlocked, reason = grug_jobs.recipe_progress_unlocked(player, recipe)
+	if not unlocked then return false, reason end
 	local handler = grug_jobs.station_handler(recipe.station)
 	if handler and handler.can_use then
 		local allowed, reason = handler.can_use(player, recipe)
