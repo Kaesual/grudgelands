@@ -490,6 +490,7 @@ return function(root, options)
 	assert(grug_mounts.warning_state(rider,
 		{x = 616, y = 100, z = -2200}) == "ocean",
 		"reviewer bay-edge witness did not warn")
+	if not options.compact then
 	local wp40 = root .. "/mods/MAPGEN/grug_mapgen/wp40"
 	local common = dofile(root .. "/tools/wp40/r6/common.lua")
 	local production_source = dofile(wp40 .. "/source/simple_map.lua")
@@ -514,6 +515,7 @@ return function(root, options)
 		{x = 616, y = 100, z = -2200}) ~= nil,
 		"production reviewer bay-edge witness did not warn")
 	grug_zones = fixture_zones
+	end
 
 	surface_height = 20
 	rider.pos = {x = -100, y = 19, z = -100}
