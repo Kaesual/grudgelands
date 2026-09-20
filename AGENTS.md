@@ -419,7 +419,7 @@ Details + line numbers in [docs/research/](docs/research/).
   UI state only and no melee, hostile cast or projectile may read it as aim;
   friendly skills always resolve through valid pointed ally → valid ally
   memory → self. WP19 also added **absorb
-  shields** (`grug_core.set_absorb`, soaked in the central
+  shields** (`grug_core.add_absorb`, soaked in the central
   hp modifier after dodge/fall mitigation), **race passives** as a perk
   table in the grug_classes race registry (`grug_classes.get_race_perk`,
   stub-mirrored as `grug_core.get_race_perk`; elf range via per-stack

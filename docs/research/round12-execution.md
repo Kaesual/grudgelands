@@ -1,7 +1,7 @@
 # Round 12 execution checkpoint
 
 Date: 2026-09-20. User explicitly said **Go** after the independent plan review.
-Status: ACTIVE. Integration branch `wp12-round12`, starting main `3fdd6b35`.
+Status: TECHNICALLY COMPLETE; final main/sync/push delivery in progress. Integration branch `wp12-round12`, starting main `3fdd6b35`.
 Authority: `round12-plan/README.md`, three package annexes and corrected review.
 Frozen planning hashes remain historical and must not be rewritten during work.
 
@@ -171,3 +171,31 @@ at `f86bc36a`; root integrated the three commits as `fa4b7ab6`, `afa7e632`,
 `c46d94eb`. Native catalog: 830 routes, 596 Basics, 234 profession-owned,
 63 starters, five dual alloys, four Bronze armor starters; all three refinements
 have actual Cooking authority. X3 final correction/review remains pending.
+
+## X3 corrective handoff
+
+Separate Astra implementation froze `65aaf78c` in `/tmp/grug-r12-talents`.
+110 native assertions pass through actual talent, cast/held-swing, projectile,
+HP-modifier, movement, status and repair consumers with synthetic player/mob
+adapters. Final staged bytes match the recorded hashes. Original independent
+Astra reviewer is checking the ten findings and corrective diff; integration
+remains gated on its clean verdict. Root prepared the wp39 fixture's explicit
+named absorb calls and untalented window API stubs; these are untested until
+X3 integrates. Final shared Skills/combat/UI regressions and isolated integrated
+native probe remain mandatory. Native GUI/network-client behavior is not claimed.
+
+## Final technical gate (supersedes pending entries above)
+
+All implementation packages are independently clean. X3 worker `65aaf78c` was
+integrated as `1215c270`, `999dd7a3`, `a5dae0e7`, `1a4b5c58`; its original
+independent Astra reviewer also approved the merged Skills guards and neutral
+fixture dependency updates. Final native X3: 110 assertions PASS. Separate
+native catalog probe: 596 Basics / 63 starters / 57 foods / four Bronze armor
+starters PASS. Four shared LuaJIT fixtures PASS; 351-file plain-5.1 parser,
+SETGLOBAL/five sweeps and 13 unchanged pins PASS. No PUC runtime. All 1,961
+runtime payload bytes match the native staging manifest.
+
+Completion/status docs, gallery and next-playtest checklist are prepared.
+New user-reported shared world-station ownership is investigated and tracked in
+`TODO-station-ownership.md`; the user explicitly kept its implementation outside
+this round. Current remaining actions: final commit, main merge, sync and push.

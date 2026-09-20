@@ -1,7 +1,7 @@
 # Round 12 playtest checklist
 
-Delivery candidate checklist; the completion record will identify the installed
-reviewed build. Restart Luanti after the coordinator reports synchronization.
+Reviewed Round12 checklist; see [completion](round12-completion.md) for evidence
+and limits. Restart Luanti after the coordinator reports synchronization.
 Use a fresh world/character for onboarding and recipe discovery. Creative is
 useful for art inspection, but intentionally disables ordinary durability wear.
 Use `/help` for existing `/giveme`, `/xp`, `/money` and `/talents` diagnostics;

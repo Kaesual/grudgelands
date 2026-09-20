@@ -137,13 +137,17 @@ cultural finish and a separate target-race PvP-special channel instead of
 creating parallel catalogs. The equipped weapon slot is the sole source of a
 skill's damage and appearance; the Character page also carries four armor
 slots, an offhand, two trinkets and four bags; the approved Round-11 catalog
-adds equivalent cloth and leather bag lines.
+adds equivalent cloth and leather bag lines. The Skills tab lists unlocked
+abilities and every purchased mount tier; discarded representations can be
+recovered without losing entitlement or resetting cooldowns.
 
 [Farming](docs/design/farming.md) defines crop cultivation, tiered hoe lifetime,
-water-only buckets and slow bounded renewal of depleted wild plants.
+water-only buckets and slow bounded renewal of depleted wild plants. Seventeen
+crop families use distinct shapes and annual, regrowing or retained-base
+lifecycles, including vertical Corn, Cane and Bamboo.
 [Durability and repair](docs/design/durability_repair.md) keeps broken gear and
 lets every city profession trainer repair it for copper, with a maximum price
-of 20% of its reference purchase price. Both are delivered in Round 11.
+of 20% of its reference purchase price. The Round 11 foundation is delivered; Round 12 extends the crop families.
 
 [Seven primary professions](docs/design/professions.md) are cut by material:
 Weaponsmith, Armorsmith, Leatherworker, Tailor, Woodcarver, Goldsmith and
@@ -153,10 +157,13 @@ material tiers, while four mastery bands control improvement slots and selected
 exclusive recipes.
 
 Plain feedstocks and familiar base weapons, tools and metal, leather and cloth
-armor belong exclusively to **Basics** and require no profession. Each
+armor belong exclusively to **Basics** and require no profession. Starter routes
+are visible immediately; later routes appear after first acquiring their main
+material, without gating crafting. Each
 profession owns only its improvement and specialist routes; Weaponsmith and
 Armorsmith share the Forge with separate authorization. Cooking keeps its
-ordinary grid and furnace routes. The integrated, independently reviewed equipment work completes these catalogs,
+ordinary grid and furnace routes, including Bread, Cooked Meat and Cooked Fish.
+All food statuses last five minutes. The integrated, independently reviewed equipment work completes these catalogs,
 terminal refinement, direct affix application and the retained kit model. MAP-B is
 integrated and independently reviewed. Final interpreter parity and delivery
 are complete; GUI acceptance remains pending.
@@ -229,7 +236,8 @@ asymmetric.
 [Mounts](docs/design/mounts.md) have integrated, independently reviewed Round-10
 runtime, capital-service and art changes. Final interpreter parity and delivery
 are complete; GUI acceptance remains pending. Riding unlocks at levels 15/30/45/60; T1
-moves at 6.4 nodes/s (+60%), while later land/flight tiers retain 8/7/10. The
+moves at 6.4 nodes/s (+60%), while T2/T3/T4 run at 8/8/12 nodes/s. Purchased earlier tiers remain
+recoverable through Skills at their original speeds. The
 owner's mesh is hidden only in first person, an untimed status shows tier and
 actual speed, land mounts step over half/full blocks, and all mounted attacks are
 refused. Capital-only Riding Trainers, twelve rendered icons and all six stable layouts
@@ -252,54 +260,41 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 ## Current State
 
 *Last updated: 2026-09-20. Derived from [BACKLOG.md](BACKLOG.md) and
-[ROADMAP.md](ROADMAP.md); Round 11 technical delivery is complete;
-the first playtest and focused followup checks remain the GUI acceptance gate.*
+[ROADMAP.md](ROADMAP.md); [Round 12 technical delivery](docs/research/round12-completion.md)
+is complete. GUI acceptance is the next user playtest.*
 
-**Shipped foundation:** 23 of 53 tracked identities are complete: WP0–WP4,
+**Shipped foundation:** 24 of 53 tracked identities are complete: WP0–WP4,
 WP6, WP7, WP15, WP18, WP19, WP25, WP26, WP33, WP35, WP36, WP38, WP39, WP40,
-WP43, WP45, WP-HUD, WP-Speed and WP-Scout. The denominator includes numbered
-WP0–WP49 and the three named packages; canceled WP16 is tracked but not shipped.
-These foundations provide four classes, combat, mobs, the named-zone world,
-materials, gathering, equipment, currency, Cooking/Alchemy and safe character creation.
+WP43, WP45, WP47, WP-HUD, WP-Speed and WP-Scout. The denominator includes
+WP0–WP49 and three named packages; canceled WP16 is tracked but not shipped.
+The game provides four classes, combat, mobs, the named-zone world, professions,
+equipment, farming, mounts and safe character creation.
 
-**Delivered Round 11:** the independently reviewed build adds Scout and both
-trees, live shields/books/quivers, family-filtered affixes, attacker-level armor,
-slow equipment wear and money-only repair. Farming gains distinct seed art,
-seven hoes, water buckets and bounded wild-plant renewal at lower initial density.
-Reported beach columns, dragon persistence, mount orientation, station windows
-and book refresh are corrected; open animated stables and profession displays
-extend all six capitals. Targeted LuaJIT, plain-5.1 static and isolated native
-engine checks pass; PUC runtime was explicitly waived for this round.
+**Delivered Round 12:** Skills provides disposable, recoverable ability icons
+and every purchased mount tier at its original speed. Farming now has distinct
+seventeen-family growth/harvest behavior; all food buffs last five minutes.
+Basics reveals later recipes through main-material discovery, while real Cooking
+authority keeps its dishes exclusive. Larger inventory/Talents pages, onboarding
+Help, Creative Food, held-item fallback, revised food/wand/Greataxe art and the
+original-class X3 talent consumers are independently reviewed and integrated.
 
-The first-playtest [followups](docs/research/round11-playtest-followups.md) add
-directional arrow meshes, bow draw stages, reliable outer-district trainers and
-the requested Sprint/mount speeds. Arrows stack to 200 and new Scouts receive
-200. The beach fix is user-accepted; bow feel still needs GUI confirmation,
-including the documented initial LMB camera gesture. The subsequent
-[vegetation fix](docs/research/round11-vegetation-chase-fix.md) restores mob
-pursuit through harmless plants while preserving cliff protection. The user
-accepted that fix. Reviewed [interaction corrections](docs/research/round11-interaction-followups.md)
-now limit ability pickup to 4 m, add mounted A/D and prevent simultaneous NPC
-interaction and mount activation. [Round 12](docs/research/round12-plan/README.md) now plans the expanded farming,
-Skills, art/UI and original-class talent work; implementation awaits the final
-round Go.
-
-**In progress:** WP11 still owns the original three classes' remaining X3
-abilities and capstones; Scout completion does not close that broader package.
-WP13 has six starts and capitals but still owns most of the 100-anchor POI roster.
-WP10/WP29 retain broader catalog/economy work, WP14 retains carried light, and
-WP22 retains six-pick runtime calibration and the deferred repair redesign.
-Ordinary farming is delivered independently of future Claim Stone integration.
+**In progress:** WP11 retains WP44's measured respec-price calibration; WP13
+retains most of the 100-anchor POI roster. WP10/WP29 retain broader catalog and
+economy work, WP14 carried light, and WP22 six-pick runtime calibration plus the
+deferred repair redesign. Ordinary farming is delivered; Claim Stone integration
+still belongs to WP24/WP32.
 
 **Not yet:** quests, parties, remaining recovery work, Housing, geographic PvP,
-war fronts and the first-public-release gates remain open. WP44 owns the full
-economy rebase, while WP46's general explosion/fire/lava protection extends beyond
-the delivered water guard. GUI acceptance remains required for the new gameplay
-and visual changes; use the [Round-11 fresh-world checklist](docs/research/round11-next-playtest.md).
+war fronts and first-public-release gates remain open. Focused LuaJIT, static
+Lua-5.1 and isolated native checks pass; PUC runtime was explicitly excluded.
+Use the [Round12 fresh-world checklist](docs/research/round12-next-playtest.md)
+and [art gallery](docs/research/round12-gallery.md); the separate UX review is
+source/heuristic evidence and leaves four proposals for later selection.
+Shared world-station inventories also need the newly identified
+[ownership followup](TODO-station-ownership.md) before multiplayer acceptance.
 
-Historical Round-7 through Round-10 decisions are archived under
-[docs/research/](docs/research/); current rules live only in `docs/design/`, and
-remaining work lives in BACKLOG/ROADMAP or focused topic TODOs.
+Historical round records live under [docs/research/](docs/research/); current
+rules live in `docs/design/` and remaining work in BACKLOG/ROADMAP or topic TODOs.
 
 ## Running it
 

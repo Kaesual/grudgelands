@@ -188,6 +188,8 @@ local function build_env()
 	end
 
 	local grug_core = {}
+	function grug_core.absorb_modifier() return 0 end
+	function grug_core.clear_absorb_modifiers() end
 	function grug_core.get_armor_rating(player) return player._armor or 60 end
 	function grug_core.get_player_level(player) return player._level end
 	function grug_core.armor_reduction(rating, level, cap)

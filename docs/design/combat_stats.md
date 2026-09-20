@@ -70,7 +70,7 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   second time.** Flash Heal and Shield are each 25% of `P(L)`; each Renew tick
   is 8%. Multiply that pool share by `1 + spell power/100`, then pass the
   resulting absolute amount unchanged through `scale_player_value` and the
-  existing `heal_player`/`set_absorb` seams. Percentage consumables likewise
+  existing `heal_player`/`add_absorb` seams. Percentage consumables likewise
   derive once from the relevant final pool and bypass the damage scalar.
 - **Mana costs** are rounded percentages of the unmodified `P(L)`, minimum 1.
   HP/mana enchants and pool talents therefore change capacity, not spell cost.

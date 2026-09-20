@@ -1,8 +1,9 @@
 # Round 12 X3 corrective candidate
 
 Author: native Astra. Base: `5799c524` on `wp11-r12-talents`.
-Independent review: **pending** re-review by the original independent Astra
-reviewer; this implementation record does not approve integration.
+Independent review: **CLEAN** at worker commit `65aaf78c`; see
+`docs/research/round12-reviews/x3.md`. Root integrated the corrections with
+Skills; final integrated evidence lives under `tools/r12_integration/evidence/`.
 
 ## Finding and requirement matrix
 
@@ -22,9 +23,10 @@ reviewer; this implementation record does not approve integration.
 Additional concrete consumer fixes: Frostbind passes `hostile` when acquiring
 its remote target instead of its base registration's `self`; Tendon Cut uses
 the real player hard-root flag, then the independent slow countdown. Existing
-untalented Frost Nova movement values are preserved. Repair previously ignored
-opaque `{}`/swing-context identities because it expected every table to have
-an `id`; the real-wear assertions cover the corrected representation.
+untalented Frost Nova movement values are preserved. The repair expression was parenthesized for clarity; its old Lua `and/or`
+expression already fell back to the opaque table, so that rewrite is behaviorally
+equivalent. The actual wear correction shares one accepted action identity across
+primary and support/secondary effects; the real-wear assertions cover that rule.
 
 ## Reproduction and results
 

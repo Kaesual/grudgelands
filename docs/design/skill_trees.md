@@ -6,7 +6,7 @@ rulings of **2026-09-16** (§5) replace the budget, the tree size, the tier
 shape, the capstone rule and the respec seam, and add a fourth class. This
 revision rebuilds the decided design on those rulings.
 
-**Status, 2026-09-17: lanes X1, X2 and X4 of §4 are implemented.** X1/X2
+**Status, 2026-09-20: lanes X1–X4 of §4 are implemented.** X1/X2
 (round 4, lane W1) shipped `mods/PLAYER/grug_classes/talents.lua` with the 48 talents of the three
 shipped classes, the point budget, both gate kinds, the spend/respec rules,
 the validating persistence path, the window table and the two accessors, plus
@@ -15,11 +15,10 @@ the thirty numeric consumers of §3.8 and the code halves of rulings 19, 20 and
 and level-up notice; `/talents` remains read-only and the interim `/talent` and
 `/respec` commands are gone. WP44 has not published measured income yet, so
 X4's six prices remain the explicitly named coordinator placeholder in
-`talents_ui.lua`, not accepted measured values. Lane X3 remains open except
-for the targeted Round 11 armor slice: Ironbound's rating bonus and Unbroken's
-×1.40 rating multiplier plus bounded +15-rating emergency window are delivered
-under the universal 70% reduction cap. Other keystones, capstones and cap
-overrides remain unimplemented. The X1/X2 record:
+`talents_ui.lua`, not accepted measured values. Round 12 completes X3's
+original-class abilities, replacements and capstone consumers, including named
+absorb contributions and accepted-action settlement. Round 11's Scout trees,
+Ironbound and Unbroken are preserved under their decided caps. The X1/X2 record:
 `docs/research/wp11-talents-phase1.md`.
 
 Companion files written with this revision:
@@ -297,7 +296,7 @@ review gates remain unchanged.
 |---|---|---|---|---|---|---|---|---|
 | 1 | **Ironbound** | Wall | 1 | 5 | — | +1 / 2 / 3 / 4 / 5 armor rating | armor-rating aggregate | `armor_rating_add` |
 | 2 | **Weathered** | Wall | 2 | 4 | — | max HP +1.5 / 3 / 4.5 / 6% of the class base pool | `grug_classes/stats.lua` | `max_hp_percent_add` |
-| 3 | **Hold Ground** *(keystone)* | Wall | 3 | 3 | **new skill** ‼ | cast, 25 rage, self; absorbs 20% / 30% / 40% of the class-neutral base pool for 8 s, **and for those 8 s the Warrior cannot be rooted or slowed**. *Limit: 8 s, **60 s cooldown**.* | new; `grug_core.set_absorb`; the immunity is a flag the speed aggregator of §3.9 already has to read | — |
+| 3 | **Hold Ground** *(keystone)* | Wall | 3 | 3 | **new skill** ‼ | cast, 25 rage, self; absorbs 20% / 30% / 40% of the class-neutral base pool for 8 s, **and for those 8 s the Warrior cannot be rooted or slowed**. *Limit: 8 s, **60 s cooldown**.* | new; `grug_core.add_absorb`; the immunity is a flag the speed aggregator of §3.9 already has to read | — |
 | 4 | **Unbroken** *(capstone)* | Wall | 4 | **1** | **effect** ‼ | permanently multiplies total armor rating by **1.40** after the Warrior commits 21 points to Bulwark. The first hit in **180 s** that would take the Warrior below 20% max HP then adds **15 rating after the multiplier** for 8 s. The universal 70% reduction cap remains. | armor-rating aggregate plus the hp-change threshold/window | `armor_rating_multiplier`, `armor_rating_add_low_hp` |
 | 5 | **Spite** | Anvil | 1 | 5 | — | +1 / 2 / 3 / 4 / 5 rage per hit taken (base 3) | `grug_abilities/init.lua:2491-2495` | `rage_per_hit_taken_add` |
 | 6 | **Affront** | Anvil | 2 | 4 | — | tank-ability threat ×3 → ×3.25 / 3.5 / 3.75 / 4.0 | casts in `grug_core/combat.lua:1083-1089`; authoritative swings in `grug_abilities/init.lua:1383-1389` | `threat_mult_add` |
@@ -384,7 +383,7 @@ rule-breaker besides its capstone — see §2.9's note on the bounded pass.
 | 4 | **Rimebite** *(capstone)* | Frost | 4 | **1** | **effect** | every root Frost Nova applies also deals `5 + floor(spell power / 2)` on application | `kits.lua:581-598` | `control_damage_add` |
 | 5 | **Cold Focus** | Ward | 1 | 5 | — | in-combat mana regeneration ×1.2 / ×1.4 / ×1.6 / ×1.8 / ×2.0 (the base rate is `max(0.25 × (1 + 0.15 × level), 0.0025 × maximum mana)` mana/s, combat_stats.md §5) | `grug_abilities/init.lua` mana-regeneration ticker | `combat_mana_regen_add` |
 | 6 | **Quick Step** | Ward | 2 | 4 | — | Blink cooldown 15 s → 13.5 / 12 / 10.5 / 9 s | `grug_abilities/init.lua:1566-1567` — **not** the registration constant | `blink_cooldown_sub` |
-| 7 | **Glacial Ward** *(keystone)* | Ward | 3 | 3 | **new skill** | cast, 10% base mana, 30 s cooldown, self; absorbs 10% / 15% / 20% of the class-neutral base pool plus the spell-power percentage for 10 s | new; `grug_core.set_absorb` | — |
+| 7 | **Glacial Ward** *(keystone)* | Ward | 3 | 3 | **new skill** | cast, 10% base mana, 30 s cooldown, self; absorbs 10% / 15% / 20% of the class-neutral base pool plus the spell-power percentage for 10 s | new; `grug_core.add_absorb` | — |
 | 8 | **Far Step** | Ward | 4 | 3 | — | Blink distance 10 m → 12 / 14 / 16 m | `kits.lua:623-641` (inside the cast body, player in scope) | `blink_distance_add` |
 
 Rime also takes no rule-breaker besides its capstone, and its capstone does
@@ -420,7 +419,7 @@ sentence stays true apart from the tree's name.
 | 4 | **Last Word** *(capstone)* | Word | 4 | **1** | **effect** ‼ | while the Priest is below 25 % max HP, Word of Ruin's drain heals for **150 %** of the damage dealt — above the 100 % the pipeline otherwise allows. *Limit: 8 s per trigger, **180 s cooldown**.* | the drain half of the Word of Ruin registration | `drain_ratio_override` |
 | 5 | **Hard Faith** | Wrath | 1 | 5 | — | +1 / 2 / 3 / 4 / 5 percentage points crit chance | `grug_classes/stats.lua:122-137` | `crit_chance_add` |
 | 6 | **Warded Wrath** | Wrath | 2 | 4 | — | while the Priest carries an absorb shield, Smite deals `+1 / 2 / 3 / 4` | `kits.lua:677-717`, gated on `grug_core.get_absorb(user) > 0` (`grug_core/combat.lua:1168`) | `smite_damage_while_shielded_add` |
-| 7 | **Recompense** *(keystone)* | Wrath | 3 | 3 | **replaces Smite** | Smite costs 6% instead of 5% base mana and grants the Priest an absorb of 6% / 9% / 12% of the class-neutral base pool plus the spell-power percentage on every landed cast, refreshing rather than stacking. Same key — the solo nuke becomes the solo sustain | Smite settlement and `grug_core.set_absorb` | `smite_absorb` |
+| 7 | **Recompense** *(keystone)* | Wrath | 3 | 3 | **replaces Smite** | Smite costs 6% instead of 5% base mana and grants the Priest an absorb of 6% / 9% / 12% of the class-neutral base pool plus the spell-power percentage on every landed cast, refreshing rather than stacking. Same key — the solo nuke becomes the solo sustain | Smite settlement and `grug_core.add_absorb` | `smite_absorb` |
 | 8 | **Hardened** | Wrath | 4 | 3 | — | max HP +0.3 / 0.6 / 0.9% of the class base pool | `grug_classes/stats.lua` | `max_hp_percent_add` |
 
 Word of Ruin's drain is specified as "50 % of the damage dealt **before the
@@ -1272,7 +1271,7 @@ landed.
 |---|---|---|---|
 | **X1 — the model** | `talents.lua`: registry, the 48 talent registrations of the three shipped classes (data only, no consumer), points, the two gate kinds, spend/respec rules, persistence with the validating read path, the window table of §3.2, `get_talent_bonus` / `talent_rank`, the `on_talents_changed` callback, and the whole KAT of §3.7 except group 5's consumer half. Ships with **zero gameplay effect** — every talent is inert. | — | M |
 | **X2 — the numeric consumers** | The **30** talents of the three shipped classes that are neither keystone nor capstone, at the sites of the §3.8 table. **Twenty-five are a one-line read where the table says; five hook the three central per-player seams of §3.2** (Grudge, Quick Step, Swift Word and Onset on `arm_cooldown`; Far Cast on the spawn call and `get_range`), and each of those needs its own no-talent regression case (KAT group 8). Completes KAT groups 5 and 6. Touches shared files, so it is one lane and not split by class. | X1 | M |
-| **X3 — keystones and capstones (open except delivered armor slice)** | **Four** new ability registrations (Hold Ground, Cinderfall, Glacial Ward, Word of Ruin); the `talent_gated` flag on the **two shipped abilities that become keystones**, Renew (already flagged) and Hamstring (`kits.lua:350`, ruling 19), plus their rank scaling; the shared entitlement predicate and manual Skills recovery rule of §3.4; **seven replacements** written inside the shipped abilities' own bodies (Bellow, Broadstroke, Brand, Frostbind, Turn Aside, Recompense, Hearten) and the rule-breaking finisher Tendon Cut; the remaining capstone effects and cap-override paths. Round 11 already delivered Ironbound and Unbroken's armor-rating multiplier/window, so X3 must preserve and consume that implementation rather than recreate it. The remaining crit override is in `stats.lua:45`; the Scout dodge override is delivered. Each remaining ability/replacement needs its specified probe. **Hold Ground's root/slow immunity needs the §3.9 aggregator first.** | X1, §3.9 for one talent | L |
+| **X3 — keystones and capstones (implemented Round 12)** | **Four** new ability registrations (Hold Ground, Cinderfall, Glacial Ward, Word of Ruin); the `talent_gated` flag on the **two shipped abilities that become keystones**, Renew (already flagged) and Hamstring (`kits.lua:350`, ruling 19), plus their rank scaling; the shared entitlement predicate and manual Skills recovery rule of §3.4; **seven replacements** written inside the shipped abilities' own bodies (Bellow, Broadstroke, Brand, Frostbind, Turn Aside, Recompense, Hearten) and the rule-breaking finisher Tendon Cut; the remaining capstone effects and cap-override paths. Round 11 already delivered Ironbound and Unbroken's armor-rating multiplier/window, Round 12 preserves that implementation alongside Scout. The Crit override, named absorbs and Hold Ground immunity use the shared §3 seams. The bounded native X3 probe covers each ability/replacement and lifecycle. | X1, §3.9 for one talent | L |
 | **X4 — UI, level-up and respec (implemented 2026-09-17)** | The sfinv Talents page of §3.5, the two `mod.conf` edges, the level-up chat line with its `old_level ~= nil` guard, the respec transaction against `grug_money.take`, the price of ruling 22 (§1.4), and the raw-vs-effective display `combat_stats.md:104-108` requires — including the **raised cap** while a rule-breaker runs. The six price values remain a coordinator placeholder until WP44 publishes the measured ledger outputs. | X1 | M |
 
 X3 is the only lane that owes a runtime test on a headless server; X1, X2 and

@@ -213,11 +213,16 @@ grug_core = {}
 
 local class_callbacks = {}
 grug_classes = {
+	registered_talents = {},
 	-- Round 4 (WP11 phase 1): abilities and the HUD read talent bonuses; 0 = untalented.
 	get_talent_bonus = function(player, key)
 		return player.talent_bonuses and player.talent_bonuses[key] or 0
 	end,
 	talent_rank = function(player, id) return (player.talent_ranks or {})[id] or 0 end,
+	-- Adjacent class window API: this fixture covers untalented combat; the
+	-- native X3 probe exercises the real talent model and window consumers.
+	talent_window_active = function() return false end,
+	try_trigger_talent_window = function() return false end,
 	registered_classes = {
 		warrior = {name = "Warrior"},
 		mage = {name = "Mage"},
@@ -778,14 +783,14 @@ assert(hostile_player:get_hp() == hostile_hp)
 assert(grug_abilities.get_rage(hero) == 0)
 
 hostile_player.dodge = 0
-grug_core.set_absorb(hostile_player, 20, 10)
+grug_core.add_absorb(hostile_player, "power_word_shield", 20, 10)
 now = 13000000
 queue_ray({pointed(hostile_player)})
 swing_pass()
 assert(hostile_player:get_hp() == hostile_hp)
 assert(grug_abilities.get_rage(hero) == 0)
 
-grug_core.set_absorb(hostile_player, 2, 10)
+grug_core.add_absorb(hostile_player, "power_word_shield", 2, 10)
 now = 14500000
 queue_ray({pointed(hostile_player)})
 swing_pass()
@@ -875,12 +880,12 @@ ordinary_punch(hostile_two, 0.5)
 assert(hostile_two:get_hp() == hp_two and grug_abilities.get_rage(hero) == 0)
 
 hostile_two.dodge = 0
-grug_core.set_absorb(hostile_two, 1, 10)
+grug_core.add_absorb(hostile_two, "power_word_shield", 1, 10)
 ordinary_punch(hostile_two, 0.5)
 ordinary_punch(hostile_two, 0.5)
 assert(hostile_two:get_hp() == hp_two and grug_abilities.get_rage(hero) == 0)
 
-grug_core.set_absorb(hostile_two, 0.5, 10)
+grug_core.add_absorb(hostile_two, "power_word_shield", 0.5, 10)
 ordinary_punch(hostile_two, 0.5)
 ordinary_punch(hostile_two, 0.5)
 assert(hostile_two:get_hp() == hp_two - 0.5)

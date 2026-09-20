@@ -1,6 +1,6 @@
 # Backlog — Work Packages
 
-Final integrated status and exact gate identities: [Round 11 completion](docs/research/round11-completion.md).
+Final integrated status and exact gate identities: [Round 12 completion](docs/research/round12-completion.md).
 Final technical gates PASS. The reviewed changes are delivered on main, synchronized
 and pushed; GUI acceptance remains pending.
 
@@ -55,18 +55,19 @@ and stop pursuing mobs; real ground/hazard checks remain enforced.
 The [interaction followups](docs/research/round11-interaction-followups.md) are
 reviewed and delivered: ability pickup is limited to 4 m, ground/flying mounts
 support A/D, and trainer right-click no longer also activates the held mount.
-The vegetation fix is user-accepted. The approved Basics discovery rule and
-unapproved next-round scope are distinguished in
-[Round 12 planning](TODO-round12-planning.md); no broader round has started.
+The vegetation fix is user-accepted. The subsequent approved round is complete;
+see [Round 12 completion](docs/research/round12-completion.md).
 
-## Round 12 planning
+## Round 12 delivered
 
-The user accepted expanded farming, WP47 Skills, food/art/held presentation,
-Basics/onboarding/UI improvements and the remaining WP11 consumers. The
-[execution plan](docs/research/round12-plan/README.md) records package boundaries,
-confirmed clarifications and independent review. Implementation still awaits the
-explicit round Go; no new WP is marked shipped. The independent UX lane reports
-only, and no broader Housing/economy/war-front work is added.
+The independently reviewed round delivers WP47 Skills and retained mount tiers,
+seventeen-family farming, five-minute food, Basics main-material discovery,
+Cooking authority, larger UI/Help/Food navigation, held presentation, revised
+art and the remaining original-class X3 consumers. [Completion and evidence](docs/research/round12-completion.md)
+record the bounded native/static checks and report-only UX findings. GUI acceptance
+uses the [next-playtest checklist](docs/research/round12-next-playtest.md).
+WP11 remains open for WP44's measured respec prices; broader Housing/economy
+and war-front work were not included.
 
 ## Phase 1 (MVP)
 
@@ -83,7 +84,7 @@ only, and no broader Housing/economy/war-front work is added.
 | WP8 | Quest framework: quest log, kill/gather goals, quest-giver NPCs, min_level per quest | open (story frame: `docs/design/story.md`) | WP1, WP7 |
 | WP9 | Mandatory questlines: named-zone progression, first PvP quests through Ashenward March / Bannerbreak Mesa and The Broken Causeway, war-front guards, elite quests and level gates; wires the decided PvP-death XP exemption through WP41's `classify_death` seam | open; the PvP-death/XP consequence is decided (confirmed PvP deaths cost no XP, `progression.md` §3, 2026-08-13); geography and quest-interaction slots are fixed in `world_zones.md` §§8/16 | WP6, WP8, WP40, WP41 |
 | WP10 | Professions: seven primaries plus secondary Cooking; two primary slots; exclusive Basics and owning-profession books; independent T1–T6 recipe progression and four mastery bands; universal plain feedstocks/base gear; specialist catalogs, refinement, direct affix operations and kits. Weaponsmith and Armorsmith are separate professions sharing the Forge; no Blacksmith alias. | in progress: framework, Cooking and Alchemy are on main. Independently clean Round-10 EQUIP and CAP are delivered on main: seven-primary catalogs, Basics provenance, universal base recipes, improvement operations and owning public stations. Final technical gates pass; main delivery, synchronization and push are complete. Round 11 additionally delivers family-filtered improvements, ordinary offhands/bags and money-only trainer repair. Cultural services and the WP44-priced remainder stay open. | WP26 ✅, WP33 ✅, WP43 ✅, WP44 |
-| WP11 | Skill trees: 2 trees × 2 chains × 8 talents = **28 ranks per tree** (56 per class), 1 point per 2 levels (30 at level 60). Per tree at most ONE keystone adds a new skill; the other keystone and the **one-rank capstone** improve or REPLACE an existing button, so no build exceeds base kit + 2 keys and **the original three classes start with Strike + 3; Scout starts with Strike + 4** (Hamstring leaves the Warrior's base kit and becomes Ruin's keystone). **A character reaches exactly one capstone**: 21 of 30 points in one tree, level 42. **4 new ability registrations** (Hold Ground, Cinderfall, Glacial Ward, Word of Ruin); Renew and Hamstring are gated instead. Nine talents deliberately break a cap or a control rule, each with a stated limit. Respec = full reset in the talent UI, priced at 5 minutes of measured net solo income, first one free; **class change is removed from the game**. **Prerequisites: the shipped `grug_core` movement aggregator** (WP-Speed) for one talent, and an absorb-stacking aggregator inside this WP | in progress: X1/X2/X4 and Scout's complete trees are implemented. Round 11 delivers Ironbound/Unbroken; the original three classes' remaining X3 consumers remain open. X4 ships the sfinv page, read-only `/talents`, removes `/talent` and `/respec`, and implements free-first/paid respec through `grug_money.take`; its six copper values are an explicit coordinator placeholder until WP44 publishes measured ledger outputs (spec: `docs/design/skill_trees.md` rev 2 + `progression.md` §2; user rulings 2026-09-16) | WP3 ✅, WP4 ✅, WP-Speed ✅ |
+| WP11 | Skill trees: 2 trees × 2 chains × 8 talents = **28 ranks per tree** (56 per class), 1 point per 2 levels (30 at level 60). Per tree at most ONE keystone adds a new skill; the other keystone and the **one-rank capstone** improve or REPLACE an existing button, so no build exceeds base kit + 2 keys and **the original three classes start with Strike + 3; Scout starts with Strike + 4** (Hamstring leaves the Warrior's base kit and becomes Ruin's keystone). **A character reaches exactly one capstone**: 21 of 30 points in one tree, level 42. **4 new ability registrations** (Hold Ground, Cinderfall, Glacial Ward, Word of Ruin); Renew and Hamstring are gated instead. Nine talents deliberately break a cap or a control rule, each with a stated limit. Respec = full reset in the talent UI, priced at 5 minutes of measured net solo income, first one free; **class change is removed from the game**. **Prerequisites: the shipped `grug_core` movement aggregator** (WP-Speed) for one talent, and an absorb-stacking aggregator inside this WP | in progress: X1/X2/X4 and Scout's complete trees are implemented. Round 11 delivers Ironbound/Unbroken; Round 12 completes the original three classes' X3 consumers; only WP44 respec-price calibration remains. X4 ships the sfinv page, read-only `/talents`, removes `/talent` and `/respec`, and implements free-first/paid respec through `grug_money.take`; its six copper values are an explicit coordinator placeholder until WP44 publishes measured ledger outputs (spec: `docs/design/skill_trees.md` rev 2 + `progression.md` §2; user rulings 2026-09-16) | WP3 ✅, WP4 ✅, WP-Speed ✅ |
 | WP-Scout | Fourth class **Scout** (leather, bow + blade; **no stealth, no poison, no traps in v1** — user ruling 2026-09-16): design done (`docs/design/scout.md`), bounded implementation lanes (bow+arrows, offhands, class+trees); Leatherworker and leather armor already exist, uses **mana**. Depends on WP11's machinery and on the speed aggregator. Stealth is designed and deferred whole to `scout.md` §8 | ✅ shipped 2026-09-20: fourth class, four base abilities, ballistic held-draw arrows, both complete talent trees, starter and trader integration; independently reviewed Round 11. GUI acceptance remains in the next-playtest checklist; stealth stays deferred. | WP11 |
 | WP-HUD | Point-accurate LIFE bar and one MANA-or-RAGE bar above the hotbar, replacing the builtin heart statbars (user ruling 2026-09-16, "half hearts are an ugly approximation"). Also settles who owns the HUD offset stack, which four elements in three mods currently guess at | ✅ shipped 2026-09-16: `grug_hud_layout` owns the shared offset stack; builtin health/breath statbars are hidden and the exact LIFE plus class-resource bars update through one coalesced HUD path; record: `docs/research/hud-bars.md` | WP4 ✅ |
 | WP-Speed | **`grug_core` movement aggregator**: named modifiers with independent durations over **speed and jump**, root as a hard flag, mounts outside it — replacing the **three** `physics_override` writers measured in the tree (`grug_mobs/verbs.lua`, `grug_abilities/kits.lua`, and `grug_classes/selection.lua`). Prerequisite for WP11's Hold Ground, for the Scout's Sprint and for the mob-pressure patch | ✅ shipped 2026-09-16: named speed/jump modifiers, longest root and movement-immunity windows have one owner; slows and character-creation freeze migrated without snapshot restoration; record: `docs/research/mob-pressure.md` §3a | — |
@@ -285,7 +286,8 @@ wall with zero node changes.
 
 ### WP47 — Skills tab, disposable bound representations, retained mount tiers
 
-**Planned for Round 12; implementation awaits the user's round Go.**
+**✅ Shipped in Round 12, 2026-09-20.**
+Reviewed implementation, calibration and runtime checklist: [completion](docs/research/round12-completion.md).
 Concrete contract: [Skills/pose annex](docs/research/round12-plan/skills-pose.md)
 and [integration ownership](docs/research/round12-plan/README.md).
 
@@ -305,7 +307,17 @@ and [integration ownership](docs/research/round12-plan/README.md).
   deletion, own-bag moves, external-transfer refusal, stale entitlement, original
   mount speeds and authoritative cooldown/charge continuity.
 
-These are target rules for the approved scope; runtime has not changed yet.
+These rules are implemented and independently reviewed; GUI acceptance remains separate.
+
+### Shared world-station ownership followup
+
+**Open design/engineering followup, raised during Round12 delivery.** Node-based
+stations share ingredients/results, and timer recipes can consume inputs before
+output-take authorization. Define personal city work inventories/jobs, early
+profession checks, cancellation and persistent ownership before multiplayer
+acceptance. [Decision brief](TODO-station-ownership.md); existing WP10/WP26/WP30
+and Housing/protection boundaries, not a new numbered identity. The user explicitly
+kept implementation outside the current round.
 
 ### WP48 — Mapgen writer performance and parallel emerge
 
@@ -412,10 +424,10 @@ fresh-server mode; Lua 5.1 remains supported throughout development.
 ### Readiness (updated 2026-09-20)
 
 The backlog tracks **50 numbered identities, WP0–WP49, plus WP-Scout, WP-HUD
-and WP-Speed: 53 work-package identities in all**. Exactly **23 are
+and WP-Speed: 53 work-package identities in all**. Exactly **24 are
 shipped**: WP0–WP4, WP6, WP7, WP15, WP18, WP19, WP25, WP26, WP33, WP35,
-WP36, WP38, WP39, WP40, WP43, WP45, WP-HUD, WP-Speed and WP-Scout. WP16 is a canceled
-tombstone and is not shipped; the remaining 29 are open or in progress. WP11
+WP36, WP38, WP39, WP40, WP43, WP45, WP47, WP-HUD, WP-Speed and WP-Scout. WP16 is a canceled
+tombstone and is not shipped; the remaining 28 are open or in progress. WP11
 and WP13 are in progress; design-ready
 means a package's game-design contract is fixed, not that its implementation
 dependencies or engineering gates are complete.
@@ -428,7 +440,7 @@ v2 core now supersedes its three-quality model. The
 shore contract now fixes ordinary dry banks at `water_y`, and every start has
 surface level 1 through 100 m and level 2 through 150 m. The media-candidate
 report authorizes no import by itself; separately approved Round 8 assets are
-recorded in the licence ledgers. WP11 X3 remains open.
+recorded in the licence ledgers. WP11 X3 was subsequently completed in Round 12; WP44 price calibration remains.
 
 **Round 7 Food v2 core (2026-09-18):** six data-driven food tiers, fixed
 instant HP, five-second raw/dish regeneration, combat deferral, status-stat
@@ -473,7 +485,7 @@ the remaining 100-anchor POI roster and the decided 24-node versus implemented
    WP27/WP29 and WP10 no longer wait on it.
 3. **WP37 — surface density**, **WP14 — offhand/carried light**, **WP20 —
    party**, **WP21 — recovery/rest** and **WP8 — quest framework** have
-   shipped prerequisites. WP11 phase 1 and X4 are shipped; X3 remains open.
+   shipped prerequisites. WP11 X1–X4 are implemented; measured respec-price calibration still depends on WP44.
 
 WP40's [completion record](docs/research/wp40-completion.md) consolidates the
 accepted map foundation, first visual/performance correction round, native and

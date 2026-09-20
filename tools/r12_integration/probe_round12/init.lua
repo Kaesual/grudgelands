@@ -1,5 +1,6 @@
 -- Disposable full-game registration/catalog probe. No map emergence or players.
 local storage = core.get_mod_storage()
+grug_core.request_starts_preload = function() end
 core.register_on_mods_loaded(function()
 	core.after(0, function()
 		assert(jit and jit.version, "Round12 native probe requires LuaJIT")
