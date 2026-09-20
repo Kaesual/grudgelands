@@ -4,7 +4,8 @@
 return function(repo)
 	local saved = {}
 	local globals = {"core", "PcgRandom", "ItemStack", "grug_gear",
-		"grug_traders", "grug_items", "grug_xp", "grug_money", "vector"}
+		"grug_traders", "grug_items", "grug_xp", "grug_money", "vector",
+		"dofile"}
 	for _, name in ipairs(globals) do saved[name] = rawget(_G, name) end
 	local old_time = os.time
 	local function restore()
@@ -47,6 +48,9 @@ return function(repo)
 	local formspec, message, receive_fields
 	core = {
 		registered_items = definitions,
+		registered_entities = {},
+		get_current_modname = function() return "grug_traders" end,
+		get_modpath = function() return repo .. "/mods/ENTITIES/grug_traders" end,
 		register_on_mods_loaded = function(fn) callbacks[#callbacks + 1] = fn end,
 		global_exists = function(name) return rawget(_G, name) ~= nil end,
 		colorize = function(_, text) return text end,
@@ -92,9 +96,24 @@ return function(repo)
 		end
 		grug_gear.catalog[bracket] = {fixed = fixed, extras = extras, all = all}
 	end
+	definitions["grug_gear:arrow"] = {groups = {}, _grug_sell_price = 1}
 
-	dofile(repo .. "/mods/ENTITIES/grug_traders/stock.lua")
-	for _, callback in ipairs(callbacks) do callback() end
+	local real_dofile = dofile
+	dofile = function(path)
+		if path:find("/stock.lua$", 1, false) then
+			return real_dofile(path)
+		end
+		if path:find("/potion.lua$", 1, false) or
+				path:find("/vendors.lua$", 1, false) or
+				path:find("/trade.lua$", 1, false) then
+			return
+		end
+		return real_dofile(path)
+	end
+	real_dofile(repo .. "/mods/ENTITIES/grug_traders/init.lua")
+	dofile = real_dofile
+	check(type(callbacks[1]) == "function", "stock filter callback was not registered")
+	callbacks[1]()
 	local roll_calls = 0
 	grug_items = {roll_enchants = function(stack, ilvl, source)
 		roll_calls = roll_calls + 1
@@ -102,12 +121,36 @@ return function(repo)
 		check(ilvl > 0 and source == "world", "quality roller handoff differs")
 	end}
 
-	local arrow_count = 0
+	local arrow_count, arrow_entry = 0
 	for _, entry in ipairs(grug_traders.profession_stock.bowyer) do
-		if entry.item == "grug_gear:arrow" then arrow_count = arrow_count + 1 end
+		if entry.item == "grug_gear:arrow" then
+			arrow_count, arrow_entry = arrow_count + 1, entry
+		end
 		check(entry.item ~= "grug_mobs:arrow", "obsolete arrow bundle remains on Bowyer shelf")
 	end
 	check(arrow_count == 1, "Bowyer does not supply exactly one player-arrow offer")
+	check(arrow_entry.price == 3 and
+		grug_traders.discounted_price(arrow_entry.price) == 2 and
+		grug_traders.sell_price(arrow_entry.item) == 1,
+		"player-arrow price does not remain strictly above discounted buy-back")
+	arrow_entry.price = 2
+	local old_price_failures = grug_traders.audit_sell_buy_prices()
+	check(#old_price_failures == 1 and
+		old_price_failures[1]:find("grug_gear:arrow", 1, true),
+		"real trader price audit did not reject the former arrow money loop")
+	arrow_entry.price = 3
+	check(#grug_traders.audit_sell_buy_prices() == 0,
+		"real trader price audit rejects the corrected stock")
+	local fixed_prices = {
+		["default:stick"] = 2, ["grug_mobs:feather"] = 3,
+		["grug_mobs:sharp_feather"] = 9,
+	}
+	for _, entry in ipairs(grug_traders.profession_stock.bowyer) do
+		if entry.item ~= "grug_gear:arrow" then
+			check(fixed_prices[entry.item] == entry.price,
+				"non-arrow Bowyer stock changed")
+		end
+	end
 
 	local bowyer = {salt = 28, bracket_filter = "bow"}
 	local tanner = {salt = 31, bracket_filter = "leather"}

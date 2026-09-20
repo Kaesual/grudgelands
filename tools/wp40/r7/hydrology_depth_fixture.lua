@@ -58,6 +58,10 @@ return function(repo)
 	function source.coast_material_at() return nil end
 	function source.primary_relief_at() return nil end
 	function source.landmark_excluded_at() return false end
+	function source.static_exclusion_values_at() return nil end
+	function source.housing_mask_id_at() return nil end
+	function source.functional_surface_values_at() return nil end
+	function source.hard_row_at() return nil end
 	function source.metrics() return {} end
 	local planner = planner_module.new(source, manifest, lookup, allocator, {})
 	allocator:seal_construction()

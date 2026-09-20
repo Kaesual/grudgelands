@@ -57,8 +57,8 @@ required parser and bytecode-listing static tool.
 
 The complete changed Lua set and all `mods/*/grug_*` Lua files passed
 `tools/bin/luac51 -p`. `SETGLOBAL` inspection found only the declared mod-table
-writes in top-level `grug_abilities` and `grug_projectiles`; loaded subfiles
-write no globals. All five `docs/research/luanti-lua.md` grep sweeps were run
+writes in top-level `grug_abilities`, `grug_projectiles`, `grug_classes` and
+`grug_items` (the quality owner); loaded subfiles write no globals. All five `docs/research/luanti-lua.md` grep sweeps were run
 against the full first-party mod scope and the changed tools. Hits were
 comments, ordinary string separators and the frozen WP40 data manifest; no
 prohibited syntax, library call, sandbox call or `minetest.*` use was present.

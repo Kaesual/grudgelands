@@ -1,0 +1,12 @@
+luac51 -p PASS: 373 files (all first-party mods plus changed Lua, including tools/vendor)
+Sweep 1: 2 hit lines; inspect raw log for comment/string/tool-host exceptions
+Sweep 2: 2 hit lines; inspect raw log for comment/string/tool-host exceptions
+Sweep 3: 0 hit lines; inspect raw log for comment/string/tool-host exceptions
+Sweep 4: 268 hit lines; inspect raw log for comment/string/tool-host exceptions
+Sweep 5: 4 hit lines; inspect raw log for comment/string/tool-host exceptions
+git diff --check PASS
+reference pins PASS: 13 unchanged initialized references
+Additional newly authored untracked planner_source_kat.lua: parser PASS; all five sweep/SETGLOBAL checks in planner-static.log. Total final covered Lua files: 374.
+Manual classification: sweeps 1/2 only explanatory comments; sweep 3 empty; sweep 4 only prose/string delimiters and frozen r7_r6_manifest long-string data; sweep 5 three minetest.conf comments plus pre-existing vendored mobs_redo namespace. No prohibited first-party code.
+SETGLOBAL: declared mod ownership tables only; changed tool fixtures deliberately install/restore engine/mod mocks. No leaked production globals.
+Fresh-server source audit PASS.

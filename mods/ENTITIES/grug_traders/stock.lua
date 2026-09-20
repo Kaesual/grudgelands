@@ -514,7 +514,7 @@ profession_shelf("brewer", {
 -- The bowyer: player ammunition and the stick-and-feather goods behind it.
 -- `grug_mobs:arrow` is the obsolete loot bundle, not usable ammunition.
 profession_shelf("bowyer", {
-	{"grug_gear:arrow", 2},
+	{"grug_gear:arrow", 3},
 	{"default:stick", 2},
 	{"grug_mobs:feather", 3},
 	{"grug_mobs:sharp_feather", 9},
