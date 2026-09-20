@@ -41,7 +41,7 @@ local canonical = "closed-catalog-fixture\n"
 local catalog_digest = hex(raw_sha256(canonical))
 local snapshot = {
 	manifest = {
-		schema = "grug_wp33_gathering_catalog_v1",
+		schema = "grug_wp33_gathering_catalog_v2",
 		sha256 = catalog_digest,
 		canonical_bytes = canonical,
 		source_files = {}, placement = {},

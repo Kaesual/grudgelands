@@ -617,9 +617,10 @@ WP40 replaces it with the complete catalog and contracts below.
   Both filling and opening use one purpose-specific cave exclusion. Actual
   start/capital build squares and their authored aprons, other POI building
   cores, necessary route corridors, functional water/route operations,
-  foundations, housing reservations and named landmark exclusions remain
-  excluded. An anchor's wider fitting/blend envelope alone is not excluded;
-  generic `land_grade` terrain fitting is not itself a functional structure.
+  foundations and housing reservations remain excluded. An anchor's wider fitting/blend envelope alone is not excluded;
+  generic `land_grade` terrain fitting and natural landmark relief/hydrology
+  envelopes are not themselves functional structures. Their actual water,
+  route and building footprints remain protected.
   Dry portions of whole-island coast claim envelopes are not occupied cave
   footprints. All overlapping real footprints still apply. Claim exclusions,
   hard protection, terrain fitting, route grades and water geometry are

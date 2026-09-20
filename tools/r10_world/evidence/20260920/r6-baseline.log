@@ -1,0 +1,7 @@
+luajit: fail_content_manifest: surface skin host rock is absent
+stack traceback:
+	[C]: in function 'error'
+	/tmp/grudgelands-r10/world/baseline-r6_settlement.lua:3501: in function 'apply'
+	/tmp/grudgelands-r10/world/baseline-micro_kat_fixture.lua:519: in function </tmp/grudgelands-r10/world/baseline-micro_kat_fixture.lua:3>
+	/tmp/grudgelands-r10/world/r6-baseline-check.lua:8: in main chunk
+	[C]: at 0x56468862eb00

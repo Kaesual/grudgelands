@@ -3827,6 +3827,9 @@ local function height_factory(dependencies)
 			function session.coast_profile_at(x, z)
 				return derived_water_evidence.coast_profile_at(x, z)
 			end
+			function session.coast_material_at(x, z)
+				return derived_water_evidence.coast_profile_at(x, z, nil, true)
+			end
 			function session.landmark_excluded_at(x, z)
 				return derived_water_evidence.landmark_excluded_at(x, z)
 			end
@@ -4183,6 +4186,9 @@ local function height_factory(dependencies)
 
 		function session.coast_profile_at(x, z)
 			return derived_water_evidence.coast_profile_at(x, z)
+		end
+		function session.coast_material_at(x, z)
+			return derived_water_evidence.coast_profile_at(x, z, nil, true)
 		end
 
 		function session.landmark_excluded_at(x, z)
@@ -5366,14 +5372,22 @@ local function height_factory(dependencies)
 				return target, width
 			end
 
-			derived_water_evidence.coast_profile_at = function(x, z, supplied_incoming)
+			derived_water_evidence.coast_profile_at = function(x, z, supplied_incoming,
+					material_only)
 				coordinate(x, "coast query x") coordinate(z, "coast query z")
 				local water_class, _, owner = classified_values(x, z)
-				if water_class ~= "land" or owner == nil or
-					(horizontal.static_exclusion_values_at(x, z) ~= nil) or
+				if water_class ~= "land" or owner == nil then return nil end
+				-- Material queries reuse the shore classification without opting an
+				-- excluded column into coast geometry. Authored writes still win P7.
+				local geometry_excluded = horizontal.static_exclusion_values_at(x, z) ~= nil or
 					(type(horizontal.housing_mask_id_at) == "function" and
-						horizontal.housing_mask_id_at(x, z) ~= nil) then return nil end
-				if landmark_excluded_at(x, z) then return nil end
+						horizontal.housing_mask_id_at(x, z) ~= nil) or
+					landmark_excluded_at(x, z)
+				if material_only then
+					-- Fallback only for excluded geometry: an eligible inland column
+					-- has already paid the shore scan in coast_profile_at. Do not repeat it.
+					if not geometry_excluded then return nil end
+				elseif geometry_excluded then return nil end
 				local best_distance, orientation, water_y, freshwater
 				for direction = 1, 4 do
 					for distance = 1, 16 do

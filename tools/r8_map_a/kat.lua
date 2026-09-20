@@ -59,6 +59,10 @@ return function(root)
 		raw_sha256 = common.new_sha256()})
 	local _, coast_off_planner = zones_module.new_with_planner_source_runtime("0", 1)
 	_G.core = saved_core
+	check(coast_off_planner.primary_relief_at(-3150, 0) == "mountain",
+		"actual planner lost island primary relief")
+	check(coast_off_planner.coast_material_at(1784, -2960) == nil,
+		"material fallback repeated an eligible geometry shore query")
 	local production_r8_columns = {
 		{1784, -2960, "beach/1/8/false/11/2/-62/sea_ordinary/1/lowland"},
 		{1800, -2960, "beach/2/9/false/11/4/37/sea_ordinary/1/lowland"},

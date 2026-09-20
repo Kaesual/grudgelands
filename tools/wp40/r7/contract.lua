@@ -198,7 +198,7 @@ function module.validate_catalog(snapshot, raw_sha256)
 		schema = true, sha256 = true, canonical_bytes = true,
 		source_files = true, placement = true, population = true,
 	}, "catalog manifest")
-	if manifest.schema ~= "grug_wp33_gathering_catalog_v1" then
+	if manifest.schema ~= "grug_wp33_gathering_catalog_v2" then
 		fail("catalog schema differs")
 	end
 	sha256(manifest.sha256, "catalog digest")

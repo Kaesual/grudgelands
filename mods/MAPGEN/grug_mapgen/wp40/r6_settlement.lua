@@ -2154,11 +2154,14 @@ local function settlement_factory()
 			local surface_skin_column = transaction_state.surface_skin_column
 			local function surface_skin_excluded(x, z, water_class, functional_kind,
 					hard_foundation)
-				local _, static_id = helpers.r8_horizontal.static_exclusion_values_at(x, z)
+				local _, static_id = helpers.r8_horizontal.static_exclusion_values_at(
+					x, z, "cave")
+				-- Natural landmark relief envelopes are terrain, not occupied cells.
+				-- Their real water/route/build footprints remain independently guarded.
 				return (water_class == "land" and static_id ~= nil) or
 					helpers.housing_excluded_at(x, z) or
-					planner_source.landmark_excluded_at(x, z) or
-					functional_kind ~= nil or hard_foundation
+					(functional_kind ~= nil and functional_kind ~= "land_grade") or
+					hard_foundation
 			end
 			local skin_context = {}
 			function skin_context.column_at(x, z)
@@ -2185,8 +2188,11 @@ local function settlement_factory()
 				-- Owned cells must have traversed the cave-preserving terrain-fill
 				-- policy.  Below-owner halo cells are already the committed result
 				-- of the preceding slice, which is the dust-only boundary case.
-				return y < min_y or rbase ~= nil and
-					plan.r5_plan.run_values[rbase + 4] == 27
+				-- R5 can also preserve native cave air under a start/capital
+				-- anchor grade (opcode 21). The immutable-air and final-air checks
+				-- above prove preservation; functional footprint guards still apply.
+				local opcode = rbase ~= nil and plan.r5_plan.run_values[rbase + 4]
+				return y < min_y or opcode == 27 or opcode == 21
 			end
 			function skin_context.excluded_at(x, z)
 				local water_class, _, _, _, _, _, _, _, _, functional_kind, _, _, _,

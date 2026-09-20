@@ -157,6 +157,8 @@ return function(repo, settlement_path)
 	function planner_source.surface_cave_candidate_at_cell() return nil end
 	function planner_source.surface_cave_cell_at() return 0, 0 end
 	function planner_source.coast_profile_at() return nil end
+	function planner_source.coast_material_at() return nil end
+	function planner_source.primary_relief_at() return nil end
 	function planner_source.landmark_excluded_at() return false end
 	local horizontal = {}
 	function horizontal.static_exclusion_values_at() return nil end
