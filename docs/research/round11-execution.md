@@ -296,3 +296,25 @@ will not review its own trader slice. Scout worker confirmed no trader edits.
 Trader acceptance remains the approved Bowyer bow bracket/player-arrow supply
 and Tanner leather grades using existing price/rotation machinery; no economy
 rebase. Root integrates only after an independent review.
+
+
+### REPAIR accepted / final Scout implementation
+
+REPAIR `20ab7b50` independently CLEAN and integrated after two correction rounds.
+Implementers: root Astra service/transactions, native Sol runtime and corrective
+Sol; reviewer separate native Sol. Initial4H1M1L, then1confirmedHigh cadence;
+one alleged ordinary-table bug was explicitly retracted, not a product finding.
+Final0open, elapsedunknown; report repair-final.md. Fresh runtime/service/armor/
+WP39 swing/projectile evidence covers the changed seams; no PUC runtime.
+
+`equipment_changed(player,listname,reason)` and the core notifier now forward
+optional `durability_metadata`. Wear/remainder/capability bookkeeping and first
+persistent projectile identity update the clock snapshot without resetting a
+usable same-name weapon's cadence. Actual swaps and broken/unbroken transitions
+keep the conservative full-interval reset. Nested notifications coalesce safely.
+SCOUT shared-file ownership is released and the worker must merge20ab7b50,
+including respect for this reason in its draw-cache consumer.
+
+Remaining: SCOUT runtime+traders, independent reviews, one bounded native engine
+witness, final targeted static/integration gates, status reconciliation, main
+merge/sync/push and next-playtest delivery. Root has not declared delivery yet.
