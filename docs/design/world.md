@@ -411,8 +411,9 @@ The ordinary contested deep rule resumes at y = −701 even below a capital.
   waypoint. **There is no class trainer** (user ruling 4 of 2026-09-16,
   `skill_trees.md` §5, `progression.md` §2): new skills come only from the
   talent tree, and the respec is bought in the talent UI, not from an NPC.
-  The job trainers stay — they are a different NPC and they also sell the
-  four riding steps (`mounts.md` §1). No capital is a superior faction-wide
+  Profession trainers and public stations occupy themed outer-district premises.
+  A separate Riding Trainer sells the four riding steps in each capital's shared-design
+  outer stable (`mounts.md` §1); profession trainers do not teach Riding. No capital is a superior faction-wide
   administrative seat in the MVP; shared faction services use the same
   service definition in all three faction capitals.
 - Race flair comes from architecture and NPCs (per-race wood/build sets,

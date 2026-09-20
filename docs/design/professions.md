@@ -24,12 +24,24 @@ the material ladder is its §3.0, the per-profession catalogs are
   from `classes.md`.
   - Cooking has the same visible T1–T6 book groups and profession-level gate
     as every primary profession (`items_crafting.md` §2.2, §3.7).
-  - **Riding is likewise universal** and is taught and sold by the same job
-    trainers in four steps at levels 15/30/45/60 (`mounts.md` §1, D20 decided
-    2026-08-13). It costs no main profession slot and adds no separate
-    trainer NPC.
+  - **Riding is likewise universal**, but is taught only by the dedicated
+    Riding Trainer in each capital's outer stable, in four steps at levels
+    15/30/45/60 (`mounts.md` §1). It costs no main profession slot, is not a
+    framework profession and is absent from all profession trainer interfaces.
 - **Cooking in every start, all eight in every capital.** The eight capital
   trainers are the seven primaries plus Cooking.
+  Capital trainers and their public stations occupy themed outer-district
+  premises, reusing suitable shops; vendors remain separate NPCs. Weaponsmith
+  and Armorsmith share one forge house with separate trainers and one Forge.
+  The other premises are an Alchemist's herb court and brewing stand, Tailor's
+  cloth hall and loom, Leatherworker's drying racks and tubs, Woodcarver's timber
+  and carving shop, Goldsmith's display cases and workbench, and Cooking kitchen
+  with hearth and counter. Stations and trainers have safe, unobstructed access.
+  Forge dressing includes an anvil, quench basin, decorative lava and visible
+  weapon/armor displays. Authored display gear has no collectible inventory;
+  interaction, digging, damage, explosions and indirect node transformations
+  cannot release items. This guarantee is intrinsic to the display definitions,
+  independent of the unfinished general protection system.
 - **Gathering split**: food-grade plants (potatoes, berries, cooking
   ingredients) are gatherable by EVERYONE; **alchemy herbs
   ("dragonweed") require the Alchemist main profession** — for everyone
