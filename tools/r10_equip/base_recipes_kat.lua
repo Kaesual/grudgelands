@@ -27,6 +27,7 @@ return function(repo)
 		error("r10 base recipes: "..message,0)
 	end
 	local function signature(recipe)
+		if type(recipe[1]) == "string" then return table.concat(recipe, "|") end
 		local rows={}
 		for row=1,#recipe do rows[row]=table.concat(recipe[row],"|") end
 		return table.concat(rows,"/")
@@ -101,11 +102,20 @@ return function(repo)
 			{{bar,bar,bar},{bar,rod,bar},{"",rod,""}}})
 		expect("grug_gear:wand_"..metal,{{{"",wood,""},{"",stick,""}},
 			{{"",wood,""},{"",rod,""}}})
-		expect("grug_gear:scepter_"..metal,{{{"",bar,""},{"",wood,""},{"",stick,""}},
-			{{"",bar,""},{"",wood,""},{"",rod,""}}})
-		expect("grug_gear:orb_"..metal,{{{"",wood,""},{wood,"",wood},{"",wood,""}}})
 		expect("grug_gear:staff_"..metal,{{{"",wood,""},{"",wood,""},{"",wood,""}}})
+		expect("grug_gear:bow_"..metal,{{{"",wood,"grug_professions:thread"},
+			{wood,"","grug_professions:thread"},{"",wood,"grug_professions:thread"}},
+			{{"grug_professions:thread",wood,""},{"grug_professions:thread","",wood},
+			{"grug_professions:thread",wood,""}}})
+		expect("grug_gear:shield_"..metal,{{{"group:wood",bar,"group:wood"},
+			{"group:wood","group:wood","group:wood"},{"","group:wood",""}}})
+		if crafts["grug_gear:scepter_"..metal] or crafts["grug_gear:orb_"..metal] then
+			fail("retired caster family retained a recipe")
+		end
 	end
+	expect("grug_gear:arrow",{{"grug_materials:iron_bar","group:stick","group:stick",
+		"group:stick","group:stick","grug_mobs:sharp_feather","grug_mobs:sharp_feather",
+		"grug_mobs:sharp_feather","grug_mobs:sharp_feather"}},{20})
 	expect("grug_farming:hoe",{
 		{{"group:wood","group:wood",""},{"","default:stick",""},{"","default:stick",""}},
 		{{"","group:wood","group:wood"},{"","default:stick",""},{"","default:stick",""}},})

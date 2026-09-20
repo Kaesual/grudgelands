@@ -78,6 +78,12 @@ local trinkets = {
 	{key = "reclaimers_mark", settings = 6, g1 = "garnet", g4 = "ruby"},
 }
 
+local reagents = {
+	[2] = "grug_mobs:venom_gland", [3] = "grug_mobs:slime_gel",
+	[4] = "grug_mobs:croc_tooth", [5] = "grug_gathering:stormkelp",
+	[6] = "grug_mobs:stone_core",
+}
+
 -- Round 9 ruling 39: the identity-specific Setting counts are a temporary
 -- collision key for the input-authoritative station registry. Replace them
 -- with station output selection or one authored per-identity ingredient.
@@ -92,6 +98,23 @@ end
 
 for tier = 1, 6 do
 	local setting = settings[tier].item
+	local book = "grug_gear:spellbook_" ..
+		({"bronze", "iron", "steel", "silversteel", "embersteel", "abyssal_steel"})[tier]
+	A.register_recipe("goldsmith", {tier = tier,
+		station = "jewellers_bench", inputs = {{setting, "grug_professions:parchment"}},
+		output = book,
+		mastery_required = 2, hint = "Bind at a Jeweller's Bench"})
+	A.register_recipe("goldsmith", {tier = tier, station = "jewellers_bench",
+		inputs = {{book, setting}}, output = book, in_place = true,
+		operation = "refinement", family = "spellbook",
+		operation_material = setting, quality_mode = "refinement",
+		hint = "Improve at a Jeweller's Bench"})
+	A.register_recipe("goldsmith", {tier = tier, station = "jewellers_bench",
+		inputs = {{book, setting, tier == 1 and "default:coal_lump" or reagents[tier]}},
+		output = book, in_place = true, operation = "add_affix",
+		family = "spellbook", operation_material = setting,
+		operation_reagent = tier == 1 and "default:coal_lump" or reagents[tier],
+		hint = "Add the next affix at a Jeweller's Bench"})
 	for identity_index = 1, #trinkets do
 		local row = trinkets[identity_index]
 		local inputs = {}
@@ -107,14 +130,6 @@ for tier = 1, 6 do
 		recipe.quality_mode = "fine"
 	end
 end
-
-local reagents = {
-	[2] = "grug_mobs:venom_gland",
-	[3] = "grug_mobs:slime_gel",
-	[4] = "grug_mobs:croc_tooth",
-	[5] = "grug_gathering:stormkelp",
-	[6] = "grug_mobs:stone_core",
-}
 
 for tier = 2, 6 do
 	A.register_ingredient(reagents[tier], tier)

@@ -39,22 +39,18 @@ local EXPECTED_LEATHER = {"Light", "Cured", "Heavy", "Scaled", "Sleek",
 local RETIRED_ADJECTIVES = {"Crude", "Plain", "Tempered", "Reinforced",
 	"Superior", "Grand"}
 
-local WEAPON_FAMILIES = {"sword", "dagger", "greataxe", "staff", "wand",
-	"scepter", "orb"}
+local WEAPON_FAMILIES = {"sword", "dagger", "greataxe", "staff", "wand", "bow"}
 local WEAPON_NOUNS = {sword = "Sword", dagger = "Dagger",
-	greataxe = "Greataxe", staff = "Staff", wand = "Wand",
-	scepter = "Scepter", orb = "Orb"}
+	greataxe = "Greataxe", staff = "Staff", wand = "Wand", bow = "Bow"}
 local WEAPON_FACTOR = {sword = 1.0, dagger = 0.7, greataxe = 1.5, staff = 1.2,
-	wand = 1.0, scepter = 1.0, orb = 1.0}
+	wand = 1.0, bow = 1.0}
 local WEAPON_FPI = {sword = 1.0, dagger = 0.7, greataxe = 1.4, staff = 1.4,
-	wand = 1.0, scepter = 1.0, orb = 1.0}
+	wand = 1.0, bow = 1.0}
 local WEAPON_HANDS = {sword = 1, dagger = 1, greataxe = 2, staff = 2,
-	wand = 1, scepter = 1, orb = 1}
+	wand = 1, bow = 2}
 local WEAPON_GROUP = {sword = "sword", dagger = "sword", greataxe = "axe",
-	staff = "staff", wand = "wand", scepter = "scepter", orb = "orb"}
-local CASTER_IMAGE = {wand = "default_mese_crystal_fragment.png^[colorize:",
-	scepter = "default_stick.png^[colorize:",
-	orb = "default_mese_crystal.png^[colorize:"}
+	staff = "staff", wand = "wand", bow = "bow"}
+local CASTER_IMAGE = {wand = "default_mese_crystal_fragment.png^[colorize:"}
 
 local ARMOR_NOUNS = {
 	metal = {head = "Helm", chest = "Chestplate", legs = "Greaves",
@@ -271,7 +267,7 @@ function M.run(repo)
 	--
 	-- B. the full catalogue, item by item
 	--
-	-- 42 weapons + 72 armor pieces + the starter staff, each listed with the
+	-- 36 weapons + 72 armor pieces + the starter weapons, each listed with the
 	-- display name a player reads, the ilvl and the stat the generator gave it.
 	-- The stat is recomputed here from items_crafting.md §3.2 / §3.1 so the
 	-- rename cannot have moved a number sideways.
@@ -306,6 +302,9 @@ function M.run(repo)
 				local expected_image = CASTER_IMAGE[family] and
 					(CASTER_IMAGE[family] .. gear.BRACKET_TINT[bracket] .. ":115") or
 					("grug_gear_item_" .. family .. "_" .. material.metal.key .. ".png")
+				if family == "bow" then
+					expected_image = "grug_gear_item_staff_" .. material.metal.key .. ".png"
+				end
 				check(def.inventory_image == expected_image,
 					name .. " does not use its own material sprite")
 				check((def.groups or {}).grug_equip_weapon == 1,
@@ -347,8 +346,8 @@ function M.run(repo)
 		row("wp13_gear_item", entry)
 	end
 	row("wp13_gear_count", #listed)
-	check(#listed == 114, "the catalogue holds " .. #listed ..
-		" items, expected 114")
+	check(#listed == 108, "the catalogue holds " .. #listed ..
+		" items, expected 108")
 
 	-- The six core identities are one definition per tier. Their authored
 	-- passive remains descriptive data for the follow-up effects lane.
@@ -422,6 +421,11 @@ function M.run(repo)
 		row("wp13_gear_starter", gear.STARTER_STAFF,
 			first_line(starter.description), gear.STARTER_SWORD)
 	end
+	local starter_bow = items[gear.STARTER_BOW]
+	check(starter_bow and starter_bow._grug_hands == 2 and
+		(starter_bow.groups or {}).grug_bow == 1 and
+		starter_bow._grug_ilvl == nil,
+		"the wooden starter bow contract differs")
 
 	-- Every weapon-slot item with fleshy damage uses the same base-stat line,
 	-- including the default starters/hatchets and a later material-ladder axe.
@@ -519,13 +523,31 @@ function M.run(repo)
 		local cat = gear.catalog[bracket]
 		check(#cat.fixed == 13, "bracket " .. bracket .. " has " ..
 			#cat.fixed .. " fixed items, expected 13")
-		check(#cat.extras == 6, "bracket " .. bracket .. " has " ..
-			#cat.extras .. " rotating items, expected 6")
-		check(#cat.all == 19, "bracket " .. bracket .. " has " .. #cat.all ..
-			" items, expected 19")
+		check(#cat.extras == 5, "bracket " .. bracket .. " has " ..
+			#cat.extras .. " rotating items, expected 5")
+		check(#cat.all == 18, "bracket " .. bracket .. " has " .. #cat.all ..
+			" items, expected 18")
 		local sword = gear.weapon_item("sword", bracket)
 		check(gear.get_price(sword) == br.price.weapon,
 			sword .. " is not priced at the bracket's weapon price")
+		local quality = 3
+		local price_stack = {is_empty = function() return false end,
+			get_name = function() return sword end,
+			get_definition = function() return items[sword] end,
+			get_meta = function() return {get_int = function(_, key)
+				return key == "grug_quality" and quality or 0
+			end} end}
+		check(gear.reference_purchase_price(price_stack) == br.price.weapon * 6,
+			sword .. " Rare repair reference price differs")
+		local metal = gear.MATERIALS[bracket].metal.key
+		local shield = items["grug_gear:shield_" .. metal]
+		local book = items["grug_gear:spellbook_" .. metal]
+		check(shield and shield.groups.grug_equip_offhand == 1 and
+			shield.groups.grug_shield == 1 and shield._grug_armor > 0,
+			"tier " .. bracket .. " shield contract differs")
+		check(book and book.groups.grug_equip_offhand == 1 and
+			book.groups.grug_spellbook == 1 and book._grug_max_mana_percent ==
+			math.ceil(bracket / 2), "tier " .. bracket .. " spellbook contract differs")
 		check(gear.get_sell_price(sword) ==
 			math.max(1, math.floor(br.price.weapon * 0.25)),
 			sword .. " does not buy back at 25%")

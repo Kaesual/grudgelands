@@ -74,11 +74,11 @@ Two free main professions per player, unchanged. The roster is organised
 | Profession | Material chain T1–T6 | Owns exclusively |
 |---|---|---|
 | **Weaponsmith** | Bronze → Iron → Steel → Silversteel → Embersteel → Abyssal Steel | Physical weapons and mining tools |
-| **Armorsmith** | Bronze → Iron → Steel → Silversteel → Embersteel → Abyssal Steel | Metal armor (4 slots) and **shields** |
-| **Leatherworker** | light → cured → heavy → scaled → sleek → nightscale leather | Leather armor (4 slots — the Warrior's light set since the 2026-08-13 C10 decision, `items_crafting.md` §3.8), later **quivers** |
-| **Tailor** | patch → woven → heavy → silkweave → silk → stormweave bolts | Cloth armor (4 slots), **bags**, **spell tome** (offhand) |
-| **Woodcarver** | any `group:wood`, graded Seasoned → Polished → Hardened → Inlaid → Lacquered → Heartwood (race woods are cultural skins); **buys metal fittings from the Weaponsmith** | Staves, wands, scepters, orbs — later bows |
-| **Goldsmith** | Gold + Quartz + the six regional G1/G2 gems | **Both trinket slots**, Rough → Cut gem refinement, Settings, jewelry components, and the 10%/20% natural-gem yield roll |
+| **Armorsmith** | Bronze → Iron → Steel → Silversteel → Embersteel → Abyssal Steel | Metal armor and shield refinement/affixes; plain shields are Basics |
+| **Leatherworker** | light → cured → heavy → scaled → sleek → nightscale leather | Leather armor, leather bags and the quiver |
+| **Tailor** | patch → woven → heavy → silkweave → silk → stormweave bolts | Cloth armor and cloth bags |
+| **Woodcarver** | any `group:wood`, graded Seasoned → Polished → Hardened → Inlaid → Lacquered → Heartwood | Staff, wand and bow refinement/affixes; plain items are Basics |
+| **Goldsmith** | Gold + Quartz + the six regional G1/G2 gems | Both trinket slots, spellbooks, gem refinement, Settings and jewelry components |
 | **Alchemist** | healing herbs + spices | Potions, elixirs, apothecary gear — **gathers its own herbs** |
 
 ### 2.1 The coverage is complete and overlap-free
@@ -93,21 +93,19 @@ That is the property the re-cut was made for, and it is checkable:
   potion effects on it, and the Alchemist cannot make the Tailor's cloth
   armor — which is why it cross-buys bolts.
 - **Every weapon family of `items_crafting.md` §3.2 is assigned.** 1H,
-  dagger and 2H to the Weaponsmith; the caster 1H (wand / scepter / orb)
-  and the 2H staff to the Woodcarver. Bows join the Woodcarver in
-  Phase 2 (§5).
+  dagger and 2H to the Weaponsmith; wand, staff and bow quality to the
+  Woodcarver. Scepters and orbs are absent from V1.
 - **Both trinket slots finally have an owner** — the Goldsmith. In the
   old roster they had none at all. **The items ship in the MVP**
   (decided 2026-08-08): the slots are no longer reserved
   (`inventory_equipment.md` §2). Each trinket has exactly one primary-
   attribute prefix, one HP/Mana/Crit suffix and one authored special
   (`items_crafting.md` §6.2); cultural finishes never apply to trinkets.
-- **The offhand is split, not shared**: the Tailor makes the **spell
-  tome**, the Armorsmith makes the **shield**. Different items, different
-  armor classes, different users — one item per concept holds
-  (`items_crafting.md` §3.0.3).
-- **Consumables** are the Alchemist's alone; **bags** are the Tailor's
-  alone.
+- **Offhands have distinct roles**: plain shields are Basics and Armorsmith
+  improves them; Goldsmith makes spellbooks; Leatherworker makes the no-stat
+  four-stack quiver. A bow permits only the quiver beside it.
+- **Consumables** are the Alchemist's alone. Tailor owns cloth bags and
+  Leatherworker owns equal-capacity leather bags.
 
 ### 2.2 Why material-cut and not class-cut
 
@@ -128,6 +126,12 @@ online. The cross-buys are deliberate and already load-bearing: the
 Woodcarver buys metal fittings from the Weaponsmith (`items_crafting.md`
 §3.6a) the same way Tailors and Alchemists buy leather from the
 Leatherworker (§3 below).
+
+V1 repair is the explicit exception to profession ownership: every profession
+trainer repairs every repairable item for gold only. Housing craft stations
+gain the same universal service later. Material-matched repair is backlog work,
+not a hidden benefit of learning the item's owning profession; see
+[durability_repair.md](durability_repair.md).
 
 ### 2.3 Two professions were merged away
 
@@ -150,12 +154,9 @@ symmetric: four mastery tiers each, six material groups each.**
 
 ### 2.4 The Woodcarver closes a real hole
 
-`items_crafting.md` §3.2 used to leave wands and orbs **drop-only**,
-which meant a Mage or a Priest had **no craftable weapon at all** — the
-one outright gap in the old catalog, and one no re-balancing could fix
-because the items did not exist. The Woodcarver makes the whole caster
-weapon family craftable, refinable and enchantable like every other
-weapon.
+The active caster roster is two-handed staff or one-handed wand plus a
+Goldsmith spellbook. Plain staff/wand recipes are Basics; Woodcarver owns their
+refinement and affixes. Scepters and orbs are absent from fresh V1 worlds.
 
 ## 3. Cross-profession supply loops
 
@@ -214,8 +215,8 @@ recipe ownership. The seven primaries still compete for two slots; a metal user
 who wants both specialties spends both slots, matching the two-profession cost
 of cloth or leather users who also want a professionally improved weapon.
 
-- **The Bowyer split is dropped entirely** (2026-08-07). Bows are a
-  Woodcarver product (`items_crafting.md` §3.6a, §9) and the quiver stays
+- **The Bowyer split is dropped entirely** (2026-08-07). Plain bows are Basics,
+  while Woodcarver owns their quality operations; the quiver stays
   Leatherworker, so there is nothing left for a Bowyer to own. The
   Leatherworker is not split.
   *A settlement shop called a bowyer is not this.* Since 2026-09-15 a
@@ -229,15 +230,9 @@ of cloth or leather users who also want a professionally improved weapon.
   what every profession does to its own refined items
   (`items_crafting.md` §6b), not a seventh profession that would take a
   cut of all six.
-- **The bow foundation has a consumer now, and it is still not built.** Its
-  item path and profession ownership are fixed (`items_crafting.md` §9), and
-  since 2026-09-16 there is a class that needs it: the **Scout**, whose base
-  kit opens with a bow shot ([scout.md](scout.md) §2, user rulings 7 and 12 of
-  `skill_trees.md` §5, work package **WP-Scout**). Nothing changes for the six
-  professions — bows stay a Woodcarver product and the quiver stays
-  Leatherworker — and bows, arrows and quivers remain an inactive substrate
-  until that package builds them; what has ended is the "no consumer"
-  reasoning for leaving them there.
+- **The bow foundation now has the Scout consumer.** Six tier bows and the
+  wooden starter are active V1 equipment. Woodcarver improves bows;
+  Leatherworker makes the optional four-stack quiver.
 - Cultural finishing is the scalable race/profession hook
   (`items_crafting.md` §4): a crafter applies only their own culture's fixed
   effects to families their profession owns, while finished stacks remain

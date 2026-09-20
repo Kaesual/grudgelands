@@ -97,14 +97,23 @@ P.register_recipe("tailor", {tier = 1, station = "tailor_bench",
 	inputs = {{C .. "bolt_patch", C .. "bolt_patch", C .. "bolt_patch"},
 		{C .. "bolt_patch", "grug_mobs:light_leather", C .. "bolt_patch"},
 		{C .. "bolt_patch", "grug_mobs:light_leather", ""}},
-	output = "grug_inventory:bag_small", hint = "Sew at a Tailor Bench"})
+	output = "grug_inventory:bag_small", mastery_required = 1,
+	hint = "Sew at a Tailor Bench"})
 P.register_recipe("tailor", {tier = 2, station = "tailor_bench",
 	inputs = {{woven_bundle, woven_bundle, C .. "cured_leather"},
 		{"", C .. "cured_leather", ""}},
-	output = "grug_inventory:bag_medium", hint = "Sew at a Tailor Bench"})
+	output = "grug_inventory:bag_medium", mastery_required = 2,
+	hint = "Sew at a Tailor Bench"})
 P.register_recipe("tailor", {tier = 4, station = "tailor_bench",
 	inputs = {{heavy_bundle, heavy_bundle, "grug_mobs:spider_silk"},
 		{"grug_mobs:spider_silk", "grug_mobs:heavy_leather",
 			"grug_mobs:spider_silk"},
 		{"grug_mobs:heavy_leather", "grug_mobs:spider_silk", ""}},
-	output = "grug_inventory:bag_large", hint = "Sew at a Tailor Bench"})
+	output = "grug_inventory:bag_large", mastery_required = 3,
+	hint = "Sew at a Tailor Bench"})
+P.register_recipe("tailor", {tier = 5, station = "tailor_bench",
+	inputs = {{C .. "bolt_silk", C .. "bolt_silk", C .. "bolt_silk"},
+		{C .. "bolt_silk", "grug_mobs:spider_silk", C .. "bolt_silk"},
+		{C .. "bolt_silk", C .. "bolt_silk", C .. "bolt_silk"}},
+	output = "grug_inventory:bag_great", mastery_required = 4,
+	hint = "Sew at a Tailor Bench"})
