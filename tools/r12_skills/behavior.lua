@@ -12,6 +12,10 @@ local meta = {get_int = function(_, k) return tonumber(meta_values[k]) or 0 end,
 	set_string = function(_, k, v) meta_values[k] = v end}
 function player:get_meta() return meta end
 local inventory_type = getmetatable(inv)
+inv.owner_name = player:get_player_name()
+function inventory_type:get_location()
+	return {type = "player", name = self.owner_name}
+end
 function inventory_type:set_size(name, count)
 	self[name] = self[name] or {}
 	for i = 1, count do self[name][i] = self[name][i] or ItemStack("") end
@@ -119,6 +123,29 @@ local strike = catalog:get_stack("catalog", strike_index)
 assert(callbacks.allow_take(catalog, "catalog", strike_index, strike, player) == 0, "bag duplicate accepted")
 remove_all(strike:get_name())
 assert(callbacks.allow_take(catalog, "catalog", strike_index, strike, player) == -1)
+-- Luanti creates a fresh InvRef userdata for the destination-side player
+-- callback. Reproduce the complete cross-inventory transaction: detached
+-- infinite source allow_take, distinct destination wrapper allow_put, move,
+-- then detached on_take. The catalog source must remain unchanged.
+local destination_ref = setmetatable({owner_name = player:get_player_name()}, {
+	__index = function(_, key) return inv[key] or inventory_type[key] end,
+})
+local destination_allow = allow_action(player, "put", destination_ref,
+	{listname = "main", index = 1, stack = strike})
+assert(destination_allow == nil, "player-owned destination wrapper rejected")
+inv:set_stack("main", 1, strike)
+callbacks.on_take(catalog, "catalog", strike_index, strike, player)
+assert(inv:get_stack("main", 1):get_name() == "grug_abilities:strike",
+	"catalog recovery transaction did not reach main")
+assert(catalog:get_stack("catalog", strike_index):get_name() == "grug_abilities:strike",
+	"infinite catalog source was consumed")
+remove_all(strike:get_name())
+local foreign_ref = setmetatable({owner_name = "other"}, {
+	__index = function(_, key) return inv[key] or inventory_type[key] end,
+})
+assert(allow_action(player, "put", foreign_ref,
+	{listname = "main", index = 1, stack = strike}) == 0,
+	"another player's inventory accepted a bound skill")
 local mount_index = index_of("grug_mounts:t1")
 local mount = catalog:get_stack("catalog", mount_index)
 local forged = ItemStack(mount); forged:get_meta():set_string("grug_mounts:owner", "other")

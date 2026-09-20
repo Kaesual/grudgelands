@@ -11,6 +11,12 @@ local function owned_list(listname)
 	return false
 end
 
+local function owns_inventory(player, inventory)
+	local location = inventory and inventory:get_location()
+	return location and location.type == "player" and
+		location.name == player:get_player_name()
+end
+
 local function entitled(player, stack)
 	local name = stack:get_name()
 	local id = name:match("^grug_abilities:(.+)$")
@@ -29,7 +35,7 @@ core.register_allow_player_inventory_action(function(player, action, inventory, 
 		if bound(stack) and (not owned_list(info.from_list) or
 				not owned_list(info.to_list) or not entitled(player, stack)) then return 0 end
 	elseif action == "put" and bound(info.stack) then
-		if inventory ~= player:get_inventory() or not owned_list(info.listname) or
+		if not owns_inventory(player, inventory) or not owned_list(info.listname) or
 				not entitled(player, info.stack) then return 0 end
 	end
 end)
