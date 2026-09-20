@@ -480,6 +480,8 @@ grug_abilities.register_ability({
 -- Mage (mana)
 --
 
+local fireball_action_serial = 0
+
 grug_projectiles.register("fireball", {
 	speed = 20,
 	max_distance = 20,
@@ -499,7 +501,7 @@ grug_projectiles.register("fireball", {
 	},
 	on_hit = function(owner, target, data, point, attacker_level)
 		grug_core.deal_ability_damage(owner, target, data.damage,
-			{attacker_level = attacker_level})
+			{attacker_level = attacker_level, action_id = data.action_id})
 	end,
 })
 
@@ -546,6 +548,11 @@ grug_abilities.register_ability({
 		if not origin or not direction then
 			return false, "Cannot determine your aim."
 		end
+		fireball_action_serial = fireball_action_serial + 1
+		local action_id = user:get_player_name() .. ":fireball:" ..
+			tostring(fireball_action_serial)
+		local repair = rawget(_G, "grug_repair")
+		if repair then repair.capture_action(user, action_id) end
 		local spawned = grug_projectiles.spawn("fireball", {
 			owner = user,
 			origin = origin,
@@ -558,9 +565,11 @@ grug_abilities.register_ability({
 			data = {
 				-- Tinder (skill_trees.md §2.3). Brand's splash is lane X3's.
 				damage = fireball_values(user).damage,
+				action_id = action_id,
 			},
 		})
 		if not spawned then
+			if repair then repair.cancel_action(user, action_id) end
 			return false, "The fireball could not be launched."
 		end
 		local name = user:get_player_name()

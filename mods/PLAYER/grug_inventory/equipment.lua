@@ -520,11 +520,13 @@ local function cached_slot_item(player, list)
 end
 
 function grug_inventory.get_equipped_weapon(player)
-	return cached_slot_item(player, WEAPON_LIST)
+	local stack = cached_slot_item(player, WEAPON_LIST)
+	return stack and not grug_core.equipment_is_broken(stack) and stack or nil
 end
 
 function grug_inventory.get_equipped_offhand(player)
-	return cached_slot_item(player, OFFHAND_LIST)
+	local stack = cached_slot_item(player, OFFHAND_LIST)
+	return stack and not grug_core.equipment_is_broken(stack) and stack or nil
 end
 
 -- Base fallback until grug_quality adds shield, refinement and affix rating.

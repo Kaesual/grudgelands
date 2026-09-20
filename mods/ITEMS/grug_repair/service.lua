@@ -84,7 +84,14 @@ function grug_repair.apply(player, quote)
 	for _, row in ipairs(quote.items) do
 		local stack = ItemStack(row.expected)
 		stack:set_wear(0)
-		stack:get_meta():set_string("_grug_wear_remainder", "")
+		local meta = stack:get_meta()
+		meta:set_string("_grug_wear_remainder", "")
+		local encoded = meta:get_string("_grug_repair_caps")
+		local saved = encoded ~= "" and core.deserialize(encoded) or nil
+		if meta.set_tool_capabilities then
+			meta:set_tool_capabilities(type(saved) == "table" and saved or nil)
+		end
+		meta:set_string("_grug_repair_caps", "")
 		changes[#changes + 1] = {list = row.list, index = row.index,
 			expected = row.expected, replacement = stack}
 		if grug_inventory.is_equipment_list(row.list) then equipment = true end

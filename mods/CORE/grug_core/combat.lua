@@ -631,6 +631,7 @@ end
 --
 
 local hit_mob_callbacks = {}
+local ability_action_id
 
 function grug_core.register_on_player_hit_mob(func)
 	table.insert(hit_mob_callbacks, func)
@@ -654,6 +655,9 @@ function grug_core.run_player_hit_mob(player, mob_ent, damage, applied, fraction
 	end
 	for _, func in ipairs(hit_mob_callbacks) do
 		func(player, mob_ent, damage, applied, fraction)
+	end
+	if grug_core.in_ability_punch and ability_action_id and (damage or 0) > 0 then
+		grug_core.run_settled_outgoing_action(player, ability_action_id, "damage")
 	end
 end
 
@@ -1112,6 +1116,7 @@ function grug_core.deal_ability_damage(attacker, target, amount, opts)
 	-- pcall + flag restore: an error mid-punch must not leave the sticky
 	-- flag set (that would silently kill rage generation server-wide).
 	grug_core.in_ability_punch = true
+	ability_action_id = opts.action_id or {}
 	ability_attacker_level = opts.attacker_level or
 		grug_core.get_player_level(attacker)
 	-- `punch_attack_uses = 0` is not cosmetic: mobs_redo's on_punch runs an
@@ -1127,16 +1132,22 @@ function grug_core.deal_ability_damage(attacker, target, amount, opts)
 	-- from the hotbar until a relog
 	-- re-granted it. api.lua:2927-3538 reads exactly this field as "no wear",
 	-- so one line switches the whole path off for every ability punch.
+	local hp_before = target:get_hp()
 	local ok, err = pcall(target.punch, target, attacker, 1.4, {
 		full_punch_interval = 1.4,
 		punch_attack_uses = 0,
 		damage_groups = {fleshy = amount},
 	}, nil)
+	local settled_action = ability_action_id
+	ability_action_id = nil
 	ability_attacker_level = nil
 	grug_core.in_ability_punch = false
 	if not ok then
 		core.log("warning", "[grug_core] ability punch failed: " .. tostring(err))
 		return 0
+	end
+	if target:is_player() and target:get_hp() < hp_before then
+		grug_core.run_settled_outgoing_action(attacker, settled_action, "damage")
 	end
 	-- BONUS-ONLY threat site. The punch above already ran through grug_mobs'
 	-- accepted hit hook -> run_player_hit_mob, which added the base threat

@@ -874,7 +874,8 @@ local function equipment_totals(player)
 	local inventory = player:get_inventory()
 	for _, slot in ipairs(grug_inventory.equipment_slots) do
 		local stack = inventory:get_stack(slot.list, 1)
-		if stack and not stack:is_empty() then
+		if stack and not stack:is_empty() and
+				not grug_core.equipment_is_broken(stack) then
 			local meta = stack:get_meta()
 			local affixes = read_affixes(meta)
 			for index = 1, #affixes do
