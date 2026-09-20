@@ -1,6 +1,6 @@
 # TODO — Shared crafting station ownership
 
-Date: 2026-09-20. Raised by the user during Round12 delivery. Investigation and
+Updated: 2026-09-21. Raised by the user during Round12 delivery. Investigation and
 planning only; the user explicitly instructed the coordinator to finish the
 current round without expanding implementation scope.
 
@@ -17,11 +17,11 @@ player-owned; this issue concerns node-based workstations.
 
 Detailed source audit: [shared station inventory audit](docs/research/shared-station-ownership-audit.md).
 
-## User proposal and coordinator feedback — 2026-09-20
+## Accepted mode split and revised transaction proposal — 2026-09-21
 
-The user proposes two fixed modes, selected by placement provenance rather than
-player configuration. These clarify the intended discussion; implementation has
-not begun and the full transaction contract is still open.
+The user accepted two fixed modes, selected by placement provenance rather than
+player configuration, including the labels below. Implementation has not begun
+and the full transaction contract is still open.
 
 - Authored capital/POI stations: persistent personal working inventories per
   player and station. Other players cannot see or take those contents.
@@ -35,20 +35,53 @@ not begun and the full transaction contract is still open.
   “Personal workspace” and “Shared station”; shared wording explicitly refers to
   players who have access to the surrounding area.
 
-Coordinator recommendation: adopt that split. Require recipe/profession
-eligibility before consuming inputs/fuel and record the initiating crafter.
-For shared stations, any area-authorized player may collect a legally produced
-result, even without that profession; profession credit belongs to its crafter,
-not its collector. This replaces the current late extraction gate. Personal
-stations allow only their corresponding player to collect. Define cancellation,
-full-inventory handling, profession loss, disconnect and offline timing without
-loss/duplication. Authored loot chests remain a separate design question and do
-not automatically become personal through this station rule.
+The earlier coordinator suggestion to bind production/progress to an initiating
+crafter is superseded by the user's new proposal:
 
-Open transaction details include when automated production binds its crafter,
-fuel reservation, interrupted work, recovery and the exact moment of awarding
-profession progress. No personal inventory may silently teleport contents
-between different physical stations.
+- Shared 3x3 station inputs remain shared, but the result preview is per viewer.
+  Only a player eligible for that recipe sees and may take its output; other
+  viewers see an empty result slot. Revalidate eligibility and current ingredients
+  on the real take transaction. A preview is not an independently owned item.
+- Progress belongs to the collector, only if eligible and the recipe tier is
+  exactly their current profession tier; otherwise that progress is lost.
+- Automatic furnaces and dual furnaces transform inputs and allow collection
+  without profession checks (area access still applies).
+- Only qualified cooks may assemble profession-specific raw dishes, but anyone
+  may then bake and collect those dishes from an oven.
+- No production eligibility is bound to whoever happened to insert an ingredient.
+
+An explicitly requested native GPT-6 Astra [audit](docs/research/station-viewer-rules-audit.md)
+checked this against current recipe/engine paths. Open issues include the automatic Brewing Stand, raw/final
+Cooking double progress, simple roasted foods, custom refinement stations,
+per-player previews over shared inventories, and partial-stack progress receipts.
+Authored loot chests remain separate and do not automatically become personal.
+
+Coordinator recommendations pending user answers:
+
+1. Alchemy follows the same qualified-preparation/free-automatic-finish split
+   as Cooking. This needs new prepared mixtures and is a real content change,
+   not merely removing the existing Brewing Stand output gate. Alternative:
+   separately design a profession-gated brewing exception.
+2. Award progress on collection of the profession-gated preparation only;
+   automatic finishing then gives no second credit. Alternative: only the final
+   result awards credit to an eligible collector. The user was asked explicitly.
+3. Simple roasting of meat/fish/grain remains universal under the furnace rule.
+   If preparation-only credit is selected, these universal conversions give no
+   Cooking progression. Prepared dishes remain Cooking-exclusive to assemble.
+4. Custom refinement/affix Apply transactions retain their metadata-preserving
+   commit and commit-time roll. Viewer eligibility also controls their preview
+   and confirmation. Do not turn a prospective affix preview into a takeable
+   already-generated item or allow repeated preview rolls.
+
+Separate per-viewer output adapters must revalidate distance, area access,
+station identity, ingredients and eligibility at commit. A shared node inventory
+cannot itself show different contents to two players. Persistent input/fuel/
+output data for personal workspaces must survive UI close, reconnect and unload;
+the temporary UI is not the persistence store.
+
+Define full-inventory handling, concurrent viewers, profession loss, disconnect,
+offline timing and all removal paths without loss/duplication. No personal
+inventory may silently teleport contents between different physical stations.
 
 ## Next planning package
 

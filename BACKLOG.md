@@ -318,7 +318,8 @@ These rules are implemented and independently reviewed; GUI acceptance remains s
 **Open numbers discussion (2026-09-20).** The user wants short-lived wooden and
 stone bootstrap tools, then substantially longer-lived metal tools; Wood,
 Stone and Bronze retain T1 pick access. Current values and the unapproved
-24/64/512 starting proposal are in [the lifetime brief](TODO-tool-lifetimes.md).
+user's revised 30/60/300-through-3000 tool proposal and weapon/armor curves are
+in [the lifetime brief](TODO-tool-lifetimes.md).
 Recipe visibility corrections are independent of that calibration; no durability
 or Stone Hoe implementation is authorized by the brief.
 

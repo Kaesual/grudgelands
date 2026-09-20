@@ -1,6 +1,6 @@
 # TODO — Starter tool lifetimes
 
-Date: 2026-09-20. User requested current values before deciding new durability.
+Updated: 2026-09-21. User requested discussion before implementation.
 Wood/Stone/Bronze share T1 pick access. Missing immediate wooden/stone Basics
 routes are a confirmed bug and were fixed independently; lifetime changes
 are not yet approved.
@@ -30,14 +30,45 @@ maxlevel zero, while hoes spend their explicitly authored conversion budget.
 These are not the raw legacy `uses` values. Iron/Steel axe lifetimes are currently
 non-monotonic and should be corrected by the eventual calibration.
 
-## Desired progression and initial recommendation
+## User proposal — 2026-09-21
 
 User goal: very short-lived wooden bootstrap tools, somewhat better stone,
 then durable metal tools whose tier becomes the main progression limit. Wood,
 Stone and Bronze remain T1 from the tool progression perspective.
 
-Coordinator's initial discussion proposal: 24 Wood / 64 Stone / 512 Bronze
-successful operations, shared across pickaxe/axe/shovel/hoe, followed by
-monotonic higher-metal lifetimes. Add the missing Stone Hoe if this line is
-adopted. The user has been asked about this magnitude; do not implement these
-numbers or infer approval from the recipe visibility fix.
+The earlier coordinator suggestion of 24/64/512 is superseded by the user's
+proposal below. No implementation has started; the user explicitly requested
+a feedback/discussion round first.
+
+| Tier/material | All four tool families | Weapons and armor |
+|---|---:|---:|
+| Wood | 30 | removed |
+| Stone | 60 | removed |
+| Bronze / T1 | 300 | 1000 |
+| Iron / T2 | 600 | 1500 |
+| Steel / T3 | 1000 | 2000 |
+| Silversteel / T4 | 1500 | 2500 |
+| Embersteel / T5 | 2000 | 3000 |
+| Abyssal Steel / T6 | 3000 | 4000 |
+
+- Tools and weapons are disjoint. One-handed axes become woodcutting tools
+  (suggested English label: "Woodcutting Axe"), cannot enter the weapon slot,
+  cause no damage and have no damage tooltip. The two-handed weapon is a
+  "Battle Axe". Apply the no-damage tool principle consistently to picks,
+  shovels and hoes as well; existing direct tool-punch paths need review.
+- Remove wooden/stone weapons from registration, recipes, starter grants and
+  catalogs. All weapon families begin at Bronze; this is a progression tier,
+  not a requirement that a bow or staff be made entirely of metal.
+- New characters receive their class's Bronze weapon. Preserve Scout's 200
+  arrows; its current backup Stone Sword also needs a Bronze replacement.
+- Each successful incoming combat hit spends one use on one randomly selected
+  equipped armor piece, rather than on every armor piece. Define eligible
+  non-broken candidates and shield participation before implementation.
+- Add the missing Stone Hoe. Wood/Stone/Bronze tools all retain T1 access.
+
+Open details: the existing refinement lifetime multiplier (currently x2; user
+asked asynchronously), shields/spellbooks, and retention of deeper-mining wear
+penalties. Current 3000/6000 weapon budgets mean this proposal reduces early-tier
+weapon lifetime; randomly selecting armor reduces aggregate armor wear. Exact
+event rules should preserve one outgoing wear debit per settled action, not per
+victim/projectile, and no combat wear for falls or environmental damage.

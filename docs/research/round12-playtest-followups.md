@@ -58,6 +58,9 @@ No durability, Stone Hoe, personal-station or ownership implementation is includ
 
 ## User runtime check
 
+User acceptance on 2026-09-21: destroying and restoring Skills works.
+The recipe visibility check has no separate acceptance report yet.
+
 Restart the game to load the corrected Lua. Delete Taunt and drag it from Skills
 into the main inventory; verify a second copy is unavailable while one exists
 in main or a bag. Open Basics on a character without material discoveries and

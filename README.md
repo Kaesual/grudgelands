@@ -294,6 +294,8 @@ and [art gallery](docs/research/round12-gallery.md); the separate UX review is
 source/heuristic evidence and leaves four proposals for later selection.
 Shared world-station inventories also need the newly identified
 [ownership followup](TODO-station-ownership.md) before multiplayer acceptance.
+The followup discussion now covers personal/shared station modes and revised
+[tool and combat-equipment lifetimes](TODO-tool-lifetimes.md); neither is implemented.
 
 Historical round records live under [docs/research/](docs/research/); current
 rules live in `docs/design/` and remaining work in BACKLOG/ROADMAP or topic TODOs.
