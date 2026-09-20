@@ -2,7 +2,7 @@
 
 Date: 2026-09-20  
 Branch: `wp11-r11-scout`  
-Frozen implementation head: `6c4ec3a8`
+Frozen implementation head: `3d61d55b`
 
 ## Delivered contract
 
@@ -50,7 +50,7 @@ required parser and bytecode-listing static tool.
 | --- | --- | --- |
 | `luajit -e 'local a,b=dofile("tools/wp11/talent_tree_kat.lua")("."); if a==false then io.write(b); os.exit(1) else io.write(a) end'` | `wp11_talents_result PASS 0` | Real class/talent registries, all 16 Scout consumers, actual cast dispatcher and mana/cooldown path, full/partial held draw, current release aim, Twin/Longshot/refund/failure, Snare/Pinning settlement, lifecycle/mount refusal, Opening direction, Untouchable and actual starter callback |
 | `luajit tools/wp39/swing_aim_test.lua .` | `swing_aim_test: ok` | Actual held-swing authority, percentage-mana affordability snapshot, accepted payment, cancelled non-payment, main-hand clock and REPAIR metadata reason |
-| `luajit tools/wp11/move_aggregator_kat.lua .` | pass | Actual movement aggregator: old slow/root dispel, positive Sprint preservation and new slow immunity behavior |
+| `luajit -e 'io.write(dofile("tools/wp11/move_aggregator_kat.lua")("."))'` | `wp11_move_aggregator PASS mutation 0`; `dispel old_negative_removed positive_preserved ok` | Actual movement aggregator: old slow/root dispel, positive Sprint preservation and new slow immunity behavior |
 | `luajit tools/wp39/projectile_test.lua .` | `projectile_test: ok` | Active limit/session tokens, partial batch rollback, no rollback callbacks, commit refusal and successful siblings |
 | `luajit -e 'io.write(dofile("tools/r11_gear/ammo_kat.lua")("."))'` | pass | Quiver-first consume/refund, main fallback, filled-quiver transfer, atomic refusal and safe refund overflow |
 | `luajit -e 'io.write(dofile("tools/r11_gear/quality_kat.lua")("."))'` | pass | Real quality wrapper including forwarding `durability_metadata` through the equipment notification wrapper |
@@ -67,7 +67,7 @@ prohibited syntax, library call, sandbox call or `minetest.*` use was present.
 ## Frozen hashes
 
 ```text
-81dd4ca1077d0dd02e9308a217f0004c415133eb287b68b4200b0400a35d4149  mods/PLAYER/grug_abilities/scout.lua
+909d9c466bee7cddc77ebe210483dfdb06d0390db9368ad4f8da9942556b0a59  mods/PLAYER/grug_abilities/scout.lua
 73ec5773c782c9ef5033cbf89ed57fe4bad7eaae020ecd6b8333922a54eacf94  mods/PLAYER/grug_abilities/init.lua
 52cb43d5fff3ac6249ccc20aa000671f4f7673d59c73e3af943c8b820c352c8d  mods/PLAYER/grug_classes/scout.lua
 1e2260b152510ffbd2eb826b85cef7ff41486908f5e6e0d17e6dd542d4dcbacd  mods/PLAYER/grug_classes/scout_talents.lua
