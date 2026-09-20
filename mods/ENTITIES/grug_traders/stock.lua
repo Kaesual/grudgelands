@@ -100,17 +100,16 @@ grug_traders.register_stock({item = "default:pick_bronze", price = 40, category 
 -- A player sees their own bracket and every bracket below it. Per (vendor
 -- kind, bracket) the offer is:
 --   * the 13 FIXED items (sword + four pieces from each armor class);
---   * 3 ROTATING conceptual families drawn from dagger, greataxe, staff,
+--   * 4 ROTATING conceptual families drawn from dagger, greataxe, staff,
 --     caster 1H and bow. The active caster 1H family is the wand.
---     for this vendor/hour/bracket. Two conceptual families are withheld. This
---     keeps the three caster forms from crowding out physical families;
+--     for this vendor/hour/bracket. One conceptual family is withheld;
 --     Withholding is
 --     what makes it a rotation at all — with one slot per extra the whole
 --     catalog would be on the shelf every hour and the roll would only
 --     permute the display order. §3.8's "guaranteed, but expensive … the
 --     floor, not the ceiling" is a promise about the fixed floor above,
 --     which is untouched by this;
---   * one rotation in five, one of those three slots is replaced by a single
+--   * one rotation in five, one of those four slots is replaced by a single
 --     UNCOMMON item drawn from grug_gear.catalog[b].all and priced x3 —
 --     "today the trader had something good". Until WP5's enchant roller
 --     exists, no Uncommon is offered at all (see the WP5 SEAM below).
@@ -123,8 +122,8 @@ grug_traders.register_stock({item = "default:pick_bronze", price = 40, category 
 --
 
 local ROTATION_SECONDS = 3600 -- §3.8 "re-rolled hourly"; real hours
--- Strictly below the five conceptual extra families, so two stay withheld.
-local ROTATING_SLOTS = 3
+-- Exactly one of the five conceptual extra families stays withheld.
+local ROTATING_SLOTS = 4
 local UNCOMMON_EVERY = 5 -- "roughly one rotation in five"
 local UNCOMMON_PRICE_FACTOR = 3 -- §3.8 "priced x3"
 local UNCOMMON_COLOR = "#4A90FF"
@@ -245,7 +244,7 @@ local function compute(salt, bracket, rotation)
 		-- The shuffle decides WHICH extras are on the shelf: taking the first
 		-- ROTATING_SLOTS of the shuffled pool leaves the rest withheld until
 		-- the next hour. The modulo only guards the degenerate case of a pool
-		-- SMALLER than the slot count (never today: 3 extras, 2 slots).
+		-- SMALLER than the slot count (never today: 5 extras, 4 slots).
 		local itemname = pool[((i - 1) % #pool) + 1]
 		rotating[i] = {
 			item = itemname,

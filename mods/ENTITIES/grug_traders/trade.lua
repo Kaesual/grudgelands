@@ -211,7 +211,7 @@ local function render_buy(parts, player, session, vendor, discount)
 	if #offer == 0 then
 		parts[#parts + 1] = "label[0.6,3.0;The vendor has nothing on this shelf.]"
 	end
-	-- Required form height. The full bracket shelf is 16 entries (13 fixed + 3
+	-- Required form height. The full bracket shelf is 17 entries (13 fixed + 4
 	-- rotating); filtered profession views are smaller. General-tab supplies
 	-- may also extend to a third row, so derive the window from the actual view.
 	local grid_rows = math.ceil(#offer / GRID_COLS)
