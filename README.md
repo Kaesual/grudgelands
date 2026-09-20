@@ -240,8 +240,8 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 ## Current State
 
 *Last updated: 2026-09-20. Derived from [BACKLOG.md](BACKLOG.md) and
-[ROADMAP.md](ROADMAP.md); a final status sweep is required after Round-10
-integration.*
+[ROADMAP.md](ROADMAP.md); final MAP-B and acceptance-gate results are still
+pending.*
 
 **Shipped foundation:** 22 of 53 tracked work-package identities are complete:
 WP0–WP4,
@@ -254,19 +254,21 @@ Cooking/Alchemy infrastructure, status/food systems and safe character creation.
 Round-9 MOB2/BOSS, trinket effects, mana, farming mechanics and map/performance
 work are present as delivered subpackages without changing whole-WP counts.
 
-**Staged Round-10 candidates:** EQUIP is independently clean and completes
-Basics, seven primaries, universal base recipes, terminal improvements, kits and
-vendor rotation. WORLD has a clean source review with its global parity gate
-still pending; GAME is independently clean at `b887124d` after two Medium fix
-rounds, with byte-identical final parity evidence. CAP is active, while ART and MAP-B remain incomplete, so
-these candidates are not yet reported as main delivery or playtest-ready.
+**Integrated Round-10 work:** EQUIP, GAME, WORLD, ART, CAP and FARM are in the
+private integration candidate and independently clean. This includes Basics and
+seven primaries, universal base equipment, refinement/affixes, licensed
+nonweapon art, corrected cave/material behavior, percentage falls and
+dragon/mount behavior, all 17 crop lifecycles, and six capitals with eight
+profession trainers, seven stations, 24 mount displays and 18 gear displays.
+MAP-B and the engine-harness correction remain active; global parity, isolated
+engine gates, main delivery, synchronization and GUI acceptance are pending.
 
 **In progress:** WP13 has all six starts and capitals but still owns most of the
 100-anchor POI roster; its Round-10 capital work moves trainers into themed outer
 premises and adds dedicated stables. WP11 has X1/X2/X4 and still lacks X3.
-WP10's framework, Cooking and Alchemy are live, while its equipment/catalog
-completion is staged in EQUIP. The farming loop exists, but final world
-placement, soils and selected licensed visuals remain MAP-B/ART work.
+WP10's framework, Cooking, Alchemy and integrated equipment/catalog work are
+present without declaring the whole WP complete. Farming mechanics and visuals
+are integrated; final world placement and soils remain MAP-B work.
 
 **Not yet:** quests, parties, remaining recovery/offhand work, WP22 durability,
 WP24 Housing, WP41 geographic PvP, WP42 fronts, WP46, WP47, WP49, Scout and the

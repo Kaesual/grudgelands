@@ -1,8 +1,9 @@
 # Round 10 fresh-world playtest checklist
 
-This checklist applies only after the staged EQUIP, GAME, WORLD, CAP, ART and
-MAP-B candidates are integrated and synchronized. Offline fixtures and renders
-do not replace these GUI observations.
+EQUIP, GAME, WORLD, ART, CAP and FARM are integrated and independently clean.
+Use this checklist only after MAP-B, the final interpreter/engine gates, main
+delivery and synchronization are complete. Offline fixtures and renders do not
+replace these GUI observations.
 
 ## Short smoke route
 
@@ -39,10 +40,12 @@ do not replace these GUI observations.
 
 ## World, farming and art
 
-1. Visit all six capitals. Each must have seven primary trainers plus Cooking,
-   public owning stations and a separate Riding stable in outer premises; no
+1. Visit all six capitals. Each must have the seven primary trainers plus
+   Cooking (eight profession trainers), seven public owning stations and a
+   separate Riding stable in outer premises; no
    Riding Trainer belongs in a start settlement. Each stable displays exactly
-   four race-appropriate static mounts, and displayed mounts/gear release no
+   four race-appropriate static mounts (24 total); the capitals also carry
+   three gear displays each (18 total). Displayed mounts/gear release no
    item through dig, punch, take, blast, death or reload.
 2. At the Dawnmere witness near seed `4151598227737528026`, position
    approximately `(-71,19,-2458)`, confirm natural caves can break the surface

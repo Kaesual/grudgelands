@@ -9,6 +9,13 @@ The decided game rules live in [docs/design/](docs/design/). Implementation
 status and exact dependencies live in [BACKLOG.md](BACKLOG.md); this roadmap is
 the goal-level view.
 
+## Current delivery checkpoint
+
+Round-10 EQUIP, GAME, WORLD, ART, CAP and FARM changes are integrated and
+independently clean. MAP-B and final technical gates remain active; the result
+is not yet delivered to main or ready for the user's consolidated GUI playtest.
+Whole-goal checkboxes remain unchanged until their complete scope is finished.
+
 ## Vision
 
 - **Two distinct faction continents.** The Accord holds southern Elandor and

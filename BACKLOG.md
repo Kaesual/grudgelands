@@ -16,6 +16,14 @@ window. Rules:
 - Insights that future sessions need belong in AGENTS.md (conventions) or
   docs/ (details) — not just in the chat.
 
+## Round 10 integration checkpoint
+
+EQUIP, GAME, WORLD, ART, CAP and FARM are integrated in the private candidate
+and independently clean. MAP-B and the engine-harness correction are active;
+the global interpreter pair, isolated engine gates, main delivery, synchronization
+and user GUI acceptance remain pending. These subpackages do not change the
+whole-WP readiness count below.
+
 ## Phase 1 (MVP)
 
 | WP | Title | Status | Depends on |
