@@ -1154,9 +1154,9 @@ Neither of these costs a main profession slot (professions.md §1).
   mana at the listed rate. Every raw edible regenerates 1% maximum HP per tick;
   Wild Cocoa is HP food, not mana food. Rock Salt and Salt Crust are inedible.
 
-  **Plants pending placement (Round 9, carried R8-MAP-B).** Cooking v1
-  registers these as craftitems only. Their `Raw tier` is the band of the
-  lowest planned source;
+  **Cooking plant sources.** The exact Round-10 wild-source and farming
+  contract is in `world_zones.md`, "Cooking wild sources, field soil and shallow
+  reefs". Their `Raw tier` is the band of the lowest source;
   `Recipe tier` is the profession ingredient tier and may deliberately differ.
 
   | Item | Raw tier | Recipe tier | Food rule | Planned source |
