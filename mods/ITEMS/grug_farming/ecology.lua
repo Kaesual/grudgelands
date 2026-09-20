@@ -1,7 +1,7 @@
 -- Exact-baseline, bounded renewal for generated natural plants.
 return function()
 	local CELL, PASS_SECONDS = 64, 10
-	local MAX_CELLS, MAX_READS, MAX_PLACEMENTS = 8, 64, 2
+	local MAX_CELLS, MAX_CANDIDATES, MAX_NODE_READS, MAX_PLACEMENTS = 8, 64, 384, 2
 	local FIRST_MIN, FIRST_SPAN = 14400, 14400
 	local RETRY_MIN, RETRY_SPAN = 1800, 1800
 	local PLAYER_MARK = "grug_player_placed_plant"
@@ -11,11 +11,32 @@ return function()
 			type(state.cells) ~= "table" then
 		state = {schema = "grug_farming_ecology_v1", cells = {}}
 	end
-	local sources, source_names = {}, {}
+	local sources, source_names, habitat, cells_by_coord = {}, {}, nil, {}
 	local ready, elapsed, cell_cursor = false, 0, 1
+	for _, cell in pairs(state.cells) do
+		cell.debt = cell.debt or 0
+		cell.due = cell.due or 0
+		cell.cursor = cell.cursor or 1
+	end
+	local function index_cell(key)
+		local cx, cz = key:match("|(-?%d+)|(-?%d+)$")
+		if not cx then return end
+		local coord = cx .. "|" .. cz
+		local keys = cells_by_coord[coord]
+		if not keys then keys = {}; cells_by_coord[coord] = keys end
+		keys[#keys + 1] = key
+	end
+	for key in pairs(state.cells) do index_cell(key) end
 
 	local function save()
-		storage:set_string("ecology_v1", core.serialize(state))
+		local persisted = {schema = state.schema, cells = {}}
+		for key, cell in pairs(state.cells) do
+			local row = {species = cell.species, positions = cell.positions,
+				cursor = cell.cursor}
+			if cell.debt > 0 then row.debt, row.due = cell.debt, cell.due end
+			persisted.cells[key] = row
+		end
+		storage:set_string("ecology_v1", core.serialize(persisted))
 	end
 
 	local function pos_key(pos)
@@ -41,21 +62,30 @@ return function()
 		local source = sources[name]
 		if not source or core.get_meta(pos):get_int(PLAYER_MARK) == 1 then return false end
 		local mapgen = rawget(_G, "grug_mapgen")
-		local query = mapgen and mapgen.wp40 and mapgen.wp40.ecology_at
-		if type(query) ~= "function" then return false end
-		local _, _, _, static, housing, functional, hard =
-			query(pos.x, pos.y, pos.z)
-		if static or housing or functional or hard then return false end
+		local planner = mapgen and mapgen.wp40 and mapgen.wp40.planner_source
+		if type(planner) ~= "table" then return false end
+		local _, _, _, _, _, terrain_y = planner.column_values_at(pos.x, pos.z)
+		local functional, functional_y =
+			planner.functional_surface_values_at(pos.x, pos.z)
+		if planner.static_exclusion_values_at(pos.x, pos.z) ~= nil or
+				planner.housing_mask_id_at(pos.x, pos.z) ~= nil or
+				(functional ~= nil and pos.y >= functional_y) or
+				planner.hard_row_at(pos.x, pos.y, pos.z) ~= nil or
+				planner.hard_row_at(pos.x, pos.y - 1, pos.z) ~= nil then
+			return false
+		end
 		local key = cell_key(source.species, pos)
 		local cell = state.cells[key]
 		if not cell then
 			cell = {species = source.species, positions = {}, debt = 0, due = 0,
 				cursor = 1}
 			state.cells[key] = cell
+			index_cell(key)
 		end
 		local key_at = pos_key(pos)
 		if cell.positions[key_at] then return false end
-		local below = core.get_node({x = pos.x, y = pos.y - 1, z = pos.z})
+		local below = core.get_node_or_nil({x = pos.x, y = pos.y - 1, z = pos.z})
+		if not below then return false end
 		cell.positions[key_at] = {x = pos.x, y = pos.y, z = pos.z,
 			name = name, present = true, support = below.name,
 			support_param2 = below.param2 or 0}
@@ -76,30 +106,10 @@ return function()
 		save()
 	end
 
-	local function set(values)
-		local result = {}
-		for index = 1, #(values or {}) do result[values[index]] = true end
-		return result
-	end
-
-	local function add_source(name, species, row, kind)
+	local function add_source(source)
+		local name, species = source.node, source.key
 		if sources[name] then error("grug_farming: duplicate ecology source " .. name, 0) end
-		local source = {name = name, species = species, row = row, kind = kind,
-			zones = set(row.zones), hosts = {}}
-		if kind == "world" then
-			for biome, values in pairs(row.hosts) do
-				source.hosts[biome == "any" and "*" or biome] = set(values)
-			end
-		elseif kind == "p9g" then
-			for index = 1, #row.hosts do
-				local host = row.hosts[index]
-				local biome = source.hosts[host.biome] or {}
-				local support = biome[host.support] or {}
-				support[host.zone or "*"] = true
-				biome[host.support] = support
-				source.hosts[host.biome] = biome
-			end
-		end
+		source.name, source.species = name, species
 		sources[name], source_names[#source_names + 1] = source, name
 	end
 
@@ -109,7 +119,7 @@ return function()
 		local offsets = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}}
 		local found = false
 		for index = 1, 4 do
-			if reads >= MAX_READS then return false, reads end
+			if reads >= MAX_NODE_READS then return false, reads end
 			local node = core.get_node_or_nil({x = pos.x + offsets[index][1],
 				y = pos.y - 1, z = pos.z + offsets[index][2]})
 			reads = reads + 1
@@ -121,15 +131,23 @@ return function()
 
 	local function habitat_ok(source, pos, reads)
 		local mapgen = rawget(_G, "grug_mapgen")
-		local query = mapgen and mapgen.wp40 and mapgen.wp40.ecology_at
+		local planner = mapgen and mapgen.wp40 and mapgen.wp40.planner_source
 		local support_pos = {x = pos.x, y = pos.y - 1, z = pos.z}
-		if type(query) ~= "function" or not grug_core.world_alterable(pos) or
+		if type(planner) ~= "table" or not grug_core.world_alterable(pos) or
 				not grug_core.world_alterable(support_pos) then
 			return false, reads
 		end
-		local zone, analytic_biome, terrain_y, static, housing, functional, hard =
-			query(pos.x, pos.y, pos.z)
-		if static or housing or functional or hard then return false, reads end
+		local _, _, zone, analytic_biome, _, terrain_y =
+			planner.column_values_at(pos.x, pos.z)
+		local functional, functional_y =
+			planner.functional_surface_values_at(pos.x, pos.z)
+		if planner.static_exclusion_values_at(pos.x, pos.z) ~= nil or
+				planner.housing_mask_id_at(pos.x, pos.z) ~= nil or
+				(functional ~= nil and pos.y >= functional_y) or
+				planner.hard_row_at(pos.x, pos.y, pos.z) ~= nil or
+				planner.hard_row_at(pos.x, pos.y - 1, pos.z) ~= nil then
+			return false, reads
+		end
 		local node = core.get_node_or_nil(pos)
 		reads = reads + 1
 		if not node or node.name ~= "air" then return false, reads end
@@ -141,21 +159,12 @@ return function()
 			return false, reads
 		end
 		if core.get_meta(support_pos):get_int(PLAYER_MARK) == 1 then return false, reads end
-		local row = source.row
-		if source.kind == "world" then
-			if pos.y < row.min or pos.y > row.max or
-					(#row.zones > 0 and not source.zones[zone]) then return false, reads end
+		if source.kind == "world" or source.kind == "p9g" then
 			local data = core.get_biome_data(pos)
 			local biome = data and core.get_biome_name(data.biome) or analytic_biome
-			local supports = source.hosts[biome] or source.hosts[analytic_biome] or
-				source.hosts["*"] or source.hosts.stone
-			if not supports or not supports[below.name] then return false, reads end
-			if row.mode == "surface" and pos.y ~= terrain_y + 1 then return false, reads end
-		elseif source.kind == "p9g" then
-			if not source.zones[zone] then return false, reads end
-			local biome = source.hosts[analytic_biome]
-			local zones = biome and biome[below.name]
-			if not zones or not (zones[zone] or zones["*"]) then return false, reads end
+			if not habitat.habitat_matches(source, {zone = zone, biome = biome,
+				analytic_biome = analytic_biome, terrain_y = terrain_y, y = pos.y,
+				support = below.name}) then return false, reads end
 		else
 			-- Reused fruit positions renew only while their original tree/bush
 			-- support remains. Air, farm soil and liquids are never accepted.
@@ -169,17 +178,16 @@ return function()
 		return shore_ok(source, pos, reads)
 	end
 
-	local function visible_debts()
+	local function visible_cells()
 		local result, seen = {}, {}
 		for _, player in ipairs(core.get_connected_players()) do
 			local pos = player:get_pos()
 			local cx, cz = math.floor(pos.x / CELL), math.floor(pos.z / CELL)
 			for dz = -1, 1 do for dx = -1, 1 do
-				local suffix = "|" .. (cx + dx) .. "|" .. (cz + dz)
-				for key, cell in pairs(state.cells) do
-					if cell.debt > 0 and key:sub(-#suffix) == suffix and not seen[key] then
-						seen[key], result[#result + 1] = true, key
-					end
+				local keys = cells_by_coord[(cx + dx) .. "|" .. (cz + dz)] or {}
+				for index = 1, #keys do
+					local key = keys[index]
+					if not seen[key] then seen[key], result[#result + 1] = true, key end
 				end
 			end end
 		end
@@ -189,15 +197,15 @@ return function()
 
 	local function service()
 		if not ready then return end
-		local keys = visible_debts()
+		local keys = visible_cells()
 		if #keys == 0 then return end
 		if cell_cursor > #keys then cell_cursor = 1 end
-		local now, reads, placements, dirty = os.time(), 0, 0, false
+		local now, reads, candidates_seen, placements, dirty = os.time(), 0, 0, 0, false
 		local cell_count = math.min(MAX_CELLS, #keys)
 		for offset = 0, cell_count - 1 do
 			local key = keys[((cell_cursor + offset - 1) % #keys) + 1]
 			local cell = state.cells[key]
-			if cell.debt > 0 and cell.due <= now then
+			if cell.due == 0 or cell.due <= now then
 				local candidates = {}
 				for _, pos in pairs(cell.positions) do candidates[#candidates + 1] = pos end
 				table.sort(candidates, function(a, b)
@@ -210,8 +218,9 @@ return function()
 				for step = 1, attempts do
 					-- Reserve the worst case: current node, candidate, support and four
 					-- cardinal shore reads. This keeps the advertised global cap exact.
-					if reads > MAX_READS - 7 or placements >= MAX_PLACEMENTS then break end
+					if reads > MAX_NODE_READS - 7 or candidates_seen >= MAX_CANDIDATES then break end
 					attempted = attempted + 1
+					candidates_seen = candidates_seen + 1
 					local index = ((cell.cursor + step - 2) % #candidates) + 1
 					local pos = candidates[index]
 					local current = core.get_node_or_nil(pos)
@@ -219,6 +228,9 @@ return function()
 					if current and pos.present and current.name ~= pos.name then
 						pos.present = false
 						cell.debt = math.min(cell.debt + 1, #candidates)
+						if cell.due == 0 then
+							cell.due = now + random_delay(FIRST_MIN, FIRST_SPAN)
+						end
 						dirty = true
 					end
 					if current and not pos.present and current.name == pos.name and
@@ -227,7 +239,8 @@ return function()
 						cell.debt = math.max(0, cell.debt - 1)
 						dirty = true
 					end
-					if not pos.present then
+					if not pos.present and cell.due <= now and
+							placements < MAX_PLACEMENTS then
 						local okay
 						okay, reads = habitat_ok(sources[pos.name], pos, reads)
 						if okay then
@@ -239,7 +252,10 @@ return function()
 				end
 				cell.cursor = #candidates > 0 and
 					((cell.cursor + attempted - 1) % #candidates) + 1 or 1
-				if attempted > 0 then
+				if cell.debt == 0 then
+					cell.due = 0
+					dirty = true
+				elseif attempted > 0 and cell.due <= now then
 					cell.due = cell.debt > 0 and
 						now + random_delay(RETRY_MIN, RETRY_SPAN) or 0
 					dirty = true
@@ -252,18 +268,19 @@ return function()
 
 	local mapgen_path = core.get_modpath("grug_mapgen")
 	if not mapgen_path then error("grug_farming: mapgen ecology authority missing", 0) end
+	habitat = dofile(mapgen_path .. "/wp40/habitat_registry.lua")
 	local world = dofile(mapgen_path .. "/wp40/world_content_catalog.lua")
 	for index = 1, #world.plants do
 		local row = world.plants[index]
-		if row.key ~= "salt_crust" then add_source(row.node, row.key, row, "world") end
+		if habitat.is_renewable(row.key) then add_source(habitat.compile_world(row)) end
 	end
 	local gathering = dofile(core.get_modpath("grug_gathering") .. "/catalog.lua")
 	for _, row in ipairs(gathering.p9g_sources()) do
-		if row.key ~= "rock_salt" then add_source(row.source_node, row.key, row, "p9g") end
+		if habitat.is_renewable(row.key) then add_source(habitat.compile_p9g(row)) end
 	end
-	add_source("default:apple", "apple", {zones = {}, hosts = {}}, "reuse")
-	add_source("default:blueberry_bush_leaves_with_berries", "blueberry",
-		{zones = {}, hosts = {}}, "reuse")
+	add_source({node = "default:apple", key = "apple", kind = "reuse"})
+	add_source({node = "default:blueberry_bush_leaves_with_berries",
+		key = "blueberry", kind = "reuse"})
 
 	core.register_on_mods_loaded(function()
 		for index = 1, #source_names do
@@ -306,7 +323,8 @@ return function()
 	end)
 
 	grug_farming.ECOLOGY_LIMITS = {cell = CELL, cells_per_pass = MAX_CELLS,
-		node_reads_per_pass = MAX_READS, candidates_per_cell = 8,
+		node_reads_per_pass = MAX_NODE_READS, candidates_per_pass = MAX_CANDIDATES,
+		candidates_per_cell = 8,
 		placements_per_pass = MAX_PLACEMENTS, pass_seconds = PASS_SECONDS,
 		first_min = FIRST_MIN, first_max = FIRST_MIN + FIRST_SPAN,
 		retry_min = RETRY_MIN, retry_max = RETRY_MIN + RETRY_SPAN}

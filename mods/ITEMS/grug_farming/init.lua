@@ -97,6 +97,10 @@ core.register_lbm({
 
 local crops = {}
 local crop_keys = {}
+-- ART owns this pure map and its licensed textures; integration merges that
+-- commit before this registration hook is exercised.
+local seed_visuals = dofile(core.get_modpath(core.get_current_modname()) ..
+	"/seed_visuals.lua")
 
 local function add_crop(key, description, item, image)
 	if crop_keys[key] then
@@ -215,7 +219,8 @@ for index = 1, #crops do
 	local row = crops[index]
 	core.register_craftitem(row.seed, {
 		description = row.description .. " Seeds",
-		inventory_image = row.image .. "^[colorize:#6f542c:90",
+		inventory_image = assert(seed_visuals[row.key],
+			"grug_farming: missing seed visual " .. row.key),
 		groups = {seed = 1, grug_farming_seed = 1},
 		_grug_crop = row.key,
 		on_place = place_seed(row),

@@ -1,6 +1,11 @@
 -- Seven plain hoes share one soil operation; tiers change lifetime only.
 return function(callbacks)
  local uses_by_tier = {128,192,256,384,512,768}
+ local hoe_tints = {
+  bronze="#b97842:95", iron="#8b9298:72", steel="#c4ccd3:35",
+  silversteel="#d9e0e3:70", embersteel="#a43d21:105",
+  abyssal_steel="#49345f:115",
+ }
  local function spend_use(stack, uses)
   local meta = stack:get_meta()
   -- Integer remainder makes every authored lifetime exact, including 192
@@ -61,6 +66,6 @@ return function(callbacks)
  for tier=1,#grug_materials.TIERS do
   local row=grug_materials.TIERS[tier]
   register("grug_farming:hoe_"..row.key,row.name.." Hoe",tier,uses_by_tier[tier],
-   row.bar_item,"grug_farming_steelhoe.png")
+   row.bar_item,"grug_farming_steelhoe.png^[colorize:"..hoe_tints[row.key])
  end
 end

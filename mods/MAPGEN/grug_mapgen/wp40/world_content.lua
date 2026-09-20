@@ -1,5 +1,6 @@
 -- P9G-2 surface/cave/reef extension, inside the existing R6 private transaction.
-return function(catalog, content)
+return function(catalog, content, habitat)
+ assert(type(habitat)=="table" and type(habitat.initial_denominator)=="function")
  assert(catalog.schema=="grug_world_content_v1" and #catalog.plants==15 and #catalog.names==22)
  for i,name in ipairs(catalog.names) do assert(content.content_names[i+12]==name) end
  local config={}
@@ -72,7 +73,7 @@ return function(catalog, content)
           local allowed=hosts[i][biome] or hosts[i].any
           if row.mode=="surface" and allowed and allowed[below] and level and
            level>=row.min and level<=row.max and (#row.zones==0 or zones[i][zone]) and
-           hash(x,y,z,i)%(row.key=="salt_crust" and row.density or row.density*2)==0 and
+           hash(x,y,z,i)%habitat.initial_denominator(row.key,row.density)==0 and
            shore(ctx,row,x,ground,z) then
            write(i,x,y,z,0);break
           end
@@ -91,7 +92,7 @@ return function(catalog, content)
         local low=math.max(ctx.min_y+1,row.min)
         local high=math.min(ctx.max_y,row.max,ground-2)
         for y=low,high do
-         if hash(x,y,z,i)%(row.key=="salt_crust" and row.density or row.density*2)==0 and
+         if hash(x,y,z,i)%habitat.initial_denominator(row.key,row.density)==0 and
           ctx.cave_content_allowed_at(x,y,z) then
           local cid,p2,occupancy=ctx.settled_at(x,y,z)
           local below=ctx.settled_at(x,y-1,z)
