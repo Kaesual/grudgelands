@@ -628,6 +628,14 @@ local function perch_tick(self, state, dtime, moveresult)
 		return false
 	end
 	state.perch = (state.perch or 0) + dtime
+	state.acquire = (state.acquire or 0) + dtime
+	if state.acquire >= 1 then
+		state.acquire = 0
+		-- do_custom owns idle movement and therefore bypasses mobs_redo's later
+		-- acquisition pass. Reuse the same bounded acquisition method here.
+		if self.general_attack then self:general_attack() end
+		if self.attack then return false end
+	end
 	if state.perch < 15 or not self._grug_perches or #self._grug_perches < 2 then
 		stop_object(self)
 		return false
@@ -658,8 +666,13 @@ local function dragon_tick(self, dtime, moveresult, opts)
 	if not target_pos then
 		if target and self.stop_attack then self:stop_attack() end
 		if state.mode ~= "ground" then
-			state.mode = "landing"
 			set_flight(self, false)
+			if grounded(self, moveresult) then
+				state.mode = "ground"
+				if self.set_animation then self:set_animation("stand", true) end
+			else
+				state.mode = "landing"
+			end
 			return false
 		end
 		return perch_tick(self, state, dtime, moveresult)

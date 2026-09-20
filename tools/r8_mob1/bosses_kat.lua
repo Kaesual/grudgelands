@@ -14,6 +14,7 @@ return function(root)
 	local node_map, timers = {}, {}
 	local particles, spawners = {}, {}
 	local protected = false
+	local peaceful_names = {}
 	local line_clear = true
 	local movement = {walk = 0, path = 0, snap = 0, clear = 0, socket = 0}
 	local stalled, path_result = 0, false
@@ -106,7 +107,9 @@ return function(root)
 		serialize = function() return "" end,
 		deserialize = function() return nil end,
 		is_player = function(object) return object and object._is_player == true end,
-		check_player_privs = function() return false end,
+		check_player_privs = function(name, privilege)
+			return privilege == "peaceful_player" and peaceful_names[name] == true
+		end,
 		yaw_to_dir = function() return {x = 0, y = 0, z = 1} end,
 		add_entity = function(pos, name)
 			spawn_count = (spawn_count or 0) + 1
@@ -400,6 +403,26 @@ return function(root)
 	assert(movement.snap == snap_before and idle.object.velocity.z > 0 and
 		idle.temp.grug_dragon.gust == 0,
 		"idle dragon did not walk without teleport or target-only gust")
+
+	-- do_custom owns idle movement, so it must explicitly reuse mobs_redo's
+	-- acquisition pass. Landing without a target must still settle to ground.
+	local entering = dragon_for("grug_mobs:ice_dragon", nil,
+		{x = 0, y = 1, z = 0})
+	function entering:general_attack() self.attack = enemy end
+	ice_def.do_custom(entering, 1)
+	assert(entering.attack == enemy, "idle dragon did not reacquire entering hostile")
+	entering.attack = nil
+	entering.temp.grug_dragon.mode = "landing"
+	ice_def.do_custom(entering, 0.1, {touching_ground = true})
+	assert(entering.temp.grug_dragon.mode == "ground",
+		"targetless landing dragon did not return to ground rest")
+	peaceful_names.enemy = true
+	entering.attack = enemy
+	entering.temp.grug_dragon.primary = 0
+	ice_def.do_custom(entering, 0.1, {touching_ground = true})
+	assert(entering.attack == nil and entering.temp.grug_dragon.action == nil,
+		"peaceful target remained valid for dragon action")
+	peaceful_names.enemy = nil
 
 	-- An obstructed near target also forces takeoff.
 	enemy.pos = {x = 7, y = 1, z = 0}
