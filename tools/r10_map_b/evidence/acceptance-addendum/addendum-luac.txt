@@ -1,0 +1,4353 @@
+
+main <(luac):0,0> (5 instructions, 20 bytes at 0x2d888e0)
+0 params, 1 slot, 0 upvalues, 0 locals, 0 constants, 2 functions
+	1	[-]	CLOSURE  	0 0	; 0x2d6b920
+	2	[-]	CALL     	0 1 1
+	3	[-]	CLOSURE  	0 1	; 0x2d86e50
+	4	[-]	CALL     	0 1 1
+	5	[-]	RETURN   	0 1
+
+main <tools/wp40/r6/micro_kat_fixture.lua:0,0> (3 instructions, 12 bytes at 0x2d6b920)
+0+ params, 2 slots, 0 upvalues, 0 locals, 0 constants, 1 function
+	1	[756]	CLOSURE  	0 0	; 0x2d6ba80
+	2	[756]	RETURN   	0 2
+	3	[756]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:3,756> (2334 instructions, 9336 bytes at 0x2d6ba80)
+1 param, 121 slots, 0 upvalues, 280 locals, 376 constants, 48 functions
+	1	[4]	GETGLOBAL	1 -1	; dofile
+	2	[4]	MOVE     	2 0
+	3	[4]	LOADK    	3 -2	; "/tools/wp40/r6/common.lua"
+	4	[4]	CONCAT   	2 2 3
+	5	[4]	CALL     	1 2 2
+	6	[5]	GETTABLE 	2 1 -3	; "new_sha256"
+	7	[5]	CALL     	2 1 2
+	8	[6]	MOVE     	3 0
+	9	[6]	LOADK    	4 -4	; "/mods/MAPGEN/grug_mapgen/wp40"
+	10	[6]	CONCAT   	3 3 4
+	11	[7]	GETGLOBAL	4 -1	; dofile
+	12	[7]	MOVE     	5 3
+	13	[7]	LOADK    	6 -5	; "/r6_hash.lua"
+	14	[7]	CONCAT   	5 5 6
+	15	[7]	CALL     	4 2 2
+	16	[7]	MOVE     	5 2
+	17	[7]	CALL     	4 2 2
+	18	[8]	GETGLOBAL	5 -1	; dofile
+	19	[8]	MOVE     	6 3
+	20	[8]	LOADK    	7 -6	; "/r6_settlement.lua"
+	21	[8]	CONCAT   	6 6 7
+	22	[8]	CALL     	5 2 2
+	23	[9]	GETGLOBAL	6 -1	; dofile
+	24	[9]	MOVE     	7 3
+	25	[9]	LOADK    	8 -7	; "/counting_allocator.lua"
+	26	[9]	CONCAT   	7 7 8
+	27	[9]	CALL     	6 2 2
+	28	[10]	GETGLOBAL	7 -1	; dofile
+	29	[10]	MOVE     	8 0
+	30	[10]	LOADK    	9 -8	; "/tools/wp40/simple_map_r5_vm.lua"
+	31	[10]	CONCAT   	8 8 9
+	32	[10]	CALL     	7 2 2
+	33	[11]	NEWTABLE 	8 0 0
+	34	[12]	CLOSURE  	9 0	; 0x2d6c370
+	35	[16]	CLOSURE  	10 1	; 0x2d6d3f0
+	36	[16]	MOVE     	0 9
+	37	[19]	CLOSURE  	11 2	; 0x2d6d750
+	38	[19]	MOVE     	0 8
+	39	[31]	CLOSURE  	12 3	; 0x2d6db30
+	40	[36]	CLOSURE  	13 4	; 0x2d6eab0
+	41	[39]	CLOSURE  	14 5	; 0x2d6ee50
+	42	[51]	CLOSURE  	15 6	; 0x2d6f3d0
+	43	[51]	MOVE     	0 13
+	44	[57]	CLOSURE  	16 7	; 0x2d6e690
+	45	[57]	MOVE     	0 16
+	46	[58]	NEWTABLE 	17 15 0
+	47	[58]	LOADK    	18 -9	; "kat:top"
+	48	[58]	LOADK    	19 -10	; "kat:filler"
+	49	[58]	LOADK    	20 -11	; "kat:shore"
+	50	[58]	LOADK    	21 -12	; "kat:bed"
+	51	[59]	LOADK    	22 -13	; "kat:dust"
+	52	[59]	LOADK    	23 -14	; "kat:ore_a"
+	53	[59]	LOADK    	24 -15	; "kat:ore_b"
+	54	[59]	LOADK    	25 -16	; "kat:ore_c"
+	55	[59]	LOADK    	26 -17	; "kat:template"
+	56	[60]	LOADK    	27 -18	; "kat:tall"
+	57	[60]	LOADK    	28 -19	; "kat:simple"
+	58	[60]	LOADK    	29 -20	; "kat:tier5"
+	59	[60]	LOADK    	30 -21	; "kat:tier6"
+	60	[60]	LOADK    	31 -22	; "kat:tier1"
+	61	[60]	LOADK    	32 -23	; "default:stone"
+	62	[60]	SETLIST  	17 15 1	; 1
+	63	[61]	NEWTABLE 	18 0 0
+	64	[61]	NEWTABLE 	19 0 0
+	65	[61]	NEWTABLE 	20 0 0
+	66	[61]	NEWTABLE 	21 0 0
+	67	[61]	NEWTABLE 	22 0 0
+	68	[62]	LOADK    	23 -24	; 1
+	69	[62]	LEN      	24 17
+	70	[62]	LOADK    	25 -24	; 1
+	71	[62]	FORPREP  	23 57	; to 129
+	72	[63]	GETTABLE 	27 17 26
+	73	[63]	MOVE     	28 26
+	74	[63]	ADD      	29 -25 26	; 100 -
+	75	[63]	SETTABLE 	18 26 29
+	76	[63]	SETTABLE 	20 27 28
+	77	[64]	LE       	0 26 -26	; - 4
+	78	[64]	JMP      	3	; to 82
+	79	[64]	LOADK    	27 -24	; 1
+	80	[64]	TEST     	27 0 1
+	81	[64]	JMP      	16	; to 98
+	82	[64]	EQ       	0 26 -27	; - 5
+	83	[64]	JMP      	3	; to 87
+	84	[64]	LOADK    	27 -28	; 2
+	85	[64]	TEST     	27 0 1
+	86	[64]	JMP      	11	; to 98
+	87	[65]	LE       	0 26 -29	; - 8
+	88	[65]	JMP      	3	; to 92
+	89	[65]	LOADK    	27 -26	; 4
+	90	[65]	TEST     	27 0 1
+	91	[65]	JMP      	6	; to 98
+	92	[65]	LE       	0 26 -30	; - 11
+	93	[65]	JMP      	3	; to 97
+	94	[65]	LOADK    	27 -29	; 8
+	95	[65]	TEST     	27 0 1
+	96	[65]	JMP      	1	; to 98
+	97	[65]	LOADK    	27 -24	; 1
+	98	[65]	SETTABLE 	19 26 27
+	99	[66]	GETTABLE 	27 18 26
+	100	[66]	LE       	0 26 -26	; - 4
+	101	[66]	JMP      	3	; to 105
+	102	[66]	LOADK    	28 -31	; 7
+	103	[66]	TEST     	28 0 1
+	104	[66]	JMP      	16	; to 121
+	105	[66]	EQ       	0 26 -27	; - 5
+	106	[66]	JMP      	3	; to 110
+	107	[66]	LOADK    	28 -29	; 8
+	108	[66]	TEST     	28 0 1
+	109	[66]	JMP      	11	; to 121
+	110	[67]	LE       	0 26 -29	; - 8
+	111	[67]	JMP      	3	; to 115
+	112	[67]	LOADK    	28 -32	; 10
+	113	[67]	TEST     	28 0 1
+	114	[67]	JMP      	6	; to 121
+	115	[67]	LE       	0 26 -30	; - 11
+	116	[67]	JMP      	3	; to 120
+	117	[67]	LOADK    	28 -29	; 8
+	118	[67]	TEST     	28 0 1
+	119	[67]	JMP      	1	; to 121
+	120	[67]	LOADK    	28 -30	; 11
+	121	[67]	SETTABLE 	21 27 28
+	122	[68]	EQ       	0 26 -33	; - 9
+	123	[68]	JMP      	3	; to 127
+	124	[68]	LOADK    	27 -34	; "facedir"
+	125	[68]	TEST     	27 0 1
+	126	[68]	JMP      	1	; to 128
+	127	[68]	LOADK    	27 -35	; "none"
+	128	[68]	SETTABLE 	22 26 27
+	129	[62]	FORLOOP  	23 -58	; to 72
+	130	[70]	GETTABLE 	23 18 -36	; 15
+	131	[70]	SETTABLE 	21 23 -31	; - 7
+	132	[71]	LOADK    	23 -24	; 1
+	133	[71]	LOADK    	24 -26	; 4
+	134	[71]	SETTABLE 	21 -38 -39	; 65535 3
+	135	[71]	SETTABLE 	21 -32 24	; 10 -
+	136	[71]	SETTABLE 	21 -37 23	; 0 -
+	137	[72]	NEWTABLE 	23 0 2
+	138	[72]	SETTABLE 	23 -40 -37	; "air" 0
+	139	[72]	SETTABLE 	23 -41 -32	; "default:water_source" 10
+	140	[73]	LOADK    	24 -24	; 1
+	141	[73]	LEN      	25 17
+	142	[73]	LOADK    	26 -24	; 1
+	143	[73]	FORPREP  	24 3	; to 147
+	144	[73]	GETTABLE 	28 17 27
+	145	[73]	GETTABLE 	29 18 27
+	146	[73]	SETTABLE 	23 28 29
+	147	[73]	FORLOOP  	24 -4	; to 144
+	148	[74]	NEWTABLE 	24 0 7
+	149	[74]	SETTABLE 	24 -42 -43	; "schema" "grug_wp40_r6_content_contract_v1"
+	150	[75]	SETTABLE 	24 -44 -38	; "ignore_cid" 65535
+	151	[75]	SETTABLE 	24 -45 -24	; "ordinary_water_family_id" 1
+	152	[76]	SETTABLE 	24 -46 -28	; "river_water_family_id" 2
+	153	[76]	SETTABLE 	24 -47 17	; "content_names" -
+	154	[77]	SETTABLE 	24 -48 18	; "content_cids" -
+	155	[77]	SETTABLE 	24 -49 19	; "content_kind_masks" -
+	156	[78]	NEWTABLE 	25 0 0
+	157	[78]	SETTABLE 	24 -50 25	; "r5" -
+	158	[79]	GETTABLE 	25 24 -50	; "r5"
+	159	[86]	CLOSURE  	26 8	; 0x2d6c7a0
+	160	[86]	MOVE     	0 9
+	161	[86]	MOVE     	0 18
+	162	[79]	SETTABLE 	25 -51 26	; "resolve" -
+	163	[89]	CLOSURE  	25 9	; 0x2d73670
+	164	[89]	MOVE     	0 18
+	165	[89]	MOVE     	0 19
+	166	[87]	SETTABLE 	24 -52 25	; "resolve_r6" -
+	167	[99]	CLOSURE  	25 10	; 0x2d6ccf0
+	168	[99]	MOVE     	0 21
+	169	[99]	MOVE     	0 18
+	170	[99]	MOVE     	0 22
+	171	[90]	SETTABLE 	24 -53 25	; "classify" -
+	172	[100]	NEWTABLE 	25 1 0
+	173	[100]	NEWTABLE 	26 0 12
+	174	[100]	SETTABLE 	26 -54 -55	; "id" "kat_biome"
+	175	[100]	GETTABLE 	27 17 -24	; 1
+	176	[100]	SETTABLE 	26 -56 27	; "top" -
+	177	[100]	GETTABLE 	27 17 -28	; 2
+	178	[100]	SETTABLE 	26 -57 27	; "filler" -
+	179	[101]	SETTABLE 	26 -58 -24	; "filler_depth" 1
+	180	[101]	GETTABLE 	27 17 -39	; 3
+	181	[101]	SETTABLE 	26 -59 27	; "shore" -
+	182	[101]	GETTABLE 	27 17 -26	; 4
+	183	[101]	SETTABLE 	26 -60 27	; "bed" -
+	184	[101]	GETTABLE 	27 17 -27	; 5
+	185	[101]	SETTABLE 	26 -61 27	; "dust" -
+	186	[102]	SETTABLE 	26 -62 -24	; "top_ref" 1
+	187	[102]	SETTABLE 	26 -63 -28	; "filler_ref" 2
+	188	[102]	SETTABLE 	26 -64 -39	; "shore_ref" 3
+	189	[102]	SETTABLE 	26 -65 -26	; "bed_ref" 4
+	190	[102]	SETTABLE 	26 -66 -27	; "dust_ref" 5
+	191	[102]	SETLIST  	25 1 1	; 1
+	192	[103]	NEWTABLE 	26 0 0
+	193	[104]	LOADK    	27 -24	; 1
+	194	[104]	LOADK    	28 -39	; 3
+	195	[104]	LOADK    	29 -24	; 1
+	196	[104]	FORPREP  	27 36	; to 233
+	197	[105]	NEWTABLE 	31 6 0
+	198	[105]	LOADBOOL 	32 0 0
+	199	[105]	LOADBOOL 	33 0 0
+	200	[105]	LOADBOOL 	34 0 0
+	201	[105]	LOADBOOL 	35 0 0
+	202	[105]	LOADBOOL 	36 0 0
+	203	[105]	LOADK    	37 -24	; 1
+	204	[105]	SETLIST  	31 6 1	; 1
+	205	[106]	EQ       	0 30 -24	; - 1
+	206	[106]	JMP      	1	; to 208
+	207	[106]	SETTABLE 	31 -67 -68	; 6 false
+	208	[107]	NEWTABLE 	32 0 11
+	209	[107]	LOADK    	33 -70	; "ore_"
+	210	[107]	MOVE     	34 30
+	211	[107]	CONCAT   	33 33 34
+	212	[107]	SETTABLE 	32 -69 33	; "key" -
+	213	[107]	SETTABLE 	32 -71 -72	; "scope" "universal"
+	214	[108]	SETTABLE 	32 -73 -67	; "first_tier" 6
+	215	[108]	SETTABLE 	32 -74 31	; "denominators" -
+	216	[109]	EQ       	0 30 -28	; - 2
+	217	[109]	JMP      	3	; to 221
+	218	[109]	LOADK    	33 -24	; 1
+	219	[109]	TEST     	33 0 1
+	220	[109]	JMP      	1	; to 222
+	221	[109]	LOADK    	33 -28	; 2
+	222	[109]	SETTABLE 	32 -75 33	; "max_nodes_per_vein" -
+	223	[110]	SETTABLE 	32 -76 -27	; "deep_1500_1999_numerator" 5
+	224	[111]	SETTABLE 	32 -77 -26	; "deep_1500_1999_denominator" 4
+	225	[111]	SETTABLE 	32 -78 -39	; "deep_2000_floor_numerator" 3
+	226	[112]	SETTABLE 	32 -79 -28	; "deep_2000_floor_denominator" 2
+	227	[112]	ADD      	33 -27 30	; 5 -
+	228	[112]	GETTABLE 	33 17 33
+	229	[112]	SETTABLE 	32 -80 33	; "node" -
+	230	[113]	ADD      	33 -27 30	; 5 -
+	231	[113]	SETTABLE 	32 -81 33	; "content_ref" -
+	232	[113]	SETTABLE 	26 30 32
+	233	[104]	FORLOOP  	27 -37	; to 197
+	234	[115]	NEWTABLE 	27 1 0
+	235	[115]	NEWTABLE 	28 0 6
+	236	[115]	SETTABLE 	28 -82 -83	; "race" "dwarf"
+	237	[115]	SETTABLE 	28 -69 -84	; "key" "kat_cultural"
+	238	[116]	SETTABLE 	28 -85 -86	; "ordinary_denominator" 4096
+	239	[116]	SETTABLE 	28 -87 -88	; "concentrated_denominator" 1024
+	240	[117]	NEWTABLE 	29 1 0
+	241	[117]	LOADK    	30 -55	; "kat_biome"
+	242	[117]	SETLIST  	29 1 1	; 1
+	243	[117]	SETTABLE 	28 -89 29	; "biomes" -
+	244	[117]	SETTABLE 	28 -90 -91	; "concentrated_zone" "kat_zone"
+	245	[117]	SETLIST  	27 1 1	; 1
+	246	[118]	NEWTABLE 	28 4 0
+	247	[118]	NEWTABLE 	29 0 9
+	248	[119]	SETTABLE 	29 -54 -92	; "id" "kat_large"
+	249	[119]	NEWTABLE 	30 1 0
+	250	[119]	LOADK    	31 -55	; "kat_biome"
+	251	[119]	SETLIST  	30 1 1	; 1
+	252	[119]	SETTABLE 	29 -89 30	; "biomes" -
+	253	[119]	SETTABLE 	29 -93 -94	; "kind" "template"
+	254	[120]	SETTABLE 	29 -95 -96	; "asset_or_node" "kat_large.mts"
+	255	[120]	GETTABLE 	30 17 -24	; 1
+	256	[120]	SETTABLE 	29 -97 30	; "host" -
+	257	[120]	SETTABLE 	29 -98 -24	; "numerator" 1
+	258	[121]	SETTABLE 	29 -99 -24	; "denominator" 1
+	259	[121]	SETTABLE 	29 -100 -101	; "rule" "center_xz"
+	260	[121]	SETTABLE 	29 -102 -24	; "settlement_class" 1
+	261	[121]	NEWTABLE 	30 0 9
+	262	[122]	SETTABLE 	30 -54 -103	; "id" "kat_small"
+	263	[122]	NEWTABLE 	31 1 0
+	264	[122]	LOADK    	32 -55	; "kat_biome"
+	265	[122]	SETLIST  	31 1 1	; 1
+	266	[122]	SETTABLE 	30 -89 31	; "biomes" -
+	267	[122]	SETTABLE 	30 -93 -94	; "kind" "template"
+	268	[123]	SETTABLE 	30 -95 -104	; "asset_or_node" "kat_small.mts"
+	269	[123]	GETTABLE 	31 17 -24	; 1
+	270	[123]	SETTABLE 	30 -97 31	; "host" -
+	271	[123]	SETTABLE 	30 -98 -24	; "numerator" 1
+	272	[124]	SETTABLE 	30 -99 -24	; "denominator" 1
+	273	[124]	SETTABLE 	30 -100 -101	; "rule" "center_xz"
+	274	[124]	SETTABLE 	30 -102 -28	; "settlement_class" 2
+	275	[124]	NEWTABLE 	31 0 10
+	276	[125]	SETTABLE 	31 -54 -105	; "id" "kat_tall"
+	277	[125]	NEWTABLE 	32 1 0
+	278	[125]	LOADK    	33 -55	; "kat_biome"
+	279	[125]	SETLIST  	32 1 1	; 1
+	280	[125]	SETTABLE 	31 -89 32	; "biomes" -
+	281	[125]	SETTABLE 	31 -93 -106	; "kind" "simple"
+	282	[126]	GETTABLE 	32 17 -32	; 10
+	283	[126]	SETTABLE 	31 -95 32	; "asset_or_node" -
+	284	[126]	GETTABLE 	32 17 -24	; 1
+	285	[126]	SETTABLE 	31 -97 32	; "host" -
+	286	[126]	SETTABLE 	31 -98 -24	; "numerator" 1
+	287	[127]	SETTABLE 	31 -99 -24	; "denominator" 1
+	288	[127]	SETTABLE 	31 -100 -107	; "rule" "height_2_to_4_from_domain_hash"
+	289	[128]	SETTABLE 	31 -102 -39	; "settlement_class" 3
+	290	[128]	SETTABLE 	31 -81 -32	; "content_ref" 10
+	291	[128]	NEWTABLE 	32 0 10
+	292	[129]	SETTABLE 	32 -54 -108	; "id" "kat_simple"
+	293	[129]	NEWTABLE 	33 1 0
+	294	[129]	LOADK    	34 -55	; "kat_biome"
+	295	[129]	SETLIST  	33 1 1	; 1
+	296	[129]	SETTABLE 	32 -89 33	; "biomes" -
+	297	[129]	SETTABLE 	32 -93 -106	; "kind" "simple"
+	298	[130]	GETTABLE 	33 17 -30	; 11
+	299	[130]	SETTABLE 	32 -95 33	; "asset_or_node" -
+	300	[130]	GETTABLE 	33 17 -24	; 1
+	301	[130]	SETTABLE 	32 -97 33	; "host" -
+	302	[130]	SETTABLE 	32 -98 -24	; "numerator" 1
+	303	[131]	SETTABLE 	32 -99 -24	; "denominator" 1
+	304	[131]	SETTABLE 	32 -100 -35	; "rule" "none"
+	305	[131]	SETTABLE 	32 -102 -26	; "settlement_class" 4
+	306	[131]	SETTABLE 	32 -81 -30	; "content_ref" 11
+	307	[132]	SETLIST  	28 4 1	; 1
+	308	[133]	NEWTABLE 	29 0 2
+	309	[133]	NEWTABLE 	30 6 0
+	310	[133]	NEWTABLE 	31 0 2
+	311	[134]	SETTABLE 	31 -110 -111	; "y_min" -100
+	312	[134]	GETTABLE 	32 17 -112	; 14
+	313	[134]	SETTABLE 	31 -80 32	; "node" -
+	314	[134]	NEWTABLE 	32 0 2
+	315	[134]	SETTABLE 	32 -110 -113	; "y_min" -300
+	316	[134]	GETTABLE 	33 17 -112	; 14
+	317	[134]	SETTABLE 	32 -80 33	; "node" -
+	318	[134]	NEWTABLE 	33 0 2
+	319	[135]	SETTABLE 	33 -110 -114	; "y_min" -500
+	320	[135]	GETTABLE 	34 17 -112	; 14
+	321	[135]	SETTABLE 	33 -80 34	; "node" -
+	322	[135]	NEWTABLE 	34 0 2
+	323	[135]	SETTABLE 	34 -110 -115	; "y_min" -700
+	324	[135]	GETTABLE 	35 17 -112	; 14
+	325	[135]	SETTABLE 	34 -80 35	; "node" -
+	326	[135]	NEWTABLE 	35 0 2
+	327	[136]	SETTABLE 	35 -110 -116	; "y_min" -1000
+	328	[136]	GETTABLE 	36 17 -117	; 12
+	329	[136]	SETTABLE 	35 -80 36	; "node" -
+	330	[136]	NEWTABLE 	36 0 2
+	331	[136]	SETTABLE 	36 -110 -118	; "y_min" -31000
+	332	[136]	GETTABLE 	37 17 -119	; 13
+	333	[136]	SETTABLE 	36 -80 37	; "node" -
+	334	[137]	SETLIST  	30 6 1	; 1
+	335	[137]	SETTABLE 	29 -109 30	; "tiers" -
+	336	[137]	NEWTABLE 	30 1 0
+	337	[137]	NEWTABLE 	31 0 3
+	338	[137]	SETTABLE 	31 -82 -83	; "race" "dwarf"
+	339	[137]	SETTABLE 	31 -121 -122	; "g1" "ore_1"
+	340	[137]	SETTABLE 	31 -123 -124	; "g2" "ore_2"
+	341	[137]	SETLIST  	30 1 1	; 1
+	342	[137]	SETTABLE 	29 -120 30	; "race_regions" -
+	343	[138]	NEWTABLE 	30 0 0
+	344	[139]	CLOSURE  	31 11	; 0x2d70f10
+	345	[139]	MOVE     	0 24
+	346	[139]	SETTABLE 	30 -125 31	; "content_contract" -
+	347	[140]	CLOSURE  	31 12	; 0x2d70f90
+	348	[140]	MOVE     	0 16
+	349	[140]	MOVE     	0 25
+	350	[140]	SETTABLE 	30 -126 31	; "surfaces" -
+	351	[147]	CLOSURE  	31 13	; 0x2d710e0
+	352	[147]	MOVE     	0 25
+	353	[141]	SETTABLE 	30 -127 31	; "new_surface_selector" -
+	354	[148]	CLOSURE  	31 14	; 0x2d729a0
+	355	[148]	MOVE     	0 16
+	356	[148]	MOVE     	0 26
+	357	[148]	SETTABLE 	30 -128 31	; "resources" -
+	358	[149]	CLOSURE  	31 15	; 0x2d72b00
+	359	[149]	MOVE     	0 16
+	360	[149]	MOVE     	0 27
+	361	[149]	SETTABLE 	30 -129 31	; "cultural" -
+	362	[150]	CLOSURE  	31 16	; 0x2d72c30
+	363	[150]	MOVE     	0 16
+	364	[150]	MOVE     	0 28
+	365	[150]	SETTABLE 	30 -130 31	; "decorations" -
+	366	[153]	CLOSURE  	31 17	; 0x2d6fe80
+	367	[153]	MOVE     	0 20
+	368	[153]	MOVE     	0 17
+	369	[151]	SETTABLE 	30 -131 31	; "decoration_cover" -
+	370	[154]	CLOSURE  	31 18	; 0x2d70870
+	371	[154]	MOVE     	0 16
+	372	[154]	MOVE     	0 29
+	373	[154]	SETTABLE 	30 -132 31	; "wp43_projection" -
+	374	[155]	CLOSURE  	31 19	; 0x2d709d0
+	375	[155]	MOVE     	0 20
+	376	[155]	SETTABLE 	30 -81 31	; "content_ref" -
+	377	[156]	CLOSURE  	31 20	; 0x2d6e520
+	378	[156]	MOVE     	0 22
+	379	[156]	SETTABLE 	30 -133 31	; "param2_kind" -
+	380	[157]	NEWTABLE 	31 0 0
+	381	[167]	CLOSURE  	32 21	; 0x2d733b0
+	382	[167]	MOVE     	0 17
+	383	[158]	SETTABLE 	31 -134 32	; "read" -
+	384	[168]	GETGLOBAL	32 -1	; dofile
+	385	[168]	MOVE     	33 3
+	386	[168]	LOADK    	34 -135	; "/r6_templates.lua"
+	387	[168]	CONCAT   	33 33 34
+	388	[168]	CALL     	32 2 2
+	389	[169]	MOVE     	33 4
+	390	[169]	MOVE     	34 30
+	391	[169]	MOVE     	35 31
+	392	[168]	CALL     	32 4 2
+	393	[194]	CLOSURE  	33 22	; 0x2d78f20
+	394	[194]	MOVE     	0 3
+	395	[194]	MOVE     	0 4
+	396	[194]	MOVE     	0 10
+	397	[219]	CLOSURE  	34 23	; 0x2d799a0
+	398	[219]	MOVE     	0 3
+	399	[219]	MOVE     	0 4
+	400	[219]	MOVE     	0 10
+	401	[220]	NEWTABLE 	35 0 2
+	402	[220]	SETTABLE 	35 -54 -136	; "id" "kat_apex"
+	403	[220]	NEWTABLE 	36 0 2
+	404	[220]	SETTABLE 	36 -138 -139	; "x" 10000
+	405	[220]	SETTABLE 	36 -140 -139	; "z" 10000
+	406	[220]	SETTABLE 	35 -137 36	; "position" -
+	407	[221]	NEWTABLE 	36 0 0
+	408	[221]	NEWTABLE 	37 0 0
+	409	[222]	LOADK    	38 -24	; 1
+	410	[222]	LOADK    	39 -141	; 24
+	411	[222]	LOADK    	40 -24	; 1
+	412	[222]	FORPREP  	38 34	; to 447
+	413	[223]	LOADK    	42 -142	; "kat_apex:socket_"
+	414	[223]	GETGLOBAL	43 -143	; string
+	415	[223]	GETTABLE 	43 43 -144	; "format"
+	416	[223]	LOADK    	44 -145	; "%02d"
+	417	[223]	MOVE     	45 41
+	418	[223]	CALL     	43 3 2
+	419	[223]	CONCAT   	42 42 43
+	420	[224]	NEWTABLE 	43 0 4
+	421	[224]	SETTABLE 	43 -54 42	; "id" -
+	422	[224]	GETTABLE 	44 35 -54	; "id"
+	423	[224]	SETTABLE 	43 -146 44	; "anchor_id" -
+	424	[225]	SETTABLE 	43 -147 -122	; "species" "ore_1"
+	425	[225]	NEWTABLE 	44 0 2
+	426	[225]	SETTABLE 	44 -138 41	; "x" -
+	427	[225]	SETTABLE 	44 -140 -37	; "z" 0
+	428	[225]	SETTABLE 	43 -148 44	; "offset" -
+	429	[225]	SETTABLE 	36 41 43
+	430	[226]	NEWTABLE 	43 0 7
+	431	[226]	LOADK    	44 -149	; "hard:"
+	432	[226]	MOVE     	45 42
+	433	[226]	CONCAT   	44 44 45
+	434	[226]	SETTABLE 	43 -54 44	; "id" -
+	435	[226]	GETTABLE 	44 35 -54	; "id"
+	436	[226]	SETTABLE 	43 -150 44	; "source_anchor_id" -
+	437	[227]	SETTABLE 	43 -151 42	; "socket_id" -
+	438	[227]	SETTABLE 	43 -152 -122	; "resource_key" "ore_1"
+	439	[228]	SETTABLE 	43 -153 -154	; "recipe_id" "hard_apex_socket_column_v1"
+	440	[228]	SETTABLE 	43 -155 -156	; "active" true
+	441	[229]	NEWTABLE 	44 0 2
+	442	[229]	ADD      	45 -139 41	; 10000 -
+	443	[229]	SETTABLE 	44 -138 45	; "x" -
+	444	[229]	SETTABLE 	44 -140 -139	; "z" 10000
+	445	[229]	SETTABLE 	43 -157 44	; "center" -
+	446	[229]	SETTABLE 	37 41 43
+	447	[222]	FORLOOP  	38 -35	; to 413
+	448	[231]	LOADK    	38 -158	; "kat:route_hard_overlap"
+	449	[232]	NEWTABLE 	39 0 8
+	450	[232]	NEWTABLE 	40 1 0
+	451	[232]	NEWTABLE 	41 0 2
+	452	[232]	SETTABLE 	41 -54 38	; "id" -
+	453	[233]	SETTABLE 	41 -153 -160	; "recipe_id" "exclude_route_corridor_v1"
+	454	[233]	SETLIST  	40 1 1	; 1
+	455	[233]	SETTABLE 	39 -159 40	; "claim_exclusions" -
+	456	[233]	NEWTABLE 	40 0 0
+	457	[233]	SETTABLE 	39 -161 40	; "routes" -
+	458	[234]	SETTABLE 	39 -162 37	; "hard_protection" -
+	459	[235]	NEWTABLE 	40 1 0
+	460	[235]	MOVE     	41 35
+	461	[235]	SETLIST  	40 1 1	; 1
+	462	[235]	SETTABLE 	39 -163 40	; "anchors" -
+	463	[235]	SETTABLE 	39 -164 36	; "apex_sockets" -
+	464	[236]	NEWTABLE 	40 0 0
+	465	[236]	SETTABLE 	39 -165 40	; "hydrology_profiles" -
+	466	[236]	NEWTABLE 	40 0 0
+	467	[236]	SETTABLE 	39 -166 40	; "hydrology" -
+	468	[236]	NEWTABLE 	40 0 0
+	469	[236]	SETTABLE 	39 -167 40	; "hydrology_interfaces" -
+	470	[238]	MOVE     	40 11
+	471	[238]	LOADK    	41 -42	; "schema"
+	472	[238]	LOADK    	42 -168	; "grug_wp40_r6_micro_kat_v2"
+	473	[238]	CALL     	40 3 1
+	474	[239]	MOVE     	40 11
+	475	[239]	LOADK    	41 -169	; "domain_population"
+	476	[239]	GETTABLE 	42 4 -170	; "domains"
+	477	[239]	CALL     	42 1 2
+	478	[239]	LEN      	42 42
+	479	[239]	CALL     	40 3 1
+	480	[240]	MOVE     	40 11
+	481	[240]	LOADK    	41 -171	; "negative_frame"
+	482	[240]	GETTABLE 	42 1 -172	; "hex"
+	483	[240]	GETTABLE 	43 4 -173	; "sha256_bytes"
+	484	[240]	GETTABLE 	44 4 -174	; "frame"
+	485	[240]	LOADK    	45 -175	; -42
+	486	[240]	CALL     	44 2 0
+	487	[240]	CALL     	43 0 0
+	488	[240]	CALL     	42 0 0
+	489	[240]	CALL     	40 0 1
+	490	[241]	MOVE     	40 11
+	491	[241]	LOADK    	41 -176	; "negative_owner"
+	492	[241]	MOVE     	42 14
+	493	[241]	LOADK    	43 -177	; -37
+	494	[241]	CALL     	42 2 0
+	495	[241]	CALL     	40 0 1
+	496	[242]	NEWTABLE 	40 4 0
+	497	[242]	NEWTABLE 	41 5 0
+	498	[243]	LOADK    	42 -178	; "reduce_words/512/0/1000"
+	499	[243]	LOADK    	43 -37	; 0
+	500	[243]	LOADK    	44 -179	; 1000
+	501	[243]	LOADK    	45 -180	; 512
+	502	[243]	LOADK    	46 -181	; 488
+	503	[243]	SETLIST  	41 5 1	; 1
+	504	[243]	NEWTABLE 	42 5 0
+	505	[244]	LOADK    	43 -182	; "reduce_words/12000/1/0"
+	506	[244]	LOADK    	44 -24	; 1
+	507	[244]	LOADK    	45 -37	; 0
+	508	[244]	LOADK    	46 -183	; 12000
+	509	[244]	LOADK    	47 -184	; 11296
+	510	[244]	SETLIST  	42 5 1	; 1
+	511	[244]	NEWTABLE 	43 5 0
+	512	[245]	LOADK    	44 -185	; "reduce_words/12000/0/2147483648"
+	513	[245]	LOADK    	45 -37	; 0
+	514	[245]	LOADK    	46 -186	; 2147483648
+	515	[245]	LOADK    	47 -183	; 12000
+	516	[245]	LOADK    	48 -187	; 11648
+	517	[245]	SETLIST  	43 5 1	; 1
+	518	[245]	NEWTABLE 	44 5 0
+	519	[246]	LOADK    	45 -188	; "reduce_words/48000/4294967295/4294967295"
+	520	[246]	LOADK    	46 -189	; 4294967295
+	521	[246]	LOADK    	47 -189	; 4294967295
+	522	[247]	LOADK    	48 -190	; 48000
+	523	[247]	LOADK    	49 -191	; 15615
+	524	[247]	SETLIST  	44 5 1	; 1
+	525	[248]	SETLIST  	40 4 1	; 1
+	526	[249]	LOADK    	41 -24	; 1
+	527	[249]	LEN      	42 40
+	528	[249]	LOADK    	43 -24	; 1
+	529	[249]	FORPREP  	41 18	; to 548
+	530	[250]	GETTABLE 	45 40 44
+	531	[251]	GETTABLE 	46 4 -192	; "reduce_words"
+	532	[251]	GETTABLE 	47 45 -28	; 2
+	533	[251]	GETTABLE 	48 45 -39	; 3
+	534	[251]	GETTABLE 	49 45 -26	; 4
+	535	[251]	CALL     	46 4 2
+	536	[252]	MOVE     	47 10
+	537	[252]	GETTABLE 	48 45 -27	; 5
+	538	[252]	EQ       	1 46 48
+	539	[252]	JMP      	1	; to 541
+	540	[252]	LOADBOOL 	48 0 1
+	541	[252]	LOADBOOL 	48 1 0
+	542	[252]	LOADK    	49 -193	; "mandatory reduction vector differs"
+	543	[252]	CALL     	47 3 1
+	544	[253]	MOVE     	47 11
+	545	[253]	GETTABLE 	48 45 -24	; 1
+	546	[253]	MOVE     	49 46
+	547	[253]	CALL     	47 3 1
+	548	[249]	FORLOOP  	41 -19	; to 530
+	549	[255]	NEWTABLE 	41 4 0
+	550	[255]	NEWTABLE 	42 4 0
+	551	[256]	LOADK    	43 -194	; "ordinary_512"
+	552	[256]	LOADK    	44 -180	; 512
+	553	[256]	LOADK    	45 -24	; 1
+	554	[256]	LOADK    	46 -24	; 1
+	555	[256]	SETLIST  	42 4 1	; 1
+	556	[256]	NEWTABLE 	43 4 0
+	557	[257]	LOADK    	44 -195	; "deep_1500_1999_12000"
+	558	[257]	LOADK    	45 -196	; 3000
+	559	[257]	LOADK    	46 -27	; 5
+	560	[257]	LOADK    	47 -26	; 4
+	561	[257]	SETLIST  	43 4 1	; 1
+	562	[257]	NEWTABLE 	44 4 0
+	563	[258]	LOADK    	45 -197	; "deep_2000_floor_24000"
+	564	[258]	LOADK    	46 -183	; 12000
+	565	[258]	LOADK    	47 -39	; 3
+	566	[258]	LOADK    	48 -28	; 2
+	567	[258]	SETLIST  	44 4 1	; 1
+	568	[258]	NEWTABLE 	45 4 0
+	569	[259]	LOADK    	46 -198	; "remainder_48000"
+	570	[259]	LOADK    	47 -183	; 12000
+	571	[259]	LOADK    	48 -27	; 5
+	572	[259]	LOADK    	49 -26	; 4
+	573	[259]	SETLIST  	45 4 1	; 1
+	574	[260]	SETLIST  	41 4 1	; 1
+	575	[261]	LOADK    	42 -24	; 1
+	576	[261]	LEN      	43 41
+	577	[261]	LOADK    	44 -24	; 1
+	578	[261]	FORPREP  	42 50	; to 629
+	579	[262]	GETTABLE 	46 41 45
+	580	[263]	GETTABLE 	47 4 -199	; "digest"
+	581	[263]	LOADK    	48 -200	; "resource_budget_remainder_v1"
+	582	[263]	LOADK    	49 -201	; "42"
+	583	[263]	NEWTABLE 	50 7 0
+	584	[264]	GETTABLE 	51 46 -24	; 1
+	585	[264]	LOADK    	52 -202	; -2
+	586	[264]	LOADK    	53 -203	; -188
+	587	[264]	LOADK    	54 -31	; 7
+	588	[264]	LOADK    	55 -204	; "grug_materials:abyssal_rock"
+	589	[264]	LOADK    	56 -67	; 6
+	590	[264]	GETTABLE 	57 46 -24	; 1
+	591	[264]	SETLIST  	50 7 1	; 1
+	592	[263]	CALL     	47 4 2
+	593	[266]	GETTABLE 	48 4 -205	; "budget"
+	594	[266]	LOADK    	49 -86	; 4096
+	595	[266]	LOADK    	50 -24	; 1
+	596	[266]	GETTABLE 	51 46 -28	; 2
+	597	[266]	GETTABLE 	52 46 -39	; 3
+	598	[266]	GETTABLE 	53 46 -26	; 4
+	599	[266]	MOVE     	54 47
+	600	[266]	CALL     	48 7 6
+	601	[267]	MOVE     	53 10
+	602	[267]	GETTABLE 	54 46 -28	; 2
+	603	[267]	GETTABLE 	55 46 -26	; 4
+	604	[267]	MUL      	54 54 55
+	605	[267]	EQ       	1 50 54
+	606	[267]	JMP      	1	; to 608
+	607	[267]	LOADBOOL 	54 0 1
+	608	[267]	LOADBOOL 	54 1 0
+	609	[268]	LOADK    	55 -206	; "remainder denominator differs for "
+	610	[268]	GETTABLE 	56 46 -24	; 1
+	611	[268]	CONCAT   	55 55 56
+	612	[267]	CALL     	53 3 1
+	613	[269]	MOVE     	53 11
+	614	[269]	LOADK    	54 -207	; "budget/"
+	615	[269]	GETTABLE 	55 46 -24	; 1
+	616	[269]	CONCAT   	54 54 55
+	617	[269]	GETGLOBAL	55 -208	; table
+	618	[269]	GETTABLE 	55 55 -209	; "concat"
+	619	[269]	NEWTABLE 	56 5 0
+	620	[269]	MOVE     	57 48
+	621	[269]	MOVE     	58 49
+	622	[269]	MOVE     	59 50
+	623	[270]	MOVE     	60 51
+	624	[270]	MOVE     	61 52
+	625	[270]	SETLIST  	56 5 1	; 1
+	626	[270]	LOADK    	57 -210	; "/"
+	627	[269]	CALL     	55 3 0
+	628	[269]	CALL     	53 0 1
+	629	[261]	FORLOOP  	42 -51	; to 579
+	630	[273]	GETTABLE 	42 25 -24	; 1
+	631	[273]	GETTABLE 	42 42 -54	; "id"
+	632	[274]	GETTABLE 	43 27 -24	; 1
+	633	[274]	GETTABLE 	43 43 -82	; "race"
+	634	[275]	NEWTABLE 	44 0 3
+	635	[275]	SETTABLE 	44 -42 -211	; "schema" "grug_wp40_r5_planner_source_v1"
+	636	[276]	SETTABLE 	44 -212 -68	; "bridge_probe" false
+	637	[276]	SETTABLE 	44 -213 -68	; "hard_route_probe" false
+	638	[286]	CLOSURE  	45 24	; 0x2d73ff0
+	639	[286]	MOVE     	0 44
+	640	[286]	MOVE     	0 42
+	641	[286]	MOVE     	0 43
+	642	[277]	SETTABLE 	44 -214 45	; "column_values_at" -
+	643	[287]	CLOSURE  	45 25	; 0x2d7a8b0
+	644	[287]	SETTABLE 	44 -215 45	; "surface_cave_run_at" -
+	645	[288]	CLOSURE  	45 26	; 0x2d7acb0
+	646	[288]	SETTABLE 	44 -216 45	; "surface_cave_candidate_at_cell" -
+	647	[289]	CLOSURE  	45 27	; 0x2d7a9a0
+	648	[289]	SETTABLE 	44 -217 45	; "surface_cave_cell_at" -
+	649	[290]	CLOSURE  	45 28	; 0x2d74eb0
+	650	[290]	SETTABLE 	44 -218 45	; "coast_profile_at" -
+	651	[291]	CLOSURE  	45 29	; 0x2d74f70
+	652	[291]	SETTABLE 	44 -219 45	; "landmark_excluded_at" -
+	653	[292]	NEWTABLE 	45 0 0
+	654	[298]	CLOSURE  	46 30	; 0x2d75030
+	655	[298]	MOVE     	0 44
+	656	[298]	MOVE     	0 38
+	657	[293]	SETTABLE 	45 -220 46	; "static_exclusion_values_at" -
+	658	[299]	NEWTABLE 	46 0 1
+	659	[299]	NEWTABLE 	47 0 0
+	660	[299]	SETTABLE 	46 -221 47	; "value" -
+	661	[300]	GETTABLE 	47 29 -109	; "tiers"
+	662	[300]	GETTABLE 	47 47 -24	; 1
+	663	[300]	GETTABLE 	47 47 -80	; "node"
+	664	[300]	GETTABLE 	47 23 47
+	665	[301]	NEWTABLE 	48 0 0
+	666	[325]	CLOSURE  	49 31	; 0x2d75190
+	667	[325]	MOVE     	0 47
+	668	[302]	SETTABLE 	48 -222 49	; "apply" -
+	669	[326]	NEWTABLE 	49 0 0
+	670	[326]	NEWTABLE 	50 0 0
+	671	[332]	CLOSURE  	51 32	; 0x2d74680
+	672	[332]	MOVE     	0 50
+	673	[332]	MOVE     	0 49
+	674	[333]	LOADK    	52 -24	; 1
+	675	[333]	LEN      	53 26
+	676	[333]	LOADK    	54 -24	; 1
+	677	[333]	FORPREP  	52 4	; to 682
+	678	[333]	MOVE     	56 51
+	679	[333]	GETTABLE 	57 26 55
+	680	[333]	GETTABLE 	57 57 -69	; "key"
+	681	[333]	CALL     	56 2 1
+	682	[333]	FORLOOP  	52 -5	; to 678
+	683	[334]	LOADK    	52 -24	; 1
+	684	[334]	LEN      	53 27
+	685	[334]	LOADK    	54 -24	; 1
+	686	[334]	FORPREP  	52 4	; to 691
+	687	[334]	MOVE     	56 51
+	688	[334]	GETTABLE 	57 27 55
+	689	[334]	GETTABLE 	57 57 -69	; "key"
+	690	[334]	CALL     	56 2 1
+	691	[334]	FORLOOP  	52 -5	; to 687
+	692	[335]	LOADK    	52 -24	; 1
+	693	[335]	LEN      	53 28
+	694	[335]	LOADK    	54 -24	; 1
+	695	[335]	FORPREP  	52 4	; to 700
+	696	[335]	MOVE     	56 51
+	697	[335]	GETTABLE 	57 28 55
+	698	[335]	GETTABLE 	57 57 -54	; "id"
+	699	[335]	CALL     	56 2 1
+	700	[335]	FORLOOP  	52 -5	; to 696
+	701	[336]	MOVE     	52 51
+	702	[336]	MOVE     	53 43
+	703	[336]	CALL     	52 2 1
+	704	[337]	GETGLOBAL	52 -208	; table
+	705	[337]	GETTABLE 	52 52 -223	; "sort"
+	706	[337]	MOVE     	53 49
+	707	[337]	GETTABLE 	54 4 -224	; "less_bytes"
+	708	[337]	CALL     	52 3 1
+	709	[338]	LOADNIL  	52 52
+	710	[339]	LOADK    	53 -24	; 1
+	711	[339]	LEN      	54 49
+	712	[339]	LOADK    	55 -24	; 1
+	713	[339]	FORPREP  	53 5	; to 719
+	714	[340]	GETTABLE 	57 49 56
+	715	[340]	EQ       	0 57 43
+	716	[340]	JMP      	2	; to 719
+	717	[340]	MOVE     	52 56
+	718	[340]	JMP      	1	; to 720
+	719	[339]	FORLOOP  	53 -6	; to 714
+	720	[342]	MOVE     	53 10
+	721	[342]	MOVE     	54 52
+	722	[342]	LOADK    	55 -225	; "race planner ref is absent"
+	723	[342]	CALL     	53 3 1
+	724	[343]	GETTABLE 	53 5 -226	; "new"
+	725	[343]	NEWTABLE 	54 0 12
+	726	[344]	SETTABLE 	54 -227 -228	; "full_seed_string" "0"
+	727	[344]	SETTABLE 	54 -229 48	; "r5_adapter" -
+	728	[344]	SETTABLE 	54 -230 30	; "content" -
+	729	[345]	SETTABLE 	54 -231 32	; "templates" -
+	730	[345]	SETTABLE 	54 -232 4	; "hash" -
+	731	[345]	SETTABLE 	54 -233 45	; "horizontal" -
+	732	[346]	SETTABLE 	54 -234 44	; "planner_source" -
+	733	[346]	SETTABLE 	54 -235 46	; "construction_identity" -
+	734	[347]	NEWTABLE 	55 0 0
+	735	[347]	SETTABLE 	54 -236 55	; "cultural_registrations" -
+	736	[347]	SETTABLE 	54 -237 39	; "source" -
+	737	[348]	SETTABLE 	54 -238 49	; "planner_stable_refs" -
+	738	[349]	GETTABLE 	55 6 -226	; "new"
+	739	[350]	LOADK    	56 -240	; "grug_wp40_r6_settlement_allocator_v1"
+	740	[349]	CALL     	55 2 2
+	741	[350]	SETTABLE 	54 -239 55	; "counting_allocator" -
+	742	[343]	CALL     	53 2 3
+	743	[351]	LOADK    	55 -37	; 0
+	744	[390]	CLOSURE  	56 33	; 0x2d7c650
+	745	[390]	MOVE     	0 55
+	746	[390]	MOVE     	0 13
+	747	[390]	MOVE     	0 52
+	748	[390]	MOVE     	0 46
+	749	[390]	MOVE     	0 49
+	750	[393]	CLOSURE  	57 34	; 0x2d75bb0
+	751	[399]	CLOSURE  	58 35	; 0x2d763a0
+	752	[399]	MOVE     	0 57
+	753	[408]	CLOSURE  	59 36	; 0x2d75620
+	754	[410]	NEWTABLE 	60 0 0
+	755	[410]	LOADNIL  	61 61
+	756	[411]	GETGLOBAL	62 -241	; math
+	757	[411]	GETTABLE 	62 62 -242	; "huge"
+	758	[412]	LOADK    	63 -24	; 1
+	759	[412]	LEN      	64 28
+	760	[412]	LOADK    	65 -24	; 1
+	761	[412]	FORPREP  	63 27	; to 789
+	762	[413]	GETTABLE 	67 28 66
+	763	[414]	GETTABLE 	68 67 -102	; "settlement_class"
+	764	[414]	GETTABLE 	68 60 68
+	765	[414]	TEST     	68 0 1
+	766	[414]	JMP      	2	; to 769
+	767	[415]	GETTABLE 	68 67 -102	; "settlement_class"
+	768	[415]	SETTABLE 	60 68 66
+	769	[417]	GETTABLE 	68 67 -93	; "kind"
+	770	[417]	EQ       	0 68 -94	; - "template"
+	771	[417]	JMP      	17	; to 789
+	772	[417]	GETTABLE 	68 67 -102	; "settlement_class"
+	773	[417]	EQ       	0 68 -28	; - 2
+	774	[417]	JMP      	14	; to 789
+	775	[418]	GETTABLE 	68 32 -243	; "rotation"
+	776	[418]	GETTABLE 	69 67 -54	; "id"
+	777	[418]	LOADK    	70 -37	; 0
+	778	[418]	CALL     	68 3 2
+	779	[419]	GETTABLE 	69 68 -244	; "size_x"
+	780	[419]	GETTABLE 	70 68 -245	; "size_y"
+	781	[419]	MUL      	69 69 70
+	782	[419]	GETTABLE 	70 68 -246	; "size_z"
+	783	[419]	MUL      	69 69 70
+	784	[420]	LT       	0 69 62
+	785	[420]	JMP      	3	; to 789
+	786	[421]	MOVE     	70 69
+	787	[421]	MOVE     	61 66
+	788	[421]	MOVE     	62 70
+	789	[412]	FORLOOP  	63 -28	; to 762
+	790	[425]	LOADK    	63 -24	; 1
+	791	[425]	LOADK    	64 -26	; 4
+	792	[425]	LOADK    	65 -24	; 1
+	793	[425]	FORPREP  	63 4	; to 798
+	794	[425]	MOVE     	67 10
+	795	[425]	GETTABLE 	68 60 66
+	796	[425]	LOADK    	69 -247	; "decoration class missing"
+	797	[425]	CALL     	67 3 1
+	798	[425]	FORLOOP  	63 -5	; to 794
+	799	[426]	MOVE     	63 10
+	800	[426]	MOVE     	64 61
+	801	[426]	LOADK    	65 -248	; "compact class-2 template missing"
+	802	[426]	CALL     	63 3 1
+	803	[427]	SETTABLE 	60 -28 61	; 2 -
+	804	[429]	NEWTABLE 	63 0 3
+	805	[429]	SETTABLE 	63 -138 -249	; "x" -32
+	806	[429]	SETTABLE 	63 -250 -37	; "y" 0
+	807	[429]	SETTABLE 	63 -140 -249	; "z" -32
+	808	[429]	NEWTABLE 	64 0 3
+	809	[430]	SETTABLE 	64 -138 -251	; "x" 47
+	810	[430]	SETTABLE 	64 -250 -252	; "y" 31
+	811	[430]	SETTABLE 	64 -140 -251	; "z" 47
+	812	[431]	MOVE     	65 56
+	813	[431]	MOVE     	66 63
+	814	[431]	MOVE     	67 64
+	815	[431]	LOADBOOL 	68 1 0
+	816	[431]	CALL     	65 4 2
+	817	[432]	NEWTABLE 	66 0 0
+	818	[433]	LOADK    	67 -37	; 0
+	819	[433]	LOADK    	68 -39	; 3
+	820	[433]	LOADK    	69 -24	; 1
+	821	[433]	FORPREP  	67 98	; to 920
+	822	[434]	LOADNIL  	71 71
+	823	[435]	MUL      	72 70 -36	; - 15
+	824	[435]	ADD      	72 -253 72	; -24 -
+	825	[435]	MUL      	73 70 -36	; - 15
+	826	[435]	ADD      	73 -254 73	; -15 -
+	827	[435]	LOADK    	74 -24	; 1
+	828	[435]	FORPREP  	72 64	; to 893
+	829	[436]	LOADK    	76 -253	; -24
+	830	[436]	LOADK    	77 -255	; 36
+	831	[436]	LOADK    	78 -24	; 1
+	832	[436]	FORPREP  	76 56	; to 889
+	833	[437]	GETTABLE 	80 28 61
+	834	[438]	GETGLOBAL	81 -241	; math
+	835	[438]	GETTABLE 	81 81 -256	; "floor"
+	836	[438]	GETGLOBAL	82 -143	; string
+	837	[438]	LOADK    	83 -257	; "byte"
+	838	[438]	GETTABLE 	82 82 83
+	839	[438]	GETTABLE 	83 4 -199	; "digest"
+	840	[438]	LOADK    	84 -258	; "decoration_rotation_v1"
+	841	[439]	LOADK    	85 -228	; "0"
+	842	[439]	NEWTABLE 	86 4 0
+	843	[439]	GETTABLE 	87 80 -54	; "id"
+	844	[439]	MOVE     	88 79
+	845	[439]	LOADK    	89 -27	; 5
+	846	[439]	MOVE     	90 75
+	847	[439]	SETLIST  	86 4 1	; 1
+	848	[438]	CALL     	83 4 2
+	849	[439]	LOADK    	84 -24	; 1
+	850	[438]	CALL     	82 3 2
+	851	[439]	LOADK    	83 -259	; 64
+	852	[439]	DIV      	82 82 83
+	853	[438]	CALL     	81 2 2
+	854	[440]	GETTABLE 	82 32 -243	; "rotation"
+	855	[440]	GETTABLE 	83 80 -54	; "id"
+	856	[440]	MOVE     	84 81
+	857	[440]	CALL     	82 3 2
+	858	[441]	EQ       	0 81 70
+	859	[441]	JMP      	29	; to 889
+	860	[441]	LOADK    	83 -260	; "min_x"
+	861	[441]	GETTABLE 	83 82 83
+	862	[441]	ADD      	83 79 83
+	863	[441]	GETTABLE 	84 63 -138	; "x"
+	864	[441]	LE       	0 84 83
+	865	[441]	JMP      	23	; to 889
+	866	[442]	LOADK    	83 -261	; "max_x"
+	867	[442]	GETTABLE 	83 82 83
+	868	[442]	ADD      	83 79 83
+	869	[442]	GETTABLE 	84 64 -138	; "x"
+	870	[442]	LE       	0 83 84
+	871	[442]	JMP      	17	; to 889
+	872	[442]	LOADK    	83 -262	; "min_z"
+	873	[442]	GETTABLE 	83 82 83
+	874	[442]	ADD      	83 75 83
+	875	[442]	GETTABLE 	84 63 -140	; "z"
+	876	[442]	LE       	0 84 83
+	877	[442]	JMP      	11	; to 889
+	878	[443]	LOADK    	83 -263	; "max_z"
+	879	[443]	GETTABLE 	83 82 83
+	880	[443]	ADD      	83 75 83
+	881	[443]	GETTABLE 	84 64 -140	; "z"
+	882	[443]	LE       	0 83 84
+	883	[443]	JMP      	5	; to 889
+	884	[444]	NEWTABLE 	83 0 2
+	885	[444]	SETTABLE 	83 -138 79	; "x" -
+	886	[444]	SETTABLE 	83 -140 75	; "z" -
+	887	[444]	MOVE     	71 83
+	888	[445]	JMP      	1	; to 890
+	889	[436]	FORLOOP  	76 -57	; to 833
+	890	[448]	TEST     	71 0 0
+	891	[448]	JMP      	1	; to 893
+	892	[448]	JMP      	1	; to 894
+	893	[435]	FORLOOP  	72 -65	; to 829
+	894	[450]	MOVE     	72 10
+	895	[450]	MOVE     	73 71
+	896	[450]	LOADK    	74 -264	; "rotation root missing: "
+	897	[450]	MOVE     	75 70
+	898	[450]	CONCAT   	74 74 75
+	899	[450]	CALL     	72 3 2
+	900	[450]	SETTABLE 	66 70 72
+	901	[451]	GETTABLE 	72 28 61
+	902	[452]	MOVE     	73 58
+	903	[452]	MOVE     	74 65
+	904	[452]	MOVE     	75 63
+	905	[452]	GETTABLE 	76 71 -138	; "x"
+	906	[452]	GETTABLE 	77 71 -140	; "z"
+	907	[453]	GETTABLE 	78 30 -81	; "content_ref"
+	908	[453]	GETTABLE 	79 72 -97	; "host"
+	909	[453]	CALL     	78 2 0
+	910	[452]	CALL     	73 0 1
+	911	[454]	MOVE     	73 59
+	912	[454]	MOVE     	74 65
+	913	[454]	LOADK    	75 -28	; 2
+	914	[454]	MOVE     	76 61
+	915	[454]	LOADK    	77 -28	; 2
+	916	[454]	GETTABLE 	78 71 -138	; "x"
+	917	[454]	LOADK    	79 -27	; 5
+	918	[454]	GETTABLE 	80 71 -140	; "z"
+	919	[454]	CALL     	73 8 1
+	920	[433]	FORLOOP  	67 -99	; to 822
+	921	[457]	NEWTABLE 	67 4 0
+	922	[457]	NEWTABLE 	68 2 0
+	923	[457]	LOADK    	69 -253	; -24
+	924	[457]	LOADK    	70 -265	; 38
+	925	[457]	SETLIST  	68 2 1	; 1
+	926	[457]	NEWTABLE 	69 2 0
+	927	[457]	LOADK    	70 -37	; 0
+	928	[457]	LOADK    	71 -266	; 42
+	929	[457]	SETLIST  	69 2 1	; 1
+	930	[457]	NEWTABLE 	70 2 0
+	931	[457]	LOADK    	71 -267	; 18
+	932	[457]	LOADK    	72 -266	; 42
+	933	[457]	SETLIST  	70 2 1	; 1
+	934	[457]	NEWTABLE 	71 2 0
+	935	[457]	LOADK    	72 -268	; 32
+	936	[457]	LOADK    	73 -266	; 42
+	937	[457]	SETLIST  	71 2 1	; 1
+	938	[457]	SETLIST  	67 4 1	; 1
+	939	[458]	LOADK    	68 -24	; 1
+	940	[458]	LOADK    	69 -26	; 4
+	941	[458]	LOADK    	70 -24	; 1
+	942	[458]	FORPREP  	68 28	; to 971
+	943	[459]	LOADK    	72 -28	; 2
+	944	[459]	EQ       	1 71 72
+	945	[459]	JMP      	25	; to 971
+	946	[460]	GETTABLE 	72 60 71
+	947	[460]	GETTABLE 	73 67 71
+	948	[461]	GETTABLE 	74 28 72
+	949	[462]	MOVE     	75 58
+	950	[462]	MOVE     	76 65
+	951	[462]	MOVE     	77 63
+	952	[462]	LOADK    	78 -24	; 1
+	953	[462]	GETTABLE 	78 73 78
+	954	[462]	LOADK    	79 -28	; 2
+	955	[462]	GETTABLE 	79 73 79
+	956	[463]	GETTABLE 	80 30 -81	; "content_ref"
+	957	[463]	GETTABLE 	81 74 -97	; "host"
+	958	[463]	CALL     	80 2 0
+	959	[462]	CALL     	75 0 1
+	960	[464]	MOVE     	75 59
+	961	[464]	MOVE     	76 65
+	962	[464]	LOADK    	77 -28	; 2
+	963	[464]	MOVE     	78 72
+	964	[464]	MOVE     	79 71
+	965	[464]	LOADK    	80 -24	; 1
+	966	[464]	GETTABLE 	80 73 80
+	967	[464]	LOADK    	81 -27	; 5
+	968	[464]	LOADK    	82 -28	; 2
+	969	[464]	GETTABLE 	82 73 82
+	970	[464]	CALL     	75 8 1
+	971	[458]	FORLOOP  	68 -29	; to 943
+	972	[467]	LOADK    	68 -26	; 4
+	973	[467]	GETTABLE 	68 60 68
+	974	[468]	MOVE     	69 61
+	975	[468]	LOADNIL  	70 70
+	976	[469]	LOADK    	71 -269	; -10
+	977	[469]	LOADK    	72 -32	; 10
+	978	[469]	LOADK    	73 -24	; 1
+	979	[469]	FORPREP  	71 55	; to 1035
+	980	[470]	GETGLOBAL	75 -270	; ipairs
+	981	[470]	NEWTABLE 	76 2 0
+	982	[470]	GETTABLE 	77 63 -138	; "x"
+	983	[470]	GETTABLE 	78 64 -138	; "x"
+	984	[470]	SETLIST  	76 2 1	; 1
+	985	[470]	CALL     	75 2 4
+	986	[470]	JMP      	43	; to 1030
+	987	[471]	GETTABLE 	80 28 69
+	988	[472]	GETGLOBAL	81 -241	; math
+	989	[472]	GETTABLE 	81 81 -256	; "floor"
+	990	[472]	GETGLOBAL	82 -143	; string
+	991	[472]	LOADK    	83 -257	; "byte"
+	992	[472]	GETTABLE 	82 82 83
+	993	[472]	GETTABLE 	83 4 -199	; "digest"
+	994	[472]	LOADK    	84 -258	; "decoration_rotation_v1"
+	995	[473]	LOADK    	85 -228	; "0"
+	996	[473]	NEWTABLE 	86 4 0
+	997	[473]	GETTABLE 	87 80 -54	; "id"
+	998	[473]	MOVE     	88 79
+	999	[473]	LOADK    	89 -27	; 5
+	1000	[473]	MOVE     	90 74
+	1001	[473]	SETLIST  	86 4 1	; 1
+	1002	[472]	CALL     	83 4 2
+	1003	[473]	LOADK    	84 -24	; 1
+	1004	[472]	CALL     	82 3 2
+	1005	[473]	LOADK    	83 -259	; 64
+	1006	[473]	DIV      	82 82 83
+	1007	[472]	CALL     	81 2 2
+	1008	[474]	GETTABLE 	82 32 -243	; "rotation"
+	1009	[474]	GETTABLE 	83 80 -54	; "id"
+	1010	[474]	MOVE     	84 81
+	1011	[474]	CALL     	82 3 2
+	1012	[475]	LOADK    	83 -260	; "min_x"
+	1013	[475]	GETTABLE 	83 82 83
+	1014	[475]	ADD      	83 79 83
+	1015	[475]	GETTABLE 	84 63 -138	; "x"
+	1016	[475]	LT       	1 83 84
+	1017	[475]	JMP      	6	; to 1024
+	1018	[475]	LOADK    	83 -261	; "max_x"
+	1019	[475]	GETTABLE 	83 82 83
+	1020	[475]	ADD      	83 79 83
+	1021	[475]	GETTABLE 	84 64 -138	; "x"
+	1022	[475]	LT       	0 84 83
+	1023	[475]	JMP      	6	; to 1030
+	1024	[476]	NEWTABLE 	83 2 0
+	1025	[476]	MOVE     	84 79
+	1026	[476]	MOVE     	85 74
+	1027	[476]	SETLIST  	83 2 1	; 1
+	1028	[476]	MOVE     	70 83
+	1029	[477]	JMP      	2	; to 1032
+	1030	[470]	TFORLOOP 	75 2
+	1031	[478]	JMP      	-45	; to 987
+	1032	[480]	TEST     	70 0 0
+	1033	[480]	JMP      	1	; to 1035
+	1034	[480]	JMP      	1	; to 1036
+	1035	[469]	FORLOOP  	71 -56	; to 980
+	1036	[482]	MOVE     	71 10
+	1037	[482]	MOVE     	72 70
+	1038	[482]	LOADK    	73 -271	; "clipped template root missing"
+	1039	[482]	CALL     	71 3 1
+	1040	[483]	MOVE     	71 59
+	1041	[483]	MOVE     	72 65
+	1042	[483]	LOADK    	73 -28	; 2
+	1043	[483]	MOVE     	74 69
+	1044	[483]	LOADK    	75 -28	; 2
+	1045	[483]	LOADK    	76 -24	; 1
+	1046	[483]	GETTABLE 	76 70 76
+	1047	[483]	LOADK    	77 -27	; 5
+	1048	[483]	LOADK    	78 -28	; 2
+	1049	[483]	GETTABLE 	78 70 78
+	1050	[483]	CALL     	71 8 1
+	1051	[484]	NEWTABLE 	71 2 0
+	1052	[484]	LOADK    	72 -272	; 40
+	1053	[484]	LOADK    	73 -253	; -24
+	1054	[484]	SETLIST  	71 2 1	; 1
+	1055	[485]	MOVE     	72 58
+	1056	[485]	MOVE     	73 65
+	1057	[485]	MOVE     	74 63
+	1058	[485]	LOADK    	75 -24	; 1
+	1059	[485]	GETTABLE 	75 71 75
+	1060	[485]	LOADK    	76 -28	; 2
+	1061	[485]	GETTABLE 	76 71 76
+	1062	[486]	GETTABLE 	77 30 -81	; "content_ref"
+	1063	[486]	LOADK    	78 -24	; 1
+	1064	[486]	GETTABLE 	78 25 78
+	1065	[486]	GETTABLE 	78 78 -56	; "top"
+	1066	[486]	CALL     	77 2 0
+	1067	[485]	CALL     	72 0 1
+	1068	[487]	MOVE     	72 59
+	1069	[487]	MOVE     	73 65
+	1070	[487]	LOADK    	74 -24	; 1
+	1071	[487]	LOADK    	75 -24	; 1
+	1072	[487]	LOADK    	76 -86	; 4096
+	1073	[487]	LOADK    	77 -24	; 1
+	1074	[487]	GETTABLE 	77 71 77
+	1075	[487]	LOADK    	78 -26	; 4
+	1076	[487]	LOADK    	79 -28	; 2
+	1077	[487]	GETTABLE 	79 71 79
+	1078	[487]	CALL     	72 8 1
+	1079	[489]	GETTABLE 	72 30 -81	; "content_ref"
+	1080	[489]	LOADK    	73 -24	; 1
+	1081	[489]	GETTABLE 	73 25 73
+	1082	[489]	GETTABLE 	73 73 -57	; "filler"
+	1083	[489]	CALL     	72 2 2
+	1084	[490]	LOADNIL  	73 73
+	1085	[491]	LOADK    	74 -24	; 1
+	1086	[491]	LEN      	75 25
+	1087	[491]	LOADK    	76 -24	; 1
+	1088	[491]	FORPREP  	74 8	; to 1097
+	1089	[492]	GETTABLE 	78 25 77
+	1090	[492]	GETTABLE 	78 78 -66	; "dust_ref"
+	1091	[492]	LOADK    	79 -37	; 0
+	1092	[492]	EQ       	1 78 79
+	1093	[492]	JMP      	3	; to 1097
+	1094	[492]	GETTABLE 	78 25 77
+	1095	[492]	GETTABLE 	73 78 -66	; "dust_ref"
+	1096	[492]	JMP      	1	; to 1098
+	1097	[491]	FORLOOP  	74 -9	; to 1089
+	1098	[494]	MOVE     	74 10
+	1099	[494]	MOVE     	75 73
+	1100	[494]	LOADK    	76 -273	; "dust content ref missing"
+	1101	[494]	CALL     	74 3 1
+	1102	[495]	NEWTABLE 	74 3 0
+	1103	[495]	NEWTABLE 	75 2 0
+	1104	[495]	LOADK    	76 -274	; -30
+	1105	[495]	LOADK    	77 -274	; -30
+	1106	[495]	SETLIST  	75 2 1	; 1
+	1107	[495]	NEWTABLE 	76 2 0
+	1108	[495]	LOADK    	77 -275	; -28
+	1109	[495]	LOADK    	78 -274	; -30
+	1110	[495]	SETLIST  	76 2 1	; 1
+	1111	[495]	NEWTABLE 	77 2 0
+	1112	[495]	LOADK    	78 -276	; -26
+	1113	[495]	LOADK    	79 -274	; -30
+	1114	[495]	SETLIST  	77 2 1	; 1
+	1115	[495]	SETLIST  	74 3 1	; 1
+	1116	[496]	MOVE     	75 57
+	1117	[496]	MOVE     	76 63
+	1118	[496]	LOADK    	77 -24	; 1
+	1119	[496]	GETTABLE 	77 74 77
+	1120	[496]	LOADK    	78 -24	; 1
+	1121	[496]	GETTABLE 	77 77 78
+	1122	[496]	LOADK    	78 -24	; 1
+	1123	[496]	GETTABLE 	78 74 78
+	1124	[496]	LOADK    	79 -28	; 2
+	1125	[496]	GETTABLE 	78 78 79
+	1126	[496]	CALL     	75 4 2
+	1127	[497]	MOVE     	76 58
+	1128	[497]	MOVE     	77 65
+	1129	[497]	MOVE     	78 63
+	1130	[497]	LOADK    	79 -24	; 1
+	1131	[497]	GETTABLE 	79 74 79
+	1132	[497]	LOADK    	80 -24	; 1
+	1133	[497]	GETTABLE 	79 79 80
+	1134	[497]	LOADK    	80 -24	; 1
+	1135	[497]	GETTABLE 	80 74 80
+	1136	[497]	LOADK    	81 -28	; 2
+	1137	[497]	GETTABLE 	80 80 81
+	1138	[498]	GETTABLE 	81 30 -81	; "content_ref"
+	1139	[498]	LOADK    	82 -24	; 1
+	1140	[498]	GETTABLE 	82 25 82
+	1141	[498]	GETTABLE 	82 82 -56	; "top"
+	1142	[498]	CALL     	81 2 2
+	1143	[498]	LOADK    	82 -24	; 1
+	1144	[497]	CALL     	76 7 1
+	1145	[499]	LOADK    	76 -277	; "column_values"
+	1146	[499]	GETTABLE 	76 65 76
+	1147	[499]	LOADK    	77 -33	; 9
+	1148	[499]	ADD      	77 75 77
+	1149	[499]	LOADK    	78 -277	; "column_values"
+	1150	[499]	GETTABLE 	78 65 78
+	1151	[499]	LOADK    	79 -30	; 11
+	1152	[499]	ADD      	79 75 79
+	1153	[499]	MOVE     	80 72
+	1154	[499]	LOADK    	81 -24	; 1
+	1155	[499]	SETTABLE 	78 79 81
+	1156	[499]	SETTABLE 	76 77 80
+	1157	[500]	LOADK    	76 -277	; "column_values"
+	1158	[500]	GETTABLE 	76 65 76
+	1159	[500]	LOADK    	77 -117	; 12
+	1160	[500]	ADD      	77 75 77
+	1161	[500]	SETTABLE 	76 77 73
+	1162	[501]	MOVE     	76 58
+	1163	[501]	MOVE     	77 65
+	1164	[501]	MOVE     	78 63
+	1165	[501]	LOADK    	79 -28	; 2
+	1166	[501]	GETTABLE 	79 74 79
+	1167	[501]	LOADK    	80 -24	; 1
+	1168	[501]	GETTABLE 	79 79 80
+	1169	[501]	LOADK    	80 -28	; 2
+	1170	[501]	GETTABLE 	80 74 80
+	1171	[501]	LOADK    	81 -28	; 2
+	1172	[501]	GETTABLE 	80 80 81
+	1173	[502]	GETTABLE 	81 30 -81	; "content_ref"
+	1174	[502]	LOADK    	82 -24	; 1
+	1175	[502]	GETTABLE 	82 25 82
+	1176	[502]	GETTABLE 	82 82 -56	; "top"
+	1177	[502]	CALL     	81 2 2
+	1178	[502]	LOADK    	82 -28	; 2
+	1179	[503]	GETTABLE 	83 30 -81	; "content_ref"
+	1180	[503]	LOADK    	84 -24	; 1
+	1181	[503]	GETTABLE 	84 25 84
+	1182	[503]	GETTABLE 	84 84 -59	; "shore"
+	1183	[503]	CALL     	83 2 0
+	1184	[501]	CALL     	76 0 1
+	1185	[504]	MOVE     	76 58
+	1186	[504]	MOVE     	77 65
+	1187	[504]	MOVE     	78 63
+	1188	[504]	LOADK    	79 -39	; 3
+	1189	[504]	GETTABLE 	79 74 79
+	1190	[504]	LOADK    	80 -24	; 1
+	1191	[504]	GETTABLE 	79 79 80
+	1192	[504]	LOADK    	80 -39	; 3
+	1193	[504]	GETTABLE 	80 74 80
+	1194	[504]	LOADK    	81 -28	; 2
+	1195	[504]	GETTABLE 	80 80 81
+	1196	[505]	GETTABLE 	81 30 -81	; "content_ref"
+	1197	[505]	LOADK    	82 -24	; 1
+	1198	[505]	GETTABLE 	82 25 82
+	1199	[505]	GETTABLE 	82 82 -56	; "top"
+	1200	[505]	CALL     	81 2 2
+	1201	[505]	LOADK    	82 -39	; 3
+	1202	[506]	GETTABLE 	83 30 -81	; "content_ref"
+	1203	[506]	LOADK    	84 -24	; 1
+	1204	[506]	GETTABLE 	84 25 84
+	1205	[506]	GETTABLE 	84 84 -60	; "bed"
+	1206	[506]	CALL     	83 2 0
+	1207	[504]	CALL     	76 0 1
+	1208	[507]	LOADK    	76 -278	; "candidate_cell_count"
+	1209	[507]	LOADK    	77 -24	; 1
+	1210	[507]	SETTABLE 	65 76 77
+	1211	[508]	LOADK    	76 -279	; "candidate_cell_values"
+	1212	[508]	GETTABLE 	76 65 76
+	1213	[508]	LOADK    	77 -24	; 1
+	1214	[508]	LOADK    	78 -279	; "candidate_cell_values"
+	1215	[508]	GETTABLE 	78 65 78
+	1216	[508]	LOADK    	79 -28	; 2
+	1217	[508]	LOADK    	80 -202	; -2
+	1218	[508]	LOADK    	81 -202	; -2
+	1219	[508]	SETTABLE 	78 79 81
+	1220	[508]	SETTABLE 	76 77 80
+	1221	[509]	LOADK    	76 -279	; "candidate_cell_values"
+	1222	[509]	GETTABLE 	76 65 76
+	1223	[509]	LOADK    	77 -39	; 3
+	1224	[509]	LOADK    	78 -279	; "candidate_cell_values"
+	1225	[509]	GETTABLE 	78 65 78
+	1226	[509]	LOADK    	79 -26	; 4
+	1227	[509]	LOADK    	80 -24	; 1
+	1228	[510]	LOADK    	81 -280	; "candidate_count"
+	1229	[510]	GETTABLE 	81 65 81
+	1230	[510]	LOADK    	82 -24	; 1
+	1231	[510]	ADD      	81 81 82
+	1232	[510]	SETTABLE 	78 79 81
+	1233	[510]	SETTABLE 	76 77 80
+	1234	[512]	MOVE     	76 15
+	1235	[512]	MOVE     	77 63
+	1236	[512]	MOVE     	78 64
+	1237	[512]	LOADK    	79 -37	; 0
+	1238	[512]	CALL     	76 4 5
+	1239	[513]	LOADK    	80 -24	; 1
+	1240	[513]	LEN      	81 78
+	1241	[513]	LOADK    	82 -24	; 1
+	1242	[513]	FORPREP  	80 2	; to 1245
+	1243	[513]	LOADK    	84 -36	; 15
+	1244	[513]	SETTABLE 	78 83 84
+	1245	[513]	FORLOOP  	80 -3	; to 1243
+	1246	[514]	MOVE     	80 79
+	1247	[514]	LOADK    	81 -28	; 2
+	1248	[514]	GETTABLE 	81 74 81
+	1249	[514]	LOADK    	82 -24	; 1
+	1250	[514]	GETTABLE 	81 81 82
+	1251	[514]	LOADK    	82 -26	; 4
+	1252	[514]	LOADK    	83 -28	; 2
+	1253	[514]	GETTABLE 	83 74 83
+	1254	[514]	LOADK    	84 -28	; 2
+	1255	[514]	GETTABLE 	83 83 84
+	1256	[514]	CALL     	80 4 2
+	1257	[514]	GETTABLE 	81 23 -41	; "default:water_source"
+	1258	[514]	SETTABLE 	76 80 81
+	1259	[515]	GETTABLE 	80 7 -226	; "new"
+	1260	[515]	NEWTABLE 	81 0 10
+	1261	[515]	LOADK    	82 -281	; "minp"
+	1262	[515]	SETTABLE 	81 82 63
+	1263	[515]	LOADK    	82 -282	; "maxp"
+	1264	[515]	SETTABLE 	81 82 64
+	1265	[516]	LOADK    	82 -283	; "data"
+	1266	[516]	SETTABLE 	81 82 76
+	1267	[516]	LOADK    	82 -284	; "param2"
+	1268	[516]	SETTABLE 	81 82 77
+	1269	[516]	LOADK    	82 -285	; "light"
+	1270	[516]	SETTABLE 	81 82 78
+	1271	[517]	LOADK    	82 -286	; "heightmap"
+	1272	[517]	MOVE     	83 13
+	1273	[517]	LOADK    	84 -287	; 6400
+	1274	[517]	LOADK    	85 -288	; -31007
+	1275	[517]	CALL     	83 3 2
+	1276	[517]	SETTABLE 	81 82 83
+	1277	[517]	SETTABLE 	81 -125 24	; "content_contract" -
+	1278	[518]	LOADK    	82 -289	; "water_level"
+	1279	[518]	LOADK    	83 -24	; 1
+	1280	[518]	SETTABLE 	81 82 83
+	1281	[518]	GETTABLE 	82 24 -44	; "ignore_cid"
+	1282	[518]	SETTABLE 	81 -44 82	; "ignore_cid" -
+	1283	[519]	LOADK    	82 -290	; "verify_inactive_tail"
+	1284	[519]	LOADBOOL 	83 0 0
+	1285	[519]	SETTABLE 	81 82 83
+	1286	[515]	CALL     	80 2 4
+	1287	[520]	SELF     	83 53 -222	; "apply"
+	1288	[520]	MOVE     	85 80
+	1289	[520]	MOVE     	86 63
+	1290	[520]	MOVE     	87 64
+	1291	[520]	MOVE     	88 65
+	1292	[521]	LOADK    	89 -291	; "generation"
+	1293	[521]	GETTABLE 	89 65 89
+	1294	[521]	LOADK    	90 -292	; "fixture"
+	1295	[520]	CALL     	83 8 2
+	1296	[522]	LOADK    	84 -293	; "last_ledger"
+	1297	[522]	GETTABLE 	84 54 84
+	1298	[522]	CALL     	84 1 2
+	1299	[523]	LOADK    	85 -294	; "run_values"
+	1300	[523]	GETTABLE 	85 54 85
+	1301	[523]	CALL     	85 1 3
+	1302	[524]	NEWTABLE 	87 0 0
+	1303	[525]	LOADK    	88 -24	; 1
+	1304	[525]	MOVE     	89 86
+	1305	[525]	LOADK    	90 -24	; 1
+	1306	[525]	FORPREP  	88 14	; to 1321
+	1307	[526]	LOADK    	92 -24	; 1
+	1308	[526]	SUB      	92 91 92
+	1309	[526]	LOADK    	93 -33	; 9
+	1310	[526]	MUL      	92 92 93
+	1311	[526]	LOADK    	93 -26	; 4
+	1312	[526]	ADD      	92 92 93
+	1313	[526]	GETTABLE 	92 85 92
+	1314	[527]	GETTABLE 	93 87 92
+	1315	[527]	TEST     	93 0 1
+	1316	[527]	JMP      	1	; to 1318
+	1317	[527]	LOADK    	93 -37	; 0
+	1318	[527]	LOADK    	94 -24	; 1
+	1319	[527]	ADD      	93 93 94
+	1320	[527]	SETTABLE 	87 92 93
+	1321	[525]	FORLOOP  	88 -15	; to 1307
+	1322	[529]	GETGLOBAL	88 -270	; ipairs
+	1323	[529]	NEWTABLE 	89 5 0
+	1324	[529]	LOADK    	90 -24	; 1
+	1325	[529]	LOADK    	91 -28	; 2
+	1326	[529]	LOADK    	92 -39	; 3
+	1327	[529]	LOADK    	93 -26	; 4
+	1328	[529]	LOADK    	94 -295	; 33
+	1329	[529]	SETLIST  	89 5 1	; 1
+	1330	[529]	CALL     	88 2 4
+	1331	[529]	JMP      	14	; to 1346
+	1332	[530]	MOVE     	93 10
+	1333	[530]	GETTABLE 	94 87 92
+	1334	[530]	TEST     	94 0 1
+	1335	[530]	JMP      	1	; to 1337
+	1336	[530]	LOADK    	94 -37	; 0
+	1337	[530]	LOADK    	95 -37	; 0
+	1338	[530]	LT       	1 95 94
+	1339	[530]	JMP      	1	; to 1341
+	1340	[530]	LOADBOOL 	94 0 1
+	1341	[530]	LOADBOOL 	94 1 0
+	1342	[530]	LOADK    	95 -296	; "P7 opcode missing: "
+	1343	[530]	MOVE     	96 92
+	1344	[530]	CONCAT   	95 95 96
+	1345	[530]	CALL     	93 3 1
+	1346	[529]	TFORLOOP 	88 2
+	1347	[530]	JMP      	-16	; to 1332
+	1348	[532]	NEWTABLE 	88 0 0
+	1349	[533]	LOADK    	89 -24	; 1
+	1350	[533]	LEN      	90 28
+	1351	[533]	LOADK    	91 -24	; 1
+	1352	[533]	FORPREP  	89 23	; to 1376
+	1353	[534]	GETTABLE 	93 84 -130	; "decorations"
+	1354	[534]	GETTABLE 	94 28 92
+	1355	[534]	GETTABLE 	94 94 -54	; "id"
+	1356	[534]	GETTABLE 	93 93 94
+	1357	[535]	TEST     	93 0 0
+	1358	[535]	JMP      	17	; to 1376
+	1359	[535]	LOADK    	94 -297	; "accepted"
+	1360	[535]	GETTABLE 	94 93 94
+	1361	[535]	LOADK    	95 -37	; 0
+	1362	[535]	LT       	0 95 94
+	1363	[535]	JMP      	12	; to 1376
+	1364	[536]	GETTABLE 	94 28 92
+	1365	[536]	GETTABLE 	94 94 -102	; "settlement_class"
+	1366	[537]	GETTABLE 	95 28 92
+	1367	[537]	GETTABLE 	95 95 -102	; "settlement_class"
+	1368	[537]	GETTABLE 	95 88 95
+	1369	[537]	TEST     	95 0 1
+	1370	[537]	JMP      	1	; to 1372
+	1371	[537]	LOADK    	95 -37	; 0
+	1372	[538]	LOADK    	96 -297	; "accepted"
+	1373	[538]	GETTABLE 	96 93 96
+	1374	[538]	ADD      	95 95 96
+	1375	[538]	SETTABLE 	88 94 95
+	1376	[533]	FORLOOP  	89 -24	; to 1353
+	1377	[541]	LOADK    	89 -24	; 1
+	1378	[541]	LOADK    	90 -26	; 4
+	1379	[541]	LOADK    	91 -24	; 1
+	1380	[541]	FORPREP  	89 20	; to 1401
+	1381	[542]	MOVE     	93 10
+	1382	[542]	GETTABLE 	94 88 92
+	1383	[542]	TEST     	94 0 1
+	1384	[542]	JMP      	1	; to 1386
+	1385	[542]	LOADK    	94 -37	; 0
+	1386	[542]	LOADK    	95 -37	; 0
+	1387	[542]	LT       	1 95 94
+	1388	[542]	JMP      	1	; to 1390
+	1389	[542]	LOADBOOL 	94 0 1
+	1390	[542]	LOADBOOL 	94 1 0
+	1391	[543]	LOADK    	95 -298	; "decoration class did not settle: "
+	1392	[543]	MOVE     	96 92
+	1393	[543]	CONCAT   	95 95 96
+	1394	[542]	CALL     	93 3 1
+	1395	[544]	MOVE     	93 11
+	1396	[544]	LOADK    	94 -299	; "decoration_class/"
+	1397	[544]	MOVE     	95 92
+	1398	[544]	CONCAT   	94 94 95
+	1399	[544]	GETTABLE 	95 88 92
+	1400	[544]	CALL     	93 3 1
+	1401	[541]	FORLOOP  	89 -21	; to 1381
+	1402	[546]	LOADK    	89 -24	; 1
+	1403	[546]	GETTABLE 	89 27 89
+	1404	[546]	GETTABLE 	89 89 -69	; "key"
+	1405	[546]	LOADK    	90 -300	; "\000ordinary"
+	1406	[546]	CONCAT   	89 89 90
+	1407	[547]	MOVE     	90 10
+	1408	[547]	GETTABLE 	91 84 -129	; "cultural"
+	1409	[547]	GETTABLE 	91 91 89
+	1410	[547]	TEST     	91 0 0
+	1411	[547]	JMP      	16	; to 1428
+	1412	[547]	GETTABLE 	91 84 -129	; "cultural"
+	1413	[547]	GETTABLE 	91 91 89
+	1414	[547]	LOADK    	92 -297	; "accepted"
+	1415	[547]	GETTABLE 	91 91 92
+	1416	[547]	LOADK    	92 -24	; 1
+	1417	[547]	EQ       	0 91 92
+	1418	[547]	JMP      	7	; to 1426
+	1419	[548]	GETTABLE 	91 84 -129	; "cultural"
+	1420	[548]	GETTABLE 	91 91 89
+	1421	[548]	LOADK    	92 -301	; "reserved"
+	1422	[548]	GETTABLE 	91 91 92
+	1423	[548]	LOADK    	92 -302	; 225
+	1424	[548]	EQ       	1 91 92
+	1425	[548]	JMP      	1	; to 1427
+	1426	[548]	LOADBOOL 	91 0 1
+	1427	[548]	LOADBOOL 	91 1 0
+	1428	[548]	LOADK    	92 -303	; "cultural reservation differs"
+	1429	[547]	CALL     	90 3 1
+	1430	[549]	LOADK    	90 -304	; "decoration\000"
+	1431	[549]	GETTABLE 	91 28 69
+	1432	[549]	GETTABLE 	91 91 -54	; "id"
+	1433	[550]	LOADK    	92 -305	; "\000clipped_owner"
+	1434	[550]	CONCAT   	90 90 92
+	1435	[551]	MOVE     	91 10
+	1436	[551]	LOADK    	92 -306	; "rejections"
+	1437	[551]	GETTABLE 	92 84 92
+	1438	[551]	GETTABLE 	92 92 90
+	1439	[551]	LOADK    	93 -24	; 1
+	1440	[551]	EQ       	1 92 93
+	1441	[551]	JMP      	1	; to 1443
+	1442	[551]	LOADBOOL 	92 0 1
+	1443	[551]	LOADBOOL 	92 1 0
+	1444	[551]	LOADK    	93 -307	; "owner-clipping rejection missing"
+	1445	[551]	CALL     	91 3 1
+	1446	[552]	LOADK    	91 -308	; "metrics"
+	1447	[552]	GETTABLE 	91 82 91
+	1448	[552]	CALL     	91 1 2
+	1449	[553]	MOVE     	92 10
+	1450	[553]	LOADK    	93 -309	; "vm_calc_lighting_calls"
+	1451	[553]	GETTABLE 	93 91 93
+	1452	[553]	LOADK    	94 -24	; 1
+	1453	[553]	EQ       	0 93 94
+	1454	[553]	JMP      	5	; to 1460
+	1455	[553]	LOADK    	93 -310	; "vm_set_light_data_calls"
+	1456	[553]	GETTABLE 	93 91 93
+	1457	[553]	LOADK    	94 -24	; 1
+	1458	[553]	EQ       	1 93 94
+	1459	[553]	JMP      	1	; to 1461
+	1460	[553]	LOADBOOL 	93 0 1
+	1461	[553]	LOADBOOL 	93 1 0
+	1462	[554]	LOADK    	94 -311	; "lighting dirtiness calls differ"
+	1463	[553]	CALL     	92 3 1
+	1464	[555]	LOADK    	92 -312	; "last_light_seed_runs"
+	1465	[555]	GETTABLE 	92 54 92
+	1466	[555]	CALL     	92 1 2
+	1467	[556]	MOVE     	93 10
+	1468	[556]	LOADK    	94 -37	; 0
+	1469	[556]	LT       	0 94 92
+	1470	[556]	JMP      	6	; to 1477
+	1471	[556]	LOADK    	94 -313	; "vm_set_lighting_calls"
+	1472	[556]	GETTABLE 	94 91 94
+	1473	[556]	LOADK    	95 -24	; 1
+	1474	[556]	ADD      	95 92 95
+	1475	[556]	EQ       	1 94 95
+	1476	[556]	JMP      	1	; to 1478
+	1477	[556]	LOADBOOL 	94 0 1
+	1478	[556]	LOADBOOL 	94 1 0
+	1479	[557]	LOADK    	95 -314	; "lighting seed-run branch differs"
+	1480	[556]	CALL     	93 3 1
+	1481	[558]	MOVE     	93 10
+	1482	[558]	LOADK    	94 -315	; "vm_update_liquids_calls"
+	1483	[558]	GETTABLE 	94 91 94
+	1484	[558]	LOADK    	95 -24	; 1
+	1485	[558]	EQ       	1 94 95
+	1486	[558]	JMP      	1	; to 1488
+	1487	[558]	LOADBOOL 	94 0 1
+	1488	[558]	LOADBOOL 	94 1 0
+	1489	[558]	LOADK    	95 -316	; "liquid dirtiness call differs"
+	1490	[558]	CALL     	93 3 1
+	1491	[559]	MOVE     	93 11
+	1492	[559]	LOADK    	94 -317	; "p7_opcodes"
+	1493	[559]	GETGLOBAL	95 -208	; table
+	1494	[559]	GETTABLE 	95 95 -209	; "concat"
+	1495	[559]	NEWTABLE 	96 5 0
+	1496	[559]	LOADK    	97 -24	; 1
+	1497	[559]	GETTABLE 	97 87 97
+	1498	[559]	LOADK    	98 -28	; 2
+	1499	[559]	GETTABLE 	98 87 98
+	1500	[560]	LOADK    	99 -39	; 3
+	1501	[560]	GETTABLE 	99 87 99
+	1502	[560]	LOADK    	100 -26	; 4
+	1503	[560]	GETTABLE 	100 87 100
+	1504	[560]	LOADK    	101 -295	; 33
+	1505	[560]	GETTABLE 	101 87 101
+	1506	[560]	SETLIST  	96 5 1	; 1
+	1507	[560]	LOADK    	97 -210	; "/"
+	1508	[559]	CALL     	95 3 0
+	1509	[559]	CALL     	93 0 1
+	1510	[561]	MOVE     	93 11
+	1511	[561]	LOADK    	94 -129	; "cultural"
+	1512	[561]	LOADK    	95 -24	; 1
+	1513	[561]	GETTABLE 	95 27 95
+	1514	[561]	GETTABLE 	95 95 -69	; "key"
+	1515	[561]	LOADK    	96 -318	; "/225"
+	1516	[561]	CONCAT   	95 95 96
+	1517	[561]	CALL     	93 3 1
+	1518	[562]	MOVE     	93 11
+	1519	[562]	LOADK    	94 -319	; "owner_clipping"
+	1520	[562]	GETTABLE 	95 28 69
+	1521	[562]	GETTABLE 	95 95 -54	; "id"
+	1522	[562]	LOADK    	96 -320	; "/1"
+	1523	[562]	CONCAT   	95 95 96
+	1524	[562]	CALL     	93 3 1
+	1525	[563]	LOADK    	93 -37	; 0
+	1526	[563]	LOADK    	94 -39	; 3
+	1527	[563]	LOADK    	95 -24	; 1
+	1528	[563]	FORPREP  	93 27	; to 1556
+	1529	[564]	GETTABLE 	97 32 -243	; "rotation"
+	1530	[564]	GETTABLE 	98 28 61
+	1531	[564]	GETTABLE 	98 98 -54	; "id"
+	1532	[564]	MOVE     	99 96
+	1533	[564]	CALL     	97 3 2
+	1534	[565]	MOVE     	98 11
+	1535	[565]	LOADK    	99 -321	; "rotation/"
+	1536	[565]	MOVE     	100 96
+	1537	[565]	CONCAT   	99 99 100
+	1538	[565]	GETGLOBAL	100 -208	; table
+	1539	[565]	GETTABLE 	100 100 -209	; "concat"
+	1540	[565]	NEWTABLE 	101 5 0
+	1541	[565]	GETTABLE 	102 28 61
+	1542	[565]	GETTABLE 	102 102 -54	; "id"
+	1543	[566]	GETTABLE 	103 97 -244	; "size_x"
+	1544	[566]	GETTABLE 	104 97 -245	; "size_y"
+	1545	[566]	GETTABLE 	105 97 -246	; "size_z"
+	1546	[566]	LOADK    	106 -322	; "cells"
+	1547	[566]	GETTABLE 	106 97 106
+	1548	[566]	LOADK    	107 -24	; 1
+	1549	[566]	GETTABLE 	106 106 107
+	1550	[566]	LOADK    	107 -284	; "param2"
+	1551	[566]	GETTABLE 	106 106 107
+	1552	[566]	SETLIST  	101 5 1	; 1
+	1553	[566]	LOADK    	102 -210	; "/"
+	1554	[565]	CALL     	100 3 0
+	1555	[565]	CALL     	98 0 1
+	1556	[563]	FORLOOP  	93 -28	; to 1529
+	1557	[568]	MOVE     	93 11
+	1558	[568]	LOADK    	94 -323	; "rotation/wallmounted_invalid"
+	1559	[569]	MOVE     	95 33
+	1560	[569]	LOADK    	96 -324	; "wallmounted"
+	1561	[569]	LOADK    	97 -67	; 6
+	1562	[569]	CALL     	95 3 0
+	1563	[568]	CALL     	93 0 1
+	1564	[570]	MOVE     	93 11
+	1565	[570]	LOADK    	94 -325	; "rotation/4dir_invalid"
+	1566	[570]	MOVE     	95 33
+	1567	[570]	LOADK    	96 -326	; "4dir"
+	1568	[570]	LOADK    	97 -37	; 0
+	1569	[570]	CALL     	95 3 0
+	1570	[570]	CALL     	93 0 1
+	1571	[571]	MOVE     	93 11
+	1572	[571]	LOADK    	94 -327	; "rotation/meshoptions_passthrough"
+	1573	[572]	MOVE     	95 34
+	1574	[572]	LOADK    	96 -328	; "meshoptions"
+	1575	[572]	LOADK    	97 -26	; 4
+	1576	[572]	CALL     	95 3 0
+	1577	[571]	CALL     	93 0 1
+	1578	[573]	MOVE     	93 11
+	1579	[573]	LOADK    	94 -329	; "light_seed_runs"
+	1580	[573]	MOVE     	95 92
+	1581	[573]	CALL     	93 3 1
+	1582	[574]	MOVE     	93 11
+	1583	[574]	LOADK    	94 -330	; "vm_surface"
+	1584	[574]	GETGLOBAL	95 -208	; table
+	1585	[574]	GETTABLE 	95 95 -209	; "concat"
+	1586	[574]	NEWTABLE 	96 5 0
+	1587	[574]	MOVE     	97 83
+	1588	[574]	LOADK    	98 -313	; "vm_set_lighting_calls"
+	1589	[574]	GETTABLE 	98 91 98
+	1590	[575]	LOADK    	99 -309	; "vm_calc_lighting_calls"
+	1591	[575]	GETTABLE 	99 91 99
+	1592	[575]	LOADK    	100 -310	; "vm_set_light_data_calls"
+	1593	[575]	GETTABLE 	100 91 100
+	1594	[576]	LOADK    	101 -315	; "vm_update_liquids_calls"
+	1595	[576]	GETTABLE 	101 91 101
+	1596	[576]	SETLIST  	96 5 1	; 1
+	1597	[576]	LOADK    	97 -210	; "/"
+	1598	[574]	CALL     	95 3 0
+	1599	[574]	CALL     	93 0 1
+	1600	[581]	NEWTABLE 	93 0 3
+	1601	[581]	LOADK    	94 -249	; -32
+	1602	[581]	SETTABLE 	93 -138 94	; "x" -
+	1603	[581]	LOADK    	94 -26	; 4
+	1604	[581]	SETTABLE 	93 -250 94	; "y" -
+	1605	[581]	LOADK    	94 -249	; -32
+	1606	[581]	SETTABLE 	93 -140 94	; "z" -
+	1607	[581]	NEWTABLE 	94 0 3
+	1608	[582]	LOADK    	95 -251	; 47
+	1609	[582]	SETTABLE 	94 -138 95	; "x" -
+	1610	[582]	LOADK    	95 -27	; 5
+	1611	[582]	SETTABLE 	94 -250 95	; "y" -
+	1612	[582]	LOADK    	95 -251	; 47
+	1613	[582]	SETTABLE 	94 -140 95	; "z" -
+	1614	[583]	MOVE     	95 56
+	1615	[583]	MOVE     	96 93
+	1616	[583]	MOVE     	97 94
+	1617	[583]	LOADBOOL 	98 1 0
+	1618	[583]	CALL     	95 4 2
+	1619	[583]	MOVE     	65 95
+	1620	[584]	NEWTABLE 	95 2 0
+	1621	[584]	LOADK    	96 -37	; 0
+	1622	[584]	LOADK    	97 -37	; 0
+	1623	[584]	SETLIST  	95 2 1	; 1
+	1624	[585]	GETTABLE 	96 30 -81	; "content_ref"
+	1625	[585]	GETTABLE 	97 28 68
+	1626	[585]	GETTABLE 	97 97 -97	; "host"
+	1627	[585]	CALL     	96 2 2
+	1628	[586]	MOVE     	97 58
+	1629	[586]	MOVE     	98 65
+	1630	[586]	MOVE     	99 93
+	1631	[586]	LOADK    	100 -24	; 1
+	1632	[586]	GETTABLE 	100 95 100
+	1633	[586]	LOADK    	101 -28	; 2
+	1634	[586]	GETTABLE 	101 95 101
+	1635	[586]	MOVE     	102 96
+	1636	[586]	CALL     	97 6 1
+	1637	[587]	MOVE     	97 59
+	1638	[587]	MOVE     	98 65
+	1639	[587]	LOADK    	99 -28	; 2
+	1640	[587]	MOVE     	100 68
+	1641	[587]	LOADK    	101 -26	; 4
+	1642	[587]	LOADK    	102 -24	; 1
+	1643	[587]	GETTABLE 	102 95 102
+	1644	[587]	LOADK    	103 -27	; 5
+	1645	[587]	LOADK    	104 -28	; 2
+	1646	[587]	GETTABLE 	104 95 104
+	1647	[587]	CALL     	97 8 1
+	1648	[588]	LOADK    	97 -278	; "candidate_cell_count"
+	1649	[588]	LOADK    	98 -24	; 1
+	1650	[588]	SETTABLE 	65 97 98
+	1651	[589]	LOADK    	97 -279	; "candidate_cell_values"
+	1652	[589]	GETTABLE 	97 65 97
+	1653	[589]	LOADK    	98 -24	; 1
+	1654	[589]	LOADK    	99 -279	; "candidate_cell_values"
+	1655	[589]	GETTABLE 	99 65 99
+	1656	[589]	LOADK    	100 -28	; 2
+	1657	[589]	LOADK    	101 -37	; 0
+	1658	[589]	LOADK    	102 -37	; 0
+	1659	[589]	SETTABLE 	99 100 102
+	1660	[589]	SETTABLE 	97 98 101
+	1661	[590]	LOADK    	97 -279	; "candidate_cell_values"
+	1662	[590]	GETTABLE 	97 65 97
+	1663	[590]	LOADK    	98 -39	; 3
+	1664	[590]	LOADK    	99 -279	; "candidate_cell_values"
+	1665	[590]	GETTABLE 	99 65 99
+	1666	[590]	LOADK    	100 -26	; 4
+	1667	[590]	LOADK    	101 -24	; 1
+	1668	[590]	LOADK    	102 -28	; 2
+	1669	[590]	SETTABLE 	99 100 102
+	1670	[590]	SETTABLE 	97 98 101
+	1671	[591]	MOVE     	97 15
+	1672	[591]	MOVE     	98 93
+	1673	[591]	MOVE     	99 94
+	1674	[591]	LOADK    	100 -37	; 0
+	1675	[591]	CALL     	97 4 5
+	1676	[591]	MOVE     	79 100
+	1677	[591]	MOVE     	78 99
+	1678	[591]	MOVE     	77 98
+	1679	[591]	MOVE     	76 97
+	1680	[594]	GETTABLE 	97 93 -140	; "z"
+	1681	[594]	LOADK    	98 -331	; 16
+	1682	[594]	SUB      	97 97 98
+	1683	[594]	GETTABLE 	98 94 -140	; "z"
+	1684	[594]	LOADK    	99 -331	; 16
+	1685	[594]	ADD      	98 98 99
+	1686	[594]	LOADK    	99 -24	; 1
+	1687	[594]	FORPREP  	97 24	; to 1712
+	1688	[595]	GETTABLE 	101 93 -138	; "x"
+	1689	[595]	LOADK    	102 -331	; 16
+	1690	[595]	SUB      	101 101 102
+	1691	[595]	GETTABLE 	102 94 -138	; "x"
+	1692	[595]	LOADK    	103 -331	; 16
+	1693	[595]	ADD      	102 102 103
+	1694	[595]	LOADK    	103 -24	; 1
+	1695	[595]	FORPREP  	101 15	; to 1711
+	1696	[596]	GETTABLE 	105 93 -250	; "y"
+	1697	[596]	LOADK    	106 -331	; 16
+	1698	[596]	SUB      	105 105 106
+	1699	[596]	LOADK    	106 -39	; 3
+	1700	[596]	LOADK    	107 -24	; 1
+	1701	[596]	FORPREP  	105 8	; to 1710
+	1702	[597]	MOVE     	109 79
+	1703	[597]	MOVE     	110 104
+	1704	[597]	MOVE     	111 108
+	1705	[597]	MOVE     	112 100
+	1706	[597]	CALL     	109 4 2
+	1707	[597]	LOADK    	110 -36	; 15
+	1708	[597]	GETTABLE 	110 18 110
+	1709	[597]	SETTABLE 	76 109 110
+	1710	[596]	FORLOOP  	105 -9	; to 1702
+	1711	[595]	FORLOOP  	101 -16	; to 1696
+	1712	[594]	FORLOOP  	97 -25	; to 1688
+	1713	[601]	MOVE     	97 79
+	1714	[601]	LOADK    	98 -24	; 1
+	1715	[601]	GETTABLE 	98 95 98
+	1716	[601]	LOADK    	99 -26	; 4
+	1717	[601]	LOADK    	100 -28	; 2
+	1718	[601]	GETTABLE 	100 95 100
+	1719	[601]	CALL     	97 4 2
+	1720	[602]	GETTABLE 	98 24 -48	; "content_cids"
+	1721	[602]	GETTABLE 	98 98 96
+	1722	[602]	SETTABLE 	76 97 98
+	1723	[603]	MOVE     	97 79
+	1724	[603]	LOADK    	98 -24	; 1
+	1725	[603]	GETTABLE 	98 95 98
+	1726	[603]	LOADK    	99 -27	; 5
+	1727	[603]	LOADK    	100 -28	; 2
+	1728	[603]	GETTABLE 	100 95 100
+	1729	[603]	CALL     	97 4 2
+	1730	[603]	GETTABLE 	98 24 -44	; "ignore_cid"
+	1731	[603]	SETTABLE 	76 97 98
+	1732	[604]	GETTABLE 	97 7 -226	; "new"
+	1733	[604]	NEWTABLE 	98 0 10
+	1734	[604]	LOADK    	99 -281	; "minp"
+	1735	[604]	SETTABLE 	98 99 93
+	1736	[604]	LOADK    	99 -282	; "maxp"
+	1737	[604]	SETTABLE 	98 99 94
+	1738	[604]	LOADK    	99 -283	; "data"
+	1739	[604]	SETTABLE 	98 99 76
+	1740	[605]	LOADK    	99 -284	; "param2"
+	1741	[605]	SETTABLE 	98 99 77
+	1742	[605]	LOADK    	99 -285	; "light"
+	1743	[605]	SETTABLE 	98 99 78
+	1744	[605]	LOADK    	99 -286	; "heightmap"
+	1745	[605]	MOVE     	100 13
+	1746	[605]	LOADK    	101 -287	; 6400
+	1747	[605]	LOADK    	102 -288	; -31007
+	1748	[605]	CALL     	100 3 2
+	1749	[605]	SETTABLE 	98 99 100
+	1750	[606]	SETTABLE 	98 -125 24	; "content_contract" -
+	1751	[606]	LOADK    	99 -289	; "water_level"
+	1752	[606]	LOADK    	100 -24	; 1
+	1753	[606]	SETTABLE 	98 99 100
+	1754	[606]	GETTABLE 	99 24 -44	; "ignore_cid"
+	1755	[606]	SETTABLE 	98 -44 99	; "ignore_cid" -
+	1756	[607]	LOADK    	99 -290	; "verify_inactive_tail"
+	1757	[607]	LOADBOOL 	100 0 0
+	1758	[607]	SETTABLE 	98 99 100
+	1759	[604]	CALL     	97 2 2
+	1760	[607]	MOVE     	80 97
+	1761	[608]	SELF     	97 53 -222	; "apply"
+	1762	[608]	MOVE     	99 80
+	1763	[608]	MOVE     	100 93
+	1764	[608]	MOVE     	101 94
+	1765	[608]	MOVE     	102 65
+	1766	[609]	LOADK    	103 -291	; "generation"
+	1767	[609]	GETTABLE 	103 65 103
+	1768	[609]	LOADK    	104 -292	; "fixture"
+	1769	[608]	CALL     	97 8 2
+	1770	[610]	LOADK    	98 -293	; "last_ledger"
+	1771	[610]	GETTABLE 	98 54 98
+	1772	[610]	CALL     	98 1 2
+	1773	[610]	MOVE     	84 98
+	1774	[611]	LOADK    	98 -304	; "decoration\000"
+	1775	[611]	GETTABLE 	99 28 68
+	1776	[611]	GETTABLE 	99 99 -54	; "id"
+	1777	[612]	LOADK    	100 -332	; "\000content_ignore"
+	1778	[612]	CONCAT   	98 98 100
+	1779	[613]	MOVE     	99 10
+	1780	[613]	LOADK    	100 -306	; "rejections"
+	1781	[613]	GETTABLE 	100 84 100
+	1782	[613]	GETTABLE 	100 100 98
+	1783	[613]	LOADK    	101 -24	; 1
+	1784	[613]	EQ       	1 100 101
+	1785	[613]	JMP      	1	; to 1787
+	1786	[613]	LOADBOOL 	100 0 1
+	1787	[613]	LOADBOOL 	100 1 0
+	1788	[613]	LOADK    	101 -333	; "content-ignore rejection missing"
+	1789	[613]	CALL     	99 3 1
+	1790	[614]	MOVE     	99 10
+	1791	[614]	LOADK    	100 -334	; "noop_equal_content"
+	1792	[614]	EQ       	1 97 100
+	1793	[614]	JMP      	1	; to 1795
+	1794	[614]	LOADBOOL 	100 0 1
+	1795	[614]	LOADBOOL 	100 1 0
+	1796	[614]	LOADK    	101 -335	; "ignore transaction dirtied content"
+	1797	[614]	CALL     	99 3 1
+	1798	[615]	MOVE     	99 11
+	1799	[615]	LOADK    	100 -336	; "ignore"
+	1800	[615]	GETTABLE 	101 28 68
+	1801	[615]	GETTABLE 	101 101 -54	; "id"
+	1802	[615]	LOADK    	102 -337	; "/1/"
+	1803	[615]	MOVE     	103 97
+	1804	[615]	CONCAT   	101 101 103
+	1805	[615]	CALL     	99 3 1
+	1806	[617]	NEWTABLE 	99 0 3
+	1807	[617]	LOADK    	100 -249	; -32
+	1808	[617]	SETTABLE 	99 -138 100	; "x" -
+	1809	[617]	LOADK    	100 -338	; -1024
+	1810	[617]	SETTABLE 	99 -250 100	; "y" -
+	1811	[617]	LOADK    	100 -249	; -32
+	1812	[617]	SETTABLE 	99 -140 100	; "z" -
+	1813	[617]	NEWTABLE 	100 0 3
+	1814	[618]	LOADK    	101 -251	; 47
+	1815	[618]	SETTABLE 	100 -138 101	; "x" -
+	1816	[618]	LOADK    	101 -339	; -1009
+	1817	[618]	SETTABLE 	100 -250 101	; "y" -
+	1818	[618]	LOADK    	101 -251	; 47
+	1819	[618]	SETTABLE 	100 -140 101	; "z" -
+	1820	[619]	MOVE     	101 56
+	1821	[619]	MOVE     	102 99
+	1822	[619]	MOVE     	103 100
+	1823	[619]	LOADBOOL 	104 0 0
+	1824	[619]	CALL     	101 4 2
+	1825	[619]	MOVE     	65 101
+	1826	[620]	GETTABLE 	101 29 -109	; "tiers"
+	1827	[620]	LOADK    	102 -27	; 5
+	1828	[620]	GETTABLE 	101 101 102
+	1829	[620]	GETTABLE 	101 101 -80	; "node"
+	1830	[620]	GETTABLE 	101 23 101
+	1831	[621]	GETTABLE 	102 29 -109	; "tiers"
+	1832	[621]	LOADK    	103 -67	; 6
+	1833	[621]	GETTABLE 	102 102 103
+	1834	[621]	GETTABLE 	102 102 -80	; "node"
+	1835	[621]	GETTABLE 	102 23 102
+	1836	[622]	MOVE     	103 15
+	1837	[622]	MOVE     	104 99
+	1838	[622]	MOVE     	105 100
+	1839	[622]	MOVE     	106 101
+	1840	[622]	CALL     	103 4 5
+	1841	[622]	MOVE     	79 106
+	1842	[622]	MOVE     	78 105
+	1843	[622]	MOVE     	77 104
+	1844	[622]	MOVE     	76 103
+	1845	[623]	MOVE     	103 79
+	1846	[623]	LOADK    	104 -37	; 0
+	1847	[623]	LOADK    	105 -338	; -1024
+	1848	[623]	LOADK    	106 -37	; 0
+	1849	[623]	CALL     	103 4 2
+	1850	[623]	MOVE     	104 79
+	1851	[623]	LOADK    	105 -28	; 2
+	1852	[623]	LOADK    	106 -338	; -1024
+	1853	[623]	LOADK    	107 -37	; 0
+	1854	[623]	CALL     	104 4 2
+	1855	[623]	MOVE     	105 102
+	1856	[623]	SETTABLE 	76 104 102
+	1857	[623]	SETTABLE 	76 103 105
+	1858	[624]	GETTABLE 	103 7 -226	; "new"
+	1859	[624]	NEWTABLE 	104 0 10
+	1860	[624]	LOADK    	105 -281	; "minp"
+	1861	[624]	SETTABLE 	104 105 99
+	1862	[624]	LOADK    	105 -282	; "maxp"
+	1863	[624]	SETTABLE 	104 105 100
+	1864	[625]	LOADK    	105 -283	; "data"
+	1865	[625]	SETTABLE 	104 105 76
+	1866	[625]	LOADK    	105 -284	; "param2"
+	1867	[625]	SETTABLE 	104 105 77
+	1868	[625]	LOADK    	105 -285	; "light"
+	1869	[625]	SETTABLE 	104 105 78
+	1870	[626]	LOADK    	105 -286	; "heightmap"
+	1871	[626]	MOVE     	106 13
+	1872	[626]	LOADK    	107 -287	; 6400
+	1873	[626]	LOADK    	108 -288	; -31007
+	1874	[626]	CALL     	106 3 2
+	1875	[626]	SETTABLE 	104 105 106
+	1876	[626]	SETTABLE 	104 -125 24	; "content_contract" -
+	1877	[627]	LOADK    	105 -289	; "water_level"
+	1878	[627]	LOADK    	106 -24	; 1
+	1879	[627]	SETTABLE 	104 105 106
+	1880	[627]	GETTABLE 	105 24 -44	; "ignore_cid"
+	1881	[627]	SETTABLE 	104 -44 105	; "ignore_cid" -
+	1882	[628]	LOADK    	105 -290	; "verify_inactive_tail"
+	1883	[628]	LOADBOOL 	106 0 0
+	1884	[628]	SETTABLE 	104 105 106
+	1885	[624]	CALL     	103 2 4
+	1886	[628]	MOVE     	82 105
+	1887	[628]	MOVE     	81 104
+	1888	[628]	MOVE     	80 103
+	1889	[629]	SELF     	103 53 -222	; "apply"
+	1890	[629]	MOVE     	105 80
+	1891	[629]	MOVE     	106 99
+	1892	[629]	MOVE     	107 100
+	1893	[629]	MOVE     	108 65
+	1894	[629]	LOADK    	109 -291	; "generation"
+	1895	[629]	GETTABLE 	109 65 109
+	1896	[629]	LOADK    	110 -292	; "fixture"
+	1897	[629]	CALL     	103 8 2
+	1898	[629]	MOVE     	83 103
+	1899	[630]	LOADK    	103 -293	; "last_ledger"
+	1900	[630]	GETTABLE 	103 54 103
+	1901	[630]	CALL     	103 1 2
+	1902	[630]	MOVE     	84 103
+	1903	[631]	LOADK    	103 -37	; 0
+	1904	[631]	LOADK    	104 -37	; 0
+	1905	[631]	NEWTABLE 	105 0 0
+	1906	[632]	GETGLOBAL	106 -340	; pairs
+	1907	[632]	GETTABLE 	107 84 -128	; "resources"
+	1908	[632]	CALL     	106 2 4
+	1909	[632]	JMP      	31	; to 1941
+	1910	[633]	LOADK    	111 -341	; "shortfall"
+	1911	[633]	GETTABLE 	111 110 111
+	1912	[633]	ADD      	103 103 111
+	1913	[634]	LOADK    	111 -342	; "collisions"
+	1914	[634]	GETTABLE 	111 110 111
+	1915	[634]	ADD      	104 104 111
+	1916	[635]	LOADK    	113 -343	; "find"
+	1917	[635]	SELF     	111 109 113
+	1918	[635]	LOADK    	113 -344	; "\000"
+	1919	[635]	LOADK    	114 -24	; 1
+	1920	[635]	LOADBOOL 	115 1 0
+	1921	[635]	CALL     	111 5 2
+	1922	[636]	TEST     	111 0 1
+	1923	[636]	JMP      	3	; to 1927
+	1924	[636]	MOVE     	112 9
+	1925	[636]	LOADK    	113 -345	; "resource ledger key delimiter is absent"
+	1926	[636]	CALL     	112 2 1
+	1927	[637]	LOADK    	114 -346	; "sub"
+	1928	[637]	SELF     	112 109 114
+	1929	[637]	LOADK    	114 -24	; 1
+	1930	[637]	LOADK    	115 -24	; 1
+	1931	[637]	SUB      	115 111 115
+	1932	[637]	CALL     	112 4 2
+	1933	[639]	GETTABLE 	113 105 112
+	1934	[639]	TEST     	113 0 1
+	1935	[639]	JMP      	1	; to 1937
+	1936	[639]	LOADK    	113 -37	; 0
+	1937	[639]	LOADK    	114 -342	; "collisions"
+	1938	[639]	GETTABLE 	114 110 114
+	1939	[639]	ADD      	113 113 114
+	1940	[639]	SETTABLE 	105 112 113
+	1941	[632]	TFORLOOP 	106 2
+	1942	[639]	JMP      	-33	; to 1910
+	1943	[641]	MOVE     	106 10
+	1944	[641]	LOADK    	107 -28	; 2
+	1945	[641]	EQ       	1 103 107
+	1946	[641]	JMP      	1	; to 1948
+	1947	[641]	LOADBOOL 	107 0 1
+	1948	[641]	LOADBOOL 	107 1 0
+	1949	[641]	LOADK    	108 -347	; "short-vein witness differs: "
+	1950	[642]	GETGLOBAL	109 -348	; tostring
+	1951	[642]	MOVE     	110 103
+	1952	[642]	CALL     	109 2 2
+	1953	[642]	CONCAT   	108 108 109
+	1954	[641]	CALL     	106 3 1
+	1955	[643]	MOVE     	106 10
+	1956	[643]	LOADK    	107 -28	; 2
+	1957	[643]	EQ       	0 104 107
+	1958	[643]	JMP      	22	; to 1981
+	1959	[643]	GETTABLE 	107 105 -122	; "ore_1"
+	1960	[643]	TEST     	107 0 1
+	1961	[643]	JMP      	1	; to 1963
+	1962	[643]	LOADK    	107 -37	; 0
+	1963	[643]	LOADK    	108 -37	; 0
+	1964	[643]	EQ       	0 107 108
+	1965	[643]	JMP      	15	; to 1981
+	1966	[644]	GETTABLE 	107 105 -124	; "ore_2"
+	1967	[644]	TEST     	107 0 1
+	1968	[644]	JMP      	1	; to 1970
+	1969	[644]	LOADK    	107 -37	; 0
+	1970	[644]	LOADK    	108 -37	; 0
+	1971	[644]	EQ       	0 107 108
+	1972	[644]	JMP      	8	; to 1981
+	1973	[645]	LOADK    	107 -349	; "ore_3"
+	1974	[645]	GETTABLE 	107 105 107
+	1975	[645]	TEST     	107 0 1
+	1976	[645]	JMP      	1	; to 1978
+	1977	[645]	LOADK    	107 -37	; 0
+	1978	[645]	LOADK    	108 -28	; 2
+	1979	[645]	EQ       	1 107 108
+	1980	[645]	JMP      	1	; to 1982
+	1981	[645]	LOADBOOL 	107 0 1
+	1982	[645]	LOADBOOL 	107 1 0
+	1983	[646]	LOADK    	108 -350	; "resource collision owner accounting differs: "
+	1984	[647]	GETGLOBAL	109 -208	; table
+	1985	[647]	GETTABLE 	109 109 -209	; "concat"
+	1986	[647]	NEWTABLE 	110 4 0
+	1987	[647]	MOVE     	111 104
+	1988	[647]	GETTABLE 	112 105 -122	; "ore_1"
+	1989	[647]	TEST     	112 0 1
+	1990	[647]	JMP      	1	; to 1992
+	1991	[647]	LOADK    	112 -37	; 0
+	1992	[648]	GETTABLE 	113 105 -124	; "ore_2"
+	1993	[648]	TEST     	113 0 1
+	1994	[648]	JMP      	1	; to 1996
+	1995	[648]	LOADK    	113 -37	; 0
+	1996	[649]	LOADK    	114 -349	; "ore_3"
+	1997	[649]	GETTABLE 	114 105 114
+	1998	[649]	TEST     	114 0 1
+	1999	[649]	JMP      	1	; to 2001
+	2000	[649]	LOADK    	114 -37	; 0
+	2001	[649]	SETLIST  	110 4 1	; 1
+	2002	[649]	LOADK    	111 -210	; "/"
+	2003	[647]	CALL     	109 3 2
+	2004	[649]	CONCAT   	108 108 109
+	2005	[643]	CALL     	106 3 1
+	2006	[650]	MOVE     	106 11
+	2007	[650]	LOADK    	107 -351	; "short_vein"
+	2008	[650]	MOVE     	108 103
+	2009	[650]	CALL     	106 3 1
+	2010	[651]	MOVE     	106 11
+	2011	[651]	LOADK    	107 -352	; "resource_collision"
+	2012	[651]	MOVE     	108 104
+	2013	[651]	CALL     	106 3 1
+	2014	[652]	LOADK    	106 -24	; 1
+	2015	[652]	LEN      	107 26
+	2016	[652]	LOADK    	108 -24	; 1
+	2017	[652]	FORPREP  	106 12	; to 2030
+	2018	[653]	MOVE     	110 11
+	2019	[653]	LOADK    	111 -353	; "resource_collision/"
+	2020	[653]	GETTABLE 	112 26 109
+	2021	[653]	GETTABLE 	112 112 -69	; "key"
+	2022	[653]	CONCAT   	111 111 112
+	2023	[654]	GETTABLE 	112 26 109
+	2024	[654]	GETTABLE 	112 112 -69	; "key"
+	2025	[654]	GETTABLE 	112 105 112
+	2026	[654]	TEST     	112 0 1
+	2027	[654]	JMP      	1	; to 2029
+	2028	[654]	LOADK    	112 -37	; 0
+	2029	[653]	CALL     	110 3 1
+	2030	[652]	FORLOOP  	106 -13	; to 2018
+	2031	[656]	MOVE     	106 11
+	2032	[656]	LOADK    	107 -354	; "vm_deep"
+	2033	[656]	MOVE     	108 83
+	2034	[656]	CALL     	106 3 1
+	2035	[657]	LOADBOOL 	106 1 0
+	2036	[657]	SETTABLE 	44 -212 106	; "bridge_probe" -
+	2037	[658]	LOADK    	106 -355	; "scan_horizontal_owner"
+	2038	[658]	GETTABLE 	106 54 106
+	2039	[658]	LOADK    	107 -249	; -32
+	2040	[658]	LOADK    	108 -249	; -32
+	2041	[658]	NEWTABLE 	109 0 0
+	2042	[658]	NEWTABLE 	110 1 0
+	2043	[659]	NEWTABLE 	111 0 5
+	2044	[659]	LOADK    	112 -356	; "catalog"
+	2045	[659]	SETTABLE 	111 112 61
+	2046	[659]	LOADK    	112 -357	; "parameter"
+	2047	[659]	LOADK    	113 -28	; 2
+	2048	[659]	SETTABLE 	111 112 113
+	2049	[659]	LOADK    	112 -37	; 0
+	2050	[659]	SETTABLE 	111 -138 112	; "x" -
+	2051	[659]	LOADK    	112 -27	; 5
+	2052	[659]	SETTABLE 	111 -250 112	; "y" -
+	2053	[659]	LOADK    	112 -37	; 0
+	2054	[659]	SETTABLE 	111 -140 112	; "z" -
+	2055	[659]	SETLIST  	110 1 1	; 1
+	2056	[658]	CALL     	106 5 2
+	2057	[660]	LOADBOOL 	107 0 0
+	2058	[660]	SETTABLE 	44 -212 107	; "bridge_probe" -
+	2059	[661]	LOADK    	107 -304	; "decoration\000"
+	2060	[661]	GETTABLE 	108 28 61
+	2061	[661]	GETTABLE 	108 108 -54	; "id"
+	2062	[662]	LOADK    	109 -358	; "\000insufficient_clearance"
+	2063	[662]	CONCAT   	107 107 109
+	2064	[663]	NEWTABLE 	108 0 0
+	2065	[664]	GETGLOBAL	109 -340	; pairs
+	2066	[664]	LOADK    	110 -306	; "rejections"
+	2067	[664]	GETTABLE 	110 106 110
+	2068	[664]	CALL     	109 2 4
+	2069	[664]	JMP      	12	; to 2082
+	2070	[665]	LEN      	114 108
+	2071	[665]	LOADK    	115 -24	; 1
+	2072	[665]	ADD      	114 114 115
+	2073	[665]	MOVE     	115 12
+	2074	[665]	MOVE     	116 112
+	2075	[665]	CALL     	115 2 2
+	2076	[665]	LOADK    	116 -359	; "="
+	2077	[665]	GETGLOBAL	117 -348	; tostring
+	2078	[665]	MOVE     	118 113
+	2079	[665]	CALL     	117 2 2
+	2080	[665]	CONCAT   	115 115 117
+	2081	[665]	SETTABLE 	108 114 115
+	2082	[664]	TFORLOOP 	109 2
+	2083	[665]	JMP      	-14	; to 2070
+	2084	[667]	GETGLOBAL	109 -208	; table
+	2085	[667]	GETTABLE 	109 109 -223	; "sort"
+	2086	[667]	MOVE     	110 108
+	2087	[667]	CALL     	109 2 1
+	2088	[668]	MOVE     	109 10
+	2089	[668]	GETTABLE 	110 106 -130	; "decorations"
+	2090	[668]	GETTABLE 	111 28 61
+	2091	[668]	GETTABLE 	111 111 -54	; "id"
+	2092	[668]	GETTABLE 	110 110 111
+	2093	[668]	LOADK    	111 -297	; "accepted"
+	2094	[668]	GETTABLE 	110 110 111
+	2095	[668]	LOADK    	111 -37	; 0
+	2096	[668]	EQ       	0 110 111
+	2097	[668]	JMP      	6	; to 2104
+	2098	[669]	LOADK    	110 -306	; "rejections"
+	2099	[669]	GETTABLE 	110 106 110
+	2100	[669]	GETTABLE 	110 110 107
+	2101	[669]	LOADK    	111 -24	; 1
+	2102	[669]	EQ       	1 110 111
+	2103	[669]	JMP      	1	; to 2105
+	2104	[669]	LOADBOOL 	110 0 1
+	2105	[669]	LOADBOOL 	110 1 0
+	2106	[670]	LOADK    	111 -360	; "analytic P2-P6 predecessor bridge probe differs: "
+	2107	[671]	GETGLOBAL	112 -208	; table
+	2108	[671]	GETTABLE 	112 112 -209	; "concat"
+	2109	[671]	MOVE     	113 108
+	2110	[671]	LOADK    	114 -361	; ","
+	2111	[671]	CALL     	112 3 2
+	2112	[671]	CONCAT   	111 111 112
+	2113	[668]	CALL     	109 3 1
+	2114	[672]	MOVE     	109 11
+	2115	[672]	LOADK    	110 -362	; "analytic_bridge_predecessor"
+	2116	[672]	LOADK    	111 -306	; "rejections"
+	2117	[672]	GETTABLE 	111 106 111
+	2118	[672]	GETTABLE 	111 111 107
+	2119	[672]	CALL     	109 3 1
+	2120	[673]	LOADK    	109 -363	; "hard"
+	2121	[673]	SETTABLE 	44 -213 109	; "hard_route_probe" -
+	2122	[674]	LOADK    	109 -355	; "scan_horizontal_owner"
+	2123	[674]	GETTABLE 	109 54 109
+	2124	[674]	LOADK    	110 -249	; -32
+	2125	[674]	LOADK    	111 -249	; -32
+	2126	[674]	NEWTABLE 	112 0 0
+	2127	[674]	NEWTABLE 	113 1 0
+	2128	[675]	NEWTABLE 	114 0 5
+	2129	[675]	LOADK    	115 -356	; "catalog"
+	2130	[675]	SETTABLE 	114 115 61
+	2131	[675]	LOADK    	115 -357	; "parameter"
+	2132	[675]	LOADK    	116 -28	; 2
+	2133	[675]	SETTABLE 	114 115 116
+	2134	[675]	LOADK    	115 -37	; 0
+	2135	[675]	SETTABLE 	114 -138 115	; "x" -
+	2136	[675]	LOADK    	115 -27	; 5
+	2137	[675]	SETTABLE 	114 -250 115	; "y" -
+	2138	[675]	LOADK    	115 -37	; 0
+	2139	[675]	SETTABLE 	114 -140 115	; "z" -
+	2140	[675]	SETLIST  	113 1 1	; 1
+	2141	[674]	CALL     	109 5 2
+	2142	[676]	LOADK    	110 -364	; "route"
+	2143	[676]	SETTABLE 	44 -213 110	; "hard_route_probe" -
+	2144	[677]	LOADK    	110 -355	; "scan_horizontal_owner"
+	2145	[677]	GETTABLE 	110 54 110
+	2146	[677]	LOADK    	111 -249	; -32
+	2147	[677]	LOADK    	112 -249	; -32
+	2148	[677]	NEWTABLE 	113 0 0
+	2149	[677]	NEWTABLE 	114 1 0
+	2150	[678]	NEWTABLE 	115 0 5
+	2151	[678]	LOADK    	116 -356	; "catalog"
+	2152	[678]	SETTABLE 	115 116 61
+	2153	[678]	LOADK    	116 -357	; "parameter"
+	2154	[678]	LOADK    	117 -28	; 2
+	2155	[678]	SETTABLE 	115 116 117
+	2156	[678]	LOADK    	116 -37	; 0
+	2157	[678]	SETTABLE 	115 -138 116	; "x" -
+	2158	[678]	LOADK    	116 -27	; 5
+	2159	[678]	SETTABLE 	115 -250 116	; "y" -
+	2160	[678]	LOADK    	116 -37	; 0
+	2161	[678]	SETTABLE 	115 -140 116	; "z" -
+	2162	[678]	SETLIST  	114 1 1	; 1
+	2163	[677]	CALL     	110 5 2
+	2164	[679]	LOADBOOL 	111 0 0
+	2165	[679]	SETTABLE 	44 -213 111	; "hard_route_probe" -
+	2166	[680]	LOADK    	111 -304	; "decoration\000"
+	2167	[680]	GETTABLE 	112 28 61
+	2168	[680]	GETTABLE 	112 112 -54	; "id"
+	2169	[681]	LOADK    	113 -365	; "\000fixed_or_protected"
+	2170	[681]	CONCAT   	111 111 113
+	2171	[682]	LOADK    	112 -304	; "decoration\000"
+	2172	[682]	GETTABLE 	113 28 61
+	2173	[682]	GETTABLE 	113 113 -54	; "id"
+	2174	[683]	LOADK    	114 -366	; "\000route_or_water"
+	2175	[683]	CONCAT   	112 112 114
+	2176	[684]	MOVE     	113 10
+	2177	[684]	GETTABLE 	114 109 -130	; "decorations"
+	2178	[684]	GETTABLE 	115 28 61
+	2179	[684]	GETTABLE 	115 115 -54	; "id"
+	2180	[684]	GETTABLE 	114 114 115
+	2181	[684]	LOADK    	115 -297	; "accepted"
+	2182	[684]	GETTABLE 	114 114 115
+	2183	[684]	LOADK    	115 -37	; 0
+	2184	[684]	EQ       	0 114 115
+	2185	[684]	JMP      	12	; to 2198
+	2186	[685]	LOADK    	114 -306	; "rejections"
+	2187	[685]	GETTABLE 	114 109 114
+	2188	[685]	GETTABLE 	114 114 111
+	2189	[685]	LOADK    	115 -24	; 1
+	2190	[685]	EQ       	0 114 115
+	2191	[685]	JMP      	6	; to 2198
+	2192	[686]	LOADK    	114 -306	; "rejections"
+	2193	[686]	GETTABLE 	114 109 114
+	2194	[686]	GETTABLE 	114 114 112
+	2195	[686]	LOADNIL  	115 115
+	2196	[686]	EQ       	1 114 115
+	2197	[686]	JMP      	1	; to 2199
+	2198	[686]	LOADBOOL 	114 0 1
+	2199	[686]	LOADBOOL 	114 1 0
+	2200	[687]	LOADK    	115 -367	; "hard-protection did not precede representative route exclusion"
+	2201	[684]	CALL     	113 3 1
+	2202	[688]	MOVE     	113 10
+	2203	[688]	GETTABLE 	114 110 -130	; "decorations"
+	2204	[688]	GETTABLE 	115 28 61
+	2205	[688]	GETTABLE 	115 115 -54	; "id"
+	2206	[688]	GETTABLE 	114 114 115
+	2207	[688]	LOADK    	115 -297	; "accepted"
+	2208	[688]	GETTABLE 	114 114 115
+	2209	[688]	LOADK    	115 -37	; 0
+	2210	[688]	EQ       	0 114 115
+	2211	[688]	JMP      	12	; to 2224
+	2212	[689]	LOADK    	114 -306	; "rejections"
+	2213	[689]	GETTABLE 	114 110 114
+	2214	[689]	GETTABLE 	114 114 112
+	2215	[689]	LOADK    	115 -24	; 1
+	2216	[689]	EQ       	0 114 115
+	2217	[689]	JMP      	6	; to 2224
+	2218	[690]	LOADK    	114 -306	; "rejections"
+	2219	[690]	GETTABLE 	114 110 114
+	2220	[690]	GETTABLE 	114 114 111
+	2221	[690]	LOADNIL  	115 115
+	2222	[690]	EQ       	1 114 115
+	2223	[690]	JMP      	1	; to 2225
+	2224	[690]	LOADBOOL 	114 0 1
+	2225	[690]	LOADBOOL 	114 1 0
+	2226	[691]	LOADK    	115 -368	; "representative route exclusion was upgraded without hard-protection"
+	2227	[688]	CALL     	113 3 1
+	2228	[692]	MOVE     	113 11
+	2229	[692]	LOADK    	114 -369	; "hard_route_exclusion_precedence"
+	2230	[693]	LOADK    	115 -306	; "rejections"
+	2231	[693]	GETTABLE 	115 109 115
+	2232	[693]	GETTABLE 	115 115 111
+	2233	[692]	CALL     	113 3 1
+	2234	[694]	MOVE     	113 11
+	2235	[694]	LOADK    	114 -370	; "route_without_hard_precedence"
+	2236	[695]	LOADK    	115 -306	; "rejections"
+	2237	[695]	GETTABLE 	115 110 115
+	2238	[695]	GETTABLE 	115 115 112
+	2239	[694]	CALL     	113 3 1
+	2240	[696]	LOADNIL  	113 113
+	2241	[696]	LOADNIL  	54 54
+	2242	[696]	MOVE     	53 113
+	2243	[697]	GETGLOBAL	113 -371	; collectgarbage
+	2244	[697]	LOADK    	114 -372	; "collect"
+	2245	[697]	CALL     	113 2 1
+	2246	[698]	MOVE     	113 16
+	2247	[698]	MOVE     	114 26
+	2248	[698]	CALL     	113 2 2
+	2249	[699]	LOADK    	114 -28	; 2
+	2250	[699]	LEN      	115 113
+	2251	[699]	LOADK    	116 -24	; 1
+	2252	[699]	FORPREP  	114 5	; to 2258
+	2253	[699]	GETTABLE 	118 113 117
+	2254	[699]	GETTABLE 	118 118 -74	; "denominators"
+	2255	[699]	LOADK    	119 -67	; 6
+	2256	[699]	LOADK    	120 -29	; 8
+	2257	[699]	SETTABLE 	118 119 120
+	2258	[699]	FORLOOP  	114 -6	; to 2253
+	2259	[700]	NEWTABLE 	114 0 0
+	2260	[701]	CLOSURE  	115 37	; 0x2d7daf0
+	2261	[701]	MOVE     	0 24
+	2262	[701]	SETTABLE 	114 -125 115	; "content_contract" -
+	2263	[702]	CLOSURE  	115 38	; 0x2d7dba0
+	2264	[702]	MOVE     	0 16
+	2265	[702]	MOVE     	0 25
+	2266	[702]	SETTABLE 	114 -126 115	; "surfaces" -
+	2267	[705]	CLOSURE  	115 39	; 0x2d7dcb0
+	2268	[705]	MOVE     	0 30
+	2269	[703]	SETTABLE 	114 -127 115	; "new_surface_selector" -
+	2270	[706]	CLOSURE  	115 40	; 0x2d7de60
+	2271	[706]	MOVE     	0 16
+	2272	[706]	MOVE     	0 113
+	2273	[706]	SETTABLE 	114 -128 115	; "resources" -
+	2274	[707]	CLOSURE  	115 41	; 0x2d7df90
+	2275	[707]	MOVE     	0 16
+	2276	[707]	MOVE     	0 27
+	2277	[707]	SETTABLE 	114 -129 115	; "cultural" -
+	2278	[708]	CLOSURE  	115 42	; 0x2d7e0f0
+	2279	[708]	MOVE     	0 16
+	2280	[708]	MOVE     	0 28
+	2281	[708]	SETTABLE 	114 -130 115	; "decorations" -
+	2282	[709]	CLOSURE  	115 43	; 0x2d7e250
+	2283	[709]	MOVE     	0 16
+	2284	[709]	MOVE     	0 29
+	2285	[709]	SETTABLE 	114 -132 115	; "wp43_projection" -
+	2286	[710]	CLOSURE  	115 44	; 0x2d7e3b0
+	2287	[710]	MOVE     	0 20
+	2288	[710]	SETTABLE 	114 -81 115	; "content_ref" -
+	2289	[711]	CLOSURE  	115 45	; 0x2d7e4d0
+	2290	[711]	MOVE     	0 22
+	2291	[711]	SETTABLE 	114 -133 115	; "param2_kind" -
+	2292	[714]	CLOSURE  	115 46	; 0x2d7e5f0
+	2293	[714]	MOVE     	0 30
+	2294	[712]	SETTABLE 	114 -131 115	; "decoration_cover" -
+	2295	[715]	GETTABLE 	115 5 -226	; "new"
+	2296	[715]	NEWTABLE 	116 0 12
+	2297	[716]	SETTABLE 	116 -227 -228	; "full_seed_string" "0"
+	2298	[716]	SETTABLE 	116 -229 48	; "r5_adapter" -
+	2299	[716]	SETTABLE 	116 -230 114	; "content" -
+	2300	[717]	SETTABLE 	116 -231 32	; "templates" -
+	2301	[717]	SETTABLE 	116 -232 4	; "hash" -
+	2302	[717]	SETTABLE 	116 -233 45	; "horizontal" -
+	2303	[718]	SETTABLE 	116 -234 44	; "planner_source" -
+	2304	[718]	SETTABLE 	116 -235 46	; "construction_identity" -
+	2305	[719]	NEWTABLE 	117 0 0
+	2306	[719]	SETTABLE 	116 -236 117	; "cultural_registrations" -
+	2307	[719]	SETTABLE 	116 -237 39	; "source" -
+	2308	[720]	SETTABLE 	116 -238 49	; "planner_stable_refs" -
+	2309	[721]	GETTABLE 	117 6 -226	; "new"
+	2310	[722]	LOADK    	118 -240	; "grug_wp40_r6_settlement_allocator_v1"
+	2311	[721]	CALL     	117 2 2
+	2312	[722]	SETTABLE 	116 -239 117	; "counting_allocator" -
+	2313	[715]	CALL     	115 2 3
+	2314	[751]	CLOSURE  	117 47	; 0x2d7e860
+	2315	[751]	MOVE     	0 56
+	2316	[751]	MOVE     	0 15
+	2317	[751]	MOVE     	0 102
+	2318	[751]	MOVE     	0 7
+	2319	[751]	MOVE     	0 13
+	2320	[751]	MOVE     	0 24
+	2321	[751]	MOVE     	0 115
+	2322	[751]	MOVE     	0 116
+	2323	[751]	MOVE     	0 10
+	2324	[751]	MOVE     	0 11
+	2325	[752]	MOVE     	118 117
+	2326	[752]	LOADK    	119 -373	; -1600
+	2327	[752]	LOADK    	120 -374	; "deep_1500_1999"
+	2328	[752]	CALL     	118 3 1
+	2329	[753]	MOVE     	118 117
+	2330	[753]	LOADK    	119 -375	; -2080
+	2331	[753]	LOADK    	120 -376	; "deep_2000_floor"
+	2332	[753]	CALL     	118 3 1
+	2333	[755]	RETURN   	8 2
+	2334	[756]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:12,12> (7 instructions, 28 bytes at 0x2d6c370)
+1 param, 4 slots, 0 upvalues, 1 local, 3 constants, 0 functions
+	1	[12]	GETGLOBAL	1 -1	; error
+	2	[12]	LOADK    	2 -2	; "r6 micro KAT: "
+	3	[12]	MOVE     	3 0
+	4	[12]	CONCAT   	2 2 3
+	5	[12]	LOADK    	3 -3	; 0
+	6	[12]	CALL     	1 3 1
+	7	[12]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:13,16> (7 instructions, 28 bytes at 0x2d6d3f0)
+2 params, 4 slots, 1 upvalue, 2 locals, 0 constants, 0 functions
+	1	[14]	TEST     	0 0 1
+	2	[14]	JMP      	3	; to 6
+	3	[14]	GETUPVAL 	2 0	; fail
+	4	[14]	MOVE     	3 1
+	5	[14]	CALL     	2 2 1
+	6	[15]	RETURN   	0 2
+	7	[16]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:17,19> (13 instructions, 52 bytes at 0x2d6d750)
+2 params, 8 slots, 1 upvalue, 2 locals, 4 constants, 0 functions
+	1	[18]	GETUPVAL 	2 0	; rows
+	2	[18]	GETUPVAL 	3 0	; rows
+	3	[18]	LEN      	3 3
+	4	[18]	ADD      	3 3 -1	; - 1
+	5	[18]	MOVE     	4 0
+	6	[18]	LOADK    	5 -2	; "\t"
+	7	[18]	GETGLOBAL	6 -3	; tostring
+	8	[18]	MOVE     	7 1
+	9	[18]	CALL     	6 2 2
+	10	[18]	LOADK    	7 -4	; "\n"
+	11	[18]	CONCAT   	4 4 7
+	12	[18]	SETTABLE 	2 3 4
+	13	[19]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:20,31> (31 instructions, 124 bytes at 0x2d6db30)
+1 param, 9 slots, 0 upvalues, 4 locals, 7 constants, 0 functions
+	1	[21]	NEWTABLE 	1 0 0
+	2	[21]	LOADK    	2 -1	; 1
+	3	[23]	SELF     	3 0 -2	; "find"
+	4	[23]	LOADK    	5 -3	; "\000"
+	5	[23]	MOVE     	6 2
+	6	[23]	LOADBOOL 	7 1 0
+	7	[23]	CALL     	3 5 2
+	8	[24]	TEST     	3 0 1
+	9	[24]	JMP      	12	; to 22
+	10	[25]	LEN      	4 1
+	11	[25]	ADD      	4 4 -1	; - 1
+	12	[25]	SELF     	5 0 -4	; "sub"
+	13	[25]	MOVE     	7 2
+	14	[25]	CALL     	5 3 2
+	15	[25]	SETTABLE 	1 4 5
+	16	[26]	GETGLOBAL	4 -5	; table
+	17	[26]	GETTABLE 	4 4 -6	; "concat"
+	18	[26]	MOVE     	5 1
+	19	[26]	LOADK    	6 -7	; "/"
+	20	[26]	TAILCALL 	4 3 0
+	21	[26]	RETURN   	4 0
+	22	[28]	LEN      	4 1
+	23	[28]	ADD      	4 4 -1	; - 1
+	24	[28]	SELF     	5 0 -4	; "sub"
+	25	[28]	MOVE     	7 2
+	26	[28]	SUB      	8 3 -1	; - 1
+	27	[28]	CALL     	5 4 2
+	28	[28]	SETTABLE 	1 4 5
+	29	[29]	ADD      	2 3 -1	; - 1
+	30	[29]	JMP      	-28	; to 3
+	31	[31]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:32,36> (9 instructions, 36 bytes at 0x2d6eab0)
+2 params, 7 slots, 0 upvalues, 7 locals, 1 constant, 0 functions
+	1	[33]	NEWTABLE 	2 0 0
+	2	[34]	LOADK    	3 -1	; 1
+	3	[34]	MOVE     	4 0
+	4	[34]	LOADK    	5 -1	; 1
+	5	[34]	FORPREP  	3 1	; to 7
+	6	[34]	SETTABLE 	2 6 1
+	7	[34]	FORLOOP  	3 -2	; to 6
+	8	[35]	RETURN   	2 2
+	9	[36]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:37,39> (9 instructions, 36 bytes at 0x2d6ee50)
+1 param, 3 slots, 0 upvalues, 1 local, 5 constants, 0 functions
+	1	[38]	GETGLOBAL	1 -1	; math
+	2	[38]	GETTABLE 	1 1 -2	; "floor"
+	3	[38]	ADD      	2 0 -3	; - 30912
+	4	[38]	DIV      	2 2 -4	; - 80
+	5	[38]	CALL     	1 2 2
+	6	[38]	MUL      	1 1 -4	; - 80
+	7	[38]	ADD      	1 -5 1	; -30912 -
+	8	[38]	RETURN   	1 2
+	9	[39]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:40,51> (46 instructions, 184 bytes at 0x2d6f3d0)
+3 params, 16 slots, 1 upvalue, 12 locals, 6 constants, 1 function
+	1	[41]	GETTABLE 	3 1 -1	; "x"
+	2	[41]	GETTABLE 	4 0 -1	; "x"
+	3	[41]	SUB      	3 3 4
+	4	[41]	ADD      	3 3 -2	; - 33
+	5	[41]	GETTABLE 	4 1 -3	; "y"
+	6	[41]	GETTABLE 	5 0 -3	; "y"
+	7	[41]	SUB      	4 4 5
+	8	[41]	ADD      	4 4 -2	; - 33
+	9	[42]	GETTABLE 	5 1 -4	; "z"
+	10	[42]	GETTABLE 	6 0 -4	; "z"
+	11	[42]	SUB      	5 5 6
+	12	[42]	ADD      	5 5 -2	; - 33
+	13	[43]	MUL      	6 3 4
+	14	[43]	MUL      	6 6 5
+	15	[44]	GETUPVAL 	7 0	; fixed_array
+	16	[44]	MOVE     	8 6
+	17	[44]	MOVE     	9 2
+	18	[44]	CALL     	7 3 2
+	19	[45]	GETUPVAL 	8 0	; fixed_array
+	20	[45]	MOVE     	9 6
+	21	[45]	LOADK    	10 -5	; 0
+	22	[45]	CALL     	8 3 2
+	23	[45]	GETUPVAL 	9 0	; fixed_array
+	24	[45]	MOVE     	10 6
+	25	[45]	LOADK    	11 -5	; 0
+	26	[45]	CALL     	9 3 2
+	27	[46]	NEWTABLE 	10 0 3
+	28	[46]	GETTABLE 	11 0 -1	; "x"
+	29	[46]	SUB      	11 11 -6	; - 16
+	30	[46]	SETTABLE 	10 -1 11	; "x" -
+	31	[46]	GETTABLE 	11 0 -3	; "y"
+	32	[46]	SUB      	11 11 -6	; - 16
+	33	[46]	SETTABLE 	10 -3 11	; "y" -
+	34	[46]	GETTABLE 	11 0 -4	; "z"
+	35	[46]	SUB      	11 11 -6	; - 16
+	36	[46]	SETTABLE 	10 -4 11	; "z" -
+	37	[49]	CLOSURE  	11 0	; 0x2d6fba0
+	38	[49]	MOVE     	0 10
+	39	[49]	MOVE     	0 3
+	40	[49]	MOVE     	0 4
+	41	[50]	MOVE     	12 7
+	42	[50]	MOVE     	13 8
+	43	[50]	MOVE     	14 9
+	44	[50]	MOVE     	15 11
+	45	[50]	RETURN   	12 5
+	46	[51]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:47,49> (20 instructions, 80 bytes at 0x2d6fba0)
+3 params, 6 slots, 3 upvalues, 3 locals, 4 constants, 0 functions
+	1	[48]	GETUPVAL 	3 0	; emin
+	2	[48]	GETTABLE 	3 3 -1	; "z"
+	3	[48]	SUB      	3 2 3
+	4	[48]	GETUPVAL 	4 1	; ex
+	5	[48]	MUL      	3 3 4
+	6	[48]	GETUPVAL 	4 2	; ey
+	7	[48]	MUL      	3 3 4
+	8	[48]	GETUPVAL 	4 0	; emin
+	9	[48]	GETTABLE 	4 4 -2	; "y"
+	10	[48]	SUB      	4 1 4
+	11	[48]	GETUPVAL 	5 1	; ex
+	12	[48]	MUL      	4 4 5
+	13	[48]	ADD      	3 3 4
+	14	[48]	GETUPVAL 	4 0	; emin
+	15	[48]	GETTABLE 	4 4 -3	; "x"
+	16	[48]	SUB      	4 0 4
+	17	[48]	ADD      	3 3 4
+	18	[48]	ADD      	3 3 -4	; - 1
+	19	[48]	RETURN   	3 2
+	20	[49]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:52,57> (22 instructions, 88 bytes at 0x2d6e690)
+1 param, 10 slots, 1 upvalue, 7 locals, 3 constants, 0 functions
+	1	[53]	GETGLOBAL	1 -1	; type
+	2	[53]	MOVE     	2 0
+	3	[53]	CALL     	1 2 2
+	4	[53]	EQ       	1 1 -2	; - "table"
+	5	[53]	JMP      	1	; to 7
+	6	[53]	RETURN   	0 2
+	7	[54]	NEWTABLE 	1 0 0
+	8	[55]	GETGLOBAL	2 -3	; pairs
+	9	[55]	MOVE     	3 0
+	10	[55]	CALL     	2 2 4
+	11	[55]	JMP      	7	; to 19
+	12	[55]	GETUPVAL 	7 0	; clone
+	13	[55]	MOVE     	8 5
+	14	[55]	CALL     	7 2 2
+	15	[55]	GETUPVAL 	8 0	; clone
+	16	[55]	MOVE     	9 6
+	17	[55]	CALL     	8 2 2
+	18	[55]	SETTABLE 	1 7 8
+	19	[55]	TFORLOOP 	2 2
+	20	[55]	JMP      	-9	; to 12
+	21	[56]	RETURN   	1 2
+	22	[57]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:79,86> (32 instructions, 128 bytes at 0x2d6c7a0)
+3 params, 7 slots, 2 upvalues, 3 locals, 8 constants, 0 functions
+	1	[80]	EQ       	0 2 -1	; - 0
+	2	[80]	JMP      	4	; to 7
+	3	[80]	LT       	1 0 -2	; - 1
+	4	[80]	JMP      	2	; to 7
+	5	[80]	LT       	0 -3 0	; 16 -
+	6	[80]	JMP      	3	; to 10
+	7	[81]	GETUPVAL 	3 0	; fail
+	8	[81]	LOADK    	4 -4	; "micro R5 resolver input differs"
+	9	[81]	CALL     	3 2 1
+	10	[83]	EQ       	0 0 -2	; - 1
+	11	[83]	JMP      	5	; to 17
+	12	[83]	LOADK    	3 -1	; 0
+	13	[83]	LOADK    	4 -1	; 0
+	14	[83]	LOADK    	5 -1	; 0
+	15	[83]	LOADNIL  	6 6
+	16	[83]	RETURN   	3 5
+	17	[84]	EQ       	1 0 -5	; - 10
+	18	[84]	JMP      	2	; to 21
+	19	[84]	EQ       	0 0 -6	; - 13
+	20	[84]	JMP      	5	; to 26
+	21	[84]	LOADK    	3 -5	; 10
+	22	[84]	LOADK    	4 -7	; 2
+	23	[84]	LOADK    	5 -1	; 0
+	24	[84]	LOADNIL  	6 6
+	25	[84]	RETURN   	3 5
+	26	[85]	GETUPVAL 	3 1	; cids
+	27	[85]	GETTABLE 	3 3 -8	; 14
+	28	[85]	LOADK    	4 -2	; 1
+	29	[85]	LOADK    	5 -1	; 0
+	30	[85]	LOADNIL  	6 6
+	31	[85]	RETURN   	3 5
+	32	[86]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:87,89> (9 instructions, 36 bytes at 0x2d73670)
+2 params, 7 slots, 2 upvalues, 2 locals, 1 constant, 0 functions
+	1	[88]	GETUPVAL 	2 0	; cids
+	2	[88]	GETTABLE 	2 2 0
+	3	[88]	LOADK    	3 -1	; 1
+	4	[88]	LOADK    	4 -1	; 1
+	5	[88]	MOVE     	5 1
+	6	[88]	GETUPVAL 	6 1	; masks
+	7	[88]	GETTABLE 	6 6 0
+	8	[88]	RETURN   	2 6
+	9	[89]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:90,99> (61 instructions, 244 bytes at 0x2d6ccf0)
+1 param, 13 slots, 3 upvalues, 7 locals, 6 constants, 0 functions
+	1	[91]	GETUPVAL 	1 0	; classes
+	2	[91]	GETTABLE 	1 1 0
+	3	[91]	TEST     	1 0 1
+	4	[91]	JMP      	1	; to 6
+	5	[91]	LOADK    	1 -1	; 9
+	6	[92]	EQ       	0 1 -2	; - 4
+	7	[92]	JMP      	11	; to 19
+	8	[92]	LOADK    	2 -2	; 4
+	9	[92]	LOADK    	3 -3	; 1
+	10	[92]	LOADK    	4 -3	; 1
+	11	[92]	LOADK    	5 -4	; 0
+	12	[92]	LOADBOOL 	6 0 0
+	13	[92]	LOADBOOL 	7 1 0
+	14	[92]	LOADBOOL 	8 1 0
+	15	[92]	LOADBOOL 	9 1 0
+	16	[92]	LOADK    	10 -4	; 0
+	17	[92]	LOADK    	11 -5	; "none"
+	18	[92]	RETURN   	2 11
+	19	[93]	LOADNIL  	2 2
+	20	[94]	LOADK    	3 -3	; 1
+	21	[94]	GETUPVAL 	4 1	; cids
+	22	[94]	LEN      	4 4
+	23	[94]	LOADK    	5 -3	; 1
+	24	[94]	FORPREP  	3 6	; to 31
+	25	[95]	GETUPVAL 	7 1	; cids
+	26	[95]	GETTABLE 	7 7 6
+	27	[95]	EQ       	0 7 0
+	28	[95]	JMP      	2	; to 31
+	29	[95]	MOVE     	2 6
+	30	[95]	JMP      	1	; to 32
+	31	[94]	FORLOOP  	3 -7	; to 25
+	32	[97]	MOVE     	3 1
+	33	[97]	LOADK    	4 -4	; 0
+	34	[97]	LOADK    	5 -4	; 0
+	35	[97]	LOADK    	6 -4	; 0
+	36	[97]	EQ       	1 1 -3	; - 1
+	37	[97]	JMP      	3	; to 41
+	38	[97]	EQ       	1 1 -6	; - 8
+	39	[97]	JMP      	1	; to 41
+	40	[97]	LOADBOOL 	7 0 1
+	41	[97]	LOADBOOL 	7 1 0
+	42	[97]	EQ       	1 1 -3	; - 1
+	43	[97]	JMP      	1	; to 45
+	44	[97]	LOADBOOL 	8 0 1
+	45	[97]	LOADBOOL 	8 1 0
+	46	[98]	EQ       	1 1 -3	; - 1
+	47	[98]	JMP      	1	; to 49
+	48	[98]	LOADBOOL 	9 0 1
+	49	[98]	LOADBOOL 	9 1 0
+	50	[98]	EQ       	1 1 -3	; - 1
+	51	[98]	JMP      	1	; to 53
+	52	[98]	LOADBOOL 	10 0 1
+	53	[98]	LOADBOOL 	10 1 0
+	54	[98]	LOADK    	11 -4	; 0
+	55	[98]	GETUPVAL 	12 2	; param2_kinds
+	56	[98]	GETTABLE 	12 12 2
+	57	[98]	TEST     	12 0 1
+	58	[98]	JMP      	1	; to 60
+	59	[98]	LOADK    	12 -5	; "none"
+	60	[98]	RETURN   	3 11
+	61	[99]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:139,139> (3 instructions, 12 bytes at 0x2d70f10)
+0 params, 2 slots, 1 upvalue, 0 locals, 0 constants, 0 functions
+	1	[139]	GETUPVAL 	0 0	; contract
+	2	[139]	RETURN   	0 2
+	3	[139]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:140,140> (5 instructions, 20 bytes at 0x2d70f90)
+0 params, 2 slots, 2 upvalues, 0 locals, 0 constants, 0 functions
+	1	[140]	GETUPVAL 	0 0	; clone
+	2	[140]	GETUPVAL 	1 1	; surfaces
+	3	[140]	TAILCALL 	0 2 0
+	4	[140]	RETURN   	0 0
+	5	[140]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:141,147> (4 instructions, 16 bytes at 0x2d710e0)
+0 params, 2 slots, 1 upvalue, 0 locals, 0 constants, 1 function
+	1	[146]	CLOSURE  	0 0	; 0x2d71190
+	2	[146]	GETUPVAL 	0 0	; surfaces
+	3	[146]	RETURN   	0 2
+	4	[147]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:142,146> (15 instructions, 60 bytes at 0x2d71190)
+1 param, 6 slots, 1 upvalue, 5 locals, 2 constants, 0 functions
+	1	[143]	LOADK    	1 -1	; 1
+	2	[143]	GETUPVAL 	2 0	; surfaces
+	3	[143]	LEN      	2 2
+	4	[143]	LOADK    	3 -1	; 1
+	5	[143]	FORPREP  	1 8	; to 14
+	6	[144]	GETUPVAL 	5 0	; surfaces
+	7	[144]	GETTABLE 	5 5 4
+	8	[144]	GETTABLE 	5 5 -2	; "id"
+	9	[144]	EQ       	0 5 0
+	10	[144]	JMP      	3	; to 14
+	11	[144]	GETUPVAL 	5 0	; surfaces
+	12	[144]	GETTABLE 	5 5 4
+	13	[144]	RETURN   	5 2
+	14	[143]	FORLOOP  	1 -9	; to 6
+	15	[146]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:148,148> (5 instructions, 20 bytes at 0x2d729a0)
+0 params, 2 slots, 2 upvalues, 0 locals, 0 constants, 0 functions
+	1	[148]	GETUPVAL 	0 0	; clone
+	2	[148]	GETUPVAL 	1 1	; kat_resources
+	3	[148]	TAILCALL 	0 2 0
+	4	[148]	RETURN   	0 0
+	5	[148]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:149,149> (5 instructions, 20 bytes at 0x2d72b00)
+0 params, 2 slots, 2 upvalues, 0 locals, 0 constants, 0 functions
+	1	[149]	GETUPVAL 	0 0	; clone
+	2	[149]	GETUPVAL 	1 1	; cultural
+	3	[149]	TAILCALL 	0 2 0
+	4	[149]	RETURN   	0 0
+	5	[149]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:150,150> (5 instructions, 20 bytes at 0x2d72c30)
+0 params, 2 slots, 2 upvalues, 0 locals, 0 constants, 0 functions
+	1	[150]	GETUPVAL 	0 0	; clone
+	2	[150]	GETUPVAL 	1 1	; decorations
+	3	[150]	TAILCALL 	0 2 0
+	4	[150]	RETURN   	0 0
+	5	[150]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:151,153> (14 instructions, 56 bytes at 0x2d6fe80)
+3 params, 5 slots, 2 upvalues, 3 locals, 3 constants, 0 functions
+	1	[152]	EQ       	0 1 -1	; - "kat_biome"
+	2	[152]	JMP      	9	; to 12
+	3	[152]	GETUPVAL 	3 0	; refs
+	4	[152]	GETUPVAL 	4 1	; names
+	5	[152]	GETTABLE 	4 4 -2	; 1
+	6	[152]	GETTABLE 	3 3 4
+	7	[152]	EQ       	0 2 3
+	8	[152]	JMP      	3	; to 12
+	9	[152]	LOADK    	3 -2	; 1
+	10	[152]	TEST     	3 0 1
+	11	[152]	JMP      	1	; to 13
+	12	[152]	LOADK    	3 -3	; 0
+	13	[152]	RETURN   	3 2
+	14	[153]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:154,154> (5 instructions, 20 bytes at 0x2d70870)
+0 params, 2 slots, 2 upvalues, 0 locals, 0 constants, 0 functions
+	1	[154]	GETUPVAL 	0 0	; clone
+	2	[154]	GETUPVAL 	1 1	; projection
+	3	[154]	TAILCALL 	0 2 0
+	4	[154]	RETURN   	0 0
+	5	[154]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:155,155> (4 instructions, 16 bytes at 0x2d709d0)
+1 param, 2 slots, 1 upvalue, 1 local, 0 constants, 0 functions
+	1	[155]	GETUPVAL 	1 0	; refs
+	2	[155]	GETTABLE 	1 1 0
+	3	[155]	RETURN   	1 2
+	4	[155]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:156,156> (4 instructions, 16 bytes at 0x2d6e520)
+1 param, 2 slots, 1 upvalue, 1 local, 0 constants, 0 functions
+	1	[156]	GETUPVAL 	1 0	; param2_kinds
+	2	[156]	GETTABLE 	1 1 0
+	3	[156]	RETURN   	1 2
+	4	[156]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:158,167> (35 instructions, 140 bytes at 0x2d733b0)
+1 param, 9 slots, 1 upvalue, 7 locals, 19 constants, 0 functions
+	1	[159]	EQ       	0 0 -1	; - "kat_large.mts"
+	2	[159]	JMP      	3	; to 6
+	3	[159]	LOADK    	1 -2	; 6
+	4	[159]	TEST     	1 0 1
+	5	[159]	JMP      	1	; to 7
+	6	[159]	LOADK    	1 -3	; 3
+	7	[160]	NEWTABLE 	2 0 0
+	8	[161]	LOADK    	3 -4	; 1
+	9	[161]	MUL      	4 1 1
+	10	[161]	LOADK    	5 -4	; 1
+	11	[161]	FORPREP  	3 8	; to 20
+	12	[162]	NEWTABLE 	7 0 4
+	13	[162]	GETUPVAL 	8 0	; names
+	14	[162]	GETTABLE 	8 8 -6	; 9
+	15	[162]	SETTABLE 	7 -5 8	; "name" -
+	16	[162]	SETTABLE 	7 -7 -8	; "prob" 254
+	17	[162]	SETTABLE 	7 -9 -10	; "param2" 0
+	18	[163]	SETTABLE 	7 -11 -12	; "force_place" false
+	19	[163]	SETTABLE 	2 6 7
+	20	[161]	FORLOOP  	3 -9	; to 12
+	21	[165]	NEWTABLE 	3 0 3
+	22	[165]	NEWTABLE 	4 0 3
+	23	[165]	SETTABLE 	4 -14 1	; "x" -
+	24	[165]	SETTABLE 	4 -15 -4	; "y" 1
+	25	[165]	SETTABLE 	4 -16 1	; "z" -
+	26	[165]	SETTABLE 	3 -13 4	; "size" -
+	27	[166]	NEWTABLE 	4 1 0
+	28	[166]	NEWTABLE 	5 0 2
+	29	[166]	SETTABLE 	5 -18 -10	; "ypos" 0
+	30	[166]	SETTABLE 	5 -7 -8	; "prob" 254
+	31	[166]	SETLIST  	4 1 1	; 1
+	32	[166]	SETTABLE 	3 -17 4	; "yslice_prob" -
+	33	[166]	SETTABLE 	3 -19 2	; "data" -
+	34	[166]	RETURN   	3 2
+	35	[167]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:170,194> (62 instructions, 248 bytes at 0x2d78f20)
+2 params, 13 slots, 3 upvalues, 7 locals, 22 constants, 6 functions
+	1	[171]	NEWTABLE 	2 0 3
+	2	[171]	SETTABLE 	2 -1 -2	; "ignore_cid" 65535
+	3	[171]	NEWTABLE 	3 1 0
+	4	[171]	LOADK    	4 -4	; 9001
+	5	[171]	SETLIST  	3 1 1	; 1
+	6	[171]	SETTABLE 	2 -3 3	; "content_cids" -
+	7	[172]	NEWTABLE 	3 1 0
+	8	[172]	LOADK    	4 -6	; 8
+	9	[172]	SETLIST  	3 1 1	; 1
+	10	[172]	SETTABLE 	2 -5 3	; "content_kind_masks" -
+	11	[173]	CLOSURE  	3 0	; 0x2d79120
+	12	[173]	SETTABLE 	2 -7 3	; "resolve_r6" -
+	13	[174]	NEWTABLE 	3 0 0
+	14	[175]	CLOSURE  	4 1	; 0x2d793d0
+	15	[175]	MOVE     	0 2
+	16	[175]	SETTABLE 	3 -8 4	; "content_contract" -
+	17	[179]	CLOSURE  	4 2	; 0x2d79090
+	18	[176]	SETTABLE 	3 -9 4	; "decorations" -
+	19	[180]	CLOSURE  	4 3	; 0x2d79ac0
+	20	[180]	SETTABLE 	3 -10 4	; "content_ref" -
+	21	[181]	CLOSURE  	4 4	; 0x2d7a220
+	22	[181]	MOVE     	0 0
+	23	[181]	SETTABLE 	3 -11 4	; "param2_kind" -
+	24	[182]	NEWTABLE 	4 0 0
+	25	[188]	CLOSURE  	5 5	; 0x2d7a3d0
+	26	[188]	MOVE     	0 1
+	27	[183]	SETTABLE 	4 -12 5	; "read" -
+	28	[189]	GETGLOBAL	5 -13	; pcall
+	29	[189]	GETGLOBAL	6 -14	; dofile
+	30	[189]	GETUPVAL 	7 0	; directory
+	31	[189]	LOADK    	8 -15	; "/r6_templates.lua"
+	32	[189]	CONCAT   	7 7 8
+	33	[189]	CALL     	6 2 2
+	34	[190]	GETUPVAL 	7 1	; hash
+	35	[190]	MOVE     	8 3
+	36	[190]	MOVE     	9 4
+	37	[189]	CALL     	5 5 3
+	38	[191]	GETUPVAL 	7 2	; check
+	39	[191]	TEST     	5 0 1
+	40	[191]	JMP      	10	; to 51
+	41	[191]	GETGLOBAL	8 -16	; tostring
+	42	[191]	MOVE     	9 6
+	43	[191]	CALL     	8 2 2
+	44	[191]	SELF     	8 8 -17	; "find"
+	45	[191]	LOADK    	10 -18	; "fail_template:"
+	46	[191]	LOADK    	11 -19	; 1
+	47	[191]	LOADBOOL 	12 1 0
+	48	[191]	CALL     	8 5 2
+	49	[191]	EQ       	1 8 -19	; - 1
+	50	[191]	JMP      	1	; to 52
+	51	[191]	LOADBOOL 	8 0 1
+	52	[191]	LOADBOOL 	8 1 0
+	53	[192]	LOADK    	9 -20	; "forbidden template kind did not fail closed"
+	54	[191]	CALL     	7 3 1
+	55	[193]	GETGLOBAL	7 -16	; tostring
+	56	[193]	MOVE     	8 6
+	57	[193]	CALL     	7 2 2
+	58	[193]	SELF     	7 7 -21	; "match"
+	59	[193]	LOADK    	9 -22	; "^fail_template: ([^\n]+)$"
+	60	[193]	TAILCALL 	7 3 0
+	61	[193]	RETURN   	7 0
+	62	[194]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:173,173> (7 instructions, 28 bytes at 0x2d79120)
+2 params, 7 slots, 0 upvalues, 2 locals, 3 constants, 0 functions
+	1	[173]	LOADK    	2 -1	; 9001
+	2	[173]	LOADK    	3 -2	; 1
+	3	[173]	LOADK    	4 -2	; 1
+	4	[173]	MOVE     	5 1
+	5	[173]	LOADK    	6 -3	; 8
+	6	[173]	RETURN   	2 6
+	7	[173]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:175,175> (3 instructions, 12 bytes at 0x2d793d0)
+0 params, 2 slots, 1 upvalue, 0 locals, 0 constants, 0 functions
+	1	[175]	GETUPVAL 	0 0	; probe_contract
+	2	[175]	RETURN   	0 2
+	3	[175]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:176,179> (10 instructions, 40 bytes at 0x2d79090)
+0 params, 2 slots, 0 upvalues, 0 locals, 10 constants, 0 functions
+	1	[177]	NEWTABLE 	0 1 0
+	2	[177]	NEWTABLE 	1 0 5
+	3	[177]	SETTABLE 	1 -1 -2	; "id" "probe"
+	4	[177]	SETTABLE 	1 -3 -4	; "kind" "template"
+	5	[177]	SETTABLE 	1 -5 -6	; "asset_or_node" "probe.mts"
+	6	[178]	SETTABLE 	1 -7 -8	; "rule" "center_xz"
+	7	[178]	SETTABLE 	1 -9 -10	; "settlement_class" 2
+	8	[178]	SETLIST  	0 1 1	; 1
+	9	[178]	RETURN   	0 2
+	10	[179]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:180,180> (8 instructions, 32 bytes at 0x2d79ac0)
+1 param, 2 slots, 0 upvalues, 1 local, 2 constants, 0 functions
+	1	[180]	EQ       	0 0 -1	; - "kat:probe"
+	2	[180]	JMP      	3	; to 6
+	3	[180]	LOADK    	1 -2	; 1
+	4	[180]	TEST     	1 0 1
+	5	[180]	JMP      	1	; to 7
+	6	[180]	LOADNIL  	1 1
+	7	[180]	RETURN   	1 2
+	8	[180]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:181,181> (3 instructions, 12 bytes at 0x2d7a220)
+0 params, 2 slots, 1 upvalue, 0 locals, 0 constants, 0 functions
+	1	[181]	GETUPVAL 	0 0	; kind
+	2	[181]	RETURN   	0 2
+	3	[181]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:183,188> (23 instructions, 92 bytes at 0x2d7a3d0)
+0 params, 4 slots, 1 upvalue, 0 locals, 16 constants, 0 functions
+	1	[184]	NEWTABLE 	0 0 3
+	2	[184]	NEWTABLE 	1 0 3
+	3	[184]	SETTABLE 	1 -2 -3	; "x" 1
+	4	[184]	SETTABLE 	1 -4 -3	; "y" 1
+	5	[184]	SETTABLE 	1 -5 -3	; "z" 1
+	6	[184]	SETTABLE 	0 -1 1	; "size" -
+	7	[185]	NEWTABLE 	1 1 0
+	8	[185]	NEWTABLE 	2 0 2
+	9	[185]	SETTABLE 	2 -7 -8	; "ypos" 0
+	10	[185]	SETTABLE 	2 -9 -10	; "prob" 254
+	11	[185]	SETLIST  	1 1 1	; 1
+	12	[185]	SETTABLE 	0 -6 1	; "yslice_prob" -
+	13	[186]	NEWTABLE 	1 1 0
+	14	[186]	NEWTABLE 	2 0 4
+	15	[186]	SETTABLE 	2 -12 -13	; "name" "kat:probe"
+	16	[186]	SETTABLE 	2 -9 -10	; "prob" 254
+	17	[186]	GETUPVAL 	3 0	; param2
+	18	[186]	SETTABLE 	2 -14 3	; "param2" -
+	19	[187]	SETTABLE 	2 -15 -16	; "force_place" false
+	20	[187]	SETLIST  	1 1 1	; 1
+	21	[187]	SETTABLE 	0 -11 1	; "data" -
+	22	[187]	RETURN   	0 2
+	23	[188]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:195,219> (52 instructions, 208 bytes at 0x2d799a0)
+2 params, 10 slots, 3 upvalues, 7 locals, 20 constants, 6 functions
+	1	[196]	NEWTABLE 	2 0 3
+	2	[196]	SETTABLE 	2 -1 -2	; "ignore_cid" 65535
+	3	[196]	NEWTABLE 	3 1 0
+	4	[196]	LOADK    	4 -4	; 9001
+	5	[196]	SETLIST  	3 1 1	; 1
+	6	[196]	SETTABLE 	2 -3 3	; "content_cids" -
+	7	[197]	NEWTABLE 	3 1 0
+	8	[197]	LOADK    	4 -6	; 8
+	9	[197]	SETLIST  	3 1 1	; 1
+	10	[197]	SETTABLE 	2 -5 3	; "content_kind_masks" -
+	11	[198]	CLOSURE  	3 0	; 0x2d79ea0
+	12	[198]	SETTABLE 	2 -7 3	; "resolve_r6" -
+	13	[199]	NEWTABLE 	3 0 0
+	14	[200]	CLOSURE  	4 1	; 0x2d7a070
+	15	[200]	MOVE     	0 2
+	16	[200]	SETTABLE 	3 -8 4	; "content_contract" -
+	17	[204]	CLOSURE  	4 2	; 0x2d7a170
+	18	[201]	SETTABLE 	3 -9 4	; "decorations" -
+	19	[205]	CLOSURE  	4 3	; 0x2d7c320
+	20	[205]	SETTABLE 	3 -10 4	; "content_ref" -
+	21	[206]	CLOSURE  	4 4	; 0x2d7ca60
+	22	[206]	MOVE     	0 0
+	23	[206]	SETTABLE 	3 -11 4	; "param2_kind" -
+	24	[207]	NEWTABLE 	4 0 0
+	25	[213]	CLOSURE  	5 5	; 0x2d7cc10
+	26	[213]	MOVE     	0 1
+	27	[208]	SETTABLE 	4 -12 5	; "read" -
+	28	[214]	GETGLOBAL	5 -13	; dofile
+	29	[214]	GETUPVAL 	6 0	; directory
+	30	[214]	LOADK    	7 -14	; "/r6_templates.lua"
+	31	[214]	CONCAT   	6 6 7
+	32	[214]	CALL     	5 2 2
+	33	[215]	GETUPVAL 	6 1	; hash
+	34	[215]	MOVE     	7 3
+	35	[215]	MOVE     	8 4
+	36	[214]	CALL     	5 4 2
+	37	[216]	GETTABLE 	6 5 -15	; "rotation"
+	38	[216]	LOADK    	7 -16	; "probe"
+	39	[216]	LOADK    	8 -17	; 1
+	40	[216]	CALL     	6 3 2
+	41	[216]	GETTABLE 	6 6 -18	; "cells"
+	42	[216]	GETTABLE 	6 6 -17	; 1
+	43	[216]	GETTABLE 	6 6 -19	; "param2"
+	44	[217]	GETUPVAL 	7 2	; check
+	45	[217]	EQ       	1 6 1
+	46	[217]	JMP      	1	; to 48
+	47	[217]	LOADBOOL 	8 0 1
+	48	[217]	LOADBOOL 	8 1 0
+	49	[217]	LOADK    	9 -20	; "pass-through template param2 changed"
+	50	[217]	CALL     	7 3 1
+	51	[218]	RETURN   	6 2
+	52	[219]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:198,198> (7 instructions, 28 bytes at 0x2d79ea0)
+2 params, 7 slots, 0 upvalues, 2 locals, 3 constants, 0 functions
+	1	[198]	LOADK    	2 -1	; 9001
+	2	[198]	LOADK    	3 -2	; 1
+	3	[198]	LOADK    	4 -2	; 1
+	4	[198]	MOVE     	5 1
+	5	[198]	LOADK    	6 -3	; 8
+	6	[198]	RETURN   	2 6
+	7	[198]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:200,200> (3 instructions, 12 bytes at 0x2d7a070)
+0 params, 2 slots, 1 upvalue, 0 locals, 0 constants, 0 functions
+	1	[200]	GETUPVAL 	0 0	; probe_contract
+	2	[200]	RETURN   	0 2
+	3	[200]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:201,204> (10 instructions, 40 bytes at 0x2d7a170)
+0 params, 2 slots, 0 upvalues, 0 locals, 10 constants, 0 functions
+	1	[202]	NEWTABLE 	0 1 0
+	2	[202]	NEWTABLE 	1 0 5
+	3	[202]	SETTABLE 	1 -1 -2	; "id" "probe"
+	4	[202]	SETTABLE 	1 -3 -4	; "kind" "template"
+	5	[202]	SETTABLE 	1 -5 -6	; "asset_or_node" "probe.mts"
+	6	[203]	SETTABLE 	1 -7 -8	; "rule" "center_xz"
+	7	[203]	SETTABLE 	1 -9 -10	; "settlement_class" 2
+	8	[203]	SETLIST  	0 1 1	; 1
+	9	[203]	RETURN   	0 2
+	10	[204]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:205,205> (8 instructions, 32 bytes at 0x2d7c320)
+1 param, 2 slots, 0 upvalues, 1 local, 2 constants, 0 functions
+	1	[205]	EQ       	0 0 -1	; - "kat:probe"
+	2	[205]	JMP      	3	; to 6
+	3	[205]	LOADK    	1 -2	; 1
+	4	[205]	TEST     	1 0 1
+	5	[205]	JMP      	1	; to 7
+	6	[205]	LOADNIL  	1 1
+	7	[205]	RETURN   	1 2
+	8	[205]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:206,206> (3 instructions, 12 bytes at 0x2d7ca60)
+0 params, 2 slots, 1 upvalue, 0 locals, 0 constants, 0 functions
+	1	[206]	GETUPVAL 	0 0	; kind
+	2	[206]	RETURN   	0 2
+	3	[206]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:208,213> (23 instructions, 92 bytes at 0x2d7cc10)
+0 params, 4 slots, 1 upvalue, 0 locals, 16 constants, 0 functions
+	1	[209]	NEWTABLE 	0 0 3
+	2	[209]	NEWTABLE 	1 0 3
+	3	[209]	SETTABLE 	1 -2 -3	; "x" 1
+	4	[209]	SETTABLE 	1 -4 -3	; "y" 1
+	5	[209]	SETTABLE 	1 -5 -3	; "z" 1
+	6	[209]	SETTABLE 	0 -1 1	; "size" -
+	7	[210]	NEWTABLE 	1 1 0
+	8	[210]	NEWTABLE 	2 0 2
+	9	[210]	SETTABLE 	2 -7 -8	; "ypos" 0
+	10	[210]	SETTABLE 	2 -9 -10	; "prob" 254
+	11	[210]	SETLIST  	1 1 1	; 1
+	12	[210]	SETTABLE 	0 -6 1	; "yslice_prob" -
+	13	[211]	NEWTABLE 	1 1 0
+	14	[211]	NEWTABLE 	2 0 4
+	15	[211]	SETTABLE 	2 -12 -13	; "name" "kat:probe"
+	16	[211]	SETTABLE 	2 -9 -10	; "prob" 254
+	17	[211]	GETUPVAL 	3 0	; param2
+	18	[211]	SETTABLE 	2 -14 3	; "param2" -
+	19	[212]	SETTABLE 	2 -15 -16	; "force_place" false
+	20	[212]	SETLIST  	1 1 1	; 1
+	21	[212]	SETTABLE 	0 -11 1	; "data" -
+	22	[212]	RETURN   	0 2
+	23	[213]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:277,286> (39 instructions, 156 bytes at 0x2d73ff0)
+2 params, 22 slots, 3 upvalues, 2 locals, 11 constants, 0 functions
+	1	[278]	GETUPVAL 	2 0	; fake_source
+	2	[278]	GETTABLE 	2 2 -1	; "bridge_probe"
+	3	[278]	TEST     	2 0 0
+	4	[278]	JMP      	16	; to 21
+	5	[278]	EQ       	0 0 -2	; - 1
+	6	[278]	JMP      	14	; to 21
+	7	[279]	LOADK    	2 -3	; "land"
+	8	[279]	LOADK    	3 -2	; 1
+	9	[279]	LOADK    	4 -4	; "kat_zone"
+	10	[279]	GETUPVAL 	5 1	; surface_id
+	11	[279]	GETUPVAL 	6 2	; race
+	12	[279]	LOADK    	7 -5	; 4
+	13	[279]	LOADK    	8 -2	; 1
+	14	[279]	LOADNIL  	9 10
+	15	[280]	LOADK    	11 -6	; "bridge_deck"
+	16	[280]	LOADK    	12 -7	; 6
+	17	[280]	LOADK    	13 -8	; "kat_bridge"
+	18	[280]	LOADNIL  	14 20
+	19	[281]	LOADBOOL 	21 0 0
+	20	[281]	RETURN   	2 21
+	21	[283]	LOADK    	2 -3	; "land"
+	22	[283]	LOADK    	3 -2	; 1
+	23	[283]	LOADK    	4 -4	; "kat_zone"
+	24	[283]	GETUPVAL 	5 1	; surface_id
+	25	[283]	GETUPVAL 	6 2	; race
+	26	[283]	LOADK    	7 -5	; 4
+	27	[283]	LOADNIL  	8 20
+	28	[285]	GETUPVAL 	21 0	; fake_source
+	29	[285]	GETTABLE 	21 21 -9	; "hard_route_probe"
+	30	[285]	EQ       	0 21 -10	; - "hard"
+	31	[285]	JMP      	4	; to 36
+	32	[285]	EQ       	0 0 -11	; - 0
+	33	[285]	JMP      	2	; to 36
+	34	[285]	EQ       	1 1 -11	; - 0
+	35	[285]	JMP      	1	; to 37
+	36	[285]	LOADBOOL 	21 0 1
+	37	[285]	LOADBOOL 	21 1 0
+	38	[285]	RETURN   	2 21
+	39	[286]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:287,287> (2 instructions, 8 bytes at 0x2d7a8b0)
+0 params, 2 slots, 0 upvalues, 0 locals, 0 constants, 0 functions
+	1	[287]	RETURN   	0 2
+	2	[287]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:288,288> (2 instructions, 8 bytes at 0x2d7acb0)
+0 params, 2 slots, 0 upvalues, 0 locals, 0 constants, 0 functions
+	1	[288]	RETURN   	0 2
+	2	[288]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:289,289> (2 instructions, 8 bytes at 0x2d7a9a0)
+0 params, 2 slots, 0 upvalues, 0 locals, 0 constants, 0 functions
+	1	[289]	RETURN   	0 2
+	2	[289]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:290,290> (2 instructions, 8 bytes at 0x2d74eb0)
+0 params, 2 slots, 0 upvalues, 0 locals, 0 constants, 0 functions
+	1	[290]	RETURN   	0 2
+	2	[290]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:291,291> (3 instructions, 12 bytes at 0x2d74f70)
+0 params, 2 slots, 0 upvalues, 0 locals, 0 constants, 0 functions
+	1	[291]	LOADBOOL 	0 0 0
+	2	[291]	RETURN   	0 2
+	3	[291]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:293,298> (14 instructions, 56 bytes at 0x2d75030)
+2 params, 4 slots, 2 upvalues, 2 locals, 3 constants, 0 functions
+	1	[294]	GETUPVAL 	2 0	; fake_source
+	2	[294]	GETTABLE 	2 2 -1	; "hard_route_probe"
+	3	[294]	TEST     	2 0 0
+	4	[294]	JMP      	7	; to 12
+	5	[294]	EQ       	0 0 -2	; - 0
+	6	[294]	JMP      	5	; to 12
+	7	[294]	EQ       	0 1 -2	; - 0
+	8	[294]	JMP      	3	; to 12
+	9	[295]	LOADK    	2 -3	; 1
+	10	[295]	GETUPVAL 	3 1	; overlap_exclusion_id
+	11	[295]	RETURN   	2 3
+	12	[297]	LOADNIL  	2 2
+	13	[297]	RETURN   	2 2
+	14	[298]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:302,325> (65 instructions, 260 bytes at 0x2d75190)
+5 params, 24 slots, 1 upvalue, 20 locals, 17 constants, 1 function
+	1	[303]	NEWTABLE 	5 0 0
+	2	[304]	SELF     	6 1 -1	; "get_data"
+	3	[304]	MOVE     	8 5
+	4	[304]	CALL     	6 3 1
+	5	[305]	SELF     	6 1 -2	; "get_emerged_area"
+	6	[305]	CALL     	6 2 3
+	7	[306]	GETTABLE 	8 7 -3	; "x"
+	8	[306]	GETTABLE 	9 6 -3	; "x"
+	9	[306]	SUB      	8 8 9
+	10	[306]	ADD      	8 8 -4	; - 1
+	11	[307]	GETTABLE 	9 7 -5	; "y"
+	12	[307]	GETTABLE 	10 6 -5	; "y"
+	13	[307]	SUB      	9 9 10
+	14	[307]	ADD      	9 9 -4	; - 1
+	15	[311]	CLOSURE  	10 0	; 0x2d75270
+	16	[311]	MOVE     	0 6
+	17	[311]	MOVE     	0 8
+	18	[311]	MOVE     	0 9
+	19	[312]	GETTABLE 	11 3 -3	; "x"
+	20	[312]	GETTABLE 	12 2 -3	; "x"
+	21	[312]	SUB      	11 11 12
+	22	[312]	ADD      	11 11 -4	; - 1
+	23	[313]	LOADK    	12 -4	; 1
+	24	[313]	GETTABLE 	13 4 -6	; "kat_column_count"
+	25	[313]	LOADK    	14 -4	; 1
+	26	[313]	FORPREP  	12 32	; to 59
+	27	[314]	SUB      	16 15 -4	; - 1
+	28	[314]	MUL      	16 16 -7	; - 12
+	29	[315]	GETTABLE 	17 4 -8	; "kat_column_values"
+	30	[315]	ADD      	18 16 -9	; - 9
+	31	[315]	GETTABLE 	17 17 18
+	32	[315]	EQ       	1 17 -10	; - 0
+	33	[315]	JMP      	25	; to 59
+	34	[316]	GETTABLE 	17 4 -8	; "kat_column_values"
+	35	[316]	ADD      	18 16 -11	; - 11
+	36	[316]	GETTABLE 	17 17 18
+	37	[316]	LT       	0 -10 17	; 0 -
+	38	[316]	JMP      	20	; to 59
+	39	[317]	SUB      	17 15 -4	; - 1
+	40	[318]	GETTABLE 	18 2 -3	; "x"
+	41	[318]	MOD      	19 17 11
+	42	[318]	ADD      	18 18 19
+	43	[319]	GETTABLE 	19 2 -12	; "z"
+	44	[319]	GETGLOBAL	20 -13	; math
+	45	[319]	GETTABLE 	20 20 -14	; "floor"
+	46	[319]	DIV      	21 17 11
+	47	[319]	CALL     	20 2 2
+	48	[319]	ADD      	19 19 20
+	49	[320]	MOVE     	20 10
+	50	[320]	MOVE     	21 18
+	51	[320]	GETTABLE 	22 4 -8	; "kat_column_values"
+	52	[320]	ADD      	23 16 -15	; - 5
+	53	[320]	GETTABLE 	22 22 23
+	54	[320]	SUB      	22 22 -4	; - 1
+	55	[320]	MOVE     	23 19
+	56	[320]	CALL     	20 4 2
+	57	[320]	GETUPVAL 	21 0	; tier1_cid
+	58	[320]	SETTABLE 	5 20 21
+	59	[313]	FORLOOP  	12 -33	; to 27
+	60	[323]	SELF     	12 1 -16	; "set_data"
+	61	[323]	MOVE     	14 5
+	62	[323]	CALL     	12 3 1
+	63	[324]	LOADK    	12 -17	; "kat_r5_ready"
+	64	[324]	RETURN   	12 2
+	65	[325]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:308,311> (20 instructions, 80 bytes at 0x2d75270)
+3 params, 6 slots, 3 upvalues, 3 locals, 4 constants, 0 functions
+	1	[309]	GETUPVAL 	3 0	; emerged_min
+	2	[309]	GETTABLE 	3 3 -1	; "z"
+	3	[309]	SUB      	3 2 3
+	4	[309]	GETUPVAL 	4 1	; ex
+	5	[309]	MUL      	3 3 4
+	6	[309]	GETUPVAL 	4 2	; ey
+	7	[309]	MUL      	3 3 4
+	8	[309]	GETUPVAL 	4 0	; emerged_min
+	9	[309]	GETTABLE 	4 4 -2	; "y"
+	10	[309]	SUB      	4 1 4
+	11	[309]	GETUPVAL 	5 1	; ex
+	12	[309]	MUL      	4 4 5
+	13	[309]	ADD      	3 3 4
+	14	[310]	GETUPVAL 	4 0	; emerged_min
+	15	[310]	GETTABLE 	4 4 -3	; "x"
+	16	[310]	SUB      	4 0 4
+	17	[310]	ADD      	3 3 4
+	18	[310]	ADD      	3 3 -4	; - 1
+	19	[310]	RETURN   	3 2
+	20	[311]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:327,332> (12 instructions, 48 bytes at 0x2d74680)
+1 param, 3 slots, 2 upvalues, 1 local, 2 constants, 0 functions
+	1	[328]	GETUPVAL 	1 0	; stable_set
+	2	[328]	GETTABLE 	1 1 0
+	3	[328]	TEST     	1 0 1
+	4	[328]	JMP      	7	; to 12
+	5	[329]	GETUPVAL 	1 0	; stable_set
+	6	[329]	SETTABLE 	1 0 -1	; - true
+	7	[330]	GETUPVAL 	1 1	; stable_refs
+	8	[330]	GETUPVAL 	2 1	; stable_refs
+	9	[330]	LEN      	2 2
+	10	[330]	ADD      	2 2 -2	; - 1
+	11	[330]	SETTABLE 	1 2 0
+	12	[332]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:352,390> (137 instructions, 548 bytes at 0x2d7c650)
+3 params, 23 slots, 5 upvalues, 31 locals, 41 constants, 0 functions
+	1	[353]	GETUPVAL 	3 0	; generation
+	2	[353]	ADD      	3 3 -1	; - 1
+	3	[353]	SETUPVAL 	3 0	; generation
+	4	[354]	GETTABLE 	3 1 -2	; "x"
+	5	[354]	GETTABLE 	4 0 -2	; "x"
+	6	[354]	SUB      	3 3 4
+	7	[354]	ADD      	3 3 -1	; - 1
+	8	[354]	GETTABLE 	4 1 -3	; "z"
+	9	[354]	GETTABLE 	5 0 -3	; "z"
+	10	[354]	SUB      	4 4 5
+	11	[354]	ADD      	4 4 -1	; - 1
+	12	[354]	MUL      	3 3 4
+	13	[355]	GETUPVAL 	4 1	; fixed_array
+	14	[355]	MUL      	5 3 -4	; - 12
+	15	[355]	LOADK    	6 -5	; 0
+	16	[355]	CALL     	4 3 2
+	17	[356]	LOADK    	5 -1	; 1
+	18	[356]	MOVE     	6 3
+	19	[356]	LOADK    	7 -1	; 1
+	20	[356]	FORPREP  	5 8	; to 29
+	21	[357]	SUB      	9 8 -1	; - 1
+	22	[357]	MUL      	9 9 -4	; - 12
+	23	[358]	ADD      	10 9 -1	; - 1
+	24	[358]	ADD      	11 9 -6	; - 4
+	25	[358]	LOADK    	12 -1	; 1
+	26	[358]	GETUPVAL 	13 2	; race_ref
+	27	[358]	SETTABLE 	4 11 13
+	28	[358]	SETTABLE 	4 10 12
+	29	[356]	FORLOOP  	5 -9	; to 21
+	30	[360]	NEWTABLE 	5 0 0
+	31	[360]	NEWTABLE 	6 0 0
+	32	[361]	TEST     	2 0 0
+	33	[361]	JMP      	55	; to 89
+	34	[362]	LOADK    	7 -1	; 1
+	35	[362]	MOVE     	8 3
+	36	[362]	LOADK    	9 -1	; 1
+	37	[362]	FORPREP  	7 45	; to 83
+	38	[363]	SUB      	11 10 -1	; - 1
+	39	[363]	MUL      	11 11 -4	; - 12
+	40	[363]	SUB      	12 10 -1	; - 1
+	41	[363]	MUL      	12 12 -7	; - 3
+	42	[363]	ADD      	12 12 -1	; - 1
+	43	[364]	ADD      	13 11 -8	; - 5
+	44	[364]	SETTABLE 	4 13 -6	; - 4
+	45	[365]	SETTABLE 	5 10 12
+	46	[366]	LOADK    	13 -5	; 0
+	47	[366]	LOADK    	14 -9	; 2
+	48	[366]	LOADK    	15 -1	; 1
+	49	[366]	FORPREP  	13 32	; to 82
+	50	[367]	ADD      	17 12 16
+	51	[367]	SUB      	17 17 -1	; - 1
+	52	[367]	MUL      	17 17 -10	; - 9
+	53	[368]	ADD      	18 17 -1	; - 1
+	54	[368]	ADD      	19 17 -9	; - 2
+	55	[368]	ADD      	20 -7 16	; 3 -
+	56	[368]	ADD      	21 -7 16	; 3 -
+	57	[368]	SETTABLE 	6 19 21
+	58	[368]	SETTABLE 	6 18 20
+	59	[369]	ADD      	18 17 -7	; - 3
+	60	[369]	ADD      	19 17 -6	; - 4
+	61	[369]	LOADK    	20 -11	; 7
+	62	[370]	EQ       	0 16 -5	; - 0
+	63	[370]	JMP      	3	; to 67
+	64	[370]	LOADK    	21 -12	; 27
+	65	[370]	TEST     	21 0 1
+	66	[370]	JMP      	6	; to 73
+	67	[370]	EQ       	0 16 -1	; - 1
+	68	[370]	JMP      	3	; to 72
+	69	[370]	LOADK    	21 -13	; 28
+	70	[370]	TEST     	21 0 1
+	71	[370]	JMP      	1	; to 73
+	72	[370]	LOADK    	21 -14	; 26
+	73	[370]	SETTABLE 	6 19 21
+	74	[370]	SETTABLE 	6 18 20
+	75	[371]	LOADK    	18 -8	; 5
+	76	[371]	LOADK    	19 -10	; 9
+	77	[371]	LOADK    	20 -1	; 1
+	78	[371]	FORPREP  	18 2	; to 81
+	79	[371]	ADD      	22 17 21
+	80	[371]	SETTABLE 	6 22 -5	; - 0
+	81	[371]	FORLOOP  	18 -3	; to 79
+	82	[366]	FORLOOP  	13 -33	; to 50
+	83	[362]	FORLOOP  	7 -46	; to 38
+	84	[374]	ADD      	7 3 -1	; - 1
+	85	[374]	MUL      	8 3 -7	; - 3
+	86	[374]	ADD      	8 8 -1	; - 1
+	87	[374]	SETTABLE 	5 7 8
+	88	[374]	JMP      	6	; to 95
+	89	[376]	LOADK    	7 -1	; 1
+	90	[376]	ADD      	8 3 -1	; - 1
+	91	[376]	LOADK    	9 -1	; 1
+	92	[376]	FORPREP  	7 1	; to 94
+	93	[376]	SETTABLE 	5 10 -1	; - 1
+	94	[376]	FORLOOP  	7 -2	; to 93
+	95	[378]	NEWTABLE 	7 0 18
+	96	[379]	SETTABLE 	7 -15 -16	; "schema" "grug_wp40_r6_refinement_plan_v1"
+	97	[380]	GETUPVAL 	8 3	; identity
+	98	[380]	GETTABLE 	8 8 -18	; "value"
+	99	[380]	SETTABLE 	7 -17 8	; "construction_identity" -
+	100	[380]	GETUPVAL 	8 0	; generation
+	101	[380]	SETTABLE 	7 -19 8	; "generation" -
+	102	[380]	SETTABLE 	7 -20 -21	; "valid" true
+	103	[381]	GETTABLE 	8 0 -2	; "x"
+	104	[381]	SETTABLE 	7 -22 8	; "min_x" -
+	105	[381]	GETTABLE 	8 0 -24	; "y"
+	106	[381]	SETTABLE 	7 -23 8	; "min_y" -
+	107	[381]	GETTABLE 	8 0 -3	; "z"
+	108	[381]	SETTABLE 	7 -25 8	; "min_z" -
+	109	[382]	GETTABLE 	8 1 -2	; "x"
+	110	[382]	SETTABLE 	7 -26 8	; "max_x" -
+	111	[382]	GETTABLE 	8 1 -24	; "y"
+	112	[382]	SETTABLE 	7 -27 8	; "max_y" -
+	113	[382]	GETTABLE 	8 1 -3	; "z"
+	114	[382]	SETTABLE 	7 -28 8	; "max_z" -
+	115	[383]	NEWTABLE 	8 0 4
+	116	[383]	SETTABLE 	8 -30 5	; "column_start" -
+	117	[383]	SETTABLE 	8 -31 6	; "run_values" -
+	118	[384]	SETTABLE 	8 -32 4	; "kat_column_values" -
+	119	[384]	SETTABLE 	8 -33 3	; "kat_column_count" -
+	120	[384]	SETTABLE 	7 -29 8	; "r5_plan" -
+	121	[385]	GETUPVAL 	8 0	; generation
+	122	[385]	SETTABLE 	7 -34 8	; "r5_generation" -
+	123	[385]	SETTABLE 	7 -35 4	; "column_values" -
+	124	[386]	SETTABLE 	7 -36 3	; "column_count" -
+	125	[386]	GETUPVAL 	8 1	; fixed_array
+	126	[386]	LOADK    	9 -6	; 4
+	127	[386]	LOADK    	10 -5	; 0
+	128	[386]	CALL     	8 3 2
+	129	[386]	SETTABLE 	7 -37 8	; "candidate_cell_values" -
+	130	[387]	SETTABLE 	7 -38 -5	; "candidate_cell_count" 0
+	131	[387]	NEWTABLE 	8 0 0
+	132	[387]	SETTABLE 	7 -39 8	; "candidate_values" -
+	133	[387]	SETTABLE 	7 -40 -5	; "candidate_count" 0
+	134	[388]	GETUPVAL 	8 4	; stable_refs
+	135	[388]	SETTABLE 	7 -41 8	; "stable_refs" -
+	136	[389]	RETURN   	7 2
+	137	[390]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:391,393> (9 instructions, 36 bytes at 0x2d75bb0)
+3 params, 5 slots, 0 upvalues, 3 locals, 4 constants, 0 functions
+	1	[392]	GETTABLE 	3 0 -1	; "z"
+	2	[392]	SUB      	3 2 3
+	3	[392]	MUL      	3 3 -2	; - 80
+	4	[392]	GETTABLE 	4 0 -3	; "x"
+	5	[392]	SUB      	4 1 4
+	6	[392]	ADD      	3 3 4
+	7	[392]	MUL      	3 3 -4	; - 12
+	8	[392]	RETURN   	3 2
+	9	[393]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:394,399> (21 instructions, 84 bytes at 0x2d763a0)
+7 params, 11 slots, 1 upvalue, 8 locals, 6 constants, 0 functions
+	1	[395]	GETUPVAL 	7 0	; column_base
+	2	[395]	MOVE     	8 1
+	3	[395]	MOVE     	9 2
+	4	[395]	MOVE     	10 3
+	5	[395]	CALL     	7 4 2
+	6	[396]	GETTABLE 	8 0 -1	; "column_values"
+	7	[396]	ADD      	9 7 -2	; - 7
+	8	[396]	TESTSET  	10 5 1
+	9	[396]	JMP      	1	; to 11
+	10	[396]	LOADK    	10 -3	; 1
+	11	[396]	SETTABLE 	8 9 10
+	12	[397]	GETTABLE 	8 0 -1	; "column_values"
+	13	[397]	ADD      	9 7 -4	; - 8
+	14	[397]	SETTABLE 	8 9 4
+	15	[398]	GETTABLE 	8 0 -1	; "column_values"
+	16	[398]	ADD      	9 7 -5	; - 10
+	17	[398]	TESTSET  	10 6 1
+	18	[398]	JMP      	1	; to 20
+	19	[398]	LOADK    	10 -6	; 0
+	20	[398]	SETTABLE 	8 9 10
+	21	[399]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:400,408> (35 instructions, 140 bytes at 0x2d75620)
+7 params, 15 slots, 0 upvalues, 13 locals, 11 constants, 0 functions
+	1	[401]	GETTABLE 	7 0 -1	; "candidate_count"
+	2	[401]	ADD      	7 7 -2	; - 1
+	3	[402]	SUB      	8 7 -2	; - 1
+	4	[402]	MUL      	8 8 -3	; - 14
+	5	[403]	GETTABLE 	9 0 -4	; "candidate_values"
+	6	[403]	ADD      	10 8 -2	; - 1
+	7	[403]	GETTABLE 	11 0 -4	; "candidate_values"
+	8	[403]	ADD      	12 8 -5	; - 2
+	9	[403]	MOVE     	13 1
+	10	[403]	SETTABLE 	11 12 2
+	11	[403]	SETTABLE 	9 10 13
+	12	[404]	GETTABLE 	9 0 -4	; "candidate_values"
+	13	[404]	ADD      	10 8 -6	; - 3
+	14	[404]	GETTABLE 	11 0 -4	; "candidate_values"
+	15	[404]	ADD      	12 8 -7	; - 4
+	16	[404]	MOVE     	13 3
+	17	[404]	SETTABLE 	11 12 4
+	18	[404]	SETTABLE 	9 10 13
+	19	[405]	GETTABLE 	9 0 -4	; "candidate_values"
+	20	[405]	ADD      	10 8 -8	; - 5
+	21	[405]	GETTABLE 	11 0 -4	; "candidate_values"
+	22	[405]	ADD      	12 8 -9	; - 6
+	23	[405]	MOVE     	13 5
+	24	[405]	SETTABLE 	11 12 6
+	25	[405]	SETTABLE 	9 10 13
+	26	[406]	LOADK    	9 -10	; 7
+	27	[406]	LOADK    	10 -3	; 14
+	28	[406]	LOADK    	11 -2	; 1
+	29	[406]	FORPREP  	9 3	; to 33
+	30	[406]	GETTABLE 	13 0 -4	; "candidate_values"
+	31	[406]	ADD      	14 8 12
+	32	[406]	SETTABLE 	13 14 -11	; - 0
+	33	[406]	FORLOOP  	9 -4	; to 30
+	34	[407]	SETTABLE 	0 -1 7	; "candidate_count" -
+	35	[408]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:701,701> (3 instructions, 12 bytes at 0x2d7daf0)
+0 params, 2 slots, 1 upvalue, 0 locals, 0 constants, 0 functions
+	1	[701]	GETUPVAL 	0 0	; contract
+	2	[701]	RETURN   	0 2
+	3	[701]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:702,702> (5 instructions, 20 bytes at 0x2d7dba0)
+0 params, 2 slots, 2 upvalues, 0 locals, 0 constants, 0 functions
+	1	[702]	GETUPVAL 	0 0	; clone
+	2	[702]	GETUPVAL 	1 1	; surfaces
+	3	[702]	TAILCALL 	0 2 0
+	4	[702]	RETURN   	0 0
+	5	[702]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:703,705> (5 instructions, 20 bytes at 0x2d7dcb0)
+0 params, 2 slots, 1 upvalue, 0 locals, 1 constant, 0 functions
+	1	[704]	GETUPVAL 	0 0	; content
+	2	[704]	GETTABLE 	0 0 -1	; "new_surface_selector"
+	3	[704]	TAILCALL 	0 1 0
+	4	[704]	RETURN   	0 0
+	5	[705]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:706,706> (5 instructions, 20 bytes at 0x2d7de60)
+0 params, 2 slots, 2 upvalues, 0 locals, 0 constants, 0 functions
+	1	[706]	GETUPVAL 	0 0	; clone
+	2	[706]	GETUPVAL 	1 1	; band_resources
+	3	[706]	TAILCALL 	0 2 0
+	4	[706]	RETURN   	0 0
+	5	[706]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:707,707> (5 instructions, 20 bytes at 0x2d7df90)
+0 params, 2 slots, 2 upvalues, 0 locals, 0 constants, 0 functions
+	1	[707]	GETUPVAL 	0 0	; clone
+	2	[707]	GETUPVAL 	1 1	; cultural
+	3	[707]	TAILCALL 	0 2 0
+	4	[707]	RETURN   	0 0
+	5	[707]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:708,708> (5 instructions, 20 bytes at 0x2d7e0f0)
+0 params, 2 slots, 2 upvalues, 0 locals, 0 constants, 0 functions
+	1	[708]	GETUPVAL 	0 0	; clone
+	2	[708]	GETUPVAL 	1 1	; decorations
+	3	[708]	TAILCALL 	0 2 0
+	4	[708]	RETURN   	0 0
+	5	[708]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:709,709> (5 instructions, 20 bytes at 0x2d7e250)
+0 params, 2 slots, 2 upvalues, 0 locals, 0 constants, 0 functions
+	1	[709]	GETUPVAL 	0 0	; clone
+	2	[709]	GETUPVAL 	1 1	; projection
+	3	[709]	TAILCALL 	0 2 0
+	4	[709]	RETURN   	0 0
+	5	[709]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:710,710> (4 instructions, 16 bytes at 0x2d7e3b0)
+1 param, 2 slots, 1 upvalue, 1 local, 0 constants, 0 functions
+	1	[710]	GETUPVAL 	1 0	; refs
+	2	[710]	GETTABLE 	1 1 0
+	3	[710]	RETURN   	1 2
+	4	[710]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:711,711> (4 instructions, 16 bytes at 0x2d7e4d0)
+1 param, 2 slots, 1 upvalue, 1 local, 0 constants, 0 functions
+	1	[711]	GETUPVAL 	1 0	; param2_kinds
+	2	[711]	GETTABLE 	1 1 0
+	3	[711]	RETURN   	1 2
+	4	[711]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:712,714> (8 instructions, 32 bytes at 0x2d7e5f0)
+3 params, 7 slots, 1 upvalue, 3 locals, 1 constant, 0 functions
+	1	[713]	GETUPVAL 	3 0	; content
+	2	[713]	GETTABLE 	3 3 -1	; "decoration_cover"
+	3	[713]	LOADNIL  	4 4
+	4	[713]	MOVE     	5 1
+	5	[713]	MOVE     	6 2
+	6	[713]	TAILCALL 	3 4 0
+	7	[713]	RETURN   	3 0
+	8	[714]	RETURN   	0 1
+
+function <tools/wp40/r6/micro_kat_fixture.lua:724,751> (124 instructions, 496 bytes at 0x2d7e860)
+2 params, 26 slots, 10 upvalues, 26 locals, 39 constants, 0 functions
+	1	[725]	NEWTABLE 	2 0 3
+	2	[725]	SETTABLE 	2 -1 -2	; "x" -32
+	3	[725]	SETTABLE 	2 -3 0	; "y" -
+	4	[725]	SETTABLE 	2 -4 -2	; "z" -32
+	5	[725]	NEWTABLE 	3 0 3
+	6	[726]	SETTABLE 	3 -1 -5	; "x" 47
+	7	[726]	ADD      	4 0 -6	; - 15
+	8	[726]	SETTABLE 	3 -3 4	; "y" -
+	9	[726]	SETTABLE 	3 -4 -5	; "z" 47
+	10	[727]	GETUPVAL 	4 0	; blank_plan
+	11	[727]	MOVE     	5 2
+	12	[727]	MOVE     	6 3
+	13	[727]	LOADBOOL 	7 0 0
+	14	[727]	CALL     	4 4 2
+	15	[729]	GETUPVAL 	5 1	; vm_arrays
+	16	[729]	MOVE     	6 2
+	17	[729]	MOVE     	7 3
+	18	[729]	LOADK    	8 -7	; 0
+	19	[729]	CALL     	5 4 5
+	20	[730]	LOADK    	9 -7	; 0
+	21	[730]	LOADK    	10 -6	; 15
+	22	[730]	LOADK    	11 -8	; 1
+	23	[730]	FORPREP  	9 7	; to 31
+	24	[730]	MOVE     	13 8
+	25	[730]	MOVE     	14 12
+	26	[730]	MOVE     	15 0
+	27	[730]	LOADK    	16 -7	; 0
+	28	[730]	CALL     	13 4 2
+	29	[730]	GETUPVAL 	14 2	; tier6_cid
+	30	[730]	SETTABLE 	5 13 14
+	31	[730]	FORLOOP  	9 -8	; to 24
+	32	[731]	GETUPVAL 	9 3	; vm_module
+	33	[731]	GETTABLE 	9 9 -9	; "new"
+	34	[731]	NEWTABLE 	10 0 10
+	35	[731]	SETTABLE 	10 -10 2	; "minp" -
+	36	[731]	SETTABLE 	10 -11 3	; "maxp" -
+	37	[732]	SETTABLE 	10 -12 5	; "data" -
+	38	[732]	SETTABLE 	10 -13 6	; "param2" -
+	39	[732]	SETTABLE 	10 -14 7	; "light" -
+	40	[733]	GETUPVAL 	11 4	; fixed_array
+	41	[733]	LOADK    	12 -16	; 6400
+	42	[733]	LOADK    	13 -17	; -31007
+	43	[733]	CALL     	11 3 2
+	44	[733]	SETTABLE 	10 -15 11	; "heightmap" -
+	45	[733]	GETUPVAL 	11 5	; contract
+	46	[733]	SETTABLE 	10 -18 11	; "content_contract" -
+	47	[734]	SETTABLE 	10 -19 -8	; "water_level" 1
+	48	[734]	GETUPVAL 	11 5	; contract
+	49	[734]	GETTABLE 	11 11 -20	; "ignore_cid"
+	50	[734]	SETTABLE 	10 -20 11	; "ignore_cid" -
+	51	[735]	SETTABLE 	10 -21 -22	; "verify_inactive_tail" false
+	52	[731]	CALL     	9 2 2
+	53	[736]	GETUPVAL 	10 6	; band_settlement
+	54	[736]	SELF     	10 10 -23	; "apply"
+	55	[736]	MOVE     	12 9
+	56	[736]	MOVE     	13 2
+	57	[736]	MOVE     	14 3
+	58	[736]	MOVE     	15 4
+	59	[737]	GETTABLE 	16 4 -24	; "generation"
+	60	[737]	LOADK    	17 -25	; "fixture"
+	61	[736]	CALL     	10 8 2
+	62	[738]	GETUPVAL 	11 7	; band_fixture
+	63	[738]	GETTABLE 	11 11 -26	; "last_ledger"
+	64	[738]	CALL     	11 1 2
+	65	[739]	LOADK    	12 -7	; 0
+	66	[739]	LOADK    	13 -7	; 0
+	67	[739]	LOADK    	14 -7	; 0
+	68	[739]	LOADK    	15 -7	; 0
+	69	[740]	LOADK    	16 -27	; "\000"
+	70	[740]	MOVE     	17 1
+	71	[740]	CONCAT   	16 16 17
+	72	[741]	GETGLOBAL	17 -28	; pairs
+	73	[741]	GETTABLE 	18 11 -29	; "resources"
+	74	[741]	CALL     	17 2 4
+	75	[741]	JMP      	18	; to 94
+	76	[742]	GETUPVAL 	22 8	; check
+	77	[742]	SELF     	23 20 -30	; "sub"
+	78	[742]	LEN      	25 16
+	79	[742]	UNM      	25 25
+	80	[742]	CALL     	23 3 2
+	81	[742]	EQ       	1 23 16
+	82	[742]	JMP      	1	; to 84
+	83	[742]	LOADBOOL 	23 0 1
+	84	[742]	LOADBOOL 	23 1 0
+	85	[742]	LOADK    	24 -31	; "deep-band ledger branch differs"
+	86	[742]	CALL     	22 3 1
+	87	[743]	GETTABLE 	22 21 -32	; "eligible"
+	88	[743]	ADD      	12 12 22
+	89	[744]	GETTABLE 	22 21 -33	; "accepted"
+	90	[744]	ADD      	13 13 22
+	91	[745]	GETTABLE 	22 21 -34	; "placed_nodes"
+	92	[745]	ADD      	14 14 22
+	93	[746]	ADD      	15 15 -8	; - 1
+	94	[741]	TFORLOOP 	17 2
+	95	[746]	JMP      	-20	; to 76
+	96	[748]	GETUPVAL 	17 8	; check
+	97	[748]	LT       	0 -7 15	; 0 -
+	98	[748]	JMP      	6	; to 105
+	99	[748]	LT       	0 -7 12	; 0 -
+	100	[748]	JMP      	4	; to 105
+	101	[748]	LT       	0 -7 13	; 0 -
+	102	[748]	JMP      	2	; to 105
+	103	[748]	LT       	1 -7 14	; 0 -
+	104	[748]	JMP      	1	; to 106
+	105	[748]	LOADBOOL 	18 0 1
+	106	[748]	LOADBOOL 	18 1 0
+	107	[749]	LOADK    	19 -35	; "deep-band VM probe is empty"
+	108	[748]	CALL     	17 3 1
+	109	[750]	GETUPVAL 	17 9	; row
+	110	[750]	LOADK    	18 -36	; "vm_band/"
+	111	[750]	MOVE     	19 1
+	112	[750]	CONCAT   	18 18 19
+	113	[750]	GETGLOBAL	19 -37	; table
+	114	[750]	GETTABLE 	19 19 -38	; "concat"
+	115	[750]	NEWTABLE 	20 4 0
+	116	[750]	MOVE     	21 10
+	117	[750]	MOVE     	22 12
+	118	[750]	MOVE     	23 13
+	119	[750]	MOVE     	24 14
+	120	[750]	SETLIST  	20 4 1	; 1
+	121	[750]	LOADK    	21 -39	; "/"
+	122	[750]	CALL     	19 3 0
+	123	[750]	CALL     	17 0 1
+	124	[751]	RETURN   	0 1
+
+main <tools/r10_map_b/engine_probe/init.lua:0,0> (91 instructions, 364 bytes at 0x2d86e50)
+0+ params, 13 slots, 0 upvalues, 11 locals, 40 constants, 6 functions
+	1	[3]	LOADK    	0 -1	; "4151598227737528026"
+	2	[4]	GETGLOBAL	1 -2	; assert
+	3	[4]	GETGLOBAL	2 -3	; core
+	4	[4]	GETTABLE 	2 2 -4	; "get_mapgen_setting"
+	5	[4]	LOADK    	3 -5	; "seed"
+	6	[4]	CALL     	2 2 2
+	7	[4]	EQ       	1 2 0
+	8	[4]	JMP      	1	; to 10
+	9	[4]	LOADBOOL 	2 0 1
+	10	[4]	LOADBOOL 	2 1 0
+	11	[4]	CALL     	1 2 1
+	12	[5]	NEWTABLE 	1 7 0
+	13	[5]	NEWTABLE 	2 0 4
+	14	[6]	SETTABLE 	2 -6 -7	; "id" "dawnmere_field"
+	15	[6]	SETTABLE 	2 -8 -9	; "x" 0
+	16	[6]	SETTABLE 	2 -10 -11	; "z" -2550
+	17	[6]	SETTABLE 	2 -12 -13	; "r" 63
+	18	[6]	NEWTABLE 	3 0 4
+	19	[7]	SETTABLE 	3 -6 -14	; "id" "dawnmere_wild"
+	20	[7]	SETTABLE 	3 -8 -15	; "x" 288
+	21	[7]	SETTABLE 	3 -10 -16	; "z" -2512
+	22	[7]	SETTABLE 	3 -12 -17	; "r" 39
+	23	[7]	NEWTABLE 	4 0 4
+	24	[8]	SETTABLE 	4 -6 -18	; "id" "mournfen_wild"
+	25	[8]	SETTABLE 	4 -8 -19	; "x" -1800
+	26	[8]	SETTABLE 	4 -10 -20	; "z" 2070
+	27	[8]	SETTABLE 	4 -12 -17	; "r" 39
+	28	[8]	NEWTABLE 	5 0 4
+	29	[9]	SETTABLE 	5 -6 -21	; "id" "shattered_wild"
+	30	[9]	SETTABLE 	5 -8 -22	; "x" 620
+	31	[9]	SETTABLE 	5 -10 -23	; "z" 140
+	32	[9]	SETTABLE 	5 -12 -17	; "r" 39
+	33	[9]	NEWTABLE 	6 0 6
+	34	[10]	SETTABLE 	6 -6 -24	; "id" "native_cave"
+	35	[10]	SETTABLE 	6 -8 -9	; "x" 0
+	36	[10]	SETTABLE 	6 -10 -25	; "z" -2400
+	37	[10]	SETTABLE 	6 -12 -17	; "r" 39
+	38	[10]	SETTABLE 	6 -26 -27	; "low" -208
+	39	[10]	SETTABLE 	6 -28 -29	; "high" -129
+	40	[10]	NEWTABLE 	7 0 6
+	41	[11]	SETTABLE 	7 -6 -30	; "id" "native_deep"
+	42	[11]	SETTABLE 	7 -8 -9	; "x" 0
+	43	[11]	SETTABLE 	7 -10 -25	; "z" -2400
+	44	[11]	SETTABLE 	7 -12 -17	; "r" 39
+	45	[11]	SETTABLE 	7 -26 -31	; "low" -848
+	46	[11]	SETTABLE 	7 -28 -32	; "high" -769
+	47	[11]	NEWTABLE 	8 0 6
+	48	[12]	SETTABLE 	8 -6 -33	; "id" "shallow_reef"
+	49	[12]	SETTABLE 	8 -8 -34	; "x" -1856
+	50	[12]	SETTABLE 	8 -10 -35	; "z" -3000
+	51	[12]	SETTABLE 	8 -12 -17	; "r" 39
+	52	[12]	SETTABLE 	8 -26 -36	; "low" -12
+	53	[12]	SETTABLE 	8 -28 -37	; "high" 2
+	54	[13]	SETLIST  	1 7 1	; 1
+	55	[14]	NEWTABLE 	2 2 0
+	56	[14]	LOADK    	3 -38	; "schema\tgrug_r10_map_b_engine_v1"
+	57	[14]	LOADK    	4 -39	; "seed\t"
+	58	[14]	MOVE     	5 0
+	59	[14]	CONCAT   	4 4 5
+	60	[14]	SETLIST  	2 2 1	; 1
+	61	[15]	NEWTABLE 	3 0 0
+	62	[15]	NEWTABLE 	4 0 0
+	63	[15]	LOADK    	5 -9	; 0
+	64	[16]	CLOSURE  	6 0	; 0x2d88db0
+	65	[16]	MOVE     	0 2
+	66	[17]	CLOSURE  	7 1	; 0x2d86910
+	67	[17]	MOVE     	0 2
+	68	[33]	CLOSURE  	8 2	; 0x2d89a70
+	69	[33]	MOVE     	0 4
+	70	[33]	MOVE     	0 6
+	71	[33]	MOVE     	0 3
+	72	[33]	MOVE     	0 1
+	73	[33]	MOVE     	0 7
+	74	[34]	LOADNIL  	9 9
+	75	[84]	CLOSURE  	10 3	; 0x2d91ca0
+	76	[84]	MOVE     	0 4
+	77	[84]	MOVE     	0 6
+	78	[84]	MOVE     	0 3
+	79	[84]	MOVE     	0 7
+	80	[84]	MOVE     	0 9
+	81	[98]	CLOSURE  	9 4	; 0x2d776a0
+	82	[98]	MOVE     	0 5
+	83	[98]	MOVE     	0 1
+	84	[98]	MOVE     	0 8
+	85	[98]	MOVE     	0 10
+	86	[99]	GETGLOBAL	11 -3	; core
+	87	[99]	GETTABLE 	11 11 -40	; "register_on_mods_loaded"
+	88	[99]	CLOSURE  	12 5	; 0x2d8bdf0
+	89	[99]	MOVE     	0 9
+	90	[99]	CALL     	11 2 1
+	91	[99]	RETURN   	0 1
+
+function <tools/r10_map_b/engine_probe/init.lua:16,16> (27 instructions, 108 bytes at 0x2d88db0)
+0+ params, 9 slots, 1 upvalue, 5 locals, 7 constants, 0 functions
+	1	[16]	NEWTABLE 	0 0 0
+	2	[16]	LOADK    	1 -1	; 1
+	3	[16]	GETGLOBAL	2 -2	; select
+	4	[16]	LOADK    	3 -3	; "#"
+	5	[16]	VARARG   	4 0
+	6	[16]	CALL     	2 0 2
+	7	[16]	LOADK    	3 -1	; 1
+	8	[16]	FORPREP  	1 7	; to 16
+	9	[16]	GETGLOBAL	5 -4	; tostring
+	10	[16]	GETGLOBAL	6 -2	; select
+	11	[16]	MOVE     	7 4
+	12	[16]	VARARG   	8 0
+	13	[16]	CALL     	6 0 0
+	14	[16]	CALL     	5 0 2
+	15	[16]	SETTABLE 	0 4 5
+	16	[16]	FORLOOP  	1 -8	; to 9
+	17	[16]	GETUPVAL 	1 0	; rows
+	18	[16]	GETUPVAL 	2 0	; rows
+	19	[16]	LEN      	2 2
+	20	[16]	ADD      	2 2 -1	; - 1
+	21	[16]	GETGLOBAL	3 -5	; table
+	22	[16]	GETTABLE 	3 3 -6	; "concat"
+	23	[16]	MOVE     	4 0
+	24	[16]	LOADK    	5 -7	; "\t"
+	25	[16]	CALL     	3 3 2
+	26	[16]	SETTABLE 	1 2 3
+	27	[16]	RETURN   	0 1
+
+function <tools/r10_map_b/engine_probe/init.lua:17,17> (18 instructions, 72 bytes at 0x2d86910)
+0 params, 6 slots, 1 upvalue, 0 locals, 8 constants, 0 functions
+	1	[17]	GETGLOBAL	0 -1	; assert
+	2	[17]	GETGLOBAL	1 -2	; core
+	3	[17]	GETTABLE 	1 1 -3	; "safe_file_write"
+	4	[17]	GETGLOBAL	2 -2	; core
+	5	[17]	GETTABLE 	2 2 -4	; "get_worldpath"
+	6	[17]	CALL     	2 1 2
+	7	[17]	LOADK    	3 -5	; "/r10-map-b.tsv"
+	8	[17]	CONCAT   	2 2 3
+	9	[17]	GETGLOBAL	3 -6	; table
+	10	[17]	GETTABLE 	3 3 -7	; "concat"
+	11	[17]	GETUPVAL 	4 0	; rows
+	12	[17]	LOADK    	5 -8	; "\n"
+	13	[17]	CALL     	3 3 2
+	14	[17]	LOADK    	4 -8	; "\n"
+	15	[17]	CONCAT   	3 3 4
+	16	[17]	CALL     	1 3 0
+	17	[17]	CALL     	0 0 1
+	18	[17]	RETURN   	0 1
+
+function <tools/r10_map_b/engine_probe/init.lua:18,33> (118 instructions, 472 bytes at 0x2d89a70)
+0 params, 15 slots, 5 upvalues, 15 locals, 28 constants, 0 functions
+	1	[19]	LOADK    	0 -1	; 0
+	2	[19]	LOADK    	1 -1	; 0
+	3	[19]	LOADK    	2 -1	; 0
+	4	[19]	LOADK    	3 -1	; 0
+	5	[20]	GETGLOBAL	4 -2	; ipairs
+	6	[20]	GETUPVAL 	5 0	; soil
+	7	[20]	CALL     	4 2 4
+	8	[20]	JMP      	45	; to 54
+	9	[21]	GETGLOBAL	9 -3	; core
+	10	[21]	GETTABLE 	9 9 -4	; "get_node"
+	11	[21]	MOVE     	10 8
+	12	[21]	CALL     	9 2 2
+	13	[22]	GETTABLE 	10 9 -5	; "name"
+	14	[22]	EQ       	0 10 -6	; - "grug_farming:soil_wet"
+	15	[22]	JMP      	2	; to 18
+	16	[22]	ADD      	0 0 -7	; - 1
+	17	[22]	JMP      	8	; to 26
+	18	[22]	GETTABLE 	10 9 -5	; "name"
+	19	[22]	EQ       	0 10 -8	; - "grug_farming:soil"
+	20	[22]	JMP      	2	; to 23
+	21	[22]	ADD      	1 1 -7	; - 1
+	22	[22]	JMP      	3	; to 26
+	23	[22]	GETGLOBAL	10 -9	; error
+	24	[22]	LOADK    	11 -10	; "field lost real soil"
+	25	[22]	CALL     	10 2 1
+	26	[23]	GETGLOBAL	10 -3	; core
+	27	[23]	GETTABLE 	10 10 -11	; "get_node_timer"
+	28	[23]	MOVE     	11 8
+	29	[23]	CALL     	10 2 2
+	30	[23]	SELF     	10 10 -12	; "is_started"
+	31	[23]	CALL     	10 2 2
+	32	[23]	TEST     	10 0 0
+	33	[23]	JMP      	1	; to 35
+	34	[23]	ADD      	2 2 -7	; - 1
+	35	[24]	GETGLOBAL	10 -3	; core
+	36	[24]	GETTABLE 	10 10 -13	; "find_node_near"
+	37	[24]	MOVE     	11 8
+	38	[24]	LOADK    	12 -14	; 3
+	39	[24]	NEWTABLE 	13 1 0
+	40	[24]	LOADK    	14 -15	; "group:water"
+	41	[24]	SETLIST  	13 1 1	; 1
+	42	[24]	CALL     	10 4 2
+	43	[24]	TEST     	10 0 0
+	44	[24]	JMP      	9	; to 54
+	45	[24]	ADD      	3 3 -7	; - 1
+	46	[24]	GETGLOBAL	10 -16	; assert
+	47	[24]	GETTABLE 	11 9 -5	; "name"
+	48	[24]	EQ       	1 11 -6	; - "grug_farming:soil_wet"
+	49	[24]	JMP      	1	; to 51
+	50	[24]	LOADBOOL 	11 0 1
+	51	[24]	LOADBOOL 	11 1 0
+	52	[24]	LOADK    	12 -17	; "near-water soil remained dry"
+	53	[24]	CALL     	10 3 1
+	54	[20]	TFORLOOP 	4 2
+	55	[24]	JMP      	-47	; to 9
+	56	[26]	GETUPVAL 	4 1	; record
+	57	[26]	LOADK    	5 -18	; "soil_activation"
+	58	[26]	GETUPVAL 	6 0	; soil
+	59	[26]	LEN      	6 6
+	60	[26]	MOVE     	7 0
+	61	[26]	MOVE     	8 1
+	62	[26]	MOVE     	9 2
+	63	[26]	MOVE     	10 3
+	64	[26]	CALL     	4 7 1
+	65	[27]	GETGLOBAL	4 -16	; assert
+	66	[27]	GETUPVAL 	5 0	; soil
+	67	[27]	LEN      	5 5
+	68	[27]	LT       	0 -1 5	; 0 -
+	69	[27]	JMP      	4	; to 74
+	70	[27]	GETUPVAL 	5 0	; soil
+	71	[27]	LEN      	5 5
+	72	[27]	EQ       	1 2 5
+	73	[27]	JMP      	1	; to 75
+	74	[27]	LOADBOOL 	5 0 1
+	75	[27]	LOADBOOL 	5 1 0
+	76	[27]	LOADK    	6 -19	; "VM field soil timers did not activate"
+	77	[27]	CALL     	4 3 1
+	78	[28]	GETGLOBAL	4 -16	; assert
+	79	[28]	LT       	0 -1 3	; 0 -
+	80	[28]	JMP      	4	; to 85
+	81	[28]	LT       	0 -1 0	; 0 -
+	82	[28]	JMP      	2	; to 85
+	83	[28]	LT       	1 -1 1	; 0 -
+	84	[28]	JMP      	1	; to 86
+	85	[28]	LOADBOOL 	5 0 1
+	86	[28]	LOADBOOL 	5 1 0
+	87	[28]	LOADK    	6 -20	; "wet/dry engine witness must be nonvacuous"
+	88	[28]	CALL     	4 3 1
+	89	[29]	GETGLOBAL	4 -2	; ipairs
+	90	[29]	GETUPVAL 	5 2	; held
+	91	[29]	CALL     	4 2 4
+	92	[29]	JMP      	5	; to 98
+	93	[29]	GETGLOBAL	9 -3	; core
+	94	[29]	GETTABLE 	9 9 -21	; "forceload_free_block"
+	95	[29]	MOVE     	10 8
+	96	[29]	LOADBOOL 	11 1 0
+	97	[29]	CALL     	9 3 1
+	98	[29]	TFORLOOP 	4 2
+	99	[29]	JMP      	-7	; to 93
+	100	[30]	GETUPVAL 	4 1	; record
+	101	[30]	LOADK    	5 -22	; "complete"
+	102	[30]	GETUPVAL 	6 3	; cases
+	103	[30]	LEN      	6 6
+	104	[30]	CALL     	4 3 1
+	105	[30]	GETUPVAL 	4 4	; save
+	106	[30]	CALL     	4 1 1
+	107	[31]	GETGLOBAL	4 -3	; core
+	108	[31]	GETTABLE 	4 4 -23	; "log"
+	109	[31]	LOADK    	5 -24	; "action"
+	110	[31]	LOADK    	6 -25	; "[R10_MAP_B] COMPLETE"
+	111	[31]	CALL     	4 3 1
+	112	[32]	GETGLOBAL	4 -3	; core
+	113	[32]	GETTABLE 	4 4 -26	; "request_shutdown"
+	114	[32]	LOADK    	5 -27	; "MAP-B witness complete"
+	115	[32]	LOADBOOL 	6 0 0
+	116	[32]	LOADK    	7 -28	; 0.1
+	117	[32]	CALL     	4 4 1
+	118	[33]	RETURN   	0 1
+
+function <tools/r10_map_b/engine_probe/init.lua:35,84> (284 instructions, 1136 bytes at 0x2d91ca0)
+1 param, 30 slots, 5 upvalues, 47 locals, 59 constants, 0 functions
+	1	[36]	NEWTABLE 	1 0 0
+	2	[36]	NEWTABLE 	2 0 0
+	3	[37]	GETTABLE 	3 0 -1	; "z"
+	4	[37]	GETTABLE 	4 0 -2	; "r"
+	5	[37]	SUB      	3 3 4
+	6	[37]	GETTABLE 	4 0 -1	; "z"
+	7	[37]	GETTABLE 	5 0 -2	; "r"
+	8	[37]	ADD      	4 4 5
+	9	[37]	LOADK    	5 -3	; 1
+	10	[37]	FORPREP  	3 102	; to 113
+	11	[38]	GETTABLE 	7 0 -4	; "x"
+	12	[38]	GETTABLE 	8 0 -2	; "r"
+	13	[38]	SUB      	7 7 8
+	14	[38]	GETTABLE 	8 0 -4	; "x"
+	15	[38]	GETTABLE 	9 0 -2	; "r"
+	16	[38]	ADD      	8 8 9
+	17	[38]	LOADK    	9 -3	; 1
+	18	[38]	FORPREP  	7 93	; to 112
+	19	[39]	GETGLOBAL	11 -5	; grug_zones
+	20	[39]	GETTABLE 	11 11 -6	; "terrain_height_at"
+	21	[39]	MOVE     	12 10
+	22	[39]	MOVE     	13 6
+	23	[39]	CALL     	11 3 2
+	24	[40]	GETTABLE 	12 0 -7	; "low"
+	25	[40]	TEST     	12 0 1
+	26	[40]	JMP      	1	; to 28
+	27	[40]	SUB      	12 11 -8	; - 3
+	28	[40]	GETTABLE 	13 0 -9	; "high"
+	29	[40]	TEST     	13 0 1
+	30	[40]	JMP      	1	; to 32
+	31	[40]	ADD      	13 11 -10	; - 5
+	32	[41]	MOVE     	14 12
+	33	[41]	MOVE     	15 13
+	34	[41]	LOADK    	16 -3	; 1
+	35	[41]	FORPREP  	14 75	; to 111
+	36	[42]	NEWTABLE 	18 0 3
+	37	[42]	SETTABLE 	18 -4 10	; "x" -
+	38	[42]	SETTABLE 	18 -11 17	; "y" -
+	39	[42]	SETTABLE 	18 -1 6	; "z" -
+	40	[42]	GETGLOBAL	19 -12	; core
+	41	[42]	GETTABLE 	19 19 -13	; "get_node"
+	42	[42]	MOVE     	20 18
+	43	[42]	CALL     	19 2 2
+	44	[43]	GETGLOBAL	20 -14	; assert
+	45	[43]	GETTABLE 	21 19 -15	; "name"
+	46	[43]	EQ       	0 21 -16	; - "ignore"
+	47	[43]	JMP      	1	; to 49
+	48	[43]	LOADBOOL 	21 0 1
+	49	[43]	LOADBOOL 	21 1 0
+	50	[43]	LOADK    	22 -17	; "probe read unemerged cell"
+	51	[43]	CALL     	20 3 1
+	52	[44]	GETTABLE 	20 19 -15	; "name"
+	53	[44]	SELF     	20 20 -18	; "match"
+	54	[44]	LOADK    	22 -19	; "^grug_mapgen:.*_source$"
+	55	[44]	CALL     	20 3 2
+	56	[44]	TEST     	20 0 1
+	57	[44]	JMP      	21	; to 79
+	58	[44]	GETTABLE 	20 19 -15	; "name"
+	59	[44]	SELF     	20 20 -18	; "match"
+	60	[44]	LOADK    	22 -20	; "^default:coral_"
+	61	[44]	CALL     	20 3 2
+	62	[44]	TEST     	20 0 1
+	63	[44]	JMP      	15	; to 79
+	64	[44]	GETTABLE 	20 19 -15	; "name"
+	65	[44]	EQ       	1 20 -21	; - "default:sand_with_kelp"
+	66	[44]	JMP      	12	; to 79
+	67	[44]	GETTABLE 	20 19 -15	; "name"
+	68	[44]	EQ       	1 20 -22	; - "grug_farming:soil"
+	69	[44]	JMP      	9	; to 79
+	70	[44]	GETTABLE 	20 19 -15	; "name"
+	71	[44]	EQ       	1 20 -23	; - "grug_farming:soil_wet"
+	72	[44]	JMP      	6	; to 79
+	73	[44]	GETTABLE 	20 19 -15	; "name"
+	74	[44]	EQ       	1 20 -24	; - "grug_nodes:ash_ground"
+	75	[44]	JMP      	3	; to 79
+	76	[44]	GETTABLE 	20 19 -15	; "name"
+	77	[44]	EQ       	0 20 -25	; - "grug_nodes:dirt_with_moss"
+	78	[44]	JMP      	32	; to 111
+	79	[45]	GETTABLE 	20 19 -15	; "name"
+	80	[45]	GETTABLE 	21 19 -15	; "name"
+	81	[45]	GETTABLE 	21 1 21
+	82	[45]	TEST     	21 0 1
+	83	[45]	JMP      	1	; to 85
+	84	[45]	LOADK    	21 -26	; 0
+	85	[45]	ADD      	21 21 -3	; - 1
+	86	[45]	SETTABLE 	1 20 21
+	87	[46]	LEN      	20 2
+	88	[46]	ADD      	20 20 -3	; - 1
+	89	[46]	MOVE     	21 10
+	90	[46]	LOADK    	22 -27	; ","
+	91	[46]	MOVE     	23 17
+	92	[46]	LOADK    	24 -27	; ","
+	93	[46]	MOVE     	25 6
+	94	[46]	LOADK    	26 -28	; ":"
+	95	[46]	GETTABLE 	27 19 -15	; "name"
+	96	[46]	LOADK    	28 -28	; ":"
+	97	[46]	GETTABLE 	29 19 -29	; "param2"
+	98	[46]	CONCAT   	21 21 29
+	99	[46]	SETTABLE 	2 20 21
+	100	[47]	GETTABLE 	20 19 -15	; "name"
+	101	[47]	EQ       	1 20 -22	; - "grug_farming:soil"
+	102	[47]	JMP      	3	; to 106
+	103	[47]	GETTABLE 	20 19 -15	; "name"
+	104	[47]	EQ       	0 20 -23	; - "grug_farming:soil_wet"
+	105	[47]	JMP      	5	; to 111
+	106	[48]	GETUPVAL 	20 0	; soil
+	107	[48]	GETUPVAL 	21 0	; soil
+	108	[48]	LEN      	21 21
+	109	[48]	ADD      	21 21 -3	; - 1
+	110	[48]	SETTABLE 	20 21 18
+	111	[41]	FORLOOP  	14 -76	; to 36
+	112	[38]	FORLOOP  	7 -94	; to 19
+	113	[37]	FORLOOP  	3 -103	; to 11
+	114	[54]	NEWTABLE 	3 0 0
+	115	[54]	GETGLOBAL	4 -30	; pairs
+	116	[54]	MOVE     	5 1
+	117	[54]	CALL     	4 2 4
+	118	[54]	JMP      	3	; to 122
+	119	[54]	LEN      	8 3
+	120	[54]	ADD      	8 8 -3	; - 1
+	121	[54]	SETTABLE 	3 8 7
+	122	[54]	TFORLOOP 	4 1
+	123	[54]	JMP      	-5	; to 119
+	124	[54]	GETGLOBAL	4 -31	; table
+	125	[54]	GETTABLE 	4 4 -32	; "sort"
+	126	[54]	MOVE     	5 3
+	127	[54]	CALL     	4 2 1
+	128	[54]	GETGLOBAL	4 -31	; table
+	129	[54]	GETTABLE 	4 4 -32	; "sort"
+	130	[54]	MOVE     	5 2
+	131	[54]	CALL     	4 2 1
+	132	[55]	GETGLOBAL	4 -33	; ipairs
+	133	[55]	MOVE     	5 3
+	134	[55]	CALL     	4 2 4
+	135	[55]	JMP      	6	; to 142
+	136	[55]	GETUPVAL 	9 1	; record
+	137	[55]	LOADK    	10 -34	; "count"
+	138	[55]	GETTABLE 	11 0 -35	; "id"
+	139	[55]	MOVE     	12 8
+	140	[55]	GETTABLE 	13 1 8
+	141	[55]	CALL     	9 5 1
+	142	[55]	TFORLOOP 	4 2
+	143	[55]	JMP      	-8	; to 136
+	144	[56]	GETUPVAL 	4 1	; record
+	145	[56]	LOADK    	5 -36	; "case_digest"
+	146	[56]	GETTABLE 	6 0 -35	; "id"
+	147	[56]	GETGLOBAL	7 -12	; core
+	148	[56]	GETTABLE 	7 7 -37	; "sha256"
+	149	[56]	GETGLOBAL	8 -31	; table
+	150	[56]	GETTABLE 	8 8 -38	; "concat"
+	151	[56]	MOVE     	9 2
+	152	[56]	LOADK    	10 -39	; "\n"
+	153	[56]	CALL     	8 3 0
+	154	[56]	CALL     	7 0 0
+	155	[56]	CALL     	4 0 1
+	156	[57]	GETTABLE 	4 0 -35	; "id"
+	157	[57]	EQ       	0 4 -40	; - "dawnmere_field"
+	158	[57]	JMP      	114	; to 273
+	159	[58]	NEWTABLE 	4 0 0
+	160	[58]	NEWTABLE 	5 0 0
+	161	[59]	GETUPVAL 	6 0	; soil
+	162	[59]	LEN      	6 6
+	163	[60]	GETGLOBAL	7 -33	; ipairs
+	164	[60]	GETUPVAL 	8 0	; soil
+	165	[60]	CALL     	7 2 4
+	166	[60]	JMP      	45	; to 212
+	167	[61]	GETGLOBAL	12 -41	; math
+	168	[61]	GETTABLE 	12 12 -42	; "floor"
+	169	[61]	GETTABLE 	13 11 -4	; "x"
+	170	[61]	DIV      	13 13 -43	; - 16
+	171	[61]	CALL     	12 2 2
+	172	[61]	LOADK    	13 -28	; ":"
+	173	[61]	GETGLOBAL	14 -41	; math
+	174	[61]	GETTABLE 	14 14 -42	; "floor"
+	175	[61]	GETTABLE 	15 11 -11	; "y"
+	176	[61]	DIV      	15 15 -43	; - 16
+	177	[61]	CALL     	14 2 2
+	178	[61]	LOADK    	15 -28	; ":"
+	179	[61]	GETGLOBAL	16 -41	; math
+	180	[61]	GETTABLE 	16 16 -42	; "floor"
+	181	[61]	GETTABLE 	17 11 -1	; "z"
+	182	[61]	DIV      	17 17 -43	; - 16
+	183	[61]	CALL     	16 2 2
+	184	[61]	CONCAT   	12 12 16
+	185	[62]	GETTABLE 	13 4 12
+	186	[62]	TEST     	13 0 1
+	187	[62]	JMP      	18	; to 206
+	188	[62]	GETUPVAL 	13 2	; held
+	189	[62]	LEN      	13 13
+	190	[62]	LT       	0 13 -44	; - 4
+	191	[62]	JMP      	14	; to 206
+	192	[63]	GETGLOBAL	13 -14	; assert
+	193	[63]	GETGLOBAL	14 -12	; core
+	194	[63]	GETTABLE 	14 14 -45	; "forceload_block"
+	195	[63]	MOVE     	15 11
+	196	[63]	LOADBOOL 	16 1 0
+	197	[63]	CALL     	14 3 2
+	198	[63]	LOADK    	15 -46	; "field block hold failed"
+	199	[63]	CALL     	13 3 1
+	200	[64]	SETTABLE 	4 12 -47	; - true
+	201	[64]	GETUPVAL 	13 2	; held
+	202	[64]	GETUPVAL 	14 2	; held
+	203	[64]	LEN      	14 14
+	204	[64]	ADD      	14 14 -3	; - 1
+	205	[64]	SETTABLE 	13 14 11
+	206	[66]	GETTABLE 	13 4 12
+	207	[66]	TEST     	13 0 0
+	208	[66]	JMP      	3	; to 212
+	209	[66]	LEN      	13 5
+	210	[66]	ADD      	13 13 -3	; - 1
+	211	[66]	SETTABLE 	5 13 11
+	212	[60]	TFORLOOP 	7 2
+	213	[66]	JMP      	-47	; to 167
+	214	[68]	SETUPVAL 	5 0	; soil
+	215	[68]	GETUPVAL 	7 1	; record
+	216	[68]	LOADK    	8 -48	; "soil_sample"
+	217	[68]	MOVE     	9 6
+	218	[68]	GETUPVAL 	10 0	; soil
+	219	[68]	LEN      	10 10
+	220	[68]	GETUPVAL 	11 2	; held
+	221	[68]	LEN      	11 11
+	222	[68]	CALL     	7 5 1
+	223	[69]	LOADK    	7 -26	; 0
+	224	[70]	GETGLOBAL	8 -33	; ipairs
+	225	[70]	GETUPVAL 	9 0	; soil
+	226	[70]	CALL     	8 2 4
+	227	[70]	JMP      	11	; to 239
+	228	[71]	GETGLOBAL	13 -12	; core
+	229	[71]	GETTABLE 	13 13 -49	; "find_node_near"
+	230	[71]	MOVE     	14 12
+	231	[71]	LOADK    	15 -8	; 3
+	232	[71]	NEWTABLE 	16 1 0
+	233	[71]	LOADK    	17 -50	; "group:water"
+	234	[71]	SETLIST  	16 1 1	; 1
+	235	[71]	CALL     	13 4 2
+	236	[71]	TEST     	13 0 0
+	237	[71]	JMP      	1	; to 239
+	238	[71]	ADD      	7 7 -3	; - 1
+	239	[70]	TFORLOOP 	8 2
+	240	[71]	JMP      	-13	; to 228
+	241	[73]	GETUPVAL 	8 1	; record
+	242	[73]	LOADK    	9 -51	; "initial_near_water"
+	243	[73]	MOVE     	10 7
+	244	[73]	CALL     	8 3 1
+	245	[77]	GETGLOBAL	8 -14	; assert
+	246	[77]	GETUPVAL 	9 0	; soil
+	247	[77]	GETTABLE 	9 9 -3	; 1
+	248	[77]	CALL     	8 2 2
+	249	[77]	NEWTABLE 	9 0 3
+	250	[77]	GETTABLE 	10 8 -4	; "x"
+	251	[77]	SETTABLE 	9 -4 10	; "x" -
+	252	[77]	GETTABLE 	10 8 -11	; "y"
+	253	[77]	ADD      	10 10 -3	; - 1
+	254	[77]	SETTABLE 	9 -11 10	; "y" -
+	255	[77]	GETTABLE 	10 8 -1	; "z"
+	256	[77]	SETTABLE 	9 -1 10	; "z" -
+	257	[78]	GETGLOBAL	10 -12	; core
+	258	[78]	GETTABLE 	10 10 -52	; "set_node"
+	259	[78]	MOVE     	11 9
+	260	[78]	NEWTABLE 	12 0 1
+	261	[78]	SETTABLE 	12 -15 -53	; "name" "default:water_source"
+	262	[78]	CALL     	10 3 1
+	263	[79]	GETUPVAL 	10 1	; record
+	264	[79]	LOADK    	11 -54	; "probe_water_stimulus"
+	265	[79]	GETTABLE 	12 9 -4	; "x"
+	266	[79]	GETTABLE 	13 9 -11	; "y"
+	267	[79]	GETTABLE 	14 9 -1	; "z"
+	268	[79]	CALL     	10 5 1
+	269	[80]	GETUPVAL 	10 1	; record
+	270	[80]	LOADK    	11 -55	; "soil_origin"
+	271	[80]	LOADK    	12 -56	; "actual authored VM output; water is probe-supplied"
+	272	[80]	CALL     	10 3 1
+	273	[82]	GETUPVAL 	4 3	; save
+	274	[82]	CALL     	4 1 1
+	275	[82]	GETGLOBAL	4 -12	; core
+	276	[82]	GETTABLE 	4 4 -57	; "log"
+	277	[82]	LOADK    	5 -58	; "action"
+	278	[82]	LOADK    	6 -59	; "[R10_MAP_B] read "
+	279	[82]	GETTABLE 	7 0 -35	; "id"
+	280	[82]	CONCAT   	6 6 7
+	281	[82]	CALL     	4 3 1
+	282	[83]	GETUPVAL 	4 4	; next_case
+	283	[83]	CALL     	4 1 1
+	284	[84]	RETURN   	0 1
+
+function <tools/r10_map_b/engine_probe/init.lua:85,98> (87 instructions, 348 bytes at 0x2d776a0)
+0 params, 15 slots, 4 upvalues, 12 locals, 20 constants, 1 function
+	1	[86]	GETUPVAL 	0 0	; index
+	2	[86]	ADD      	0 0 -1	; - 1
+	3	[86]	SETUPVAL 	0 0	; index
+	4	[86]	GETUPVAL 	0 1	; cases
+	5	[86]	GETUPVAL 	1 0	; index
+	6	[86]	GETTABLE 	0 0 1
+	7	[87]	TEST     	0 0 1
+	8	[87]	JMP      	6	; to 15
+	9	[87]	GETGLOBAL	1 -2	; core
+	10	[87]	GETTABLE 	1 1 -3	; "after"
+	11	[87]	LOADK    	2 -4	; 22
+	12	[87]	GETUPVAL 	3 2	; finish
+	13	[87]	CALL     	1 3 1
+	14	[87]	RETURN   	0 1
+	15	[88]	GETTABLE 	1 0 -5	; "low"
+	16	[88]	TEST     	1 0 1
+	17	[88]	JMP      	1	; to 19
+	18	[88]	LOADK    	1 -6	; 31000
+	19	[88]	GETTABLE 	2 0 -7	; "high"
+	20	[88]	TEST     	2 0 1
+	21	[88]	JMP      	1	; to 23
+	22	[88]	LOADK    	2 -8	; -31000
+	23	[89]	GETTABLE 	3 0 -5	; "low"
+	24	[89]	TEST     	3 0 1
+	25	[89]	JMP      	35	; to 61
+	26	[90]	GETTABLE 	3 0 -9	; "z"
+	27	[90]	GETTABLE 	4 0 -10	; "r"
+	28	[90]	SUB      	3 3 4
+	29	[90]	GETTABLE 	4 0 -9	; "z"
+	30	[90]	GETTABLE 	5 0 -10	; "r"
+	31	[90]	ADD      	4 4 5
+	32	[90]	LOADK    	5 -1	; 1
+	33	[90]	FORPREP  	3 26	; to 60
+	34	[90]	GETTABLE 	7 0 -11	; "x"
+	35	[90]	GETTABLE 	8 0 -10	; "r"
+	36	[90]	SUB      	7 7 8
+	37	[90]	GETTABLE 	8 0 -11	; "x"
+	38	[90]	GETTABLE 	9 0 -10	; "r"
+	39	[90]	ADD      	8 8 9
+	40	[90]	LOADK    	9 -1	; 1
+	41	[90]	FORPREP  	7 17	; to 59
+	42	[91]	GETGLOBAL	11 -12	; grug_zones
+	43	[91]	GETTABLE 	11 11 -13	; "terrain_height_at"
+	44	[91]	MOVE     	12 10
+	45	[91]	MOVE     	13 6
+	46	[91]	CALL     	11 3 2
+	47	[91]	GETGLOBAL	12 -14	; math
+	48	[91]	GETTABLE 	12 12 -15	; "min"
+	49	[91]	MOVE     	13 1
+	50	[91]	SUB      	14 11 -16	; - 3
+	51	[91]	CALL     	12 3 2
+	52	[91]	MOVE     	1 12
+	53	[91]	GETGLOBAL	12 -14	; math
+	54	[91]	GETTABLE 	12 12 -17	; "max"
+	55	[91]	MOVE     	13 2
+	56	[91]	ADD      	14 11 -18	; - 5
+	57	[91]	CALL     	12 3 2
+	58	[91]	MOVE     	2 12
+	59	[90]	FORLOOP  	7 -18	; to 42
+	60	[90]	FORLOOP  	3 -27	; to 34
+	61	[94]	GETGLOBAL	3 -2	; core
+	62	[94]	GETTABLE 	3 3 -19	; "emerge_area"
+	63	[94]	NEWTABLE 	4 0 3
+	64	[94]	GETTABLE 	5 0 -11	; "x"
+	65	[94]	GETTABLE 	6 0 -10	; "r"
+	66	[94]	SUB      	5 5 6
+	67	[94]	SETTABLE 	4 -11 5	; "x" -
+	68	[94]	SETTABLE 	4 -20 1	; "y" -
+	69	[94]	GETTABLE 	5 0 -9	; "z"
+	70	[94]	GETTABLE 	6 0 -10	; "r"
+	71	[94]	SUB      	5 5 6
+	72	[94]	SETTABLE 	4 -9 5	; "z" -
+	73	[94]	NEWTABLE 	5 0 3
+	74	[94]	GETTABLE 	6 0 -11	; "x"
+	75	[94]	GETTABLE 	7 0 -10	; "r"
+	76	[94]	ADD      	6 6 7
+	77	[94]	SETTABLE 	5 -11 6	; "x" -
+	78	[94]	SETTABLE 	5 -20 2	; "y" -
+	79	[94]	GETTABLE 	6 0 -9	; "z"
+	80	[94]	GETTABLE 	7 0 -10	; "r"
+	81	[94]	ADD      	6 6 7
+	82	[94]	SETTABLE 	5 -9 6	; "z" -
+	83	[97]	CLOSURE  	6 0	; 0x2d72280
+	84	[97]	GETUPVAL 	0 3	; read_case
+	85	[97]	MOVE     	0 0
+	86	[94]	CALL     	3 4 1
+	87	[98]	RETURN   	0 1
+
+function <tools/r10_map_b/engine_probe/init.lua:94,97> (23 instructions, 92 bytes at 0x2d72280)
+3 params, 6 slots, 2 upvalues, 3 locals, 7 constants, 1 function
+	1	[95]	GETGLOBAL	3 -1	; assert
+	2	[95]	GETGLOBAL	4 -2	; core
+	3	[95]	GETTABLE 	4 4 -3	; "EMERGE_CANCELLED"
+	4	[95]	EQ       	1 1 4
+	5	[95]	JMP      	4	; to 10
+	6	[95]	GETGLOBAL	4 -2	; core
+	7	[95]	GETTABLE 	4 4 -4	; "EMERGE_ERRORED"
+	8	[95]	EQ       	0 1 4
+	9	[95]	JMP      	1	; to 11
+	10	[95]	LOADBOOL 	4 0 1
+	11	[95]	LOADBOOL 	4 1 0
+	12	[95]	LOADK    	5 -5	; "MAP-B emerge failed"
+	13	[95]	CALL     	3 3 1
+	14	[96]	EQ       	0 2 -6	; - 0
+	15	[96]	JMP      	7	; to 23
+	16	[96]	GETGLOBAL	3 -2	; core
+	17	[96]	GETTABLE 	3 3 -7	; "after"
+	18	[96]	LOADK    	4 -6	; 0
+	19	[96]	CLOSURE  	5 0	; 0x2d85d70
+	20	[96]	GETUPVAL 	0 0	; read_case
+	21	[96]	GETUPVAL 	0 1	; case
+	22	[96]	CALL     	3 3 1
+	23	[97]	RETURN   	0 1
+
+function <tools/r10_map_b/engine_probe/init.lua:96,96> (4 instructions, 16 bytes at 0x2d85d70)
+0 params, 2 slots, 2 upvalues, 0 locals, 0 constants, 0 functions
+	1	[96]	GETUPVAL 	0 0	; read_case
+	2	[96]	GETUPVAL 	1 1	; case
+	3	[96]	CALL     	0 2 1
+	4	[96]	RETURN   	0 1
+
+function <tools/r10_map_b/engine_probe/init.lua:99,99> (6 instructions, 24 bytes at 0x2d8bdf0)
+0 params, 3 slots, 1 upvalue, 0 locals, 3 constants, 0 functions
+	1	[99]	GETGLOBAL	0 -1	; core
+	2	[99]	GETTABLE 	0 0 -2	; "after"
+	3	[99]	LOADK    	1 -3	; 0
+	4	[99]	GETUPVAL 	2 0	; next_case
+	5	[99]	CALL     	0 3 1
+	6	[99]	RETURN   	0 1
