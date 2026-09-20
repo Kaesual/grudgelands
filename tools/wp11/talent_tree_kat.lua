@@ -215,6 +215,9 @@ local function build_env(repo, clock)
 	function grug_core.register_on_equipment_change(func)
 		clock.equipment_callbacks[#clock.equipment_callbacks + 1] = func
 	end
+	function grug_core.register_on_settled_outgoing_action(func)
+		clock.settled_callbacks[#clock.settled_callbacks + 1] = func
+	end
 	function grug_core.notify_equipment_change(player, listname, reason)
 		for _, callback in ipairs(clock.equipment_callbacks) do
 			callback(player, listname, reason)
@@ -250,11 +253,22 @@ local function build_env(repo, clock)
 	function grug_core.set_move_immunity(player, duration)
 		clock.move_immunity = duration
 	end
+	function grug_core.clear_negative_move_modifiers()
+		clock.cleared_negative = (clock.cleared_negative or 0) + 1
+	end
 	function grug_core.set_root(player, duration)
 		clock.root_effect = duration
 	end
+	function grug_core.refuse_mounted_attack()
+		return clock.mounted == true
+	end
 	function grug_core.deal_ability_damage(owner, target, amount, opts)
 		clock.damage = {amount = amount, opts = opts}
+		if clock.damage_accept ~= false then
+			for _, callback in ipairs(clock.settled_callbacks) do
+				callback(owner, opts.action_id, "damage")
+			end
+		end
 		return amount
 	end
 	function grug_core.scale_player_value(player, amount)
@@ -607,7 +621,7 @@ local function run_checks(repo)
 
 	local clock = {us = 0, chat = {}, commands = {}, absorb = 0,
 		globalsteps = {}, die_callbacks = {}, leave_callbacks = {}, hp_callbacks = {},
-		class_callbacks = {},
+		class_callbacks = {}, settled_callbacks = {},
 		equipment_callbacks = {}, players = {}, spawn_batches = {}, ammo = 20,
 		consumed = 0, refunded = 0}
 	clock.captured, clock.cancelled = 0, {}
@@ -1341,6 +1355,8 @@ local function run_checks(repo)
 		"Sidestep dispatcher starts its dodge window")
 	equal(clock.move_immunity, 4,
 		"Shake Loose clears and blocks movement control for four seconds")
+	equal(clock.cleared_negative, 1,
+		"Shake Loose calls the central negative-movement dispel")
 	local sprint_user = make_player("sprint_gameplay", "scout", 60)
 	abilities.restore_mana(sprint_user, 100000)
 	abilities.try_cast(sprint_user, registered.sprint, {type = "object"})
@@ -1415,6 +1431,13 @@ local function run_checks(repo)
 	env.grug_projectiles.registered.scout_arrow.on_hit(shot_user,
 		control_target, pin.data, {x = 5, y = 0, z = 0}, 60)
 	equal(clock.root_effect, 3, "Pinning Shot rank three roots for three seconds")
+	clock.root_effect = nil
+	clock.damage_accept = false
+	env.grug_projectiles.registered.scout_arrow.on_hit(shot_user,
+		control_target, pin.data, {x = 5, y = 0, z = 0}, 60)
+	clock.damage_accept = true
+	equal(clock.root_effect, nil,
+		"absorbed or callback-refused Pinning Shot applies no root")
 
 	-- Spawn refusal rolls back the batch before ammo payment and refund.
 	local fail_user = forged("draw_failure", "scout", 60, "strong_draw=1")
@@ -1465,6 +1488,18 @@ local function run_checks(repo)
 	clock.scout_globalstep(0.05)
 	check(not abilities.scout_draw_active(fail_user),
 		"wield change did not cancel the held draw")
+	fail_user._wield = make_stack("grug_abilities:loose")
+	fail_user._control.dig = true
+	abilities.try_cast(fail_user, registered.loose, nil)
+	local mounted_ammo = clock.ammo
+	clock.mounted = true
+	fail_user._control.dig = false
+	clock.scout_globalstep(0.5)
+	clock.mounted = false
+	equal(clock.ammo, mounted_ammo,
+		"mounting during a held draw refuses release without ammunition cost")
+	check(not abilities.scout_draw_active(fail_user),
+		"mounted release did not clear the held draw")
 
 	-- Opening pays only for the target's rear hemisphere. The proc consumes
 	-- the authoritative main-hand context and includes Fine Edge exactly once.

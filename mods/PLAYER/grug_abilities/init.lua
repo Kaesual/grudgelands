@@ -1228,6 +1228,7 @@ local function prepare_authoritative_swing(player, target, fraction, token)
 		debug_name = swing.debug_name,
 		transaction = swing.debug_name and swing or nil,
 		proc = swing.proc,
+		proc_cost = swing.proc_cost,
 		post = swing.post,
 	}
 	return context
@@ -1267,7 +1268,7 @@ local function finish_authoritative_swing(context, result)
 		grant_battlebeat()
 		return false
 	end
-	if not spend(context.player, context.proc.cost) then
+	if not spend(context.player, context.proc_cost) then
 		-- Preparation and finish are synchronous around one punch, so this is
 		-- reachable only if foreign callback code mutates our private resource
 		-- tables. Keep the charge/effect untouched and report the free damage.
@@ -1417,15 +1418,17 @@ attempt_swing = function(player, selected, held, latched)
 		"melee_damage_add")
 	local raw_damage = weapon_damage + melee_bonus + melee_damage_add
 	local proc
+	local proc_cost
 	local post
 	local threat_mult = 1
 	-- Selection is read live at this actual due swing. An unavailable or
 	-- unaffordable proc stays armed and the ordinary swing still lands. Its
 	-- replacement amount is assembled before the transaction crosses the
 	-- scalar, so even Mighty Blow has exactly one scaling pass.
+	local selected_cost = grug_abilities.cost_for(player, selected.cost)
 	if selected.proc_swing
 			and grug_abilities.charge_ready(player, selected)
-			and affordable(player, selected.cost) then
+			and affordable(player, selected_cost) then
 		local proc_damage, proc_threat, proc_post = selected.proc_swing(player,
 			target, {
 			weapon_damage = weapon_damage,
@@ -1436,6 +1439,7 @@ attempt_swing = function(player, selected, held, latched)
 		if proc_damage ~= nil then
 			raw_damage = proc_damage
 			proc = selected
+			proc_cost = selected_cost
 			threat_mult = proc_threat or 1
 			post = proc_post
 		end
@@ -1452,6 +1456,7 @@ attempt_swing = function(player, selected, held, latched)
 		melee_bonus = melee_bonus,
 		raw_damage = raw_damage,
 		proc = proc,
+		proc_cost = proc_cost,
 		post = post,
 		threat_mult = threat_mult,
 		-- The complete gear + flat Strength amount crosses the one player-level

@@ -931,11 +931,11 @@ function grug_items.get_equipment_armor_rating_bonus(player)
 end
 
 local original_equipment_changed = grug_inventory.equipment_changed
-grug_inventory.equipment_changed = function(player, listname)
+grug_inventory.equipment_changed = function(player, listname, reason)
 	if player and player.get_player_name then
 		aggregate_cache[player:get_player_name()] = nil
 	end
-	return original_equipment_changed(player, listname)
+	return original_equipment_changed(player, listname, reason)
 end
 grug_inventory.invalidate_armor = grug_inventory.equipment_changed
 

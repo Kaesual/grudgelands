@@ -327,6 +327,22 @@ function grug_core.clear_root(player)
 	settle(player, pname, rec)
 end
 
+-- Remove current roots and every named movement penalty while preserving
+-- beneficial modifiers, holds and mount-independent state. Shake Loose uses
+-- this before arming immunity, so an older slow cannot resume afterward.
+function grug_core.clear_negative_move_modifiers(player)
+	local pname, rec = peek(player)
+	if not pname or not rec then return end
+	prune(rec, now())
+	rec.root = nil
+	for name, entry in pairs(rec.mods) do
+		if entry.speed < 0 or entry.jump < 0 then
+			rec.mods[name] = nil
+		end
+	end
+	settle(player, pname, rec)
+end
+
 -- Root/slow immunity for `duration` seconds: drops a running root and makes
 -- every negative modifier inert while it lasts (see `combine`). This is the
 -- seam WP11's Hold Ground and Shake Loose are specified against

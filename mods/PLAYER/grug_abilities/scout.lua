@@ -6,6 +6,7 @@ local ARROW_SPEED = 40
 local DRAW_STEP = 0.05
 local draws = {}
 local draw_wear_steps = {}
+local pending_control = {}
 local next_action = 0
 
 local function action_id(player, ability)
@@ -61,6 +62,16 @@ local function apply_slow(target, duration, factor)
 	end
 end
 
+grug_core.register_on_settled_outgoing_action(function(player, action_id, kind)
+	if kind ~= "damage" then return end
+	local per_player = pending_control[player:get_player_name()]
+	local pending = per_player and per_player[action_id]
+	if not pending then return end
+	per_player[action_id] = nil
+	if pending.slow then apply_slow(pending.target, pending.slow, 0.5) end
+	if pending.root then apply_root(pending.target, pending.root) end
+end)
+
 grug_projectiles.register(ARROW_PROJECTILE, {
 	speed = ARROW_SPEED,
 	max_distance = 25,
@@ -77,18 +88,33 @@ grug_projectiles.register(ARROW_PROJECTILE, {
 		if data.longshot and vector.distance(data.origin, point) > 25 then
 			damage = damage + 4
 		end
-		local dealt = grug_core.deal_ability_damage(owner, target, damage, {
+		local name = owner:get_player_name()
+		local per_player = pending_control[name]
+		if not per_player then
+			per_player = {}
+			pending_control[name] = per_player
+		end
+		if data.slow or data.root then
+			per_player[data.action_id] = {
+				target = target, slow = data.slow, root = data.root,
+			}
+		end
+		grug_core.deal_ability_damage(owner, target, damage, {
 			attacker_level = attacker_level,
 			action_id = data.action_id,
 		})
-		if dealt > 0 then
-			if data.slow then apply_slow(target, data.slow, 0.5) end
-			if data.root then apply_root(target, data.root) end
-		end
+		-- Settlement is synchronous inside deal_ability_damage. Anything still
+		-- pending was dodged, absorbed or refused by PvP/mobs callbacks.
+		per_player[data.action_id] = nil
 	end,
 })
 
 local function launch(player, ability, count, fraction, effect, captured)
+	if grug_core.refuse_mounted_attack and
+			grug_core.refuse_mounted_attack(player) == true then
+		if captured then cancel_receipt(player, captured) end
+		return false, "You cannot attack while mounted."
+	end
 	local bow = equipped_bow(player)
 	local base_damage = arrow_damage(player)
 	if not bow or not base_damage then
@@ -245,6 +271,12 @@ local function release_draw(player, rec)
 	end
 	draws[player:get_player_name()] = nil
 	draw_wear_steps[player:get_player_name()] = nil
+	if grug_core.refuse_mounted_attack and
+			grug_core.refuse_mounted_attack(player) == true then
+		cancel_receipt(player, rec.action_id)
+		set_draw_wear(player, 1)
+		return
+	end
 	local draw_time = effective_draw_time(player)
 	local fraction = math.min(1,
 		math.max(0, (core.get_us_time() - rec.started) / (draw_time * 1e6)))
@@ -289,7 +321,10 @@ core.register_globalstep(function(dtime)
 end)
 
 core.register_on_dieplayer(clear_draw)
-core.register_on_leaveplayer(clear_draw)
+core.register_on_leaveplayer(function(player)
+	clear_draw(player)
+	pending_control[player:get_player_name()] = nil
+end)
 
 grug_core.register_on_equipment_change(function(player, listname, reason)
 	if listname == nil or listname == "grug_weapon" then
