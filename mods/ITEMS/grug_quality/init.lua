@@ -870,7 +870,7 @@ local function equipment_totals(player)
 	if cached then return cached end
 	local totals = {str = 0, dex = 0, int = 0, crit_percent = 0,
 		dodge_percent = 0, armor_rating = 0, max_hp_percent = 0,
-		max_mana_percent = 0, refined_armor = 0}
+		max_mana_percent = 0, refined_armor = 0, refined_mana_percent = 0}
 	local inventory = player:get_inventory()
 	for _, slot in ipairs(grug_inventory.equipment_slots) do
 		local stack = inventory:get_stack(slot.list, 1)
@@ -893,6 +893,14 @@ local function equipment_totals(player)
 				local effective = described and described.armor or
 					math.floor(armor * 1.15 + 0.5)
 				totals.refined_armor = totals.refined_armor + effective - armor
+			end
+			local base_mana = tonumber(def._grug_max_mana_percent) or 0
+			if base_mana > 0 and meta:get_int("grug_refined") == 1 then
+				local _, described = grug_gear.describe_stack_base(stack,
+					effective_ilvl(stack), true)
+				totals.refined_mana_percent = totals.refined_mana_percent +
+					(tonumber(described and described.max_mana_percent) or base_mana) -
+					base_mana
 			end
 		end
 	end
@@ -933,7 +941,9 @@ grug_inventory.invalidate_armor = grug_inventory.equipment_changed
 grug_classes.get_equipment_pool_percent = function(player, pool)
 	local totals = equipment_totals(player)
 	if pool == "hp" then return totals.max_hp_percent or 0 end
-	if pool == "mana" then return totals.max_mana_percent or 0 end
+	if pool == "mana" then
+		return (totals.max_mana_percent or 0) + (totals.refined_mana_percent or 0)
+	end
 	return 0
 end
 

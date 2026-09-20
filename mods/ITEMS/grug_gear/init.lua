@@ -275,6 +275,19 @@ function grug_gear.describe_stack_base(stack, ilvl, refined)
 		return lines, {damage = damage,
 			full_punch_interval = base_caps.full_punch_interval or 1.4}
 	end
+	if (groups.grug_shield or 0) > 0 then
+		local rating = tonumber(def._grug_armor) or 0
+		if refined then rating = math.floor(rating * 1.15 + 0.5) end
+		lines[#lines + 1] = core.colorize(STAT_COLOR, rating .. " armor rating")
+		return lines, {armor = rating}
+	end
+	if (groups.grug_spellbook or 0) > 0 then
+		local mana = tonumber(def._grug_max_mana_percent) or 0
+		if refined then mana = mana * 1.15 end
+		lines[#lines + 1] = core.colorize(STAT_COLOR,
+			"+" .. string.format("%.2g", mana) .. "% maximum Mana")
+		return lines, {max_mana_percent = mana}
+	end
 	local rank = tonumber(groups.grug_armor_class)
 	if rank then
 		local line_key = rank == 3 and "metal" or rank == 2 and "leather" or

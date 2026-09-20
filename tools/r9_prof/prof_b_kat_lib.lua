@@ -105,6 +105,7 @@ return function(repo, spec)
 		function core.get_current_modname() return current_mod end
 		function core.get_modpath(name)
 			if name == "grug_gear" then return repo .. "/mods/ITEMS/grug_gear" end
+			if name == "grug_jobs" then return repo .. "/mods/PLAYER/grug_jobs" end
 			if name == "grug_artisans" then
 				return repo .. "/mods/ITEMS/grug_artisans"
 			end
