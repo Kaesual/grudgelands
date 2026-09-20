@@ -799,9 +799,9 @@ function grug_abilities.register_ability(def)
 		wield_image = "grug_abilities_orb.png^[multiply:" .. def.color,
 		range = def.range or 4,
 		stack_max = 1,
-		groups = {grug_ability = 1, not_in_creative_inventory = 1},
-		on_drop = function(itemstack)
-			return itemstack -- ability items cannot be dropped
+		groups = {grug_ability = 1, grug_bound_skill = 1, not_in_creative_inventory = 1},
+		on_drop = function()
+			return ItemStack("")
 		end,
 		-- Right-click never cast and still does not; both callbacks only hand
 		-- the click on to an interactive node (see the block above this
@@ -937,18 +937,9 @@ local function set_item_wear(player, ability_id, wear)
 	end
 end
 
--- Ability items live in the main inventory only — stashing one in a bag
--- would hide its cooldown and used to confuse the kit sync. NB other
--- allow callbacks OR-combine (see grug_inventory): return nil when
--- unconcerned, a number swallows later callbacks.
-core.register_allow_player_inventory_action(function(player, action, inventory, info)
-	if action == "move" and info.to_list ~= "main" then
-		local stack = inventory:get_stack(info.from_list, info.from_index)
-		if item_defs[stack:get_name()] then
-			return 0
-		end
-	end
-end)
+-- Destination policy for ability and mount representations is centralized in
+-- grug_skills. Source-side take callbacks cannot distinguish Q/drop from an
+-- external transfer, so this mod deliberately registers no take veto.
 
 --
 -- Cooldowns belong to cast skills. Swing timing uses the shared authoritative
@@ -2130,203 +2121,112 @@ core.register_on_mods_loaded(function()
 end)
 
 --
--- Kit granting: exactly one item per class ability, foreign class items are
--- purged, wear resets with the (runtime) cooldowns. Runs on join and on
--- class pick/switch. Talent-gated abilities (def.talent_gated, e.g. Renew)
--- stay registered but are NOT part of the base kit — WP11's talent system
--- will grant them. The elf range passive lands here as a per-stack meta
--- `range` override (engine 5.9+: overrides the pointing range), so
--- pointed_thing reaches as far as grug_abilities.get_range allows.
+-- Ability entitlement and representation normalization.
 --
-
--- Does this ability belong in THIS character's kit? One predicate, used by both
--- the purge below and the grant loop, so the two can never disagree about what
--- a kit is. Universal Strike is granted to every class and must be
--- exempt from the purge (or it is granted and destroyed in the same pass).
 local function in_kit(def, class)
 	return def.universal or def.class == class
 end
 
--- Every ability this character gets, in hotbar order: universal first (E1 —
--- Strike lands on key 1 for everyone), then the class kit. Talent-
--- gated abilities are left out entirely, so a def's position in this list IS
--- its hotbar slot (Renew must not push Power Word: Shield off key 4).
-local function kit_of(class)
-	local kit = {}
-	for _, def in ipairs(grug_abilities.universal) do
-		if not def.talent_gated then
-			kit[#kit + 1] = def
-		end
+function grug_abilities.is_unlocked(player, ability_id)
+	local def = grug_abilities.registered[ability_id]
+	if not def or not in_kit(def, grug_classes.get_class(player)) then
+		return false
 	end
-	for _, def in ipairs(grug_abilities.by_class[class] or {}) do
-		if not def.talent_gated then
-			kit[#kit + 1] = def
-		end
+	if def.talent_gated then
+		return grug_classes.talent_rank(player, def.talent or def.id) > 0
 	end
-	return kit
+	return true
 end
 
--- Put a freshly granted ability item at its kit position instead of wherever
--- there happens to be room.
---
--- `inv:add_item("main", stack)` takes the first FREE slot, so E1's "first in
--- the hotbar, key 1 for everyone" only ever held for a character created after
--- the ability existed: every already-playing Warrior had keys 1-4 filled with
--- the class kit granted in an earlier session and got the universal Strike
--- behind it. That is not a migration case that fades — it is the state of every
--- live character on the day this ships.
---
--- Only NEWLY granted items are placed. Rearranging the whole kit on every join
--- would undo the hotbar order a player chose for themselves (ability items are
--- locked to `main`, but they can be moved around inside it).
-local function grant_at(inv, stack, index)
-	local size = inv:get_size("main")
-	if index < 1 or index > size then
-		inv:add_item("main", stack)
-		return
-	end
-	local occupant = inv:get_stack("main", index)
-	if occupant:is_empty() then
-		inv:set_stack("main", index, stack)
-		return
-	end
-	-- The slot is taken — by the player's own item, or by an ability granted
-	-- before this one existed. Move it aside rather than destroying it.
-	local free
-	for i = 1, size do
-		if inv:get_stack("main", i):is_empty() then
-			free = i
-			break
+function grug_abilities.unlocked_ids(player)
+	local result = {}
+	local function append(def)
+		if grug_abilities.is_unlocked(player, def.id) then
+			result[#result + 1] = def.id
 		end
 	end
-	if not free then
-		inv:add_item("main", stack) -- pack full: exactly as before, i.e. lost
-		return
+	for _, def in ipairs(grug_abilities.universal) do append(def) end
+	for _, def in ipairs(grug_abilities.by_class[grug_classes.get_class(player)] or {}) do
+		append(def)
 	end
-	inv:set_stack("main", free, occupant)
-	inv:set_stack("main", index, stack)
+	return result
 end
 
-local function sync_kit(player)
-	local class = grug_classes.get_class(player)
+local function representation_wear(player, def)
 	local name = player:get_player_name()
-	-- Join and the class pick at character creation land here; the third
-	-- entry path, a class SWITCH, cannot occur any more (ruling 20 of
-	-- 2026-09-16, skill_trees.md §1.4/§3.10, removed class changing from the
-	-- game for admins too). WP11's respec becomes the second re-granting
-	-- caller: it has to take back a talent-granted button. Either way this
-	-- wipes runtime cooldowns, charges, targets and the attack clock before
-	-- re-granting, and wiping the charges makes the kit start fully charged:
-	-- no record IS the charged state (see the charge timers section).
-	clear_swing_progress(player)
-	targets[name] = nil
-	cooldowns[name] = {}
-	cast_intervals[name] = {}
-	charges[name] = {}
-	wear_steps[name] = {}
-	charge_steps[name] = {}
-	slot_cache[name] = {}
-	local source_of = skin_source_cache(player)
+	if def.kind == "swing" and def.charge then
+		local frac = grug_abilities.charge_fraction(player, def)
+		return math.floor((1 - math.max(0, math.min(1, frac))) * 65534)
+	end
+	local rec = cooldowns[name] and cooldowns[name][def.id]
+	if not rec then return 0 end
+	local remaining = math.max(0, (rec.expiry - core.get_us_time()) / 1e6)
+	return math.floor(math.min(1, remaining / rec.duration) * 65534)
+end
+
+function grug_abilities.stack_for(player, ability_id)
+	local def = grug_abilities.registered[ability_id]
+	if not def or not grug_abilities.is_unlocked(player, ability_id) then return nil end
+	local stack = ItemStack("grug_abilities:" .. ability_id)
+	local effective = grug_abilities.get_range(player, def)
+	if effective > (def.range or 4) then stack:get_meta():set_float("range", effective) end
+	apply_skin(stack, def, skin_source_cache(player)(def))
+	if def.slot == "weapon" then apply_swing_caps(stack, def, player) end
+	apply_charge_bar(stack, def)
+	grug_abilities.update_stack_description(stack, def, player)
+	stack:set_wear(representation_wear(player, def))
+	return stack
+end
+
+local function allowed_storage(listname)
+	if listname == "main" then return true end
+	if not core.global_exists("grug_inventory") then return false end
+	for i = 1, grug_inventory.BAG_COUNT do
+		if listname == grug_inventory.content_list(i) then return true end
+	end
+	return false
+end
+
+function grug_abilities.normalize_kit(player)
 	local inv = player:get_inventory()
 	local have = {}
 	for listname, list in pairs(inv:get_lists()) do
-		-- Equipment lists are skipped ENTIRELY, purge included: writing one
-		-- bypasses grug_inventory's cache-drop/notify contract
-		-- (equipment.lua:56-78), which is the one rule T5 asks of every writer,
-		-- and this loop is the only writer in the game that could break it. No
-		-- ability item can reach such a list either -- the equip gate refuses
-		-- anything without the slot's group and the allow callback above refuses
-		-- moving an ability item out of "main" -- so nothing is lost by not
-		-- looking. Closing it by NOT writing rather than by announcing the write
-		-- is what keeps grug_abilities free of a dependency on grug_inventory.
 		if not equipment_list[listname] then
 			for i, stack in ipairs(list) do
 				local def = item_defs[stack:get_name()]
 				if def then
-					-- Only granted items in "main" count as present:
-					-- foreign-class items, talent-gated items (not granted
-					-- yet), duplicates and strays in other lists (bags from
-					-- old saves) are removed; own-class strays re-granted
-					-- into main below.
-					if not in_kit(def, class) or def.talent_gated or
-							listname ~= "main" or have[stack:get_name()] then
+					if not allowed_storage(listname) or
+							not grug_abilities.is_unlocked(player, def.id) or have[def.id] then
 						inv:set_stack(listname, i, ItemStack(""))
 					else
-						have[stack:get_name()] = true
-						local changed = false
-						if stack:get_wear() ~= 0 then
-							stack:set_wear(0)
-							changed = true
-						end
-						local meta = stack:get_meta()
-						-- The override exists only while the EFFECTIVE range
-						-- differs from the item definition's own. E7's melee
-						-- opt-out lives inside get_range, so the reach the
-						-- engine allows and the reach the lock fallback checks
-						-- cannot drift apart.
-						local base = def.range or 4
-						local effective = grug_abilities.get_range(player, def)
-						local desired = effective > base and effective or 0
-						if meta:get_float("range") ~= desired then
-							if desired > 0 then
-								meta:set_float("range", desired)
-							else
-								meta:set_string("range", "") -- remove override
-							end
-							changed = true
-						end
-						-- The skin, same discipline as the range override
-						-- above: compare first, write once, or not at all.
-						if apply_skin(stack, def, source_of(def)) then
-							changed = true
-						end
-						if def.slot == "weapon" and
-								apply_swing_caps(stack, def, player) then
-							changed = true
-						end
-						-- The charge bar ramp, same discipline (classes.md
-						-- §2b): the params either exist or not, and the
-						-- token answers that.
-						if apply_charge_bar(stack, def) then
-							changed = true
-						end
-						if grug_abilities.update_stack_description(stack, def, player) then
-							changed = true
-						end
-						if changed then
-							inv:set_stack(listname, i, stack)
-						end
+						have[def.id] = true
+						local fresh = grug_abilities.stack_for(player, def.id)
+						if fresh then inv:set_stack(listname, i, fresh) end
 					end
 				end
 			end
 		end
 	end
-	for index, def in ipairs(kit_of(class)) do
-		local itemname = "grug_abilities:" .. def.id
-		if not have[itemname] then
-			local stack = ItemStack(itemname)
-			local effective = grug_abilities.get_range(player, def)
-			if effective > (def.range or 4) then
-				stack:get_meta():set_float("range", effective)
+end
+
+local function grant_initial_kit(player)
+	local inv = player:get_inventory()
+	for index, ability_id in ipairs(grug_abilities.unlocked_ids(player)) do
+		local def = grug_abilities.registered[ability_id]
+		if not def.talent_gated then
+			local stack = grug_abilities.stack_for(player, ability_id)
+			if stack then
+				local slot = inv:get_stack("main", index)
+				if slot:is_empty() then inv:set_stack("main", index, stack)
+				else inv:add_item("main", stack) end
 			end
-			-- Skin it BEFORE it reaches the inventory: a freshly granted item
-			-- must not spend one write appearing as an orb and a second one
-			-- turning into the weapon.
-			apply_skin(stack, def, source_of(def))
-			if def.slot == "weapon" then
-				apply_swing_caps(stack, def, player)
-			end
-			-- Charge bar ramp, same "before it reaches the inventory" rule:
-			-- a charging skill must never appear without its ramp.
-			apply_charge_bar(stack, def)
-			grug_abilities.update_stack_description(stack, def, player)
-			grant_at(inv, stack, index)
 		end
 	end
 end
 
 grug_classes.register_on_class_chosen(function(player, class_id)
-	sync_kit(player)
+	grug_abilities.normalize_kit(player)
+	grant_initial_kit(player)
 	refill_mana(player)
 	clamp_mana(player)
 	rage[player:get_player_name()] = 0
@@ -2338,6 +2238,7 @@ end)
 -- changed stats, so descriptions see the final value.
 if grug_classes.register_on_talents_changed then
 	grug_classes.register_on_talents_changed(function(player)
+		grug_abilities.normalize_kit(player)
 		sync_descriptions(player)
 		clamp_mana(player)
 		hud_update(player)
@@ -2785,7 +2686,7 @@ core.register_on_joinplayer(function(player)
 		layout.image_element("reticle", {text = "", z_index = 1}))}
 	rage[name] = 0
 	refill_mana(player)
-	sync_kit(player)
+	grug_abilities.normalize_kit(player)
 	-- Watcher baseline AFTER the kit sync, so the snapshot is the post-grant
 	-- wielded slot. Recording is feedback-free by design: nothing changed,
 	-- so no "Strike" popup on login.
