@@ -106,3 +106,29 @@ worker to FARM ecology while GEAR continues. WORLD then independent review; ART
 media via new files/patches, not simultaneous registration writes. Later COMBAT,
 REPAIR and SCOUT still required. No partial-package final answer or playtest-ready
 claim; no sync/main/push has occurred in this round.
+
+### Accepted GAME / current worker rotation
+
+GAME independently CLEAN at `43c09f39` and merged into integration (not main).
+Final report archived at `round11-plan/review/game-final.md`. Implementer native
+Sol with root Astra integration fixes; independent reviewer native Sol. Initial
+findings0C/0H/3M, four correction iterations including vendor crossreferences,
+final0open; elapsedunknown. Actual floor seam regression caught andfixed.
+
+`r11_game_review` now owns FARM ecology in `.claude/worktrees/r11-farm`, starting
+at rootwater/hoe e3469484; it must not independently review its own FARM work.
+`playtest_creatures_camera` is inactive. Native thread slots may require reuse
+of an existing idle handle instead of resurrecting a retired one; never useCLI
+as a workaround. WORLD supplied exact existing geometry bridge locations for
+FARM: zones.lua planner_source -> originalhorizontal/height queries, publish via
+r7_loader built.planner_source; no duplicatedgeometry/constructor.
+
+ART worktree `.claude/worktrees/r11-art`, branch `wp29-r11-art`, basef0173d85.
+Root prepared sourcecontactsheet `/tmp/grudgelands-r11-reference-contact.png`
+and detailed boundedhandoff `/tmp/grudgelands-r11-art-handoff.md` (archive upon
+ARTassignment). One imagegen quiver fills an identified referencegap; original
+`/home/jan/.codex/generated_images/01a0bb7c-607d-7420-9795-366d4be0d06a/exec-49912ac9-fe32-40b7-a0eb-3e0ca8aac5bf.png`
+copied into ART `mods/PLAYER/grug_inventory/textures/grug_inventory_quiver.png`.
+Actual1254x1254transparentRGBA, visuallyacceptedroot, notyetcommitted/consumed.
+RemainingART uses licensedreferenceassets. Read imagegen skill only if needed;
+no CLI/APIfallback was used.
