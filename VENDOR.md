@@ -182,7 +182,7 @@ combat-physics rulings:
   vendored tree in `grug_core`.
 
 **Historical Round-5 snapshot: 59 markers in `mobs/api.lua`, plus one in
-`mobs/grug_obstacle.lua`.** The current inventory is 62 markers, as recorded
+`mobs/grug_obstacle.lua`.** The current inventory is 65 markers, as recorded
 in the vendored-mod row below and in `AGENTS.md`.
 
 ## R8 per-viewer parent-tag isolation (2026-09-18)
@@ -306,7 +306,7 @@ table row below records the replaced implementation, not the current rule.
 WP43 also clears the vendored `mobs:lasso` and `mobs:protector2` recipes from
 the external `grug_materials/content_curation.lua` module because their Mese/Diamond
 inputs are retired. This adds no `mobs_redo` in-place patch and does not change
-the 62-marker inventory above.
+the 65-marker inventory above.
 
 ## Curated code port -- `mods/ITEMS/grug_smelting` (WP26)
 
