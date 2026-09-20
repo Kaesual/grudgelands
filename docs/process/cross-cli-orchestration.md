@@ -22,6 +22,16 @@ not `gpt-astra-6`).
 
 ## 1. Roles and invariants
 
+- **CLI is exclusively cross-provider (user 2026-09-20).** Claude may run
+  Codex CLI workers; Codex may run Claude CLI workers when authorized. For its
+  own provider, a coordinator uses native subagents, including independent
+  reviewers. Never copy the Claude-to-Codex commands below into a Codex
+  coordinator's same-provider workflow, or invoke Claude CLI from Claude for
+  its own subagents. Native thread limits do not permit that workaround.
+- **Current Round 10 session:** no Claude tasks/CLI calls; the user's Claude
+  credits are exhausted. Use native Sol/Astra only as routed by the user.
+  This session restriction does not remove the general cross-provider ability.
+
 - **One orchestrator per session**, whichever CLI the user is talking to. The
   other CLI is a **worker**: one OS process per lane, its own worktree, port
   block, output directory and brief. A worker never delegates further and

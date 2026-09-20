@@ -13,6 +13,24 @@ projects: **[docs/research/](docs/research/)**.
 - Chat with the user is in **German**; code identifiers and code comments
   are in English.
 
+## Agent execution channel
+
+- **Standing user instruction, decided 2026-09-20:** use native subagents for
+  models from the coordinator's own provider. CLI delegation is exclusively
+  for another provider: Claude may invoke Codex CLI, and Codex may invoke
+  Claude CLI when that provider/model is authorized. Codex must never launch
+  Codex CLI for its own implementation or review agents; Claude likewise uses
+  native Claude agents rather than Claude CLI for its own models.
+- This changes execution mechanics, not model authorization or independent
+  review requirements. Read `docs/process/agent-model-policy.md` and
+  `docs/process/cross-cli-orchestration.md` for those rules.
+- **Current Round 10 session:** Claude credits are exhausted. No Claude CLI,
+  Claude agent, Opus or Fable task is authorized in this session. Root is Astra;
+  ordinary implementation/review uses native Sol, with native Astra allowed for
+  hard/performance-critical work. This session restriction can change only by
+  a later explicit user instruction. Durable active work state:
+  `docs/research/round10-execution.md`.
+
 ## Fresh-server development mode
 
 - **Standing user instruction, decided 2026-09-13:** the first release is

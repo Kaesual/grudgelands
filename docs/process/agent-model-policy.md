@@ -9,6 +9,15 @@ but must not define a competing model priority.
 The user is the final authority over every routing choice, ruling, and merge;
 every clause in this policy yields to an explicit user instruction.
 
+**Execution-channel rule (user 2026-09-20):** models from the coordinator's own
+provider are delegated through native subagents, never through that provider's
+CLI. CLI delegation is exclusively cross-provider: Claude may invoke Codex CLI;
+Codex may invoke Claude CLI, subject to current model/task authorization. This
+applies to both implementation and independent review. A native slot/thread
+limit does not authorize a same-provider CLI workaround. The current Round 10
+session excludes all Claude tasks because the user's Claude credits are
+exhausted; see `../research/round10-execution.md` for active session routing.
+
 **Day-to-day routing rule (decided 2026-09-14):** the role assignments below
 are *defaults*, not mandates. The user decides per session which model
 coordinates, implements and reviews, depending on how they plan their credits

@@ -101,6 +101,14 @@ the old terminal-Codex launch instructions were for Claude. Use native subagents
 for implementation AND fresh independent reviews; no `codex exec` workers.
 Review capacity is scheduled within the available native slots.
 
+Jan's additional clarification is now a standing process rule: CLI delegation
+is exclusively cross-provider (Claude -> Codex CLI; Codex -> Claude CLI).
+Same-provider models always use native subagents, for implementation and review.
+For THIS session Claude credits are exhausted: no Claude CLI, Opus or Fable task
+may be launched. Do not reinterpret the general cross-provider permission as
+current Claude authorization. These rules also live near the top of AGENTS.md
+and in both model-policy and cross-CLI process documents.
+
 The native service currently rejects additional threads at its thread limit,
 including while the old threads are completed. Reuse the three existing workers
 and schedule independent cross-package reviews in contexts that did not author
