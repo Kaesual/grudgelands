@@ -16,9 +16,10 @@ Core principles:
   stats/enchantments. The former "1 skill point per level" in this line was
   superseded by that ruling, together with `progression.md` §2's earlier "1
   point every 3 levels"; the trees the points are spent in are
-  [skill_trees.md](skill_trees.md) (PROPOSAL, revision 2), which also carries
-  the open decision (§6.5) about whether a capstone may exceed one of this
-  file's caps for a bounded time.
+  [skill_trees.md](skill_trees.md) (decided revision 2). Named, bounded
+  rule-breakers may exceed a stat cap only where that design explicitly says
+  so; Round 11 has delivered Unbroken's armor-rating multiplier and emergency
+  window under the unchanged universal 70% reduction cap.
 - **One readable level curve**: player pools and normal-mob HP share the
   rounded `20 + 5L + 0.66L²` base. Class factors, percentages and gear form
   visible secondary axes; level itself does not hide inside attributes.

@@ -1357,16 +1357,17 @@ changes:
 - **Shipped armor lines: metal, cloth and leather** (leather decided
   2026-08-13, superseding 2026-08-07's "does not ship"). The rank rule
   grants each class its own rank **and everything below**
-  (`inventory_equipment.md` §2: Warrior 3 / Mage 1 / Priest 1), so
-  leather (rank 2) ships as the **Warrior's light set**: §6.2's leather
-  pool (+Dex, +max HP%, +crit%, +dodge%) against metal's (+Str, +max HP%,
-  +armor%, +dodge%) is a real mitigation-versus-avoidance choice, and
+  (`inventory_equipment.md` §2: Warrior 3 / Scout 2 / Mage 1 / Priest 1), so
+  leather (rank 2) is the **Scout's armor line** and remains a legal light set
+  for the Warrior. §6.2's leather pool (+Dex, +max HP%, +max Mana%, +crit%,
+  +dodge%) against metal's (+Str, +max HP%, +armor rating, +dodge%) is a real
+  mitigation-versus-avoidance choice, and
   §3.1 already prices leather below metal at equal tier, so plate stays
   the mitigation king. The curve sits in the generator; the 24 leather
   registrations land with WP29's catalog merge. Under the §3.0.3 merge
   this covers the **craft** ladder too — one catalog, so the line ships
-  vendor and craft at once (§3.4). The Rogue (Phase 2) later joins as
-  the intended primary wearer.
+  vendor and craft at once (§3.4). The Scout replaces the retired separate
+  Rogue plan; no later Rogue wearer is implied.
 - Cultural-region vendor presentation and the same-race purchase discount
   layer on top without changing catalog strength or buy-back (§8.2).
 
@@ -2153,9 +2154,10 @@ Enchants are expressed in the item name as **prefixes and suffixes**.
   item family iff its stat is in that family's pool (armor-rating words
   can therefore appear only on metal armor and shields), and the trinket
   exception in §6.2 constrains its two slots the same way. Every word
-  maps to exactly one stat — there is **no poison stat** in this game
-  (see §6.2 and `combat_stats.md` §2; poison arrives with the Rogue in
-  Phase 2, `classes.md` §6), and an affix word for a stat nothing
+  maps to exactly one stat — there is **no player poison stat** in this game
+  (see §6.2 and `combat_stats.md` §2). The separate Rogue plan is retired and
+  the Scout explicitly has no poison in V1; a future poison mechanic would
+  require a new decision. An affix word for a stat nothing
   consumes is a bug, not flavour.
 - Examples: *Stone Sword of the Ox* and *Lucky Stone Sword of the Bear*.
 - **The refinement word disappears as soon as an affix is present.** An
@@ -2427,7 +2429,9 @@ professions). Recommendation: **accept for the MVP** (leather is not
 worn by MVP classes' endgame sets; the flask is consumable, not
 permanent power) and add mirrored recipes in Phase 2 when the Rogue
 makes top leather PvP-relevant.
-**Decided as recommended (2026-08-06).**
+**Decided as recommended (2026-08-06), then superseded 2026-09-16.** The
+Scout replaces the separate Rogue, wears leather in V1 and does not introduce
+poison; no Phase-2 Rogue mirror is current scope.
 
 **P3 — Potion/elixir/food exclusivity.** Healing and mana potions share one
 60 s cooldown. One active elixir and one food restore buff may coexist with
@@ -2535,15 +2539,17 @@ speed%, which are the identity of the armor and melee-weapon rows.
 Consequence, stated rather than discovered later: the §6.3 worst case
 for crit rises from ≈ 30 % on 6 slots to ≈ 36 % on 8 and now **clamps**
 against the 30 % cap of `combat_stats.md` §2 instead of landing on it.
-Dodge (≈ 19 %) and the 60 % armor cap are untouched, because trinkets
-roll neither.
+Dodge (≈ 19 %) was untouched by that decision because trinkets roll neither.
+The referenced 60% armor cap was later superseded by Round 11's attacker-level
+rating formula and universal 70% reduction cap.
 
 **D12 — There is no poison stat** (resolves the poison half of A2).
 §6b.4's *of the snake* (+poison) was an off-hand example, not a
 decision: poison appears in no §6.2 pool, no §6.3 row and nowhere in
 `combat_stats.md`. The example is now *of the cat* (+dodge), and poison
-is booked as the **Rogue's signature damage type for Phase 2**
-(`classes.md` §6). Poison as a *mob* effect (the serpent, and the
+was then booked as the **Rogue's signature damage type for Phase 2**. That
+plan is superseded by the Scout, which has no poison in V1 (`classes.md` §6;
+`scout.md` §1). Poison as a *mob* effect (the serpent, and the
 Alchemist's Antivenom that cures it) is unaffected — that is a mob verb,
 not a player stat.
 

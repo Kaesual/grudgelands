@@ -52,9 +52,8 @@ rulings; the superseded text is named in `skill_trees.md` §5.2.
   (`economy.md` §3/§4.1), and **the first respec of a character is free**. A
   respec is a **full reset**, and **class change is removed from the game
   entirely, for admins too**. *(Supersedes "Respec at the class trainer
-  for gold". `economy.md` §4, `items_crafting.md` §8.3 and `world.md` §1 were
-  corrected on 2026-09-16 and no longer name a class trainer —
-  `skill_trees.md` §7, task 3.)*
+  for gold". `economy.md` §4, `items_crafting.md` §8.3 and `world.md` §1 now
+  state the same no-trainer rule.)*
 - **Level 20 — first Claim Stone:** a short introduction from the passive,
   invulnerable Housing Steward unlocks the first free owner-bound Claim Stone.
   It may be placed only in the authored level-11–30 housing zones and starts

@@ -40,12 +40,23 @@ history where they are clearly labelled and cannot be read as current rules.
   the center-grip pose. Its active bow affix pool matches GEAR. Old statements
   about a nonexistent bow, disabled leather, generated sprites and borrowed
   cloth are retained only as labelled historical quotations. SCOUT still owns
-  the ballistic entity, abilities, class registration and talents.
+  the ballistic entity, abilities, class registration and talents. Its weapon
+  roster includes the accepted greataxe as the two-handed melee route alongside
+  dagger, one-handed sword and bow.
+- Active leather itemization prose now identifies the Scout as the intended
+  wearer, includes Mana in the leather affix pool and treats Warrior access as
+  the below-rank alternative. The separate Rogue and player-poison plans are
+  explicitly retired in both active prose and the labelled decision history.
 - `docs/design/progression.md` and `docs/design/skill_trees.md` now describe
   the approved four-class talent design as decided while keeping the Scout
-  implementation pending. The targeted Round 11 Ironbound/Unbroken armor-
-  rating slice remains explicitly narrower than the rest of the future talent
-  lane.
+  implementation pending. The status, lane table and remaining-task list all
+  distinguish the delivered Round 11 Ironbound/Unbroken armor-rating slice
+  from the rest of the open X3 talent lane. Stale proposal, open-decision and
+  class-trainer metadata has been replaced with the current decided state.
+- `docs/design/README.md` now indexes the talent and Scout documents as
+  decided, records the delivered GEAR/ART dependencies and targeted
+  Ironbound/Unbroken slice, and leaves only the actual SCOUT, REPAIR and
+  remainder-of-X3 consumers pending.
 - `AGENTS.md` now gives the current armor-rating pipeline (`A`, attacker-level
   `K`, 70% cap and Unbroken ordering), the seven-primary profession roster,
   active bow/item foundation with pending SCOUT consumer, the bow/quiver

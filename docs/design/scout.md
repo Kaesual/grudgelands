@@ -42,7 +42,7 @@ decided specifications under the shared arithmetic in `skill_trees.md`.
 | | |
 |---|---|
 | **Armour** | leather — armor class 2 (`inventory_equipment.md:184-193`) |
-| **Weapons** | bow (ranged) and dagger / 1H sword (melee) |
+| **Weapons** | bow (ranged); dagger / 1H sword (one-handed melee); greataxe (two-handed melee). The ordinary weapon slot remains family-agnostic, and every melee family uses the same equipped-main-hand formula. |
 | **Resource** | **mana** — ruling 14, decided. The bar uses the class-neutral level pool `round(20 + 5L + 0.66L²)` before mana-percent gear/talents (`combat_stats.md` §2); Intelligence does not add mana |
 | **Trees** | **Quarry** (bow) and **Veil** (blade and evasion) — `skill_trees.md` §2.7/§2.8, named by ruling 27 |
 | **Attributes** | Dexterity-led; growth **+2 Dex / +1 Str / +1 Int** per level, against `combat_stats.md:40-41`'s Warrior +3 Str/+1 Dex, Mage +3 Int/+1 Dex, Priest +1 Str/+2 Int/+1 Dex |
@@ -156,15 +156,15 @@ The downstream contract is:
 
 - `inventory_equipment.md:184-193`: armor class **cloth 1 < leather 2 <
   metal 3**; a class may wear its rank "and everything below", and leather
-  already ships as "the **Warrior's** light avoidance set" — so a Scout at
-  rank 2 wears leather and cloth, and the below-inclusive rule needs no change
-  beyond the new class's rank.
+  leather is the **Scout's armor line** and remains a legal light avoidance
+  set for the Warrior. A Scout at rank 2 wears leather and cloth, and the
+  below-inclusive rule needs no change beyond the new class's rank.
 - The **Leatherworker** owns the six grades, leather bags and the current
   four-stack quiver. No profession is created; the Scout is an intended wearer.
 - `character_visuals.md` §3 defines leather as its own complete armor family.
   SCOUT reuses those shipped overlays without adding or borrowing art.
-- `items_crafting.md` §10 P2 (`:2468-2473`) already parks the mirrored
-  signature recipes "in Phase 2 when the Rogue makes top leather PvP-relevant".
+- `items_crafting.md` §10 P2 records that the old Phase-2 Rogue/signature-
+  mirror assumption is superseded; the Scout does not revive that scope.
 
 
 ### 4.1 The arrow's physics, and the licence question ruling 12 raises
