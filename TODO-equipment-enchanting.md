@@ -48,7 +48,7 @@ Attuned/of the Raven (Mana), Lucky/of the Eagle (Crit), Swift/of the Hornet
 (attack speed), Elusive/of the Cat (Dodge), Stalwart/of the Tortoise (Armor).
 Legal item-family pools remain binding; not every stat fits every item.
 
-## Coordinator feedback and two pending user choices
+## Coordinator feedback and resolved user choices
 
 Support removing the mandatory refinement step rather than preserving it under
 another label. Keep profession ownership, item-family affix eligibility and
@@ -65,14 +65,12 @@ Recommend consistency across ordinary enchantable weapons, armor and offhands
 while retaining the separately designed trinket exception. The existing rule
 against repeating the same stat across prefix/suffix should remain.
 
-Two questions were explicitly sent to the user:
+The user answered both questions on 2026-09-21:
 
-1. Fixed authored bonus per enchant tier (recommended), or a random range within
-   that enchant tier? Both preserve targeted stat selection and never scale a
-   cheap T1 enchant up to the target's tier.
-2. Allow a new enchant to replace its occupied channel with material cost and
-   clear preview (recommended), preserving the other channel, or fill empty
-   channels only?
+1. Fixed authored bonus per enchant tier; no random application value and no
+   scaling a cheap T1 enchant up to the target's tier.
+2. A new enchant may replace its occupied channel with material cost and a clear
+   preview. Preserve the other channel.
 
 Recommended profession progression uses the enchant recipe's own tier, not the
 target's tier; a T1 application to a T6 item remains T1 work. Remove separate
@@ -80,3 +78,7 @@ Imbue/Temper/refinement upgrade paths in favor of this single enchant workflow.
 Materials, numeric bonus tables and station presentation need a bounded catalog
 design pass before implementation; the user need not choose each individual
 recipe value if the round Go delegates that calibration.
+The coordinator has no further player-choice blocker under these recommendations.
+The implementation round still awaits explicit Go. Fold the settled model into
+the living design docs with the complete catalog/round contract before coding;
+this TODO remains until that consolidation is complete.
