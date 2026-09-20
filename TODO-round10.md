@@ -5,7 +5,8 @@ Status: planning, 2026-09-20. Accepted user decisions are recorded in
 boundaries; it is not an implementation-completion record. Before implementing
 each package, fold its resolved rules into the named `docs/design/` owners.
 Delete this TODO once the remaining questions are settled and the work is
-represented in design/BACKLOG. PERF continues independently in Round 9.
+represented in design/BACKLOG. The bounded Round 9 PERF package is complete
+and integrated; its remaining mapgen successors are still pending.
 
 **Hold for independent drift audit (user 2026-09-20):** compare the current
 repository with tested baseline `2a308891`. Do not implement gameplay
@@ -41,6 +42,50 @@ in `/home/jan/projects/grudgelands-orchestration/w9/visual-audit/` (`index.html`
 material palettes, worn-model compatibility and final in-game inventory/drop
 appearance remain implementation gates after the user selects a direction.
 
+The user reviewed the gallery and endorsed its icon and armor-skin direction
+on 2026-09-20. This is direction feedback, not final per-file import approval
+or proof that worn textures fit the shipped player mesh. The pilot visually
+compares selected sources from VoxeLibre, Lord of the Test, Animalia and
+Animalworld; it is not an exhaustive review of all reference media.
+
+### Mount icons and capital profession districts — user 2026-09-20
+
+The user identified broken-looking mount skill icons and proposed generic
+riding symbols or offline renders of the actual textured models. The method
+remains a visual choice; a small read-only source/render investigation is
+authorized, not a production asset replacement.
+
+Accepted capital outcomes:
+
+- Every capital gets a dedicated Riding Trainer. Riding is no longer taught
+  by profession trainers. The user explicitly chose **capitals only**, with
+  no T1 riding teacher in start settlements; travelling to the capital for
+  the first mount is accepted. Existing tier, price and ownership rules are
+  unchanged except for the already-approved T1 speed change.
+- Place that trainer in an outer district with a stable. Reuse the same stable
+  building design across all six races; display the four mounts available to
+  that capital's race behind its trainer for atmosphere. This does not require
+  new race-specific species or models for every tier.
+- Move capital profession trainers from the central lineup into outer-ring
+  profession-themed premises. Weaponsmith and Armorsmith share one forge
+  building, including a lava basin and displayed weapons/armor. Other
+  professions need equally recognizable settings.
+- All authored atmosphere item displays, including wall displays, frames and
+  stands, must not allow players
+  to remove or collect the displayed items. This protection must cover the
+  actual interaction and drop paths, not merely ordinary node digging.
+
+Implementation proposals, not additional user rulings: use static, non-AI
+display mounts; consider a contained decorative lava feature; reuse existing
+capital house/building primitives; if model renders are selected, generate
+inventory icons offline so rendering adds no per-frame game work. The concrete display architecture,
+workstation layout, building dimensions, material palettes and worn-model/icon
+render details remain to be specified after examining current sources.
+
+This changes the pending capital-placement scope and must be reconciled with
+CAP, the smith split and MAP-B before those lanes run. It does not authorize a
+second capital system or changing established world/protection geometry.
+
 ## Accepted direction and proposed package boundaries
 
 | Package | Accepted work | Design owner / dependency |
@@ -52,12 +97,14 @@ appearance remain implementation gates after the user selects a direction.
 | Farming artwork | Import appropriate existing crop/inventory/stage art instead of tint-only placeholders | `docs/reference_projects.md` farming/x_farming allow-list; `LICENSE-media.md`; no foreign modpack import |
 | Roaming and dragons | At most one-node idle descents; visible dragon walks between resting spots; target-gated abilities that treat `peaceful_player` as non-hostile | `biomes_mobs.md`, `combat_stats.md`; one shared cliff-probe owner |
 | Mount usability | First-person-only mesh hiding, top-right status, automatic half/full-block steps, T1 6.4 nodes/s | `mounts.md`; existing status API needs an explicitly cleared runtime-only untimed entry |
+| Capital profession districts | Capital-only Riding Trainers and shared stable design; four existing tier appearances available to the capital's race on display; profession premises in the outer ring; shared smith forge and protected item displays | `professions.md`, `mounts.md`, capital design; reconcile with CAP and the smith split before implementation |
 | Cave investigation | Explain thin roofs at the concrete seed/position before changing terrain | `world_zones.md`; diagnosis is separate from PERF's byte-preserving optimization |
 
 Housing (WP24), Scout, WP46 terrain-damage protection, WP47 skills tab and WP49
 audit refreeze remain planning candidates from the handover. This acceptance of
 playtest follow-ups does not mark them implemented or schedule the entire list
-concurrently. The remaining Round 9 mapgen chain is PERF -> CAP -> MAP-B -> DOCS.
+concurrently. After the completed PERF package, the remaining Round 9 mapgen
+chain is CAP -> MAP-B -> DOCS; these briefs require current-rule reconciliation.
 
 ## Recipe evidence to preserve
 
@@ -87,9 +134,10 @@ the recipe book is a separate presentation defect.
 
 1. **Split ownership and physical stations.** Proposed: Weaponsmith owns
    physical weapons/tools and the existing Metal Fittings used by Woodcarver;
-   Armorsmith owns metal armor and shields. Decide whether their named work
-   areas share one forge or need separate stations, and which existing material
-   serves armor refinement. Do not invent a new component only to fill a table.
+   Armorsmith owns metal armor and shields. Their shared forge building is
+   decided. Decide whether work areas/stations inside it are shared or separate,
+   and which existing material serves armor refinement. Do not invent a new
+   component only to fill a table.
 2. **Universal feedstocks.** Base recipes must be profession-free. Decide
    whether the existing profession-only cloth/leather conversion chains remain
    an intentional trade dependency or whether plain material preparation also
