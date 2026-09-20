@@ -1,7 +1,7 @@
 # Round 11 execution plan
 
 Date: 2026-09-20. Baseline: `ac232ec2` on main.
-Status: **IMPLEMENTED AND REVIEWED — final technical gates PASS, 2026-09-20.**
+Status: **DELIVERED — main, Luanti sync and remote push complete, 2026-09-20.**
 Delivery checkpoint and next playtest: [Round 11 completion](../round11-completion.md).
 The user approved the complete plan and authorized autonomous delivery through
 the next playtest. The final test-budget amendment below supersedes older annex

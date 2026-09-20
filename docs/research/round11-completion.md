@@ -1,8 +1,8 @@
 # Round 11 completion
 
 Date: 2026-09-20. Baseline: main `ac232ec2` (Round 10).
-Status: all implementation, independent review and final technical gates PASS.
-Main merge, synchronization and push are recorded in the delivery checkpoint below.
+Status: **DELIVERED — next playtest ready.** All implementation, independent
+review and final technical gates PASS; main merge, synchronization and push complete.
 
 The user authorized autonomous implementation of the approved
 [plan](round11-plan/README.md), native Sol workers/reviewers and Astra for hard
@@ -129,10 +129,15 @@ outside this round; the error-level arrow and planner regressions are closed.
 ## Delivery and next playtest
 
 Final reviewed runtime/evidence checkpoint: `697391d8`; Scout merge: `5202dc1a`.
-The final documentation commit reconciles living specs, BACKLOG/ROADMAP/README
-and the next-playtest checklist. Main integration, sync and remote publication
-are the remaining delivery operations; their actual completion is appended to
-this record after execution.
+Documentation checkpoint `63242192` reconciles living specs, BACKLOG/ROADMAP/README
+and the next-playtest checklist. Main merge
+`737f25b4787d21a9e36d068e9bcd27fe032b5b3f` includes the full reviewed history.
+`tools/sync_to_luanti.sh` ran from main, and every one of the 1,894 installed
+runtime files matches the engine-tested payload. The authorized
+`git push origin main` succeeded to `github.com/Kaesual/grudgelands`, advancing
+remote main from `ac232ec2` to `737f25b4`. This final documentation receipt adds
+no runtime changes. All worker/reviewer tasks are finished; GUI acceptance is
+the next user action.
 
 User runtime acceptance follows the
 [Round 11 fresh-world checklist](round11-next-playtest.md). Prioritize the reported

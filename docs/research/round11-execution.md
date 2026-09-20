@@ -1,7 +1,14 @@
 # Round 11 execution checkpoint
 
-Date: 2026-09-20. Status: **IMPLEMENTATION / INDEPENDENT PACKAGE REVIEWS IN PROGRESS**.
-Runtime baseline: `ac232ec2`. Integration branch: `wp11-r11-integration`. GAME, WORLD-CAP, GEAR, COMBAT and ART are accepted and integrated; FARM, REPAIR, SCOUT and final SPEC reconciliation remain open. No personal-world mutation is authorized.
+Date: 2026-09-20. Status: **DELIVERED — READY FOR THE NEXT USER PLAYTEST**.
+All Round 11 packages, independent reviews and bounded technical gates are
+complete. Main merge `737f25b4` is synchronized to the personal Luanti game
+folder and pushed to `github.com/Kaesual/grudgelands` (`origin/main`). All 1,894
+installed runtime files match the tested payload. No user world was modified.
+All workers are finished; no implementation or review task remains running.
+Use [completion](round11-completion.md) and the [fresh-world checklist](round11-next-playtest.md).
+The remaining sections preserve the chronological execution record; their older
+pending states are superseded by this current checkpoint.
 
 The [independent plan review](round11-plan/review/report.md) is CLEAN on v3:
 0 Critical / 0 High / 0 Medium / 0 Low open. Two initial Medium contradictions
@@ -28,7 +35,7 @@ reports. Their task handles may be reused now within review-independence
 rules; planning a contract does not authorize reviewing contested rules one
 has authored.
 
-## Current execution sequence
+## Approved execution sequence (completed)
 
 1. SPEC: fold the approved plan into living design and reconcile all source
    conflicts; exact item/price catalogs follow the plan's fixed rules. Update
@@ -410,3 +417,13 @@ mapgen fleet and no PUC runtime. All1894 staged runtime files match root and
 `tools/r11_integration/evidence/`; fresh-server audit and13referencepins pass.
 All agents are finished; no source edits or review findings remain pending.
 Next: final docs commit, main merge, sync_to_luanti, authorized origin/main push.
+
+### Delivered
+
+Main merge `737f25b4787d21a9e36d068e9bcd27fe032b5b3f` completed from reviewed
+integration `63242192`. `tools/sync_to_luanti.sh` ran from main; all1,894 installed
+files match the exact engine-tested runtime manifest. `git push origin main`
+succeeded to Kaesual/grudgelands, advancing origin/main from R10ac232ec2 to737f25b4.
+This subsequent documentation-only receipt changes no tested runtime bytes.
+All implementation/review agents are finished. Next action belongs to the user:
+fresh-world Round11 playtest; no automatic next round or wider WP is started.
