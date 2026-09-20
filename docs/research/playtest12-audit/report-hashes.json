@@ -1,0 +1,18 @@
+[
+  {
+    "report": "professions.md",
+    "original_sha256": "4a7896367774b0477632341dbaa74f1b5739e6f613c51128b4b50f34b9a10ec7"
+  },
+  {
+    "report": "world.md",
+    "original_sha256": "b1578c01731838f576f838878879f0cb64bb052df7799928f5074711d80cd62f"
+  },
+  {
+    "report": "gameplay.md",
+    "original_sha256": "2a0dff85b6bf129007c411f3e77b49513e8de60fc27cbec2b53add178bcf51c3"
+  },
+  {
+    "report": "process.md",
+    "original_sha256": "f480e706bfa282a4cccb3bcd4873ca49f637a52bd16149bbb8f388edeeb607c8"
+  }
+]

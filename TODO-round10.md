@@ -13,6 +13,34 @@ corrections from this file until the audit findings have been presented to and
 discussed with the user. The package boundaries below remain proposals, not
 accepted architecture.
 
+The completed [Playtest 12 design-to-code audit](docs/research/playtest12-audit/README.md)
+records seven source-confirmed implementation deviations and four unresolved
+choices. Its coordinator dispositions distinguish missing open-WP work from
+historical defects and preserve the already-decided independent mastery and
+profession-tier ladders. No audit correction is authorized by the report alone.
+
+## Visual selection pilot — user-approved scope, 2026-09-20
+
+The user approved a first visual-selection pass over armor and animal loot,
+followed later by other nonweapon item families. Weapons remain untouched.
+The pilot compares 26 live items (12 armor, 14 loot), using actual current
+texture expressions and visually inspected reference candidates. It proposes
+VoxeLibre metal armor as the leading source direction, with Grudgelands material
+adaptation still pending; cloth candidates and individual loot replacements
+remain choices. No matching Boar Tusk inventory sprite was found in the inspected
+candidate set, so dedicated artwork is an explicit gap rather than a false match.
+
+Gold/blue armor-trim previews are visual proposals only. Their meaning for
+refinement, enchants or rarity is undecided. Worn texture compatibility with the
+actual player mesh is unverified; the pilot shows labeled UV source samples,
+not fabricated engine screenshots. No graphics or gameplay were replaced.
+
+The offline gallery, report, source pins/licenses and item mapping are retained
+in `/home/jan/projects/grudgelands-orchestration/w9/visual-audit/` (`index.html`,
+`report.md`, `mapping.json`, comparison PNGs). Source/per-file licensing,
+material palettes, worn-model compatibility and final in-game inventory/drop
+appearance remain implementation gates after the user selects a direction.
+
 ## Accepted direction and proposed package boundaries
 
 | Package | Accepted work | Design owner / dependency |
