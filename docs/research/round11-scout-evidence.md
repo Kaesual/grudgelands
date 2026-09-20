@@ -64,6 +64,11 @@ comments, ordinary string separators and the frozen WP40 data manifest; no
 prohibited syntax, library call, sandbox call or `minetest.*` use was present.
 `git diff --check` passed.
 
+Raw outputs for the focused reruns and final static checks are stored under
+`tools/r11_scout/evidence/`. The independently reviewed movement output used
+the exact runner shown in the table above and was not redundantly rerun for the
+final wear-only correction.
+
 ## Frozen hashes
 
 ```text
