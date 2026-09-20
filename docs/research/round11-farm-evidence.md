@@ -75,3 +75,12 @@ consumer; the micro-KAT now calls all four geometry delegates. Only expected
 top-level mod globals remain; sweep hits are comments/strings. Runtime commands
 use `chrt --idle 0 ionice -c3 luajit`; each is well under 1 second.
 No broad census, seed population, fallback PUC or personal-world mutation.
+
+## Independent review correction
+
+The first independent Sol review found no material product-code defect. It
+requested refreshed water/hoe input hashes after the final ecology/material
+changes and removal of a trailing blank line in the crop log. Both evidence
+issues are corrected; production bytes remain those of `e5486a85`. The reviewer
+independently reran the targeted water, hoe, ecology and WP40 micro-KATs and
+confirmed the changed-file Lua 5.1 parser gate. Final review remains pending.
