@@ -1,0 +1,11 @@
+r10/cliff	flat=pass	one=pass	two=refused	signed-half=pass	nonwalkable=pass	missing=pass	danger=pass	exceptions=pass
+r6_status_regressions	mana=40/60/0/100/hud2 status=10/8 hud=4 renew=10/10
+r6_status_result	failures=0
+PASS
+r9_boss_v1|dragons=2|whelps=2|kings=6|royal_guards=12|perches=3|warning=60|heartbeat_spawns=1|flight=1|dive=1|breath_cone=3|ground_effects=2|lightning_miss=1|gust=12|enrage=0.7|guard_full_step_follow_snap=1|guard_reset=0|particles_lt_1000=1
+r9_mounts_v3|tiers=4|models=12|warning=48|warning_probes=112|warning_interval=1|ceiling=600|assets=0
+r10_potion|base=15|loop=17|bonus_calls=1
+strike_description_rage=A full melee swing with your equipped weapon. Hold LMB and keep a hostile in your crosshair; the shared weapon clock prevents click spam. Generates 12 rage when it lands.
+strike_description_mana=A full melee swing with your equipped weapon. Hold LMB and keep a hostile in your crosshair; the shared weapon clock prevents click spam.
+strike_description_classless=A full melee swing with your equipped weapon. Hold LMB and keep a hostile in your crosshair; the shared weapon clock prevents click spam.
+combat_integration_test: ok

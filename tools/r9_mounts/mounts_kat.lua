@@ -168,7 +168,10 @@ return function(root, options)
 		end
 		function object:get_attach() return self.parent end
 		function object:get_luaentity() return self.entity end
-		function object:remove() self.valid = false end
+		function object:remove()
+			self.remove_calls = (self.remove_calls or 0) + 1
+			self.valid = false
+		end
 		return object
 	end
 
@@ -255,6 +258,7 @@ return function(root, options)
 			return player.statuses[id]
 		end,
 		clear_status = function(player, id)
+			player.clear_status_calls = (player.clear_status_calls or 0) + 1
 			if player.statuses then player.statuses[id] = nil end
 		end,
 		get_player_faction = function(name)
@@ -445,6 +449,41 @@ return function(root, options)
 	assert(rider.statuses.mount.label == "T1 Mount, +60% Speed")
 	assert(grug_mounts.dismount(rider, "manual", false) and
 		rider.statuses.mount == nil and not land_record.visual:is_valid())
+
+	local function lifecycle_rider(name)
+		local value = new_player(name, 60, "accord", "human")
+		value:get_meta():set_int("grug_mounts:land_tier", 2)
+		assert(grug_mounts.mount(value, 1))
+		return value, assert(grug_mounts.active[name])
+	end
+	local function assert_cleaned_once(player, mounted_record, label)
+		assert(grug_mounts.active[player.name] == nil and player:get_attach() == nil and
+			player.statuses.mount == nil and not mounted_record.object:is_valid() and
+			not mounted_record.visual:is_valid(), label .. " left mount state")
+		assert(player.clear_status_calls == 1 and
+			mounted_record.object.remove_calls == 1 and
+			mounted_record.visual.remove_calls == 1,
+			label .. " cleanup was not exact-once")
+	end
+	local death_rider, death_record = lifecycle_rider("death_rider")
+	for _, callback in ipairs(callbacks.die) do callback(death_rider) end
+	for _, callback in ipairs(callbacks.die) do callback(death_rider) end
+	assert_cleaned_once(death_rider, death_record, "death")
+	local leave_rider, leave_record = lifecycle_rider("leave_rider")
+	for _, callback in ipairs(callbacks.leave) do callback(leave_rider) end
+	for _, callback in ipairs(callbacks.leave) do callback(leave_rider) end
+	assert_cleaned_once(leave_rider, leave_record, "leave")
+	local detached_rider, detached_record = lifecycle_rider("detached_rider")
+	detached_rider:set_detach()
+	detached_record.object.entity:on_step(0.1)
+	detached_record.object.entity:on_step(0.1)
+	assert_cleaned_once(detached_rider, detached_record, "external detach")
+	local shutdown_a, shutdown_record_a = lifecycle_rider("shutdown_a")
+	local shutdown_b, shutdown_record_b = lifecycle_rider("shutdown_b")
+	for _, callback in ipairs(callbacks.shutdown) do callback() end
+	for _, callback in ipairs(callbacks.shutdown) do callback() end
+	assert_cleaned_once(shutdown_a, shutdown_record_a, "shutdown first rider")
+	assert_cleaned_once(shutdown_b, shutdown_record_b, "shutdown second rider")
 
 	zone_mode = "battleground"
 	assert(grug_mounts.flight_state(rider, {x = 10, y = 30, z = 10}))
