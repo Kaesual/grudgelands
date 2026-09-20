@@ -117,7 +117,7 @@ local function loader()
 	-- is `after_dig_node`, which runs on dig).
 	--
 	-- `crop_soil` IS TILLED SOIL, for the reason the human palette records and
-	-- for a second one this race adds. The first: `grug_nodes:tilled_soil`
+	-- for a second one this race adds. The first: `grug_farming:soil`
 	-- carries no `spreading_dirt_type` and is not named by default's "Grass
 	-- spread" ABM, so a field stays a field. The second: default's "Grow
 	-- papyrus" ABM lifts a reed to four nodes only when the node UNDER it is
@@ -130,7 +130,7 @@ local function loader()
 	-- role the fallback used, and the whole point is that a FIELD must read
 	-- differently from the ground beside it.
 	M.CROP = {
-		crop_soil = "grug_nodes:tilled_soil",
+		crop_soil = "grug_farming:soil",
 		crop = "default:papyrus",
 	}
 

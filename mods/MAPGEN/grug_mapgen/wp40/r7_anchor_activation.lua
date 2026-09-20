@@ -10,7 +10,11 @@ return function(roster_factory, anchor_content)
 			type(anchor_content.resolve_anchor) ~= "function" then
 		fail("construction seam differs")
 	end
-	local config = {schema = "grug_wp40_r7_anchor_config_v1"}
+	local base = anchor_content.successor_base_ref
+ if type(base) ~= "number" or base % 1 ~= 0 or base < 1 or base > 65535 then
+  fail("anchor successor reference base differs")
+ end
+ local config = {schema = "grug_wp40_r7_anchor_config_v1"}
 	function config.new(dependencies)
 		if type(dependencies) ~= "table" or type(dependencies.source) ~= "table" or
 				type(dependencies.zones_session) ~= "table" or
@@ -212,7 +216,7 @@ return function(roster_factory, anchor_content)
 								final_cid = cid, final_param2 = param2, final_occupancy = -2,
 								final_opcode = 36, final_feature = row.numeric_id,
 								final_interface = 0,
-								final_aux = (100 + row.content_ref - 1) * 256 + param2}
+								final_aux = (base + row.content_ref - 1) * 256 + param2}
 						end
 						written = written + 1
 					end

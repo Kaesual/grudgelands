@@ -93,14 +93,14 @@ return function(catalog, p9g_content, raw_sha256)
 
 	if type(catalog) ~= "table" or type(catalog.manifest) ~= "function" or
 			type(catalog.p9g_sources) ~= "function" or type(p9g_content) ~= "table" or
-			p9g_content.schema ~= "grug_wp40_r7_p9g_content_v1" or
+			p9g_content.schema ~= "grug_wp40_r7_p9g_content_v2" or
 			type(p9g_content.resolve_p9g) ~= "function" or
 			type(p9g_content.content_ref) ~= "function" or type(raw_sha256) ~= "function" then
 		fail("construction seam differs")
 	end
 	local manifest = catalog.manifest()
 	local rows = catalog.p9g_sources()
-	if manifest.schema ~= "grug_wp33_gathering_catalog_v2" or
+	if manifest.schema ~= "grug_wp33_gathering_catalog_v3" or
 			type(manifest.canonical_bytes) ~= "string" or
 			type(manifest.sha256) ~= "string" or
 			hex(raw_sha256(manifest.canonical_bytes)) ~= manifest.sha256 or
@@ -111,8 +111,8 @@ return function(catalog, p9g_content, raw_sha256)
 		fail("gathering manifest identity differs")
 	end
 	dense(rows, 12, "P9G catalog")
-	dense(p9g_content.content_names, 12, "P9G content names")
-	dense(p9g_content.content_cids, 12, "P9G content CIDs")
+	dense(p9g_content.content_names, 34, "P9G content names")
+	dense(p9g_content.content_cids, 34, "P9G content CIDs")
 
 	local zone_sets, host_sets, shore_sets = {}, {}, {}
 	for index = 1, #rows do
@@ -223,7 +223,7 @@ return function(catalog, p9g_content, raw_sha256)
 				type(dependencies.zones_session.surface_mob_level_at) ~= "function" or
 				type(production) ~= "table" or
 				production.schema ~= "grug_wp40_r7_production_r6_content_v1" or
-				#production.content_names ~= 88 then
+				#production.content_names ~= 90 then
 			fail("successor production identity differs")
 		end
 		local air_cid, air_kind, air_param2 = production.r5.resolve(1, 0, 0)

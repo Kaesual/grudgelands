@@ -298,6 +298,7 @@ return function(repo)
 			local tail = {}
 			function tail.plan_slice() stub_calls.plan = stub_calls.plan + 1 end
 			function tail.bind_plan() stub_calls.plan = stub_calls.plan + 1 end
+			tail.bind = tail.bind_plan
 			function tail.settle()
 				stub_calls.settle = stub_calls.settle + 1
 				return {schema = schema}
@@ -308,7 +309,7 @@ return function(repo)
 		end
 		return config
 	end
-	local composed = successor_factory(stub("p9g"), stub("anchors"), configs, keys)
+	local composed = successor_factory(stub("p9g"), stub("anchors"), configs, keys, stub("world"))
 	-- The roster order is the manifest's order, so a successor built from a
 	-- reordered or short roster must be refused outright.
 	local reordered = {configs[2], configs[1]}

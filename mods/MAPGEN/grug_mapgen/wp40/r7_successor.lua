@@ -13,7 +13,7 @@
 -- losing ANY settlement -- or reordering them, which would reorder the manifest
 -- -- is what fails here.
 
-return function(p9g_config, anchor_config, settlement_configs, roster_keys)
+return function(p9g_config, anchor_config, settlement_configs, roster_keys, world_config)
 	local function fail(message) error("WP40 R7 successor: " .. message, 0) end
 	if type(p9g_config) ~= "table" or type(p9g_config.new) ~= "function" or
 			type(anchor_config) ~= "table" or type(anchor_config.new) ~= "function" or
@@ -26,7 +26,7 @@ return function(p9g_config, anchor_config, settlement_configs, roster_keys)
 	-- roster key equal to a fixed field would overwrite it and publish a
 	-- settlement's ledger as the schema string, the P9G ledger or the anchor
 	-- ledger, so the roster may not carry one.
-	local RESERVED_LEDGER_FIELDS = {schema = true, p9g = true, anchors = true}
+	local RESERVED_LEDGER_FIELDS = {schema = true, p9g = true, anchors = true, world_content = true}
 	local keys = {}
 	for index = 1, #settlement_configs do
 		local settlement = settlement_configs[index]
@@ -53,6 +53,7 @@ return function(p9g_config, anchor_config, settlement_configs, roster_keys)
 			construction_identity = dependencies.construction_identity,
 			runtime_mode = dependencies.runtime_mode})
 		local anchors = anchor_config.new(dependencies)
+		local world = assert(world_config).new(dependencies)
 		local settlements = {}
 		for index = 1, #settlement_configs do
 			local settlement = settlement_configs[index].new(dependencies)
@@ -66,6 +67,7 @@ return function(p9g_config, anchor_config, settlement_configs, roster_keys)
 		function tail.plan_slice(self, minp, maxp, plan, generation)
 			if not rawequal(self, tail) then fail("plan receiver differs") end
 			p9g:plan_slice(minp, maxp, plan, generation)
+			world.bind(plan, generation)
 			anchors:bind_plan(minp, maxp, plan, generation)
 			for index = 1, #settlements do
 				settlements[index]:bind_plan(minp, maxp, plan, generation)
@@ -74,6 +76,7 @@ return function(p9g_config, anchor_config, settlement_configs, roster_keys)
 		function tail.plan_evidence_owner(self, min_x, max_x, min_z, max_z)
 			if not rawequal(self, tail) then fail("evidence receiver differs") end
 			local plan, generation = p9g:plan_evidence_owner(min_x, max_x, min_z, max_z)
+			world.bind(plan, generation)
 			anchors:bind_plan({x = min_x, y = -30912, z = min_z},
 				{x = max_x, y = 30927, z = max_z}, plan, generation)
 			for index = 1, #settlements do
@@ -93,9 +96,10 @@ return function(p9g_config, anchor_config, settlement_configs, roster_keys)
 				p9g_context[key] = context[key]
 			end
 			local p9g_ledger = p9g:settle(p9g_context)
+			local world_ledger = world.settle(context)
 			local anchor_ledger = anchors:settle(context)
 			local ledger = {schema = "grug_wp40_r7_successor_ledger_v1",
-				p9g = p9g_ledger, anchors = anchor_ledger}
+				p9g = p9g_ledger, world_content = world_ledger, anchors = anchor_ledger}
 			for index = 1, #settlements do
 				ledger[settlements[index].key] = settlements[index]:settle(context)
 			end
@@ -104,7 +108,7 @@ return function(p9g_config, anchor_config, settlement_configs, roster_keys)
 		function tail.metrics(self)
 			if not rawequal(self, tail) then fail("metrics receiver differs") end
 			local metrics = {schema = "grug_wp40_r7_successor_metrics_v1",
-				p9g = p9g:metrics(), anchors = anchors:metrics()}
+				p9g = p9g:metrics(), world_content = world.metrics(), anchors = anchors:metrics()}
 			for index = 1, #settlements do
 				metrics[settlements[index].key] = settlements[index]:metrics()
 			end

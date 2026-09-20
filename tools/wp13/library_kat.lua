@@ -250,12 +250,23 @@ return function(repo)
 	-- so a node carrying only those behaves identically however it was
 	-- written.
 	local meta_checked = 0
+	local soil_activation_proven = false
 	for name, role in pairs(palette_names) do
 		local def = world.nodes[name]
 		local hits = registry.meta_fields(def)
+		if name == "grug_farming:soil" or name == "grug_farming:soil_wet" then
+   assert(#hits == 2 and type(def.on_construct) == "function" and
+    type(def.on_timer) == "function", "unexpected field soil callback surface")
+   if not soil_activation_proven then
+    local evidence=dofile(repo .. "/tools/r10_farm/farming_completion_kat.lua")(repo)
+    assert(evidence:find("vm_timer_activation\tidempotent+reload",1,true))
+    soil_activation_proven=true
+   end
+  else
 		assert(#hits == 0, palette_race[name] .. " role " .. role ..
 			" is bound to " .. name .. ", which needs " ..
 			table.concat(hits, "/") .. " that bulk placement never runs")
+  end
 		if def.on_rightclick ~= nil then
 			assert(name:sub(1, 6) == "doors:", palette_race[name] .. " role " ..
 				role .. " is bound to " .. name .. ", which has an on_rightclick")
@@ -525,7 +536,7 @@ return function(repo)
 	-- Six places in this library ask whether a cell may carry a wild plant,
 	-- and all six used to ask it as `name:find("dirt")` -- a substring of a
 	-- node name, which is a spelling and not a property. It answered false
-	-- for `grug_nodes:tilled_soil` the moment Dawnmere's furrows stopped
+	-- for `grug_farming:soil` the moment Dawnmere's furrows stopped
 	-- being `default:dirt`, and 425 tufts and bushes left the fields without
 	-- anyone deciding that they should. `parts.WILD_SOIL` is the roster now,
 	-- and the rule it is supposed to encode is checked against the source of
@@ -537,7 +548,7 @@ return function(repo)
 	-- generated ground and still carries no wild plants, because the Cradle's
 	-- mud flats are bare by authored intent; the roster may be a subset.
 	-- What must hold is the one direction that keeps authored ground out of
-	-- it -- and `grug_nodes:tilled_soil` is outside both rosters, which is
+	-- it -- and `grug_farming:soil` is outside both rosters, which is
 	-- asserted here so that adding it to either cannot pass unnoticed.
 	local ground_source = io.open(repo ..
 		"/mods/ITEMS/grug_materials/registry.lua", "r")
@@ -567,9 +578,9 @@ return function(repo)
 		assert(registry.is_opaque_full(world, name),
 			"wild soil " .. name .. " is not an opaque full cube")
 	end
-	assert(not parts.wild_soil("grug_nodes:tilled_soil"),
+	assert(not parts.wild_soil("grug_farming:soil"),
 		"an authored furrow may not carry wild plants")
-	assert(not natural_ground["grug_nodes:tilled_soil"],
+	assert(not natural_ground["grug_farming:soil"],
 		"an authored furrow may not be generated ground")
 	say("wild_soil", wild_count, "of", natural_count, "natural_ground",
 		"authored_excluded", "pass")

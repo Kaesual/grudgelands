@@ -198,7 +198,7 @@ function module.validate_catalog(snapshot, raw_sha256)
 		schema = true, sha256 = true, canonical_bytes = true,
 		source_files = true, placement = true, population = true,
 	}, "catalog manifest")
-	if manifest.schema ~= "grug_wp33_gathering_catalog_v2" then
+	if manifest.schema ~= "grug_wp33_gathering_catalog_v3" then
 		fail("catalog schema differs")
 	end
 	sha256(manifest.sha256, "catalog digest")
@@ -504,7 +504,7 @@ function module.validate_stage_b(receipt)
 			"candidate_decisions_sha256", "accepted_candidate_decisions_sha256"}) do
 		sha256(receipt[field], "Stage-B " .. field)
 	end
-	if receipt.name_map_population ~= 88 or
+	if receipt.name_map_population ~= 90 or
 			receipt.cultural_name_map_population ~= 6 or
 			receipt.inherited_cultural_access_count ~= 12 then
 		fail("Stage-B total name map differs")

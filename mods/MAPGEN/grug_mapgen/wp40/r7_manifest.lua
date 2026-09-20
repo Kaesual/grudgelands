@@ -35,8 +35,10 @@ return function(canonical, raw_sha256, settlement_order)
 	-- authenticated gathering limb and this roll-up move again.
 	-- R10 WORLD: catalog v2 authenticates zone-scoped Rock Salt support rows.
 	-- Only the gathering limb changes; native inputs and the 157-source roster stay.
+	-- R10 MAP-B adds two soil rows and 22 P9G nodes/rules; decoded template
+	-- content refs shift with sorted soil rows while MTS geometry stays fixed.
 	local SOURCE_PROJECTION_SHA256 =
-		"674ddc3f6a9b9bfd1a1e50c88db6908f5022960200e88128665292047ade9c51"
+		"461d67ef63c4364764a615871fd1771a5a6ef636796f82511b6de563a7bb056b"
 	local FIELD_HEAD = {
 		"schema", "full_seed", "r5_schema", "r5_manifest_sha256",
 		"r5_artifact_sha256", "r6_schema", "r6_contract_sha256",
@@ -48,7 +50,7 @@ return function(canonical, raw_sha256, settlement_order)
 		"production_r6_content_sha256", "production_r6_semantic_sha256",
 		"cultural_registration_sha256", "p9g_content_schema",
 		"p9g_content_sha256", "p9g_semantic_sha256", "p9g_delta_schema",
-		"p9g_delta_sha256", "anchor_content_schema", "anchor_content_sha256",
+		"p9g_delta_sha256", "p9g_world_rules_sha256", "anchor_content_schema", "anchor_content_sha256",
 		"anchor_semantic_sha256", "anchor_roster_schema", "anchor_roster_sha256",
 		"anchor_delta_schema", "anchor_delta_sha256", "anchor_opcode",
 		"anchor_class", "anchor_policy", "anchor_order", "anchor_overwrite",
@@ -244,11 +246,11 @@ return function(canonical, raw_sha256, settlement_order)
 			fail("successor window population differs")
 		end
 		return {p9g_min = production_count + 1,
-			p9g_max = production_count + 12,
-			anchor_min = production_count + 13,
-			anchor_max = production_count + 14,
-			settlement_min = production_count + 15,
-			settlement_max = production_count + 14 + settlement_count}
+			p9g_max = production_count + 34,
+			anchor_min = production_count + 35,
+			anchor_max = production_count + 36,
+			settlement_min = production_count + 37,
+			settlement_max = production_count + 36 + settlement_count}
 	end
 	function module.new(inputs)
 		if type(inputs) ~= "table" or getmetatable(inputs) ~= nil then
@@ -258,7 +260,7 @@ return function(canonical, raw_sha256, settlement_order)
 			full_seed = true, r5_manifest = true, r5_manifest_module = true,
 			r6_manifest = true, wp43_projection = true, accepted_r6_rows = true,
 			native_identities = true, gathering_manifest = true,
-			production_content = true, p9g_content = true,
+			production_content = true, p9g_content = true, world_content_rules = true,
 			anchor_content = true, anchor_roster = true,
 			anchor_roster_sha256 = true,
 			settlement_content = true, settlement_blueprints = true,
@@ -294,16 +296,16 @@ return function(canonical, raw_sha256, settlement_order)
 			fail("native identity differs")
 		end
 		local gathering = inputs.gathering_manifest
-		if gathering.schema ~= "grug_wp33_gathering_catalog_v2" or
+		if gathering.schema ~= "grug_wp33_gathering_catalog_v3" or
 			gathering.sha256 ~=
-				"85382465797196dbeb20e407ef482c367f9e6c547127722cf2b0f634d6c98929" or
+				"ad4d5ea64a408ea2dde27ccfeacd3338df9b1a79f63bbe5bbd1be657e2b2dfe9" or
 			sha256_hex(gathering.canonical_bytes) ~= gathering.sha256 then
 			fail("gathering identity differs")
 		end
 		if inputs.production_content.semantic_digest ~=
-				"9b7a978d178352521ae61fb87b897c5f79e12838b0829caa229ad90832ddedb8" or
+				"e7f1204a434fb773b78562c4655cb949e7f5637b6c165b7d3228056d6ed56296" or
 				inputs.p9g_content.semantic_digest ~=
-				"450c35e94af32721768d3771454db89dbdb43099660b2118c178a3ca6b438d49" then
+				"4982608737ad1a25f5af057bb18db19af28cfc65482225bda954fcdc1868da03" then
 			fail("frozen content semantics differ")
 		end
 		local anchors = inputs.anchor_content
@@ -456,6 +458,7 @@ return function(canonical, raw_sha256, settlement_order)
 			wp43_projection = graph_digest(inputs.wp43_projection),
 			production_semantics = inputs.production_content.semantic_digest,
 			p9g_semantics = inputs.p9g_content.semantic_digest,
+			world_rules = graph_digest(inputs.world_content_rules),
 			native_noise = native.noise_digest,
 			native_allowlist = native.native_digest,
 			gathering = gathering.sha256,
@@ -465,11 +468,11 @@ return function(canonical, raw_sha256, settlement_order)
 		if frozen.r6_catalog ~=
 				"71686cbaff9a2b6acb0415a3eda0ebc2d056412db1879c1bf4fcb162e14f4f74" or
 			frozen.accepted_r6_content ~=
-				"466abcd49cac58c68aabf26b17e0ae3925425e1396ab73bc61f8d27de8cf996b" or
+				"0c1c1efa25f1d173680ebc94aeed87d969ca56572a06b0e1fcb8378f16a2783d" or
 			frozen.decoded_templates ~=
-				"faa8fdd2beabd0807b5a41cd207163bbbb741fa8ee263a212bd7fbe34f2ff4df" or
+				"0f9c1230f22f7a2782cd57d3b7d5d5029d9f3eeed18a29f729f10b8bf92b9ec0" or
 			frozen.wp43_projection ~=
-				"c8088a4b6802c0fc1a74d8826e3df0bb49b64f9ab4c6e93bcbd66aa2a16b9895" or
+				"3fe1fef43404bdddb1d5cb84669d73f393460e74542d2f95ad6494f91569dc25" or
 			frozen.cultural ~=
 				"263b9bf0a470295b62791f85effd59eee9090c82d5f4d050e4f97ba88bb79fb6" or
 			frozen.consumer_payload ~=
@@ -484,7 +487,8 @@ return function(canonical, raw_sha256, settlement_order)
 		local windows = successor_windows(#inputs.accepted_r6_rows + 6,
 			settlement_content.count)
 		local p9g_delta = {
-			schema = "grug_wp40_r7_p9g_delta_v1", opcode = 35,
+			world_rules_sha256 = graph_digest(inputs.world_content_rules),
+			schema = "grug_wp40_r7_p9g_delta_v2", opcode = 35,
 			class = 10, policy = 11, successor_ref_min = windows.p9g_min,
 			successor_ref_max = windows.p9g_max,
 			order = "after_r6_p9_before_run_derivation",
@@ -562,6 +566,7 @@ return function(canonical, raw_sha256, settlement_order)
 			p9g_semantic_sha256 = inputs.p9g_content.semantic_digest,
 			p9g_delta_schema = p9g_delta.schema,
 			p9g_delta_sha256 = graph_digest(p9g_delta),
+			p9g_world_rules_sha256 = graph_digest(inputs.world_content_rules),
 			anchor_content_schema = anchors.schema,
 			anchor_content_sha256 = anchors.digest,
 			anchor_semantic_sha256 = anchors.semantic_digest,

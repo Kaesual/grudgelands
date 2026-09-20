@@ -1,7 +1,7 @@
 -- Pure WP33 catalog. This file deliberately reads no engine global so the
 -- same bytes can be loaded in the main and mapgen environments.
 
-local SCHEMA = "grug_wp33_gathering_catalog_v2"
+local SCHEMA = "grug_wp33_gathering_catalog_v3"
 local NODE_SOURCE = "mods/ITEMS/grug_gathering/nodes.lua"
 local HARVEST_SOURCE = "mods/ITEMS/grug_gathering/harvest.lua"
 local NODE_SOURCE_SHA256 =
@@ -9,7 +9,7 @@ local NODE_SOURCE_SHA256 =
 local HARVEST_SOURCE_SHA256 =
 	"3fe1a5ffdb4ae5119a6952561d1975b020cf435b32978758676f29f61b0ad11a"
 local EXPECTED_MANIFEST_SHA256 =
-	"85382465797196dbeb20e407ef482c367f9e6c547127722cf2b0f634d6c98929"
+	"ad4d5ea64a408ea2dde27ccfeacd3338df9b1a79f63bbe5bbd1be657e2b2dfe9"
 
 local PLACEMENT = {
 	schema = "P9G-1",
@@ -78,6 +78,21 @@ local function p9g(id, key, name, density, zones, hosts, shore, kind, grade,
 	}
 end
 
+local function extended_hosts(zones, original, extra_zone)
+ local result = {}
+ for _, zone in ipairs(zones) do
+  for _, value in ipairs(original) do
+   result[#result + 1] = host(value.biome, value.support, zone)
+  end
+ end
+ result[#result + 1] = host("grug_swamp", "grug_nodes:mud", extra_zone)
+ table.sort(result, function(a, b)
+  return a.zone .. "/" .. a.biome .. "/" .. a.support <
+   b.zone .. "/" .. b.biome .. "/" .. b.support
+ end)
+ return result
+end
+
 local P9G = {
 	p9g("wp33_corn_source_v1", "corn", "Corn", 256, {
 		"elandor_ashenward_march", "elandor_dawnmere_fields",
@@ -136,13 +151,22 @@ local P9G = {
 		"elandor_whitebridge_shire", "front_broken_causeway",
 		"front_gravesalt_escarpment", "front_skyglass_canopy",
 		"front_stormscale_summit", "kragmar_blackwind_rise",
+		"kragmar_ossuary_reach", "kragmar_speargrass_reach",
+		"kragmar_thunderroot_wilds",
+		"kragmar_totemwater_reach", "kragmar_whispering_reedlands",
+	}, extended_hosts({
+		"elandor_ashenward_march", "elandor_glassroot_wilds",
+		"elandor_lorindor", "elandor_moonfall_wood",
+		"elandor_whitebridge_shire", "front_broken_causeway",
+		"front_gravesalt_escarpment", "front_skyglass_canopy",
+		"front_stormscale_summit", "kragmar_blackwind_rise",
 		"kragmar_ossuary_reach", "kragmar_thunderroot_wilds",
 		"kragmar_totemwater_reach", "kragmar_whispering_reedlands",
 	}, {
 		host("grug_bone_forest", "grug_nodes:dirt_with_bone_litter"),
 		host("grug_deep_forest", "grug_nodes:dirt_with_forest_litter"),
 		host("grug_swamp", "grug_nodes:mud"),
-	}, "none", "found_only_food", nil, false,
+	}, "kragmar_speargrass_reach"), "none", "found_only_food", nil, false,
 		"default_pine_bush_sapling.png^[colorize:#9b7653:150"),
 	p9g("wp33_potato_source_v1", "potato", "Potato", 256, {
 		"elandor_ashenward_march", "elandor_dawnmere_fields",
@@ -163,9 +187,12 @@ local P9G = {
 		"found_only_food", nil, false,
 		"default_clay_lump.png^[colorize:#f4efe2:155"),
 	p9g("wp33_stormkelp_source_v1", "stormkelp", "Stormkelp", 1024, {
-		"front_gravesalt_escarpment", "front_skyglass_canopy",
+		"front_gravesalt_escarpment", "front_shattered_line",
+		"front_skyglass_canopy",
 		"front_stormscale_summit", "front_wyrmglass_crown",
-	}, ALL_DRY_HOSTS, "dry_cardinal", "spice", 3, true,
+	}, extended_hosts({"front_gravesalt_escarpment", "front_skyglass_canopy",
+		"front_stormscale_summit", "front_wyrmglass_crown"},
+		ALL_DRY_HOSTS, "front_shattered_line"), "dry_cardinal", "spice", 3, true,
 		"default_marram_grass_3.png^[colorize:#3c8290:120"),
 	p9g("wp33_sunleaf_source_v1", "sunleaf", "Sunleaf", 384, {
 		"elandor_goldmead_vale", "elandor_starbough_vale",
