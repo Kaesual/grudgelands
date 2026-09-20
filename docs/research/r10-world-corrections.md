@@ -1,8 +1,13 @@
 # Round 10 world corrections
 
-Status: implementation and bounded correctness evidence ready for independent
-review. **Independent review, root integration and the global final PUC/LuaJIT
-micro pair remain pending.** This record does not mark WP40 complete.
+Final integrated status and exact gate identities: [Round 10 final completion](round10-final-completion.md).
+Final technical gates PASS. The reviewed changes are delivered on main, synchronized
+and pushed; GUI acceptance remains pending.
+
+Status: `7f009e87` independently source-reviewed CLEAN and delivered on main.
+The global final PUC/LuaJIT pair passes and delivery is complete; integrated engine,
+static and combined LuaJIT checks pass.
+This correction package does not change WP40's earlier development-completion status.
 
 ## Authority and scope
 
@@ -73,7 +78,7 @@ tree slices and PERF writer equivalence. Changed Lua passes plain Lua 5.1 parsin
 SETGLOBAL inspection and all five sweeps; the only sweep hit is existing comment
 prose. Fresh-server audit and `git diff --check` pass. No PUC runtime was run.
 The global final runner now binds and calls both new portable fixtures; root
-will run the sole final pair after serial CAP/MAP-B integration freezes bytes.
+owns the sole final integrated pair, whose byte-identical PASS is recorded centrally.
 
 ## Superseded findings and limits
 
@@ -86,7 +91,10 @@ its private synthetic content catalog lacks `default:stone`. The same failure
 was reproduced with **both** settlement and fixture source taken from baseline
 `38ae136d`; hashes/log are retained. It does not load the new rocky-shore selector,
 and it is not part of the current global final micro. Its incidental stub edits
-were reverted. Current R7 and actual writer fixtures pass.
+were reverted. Current R7 and actual writer fixtures pass. MAP-B subsequently
+corrected this synthetic host and isolated its native-air/light context without
+weakening the rejection oracle; its full thirteen-job LuaJIT regression now passes
+(see `r10-world-content.md`). This paragraph preserves the original WORLD evidence.
 
 Known uncorrected design discrepancy for CLOSE/CAP: V1e prose says both bandit
 profiles have a 24-node building core, while source `bandit_frontier` uses 16
@@ -95,8 +103,10 @@ footprint without widening terrain geometry. Do not rewrite the decided design
 to 16 merely to match that older implementation. Unbuilt POI expansion is outside
 this package.
 
-Implementation model: native GPT-6 Astra. Independent reviewer and review outcome:
-pending root assignment. No external AI, push, merge or sync was performed.
+Implementation model: native GPT-6 Astra. Independent reviewer: native GPT-5.6
+Sol; source CLEAN at `7f009e87`, zero remaining material findings, zero fix rounds;
+observed elapsed time unknown. See `round10-reviews/world-review.md`. No external
+AI, push, merge or sync was performed by this lane.
 
 ## Next GUI check after root integration
 

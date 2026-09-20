@@ -1,5 +1,9 @@
 # Round 10 farming completion
 
+Final integrated status and exact gate identities: [Round 10 final completion](round10-final-completion.md).
+Final technical gates PASS. The reviewed changes are delivered on main, synchronized
+and pushed; GUI acceptance remains pending.
+
 Date: 2026-09-20.
 
 The farming runtime keeps the existing seventeen stable crop families: the
@@ -31,3 +35,16 @@ the seventeen families. It also covers VoxelManip soil activation, idempotent
 reload behavior, and independent protection at both touched planting positions.
 The fixture returns deterministic text for inclusion in the shared final
 PUC/LuaJIT comparison.
+
+## Integrated disposition
+
+FARM `806b0c0f` is independently reviewed CLEAN and delivered on main. MAP-B
+`02f37ec0` is also independently clean and supplies the authored field conversion,
+wild acquisition and bounded engine/current-save witness. Complete soil definitions
+and the pure crop visual builder now live in lower-layer `grug_nodes`; FARM binds
+its real callbacks and retains sole crop/lifecycle/LBM ownership. All 68 crop-stage
+visuals remain bound to the reviewed ART assets. See `r10-world-content.md` for
+this cycle-free load-order seam and the clearly labeled scratch-water stimulus.
+Integrated engine, static, combined LuaJIT and final interpreter-parity gates
+pass. Main delivery, synchronization and push are complete; GUI acceptance
+remains pending. Farming on legal editable ground does not wait for Housing.

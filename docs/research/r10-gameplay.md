@@ -1,5 +1,9 @@
 # Round 10 gameplay implementation record
 
+Final integrated status and exact gate identities: [Round 10 final completion](round10-final-completion.md).
+Final technical gates PASS. The reviewed changes are delivered on main, synchronized
+and pushed; GUI acceptance remains pending.
+
 Date: 2026-09-20. Candidate branch: `wp23-r10-gameplay`. This record covers
 only the GAME lane; capital trainer placement, profession/equipment work,
 terrain work and final mount icons belong to their separate Round-10 packages.
@@ -83,9 +87,8 @@ Apothecary Loop and verify the shared cooldown.
 ## Calibration and review state
 
 - Implementing model: GPT-5.6 Sol, native agent.
-- Independent reviewing model: pending coordinator assignment; must be native
-  and independent under the active Round-10 provider rule.
-- Independent review: native GPT-5.6 Sol, separate EQUIP author context.
-- Critical/High findings: 0/0. One Medium finding fixed.
-- Review-fix rounds: 1; focused re-review pending coordinator assignment.
+- Independent review: native GPT-5.6 Sol, separate EQUIP author context; final
+  candidate `b887124d` CLEAN (see `round10-reviews/game-rereview-final.md`).
+- Critical/High findings: 0/0. Two Medium findings closed across two fix rounds.
+- Review-fix rounds: 2. Final interpreter parity passes; user GUI acceptance remains pending.
 - Implementation elapsed time: not measured.

@@ -1,5 +1,9 @@
 # Roadmap — Grudgelands
 
+Final integrated status and exact gate identities: [Round 10 final completion](docs/research/round10-final-completion.md).
+Final technical gates PASS. The reviewed changes are delivered on main, synchronized
+and pushed; GUI acceptance remains pending.
+
 Grudgelands is a standalone, WoW-inspired voxel RPG for Luanti. It combines
 two factions, races, classes, fast leveling, threat-based combat, professions,
 an item economy, open-world housing and geographic PvP in an authored but
@@ -11,9 +15,10 @@ the goal-level view.
 
 ## Current delivery checkpoint
 
-Round-10 EQUIP, GAME, WORLD, ART, CAP and FARM changes are integrated and
-independently clean. MAP-B and final technical gates remain active; the result
-is not yet delivered to main or ready for the user's consolidated GUI playtest.
+Round-10 EQUIP, GAME, WORLD, ART, CAP, FARM and MAP-B changes are integrated
+on main and independently clean. Six-capital and six-start engine checks and
+final interpreter parity pass. The result is synchronized and pushed for the
+user's consolidated GUI playtest, whose acceptance remains pending.
 Whole-goal checkboxes remain unchanged until their complete scope is finished.
 
 ## Vision
@@ -86,7 +91,7 @@ Whole-goal checkboxes remain unchanged until their complete scope is finished.
   the destination.
 - **Travel is earned.** Visit-unlocked waypoints connect authored hubs. A Home
   Stone channels to the active bound claim only. Universal riding unlocks at
-  levels 15/30/45/60 with land speeds 6/8 and flight speeds 7/10 nodes per
+  levels 15/30/45/60 with land speeds 6.4/8 and flight speeds 7/10 nodes per
   second; damage dismounts. Battlegrounds permit flight, enemy territory allows
   land mounts only, and every exterior-ocean column forbids flight. Boats are
   the deliberate exception to earning travel: the base boat costs five wood at
@@ -191,6 +196,19 @@ The Nether is not part of V1.
   v1) remains open. Its Sprint consumes the movement aggregator already
   shipped by WP-Speed.
 
+### Round 10 bounded corrections
+
+The independently reviewed delivery includes exclusive Basics and
+seven primaries, universal base gear, refinement/affix operations, corrected
+mount/dragon/fall behavior, nonweapon art, all six capital service layouts,
+purpose-specific cave openings, rocky shores and Rock Salt endpoints. MAP-B adds
+fifteen Cooking wild sources, secondary ash/moss soils, real field soil and shallow
+sea coral/kelp; FARM completes the seventeen-family legal-ground loop. Final
+interpreter parity passes; main delivery, synchronization and push are complete. See the
+[execution record](docs/research/round10-execution.md) and
+[fresh-world GUI checklist](docs/research/round10-next-playtest.md).
+These subpackages do not close the larger whole-WP goals below.
+
 ### Dependent world and item loop
 
 - [ ] WP27–WP30: base armor; the six-tier gear/tool merge; safe removal of
@@ -281,7 +299,10 @@ The Nether is not part of V1.
   dragon arenas are WP13 dressing only and WP42/WP23 own their encounters.
   The six level-65 kings and their four level-60 royal guards per capital now
   occupy the authored sockets, and the post-content boundary walker closes
-  every capital ring while preserving only its four gate bands.
+  every capital ring while preserving only its four gate bands. Round-10 CAP
+  additionally supplies outer workshops, separate Riding stables and protected
+  displays. The decided 24-node versus implemented 16-node bandit-frontier
+  building-core width remains an explicit WP13 correction; the design stays at 24.
 - [x] WP33: gathering plants, signature woods and cultural sources on final
   zone/race-region ownership; accepted with WP40 R7 on 2026-09-02.
 - [ ] WP34: deep spawn pressure, corrected depth-level curve, camp-only
@@ -300,8 +321,9 @@ The Nether is not part of V1.
   map, contested PvP and renewable apex resources.
 - [ ] WP22: durability/repair and explicit six-pick speed/use calibration
   after loot, materials and economy.
-- [ ] WP31: mounts after final map/economy plus the remaining explicit mount
-  questions in `TODO-design-crafting-rework.md`.
+- [ ] WP31: the reviewed mount runtime, capital Riding services and twelve
+  model icons are delivered on main. Final interpreter parity passes; GUI
+  acceptance remains; no open design question or Housing prerequisite is introduced.
 
 ### Before the first public release
 

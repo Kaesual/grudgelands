@@ -1,6 +1,11 @@
 # Round 10 capital services
 
-Implementation candidate, pending independent review and root integration gates.
+Final integrated status and exact gate identities: [Round 10 final completion](round10-final-completion.md).
+Final technical gates PASS. The reviewed changes are delivered on main, synchronized
+and pushed; GUI acceptance remains pending.
+
+Candidate `b80b2037` independently source-reviewed CLEAN and delivered on main.
+Final interpreter parity passes; main delivery, synchronization and push are complete.
 Authority: `docs/research/round10-execution.md`, `docs/design/settlements.md`,
 `docs/design/professions.md` and `docs/design/items_crafting.md`. Fresh-server
 mode applies; current-version entity reload and station activation are tested.
@@ -65,16 +70,19 @@ The full WP13 LuaJIT suite passes, including its nine-seed capital water checks.
 The source manifest constructor passes on the changed geometry. No source-pin
 oracle was weakened, historical R7 source roster stays exactly 157, and no PUC
 runtime was run in this lane. Root owns the single final integrated PUC/LuaJIT
-pair and six-capital/six-start engine gates after MAP-B. These remain pending;
-this document does not mark the package shipped.
+pair after MAP-B. The six-capital service/precinct/Alchemy and six-start
+order/reload engine gates and final parity pass; overlay attribution is
+independently CLEAN. Main delivery, synchronization and push are complete.
 
-Known unrelated deviation: decided `bandit_frontier` radius is 24 while current
+Known unrelated deviation: decided `bandit_frontier` building-core width is 24 while current
 source remains 16. CAP neither widens that geometry nor changes design to 16.
 Unbuilt POI and housing expansion remain outside this package.
 
-Implementation model: native GPT-6 Astra. Independent source/review outcome and
-calibration: pending root-assigned independent review. No merge, push, sync,
-personal-world access or external AI was performed.
+Implementation model: native GPT-6 Astra. Independent reviewer: native GPT-5.6
+Sol; source CLEAN at `b80b2037`, zero remaining material findings, two focused
+preflight fix rounds; observed elapsed time unknown. See
+`round10-reviews/cap-review.md`. No merge, push, sync, personal-world access or
+external AI was performed by this lane.
 
 ## User runtime check after integration
 
@@ -84,3 +92,13 @@ Forge, no profession-trainer Riding entry, protected noncollectible displays,
 and unchanged Cooking purchase/extraction requirements. Leave and reload the
 area to check stable display position and deduplication. Walk all four civic
 gates and inspect Nhal Veyr's wall bars.
+
+## Post-integration corrections
+
+The real engine found a display-placement High in the mob-only facing helper;
+`561a9c2b` corrects plain display activation and is independently reviewed.
+`ccd10d96` independently preserves lamp/pier cadence when the inner avenue
+start moves to 50. The final six-capital engine witnesses pass service,
+precinct and Alchemy checks. [Exact overlay attribution](../../tools/r10_capital_phase/ATTRIBUTION.md)
+separates the accepted inner changes from earlier terrain changes and reports
+zero unexplained coordinates across all 18 historical comparisons; attribution and current-baseline reviews are independently CLEAN. The central completion record owns final gate identities.

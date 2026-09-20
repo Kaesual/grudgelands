@@ -1,5 +1,9 @@
 # R10 nonweapon visual correction record
 
+Final integrated status and exact gate identities: [Round 10 final completion](round10-final-completion.md).
+Final technical gates PASS. The reviewed changes are delivered on main, synchronized
+and pushed; GUI acceptance remains pending.
+
 Date: 2026-09-20. This record covers the accepted representative armor, animal
 loot, crop and mount pass. Weapon media is unchanged.
 
@@ -96,3 +100,12 @@ actual racial appearance. Model animation and runtime geometry are unchanged.
 
 Per-file authorship, license and modification details live in each owning mod's
 `LICENSE-media.md`. Reference pins were read only and were not moved.
+
+## Integrated disposition
+
+ART `dc323374` is independently reviewed CLEAN and delivered on main; two fix
+rounds closed the formal review's Medium findings. Candidate-source license holds
+were resolved before that frozen review and remain documented in its separate
+preflight record. Integrated runtime/asset checks and the final interpreter
+pair pass; user GUI inspection remains pending. See `round10-reviews/README.md`; do not treat model icons or offline
+worn renders as acceptance of in-engine framing and appearance.

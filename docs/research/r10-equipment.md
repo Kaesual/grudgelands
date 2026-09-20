@@ -1,5 +1,9 @@
 # Round 10 equipment delivery evidence
 
+Final integrated status and exact gate identities: [Round 10 final completion](round10-final-completion.md).
+Final technical gates PASS. The reviewed changes are delivered on main, synchronized
+and pushed; GUI acceptance remains pending.
+
 This record covers the universal equipment recipe, profession split,
 refinement/affix and vendor-catalog package. It does not claim the CAP trainer
 projection or ART texture package; those are atomic integration dependencies.
@@ -53,13 +57,14 @@ orb.
 
 ## Integration dependencies
 
-- CAP must project separate `weaponsmith` and `armorsmith` trainers, remove the
-  retired Blacksmith socket vocabulary, and project one shared public
+- Integrated, independently reviewed CAP projects separate `weaponsmith` and
+  `armorsmith` trainers, replaces the retired Blacksmith socket vocabulary, and
+  projects one shared public
   `grug_jobs:forge`. There is deliberately no old-name alias or migration.
-- ART must supply or bind the four leather armor inventory textures referenced
-  by the newly active logical line: `grug_gear_item_{head,chest,legs,feet}_leather.png`.
-- The package must be reviewed and integrated atomically with CAP because the
-  pre-R10 capital projection still speaks the retired Blacksmith vocabulary.
+- Integrated, independently reviewed ART supplies the four leather armor inventory textures referenced
+  by the active logical line: `grug_gear_item_{head,chest,legs,feet}_leather.png`.
+- The package and CAP are integrated together; there is no retired Blacksmith
+  vocabulary in the current trainer projection. Final interpreter parity passes; the central completion record owns exact gate results.
 
 ## Validation
 
@@ -68,5 +73,7 @@ all five portability/security sweeps, the fresh-server source audit, focused
 LuaJIT fixtures and one compact byte-identical LuaJIT/PUC 5.1 digest pair. The
 real-code fixtures also prove source-stack metadata preservation and terminal
 craft-callback composition. The reproducible runner, provenance and immutable
-logs are recorded under `tools/r10_equip/evidence/`. An independent source
-review of the frozen commit remains required before integration.
+logs are recorded under `tools/r10_equip/evidence/`. Independent source review of `b8dc0db3` is CLEAN; see
+[the review index](round10-reviews/README.md). The package-specific historical
+pair remains scoped to its recorded inputs; the final integrated replacement
+pair passes with byte-identical output, as recorded centrally.

@@ -1,0 +1,8 @@
+{
+  "mods": "byte-identical; no extra files",
+  "menu": "byte-identical; no extra files",
+  "game.conf": "393732a5b99e9bee3f6554ecf9bdbdab3956aab12ddbf950a0e1dc7d91dd5f47",
+  "minetest.conf": "3095decaaa396cb5db1865a4f0e030826e32d5d742a1b5166a582387dbf90707",
+  "settingtypes.txt": "933eea5f3b3badfb8682b470a2229611a825b54d4316aec5de8e4bd33bf06b11",
+  "main": "c02dd91e9c2495dfb9669e07f518c61ae42ac58d"
+}

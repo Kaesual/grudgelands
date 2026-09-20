@@ -1,6 +1,10 @@
 # Round 10 — world content and farming integration
 
-Status: production checkpoint `2bc6f33c`; corrected regression and bounded engine/current-save evidence complete. Independent focused review and root's final integrated PUC-5.1/LuaJIT pair remain gates; this is not package acceptance. No intermediate PUC runtime was run.
+Final integrated status and exact gate identities: [Round 10 final completion](round10-final-completion.md).
+Final technical gates PASS. The reviewed changes are delivered on main, synchronized
+and pushed; GUI acceptance remains pending.
+
+Status: production checkpoint `2bc6f33c`; corrected regression and bounded engine/current-save evidence complete. Independent final review of `02f37ec0` is CLEAN, including bounded engine evidence. The final integrated PUC-5.1/LuaJIT pair passes; main delivery, synchronization and push are complete. No intermediate PUC runtime was run.
 
 ## Authority and scope
 
@@ -131,14 +135,14 @@ positives. Dawnmere's 3267 real VM-written soils include a 28-soil held sample;
 with a clearly labeled scratch-only water stimulus, 12 hydrate and 16 remain dry,
 all with active timers. Native cave samples contain Cave Cap1 and Ember Moss2;
 the sea sample contains four coral variants. These sampled counts are not an
-all-plant census. The wet/dry reload is also complete; focused review remains separate.
+all-plant census. The wet/dry reload is also complete; final independent review is CLEAN.
 
 Calibration: implementer GPT-6 Astra; independent reviewer GPT-5.6 Sol. Initial
 review: 0 Critical, 0 High, 1 Medium (the retained R6 fixture failure). One fix
-round; focused review pending. Elapsed delivery wall time: unknown. Root retains
+round; focused review CLEAN at `02f37ec0` (see `round10-reviews/map-b-review.md`). Elapsed delivery wall time: unknown. Root retains
 integration and final interpreter-gate ownership.
 
 The final same-world boot on port32754 also passes: persisted12 wet /16 dry soils,
 all28 timers active, and six non-field content digests identical. Field readback
 changes only by the expected dry-to-wet state. Actual engine evidence is complete;
-root's final integrated interpreter/fleet gates and focused review remain separate.
+the integrated capital/start fleets and combined LuaJIT/static gates also pass. Final interpreter parity also passes with its exact identity recorded centrally.

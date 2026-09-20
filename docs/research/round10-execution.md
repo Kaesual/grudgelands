@@ -1,7 +1,12 @@
 # Round 10 execution and resumption record
 
-Date: 2026-09-20. Baseline: `38ae136d`. Status: implementation integrated;
-MAP-B, the engine-harness correction and final acceptance gates remain active.
+Final integrated status and exact gate identities: [Round 10 final completion](round10-final-completion.md).
+Final technical gates PASS. The reviewed changes are delivered on main, synchronized
+and pushed; GUI acceptance remains pending.
+
+Date: 2026-09-20. Baseline: `38ae136d`. Status: all implementation lanes are
+delivered on main and independently clean;
+final interpreter parity passes and main delivery, synchronization and push are complete.
 
 ## User authority and final decisions
 
@@ -94,9 +99,9 @@ truncated automatic AGENTS injection.
 | WORLD | Purpose-specific cave boundary/witness and mountain/high-water/Rock Salt corrections | Accepted decisions above | Integrated; independent source review CLEAN |
 | CAP | Old core fixes plus outer service premises, dedicated Riding and protected atmosphere | EQUIP trainer/station contract, GAME mount API, WORLD | Integrated; independent source review CLEAN |
 | FARM | All 17 crop-family lifecycles and protected planting | ART crop bindings; MAP-B consumes soil/crop IDs | Integrated; independent review CLEAN |
-| MAP-B | Wild plants, secondary soils, field soils, cave-air plants, coral/kelp, FARM integration | CAP; ART crop bindings | Active; not yet frozen or independently reviewed |
-| ENGINE | Capital service witnesses and constrained accepted geometry deltas | Integrated CAP plus MAP-B | Active; final isolated runs pending |
-| CLOSE | Cross-package gates, final docs, sync/push and next-playtest checklist | All packages independently reviewed | Active; global parity, engine evidence, main delivery and GUI acceptance pending |
+| MAP-B | Wild plants, secondary soils, field soils, cave-air plants, coral/kelp, FARM integration | CAP; ART crop bindings | Integrated `02f37ec0`; independent source and bounded engine-evidence review CLEAN |
+| ENGINE | Capital service witnesses and constrained accepted geometry deltas | Integrated CAP plus MAP-B | Six-capital service/precinct/Alchemy and six-start order/reload witnesses PASS; seven historical overlay differences independently attributed CLEAN; current baseline CLEAN |
+| CLOSE | Cross-package gates, final docs, sync/push and next-playtest checklist | All packages independently reviewed | Complete technical delivery; static, combined LuaJIT and final parity PASS; merged, synchronized and pushed; GUI acceptance pending |
 
 At most three native workers run beside root. Queue work and review slots as
 dependencies permit; world mutation packages run serially. Jan clarified that
@@ -163,3 +168,25 @@ implied. Preserve their honest open status. Newly authored displays must still
 be safe on all actual interaction/drop paths. Final delivery includes clean main,
 reviewed commits pushed to the authorized origin, synchronized game files and
 one concise fresh-world playtest checklist. GUI acceptance remains user-run.
+
+## Integrated verification checkpoint
+
+Source `8dd1c8e4` passes all six real capital service, precinct and Alchemy
+witnesses. Six starts pass forward/reverse generation and cold/current-reload
+checks with four identical digests. Static checks cover 185 Lua files, and the
+full combined LuaJIT runner passes. Exact source/input/output identities belong
+in [the central completion record](round10-final-completion.md), not repeated
+across package summaries. The final PUC-5.1/LuaJIT pair also passes with
+byte-identical canonical output. These technical checks do not substitute for
+the user's GUI playtest.
+
+The first integrated engine pass found a display-placement High: plain display
+entities reached a mob-only `face_yaw` helper. `561a9c2b` corrected the dispatch
+and received independent review plus a real engine witness. The subsequent
+cadence correction `ccd10d96` keeps established outer lamp/pier positions while
+retaining the accepted inner avenue endpoint. Its source review is CLEAN.
+[The complete overlay attribution](../../tools/r10_capital_phase/ATTRIBUTION.md)
+reproduces all 18 historical hashes and reports zero unexplained changed
+coordinates; independent attribution and current-baseline reviews are CLEAN. Six avenue
+changes and the earlier Highcourt terrain/rampart change are distinguished,
+with original failed/superseded evidence retained.

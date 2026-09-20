@@ -1,9 +1,13 @@
 # Round 10 fresh-world playtest checklist
 
-EQUIP, GAME, WORLD, ART, CAP and FARM are integrated and independently clean.
-Use this checklist only after MAP-B, the final interpreter/engine gates, main
-delivery and synchronization are complete. Offline fixtures and renders do not
-replace these GUI observations.
+Final integrated status and exact gate identities: [Round 10 final completion](round10-final-completion.md).
+Final technical gates PASS. The reviewed changes are delivered on main, synchronized
+and pushed; GUI acceptance remains pending.
+
+EQUIP, GAME, WORLD, ART, CAP, FARM and MAP-B are delivered on main and
+independently clean. Final interpreter parity and attribution review pass; the
+delivery is synchronized and pushed. Use this checklist for the next fresh-world
+GUI playtest. Offline fixtures and renders do not replace these observations.
 
 ## Short smoke route
 
@@ -58,7 +62,9 @@ replace these GUI observations.
    till approved soil with the Farmer's Hoe, compare wet and dry growth, then
    harvest and replant. Dry growth pauses and resumes after watering; protection
    blocks unauthorized planting/harvest. Optionally repeat all 17 families,
-   including cave plants, potato and corn, and inspect sea-only coral/kelp.
+   including cave plants, potato and corn, and inspect sea-only coral/kelp. Use
+   legal unprotected ground: protected civic fields are scenery, not a farming
+   permission exception. Seed conversion and cultivation do not require Housing.
 5. Inspect replacement armor, loot, material, food and crop icons at ordinary
    inventory size and as world drops. Equip representative metal, cloth and
    leather pieces on several races and inspect worn UV alignment. Weapon art
@@ -75,6 +81,10 @@ replace these GUI observations.
 - Fight a dragon without `peaceful_player`: skills require a live hostile
   target, lost targets cancel queued actions, scorch refreshes combat, blocked
   idle travel stops/retries, and no-target flight lands and resumes rest.
+
+For a focused trinket check, `/giveme grug_gear:manawell_t1` supplies the
+**Tin Manawell Pendant**. Equip it in a trinket slot and inspect its tooltip and
+mana behavior.
 
 Use `/giveme <item-id>` only for focused setup after the ordinary acquisition
 path has been checked. `/money`, `/xp`, `/char`, `/faction`, `/talents` and the
