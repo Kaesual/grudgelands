@@ -11,6 +11,24 @@ Use a fresh world. For the supplied beach witnesses use seed
 Creative intentionally suppresses wear. Diagnostic setup can use `/giveme`,
 `/xp`, `/money`, `/talents` and `/combatdebug`; use in-game help for arguments.
 
+## First-playtest followup checks
+
+The [followup record](round11-playtest-followups.md) covers the additional build.
+Restart Luanti after synchronization to load the changed code and media.
+
+- A new Scout receives 200 arrows; inventory and quiver slots accept 200 each.
+  Remove a filled quiver with exactly enough main-inventory room, then with too
+  little room: transfer succeeds or refuses atomically.
+- Shoot horizontally, upward and downward: the arrow is a narrow directional
+  mesh whose tip follows flight. Hold Loose: three visible bow draw stages,
+  normal bow restored on release or cancellation, no sustained third-person
+  melee animation. Luanti still makes its brief initial first-person LMB gesture.
+- Sprint's description and effect are +50% for 10 seconds. T3/T4 mounts show
+  +100%/+200% and move accordingly.
+- Visit Highcourt's Cooking/Woodcarver shops, also by approaching the outer
+  district directly. All trainers should appear when their blocks are loaded.
+  Newly generated Leatherworker premises show both leather and armor outside.
+
 ## First pass: reported defects
 
 1. Visit the beach around `(-414,20,-2724)` and `(-511,20,-2562)`. The accepted
@@ -46,7 +64,7 @@ Creative intentionally suppresses wear. Diagnostic setup can use `/giveme`,
    explain the actual output and preserve the concrete item's metadata.
 3. Equip a two-handed staff: Offhand is unavailable. Equip a one-handed wand
    with a Goldsmith spellbook. Equip a bow with the optional Leatherworker
-   quiver: four arrow stacks, no combat bonus. Other two-handed weapons still
+   quiver: four arrow stacks of up to 200 each, no combat bonus. Other two-handed weapons still
    require empty Offhand. Removing a filled quiver transfers arrows to main;
    if they do not all fit, removal is refused with a message and nothing moves.
 4. Outside Creative, fight briefly and inspect slow equipment wear. A miss,
@@ -86,7 +104,7 @@ Creative intentionally suppresses wear. Diagnostic setup can use `/giveme`,
 
 ## Scout
 
-1. Create a Scout: leather eligibility, mana, wooden bow equipped, 20 arrows
+1. Create a Scout: leather eligibility, mana, wooden bow equipped, 200 arrows
    and a stone sword in main, no required starter quiver. Verify class selection
    and both talent trees are available.
 2. Try partial and full draws with Loose, then Snare Shot, Sidestep and Sprint.

@@ -2393,7 +2393,8 @@ consumer are active:
   material-named like everything else (§3.0.3). Its ordinary affix pool is
   Dexterity, Crit, draw speed, HP and Mana; draw speed uses the weapon-family
   attack-speed channel to shorten charge time.
-- **Arrows** as stackable ammo + entity (vl_projectile template);
+- **Arrows** stack to **200** per inventory/quiver slot (user playtest ruling
+  2026-09-20); new Scouts receive 200. Ammo also has a ballistic entity;
   craft 20/batch: 1 iron bar + 4 sticks + 4 feathers (sharp feathers —
   eagle/vulture drops finally get their reagent role). The optional quiver is
   a Leatherworker Offhand item with four arrow-only slots (§3.4). The current

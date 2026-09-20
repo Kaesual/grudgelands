@@ -178,6 +178,22 @@ end)
 -- Localize for better performance.
 local player_set_animation = player_api.set_animation
 local player_attached = player_api.player_attached
+-- GRUG PATCH: let server-owned held actions suppress the generic mine pose
+-- without adding a second animation globalstep or coupling this vendor mod to
+-- a specific Grudgelands ability.
+local control_animation_overrides = {}
+
+function player_api.register_control_animation_override(callback)
+	assert(type(callback) == "function", "animation override needs a callback")
+	control_animation_overrides[#control_animation_overrides + 1] = callback
+end
+
+local function control_animation_override(player, controls)
+	for index = 1, #control_animation_overrides do
+		local animation = control_animation_overrides[index](player, controls)
+		if animation then return animation end
+	end
+end
 
 -- Prevent knockback for attached players
 local old_calculate_knockback = minetest.calculate_knockback
@@ -206,16 +222,21 @@ function player_api.globalstep()
 			-- Apply animations based on what the player is doing
 			if player:get_hp() == 0 then
 				player_set_animation(player, "lay")
-			elseif controls.up or controls.down or controls.left or controls.right then
-				if controls.LMB or controls.RMB then
-					player_set_animation(player, "walk_mine", animation_speed_mod)
-				else
-					player_set_animation(player, "walk", animation_speed_mod)
-				end
-			elseif controls.LMB or controls.RMB then
-				player_set_animation(player, "mine", animation_speed_mod)
 			else
-				player_set_animation(player, "stand", animation_speed_mod)
+				local override = control_animation_override(player, controls)
+				if override then
+					player_set_animation(player, override, animation_speed_mod)
+				elseif controls.up or controls.down or controls.left or controls.right then
+					if controls.LMB or controls.RMB then
+						player_set_animation(player, "walk_mine", animation_speed_mod)
+					else
+						player_set_animation(player, "walk", animation_speed_mod)
+					end
+				elseif controls.LMB or controls.RMB then
+					player_set_animation(player, "mine", animation_speed_mod)
+				else
+					player_set_animation(player, "stand", animation_speed_mod)
+				end
 			end
 		end
 	end

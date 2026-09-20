@@ -196,6 +196,10 @@ Goldsmith and Cooking each have their own representative products. Displays
 have fixed identities, no mutable inventory, no collectible item entity and no
 punch/take/drop path; current-version activation restores them deterministically.
 Public stations, trainer access and street approaches remain clear.
+The Leatherworker's exterior sign shows both leather and leather armor; the
+interior display retains the armor. Capital service placement remains eligible
+after the core unloads: loading any authored capital socket block establishes
+current-world readiness, while each NPC waits for its own block to be loaded.
 
 The shared outer stable is an open shelter with an earth floor, a one-node
 fence and a flat roof supported by exactly six posts. It has no perimeter

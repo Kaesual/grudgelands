@@ -631,7 +631,7 @@ core.register_tool(STARTER_BOW, {
 grug_gear.STARTER_BOW = STARTER_BOW
 core.register_craftitem("grug_gear:arrow", {
 	description = "Arrow", inventory_image = "grug_gear_arrow.png",
-	groups = {grug_arrow = 1}, stack_max = 99, _grug_sell_price = 1,
+	groups = {grug_arrow = 1}, stack_max = 200, _grug_sell_price = 1,
 })
 -- The Warrior half of the same pair, published so the starter-kit grant in
 -- grug_inventory names neither item twice.

@@ -8,6 +8,21 @@ local draws = {}
 local draw_wear_steps = {}
 local pending_control = {}
 local next_action = 0
+local DRAW_STAGE_SOURCE = {
+	["grug_gear_bow_wood.png"] = "",
+	["grug_gear_bow_lebethron.png"] = "^[colorize:#5f7040:90",
+	["grug_gear_bow_birch.png"] = "^[hsl:0:-20:16",
+	["grug_gear_bow_mallorn.png"] = "^[colorize:#d4b34c:70",
+	["grug_gear_bow_alder.png"] = "^[colorize:#9b442f:75",
+}
+
+player_api.register_control_animation_override(function(player, controls)
+	if not draws[player:get_player_name()] then return end
+	if controls.up or controls.down or controls.left or controls.right then
+		return "walk"
+	end
+	return "stand"
+end)
 
 local function action_id(player, ability)
 	next_action = next_action + 1
@@ -77,11 +92,13 @@ grug_projectiles.register(ARROW_PROJECTILE, {
 	max_distance = 25,
 	active_limit = 8,
 	lifetime = 8,
+	orient_to_velocity = true,
 	properties = {
 		is_visible = true,
-		visual = "sprite",
-		textures = {"grug_gear_arrow.png"},
-		visual_size = {x = 0.35, y = 0.8},
+		visual = "mesh",
+		mesh = "grug_projectiles_arrow.obj",
+		textures = {"grug_projectiles_arrow.png"},
+		visual_size = {x = -1, y = 1},
 	},
 	on_hit = function(owner, target, data, point, attacker_level)
 		local damage = data.damage
@@ -191,37 +208,79 @@ local function loose_effect(player, full_draw)
 	}
 end
 
-local function clear_draw(player)
-	local name = player:get_player_name()
-	local rec = draws[name]
-	if rec then cancel_receipt(player, rec.action_id) end
-	draws[name] = nil
-	draw_wear_steps[name] = nil
-	local inv = player:get_inventory()
-	for index, stack in ipairs(inv and inv:get_list("main") or {}) do
-		if stack:get_name() == "grug_abilities:loose" and stack:get_wear() ~= 0 then
-			stack:set_wear(0)
-			inv:set_stack("main", index, stack)
-			break
-		end
-	end
-end
-
 local function bow_identity(stack)
 	if not stack or stack:is_empty() then return nil end
 	local item_id = stack:get_meta():get_string("_grug_repair_item_id")
 	return stack:get_name() .. "|" .. item_id
 end
 
-local function set_draw_wear(player, fraction)
-	local name = player:get_player_name()
-	local step = math.max(0, math.min(10, math.floor(fraction * 10)))
-	if draw_wear_steps[name] == step then return end
-	draw_wear_steps[name] = step
+local function image_string(image)
+	if type(image) == "table" then return image.name or "" end
+	return image or ""
+end
+
+local function bow_wield_image(player)
+	local bow = equipped_bow(player)
+	if not bow then return "" end
+	local meta = bow:get_meta()
+	local image = meta:get_string("wield_image")
+	local def = core.registered_items[bow:get_name()]
+	if image == "" then image = image_string(def and def.wield_image) end
+	if image == "" then image = meta:get_string("inventory_image") end
+	if image == "" then image = image_string(def and def.inventory_image) end
+	return image
+end
+
+local function staged_bow_image(player, stage)
+	local source = bow_wield_image(player)
+	for base, family_tint in pairs(DRAW_STAGE_SOURCE) do
+		if source:sub(1, #base) == base then
+			return "grug_abilities_bow_draw_" .. stage .. ".png" ..
+				family_tint .. source:sub(#base + 1)
+		end
+	end
+	return source
+end
+
+local function reset_draw_stack(player)
+	local source = bow_wield_image(player)
 	local inv = player:get_inventory()
 	for index, stack in ipairs(inv and inv:get_list("main") or {}) do
 		if stack:get_name() == "grug_abilities:loose" then
-			stack:set_wear(math.floor((10 - step) / 10 * 65534))
+			local meta = stack:get_meta()
+			if stack:get_wear() ~= 0 or meta:get_string("wield_image") ~= source then
+				stack:set_wear(0)
+				meta:set_string("wield_image", source)
+				inv:set_stack("main", index, stack)
+			end
+			return
+		end
+	end
+end
+
+local function clear_draw(player)
+	local name = player:get_player_name()
+	local rec = draws[name]
+	if rec then cancel_receipt(player, rec.action_id) end
+	draws[name] = nil
+	draw_wear_steps[name] = nil
+	reset_draw_stack(player)
+end
+
+local function set_draw_wear(player, fraction)
+	local name = player:get_player_name()
+	-- Ten visible charge states leave the lifecycle reset inside the prior
+	-- eleven-write/action ceiling while the same writes also carry bow stages.
+	local step = math.max(0, math.min(9, math.floor(fraction * 9)))
+	if draw_wear_steps[name] == step then return end
+	draw_wear_steps[name] = step
+	local stage = step < 3 and 0 or (step < 6 and 1 or 2)
+	local inv = player:get_inventory()
+	for index, stack in ipairs(inv and inv:get_list("main") or {}) do
+		if stack:get_name() == "grug_abilities:loose" then
+			stack:set_wear(math.floor((9 - step) / 9 * 65534))
+			stack:get_meta():set_string("wield_image",
+				staged_bow_image(player, stage))
 			inv:set_stack("main", index, stack)
 			return
 		end
@@ -229,9 +288,7 @@ local function set_draw_wear(player, fraction)
 end
 
 local function finish_draw_wear(player)
-	-- Keep the cached step through the compare-first reset. A full draw is
-	-- already at step 10 / wear 0 and therefore needs no identical write.
-	set_draw_wear(player, 1)
+	reset_draw_stack(player)
 	draw_wear_steps[player:get_player_name()] = nil
 end
 
@@ -384,9 +441,9 @@ grug_abilities.register_ability({
 	id = "sprint", class = "scout", name = "Sprint", kind = "cast",
 	target_kind = "self", color = "#c9b85d", cost = {mana_percent = 15},
 	cooldown = 300, range = 0,
-	description = "Move 25% faster for 10 s.",
+	description = "Move 50% faster for 10 s.",
 	cast = function(user)
-		grug_core.set_move_modifier(user, "scout_sprint", {speed = 0.25}, 10)
+		grug_core.set_move_modifier(user, "scout_sprint", {speed = 0.50}, 10)
 		return true
 	end,
 })

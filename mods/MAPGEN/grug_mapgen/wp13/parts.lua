@@ -90,6 +90,7 @@ local PARAM2_KIND = {
 	["grug_decor:capital_product_armorsmith"] = M.FACEDIR,
 	["grug_decor:capital_product_tailor"] = M.FACEDIR,
 	["grug_decor:capital_product_leatherworker"] = M.FACEDIR,
+	["grug_decor:capital_product_leatherworker_exterior"] = M.FACEDIR,
 	["grug_decor:capital_product_woodcarver"] = M.FACEDIR,
 	["grug_decor:capital_product_goldsmith"] = M.FACEDIR,
 	["grug_decor:capital_product_alchemist"] = M.FACEDIR,

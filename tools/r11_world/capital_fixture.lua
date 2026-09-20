@@ -23,7 +23,7 @@ return function(repo)
    assert(def.tiles[6]:find('.png',1,true),'missing product face')
   end
  end
- assert(products==8)
+ assert(products==9)
  local output={}
  for _,city in ipairs({'highcourt','dur_brannoc','lethariel','nhal_veyr','gor_drazhak','kezamba'})do
   local districts=dofile(dir..'/'..city..'_districts.lua')(dir)
@@ -33,12 +33,15 @@ return function(repo)
    if service then
     plots=plots+1
     local bp=plot.build();local cells={};local sockets={};local plaques=0
+    local plaque_names={}
     for _,cell in ipairs(bp.cells)do
      cells[key(cell.x,cell.y,cell.z)]=cell
      if cell.name:find('grug_decor:capital_product_',1,true)then
       assert(definitions[cell.name]);plaques=plaques+1
+      plaque_names[cell.name]=(plaque_names[cell.name] or 0)+1
       local suffix=cell.name:match('capital_product_(.+)')
-      assert(suffix==service or service=='forge' and
+      assert(suffix==service or service=='leatherworker' and
+       suffix=='leatherworker_exterior' or service=='forge' and
        (suffix=='weaponsmith' or suffix=='armorsmith'))
      end
     end
@@ -84,6 +87,24 @@ return function(repo)
      end
     else
      assert(plaques==2,city..' '..service..' exterior/interior product count')
+     if service=='leatherworker' then
+      assert(plaque_names['grug_decor:capital_product_leatherworker']==1 and
+       plaque_names['grug_decor:capital_product_leatherworker_exterior']==1,
+       city..' leatherworker exterior material/armor display differs')
+     end
+     if service=='forge' then
+      for _,profession in ipairs({'weaponsmith','armorsmith'})do
+       local trainer=assert(sockets[plot.id..'_'..profession],
+        city..' '..profession..' trainer socket missing')
+       assert(trainer.role=='trainer' and trainer.profession==profession,
+        city..' '..profession..' trainer identity differs')
+      end
+     else
+      local trainer=assert(sockets[plot.id..'_'..service],
+       city..' '..service..' trainer socket missing')
+      assert(trainer.role=='trainer' and trainer.profession==service,
+       city..' '..service..' trainer identity differs')
+     end
      frames=frames+(service=='forge' and 2 or 1)
     end
     output[#output+1]=city..'\t'..service..'\t'..#bp.cells..'\t'..plaques
@@ -92,5 +113,5 @@ return function(repo)
   assert(plots==8 and frames==8)
  end
  table.sort(output)
- return 'R11 CAP PASS: 48 real service plots, 6 open shelters, 24 mounts, 24 authored ground endpoints, 48 exterior product frames; 8 protected product definitions\n'..table.concat(output,'\n')..'\n'
+ return 'R11 CAP PASS: 48 real service plots, 48 profession trainer sockets, 6 open shelters, 24 mounts, 24 authored ground endpoints, 48 exterior product frames; 9 protected product definitions\n'..table.concat(output,'\n')..'\n'
 end

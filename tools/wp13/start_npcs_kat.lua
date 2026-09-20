@@ -148,6 +148,8 @@ return function(repo)
 		-- deliberately has none of mobs_redo's methods.
 		{id = "market_stable/mount_t1", role = "mount_display", tags = {"1"},
 			x = 82, y = 1, z = -42, dir = {x = 1, z = 0}},
+		{id = "outer_cooking/cooking", role = "trainer", profession = "cooking",
+			x = 90, y = 1, z = 0, dir = {x = -1, z = 0}},
 	}
 	local SOCKETS = {
 		{id = "gate_west", role = "guard_post", x = -4, y = 1, z = 59,
@@ -281,6 +283,8 @@ return function(repo)
 	-- answers nil for a block that is not loaded, which is the gate a capital
 	-- is placed behind.
 	local capital_loaded = false
+	local capital_anchor_unloaded = false
+	local capital_outer_unloaded = false
 
 	--
 	-- The world the stub keeps between boots: mod storage and the objects that
@@ -731,7 +735,12 @@ return function(repo)
 				end
 				return {name = "air"}
 			end
-			if pos and pos.z > -2000 and not capital_loaded then return nil end
+			if pos and pos.z > -2000 then
+				if not capital_loaded then return nil end
+				if capital_anchor_unloaded and pos.x == CAPITAL.x and
+						pos.y == CAPITAL.y and pos.z == CAPITAL.z then return nil end
+				if capital_outer_unloaded and pos.x >= CAPITAL.x + 80 then return nil end
+			end
 			if pos and pos.y < GROUND_Y then return {name = "default:stone"} end
 			return {name = "air"}
 		end
@@ -2237,6 +2246,43 @@ return function(repo)
 	end
 	line("real_starts", table.concat(rings, " "),
 		"min_walker_ring_" .. tostring(worst_ring))
+
+	-- A capital's anchor authenticates the settlement once per server session.
+	-- Its outer districts load later as the player walks away from the core; by
+	-- then the anchor mapblock may be unloaded. Pending trainers must still be
+	-- served from their own newly loaded block.
+	real_settlements = nil
+	world = {storage = {}, objects = {}}
+	capital_loaded = true
+	capital_anchor_unloaded = false
+	capital_outer_unloaded = true
+	boot()
+	step(5)
+	check(entity_at("outer_cooking/cooking") == nil,
+		"the unloaded outer trainer was placed early")
+	capital_anchor_unloaded = true
+	capital_outer_unloaded = false
+	step(5)
+	check(entity_at("outer_cooking/cooking") ~= nil,
+		"the pending outer trainer required the anchor and shop simultaneously")
+	line("capital_pending", "anchor_latched", "outer_trainer_placed")
+	world = {storage = {['startnpc:dur_brannoc:hall_guard'] = '1'}, objects = {}}
+	capital_anchor_unloaded = true
+	capital_outer_unloaded = false
+	boot()
+	step(5)
+	check(entity_at("outer_cooking/cooking") ~= nil,
+		"a persisted capital marker did not restore outer-shop service after restart")
+	line("capital_restart", "marker_restored_readiness", "outer_trainer_placed")
+	world = {storage = {}, objects = {}}
+	capital_anchor_unloaded = true
+	capital_outer_unloaded = false
+	boot()
+	step(5)
+	check(entity_at("outer_cooking/cooking") ~= nil,
+		"a direct first arrival at the outer district still required the core")
+	line("capital_direct_outer", "socket_block_authenticated",
+		"outer_trainer_placed")
 
 	restore()
 	return table.concat(report)

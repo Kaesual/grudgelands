@@ -84,7 +84,9 @@ function M.decorate(city, plot, buf, palette, sockets, area)
    buf:fill(post_x,1,z,post_x,3,z,palette.node("post"))
   end
   buf:put(x,3,z,palette.node("post"))
-  decor(x,2,z,"product_"..profession)
+  local display=profession
+  if profession=="leatherworker" then display="leatherworker_exterior" end
+  decor(x,2,z,"product_"..display)
  end
  -- Existing wall/roof silhouettes and vendor shopfronts remain. The bounded
  -- central room is furnished for its actual service; side aisles stay open.

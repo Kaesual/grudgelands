@@ -11,6 +11,7 @@ local active_counts = {} -- session -> projectile id -> count
 local active_tokens = {} -- token -> {session, projectile_id}
 local session_tokens = {} -- session -> token -> true
 local next_active_token = 0
+local ARROW_MESH_YAW_OFFSET = -math.pi / 2
 
 dofile(modpath .. "/collision.lua")
 
@@ -162,7 +163,23 @@ function grug_projectiles.register(id, def)
 	assert(def.active_limit == nil or (type(def.active_limit) == "number"
 		and def.active_limit > 0 and def.active_limit % 1 == 0),
 		"projectile active_limit must be a positive integer")
+	assert(def.orient_to_velocity == nil or
+		type(def.orient_to_velocity) == "boolean",
+		"projectile orient_to_velocity must be a boolean")
 	definitions[id] = def
+end
+
+-- Match the imported mesh's proven VoxeLibre orientation: Luanti's yaw plus
+-- this -pi/2 mesh offset, with vertical velocity carried by entity roll.
+local function orient_to_velocity(object, velocity)
+	local length = vector.length(velocity)
+	if length <= 0 then return end
+	local direction = vector.multiply(velocity, 1 / length)
+	object:set_rotation(vector.new(
+		0,
+		core.dir_to_yaw(direction) + ARROW_MESH_YAW_OFFSET,
+		math.asin(math.max(-1, math.min(1, direction.y)))
+	))
 end
 
 -- params = {owner=PlayerRef, origin=vector, direction=vector, data=table,
@@ -224,6 +241,9 @@ local function spawn_one(id, params)
 	end
 	local velocity = vector.multiply(direction, speed)
 	local ok = pcall(object.set_velocity, object, velocity)
+	if ok and def.orient_to_velocity then
+		ok = pcall(orient_to_velocity, object, velocity)
+	end
 	if ok and params.acceleration then
 		ok = pcall(object.set_acceleration, object,
 			vector.new(params.acceleration))
@@ -382,6 +402,9 @@ core.register_entity(ENTITY_NAME, {
 		if not current or not previous then
 			remove_projectile(self, "owner_lost", "projectile invalid")
 			return
+		end
+		if def.orient_to_velocity then
+			orient_to_velocity(self.object, self.object:get_velocity())
 		end
 
 		local elapsed = math.max(0, dtime or 0)

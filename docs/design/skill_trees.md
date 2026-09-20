@@ -1108,7 +1108,7 @@ free-first assertion fail.
 
 Three talents and one base-kit ability in this design write the player's
 movement: Hold Ground and Shake Loose set a **root/slow immunity flag**, the
-Scout's Sprint sets a **+25 % modifier**, and Tendon Cut and Pinning Shot
+Scout's Sprint sets a **+50 % modifier**, and Tendon Cut and Pinning Shot
 apply a **root**. They cannot be written the way the game writes movement
 today.
 
@@ -1154,7 +1154,7 @@ never a "−1000 %"; **mounts stay outside it**, exactly as `mounts.md:128-133`
 already requires.
 
 ```lua
-grug_core.set_move_modifier(player, "sprint", {speed = 0.25}, 10)
+grug_core.set_move_modifier(player, "sprint", {speed = 0.50}, 10)
 grug_core.set_move_modifier(player, "mob_web", {speed = -0.40}, 7)
 grug_core.clear_move_modifier(player, "sprint")
 grug_core.set_root(player, 4)             -- hard flag: speed 0, jump 0
@@ -1501,8 +1501,10 @@ undecided any more.**
     (`grug_classes/stats.lua:34-36`). *(One accessor, and one sentence added
     to `combat_stats.md` §2 — §7 task 9. It is what makes the Scout's
     Dexterity-led growth mean something.)*
-29. **Sprint is +25 % for 10 s on a 300 s cooldown.** *(The numbers the
-    documents already use. It puts a sprinting Scout at 5.0 nodes/s against
+29. **Historical ruling: Sprint is +25 % for 10 s on a 300 s cooldown.**
+    **The user amended the speed to +50% on 2026-09-20; duration, cooldown
+    and the existing movement cap remain unchanged.** *(The amended value
+    puts a sprinting Scout at 6.0 nodes/s against
     the ordinary aggressive band's 4.6, which ruling 10 permits and which
     **confirms §7 task 1**: `mounts.md` §3.1 and `combat_stats.md` §3 must
     record the exception.)*
@@ -1564,7 +1566,7 @@ where their answers now live:
 | the movement aggregator's arithmetic | ruling 26 — additive per axis, one clamp | §3.9 |
 | the Scout's tree names | ruling 27 — Quarry / Veil | §1.1, §2.7, §2.8 |
 | what feeds a bow's damage | ruling 28 — `weapon damage + floor(Dex/10)` | [scout.md](scout.md) §1, §7 task 9 |
-| Sprint's percentage and cooldown | ruling 29 — +25 % / 10 s / 300 s | [scout.md](scout.md) §2, §7 task 1 |
+| Sprint's percentage and cooldown | user amendment 2026-09-20 — +50 % / 10 s / 300 s | [scout.md](scout.md) §2, §7 task 1 |
 
 ---
 
@@ -1576,7 +1578,7 @@ are listed so that the merge does not leave the repo contradicting itself.
 
 | # | Task | Why it cannot be done here |
 |---|---|---|
-| 1 | Amend `mounts.md` §3.1's pillar paragraph and `combat_stats.md` §3 to say the 4.4 > 4.0 inequality holds **except** for named, long-cooldown skills, of which Sprint is the first at **+25 % for 10 s every 300 s**; the Swiftness Draught's +8 % stays as it is | rulings 10 and 29 decided it; neither file is this lane's |
+| 1 | Amend `mounts.md` §3.1's pillar paragraph and `combat_stats.md` §3 to say the 4.4 > 4.0 inequality holds **except** for named, long-cooldown skills, of which Sprint is the first at **+50 % for 10 s every 300 s**; the Swiftness Draught's +8 % stays as it is | rulings 10 and 29 decided it; neither file is this lane's |
 | 2 | Implement the remaining Mage crit-cap override without replacing Round 11's delivered Unbroken armor path or Scout dodge-cap override | the common cap rule is decided and documented; the remaining consumer belongs to X3 |
 | 4 | Correct the five shipped comments that assume a class change (`grug_inventory/equipment.lua:57`, `:501`, `:579`, `grug_core/combat.lua:110`, `grug_abilities/init.lua:1775-1776`) and remove the `/class` registration at `grug_classes/selection.lua:594-595` — **not** the `:554-592` helper, which `/race` still needs | ruling 20 decided it; it is code, and this lane is docs-only (§3.10 lists the sites) |
 | 5 | Rename the two remaining "Holy tree" mentions to Mercy — the Renew row at `classes.md:464` and the comment at `mods/PLAYER/grug_abilities/kits.lua:650` | bookkeeping after ruling 5's tree names; one is code |

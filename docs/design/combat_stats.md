@@ -481,12 +481,12 @@ Normal tier at level L:
   or duration." *(The ruling is quoted verbatim and says 4.4 because the band
   moved to 4.6 on the same day, in ruling 2 above; the numbers derived from it
   below are stated against the shipped 4.6.)* The first one is the Scout's
-  **Sprint** — **+25 % for 10 s on a 300 s cooldown** (ruling 29,
-  `scout.md` §2) — which puts a sprinting player at **5.0** against 4.6 for
+  **Sprint** — **+50 % for 10 s on a 300 s cooldown** (user amendment 2026-09-20,
+  `scout.md` §2) — which puts a sprinting player at **6.0** against 4.6 for
   ten seconds in every five minutes. Nothing permanent or cheap is covered:
   the Swiftness Draught stays at **+10 % for 5 s**
   (4.0 × 1.10 = 4.4 < 4.6, `items_crafting.md` §3.6/§10 P4) and a
-  mount pays for its permanent 6–10 nodes/s with the damage dismount
+  mount pays for its permanent 6.4–12 nodes/s with the damage dismount
   (`mounts.md` §3.1).
 - **View range follows the attack type** (decided 2026-09-16, user ruling 3):
   a **`dogshoot` family sees 16 m**, a **melee family 10–14 m by habitat**.

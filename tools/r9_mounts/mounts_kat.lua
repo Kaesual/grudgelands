@@ -624,7 +624,7 @@ return function(root, options)
 		record.visual.force_visible == false)
 	assert(record.object.properties.stepheight == nil or
 		record.object.properties.stepheight == 0)
-	assert(rider.statuses.mount.label == "T3 Mount, +75% Speed" and
+	assert(rider.statuses.mount.label == "T3 Mount, +100% Speed" and
 		rider.statuses.mount.untimed == true)
 	grug_visuals.apply(rider)
 	assert(math.abs(rider.properties.visual_size.x - 0.9) < 0.000001 and

@@ -1,0 +1,9 @@
+luac51 -p PASS: 332 files (all first-party mods plus changed Lua, including tools/vendor)
+Sweep 1: 1 hit lines; inspect raw log for comment/string/tool-host exceptions
+Sweep 2: 2 hit lines; inspect raw log for comment/string/tool-host exceptions
+Sweep 3: 0 hit lines; inspect raw log for comment/string/tool-host exceptions
+Sweep 4: 249 hit lines; inspect raw log for comment/string/tool-host exceptions
+Sweep 5: 9 hit lines; inspect raw log for comment/string/tool-host exceptions
+git diff --check PASS
+reference pins PASS: 13 unchanged initialized references
+Manual inspection PASS: sweep hits are comments, strings/frozen manifest, or existing vendor namespace; SETGLOBAL limited to declared mod tables and intentional fixture globals. No PUC runtime.
