@@ -1,0 +1,7 @@
+luajit: fail_content_manifest: surface skin host rock is absent
+stack traceback:
+	[C]: in function 'error'
+	...heck-tree/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua:3507: in function 'apply'
+	...r10/world/check-tree/tools/wp40/r6/micro_kat_fixture.lua:521: in function <...r10/world/check-tree/tools/wp40/r6/micro_kat_fixture.lua:3>
+	/tmp/grudgelands-r10/world/run-fixture.lua:1: in main chunk
+	[C]: at 0x5649a1b31b00

@@ -1248,6 +1248,11 @@ return function(dependencies)
 		end
 		return bounds
 	end
+	local cave_core_widths={}
+	for index=1,#source.anchor_profiles do
+		local profile=source.anchor_profiles[index]
+		cave_core_widths[profile.id]=profile.building_core_width or profile.fitting_width
+	end
 	for index=1,#source.claim_exclusions do
 		local exclusion=source.claim_exclusions[index]
 		local record=exclusion_source_by_id[exclusion.source_id]
@@ -1255,6 +1260,8 @@ return function(dependencies)
 		if exclusion.recipe_id == "exclude_anchor_blend_v1" then
 			shape.kind="square" shape.center=exclusion.center
 			shape.total_width=exclusion.total_width
+			shape.cave_core_width=cave_core_widths[record.template_id]
+			if not shape.cave_core_width then fail("cave anchor has no core width") end
 			-- A start's or a capital's blend envelope is the one claim exclusion
 			-- that is terrain and not settlement ground;
 			-- `static_exclusion_values_at` can be asked to skip it. See the
@@ -1287,6 +1294,7 @@ return function(dependencies)
 			end
 		elseif exclusion.recipe_id == "exclude_coast_v1" then
 			shape.kind="polygon" shape.polygon=record.polygon
+			shape.cave_dry_coast=true
 			shape.expansion=exclusion.projection_width
 			shape.warped=record.region ~= nil
 			local extra=shape.expansion+(shape.warped and source.warp.maximum or 0)
@@ -2042,7 +2050,15 @@ return function(dependencies)
 			if not candidates then return nil end
 			for index=1,#candidates do
 				local shape=candidates[index]
-				if shape.anchor_blend and purpose == "vegetation" then
+				if purpose == "cave" and shape.cave_core_width and
+						not in_centered_half_open_square(x,z,shape.center,
+							shape.cave_core_width,0) then
+					-- Terrain fitting is not occupied ground. Keep checking overlapping
+					-- hard cores/aprons, routes and water exclusions in this bucket.
+				elseif purpose == "cave" and shape.cave_dry_coast and
+						classification_values_at(x,z) == "land" then
+					-- Whole-island coast claims do not occupy their dry interior.
+				elseif shape.anchor_blend and purpose == "vegetation" then
 					-- Skipped, not returned as "no exclusion": the remaining shapes in
 					-- this bucket still answer, which is what makes the anchor's own
 					-- hard core (`exclude:active:hard:anchor_00N` -- 148 nodes for a
@@ -2148,7 +2164,7 @@ return function(dependencies)
 		function session.static_exclusion_values_at(x,z,purpose)
 			integer(x,"static exclusion query x")
 			integer(z,"static exclusion query z")
-			if purpose ~= nil and purpose ~= "vegetation" then
+			if purpose ~= nil and purpose ~= "vegetation" and purpose ~= "cave" then
 				fail("static exclusion purpose differs")
 			end
 			if not in_rectangle(x,z,query_bounds,0) then return nil end

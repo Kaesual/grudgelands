@@ -100,7 +100,7 @@ return function(catalog, p9g_content, raw_sha256)
 	end
 	local manifest = catalog.manifest()
 	local rows = catalog.p9g_sources()
-	if manifest.schema ~= "grug_wp33_gathering_catalog_v1" or
+	if manifest.schema ~= "grug_wp33_gathering_catalog_v2" or
 			type(manifest.canonical_bytes) ~= "string" or
 			type(manifest.sha256) ~= "string" or
 			hex(raw_sha256(manifest.canonical_bytes)) ~= manifest.sha256 or
@@ -147,15 +147,22 @@ return function(catalog, p9g_content, raw_sha256)
 			end
 			zones[value] = true
 		end
+		local previous_host
 		for item = 1, #row.hosts do
 			local value = row.hosts[item]
 			if type(value) ~= "table" or type(value.biome) ~= "string" or
-					type(value.support) ~= "string" or hosts[value.biome] or
-					(item > 1 and not less_bytes(row.hosts[item - 1].biome,
-						value.biome)) then
+					type(value.support) ~= "string" or
+					(value.zone ~= nil and not zones[value.zone]) then
 				fail("P9G host set differs")
 			end
-			hosts[value.biome] = value.support
+			local key = (value.zone or "*") .. "/" .. value.biome .. "/" .. value.support
+			if previous_host and not less_bytes(previous_host, key) then
+				fail("P9G host ordering differs")
+			end
+			previous_host = key
+			local candidates = hosts[value.biome] or {}
+			candidates[#candidates + 1] = value
+			hosts[value.biome] = candidates
 		end
 		for item = 1, #row.shore_water_classes do
 			shore[row.shore_water_classes[item]] = true
@@ -272,14 +279,20 @@ return function(catalog, p9g_content, raw_sha256)
 		local function geographic_reason(context, catalog_index, x, surface_y, z)
 			local water_class, _, zone_id, biome = context.column_values_at(x, z)
 			if not zone_sets[catalog_index][zone_id] then return "wrong_zone" end
-			local support_name = host_sets[catalog_index][biome]
-			if water_class ~= "land" or not support_name then return "wrong_biome" end
+			local candidates = host_sets[catalog_index][biome]
+			if water_class ~= "land" or not candidates then return "wrong_biome" end
 			if not shore_matches(context, catalog_index, x, z) then return "wrong_shore" end
-			local support_ref = context.production_content(support_name)
-			if not support_ref or context.analytic_p7_ref(x, surface_y, z) ~= support_ref then
-				return "wrong_support"
+			local actual_ref = context.analytic_p7_ref(x, surface_y, z)
+			for index = 1, #candidates do
+				local host = candidates[index]
+				if host.zone == nil or host.zone == zone_id then
+					local support_ref = context.production_content(host.support)
+					if support_ref and actual_ref == support_ref then
+						return nil, host.support
+					end
+				end
 			end
-			return nil
+			return "wrong_support"
 		end
 
 		local function settlement_decision(context, catalog_index, x, y, z)
@@ -318,10 +331,8 @@ return function(catalog, p9g_content, raw_sha256)
 			if value.prior_cid == production.ignore_cid then
 				return "content_ignore", value
 			end
-			local reason = geographic_reason(context, catalog_index, x, y - 1, z)
+			local reason, support_name = geographic_reason(context, catalog_index, x, y - 1, z)
 			if reason then return reason, value end
-			local support_name = host_sets[catalog_index][select(4,
-				context.column_values_at(x, z))]
 			local expected_support_cid = select(2,
 				context.production_content(support_name))
 			if context.inside_owner(x, y - 1, z) then

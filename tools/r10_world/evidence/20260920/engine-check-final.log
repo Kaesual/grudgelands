@@ -1,0 +1,10 @@
+R10 engine output PASS
+columns 245 geometry/ownership unchanged
+high_freshwater_rock_columns 25
+openings 16
+skin_nodes 26
+stormscale_rock_columns 27
+wyrmglass_rock_columns 25
+reported_point -71/21/-2458 grass-roof -> air; native cave retained
+gravesalt sand support retained
+persistence 224 six-node columns byte-identical; full reload telemetry 245

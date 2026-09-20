@@ -1984,6 +1984,8 @@ return function(repo, changed_roster_relative, expected_changed_count)
 				surface_cave_cell_at = function() return 0, 0 end,
 				surface_cave_constants = function() return 80, -30912, 24, 2, 24 end,
 				coast_profile_at = function() return nil end,
+				coast_material_at = function() return nil end,
+				primary_relief_at = function() return nil end,
 				landmark_excluded_at = function() return false end,
 				metrics = function()
 					return {runtime_column_cache_limit = 65536,
@@ -2197,6 +2199,8 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	function planner_source.surface_cave_cell_at() return 0, 0 end
 	function planner_source.surface_cave_constants() return 80, -30912, 24, 2, 24 end
 	function planner_source.coast_profile_at() return nil end
+	function planner_source.coast_material_at() return nil end
+	function planner_source.primary_relief_at() return nil end
 	function planner_source.landmark_excluded_at() return false end
 	local source_anchor = {id = "micro_apex", position = {x = 10000, z = 10000}}
 	local source = {claim_exclusions = {{id = "micro_resource_exclusion",

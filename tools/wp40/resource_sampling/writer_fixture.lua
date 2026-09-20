@@ -131,6 +131,8 @@ return function(repo, expanded)
 	function planner_source.surface_cave_candidate_at_cell() return nil end
 	function planner_source.surface_cave_cell_at() return 0, 0 end
 	function planner_source.coast_profile_at() return nil end
+	function planner_source.coast_material_at() return nil end
+	function planner_source.primary_relief_at() return nil end
 	-- This fixture owns only the deep resource oracle. Keep the unrelated
 	-- surface-skin pass excluded while still providing its complete content seam.
 	function planner_source.landmark_excluded_at() return true end

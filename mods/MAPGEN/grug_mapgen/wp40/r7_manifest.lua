@@ -33,8 +33,10 @@ return function(canonical, raw_sha256, settlement_order)
 	-- Ember Moss through its Cooking-owned itemstring in the fail-closed herb
 	-- vocabulary. Placement/content semantics remain unchanged; only the
 	-- authenticated gathering limb and this roll-up move again.
+	-- R10 WORLD: catalog v2 authenticates zone-scoped Rock Salt support rows.
+	-- Only the gathering limb changes; native inputs and the 157-source roster stay.
 	local SOURCE_PROJECTION_SHA256 =
-		"1fcdf06bace3cc7679e8959087d4b361da164c1a6ff920cdb60e7f4473022c47"
+		"674ddc3f6a9b9bfd1a1e50c88db6908f5022960200e88128665292047ade9c51"
 	local FIELD_HEAD = {
 		"schema", "full_seed", "r5_schema", "r5_manifest_sha256",
 		"r5_artifact_sha256", "r6_schema", "r6_contract_sha256",
@@ -292,9 +294,9 @@ return function(canonical, raw_sha256, settlement_order)
 			fail("native identity differs")
 		end
 		local gathering = inputs.gathering_manifest
-		if gathering.schema ~= "grug_wp33_gathering_catalog_v1" or
+		if gathering.schema ~= "grug_wp33_gathering_catalog_v2" or
 			gathering.sha256 ~=
-				"287c4278002668928151de6666dce3f738242c0a241927e71d3bd46a3d48bc8e" or
+				"85382465797196dbeb20e407ef482c367f9e6c547127722cf2b0f634d6c98929" or
 			sha256_hex(gathering.canonical_bytes) ~= gathering.sha256 then
 			fail("gathering identity differs")
 		end

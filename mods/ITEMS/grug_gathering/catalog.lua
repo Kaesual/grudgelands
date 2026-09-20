@@ -1,7 +1,7 @@
 -- Pure WP33 catalog. This file deliberately reads no engine global so the
 -- same bytes can be loaded in the main and mapgen environments.
 
-local SCHEMA = "grug_wp33_gathering_catalog_v1"
+local SCHEMA = "grug_wp33_gathering_catalog_v2"
 local NODE_SOURCE = "mods/ITEMS/grug_gathering/nodes.lua"
 local HARVEST_SOURCE = "mods/ITEMS/grug_gathering/harvest.lua"
 local NODE_SOURCE_SHA256 =
@@ -9,7 +9,7 @@ local NODE_SOURCE_SHA256 =
 local HARVEST_SOURCE_SHA256 =
 	"3fe1a5ffdb4ae5119a6952561d1975b020cf435b32978758676f29f61b0ad11a"
 local EXPECTED_MANIFEST_SHA256 =
-	"287c4278002668928151de6666dce3f738242c0a241927e71d3bd46a3d48bc8e"
+	"85382465797196dbeb20e407ef482c367f9e6c547127722cf2b0f634d6c98929"
 
 local PLACEMENT = {
 	schema = "P9G-1",
@@ -46,8 +46,8 @@ local ALL_DRY_HOSTS = {
 	{biome = "grug_swamp", support = "grug_nodes:mud"},
 }
 
-local function host(biome, support)
-	return {biome = biome, support = support}
+local function host(biome, support, zone)
+	return {biome = biome, support = support, zone = zone}
 end
 
 local function p9g(id, key, name, density, zones, hosts, shore, kind, grade,
@@ -153,7 +153,13 @@ local P9G = {
 	p9g("wp33_rock_salt_source_v1", "rock_salt", "Rock Salt", 1024, {
 		"front_gravesalt_escarpment", "front_stormscale_summit",
 		"front_wyrmglass_crown",
-	}, {host("grug_beach", "default:sand")}, "salt_cardinal",
+	}, {
+		host("grug_beach", "default:sand", "front_gravesalt_escarpment"),
+		host("grug_beach", "default:gravel", "front_stormscale_summit"),
+		host("grug_beach", "default:stone", "front_stormscale_summit"),
+		host("grug_beach", "default:gravel", "front_wyrmglass_crown"),
+		host("grug_beach", "default:stone", "front_wyrmglass_crown"),
+	}, "salt_cardinal",
 		"found_only_food", nil, false,
 		"default_clay_lump.png^[colorize:#f4efe2:155"),
 	p9g("wp33_stormkelp_source_v1", "stormkelp", "Stormkelp", 1024, {
@@ -339,6 +345,7 @@ end
 local function append_hosts(parts, hosts)
 	append(parts, #hosts)
 	for index = 1, #hosts do
+		append(parts, hosts[index].zone or "*")
 		append(parts, hosts[index].biome)
 		append(parts, hosts[index].support)
 	end

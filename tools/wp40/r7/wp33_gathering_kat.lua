@@ -35,7 +35,7 @@ end
 local catalog_path = root .. "/mods/ITEMS/grug_gathering/catalog.lua"
 local catalog = assert(loadfile(catalog_path))()
 local manifest = catalog.manifest()
-check(manifest.schema == "grug_wp33_gathering_catalog_v1", "manifest schema")
+check(manifest.schema == "grug_wp33_gathering_catalog_v2", "manifest schema")
 check(sha256_hex(manifest.canonical_bytes) == manifest.sha256,
 	"manifest digest")
 check(manifest.population.new_p9g_source == 12 and

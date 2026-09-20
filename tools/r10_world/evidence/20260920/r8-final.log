@@ -1,0 +1,19 @@
+schema	grug_r8_map_a_kat_v1
+coast_off_reference	pure=6/production=6
+profile_mix	4228/3911/2600/1267
+relief_beaches	1494/1335/876/377/146/0
+strata	200/min_distinct=2/clay_hits=98/floor_clips=400
+schema	grug_wp40_quality_caves_v2
+hillside	-154/23/-791
+sinkhole	-702/100/-801
+ordered_population	284
+cache_evictions	313
+actual	compact
+
+schema	grug_r8_map_a_writer_kat_v2
+plate	opcode=21/role=11/policy=3/y=-37..-33
+surface_skin	lower=1/all9=1/negative=isolated,filled_sky,short_corner,excluded,water/owner_edge=1/slices=bottom,top,dust_only/air_at_t=1
+surface	sea=1/fresh_rim=4/wet_sand=1
+strata	written=2/floor_clipped=3/native_gravel=preserved
+caves	connected=54/closed=rejected/sky=rejected/edge_pocket=rejected/component=35
+checker	exact=connected/partial=1/dual=28/unexpected=28/rejected=detected

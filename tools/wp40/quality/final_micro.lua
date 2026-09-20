@@ -25,6 +25,8 @@ for _, relative in ipairs({
 	"tools/r6_shore/kat.lua",
 	"tools/r7_level_bands/kat.lua",
 	"tools/r8_map_a/kat.lua",
+	"tools/r10_world/cave_boundary_fixture.lua",
+	"tools/r10_world/material_salt_fixture.lua",
 	"tools/r9_perf/cache_fixture.lua",
 	"tools/r9_perf/lighting_fixture.lua",
 	"tools/r9_farm/farming_kat.lua",
