@@ -457,7 +457,7 @@ return function(root, options)
 	rider.control = {}
 	land_record.object.entity:on_step(0.1)
 	assert(math.abs(land_record.object.yaw) < 0.000001 and
-		math.abs(rider.attach_rotation.y - 60) < 0.000001,
+		math.abs(rider.attach_rotation.y + 60) < 0.000001,
 		"stationary rider attachment did not follow look yaw")
 	assert(land_record.visual:get_attach() == rider and
 		land_record.visual.force_visible == false,

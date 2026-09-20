@@ -209,8 +209,10 @@ local function orient_rider(self, player, yaw)
 	end
 	local model = self._grug_model
 	local seat = model.attach_y * model.visual_size.y
+	-- Free CAO yaw is negated by content_cao before scene rotation; attachment
+	-- rotation is applied directly, so matching the same visible yaw needs -deg.
 	player:set_attach(self.object, "", {x = 0, y = seat, z = 0},
-		{x = 0, y = math.deg(yaw), z = 0})
+		{x = 0, y = -math.deg(yaw), z = 0})
 	self._grug_attach_yaw = yaw
 end
 
@@ -410,7 +412,7 @@ local function attach(player, object, model, skip_animation)
 	player_api.player_attached[name] = true
 	local seat = model.attach_y * model.visual_size.y
 	player:set_attach(object, "", {x = 0, y = seat, z = 0},
-		{x = 0, y = math.deg(player:get_look_horizontal() or 0), z = 0})
+		{x = 0, y = -math.deg(player:get_look_horizontal() or 0), z = 0})
 	player:set_eye_offset({x = 0, y = model.eye_y, z = 0}, {x = 0, y = 0, z = 0})
 	if not skip_animation then player_api.set_animation(player, "sit", 30) end
 end
