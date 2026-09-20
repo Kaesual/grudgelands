@@ -1,8 +1,6 @@
 # Round 10 — world content and farming integration
 
-Status: production checkpoint `2bc6f33c`, independent review in progress. This is
-not package acceptance. The bounded engine/current-save addendum and root's final
-integrated PUC-5.1/LuaJIT pair remain gates. No intermediate PUC runtime was run.
+Status: production checkpoint `2bc6f33c`; corrected regression and bounded engine/current-save evidence complete. Independent focused review and root's final integrated PUC-5.1/LuaJIT pair remain gates; this is not package acceptance. No intermediate PUC runtime was run.
 
 ## Authority and scope
 
@@ -97,7 +95,7 @@ unrelated pre-existing surface-skin repairs. Exact baseline `4491c996` reproduce
 its ignore/light failure after the same host correction. The corrected context
 provides native stone below the analytical surface and retains the original
 ignore-rejection and byte-equal/no-light assertions. Failures are retained, not
-counted as passes. The full corrected regression log follows in the addendum.
+counted as passes. The full corrected thirteen-job regression log passes in the addendum.
 
 ## Canonical binding and cost
 
@@ -133,4 +131,14 @@ positives. Dawnmere's 3267 real VM-written soils include a 28-soil held sample;
 with a clearly labeled scratch-only water stimulus, 12 hydrate and 16 remain dry,
 all with active timers. Native cave samples contain Cave Cap1 and Ember Moss2;
 the sea sample contains four coral variants. These sampled counts are not an
-all-plant census. A final reload of the wet/dry state and focused review follow.
+all-plant census. The wet/dry reload is also complete; focused review remains separate.
+
+Calibration: implementer GPT-6 Astra; independent reviewer GPT-5.6 Sol. Initial
+review: 0 Critical, 0 High, 1 Medium (the retained R6 fixture failure). One fix
+round; focused review pending. Elapsed delivery wall time: unknown. Root retains
+integration and final interpreter-gate ownership.
+
+The final same-world boot on port32754 also passes: persisted12 wet /16 dry soils,
+all28 timers active, and six non-field content digests identical. Field readback
+changes only by the expected dry-to-wet state. Actual engine evidence is complete;
+root's final integrated interpreter/fleet gates and focused review remain separate.

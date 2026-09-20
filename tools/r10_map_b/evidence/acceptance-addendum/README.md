@@ -29,3 +29,16 @@ All processes use nice19/chrt idle/ionice3, isolated user/XDG storage and bounde
 launcher timeouts. The source checkpoint's full input hashes plus these two
 changed-input hashes bind the candidate. Root's integrated final micro pair and
 independent focused re-review remain pending; this record is not final acceptance.
+
+Log-copy correction: the second boot's unique server log is `server.2.log`.
+The prior addendum accidentally copied the first boot's `server.log` under the
+hydration log filename; this is replaced by the actual port32753 log. The TSV and
+launcher log already belonged to the correct second boot and are unchanged.
+
+Final wet-state reload: port32754, identical production and probe bytes, same
+scratch world. It starts with12 actual wet soils; all28 selected timers reactivate
+and finish with the same12 wet /16 dry /12 near-water counts. The six non-field
+case digests, including the reef, remain identical. The field's initial digest
+correctly changes from all-dry to the persisted wet state. See
+`reload-verification.txt` and the third boot's own `server.3.log` copy. Both engine
+and full regression processes exited successfully; no lane runtime remains.
