@@ -870,8 +870,12 @@ function grug_abilities.description_prefix(player, def)
 	else
 		cost_line = "free"
 	end
+	local timing = def._grug_timing_line
+	if player and def.kind == "swing" and def.charge then
+		timing = grug_abilities.effective_charge(player, def) .. " s charge"
+	end
 	return def.name .. " (" .. def._grug_owner_line .. ")\n" ..
-		cost_line .. ", " .. def._grug_timing_line .. "\n"
+		cost_line .. ", " .. timing .. "\n"
 end
 
 -- Apply one player's effective numeric description to an ability stack in
@@ -1025,6 +1029,15 @@ end
 
 local charges = {} -- player name -> {ability id -> ready_at us time}
 
+function grug_abilities.effective_charge(player, def)
+	local duration = def.charge or 0
+	if def.charge_talent then
+		duration = duration - grug_classes.get_talent_bonus(player,
+			def.charge_talent)
+	end
+	return math.max(0, duration)
+end
+
 -- A def WITHOUT def.charge is always ready (Mighty Blow: limited by its
 -- resource alone). An absent record means charged (the join/grant state).
 function grug_abilities.charge_ready(player, def)
@@ -1045,7 +1058,8 @@ function grug_abilities.reset_charge(player, def)
 	end
 	local name = player:get_player_name()
 	charges[name] = charges[name] or {}
-	charges[name][def.id] = core.get_us_time() + def.charge * 1e6
+	charges[name][def.id] = core.get_us_time()
+		+ grug_abilities.effective_charge(player, def) * 1e6
 	charge_steps[name] = charge_steps[name] or {}
 	charge_steps[name][def.id] = 0
 	set_item_wear(player, def.id, 65534)
@@ -1062,7 +1076,7 @@ function grug_abilities.charge_fraction(player, def)
 	if remaining <= 0 then
 		return 1
 	end
-	return 1 - remaining / def.charge
+	return 1 - remaining / grug_abilities.effective_charge(player, def)
 end
 
 -- Authoritative swing clock (classes.md §2b). Native object punches from a
@@ -1214,6 +1228,7 @@ local function prepare_authoritative_swing(player, target, fraction, token)
 		debug_name = swing.debug_name,
 		transaction = swing.debug_name and swing or nil,
 		proc = swing.proc,
+		proc_cost = swing.proc_cost,
 		post = swing.post,
 	}
 	return context
@@ -1240,6 +1255,7 @@ local function finish_authoritative_swing(context, result)
 	if result.cancelled or not result.landed then
 		return false
 	end
+	grug_core.run_settled_outgoing_action(context.player, context, "damage")
 	local function grant_battlebeat()
 		if grug_core.trinket_weapon_hit then
 			grug_core.trinket_weapon_hit(context.player)
@@ -1252,7 +1268,7 @@ local function finish_authoritative_swing(context, result)
 		grant_battlebeat()
 		return false
 	end
-	if not spend(context.player, context.proc.cost) then
+	if not spend(context.player, context.proc_cost) then
 		-- Preparation and finish are synchronous around one punch, so this is
 		-- reachable only if foreign callback code mutates our private resource
 		-- tables. Keep the charge/effect untouched and report the free damage.
@@ -1398,26 +1414,35 @@ attempt_swing = function(player, selected, held, latched)
 		punch_attack_uses = 0,
 	}
 	local melee_bonus = grug_classes.get_melee_bonus(player)
-	local raw_damage = weapon_damage + melee_bonus
+	local melee_damage_add = grug_classes.get_talent_bonus(player,
+		"melee_damage_add")
+	local raw_damage = weapon_damage + melee_bonus + melee_damage_add
 	local proc
+	local proc_cost
 	local post
 	local threat_mult = 1
 	-- Selection is read live at this actual due swing. An unavailable or
 	-- unaffordable proc stays armed and the ordinary swing still lands. Its
 	-- replacement amount is assembled before the transaction crosses the
 	-- scalar, so even Mighty Blow has exactly one scaling pass.
+	local selected_cost = grug_abilities.cost_for(player, selected.cost)
 	if selected.proc_swing
 			and grug_abilities.charge_ready(player, selected)
-			and affordable(player, selected.cost) then
-		local proc_damage
-		proc_damage, threat_mult, post = selected.proc_swing(player, target, {
+			and affordable(player, selected_cost) then
+		local proc_damage, proc_threat, proc_post = selected.proc_swing(player,
+			target, {
 			weapon_damage = weapon_damage,
 			fpi = fpi,
 			melee_bonus = melee_bonus,
+			melee_damage_add = melee_damage_add,
 		})
-		raw_damage = proc_damage
-		proc = selected
-		threat_mult = threat_mult or 1
+		if proc_damage ~= nil then
+			raw_damage = proc_damage
+			proc = selected
+			proc_cost = selected_cost
+			threat_mult = proc_threat or 1
+			post = proc_post
+		end
 		-- Affront raises a tank multiplier only; the cast-side equivalent stays
 		-- in grug_core/combat.lua's deal_ability_damage.
 		if threat_mult ~= 1 then
@@ -1431,6 +1456,7 @@ attempt_swing = function(player, selected, held, latched)
 		melee_bonus = melee_bonus,
 		raw_damage = raw_damage,
 		proc = proc,
+		proc_cost = proc_cost,
 		post = post,
 		threat_mult = threat_mult,
 		-- The complete gear + flat Strength amount crosses the one player-level
@@ -2021,7 +2047,7 @@ end
 -- following the weapon with nothing but one load-time log line to say so.
 -- The full pass costs one walk of `main` with a token compare per ability
 -- stack, and writes only what actually changed.
-grug_core.register_on_equipment_change(function(player, listname)
+grug_core.register_on_equipment_change(function(player, listname, reason)
 	clamp_mana(player)
 	hud_update(player)
 	-- Every equipment list may carry rolled attributes; weapon changes also
@@ -2040,7 +2066,14 @@ grug_core.register_on_equipment_change(function(player, listname)
 		local name = player:get_player_name()
 		local entry = swing_progress[name]
 		local weapon = grug_core.get_equipped_weapon(player) or ItemStack("")
-		if (entry and not entry.weapon:equals(weapon))
+		if reason == "durability_metadata" and entry and
+				not entry.weapon:is_empty() and not weapon:is_empty() and
+				entry.weapon:get_name() == weapon:get_name() then
+			-- Wear, its integer remainder and the persistent projectile identity
+			-- belong to this same concrete equipped stack. Refresh the comparison
+			-- snapshot without disturbing due-time late carry or the input latch.
+			entry.weapon = ItemStack(weapon)
+		elseif (entry and not entry.weapon:equals(weapon))
 				or (not entry and listname == "grug_weapon") then
 			local _, fpi = grug_abilities.swing_stats(player, weapon)
 			grug_core.reset_accumulated_melee(player)
@@ -2466,7 +2499,8 @@ core.register_on_punchplayer(function(player, hitter, tflp, tool_capabilities, d
 	end
 	local crit_damage, _, critical = grug_core.roll_melee_crit(
 		hitter, full_damage)
-	local armored_damage = grug_core.apply_player_armor(player, crit_damage)
+	local armored_damage = grug_core.apply_player_armor(player, crit_damage,
+		grug_core.get_player_level(hitter))
 	local proc_extra = 0
 	local raw = armored_damage * fraction + proc_extra
 	if authoritative then
@@ -2808,3 +2842,4 @@ grug_xp.register_on_level_change(function(player, old_level, new_level)
 end)
 
 dofile(core.get_modpath(core.get_current_modname()) .. "/kits.lua")
+dofile(core.get_modpath(core.get_current_modname()) .. "/scout.lua")

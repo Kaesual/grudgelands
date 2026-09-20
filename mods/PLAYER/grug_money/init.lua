@@ -136,6 +136,51 @@ function grug_money.take(player, copper)
 	return true
 end
 
+-- One synchronous purchase of in-place inventory changes. Unlike `take`,
+-- callbacks are delayed until BOTH the inventory and ledger are committed.
+-- ItemStack:equals compares metadata independently of serialization order
+-- (pinned lua_api.md:8650); itemstring equality is not an exact-stack test.
+function grug_money.take_with_inventory(player, copper, changes)
+	if not is_player(player) or type(copper) ~= "number" or copper ~= copper or
+			copper < 0 or copper > grug_money.MAX or copper % 1 ~= 0 or
+			type(changes) ~= "table" then return false, "Invalid purchase." end
+	local inventory = player:get_inventory()
+	local balance = grug_money.get(player)
+	if balance < copper then return false, "You do not have enough money." end
+	local seen = {}
+	for _, row in ipairs(changes) do
+		if type(row.list) ~= "string" or type(row.index) ~= "number" or
+				row.index % 1 ~= 0 or row.index < 1 or
+				row.index > inventory:get_size(row.list) or
+				not row.expected or not row.replacement then
+			return false, "The inventory changed. Request a new quote."
+		end
+		local key = row.list .. ":" .. row.index
+		if seen[key] or not inventory:get_stack(row.list, row.index):equals(row.expected) then
+			return false, "The inventory changed. Request a new quote."
+		end
+		seen[key] = true
+	end
+	-- These engine writes do not run inventory-action Lua callbacks. Validated
+	-- in-place indices cannot grow, drop, or truncate an inventory list.
+	for i, row in ipairs(changes) do
+		if not inventory:set_stack(row.list, row.index, row.replacement) then
+			for restored = 1, i - 1 do
+				local old = changes[restored]
+				inventory:set_stack(old.list, old.index, old.expected)
+			end
+			return false, "The inventory changed. Request a new quote."
+		end
+	end
+	local paid = balance - copper
+	if paid ~= balance then
+		player:get_meta():set_int(grug_money.KEY, paid)
+		for _, func in ipairs(change_callbacks) do func(player, balance, paid) end
+		hud_update(player)
+	end
+	return true
+end
+
 --
 -- HUD: the money line sits on the "money" row of grug_core.hud_layout,
 -- between the skill-name line and the XP line. No z_index, same as those two

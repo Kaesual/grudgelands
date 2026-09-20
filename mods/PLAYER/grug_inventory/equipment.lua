@@ -89,19 +89,21 @@ local slot_cache = {} -- player name -> {[list] = ItemStack or false}
 -- join), and a writer that remembered one and forgot the other would leave a
 -- swapped weapon dealing the old damage until relog.
 --
--- `listname` is optional and is passed straight through to the hook consumers
+-- `listname` and `reason` are optional and pass through to hook consumers.
+-- `reason = "durability_metadata"` identifies a same-stack wear/identity write;
+-- consumers must still treat a broken-state transition as a concrete change.
 -- (see grug_core.register_on_equipment_change): the one equipment list that
 -- changed, or nil for "unknown / more than one". The CACHES are always dropped
 -- wholesale regardless -- two table writes are cheaper than a caller who names
 -- one list and quietly wrote two.
-function grug_inventory.equipment_changed(player, listname)
+function grug_inventory.equipment_changed(player, listname, reason)
 	if not player or not player.is_player or not player:is_player() then
 		return
 	end
 	local name = player:get_player_name()
 	armor_cache[name] = nil
 	slot_cache[name] = nil
-	grug_core.notify_equipment_change(player, listname)
+	grug_core.notify_equipment_change(player, listname, reason)
 end
 
 -- WP7 name, kept because AGENTS.md and the WP7 armor pipeline document it.
@@ -241,6 +243,7 @@ function grug_inventory.hands_of(item)
 	end
 	local def = core.registered_items[itemname]
 	local hands = def and def._grug_hands
+	if hands == 0 then return 0 end
 	if type(hands) == "number" and hands >= 2 then
 		return 2
 	end
@@ -283,6 +286,17 @@ local function allow_hands(player, inventory, to_list, stack, action, info)
 	local other = other_hand_stack(inventory, other_list, action, info)
 	if other:is_empty() then
 		return true -- the other hand is free: nothing to cross-check
+	end
+	local incoming_quiver = core.get_item_group(stack:get_name(), "grug_quiver") > 0
+	local other_quiver = core.get_item_group(other:get_name(), "grug_quiver") > 0
+	local incoming_bow = core.get_item_group(stack:get_name(), "grug_bow") > 0
+	local other_bow = core.get_item_group(other:get_name(), "grug_bow") > 0
+	if (incoming_quiver and other_bow) or (other_quiver and incoming_bow) then
+		return true
+	end
+	if incoming_quiver or other_quiver then
+		local weapon = incoming_quiver and other or stack
+		if grug_inventory.hands_of(weapon) <= 1 then return true end
 	end
 	local incoming_2h = grug_inventory.hands_of(stack) >= 2
 	local held_2h = grug_inventory.hands_of(other) >= 2
@@ -405,7 +419,7 @@ core.register_on_player_inventory_action(function(player, action, inventory, inf
 end)
 
 --
--- Armor points of everything currently worn (items_crafting.md §3.1: 1 point
+-- Base armor rating of the four worn armor pieces (combat_stats.md §2
 -- = 1% damage reduction). Read off the ITEM DEFINITION: per-stack overrides
 -- through item meta are WP5's business (rolled affixes), not WP7's.
 --
@@ -425,7 +439,7 @@ local function compute_equipped_armor(player)
 	local total = 0
 	for _, list in ipairs(ARMOR_LISTS) do
 		local stack = inv:get_stack(list, 1)
-		if not stack:is_empty() then
+		if not stack:is_empty() and not grug_core.equipment_is_broken(stack) then
 			local def = core.registered_items[stack:get_name()]
 			local armor = def and def._grug_armor
 			armor = grug_inventory.armor_points_of and grug_inventory.armor_points_of(stack, armor) or armor
@@ -508,26 +522,24 @@ local function cached_slot_item(player, list)
 end
 
 function grug_inventory.get_equipped_weapon(player)
-	return cached_slot_item(player, WEAPON_LIST)
+	local stack = cached_slot_item(player, WEAPON_LIST)
+	return stack and not grug_core.equipment_is_broken(stack) and stack or nil
 end
 
 function grug_inventory.get_equipped_offhand(player)
-	return cached_slot_item(player, OFFHAND_LIST)
+	local stack = cached_slot_item(player, OFFHAND_LIST)
+	return stack and not grug_core.equipment_is_broken(stack) and stack or nil
 end
 
--- Wire the real value into grug_core's damage pipeline (stub override, same
--- pattern as grug_classes' crit/dodge accessors). Hard cap 60% — endgame
--- plate plus shield reaches it, vendor gear never does. (grug_core clamps a
--- second time in the consumer, so a future override cannot break the
--- invariant by forgetting this line.)
---
--- Ironbound (skill_trees.md §2.1) is inside that cap like any gear roll; the
--- Warrior capstone Unbroken, which raises the cap itself for 8 s, is lane
--- X3's and is deliberately not read here yet.
-function grug_core.get_armor_percent(player)
-	return math.min(60, grug_inventory.get_equipped_armor(player)
+-- Base fallback until grug_quality adds shield, refinement and affix rating.
+function grug_core.get_armor_rating(player)
+	local base = grug_inventory.get_equipped_armor(player)
 		+ grug_classes.get_talent_bonus(player, "armor_percent_add")
-		+ grug_core.status_modifier_sum(player, "armor"))
+		+ grug_core.status_modifier_sum(player, "armor")
+	local multiplier = grug_classes.talent_rank(player, "unbroken") > 0
+		and 1.40 or 1
+	return base * multiplier + grug_classes.get_talent_bonus(player,
+		"armor_rating_add_low_hp")
 end
 
 -- Same stub-override pattern for the two hand slots: grug_core publishes the
@@ -650,6 +662,7 @@ grug_inventory.STARTER_WEAPON = {
 	warrior = grug_gear.STARTER_SWORD,
 	mage = grug_gear.STARTER_STAFF,
 	priest = grug_gear.STARTER_STAFF,
+	scout = grug_gear.STARTER_BOW,
 }
 local CLASS_STARTER_WEAPON = grug_inventory.STARTER_WEAPON
 
@@ -697,6 +710,17 @@ grug_classes.register_on_class_chosen(function(player, class_id)
 		-- Server-side equipment write: caches, stats, ability skins, the
 		-- Character page and the visible weapon all hang off this one call.
 		grug_inventory.equipment_changed(player, WEAPON_LIST)
+	end
+	if class_id == "scout" then
+		-- The class selection inventory is normally empty. Keep the fallback
+		-- lossless nevertheless: a full inventory drops the owed starter item
+		-- at the player instead of silently deleting it.
+		for _, item in ipairs({"default:sword_stone", "grug_gear:arrow 20"}) do
+			local leftover = inv:add_item("main", ItemStack(item))
+			if not leftover:is_empty() then
+				core.add_item(player:get_pos(), leftover)
+			end
+		end
 	end
 	local def = core.registered_items[itemname]
 	local label = ((def and def.description) or itemname):gsub("\n.*", "")

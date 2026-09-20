@@ -30,7 +30,10 @@ return function(repo)
 		error("R10 farming registered a globalstep", 0)
 	end
 	function core_mock.get_node(p) return world[key(p)] or {name = "air"} end
-	function core_mock.set_node(p, node) world[key(p)] = {name = node.name} end
+	function core_mock.set_node(p, node) world[key(p)] = {name = node.name}; return true end
+ core_mock.get_node_or_nil = core_mock.get_node
+ function core_mock.get_current_modname() return "grug_farming" end
+ function core_mock.get_modpath(name) return repo .. "/mods/ITEMS/" .. name end
 	core_mock.swap_node = core_mock.set_node
 	function core_mock.get_meta(p)
 		local values = metadata[key(p)] or {}
@@ -112,12 +115,22 @@ return function(repo)
 		self.count = math.max(0, self.count - (amount or 1)); return self
 	end
 	function stack_methods:add_wear(amount) self.wear = self.wear + amount end
+ function stack_methods:get_wear() return self.wear end
+ function stack_methods:set_wear(wear) self.wear = wear end
+ function stack_methods:get_definition() return core_mock.registered_items[self.name] end
+ function stack_methods:get_meta()
+  self.metadata = self.metadata or {}
+  local data = self.metadata
+  return {get_int = function(_, k) return data[k] or 0 end,
+   set_int = function(_, k, v) data[k] = v end}
+ end
 	local function stack(name, count)
 		return setmetatable({name = name, count = count or 1, wear = 0},
 			{__index = stack_methods})
 	end
-	local player = {get_player_name = function() return "farmer" end}
-	local global_names = {"core", "default", "grug_cooking", "grug_farming", "grug_nodes"}
+	local player = {get_player_name = function() return "farmer" end,
+ is_player = function() return true end}
+	local global_names = {"core", "default", "grug_cooking", "grug_farming", "grug_nodes", "grug_materials"}
 	local saved, present = {}, {}
 	for _, name in ipairs(global_names) do
 		present[name] = rawget(_G, name) ~= nil
@@ -139,6 +152,8 @@ return function(repo)
  })
 
 	local ok, result = pcall(function()
+  rawset(_G, "grug_materials", {})
+  dofile(repo .. "/mods/ITEMS/grug_materials/registry.lua")
 		assert(loadfile(repo .. "/mods/ITEMS/grug_farming/init.lua"))()
 		check(#grug_farming.CROPS == 17, "crop population differs")
 		check(#lbms == 1 and lbms[1].run_at_every_load,

@@ -25,10 +25,18 @@ universal skills `professions.md` §1, the mob speed pillar
   and its purchase hands over the owner-bound mount item represented by that
   step.
 - Every capital has one outer-district stable using the same shared building
-  design, with the local architectural palette. Its dedicated Riding Trainer
-  stands in front of four stationary displays of the existing mount appearances
+  design, with the local architectural palette: earth floor, one-node fence,
+  clear entrance and a flat roof on exactly six posts, without perimeter walls.
+  Its dedicated Riding Trainer stands in front of four protected displays of the existing mount appearances
   available to that race, one for each tier in §1.1: 24 displays across six cities.
-  These displays are noncombatant, non-AI and cannot be ridden or yield items.
+  CAP authors separate bounded movement/rest regions for all four sockets.
+  Ground mounts take short slow walks and pauses inside their safe region;
+  flying appearances stay grounded with verified idle animation. Full-size
+  posed meshes, the trainer approach and neighboring displays remain clear
+  throughout the allowed movement. GAME owns throttled movement and persistence;
+  CAP owns the roof, enclosure and socket geometry. These displays have no
+  combat AI, attacks, loot, flight or visible teleport resets and cannot be
+  ridden or yield items.
   Trainer, stable and displays use the authored settlement activation identities;
   saving, reload and partial activation must not duplicate them. Riding is absent
   from every profession trainer, including Cooking trainers in starting villages.

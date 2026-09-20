@@ -196,13 +196,15 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   bottom to top. Every exterior-ocean class remains non-flyable, while planned
   zone water inherits its zone's flight rule. Housing uses dry mainland claims
   and has no island exception.
-- **R4 — Nothing regrows** (decided 2026-08-08): ores and resources do
+- **R4 — Natural minerals do not regrow** (revised 2026-09-20): ores and mineral resources do
   **not** respawn. A mined-out vein is gone, everywhere, for good. The
   world does not run dry because **depth supplies without bound** (R6,
   §4c, `combat_stats.md` §3) — the price of a material is paid in danger
   and travel, never in waiting for a timer. Renewable ore would have
   capped every material's value at its respawn interval and turned mining
-  into a rotation instead of an expedition. **Sole exception: renewable
+  into a rotation instead of an expedition. Wild plants instead follow the
+  bounded depletion-based renewal in [farming.md](farming.md); no ore, gem, Rock
+  Salt or Salt Crust joins that plant exception. **Mineral exception: renewable
   nodes inside protected functional socket anchors**, where the bounded
   mechanism is protected (R1) and no player can privatize it. Ordinary camp
   walls, tents, fences and dressing remain mutable and claim-excluded. In the
@@ -227,8 +229,8 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
     world-wide mechanic used, because a handful of nodes at a guarded
     place is a different thing from a vein under every hill.
   - Other POI kinds may join the exception later, one renewable node type
-    per kind, once camps have proven the shape. Nothing else regrows
-    today.
+    per kind, once camps have proven the shape. Other natural mineral deposits
+    never regrow.
 - **R5 — Active Claim Stones**: per-character Claim Stones provide the only
   permanent player-owned protection (§5). The owner and same-faction trusted
   characters may change ordinary nodes and use ordinary functional content
@@ -496,8 +498,8 @@ zones. They enforce authored routes and make the zone's strategic role visible:
   mining camp — resource site + conflict point in one). Such a site is
   **world content, not a purchasable claim**: it is guarded, never owned,
   and anyone permitted by the zone rule who fights past the garrison may mine
-  it. Under R4 a **mining camp is the only place in
-  the world where anything regrows at all**, precisely because its
+  it. Under R4 a **mining camp is the only place with renewable minerals**,
+  while wild plants follow the separate [farming.md](farming.md) rules. Its
   small functional anchor and renewable sockets are indestructible: exactly
   12 renewable regional-tier metal sockets on a 2–4 h respawn
   (numbers and rationale in §2 R4). Its ordinary walls, tents and dressing

@@ -480,6 +480,8 @@ grug_abilities.register_ability({
 -- Mage (mana)
 --
 
+local fireball_action_serial = 0
+
 grug_projectiles.register("fireball", {
 	speed = 20,
 	max_distance = 20,
@@ -497,8 +499,9 @@ grug_projectiles.register("fireball", {
 		visual_size = {x = 0.7, y = 0.7},
 		glow = 12,
 	},
-	on_hit = function(owner, target, data)
-		grug_core.deal_ability_damage(owner, target, data.damage)
+	on_hit = function(owner, target, data, point, attacker_level)
+		grug_core.deal_ability_damage(owner, target, data.damage,
+			{attacker_level = attacker_level, action_id = data.action_id})
 	end,
 })
 
@@ -545,6 +548,11 @@ grug_abilities.register_ability({
 		if not origin or not direction then
 			return false, "Cannot determine your aim."
 		end
+		fireball_action_serial = fireball_action_serial + 1
+		local action_id = user:get_player_name() .. ":fireball:" ..
+			tostring(fireball_action_serial)
+		local repair = rawget(_G, "grug_repair")
+		local repair_receipt = repair and repair.capture_action(user, action_id)
 		local spawned = grug_projectiles.spawn("fireball", {
 			owner = user,
 			origin = origin,
@@ -557,9 +565,11 @@ grug_abilities.register_ability({
 			data = {
 				-- Tinder (skill_trees.md §2.3). Brand's splash is lane X3's.
 				damage = fireball_values(user).damage,
+				action_id = repair_receipt or action_id,
 			},
 		})
 		if not spawned then
+			if repair then repair.cancel_action(user, action_id) end
 			return false, "The fireball could not be launched."
 		end
 		local name = user:get_player_name()
@@ -764,7 +774,8 @@ grug_abilities.register_ability({
 			return false, "Target is dead."
 		end
 		-- Gentle Hand (skill_trees.md §2.5); Hearten's splash is lane X3's.
-		grug_core.heal_player(user, target, def.values(user).heal)
+		grug_core.heal_player(user, target, def.values(user).heal,
+			{action_id = {}})
 		burst(target:get_pos(), "mobs_heart_particle.png", 8)
 		return true
 	end,
@@ -810,7 +821,7 @@ grug_abilities.register_ability({
 		-- joins the base before the central level scalar. The 15 s duration is
 		-- unscaled. Turn Aside's dodge window is lane X3's.
 		grug_core.set_absorb(target, def.values(user).absorb,
-			15 + grug_classes.get_talent_bonus(user, "shield_duration_add"), user)
+			15 + grug_classes.get_talent_bonus(user, "shield_duration_add"), user, {})
 		burst(target:get_pos(), "default_item_smoke.png^[multiply:#ffe9a0", 8)
 		return true
 	end,
@@ -858,6 +869,7 @@ grug_abilities.register_ability({
 			ticks = 4,
 			amount = def.values(user).heal,
 			healer = user:get_player_name(),
+			action_id = {},
 		}
 		if grug_core.set_status then
 			grug_core.set_status(target, "renew", {
@@ -888,7 +900,8 @@ core.register_globalstep(function(dtime)
 			end
 		else
 			local healer = core.get_player_by_name(renew.healer) or target
-			grug_core.heal_player(healer, target, renew.amount)
+			grug_core.heal_player(healer, target, renew.amount,
+				{action_id = renew.action_id})
 			burst(target:get_pos(), "mobs_heart_particle.png", 3)
 			renew.ticks = renew.ticks - 1
 			if renew.ticks <= 0 then

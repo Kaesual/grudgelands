@@ -494,6 +494,12 @@ WP40 replaces it with the complete catalog and contracts below.
   coastal housing cores, routes and corridors, bridges, causeways, fords,
   route decks, culverts, POI spurs, named landmarks and civic water retain
   their established grade and material priority.
+  The coarse shore-distance fallback retains the same Euclidean distance and
+  profile-width formulas. Its run orientation follows the nearest actual
+  cardinal water contact within its bounded shore window, with deterministic
+  direction-order ties, rather than the dominant component of one coarse
+  sample vector. This prevents isolated alternate-profile columns on diagonal
+  shores without shaving final heights or changing protection/exclusion masks.
 - **Near-water materials (2026-09-20):** eligible sea-beach bands use sand
   above three sandstone filler nodes. Freshwater beach bands remain local
   shore lips. Mountain coasts, including both dragon islands, contain no dry

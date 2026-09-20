@@ -178,6 +178,16 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		check(type(live_zones) == "table" and type(live_planner) == "table" and
 			type(live_zones.canonical_kat_digest) == "nil",
 			"R8 bounded zones runtime construction differs")
+		check(type(live_planner.static_exclusion_values_at) == "function" and
+			type(live_planner.housing_mask_id_at) == "function" and
+			type(live_planner.functional_surface_values_at) == "function" and
+			type(live_planner.hard_row_at) == "function",
+			"ecology planner bridge differs")
+		-- Exercise the real geometry owners through the published narrow seam.
+		live_planner.static_exclusion_values_at(0, -1500)
+		live_planner.housing_mask_id_at(0, -1500)
+		live_planner.functional_surface_values_at(0, -1500)
+		live_planner.hard_row_at(0, 44, -1500)
 
 		local samples = {
 			{0, -1500, "land", "elandor_highcourt", "grug_meadows", "human", 44,
@@ -1452,8 +1462,9 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		end
 		return table.concat(output)
 	end
+	local habitat_registry = dofile(wp40 .. "/habitat_registry.lua")
 	local successor_config = dofile(wp40 .. "/r7_p9g.lua")(
-		catalog, content_set.p9g, compact_digest)
+		catalog, content_set.p9g, compact_digest, habitat_registry)
 	local hash_seam = {}
 	function hash_seam.budget(eligible)
 		return eligible > 0 and 1 or 0
@@ -1915,7 +1926,8 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	end}
 	local successor = dofile(wp40 .. "/r7_successor.lua")(
 		successor_config, empty_anchor_config, {empty_hearthpine_config},
-		{"hearthpine"}, dofile(wp40 .. "/world_content.lua")(world_catalog, content_set.p9g)).new(
+		{"hearthpine"}, dofile(wp40 .. "/world_content.lua")(
+			world_catalog, content_set.p9g, habitat_registry)).new(
 			successor_dependencies)
 
 	local settlement_hash = dofile(wp40 .. "/r6_hash.lua")(raw_sha256)

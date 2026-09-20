@@ -1,0 +1,10 @@
+parser PASS mods/MAPGEN/grug_mapgen/wp40/height.lua
+parser PASS tools/r11_world/beach_probe.lua
+parser PASS tools/r11_world/beach_writer.lua
+parser PASS tools/r11_world/coast_fixture.lua
+parser PASS tools/r11_world/socket_fixture.lua
+SWEEP 1 (review any comment/tool-only hits)
+SWEEP 2 (review any comment/tool-only hits)
+SWEEP 3 (review any comment/tool-only hits)
+SWEEP 4 (review any comment/tool-only hits)
+SWEEP 5 (review any comment/tool-only hits)

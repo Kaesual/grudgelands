@@ -1,0 +1,7 @@
+beach_writer	-416	-2720	default:stone	4	cleared_to_24	applied_clq
+beach_writer	-415	-2720	default:dirt_with_grass	5	cleared_to_24	applied_clq
+beach_writer	-414	-2720	default:stone_with_coal	4	cleared_to_24	applied_clq
+beach_writer	-486	-2575	default:stone	4	cleared_to_24	applied_clq
+beach_writer	-485	-2575	default:dirt_with_grass	4	cleared_to_24	applied_clq
+beach_writer	-484	-2575	default:stone_with_coal	4	cleared_to_24	applied_clq
+PASS actual planner+adapter: two23-layer owner slices, six stone/soil/ore columns

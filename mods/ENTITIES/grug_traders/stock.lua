@@ -100,17 +100,16 @@ grug_traders.register_stock({item = "default:pick_bronze", price = 40, category 
 -- A player sees their own bracket and every bracket below it. Per (vendor
 -- kind, bracket) the offer is:
 --   * the 13 FIXED items (sword + four pieces from each armor class);
---   * 3 ROTATING conceptual families drawn from dagger, greataxe, staff and
---     caster 1H. Caster 1H resolves deterministically to wand, scepter or orb
---     for this vendor/hour/bracket. One conceptual family is withheld. This
---     keeps the three caster forms from crowding out physical families;
+--   * 4 ROTATING conceptual families drawn from dagger, greataxe, staff,
+--     caster 1H and bow. The active caster 1H family is the wand.
+--     for this vendor/hour/bracket. One conceptual family is withheld;
 --     Withholding is
 --     what makes it a rotation at all — with one slot per extra the whole
 --     catalog would be on the shelf every hour and the roll would only
 --     permute the display order. §3.8's "guaranteed, but expensive … the
 --     floor, not the ceiling" is a promise about the fixed floor above,
 --     which is untouched by this;
---   * one rotation in five, one of those three slots is replaced by a single
+--   * one rotation in five, one of those four slots is replaced by a single
 --     UNCOMMON item drawn from grug_gear.catalog[b].all and priced x3 —
 --     "today the trader had something good". Until WP5's enchant roller
 --     exists, no Uncommon is offered at all (see the WP5 SEAM below).
@@ -123,8 +122,8 @@ grug_traders.register_stock({item = "default:pick_bronze", price = 40, category 
 --
 
 local ROTATION_SECONDS = 3600 -- §3.8 "re-rolled hourly"; real hours
--- Strictly below the four conceptual extra families, so one stays withheld.
-local ROTATING_SLOTS = 3
+-- Exactly one of the five conceptual extra families stays withheld.
+local ROTATING_SLOTS = 4
 local UNCOMMON_EVERY = 5 -- "roughly one rotation in five"
 local UNCOMMON_PRICE_FACTOR = 3 -- §3.8 "priced x3"
 local UNCOMMON_COLOR = "#4A90FF"
@@ -230,13 +229,14 @@ local function compute(salt, bracket, rotation)
 	end
 
 	local rng = PcgRandom(rotation_seed(salt, bracket, rotation))
-	local caster = {"wand", "scepter", "orb"}
+	local caster = {"wand"}
 	local caster_family = caster[rng:next(1, #caster)]
 	local conceptual = {
 		grug_gear.weapon_item("dagger", bracket),
 		grug_gear.weapon_item("greataxe", bracket),
 		grug_gear.weapon_item("staff", bracket),
 		grug_gear.weapon_item(caster_family, bracket),
+		grug_gear.weapon_item("bow", bracket),
 	}
 	local pool = shuffled(conceptual, rng)
 	local rotating = {}
@@ -244,7 +244,7 @@ local function compute(salt, bracket, rotation)
 		-- The shuffle decides WHICH extras are on the shelf: taking the first
 		-- ROTATING_SLOTS of the shuffled pool leaves the rest withheld until
 		-- the next hour. The modulo only guards the degenerate case of a pool
-		-- SMALLER than the slot count (never today: 3 extras, 2 slots).
+		-- SMALLER than the slot count (never today: 5 extras, 4 slots).
 		local itemname = pool[((i - 1) % #pool) + 1]
 		rotating[i] = {
 			item = itemname,
@@ -302,6 +302,46 @@ function grug_traders.bracket_stock(salt, bracket)
 	return entries
 end
 
+-- Profession equipment shops are views over the one authoritative bracket
+-- shelf above. This preserves its price, hourly rotation and quality roll;
+-- in particular, Tanner does not own a copied list of the leather ladder.
+-- A Bowyer hour may omit bows because bows are one of the five rotating extra
+-- families and only four are offered (§3.8). An Uncommon survives a filtered
+-- view only when the rolled item belongs to that shop's family.
+local BRACKET_FILTERS = {
+	bow = function(def)
+		return ((def.groups or {}).grug_bow or 0) > 0
+	end,
+	leather = function(def)
+		return ((def.groups or {}).grug_armor_class or 0) == 2
+	end,
+}
+
+-- `true` means the full shared catalog; a string names the filter above.
+-- vendors.lua consumes this table when it registers the profession entities,
+-- keeping UI entitlement and stock selection on one declaration.
+grug_traders.PROFESSION_BRACKETS = {
+	smith = true,
+	armourer = true,
+	bowyer = "bow",
+	tanner = "leather",
+}
+
+function grug_traders.vendor_bracket_stock(vendor, bracket)
+	if not vendor then return {} end
+	local entries = grug_traders.bracket_stock(vendor.salt, bracket)
+	local filter = BRACKET_FILTERS[vendor.bracket_filter]
+	if not filter then return entries end
+	local result = {}
+	for _, entry in ipairs(entries) do
+		local def = core.registered_items[entry.item]
+		if def and filter(def) then
+			result[#result + 1] = entry
+		end
+	end
+	return result
+end
+
 -- Highest bracket a player may shop in (§3.8: "their own bracket and every
 -- bracket below").
 function grug_traders.max_bracket(player)
@@ -336,12 +376,13 @@ end
 -- enforces that at load rather than in a player's hand: a shelf entry whose
 -- item is not registered is DROPPED from the shelf and reported as an error.
 --
--- The SMITH and, since wave 2, the ARMOURER additionally keep the bracket
+-- The SMITH and ARMOURER keep the full bracket tabs. Bowyer and Tanner expose
+-- filtered views of those same tabs for bows and leather armor respectively;
 -- tabs, so their shelves are the metal and the padding while the gear ladder
 -- itself comes from `grug_gear`'s own catalog (items_crafting.md section
 -- 3.0.3: the vendor bracket catalog and the base craft ladder are the same
--- items, so a smith that listed them again would be a second copy of the
--- ladder). The other ten sell no equipment and carry no bracket tab at all.
+-- items, so a profession shelf that listed them again would be a second copy
+-- of the ladder). The other eight sell no equipment and carry no bracket tab.
 --
 -- Prices are in COPPER (economy.md section 1) and sit above the
 -- `_grug_sell_price` the same items carry as loot, so buying from a profession
@@ -439,27 +480,9 @@ profession_shelf("smith", {
 -- row of kinds -- mason, brewer, bowyer, herbalist, armourer, tanner and
 -- embalmer.
 --
--- EVERY ITEM BELOW WAS MEASURED, not looked up in a design doc: one headless
--- boot of this tree dumped all 1012 registered item names and their
--- `_grug_sell_price`, and every name here and every price comparison comes out
--- of that dump (the evidence directory carries it). Two things it settled:
---
---   * THERE IS NO BOW. Nothing in the 1012 is a bow, a stave, a bowstring or a
---     quiver -- the only archery items in the game are `grug_mobs:arrow`
---     ("Bundle of Arrows", the skeleton archer's drop, whose own item comment
---     already says "there is no bow/quiver item yet") and the castle
---     ARROWSLIT nodes, which are masonry. So the bowyer sells arrows and the
---     stick-class goods they are made of, exactly as the wave-2 brief allows,
---     and gets no bracket tab (there is no ranged family in `grug_gear` to
---     reach).
---   * THERE ARE NO PROCESSED INTERMEDIATE GOODS. §3.0.3's leather grades are
---     "named, not yet registered", and nothing in the tree is a rivet, a
---     buckle, a bolt of cured hide or a jar. Twelve trades therefore share one
---     pool of about forty sellable materials, so a few items appear on two
---     shelves (the butcher and the tanner both sell hides; the tailor and the
---     embalmer both sell linen scrap). Where that happens the PRICE IS THE
---     SAME on both, so the overlap is one good in two shops and never an
---     arbitrage.
+-- The Round 11 gear package registers tier bows, player arrows and the six
+-- leather armor grades. Bows/leather stay in the authoritative bracket
+-- catalog above; these General shelves contain only supplies and raw goods.
 --
 -- Prices sit above each item's `_grug_sell_price` buy-back the same way the
 -- five original shelves do, and since this lane the audit in init.lua proves
@@ -488,10 +511,10 @@ profession_shelf("brewer", {
 	{"default:apple", 2},
 })
 
--- The bowyer: arrows and the stick-and-feather goods behind them (see the
--- measurement above -- no bow exists to sell).
+-- The bowyer: player ammunition and the stick-and-feather goods behind it.
+-- `grug_mobs:arrow` is the obsolete loot bundle, not usable ammunition.
 profession_shelf("bowyer", {
-	{"grug_mobs:arrow", 5},
+	{"grug_gear:arrow", 3},
 	{"default:stick", 2},
 	{"grug_mobs:feather", 3},
 	{"grug_mobs:sharp_feather", 9},
@@ -519,9 +542,8 @@ profession_shelf("armourer", {
 	{"grug_mobs:shiny_scale", 9},
 })
 
--- The tanner: hides and pelts. Two of them (the sleek pelt and the ape hair)
--- are on no other shelf; the three it shares with the butcher carry the
--- butcher's own prices.
+-- The tanner: hides and pelts on General; its bracket tabs filter the shared
+-- gear catalog to the four pieces of the matching leather grade.
 profession_shelf("tanner", {
 	{"mobs:leather", 8},
 	{"grug_mobs:light_leather", 6},

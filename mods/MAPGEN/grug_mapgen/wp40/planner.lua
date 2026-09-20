@@ -330,6 +330,10 @@ local function planner_factory(allocator_factory)
 		coast_material_at = true,
 		primary_relief_at = true,
 		landmark_excluded_at = true,
+		static_exclusion_values_at = true,
+		housing_mask_id_at = true,
+		functional_surface_values_at = true,
+		hard_row_at = true,
 		metrics = true,
 	}
 	local RELATION_FIELDS = {
@@ -460,6 +464,10 @@ local function planner_factory(allocator_factory)
 				type(planner_source.coast_profile_at) ~= "function" or
 				type(planner_source.coast_material_at) ~= "function" or
 				type(planner_source.primary_relief_at) ~= "function" or
+				type(planner_source.static_exclusion_values_at) ~= "function" or
+				type(planner_source.housing_mask_id_at) ~= "function" or
+				type(planner_source.functional_surface_values_at) ~= "function" or
+				type(planner_source.hard_row_at) ~= "function" or
 				type(planner_source.metrics) ~= "function" then
 			fail("fail_source", "planner source API differs")
 		end

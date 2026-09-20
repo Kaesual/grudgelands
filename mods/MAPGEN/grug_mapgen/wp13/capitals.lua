@@ -1112,6 +1112,8 @@ local function loader(directory)
 			buf:clear(2 + run, 7 + run, d - 2, 2 + run, 9 + run, d - 2)
 			parts.stair(buf, 2 + run, 7 + run, d - 2, stone_stair(palette), 1)
 		end
+		-- One extra deck opening cell above the approach to the upper flight.
+		buf:clear(3, 11, d - 2, 3, 11, d - 2)
 		local merlons = 0
 		for z = 0, d - 1 do
 			for x = 0, w - 1 do
@@ -1662,6 +1664,28 @@ local function loader(directory)
 	-- feed trough against the head wall and the aisle left open for a cart.
 	function M.stable(palette, spec)
 		local w, d = spec.w or 15, spec.d or 11
+		if spec.open_shelter then
+			local buf = parts.buffer()
+			buf:fill(0, 0, 0, w - 1, 0, d - 1, "default:dirt")
+			buf:clear(0, 1, 0, w - 1, 6, d - 1)
+			buf:fill(0, 6, 0, w - 1, 6, d - 1, palette.node("roof_ridge"))
+			local cx = math.floor(w / 2)
+			for z = 0, d - 1 do
+				for x = 0, w - 1 do
+					if (x == 0 or x == w - 1 or z == d - 1 or
+							z == 0 and math.abs(x - cx) > 2) then
+						buf:put(x, 1, z, palette.node("fence"))
+					end
+				end
+			end
+			for _, x in ipairs({0, w - 1}) do
+				for _, z in ipairs({0, math.floor(d / 2), d - 1}) do
+					buf:fill(x, 1, z, x, 5, z, palette.node("post"))
+				end
+			end
+			return finish(buf, w, d, 6, {sockets = {},
+				inside = {{x = cx, y = 1, z = 2}}})
+		end
 		local wall_h = spec.wall_h or 5
 		local infill, shutters = dress(spec)
 		local cx = math.floor(w / 2)

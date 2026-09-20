@@ -1,12 +1,12 @@
-# Scout — the fourth class (PROPOSAL, 2026-09-16, NOT DECIDED)
+# Scout — the fourth class
 
-**PROPOSAL, written with [skill_trees.md](skill_trees.md) revision 2.** The
-user's ruling 7 of 2026-09-16 creates a fourth class, **Scout**, in leather
-armour, with two trees — ranged (bow) and melee — **planned now and
-implemented later**. Rulings 8 and 9 added invisibility rules and the Sprint
+The accepted Round 11 design creates a fourth class, **Scout**, in leather
+armour, with two trees — ranged (bow) and melee. Rulings 8 and 9 added
+invisibility rules and the Sprint
 idea; **rulings 12 and 14 then cut the class back to its simplest workable
-form**, which is what this file now describes. Nothing here is implemented and
-nothing in `mods/` was changed for it.
+form**, which is what this file now describes. Round 11 delivered the shared
+gear, leather and visual foundations plus the playable Scout class, four base
+abilities, ballistic bow flow, talent consumers, starter kit and trader stock.
 
 > **Ruling 12 (user, 2026-09-16), and it has priority over everything else in
 > this file:** the Scout is to be **as simple as possible**, ahead of "as cool
@@ -18,17 +18,22 @@ nothing in `mods/` was changed for it.
 >
 > **Ruling 14 (user, 2026-09-16):** the Scout **uses mana**. No new resource.
 
+The Round 11 art ruling supersedes only the quoted implementation shortcuts:
+bows use the licensed LotT sprite family and leather has dedicated inventory
+and worn textures. The class simplification, ballistic arrows and four-skill
+kit remain binding.
+
 The invisibility rulings and the whole stealth analysis are **not deleted** —
 they are §8, "Deferred: stealth v2", intact, so that the day the user wants
 them the research is already done.
 
 **Why this is its own file and not a chapter of `skill_trees.md`.** Most of
-what a new class needs is not talent design: a weapon family that does not
-exist, an armour line registered `false`, character visuals, trader stock and
-a profession that already has an owner. The Scout's **two talent trees stay in
+what a new class needs is not talent design: weapon and armor foundations,
+character visuals, trader stock and professions that already have owners. The
+Scout's **two talent trees stay in
 `skill_trees.md` §2.7/§2.8**, with all four classes' tables under one
 arithmetic and one name audit; everything else is here. Both files are
-proposals and both carry one shared open-decisions list (`skill_trees.md` §6).
+decided specifications under the shared arithmetic in `skill_trees.md`.
 
 ---
 
@@ -37,13 +42,13 @@ proposals and both carry one shared open-decisions list (`skill_trees.md` §6).
 | | |
 |---|---|
 | **Armour** | leather — armor class 2 (`inventory_equipment.md:184-193`) |
-| **Weapons** | bow (ranged) and dagger / 1H sword (melee) |
+| **Weapons** | bow (ranged); dagger / 1H sword (one-handed melee); greataxe (two-handed melee). The ordinary weapon slot remains family-agnostic, and every melee family uses the same equipped-main-hand formula. |
 | **Resource** | **mana** — ruling 14, decided. The bar uses the class-neutral level pool `round(20 + 5L + 0.66L²)` before mana-percent gear/talents (`combat_stats.md` §2); Intelligence does not add mana |
 | **Trees** | **Quarry** (bow) and **Veil** (blade and evasion) — `skill_trees.md` §2.7/§2.8, named by ruling 27 |
-| **Attributes** | Dexterity-led; growth proposed **+2 Dex / +1 Str / +1 Int** per level, against `combat_stats.md:40-41`'s Warrior +3 Str/+1 Dex, Mage +3 Int/+1 Dex, Priest +1 Str/+2 Int/+1 Dex |
+| **Attributes** | Dexterity-led; growth **+2 Dex / +1 Str / +1 Int** per level, against `combat_stats.md:40-41`'s Warrior +3 Str/+1 Dex, Mage +3 Int/+1 Dex, Priest +1 Str/+2 Int/+1 Dex |
 | **Role** | ranged damage that can also fight at knife range; the most evasive class in the game |
 
-At level 60 the proposed growth gives Dex `10 + 2 × 59 = 128`, so
+At level 60 the growth gives Dex `10 + 2 × 59 = 128`, so
 `combat_stats.md:55-56`'s formulas put the Scout at **17.8 % crit** and
 **12.8 % dodge** from attributes alone — the highest of any class, and still
 far under the 30 % caps, which is what leaves room for the dodge talents and
@@ -89,10 +94,17 @@ What is deliberately **not** in the base kit: a melee finisher (it is Veil's
 keystone, `skill_trees.md` §2.8), a root (Quarry's keystone), and stealth of
 any kind (§8).
 
-## 3. The bow does not exist
+## 3. Bow and ammunition contract
 
-Measured, not looked up. `mods/ENTITIES/grug_traders/stock.lua:428-435`
-records a headless dump of all 1012 registered item names:
+Round 11 activates six universal plain tier bows plus one below-ladder wooden
+starter bow. Woodcarver owns bow refinement and affixes, not the plain recipe.
+Bows are two-handed and may share Offhand only with the zero-hand quiver.
+Shooting works without a quiver: ammunition is consumed atomically from the
+equipped quiver first and then `main`. The Scout starts with its wooden bow
+equipped and receives 20 arrows plus a stone sword in `main`; it does not start
+with a quiver.
+
+Historical baseline measured before Round 11:
 
 > "**THERE IS NO BOW.** Nothing in the 1012 is a bow, a stave, a bowstring or
 > a quiver — the only archery items in the game are `grug_mobs:arrow`
@@ -104,23 +116,22 @@ The bowyer shelf therefore sells arrows, sticks and feathers
 (`stock.lua:474-479`) and gets no bracket tab, "there is no ranged family in
 `grug_gear` to reach".
 
-What **is** decided and waiting:
+The active contract is:
 
-- `items_crafting.md` §9 (`:2423-2445`) is a complete inactive substrate:
-  bow family on the 1H weapon curve (8/13/19/24 damage at ilvl 12/27/42/57),
-  **25 m range, 0.5 s charge**, partial charge scales linearly, enchant pool =
-  melee weapons (attack speed → charge speed), one bow per material tier,
+- `items_crafting.md` §9 defines the active substrate: bow family on the 1H
+  weapon curve (8/13/19/24 damage at ilvl 12/27/42/57),
+  **25 m range, 0.5 s charge**, partial charge scales linearly, and the affix
+  pool is Dex, Crit, attack/draw speed, HP and Mana. One bow per material tier,
   material-named under §3.0.3. Arrows craft 20 per batch from 1 iron bar +
-  4 sticks + 4 sharp feathers. **Producer: the Woodcarver.** Quiver =
-  Leatherworker bag-slot item. Its closing line is the one this class
-  answers: "No current or committed class consumes a bow baseline… until a
-  class package explicitly adopts it."
-- `combat_stats.md:249-252`: "Bows reuse the infrastructure later… a bow is
-  drawn up to a maximum and releases a ballistic arrow whose initial impulse
-  comes from draw time; gravity supplies the trajectory."
-- The weapon ladder's shape is `tools/wp13/gen_weapon_ladder.py` and one
-  sprite per family per material (`items_crafting.md:606-643`), so a bow
-  family is **six new sprites and six new registrations**, not a new system.
+  4 sticks + 4 sharp feathers. Plain bows and arrows are Basics; Woodcarver
+  owns bow refinement/affixes. Leatherworker makes the optional four-stack
+  Offhand quiver at Apprentice.
+- `combat_stats.md` §2 defines the delivered bow flow: a bow is drawn up to a
+  maximum and releases a ballistic arrow whose initial impulse comes from draw
+  time; gravity supplies the trajectory.
+- The seven bow identities and their dedicated centre-grip wield pose are
+  delivered from licensed LotT arc sprites. The Scout runtime consumes those
+  registrations; it does not regenerate their art.
 
 The arrow entity already exists in another mod: `grug_mobs:arrow_entity`
 (`skeleton_archer.lua:18`), used by the archer, the raider and both golems.
@@ -128,36 +139,32 @@ A player bow should **not** reuse it — mob arrows carry `stamp_arrow_damage`
 (`skeleton_archer.lua:68`) and the mob level pipeline — but it is the working
 reference for the entity shape.
 
-## 4. Leather armour exists on paper only
+## 4. Leather armour
 
-`mods/ITEMS/grug_gear/init.lua:77-79`, in the generator's own words:
+Leather armor and its 24-item six-tier line are a delivered shared foundation.
+The following
+quoted passage records the older baseline and is not current implementation:
 
 > "leather — the Leatherworker's six leather grades (§3.4). Registered
 > **`false`** below (its only wearer, the Rogue, is Phase 2) but **NAMED**
 > here, so the day it registers nothing is invented."
 
-The six grades are `light / cured / heavy / scaled / sleek / nightscale`
-(`init.lua:82-99`), one per material tier, in the same table as the metal and
-cloth ladders. Flipping the line registers **24 items** (6 grades × 4 slots).
-Everything downstream is then already true:
+The six grades are `light / cured / heavy / scaled / sleek / nightscale`, one
+per material tier, in the same table as the metal and cloth ladders. The 24
+items (6 grades × 4 slots) and their dedicated inventory/worn art are active.
+The downstream contract is:
 
 - `inventory_equipment.md:184-193`: armor class **cloth 1 < leather 2 <
   metal 3**; a class may wear its rank "and everything below", and leather
-  already ships as "the **Warrior's** light avoidance set" — so a Scout at
-  rank 2 wears leather and cloth, and the below-inclusive rule needs no change
-  beyond the new class's rank.
-- `professions.md:52`: the **Leatherworker** already owns the six grades and
-  "later **quivers**"; `:93-94` already says "Phase 2's Rogue wants leather,
-  which already has a maker". No profession is created; the Scout is the
-  wearer the line was drawn for.
-- `character_visuals.md:71-73`: two armour lines ship, cloth and metal, "and
-  each has one overlay per slot: head, chest, legs, feet. **Leather borrows
-  the cloth cut until its own art exists, because it has no wearer before the
-  Rogue.**" So the Scout needs **no new overlay art to ship** — it needs the
-  six leather tints on the cloth silhouette — and its own art is a later
-  pass. This is the single largest saving in the whole class.
-- `items_crafting.md` §10 P2 (`:2468-2473`) already parks the mirrored
-  signature recipes "in Phase 2 when the Rogue makes top leather PvP-relevant".
+  leather is the **Scout's armor line** and remains a legal light avoidance
+  set for the Warrior. A Scout at rank 2 wears leather and cloth, and the
+  below-inclusive rule needs no change beyond the new class's rank.
+- The **Leatherworker** owns the six grades, leather bags and the current
+  four-stack quiver. No profession is created; the Scout is an intended wearer.
+- `character_visuals.md` §3 defines leather as its own complete armor family.
+  SCOUT reuses those shipped overlays without adding or borrowing art.
+- `items_crafting.md` §10 P2 records that the old Phase-2 Rogue/signature-
+  mirror assumption is superseded; the Scout does not revive that scope.
 
 
 ### 4.1 The arrow's physics, and the licence question ruling 12 raises
@@ -226,8 +233,8 @@ Ruling 12 in one table. Nothing here is rejected; it is sequenced.
 | **Poison** | 7 and 12 | nowhere. `classes.md:475-487`'s Phase-2 Rogue plan is retired in this lane's `classes.md` commit, so no work package owns a player poison stat any more |
 | **Traps** | 12 | nowhere. Ruling 7 allowed them "if cheap"; ruling 12 removed the option, and they were the one idea in the class that needed a placed-entity lifecycle |
 | **A third resource** | 14: the Scout uses mana | nowhere; §1 |
-| **A quiver item** | not ruled — simply not needed for v1 | `professions.md:52` already assigns it to the Leatherworker "later"; arrows stack in the main inventory until then |
-| **A dedicated leather overlay** | 12: "leather borrows the cloth cut" | `character_visuals.md:71-73` already says so; the art is a later pass |
+| **A starter quiver** | omitted: the Scout starts without one | The Leatherworker's optional four-stack quiver ships in V1; arrows also work directly from `main` (§3) |
+| **Additional Scout-specific leather art** | unnecessary | the dedicated six-tier leather family already ships and is shared with every legal wearer |
 
 What that leaves is a class made entirely of numbers, durations and flags on
 machinery the game already runs — which is the point of ruling 12, and the
@@ -294,30 +301,22 @@ that it cannot be the answer to an ordinary fight. **Rule needed before any
 mob speed changes**: the root duration, the soft-de-aggro distance and the mob
 speed are one system and cannot be tuned separately.
 
-### 6.4 Caps versus timed windows — **resolved by ruling 10, with a doc amendment**
+### 6.4 Caps versus timed windows — **resolved by ruling 10**
 
-`combat_stats.md:104-108`: "The caps remain 30 % Crit, 30 % Dodge and 60 %
-armor. Values above a cap remain present on their stacks but have no further
-combat effect… There is **no automatic overflow conversion or cap raise**."
+`combat_stats.md` §2 keeps Crit and Dodge at 30% while armor uses its separate
+attacker-level rating formula and 70% reduction cap.
 The Scout's base-kit Sidestep stays inside the 30 % dodge cap and is simply
 clamped — which means a Scout with good gear gets *less* from their own
 button, a real consequence and not a bug. The Veil capstone **Untouchable**
-does raise the cap, to 50-60 % for six seconds once every three minutes, which
-is what ruling 10 permits for a capstone. `combat_stats.md` §2 needs the one
-paragraph `skill_trees.md` §2.10 describes, and the Talents header has to show
-the raised cap while it runs (`:104-108` already requires effective **and**
-raw).
+raises only the dodge cap to 55% for six seconds once every three minutes,
+which is the named, time-limited capstone exception allowed by ruling 10. The
+Talents header shows the raised cap while it runs.
 
-### 6.5 The bow has no wield pose and no starter — **needs a rule**
+### 6.5 Bow pose and starter — **resolved in Round 11**
 
-`grug_visuals/apply.lua:82-87` maps an item to one of **three** wield poses,
-and the tables live in `wield_geometry.lua` — a bow is a fourth silhouette,
-held across the body rather than hilt-in-fist. Separately,
-`inventory_equipment.md:84-85` grants "a **Warrior** the stone sword, a
-**Priest** and a **Mage** the wooden staff" at class choice, and there is no
-below-ladder bow the way `grug_gear:staff_wood` was created for casters
-(`items_crafting.md:639-643`). Both are small and both have to be decided by
-the lane that registers the bow family, not discovered by it.
+The bow uses its dedicated centre-grip pose and seven licensed arc sprites.
+`inventory_equipment.md` §2 assigns the below-ladder wooden bow to a new Scout;
+the six tier bows remain ordinary level-gated equipment.
 
 ### 6.6 Claims, protection and nametags — **no conflict**
 
@@ -327,21 +326,21 @@ Nothing in the claim/protection system reads a class or a speed
 are the first things a reviewer asks about, and because both *would* have been
 conflicts if version 1 had stealth (§8).
 
-## 7. Scope: what the Scout costs
+## 7. Delivered Round 11 scope
 
 ### 7.1 Dependencies and side effects on other work packages
 
-| Area | What the Scout needs | Evidence |
+| Area | Delivered result | Evidence |
 |---|---|---|
-| **WP11 (skill trees)** | the whole talent machinery first. The Scout's 16 talents are data on top of X1-X4 | `skill_trees.md` §4 |
-| **The speed aggregator** | ruling 11's `grug_core` aggregator, **owned by the mob-pressure lane**, before Sprint or Snare Shot | `skill_trees.md` §3.9; `docs/research/mob-pressure-task-card.md` |
-| **Weapon ladder §3.0.3** | a **bow family**: six registrations, six sprites through the existing `tools/wp13/gen_weapon_ladder.py`, one bracket tab for the bowyer, a below-ladder starter bow, and the fourth wield pose of §6.5 | `items_crafting.md:606-643`, `:2428-2432`; `grug_visuals/apply.lua:82-87` |
-| **Arrows** | a player arrow item and a **ballistic** entity on `grug_projectiles`; the craft (1 iron bar + 4 sticks + 4 sharp feathers → 20) exists on paper; the physics reference and its licence are §4.1 | `items_crafting.md:2433-2436`; reference entity `skeleton_archer.lua:18` |
-| **Leather armour** | flip `grug_gear`'s leather line from `false` to registered: **24 items** and 24 icons, on the **borrowed cloth cut** — no new overlay art | `grug_gear/init.lua:77-99`; `character_visuals.md:71-73` |
-| **Professions** | none created. The **Leatherworker** already owns the grades and the future quiver; the **Woodcarver** already owns the bow | `professions.md:52`, `:93-94`, `:192-195`; `items_crafting.md:2437-2441` |
-| **Traders** | the bowyer shelf gains its bracket tab (it explicitly has none today); the tanner shelf gains the leather grades | `grug_traders/stock.lua:428-435`, `:472-479` |
-| **Character visuals** | the six leather tints on the cloth silhouette, and the bow pose | `character_visuals.md:71-73` |
-| **`combat_stats.md`** | one sentence for the ranged damage term of ruling 28, and the cap-override paragraph WP11 already owes | beside `grug_classes.get_melee_bonus` at `grug_classes/stats.lua:107-115` |
+| **WP11 (skill trees)** | the Scout's 16 talents run on the shared talent machinery | `skill_trees.md` §4 |
+| **The speed aggregator** | ruling 11's `grug_core` aggregator drives Sprint, Snare Shot and Shake Loose | `skill_trees.md` §3.9; `docs/research/mob-pressure-task-card.md` |
+| **Weapon ladder §3.0.3** | six tier bows, the below-ladder starter bow, dedicated centre-grip pose and ballistic ability consumer | `items_crafting.md` §9; `character_visuals.md` §6 |
+| **Arrows** | the player arrow item and **ballistic** `grug_projectiles` entity; the Basics craft is 1 iron bar + 4 sticks + 4 sharp feathers → 20; the physics reference and its licence are §4.1 | `items_crafting.md` §9; reference entity `skeleton_archer.lua:18` |
+| **Leather armour** | consume the delivered 24-item leather family and its dedicated inventory/worn art; armor rank remains 2 | `inventory_equipment.md` §2; `character_visuals.md` §3 |
+| **Professions** | none created. Leatherworker owns the grades/current quiver; Woodcarver owns bow quality operations | `professions.md` §2–§3 |
+| **Traders** | the bowyer shelf exposes bows and player arrows; the tanner shelf exposes the leather grades through the existing rotation and quality paths | `grug_traders/stock.lua` |
+| **Character visuals** | consume the delivered leather family and bow pose without new Scout-specific art | `character_visuals.md` §§3, 6 |
+| **Combat stat consumers** | the ranged damage term and Scout dodge consumer are delivered. The shared cap rule and targeted Unbroken consumer are delivered; the Mage crit override remains WP11 X3 | `combat_stats.md` §2; `skill_trees.md` §3.2 |
 | **PvP (WP41)** | nothing in version 1. Sprint and Sidestep are ordinary buffs under the existing tag rules | `combat_stats.md:270-289` |
 | **`grug_visuals`, `grug_mobs` AI, nametags** | **nothing** — every one of those was an invisibility dependency (§8) | — |
 
@@ -355,9 +354,9 @@ moves to the mob-pressure lane that needs it anyway.
 | Lane | Scope | Depends on | Size |
 |---|---|---|---|
 | **S0 — design** | this file and `skill_trees.md` §2.7/§2.8 | — | **done** |
-| **S1 — bow and arrows** | the bow family (6 registrations + 6 sprites through the existing generator + the bracket tab), the below-ladder starter bow, the fourth wield pose, the player arrow item and its **ballistic** entity on `grug_projectiles`, the draw-time charge on the shipped charge-bar machinery (`classes.md` §2b), the Woodcarver recipes and the bowyer shelf | — | **L** |
-| **S2 — leather and the tanner line** | flip `grug_gear`'s leather ladder (24 items, 24 icons), the six tints on the borrowed cloth cut, armor class 2 for the new rank, the Leatherworker recipes and the tanner shelf | — | **M-L** |
-| **S3 — the class and its trees** | `grug_classes` registration (attributes, growth, colour), the four base abilities of §2, the class-selection entry, the starter grant, the ranged damage term of ruling 28, **and** the 16 talents of `skill_trees.md` §2.7/§2.8 — 10 numeric consumers, **2 new-skill keystones** (Pinning Shot, Opening), **3 replacements** (Twin Shot, Shake Loose and the capstone Longshot) and **1 capstone effect** (Untouchable) — plus the KAT rows | S1, S2, WP11 X1-X4, the aggregator | **L** |
+| **S1 — bow consumer** | ballistic player-arrow entity, bounded draw/charge settlement, Scout abilities and bowyer bracket using the delivered bow/ammo/quiver APIs and art | GEAR, COMBAT | **delivered** |
+| **S2 — leather stock integration** | tanner shelf entries using the delivered leather catalog | GEAR | **delivered** |
+| **S3 — the class and its trees** | `grug_classes` registration (attributes, growth, colour), the four base abilities of §2, the class-selection entry, the starter grant, the ranged damage term of ruling 28, **and** the 16 talents of `skill_trees.md` §2.7/§2.8 — 10 numeric consumers, **2 new-skill keystones** (Pinning Shot, Opening), **3 replacements** (Twin Shot, Shake Loose and the capstone Longshot) and **1 capstone effect** (Untouchable) — plus the KAT rows | S1, S2, WP11 X1-X4, the aggregator | **delivered** |
 
 ### 7.3 My estimate, and what changed
 
@@ -370,22 +369,23 @@ more than the original sketch did.
 
 What that rests on, measured rather than assumed:
 
-- **S1 and S2 are each a genuine lane.** S2 alone registers 24 items with 24
-  icons and touches the armor-class rule; it is cheaper than it looks only
-  because `character_visuals.md:71-73` already lets leather borrow the cloth
-  cut, which is the single largest saving in the class.
+- **S1 delivered the ballistic consumer; S2 delivered stock integration.**
+  The item registrations, leather family and visual assets remain shared
+  dependencies and are not recreated.
 - **S3 absorbs what used to be two lanes** (the class and its trees) because
   ruling 13 leaves the Scout with just **two** new ability registrations
   across both trees, and everything else is a read inside an ability that S3
   itself wrote.
-- **The wave is still not self-contained.** S3 cannot start before WP11's
-  X1-X4 and the aggregator; S1 and S2 are independent of everything and could
-  be pulled forward into any earlier wave as pure item work.
-- **Nothing in version 1 touches `grug_visuals`, the mobs AI or PvP.** That is
+- **The wave uses shared foundations.** S3 consumes the shipped WP11
+  foundations and movement aggregator plus the accepted GEAR/COMBAT seams.
+- **Nothing remaining in version 1 changes `grug_visuals`, mobs AI or PvP.** That is
   ruling 12's whole return: the three conflicts marked **blocks** in the
   previous revision were all stealth's, and all three are now in §8.
 
-A realistic sequencing: **WP11 (four lanes) + the aggregator → S1 ∥ S2 → S3.**
+The completed sequence was **accepted GEAR/COMBAT/ART foundations → stock
+integration and ballistic consumer → Scout class and talent settlement**.
+The implementation and focused verification are recorded in
+[`round11-scout-evidence.md`](../research/round11-scout-evidence.md).
 
 ## 8. Deferred: stealth v2
 

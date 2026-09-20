@@ -97,6 +97,11 @@ function grug_classes.get_melee_bonus(player)
 	return math.floor(grug_classes.get_attributes(player).str / 10)
 end
 
+-- Flat bonus added to bow damage (Scout ruling 28).
+function grug_classes.get_ranged_bonus(player)
+	return math.floor(grug_classes.get_attributes(player).dex / 10)
+end
+
 -- Intelligence-derived spell power is a flat damage term and a percentage
 -- bonus on pool-derived healing/absorb values.
 function grug_classes.get_spell_power_bonus(player)
@@ -123,7 +128,8 @@ end
 function grug_classes.get_dodge_chance_raw(player)
 	return 0.001 * grug_classes.get_attributes(player).dex
 		+ 0.01 * (grug_classes.get_talent_bonus(player, "dodge_chance_add")
-			+ grug_classes.get_talent_bonus(player, "dodge_chance_window"))
+			+ grug_classes.get_talent_bonus(player, "dodge_chance_window")
+			+ grug_classes.get_scout_dodge_add(player))
 end
 
 -- Chances in 0..1; flat caps, no diminishing returns (combat_stats.md §2).
@@ -132,7 +138,8 @@ function grug_classes.get_crit_chance(player)
 end
 
 function grug_classes.get_dodge_chance(player)
-	return math.min(0.30, grug_classes.get_dodge_chance_raw(player))
+	return math.min(grug_classes.get_scout_dodge_cap(player) / 100,
+		grug_classes.get_dodge_chance_raw(player))
 end
 
 -- Recomputes hp_max from level + class. heal_gain grants the gained
@@ -168,6 +175,7 @@ grug_core.get_dodge_chance = grug_classes.get_dodge_chance
 -- Native proportional melee Strength bonus (combat_stats.md §2); read by the
 -- player-melee patch in mobs/api.lua and the hostile-PvP handler.
 grug_core.get_melee_bonus = grug_classes.get_melee_bonus
+grug_core.get_ranged_bonus = grug_classes.get_ranged_bonus
 
 -- FIRST equipment-change consumer. grug_classes is a dependency of both
 -- grug_inventory and grug_abilities, so registering here is earlier by the mod

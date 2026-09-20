@@ -28,7 +28,7 @@ return function(repo)
      end
     end
     if service=="forge" then assert(stations==1 and trainers==2)
-    else assert(mounts==4 and riding==1 and cells["0:3:6"].name~="air") end
+    else assert(mounts==4 and riding==1 and cells["0:6:6"].name~="air") end
     out[#out+1]=table.concat({city,service,#bp.cells,trainers,stations,mounts,riding},"\t")
     built=built+1
    end

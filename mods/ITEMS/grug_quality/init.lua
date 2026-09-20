@@ -20,7 +20,7 @@
 -- Derived consumer keys are rebuilt from grug_ench and are not authorities:
 --   _grug_strength, _grug_dexterity, _grug_intelligence,
 --   _grug_max_hp_percent, _grug_max_mana_percent, _grug_crit_percent,
---   _grug_dodge_percent, _grug_armor_percent, _grug_attack_speed_percent.
+--   _grug_dodge_percent, _grug_armor_rating, _grug_attack_speed_percent.
 
 grug_items = {}
 
@@ -50,17 +50,22 @@ local AFFIX = {
 		percent = true},
 	dodge_percent = {label = "Dodge", short = "Dodge", prefix = "Elusive",
 		suffix = "of the Cat", decimals = 1, percent = true},
-	armor_percent = {label = "Armor", short = "Armor", prefix = "Stalwart",
-		suffix = "of the Tortoise", decimals = 0, percent = true},
+	armor_rating = {label = "armor rating", short = "Armor", prefix = "Stalwart",
+		suffix = "of the Tortoise", decimals = 0},
 }
 
 local POOLS = {
 	melee_weapon = {"str", "dex", "attack_speed_percent", "crit_percent",
-		"max_hp_percent"},
+		"max_hp_percent", "max_mana_percent"},
+	bow = {"dex", "crit_percent", "attack_speed_percent", "max_hp_percent",
+		"max_mana_percent"},
 	caster_weapon = {"int", "max_mana_percent", "crit_percent",
 		"max_hp_percent"},
-	metal_armor = {"str", "max_hp_percent", "armor_percent", "dodge_percent"},
-	leather_armor = {"dex", "max_hp_percent", "crit_percent", "dodge_percent"},
+	shield = {"str", "dex", "max_hp_percent", "armor_rating"},
+	spellbook = {"int", "max_mana_percent", "crit_percent", "max_hp_percent"},
+	metal_armor = {"str", "max_hp_percent", "armor_rating"},
+	leather_armor = {"dex", "max_hp_percent", "max_mana_percent",
+		"crit_percent", "dodge_percent"},
 	cloth_armor = {"int", "max_mana_percent", "max_hp_percent", "crit_percent"},
 	trinket_prefix = {"str", "int", "dex"},
 	trinket_suffix = {"max_hp_percent", "max_mana_percent", "crit_percent"},
@@ -112,9 +117,9 @@ grug_items.CRAFTED_QUALITY = {
 	base = {quality = 1, refined = false, chance = 100},
 	refinement = {quality = 1, refined = true, chance = 100},
 	fine = {quality = 2, refined = true, chance = 100,
-		window = "crafted-fine", minimum = 1, maximum = 2},
+		window = "crafted-fine", minimum = 1, maximum = 1},
 	masterwork = {quality = 3, refined = true, chance = 100,
-		window = "crafted-masterwork", minimum = 3, maximum = 4},
+		window = "crafted-masterwork", minimum = 2, maximum = 2},
 }
 
 grug_items.QUALITY = QUALITY
@@ -126,7 +131,7 @@ grug_items.WINDOWS = WINDOWS
 local DERIVED_KEYS = {
 	"_grug_strength", "_grug_dexterity", "_grug_intelligence",
 	"_grug_max_hp_percent", "_grug_max_mana_percent", "_grug_crit_percent",
-	"_grug_dodge_percent", "_grug_armor_percent",
+	"_grug_dodge_percent", "_grug_armor_rating",
 	"_grug_attack_speed_percent",
 }
 
@@ -138,7 +143,7 @@ local STAT_META = {
 	max_mana_percent = "_grug_max_mana_percent",
 	crit_percent = "_grug_crit_percent",
 	dodge_percent = "_grug_dodge_percent",
-	armor_percent = "_grug_armor_percent",
+	armor_rating = "_grug_armor_rating",
 	attack_speed_percent = "_grug_attack_speed_percent",
 }
 
@@ -228,6 +233,7 @@ local function family_for(stack)
 	local groups = def.groups or {}
 	if (groups.grug_equip_trinket or 0) > 0 then return "trinket" end
 	if (groups.grug_equip_weapon or 0) > 0 then
+		if (groups.grug_bow or 0) > 0 then return "bow" end
 		if (groups.staff or 0) > 0 or (groups.wand or 0) > 0 or
 				(groups.grug_caster_weapon or 0) > 0 then
 			return "caster_weapon"
@@ -238,7 +244,8 @@ local function family_for(stack)
 	if rank == 3 then return "metal_armor" end
 	if rank == 2 then return "leather_armor" end
 	if rank == 1 then return "cloth_armor" end
-	if (groups.grug_equip_offhand or 0) > 0 then return "caster_weapon" end
+	if (groups.grug_shield or 0) > 0 then return "shield" end
+	if (groups.grug_spellbook or 0) > 0 then return "spellbook" end
 	if (groups.pickaxe or 0) > 0 or (groups.shovel or 0) > 0 or
 			(groups.axe or 0) > 0 or (groups.hoe or 0) > 0 then
 		return "tool"
@@ -268,7 +275,7 @@ local function range_for(stat, ilvl)
 		return values.chance
 	elseif stat == "attack_speed_percent" then
 		return values.attack_speed
-	elseif stat == "armor_percent" then
+	elseif stat == "armor_rating" then
 		return values.armor
 	end
 	error("grug_quality: unknown affix stat " .. tostring(stat), 0)
@@ -301,7 +308,7 @@ local function read_affixes(meta)
 	local value = core.deserialize(text)
 	if type(value) ~= "table" then return {} end
 	local out, seen = {}, {}
-	for index = 1, math.min(4, #value) do
+	for index = 1, math.min(2, #value) do
 		local slot = value[index]
 		if type(slot) == "table" and AFFIX[slot.stat] and
 				type(slot.value) == "number" and not seen[slot.stat] then
@@ -361,10 +368,10 @@ local function generated_name(base_name, affixes)
 end
 
 local REFINEMENT_WORD = {
-	melee_weapon = "Honed", caster_weapon = "Honed",
+	melee_weapon = "Honed", caster_weapon = "Honed", bow = "Honed",
 	tool = "Honed",
-	metal_armor = "Reinforced", leather_armor = "Reinforced",
-	cloth_armor = "Ornate",
+	metal_armor = "Reinforced", leather_armor = "Reinforced", shield = "Reinforced",
+	cloth_armor = "Ornate", spellbook = "Ornate",
 }
 
 local function ensure_base_name(stack)
@@ -459,8 +466,8 @@ local function apply_capabilities(stack, totals, refined)
 end
 
 local function rolled_count(quality, rng)
-	if quality == 2 then return random_chance(rng, 60) and 1 or 2 end
-	if quality == 3 then return random_chance(rng, 70) and 3 or 4 end
+	if quality == 2 then return 1 end
+	if quality == 3 then return 2 end
 	return 0
 end
 
@@ -505,10 +512,10 @@ function grug_items.roll_enchants(stack, ilvl, window, count, seed)
 		if quality < 2 then quality = 2 end
 	else
 		local wanted = count == nil and rolled_count(quality, rng) or
-			clamp(math.floor(tonumber(count) or 0), 0, 4)
+			clamp(math.floor(tonumber(count) or 0), 0, 2)
 		if wanted == 0 then return false, "quality has no affix budget" end
 		stats = choose_unique(POOLS[family], wanted, rng)
-		if #stats <= 2 then quality = 2 else quality = 3 end
+		if #stats == 1 then quality = 2 else quality = 3 end
 	end
 	local affixes = {}
 	for index = 1, #stats do
@@ -550,7 +557,7 @@ function grug_items.append_affix(stack, window, seed, player)
 	local meta = stack:get_meta()
 	if meta:get_int("grug_refined") ~= 1 then return false, "Refine the item first." end
 	local affixes = read_affixes(meta)
-	local maximum = math.min(4, grug_items.mastery_band(player))
+	local maximum = grug_items.mastery_band(player) >= 2 and 2 or 1
 	if #affixes >= maximum then
 		return false, "Your mastery cannot fill another affix slot."
 	end
@@ -562,7 +569,7 @@ function grug_items.append_affix(stack, window, seed, player)
 		if not used[stat] then candidates[#candidates + 1] = stat end
 	end
 	if #candidates == 0 then return false, "No legal affix remains." end
-	window = window or (#affixes >= 2 and "crafted-masterwork" or "crafted-fine")
+	window = window or (#affixes >= 1 and "crafted-masterwork" or "crafted-fine")
 	if not WINDOWS[window] then return false, "unknown roll window" end
 	local rng, used_seed = rng_for(seed, stack:get_name() .. ":append:" ..
 		(#affixes + 1))
@@ -571,7 +578,7 @@ function grug_items.append_affix(stack, window, seed, player)
 	if not ilvl then return false, "item has no item level" end
 	affixes[#affixes + 1] = {stat = stat,
 		value = roll_value(stat, ilvl, window, rng)}
-	meta:set_int("grug_quality", #affixes <= 2 and 2 or 3)
+	meta:set_int("grug_quality", #affixes == 1 and 2 or 3)
 	meta:set_string("grug_ench", core.serialize(affixes))
 	meta:set_string("grug_roll_window", window)
 	meta:set_int("grug_roll_seed", used_seed)
@@ -598,7 +605,8 @@ function grug_items.apply_station_operation(recipe, inputs, player)
 	if recipe.family and family_for(source) ~= recipe.family and
 			not (recipe.family == "weapon" and
 				(family_for(source) == "melee_weapon" or
-				family_for(source) == "caster_weapon")) then
+				family_for(source) == "caster_weapon" or
+				family_for(source) == "bow")) then
 		return nil, "That profession does not own this item family."
 	end
 	if recipe.operation == "refinement" then
@@ -637,7 +645,7 @@ function grug_items.preview_station_operation(recipe, stack)
 	return preview
 end
 
-function grug_items.can_apply_upgrade_kit(stack, mode)
+function grug_items.can_apply_upgrade_kit(stack, mode, player)
 	if not stack or stack:is_empty() then return false, "empty item" end
 	local family = family_for(stack)
 	if not family or family == "tool" then
@@ -654,14 +662,19 @@ function grug_items.can_apply_upgrade_kit(stack, mode)
 		if #affixes == 0 then return false, "Only an enchanted item can be tempered." end
 		local upgrades = meta:get_int("grug_upgrades")
 		if upgrades >= 2 then return false, "That item has already been tempered twice." end
+		local required = upgrades == 0 and 3 or 4
+		if player and grug_items.mastery_band(player) < required then
+			return false, (required == 3 and "Expert" or "Master") ..
+				" mastery is required for this temper."
+		end
 	else
 		return false, "Unknown upgrade-kit operation."
 	end
 	return true
 end
 
-function grug_items.apply_upgrade_kit(stack, mode, seed)
-	local allowed, reason = grug_items.can_apply_upgrade_kit(stack, mode)
+function grug_items.apply_upgrade_kit(stack, mode, seed, player)
+	local allowed, reason = grug_items.can_apply_upgrade_kit(stack, mode, player)
 	if not allowed then return false, reason end
 	local meta = stack:get_meta()
 	local affixes = read_affixes(meta)
@@ -856,12 +869,13 @@ local function equipment_totals(player)
 	local cached = aggregate_cache[name]
 	if cached then return cached end
 	local totals = {str = 0, dex = 0, int = 0, crit_percent = 0,
-		dodge_percent = 0, armor_percent = 0, max_hp_percent = 0,
-		max_mana_percent = 0, refined_armor = 0}
+		dodge_percent = 0, armor_rating = 0, max_hp_percent = 0,
+		max_mana_percent = 0, refined_armor = 0, refined_mana_percent = 0}
 	local inventory = player:get_inventory()
 	for _, slot in ipairs(grug_inventory.equipment_slots) do
 		local stack = inventory:get_stack(slot.list, 1)
-		if stack and not stack:is_empty() then
+		if stack and not stack:is_empty() and
+				not grug_core.equipment_is_broken(stack) then
 			local meta = stack:get_meta()
 			local affixes = read_affixes(meta)
 			for index = 1, #affixes do
@@ -881,25 +895,56 @@ local function equipment_totals(player)
 					math.floor(armor * 1.15 + 0.5)
 				totals.refined_armor = totals.refined_armor + effective - armor
 			end
+			local base_mana = tonumber(def._grug_max_mana_percent) or 0
+			if base_mana > 0 and meta:get_int("grug_refined") == 1 then
+				local _, described = grug_gear.describe_stack_base(stack,
+					effective_ilvl(stack), true)
+				totals.refined_mana_percent = totals.refined_mana_percent +
+					(tonumber(described and described.max_mana_percent) or base_mana) -
+					base_mana
+			end
 		end
 	end
 	aggregate_cache[name] = totals
 	return totals
 end
 
+function grug_items.get_equipment_affix_totals(player)
+	local source = equipment_totals(player)
+	local result = {}
+	for key, value in pairs(source) do result[key] = value end
+	return result
+end
+
+-- Rating contribution outside base armor and affixes: the shield's full-set
+-- base rating and every +15% refinement delta. Affixes remain separately
+-- visible through get_equipment_affix_totals for the combat breakdown.
+function grug_items.get_equipment_armor_rating_bonus(player)
+	local totals = equipment_totals(player)
+	local shield = grug_inventory.get_equipped_offhand(player)
+	local shield_rating = 0
+	if shield and not grug_core.equipment_is_broken(shield) and
+			core.get_item_group(shield:get_name(), "grug_shield") > 0 then
+		shield_rating = tonumber((shield:get_definition() or {})._grug_armor) or 0
+	end
+	return shield_rating + (totals.refined_armor or 0)
+end
+
 local original_equipment_changed = grug_inventory.equipment_changed
-grug_inventory.equipment_changed = function(player, listname)
+grug_inventory.equipment_changed = function(player, listname, reason)
 	if player and player.get_player_name then
 		aggregate_cache[player:get_player_name()] = nil
 	end
-	return original_equipment_changed(player, listname)
+	return original_equipment_changed(player, listname, reason)
 end
 grug_inventory.invalidate_armor = grug_inventory.equipment_changed
 
 grug_classes.get_equipment_pool_percent = function(player, pool)
 	local totals = equipment_totals(player)
 	if pool == "hp" then return totals.max_hp_percent or 0 end
-	if pool == "mana" then return totals.max_mana_percent or 0 end
+	if pool == "mana" then
+		return (totals.max_mana_percent or 0) + (totals.refined_mana_percent or 0)
+	end
 	return 0
 end
 
@@ -941,16 +986,29 @@ grug_classes.get_dodge_chance_raw = function(player)
 end
 
 local function raw_armor(player)
-	local totals = equipment_totals(player)
-	return grug_inventory.get_equipped_armor(player) + totals.refined_armor +
-		(totals.armor_percent or 0) +
-		grug_classes.get_talent_bonus(player, "armor_percent_add") +
-		grug_core.status_modifier_sum(player, "armor")
+	local base = grug_inventory.get_equipped_armor(player)
+	local affixes = grug_items.get_equipment_affix_totals(player)
+	local equipment_bonus = grug_items.get_equipment_armor_rating_bonus(player)
+	local talent = grug_classes.get_talent_bonus(player, "armor_percent_add")
+	local status = grug_core.status_modifier_sum(player, "armor")
+	local before_unbroken = base + (affixes.armor_rating or 0) +
+		equipment_bonus + talent + status
+	local multiplier = grug_classes.talent_rank(player, "unbroken") > 0
+		and 1.40 or 1
+	local emergency = grug_classes.get_talent_bonus(player,
+		"armor_rating_add_low_hp")
+	return before_unbroken * multiplier + emergency, {
+		base = before_unbroken,
+		multiplier = multiplier,
+		emergency = emergency,
+		result = before_unbroken * multiplier + emergency,
+	}
 end
 
-grug_core.get_armor_percent_raw = raw_armor
-grug_core.get_armor_percent = function(player)
-	return math.min(60, raw_armor(player))
+grug_core.get_armor_rating = raw_armor
+grug_core.get_armor_rating_breakdown = function(player)
+	local _, breakdown = raw_armor(player)
+	return breakdown
 end
 
 core.register_on_leaveplayer(function(player)

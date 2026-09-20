@@ -88,8 +88,14 @@ prices take precedence over preserving the exact mathematical ratio.
 - Small/steady: vendor goods, job supplies, bags, potions and other ordinary
   consumables.
 - **Repair:** broken gear is never destroyed; at zero durability its effects
-  stop until an NPC repair paid from the ledger. Cost scales with item level,
-  quality and wear (`items_crafting.md` §8.3).
+  stop until repaired with ledger money at any city profession trainer, including
+  Cooking. The V1 cost is `ceil(0.20 × reference purchase price × missing
+  durability fraction)` per item; intact items are free. Anyone may repair any
+  eligible item, with no profession or material requirement. The precise
+  eligibility, current-price catalog, transaction and future Housing-station
+  rules are in [durability_repair.md](durability_repair.md). This bounded Round-11
+  service retains the shipped purchase curve until WP44 rebases it; it does not
+  deploy the full target price axis below/above by implication.
 - **Talent respec:** repeatable **in the talent UI — there is no class
   trainer and no NPC** (user ruling 4 of 2026-09-16, `skill_trees.md` §5,
   `progression.md` §2). The price is **five minutes of measured reliable net

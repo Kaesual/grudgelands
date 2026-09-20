@@ -416,10 +416,10 @@ Details + line numbers in [docs/research/](docs/research/).
   `_grug_hands` two-handed rule) and `combat_stats.md` §2. Its
   **equipment seam** lives in `grug_core/combat.lua`:
   `get_equipped_weapon`/`get_equipped_offhand` (stub-override pattern like
-  `get_armor_percent`; **the returned ItemStack is the caller's OWN
+  `get_armor_rating`; **the returned ItemStack is the caller's OWN
   COPY** — a modified copy is not equipped until it is written back AND
   `grug_inventory.equipment_changed` is called) plus
-  `register_on_equipment_change(func(player, listname))`, where `listname`
+  `register_on_equipment_change(func(player, listname, reason))`, where `listname`
   is the one list that changed or **nil** for "assume everything moved".
   Consumers must be idempotent and cheap (every inventory write re-sends
   the list to the client), **may be called twice for one change** (the
@@ -432,9 +432,14 @@ Details + line numbers in [docs/research/](docs/research/).
   exactly one Character-page refresh consumer; normal equip, class change
   and join add no direct duplicate refresh (a genuine nested write may still
   earn the second pass).
+  Round 11 adds the optional `reason = "durability_metadata"` for same-item
+  wear/remainder/capability bookkeeping and first persistent action identity.
+  Forward that third argument through every wrapper (including quality).
+  Held swings and bow draws refresh their usable same-item snapshot without
+  restarting cadence; actual swaps and broken/unbroken transitions still reset.
   **Swing skills use native interaction plus an authoritative held clock**
   (`classes.md` §2b; WP38 base, WP39 target-authority revision decided
-  2026-08-10): exactly Strike, Mighty Blow and Hamstring have `kind = "swing"`
+  2026-08-10): Strike, Mighty Blow, Hamstring and Round 11's Opening have `kind = "swing"`
   and **no `on_use`**, keeping the fast first-person held animation. Their
   native enemy packets are input only and return before damage/rage/threat/
   wear/proc. The no-dig pointabilities can mask a ground-level drop, so each
@@ -463,7 +468,9 @@ Details + line numbers in [docs/research/](docs/research/).
   Swing ItemStacks continue to mirror equipped-slot FPI compare-first with
   `fleshy = 0`, empty `groupcaps`, `max_drop_level = 0`,
   `punch_attack_uses = 0` and blocking hand/dig_immediate node pointabilities.
-  Neither ability stack nor slot weapon wears. The accepted transaction stays
+  The ability stack never wears. Round 11's REPAIR hook spends wear on the
+  concrete main hand once on a qualifying settled
+  action. The accepted transaction stays
   exact attacker+ray-target and claim-once; the mobs_redo/PvP finish seam pays
   cost, resets charge, grants rage and applies post-effects only on its existing
   accepted/HP-loss conditions. Mighty Blow remains
@@ -484,10 +491,19 @@ Details + line numbers in [docs/research/](docs/research/).
   `grug_projectiles.register(id, def)` and
   `grug_projectiles.spawn(id, params)` foundation owns swept collision,
   ownership, exact-once settlement and terminal cleanup for later ballistic,
-  draw-impulse arrows; bows themselves remain later work. Fireball uses
+  draw-impulse arrows; the bow/items are active and the ballistic ability
+  consumer remains the pending SCOUT package. Fireball uses
   `active_limit = 8` per owner/session: failure happens before entity creation,
   every terminal/failure path releases its opaque token idempotently, and a
   reconnect/respawn creates a fresh session that old shots cannot charge.
+  Round 11's Scout uses the same foundation for ballistic arrows. Public
+  `grug_projectiles.spawn_batch(id, launches, commit)` reserves/spawns all
+  siblings before ammunition payment and rolls back every sibling/token on
+  failure. Quiver-first `grug_inventory.consume_ammo` / `refund_ammo` own
+  ammunition; Twin Shot carries one shared `grug_repair.capture_action`
+  receipt. Arrow control follows the settled outgoing-action hook, never the
+  published damage return alone. Opening resolves percentage mana once before
+  affordability and carries that snapshot through accepted swing settlement.
   Round 6 centralizes player scaling in `grug_core.base_pool`: max HP and mana,
   percentage mana costs, pool-derived heals/absorbs and the damage-only
   `level_scale` fit follow `combat_stats.md` §2; Strength and Intelligence are
@@ -541,7 +557,8 @@ Details + line numbers in [docs/research/](docs/research/).
   **PvP melee runs through the same pipeline** (the on_punchplayer
   handler in grug_abilities): an authoritative ability swing builds the
   slot-fed full swing, adds Strength/proc, rolls crit once, applies
-  `grug_core.apply_player_armor` (0..60%, ceil only when pct > 0), then enters
+  `grug_core.apply_player_armor` with attacker-level provenance and the
+  rating formula capped at 70% reduction, then enters
   dodge/absorb once. A native swing-item packet is suppressed and never
   authorizes the final target. Ordinary tools/fists still scale their wielded-stack full
   equivalent by `fraction` and accumulate. Their integer commit uses `set_hp`
@@ -589,7 +606,7 @@ Details + line numbers in [docs/research/](docs/research/).
     multipliers on the first active tick. `_grug_fixed_level` is the sole
     explicit fixed-entity mechanism: it bypasses positional/role fields only
     for deliberately designed fixed entities. Its implemented uses are the
-    Kraken L100, the island dragons L60, the capital kings L65 and their royal
+    Kraken L100, the island dragons L70, the capital kings L65 and their royal
     guards L60. There is no second king-specific level path.
     Everything else (speeds, view_range, drops, visuals) stays def-owned.
     **Four tiers since WP36**: `critter` (added for the small animals —
@@ -801,17 +818,13 @@ Details + line numbers in [docs/research/](docs/research/).
     The authoritative target is the Common-price axis plus ceiling-rounded
     **5%** buy-back in `economy.md`; WP44 migrates the catalog and payout
     tables without bypassing these APIs.
-  - **Armor pipeline** (armor was inert before WP7): item def
-    `_grug_armor` → `grug_inventory.get_equipped_armor` (sums the four
-    armor slots, **cached per player**, invalidated from the equipment
-    inventory action, `grug_inventory.invalidate_armor` for server-side
-    list writes, and on join) → `grug_core.get_armor_percent`
-    (stub-override pattern, like crit/dodge) → one branch in the central
-    hp-change modifier: **punch damage only**, after the dodge roll,
-    before the absorb shield, `math.ceil` so armor alone never makes a
-    hit free. **Capped at 60 in the consumer AS WELL AS the overrider** —
-    that modifier is registered with `true` (may raise HP), so a pct >
-    100 would turn a punch into a heal.
+  - **Armor pipeline**: item `_grug_armor` values and every additive source
+    aggregate as uncapped raw rating `A`. The deep Bulwark Unbroken capstone
+    multiplies that aggregate by 1.40 and its emergency window then adds 15.
+    For authoritative attacker level `L >= 1`, `K = 20 + 0.5*min(L,60) +
+    8.5*max(L-60,0)` and reduction is `min(0.70, A/(A+K))`. Apply once to
+    player combat damage before absorb, with the existing final `math.ceil`;
+    environmental/fall damage has no attacker provenance and bypasses armor.
   - **Armor-rank gate**: items carry `grug_armor_class` (cloth 1 <
     leather 2 < metal 3), classes carry `armor_rank`
     (`grug_classes.get_armor_rank`, no class = 1); the check sits in the

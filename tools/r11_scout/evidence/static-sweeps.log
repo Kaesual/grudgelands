@@ -1,0 +1,7 @@
+mods/PLAYER/grug_abilities/init.lua:716:-- Ability registration & item. One tool per ability; the item's `range`
+mods/PLAYER/grug_abilities/init.lua:1862:	return SKIN_VERSION .. "|" .. color .. "|" .. src.inv .. "|" .. src.wield
+mods/PLAYER/grug_abilities/init.lua:1906:	local token = SWING_CAPS_VERSION .. "|" .. string.format("%.17g", interval)
+mods/PLAYER/grug_abilities/scout.lua:213:	return stack:get_name() .. "|" .. item_id
+mods/PLAYER/grug_inventory/bags.lua:177:-- List setup & rules
+tools/r11_gear/ammo_kat.lua:55:  return table.concat(rows,"|")
+Reviewed: only ordinary ampersand/pipe text and string separators matched sweep 4; sweeps 1, 2, 3 and 5 had no hits. PASS

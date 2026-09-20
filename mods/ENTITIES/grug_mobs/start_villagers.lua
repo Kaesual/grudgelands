@@ -1030,7 +1030,7 @@ for index = 1, #identities do
 				if self._grug_profession and jobs and jobs.open_trainer and
 						self.object and self.object:get_pos() then
 					jobs.open_trainer(clicker, self._grug_profession,
-						self.object:get_pos())
+						self.object:get_pos(), self)
 					return
 				end
 				answer(self, clicker, self._grug_idle_tag)

@@ -1,7 +1,9 @@
 -- Reject-only WP40 R7 gathering successor. This module owns no engine API and
 -- can mutate world data only through the single private R6 successor closure.
 
-return function(catalog, p9g_content, raw_sha256)
+return function(catalog, p9g_content, raw_sha256, habitat)
+	assert(type(habitat) == "table" and
+		type(habitat.initial_denominator) == "function")
 	local MAX_SAFE = 9007199254740991
 	local MAX_CANDIDATES = 4096
 	local HASH_PREFIX = "grug_wp40_r6_hash_v1"
@@ -501,11 +503,13 @@ return function(catalog, p9g_content, raw_sha256)
 						if eligible > metrics.peak_eligible_per_cell then
 							metrics.peak_eligible_per_cell = eligible
 						end
+						local density = habitat.initial_denominator(row.key,
+							row.fill_denominator)
 						local remainder = digest("gathering_budget_remainder_v1", full_seed,
 							row.id, cell_x, cell_z, row.fill_numerator,
-							row.fill_denominator)
+							density)
 						local budget = hash.budget(eligible, row.fill_numerator,
-							row.fill_denominator, 1, 1, remainder)
+							density, 1, 1, remainder)
 						sort_prefix(rank_scratch, eligible)
 						local group
 						if emit_ledger then

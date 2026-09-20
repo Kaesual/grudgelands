@@ -52,7 +52,16 @@ function ItemStack(value)
 end
 function Stack:get_name() return self.name end
 function Stack:is_empty() return self.name == "" end
-function Stack:equals(other) return self.name == other.name end
+function Stack:equals(other)
+	if self.name ~= other.name or self.wear ~= other.wear then return false end
+	for key, value in pairs(self.meta) do
+		if other.meta[key] ~= value then return false end
+	end
+	for key, value in pairs(other.meta) do
+		if self.meta[key] ~= value then return false end
+	end
+	return true
+end
 function Stack:get_wear() return self.wear end
 function Stack:set_wear(wear) self.wear = wear end
 function Stack:get_definition() return core.registered_items[self.name] or {} end
@@ -77,6 +86,8 @@ core = {
 	registered_items = {
 		["test:weapon"] = {type="tool", inventory_image="weapon.png",
 			tool_capabilities={full_punch_interval=1, damage_groups={fleshy=5}}},
+		["test:weapon_b"] = {type="tool", inventory_image="weapon_b.png",
+			tool_capabilities={full_punch_interval=1, damage_groups={fleshy=6}}},
 	},
 	registered_nodes = {stone={walkable=true}},
 	get_us_time = function() return now end,
@@ -123,7 +134,7 @@ grug_classes = {
 	registered_classes = {warrior={name="Warrior"}},
 	get_class_def = function() return {resource="rage"} end,
 	get_class = function() return "warrior" end,
-	get_max_mana = function() return 0 end,
+	get_max_mana = function() return 100 end,
 	get_race_perk = function() return nil end,
 	get_talent_bonus = function() return 0 end,
 	get_melee_bonus = function() return 0 end,
@@ -147,13 +158,31 @@ grug_mobs = {
 grug_projectiles = {
 	register = function() end,
 	spawn = function() return true end,
+	spawn_batch = function() return true end,
+}
+grug_inventory = {
+	is_bow = function() return false end,
+	ammo_count = function() return 0 end,
+	consume_ammo = function() return false end,
+	refund_ammo = function() return false end,
+}
+grug_repair = {
+	capture_action = function(_, id) return id end,
+	cancel_action = function() end,
 }
 
 local authoritative
 local reset_count = 0
+local equipped_weapon = ItemStack("test:weapon")
+local equipment_change_handler
 grug_core = {
+	get_player_level = function() return 1 end,
+	base_pool = function() return 100 end,
 	get_player_faction = function(name) return name == "hero" and "accord" or "throng" end,
-	get_equipped_weapon = function() return ItemStack("test:weapon") end,
+	get_equipped_weapon = function()
+		if equipped_weapon:get_wear() >= 65535 then return nil end
+		return ItemStack(equipped_weapon)
+	end,
 	get_equipped_offhand = function() return ItemStack("") end,
 	get_melee_bonus = function() return 0 end,
 	scale_player_damage = function(_, _, amount) return amount end,
@@ -169,9 +198,15 @@ grug_core = {
 	end,
 	register_native_swing_input_handler = function(fn) native_input_handler = fn end,
 	register_ordinary_melee_input_handler = function() end,
-	register_on_equipment_change = function() end,
+	register_on_equipment_change = function(fn)
+		-- This fixture owns the shared swing consumer. Later independent
+		-- consumers (including Scout draw cancellation) have dedicated KATs.
+		if not equipment_change_handler then equipment_change_handler = fn end
+	end,
 	register_on_status_modifiers_changed = function() end,
 	register_on_player_hit_mob = function() end,
+	register_on_settled_outgoing_action = function() end,
+	run_settled_outgoing_action = function() end,
 	combat_debug_enabled = function() return false end,
 	combat_debug_due = function() return false end,
 	combat_debug_log = function() error("disabled debug formatted") end,
@@ -263,8 +298,10 @@ local function enemy(name)
 		self.punches=self.punches+1
 		local token=grug_core.claim_authoritative_swing(hitter,self)
 		local context=grug_core.prepare_native_melee(hitter,self,1,token)
+		self.last_context = context
 		if self.accept then
-			grug_core.finish_native_melee(context,{landed=self.landed,damage=5,grant_rage=true})
+			self.last_finish = grug_core.finish_native_melee(context,
+				{landed=self.landed,damage=5,grant_rage=true})
 		end
 	end
 	return obj
@@ -295,6 +332,13 @@ end
 -- grug_core.hud_layout at join; the real file calls nothing from core.
 dofile(repo .. "/mods/CORE/grug_core/hud_layout.lua")
 dofile(repo .. "/mods/PLAYER/grug_abilities/init.lua")
+grug_abilities.register_ability({
+	id = "mana_swing_test", class = "warrior", name = "Mana Swing Test",
+	kind = "swing", target_kind = "hostile", color = "#ffffff",
+	description = "Fixture swing.",
+	cost = {mana_percent = 15}, melee = true, range = 3,
+	proc_swing = function() return 20 end,
+})
 for _, fn in ipairs(mods_loaded) do fn() end
 for _, fn in ipairs(joins) do fn(hero) end
 core.get_connected_players = function() return {hero} end
@@ -497,6 +541,116 @@ local click_punches = click_ray_target.punches
 assert(click_punches == hold_punches and ray_calls == click_rays_before + 4)
 assert(click_packet_target.punches == 0)
 lifecycle_reset()
-
 assert(inventory.writes == 0)
+
+-- REPAIR bookkeeping writes refresh the cached concrete stack without
+-- restarting the held clock. Preserve bounded late carry across wear and
+-- identity metadata plus repeated notifications.
+local repair_target = enemy("mob:repair-cadence")
+equipped_weapon = ItemStack("test:weapon")
+hero.dig = true
+now = 30000000
+queue({}, {pointed(repair_target)})
+swing_step()
+assert(repair_target.punches == 1)
+now = 31050000
+queue({pointed(repair_target)})
+swing_step()
+assert(repair_target.punches == 2)
+local resets_before_metadata = reset_count
+equipped_weapon:set_wear(21)
+equipped_weapon:get_meta():set_string("_grug_wear_remainder", "123")
+equipment_change_handler(hero, "grug_weapon", "durability_metadata")
+equipped_weapon:get_meta():set_string("_grug_repair_item_id", "repair:9")
+equipment_change_handler(hero, "grug_weapon", "durability_metadata")
+equipment_change_handler(hero, "grug_weapon", "durability_metadata")
+assert(reset_count == resets_before_metadata)
+now = 31999999
+local metadata_rays = ray_calls
+swing_step()
+assert(ray_calls == metadata_rays)
+now = 32000000
+queue({pointed(repair_target)})
+swing_step()
+assert(repair_target.punches == 3)
+
+-- First identity assignment also preserves a queued native-input latch.
+lifecycle_reset()
+equipped_weapon = ItemStack("test:weapon")
+hero.dig = true
+now = 40000000
+queue({}, {pointed(repair_target)})
+swing_step()
+assert(repair_target.punches == 4)
+hero.dig = false
+now = 41000000
+assert(native_input_handler(hero, repair_target) == true)
+equipped_weapon:get_meta():set_string("_grug_repair_item_id", "repair:10")
+equipment_change_handler(hero, "grug_weapon", "durability_metadata")
+queue({pointed(repair_target)})
+swing_step()
+assert(repair_target.punches == 5)
+
+-- A real A -> B swap and broken/unbroken transitions retain the full reset.
+local resets_before_swap = reset_count
+equipped_weapon = ItemStack("test:weapon_b")
+equipment_change_handler(hero, "grug_weapon")
+assert(reset_count == resets_before_swap + 1)
+hero.dig = true
+now = 41500000
+local punches_before_swap_due = repair_target.punches
+swing_step()
+assert(repair_target.punches == punches_before_swap_due)
+now = 42000000
+queue({pointed(repair_target)})
+swing_step()
+assert(repair_target.punches == 6)
+local resets_before_break = reset_count
+equipped_weapon:set_wear(65535)
+equipment_change_handler(hero, "grug_weapon", "durability_metadata")
+assert(reset_count == resets_before_break + 1)
+now = 42500000
+local punches_before_broken_due = repair_target.punches
+swing_step()
+assert(repair_target.punches == punches_before_broken_due)
+equipped_weapon:set_wear(0)
+equipment_change_handler(hero, "grug_weapon")
+assert(reset_count == resets_before_break + 2)
+lifecycle_reset()
+
+-- Swing procs resolve percentage costs once at attempt time, then pay only
+-- after an accepted landed result. At zero mana the ordinary swing remains.
+equipped_weapon = ItemStack("test:weapon")
+inventory.main[1] = ItemStack("grug_abilities:mana_swing_test")
+equipment_change_handler(hero, "grug_weapon")
+local mana_target = enemy("mob:mana-cost")
+grug_abilities.registered.mana_swing_test.cost = {mana_percent = 150}
+hero.dig = true
+now = 51000000
+queue({}, {pointed(mana_target)})
+swing_step()
+assert(grug_abilities.get_mana(hero) == 100)
+grug_abilities.registered.mana_swing_test.cost = {mana_percent = 15}
+hero.dig = false
+swing_step()
+hero.dig = true
+now = 52000000
+queue({}, {pointed(mana_target)})
+swing_step()
+assert(grug_abilities.get_mana(hero) == 85,
+	"mana=" .. grug_abilities.get_mana(hero) .. " punches=" .. mana_target.punches ..
+	" proc=" .. tostring(mana_target.last_context and mana_target.last_context.proc and
+		mana_target.last_context.proc.id) .. " cost=" .. tostring(mana_target.last_context and
+		mana_target.last_context.proc_cost and mana_target.last_context.proc_cost.mana) ..
+		" finish=" .. tostring(mana_target.last_finish))
+mana_target.landed = false
+hero.dig = false
+swing_step()
+hero.dig = true
+now = 53000000
+queue({}, {pointed(mana_target)})
+swing_step()
+assert(grug_abilities.get_mana(hero) == 85)
+lifecycle_reset()
+
 print("swing_aim_test: ok")

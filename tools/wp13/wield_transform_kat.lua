@@ -560,8 +560,9 @@ function M.run(repo)
 	-- same size) and that the head then leads the downstroke at both arm angles.
 	local POSE = geometry.POSE
 	check(type(POSE) == "table" and POSE.tool == "tool" and
-		POSE.edge_down == "edge_down" and POSE.upright == "upright",
-		GEOMETRY .. " does not publish the three pose names")
+		POSE.edge_down == "edge_down" and POSE.bow == "bow" and
+		POSE.upright == "upright",
+		GEOMETRY .. " does not publish the four pose names")
 	local axe_hanging = measure("wp13_wield_axe_hanging",
 		wield_transform(1, POSE.edge_down), 0, 1)
 	local axe_raised = measure("wp13_wield_axe_raised90",
@@ -657,6 +658,8 @@ function M.run(repo)
 		-- hand. Its line hangs off the down-right side of the image, and the
 		-- plain tool pose is the one that hangs it downwards.
 		{"grug_fishing:rod", {fishing_rod = 1, tool = 1}, POSE.tool},
+		{"grug_gear:bow_bronze", {bow = 1, grug_bow = 1,
+			grug_equip_weapon = 1}, POSE.bow},
 		-- Anonymous icons: no declared family, no diagonal, no grip pixel.
 		{"default:stick", {}, POSE.upright},
 		{"default:torch", {torch = 1, attached_node = 1}, POSE.upright},
@@ -714,6 +717,12 @@ function M.run(repo)
 	-- bottom edges, its axis the image's +y), the sprite centre lands on the
 	-- fist and the icon's own up points at model up.
 	local upright = wield_transform(1, POSE.upright)
+	local bow = wield_transform(1, POSE.bow)
+	check(bow.rot.x == 90 and bow.rot.y == 45 and bow.rot.z == -90,
+		"bow rotation no longer holds its arc upright and forward")
+	close(bow.pos.x, upright.pos.x, 1e-9, "bow centre x")
+	close(bow.pos.y, upright.pos.y, 1e-9, "bow centre y")
+	close(bow.pos.z, upright.pos.z, 1e-9, "bow centre z")
 	local UPRIGHT_MEASURE = {
 		pos = upright.pos,
 		rot = upright.rot,

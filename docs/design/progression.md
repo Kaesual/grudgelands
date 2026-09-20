@@ -17,12 +17,12 @@ Detailed quest catalogs are authored with WP8/WP9.
 
 Levels must keep delivering *decisions and buttons*, not just stats:
 
-**The trees themselves are proposed, not decided.**
-[skill_trees.md](skill_trees.md) (PROPOSAL, revision 2, 2026-09-16) builds
+**The trees are decided.**
+[skill_trees.md](skill_trees.md) (revision 2, 2026-09-16) defines
 two trees per class on the cadence below, works the arithmetic out for every
 milestone, and lists every talent, keystone and capstone for all **four**
-classes — the fourth being the Scout ([scout.md](scout.md)), also proposed.
-Its §6 is the list of open decisions.
+classes — the fourth being the Scout ([scout.md](scout.md)). Its §6 records
+that the design has no remaining open decision.
 
 The three bullets below were rewritten on **2026-09-16** by the user's
 rulings; the superseded text is named in `skill_trees.md` §5.2.
@@ -52,9 +52,8 @@ rulings; the superseded text is named in `skill_trees.md` §5.2.
   (`economy.md` §3/§4.1), and **the first respec of a character is free**. A
   respec is a **full reset**, and **class change is removed from the game
   entirely, for admins too**. *(Supersedes "Respec at the class trainer
-  for gold". `economy.md` §4, `items_crafting.md` §8.3 and `world.md` §1 were
-  corrected on 2026-09-16 and no longer name a class trainer —
-  `skill_trees.md` §7, task 3.)*
+  for gold". `economy.md` §4, `items_crafting.md` §8.3 and `world.md` §1 now
+  state the same no-trainer rule.)*
 - **Level 20 — first Claim Stone:** a short introduction from the passive,
   invulnerable Housing Steward unlocks the first free owner-bound Claim Stone.
   It may be placed only in the authored level-11–30 housing zones and starts

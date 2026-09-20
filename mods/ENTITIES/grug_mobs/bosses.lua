@@ -235,6 +235,7 @@ local function shoot(self, target, arrow, offset_angle)
 	local ent = object and object:get_luaentity()
 	if not ent then return end
 	ent._grug_damage = self.damage
+	ent._grug_attacker_level = self._grug_level
 	ent.owner_id = tostring(self.object)
 	local velocity = ent.velocity or 16
 	object:set_velocity({x = dx * velocity / length,

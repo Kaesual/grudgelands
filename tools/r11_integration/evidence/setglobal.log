@@ -1,0 +1,183 @@
+mods/CORE/grug_core/init.lua
+2	[1]	SETGLOBAL	0 -1	; grug_core
+mods/ENTITIES/grug_projectiles/init.lua
+2	[3]	SETGLOBAL	0 -1	; grug_projectiles
+mods/ENTITIES/grug_traders/init.lua
+2	[17]	SETGLOBAL	0 -1	; grug_traders
+mods/ENTITIES/mobs/api.lua
+72	[26]	SETGLOBAL	8 -3	; mobs
+mods/ITEMS/grug_artisans/init.lua
+10	[7]	SETGLOBAL	0 -1	; grug_artisans
+mods/ITEMS/grug_farming/init.lua
+2	[6]	SETGLOBAL	0 -1	; grug_farming
+mods/ITEMS/grug_gear/init.lua
+2	[32]	SETGLOBAL	0 -1	; grug_gear
+mods/ITEMS/grug_quality/init.lua
+2	[25]	SETGLOBAL	0 -1	; grug_items
+mods/ITEMS/grug_repair/init.lua
+2	[1]	SETGLOBAL	0 -1	; grug_repair
+mods/PLAYER/grug_abilities/init.lua
+2	[6]	SETGLOBAL	0 -1	; grug_abilities
+mods/PLAYER/grug_classes/init.lua
+2	[1]	SETGLOBAL	0 -1	; grug_classes
+mods/PLAYER/grug_money/init.lua
+2	[1]	SETGLOBAL	0 -1	; grug_money
+tools/r10_equip/base_recipes_kat.lua
+17	[7]	SETGLOBAL	6 -1	; core
+31	[15]	SETGLOBAL	6 -2	; grug_professions
+69	[19]	SETGLOBAL	6 -3	; grug_gear
+81	[22]	SETGLOBAL	10 -3	; grug_gear
+82	[22]	SETGLOBAL	9 -2	; grug_professions
+83	[22]	SETGLOBAL	8 -1	; core
+704	[122]	SETGLOBAL	24 -3	; grug_gear
+705	[122]	SETGLOBAL	23 -2	; grug_professions
+706	[122]	SETGLOBAL	22 -1	; core
+7	[26]	SETGLOBAL	3 -3	; grug_gear
+8	[26]	SETGLOBAL	2 -2	; grug_professions
+9	[26]	SETGLOBAL	1 -1	; core
+tools/r10_equip/vendor_rotation_kat.lua
+34	[9]	SETGLOBAL	6 -9	; os
+44	[11]	SETGLOBAL	6 -1	; core
+51	[14]	SETGLOBAL	7 -8	; PcgRandom
+53	[21]	SETGLOBAL	7 -7	; ItemStack
+57	[26]	SETGLOBAL	7 -4	; grug_items
+59	[27]	SETGLOBAL	7 -5	; grug_money
+63	[27]	SETGLOBAL	7 -6	; grug_xp
+132	[36]	SETGLOBAL	10 -3	; grug_gear
+145	[38]	SETGLOBAL	10 -2	; grug_traders
+tools/r11_combat/armor_kat.lua
+16	[23]	SETGLOBAL	5 -4	; vector
+40	[35]	SETGLOBAL	5 -7	; core
+53	[37]	SETGLOBAL	5 -23	; grug_core
+tools/r11_farm/ecology_kat.lua
+80	[56]	SETGLOBAL	10 -11	; core
+85	[57]	SETGLOBAL	10 -32	; grug_core
+89	[59]	SETGLOBAL	10 -34	; grug_farming
+105	[68]	SETGLOBAL	10 -39	; grug_mapgen
+tools/r11_game/display_kat.lua
+84	[10]	SETGLOBAL	4 -33	; core
+132	[21]	SETGLOBAL	5 -54	; grug_core
+139	[22]	SETGLOBAL	5 -56	; grug_mounts
+147	[24]	SETGLOBAL	5 -61	; grug_gear
+155	[26]	SETGLOBAL	5 -65	; grug_mobs
+tools/r11_gear/quality_kat.lua
+37	[36]	SETGLOBAL	7 -2	; PcgRandom
+76	[87]	SETGLOBAL	12 -3	; ItemStack
+81	[99]	SETGLOBAL	16 -1	; core
+199	[145]	SETGLOBAL	17 -5	; grug_gear
+247	[195]	SETGLOBAL	21 -6	; grug_mobs
+251	[196]	SETGLOBAL	21 -11	; grug_zones
+255	[197]	SETGLOBAL	21 -12	; mobs
+282	[208]	SETGLOBAL	23 -7	; grug_inventory
+290	[210]	SETGLOBAL	23 -9	; grug_xp
+304	[218]	SETGLOBAL	23 -8	; grug_classes
+314	[227]	SETGLOBAL	23 -10	; grug_core
+tools/r11_repair/runtime_kat.lua
+55	[42]	SETGLOBAL	5 -24	; ItemStack
+92	[74]	SETGLOBAL	12 -27	; core
+96	[81]	SETGLOBAL	12 -37	; grug_repair
+105	[89]	SETGLOBAL	12 -39	; grug_inventory
+109	[90]	SETGLOBAL	12 -44	; grug_gear
+122	[98]	SETGLOBAL	12 -46	; grug_core
+tools/r11_scout_traders/stock_kat.lua
+41	[30]	SETGLOBAL	8 -2	; PcgRandom
+43	[44]	SETGLOBAL	8 -3	; ItemStack
+85	[64]	SETGLOBAL	14 -1	; core
+87	[65]	SETGLOBAL	14 -5	; grug_traders
+93	[66]	SETGLOBAL	14 -4	; grug_gear
+258	[112]	SETGLOBAL	18 -10	; dofile
+264	[114]	SETGLOBAL	17 -10	; dofile
+283	[122]	SETGLOBAL	19 -6	; grug_items
+599	[210]	SETGLOBAL	26 -9	; vector
+603	[211]	SETGLOBAL	26 -7	; grug_xp
+618	[219]	SETGLOBAL	28 -8	; grug_money
+tools/r8_mob1/bosses_kat.lua
+68	[42]	SETGLOBAL	28 -21	; vector
+164	[121]	SETGLOBAL	29 -23	; core
+185	[136]	SETGLOBAL	29 -58	; grug_core
+189	[141]	SETGLOBAL	29 -66	; grug_zones
+219	[176]	SETGLOBAL	29 -68	; grug_mobs
+224	[177]	SETGLOBAL	29 -79	; mobs
+226	[178]	SETGLOBAL	29 -81	; ItemStack
+tools/r9_ench/quality_kat.lua
+37	[36]	SETGLOBAL	7 -2	; PcgRandom
+76	[87]	SETGLOBAL	12 -3	; ItemStack
+81	[99]	SETGLOBAL	16 -1	; core
+199	[145]	SETGLOBAL	17 -5	; grug_gear
+247	[195]	SETGLOBAL	21 -6	; grug_mobs
+251	[196]	SETGLOBAL	21 -11	; grug_zones
+255	[197]	SETGLOBAL	21 -12	; mobs
+280	[205]	SETGLOBAL	22 -7	; grug_inventory
+288	[207]	SETGLOBAL	22 -9	; grug_xp
+302	[215]	SETGLOBAL	22 -8	; grug_classes
+310	[223]	SETGLOBAL	22 -10	; grug_core
+tools/r9_mounts/mounts_kat.lua
+62	[41]	SETGLOBAL	13 -23	; ItemStack
+156	[228]	SETGLOBAL	16 -30	; core
+174	[257]	SETGLOBAL	16 -61	; vector
+180	[258]	SETGLOBAL	16 -67	; player_api
+193	[274]	SETGLOBAL	16 -70	; grug_core
+197	[281]	SETGLOBAL	16 -75	; grug_visuals
+201	[282]	SETGLOBAL	16 -77	; grug_xp
+207	[290]	SETGLOBAL	16 -79	; grug_money
+218	[301]	SETGLOBAL	16 -82	; grug_factions
+224	[303]	SETGLOBAL	16 -87	; grug_mobs
+231	[307]	SETGLOBAL	16 -90	; grug_classes
+233	[308]	SETGLOBAL	16 -93	; grug_jobs
+247	[347]	SETGLOBAL	16 -94	; grug_zones
+1286	[564]	SETGLOBAL	52 -94	; grug_zones
+1332	[572]	SETGLOBAL	51 -94	; grug_zones
+1877	[692]	SETGLOBAL	59 -294	; grug_projectiles
+tools/r9_prof/prof_b_kat_lib.lua
+8	[32]	SETGLOBAL	2 -1	; vector
+53	[93]	SETGLOBAL	5 -20	; ItemStack
+71	[104]	SETGLOBAL	16 -23	; core
+202	[232]	SETGLOBAL	19 -64	; PcgRandom
+214	[239]	SETGLOBAL	19 -65	; default
+277	[261]	SETGLOBAL	21 -94	; grug_core
+279	[262]	SETGLOBAL	21 -101	; grug_inventory
+299	[271]	SETGLOBAL	21 -102	; grug_classes
+303	[272]	SETGLOBAL	21 -113	; grug_xp
+309	[274]	SETGLOBAL	21 -115	; grug_mobs
+404	[311]	SETGLOBAL	25 -164	; grug_materials
+406	[312]	SETGLOBAL	25 -166	; grug_professions
+408	[314]	SETGLOBAL	25 -167	; grug_jobs
+tools/r9_prof/stations_kat.lua
+49	[36]	SETGLOBAL	5 -5	; ItemStack
+65	[75]	SETGLOBAL	12 -1	; core
+118	[111]	SETGLOBAL	12 -4	; default
+120	[112]	SETGLOBAL	12 -8	; grug_core
+122	[113]	SETGLOBAL	12 -9	; grug_brewing
+126	[117]	SETGLOBAL	12 -10	; vector
+159	[128]	SETGLOBAL	13 -6	; grug_jobs
+758	[265]	SETGLOBAL	25 -7	; grug_items
+tools/wp11/move_aggregator_kat.lua
+78	[132]	SETGLOBAL	18 -10	; core
+80	[133]	SETGLOBAL	18 -11	; grug_core
+102	[532]	SETGLOBAL	10 -13	; vector
+103	[532]	SETGLOBAL	22 -12	; grug_mobs
+104	[532]	SETGLOBAL	21 -11	; grug_core
+105	[532]	SETGLOBAL	20 -10	; core
+760	[395]	SETGLOBAL	7 -140	; grug_mobs
+764	[396]	SETGLOBAL	7 -141	; vector
+tools/wp39/projectile_test.lua
+29	[19]	SETGLOBAL	15 -9	; vector
+113	[100]	SETGLOBAL	16 -17	; core
+137	[152]	SETGLOBAL	16 -44	; grug_core
+146	[169]	SETGLOBAL	17 -51	; grug_factions
+150	[174]	SETGLOBAL	17 -54	; grug_mobs
+1980	[648]	SETGLOBAL	68 -172	; grug_abilities
+1992	[656]	SETGLOBAL	69 -179	; grug_classes
+2000	[663]	SETGLOBAL	69 -54	; grug_mobs
+tools/wp39/swing_aim_test.lua
+15	[15]	SETGLOBAL	11 -5	; vector
+49	[42]	SETGLOBAL	13 -16	; ItemStack
+170	[131]	SETGLOBAL	14 -30	; core
+195	[144]	SETGLOBAL	14 -75	; grug_classes
+203	[149]	SETGLOBAL	14 -89	; grug_factions
+207	[150]	SETGLOBAL	14 -93	; grug_xp
+215	[157]	SETGLOBAL	14 -95	; grug_mobs
+223	[162]	SETGLOBAL	14 -99	; grug_projectiles
+233	[168]	SETGLOBAL	14 -103	; grug_inventory
+239	[172]	SETGLOBAL	14 -108	; grug_repair
+314	[222]	SETGLOBAL	18 -111	; grug_core

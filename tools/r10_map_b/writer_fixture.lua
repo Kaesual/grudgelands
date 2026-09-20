@@ -59,7 +59,8 @@ return function(repo)
    generation=1,valid=true,min_x=minp.x,min_y=minp.y,min_z=minp.z,max_x=maxp.x,max_y=maxp.y,max_z=maxp.z,
    r5_plan={column_start=starts,run_values=runs},r5_generation=1,column_values=columns,column_count=6400,
    candidate_cell_values={},candidate_cell_count=0,candidate_values={},candidate_count=0,stable_refs={"world"}}
-  local world=dofile(dir.."/world_content.lua")(catalog,content_set.p9g).new({content=content,
+  local world=dofile(dir.."/world_content.lua")(catalog,content_set.p9g,
+   dofile(dir.."/habitat_registry.lua")).new({content=content,
    full_seed_string="4151598227737528026",zones_session={surface_mob_level_at=function() return 7 end}})
   world.bind(plan,1)
   local successor={settle=function(_,ctx)

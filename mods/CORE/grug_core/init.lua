@@ -54,6 +54,7 @@ dofile(modpath .. "/starts_preload.lua")
 -- from it, and grug_mapgen fills it once the authority is installed.
 dofile(modpath .. "/settlement_sockets.lua")
 dofile(modpath .. "/protection.lua")
+dofile(modpath .. "/water_guard.lua")
 dofile(modpath .. "/combat_debug.lua")
 dofile(modpath .. "/combat_ray.lua")
 dofile(modpath .. "/combat.lua")

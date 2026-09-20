@@ -118,6 +118,37 @@ local FUNCTION_DROPS = {
 	},
 }
 
+-- The real no-buyback-loop boundary, public so the focused stock KAT can
+-- exercise the same complete stock/catalog walk used at server startup.
+function grug_traders.audit_sell_buy_prices()
+	local failures = {}
+	local function check(itemname, price)
+		local discounted = grug_traders.discounted_price(price)
+		local buyback = grug_traders.sell_price(itemname)
+		if buyback >= discounted then
+			local message = "[grug_traders] MONEY LOOP: '" .. itemname ..
+				"' sells for " .. discounted .. "c (discounted) but buys back " ..
+				"at " .. buyback .. "c"
+			failures[#failures + 1] = message
+			core.log("error", message)
+		end
+	end
+	for _, entry in ipairs(grug_traders.stock) do
+		check(entry.item, entry.price)
+	end
+	for _, shelf in pairs(grug_traders.profession_stock) do
+		for _, entry in ipairs(shelf) do
+			check(entry.item, entry.price)
+		end
+	end
+	for bracket = 1, #grug_gear.BRACKETS do
+		for _, itemname in ipairs(grug_gear.catalog[bracket].all) do
+			check(itemname, grug_gear.get_price(itemname))
+		end
+	end
+	return failures
+end
+
 core.register_on_mods_loaded(function()
 	--
 	-- 1. "Traders buy EVERY mob drop" (economy.md §3).
@@ -180,42 +211,7 @@ core.register_on_mods_loaded(function()
 	-- catalog; this loop is what turns "already guarantees" into a fact that
 	-- fails loudly if a price is ever edited.
 	--
-	local function check(itemname, price)
-		local discounted = grug_traders.discounted_price(price)
-		local buyback = grug_traders.sell_price(itemname)
-		if buyback >= discounted then
-			core.log("error", "[grug_traders] MONEY LOOP: '" .. itemname ..
-				"' sells for " .. discounted .. "c (discounted) but buys back " ..
-				"at " .. buyback .. "c")
-		end
-	end
-	for _, entry in ipairs(grug_traders.stock) do
-		check(entry.item, entry.price)
-	end
-	--
-	-- AND THE PROFESSION SHELVES (WP13 wave 2, 2026-09-15). They were outside
-	-- this audit from the round-3 lane that introduced them: it walked the core
-	-- stock and the bracket catalogs only, so a butcher could have been priced
-	-- into a money loop and nothing would have said so. Twelve shelves is where
-	-- that stopped being theoretical.
-	--
-	-- `pairs` is fine here: `check` only logs, and it logs the item name, so
-	-- the order the shelves are visited in changes nothing a reader diffs.
-	-- stock.lua has already dropped the unregistered entries by the time this
-	-- runs -- both callbacks are `register_on_mods_loaded` and stock.lua's is
-	-- registered first (init.lua dofiles it above this block).
-	--
-	for _, shelf in pairs(grug_traders.profession_stock) do
-		for _, entry in ipairs(shelf) do
-			check(entry.item, entry.price)
-		end
-	end
-	for bracket = 1, #grug_gear.BRACKETS do
-		for _, itemname in ipairs(grug_gear.catalog[bracket].all) do
-			check(itemname, grug_gear.get_price(itemname))
-		end
-	end
-
+	grug_traders.audit_sell_buy_prices()
 	--
 	-- 3. No CRAFT loop either. items_crafting.md §3.8: "vendor value of a
 	-- crafted item < summed vendor value of its ingredients — vendors are a

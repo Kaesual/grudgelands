@@ -16,9 +16,10 @@ Core principles:
   stats/enchantments. The former "1 skill point per level" in this line was
   superseded by that ruling, together with `progression.md` §2's earlier "1
   point every 3 levels"; the trees the points are spent in are
-  [skill_trees.md](skill_trees.md) (PROPOSAL, revision 2), which also carries
-  the open decision (§6.5) about whether a capstone may exceed one of this
-  file's caps for a bounded time.
+  [skill_trees.md](skill_trees.md) (decided revision 2). Named, bounded
+  rule-breakers may exceed a stat cap only where that design explicitly says
+  so; Round 11 has delivered Unbroken's armor-rating multiplier and emergency
+  window under the unchanged universal 70% reduction cap.
 - **One readable level curve**: player pools and normal-mob HP share the
   rounded `20 + 5L + 0.66L²` base. Class factors, percentages and gear form
   visible secondary axes; level itself does not hide inside attributes.
@@ -92,14 +93,27 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   (`mods/CORE/grug_core/combat.lua:29-65`).
 - **Crit** = 5% + 0.1%×Dex, **cap 30%**; a crit deals ×1.5 damage
 - **Dodge** = 0.1%×Dex, **cap 30%**; a dodge avoids the hit entirely
-- Player armor (gear) reduces incoming damage; endgame plate reaches the
-  **60% reduction cap**, cloth ~15%.
-- **How armor resolves** (it was inert until WP7; recorded 2026-08-07):
-  armor points **sum over the four armor slots** (head/chest/legs/feet —
-  offhand and trinkets contribute nothing until WP14's shields),
-  **1 point = 1 % damage reduction**, **hard cap 60 %**. Which armor a
+- Player armor is a numerical **rating** evaluated against the attacker's
+  level. It is not itself a percentage; endgame plate and shields remain useful
+  against enemies above level 60.
+- **How armor resolves** (rating model adopted 2026-09-20): armor rating sums
+  over head/chest/legs/feet, an equipped shield, refinement, affixes, cultural
+  finish, statuses and talents. Which armor a
   character may wear at all is the class rank of
   `inventory_equipment.md` §2.
+  - For attacker level `L >= 1`, `K(L) = 20 + 0.5×min(L,60) +
+    8.5×max(L−60,0)`. Reduction is
+    `min(0.70, rating / (rating + K(L)))`. All raw rating enters that formula;
+    only the resulting reduction is capped. Overcap rating against an
+    equal-level enemy therefore remains useful against a stronger enemy.
+  - The attacker level is the live Grudgelands mob/NPC level, the attacking
+    player's character level in PvP, or the immutable attacker level stamped
+    onto a projectile. Unattributed and environmental damage has no attacker
+    level and bypasses armor.
+  - **Bulwark specialization:** learning the mutually exclusive 21-point
+    Unbroken capstone multiplies the final aggregated rating by **1.40**. Its
+    existing low-HP trigger then adds **15 rating after that multiplier** for
+    8 seconds, at most once per 180 seconds. It never raises the 70% cap.
   - It applies **only to `reason.type == "punch"`**. There is no
     damage-type system, so that IS the whole definition of "physical":
     fall damage has its own race perk (world.md §7) and drowning, lava
@@ -154,12 +168,13 @@ mcl_damage-style, unified damage reasons). Flat caps, no
 diminishing-returns curves.
 
 Equipment sources, ordinary affixes and cultural finishes add before final
-consumer caps. The caps remain 30% Crit, 30% Dodge and 60% armor. Values above
-a cap remain present on their stacks but have no further combat effect. The
-Talents header exposes effective/raw Crit, Dodge and Armor with the cap in
-parentheses, for example `Armor 60/67% (60)`. There is no shipped automatic
-overflow conversion or cap raise; the cap-override talent keys remain reserved
-for WP11 lane X3 and are not combat consumers yet.
+consumer caps. Crit and Dodge remain capped at 30%; armor reduction is capped
+at 70% after the attacker-level formula. Raw armor rating is never discarded.
+The Character/Talents UI exposes raw rating, the active Bulwark multiplier,
+the resulting rating and reduction evaluated against the player's own character
+level. This same-level display does not change with the selected target or the
+last attacker.
+Unbroken does not override the reduction cap.
 
 The Character page contains only two live maximum-pool derivations: HP and
 mana, or HP and fixed Rage. Each compact line carries final value, base pool,
@@ -172,7 +187,8 @@ extra Character-page rows.
 Active timed statuses are an additional stat source. `grug_core.set_status`
 accepts only `hp_pool_percent`, `mana_pool_percent`, `crit_percent`, `armor`
 and `spell_damage_percent`; unknown keys reject the whole status. Values sum
-across active status ids before the ordinary caps. Replacing the `food` status
+across active status ids before the ordinary caps. `armor` means rating, not a
+percentage. Replacing the `food` status
 therefore replaces its contribution, while a future `elixir` status stacks
 with it even on the same key. HP/mana pool percentages use the same base,
 class factor and final rounding as talent percentages. Every modifier change,
@@ -278,8 +294,11 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   `punch_attack_uses = 0`; an empty slot uses the registered hand interval.
   Zero native damage preserves client animation while preventing builtin PvP
   knockback before suppression. The authoritative swing rebuilds real full
-  capabilities from the slot, never from a wielded tool. The ability stack and
-  equipped weapon take no wear. Swing definitions keep `crumbly`, `snappy`,
+  capabilities from the slot, never from a wielded tool. The ability stack
+  takes no equipment wear. The equipped weapon remains wear-free
+  until the approved durability package integrates its once-per-settled-action
+  event hook; after that, the concrete main hand wears once on qualifying
+  damage while the ability token still never wears. Swing definitions keep `crumbly`, `snappy`,
   `oddly_breakable_by_hand` and `dig_immediate` node pointabilities blocking.
 - **Skill selection is live at the attempted swing.** Switching Strike ↔
   Mighty Blow ↔ Hamstring preserves the weapon clock and reads the new skill.
@@ -352,7 +371,7 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   cannot be skipped by a large `dtime`. Owner/faction validation, one-hit
   settlement, unloaded-object cleanup and max-distance cleanup are shared
   projectile infrastructure, not Fireball-only branches.
-- **Bows reuse the infrastructure later, not in WP39.** A bow is drawn up to a
+- **Bows use the infrastructure in the SCOUT package.** A bow is drawn up to a
   maximum and releases a ballistic arrow whose initial impulse comes from draw
   time; gravity supplies the trajectory and a lifetime/distance guard still
   cleans the entity. The item/ammo numbers stay in `items_crafting.md` §9.
@@ -791,7 +810,7 @@ design (`group_attack` stays on).
   Swiftness grants +10% speed for 5 seconds, and Cave Draught grants night
   vision for 10 minutes. One elixir status is active at a time and stacks with
   food: Vigor grants +5/10/15/20% maximum HP at T3–T6, Focus the same maximum
-  mana, and Precision +1/2/3/4 percentage points crit. Stoneskin is +4% armor
+  mana, and Precision +1/2/3/4 percentage points crit. Stoneskin is +4 armor rating
   for 30 minutes and Deepwater grants water breathing for 10 minutes. Ordinary
   stat elixirs last 15 minutes. None of the elixirs touches the potion clock.
   Each worn Apothecary piece adds 10% duration to timed potions and elixirs
@@ -871,13 +890,15 @@ design (`group_attack` stays on).
 - The engine has **no native offhand**; we build `grug_offhand` after
   VoxeLibre's `mcl_offhand` pattern (inventory list `"offhand"` + HUD
   slot).
-- Equip rules (enforced centrally): **two-handed weapons require an empty
-  offhand**; shields = Warrior; Mage focus item (tome/orb) as stat
-  offhand; **dual wield reserved for the Rogue (Phase 2)**.
+- Equip rules (enforced centrally): occupied hands normally total at most two.
+  The zero-hand Leatherworker quiver is the sole exception: it may accompany a
+  two-handed bow or one-handed melee weapon. Shields and Goldsmith spellbooks
+  are ordinary one-hand offhands; staff and greataxe require an empty offhand.
+  There is no dual-wield or Rogue path in V1.
 - **The mechanism of the two-handed rule** (decided 2026-08-08, shipped
   with WP35 — the weapon slot is the first place it can be enforced):
-  items declare a hand count in `_grug_hands` (**greataxe 2, staff 2,
-  sword/dagger 1**, the vendored `default:` swords and axes 1 — twelve when
+  items declare a hand count in `_grug_hands` (**greataxe/staff/bow 2,
+  sword/dagger/wand 1**, the vendored `default:` swords and axes 1 — twelve when
   WP35 wrote this, **eight since WP25/WP43 deleted the mese and diamond tool
   tiers** (`grug_gear/init.lua`'s `VENDORED_WEAPONS` is the live list) —, no
   field = one-handed), and the weapon/offhand `allow_put` refuses any pair
@@ -888,8 +909,8 @@ design (`group_attack` stays on).
   unequip of the other slot.
 - Consequence, and it is a gameplay rule rather than a technicality:
   **carrying a torch costs you the two-handed weapon.** Greataxe and staff
-  users choose between the light and their weapon; the refusal text says so
-  rather than failing silently.
+  users choose between the light and their weapon; a bow accepts only the
+  quiver exception. The refusal text says so rather than failing silently.
 - **Torch in the offhand gives a moving light radius** (wielded-light
   technique: invisible light node at head height, moved only on
   node-position change, skipped when ambient light is bright; profile

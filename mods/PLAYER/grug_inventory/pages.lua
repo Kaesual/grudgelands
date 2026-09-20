@@ -123,6 +123,12 @@ local function character_content(player)
 	local hp = grug_classes.get_pool_breakdown(player, "hp")
 	local mana = class and class.resource == "mana"
 		and grug_classes.get_pool_breakdown(player, "mana") or nil
+	local armor = grug_core.get_armor_rating_breakdown and
+		grug_core.get_armor_rating_breakdown(player) or {
+			base = grug_core.get_armor_rating(player), multiplier = 1,
+			result = grug_core.get_armor_rating(player), emergency = 0}
+	local armor_reduction = grug_core.armor_reduction(armor.result,
+		grug_core.get_player_level(player), 0.70) * 100
 
 	local lines = {
 		("HP %d=B%dxC%.2fx(100+G%g+T%g+S%g)%%"):format(
@@ -133,6 +139,9 @@ local function character_content(player)
 				mana.final, mana.base, mana.class_factor, mana.gear_percent,
 				mana.talent_percent, mana.status_percent)
 			or "Rage 100=fixed; no C/G/T scaling",
+		("Armor %.1f x %.2f + %.1f = %.1f; own-level %.1f%%"):format(
+			armor.base, armor.multiplier, armor.emergency,
+			armor.result, armor_reduction),
 	}
 
 	local mesh, textures = preview_model(player)
@@ -200,10 +209,10 @@ sfinv.register_page("grug_inventory:help", {
 			"Strength adds floor(Strength / 10) as flat melee damage.",
 			"Intelligence adds floor(Intelligence / 10) as spell power: flat spell damage and a percentage bonus to healing and absorbs.",
 			"Dexterity adds 0.1 percentage point each of Crit and Dodge per point; Crit starts at 5%.",
-			"The Talents header shows effective/raw Crit, Dodge and Armor; the parenthesized values are the current caps. The shipped combat caps are 30%, 30% and 60%.",
+			"The Talents header shows effective/raw Crit and Dodge with their caps, plus raw Armor rating, its active Unbroken multiplier and same-level reduction.",
 			"Crit multiplies damage by 1.5.",
 			"Dodge avoids the hit entirely.",
-			"Each Armor point reduces incoming punch damage by 1 percentage point.",
+			"Armor is a rating resolved against the attacker's level; only the final reduction is capped at 70%.",
 			"Item level is counted once, in the weapon's base damage; your character level applies the shared damage fit; there is no separate item-level multiplier.",
 			"At level 60, an item-level 70 weapon gives about 9% more effective swing damage than item level 60, while item level 50 gives about 7% less, before enchants.",
 			"Healing and absorbs are percentages of the caster's neutral base pool; spell power is a percentage bonus.",
@@ -225,6 +234,12 @@ local function bags_content(player, context)
 	local inv = player:get_inventory()
 	local selected = context.grug_bag or 1
 	local fs = {}
+	local has_quiver = core.get_item_group(
+		inv:get_stack("grug_offhand", 1):get_name(), "grug_quiver") > 0
+	if has_quiver then
+		table.insert(fs, "label[4.3,0.1;Quiver]list[current_player;grug_quiver_content;4.3,0.35;4,1;]")
+		table.insert(fs, "listring[current_player;grug_quiver_content]listring[current_player;main]")
+	end
 	for i = 1, grug_inventory.BAG_COUNT do
 		local x = (i - 1) * 2 + 0.3
 		table.insert(fs, ("list[current_player;%s;%.1f,0.35;1,1;]"):format(
@@ -301,9 +316,9 @@ sfinv.pages_unordered = ordered
 -- changes (the list contents themselves update live anyway).
 --
 
-function grug_inventory.refresh(player)
+function grug_inventory.refresh(player, force)
 	local context = sfinv.get_or_create_context(player)
-	if context.page == "grug_inventory:character" or
+	if force or context.page == "grug_inventory:character" or
 			context.page == "grug_inventory:bags" then
 		sfinv.set_page(player, context.page)
 	end

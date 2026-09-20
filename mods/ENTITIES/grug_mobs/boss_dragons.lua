@@ -182,8 +182,7 @@ end)
 
 local function projectile_hit(self, player)
 	if not hostile_player(player) then return end
-	local source = self._grug_source or self.object
-	player:punch(source, 1, {
+	player:punch(self.object, 1, {
 		full_punch_interval = 1,
 		damage_groups = {fleshy = (self._grug_damage or 1) * 1.5},
 	}, nil)
@@ -361,6 +360,7 @@ local function shoot_breath(self, action, opts)
 			local ent = object and object:get_luaentity()
 			if ent then
 				ent._grug_damage = self.damage
+				ent._grug_attacker_level = self._grug_level
 				ent._grug_source = self.object
 				ent._grug_actor_name = action.actor_name
 				ent._grug_effect = opts.effect
@@ -791,7 +791,8 @@ local function dragon_def(id, opts, callbacks)
 	return {
 		description = opts.description,
 		clock = "any", type = "monster",
-		_grug_fixed_level = 60, _grug_tier = "boss",
+		_grug_fixed_level = 70, _grug_tier = "boss",
+		_grug_no_far_despawn = true,
 		_grug_leash_range = TUNING.leash,
 		attack_type = "dogfight", attack_players = true,
 		attack_monsters = false, attack_animals = false, attack_npcs = false,

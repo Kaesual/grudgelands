@@ -62,32 +62,21 @@ local function stat_lines(player)
 	local dodge_raw = grug_classes.get_dodge_chance_raw(player) * 100
 	local crit = grug_classes.get_crit_chance(player) * 100
 	local dodge = grug_classes.get_dodge_chance(player) * 100
-	local armor = (grug_core.get_armor_percent(player) or 0)
-	local armor_raw = armor
-	if type(grug_core.get_armor_percent_raw) == "function" then
-		armor_raw = grug_core.get_armor_percent_raw(player) or armor
-	else
-		-- grug_inventory depends on this mod, so it cannot be a dependency in
-		-- the other direction. Player forms open only after all mods loaded;
-		-- use its public aggregate opportunistically and keep stripped test
-		-- games on the effective fallback above.
-		local inventory = rawget(_G, "grug_inventory")
-		if inventory and type(inventory.get_equipped_armor) == "function" then
-			armor_raw = inventory.get_equipped_armor(player)
-				+ grug_classes.get_talent_bonus(player, "armor_percent_add")
-				+ grug_classes.get_talent_bonus(player,
-					"armor_percent_add_low_hp")
-		end
-	end
+	local armor = grug_core.get_armor_rating_breakdown and
+		grug_core.get_armor_rating_breakdown(player) or {
+			base = grug_core.get_armor_rating(player), multiplier = 1,
+			result = grug_core.get_armor_rating(player), emergency = 0}
+	local armor_reduction = grug_core.armor_reduction(armor.result,
+		grug_core.get_player_level(player), 0.70) * 100
 	local crit_cap = math.max(30,
 		grug_classes.get_talent_bonus(player, "crit_cap_override"))
 	local dodge_cap = math.max(30,
 		grug_classes.get_talent_bonus(player, "dodge_cap_override"))
-	local armor_cap = math.max(60,
-		grug_classes.get_talent_bonus(player, "armor_cap_override"))
 	return ("Crit %.1f/%.1f%% (%.0f)"):format(crit, crit_raw, crit_cap),
 		("Dodge %.1f/%.1f%% (%.0f)"):format(dodge, dodge_raw, dodge_cap),
-		("Armor %.0f/%.0f%% (%.0f)"):format(armor, armor_raw, armor_cap)
+		("Armor %.1f x %.2f + %.1f = %.1f (own-level %.1f%%)"):format(
+			armor.base, armor.multiplier, armor.emergency,
+			armor.result, armor_reduction)
 end
 
 local function trees_for_player(player)

@@ -41,7 +41,7 @@ function M.service(city, plot)
  end
 end
 
-function M.decorate(city, plot, buf, palette, sockets)
+function M.decorate(city, plot, buf, palette, sockets, area)
  local service=M.service(city,plot)
  if not service then return end
  local function socket(id,role,x,y,z,extra)
@@ -53,28 +53,38 @@ function M.decorate(city, plot, buf, palette, sockets)
   buf:put(x,y,z,"grug_decor:capital_"..name)
  end
  if service=="riding" then
-  -- Two generous rows behind the trainer. Full-size Accord eagle wings need
-  -- rear bays wider than seven nodes; no cross rail cuts through those poses.
-  buf:clear(-9,1,-6,9,4,6)
-  for z=-4,6 do decor(0,1,z,"rail") end
-  -- A supported rear-centre lamp clears every full-size posed display.
-  buf:put(0,1,6,palette.node("post"))
-  buf:put(0,2,6,palette.node("post"))
-  buf:put(0,3,6,palette.node("light_post"),1)
+  -- Shared open shelter: no divider or trough intrudes into movement lanes.
   local positions={{-5,-3},{5,-3},{-5,3},{5,3}}
   for tier,p in ipairs(positions) do
    socket("mount_"..tier,"mount_display",p[1],1,p[2],{tags={tostring(tier)}})
-   decor(p[1],0,p[2],"bedding")
+   if tier<=2 then
+    local front=city=="kezamba" and tier==2 and -3 or -4
+    for _,endpoint in ipairs({{"a",front},{"b",-2}}) do
+     socket("mount_"..tier.."_walk_"..endpoint[1],"idle",p[1],1,endpoint[2],
+      {spawn=false,tags={"mount_walk"}})
+    end
+   end
   end
-  decor(-5,1,7,"trough");decor(5,1,7,"trough")
   local resident=0
   for _,s in ipairs(sockets) do
-   if s.role=="idle" then
+   if s.role=="idle" and s.spawn~=false then
     resident=resident+1;s.x=resident==1 and -8 or 8;s.y=1;s.z=-6
    end
   end
   socket("riding","riding_trainer",0,1,-6)
   return
+ end
+ -- Free-standing exterior product frames sit beside the central approach.
+ -- The plot supplies its actual front boundary; no house-relative guess.
+ local products=service=="forge" and {"weaponsmith","armorsmith"} or {service}
+ for index,profession in ipairs(products) do
+  local x=#products==2 and (index==1 and -3 or 3) or 3
+  local z=assert(area,"capital product frame needs plot bounds").z0+1
+  for _,post_x in ipairs({x-1,x+1}) do
+   buf:fill(post_x,1,z,post_x,3,z,palette.node("post"))
+  end
+  buf:put(x,3,z,palette.node("post"))
+  decor(x,2,z,"product_"..profession)
  end
  -- Existing wall/roof silhouettes and vendor shopfronts remain. The bounded
  -- central room is furnished for its actual service; side aisles stay open.
@@ -93,6 +103,10 @@ function M.decorate(city, plot, buf, palette, sockets)
 
  buf:put(0,1,1,STATIONS[service])
  socket("station","public_station",0,1,1,{tags={STATION_IDS[service]}})
+ if service~="forge" then
+  decor(3,1,3,"counter")
+  decor(3,2,3,"product_"..service)
+ end
  if service=="forge" then
   socket("weaponsmith","trainer",-2,1,-1,{profession="weaponsmith"})
   socket("armorsmith","trainer",2,1,-1,{profession="armorsmith"})

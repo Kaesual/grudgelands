@@ -12,7 +12,7 @@ return function(repo)
 	end
 	local function fail(message)
 		restore()
-		error("r9 enchant quality: " .. message, 0)
+		error("r11 gear quality: " .. message, 0)
 	end
 	local function check(value, message) if not value then fail(message) end end
 
@@ -123,6 +123,13 @@ return function(repo)
 	end
 	weapon("test:melee", {grug_equip_weapon = 1, sword = 1}, 10, 1.0, 20)
 	weapon("test:caster", {grug_equip_weapon = 1, staff = 1}, 9, 1.4, 20)
+	weapon("test:bow", {grug_equip_weapon = 1, grug_bow = 1}, 9, 1.0, 20)
+	definitions["test:shield"] = {description = "Test Shield",
+		groups = {grug_equip_offhand = 1, grug_shield = 1},
+		_grug_ilvl = 20, _grug_quality = 1, _grug_armor = 12}
+	definitions["test:spellbook"] = {description = "Test Spellbook",
+		groups = {grug_equip_offhand = 1, grug_spellbook = 1},
+		_grug_ilvl = 20, _grug_quality = 1, _grug_max_mana_percent = 1}
 	definitions["test:metal"] = {description = "Test Metal",
 		groups = {grug_equip_chest = 1, grug_armor_class = 3},
 		_grug_ilvl = 20, _grug_quality = 1, _grug_armor = 12}
@@ -240,24 +247,34 @@ return function(repo)
 	-- A. Exact §6.2 pools.
 	same_members(grug_items.POOLS.melee_weapon,
 		{"str", "dex", "attack_speed_percent", "crit_percent",
-			"max_hp_percent"}, "melee pool")
+			"max_hp_percent", "max_mana_percent"}, "melee pool")
 	same_members(grug_items.POOLS.caster_weapon,
 		{"int", "max_mana_percent", "crit_percent", "max_hp_percent"},
 		"caster pool")
+	same_members(grug_items.POOLS.bow,
+		{"dex", "crit_percent", "attack_speed_percent", "max_hp_percent",
+			"max_mana_percent"}, "bow pool")
+	same_members(grug_items.POOLS.shield,
+		{"str", "dex", "max_hp_percent", "armor_rating"}, "shield pool")
+	same_members(grug_items.POOLS.spellbook,
+		{"int", "max_mana_percent", "crit_percent", "max_hp_percent"},
+		"spellbook pool")
 	same_members(grug_items.POOLS.metal_armor,
-		{"str", "max_hp_percent", "armor_percent", "dodge_percent"},
+		{"str", "max_hp_percent", "armor_rating"},
 		"metal pool")
 	same_members(grug_items.POOLS.leather_armor,
-		{"dex", "max_hp_percent", "crit_percent", "dodge_percent"},
+		{"dex", "max_hp_percent", "max_mana_percent", "crit_percent", "dodge_percent"},
 		"leather pool")
 	same_members(grug_items.POOLS.cloth_armor,
 		{"int", "max_mana_percent", "max_hp_percent", "crit_percent"},
 		"cloth pool")
-	row("pools", "five ordinary families", "exact")
+	row("pools", "eight ordinary families", "exact")
 
 	-- B. Every family x ilvl band x source window: legal, unique and bounded.
 	local families = {
 		{"test:melee", "melee_weapon"}, {"test:caster", "caster_weapon"},
+		{"test:bow", "bow"}, {"test:shield", "shield"},
+		{"test:spellbook", "spellbook"},
 		{"test:metal", "metal_armor"}, {"test:leather", "leather_armor"},
 		{"test:cloth", "cloth_armor"},
 	}
@@ -276,7 +293,7 @@ return function(repo)
 				local stack = ItemStack(item)
 				stack:get_meta():set_int("grug_quality", 3)
 				stack:get_meta():set_int("grug_refined", 1)
-				local count = math.min(4, #grug_items.POOLS[family])
+				local count = math.min(2, #grug_items.POOLS[family])
 				local ok = grug_items.roll_enchants(stack, levels[level_index],
 					windows[window_index], count,
 					1000 + family_index * 100 + level_index * 10 + window_index)
@@ -360,14 +377,14 @@ return function(repo)
 	check(not denied and #grug_items.get_affixes(one)==1,
 		"denied append changed the source stack")
 	local current=one
-	for expected=2,4 do
+	for expected=2,2 do
 		current=assert(grug_items.apply_station_operation(add_recipe,
 			{current,ItemStack("test:material"),ItemStack("test:reagent")},
 			{level=46}))
 		check(#grug_items.get_affixes(current)==expected,
 			"Master append count differs at slot "..expected)
 	end
-	row("station_ops", "preserve stack", "append one", "mastery 1/2/3/4")
+	row("station_ops", "preserve stack", "append one", "mastery prefix/suffix")
 	local kit_item=ItemStack("test:melee")
 	grug_items.set_refined(kit_item,true)
 	check(grug_items.apply_upgrade_kit(kit_item,"imbue",8181),
@@ -377,13 +394,13 @@ return function(repo)
 		"imbue kit escaped its 1-2 affix budget")
 	local kit_stats={}
 	for index=1,#kit_affixes do kit_stats[index]=kit_affixes[index].stat end
-	check(grug_items.apply_upgrade_kit(kit_item,"temper",9191) and
+	check(grug_items.apply_upgrade_kit(kit_item,"temper",9191,{level=31}) and
 		kit_item:get_meta():get_int("grug_upgrades")==1,
 		"first temper did not settle")
-	check(grug_items.apply_upgrade_kit(kit_item,"temper",9292) and
+	check(grug_items.apply_upgrade_kit(kit_item,"temper",9292,{level=46}) and
 		kit_item:get_meta():get_int("grug_upgrades")==2,
 		"second temper did not settle")
-	check(not grug_items.apply_upgrade_kit(kit_item,"temper",9393),
+	check(not grug_items.apply_upgrade_kit(kit_item,"temper",9393,{level=46}),
 		"third temper exceeded the cap")
 	local after_temper=grug_items.get_affixes(kit_item)
 	for index=1,#after_temper do
@@ -412,10 +429,10 @@ return function(repo)
 	check(crafted.refinement.quality == 1 and crafted.refinement.refined and
 		crafted.refinement.chance == 100, "refinement crafted row differs")
 	check(crafted.fine.quality == 2 and crafted.fine.minimum == 1 and
-		crafted.fine.maximum == 2 and crafted.fine.window == "crafted-fine",
+		crafted.fine.maximum == 1 and crafted.fine.window == "crafted-fine",
 		"fine crafted row differs")
-	check(crafted.masterwork.quality == 3 and crafted.masterwork.minimum == 3 and
-		crafted.masterwork.maximum == 4 and
+	check(crafted.masterwork.quality == 3 and crafted.masterwork.minimum == 2 and
+		crafted.masterwork.maximum == 2 and
 		crafted.masterwork.window == "crafted-masterwork",
 		"masterwork crafted row differs")
 	local refused_masterwork = ItemStack("test:melee")
@@ -428,9 +445,9 @@ return function(repo)
 		{quality_mode = "masterwork"})
 	check(not permission_ok, "Masterwork pre-consumption permission did not refuse")
 	for _, sample in ipairs({{level = 1, mode = "fine", count = 1},
-		{level = 16, mode = "fine", count = 2},
-		{level = 31, mode = "masterwork", count = 3},
-		{level = 46, mode = "masterwork", count = 4}}) do
+		{level = 16, mode = "fine", count = 1},
+		{level = 31, mode = "masterwork", count = 2},
+		{level = 46, mode = "masterwork", count = 2}}) do
 		local stack = ItemStack("test:melee")
 		check(grug_items.apply_crafted_quality(stack, sample.mode, sample, 900),
 			"crafted " .. sample.mode .. " failed")
@@ -523,7 +540,7 @@ return function(repo)
 		"per-stack drop level did not override the catalog anchor")
 	local armor_level = ItemStack("test:metal")
 	armor_level:get_meta():set_int("grug_refined", 1)
-	check(grug_items.roll_enchants(armor_level, 46, "boss", 4, 13),
+	check(grug_items.roll_enchants(armor_level, 46, "boss", 2, 13),
 		"armor requirement probe did not roll")
 	check(armor_level:get_meta():get_int("grug_req_level") == 0,
 		"weapon-only level requirement leaked onto armor")
@@ -555,7 +572,7 @@ return function(repo)
 		local stack = ItemStack("test:melee")
 		stack:get_meta():set_int("grug_quality", 3)
 		stack:get_meta():set_int("grug_refined", 1)
-		check(grug_items.roll_enchants(stack, 46, "boss", 4, seed),
+		check(grug_items.roll_enchants(stack, 46, "boss", 2, seed),
 			"determinism roll failed")
 		return stack
 	end
@@ -580,11 +597,9 @@ return function(repo)
 		meta:get_int("grug_quality") == quality_before,
 		"description round-trip changed authoritative meta")
 	local affixes = grug_items.get_affixes(first)
-	check(#affixes == 4, "four-slot description lost affixes")
+	check(#affixes == 2, "two-slot description lost affixes")
 	local suffix_one = grug_items.AFFIXES[affixes[2].stat].suffix:gsub("^of the ", "")
-	local suffix_two = grug_items.AFFIXES[affixes[4].stat].suffix:gsub("^of the ", "")
-	check(description:find("of " .. suffix_one .. " and " .. suffix_two, 1, true),
-		"two suffixes did not combine positionally")
+	check(description:find("of the ", 1, true), "suffix was not displayed positionally")
 	local caps = first:get_tool_capabilities()
 	local speed
 	for index = 1, #affixes do

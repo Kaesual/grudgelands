@@ -63,7 +63,8 @@ return function(repo)
 	local production = {schema = "grug_wp40_r7_production_r6_content_v1",
 		content_names = names, ignore_cid = 127,
 		r5 = {resolve = function() return 0, 0, 0 end}}
-	local successor = dofile(wp40 .. "/r7_p9g.lua")(catalog, p9g, sha).new({
+	local successor = dofile(wp40 .. "/r7_p9g.lua")(catalog, p9g, sha,
+		dofile(wp40 .. "/habitat_registry.lua")).new({
 		full_seed_string = "0", hash = {budget = function() return 1 end},
 		planner_source = {}, horizontal = {}, source = {}, construction_identity = {},
 		content = {content_contract = function() return production end},
