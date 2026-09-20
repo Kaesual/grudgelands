@@ -52,12 +52,23 @@ The frozen candidate must retain these checks:
   `tools/r10_gameplay/potion_kat.lua`;
 - one final compact PUC-5.1/LuaJIT digest pair after review freezes the bytes.
 
-The final compact pair produced byte-identical output with SHA-256
-`c236c219e12a92a04c5f9b1f94cd4569172fb9b66ea405b4aff0ecd19a1fdbf3`.
+The post-review replacement compact pair produced byte-identical 1,134-byte
+output with SHA-256
+`42dc5b50285b03c8d4228eecd209f2579a92e0539e33a50a005d8d2079074f67`.
 The compact pair exercises mount controller/visual/status/step behavior and the
 mounted PvP control flow. The complete mount fixture additionally runs the B3D
 asset audit and WP40 boundary oracle under LuaJIT development coverage; those
 unrelated expensive checks stay outside the fallback-runtime boundary.
+
+Independent review found one Medium defect in the newly broadened ambient
+cliff path: the vendored blocker predicate accepted registered non-walkable
+nodes and dereferenced missing definitions. The corrected predicate treats
+both as cliffs. Focused source-faithful coverage now includes probe endpoints,
+walkable support, deep air, dangerous/non-walkable/missing blockers and the
+flight/combat exceptions. The same review round added low/high-pool,
+fractional/uncapped and armor/dodge fall boundaries, plus exact-once mount
+cleanup for death, leave, shutdown and external detach. External detach now
+uses the shared dismount path so the visual and UI status cannot remain stale.
 
 GUI acceptance on a fresh world: ride T1 and T2 land mounts over slabs and one
 full block without jump, confirm a two-block wall and low ceiling block them,
@@ -74,6 +85,7 @@ Apothecary Loop and verify the shared cooldown.
 - Implementing model: GPT-5.6 Sol, native agent.
 - Independent reviewing model: pending coordinator assignment; must be native
   and independent under the active Round-10 provider rule.
-- Critical/High findings: pending review.
-- Review-fix rounds: pending review.
+- Independent review: native GPT-5.6 Sol, separate EQUIP author context.
+- Critical/High findings: 0/0. One Medium finding fixed.
+- Review-fix rounds: 1; focused re-review pending coordinator assignment.
 - Implementation elapsed time: not measured.
