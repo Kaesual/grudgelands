@@ -1,7 +1,7 @@
 # R11 REPAIR focused re-review — findings
 
-Candidate: `c53a512d30413ff6d0308c5382203ee04234c78e`  
-Review: fresh native GPT-5.6 Sol, read-only  
+Candidate: `c53a512d30413ff6d0308c5382203ee04234c78e`\
+Review: fresh native GPT-5.6 Sol, read-only\
 Result: **not clean**
 
 The correction closes the original exact-budget, broken-hoe, persistent item-ID,

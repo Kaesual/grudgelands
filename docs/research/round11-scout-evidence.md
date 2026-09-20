@@ -1,7 +1,7 @@
 # Round 11 Scout evidence
 
-Date: 2026-09-20  
-Branch: `wp11-r11-scout`  
+Date: 2026-09-20\
+Branch: `wp11-r11-scout`\
 Frozen implementation head: `3d61d55b`
 
 ## Delivered contract

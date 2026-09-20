@@ -1,7 +1,7 @@
 # Independent Round 11 SPEC authority review
 
-Reviewer: native GPT-5.6 Sol (`/root/r11_farm_review`), independent of the documentation author.  
-Candidate: `da3a4958` on `wp11-r11-spec-audit`; base `bc112522`.  
+Reviewer: native GPT-5.6 Sol (`/root/r11_farm_review`), independent of the documentation author.\
+Candidate: `da3a4958` on `wp11-r11-spec-audit`; base `bc112522`.\
 Disposition: **CHANGES REQUESTED**.
 
 ## Findings

@@ -1,5 +1,9 @@
 # Round 11 FARM implementation evidence
 
+Historical package checkpoint: the pending statuses below describe that
+checkpoint. Final acceptance and later integration corrections are recorded in
+[Round 11 completion](round11-completion.md).
+
 Status: FARM implementation complete, **awaiting independent review**.
 Implementer: native Sol, with the water/hoe base and initial ecology attempt
 inherited from commits `e3469484` and `14cb3a14`; reviewer/calibration pending.

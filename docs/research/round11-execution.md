@@ -368,3 +368,45 @@ real movement aggregator), not substitute success stubs for the tested boundary.
 The quality finding is a cross-package REPAIR integration defect; retain this
 record rather than treating its prior isolated acceptance as whole-game proof.
 Final Astra review and the bounded native engine witness still remain required.
+
+### Scout accepted and final native integration checkpoint
+
+SCOUT `35bde4c8` (production `3d61d55b`) independently CLEAN, merged into root.
+Author native Sol; reviewer native Astra; 0C/1H/4M/1L, two source fix rounds,
+elapsed unknown. Final report `round11-plan/review/scout-final.md`; the exact
+approved SETGLOBAL documentation correction names all four declared mod tables.
+Root integrated Scout gameplay and held-swing fixtures pass. Static parsing
+passes 370 files; final source/fixture hashes and raw sweep results are under
+`tools/r11_integration/evidence/`. No PUC runtime.
+
+The one bounded native LuaJIT engine witness exposed two further integration
+failures despite its catalog/native-water probes passing: the mapgen thread's
+exact planner-source schema rejects FARM's extra `hard_row_at` member, and the
+startup price audit reports an arrow discounted purchase equal to buy-back
+(1c/1c). Initial engine log and water receipt are retained. No GUI/world user
+state was touched; only `/tmp/grudgelands-headless.XlMeTN` was used.
+
+Root assigned narrow corrective work in the root integration checkout:
+native Astra `r11_scout_review` owns mapgen interface/focused real-constructor
+regression; native Sol `r11_scout` owns arrow price/audit regression; separate
+native Sol `r11_repair_review` independently reviews both. No broad mapgen
+suites, no PUC runtime. Repeat only the bounded engine probe after final fixes.
+Documentation status updates are currently unstaged preparation; main/runtime
+remain R10 until all gates pass, final records commit, merge/sync/push complete.
+
+### Final technical gates accepted
+
+`697391d8` records the independently clean narrow native integration fixes.
+Mapgen: four required source callbacks plus type validation; real runtime
+constructor/one-column positive and strict-schema negative cases pass. Traders:
+Arrow3c gives discounted2c versus buyback1c; actual complete startup audit has
+negative2c/positive3c regression coverage. Authors Astra/Sol respectively;
+independent native Sol reviewer0findings; one correction round each, elapsedunknown.
+
+Final isolated Luanti5.17.0/LuaJIT engine PASS, catalog PASS, protected-water
+receipt22/4, no ERROR/ModError. Exactly two bounded35-second attempts; no broad
+mapgen fleet and no PUC runtime. All1894 staged runtime files match root and
+374Lua files pass static coverage. Source/receipt hashes and raw logs live in
+`tools/r11_integration/evidence/`; fresh-server audit and13referencepins pass.
+All agents are finished; no source edits or review findings remain pending.
+Next: final docs commit, main merge, sync_to_luanti, authorized origin/main push.

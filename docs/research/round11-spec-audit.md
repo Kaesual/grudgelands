@@ -1,5 +1,9 @@
 # Round 11 living-spec authority audit
 
+Historical package checkpoint: the pending statuses below describe that
+checkpoint. Final acceptance and later integration corrections are recorded in
+[Round 11 completion](round11-completion.md).
+
 **Date:** 2026-09-20
 
 **Scope:** living `docs/design/` rules affected by Round 11 and the technical

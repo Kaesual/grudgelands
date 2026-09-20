@@ -419,7 +419,7 @@ Details + line numbers in [docs/research/](docs/research/).
   `get_armor_rating`; **the returned ItemStack is the caller's OWN
   COPY** — a modified copy is not equipped until it is written back AND
   `grug_inventory.equipment_changed` is called) plus
-  `register_on_equipment_change(func(player, listname))`, where `listname`
+  `register_on_equipment_change(func(player, listname, reason))`, where `listname`
   is the one list that changed or **nil** for "assume everything moved".
   Consumers must be idempotent and cheap (every inventory write re-sends
   the list to the client), **may be called twice for one change** (the
@@ -432,9 +432,14 @@ Details + line numbers in [docs/research/](docs/research/).
   exactly one Character-page refresh consumer; normal equip, class change
   and join add no direct duplicate refresh (a genuine nested write may still
   earn the second pass).
+  Round 11 adds the optional `reason = "durability_metadata"` for same-item
+  wear/remainder/capability bookkeeping and first persistent action identity.
+  Forward that third argument through every wrapper (including quality).
+  Held swings and bow draws refresh their usable same-item snapshot without
+  restarting cadence; actual swaps and broken/unbroken transitions still reset.
   **Swing skills use native interaction plus an authoritative held clock**
   (`classes.md` §2b; WP38 base, WP39 target-authority revision decided
-  2026-08-10): exactly Strike, Mighty Blow and Hamstring have `kind = "swing"`
+  2026-08-10): Strike, Mighty Blow, Hamstring and Round 11's Opening have `kind = "swing"`
   and **no `on_use`**, keeping the fast first-person held animation. Their
   native enemy packets are input only and return before damage/rage/threat/
   wear/proc. The no-dig pointabilities can mask a ground-level drop, so each
@@ -463,9 +468,8 @@ Details + line numbers in [docs/research/](docs/research/).
   Swing ItemStacks continue to mirror equipped-slot FPI compare-first with
   `fleshy = 0`, empty `groupcaps`, `max_drop_level = 0`,
   `punch_attack_uses = 0` and blocking hand/dig_immediate node pointabilities.
-  The ability stack never wears. The slot weapon remains wear-free until the
-  approved REPAIR package integrates its once-per-settled-action hook; after
-  integration, the concrete main hand wears once on a qualifying settled
+  The ability stack never wears. Round 11's REPAIR hook spends wear on the
+  concrete main hand once on a qualifying settled
   action. The accepted transaction stays
   exact attacker+ray-target and claim-once; the mobs_redo/PvP finish seam pays
   cost, resets charge, grants rage and applies post-effects only on its existing
@@ -492,6 +496,14 @@ Details + line numbers in [docs/research/](docs/research/).
   `active_limit = 8` per owner/session: failure happens before entity creation,
   every terminal/failure path releases its opaque token idempotently, and a
   reconnect/respawn creates a fresh session that old shots cannot charge.
+  Round 11's Scout uses the same foundation for ballistic arrows. Public
+  `grug_projectiles.spawn_batch(id, launches, commit)` reserves/spawns all
+  siblings before ammunition payment and rolls back every sibling/token on
+  failure. Quiver-first `grug_inventory.consume_ammo` / `refund_ammo` own
+  ammunition; Twin Shot carries one shared `grug_repair.capture_action`
+  receipt. Arrow control follows the settled outgoing-action hook, never the
+  published damage return alone. Opening resolves percentage mana once before
+  affordability and carries that snapshot through accepted swing settlement.
   Round 6 centralizes player scaling in `grug_core.base_pool`: max HP and mana,
   percentage mana costs, pool-derived heals/absorbs and the damage-only
   `level_scale` fit follow `combat_stats.md` §2; Strength and Intelligence are

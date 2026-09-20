@@ -1,7 +1,7 @@
 # R11 REPAIR independent review — findings
 
-Candidate: `2ad85b152d315add945245a088a28855c94ba2a0`  
-Review: fresh native GPT-5.6 Sol, read-only  
+Candidate: `2ad85b152d315add945245a088a28855c94ba2a0`\
+Review: fresh native GPT-5.6 Sol, read-only\
 Result: **not clean**
 
 ## High

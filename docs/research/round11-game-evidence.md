@@ -1,9 +1,9 @@
 # Round 11 GAME evidence
 
-Date: 2026-09-20  
-Implementation model: native GPT-5.6 Sol  
-Base: `45fbc477`  
-Design commit: `a898c30c0c962f3da931581d3329f9ed5b582a1d`  
+Date: 2026-09-20\
+Implementation model: native GPT-5.6 Sol\
+Base: `45fbc477`\
+Design commit: `a898c30c0c962f3da931581d3329f9ed5b582a1d`\
 Runtime commits: `45d63092f9ba4b1e33d960b519d9d2e8d5d891fe`, followed by
 the pinned-engine yaw-convention correction
 `bdaf87204c25a368c60b54b37d0139f2bc651213`

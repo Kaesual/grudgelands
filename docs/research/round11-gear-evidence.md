@@ -1,5 +1,9 @@
 # Round 11 equipment implementation evidence
 
+Historical package checkpoint: the pending statuses below describe that
+checkpoint. Final acceptance and later integration corrections are recorded in
+[Round 11 completion](round11-completion.md).
+
 This record binds the approved AFF-GEAR implementation. It is an implementation and evidence record, not a source of new design authority.
 
 ## Frozen catalog interfaces

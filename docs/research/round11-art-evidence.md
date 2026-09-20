@@ -1,5 +1,9 @@
 # Round 11 ART implementation evidence
 
+Historical package checkpoint: the pending statuses below describe that
+checkpoint. Final acceptance and later integration corrections are recorded in
+[Round 11 completion](round11-completion.md).
+
 Status: implemented on `wp29-r11-art`; independent review and integration remain
 pending. No main merge, sync, push or GUI acceptance is claimed.
 

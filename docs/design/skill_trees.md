@@ -70,8 +70,8 @@ numbers as `main:NNN` and quotes the sentence in full.
 
 ### 1.1 Four classes, two trees, two chains per tree
 
-Three classes ship (`grug_classes/init.lua:136`, `:146`, `:156`); the fourth,
-**Scout**, is decided and remains pending implementation (ruling 7,
+Four classes ship; the fourth,
+**Scout**, was delivered in Round 11 (ruling 7,
 [scout.md](scout.md)). Each class gets two trees, and — new in revision 2 —
 **each tree holds two rough playstyle directions, called chains** (ruling 2).
 A chain is a straight line of four talents: two numeric, then a keystone,
@@ -432,7 +432,7 @@ what landed.
 Hardened's 0.3% per rank uses the same rule: its first reachable rank at level
 42 adds 4 HP after rounding, matching the former flat first rank.
 
-### 2.7 Scout — Quarry (planned, not implemented)
+### 2.7 Scout — Quarry (implemented in Round 11)
 
 The Scout's kit, resource, armour, bow and the **deferred stealth work** are
 [scout.md](scout.md); its two trees are here so that §1.3's arithmetic and
@@ -454,7 +454,7 @@ game already runs.
 | 7 | **Pinning Shot** *(keystone)* | Ranging | 3 | 3 | **new skill** ‼ | cast, **12% base mana + 1 arrow**, 25 m; roots the pointed hostile for 2 / 2.5 / 3 s — a root at bow range, which no class has. *Limit: **30 s cooldown**.* | — |
 | 8 | **Shifting Weight** | Ranging | 4 | 3 | — | +1 / 2 / 3 percentage points dodge chance | `dodge_chance_add` |
 
-### 2.8 Scout — Veil (planned, not implemented)
+### 2.8 Scout — Veil (implemented in Round 11)
 
 | # | Talent | Chain | Tier | Ranks | Kind | Effect | Key |
 |---|---|---|---|---|---|---|---|
@@ -490,10 +490,9 @@ burst that would kill it, built from the dodge stat the game already rolls.
 
 **New-skill keystones: 8 across all four classes**, one per tree — Hold
 Ground, Hamstring, Cinderfall, Glacial Ward, Renew, Word of Ruin, Pinning
-Shot, Opening. **Two of those are already registered in code**: Renew
-(`kits.lua:651-677`, already `talent_gated`) and, since ruling 19,
-**Hamstring** (`kits.lua:350-377`, which needs the flag added). Two more
-belong to the unimplemented Scout (Pinning Shot, Opening). So:
+Shot, Opening. **Four of those are registered in code**: Renew
+(`kits.lua:651-677`, already `talent_gated`), Hamstring
+(`kits.lua:350-377`) and Round 11's Pinning Shot and Opening. So:
 
 > **WP11 registers four new abilities** — Hold Ground, Cinderfall, Glacial
 > Ward, Word of Ruin.
@@ -787,7 +786,7 @@ one of its kind:
 | Onset | `cooldown` in the ability def — Charge's, `kits.lua:299` | the same `arm_cooldown` call, `grug_abilities/init.lua:1233` |
 | Far Cast | `max_distance` in the projectile registration (`kits.lua:413`) and `range` in the ability def (`:446`) | flight: the spawn call (`kits.lua:453-460`), since `grug_projectiles/init.lua:195` prefers `params.max_distance`; targeting reach: `grug_abilities.get_range` (`init.lua:170-177`), the twin of the elf `ability_range_bonus` perk, whose item-meta override `sync_kit` already refreshes (`grug_abilities/init.lua:1827-1831`) |
 
-The Scout adds two more when it is built, both onto sites already in the
+The Scout adds two more, both onto sites already in the
 table: **Slip Away** (Sidestep's cooldown → `init.lua:1233`) and **Follow
 Through** (Opening's charge → `init.lua:718`). Nothing in either tree hooks
 the `spend` call at `init.lua:1232` except the Mage capstone **Whitehot**,
@@ -1102,7 +1101,7 @@ free-first assertion fail.
 | `grug_core/` the speed aggregator | **prerequisite, not this WP** — §3.9. Hold Ground's and Shake Loose's root/slow immunity are flags it owns, and the Scout's Sprint is a modifier in it | — |
 | `tools/wp11/talent_tree_kat.lua` | **new** — §3.7 | medium |
 | `tools/wp11/talent_ui_kat.lua` | **new** — X4 interactions, transaction and render checks | medium |
-| `docs/design/combat_stats.md` §2 | the common cap-override rule; Round 11 has filled its Unbroken armor case, while the remaining consumers belong to X3/SCOUT | small |
+| `docs/design/combat_stats.md` §2 | the common cap-override rule; Round 11 has filled its Unbroken armor and Scout dodge cases, while the remaining Mage crit consumer belongs to X3 | small |
 | `docs/design/classes.md`, `progression.md`, `economy.md`, `items_crafting.md`, `README.md` | the "base value" wording of §2.10 and the no-class-trainer respec rule | small |
 
 ### 3.9 The movement aggregator (ruling 11) — a prerequisite this WP does not own
@@ -1287,7 +1286,7 @@ landed.
 |---|---|---|---|
 | **X1 — the model** | `talents.lua`: registry, the 48 talent registrations of the three shipped classes (data only, no consumer), points, the two gate kinds, spend/respec rules, persistence with the validating read path, the window table of §3.2, `get_talent_bonus` / `talent_rank`, the `on_talents_changed` callback, and the whole KAT of §3.7 except group 5's consumer half. Ships with **zero gameplay effect** — every talent is inert. | — | M |
 | **X2 — the numeric consumers** | The **30** talents of the three shipped classes that are neither keystone nor capstone, at the sites of the §3.8 table. **Twenty-five are a one-line read where the table says; five hook the three central per-player seams of §3.2** (Grudge, Quick Step, Swift Word and Onset on `arm_cooldown`; Far Cast on the spawn call and `get_range`), and each of those needs its own no-talent regression case (KAT group 8). Completes KAT groups 5 and 6. Touches shared files, so it is one lane and not split by class. | X1 | M |
-| **X3 — keystones and capstones (open except delivered armor slice)** | **Four** new ability registrations (Hold Ground, Cinderfall, Glacial Ward, Word of Ruin); the `talent_gated` flag on the **two shipped abilities that become keystones**, Renew (already flagged) and Hamstring (`kits.lua:350`, ruling 19), plus their rank scaling; the grant predicate at the three `talent_gated` sites and the append-after-base-kit rule of §3.4; **seven replacements** written inside the shipped abilities' own bodies (Bellow, Broadstroke, Brand, Frostbind, Turn Aside, Recompense, Hearten) and the rule-breaking finisher Tendon Cut; the remaining capstone effects and cap-override paths. Round 11 already delivered Ironbound and Unbroken's armor-rating multiplier/window, so X3 must preserve and consume that implementation rather than recreate it. The remaining crit override is in `stats.lua:45`; the Scout dodge override belongs to S3. Each remaining ability/replacement needs its specified probe. **Hold Ground's root/slow immunity needs the §3.9 aggregator first.** | X1, §3.9 for one talent | L |
+| **X3 — keystones and capstones (open except delivered armor slice)** | **Four** new ability registrations (Hold Ground, Cinderfall, Glacial Ward, Word of Ruin); the `talent_gated` flag on the **two shipped abilities that become keystones**, Renew (already flagged) and Hamstring (`kits.lua:350`, ruling 19), plus their rank scaling; the grant predicate at the three `talent_gated` sites and the append-after-base-kit rule of §3.4; **seven replacements** written inside the shipped abilities' own bodies (Bellow, Broadstroke, Brand, Frostbind, Turn Aside, Recompense, Hearten) and the rule-breaking finisher Tendon Cut; the remaining capstone effects and cap-override paths. Round 11 already delivered Ironbound and Unbroken's armor-rating multiplier/window, so X3 must preserve and consume that implementation rather than recreate it. The remaining crit override is in `stats.lua:45`; the Scout dodge override is delivered. Each remaining ability/replacement needs its specified probe. **Hold Ground's root/slow immunity needs the §3.9 aggregator first.** | X1, §3.9 for one talent | L |
 | **X4 — UI, level-up and respec (implemented 2026-09-17)** | The sfinv Talents page of §3.5, the two `mod.conf` edges, the level-up chat line with its `old_level ~= nil` guard, the respec transaction against `grug_money.take`, the price of ruling 22 (§1.4), and the raw-vs-effective display `combat_stats.md:104-108` requires — including the **raised cap** while a rule-breaker runs. The six price values remain a coordinator placeholder until WP44 publishes the measured ledger outputs. | X1 | M |
 
 X3 is the only lane that owes a runtime test on a headless server; X1, X2 and
@@ -1578,9 +1577,9 @@ are listed so that the merge does not leave the repo contradicting itself.
 | # | Task | Why it cannot be done here |
 |---|---|---|
 | 1 | Amend `mounts.md` §3.1's pillar paragraph and `combat_stats.md` §3 to say the 4.4 > 4.0 inequality holds **except** for named, long-cooldown skills, of which Sprint is the first at **+25 % for 10 s every 300 s**; the Swiftness Draught's +8 % stays as it is | rulings 10 and 29 decided it; neither file is this lane's |
-| 2 | Implement the remaining named cap overrides without replacing Round 11's delivered Unbroken armor path: the Mage crit override belongs to X3 and the Scout dodge override to S3 | the common cap rule is decided and documented; only these consumers remain |
+| 2 | Implement the remaining Mage crit-cap override without replacing Round 11's delivered Unbroken armor path or Scout dodge-cap override | the common cap rule is decided and documented; the remaining consumer belongs to X3 |
 | 4 | Correct the five shipped comments that assume a class change (`grug_inventory/equipment.lua:57`, `:501`, `:579`, `grug_core/combat.lua:110`, `grug_abilities/init.lua:1775-1776`) and remove the `/class` registration at `grug_classes/selection.lua:594-595` — **not** the `:554-592` helper, which `/race` still needs | ruling 20 decided it; it is code, and this lane is docs-only (§3.10 lists the sites) |
 | 5 | Rename the two remaining "Holy tree" mentions to Mercy — the Renew row at `classes.md:464` and the comment at `mods/PLAYER/grug_abilities/kits.lua:650` | bookkeeping after ruling 5's tree names; one is code |
 | 7 | Fix three drifted citations **into** `mods/ENTITIES/mobs/api.lua`, held by three other files: `mounts.md:165` points at api.lua 2525-2526 where the line is **2531**, and the comments at `grug_mobs/golem.lua:67` and `grug_mobs/skeleton_archer.lua:65` both point at api.lua 2249 where the line is **2366** | found while writing `docs/research/mob-pressure-task-card.md`, which carries them; two are code comments |
 | 8 | **Re-tune Warrior rage** (ruling 25): swing **12 → 8** at all five `add_rage` sites (`grug_abilities/init.lua:939`, `:950`, `:966`, `:1915`, `:2099`), hit taken **4 → 3** (`:2109-2110`), and a **5 rage/s out-of-combat decay** on the existing `grug_core.in_combat` window (read at `:2201`). `classes.md` §3's table and its "+12 rage per auto-hit" tuning note (`:418`, `:430`) move with it. **Fallback if (b) overshoots**: leave the income alone and raise the prices instead — Mighty Blow 25 → 35, Hamstring 10 → 15 | it is `classes.md` §3 tuning plus code, for the WP11 / mob-pressure round; WP11's talents must then be re-checked against whichever number lands, because Stoke, Heavy Hand and Broadstroke all assume rage is a limiter |
-| 9 | Add the **ranged damage term** to `combat_stats.md` §2 (ruling 28): `weapon damage + floor(Dex/10)`, published as `grug_classes.get_ranged_bonus` beside `get_melee_bonus` (`grug_classes/stats.lua:34-36`) | a third damage term in a decided file; it lands with the Scout's lane S3, not with WP11 |
+| 9 | **Delivered in Round 11:** the ranged damage term from ruling 28, `weapon damage + floor(Dex/10)`, published as `grug_classes.get_ranged_bonus` beside `get_melee_bonus` | implemented with the Scout consumer |

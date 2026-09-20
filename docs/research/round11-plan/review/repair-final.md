@@ -1,7 +1,7 @@
 # R11 REPAIR final focused re-review
 
-Candidate: `20ab7b50b57f2b9bcc14cccb7106142de45a8548`  
-Review: fresh native GPT-5.6 Sol, read-only  
+Candidate: `20ab7b50b57f2b9bcc14cccb7106142de45a8548`\
+Review: fresh native GPT-5.6 Sol, read-only\
 Result: **clean — no substantive findings**
 
 The final correction resolves the remaining metadata/cadence defect. Repair

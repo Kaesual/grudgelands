@@ -1,7 +1,7 @@
 # Independent Round 11 engine-probe review
 
-Reviewer: native GPT-5.6 Sol (`/root/r11_farm_review`), independent of fixture authoring.  
-Reviewed fixture commit: `bb166bf5` in integration checkout `/home/jan/projects/grudgelands` (current checkout head also contains the later reviewed SPEC merge).  
+Reviewer: native GPT-5.6 Sol (`/root/r11_farm_review`), independent of fixture authoring.\
+Reviewed fixture commit: `bb166bf5` in integration checkout `/home/jan/projects/grudgelands` (current checkout head also contains the later reviewed SPEC merge).\
 Disposition: **CLEAN for deferred execution after SCOUT and REPAIR integration**.
 
 ## Static review result

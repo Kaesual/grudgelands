@@ -1,7 +1,7 @@
 # Independent Round 11 SPEC final review
 
-Reviewer/calibration model: native GPT-5.6 Sol (`/root/r11_farm_review`), independent of the documentation author.  
-Final candidate: `ee6c3f6a` on `wp11-r11-spec-audit`; correction chain `da3a4958` → `48dfc6f2` → `ee6c3f6a`; package base `bc112522`.  
+Reviewer/calibration model: native GPT-5.6 Sol (`/root/r11_farm_review`), independent of the documentation author.\
+Final candidate: `ee6c3f6a` on `wp11-r11-spec-audit`; correction chain `da3a4958` → `48dfc6f2` → `ee6c3f6a`; package base `bc112522`.\
 Disposition: **CLEAN**.
 
 ## Final correction verification

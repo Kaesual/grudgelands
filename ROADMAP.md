@@ -1,6 +1,6 @@
 # Roadmap — Grudgelands
 
-Final integrated status and exact gate identities: [Round 10 final completion](docs/research/round10-final-completion.md).
+Final integrated status and exact gate identities: [Round 11 completion](docs/research/round11-completion.md).
 Final technical gates PASS. The reviewed changes are delivered on main, synchronized
 and pushed; GUI acceptance remains pending.
 
@@ -184,25 +184,25 @@ The Nether is not part of V1.
 - [ ] **WP11 — skill trees, lanes X1/X2/X4 shipped (2026-09-17):** the model,
   thirty numeric consumers, sfinv talent page, paid full-reset respec and
   level-up hint are in the game; `/talents` remains a read-only summary.
-  Respec bracket values remain coordinator placeholders. Still open: lane X3
-  (keystones, capstones and four new abilities).
-- [ ] **WP14 / WP20 / WP21 / WP8:** live offhand/carried
+  Respec bracket values remain coordinator placeholders. Round 11 adds complete Scout trees and Ironbound/Unbroken. Still open: the
+  original three classes' remaining lane X3 keystones, capstones and abilities.
+- [ ] **WP14 / WP20 / WP21 / WP8:** carried
   light, parties, recovery/rest and the quest framework are independently
   ready behind their shipped prerequisites. Design revision 2 landed 2026-09-16
   ([skill_trees.md](docs/design/skill_trees.md)); implementation phase 1 and
   X4 are shipped, while X3 remains.
-- [ ] **WP-Scout:** the fourth class
-  ([scout.md](docs/design/scout.md) — leather, bow and blade, no stealth in
-  v1) remains open. Its Sprint consumes the movement aggregator already
-  shipped by WP-Speed.
+- [x] **WP-Scout:** fourth class, leather, bow and blade, four base abilities
+  and both complete trees delivered in Round 11; no stealth in V1. Sprint
+  consumes the existing movement aggregator. GUI acceptance remains pending.
 
-### Round 11 approved work (in progress)
+### Round 11 delivered work
 
 The [approved plan](docs/research/round11-plan/README.md) delivers playtest fixes,
 Scout with both trees, ordinary offhands and bags, two family-filtered affixes,
 attacker-level armor with the deep-Bulwark tank multiplier, limited gear repair,
 and [farming/renewal/buckets](docs/design/farming.md). Living design precedes
-code; every package receives independent review. PUC runtime is explicitly
+code; every package passed independent review. Delivery and bounded gates are
+recorded in [Round 11 completion](docs/research/round11-completion.md). PUC runtime is explicitly
 waived for this round, with plain-5.1 parser/static and targeted LuaJIT checks
 retained. Larger WP11/WP14/WP22/WP24/WP44/WP46 scopes remain separately open.
 
@@ -329,8 +329,8 @@ These subpackages do not close the larger whole-WP goals below.
   questlines after final structures/map/PvP.
 - [ ] WP23: both dragon encounters after structures, playable boats, final
   map, contested PvP and renewable apex resources.
-- [ ] WP22: durability/repair and explicit six-pick speed/use calibration
-  after loot, materials and economy.
+- [ ] WP22: Round 11 delivers slow durability and money-only repair; explicit
+  six-pick speed/use calibration and later repair redesign remain open.
 - [ ] WP31: the reviewed mount runtime, capital Riding services and twelve
   model icons are delivered on main. Final interpreter parity passes; GUI
   acceptance remains; no open design question or Housing prerequisite is introduced.

@@ -4,9 +4,9 @@ The accepted Round 11 design creates a fourth class, **Scout**, in leather
 armour, with two trees — ranged (bow) and melee. Rulings 8 and 9 added
 invisibility rules and the Sprint
 idea; **rulings 12 and 14 then cut the class back to its simplest workable
-form**, which is what this file now describes. Round 11 has delivered the
-shared gear, leather and visual foundations; the Scout class, abilities and
-talent consumers remain the SCOUT package.
+form**, which is what this file now describes. Round 11 delivered the shared
+gear, leather and visual foundations plus the playable Scout class, four base
+abilities, ballistic bow flow, talent consumers, starter kit and trader stock.
 
 > **Ruling 12 (user, 2026-09-16), and it has priority over everything else in
 > this file:** the Scout is to be **as simple as possible**, ahead of "as cool
@@ -126,11 +126,11 @@ The active contract is:
   4 sticks + 4 sharp feathers. Plain bows and arrows are Basics; Woodcarver
   owns bow refinement/affixes. Leatherworker makes the optional four-stack
   Offhand quiver at Apprentice.
-- `combat_stats.md` §2: "Bows use the infrastructure in the SCOUT package. A bow is
-  drawn up to a maximum and releases a ballistic arrow whose initial impulse
-  comes from draw time; gravity supplies the trajectory."
+- `combat_stats.md` §2 defines the delivered bow flow: a bow is drawn up to a
+  maximum and releases a ballistic arrow whose initial impulse comes from draw
+  time; gravity supplies the trajectory.
 - The seven bow identities and their dedicated centre-grip wield pose are
-  delivered from licensed LotT arc sprites. The SCOUT package consumes those
+  delivered from licensed LotT arc sprites. The Scout runtime consumes those
   registrations; it does not regenerate their art.
 
 The arrow entity already exists in another mod: `grug_mobs:arrow_entity`
@@ -326,21 +326,21 @@ Nothing in the claim/protection system reads a class or a speed
 are the first things a reviewer asks about, and because both *would* have been
 conflicts if version 1 had stealth (§8).
 
-## 7. Scope: what the Scout costs
+## 7. Delivered Round 11 scope
 
 ### 7.1 Dependencies and side effects on other work packages
 
-| Area | What the Scout needs | Evidence |
+| Area | Delivered result | Evidence |
 |---|---|---|
-| **WP11 (skill trees)** | the whole talent machinery first. The Scout's 16 talents are data on top of X1-X4 | `skill_trees.md` §4 |
-| **The speed aggregator** | ruling 11's `grug_core` aggregator, **owned by the mob-pressure lane**, before Sprint or Snare Shot | `skill_trees.md` §3.9; `docs/research/mob-pressure-task-card.md` |
-| **Weapon ladder §3.0.3** | the delivered six tier bows, below-ladder starter bow and dedicated centre-grip pose; SCOUT adds the ballistic ability consumer | `items_crafting.md` §9; `character_visuals.md` §6 |
-| **Arrows** | consume the delivered player arrow item and add a **ballistic** entity on `grug_projectiles`; the delivered Basics craft is 1 iron bar + 4 sticks + 4 sharp feathers → 20; the physics reference and its licence are §4.1 | `items_crafting.md` §9; reference entity `skeleton_archer.lua:18` |
+| **WP11 (skill trees)** | the Scout's 16 talents run on the shared talent machinery | `skill_trees.md` §4 |
+| **The speed aggregator** | ruling 11's `grug_core` aggregator drives Sprint, Snare Shot and Shake Loose | `skill_trees.md` §3.9; `docs/research/mob-pressure-task-card.md` |
+| **Weapon ladder §3.0.3** | six tier bows, the below-ladder starter bow, dedicated centre-grip pose and ballistic ability consumer | `items_crafting.md` §9; `character_visuals.md` §6 |
+| **Arrows** | the player arrow item and **ballistic** `grug_projectiles` entity; the Basics craft is 1 iron bar + 4 sticks + 4 sharp feathers → 20; the physics reference and its licence are §4.1 | `items_crafting.md` §9; reference entity `skeleton_archer.lua:18` |
 | **Leather armour** | consume the delivered 24-item leather family and its dedicated inventory/worn art; armor rank remains 2 | `inventory_equipment.md` §2; `character_visuals.md` §3 |
 | **Professions** | none created. Leatherworker owns the grades/current quiver; Woodcarver owns bow quality operations | `professions.md` §2–§3 |
-| **Traders** | the bowyer shelf still needs its bow bracket tab and the tanner shelf its leather grades | `grug_traders/stock.lua` |
+| **Traders** | the bowyer shelf exposes bows and player arrows; the tanner shelf exposes the leather grades through the existing rotation and quality paths | `grug_traders/stock.lua` |
 | **Character visuals** | consume the delivered leather family and bow pose without new Scout-specific art | `character_visuals.md` §§3, 6 |
-| **Combat stat consumers** | S3 supplies the ranged damage term and Scout dodge consumer. The shared cap rule and targeted Unbroken consumer are delivered; the Mage crit override remains WP11 X3 | `combat_stats.md` §2; `skill_trees.md` §3.2 |
+| **Combat stat consumers** | the ranged damage term and Scout dodge consumer are delivered. The shared cap rule and targeted Unbroken consumer are delivered; the Mage crit override remains WP11 X3 | `combat_stats.md` §2; `skill_trees.md` §3.2 |
 | **PvP (WP41)** | nothing in version 1. Sprint and Sidestep are ordinary buffs under the existing tag rules | `combat_stats.md:270-289` |
 | **`grug_visuals`, `grug_mobs` AI, nametags** | **nothing** — every one of those was an invisibility dependency (§8) | — |
 
@@ -354,9 +354,9 @@ moves to the mob-pressure lane that needs it anyway.
 | Lane | Scope | Depends on | Size |
 |---|---|---|---|
 | **S0 — design** | this file and `skill_trees.md` §2.7/§2.8 | — | **done** |
-| **S1 — bow consumer** | ballistic player-arrow entity, bounded draw/charge settlement, Scout abilities, and the still-required bowyer bracket using the delivered bow/ammo/quiver APIs and art | GEAR, COMBAT | **L** |
-| **S2 — leather stock integration** | the still-required tanner shelf entries using the delivered leather catalog | GEAR | **S** |
-| **S3 — the class and its trees** | `grug_classes` registration (attributes, growth, colour), the four base abilities of §2, the class-selection entry, the starter grant, the ranged damage term of ruling 28, **and** the 16 talents of `skill_trees.md` §2.7/§2.8 — 10 numeric consumers, **2 new-skill keystones** (Pinning Shot, Opening), **3 replacements** (Twin Shot, Shake Loose and the capstone Longshot) and **1 capstone effect** (Untouchable) — plus the KAT rows | S1, S2, WP11 X1-X4, the aggregator | **L** |
+| **S1 — bow consumer** | ballistic player-arrow entity, bounded draw/charge settlement, Scout abilities and bowyer bracket using the delivered bow/ammo/quiver APIs and art | GEAR, COMBAT | **delivered** |
+| **S2 — leather stock integration** | tanner shelf entries using the delivered leather catalog | GEAR | **delivered** |
+| **S3 — the class and its trees** | `grug_classes` registration (attributes, growth, colour), the four base abilities of §2, the class-selection entry, the starter grant, the ranged damage term of ruling 28, **and** the 16 talents of `skill_trees.md` §2.7/§2.8 — 10 numeric consumers, **2 new-skill keystones** (Pinning Shot, Opening), **3 replacements** (Twin Shot, Shake Loose and the capstone Longshot) and **1 capstone effect** (Untouchable) — plus the KAT rows | S1, S2, WP11 X1-X4, the aggregator | **delivered** |
 
 ### 7.3 My estimate, and what changed
 
@@ -369,21 +369,23 @@ more than the original sketch did.
 
 What that rests on, measured rather than assumed:
 
-- **S1 owns the remaining ballistic consumer; S2 is now only stock
-  integration.** The item registrations, leather family and visual assets are
-  delivered dependencies and must not be recreated.
+- **S1 delivered the ballistic consumer; S2 delivered stock integration.**
+  The item registrations, leather family and visual assets remain shared
+  dependencies and are not recreated.
 - **S3 absorbs what used to be two lanes** (the class and its trees) because
   ruling 13 leaves the Scout with just **two** new ability registrations
   across both trees, and everything else is a read inside an ability that S3
   itself wrote.
-- **The wave is still not self-contained.** S3 consumes the shipped WP11
+- **The wave uses shared foundations.** S3 consumes the shipped WP11
   foundations and movement aggregator plus the accepted GEAR/COMBAT seams.
 - **Nothing remaining in version 1 changes `grug_visuals`, mobs AI or PvP.** That is
   ruling 12's whole return: the three conflicts marked **blocks** in the
   previous revision were all stealth's, and all three are now in §8.
 
-Current sequencing is **accepted GEAR/COMBAT/ART foundations → remaining stock
+The completed sequence was **accepted GEAR/COMBAT/ART foundations → stock
 integration and ballistic consumer → Scout class and talent settlement**.
+The implementation and focused verification are recorded in
+[`round11-scout-evidence.md`](../research/round11-scout-evidence.md).
 
 ## 8. Deferred: stealth v2
 

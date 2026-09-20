@@ -1,8 +1,8 @@
 # R11 SCOUT-TRADERS independent review — findings
 
-Candidate: `52a6111a3783b465910ba289eefaff6275eb781f`  
-Base: `6bd8a6b8`  
-Review: fresh native GPT-5.6 Sol, read-only  
+Candidate: `52a6111a3783b465910ba289eefaff6275eb781f`\
+Base: `6bd8a6b8`\
+Review: fresh native GPT-5.6 Sol, read-only\
 Result: **not clean**
 
 ## Medium

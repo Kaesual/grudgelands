@@ -1,8 +1,9 @@
 # Round 11 fresh-world playtest checklist
 
-**Preparation draft — not a delivery notice.** Implementation and independent
-reviews are still running. Root updates this header after main integration,
-synchronization and push. Offline checks do not establish GUI acceptance.
+**Round 11 playtest build — 2026-09-20.** Implementation, independent reviews,
+focused LuaJIT/static gates and the isolated native engine witness pass. Delivery
+is tracked in [Round 11 completion](round11-completion.md). GUI acceptance
+remains this checklist; no PUC runtime was run in this round.
 
 Use a fresh world. For the supplied beach witnesses use seed
 `15140735923413111218`. Keep Creative disabled when checking durability;

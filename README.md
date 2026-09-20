@@ -1,6 +1,6 @@
 # Grudgelands
 
-Final integrated status and exact gate identities: [Round 10 final completion](docs/research/round10-final-completion.md).
+Final integrated status and exact gate identities: [Round 11 completion](docs/research/round11-completion.md).
 Final technical gates PASS. The reviewed changes are delivered on main, synchronized
 and pushed; GUI acceptance remains pending.
 
@@ -8,7 +8,7 @@ and pushed; GUI acceptance remains pending.
 classes, XP, quests, professions, housing, an item economy and geographic PvP,
 built as a standalone Lua game rather than a mod pack.
 
-> **Status: in development.** The world, mobs, three classes, combat,
+> **Status: in development.** The world, mobs, four classes, combat,
 > equipment, XP, money/vendors, Cooking, Alchemy and the integrated seven-primary
 > profession/equipment work are delivered and playable.
 > The named-zone world is implemented and still has explicit release/runtime gates;
@@ -143,7 +143,7 @@ adds equivalent cloth and leather bag lines.
 water-only buckets and slow bounded renewal of depleted wild plants.
 [Durability and repair](docs/design/durability_repair.md) keeps broken gear and
 lets every city profession trainer repair it for copper, with a maximum price
-of 20% of its reference purchase price. These Round-11 additions are in progress.
+of 20% of its reference purchase price. Both are delivered in Round 11.
 
 [Seven primary professions](docs/design/professions.md) are cut by material:
 Weaponsmith, Armorsmith, Leatherworker, Tailor, Woodcarver, Goldsmith and
@@ -185,7 +185,8 @@ targets only at 120% threat and use a 25 m soft de-aggro plus 40 m leash.
 Elites/rares telegraph their strongest attack so movement, not gear alone,
 answers it.
 
-The [MVP class kits](docs/design/classes.md) are Warrior, Mage and Priest.
+The [MVP class kits](docs/design/classes.md) are Warrior, Mage, Priest and
+[Scout](docs/design/scout.md), whose bow arrows use held draw and ballistic flight.
 The equipped weapon drives every swing skill while a server-authoritative
 clock and current eye ray decide when and what it hits; click spam cannot
 outrun hold. Enemy memory is Target-Frame state only, ally memory remains a
@@ -198,18 +199,17 @@ played hours, with **one talent point every two levels** — thirty by level 60,
 enough to fill one whole tree — and a new active skill from a tree's
 keystone.
 
-The trees those points are spent in are still a proposal:
+The talent design is decided:
 [skill_trees.md](docs/design/skill_trees.md) gives every class two trees of
 two chains, twenty-eight ranks each, and lists all sixty-four talents. A
 tree's
 keystone either adds one new button or **replaces** one the player already
 has, so no build ever carries more than two extra keys, and nine talents
 deliberately break a cap or a control rule — each paying for it with a stated
-cooldown. A fourth class, the [Scout](docs/design/scout.md) — leather, a bow
-and a blade — is designed there too, planned now and built later. Both files
-carry a **PROPOSAL** banner; as of 2026-09-16 the user has answered every
-open question in them. WP11's X1, X2 and X4 are implemented; its X3 and the
-Scout remain open.
+cooldown. Scout's two complete trees and four base abilities are implemented,
+alongside WP11's X1, X2 and X4 foundations. The original three classes still
+await most X3 keystones and capstones; Round 11 supplies the targeted
+Ironbound/Unbroken armor consumers without closing that wider work.
 
 Death returns a player to their race's starting settlement with inventory
 intact; the decided PvE penalty removes 25% of the whole current-level XP span,
@@ -252,52 +252,37 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 ## Current State
 
 *Last updated: 2026-09-20. Derived from [BACKLOG.md](BACKLOG.md) and
-[ROADMAP.md](ROADMAP.md); Round 10 technical delivery is complete and
-Round 11 is approved and implementation is in progress after user playtest feedback.*
+[ROADMAP.md](ROADMAP.md); Round 11 technical delivery is complete;
+the next fresh-world GUI playtest remains the user acceptance gate.*
 
-**Shipped foundation:** 22 of 53 tracked work-package identities are complete:
-WP0–WP4,
+**Shipped foundation:** 23 of 53 tracked identities are complete: WP0–WP4,
 WP6, WP7, WP15, WP18, WP19, WP25, WP26, WP33, WP35, WP36, WP38, WP39, WP40,
-WP43, WP45, WP-HUD and WP-Speed. The denominator comprises numbered WP0–WP49
-plus WP-Scout, WP-HUD and WP-Speed; canceled tombstone WP16 is tracked but is
-not shipped. The shipped packages provide three classes, combat, mobs, the
-named-zone world, canonical materials, gathering, equipment slots, currency,
-Cooking/Alchemy infrastructure, status/food systems and safe character creation.
-Round-9 MOB2/BOSS, trinket effects, mana, farming mechanics and map/performance
-work are present as delivered subpackages without changing whole-WP counts.
+WP43, WP45, WP-HUD, WP-Speed and WP-Scout. The denominator includes numbered
+WP0–WP49 and the three named packages; canceled WP16 is tracked but not shipped.
+These foundations provide four classes, combat, mobs, the named-zone world,
+materials, gathering, equipment, currency, Cooking/Alchemy and safe character creation.
 
-**Integrated Round-10 work:** EQUIP, GAME, WORLD, ART, CAP, FARM and MAP-B are in the
-delivered main branch and independently clean. This includes Basics and
-seven primaries, universal base equipment, refinement/affixes, licensed
-nonweapon art, corrected cave/material behavior, percentage falls and
-dragon/mount behavior, all 17 crop lifecycles, and six capitals with eight
-profession trainers plus a separate Riding Trainer and seven stations per city,
-with 24 mount displays and 18 gear displays across all six. Fifteen Cooking wild
-sources, ash/moss soils, real field soil and sea-only reef content are implemented;
-the six-capital service/precinct/Alchemy witnesses and six-start order/reload
-checks pass. Final interpreter parity, main delivery, synchronization and push
-are complete; GUI acceptance remains pending.
+**Delivered Round 11:** the independently reviewed build adds Scout and both
+trees, live shields/books/quivers, family-filtered affixes, attacker-level armor,
+slow equipment wear and money-only repair. Farming gains distinct seed art,
+seven hoes, water buckets and bounded wild-plant renewal at lower initial density.
+Reported beach columns, dragon persistence, mount orientation, station windows
+and book refresh are corrected; open animated stables and profession displays
+extend all six capitals. Targeted LuaJIT, plain-5.1 static and isolated native
+engine checks pass; PUC runtime was explicitly waived for this round.
 
-**In progress:** [Round 11](docs/research/round11-plan/README.md) addresses the
-playtest defects and adds Scout, offhands, family-specific affixes, armor rating,
-plant renewal, buckets and simple repair. The approved source rules are being
-folded into living design before each implementation; no Round-11 completion
-or GUI acceptance is claimed yet. WP13 has all six starts and capitals but still owns most of the
-100-anchor POI roster; its Round-10 capital work moves trainers into themed outer
-premises and adds dedicated stables. WP11 has X1/X2/X4 and still lacks X3.
-WP10's framework, Cooking, Alchemy and integrated equipment/catalog work are
-present without declaring the whole WP complete. Farming mechanics, visuals, wild
-acquisition and field soils are integrated; future Claim Stone integration remains
-separate from ordinary legal-ground farming.
+**In progress:** WP11 still owns the original three classes' remaining X3
+abilities and capstones; Scout completion does not close that broader package.
+WP13 has six starts and capitals but still owns most of the 100-anchor POI roster.
+WP10/WP29 retain broader catalog/economy work, WP14 retains carried light, and
+WP22 retains six-pick runtime calibration and the deferred repair redesign.
+Ordinary farming is delivered independently of future Claim Stone integration.
 
-**Not yet:** quests, parties, remaining recovery/offhand work, WP22 durability,
-WP24 Housing, WP41 geographic PvP, WP42 fronts, WP46, WP47, WP49, Scout and the
-first-public-release gates remain open. WP44 still owns the complete economy
-rebase despite the integrated vendor correction. GUI acceptance remains required
-for crafting/refinement, six-capital services, mount cameras/steps, falls,
-ambient/dragon behavior, farming, cave witnesses and final art. Use the
-[Round-10 fresh-world checklist](docs/research/round10-next-playtest.md) after
-technical delivery and synchronization.
+**Not yet:** quests, parties, remaining recovery work, Housing, geographic PvP,
+war fronts and the first-public-release gates remain open. WP44 owns the full
+economy rebase, while WP46's general explosion/fire/lava protection extends beyond
+the delivered water guard. GUI acceptance remains required for the new gameplay
+and visual changes; use the [Round-11 fresh-world checklist](docs/research/round11-next-playtest.md).
 
 Historical Round-7 through Round-10 decisions are archived under
 [docs/research/](docs/research/); current rules live only in `docs/design/`, and

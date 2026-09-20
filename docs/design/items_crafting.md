@@ -2371,21 +2371,21 @@ are derived only after those rates are measured; the retired fixed
 
 ## 9. Bow and arrow item foundation
 
-**Its consumer exists on paper since 2026-09-16**: the Scout's base kit opens
+**Its consumer is delivered in Round 11**: the Scout's base kit opens
 with a bow shot ([scout.md](scout.md) §2, rulings 7 and 12 of
 [skill_trees.md](skill_trees.md) §5) and the arrow is **ballistic** — gravity
 and a draw-time impulse, while Fireball stays straight (`combat_stats.md`
 §2, `classes.md` §2b). Round 11 has delivered the registered bow, arrow and
-quiver item foundation below. The SCOUT package still owns draw, launch and
-hit settlement.
+quiver item foundation below. The Scout runtime owns draw, launch and
+accepted-action hit settlement.
 
 Item path (source: `mcl_bows`, code **LGPL 3.0 or GPL 3.0** — VoxeLibre
 dual-licences every mod, `LEGAL.md:25-28`, and both are on `AGENTS.md`'s
 permitted list ✓; media: **textures CC BY-SA 4.0**, sounds **two CC0** plus
 **one CC BY 3.0** (`mcl_bows_hit_player.ogg`, tim.kahn) — so exactly **one**
 attribution-requiring sound, not two; port ≈ 1000 lines incl.
-`vl_projectile`, §1.2). The item/ammunition foundation is active; the Scout
-ability consumer remains the separately scheduled SCOUT package:
+`vl_projectile`, §1.2). The item/ammunition foundation and Scout ability
+consumer are active:
 
 - **Bow family on the weapon curve**: full-charge damage = the 1H curve
   (8/13/19/24 at ilvl 12/27/42/57) at 25 m range, charge 0.5 s (mcl
@@ -2396,7 +2396,9 @@ ability consumer remains the separately scheduled SCOUT package:
 - **Arrows** as stackable ammo + entity (vl_projectile template);
   craft 20/batch: 1 iron bar + 4 sticks + 4 feathers (sharp feathers —
   eagle/vulture drops finally get their reagent role). The optional quiver is
-  a Leatherworker Offhand item with four arrow-only slots (§3.4).
+  a Leatherworker Offhand item with four arrow-only slots (§3.4). The current
+  Bowyer offer is 3c per arrow (2c after the same-race discount), with 1c
+  buy-back; purchase remains strictly above buy-back after rounding.
 - **Plain production is Basics; Woodcarver owns refinement and affixes.** The
   Scout consumes the family in V1. The Leatherworker's Apprentice quiver is an
   optional four-stack Offhand convenience; shooting still reads `main` when no

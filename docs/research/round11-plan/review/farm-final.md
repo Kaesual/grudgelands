@@ -1,7 +1,7 @@
 # Independent Round 11 FARM final review
 
-Reviewer: native GPT-5.6 Sol (`/root/r11_farm_review`), independent of all candidate and correction commits.  
-Final candidate: `a6889da2` on `wp33-r11-farm`; production candidate `e5486a85`; base `16b7449c`.  
+Reviewer: native GPT-5.6 Sol (`/root/r11_farm_review`), independent of all candidate and correction commits.\
+Final candidate: `a6889da2` on `wp33-r11-farm`; production candidate `e5486a85`; base `16b7449c`.\
 Disposition: **CLEAN**.
 
 ## Review scope and result

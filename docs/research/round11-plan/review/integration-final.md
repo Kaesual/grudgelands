@@ -1,7 +1,7 @@
 # Round 11 final integration fixes — independent review
 
-Reviewer: native Sol, independent of both production fixes.  
-Scope: frozen root-worktree Arrow price/audit correction and planner-source schema correction only.  
+Reviewer: native Sol, independent of both production fixes.
+Scope: frozen root-worktree Arrow price/audit correction and planner-source schema correction only.
 Result: **CLEAN — no substantive findings.**
 
 ## Trader correction

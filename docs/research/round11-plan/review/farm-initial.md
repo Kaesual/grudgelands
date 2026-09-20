@@ -1,7 +1,7 @@
 # Independent Round 11 FARM review
 
-Reviewer: native GPT-5.6 Sol (`/root/r11_farm_review`), independent of all candidate commits.  
-Candidate: `e5486a85afdd5c22babe553f865b27b6b443f770` on `wp33-r11-farm`; base `16b7449c`.  
+Reviewer: native GPT-5.6 Sol (`/root/r11_farm_review`), independent of all candidate commits.\
+Candidate: `e5486a85afdd5c22babe553f865b27b6b443f770` on `wp33-r11-farm`; base `16b7449c`.\
 Disposition: **CHANGES REQUESTED** (evidence-integrity correction; no production-code defect found).
 
 ## Findings

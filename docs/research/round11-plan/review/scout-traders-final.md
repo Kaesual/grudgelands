@@ -1,7 +1,7 @@
 # R11 SCOUT-TRADERS final focused review
 
-Candidate: `9730af2505020967bbde14bcabbd7cb425a8af25`  
-Review: fresh native GPT-5.6 Sol, read-only  
+Candidate: `9730af2505020967bbde14bcabbd7cb425a8af25`\
+Review: fresh native GPT-5.6 Sol, read-only\
 Result: **clean — no substantive findings**
 
 The final comment-only correction changes the remaining stale Bowyer statement
