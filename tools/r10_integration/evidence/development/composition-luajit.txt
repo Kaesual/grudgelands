@@ -1,0 +1,230 @@
+material_tier	lower_input_accepted_at_output_tier	gear_lower_input_refused
+refused	unknown profession
+refused	unknown station
+refused	missing tier ingredient
+refused	higher tier ingredient
+refused	duplicate output
+refused	universal output collision
+refused	dual-furnace output collision
+refused	universal input collision
+in_place	universal_output_accepted	ordinary_collision_refused	station_operation_accepted	missing_output_input_refused
+refused	overlapping group inputs
+registry	recipes=5	engine=4	input_collisions_refused	group_overlap_refused	late_collision_audited
+slots	weaponsmith	alchemist	secondary_unlimited
+levels	tier=2	count=0	band=2
+permission	locked_refused	learned_allowed	above_level_refused	requirement_named	last_in_real_chain	masterwork_preconsume_refused	emergency_no_restore	universal_still_craftable	craft_recorded
+authority	deferred_after_mods_loaded	late_inserted_before_gate	first_craft_refused	stale_registrar_fail_closed	logged_once
+ambiguity	overlap_registration_refused	output_replaced	runtime_fail_closed	logged_once	player_notified
+station	locked_refused	move_bypass_refused	partial_batches_coalesced	craft_recorded
+unlearn	state_wiped
+trainer	role_installed	learned	confirmed_unlearn
+crafting	none	slots=4	empty=3	inside	nonoverlap
+crafting	one	slots=4	empty=2	inside	nonoverlap
+crafting	two	slots=4	empty=1	inside	nonoverlap
+crafting	two_cooking	slots=4	empty=0	inside	nonoverlap
+book	recipes=40	capacity=14	pages=3	last=12	search=1	grid=3x3	inside	nonoverlap
+escaping	description+input+hint	general_recipes_listed
+scale	professions=200	universal=2000	matrix_checks=860100	corpus_scans=4802
+adversarial	slots=9	broad_groups=8	matrix_checks=81	group_item_checks=1500	token_pairs=4
+registry	trainer accepted	profession copied	unknown refused
+start	hearthpine	cooking	2	1	10	ground+headroom	trainer_unique_against=19
+start	dawnmere	cooking	2	1	10	ground+headroom	trainer_unique_against=19
+start	silverleaf	cooking	2	1	10	ground+headroom	trainer_unique_against=19
+start	stillgrave	cooking	2	1	-10	ground+headroom	trainer_unique_against=19
+start	sunscar	cooking	2	1	-10	ground+headroom	trainer_unique_against=19
+start	kapok	cooking	2	1	-10	ground+headroom	trainer_unique_against=19
+capital	highcourt	trainers=8+riding=1+stations=7	outerplots+ground+headroom	trainer_unique_against=279
+capital	dur_brannoc	trainers=8+riding=1+stations=7	outerplots+ground+headroom	trainer_unique_against=292
+capital	lethariel	trainers=8+riding=1+stations=7	outerplots+ground+headroom	trainer_unique_against=276
+capital	gor_drazhak	trainers=8+riding=1+stations=7	outerplots+ground+headroom	trainer_unique_against=338
+capital	kezamba	trainers=8+riding=1+stations=7	outerplots+ground+headroom	trainer_unique_against=285
+capital	nhal_veyr	trainers=8+riding=1+stations=7	outerplots+ground+headroom	trainer_unique_against=297
+r10_professions	seven primaries	split smiths	owned operations	PASS
+r10_professions	seven primaries	split smiths	owned operations	PASS
+r10_professions	seven primaries	split smiths	owned operations	PASS
+r10_professions	seven primaries	split smiths	owned operations	PASS
+PASS r9 goldsmith catalog recipes=62 outputs=62
+stations	ids=5	nodes=5	grid=3x3	book_button
+recipes	housing_t3=5	acyclic	shaped+shapeless	station_isolated
+operation	near+ACL	exact-once	full-inventory-no-roll
+capitals	count=6	stations_each=7	authored_outer_socket	reachable	shared_forge
+weaponsmith	forge	grug_jobs:forge	0,1,-8
+leatherworker	tanning_rack	grug_jobs:tanning_rack	2,1,-20
+tailor	tailor_bench	grug_jobs:tailor_bench	0,1,-16
+woodcarver	carving_bench	grug_jobs:carving_bench	0,1,-24
+goldsmith	jewellers_bench	grug_jobs:jewellers_bench	2,1,-28
+pools	five ordinary families	exact
+roll_matrix	150	legal unique bounded
+trinket	one prefix	one suffix	unrefined exception
+station_ops	preserve stack	append one	mastery 1/2/3/4
+kits	imbue 1-2	temper values	cap two	trinkets fixed two
+crafted	Common/refined/Fine/Masterwork	100% exact rows
+drop	3/20+3/100+25/100	ledger hook	King 70 Dragon 75	immediate+queued player descriptions
+description	meta round-trip	prefix/suffix positional	fixed seed 424242
+consumers	attributes	crit/dodge/armor/pools cached
+wp13_gear_trinket_special	Restores 2 Rage on an accepted hit
+wp13_gear_metals	Bronze,Iron,Steel,Silversteel,Embersteel,Abyssal Steel
+wp13_gear_cloth	Patch,Woven,Heavy,Silkweave,Silk,Stormweave
+wp13_gear_leather	Light,Cured,Heavy,Scaled,Sleek,Nightscale
+wp13_gear_item	grug_gear:sword_bronze	Bronze Sword	3	5
+wp13_gear_item	grug_gear:dagger_bronze	Bronze Dagger	3	4
+wp13_gear_item	grug_gear:greataxe_bronze	Bronze Greataxe	3	8
+wp13_gear_item	grug_gear:staff_bronze	Bronze Staff	3	6
+wp13_gear_item	grug_gear:wand_bronze	Bronze Wand	3	5
+wp13_gear_item	grug_gear:scepter_bronze	Bronze Scepter	3	5
+wp13_gear_item	grug_gear:orb_bronze	Bronze Orb	3	5
+wp13_gear_item	grug_gear:head_metal_bronze	Bronze Helm	3	2
+wp13_gear_item	grug_gear:chest_metal_bronze	Bronze Chestplate	3	3
+wp13_gear_item	grug_gear:legs_metal_bronze	Bronze Greaves	3	2
+wp13_gear_item	grug_gear:feet_metal_bronze	Bronze Sabatons	3	1
+wp13_gear_item	grug_gear:head_leather_light	Light Hood	3	1
+wp13_gear_item	grug_gear:chest_leather_light	Light Jerkin	3	2
+wp13_gear_item	grug_gear:legs_leather_light	Light Pants	3	1
+wp13_gear_item	grug_gear:feet_leather_light	Light Boots	3	1
+wp13_gear_item	grug_gear:head_cloth_patch	Patch Cowl	3	1
+wp13_gear_item	grug_gear:chest_cloth_patch	Patch Robe	3	1
+wp13_gear_item	grug_gear:legs_cloth_patch	Patch Leggings	3	1
+wp13_gear_item	grug_gear:feet_cloth_patch	Patch Slippers	3	1
+wp13_gear_item	grug_gear:sword_iron	Iron Sword	10	8
+wp13_gear_item	grug_gear:dagger_iron	Iron Dagger	10	6
+wp13_gear_item	grug_gear:greataxe_iron	Iron Greataxe	10	12
+wp13_gear_item	grug_gear:staff_iron	Iron Staff	10	10
+wp13_gear_item	grug_gear:wand_iron	Iron Wand	10	8
+wp13_gear_item	grug_gear:scepter_iron	Iron Scepter	10	8
+wp13_gear_item	grug_gear:orb_iron	Iron Orb	10	8
+wp13_gear_item	grug_gear:head_metal_iron	Iron Helm	10	3
+wp13_gear_item	grug_gear:chest_metal_iron	Iron Chestplate	10	5
+wp13_gear_item	grug_gear:legs_metal_iron	Iron Greaves	10	4
+wp13_gear_item	grug_gear:feet_metal_iron	Iron Sabatons	10	2
+wp13_gear_item	grug_gear:head_leather_cured	Cured Hood	10	2
+wp13_gear_item	grug_gear:chest_leather_cured	Cured Jerkin	10	3
+wp13_gear_item	grug_gear:legs_leather_cured	Cured Pants	10	3
+wp13_gear_item	grug_gear:feet_leather_cured	Cured Boots	10	2
+wp13_gear_item	grug_gear:head_cloth_woven	Woven Cowl	10	1
+wp13_gear_item	grug_gear:chest_cloth_woven	Woven Robe	10	2
+wp13_gear_item	grug_gear:legs_cloth_woven	Woven Leggings	10	1
+wp13_gear_item	grug_gear:feet_cloth_woven	Woven Slippers	10	1
+wp13_gear_item	grug_gear:sword_steel	Steel Sword	20	11
+wp13_gear_item	grug_gear:dagger_steel	Steel Dagger	20	8
+wp13_gear_item	grug_gear:greataxe_steel	Steel Greataxe	20	17
+wp13_gear_item	grug_gear:staff_steel	Steel Staff	20	13
+wp13_gear_item	grug_gear:wand_steel	Steel Wand	20	11
+wp13_gear_item	grug_gear:scepter_steel	Steel Scepter	20	11
+wp13_gear_item	grug_gear:orb_steel	Steel Orb	20	11
+wp13_gear_item	grug_gear:head_metal_steel	Steel Helm	20	5
+wp13_gear_item	grug_gear:chest_metal_steel	Steel Chestplate	20	8
+wp13_gear_item	grug_gear:legs_metal_steel	Steel Greaves	20	6
+wp13_gear_item	grug_gear:feet_metal_steel	Steel Sabatons	20	4
+wp13_gear_item	grug_gear:head_leather_heavy	Heavy Hood	20	4
+wp13_gear_item	grug_gear:chest_leather_heavy	Heavy Jerkin	20	6
+wp13_gear_item	grug_gear:legs_leather_heavy	Heavy Pants	20	4
+wp13_gear_item	grug_gear:feet_leather_heavy	Heavy Boots	20	3
+wp13_gear_item	grug_gear:head_cloth_heavy	Heavy Cowl	20	1
+wp13_gear_item	grug_gear:chest_cloth_heavy	Heavy Robe	20	2
+wp13_gear_item	grug_gear:legs_cloth_heavy	Heavy Leggings	20	2
+wp13_gear_item	grug_gear:feet_cloth_heavy	Heavy Slippers	20	1
+wp13_gear_item	grug_gear:sword_silversteel	Silversteel Sword	30	15
+wp13_gear_item	grug_gear:dagger_silversteel	Silversteel Dagger	30	11
+wp13_gear_item	grug_gear:greataxe_silversteel	Silversteel Greataxe	30	23
+wp13_gear_item	grug_gear:staff_silversteel	Silversteel Staff	30	18
+wp13_gear_item	grug_gear:wand_silversteel	Silversteel Wand	30	15
+wp13_gear_item	grug_gear:scepter_silversteel	Silversteel Scepter	30	15
+wp13_gear_item	grug_gear:orb_silversteel	Silversteel Orb	30	15
+wp13_gear_item	grug_gear:head_metal_silversteel	Silversteel Helm	30	7
+wp13_gear_item	grug_gear:chest_metal_silversteel	Silversteel Chestplate	30	11
+wp13_gear_item	grug_gear:legs_metal_silversteel	Silversteel Greaves	30	9
+wp13_gear_item	grug_gear:feet_metal_silversteel	Silversteel Sabatons	30	5
+wp13_gear_item	grug_gear:head_leather_scaled	Scaled Hood	30	5
+wp13_gear_item	grug_gear:chest_leather_scaled	Scaled Jerkin	30	8
+wp13_gear_item	grug_gear:legs_leather_scaled	Scaled Pants	30	6
+wp13_gear_item	grug_gear:feet_leather_scaled	Scaled Boots	30	4
+wp13_gear_item	grug_gear:head_cloth_silkweave	Silkweave Cowl	30	2
+wp13_gear_item	grug_gear:chest_cloth_silkweave	Silkweave Robe	30	3
+wp13_gear_item	grug_gear:legs_cloth_silkweave	Silkweave Leggings	30	2
+wp13_gear_item	grug_gear:feet_cloth_silkweave	Silkweave Slippers	30	1
+wp13_gear_item	grug_gear:sword_embersteel	Embersteel Sword	40	18
+wp13_gear_item	grug_gear:dagger_embersteel	Embersteel Dagger	40	13
+wp13_gear_item	grug_gear:greataxe_embersteel	Embersteel Greataxe	40	27
+wp13_gear_item	grug_gear:staff_embersteel	Embersteel Staff	40	22
+wp13_gear_item	grug_gear:wand_embersteel	Embersteel Wand	40	18
+wp13_gear_item	grug_gear:scepter_embersteel	Embersteel Scepter	40	18
+wp13_gear_item	grug_gear:orb_embersteel	Embersteel Orb	40	18
+wp13_gear_item	grug_gear:head_metal_embersteel	Embersteel Helm	40	9
+wp13_gear_item	grug_gear:chest_metal_embersteel	Embersteel Chestplate	40	14
+wp13_gear_item	grug_gear:legs_metal_embersteel	Embersteel Greaves	40	11
+wp13_gear_item	grug_gear:feet_metal_embersteel	Embersteel Sabatons	40	6
+wp13_gear_item	grug_gear:head_leather_sleek	Sleek Hood	40	6
+wp13_gear_item	grug_gear:chest_leather_sleek	Sleek Jerkin	40	10
+wp13_gear_item	grug_gear:legs_leather_sleek	Sleek Pants	40	8
+wp13_gear_item	grug_gear:feet_leather_sleek	Sleek Boots	40	5
+wp13_gear_item	grug_gear:head_cloth_silk	Silk Cowl	40	2
+wp13_gear_item	grug_gear:chest_cloth_silk	Silk Robe	40	4
+wp13_gear_item	grug_gear:legs_cloth_silk	Silk Leggings	40	3
+wp13_gear_item	grug_gear:feet_cloth_silk	Silk Slippers	40	2
+wp13_gear_item	grug_gear:sword_abyssal_steel	Abyssal Steel Sword	50	22
+wp13_gear_item	grug_gear:dagger_abyssal_steel	Abyssal Steel Dagger	50	15
+wp13_gear_item	grug_gear:greataxe_abyssal_steel	Abyssal Steel Greataxe	50	33
+wp13_gear_item	grug_gear:staff_abyssal_steel	Abyssal Steel Staff	50	26
+wp13_gear_item	grug_gear:wand_abyssal_steel	Abyssal Steel Wand	50	22
+wp13_gear_item	grug_gear:scepter_abyssal_steel	Abyssal Steel Scepter	50	22
+wp13_gear_item	grug_gear:orb_abyssal_steel	Abyssal Steel Orb	50	22
+wp13_gear_item	grug_gear:head_metal_abyssal_steel	Abyssal Steel Helm	50	11
+wp13_gear_item	grug_gear:chest_metal_abyssal_steel	Abyssal Steel Chestplate	50	17
+wp13_gear_item	grug_gear:legs_metal_abyssal_steel	Abyssal Steel Greaves	50	13
+wp13_gear_item	grug_gear:feet_metal_abyssal_steel	Abyssal Steel Sabatons	50	8
+wp13_gear_item	grug_gear:head_leather_nightscale	Nightscale Hood	50	8
+wp13_gear_item	grug_gear:chest_leather_nightscale	Nightscale Jerkin	50	12
+wp13_gear_item	grug_gear:legs_leather_nightscale	Nightscale Pants	50	10
+wp13_gear_item	grug_gear:feet_leather_nightscale	Nightscale Boots	50	6
+wp13_gear_item	grug_gear:head_cloth_stormweave	Stormweave Cowl	50	3
+wp13_gear_item	grug_gear:chest_cloth_stormweave	Stormweave Robe	50	5
+wp13_gear_item	grug_gear:legs_cloth_stormweave	Stormweave Leggings	50	4
+wp13_gear_item	grug_gear:feet_cloth_stormweave	Stormweave Slippers	50	2
+wp13_gear_count	114
+wp13_gear_trinkets	36
+wp13_gear_starter	grug_gear:staff_wood	Wooden Staff	default:sword_stone
+wp13_gear_retrofit	default:axe_bronze,default:axe_steel,default:axe_stone,default:axe_wood,default:sword_stone,default:sword_wood,grug_materials:axe_silversteel
+wp13_gear_adjectives	0
+wp13_gear_duplicates	0
+wp13_gear_vendored	default:axe_bronze,default:axe_steel,default:axe_stone,default:axe_wood,default:sword_stone,default:sword_wood	not	default:sword_bronze,default:sword_steel
+wp13_gear_prices	3:50/40/25 10:70/56/35 20:98/78/49 30:137/110/69 40:192/154/96 50:269/215/134
+wp13_gear_result	PASS	0
+r10_base_recipes	6 tiers	140 exact outputs	2D+yields	PASS
+r10_professions	seven primaries	split smiths	owned operations	PASS
+r10_vendor	13+3	four concepts	caster deterministic	Uncommon retained	PASS
+CAP geometry micro PASS
+dur_brannoc	forge	5824	2	1	0	0
+gor_drazhak	forge	5974	2	1	0	0
+highcourt	forge	5824	2	1	0	0
+highcourt	riding	8553	0	0	4	1
+kezamba	forge	5824	2	1	0	0
+lethariel	forge	5824	2	1	0	0
+nhal_veyr	forge	5824	2	1	0	0
+cap_riding_acl	PASS
+cap_inert_nodes	14
+cap_display_reload	24
+cap_purchase_chain	click+state+money+owner+profession_separation	PASS
+cap_public_furnace	activation+timer+acl+Cooking	PASS
+wp13_cv_inputs	6	3	4	6	dwarf,elf,human,orc,troll,undead	cloth,leather,metal	head,chest,legs,feet	#8a7f6a,#a89478,#c0b088,#d8cc9a,#e8dcb0,#ffffff
+wp13_cv_index	72	cloth=24,leather=24,metal=24	chest=18,feet=18,head=18,legs=18
+wp13_cv_roundtrip	grug_visuals_skin_dwarf.png^grug_visuals_metal_head_steel.png^grug_visuals_metal_chest_steel.png^grug_visuals_metal_legs_steel.png^grug_visuals_metal_feet_steel.png
+wp13_cv_matrix	546	546	545	2912082577
+wp13_cv_shapecheck	4	[multiply outside a group;unbalanced '(';unbalanced ')';trailing backslash
+wp13_cv_textures	78	0	grug_visuals_cloth_chest_heavy.png,grug_visuals_cloth_chest_patch.png,grug_visuals_cloth_chest_silk.png,grug_visuals_cloth_chest_silkweave.png,grug_visuals_cloth_chest_stormweave.png,grug_visuals_cloth_chest_woven.png,grug_visuals_cloth_feet_heavy.png,grug_visuals_cloth_feet_patch.png,grug_visuals_cloth_feet_silk.png,grug_visuals_cloth_feet_silkweave.png,grug_visuals_cloth_feet_stormweave.png,grug_visuals_cloth_feet_woven.png,grug_visuals_cloth_head_heavy.png,grug_visuals_cloth_head_patch.png,grug_visuals_cloth_head_silk.png,grug_visuals_cloth_head_silkweave.png,grug_visuals_cloth_head_stormweave.png,grug_visuals_cloth_head_woven.png,grug_visuals_cloth_legs_heavy.png,grug_visuals_cloth_legs_patch.png,grug_visuals_cloth_legs_silk.png,grug_visuals_cloth_legs_silkweave.png,grug_visuals_cloth_legs_stormweave.png,grug_visuals_cloth_legs_woven.png,grug_visuals_leather_chest_cured.png,grug_visuals_leather_chest_heavy.png,grug_visuals_leather_chest_light.png,grug_visuals_leather_chest_nightscale.png,grug_visuals_leather_chest_scaled.png,grug_visuals_leather_chest_sleek.png,grug_visuals_leather_feet_cured.png,grug_visuals_leather_feet_heavy.png,grug_visuals_leather_feet_light.png,grug_visuals_leather_feet_nightscale.png,grug_visuals_leather_feet_scaled.png,grug_visuals_leather_feet_sleek.png,grug_visuals_leather_head_cured.png,grug_visuals_leather_head_heavy.png,grug_visuals_leather_head_light.png,grug_visuals_leather_head_nightscale.png,grug_visuals_leather_head_scaled.png,grug_visuals_leather_head_sleek.png,grug_visuals_leather_legs_cured.png,grug_visuals_leather_legs_heavy.png,grug_visuals_leather_legs_light.png,grug_visuals_leather_legs_nightscale.png,grug_visuals_leather_legs_scaled.png,grug_visuals_leather_legs_sleek.png,grug_visuals_metal_chest_abyssal_steel.png,grug_visuals_metal_chest_bronze.png,grug_visuals_metal_chest_embersteel.png,grug_visuals_metal_chest_iron.png,grug_visuals_metal_chest_silversteel.png,grug_visuals_metal_chest_steel.png,grug_visuals_metal_feet_abyssal_steel.png,grug_visuals_metal_feet_bronze.png,grug_visuals_metal_feet_embersteel.png,grug_visuals_metal_feet_iron.png,grug_visuals_metal_feet_silversteel.png,grug_visuals_metal_feet_steel.png,grug_visuals_metal_head_abyssal_steel.png,grug_visuals_metal_head_bronze.png,grug_visuals_metal_head_embersteel.png,grug_visuals_metal_head_iron.png,grug_visuals_metal_head_silversteel.png,grug_visuals_metal_head_steel.png,grug_visuals_metal_legs_abyssal_steel.png,grug_visuals_metal_legs_bronze.png,grug_visuals_metal_legs_embersteel.png,grug_visuals_metal_legs_iron.png,grug_visuals_metal_legs_silversteel.png,grug_visuals_metal_legs_steel.png,grug_visuals_skin_dwarf.png,grug_visuals_skin_elf.png,grug_visuals_skin_human.png,grug_visuals_skin_orc.png,grug_visuals_skin_troll.png,grug_visuals_skin_undead.png
+wp13_cv_stature	0.85	1.12	dwarf=0.90/0.90/0.90,elf=1.06/1.06/1.06,human=1.00/1.00/1.00,orc=1.08/1.08/1.08,troll=1.12/1.12/1.12,undead=0.94/0.94/0.94
+wp13_cv_fallback	human;grug_visuals_skin_human.png;-;-;-;-;-	1	grug_mobs_mirefolk.png	nil
+wp13_cv_weapon	nil	grug_gear:sword_bronze	grug_gear:sword_abyssal_steel
+wp13_cv_result	PASS	0
+r10_mount_icons_v1	cases=8	fallbacks=4
+r10_art_v1	files=259	digest=1219104709
+r10/cliff	flat=pass	one=pass	two=refused	signed-half=pass	nonwalkable=pass	missing=pass	danger=pass	exceptions=pass
+r6_status_regressions	mana=40/60/0/100/hud2 status=10/8 hud=4 renew=10/10
+r6_status_result	failures=0
+PASS
+r9_boss_v1|dragons=2|whelps=2|kings=6|royal_guards=12|perches=3|warning=60|heartbeat_spawns=1|flight=1|dive=1|breath_cone=3|ground_effects=2|lightning_miss=1|gust=12|enrage=0.7|guard_full_step_follow_snap=1|guard_reset=0|particles_lt_1000=1
+r9_mounts_v3|tiers=4|models=12|warning=48|warning_probes=112|warning_interval=1|ceiling=600|assets=0
+r10_potion|base=15|loop=17|bonus_calls=1
+strike_description_rage=A full melee swing with your equipped weapon. Hold LMB and keep a hostile in your crosshair; the shared weapon clock prevents click spam. Generates 12 rage when it lands.
+strike_description_mana=A full melee swing with your equipped weapon. Hold LMB and keep a hostile in your crosshair; the shared weapon clock prevents click spam.
+strike_description_classless=A full melee swing with your equipped weapon. Hold LMB and keep a hostile in your crosshair; the shared weapon clock prevents click spam.
+combat_integration_test: ok
