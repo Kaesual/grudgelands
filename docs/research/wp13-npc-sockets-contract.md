@@ -38,7 +38,7 @@ registry in `grug_core` and never touch the mapgen mod.
   - `vendor` — a trader; `kind` is `"race"` or `"general"` (the two vendor
     families of `grug_traders`);
   - `trainer` — a profession trainer resident; `profession` is exactly one of
-    `blacksmith`, `alchemist`, `tailor`, `leatherworker`, `woodcarver`,
+    `weaponsmith`, `armorsmith`, `alchemist`, `tailor`, `leatherworker`, `woodcarver`,
     `goldsmith` or `cooking`. No other role may carry `profession`;
   - `idle` — a flair NPC spot; `tags` is an optional list such as
     `{"bench"}`, `{"door"}`, `{"work"}`, `{"fire"}` the NPC lane may use for
@@ -50,6 +50,14 @@ registry in `grug_core` and never touch the mapgen mod.
   - `king` — the throne (capitals only);
   - `waypoint` — reserved for WP17's travel waypoint; the structure lane
     places it, nobody else consumes it yet.
+- Round 10 adds `riding_trainer` (one capital-only service), `mount_display`
+  (tags contains exactly the tier string `1`..`4`), `gear_display` (one of
+  `weapon`, `armor`, `jewel`) and `public_station` (one exact station id).
+  Displays are static render entities governed by the existing socket lease.
+  A public-station socket is a node anchor, not an NPC standing position: its
+  cell contains the actual station. Its terrain-relative projection is the
+  public-access registration authority, independent of nearby trainer offsets.
+  Only `trainer` carries a profession; Riding is not a profession.
 - `id` is unique within one blueprint; the string is stable (it may appear
   in logs and tests).
 - `spawn` is either absent or exactly `false`, and only an `idle` socket may
@@ -103,8 +111,8 @@ different things: `idle` is how many standing positions a settlement offers,
 `spare` how many of them nobody lives on.
 
 Since 2026-09-18 every start additionally carries one `trainer` socket for
-Cooking. Every capital carries seven `trainer` sockets, one for each of the six
-primary professions and one for Cooking.
+Cooking. Every capital carries eight `trainer` sockets, one for each of the seven
+primary professions and one for Cooking, all in themed outer premises.
 
 ## 5. User rulings
 

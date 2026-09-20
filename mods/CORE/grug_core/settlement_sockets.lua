@@ -31,8 +31,9 @@
 
 local ROLES = {guard_post = true, guard_patrol = true, vendor = true,
 	idle = true, quest = true, king = true, waypoint = true, work = true,
-	trainer = true}
-local TRAINER_PROFESSIONS = {blacksmith = true, alchemist = true,
+	trainer = true, riding_trainer = true, mount_display = true,
+	gear_display = true, public_station = true}
+local TRAINER_PROFESSIONS = {weaponsmith = true, armorsmith = true, alchemist = true,
 	tailor = true, leatherworker = true, woodcarver = true, goldsmith = true,
 	cooking = true}
 -- Contract section 8.4: the two vendor families plus the professions. The
@@ -149,6 +150,23 @@ local function compile(settlement_key, anchor, socket, seen)
 			local tag = socket.tags[index]
 			if type(tag) ~= "string" or tag == "" then fail(where .. ": tag differs") end
 			tags[index] = tag
+		end
+	end
+	if socket.role == "mount_display" then
+		if not tags or #tags ~= 1 or not ({["1"]=true,["2"]=true,
+				["3"]=true,["4"]=true})[tags[1]] then
+			fail(where .. ": mount display tier differs")
+		end
+	elseif socket.role == "gear_display" then
+		if not tags or #tags ~= 1 or not ({weapon=true,armor=true,jewel=true})[tags[1]] then
+			fail(where .. ": gear display identity differs")
+		end
+	elseif socket.role == "public_station" then
+		local station = tags and tags[1]
+		if not tags or #tags ~= 1 or not ({forge=true,brewing_stand=true,
+				tailor_bench=true,tanning_rack=true,carving_bench=true,
+				jewellers_bench=true,furnace=true})[station] then
+			fail(where .. ": public station identity differs")
 		end
 	end
 	return {

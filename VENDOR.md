@@ -351,3 +351,13 @@ The registration contract is enforced by `tools/wp13/decor_registry_kat.lua`,
 an engine-free smoke test that loads the mod against a stub `core` and asserts
 the namespace, that every texture and mesh resolves, and that nothing
 mechanical was registered.
+
+### Round 10 public Cooking hearth exception
+
+`mods/BASE/default/furnace.lua` adds the marked `inventory_protected` hook.
+Only an exact authored public Furnace socket, an actual current inactive/active
+Furnace node and a live player within eight nodes bypass ordinary protection.
+The owning `grug_jobs` adapter supplies that predicate and idempotent activation
+for VM-placed current-version hearths. Existing fuel, timer, recipe and Cooking
+output extraction/progression callbacks remain chained unchanged. No media or
+upstream pin changed.

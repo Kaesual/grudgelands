@@ -180,10 +180,9 @@ core.register_on_mods_loaded(function()
 		local sockets = grug_core.settlement_sockets_at(settlements[index].key)
 		for socket_index = 1, #sockets do
 			local socket = sockets[socket_index]
-			if socket.role == "trainer" and socket.profession == "alchemist" then
-				grug_brewing.register_public_position({
-					x = socket.pos.x + 1, y = socket.pos.y, z = socket.pos.z,
-				})
+			if socket.role == "public_station" and socket.tags and
+					socket.tags[1] == "brewing_stand" then
+				grug_brewing.register_public_position(socket.pos)
 			end
 		end
 	end

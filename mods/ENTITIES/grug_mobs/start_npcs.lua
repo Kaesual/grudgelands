@@ -380,6 +380,11 @@ end
 -- Returns false when the CALLER has removed itself, in which case its activation
 -- must do nothing else.
 --
+local function remove_socket_holder(entity)
+	if entity._grug_capital_display then entity.object:remove()
+	else mobs:remove(entity, true) end
+end
+
 function grug_mobs.start_npc_claim(entity)
 	if type(entity) ~= "table" then
 		return true
@@ -398,7 +403,7 @@ function grug_mobs.start_npc_claim(entity)
 				": the newer " .. tostring(other.name) .. " on socket " ..
 				socket_id .. " gave way to the one that was placed first")
 			if other.object then
-				mobs:remove(other, true)
+				remove_socket_holder(other)
 			end
 			slots[socket_id] = entity
 			return true
@@ -407,7 +412,7 @@ function grug_mobs.start_npc_claim(entity)
 			tostring(entity.name) .. " activated on socket " .. socket_id ..
 			" and removed itself")
 		if entity.object then
-			mobs:remove(entity, true)
+			remove_socket_holder(entity)
 		end
 		return false
 	end
@@ -785,7 +790,7 @@ local function scan_row(row)
 						": a second " .. entity.name ..
 						" was booked on socket " .. socket_id ..
 						" and was removed")
-					mobs:remove(drop, true)
+					remove_socket_holder(drop)
 				end
 			end
 		end
@@ -884,6 +889,8 @@ local function track_deactivation(entity, removal)
 		slot.away_x, slot.away_y, slot.away_z = pos.x, pos.y, pos.z
 	end
 end
+
+grug_mobs.start_npc_deactivate = track_deactivation
 
 local old_on_deactivate = mobs.mob_class.on_deactivate
 mobs.mob_class.on_deactivate = function(self, removal)
@@ -1115,6 +1122,13 @@ local function install(entity, row, slot)
 		entity._grug_idle_tag = slot.tag or slot.activity
 	elseif slot.role == "king" then
 		entity._grug_home = {x = slot.pos.x, y = slot.pos.y, z = slot.pos.z}
+	elseif slot.role == "mount_display" or slot.role == "gear_display" then
+		entity._grug_display_race = row.race_id
+		entity._grug_display_tag = slot.tag
+		grug_mobs.configure_capital_display(entity)
+	elseif slot.role == "riding_trainer" then
+		entity._grug_npc_name = "Riding Trainer"
+		entity._grug_walker = false
 	elseif slot.role == "trainer" then
 		grug_mobs.install_profession_trainer(entity, slot)
 	end
