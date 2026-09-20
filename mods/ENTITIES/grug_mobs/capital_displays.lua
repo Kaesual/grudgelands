@@ -18,6 +18,19 @@ local FOOT_Y={dwarf=-0.011460670,elf=-0.000000103,
  orc=-0.006643265,t1_accord=-0.001113216,t1_throng=-0.001113216,
  troll=-0.016625724,undead=-0.018340415}
 
+-- Lowest posed foot Y over every integer frame of each ground mount's move
+-- clip. Walking displays use the lower of stand and move so animation cannot
+-- dip toes through the authored stable floor. Flying displays remain grounded
+-- from their stand pose because they never enter the move clip.
+local MOVE_FOOT_Y={dwarf=-0.02838736551718793,elf=-0.029718032188245848,
+ human=-0.01152582889405449,orc=-0.029451181083463642,
+ t1_accord=-0.01152582889405449,t1_throng=-0.01152582889405449,
+ troll=-0.058341372000002084,undead=-0.02158749311255711}
+
+local function ground_foot_y(key)
+ return math.min(assert(FOOT_Y[key]),assert(MOVE_FOOT_Y[key]))
+end
+
 local function display_animation(self,name)
  if self._grug_display_anim==name then return end
  local clip=self._grug_display_model and self._grug_display_model.animation[name]
@@ -26,7 +39,7 @@ local function display_animation(self,name)
  self._grug_display_anim=name
 end
 
-local function walk_points(self,key)
+local function walk_points(self,key,foot_y)
  local sockets=grug_core.settlement_sockets_at(self._grug_start)
  local wanted={self._grug_socket.."_walk_a",self._grug_socket.."_walk_b"}
  local found={}
@@ -37,7 +50,7 @@ local function walk_points(self,key)
  if not found[1] or not found[2] then return nil end
  for index=1,2 do
   found[index]={x=found[index].x,
-   y=found[index].y+0.02-assert(FOOT_Y[key]),z=found[index].z}
+   y=found[index].y+0.02-foot_y,z=found[index].z}
  end
  return found
 end
@@ -70,11 +83,12 @@ function grug_mobs.configure_capital_display(self)
    visual_size=model.visual_size,collisionbox=model.collisionbox,
    nametag=model.description})
   local pos=self.object:get_pos()
-  pos.y=assert(self._grug_display_floor)+0.02-assert(FOOT_Y[key])
+  local foot_y=tier<=2 and ground_foot_y(key) or assert(FOOT_Y[key])
+  pos.y=assert(self._grug_display_floor)+0.02-foot_y
   self.object:set_pos(pos)
   self._grug_display_model=model
   self._grug_display_anim=nil
-  self._grug_display_walk_points=tier<=2 and walk_points(self,key) or nil
+  self._grug_display_walk_points=tier<=2 and walk_points(self,key,foot_y) or nil
   self._grug_display_walk_target=tonumber(self._grug_display_walk_target) or 1
   if self._grug_display_walk_target~=1 and self._grug_display_walk_target~=2 then
    self._grug_display_walk_target=1

@@ -12,13 +12,14 @@ function core.register_entity(name,def) registered[name]=def end
 function core.dir_to_yaw(dir) return math.atan2(-dir.x,dir.z) end
 function core.serialize(value) return value end
 function core.deserialize(value) return value end
-grug_core={settlement_sockets_at=function()
- return {
-  {id="mount_1_walk_a",pos={x=0,y=10,z=-1}},
-  {id="mount_1_walk_b",pos={x=0,y=10,z=1}},
- }
-end}
-grug_mounts={MODELS={t1_accord=model,expert_accord=flyer}}
+local sockets={
+ {id="mount_1_walk_a",pos={x=0,y=10,z=-4}},
+ {id="mount_1_walk_b",pos={x=0,y=10,z=-2}},
+ {id="mount_2_walk_a",pos={x=5,y=10,z=-3}},
+ {id="mount_2_walk_b",pos={x=5,y=10,z=-2}},
+}
+grug_core={settlement_sockets_at=function() return sockets end}
+grug_mounts={MODELS={t1_accord=model,troll=model,expert_accord=flyer}}
 grug_gear={weapon_item=function() return "sword" end,
  armor_item=function() return "chest" end,trinket_item=function() return "jewel" end}
 grug_mobs={start_npc_claim=function() return true end,
@@ -45,13 +46,27 @@ local ground={object=object({x=0,y=10,z=0}),_grug_start="capital",
  _grug_face_yaw=0}
 grug_mobs.configure_capital_display(ground)
 assert(ground._grug_display_walk_points and ground.object.animation.speed==25)
+assert(math.abs(ground.object.pos.y-(10.02+0.01152582889405449))<1e-12 and
+ math.abs(ground._grug_display_walk_points[1].y-ground.object.pos.y)<1e-12,
+ "ground display did not use the full move-clip foot minimum")
 ground._grug_display_pause=0
 def.on_step(ground,0.1)
 assert(ground.object.pos.z<0 and ground.object.animation.speed==90,
  "ground display did not walk toward authored endpoint")
-for _=1,30 do def.on_step(ground,0.1) end
-assert(ground.object.pos.z==-1 and ground._grug_display_walk_target==2 and
+for _=1,80 do def.on_step(ground,0.1) end
+assert(ground.object.pos.z==-4 and ground._grug_display_walk_target==2 and
  ground._grug_display_pause>0,"ground display did not pause and reverse in bounds")
+
+local kezamba={object=object({x=5,y=10,z=-3}),_grug_start="capital",
+ _grug_socket="mount_2",_grug_socket_role="mount_display",
+ _grug_display_race="troll",_grug_display_tag="2",_grug_display_floor=10,
+ _grug_face_yaw=0}
+grug_mobs.configure_capital_display(kezamba)
+assert(kezamba._grug_display_walk_points[1].z==-3 and
+ kezamba._grug_display_walk_points[2].z==-2,
+ "Kezamba T2 display did not retain its shorter authored lane")
+assert(math.abs(kezamba.object.pos.y-(10.02+0.058341372000002084))<1e-12,
+ "Kezamba T2 display did not use the full move-clip foot minimum")
 
 local air={object=object({x=5,y=10,z=0}),_grug_start="capital",
  _grug_socket="mount_3",_grug_socket_role="mount_display",
@@ -66,4 +81,4 @@ def.on_step(air,10)
 assert(air.object.pos.x==before.x and air.object.pos.z==before.z,
  "flying display moved")
 
-io.write("r11_display\tPASS\tground_walk=1\tpause=1\tflyer_grounded=1\n")
+io.write("r11_display\tPASS\tground_walk=1\tpause=1\tmove_grounded=1\tkezamba_lane=1\tflyer_grounded=1\n")

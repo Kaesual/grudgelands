@@ -41,6 +41,14 @@ was corrected by making the Character/Talents armor preview explicitly use the
 player's own character level; the displayed reduction is therefore stable and
 does not depend on a selected target or the last attacker.
 
+The focused integration correction also reconciles the vendored mobs_redo
+ledger with its 65 actual `GRUG PATCH` markers, including both authored-boss
+far-despawn sites. Ground display placement now uses the lower foot bound from
+the stand pose and all 422 measured integer frames of the move clip. The source
+measurements are `tools/r11_world/evidence/motion-bounds.json` in the WORLD
+package; the focused display fixture covers the ordinary two-node lane, the
+shorter Kezamba T2 lane and unchanged grounded-flyer behavior.
+
 ## Targeted LuaJIT evidence
 
 Command:
