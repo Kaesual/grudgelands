@@ -1,6 +1,7 @@
 # Round 10 execution and resumption record
 
-Date: 2026-09-20. Baseline: `38ae136d`. Status: authorized, in progress.
+Date: 2026-09-20. Baseline: `38ae136d`. Status: implementation integrated;
+MAP-B, the engine-harness correction and final acceptance gates remain active.
 
 ## User authority and final decisions
 
@@ -87,13 +88,15 @@ truncated automatic AGENTS injection.
 
 | ID | Deliverable | Dependencies | Status |
 | --- | --- | --- | --- |
-| EQUIP | Basics/profession provenance, universal materials/base recipes, leather armor, smith split, refinement/affix workflow, kits and vendor corrections | Accepted decisions above | Running: native Sol, `wp10-r10-equipment` |
-| GAME | Mount usability/PvP refusal, percentage falls, idle cliff behavior, dragon rest/target/combat fixes, vendor potion bonus | Accepted decisions above | Running: native Sol, `wp23-r10-gameplay` |
-| ART | Nonweapon icon/worn/crop families and twelve mount model icons | Stable semantic IDs; registration handoffs | Prepared; queued for next free Sol slot, `wp29-r10-art` |
-| WORLD | Purpose-specific cave boundary/witness and mountain/high-water/Rock Salt corrections | Accepted decisions above | Running: native Astra, `wp40-r10-world` |
-| CAP | Old core fixes plus outer service premises, dedicated Riding and protected atmosphere | EQUIP trainer/station contract, GAME mount API, WORLD | Queued |
-| MAP-B | Wild plants, secondary soils, field soils, cave-air plants, coral/kelp, FARM integration | CAP; ART crop bindings | Queued |
-| CLOSE | Cross-package gates, final docs, sync/push and next-playtest checklist | All packages independently reviewed | Queued |
+| EQUIP | Basics/profession provenance, universal materials/base recipes, leather armor, smith split, refinement/affix workflow, kits and vendor corrections | Accepted decisions above | Integrated; independent review CLEAN |
+| GAME | Mount usability/PvP refusal, percentage falls, idle cliff behavior, dragon rest/target/combat fixes, vendor potion bonus | Accepted decisions above | Integrated; independent review CLEAN after two fix rounds |
+| ART | Nonweapon icon/worn/crop families and twelve mount model icons | Stable semantic IDs; registration handoffs | Integrated; independent review CLEAN after two fix rounds |
+| WORLD | Purpose-specific cave boundary/witness and mountain/high-water/Rock Salt corrections | Accepted decisions above | Integrated; independent source review CLEAN |
+| CAP | Old core fixes plus outer service premises, dedicated Riding and protected atmosphere | EQUIP trainer/station contract, GAME mount API, WORLD | Integrated; independent source review CLEAN |
+| FARM | All 17 crop-family lifecycles and protected planting | ART crop bindings; MAP-B consumes soil/crop IDs | Integrated; independent review CLEAN |
+| MAP-B | Wild plants, secondary soils, field soils, cave-air plants, coral/kelp, FARM integration | CAP; ART crop bindings | Active; not yet frozen or independently reviewed |
+| ENGINE | Capital service witnesses and constrained accepted geometry deltas | Integrated CAP plus MAP-B | Active; final isolated runs pending |
+| CLOSE | Cross-package gates, final docs, sync/push and next-playtest checklist | All packages independently reviewed | Active; global parity, engine evidence, main delivery and GUI acceptance pending |
 
 At most three native workers run beside root. Queue work and review slots as
 dependencies permit; world mutation packages run serially. Jan clarified that
