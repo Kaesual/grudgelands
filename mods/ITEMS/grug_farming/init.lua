@@ -224,6 +224,13 @@ local function place_seed(row)
 			return itemstack
 		end
 		local player_name = placer and placer:get_player_name() or ""
+		-- Planting can hydrate/swap the supporting soil before it writes the crop.
+		-- Both positions are therefore part of the player action and must pass
+		-- protection independently.
+		if core.is_protected(under, player_name) then
+			core.record_protection_violation(under, player_name)
+			return itemstack
+		end
 		if core.is_protected(above, player_name) then
 			core.record_protection_violation(above, player_name)
 			return itemstack
