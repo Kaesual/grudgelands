@@ -1,0 +1,766 @@
+WARNING[Main]: /!\ You are using the old mod storage files backend. This backend is deprecated and may be removed in a future release /!\
+WARNING[Main]: Switching to SQLite3 is advised, please read https://docs.luanti.org/for-server-hosts/database-backends.
+[MOD] Mobs Redo loaded
+ACTION[Main]: [grug_materials] 12 tools completing the six-tier pick/axe/shovel ladder
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:pick_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:shovel_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:axe_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sword_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:pick_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:shovel_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:axe_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sword_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sword_bronze'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sword_steel'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:copper_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:tin_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:bronze_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:steel_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:gold_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:goldblock'])
+WARNING[Main]: No craft recipe known for output 'default:stone_with_mese'
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:stone_with_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_crystal'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_crystal_fragment'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:meselamp'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_acacia_wood'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_junglewood'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_pine_wood'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_aspen_wood'])
+WARNING[Main]: No craft recipe known for output 'default:stone_with_diamond'
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:stone_with_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:diamondblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sign_wall_steel'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:ladder_steel'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_goldblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_goldblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_goldblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_goldblock'])
+ACTION[Main]: [grug_gear] 6 bracket catalogs: 42 weapons + 72 armor pieces
+ACTION[Main]: [grug_quality] deterministic PcgRandom quality rolls enabled
+WARNING[Main]: No craft recipe known for output 'grug_gear:sword_bronze'
+WARNING[Main]: No craft recipe known for output 'grug_gear:dagger_bronze'
+WARNING[Main]: No craft recipe known for output 'grug_gear:greataxe_bronze'
+WARNING[Main]: No craft recipe known for output 'grug_gear:wand_bronze'
+WARNING[Main]: No craft recipe known for output 'grug_gear:scepter_bronze'
+WARNING[Main]: No craft recipe known for output 'grug_gear:orb_bronze'
+WARNING[Main]: No craft recipe known for output 'grug_gear:staff_bronze'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_leather_light'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_leather_light'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_leather_light'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_leather_light'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_metal_bronze'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_metal_bronze'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_metal_bronze'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_metal_bronze'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_cloth_patch'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_cloth_patch'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_cloth_patch'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_cloth_patch'
+WARNING[Main]: No craft recipe known for output 'grug_gear:sword_iron'
+WARNING[Main]: No craft recipe known for output 'grug_materials:pick_iron'
+WARNING[Main]: No craft recipe known for output 'grug_materials:shovel_iron'
+WARNING[Main]: No craft recipe known for output 'grug_materials:axe_iron'
+WARNING[Main]: No craft recipe known for output 'grug_gear:dagger_iron'
+WARNING[Main]: No craft recipe known for output 'grug_gear:greataxe_iron'
+WARNING[Main]: No craft recipe known for output 'grug_gear:wand_iron'
+WARNING[Main]: No craft recipe known for output 'grug_gear:scepter_iron'
+WARNING[Main]: No craft recipe known for output 'grug_gear:orb_iron'
+WARNING[Main]: No craft recipe known for output 'grug_gear:staff_iron'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_leather_cured'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_leather_cured'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_leather_cured'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_leather_cured'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_metal_iron'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_metal_iron'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_metal_iron'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_metal_iron'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_cloth_woven'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_cloth_woven'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_cloth_woven'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_cloth_woven'
+WARNING[Main]: No craft recipe known for output 'grug_gear:sword_steel'
+WARNING[Main]: No craft recipe known for output 'default:pick_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:dagger_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:greataxe_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:wand_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:scepter_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:orb_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:staff_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_leather_heavy'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_leather_heavy'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_leather_heavy'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_leather_heavy'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_metal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_metal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_metal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_metal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_cloth_heavy'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_cloth_heavy'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_cloth_heavy'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_cloth_heavy'
+WARNING[Main]: No craft recipe known for output 'grug_gear:sword_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_materials:pick_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_materials:shovel_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_materials:axe_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:dagger_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:greataxe_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:wand_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:scepter_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:orb_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:staff_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_leather_scaled'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_leather_scaled'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_leather_scaled'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_leather_scaled'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_metal_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_metal_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_metal_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_metal_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_cloth_silkweave'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_cloth_silkweave'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_cloth_silkweave'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_cloth_silkweave'
+WARNING[Main]: No craft recipe known for output 'grug_gear:sword_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_materials:pick_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_materials:shovel_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_materials:axe_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:dagger_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:greataxe_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:wand_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:scepter_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:orb_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:staff_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_leather_sleek'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_leather_sleek'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_leather_sleek'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_leather_sleek'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_metal_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_metal_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_metal_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_metal_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_cloth_silk'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_cloth_silk'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_cloth_silk'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_cloth_silk'
+WARNING[Main]: No craft recipe known for output 'grug_gear:sword_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_materials:pick_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_materials:shovel_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_materials:axe_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:dagger_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:greataxe_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:wand_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:scepter_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:orb_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:staff_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_leather_nightscale'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_leather_nightscale'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_leather_nightscale'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_leather_nightscale'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_metal_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_metal_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_metal_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_metal_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_cloth_stormweave'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_cloth_stormweave'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_cloth_stormweave'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_cloth_stormweave'
+WARNING[Main]: No craft recipe known for output 'grug_mobs:light_leather'
+WARNING[Main]: No craft recipe known for output 'grug_professions:cured_leather'
+WARNING[Main]: No craft recipe known for output 'grug_mobs:heavy_leather'
+WARNING[Main]: No craft recipe known for output 'grug_mobs:scaled_hide'
+WARNING[Main]: No craft recipe known for output 'grug_professions:sleek_leather'
+WARNING[Main]: No craft recipe known for output 'grug_professions:nightscale_leather'
+WARNING[Main]: No craft recipe known for output 'grug_professions:bolt_patch'
+WARNING[Main]: No craft recipe known for output 'grug_professions:bolt_woven'
+WARNING[Main]: No craft recipe known for output 'grug_professions:bolt_heavy'
+WARNING[Main]: No craft recipe known for output 'grug_professions:bolt_silkweave'
+WARNING[Main]: No craft recipe known for output 'grug_professions:bolt_silk'
+WARNING[Main]: No craft recipe known for output 'grug_professions:bolt_stormweave'
+ACTION[Main]: [grug_professions] registered Weaponsmith, Armorsmith, Leatherworker and Tailor catalogs
+WARNING[Main]: No craft recipe known for output 'grug_artisans:seasoned_wood'
+WARNING[Main]: No craft recipe known for output 'grug_artisans:polished_wood'
+WARNING[Main]: No craft recipe known for output 'grug_artisans:hardened_wood'
+WARNING[Main]: No craft recipe known for output 'grug_artisans:inlaid_wood'
+WARNING[Main]: No craft recipe known for output 'grug_artisans:lacquered_wood'
+WARNING[Main]: No craft recipe known for output 'grug_artisans:heartwood_wood'
+ACTION[Main]: [grug_artisans] registered Woodcarver and Goldsmith catalogs
+ACTION[Main]: [grug_materials] registry audit passed: 6 tiers, 15 resources, 12 processed forms, 6 race regions
+ACTION[Main]: [grug_smelting] recipe audit passed: 5 cooking, 5 dualfurn, 12 storage pairs, 1 station
+ACTION[Main]: [grug_visuals] 72 armor pieces indexed for overlays, 3 art lines x 4 slots
+ACTION[Main]: [grug_mobs] settlement work activities: tools 7, weapon families 1, all registered
+ACTION[Main]: [grug_fishing] tables=6 entries=18 weight=100 bite=3..10s rod_uses=64
+ACTION[Main]: [grug_inventory] starter weapons: mage=grug_gear:staff_wood (2H), priest=grug_gear:staff_wood (2H), warrior=default:sword_stone
+ACTION[Main]: [grug_traders] 12 profession shelves, 122 offers, all registered
+ACTION[Main]: [grug_traders] dwarf capital vendors come from the sockets of dur_brannoc
+ACTION[Main]: [grug_traders] elf capital vendors come from the sockets of lethariel
+ACTION[Main]: [grug_traders] human capital vendors come from the sockets of highcourt
+ACTION[Main]: [grug_traders] orc capital vendors come from the sockets of gor_drazhak
+ACTION[Main]: [grug_traders] troll capital vendors come from the sockets of kezamba
+ACTION[Main]: [grug_traders] undead capital vendors come from the sockets of nhal_veyr
+ACTION[Main]: [grug_traders] 12 settlements indexed for profession vendor appearance
+ACTION[Main]: [grug_traders] drop audit: 3 mob(s) use a `drops` FUNCTION and cannot be walked statically (grug_mobs:bandit, grug_mobs:bandit_archer, grug_mobs:poacher); their items are audited from the hardcoded FUNCTION_DROPS list
+WARNING[Main]: [grug_traders] no vendor price for dropped item 'default:apple' (dropped by grug_mobs:ashen_treant, grug_mobs:gravewood_treant) — add a _grug_sell_price to its def or a grug_traders.set_price override; traders must buy every mob drop (economy.md §3)
+WARNING[Main]: [grug_traders] no vendor price for dropped item 'default:stick' (dropped by grug_mobs:ashen_treant, grug_mobs:gravewood_treant) — add a _grug_sell_price to its def or a grug_traders.set_price override; traders must buy every mob drop (economy.md §3)
+ACTION[Main]: GRUG_WP13_CAPITAL event=start engine=5.17.0 seed=531802985935182545 manifest=da00097a1ebe183092a22027f989209dc205a21ebcdef1159fff6d2964ae74f1 sockets_registered=1881 anchor=1800,66,1500 mode=full build_us=module_load=18978,core=139839,plot_shore_market=4934,plot_shore_butcher=8732,plot_shore_tailor=5089,plot_shore_store=6705,plot_shore_smokehouse=3633,plot_shore_carvers=4165,plot_shore_well=2748,plot_shore_watch=9736,plot_shore_house=5509,plot_shore_vineyard=3587,plot_shore_gardens=3719,plot_shore_logyard=1827,plot_shore_green=855,plot_vine_house_a=4088,plot_vine_house_b=3790,plot_vine_house_c=4572,plot_vine_house_d=3736,plot_vine_longhouse=5222,plot_vine_herbalist=3556,plot_vine_moot=2481,plot_vine_well=2562,plot_vine_store=6130,plot_vine_common=3671,plot_vine_terraces=3350,plot_vine_park=1772,plot_vine_kitchen=833,plot_canopy_barracks_a=9344,plot_canopy_barracks_b=9465,plot_canopy_armoury=6258,plot_canopy_watchpost=3595,plot_canopy_stable=9860,plot_canopy_store=5929,plot_canopy_hall=5101,plot_canopy_house_a=3531,plot_canopy_house_b=3387,plot_canopy_carvers=4052,plot_canopy_well=2514,plot_canopy_muster=3379,plot_canopy_pasture=3296,plot_canopy_woodyard=1719,plot_canopy_green=778,plot_totem_scriptorium=7106,plot_totem_carvers=3724,plot_totem_shrine=11897,plot_totem_hall=5025,plot_totem_house_a=3633,plot_totem_store=5314,plot_totem_well=2623,plot_totem_graves=3432,plot_totem_posts=770,plot_totem_grove=1929,plot_totem_green=727
+ACTION[Main]: GRUG_WP13_CAPITAL event=build
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time module_load=18978
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time core=139839
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_shore_market=4934
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_shore_butcher=8732
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_shore_tailor=5089
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_shore_store=6705
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_shore_smokehouse=3633
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_shore_carvers=4165
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_shore_well=2748
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_shore_watch=9736
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_shore_house=5509
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_shore_vineyard=3587
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_shore_gardens=3719
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_shore_logyard=1827
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_shore_green=855
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_vine_house_a=4088
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_vine_house_b=3790
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_vine_house_c=4572
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_vine_house_d=3736
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_vine_longhouse=5222
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_vine_herbalist=3556
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_vine_moot=2481
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_vine_well=2562
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_vine_store=6130
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_vine_common=3671
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_vine_terraces=3350
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_vine_park=1772
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_vine_kitchen=833
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_canopy_barracks_a=9344
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_canopy_barracks_b=9465
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_canopy_armoury=6258
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_canopy_watchpost=3595
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_canopy_stable=9860
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_canopy_store=5929
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_canopy_hall=5101
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_canopy_house_a=3531
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_canopy_house_b=3387
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_canopy_carvers=4052
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_canopy_well=2514
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_canopy_muster=3379
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_canopy_pasture=3296
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_canopy_woodyard=1719
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_canopy_green=778
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_totem_scriptorium=7106
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_totem_carvers=3724
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_totem_shrine=11897
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_totem_hall=5025
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_totem_house_a=3633
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_totem_store=5314
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_totem_well=2623
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_totem_graves=3432
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_totem_posts=770
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_totem_grove=1929
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_totem_green=727
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket sockets=285
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket role_gear_display=3
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket role_guard_patrol=65
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket role_guard_post=13
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket role_idle=112
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket role_king=1
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket role_mount_display=4
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket role_public_station=7
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket role_quest=1
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket role_riding_trainer=1
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket role_trainer=8
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket role_vendor=7
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket role_waypoint=1
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket role_work=62
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket loops=5
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket loop_kezamba_canopy_watch=17
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket loop_kezamba_shore_watch=14
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket loop_kezamba_totem_watch=11
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket loop_kezamba_vine_watch=14
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket loop_kezamba_watch=9
+ACTION[Main]: GRUG_WP13_CAPITAL event=corpus mapchunks=78
+ _                   _   _ 
+| |_   _  __ _ _ __ | |_(_)
+| | | | |/ _` | '_ \| __| |
+| | |_| | (_| | | | | |_| |
+|_|\__,_|\__,_|_| |_|\__|_|  ___ 5.17.0
+ACTION[Main]: World at [/tmp/grudgelands-wp13-capital.dlGMyU/world]
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:31944.
+ACTION[Server]: [grug_core] start preload: emerging 6 start areas (128 x 128 nodes each, 2 at a time)
+ACTION[Emerge-0]: [grug_core] start area ready: dwarf (1/6, 24.2 s)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:guard_accord placed at socket gate_west (-1804,26,-2491)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:guard_accord placed at socket gate_east (-1796,26,-2491)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:guard_accord placed at socket watch_gate (-1800,26,-2498)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_traders:vendor_race_dwarf placed at socket plaza_vendor (-1793,26,-2555)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket idle_west_door (-1816,26,-2546)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket idle_plaza_bench (-1793,26,-2549)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket idle_workyard (-1819,26,-2533)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket idle_forge_door (-1798,26,-2560)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket work_woodpile (-1812,26,-2563)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket work_garden (-1819,26,-2529)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:elder_dwarf placed at socket hall_quest (-1828,26,-2524)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket trainer_cooking (-1798,26,-2540)
+ACTION[Server]: [grug_mobs] start npcs dwarf hearthpine: guards 3/3 flair 7/7 vendor 1/1 quest 1/1 royal 0/0 new 12 pending 0 spare 3 residents 6 walkers 1
+ACTION[Emerge-0]: [grug_core] start area ready: human (2/6, 33.4 s)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:guard_accord placed at socket gate_west (-4,18,-2493)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:guard_accord placed at socket gate_east (4,18,-2493)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:guard_accord placed at socket watch_gate (0,18,-2498)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_traders:vendor_race_human placed at socket green_vendor (6,18,-2554)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket idle_cottage_door (10,18,-2566)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket idle_green_bench (-6,18,-2543)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket idle_barn (-19,18,-2550)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket idle_smithy (22,18,-2551)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket work_field (18,18,-2519)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket work_green_seat (-5,18,-2535)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:elder_human placed at socket hall_quest (-11,18,-2542)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket trainer_cooking (2,18,-2540)
+ACTION[Server]: [grug_mobs] start npcs human dawnmere: guards 3/3 flair 7/7 vendor 1/1 quest 1/1 royal 0/0 new 12 pending 0 spare 3 residents 6 walkers 1
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=warmup mapchunk=1488:48:688 kind=warmup elapsed_us=33261657
+ACTION[Emerge-0]: [grug_core] start area ready: elf (3/6, 40.0 s)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:guard_accord placed at socket gate_west (1796,22,-2493)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:guard_accord placed at socket gate_east (1804,22,-2493)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:guard_accord placed at socket watch_gate (1800,22,-2498)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_traders:vendor_race_elf placed at socket court_vendor (1807,22,-2554)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed at socket idle_shrine_door (1779,22,-2534)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed at socket idle_court_bench (1793,22,-2545)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed at socket idle_bowyer (1828,22,-2551)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed at socket idle_market (1769,22,-2550)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed at socket work_planters (1804,22,-2539)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed at socket work_market (1767,22,-2545)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:elder_elf placed at socket hall_quest (1820,22,-2536)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed at socket trainer_cooking (1802,22,-2540)
+ACTION[Server]: [grug_mobs] start npcs elf silverleaf: guards 3/3 flair 7/7 vendor 1/1 quest 1/1 royal 0/0 new 12 pending 0 spare 3 residents 6 walkers 1
+ACTION[Emerge-0]: [grug_core] start area ready: undead (4/6, 48.0 s)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:guard_throng placed at socket gate_west (-1804,55,2494)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:guard_throng placed at socket gate_east (-1796,55,2494)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:guard_throng placed at socket watch_gate (-1800,55,2498)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_traders:vendor_race_undead placed at socket court_vendor (-1793,55,2545)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:villager_undead placed at socket idle_warden_door (-1813,55,2582)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:villager_undead placed at socket idle_court_settle (-1810,55,2554)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:villager_undead placed at socket idle_bone_works (-1778,55,2549)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:villager_undead placed at socket idle_gate_brazier (-1805,55,2493)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:villager_undead placed at socket work_gravewood (-1790,55,2544)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:villager_undead placed at socket work_blightbed (-1822,55,2542)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:elder_undead placed at socket hall_quest (-1798,55,2560)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:villager_undead placed at socket trainer_cooking (-1798,55,2540)
+ACTION[Server]: [grug_mobs] start npcs undead stillgrave: guards 3/3 flair 7/7 vendor 1/1 quest 1/1 royal 0/0 new 12 pending 0 spare 3 residents 6 walkers 1
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=control_capital_lethariel mapchunk=1728:-32:-1552 kind=control_capital elapsed_us=14824815
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:king_elf placed at socket king (1762,47,-1525)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:royal_guard_elf placed at socket throne_guard_west (1765,45,-1532)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:royal_guard_elf placed at socket throne_guard_east (1765,45,-1518)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:guard_accord placed at socket door_guard_west (1783,44,-1528)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:guard_accord placed at socket door_guard_east (1783,44,-1521)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket hall_idle_west (1775,44,-1538)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket hall_idle_east (1775,44,-1512)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket hall_idle_service (1766,44,-1538)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:guard_accord placed at socket gate_south_post_west (1798,42,-1548)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:guard_accord placed at socket gate_south_post_east (1802,42,-1548)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket gate_south_idle_west (1795,42,-1545)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket gate_south_idle_east (1805,42,-1545)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:guard_accord placed at socket gate_west_post_west (1752,42,-1498)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:guard_accord placed at socket gate_west_post_east (1752,42,-1502)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket gate_west_idle_west (1755,42,-1495)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket gate_west_idle_east (1755,42,-1505)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket colonnade_west_idle_a (1792,42,-1519)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket colonnade_west_idle_b (1794,42,-1529)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:guard_accord placed at socket colonnade_west_walk (1793,42,-1524)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket colonnade_east_idle_b (1807,42,-1519)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket fountain_court_idle_a (1761,42,-1490)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket fountain_court_idle_b (1761,42,-1484)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket star_hall_altar (1775,42,-1479)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:elder_elf placed at socket star_hall_quest (1775,42,-1495)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket bough_west_foot (1789,42,-1485)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket quay_idle_head (1796,42,-1481)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket forecourt_idle_west (1794,42,-1514)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket forecourt_idle_east (1807,42,-1514)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket shore_work_sweep (1796,42,-1481)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket crossing_work_west (1795,43,-1504)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket crossing_work_east (1805,43,-1504)
+ACTION[Server]: [grug_mobs] start npcs elf lethariel: guards 9/22 flair 20/175 vendor 0/9 quest 1/2 royal 1/1 new 31 pending 178 spare 24 residents 159 walkers 22
+ACTION[Emerge-0]: [grug_core] start area ready: orc (5/6, 59.6 s)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:guard_throng placed at socket gate_west (-4,28,2499)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:guard_throng placed at socket gate_east (4,28,2499)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:guard_throng placed at socket watch_gate (0,28,2510)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_traders:vendor_race_orc placed at socket yard_vendor (8,28,2545)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:villager_orc placed at socket idle_tusk_door (-11,28,2528)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:villager_orc placed at socket idle_council_seat (-3,28,2558)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:villager_orc placed at socket idle_beast_pen (-25,28,2548)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:villager_orc placed at socket idle_armoury_forge (20,28,2548)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:villager_orc placed at socket work_forge (-34,28,2552)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:villager_orc placed at socket work_acacia (-14,28,2549)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:elder_orc placed at socket hall_quest (3,28,2562)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:villager_orc placed at socket trainer_cooking (2,28,2540)
+ACTION[Server]: [grug_mobs] start npcs orc sunscar: guards 3/3 flair 7/7 vendor 1/1 quest 1/1 royal 0/0 new 12 pending 0 spare 3 residents 6 walkers 1
+ACTION[Emerge-0]: [grug_core] start area ready: troll (6/6, 65.3 s)
+ACTION[Emerge-0]: [grug_core] all 6 start areas ready after 65.3 s
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:guard_throng placed at socket gate_west (1796,21,2505)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:guard_throng placed at socket gate_east (1804,21,2505)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:guard_throng placed at socket watch_gate (1800,21,2514)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_traders:vendor_race_troll placed at socket clearing_vendor (1807,21,2546)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at socket idle_lodge_door (1798,21,2567)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at socket idle_terrace_settle (1788,21,2577)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at socket idle_drying_shed (1783,21,2574)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at socket idle_smoker (1813,21,2570)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at socket work_jungle (1771,21,2563)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at socket work_terrace (1784,21,2574)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:elder_troll placed at socket hall_quest (1803,21,2567)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at socket trainer_cooking (1802,21,2540)
+ACTION[Server]: [grug_mobs] start npcs troll kapok: guards 3/3 flair 7/7 vendor 1/1 quest 1/1 royal 0/0 new 12 pending 0 spare 3 residents 6 walkers 1
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=control_capital_lethariel mapchunk=1808:-32:-1552 kind=control_capital elapsed_us=16878960
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=control_capital_lethariel mapchunk=1728:48:-1552 kind=control_capital elapsed_us=572033
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=control_capital_lethariel mapchunk=1808:48:-1552 kind=control_capital elapsed_us=287696
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=control_capital_lethariel mapchunk=1728:-32:-1472 kind=control_capital elapsed_us=651658
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=control_capital_lethariel mapchunk=1808:-32:-1472 kind=control_capital elapsed_us=437592
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=control_capital_lethariel mapchunk=1728:48:-1472 kind=control_capital elapsed_us=244102
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=control_capital_lethariel mapchunk=1808:48:-1472 kind=control_capital elapsed_us=255783
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=core mapchunk=1728:48:1408 kind=capital elapsed_us=1159608
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:guard_accord placed at socket gate_south_deck (1800,53,-1546)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:guard_accord placed at socket gate_west_deck (1754,53,-1500)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:guard_accord placed at socket gate_east_post_west (1848,42,-1502)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:guard_accord placed at socket gate_east_post_east (1848,42,-1498)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:guard_accord placed at socket gate_east_deck (1846,53,-1500)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket gate_east_idle_west (1845,42,-1505)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket gate_east_idle_east (1845,42,-1495)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket market_booth_1 (1819,42,-1543)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket market_booth_2 (1829,42,-1543)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket market_booth_3 (1819,42,-1529)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket market_booth_4 (1829,42,-1529)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket market_idle_west (1817,42,-1541)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket market_idle_east (1831,42,-1531)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket colonnade_east_idle_a (1809,42,-1529)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket statue_idle (1810,42,-1496)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket sacred_grove_idle (1833,42,-1484)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket mere_shrine_keeper (1818,43,-1484)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket mere_shrine_south (1820,43,-1486)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket mere_shrine_north (1820,43,-1482)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket bough_west_deck (1790,49,-1487)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket bough_east_deck (1840,48,-1517)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket bough_east_foot (1839,42,-1515)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_traders:vendor_race_elf placed at socket vendor_race (1817,42,-1525)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_traders:vendor_general_accord placed at socket vendor_general (1824,42,-1525)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket quay_idle_west (1777,42,-1472)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket quay_idle_east (1823,42,-1472)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket grove_idle_walk (1822,42,-1491)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket grove_idle_shrine (1818,42,-1489)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket market_idle_walk (1812,42,-1524)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket shore_work_counter (1808,42,-1487)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket shore_work_pile (1813,42,-1487)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket shore_work_beds (1809,42,-1484)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket shore_work_stone (1813,42,-1484)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket market_granary/market_granary_work (1728,39,-1420)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:guard_accord placed at socket market_granary/market_granary_watch (1728,39,-1432)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket market_granary/market_granary_gate_idle (1728,39,-1432)
+ACTION[Server]: [grug_mobs] start npcs elf lethariel: guards 15/22 flair 48/175 vendor 2/9 quest 1/2 royal 1/1 new 36 pending 142 spare 24 residents 159 walkers 22
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=core mapchunk=1808:48:1408 kind=capital elapsed_us=807693
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=core mapchunk=1728:48:1488 kind=capital elapsed_us=830982
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=core mapchunk=1808:48:1488 kind=capital elapsed_us=461711
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_shore_market mapchunk=1888:-32:1328 kind=capital elapsed_us=1017344
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_shore_butcher mapchunk=1888:48:1328 kind=capital elapsed_us=303774
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_shore_tailor mapchunk=1888:-32:1408 kind=capital elapsed_us=938349
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_shore_tailor mapchunk=1888:48:1408 kind=capital elapsed_us=431143
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:king_troll placed at socket king (1811,72,1469)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:royal_guard_troll placed at socket throne_guard_west (1814,70,1462)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:royal_guard_troll placed at socket throne_guard_east (1814,70,1476)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:guard_throng placed at socket door_guard_west (1828,69,1466)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:guard_throng placed at socket door_guard_east (1828,69,1473)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket hall_idle_west (1820,69,1460)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket hall_idle_east (1820,69,1478)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket hall_idle_service (1815,69,1460)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket moot_house_porch (1781,71,1535)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket moot_house_verandah (1782,71,1539)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket cauldron_court_brew_1 (1757,67,1459)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket cauldron_court_brew_2 (1765,67,1459)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket cauldron_court_brew_3 (1757,67,1463)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket cauldron_court_brew_4 (1765,67,1463)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket cauldron_court_sit_south (1761,68,1456)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket cauldron_court_sit_north (1761,68,1466)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:guard_throng placed at socket cauldron_court_watch_a (1755,67,1461)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shrine_pray (1760,67,1527)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:elder_troll placed at socket shrine_quest (1762,67,1527)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shrine_idle (1756,67,1532)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket carver_yard_carve_1 (1757,67,1489)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket carver_yard_carve_2 (1760,67,1489)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket carver_yard_carve_3 (1763,67,1489)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket carver_yard_chop (1756,67,1492)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket carver_yard_idle (1760,67,1486)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket granary_work (1817,67,1489)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket stable_groom (1843,67,1462)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket stable_gate (1837,67,1462)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_traders:vendor_race_troll placed at socket vendor_race (1776,67,1487)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_traders:vendor_general_throng placed at socket vendor_general (1776,67,1493)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:guard_throng placed at socket gate_post_south (1796,67,1454)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:guard_throng placed at socket gate_post_west (1754,67,1496)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_traders:vendor_fishmonger placed at socket vendor_fishmonger (1775,67,1521)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket quay_stall (1778,67,1521)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket cenote_fish_1 (1795,67,1520)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket cenote_fish_2 (1791,67,1526)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket cenote_fish_3 (1789,67,1528)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket quay_idle_north (1782,67,1530)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket quay_idle_south (1782,67,1514)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket crossing_idle_west (1793,68,1504)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket crossing_idle_east (1805,68,1504)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket plaza_idle (1766,67,1472)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket forecourt_idle (1805,67,1476)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_market/shore_market_brew_1 (1920,40,1386)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_market/shore_market_brew_2 (1928,40,1386)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_market/shore_market_brew_3 (1920,40,1390)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_market/shore_market_brew_4 (1928,40,1390)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_market/shore_market_sit_south (1924,41,1383)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_market/shore_market_sit_north (1924,41,1393)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:guard_throng placed at socket shore_market/shore_market_watch (1924,40,1381)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_market/shore_market_gate_idle (1924,40,1381)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_traders:vendor_brewer placed at socket shore_market/shore_market_vendor_brewer (1917,40,1381)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_butcher/shore_butcher_gate_idle (1956,40,1380)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_traders:vendor_butcher placed at socket shore_butcher/shore_butcher_vendor_butcher (1951,40,1379)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_butcher/shore_butcher_work_butcher_block (1948,40,1379)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_tailor/shore_tailor_gate_idle (1932,40,1414)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_traders:vendor_tailor placed at socket shore_tailor/shore_tailor_vendor_tailor (1928,40,1413)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_tailor/shore_tailor_work_tailor_bench (1926,41,1415)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_tailor/shore_tailor_tailor (1930,40,1419)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_store/shore_store_work (1892,34,1388)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_store/shore_store_gate_idle (1892,34,1376)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_store/shore_store_leatherworker (1890,34,1383)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_smokehouse/shore_smokehouse_gate_idle (1928,40,1339)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_smokehouse/shore_smokehouse_work_smoke_counter (1923,40,1338)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_smokehouse/shore_smokehouse_smoke_idle (1935,40,1338)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_smokehouse/shore_smokehouse_cooking (1926,40,1343)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_well/shore_well_idle_a (1928,43,1449)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_well/shore_well_idle_b (1928,43,1455)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_well/shore_well_gate_idle (1928,43,1445)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:guard_throng placed at socket shore_watch/shore_watch_post (1960,40,1344)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_watch/shore_watch_muster (1960,40,1359)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_watch/shore_watch_gate_idle (1960,40,1341)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:guard_throng placed at socket shore_watch/shore_watch_post_shore_gate (1952,40,1341)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_house/shore_house_gate_idle (1964,40,1412)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_vineyard/shore_vineyard_gate_idle (1896,37,1343)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_vineyard/shore_vineyard_work_vine_b (1905,37,1343)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_green/shore_green_gate_idle (1908,40,1409)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_green/shore_green_work_green_sit (1906,41,1410)
+ACTION[Server]: [grug_mobs] start npcs troll kezamba: guards 10/18 flair 60/179 vendor 6/7 quest 1/1 royal 1/1 new 78 pending 128 spare 11 residents 163 walkers 21
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_shore_store mapchunk=1808:-32:1328 kind=capital elapsed_us=806780
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_shore_carvers mapchunk=1968:-32:1328 kind=capital elapsed_us=931554
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_shore_carvers mapchunk=1968:48:1328 kind=capital elapsed_us=347674
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_shore_house mapchunk=1968:-32:1408 kind=capital elapsed_us=816146
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_shore_house mapchunk=1968:48:1408 kind=capital elapsed_us=354745
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_shore_logyard mapchunk=1888:-32:1248 kind=capital elapsed_us=953230
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_carvers/shore_carvers_carve_1 (1984,43,1387)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_carvers/shore_carvers_carve_2 (1988,43,1387)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_carvers/shore_carvers_carve_3 (1992,43,1387)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_carvers/shore_carvers_chop (1983,43,1391)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_carvers/shore_carvers_idle (1988,43,1383)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_carvers/shore_carvers_gate_idle (1988,43,1381)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_carvers/shore_carvers_woodcarver (1986,43,1387)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_vineyard/shore_vineyard_work_vine_a (1887,37,1343)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_gardens/shore_gardens_gate_idle (1860,37,1375)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_gardens/shore_gardens_work_garden_a (1852,37,1375)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_gardens/shore_gardens_work_garden_b (1868,37,1375)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_gardens/shore_gardens_garden_idle (1850,37,1375)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_logyard/shore_logyard_gate_idle (1928,40,1310)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_logyard/shore_logyard_work_log_a (1922,40,1310)
+ACTION[Server]: [grug_mobs] start npcs troll kezamba: guards 10/18 flair 74/179 vendor 6/7 quest 1/1 royal 1/1 new 14 pending 114 spare 11 residents 163 walkers 21
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_vine_house_a mapchunk=1648:-32:1328 kind=capital elapsed_us=1193761
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_vine_house_b mapchunk=1648:48:1328 kind=capital elapsed_us=305742
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_vine_house_c mapchunk=1648:-32:1408 kind=capital elapsed_us=1025272
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_vine_house_c mapchunk=1648:48:1408 kind=capital elapsed_us=328853
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_vine_house_d mapchunk=1568:-32:1328 kind=capital elapsed_us=897321
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_vine_house_d mapchunk=1568:48:1328 kind=capital elapsed_us=339130
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_vine_common mapchunk=1728:-32:1328 kind=capital elapsed_us=955702
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_vine_terraces mapchunk=1568:-32:1408 kind=capital elapsed_us=793068
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:guard_throng placed at socket vine_house_a/vine_house_a_watch (1664,37,1382)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket vine_house_a/vine_house_a_gate_idle (1664,37,1382)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket vine_house_b/vine_house_b_gate_idle (1696,40,1378)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket vine_house_c/vine_house_c_gate_idle (1672,37,1414)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket vine_house_d/vine_house_d_gate_idle (1632,41,1386)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket vine_longhouse/vine_longhouse_gate_idle (1672,46,1336)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket vine_herbalist/vine_herbalist_gate_idle (1640,43,1350)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_traders:vendor_herbalist placed at socket vine_herbalist/vine_herbalist_vendor_herbalist (1636,43,1349)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket vine_herbalist/vine_herbalist_work_physic (1634,43,1359)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket vine_herbalist/vine_herbalist_alchemist (1638,43,1355)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket vine_moot/vine_moot_idle_a (1667,34,1451)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket vine_moot/vine_moot_idle_b (1677,34,1453)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket vine_moot/vine_moot_gate_idle (1672,34,1449)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket vine_moot/vine_moot_work_moot_sit (1665,35,1449)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket vine_well/vine_well_idle_a (1704,43,1349)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket vine_well/vine_well_idle_b (1704,43,1355)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket vine_well/vine_well_gate_idle (1704,43,1345)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket vine_store/vine_store_work (1600,40,1392)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket vine_store/vine_store_gate_idle (1600,40,1380)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket vine_common/vine_common_gate_idle (1728,40,1375)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket vine_common/vine_common_work_common_a (1720,40,1375)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket vine_common/vine_common_work_common_b (1736,40,1375)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket vine_common/vine_common_common_idle (1718,40,1375)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket vine_terraces/vine_terraces_gate_idle (1640,40,1415)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket vine_terraces/vine_terraces_work_terrace_a (1631,40,1415)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket vine_terraces/vine_terraces_work_terrace_b (1649,40,1415)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket vine_kitchen/vine_kitchen_gate_idle (1716,40,1413)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket vine_kitchen/vine_kitchen_work_kitchen (1713,40,1413)
+ACTION[Server]: [grug_mobs] start npcs troll kezamba: guards 11/18 flair 100/179 vendor 7/7 quest 1/1 royal 1/1 new 28 pending 86 spare 11 residents 163 walkers 21
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_vine_park mapchunk=1648:-32:1248 kind=capital elapsed_us=990119
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_canopy_barracks_a mapchunk=1648:-32:1568 kind=capital elapsed_us=1216573
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_canopy_barracks_a mapchunk=1648:48:1568 kind=capital elapsed_us=341696
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_canopy_barracks_b mapchunk=1568:-32:1568 kind=capital elapsed_us=1056059
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_canopy_barracks_b mapchunk=1568:48:1568 kind=capital elapsed_us=335477
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_canopy_watchpost mapchunk=1648:-32:1648 kind=capital elapsed_us=917722
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket vine_park/vine_park_gate_idle (1672,38,1310)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket vine_park/vine_park_work_park_sit (1667,39,1311)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket vine_park/vine_park_park_idle (1678,38,1310)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:guard_throng placed at socket canopy_barracks_a/canopy_barracks_a_post (1664,40,1604)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket canopy_barracks_a/canopy_barracks_a_muster (1664,40,1619)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:guard_throng placed at socket canopy_barracks_a/canopy_barracks_a_watch (1664,40,1601)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket canopy_barracks_a/canopy_barracks_a_gate_idle (1664,40,1601)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:guard_throng placed at socket canopy_barracks_a/canopy_barracks_a_post_canopy_a (1656,40,1601)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:guard_throng placed at socket canopy_barracks_b/canopy_barracks_b_post (1632,43,1604)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket canopy_barracks_b/canopy_barracks_b_muster (1632,43,1619)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket canopy_barracks_b/canopy_barracks_b_gate_idle (1632,43,1601)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:guard_throng placed at socket canopy_barracks_b/canopy_barracks_b_post_canopy_b (1624,43,1601)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket canopy_armoury/canopy_armoury_gate_idle (1664,37,1572)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket canopy_armoury/canopy_armoury_work_anvil (1656,37,1572)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket canopy_armoury/canopy_armoury_armoury_idle (1671,37,1572)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket canopy_armoury/canopy_armoury_weaponsmith (1662,37,1579)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket canopy_armoury/canopy_armoury_armorsmith (1666,37,1579)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:capital_display placed at socket canopy_armoury/canopy_armoury_weapon (1661,38,1583)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:capital_display placed at socket canopy_armoury/canopy_armoury_armor (1667,38,1583)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket canopy_watchpost/canopy_watchpost_gate_idle (1664,46,1639)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:guard_throng placed at socket canopy_watchpost/canopy_watchpost_post_canopy_tower (1659,46,1639)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket canopy_stable/canopy_stable_groom (1688,37,1610)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket canopy_stable/canopy_stable_gate (1704,37,1610)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket canopy_stable/canopy_stable_gate_idle (1704,37,1610)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:capital_display placed at socket canopy_stable/canopy_stable_mount_1 (1691,37,1613)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:capital_display placed at socket canopy_stable/canopy_stable_mount_2 (1701,37,1613)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:capital_display placed at socket canopy_stable/canopy_stable_mount_3 (1691,37,1619)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:capital_display placed at socket canopy_stable/canopy_stable_mount_4 (1701,37,1619)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket canopy_stable/canopy_stable_riding (1696,37,1610)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket canopy_store/canopy_store_work (1600,46,1616)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket canopy_store/canopy_store_gate_idle (1600,46,1604)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket canopy_hall/canopy_hall_gate_idle (1632,40,1572)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket canopy_house_a/canopy_house_a_gate_idle (1632,41,1638)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket canopy_carvers/canopy_carvers_carve_1 (1660,43,1675)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket canopy_carvers/canopy_carvers_carve_2 (1664,43,1675)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket canopy_carvers/canopy_carvers_carve_3 (1668,43,1675)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket canopy_carvers/canopy_carvers_chop (1659,43,1679)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket canopy_carvers/canopy_carvers_idle (1664,43,1671)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket canopy_carvers/canopy_carvers_gate_idle (1664,43,1669)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket canopy_well/canopy_well_idle_a (1696,40,1645)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket canopy_well/canopy_well_idle_b (1696,40,1651)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket canopy_well/canopy_well_gate_idle (1696,40,1641)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket canopy_muster/canopy_muster_work_spar_a (1720,37,1607)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket canopy_muster/canopy_muster_muster_idle (1718,37,1607)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket canopy_pasture/canopy_pasture_gate_idle (1600,46,1571)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket canopy_pasture/canopy_pasture_work_pasture (1592,46,1571)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket canopy_woodyard/canopy_woodyard_gate_idle (1604,43,1634)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket canopy_woodyard/canopy_woodyard_work_wood_a (1598,43,1634)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket canopy_green/canopy_green_gate_idle (1688,37,1589)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket canopy_green/canopy_green_work_guard_sit (1686,38,1590)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket totem_well/totem_well_idle_a (1700,43,1681)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket totem_well/totem_well_idle_b (1700,43,1687)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket totem_well/totem_well_gate_idle (1700,43,1677)
+ACTION[Server]: [grug_mobs] start npcs troll kezamba: guards 17/18 flair 147/179 vendor 7/7 quest 1/1 royal 1/1 new 53 pending 33 spare 11 residents 163 walkers 21
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_canopy_watchpost mapchunk=1648:48:1648 kind=capital elapsed_us=356806
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_canopy_house_a mapchunk=1568:-32:1648 kind=capital elapsed_us=860325
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_canopy_house_a mapchunk=1568:48:1648 kind=capital elapsed_us=421380
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_canopy_house_b mapchunk=1648:-32:1488 kind=capital elapsed_us=984123
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_canopy_house_b mapchunk=1648:48:1488 kind=capital elapsed_us=327170
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_canopy_muster mapchunk=1728:-32:1568 kind=capital elapsed_us=915658
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket canopy_house_b/canopy_house_b_gate_idle (1664,40,1542)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket canopy_muster/canopy_muster_gate_idle (1728,37,1607)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket canopy_muster/canopy_muster_work_spar_b (1736,37,1607)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket totem_store/totem_store_gate_idle (1754,41,1644)
+ACTION[Server]: [grug_mobs] start npcs troll kezamba: guards 17/18 flair 151/179 vendor 7/7 quest 1/1 royal 1/1 new 4 pending 29 spare 11 residents 163 walkers 21
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_totem_scriptorium mapchunk=1808:-32:1648 kind=capital elapsed_us=1114350
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_totem_scriptorium mapchunk=1808:48:1648 kind=capital elapsed_us=422653
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_totem_shrine mapchunk=1728:-32:1648 kind=capital elapsed_us=713521
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_totem_shrine mapchunk=1728:48:1648 kind=capital elapsed_us=426304
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_totem_hall mapchunk=1888:-32:1648 kind=capital elapsed_us=1029038
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_totem_hall mapchunk=1888:48:1648 kind=capital elapsed_us=457585
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_totem_store mapchunk=1728:48:1568 kind=capital elapsed_us=570930
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_south mapchunk=1728:-32:1168 kind=capital elapsed_us=964186
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_south mapchunk=1728:48:1168 kind=capital elapsed_us=432179
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_south mapchunk=1728:-32:1248 kind=capital elapsed_us=888352
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_south mapchunk=1728:48:1248 kind=capital elapsed_us=348564
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_south mapchunk=1728:48:1328 kind=capital elapsed_us=684089
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_south mapchunk=1728:-32:1408 kind=capital elapsed_us=1105751
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_north mapchunk=1728:-32:1488 kind=capital elapsed_us=957558
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_north mapchunk=1728:-32:1728 kind=capital elapsed_us=960887
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_north mapchunk=1728:48:1728 kind=capital elapsed_us=413487
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_west mapchunk=1488:-32:1488 kind=capital elapsed_us=1245256
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_west mapchunk=1568:-32:1488 kind=capital elapsed_us=1018132
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_west mapchunk=1488:48:1488 kind=capital elapsed_us=409152
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_west mapchunk=1568:48:1488 kind=capital elapsed_us=247291
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_east mapchunk=1808:-32:1488 kind=capital elapsed_us=672990
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_east mapchunk=1888:-32:1488 kind=capital elapsed_us=744700
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_east mapchunk=1968:-32:1488 kind=capital elapsed_us=1063411
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_east mapchunk=2048:-32:1488 kind=capital elapsed_us=804993
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_east mapchunk=1888:48:1488 kind=capital elapsed_us=324768
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_east mapchunk=1968:48:1488 kind=capital elapsed_us=448667
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_east mapchunk=2048:48:1488 kind=capital elapsed_us=456353
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_ring_east mapchunk=1888:-32:1568 kind=capital elapsed_us=687311
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_ring_east mapchunk=1888:48:1568 kind=capital elapsed_us=295586
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_ring_south mapchunk=1808:48:1328 kind=capital elapsed_us=844080
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_ring_north mapchunk=1808:-32:1568 kind=capital elapsed_us=681580
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_ring_north mapchunk=1808:48:1568 kind=capital elapsed_us=341866
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=control_open_land mapchunk=848:-32:848 kind=control elapsed_us=1203760
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=control_open_land_far mapchunk=1168:48:768 kind=control elapsed_us=1108747
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=control_dawnmere_start mapchunk=-32:-32:-2592 kind=control elapsed_us=2911
+ACTION[Server]: GRUG_WP13_CAPITAL event=dump file=kezamba-core.tsv cells=39301 ignored=0 road_cells=10109 held=147 unheld=0 emerge_trouble=0 retries=0 road_digest=f1e84a347ac4781438c1e8004ea1f693575d7dd1cc6543e6fa72bb722111d168
+ACTION[Server]: GRUG_WP13_CAPITAL event=dump file=kezamba-plot.tsv cells=6875 ignored=0 road_cells=374 held=18 unheld=0 emerge_trouble=0 retries=0 road_digest=98cde270ec33c8f80aaaa36bb1972f64b515fa9117b974b04ac6e6502b4325ed
+ACTION[Server]: GRUG_WP13_CAPITAL event=dump file=kezamba-avenue.tsv cells=110611 ignored=0 road_cells=2336 held=84 unheld=0 emerge_trouble=0 retries=0 road_digest=eb27548e1dab611df5283c288e2738c1e5aa88bf76821b40aeea964c011e6631
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket totem_scriptorium/totem_scriptorium_desk_a (1832,40,1680)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket totem_scriptorium/totem_scriptorium_desk_b (1832,40,1688)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:guard_throng placed at socket totem_scriptorium/totem_scriptorium_watch (1832,40,1675)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket totem_scriptorium/totem_scriptorium_gate_idle (1832,40,1675)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket totem_scriptorium/totem_scriptorium_goldsmith (1830,40,1683)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:capital_display placed at socket totem_scriptorium/totem_scriptorium_jewel (1835,41,1686)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket totem_carvers/totem_carvers_carve_1 (1864,38,1683)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket totem_carvers/totem_carvers_carve_2 (1868,38,1683)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket totem_carvers/totem_carvers_carve_3 (1872,38,1683)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket totem_carvers/totem_carvers_chop (1863,38,1687)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket totem_carvers/totem_carvers_idle (1868,38,1679)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket totem_carvers/totem_carvers_gate_idle (1868,38,1677)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket totem_shrine/totem_shrine_altar (1768,41,1690)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket totem_shrine/totem_shrine_gate_idle (1768,41,1674)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket totem_shrine/totem_shrine_work_shrine_pray (1761,41,1674)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket totem_hall/totem_hall_gate_idle (1900,46,1672)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket totem_store/totem_store_work (1754,41,1656)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket totem_graves/totem_graves_gate_idle (1832,40,1705)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket totem_graves/totem_graves_work_mourn_a (1824,40,1705)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket totem_graves/totem_graves_work_tend_graves (1840,40,1705)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket totem_graves/totem_graves_graves_idle (1822,40,1705)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket totem_posts/totem_posts_gate_idle (1860,37,1655)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket totem_posts/totem_posts_work_post_carve (1858,37,1656)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket totem_grove/totem_grove_gate_idle (1856,40,1704)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket totem_grove/totem_grove_work_grove_forage (1850,40,1704)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket totem_green/totem_green_gate_idle (1832,43,1657)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket totem_green/totem_green_work_quiet_sit (1830,44,1658)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket totem_green/totem_green_quiet_idle (1835,43,1657)
+ACTION[Server]: [grug_mobs] start npcs troll kezamba: guards 18/18 flair 178/179 vendor 7/7 quest 1/1 royal 1/1 new 28 pending 1 spare 11 residents 163 walkers 21
+ACTION[Server]: GRUG_WP13_CAPITAL event=dump_retry file=kezamba-approach.tsv box=1 attempt=1 ignored=17136 emerge_trouble=0
+ACTION[Server]: GRUG_WP13_CAPITAL event=dump file=kezamba-approach.tsv cells=39870 ignored=0 road_cells=714 held=150 unheld=0 emerge_trouble=0 retries=1 road_digest=304df8877888cd11b900e913f0fc42561706bee0e620d51cd8de3df9599dc93a
+ACTION[Server]: GRUG_WP13_CAPITAL event=precinct capital=kezamba authored_ring_columns=274 authored_ring_cells=1289 authored_gates=4 digest=f5b496b801383b44a89ee932411c8d6668cbf793a233e2f305451fb488030378 status=PASS
+ACTION[Server]: GRUG_WP13_CAPITAL event=services capital=kezamba plots=8 stations=7 profession_trainers=8 riding_trainers=1 mount_displays=4 gear_displays=3 entity_attempts=2 status=PASS
+ACTION[Server]: r8_alch_capital_probe takes grug_alchemy:potion_healing 10 from brewing stand at (1640,43,1357)
+ACTION[Server]: GRUG_WP13_CAPITAL event=alchemy capital=kezamba trainer=1638,43,1355 stand=1640,43,1357 learned=true brewed=10 output=grug_alchemy:potion_healing book_tiers=1,2,3,4,5,6 profession_level=2
+ACTION[Server]: GRUG_WP13_CAPITAL event=complete mode=full requested=78 completed=78 warmup_chunks=1 warmup_total_us=33261657 warmup_first_us=33261657 warmup_worst_us=33261657 warmup_best_us=33261657 capital_chunks=66 capital_total_us=46498260 capital_first_us=1159608 capital_worst_us=1245256 capital_best_us=247291 capital_steady_mean_us=697517 control_capital_chunks=8 control_capital_total_us=34152639 control_capital_first_us=14824815 control_capital_worst_us=16878960 control_capital_best_us=244102 control_capital_steady_mean_us=2761117 control_chunks=3 control_total_us=2315418 control_first_us=1203760 control_worst_us=1203760 control_best_us=2911 control_steady_mean_us=555829 core_cells=39301 core_ignored=0 core_held=147 core_unheld=0 core_emerge_trouble=0 core_retries=0 core_road_cells=10109 core_road_digest=f1e84a347ac4781438c1e8004ea1f693575d7dd1cc6543e6fa72bb722111d168 plot_cells=6875 plot_ignored=0 plot_held=18 plot_unheld=0 plot_emerge_trouble=0 plot_retries=0 plot_road_cells=374 plot_road_digest=98cde270ec33c8f80aaaa36bb1972f64b515fa9117b974b04ac6e6502b4325ed avenue_cells=110611 avenue_ignored=0 avenue_held=84 avenue_unheld=0 avenue_emerge_trouble=0 avenue_retries=0 avenue_road_cells=2336 avenue_road_digest=eb27548e1dab611df5283c288e2738c1e5aa88bf76821b40aeea964c011e6631 approach_cells=39870 approach_ignored=0 approach_held=150 approach_unheld=0 approach_emerge_trouble=0 approach_retries=1 approach_road_cells=714 approach_road_digest=304df8877888cd11b900e913f0fc42561706bee0e620d51cd8de3df9599dc93a worst_plot_fall=5 worst_plot=totem_hall worst_plot_submerged=0 worst_submerged_plot=- sockets=285 role_gear_display=3 role_guard_patrol=65 role_guard_post=13 role_idle=112 role_king=1 role_mount_display=4 role_public_station=7 role_quest=1 role_riding_trainer=1 role_trainer=8 role_vendor=7 role_waypoint=1 role_work=62 loops=5 loop_kezamba_canopy_watch=17 loop_kezamba_shore_watch=14 loop_kezamba_totem_watch=11 loop_kezamba_vine_watch=14 loop_kezamba_watch=9 trees_avenue_regions=4 trees_avenue_trunks=0 trees_avenue_wild=0 trees_avenue_canopy=0 trees_avenue_leaves=0 trees_avenue_worst=0 trees_avenue_worst_id=- trees_gate_regions=4 trees_gate_trunks=0 trees_gate_wild=0 trees_gate_canopy=0 trees_gate_leaves=0 trees_gate_worst=0 trees_gate_worst_id=- trees_plot_regions=52 trees_plot_trunks=3590 trees_plot_wild=0 trees_plot_canopy=0 trees_plot_leaves=396 trees_plot_worst=0 trees_plot_worst_id=- trees_ring_regions=4 trees_ring_trunks=0 trees_ring_wild=0 trees_ring_canopy=0 trees_ring_leaves=0 trees_ring_worst=0 trees_ring_worst_id=- trees_found_total=0
+ACTION[Main]: Server: Shutting down

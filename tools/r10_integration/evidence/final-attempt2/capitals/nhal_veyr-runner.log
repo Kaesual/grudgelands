@@ -1,0 +1,11 @@
+exit=0 errors=0 complete=1 log=/tmp/grudgelands-r10-final-engines/capitals-v2/nhal_veyr/server.log
+WP13 nhal_veyr: the built avenue moved.
+  now      68aa0237ab92c3544393efda2399ea414b32e7a70b5f4ebb7e13ffa5a0dddb10
+  expected 6a8a2158a82e96a8f648b0c62f7c91d2080303096bf9ad72fb24b48432f89966 (/home/jan/projects/grudgelands/.claude/worktrees/r10-integration/tools/wp13/evidence/20260915-capital-terrain/nhal_veyr/avenue-digest-531802985935182545.txt)
+WP13 nhal_veyr: the built rampart moved.
+  now      986108210cb75c30ffb6012335e2d7830fc110da54cea242786cf9440ad670a0
+  expected 317799719955dcd8903c35429d7d375675a6bfbf28166468e99522f2077e652a (/home/jan/projects/grudgelands/.claude/worktrees/r10-integration/tools/wp13/evidence/20260915-capital-terrain/nhal_veyr/rampart-digest-531802985935182545.txt)
+corner overlay digest matches the committed value
+WP13 nhal_veyr: the built gate moved.
+  now      a8df3d513c4c34b51aac616a24e1c8eb9e70bcf7e02a84c7462a18f6d3876017
+  expected 46a73b86f858cbf19de55975ad8c2dac9f280d3a08568a9124bf4e1cacae9cf9 (/home/jan/projects/grudgelands/.claude/worktrees/r10-integration/tools/wp13/evidence/20260915-capital-terrain/nhal_veyr/gate-digest-531802985935182545.txt)

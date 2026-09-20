@@ -1,0 +1,380 @@
+parser PASS mods/BASE/default/furnace.lua
+parser PASS mods/CORE/grug_core/combat.lua
+parser PASS mods/CORE/grug_core/settlement_sockets.lua
+parser PASS mods/CORE/grug_core/status.lua
+parser PASS mods/ENTITIES/grug_mobs/boss_dragons.lua
+parser PASS mods/ENTITIES/grug_mobs/capital_displays.lua
+parser PASS mods/ENTITIES/grug_mobs/init.lua
+	2	[1]	SETGLOBAL	0 -1	; grug_mobs
+parser PASS mods/ENTITIES/grug_mobs/items.lua
+parser PASS mods/ENTITIES/grug_mobs/start_npcs.lua
+parser PASS mods/ENTITIES/grug_mobs/start_villagers.lua
+parser PASS mods/ENTITIES/grug_traders/potion.lua
+parser PASS mods/ENTITIES/grug_traders/stock.lua
+parser PASS mods/ENTITIES/mobs/api.lua
+	72	[26]	SETGLOBAL	8 -3	; mobs
+parser PASS mods/ITEMS/grug_alchemy/recipes.lua
+parser PASS mods/ITEMS/grug_artisans/init.lua
+	10	[7]	SETGLOBAL	0 -1	; grug_artisans
+parser PASS mods/ITEMS/grug_artisans/woodcarver.lua
+parser PASS mods/ITEMS/grug_cooking/init.lua
+	2	[4]	SETGLOBAL	0 -1	; grug_cooking
+parser PASS mods/ITEMS/grug_decor/capital.lua
+parser PASS mods/ITEMS/grug_decor/init.lua
+	2	[14]	SETGLOBAL	0 -1	; grug_decor
+parser PASS mods/ITEMS/grug_farming/init.lua
+	2	[6]	SETGLOBAL	0 -1	; grug_farming
+parser PASS mods/ITEMS/grug_gathering/catalog.lua
+parser PASS mods/ITEMS/grug_gathering/init.lua
+	2	[4]	SETGLOBAL	0 -1	; grug_gathering
+parser PASS mods/ITEMS/grug_gear/init.lua
+	2	[32]	SETGLOBAL	0 -1	; grug_gear
+parser PASS mods/ITEMS/grug_materials/registry.lua
+parser PASS mods/ITEMS/grug_nodes/crop_soil.lua
+parser PASS mods/ITEMS/grug_nodes/crop_visual.lua
+parser PASS mods/ITEMS/grug_nodes/init.lua
+	303	[247]	SETGLOBAL	3 -108	; grug_nodes
+parser PASS mods/ITEMS/grug_professions/base_recipes.lua
+parser PASS mods/ITEMS/grug_professions/init.lua
+	14	[8]	SETGLOBAL	0 -1	; grug_professions
+parser PASS mods/ITEMS/grug_professions/leatherworker.lua
+parser PASS mods/ITEMS/grug_professions/smiths.lua
+parser PASS mods/ITEMS/grug_professions/tailor.lua
+parser PASS mods/ITEMS/grug_quality/init.lua
+	2	[25]	SETGLOBAL	0 -1	; grug_items
+parser PASS mods/MAPGEN/grug_mapgen/init.lua
+	2	[5]	SETGLOBAL	0 -1	; grug_mapgen
+parser PASS mods/MAPGEN/grug_mapgen/world_nodes.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp13/capital_services.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp13/dur_brannoc.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp13/dur_brannoc_plot.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp13/elf_parts.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp13/gor_drazhak.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp13/gor_drazhak_plot.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp13/gor_drazhak_quadrants.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp13/highcourt.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp13/highcourt_plot.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp13/kezamba.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp13/kezamba_plot.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp13/lethariel.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp13/lethariel_plot.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp13/nhal_veyr.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp13/nhal_veyr_plot.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp13/palette.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp13/parts.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp13/precinct_ring.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp13/troll_palette.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp40/height.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp40/planner.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp40/r6_content.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp40/r7_anchor_activation.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp40/r7_content.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp40/r7_manifest.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp40/r7_p9g.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp40/r7_runtime.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp40/r7_successor.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp40/simple_map.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp40/world_content.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp40/world_content_catalog.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp40/zones.lua
+parser PASS mods/PLAYER/grug_abilities/init.lua
+	2	[6]	SETGLOBAL	0 -1	; grug_abilities
+parser PASS mods/PLAYER/grug_jobs/registry.lua
+parser PASS mods/PLAYER/grug_jobs/station_nodes.lua
+parser PASS mods/PLAYER/grug_jobs/trainers.lua
+parser PASS mods/PLAYER/grug_jobs/ui.lua
+parser PASS mods/PLAYER/grug_mounts/catalog.lua
+parser PASS mods/PLAYER/grug_mounts/entity.lua
+parser PASS mods/PLAYER/grug_mounts/items.lua
+parser PASS mods/PLAYER/grug_mounts/trainer.lua
+parser PASS mods/PLAYER/grug_visuals/compose.lua
+parser PASS tools/r10_art/art_kat.lua
+parser PASS tools/r10_art/final_micro.lua
+parser PASS tools/r10_art/mount_icon_kat.lua
+parser PASS tools/r10_cap/decor_geometry.lua
+	8	[10]	SETGLOBAL	1 -4	; core
+	27	[15]	SETGLOBAL	1 -10	; default
+	36	[17]	SETGLOBAL	1 -16	; grug_brewing
+parser PASS tools/r10_cap/furnace_micro.lua
+	2	[18]	SETGLOBAL	0 -1	; ItemStack
+	80	[57]	SETGLOBAL	9 -10	; core
+	99	[71]	SETGLOBAL	9 -39	; default
+	101	[72]	SETGLOBAL	9 -47	; grug_items
+	103	[72]	SETGLOBAL	9 -48	; grug_brewing
+	107	[72]	SETGLOBAL	9 -49	; grug_jobs
+	111	[73]	SETGLOBAL	9 -51	; vector
+	115	[74]	SETGLOBAL	9 -53	; grug_xp
+	122	[76]	SETGLOBAL	9 -55	; grug_core
+parser PASS tools/r10_cap/gear_visuals.lua
+	27	[7]	SETGLOBAL	2 -4	; core
+parser PASS tools/r10_cap/geometry_micro.lua
+parser PASS tools/r10_cap/mount_catalog.lua
+	6	[3]	SETGLOBAL	1 -4	; grug_mounts
+parser PASS tools/r10_cap/planner_integration.lua
+parser PASS tools/r10_cap/public_socket_oracle.lua
+parser PASS tools/r10_cap/purchase_micro.lua
+	18	[27]	SETGLOBAL	1 -8	; ItemStack
+	67	[67]	SETGLOBAL	5 -15	; core
+	73	[68]	SETGLOBAL	5 -31	; grug_mobs
+	78	[69]	SETGLOBAL	5 -34	; mobs
+	84	[72]	SETGLOBAL	5 -36	; grug_core
+	90	[74]	SETGLOBAL	5 -39	; grug_factions
+	96	[76]	SETGLOBAL	5 -42	; grug_classes
+	100	[77]	SETGLOBAL	5 -45	; grug_xp
+	150	[87]	SETGLOBAL	9 -63	; grug_mounts
+	428	[127]	SETGLOBAL	14 -102	; grug_jobs
+parser PASS tools/r10_cap/ring_overlap.lua
+	52	[39]	SETGLOBAL	15 -5	; dofile
+	64	[40]	SETGLOBAL	2 -5	; dofile
+parser PASS tools/r10_cap/services_micro.lua
+	70	[27]	SETGLOBAL	11 -16	; core
+	74	[31]	SETGLOBAL	11 -34	; grug_core
+	78	[32]	SETGLOBAL	11 -36	; grug_factions
+	82	[33]	SETGLOBAL	11 -38	; grug_xp
+	86	[34]	SETGLOBAL	11 -40	; grug_money
+	97	[37]	SETGLOBAL	11 -43	; grug_mounts
+	118	[40]	SETGLOBAL	13 -52	; grug_mobs
+	124	[41]	SETGLOBAL	13 -54	; mobs
+	446	[85]	SETGLOBAL	20 -100	; grug_gear
+parser PASS tools/r10_cap/stable_geometry.lua
+parser PASS tools/r10_engine/run_service_witness_kat.lua
+parser PASS tools/r10_engine/service_witness_kat.lua
+parser PASS tools/r10_equip/base_recipes_kat.lua
+	17	[7]	SETGLOBAL	6 -1	; core
+	31	[15]	SETGLOBAL	6 -2	; grug_professions
+	69	[19]	SETGLOBAL	6 -3	; grug_gear
+	81	[22]	SETGLOBAL	10 -3	; grug_gear
+	82	[22]	SETGLOBAL	9 -2	; grug_professions
+	83	[22]	SETGLOBAL	8 -1	; core
+	670	[112]	SETGLOBAL	24 -3	; grug_gear
+	671	[112]	SETGLOBAL	23 -2	; grug_professions
+	672	[112]	SETGLOBAL	22 -1	; core
+	7	[26]	SETGLOBAL	3 -3	; grug_gear
+	8	[26]	SETGLOBAL	2 -2	; grug_professions
+	9	[26]	SETGLOBAL	1 -1	; core
+parser PASS tools/r10_equip/evidence/final_micro.lua
+parser PASS tools/r10_equip/profession_contract_kat.lua
+	13	[10]	SETGLOBAL	3 -1	; core
+	27	[18]	SETGLOBAL	5 -2	; grug_professions
+	69	[36]	SETGLOBAL	5 -3	; grug_artisans
+	288	[96]	SETGLOBAL	11 -3	; grug_artisans
+	289	[96]	SETGLOBAL	10 -2	; grug_professions
+	290	[96]	SETGLOBAL	9 -1	; core
+	7	[7]	SETGLOBAL	3 -3	; grug_artisans
+	8	[7]	SETGLOBAL	2 -2	; grug_professions
+	9	[7]	SETGLOBAL	1 -1	; core
+parser PASS tools/r10_equip/vendor_rotation_kat.lua
+	34	[9]	SETGLOBAL	6 -9	; os
+	44	[11]	SETGLOBAL	6 -1	; core
+	51	[14]	SETGLOBAL	7 -8	; PcgRandom
+	53	[21]	SETGLOBAL	7 -7	; ItemStack
+	57	[26]	SETGLOBAL	7 -4	; grug_items
+	59	[27]	SETGLOBAL	7 -5	; grug_money
+	63	[27]	SETGLOBAL	7 -6	; grug_xp
+	133	[36]	SETGLOBAL	10 -3	; grug_gear
+	146	[38]	SETGLOBAL	10 -2	; grug_traders
+parser PASS tools/r10_farm/farming_completion_kat.lua
+parser PASS tools/r10_farm/final_micro.lua
+parser PASS tools/r10_gameplay/cliff_kat.lua
+parser PASS tools/r10_gameplay/final_micro.lua
+parser PASS tools/r10_gameplay/potion_kat.lua
+	7	[6]	SETGLOBAL	2 -1	; core
+	31	[26]	SETGLOBAL	6 -12	; grug_core
+	33	[27]	SETGLOBAL	6 -15	; grug_traders
+parser PASS tools/r10_integration/evidence/development/composition_tail.lua
+parser PASS tools/r10_map_b/content_fixture.lua
+parser PASS tools/r10_map_b/derive_pins.lua
+parser PASS tools/r10_map_b/engine_probe/init.lua
+parser PASS tools/r10_map_b/placement_fixture.lua
+parser PASS tools/r10_map_b/registration_fixture.lua
+parser PASS tools/r10_map_b/regressions.lua
+parser PASS tools/r10_map_b/runtime_fixture.lua
+parser PASS tools/r10_map_b/template_refs.lua
+parser PASS tools/r10_map_b/writer_fixture.lua
+parser PASS tools/r10_world/cave_boundary_fixture.lua
+parser PASS tools/r10_world/engine_probe/init.lua
+parser PASS tools/r10_world/material_salt_fixture.lua
+parser PASS tools/r10_world/planner_integration.lua
+parser PASS tools/r6_food_buffs/kat.lua
+parser PASS tools/r8_alch/capital_kat.lua
+	31	[10]	SETGLOBAL	3 -14	; core
+	149	[111]	SETGLOBAL	11 -16	; dofile
+	155	[116]	SETGLOBAL	6 -16	; dofile
+parser PASS tools/r8_map_a/kat.lua
+parser PASS tools/r8_mob1/bosses_kat.lua
+	68	[42]	SETGLOBAL	28 -21	; vector
+	164	[121]	SETGLOBAL	29 -23	; core
+	185	[136]	SETGLOBAL	29 -58	; grug_core
+	189	[141]	SETGLOBAL	29 -66	; grug_zones
+	219	[176]	SETGLOBAL	29 -68	; grug_mobs
+	224	[177]	SETGLOBAL	29 -79	; mobs
+	226	[178]	SETGLOBAL	29 -81	; ItemStack
+parser PASS tools/r8_prof/framework_kat.lua
+	96	[48]	SETGLOBAL	15 -1	; core
+	166	[113]	SETGLOBAL	15 -6	; default
+	169	[115]	SETGLOBAL	16 -8	; grug_mobs
+	181	[118]	SETGLOBAL	16 -9	; grug_smelting
+	187	[122]	SETGLOBAL	16 -7	; ItemStack
+	191	[132]	SETGLOBAL	16 -5	; grug_xp
+	193	[133]	SETGLOBAL	16 -4	; grug_jobs
+	522	[315]	SETGLOBAL	20 -10	; grug_items
+parser PASS tools/r8_prof/trainer_sockets_kat.lua
+	20	[6]	SETGLOBAL	2 -1	; core
+	24	[7]	SETGLOBAL	2 -4	; vector
+	26	[8]	SETGLOBAL	2 -5	; grug_core
+parser PASS tools/r9_ench/quality_kat.lua
+	37	[36]	SETGLOBAL	7 -2	; PcgRandom
+	76	[87]	SETGLOBAL	12 -3	; ItemStack
+	81	[99]	SETGLOBAL	16 -1	; core
+	170	[138]	SETGLOBAL	17 -5	; grug_gear
+	218	[188]	SETGLOBAL	21 -6	; grug_mobs
+	222	[189]	SETGLOBAL	21 -11	; grug_zones
+	226	[190]	SETGLOBAL	21 -12	; mobs
+	251	[198]	SETGLOBAL	22 -7	; grug_inventory
+	259	[200]	SETGLOBAL	22 -9	; grug_xp
+	273	[208]	SETGLOBAL	22 -8	; grug_classes
+	281	[216]	SETGLOBAL	22 -10	; grug_core
+parser PASS tools/r9_farm/farming_kat.lua
+parser PASS tools/r9_mounts/mounts_kat.lua
+	62	[41]	SETGLOBAL	13 -23	; ItemStack
+	156	[223]	SETGLOBAL	16 -30	; core
+	174	[252]	SETGLOBAL	16 -61	; vector
+	180	[253]	SETGLOBAL	16 -67	; player_api
+	193	[269]	SETGLOBAL	16 -70	; grug_core
+	197	[276]	SETGLOBAL	16 -75	; grug_visuals
+	201	[277]	SETGLOBAL	16 -77	; grug_xp
+	207	[285]	SETGLOBAL	16 -79	; grug_money
+	218	[296]	SETGLOBAL	16 -82	; grug_factions
+	224	[298]	SETGLOBAL	16 -87	; grug_mobs
+	231	[302]	SETGLOBAL	16 -90	; grug_classes
+	233	[303]	SETGLOBAL	16 -93	; grug_jobs
+	247	[342]	SETGLOBAL	16 -94	; grug_zones
+	1241	[550]	SETGLOBAL	52 -94	; grug_zones
+	1287	[558]	SETGLOBAL	51 -94	; grug_zones
+	1823	[678]	SETGLOBAL	59 -289	; grug_projectiles
+parser PASS tools/r9_perf/writer_equivalence.lua
+parser PASS tools/r9_prof/blacksmith_kat.lua
+parser PASS tools/r9_prof/catalog_kat_lib.lua
+	38	[64]	SETGLOBAL	4 -15	; ItemStack
+	50	[68]	SETGLOBAL	9 -16	; core
+	348	[174]	SETGLOBAL	14 -125	; grug_inventory
+	363	[176]	SETGLOBAL	14 -127	; grug_gear
+	380	[180]	SETGLOBAL	14 -139	; grug_traders
+	382	[181]	SETGLOBAL	14 -141	; grug_jobs
+parser PASS tools/r9_prof/goldsmith_kat.lua
+parser PASS tools/r9_prof/leatherworker_kat.lua
+parser PASS tools/r9_prof/prof_b_kat_lib.lua
+	8	[32]	SETGLOBAL	2 -1	; vector
+	53	[93]	SETGLOBAL	5 -20	; ItemStack
+	71	[104]	SETGLOBAL	16 -23	; core
+	202	[231]	SETGLOBAL	19 -64	; PcgRandom
+	214	[238]	SETGLOBAL	19 -65	; default
+	272	[259]	SETGLOBAL	21 -92	; grug_core
+	274	[260]	SETGLOBAL	21 -99	; grug_inventory
+	294	[269]	SETGLOBAL	21 -100	; grug_classes
+	298	[270]	SETGLOBAL	21 -111	; grug_xp
+	304	[272]	SETGLOBAL	21 -113	; grug_mobs
+	399	[309]	SETGLOBAL	25 -162	; grug_materials
+	401	[310]	SETGLOBAL	25 -164	; grug_professions
+	403	[312]	SETGLOBAL	25 -165	; grug_jobs
+parser PASS tools/r9_prof/stations_kat.lua
+	49	[36]	SETGLOBAL	5 -5	; ItemStack
+	65	[75]	SETGLOBAL	12 -1	; core
+	114	[108]	SETGLOBAL	12 -4	; default
+	116	[109]	SETGLOBAL	12 -8	; grug_core
+	118	[110]	SETGLOBAL	12 -9	; grug_brewing
+	122	[114]	SETGLOBAL	12 -10	; vector
+	155	[125]	SETGLOBAL	13 -6	; grug_jobs
+	754	[262]	SETGLOBAL	25 -7	; grug_items
+parser PASS tools/r9_prof/tailor_kat.lua
+parser PASS tools/r9_prof/woodcarver_kat.lua
+parser PASS tools/wp13/blueprint_kat.lua
+parser PASS tools/wp13/capital_probe/init.lua
+	2	[44]	SETGLOBAL	0 -1	; grug_wp13_capital_probe
+parser PASS tools/wp13/capital_probe/precinct_witness.lua
+parser PASS tools/wp13/capital_probe/service_witness.lua
+parser PASS tools/wp13/character_visuals_kat.lua
+parser PASS tools/wp13/dur_brannoc_kat.lua
+parser PASS tools/wp13/gear_catalogue_kat.lua
+parser PASS tools/wp13/gor_drazhak_kat.lua
+parser PASS tools/wp13/highcourt_kat.lua
+parser PASS tools/wp13/integration_fixture.lua
+parser PASS tools/wp13/kezamba_kat.lua
+parser PASS tools/wp13/lethariel_kat.lua
+parser PASS tools/wp13/library_kat.lua
+parser PASS tools/wp13/nhal_veyr_kat.lua
+parser PASS tools/wp13/precinct_ring_kat.lua
+parser PASS tools/wp13/seam_kat.lua
+parser PASS tools/wp13/start_npcs_kat.lua
+parser PASS tools/wp13/stub_registry.lua
+parser PASS tools/wp39/combat_integration_test.lua
+	34	[31]	SETGLOBAL	11 -13	; vector
+	73	[77]	SETGLOBAL	12 -26	; ItemStack
+	215	[202]	SETGLOBAL	13 -34	; core
+	217	[204]	SETGLOBAL	13 -89	; grug_core
+	250	[231]	SETGLOBAL	14 -90	; grug_classes
+	252	[233]	SETGLOBAL	14 -108	; grug_factions
+	265	[243]	SETGLOBAL	14 -112	; grug_xp
+	275	[251]	SETGLOBAL	15 -114	; grug_mobs
+	287	[263]	SETGLOBAL	18 -118	; grug_projectiles
+	1693	[801]	SETGLOBAL	63 -301	; grug_mounts
+parser PASS tools/wp40/planner_throughput/fixture.lua
+parser PASS tools/wp40/planner_throughput/r5_fixture.lua
+parser PASS tools/wp40/quality/banner_fixture.lua
+parser PASS tools/wp40/quality/cover_fixture.lua
+parser PASS tools/wp40/quality/final_micro.lua
+parser PASS tools/wp40/quality/gravewood_writer_fixture.lua
+parser PASS tools/wp40/quality/vendor_fixture.lua
+parser PASS tools/wp40/r6/fixtures.lua
+parser PASS tools/wp40/r6/micro_kat_fixture.lua
+parser PASS tools/wp40/r7/anchor_activation_kat.lua
+parser PASS tools/wp40/r7/contract.lua
+parser PASS tools/wp40/r7/contract_kat.lua
+parser PASS tools/wp40/r7/hydrology_depth_fixture.lua
+parser PASS tools/wp40/r7/micro_kat_fixture.lua
+parser PASS tools/wp40/r7/node_semantics_fixture.lua
+parser PASS tools/wp40/r7/wp33_gathering_kat.lua
+parser PASS tools/wp40/resource_sampling/writer_fixture.lua
+parser PASS tools/wp40/tree_slices/fixture.lua
+SWEEP 1 (review any comment/tool-only hits)
+SWEEP 2 (review any comment/tool-only hits)
+SWEEP 3 (review any comment/tool-only hits)
+SWEEP 4 (review any comment/tool-only hits)
+mods/ENTITIES/grug_traders/stock.lua:22:-- §8.2 VERBATIM; "Wood & stone tools / bronze pick | 5-15c / 40c" is the
+mods/ENTITIES/grug_traders/stock.lua:32:-- {item = <name>, price = <copper>, category = "goods" | "tools"}
+mods/ENTITIES/grug_traders/stock.lua:98:-- Bracket catalogs & the hourly rotation (§3.8)
+mods/CORE/grug_core/combat.lua:1:-- Damage pipeline & combat state (docs/design/classes.md §2,
+mods/ENTITIES/grug_mobs/items.lua:85:-- Hides & pelts (§6 rows "light leather" / "heavy leather" / "scaled hide")
+mods/MAPGEN/grug_mapgen/wp13/gor_drazhak.lua:11:--     "Gor Drazhak | orc | mesa shelf, step 4 | adobe flat roofs with
+mods/ENTITIES/grug_mobs/init.lua:69:--   def._grug_tier        — "normal" (default) | "elite" | "rare" | "boss"
+tools/r10_equip/base_recipes_kat.lua:31:		for row=1,#recipe do rows[row]=table.concat(recipe[row],"|") end
+mods/ENTITIES/mobs/api.lua:1:-- translation & mod checks
+mods/ENTITIES/mobs/api.lua:694:-- update nametag & infotext
+mods/ENTITIES/mobs/api.lua:1513:-- are we able to dig & drop a node?
+mods/ENTITIES/mobs/api.lua:2114:-- dogshoot attack switch & counter function
+mods/ENTITIES/mobs/api.lua:2133:-- stop attack & reset vars
+mods/ENTITIES/mobs/api.lua:2866:-- falling & fall damage
+mods/ENTITIES/mobs/api.lua:2919:-- deal damage & effects when mob punched
+mods/ENTITIES/mobs/api.lua:3766:-- handle mob lifetimer & expiration
+mods/ENTITIES/mobs/api.lua:5073:	-- sneak & right-click mob to show what it eats/follows
+tools/r10_gameplay/potion_kat.lua:34:	return "r10_potion|base=15|loop=17|bonus_calls=1\n"
+tools/r8_mob1/bosses_kat.lua:743:	return "r9_boss_v1|dragons=2|whelps=2|kings=6|royal_guards=12|perches=3|" ..
+tools/r8_mob1/bosses_kat.lua:744:		"warning=60|heartbeat_spawns=1|flight=1|dive=1|breath_cone=3|" ..
+tools/r8_mob1/bosses_kat.lua:745:		"ground_effects=2|lightning_miss=1|gust=12|enrage=0.7|" ..
+tools/r8_mob1/bosses_kat.lua:746:		"guard_full_step_follow_snap=1|guard_reset=0|particles_lt_1000=1\n"
+mods/MAPGEN/grug_mapgen/wp40/simple_map.lua:722:					-- open envelope is |d| < gate_half, so the closed box this
+mods/MAPGEN/grug_mapgen/wp13/kezamba.lua:11:-- is an answer to it: "Kezamba | troll | stilted cenote terrace, step 3 | stilt
+tools/r9_prof/catalog_kat_lib.lua:201:		return table.concat(flat, "|")
+tools/wp40/resource_sampling/writer_fixture.lua:255:			"\ntrace=", table.concat(snapshot.trace, "|"), "\n"})
+tools/r9_prof/prof_b_kat_lib.lua:350:			return table.concat(flat, "|")
+mods/MAPGEN/grug_mapgen/wp13/nhal_veyr.lua:1301:	--     cap(p) = gate_y + |p - gate_at|      (gate_y = the free terrain at
+mods/PLAYER/grug_visuals/compose.lua:275:	-- docs/research/luanti-lua.md flags `"|"` as a possible bitwise operator,
+tools/r9_mounts/mounts_kat.lua:818:	return "r9_mounts_v3|tiers=4|models=12|warning=48|warning_probes=112|" ..
+tools/r9_mounts/mounts_kat.lua:819:		"warning_interval=1|ceiling=600|assets=" ..
+mods/PLAYER/grug_abilities/init.lua:716:-- Ability registration & item. One tool per ability; the item's `range`
+mods/PLAYER/grug_abilities/init.lua:1836:	return SKIN_VERSION .. "|" .. color .. "|" .. src.inv .. "|" .. src.wield
+mods/PLAYER/grug_abilities/init.lua:1880:	local token = SWING_CAPS_VERSION .. "|" .. string.format("%.17g", interval)
+SWEEP 5 (review any comment/tool-only hits)
+mods/ENTITIES/mobs/api.lua:4658:	if mobs_griefing and not minetest.is_protected(pos, "") then

@@ -1,0 +1,7 @@
+exit=0 errors=0 complete=1 log=/tmp/grudgelands-r10-final-engines/capitals-v2/lethariel/server.log
+WP13 lethariel: the built avenue moved.
+  now      8f35dac4832561e22de22dcd72226d941c8a3cca5331369492ca6488af31f2e0
+  expected a0d99054886bfb13cd7db3ed561f9261740d79810b2d2beda01e5c685a9e6f9c (/home/jan/projects/grudgelands/.claude/worktrees/r10-integration/tools/wp13/evidence/20260915-capital-terrain/lethariel/avenue-digest-531802985935182545.txt)
+rampart: this capital publishes no such overlay region
+corner: this capital publishes no such overlay region
+gate: this capital publishes no such overlay region
