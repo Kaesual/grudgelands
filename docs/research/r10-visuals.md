@@ -47,7 +47,12 @@ All 17 registered crop families now bind four actual growth textures via
 harvest inventory item for every world stage. The source mapping and strict
 allow-list are in `tools/r10_art/import_crop_stages.sh` and
 `grug_farming/LICENSE-media.md`. No foreign node logic, recipes, sounds or IDs
-were imported. `r10-visuals/crop-stages-sheet.png` shows the full 17x4 result.
+were imported. Sugar cane and bamboo keep the local plantlike nodes with visible
+stage scale. Salt crust alone uses the source's animated crystal tops and a
+four-step shallow nodebox silhouette; its local IDs, timer, soil requirement,
+walkability and drops are unchanged. `r10-visuals/crop-stages-sheet.png` shows
+the full 17x4 texture result, while `r10-visuals/crop-node-visual-proof.png`
+shows the effective cane, bamboo and salt geometry at every stage.
 For MAP-B wild placement, reuse each mature stage-4 tile only where the plant's
 accepted biome/soil table already permits the item; do not import upstream spawn
 rules or add new wild populations as an art side effect.
