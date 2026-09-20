@@ -127,6 +127,12 @@ Woodcarver buys metal fittings from the Weaponsmith (`items_crafting.md`
 §3.6a) the same way Tailors and Alchemists buy leather from the
 Leatherworker (§3 below).
 
+V1 repair is the explicit exception to profession ownership: every profession
+trainer repairs every repairable item for gold only. Housing craft stations
+gain the same universal service later. Material-matched repair is backlog work,
+not a hidden benefit of learning the item's owning profession; see
+[durability_repair.md](durability_repair.md).
+
 ### 2.3 Two professions were merged away
 
 - **Herbalism merges into the Alchemist.** The Alchemist gathers its own

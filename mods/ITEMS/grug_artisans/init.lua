@@ -112,7 +112,7 @@ core.register_craft_predict(function(itemstack, player, old_grid)
 			tonumber(definition._grug_bracket) ~= tier then
 		return ItemStack("")
 	end
-	local allowed = grug_items.can_apply_upgrade_kit(item, mode)
+	local allowed = grug_items.can_apply_upgrade_kit(item, mode, player)
 	if not allowed then return ItemStack("") end
 	return ItemStack(item)
 end)
@@ -125,7 +125,7 @@ core.register_on_craft(function(itemstack, player, old_grid)
 			tonumber(definition._grug_bracket) ~= tier then return ItemStack("") end
 	local result = ItemStack(item)
 	result:set_count(1)
-	local allowed = grug_items.apply_upgrade_kit(result, mode)
+	local allowed = grug_items.apply_upgrade_kit(result, mode, nil, player)
 	return allowed and result or ItemStack("")
 end)
 

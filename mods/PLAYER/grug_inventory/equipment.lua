@@ -241,6 +241,7 @@ function grug_inventory.hands_of(item)
 	end
 	local def = core.registered_items[itemname]
 	local hands = def and def._grug_hands
+	if hands == 0 then return 0 end
 	if type(hands) == "number" and hands >= 2 then
 		return 2
 	end
@@ -283,6 +284,17 @@ local function allow_hands(player, inventory, to_list, stack, action, info)
 	local other = other_hand_stack(inventory, other_list, action, info)
 	if other:is_empty() then
 		return true -- the other hand is free: nothing to cross-check
+	end
+	local incoming_quiver = core.get_item_group(stack:get_name(), "grug_quiver") > 0
+	local other_quiver = core.get_item_group(other:get_name(), "grug_quiver") > 0
+	local incoming_bow = core.get_item_group(stack:get_name(), "grug_bow") > 0
+	local other_bow = core.get_item_group(other:get_name(), "grug_bow") > 0
+	if (incoming_quiver and other_bow) or (other_quiver and incoming_bow) then
+		return true
+	end
+	if incoming_quiver or other_quiver then
+		local weapon = incoming_quiver and other or stack
+		if grug_inventory.hands_of(weapon) <= 1 then return true end
 	end
 	local incoming_2h = grug_inventory.hands_of(stack) >= 2
 	local held_2h = grug_inventory.hands_of(other) >= 2

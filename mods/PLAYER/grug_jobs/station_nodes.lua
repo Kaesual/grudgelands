@@ -78,16 +78,16 @@ local function formspec(station, operation)
 	local operation_hint = operation == "add_affix" and
 		"label[6.2,1.25;Adds one random legal affix]" or
 		(operation and "label[6.2,1.25;Exact improved result]" or "")
-	return "formspec_version[3]size[10,10]" ..
+	return "formspec_version[3]size[11.5,10]" ..
 		"label[1.5,0.35;" .. core.formspec_escape(info.display_name) .. "]" ..
 		"label[1.5,0.75;" .. input_label .. "]list[context;craft;1.5,1.1;3,3;]" ..
 		"image[5.0,2.05;1,1;gui_furnace_arrow_bg.png^[transformR270]" ..
 		"label[6.2,0.75;" .. output_label .. "]list[context;output;6.2,2.05;1,1;]" ..
-		"list[current_player;main;1,5.15;8,1;]" ..
-		"list[current_player;main;1,6.4;8,3;8]" ..
+		"list[current_player;main;1.75,5.15;8,1;]" ..
+		"list[current_player;main;1.75,6.4;8,3;8]" ..
 		"listring[context;output]listring[current_player;main]" ..
 		"listring[context;craft]listring[current_player;main]" ..
-		default.get_hotbar_bg(1, 5.15) ..
+		default.get_hotbar_bg(1.75, 5.15) ..
 		jobs.station_book_button(station) ..
 		(operation and "button[7.45,2.0;1.8,0.8;grug_jobs_apply;" ..
 			action_label .. "]" or "") .. operation_hint

@@ -3,8 +3,8 @@
 -- their own bracket and every bracket below it.
 --
 -- Everything in here is GENERATED from the design curves, never hand-listed:
--- 7 weapon families x 6 brackets = 42 tools, plus 2 armor lines x 4 slots x
--- 6 brackets = 48 craftitems. All Common, therefore all without enchants
+-- 6 weapon families x 6 brackets = 36 tools, plus 3 armor lines x 4 slots x
+-- 6 brackets = 72 armor items and 12 offhands. All Common, therefore without enchants
 -- (§3.8) and 10-15% behind crafted gear of the same era by construction.
 --
 -- ---------------------------------------------------------------------------
@@ -188,10 +188,8 @@ local WEAPONS = {
 	{key = "staff",    noun = "Staff",    fpi = 1.4, factor = 1.2, hands = 2, group = "staff"},
 	{key = "wand",     noun = "Wand",     fpi = 1.0, factor = 1.0, hands = 1, group = "wand", caster = true,
 		image = "default_mese_crystal_fragment.png^[colorize:"},
-	{key = "scepter",  noun = "Scepter",  fpi = 1.0, factor = 1.0, hands = 1, group = "scepter", caster = true,
-		image = "default_stick.png^[colorize:"},
-	{key = "orb",      noun = "Orb",      fpi = 1.0, factor = 1.0, hands = 1, group = "orb", caster = true,
-		image = "default_mese_crystal.png^[colorize:"},
+	{key = "bow",      noun = "Bow",      fpi = 1.0, factor = 1.0, hands = 2,
+		group = "bow", bow = true},
 }
 
 function grug_gear.weapon_damage_at_level(ilvl, family)
@@ -341,6 +339,52 @@ function grug_gear.get_sell_price(itemname)
 	return sell_price[itemname]
 end
 
+local REPAIR_STARTER_PRICE = {
+	["default:pick_wood"] = 5, ["default:shovel_wood"] = 5,
+	["default:axe_wood"] = 5, ["default:sword_wood"] = 5,
+	["grug_farming:hoe"] = 5,
+	["default:pick_stone"] = 10, ["default:shovel_stone"] = 10,
+	["default:axe_stone"] = 10, ["default:sword_stone"] = 15,
+	["grug_gear:staff_wood"] = 15, ["grug_gear:bow_wood"] = 15,
+}
+local REPAIR_TIER_TOOL = {}
+for tier, names in ipairs({
+	{"default:pick_bronze", "default:axe_bronze", "default:shovel_bronze", "grug_farming:hoe_bronze"},
+	{"grug_materials:pick_iron", "grug_materials:axe_iron", "grug_materials:shovel_iron", "grug_farming:hoe_iron"},
+	{"default:pick_steel", "default:axe_steel", "default:shovel_steel", "grug_farming:hoe_steel"},
+	{"grug_materials:pick_silversteel", "grug_materials:axe_silversteel", "grug_materials:shovel_silversteel", "grug_farming:hoe_silversteel"},
+	{"grug_materials:pick_embersteel", "grug_materials:axe_embersteel", "grug_materials:shovel_embersteel", "grug_farming:hoe_embersteel"},
+	{"grug_materials:pick_abyssal_steel", "grug_materials:axe_abyssal_steel", "grug_materials:shovel_abyssal_steel", "grug_farming:hoe_abyssal_steel"},
+}) do
+	for _, itemname in ipairs(names) do REPAIR_TIER_TOOL[itemname] = tier end
+end
+
+-- Canonical regular-purchase reference price for the repair service. This is
+-- independent of vendor rotation and never derives a sell-back price.
+function grug_gear.reference_purchase_price(item)
+	local stack = type(item) == "string" and ItemStack(item) or item
+	if not stack or stack:is_empty() then return nil end
+	local itemname = stack:get_name()
+	local base = buy_price[itemname] or REPAIR_STARTER_PRICE[itemname]
+	local tool_tier = REPAIR_TIER_TOOL[itemname]
+	if not base and tool_tier then
+		base = grug_gear.BRACKETS[tool_tier].price.weapon
+	end
+	if not base then
+		local bracket = tonumber((stack:get_definition() or {})._grug_bracket)
+		local groups = (stack:get_definition() or {}).groups or {}
+		if bracket and grug_gear.BRACKETS[bracket] and
+				((groups.pickaxe or 0) > 0 or (groups.axe or 0) > 0 or
+				(groups.shovel or 0) > 0 or (groups.hoe or 0) > 0) then
+			base = grug_gear.BRACKETS[bracket].price.weapon
+		end
+	end
+	if not base then return nil end
+	local quality = stack:get_meta():get_int("grug_quality")
+	if quality == 0 then quality = tonumber((stack:get_definition() or {})._grug_quality) or 1 end
+	return base * (({[1] = 1, [2] = 3, [3] = 6})[quality] or 1)
+end
+
 --
 -- Generation.
 --
@@ -388,7 +432,9 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 		local groups = {grug_gear = 1, grug_equip_weapon = 1}
 		groups[w.group] = 1
 		if w.caster then groups.grug_caster_weapon = 1 end
+		if w.bow then groups.grug_bow = 1 end
 		local image = "grug_gear_item_" .. w.key .. "_" .. metal.key .. ".png"
+		if w.bow then image = "grug_gear_item_staff_" .. metal.key .. ".png" end
 		if w.image then image = w.image .. BRACKET_TINT[bracket] .. ":115" end
 		core.register_tool(itemname, {
 			description = describe(metal.name, w.noun, br.ilvl,
@@ -408,6 +454,8 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 			_grug_bracket = bracket,
 			_grug_quality = 1,
 			_grug_hands = w.hands,
+			_grug_bow_draw_time = w.bow and 0.5 or nil,
+			_grug_bow_range = w.bow and 25 or nil,
 			_grug_sell_price = buyback(br.price.weapon),
 		})
 		buy_price[itemname] = br.price.weapon
@@ -415,6 +463,39 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 		table.insert(w.fixed and cat.fixed or cat.extras, itemname)
 		tool_count = tool_count + 1
 	end
+
+	-- Offhands use the matching bracket's "other" purchase reference. A shield's
+	-- base rating equals the complete same-ilvl unrefined metal set; spellbooks
+	-- carry only their authored mana line before ordinary affixes.
+	local metal_line = ARMOR_LINES[1]
+	local shield_rating = 0
+	for _, slot in ipairs(ARMOR_SLOTS) do
+		shield_rating = shield_rating + math.max(1, math.floor(
+			(metal_line.base + metal_line.per_ilvl * br.ilvl) * slot.share + 0.5))
+	end
+	local shield = "grug_gear:shield_" .. metal.key
+	core.register_craftitem(shield, {
+		description = describe(metal.name, "Shield", br.ilvl,
+			shield_rating .. " armor rating"),
+		inventory_image = "grug_gear_item_chest_metal_" .. metal.key .. ".png",
+		groups = {grug_gear = 1, grug_equip_offhand = 1, grug_shield = 1},
+		stack_max = 1, _grug_armor = shield_rating, _grug_ilvl = br.ilvl,
+		_grug_bracket = bracket, _grug_quality = 1, _grug_hands = 1,
+		_grug_quality_family = "shield", _grug_sell_price = buyback(br.price.other),
+	})
+	buy_price[shield], sell_price[shield] = br.price.other, buyback(br.price.other)
+	local mana = math.ceil(bracket / 2)
+	local book = "grug_gear:spellbook_" .. metal.key
+	core.register_craftitem(book, {
+		description = describe(metal.name, "Spellbook", br.ilvl,
+			"+" .. mana .. "% maximum Mana"),
+		inventory_image = "default_book.png^[colorize:" .. BRACKET_TINT[bracket] .. ":75",
+		groups = {grug_gear = 1, grug_equip_offhand = 1, grug_spellbook = 1},
+		stack_max = 1, _grug_max_mana_percent = mana, _grug_ilvl = br.ilvl,
+		_grug_bracket = bracket, _grug_quality = 1, _grug_hands = 1,
+		_grug_quality_family = "spellbook", _grug_sell_price = buyback(br.price.other),
+	})
+	buy_price[book], sell_price[book] = br.price.other, buyback(br.price.other)
 
 	for _, line in ipairs(ARMOR_LINES) do
 		if line.register then
@@ -481,6 +562,7 @@ end
 -- uses: the stone sword's 4 fleshy as the 1H value, times the staff family's
 -- x1.2, rounded the §3.2 way -- 5 at a 1.4 s swing.
 local STARTER_STAFF = "grug_gear:staff_wood"
+local STARTER_BOW = "grug_gear:bow_wood"
 
 core.register_tool(STARTER_STAFF, {
 	description = "Wooden Staff\n" ..
@@ -500,6 +582,23 @@ core.register_tool(STARTER_STAFF, {
 })
 
 grug_gear.STARTER_STAFF = STARTER_STAFF
+core.register_tool(STARTER_BOW, {
+	description = "Wooden Bow\n" .. core.colorize(STAT_COLOR,
+		weapon_stats(4, 1.0, 2)),
+	inventory_image = "default_stick.png^[colorize:#704522:55",
+	groups = {grug_gear = 1, grug_equip_weapon = 1, bow = 1, grug_bow = 1,
+		flammable = 2},
+	stack_max = 1,
+	tool_capabilities = {full_punch_interval = 1.0,
+		damage_groups = {fleshy = 4}, max_drop_level = 0, groupcaps = {}},
+	_grug_quality = 1, _grug_hands = 2, _grug_bow_draw_time = 0.5,
+	_grug_bow_range = 25, _grug_sell_price = 3,
+})
+grug_gear.STARTER_BOW = STARTER_BOW
+core.register_craftitem("grug_gear:arrow", {
+	description = "Arrow", inventory_image = "default_stick.png",
+	groups = {grug_arrow = 1}, stack_max = 99, _grug_sell_price = 1,
+})
 -- The Warrior half of the same pair, published so the starter-kit grant in
 -- grug_inventory names neither item twice.
 grug_gear.STARTER_SWORD = "default:sword_stone"

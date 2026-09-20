@@ -101,7 +101,7 @@ grug_traders.register_stock({item = "default:pick_bronze", price = 40, category 
 -- kind, bracket) the offer is:
 --   * the 13 FIXED items (sword + four pieces from each armor class);
 --   * 3 ROTATING conceptual families drawn from dagger, greataxe, staff and
---     caster 1H. Caster 1H resolves deterministically to wand, scepter or orb
+--     caster 1H. The active caster 1H family is the wand.
 --     for this vendor/hour/bracket. One conceptual family is withheld. This
 --     keeps the three caster forms from crowding out physical families;
 --     Withholding is
@@ -230,7 +230,7 @@ local function compute(salt, bracket, rotation)
 	end
 
 	local rng = PcgRandom(rotation_seed(salt, bracket, rotation))
-	local caster = {"wand", "scepter", "orb"}
+	local caster = {"wand"}
 	local caster_family = caster[rng:next(1, #caster)]
 	local conceptual = {
 		grug_gear.weapon_item("dagger", bracket),

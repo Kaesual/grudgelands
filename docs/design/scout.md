@@ -232,7 +232,7 @@ Ruling 12 in one table. Nothing here is rejected; it is sequenced.
 | **Poison** | 7 and 12 | nowhere. `classes.md:475-487`'s Phase-2 Rogue plan is retired in this lane's `classes.md` commit, so no work package owns a player poison stat any more |
 | **Traps** | 12 | nowhere. Ruling 7 allowed them "if cheap"; ruling 12 removed the option, and they were the one idea in the class that needed a placed-entity lifecycle |
 | **A third resource** | 14: the Scout uses mana | nowhere; §1 |
-| **A quiver item** | not ruled — simply not needed for v1 | `professions.md:52` already assigns it to the Leatherworker "later"; arrows stack in the main inventory until then |
+| **A starter quiver** | omitted: the Scout starts without one | The Leatherworker's optional four-stack quiver ships in V1; arrows also work directly from `main` (§3) |
 | **A dedicated leather overlay** | 12: "leather borrows the cloth cut" | `character_visuals.md:71-73` already says so; the art is a later pass |
 
 What that leaves is a class made entirely of numbers, durations and flags on

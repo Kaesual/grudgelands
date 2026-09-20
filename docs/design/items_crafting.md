@@ -335,9 +335,11 @@ redemption item or discovery grind. A pure fighter instead buys refined and
 enchanted gear from crafters; both paths remain inside the 10–20 h envelope.
 **Intended gear cadence: a visible upgrade every 45–90 min** (quest
 rewards + 3% world drops between the six material tiers, §3.0),
-and at 60 the professions stay load-bearing via repair (§8), consumables
+and at 60 the professions stay load-bearing via consumables
 (elixirs/bandages/potions), upgrade kits (§7), masterworks and race
-signatures (§4).
+signatures (§4). V1 repair is universal and gold-only at every profession
+trainer; material/profession repair remains later work (§8 and
+[durability_repair.md](durability_repair.md)).
 
 ## 3. Materials, curves and the profession catalogs
 
@@ -2217,7 +2219,7 @@ A profession can turn a **refined but not yet enchanted** item into a
 that slows attackers, for instance.
 
 - An ordinary special variant **keeps its full one-prefix/one-suffix slots on
-  top of its one authored effect.** The effect is not one of the four. It is
+  top of its one authored effect.** The effect is not one of the two. It is
   also distinct from §4's cultural-finish and PvP-special metadata; every
   legal combination participates in the combined cap audit.
 - The input must be unenchanted: the special variant is a step *between*
