@@ -280,8 +280,9 @@ including the documented initial LMB camera gesture. The subsequent
 pursuit through harmless plants while preserving cliff protection. The user
 accepted that fix. Reviewed [interaction corrections](docs/research/round11-interaction-followups.md)
 now limit ability pickup to 4 m, add mounted A/D and prevent simultaneous NPC
-interaction and mount activation. [Round 12](TODO-round12-planning.md) is in
-planning; only the Basics visibility decision is approved so far.
+interaction and mount activation. [Round 12](docs/research/round12-plan/README.md) now plans the expanded farming,
+Skills, art/UI and original-class talent work; implementation awaits the final
+round Go.
 
 **In progress:** WP11 still owns the original three classes' remaining X3
 abilities and capstones; Scout completion does not close that broader package.
