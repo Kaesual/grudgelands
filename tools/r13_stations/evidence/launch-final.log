@@ -1,0 +1,6 @@
+staged patch: catalog-only.patch
+staged probe: probe
+headless boot: PASS (port 32917, 45 s)
+log: /tmp/grudgelands-headless.qFYhzN/server.log
+236:ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:32917.
+kept: /tmp/grudgelands-headless.qFYhzN

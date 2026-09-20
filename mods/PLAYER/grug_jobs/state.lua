@@ -177,6 +177,7 @@ function grug_jobs.recipe_progress_unlocked(player, recipe)
 end
 
 function grug_jobs.can_craft_recipe(player, recipe)
+	if recipe and recipe.automatic_finish then return true end
 	local unlocked, reason = grug_jobs.recipe_progress_unlocked(player, recipe)
 	if not unlocked then return false, reason end
 	local handler = grug_jobs.station_handler(recipe.station)

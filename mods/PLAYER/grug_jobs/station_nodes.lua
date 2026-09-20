@@ -8,6 +8,7 @@ local station_visuals = dofile(core.get_modpath("grug_jobs") ..
 	"/station_visuals.lua")
 local PUBLIC_STATIONS = {
 	furnace = true,
+	dual_furnace = true,
 	brewing_stand = true,
 	forge = true,
 	tanning_rack = true,
@@ -50,208 +51,8 @@ function factory.can_access_public_furnace(pos, player)
 		node.name == "default:furnace_active")
 end
 
-local function may_access(station, pos, player)
-	if factory.is_public_station(station, pos) then return true end
-	return player and player.is_player and player:is_player() and
-		not core.is_protected(pos, player:get_player_name())
-end
-
-local function may_use_here(station, pos, player)
-	if not may_access(station, pos, player) or not player or
-			type(player.get_pos) ~= "function" then return false end
-	local player_pos = player:get_pos()
-	return player_pos ~= nil and vector.distance(player_pos, pos) <= 8
-end
-
-local function jobs_api()
-	local jobs = rawget(_G, "grug_jobs")
-	if type(jobs) ~= "table" then
-		error("grug_jobs: station runtime is unavailable", 0)
-	end
-	return jobs
-end
-
-local function formspec(station, operation)
-	local jobs = jobs_api()
-	local info = jobs.station_info(station)
-	local input_label = operation and "Item + material" or "Craft"
-	local output_label = operation and "Result preview" or "Output"
-	local action_label = operation == "add_affix" and "Add Affix" or "Refine"
-	local operation_hint = operation == "add_affix" and
-		"label[6.2,1.25;Adds one random legal affix]" or
-		(operation and "label[6.2,1.25;Exact improved result]" or "")
-	return "formspec_version[3]size[11.5,10]" ..
-		"label[1.5,0.35;" .. core.formspec_escape(info.display_name) .. "]" ..
-		"label[1.5,0.75;" .. input_label .. "]list[context;craft;1.5,1.1;3,3;]" ..
-		"image[5.0,2.05;1,1;gui_furnace_arrow_bg.png^[transformR270]" ..
-		"label[6.2,0.75;" .. output_label .. "]list[context;output;6.2,2.05;1,1;]" ..
-		"list[current_player;main;1.75,5.15;8,1;]" ..
-		"list[current_player;main;1.75,6.4;8,3;8]" ..
-		"listring[context;output]listring[current_player;main]" ..
-		"listring[context;craft]listring[current_player;main]" ..
-		default.get_hotbar_bg(1.75, 5.15) ..
-		jobs.station_book_button(station) ..
-		(operation and "button[7.45,2.0;1.8,0.8;grug_jobs_apply;" ..
-			action_label .. "]" or "") .. operation_hint
-end
-
-local function recipe_at(pos, station)
-	local jobs = jobs_api()
-	local inv = core.get_meta(pos):get_inventory()
-	return jobs.recipe_for_craft(station, ItemStack(""),
-		inv:get_list("craft") or {})
-end
-
-local function refresh_output(pos, station)
-	local inv = core.get_meta(pos):get_inventory()
-	local recipe = recipe_at(pos, station)
-	local output = recipe and ItemStack(recipe.output) or ItemStack("")
-	if recipe and recipe.in_place then
-		for index = 1, 9 do
-			local candidate = inv:get_stack("craft", index)
-			if candidate:get_name() == recipe.output_name then
-				output = ItemStack(candidate)
-				break
-			end
-		end
-		local quality = rawget(_G, "grug_items")
-		if quality and type(quality.preview_station_operation) == "function" then
-			output = quality.preview_station_operation(recipe, output)
-		end
-	end
-	inv:set_stack("output", 1, output)
-	core.get_meta(pos):set_string("formspec", formspec(station,
-		recipe and recipe.operation))
-end
-
-local function initialize(pos, station)
-	local meta = core.get_meta(pos)
-	local inv = meta:get_inventory()
-	if inv:get_size("craft") ~= 9 then inv:set_size("craft", 9) end
-	if inv:get_size("output") ~= 1 then inv:set_size("output", 1) end
-	meta:set_string("formspec", formspec(station))
-	meta:set_string("infotext", jobs_api().station_info(station).display_name)
-	refresh_output(pos, station)
-end
-
-local function consume_inputs(pos)
-	local inv = core.get_meta(pos):get_inventory()
-	for index = 1, 9 do
-		local stack = inv:get_stack("craft", index)
-		if not stack:is_empty() then
-			stack:take_item(1)
-			inv:set_stack("craft", index, stack)
-		end
-	end
-end
-
 local function register_station_node(station, info, visual)
-	local name = info.node
-	local function allow_put(pos, listname, index, stack, player)
-		if not may_use_here(station, pos, player) or listname ~= "craft" then return 0 end
-		return stack:get_count()
-	end
-	local function allow_move(pos, from_list, from_index, to_list, to_index,
-			count, player)
-		if not may_use_here(station, pos, player) or from_list == "output" or
-				to_list == "output" or to_list ~= "craft" then
-			return 0
-		end
-		return count
-	end
-	local function allow_take(pos, listname, index, stack, player)
-		if not may_use_here(station, pos, player) then return 0 end
-		if listname ~= "output" then return stack:get_count() end
-		if not player or not player.is_player or not player:is_player() then
-			return 0
-		end
-		local recipe = recipe_at(pos, station)
-		if recipe and recipe.operation then
-			core.chat_send_player(player:get_player_name(),
-				"Use Apply to complete this " .. recipe.operation .. ".")
-			return 0
-		end
-		if not recipe or ItemStack(recipe.output):get_count() ~= stack:get_count() then
-			return 0
-		end
-		local allowed, reason = jobs_api().can_craft_recipe(player, recipe)
-		local quality_api = rawget(_G, "grug_items")
-		if allowed and quality_api and
-				type(quality_api.can_craft_quality) == "function" then
-			allowed, reason = quality_api.can_craft_quality(player, recipe)
-		end
-		if not allowed then
-			core.chat_send_player(player:get_player_name(),
-				"Cannot craft " .. recipe.output_name .. ": " .. reason)
-			return 0
-		end
-		if quality_api and type(quality_api.crafted_output) == "function" then
-			local output = ItemStack(stack)
-			if quality_api.crafted_output(output, player, recipe) then
-				core.get_meta(pos):get_inventory():set_stack(listname, index, output)
-			end
-		end
-		return stack:get_count()
-	end
-	local function on_take(pos, listname, index, stack, player)
-		if listname == "output" then
-			local recipe = recipe_at(pos, station)
-			if recipe and recipe.output_name == stack:get_name() then
-				consume_inputs(pos)
-				jobs_api().record_craft(player, recipe.profession, recipe.tier)
-			end
-		end
-		refresh_output(pos, station)
-	end
-	local function on_change(pos)
-		refresh_output(pos, station)
-	end
-	local function can_dig(pos)
-		local inv = core.get_meta(pos):get_inventory()
-		return inv:is_empty("craft") and inv:is_empty("output")
-	end
-	local function on_receive_fields(pos, formname, fields, sender)
-		if fields.grug_jobs_book and sender and sender:is_player() then
-			jobs_api().open_book(sender, "station", station)
-		elseif fields.grug_jobs_apply and sender and sender:is_player() then
-			if not may_use_here(station, pos, sender) then
-				core.chat_send_player(sender:get_player_name(),
-					"Move closer to this station to use it.")
-				return
-			end
-			local recipe = recipe_at(pos, station)
-			local jobs = jobs_api()
-			local allowed, reason = jobs.can_craft_recipe(sender, recipe)
-			local quality = rawget(_G, "grug_items")
-			if allowed and recipe and recipe.operation and quality and
-					type(quality.apply_station_operation) == "function" then
-				local station_inv = core.get_meta(pos):get_inventory()
-				local preview = station_inv:get_stack("output", 1)
-				if not sender:get_inventory():room_for_item("main", preview) then
-					allowed, reason = false, "Make room in your inventory."
-				else
-					local result, operation_reason = quality.apply_station_operation(
-						recipe, station_inv:get_list("craft") or {}, sender)
-					if result then
-					consume_inputs(pos)
-					sender:get_inventory():add_item("main", result)
-					jobs.record_craft(sender, recipe.profession, recipe.tier)
-					else
-						reason = operation_reason
-						allowed = false
-					end
-				end
-			elseif allowed then
-				allowed, reason = false, "This operation is unavailable."
-			end
-			if not allowed then
-				core.chat_send_player(sender:get_player_name(), reason or
-					"The operation was refused.")
-			end
-			refresh_output(pos, station)
-		end
-	end
-	local definition = {
+	core.register_node(":" .. info.node, {
 		description = info.display_name,
 		drawtype = "nodebox",
 		node_box = {type = "fixed", fixed = visual.boxes},
@@ -260,27 +61,12 @@ local function register_station_node(station, info, visual)
 		is_ground_content = false,
 		groups = visual.groups,
 		sounds = type(visual.sounds) == "function" and visual.sounds() or visual.sounds,
-		_grug_station = station,
-		_grug_grid_size = 9,
-		on_construct = function(pos) initialize(pos, station) end,
-		can_dig = can_dig,
-		allow_metadata_inventory_put = allow_put,
-		allow_metadata_inventory_move = allow_move,
-		allow_metadata_inventory_take = allow_take,
-		on_metadata_inventory_put = on_change,
-		on_metadata_inventory_move = on_change,
-		on_metadata_inventory_take = on_take,
-		on_receive_fields = on_receive_fields,
-		on_blast = function(pos)
-			local drops = {}
-			default.get_inventory_drops(pos, "craft", drops)
-			drops[#drops + 1] = name
-			core.remove_node(pos)
-			return drops
+		_grug_station = station, _grug_grid_size = 9,
+		on_construct = function(pos)
+			core.get_meta(pos):get_inventory():set_size("craft", 9)
+			core.get_meta(pos):set_string("infotext", info.display_name)
 		end,
-	}
-	default.set_inventory_action_loggers(definition, station:gsub("_", " "))
-	core.register_node(":" .. name, definition)
+	})
 end
 
 local wood_boxes = {
@@ -363,7 +149,7 @@ function factory.register_nodes()
 		run_at_every_load = true,
 		action = function(pos, node)
 			if core.get_meta(pos):get_inventory():get_size("craft") ~= 9 then
-				initialize(pos, core.registered_nodes[node.name]._grug_station)
+				core.registered_nodes[node.name].on_construct(pos)
 			end
 		end,
 	})
@@ -406,6 +192,7 @@ function factory.install_jobs(jobs)
 	jobs.register_public_position = factory.register_public_position
 	jobs.is_public_station = factory.is_public_station
 	jobs.can_access_public_furnace = factory.can_access_public_furnace
+	jobs.workspaces = dofile(core.get_modpath("grug_jobs") .. "/workspaces.lua")
 	core.register_lbm({
 		label = "Activate authored public cooking hearths",
 		name = "grug_jobs:activate_public_hearths",

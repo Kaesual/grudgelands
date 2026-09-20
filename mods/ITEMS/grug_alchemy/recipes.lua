@@ -135,10 +135,22 @@ grug_alchemy.INGREDIENT_TIERS = ingredients
 
 for index = 1, #catalog do
 	local row = catalog[index]
+	row.mixture = "grug_alchemy:mixture_" .. row.id
+	core.register_craftitem(row.mixture, {
+		description = "Prepared " .. row.name .. " Mixture\nFinish at a Brewing Stand with fuel.",
+		inventory_image = core.registered_items["grug_alchemy:" .. row.id].inventory_image,
+		groups = {grug_potion_mixture = 1}, _grug_tier = row.tier,
+	})
+	grug_jobs.register_ingredient_tier(row.mixture, row.tier)
+	grug_jobs.register_recipe({
+		profession = "alchemist", tier = row.tier, station = "grid",
+		inputs = {row.inputs}, output = row.mixture,
+		hint = "Prepare in the inventory grid; finish at a Brewing Stand",
+	})
 	grug_jobs.register_recipe({
 		profession = "alchemist", tier = row.tier, station = "brewing_stand",
-		inputs = row.inputs, output = "grug_alchemy:" .. row.id,
-		hint = "Brew at a Brewing Stand", time = 5,
+		inputs = {row.mixture}, output = "grug_alchemy:" .. row.id,
+		hint = "Anyone may finish the prepared mixture; no profession progress", time = 5,
 	})
 end
 
@@ -158,7 +170,6 @@ grug_jobs.register_recipe({
 
 grug_jobs.register_station("brewing_stand", {
 	register_recipe = grug_brewing.register_recipe,
-	can_use = function(player) return grug_jobs.has(player, "alchemist") end,
 })
 
 grug_gathering.register_herb_authorizer(function(player)

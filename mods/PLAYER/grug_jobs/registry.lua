@@ -684,6 +684,8 @@ function grug_jobs.register_recipe(definition)
 		quality_mode = definition.quality_mode,
 		mastery_required = definition.mastery_required,
 		existing_engine_recipe = definition.existing_engine_recipe == true,
+		automatic_finish = station == "furnace" or station == "dual_furnace" or
+			station == "brewing_stand",
 		universal_output_routes = universal_routes,
 		shapeless = definition.shapeless == true,
 		shaped = definition.shapeless ~= true and
