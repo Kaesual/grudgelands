@@ -16,6 +16,7 @@ local clear_swing_progress -- assigned after the swing-clock declaration
 local reset_swing_boundary -- assigned after the swing-clock declaration
 local swing_progress -- assigned after ability registration helpers
 local attempt_swing -- assigned after the swing-clock declaration
+local pickup_visible_loot -- assigned with the shared 4 m pickup ray
 
 local function refuse_mounted_attack(player)
 	return grug_core.refuse_mounted_attack and
@@ -834,14 +835,13 @@ function grug_abilities.register_ability(def)
 			-- Run the builtin item entity's own on_punch — the exact pickup path
 			-- a weapon punch takes (on_pickup callback, inventory add, entity
 			-- removal, item_entity.lua:325-347) — and do NOT cast.
-			-- Pointing is limited by this ability item's own range (up to 20 m
-			-- on ranged skills), so a long-range skill picks up loot from
-			-- further away than a sword — accepted, a convenience, not an
-			-- exploit.
+			-- The client points with this ability item's combat range, so never
+			-- trust that object reference as pickup authority. Reacquire the
+			-- first visible thing on the shared, fixed-distance loot ray.
 			if pointed_thing and pointed_thing.type == "object" then
 				local ent = pointed_thing.ref and pointed_thing.ref:get_luaentity()
 				if ent and ent.name == "__builtin:item" then
-					ent:on_punch(user)
+					pickup_visible_loot(user)
 					return
 				end
 			end
@@ -1152,18 +1152,20 @@ end
 -- can also hide a dropped item's small selection box when it rests against the
 -- blocked ground, so no native object packet reaches builtin pickup. Restore
 -- only that one interaction server-side: one new LMB press, the first visible
--- thing on the ordinary eye ray, exact swing range, and builtin items only.
+-- thing on the ordinary eye ray, the shared 4 m pickup range, and builtin items
+-- only.
 -- Nodes and non-item objects stop the ray; this is neither auto-loot nor a
 -- through-wall/proximity pickup.
+local LOOT_PICKUP_RANGE = 4
 local LOOT_DISTANCE_TIE_EPSILON = 0.000001
 
-local function pickup_swing_loot(player, selected)
+pickup_visible_loot = function(player)
 	local eye = grug_core.combat_eye_pos(player)
 	if not eye then
 		return false
 	end
 	local dest = vector.add(eye, vector.multiply(player:get_look_dir(),
-		grug_abilities.get_range(player, selected)))
+		LOOT_PICKUP_RANGE))
 	local best_distance
 	local best_is_drop = false
 	local best_drop
@@ -1179,8 +1181,9 @@ local function pickup_swing_loot(player, selected)
 				vector.distance(eye, pointed.intersection_point) or math.huge
 			local ent = pointed.type == "object" and pointed.ref and
 				pointed.ref:get_luaentity()
-			local is_drop = pointed.intersection_point and ent and
-				ent.name == "__builtin:item" or false
+			local is_drop = pointed.intersection_point and
+				distance <= LOOT_PICKUP_RANGE + LOOT_DISTANCE_TIE_EPSILON and
+				ent and ent.name == "__builtin:item" or false
 			local nearer = not best_distance or
 				distance < best_distance - LOOT_DISTANCE_TIE_EPSILON
 			local blocker_tie = best_distance and
@@ -1198,6 +1201,10 @@ local function pickup_swing_loot(player, selected)
 		return true
 	end
 	return false
+end
+
+local function pickup_swing_loot(player)
+	return pickup_visible_loot(player)
 end
 
 -- Proc preparation still uses the two-phase grug_core seam because mobs_redo

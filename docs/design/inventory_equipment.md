@@ -242,6 +242,9 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
 
 - **Basics** is the exclusive category for profession-free recipes. Every recipe
   route belongs to exactly one category: Basics or its owning profession.
+  Starter recipes are visible immediately; further Basics recipes appear after
+  first acquiring their main material (user decision 2026-09-20). Neither that
+  visibility rule nor character level restricts universal recipe crafting.
 - Everyone uses the familiar 3×3 layouts to make plain weapons, tools and
   metal, cloth or leather armor. Plain feedstock preparation for cloth, leather
   and processed wood is also profession-free. Professional fittings, grips and

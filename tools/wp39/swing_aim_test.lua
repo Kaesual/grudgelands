@@ -11,6 +11,7 @@ local mods_loaded = {}
 local native_input_handler
 local melee_prepare
 local melee_finish
+player_api = {register_control_animation_override = function() end}
 
 vector = {}
 function vector.new(x, y, z)
@@ -449,6 +450,21 @@ queue({pointed(item,2),node_pointed(2)}, {})
 swing_step()
 assert(item_ent.picked == picked_before and a.punches+b.punches == before)
 assert(ray_calls == rays_before+2)
+
+-- Cast tools may have a much longer combat range, but their builtin-item
+-- bridge shares the same 4 m visible pickup authority as swing tools.
+local smite_item = core.registered_items["grug_abilities:smite"]
+rays_before = ray_calls
+queue({pointed(item, 8)})
+smite_item.on_use(ItemStack("grug_abilities:smite"), hero, pointed(item, 8))
+assert(item_ent.picked == picked_before and ray_calls == rays_before + 1)
+queue({pointed(item, 3), node_pointed(2)})
+smite_item.on_use(ItemStack("grug_abilities:smite"), hero, pointed(item, 3))
+assert(item_ent.picked == picked_before)
+queue({pointed(item, 3)})
+smite_item.on_use(ItemStack("grug_abilities:smite"), hero, pointed(item, 3))
+assert(item_ent.picked == picked_before + 1)
+picked_before = item_ent.picked
 
 -- Every other object is terminal too, regardless of iterator order.
 hero.dig=false

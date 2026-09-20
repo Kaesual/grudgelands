@@ -74,3 +74,6 @@ Delivery: implementation `501dd82c`, main merge `ff7f43db`; synchronized to the
 personal Luanti game folder and pushed to `Kaesual/grudgelands`. All 1,900
 installed runtime files match main byte-for-byte. No user world changed.
 Workers are finished; the next action is the post-restart GUI retry above.
+
+User GUI acceptance (2026-09-20): the user explicitly confirmed the vegetation
+pursuit correction is fixed before reporting the subsequent interaction issues.
