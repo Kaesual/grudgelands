@@ -152,9 +152,14 @@ function grug_abilities.mana_cost(player, percent)
 	return math.max(1, math.floor(base * percent / 100 + 0.5))
 end
 
-function grug_abilities.cost_for(player, cost)
+function grug_abilities.cost_for(player, cost, ability_id)
 	if cost.mana_percent then
-		return {mana = grug_abilities.mana_cost(player, cost.mana_percent)}
+		local percent = cost.mana_percent
+		if ability_id == "fireball" and
+				grug_classes.talent_window_active(player, "whitehot") then
+			percent = 3
+		end
+		return {mana = grug_abilities.mana_cost(player, percent)}
 	end
 	return cost
 end
@@ -1606,7 +1611,7 @@ function grug_abilities.try_cast(user, def, pointed_thing)
 		grug_abilities.flash(user, def.name .. " cast interval is not ready.")
 		return
 	end
-	local effective_cost = grug_abilities.cost_for(user, def.cost)
+	local effective_cost = grug_abilities.cost_for(user, def.cost, def.id)
 	if not affordable(user, effective_cost) then
 		grug_abilities.flash(user,
 			"Not enough " .. (effective_cost.mana and "mana" or "rage") .. ".")
