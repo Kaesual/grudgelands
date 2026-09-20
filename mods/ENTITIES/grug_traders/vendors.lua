@@ -402,7 +402,7 @@ end
 --   * is DRAWN as the race of the settlement it stands in (`settlement_race`
 --     above), because one butcher entity serves Hearthpine and Sunscar;
 --   * offers its own shelf on the General tab (`stock.lua`'s
---     `profession_stock`), and only the smith keeps the gear bracket tabs.
+--     `profession_stock`), with bracket tabs where stock.lua declares them.
 --
 -- The salts continue the race vendors' block (RACE_SALT_BASE + 1..6), so no
 -- two vendor kinds share an hourly rotation.
@@ -414,20 +414,11 @@ end
 -- (`PROFESSION_SALT_BASE + index`) and re-ordering this list would re-roll
 -- every existing shop's hourly shelf.
 --
--- WHICH OF THEM SELL THE EQUIPMENT LADDER: the smith, and now the ARMOURER.
--- Eight of the nine fixed items in a bracket catalog are armour
--- (`grug_gear`'s four metal and four cloth pieces against one sword), so an
--- armourer that could not reach the tabs would be an armourer with no armour.
--- The cost is named rather than hidden: `sells_gear` is one boolean over the
--- WHOLE catalog (trade.lua), so the armourer's tabs also carry the sword and
--- the rotating weapon extras. An armour-only tab would be a second view of the
--- same catalog -- a trade-UI change and a contract question, not this lane's.
--- items_crafting.md section 3.0.3 is satisfied either way: it forbids a second
--- ITEM per concept, and two vendors reaching one catalog duplicate nothing
--- (the race and general Quartermasters already both do).
+-- Smith and Armourer retain the full equipment ladder. Round 11 adds filtered
+-- views for Bowyer (bow) and Tanner (leather); stock.lua owns that declaration
+-- and the filtering so these entities cannot drift from the shared catalog.
 --
 local PROFESSION_SALT_BASE = 20
-local GEAR_KINDS = {smith = true, armourer = true}
 -- Ordered, because the salts are positional and must be reproducible across
 -- restarts; the nametag is the shop and not the shopkeeper.
 local PROFESSIONS = {
@@ -455,9 +446,10 @@ for index, row in ipairs(PROFESSIONS) do
 		-- The General tab's shelf. `nil` for the two original families, which
 		-- is what makes them keep the level-independent core stock.
 		stock = row.kind,
-		-- Only the smith and the armourer sell equipment (see GEAR_KINDS
-		-- above: a baker is not on the ladder at all).
-		brackets = GEAR_KINDS[row.kind] or nil,
+		-- Full or filtered equipment tabs come from stock.lua's one declaration.
+		brackets = grug_traders.PROFESSION_BRACKETS[row.kind] and true or nil,
+		bracket_filter = type(grug_traders.PROFESSION_BRACKETS[row.kind]) ==
+			"string" and grug_traders.PROFESSION_BRACKETS[row.kind] or nil,
 	-- The placeholder skin of a build without grug_visuals. A profession
 	-- vendor has no faction, so it falls back to the Accord guard texture and
 	-- the visuals mod replaces it with the settlement's race at activation.
