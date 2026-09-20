@@ -338,6 +338,7 @@ local function loader(directory)
 	-- They reach 261 and not the gate station at 256 so that the road runs a
 	-- little past the threshold rather than stopping inside it, which is the
 	-- same number Highcourt and Dur Brannoc use for their gates.
+	-- Keep lamp and pier cadence independent of the inner avenue endpoint.
 	local GATE_OUT = 261
 	M.avenues = {
 		{id = "avenue_south", axis = "z", at = 0, from = -GATE_OUT, to = -(RADIUS + 1),
@@ -346,7 +347,7 @@ local function loader(directory)
 			gate = "gate_north"},
 		{id = "avenue_west", axis = "x", at = 0, from = -GATE_OUT, to = -(RADIUS + 1),
 			gate = "gate_west"},
-		{id = "avenue_east", axis = "x", at = 0, from = RADIUS + 1, to = GATE_OUT,
+		{id = "avenue_east", axis = "x", at = 0, from = RADIUS + 1, to = GATE_OUT, lamp_phase = 48,
 			gate = "gate_east"},
 	}
 

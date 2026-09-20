@@ -542,7 +542,7 @@ return function(repo)
 					local piece = run_of(palette,
 						{id = spec.id, axis = spec.axis, at = spec.at,
 							from = part[1], to = part[2],
-							lamp_phase = spec.from}, case.ground, case.wet,
+							lamp_phase = spec.lamp_phase or spec.from}, case.ground, case.wet,
 						case.junctions)
 					for _, cell in ipairs(piece.cells) do
 						local key = cell.x .. ":" .. cell.y .. ":" .. cell.z
@@ -1078,14 +1078,14 @@ return function(repo)
 				local piece = avenue.run(palette, {id = spec.id,
 					axis = spec.axis, at = spec.at, from = spec.from,
 					to = spec.to, width = avenue.WIDTH,
-					lamp_spacing = avenue.LAMP_SPACING, lamp_phase = spec.from,
+					lamp_spacing = avenue.LAMP_SPACING, lamp_phase = spec.lamp_phase or spec.from,
 					reach = avenue.REACH, wet = pond_wet,
 					junctions = spec.junctions,
 					clear_verge = spec.clear_verge}, pond)
 				local bare = avenue.run(palette, {id = spec.id,
 					axis = spec.axis, at = spec.at, from = spec.from,
 					to = spec.to, width = avenue.WIDTH,
-					lamp_spacing = avenue.LAMP_SPACING, lamp_phase = spec.from,
+					lamp_spacing = avenue.LAMP_SPACING, lamp_phase = spec.lamp_phase or spec.from,
 					reach = avenue.REACH, wet = pond_wet,
 					junctions = spec.junctions}, pond)
 				pieces[spec.id] = piece
@@ -1218,7 +1218,7 @@ return function(repo)
 				return avenue.run(palette, {id = spec.id, axis = spec.axis,
 					at = spec.at, from = from, to = to, width = avenue.WIDTH,
 					lamp_spacing = avenue.LAMP_SPACING,
-					lamp_phase = spec.from, reach = avenue.REACH,
+					lamp_phase = spec.lamp_phase or spec.from, reach = avenue.REACH,
 					wet = pond_wet, junctions = spec.junctions,
 					clear_verge = spec.clear_verge}, pond)
 			end

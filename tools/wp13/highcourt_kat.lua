@@ -2405,7 +2405,7 @@ return function(repo)
 		local wsurface = wall_surface(spec.axis, spec.at)
 		local piece = wall.run(human, {id = spec.id, axis = spec.axis,
 			at = spec.at, from = spec.from, to = spec.to, width = avenue.WIDTH,
-			lamp_spacing = avenue.LAMP_SPACING, lamp_phase = spec.from,
+			lamp_spacing = avenue.LAMP_SPACING, lamp_phase = spec.lamp_phase or spec.from,
 			reach = avenue.REACH}, wsurface, plan)
 		wall_cells = wall_cells + #piece.cells
 		wall_columns = wall_columns + piece.columns
