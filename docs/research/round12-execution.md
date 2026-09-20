@@ -159,3 +159,15 @@ Root has prepared `tools/r12_integration/probe_round12` for an isolated final
 native catalog/registration smoke after both remaining packages integrate;
 this probe has not run yet. Gallery and next-playtest drafts are in
 `round12-gallery.md` and `round12-next-playtest.md`. No Round12 runtime sync.
+
+## Recipes closed
+
+The second re-review caught one remaining High: presentation-only ownership
+still allowed universal furnace extraction. Sol corrected this through verified
+existing-engine recipe registrations; actual furnace callbacks now deny all
+three refinements without Cooking and award progression after successful takes.
+The obsolete discovery stub/caller was removed. Independent Sol review is clean
+at `f86bc36a`; root integrated the three commits as `fa4b7ab6`, `afa7e632`,
+`c46d94eb`. Native catalog: 830 routes, 596 Basics, 234 profession-owned,
+63 starters, five dual alloys, four Bronze armor starters; all three refinements
+have actual Cooking authority. X3 final correction/review remains pending.

@@ -98,3 +98,24 @@ r12 Skills real callbacks PASS: normalization, equipment notifications, retained
 ```
 
 Q3, Q4, P1, and P2 remain report-only recommendations for later user selection. Recipes and X3 still require the previously stated final integration recheck; this Q1/Q2 review does not certify those pending packages or make an observed-GUI claim.
+
+## Final combined UI/Skills/Recipes source recheck — Recipes resolved
+
+Rechecked integrated primary head `c46d94eb9348dfb05977e05a5f457dfbbd4e2168` plus the uncommitted documentation addition in `AGENTS.md` and the additional Cooking-authority assertion in `tools/r12_integration/probe_round12/init.lua`. This was a bounded read-only source and formspec-geometry pass. I did not rerun the broad integration probe, a PUC runtime, Luanti GUI, or a user world. No new defect was found.
+
+### Combined formspec geometry
+
+- The game-owned shared form remains `10.4x11.1`, with the hotbar at `y=7.2` and the remaining `main` inventory at `y=8.35` (`mods/PLAYER/grug_inventory/ui.lua:1-37`). The jobs Crafting page ends at approximately `y=4.16`: its recipe-book buttons occupy `x=0.10..0.92`, the 3x3 craft grid occupies `x=1.75..4.75` and `y=0.5..3.5`, and preview/arrow remain around `x=4.75..6.75`. Nothing approaches or masks the player's visible main inventory (`mods/PLAYER/grug_jobs/ui.lua:546-594`).
+- Skills ends its instruction textarea at `y=6.85`, below the shared `content_bottom=7.0` and above the main inventory at `y=7.2`. Its `9.9`-wide passive/instruction textareas remain inside the `10.4` form, and its separately labelled ability and mount rows retain the reviewed index mapping (`mods/PLAYER/grug_skills/page.lua:110-129`).
+- The recipe book is intentionally a standalone `10x9.8` form rather than an embedded shared-inventory page. Its two result rows end at `y=3.70`; undiscovered counts and the explicit “Acquire the main material to reveal more recipes.” guide occupy `y=4.02` and `4.35`; the separator is at `4.65`; recipe cells remain below it; and the Close button ends at `y=9.57`, inside the form (`mods/PLAYER/grug_jobs/ui.lua:460-509`). Current station hints are short and no current generated label crosses another interactive element. This is source geometry, not an observed default-scale GUI render.
+- Furnace input stays in the ingredient relationship. For every non-grid recipe, the station icon is drawn at `x=4.18,y=7.38`, directly below the horizontal arrow at `x=4.15,y=6.55`, outside ingredient cells and output (`mods/PLAYER/grug_jobs/ui.lua:355-458`). Furnace, dual-furnace, brewing and 3x3 grid/custom-station cell arrangements remain distinct. Group tooltips show at most four alternatives plus a continuation count and use the shared wrapper.
+
+### Discovery and Cooking ownership
+
+The final book shows undiscovered counts for T1–T6 and the main-material instruction without implying a permission unlock. Exact runtime routes are bound to the independent declaration catalogue before Basics display; general routes carry starter or main-material presentation, while professional routes are removed before discovery filtering (`mods/PLAYER/grug_jobs/basics_presentation.lua`; `basics_routes.lua`; `ui.lua:460-507`). The committed focused evidence records 830 exact routes, 596 Basics routes, 234 profession routes, 63 starters, five alloy routes, four Bronze armor starters, persistent discovery, and the corrected station formspec.
+
+The additional integration-probe loop is correctly scoped: it iterates every `grug_cooking.REFINEMENTS` route and resolves the actual `(station, output, input)` through `grug_jobs.recipe_for_craft`, requiring Cooking ownership and tier 1. This adds a direct full-game assertion for Bread/Cooked Meat/Cooked Fish provenance without changing runtime behavior (`tools/r12_integration/probe_round12/init.lua:40-44`). I inspected the assertion but did not rerun the integration probe under this report-only budget.
+
+The new `AGENTS.md` paragraph accurately records the implemented exact-catalog audit, visibility-only discovery, actual Cooking book/furnace authority, verified existing-engine provenance, and station-icon placement. It does not introduce a new rule inconsistent with current source. `git diff --check` is clean for the uncommitted documentation and probe delta.
+
+Q1 and Q2 remain resolved. Q3, Q4, P1, and P2 remain the only report-only recommendations for later user selection. X3's new talent abilities still await final integration and are outside this certification; the existing Talents layout is unchanged. Root should perform the X3/final checks independently after integration.

@@ -37,6 +37,11 @@ core.register_on_mods_loaded(function()
 			"", "grug_materials:abyssal_steel_bar", "",
 			"", "default:stick", ""}})
 		assert(craft.item:get_name() == "grug_gear:sword_abyssal_steel", "universal sword craft changed")
+		for _, route in ipairs(grug_cooking.REFINEMENTS) do
+			local owner = grug_jobs.recipe_for_craft(route.station, route.output, {route.input})
+			assert(owner and owner.profession == "cooking" and owner.tier == 1,
+				"Cooking furnace authority missing: " .. route.output)
+		end
 		assert(grug_food.DURATION == 300)
 		assert(sfinv.pages["grug_skills:skills"] and sfinv.pages["creative:food"])
 		creative.init_creative_inventory(actor)

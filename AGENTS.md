@@ -358,6 +358,12 @@ Details + line numbers in [docs/research/](docs/research/).
   A later custom station (including the brewing stand) must call
   `can_craft_recipe` before its output leaves and `record_craft` after each
   successful craft on that same take path.
+  Basics declares each exact engine route as starter or with one main material;
+  the complete runtime catalog is audited against `basics_routes.lua` at startup.
+  Discovery changes visibility only. Cooking owns Bread, Cooked Meat and Cooked
+  Fish in both the book and furnace extraction; `existing_engine_recipe = true`
+  registers verified existing engine provenance without duplicate installation.
+  Station icons appear below the recipe arrow, outside ingredient slots.
   `grug_jobs.open_trainer(player, profession, pos)` serves the seven primaries
   and Cooking. Capital-only Riding uses `grug_mounts.open_trainer(player, entity)`
   with an authenticated Riding socket, never the generic profession hook.
@@ -366,6 +372,21 @@ Details + line numbers in [docs/research/](docs/research/).
   `crop_visual(key, stage, sounds)` and `bind_crop_soil_callbacks`. FARM binds
   its real callbacks once and owns the 17 crop families, timers and current-world
   activation. Mapgen has no FARM dependency; do not defer world authority.
+  Tall crops keep state, timers and drops on the root; hidden helpers never own
+  rewards. Multi-position growth/harvest preflights loaded, protected and exact
+  matching nodes before mutation. Mature regrowers use right-click; annuals are
+  replanted, while harvested Cane/Bamboo retain and reset the base.
+- **Skills catalogue**: `grug_skills` lists unlocked active class/talent
+  abilities and every purchased mount tier. Entitlement is authoritative;
+  inventory stacks are disposable bound representations. Drop/catalog return
+  deletes only the stack, with no world entity. Manual recovery requires no
+  copy in main, craft or owned bag contents; external inventories, equipment
+  and trading refuse bound stacks. Base-kit insertion happens once at character
+  creation; later talent unlocks and mount purchases announce Skills availability
+  without insertion. `grug_abilities.is_unlocked` is shared by catalogue,
+  recovery, normalization and actual cast/swing execution. `normalize_kit`
+  removes stale copies without re-granting missing ones. Purchased mount tiers
+  remain individually available at their original speeds.
 - **Mount runtime**: ownership is player meta; the summoned controller and its
   visible child are ephemeral. The child is hidden only from its local rider in
   first person. `grug_mounts.dismount` is the shared cleanup path for manual,

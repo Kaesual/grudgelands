@@ -129,3 +129,23 @@ Reproduction: in a real catalog boot, call `grug_jobs.recipe_for_craft("furnace"
 - The seven committed source hashes match the reviewed files; `git diff --check` reports only the intentional blank final line in the probe `mod.conf` and no whitespace error.
 
 No PUC runtime or broad suite ran. I did not duplicate the unchanged bounded native probe because its committed output directly exposes the authority mismatch above.
+
+## Final correction re-review — `f86bc36a396513b58e155b0889d0cacb8ddd1884`
+
+**Verdict: CLEAN.** Both remaining findings are closed, and no new issue was found in the correction from `b8a329939dcd1832353eecab85003dbbe22219e8`.
+
+- Cooking now registers all three refinements with the normal Jobs registry as exact T1 furnace routes (`mods/ITEMS/grug_cooking/init.lua:263-280`). They consequently participate in the same `recipe_for_craft`, `can_craft_recipe` and `record_craft` paths as other professional furnace recipes.
+- The new `existing_engine_recipe` adapter is bounded to grid/furnace, proves exactly one matching existing engine route and exactly one total route for that output before accepting ownership (`mods/PLAYER/grug_jobs/registry.lua:629-648`). It records the normal profession recipe but deliberately skips `install_recipe`, preventing a duplicate `core.register_craft` (`:675-713`). Final collision validation rechecks the engine corpus and exact matching provenance after all mods load (`:765-825`). The three Cooking outputs satisfy this strict scope in the native boot.
+- The actual furnace callbacks now resolve these outputs: an unlearned player is denied before extraction, while a learned cook is allowed and receives one progression credit per taken output. The real-code callback fixture covers all three and deliberately makes `core.register_craft` fatal, proving the adapter did not reinstall them (`tools/r12_recipes/furnace_authority_kat.lua:39-43,66-100`). Reviewer rerun passed:
+
+  ```text
+  chrt --idle 0 ionice -c3 luajit tools/r12_recipes/furnace_authority_kat.lua .
+  R12 RECIPES furnace authority PASS unlearned=denied learned=3 progression=3
+  ```
+
+- The updated native catalog independently derives owner names from `recipe_for_craft` (`tools/r12_recipes/catalog_probe/init.lua:35-49`). Its committed log labels Bread, Cooked Meat and Cooked Fish `owner=cooking`, and its explicit authority assertions pass for all three (`:100-112`). The same boot retains `catalog=830`, `basics=596`, 63 starters, five alloys and four Bronze armor starters.
+- The presentation-only profession-record bridge was removed. Cooking-book rows now come from the real registry, so presentation and craft authority share one record rather than diverging.
+- `discover_tier_one_inputs` and its sole conditional caller are both gone (`mods/PLAYER/grug_jobs/discovery.lua:43-50`; `mods/PLAYER/grug_jobs/state.lua:72-83`). Repository search finds no remaining reference.
+- All twelve committed source-input hashes match the reviewed files. The checked-in static summary reports the Lua 5.1 parser and five sweeps passing; its single SETGLOBAL occurrence is the expected mod-global declaration for `grug_cooking`. `git diff --check` has no error.
+
+No PUC runtime or broad suite ran.
