@@ -155,6 +155,10 @@ round 10. Its hedge, parapet, bank or palisade is written after all structural
 core content and later dressing may use only free cells: a house, orchard,
 green, lore piece, martial piece or prop may meet the boundary but may not cut
 it. Only the four authored thirteen-column gate or threshold bands stay open.
+The boundary and its gates stand at radius 48, two nodes outside the earlier
+radius 46. Each capital retains the actual asymmetric extent of its gatehouses;
+projection bounds include every authored cell, and no ring column intersects a
+building. Nhal Veyr's bars align with their wall on both axes.
 A fitting attached to content displaced by the boundary is removed, and an
 edge building faces inward so its door remains usable. The six forms of the
 same rule are:

@@ -1,9 +1,14 @@
-# TODO — Round 7: planning the plant, recipe and mob worlds, plus the small fixes that are already clear
+# Round 7 historical decisions
+
+> **Historical archive:** This file preserves the Round-7 rulings and execution
+> plan as written. Current authority lives in `docs/design/`, BACKLOG and the
+> active execution record. Old lane, model, CLI, approval and gate instructions
+> below are not current process instructions.
 
 Decided with the user on 2026-09-18 after Playtest 9 (main `070abcae`, round 6
 complete). Round 7 starts on 2026-09-19. It is a **planning round with a
 small implementation tail**: the creative plans it produces are the input of
-[Round 8](TODO-round8.md), whose goal is a first complete version of Cooking
+[Round 8](round8-decisions.md), whose goal is a first complete version of Cooking
 and Alchemy. Nothing in this file overrides a decided rule in `docs/design/`;
 where a plan below wants to change one, the plan says so and the user rules
 before Round 8 implements it.

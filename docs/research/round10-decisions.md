@@ -1,21 +1,19 @@
 # TODO — Round 10 scope and Playtest 12 follow-ups
 
-Status: planning, 2026-09-20. Accepted user decisions are recorded in
-`TODO-round9.md` §4.47–56. This file tracks the remaining questions and package
-boundaries; it is not an implementation-completion record. Before implementing
-each package, fold its resolved rules into the named `docs/design/` owners.
-Delete this TODO once the remaining questions are settled and the work is
-represented in design/BACKLOG. The bounded Round 9 PERF package is complete
-and integrated; its remaining mapgen successors are still pending.
+Status: historical decision and execution record, archived 2026-09-20.
+Accepted user decisions 47–56 are retained in
+`round9-decisions.md` §4. This file records the planning state that preceded
+the accepted Round-10 execution package; current implementation and remaining
+gates are tracked by `round10-execution.md` and `round10-closeout.md`.
 
 **Implementation authorized (user 2026-09-20):** after the audit discussion,
 the user accepted all nine final recommendations and requested autonomous
 delivery through the next playtest. The earlier audit hold is lifted. The
-[execution record](docs/research/round10-execution.md) records those decisions,
+[execution record](round10-execution.md) records those decisions,
 scope, package dependencies and completion gates and supersedes the remaining
 proposal/open-question wording below while it is folded into `docs/design/`.
 
-The completed [Playtest 12 design-to-code audit](docs/research/playtest12-audit/README.md)
+The completed [Playtest 12 design-to-code audit](playtest12-audit/README.md)
 records seven source-confirmed implementation deviations and four unresolved
 choices. Its coordinator dispositions distinguish missing open-WP work from
 historical defects and preserve the already-decided independent mastery and

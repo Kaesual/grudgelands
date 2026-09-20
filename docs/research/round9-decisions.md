@@ -1,4 +1,9 @@
-# TODO — Round 9: terrain (MAP-C), plant placement, the five primary profession catalogs, mob wave 2, farming, enchant rolls, mounts
+# Round 9 historical decisions
+
+> **Historical archive:** This file preserves the Round-9 rulings and execution
+> plan as written. Current authority lives in `docs/design/`, BACKLOG and
+> `round10-execution.md`. Old lane, model, CLI, approval and gate instructions
+> below are not current process instructions.
 
 
 Written 2026-09-18 (evening) while Round 8 was closing, **DECIDED with the
@@ -418,7 +423,8 @@ Actual tested baseline: `2a308891`. The user completed this playtest on
 2026-09-20, before PERF, CAP and MAP-B. Consequently the coral/plant placement
 and capital-wall checks in the original checklist below are still pending.
 
-Findings and accepted follow-ups are tracked in [TODO-round10.md](TODO-round10.md).
+Findings and accepted follow-ups are retained in the
+[Round 10 record](round10-decisions.md).
 The concrete thin-cave-roof example is world `test`, seed
 `4151598227737528026`, approximately `(-71, 19, -2458)`. A read-only source
 query places it inside `exclude:anchor:anchor_002:01`, Dawnmere's 256-node

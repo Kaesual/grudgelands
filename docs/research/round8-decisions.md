@@ -1,4 +1,9 @@
-# TODO — Round 8: mapgen iteration, profession framework, Cooking and Alchemy v1, mob wave 1
+# Round 8 historical decisions
+
+> **Historical archive:** This file preserves the Round-8 rulings and execution
+> plan as written. Current authority lives in `docs/design/`, BACKLOG and the
+> active execution record. Old lane, model, CLI, approval and gate instructions
+> below are not current process instructions.
 
 Rough plan of 2026-09-18 (morning), rewritten as a proposal in the evening
 after Round 7 delivered its plans, and **decided with the user on
@@ -19,7 +24,7 @@ Flask remains pending. Review follow-ups carried forward are a real
 writer exactness deviation; the proposed foreign-mod profession registrar was
 explicitly not added under the decided ownership rule. These and the remaining
 content work are tracked in the orchestrator's
-[Round 9 proposal](TODO-round9.md).
+[Round 9 record](round9-decisions.md).
 
 Inputs: `docs/research/cooking-alchemy-plan.md`,
 `docs/research/mob-worlds-plan.md`,

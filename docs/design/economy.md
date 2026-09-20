@@ -27,8 +27,9 @@ income relationship and sink structure.
   never consumes inventory Gold.
 - The vendor floor moves with the player. Six Common gear catalogs cover
   levels 1–10 through 51–60; a player sees the current and all lower brackets.
-  Vendors never sell refined or enchanted gear. See `items_crafting.md`
-  §3.8.
+  Fixed stock and ordinary rotations are Common and unrefined. The sole
+  exception is the expensive one-in-five rotating Uncommon defined in
+  `items_crafting.md` §3.8; vendors never offer Rare or higher gear.
 
 ## 2. Ordinary price axis and buy-back
 

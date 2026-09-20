@@ -1,5 +1,13 @@
 # Round 9 design-doc drift audit (R9-AUDIT, GPT-5.6 Sol, read-only, 2026-09-19)
 
+> **Closeout disposition, 2026-09-20:** This remains a historical audit of its
+> stated baseline. All questions in findings 12, 16 and 17 were answered by the
+> archived Round-9 decisions and the accepted Round-10 execution record. The
+> plateau proposal in finding 1 was withdrawn; current cave behavior uses
+> functional footprints rather than the broad fitting envelope. Current rules
+> and candidate/evidence status are indexed in
+> [round10-closeout.md](round10-closeout.md); wording below is not living design.
+
 Read-only audit of the design docs against the rulings of rounds 5–9 and the shipped code (main 71ed60df). Report only; the user rules per item, R9-DOCS applies the doc changes. Findings that touch a running lane were forwarded to that lane's orchestrator thread.
 
 ## Summary

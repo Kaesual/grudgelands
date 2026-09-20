@@ -15,7 +15,7 @@ universal skills `professions.md` §1, the mob speed pillar
 
 - **Riding does not cost a main profession slot.** Like **Cooking** and
   **First Aid** (`professions.md` §1) it is universal — every character
-  can learn it, and the two main profession slots stay free for the six
+  can learn it, and the two main profession slots stay free for the seven
   crafting professions.
 - Riding is learned **from a dedicated Riding Trainer in every race capital**, in four
   steps at character levels 15, 30, 45 and 60 (D20 decided 2026-08-13:
@@ -24,11 +24,14 @@ universal skills `professions.md` §1, the mob speed pillar
   **player state, permanent and per character**,
   and its purchase hands over the owner-bound mount item represented by that
   step.
-- WP13 reserves only a **cosmetic stable/hitching-post dressing slot** near
-  the job trainer's court in the Market/Professions capital quadrant. It is
-  ordinary mutable, claim-excluded dressing, never a functional anchor; a
-  later dedicated stable master (Phase 2+, e.g. with D19 variants) can attach
-  there without moving NPCs or roads.
+- Every capital has one outer-district stable using the same shared building
+  design, with the local architectural palette. Its dedicated Riding Trainer
+  stands in front of four stationary displays of the existing mount appearances
+  available to that race, one for each tier in §1.1: 24 displays across six cities.
+  These displays are noncombatant, non-AI and cannot be ridden or yield items.
+  Trainer, stable and displays use the authored settlement activation identities;
+  saving, reload and partial activation must not duplicate them. Riding is absent
+  from every profession trainer, including Cooking trainers in starting villages.
 - **Mounts are not a reward and not a drop** — they are bought (§2), and
   buying them is the point (§2 is a gold sink).
 

@@ -1929,9 +1929,10 @@ roll window, but never changes the fixed channel count or multiplies a special.
 This is the explicit exception to §6b's ordinary refine-before-enchant rule.
 
 Register exactly six ordinary core identities, each craftable in T1–T6.
-Setting, tier, item level, required level, affix rolls, special strength,
-generated display name/color and image composition are per-stack data, yielding
-six item ids rather than 36:
+Identity, Setting, tier, item level, required level, special strength and base
+image are static fields of 36 registered ids (six identities across six tiers).
+Random affix rolls, refinement/quality state and the resulting generated display
+name and color remain per-stack data.
 
 | Visual family | Core identities |
 |---|---|
@@ -1962,8 +1963,8 @@ the same specials; it remains subject to that special's authored two-slot rule.
   internally.
 - Mercy Seal runs through the central outgoing-heal path.
 - Last Light triggers after a survived hit leaves the wearer below 25% maximum
-  HP. It grants an absorb from post-hit maximum HP and cannot save an already
-  lethal hit.
+  HP. It grants an absorb from post-hit maximum HP for at most 120 seconds,
+  sharing that 120-second cooldown, and cannot save an already lethal hit.
 - Reclaimer's Mark triggers only on an XP-eligible kill, settles its shared
   cooldown first, then restores HP plus maximum-Mana percentage for Mage/
   Priest or HP plus flat Rage for Warrior. Gray kills grant nothing.
@@ -1975,6 +1976,11 @@ Direct damage procs, ability cooldown reduction, movement speed, gathering
 yield, durability and vendor bonuses are excluded from the six-special MVP.
 A future race-taunt trinket would consume its one authored-special channel,
 not add a fourth channel; no such placeholder ships now.
+
+The shared trinket owner rebuilds an event-driven per-character equipment cache
+when equipment changes. Hot mana, heal, hit, kill and potion paths read that
+cache and never rescan equipment per tick or event. It enforces the
+same-identity-per-character exclusion and every cap/cooldown above.
 
 ### 6.3 Roll ranges by the item's ilvl bracket and source window
 
