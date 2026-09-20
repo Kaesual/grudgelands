@@ -358,6 +358,14 @@ Details + line numbers in [docs/research/](docs/research/).
   A later custom station (including the brewing stand) must call
   `can_craft_recipe` before its output leaves and `record_craft` after each
   successful craft on that same take path.
+  `grug_jobs.open_trainer(player, profession, pos)` serves the seven primaries
+  and Cooking. Capital-only Riding uses `grug_mounts.open_trainer(player, entity)`
+  with an authenticated Riding socket, never the generic profession hook.
+- **Crop registration**: `grug_nodes` registers complete `grug_farming:soil` and
+  `soil_wet` definitions before synchronous mapgen compilation, and exports
+  `crop_visual(key, stage, sounds)` and `bind_crop_soil_callbacks`. FARM binds
+  its real callbacks once and owns the 17 crop families, timers and current-world
+  activation. Mapgen has no FARM dependency; do not defer world authority.
 - **Mount runtime**: ownership is player meta; the summoned controller and its
   visible child are ephemeral. The child is hidden only from its local rider in
   first person. `grug_mounts.dismount` is the shared cleanup path for manual,
@@ -508,8 +516,11 @@ Details + line numbers in [docs/research/](docs/research/).
   stand nodes, timer and recipe adapter) and `grug_alchemy` (items, profession
   recipes and effects). The stand has two reagent slots plus vial, fuel and
   output; its output take path calls `can_craft_recipe` before release and
-  `record_craft` after release. Capital stands are the public node at local
-  `(2,1,-12)`, directly east of the Alchemist trainer. Potions share
+  `record_craft` after release. Capital public stations derive from terrain-resolved,
+  rotated `public_station` sockets in the themed outer premises.
+  `grug_jobs.register_public_position(station, pos)` owns the shared registry;
+  `grug_brewing.register_public_position(pos)` delegates the brewing stand.
+  No fixed capital-core position is authoritative. Potions share
   `grug_traders`' persistent clock (60 s, or 45 s for the Greater pair);
   elixirs replace status id `elixir`, stack with status id `food`, and never
   touch that clock. Apothecary gear extends timed potions and elixirs by 10%

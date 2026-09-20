@@ -18,6 +18,9 @@ the reports; the final dated candidate disposition supersedes earlier verdicts.
 | Integrated final-runner composition | GPT-6 Astra | GPT-5.6 Sol | `70f04ceb` | [CLEAN](final-runner-review.md), including MAP-B compact composition | 0 |
 | ENGINE witnesses | GPT-5.6 Sol | GPT-5.6 Sol | `59b98f38` | [CLEAN SOURCE](engine-gates-review.md), five Medium and one Low findings closed; final engine fleet pending | 2 |
 | CLOSE status reconciliation | GPT-5.6 Sol | GPT-5.6 Sol | `e05562ef` | [CLEAN DOCS](close-final-review.md), one Medium finding closed; final delivery fields pending | 1 |
+| MAP-B | GPT-6 Astra | GPT-5.6 Sol | `02f37ec0` | [CLEAN SOURCE + BOUNDED ENGINE EVIDENCE](map-b-review.md), one Medium closed | 1 |
+| Final banner fixture and gear comment | GPT-6 Astra | GPT-5.6 Sol | Source hashes in report | [CLEAN](banner-fixture-review.md) | 0 |
+| Runtime authority refresh | GPT-6 Astra | GPT-5.6 Sol | Source hash in report | [CLEAN](authority-refresh-review.md) | 0 |
 | CLOSE | GPT-5.6 Sol, focused correction by GPT-6 Astra | GPT-5.6 Sol | `557f942e` | [CLEAN conditional on ART](close-review.md); dependency present in integration `c6df7d4f` | 1 |
 
 Every row has zero remaining Critical/High findings. Observed elapsed delivery
@@ -26,8 +29,8 @@ ART license preflight found two High candidate-source holds before the formal
 package review; those sources were replaced before the reviewed candidate.
 The ART-integration review's old leather comment was corrected in `7e2bc1f0`.
 
-These source reviews are not an aggregate playtest-ready declaration. MAP-B, final integration evidence and final dynamic documentation
-remain pending at this checkpoint. The coordinator owns the single integrated
+These source reviews are not an aggregate playtest-ready declaration. Final
+integration evidence and final dynamic documentation remain pending at this checkpoint. The coordinator owns the single integrated
 compact PUC/LuaJIT pair and isolated engine checks; reviewers inspect immutable
 evidence rather than duplicating the fallback-interpreter run. GUI acceptance
 remains the user's next playtest.

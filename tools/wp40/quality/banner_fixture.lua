@@ -2,7 +2,13 @@
 return function(repo)
 	local definitions = {}
 	local environment = setmetatable({
-		core = {register_node = function(name, def) definitions[name] = def end},
+		core = {
+			register_node = function(name, def) definitions[name:gsub("^:", "")] = def end,
+			get_modpath = function(name)
+				assert(name == "grug_nodes")
+				return repo .. "/mods/ITEMS/grug_nodes"
+			end,
+		},
 		grug_materials = {natural_groups = function(groups) return groups end},
 		default = {
 			node_sound_dirt_defaults = function() return {} end,

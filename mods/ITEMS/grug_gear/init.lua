@@ -73,9 +73,9 @@ end
 --                weapon materials and the six pick tiers;
 --   * cloth   -- the Tailor's six bolt grades (§3.5); the doc's "T2 linen
 --                cloth -> woven bolt" becomes the adjective `Woven`;
---   * leather -- the Leatherworker's six leather grades (§3.4). Registered
---                `false` below (its only wearer, the Rogue, is Phase 2) but
---                NAMED here, so the day it registers nothing is invented.
+--   * leather -- the six leather grades (§3.4), registered alongside metal
+--                and cloth as universal base armor; Leatherworkers refine
+--                these base items through their profession recipes.
 --
 grug_gear.MATERIALS = {
 	{metal = {key = "bronze", name = "Bronze"},
