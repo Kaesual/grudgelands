@@ -340,7 +340,7 @@ conflicts if version 1 had stealth (§8).
 | **Professions** | none created. Leatherworker owns the grades/current quiver; Woodcarver owns bow quality operations | `professions.md` §2–§3 |
 | **Traders** | the bowyer shelf still needs its bow bracket tab and the tanner shelf its leather grades | `grug_traders/stock.lua` |
 | **Character visuals** | consume the delivered leather family and bow pose without new Scout-specific art | `character_visuals.md` §§3, 6 |
-| **`combat_stats.md`** | one sentence for the ranged damage term of ruling 28, and the cap-override paragraph WP11 already owes | beside `grug_classes.get_melee_bonus` at `grug_classes/stats.lua:107-115` |
+| **Combat stat consumers** | S3 supplies the ranged damage term and Scout dodge consumer. The shared cap rule and targeted Unbroken consumer are delivered; the Mage crit override remains WP11 X3 | `combat_stats.md` §2; `skill_trees.md` §3.2 |
 | **PvP (WP41)** | nothing in version 1. Sprint and Sidestep are ordinary buffs under the existing tag rules | `combat_stats.md:270-289` |
 | **`grug_visuals`, `grug_mobs` AI, nametags** | **nothing** — every one of those was an invisibility dependency (§8) | — |
 
