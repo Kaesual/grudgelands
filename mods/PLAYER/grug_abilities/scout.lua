@@ -228,6 +228,13 @@ local function set_draw_wear(player, fraction)
 	end
 end
 
+local function finish_draw_wear(player)
+	-- Keep the cached step through the compare-first reset. A full draw is
+	-- already at step 10 / wear 0 and therefore needs no identical write.
+	set_draw_wear(player, 1)
+	draw_wear_steps[player:get_player_name()] = nil
+end
+
 local function effective_draw_time(player)
 	local base = math.max(0.1, 0.5 -
 		grug_classes.get_talent_bonus(player, "draw_time_sub"))
@@ -270,11 +277,10 @@ local function release_draw(player, rec)
 		return
 	end
 	draws[player:get_player_name()] = nil
-	draw_wear_steps[player:get_player_name()] = nil
 	if grug_core.refuse_mounted_attack and
 			grug_core.refuse_mounted_attack(player) == true then
 		cancel_receipt(player, rec.action_id)
-		set_draw_wear(player, 1)
+		finish_draw_wear(player)
 		return
 	end
 	local draw_time = effective_draw_time(player)
@@ -284,13 +290,13 @@ local function release_draw(player, rec)
 	-- impulse and therefore no projectile action or ammunition cost.
 	if fraction <= 0 then
 		cancel_receipt(player, rec.action_id)
-		set_draw_wear(player, 1)
+		finish_draw_wear(player)
 		return
 	end
 	local effect = loose_effect(player, fraction >= 1)
 	local ok, err = launch(player, "loose", effect.count, fraction, effect,
 		rec.action_id)
-	set_draw_wear(player, 1)
+	finish_draw_wear(player)
 	if not ok then grug_abilities.flash(player, err) end
 end
 
