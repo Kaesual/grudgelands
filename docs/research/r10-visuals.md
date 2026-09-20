@@ -30,10 +30,11 @@ Animalworld bear/boar pelts. The old leather-tinted Boar Tusk was replaced by a
 single curved ivory sprite authored through OpenAI image generation, then
 mechanically downsampled to 16x16. The generation prompt requested one curved
 ivory boar tusk, transparent background, high-contrast pixel-art shading and
-readability at 16x16; source output was
-`/home/jan/.codex/generated_images/01a0bbff-cfdf-7c80-832e-dc8ca60211e3/exec-f70218aa-2518-4eb0-bdb5-8e5c9eee2538.png`.
-The distributable 16x16 result and this provenance are persistent in the repo;
-no runtime or project path points to the generated-image directory.
+readability at 16x16. The immutable original and exact prompt are stored under
+`r10-visuals/sources/`; `tools/r10_art/build_boar_tusk.sh` records the
+point-filter trim, downsample and centered extent operation. The manifest
+records source, prompt and output hashes, so the result no longer depends on a
+machine-local generated-image path.
 
 The rest of the nonweapon item registrations were reviewed by texture-expression
 family. Existing readable cooking dishes, alchemy containers, metal bars,
@@ -44,9 +45,10 @@ only the observed wrong-object or generic-harvest placeholders.
 
 All 17 registered crop families now bind four actual growth textures via
 `grug_farming_<crop>_<stage>.png`; the previous system tinted and scaled the
-harvest inventory item for every world stage. The source mapping and strict
-allow-list are in `tools/r10_art/import_crop_stages.sh` and
-`grug_farming/LICENSE-media.md`. No foreign node logic, recipes, sounds or IDs
+harvest inventory item for every world stage. The stage source map is
+`tools/r10_art/import_crop_stages.sh`; the separate exact harvest-icon map is
+`tools/r10_art/import_harvest_icons.sh`. Their strict allow-lists and authorship
+are in the owning media ledgers. No foreign node logic, recipes, sounds or IDs
 were imported. Sugar cane and bamboo keep the local plantlike nodes with visible
 stage scale. Salt crust alone uses the source's animated crystal tops and a
 four-step shallow nodebox silhouette; its local IDs, timer, soil requirement,

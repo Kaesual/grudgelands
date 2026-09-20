@@ -598,4 +598,4 @@ skins. All files are CC0 1.0 by the **Grudgelands project**.
 | `grug_mobs_item_light_leather.png` | animalia `5895f403`, `animalia_leather.png`, ElCeejo | MIT | renamed, byte-identical |
 | `grug_mobs_item_heavy_leather.png` | animalworld `ac835da9`, `abearpelt.png`, Liil/Wilhelmine | MIT | renamed, byte-identical |
 | `grug_mobs_item_sleek_pelt.png` | animalworld `ac835da9`, `aboarpelt.png`, Liil/Wilhelmine | MIT | renamed, byte-identical |
-| `grug_mobs_item_boar_tusk.png` | Grudgelands R10 image-generation output | CC0 1.0 | authored as one curved ivory 16×16-readable pixel-art tusk on transparency; mechanically downsampled to 16×16 |
+| `grug_mobs_item_boar_tusk.png` | persistent source `docs/research/r10-visuals/sources/boar-tusk-imagegen.png`; prompt beside it | CC0 1.0, Grudgelands project | deterministic point-filter trim/downsample/14×14-centering via `tools/r10_art/build_boar_tusk.sh` |
