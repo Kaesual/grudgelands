@@ -947,6 +947,24 @@ function grug_classes.talent_window_active(player, talent_id)
 	return true
 end
 
+function grug_classes.try_trigger_talent_window(player, talent_id, duration,
+		cooldown)
+	if grug_classes.talent_rank(player, talent_id) <= 0 then return false end
+	if not grug_classes.talent_trigger_ready(player, talent_id, cooldown) then
+		return false
+	end
+	return grug_classes.start_talent_window(player, talent_id, duration)
+end
+
+function grug_classes.talent_trigger_ready(player, talent_id, cooldown)
+	local key = "grug_classes:talent_ready:" .. talent_id
+	local now = os.time()
+	local meta = player:get_meta()
+	if now < (tonumber(meta:get_string(key)) or 0) then return false end
+	meta:set_string(key, tostring(now + cooldown))
+	return true
+end
+
 function grug_classes.clear_talent_windows(player)
 	windows[player:get_player_name()] = nil
 end

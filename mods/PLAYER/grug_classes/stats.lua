@@ -129,12 +129,15 @@ function grug_classes.get_dodge_chance_raw(player)
 	return 0.001 * grug_classes.get_attributes(player).dex
 		+ 0.01 * (grug_classes.get_talent_bonus(player, "dodge_chance_add")
 			+ grug_classes.get_talent_bonus(player, "dodge_chance_window")
+			+ grug_core.status_modifier_sum(player, "dodge_percent")
 			+ grug_classes.get_scout_dodge_add(player))
 end
 
 -- Chances in 0..1; flat caps, no diminishing returns (combat_stats.md §2).
 function grug_classes.get_crit_chance(player)
-	return math.min(0.30, grug_classes.get_crit_chance_raw(player))
+	local cap = math.max(30,
+		grug_classes.get_talent_bonus(player, "crit_cap_override"))
+	return math.min(cap / 100, grug_classes.get_crit_chance_raw(player))
 end
 
 function grug_classes.get_dodge_chance(player)

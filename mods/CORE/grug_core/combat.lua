@@ -1123,9 +1123,11 @@ function grug_core.deal_ability_damage(attacker, target, amount, opts)
 			return 0
 		end
 	end
-	if math.random() < grug_core.get_crit_chance(attacker) then
+	local critical = math.random() < grug_core.get_crit_chance(attacker)
+	if critical then
 		amount = math.floor(amount * 1.5)
 		crit_particles(target:get_pos())
+		if opts.on_crit then opts.on_crit(attacker, target) end
 	end
 	grug_core.mark_in_combat(attacker)
 	-- pcall + flag restore: an error mid-punch must not leave the sticky
@@ -1238,7 +1240,7 @@ end
 -- checked whenever the shield would matter.
 --
 
-local absorbs = {} -- player name -> {amount = n, expiry = us time}
+local absorbs = {} -- player name -> source id -> {amount = n, expiry = us time}
 local effective_absorb_callbacks = {}
 
 function grug_core.register_on_effective_absorb(func)
@@ -1271,10 +1273,21 @@ function grug_core.register_on_settled_incoming_hit(func)
 	table.insert(settled_incoming_callbacks, func)
 end
 
-function grug_core.set_absorb(player, amount, duration, source, action_id)
+function grug_core.add_absorb(player, id, amount, duration, source, action_id)
 	amount = grug_core.scale_player_value(source or player, amount)
 	local expiry = core.get_us_time() + duration * 1e6
-	absorbs[player:get_player_name()] = {
+	local name = player:get_player_name()
+	absorbs[name] = absorbs[name] or {}
+	local existing = 0
+	for current_id, entry in pairs(absorbs[name]) do
+		if current_id ~= id and entry.expiry > core.get_us_time() then
+			existing = existing + entry.amount
+		end
+	end
+	local properties = player:get_properties() or {}
+	amount = math.max(0, math.min(amount,
+		(tonumber(properties.hp_max) or amount) - existing))
+	absorbs[name][id] = {
 		amount = amount,
 		expiry = expiry,
 	}
@@ -1299,24 +1312,31 @@ function grug_core.set_absorb(player, amount, duration, source, action_id)
 	end
 end
 
+function grug_core.set_absorb(player, amount, duration, source, action_id)
+	grug_core.add_absorb(player, "power_word_shield", amount, duration,
+		source, action_id)
+end
+
 -- Remaining absorb amount (0 when none/expired).
 function grug_core.get_absorb(player)
 	local name = player:get_player_name()
-	local a = absorbs[name]
-	if not a then
+	local entries = absorbs[name]
+	if not entries then
 		if grug_core.clear_status then
 			grug_core.clear_status(player, "shield")
 		end
 		return 0
 	end
-	if core.get_us_time() > a.expiry then
-		absorbs[name] = nil
-		if grug_core.clear_status then
-			grug_core.clear_status(player, "shield")
+	local total, t = 0, core.get_us_time()
+	for id, entry in pairs(entries) do
+		if t > entry.expiry or entry.amount <= 0 then
+			entries[id] = nil
+		else
+			total = total + entry.amount
 		end
-		return 0
 	end
-	return a.amount
+	if total <= 0 then absorbs[name] = nil end
+	return total
 end
 
 local function absorb_particles(pos)
@@ -1424,14 +1444,22 @@ core.register_on_player_hpchange(function(player, hp_change, reason)
 	-- Absorb shield soaks any remaining damage (all sources).
 	if hp_change < 0 and grug_core.get_absorb(player) > 0 then
 		local name = player:get_player_name()
-		local a = absorbs[name]
-		local soak = math.min(a.amount, -hp_change)
-		a.amount = a.amount - soak
-		hp_change = hp_change + soak
-		absorb_particles(player:get_pos())
-		if a.amount <= 0 then
-			absorbs[name] = nil
+		local entries = absorbs[name]
+		local ordered = {}
+		for id, entry in pairs(entries) do ordered[#ordered + 1] = {id, entry} end
+		table.sort(ordered, function(a, b) return a[2].expiry < b[2].expiry end)
+		local remaining = -hp_change
+		for index = 1, #ordered do
+			local id, entry = ordered[index][1], ordered[index][2]
+			local soak = math.min(entry.amount, remaining)
+			entry.amount = entry.amount - soak
+			remaining = remaining - soak
+			if entry.amount <= 0 then entries[id] = nil end
+			if remaining <= 0 then break end
 		end
+		hp_change = -remaining
+		absorb_particles(player:get_pos())
+		if next(entries) == nil then absorbs[name] = nil end
 	end
 	return hp_change
 end, true)
