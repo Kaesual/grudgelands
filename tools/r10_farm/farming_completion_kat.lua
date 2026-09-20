@@ -5,8 +5,8 @@ return function(repo)
 		if not value then error("R10 farming KAT: " .. message, 0) end
 		return value
 	end
-	local world, timers, metadata, protected = {}, {}, {}, {}
-	local crafts, lbms, violations = {}, {}, {}
+	local world, timers, metadata, protected, unloaded = {}, {}, {}, {}, {}
+	local crafts, lbms, violations, handled_drops = {}, {}, {}, {}
 	local function key(pos) return pos.x .. "/" .. pos.y .. "/" .. pos.z end
 	local function pos(x, y, z) return {x = x, y = y, z = z} end
 	local core_mock = {registered_items = {}, registered_nodes = {}}
@@ -25,15 +25,23 @@ return function(repo)
 	function core_mock.register_craft(definition) crafts[#crafts + 1] = definition end
 	function core_mock.register_lbm(definition) lbms[#lbms + 1] = definition end
 	function core_mock.register_on_mods_loaded() end
+	function core_mock.register_on_generated() end
+	function core_mock.register_on_placenode() end
+	function core_mock.override_item() end
 	function core_mock.register_abm() error("R10 farming registered an ABM", 0) end
-	function core_mock.register_globalstep()
-		error("R10 farming registered a globalstep", 0)
-	end
+	function core_mock.register_globalstep() end
 	function core_mock.get_node(p) return world[key(p)] or {name = "air"} end
+	function core_mock.remove_node(p) world[key(p)] = {name = "air"} end
 	function core_mock.set_node(p, node) world[key(p)] = {name = node.name}; return true end
- core_mock.get_node_or_nil = core_mock.get_node
+	function core_mock.get_node_or_nil(p)
+		if unloaded[key(p)] then return nil end
+		return core_mock.get_node(p)
+	end
  function core_mock.get_current_modname() return "grug_farming" end
- function core_mock.get_modpath(name) return repo .. "/mods/ITEMS/" .. name end
+ function core_mock.get_modpath(name)
+  if name == "grug_mapgen" then return repo .. "/mods/MAPGEN/grug_mapgen" end
+  return repo .. "/mods/ITEMS/" .. name
+ end
 	core_mock.swap_node = core_mock.set_node
 	function core_mock.get_meta(p)
 		local values = metadata[key(p)] or {}
@@ -41,8 +49,19 @@ return function(repo)
 		return {
 			get_float = function(_, name) return values[name] or 0 end,
 			set_float = function(_, name, value) values[name] = value end,
+			get_string = function(_, name) return values[name] or "" end,
+			set_string = function(_, name, value) values[name] = value end,
 		}
 	end
+	function core_mock.get_mod_storage()
+		return {get_string = function() return "" end, set_string = function() end}
+	end
+	function core_mock.deserialize() return nil end
+	function core_mock.serialize() return "" end
+	function core_mock.handle_node_drops(_, drops)
+		handled_drops[#handled_drops + 1] = table.concat(drops, ",")
+	end
+	function core_mock.add_item() end
 	function core_mock.get_node_timer(p)
 		local timer = timers[key(p)]
 		if timer then return timer end
@@ -117,6 +136,7 @@ return function(repo)
 	function stack_methods:add_wear(amount) self.wear = self.wear + amount end
  function stack_methods:get_wear() return self.wear end
  function stack_methods:set_wear(wear) self.wear = wear end
+ function stack_methods:is_empty() return self.count <= 0 or self.name == "" end
  function stack_methods:get_definition() return core_mock.registered_items[self.name] end
  function stack_methods:get_meta()
   self.metadata = self.metadata or {}
@@ -128,8 +148,11 @@ return function(repo)
 		return setmetatable({name = name, count = count or 1, wear = 0},
 			{__index = stack_methods})
 	end
+	local inventory = {add_item = function(_, _, item) return stack("", 0) end}
 	local player = {get_player_name = function() return "farmer" end,
- is_player = function() return true end}
+ is_player = function() return true end,
+ get_player_control = function() return {sneak = false} end,
+ get_inventory = function() return inventory end}
 	local global_names = {"core", "default", "grug_cooking", "grug_farming", "grug_nodes", "grug_materials"}
 	local saved, present = {}, {}
 	for _, name in ipairs(global_names) do
@@ -156,7 +179,7 @@ return function(repo)
   dofile(repo .. "/mods/ITEMS/grug_materials/registry.lua")
 		assert(loadfile(repo .. "/mods/ITEMS/grug_farming/init.lua"))()
 		check(#grug_farming.CROPS == 17, "crop population differs")
-		check(#lbms == 1 and lbms[1].run_at_every_load,
+		check(#lbms >= 3 and lbms[1].run_at_every_load and lbms[2].run_at_every_load,
 			"VM soil activation LBM differs")
 		local recipes = {}
 		for _, craft in ipairs(crafts) do
@@ -165,6 +188,10 @@ return function(repo)
 		local hoe = check(core_mock.registered_items["grug_farming:hoe"],
 			"hoe absent")
 		for index, crop in ipairs(grug_farming.CROPS) do
+			for stage = 1, 3 do
+				check(core_mock.registered_nodes[crop.stages[stage]].drop == crop.seed,
+					"immature drop differs: " .. crop.key .. "/" .. stage)
+			end
 			check(recipes[crop.harvest_item] == crop.seed .. " 2",
 				"harvest-to-seed route differs: " .. crop.key)
 			local x = index * 10
@@ -184,9 +211,22 @@ return function(repo)
 			first.on_timer(above, 600)
 			check(core_mock.get_node(above).name == crop.stages[4],
 				"growth route differs: " .. crop.key)
+			local height = crop.profile.heights and crop.profile.heights[4] or 1
+			for level = 1, height - 1 do
+				check(core_mock.get_node(pos(above.x, above.y + level, above.z)).name ==
+					("grug_farming:" .. crop.key .. "_4_upper_" .. level),
+					"mature helper differs: " .. crop.key .. "/" .. level)
+			end
 			local drop = core_mock.registered_nodes[crop.stages[4]].drop.items
 			check(drop[1].items[1] == crop.harvest_item and drop[2].items[1] == crop.seed,
 				"harvest/replant return differs: " .. crop.key)
+			if crop.profile.regrow_stage then
+				core_mock.registered_nodes[crop.stages[4]].on_rightclick(above,
+					core_mock.get_node(above), player, stack("", 0))
+				check(core_mock.get_node(above).name ==
+					crop.stages[crop.profile.regrow_stage],
+					"regrowth reset differs: " .. crop.key)
+			end
 			world[key(above)] = {name = "air"}
 			local returned = stack(crop.seed)
 			core_mock.registered_items[crop.seed].on_place(returned, player,
@@ -194,6 +234,59 @@ return function(repo)
 			check(returned.count == 0 and core_mock.get_node(above).name == crop.stages[1],
 				"returned seed does not replant: " .. crop.key)
 		end
+
+		-- An unprotected upper segment cannot bypass a protected root. Once the
+		-- root is unprotected, one helper dig removes the whole mature organism
+		-- and settles exactly one deterministic mature drop pair.
+		local corn
+		for _, row in ipairs(grug_farming.CROPS) do
+			if row.key == "corn" then corn = row end
+		end
+		local corn_soil, corn_root, corn_water = pos(420, 0, 0), pos(420, 1, 0),
+			pos(423, 0, 0)
+		world[key(corn_soil)], world[key(corn_root)], world[key(corn_water)] =
+			{name = grug_farming.SOIL_WET}, {name = "air"},
+			{name = "default:water_source"}
+		core_mock.registered_items[corn.seed].on_place(stack(corn.seed), player,
+			{type = "node", under = corn_soil, above = corn_root})
+		core_mock.registered_nodes[corn.stages[1]].on_timer(corn_root, 600)
+		local corn_top = pos(420, 3, 0)
+		local top_name = core_mock.get_node(corn_top).name
+		protected[key(corn_root)] = true
+		core_mock.registered_nodes[top_name].on_dig(corn_top,
+			core_mock.get_node(corn_top), player)
+		check(core_mock.get_node(corn_root).name == corn.stages[4] and
+			core_mock.get_node(corn_top).name == top_name,
+			"protected root was bypassed through upper segment")
+		protected[key(corn_root)] = false
+		unloaded[key(pos(420, 2, 0))] = true
+		core_mock.registered_nodes[top_name].on_dig(corn_top,
+			core_mock.get_node(corn_top), player)
+		check(core_mock.get_node(corn_root).name == corn.stages[4] and
+			core_mock.get_node(corn_top).name == top_name,
+			"unloaded middle segment allowed partial corn removal")
+		unloaded[key(pos(420, 2, 0))] = nil
+		core_mock.registered_nodes[top_name].on_dig(corn_top,
+			core_mock.get_node(corn_top), player)
+		check(core_mock.get_node(corn_root).name == "air" and
+			core_mock.get_node(corn_top).name == "air" and
+			handled_drops[#handled_drops] == corn.seed .. "," .. corn.harvest_item,
+			"whole mature corn dig did not settle once")
+
+		local blocked_root, blocked_upper = pos(440, 1, 0), pos(440, 2, 0)
+		world[key(pos(440, 0, 0))] = {name = grug_farming.SOIL_WET}
+		world[key(blocked_root)] = {name = corn.stages[2]}
+		world[key(blocked_upper)] = {name = "default:dirt"}
+		core_mock.registered_nodes[corn.stages[2]].on_timer(blocked_root, 200)
+		check(core_mock.get_node(blocked_root).name == corn.stages[2] and
+			core_mock.get_node(blocked_upper).name == "default:dirt",
+			"blocked vertical growth partially mutated")
+		world[key(blocked_upper)] = {name = "air"}
+		core_mock.registered_nodes[corn.stages[2]].on_timer(blocked_root, 200)
+		check(core_mock.get_node(blocked_root).name == corn.stages[3] and
+			core_mock.get_node(blocked_upper).name ==
+			"grug_farming:corn_3_upper_1",
+			"vertical growth did not resume after blocker cleared")
 
 		-- VoxelManip fields do not call on_construct. The every-load activation is
 		-- idempotent and also restarts a persisted soil whose timer is absent.

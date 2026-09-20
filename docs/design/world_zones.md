@@ -1701,6 +1701,8 @@ tag anybody.
 All fifteen Cooking plant identities below have independent wild source nodes
 `grug_mapgen:<key>_source`, yielding `grug_cooking:<key>`. Their farm seed/stage
 identities remain `grug_farming:seed_<key>` and `<key>_1`…`<key>_4`.
+Those are rooted logical-stage identities. Tall cultivated families may use
+hidden, non-owning upper helper nodes; wild sources remain single-node.
 Potato/Corn retain the exact separate WP33 sources above. All seventeen families
 are farmable on legal editable ground. Salt Crust is neither Rock Salt nor an
 alias, and Frost Melon is distinct from the existing gathering Melon.

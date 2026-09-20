@@ -12,6 +12,12 @@ stages per family. Exact copies and stage selections are reproducible through
 | sugar cane, bamboo | shipped `default_papyrus.png`, minetest_game `b5243f3e` | CC BY-SA 3.0, minetest_game contributors | upright plantlike tile copied or baked with 28% green colour grade; engine stage scale supplies growth |
 | cave cap | `goblins` `ce27b15f`, `goblins_mushroom_brown*.png`, Francisco Athens | CC BY-SA 3.0 | four authored mushroom stages copied/renamed |
 
+Round 12 derives five cultivated Corn segment tiles from the already recorded
+stage-3/stage-4 `x_farming` Corn sources. `tools/r12_farming/build_corn_segments.sh`
+performs only point-filter vertical expansion and exact 16×16 slicing. The
+original author, CC BY-SA 4.0 license and pinned `ac5f69d5` source remain the
+same; wild Corn continues to use the unsliced mature tile.
+
 The source allow-list is exactly the table above. The deny-list is every other
 file in the two farming repositories: no recipe, model, sound, node code, or
 unlisted texture is imported. All node IDs, stage counts and farming mechanics

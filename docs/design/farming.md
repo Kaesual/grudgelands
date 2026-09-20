@@ -12,6 +12,36 @@ Cultivated crops and their seeds remain distinct from natural source nodes.
 Seeds use recognizable seed silhouettes from licensed references, rather than
 recolored harvest icons. Reusing an appropriate seed silhouette is allowed.
 
+Every family has four logical stages at 200 seconds per advance. Growth runs
+only above wet crop soil; drying pauses exact partial progress and rewetting
+resumes it. Destructively harvesting stages 1–3 always returns exactly one seed
+and no ingredient. Mature annual crops return one ingredient plus one seed and
+must be replanted. Yield is deterministic and remains one ingredient.
+
+| Class | Families | Mature harvest |
+|---|---|---|
+| annual low crop | Wild Grain, Carrot, Cassava, Wild Onion, Potato | remove and replant |
+| regrowing bush/patch | Fire Pepper, Blightberry, Sunberry, Jungle Berry, Cave Cap, Ember Moss | pick one ingredient; rooted plant returns to stage 2 |
+| regrowing ground fruit | Pumpkin, Frost Melon | pick one fruit; rooted vine returns to stage 2 |
+| salt crust | Salt Crust | scrape one crust; basin returns to stage 1 |
+| retained vertical | Sugar Cane, Bamboo Shoot | harvest upper growth; root returns to stage 1 |
+| annual vertical | Corn | remove the whole mature stalk and replant |
+
+Corn grows to three nodes at maturity. Sugar Cane reaches four nodes including
+its root; Bamboo reaches three. The bottom node exclusively owns stage, timer,
+metadata and drops. Upper nodes are hidden helpers. Digging any segment removes
+the complete organism once, except the explicit mature upper harvest of Sugar
+Cane or Bamboo, which preserves and resets the root. Every multi-node placement,
+growth, dig and harvest preflights all changed loaded positions and protection;
+a blocker or unloaded/protected position causes no partial mutation. The root
+retries blocked growth through its ordinary bounded timer.
+
+Right-click harvests a mature regrowing crop in place. Sneak-right-click bypasses
+that crop action. Removing the rooted plant remains the explicit way to recover
+its seed; mature removal also returns its one ingredient. Cultivated regrowth is
+independent of the slow natural-source renewal below and never creates wild
+renewal debt.
+
 The wooden hoe and six metal-tier hoes perform exactly the same conversion of
 eligible earth to farm soil. Their use budgets are respectively
 **64 / 128 / 192 / 256 / 384 / 512 / 768**. Only an actual new conversion spends
