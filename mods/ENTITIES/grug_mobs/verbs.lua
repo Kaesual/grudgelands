@@ -560,6 +560,7 @@ function grug_mobs.stamp_arrow_damage(ent, mob)
 		return
 	end
 	ent._grug_damage = mob and mob.damage or nil
+	ent._grug_attacker_level = mob and mob._grug_level or nil
 end
 
 -- opts: texture (sprite, required), velocity (default 14), size, glow,

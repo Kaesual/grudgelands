@@ -169,27 +169,39 @@ function grug_core.format_k(value)
 	return sign .. tostring(math.floor(number / 1000 + 0.5)) .. "k"
 end
 
--- Damage reduction from equipped armor, in PERCENT (0..60). 1 armor point =
--- 1% reduction, summed over the four armor slots and hard-capped at 60%
--- (items_crafting.md §3.1, combat_stats.md §2). grug_inventory overrides
--- this with the real accessor; grug_core itself must not know about
--- equipment slots or item fields.
-function grug_core.get_armor_percent(player)
+-- Raw player armor rating. grug_inventory overrides this stub after equipment
+-- and quality load; Core owns only the attacker-level reduction curve.
+function grug_core.get_armor_rating(player)
 	return 0
 end
 
--- PvP melee applies armor to the FULL-swing equivalent: authoritative swing
--- abilities then commit it whole, while ordinary tools/fists scale it by their
--- native packet fraction (combat_stats.md §2). Publish the exact formula here
--- so those paths and the central hp-change
--- modifier cannot drift apart: clamp to 0..60%, and only round when armor is
--- actually present. At 0% this deliberately returns fractional damage
--- unchanged; the melee remainder accumulator owns that rounding.
-function grug_core.apply_player_armor(player, damage)
-	local pct = grug_core.get_armor_percent(player) or 0
-	pct = math.max(0, math.min(60, pct))
-	if pct > 0 then
-		return math.ceil(damage * (100 - pct) / 100)
+-- Equipment consumers share the non-destructive broken sentinel. Eligibility
+-- remains owned by the caller, so ability-token wear bars never enter here.
+function grug_core.equipment_is_broken(stack)
+	return stack and stack.get_wear and stack:get_wear() >= 65535 or false
+end
+
+function grug_core.armor_k(attacker_level)
+	local level = math.max(1, tonumber(attacker_level) or 1)
+	return 20 + 0.5 * math.min(level, 60) +
+		8.5 * math.max(level - 60, 0)
+end
+
+function grug_core.armor_reduction(raw_rating, attacker_level, cap)
+	local rating = math.max(0, tonumber(raw_rating) or 0)
+	if rating <= 0 then return 0 end
+	local reduction = rating / (rating + grug_core.armor_k(attacker_level))
+	return math.min(tonumber(cap) or 0.70, reduction)
+end
+
+-- PvP melee applies armor to the full-swing equivalent before the ordinary
+-- packet fraction. Preserve fractional damage when rating is zero; the melee
+-- remainder accumulator remains the one rounding owner for that path.
+function grug_core.apply_player_armor(player, damage, attacker_level)
+	local reduction = grug_core.armor_reduction(
+		grug_core.get_armor_rating(player), attacker_level, 0.70)
+	if reduction > 0 then
+		return math.ceil(damage * (1 - reduction))
 	end
 	return damage
 end
@@ -205,7 +217,7 @@ grug_core.ARMOR_APPLIED_CUSTOM_TYPE = "grug_core:player_armor_applied"
 -- slots. Neither depends on the other, so the contract lives here.
 --
 -- get_equipped_weapon/get_equipped_offhand are STUBS returning nil (same
--- pattern as get_armor_percent above) -- nil means "empty slot", and an empty
+-- pattern as get_armor_rating above) -- nil means "empty slot", and an empty
 -- slot has no fallback to the wielded item (B1): the connected skills carry no
 -- item and hit for the bare-handed baseline. grug_inventory overrides both
 -- with a per-player cached read.
@@ -1064,6 +1076,7 @@ end)
 -- ability hits (rage comes from authoritative melee swings only, classes.md §1) and the
 -- central dodge modifier skip the roll (abilities pre-roll it below).
 grug_core.in_ability_punch = false
+local ability_attacker_level
 
 function grug_core.deal_ability_damage(attacker, target, amount, opts)
 	opts = opts or {}
@@ -1099,6 +1112,8 @@ function grug_core.deal_ability_damage(attacker, target, amount, opts)
 	-- pcall + flag restore: an error mid-punch must not leave the sticky
 	-- flag set (that would silently kill rage generation server-wide).
 	grug_core.in_ability_punch = true
+	ability_attacker_level = opts.attacker_level or
+		grug_core.get_player_level(attacker)
 	-- `punch_attack_uses = 0` is not cosmetic: mobs_redo's on_punch runs an
 	-- UNGUARDED wear block (mods/ENTITIES/mobs/api.lua:2927-3538) that adds
 	-- floor(fpi / 75 * 9000) wear to the WIELDED stack and writes it back with
@@ -1117,6 +1132,7 @@ function grug_core.deal_ability_damage(attacker, target, amount, opts)
 		punch_attack_uses = 0,
 		damage_groups = {fleshy = amount},
 	}, nil)
+	ability_attacker_level = nil
 	grug_core.in_ability_punch = false
 	if not ok then
 		core.log("warning", "[grug_core] ability punch failed: " .. tostring(err))
@@ -1197,6 +1213,32 @@ local effective_absorb_callbacks = {}
 
 function grug_core.register_on_effective_absorb(func)
 	table.insert(effective_absorb_callbacks, func)
+end
+
+-- Durability/action consumers subscribe here, while the ability or swing that
+-- owns the transaction publishes exactly once. `action_id` must be unique for
+-- that player's live session and reused across every victim/projectile settled
+-- by the same action. Core deliberately does not emit from per-target damage,
+-- healing or absorb callbacks because those sites would multiply AoE wear.
+local settled_outgoing_callbacks = {}
+
+function grug_core.register_on_settled_outgoing_action(func)
+	table.insert(settled_outgoing_callbacks, func)
+end
+
+function grug_core.run_settled_outgoing_action(player, action_id, kind)
+	if not player or not action_id then return end
+	for index = 1, #settled_outgoing_callbacks do
+		settled_outgoing_callbacks[index](player, action_id, kind)
+	end
+end
+
+-- Incoming settlement is centralized after all hp-change modifiers. A full
+-- dodge/absorb produces zero and a lethal hit is excluded by contract.
+local settled_incoming_callbacks = {}
+
+function grug_core.register_on_settled_incoming_hit(func)
+	table.insert(settled_incoming_callbacks, func)
 end
 
 function grug_core.set_absorb(player, amount, duration, source)
@@ -1293,9 +1335,11 @@ core.register_on_player_hpchange(function(player, hp_change, reason)
 	if reason.type == "punch" and reason.object and
 			not reason.object:is_player() then
 		local entity = reason.object:get_luaentity()
-		if entity and entity._grug_level then
+		local pressure_level = entity and
+			(entity._grug_attacker_level or entity._grug_level) or nil
+		if pressure_level then
 			hp_change = -math.max(1, math.ceil(-hp_change *
-				grug_core.mob_pressure_scale(entity._grug_level)))
+				grug_core.mob_pressure_scale(pressure_level)))
 		end
 	end
 	-- Equipped armor (items_crafting.md §3.1): PHYSICAL mitigation only.
@@ -1312,7 +1356,20 @@ core.register_on_player_hpchange(function(player, hp_change, reason)
 	-- absorb below and later hp callbacks still run normally.
 	if reason.type == "punch" and
 			reason.custom_type ~= grug_core.ARMOR_APPLIED_CUSTOM_TYPE then
-		hp_change = -grug_core.apply_player_armor(player, -hp_change)
+		local attacker_level
+		if grug_core.in_ability_punch then
+			attacker_level = ability_attacker_level
+		elseif reason.object and reason.object:is_player() then
+			attacker_level = grug_core.get_player_level(reason.object)
+		elseif reason.object then
+			local entity = reason.object:get_luaentity()
+			attacker_level = entity and
+				(entity._grug_attacker_level or entity._grug_level) or nil
+		end
+		if attacker_level then
+			hp_change = -grug_core.apply_player_armor(
+				player, -hp_change, attacker_level)
+		end
 	end
 	-- Scale the engine's native impact result to the current pool. The native
 	-- scale's 20 damage is one full pool; sufficiently severe impacts remain
@@ -1348,5 +1405,11 @@ end, true)
 -- absorption. The engine has not stored it yet, so the consumer predicts the
 -- post-hit HP and can reject lethal hits without reviving the player.
 core.register_on_player_hpchange(function(player, hp_change, reason)
+	if hp_change < 0 and reason.type == "punch" and
+			player:get_hp() + hp_change > 0 then
+		for index = 1, #settled_incoming_callbacks do
+			settled_incoming_callbacks[index](player, -hp_change, reason)
+		end
+	end
 	if grug_core.trinket_after_hit then grug_core.trinket_after_hit(player, hp_change, reason) end
 end, false)
