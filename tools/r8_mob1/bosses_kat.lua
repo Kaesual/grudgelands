@@ -106,6 +106,7 @@ return function(root)
 		serialize = function() return "" end,
 		deserialize = function() return nil end,
 		is_player = function(object) return object and object._is_player == true end,
+		check_player_privs = function() return false end,
 		yaw_to_dir = function() return {x = 0, y = 0, z = 1} end,
 		add_entity = function(pos, name)
 			spawn_count = (spawn_count or 0) + 1
@@ -116,6 +117,9 @@ return function(root)
 		end,
 	}
 	grug_core = {
+		mark_in_combat = function(player)
+			player.combat_marks = (player.combat_marks or 0) + 1
+		end,
 		register_on_player_hit_mob = function(fn) callbacks.hit[#callbacks.hit + 1] = fn end,
 		register_on_effective_heal = function(fn) callbacks.heal[#callbacks.heal + 1] = fn end,
 		register_on_effective_absorb = function(fn)
@@ -344,8 +348,11 @@ return function(root)
 			walk_velocity = def.walk_velocity, run_velocity = def.run_velocity,
 			fall_speed = -9.81, fly = false}
 		object.ent = dragon
-		function dragon:set_animation(kind) self.animation = kind end
-		function dragon:yaw_to_pos() end
+			function dragon:set_animation(kind) self.animation = kind end
+			function dragon:yaw_to_pos() end
+			function dragon:set_velocity(speed)
+				self.object:set_velocity({x = 0, y = 0, z = speed})
+			end
 		function dragon:stop_attack() self.attack = nil self.state = "stand" end
 		return dragon, def
 	end
@@ -381,7 +388,18 @@ return function(root)
 	ice_def.do_custom(dragon, 0.1)
 	assert(dragon.temp.grug_dragon.action == nil and
 		dragon.temp.grug_dragon.mode == "landing" and not dragon.fly,
-		"target loss did not cancel dive")
+			"target loss did not cancel dive")
+
+	-- Idle dragons walk to authored rest positions and never snap there or fire
+	-- their target-only gust while no hostile target exists.
+	local idle = dragon_for("grug_mobs:ice_dragon", nil, {x = 0, y = 1, z = 0})
+	idle._grug_perches = {{x = 0, y = 1, z = 0}, {x = 8, y = 1, z = 0}}
+	local snap_before = movement.snap
+	ice_def.do_custom(idle, 15)
+	ice_def.do_custom(idle, 0.1, {collides = false})
+	assert(movement.snap == snap_before and idle.object.velocity.z > 0 and
+		idle.temp.grug_dragon.gust == 0,
+		"idle dragon did not walk without teleport or target-only gust")
 
 	-- An obstructed near target also forces takeoff.
 	enemy.pos = {x = 7, y = 1, z = 0}

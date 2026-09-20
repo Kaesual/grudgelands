@@ -993,7 +993,13 @@ end
 
 function mob_class:is_at_cliff()
 
-	if self.driver or self.fear_height == 0 then return end -- 0 for no fear of heights
+	if self.driver then return end
+	-- GRUG PATCH: ambient idle/free-roam movement may descend at most one node.
+	-- Keep the same single forward line probe; combat, flee and scripted states
+	-- retain each definition's authored fear_height.
+	local ambient = self.state == "stand" or self.state == "walk"
+	if self.fly or (self.fear_height == 0 and not ambient) then return end
+	local fear_height = ambient and 2 or self.fear_height
 
 	local yaw = self.object:get_yaw() ; if not yaw then return end
 	local prop = self.object:get_properties()
@@ -1004,7 +1010,7 @@ function mob_class:is_at_cliff()
 
 	local free_fall, blocker = core.line_of_sight(
 			{x = pos.x + dir_x, y = ypos, z = pos.z + dir_z},
-			{x = pos.x + dir_x, y = ypos - self.fear_height, z = pos.z + dir_z})
+			{x = pos.x + dir_x, y = ypos - fear_height, z = pos.z + dir_z})
 
 	if free_fall then return true end -- check for straight drop
 

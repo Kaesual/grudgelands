@@ -10,7 +10,7 @@ grug_mounts.PRICES = grug_mounts.COORDINATOR_PLACEHOLDER_PRICES
 
 grug_mounts.TIERS = {
 	[1] = {id = 1, key = "apprentice", name = "Apprentice Riding",
-		level = 15, mode = "land", speed = 6,
+		level = 15, mode = "land", speed = 6.4,
 		item = "grug_mounts:apprentice_mount"},
 	[2] = {id = 2, key = "journeyman", name = "Journeyman Riding",
 		level = 30, mode = "land", speed = 8,

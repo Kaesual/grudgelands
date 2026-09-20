@@ -1,4 +1,6 @@
 local ENTITY_NAME = "grug_mounts:mount"
+local VISUAL_NAME = "grug_mounts:mount_visual"
+local STATUS_ID = "mount"
 local WARNING_INTERVAL = 1
 local WARNING_DISTANCES = {1, 2, 4, 8, 16, 32, 48}
 local WARNING_DIRECTIONS = {}
@@ -17,28 +19,8 @@ local function valid_player(player)
 	return player and player.is_player and player:is_player()
 end
 
-local function counter_scale(player, record, visual_size)
-	if not record or not record.model then return end
-	visual_size = visual_size or record.rider_visual_size or {x = 1, y = 1}
-	record.rider_visual_size = {x = visual_size.x, y = visual_size.y}
-	player:set_properties({visual_size = {
-		x = visual_size.x / record.model.visual_size.x,
-		y = visual_size.y / record.model.visual_size.y,
-	}})
-end
-
-if core.global_exists("grug_visuals") and type(grug_visuals.apply) == "function" then
-	local apply_visuals = grug_visuals.apply
-	grug_visuals.apply = function(player)
-		local result = apply_visuals(player)
-		if valid_player(player) then
-			local record = active[player:get_player_name()]
-			if record then
-				counter_scale(player, record, result and result.visual_size)
-			end
-		end
-		return result
-	end
+function grug_mounts.is_mounted(player)
+	return valid_player(player) and active[player:get_player_name()] ~= nil
 end
 
 local function position_node(pos)
@@ -104,6 +86,7 @@ function grug_mounts.dismount(player, reason, hard, skip_animation)
 	local object = record.object
 	local pos = object and object:is_valid() and object:get_pos() or player:get_pos()
 	active[name] = nil
+	grug_core.clear_status(player, STATUS_ID)
 	remove_warning(player, record)
 	if object and object:is_valid() then
 		local entity = object:get_luaentity()
@@ -126,6 +109,7 @@ function grug_mounts.dismount(player, reason, hard, skip_animation)
 		player:set_pos(free_dismount_pos(pos))
 	end
 	if object and object:is_valid() then object:remove() end
+	if record.visual and record.visual:is_valid() then record.visual:remove() end
 	if reason and reason ~= "manual" then
 		core.chat_send_player(name, reason)
 	end
@@ -199,7 +183,11 @@ end
 local function set_animation(self, name)
 	if self._grug_animation == name then return end
 	local clip = self._grug_model.animation[name]
-	self.object:set_animation({x = clip[1], y = clip[2]}, clip[3], 0, true)
+	local record = active[self._grug_owner]
+	local visual = record and record.visual
+	if visual and visual:is_valid() then
+		visual:set_animation({x = clip[1], y = clip[2]}, clip[3], 0, true)
+	end
 	self._grug_animation = name
 end
 
@@ -257,9 +245,11 @@ local entity_definition = {
 		physical = true,
 		collide_with_objects = false,
 		pointable = true,
-		visual = "mesh",
-		mesh = "grug_mounts_horse.b3d",
+		visual = "sprite",
 		textures = {"grug_mobs_blank.png"},
+		-- Attachment children inherit the parent's visual transform. Keep the
+		-- invisible controller at neutral scale so the rider is never shrunk.
+		visual_size = {x = 1, y = 1},
 		collisionbox = {-0.7, -0.01, -0.7, 0.7, 1.59, 0.7},
 		selectionbox = {-0.7, -0.01, -0.7, 0.7, 3.06, 0.7},
 		static_save = false,
@@ -282,12 +272,10 @@ local entity_definition = {
 		self._grug_model = model
 		self.object:set_armor_groups({immortal = 1})
 		self.object:set_properties({
-			mesh = model.mesh, textures = model.textures,
-			visual_size = model.visual_size,
 			collisionbox = model.collisionbox,
 			selectionbox = model.selectionbox,
+			stepheight = tier.mode == "land" and 1.01 or 0,
 		})
-		set_animation(self, "stand")
 	end,
 
 	get_staticdata = function()
@@ -359,13 +347,36 @@ local entity_definition = {
 core.register_entity(ENTITY_NAME, entity_definition)
 grug_mounts.entity_definition = entity_definition
 
+local visual_definition = {
+	initial_properties = {
+		physical = false, pointable = false, static_save = false,
+		visual = "mesh", mesh = "grug_mounts_horse.b3d",
+		textures = {"grug_mobs_blank.png"},
+	},
+	on_activate = function(self, staticdata)
+		local data = core.deserialize(staticdata or "")
+		local player = type(data) == "table" and
+			core.get_player_by_name(data.owner or "")
+		local model = valid_player(player) and grug_mounts.model_for(player, data.tier)
+		if not model then self.object:remove() return end
+		local rider_size = (player:get_properties() or {}).visual_size or {x = 1, y = 1}
+		local seat = model.attach_y * model.visual_size.y
+		self.object:set_properties({mesh = model.mesh, textures = model.textures,
+			visual_size = {x = model.visual_size.x / rider_size.x,
+				y = model.visual_size.y / rider_size.y}})
+		self.object:set_attach(player, "", {x = 0, y = -seat / rider_size.y, z = 0},
+			{x = 0, y = 0, z = 0}, false)
+	end,
+	get_staticdata = function() return "" end,
+}
+core.register_entity(VISUAL_NAME, visual_definition)
+grug_mounts.visual_definition = visual_definition
+
 local function attach(player, object, model, skip_animation)
 	local name = player:get_player_name()
-	local record = active[name]
-	local properties = player:get_properties() or {}
-	counter_scale(player, record, properties.visual_size)
 	player_api.player_attached[name] = true
-	player:set_attach(object, "", {x = 0, y = model.attach_y, z = 0},
+	local seat = model.attach_y * model.visual_size.y
+	player:set_attach(object, "", {x = 0, y = seat, z = 0},
 		{x = 0, y = 0, z = 0})
 	player:set_eye_offset({x = 0, y = model.eye_y, z = 0}, {x = 0, y = 0, z = 0})
 	if not skip_animation then player_api.set_animation(player, "sit", 30) end
@@ -388,6 +399,19 @@ function grug_mounts.spawn_entity(player, tier_id, pos, skip_animation)
 	active[name] = {object = object, tier = tier_id, flying = tier.mode == "flight",
 		model = model}
 	attach(player, object, model, skip_animation)
+	local visual = core.add_entity(pos, VISUAL_NAME,
+		core.serialize({owner = name, tier = tier_id}))
+	if not visual then
+		grug_mounts.dismount(player, nil, false)
+		return false, "The mount appearance failed to activate."
+	end
+	active[name].visual = visual
+	set_animation(entity, "stand")
+	local bonus = math.floor((tier.speed / 4 - 1) * 100 + 0.5)
+	grug_core.set_status(player, STATUS_ID, {
+		label = ("T%d Mount, +%d%% Speed"):format(tier_id, bonus),
+		kind = "buff", untimed = true,
+	})
 	return true
 end
 

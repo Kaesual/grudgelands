@@ -2380,6 +2380,12 @@ core.register_on_punchplayer(function(player, hitter, tflp, tool_capabilities, d
 	if grug_core.in_ability_punch then
 		return
 	end
+	-- Mounted native tool/fist packets are refused before they can claim a
+	-- swing, move clocks, accumulate damage, grant rage or refresh targeting.
+	local mounts = rawget(_G, "grug_mounts")
+	if mounts and mounts.is_mounted and mounts.is_mounted(hitter) then
+		return true
+	end
 	local authoritative_token = grug_core.claim_authoritative_swing(
 		hitter, player)
 	if not authoritative_token and grug_core.authoritative_swing_active(hitter) then

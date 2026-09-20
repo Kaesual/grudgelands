@@ -171,6 +171,7 @@ core.register_globalstep(function(dtime)
 			if node and node.name == RIME then
 				grug_mobs.slow_player(player, 0.5, 0.6)
 			elseif do_scorch and node and node.name == SCORCH then
+				grug_core.mark_in_combat(player)
 				player:set_hp(math.max(0, player:get_hp() - 2), {
 					type = "node_damage", node = SCORCH,
 				})
@@ -593,12 +594,48 @@ local function start_primary(self, state, target, target_pos, opts, airborne)
 	end
 end
 
-local function perch_tick(self, state, dtime)
+local function perch_tick(self, state, dtime, moveresult)
+	local destination = state.rest_destination
+	if destination then
+		local pos = self.object and self.object:get_pos()
+		if not pos then return false end
+		local _, horizontal = distance(pos, destination)
+		if horizontal <= 1.5 then
+			stop_object(self)
+			state.rest_destination = nil
+			state.perch = 0
+			if self.set_animation then self:set_animation("stand", true) end
+			return false
+		end
+		-- A blocked route is not repaired with a teleport. Rest in place and let
+		-- the ordinary cadence choose another authored destination.
+		local blocked = false
+		for _, collision in ipairs(moveresult and moveresult.collisions or {}) do
+			if collision.axis == "x" or collision.axis == "z" then
+				blocked = true
+				break
+			end
+		end
+		if blocked or self.at_cliff then
+			stop_object(self)
+			state.rest_destination = nil
+			state.perch = 0
+			return false
+		end
+		if self.yaw_to_pos then self:yaw_to_pos(destination, 0, 4) end
+		self:set_velocity(self.walk_velocity)
+		if self.set_animation then self:set_animation("walk", true) end
+		return false
+	end
 	state.perch = (state.perch or 0) + dtime
-	if state.perch < 15 or not self._grug_perches then return end
+	if state.perch < 15 or not self._grug_perches or #self._grug_perches < 2 then
+		stop_object(self)
+		return false
+	end
 	state.perch = 0
 	state.perch_index = (state.perch_index or 1) % #self._grug_perches + 1
-	grug_mobs.place_on_ground(self.object, self._grug_perches[state.perch_index])
+	state.rest_destination = self._grug_perches[state.perch_index]
+	return false
 end
 
 local function dragon_tick(self, dtime, moveresult, opts)
@@ -614,10 +651,6 @@ local function dragon_tick(self, dtime, moveresult, opts)
 	enrage(self, state, opts)
 	state.primary = math.max(0, (state.primary or 0) - dtime)
 	state.gust = math.max(0, (state.gust or 0) - dtime)
-	if state.gust <= 0 then
-		gust(self)
-		state.gust = cooldown(self, TUNING.gust_cooldown)
-	end
 	if tick_action(self, state, dtime, moveresult, opts) then return false end
 
 	local target = self.attack
@@ -629,10 +662,14 @@ local function dragon_tick(self, dtime, moveresult, opts)
 			set_flight(self, false)
 			return false
 		end
-		perch_tick(self, state, dtime)
-		return
+		return perch_tick(self, state, dtime, moveresult)
 	end
 	state.perch = 0
+	state.rest_destination = nil
+	if state.gust <= 0 then
+		gust(self)
+		state.gust = cooldown(self, TUNING.gust_cooldown)
+	end
 	if state.mode == "landing" then
 		set_flight(self, false)
 		if grounded(self, moveresult) then
@@ -776,6 +813,7 @@ end
 function grug_mobs.register_dragon_bosses(callbacks)
 	hostile_player = function(player)
 		return player and core.is_player(player) and player:get_hp() > 0 and
+			not core.check_player_privs(player:get_player_name(), "peaceful_player") and
 			callbacks.player_enemy_of(player, nil)
 	end
 	local ice = {

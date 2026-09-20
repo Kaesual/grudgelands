@@ -1,4 +1,5 @@
--- Runtime-only timed player statuses and their first-pass text HUD.
+-- Runtime-only player statuses and their first-pass text HUD. Most statuses are
+-- timed; `untimed = true` is restricted to modifier-free lifecycle UI state.
 -- Effects intentionally disappear on relog. Persistent mechanics, such as
 -- the potion cooldown, keep their own authoritative storage and are mirrored
 -- here only while the player is online.
@@ -91,15 +92,21 @@ function grug_core.set_status(player, id, definition)
 		return nil
 	end
 	local now = core.get_us_time()
+	local untimed = definition.untimed == true
 	local expiry = tonumber(definition.expiry_us)
-	if not expiry then
+	if untimed then
+		if expiry or definition.duration or definition.on_tick or
+				definition.interval or definition.on_expire or definition.modifiers then
+			return nil
+		end
+	elseif not expiry then
 		local duration = tonumber(definition.duration)
 		if not duration or duration <= 0 then
 			return nil
 		end
 		expiry = now + duration * 1e6
 	end
-	if expiry <= now then
+	if not untimed and expiry <= now then
 		return nil
 	end
 	local has_tick = definition.on_tick ~= nil
@@ -137,6 +144,7 @@ function grug_core.set_status(player, id, definition)
 		on_expire = definition.on_expire,
 		modifiers = modifiers,
 		sequence = sequence,
+		untimed = untimed,
 	}
 	if interval then
 		record.next_tick_us = now + interval * 1e6
@@ -153,6 +161,7 @@ function grug_core.clear_status(player, id)
 end
 
 local function should_expire(record, now)
+	if record.untimed then return false end
 	local pending_tick = record.on_tick and
 		record.next_tick_us <= record.expiry_us
 	return now >= record.expiry_us and not pending_tick
@@ -238,8 +247,12 @@ function grug_core.status_text(player)
 				label = label .. " " .. tostring(math.max(0,
 					math.floor(tonumber(value) or 0)))
 			end
-			lines[#lines + 1] = label .. "  " ..
-				duration_text(record.expiry_us - now)
+			if record.untimed then
+				lines[#lines + 1] = label
+			else
+				lines[#lines + 1] = label .. "  " ..
+					duration_text(record.expiry_us - now)
+			end
 		end
 	end
 	return table.concat(lines, "\n")
