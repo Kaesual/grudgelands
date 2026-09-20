@@ -289,7 +289,7 @@ if [[ "$mode" == "full" ]]; then
 		# WP13 round 3 moved the ground under both: the capital terrace risers
 		# became bands of one-block ground steps, so the road and the rampart
 		# that follow the surface moved with it.
-		expected_file="$repo/tools/wp13/evidence/20260915-capital-terrain/$key/${label}-digest-$seed.txt"
+		expected_file="$repo/tools/wp13/evidence/20260920-capital-round10/$key/${label}-digest-$seed.txt"
 		if [[ -f "$expected_file" ]]; then
 			expected="$(awk 'NR==1 {print $1}' "$expected_file")"
 			expected_cells="$(awk 'NR==1 {for(i=1;i<=NF;i++) if($i ~ /^overlay_cells=/) {sub(/^overlay_cells=/,"",$i); print $i}}' "$expected_file")"

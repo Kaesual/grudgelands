@@ -1,0 +1,9 @@
+exit=0 errors=0 complete=1 log=/tmp/grudgelands-r10-final-engines/capitals-v3/highcourt/server.log
+WP13 highcourt: the built avenue moved.
+  now      7a1388161d18e3c485fa2ad464141b6bba46ea7589528a7dc479a9009269f508
+  expected 1d0e286828e26b0a86fb01fc15dde545831361ee9313518620e1bb621425eb89 (/home/jan/projects/grudgelands/.claude/worktrees/r10-integration/tools/wp13/evidence/20260915-capital-terrain/highcourt/avenue-digest-531802985935182545.txt)
+WP13 highcourt: the built rampart moved.
+  now      956c8cb3957ccf31b15027cf6a8f37704a261c8425a60163c3292ae2ce49a261
+  expected 8118864bac90befe1c950eca9f5a8365e1c0a9d94466c6602feed65c8897ce27 (/home/jan/projects/grudgelands/.claude/worktrees/r10-integration/tools/wp13/evidence/20260915-capital-terrain/highcourt/rampart-digest-531802985935182545.txt)
+corner overlay digest matches the committed value
+gate overlay digest matches the committed value

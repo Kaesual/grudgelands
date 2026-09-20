@@ -1,0 +1,7 @@
+exit=0 errors=0 complete=1 log=/tmp/grudgelands-r10-final-engines/capitals-v3/dur_brannoc/server.log
+WP13 dur_brannoc: the built avenue moved.
+  now      1b23ee6f5fbfa34b72fc509d6b524ccbcb8b717225e99f3c30f4d761d807b4b1
+  expected 1e35beca74df122d78cf8f2c2fb624e8564c28cfa730f56d31034d9bcf72c52b (/home/jan/projects/grudgelands/.claude/worktrees/r10-integration/tools/wp13/evidence/20260915-capital-terrain/dur_brannoc/avenue-digest-531802985935182545.txt)
+rampart overlay digest matches the committed value
+corner overlay digest matches the committed value
+gate overlay digest matches the committed value

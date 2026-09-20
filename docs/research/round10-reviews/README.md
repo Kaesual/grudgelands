@@ -45,3 +45,12 @@ integration evidence and final dynamic documentation remain pending at this chec
 compact PUC/LuaJIT pair and isolated engine checks; reviewers inspect immutable
 evidence rather than duplicating the fallback-interpreter run. GUI acceptance
 remains the user's next playtest.
+
+## Final capital attribution and current expectations
+
+[Attribution review](capital-overlay-attribution-review.md): CLEAN, all18 historical
+regions reproduced and zero unexplained coordinates. [Current baseline review](capital-current-baseline-review.md): CLEAN, seven reviewed changes and eleven
+identical values; historical oracles remain untouched. The [v3 runtime/static
+review](final-v3-runtime-review.md) is preserved at its original conditional
+verdict; these two later reviews close its geometry condition. Final interpreter
+parity and delivery are still pending at this checkpoint.
