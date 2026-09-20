@@ -195,3 +195,19 @@ Protected exterior product frames and interior stands identify all capital
 professions, following [settlements.md](settlements.md). Fixed display items
 are scenery, with no removable inventory or collectible drop. The open stable
 and its living mount displays follow [mounts.md](mounts.md).
+
+### Round 12 inventory-art families
+
+Cooking results use recipe-specific silhouettes at native 16x16 scale rather
+than role-colourized ingredient placeholders. Bowls, pots, platters, jars,
+mugs, whole fish and tied raw preparations may share a family vocabulary, but
+each result remains distinguishable beside the Cooking catalog. Jungle Cocoa
+is a steaming brown drink, never a fruit silhouette. Raw ingredient icons
+remain unchanged.
+
+Wands have a short grip and shaft with a faceted magical focus, distinct from
+a loose crystal, dagger or staff. Greataxes have a broad opposing double-bit
+head and must not read as a spear or halberd. Both families keep one silhouette
+across all six tier palettes and the established diagonal convention: grip at
+approximately `(3.4, 12.6)` in 16x16 sprite coordinates, business end toward
+the upper right. Accepted swords, one-handed axes and armor are unchanged.

@@ -1,17 +1,20 @@
 # Media Origin and Licenses (grug_cooking)
 
-R10 adds fifteen plant harvest sprites; raw assemblies and dishes continue to
-use the existing runtime-colourized presentations below.
+R10 added fifteen plant harvest sprites. Round 12 preserves those ingredient
+icons and replaces the generic runtime-colourized results with project art.
 
-| Presentations | Runtime source file | Pinned source URL / repository path | Author chain | Exact licence | Modification |
-|---|---|---|---|---|---|
-| Bread, all raw assemblies and all Hearty dishes | `default_clay_lump.png` | <https://github.com/luanti-org/minetest_game/blob/b5243f3e42410ae3ca85ead795149406fa654538/mods/default/textures/default_clay_lump.png> | minetest_game contributors listed in `mods/BASE/default/license.txt` | CC BY-SA 3.0 Unported | Runtime colourize only |
-| all Caster dishes | `default_apple.png` | <https://github.com/luanti-org/minetest_game/blob/b5243f3e42410ae3ca85ead795149406fa654538/mods/default/textures/default_apple.png> | minetest_game contributors listed in `mods/BASE/default/license.txt` | CC BY-SA 3.0 Unported | Runtime colourize only |
-| all Hunter dishes | `grug_mobs_item_raw_fish.png` | `mods/ENTITIES/grug_mobs/textures/grug_mobs_item_raw_fish.png`; generator `tools/gen_mob_item_textures.py:748`; owning ledger `mods/ENTITIES/grug_mobs/LICENSE-media.md:284` | Grudgelands project | CC0 1.0 | Runtime colourize only |
+## Round 12 cooking results — CC0 1.0
 
-The complete minetest_game attribution and licence text remain in
-`mods/BASE/default/license.txt`. These derived presentations remain under the
-same licence as their respective source.
+The 18 `grug_cooking_dish_*.png` files, six `grug_cooking_raw_*.png` files and
+`grug_cooking_bread.png` are original Grudgelands pixel art, authored as
+explicit 16x16 geometry in `tools/r12_art/build_assets.py`. They are dedicated
+to the public domain under CC0 1.0 Universal.
+
+An OpenAI image-generation concept sheet informed the high-level vocabulary
+(bowls, pots, platter, jar, mug and tied raw bundles), but no generated pixels
+ship in game textures. The prompt and unmodified concept output are archived
+in `tools/r12_art/`; the deterministic script is authoritative for every
+shipped pixel. No foreign food asset was copied or traced.
 
 
 ## R10 plant harvest icons

@@ -203,8 +203,7 @@ local WEAPONS = {
 	{key = "dagger",   noun = "Dagger",   fpi = 0.7, factor = 0.7, hands = 1, group = "sword"},
 	{key = "greataxe", noun = "Greataxe", fpi = 1.4, factor = 1.5, hands = 2, group = "axe"},
 	{key = "staff",    noun = "Staff",    fpi = 1.4, factor = 1.2, hands = 2, group = "staff"},
-	{key = "wand",     noun = "Wand",     fpi = 1.0, factor = 1.0, hands = 1, group = "wand", caster = true,
-		image = "default_mese_crystal_fragment.png^[colorize:"},
+	{key = "wand",     noun = "Wand",     fpi = 1.0, factor = 1.0, hands = 1, group = "wand", caster = true},
 	{key = "bow",      noun = "Bow",      fpi = 1.0, factor = 1.0, hands = 2,
 		group = "bow", bow = true},
 }
@@ -465,7 +464,6 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 		if w.bow then groups.grug_bow = 1 end
 		local image = "grug_gear_item_" .. w.key .. "_" .. metal.key .. ".png"
 		if w.bow then image = BOW_IMAGE[bracket] end
-		if w.image then image = w.image .. BRACKET_TINT[bracket] .. ":115" end
 		core.register_tool(itemname, {
 			description = describe(metal.name, w.noun, br.ilvl,
 				weapon_stats(damage, w.fpi, w.hands)),
