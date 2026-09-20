@@ -7,7 +7,6 @@ grug_artisans = {
 }
 
 local modpath = core.get_modpath(core.get_current_modname())
-local refinement_recipes = {}
 
 function grug_artisans.register_item(name, description, image, groups)
 	if core.registered_items[name] then
@@ -43,67 +42,106 @@ function grug_artisans.register_recipe(profession, definition)
 end
 
 function grug_artisans.register_refinement(tier, base, wood_grade)
-	local recipe = grug_artisans.register_recipe("woodcarver", {
+	return grug_artisans.register_recipe("woodcarver", {
 		tier = tier,
-		station = "grid",
+		station = "carving_bench",
 		inputs = {{base, wood_grade}},
 		output = base,
 		in_place = true,
-		hint = "Refine in the inventory grid",
+		operation = "refinement", family = "weapon",
+		operation_material = wood_grade, quality_mode = "refinement",
+		hint = "Improve at a Carving Bench",
 	})
-	recipe.quality_mode = "refinement"
-	refinement_recipes[recipe.id] = true
-	return recipe
 end
 
-local function refinement_for(itemstack, old_grid)
-	local recipe = grug_jobs.recipe_for_craft("grid", itemstack, old_grid)
-	return recipe, recipe and refinement_recipes[recipe.id] == true
+function grug_artisans.register_add_affix(tier, base, wood_grade, reagent)
+	return grug_artisans.register_recipe("woodcarver", {
+		tier = tier, station = "carving_bench",
+		inputs = {{base, wood_grade, reagent}}, output = base,
+		in_place = true, operation = "add_affix", family = "weapon",
+		operation_material = wood_grade, operation_reagent = reagent,
+		hint = "Add the next affix at a Carving Bench",
+	})
 end
-
-local function already_refined(old_grid, output_name)
-	for index = 1, #old_grid do
-		local stack = old_grid[index]
-		if stack and stack:get_name() == output_name and
-				stack:get_meta():get_int("grug_refined") == 1 then
-			return true
-		end
-	end
-	return false
-end
-
-core.register_craft_predict(function(itemstack, player, old_grid)
-	local recipe, refinement = refinement_for(itemstack, old_grid)
-	if refinement and already_refined(old_grid, recipe.output_name) then
-		if player and player.get_player_name then
-			core.chat_send_player(player:get_player_name(),
-				"That item is already refined.")
-		end
-		return ItemStack("")
-	end
-end)
-
-core.register_on_craft(function(itemstack, player, old_grid)
-	local recipe, refinement = refinement_for(itemstack, old_grid)
-	if not refinement then return nil end
-	local base
-	for index = 1, #old_grid do
-		local stack = old_grid[index]
-		if stack and stack:get_name() == recipe.output_name then
-			base = ItemStack(stack)
-			break
-		end
-	end
-	if not base then return nil end
-	grug_items.set_refined(base, true)
-	if grug_gear.initialize_weapon_tooltip then
-		grug_gear.initialize_weapon_tooltip(base, player)
-	end
-	return base
-end)
 
 dofile(modpath .. "/woodcarver.lua")
 dofile(modpath .. "/goldsmith.lua")
+
+local KIT_GROUPS = {
+	{group = "grug_whetstone_", family = "melee_weapon"},
+	{group = "grug_armor_polish_", family = "metal_armor"},
+	{group = "grug_leather_", family = "leather_armor"},
+	{group = "grug_embroidery_", family = "cloth_armor"},
+	{group = "grug_wood_oil_", family = "caster_weapon"},
+	{group = "grug_gem_setting_", family = "trinket"},
+}
+
+local function kit_definition(stack)
+	local groups = (stack:get_definition() or {}).groups or {}
+	for index = 1, #KIT_GROUPS do
+		local row = KIT_GROUPS[index]
+		for _, mode in ipairs({"imbue", "temper"}) do
+			local tier = tonumber(groups[row.group .. mode])
+			if tier and tier > 0 then return mode, row.family, tier end
+		end
+	end
+end
+
+local function upgrade_inputs(old_grid)
+	local item, kit, mode, family, tier
+	for index = 1, #old_grid do
+		local stack = old_grid[index]
+		if stack and not stack:is_empty() then
+			local candidate_mode, candidate_family, candidate_tier = kit_definition(stack)
+			if candidate_mode then
+				kit, mode, family, tier = stack, candidate_mode, candidate_family,
+					candidate_tier
+			elseif grug_items.family_for(stack) then
+				item = stack
+			end
+		end
+	end
+	return item, kit, mode, family, tier
+end
+
+core.register_craft_predict(function(itemstack, player, old_grid)
+	local item, kit, mode, family, tier = upgrade_inputs(old_grid)
+	if not item or not kit then return nil end
+	local definition = item:get_definition() or {}
+	if grug_items.family_for(item) ~= family or
+			tonumber(definition._grug_bracket) ~= tier then
+		return ItemStack("")
+	end
+	local allowed = grug_items.can_apply_upgrade_kit(item, mode)
+	if not allowed then return ItemStack("") end
+	return ItemStack(item)
+end)
+
+core.register_on_craft(function(itemstack, player, old_grid)
+	local item, kit, mode, family, tier = upgrade_inputs(old_grid)
+	if not item or not kit then return nil end
+	local definition = item:get_definition() or {}
+	if grug_items.family_for(item) ~= family or
+			tonumber(definition._grug_bracket) ~= tier then return ItemStack("") end
+	local result = ItemStack(item)
+	result:set_count(1)
+	local allowed = grug_items.apply_upgrade_kit(result, mode)
+	return allowed and result or ItemStack("")
+end)
+
+for kit_name, kit_def in pairs(core.registered_items) do
+	local mode, family, tier = kit_definition(ItemStack(kit_name))
+	if mode then
+		for item_name, item_def in pairs(core.registered_items) do
+			local probe = ItemStack(item_name)
+			if grug_items.family_for(probe) == family and
+					tonumber(item_def._grug_bracket) == tier then
+				core.register_craft({type = "shapeless", output = item_name,
+					recipe = {item_name, kit_name}})
+			end
+		end
+	end
+end
 
 local function input_exists(input)
 	local group = input:match("^group:(.+)$")

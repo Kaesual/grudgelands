@@ -59,6 +59,8 @@ local CASTER_IMAGE = {wand = "default_mese_crystal_fragment.png^[colorize:",
 local ARMOR_NOUNS = {
 	metal = {head = "Helm", chest = "Chestplate", legs = "Greaves",
 		feet = "Sabatons"},
+	leather = {head = "Hood", chest = "Jerkin", legs = "Pants",
+		feet = "Boots"},
 	cloth = {head = "Cowl", chest = "Robe", legs = "Leggings",
 		feet = "Slippers"},
 }
@@ -269,7 +271,7 @@ function M.run(repo)
 	--
 	-- B. the full catalogue, item by item
 	--
-	-- 42 weapons + 48 armor pieces + the starter staff, each listed with the
+	-- 42 weapons + 72 armor pieces + the starter staff, each listed with the
 	-- display name a player reads, the ilvl and the stat the generator gave it.
 	-- The stat is recomputed here from items_crafting.md §3.2 / §3.1 so the
 	-- rename cannot have moved a number sideways.
@@ -318,7 +320,7 @@ function M.run(repo)
 			end
 		end
 
-		for _, line in ipairs({"metal", "cloth"}) do
+		for _, line in ipairs({"metal", "leather", "cloth"}) do
 			for _, slot in ipairs(SLOTS) do
 				local name = gear.armor_item(slot, line, bracket)
 				local def = items[name]
@@ -341,22 +343,12 @@ function M.run(repo)
 		end
 	end
 
-	-- The leather line is NAMED but deliberately not REGISTERED (its wearer,
-	-- the Rogue, is Phase 2). Both halves are the check.
-	for bracket = 1, 6 do
-		local name = gear.armor_item("chest", "leather", bracket)
-		check(type(name) == "string" and name ~= "",
-			"the leather line has no name at tier " .. bracket)
-		check(items[name] == nil,
-			"leather is registered after all (" .. tostring(name) .. ")")
-	end
-
 	for _, entry in ipairs(listed) do
 		row("wp13_gear_item", entry)
 	end
 	row("wp13_gear_count", #listed)
-	check(#listed == 90, "the catalogue holds " .. #listed ..
-		" items, expected 90")
+	check(#listed == 114, "the catalogue holds " .. #listed ..
+		" items, expected 114")
 
 	-- The six core identities are one definition per tier. Their authored
 	-- passive remains descriptive data for the follow-up effects lane.
@@ -481,7 +473,7 @@ function M.run(repo)
 			end
 			seen[label] = true
 		end
-		for _, line in ipairs({"metal", "cloth"}) do
+		for _, line in ipairs({"metal", "leather", "cloth"}) do
 			for _, slot in ipairs(SLOTS) do
 				local label = first_line(
 					items[gear.armor_item(slot, line, bracket)].description)
@@ -525,12 +517,12 @@ function M.run(repo)
 	for bracket = 1, 6 do
 		local br = gear.BRACKETS[bracket]
 		local cat = gear.catalog[bracket]
-		check(#cat.fixed == 9, "bracket " .. bracket .. " has " ..
-			#cat.fixed .. " fixed items, expected 9")
+		check(#cat.fixed == 13, "bracket " .. bracket .. " has " ..
+			#cat.fixed .. " fixed items, expected 13")
 		check(#cat.extras == 6, "bracket " .. bracket .. " has " ..
 			#cat.extras .. " rotating items, expected 6")
-		check(#cat.all == 15, "bracket " .. bracket .. " has " .. #cat.all ..
-			" items, expected 15")
+		check(#cat.all == 19, "bracket " .. bracket .. " has " .. #cat.all ..
+			" items, expected 19")
 		local sword = gear.weapon_item("sword", bracket)
 		check(gear.get_price(sword) == br.price.weapon,
 			sword .. " is not priced at the bracket's weapon price")

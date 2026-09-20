@@ -89,6 +89,9 @@ return function(repo, spec)
 			output = definition.output}
 		engine_recipes[output] = list
 	end
+	function core.clear_craft(definition)
+		if definition and definition.output then engine_recipes[definition.output] = nil end
+	end
 	function core.get_all_craft_recipes(output) return engine_recipes[output] end
 	function core.get_item_group(name, group)
 		local definition = core.registered_items[name]
@@ -129,11 +132,20 @@ return function(repo, spec)
 		"grug_materials:pick_embersteel", "grug_materials:pick_abyssal_steel"}
 	local cloth = {"patch", "woven", "heavy", "silkweave", "silk",
 		"stormweave"}
+	local leather = {"light", "cured", "heavy", "scaled", "sleek", "nightscale"}
 	for tier = 1, 6 do
 		base(picks[tier], {description = metals[tier] .. " pick\nItem level " .. tier,
 			tool_capabilities = {full_punch_interval = 1,
 				damage_groups = {fleshy = tier + 2}, groupcaps = {}},
 			_grug_quality = 1})
+		for _, kind in ipairs({"axe", "shovel"}) do
+			local name = (tier == 1 and "default:" .. kind .. "_bronze") or
+				(tier == 3 and "default:" .. kind .. "_steel") or
+				("grug_materials:" .. kind .. "_" .. metals[tier])
+			base(name, {description = name, groups = {[kind] = 1},
+				tool_capabilities = {full_punch_interval = 1,
+					damage_groups = {fleshy = 3}, groupcaps = {}}})
+		end
 		for _, family in ipairs({"sword", "dagger", "greataxe"}) do
 			base("grug_gear:" .. family .. "_" .. metals[tier], {
 				description = metals[tier] .. " " .. family .. "\nItem level " .. tier,
@@ -152,11 +164,19 @@ return function(repo, spec)
 				description = cloth[tier] .. " cloth " .. slot ..
 					"\nItem level " .. tier, _grug_armor = tier,
 				_grug_quality = 1})
+			base("grug_gear:" .. slot .. "_leather_" .. leather[tier], {
+				description = leather[tier] .. " leather " .. slot ..
+					"\nItem level " .. tier, _grug_armor = tier,
+				_grug_quality = 1})
 		end
 	end
 
 	grug_inventory = {get_equipped_armor = function() return 0 end}
-	grug_gear = {initialize_weapon_tooltip = function() return false end}
+	grug_gear = {initialize_weapon_tooltip = function() return false end,
+		BRACKET_TINT = {"#1","#2","#3","#4","#5","#6"}, MATERIALS = {}}
+	for tier = 1, 6 do
+		grug_gear.MATERIALS[tier] = {metal = {name = metals[tier]}}
+	end
 	grug_traders = {register_all_vendor_stock = function() end}
 	grug_jobs = {}
 	dofile(repo .. "/mods/PLAYER/grug_jobs/registry.lua")

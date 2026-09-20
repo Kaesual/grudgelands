@@ -4,9 +4,9 @@ The crafting/professions/materials rework was decided on 2026-08-07 and
 folded into `docs/design/` (commit `d5baf03`): the two ladders
 (`items_crafting.md` §2.1), the six-tier material ladder (§3.0), one item
 per concept (§3.0.3), exact natural pick depths plus separate harvest tiers
-(§3.0.4), the six
-material-cut professions (`professions.md` §2), the one recipe book per
-profession (§2.2) with the surviving keystones (§2.3), refinement and the
+(§3.0.4), the seven
+material-cut professions (`professions.md` §2), the exclusive Basics and one
+UI recipe book per learned profession (§2.2), refinement and the
 prefix/suffix affixes (§6b), the herb/spice split
 (`biomes_mobs.md` §2) and the new `mounts.md`. The later material, map,
 open-world housing and mount-geography decisions live in their design docs;
@@ -39,9 +39,8 @@ Open here: **only the six effective `times` and `uses` sets themselves.**
 
 *Lands in*: `items_crafting.md` §3.0.4.
 **Decision:** _open_ (the `times` and `uses` numbers). Owner:
-**WP29/WP22** — WP29 authors the pick catalog and recipes, WP22
-runtime-calibrates dig times and durability (BACKLOG WP22 row). WP26
-ships bars and furnaces only, no picks.
+**WP22** — the six-tier pick catalog and familiar universal recipes now exist;
+WP22 runtime-calibrates only dig times and durability (BACKLOG WP22 row).
 
 ---
 

@@ -99,17 +99,18 @@ grug_traders.register_stock({item = "default:pick_bronze", price = 40, category 
 --
 -- A player sees their own bracket and every bracket below it. Per (vendor
 -- kind, bracket) the offer is:
---   * the 9 FIXED items of grug_gear.catalog[b].fixed (sword + 4 metal + 4
---     cloth) — §3.8's guaranteed floor, always on sale;
---   * 2 ROTATING slots drawn from the 3 items of grug_gear.catalog[b].extras
---     (dagger, greataxe, staff): two weapon families are on sale each hour,
---     the third is WITHHELD and rotates back in next hour. Withholding is
+--   * the 13 FIXED items (sword + four pieces from each armor class);
+--   * 3 ROTATING conceptual families drawn from dagger, greataxe, staff and
+--     caster 1H. Caster 1H resolves deterministically to wand, scepter or orb
+--     for this vendor/hour/bracket. One conceptual family is withheld. This
+--     keeps the three caster forms from crowding out physical families;
+--     Withholding is
 --     what makes it a rotation at all — with one slot per extra the whole
 --     catalog would be on the shelf every hour and the roll would only
 --     permute the display order. §3.8's "guaranteed, but expensive … the
---     floor, not the ceiling" is a promise about the 9-item floor above,
+--     floor, not the ceiling" is a promise about the fixed floor above,
 --     which is untouched by this;
---   * one rotation in five, one of those two slots is replaced by a single
+--   * one rotation in five, one of those three slots is replaced by a single
 --     UNCOMMON item drawn from grug_gear.catalog[b].all and priced x3 —
 --     "today the trader had something good". Until WP5's enchant roller
 --     exists, no Uncommon is offered at all (see the WP5 SEAM below).
@@ -122,10 +123,8 @@ grug_traders.register_stock({item = "default:pick_bronze", price = 40, category 
 --
 
 local ROTATION_SECONDS = 3600 -- §3.8 "re-rolled hourly"; real hours
--- STRICTLY BELOW #extras (3 today), or nothing is ever withheld and the
--- hourly re-roll degenerates into a reshuffle of the same shelf. If §3.2 ever
--- grows a fourth extra weapon family, raise this to 3 — never to #extras.
-local ROTATING_SLOTS = 2
+-- Strictly below the four conceptual extra families, so one stays withheld.
+local ROTATING_SLOTS = 3
 local UNCOMMON_EVERY = 5 -- "roughly one rotation in five"
 local UNCOMMON_PRICE_FACTOR = 3 -- §3.8 "priced x3"
 local UNCOMMON_COLOR = "#4A90FF"
@@ -231,7 +230,15 @@ local function compute(salt, bracket, rotation)
 	end
 
 	local rng = PcgRandom(rotation_seed(salt, bracket, rotation))
-	local pool = shuffled(cat.extras, rng)
+	local caster = {"wand", "scepter", "orb"}
+	local caster_family = caster[rng:next(1, #caster)]
+	local conceptual = {
+		grug_gear.weapon_item("dagger", bracket),
+		grug_gear.weapon_item("greataxe", bracket),
+		grug_gear.weapon_item("staff", bracket),
+		grug_gear.weapon_item(caster_family, bracket),
+	}
+	local pool = shuffled(conceptual, rng)
 	local rotating = {}
 	for i = 1, ROTATING_SLOTS do
 		-- The shuffle decides WHICH extras are on the shelf: taking the first

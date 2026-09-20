@@ -53,7 +53,7 @@ ladders are independent; §2.1 spells out how they meet.
 - **Rare patrol mobs** with special loot as raid incentive into enemy
   territory; each of the six race **Kings** is a heavily guarded raid boss
   with top-tier rolls.
-- **Class/profession synergy intended** (Warrior+Blacksmith,
+- **Class/profession synergy intended** (Warrior+Weaponsmith or Armorsmith,
   Priest/Mage+Tailor, …).
 - Regional materials and contested routes make high-tier equipment and
   optional target-race counters trade goods; universal picks never require a
@@ -269,7 +269,8 @@ the book group's business; this table cuts only mastery:
 
 | Profession | Apprentice | Journeyman | Expert | Master |
 |---|---|---|---|---|
-| Blacksmith | metal fittings | shield; whetstone imbue kit | whetstone temper kit; armor-polish imbue kit | armor-polish temper kit |
+| Weaponsmith | metal fittings | whetstone imbue kit | whetstone temper kit | — |
+| Armorsmith | — | shield | armor-polish imbue kit | armor-polish temper kit |
 | Leatherworker | weapon grips | leather-armor imbue kit | leather temper kit | quiver (cataloged; ships with §9) |
 | Tailor | 8-slot bag | 16-slot bag; spell tome +10; embroidery imbue kit | 24-slot bag; spell tome +20; embroidery temper kit | 32-slot bag; spell tome +30 |
 | Woodcarver | — (the base caster ladder is the Apprentice value) | wood-oil imbue kit | wood-oil temper kit | bows (cataloged; ship with §9) |
@@ -289,10 +290,10 @@ tomes/consumables unchanged. No new numbers are introduced here.
   above the effective profession level remain visible but greyed, with the
   required profession tier and corresponding character-band floor.
 - The crafting page carries two primary book slots, one slot for every
-  framework secondary (Cooking today), and the always-open General book.
+  framework secondary (Cooking today), and the always-open **Basics** book.
   Empty learnable slots say **learn at a trainer**. First Aid and Riding do not
   acquire book slots.
-- The General book derives its entries from existing non-profession engine and
+- The Basics book derives its entries from existing non-profession engine and
   dual-furnace recipes. Those recipes remain registered by their owning mods
   and are not re-registered by the profession framework.
 - Every furnace, dual furnace and brewing stand carries the same book button,
@@ -535,7 +536,7 @@ from `grug_gear`. Consequences, all binding:
   |---|---|---|---|---|---|---|
   | Weapons and metal armor (§3.0.1's metals) | Bronze | Iron | Steel | Silversteel | Embersteel | Abyssal Steel |
   | Cloth armor (§3.5's bolt grades) | Patch | Woven | Heavy | Silkweave | Silk | Stormweave |
-  | Leather armor (§3.4's grades; named, not yet registered) | Light | Cured | Heavy | Scaled | Sleek | Nightscale |
+  | Leather armor (§3.4's grades) | Light | Cured | Heavy | Scaled | Sleek | Nightscale |
 
   Nouns are Sword / Dagger / Greataxe / Staff, Helm / Chestplate / Greaves /
   Sabatons (metal), Cowl / Robe / Leggings / Slippers (cloth) and Hood /
@@ -547,6 +548,16 @@ from `grug_gear`. Consequences, all binding:
   weapons, armor. This is the deliberate "Minecraft feel", and it is what
   makes mining and smelting worth doing for a player with no crafting
   profession at all.
+  Four wood sticks use the familiar two-plank vertical recipe; the old
+  one-plank shortcut is removed. Base swords use two same-tier bars over a wood stick, with a same-tier
+  metal rod accepted in the handle slot. Pickaxes, axes, shovels and the
+  existing Farmer's Hoe use their canonical Minecraft shapes; axes and the hoe
+  accept both mirrored orientations. The exact non-Minecraft shapes are dagger = one
+  material over one handle; greataxe = five material units symmetrically around
+  two vertical handles; wand = one processed wood over one handle; scepter = one
+  metal, one processed wood and one handle in a column; orb = four processed
+  wood in a diamond silhouette; staff = three processed wood in a column. No
+  base recipe adds a gem or professional fitting beyond those stated shapes.
   **This supersedes §3.3's** "vendor floor sells up to the bronze pick —
   iron+ picks are smith products" (see the marked line there).
 - **`default`'s tool ladder is replaced** by the six-tier ladder: wood
@@ -565,9 +576,9 @@ from `grug_gear`. Consequences, all binding:
   Abyssal Steel are registered by `grug_materials/tools.lua`. Iron gets tools
   because Iron is a full tier here — it owns a depth band, a pick tier and a
   real bar item — so skipping it would leave §3.0.4's T2 row without a pick.
-  The four new tiers carry **no craft recipe**, exactly like the surviving
-  Steel pick: WP26 owns the bar recipes and WP29 the final tool catalog, and
-  handing the deep picks a recipe would move the progression gate. A `default`
+  All six pick, axe and shovel tiers use the familiar Minecraft grid shapes and
+  are universal Basics recipes. Their existing capability profiles remain the
+  authority; recipe completion does not recalibrate dig times or uses. A `default`
   axe stays a one-handed hatchet and a mining tool; the two-handed ×1.5 Greataxe
   is the weapon family (`inventory_equipment.md` §2).
   **The caster starter is new**: `default` ships no staff, so
@@ -575,10 +586,10 @@ from `grug_gear`. Consequences, all binding:
   stone sword's below-ladder equivalent for Priests and Mages. Like the wood and
   stone swords it carries no ilvl and no level requirement, and a vendor sells
   it at the same 15 c.
-- **Armor base recipes must be created.** `default` has **no armor at
-  all**. Shapes adapted from LotT `lottarmor` (closer fit) or VoxeLibre
-  `mcl_armor` — sources and licences in §1.2 — with our bar costs from
-  §3.3.
+- **All armor base recipes use the canonical shapes:** head 5, chest 8,
+  legs 7 and feet 4 units, in the same grid positions for metal, cloth and
+  leather. All three lines and all six material tiers are registered and
+  universal.
 - A profession never gets a *parallel* item. What a profession adds on
   top of the base item is the **refinement, the enchant and the special
   variant** (§6b), plus its handful of exclusive recipes.
@@ -767,10 +778,10 @@ Headed by their ilvl from here on.
 
 | Armor line (profession) | ilvl 12 | 27 | 42 | 57 | ilvl 57 per piece |
 |---|---|---|---|---|---|
-| Metal (Blacksmith) | 16 | 29 | 42 | 55 | 19/15/12/9 |
+| Metal (Armorsmith) | 16 | 29 | 42 | 55 | 19/15/12/9 |
 | Leather (Leatherworker) | 11 | 20 | 30 | 40 | 14/11/9/6 |
 | Cloth (Tailor) | 5 | 8 | 11 | 15 | 5/4/3/3 |
-| Shield (Blacksmith, Journeyman+, Warrior) | — | 4 | 5 | 5 | — |
+| Shield (Armorsmith, Journeyman+, Warrior) | — | 4 | 5 | 5 | — |
 
 Check at 60 after the player-side pressure fit: full plate+shield = 60% →
 normal-mob hit 99 → 40 effective vs 3235 HP (≈81 hits); cloth Mage 15% →
@@ -811,7 +822,7 @@ already does it. Nothing is re-derived and no coefficient changes; the
 tier columns above stay the authority at their four ilvls.
 
 **Base recipes.** `default` ships no armor (§1.2), so the four shapes are
-ours. Bar costs are §3.3's — chest 5 / legs 4 / head 3 / feet 2 per
+ours. Material costs use the canonical shapes — chest 8 / legs 7 / head 5 / feet 4 per
 piece — for the lead metal of the tier, and the same shapes serve the
 leather and cloth lines with cured leather and bolts in place of bars.
 
@@ -846,8 +857,8 @@ weapon at all — the one real hole in the catalog. The **Woodcarver**
 1H** family and ride the existing 1H row (same fpi, same factor — the
 weapon families are class flavor, not a power ladder, §8.2); staves stay
 the caster 2H on the staff row, and "metal-shod" is literal — the
-Woodcarver buys the fitting from a Blacksmith (§3.6a). Orbs are **not**
-an offhand: the offhand is the Tailor's spell tome or the Blacksmith's
+Woodcarver buys the fitting from a Weaponsmith (§3.6a). Orbs are **not**
+an offhand: the offhand is the Tailor's spell tome or the Armorsmith's
 shield and nothing else (§3.5, §3.3), so there is no duplicate.
 
 For weapons, the catalogue's `_grug_ilvl` is also the minimum character level
@@ -868,10 +879,10 @@ craftable by everyone. What each section now lists is three things —
 3. its **exclusive recipes**, a handful per mastery tier: things nobody
    else can make at all.
 
-Coverage across the six professions is complete and overlap-free
+Coverage across the seven professions is complete and overlap-free
 (professions.md §2).
 
-### 3.3 Blacksmith (forge) — metal, and everything made of it
+### 3.3 Weaponsmith and Armorsmith (shared Forge)
 
 **Material chain**: T1 **Bronze** → T2 **Iron** → T3 **Steel** → T4
 **Silversteel** → T5 **Embersteel** → T6 **Abyssal Steel** (§3.0.1/§3.0.2).
@@ -881,10 +892,11 @@ six-tier ladder, and **§10 P1's "gem-tempered steel" is retired with it**
 — the T4 metal is Silversteel from a real new ore, which is exactly the
 "new ore post-MVP" option P1 held open.
 
-**Refines and enchants**: metal armor (all four slots), 1H weapons,
-daggers, 2H weapons, shields. Bar costs for the base recipes: chest 5,
-legs 4, head 3, feet 2, shield 4, 1H 3, dagger 2, 2H 5, staff fitting 2,
-pick 3.
+**Weaponsmith refines and enchants** physical weapons and refines mining tools.
+**Armorsmith refines and enchants** metal armor and shields. Plain base recipes
+remain universal: swords cost two bars plus a handle; picks cost three bars;
+armor uses the canonical 5/8/7/4 head/chest/legs/feet layouts. Metal fittings
+are Weaponsmith trade goods used for professional improvement, never base gear.
 
 **Exclusive recipes** (mastery cut decided 2026-08-13, §2.1): **metal
 fittings** at Apprentice (the Woodcarver cross-buy, §3.6a); **shields**
@@ -902,7 +914,7 @@ a lead-metal-band rule.
 > **Superseded 2026-08-07 (§3.0.3):** ~~"Vendor floor sells up to the
 > bronze pick — iron+ picks are smith products (mining stays open to
 > all, the TOOL is the trade good)."~~ Every pick on the ladder is a base
-> recipe now, so the Blacksmith has no claim on iron+ picks. Vendor stock
+> recipe now, so the Weaponsmith has no exclusive claim on iron+ picks. Vendor stock
 > is unchanged — the bronze pick stays the vendor's top tool (§3.7); a
 > higher pick is **crafted, not bought**. The trade good is the
 > **refined** pick: +100 % durability (§6b.2) is worth more on a mining
@@ -963,7 +975,7 @@ robe 6 / leggings 5 / cowl 4 / slippers 3 bolts.
 - **The spell tome (offhand)** from Journeyman up: +1% / +2% / +3% max mana
   at Journeyman / Expert / Master, cloth + parchment + leather binding.
   It is one of exactly **two** offhands in the game; the other is the
-  Blacksmith's shield (§3.3). Different item, different armor class, no
+  Armorsmith's shield (§3.3). Different item, different armor class, no
   duplicate.
 - **Embroidery kits** (§7): imbue at Journeyman, temper at Expert
   (mastery cut decided 2026-08-13, §2.1). With one bag size per tier and
@@ -1052,9 +1064,9 @@ Journeyman (imbue) and Expert (temper); **bows** are the Master line
 from Phase 2 (§9 — this replaces the old "Bowyer = Leatherworker split"
 assignment; the quiver stays Leatherworker, §3.4).
 
-**Cross-buy: the Woodcarver buys metal fittings from the Blacksmith.**
+**Cross-buy: the Woodcarver buys metal fittings from the Weaponsmith.**
 The §3.2 family is literally called "metal-shod staff"; from T2 up every
-caster weapon needs a Blacksmith-made fitting of its own tier. That is
+caster weapon needs a Weaponsmith-made fitting of its own tier. That is
 the same deliberate supply loop the Leatherworker and Tailor already run
 in professions.md §3 — a profession that cannot finish its own top item
 alone is what keeps the market alive.
@@ -1190,7 +1202,7 @@ Neither of these costs a main profession slot (professions.md §1).
   | T6 | Hunter | raw meat + Wild Cocoa + Fire Pepper or Wild Onion | Cocoa-Rubbed Game |
 
   **Both furnace patterns.** The three universal refinements appear in the
-  General book with a Furnace hint and need no profession: raw meat → Cooked
+  Basics book with a Furnace hint and need no profession: raw meat → Cooked
   Meat, ordinary Raw Fish → Cooked Fish, and Wild Grain → Bread. Separately,
   every tier has one Cooking grid recipe for an inedible raw assembly; its
   profession-gated furnace route meets the direct grid route at the same edible
@@ -1328,7 +1340,7 @@ changes:
 
   **Implemented reading** (decided 2026-08-07):
   - The bracket's **fixed floor is always on sale**: the 1H sword plus a
-    full set in each shipped armor line = **9 items**. That is what
+    full set in each of the three shipped armor lines = **13 items**. That is what
     "guaranteed, but expensive … the floor, not the ceiling" requires,
     and the rotation may never touch it.
   - On top of it sit the **rotating slots**, drawn hourly from the
@@ -1343,6 +1355,9 @@ changes:
     greataxe, staff, caster 1H — and the slot count rises from 2 to
     **3**, exactly as the rule above already prescribed. Casters can now
     buy a floor weapon, which the old three-family pool never allowed.
+    When caster 1H is selected, `(real hour, vendor, bracket)` also selects
+    exactly one of wand, scepter and orb; those three visual forms remain one
+    conceptual rotation family.
   - The **1-in-5 Uncommon is rolled per vendor and per bracket** (so two
     vendors in the same hour differ, and a player's own brackets differ
     from each other), replaces one of the rotating slots and is priced
@@ -1453,7 +1468,7 @@ parallel registered item.
   The user never chooses a culture-local random/smart stat, and a sword and
   hammer do not select different signatures merely because their visual
   subtype differs.
-- Direct player production requires the base family's owning Blacksmith,
+- Direct player production requires the base family's owning Weaponsmith, Armorsmith,
   Leatherworker, Tailor or other explicitly assigned profession at the
   matching tier, and the crafter may apply only their own culture's finish.
   Finished stacks are tradeable and function for any wearer without race or
@@ -2206,6 +2221,13 @@ one-affix item an Apprentice made, up to four. This is the second reason
 mastery matters (the first is the exclusive recipes, §2.1) and it is what
 makes a Master crafter worth seeking out on a server.
 
+Affixes are added one at a time at the owning profession station. The
+transaction consumes the refined concrete item, one same-tier professional
+material and the authored tier reagent; it appends one random legal stat, never
+duplicates an existing stat, preserves all prior values and stack metadata, and
+awards one craft credit only after successful settlement. Character levels
+1/16/31/46 permit 1/2/3/4 filled slots respectively.
+
 ### 6b.6 Ordinary-equipment quality follows the slot count
 
 No new rule — §6.1's budgets, read through the affix model:
@@ -2248,9 +2270,9 @@ that slows attackers, for instance.
 
 ## 7. Upgrade mechanics (resolves the old §2 — no failure chance)
 
-Two kit types per profession, applied in the grid (item + kit); effects on the
+Two kit types per profession, applied to one concrete item while preserving its metadata; effects on the
 item's OWN family only (whetstones/armor
-polish = Blacksmith, armor kits = Leatherworker, embroidery = Tailor,
+polish = Armorsmith, whetstones = Weaponsmith, armor kits = Leatherworker, embroidery = Tailor,
 wood oils = Woodcarver, gem settings = Goldsmith, imbuing oils =
 apothecary gear):
 
@@ -2272,7 +2294,7 @@ apothecary gear):
   never becomes a top item", enforced structurally, not by caps.
 - **Kit mastery rule** (decided 2026-08-13): imbue kits unlock at
   Journeyman and temper kits at Expert; a profession's second kit
-  family — the Blacksmith's armor polish — sits one tier later (imbue
+  family — the Armorsmith's armor polish — sits one tier later (imbue
   Expert, temper Master). §2.1's signature table is the authoritative
   cut.
 
@@ -2480,9 +2502,9 @@ diamond tool tiers are deleted (§3.0.3). Rejected alternative: letting
 `default`'s ladder stand next to a bracket ladder — two items per
 concept, and no player would ever be able to tell which one to make.
 
-**D3 — Six professions, cut by material.** Blacksmith, Leatherworker,
-Tailor, Woodcarver, Goldsmith, Alchemist. Herbalism merges into the
-Alchemist, Gem Hunter into the Goldsmith; all six are symmetric with four
+**D3 — Seven professions, cut by material.** Weaponsmith, Armorsmith,
+Leatherworker, Tailor, Woodcarver, Goldsmith and Alchemist. Herbalism merges
+into the Alchemist, Gem Hunter into the Goldsmith; all seven are symmetric with four
 mastery tiers. Cutting by class was rejected: it breaks the moment
 Phase 2 adds four classes, and a material profession serving several
 classes is what keeps the supply chain social (professions.md §2/§4).
@@ -2492,7 +2514,7 @@ classes is what keeps the supply chain social (professions.md §2/§4).
 retired. A learned profession exposes its complete catalog; profession level
 controls crafting permission while locked rows remain visible. Quest and boss
 recipes land in the same book, and universal base recipes remain in the
-General book (§2.2/§2.3).
+Basics book (§2.2/§2.3).
 
 **D5 — Refinement is the profession's product.** +15 % base damage or
 armor and +100 % durability; only refined items can be enchanted; affixes
