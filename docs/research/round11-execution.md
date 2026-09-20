@@ -318,3 +318,29 @@ including respect for this reason in its draw-cache consumer.
 Remaining: SCOUT runtime+traders, independent reviews, one bounded native engine
 witness, final targeted static/integration gates, status reconciliation, main
 merge/sync/push and next-playtest delivery. Root has not declared delivery yet.
+
+
+### Scout traders accepted / frozen Scout source review
+
+TRADERS `9730af25` independently CLEAN and integrated: native Sol author,
+root final comment correction, different native Sol reviewer; initial2M1L
+(rotation authority and inactive quality fixture branch), then one additional
+stale-comment Low, two correction rounds, elapsedunknown. The final shelf has
+13 fixed +4 rotating items, exactly one of five extra families withheld, as
+already required by items_crafting §3.8. Bowyer and Tanner are filtered views;
+actual trade render, buy recomputation and stale-hour rejection are tested.
+Quality roller is a clearly disclosed synthetic seam in the focused fixture.
+Reports scout-traders-initial.md and scout-traders-final.md.
+
+SCOUT source checkpoint `08f6f8b2` is frozen after clean REPAIR20ab7b50 merge;
+no known production gap reported. Native Sol author finishes focused
+`tools/r11_scout` gameplay KAT/static/evidence. Fresh native Astra
+`r11_scout_review` independently audits the frozen combat/projectile/talent/
+ammunition integration while tests finish; final acceptance waits final bytes
+and evidence. This is an authorized hard-task model choice, no external CLI.
+
+Root additionally found stale skill_trees §3.4 Scout button arithmetic: the
+approved four class skills plus universal Strike mean5base/7maximum, not the
+old Strike+3/6 table row. The approved plan/scout §2 govern implementation;
+root will reconcile that status/table with final delivery docs. No new design
+choice is required. Main/runtime still R10ac232ec2; no Round11 sync/push yet.
