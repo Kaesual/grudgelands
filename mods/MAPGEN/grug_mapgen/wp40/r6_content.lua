@@ -585,7 +585,7 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 	local fertile_palettes = {
 		grug_meadows = {"default:dirt_with_grass", "default:dirt", "grug_nodes:dirt_with_forest_litter"},
 		grug_pine_hills = {"default:dirt_with_coniferous_litter", "grug_nodes:dirt_with_forest_litter", "default:dirt_with_grass"},
-		grug_elf_forest = {"grug_nodes:dirt_with_silver_litter", "grug_nodes:dirt_with_forest_litter", "default:dirt_with_grass"},
+		grug_elf_forest = {"grug_nodes:dirt_with_silver_litter", "grug_nodes:dirt_with_moss", "default:dirt_with_grass"},
 		grug_deep_forest = {"grug_nodes:dirt_with_forest_litter", "default:dirt_with_coniferous_litter", "default:dirt_with_grass"},
 		grug_jungle_edge = {"default:dirt_with_rainforest_litter", "grug_nodes:dirt_with_canopy_litter", "grug_nodes:mud"},
 		grug_deep_jungle = {"grug_nodes:dirt_with_canopy_litter", "default:dirt_with_rainforest_litter", "grug_nodes:mud"},
@@ -593,7 +593,7 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 		grug_savanna = {"default:dry_dirt_with_dry_grass", "default:dry_dirt", "grug_nodes:mesa_clay"},
 		grug_badlands = {"grug_nodes:mesa_clay", "default:dry_dirt", "grug_nodes:mesa_clay"},
 		grug_badlands_east = {"grug_nodes:mesa_clay", "default:dry_dirt", "grug_nodes:mesa_clay"},
-		grug_blight = {"grug_nodes:blight_dirt", "grug_nodes:dirt_with_bone_litter", "grug_nodes:blight_dirt"},
+		grug_blight = {"grug_nodes:blight_dirt", "grug_nodes:ash_ground", "grug_nodes:blight_dirt"},
 		grug_bone_forest = {"grug_nodes:dirt_with_bone_litter", "grug_nodes:blight_dirt", "grug_nodes:dirt_with_bone_litter"},
 		grug_crags = {"default:gravel", "default:gravel", "default:gravel"},
 		grug_crags_snowy = {"default:snowblock", "default:snowblock", "default:snowblock"},
@@ -628,7 +628,7 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 			phase = (phase * 131 + string.byte(full_seed, index)) % 65521
 		end
 		local variants, coast_variants = {}, {}
-		local wet_variants, beach_shores = {}, {}
+		local wet_variants, beach_shores, rocky_shores = {}, {}, {}
 		local function ordinary_filler(id, base)
 			if id == "grug_beach" then return "default:sand" end
 			if id == "grug_savanna" then return "default:dry_dirt" end
@@ -692,6 +692,14 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 				terraced_cliff = coast_row(base, lip, "default:stone", 3),
 			}
 		end
+		for id, base in pairs(surface_by_id) do
+			rocky_shores[id] = {}
+			for index, name in ipairs({"default:gravel", "default:stone"}) do
+				local row = coast_row(base, name, name, 3)
+				row.shore, row.shore_ref = name, row.top_ref
+				rocky_shores[id][index] = row
+			end
+		end
 		for shore_index, shore_name in ipairs({"default:sand", "default:sand",
 				"default:sand", "default:gravel"}) do
 			local shore = deep_copy(surface_by_id.grug_beach)
@@ -729,6 +737,26 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 			if type(planner_source.coast_profile_at) == "function" then
 				profile, distance, width, freshwater =
 					planner_source.coast_profile_at(x, z)
+			end
+			local relief = planner_source.primary_relief_at and
+				planner_source.primary_relief_at(x, z)
+			local dry = water_y == nil or water_y <= terrain_y
+			if dry and (relief == "mountain" or relief == "highland" or
+					relief == "plateau") then
+				local material_profile, material_distance, material_width, material_fresh =
+					profile, distance, width, freshwater
+				if not material_profile and planner_source.coast_material_at then
+					material_profile, material_distance, material_width, material_fresh =
+						planner_source.coast_material_at(x, z)
+				end
+				local rim = coast_profile_applies(material_profile, material_distance,
+					material_width, material_fresh)
+				if (relief == "mountain" and (id == "grug_beach" or rim)) or
+						(material_fresh and rim) then
+					local detail = noise(x, z, 8, 29712151)
+					local patch = math.floor((3 * noise(x, z, 32, 19349663) + detail) / 4)
+					return rocky_shores[id][patch < 512 and 1 or 2]
+				end
 			end
 			if coast_profile_applies(profile, distance, width, freshwater) then
 				return coast_variants[id][profile]

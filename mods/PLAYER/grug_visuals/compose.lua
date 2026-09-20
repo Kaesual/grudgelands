@@ -73,21 +73,16 @@ for id, race in pairs(RACES) do
 end
 
 --
--- Armor overlays. TWO art lines (the two grug_gear registers) x four slots,
--- tinted per bracket with grug_gear's own six colours -- never a copy of that
--- table, so a palette edit there moves the armor on the model with it.
---
--- `leather` borrows the cloth cut: grug_gear registers no leather item today
--- (its only wearer, the Rogue, is Phase 2), and one fabric silhouette is a
--- better placeholder than a missing overlay. The map is explicit so the day
--- leather art exists, exactly this line changes.
+-- Armor overlays. Three independent art lines x four slots x six material
+-- tiers. Tier identity is baked into the media so source silhouettes, trim and
+-- material treatment stay aligned with each inventory icon.
 --
 grug_visuals.SLOTS = {"head", "chest", "legs", "feet"}
-grug_visuals.LINES = {"cloth", "metal"}
+grug_visuals.LINES = {"cloth", "leather", "metal"}
 
 local SLOTS = grug_visuals.SLOTS
 local ARMOR_RANK_LINE = {"cloth", "leather", "metal"}
-local LINE_ART = {cloth = "cloth", leather = "cloth", metal = "metal"}
+local LINE_ART = {cloth = "cloth", leather = "leather", metal = "metal"}
 
 grug_visuals.ARMOR_RANK_LINE = ARMOR_RANK_LINE
 grug_visuals.LINE_ART = LINE_ART
@@ -96,7 +91,11 @@ local OVERLAY = {}
 for _, line in ipairs(grug_visuals.LINES) do
 	OVERLAY[line] = {}
 	for _, slot in ipairs(SLOTS) do
-		OVERLAY[line][slot] = "grug_visuals_" .. line .. "_" .. slot .. ".png"
+		OVERLAY[line][slot] = {}
+		for bracket, materials in ipairs(grug_gear.MATERIALS) do
+			OVERLAY[line][slot][bracket] = "grug_visuals_" .. line .. "_" ..
+				slot .. "_" .. materials[line].key .. ".png"
+		end
 	end
 end
 grug_visuals.OVERLAY = OVERLAY
@@ -292,11 +291,8 @@ function grug_visuals.compose(spec)
 	for index, slot in ipairs(SLOTS) do
 		local piece = pieces[index]
 		if piece then
-			-- Parenthesised, because `^[multiply` applies to EVERYTHING to its
-			-- left otherwise: `a^b^[multiply:c` tints the skin too
-			-- (src/client/imagesource.cpp, the top-level `^` split).
-			texture = texture .. "^(" .. OVERLAY[LINE_ART[piece.line]][slot] ..
-				"^[multiply:" .. grug_gear.BRACKET_TINT[piece.bracket] .. ")"
+			texture = texture .. "^" ..
+				OVERLAY[LINE_ART[piece.line]][slot][piece.bracket]
 		end
 	end
 

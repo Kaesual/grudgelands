@@ -442,7 +442,7 @@ do
 			local spec = {id = run.id, axis = run.axis, at = run.at,
 				from = run.from, to = run.to, width = avenue_module.WIDTH,
 				lamp_spacing = avenue_module.LAMP_SPACING,
-				lamp_phase = run.from, reach = avenue_module.REACH}
+				lamp_phase = run.lamp_phase or run.from, reach = avenue_module.REACH}
 			local piece = capital.overlay_run(avenue_module, road_palette,
 				spec, surface)
 			local top, low = {}, {}

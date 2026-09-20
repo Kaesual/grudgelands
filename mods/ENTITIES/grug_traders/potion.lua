@@ -114,6 +114,10 @@ core.register_craftitem("grug_traders:potion_healing_weak", {
 		end
 		local amount = math.max(1,
 			math.floor(max_hp * grug_traders.POTION_HEAL_FRACTION + 0.5))
+		if grug_core.trinket_instant_potion then
+			amount = math.max(1, math.floor(
+				grug_core.trinket_instant_potion(user, amount) + 0.5))
+		end
 		-- The central heal path: clamps to max HP and reports heal threat.
 		-- no_crit because its first argument is the healer, so without the flag
 		-- the DRINKER's crit chance would turn §3.6's flat 15% into 22.5%.

@@ -42,10 +42,14 @@ decisions are the coordinator's and are open to the user's correction.
 
 ### 2.1 A capital is one core blueprint plus terrain-relative district plots and avenues
 
-- **Core blueprint** (96 × 96, bounds ±47, y -2..40): king's hall on a
+- **Core blueprint** (bounds ±49, y -2..40; radius-48 precinct ring): king's hall on a
   podium, throne approach, waypoint plaza reserved by WP17's pending row,
-  principal service court, four gate openings at the core edge. Anchor-
-  relative like a start; the core is flat by construction.
+  civic court and four gate openings at the core edge. The capital terrain
+  fitting remains unchanged. Ring and gatehouses moved two nodes outward in
+  Round 10; the seven-deep gates require south/west origins -49 and north/east
+  origins 43, with emitted bounds ±49. The wider projection prevents clipping;
+  outer route gate pins remain unchanged. Profession services occupy the
+  terrain-relative outer plots (`professions.md` §1), not the civic court.
 - **District plots** outside the core cannot be anchor-relative: the
   terraces put them on different heights. Each plot (≤ 32 × 32, bounds
   ±15, y -6..24) carries a **reference column**; at settle time the

@@ -100,16 +100,22 @@ return function(repo, production_repo, verify_compressed, check_light_validation
 	}
 
 	local fixture_terrain_y = 4
+	local fixture_functional_kind, fixture_foundation, cave_queries = nil, false, 0
 	local planner_source = {column_values_at = function(_, z)
 		return "land", 1, "fixture", z > 0 and surface2.id or surface.id, "none",
 			fixture_terrain_y,
-			nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, false
+			nil, nil, nil, fixture_functional_kind, nil, nil, nil, nil, nil, nil, nil, nil, nil, fixture_foundation
 	end, surface_cave_run_at = function() return nil end,
 		surface_cave_candidate_at_cell = function() return nil end,
 		surface_cave_cell_at = function() return 0, 0 end,
 		coast_profile_at = function() return nil end,
-		landmark_excluded_at = function() return false end}
-	local horizontal = {static_exclusion_values_at = function() return nil end,
+		coast_material_at = function() return nil end,
+		primary_relief_at = function() return nil end,
+		landmark_excluded_at = function() return fixture_functional_kind == "land_grade" end}
+	local horizontal = {static_exclusion_values_at = function(_, _, purpose)
+		if purpose == "cave" then cave_queries = cave_queries + 1 end
+		return nil
+	end,
 		housing_mask_id_at = function() return nil end}
 	local anchor = {id = "gravewood_anchor", position = {x = 10000, z = 10000}}
 	local source = {claim_exclusions = {}, routes = {}, hard_protection = {},
@@ -370,6 +376,7 @@ return function(repo, production_repo, verify_compressed, check_light_validation
 	-- The opening transaction uses the real writer with a 3x3 native-air band.
 	-- R5 first places the exact surface host at T=4; the R9 opening must replace
 	-- that predecessor intent with air rather than merely skipping P7 and skin.
+	fixture_functional_kind = "land_grade"
 	local opening_columns = {}
 	local opening_column_start, opening_run_values = {}, {}
 	local snow_ref = check(content.content_ref("default:snow"),
@@ -385,7 +392,7 @@ return function(repo, production_repo, verify_compressed, check_light_validation
 		local fill_base, surface_base, sky_base = (first - 1) * 9, first * 9,
 			(first + 1) * 9
 		opening_run_values[fill_base + 1], opening_run_values[fill_base + 2] = 0, 3
-		opening_run_values[fill_base + 3], opening_run_values[fill_base + 4] = 5, 27
+		opening_run_values[fill_base + 3], opening_run_values[fill_base + 4] = 11, 21
 		opening_run_values[surface_base + 1], opening_run_values[surface_base + 2] = 4, 4
 		opening_run_values[surface_base + 3], opening_run_values[surface_base + 4] = 7, 28
 		opening_run_values[sky_base + 1], opening_run_values[sky_base + 2] = 5, 31
@@ -424,6 +431,18 @@ return function(repo, production_repo, verify_compressed, check_light_validation
 	end
 	check(opening_snapshot.data[opening_index + 112] == 0,
 		"surface opening retained dust at T+1")
+
+	check(cave_queries > 0, "writer did not use the cave-purpose predicate")
+	-- A true authored foundation remains solid even with the same native air.
+	fixture_foundation = true
+	local protected_vm, _, protected_observer = vm_module.new({minp = minp, maxp = maxp,
+		data = filled(volume, 0), param2 = filled(volume, 0), light = filled(volume, 0),
+		heightmap = filled(6400, -31007), content_contract = contract, water_level = 1,
+		ignore_cid = contract.ignore_cid, verify_inactive_tail = false})
+	settlement:apply(protected_vm, minp, maxp, opening_plan, 1, "fixture")
+	check(protected_observer.snapshot().data[opening_index] == cids[1],
+		"surface opening removed an authored foundation")
+	fixture_foundation = false
 
 	-- Native sky air is not an opening when the terrain-fill plan replaces it.
 	local filled_plan = {}
@@ -485,7 +504,7 @@ return function(repo, production_repo, verify_compressed, check_light_validation
 		"templates\t2\tclass=1", "rotations\t8\tmandatory_wood=pass",
 		"opening_surface\tair_at_t=pass\tair_t_minus_1_to_4=pass\t" ..
 			"dust_at_t_plus_1=absent\tplanned_fill_surface=intact\t" ..
-			"dust_only_slice=air",
+			"dust_only_slice=air\tgeneric_land_grade=open\tanchor_fill_21=open\tnatural_landmark=open\tfoundation=intact",
 		"writer\t" .. result .. "\toptional_leaves=" .. leaf_written ..
 			"\tnonoverwrite=pass"}
 	for _, channel in ipairs({"data", "param2", "light", "trace"}) do

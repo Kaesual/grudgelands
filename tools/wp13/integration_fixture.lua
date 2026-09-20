@@ -41,6 +41,38 @@ return function(repo)
 		local source = dofile(wp40 .. "/" .. profile.blueprint_file)()
 		if type(source) == "function" then source = source() end
 		local entry = module.prepare(profile, source, sha)
+		-- The accepted inner endpoint moved to 50; outer lamps and piers keep
+		-- their established phase. The separate northern lake entrance stays 22.
+		if source.overlay then
+			for _, run in ipairs(source.overlay.runs) do
+				if run.id == "avenue_east" or run.id == "avenue_north" then
+					if profile.key == "lethariel" and run.id == "avenue_north" then
+						assert(run.from == 22 and run.lamp_phase == nil)
+					else
+						assert(run.from == 50 and run.lamp_phase == 48,
+							profile.key .. ": inner endpoint changed outer cadence")
+					end
+				end
+			end
+		end
+		if profile.key == "highcourt" then
+			local function overlay_digest(value)
+				for _, blueprint in ipairs(value.blueprints) do
+					if blueprint.runs then return blueprint.identity.sha256 end
+				end
+				error("missing prepared overlay")
+			end
+			local run = source.overlay.runs[1]
+			local saved = run.lamp_phase
+			run.lamp_phase = run.from + 1
+			assert(overlay_digest(module.prepare(profile, source, sha)) ~= overlay_digest(entry),
+				"lamp phase omitted from overlay identity")
+			run.lamp_phase = false
+			local ok, message = pcall(module.prepare, profile, source, sha)
+			assert(not ok and tostring(message):find("run lamp phase", 1, true),
+				"invalid lamp phase was silently accepted")
+			run.lamp_phase = saved
+		end
 		prepared[index] = entry
 		for _, name in ipairs(entry.palette) do
 			if not seen[name] then
@@ -143,7 +175,7 @@ return function(repo)
 					local piece = blueprint.run({id = run.id, axis = run.axis,
 						at = run.at, from = run.from, to = run.to,
 						width = blueprint.width, lamp_spacing = blueprint.lamp_spacing,
-						lamp_phase = run.from, reach = blueprint.reach,
+						lamp_phase = run.lamp_phase or run.from, reach = blueprint.reach,
 						junctions = run.junctions,
 						plain_verge = run.plain_verge,
 						clear_verge = run.clear_verge},
@@ -298,6 +330,7 @@ return function(repo)
 			local tail = {}
 			function tail.plan_slice() stub_calls.plan = stub_calls.plan + 1 end
 			function tail.bind_plan() stub_calls.plan = stub_calls.plan + 1 end
+			tail.bind = tail.bind_plan
 			function tail.settle()
 				stub_calls.settle = stub_calls.settle + 1
 				return {schema = schema}
@@ -308,7 +341,7 @@ return function(repo)
 		end
 		return config
 	end
-	local composed = successor_factory(stub("p9g"), stub("anchors"), configs, keys)
+	local composed = successor_factory(stub("p9g"), stub("anchors"), configs, keys, stub("world"))
 	-- The roster order is the manifest's order, so a successor built from a
 	-- reordered or short roster must be refused outright.
 	local reordered = {configs[2], configs[1]}

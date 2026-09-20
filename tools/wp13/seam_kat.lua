@@ -62,7 +62,7 @@ return function(repo)
 		start_bounds.min.z == -63 and start_bounds.max.z == 63,
 		"the start bounds are no longer the literal the seam replaced")
 	local core_bounds = settlement.BOUNDS.capital_core
-	assert(core_bounds.min.x == -47 and core_bounds.max.x == 47 and
+	assert(core_bounds.min.x == -49 and core_bounds.max.x == 49 and
 		core_bounds.min.y == -2 and core_bounds.max.y == 40,
 		"the capital core bounds differ from contract section 2.1")
 	local plot_bounds = settlement.BOUNDS.capital_plot
@@ -782,16 +782,16 @@ return function(repo)
 	end
 	local whole = overlay.run({id = run.id, axis = run.axis, at = run.at,
 		from = run.from, to = run.to, width = overlay.width,
-		lamp_spacing = overlay.lamp_spacing, lamp_phase = run.from,
+		lamp_spacing = overlay.lamp_spacing, lamp_phase = run.lamp_phase or run.from,
 		reach = overlay.reach}, surface)
 	local cut = math.floor((run.from + run.to) / 2)
 	local low = overlay.run({id = run.id, axis = run.axis, at = run.at,
 		from = run.from, to = cut, width = overlay.width,
-		lamp_spacing = overlay.lamp_spacing, lamp_phase = run.from,
+		lamp_spacing = overlay.lamp_spacing, lamp_phase = run.lamp_phase or run.from,
 		reach = overlay.reach}, surface)
 	local high = overlay.run({id = run.id, axis = run.axis, at = run.at,
 		from = cut + 1, to = run.to, width = overlay.width,
-		lamp_spacing = overlay.lamp_spacing, lamp_phase = run.from,
+		lamp_spacing = overlay.lamp_spacing, lamp_phase = run.lamp_phase or run.from,
 		reach = overlay.reach}, surface)
 	assert(#low.cells + #high.cells == #whole.cells,
 		"the two pieces of a run are not the whole run")

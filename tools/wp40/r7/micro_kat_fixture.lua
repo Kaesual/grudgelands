@@ -338,7 +338,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		new_capture = runtime_constructor, new_evidence = runtime_constructor}
 	local runtime_content_set = {
 		production = {schema = "grug_wp40_r7_production_r6_content_v1"},
-		p9g = {schema = "grug_wp40_r7_p9g_content_v1"},
+		p9g = {schema = "grug_wp40_r7_p9g_content_v2"},
 		production_digest = string.rep("1", 64),
 		production_semantic_digest = string.rep("2", 64),
 		p9g_digest = string.rep("3", 64), p9g_semantic_digest = string.rep("4", 64),
@@ -354,7 +354,11 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		accepted_r6_rows = function() return {} end,
 	}
 	local runtime_manifest_module = {}
-	function runtime_manifest_module.new()
+	local runtime_world_catalog = {schema = "micro_world_rules"}
+	local runtime_world_config = {schema = "micro_world_config"}
+	function runtime_manifest_module.new(inputs)
+		check(inputs.world_content_rules == runtime_world_catalog,
+			"runtime world rules manifest seam differs")
 		runtime_calls.manifest_new = runtime_calls.manifest_new + 1
 		return {schema = "micro_manifest", sha256 = string.rep("5", 64)}
 	end
@@ -435,8 +439,19 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		if path:match("/r7_settlement%.lua$") then
 			return runtime_settlement_module
 		end
+		if path:match("/world_content_catalog%.lua$") then return runtime_world_catalog end
+		if path:match("/world_content%.lua$") then
+			return function(rules, content)
+				check(rules == runtime_world_catalog and content == runtime_content_set.p9g,
+					"runtime world content factory seam differs")
+				return runtime_world_config
+			end
+		end
 		if path:match("/r7_successor%.lua$") then
-			return function() return {schema = "grug_wp40_r7_successor_config_v1"} end
+			return function(_, _, _, _, world)
+				check(world == runtime_world_config, "runtime world successor seam differs")
+				return {schema = "grug_wp40_r7_successor_config_v1"}
+			end
 		end
 		if path:match("/r7_zone_overlay%.lua$") then
 			return function(session) return session end
@@ -1071,8 +1086,10 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	for name, mask in accepted_block:gmatch('{"([^"]+)", (%d+)}') do
 		accepted_rows[#accepted_rows + 1] = {name, assert(tonumber(mask))}
 	end
-	check(#accepted_rows == 82, "accepted-content population differs")
+	check(#accepted_rows == 84, "accepted-content population differs")
 	local cultural_rows, p9g_rows = catalog.cultural_sources(), catalog.p9g_sources()
+	local world_catalog = dofile(wp40 .. "/world_content_catalog.lua")
+	check(#p9g_rows == 12 and #world_catalog.names == 22, "world suffix population differs")
 	local semantic_names = {"air", "ignore", "default:water_source",
 		"default:water_flowing", "default:river_water_source",
 		"default:river_water_flowing"}
@@ -1085,6 +1102,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	for index = 1, #p9g_rows do
 		semantic_names[#semantic_names + 1] = p9g_rows[index].source_node
 	end
+	for _, name in ipairs(world_catalog.names) do semantic_names[#semantic_names + 1] = name end
 	semantic_names[#semantic_names + 1] = "grug_nodes:camp_fire"
 	semantic_names[#semantic_names + 1] = "grug_nodes:guard_banner"
 	local semantic_seen = {}
@@ -1175,7 +1193,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	local projection = dofile(repo ..
 		"/mods/MAPGEN/grug_mapgen/wp43_handoff.lua").project(
 		material_environment.grug_materials)
-	check(#projection.tiers == 6 and #projection.natural_ground_nodes == 23 and
+	check(#projection.tiers == 6 and #projection.natural_ground_nodes == 25 and
 		#projection.resources == 15 and #projection.processed_materials == 12 and
 		#projection.gem_grades == 2 and #projection.cultural_materials == 6 and
 		#projection.signature_woods == 6 and #projection.race_regions == 6 and
@@ -1201,6 +1219,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	for index = 1, #accepted_rows do register(accepted_rows[index][1]) end
 	for index = 1, #cultural_rows do register(cultural_rows[index].source_node) end
 	for index = 1, #p9g_rows do register(p9g_rows[index].source_node) end
+	for _, name in ipairs(world_catalog.names) do register(name) end
 	register("grug_nodes:camp_fire")
 	register("grug_nodes:guard_banner")
 	for index = 1, #settlement_palette do
@@ -1218,10 +1237,10 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	local hearthpine_config = settlement_module.config(hearthpine_prepared,
 		content_set.settlement, raw_sha256)
 	check(content_set.production_semantic_digest ==
-		"9b7a978d178352521ae61fb87b897c5f79e12838b0829caa229ad90832ddedb8",
+		"e7f1204a434fb773b78562c4655cb949e7f5637b6c165b7d3228056d6ed56296",
 		"production semantic identity differs: " .. content_set.production_semantic_digest)
 	check(content_set.p9g_semantic_digest ==
-		"450c35e94af32721768d3771454db89dbdb43099660b2118c178a3ca6b438d49",
+		"4982608737ad1a25f5af057bb18db19af28cfc65482225bda954fcdc1868da03",
 		"P9G semantic identity differs")
 	row("content/production_sha256", content_set.production_digest)
 	row("content/p9g_sha256", content_set.p9g_digest)
@@ -1242,7 +1261,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	local manifest_module = dofile(wp40 .. "/r7_manifest.lua")(
 		canonical, raw_sha256, settlement_order)
 	check(manifest_module.graph_digest_for_evidence(projection) ==
-		"c8088a4b6802c0fc1a74d8826e3df0bb49b64f9ab4c6e93bcbd66aa2a16b9895",
+		"3fe1fef43404bdddb1d5cb84669d73f393460e74542d2f95ad6494f91569dc25",
 		"complete production WP43 projection digest differs")
 	local r6_manifest = dofile(wp40 .. "/r7_r6_manifest.lua")()
 	local r5_manifest_module = dofile(wp40 .. "/mapgen_manifest.lua")
@@ -1251,16 +1270,18 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	local gathering_manifest = catalog.manifest()
 	local successor_windows = manifest_module.successor_windows_for_evidence(
 		#content_set.production.content_names, #content_set.settlement.content_names)
-	check(successor_windows.p9g_min == 89 and successor_windows.p9g_max == 100 and
-		successor_windows.anchor_min == 101 and successor_windows.anchor_max == 102 and
-		successor_windows.settlement_min == 103,
+	check(successor_windows.p9g_min == 91 and successor_windows.p9g_max == 124 and
+		successor_windows.anchor_min == 125 and successor_windows.anchor_max == 126 and
+		successor_windows.settlement_min == 127,
 		"real manifest successor windows differ")
 	local cultural_registrations = catalog.cultural_registrations()
 	local cultural_digests = {}
 	for index = 1, #cultural_registrations do
 		cultural_digests[index] = cultural_registrations[index].digest
 	end
-	local p9g_delta = {schema = "grug_wp40_r7_p9g_delta_v1", opcode = 35,
+	local world_rules_digest = manifest_module.graph_digest_for_evidence(world_catalog)
+	local p9g_delta = {schema = "grug_wp40_r7_p9g_delta_v2", opcode = 35,
+		world_rules_sha256 = world_rules_digest,
 		class = 10, policy = 11, successor_ref_min = successor_windows.p9g_min,
 		successor_ref_max = successor_windows.p9g_max,
 		order = "after_r6_p9_before_run_derivation",
@@ -1311,11 +1332,11 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		r6_catalog_sha256 =
 			"71686cbaff9a2b6acb0415a3eda0ebc2d056412db1879c1bf4fcb162e14f4f74",
 		r6_accepted_content_sha256 =
-			"2486aac15521fbacdfa733f832aac615b799aa8d13c818525d1ce75221fad7d6",
+			manifest_module.graph_digest_for_evidence(content_set.accepted_r6_rows()),
 		r6_template_inputs_sha256 =
 			"3734b3e2e3203c61a2f08fdc7ee5abd7a8d3f7d00ae585c206aabc7c4ca7d42d",
 		wp43_projection_sha256 =
-			"c8088a4b6802c0fc1a74d8826e3df0bb49b64f9ab4c6e93bcbd66aa2a16b9895",
+			"3fe1fef43404bdddb1d5cb84669d73f393460e74542d2f95ad6494f91569dc25",
 		noise_schema = native_identities.noise_schema,
 		noise_sha256 = native_identities.noise_digest,
 		native_schema = native_identities.native_schema,
@@ -1331,6 +1352,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		p9g_semantic_sha256 = content_set.p9g_semantic_digest,
 		p9g_delta_schema = p9g_delta.schema,
 		p9g_delta_sha256 = p9g_delta_digest,
+		p9g_world_rules_sha256 = world_rules_digest,
 		anchor_content_schema = content_set.anchors.schema,
 		anchor_content_sha256 = content_set.anchor_digest,
 		anchor_semantic_sha256 = content_set.anchor_semantic_digest,
@@ -1359,7 +1381,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		p9g_opcode = 35, p9g_class = 10, p9g_policy = 11,
 		p9g_order = p9g_delta.order, p9g_overwrite = false,
 		source_projection_sha256 =
-			"8735e5f7af1c63316b13b71bfed3e2db02d83bd455e970c7ac5c0ed539536482",
+			"461d67ef63c4364764a615871fd1771a5a6ef636796f82511b6de563a7bb056b",
 		production_enabled = true,
 	}
 	local manifest_field_order = {
@@ -1373,7 +1395,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		"production_r6_content_sha256", "production_r6_semantic_sha256",
 		"cultural_registration_sha256", "p9g_content_schema",
 		"p9g_content_sha256", "p9g_semantic_sha256", "p9g_delta_schema",
-		"p9g_delta_sha256", "anchor_content_schema", "anchor_content_sha256",
+		"p9g_delta_sha256", "p9g_world_rules_sha256", "anchor_content_schema", "anchor_content_sha256",
 		"anchor_semantic_sha256", "anchor_roster_schema", "anchor_roster_sha256",
 		"anchor_delta_schema", "anchor_delta_sha256", "anchor_opcode",
 		"anchor_class", "anchor_policy", "anchor_order", "anchor_overwrite",
@@ -1620,9 +1642,9 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		check(accepted_by_name[name] ~= nil,
 			"Stage-B normalization introduced a foreign name")
 	end
-	check(#accepted_content_rows == 82 and normalized_population == 82 and
+	check(#accepted_content_rows == 84 and normalized_population == 84 and
 		substitution_count == 6,
-		"Stage-B 88-to-82 name projection differs")
+		"Stage-B 90-to-84 name projection differs")
 	local normalized, accepted = {}, {}
 	for index = 1, #cultural_registrations do
 		local registration = cultural_registrations[index]
@@ -1640,7 +1662,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		seed_identity = "micro-seed-0",
 		production_r6_content_sha256 = content_set.production_digest,
 		accepted_r6_projection_sha256 = accepted_digest,
-		name_map_population = 88, cultural_name_map_population = 6,
+		name_map_population = 90, cultural_name_map_population = 6,
 		cultural_substitution_count = substitution_count,
 		inherited_cultural_access_count = 12,
 		normalized_artifact_sha256 = normalized_digest,
@@ -1893,7 +1915,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	end}
 	local successor = dofile(wp40 .. "/r7_successor.lua")(
 		successor_config, empty_anchor_config, {empty_hearthpine_config},
-		{"hearthpine"}).new(
+		{"hearthpine"}, dofile(wp40 .. "/world_content.lua")(world_catalog, content_set.p9g)).new(
 			successor_dependencies)
 
 	local settlement_hash = dofile(wp40 .. "/r6_hash.lua")(raw_sha256)
@@ -1984,6 +2006,8 @@ return function(repo, changed_roster_relative, expected_changed_count)
 				surface_cave_cell_at = function() return 0, 0 end,
 				surface_cave_constants = function() return 80, -30912, 24, 2, 24 end,
 				coast_profile_at = function() return nil end,
+				coast_material_at = function() return nil end,
+				primary_relief_at = function() return nil end,
 				landmark_excluded_at = function() return false end,
 				metrics = function()
 					return {runtime_column_cache_limit = 65536,
@@ -2197,6 +2221,8 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	function planner_source.surface_cave_cell_at() return 0, 0 end
 	function planner_source.surface_cave_constants() return 80, -30912, 24, 2, 24 end
 	function planner_source.coast_profile_at() return nil end
+	function planner_source.coast_material_at() return nil end
+	function planner_source.primary_relief_at() return nil end
 	function planner_source.landmark_excluded_at() return false end
 	local source_anchor = {id = "micro_apex", position = {x = 10000, z = 10000}}
 	local source = {claim_exclusions = {{id = "micro_resource_exclusion",
@@ -2451,6 +2477,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	-- registration modules. Reuse those exact surfaces here so the R7 source
 	-- audit observes their real chunks, including chunks loaded with loadfile.
 	local saved_loadfile = loadfile
+	local tracked_gear
 	local function tracking_loadfile(path)
 		local chunk, message = saved_loadfile(path)
 		if not chunk then return nil, message end
@@ -2459,6 +2486,9 @@ return function(repo, changed_roster_relative, expected_changed_count)
 			setfenv(chunk, getfenv(wrapper))
 			local function mark_return(...)
 				mark_executed(path)
+				if path == repo .. "/mods/ITEMS/grug_gear/init.lua" then
+					tracked_gear = getfenv(chunk).grug_gear
+				end
 				return ...
 			end
 			return mark_return(chunk(...))
@@ -2534,7 +2564,9 @@ return function(repo, changed_roster_relative, expected_changed_count)
 			"register_on_respawnplayer", "register_on_mods_loaded"}) do
 		visual_core[name] = function() end
 	end
-	local visual_environment = setmetatable({core = visual_core,
+	check(tracked_gear and #tracked_gear.MATERIALS == 6,
+		"real gear registration was not captured for visual initialization")
+	local visual_environment = setmetatable({core = visual_core, grug_gear = tracked_gear,
 		grug_classes = {register_on_race_chosen = function() end,
 			register_on_class_chosen = function() end},
 		grug_core = {register_on_equipment_change = function() end}},

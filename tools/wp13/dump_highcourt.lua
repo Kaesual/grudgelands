@@ -197,7 +197,7 @@ elseif what == "capital" then
 	for _, spec in ipairs(highcourt.overlay_runs(quadrants.lane_runs())) do
 		for _, cell in ipairs(highcourt.overlay_run(avenue, road,
 				{id = spec.id, axis = spec.axis, at = spec.at,
-					from = spec.from, to = spec.to, lamp_phase = spec.from},
+					from = spec.from, to = spec.to, lamp_phase = spec.lamp_phase or spec.from},
 				flat).cells) do
 			emit(cell.x, cell.y, cell.z, cell.name, cell.param2)
 		end

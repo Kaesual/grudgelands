@@ -1,0 +1,24 @@
+capital	plot	service	socket	role	tag	node	entity	x	y	z
+kezamba	canopy_armoury	forge	canopy_armoury/canopy_armoury_armor	gear_display	armor	air	grug_mobs:capital_display	1667	38	1583
+kezamba	canopy_armoury	forge	canopy_armoury/canopy_armoury_armorsmith	trainer	armorsmith	air	grug_mobs:villager_troll	1666	37	1579
+kezamba	canopy_armoury	forge	canopy_armoury/canopy_armoury_station	public_station	forge	grug_jobs:forge	-	1664	37	1581
+kezamba	canopy_armoury	forge	canopy_armoury/canopy_armoury_weapon	gear_display	weapon	air	grug_mobs:capital_display	1661	38	1583
+kezamba	canopy_armoury	forge	canopy_armoury/canopy_armoury_weaponsmith	trainer	weaponsmith	air	grug_mobs:villager_troll	1662	37	1579
+kezamba	canopy_stable	riding	canopy_stable/canopy_stable_mount_1	mount_display	1	air	grug_mobs:capital_display	1691	37	1613
+kezamba	canopy_stable	riding	canopy_stable/canopy_stable_mount_2	mount_display	2	air	grug_mobs:capital_display	1701	37	1613
+kezamba	canopy_stable	riding	canopy_stable/canopy_stable_mount_3	mount_display	3	air	grug_mobs:capital_display	1691	37	1619
+kezamba	canopy_stable	riding	canopy_stable/canopy_stable_mount_4	mount_display	4	air	grug_mobs:capital_display	1701	37	1619
+kezamba	canopy_stable	riding	canopy_stable/canopy_stable_riding	riding_trainer		air	grug_mobs:villager_troll	1696	37	1610
+kezamba	shore_carvers	woodcarver	shore_carvers/shore_carvers_station	public_station	carving_bench	grug_jobs:carving_bench	-	1988	43	1389
+kezamba	shore_carvers	woodcarver	shore_carvers/shore_carvers_woodcarver	trainer	woodcarver	air	grug_mobs:villager_troll	1986	43	1387
+kezamba	shore_smokehouse	cooking	shore_smokehouse/shore_smokehouse_cooking	trainer	cooking	air	grug_mobs:villager_troll	1926	40	1343
+kezamba	shore_smokehouse	cooking	shore_smokehouse/shore_smokehouse_station	public_station	furnace	default:furnace	-	1928	40	1345
+kezamba	shore_store	leatherworker	shore_store/shore_store_leatherworker	trainer	leatherworker	air	grug_mobs:villager_troll	1890	34	1383
+kezamba	shore_store	leatherworker	shore_store/shore_store_station	public_station	tanning_rack	grug_jobs:tanning_rack	-	1892	34	1385
+kezamba	shore_tailor	tailor	shore_tailor/shore_tailor_station	public_station	tailor_bench	grug_jobs:tailor_bench	-	1932	40	1421
+kezamba	shore_tailor	tailor	shore_tailor/shore_tailor_tailor	trainer	tailor	air	grug_mobs:villager_troll	1930	40	1419
+kezamba	totem_scriptorium	goldsmith	totem_scriptorium/totem_scriptorium_goldsmith	trainer	goldsmith	air	grug_mobs:villager_troll	1830	40	1683
+kezamba	totem_scriptorium	goldsmith	totem_scriptorium/totem_scriptorium_jewel	gear_display	jewel	air	grug_mobs:capital_display	1835	41	1686
+kezamba	totem_scriptorium	goldsmith	totem_scriptorium/totem_scriptorium_station	public_station	jewellers_bench	grug_jobs:jewellers_bench	-	1832	40	1685
+kezamba	vine_herbalist	alchemist	vine_herbalist/vine_herbalist_alchemist	trainer	alchemist	air	grug_mobs:villager_troll	1638	43	1355
+kezamba	vine_herbalist	alchemist	vine_herbalist/vine_herbalist_station	public_station	brewing_stand	grug_brewing:brewing_stand	-	1640	43	1357

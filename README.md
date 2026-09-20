@@ -5,10 +5,10 @@ classes, XP, quests, professions, housing, an item economy and geographic PvP,
 built as a standalone Lua game rather than a mod pack.
 
 > **Status: in development.** The world, mobs, three classes, combat,
-> equipment, XP, the first money/vendor economy and the shared profession
-> framework are playable. The final named-zone map is implemented and awaiting
-> release/runtime gates; quests, five primary recipe catalogs, open-world housing
-> and geographic PvP are not built. See
+> equipment, XP, money/vendors, Cooking, Alchemy and the integrated seven-primary
+> profession/equipment work are playable in the private candidate.
+> The named-zone world is implemented and still has explicit release/runtime gates;
+> quests, open-world housing and geographic PvP are not built. See
 > [Current State](#current-state).
 
 ## The story
@@ -89,9 +89,9 @@ Kapok Cradle (troll, a plank village on stilts over a basin).
 [Character visuals](docs/design/character_visuals.md) give the six peoples
 recognisably different skins and a visual-only stature between 0.85 and 1.12 —
 the collision box and eye height never change, so a troll fits through a
-dwarf's door. Armor is visible: two lines, four slots, tinted with the same six
-bracket colours the vendor icons use, and a character holds the weapon it has
-equipped. Players and the humanoid NPCs on the same model — guards, bandits,
+dwarf's door. Visible armor has dedicated cloth, leather and metal art across
+four slots and six material tiers, with matching inventory and worn designs.
+A character holds the weapon it has equipped. Players and the humanoid NPCs on the same model — guards, bandits,
 vendors — go through one composition function.
 
 [Open-world housing](docs/design/housing.md) uses Claim Stones in exactly ten
@@ -134,26 +134,20 @@ creating parallel catalogs. The equipped weapon slot is the sole source of a
 skill's damage and appearance; the Character page also carries four armor
 slots, an offhand, two trinkets and four Tailor-made bags.
 
-[Six main professions](docs/design/professions.md) are cut by material rather
-than class: Blacksmith, Leatherworker, Tailor, Woodcarver, Goldsmith and
-Alchemist. Characters freely choose two; Cooking is an unlimited secondary,
-while First Aid stays universal outside the profession framework. Learned
-professions expose complete UI recipe books and advance from T1 to T6 through
-current-tier crafts, capped by the character's ten-level band; item use remains
-independently gated by item level. Goldsmith owns Quartz, the six regional
-gems, Rough-to-Cut processing, Settings, both trinket slots and the exact
-natural-gem yield bonus. Mining, smelting and universal base-item crafting
-remain open to everyone through the General book. Cooking already has its
-six-tier three-role dish ladder, raw assembled-dish path and furnace
-refinements; its new plants are inventory items awaiting Round 9 world
-placement. Alchemy has its 21 potions and elixirs plus the capital brewing
-stand; the other five primary catalogs follow in Round 9.
+[Seven primary professions](docs/design/professions.md) are cut by material:
+Weaponsmith, Armorsmith, Leatherworker, Tailor, Woodcarver, Goldsmith and
+Alchemist. Characters choose two; Cooking is an unlimited secondary and First
+Aid stays universal. Profession level advances independently through six
+material tiers, while four mastery bands control improvement slots and selected
+exclusive recipes.
 
-The gathering contract closes twelve one-cell herb, spice and food sources,
-eight reused tree/food sources and six cultural sources. Healing herbs fail
-closed to Alchemist authorization; ordinary plants drop one item, while
-concentrated cultural sources differ by opportunity density and require their
-ratified T4 pick, axe or shovel family.
+Plain feedstocks and familiar base weapons, tools and metal, leather and cloth
+armor belong exclusively to **Basics** and require no profession. Each
+profession owns only its improvement and specialist routes; Weaponsmith and
+Armorsmith share the Forge with separate authorization. Cooking keeps its
+ordinary grid and furnace routes. The integrated, independently reviewed equipment work completes these catalogs,
+terminal refinement, direct affix application and the retained kit model. MAP-B,
+final technical gates, main delivery and GUI acceptance remain pending.
 
 ### Economy
 
@@ -220,16 +214,14 @@ on sight, and enemies use the threat/chase model. Both factions receive every
 universal input; race woods and cultural materials stay intentionally
 asymmetric.
 
-[Mounts](docs/design/mounts.md) are specified but not built. Universal riding
-unlocks at levels 15/30/45/60: land mounts move at 6/8 nodes per second and
-flyers at 7/10, with price targets of 15 minutes/45 minutes/2 hours/5 hours of
-reliable net income. A permanent owner-bound item summons one ephemeral
-entity; incoming damage dismounts. Battlegrounds allow flight, enemy territory
-allows land mounts only, and an exact 48-node warning precedes forced flight
-dismount over exterior ocean columns. Riding is taught by the capital job
-trainers. Asset selection, mount attackability, mounting in combat,
-underground flight, ceiling/drift, swimmer exhaustion and variants remain
-open in [TODO-design-crafting-rework.md](TODO-design-crafting-rework.md).
+[Mounts](docs/design/mounts.md) have integrated, independently reviewed Round-10
+runtime, capital-service and art changes; final technical gates and GUI
+acceptance remain. Riding unlocks at levels 15/30/45/60; T1
+moves at 6.4 nodes/s (+60%), while later land/flight tiers retain 8/7/10. The
+owner's mesh is hidden only in first person, an untimed status shows tier and
+actual speed, land mounts step over half/full blocks, and all mounted attacks are
+refused. Capital-only Riding Trainers, twelve rendered icons and all six stable layouts
+are integrated in the private candidate.
 
 [Boats](docs/design/boats.md) are specified but not built, and they are
 deliberately not an earned unlock: the base boat is five wood on any
@@ -248,152 +240,46 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 ## Current State
 
 *Last updated: 2026-09-20. Derived from [BACKLOG.md](BACKLOG.md) and
-[ROADMAP.md](ROADMAP.md); those are the status sources of truth.*
+[ROADMAP.md](ROADMAP.md); final MAP-B and acceptance-gate results are still
+pending.*
 
-**Shipped (22 of 49 work packages):** WP0–WP4, WP6, WP7, WP15, WP18, WP19,
-WP25, WP26, WP33, WP35, WP36, WP38, WP39, WP40, WP43, WP45, WP-HUD and
-WP-Speed provide the playable foundation: three classes, combat, mobs,
-equipment/bags, currency,
-canonical materials, gathering, exact life/resource bars, unified movement
-effects and the named-zone world. Round 6 adds the shared HP/mana and damage
-fit, maximum-pool Character/Help pages, per-player effective tooltips, total
-friendly-skill fallback, 5% suffocation and the `grug_core.status` text list.
-Round 7's Food v2 adds six data-driven tiers, fixed instant HP, five-second
-out-of-combat regeneration, active stat modifiers and shared consumable level
-gates; mana regeneration now follows the slower level-linear curve. It also
-fixes ordinary dry shore banks at `water_y`, replaces flat hub-target
-difficulty with three axial level bands per zone, and guarantees surface level 1 through 100 m and level 2 through 150 m of every
-start anchor. New characters remain
-protected behind character creation until the server has prepared all six
-start areas, which a fresh world emerges once and records in mod storage. WP40's
-[development acceptance](docs/research/wp40-completion.md) now includes the first
-terrain/performance correction round and green native plus browser-local
-Lua-5.1 user tests; slower browser generation is accepted for this server game.
-The bounded [R9-PERF writer pass](docs/research/r9-perf-completion.md) preserves
-all measured output channels and reduces its measured sequence endpoint by
-17.26%; WP48 remains open for broader post-processing and engine-blocked
-parallel emerge work.
-Round 8 adds per-viewer player nametags, shared profession books and trainers,
-Cooking and Alchemy v1, new day/night mob families, two dragons and six kings
-with their guards. It also closes every capital boundary ring and adds four
-coast profiles, sand, shallow strata and connected cave mouths; plant placement
-and crop soil carry into Round 9.
-WP16 is canceled and is not counted as shipped. WP-Scout, WP-HUD and WP-Speed
-are counted in the 49; only WP-Scout remains open.
+**Shipped foundation:** 22 of 53 tracked work-package identities are complete:
+WP0–WP4,
+WP6, WP7, WP15, WP18, WP19, WP25, WP26, WP33, WP35, WP36, WP38, WP39, WP40,
+WP43, WP45, WP-HUD and WP-Speed. The denominator comprises numbered WP0–WP49
+plus WP-Scout, WP-HUD and WP-Speed; canceled tombstone WP16 is tracked but is
+not shipped. The shipped packages provide three classes, combat, mobs, the
+named-zone world, canonical materials, gathering, equipment slots, currency,
+Cooking/Alchemy infrastructure, status/food systems and safe character creation.
+Round-9 MOB2/BOSS, trinket effects, mana, farming mechanics and map/performance
+work are present as delivered subpackages without changing whole-WP counts.
 
-**Not in the game yet:** quests, the five remaining primary profession
-catalogs, talent keystones, capstones and their four new
-abilities (WP11 X3), parties,
-the remaining recovery/rest systems, offhand items, affixes, durability, final structures, travel/map, Claim Stone housing,
-mounts and the remaining boss encounters remain unbuilt. X1, X2 and X4 of the talent trees are in the
-game; X4's respec prices remain coordinator placeholders. Geographic PvP,
-bounded war-front life and the rebased economy are also pending. Remaining
-mount and deep-content decisions live in [the crafting/mount TODO](TODO-design-crafting-rework.md)
-and [the depth TODO](TODO-design-depth.md); Round 8 is closed in
-[TODO-round8.md](TODO-round8.md), and [TODO-round9.md](TODO-round9.md) carries
-the next round; the [boat contract](docs/design/boats.md)
-and [PvP-death XP exemption](docs/design/progression.md) are already decided.
+**Integrated Round-10 work:** EQUIP, GAME, WORLD, ART, CAP and FARM are in the
+private integration candidate and independently clean. This includes Basics and
+seven primaries, universal base equipment, refinement/affixes, licensed
+nonweapon art, corrected cave/material behavior, percentage falls and
+dragon/mount behavior, all 17 crop lifecycles, and six capitals with eight
+profession trainers, seven stations, 24 mount displays and 18 gear displays.
+MAP-B and the engine-harness correction remain active; global parity, isolated
+engine gates, main delivery, synchronization and GUI acceptance are pending.
 
-**In progress:** WP11 phase 1 has shipped its talent registry, 48 talents,
-point/gate/persistence model and thirty numeric consumers. X4's Talents page,
-respec price and level-up flow are shipped; only X3's keystones, capstones and
-four abilities remain open. Food v2 now carries Cooking's full eighteen-dish
-T1–T6 ladder, six raw assembled dishes, three basic furnace refinements and
-the current raw-food tiers. WP10's shared `grug_jobs` framework is live: two
-primary slots plus Cooking, persistent T1–T6 craft progression, complete UI
-books, grid/station permission gates and trainers in every start and capital;
-Alchemy v1 adds its capital stand and 21-item potion/elixir catalog, while the
-five remaining primary catalogs follow in Round 9. WP13 has built
-**all six start settlements and all six capitals**. The starts share one reusable building library with per-race
-palettes -- small dense houses with doors, pane windows, stair roofs,
-furnished interiors and exterior dressing -- and each is a different
-settlement out of it: a dwarf craft village in a pine clearing, a human
-farming hamlet on a green, an elf glade under columnar silverwoods, an undead
-hollow round two walled burial grounds, an orc war camp behind a stake
-palisade, and a troll stilt village on boardwalks over a basin. The package
-also adds a server-side atmosphere layer (shadows, bloom, saturation, waving)
-with per-zone fog, sky and light, seven vendored minetest_game building mods,
-a curated 333-node decorative kit from castle_masonry, cottages, darkage and
-xdecor-libre, and a textured isometric renderer used to review buildings
-before playtests. The six start areas are emerged once at server start and no
-hostile mob spawns inside their protected footprints.
+**In progress:** WP13 has all six starts and capitals but still owns most of the
+100-anchor POI roster; its Round-10 capital work moves trainers into themed outer
+premises and adds dedicated stables. WP11 has X1/X2/X4 and still lacks X3.
+WP10's framework, Cooking, Alchemy and integrated equipment/catalog work are
+present without declaring the whole WP complete. Farming mechanics and visuals
+are integrated; final world placement and soils remain MAP-B work.
 
-The capitals were built out of the same library plus eighteen capital parts --
-a basilica king's hall with a throne room, curtain wall, corner tower and
-gatehouse, market square, colonnade, temple, barracks, scriptorium, granary,
-stable, statue, and hedge, grove, stilt and water edge pieces. The four walled
-capitals are **Highcourt, Dur Brannoc, Gor Drazhak and Nhal Veyr**; the two
-open capitals are **Lethariel and Kezamba**. **Highcourt**
-(human) was the pilot and put the seam in place: a settlement owns several
-blueprints, a district plot levels itself onto the ground under its own
-reference column, the avenues and the city wall are computed per mapchunk from
-the ground the map actually has, and a capital's buildings are constructed only
-when somebody goes there. Then came **Dur Brannoc** (dwarf, stair streets down
-forty-four nodes of hillside), **Gor Drazhak** (orc, a stake palisade on an
-earth rampart and a sunken fighting arena), **Lethariel** (elf, a planted belt
-instead of a wall and a lore precinct on a lake), **Kezamba** (troll, boardwalks
-on basalt piers round a cenote) and **Nhal Veyr** (undead, grave fields and a
-walk-in mausoleum). Each has four districts of nine plots plus four pieces of
-open ground -- a field, a pasture, a yard, a green -- and which district stands
-in which quarter is decided by the world seed. Every street in every capital
-now follows one rule: a flat cross profile, a levelled plateau where two
-streets cross, open air and pillars under a street raised three nodes or more,
-and a railed bridge, in that race's own palette, wherever one crosses water.
-Their people stay put rather than mill about: most residents keep to one spot,
-one in four works a craft with its own animation (smith, fisher, farmer, miner,
-brewer, carver, mourner, sparring pair, forager), and only a minority walk a
-short ring -- in Highcourt, 36 workplaces and 22 walkers among 144 residents.
-A district reads as lived in because a butcher's house has a butcher in it --
-twelve profession shops in all. WP13's round-2 merge also shipped the **one
-weapon ladder**: vendor gear and the base craft ladder are now the same
-material-named items (Bronze Sword, Silkweave Cowl), merged with `default`'s
-tool ladder.
+**Not yet:** quests, parties, remaining recovery/offhand work, WP22 durability,
+WP24 Housing, WP41 geographic PvP, WP42 fronts, WP46, WP47, WP49, Scout and the
+first-public-release gates remain open. WP44 still owns the complete economy
+rebase despite the integrated vendor correction. GUI acceptance remains required
+for crafting/refinement, six-capital services, mount cameras/steps, falls,
+ambient/dragon behavior, farming, cave witnesses and final art.
 
-**Every start and every capital still awaits the user's GUI playtest**, and
-the rest of WP13's 100-anchor roster is unbuilt: twelve villages (two of them
-with a shipwright's plot), 24 outposts, 12 bandit camps, 6 mining camps, 4
-mirefolk camps, 16 clash anchors, 2 dragon arenas, 2 apex camps and 10
-rare-route pads. The mirefolk camps, clash anchors and dragon arenas are
-dressing only here -- WP42 and WP23 own what happens in them -- and the apex
-camps' twelve renewable sockets are WP34's. The six kings and their royal
-guards now occupy the capital sockets; each king owns the shared reset,
-participation and respawn clock for its four-guard group. A final boundary pass
-keeps all six capital rings continuous except at their four authored gates.
-
-**Fishing** arrived with the same round: `grug_fishing` adds a craftable rod
-that lasts 64 catches, furnace-cooked fish and six catch tables selected by the
-zone level at the cast position — right-click salt or fresh water, wait a few
-seconds, and the water gives something back. Kezamba's anglers work its cenote, its fields grow papyrus in tilled
-furrows, and its two vineyards are planted beds rather than bare kerbs.
-
-**WP26 is shipped** (2026-09-16): a new `grug_smelting` mod adds the two-slot
-dual furnace next to the ordinary one, the five lump-to-bar smelts, the five
-alloys of the Bronze-to-Abyssal-Steel ladder, the twelve storage pack/unpack
-pairs and the furnace's own T1 recipe, with the trader audit extended to the
-alloy chain the engine itself cannot see. It still awaits the user's own
-~10-minute runtime test. WP5, WP44, WP37, WP11, WP14, WP20, WP21 and WP8 are
-also ready behind shipped prerequisites. WP34 still needs structures and
-economy.
-
-**Media remains decision-gated:**
-[the Round 6 candidate report](docs/research/reference-media-candidates.md)
-records provenance and suitability only and authorizes no import by itself.
-The assets approved separately for Round 8 are recorded in the repository's
-licence ledgers; all other candidates still require an explicit decision.
-
-**Release boundary:** WP40 is completed as development work; it does not declare
-our first public release or end fresh-server mode. Current-candidate resource
-supply/access, feature/native/generation-order, runtime/RSS and release-engine
-checks remain explicit [first-public-release work](BACKLOG.md#first-public-release-gates).
-Historical results retain their own source identities; the accepted browser
-playtest has no visible build ID. Old-world and old-item migrations remain absent.
-
-**Other runtime caveats:** WP7 retains its old prices and 25% buy-back until
-WP44, and WP39's recorded GUI combat test remains outstanding. WP43 has
-headless/review evidence but no separate material-focused GUI acceptance;
-WP25, WP35 and WP36 retain their historical untested labels. WP45's existing-
-and new-character flows are green, while mid-creation reconnect is covered
-headlessly. These unrelated gates are not closed by the map playtests.
+Historical Round-7 through Round-10 decisions are archived under
+[docs/research/](docs/research/); current rules live only in `docs/design/`, and
+remaining work lives in BACKLOG/ROADMAP or focused topic TODOs.
 
 ## Running it
 

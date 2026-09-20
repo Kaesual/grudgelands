@@ -75,43 +75,8 @@ local function soil_timer(pos)
 	return true
 end
 
-local soil_common = {
-	drop = "default:dirt",
-	is_ground_content = false,
-	sounds = default.node_sound_dirt_defaults(),
-	on_construct = start_soil_timer,
-	on_timer = soil_timer,
-}
-
-core.register_node(SOIL_DRY, {
-	description = "Crop Soil",
-	tiles = {
-		"default_dirt.png^[colorize:#5b3a20:60",
-		"default_dirt.png",
-		"default_dirt.png^[colorize:#4a311f:30",
-	},
-	drop = soil_common.drop,
-	groups = {crumbly = 3, soil = 2, field = 1, grug_crop_soil = 1},
-	is_ground_content = soil_common.is_ground_content,
-	sounds = soil_common.sounds,
-	on_construct = soil_common.on_construct,
-	on_timer = soil_common.on_timer,
-})
-
-core.register_node(SOIL_WET, {
-	description = "Wet Crop Soil",
-	tiles = {
-		"default_dirt.png^[colorize:#24180f:105",
-		"default_dirt.png",
-		"default_dirt.png^[colorize:#24180f:65",
-	},
-	drop = soil_common.drop,
-	groups = {crumbly = 3, soil = 3, field = 1, grug_crop_soil = 1,
-		grug_crop_soil_wet = 1, not_in_creative_inventory = 1},
-	is_ground_content = soil_common.is_ground_content,
-	sounds = soil_common.sounds,
-	on_construct = soil_common.on_construct,
-	on_timer = soil_common.on_timer,
+grug_nodes.bind_crop_soil_callbacks({
+ on_construct = start_soil_timer, on_timer = soil_timer,
 })
 
 -- VoxelManip placement does not call on_construct. This idempotent current-
@@ -224,6 +189,13 @@ local function place_seed(row)
 			return itemstack
 		end
 		local player_name = placer and placer:get_player_name() or ""
+		-- Planting can hydrate/swap the supporting soil before it writes the crop.
+		-- Both positions are therefore part of the player action and must pass
+		-- protection independently.
+		if core.is_protected(under, player_name) then
+			core.record_protection_violation(under, player_name)
+			return itemstack
+		end
 		if core.is_protected(above, player_name) then
 			core.record_protection_violation(above, player_name)
 			return itemstack
@@ -238,7 +210,6 @@ local function place_seed(row)
 	end
 end
 
-local stage_tints = {140, 95, 45, 0}
 for index = 1, #crops do
 	local row = crops[index]
 	core.register_craftitem(row.seed, {
@@ -255,9 +226,6 @@ for index = 1, #crops do
 	})
 	for stage = 1, STAGES do
 		local mature = stage == STAGES
-		local tint = stage_tints[stage]
-		local tile = row.image
-		if tint > 0 then tile = tile .. "^[colorize:#47713c:" .. tint end
 		local drop
 		local groups = {snappy = 3, flammable = 2, attached_node = 1, plant = 1,
 			grug_farming_crop = 1, not_in_creative_inventory = 1}
@@ -270,31 +238,22 @@ for index = 1, #crops do
 			on_construct = start_crop_timer
 			on_timer = crop_timer
 		end
-		core.register_node(row.stages[stage], {
+
+		local definition = grug_nodes.crop_visual(row.key, stage,
+			default.node_sound_leaves_defaults())
+		local gameplay = {
 			description = row.description .. " Crop" .. (mature and "" or
 				" (Stage " .. stage .. ")"),
-			drawtype = "plantlike",
-			tiles = {tile},
-			inventory_image = tile,
-			wield_image = tile,
-			visual_scale = 0.55 + stage * 0.15,
-			paramtype = "light",
-			sunlight_propagates = true,
-			walkable = false,
-			buildable_to = true,
-			is_ground_content = false,
-			floodable = true,
-			selection_box = {type = "fixed", fixed = {-0.35, -0.5, -0.35,
-				0.35, -0.3 + stage * 0.16, 0.35}},
 			groups = groups,
 			drop = drop,
-			sounds = default.node_sound_leaves_defaults(),
 			on_construct = on_construct,
 			on_timer = on_timer,
 			_grug_crop = row.key,
 			_grug_crop_stage = stage,
 			_grug_crop_harvest = row.harvest_item,
-		})
+		}
+		for key, value in pairs(gameplay) do definition[key] = value end
+		core.register_node(row.stages[stage], definition)
 	end
 end
 

@@ -90,7 +90,7 @@ for _, key in ipairs(KEYS) do
 					from = run.from, to = run.to,
 					width = blueprint.overlay.width,
 					lamp_spacing = blueprint.overlay.lamp_spacing,
-					lamp_phase = run.from, reach = blueprint.overlay.reach,
+					lamp_phase = run.lamp_phase or run.from, reach = blueprint.overlay.reach,
 					overhead = over, wet = wet, junctions = run.junctions,
 					plain_verge = run.plain_verge,
 					clear_verge = run.clear_verge}

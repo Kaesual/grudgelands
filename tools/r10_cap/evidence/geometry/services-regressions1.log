@@ -1,0 +1,26 @@
+r8_prof/trainer_sockets	true	registry	trainer accepted	profession copied	unknown refused
+start	hearthpine	cooking	2	1	10	ground+headroom	trainer_unique_against=19
+start	dawnmere	cooking	2	1	10	ground+headroom	trainer_unique_against=19
+start	silverleaf	cooking	2	1	10	ground+headroom	trainer_unique_against=19
+start	stillgrave	cooking	2	1	-10	ground+headroom	trainer_unique_against=19
+start	sunscar	cooking	2	1	-10	ground+headroom	trainer_unique_against=19
+start	kapok	cooking	2	1	-10	ground+headroom	trainer_unique_against=19
+capital	highcourt	trainers=8	outerplots+ground+headroom	trainer_unique_against=279
+capital	dur_brannoc	trainers=8	outerplots+ground+headroom	trainer_unique_against=292
+capital	lethariel	trainers=8	outerplots+ground+headroom	trainer_unique_against=276
+capital	gor_drazhak	trainers=8	outerplots+ground+headroom	trainer_unique_against=338
+capital	kezamba	trainers=8	outerplots+ground+headroom	trainer_unique_against=285
+capital	nhal_veyr	trainers=8	outerplots+ground+headroom	trainer_unique_against=297
+
+r9_prof/stations	true	stations	ids=5	nodes=5	grid=3x3	book_button
+recipes	housing_t3=5	acyclic	shaped+shapeless	station_isolated
+operation	near+ACL	exact-once	full-inventory-no-roll
+capitals	count=6	stations_each=7	authored_outer_socket	reachable	shared_forge
+weaponsmith	forge	grug_jobs:forge	0,1,-8
+leatherworker	tanning_rack	grug_jobs:tanning_rack	2,1,-20
+tailor	tailor_bench	grug_jobs:tailor_bench	0,1,-16
+woodcarver	carving_bench	grug_jobs:carving_bench	0,1,-24
+goldsmith	jewellers_bench	grug_jobs:jewellers_bench	2,1,-28
+
+r9_mounts/mounts	true	r9_mounts_v3|tiers=4|models=12|warning=48|warning_probes=112|warning_interval=1|ceiling=600|assets=8
+

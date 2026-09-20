@@ -2,7 +2,7 @@
 
 Decided 2026-08-06, roster **re-cut 2026-08-07** (crafting rework),
 material identities integrated 2026-08-12 and profession progression revised
-2026-09-18.
+2026-09-18, and the smith split adopted 2026-09-20.
 Crafting mechanics: `inventory_equipment.md` §4 (3×3 + profession-level
 recipe permission + station hints). Recipe/material details: `items_crafting.md` —
 the material ladder is its §3.0, the per-profession catalogs are
@@ -14,9 +14,9 @@ the material ladder is its §3.0, the per-profession catalogs are
   profession trainers**
   (never class-bound — interdependence drives the server economy).
   Switching later is allowed at a trainer, but unlearning immediately wipes
-  the dropped profession's level and current-tier craft count. The six
-  primaries are Blacksmith, Alchemist, Tailor, Leatherworker, Woodcarver and
-  Goldsmith.
+  the dropped profession's level and current-tier craft count. The seven
+  primaries are Weaponsmith, Armorsmith, Alchemist, Tailor, Leatherworker,
+  Woodcarver and Goldsmith.
 - **Secondary professions have no slot limit.** Cooking is the only secondary
   profession in the framework today. Every player may learn it in addition to
   both primaries. **First Aid remains universal but is not a profession in
@@ -24,12 +24,24 @@ the material ladder is its §3.0, the per-profession catalogs are
   from `classes.md`.
   - Cooking has the same visible T1–T6 book groups and profession-level gate
     as every primary profession (`items_crafting.md` §2.2, §3.7).
-  - **Riding is likewise universal** and is taught and sold by the same job
-    trainers in four steps at levels 15/30/45/60 (`mounts.md` §1, D20 decided
-    2026-08-13). It costs no main profession slot and adds no separate
-    trainer NPC.
-- **Cooking in every start, all seven in every capital.** The seven capital
-  trainers are the six primaries plus Cooking.
+  - **Riding is likewise universal**, but is taught only by the dedicated
+    Riding Trainer in each capital's outer stable, in four steps at levels
+    15/30/45/60 (`mounts.md` §1). It costs no main profession slot, is not a
+    framework profession and is absent from all profession trainer interfaces.
+- **Cooking in every start, all eight in every capital.** The eight capital
+  trainers are the seven primaries plus Cooking.
+  Capital trainers and their public stations occupy themed outer-district
+  premises, reusing suitable shops; vendors remain separate NPCs. Weaponsmith
+  and Armorsmith share one forge house with separate trainers and one Forge.
+  The other premises are an Alchemist's herb court and brewing stand, Tailor's
+  cloth hall and loom, Leatherworker's drying racks and tubs, Woodcarver's timber
+  and carving shop, Goldsmith's display cases and workbench, and Cooking kitchen
+  with hearth and counter. Stations and trainers have safe, unobstructed access.
+  Forge dressing includes an anvil, quench basin, decorative lava and visible
+  weapon/armor displays. Authored display gear has no collectible inventory;
+  interaction, digging, damage, explosions and indirect node transformations
+  cannot release items. This guarantee is intrinsic to the display definitions,
+  independent of the unfinished general protection system.
 - **Gathering split**: food-grade plants (potatoes, berries, cooking
   ingredients) are gatherable by EVERYONE; **alchemy herbs
   ("dragonweed") require the Alchemist main profession** — for everyone
@@ -54,17 +66,18 @@ the material ladder is its §3.0, the per-profession catalogs are
   independently gated by `_grug_ilvl`; neither consuming an item nor checking
   its use requirement consults profession state.
 
-## 2. MVP roster — six professions, cut by material (re-cut 2026-08-07)
+## 2. MVP roster — seven professions, cut by material
 
 Two free main professions per player, unchanged. The roster is organised
 **by material, never by class**.
 
 | Profession | Material chain T1–T6 | Owns exclusively |
 |---|---|---|
-| **Blacksmith** | Bronze → Iron → Steel → Silversteel → Embersteel → Abyssal Steel | Metal armor (4 slots), 1H weapons, daggers, 2H weapons, **shields** |
+| **Weaponsmith** | Bronze → Iron → Steel → Silversteel → Embersteel → Abyssal Steel | Physical weapons and mining tools |
+| **Armorsmith** | Bronze → Iron → Steel → Silversteel → Embersteel → Abyssal Steel | Metal armor (4 slots) and **shields** |
 | **Leatherworker** | light → cured → heavy → scaled → sleek → nightscale leather | Leather armor (4 slots — the Warrior's light set since the 2026-08-13 C10 decision, `items_crafting.md` §3.8), later **quivers** |
 | **Tailor** | patch → woven → heavy → silkweave → silk → stormweave bolts | Cloth armor (4 slots), **bags**, **spell tome** (offhand) |
-| **Woodcarver** | any `group:wood`, graded Seasoned → Polished → Hardened → Inlaid → Lacquered → Heartwood (race woods are cultural skins); **buys metal fittings from the Blacksmith** | Staves, wands, scepters, orbs — later bows |
+| **Woodcarver** | any `group:wood`, graded Seasoned → Polished → Hardened → Inlaid → Lacquered → Heartwood (race woods are cultural skins); **buys metal fittings from the Weaponsmith** | Staves, wands, scepters, orbs — later bows |
 | **Goldsmith** | Gold + Quartz + the six regional G1/G2 gems | **Both trinket slots**, Rough → Cut gem refinement, Settings, jewelry components, and the 10%/20% natural-gem yield roll |
 | **Alchemist** | healing herbs + spices | Potions, elixirs, apothecary gear — **gathers its own herbs** |
 
@@ -72,7 +85,7 @@ Two free main professions per player, unchanged. The roster is organised
 
 That is the property the re-cut was made for, and it is checkable:
 
-- **Three armor classes, three professions.** Metal → Blacksmith,
+- **Three armor classes, three professions.** Metal → Armorsmith,
   leather → Leatherworker, cloth → Tailor. No class of armor has two
   makers and none has none. The Alchemist's **apothecary gear**
   (`items_crafting.md` §3.6) is not an exception: it carries cloth-class
@@ -80,7 +93,7 @@ That is the property the re-cut was made for, and it is checkable:
   potion effects on it, and the Alchemist cannot make the Tailor's cloth
   armor — which is why it cross-buys bolts.
 - **Every weapon family of `items_crafting.md` §3.2 is assigned.** 1H,
-  dagger and 2H to the Blacksmith; the caster 1H (wand / scepter / orb)
+  dagger and 2H to the Weaponsmith; the caster 1H (wand / scepter / orb)
   and the 2H staff to the Woodcarver. Bows join the Woodcarver in
   Phase 2 (§5).
 - **Both trinket slots finally have an owner** — the Goldsmith. In the
@@ -90,7 +103,7 @@ That is the property the re-cut was made for, and it is checkable:
   attribute prefix, one HP/Mana/Crit suffix and one authored special
   (`items_crafting.md` §6.2); cultural finishes never apply to trinkets.
 - **The offhand is split, not shared**: the Tailor makes the **spell
-  tome**, the Blacksmith makes the **shield**. Different items, different
+  tome**, the Armorsmith makes the **shield**. Different items, different
   armor classes, different users — one item per concept holds
   (`items_crafting.md` §3.0.3).
 - **Consumables** are the Alchemist's alone; **bags** are the Tailor's
@@ -112,7 +125,7 @@ profession that serves exactly one class serves exactly one customer per
 group; a material profession serves several classes at once, which is
 what makes a crafter worth finding on a server with a handful of players
 online. The cross-buys are deliberate and already load-bearing: the
-Woodcarver buys metal fittings from the Blacksmith (`items_crafting.md`
+Woodcarver buys metal fittings from the Weaponsmith (`items_crafting.md`
 §3.6a) the same way Tailors and Alchemists buy leather from the
 Leatherworker (§3 below).
 
@@ -132,7 +145,7 @@ Leatherworker (§3 below).
 Both disappear as separate professions. They were the two asymmetric
 stubs in the old roster — three tiers and two tiers against everyone
 else's four — and burning one of a player's two main slots on a pure
-gathering skill was never a real choice. **All six professions are now
+gathering skill was never a real choice. **All seven professions are now
 symmetric: four mastery tiers each, six material groups each.**
 
 ### 2.4 The Woodcarver closes a real hole
@@ -154,8 +167,8 @@ need small amounts of leather for some recipes, Alchemists a bit for
 their alchemist gear — trade, not self-sufficiency.
 
 Added 2026-08-07, the same pattern in the other direction: **the
-Woodcarver buys metal fittings from the Blacksmith.** Every caster weapon
-from T2 up needs a Blacksmith-made fitting of its own tier
+Woodcarver buys metal fittings from the Weaponsmith.** Professional refinement of every caster weapon
+from T2 up needs a Weaponsmith-made fitting of its own tier
 (`items_crafting.md` §3.6a) — the §3.2 family is literally called
 "metal-shod staff".
 
@@ -195,13 +208,12 @@ in the game still comes from a crafter or a boss.
 
 ## 5. Phase 2+
 
-- **The Blacksmith is NOT split in the MVP** (decided 2026-08-07). With
-  only two main slots, a self-equipping warrior who took Weaponsmith and
-  Armorsmith would have burned both on one armor class and one weapon
-  family — the split makes the profession *less* social, which is the
-  opposite of §4's purpose. It stays a **Phase 2** note, for when the
-  population supports specialization: Blacksmith → Weaponsmith +
-  Armorsmith.
+The former Blacksmith is split in the current roster. Weaponsmith and Armorsmith
+use one shared physical Forge but have separate trainers, books, progression and
+recipe ownership. The seven primaries still compete for two slots; a metal user
+who wants both specialties spends both slots, matching the two-profession cost
+of cloth or leather users who also want a professionally improved weapon.
+
 - **The Bowyer split is dropped entirely** (2026-08-07). Bows are a
   Woodcarver product (`items_crafting.md` §3.6a, §9) and the quiver stays
   Leatherworker, so there is nothing left for a Bowyer to own. The

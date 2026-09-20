@@ -1,0 +1,17 @@
+OpenAI image-generation prompt, 2026-09-20:
+
+Use case: stylized-concept
+Asset type: source artwork for a 16x16 voxel-game inventory sprite
+Primary request: one unmistakable curved red chili pepper fruit
+Scene/backdrop: fully transparent background
+Subject: a single slender curved ripe red chili pepper with a small green stem,
+isolated and centered
+Style/medium: crisp high-contrast pixel art with deliberately stepped edges and
+simple block shading, designed to survive nearest-neighbor downsampling to 16x16
+Composition/framing: one diagonal pepper filling most of a square canvas with
+transparent padding; entire fruit and stem visible
+Color palette: deep red, bright red highlight, dark red shadow, small green stem
+Constraints: exactly one chili pepper; genuine alpha transparency; no carrot
+leaves; no broad carrot root; no plate; no text; no border; no watermark; no
+extra objects
+Avoid: carrot silhouette, bell pepper, photorealism, background, glow, drop shadow

@@ -1781,6 +1781,13 @@ local function zones_factory(dependencies)
 			function planner_source.coast_profile_at(x, z)
 				return height.coast_profile_at(x, z)
 			end
+			function planner_source.coast_material_at(x, z)
+				return height.coast_material_at(x, z)
+			end
+			function planner_source.primary_relief_at(x, z)
+				local _, _, owner = horizontal.classification_values_at(x, z)
+				return owner and source.zones[owner].primary_relief_id or nil
+			end
 			function planner_source.landmark_excluded_at(x, z)
 				return height.landmark_excluded_at(x, z)
 			end

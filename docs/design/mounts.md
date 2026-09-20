@@ -1,7 +1,8 @@
 # Mounts — Riding, Speed Tiers & No-Mount Zones
 
 Decided 2026-08-07; revised 2026-08-11 for open-world housing and the authored
-front, and 2026-09-18 for the Round-9 entity, border and safety rules.
+front, 2026-09-18 for the Round-9 entity, border and safety rules, and
+2026-09-20 for capital trainers and mounted usability.
 
 Neighbouring rules: the named-zone faction front `world_zones.md`, travel plus
 ocean/dragon-island integration in `world.md`, the complete open-world Claim
@@ -14,20 +15,23 @@ universal skills `professions.md` §1, the mob speed pillar
 
 - **Riding does not cost a main profession slot.** Like **Cooking** and
   **First Aid** (`professions.md` §1) it is universal — every character
-  can learn it, and the two main profession slots stay free for the six
+  can learn it, and the two main profession slots stay free for the seven
   crafting professions.
-- Riding is learned **from the job trainer in every race capital**, in four
+- Riding is learned **from a dedicated Riding Trainer in every race capital**, in four
   steps at character levels 15, 30, 45 and 60 (D20 decided 2026-08-13:
-  riding is a role on the existing job trainer, exactly like Cooking and
-  First Aid — no dedicated stable master and no Quartermaster involvement in
-  the MVP). A learned step is **player state, permanent and per character**,
+  the earlier job-trainer rule is superseded). There is no Riding Trainer in a
+  race start, so the first tier requires a trip to a capital. A learned step is
+  **player state, permanent and per character**,
   and its purchase hands over the owner-bound mount item represented by that
   step.
-- WP13 reserves only a **cosmetic stable/hitching-post dressing slot** near
-  the job trainer's court in the Market/Professions capital quadrant. It is
-  ordinary mutable, claim-excluded dressing, never a functional anchor; a
-  later dedicated stable master (Phase 2+, e.g. with D19 variants) can attach
-  there without moving NPCs or roads.
+- Every capital has one outer-district stable using the same shared building
+  design, with the local architectural palette. Its dedicated Riding Trainer
+  stands in front of four stationary displays of the existing mount appearances
+  available to that race, one for each tier in §1.1: 24 displays across six cities.
+  These displays are noncombatant, non-AI and cannot be ridden or yield items.
+  Trainer, stable and displays use the authored settlement activation identities;
+  saving, reload and partial activation must not duplicate them. Riding is absent
+  from every profession trainer, including Cooking trainers in starting villages.
 - **Mounts are not a reward and not a drop** — they are bought (§2), and
   buying them is the point (§2 is a gold sink).
 
@@ -40,7 +44,7 @@ character state:
 
 | Mastery | Learn at character level | Mount | Speed | Mount speed |
 |---|---|---|---|---|
-| Apprentice | 15 | slow land mount | +50 % | 6 nodes/s |
+| Apprentice | 15 | slow land mount | +60 % | 6.4 nodes/s |
 | Journeyman | 30 | fast land mount | +100 % | 8 nodes/s |
 | Expert | 45 | slow flying mount | +75 % | 7 nodes/s |
 | Master | 60 | fast flying mount | +150 % | 10 nodes/s |
@@ -59,7 +63,7 @@ character state:
   does not override it).
 - **Every tier is faster than every mob** — aggressive mobs run 4.6
   (`combat_stats.md` §3; 4.4 until user ruling 2 of 2026-09-16, and the
-  slowest mount is still 6). That is deliberate, and it is exactly why
+  slowest mount is still 6.4). That is deliberate, and it is exactly why
   **incoming damage dismounts the rider** (§3.1): the speed is
   permanent, the immunity to the mob game is not.
 - The two flying tiers are the late-game milestones. Expert is deliberately
@@ -139,6 +143,20 @@ arbitrary fixed-price wall.
   (`reference_projects/luanti/doc/lua_api.md:8948`); while attached the
   player's `get_pos`/`get_rotation` return the parent entity's values
   and their own setters are ignored (`lua_api.md:8864-8870`).
+- The physical mount controller is invisible. Its visible mesh is attached as
+  a child of the rider with `force_visible = false`: the engine hides that child
+  from its owner's first-person camera, while third-person views and other
+  clients retain the complete rider-and-mount silhouette. Dismount and every
+  lifecycle exit remove both ephemeral objects.
+- Land mounts automatically step over slabs and nominal one-node rises while
+  moving forward, without jump input. Their controller uses a **1.01-node**
+  step height to clear the engine's strict collision comparison; taller
+  obstacles and low ceilings continue to block them. Flying movement is
+  unchanged.
+- While mounted, the existing top-right status list shows the live tier and
+  speed bonus (for example `T1 Mount, +60% Speed`) without a countdown. This is
+  runtime-only UI state, supplies no movement modifier and is cleared by the
+  shared dismount path.
 - Only one active mount entity may exist per player. Using the active mount item
   again dismounts. Every dismount removes the ephemeral entity; no horse or
   flying creature remains parked in the world, and the unchanged item was in

@@ -32,6 +32,7 @@
 -- Plain Lua 5.1; the same bytes must run under LuaJIT and PUC 5.1.
 
 return function(repo)
+	local public_socket=dofile(repo.."/tools/r10_cap/public_socket_oracle.lua")
 	local wp13 = repo .. "/mods/MAPGEN/grug_mapgen/wp13"
 	local parts = dofile(wp13 .. "/parts.lua")
 	local palettes = dofile(wp13 .. "/palette.lua")
@@ -304,8 +305,9 @@ return function(repo)
 			assert(cell.name ~= "grug_nodes:guard_banner" and
 				cell.name ~= "grug_nodes:camp_fire",
 				label .. " writes a decorative spawner")
-			assert(not cell.name:find("water") and not cell.name:find("lava"),
-				label .. " writes a liquid")
+			local definition=world.nodes[cell.name]
+			assert(not definition or not definition.liquidtype or
+				definition.liquidtype=="none", label .. " writes a liquid")
 			local key = cell.x .. ":" .. cell.y .. ":" .. cell.z
 			assert(index[key] == nil, label .. " writes " .. key .. " twice")
 			if previous then
@@ -744,7 +746,8 @@ return function(repo)
 			assert(entry.dir and entry.dir.x == dx and entry.dir.z == dz,
 				label .. ": socket " .. entry.id ..
 					" publishes a dir that is not its own facing")
-			assert(free(entry.x, entry.y, entry.z) and
+			assert((public_socket(entry,node(entry.x,entry.y,entry.z)) or
+				free(entry.x, entry.y, entry.z)) and
 					free(entry.x, entry.y + 1, entry.z),
 				label .. ": socket " .. entry.id .. " has no headroom at " ..
 					entry.x .. "," .. entry.y .. "," .. entry.z)
@@ -960,7 +963,7 @@ return function(repo)
 	-- ------------------------------------------------------------------
 	local core = capital.core()
 	local CORE = {
-		reach = 47, ymin = -2, ymax = 40, budget = 150000,
+		reach = 49, ymin = -2, ymax = 40, budget = 150000,
 		min_lights = 40, min_doors = 12, loops = 5,
 		-- 371 paved cells stand over air, and the number has two halves:
 		-- 298 of them are STRUCTURE -- the four gatehouses' chamber floors
@@ -1034,7 +1037,7 @@ return function(repo)
 	-- four five-column corner-drum joins; placed content no longer subtracts
 	-- from that population.
 	for _, row in ipairs({{"nave_floor", 90}, {"pines", 12},
-			{"corner_drums", 4}, {"parapet_columns", 296}}) do
+			{"corner_drums", 4}, {"parapet_columns", 312}}) do
 		assert(core.landmarks[row[1]] == row[2], "the core's " .. row[1] ..
 			" population is " .. tostring(core.landmarks[row[1]]) ..
 			", not " .. row[2])
@@ -1042,7 +1045,7 @@ return function(repo)
 
 	-- The four gate openings and their avenues: five wide, walkable end to
 	-- end, and each one really reaching its gate at the core edge.
-	local RADIUS = 47
+	local RADIUS = 49
 	for _, gate in ipairs({"south", "north", "east", "west"}) do
 		local box = assert(core.landmarks["avenue_" .. gate],
 			"dur brannoc core has no avenue_" .. gate)
@@ -1421,7 +1424,8 @@ return function(repo)
 		for role in pairs(spec.roles) do
 			assert(role == "guard_post" or role == "guard_patrol" or
 				role == "idle" or role == "quest" or role == "vendor" or
-				role == "work",
+				role == "work" or role=="trainer" or role=="riding_trainer" or
+				role=="mount_display" or role=="gear_display" or role=="public_station",
 				entry.id .. " publishes the role " .. role ..
 					", which no district plot may own")
 		end
@@ -1673,7 +1677,7 @@ return function(repo)
 			assert(far >= GATE_AT, spec.id .. " reaches " .. far ..
 				", short of the gate station at " .. GATE_AT)
 			local near = math.min(math.abs(spec.from), math.abs(spec.to))
-			assert(near <= 48, spec.id .. " starts at " .. near ..
+			assert(near == 50, spec.id .. " starts at " .. near ..
 				", away from the core edge")
 			local sign = (spec.to > 0) and 1 or -1
 			seen[spec.axis .. ":" .. sign] = spec.id
@@ -2317,7 +2321,7 @@ return function(repo)
 		local surface = wall_surface(spec.axis, spec.at)
 		local piece = wall.run(dwarf, {id = spec.id, axis = spec.axis,
 			at = spec.at, from = spec.from, to = spec.to, width = avenue.WIDTH,
-			lamp_spacing = avenue.LAMP_SPACING, lamp_phase = spec.from,
+			lamp_spacing = avenue.LAMP_SPACING, lamp_phase = spec.lamp_phase or spec.from,
 			reach = avenue.REACH}, surface, plan)
 		wall_cells = wall_cells + #piece.cells
 		wall_columns = wall_columns + piece.columns

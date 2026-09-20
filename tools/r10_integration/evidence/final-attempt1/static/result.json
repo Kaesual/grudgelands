@@ -1,0 +1,8 @@
+{
+  "candidate": "2d3702d4627b215ea6782d10dc87e5d3b887c866",
+  "lua_files": 172,
+  "parser_sweeps": 0,
+  "fresh_server": 0,
+  "diff_check": 2,
+  "note": "Coordinator must inspect all SETGLOBAL and sweep hits; process exit alone is not semantic approval."
+}

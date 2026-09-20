@@ -1,0 +1,16 @@
+[
+  {
+    "capital": "gor_drazhak",
+    "port": 31872,
+    "status": 0,
+    "output": "/tmp/grudgelands-r10/overlay-attribution/historical-engine-v2-gor_drazhak",
+    "log": "/tmp/grudgelands-r10/overlay-attribution/historical-engine-v2-gor_drazhak-runner.log"
+  },
+  {
+    "capital": "lethariel",
+    "port": 31873,
+    "status": 0,
+    "output": "/tmp/grudgelands-r10/overlay-attribution/historical-engine-v2-lethariel",
+    "log": "/tmp/grudgelands-r10/overlay-attribution/historical-engine-v2-lethariel-runner.log"
+  }
+]

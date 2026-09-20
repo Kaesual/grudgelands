@@ -286,7 +286,7 @@ local function title_for(book, station)
 			jewellers_bench = "Jeweller's Bench"}
 		return (names[station] or "Station") .. " Recipes"
 	end
-	if book == "general" then return "General Recipe Book" end
+	if book == "general" then return "Basics" end
 	local definition = grug_jobs.PROFESSIONS[book]
 	return (definition and definition.name or book) .. " Recipe Book"
 end
@@ -408,9 +408,23 @@ local function append_recipe(fs, recipe, alternative, alternative_count)
 		local item = display_item(cell.token)
 		fs[#fs + 1] = ("item_image[%.2f,%.2f;0.82,0.82;%s]"):format(x, y,
 			esc(item))
-		fs[#fs + 1] = ("tooltip[%.2f,%.2f;0.82,0.82;%s]"):format(x, y,
-			esc(cell.token:match("^group:") and ("Any " .. cell.token) or
-				item_label(cell.token)))
+			local label = item_label(cell.token)
+			if cell.token:match("^group:") then
+				local names, seen = {}, {}
+				for name in pairs(core.registered_items or {}) do
+					if grug_jobs._group_matches(cell.token, name) then
+						local candidate = item_label(name):match("^[^\n]+")
+						if not seen[candidate] then
+							seen[candidate] = true
+							names[#names + 1] = candidate
+						end
+					end
+				end
+				table.sort(names)
+				label = #names > 0 and table.concat(names, " or ") or cell.token
+			end
+			fs[#fs + 1] = ("tooltip[%.2f,%.2f;0.82,0.82;%s]"):format(x, y,
+				esc(label))
 	end
 	fs[#fs + 1] = "image[4.15,6.55;0.9,0.7;gui_furnace_arrow_bg.png^[transformR270]"
 	fs[#fs + 1] = ("item_image[5.25,6.35;1.1,1.1;%s]"):format(
@@ -527,7 +541,7 @@ function grug_jobs.crafting_page_content(player)
 		"Cooking — learn at a trainer")
 	fs[#fs + 1] = ("image_button[0.10,3.34;0.82,0.82;%s;" ..
 		"grug_jobs_book_general;]"):format(BOOK_TEXTURE)
-	fs[#fs + 1] = "tooltip[grug_jobs_book_general;General recipe book]"
+	fs[#fs + 1] = "tooltip[grug_jobs_book_general;Basics — profession-free recipes]"
 	return table.concat(fs)
 end
 

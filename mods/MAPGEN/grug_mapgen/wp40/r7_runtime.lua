@@ -109,6 +109,8 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	local r6_settlement_factory = dofile(wp40_directory .. "/r6_settlement.lua")
 	local r6_factory = dofile(wp40_directory .. "/r6.lua")
 	local r7_content_factory = dofile(wp40_directory .. "/r7_content.lua")
+	local world_catalog = dofile(wp40_directory .. "/world_content_catalog.lua")
+	local world_factory = dofile(wp40_directory .. "/world_content.lua")
 	local consumer_payload_factory = dofile(
 		wp40_directory .. "/r7_consumer_payload.lua")
 	local r7_manifest_factory = dofile(wp40_directory .. "/r7_manifest.lua")
@@ -266,7 +268,7 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			local anchor_successor = r7_anchor_activation_factory(
 				r7_anchor_roster_factory, content_set.anchors)
 			successor = r7_successor_factory(p9g_successor, anchor_successor,
-				settlement_configs, settlement_keys)
+				settlement_configs, settlement_keys, world_factory(world_catalog, content_set.p9g))
 		end
 		local authored_source = dofile(wp40_directory .. "/source/catalog.lua")
 		local consumer_payload = consumer_payload_factory(source,
@@ -328,6 +330,7 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			production_content = {schema = content_set.production.schema,
 				digest = content_set.production_digest,
 				semantic_digest = content_set.production_semantic_digest},
+			world_content_rules = world_catalog,
 			p9g_content = {schema = content_set.p9g.schema,
 				digest = content_set.p9g_digest,
 				semantic_digest = content_set.p9g_semantic_digest},

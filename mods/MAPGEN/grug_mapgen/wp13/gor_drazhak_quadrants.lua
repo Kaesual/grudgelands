@@ -127,15 +127,16 @@ local function loader()
 	-- the gate. The four gate points Lane R's routes end on -- (+-256, 0) and
 	-- (0, +-256) on the avenue centre lines -- are therefore columns of these
 	-- runs, and no route cell or bridge deck is needed inside the envelope.
+	-- Keep lamp and pier cadence independent of the inner avenue endpoint.
 	local GATE_OUT = 261
 	M.AVENUES = {
-		{id = "avenue_south", axis = "z", at = 0, from = -GATE_OUT, to = -48,
+		{id = "avenue_south", axis = "z", at = 0, from = -GATE_OUT, to = -50,
 			gate = "gate_south"},
-		{id = "avenue_north", axis = "z", at = 0, from = 48, to = GATE_OUT,
+		{id = "avenue_north", axis = "z", at = 0, from = 50, to = GATE_OUT, lamp_phase = 48,
 			gate = "gate_north"},
-		{id = "avenue_west", axis = "x", at = 0, from = -GATE_OUT, to = -48,
+		{id = "avenue_west", axis = "x", at = 0, from = -GATE_OUT, to = -50,
 			gate = "gate_west"},
-		{id = "avenue_east", axis = "x", at = 0, from = 48, to = GATE_OUT,
+		{id = "avenue_east", axis = "x", at = 0, from = 50, to = GATE_OUT, lamp_phase = 48,
 			gate = "gate_east"},
 	}
 

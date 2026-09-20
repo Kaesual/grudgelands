@@ -576,7 +576,7 @@ if mode == "gates" then
 			local plan = kezamba.avenue_plan[run.id]
 			local spec = {id = run.id, axis = run.axis, at = run.at,
 				from = run.from, to = run.to, width = avenue.WIDTH,
-				lamp_spacing = avenue.LAMP_SPACING, lamp_phase = run.from,
+				lamp_spacing = avenue.LAMP_SPACING, lamp_phase = run.lamp_phase or run.from,
 				reach = avenue.REACH, wet = wet_at,
 				junctions = run.junctions, plain_verge = run.plain_verge,
 				clear_verge = run.clear_verge}

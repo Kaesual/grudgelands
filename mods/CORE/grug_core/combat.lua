@@ -1314,12 +1314,19 @@ core.register_on_player_hpchange(function(player, hp_change, reason)
 			reason.custom_type ~= grug_core.ARMOR_APPLIED_CUSTOM_TYPE then
 		hp_change = -grug_core.apply_player_armor(player, -hp_change)
 	end
-	-- Dwarf passive (world.md §7): -20% fall damage, before the absorb so
-	-- the shield only soaks what would actually land.
+	-- Scale the engine's native impact result to the current pool. The native
+	-- scale's 20 damage is one full pool; sufficiently severe impacts remain
+	-- lethal because this deliberately has no 100% cap.
 	if reason.type == "fall" then
+		local properties = player:get_properties() or {}
+		local max_hp = tonumber(properties.hp_max) or 0
+		if max_hp > 0 then
+			hp_change = -math.ceil(max_hp * -hp_change / 20)
+		end
+		-- Dwarf passive (world.md §7): -20%, before absorb.
 		local mult = grug_core.get_race_perk(player, "fall_damage_mult")
 		if mult then
-			hp_change = -math.floor(-hp_change * mult)
+			hp_change = -math.max(1, math.ceil(-hp_change * mult))
 		end
 	end
 	-- Absorb shield soaks any remaining damage (all sources).

@@ -69,6 +69,12 @@ lets the mob pick the next-closest viable target instead of re-acquiring the
 vetoed one for ever — the same reason the player hook sits at this site.
 **40 markers in `mobs/api.lua`.**
 
+Round 10 adds one narrowly bounded `mobs/api.lua` marker to the existing
+quarter-second cliff probe: only ambient `stand`/`walk` states use a two-node
+probe, which permits a one-node descent and rejects a deeper drop. Combat,
+fleeing and scripted movement retain each definition's authored
+`fear_height`; no second scan or path search is added.
+
 ## Mob pressure — the attack cadence (2026-09-16)
 
 Three new markers, all in `do_states()`'s dogfight branch, and together they
@@ -345,3 +351,13 @@ The registration contract is enforced by `tools/wp13/decor_registry_kat.lua`,
 an engine-free smoke test that loads the mod against a stub `core` and asserts
 the namespace, that every texture and mesh resolves, and that nothing
 mechanical was registered.
+
+### Round 10 public Cooking hearth exception
+
+`mods/BASE/default/furnace.lua` adds the marked `inventory_protected` hook.
+Only an exact authored public Furnace socket, an actual current inactive/active
+Furnace node and a live player within eight nodes bypass ordinary protection.
+The owning `grug_jobs` adapter supplies that predicate and idempotent activation
+for VM-placed current-version hearths. Existing fuel, timer, recipe and Cooking
+output extraction/progression callbacks remain chained unchanged. No media or
+upstream pin changed.

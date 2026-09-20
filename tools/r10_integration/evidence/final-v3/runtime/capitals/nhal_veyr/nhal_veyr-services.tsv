@@ -1,0 +1,24 @@
+capital	plot	service	socket	role	tag	node	entity	x	y	z
+nhal_veyr	homes_mourners_hall	cooking	homes_mourners_hall/homes_mourners_hall_cooking	trainer	cooking	air	grug_mobs:villager_undead	-1730	107	1315
+nhal_veyr	homes_mourners_hall	cooking	homes_mourners_hall/homes_mourners_hall_station	public_station	furnace	default:furnace	-	-1728	107	1317
+nhal_veyr	market_bone_store	goldsmith	market_bone_store/market_bone_store_goldsmith	trainer	goldsmith	air	grug_mobs:villager_undead	-1878	99	1423
+nhal_veyr	market_bone_store	goldsmith	market_bone_store/market_bone_store_jewel	gear_display	jewel	air	grug_mobs:capital_display	-1873	100	1426
+nhal_veyr	market_bone_store	goldsmith	market_bone_store/market_bone_store_station	public_station	jewellers_bench	grug_jobs:jewellers_bench	-	-1876	99	1425
+nhal_veyr	market_bonesmith	forge	market_bonesmith/market_bonesmith_armor	gear_display	armor	air	grug_mobs:capital_display	-1869	102	1343
+nhal_veyr	market_bonesmith	forge	market_bonesmith/market_bonesmith_armorsmith	trainer	armorsmith	air	grug_mobs:villager_undead	-1870	101	1339
+nhal_veyr	market_bonesmith	forge	market_bonesmith/market_bonesmith_station	public_station	forge	grug_jobs:forge	-	-1872	101	1341
+nhal_veyr	market_bonesmith	forge	market_bonesmith/market_bonesmith_weapon	gear_display	weapon	air	grug_mobs:capital_display	-1875	102	1343
+nhal_veyr	market_bonesmith	forge	market_bonesmith/market_bonesmith_weaponsmith	trainer	weaponsmith	air	grug_mobs:villager_undead	-1874	101	1339
+nhal_veyr	market_cart_yard	riding	market_cart_yard/market_cart_yard_mount_1	mount_display	1	air	grug_mobs:capital_display	-1871	102	1381
+nhal_veyr	market_cart_yard	riding	market_cart_yard/market_cart_yard_mount_2	mount_display	2	air	grug_mobs:capital_display	-1861	102	1381
+nhal_veyr	market_cart_yard	riding	market_cart_yard/market_cart_yard_mount_3	mount_display	3	air	grug_mobs:capital_display	-1871	102	1387
+nhal_veyr	market_cart_yard	riding	market_cart_yard/market_cart_yard_mount_4	mount_display	4	air	grug_mobs:capital_display	-1861	102	1387
+nhal_veyr	market_cart_yard	riding	market_cart_yard/market_cart_yard_riding	riding_trainer		air	grug_mobs:villager_undead	-1866	102	1378
+nhal_veyr	market_charnel	leatherworker	market_charnel/market_charnel_leatherworker	trainer	leatherworker	air	grug_mobs:villager_undead	-1978	103	1341
+nhal_veyr	market_charnel	leatherworker	market_charnel/market_charnel_station	public_station	tanning_rack	grug_jobs:tanning_rack	-	-1976	103	1343
+nhal_veyr	market_physic	alchemist	market_physic/market_physic_alchemist	trainer	alchemist	air	grug_mobs:villager_undead	-1982	104	1385
+nhal_veyr	market_physic	alchemist	market_physic/market_physic_station	public_station	brewing_stand	grug_brewing:brewing_stand	-	-1980	104	1387
+nhal_veyr	market_shroud_house	tailor	market_shroud_house/market_shroud_house_station	public_station	tailor_bench	grug_jobs:tailor_bench	-	-1916	104	1431
+nhal_veyr	market_shroud_house	tailor	market_shroud_house/market_shroud_house_tailor	trainer	tailor	air	grug_mobs:villager_undead	-1918	104	1429
+nhal_veyr	vigil_candle_works	woodcarver	vigil_candle_works/vigil_candle_works_station	public_station	carving_bench	grug_jobs:carving_bench	-	-1960	115	1617
+nhal_veyr	vigil_candle_works	woodcarver	vigil_candle_works/vigil_candle_works_woodcarver	trainer	woodcarver	air	grug_mobs:villager_undead	-1962	115	1615

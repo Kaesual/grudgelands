@@ -411,8 +411,9 @@ The ordinary contested deep rule resumes at y = −701 even below a capital.
   waypoint. **There is no class trainer** (user ruling 4 of 2026-09-16,
   `skill_trees.md` §5, `progression.md` §2): new skills come only from the
   talent tree, and the respec is bought in the talent UI, not from an NPC.
-  The job trainers stay — they are a different NPC and they also sell the
-  four riding steps (`mounts.md` §1). No capital is a superior faction-wide
+  Profession trainers and public stations occupy themed outer-district premises.
+  A separate Riding Trainer sells the four riding steps in each capital's shared-design
+  outer stable (`mounts.md` §1); profession trainers do not teach Riding. No capital is a superior faction-wide
   administrative seat in the MVP; shared faction services use the same
   service definition in all three faction capitals.
 - Race flair comes from architecture and NPCs (per-race wood/build sets,
@@ -594,10 +595,18 @@ mirefolk camps, later miners, king bodyguards, …) follows ONE model:
 
 Every apex boss shares the same tech — oversized entity
 (`visual_size` 4–6×), fixed lair POI with hoard chest, **stationary
-arena fight** (holds its ledge, hops between ~3 fixed positions; never
-kites into terrain, sidesteps pathfinding exploits), telegraphed attacks
-(the elite wind-up mechanic scaled up), respawn timer — but each has a
-**distinct skill set** so it threatens in its own way.
+arena fight** (holds its ledge and visibly walks between about three authored
+rest positions; it never teleports during idle roaming, kites into terrain or
+uses that walk to sidestep pathfinding exploits). A blocked rest route stops,
+rests and retries another authored position on the existing cadence.
+Telegraphed attacks (the elite wind-up mechanic scaled up), respawn timer — but
+each has a **distinct skill set** so it threatens in its own way.
+
+A dragon may begin or finish a hostile skill only while it has a valid living
+hostile target. Peaceful players are excluded from acquisition; losing the
+target cancels the active wind-up/action. Encounter leash and reset remain a
+separate arena rule. Periodic scorch damage counts as combat damage for the
+ordinary five-second combat window.
 
 - The old stage-one rule **one dragon per continent is retired**. The world
   gets two offshore overworld dragons, one beyond each Battlegrounds endpoint,
@@ -931,7 +940,8 @@ territory.
 - MVP perks (revised 2026-08-06 — a perk must be FELT from level 1, a
   vendor discount is invisible for the first ten hours): **one visible
   passive per race** + the vendor discount as a bonus. Passives
-  (implementation: WP19, race registry hook): Dwarf −20% fall damage ·
+  (implementation: WP19, race registry hook): Dwarf −20% fall damage, applied
+  after the max-HP fall conversion and before absorb (`combat_stats.md` §2) ·
   Troll +50% out-of-combat regen · Undead ignored by zombies at night
   (unless the player attacked that zombie) · Orc +1 rage per hit taken ·
   Elf +5 m ability range (**ranged/spell abilities only** — melee abilities

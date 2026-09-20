@@ -1,0 +1,36 @@
+{
+  "candidate": "8dd1c8e463a13ccc356cdade123875471b398707",
+  "width": 6,
+  "runs": [
+    {
+      "capital": "dur_brannoc",
+      "exit": 1,
+      "elapsed_seconds": 187.338
+    },
+    {
+      "capital": "gor_drazhak",
+      "exit": 1,
+      "elapsed_seconds": 151.814
+    },
+    {
+      "capital": "highcourt",
+      "exit": 1,
+      "elapsed_seconds": 156.819
+    },
+    {
+      "capital": "kezamba",
+      "exit": 1,
+      "elapsed_seconds": 147.789
+    },
+    {
+      "capital": "lethariel",
+      "exit": 1,
+      "elapsed_seconds": 161.312
+    },
+    {
+      "capital": "nhal_veyr",
+      "exit": 1,
+      "elapsed_seconds": 177.357
+    }
+  ]
+}

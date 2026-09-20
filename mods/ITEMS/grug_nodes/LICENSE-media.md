@@ -44,15 +44,14 @@ preserved.
 
 ### 1b. Nodes that carry no media of their own
 
-`grug_nodes:tilled_soil` (WP13, the authored crop furrow) ships **no file**.
-Its three tiles are minetest_game's `default_dirt.png` — the vendored original,
-unmodified on disk — with the engine's own `^[colorize:#2b1d0e` texture
-modifier applied at load time on the top and side faces, which is a render-time
-operation and not a derivative work distributed by this project. The same is
-true of `register_litter()`'s bottom face and of every other place in this mod
-where a vendored texture name is used as written. Nothing to attribute beyond
-the vendored `default` media itself (`mods/BASE/default/license.txt`,
-CC BY-SA 3.0); the table above stays the roster of PNGs this mod *generates*.
+The authored field soil now belongs to `grug_farming`; this mod no longer
+registers the interim tilled-soil node. Round-10 `grug_nodes:ash_ground` uses
+`default_gravel.png` with runtime colorization `#45403e:145`. The vendored
+README attributes that gravel to sofar (CC0 1.0), derived from Gambit's PixelBOX
+light gravel. `grug_nodes:dirt_with_moss` uses the unchanged shipped
+`default_moss.png`, `default_moss_side.png` and `default_dirt.png`; ownership and
+license remain in `mods/BASE/default/README.txt` / `license.txt` (paramat moss,
+CC BY-SA 3.0). These are texture-name/modifier bindings; no new bitmap is shipped.
 
 ## 2. Own pixel art — CC0 1.0
 

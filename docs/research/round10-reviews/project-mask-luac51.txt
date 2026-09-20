@@ -1,0 +1,841 @@
+
+main <tools/r10_capital_phase/project_mask.lua:0,0> (685 instructions, 2740 bytes at 0x1743d930)
+0+ params, 66 slots, 0 upvalues, 150 locals, 133 constants, 8 functions
+	1	[3]	GETGLOBAL	0 -1	; assert
+	2	[3]	GETGLOBAL	1 -2	; arg
+	3	[3]	GETTABLE 	1 1 -3	; 1
+	4	[3]	CALL     	0 2 2
+	5	[3]	GETGLOBAL	1 -1	; assert
+	6	[3]	GETGLOBAL	2 -2	; arg
+	7	[3]	GETTABLE 	2 2 -4	; 2
+	8	[3]	CALL     	1 2 2
+	9	[3]	GETGLOBAL	2 -1	; assert
+	10	[3]	GETGLOBAL	3 -2	; arg
+	11	[3]	GETTABLE 	3 3 -5	; 3
+	12	[3]	CALL     	2 2 2
+	13	[4]	LOADK    	3 -6	; "531802985935182545"
+	14	[5]	MOVE     	4 0
+	15	[5]	LOADK    	5 -7	; "/mods/MAPGEN/grug_mapgen/wp40"
+	16	[5]	CONCAT   	4 4 5
+	17	[6]	GETGLOBAL	5 -8	; dofile
+	18	[6]	MOVE     	6 0
+	19	[6]	LOADK    	7 -9	; "/tools/wp40/r6/common.lua"
+	20	[6]	CONCAT   	6 6 7
+	21	[6]	CALL     	5 2 2
+	22	[6]	GETTABLE 	6 5 -10	; "new_sha256"
+	23	[6]	CALL     	6 1 2
+	24	[7]	GETGLOBAL	7 -8	; dofile
+	25	[7]	MOVE     	8 4
+	26	[7]	LOADK    	9 -11	; "/zones.lua"
+	27	[7]	CONCAT   	8 8 9
+	28	[7]	CALL     	7 2 2
+	29	[7]	NEWTABLE 	8 0 9
+	30	[7]	GETGLOBAL	9 -8	; dofile
+	31	[7]	MOVE     	10 4
+	32	[7]	LOADK    	11 -13	; "/source/simple_map.lua"
+	33	[7]	CONCAT   	10 10 11
+	34	[7]	CALL     	9 2 2
+	35	[7]	SETTABLE 	8 -12 9	; "source" -
+	36	[7]	GETGLOBAL	9 -8	; dofile
+	37	[7]	MOVE     	10 4
+	38	[7]	LOADK    	11 -15	; "/schemas.lua"
+	39	[7]	CONCAT   	10 10 11
+	40	[7]	CALL     	9 2 2
+	41	[7]	SETTABLE 	8 -14 9	; "schemas" -
+	42	[7]	GETGLOBAL	9 -8	; dofile
+	43	[7]	MOVE     	10 4
+	44	[7]	LOADK    	11 -17	; "/canonical.lua"
+	45	[7]	CONCAT   	10 10 11
+	46	[7]	CALL     	9 2 2
+	47	[7]	SETTABLE 	8 -16 9	; "canonical" -
+	48	[7]	GETGLOBAL	9 -8	; dofile
+	49	[7]	MOVE     	10 4
+	50	[7]	LOADK    	11 -19	; "/deterministic.lua"
+	51	[7]	CONCAT   	10 10 11
+	52	[7]	CALL     	9 2 2
+	53	[7]	SETTABLE 	8 -18 9	; "deterministic" -
+	54	[7]	GETGLOBAL	9 -8	; dofile
+	55	[7]	MOVE     	10 4
+	56	[7]	LOADK    	11 -21	; "/index128.lua"
+	57	[7]	CONCAT   	10 10 11
+	58	[7]	CALL     	9 2 2
+	59	[7]	SETTABLE 	8 -20 9	; "index128" -
+	60	[7]	GETGLOBAL	9 -8	; dofile
+	61	[7]	MOVE     	10 4
+	62	[7]	LOADK    	11 -23	; "/simple_map.lua"
+	63	[7]	CONCAT   	10 10 11
+	64	[7]	CALL     	9 2 2
+	65	[7]	SETTABLE 	8 -22 9	; "horizontal_factory" -
+	66	[7]	GETGLOBAL	9 -8	; dofile
+	67	[7]	MOVE     	10 4
+	68	[7]	LOADK    	11 -25	; "/coupled_grade.lua"
+	69	[7]	CONCAT   	10 10 11
+	70	[7]	CALL     	9 2 2
+	71	[7]	CALL     	9 1 2
+	72	[7]	SETTABLE 	8 -24 9	; "coupled_grade" -
+	73	[7]	GETGLOBAL	9 -8	; dofile
+	74	[7]	MOVE     	10 4
+	75	[7]	LOADK    	11 -27	; "/height.lua"
+	76	[7]	CONCAT   	10 10 11
+	77	[7]	CALL     	9 2 2
+	78	[7]	SETTABLE 	8 -26 9	; "height_factory" -
+	79	[7]	SETTABLE 	8 -28 6	; "raw_sha256" -
+	80	[7]	CALL     	7 2 2
+	81	[8]	GETTABLE 	8 7 -29	; "new_with_planner_source_runtime"
+	82	[8]	MOVE     	9 3
+	83	[8]	LOADK    	10 -3	; 1
+	84	[8]	CALL     	8 3 3
+	85	[9]	GETGLOBAL	10 -8	; dofile
+	86	[9]	MOVE     	11 4
+	87	[9]	LOADK    	12 -30	; "/r7_settlement.lua"
+	88	[9]	CONCAT   	11 11 12
+	89	[9]	CALL     	10 2 2
+	90	[9]	LOADNIL  	11 11
+	91	[10]	GETGLOBAL	12 -31	; ipairs
+	92	[10]	GETTABLE 	13 10 -32	; "roster"
+	93	[10]	CALL     	12 2 4
+	94	[10]	JMP      	4	; to 99
+	95	[10]	GETTABLE 	17 16 -33	; "key"
+	96	[10]	EQ       	0 17 1
+	97	[10]	JMP      	1	; to 99
+	98	[10]	MOVE     	11 16
+	99	[10]	TFORLOOP 	12 2
+	100	[10]	JMP      	-6	; to 95
+	101	[11]	GETGLOBAL	12 -1	; assert
+	102	[11]	MOVE     	13 11
+	103	[11]	LOADK    	14 -34	; "missing capital"
+	104	[11]	CALL     	12 3 1
+	105	[12]	GETTABLE 	12 8 -35	; "anchor"
+	106	[12]	GETTABLE 	13 11 -36	; "zone_id"
+	107	[12]	GETTABLE 	14 11 -37	; "slot"
+	108	[12]	CALL     	12 3 2
+	109	[13]	GETGLOBAL	13 -8	; dofile
+	110	[13]	MOVE     	14 4
+	111	[13]	LOADK    	15 -38	; "/"
+	112	[13]	GETTABLE 	16 11 -39	; "blueprint_file"
+	113	[13]	CONCAT   	14 14 16
+	114	[13]	CALL     	13 2 2
+	115	[13]	NEWTABLE 	14 0 2
+	116	[13]	SETTABLE 	14 -40 3	; "full_seed" -
+	117	[13]	SETTABLE 	14 -28 6	; "raw_sha256" -
+	118	[13]	CALL     	13 2 2
+	119	[14]	GETTABLE 	14 10 -41	; "prepare"
+	120	[14]	MOVE     	15 11
+	121	[14]	MOVE     	16 13
+	122	[14]	MOVE     	17 6
+	123	[14]	CALL     	14 4 2
+	124	[15]	NEWTABLE 	15 0 0
+	125	[15]	NEWTABLE 	16 0 0
+	126	[16]	GETGLOBAL	17 -31	; ipairs
+	127	[16]	GETTABLE 	18 14 -42	; "palette"
+	128	[16]	CALL     	17 2 4
+	129	[16]	JMP      	2	; to 132
+	130	[16]	SETTABLE 	15 20 21
+	131	[16]	SETTABLE 	16 21 20
+	132	[16]	TFORLOOP 	17 2
+	133	[16]	JMP      	-4	; to 130
+	134	[17]	NEWTABLE 	17 0 2
+	135	[17]	SETTABLE 	17 -43 -44	; "schema" "grug_wp13_settlement_content_v1"
+	136	[17]	SETTABLE 	17 -45 15	; "content_names" -
+	137	[18]	CLOSURE  	18 0	; 0x1743f400
+	138	[18]	MOVE     	0 16
+	139	[18]	SETTABLE 	17 -46 18	; "content_ref" -
+	140	[19]	CLOSURE  	18 1	; 0x17440100
+	141	[19]	SETTABLE 	17 -47 18	; "resolve" -
+	142	[20]	GETTABLE 	18 10 -48	; "config"
+	143	[20]	MOVE     	19 14
+	144	[20]	MOVE     	20 17
+	145	[20]	MOVE     	21 6
+	146	[20]	CALL     	18 4 2
+	147	[20]	GETTABLE 	18 18 -49	; "new"
+	148	[20]	NEWTABLE 	19 0 2
+	149	[20]	SETTABLE 	19 -50 9	; "planner_source" -
+	150	[20]	SETTABLE 	19 -51 8	; "zones_session" -
+	151	[20]	CALL     	18 2 2
+	152	[21]	NEWTABLE 	19 0 0
+	153	[21]	GETGLOBAL	20 -31	; ipairs
+	154	[21]	GETTABLE 	21 13 -52	; "overlay"
+	155	[21]	GETTABLE 	21 21 -53	; "names"
+	156	[21]	CALL     	20 2 4
+	157	[21]	JMP      	1	; to 159
+	158	[21]	SETTABLE 	19 24 -54	; - true
+	159	[21]	TFORLOOP 	20 2
+	160	[21]	JMP      	-3	; to 158
+	161	[22]	CLOSURE  	20 2	; 0x1743e890
+	162	[22]	MOVE     	0 8
+	163	[22]	MOVE     	0 12
+	164	[23]	CLOSURE  	21 3	; 0x1743f6a0
+	165	[23]	MOVE     	0 12
+	166	[24]	GETTABLE 	22 12 -55	; "y"
+	167	[24]	GETTABLE 	23 12 -55	; "y"
+	168	[25]	LOADK    	24 -56	; 40
+	169	[25]	LOADK    	25 -57	; 260
+	170	[25]	LOADK    	26 -58	; 4
+	171	[25]	FORPREP  	24 16	; to 188
+	172	[25]	MOVE     	28 20
+	173	[25]	MOVE     	29 27
+	174	[25]	LOADK    	30 -59	; 0
+	175	[25]	CALL     	28 3 2
+	176	[25]	GETGLOBAL	29 -60	; math
+	177	[25]	GETTABLE 	29 29 -61	; "min"
+	178	[25]	MOVE     	30 22
+	179	[25]	MOVE     	31 28
+	180	[25]	CALL     	29 3 2
+	181	[25]	MOVE     	22 29
+	182	[25]	GETGLOBAL	29 -60	; math
+	183	[25]	GETTABLE 	29 29 -62	; "max"
+	184	[25]	MOVE     	30 23
+	185	[25]	MOVE     	31 28
+	186	[25]	CALL     	29 3 2
+	187	[25]	MOVE     	23 29
+	188	[25]	FORLOOP  	24 -17	; to 172
+	189	[26]	NEWTABLE 	24 0 1
+	190	[26]	NEWTABLE 	25 0 0
+	191	[26]	MOVE     	26 21
+	192	[26]	LOADK    	27 -56	; 40
+	193	[26]	LOADK    	28 -57	; 260
+	194	[26]	LOADK    	29 -64	; -12
+	195	[26]	LOADK    	30 -65	; 12
+	196	[26]	SUB      	31 22 -66	; - 6
+	197	[26]	ADD      	32 23 -66	; - 6
+	198	[26]	CALL     	26 7 0
+	199	[26]	SETLIST  	25 0 1	; 1
+	200	[26]	SETTABLE 	24 -63 25	; "avenue" -
+	201	[27]	LOADBOOL 	25 0 0
+	202	[27]	GETGLOBAL	26 -31	; ipairs
+	203	[27]	GETTABLE 	27 13 -52	; "overlay"
+	204	[27]	GETTABLE 	27 27 -67	; "runs"
+	205	[27]	CALL     	26 2 4
+	206	[27]	JMP      	8	; to 215
+	207	[27]	GETTABLE 	31 30 -68	; "id"
+	208	[27]	SELF     	31 31 -69	; "sub"
+	209	[27]	LOADK    	33 -3	; 1
+	210	[27]	LOADK    	34 -70	; 5
+	211	[27]	CALL     	31 4 2
+	212	[27]	EQ       	0 31 -71	; - "wall_"
+	213	[27]	JMP      	1	; to 215
+	214	[27]	LOADBOOL 	25 1 0
+	215	[27]	TFORLOOP 	26 2
+	216	[27]	JMP      	-10	; to 207
+	217	[28]	TEST     	25 0 0
+	218	[28]	JMP      	134	; to 353
+	219	[29]	GETTABLE 	26 12 -55	; "y"
+	220	[29]	GETTABLE 	23 12 -55	; "y"
+	221	[29]	MOVE     	22 26
+	222	[30]	LOADK    	26 -72	; -80
+	223	[30]	LOADK    	27 -73	; 80
+	224	[30]	LOADK    	28 -4	; 2
+	225	[30]	FORPREP  	26 16	; to 242
+	226	[30]	MOVE     	30 20
+	227	[30]	LOADK    	31 -74	; 256
+	228	[30]	MOVE     	32 29
+	229	[30]	CALL     	30 3 2
+	230	[30]	GETGLOBAL	31 -60	; math
+	231	[30]	GETTABLE 	31 31 -61	; "min"
+	232	[30]	MOVE     	32 22
+	233	[30]	MOVE     	33 30
+	234	[30]	CALL     	31 3 2
+	235	[30]	MOVE     	22 31
+	236	[30]	GETGLOBAL	31 -60	; math
+	237	[30]	GETTABLE 	31 31 -62	; "max"
+	238	[30]	MOVE     	32 23
+	239	[30]	MOVE     	33 30
+	240	[30]	CALL     	31 3 2
+	241	[30]	MOVE     	23 31
+	242	[30]	FORLOOP  	26 -17	; to 226
+	243	[31]	NEWTABLE 	26 0 0
+	244	[31]	MOVE     	27 21
+	245	[31]	LOADK    	28 -76	; 250
+	246	[31]	LOADK    	29 -77	; 262
+	247	[31]	LOADK    	30 -72	; -80
+	248	[31]	LOADK    	31 -73	; 80
+	249	[31]	SUB      	32 22 -66	; - 6
+	250	[31]	ADD      	33 23 -78	; - 24
+	251	[31]	CALL     	27 7 0
+	252	[31]	SETLIST  	26 0 1	; 1
+	253	[31]	SETTABLE 	24 -75 26	; "rampart" -
+	254	[32]	GETTABLE 	26 12 -55	; "y"
+	255	[32]	GETTABLE 	23 12 -55	; "y"
+	256	[32]	MOVE     	22 26
+	257	[33]	LOADK    	26 -79	; 236
+	258	[33]	LOADK    	27 -80	; 266
+	259	[33]	LOADK    	28 -4	; 2
+	260	[33]	FORPREP  	26 16	; to 277
+	261	[33]	MOVE     	30 20
+	262	[33]	MOVE     	31 29
+	263	[33]	LOADK    	32 -59	; 0
+	264	[33]	CALL     	30 3 2
+	265	[33]	GETGLOBAL	31 -60	; math
+	266	[33]	GETTABLE 	31 31 -61	; "min"
+	267	[33]	MOVE     	32 22
+	268	[33]	MOVE     	33 30
+	269	[33]	CALL     	31 3 2
+	270	[33]	MOVE     	22 31
+	271	[33]	GETGLOBAL	31 -60	; math
+	272	[33]	GETTABLE 	31 31 -62	; "max"
+	273	[33]	MOVE     	32 23
+	274	[33]	MOVE     	33 30
+	275	[33]	CALL     	31 3 2
+	276	[33]	MOVE     	23 31
+	277	[33]	FORLOOP  	26 -17	; to 261
+	278	[34]	NEWTABLE 	26 0 0
+	279	[34]	MOVE     	27 21
+	280	[34]	LOADK    	28 -82	; 232
+	281	[34]	LOADK    	29 -80	; 266
+	282	[34]	LOADK    	30 -83	; -20
+	283	[34]	LOADK    	31 -84	; 20
+	284	[34]	SUB      	32 22 -66	; - 6
+	285	[34]	ADD      	33 23 -85	; - 26
+	286	[34]	CALL     	27 7 0
+	287	[34]	SETLIST  	26 0 1	; 1
+	288	[34]	SETTABLE 	24 -81 26	; "gate" -
+	289	[35]	NEWTABLE 	26 0 0
+	290	[35]	SETTABLE 	24 -86 26	; "corner" -
+	291	[36]	GETGLOBAL	26 -31	; ipairs
+	292	[36]	NEWTABLE 	27 2 0
+	293	[36]	LOADK    	28 -87	; -1
+	294	[36]	LOADK    	29 -3	; 1
+	295	[36]	SETLIST  	27 2 1	; 1
+	296	[36]	CALL     	26 2 4
+	297	[36]	JMP      	53	; to 351
+	298	[36]	GETGLOBAL	31 -31	; ipairs
+	299	[36]	NEWTABLE 	32 2 0
+	300	[36]	LOADK    	33 -87	; -1
+	301	[36]	LOADK    	34 -3	; 1
+	302	[36]	SETLIST  	32 2 1	; 1
+	303	[36]	CALL     	31 2 4
+	304	[36]	JMP      	44	; to 349
+	305	[37]	MUL      	36 30 -74	; - 256
+	306	[37]	MUL      	37 35 -74	; - 256
+	307	[37]	GETTABLE 	38 12 -55	; "y"
+	308	[37]	GETTABLE 	23 12 -55	; "y"
+	309	[37]	MOVE     	22 38
+	310	[38]	SUB      	38 36 -65	; - 12
+	311	[38]	ADD      	39 36 -65	; - 12
+	312	[38]	LOADK    	40 -4	; 2
+	313	[38]	FORPREP  	38 21	; to 335
+	314	[38]	SUB      	42 37 -65	; - 12
+	315	[38]	ADD      	43 37 -65	; - 12
+	316	[38]	LOADK    	44 -4	; 2
+	317	[38]	FORPREP  	42 16	; to 334
+	318	[38]	MOVE     	46 20
+	319	[38]	MOVE     	47 41
+	320	[38]	MOVE     	48 45
+	321	[38]	CALL     	46 3 2
+	322	[38]	GETGLOBAL	47 -60	; math
+	323	[38]	GETTABLE 	47 47 -61	; "min"
+	324	[38]	MOVE     	48 22
+	325	[38]	MOVE     	49 46
+	326	[38]	CALL     	47 3 2
+	327	[38]	MOVE     	22 47
+	328	[38]	GETGLOBAL	47 -60	; math
+	329	[38]	GETTABLE 	47 47 -62	; "max"
+	330	[38]	MOVE     	48 23
+	331	[38]	MOVE     	49 46
+	332	[38]	CALL     	47 3 2
+	333	[38]	MOVE     	23 47
+	334	[38]	FORLOOP  	42 -17	; to 318
+	335	[38]	FORLOOP  	38 -22	; to 314
+	336	[39]	GETTABLE 	38 24 -86	; "corner"
+	337	[39]	GETTABLE 	39 24 -86	; "corner"
+	338	[39]	LEN      	39 39
+	339	[39]	ADD      	39 39 -3	; - 1
+	340	[39]	MOVE     	40 21
+	341	[39]	SUB      	41 36 -65	; - 12
+	342	[39]	ADD      	42 36 -65	; - 12
+	343	[39]	SUB      	43 37 -65	; - 12
+	344	[39]	ADD      	44 37 -65	; - 12
+	345	[39]	SUB      	45 22 -66	; - 6
+	346	[39]	ADD      	46 23 -78	; - 24
+	347	[39]	CALL     	40 7 2
+	348	[39]	SETTABLE 	38 39 40
+	349	[36]	TFORLOOP 	31 2
+	350	[39]	JMP      	-46	; to 305
+	351	[36]	TFORLOOP 	26 2
+	352	[40]	JMP      	-55	; to 298
+	353	[42]	CLOSURE  	26 4	; 0x17444300
+	354	[43]	NEWTABLE 	27 0 0
+	355	[43]	NEWTABLE 	28 0 0
+	356	[44]	GETGLOBAL	29 -88	; pairs
+	357	[44]	MOVE     	30 24
+	358	[44]	CALL     	29 2 4
+	359	[44]	JMP      	62	; to 422
+	360	[44]	GETGLOBAL	34 -31	; ipairs
+	361	[44]	MOVE     	35 33
+	362	[44]	CALL     	34 2 4
+	363	[44]	JMP      	56	; to 420
+	364	[45]	MOVE     	39 26
+	365	[45]	GETTABLE 	40 12 -89	; "z"
+	366	[45]	GETTABLE 	41 38 -90	; "z1"
+	367	[45]	ADD      	40 40 41
+	368	[45]	CALL     	39 2 2
+	369	[45]	MOVE     	40 26
+	370	[45]	GETTABLE 	41 12 -89	; "z"
+	371	[45]	GETTABLE 	42 38 -91	; "z2"
+	372	[45]	ADD      	41 41 42
+	373	[45]	CALL     	40 2 2
+	374	[45]	LOADK    	41 -73	; 80
+	375	[45]	FORPREP  	39 43	; to 419
+	376	[46]	MOVE     	43 26
+	377	[46]	GETTABLE 	44 12 -55	; "y"
+	378	[46]	GETTABLE 	45 38 -92	; "y1"
+	379	[46]	ADD      	44 44 45
+	380	[46]	CALL     	43 2 2
+	381	[46]	MOVE     	44 26
+	382	[46]	GETTABLE 	45 12 -55	; "y"
+	383	[46]	GETTABLE 	46 38 -93	; "y2"
+	384	[46]	ADD      	45 45 46
+	385	[46]	CALL     	44 2 2
+	386	[46]	LOADK    	45 -73	; 80
+	387	[46]	FORPREP  	43 30	; to 418
+	388	[47]	MOVE     	47 26
+	389	[47]	GETTABLE 	48 12 -94	; "x"
+	390	[47]	GETTABLE 	49 38 -95	; "x1"
+	391	[47]	ADD      	48 48 49
+	392	[47]	CALL     	47 2 2
+	393	[47]	MOVE     	48 26
+	394	[47]	GETTABLE 	49 12 -94	; "x"
+	395	[47]	GETTABLE 	50 38 -96	; "x2"
+	396	[47]	ADD      	49 49 50
+	397	[47]	CALL     	48 2 2
+	398	[47]	LOADK    	49 -73	; 80
+	399	[47]	FORPREP  	47 17	; to 417
+	400	[48]	MOVE     	51 50
+	401	[48]	LOADK    	52 -97	; ":"
+	402	[48]	MOVE     	53 46
+	403	[48]	LOADK    	54 -97	; ":"
+	404	[48]	MOVE     	55 42
+	405	[48]	CONCAT   	51 51 55
+	406	[49]	GETTABLE 	52 27 51
+	407	[49]	TEST     	52 0 1
+	408	[49]	JMP      	8	; to 417
+	409	[49]	SETTABLE 	27 51 -54	; - true
+	410	[49]	LEN      	52 28
+	411	[49]	ADD      	52 52 -3	; - 1
+	412	[49]	NEWTABLE 	53 0 3
+	413	[49]	SETTABLE 	53 -94 50	; "x" -
+	414	[49]	SETTABLE 	53 -55 46	; "y" -
+	415	[49]	SETTABLE 	53 -89 42	; "z" -
+	416	[49]	SETTABLE 	28 52 53
+	417	[47]	FORLOOP  	47 -18	; to 400
+	418	[46]	FORLOOP  	43 -31	; to 388
+	419	[45]	FORLOOP  	39 -44	; to 376
+	420	[44]	TFORLOOP 	34 2
+	421	[52]	JMP      	-58	; to 364
+	422	[44]	TFORLOOP 	29 2
+	423	[53]	JMP      	-64	; to 360
+	424	[54]	GETGLOBAL	29 -98	; table
+	425	[54]	GETTABLE 	29 29 -99	; "sort"
+	426	[54]	MOVE     	30 28
+	427	[54]	CLOSURE  	31 5	; 0x17444970
+	428	[54]	CALL     	29 3 1
+	429	[55]	NEWTABLE 	29 0 0
+	430	[56]	GETGLOBAL	30 -31	; ipairs
+	431	[56]	MOVE     	31 28
+	432	[56]	CALL     	30 2 4
+	433	[56]	JMP      	47	; to 481
+	434	[57]	NEWTABLE 	35 0 3
+	435	[57]	GETTABLE 	36 34 -94	; "x"
+	436	[57]	ADD      	36 36 -100	; - 79
+	437	[57]	SETTABLE 	35 -94 36	; "x" -
+	438	[57]	GETTABLE 	36 34 -55	; "y"
+	439	[57]	ADD      	36 36 -100	; - 79
+	440	[57]	SETTABLE 	35 -55 36	; "y" -
+	441	[57]	GETTABLE 	36 34 -89	; "z"
+	442	[57]	ADD      	36 36 -100	; - 79
+	443	[57]	SETTABLE 	35 -89 36	; "z" -
+	444	[57]	NEWTABLE 	36 0 0
+	445	[58]	SELF     	37 18 -101	; "bind_plan"
+	446	[58]	MOVE     	39 34
+	447	[58]	MOVE     	40 35
+	448	[58]	MOVE     	41 36
+	449	[58]	MOVE     	42 33
+	450	[58]	CALL     	37 6 1
+	451	[59]	NEWTABLE 	37 0 9
+	452	[59]	SETTABLE 	37 -102 36	; "plan" -
+	453	[59]	SETTABLE 	37 -103 33	; "generation" -
+	454	[59]	SETTABLE 	37 -104 -105	; "call_mode" "fixture"
+	455	[59]	GETTABLE 	38 34 -94	; "x"
+	456	[59]	SETTABLE 	37 -106 38	; "min_x" -
+	457	[59]	GETTABLE 	38 34 -55	; "y"
+	458	[59]	SETTABLE 	37 -107 38	; "min_y" -
+	459	[59]	GETTABLE 	38 34 -89	; "z"
+	460	[59]	SETTABLE 	37 -108 38	; "min_z" -
+	461	[59]	GETTABLE 	38 35 -94	; "x"
+	462	[59]	SETTABLE 	37 -109 38	; "max_x" -
+	463	[59]	GETTABLE 	38 35 -55	; "y"
+	464	[59]	SETTABLE 	37 -110 38	; "max_y" -
+	465	[59]	GETTABLE 	38 35 -89	; "z"
+	466	[59]	SETTABLE 	37 -111 38	; "max_z" -
+	467	[60]	CLOSURE  	38 6	; 0x174452c0
+	468	[60]	MOVE     	0 34
+	469	[60]	MOVE     	0 35
+	470	[60]	SETTABLE 	37 -112 38	; "inside_owner" -
+	471	[65]	CLOSURE  	38 7	; 0x17440830
+	472	[65]	MOVE     	0 12
+	473	[65]	MOVE     	0 29
+	474	[65]	MOVE     	0 15
+	475	[61]	SETTABLE 	37 -113 38	; "write_hearthpine" -
+	476	[66]	SELF     	38 18 -114	; "settle"
+	477	[66]	MOVE     	40 37
+	478	[66]	CALL     	38 3 1
+	479	[66]	CLOSE    	35
+	480	[66]	CLOSE    	33
+	481	[56]	TFORLOOP 	30 2
+	482	[66]	JMP      	-49	; to 434
+	483	[68]	GETGLOBAL	30 -1	; assert
+	484	[68]	GETGLOBAL	31 -115	; io
+	485	[68]	GETTABLE 	31 31 -116	; "open"
+	486	[68]	MOVE     	32 2
+	487	[68]	LOADK    	33 -38	; "/"
+	488	[68]	MOVE     	34 1
+	489	[68]	LOADK    	35 -117	; "-projection.tsv"
+	490	[68]	CONCAT   	32 32 35
+	491	[68]	LOADK    	33 -118	; "w"
+	492	[68]	CALL     	31 3 0
+	493	[68]	CALL     	30 0 2
+	494	[69]	SELF     	31 30 -119	; "write"
+	495	[69]	LOADK    	33 -120	; "label\tsha256\tcells\towners\n"
+	496	[69]	CALL     	31 3 1
+	497	[70]	GETGLOBAL	31 -31	; ipairs
+	498	[70]	NEWTABLE 	32 4 0
+	499	[70]	LOADK    	33 -63	; "avenue"
+	500	[70]	LOADK    	34 -75	; "rampart"
+	501	[70]	LOADK    	35 -86	; "corner"
+	502	[70]	LOADK    	36 -81	; "gate"
+	503	[70]	SETLIST  	32 4 1	; 1
+	504	[70]	CALL     	31 2 4
+	505	[70]	JMP      	135	; to 641
+	506	[71]	GETTABLE 	36 24 35
+	507	[71]	TEST     	36 0 0
+	508	[71]	JMP      	132	; to 641
+	509	[72]	GETGLOBAL	36 -1	; assert
+	510	[72]	GETGLOBAL	37 -115	; io
+	511	[72]	GETTABLE 	37 37 -116	; "open"
+	512	[72]	MOVE     	38 2
+	513	[72]	LOADK    	39 -38	; "/"
+	514	[72]	MOVE     	40 1
+	515	[72]	LOADK    	41 -121	; "-"
+	516	[72]	MOVE     	42 35
+	517	[72]	LOADK    	43 -122	; "-mask.tsv"
+	518	[72]	CONCAT   	38 38 43
+	519	[72]	LOADK    	39 -118	; "w"
+	520	[72]	CALL     	37 3 0
+	521	[72]	CALL     	36 0 2
+	522	[73]	NEWTABLE 	37 0 0
+	523	[73]	GETGLOBAL	38 -1	; assert
+	524	[73]	GETGLOBAL	39 -115	; io
+	525	[73]	GETTABLE 	39 39 -116	; "open"
+	526	[73]	MOVE     	40 2
+	527	[73]	LOADK    	41 -38	; "/"
+	528	[73]	MOVE     	42 1
+	529	[73]	LOADK    	43 -121	; "-"
+	530	[73]	MOVE     	44 35
+	531	[73]	LOADK    	45 -123	; ".tsv"
+	532	[73]	CONCAT   	40 40 45
+	533	[73]	LOADK    	41 -118	; "w"
+	534	[73]	CALL     	39 3 0
+	535	[73]	CALL     	38 0 2
+	536	[74]	GETGLOBAL	39 -31	; ipairs
+	537	[74]	GETTABLE 	40 24 35
+	538	[74]	CALL     	39 2 4
+	539	[74]	JMP      	75	; to 615
+	540	[75]	GETTABLE 	44 43 -90	; "z1"
+	541	[75]	GETTABLE 	45 43 -91	; "z2"
+	542	[75]	LOADK    	46 -3	; 1
+	543	[75]	FORPREP  	44 70	; to 614
+	544	[75]	GETTABLE 	48 43 -92	; "y1"
+	545	[75]	GETTABLE 	49 43 -93	; "y2"
+	546	[75]	LOADK    	50 -3	; 1
+	547	[75]	FORPREP  	48 65	; to 613
+	548	[75]	GETTABLE 	52 43 -95	; "x1"
+	549	[75]	GETTABLE 	53 43 -96	; "x2"
+	550	[75]	LOADK    	54 -3	; 1
+	551	[75]	FORPREP  	52 60	; to 612
+	552	[76]	MOVE     	56 55
+	553	[76]	LOADK    	57 -97	; ":"
+	554	[76]	MOVE     	58 51
+	555	[76]	LOADK    	59 -97	; ":"
+	556	[76]	MOVE     	60 47
+	557	[76]	CONCAT   	56 56 60
+	558	[76]	GETTABLE 	56 29 56
+	559	[77]	TEST     	56 0 0
+	560	[77]	JMP      	14	; to 575
+	561	[77]	SELF     	57 36 -119	; "write"
+	562	[77]	GETGLOBAL	59 -98	; table
+	563	[77]	GETTABLE 	59 59 -124	; "concat"
+	564	[77]	NEWTABLE 	60 5 0
+	565	[77]	MOVE     	61 55
+	566	[77]	MOVE     	62 51
+	567	[77]	MOVE     	63 47
+	568	[77]	GETTABLE 	64 56 -3	; 1
+	569	[77]	GETTABLE 	65 56 -4	; 2
+	570	[77]	SETLIST  	60 5 1	; 1
+	571	[77]	LOADK    	61 -125	; "\t"
+	572	[77]	CALL     	59 3 2
+	573	[77]	LOADK    	60 -126	; "\n"
+	574	[77]	CALL     	57 4 1
+	575	[78]	TEST     	56 0 0
+	576	[78]	JMP      	35	; to 612
+	577	[78]	GETTABLE 	57 56 -3	; 1
+	578	[78]	EQ       	1 57 -127	; - "air"
+	579	[78]	JMP      	32	; to 612
+	580	[78]	GETTABLE 	57 56 -3	; 1
+	581	[78]	GETTABLE 	57 19 57
+	582	[78]	TEST     	57 0 0
+	583	[78]	JMP      	28	; to 612
+	584	[79]	LEN      	57 37
+	585	[79]	ADD      	57 57 -3	; - 1
+	586	[79]	GETGLOBAL	58 -98	; table
+	587	[79]	GETTABLE 	58 58 -124	; "concat"
+	588	[79]	NEWTABLE 	59 5 0
+	589	[79]	MOVE     	60 55
+	590	[79]	MOVE     	61 51
+	591	[79]	MOVE     	62 47
+	592	[79]	GETTABLE 	63 56 -3	; 1
+	593	[79]	GETTABLE 	64 56 -4	; 2
+	594	[79]	SETLIST  	59 5 1	; 1
+	595	[79]	LOADK    	60 -97	; ":"
+	596	[79]	CALL     	58 3 2
+	597	[79]	SETTABLE 	37 57 58
+	598	[79]	SELF     	57 38 -119	; "write"
+	599	[79]	GETGLOBAL	59 -98	; table
+	600	[79]	GETTABLE 	59 59 -124	; "concat"
+	601	[79]	NEWTABLE 	60 5 0
+	602	[79]	MOVE     	61 55
+	603	[79]	MOVE     	62 51
+	604	[79]	MOVE     	63 47
+	605	[79]	GETTABLE 	64 56 -3	; 1
+	606	[79]	GETTABLE 	65 56 -4	; 2
+	607	[79]	SETLIST  	60 5 1	; 1
+	608	[79]	LOADK    	61 -125	; "\t"
+	609	[79]	CALL     	59 3 2
+	610	[79]	LOADK    	60 -126	; "\n"
+	611	[79]	CALL     	57 4 1
+	612	[75]	FORLOOP  	52 -61	; to 552
+	613	[75]	FORLOOP  	48 -66	; to 548
+	614	[75]	FORLOOP  	44 -71	; to 544
+	615	[74]	TFORLOOP 	39 2
+	616	[81]	JMP      	-77	; to 540
+	617	[83]	SELF     	39 36 -128	; "close"
+	618	[83]	CALL     	39 2 1
+	619	[83]	SELF     	39 38 -128	; "close"
+	620	[83]	CALL     	39 2 1
+	621	[83]	SELF     	39 30 -119	; "write"
+	622	[83]	MOVE     	41 35
+	623	[83]	LOADK    	42 -125	; "\t"
+	624	[83]	GETTABLE 	43 5 -129	; "hex"
+	625	[83]	MOVE     	44 6
+	626	[83]	GETGLOBAL	45 -98	; table
+	627	[83]	GETTABLE 	45 45 -124	; "concat"
+	628	[83]	MOVE     	46 37
+	629	[83]	LOADK    	47 -126	; "\n"
+	630	[83]	CALL     	45 3 0
+	631	[83]	CALL     	44 0 0
+	632	[83]	CALL     	43 0 2
+	633	[83]	LOADK    	44 -125	; "\t"
+	634	[83]	LEN      	45 37
+	635	[83]	LOADK    	46 -125	; "\t"
+	636	[83]	LEN      	47 28
+	637	[83]	LOADK    	48 -126	; "\n"
+	638	[83]	CALL     	39 10 1
+	639	[83]	SELF     	39 30 -130	; "flush"
+	640	[83]	CALL     	39 2 1
+	641	[70]	TFORLOOP 	31 2
+	642	[84]	JMP      	-137	; to 506
+	643	[86]	SELF     	31 30 -128	; "close"
+	644	[86]	CALL     	31 2 1
+	645	[87]	GETGLOBAL	31 -1	; assert
+	646	[87]	GETGLOBAL	32 -115	; io
+	647	[87]	GETTABLE 	32 32 -116	; "open"
+	648	[87]	MOVE     	33 2
+	649	[87]	LOADK    	34 -38	; "/"
+	650	[87]	MOVE     	35 1
+	651	[87]	LOADK    	36 -131	; "-road-names.txt"
+	652	[87]	CONCAT   	33 33 36
+	653	[87]	LOADK    	34 -118	; "w"
+	654	[87]	CALL     	32 3 0
+	655	[87]	CALL     	31 0 2
+	656	[87]	NEWTABLE 	32 0 0
+	657	[87]	GETGLOBAL	33 -88	; pairs
+	658	[87]	MOVE     	34 19
+	659	[87]	CALL     	33 2 4
+	660	[87]	JMP      	3	; to 664
+	661	[87]	LEN      	37 32
+	662	[87]	ADD      	37 37 -3	; - 1
+	663	[87]	SETTABLE 	32 37 36
+	664	[87]	TFORLOOP 	33 1
+	665	[87]	JMP      	-5	; to 661
+	666	[87]	GETGLOBAL	33 -98	; table
+	667	[87]	GETTABLE 	33 33 -99	; "sort"
+	668	[87]	MOVE     	34 32
+	669	[87]	CALL     	33 2 1
+	670	[87]	SELF     	33 31 -119	; "write"
+	671	[87]	GETGLOBAL	35 -98	; table
+	672	[87]	GETTABLE 	35 35 -124	; "concat"
+	673	[87]	MOVE     	36 32
+	674	[87]	LOADK    	37 -126	; "\n"
+	675	[87]	CALL     	35 3 2
+	676	[87]	LOADK    	36 -126	; "\n"
+	677	[87]	CALL     	33 4 1
+	678	[87]	SELF     	33 31 -128	; "close"
+	679	[87]	CALL     	33 2 1
+	680	[88]	GETGLOBAL	33 -132	; print
+	681	[88]	LOADK    	34 -133	; "source projection complete"
+	682	[88]	MOVE     	35 1
+	683	[88]	LEN      	36 28
+	684	[88]	CALL     	33 4 1
+	685	[88]	RETURN   	0 1
+
+function <tools/r10_capital_phase/project_mask.lua:18,18> (4 instructions, 16 bytes at 0x1743f400)
+1 param, 2 slots, 1 upvalue, 1 local, 0 constants, 0 functions
+	1	[18]	GETUPVAL 	1 0	; refs
+	2	[18]	GETTABLE 	1 1 0
+	3	[18]	RETURN   	1 2
+	4	[18]	RETURN   	0 1
+
+function <tools/r10_capital_phase/project_mask.lua:19,19> (4 instructions, 16 bytes at 0x17440100)
+2 params, 4 slots, 0 upvalues, 2 locals, 0 constants, 0 functions
+	1	[19]	MOVE     	2 0
+	2	[19]	MOVE     	3 1
+	3	[19]	RETURN   	2 3
+	4	[19]	RETURN   	0 1
+
+function <tools/r10_capital_phase/project_mask.lua:22,22> (11 instructions, 44 bytes at 0x1743e890)
+2 params, 5 slots, 2 upvalues, 2 locals, 3 constants, 0 functions
+	1	[22]	GETUPVAL 	2 0	; session
+	2	[22]	GETTABLE 	2 2 -1	; "terrain_height_at"
+	3	[22]	GETUPVAL 	3 1	; anchor
+	4	[22]	GETTABLE 	3 3 -2	; "x"
+	5	[22]	ADD      	3 3 0
+	6	[22]	GETUPVAL 	4 1	; anchor
+	7	[22]	GETTABLE 	4 4 -3	; "z"
+	8	[22]	ADD      	4 4 1
+	9	[22]	TAILCALL 	2 3 0
+	10	[22]	RETURN   	2 0
+	11	[22]	RETURN   	0 1
+
+function <tools/r10_capital_phase/project_mask.lua:23,23> (15 instructions, 60 bytes at 0x1743f6a0)
+6 params, 8 slots, 1 upvalue, 6 locals, 7 constants, 0 functions
+	1	[23]	NEWTABLE 	6 0 6
+	2	[23]	SETTABLE 	6 -1 0	; "x1" -
+	3	[23]	SETTABLE 	6 -2 1	; "x2" -
+	4	[23]	SETTABLE 	6 -3 2	; "z1" -
+	5	[23]	SETTABLE 	6 -4 3	; "z2" -
+	6	[23]	GETUPVAL 	7 0	; anchor
+	7	[23]	GETTABLE 	7 7 -6	; "y"
+	8	[23]	SUB      	7 4 7
+	9	[23]	SETTABLE 	6 -5 7	; "y1" -
+	10	[23]	GETUPVAL 	7 0	; anchor
+	11	[23]	GETTABLE 	7 7 -6	; "y"
+	12	[23]	SUB      	7 5 7
+	13	[23]	SETTABLE 	6 -7 7	; "y2" -
+	14	[23]	RETURN   	6 2
+	15	[23]	RETURN   	0 1
+
+function <tools/r10_capital_phase/project_mask.lua:42,42> (9 instructions, 36 bytes at 0x17444300)
+1 param, 3 slots, 0 upvalues, 1 local, 5 constants, 0 functions
+	1	[42]	GETGLOBAL	1 -1	; math
+	2	[42]	GETTABLE 	1 1 -2	; "floor"
+	3	[42]	ADD      	2 0 -3	; - 30912
+	4	[42]	DIV      	2 2 -4	; - 80
+	5	[42]	CALL     	1 2 2
+	6	[42]	MUL      	1 1 -4	; - 80
+	7	[42]	ADD      	1 -5 1	; -30912 -
+	8	[42]	RETURN   	1 2
+	9	[42]	RETURN   	0 1
+
+function <tools/r10_capital_phase/project_mask.lua:54,54> (32 instructions, 128 bytes at 0x17444970)
+2 params, 4 slots, 0 upvalues, 2 locals, 3 constants, 0 functions
+	1	[54]	GETTABLE 	2 0 -1	; "z"
+	2	[54]	GETTABLE 	3 1 -1	; "z"
+	3	[54]	EQ       	1 2 3
+	4	[54]	JMP      	8	; to 13
+	5	[54]	GETTABLE 	2 0 -1	; "z"
+	6	[54]	GETTABLE 	3 1 -1	; "z"
+	7	[54]	LT       	1 2 3
+	8	[54]	JMP      	1	; to 10
+	9	[54]	LOADBOOL 	2 0 1
+	10	[54]	LOADBOOL 	2 1 0
+	11	[54]	RETURN   	2 2
+	12	[54]	JMP      	19	; to 32
+	13	[54]	GETTABLE 	2 0 -2	; "y"
+	14	[54]	GETTABLE 	3 1 -2	; "y"
+	15	[54]	EQ       	1 2 3
+	16	[54]	JMP      	8	; to 25
+	17	[54]	GETTABLE 	2 0 -2	; "y"
+	18	[54]	GETTABLE 	3 1 -2	; "y"
+	19	[54]	LT       	1 2 3
+	20	[54]	JMP      	1	; to 22
+	21	[54]	LOADBOOL 	2 0 1
+	22	[54]	LOADBOOL 	2 1 0
+	23	[54]	RETURN   	2 2
+	24	[54]	JMP      	7	; to 32
+	25	[54]	GETTABLE 	2 0 -3	; "x"
+	26	[54]	GETTABLE 	3 1 -3	; "x"
+	27	[54]	LT       	1 2 3
+	28	[54]	JMP      	1	; to 30
+	29	[54]	LOADBOOL 	2 0 1
+	30	[54]	LOADBOOL 	2 1 0
+	31	[54]	RETURN   	2 2
+	32	[54]	RETURN   	0 1
+
+function <tools/r10_capital_phase/project_mask.lua:60,60> (28 instructions, 112 bytes at 0x174452c0)
+3 params, 4 slots, 2 upvalues, 3 locals, 3 constants, 0 functions
+	1	[60]	GETUPVAL 	3 0	; minp
+	2	[60]	GETTABLE 	3 3 -1	; "x"
+	3	[60]	LE       	0 3 0
+	4	[60]	JMP      	20	; to 25
+	5	[60]	GETUPVAL 	3 1	; maxp
+	6	[60]	GETTABLE 	3 3 -1	; "x"
+	7	[60]	LE       	0 0 3
+	8	[60]	JMP      	16	; to 25
+	9	[60]	GETUPVAL 	3 0	; minp
+	10	[60]	GETTABLE 	3 3 -2	; "y"
+	11	[60]	LE       	0 3 1
+	12	[60]	JMP      	12	; to 25
+	13	[60]	GETUPVAL 	3 1	; maxp
+	14	[60]	GETTABLE 	3 3 -2	; "y"
+	15	[60]	LE       	0 1 3
+	16	[60]	JMP      	8	; to 25
+	17	[60]	GETUPVAL 	3 0	; minp
+	18	[60]	GETTABLE 	3 3 -3	; "z"
+	19	[60]	LE       	0 3 2
+	20	[60]	JMP      	4	; to 25
+	21	[60]	GETUPVAL 	3 1	; maxp
+	22	[60]	GETTABLE 	3 3 -3	; "z"
+	23	[60]	LE       	1 2 3
+	24	[60]	JMP      	1	; to 26
+	25	[60]	LOADBOOL 	3 0 1
+	26	[60]	LOADBOOL 	3 1 0
+	27	[60]	RETURN   	3 2
+	28	[60]	RETURN   	0 1
+
+function <tools/r10_capital_phase/project_mask.lua:61,65> (26 instructions, 104 bytes at 0x17440830)
+6 params, 11 slots, 3 upvalues, 7 locals, 6 constants, 0 functions
+	1	[62]	GETUPVAL 	6 0	; anchor
+	2	[62]	GETTABLE 	6 6 -1	; "x"
+	3	[62]	SUB      	6 0 6
+	4	[62]	LOADK    	7 -2	; ":"
+	5	[62]	GETUPVAL 	8 0	; anchor
+	6	[62]	GETTABLE 	8 8 -3	; "y"
+	7	[62]	SUB      	8 1 8
+	8	[62]	LOADK    	9 -2	; ":"
+	9	[62]	GETUPVAL 	10 0	; anchor
+	10	[62]	GETTABLE 	10 10 -4	; "z"
+	11	[62]	SUB      	10 2 10
+	12	[62]	CONCAT   	6 6 10
+	13	[63]	GETGLOBAL	7 -5	; assert
+	14	[63]	GETUPVAL 	8 1	; cells
+	15	[63]	GETTABLE 	8 8 6
+	16	[63]	NOT      	8 8
+	17	[63]	LOADK    	9 -6	; "duplicate settlement writer cell"
+	18	[63]	CALL     	7 3 1
+	19	[64]	GETUPVAL 	7 1	; cells
+	20	[64]	NEWTABLE 	8 2 0
+	21	[64]	GETUPVAL 	9 2	; names
+	22	[64]	GETTABLE 	9 9 5
+	23	[64]	MOVE     	10 4
+	24	[64]	SETLIST  	8 2 1	; 1
+	25	[64]	SETTABLE 	7 6 8
+	26	[65]	RETURN   	0 1

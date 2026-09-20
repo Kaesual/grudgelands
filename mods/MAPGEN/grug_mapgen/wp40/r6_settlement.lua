@@ -1690,14 +1690,14 @@ local function settlement_factory()
 					occupied[key] = -2
 					occupied_positions[key] = {x, y, z}
 					written[key] = {x, y, z, cid, param2, -2, 36, feature, 0,
-						(#contract.content_names + 12 + local_ref - 1) * 256 + param2}
+						(#contract.content_names + 34 + local_ref - 1) * 256 + param2}
 				end
 				function context.write_hearthpine(x, y, z, cid, param2, local_ref, feature)
 					local key = occupied_key(x, y, z)
 					occupied[key] = -2
 					occupied_positions[key] = {x, y, z}
 					written[key] = {x, y, z, cid, param2, -2, 37, feature, 0,
-						(#contract.content_names + 14 + local_ref - 1) * 256 + param2}
+						(#contract.content_names + 36 + local_ref - 1) * 256 + param2}
 				end
 				local successor_result = successor_tail:settle(context)
 				if type(successor_result) ~= "table" or
@@ -1705,6 +1705,7 @@ local function settlement_factory()
 					fail("fail_ledger", "R7 successor ledger differs")
 				end
 				result.p9g, result.anchors = successor_result.p9g, successor_result.anchors
+				result.world_content = successor_result.world_content
 				result.hearthpine = successor_result.hearthpine
 				result.final_rows = evidence_rows(prospective)
 				result.final_runs = evidence_run_rows(result.final_rows)
@@ -2154,11 +2155,14 @@ local function settlement_factory()
 			local surface_skin_column = transaction_state.surface_skin_column
 			local function surface_skin_excluded(x, z, water_class, functional_kind,
 					hard_foundation)
-				local _, static_id = helpers.r8_horizontal.static_exclusion_values_at(x, z)
+				local _, static_id = helpers.r8_horizontal.static_exclusion_values_at(
+					x, z, "cave")
+				-- Natural landmark relief envelopes are terrain, not occupied cells.
+				-- Their real water/route/build footprints remain independently guarded.
 				return (water_class == "land" and static_id ~= nil) or
 					helpers.housing_excluded_at(x, z) or
-					planner_source.landmark_excluded_at(x, z) or
-					functional_kind ~= nil or hard_foundation
+					(functional_kind ~= nil and functional_kind ~= "land_grade") or
+					hard_foundation
 			end
 			local skin_context = {}
 			function skin_context.column_at(x, z)
@@ -2185,8 +2189,11 @@ local function settlement_factory()
 				-- Owned cells must have traversed the cave-preserving terrain-fill
 				-- policy.  Below-owner halo cells are already the committed result
 				-- of the preceding slice, which is the dust-only boundary case.
-				return y < min_y or rbase ~= nil and
-					plan.r5_plan.run_values[rbase + 4] == 27
+				-- R5 can also preserve native cave air under a start/capital
+				-- anchor grade (opcode 21). The immutable-air and final-air checks
+				-- above prove preservation; functional footprint guards still apply.
+				local opcode = rbase ~= nil and plan.r5_plan.run_values[rbase + 4]
+				return y < min_y or opcode == 27 or opcode == 21
 			end
 			function skin_context.excluded_at(x, z)
 				local water_class, _, _, _, _, _, _, _, _, functional_kind, _, _, _,
@@ -2981,6 +2988,13 @@ local function settlement_factory()
 					return contract.content_cids[ref], 0, 0, opcode, 0, 0,
 						(ref - 1) * 256
 				end
+				function successor_context.cave_content_allowed_at(x, y, z)
+					return not skin_context.excluded_at(x, z) and
+						inside_owner(x, y, z) and
+						planner_source.column_values_at(x, z) == "land" and
+						original_data[index_at(x,y,z)] == native_air_cid and
+						final_data[index_at(x,y,z)] == native_air_cid
+				end
 				function successor_context.exclusion_at(x, z)
 					return helpers.exclusion_reason(x, z)
 				end
@@ -2997,8 +3011,8 @@ local function settlement_factory()
 					end
 					integer(cid, "P9G CID", 0, MAX_SAFE, "fail_content_manifest")
 					integer(param2, "P9G param2", 0, 255, "fail_content_manifest")
-					integer(local_ref, "P9G local ref", 1, 12, "fail_content_manifest")
-					integer(feature_ref, "P9G feature ref", 1, 12, "fail_content_manifest")
+					integer(local_ref, "P9G local ref", 1, 34, "fail_content_manifest")
+					integer(feature_ref, "P9G feature ref", 1, 34, "fail_content_manifest")
 					if cid == contract.ignore_cid then
 						fail("fail_content_manifest", "P9G target is ignore")
 					end
@@ -3032,7 +3046,7 @@ local function settlement_factory()
 					final_data[index], final_param2[index] = cid, param2
 					intent_opcode[index], intent_feature[index], intent_interface[index] =
 						36, feature_ref, 0
-					local successor_ref = #contract.content_names + 12 + local_ref
+					local successor_ref = #contract.content_names + 34 + local_ref
 					if successor_refs.anchor_min == 0 or
 							successor_ref < successor_refs.anchor_min then
 						successor_refs.anchor_min = successor_ref
@@ -3063,7 +3077,7 @@ local function settlement_factory()
 					final_data[index], final_param2[index] = cid, param2
 					intent_opcode[index], intent_feature[index], intent_interface[index] =
 						37, feature_ref, 0
-					local successor_ref = #contract.content_names + 12 + 2 + local_ref
+					local successor_ref = #contract.content_names + 34 + 2 + local_ref
 					if successor_refs.settlement_min == 0 or
 							successor_ref < successor_refs.settlement_min then
 						successor_refs.settlement_min = successor_ref
@@ -3086,6 +3100,7 @@ local function settlement_factory()
 						fail("fail_ledger", "R7 successor detail differs")
 					end
 					ledger.p9g, ledger.anchors = successor_ledger.p9g, successor_ledger.anchors
+					ledger.world_content = successor_ledger.world_content
 					ledger.hearthpine = successor_ledger.hearthpine
 				end
 			end

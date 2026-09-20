@@ -330,12 +330,19 @@ Details + line numbers in [docs/research/](docs/research/).
 - **XP/levels**: template VoxeLibre `mods/HUD/mcl_experience/init.lua` — XP
   as an int in player meta, `level_to_xp` curve, `register_on_add_xp`
   pipeline, HUD bar. XP loss on death via `core.register_on_dieplayer`.
-- **Professions**: `grug_jobs` owns the exact six primaries plus Cooking,
+- **Professions**: `grug_jobs` owns the exact seven primaries — Weaponsmith,
+  Armorsmith, Alchemist, Tailor, Leatherworker, Woodcarver and Goldsmith — plus Cooking,
   two primary slots, player-meta progression and the UI-only recipe books.
   Content mods first call `register_ingredient_tier(item, tier)`, then
   `register_recipe{profession, tier, station, inputs, output, hint}`; every
-  recipe must contain a declared ingredient of its own tier. Supported station
-  names are `grid`, `furnace`, `dual_furnace` and `brewing_stand`.
+  gear recipe must contain a declared ingredient of its own tier. For an
+  intermediate-material conversion, the output tier is the recipe tier; it
+  does not invent a same-tier input solely to satisfy the gear rule. **Basics** is the
+  exclusive profession-free category; every recipe route appears in exactly
+  one book. Weaponsmith and Armorsmith have separate authorization/progression
+  but share station id `forge` and node `grug_jobs:forge`; there is no
+  `blacksmith` alias. Supported station names are `grid`, `furnace`,
+  `dual_furnace`, `brewing_stand` and the registered profession stations.
   `register_station(name, {register_recipe=..., can_use=...})` lets a later
   station install its engine adapter and optional per-player gate; registrations
   made before that adapter are replayed. Player APIs are `learn`, `unlearn`,
@@ -351,6 +358,29 @@ Details + line numbers in [docs/research/](docs/research/).
   A later custom station (including the brewing stand) must call
   `can_craft_recipe` before its output leaves and `record_craft` after each
   successful craft on that same take path.
+  `grug_jobs.open_trainer(player, profession, pos)` serves the seven primaries
+  and Cooking. Capital-only Riding uses `grug_mounts.open_trainer(player, entity)`
+  with an authenticated Riding socket, never the generic profession hook.
+- **Crop registration**: `grug_nodes` registers complete `grug_farming:soil` and
+  `soil_wet` definitions before synchronous mapgen compilation, and exports
+  `crop_visual(key, stage, sounds)` and `bind_crop_soil_callbacks`. FARM binds
+  its real callbacks once and owns the 17 crop families, timers and current-world
+  activation. Mapgen has no FARM dependency; do not defer world authority.
+- **Mount runtime**: ownership is player meta; the summoned controller and its
+  visible child are ephemeral. The child is hidden only from its local rider in
+  first person. `grug_mounts.dismount` is the shared cleanup path for manual,
+  damage, death, leave, shutdown and external-detach exits and clears the
+  runtime-only untimed `mount` status. Mounted players cannot attack. Land
+  controllers use nominal one-node step height; T1 is 6.4 nodes/s (+60%).
+- **R7 audit boundary**: the 157-file R7 source-audit roster is frozen
+  historical evidence and is not a current-source gate. WP49 will replace it
+  with a fixed WP40/direct-neighbour roster; never refresh or cite the old
+  baseline-derived list as current certification.
+- **Trinkets**: `grug_trinkets` owns the six special consumers and rebuilds an
+  event-driven per-character equipment cache through the equipment-change seam;
+  hot mana/heal/hit/kill/potion paths read that cache and never rescan slots.
+  The same trinket identity cannot occupy both slots. Last Light uses one
+  shared 120-second cooldown and maximum shield lifetime.
 - **Combat/classes**: damage = damage_groups × armor_groups (÷100) ×
   punch-interval factor. **Damage pipeline lives in `grug_core/combat.lua`**
   (WP4): `deal_ability_damage` (crit ×1.5, applied via `object:punch` with
@@ -486,8 +516,11 @@ Details + line numbers in [docs/research/](docs/research/).
   stand nodes, timer and recipe adapter) and `grug_alchemy` (items, profession
   recipes and effects). The stand has two reagent slots plus vial, fuel and
   output; its output take path calls `can_craft_recipe` before release and
-  `record_craft` after release. Capital stands are the public node at local
-  `(2,1,-12)`, directly east of the Alchemist trainer. Potions share
+  `record_craft` after release. Capital public stations derive from terrain-resolved,
+  rotated `public_station` sockets in the themed outer premises.
+  `grug_jobs.register_public_position(station, pos)` owns the shared registry;
+  `grug_brewing.register_public_position(pos)` delegates the brewing stand.
+  No fixed capital-core position is authoritative. Potions share
   `grug_traders`' persistent clock (60 s, or 45 s for the Greater pair);
   elixirs replace status id `elixir`, stack with status id `food`, and never
   touch that clock. Apothecary gear extends timed potions and elixirs by 10%

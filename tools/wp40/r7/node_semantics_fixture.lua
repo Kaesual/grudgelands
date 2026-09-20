@@ -7,7 +7,7 @@ return function(repo, catalog, expected_names)
 	local saved = {}
 	local globals = {"core", "minetest", "default", "grug_materials",
 		"grug_trees", "grug_brewing", "grug_jobs", "ItemStack", "vector",
-		"stairs"}
+		"stairs", "grug_nodes"}
 	for index = 1, #globals do
 		local name = globals[index]
 		saved[name] = rawget(_G, name)
@@ -234,7 +234,8 @@ return function(repo, catalog, expected_names)
 		-- semantics are irrelevant here, but the authentic initializer requires
 		-- the registrations to exist before applying its production overrides.
 		for _, name in ipairs({"default:pick_wood", "default:pick_stone",
-				"default:pick_bronze", "default:pick_steel"}) do
+				"default:pick_bronze", "default:pick_steel", "default:shovel_wood",
+				"default:shovel_stone", "default:shovel_bronze", "default:shovel_steel"}) do
 			api.register_tool(name, {groups = {pickaxe = 1}, tool_capabilities = {
 				punch_attack_uses = 20, groupcaps = {}, damage_groups = {}}})
 		end
@@ -272,6 +273,9 @@ return function(repo, catalog, expected_names)
 			register_recipe = function() end,
 		})
 		dofile(repo .. "/mods/PLAYER/grug_jobs/station_nodes.lua")
+
+		dofile(repo .. "/mods/MAPGEN/grug_mapgen/world_nodes.lua")(api,
+			repo .. "/mods/MAPGEN/grug_mapgen", grug_nodes, {source_can_dig = harvest.can_dig})
 
 		local definitions = {}
 		local seen = {}

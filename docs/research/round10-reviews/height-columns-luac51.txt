@@ -1,0 +1,156 @@
+
+main <tools/r10_capital_phase/height_columns.lua:0,0> (153 instructions, 612 bytes at 0x2dd97930)
+0+ params, 29 slots, 0 upvalues, 26 locals, 53 constants, 0 functions
+	1	[3]	GETGLOBAL	0 -1	; assert
+	2	[3]	GETGLOBAL	1 -2	; arg
+	3	[3]	GETTABLE 	1 1 -3	; 1
+	4	[3]	CALL     	0 2 2
+	5	[3]	GETGLOBAL	1 -1	; assert
+	6	[3]	GETGLOBAL	2 -2	; arg
+	7	[3]	GETTABLE 	2 2 -4	; 2
+	8	[3]	CALL     	1 2 2
+	9	[3]	GETGLOBAL	2 -1	; assert
+	10	[3]	GETGLOBAL	3 -2	; arg
+	11	[3]	GETTABLE 	3 3 -5	; 3
+	12	[3]	CALL     	2 2 2
+	13	[4]	LOADK    	3 -6	; "531802985935182545"
+	14	[5]	MOVE     	4 0
+	15	[5]	LOADK    	5 -7	; "/mods/MAPGEN/grug_mapgen/wp40"
+	16	[5]	CONCAT   	4 4 5
+	17	[6]	GETGLOBAL	5 -8	; dofile
+	18	[6]	MOVE     	6 0
+	19	[6]	LOADK    	7 -9	; "/tools/wp40/r6/common.lua"
+	20	[6]	CONCAT   	6 6 7
+	21	[6]	CALL     	5 2 2
+	22	[6]	GETTABLE 	6 5 -10	; "new_sha256"
+	23	[6]	CALL     	6 1 2
+	24	[7]	GETGLOBAL	7 -8	; dofile
+	25	[7]	MOVE     	8 4
+	26	[7]	LOADK    	9 -11	; "/zones.lua"
+	27	[7]	CONCAT   	8 8 9
+	28	[7]	CALL     	7 2 2
+	29	[7]	NEWTABLE 	8 0 9
+	30	[7]	GETGLOBAL	9 -8	; dofile
+	31	[7]	MOVE     	10 4
+	32	[7]	LOADK    	11 -13	; "/source/simple_map.lua"
+	33	[7]	CONCAT   	10 10 11
+	34	[7]	CALL     	9 2 2
+	35	[7]	SETTABLE 	8 -12 9	; "source" -
+	36	[7]	GETGLOBAL	9 -8	; dofile
+	37	[7]	MOVE     	10 4
+	38	[7]	LOADK    	11 -15	; "/schemas.lua"
+	39	[7]	CONCAT   	10 10 11
+	40	[7]	CALL     	9 2 2
+	41	[7]	SETTABLE 	8 -14 9	; "schemas" -
+	42	[7]	GETGLOBAL	9 -8	; dofile
+	43	[7]	MOVE     	10 4
+	44	[7]	LOADK    	11 -17	; "/canonical.lua"
+	45	[7]	CONCAT   	10 10 11
+	46	[7]	CALL     	9 2 2
+	47	[7]	SETTABLE 	8 -16 9	; "canonical" -
+	48	[7]	GETGLOBAL	9 -8	; dofile
+	49	[7]	MOVE     	10 4
+	50	[7]	LOADK    	11 -19	; "/deterministic.lua"
+	51	[7]	CONCAT   	10 10 11
+	52	[7]	CALL     	9 2 2
+	53	[7]	SETTABLE 	8 -18 9	; "deterministic" -
+	54	[7]	GETGLOBAL	9 -8	; dofile
+	55	[7]	MOVE     	10 4
+	56	[7]	LOADK    	11 -21	; "/index128.lua"
+	57	[7]	CONCAT   	10 10 11
+	58	[7]	CALL     	9 2 2
+	59	[7]	SETTABLE 	8 -20 9	; "index128" -
+	60	[7]	GETGLOBAL	9 -8	; dofile
+	61	[7]	MOVE     	10 4
+	62	[7]	LOADK    	11 -23	; "/simple_map.lua"
+	63	[7]	CONCAT   	10 10 11
+	64	[7]	CALL     	9 2 2
+	65	[7]	SETTABLE 	8 -22 9	; "horizontal_factory" -
+	66	[7]	GETGLOBAL	9 -8	; dofile
+	67	[7]	MOVE     	10 4
+	68	[7]	LOADK    	11 -25	; "/coupled_grade.lua"
+	69	[7]	CONCAT   	10 10 11
+	70	[7]	CALL     	9 2 2
+	71	[7]	CALL     	9 1 2
+	72	[7]	SETTABLE 	8 -24 9	; "coupled_grade" -
+	73	[7]	GETGLOBAL	9 -8	; dofile
+	74	[7]	MOVE     	10 4
+	75	[7]	LOADK    	11 -27	; "/height.lua"
+	76	[7]	CONCAT   	10 10 11
+	77	[7]	CALL     	9 2 2
+	78	[7]	SETTABLE 	8 -26 9	; "height_factory" -
+	79	[7]	SETTABLE 	8 -28 6	; "raw_sha256" -
+	80	[7]	CALL     	7 2 2
+	81	[8]	GETTABLE 	8 7 -29	; "new_with_planner_source_runtime"
+	82	[8]	MOVE     	9 3
+	83	[8]	LOADK    	10 -3	; 1
+	84	[8]	CALL     	8 3 3
+	85	[9]	GETGLOBAL	10 -8	; dofile
+	86	[9]	MOVE     	11 4
+	87	[9]	LOADK    	12 -30	; "/r7_settlement.lua"
+	88	[9]	CONCAT   	11 11 12
+	89	[9]	CALL     	10 2 2
+	90	[9]	LOADNIL  	11 11
+	91	[10]	GETGLOBAL	12 -31	; ipairs
+	92	[10]	GETTABLE 	13 10 -32	; "roster"
+	93	[10]	CALL     	12 2 4
+	94	[10]	JMP      	4	; to 99
+	95	[10]	GETTABLE 	17 16 -33	; "key"
+	96	[10]	EQ       	0 17 1
+	97	[10]	JMP      	1	; to 99
+	98	[10]	MOVE     	11 16
+	99	[10]	TFORLOOP 	12 2
+	100	[10]	JMP      	-6	; to 95
+	101	[11]	GETGLOBAL	12 -1	; assert
+	102	[11]	MOVE     	13 11
+	103	[11]	LOADK    	14 -34	; "missing capital"
+	104	[11]	CALL     	12 3 1
+	105	[12]	GETTABLE 	12 8 -35	; "anchor"
+	106	[12]	GETTABLE 	13 11 -36	; "zone_id"
+	107	[12]	GETTABLE 	14 11 -37	; "slot"
+	108	[12]	CALL     	12 3 2
+	109	[13]	GETGLOBAL	13 -1	; assert
+	110	[13]	GETGLOBAL	14 -38	; io
+	111	[13]	GETTABLE 	14 14 -39	; "open"
+	112	[13]	MOVE     	15 2
+	113	[13]	LOADK    	16 -40	; "w"
+	114	[13]	CALL     	14 3 0
+	115	[13]	CALL     	13 0 2
+	116	[14]	GETGLOBAL	14 -38	; io
+	117	[14]	GETTABLE 	14 14 -41	; "lines"
+	118	[14]	GETGLOBAL	15 -2	; arg
+	119	[14]	GETTABLE 	15 15 -42	; 4
+	120	[14]	CALL     	14 2 4
+	121	[14]	JMP      	27	; to 149
+	122	[15]	SELF     	18 17 -43	; "match"
+	123	[15]	LOADK    	20 -44	; "([^\t]+)\t([^\t]+)"
+	124	[15]	CALL     	18 3 3
+	125	[15]	GETGLOBAL	20 -45	; tonumber
+	126	[15]	MOVE     	21 18
+	127	[15]	CALL     	20 2 2
+	128	[15]	GETGLOBAL	21 -45	; tonumber
+	129	[15]	MOVE     	22 19
+	130	[15]	CALL     	21 2 2
+	131	[15]	MOVE     	19 21
+	132	[15]	MOVE     	18 20
+	133	[16]	GETTABLE 	20 8 -46	; "terrain_height_at"
+	134	[16]	GETTABLE 	21 12 -47	; "x"
+	135	[16]	ADD      	21 21 18
+	136	[16]	GETTABLE 	22 12 -48	; "z"
+	137	[16]	ADD      	22 22 19
+	138	[16]	CALL     	20 3 2
+	139	[16]	GETTABLE 	21 12 -49	; "y"
+	140	[16]	SUB      	20 20 21
+	141	[17]	SELF     	21 13 -50	; "write"
+	142	[17]	MOVE     	23 18
+	143	[17]	LOADK    	24 -51	; "\t"
+	144	[17]	MOVE     	25 19
+	145	[17]	LOADK    	26 -51	; "\t"
+	146	[17]	MOVE     	27 20
+	147	[17]	LOADK    	28 -52	; "\n"
+	148	[17]	CALL     	21 8 1
+	149	[14]	TFORLOOP 	14 1
+	150	[17]	JMP      	-29	; to 122
+	151	[19]	SELF     	14 13 -53	; "close"
+	152	[19]	CALL     	14 2 1
+	153	[19]	RETURN   	0 1

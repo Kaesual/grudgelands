@@ -73,9 +73,9 @@ end
 --                weapon materials and the six pick tiers;
 --   * cloth   -- the Tailor's six bolt grades (§3.5); the doc's "T2 linen
 --                cloth -> woven bolt" becomes the adjective `Woven`;
---   * leather -- the Leatherworker's six leather grades (§3.4). Registered
---                `false` below (its only wearer, the Rogue, is Phase 2) but
---                NAMED here, so the day it registers nothing is invented.
+--   * leather -- the six leather grades (§3.4), registered alongside metal
+--                and cloth as universal base armor; Leatherworkers refine
+--                these base items through their profession recipes.
 --
 grug_gear.MATERIALS = {
 	{metal = {key = "bronze", name = "Bronze"},
@@ -220,17 +220,15 @@ end
 -- interior points of a fit anchored on T1/T4 -- reported as findings; the
 -- vendor brackets stop at ilvl 50 and none of them touches those cells.
 --
--- Only metal and cloth ship (decided 2026-08-07): the MVP classes are
--- Warrior (rank 3) / Mage (rank 1) / Priest (rank 1), so nothing can wear
--- rank 2 and 24 leather items would be dead weight. The leather curve stays
--- here so the coefficients never have to be re-derived -- it is registered
--- with the Rogue (Phase 2) / the WP5 drop tables.
+-- Round 10 registers all three material lines across six tiers. Universal
+-- base recipes include leather; class armor-rank eligibility still governs
+-- wearing a piece independently of who can craft it.
 --
 
 local ARMOR_LINES = {
 	{key = "metal", rank = 3, base = 5.6, per_ilvl = 0.86667, register = true,
 		nouns = {head = "Helm", chest = "Chestplate", legs = "Greaves", feet = "Sabatons"}},
-	{key = "leather", rank = 2, base = 3.2667, per_ilvl = 0.64444, register = false,
+	{key = "leather", rank = 2, base = 3.2667, per_ilvl = 0.64444, register = true,
 		nouns = {head = "Hood", chest = "Jerkin", legs = "Pants", feet = "Boots"}},
 	{key = "cloth", rank = 1, base = 2.3333, per_ilvl = 0.22222, register = true,
 		nouns = {head = "Cowl", chest = "Robe", legs = "Leggings", feet = "Slippers"}},
@@ -376,7 +374,6 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 	local cat = {fixed = {}, extras = {}, all = {}}
 	grug_gear.catalog[bracket] = cat
 
-	local tint = "^[multiply:" .. BRACKET_TINT[bracket]
 	local metal = grug_gear.MATERIALS[bracket].metal
 
 	for _, w in ipairs(WEAPONS) do
@@ -437,7 +434,7 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 					description = describe(grade.name, line.nouns[slot.key],
 						br.ilvl, armor_stats(armor)),
 					inventory_image = "grug_gear_item_" .. slot.key .. "_" ..
-						line.key .. ".png" .. tint,
+						line.key .. "_" .. grade.key .. ".png",
 					groups = {
 						["grug_equip_" .. slot.key] = 1,
 						grug_armor_class = line.rank,

@@ -27,7 +27,7 @@ return function(repo)
 	api.global_exists = function(name) return rawget(env, name) ~= nil end
 	api.get_modpath = function(name)
 		local groups = {default = "BASE", stairs = "BASE", creative = "BASE",
-			player_api = "BASE", mobs = "ENTITIES"}
+			player_api = "BASE", mobs = "ENTITIES", grug_nodes = "ITEMS"}
 		if groups[name] then return repo .. "/mods/" .. groups[name] .. "/" .. name end
 	end
 	local function register(kind, name, def)

@@ -156,6 +156,7 @@ return function(repo)
 			local station_player = {level = 30,
 				is_player = function() return true end,
 				get_player_name = function() return "gold-station-kat" end,
+				get_pos = function() return {x=8,y=2,z=-4} end,
 				get_meta = function() return {} end}
 			local offered = inventory:get_stack("output", 1)
 			context.check(node.allow_metadata_inventory_take(pos, "output", 1,

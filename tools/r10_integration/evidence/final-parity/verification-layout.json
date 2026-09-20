@@ -1,0 +1,7 @@
+{
+  "candidate": "35432bdf232e88a6d633e861b84571fc3411e404",
+  "candidate_root": "/home/jan/projects/grudgelands/.claude/worktrees/r10-integration",
+  "reference_root": "/home/jan/projects/grudgelands/reference_projects",
+  "reference_pins": " f164140154945f0b356521ae721a86e9c7a0e0cf reference_projects/Lord-of-the-Test (v1.2.7)\n c2dbc520ff4e1637072d33b06c3a2404e0f08df7 reference_projects/VoxeLibre (0.91.2-98-gc2dbc520f)\n 5895f403fd43a9464e06b3675af3495f50565a3f reference_projects/animalia (remotes/origin/HEAD)\n ac835da96681774679ace90656812aab67e25b5c reference_projects/animalworld (remotes/origin/HEAD)\n 5ad66e400ec31aa8c6ca33e8a8c2510b6fa5d6fd reference_projects/draconis (heads/main)\n 1a918c7ae3778c3406ad91de6b83a174facad8f0 reference_projects/farming (heads/master)\n ce27b15f87452c9614b515b8a9b53af5d0e8e276 reference_projects/goblins (heads/master)\n df04879066de6eb94ca43996822a6dfacc74feca reference_projects/luanti (5.16.0-74-gdf0487906)\n b5243f3e42410ae3ca85ead795149406fa654538 reference_projects/minetest_game (5.8.0-79-gb5243f3)\n adc76336bf596ea49b86cb45b852848f108e1ebd reference_projects/mobs_monster (adc7633)\n 646ba60a9962b2948a41ee8d56552318d1bc751e reference_projects/mobs_redo (heads/master)\n 60d2280a26e8043264467ad1dc613bf031d9012c reference_projects/protector (heads/master)\n ac5f69d5103d4af841b1a5ed3a0b49a4e19d0c84 reference_projects/x_farming (v4.3.0)\n",
+  "rule": "No candidate changes until every dependent process ends; runner hashes resolved inputs before and after."
+}

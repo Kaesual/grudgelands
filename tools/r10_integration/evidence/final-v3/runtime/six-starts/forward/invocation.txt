@@ -1,0 +1,1 @@
+LUANTI_USER_PATH=/tmp/grudgelands-wp40-profile-run.niWaSrWs/user /tmp/grudgelands-r10/final-six-start-launcher-v3.sh --server --gameid grudgelands --world /tmp/grudgelands-wp40-profile-run.niWaSrWs/world --config PHASE.conf

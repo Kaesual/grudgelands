@@ -72,7 +72,7 @@ local function loader(directory)
 	-- `tools/wp13/capital_lots.lua` asks it for the lots themselves.
 	M.quadrants = districts.quadrants
 
-	local RADIUS = 47
+	local RADIUS = 49
 	local SCHEMA = "grug_wp13_dur_brannoc_core_v1"
 
 	-- The city's own patrol loop. The four gatehouses keep a two-waypoint
@@ -126,9 +126,10 @@ local function loader(directory)
 		-- The gate forecourts: a gate chamber's door is in its city face and
 		-- its doorstep is one node beyond the part's own footprint. The north
 		-- gate's forecourt is the back lane, which already reaches it.
-		{-8, -40, 8, -38, "lane"},
-		{38, -8, 40, 8, "lane"},
-		{-40, -8, -38, 8, "lane"},
+		{-8, -(RADIUS - 7), 8, -38, "lane"},
+		{-8, 38, 8, RADIUS - 7, "lane"},
+		{38, -8, RADIUS - 7, 8, "lane"},
+		{-(RADIUS - 7), -8, -38, 8, "lane"},
 		-- The travel plaza's approach off the east avenue.
 		{4, -13, 11, -11, "lane"},
 		-- The west quarter: the cistern court's walk and the temple's.
@@ -173,11 +174,11 @@ local function loader(directory)
 			spec = {patrol_group = "dur_brannoc_gate_west_tower",
 				deck_group = "dur_brannoc_gate_west_tower", order = 2}},
 		{id = "gate_north", module = "capitals", make = "gatehouse",
-			x = -6, z = 41, turns = 2, palette = "dwarf", roof = "slate",
+			x = -6, z = 43, turns = 2, palette = "dwarf", roof = "slate",
 			spec = {patrol_group = "dur_brannoc_gate_north_tower",
 				deck_group = "dur_brannoc_gate_north_tower", order = 2}},
 		{id = "gate_east", module = "capitals", make = "gatehouse",
-			x = 41, z = -6, turns = 3, palette = "dwarf", roof = "slate",
+			x = 43, z = -6, turns = 3, palette = "dwarf", roof = "slate",
 			spec = {patrol_group = "dur_brannoc_gate_east_tower",
 				deck_group = "dur_brannoc_gate_east_tower", order = 2}},
 
@@ -301,15 +302,16 @@ local function loader(directory)
 	-- wall: the curtain's centre line is at +-256 and its gate tunnel runs
 	-- through the whole seven-node thickness, so a road that stopped at the
 	-- centre line would stop inside the gate.
+	-- Keep lamp and pier cadence independent of the inner avenue endpoint.
 	local GATE_OUT = 261
 	M.avenues = {
-		{id = "avenue_south", axis = "z", at = 0, from = -GATE_OUT, to = -48,
+		{id = "avenue_south", axis = "z", at = 0, from = -GATE_OUT, to = -(RADIUS + 1),
 			gate = "gate_south"},
-		{id = "avenue_north", axis = "z", at = 0, from = 48, to = GATE_OUT,
+		{id = "avenue_north", axis = "z", at = 0, from = RADIUS + 1, to = GATE_OUT, lamp_phase = 48,
 			gate = "gate_north"},
-		{id = "avenue_west", axis = "x", at = 0, from = -GATE_OUT, to = -48,
+		{id = "avenue_west", axis = "x", at = 0, from = -GATE_OUT, to = -(RADIUS + 1),
 			gate = "gate_west"},
-		{id = "avenue_east", axis = "x", at = 0, from = 48, to = GATE_OUT,
+		{id = "avenue_east", axis = "x", at = 0, from = RADIUS + 1, to = GATE_OUT, lamp_phase = 48,
 			gate = "gate_east"},
 	}
 
@@ -794,7 +796,7 @@ local function loader(directory)
 		-- detour and the first parapet column beyond the skip joins straight into
 		-- it. This is an authored corner substitution, not an occupied-cell stop.
 		local drums = 0
-		for _, corner in ipairs({{-45, -45}, {45, -45}, {-45, 45}, {45, 45}}) do
+		for _, corner in ipairs({{-47, -47}, {47, -47}, {-47, 47}, {47, 47}}) do
 			local cx, cz = corner[1], corner[2]
 			if layout.free_area(buf, cx - 2, cz - 2, cx + 2, cz + 2, 8) then
 				buf:ring(cx - 2, cz - 2, cx + 2, cz + 2, 1, 7, STONE)

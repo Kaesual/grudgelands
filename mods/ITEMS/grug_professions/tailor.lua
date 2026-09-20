@@ -41,15 +41,18 @@ for tier = 1, #tiers do
 		P.register_ingredient("grug_gathering:stormkelp", 5)
 	end
 	P.register_ingredient(bolt, tier)
-	P.register_recipe("tailor", {tier = row.recipe_tier or tier,
-		station = "tailor_bench",
-		inputs = grid(row.inputs), output = bolt,
-		material = row.material,
-		hint = "Weave at a Tailor Bench"})
+	core.clear_craft({output = bolt})
+	core.register_craft({output = bolt, recipe = grid(row.inputs)})
 
 	for _, slot in ipairs({"head", "chest", "legs", "feet"}) do
 		P.register_refinement("tailor", tier, "cloth_armor",
 			G .. slot .. "_cloth_" .. row.key, bolt)
+		P.register_add_affix("tailor", tier, "cloth_armor",
+			G .. slot .. "_cloth_" .. row.key, bolt,
+			tier == 1 and "default:coal_lump" or
+				({[2] = "grug_mobs:venom_gland", [3] = "grug_mobs:slime_gel",
+				[4] = "grug_mobs:croc_tooth", [5] = "grug_gathering:stormkelp",
+				[6] = "grug_mobs:stone_core"})[tier])
 	end
 
 	if tier >= 2 then

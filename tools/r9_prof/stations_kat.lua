@@ -3,8 +3,9 @@
 return function(repo)
 	local saved = {core = rawget(_G, "core"), default = rawget(_G, "default"),
 		ItemStack = rawget(_G, "ItemStack"), grug_jobs = rawget(_G, "grug_jobs"),
+		grug_items = rawget(_G, "grug_items"),
 		grug_core = rawget(_G, "grug_core"),
-		grug_brewing = rawget(_G, "grug_brewing")}
+		grug_brewing = rawget(_G, "grug_brewing"), vector = rawget(_G, "vector")}
 	local function restore()
 		for name, value in pairs(saved) do rawset(_G, name, value) end
 	end
@@ -107,6 +108,10 @@ return function(repo)
 	}
 	grug_core = {}
 	grug_brewing = {}
+	vector = {distance = function(first, second)
+		local dx, dy, dz = first.x-second.x, first.y-second.y, first.z-second.z
+		return math.sqrt(dx*dx+dy*dy+dz*dz)
+	end}
 
 	local base_items = {
 		["grug_materials:steel_bar"] = {},
@@ -137,7 +142,7 @@ return function(repo)
 	station_factory.install_jobs(grug_jobs)
 
 	local expected = {
-		{profession = "blacksmith", station = "forge", node = "grug_jobs:forge",
+		{profession = "weaponsmith", station = "forge", node = "grug_jobs:forge",
 			x = 0, y = 1, z = -8, trainer_x = -1, trainer_z = -8},
 		{profession = "leatherworker", station = "tanning_rack",
 			node = "grug_jobs:tanning_rack", x = 2, y = 1, z = -20,
@@ -156,7 +161,9 @@ return function(repo)
 	for index = 1, #expected do
 		local row = expected[index]
 		local info = grug_jobs.station_info(row.station)
-		check(info and info.profession == row.profession and info.node == row.node,
+		check(info and (info.profession == row.profession or
+			(info.professions and info.professions[row.profession])) and
+			info.node == row.node,
 			row.station .. " metadata differs")
 		local definition = core.registered_nodes[row.node]
 		check(definition and definition._grug_station == row.station and
@@ -170,6 +177,23 @@ return function(repo)
 			node_meta:get_inventory():get_size("output") == 1 and
 			node_meta:get_string("formspec"):find("grug_jobs_book", 1, true),
 			row.station .. " formspec differs")
+		local near = {is_player=function()return true end,
+			get_player_name=function()return "near" end,
+			get_pos=function()return {x=pos.x,y=pos.y,z=pos.z} end}
+		local far = {is_player=function()return true end,
+			get_player_name=function()return "far" end,
+			get_pos=function()return {x=pos.x+20,y=pos.y,z=pos.z} end}
+		check(definition.allow_metadata_inventory_put(pos,"craft",1,
+			stack("default:stone 2"),near)==2,
+			row.station .. " refused nearby inventory access")
+		check(definition.allow_metadata_inventory_put(pos,"craft",1,
+			stack("default:stone 2"),far)==0,
+			row.station .. " accepted remote inventory access")
+		core.is_protected=function()return true end
+		check(definition.allow_metadata_inventory_put(pos,"craft",1,
+			stack("default:stone 2"),near)==0,
+			row.station .. " accepted protected inventory access")
+		core.is_protected=function()return false end
 		node_names[row.node] = true
 	end
 
@@ -194,7 +218,7 @@ return function(repo)
 	core.registered_items["test:station_output"] = {}
 	core.registered_items["test:shapeless_output"] = {}
 	grug_jobs.register_ingredient_tier("test:t3", 3)
-	grug_jobs.register_recipe({profession = "blacksmith", tier = 3,
+	grug_jobs.register_recipe({profession = "weaponsmith", tier = 3,
 		station = "forge", inputs = {{"test:t3", "test:base_a"},
 			{"", "test:base_b"}}, output = "test:station_output",
 		hint = "Forge test"})
@@ -217,6 +241,46 @@ return function(repo)
 		{stack("test:base_b"), stack("test:t3"), stack("test:base_a")}) ~= nil,
 		"shapeless station recipe permutation was refused")
 
+	core.registered_items["test:operation_item"] = {}
+	core.registered_items["test:operation_material"] = {}
+	grug_jobs.register_ingredient_tier("test:operation_material", 3)
+	grug_jobs.register_recipe({profession="weaponsmith",tier=3,station="forge",
+		inputs={{"test:operation_item","test:operation_material"}},
+		output="test:operation_item",in_place=true,operation="refinement",
+		family="weapon",hint="Improve test"})
+	local operation_pos={x=40,y=0,z=0}
+	local forge=core.registered_nodes["grug_jobs:forge"]
+	forge.on_construct(operation_pos)
+	local operation_inv=core.get_meta(operation_pos):get_inventory()
+	operation_inv:set_stack("craft",1,stack("test:operation_item"))
+	operation_inv:set_stack("craft",2,stack("test:operation_material"))
+	forge.on_metadata_inventory_put(operation_pos)
+	local rolls,credits,given=0,0,0
+	grug_items={preview_station_operation=function(_,source)return source end,
+		apply_station_operation=function(_,inputs)
+			rolls=rolls+1; return ItemStack(inputs[1])
+		end}
+	grug_jobs.record_craft=function()credits=credits+1 end
+	local room=true
+	local player_inv={room_for_item=function()return room end,
+		add_item=function(_,_,result)given=given+result:get_count();return stack("") end}
+	local operator={is_player=function()return true end,
+		get_player_name=function()return "operator" end,
+		get_pos=function()return {x=40,y=0,z=0} end,
+		get_inventory=function()return player_inv end}
+	forge.on_receive_fields(operation_pos,"",{grug_jobs_apply=true},operator)
+	check(rolls==1 and credits==1 and given==1 and
+		operation_inv:get_stack("craft",1):is_empty(),
+		"successful operation did not settle exactly once")
+	operation_inv:set_stack("craft",1,stack("test:operation_item"))
+	operation_inv:set_stack("craft",2,stack("test:operation_material"))
+	forge.on_metadata_inventory_put(operation_pos)
+	room=false
+	forge.on_receive_fields(operation_pos,"",{grug_jobs_apply=true},operator)
+	check(rolls==1 and credits==1 and
+		not operation_inv:get_stack("craft",1):is_empty(),
+		"full inventory rolled, credited or consumed an operation")
+
 	restore()
 	local settlement = dofile(repo ..
 		"/mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua")
@@ -227,57 +291,45 @@ return function(repo)
 			capitals = capitals + 1
 			local source = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/" ..
 				profile.blueprint_file)()
-			local original, original_cells = source.core.build(), {}
-			for index = 1, #original.cells do
-				local cell = original.cells[index]
-				original_cells[cell.x .. ":" .. cell.y .. ":" .. cell.z] = cell.name
-			end
-			local descriptors = settlement.descriptors(profile, source)
-			local projected
-			local blueprints = {}
-			for index = 1, #descriptors do
-				local descriptor = descriptors[index]
-				if descriptor.kind ~= "overlay" then
-					local blueprint = descriptor.build()
-					blueprints[#blueprints + 1] = {descriptor = descriptor,
-						landmarks = blueprint.landmarks, reference = blueprint.reference}
-					if descriptor.id == "core" then projected = blueprint end
+			local descriptors=settlement.descriptors(profile,source)
+			local blueprints,cells={},{}
+			for _,descriptor in ipairs(descriptors) do
+				if descriptor.kind~="overlay" then
+					local blueprint=descriptor.build();local offset=descriptor.offset or {x=0,z=0}
+					blueprints[#blueprints+1]={descriptor=descriptor,landmarks=blueprint.landmarks,
+						reference=blueprint.reference}
+					for _,cell in ipairs(blueprint.cells) do
+						cells[(cell.x+offset.x)..":"..cell.y..":"..(cell.z+offset.z)]=cell.name
+					end
 				end
 			end
-			local projected_cells, station_cells = {}, {}
-			for index = 1, #projected.cells do
-				local cell = projected.cells[index]
-				projected_cells[cell.x .. ":" .. cell.y .. ":" .. cell.z] = cell.name
-				if node_names[cell.name] or cell.name == "grug_brewing:brewing_stand" then
-					station_cells[#station_cells + 1] = cell.x .. ":" .. cell.y .. ":" .. cell.z
+			local prepared={schema="grug_wp13_settlement_prepared_v1",profile=profile,blueprints=blueprints}
+			local sockets=settlement.sockets(prepared,{x=0,y=20,z=0},function() return 20 end)
+			local station_nodes={forge="grug_jobs:forge",tailor_bench="grug_jobs:tailor_bench",
+				tanning_rack="grug_jobs:tanning_rack",carving_bench="grug_jobs:carving_bench",
+				jewellers_bench="grug_jobs:jewellers_bench",brewing_stand="grug_brewing:brewing_stand",
+				furnace="default:furnace"}
+			local public,count={},0
+			for _,socket in ipairs(sockets) do
+				if socket.role=="public_station" then
+					local id=socket.tags[1];count=count+1
+					check(station_nodes[id] and not public[id],profile.key.." duplicate/unknown station")
+					check(cells[socket.x..":"..socket.y..":"..socket.z]==station_nodes[id],
+						profile.key.." authored public node differs")
+					check(socket.id:find("/",1,true)~=nil,profile.key.." station remained in core")
+					public[id]=socket
 				end
 			end
-			check(#station_cells == 6, profile.key .. " station count differs")
-			local occupied = {}
-			for index = 1, #expected do
-				local row = expected[index]
-				local cell_key = row.x .. ":" .. row.y .. ":" .. row.z
-				check(math.abs(row.x - row.trainer_x) +
-					math.abs(row.z - row.trainer_z) == 1,
-					profile.key .. " " .. row.station .. " is not trainer-adjacent")
-				check(original_cells[cell_key] == "air" and
-					projected_cells[cell_key] == row.node and not occupied[cell_key],
-					profile.key .. " " .. row.station .. " projection differs")
-				occupied[cell_key] = true
-			end
-			local brewing_key = "2:1:-12"
-			check(original_cells[brewing_key] == "air" and
-				projected_cells[brewing_key] == "grug_brewing:brewing_stand" and
-				not occupied[brewing_key], profile.key .. " brewing stand differs")
-			occupied[brewing_key] = true
-			local prepared = {schema = "grug_wp13_settlement_prepared_v1",
-				profile = profile, blueprints = blueprints}
-			local sockets = settlement.sockets(prepared, {x = 0, y = 20, z = 0},
-				function() return 20 end)
-			for index = 1, #sockets do
-				local socket = sockets[index]
-				check(not occupied[socket.x .. ":" .. socket.y .. ":" .. socket.z],
-					profile.key .. " station overlaps socket " .. socket.id)
+			check(count==7,profile.key.." station count differs")
+			local profession_station={weaponsmith="forge",armorsmith="forge",tailor="tailor_bench",
+				leatherworker="tanning_rack",woodcarver="carving_bench",goldsmith="jewellers_bench",
+				alchemist="brewing_stand",cooking="furnace"}
+			for _,socket in ipairs(sockets) do
+				if socket.role=="trainer" then
+					local at=assert(public[profession_station[socket.profession]])
+					local distance=(at.x-socket.x)^2+(at.y-socket.y)^2+(at.z-socket.z)^2
+					check(distance>0 and distance<=8,profile.key.." trainer/station reach differs")
+				end
 			end
 		end
 	end
@@ -285,7 +337,8 @@ return function(repo)
 
 	local report = {"stations\tids=5\tnodes=5\tgrid=3x3\tbook_button\n",
 		"recipes\thousing_t3=5\tacyclic\tshaped+shapeless\tstation_isolated\n",
-		"capitals\tcount=6\tstations_each=6\tformer_air\tadjacent\tdistinct\n"}
+		"operation\tnear+ACL\texact-once\tfull-inventory-no-roll\n",
+		"capitals\tcount=6\tstations_each=7\tauthored_outer_socket\treachable\tshared_forge\n"}
 	for index = 1, #expected do
 		local row = expected[index]
 		report[#report + 1] = table.concat({row.profession, row.station, row.node,

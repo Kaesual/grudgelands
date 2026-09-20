@@ -58,7 +58,7 @@ return function(repo)
 	local function make_stack(value)
 		if getmetatable(value) == Stack then
 			return setmetatable({name = value.name, count = value.count,
-				values = clone(value.values), caps = clone(value.caps)}, Stack)
+				values = clone(value.values), caps = clone(value.caps), wear=value.wear}, Stack)
 		end
 		if type(value) == "string" and serialized_stacks[value] then
 			return make_stack(serialized_stacks[value])
@@ -71,6 +71,8 @@ return function(repo)
 	function Stack:get_name() return self.name end
 	function Stack:get_count() return self.count end
 	function Stack:set_count(value) self.count = value end
+	function Stack:get_wear() return self.wear or 0 end
+	function Stack:set_wear(value) self.wear = value end
 	function Stack:get_definition() return definitions[self.name] or {} end
 	function Stack:get_meta() return new_meta(self) end
 	function Stack:get_tool_capabilities()
@@ -326,6 +328,82 @@ return function(repo)
 		"Restores 2 Rage on an accepted hit", 1, true),
 		"trinket authored special was lost during regeneration")
 	row("trinket", "one prefix", "one suffix", "unrefined exception")
+
+	-- C2. Direct station operations preserve the concrete stack and append once.
+	local station_base = ItemStack("test:melee")
+	station_base:set_wear(1234)
+	station_base:get_meta():set_string("custom_probe", "kept")
+	local refine_recipe = {in_place=true, operation="refinement",
+		family="melee_weapon", output_name="test:melee"}
+	local refined = grug_items.apply_station_operation(refine_recipe,
+		{station_base, ItemStack("test:reagent")}, {level=1})
+	check(refined and refined:get_meta():get_int("grug_refined")==1,
+		"station refinement failed")
+	check(refined:get_wear()==1234 and
+		refined:get_meta():get_string("custom_probe")=="kept",
+		"station refinement lost concrete-stack state")
+	check(station_base:get_meta():get_int("grug_refined")==0,
+		"station refinement mutated input before settlement")
+	local add_recipe = {in_place=true, operation="add_affix",
+		family="melee_weapon", output_name="test:melee"}
+	local preview = grug_items.preview_station_operation(add_recipe, refined)
+	check(#grug_items.get_affixes(preview)==0 and
+		preview:get_meta():get_string("description"):find("rolled on Apply",1,true),
+		"affix preview rolled early or hid its intent")
+	local one = grug_items.apply_station_operation(add_recipe,
+		{refined, ItemStack("test:material"), ItemStack("test:reagent")},
+		{level=1})
+	check(one and #grug_items.get_affixes(one)==1,
+		"Apprentice did not append exactly one affix")
+	local denied = grug_items.apply_station_operation(add_recipe,
+		{one, ItemStack("test:material"), ItemStack("test:reagent")}, {level=1})
+	check(not denied and #grug_items.get_affixes(one)==1,
+		"denied append changed the source stack")
+	local current=one
+	for expected=2,4 do
+		current=assert(grug_items.apply_station_operation(add_recipe,
+			{current,ItemStack("test:material"),ItemStack("test:reagent")},
+			{level=46}))
+		check(#grug_items.get_affixes(current)==expected,
+			"Master append count differs at slot "..expected)
+	end
+	row("station_ops", "preserve stack", "append one", "mastery 1/2/3/4")
+	local kit_item=ItemStack("test:melee")
+	grug_items.set_refined(kit_item,true)
+	check(grug_items.apply_upgrade_kit(kit_item,"imbue",8181),
+		"imbue kit did not enchant refined Common")
+	local kit_affixes=grug_items.get_affixes(kit_item)
+	check(#kit_affixes>=1 and #kit_affixes<=2,
+		"imbue kit escaped its 1-2 affix budget")
+	local kit_stats={}
+	for index=1,#kit_affixes do kit_stats[index]=kit_affixes[index].stat end
+	check(grug_items.apply_upgrade_kit(kit_item,"temper",9191) and
+		kit_item:get_meta():get_int("grug_upgrades")==1,
+		"first temper did not settle")
+	check(grug_items.apply_upgrade_kit(kit_item,"temper",9292) and
+		kit_item:get_meta():get_int("grug_upgrades")==2,
+		"second temper did not settle")
+	check(not grug_items.apply_upgrade_kit(kit_item,"temper",9393),
+		"third temper exceeded the cap")
+	local after_temper=grug_items.get_affixes(kit_item)
+	for index=1,#after_temper do
+		check(after_temper[index].stat==kit_stats[index],
+			"temper changed affix identity")
+	end
+	local kit_trinket=ItemStack("test:trinket")
+	check(grug_items.apply_upgrade_kit(kit_trinket,"imbue",9494) and
+		#grug_items.get_affixes(kit_trinket)==2 and
+		kit_trinket:get_meta():get_int("grug_refined")==0,
+		"gem-setting imbue lost the fixed unrefined trinket exception")
+	local trinket_before=grug_items.get_affixes(kit_trinket)
+	check(grug_items.apply_upgrade_kit(kit_trinket,"temper",9595),
+		"gem-setting temper rejected an enchanted trinket")
+	local trinket_after=grug_items.get_affixes(kit_trinket)
+	check(#trinket_after==2 and trinket_after[1].stat==trinket_before[1].stat and
+		trinket_after[2].stat==trinket_before[2].stat and
+		kit_trinket:get_meta():get_int("grug_refined")==0,
+		"gem-setting temper changed trinket channels or refinement state")
+	row("kits", "imbue 1-2", "temper values", "cap two", "trinkets fixed two")
 
 	-- D. §6.4's exact crafted-quality source table and mastery slot counts.
 	local crafted = grug_items.CRAFTED_QUALITY

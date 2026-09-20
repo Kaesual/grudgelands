@@ -59,6 +59,8 @@ return function(repo, production_repo, check_composition, compact)
 	function source.surface_cave_cell_at() return 0, 0 end
 	function source.surface_cave_constants() return 80, -30912, 24, 2, 24 end
 	function source.coast_profile_at() return nil end
+	function source.coast_material_at() return nil end
+	function source.primary_relief_at() return nil end
 	function source.landmark_excluded_at() return false end
 	function source.metrics() return {} end
 	local identity = {}

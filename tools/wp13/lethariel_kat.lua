@@ -34,6 +34,7 @@
 -- Plain Lua 5.1; the same bytes must run under LuaJIT and PUC 5.1.
 
 return function(repo)
+	local public_socket=dofile(repo.."/tools/r10_cap/public_socket_oracle.lua")
 	local wp13 = repo .. "/mods/MAPGEN/grug_mapgen/wp13"
 	local parts = dofile(wp13 .. "/parts.lua")
 	local avenue = dofile(wp13 .. "/avenue.lua")(wp13)
@@ -105,8 +106,9 @@ return function(repo)
 				assert(spec.pond, label .. " writes water and is not a pond")
 				water = water + 1
 			else
-				assert(not cell.name:find("water") and
-					not cell.name:find("lava"),
+				local definition=world.nodes[cell.name]
+				assert(not definition or not definition.liquidtype or
+					definition.liquidtype=="none",
 					label .. " writes the liquid " .. cell.name)
 			end
 			assert(cell.name == "air" or world.nodes[cell.name] ~= nil,
@@ -232,7 +234,7 @@ return function(repo)
 	FEATURE.sit = false
 	FEATURE.sweep = false
 
-	local ROLES = {guard_post = true, guard_patrol = true, vendor = true,
+	local ROLES = {trainer=true,riding_trainer=true,mount_display=true,gear_display=true,public_station=true,guard_post = true, guard_patrol = true, vendor = true,
 		idle = true, quest = true, king = true, waypoint = true, work = true}
 
 	local FACEDIR_DIR = {[0] = {0, 1}, [1] = {1, 0}, [2] = {0, -1},
@@ -277,8 +279,8 @@ return function(repo)
 			end
 			for _, level in ipairs({socket.y, socket.y + 1}) do
 				local cell = at(socket.x, level, socket.z)
-				assert(cell == nil or cell.name == "air" or
-					not walkable(cell.name),
+				assert((level==socket.y and public_socket(socket,cell and cell.name)) or
+					cell == nil or cell.name == "air" or not walkable(cell.name),
 					label .. " socket " .. socket.id ..
 						" is blocked at y " .. level .. " by " ..
 						tostring(cell and cell.name))
@@ -399,7 +401,7 @@ return function(repo)
 	-- ------------------------------------------------------------------
 	local core = capital.core()
 	local core_result = check_composition("lethariel core", core,
-		{reach = 47, ymin = -2, ymax = 40, budget = 150000, min_lights = 40})
+		{reach = 49, ymin = -2, ymax = 40, budget = 150000, min_lights = 40})
 	local core_counts = check_sockets("lethariel core", core, core_result,
 		{min_sockets = 60})
 
@@ -546,8 +548,8 @@ return function(repo)
 	assert(longest <= 13, "the core's boundary carries " .. longest ..
 		" unbroken columns of castle masonry, which is a curtain wall")
 
-	assert(L.hedge_columns == 246, "the core's planted edge has " ..
-		L.hedge_columns .. " columns, not 246")
+	assert(L.hedge_columns == 258, "the core's planted edge has " ..
+		L.hedge_columns .. " columns, not 258")
 	assert(L.standards >= 16, "the core keeps only " .. L.standards ..
 		" silverwood standards")
 	assert(L.lantern_pillars >= 16, "the core lights only " ..
@@ -850,7 +852,7 @@ return function(repo)
 		return {id = run.id, axis = run.axis, at = run.at,
 			from = from or run.from, to = to or run.to,
 			width = avenue.WIDTH, lamp_spacing = avenue.LAMP_SPACING,
-			lamp_phase = run.from, reach = avenue.REACH, wet = wet,
+			lamp_phase = run.lamp_phase or run.from, reach = avenue.REACH, wet = wet,
 			junctions = run.junctions, plain_verge = run.plain_verge,
 			clear_verge = run.clear_verge}
 	end

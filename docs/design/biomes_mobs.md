@@ -784,6 +784,11 @@ source is a low hand-gathered node and drops exactly one stable raw item; the
 three healing herbs first pass the fail-closed Alchemist authorization below.
 The exact named-zone and host rosters are `world_zones.md` Section 11; density
 is over eligible root columns, not all map columns.
+Rock Salt retains exactly Gravesalt, Stormscale and Wyrmglass. Its dry cardinal
+shore roots require logical Beach: sand in Gravesalt, stone or gravel on the
+two mountain islands. The final P7 support must match the zone-specific host;
+mountain beach sand is not retained to make the resource placeable. No other
+gathering source set, density or harvest rule changes.
 
 | Source | Exact opportunity density | Classification | Farmable in WP32 |
 |---|---:|---|---|
@@ -879,6 +884,12 @@ and its nearby-player lifetime refresh uses 47 nodes
 (`reference_projects/VoxeLibre/mods/ENTITIES/mcl_mobs/api.lua:451-460`).
 
 ### 3.0 Critters vs. passive prey vs. enemies (decided 2026-08-08)
+
+Idle and freely roaming ground mobs and NPCs choose only motion whose existing
+bounded forward probe finds a descent of at most one node. This cheap local
+guard keeps ambient populations out of ravines without adding wide scans or
+full pathfinding. Combat, fleeing, authored patrols and scripted return routes
+retain their separate movement contracts.
 
 Three behaviour classes, not two. The split is by **size and role**, not by
 who runs away:

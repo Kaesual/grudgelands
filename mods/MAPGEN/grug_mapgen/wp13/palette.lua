@@ -275,12 +275,12 @@ M.races.human = {
 	-- `ground_patch` (`default:dirt`): default's "Grass spread" ABM names
 	-- exactly `default:dirt` and nothing else, so a field written out of the
 	-- worn-earth role greened over row by row while the player watched.
-	-- `grug_nodes:tilled_soil` is outside that ABM's `nodenames` and carries
+	-- `grug_farming:soil` is outside that ABM's `nodenames` and carries
 	-- no `spreading_dirt_type`, so it is neither a target nor a source of
 	-- grass spread and a field stays a field. Only this race ploughs, so only
 	-- this palette binds the role; `dressing.crop_rows` falls back to the old
 	-- pair for a race that does not.
-	crop_soil = "grug_nodes:tilled_soil",
+	crop_soil = "grug_farming:soil",
 	-- The town pond of playtest round 3, and the only water any WP13
 	-- composition writes. RIVER water and not ordinary water: it is
 	-- `liquid_renewable = false` with `liquid_range = 2` (default/nodes.lua),

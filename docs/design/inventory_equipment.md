@@ -233,30 +233,24 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   item category (professions.md §4), so it is bought, not crafted-only.
 - No item drop on death (unchanged; death costs XP, not gear).
 
-## 4. Crafting model (revised 2026-09-18 — replaces the workbench-UI split)
+## 4. Crafting model (revised 2026-09-20)
 
-- **Ordinary items are crafted in the 3×3 grid**, base recipes and profession
-  recipes alike; profession items are **multi-stage** (ore → ingot →
-  component → item). Cultural finishing and weapon-counter preparation are
-  deliberate exceptions: each is a transactional in-place workstation
-  operation on one specific stack, so its refinement, quality, affixes,
-  durability and unrelated metadata survive. They create no intermediate kit
-  or parallel item identity (`items_crafting.md` §4).
-- **Recipes are gated by profession progression**: laying the right
-  materials into the grid without having unlocked the recipe produces
-  nothing (`craft_predict` veto). What a character has unlocked is
-  defined by the learned profession and its T1–T6 profession level
-  (`items_crafting.md` §2.2–§2.3, revised 2026-09-18); the recipe book is
-  the UI for that state, never an inventory item.
-- **The book UI is mandatory**, since a 3×3 shape you don't know is
-  otherwise undiscoverable: unlocked recipes are browsable, reachable
-  directly beside the 3×3 grid. The page shows two primary slots, Cooking and
-  the always-open General book; empty profession slots point to trainers.
-- A recipe's station field is authoritative: `grid`, `furnace`,
-  `dual_furnace` or `brewing_stand`. Grid recipes need no nearby workbench.
-  Refinement and alloy recipes use their named furnace; alchemy recipes use
-  the brewing stand. Every station repeats the book button and its recipe rows
-  state the station hint.
+- **Basics** is the exclusive category for profession-free recipes. Every recipe
+  route belongs to exactly one category: Basics or its owning profession.
+- Everyone uses the familiar 3×3 layouts to make plain weapons, tools and
+  metal, cloth or leather armor. Plain feedstock preparation for cloth, leather
+  and processed wood is also profession-free. Professional fittings, grips and
+  other improvement materials remain trade goods but are never base-item inputs.
+- Equipment refinement and Add Affix use their owning profession station.
+  Weaponsmith and Armorsmith share one Forge; Leatherworker uses the Tanning
+  Rack, Tailor the Tailor Bench and Woodcarver the Carving Bench. These are
+  transactional in-place operations on one concrete stack and preserve its
+  metadata and wear. Other profession recipes retain their explicit grid,
+  furnace, dual-furnace or brewing-stand route.
+- Learned profession and T1–T6 profession level gate professional operations.
+  Universal Basics routes have neither gate and award no profession progress.
+- Recipe books display human item descriptions. A group slot lists concrete
+  alternatives with “or”; arrows switch only between complete recipe routes.
 - Claim ACL access never grants a recipe, profession tier or material the
   character has not unlocked.
 

@@ -35,6 +35,7 @@
 -- Plain Lua 5.1; the same bytes must run under LuaJIT and PUC 5.1.
 
 return function(repo)
+	local public_socket=dofile(repo.."/tools/r10_cap/public_socket_oracle.lua")
 	local wp13 = repo .. "/mods/MAPGEN/grug_mapgen/wp13"
 	local parts = dofile(wp13 .. "/parts.lua")
 	local palettes = dofile(wp13 .. "/palette.lua")
@@ -167,8 +168,9 @@ return function(repo)
 			assert(cell.name ~= "grug_nodes:guard_banner" and
 				cell.name ~= "grug_nodes:camp_fire",
 				label .. " writes a decorative spawner")
-			assert(not cell.name:find("water") and not cell.name:find("lava"),
-				label .. " writes a liquid")
+			local definition=world.nodes[cell.name]
+			assert(not definition or not definition.liquidtype or
+				definition.liquidtype=="none", label .. " writes a liquid")
 			local key = cell.x .. ":" .. cell.y .. ":" .. cell.z
 			assert(index[key] == nil, label .. " writes " .. key .. " twice")
 			if previous then
@@ -342,7 +344,8 @@ return function(repo)
 			assert(dir[1] == entry.dir.x and dir[2] == entry.dir.z,
 				label .. ": the socket " .. entry.id ..
 					" has a dir that is not its own facedir")
-			assert(stand(entry.x, entry.y, entry.z), label ..
+			assert(public_socket(entry,node(entry.x,entry.y,entry.z)) or
+				stand(entry.x, entry.y, entry.z), label ..
 				": the socket " .. entry.id .. " at " .. entry.x .. "," ..
 				entry.y .. "," .. entry.z .. " is not a standing position")
 		end
@@ -358,7 +361,7 @@ return function(repo)
 	-- ------------------------------------------------------------------
 	local core = capital.core()
 	local core_view = check_composition("gor_drazhak core", core,
-		{reach = 47, ymin = -2, ymax = 40, budget = 150000, ground = 0,
+		{reach = 49, ymin = -2, ymax = 40, budget = 150000, ground = 0,
 			min_lights = 30})
 	local L = core.landmarks
 
@@ -409,8 +412,8 @@ return function(repo)
 	-- The identity pieces of the contract's orc line, each counted.
 	assert(L.corner_towers == 4, "the precinct has " ..
 		tostring(L.corner_towers) .. " corner towers")
-	assert(L.bank_columns == 296, "the precinct bank has " ..
-		tostring(L.bank_columns) .. " columns, not 296")
+	assert(L.bank_columns == 312, "the precinct bank has " ..
+		tostring(L.bank_columns) .. " columns, not 312")
 	assert(L.bank_stakes >= 90, "the precinct stockade carries only " ..
 		tostring(L.bank_stakes) .. " stakes")
 	assert(L.deck_rings == 4, "only " .. tostring(L.deck_rings) ..
@@ -536,7 +539,7 @@ return function(repo)
 	for _, entry in ipairs(core_view.sockets) do all[#all + 1] = entry end
 	for _, entry in ipairs(plot_sockets) do all[#all + 1] = entry end
 
-	local ROLES = {king = true, vendor = true, quest = true, waypoint = true,
+	local ROLES = {trainer=true,riding_trainer=true,mount_display=true,gear_display=true,public_station=true,king = true, vendor = true, quest = true, waypoint = true,
 		guard_post = true, guard_patrol = true, idle = true, work = true}
 	local ACTIVITIES = {smith = true, fish = true, farm = true, chop = true,
 		tend = true, pray = true, stall = true, sit = true, sweep = true,
@@ -742,7 +745,7 @@ return function(repo)
 		local surface = wall_surface()
 		local piece = palisade.run(orc, {id = spec.id, axis = spec.axis,
 			at = spec.at, from = spec.from, to = spec.to, width = avenue.WIDTH,
-			lamp_spacing = avenue.LAMP_SPACING, lamp_phase = spec.from,
+			lamp_spacing = avenue.LAMP_SPACING, lamp_phase = spec.lamp_phase or spec.from,
 			reach = avenue.REACH}, surface, plan)
 		wall_cells = wall_cells + #piece.cells
 		wall_columns = wall_columns + piece.columns
@@ -1005,7 +1008,7 @@ return function(repo)
 		local piece = capital.overlay_run(avenue, orc,
 			{id = spec.id, axis = spec.axis, at = spec.at, from = spec.from,
 				to = spec.to, width = avenue.WIDTH,
-				lamp_spacing = avenue.LAMP_SPACING, lamp_phase = spec.from,
+				lamp_spacing = avenue.LAMP_SPACING, lamp_phase = spec.lamp_phase or spec.from,
 				reach = avenue.REACH}, ramp_surface)
 		road_cells = road_cells + #piece.cells
 		rail_cells = rail_cells + piece.street.rails
@@ -1096,7 +1099,7 @@ return function(repo)
 		forage = {"default:dry_shrub", "default:acacia_leaves",
 			"default:dry_grass_3", "default:dry_grass_5"},
 		-- "a counter (any solid node at waist height)"
-		stall = {"grug_decor:cottages_table", "stairs:slab_acacia_wood",
+		stall = {"grug_decor:capital_counter", "grug_decor:cottages_table", "stairs:slab_acacia_wood",
 			"default:fence_acacia_wood", "grug_decor:cottages_shelf",
 			"grug_decor:xdecor_barrel"},
 	}

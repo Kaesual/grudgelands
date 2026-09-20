@@ -80,7 +80,7 @@ local function loader(directory)
 	--                leaves on a silverwood stem, not default's bush: the hedge
 	--                between two elf plots is the same wood the plots are built
 	--                of, which is what "groves between plots" means;
-	--   `crop_soil`  the tilled row of a garden. `grug_nodes:tilled_soil` is
+	--   `crop_soil`  the tilled row of a garden. `grug_farming:soil` is
 	--                outside default's grass-spread ABM, so a field stays a
 	--                field (the lesson `dressing.crop_rows` records);
 	--   `crop`       what grows in it.
@@ -88,7 +88,7 @@ local function loader(directory)
 		water = "default:river_water_source",
 		hedge = "grug_trees:silverwood_leaves",
 		hedge_stem = "grug_trees:silverwood_tree",
-		crop_soil = "grug_nodes:tilled_soil",
+		crop_soil = "grug_farming:soil",
 		crop = "default:junglegrass",
 	}
 

@@ -5,6 +5,7 @@ end
 
 local factory = {}
 local PUBLIC_STATIONS = {
+	furnace = true,
 	brewing_stand = true,
 	forge = true,
 	tanning_rack = true,
@@ -33,10 +34,31 @@ function factory.is_public_station(station, pos)
 	return public_positions[station .. "\0" .. pos_key(pos)] == true
 end
 
+-- The vendored furnace keeps its complete timer/extraction chain; this is
+-- only the explicit authored public-position exception to node protection.
+function factory.can_access_public_furnace(pos, player)
+	if not factory.is_public_station("furnace", pos) or not player or
+			not player.is_player or not player:is_player() or player:get_hp() <= 0 then
+		return false
+	end
+	local at = player:get_pos()
+	if not at or vector.distance(at, pos) > 8 then return false end
+	local node = core.get_node_or_nil(pos)
+	return node ~= nil and (node.name == "default:furnace" or
+		node.name == "default:furnace_active")
+end
+
 local function may_access(station, pos, player)
 	if factory.is_public_station(station, pos) then return true end
 	return player and player.is_player and player:is_player() and
 		not core.is_protected(pos, player:get_player_name())
+end
+
+local function may_use_here(station, pos, player)
+	if not may_access(station, pos, player) or not player or
+			type(player.get_pos) ~= "function" then return false end
+	local player_pos = player:get_pos()
+	return player_pos ~= nil and vector.distance(player_pos, pos) <= 8
 end
 
 local function jobs_api()
@@ -47,20 +69,28 @@ local function jobs_api()
 	return jobs
 end
 
-local function formspec(station)
+local function formspec(station, operation)
 	local jobs = jobs_api()
 	local info = jobs.station_info(station)
+	local input_label = operation and "Item + material" or "Craft"
+	local output_label = operation and "Result preview" or "Output"
+	local action_label = operation == "add_affix" and "Add Affix" or "Refine"
+	local operation_hint = operation == "add_affix" and
+		"label[6.2,1.25;Adds one random legal affix]" or
+		(operation and "label[6.2,1.25;Exact improved result]" or "")
 	return "formspec_version[3]size[10,10]" ..
 		"label[1.5,0.35;" .. core.formspec_escape(info.display_name) .. "]" ..
-		"label[1.5,0.75;Craft]list[context;craft;1.5,1.1;3,3;]" ..
+		"label[1.5,0.75;" .. input_label .. "]list[context;craft;1.5,1.1;3,3;]" ..
 		"image[5.0,2.05;1,1;gui_furnace_arrow_bg.png^[transformR270]" ..
-		"label[6.2,0.75;Output]list[context;output;6.2,2.05;1,1;]" ..
+		"label[6.2,0.75;" .. output_label .. "]list[context;output;6.2,2.05;1,1;]" ..
 		"list[current_player;main;1,5.15;8,1;]" ..
 		"list[current_player;main;1,6.4;8,3;8]" ..
 		"listring[context;output]listring[current_player;main]" ..
 		"listring[context;craft]listring[current_player;main]" ..
 		default.get_hotbar_bg(1, 5.15) ..
-		jobs.station_book_button(station)
+		jobs.station_book_button(station) ..
+		(operation and "button[7.45,2.0;1.8,0.8;grug_jobs_apply;" ..
+			action_label .. "]" or "") .. operation_hint
 end
 
 local function recipe_at(pos, station)
@@ -73,7 +103,23 @@ end
 local function refresh_output(pos, station)
 	local inv = core.get_meta(pos):get_inventory()
 	local recipe = recipe_at(pos, station)
-	inv:set_stack("output", 1, recipe and ItemStack(recipe.output) or ItemStack(""))
+	local output = recipe and ItemStack(recipe.output) or ItemStack("")
+	if recipe and recipe.in_place then
+		for index = 1, 9 do
+			local candidate = inv:get_stack("craft", index)
+			if candidate:get_name() == recipe.output_name then
+				output = ItemStack(candidate)
+				break
+			end
+		end
+		local quality = rawget(_G, "grug_items")
+		if quality and type(quality.preview_station_operation) == "function" then
+			output = quality.preview_station_operation(recipe, output)
+		end
+	end
+	inv:set_stack("output", 1, output)
+	core.get_meta(pos):set_string("formspec", formspec(station,
+		recipe and recipe.operation))
 end
 
 local function initialize(pos, station)
@@ -100,21 +146,29 @@ end
 local function register_station_node(station, info, visual)
 	local name = info.node
 	local function allow_put(pos, listname, index, stack, player)
-		if not may_access(station, pos, player) or listname ~= "craft" then return 0 end
+		if not may_use_here(station, pos, player) or listname ~= "craft" then return 0 end
 		return stack:get_count()
 	end
 	local function allow_move(pos, from_list, from_index, to_list, to_index,
 			count, player)
-		if not may_access(station, pos, player) or from_list == "output" or
+		if not may_use_here(station, pos, player) or from_list == "output" or
 				to_list == "output" or to_list ~= "craft" then
 			return 0
 		end
 		return count
 	end
 	local function allow_take(pos, listname, index, stack, player)
-		if not may_access(station, pos, player) then return 0 end
+		if not may_use_here(station, pos, player) then return 0 end
 		if listname ~= "output" then return stack:get_count() end
+		if not player or not player.is_player or not player:is_player() then
+			return 0
+		end
 		local recipe = recipe_at(pos, station)
+		if recipe and recipe.operation then
+			core.chat_send_player(player:get_player_name(),
+				"Use Apply to complete this " .. recipe.operation .. ".")
+			return 0
+		end
 		if not recipe or ItemStack(recipe.output):get_count() ~= stack:get_count() then
 			return 0
 		end
@@ -157,6 +211,42 @@ local function register_station_node(station, info, visual)
 	local function on_receive_fields(pos, formname, fields, sender)
 		if fields.grug_jobs_book and sender and sender:is_player() then
 			jobs_api().open_book(sender, "station", station)
+		elseif fields.grug_jobs_apply and sender and sender:is_player() then
+			if not may_use_here(station, pos, sender) then
+				core.chat_send_player(sender:get_player_name(),
+					"Move closer to this station to use it.")
+				return
+			end
+			local recipe = recipe_at(pos, station)
+			local jobs = jobs_api()
+			local allowed, reason = jobs.can_craft_recipe(sender, recipe)
+			local quality = rawget(_G, "grug_items")
+			if allowed and recipe and recipe.operation and quality and
+					type(quality.apply_station_operation) == "function" then
+				local station_inv = core.get_meta(pos):get_inventory()
+				local preview = station_inv:get_stack("output", 1)
+				if not sender:get_inventory():room_for_item("main", preview) then
+					allowed, reason = false, "Make room in your inventory."
+				else
+					local result, operation_reason = quality.apply_station_operation(
+						recipe, station_inv:get_list("craft") or {}, sender)
+					if result then
+					consume_inputs(pos)
+					sender:get_inventory():add_item("main", result)
+					jobs.record_craft(sender, recipe.profession, recipe.tier)
+					else
+						reason = operation_reason
+						allowed = false
+					end
+				end
+			elseif allowed then
+				allowed, reason = false, "This operation is unavailable."
+			end
+			if not allowed then
+				core.chat_send_player(sender:get_player_name(), reason or
+					"The operation was refused.")
+			end
+			refresh_output(pos, station)
 		end
 	end
 	local definition = {
@@ -200,7 +290,8 @@ local wood_boxes = {
 }
 
 local STATION_INFO = {
-	forge = {display_name = "Forge", profession = "blacksmith",
+	forge = {display_name = "Forge", professions = {weaponsmith = true,
+		armorsmith = true},
 		node = "grug_jobs:forge"},
 	tanning_rack = {display_name = "Tanning Rack", profession = "leatherworker",
 		node = "grug_jobs:tanning_rack"},
@@ -270,7 +361,7 @@ end
 local STEEL = "grug_materials:steel_bar"
 
 local station_recipes = {
-	{profession = "blacksmith", output = "grug_jobs:forge", inputs = {
+	{profession = "weaponsmith", output = "grug_jobs:forge", inputs = {
 		{STEEL, STEEL, STEEL},
 		{"", "default:furnace", ""},
 		{"default:stonebrick", "default:stonebrick", "default:stonebrick"},
@@ -303,6 +394,24 @@ function factory.install_jobs(jobs)
 	factory.register_nodes()
 	jobs.register_public_position = factory.register_public_position
 	jobs.is_public_station = factory.is_public_station
+	jobs.can_access_public_furnace = factory.can_access_public_furnace
+	core.register_lbm({
+		label = "Activate authored public cooking hearths",
+		name = "grug_jobs:activate_public_hearths",
+		nodenames = {"default:furnace", "default:furnace_active"},
+		run_at_every_load = true,
+		action = function(pos)
+			if not factory.is_public_station("furnace", pos) then return end
+			local node = core.get_node_or_nil(pos)
+			if not node or (node.name ~= "default:furnace" and
+					node.name ~= "default:furnace_active") then return end
+			local inv = core.get_meta(pos):get_inventory()
+			if inv:get_size("src") == 0 and inv:get_size("fuel") == 0 and
+					inv:get_size("dst") == 0 then
+				core.registered_nodes["default:furnace"].on_construct(pos)
+			end
+		end,
+	})
 	for station, info in pairs(STATION_INFO) do
 		local station_id, station_info = station, info
 		jobs.register_station(station_id, {
@@ -311,8 +420,8 @@ function factory.install_jobs(jobs)
 					error("grug_jobs: station recipe adapter differs", 0)
 				end
 			end,
-			can_use = function(player)
-				return jobs.has(player, station_info.profession)
+			can_use = function(player, recipe)
+				return recipe and jobs.has(player, recipe.profession)
 			end,
 		})
 	end
@@ -331,14 +440,9 @@ function factory.install_jobs(jobs)
 			local sockets = grug_core.settlement_sockets_at(settlements[index].key)
 			for socket_index = 1, #sockets do
 				local socket = sockets[socket_index]
-				for station in pairs(PUBLIC_STATIONS) do
-					local info = jobs.station_info(station)
-					if info and socket.role == "trainer" and
-							socket.profession == info.profession then
-						jobs.register_public_position(station, {
-							x = socket.pos.x + 1, y = socket.pos.y, z = socket.pos.z,
-						})
-					end
+				local station = socket.tags and socket.tags[1]
+				if socket.role == "public_station" and PUBLIC_STATIONS[station] then
+					jobs.register_public_position(station, socket.pos)
 				end
 			end
 		end

@@ -1,0 +1,6 @@
+OpenAI image-generation prompt, 2026-09-20:
+
+Create a single curved ivory boar tusk as a high-contrast pixel-art inventory
+sprite on a fully transparent background. Keep one isolated object, strong
+silhouette and simple stepped shading so it remains readable when mechanically
+downsampled to 16x16. No text, border, animal head or extra objects.

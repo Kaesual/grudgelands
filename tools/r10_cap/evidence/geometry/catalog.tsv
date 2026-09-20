@@ -1,0 +1,12 @@
+dwarf	grug_mobs_ibex.b3d	1.45	1	grug_mobs_ibex.png^[multiply:#d8c49d
+elf	grug_mobs_stag.b3d	8	1	grug_mobs_stag.png
+expert_accord	grug_mobs_eagle.b3d	3	1	grug_mobs_eagle.png^[multiply:#9eb9dc|grug_mobs_eagle.png^[multiply:#9eb9dc|grug_mobs_eagle.png^[multiply:#9eb9dc|grug_mobs_eagle.png^[multiply:#9eb9dc|grug_mobs_eagle.png^[multiply:#9eb9dc|grug_mobs_eagle.png^[multiply:#9eb9dc|grug_mobs_eagle.png^[multiply:#9eb9dc|grug_mobs_eagle.png^[multiply:#9eb9dc|grug_mobs_eagle.png^[multiply:#9eb9dc|grug_mobs_eagle.png^[multiply:#9eb9dc|grug_mobs_eagle.png^[multiply:#9eb9dc|grug_mobs_eagle.png^[multiply:#9eb9dc|grug_mobs_eagle.png^[multiply:#9eb9dc|grug_mobs_eagle.png^[multiply:#9eb9dc|grug_mobs_eagle.png^[multiply:#9eb9dc|grug_mobs_eagle.png^[multiply:#9eb9dc|grug_mobs_eagle.png^[multiply:#9eb9dc|grug_mobs_eagle.png^[multiply:#9eb9dc
+expert_throng	grug_mobs_cave_bat.b3d	3	1	grug_mobs_cave_bat.png^[multiply:#856f8e
+human	grug_mounts_horse.b3d	3	1	grug_mobs_blank.png|grug_mounts_horse_white.png^[multiply:#ead7a0|grug_mobs_blank.png
+master_accord	grug_mobs_eagle.b3d	4	1	grug_mobs_eagle.png^[multiply:#eee3b6|grug_mobs_eagle.png^[multiply:#eee3b6|grug_mobs_eagle.png^[multiply:#eee3b6|grug_mobs_eagle.png^[multiply:#eee3b6|grug_mobs_eagle.png^[multiply:#eee3b6|grug_mobs_eagle.png^[multiply:#eee3b6|grug_mobs_eagle.png^[multiply:#eee3b6|grug_mobs_eagle.png^[multiply:#eee3b6|grug_mobs_eagle.png^[multiply:#eee3b6|grug_mobs_eagle.png^[multiply:#eee3b6|grug_mobs_eagle.png^[multiply:#eee3b6|grug_mobs_eagle.png^[multiply:#eee3b6|grug_mobs_eagle.png^[multiply:#eee3b6|grug_mobs_eagle.png^[multiply:#eee3b6|grug_mobs_eagle.png^[multiply:#eee3b6|grug_mobs_eagle.png^[multiply:#eee3b6|grug_mobs_eagle.png^[multiply:#eee3b6|grug_mobs_eagle.png^[multiply:#eee3b6
+master_throng	grug_mobs_cave_bat.b3d	4.2	1	grug_mobs_cave_bat.png^[multiply:#7d3549
+orc	grug_mobs_boar.b3d	1.55	1	grug_mobs_boar.png^[multiply:#9a6047|grug_mobs_blank.png
+t1_accord	grug_mounts_horse.b3d	3	1	grug_mobs_blank.png|grug_mounts_horse_white.png^[multiply:#91b5ee|grug_mobs_blank.png
+t1_throng	grug_mounts_horse.b3d	3	1	grug_mobs_blank.png|grug_mounts_horse_brown.png^[multiply:#c87575|grug_mobs_blank.png
+troll	grug_mounts_tiger.b3d	1.45	1	grug_mounts_tiger.png^[multiply:#d69a52
+undead	grug_mobs_wolf.b3d	1.7	1	grug_mobs_wolf_blightfang.png^[multiply:#b3a6ca

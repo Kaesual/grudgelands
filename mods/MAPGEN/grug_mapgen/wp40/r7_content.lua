@@ -1,11 +1,11 @@
--- Closed R7 production content resolvers. The accepted 82-row R8 terrain
--- namespace remains separate from the 88-row production-R6 namespace and the
--- twelve-row P9G suffix.
+-- Closed R7 production content resolvers. The accepted 84-row R8 terrain
+-- namespace remains separate from the 90-row production-R6 namespace and the
+-- 34-row P9G suffix.
 
 return function(core_api, projection, raw_sha256, settlement_palette)
 	local MAX_SAFE = 9007199254740991
 	local PRODUCTION_SCHEMA = "grug_wp40_r7_production_r6_content_v1"
-	local P9G_SCHEMA = "grug_wp40_r7_p9g_content_v1"
+	local P9G_SCHEMA = "grug_wp40_r7_p9g_content_v2"
 	local ANCHOR_SCHEMA = "grug_wp40_r7_anchor_content_v1"
 	local SETTLEMENT_SCHEMA = "grug_wp13_settlement_content_v1"
 	local ACCEPTED_R6_ROWS = {
@@ -79,11 +79,13 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		{"grug_materials:stone_with_ruby", 4},
 		{"grug_materials:stone_with_sapphire", 4},
 		{"grug_materials:stone_with_silver", 4},
+		{"grug_nodes:ash_ground", 1},
 		{"grug_nodes:blight_dirt", 1},
 		{"grug_nodes:bone_pile", 24},
 		{"grug_nodes:dirt_with_bone_litter", 1},
 		{"grug_nodes:dirt_with_canopy_litter", 1},
 		{"grug_nodes:dirt_with_forest_litter", 1},
+		{"grug_nodes:dirt_with_moss", 1},
 		{"grug_nodes:dirt_with_silver_litter", 1},
 		{"grug_nodes:mesa_clay", 1},
 		{"grug_nodes:mud", 9},
@@ -113,6 +115,28 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		"grug_gathering:stormkelp_source",
 		"grug_gathering:sunleaf_source",
 		"grug_gathering:wild_cocoa_source",
+		"grug_mapgen:bamboo_shoot_source",
+		"grug_mapgen:blightberry_source",
+		"grug_mapgen:carrot_source",
+		"grug_mapgen:cassava_source",
+		"grug_mapgen:cave_cap_source",
+		"grug_mapgen:ember_moss_source",
+		"grug_mapgen:fire_pepper_source",
+		"grug_mapgen:frost_melon_source",
+		"grug_mapgen:jungle_berry_source",
+		"grug_mapgen:pumpkin_source",
+		"grug_mapgen:salt_crust_source",
+		"grug_mapgen:sugar_cane_source",
+		"grug_mapgen:sunberry_source",
+		"grug_mapgen:wild_grain_source",
+		"grug_mapgen:wild_onion_source",
+		"default:coral_brown",
+		"default:coral_cyan",
+		"default:coral_green",
+		"default:coral_orange",
+		"default:coral_pink",
+		"default:coral_skeleton",
+		"default:sand_with_kelp",
 	}
 	local ANCHOR_NAMES = {
 		"grug_nodes:camp_fire",
@@ -184,7 +208,7 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		rows[#rows + 1] = {CULTURAL_NAMES[index], 16}
 	end
 	table.sort(rows, function(left, right) return less_bytes(left[1], right[1]) end)
-	if #ACCEPTED_R6_ROWS ~= 82 or #rows ~= 88 or #P9G_NAMES ~= 12 then
+	if #ACCEPTED_R6_ROWS ~= 84 or #rows ~= 90 or #P9G_NAMES ~= 34 then
 		fail("closed population differs")
 	end
 
@@ -329,7 +353,7 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 	local p9g_cids = {}
 	for index = 1, #P9G_NAMES do
 		local name = P9G_NAMES[index]
-		if index > 1 and not less_bytes(P9G_NAMES[index - 1], name) then
+		if index > 1 and index ~= 28 and not less_bytes(P9G_NAMES[index - 1], name) then
 			fail("P9G names are not ASCII ordered")
 		end
 		local def = rawget(core_api.registered_nodes, name)
@@ -345,9 +369,12 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		content_cids = p9g_cids}
 	function p9g.resolve_p9g(content_ref, param2)
 		calls.p9g_resolve = calls.p9g_resolve + 1
-		integer(content_ref, "P9G content ref", 1, 12)
-		if param2 ~= 0 then fail("P9G param2 differs") end
-		return p9g_cids[content_ref], 1, 1, 0, 8
+		integer(content_ref, "P9G content ref", 1, 34)
+		if content_ref == 34 then
+			integer(param2, "kelp height", 16, 160)
+			if param2 % 16 ~= 0 then fail("kelp height differs") end
+		elseif param2 ~= 0 then fail("P9G param2 differs") end
+		return p9g_cids[content_ref], 1, 1, param2, 8
 	end
 	function p9g.content_ref(name)
 		for index = 1, #P9G_NAMES do if P9G_NAMES[index] == name then return index end end
@@ -373,7 +400,7 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		anchor_cids[index] = cid
 	end
 	local anchors = {schema = ANCHOR_SCHEMA, content_names = copy_array(ANCHOR_NAMES),
-		content_cids = anchor_cids}
+		content_cids = anchor_cids, successor_base_ref = #names + #P9G_NAMES}
 	function anchors.resolve_anchor(content_ref, param2)
 		calls.anchor_resolve = calls.anchor_resolve + 1
 		integer(content_ref, "anchor content ref", 1, 2)

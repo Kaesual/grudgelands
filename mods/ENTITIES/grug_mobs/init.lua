@@ -801,6 +801,7 @@ dofile(modpath .. "/camps.lua")
 -- which must come after guard.lua because it places the two faction guards.
 dofile(modpath .. "/start_villagers.lua")
 dofile(modpath .. "/start_npcs.lua")
+dofile(modpath .. "/capital_displays.lua")
 -- The 2026-08-08 critter round (biomes_mobs.md §3.0, WP36): the two cave
 -- critters — the underground had none at all — plus the two surface ones.
 -- All four run on the `critter` tier of levels.lua, so they must come after
