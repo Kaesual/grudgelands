@@ -494,15 +494,17 @@ WP40 replaces it with the complete catalog and contracts below.
   coastal housing cores, routes and corridors, bridges, causeways, fords,
   route decks, culverts, POI spurs, named landmarks and civic water retain
   their established grade and material priority.
-- **Near-water sand rule (2026-09-18):** a sea-beach band has sand on top and
-  three filler nodes of `default:sandstone`; a freshwater beach has only a
-  one- or two-node sand lip. Outside those bands, only the existing
-  `grug_beach` surface row may place dry surface sand. Every zone with an
-  ordinary profile-eligible shore retains a deterministic beach run; civic,
-  landmark and other functional shore exemptions retain their authored
-  material, while existing `grug_beach` areas remain available. Sand therefore
-  remains a local furnace input for glass without becoming a general inland
-  filler.
+- **Near-water materials (2026-09-20):** eligible sea-beach bands use sand
+  above three sandstone filler nodes. Freshwater beach bands remain local
+  shore lips. Mountain coasts, including both dragon islands, contain no dry
+  beach sand; their logical beach patches use stone/gravel instead. This
+  material rule applies even where a coast claim envelope suppresses geometric
+  coast reshaping. Plateau, highland and mountain freshwater rims use stone or
+  gravel rather than biome soil or sand, including their exposed bank support.
+  Actual functional structures keep their authored cells and water/route
+  seals. Ordinary nonmountain beaches and wet beds retain their existing
+  palettes. These overrides do not change logical biome identity, coast
+  geometry, native noise, island channels or terrain protection.
 
 ### 7.5 Paths, anchors and housing
 
@@ -602,49 +604,27 @@ WP40 replaces it with the complete catalog and contracts below.
   a maximum one-node step while exact pins and water clearance remain fixed.
   This travel guarantee does not constrain roadside banks. Derived bridge
   decks and route records use the solved heights.
-- **Connected cave mouths (2026-09-18):** the offline planner selects
-  deterministic candidates in world-aligned 80-node cells with a three-quarter
-  gate. Each owner-local candidate is either a radius-2, length-24 hillside
-  entrance or a flat-ground sinkhole and has a maximum connection depth of 24
-  nodes. A sinkhole searches at most 24 horizontal nodes within that same
-  mapchunk; its fixed offline mouth apron and the exact path selected by the
-  writer are dry ordinary land in one zone and exclude
-  start aprons, water, transitions, functional surfaces, foundations, routes
-  and their corridors, settlements, static exclusions and housing. The
-  planner never authorizes a cut. In the candidate's one 80-node mapchunk, the
-  writer inspects the immutable native-v7 input and carves only when it finds
-  native cave air beneath at least three natural roof nodes within the depth
-  bound and every new lumen voxel is native air, natural vegetation, natural
-  surface, ordinary host rock or the native depth-stratum host. Native ore and
-  resource records, liquids, dungeon/foreign blocks and unknown content remain
-  transaction vetoes.
-  At most the first 64 candidate air targets are considered in deterministic
-  nearest-first order;
-  an intervening ore, dungeon block or excluded column rejects only that path,
-  not a later valid target. Outside the fixed mouth funnel, the path may not
-  rise above the final local terrain. The target's unchanged native-air
-  component is flood-filled in a radius-12 box around the target. At least 24
-  component voxels must lie outside the planned lumen and the component must
-  reach that proof box's boundary; a closed or isolated pocket is therefore
-  invalid. The complete target ±12 box must lie inside the candidate's
-  unchanged owner input; a target too close to any owner boundary is rejected,
-  and a clipped owner edge never proves continuation. The same bounded flood
-  derives the native surface from immutable
-  input CIDs and rejects the whole candidate if any component voxel reaches
-  native surface air or sky. The lumen already intersects the accepted native
-  component, and every carved voxel joins one occupancy transaction so a later
-  pass cannot re-cap it. Candidate ownership, bounded proof volume and use of
-  only the candidate's input mapchunk make the decision independent of emerge
-  order.
-  The engine witness (2026-09-18) captures a separate authored-writer-disabled
-  native-v7 comparison world. Its checker reconstructs the exact owner-local
-  lumen from revision-bound candidate and exclusion bytes, then applies this
-  same complete-box component, continuation and sky proof before inspecting the
-  carved world. A second comparison world disables only the cave writer, so
-  coast grading and every other authored operation are present on both sides of
-  the carve comparison. Across every candidate's full possible lumen volume,
-  the checker accepts only a lumen whose target has the independent native
-  continuation proof and rejects any other writer-caused air voxel.
+- **Natural cave roofs and openings (2026-09-20):** native v7 caves remain
+  authoritative; no plateau or synthetic mouth-count target is added. The
+  authored-mouth writer is disabled. After terrain and surface refinement,
+  dry eligible columns receive a three-node skin below their final surface,
+  clipped at y = -37. Immutable native air opens naturally only when at least
+  four consecutive air nodes lie below the surface and R5 preserved them;
+  either a cardinal neighbor is at least two nodes lower or all nine columns
+  in the centered 3x3 neighborhood have that four-node air run. Otherwise the
+  skin closes a thin roof. Owner slices write only their owned part of the
+  band; unknown or unavailable input never proves an opening.
+  Both filling and opening use one purpose-specific cave exclusion. Actual
+  start/capital build squares and their authored aprons, other POI building
+  cores, necessary route corridors, functional water/route operations,
+  foundations, housing reservations and named landmark exclusions remain
+  excluded. An anchor's wider fitting/blend envelope alone is not excluded;
+  generic `land_grade` terrain fitting is not itself a functional structure.
+  Dry portions of whole-island coast claim envelopes are not occupied cave
+  footprints. All overlapping real footprints still apply. Claim exclusions,
+  hard protection, terrain fitting, route grades and water geometry are
+  unchanged by this cave-specific rule. The retired mouth continuation proof
+  is not substituted for the current immutable native-air roof test.
 - **Fresh-world surface and vegetation refinement (2026-09-13):** logical
   biome ownership stays unchanged. Dry surfaces combine coherent 32-node and
   8-node material fields at weights 3:1; filler depth varies from 1–4 nodes
@@ -1241,8 +1221,13 @@ Stormkelp and Rock Salt are shore predicates rather than engine beach
 decorations. Their root is dry land with exact accepted P7 support and at least
 one cardinal neighbor classified as planned water, coastal shelf, deep ocean
 or immutable dragon channel; diagonal contact is insufficient. Rock Salt also
-requires logical biome `grug_beach` on `default:sand`, while Stormkelp does not,
-so the Skyglass coastal approach remains reachable.
+requires logical biome `grug_beach`. In Gravesalt its support is exactly
+`default:sand`; in Stormscale and Wyrmglass its support is `default:stone` or
+`default:gravel`. These are zone-scoped alternatives, not a global expansion
+of accepted hosts. The analytic P7 support and actual settled/lower-owner
+support must identify the same accepted node. Stormkelp does not require the
+beach biome, so the Skyglass coastal approach remains reachable. The three
+Rock Salt zone endpoints remain exact; Salt Crust is a distinct Cooking item.
 
 The claim-exclusion records `exclude:coast:island_wyrmglass` and
 `exclude:coast:island_stormscale` describe whole-island envelopes rather than

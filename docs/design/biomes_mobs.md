@@ -784,6 +784,11 @@ source is a low hand-gathered node and drops exactly one stable raw item; the
 three healing herbs first pass the fail-closed Alchemist authorization below.
 The exact named-zone and host rosters are `world_zones.md` Section 11; density
 is over eligible root columns, not all map columns.
+Rock Salt retains exactly Gravesalt, Stormscale and Wyrmglass. Its dry cardinal
+shore roots require logical Beach: sand in Gravesalt, stone or gravel on the
+two mountain islands. The final P7 support must match the zone-specific host;
+mountain beach sand is not retained to make the resource placeable. No other
+gathering source set, density or harvest rule changes.
 
 | Source | Exact opportunity density | Classification | Farmable in WP32 |
 |---|---:|---|---|
