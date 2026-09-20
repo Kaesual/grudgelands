@@ -911,22 +911,23 @@ It fires on every spend and on respec. A replacement needs no re-grant at all
 — the next cast simply reads a different number.
 
 **Hotbar budget** (`classes.md` §2b reserves keys 1-8). Under rulings 13 and
-19 the ceiling is **base kit + 2**, and the base kit is now **Strike + 3 for
-every class**:
+19 the ceiling is **base kit + 2**. Warrior, Mage and Priest start with
+**Strike + 3**; Scout's explicitly approved four class abilities give it
+**Strike + 4**:
 
 | Class | Base kit | Max new buttons | Worst case |
 |---|---|---|---|
 | Warrior | Strike + 3 — Charge (`kits.lua:291`), Mighty Blow (`:321`), Taunt (`:380`); **Hamstring leaves the base kit with ruling 19** and returns as Ruin's keystone | 2 (Hold Ground, Hamstring) | **6 of 8** |
 | Mage | Strike + 3 (`classes.md:445-447`) | 2 (Cinderfall, Glacial Ward) | 6 of 8 |
 | Priest | Strike + 3 (`classes.md:461-463`) | 2 (Renew, Word of Ruin) | 6 of 8 |
-| Scout | Strike + 3 ([scout.md](scout.md) §2) | 2 (Pinning Shot, Opening) | 6 of 8 |
+| Scout | Strike + 4 ([scout.md](scout.md) §2) | 2 (Pinning Shot, Opening) | **7 of 8** |
 
-Every class is now identical in shape, which is what ruling 19 asked for, and
-**two keys stay free on every build** — enough for `classes.md:471`'s parked
+Two keys stay free in the original three classes; Scout keeps at least one
+free key. The Warrior's remaining space accommodates `classes.md`'s parked
 "Warrior shield abilities → after WP14 (offhand/shields)", for which
 `register_ability` already carries the `slot = "offhand"` plumbing
-(`grug_abilities/init.lua:501-510`). This closes what the previous
-revision carried as an open decision on the hotbar.
+(`grug_abilities/init.lua`). All four classes remain inside the eight-key
+hotbar; Scout's extra base skill does not add an extra talent-button allowance.
 
 **A Warrior who takes neither Ruin keystone has no snare.** That is the cost
 of ruling 19, and it should be visible rather than discovered: Hamstring is
