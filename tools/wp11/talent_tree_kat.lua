@@ -8,7 +8,7 @@
 --   mods/PLAYER/grug_classes/talents.lua    the registry, gates, persistence
 --   mods/PLAYER/grug_abilities/init.lua     the central per-player seams
 --   mods/PLAYER/grug_abilities/kits.lua     the shipped ability catalog
---   mods/PLAYER/grug_inventory/equipment.lua the armor percent and its cap
+--   mods/PLAYER/grug_inventory/equipment.lua the raw armor-rating fallback
 --
 -- Groups, each able to go red on its own (§3.7):
 --
@@ -790,9 +790,8 @@ local function run_checks(repo)
 	row("wp11_keys_pending", table.concat(theirs, " "))
 
 	--
-	-- 6. Cap invariants, with every shipped numeric talent maxed and no
-	--    window running. The two cap OVERRIDES (Ruination, Unbroken) are lane
-	--    X3's, so crit and armor must be hard-capped here.
+	-- 6. Cap/rating invariants, with every shipped numeric talent maxed and no
+	--    window running. Crit/dodge cap here; raw armor deliberately does not.
 	--
 	local capped = forged("capped", "warrior", 60,
 		"ironbound=5,weathered=4,hold_ground=3,spite=5,affront=4,bellow=3," ..
@@ -817,21 +816,21 @@ local function run_checks(repo)
 		num(classes.get_crit_chance(crit_maxed)))
 	check(classes.get_crit_chance(crit_maxed) > classes.get_crit_chance(crit_none),
 		"Keen Edge must actually raise crit chance")
-	-- Armor: the real get_armor_percent, fed a full-plate 60.
+	-- Armor: the real raw-rating accessor has no pre-formula cap.
 	env.grug_inventory.get_equipped_armor = function(player)
 		return player._armor or 0
 	end
 	local plate = forged("plate", "warrior", 60, "ironbound=5")
 	plate._armor = 60
-	equal(env.grug_core.get_armor_percent(plate), 60,
-		"Ironbound on 60% gear must stay at the 60% cap")
+	equal(env.grug_core.get_armor_rating(plate), 65,
+		"Ironbound remains raw rating above the old cap")
 	local light = forged("light", "warrior", 60, "ironbound=5")
 	light._armor = 10
-	equal(env.grug_core.get_armor_percent(light), 15,
+	equal(env.grug_core.get_armor_rating(light), 15,
 		"Ironbound 5/5 on 10% gear")
 	local bare = make_player("bare", "warrior", 60)
 	bare._armor = 10
-	equal(env.grug_core.get_armor_percent(bare), 10,
+	equal(env.grug_core.get_armor_rating(bare), 10,
 		"no talent, no change to armor")
 	-- Max HP and max mana move by the documented amount and by nothing else.
 	local hp_none = make_player("hpnone", "warrior", 60)
@@ -900,32 +899,30 @@ local function run_checks(repo)
 		"ironbound=5,weathered=4,hold_ground=3,spite=5,affront=3,unbroken=1")
 	equal(classes.talent_rank(window, "unbroken"), 1, "the capstone is ranked")
 	clock.us = 1000000
-	equal(classes.get_talent_bonus(window, "armor_cap_override"), 0,
+	equal(classes.get_talent_bonus(window, "armor_rating_add_low_hp"), 0,
 		"a window key is 0 before its window starts")
 	classes.start_talent_window(window, "unbroken", 8)
-	equal(classes.get_talent_bonus(window, "armor_cap_override"), 75,
+	equal(classes.get_talent_bonus(window, "armor_rating_add_low_hp"), 15,
 		"a window key contributes while its window runs")
-	equal(classes.get_talent_bonus(window, "armor_percent_add_low_hp"), 15,
-		"both keys of one windowed talent run together")
 	clock.us = 1000000 + 9 * 1000000
-	equal(classes.get_talent_bonus(window, "armor_cap_override"), 0,
+	equal(classes.get_talent_bonus(window, "armor_rating_add_low_hp"), 0,
 		"a window key is 0 after its window expires")
 	classes.start_talent_window(window, "unbroken", 8)
-	equal(classes.get_talent_bonus(window, "armor_cap_override"), 75,
+	equal(classes.get_talent_bonus(window, "armor_rating_add_low_hp"), 15,
 		"a window can be restarted")
 	classes.clear_talent_windows(window)
-	equal(classes.get_talent_bonus(window, "armor_cap_override"), 0,
+	equal(classes.get_talent_bonus(window, "armor_rating_add_low_hp"), 0,
 		"death and leave clear a running window")
 	classes.start_talent_window(window, "unbroken", 8)
 	classes.respec(window)
-	equal(classes.get_talent_bonus(window, "armor_cap_override"), 0,
+	equal(classes.get_talent_bonus(window, "armor_rating_add_low_hp"), 0,
 		"a respec clears a running window")
 	equal(classes.talent_points_spent(window), 0, "a respec is a FULL reset")
 	equal(window:get_meta():get_string("grug_classes:talents"), "",
 		"a respec empties the stored string")
 	-- A window key never leaks into the cached static sum.
 	local nowindow = forged("nowindow", "warrior", 60, "ironbound=5")
-	equal(classes.get_talent_bonus(nowindow, "armor_cap_override"), 0,
+	equal(classes.get_talent_bonus(nowindow, "armor_rating_add_low_hp"), 0,
 		"an unranked window key is 0")
 
 	--

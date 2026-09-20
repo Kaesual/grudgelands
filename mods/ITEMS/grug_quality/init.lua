@@ -915,18 +915,18 @@ function grug_items.get_equipment_affix_totals(player)
 	return result
 end
 
--- Rating contribution outside the four base armor pieces: ordinary armor
--- affixes, the shield's full-set base rating, and every +15% refinement delta.
--- grug_core owns the final rating-to-mitigation curve.
+-- Rating contribution outside base armor and affixes: the shield's full-set
+-- base rating and every +15% refinement delta. Affixes remain separately
+-- visible through get_equipment_affix_totals for the combat breakdown.
 function grug_items.get_equipment_armor_rating_bonus(player)
 	local totals = equipment_totals(player)
 	local shield = grug_inventory.get_equipped_offhand(player)
 	local shield_rating = 0
-	if shield and core.get_item_group(shield:get_name(), "grug_shield") > 0 then
+	if shield and not grug_core.equipment_is_broken(shield) and
+			core.get_item_group(shield:get_name(), "grug_shield") > 0 then
 		shield_rating = tonumber((shield:get_definition() or {})._grug_armor) or 0
 	end
-	return shield_rating + (totals.armor_rating or 0) +
-		(totals.refined_armor or 0)
+	return shield_rating + (totals.refined_armor or 0)
 end
 
 local original_equipment_changed = grug_inventory.equipment_changed
@@ -985,16 +985,29 @@ grug_classes.get_dodge_chance_raw = function(player)
 end
 
 local function raw_armor(player)
-	local totals = equipment_totals(player)
-	return grug_inventory.get_equipped_armor(player) + totals.refined_armor +
-		(totals.armor_rating or 0) +
-		grug_classes.get_talent_bonus(player, "armor_percent_add") +
-		grug_core.status_modifier_sum(player, "armor")
+	local base = grug_inventory.get_equipped_armor(player)
+	local affixes = grug_items.get_equipment_affix_totals(player)
+	local equipment_bonus = grug_items.get_equipment_armor_rating_bonus(player)
+	local talent = grug_classes.get_talent_bonus(player, "armor_percent_add")
+	local status = grug_core.status_modifier_sum(player, "armor")
+	local before_unbroken = base + (affixes.armor_rating or 0) +
+		equipment_bonus + talent + status
+	local multiplier = grug_classes.talent_rank(player, "unbroken") > 0
+		and 1.40 or 1
+	local emergency = grug_classes.get_talent_bonus(player,
+		"armor_rating_add_low_hp")
+	return before_unbroken * multiplier + emergency, {
+		base = before_unbroken,
+		multiplier = multiplier,
+		emergency = emergency,
+		result = before_unbroken * multiplier + emergency,
+	}
 end
 
-grug_core.get_armor_percent_raw = raw_armor
-grug_core.get_armor_percent = function(player)
-	return math.min(60, raw_armor(player))
+grug_core.get_armor_rating = raw_armor
+grug_core.get_armor_rating_breakdown = function(player)
+	local _, breakdown = raw_armor(player)
+	return breakdown
 end
 
 core.register_on_leaveplayer(function(player)

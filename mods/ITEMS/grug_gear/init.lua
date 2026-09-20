@@ -150,10 +150,8 @@ local function weapon_stats(damage, fpi, hands)
 	return line
 end
 
--- "3 armor (-3% damage taken)" -- 1 armor point = 1% reduction
--- (items_crafting.md §3.1), capped at 60% across all four pieces.
 local function armor_stats(armor)
-	return string.format("%d armor (-%d%% damage taken)", armor, armor)
+	return string.format("%d armor rating", armor)
 end
 
 --

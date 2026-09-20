@@ -215,6 +215,7 @@ function grug_projectiles.spawn(id, params)
 		lifetime = lifetime,
 		data = data,
 		active_token = active_token,
+		attacker_level = grug_core.get_player_level(owner),
 	}
 	local object = core.add_entity(origin, ENTITY_NAME, core.serialize(payload))
 	if not object then
@@ -264,7 +265,7 @@ local function settle_hit(self, owner, hit, def)
 	debug_event(self._grug_owner_name, "hit", self._grug_projectile_id,
 		self._grug_travelled + hit.distance)
 	local ok, err = pcall(def.on_hit, owner, hit.target,
-		self._grug_data, hit.point)
+		self._grug_data, hit.point, self._grug_attacker_level)
 	if not ok then
 		core.log("error", "[grug_projectiles] hit callback failed for " ..
 			tostring(self._grug_projectile_id) .. ": " .. tostring(err))
@@ -292,6 +293,7 @@ core.register_entity(ENTITY_NAME, {
 			and definitions[payload.projectile_id] or nil
 		if not def or type(payload.owner_name) ~= "string"
 				or type(payload.owner_session) ~= "number"
+				or type(payload.attacker_level) ~= "number"
 				or type(payload.max_distance) ~= "number"
 				or type(payload.lifetime) ~= "number"
 				or type(payload.data) ~= "table" then
@@ -306,6 +308,8 @@ core.register_entity(ENTITY_NAME, {
 		self._grug_max_distance = payload.max_distance
 		self._grug_lifetime = payload.lifetime
 		self._grug_data = payload.data
+		self._grug_attacker_level = math.max(1,
+			tonumber(payload.attacker_level) or 1)
 		self._grug_age = 0
 		self._grug_travelled = 0
 		self._grug_previous = vector.new(self.object:get_pos())

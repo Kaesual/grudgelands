@@ -417,7 +417,7 @@ core.register_on_player_inventory_action(function(player, action, inventory, inf
 end)
 
 --
--- Armor points of everything currently worn (items_crafting.md §3.1: 1 point
+-- Base armor rating of the four worn armor pieces (combat_stats.md §2
 -- = 1% damage reduction). Read off the ITEM DEFINITION: per-stack overrides
 -- through item meta are WP5's business (rolled affixes), not WP7's.
 --
@@ -437,7 +437,7 @@ local function compute_equipped_armor(player)
 	local total = 0
 	for _, list in ipairs(ARMOR_LISTS) do
 		local stack = inv:get_stack(list, 1)
-		if not stack:is_empty() then
+		if not stack:is_empty() and not grug_core.equipment_is_broken(stack) then
 			local def = core.registered_items[stack:get_name()]
 			local armor = def and def._grug_armor
 			armor = grug_inventory.armor_points_of and grug_inventory.armor_points_of(stack, armor) or armor
@@ -527,19 +527,15 @@ function grug_inventory.get_equipped_offhand(player)
 	return cached_slot_item(player, OFFHAND_LIST)
 end
 
--- Wire the real value into grug_core's damage pipeline (stub override, same
--- pattern as grug_classes' crit/dodge accessors). Hard cap 60% — endgame
--- plate plus shield reaches it, vendor gear never does. (grug_core clamps a
--- second time in the consumer, so a future override cannot break the
--- invariant by forgetting this line.)
---
--- Ironbound (skill_trees.md §2.1) is inside that cap like any gear roll; the
--- Warrior capstone Unbroken, which raises the cap itself for 8 s, is lane
--- X3's and is deliberately not read here yet.
-function grug_core.get_armor_percent(player)
-	return math.min(60, grug_inventory.get_equipped_armor(player)
+-- Base fallback until grug_quality adds shield, refinement and affix rating.
+function grug_core.get_armor_rating(player)
+	local base = grug_inventory.get_equipped_armor(player)
 		+ grug_classes.get_talent_bonus(player, "armor_percent_add")
-		+ grug_core.status_modifier_sum(player, "armor"))
+		+ grug_core.status_modifier_sum(player, "armor")
+	local multiplier = grug_classes.talent_rank(player, "unbroken") > 0
+		and 1.40 or 1
+	return base * multiplier + grug_classes.get_talent_bonus(player,
+		"armor_rating_add_low_hp")
 end
 
 -- Same stub-override pattern for the two hand slots: grug_core publishes the

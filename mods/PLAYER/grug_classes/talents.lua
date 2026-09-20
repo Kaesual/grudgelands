@@ -49,7 +49,7 @@ grug_classes.talent_ids = {} -- registration order
 
 local EFFECT_KEYS = {
 	-- Lane X2 consumers (the reads this lane wrote).
-	armor_percent_add = "grug_inventory/equipment.lua get_armor_percent",
+	armor_percent_add = "grug_quality raw armor-rating aggregation",
 	max_hp_percent_add = "grug_classes/stats.lua get_max_hp",
 	max_mana_percent_add = "grug_classes/stats.lua get_max_mana",
 	crit_chance_add = "grug_classes/stats.lua get_crit_chance",
@@ -76,8 +76,7 @@ local EFFECT_KEYS = {
 	-- Lane X3 consumers (keystones, capstones, and the two finishers whose
 	-- ability X3 still has to register or un-gate).
 	hold_ground_absorb = "X3",
-	armor_percent_add_low_hp = "X3",
-	armor_cap_override = "X3",
+	armor_rating_add_low_hp = "grug_inventory/equipment.lua armor aggregation",
 	taunt_radius = "X3",
 	mighty_blow_cleave = "X3",
 	crit_chance_add_window = "X3",
@@ -134,8 +133,7 @@ grug_classes.TALENT_EFFECT_KEYS = EFFECT_KEYS
 -- one new shape revision 2 adds). get_talent_bonus returns 0 for them when no
 -- window is running, so a consumer needs no second accessor.
 local WINDOW_KEYS = {
-	armor_percent_add_low_hp = true,
-	armor_cap_override = true,
+	armor_rating_add_low_hp = true,
 	crit_chance_add_window = true,
 	crit_cap_override = true,
 	whitehot_window = true,
@@ -318,7 +316,7 @@ grug_classes.register_tree({
 grug_classes.register_talent({
 	id = "ironbound", tree = "bulwark", chain = "wall", tier = 1,
 	name = "Ironbound",
-	description = "Armor +1 percentage point per rank, under the 60% cap.",
+	description = "+1 armor rating per rank.",
 	effects = {armor_percent_add = {1, 2, 3, 4, 5}},
 })
 grug_classes.register_talent({
@@ -348,9 +346,9 @@ grug_classes.register_talent({
 	id = "unbroken", tree = "bulwark", chain = "wall", tier = 4,
 	capstone = true, window = true,
 	name = "Unbroken",
-	description = "Once every 180 s, a hit that would take you below 20% " ..
-		"health grants +15 armor with the cap raised to 75% for 8 s.",
-	effects = {armor_percent_add_low_hp = {15}, armor_cap_override = {75}},
+	description = "+40% total armor rating. Once every 180 s, a hit that " ..
+		"would take you below 20% health grants +15 armor rating for 8 s.",
+	effects = {armor_rating_add_low_hp = {15}},
 })
 grug_classes.register_talent({
 	id = "spite", tree = "bulwark", chain = "anvil", tier = 1,
@@ -707,6 +705,7 @@ grug_classes.audit_talents()
 
 local cache = {} -- player name -> {ranks, tree_points, spent, static, windowed}
 local windows = {} -- player name -> {talent id -> expiry in us}
+local META_UNBROKEN_READY = "grug_classes:unbroken_ready"
 
 function grug_classes.talent_points_total(player)
 	return math.floor(grug_xp.get_level(player)
@@ -972,6 +971,30 @@ end
 function grug_classes.talent_points_spent(player)
 	return state(player).spent
 end
+
+-- The central Core modifier has already resolved dodge, pressure, armor and
+-- absorb when this non-modifier callback runs. Trigger only from a surviving
+-- punch whose actual HP loss leaves the Warrior below 20%; environmental and
+-- fully absorbed events never open the window.
+core.register_on_player_hpchange(function(player, hp_change, reason)
+	if hp_change >= 0 or reason.type ~= "punch" or
+			grug_classes.talent_rank(player, "unbroken") <= 0 then
+		return
+	end
+	local hp_after = player:get_hp() + hp_change
+	local properties = player:get_properties() or {}
+	local max_hp = tonumber(properties.hp_max) or 0
+	if hp_after <= 0 or max_hp <= 0 or hp_after >= max_hp * 0.20 then
+		return
+	end
+	local now = os.time()
+	local meta = player:get_meta()
+	if now < (tonumber(meta:get_string(META_UNBROKEN_READY)) or 0) then return end
+	meta:set_string(META_UNBROKEN_READY, tostring(now + 180))
+	grug_classes.start_talent_window(player, "unbroken", 8)
+	local inventory = rawget(_G, "grug_inventory")
+	if inventory and inventory.refresh then inventory.refresh(player) end
+end, false)
 
 function grug_classes.talent_points_available(player)
 	return grug_classes.talent_points_total(player)

@@ -497,8 +497,9 @@ grug_projectiles.register("fireball", {
 		visual_size = {x = 0.7, y = 0.7},
 		glow = 12,
 	},
-	on_hit = function(owner, target, data)
-		grug_core.deal_ability_damage(owner, target, data.damage)
+	on_hit = function(owner, target, data, point, attacker_level)
+		grug_core.deal_ability_damage(owner, target, data.damage,
+			{attacker_level = attacker_level})
 	end,
 })
 
