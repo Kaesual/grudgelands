@@ -490,16 +490,20 @@ WP40 replaces it with the complete catalog and contracts below.
   and 1:8 through a 4--10-node sand band; bluffs rise at 1:1 or 2:1 with a
   gravel/stone face and biome-soil lip; cliffs have a seed-irregular top edge,
   may lean back one node per 2--4 nodes of rise and may expose ledges; terraced
-  cliffs use two or three 3--5-node steps. Start cores, capital envelopes,
-  coastal housing cores, routes and corridors, bridges, causeways, fords,
-  route decks, culverts, POI spurs, named landmarks and civic water retain
-  their established grade and material priority.
+  cliffs use two or three 3--5-node steps. Coast shaping protects actual
+  start/capital cores and required aprons, coastal housing cores, authored
+  building footprints/foundations, route carriageways and required shoulders,
+  bridge/causeway/ford decks, culverts, POI functional surfaces and water seals.
+  A broad fitting/blend, claim or analytical landmark envelope alone does not
+  preserve isolated native columns. This purpose-specific shaping rule changes
+  neither claim/protection geometry nor the established beach course, width or
+  profile mix; actual functional surfaces keep their grade/material priority.
 - **Near-water materials (2026-09-20):** eligible sea-beach bands use sand
   above three sandstone filler nodes. Freshwater beach bands remain local
   shore lips. Mountain coasts, including both dragon islands, contain no dry
   beach sand; their logical beach patches use stone/gravel instead. This
-  material rule applies even where a coast claim envelope suppresses geometric
-  coast reshaping. Plateau, highland and mountain freshwater rims use stone or
+  material rule also applies to eligible natural columns around protected
+  functional footprints. Plateau, highland and mountain freshwater rims use stone or
   gravel rather than biome soil or sand, including their exposed bank support.
   Actual functional structures keep their authored cells and water/route
   seals. Ordinary nonmountain beaches and wet beds retain their existing

@@ -188,6 +188,27 @@ nothing at or below the water line, piers on the verges and a planked, railed
 walk over them, in the race's own palette. Lamps foot at the street's own
 level, not at the ground of the column beside it.
 
+**Capital service presentation (2026-09-20).** Each profession premise has
+at least one readable protected exterior product frame/sign and one interior
+fixed product stand/rack. Weaponsmith and Armorsmith retain separate identities
+inside their shared forge; Alchemist, Tailor, Leatherworker, Woodcarver,
+Goldsmith and Cooking each have their own representative products. Displays
+have fixed identities, no mutable inventory, no collectible item entity and no
+punch/take/drop path; current-version activation restores them deterministically.
+Public stations, trainer access and street approaches remain clear.
+
+The shared outer stable is an open shelter with an earth floor, a one-node
+fence and a flat roof supported by exactly six posts. It has no perimeter
+walls. Four full-size racial mount displays stand behind the Riding Trainer;
+authored bounded movement/rest regions preserve clearance from posts, roof,
+fence, other displays and public access. Ground displays walk briefly and pause;
+flying appearances remain grounded (`mounts.md` §1). Geometry is shared and
+skinned by each capital's architectural palette.
+
+The shared gatehouse upper-floor stair opening removes exactly one additional
+obstructing block in the ascent direction. Treads, rise, passage, deck and room
+dimensions are unchanged; there is no stair redesign or bespoke clearance test.
+
 A capital has **four districts**, one in each of the quarters the four avenues
 cut the envelope into: market and professions, martial and garrison, lore and
 spiritual, residential and cultural. Each is nine plots on nine lots, and
