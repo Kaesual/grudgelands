@@ -175,8 +175,9 @@ look in the client — lives in the increment record,
 Decided 2026-09-20. Silversteel reads as bright neutral silver with subtle cold
 shadows across inventory icons, worn armor and the metal parts of weapons and
 tools; keep the accepted weapon silhouettes. New bows use an explicit bow pose
-consistent with their real sprite geometry, rather than assuming the diagonal
-tool grip fits them.
+consistent with their real sprite geometry: the hand grips the middle of the
+arc/string crossing and the long arc stands upright facing forward, rather than
+using the diagonal tool convention's lower-left grip.
 
 Use individually licensed and visually inspected pinned-reference media for
 seed silhouettes, hoes, the Tailor loom and the shared smith anvil. The

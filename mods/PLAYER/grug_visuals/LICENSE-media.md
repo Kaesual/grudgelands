@@ -61,6 +61,11 @@ proof in `docs/research/r10-visuals/worn-model-sheet.png` renders these UVs on
 the shipped animated `character.b3d` from front/back/side and at all six race
 statures.
 
+Round 11 applies `^[hsl:0:-90:5` to the existing Silversteel worn overlays,
+matching the neutral-bright inventory and weapon palette while retaining the
+accepted diamond-derived silhouette and shading. This is a material correction,
+not the source of tier identity; all six silhouettes remain their authored set.
+
 ## Media this mod uses but does not ship
 
 | File | Lives in | Used for |

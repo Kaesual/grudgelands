@@ -53,3 +53,30 @@ Cloth derives from complete `lottclothes` sets at Lord of the Test
 `tools/r10_art/build_armor_assets.sh` records every exact source-to-output
 mapping and deterministic composition command. The four unsuffixed leather
 icons are byte copies of the Light tier required by the logical catalog.
+
+## Round 11 bows and shields — CC BY-SA 3.0
+
+Unchanged renamed copies from Lord of the Test commit
+`f164140154945f0b356521ae721a86e9c7a0e0cf`. Upstream identifies otherwise
+unlisted media as CC BY-SA 3.0; the top-level README confirms that media
+license. Native texture modifiers provide the noted material grades.
+
+| Local files | Upstream source | Treatment |
+|---|---|---|
+| `grug_gear_bow_wood.png` | `lottthrowing_bow_wood.png` | unchanged starter |
+| `grug_gear_bow_lebethron.png` | `lottthrowing_bow_wood_lebethron.png` | unchanged Bronze |
+| `grug_gear_bow_birch.png` | `lottthrowing_bow_wood_birch.png` | unchanged Iron; HSL-brightened Steel; violet Abyssal Steel |
+| `grug_gear_bow_mallorn.png` | `lottthrowing_bow_wood_mallorn.png` | unchanged Silversteel |
+| `grug_gear_bow_alder.png` | `lottthrowing_bow_wood_alder.png` | warm Embersteel grade |
+| `grug_gear_shield_{bronze,iron,steel,silversteel,embersteel,abyssal_steel}.png` | `lottarmor_inv_shield_{bronze,copper,steel,silver,gold,galvorn}.png` | renamed copies; Iron receives a dull-grey HSL grade and Embersteel a red color grade at registration |
+
+## Round 11 book and arrow — CC BY-SA 4.0
+
+Unchanged renamed copies from VoxeLibre commit
+`c2dbc520ff4e1637072d33b06c3a2404e0f08df7`. XSSheep / Pixel Perfection and
+VoxeLibre contributors, CC BY-SA 4.0 per upstream `LEGAL.md`.
+
+| Local file | Upstream source | Treatment |
+|---|---|---|
+| `grug_gear_spellbook.png` | `mcl_enchanting_book_enchanted.png` | native per-tier color grade |
+| `grug_gear_arrow.png` | `mcl_bows_arrow_inv.png` | unchanged copy |

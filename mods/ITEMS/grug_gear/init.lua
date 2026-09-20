@@ -111,6 +111,25 @@ grug_gear.BRACKET_TINT = {"#8a7f6a", "#a89478", "#c0b088", "#d8cc9a",
 	"#e8dcb0", "#ffffff"}
 local BRACKET_TINT = grug_gear.BRACKET_TINT
 
+-- Round 11 presentation is kept beside the catalog it dresses. These are
+-- licensed inventory sprites, not gameplay identities or recipe routing.
+local BOW_IMAGE = {
+	"grug_gear_bow_lebethron.png",
+	"grug_gear_bow_birch.png",
+	"grug_gear_bow_birch.png^[hsl:0:-20:16",
+	"grug_gear_bow_mallorn.png",
+	"grug_gear_bow_alder.png^[colorize:#b94a24:38",
+	"grug_gear_bow_birch.png^[colorize:#69458c:92",
+}
+local SHIELD_IMAGE = {
+	"grug_gear_shield_bronze.png",
+	"grug_gear_shield_iron.png^[hsl:0:-100:-12",
+	"grug_gear_shield_steel.png", "grug_gear_shield_silversteel.png",
+	"grug_gear_shield_embersteel.png^[colorize:#9f2418:112",
+	"grug_gear_shield_abyssal_steel.png",
+}
+local BOOK_IMAGE = "grug_gear_spellbook.png"
+
 -- Item description (§6.1): name, item level, then the BASE stat line -- the
 -- number the item actually contributes, so a player can compare two pieces
 -- without doing the curve in their head. Grey, because it is derived data
@@ -445,7 +464,7 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 		if w.caster then groups.grug_caster_weapon = 1 end
 		if w.bow then groups.grug_bow = 1 end
 		local image = "grug_gear_item_" .. w.key .. "_" .. metal.key .. ".png"
-		if w.bow then image = "grug_gear_item_staff_" .. metal.key .. ".png" end
+		if w.bow then image = BOW_IMAGE[bracket] end
 		if w.image then image = w.image .. BRACKET_TINT[bracket] .. ":115" end
 		core.register_tool(itemname, {
 			description = describe(metal.name, w.noun, br.ilvl,
@@ -488,7 +507,7 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 	core.register_craftitem(shield, {
 		description = describe(metal.name, "Shield", br.ilvl,
 			shield_rating .. " armor rating"),
-		inventory_image = "grug_gear_item_chest_metal_" .. metal.key .. ".png",
+		inventory_image = SHIELD_IMAGE[bracket],
 		groups = {grug_gear = 1, grug_equip_offhand = 1, grug_shield = 1},
 		stack_max = 1, _grug_armor = shield_rating, _grug_ilvl = br.ilvl,
 		_grug_bracket = bracket, _grug_quality = 1, _grug_hands = 1,
@@ -500,7 +519,7 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 	core.register_craftitem(book, {
 		description = describe(metal.name, "Spellbook", br.ilvl,
 			"+" .. mana .. "% maximum Mana"),
-		inventory_image = "default_book.png^[colorize:" .. BRACKET_TINT[bracket] .. ":75",
+		inventory_image = BOOK_IMAGE .. "^[colorize:" .. BRACKET_TINT[bracket] .. ":48",
 		groups = {grug_gear = 1, grug_equip_offhand = 1, grug_spellbook = 1},
 		stack_max = 1, _grug_max_mana_percent = mana, _grug_ilvl = br.ilvl,
 		_grug_bracket = bracket, _grug_quality = 1, _grug_hands = 1,
@@ -522,11 +541,15 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 				if slot.key == "chest" then
 					price = br.price.chest
 				end
+				local armor_image = "grug_gear_item_" .. slot.key .. "_" ..
+					line.key .. "_" .. grade.key .. ".png"
+				if line.key == "metal" and grade.key == "silversteel" then
+					armor_image = armor_image .. "^[hsl:0:-90:5"
+				end
 				core.register_craftitem(itemname, {
 					description = describe(grade.name, line.nouns[slot.key],
 						br.ilvl, armor_stats(armor)),
-					inventory_image = "grug_gear_item_" .. slot.key .. "_" ..
-						line.key .. "_" .. grade.key .. ".png",
+					inventory_image = armor_image,
 					groups = {
 						["grug_equip_" .. slot.key] = 1,
 						grug_armor_class = line.rank,
@@ -596,7 +619,7 @@ grug_gear.STARTER_STAFF = STARTER_STAFF
 core.register_tool(STARTER_BOW, {
 	description = "Wooden Bow\n" .. core.colorize(STAT_COLOR,
 		weapon_stats(4, 1.0, 2)),
-	inventory_image = "default_stick.png^[colorize:#704522:55",
+	inventory_image = "grug_gear_bow_wood.png",
 	groups = {grug_gear = 1, grug_equip_weapon = 1, bow = 1, grug_bow = 1,
 		flammable = 2},
 	stack_max = 1,
@@ -607,7 +630,7 @@ core.register_tool(STARTER_BOW, {
 })
 grug_gear.STARTER_BOW = STARTER_BOW
 core.register_craftitem("grug_gear:arrow", {
-	description = "Arrow", inventory_image = "default_stick.png",
+	description = "Arrow", inventory_image = "grug_gear_arrow.png",
 	groups = {grug_arrow = 1}, stack_max = 99, _grug_sell_price = 1,
 })
 -- The Warrior half of the same pair, published so the starter-kit grant in

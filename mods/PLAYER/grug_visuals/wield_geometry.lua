@@ -248,6 +248,7 @@ local ROOT_HALF = math.sqrt(0.5)
 local POSE = {
 	tool = "tool",
 	edge_down = "edge_down",
+	bow = "bow",
 	upright = "upright",
 }
 grug_visuals.POSE = POSE
@@ -275,13 +276,20 @@ grug_visuals.POSE = POSE
 local DIAGONAL_GROUP = {"sword", "axe", "pickaxe", "shovel", "staff",
 	"fishing_rod", "grug_equip_weapon"}
 local EDGE_DOWN_GROUP = {"axe"}
+local BOW_GROUP = {"grug_bow"}
 grug_visuals.DIAGONAL_GROUP = DIAGONAL_GROUP
 grug_visuals.EDGE_DOWN_GROUP = EDGE_DOWN_GROUP
+grug_visuals.BOW_GROUP = BOW_GROUP
 
 -- `group_value(itemname, group)` is `core.get_item_group` in the engine and a
 -- table lookup in the fixture. Passed in rather than closed over so that the
 -- once-a-second wield poll allocates nothing.
 function grug_visuals.pose_for(itemname, group_value)
+	for _, group in ipairs(BOW_GROUP) do
+		if (group_value(itemname, group) or 0) > 0 then
+			return POSE.bow
+		end
+	end
 	for _, group in ipairs(EDGE_DOWN_GROUP) do
 		if (group_value(itemname, group) or 0) > 0 then
 			return POSE.edge_down
@@ -333,7 +341,7 @@ function grug_visuals.wield_transform(stature, pose)
 	-- nil stays legal and means `tool`; anything else is a caller bug.
 	if pose == nil then
 		pose = POSE.tool
-	elseif pose ~= POSE.tool and pose ~= POSE.edge_down and
+	elseif pose ~= POSE.tool and pose ~= POSE.edge_down and pose ~= POSE.bow and
 			pose ~= POSE.upright then
 		error("grug_visuals.wield_transform: unknown pose " .. tostring(pose), 2)
 	end
@@ -354,6 +362,21 @@ function grug_visuals.wield_transform(stature, pose)
 			-- better point to hang from.
 			grip_fraction_x = 0,
 			grip_fraction_y = 0,
+		}
+	end
+
+	-- The licensed bow sprites use a diagonal arc, but their grip is the
+	-- central crossing around pixel (7.5, 7.5), not the tool convention's
+	-- lower-left end. Anchor that centre in the fist and stand the arc upright.
+	if pose == POSE.bow then
+		return {
+			bone = BONE,
+			pos = {x = HAND.x, y = HAND.y, z = HAND.z},
+			rot = {x = 90, y = 45, z = -90},
+			size = {x = size, y = size},
+			pose = pose, stature = k, base_size = SIZE, tilt_up = TILT_UP,
+			hand = HAND, sprite_edge = sprite_edge,
+			grip_fraction_x = 0, grip_fraction_y = 0,
 		}
 	end
 
