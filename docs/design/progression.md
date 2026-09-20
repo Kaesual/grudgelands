@@ -17,12 +17,12 @@ Detailed quest catalogs are authored with WP8/WP9.
 
 Levels must keep delivering *decisions and buttons*, not just stats:
 
-**The trees themselves are proposed, not decided.**
-[skill_trees.md](skill_trees.md) (PROPOSAL, revision 2, 2026-09-16) builds
+**The trees are decided.**
+[skill_trees.md](skill_trees.md) (revision 2, 2026-09-16) defines
 two trees per class on the cadence below, works the arithmetic out for every
 milestone, and lists every talent, keystone and capstone for all **four**
-classes — the fourth being the Scout ([scout.md](scout.md)), also proposed.
-Its §6 is the list of open decisions.
+classes — the fourth being the Scout ([scout.md](scout.md)). Its §6 records
+that the design has no remaining open decision.
 
 The three bullets below were rewritten on **2026-09-16** by the user's
 rulings; the superseded text is named in `skill_trees.md` §5.2.

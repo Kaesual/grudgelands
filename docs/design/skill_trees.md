@@ -4,7 +4,7 @@
 built two trees of five talents per class on a 20-point budget. The user's
 rulings of **2026-09-16** (§5) replace the budget, the tree size, the tier
 shape, the capstone rule and the respec seam, and add a fourth class. This
-revision rebuilds the proposal on those rulings.
+revision rebuilds the decided design on those rulings.
 
 **Status, 2026-09-17: lanes X1, X2 and X4 of §4 are implemented.** X1/X2
 (round 4, lane W1) shipped `mods/PLAYER/grug_classes/talents.lua` with the 48 talents of the three
@@ -29,7 +29,7 @@ Companion files written with this revision:
   ranged-mob task card of the same session. Not part of WP11; it is named
   here because the Scout's kiting and stealth read on top of it.
 
-The decided frame this proposal must fit is quoted where it binds. Where a
+The decided frame this design must fit is quoted where it binds. Where a
 user ruling of 2026-09-16 **supersedes** a decided sentence, the sentence is
 named with its file and line and the correction is made in that file's own
 commit (§5.3).
@@ -70,7 +70,7 @@ numbers as `main:NNN` and quotes the sentence in full.
 ### 1.1 Four classes, two trees, two chains per tree
 
 Three classes ship (`grug_classes/init.lua:136`, `:146`, `:156`); the fourth,
-**Scout**, is planned now and implemented later (ruling 7,
+**Scout**, is decided and remains pending implementation (ruling 7,
 [scout.md](scout.md)). Each class gets two trees, and — new in revision 2 —
 **each tree holds two rough playstyle directions, called chains** (ruling 2).
 A chain is a straight line of four talents: two numeric, then a keystone,

@@ -77,7 +77,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     Swing LMB press additionally restores builtin-item pickup through a 4 m
     first-visible-object server ray; nodes and other objects stop that ray.
   - **Eligible is whatever carries the item group `grug_equip_weapon`**:
-    all four `grug_gear` weapon families (sword, dagger, greataxe, staff) at
+    all six `grug_gear` weapon families (sword, dagger, greataxe, staff, wand
+    and bow) at
     all six material tiers, the below-ladder starters
     (`default:sword_wood`, `default:sword_stone`, `grug_gear:staff_wood`) and
     every **hatchet** — the four vendored `default:` axes plus the four
@@ -92,7 +93,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     eligible**.
   - **A fresh character starts with its class's weapon already in the slot**
     (decided 2026-09-15, playtest round 2). A **Warrior** gets the stone sword,
-    a **Priest** and a **Mage** the wooden staff; the grant fires once per
+    a **Priest** and a **Mage** the wooden staff, and a **Scout** the wooden
+    bow; the grant fires once per
     character when the class is chosen — not at faction choice, where no class
     exists yet — and writes the equipment list server-side through
     `grug_inventory.equipment_changed`, so the ability skins and the visible
@@ -107,7 +109,7 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     generated item's `_grug_ilvl`, enforced directly as the minimum character
     level (`grug_inventory/equipment.lua:173-185,330-338`).
   - The slot is **family-agnostic** — it holds whatever carries the group,
-    which is how the future bow family joins without a second slot.
+    including the current bow family, without a second slot.
   - **No migration**: weapons stay valid `main` items and nothing of a
     character's is moved behind its back. A character that owns a
     slot-eligible weapon, has finished character creation and has the slot
@@ -116,8 +118,7 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     it survives for a character that took its weapon back out.
 - **Hand count — the mechanism for `combat_stats.md` §7's two-handed rule**
   (decided 2026-08-08): every weapon declares `_grug_hands` —
-  **greataxe 2, staff 2, sword 1, dagger 1** (the caster 1H family of
-  `items_crafting.md` §3.2 is one-handed too when WP30 registers it; the
+  **greataxe 2, staff 2, bow 2, sword 1, dagger 1, wand 1**; the
   below-ladder **wooden staff is 2**, like every staff), and
   every surviving `default:` sword and every hatchet **1** (a hatchet is not the
   Greataxe: 4 fleshy at a 1.0 s interval against the same tier's sword at 6
@@ -135,10 +136,9 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     clearing the other slot. Two-handers also carry ", two-handed" in their
     generated stat line, so the trade is readable before the refusal ever
     fires. Rationale: the consequence is a gameplay rule, not a
-    technicality — carrying a torch (or later a shield) costs you the
+    technicality — carrying a torch or shield costs you the
     two-handed weapon. *(The offhand direction cannot fire until an item
-    carries `grug_equip_offhand`, i.e. WP14's shields and the carried
-    light.)*
+    carries `grug_equip_offhand`, as shields and carried lights do.)*
 - **2 Trinket slots** — **no longer reserved** (decided 2026-08-08).
   UI, meta and the group-filtered `allow_put` shipped with WP15; what
   was missing was an item family, and **trinket items now ship in the
@@ -149,8 +149,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   durability, refinement state, cultural finish or extra ordinary-special
   channel. Trinkets carry **no armor class and no class
   rank binding** — every class wears both slots, and they add no armor
-  points (combat_stats.md §2), which is why the 60 % armor cap is
-  untouched by them. The Unique quality tier keeps the
+  rating (combat_stats.md §2), so they do not contribute to armor. The
+  Unique quality tier keeps the
   ship-the-frame-first strategy on its own; the trinket slots no longer
   share it. The same registered trinket identity may not occupy both slots;
   different identities may, with each special's authored two-slot stacking
@@ -202,7 +202,7 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     below-inclusive rule is load-bearing since 2026-08-13: leather
     (rank 2) ships as the **Warrior's light avoidance set**
     (`items_crafting.md` §3.8) — a Warrior chooses between metal's
-    mitigation pool and leather's avoidance pool, not between wearing
+    rating-based mitigation and leather's avoidance pool, not between wearing
     and not wearing.
   - Enforced in the **same group-filtered `allow_put`** as the rest of
     the slot rules, with a throttled chat refusal (the allow callback
@@ -212,10 +212,9 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     so worn gear would otherwise survive a respec untouched. If the
     inventory is full the piece stays worn and the player is told to
     make room.
-  - Why the rule exists: without it nothing stops a Mage from buying
-    plate, and the **60 %-plate / 15 %-cloth spread** that
-    `combat_stats.md` §2 balances the whole tank/squishy design around
-    collapses into "everyone wears the best armor they can afford".
+  - Why the rule exists: without it nothing stops a Mage from buying plate,
+    and the rating budgets that `combat_stats.md` §2 uses for the tank/squishy
+    spread collapse into "everyone wears the best armor they can afford".
 
 ## 3. Bags (WoW model, LotT implementation pattern)
 

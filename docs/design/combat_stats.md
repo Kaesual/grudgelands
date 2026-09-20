@@ -293,8 +293,11 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   `punch_attack_uses = 0`; an empty slot uses the registered hand interval.
   Zero native damage preserves client animation while preventing builtin PvP
   knockback before suppression. The authoritative swing rebuilds real full
-  capabilities from the slot, never from a wielded tool. The ability stack and
-  equipped weapon take no wear. Swing definitions keep `crumbly`, `snappy`,
+  capabilities from the slot, never from a wielded tool. The ability stack
+  takes no equipment wear. The equipped weapon remains wear-free
+  until the approved durability package integrates its once-per-settled-action
+  event hook; after that, the concrete main hand wears once on qualifying
+  damage while the ability token still never wears. Swing definitions keep `crumbly`, `snappy`,
   `oddly_breakable_by_hand` and `dig_immediate` node pointabilities blocking.
 - **Skill selection is live at the attempted swing.** Switching Strike ↔
   Mighty Blow ↔ Hamstring preserves the weapon clock and reads the new skill.
@@ -367,7 +370,7 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   cannot be skipped by a large `dtime`. Owner/faction validation, one-hit
   settlement, unloaded-object cleanup and max-distance cleanup are shared
   projectile infrastructure, not Fireball-only branches.
-- **Bows reuse the infrastructure later, not in WP39.** A bow is drawn up to a
+- **Bows use the infrastructure in the SCOUT package.** A bow is drawn up to a
   maximum and releases a ballistic arrow whose initial impulse comes from draw
   time; gravity supplies the trajectory and a lifetime/distance guard still
   cleans the entity. The item/ammo numbers stay in `items_crafting.md` §9.
@@ -806,7 +809,7 @@ design (`group_attack` stays on).
   Swiftness grants +10% speed for 5 seconds, and Cave Draught grants night
   vision for 10 minutes. One elixir status is active at a time and stacks with
   food: Vigor grants +5/10/15/20% maximum HP at T3–T6, Focus the same maximum
-  mana, and Precision +1/2/3/4 percentage points crit. Stoneskin is +4% armor
+  mana, and Precision +1/2/3/4 percentage points crit. Stoneskin is +4 armor rating
   for 30 minutes and Deepwater grants water breathing for 10 minutes. Ordinary
   stat elixirs last 15 minutes. None of the elixirs touches the potion clock.
   Each worn Apothecary piece adds 10% duration to timed potions and elixirs
@@ -886,13 +889,15 @@ design (`group_attack` stays on).
 - The engine has **no native offhand**; we build `grug_offhand` after
   VoxeLibre's `mcl_offhand` pattern (inventory list `"offhand"` + HUD
   slot).
-- Equip rules (enforced centrally): **two-handed weapons require an empty
-  offhand**; shields = Warrior; Mage focus item (tome/orb) as stat
-  offhand; **dual wield reserved for the Rogue (Phase 2)**.
+- Equip rules (enforced centrally): occupied hands normally total at most two.
+  The zero-hand Leatherworker quiver is the sole exception: it may accompany a
+  two-handed bow or one-handed melee weapon. Shields and Goldsmith spellbooks
+  are ordinary one-hand offhands; staff and greataxe require an empty offhand.
+  There is no dual-wield or Rogue path in V1.
 - **The mechanism of the two-handed rule** (decided 2026-08-08, shipped
   with WP35 — the weapon slot is the first place it can be enforced):
-  items declare a hand count in `_grug_hands` (**greataxe 2, staff 2,
-  sword/dagger 1**, the vendored `default:` swords and axes 1 — twelve when
+  items declare a hand count in `_grug_hands` (**greataxe/staff/bow 2,
+  sword/dagger/wand 1**, the vendored `default:` swords and axes 1 — twelve when
   WP35 wrote this, **eight since WP25/WP43 deleted the mese and diamond tool
   tiers** (`grug_gear/init.lua`'s `VENDORED_WEAPONS` is the live list) —, no
   field = one-handed), and the weapon/offhand `allow_put` refuses any pair
@@ -903,8 +908,8 @@ design (`group_attack` stays on).
   unequip of the other slot.
 - Consequence, and it is a gameplay rule rather than a technicality:
   **carrying a torch costs you the two-handed weapon.** Greataxe and staff
-  users choose between the light and their weapon; the refusal text says so
-  rather than failing silently.
+  users choose between the light and their weapon; a bow accepts only the
+  quiver exception. The refusal text says so rather than failing silently.
 - **Torch in the offhand gives a moving light radius** (wielded-light
   technique: invisible light node at head height, moved only on
   node-position change, skipped when ambient light is bright; profile
