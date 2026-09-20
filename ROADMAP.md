@@ -217,6 +217,14 @@ The subsequent [vegetation pursuit regression](docs/research/round11-vegetation-
 is also reviewed and delivered: harmless plants no longer masquerade as cliffs
 and stop pursuing mobs; real ground/hazard checks remain enforced.
 
+
+The [interaction followups](docs/research/round11-interaction-followups.md) are
+reviewed and delivered: ability pickup is limited to 4 m, ground/flying mounts
+support A/D, and trainer right-click no longer also activates the held mount.
+The vegetation fix is user-accepted. The approved Basics discovery rule and
+unapproved next-round scope are distinguished in
+[Round 12 planning](TODO-round12-planning.md); no broader round has started.
+
 ### Round 10 bounded corrections
 
 The independently reviewed delivery includes exclusive Basics and

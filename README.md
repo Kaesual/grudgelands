@@ -277,7 +277,11 @@ the requested Sprint/mount speeds. Arrows stack to 200 and new Scouts receive
 200. The beach fix is user-accepted; bow feel still needs GUI confirmation,
 including the documented initial LMB camera gesture. The subsequent
 [vegetation fix](docs/research/round11-vegetation-chase-fix.md) restores mob
-pursuit through harmless plants while preserving cliff protection.
+pursuit through harmless plants while preserving cliff protection. The user
+accepted that fix. Reviewed [interaction corrections](docs/research/round11-interaction-followups.md)
+now limit ability pickup to 4 m, add mounted A/D and prevent simultaneous NPC
+interaction and mount activation. [Round 12](TODO-round12-planning.md) is in
+planning; only the Basics visibility decision is approved so far.
 
 **In progress:** WP11 still owns the original three classes' remaining X3
 abilities and capstones; Scout completion does not close that broader package.

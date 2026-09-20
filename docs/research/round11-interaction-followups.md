@@ -1,7 +1,8 @@
 # Round 11 interaction followups
 
 Date: 2026-09-20. Baseline: `cca8b7ce`; branch: `wp11-interaction-followups`.
-State: independently reviewed, ready for main integration and runtime sync.
+State: delivered on main (merge `955d7221`), synchronized; push follows the
+completion record commit. Implementation: `b2f2d39f`.
 
 ## Delivered behavior
 
@@ -58,3 +59,7 @@ After restarting Luanti:
 
 The vegetation chase correction was separately accepted by the user in GUI.
 New interaction visual/GUI acceptance remains pending; no user world is edited.
+
+Delivery verification: all 1,900 installed runtime files match main
+byte-for-byte. Workers are finished. The next action is the focused user
+playtest above and discussion of the next-round scope.

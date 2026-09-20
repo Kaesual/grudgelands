@@ -1,9 +1,11 @@
 # Round 11 execution checkpoint
 
-**Latest delivery:** the [vegetation chase fix](round11-vegetation-chase-fix.md)
-is independently clean, merged as `ff7f43db`, synchronized and pushed.
-All workers are finished. The next action is the post-restart Scout/Priest
-boar pursuit check among plants. Older delivery checkpoints follow below.
+**Latest delivery:** the [interaction fixes](round11-interaction-followups.md)
+are independently clean, merged as `955d7221` and synchronized. Pickup range,
+mounted strafing and NPC/mount right-click are ready for GUI acceptance.
+All workers are finished. The prior vegetation correction is user-accepted.
+Round 12 remains discussion/planning in the root TODO; its approved Basics
+visibility rule is documented but not yet implemented. Older checkpoints follow.
 
 **Current followup delivery:** main merge `43531fdf` is independently clean,
 synchronized and pushed. All 1,900 installed runtime files match the delivered
