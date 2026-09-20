@@ -991,6 +991,39 @@ end
 
 -- are we facing a cliff?
 
+-- GRUG PATCH: `core.line_of_sight` stops at every non-air node, including
+-- harmless non-walkable vegetation.  Follow a bounded vertical probe through
+-- such cover until it finds real walkable support, while preserving dangerous
+-- and unknown nodes as unsafe boundaries.
+local function has_safe_support(self, top, bottom)
+
+	-- Match the engine's doubleToInt/floatToInt node selection, including exact
+	-- negative halves, then visit the same inclusive vertical voxel interval.
+	local function node_coordinate(value)
+		if value >= 0 then return floor(value + 0.5) end
+		return ceil(value - 0.5)
+	end
+	local x = node_coordinate(top.x)
+	local z = node_coordinate(top.z)
+	local last_y = node_coordinate(bottom.y)
+
+	for y = node_coordinate(top.y), last_y, -1 do
+
+		local node = get_node({x = x, y = y, z = z})
+		local def = core.registered_nodes[node.name]
+
+		if node.name == "ignore" or node.loaded == false or not def
+		or is_node_dangerous(self, node.name) then return false end
+		if def.walkable then return true end
+		-- Water was unsafe before the vegetation correction even for mobs whose
+		-- water_damage is zero; do not turn a plant fix into a wading rule.
+		if def.liquidtype and def.liquidtype ~= "none" then return false end
+		if def.groups and (def.groups.liquid or 0) > 0 then return false end
+	end
+
+	return false
+end
+
 function mob_class:is_at_cliff()
 
 	if self.driver then return end
@@ -1011,20 +1044,10 @@ function mob_class:is_at_cliff()
 	local pos = self.object:get_pos()
 	local ypos = pos.y + prop.collisionbox[2] -- just above floor
 
-	local free_fall, blocker = core.line_of_sight(
-			{x = pos.x + dir_x, y = ypos, z = pos.z + dir_z},
-			{x = pos.x + dir_x, y = ypos - fear_height, z = pos.z + dir_z})
+	local top = {x = pos.x + dir_x, y = ypos, z = pos.z + dir_z}
+	local bottom = {x = top.x, y = ypos - fear_height, z = top.z}
 
-	if free_fall then return true end -- check for straight drop
-
-	local bnode = node_ok(blocker, "air")
-
-	-- will we drop onto dangerous node?
-	if is_node_dangerous(self, bnode.name) then return true end
-
-	local def = core.registered_nodes[bnode.name]
-
-	return not def or not def.walkable
+	return not has_safe_support(self, top, bottom)
 end
 
 -- check for nodes or groups inside mob collision area
@@ -2738,14 +2761,9 @@ function mob_class:do_states(dtime)
 					local y = s.y + prop.collisionbox[2]
 					local depth = self.fear_height ~= 0 and self.fear_height
 							or pathfinding_max_drop
-					local free_fall, blocker = core.line_of_sight(
+					return has_safe_support(self,
 							{x = x, y = y, z = z},
 							{x = x, y = y - depth, z = z})
-					if free_fall then return false end
-					local ground = node_ok(blocker, "air")
-					if is_node_dangerous(self, ground.name) then return false end
-					local def = core.registered_nodes[ground.name]
-					return def and def.walkable == true
 				end
 
 				local velocity, chosen_side = grug_obstacle.choose_sidestep(
