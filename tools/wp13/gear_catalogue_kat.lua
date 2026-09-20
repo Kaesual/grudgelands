@@ -547,9 +547,17 @@ function M.run(repo)
 		local metal = gear.MATERIALS[bracket].metal.key
 		local shield = items["grug_gear:shield_" .. metal]
 		local book = items["grug_gear:spellbook_" .. metal]
+		local shield_images = {
+			bronze = "grug_gear_shield_bronze.png",
+			iron = "grug_gear_shield_iron.png^[hsl:0:-100:-12",
+			steel = "grug_gear_shield_steel.png",
+			silversteel = "grug_gear_shield_silversteel.png",
+			embersteel = "grug_gear_shield_embersteel.png^[colorize:#9f2418:112",
+			abyssal_steel = "grug_gear_shield_abyssal_steel.png",
+		}
 		check(shield and shield.groups.grug_equip_offhand == 1 and
 			shield.groups.grug_shield == 1 and shield._grug_armor > 0 and
-			shield.inventory_image == "grug_gear_shield_" .. metal .. ".png",
+			shield.inventory_image == shield_images[metal],
 			"tier " .. bracket .. " shield contract differs")
 		check(book and book.groups.grug_equip_offhand == 1 and
 			book.groups.grug_spellbook == 1 and book._grug_max_mana_percent ==

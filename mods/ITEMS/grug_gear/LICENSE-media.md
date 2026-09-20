@@ -68,7 +68,7 @@ license. Native texture modifiers provide the noted material grades.
 | `grug_gear_bow_birch.png` | `lottthrowing_bow_wood_birch.png` | unchanged Iron; HSL-brightened Steel; violet Abyssal Steel |
 | `grug_gear_bow_mallorn.png` | `lottthrowing_bow_wood_mallorn.png` | unchanged Silversteel |
 | `grug_gear_bow_alder.png` | `lottthrowing_bow_wood_alder.png` | warm Embersteel grade |
-| `grug_gear_shield_{bronze,iron,steel,silversteel,embersteel,abyssal_steel}.png` | `lottarmor_inv_shield_{bronze,copper,steel,silver,gold,galvorn}.png` | unchanged renamed copies |
+| `grug_gear_shield_{bronze,iron,steel,silversteel,embersteel,abyssal_steel}.png` | `lottarmor_inv_shield_{bronze,copper,steel,silver,gold,galvorn}.png` | renamed copies; Iron receives a dull-grey HSL grade and Embersteel a red color grade at registration |
 
 ## Round 11 book and arrow — CC BY-SA 4.0
 

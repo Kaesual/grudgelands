@@ -122,9 +122,11 @@ local BOW_IMAGE = {
 	"grug_gear_bow_birch.png^[colorize:#69458c:92",
 }
 local SHIELD_IMAGE = {
-	"grug_gear_shield_bronze.png", "grug_gear_shield_iron.png",
+	"grug_gear_shield_bronze.png",
+	"grug_gear_shield_iron.png^[hsl:0:-100:-12",
 	"grug_gear_shield_steel.png", "grug_gear_shield_silversteel.png",
-	"grug_gear_shield_embersteel.png", "grug_gear_shield_abyssal_steel.png",
+	"grug_gear_shield_embersteel.png^[colorize:#9f2418:112",
+	"grug_gear_shield_abyssal_steel.png",
 }
 local BOOK_IMAGE = "grug_gear_spellbook.png"
 

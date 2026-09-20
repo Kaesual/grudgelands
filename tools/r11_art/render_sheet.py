@@ -1,20 +1,33 @@
 #!/usr/bin/env python3
 """Render the actual stored R11 ART inventory media into one review sheet."""
 from pathlib import Path
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageEnhance
 import sys
 
 root=Path(sys.argv[1] if len(sys.argv)>1 else ".").resolve()
 out=Path(sys.argv[2] if len(sys.argv)>2 else "/tmp/r11-art-sheet.png")
 rows=[]
-def add(label,path):
- im=Image.open(root/path).convert("RGBA"); rows.append((label,im))
+def add(label,path,treatment=None):
+ im=Image.open(root/path).convert("RGBA")
+ if treatment == "iron":
+  alpha=im.getchannel("A")
+  im=ImageEnhance.Color(im).enhance(0.0)
+  im=ImageEnhance.Brightness(im).enhance(0.88)
+  im.putalpha(alpha)
+ elif treatment == "embersteel":
+  alpha=im.getchannel("A")
+  grade=Image.new("RGBA",im.size,(159,36,24,255))
+  im=Image.blend(im,grade,112/255)
+  im.putalpha(alpha)
+ rows.append((label,im))
 gear=Path("mods/ITEMS/grug_gear/textures")
 for label,file in [("Starter","grug_gear_bow_wood.png"),("Bronze","grug_gear_bow_lebethron.png"),
  ("Iron/Steel/Abyssal","grug_gear_bow_birch.png"),("Silversteel","grug_gear_bow_mallorn.png"),
  ("Embersteel","grug_gear_bow_alder.png")]:add("Bow "+label,gear/file)
 for material in ("bronze","iron","steel","silversteel","embersteel","abyssal_steel"):
- add("Shield "+material,gear/("grug_gear_shield_"+material+".png"))
+ treatment=material if material in ("iron","embersteel") else None
+ suffix=" (runtime grade)" if treatment else ""
+ add("Shield "+material+suffix,gear/("grug_gear_shield_"+material+".png"),treatment)
 add("Spellbook",gear/"grug_gear_spellbook.png");add("Arrow",gear/"grug_gear_arrow.png")
 inv=Path("mods/PLAYER/grug_inventory/textures")
 for size in ("small","medium","large"):add("Bag "+size,inv/("grug_inventory_bag_"+size+".png"))

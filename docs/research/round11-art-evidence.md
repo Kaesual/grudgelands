@@ -8,8 +8,10 @@ pending. No main merge, sync, push or GUI acceptance is claimed.
 - Seven bow identities use five visually inspected Lord of the Test arc sprites:
   plain wood for the starter, Lebethron for Bronze, Birch for Iron and the
   brighter Steel / violet Abyssal grades, Mallorn for Silversteel and warm Alder
-  for Embersteel. Six shield identities use the matching Bronze, Copper, Steel,
-  Silver, Gold and Galvorn shield silhouettes. All sources are pinned at
+  for Embersteel. Six shield identities use the Bronze, Copper, Steel, Silver,
+  Gold and Galvorn shield silhouettes; the Copper source receives the dull-grey
+  Iron grade and the Gold source receives the red Embersteel grade at
+  registration. All sources are pinned at
   `f164140154945f0b356521ae721a86e9c7a0e0cf`, CC BY-SA 3.0.
 - The Goldsmith book and player arrow use VoxeLibre's enchanted-book and arrow
   inventory sprites at `c2dbc520ff4e1637072d33b06c3a2404e0f08df7`, CC BY-SA
@@ -49,12 +51,13 @@ icon and no upstream code is imported.
 - Plain Lua 5.1 parsing passed for all changed Lua files. SETGLOBAL inspection
   finds only the declared `grug_gear` table. All five sweeps were inspected;
   hits are existing comments or string vocabularies. No PUC runtime was run.
-- `evidence/media-sheet.png` is the enlarged actual-media inventory review.
+- `evidence/media-sheet.png` is the enlarged inventory review and applies the
+  registered Iron and Embersteel shield treatments to the source pixels.
   `evidence/wield-bow.png` is a live-transform side-view comparison: the old
   tool grip visibly hangs the bow by its end, while the Round 11 pose holds the
   arc midpoint through all four sampled arm angles.
 - `source-inputs.sha256`, `media.sha256` and `views.sha256` bind production,
   fixtures, every changed/imported media file and both inspected views.
 
-Final first-person/third-person appearance, runtime texture modifiers and the
-inventory scale remain fresh-world GUI acceptance items.
+Final first-person/third-person appearance and inventory scale remain
+fresh-world GUI acceptance items.

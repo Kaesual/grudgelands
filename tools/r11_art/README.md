@@ -11,7 +11,8 @@ python3 tools/r11_art/render_bow_pose.py /tmp/r11-art-pose
 The first fixture checks every imported media binding and then exercises the
 real gear registration plus the real group-to-pose and attachment consumers.
 The media sheet shows stored source pixels enlarged with nearest-neighbor
-sampling; the quiver is shown at its runtime 64px bound. The bow-pose renderer
+sampling, applies the registered Iron and Embersteel shield grades, and shows
+the quiver at its runtime 64px bound. The bow-pose renderer
 reads the live transform through LuaJIT and maps every source pixel through the
 same attachment matrix as the existing WP13 geometry fixture. Its body is a
 schematic side view, so final first/third-person aesthetics remain a GUI gate.
