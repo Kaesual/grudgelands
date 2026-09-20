@@ -36,6 +36,11 @@ changed first-party production files had no prohibited construct hit.
 
 Per the user's Round 11 instruction, **no PUC runtime was run**.
 
+The independent review found no runtime issue. Its one specification finding
+was corrected by making the Character/Talents armor preview explicitly use the
+player's own character level; the displayed reduction is therefore stable and
+does not depend on a selected target or the last attacker.
+
 ## Targeted LuaJIT evidence
 
 Command:

@@ -170,7 +170,9 @@ Equipment sources, ordinary affixes and cultural finishes add before final
 consumer caps. Crit and Dodge remain capped at 30%; armor reduction is capped
 at 70% after the attacker-level formula. Raw armor rating is never discarded.
 The Character/Talents UI exposes raw rating, the active Bulwark multiplier,
-the resulting rating and current reduction against the relevant attacker.
+the resulting rating and reduction evaluated against the player's own character
+level. This same-level display does not change with the selected target or the
+last attacker.
 Unbroken does not override the reduction cap.
 
 The Character page contains only two live maximum-pool derivations: HP and
