@@ -1,6 +1,5 @@
 local P = grug_professions
 local C = "grug_professions:"
-local G = "grug_gear:"
 local THREAD = C .. "thread"
 
 local function grid(inputs)
@@ -44,35 +43,6 @@ for tier = 1, #tiers do
 	core.clear_craft({output = bolt})
 	core.register_craft({output = bolt, recipe = grid(row.inputs)})
 
-	for _, slot in ipairs({"head", "chest", "legs", "feet"}) do
-		P.register_refinement("tailor", tier, "cloth_armor",
-			G .. slot .. "_cloth_" .. row.key, bolt)
-		P.register_add_affix("tailor", tier, "cloth_armor",
-			G .. slot .. "_cloth_" .. row.key, bolt,
-			tier == 1 and "default:coal_lump" or
-				({[2] = "grug_mobs:venom_gland", [3] = "grug_mobs:slime_gel",
-				[4] = "grug_mobs:croc_tooth", [5] = "grug_gathering:stormkelp",
-				[6] = "grug_mobs:stone_core"})[tier])
-	end
-
-	if tier >= 2 then
-		local imbue = P.register_item(C .. "embroidery_imbue_" .. row.key,
-			row.name .. " Embroidery Imbue Kit",
-			"default_paper.png^[colorize:#8d568f:125",
-			{grug_upgrade_kit = 1, grug_embroidery_imbue = tier})
-		P.register_recipe("tailor", {tier = tier, station = "tailor_bench",
-			inputs = {{bolt, C .. "parchment"}}, output = imbue,
-			hint = "Weave at a Tailor Bench"})
-	end
-	if tier >= 3 then
-		local temper = P.register_item(C .. "embroidery_temper_" .. row.key,
-			row.name .. " Embroidery Temper Kit",
-			"default_paper.png^[colorize:#58647f:135",
-			{grug_upgrade_kit = 1, grug_embroidery_temper = tier})
-		P.register_recipe("tailor", {tier = tier, station = "tailor_bench",
-			inputs = {{bolt, C .. "parchment", THREAD}}, output = temper,
-			hint = "Weave at a Tailor Bench"})
-	end
 end
 
 local woven_bundle = P.register_item(C .. "woven_bolt_bundle",

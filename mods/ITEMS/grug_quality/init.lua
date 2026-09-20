@@ -6,9 +6,7 @@
 --
 -- Shared item-meta keys (all belong to one concrete ItemStack):
 --   grug_quality       integer 1 Common / 2 Uncommon / 3 Rare / 4 reserved
---   grug_ench          core.serialize ordered {stat=..., value=...} slots
---   grug_upgrades      integer 0..2 (reserved for temper applications)
---   grug_refined       integer boolean; every ordinary enchanted item has 1
+--   grug_ench          ordered {channel, stat, value, tier?} affixes
 --   grug_ilvl          per-stack item level; absent falls back to _grug_ilvl
 --   grug_req_level     per-stack weapon requirement, absent without an ilvl
 --   grug_base_name     uncolored, unaffixed definition name used on rebuild
@@ -95,9 +93,6 @@ local WINDOWS = {
 	["crafted-fine"] = {0.30, 0.80},
 	elite = {0.30, 0.90},
 	rare = {0.50, 1.00},
-	["crafted-masterwork"] = {0.60, 1.00},
-	["tempered-once"] = {0.50, 0.95},
-	["tempered-twice"] = {0.60, 1.00},
 	boss = {0.80, 1.00},
 }
 
@@ -110,17 +105,31 @@ grug_items.DROP_CHANCES = {
 	boss = {uncommon = 0, rare = 100, window = "boss"},
 }
 
--- §6.4 is an exact source table: the apparent "chance" of each listed result
--- is 100%. Affix counts are decided separately by mastery or a crafterless
--- 60/40 (Uncommon) / 70/30 (Rare) roll.
+-- Only the trinket assembly exception rolls crafted affixes. Ordinary
+-- equipment uses named, fixed-value station operations.
 grug_items.CRAFTED_QUALITY = {
-	base = {quality = 1, refined = false, chance = 100},
-	refinement = {quality = 1, refined = true, chance = 100},
-	fine = {quality = 2, refined = true, chance = 100,
-		window = "crafted-fine", minimum = 1, maximum = 1},
-	masterwork = {quality = 3, refined = true, chance = 100,
-		window = "crafted-masterwork", minimum = 2, maximum = 2},
+	base = {quality = 1},
+	fine = {quality = 2, window = "crafted-fine"},
 }
+
+local ENCHANT_VALUES = {
+	attribute = {2, 3, 5, 7, 9, 10},
+	pool = {1, 2, 2, 3, 4, 5},
+	chance = {0.5, 0.8, 1.2, 1.6, 2.0, 2.5},
+	attack_speed = {4, 6, 8, 10, 12, 14},
+	armor = {1, 2, 3, 4, 5, 6},
+}
+
+function grug_items.enchant_value(stat, tier)
+	local key = (stat == "str" or stat == "dex" or stat == "int") and "attribute"
+		or ((stat == "max_hp_percent" or stat == "max_mana_percent") and "pool")
+		or ((stat == "crit_percent" or stat == "dodge_percent") and "chance")
+		or (stat == "attack_speed_percent" and "attack_speed")
+		or (stat == "armor_rating" and "armor")
+	return key and ENCHANT_VALUES[key][tier] or nil
+end
+
+grug_items.ENCHANT_VALUES = ENCHANT_VALUES
 
 grug_items.QUALITY = QUALITY
 grug_items.AFFIXES = AFFIX
@@ -212,7 +221,10 @@ local function write_item_level_meta(stack, meta, ilvl)
 	meta:set_int("grug_ilvl", ilvl)
 	local groups = (stack:get_definition() or {}).groups or {}
 	if (groups.grug_equip_weapon or 0) > 0 then
-		meta:set_int("grug_req_level", math.min(ilvl, 60))
+		local definition = stack:get_definition() or {}
+		local authored = ilvl == tonumber(definition._grug_ilvl) and
+			tonumber(definition._grug_req_level) or nil
+		meta:set_int("grug_req_level", authored or math.min(ilvl, 60))
 	else
 		-- The requirement is weapon-only (§6.1). Clearing this also makes a
 		-- rebuilt armor/offhand stack fail closed against stale derived meta.
@@ -227,6 +239,7 @@ end
 
 local function family_for(stack)
 	local def = stack:get_definition() or {}
+	if ((def.groups or {}).grug_gathering_tool or 0) > 0 then return "tool" end
 	if type(def._grug_quality_family) == "string" then
 		return def._grug_quality_family
 	end
@@ -307,13 +320,17 @@ local function read_affixes(meta)
 	if text == "" then return {} end
 	local value = core.deserialize(text)
 	if type(value) ~= "table" then return {} end
-	local out, seen = {}, {}
+	local out, seen, channels = {}, {}, {}
 	for index = 1, math.min(2, #value) do
 		local slot = value[index]
 		if type(slot) == "table" and AFFIX[slot.stat] and
-				type(slot.value) == "number" and not seen[slot.stat] then
+				type(slot.value) == "number" and not seen[slot.stat] and
+				(slot.channel == "prefix" or slot.channel == "suffix") and
+				not channels[slot.channel] then
 			seen[slot.stat] = true
-			out[#out + 1] = {stat = slot.stat, value = slot.value}
+			channels[slot.channel] = true
+			out[#out + 1] = {channel = slot.channel, stat = slot.stat,
+				value = slot.value, tier = slot.tier}
 		end
 	end
 	return out
@@ -350,7 +367,7 @@ local function generated_name(base_name, affixes)
 	local prefixes, suffixes = {}, {}
 	for index = 1, #affixes do
 		local definition = AFFIX[affixes[index].stat]
-		if index % 2 == 1 then
+		if affixes[index].channel == "prefix" then
 			prefixes[#prefixes + 1] = definition.prefix
 		else
 			suffixes[#suffixes + 1] = definition.suffix
@@ -367,13 +384,6 @@ local function generated_name(base_name, affixes)
 	return name
 end
 
-local REFINEMENT_WORD = {
-	melee_weapon = "Honed", caster_weapon = "Honed", bow = "Honed",
-	tool = "Honed",
-	metal_armor = "Reinforced", leather_armor = "Reinforced", shield = "Reinforced",
-	cloth_armor = "Ornate", spellbook = "Ornate",
-}
-
 local function ensure_base_name(stack)
 	local meta = stack:get_meta()
 	local name = meta:get_string("grug_base_name")
@@ -385,9 +395,9 @@ local function ensure_base_name(stack)
 	return name
 end
 
-local function base_lines(stack, ilvl, refined)
+local function base_lines(stack, ilvl)
 	if grug_gear and type(grug_gear.describe_stack_base) == "function" then
-		return grug_gear.describe_stack_base(stack, ilvl, refined)
+		return grug_gear.describe_stack_base(stack, ilvl)
 	end
 	local def = stack:get_definition() or {}
 	local lines = {}
@@ -419,13 +429,9 @@ function grug_items.regenerate_description(stack, player)
 	if not family then return false end
 	local meta = stack:get_meta()
 	local affixes = read_affixes(meta)
-	local refined = family ~= "trinket" and meta:get_int("grug_refined") == 1
 	local ilvl = effective_ilvl(stack)
 	local base_name = ensure_base_name(stack)
 	local display_name = generated_name(base_name, affixes)
-	if #affixes == 0 and refined then
-		display_name = (REFINEMENT_WORD[family] or "Refined") .. " " .. base_name
-	end
 	local quality = meta:get_int("grug_quality")
 	if quality < 1 or quality > 4 then
 		quality = tonumber((stack:get_definition() or {})._grug_quality) or 1
@@ -433,11 +439,8 @@ function grug_items.regenerate_description(stack, player)
 		meta:set_int("grug_quality", quality)
 	end
 	local lines = {core.colorize(QUALITY[quality].color, display_name)}
-	local inherited = base_lines(stack, ilvl, refined)
+	local inherited = base_lines(stack, ilvl)
 	for index = 1, #inherited do lines[#lines + 1] = inherited[index] end
-	if #affixes > 0 and refined then
-		lines[#lines + 1] = core.colorize("#9aa0a6", "Refined")
-	end
 	for index = 1, #affixes do lines[#lines + 1] = affix_line(affixes[index], player) end
 	write_derived(meta, affixes)
 	local desired = table.concat(lines, "\n")
@@ -446,13 +449,13 @@ function grug_items.regenerate_description(stack, player)
 	return true
 end
 
-local function apply_capabilities(stack, totals, refined)
+local function apply_capabilities(stack, totals)
 	local def = stack:get_definition() or {}
 	local base = def.tool_capabilities
 	if type(base) ~= "table" then return end
 	local caps = copy_table(base)
 	local _, described = grug_gear.describe_stack_base(stack,
-		effective_ilvl(stack), refined)
+		effective_ilvl(stack))
 	local damage = described and described.damage or
 		(caps.damage_groups and caps.damage_groups.fleshy)
 	if type(damage) == "number" and damage > 0 and caps.damage_groups then
@@ -462,7 +465,16 @@ local function apply_capabilities(stack, totals, refined)
 	if speed > 0 and type(caps.full_punch_interval) == "number" then
 		caps.full_punch_interval = caps.full_punch_interval / (1 + speed / 100)
 	end
-	stack:get_meta():set_tool_capabilities(caps)
+	local meta = stack:get_meta()
+	if stack:get_wear() >= 65535 then
+		-- Enchanting never repairs an item. Keep the new usable capabilities
+		-- for the existing repair service while the concrete stack stays broken.
+		meta:set_string("_grug_repair_caps", core.serialize(caps))
+		meta:set_tool_capabilities({full_punch_interval = 1.4,
+			damage_groups = {fleshy = 0}, groupcaps = {}, punch_attack_uses = 0})
+	else
+		meta:set_tool_capabilities(caps)
+	end
 end
 
 local function rolled_count(quality, rng)
@@ -486,22 +498,13 @@ end
 function grug_items.roll_enchants(stack, ilvl, window, count, seed)
 	if not stack or stack:is_empty() then return false, "empty item" end
 	local family = family_for(stack)
-	if not family then return false, "item has no quality family" end
+	if not family or (family ~= "trinket" and not POOLS[family]) then
+		return false, "item has no enchant pool"
+	end
 	ilvl = effective_ilvl(stack, ilvl)
 	if not ilvl then return false, "item has no item level" end
 	if not WINDOWS[window] then return false, "unknown roll window" end
 	local meta = stack:get_meta()
-	if family ~= "trinket" and meta:get_int("grug_refined") ~= 1 then
-		-- Crafterless found/vendor sources arrive pre-enchanted (§5.1), hence
-		-- refined by definition. The shipped trader's three-argument `world`
-		-- call is one such source. An explicit crafted count, and both crafted
-		-- windows, still require an already-refined input and fail closed.
-		local found_source = count == nil and
-			(window == "world" or window == "elite" or window == "rare" or
-				window == "boss")
-		if not found_source then return false, "item is not refined" end
-		meta:set_int("grug_refined", 1)
-	end
 	local rng, used_seed = rng_for(seed, stack:get_name() .. ":" .. window)
 	local quality = meta:get_int("grug_quality")
 	if quality < 1 or quality > 4 then quality = 1 end
@@ -519,7 +522,7 @@ function grug_items.roll_enchants(stack, ilvl, window, count, seed)
 	end
 	local affixes = {}
 	for index = 1, #stats do
-		affixes[index] = {stat = stats[index],
+		affixes[index] = {channel = index == 1 and "prefix" or "suffix", stat = stats[index],
 			value = roll_value(stats[index], ilvl, window, rng)}
 	end
 	meta:set_int("grug_quality", quality)
@@ -528,179 +531,91 @@ function grug_items.roll_enchants(stack, ilvl, window, count, seed)
 	meta:set_string("grug_roll_window", window)
 	meta:set_int("grug_roll_seed", used_seed)
 	local totals = write_derived(meta, affixes)
-	apply_capabilities(stack, totals, family ~= "trinket")
+	apply_capabilities(stack, totals)
 	grug_items.regenerate_description(stack)
 	return true, used_seed
 end
 
-function grug_items.set_refined(stack, refined)
-	if not stack or stack:is_empty() or family_for(stack) == "trinket" then
-		return false
+-- Deterministic operations work on copies. The station owns the atomic
+-- capacity check, material consumption, output delivery and progression.
+function grug_items.operation_plan(recipe, inputs, player)
+	if type(inputs) ~= "table" or type(recipe) ~= "table" or recipe.operation ~= "enchant" or
+			grug_jobs.station_operation(recipe.id) ~= recipe then
+		return nil, "Select a registered enchantment."
 	end
-	local meta = stack:get_meta()
-	meta:set_int("grug_refined", refined and 1 or 0)
-	if not refined then
-		meta:set_string("grug_ench", "")
-		meta:set_int("grug_quality", 1)
+	local allowed, reason = grug_jobs.can_craft_recipe(player, recipe)
+	if not allowed then return nil, reason end
+	local source, source_index
+	for index = 1, #inputs do
+		local stack = inputs[index]
+		if stack and not stack:is_empty() and family_for(stack) == recipe.family then
+			if source or stack:get_count() ~= 1 then
+				return nil, "Insert exactly one item to enchant."
+			end
+			source, source_index = ItemStack(stack), index
+		end
 	end
-	local affixes = read_affixes(meta)
-	local totals = write_derived(meta, affixes)
-	apply_capabilities(stack, totals, refined == true)
-	grug_items.regenerate_description(stack)
-	return true
-end
-
-function grug_items.append_affix(stack, window, seed, player)
-	if not stack or stack:is_empty() then return false, "empty item" end
-	local family = family_for(stack)
-	if not family or family == "trinket" then return false, "item cannot take affixes" end
-	local meta = stack:get_meta()
-	if meta:get_int("grug_refined") ~= 1 then return false, "Refine the item first." end
-	local affixes = read_affixes(meta)
-	local maximum = grug_items.mastery_band(player) >= 2 and 2 or 1
-	if #affixes >= maximum then
-		return false, "Your mastery cannot fill another affix slot."
+	if not source then return nil, "Insert an item of the selected family." end
+	local target_tier = tonumber((source:get_definition() or {})._grug_bracket)
+	if not target_tier or target_tier < recipe.tier then
+		return nil, "The item tier must be at least the enchantment tier."
 	end
-	local used = {}
-	for index = 1, #affixes do used[affixes[index].stat] = true end
-	local candidates = {}
-	for index = 1, #(POOLS[family] or {}) do
-		local stat = POOLS[family][index]
-		if not used[stat] then candidates[#candidates + 1] = stat end
+	local consume = {[source_index] = 1}
+	for _, token in ipairs(recipe.flat_inputs) do
+		local found
+		for index = 1, #inputs do
+			local stack = inputs[index]
+			if index ~= source_index and stack and stack:get_name() == token and
+					stack:get_count() > (consume[index] or 0) then
+				consume[index] = (consume[index] or 0) + 1
+				found = true
+				break
+			end
+		end
+		if not found then return nil, "Insert the required enchantment materials." end
 	end
-	if #candidates == 0 then return false, "No legal affix remains." end
-	window = window or (#affixes >= 1 and "crafted-masterwork" or "crafted-fine")
-	if not WINDOWS[window] then return false, "unknown roll window" end
-	local rng, used_seed = rng_for(seed, stack:get_name() .. ":append:" ..
-		(#affixes + 1))
-	local stat = candidates[rng:next(1, #candidates)]
-	local ilvl = effective_ilvl(stack)
-	if not ilvl then return false, "item has no item level" end
-	affixes[#affixes + 1] = {stat = stat,
-		value = roll_value(stat, ilvl, window, rng)}
-	meta:set_int("grug_quality", #affixes == 1 and 2 or 3)
+	-- Refuse unrelated stacks so the selected operation describes the full grid.
+	for index = 1, #inputs do
+		if inputs[index] and not inputs[index]:is_empty() and not consume[index] then
+			return nil, "Remove unrelated items from the station."
+		end
+	end
+	local value = grug_items.enchant_value(recipe.enchant_stat, recipe.tier)
+	local current = read_affixes(source:get_meta())
+	local channels = {}
+	for index = 1, #current do
+		local affix = current[index]
+		if affix.channel ~= recipe.enchant_channel and affix.stat == recipe.enchant_stat then
+			return nil, "The other channel already uses this stat."
+		end
+		if affix.channel == recipe.enchant_channel and affix.stat == recipe.enchant_stat and
+				affix.value == value then
+			return nil, "This enchantment would not change the item."
+		end
+		channels[affix.channel] = affix
+	end
+	channels[recipe.enchant_channel] = {channel = recipe.enchant_channel,
+		stat = recipe.enchant_stat, value = value, tier = recipe.tier}
+	local affixes = {}
+	for _, channel in ipairs({"prefix", "suffix"}) do
+		if channels[channel] then affixes[#affixes + 1] = channels[channel] end
+	end
+	local meta = source:get_meta()
 	meta:set_string("grug_ench", core.serialize(affixes))
-	meta:set_string("grug_roll_window", window)
-	meta:set_int("grug_roll_seed", used_seed)
+	meta:set_int("grug_quality", #affixes == 1 and 2 or 3)
 	local totals = write_derived(meta, affixes)
-	apply_capabilities(stack, totals, true)
-	grug_items.regenerate_description(stack, player)
-	return true, used_seed
+	apply_capabilities(source, totals)
+	grug_items.regenerate_description(source, player)
+	return {output = source, consume = consume, recipe = recipe}
+end
+
+function grug_items.preview_station_operation(recipe, inputs, player)
+	local plan, reason = grug_items.operation_plan(recipe, inputs, player)
+	return plan and plan.output or nil, reason
 end
 
 function grug_items.apply_station_operation(recipe, inputs, player)
-	if type(recipe) ~= "table" or not recipe.in_place then
-		return nil, "This is not an item operation."
-	end
-	local source
-	for index = 1, #inputs do
-		local stack = inputs[index]
-		if stack and stack:get_name() == recipe.output_name then
-			if source then return nil, "Insert exactly one item to improve." end
-			source = ItemStack(stack)
-			source:set_count(1)
-		end
-	end
-	if not source then return nil, "Insert the item to improve." end
-	if recipe.family and family_for(source) ~= recipe.family and
-			not (recipe.family == "weapon" and
-				(family_for(source) == "melee_weapon" or
-				family_for(source) == "caster_weapon" or
-				family_for(source) == "bow")) then
-		return nil, "That profession does not own this item family."
-	end
-	if recipe.operation == "refinement" then
-		if source:get_meta():get_int("grug_refined") == 1 then
-			return nil, "That item is already refined."
-		end
-		if #read_affixes(source:get_meta()) > 0 then
-			return nil, "An enchanted item cannot be refined again."
-		end
-		grug_items.set_refined(source, true)
-		return source
-	elseif recipe.operation == "add_affix" then
-		local ok, reason = grug_items.append_affix(source, nil, nil, player)
-		if not ok then return nil, reason end
-		return source
-	end
-	return nil, "Unknown item operation."
-end
-
-function grug_items.preview_station_operation(recipe, stack)
-	local preview = ItemStack(stack)
-	preview:set_count(1)
-	if recipe and recipe.operation == "refinement" and
-			preview:get_meta():get_int("grug_refined") ~= 1 then
-		grug_items.set_refined(preview, true)
-	elseif recipe and recipe.operation == "add_affix" then
-		local meta = preview:get_meta()
-		local description = meta:get_string("description")
-		if description == "" then
-			description = (preview:get_definition() or {}).description or
-				preview:get_name()
-		end
-		meta:set_string("description", description .. "\n" ..
-			core.colorize("#9aa0a6", "Next legal affix (rolled on Apply)"))
-	end
-	return preview
-end
-
-function grug_items.can_apply_upgrade_kit(stack, mode, player)
-	if not stack or stack:is_empty() then return false, "empty item" end
-	local family = family_for(stack)
-	if not family or family == "tool" then
-		return false, "This kit does not fit that item."
-	end
-	local meta = stack:get_meta()
-	if family ~= "trinket" and meta:get_int("grug_refined") ~= 1 then
-		return false, "Refine the item first."
-	end
-	local affixes = read_affixes(meta)
-	if mode == "imbue" then
-		if #affixes > 0 then return false, "Only an unenchanted item can be imbued." end
-	elseif mode == "temper" then
-		if #affixes == 0 then return false, "Only an enchanted item can be tempered." end
-		local upgrades = meta:get_int("grug_upgrades")
-		if upgrades >= 2 then return false, "That item has already been tempered twice." end
-		local required = upgrades == 0 and 3 or 4
-		if player and grug_items.mastery_band(player) < required then
-			return false, (required == 3 and "Expert" or "Master") ..
-				" mastery is required for this temper."
-		end
-	else
-		return false, "Unknown upgrade-kit operation."
-	end
-	return true
-end
-
-function grug_items.apply_upgrade_kit(stack, mode, seed, player)
-	local allowed, reason = grug_items.can_apply_upgrade_kit(stack, mode, player)
-	if not allowed then return false, reason end
-	local meta = stack:get_meta()
-	local affixes = read_affixes(meta)
-	if mode == "imbue" then
-		meta:set_int("grug_quality", 2)
-		return grug_items.roll_enchants(stack, nil, "crafted-fine", nil, seed)
-	elseif mode == "temper" then
-		local upgrades = meta:get_int("grug_upgrades")
-		local window = upgrades == 0 and "tempered-once" or "tempered-twice"
-		local rng, used_seed = rng_for(seed, stack:get_name() .. ":temper:" ..
-			(upgrades + 1))
-		local ilvl = effective_ilvl(stack)
-		if not ilvl then return false, "item has no item level" end
-		for index = 1, #affixes do
-			affixes[index].value = roll_value(affixes[index].stat, ilvl, window, rng)
-		end
-		meta:set_int("grug_upgrades", upgrades + 1)
-		meta:set_string("grug_ench", core.serialize(affixes))
-		meta:set_string("grug_roll_window", window)
-		meta:set_int("grug_roll_seed", used_seed)
-		local totals = write_derived(meta, affixes)
-		apply_capabilities(stack, totals, family_for(stack) ~= "trinket")
-		grug_items.regenerate_description(stack)
-		return true, used_seed
-	end
-	return false, "Unknown upgrade-kit operation."
+	return grug_items.preview_station_operation(recipe, inputs, player)
 end
 
 function grug_items.mastery_band(player)
@@ -713,8 +628,8 @@ end
 
 function grug_items.can_craft_quality(player, recipe)
 	local mode = recipe and (recipe.quality_mode or recipe._grug_quality_mode)
-	if mode == "masterwork" and grug_items.mastery_band(player) < 3 then
-		return false, "Expert mastery is required for Masterwork quality."
+	if mode and mode ~= "base" and mode ~= "fine" then
+		return false, "Unknown crafted quality."
 	end
 	return true
 end
@@ -724,36 +639,26 @@ function grug_items.apply_crafted_quality(stack, mode, player, seed)
 	mode = mode or "base"
 	local row = grug_items.CRAFTED_QUALITY[mode]
 	if not row then return false, "unknown crafted quality" end
-	if mode == "masterwork" and grug_items.mastery_band(player) < 3 then
-		return false, "Expert mastery is required for Masterwork quality."
+	if mode == "fine" and family_for(stack) ~= "trinket" then
+		return false, "Ordinary equipment uses named enchantments."
 	end
 	local meta = stack:get_meta()
-	local family = family_for(stack)
 	ensure_base_name(stack)
 	meta:set_int("grug_quality", row.quality)
-	-- Trinkets have their fixed prefix/suffix channels but no refinement state
-	-- (§6.2), even when their crafted source uses the `fine` roll window.
-	local refined = row.refined and family ~= "trinket"
-	meta:set_int("grug_refined", refined and 1 or 0)
 	meta:set_string("grug_ench", "")
 	local ilvl = effective_ilvl(stack)
-	if ilvl then
-		write_item_level_meta(stack, meta, ilvl)
-	end
+	if ilvl then write_item_level_meta(stack, meta, ilvl) end
 	if row.window then
-		local slots = grug_items.mastery_band(player)
-		local count = mode == "fine" and math.min(2, slots) or slots
-		count = clamp(count, row.minimum, row.maximum)
-		return grug_items.roll_enchants(stack, ilvl, row.window, count, seed)
+		return grug_items.roll_enchants(stack, ilvl, row.window, 2, seed)
 	end
 	local totals = write_derived(meta, {})
-	apply_capabilities(stack, totals, refined)
+	apply_capabilities(stack, totals)
 	grug_items.regenerate_description(stack, player)
 	return true
 end
 
 -- One entry point for both grug_jobs output seams. Catalogs may attach
--- `quality_mode` (base, refinement, fine or masterwork) to their retained recipe
+-- `quality_mode` (base or the trinket-only fine mode) to their retained recipe
 -- object; an ordinary recipe defaults to the §6.4 Common base result.
 function grug_items.crafted_output(stack, player, recipe, seed)
 	local mode = recipe and (recipe.quality_mode or recipe._grug_quality_mode)
@@ -780,7 +685,6 @@ local function gear_stack(itemname, ilvl, quality, window, rng, seed)
 	local stack = ItemStack(itemname)
 	local meta = stack:get_meta()
 	meta:set_int("grug_quality", quality)
-	meta:set_int("grug_refined", 1)
 	write_item_level_meta(stack, meta, ilvl)
 	-- A child seed keeps each independently dropped stack reproducible without
 	-- sharing mutable RNG state with its affix sequence.
@@ -870,7 +774,7 @@ local function equipment_totals(player)
 	if cached then return cached end
 	local totals = {str = 0, dex = 0, int = 0, crit_percent = 0,
 		dodge_percent = 0, armor_rating = 0, max_hp_percent = 0,
-		max_mana_percent = 0, refined_armor = 0, refined_mana_percent = 0}
+		max_mana_percent = 0}
 	local inventory = player:get_inventory()
 	for _, slot in ipairs(grug_inventory.equipment_slots) do
 		local stack = inventory:get_stack(slot.list, 1)
@@ -887,22 +791,7 @@ local function equipment_totals(player)
 				(tonumber(def._grug_max_hp_percent) or 0)
 			totals.max_mana_percent = totals.max_mana_percent +
 				(tonumber(def._grug_max_mana_percent) or 0)
-			local armor = tonumber(def._grug_armor) or 0
-			if armor > 0 and meta:get_int("grug_refined") == 1 then
-				local _, described = grug_gear.describe_stack_base(stack,
-					effective_ilvl(stack), true)
-				local effective = described and described.armor or
-					math.floor(armor * 1.15 + 0.5)
-				totals.refined_armor = totals.refined_armor + effective - armor
-			end
-			local base_mana = tonumber(def._grug_max_mana_percent) or 0
-			if base_mana > 0 and meta:get_int("grug_refined") == 1 then
-				local _, described = grug_gear.describe_stack_base(stack,
-					effective_ilvl(stack), true)
-				totals.refined_mana_percent = totals.refined_mana_percent +
-					(tonumber(described and described.max_mana_percent) or base_mana) -
-					base_mana
-			end
+
 		end
 	end
 	aggregate_cache[name] = totals
@@ -917,17 +806,17 @@ function grug_items.get_equipment_affix_totals(player)
 end
 
 -- Rating contribution outside base armor and affixes: the shield's full-set
--- base rating and every +15% refinement delta. Affixes remain separately
+-- base rating. Affixes remain separately
 -- visible through get_equipment_affix_totals for the combat breakdown.
 function grug_items.get_equipment_armor_rating_bonus(player)
-	local totals = equipment_totals(player)
 	local shield = grug_inventory.get_equipped_offhand(player)
 	local shield_rating = 0
 	if shield and not grug_core.equipment_is_broken(shield) and
 			core.get_item_group(shield:get_name(), "grug_shield") > 0 then
-		shield_rating = tonumber((shield:get_definition() or {})._grug_armor) or 0
+		local _, described = grug_gear.describe_stack_base(shield, effective_ilvl(shield))
+		shield_rating = tonumber(described and described.armor) or 0
 	end
-	return shield_rating + (totals.refined_armor or 0)
+	return shield_rating
 end
 
 local original_equipment_changed = grug_inventory.equipment_changed
@@ -943,7 +832,7 @@ grug_classes.get_equipment_pool_percent = function(player, pool)
 	local totals = equipment_totals(player)
 	if pool == "hp" then return totals.max_hp_percent or 0 end
 	if pool == "mana" then
-		return (totals.max_mana_percent or 0) + (totals.refined_mana_percent or 0)
+		return totals.max_mana_percent or 0
 	end
 	return 0
 end
@@ -994,7 +883,7 @@ local function raw_armor(player)
 	local before_unbroken = base + (affixes.armor_rating or 0) +
 		equipment_bonus + talent + status
 	local multiplier = grug_classes.talent_rank(player, "unbroken") > 0
-		and 1.40 or 1
+		and grug_core.PROTECTION_ARMOR_MULTIPLIER or 1
 	local emergency = grug_classes.get_talent_bonus(player,
 		"armor_rating_add_low_hp")
 	return before_unbroken * multiplier + emergency, {

@@ -1,6 +1,4 @@
--- R9 primary-profession content. One mod owns three catalog files so their
--- shared supplies, refinement metadata and collision checks have one source.
--- WP22 consumes the persistent grug_refined marker for the doubled wear budget.
+-- Profession materials, equipment recipes and named enchant catalogs.
 
 grug_professions = {
 	CATALOGS = {weaponsmith = {}, armorsmith = {}, leatherworker = {}, tailor = {}},
@@ -37,43 +35,9 @@ function grug_professions.register_recipe(profession, definition)
 	return recipe
 end
 
-function grug_professions.register_refinement(profession, tier, family, base,
-		material)
-	local recipe = grug_professions.register_recipe(profession, {
-		tier = tier,
-		station = (profession == "weaponsmith" or profession == "armorsmith") and
-			"forge" or (profession == "tailor" and "tailor_bench" or
-			"tanning_rack"),
-		inputs = {{base, material}},
-		output = base,
-		in_place = true,
-		operation = "refinement", family = family,
-		operation_material = material, quality_mode = "refinement",
-		hint = "Improve at the owning profession station",
-	})
-	return recipe
-end
-
-function grug_professions.register_add_affix(profession, tier, family, base,
-		material, reagent)
-	return grug_professions.register_recipe(profession, {
-		tier = tier,
-		station = (profession == "weaponsmith" or profession == "armorsmith") and
-			"forge" or (profession == "tailor" and "tailor_bench" or
-			"tanning_rack"),
-		inputs = {{base, material, reagent}}, output = base, in_place = true,
-		operation = "add_affix", family = family,
-		operation_material = material, operation_reagent = reagent,
-		hint = "Add the next affix at the owning profession station",
-	})
-end
-
 local SUPPLIES = {
 	{"thread", "Thread", "default_paper.png^[colorize:#d8d1bd:115", 1},
-	{"flux", "Smithing Flux", "default_clay_lump.png^[colorize:#62574b:110", 2},
 	{"parchment", "Parchment", "default_paper.png^[colorize:#d6b879:65", 5},
-	{"whetstone_blank", "Whetstone Blank",
-		"default_stone.png^[colorize:#a5a09a:55", 4},
 }
 
 for index = 1, #SUPPLIES do
@@ -92,10 +56,13 @@ core.register_craft({
 	recipe = {{"grug_mobs:linen_scrap"}},
 })
 
+dofile(core.get_modpath("grug_jobs") .. "/station_operations.lua")
+
 dofile(modpath .. "/base_recipes.lua")
 dofile(modpath .. "/smiths.lua")
 dofile(modpath .. "/leatherworker.lua")
 dofile(modpath .. "/tailor.lua")
+dofile(modpath .. "/enchants.lua")
 
 core.register_on_mods_loaded(function()
 	local function input_exists(input)

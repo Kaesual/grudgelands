@@ -78,12 +78,6 @@ local trinkets = {
 	{key = "reclaimers_mark", settings = 6, g1 = "garnet", g4 = "ruby"},
 }
 
-local reagents = {
-	[2] = "grug_mobs:venom_gland", [3] = "grug_mobs:slime_gel",
-	[4] = "grug_mobs:croc_tooth", [5] = "grug_gathering:stormkelp",
-	[6] = "grug_mobs:stone_core",
-}
-
 -- Round 9 ruling 39: the identity-specific Setting counts are a temporary
 -- collision key for the input-authoritative station registry. Replace them
 -- with station output selection or one authored per-identity ingredient.
@@ -104,17 +98,6 @@ for tier = 1, 6 do
 		station = "jewellers_bench", inputs = {{setting, "grug_professions:parchment"}},
 		output = book,
 		mastery_required = 2, hint = "Bind at a Jeweller's Bench"})
-	A.register_recipe("goldsmith", {tier = tier, station = "jewellers_bench",
-		inputs = {{book, setting}}, output = book, in_place = true,
-		operation = "refinement", family = "spellbook",
-		operation_material = setting, quality_mode = "refinement",
-		hint = "Improve at a Jeweller's Bench"})
-	A.register_recipe("goldsmith", {tier = tier, station = "jewellers_bench",
-		inputs = {{book, setting, tier == 1 and "default:coal_lump" or reagents[tier]}},
-		output = book, in_place = true, operation = "add_affix",
-		family = "spellbook", operation_material = setting,
-		operation_reagent = tier == 1 and "default:coal_lump" or reagents[tier],
-		hint = "Add the next affix at a Jeweller's Bench"})
 	for identity_index = 1, #trinkets do
 		local row = trinkets[identity_index]
 		local inputs = {}
@@ -126,39 +109,27 @@ for tier = 1, 6 do
 			output = grug_gear.trinket_item(row.key, tier),
 			hint = "Assemble at a Jeweller's Bench"})
 		-- Trinkets are the fixed two-affix exception: one prefix and one suffix
-		-- in the crafted-fine window, never ordinary refinement state.
+		-- in the crafted-fine window.
 		recipe.quality_mode = "fine"
 	end
 end
 
-for tier = 2, 6 do
-	A.register_ingredient(reagents[tier], tier)
+local ornament_reagents = {
+	[3] = "grug_mobs:slime_gel", [4] = "grug_mobs:croc_tooth",
+	[5] = "grug_gathering:stormkelp", [6] = "grug_mobs:stone_core",
+}
+for tier = 3, 6 do
 	local setting = settings[tier].item
-	local imbue = A.register_item(C .. "gem_setting_imbue_t" .. tier,
-		"Tier " .. tier .. " Gem-setting Imbue Kit",
-		"default_mese_crystal_fragment.png^[colorize:#6e8bb7:125",
-		{grug_upgrade_kit = 1, grug_gem_setting_imbue = tier})
-	A.register_recipe("goldsmith", {tier = tier, station = "jewellers_bench",
-		inputs = {{setting, reagents[tier]}}, output = imbue,
-		hint = "Set at a Jeweller's Bench"})
-	if tier >= 3 then
-		local temper = A.register_item(C .. "gem_setting_temper_t" .. tier,
-			"Tier " .. tier .. " Gem-setting Temper Kit",
-			"default_mese_crystal_fragment.png^[colorize:#765884:135",
-			{grug_upgrade_kit = 1, grug_gem_setting_temper = tier})
-		A.register_recipe("goldsmith", {tier = tier,
-			station = "jewellers_bench",
-			inputs = {{setting, setting, reagents[tier]}}, output = temper,
-			hint = "Set at a Jeweller's Bench"})
-		local ornament = A.register_item(C .. "ornament_components_t" .. tier,
-			"Tier " .. tier .. " Ornament Components",
-			"default_gold_ingot.png^[colorize:#a77a42:105",
-			{grug_profession_material = 1, grug_ornament_components = tier})
-		A.register_recipe("goldsmith", {tier = tier,
-			station = "jewellers_bench",
-			inputs = {{setting, M .. "gold_bar", reagents[tier]}}, output = ornament,
-			hint = "Form at a Jeweller's Bench"})
-	end
+	local reagent = ornament_reagents[tier]
+	A.register_ingredient(reagent, tier)
+	local ornament = A.register_item(C .. "ornament_components_t" .. tier,
+		"Tier " .. tier .. " Ornament Components",
+		"default_gold_ingot.png^[colorize:#a77a42:105",
+		{grug_profession_material = 1, grug_ornament_components = tier})
+	A.register_recipe("goldsmith", {tier = tier,
+		station = "jewellers_bench",
+		inputs = {{setting, M .. "gold_bar", reagent}}, output = ornament,
+		hint = "Form at a Jeweller's Bench"})
 end
 
 function grug_artisans.settle_goldsmith_bonus(event, roll)

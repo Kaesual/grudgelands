@@ -1,6 +1,5 @@
 local A = grug_artisans
 local C = "grug_artisans:"
-local G = "grug_gear:"
 
 local tiers = {
 	{key = "seasoned", name = "Seasoned", gear = "bronze", grip = "light"},
@@ -13,17 +12,6 @@ local tiers = {
 	{key = "heartwood", name = "Heartwood", gear = "abyssal_steel",
 		grip = "nightscale", main_gem = "sapphire", offhand_gem = "diamond"},
 }
-
-local reagents = {
-	[1] = "default:coal_lump",
-	[2] = "grug_mobs:venom_gland",
-	[3] = "grug_mobs:slime_gel",
-	[4] = "grug_mobs:croc_tooth",
-	[5] = "grug_gathering:stormkelp",
-	[6] = "grug_mobs:stone_core",
-}
-
-local families = {"wand", "staff", "bow"}
 
 A.register_ingredient("group:wood", 1)
 A.register_ingredient("grug_materials:cut_diamond", 4)
@@ -46,29 +34,4 @@ for tier = 1, #tiers do
 	core.clear_craft({output = wood})
 	core.register_craft({output = wood, recipe = material_inputs})
 
-	for family_index = 1, #families do
-		local output = G .. families[family_index] .. "_" .. row.gear
-		A.register_refinement(tier, output, wood)
-		A.register_add_affix(tier, output, wood, reagents[tier])
-	end
-
-	if tier >= 2 then
-		A.register_ingredient(reagents[tier], tier)
-		local imbue = A.register_item(C .. "wood_oil_imbue_" .. row.key,
-			row.name .. " Wood-Oil Imbue Kit",
-			"default_papyrus.png^[colorize:#8b6c3e:115",
-			{grug_upgrade_kit = 1, grug_wood_oil_imbue = tier})
-		A.register_recipe("woodcarver", {tier = tier, station = "carving_bench",
-			inputs = {{wood, reagents[tier]}}, output = imbue,
-			hint = "Blend at a Carving Bench"})
-	end
-	if tier >= 3 then
-		local temper = A.register_item(C .. "wood_oil_temper_" .. row.key,
-			row.name .. " Wood-Oil Temper Kit",
-			"default_papyrus.png^[colorize:#536878:125",
-			{grug_upgrade_kit = 1, grug_wood_oil_temper = tier})
-		A.register_recipe("woodcarver", {tier = tier, station = "carving_bench",
-			inputs = {{wood, wood, reagents[tier]}}, output = temper,
-			hint = "Blend at a Carving Bench"})
-	end
 end

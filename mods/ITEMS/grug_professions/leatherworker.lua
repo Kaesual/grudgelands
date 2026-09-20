@@ -45,35 +45,6 @@ for tier = 1, #tiers do
 	P.register_recipe("leatherworker", {tier = tier, station = "tanning_rack",
 		inputs = {{row.output, row.output}}, output = grip,
 		hint = "Tan at a Tanning Rack"})
-	for _, slot in ipairs({"head", "chest", "legs", "feet"}) do
-		local item = "grug_gear:" .. slot .. "_leather_" .. row.key
-		P.register_refinement("leatherworker", tier, "leather_armor", item,
-			row.output)
-		P.register_add_affix("leatherworker", tier, "leather_armor", item,
-			row.output, tier == 1 and "default:coal_lump" or
-				({[2] = "grug_mobs:venom_gland", [3] = "grug_mobs:slime_gel",
-				[4] = "grug_mobs:croc_tooth", [5] = "grug_gathering:stormkelp",
-				[6] = "grug_mobs:stone_core"})[tier])
-	end
-
-	if tier >= 2 then
-		local imbue = P.register_item(C .. "leather_armor_imbue_" .. row.key,
-			row.name .. " Leather-Armor Imbue Kit",
-			"mobs_leather.png^[colorize:#8c6c45:115",
-			{grug_upgrade_kit = 1, grug_leather_imbue = tier})
-		P.register_recipe("leatherworker", {tier = tier, station = "tanning_rack",
-			inputs = {{row.output, grip}}, output = imbue,
-			hint = "Tan at a Tanning Rack"})
-	end
-	if tier >= 3 then
-		local temper = P.register_item(C .. "leather_armor_temper_" .. row.key,
-			row.name .. " Leather-Armor Temper Kit",
-			"mobs_leather.png^[colorize:#555f6d:125",
-			{grug_upgrade_kit = 1, grug_leather_temper = tier})
-		P.register_recipe("leatherworker", {tier = tier, station = "tanning_rack",
-			inputs = {{row.output, grip, "default:coal_lump"}}, output = temper,
-			hint = "Tan at a Tanning Rack"})
-	end
 end
 
 local bag_outputs = {
