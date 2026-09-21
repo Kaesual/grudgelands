@@ -36,9 +36,10 @@ equipment assumptions.
 
 ## Stable NPC and POI identities
 
-The existing starts already publish `hall_quest`. The Round 14 POIs must publish
-the other sockets below. Settlement keys are stable map anchors, never resolved
-coordinates.
+The existing starts already publish `hall_quest`. The Round 14 POIs publish
+the other sockets below. The table lists terrain anchor ids for handoff; actual
+quest registrations use the semantic settlement keys from the roster (for
+example `copperfell_village`), never anchor ids or resolved coordinates.
 
 | Culture | Faction | Start elder | Home village | Outpost | Bandit camp |
 |---|---|---|---|---|---|
@@ -149,7 +150,7 @@ dead, foxes around sapling guards, and poachers cutting living boughs.
 | 03 | Beneath the Seed Baskets | `grug_mobs:giant_rat` |
 | 04 | Footfalls Without Breath | `grug_mobs:zombie` |
 | 05 | Keepers of the Saplings | `grug_mobs:fox` |
-| 06 | Axes Without Leave | `grug_mobs:poacher` in the Silverleaf start region |
+| 06 | Axes Without Leave | `grug_mobs:poacher` or `grug_mobs:fox` in the Silverleaf start region |
 | 07 | Quiet the Lower Boughs | `grug_mobs:poacher` |
 | 08 | Watch the Green Road | `grug_mobs:fox` |
 | 09 | Cinders in Green Cloth | bandit family in `elandor_starbough_vale` |
@@ -191,7 +192,7 @@ heat rather than an orcish forge mark.
 | 03 | Rats Under the Hide Racks | `grug_mobs:giant_rat` |
 | 04 | The Thirsting Dead | `grug_mobs:zombie` |
 | 05 | Shells by the Bedrolls | `grug_mobs:scorpion` |
-| 06 | Husks on Redtusk Road | `grug_mobs:sun_dried_husk` in the Sunscar start region |
+| 06 | Husks on Redtusk Road | `grug_mobs:sun_dried_husk` or `grug_mobs:plains_runner` in the Sunscar start region |
 | 07 | Teeth Around the Herd | `grug_mobs:hyena` |
 | 08 | Scour the Dry Wash | `grug_mobs:scorpion` |
 | 09 | No Forge Made This Brand | bandit family in `kragmar_redtusk_savanna` |
@@ -244,3 +245,17 @@ the targets. Generic kill-objective placeholders were removed so NPC/journal
 renderers expose real target names. Both optional tool lessons now explain
 Basics, materials and the Wood-to-Stone-to-Bronze progression rather than
 merely promising instruction. Recipe quantities follow `basics_routes.lua`.
+
+### Integration identity and handoff correction
+
+The anchor ids in the roster table identify terrain anchors. NPC registration
+uses the actual socket-registry settlement keys: each of `copperfell`, `goldmead`,
+`starbough`, `mournfen`, `redtusk`, `raincall` with `_village`, `_outpost`, or
+`_bandit_camp`. There are no alternate-key aliases. Step 06 explicitly remains
+a local road-clearing task and tells players to reach level 10 before travelling
+to the village; its reward and minimum level remain unchanged.
+
+Independent review found consecutive night-only targets in the Orc chain and
+across the Elf handoff. Step 06 now also accepts local daytime plains runners
+(Orc) or foxes (Elf), with corresponding quest text; this preserves levels and
+rewards and removes the mandatory wait between night-only steps.

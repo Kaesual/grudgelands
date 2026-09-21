@@ -265,48 +265,43 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 ## Current State
 
 *Last updated: 2026-09-21. Derived from [BACKLOG.md](BACKLOG.md) and
-[ROADMAP.md](ROADMAP.md); [Round 13 technical delivery](docs/research/round13-completion.md)
-is complete, synchronized and pushed. GUI acceptance remains pending.*
+[ROADMAP.md](ROADMAP.md). [Round 14](docs/research/round14-completion.md)
+is technically complete; fresh-world GUI acceptance remains separate.*
 
-**Shipped foundation:** 24 of 53 tracked identities are complete: WP0–WP4,
-WP6, WP7, WP15, WP18, WP19, WP25, WP26, WP33, WP35, WP36, WP38, WP39, WP40,
+**Shipped foundation:** 27 of 53 tracked identities are complete: WP0–WP4,
+WP6–WP8, WP12, WP15, WP18–WP20, WP25, WP26, WP33, WP35, WP36, WP38–WP40,
 WP43, WP45, WP47, WP-HUD, WP-Speed and WP-Scout. The denominator includes
 WP0–WP49 and three named packages; canceled WP16 is tracked but not shipped.
-The game provides four classes, combat, mobs, the named-zone world, professions,
-equipment, farming, mounts and safe character creation.
+Four classes, combat, mobs, professions, equipment, farming, mounts and safe
+character creation now connect to quests, parties and an atlas.
 
-**Delivered Round 12:** Skills provides disposable, recoverable ability icons
-and every purchased mount tier at its original speed. Farming now has distinct
-seventeen-family growth/harvest behavior; all food buffs last five minutes.
-Basics reveals later recipes through main-material discovery, while real Cooking
-authority keeps its dishes exclusive. Larger inventory/Talents pages, onboarding
-Help, Creative Food, held-item fallback, revised food/wand/Greataxe art and the
-original-class X3 talent consumers are independently reviewed and integrated.
+**Delivered Round 14:** six starter chains contain 66 overworld quests with
+individual 3D NPC markers, a journal and optional tracker. Persistent same-faction
+parties have management and HP displays; the seven-view atlas has interactive
+markers. Eighteen home-region POIs, resumable starts/full-world preparation,
+interactive fishing and corrected flight rules complete the round. The reported
+cross-player Cooking issue remains unreproduced and carries targeted diagnostics.
 
-**In progress:** [Round 14](docs/research/round14-execution.md) adds quests, parties,
-the atlas, home-region POIs, resumable world preparation and playtest fixes.
-These are under implementation and are not yet installed. WP11 retains WP44's measured respec-price calibration; WP13
-retains most of the 100-anchor POI roster. WP10/WP29 retain broader catalog and
-economy work, WP14 carried light, and WP22 six-pick runtime calibration plus the
-deferred repair redesign. Ordinary farming is delivered; Claim Stone integration
-still belongs to WP24/WP32.
+**Earlier deliveries:** recoverable Skills, seventeen crop families, five-minute
+food buffs, Basics material discovery, UI/onboarding and reviewed item art came
+with Round 12. Round 13 supplies personal/shared stations, selected fixed-tier
+enchantments, Bronze starter weapons and simple durability/repair. Its playtest
+follow-ups restore skills-first hotbars and grass-free stables; wands, staves and
+bows use ordinary sticks, tier metal and the approved caster components.
 
-**Not yet:** quests, parties, remaining recovery work, Housing, geographic PvP,
-war fronts and first-public-release gates remain open. Focused LuaJIT, static
-Lua-5.1 and isolated native checks pass; PUC runtime was explicitly excluded.
-Use the [Round13 fresh-world checklist](docs/research/round13-next-playtest.md)
-and [art gallery](docs/research/round12-gallery.md); the separate UX review is
-source/heuristic evidence and leaves four proposals for later selection.
-**Delivered Round 13:** personal authored workspaces and shared player stations,
-protected preparation with universal automatic finishing, and 456 named fixed-tier
-enchantments including jewelry. Refinement is removed; starter weapons are Bronze
-and equipment uses the new durability ladders. Native Astra code reviews and the
-additional docs/code drift audit are clean; all reported findings are corrected.
-The installed payload matches main, ready for the next fresh-world playtest.
-The [first playtest fixes](docs/research/round13-playtest-followups.md) restore
-skills-first starter hotbars and grass-free earth floors in all capital stables.
-Wands, staves and bows now use ordinary sticks and tier metal; caster recipes
-add the [approved mob components](docs/research/round13-occult-recipes.md).
+**Still open:** WP9's broader progression/PvP story and WP13's remaining POI
+roster; Housing, boats/travel, geographic PvP, war fronts and release gates.
+WP11 retains measured respec-price calibration; WP10/WP29 broader catalog/economy
+work; WP14 carried light; WP21 recovery/rest; WP22 tool calibration and deferred
+repair redesign. Ordinary farming is delivered; Claim Stone integration belongs
+to WP24/WP32. The Nether is the first expansion, excluded from V1.
+
+**Validation and next step:** independent reviews, focused LuaJIT checks, static
+Lua-5.1 gates, the bounded final interpreter parity pair and isolated native
+integration support the technical delivery. Follow the [Round 14 fresh-world
+playtest](docs/research/round14-playtest.md), ideally with two players. The atlas
+is authored cartography; optional full preparation can take many hours and is
+not required to use it. No personal world was modified by the test harnesses.
 
 Historical round records live under [docs/research/](docs/research/); current
 rules live in `docs/design/` and remaining work in BACKLOG/ROADMAP or topic TODOs.

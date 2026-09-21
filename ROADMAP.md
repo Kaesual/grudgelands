@@ -191,8 +191,9 @@ The Nether is not part of V1.
   thirty numeric consumers, sfinv talent page, paid full-reset respec and
   level-up hint are in the game; `/talents` remains a read-only summary.
   Respec bracket values remain coordinator placeholders. Round 11 adds complete Scout trees and Ironbound/Unbroken. Round 12 completes the original classes' X3 consumers. Only measured WP44 respec-price calibration remains open.
-- [ ] **WP14 / WP20 / WP21 / WP8:** carried
-  light, parties, recovery/rest and the quest framework are independently
+- [x] **WP8 / WP20:** Round 14 delivers the quest framework, 66 starter
+  quests and persistent same-faction groups with separate tabs and optional HUDs.
+- [ ] **WP14 / WP21:** carried light and recovery/rest remain independently
   ready behind their shipped prerequisites. Design revision 2 landed 2026-09-16
   ([skill_trees.md](docs/design/skill_trees.md)); implementation phase 1 and
   X4 and the Round 12 X3 consumers are delivered.
@@ -356,14 +357,15 @@ These subpackages do not close the larger whole-WP goals below.
   map, materials, structures and economy; it is not an independent next WP.
 - [ ] WP24: complete Claim Stone state machine, protection/indexing and
   capacity-calibrated placement after WP40/WP43/WP44.
-- [ ] WP17 and WP12: claim-bound Home Stone, authored visit-unlocked waypoint
-  travel after claims and final zones. Round 14 separately implements the
-  cartographic Map tab without fog of war or a Housing/travel prerequisite
-  (`world_map.md`). WP17 also implements the decided boat contract plus the three ocean-danger
+- [x] WP12: Round 14 cartographic Map tab with seven views and interactive
+  markers, without fog or a Housing/travel prerequisite (`world_map.md`).
+- [ ] WP17: claim-bound Home Stone and authored visit-unlocked waypoint
+  travel after claims and final zones. WP17 also implements the decided boat contract plus the three ocean-danger
   prerequisites it needs, so its runtime test covers the whole mob roster.
 - [ ] WP41: implement the exact geographic PvP transaction after WP40.
 - [ ] WP42 and WP9: bounded war-front clashes and mandatory named-zone
-  questlines after final structures/map/PvP.
+  questlines after final structures/map/PvP. Round 14 supplies six starter
+  chains and eighteen home-region POIs; the broader story/roster remains open.
 - [ ] WP23: both dragon encounters after structures, playable boats, final
   map, contested PvP and renewable apex resources.
 - [ ] WP22: Round 11 delivers slow durability and money-only repair; explicit

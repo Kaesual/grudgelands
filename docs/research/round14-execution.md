@@ -29,17 +29,18 @@ rewrite. All suggested simplifications in the approved plan apply.
 
 | Lane | State | Owner / next step |
 |---|---|---|
-| SPEC | running | Root: authoritative documents and shared API/ownership agreements |
-| QUEST-CORE | candidate; review queued | native r14_quest_core, Astra; owns grug_quests core/tag_carrier/mobs kill seam/start_villagers |
-| STORY | candidate; review queued | native r14_story, Sol; 66 quests staged tools/r14_story/content.lua until POI sockets exist |
-| FIX | candidate; review queued, Cooking diagnosis unresolved | native r14_fixes, Sol; jobs and mount flight |
-| PARTY | core candidate; independent review running | native r14_party, Astra; UI integration running separately |
-| PREGEN | candidate; independent review queued | native r14_pregen, Astra + root waiting UI; bounded native stop/resume passes |
-| UI | running | native r14_ui, Sol; Quest/Group pages and HUD |
-| POI-ART / INTEGRATION | running | native r14_poi, Sol; 18 anchors through existing r7 settlement writer |
-| MAP | running | native r14_map, Sol; atlas only |
-| FISH | candidate; review queued | Root Astra, reused existing rod/HUD flow; bounded callback fixture passes |
-| Reviews / final drift | state core review PASS | fresh Astra r14_state_review; remaining lanes/final drift queued |
+| SPEC | complete | Root; approved design frozen |
+| QUEST-CORE | independently reviewed PASS | Astra author / fresh Astra state review |
+| STORY | independently reviewed PASS; integrated | Sol author + root corrections; 66 quests in production content.lua |
+| FIX | reviewed PASS; Cooking diagnosis unresolved | Sol; flight corrected, trainer isolation diagnostics only |
+| PARTY | independently reviewed PASS | Astra core, Sol UI + root corrections |
+| PREGEN | independently reviewed PASS | Astra + root waiting UI; bounded native stop/resume passed |
+| UI | independently reviewed PASS after corrections | Sol + root; fresh Sol UI/STORY review |
+| POI-ART / INTEGRATION | independently reviewed PASS | Astra corrections/polish; actual native placement passed |
+| MAP | independently reviewed PASS after corrections | Sol; atlas marker coordinates and labels corrected |
+| FISH | independently reviewed PASS | Root Astra; fresh Sol runtime review |
+| Integrated native gate | PASS | Astra r14_integration; actual manifest/planner, 3 POI chunks, 66/24 catalog |
+| Final static/parity / docs drift | static/parity and drift PASS | Root final parity pair; fresh Astra final docs audit |
 
 ## Accepted operational plan
 
@@ -203,7 +204,7 @@ FIX additionally owns the affected flight assertions in
   rather than nametag characters, initialized with empty observers.
 - STORY POI handoff is in `round14-story.md`. New NPC sockets: village
   `quest_steward`, outpost `quest_scout`, bandit `quest_captive`, all role quest.
-  Catalog is staged under `tools/r14_story/content.lua` until these sockets exist;
+  Catalog is staged under `mods/PLAYER/grug_quests/content.lua` until these sockets exist;
   never weaken startup validation to hide missing content.
 - FIX flight matrix implemented; profession isolation remains **unreproduced**,
   not fixed. Actual NPC/trainer/state call chain and two-player callback fixtures
@@ -260,3 +261,21 @@ Critical, High or Medium findings. UI suffixes and final integrated evidence are
 still pending and not covered by that verdict. No repeated native/PUC run.
 FISH candidate reuses the neutral skill-name notification row and has bounded
 production-callback tests; its independent review is queued with PREGEN/FIX.
+
+## Integration checkpoint
+
+The independently reviewed 66-quest catalog now lives in
+`mods/PLAYER/grug_quests/content.lua`; its staging duplicate was removed. Review
+reports refer to the original staging path as historical review evidence.
+Quest, party, preparation/fishing/flight and UI/story reviews are clean. MAP
+findings are closed. POI corrections and final real-consumer native evidence
+remain outstanding. No production merge, install sync or push has happened yet.
+
+## Final gate checkpoint
+
+POI corrections and bounded visual polish independently approved. Actual native
+integration passed three chunks and the complete 66/24 catalog. Thirteen portable
+fixtures passed in the final PUC/LuaJIT pair; the fixture-only selection-id
+correction and two failed bounded PUC attempts are fully recorded in
+`round14-completion.md`. Final drift audit found only two low-severity stale status
+wording issues, corrected by root and independently closed. Main merge/sync/push remain pending final closure.

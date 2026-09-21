@@ -580,9 +580,10 @@ moves into the talent tree.
   (**Ability icons are no longer deferred**: since 2026-08-08 an ability
   item shows the equipped weapon plus its own color — §2c.)
 - Warrior shield abilities → after WP14 (offhand/shields).
-- Buffs/auras (e.g. Battle Shout) and party frames → with skill trees
+- Buffs/auras (e.g. Battle Shout) → with skill trees
   (WP11) or later. (Power Word: Shield moved into the base kit with the
-  WP19 kit tuning, §5.)
+  WP19 kit tuning, §5.) Party frames are implemented under the separate
+  [party contract](parties.md).
 - **Poison → SUPERSEDED 2026-09-16.** The Phase-2 Rogue this bullet was
   written for is replaced by the **Scout** ([scout.md](scout.md)), and the
   user's ruling of 2026-09-16 is explicit that the Scout has **no poison**:

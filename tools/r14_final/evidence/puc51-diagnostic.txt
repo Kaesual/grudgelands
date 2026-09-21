@@ -1,0 +1,23 @@
+fixture=r14_quests/core_kat.lua
+r14-quests-core: PASS bag hand-in, live readiness, one-time claim, reward space, abandon/reset, 20 slots, HUD persistence, player isolation
+fixture=r14_quests/participation_kat.lua
+r14-quests-participation: PASS damage/effective-heal, exact 40m, gray event, unchanged split, once-before-cleanup
+fixture=r14_quests/visibility_kat.lua
+r14-quests-visibility: PASS original meshes, empty activation observers, shared25/30 hysteresis, live state refresh, child cleanup, one player scan
+fixture=r14_parties/core_kat.lua
+party-core checks=90
+party-core state=return {["groups"]={["4"]={["faction"]="accord",["leader"]="R1",["members"]={[1]="A",[2]="R1",[3]="R3",[4]="R4",[5]="R5",[6]="R6",[7]="R7",[8]="R8",[9]="R9"}}},["next_id"]=4}
+fixture=r14_pregen/kat.lua
+r14-pregen: full=70488 starts-dedup=18 cursor-resume=ok duplicates=ok cancel=ok retry=ok mode=immutable
+fixture=r14_selection/kat.lua
+tools/bin/lua51: ./mods/PLAYER/grug_classes/selection.lua:119: bad argument #2 to 'format' (string expected, got nil)
+stack traceback:
+	[C]: in function 'format'
+	./mods/PLAYER/grug_classes/selection.lua:119: in function 'options_formspec'
+	./mods/PLAYER/grug_classes/selection.lua:159: in function 'show_class_selection'
+	./mods/PLAYER/grug_classes/selection.lua:405: in function 'continue_creation'
+	./mods/PLAYER/grug_classes/selection.lua:527: in function 'fn'
+	./tools/r14_selection/kat.lua:46: in function 'drain'
+	./tools/r14_selection/kat.lua:76: in main chunk
+	tools/r14_final/micro.lua:34: in main chunk
+	[C]: ?

@@ -520,12 +520,12 @@ local function socket_face_yaw(socket)
 	return yaw
 end
 
--- Is this settlement a race's START or its CAPITAL? The registry is keyed by
+-- What kind of authored settlement is this? The registry is keyed by
 -- settlement and carries the fitted anchor it compiled against; grug_core
 -- publishes both authoritative anchors for a race, so the anchor is what
 -- answers, and nothing here has to restate a roster or trust a naming
 -- convention.
-local function settlement_kind(record, faction_id)
+local function settlement_kind(record, faction_id, sockets)
 	local function same(published)
 		return type(published) == "table" and published.x == record.anchor.x and
 			published.y == record.anchor.y and published.z == record.anchor.z
@@ -535,6 +535,17 @@ local function settlement_kind(record, faction_id)
 	end
 	if same(grug_core.capital_anchor(faction_id, record.race_id)) then
 		return "capital"
+	end
+	-- Round 14's bounded POIs are identified by their strict quest socket,
+	-- which is already the story/map integration authority. This avoids
+	-- restating either coordinates or settlement-key naming conventions here.
+	local poi_by_socket = {quest_steward = "village", quest_scout = "outpost",
+		quest_captive = "bandit_camp"}
+	for index = 1, #sockets do
+		local socket = sockets[index]
+		if socket.role == "quest" and poi_by_socket[socket.id] then
+			return poi_by_socket[socket.id]
+		end
 	end
 	return nil
 end
@@ -558,15 +569,15 @@ local function build_rows()
 		-- DECIDED by that comparison, once per settlement at load, and a
 		-- settlement that matches neither published anchor is a defect rather
 		-- than a settlement placed against a guess.
-		local kind = faction_id and settlement_kind(record, faction_id) or nil
+		local kind = faction_id and settlement_kind(record, faction_id, sockets) or nil
 		if not faction_id then
 			core.log("error", "[grug_mobs] settlement npcs: no faction for race " ..
 				record.race_id)
 		elseif not kind then
 			core.log("error", "[grug_mobs] settlement npcs: " .. record.key ..
 				" socket anchor " .. core.pos_to_string(record.anchor) ..
-				" is neither the published start nor the published capital anchor" ..
-				" of " .. record.race_id)
+				" is not a published start, capital or Round 14 POI of " ..
+				record.race_id)
 		elseif #sockets == 0 then
 			core.log("warning", "[grug_mobs] settlement npcs: " .. record.key ..
 				" exports no socket")
@@ -1013,6 +1024,26 @@ local function install_profession_trainer_name(entity, profession)
 	return true
 end
 
+-- QUEST owns NPC identity and text. Its catalog indexes the stable settlement
+-- socket rather than a coordinate, so the placement engine may apply the
+-- authored title without carrying a second 24-name table. This is deliberately
+-- guarded: grug_mobs loads before the dependent quest mod, while placement is
+-- assembled from register_on_mods_loaded after both have initialized.
+local function quest_socket_title(settlement_key, socket_id)
+	local quests = rawget(_G, "grug_quests")
+	local by_socket = quests and quests.npc_by_socket
+	local registered = quests and quests.registered_npcs
+	if type(by_socket) ~= "table" or type(registered) ~= "table" then return nil end
+	local npc_id = by_socket[settlement_key .. "/" .. socket_id]
+	if type(npc_id) ~= "string" then return nil end
+	local definition = registered[npc_id]
+	if type(definition) ~= "table" or type(definition.title) ~= "string" or
+			definition.title == "" then return nil end
+	return definition.title
+end
+
+grug_mobs.quest_socket_title = quest_socket_title
+
 grug_mobs.install_profession_trainer_name = install_profession_trainer_name
 
 function grug_mobs.install_profession_trainer(entity, slot)
@@ -1043,6 +1074,10 @@ local function install(entity, row, slot)
 	if named and grug_mobs.settlement_npc_name then
 		entity._grug_npc_name = grug_mobs.settlement_npc_name(row.key, row.kind,
 			row.race_id, named)
+	end
+	if slot.role == "quest" then
+		entity._grug_npc_name = quest_socket_title(row.key, slot.id) or
+			entity._grug_npc_name
 	end
 	-- The facing to re-assert on every activation: mob_activate hands every mob
 	-- a random yaw (api.lua:3638-3769), so an authored one has to be written back.

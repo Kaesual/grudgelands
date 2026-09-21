@@ -144,7 +144,7 @@ function Q.set_hud_enabled(player, enabled)
 end
 function Q.journal(player)
 	local state, rows = load(player), {}
-	local counts = holdings(player)
+	local counts = next(state.active) and holdings(player) or {}
 	local ids = {}
 	for id in pairs(state.active) do ids[#ids + 1] = id end
 	table.sort(ids)

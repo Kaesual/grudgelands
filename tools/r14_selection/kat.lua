@@ -34,8 +34,8 @@ local factions = {
 }
 local class_api = {
  get_race=function(p) return p.race end, get_class=function(p) return p.class end,
- registered_classes={warrior={name="Warrior"}}, class_ids={"warrior"},
- get_class_def=function() return {name="Warrior"} end,
+ registered_classes={warrior={id="warrior",name="Warrior"}}, class_ids={"warrior"},
+ get_class_def=function() return {id="warrior",name="Warrior"} end,
  set_class=function(p,id) classes=classes+1;p.class=id;return true end,
 }
 local env=setmetatable({core=api,grug_core=game,grug_classes=class_api,
