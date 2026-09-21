@@ -62,3 +62,19 @@ Decided 2026-09-21; Round 14 user Go.
 - Opening kill lessons use common mobs and small counts (e.g. five boars).
   Avoid five low-drop-rate tusks as the first mandatory task. Quest materials
   must actually exist locally under the current zone/time spawn policies.
+
+## Round 15 presentation and regional expansion
+
+Decided 2026-09-21: enlarge quest symbols fivefold while holding their upper
+extent fixed (growth downward). Keep per-viewer states and existing visibility
+hysteresis. The optional three-quest HUD sits at screen middle-right, with
+right-aligned wrapped text and edge padding.
+
+Add six optional local quests per race at the existing village/outpost/camp
+and one additional village giver per race: 102 quests and 30 giver identities
+in total. Reuse kill/item-hand-in objectives and existing race/faction gates;
+no Nether, escort, custom quest drops or new world anchors. Compose tasks with
+the visible local workplaces and ensure targets/materials are locally available.
+Retune later quest XP modestly against authored target level/effort and required
+combat; fixed rewards do not scale with the level at turn-in. Introductory
+rewards must not receive a blanket increase.

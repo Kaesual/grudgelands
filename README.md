@@ -1,6 +1,7 @@
 # Grudgelands
 
-Final integrated status and exact gate identities: [Round 13 completion](docs/research/round13-completion.md).
+Latest delivered round: [Round 14 completion](docs/research/round14-completion.md).
+Current work: [Round 15 POI, quest and HUD iteration](docs/research/round15-execution.md).
 Final technical gates PASS. The reviewed changes are delivered on main, synchronized
 and pushed; GUI acceptance remains pending.
 
@@ -12,7 +13,8 @@ built as a standalone Lua game rather than a mod pack.
 > equipment, XP, money/vendors, Cooking, Alchemy and the integrated seven-primary
 > profession/equipment work are delivered and playable.
 > The named-zone world is implemented and still has explicit release/runtime gates;
-> quests, open-world housing and geographic PvP are not built. See
+> quests, parties and a world atlas are delivered; open-world housing and
+> geographic PvP remain unfinished. See
 > [Current State](#current-state).
 
 ## The story

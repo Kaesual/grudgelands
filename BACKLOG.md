@@ -1,9 +1,9 @@
 # Backlog — Work Packages
 
-Round 14 is active: [approved execution](docs/research/round14-execution.md).
-Quests, persistent same-faction parties, the world atlas, home-region POIs,
-resumable startup preparation and the reported playtest fixes are in progress.
-No Round 14 package is delivered yet.
+Round 15 is active: [approved execution](docs/research/round15-execution.md).
+Its scope is the existing 18 POIs, 36 additional local quests, HUD presentation
+and live atlas/quest-giver markers. Waypoints remain deferred.
+Round 14 is delivered: [completion](docs/research/round14-completion.md).
 
 Round 13 is delivered: [completion and exact evidence](docs/research/round13-completion.md), [current contract](docs/design/crafting_equipment_revision.md).
 

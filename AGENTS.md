@@ -65,6 +65,13 @@ projects: **[docs/research/](docs/research/)**.
   that policy; the standing rule above only removes repeated data-sharing
   confirmation.
 
+## Active round
+
+Round 15 is authorized and tracked in `docs/research/round15-execution.md`.
+Use native Astra for POI composition and Sol for quests/HUD/atlas; independent
+reviews remain required. No waypoints or new world anchors. Unexpected major
+complexity pauses its lane for user discussion.
+
 ## Current resource-root authority
 
 - The user adopted demand-driven resource-root sampling on 2026-09-13.

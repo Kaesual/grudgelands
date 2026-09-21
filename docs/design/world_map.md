@@ -15,3 +15,17 @@ Decided 2026-09-21; Round 14 user Go.
   WP17's authority; this first map slice has no Housing or travel dependency.
 - The native V minimap remains a separate client feature. No client mods or
   native-minimap bitmap extraction are used.
+
+## Round 15 live markers
+
+Decided 2026-09-21: viewer position is a gold directional triangle; online
+party members use cyan directional triangles, with names and hover tooltips.
+Only positions within the selected view appear; offline members have no live
+map position. The viewer draws above other markers. Refresh at most twice per
+second while the atlas is open, only for changed visible state. Retain view,
+selection and stable click identity across updates.
+
+Authored quest givers have interactive markers with the same per-player
+ready/available/active/locked precedence as their world symbols. Tooltips show
+name and status. Map markers confer no remote quest interaction or travel.
+Waypoints remain a later package.

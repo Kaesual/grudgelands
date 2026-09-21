@@ -107,3 +107,10 @@ XP, preserving its current online/40-node eligibility and existing XP splitting.
 Party membership confers no automatic credit. Quest counters award a full kill
 to each eligible participant with the matching active quest; zero XP from a
 gray mob does not itself erase quest credit. See `quests.md`.
+
+## Round 15 XP presentation
+
+The numeric XP HUD line is replaced with a gold progress bar directly above
+the hotbar, 360×6 HUD units (life remains 180×16). A small adjacent level label
+remains; the bar fills fully at maximum level. Exact XP remains available in
+the existing `/xp` command. All offsets use the shared HUD layout owner.

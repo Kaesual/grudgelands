@@ -491,3 +491,15 @@ want lived-in settlements without paying for it in server load"):
   adopted 2026-09-18). Villagers, elders and vendors use the same independent
   25 m show / 30 m hide carrier gate as combat families. A nearby player no
   longer exposes settlement names to a different, distant player.
+
+## Round 15 regional POI composition
+
+The existing six villages, six outposts and six bandit camps receive distinct
+authored compositions, not just palette swaps of shared symmetric layouts.
+Each has a dominant building, differently sized secondary forms, a readable
+arrival, usable circulation, functional interiors and activity-specific scenery.
+The guaranteed fitted cores remain 24×24 for villages/camps and 16×16 for
+outposts; all buildings, roof overhangs and supports fit those cores. Existing
+anchors, roads, protection rules and functional roots remain authoritative.
+Each village gains one quest-giver socket `quest_local`; existing quest socket
+identities remain stable. No new world anchors are part of this increment.
