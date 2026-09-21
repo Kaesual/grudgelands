@@ -2190,6 +2190,29 @@ local function allowed_storage(listname)
 	return false
 end
 
+local META_INITIAL_KIT = "grug_abilities:initial_kit_given"
+
+-- Character creation runs after the faction starter supplies were added to
+-- main. Insert each base ability at its kit position and shift those supplies
+-- right, preserving every carried stack. Later class changes keep the older
+-- add-to-first-free-slot behavior and never rearrange an established inventory.
+local function insert_initial_ability(inv, index, stack)
+	local size = inv:get_size("main")
+	local empty
+	for slot = index, size do
+		if inv:get_stack("main", slot):is_empty() then
+			empty = slot
+			break
+		end
+	end
+	if not empty then return false end
+	for slot = empty, index + 1, -1 do
+		inv:set_stack("main", slot, inv:get_stack("main", slot - 1))
+	end
+	inv:set_stack("main", index, stack)
+	return true
+end
+
 function grug_abilities.normalize_kit(player)
 	local inv = player:get_inventory()
 	local have, equipment_changed = {}, false
@@ -2216,6 +2239,9 @@ end
 
 local function grant_initial_kit(player)
 	local inv = player:get_inventory()
+	local meta = player:get_meta()
+	local arrange_initial = meta:get_int(META_INITIAL_KIT) == 0
+	local complete = true
 	for index, ability_id in ipairs(grug_abilities.unlocked_ids(player)) do
 		local def = grug_abilities.registered[ability_id]
 		if not def.talent_gated then
@@ -2225,12 +2251,20 @@ local function grant_initial_kit(player)
 				if inv:contains_item(listname, "grug_abilities:" .. ability_id) then exists = true end
 			end
 			if stack and not exists then
-				local slot = inv:get_stack("main", index)
-				if slot:is_empty() then inv:set_stack("main", index, stack)
-				else inv:add_item("main", stack) end
+				if arrange_initial then
+					complete = insert_initial_ability(inv, index, stack) and complete
+				else
+					local slot = inv:get_stack("main", index)
+					if slot:is_empty() then
+						inv:set_stack("main", index, stack)
+					else
+						complete = inv:add_item("main", stack):is_empty() and complete
+					end
+				end
 			end
 		end
 	end
+	if arrange_initial and complete then meta:set_int(META_INITIAL_KIT, 1) end
 end
 
 grug_classes.register_on_class_chosen(function(player, class_id)

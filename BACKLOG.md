@@ -2,6 +2,10 @@
 
 Round 13 is delivered: [completion and exact evidence](docs/research/round13-completion.md), [current contract](docs/design/crafting_equipment_revision.md).
 
+The [first Round 13 playtest followups](docs/research/round13-playtest-followups.md)
+restore skills-first character creation and non-grassing capital stable floors;
+implementation and independent review are clean.
+
 Previous integrated status and exact gate identities: [Round 12 completion](docs/research/round12-completion.md).
 Final technical gates PASS. The reviewed changes are delivered on main, synchronized
 and pushed; GUI acceptance remains pending.

@@ -294,6 +294,8 @@ enchantments including jewelry. Refinement is removed; starter weapons are Bronz
 and equipment uses the new durability ladders. Native Astra code reviews and the
 additional docs/code drift audit are clean; all reported findings are corrected.
 The installed payload matches main, ready for the next fresh-world playtest.
+The [first playtest fixes](docs/research/round13-playtest-followups.md) restore
+skills-first starter hotbars and grass-free earth floors in all capital stables.
 
 Historical round records live under [docs/research/](docs/research/); current
 rules live in `docs/design/` and remaining work in BACKLOG/ROADMAP or topic TODOs.

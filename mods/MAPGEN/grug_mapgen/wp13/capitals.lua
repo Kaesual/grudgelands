@@ -1666,7 +1666,7 @@ local function loader(directory)
 		local w, d = spec.w or 15, spec.d or 11
 		if spec.open_shelter then
 			local buf = parts.buffer()
-			buf:fill(0, 0, 0, w - 1, 0, d - 1, "default:dirt")
+			buf:fill(0, 0, 0, w - 1, 0, d - 1, "grug_farming:soil")
 			buf:clear(0, 1, 0, w - 1, 6, d - 1)
 			buf:fill(0, 6, 0, w - 1, 6, d - 1, palette.node("roof_ridge"))
 			local cx = math.floor(w / 2)

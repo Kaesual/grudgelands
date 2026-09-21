@@ -426,6 +426,11 @@ base-class starter kit once. Later talent unlocks are acquired manually from
 Skills; talent changes, joins and equipment changes never recreate a deleted
 representation. Losing a talent removes its representation.
 
+At initial character creation, the base abilities occupy the first inventory
+slots in kit order: Strike on key 1, then the remaining class abilities, then
+starter supplies. Existing carried items are preserved. This startup arrangement
+does not reorder the player's inventory on joins or talent changes.
+
 Ability items may live in `main` or the character's four owned bag-content
 lists. `craft`, equipment, quivers, bag slots, nodes, detached inventories and
 other characters refuse them. Dropping one deletes the representation without

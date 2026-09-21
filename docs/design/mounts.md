@@ -27,6 +27,8 @@ universal skills `professions.md` §1, the mob speed pillar
 - Every capital has one outer-district stable using the same shared building
   design, with the local architectural palette: earth floor, one-node fence,
   clear entrance and a flat roof on exactly six posts, without perimeter walls.
+  All six stable floors use `grug_farming:soil`, the same non-grassing earth as
+  the Human starting fields, so nearby grass cannot spread across the enclosure.
   Its dedicated Riding Trainer stands in front of four protected displays of the existing mount appearances
   available to that race, one for each tier in §1.1: 24 displays across six cities.
   CAP authors separate bounded movement/rest regions for all four sockets.
