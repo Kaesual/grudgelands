@@ -1,8 +1,6 @@
 # Grudgelands
 
-Latest delivered round: [Round 14 completion](docs/research/round14-completion.md).
-Current candidate: [Round 15 completion](docs/research/round15-completion.md);
-independent reviews and final technical gates pass, delivery pending.
+Latest delivered round: [Round 15 completion](docs/research/round15-completion.md).
 Final technical gates PASS. The reviewed changes are delivered on main, synchronized
 and pushed; GUI acceptance remains pending.
 
@@ -269,8 +267,8 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 
 *Last updated: 2026-09-21. Derived from [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md). [Round 15](docs/research/round15-completion.md)
-has passed independent reviews and final gates; delivery and fresh-world GUI
-acceptance remain separate.*
+is independently reviewed, merged, synchronized and pushed; fresh-world GUI
+acceptance remains separate.*
 
 **Shipped foundation:** 27 of 53 tracked identities are complete: WP0–WP4,
 WP6–WP8, WP12, WP15, WP18–WP20, WP25, WP26, WP33, WP35, WP36, WP38–WP40,
@@ -279,7 +277,7 @@ WP0–WP49 and three named packages; canceled WP16 is tracked but not shipped.
 Four classes, combat, mobs, professions, equipment, farming, mounts and safe
 character creation now connect to quests, parties and an atlas.
 
-**Round 15 candidate:** the existing eighteen POIs now have distinct layouts,
+**Delivered Round 15:** the existing eighteen POIs now have distinct layouts,
 working interiors and cultural details. Thirty-six optional local quests bring
 the catalog to 102 quests and 30 givers. Larger quest symbols, centred side
 trackers, a thin XP bar and live player/party/quest atlas markers improve

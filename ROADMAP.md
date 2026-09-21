@@ -1,7 +1,7 @@
 # Roadmap — Grudgelands
 
 Current technical status and evidence: [Round 15 completion](docs/research/round15-completion.md).
-Independent reviews and bounded final gates PASS; delivery is pending.
+Independent reviews and bounded final gates PASS; merged, synchronized and pushed.
 Fresh-world GUI acceptance remains separate.
 
 Grudgelands is a standalone, WoW-inspired voxel RPG for Luanti. It combines
@@ -17,8 +17,8 @@ the goal-level view.
 
 Round 15 recomposes the eighteen existing home-region POIs, adds 36 local
 quests (102 total / 30 givers), live atlas player/party/quest markers and clearer
-quest/party/XP HUD presentation. Reviewed and technically complete; merge,
-synchronization and push are pending. Broader WP9 story and WP13 world roster
+quest/party/XP HUD presentation. Reviewed, merged, synchronized and pushed; GUI
+acceptance remains pending. Broader WP9 story and WP13 world roster
 remain open, so whole-goal counts are unchanged.
 
 The reviewed [Round 13 playtest followups](docs/research/round13-playtest-followups.md)

@@ -1,6 +1,6 @@
 # Round 15 — POI character, regional quests and readable HUD
 
-Status: independent reviews and final technical gates PASS; delivery in progress. User Go on 2026-09-21 includes the atlas
+Status: delivered on main, synchronized locally and pushed; GUI playtest pending. User Go on 2026-09-21 includes the atlas
 quest-giver layer. Waypoints are explicitly deferred. Unexpected complexity
 pauses the affected lane for escalation; unrelated work continues.
 Date: 2026-09-21. Coordinator: Astra; native agents only, no Claude this session.
@@ -191,10 +191,13 @@ and handoffs, not a competing game-design authority.
   log has no instrumented trainer actions. Keep report open; see
   round15-cooking-investigation.md for the focused two-client reproduction.
 - Final tools/r15_final parser/SETGLOBAL/five sweeps pass for 17 Lua files.
-  One final PUC/LuaJIT pair matches canonical SHA8de2aaf7c4080ad0d423f36177318a338c66cae5f72f8992cbc3bc14ab509f46.
-  Native3chunk integration passed: 102/30 registry,12,670cells,fiveNPCs.
-  Frozen production payload matches all2,045 files of the native snapshot.
-- Final completion/playtest docs record technical PASS; merge/sync/push pending.
+  One final PUC/LuaJIT pair matches the canonical digest recorded in
+  round15-completion.md.
+  Native three-chunk integration passed: 102/30 registry, 12,670 cells, five NPCs.
+  Frozen production payload matches all 2,045 files of the native snapshot.
+- Final candidate `0dcac759` merged as `ecf0f819`; local sync (2,047 exact
+  installed files) and authorized origin/main push completed. No agents running.
+  Next action is the user's fresh-world GUI playtest; Cooking remains open.
 - Thread cap requires reusing non-author lanes: Sol reviews POIs/atlas; POI
   author Astra reviews HUD; HUD author Astra reviews quests. Never self-review.
   No CLI agents; no reference-project or user-world edits.

@@ -2,7 +2,8 @@
 
 Round 15 technical gates and independent reviews pass:
 [completion](docs/research/round15-completion.md),
-[playtest](docs/research/round15-playtest.md). Delivery is pending.
+[playtest](docs/research/round15-playtest.md). Merged, synchronized and pushed;
+GUI acceptance remains pending.
 All 18 regional POIs are recomposed; 36 local quests bring the catalog to 102
 quests / 30 givers. Live player/party/quest atlas markers, larger world quest
 symbols, side trackers and the XP bar are implemented. The Cooking report

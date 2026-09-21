@@ -1,7 +1,6 @@
 # Round 15 playtest
 
-Status: final technical gates PASS; delivery pending. Restart the game after
-delivery and use a fresh world for the changed POI structures. Prefer two
+Status: delivered; technical gates PASS. Restart the game and use a fresh world for the changed POI structures. Prefer two
 same-faction characters for atlas/party checks. No full-world preparation is
 needed for this test.
 

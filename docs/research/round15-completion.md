@@ -1,6 +1,6 @@
 # Round 15 completion record
 
-Status: technical gates and independent reviews PASS; merge/sync/push pending.
+Status: delivered on main, synchronized locally and pushed; GUI acceptance pending.
 Date: 2026-09-21. Current game rules remain in `docs/design/`.
 
 ## Scope
@@ -80,3 +80,14 @@ unequal GUI/HUD scales; that separate legacy limitation is documented in the
 HUD report and was not claimed fixed by the party/quest presentation work.
 
 Next user action after delivery: [fresh-world playtest](round15-playtest.md).
+
+## Delivery receipt
+
+Reviewed integration candidate `0dcac759` merged without squash as `ecf0f819`.
+`tools/sync_to_luanti.sh` installed main; all 2,047 installed file names and
+contents matched the checkout, and the 17 final Lua hashes remained unchanged.
+`git push origin main` successfully advanced `github.com/Kaesual/grudgelands`
+from `6908d1d5` to `ecf0f819`. This documentation-only delivery receipt does
+not change the reviewed/tested game bytes. All agent tasks and the disposable
+native server have finished. Cooking remains an open diagnostic case; next
+runtime acceptance belongs to the user's fresh-world playtest.
