@@ -1,8 +1,8 @@
 -- Character creation flow: faction (grug_factions) -> race -> class, all
 -- mandatory, all final. Closing a dialog without choosing re-opens it. While
 -- the flow is incomplete the player remains frozen and engine-immortal. The
--- final teleport waits for grug_core's server-wide preload of ALL SIX start
--- areas (user decision 2026-09-14) and is committed exactly once.
+-- final teleport waits for the selected server-wide preparation plan. Existing
+-- characters reconnecting during preparation wait without changing position.
 
 local RACE_FORM = "grug_classes:race"
 local CLASS_FORM = "grug_classes:class"
@@ -68,7 +68,7 @@ local function reassert_player_lock(player)
 end
 
 local function lock_player(player)
-	if character_complete(player) then
+	if character_complete(player) and grug_core.world_preparation_status().ready then
 		return nil
 	end
 	local name = player:get_player_name()
@@ -82,7 +82,8 @@ local function lock_player(player)
 		-- class ruling 11 exists to end (skill_trees.md §3.9). Releasing the
 		-- hold hands the player back to whatever the aggregator says at that
 		-- moment, which for a fresh character is the 1/1/1 baseline.
-		session = {previous_immortal = armor.immortal}
+		session = {previous_immortal = armor.immortal,
+			preparation_only = character_complete(player)}
 		creation_sessions[name] = session
 	end
 	reassert_player_lock(player)
@@ -159,47 +160,44 @@ local function show_class_selection(player)
 			"How will you fight? This decision is final.", options))
 end
 
-local function loading_formspec(failed, ready, total)
+local function loading_formspec(status, failed)
+	local scope = status.mode == "full" and "the world" or "the starting areas"
+	local eta = "Estimating time remaining..."
+	if status.eta_seconds then
+		local minutes = math.ceil(status.eta_seconds / 60)
+		eta = ("Time remaining: %dh %02dm"):format(math.floor(minutes / 60), minutes % 60)
+	end
 	local parts = {
-		"formspec_version[4]",
-		"size[8.6,3.3]",
-		DARK_BACKGROUND,
-		"label[0.6,0.8;" .. core.formspec_escape(
-			("Preparing the starting areas (%d of %d)..."):format(
-				ready or 0, total or 0)) .. "]",
+		"formspec_version[4]", "size[10.4,3.5]", DARK_BACKGROUND,
+		"label[0.6,0.7;" .. core.formspec_escape(
+			("Preparing %s: %d%%"):format(scope, math.floor(status.percent))) .. "]",
 	}
 	if failed then
-		parts[#parts + 1] = "label[0.6,1.5;" .. core.formspec_escape(
+		parts[#parts + 1] = "label[0.6,1.4;" .. core.formspec_escape(
 			"The area could not be loaded. You remain safe here.") .. "]"
-		parts[#parts + 1] = "button[2.7,2.1;3.2,0.8;retry_spawn;Try again]"
+		parts[#parts + 1] = "button[3.6,2.1;3.2,0.8;retry_spawn;Try again]"
+	elseif status.ready then
+		parts[#parts + 1] = "label[0.6,1.4;Preparing your arrival location... ]"
 	else
-		parts[#parts + 1] = "label[0.6,1.5;" .. core.formspec_escape(
-			"Your journey will begin as soon as it is ready.") .. "]"
+		parts[#parts + 1] = "label[0.6,1.4;" .. core.formspec_escape(eta) .. "]"
+		parts[#parts + 1] = "label[0.6,2.2;You may disconnect and return later.]"
 	end
 	return table.concat(parts)
 end
 
--- The loading form is the one piece of creation UI that changes while the
--- player only waits. Send it exactly on a change of what it displays: the
--- server-wide preload progress moves at most six times, so a per-step or
--- per-callback resend would be pure packet noise.
+-- Progress callbacks are throttled by the scheduler. Compare the rendered
+-- text as well: chunk completions with the same percent/ETA send no packet.
 local function show_loading(player, failed)
 	local name = player:get_player_name()
 	local session = creation_sessions[name]
-	local ready, total = grug_core.starts_ready()
-	failed = failed and true or false
+	local status = grug_core.world_preparation_status()
+	local form = loading_formspec(status, failed or status.failed)
 	if session then
-		if session.shown_loading and session.shown_failed == failed and
-				session.shown_ready == ready and session.shown_total == total then
-			return
-		end
+		if session.shown_loading and session.shown_form == form then return end
 		session.shown_loading = true
-		session.shown_failed = failed
-		session.shown_ready = ready
-		session.shown_total = total
+		session.shown_form = form
 	end
-	core.show_formspec(name, LOADING_FORM,
-		loading_formspec(failed, ready, total))
+	core.show_formspec(name, LOADING_FORM, form)
 end
 
 local function identity_key(player)
@@ -276,7 +274,7 @@ local function start_arrival_load(player)
 end
 
 -- Binds the pending start identity. The arrival load above may only start
--- once ALL SIX starts are prepared (user decision 2026-09-14): before that it
+-- once the selected world preparation is complete: before that it
 -- would compete with the startup preload for the same mapgen threads.
 start_spawn_load = function(player)
 	local session = creation_sessions[player:get_player_name()]
@@ -306,6 +304,13 @@ finish_if_ready = function(player)
 	if not session then
 		return false
 	end
+	if session.preparation_only then
+		if grug_core.world_preparation_status().ready then
+			return release_player(player, session)
+		end
+		show_loading(player)
+		return false
+	end
 	local class_id = grug_classes.get_class(player) or session.pending_class_id
 	local key = identity_key(player)
 	if not key or not class_id then
@@ -313,8 +318,8 @@ finish_if_ready = function(player)
 	end
 	local ready, total = grug_core.starts_ready()
 	if ready < total then
-		-- Gate one: every race start must be prepared, not only this player's
-		-- (user decision 2026-09-14). Nothing of this player's own is loaded
+		-- Gate one: the selected shared preparation plan must complete.
+		-- Nothing of this player's own is loaded
 		-- while the shared preload still runs.
 		session.spawn_key = key
 		show_loading(player, session.load_failed ~= nil or
@@ -380,6 +385,10 @@ continue_creation = function(player)
 		session = lock_player(player)
 	end
 	if not session then
+		return
+	end
+	if session.preparation_only then
+		finish_if_ready(player)
 		return
 	end
 	if not grug_factions.get_faction(player) then
@@ -467,11 +476,10 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 				(session.load_failed or grug_core.starts_preload_failed()) then
 			session.spawn_key = nil
 			session.load_failed = nil
-			-- Re-requests only the start areas that are still missing; the
-			-- ready ones are never emerged twice. start_spawn_load then
-			-- re-runs this player's own arrival load once they are.
+			-- Retry the failed preparation unit without resetting its cursor,
+			-- then retry a new character's separate arrival load if needed.
 			grug_core.request_starts_preload()
-			start_spawn_load(player)
+			if not session.preparation_only then start_spawn_load(player) end
 			finish_if_ready(player)
 		else
 			-- The player closed the form (Esc). It is gone from the screen, so
@@ -487,14 +495,13 @@ grug_factions.register_on_faction_chosen(function(player, faction_id)
 	continue_creation(player)
 end)
 
--- Progress of the server-wide start preload. This fires at most once per
--- start (six times per server life), so walking the small waiting-player
--- table here is cheaper than any polling would be, and show_loading only
--- sends a formspec when its text actually changed.
-grug_core.register_on_starts_progress(function()
-	for name in pairs(creation_sessions) do
+-- The scheduler supplies one throttled progress stream for either plan.
+-- Do not open a loading form over an unfinished race/class selection.
+grug_core.register_on_preparation_progress(function()
+	for name, session in pairs(creation_sessions) do
 		local player = core.get_player_by_name(name)
-		if player then
+		if player and (session.preparation_only or session.pending_class_id or
+				grug_classes.get_class(player)) then
 			finish_if_ready(player)
 		end
 	end
@@ -515,8 +522,8 @@ core.register_on_joinplayer(function(player)
 	-- what `hold_movement` re-asserts against.
 	core.after(0, function()
 		local p = core.get_player_by_name(name)
-		if p and not character_complete(p) then
-			lock_player(p)
+		if p and creation_sessions[name] then
+			reassert_player_lock(p)
 			continue_creation(p)
 		end
 	end)

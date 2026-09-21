@@ -1,0 +1,2 @@
+party-core checks=90
+party-core state=return {["groups"]={["4"]={["faction"]="accord",["leader"]="R1",["members"]={[1]="A",[2]="R1",[3]="R3",[4]="R4",[5]="R5",[6]="R6",[7]="R7",[8]="R8",[9]="R9"}}},["next_id"]=4}

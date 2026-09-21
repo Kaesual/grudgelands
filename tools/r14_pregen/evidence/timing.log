@@ -1,0 +1,258 @@
+
+
+-------------
+  Separator
+-------------
+
+2026-09-21 20:18:27: ACTION[Main]: [grug_materials] 12 tools completing the six-tier pick/axe/shovel ladder
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:pick_mese'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:shovel_mese'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:axe_mese'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sword_mese'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:pick_diamond'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:shovel_diamond'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:axe_diamond'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sword_diamond'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sword_bronze'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sword_steel'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sword_stone'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:copper_ingot'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:copperblock'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:tin_ingot'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:tinblock'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:bronze_ingot'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:bronzeblock'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:steel_ingot'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:steelblock'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:gold_ingot'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:goldblock'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe known for output 'default:stone_with_mese'
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:stone_with_mese'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_crystal'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_crystal_fragment'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:meselamp'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_acacia_wood'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_junglewood'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_pine_wood'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_aspen_wood'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe known for output 'default:stone_with_diamond'
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:stone_with_diamond'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:diamond'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:diamondblock'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sign_wall_steel'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:ladder_steel'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_steelblock'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_steelblock'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_steelblock'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_steelblock'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_tinblock'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_tinblock'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_tinblock'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_tinblock'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_copperblock'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_copperblock'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_copperblock'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_copperblock'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_bronzeblock'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_bronzeblock'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_bronzeblock'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_bronzeblock'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_goldblock'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_goldblock'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_goldblock'])
+2026-09-21 20:18:27: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_goldblock'])
+2026-09-21 20:18:27: ACTION[Main]: [grug_gear] 6 bracket catalogs: 36 weapons + 72 armor pieces
+2026-09-21 20:18:46: ACTION[Main]: [grug_quality] deterministic PcgRandom quality rolls enabled
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:sword_bronze'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:dagger_bronze'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:greataxe_bronze'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:wand_bronze'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:staff_bronze'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:bow_bronze'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:shield_bronze'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:head_metal_bronze'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:feet_metal_bronze'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:legs_metal_bronze'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:chest_metal_bronze'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:head_cloth_patch'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:feet_cloth_patch'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:legs_cloth_patch'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:chest_cloth_patch'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:head_leather_light'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:feet_leather_light'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:legs_leather_light'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:chest_leather_light'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:sword_iron'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_materials:pick_iron'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_materials:shovel_iron'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_materials:axe_iron'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:dagger_iron'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:greataxe_iron'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:wand_iron'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:staff_iron'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:bow_iron'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:shield_iron'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:head_metal_iron'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:feet_metal_iron'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:legs_metal_iron'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:chest_metal_iron'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:head_cloth_woven'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:feet_cloth_woven'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:legs_cloth_woven'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:chest_cloth_woven'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:head_leather_cured'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:feet_leather_cured'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:legs_leather_cured'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:chest_leather_cured'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:sword_steel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'default:pick_steel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:dagger_steel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:greataxe_steel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:wand_steel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:staff_steel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:bow_steel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:shield_steel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:head_metal_steel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:feet_metal_steel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:legs_metal_steel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:chest_metal_steel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:head_cloth_heavy'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:feet_cloth_heavy'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:legs_cloth_heavy'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:chest_cloth_heavy'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:head_leather_heavy'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:feet_leather_heavy'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:legs_leather_heavy'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:chest_leather_heavy'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:sword_silversteel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_materials:pick_silversteel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_materials:shovel_silversteel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_materials:axe_silversteel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:dagger_silversteel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:greataxe_silversteel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:wand_silversteel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:staff_silversteel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:bow_silversteel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:shield_silversteel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:head_metal_silversteel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:feet_metal_silversteel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:legs_metal_silversteel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:chest_metal_silversteel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:head_cloth_silkweave'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:feet_cloth_silkweave'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:legs_cloth_silkweave'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:chest_cloth_silkweave'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:head_leather_scaled'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:feet_leather_scaled'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:legs_leather_scaled'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:chest_leather_scaled'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:sword_embersteel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_materials:pick_embersteel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_materials:shovel_embersteel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_materials:axe_embersteel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:dagger_embersteel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:greataxe_embersteel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:wand_embersteel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:staff_embersteel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:bow_embersteel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:shield_embersteel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:head_metal_embersteel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:feet_metal_embersteel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:legs_metal_embersteel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:chest_metal_embersteel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:head_cloth_silk'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:feet_cloth_silk'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:legs_cloth_silk'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:chest_cloth_silk'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:head_leather_sleek'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:feet_leather_sleek'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:legs_leather_sleek'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:chest_leather_sleek'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:sword_abyssal_steel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_materials:pick_abyssal_steel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_materials:shovel_abyssal_steel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_materials:axe_abyssal_steel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:dagger_abyssal_steel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:greataxe_abyssal_steel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:wand_abyssal_steel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:staff_abyssal_steel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:bow_abyssal_steel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:shield_abyssal_steel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:head_metal_abyssal_steel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:feet_metal_abyssal_steel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:legs_metal_abyssal_steel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:chest_metal_abyssal_steel'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:head_cloth_stormweave'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:feet_cloth_stormweave'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:legs_cloth_stormweave'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:chest_cloth_stormweave'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:head_leather_nightscale'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:feet_leather_nightscale'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:legs_leather_nightscale'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:chest_leather_nightscale'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_gear:arrow'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_mobs:light_leather'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_professions:cured_leather'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_mobs:heavy_leather'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_mobs:scaled_hide'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_professions:sleek_leather'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_professions:nightscale_leather'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_professions:bolt_patch'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_professions:bolt_woven'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_professions:bolt_heavy'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_professions:bolt_silkweave'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_professions:bolt_silk'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_professions:bolt_stormweave'
+2026-09-21 20:18:46: ACTION[Main]: [grug_professions] registered Weaponsmith, Armorsmith, Leatherworker and Tailor catalogs
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_artisans:seasoned_wood'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_artisans:polished_wood'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_artisans:hardened_wood'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_artisans:inlaid_wood'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_artisans:lacquered_wood'
+2026-09-21 20:18:46: WARNING[Main]: No craft recipe known for output 'grug_artisans:heartwood_wood'
+2026-09-21 20:18:46: ACTION[Main]: [grug_artisans] registered Woodcarver and Goldsmith catalogs
+2026-09-21 20:18:46: ACTION[Main]: [grug_materials] registry audit passed: 6 tiers, 15 resources, 12 processed forms, 6 race regions
+2026-09-21 20:18:46: ACTION[Main]: [grug_smelting] recipe audit passed: 5 cooking, 5 dualfurn, 12 storage pairs, 1 station
+2026-09-21 20:18:46: ACTION[Main]: [grug_core] world preparation mode=full cursor=0/3
+2026-09-21 20:18:46: ACTION[Main]: [grug_visuals] 72 armor pieces indexed for overlays, 3 art lines x 4 slots
+2026-09-21 20:18:46: ACTION[Main]: [grug_mobs] settlement work activities: tools 7, weapon families 1, all registered
+2026-09-21 20:18:46: ACTION[Main]: [grug_fishing] tables=6 entries=18 weight=100 bite=3..10s rod_uses=64
+2026-09-21 20:18:46: ACTION[Main]: [grug_inventory] starter weapons: mage=grug_gear:staff_bronze (2H), priest=grug_gear:staff_bronze (2H), scout=grug_gear:bow_bronze (2H), warrior=grug_gear:sword_bronze
+2026-09-21 20:18:46: ACTION[Main]: [grug_traders] 12 profession shelves, 98 offers, all registered
+2026-09-21 20:18:46: ACTION[Main]: [grug_traders] dwarf capital vendors come from the sockets of dur_brannoc
+2026-09-21 20:18:46: ACTION[Main]: [grug_traders] elf capital vendors come from the sockets of lethariel
+2026-09-21 20:18:46: ACTION[Main]: [grug_traders] human capital vendors come from the sockets of highcourt
+2026-09-21 20:18:46: ACTION[Main]: [grug_traders] orc capital vendors come from the sockets of gor_drazhak
+2026-09-21 20:18:46: ACTION[Main]: [grug_traders] troll capital vendors come from the sockets of kezamba
+2026-09-21 20:18:46: ACTION[Main]: [grug_traders] undead capital vendors come from the sockets of nhal_veyr
+2026-09-21 20:18:46: ACTION[Main]: [grug_traders] 12 settlements indexed for profession vendor appearance
+2026-09-21 20:18:46: ACTION[Main]: [grug_traders] drop audit: 3 mob(s) use a `drops` FUNCTION and cannot be walked statically (grug_mobs:bandit, grug_mobs:bandit_archer, grug_mobs:poacher); their items are audited from the hardcoded FUNCTION_DROPS list
+2026-09-21 20:18:46: WARNING[Main]: [grug_traders] no vendor price for dropped item 'default:apple' (dropped by grug_mobs:ashen_treant, grug_mobs:gravewood_treant) — add a _grug_sell_price to its def or a grug_traders.set_price override; traders must buy every mob drop (economy.md §3)
+2026-09-21 20:18:46: WARNING[Main]: [grug_traders] no vendor price for dropped item 'default:stick' (dropped by grug_mobs:ashen_treant, grug_mobs:gravewood_treant) — add a _grug_sell_price to its def or a grug_traders.set_price override; traders must buy every mob drop (economy.md §3)
+2026-09-21 20:18:46: ACTION[Main]: World at [/tmp/grug-pregen-native-rjdl2eew/full]
+2026-09-21 20:18:46: ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:32989.
+2026-09-21 20:18:47: ACTION[Server]: [r14_probe] dispatch=1 lo=(-32,-32,-2592)
+2026-09-21 20:19:03: ACTION[Emerge-0]: [r14_probe] settled_us=16472136 status=return {failed=false,mode="full",completed=1,percent=33.333333333333336,total=3,ready=false}
+2026-09-21 20:19:03: ACTION[Server]: [r14_probe] dispatch=2 lo=(48,-32,-2592)
+2026-09-21 20:19:04: ACTION[Emerge-0]: [r14_probe] settled_us=608999 status=return {failed=false,mode="full",completed=2,percent=66.666666666666671,total=3,ready=false}
+2026-09-21 20:19:04: ACTION[Server]: [r14_probe] dispatch=3 lo=(128,-32,-2592)
+2026-09-21 20:19:05: ACTION[Emerge-0]: [r14_probe] settled_us=939739 status=return {failed=false,mode="full",completed=3,percent=100,total=3,eta_seconds=0,ready=true}
+2026-09-21 20:19:05: ACTION[Server]: [grug_mobs] start npcs dwarf hearthpine: guards 0/3 flair 0/7 vendor 0/1 quest 0/1 royal 0/0 new 0 pending 12 spare 3 residents 6 walkers 1
+2026-09-21 20:19:05: ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_traders:vendor_race_human placed at socket green_vendor (6,22,-2554)
+2026-09-21 20:19:05: ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket idle_cottage_door (10,22,-2566)
+2026-09-21 20:19:05: ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket idle_green_bench (-6,22,-2543)
+2026-09-21 20:19:05: ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket idle_barn (-19,22,-2550)
+2026-09-21 20:19:05: ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket idle_smithy (22,22,-2551)
+2026-09-21 20:19:05: ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket work_field (18,22,-2519)
+2026-09-21 20:19:05: ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket work_green_seat (-5,22,-2535)
+2026-09-21 20:19:05: ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:elder_human placed at socket hall_quest (-11,22,-2542)
+2026-09-21 20:19:05: ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket trainer_cooking (2,22,-2540)
+2026-09-21 20:19:05: ACTION[Server]: [grug_mobs] start npcs human dawnmere: guards 0/3 flair 7/7 vendor 1/1 quest 1/1 royal 0/0 new 9 pending 3 spare 3 residents 6 walkers 1
+2026-09-21 20:19:05: ACTION[Server]: [grug_mobs] start npcs elf silverleaf: guards 0/3 flair 0/7 vendor 0/1 quest 0/1 royal 0/0 new 0 pending 12 spare 3 residents 6 walkers 1
+2026-09-21 20:19:05: ACTION[Server]: [grug_mobs] start npcs undead stillgrave: guards 0/3 flair 0/7 vendor 0/1 quest 0/1 royal 0/0 new 0 pending 12 spare 3 residents 6 walkers 1
+2026-09-21 20:19:05: ACTION[Server]: [grug_mobs] start npcs orc sunscar: guards 0/3 flair 0/7 vendor 0/1 quest 0/1 royal 0/0 new 0 pending 12 spare 3 residents 6 walkers 1
+2026-09-21 20:19:05: ACTION[Server]: [grug_mobs] start npcs troll kapok: guards 0/3 flair 0/7 vendor 0/1 quest 0/1 royal 0/0 new 0 pending 12 spare 3 residents 6 walkers 1
+2026-09-21 20:19:06: ACTION[Main]: Server: Shutting down
+2026-09-21 20:19:06: ACTION[Main]: [r14_probe] shutdown_us=41531450304 count=3 status=return {failed=false,mode="full",completed=3,percent=100,total=3,eta_seconds=0,ready=true}

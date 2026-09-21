@@ -296,3 +296,12 @@ other detached inventories, crafting and equipment refuse them. Source takes
 remain allowed so Q/drop reaches the item's deletion-only callback. Entitlement,
 cooldowns, charge, resources and active mounts are independent of the disposable
 item stack.
+
+## Round 14 navigation pages
+
+The inventory gains separate Quests, Group and Map tabs, following `quests.md`,
+`parties.md` and `world_map.md`. Quests and Group each own a saved HUD toggle,
+default on; empty quest logs and ungrouped players have no corresponding HUD.
+Party rows show name and HP only, with explicit offline state. HUD allocation
+uses the shared layout authority so party, quest and transient notices do not
+overlap existing combat bars, target information or status effects.

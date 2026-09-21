@@ -1,0 +1,9 @@
+parser PASS mods/PLAYER/grug_parties/init.lua
+global writes mods/PLAYER/grug_parties/init.lua: 	2	[1]	SETGLOBAL	0 -1	; grug_parties
+parser PASS tools/r14_parties/core_kat.lua
+global writes tools/r14_parties/core_kat.lua: none
+sweep 1 PASS
+sweep 2 PASS
+sweep 3 PASS
+sweep 4 PASS
+sweep 5 PASS

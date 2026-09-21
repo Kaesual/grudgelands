@@ -4,6 +4,15 @@ local function esc(value)
 	return core.formspec_escape(tostring(value or ""))
 end
 
+local function log_action(event, player, profession, before)
+	core.log("action", ("[grug_jobs] trainer_%s player=%s profession=%s " ..
+		"known_before=%s known_after=%s primary_1=%s primary_2=%s"):format(
+		event, player:get_player_name(), profession, tostring(before),
+		tostring(grug_jobs.has(player, profession)),
+		tostring(grug_jobs.primary_at(player, 1) or ""),
+		tostring(grug_jobs.primary_at(player, 2) or "")))
+end
+
 local function trainer_formspec(player, profession, confirming)
 	local definition = grug_jobs.PROFESSIONS[profession]
 	local known = grug_jobs.has(player, profession)
@@ -48,6 +57,7 @@ function grug_jobs.open_trainer(player, profession, position, entity)
 	local name = player:get_player_name()
 	sessions[name] = {profession = profession, entity = entity,
 		position = {x = position.x, y = position.y, z = position.z}}
+	log_action("open", player, profession, grug_jobs.has(player, profession))
 	core.show_formspec(name, FORMNAME, trainer_formspec(player, profession, false))
 	return true
 end
@@ -70,14 +80,18 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		local repair = rawget(_G, "grug_repair")
 		if repair then repair.open_trainer(player, session.entity) end
 	elseif fields.grug_jobs_learn then
+		local before = grug_jobs.has(player, session.profession)
 		grug_jobs.learn(player, session.profession)
+		log_action("learn", player, session.profession, before)
 		core.show_formspec(name, FORMNAME,
 			trainer_formspec(player, session.profession, false))
 	elseif fields.grug_jobs_unlearn then
 		core.show_formspec(name, FORMNAME,
 			trainer_formspec(player, session.profession, true))
 	elseif fields.grug_jobs_confirm then
+		local before = grug_jobs.has(player, session.profession)
 		grug_jobs.unlearn(player, session.profession)
+		log_action("unlearn", player, session.profession, before)
 		core.show_formspec(name, FORMNAME,
 			trainer_formspec(player, session.profession, false))
 	elseif fields.grug_jobs_cancel then

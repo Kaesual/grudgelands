@@ -193,6 +193,11 @@ end
 -- are online and within 40 m at death; each receives their own capped/gray
 -- value divided by the same eligible head count. Friendly-faction recipients
 -- receive nothing from their own guards.
+local eligible_kill_callbacks = {}
+function grug_mobs.register_on_eligible_kill(callback)
+	eligible_kill_callbacks[#eligible_kill_callbacks + 1] = callback
+end
+
 function grug_mobs.award_kill_xp(self)
 	self.temp = self.temp or {}
 	if self.temp.grug_xp_settled then
@@ -232,6 +237,10 @@ function grug_mobs.award_kill_xp(self)
 					core.colorize("#aa66ff", "+" .. xp .. " XP"))
 			end
 		end
+	end
+	-- Quests receive the exact eligible set even when gray suppression makes XP zero.
+	for _, player in ipairs(eligible) do
+		for _, callback in ipairs(eligible_kill_callbacks) do callback(player, self, death_pos) end
 	end
 	grug_mobs.cleanup_xp_participants(self)
 	return true

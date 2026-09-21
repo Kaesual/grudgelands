@@ -36,3 +36,10 @@ grug_atmosphere_zones (Drive the atmosphere from the player's zone) bool true
 #    Deterministic wide coast profiles ship enabled under Round 9's
 #    20 percent soft emerge-time gate.
 grug_mapgen_r9_coast_band_enabled (Enable wide coast profiles) bool true
+
+[World preparation]
+
+#    Prepare the complete bounded world before entry instead of only the six
+#    starts. Read once on the first fresh-world boot; changing this later does
+#    not change that world's mode. Normal shutdown saves progress for restart.
+grug_prepare_full_world (Prepare full world before entry) bool false

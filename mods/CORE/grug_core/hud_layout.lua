@@ -101,6 +101,16 @@ layout.anchors = {
 		offset = {x = -20, y = 20},
 		alignment = {x = -1, y = 1},
 	},
+	quest_list = {
+		position = {x = 0, y = 0},
+		offset = {x = 20, y = 20},
+		alignment = {x = 1, y = 1},
+	},
+	party_list = {
+		position = {x = 0, y = 0},
+		offset = {x = 20, y = 260},
+		alignment = {x = 1, y = 1},
+	},
 }
 
 local function place(id)

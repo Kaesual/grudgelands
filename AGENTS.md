@@ -24,12 +24,12 @@ projects: **[docs/research/](docs/research/)**.
 - This changes execution mechanics, not model authorization or independent
   review requirements. Read `docs/process/agent-model-policy.md` and
   `docs/process/cross-cli-orchestration.md` for those rules.
-- **Current Round 10 session:** Claude credits are exhausted. No Claude CLI,
+- **Current development session (Round 14):** Claude credits are exhausted. No Claude CLI,
   Claude agent, Opus or Fable task is authorized in this session. Root is Astra;
   ordinary implementation/review uses native Sol, with native Astra allowed for
   hard/performance-critical work. This session restriction can change only by
   a later explicit user instruction. Durable active work state:
-  `docs/research/round10-execution.md`.
+  `docs/research/round14-execution.md` (current approved round).
 
 ## Fresh-server development mode
 
@@ -304,7 +304,7 @@ current state). It is **derived, never authoritative**:
   pattern).
 - Persistence:
   - Player data (race, class, faction, XP, level, talents, jobs, gold,
-    quest state, optional fog-of-war map exploration) → `player:get_meta()`
+    quest state, HUD preferences) → `player:get_meta()`
     (PlayerMetaRef, auto-persisted). Complex structures via `core.serialize`
     as string.
   - Mod-wide data → `core.get_mod_storage()` (fetch at load time).
@@ -616,7 +616,8 @@ Details + line numbers in [docs/research/](docs/research/).
   (`race` field in the mob def + ally check); territory/tier gating via
   `mobs:spawn_abm_check()`. Tiers via `hp_max`/`armor` (lower = tougher)/
   `damage`/`view_range`/`group_attack`. Dynamic loot: `drops` can be a
-  function. Quest kill credit: `on_death(self, killer)`.
+  function. Quest kill credit subscribes to the shared eligible participant event
+  from `grug_mobs.award_kill_xp`; it must not use only the death killer.
   Quest/trader NPCs: `type="npc"`, `passive`, `on_rightclick` → formspec;
   placement via `mobs:add_mob(pos, def)`.
   **Pathfinding is a quality criterion** (user requirement: dangerous mobs
@@ -904,14 +905,39 @@ Details + line numbers in [docs/research/](docs/research/).
     priced inputs (the §3.8 anti-loop rule — the real case was smelting
     a 3c iron lump into a 5c steel ingot). Add prices, don't disable
     them.
-- **Quests**: no ready-made framework in the references. Building blocks:
-  trigger/counter patterns from `lottachievements` (awards fork), event
-  stages from VoxeLibre `mcl_events` (`cond_start/on_step/cond_complete`),
-  quest log as a formspec, state in player meta, quest givers via NPC
-  `on_rightclick`, HUD `waypoint` elements for quest targets.
+- **Quests (Round 14):** `grug_quests` owns a strict registry, 20-slot player-meta
+  journal, kill/item objectives and claim-once turn-in with main/owned-bag
+  inventory preflight. The per-mob eligible damage/effective-heal participant
+  set grants credit independently of party membership and gray-XP suppression.
+  `npc_by_socket` keys actual settlement identity plus socket id, never terrain
+  anchor ids. Marker children partition observers through the existing tag
+  carrier's one-second 25/30 hysteresis pass; no independent player scan.
+  Quest UI tracks three selected quests and stores its HUD preference. The
+  66-quest starter catalog requires only V1 overworld content; the Nether is
+  reserved for the first expansion.
+- **Parties (Round 14):** `grug_parties` persists groups of 2–10 same-faction
+  members and their leader in mod storage. Offline membership/leadership lasts
+  indefinitely. Invitations are ephemeral inviter-bound records; a second
+  member creates the group, one remaining member dissolves it. No party XP,
+  loot or quest-credit rules. UI actions resolve rendered stable identities,
+  then core APIs revalidate current authority. HUD HP writes are compare-first.
+- **Atlas (Round 14):** `grug_map` owns seven cartographic views and a separate
+  extensible marker layer sourced from authored settlements. Its page switches
+  to real coordinates after the existing legacy sfinv navigation. No fog,
+  generated-world requirement, terrain bitmap extraction or travel unlocking.
+- **Preparation (Round 14):** `grug_core` freezes starts/full mode in world
+  storage on first boot. A stable aligned plan has one in-flight chunk and a
+  success-only cursor; dispatch occurs in throttled globalstep, not callbacks.
+  Full mode includes a 320-node ocean margin and replaces starts preparation.
+  Both creation and reconnect use the shared waiting/stasis gate. Native tests
+  use isolated tiny bounds; never run production full generation as a test.
+- **Fishing (Round 14):** transient bobber, manual reel in a 1.5-second bite
+  window, missed bites rearm; only successful catches wear the returned rod.
+  `grug_abilities.notify` shares the neutral latest-message HUD token, no catch
+  chat spam. Death, leave, shutdown, invalid water/rod and distance clean up.
 - **Mapgen/biomes.** The **WP40 R7 pipeline is the only mapgen owner** since
-  the production cutover: `mods/MAPGEN/grug_mapgen/init.lua` is nine lines and
-  loads `wp40/r7_loader.lua`, whose header says it plainly — "Legacy
+  the production cutover: `mods/MAPGEN/grug_mapgen/init.lua` registers the protected POI display
+  palette, then loads `wp40/r7_loader.lua`, whose header says it plainly — "Legacy
   biome/ore/decoration/ocean/structure loaders are deliberately absent".
   `grug_mapgen/biomes.lua`, `ores.lua`, `decorations.lua`, `geometry.lua`,
   `ocean_mask.lua`, `ocean_mask_mapgen.lua` and `structures.lua` **no longer
@@ -1034,11 +1060,9 @@ Details + line numbers in [docs/research/](docs/research/).
   factions may mine them; the small functional anchor and sockets are
   protected, while the surrounding camp shell remains mutable and
   claim-excluded.
-- **Map/fog of war**: the global map does not require fog of war for its first
-  delivery. If the optional enhancement is implemented, VoxeLibre `mcl_maps`
-  renders explored chunks as PNG (`colors.json`, height shading) and pushes
-  them via `core.dynamic_add_media`, making it a candidate base. Minimap
-  gating: `hud_set_flags{minimap=...}` (pattern: minetest_game `map`).
+- **World atlas**: `docs/design/world_map.md` governs the cartographic Map tab,
+  with no fog of war and independent future-interactive markers. It needs no
+  generated-terrain bitmap and never unlocks waypoint travel.
 - **UI**: formspecs (`core.show_formspec` +
   `register_on_player_receive_fields`), set `formspec_version` +
   `real_coordinates[true]`. 3D character preview: `model[]` element.
