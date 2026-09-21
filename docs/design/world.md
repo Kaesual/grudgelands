@@ -859,8 +859,10 @@ administration system do not exist in the target design.
 - Waypoints: every race starting settlement, every capital and the authored
   travel hubs reserved by named zones. Exact density is part of the zone
   catalog; every main progression route must connect to the network.
-- **Unlocked by visiting, per character** (player meta); the fog-of-war
-  world map (section on WP12) shows discovered waypoints.
+- **Unlocked by visiting, per character** (player meta); the world map shows
+  discovered waypoints. Fog of war is an optional map enhancement, not a
+  requirement for WP12's first delivery. Showing terrain or a waypoint on the
+  map never unlocks waypoint travel; only visiting the waypoint does.
 - Teleporting works **only while standing at a waypoint**
   (waypoint → waypoint), instant and free — travel time is the cost;
   mounts stay relevant.
