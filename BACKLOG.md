@@ -6,6 +6,10 @@ The [first Round 13 playtest followups](docs/research/round13-playtest-followups
 restore skills-first character creation and non-grassing capital stable floors;
 implementation and independent review are clean.
 
+The approved [occult weapon recipes](docs/research/round13-occult-recipes.md)
+replace processed-wood base weapons with sticks, tier metal and the caster
+component ladder; recipe-book discovery follows metal.
+
 Previous integrated status and exact gate identities: [Round 12 completion](docs/research/round12-completion.md).
 Final technical gates PASS. The reviewed changes are delivered on main, synchronized
 and pushed; GUI acceptance remains pending.

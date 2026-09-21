@@ -1,5 +1,12 @@
 # Round 13 combined native integration
 
+**Current followup (2026-09-21):** the approved occult weapon recipes reduce the
+current strict catalog to **650** routes. `probe/weapon_recipes.lua` adds native
+craft/debit, preview, retired-pattern and metal-discovery checks for all eighteen
+weapons and twenty-four routes. See [the followup record](../../docs/research/round13-occult-recipes.md).
+The original 656-route capture/results below are historical Round 13 evidence;
+the old `rebuild_catalog.py` allowlist describes that original change only.
+
 Native Astra implementation/verification lane, 2026-09-21. This package owns
 only the exact Basics catalog and disposable integration tools. Independent
 review and the coordinator's joint commit remain separate. No user world,

@@ -40,7 +40,8 @@ end
 local smith = player("combined_smith",0,"weaponsmith",1)
 smith.level = 1
 local catalog = grug_jobs.basics_presentation.counts()
-check(catalog.general + catalog.profession == 656,"strict catalog route count")
+check(catalog.general + catalog.profession == 650,"strict catalog route count")
+dofile(core.get_modpath("grug_r13_integration_probe") .. "/weapon_recipes.lua")(check, player)
 local seen, count = {}, 0
 for profession in pairs(grug_jobs.PROFESSIONS) do
 	for _, record in ipairs(grug_jobs.book_records(smith,profession)) do
@@ -223,5 +224,5 @@ callbacks.on_take(cooking_inv,"dst",1,bread,cook)
 check(cook:get_inventory():contains_item("main","grug_cooking:bread") and cooking_inv:is_empty("dst"),
 	"fresh retry did not transfer exactly one finished item")
 core.get_gametime = old_clock
-core.log("action","R13 INTEGRATION PASS assertions=" .. checks .. " catalog=656 book_operations=456 native_apply=5 interpreter=" .. jit.version)
+core.log("action","R13 INTEGRATION PASS assertions=" .. checks .. " catalog=650 book_operations=456 native_apply=5 interpreter=" .. jit.version)
 end

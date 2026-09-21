@@ -1,17 +1,17 @@
--- Trash loot: exists only to be sold to traders (WP7).
+-- Common mob loot: caster components and vendor trash (WP7).
 -- _grug_sell_price = buy price in COPPER units (economy.md §1).
 
 core.register_craftitem("grug_mobs:zombie_flesh", {
 	description = "Rotting Flesh",
 	inventory_image = "grug_mobs_item_zombie_flesh.png",
-	groups = {grug_trash_loot = 1},
+	groups = {grug_material = 1},
 	_grug_sell_price = 2,
 })
 
 core.register_craftitem("grug_mobs:boar_tusk", {
 	description = "Boar Tusk",
 	inventory_image = "grug_mobs_item_boar_tusk.png",
-	groups = {grug_trash_loot = 1},
+	groups = {grug_material = 1},
 	_grug_sell_price = 1,
 })
 

@@ -29,6 +29,15 @@ local tiers = {
 		leather = "nightscale", wood = "heartwood"},
 }
 
+local occult_components = {
+	"grug_mobs:boar_tusk",
+	"grug_mobs:zombie_flesh",
+	"grug_mobs:bone",
+	"grug_mobs:bear_claw",
+	"grug_mobs:sharp_feather",
+	"grug_mobs:venom_sac",
+}
+
 local armor_shapes = {
 	head = {{1, 1, 1}, {1, 0, 1}},
 	chest = {{1, 0, 1}, {1, 1, 1}, {1, 1, 1}},
@@ -79,7 +88,6 @@ for tier = 1, #tiers do
 		{row.bar, row.bar}, {"group:stick", row.bar},
 		{"group:stick", ""}}})
 
-	local wood = "grug_artisans:" .. row.wood .. "_wood"
 	local dagger = G .. "dagger_" .. row.metal
 	register(dagger, {{"", row.bar, ""}, {"", "group:stick", ""}})
 	core.register_craft({output = dagger,
@@ -91,17 +99,17 @@ for tier = 1, #tiers do
 	core.register_craft({output = greataxe, recipe = {
 		{row.bar, row.bar, row.bar}, {row.bar, rod, row.bar}, {"", rod, ""}}})
 	local wand = G .. "wand_" .. row.metal
-	register(wand, {{"", wood, ""}, {"", "group:stick", ""}})
-	core.register_craft({output = wand,
-		recipe = {{"", wood, ""}, {"", rod, ""}}})
-	register(G .. "staff_" .. row.metal, {{"", wood, ""},
-		{"", wood, ""}, {"", wood, ""}})
+	local occult = occult_components[tier]
+	register(wand, {{"", occult, ""}, {"", row.bar, ""},
+		{"", "group:stick", ""}})
+	register(G .. "staff_" .. row.metal, {{occult, row.bar, occult},
+		{"", "group:stick", ""}, {"", "group:stick", ""}})
 	local bow = G .. "bow_" .. row.metal
-	register(bow, {{"", wood, C .. "thread"},
-		{wood, "", C .. "thread"}, {"", wood, C .. "thread"}})
+	register(bow, {{"", "group:stick", C .. "thread"},
+		{row.bar, "", C .. "thread"}, {"", "group:stick", C .. "thread"}})
 	core.register_craft({output = bow, recipe = {
-		{C .. "thread", wood, ""}, {C .. "thread", "", wood},
-		{C .. "thread", wood, ""}}})
+		{C .. "thread", "group:stick", ""}, {C .. "thread", "", row.bar},
+		{C .. "thread", "group:stick", ""}}})
 	register(G .. "shield_" .. row.metal, {
 		{"group:wood", row.bar, "group:wood"},
 		{"group:wood", "group:wood", "group:wood"},

@@ -86,6 +86,40 @@ UI selection distinguishes operations without manufacturing ambiguous grid recip
 
 ## Equipment and lifetime
 
+### Plain caster weapons and bows
+
+User-approved playtest revision, 2026-09-21. All six tiers of plain wands,
+staves and bows are profession-free Basics recipes. H means an ordinary
+`group:stick`, M one bar of the weapon's metal tier, O the occult component
+below and T `grug_professions:thread`. Dashes are empty grid slots.
+
+| Weapon | Top row | Middle row | Bottom row |
+|---|---|---|---|
+| Wand | `-O-` | `-M-` | `-H-` |
+| Staff | `OMO` | `-H-` | `-H-` |
+| Bow | `-HT` | `M-T` | `-HT` |
+| Mirrored bow | `TH-` | `T-M` | `TH-` |
+
+| Tier / metal | Occult component |
+|---|---|
+| T1 Bronze | Boar Tusk (`grug_mobs:boar_tusk`) |
+| T2 Iron | Rotting Flesh (`grug_mobs:zombie_flesh`) |
+| T3 Steel | Bone (`grug_mobs:bone`) |
+| T4 Silversteel | Bear Claw (`grug_mobs:bear_claw`) |
+| T5 Embersteel | Sharp Feather (`grug_mobs:sharp_feather`) |
+| T6 Abyssal Steel | Venom Sac (`grug_mobs:venom_sac`) |
+
+Each wand consumes one occult component; each staff consumes two. Bows need
+none. Graded wood and the former metal-rod wand alternative are absent from
+these base recipes. Graded-wood production and Woodcarver enchant costs remain
+unchanged. Existing mob sources, chances and item stats are unchanged; components
+may be collected before their weapon tier, with metal providing the tier gate.
+Bronze recipes are visible from the start; later recipes are discovered by
+finding their matching metal bar. Discovery only affects book visibility, never
+crafting qualification or character-level restrictions.
+
+### Equipment separation and wear
+
 Tools and weapons are disjoint. Woodcutting Axes, picks, shovels and hoes deal
 no damage, have no damage tooltip and cannot enter the weapon slot. Two-handed
 axes are Battle Axes. Remove wooden/stone weapons. All weapon families start at

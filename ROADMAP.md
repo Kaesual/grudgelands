@@ -24,6 +24,8 @@ Whole-goal checkboxes remain unchanged until their complete scope is finished.
 The reviewed [Round 13 playtest followups](docs/research/round13-playtest-followups.md)
 restore initial skill ordering and non-grassing capital stable floors; these do
 not change whole-goal completion counts.
+The [caster/bow recipe followup](docs/research/round13-occult-recipes.md) makes
+their base crafting use sticks and tier metal, with mob components for casters.
 
 ## Vision
 
