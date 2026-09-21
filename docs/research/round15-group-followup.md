@@ -13,7 +13,10 @@ party membership, leadership, capacity and cooldown at the moment of action.
 The selected name is stored alongside the displayed snapshot. A connection,
 faction or sort change therefore cannot reinterpret an old row number as a
 different player. If a selected player disappears, selection clears instead
-of falling through to another row. Page entry, the explicit Refresh button and
+of falling through to another row. The emitted textlist index is `-1` in that
+state: Luanti preserves table dynamic data across refreshes, and index `0`
+skips `GUITable::setSelected`, while a negative index actively clears the old
+client highlight. Page entry, the explicit Refresh button and
 completed page actions rebuild the snapshot; there is no background polling. Existing pending
 invitations, party management and preference controls remain.
 

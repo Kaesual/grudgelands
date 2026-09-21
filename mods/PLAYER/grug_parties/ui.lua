@@ -61,7 +61,9 @@ local function content(player, context)
 		"label[0.20,0.78;Online same-faction players]",
 		"label[5.18,0.78;Pending invitations]",
 	}
-	local online, online_labels, online_index = online_roster(player, context), {}, 0
+	-- Index -1 actively clears GUITable's preserved dynamic selection. Index 0
+	-- skips setSelected and can leave an old row highlighted after a refresh.
+	local online, online_labels, online_index = online_roster(player, context), {}, -1
 	for index, row in ipairs(online) do
 		online_labels[index] = esc(row.label)
 		if row.name == context.grug_party_online then online_index = index end

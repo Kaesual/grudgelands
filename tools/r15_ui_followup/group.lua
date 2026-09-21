@@ -100,10 +100,10 @@ end
 -- Choose Zebra from the displayed snapshot, then change the online roster.
 page:on_player_receive_fields(me, context, {grug_party_online_list = "CHG:4"})
 assert(context.grug_party_online == "Zebra")
-connected = {alpha, party, me, hostile, zebra, escaped}
+local aaron = player("Aaron", "accord")
+connected = {alpha, party, me, hostile, zebra, escaped, aaron}
 page:on_player_receive_fields(me, context, {grug_party_refresh = "Refresh"})
 assert(context.grug_party_online == "Zebra", "online selection did not survive reorder")
-local aaron = player("Aaron", "accord")
 connected = {aaron, me, alpha, hostile, party, escaped}
 page:on_player_receive_fields(me, context, {grug_party_invite = "Invite"})
 assert(invited[#invited] == "Zebra", "changed roster reinterpreted the old row index")
@@ -115,6 +115,8 @@ for index, row in ipairs(context.grug_party_online_rows) do names[index] = row.n
 assert(table.concat(names, "|") == "A,lice]|Aaron|Alpha|Party")
 assert(context.grug_party_online == nil, "vanished selection redirected to another player")
 assert(not context.grug_party_online_rows[5])
+form = page:get(me, context)
+assert(form:find(";-1;false]", 1, true), "lost selection did not clear the client highlight")
 local calls = #invited
 page:on_player_receive_fields(me, context, {grug_party_invite = "Invite"})
 assert(#invited == calls and context.grug_party_notice ==
