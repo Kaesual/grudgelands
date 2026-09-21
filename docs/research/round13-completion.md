@@ -2,8 +2,8 @@
 
 2026-09-21. Approved scope:
 [crafting/equipment contract](../design/crafting_equipment_revision.md).
-Implementation and code review are complete; the final documentation drift audit
-and main/sync/push receipt are still pending. GUI acceptance is user-owned.
+Implementation, code review and the final independent documentation drift audit
+are complete. The main/sync/push receipt is pending. GUI acceptance is user-owned.
 
 ## Delivered candidate
 
@@ -63,4 +63,7 @@ issue was withdrawn after verifying the existing early native-punch veto.
 
 The resolved planning TODOs were folded into living design and removed; their
 historical discussion is retained in [planning history](round13-planning-history.md).
-The user's additional final docs/code drift audit remains required before delivery.
+The additional [independent Astra docs/code drift audit](round13-reviews/docs-drift.md)
+is clean after one correction round: ten grouped documentation findings
+(0 Critical / 1 High / 7 Medium / 2 Low) were corrected and independently
+rechecked. Marked historical records remain history. No runtime reruns were needed.

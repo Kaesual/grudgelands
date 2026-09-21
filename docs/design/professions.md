@@ -98,8 +98,10 @@ That is the property the re-cut was made for, and it is checkable:
 - **Both trinket slots finally have an owner** — the Goldsmith. In the
   old roster they had none at all. **The items ship in the MVP**
   (decided 2026-08-08): the slots are no longer reserved
-  (`inventory_equipment.md` §2). Each trinket has exactly one primary-
-  attribute prefix, one HP/Mana/Crit suffix and one authored special
+  (`inventory_equipment.md` §2). Each trinket has one selectable primary-
+  attribute prefix channel, one selectable HP/Mana/Crit suffix channel and one
+  authored special. Crafted bases start with empty channels; enchants have
+  fixed tier values
   (`items_crafting.md` §6.2); cultural finishes never apply to trinkets.
 - **Offhands have distinct roles**: plain shields are Basics and Armorsmith
   improves them; Goldsmith makes spellbooks; Leatherworker makes the no-stat
@@ -173,12 +175,11 @@ needs a Weaponsmith-made fitting of its enchant tier
 (`items_crafting.md` §3.6a) — the §3.2 family is literally called
 "metal-shod staff".
 
-Added 2026-08-13 with the A1 signature table, the third relationship:
-**the Woodcarver buys weapon grips from the Leatherworker** — the
-Leatherworker's Apprentice signature component, 2 leather of the item's
-tier (`items_crafting.md` §2.1/§3.4). A profession that cannot finish
-its own top item alone is the mechanism this section exists for; it is
-now used three times.
+Weapon Grips remain Leatherworker components. The current named enchant
+catalog does not consume them: Woodcarver uses graded wood, a matching metal
+fitting and the enchant-tier reagent. Grips have no current enchant demand;
+any future supply-loop use must be specified explicitly rather than inferred
+from the retired improvement workflow.
 
 ## 4. Vendor floor rule
 

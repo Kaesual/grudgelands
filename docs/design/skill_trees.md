@@ -1034,9 +1034,9 @@ with identical output. Eight groups, each able to go red on its own:
    character and **no** window running, `get_crit_chance` still returns
    ≤ 0.30; with every dodge talent maxed, `get_dodge_chance` ≤ 0.30; with the
    armor talents maxed, final armor reduction remains ≤ 0.70. With identical
-   maximum gear and five Ironbound ranks, a damage Warrior remains about 60.9%
-   against an L70 dragon; the 21-point Bulwark commitment reaches about 68.5%,
-   and its emergency window about 69.6%. **With Ruination running, and only
+   maximum gear, five Ironbound ranks and Stoneskin (181 raw rating), a damage
+   Warrior remains about 57.28% against an L70 dragon; the 21-point Bulwark
+   commitment reaches about 68.87%, and its emergency window about 69.91%. **With Ruination running, and only
    then,** crit may reach 0.50. (The dodge cap is only
    raised by the Scout's Untouchable, so its invariant belongs to lane S3 and
    this group asserts dodge ≤ 0.30 unconditionally for the three shipped

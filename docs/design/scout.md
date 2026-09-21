@@ -96,12 +96,12 @@ any kind (§8).
 
 ## 3. Bow and ammunition contract
 
-Round 11 activates six universal plain tier bows plus one below-ladder wooden
-starter bow. Woodcarver owns bow refinement and affixes, not the plain recipe.
+The active catalog has six universal plain tier bows beginning at Bronze.
+Woodcarver owns named fixed-tier bow enchantments, not the plain recipe.
 Bows are two-handed and may share Offhand only with the zero-hand quiver.
 Shooting works without a quiver: ammunition is consumed atomically from the
-equipped quiver first and then `main`. The Scout starts with its wooden bow
-equipped and receives 200 arrows plus a stone sword in `main`; it does not start
+equipped quiver first and then `main`. The Scout starts with its Bronze Bow
+equipped and receives 200 arrows plus a Bronze Sword in `main`; it does not start
 with a quiver.
 
 Historical baseline measured before Round 11:
@@ -124,12 +124,12 @@ The active contract is:
   pool is Dex, Crit, attack/draw speed, HP and Mana. One bow per material tier,
   material-named under §3.0.3. Arrows craft 20 per batch from 1 iron bar +
   4 sticks + 4 sharp feathers. Plain bows and arrows are Basics; Woodcarver
-  owns bow refinement/affixes. Leatherworker makes the optional four-stack
+  owns named bow enchantments. Leatherworker makes the optional four-stack
   Offhand quiver at Apprentice.
 - `combat_stats.md` §2 defines the delivered bow flow: a bow is drawn up to a
   maximum and releases a ballistic arrow whose initial impulse comes from draw
   time; gravity supplies the trajectory.
-- The seven bow identities and their dedicated centre-grip wield pose are
+- The six bow identities and their dedicated centre-grip wield pose are
   delivered from licensed LotT arc sprites. The Scout runtime consumes those
   registrations; it does not regenerate their art.
 
@@ -314,9 +314,9 @@ Talents header shows the raised cap while it runs.
 
 ### 6.5 Bow pose and starter — **resolved in Round 11**
 
-The bow uses its dedicated centre-grip pose and seven licensed arc sprites.
-`inventory_equipment.md` §2 assigns the below-ladder wooden bow to a new Scout;
-the six tier bows remain ordinary level-gated equipment.
+The bow uses its dedicated centre-grip pose and licensed arc sprites.
+`inventory_equipment.md` §2 assigns an immediately usable Bronze Bow to a new
+Scout. Ordinary T1 weapons require level 1; later tiers retain their requirements.
 
 ### 6.6 Claims, protection and nametags — **no conflict**
 

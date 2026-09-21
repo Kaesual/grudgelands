@@ -295,10 +295,9 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   Zero native damage preserves client animation while preventing builtin PvP
   knockback before suppression. The authoritative swing rebuilds real full
   capabilities from the slot, never from a wielded tool. The ability stack
-  takes no equipment wear. The equipped weapon remains wear-free
-  until the approved durability package integrates its once-per-settled-action
-  event hook; after that, the concrete main hand wears once on qualifying
-  damage while the ability token still never wears. Swing definitions keep `crumbly`, `snappy`,
+  takes no equipment wear. The concrete main-hand weapon wears once on qualifying settled damage or
+  effective in-combat healing under the current durability model, while the
+  ability token never spends equipment durability. Swing definitions keep `crumbly`, `snappy`,
   `oddly_breakable_by_hand` and `dig_immediate` node pointabilities blocking.
 - **Skill selection is live at the attempted swing.** Switching Strike ↔
   Mighty Blow ↔ Hamstring preserves the weapon clock and reads the new skill.
@@ -901,14 +900,11 @@ design (`group_attack` stays on).
 - **The mechanism of the two-handed rule** (decided 2026-08-08, shipped
   with WP35 — the weapon slot is the first place it can be enforced):
   items declare a hand count in `_grug_hands` (**greataxe/staff/bow 2,
-  sword/dagger/wand 1**, the vendored `default:` swords and axes 1 — twelve when
-  WP35 wrote this, **eight since WP25/WP43 deleted the mese and diamond tool
-  tiers** (`grug_gear/init.lua`'s `VENDORED_WEAPONS` is the live list) —, no
-  field = one-handed), and the weapon/offhand `allow_put` refuses any pair
-  whose **two occupied hands add up to more than two**, in both
-  directions, with a chat message that names the trade. Numbers, the
-  eligibility list and why the vendored axes are one-handed:
-  `inventory_equipment.md` §2. It is a **refusal**, never an automatic
+  sword/dagger/wand 1**; a missing field means one-handed). Gathering tools,
+  including Woodcutting Axes, are ineligible for Weapon. The weapon/offhand
+  `allow_put` refuses pairs whose occupied hands exceed two, in both directions,
+  with a message explaining the trade. Eligibility: `inventory_equipment.md` §2.
+  It is a **refusal**, never an automatic
   unequip of the other slot.
 - Consequence, and it is a gameplay rule rather than a technicality:
   **carrying a torch costs you the two-handed weapon.** Greataxe and staff

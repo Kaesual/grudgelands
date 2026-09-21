@@ -6,8 +6,8 @@ folded into `docs/design/` (commit `d5baf03`): the two ladders
 per concept (§3.0.3), exact natural pick depths plus separate harvest tiers
 (§3.0.4), the seven
 material-cut professions (`professions.md` §2), the exclusive Basics and one
-UI recipe book per learned profession (§2.2), refinement and the
-prefix/suffix affixes (§6b), the herb/spice split
+UI recipe book per learned profession (§2.2), and the
+prefix/suffix system (now superseded by the Round13 fixed-enchant rules), the herb/spice split
 (`biomes_mobs.md` §2) and the new `mounts.md`. The later material, map,
 open-world housing and mount-geography decisions live in their design docs;
 this file retains only the crafting/content questions they did not answer.
@@ -35,15 +35,16 @@ table and runtime-calibrated by WP22 against representative ordinary rock
 (pattern: `docs/research/wp6_spawn_budget.md`) — never vendored-profile
 reuse, never the retired engine `leveldiff` coupling.
 
-Open here: **only the six effective `times` and `uses` sets themselves.** WP29
-authors the design table with the final tool catalog; WP22 owns runtime
-calibration and any evidence-driven adjustment of those values. This separates
+Open here: **only the six effective dig-speed `times` sets.** The lifetime
+`uses` values are decided in `docs/design/crafting_equipment_revision.md`
+(2026-09-21), so they are not an open design question. WP29 authors the speed
+table; WP22 owns runtime speed calibration. This separates
 design authorship from runtime calibration without moving either package's
 existing responsibility.
 
 *Lands in*: `items_crafting.md` §3.0.4.
-**Decision:** _open_ (the `times` and `uses` numbers). Owners: **WP29** authors
-the table; **WP22** runtime-calibrates dig times and durability (BACKLOG WP22
+**Decision:** _open_ (the `times` numbers only). Owners: **WP29** authors
+the table; **WP22** runtime-calibrates dig times (BACKLOG WP22
 and WP29 rows).
 
 ---
@@ -69,5 +70,5 @@ Round-10 mount decisions.
 
 | # | Question | Blocks |
 |---|---|---|
-| B22 | The six picks' explicit dig-speed `times` and durability `uses` | WP29/WP22 |
+| B22 | The six picks' explicit dig-speed `times` | WP29/WP22 |
 | D18 | Optional unmounted swimmer exhaustion behavior | deferred ocean-survival package |

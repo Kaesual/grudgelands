@@ -27,7 +27,7 @@ income relationship and sink structure.
   never consumes inventory Gold.
 - The vendor floor moves with the player. Six Common gear catalogs cover
   levels 1–10 through 51–60; a player sees the current and all lower brackets.
-  Fixed stock and ordinary rotations are Common and unrefined. The sole
+  Fixed stock and ordinary rotations are Common and unenchanted. The sole
   exception is the expensive one-in-five rotating Uncommon defined in
   `items_crafting.md` §3.8; vendors never offer Rare or higher gear.
 
@@ -44,7 +44,7 @@ prices take precedence over preserving the exact mathematical ratio.
 | Offhand/head/legs/feet | 15c | 35c | 80c | 2s | 5s | 12s50c |
 
 - The table prices slots, not weapon families. Every ordinary weapon family in
-  one tier uses the same Common reference price. Common gear is the unrefined,
+  one tier uses the same Common reference price. Common gear is the plain,
   enchant-free baseline; quality and enchantment premiums are applied above
   it and may never redefine the table.
 - A vendor's **buy-back is capped at 5%** of the item's applicable purchase or

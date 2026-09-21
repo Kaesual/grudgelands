@@ -63,9 +63,10 @@ ladders are independent; §2.1 spells out how they meet.
 - Cultural finishing is crafter-culture-bound but finished items remain
   tradeable and wearable by anyone; target-race PvP specials are a separate
   channel (§4).
-- Material tiers mirror WoW: vendor supplies (thread/flux/vials) as
-  small gold sink; world materials tiered by source level; profession
-  stations uncraftable, capitals/villages only; bags are Tailor products.
+- Material tiers mirror WoW: vendor supplies (thread/vials) as
+  small gold sink; world materials tiered by source level. Authored city/POI
+  stations are personal workspaces; crafted player-placed stations are shared.
+  Bags have parallel Tailor and Leatherworker lines.
 - Vendor floor rule: vendors sell only the LOWEST tier per category
   (professions.md §4, economy.md §1).
 - **One item per concept** (decided 2026-08-07, binding): no two items
@@ -242,17 +243,9 @@ character levels, matching the six vendor brackets of §3.8 exactly:
 Three statements close the 4-vs-6 question for good — none of them is a
 new rule, all three were implicit before:
 
-1. **The "item levels" column above is the enchant roll band, and the
-   band follows the ITEM** (sharpened 2026-08-08). The four bands
-   1–15 / 16–30 / 31–45 / 46–60 in that column are *precisely* the four
-   columns of §6.3's roll table, and what picks a band is the **item's
-   ilvl** — never the crafter's mastery tier and never the crafter's
-   character level. There is no third set of boundaries anywhere in this
-   document. That the four band boundaries fall on the same numbers as
-   the four mastery level anchors is a property of the numbers, not a
-   rule: nothing stops a level-50 Master from smithing a T1 Bronze Sword
-   (ilvl 3), and that sword rolls in the first band. §6.3 spells out the
-   two consequences.
+1. **Found-item roll bands follow item level.** The four roll bands in §6.3
+   apply to loot, not crafted enchantments. Crafts use the six fixed enchant
+   tiers irrespective of the crafter's mastery or a higher target-item level.
 2. **Profession tier gates enchant operations.** Every legal prefix and suffix
    is available in each T1–T6 tier; no mastery suffix gate or temper step remains.
 3. **Mastery retains specialist recipes**, such as bag capacities and spellbooks;
@@ -317,8 +310,9 @@ Imbue/Temper recipes do not survive as mastery unlocks.
   advance the fixed counter in `professions.md` §1; lower-tier crafts count
   nothing and above-tier crafts are refused.
 - Character level caps the effective profession tier to the material bands of
-  §3.0.1. Profession and item-use gates are independent: `_grug_ilvl` remains
-  the only consumption/equipment check.
+  §3.0.1. Profession and item-use gates are independent: item-level requirements remain separate from profession qualification.
+  Ordinary T1 weapons explicitly require level 1 through `_grug_req_level`;
+  elevated found levels keep their actual item-level gate.
 - Every profession recipe of tier N declares at least one tier-N ingredient.
   Lower-tier ingredients may accompany it; a higher-tier ingredient may not
   be hidden in a lower-tier recipe. Ingredient tier is registered explicitly
@@ -334,13 +328,12 @@ Imbue/Temper recipes do not survive as mastery unlocks.
 roughly 100–200 minutes. The five current-tier craft thresholds are
 10 / 15 / 20 / 25 / 30 (§2.3), so a player who works two professions beside
 questing has a predictable craft goal in every band without a separate
-redemption item or discovery grind. A pure fighter instead buys enchanted and
-enchanted gear from crafters; both paths remain inside the 10–20 h envelope.
+redemption item or discovery grind. A pure fighter instead buys enchanted gear from crafters; both paths remain inside the 10–20 h envelope.
 **Intended gear cadence: a visible upgrade every 45–90 min** (quest
 rewards + 3% world drops between the six material tiers, §3.0),
 and at 60 the professions stay load-bearing via consumables
-(elixirs/bandages/potions), upgrade kits (§7), masterworks and race
-signatures (§4). V1 repair is universal and gold-only at every profession
+(elixirs/bandages/potions) and named enchant application/replacement (§7).
+Broader masterwork and cultural services remain future WP5 work. V1 repair is universal and gold-only at every profession
 trainer; material/profession repair remains later work (§8 and
 [durability_repair.md](durability_repair.md)).
 
@@ -546,10 +539,10 @@ from `grug_gear`. Consequences, all binding:
   | Cloth armor (§3.5's bolt grades) | Patch | Woven | Heavy | Silkweave | Silk | Stormweave |
   | Leather armor (§3.4's grades) | Light | Cured | Heavy | Scaled | Sleek | Nightscale |
 
-  Nouns are Sword / Dagger / Greataxe / Staff, Helm / Chestplate / Greaves /
+  Nouns are Sword / Dagger / Battle Axe / Staff, Helm / Chestplate / Greaves /
   Sabatons (metal), Cowl / Robe / Leggings / Slippers (cloth) and Hood /
   Jerkin / Pants / Boots (leather) — so the catalogue reads *Abyssal Steel
-  Greataxe*, *Silkweave Cowl*, *Iron Helm*. Itemstrings follow the same
+  Battle Axe*, *Silkweave Cowl*, *Iron Helm*. Itemstrings follow the same
   ladder (`grug_gear:sword_bronze`, `grug_gear:head_cloth_silkweave`); the
   full list is pinned by `tools/wp13/gear_catalogue_kat.lua`.
 - **Everyone can craft the base items of every material tier** — tools,
@@ -573,10 +566,9 @@ from `grug_gear`. Consequences, all binding:
   (that is `pick`/`shovel`/`axe`/`sword` × mese, diamond in
   `mods/BASE/default/tools.lua` — twelve registrations to drop, plus
   their craft recipes).
-  **State 2026-09-15**, after WP13's round-2 merge. **Swords** are complete and
-  live entirely in `grug_gear`: `default:sword_wood` and `default:sword_stone`
-  remain as the below-ladder starters and `default:sword_bronze`/`_steel` are
-  unregistered by the curation list, next to the mese and diamond tiers.
+  **Current swords** live entirely in `grug_gear`, beginning at Bronze.
+  Vendored Wood/Stone/Bronze/Steel swords are unregistered, alongside the
+  removed mese and diamond tiers. Wood/Stone remain only for gathering tools.
   **Pick, axe and shovel** are complete at all six tiers: `default`'s Bronze is
   T1 and its Steel is T3 (the mapping `grug_materials/overrides.lua` already
   encoded through `grug_pick_tier`), and Iron, Silversteel, Embersteel and
@@ -919,15 +911,15 @@ wearers are the **Warrior** (light avoidance set, §3.8 — decided
 2026-08-13) and the **Scout**.
 
 **Exclusive recipes** (mastery cut decided 2026-08-13, §2.1): **weapon
-grips** at Apprentice — 2 leather of the item's tier, the
-professions.md §3 cross-buy as a concrete component item; named leather-armor enchantments across T1–T6 (§6b). At Apprentice it also makes the four-stack **quiver**, an Offhand item
+grips** at Apprentice — 2 leather of the item's tier, retained as a component
+without a current enchant consumer; named leather-armor enchantments across T1–T6 (§6b). At Apprentice it also makes the four-stack **quiver**, an Offhand item
 that stores arrows but grants no stat, affix or combat bonus, plus
 the 8-slot Leather Pouch. Its 16/24/32-slot leather bags follow at
 Journeyman/Expert/Master. Plain bows are Basics; Woodcarver owns their quality.
 
 Supply loop as decided: the ×5 leather tag (professions.md §3), Tailors
-buy leather for bags, Alchemists for apothecary gear, Woodcarvers for
-grips.
+buy leather for bags, Alchemists for apothecary gear. The current Woodcarver enchant costs do not
+consume grips; its metal-fitting demand is defined separately.
 
 ### 3.5 Tailor (tailor bench) — cloth and cloth bags
 
@@ -1025,8 +1017,8 @@ not a mandatory universal tier ladder. The six processed grades are decided
 (2026-08-13): **Seasoned → Polished → Hardened → Inlaid → Lacquered →
 Heartwood** (T1→T6), each craftable from any `group:wood` — both continents
 reach every grade by construction, and the per-race woods stay a cosmetic/
-cultural skin on top, never a tier gate. These grade words are the item
-names WP29 uses (§3.8), such as a Hardened Staff.
+cultural skin on top, never a tier gate. These are component names; finished weapons follow the shared tier names,
+for example Steel Staff (§3.8).
 
 **Enchants**: staves, wands and bows.
 
@@ -1901,38 +1893,17 @@ when equipment changes. Hot mana, heal, hit, kill and potion paths read that
 cache and never rescan equipment per tick or event. It enforces the
 same-identity-per-character exclusion and every cap/cooldown above.
 
-### 6.3 Roll ranges by the item's ilvl bracket and source window
+### 6.3 Found-item roll ranges by item level and source window
 
-Value ranges (min–max) per ilvl bracket. **The band is chosen by the
-ITEM's ilvl** (decided 2026-08-08) — never by the crafter's mastery tier
-and never by the crafter's character level. The four bands below are the
-"item levels" column of §2.1's mastery table — 1–15 / 16–30 / 31–45 /
-46–60, same boundaries, no third set anywhere; authored ilvl 61–75 endgame
-items continue to use the 46–60 value band. That those boundaries
-fall on the same numbers as the four mastery level anchors is a property
-of the numbers, not a rule. These bands are **not** the six material
-tiers of §3.0; the two ladders are independent by design (§2.1).
+These random ranges apply only to found/vendor loot. Their band is chosen by
+the concrete item's level, with ilvl61–75 retaining the final band. The four
+roll bands are independent of the six material tiers. No crafter mastery or
+character-level rule determines a found roll.
 
-Two consequences, both intended:
-
-- **A Master who crafts a low-tier item gets low-tier rolls.** A
-  level-50 Master smithing a T1 Bronze Sword (ilvl 3) rolls in the 1–15
-  band — +1–3 Str, not +6–12. **The item is what is weak, not the
-  crafter**, and this is the same rule as "a T2 enchant cannot be applied
-  to a T1 item", read from the roll table's side. What the Master's rank
-  still buys on that sword is access to the later value operations (§6b.5),
-  not a bigger number per slot.
-- **An Apprentice fills the prefix even on a T6 item.** Mastery decides
-  which slot/value operation a crafter may perform (§6b.5), never how big
-  the roll is: an Apprentice working T6 stock produces a one-affix
-  item whose single roll is a full 46–60 roll.
-
-**Mob drops have no crafter at all**, which is the other half of the
-argument: §5 ordinarily sets gear-drop ilvl = min(mob level, 60) and points at this
-table, so
-for a drop only the item reading can work at all. One rule for both
-sources is what keeps a dropped and a crafted item of the same ilvl
-comparable.
+Crafted enchantments instead use fixed T1–T6 values from
+[the current contract](crafting_equipment_revision.md#enchanting). A T1 enchant
+on a T6 item retains its T1 bonus. A T2 enchant cannot be applied to a T1 item;
+mastery never unlocks a suffix or scales a crafted value.
 
 | Enchant | 1–15 | 16–30 | 31–45 | 46–75 |
 |---|---|---|---|---|
@@ -1999,7 +1970,7 @@ legal enchants. Tools are not weapons and receive no ordinary combat enchants.
 
 ### 6b.2 Fixed tier bonuses
 
-The nine stat curves, material costs and 420 operations are defined in
+The nine stat curves, material costs and 456 operations are defined in
 [the current contract](crafting_equipment_revision.md#enchanting). Bonuses depend
 on enchant tier, never a higher target tier. No extra base-damage or lifetime
 multiplier exists.

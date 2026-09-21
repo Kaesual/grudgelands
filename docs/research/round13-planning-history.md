@@ -160,7 +160,7 @@ a feedback/discussion round first.
 
 The user rejected any refinement lifetime bonus on 2026-09-21. Use the proposed
 tier budgets without an x2 multiplier; removal of refinement itself is under
-[separate discussion](TODO-equipment-enchanting.md).
+[separate discussion](../design/crafting_equipment_revision.md).
 
 The user's revised wear proposal supersedes the earlier incoming-hit description:
 only the main-hand weapon wears for outgoing damage or healing. Incoming damage
@@ -200,7 +200,7 @@ Normal digging refuses nonempty stations; blast callbacks require their own
 analysis and are not equivalent to normal digging. Inventory Crafting is already
 player-owned; this issue concerns node-based workstations.
 
-Detailed source audit: [shared station inventory audit](docs/research/shared-station-ownership-audit.md).
+Detailed source audit: [shared station inventory audit](shared-station-ownership-audit.md).
 
 ## Accepted mode split and revised transaction proposal — 2026-09-21
 
@@ -235,7 +235,7 @@ crafter is superseded by the user's new proposal:
   may then bake and collect those dishes from an oven.
 - No production eligibility is bound to whoever happened to insert an ingredient.
 
-An explicitly requested native GPT-6 Astra [audit](docs/research/station-viewer-rules-audit.md)
+An explicitly requested native GPT-6 Astra [audit](station-viewer-rules-audit.md)
 checked this against current recipe/engine paths. The Brewing Stand and raw/final
 Cooking progress decisions are resolved below; implementation still needs simple
 roasted foods, custom affix stations, per-player previews over shared inventories

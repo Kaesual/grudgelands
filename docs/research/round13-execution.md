@@ -39,8 +39,8 @@ from reviewed main and push under standing authorization. GUI playtest is user-o
 
 ## Next actions
 
-Implementation and code gates are complete; finish the explicitly requested
-independent documentation drift audit, then main integration/sync/push.
+Implementation, code gates and the final independent documentation drift audit
+are complete. Finish main integration/sync/push.
 See [technical completion](round13-completion.md) and
 [next playtest](round13-next-playtest.md). No GUI acceptance is claimed.
 
@@ -69,9 +69,16 @@ See [technical completion](round13-completion.md) and
 
 Candidate commits: root equipment/docs `230d6cd4`, STATIONS `f99393ce` (original
 `28ef4d85`), ENCHANTS `e37524a9` (original `dc91d65a`), deterministic trinkets
-`93631dfd` (original `d11d84d3`), plus pending joint integration commit.
+`93631dfd` (original `d11d84d3`), plus joint integration commit `ed0e4de2`.
 Root fixed all three STATIONS findings and removed obsolete crafted-quality
 hooks. Exact catalog now has 656 routes; 55 integrated station assertions,
 five restart assertions and 1,871 strict combined assertions pass. Final native
 staging hashes match all 42 changed production files. No production edits are
 expected before the docs audit unless a concrete new finding requires one.
+
+## Documentation audit
+
+Fresh native Astra `/root/r13_docs_drift` completed the requested final audit.
+Ten grouped stale-rule findings were corrected (1 High, 7 Medium, 2 Low), then
+independently rechecked clean. Receipt: [docs drift](round13-reviews/docs-drift.md).
+Only Markdown changed after the frozen native production verification.

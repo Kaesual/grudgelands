@@ -48,7 +48,7 @@ eligible earth to farm soil. Their use budgets are respectively
 a use; failed interaction, already-tilled soil and Creative do not. Their grid
 shape and material count follow pinned VoxeLibre. They have hoe art and keep
 their stack at exhaustion, refusing further conversion until repaired under
-[durability_repair.md](durability_repair.md). Higher quality buys lifetime,
+[durability_repair.md](durability_repair.md). Higher material tiers buy lifetime,
 not faster growth or different soil.
 
 ## Initial wild population
