@@ -1,0 +1,3 @@
+ui_character money=no-HUD event-refresh=pass atomic-payment=pass talents=real-content inventory=legacy
+r15_group_roster PASS sorted=4 self=excluded hostile=excluded stale=safe status=shown escaping=pass
+round15-ui-followup: PASS

@@ -10,15 +10,20 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
 
 - Built on sfinv pages; **Character is the homepage**. Shared pages use a
   10.4 × 11.1 legacy-coordinate form with the hotbar at `(1.2, 7.2)` and
-  the remaining inventory at `(1.2, 8.35)`. Content ends before y=7.0.
+  the remaining inventory at `(1.2, 8.35)`. Legacy content ends before y=7.0; pages using a content-only real-coordinate
+  switch keep their controls above the same physical inventory boundary.
   Character, Bags, Talents, Skills, Crafting, Help and Creative share this
   boundary. The base inventory remains 32 slots.
 - Character separates the model, concise live HP/resource/armor values and
-  equipment into three columns. Pool derivations use
+  equipment into three columns. The current money balance is shown here, with
+  balance changes updating the cached Character view; money has no gameplay HUD.
+  Pool derivations use
   `grug_classes.get_pool_breakdown` in a wrapped, scrollable text area;
   long descriptions never share a rectangle with the model or slots.
   Help explains the B/C/G/T/S formula legend.
-- Talents shows both chains with identically sized available/locked controls,
+- Talents keeps the shared legacy inventory geometry but uses real coordinates
+  for its page content. Class/stats, tree selection, rank rows and description
+  occupy separate vertical bands. It shows both chains with equally sized available/locked controls,
   four ranks rows, and a taller wrapped selected-description area. Tooltips
   wrap at word boundaries. Selection, purchase and respec rules are unchanged.
 - Help opens with gathering, Basics, crafting/equipping, Skills, combat and

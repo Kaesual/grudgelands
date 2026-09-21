@@ -8,6 +8,11 @@ All 18 regional POIs are recomposed; 36 local quests bring the catalog to 102
 quests / 30 givers. Live player/party/quest atlas markers, larger world quest
 symbols, side trackers and the XP bar are implemented. The Cooking report
 remains open with targeted two-client diagnostics. Waypoints remain deferred.
+The [Round 15 UI follow-up](docs/research/round15-ui-followup.md) is technically
+complete and independently clean: Character money replaces the HUD line, Group
+uses an online same-faction roster, and Group/Talents controls have explicit
+non-overlapping geometry. Delivery is pending; GUI acceptance remains separate.
+
 Round 14 is delivered: [completion](docs/research/round14-completion.md).
 
 Round 13 is delivered: [completion and exact evidence](docs/research/round13-completion.md), [current contract](docs/design/crafting_equipment_revision.md).

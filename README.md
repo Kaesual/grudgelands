@@ -283,6 +283,11 @@ the catalog to 102 quests and 30 givers. Larger quest symbols, centred side
 trackers, a thin XP bar and live player/party/quest atlas markers improve
 navigation and progress feedback.
 
+**Latest UI follow-up:** independently reviewed changes move money to Character,
+add a scrollable online same-faction invitation list, and separate overlapping
+Group/Talents controls. [Delivery record and GUI checks](docs/research/round15-ui-followup.md);
+merge/synchronization/push pending.
+
 **Round 14 foundation:** persistent same-faction parties, quest journal and
 shared combat participation connect the starter stories to the seven-view atlas.
 Resumable starts/full-world preparation, interactive fishing and corrected flight

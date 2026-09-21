@@ -67,3 +67,13 @@ The party HUD sits at screen middle-left, vertically centred for the current
 row count, with edge padding. Saved visibility and offline rows remain as above.
 The atlas shows online member positions and headings in its current view; this
 does not introduce any shared XP, quest or teleport authority.
+
+## Online invitation roster
+
+The Group tab offers a scrollable, name-sorted list of online players in the
+viewer's faction, excluding the viewer. Each row retains the exact player name
+as its action identity. Invitation opt-out and existing party membership are
+shown as status; the unchanged invitation API decides whether an invite is
+allowed at submission time. Losing the selected player clears selection rather
+than choosing another player. Entering the page or pressing Refresh rebuilds
+the list; no background roster polling is required. Names need not be typed.
