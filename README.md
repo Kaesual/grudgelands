@@ -277,6 +277,10 @@ WP0–WP49 and three named packages; canceled WP16 is tracked but not shipped.
 Four classes, combat, mobs, professions, equipment, farming, mounts and safe
 character creation now connect to quests, parties and an atlas.
 
+**Current iteration:** [Round 15](docs/research/round15-execution.md) is approved
+and in progress: distinct compositions for the existing 18 POIs, 36 additional
+local quests, live atlas markers and clearer HUD presentation.
+
 **Delivered Round 14:** six starter chains contain 66 overworld quests with
 individual 3D NPC markers, a journal and optional tracker. Persistent same-faction
 parties have management and HP displays; the seven-view atlas has interactive

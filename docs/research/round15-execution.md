@@ -165,7 +165,15 @@ and handoffs, not a competing game-design authority.
 ## Live execution ledger
 
 - Base: main `6908d1d5`; integration branch `wp15-world-polish`.
-- A POIs: queued, Astra. B quests: queued, Sol. C HUD: queued, Sol.
-- D atlas: queued, Sol when a slot is free.
+- A POIs: native Astra `r15_poi_impl`, isolated `/tmp/grug-r15-poi`.
+- B quests: native Sol `r15_quests_impl`, isolated `/tmp/grug-r15-quests`.
+- C HUD: native Astra `r15_poi_design` reused, isolated `/tmp/grug-r15-hud`.
+  Runtime rejects a fourth child thread even when one is completed; own-provider
+  CLI is not a workaround. HUD geometry/parent scaling is handled by Astra.
+- D atlas: coordinator implementation, separate independent review required.
+  Engine has no server inventory-reopen event. User question pending: reset to
+  Character on closing Map (recommended, zero closed-map polling), or retain Map
+  and accept bounded polling while it remains selected. Lifecycle paused;
+  independent provider/media work may proceed.
 - Independent reviews, final gates, merge/sync/push: pending.
 - No CLI agents; do not edit reference projects or user worlds.

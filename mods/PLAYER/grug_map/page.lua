@@ -47,13 +47,6 @@ atlas.register_marker_provider("settlement", function()
 	return result
 end)
 
-atlas.register_marker_provider("player", function(player)
-	if not player or not player:is_player() then return {} end
-	return {{id = player:get_player_name(), label = "You are here",
-		detail = "Your current position", kind = "player",
-		position = player:get_pos()}}
-end)
-
 function grug_map.register_marker_provider(name, callback)
 	return atlas.register_marker_provider(name, callback)
 end
@@ -91,20 +84,33 @@ local function page_content(player, context)
 		local sx, sy = atlas.world_to_screen(view, marker.position,
 			MAP_X, MAP_Y, MAP_W, MAP_H)
 		if sx then
-			local field = "grug_map_marker_" .. index
+			local field = atlas.field_id(marker.id)
 			context.grug_map_marker_fields[field] = marker
-			local symbol = marker.kind == "player" and "@" or
-				(marker.kind == "hostile" and "!" or "+")
-			fs[#fs + 1] = ("style[%s;bgcolor=#2b2118cc;textcolor=#ffe9a8]"):
-				format(field)
-			fs[#fs + 1] = ("button[%.3f,%.3f;0.32,0.32;%s;%s]"):
-				format(sx - 0.16, sy - 0.16, field, symbol)
-			fs[#fs + 1] = ("tooltip[%s;%s]"):format(field, esc(marker.label))
+			if marker.kind == "player" or marker.kind == "party" then
+				local tint = marker.kind == "player" and "gold" or "cyan"
+				local texture = ("grug_map_heading_%s_%02d.png"):format(tint,
+					atlas.heading_frame(marker.heading))
+				fs[#fs + 1] = ("style[%s;border=false]"):format(field)
+				fs[#fs + 1] = ("image_button[%.3f,%.3f;0.42,0.42;%s;%s;;false;false]"):
+					format(sx - 0.21, sy - 0.21, texture, field)
+				-- Names stay in the hover/detail text to keep tightly grouped players
+				-- legible even at continental scale.
+			else
+				local quest = marker.kind == "quest"
+				local symbol = quest and ((marker.status == "ready" or marker.status == "active")
+					and "?" or "!") or (marker.kind == "hostile" and "!" or "+")
+				local color = quest and ((marker.status == "ready" or marker.status == "available")
+					and "#ffd700" or "#c0c0c0") or "#ffe9a8"
+				fs[#fs + 1] = ("style[%s;bgcolor=#2b2118cc;textcolor=%s]"):format(field, color)
+				fs[#fs + 1] = ("button[%.3f,%.3f;0.32,0.32;%s;%s]"):
+					format(sx - 0.16, sy - 0.16, field, symbol)
+			end
+			fs[#fs + 1] = ("tooltip[%s;%s]"):format(field, esc(marker.detail))
 		end
 	end
 	if context.grug_map_detail then
 		fs[#fs + 1] = ("label[0.15,0.50;Selected: %s]"):
-			format(esc(context.grug_map_detail:gsub("\n", " — ")))
+			format(esc(context.grug_map_detail:match("[^\n]*")))
 	end
 	return table.concat(fs)
 end
