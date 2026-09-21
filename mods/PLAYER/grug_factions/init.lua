@@ -221,6 +221,9 @@ end
 -- the moment of the single final teleport. Respawn uses it for the same
 -- reason.
 function grug_factions.prepare_spawn(player, callback)
+	if not grug_core.world_preparation_status().ready then
+		return false
+	end
 	local id = grug_factions.get_faction(player)
 	if not id then
 		return false

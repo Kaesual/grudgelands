@@ -149,7 +149,7 @@ dead, foxes around sapling guards, and poachers cutting living boughs.
 | 03 | Beneath the Seed Baskets | `grug_mobs:giant_rat` |
 | 04 | Footfalls Without Breath | `grug_mobs:zombie` |
 | 05 | Keepers of the Saplings | `grug_mobs:fox` |
-| 06 | Axes Without Leave | `grug_mobs:poacher` in `elandor_starbough_vale` |
+| 06 | Axes Without Leave | `grug_mobs:poacher` in the Silverleaf start region |
 | 07 | Quiet the Lower Boughs | `grug_mobs:poacher` |
 | 08 | Watch the Green Road | `grug_mobs:fox` |
 | 09 | Cinders in Green Cloth | bandit family in `elandor_starbough_vale` |
@@ -170,7 +170,7 @@ separates the people's old blight from the new fiery sign.
 | 03 | Gnawing in the Crypt Stores | `grug_mobs:giant_rat` |
 | 04 | The Uncalled Dead | `grug_mobs:zombie` |
 | 05 | Furrows Gone Sour | `grug_mobs:plague_boar` |
-| 06 | Lights Across the Fen Road | `grug_mobs:wisp` in `kragmar_mournfen` |
+| 06 | Tusks Along the Fen Road | `grug_mobs:plague_boar` in the Stillgrave start region |
 | 07 | Mud That Moves | `grug_mobs:bog_ooze` |
 | 08 | Clear the Sluice | `grug_mobs:crocodile` |
 | 09 | Fire That the Fen Cannot Drown | bandit family in `kragmar_mournfen` |
@@ -191,7 +191,7 @@ heat rather than an orcish forge mark.
 | 03 | Rats Under the Hide Racks | `grug_mobs:giant_rat` |
 | 04 | The Thirsting Dead | `grug_mobs:zombie` |
 | 05 | Shells by the Bedrolls | `grug_mobs:scorpion` |
-| 06 | Husks on Redtusk Road | `grug_mobs:sun_dried_husk` in `kragmar_redtusk_savanna` |
+| 06 | Husks on Redtusk Road | `grug_mobs:sun_dried_husk` in the Sunscar start region |
 | 07 | Teeth Around the Herd | `grug_mobs:hyena` |
 | 08 | Scour the Dry Wash | `grug_mobs:scorpion` |
 | 09 | No Forge Made This Brand | bandit family in `kragmar_redtusk_savanna` |
@@ -212,7 +212,7 @@ consumed.
 | 03 | Teeth in the Basket Weave | `grug_mobs:giant_rat` |
 | 04 | Dead in the Rootways | `grug_mobs:zombie` |
 | 05 | Vipers Under Broad Leaves | `grug_mobs:viper` |
-| 06 | Claws on Raincall Road | `grug_mobs:jungle_lynx` in `kragmar_raincall_basin` |
+| 06 | Claws on Raincall Road | `grug_mobs:jungle_lynx` in the Kapok start region |
 | 07 | The Coiled Footpath | `grug_mobs:viper` |
 | 08 | Cats at the Reed Line | `grug_mobs:jungle_lynx` |
 | 09 | Smoke Beneath the Rain | bandit family in `kragmar_raincall_basin` |
@@ -234,3 +234,13 @@ drops) are absent from objectives. Passive animal kills are used sparingly and
 only where the named-zone palette provides them. The catalog assumes Round 14
 POI integration places the six camp families and the three required quest
 sockets per culture; validation must fail if an anchor/socket is missing.
+
+## Coordinator content corrections before review
+
+The Undead road-clearance text now matches its actual plague-boar objective,
+available locally before Mournfen. Step-06 location notes for Elf, Orc and
+Troll now name their start regions, where the actual spawn policy also allows
+the targets. Generic kill-objective placeholders were removed so NPC/journal
+renderers expose real target names. Both optional tool lessons now explain
+Basics, materials and the Wood-to-Stone-to-Bronze progression rather than
+merely promising instruction. Recipe quantities follow `basics_routes.lua`.

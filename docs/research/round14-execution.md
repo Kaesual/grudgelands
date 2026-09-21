@@ -33,13 +33,13 @@ rewrite. All suggested simplifications in the approved plan apply.
 | QUEST-CORE | candidate; review queued | native r14_quest_core, Astra; owns grug_quests core/tag_carrier/mobs kill seam/start_villagers |
 | STORY | candidate; review queued | native r14_story, Sol; 66 quests staged tools/r14_story/content.lua until POI sockets exist |
 | FIX | candidate; review queued, Cooking diagnosis unresolved | native r14_fixes, Sol; jobs and mount flight |
-| PARTY | running | native r14_party, Astra; new grug_parties core |
-| PREGEN | running | native r14_pregen, Astra; root owns selection waiting UI |
-| UI | queued | Sol |
+| PARTY | core candidate; independent review running | native r14_party, Astra; UI integration running separately |
+| PREGEN | candidate; independent review queued | native r14_pregen, Astra + root waiting UI; bounded native stop/resume passes |
+| UI | running | native r14_ui, Sol; Quest/Group pages and HUD |
 | POI-ART / INTEGRATION | running | native r14_poi, Sol; 18 anchors through existing r7 settlement writer |
 | MAP | queued | Sol, atlas only |
 | FISH | queued | Sol |
-| Reviews / final drift | queued | Fresh non-authors; final drift Astra |
+| Reviews / final drift | state review running | native r14_state_review, Astra; remaining lanes/final drift queued |
 
 ## Accepted operational plan
 
@@ -241,3 +241,13 @@ level-gate pacing, and objective text: `Defeat the named threat` is too vague
 for a tracker unless target names are included by the UI. Ensure the optional
 tool lessons actually explain a useful mechanic rather than only promising
 a lesson. The Nether exclusion is now explicit in both story and quest specs.
+
+### Preparation candidate evidence
+
+Real isolated native starts/full stop/resume passes (three boots each), including
+immutable settings and zero dispatch after completion. Full bounds contain
+70,488 default engine mapchunks; ocean margin remains 320 nodes, not 1,600.
+Two warm surface-unit timings only suggest 16–23 hours if extrapolated; this is
+explicitly nonrepresentative and no full world was generated. Cold initialization
+can take 15–16 seconds; shutdown waits at most the active unit, not the full plan.
+Evidence and scratch-only execution details: `round14-pregen-work.md`.

@@ -105,7 +105,7 @@ local cultures = {
 		names = {"Veyra Pall", "Mordec Silt", "Sera Vane", "Hollis Grey"},
 		titles = {"Boars in the Dead Furrows", "Salt for What Remains",
 			"Gnawing in the Crypt Stores", "The Uncalled Dead", "Furrows Gone Sour",
-			"Lights Across the Fen Road", "Mud That Moves", "Clear the Sluice",
+			"Tusks Along the Fen Road", "Mud That Moves", "Clear the Sluice",
 			"Fire That the Fen Cannot Drown"},
 		descriptions = {
 			"Plague boars churn the old furrows into useless mire. Thin them before the retaining stones fail.",
@@ -113,7 +113,7 @@ local cultures = {
 			"Clear pests from the crypt stores: plague boars by day or giant rats after dusk.",
 			"Patrol the old furrows. Plague boars churn them by day, while corpses answering no bell walk there after dusk.",
 			"Another sounder has soured the outer furrows. Keep the old blight within its tended bounds.",
-			"Wisps gather along the road to Mournfen. Disperse them, then report to Mordec; their light is not our old blight.",
+			"Plague boars crowd the Stillgrave end of the fen road. Clear the approach; when you are ready for Mournfen, seek Mordec at its village.",
 			"Bog ooze is choking the village sluice. Break it apart before the water backs into the paths.",
 			"Crocodiles have claimed the outpost channel. Clear the bank for Sera's patrol.",
 			"The bandits carried cloth hot without flame, marked by a hooked sun. Defeat them and let Hollis explain what the fen could not cool.",
@@ -226,8 +226,7 @@ for _, culture in ipairs(cultures) do
 				description = "Bring raw meat"}
 		else
 			objective = {type = "kill", mobs = culture.targets[number],
-				count = COUNT[number], zone = culture.zones[number],
-				description = "Defeat the named threat"}
+				count = COUNT[number], zone = culture.zones[number]}
 		end
 		Q.register_quest(id, {
 			title = culture.titles[number], description = culture.descriptions[number],
@@ -242,14 +241,14 @@ for _, culture in ipairs(cultures) do
 	local first = quest_id(culture, 1, culture.titles[1])
 	local axe = quest_id(culture, 10, culture.lessons[1])
 	Q.register_quest(axe, {
-		title = culture.lessons[1], description = culture.lessons[3], npc = npc.elder,
+		title = culture.lessons[1], description = culture.lessons[3] .. "\n\nOpen Basics in your Crafting tab to see the wood axe recipe: three planks and two sticks. You can make planks from a tree trunk and sticks from planks. Wood tools are fragile; stone lasts longer and bronze is your first durable upgrade. This lesson is optional; an axe made by a friend is welcome too.", npc = npc.elder,
 		faction = culture.faction, race = culture.key, min_level = 1,
 		prerequisites = {first}, objectives = {{type = "item", item = "default:axe_wood",
 			count = 1, description = "Bring a wood axe"}},
 		rewards = {xp = 150, copper = 10, items = {}},
 	})
 	Q.register_quest(quest_id(culture, 11, culture.lessons[2]), {
-		title = culture.lessons[2], description = culture.lessons[4], npc = npc.elder,
+		title = culture.lessons[2], description = culture.lessons[4] .. "\n\nUse Basics to make a wooden pick first, then mine stone. The stone pick recipe uses three stone blocks across the top and two sticks down the middle. Keep valuable tools repaired at a profession trainer or crafting station. This lesson is optional; a traded pick counts too.", npc = npc.elder,
 		faction = culture.faction, race = culture.key, min_level = 2,
 		prerequisites = {axe}, objectives = {{type = "item", item = "default:pick_stone",
 			count = 1, description = "Bring a stone pick"}},
