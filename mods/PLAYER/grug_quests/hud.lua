@@ -19,23 +19,34 @@ local function objective_text(objective)
 	return ("%d/%d %s"):format(objective.count, objective.required, subject or "Objective")
 end
 
+local function wrapped_lines(text, width, limit)
+	local lines = {}
+	for line in (grug_inventory.wrap_text(text, width) .. "\n"):gmatch("(.-)\n") do
+		lines[#lines + 1] = line
+	end
+	if #lines > limit then
+		lines[limit] = lines[limit]:sub(1, math.max(1, width - 3)) .. "..."
+		for i = #lines, limit + 1, -1 do lines[i] = nil end
+	end
+	return table.concat(lines, "\n")
+end
+
 local function render(player)
 	local journal = grug_quests.journal(player)
 	if not journal.hud_enabled or #journal.quests == 0 then return "" end
 	local by_id, lines = {}, {}
+	local layout = grug_core.hud_layout
+	local width = layout.side_text_width(core.get_player_window_information(player:get_player_name()))
 	for _, quest in ipairs(journal.quests) do by_id[quest.id] = quest end
 	for _, id in ipairs(journal.tracked) do
 		local quest = by_id[id]
 		if quest then
-			local title = grug_inventory.wrap_text(quest.title, 38):match("[^\n]*")
-			lines[#lines + 1] = title .. (quest.ready and " [Ready]" or "")
+			local title = quest.title .. (quest.ready and " [Ready]" or "")
+			lines[#lines + 1] = wrapped_lines(title, width, layout.QUEST_TITLE_LINES)
 			local parts = {}
 			for _, objective in ipairs(quest.objectives) do parts[#parts + 1] = objective_text(objective) end
-			local wrapped = grug_inventory.wrap_text(table.concat(parts, "; "), 38)
-			local count = 0
+			local wrapped = wrapped_lines(table.concat(parts, "; "), width, layout.QUEST_OBJECTIVE_LINES)
 			for line in (wrapped .. "\n"):gmatch("(.-)\n") do
-				count = count + 1
-				if count > 2 then break end
 				lines[#lines + 1] = line
 			end
 		end

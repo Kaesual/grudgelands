@@ -1,6 +1,8 @@
 # Grudgelands
 
-Final integrated status and exact gate identities: [Round 13 completion](docs/research/round13-completion.md).
+Latest delivered round: [Round 14 completion](docs/research/round14-completion.md).
+Current candidate: [Round 15 completion](docs/research/round15-completion.md);
+independent reviews and final technical gates pass, delivery pending.
 Final technical gates PASS. The reviewed changes are delivered on main, synchronized
 and pushed; GUI acceptance remains pending.
 
@@ -12,7 +14,8 @@ built as a standalone Lua game rather than a mod pack.
 > equipment, XP, money/vendors, Cooking, Alchemy and the integrated seven-primary
 > profession/equipment work are delivered and playable.
 > The named-zone world is implemented and still has explicit release/runtime gates;
-> quests, open-world housing and geographic PvP are not built. See
+> quests, parties and a world atlas are delivered; open-world housing and
+> geographic PvP remain unfinished. See
 > [Current State](#current-state).
 
 ## The story
@@ -265,8 +268,9 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 ## Current State
 
 *Last updated: 2026-09-21. Derived from [BACKLOG.md](BACKLOG.md) and
-[ROADMAP.md](ROADMAP.md). [Round 14](docs/research/round14-completion.md)
-is merged, synchronized and pushed; fresh-world GUI acceptance remains separate.*
+[ROADMAP.md](ROADMAP.md). [Round 15](docs/research/round15-completion.md)
+has passed independent reviews and final gates; delivery and fresh-world GUI
+acceptance remain separate.*
 
 **Shipped foundation:** 27 of 53 tracked identities are complete: WP0–WP4,
 WP6–WP8, WP12, WP15, WP18–WP20, WP25, WP26, WP33, WP35, WP36, WP38–WP40,
@@ -275,12 +279,18 @@ WP0–WP49 and three named packages; canceled WP16 is tracked but not shipped.
 Four classes, combat, mobs, professions, equipment, farming, mounts and safe
 character creation now connect to quests, parties and an atlas.
 
-**Delivered Round 14:** six starter chains contain 66 overworld quests with
-individual 3D NPC markers, a journal and optional tracker. Persistent same-faction
-parties have management and HP displays; the seven-view atlas has interactive
-markers. Eighteen home-region POIs, resumable starts/full-world preparation,
-interactive fishing and corrected flight rules complete the round. The reported
-cross-player Cooking issue remains unreproduced and carries targeted diagnostics.
+**Round 15 candidate:** the existing eighteen POIs now have distinct layouts,
+working interiors and cultural details. Thirty-six optional local quests bring
+the catalog to 102 quests and 30 givers. Larger quest symbols, centred side
+trackers, a thin XP bar and live player/party/quest atlas markers improve
+navigation and progress feedback.
+
+**Round 14 foundation:** persistent same-faction parties, quest journal and
+shared combat participation connect the starter stories to the seven-view atlas.
+Resumable starts/full-world preparation, interactive fishing and corrected flight
+rules are delivered. The repeated cross-player Cooking report remains open;
+additional Astra investigation found no confirmed cause, and the targeted
+two-client diagnostic is included in the next playtest.
 
 **Earlier deliveries:** recoverable Skills, seventeen crop families, five-minute
 food buffs, Basics material discovery, UI/onboarding and reviewed item art came
@@ -298,8 +308,8 @@ to WP24/WP32. The Nether is the first expansion, excluded from V1.
 
 **Validation and next step:** independent reviews, focused LuaJIT checks, static
 Lua-5.1 gates, the bounded final interpreter parity pair and isolated native
-integration support the technical delivery. Follow the [Round 14 fresh-world
-playtest](docs/research/round14-playtest.md), ideally with two players. The atlas
+integration support the technical delivery. Follow the [Round 15 fresh-world
+playtest](docs/research/round15-playtest.md), ideally with two players. The atlas
 is authored cartography; optional full preparation can take many hours and is
 not required to use it. No personal world was modified by the test harnesses.
 

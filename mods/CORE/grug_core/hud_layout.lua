@@ -32,6 +32,13 @@ layout.POSITION = {x = 0.5, y = 1}
 -- pixel wide: scale.x IS the drawn width in pixels.
 layout.BAR_WIDTH = 180
 layout.BAR_HEIGHT = 16
+layout.XP_WIDTH = 360
+layout.PARTY_ROW_GAP = 6
+layout.PARTY_BAR_HEIGHT = 6
+layout.PARTY_TEXT_HEIGHT = 20
+layout.QUEST_WRAP = 38
+layout.QUEST_TITLE_LINES = 2
+layout.QUEST_OBJECTIVE_LINES = 2
 layout.BAR_TEXTURE = "grug_core_hud_bar.png"
 
 -- The smallest and largest fill a partial bar may draw. Below 1 px the
@@ -45,6 +52,7 @@ layout.MIN_FILL = 2
 -- and are a look question for the playtest, not a user ruling.
 layout.COLOR = {
 	track = 0x141414,
+	xp = 0xffd100,
 	life = 0x4caf50,
 	mana = 0x4a9bd8,
 	rage = 0xc41e3a,
@@ -58,12 +66,12 @@ layout.COLOR = {
 -- `secondary` is reserved even for a character that has no class yet: a row
 -- that appears or disappears must not move the rows above it.
 local STACK = {
-	{id = "secondary", kind = "bar", height = 16, gap = 2},
+	{id = "xp", kind = "bar", width = 360, height = 6, gap = 8},
+	{id = "secondary", kind = "bar", height = 16, gap = 8},
 	{id = "life", kind = "bar", height = 16, gap = 4},
 	{id = "breath", kind = "bar", height = 16, gap = 4},
 	{id = "skill", kind = "text", height = 20, gap = 2},
 	{id = "money", kind = "text", height = 20, gap = 2},
-	{id = "xp", kind = "text", height = 20, gap = 2},
 }
 
 -- id -> {kind, index, top, bottom, height, middle}. y grows DOWNWARDS, so
@@ -81,6 +89,7 @@ do
 			kind = row.kind,
 			index = i,
 			height = row.height,
+			width = row.width or layout.BAR_WIDTH,
 			top = top,
 			bottom = top + row.height,
 			middle = top + row.height / 2,
@@ -102,13 +111,13 @@ layout.anchors = {
 		alignment = {x = -1, y = 1},
 	},
 	quest_list = {
-		position = {x = 0, y = 0},
-		offset = {x = 20, y = 20},
-		alignment = {x = 1, y = 1},
+		position = {x = 1, y = 0.5},
+		offset = {x = -20, y = 0},
+		alignment = {x = -1, y = 0},
 	},
 	party_list = {
-		position = {x = 0, y = 0},
-		offset = {x = 20, y = 260},
+		position = {x = 0, y = 0.5},
+		offset = {x = 20, y = 0},
 		alignment = {x = 1, y = 1},
 	},
 }
@@ -180,7 +189,7 @@ function layout.bar_element(id, width, color, z_index)
 	return {
 		type = "image",
 		position = {x = layout.POSITION.x, y = layout.POSITION.y},
-		offset = {x = -layout.BAR_WIDTH / 2, y = row.top},
+		offset = {x = -row.width / 2, y = row.top},
 		alignment = {x = 1, y = 1},
 		scale = {x = width, y = row.height},
 		text = layout.bar_texture(color),
@@ -210,8 +219,8 @@ end
 -- (combat_stats.md section 2) at 324 HP must not read as untouched, and at
 -- 1 HP must not read as dead; the exact number is in the centred label, and
 -- the bar never contradicts it.
-function layout.bar_fill(value, maximum)
-	local width = layout.BAR_WIDTH
+function layout.bar_fill(value, maximum, width)
+	width = width or layout.BAR_WIDTH
 	if type(value) ~= "number" or type(maximum) ~= "number" then
 		return 0
 	end
@@ -228,4 +237,44 @@ function layout.bar_fill(value, maximum)
 		px = width - layout.MIN_FILL
 	end
 	return px
+end
+
+-- HUD images/offsets use HUD scaling; fonts independently use GUI scaling.
+-- Convert a conservative 20-GUI-unit label slot to HUD units before positioning
+-- the life bar. This includes default 16px-font ascenders/descenders and a gap.
+local function scales(window)
+	window = window or {}
+	return math.max(0.1, tonumber(window.real_hud_scaling) or 1),
+		math.max(0.1, tonumber(window.real_gui_scaling) or 1)
+end
+
+-- Side blocks use their actual content height, not a fixed ten-row box.
+function layout.party_row_offset(index, count, bar, window)
+	local anchor = layout.anchors.party_list
+	local hud, gui = scales(window)
+	local bar_y = math.ceil(layout.PARTY_TEXT_HEIGHT * gui / hud)
+	local row_height = bar_y + layout.PARTY_BAR_HEIGHT + layout.PARTY_ROW_GAP
+	local height = (count - 1) * row_height + bar_y + layout.PARTY_BAR_HEIGHT
+	return {x = anchor.offset.x, y = anchor.offset.y - height / 2 +
+		(index - 1) * row_height + (bar and bar_y or 0)}
+end
+
+function layout.xp_label(text)
+	local out = layout.text_element("xp", {number = layout.COLOR.xp, text = text})
+	out.offset.x = layout.XP_WIDTH / 2 + 8
+	out.alignment.x = 1
+	return out
+end
+
+-- Reserve the combat column even in a narrow window. Window information is
+-- supplied by consumers; the layout remains independent of engine callbacks.
+-- Nine GUI units per character estimate the default font; reserve the combat
+-- column and edge padding in HUD units, then divide the remaining pixel space
+-- by GUI-scaled character width.
+function layout.side_text_width(window)
+	if not window or not window.size then return layout.QUEST_WRAP end
+	local hud, gui = scales(window)
+	local width = (window.size.x - layout.BAR_WIDTH * hud) / 2 - 32 * hud
+	return math.max(12, math.min(layout.QUEST_WRAP,
+		math.floor(width / (9 * gui))))
 end

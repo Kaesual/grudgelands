@@ -1,0 +1,15 @@
+{
+  "canonical": "PASS three_chunks=3 catalog=102/30",
+  "planner_calls": 3,
+  "scratch": "/tmp/grug-r15-integration-fsu8de6_",
+  "scratch_only_changes": [
+    "mods/CORE/grug_core/starts_preload.lua",
+    "mods/MAPGEN/grug_mapgen/wp40/planner.lua",
+    "mods/MAPGEN/grug_mapgen/wp40/r7_manifest.lua",
+    "mods/r15_integration_probe/init.lua",
+    "mods/r15_integration_probe/mod.conf"
+  ],
+  "seed": 8675309,
+  "source_files": 2045,
+  "source_matches_root": true
+}

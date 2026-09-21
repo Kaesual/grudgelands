@@ -192,6 +192,89 @@ local cultures = {
 	},
 }
 
+-- Round 15 adds three independent local pairs per culture. Each pair hangs
+-- from the main-story step that reaches its POI; neither local task gates the
+-- other or the main chain. All targets below are members of the owning named
+-- zone's closed spawn palette, except bandits, which are supplied by the
+-- authored camp spawner at the same settlement.
+local local_stories = {
+	dwarf = {
+		name = "Dagna Copperset",
+		tasks = {
+			{"village", "Stone for the Workyard", "The workshop needs ordinary cobble to reset its cartway after the last rockfall. Bring sound blocks from the local slopes.", item = "default:cobble", count = 8, bring = "Bring cobble"},
+			{"village", "Tails Among the Tool Baskets", "Foxes slip beneath the open shelter by day and scatter the tool baskets. Clear them from the workyard.", {"grug_mobs:fox"}, 5},
+			{"outpost", "The Signal Path", "After nightfall, goblin raiders use the low signal tower's blind side. Drive their pack from the lookout path.", GOBLINS, 4},
+			{"outpost", "Sure Feet, Loose Stones", "Ibex crowd the shelf beside the guard shelter and send stones through its stores. Thin the herd around the post.", {"grug_mobs:ibex"}, 5},
+			{"camp", "The Taken Workshop", "The ruined workshop is occupied, and its stolen tools will stay lost while the camp stands. Break the bandits around it.", BANDITS, 5},
+			{"camp", "Cloth Around the Stolen Tools", "The raiders wrapped the stolen tools in their own linen. Bring some of that ordinary camp cloth so Tovin can identify the bundles.", item = "grug_mobs:linen_cloth", count = 5, bring = "Bring linen cloth"},
+		},
+	},
+	human = {
+		name = "Alda Sheaf",
+		tasks = {
+			{"village", "Food for the Granary Crew", "The granary crew cannot leave the open shed while carts are queued. Bring raw meat for their common pot.", item = "mobs:meat_raw", count = 4, bring = "Bring raw meat"},
+			{"village", "Orchard at the Door", "Foxes are bold enough to cross the off-centre yard and worry the orchard edge. Give the pickers a clear morning.", {"grug_mobs:fox"}, 5},
+			{"outpost", "Eyes Below the Tower", "After nightfall, poachers use the tower's own shadow to approach its side store. Hunt them before they learn the watch change.", {"grug_mobs:poacher"}, 4},
+			{"outpost", "A Clear Eastern View", "Foxes keep tripping the warning cords across the lookout's open sightline. Clear the slope so the next alarm means danger.", {"grug_mobs:fox"}, 5},
+			{"camp", "The Plundered Farm", "Bandits have turned a damaged farm into their yard. Drive them away from the patched house and its remaining stores.", BANDITS, 5},
+			{"camp", "Linen Around the Grain", "The raiders tied the gathered grain with their own linen cloth. Bring enough camp cloth for Pella to mark the recovered sacks.", item = "grug_mobs:linen_cloth", count = 5, bring = "Bring linen cloth"},
+		},
+	},
+	elf = {
+		name = "Lethri Reedshade",
+		tasks = {
+			{"village", "Leather for the Covered Walk", "Rain has loosened the lashings above the communal walk. Bring ordinary leather so the bindings can be replaced.", item = "mobs:leather", count = 2, bring = "Bring ordinary leather"},
+			{"village", "Fresh Cuts at the Saplings", "Poachers tested their axes beside the tended saplings. Find them after nightfall before the narrow houses hide another night's work.", {"grug_mobs:poacher"}, 5},
+			{"outpost", "No Shadow on the Sightline", "After nightfall, poachers cross the lookout's open ground when the patrol turns. Clear the approach and restore the long view.", {"grug_mobs:poacher"}, 4},
+			{"outpost", "Signs in the Ferns", "Foxes have dragged the trail signs below the elevated platform. Clear the fern line so the wardens can reset them.", {"grug_mobs:fox"}, 5},
+			{"camp", "Axes at the Worksite", "Bandits shelter beside the poachers' cut trunks and sorted timber. Break their hold on the worksite.", BANDITS, 5},
+			{"camp", "Bindings from the Worksite", "The cut trunks are bound with the raiders' linen cloth. Bring enough camp cloth for Nima to compare its knots with the poachers' work.", item = "grug_mobs:linen_cloth", count = 5, bring = "Bring linen cloth"},
+		},
+	},
+	undead = {
+		name = "Edris Wax",
+		tasks = {
+			{"village", "Gel for the Wax Store", "The wax keeper uses local slime gel to seal jars against the fen damp. Bring enough for the raised store shelves.", item = "grug_mobs:slime_gel", count = 3, bring = "Bring slime gel"},
+			{"village", "Furrows by the Memorial", "Plague boars root against the stones of the tended memorial. Drive them back into the dead furrows.", {"grug_mobs:plague_boar"}, 5},
+			{"outpost", "Teeth in the Watch Channel", "Crocodiles wait below the low watchhouse where the patrol must cross. Clear the channel before the water rises.", {"grug_mobs:crocodile"}, 4},
+			{"outpost", "The Sheltered Niche", "Bog ooze pools beneath the observation niche and eats at its supports. Break up the nearest masses.", {"grug_mobs:bog_ooze"}, 5},
+			{"camp", "Raised Stores, Living Guards", "Bandits have filled the old enclosure with raised stores that the fen cannot swallow. Remove their guards.", BANDITS, 5},
+			{"camp", "Dry Cloth from a Wet Ruin", "The inner-band raiders carry linen that stayed dry inside the ruined enclosure. Bring enough for Hollis to wrap the heat-marked scrap.", item = "grug_mobs:linen_cloth", count = 5, bring = "Bring linen cloth"},
+		},
+	},
+	orc = {
+		name = "Morga Clayhand",
+		tasks = {
+			{"village", "Hide for the Low Annex", "The broad house's low annex needs fresh ties for its hide screens. Bring ordinary leather from the local hunt.", item = "mobs:leather", count = 2, bring = "Bring ordinary leather"},
+			{"village", "Laughing Beyond the Annex", "Hyenas circle the broad house and worry the hides stacked by its low annex. Thin the pack around the village.", {"grug_mobs:hyena"}, 5},
+			{"outpost", "Howls Below the Lookout", "Hyenas wait below the timber lookout and scatter anyone carrying stores uphill. Clear the post's approach.", {"grug_mobs:hyena"}, 4},
+			{"outpost", "Stingers at the Palisade", "Scorpions shelter where the angled palisade meets dry ground. Clear them after sunset, when they leave the stones.", {"grug_mobs:scorpion"}, 5},
+			{"camp", "Freight Beneath the Shade", "Bandits guard stolen caravan freight beneath their broad shade roof. Break their hold on the cargo.", BANDITS, 5},
+			{"camp", "Bindings from the Loaded Sled", "The stolen freight is tied with the raiders' linen cloth. Bring enough of it for Rokka to compare the knots and brands.", item = "grug_mobs:linen_cloth", count = 5, bring = "Bring linen cloth"},
+		},
+	},
+	troll = {
+		name = "Amari Palmweave",
+		tasks = {
+			{"village", "Meat for the Preparation Roof", "The village preparation shelter has room for another shared meal. Bring raw meat from the basin hunt.", item = "mobs:meat_raw", count = 4, bring = "Bring raw meat"},
+			{"village", "Cats Between the Stilt Posts", "Jungle lynx stalk the shade beneath the communal house. Thin them before a child takes the low path home.", {"grug_mobs:jungle_lynx"}, 5},
+			{"outpost", "A Dry Niche for Supplies", "Vipers have claimed the dry equipment niche beside the roofed lookout. Clear them after nightfall.", {"grug_mobs:viper"}, 4},
+			{"outpost", "Eyes Beyond the Reeds", "Jungle lynx crouch beyond the lookout's reed line and keep the patrol under cover. Drive them away.", {"grug_mobs:jungle_lynx"}, 5},
+			{"camp", "The Patched Canopy", "Bandits command the camp from a patched main canopy above their wet supplies. Break the fighters beneath it.", BANDITS, 5},
+			{"camp", "Dry Bindings in the Rain", "The camp's sleeping shelters keep the raiders' linen cloth dry. Bring enough for Veko to wrap the smouldering cargo safely.", item = "grug_mobs:linen_cloth", count = 5, bring = "Bring linen cloth"},
+		},
+	},
+}
+
+local LOCAL_REWARDS = {
+	village = {{xp = 550, copper = 40, level = 10, effort = "light"},
+		{xp = 700, copper = 45, level = 10, effort = "standard"}},
+	outpost = {{xp = 650, copper = 50, level = 11, effort = "light"},
+		{xp = 800, copper = 55, level = 11, effort = "standard"}},
+	camp = {{xp = 900, copper = 65, level = 12, effort = "standard"},
+		{xp = 1100, copper = 75, level = 12, effort = "hard"}},
+}
+
 local function quest_id(culture, number, title)
 	local slug = title:lower():gsub("[^a-z0-9]+", "_"):gsub("^_", ""):gsub("_$", "")
 	return ("r14_%s_%02d_%s"):format(culture.key, number, slug)
@@ -212,6 +295,10 @@ for _, culture in ipairs(cultures) do
 		socket = "quest_scout", title = culture.names[3]})
 	Q.register_npc(npc.captive, {settlement = culture.camp,
 		socket = "quest_captive", title = culture.names[4]})
+	local story = assert(local_stories[culture.key])
+	npc.local_worker = "r15_" .. culture.key .. "_local"
+	Q.register_npc(npc.local_worker, {settlement = culture.village,
+		socket = "quest_local", title = story.name})
 
 	local previous
 	for number = 1, 9 do
@@ -230,6 +317,7 @@ for _, culture in ipairs(cultures) do
 			title = culture.titles[number], description = culture.descriptions[number] .. (number == 6 and "\n\nClear the local approach first. The village beyond is dangerous for beginners: reach level 10 before travelling there to seek its steward. Until then, continue hunting and preparing your equipment near home." or ""),
 			npc = giver, turnin_npc = number == 9 and npc.captive or giver,
 			faction = culture.faction, race = culture.key, min_level = LEVEL[number],
+			target_level = LEVEL[number], effort = number >= 8 and "hard" or "standard",
 			prerequisites = previous and {previous} or {}, objectives = {objective},
 			rewards = {xp = XP[number], copper = COPPER[number], items = {}},
 		})
@@ -241,6 +329,7 @@ for _, culture in ipairs(cultures) do
 	Q.register_quest(axe, {
 		title = culture.lessons[1], description = culture.lessons[3] .. "\n\nOpen Basics in your Crafting tab to see the wood axe recipe: three planks and two sticks. You can make planks from a tree trunk and sticks from planks. Wood tools are fragile; stone lasts longer and bronze is your first durable upgrade. This lesson is optional; an axe made by a friend is welcome too.", npc = npc.elder,
 		faction = culture.faction, race = culture.key, min_level = 1,
+		target_level = 1, effort = "lesson",
 		prerequisites = {first}, objectives = {{type = "item", item = "default:axe_wood",
 			count = 1, description = "Bring a wood axe"}},
 		rewards = {xp = 150, copper = 10, items = {}},
@@ -248,8 +337,38 @@ for _, culture in ipairs(cultures) do
 	Q.register_quest(quest_id(culture, 11, culture.lessons[2]), {
 		title = culture.lessons[2], description = culture.lessons[4] .. "\n\nUse Basics to make a wooden pick first, then mine stone. The stone pick recipe uses three stone blocks across the top and two sticks down the middle. Keep valuable tools repaired at a profession trainer or crafting station. This lesson is optional; a traded pick counts too.", npc = npc.elder,
 		faction = culture.faction, race = culture.key, min_level = 2,
+		target_level = 2, effort = "lesson",
 		prerequisites = {axe}, objectives = {{type = "item", item = "default:pick_stone",
 			count = 1, description = "Bring a stone pick"}},
 		rewards = {xp = 250, copper = 15, items = {}},
 	})
+
+	local site_seen = {village = 0, outpost = 0, camp = 0}
+	for number, task in ipairs(story.tasks) do
+		local site = task[1]
+		site_seen[site] = site_seen[site] + 1
+		local reward = LOCAL_REWARDS[site][site_seen[site]]
+		local giver = site == "village" and npc.local_worker or
+			(site == "outpost" and npc.scout or npc.captive)
+		local prerequisite_number = site == "village" and 6 or
+			(site == "outpost" and 7 or 8)
+		local objective
+		if task.item then
+			objective = {type = "item", item = task.item, count = task.count,
+				description = task.bring}
+		else
+			objective = {type = "kill", mobs = task[4], count = task[5],
+				zone = culture.zones[7]}
+		end
+		Q.register_quest(("r15_%s_local_%02d"):format(culture.key, number), {
+			title = task[2], description = task[3], npc = giver,
+			faction = culture.faction, race = culture.key,
+			min_level = reward.level, target_level = reward.level,
+			effort = reward.effort,
+			prerequisites = {quest_id(culture, prerequisite_number,
+				culture.titles[prerequisite_number])},
+			objectives = {objective},
+			rewards = {xp = reward.xp, copper = reward.copper, items = {}},
+		})
+	end
 end

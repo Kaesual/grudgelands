@@ -1,0 +1,8 @@
+SETGLOBAL mods/MAPGEN/grug_mapgen/wp40/r14_poi_blueprint.lua
+SETGLOBAL tools/r15_poi/poi_micro_kat.lua
+	19	[8]	SETGLOBAL	2 -5	; core
+SWEEP 1
+SWEEP 2
+SWEEP 3
+SWEEP 4
+SWEEP 5

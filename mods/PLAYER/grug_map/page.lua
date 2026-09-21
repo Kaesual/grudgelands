@@ -1,4 +1,6 @@
 local atlas = grug_map.atlas
+local active, elapsed = {}, 0
+local PAGE = "grug_map:atlas"
 
 -- The 900 x 800 media is displayed at the same 9:8 ratio. This page carries
 -- no inventory rows, so the atlas uses the full custom-page height.
@@ -47,13 +49,6 @@ atlas.register_marker_provider("settlement", function()
 	return result
 end)
 
-atlas.register_marker_provider("player", function(player)
-	if not player or not player:is_player() then return {} end
-	return {{id = player:get_player_name(), label = "You are here",
-		detail = "Your current position", kind = "player",
-		position = player:get_pos()}}
-end)
-
 function grug_map.register_marker_provider(name, callback)
 	return atlas.register_marker_provider(name, callback)
 end
@@ -86,41 +81,79 @@ local function page_content(player, context)
 	end
 	context.grug_map_marker_fields = {}
 	local markers = atlas.collect_markers(player)
+	context.grug_map_detail = nil
 	for index = 1, #markers do
 		local marker = markers[index]
 		local sx, sy = atlas.world_to_screen(view, marker.position,
 			MAP_X, MAP_Y, MAP_W, MAP_H)
 		if sx then
-			local field = "grug_map_marker_" .. index
+			if marker.id == context.grug_map_selected then
+				context.grug_map_detail = marker.detail
+			end
+			local field = atlas.field_id(marker.id)
 			context.grug_map_marker_fields[field] = marker
-			local symbol = marker.kind == "player" and "@" or
-				(marker.kind == "hostile" and "!" or "+")
-			fs[#fs + 1] = ("style[%s;bgcolor=#2b2118cc;textcolor=#ffe9a8]"):
-				format(field)
-			fs[#fs + 1] = ("button[%.3f,%.3f;0.32,0.32;%s;%s]"):
-				format(sx - 0.16, sy - 0.16, field, symbol)
-			fs[#fs + 1] = ("tooltip[%s;%s]"):format(field, esc(marker.label))
+			if marker.kind == "player" or marker.kind == "party" then
+				local tint = marker.kind == "player" and "gold" or "cyan"
+				local texture = ("grug_map_heading_%s_%02d.png"):format(tint,
+					atlas.heading_frame(marker.heading))
+				fs[#fs + 1] = ("style[%s;border=false]"):format(field)
+				fs[#fs + 1] = ("image_button[%.3f,%.3f;0.42,0.42;%s;%s;;false;false]"):
+					format(sx - 0.21, sy - 0.21, texture, field)
+				-- Names stay in the hover/detail text to keep tightly grouped players
+				-- legible even at continental scale.
+			else
+				local quest = marker.kind == "quest"
+				local symbol = quest and ((marker.status == "ready" or marker.status == "active")
+					and "?" or "!") or (marker.kind == "hostile" and "!" or "+")
+				local color = quest and ((marker.status == "ready" or marker.status == "available")
+					and "#ffd700" or "#c0c0c0") or "#ffe9a8"
+				fs[#fs + 1] = ("style[%s;bgcolor=#2b2118cc;textcolor=%s]"):format(field, color)
+				fs[#fs + 1] = ("button[%.3f,%.3f;0.32,0.32;%s;%s]"):
+					format(sx - 0.16, sy - 0.16, field, symbol)
+			end
+			fs[#fs + 1] = ("tooltip[%s;%s]"):format(field, esc(marker.detail))
 		end
 	end
+	if not context.grug_map_detail then context.grug_map_selected = nil end
 	if context.grug_map_detail then
 		fs[#fs + 1] = ("label[0.15,0.50;Selected: %s]"):
-			format(esc(context.grug_map_detail:gsub("\n", " — ")))
+			format(esc(context.grug_map_detail:match("[^\n]*")))
 	end
 	return table.concat(fs)
 end
 
-sfinv.register_page("grug_map:atlas", {
+local function make_form(player, context)
+	return sfinv.make_formspec(player, context, page_content(player, context), false)
+end
+
+sfinv.register_page(PAGE, {
 	title = "Map",
+	on_enter = function(self, player)
+		active[player:get_player_name()] = {}
+	end,
+	on_leave = function(self, player)
+		active[player:get_player_name()] = nil
+	end,
 	get = function(self, player, context)
-		return sfinv.make_formspec(player, context, page_content(player, context), false)
+		local form = make_form(player, context)
+		local session = active[player:get_player_name()]
+		if session then session.form = form end
+		return form
 	end,
 	on_player_receive_fields = function(self, player, context, fields)
+		if fields.quit then
+			-- The engine cannot report a later inventory reopen. Returning to
+			-- Character makes the next Map tab click an explicit open event.
+			sfinv.set_page(player, "grug_inventory:character")
+			return true
+		end
 		local views = atlas.views()
 		for index = 1, #views do
 			local id = views[index].id
 			if fields["grug_map_view_" .. id] then
 				context.grug_map_view = id
 				context.grug_map_detail = nil
+				context.grug_map_selected = nil
 				sfinv.set_page(player, "grug_map:atlas")
 				return true
 			end
@@ -128,9 +161,40 @@ sfinv.register_page("grug_map:atlas", {
 		for field, marker in pairs(context.grug_map_marker_fields or {}) do
 			if fields[field] then
 				context.grug_map_detail = marker.detail
+				context.grug_map_selected = marker.id
 				sfinv.set_page(player, "grug_map:atlas")
 				return true
 			end
 		end
 	end,
 })
+
+-- Only an explicit tab-entry session is polled. Updating the cached inventory
+-- form does not open a menu; the client updates it in place if it is visible
+-- (lua_api.md, set_inventory_formspec). Stable button names survive rebuilds.
+core.register_globalstep(function(dtime)
+	elapsed = elapsed + dtime
+	if elapsed < 0.5 then return end
+	elapsed = elapsed % 0.5
+	for name, session in pairs(active) do
+		local player = core.get_player_by_name(name)
+		local context = sfinv.contexts[name]
+		if not player or not context or context.page ~= PAGE then
+			active[name] = nil
+		else
+			local form = make_form(player, context)
+			if session.form ~= form then
+				player:set_inventory_formspec(form)
+				session.form = form
+			end
+		end
+	end
+end)
+core.register_on_leaveplayer(function(player)
+	active[player:get_player_name()] = nil
+end)
+core.register_on_dieplayer(function(player)
+	if active[player:get_player_name()] then
+		sfinv.set_page(player, "grug_inventory:character")
+	end
+end)

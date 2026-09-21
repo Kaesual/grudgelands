@@ -81,12 +81,29 @@ function M.collect_markers(player)
 			ids[id] = true
 			result[#result + 1] = {id = id, label = row.label,
 				detail = row.detail or row.label, kind = row.kind or "poi",
+				heading = row.heading, status = row.status,
 				position = {x = row.position.x, y = row.position.y,
 					z = row.position.z}}
 		end
 	end
-	table.sort(result, function(a, b) return a.id < b.id end)
+	local layers = {settlement = 1, hostile = 1, quest = 2, party = 3, player = 4}
+	table.sort(result, function(a, b)
+		local al, bl = layers[a.kind] or 1, layers[b.kind] or 1
+		if al ~= bl then return al < bl end
+		return a.id < b.id
+	end)
 	return result
+end
+
+-- Injective field identity survives marker insertion/removal and list reordering.
+function M.field_id(id)
+	return "grug_map_marker_" .. id:gsub(".", function(c)
+		return ("%02x"):format(string.byte(c))
+	end)
+end
+
+function M.heading_frame(yaw)
+	return math.floor((yaw or 0) / (2 * math.pi) * 16 + 0.5) % 16
 end
 
 return M

@@ -1,0 +1,11 @@
+mods/CORE/grug_core/hud_layout.lua: parser PASS; SETGLOBAL []
+mods/PLAYER/grug_xp/init.lua: parser PASS; SETGLOBAL ['2\t[1]\tSETGLOBAL\t0 -1\t; grug_xp']
+mods/PLAYER/grug_quests/hud.lua: parser PASS; SETGLOBAL []
+mods/PLAYER/grug_quests/npc.lua: parser PASS; SETGLOBAL []
+mods/PLAYER/grug_parties/hud.lua: parser PASS; SETGLOBAL []
+tools/r15_hud/hud_micro.lua: parser PASS; SETGLOBAL []
+Sweep 1: no matches
+Sweep 2: no matches
+Sweep 3: no matches
+Sweep 4: no matches
+Sweep 5: no matches
