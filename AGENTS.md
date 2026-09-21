@@ -70,6 +70,9 @@ projects: **[docs/research/](docs/research/)**.
 Round 15 is delivered; completion is recorded in
 `docs/research/round15-completion.md`, next GUI pass in round15-playtest.md.
 The execution ledger remains in `docs/research/round15-execution.md`.
+The latest authorized UI follow-up is tracked in
+`docs/research/round15-ui-followup.md` (money/Character, online Group roster,
+Talent control geometry).
 Native Astra owns POI/HUD composition and root atlas integration; Sol owns
 quest content. Independent reviewers must not have authored their review scope. No waypoints or new world anchors. Unexpected major
 complexity pauses its lane for user discussion.

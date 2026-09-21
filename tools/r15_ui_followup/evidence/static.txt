@@ -1,0 +1,15 @@
+GLOBAL mods/PLAYER/grug_money/init.lua 2	[1]	SETGLOBAL	0 -1	; grug_money
+PARSER PASS files=8
+SWEEP 1
+no hits
+SWEEP 2
+no hits
+SWEEP 3
+no hits
+SWEEP 4
+tools/r15_ui_followup/group.lua:86:assert(table.concat(names, "|") == "A,lice]|Alpha|Party|Zebra")
+tools/r15_ui_followup/group.lua:115:assert(table.concat(names, "|") == "A,lice]|Aaron|Alpha|Party")
+mods/PLAYER/grug_inventory/pages.lua:298:-- Homepage & nav order: Character first, Bags second, Crafting after.
+SWEEP 5
+no hits
+Inspect all global writes and sweep hits; strings/comments may match.

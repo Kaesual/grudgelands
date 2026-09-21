@@ -76,8 +76,6 @@ function grug_money.register_on_change(func)
 	end
 end
 
-local hud_update -- forward (defined below)
-
 function grug_money.get(player)
 	if not is_player(player) then
 		return 0
@@ -99,7 +97,6 @@ function grug_money.set(player, copper)
 	for _, func in ipairs(change_callbacks) do
 		func(player, old, copper)
 	end
-	hud_update(player)
 end
 
 -- Negative amounts subtract; the balance clamps at 0 and at MAX.
@@ -176,37 +173,9 @@ function grug_money.take_with_inventory(player, copper, changes)
 	if paid ~= balance then
 		player:get_meta():set_int(grug_money.KEY, paid)
 		for _, func in ipairs(change_callbacks) do func(player, balance, paid) end
-		hud_update(player)
 	end
 	return true
 end
-
---
--- HUD: the money line sits on the "money" row of grug_core.hud_layout,
--- between the skill-name line and the XP line. No z_index, same as those two
--- elements. The offset used to be a hard-coded pixel number here.
---
-
-local hud_ids = {}
-
-hud_update = function(player)
-	local id = hud_ids[player:get_player_name()]
-	if id then
-		player:hud_change(id, "text", grug_money.format(grug_money.get(player)))
-	end
-end
-
-core.register_on_joinplayer(function(player)
-	hud_ids[player:get_player_name()] = player:hud_add(
-		grug_core.hud_layout.text_element("money", {
-			number = 0xffd966,
-			text = grug_money.format(grug_money.get(player)),
-		}))
-end)
-
-core.register_on_leaveplayer(function(player)
-	hud_ids[player:get_player_name()] = nil
-end)
 
 --
 -- Chat command

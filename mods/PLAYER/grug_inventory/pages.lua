@@ -153,8 +153,9 @@ local function character_content(player)
 			("Maximum mana: " .. mana.final) or "Maximum rage: 100")),
 		("label[2.75,1.40;Armor: %.1f]"):format(armor.result),
 		("label[2.75,1.85;Own-level reduction: %.1f%%]"):format(armor_reduction),
-		"label[2.75,2.45;Pool and armor details]",
-		"textarea[2.90,2.85;4.95,3.5;;;" .. esc(table.concat(lines, "\n\n")) .. "]",
+		("label[2.75,2.30;Money: %s]"):format(esc(grug_money.format(grug_money.get(player)))),
+		"label[2.75,2.95;Pool and armor details]",
+		"textarea[2.90,3.35;4.95,3.0;;;" .. esc(table.concat(lines, "\n\n")) .. "]",
 		"label[8.3,0.50;Armor]label[9.3,0.50;Gear]",
 	}
 
@@ -355,3 +356,12 @@ end)
 -- and player_api, so their join callbacks run first. equipment.lua's later
 -- join callback sizes the slots and calls equipment_changed, which reaches
 -- the single refresh consumer above after the model and sfinv context exist.
+
+-- Keep the cached Character form current even while inventory is closed, so
+-- opening it shows the latest balance. Other selected pages need no rebuild.
+grug_money.register_on_change(function(player)
+	local context = sfinv.contexts[player:get_player_name()]
+	if context and context.page == "grug_inventory:character" then
+		sfinv.set_player_inventory_formspec(player, context)
+	end
+end)

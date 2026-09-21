@@ -17,7 +17,8 @@ income relationship and sink structure.
   the meta key directly.
 - **Display rule:** leading zero units are omitted, copper is always shown and
   interior zeros are retained: `5c`, `1s 5c`, `1g 0s 5c`. One formatter owns
-  HUD, chat and trade UI output.
+  Character-screen, chat and trade UI output. The current balance is shown
+  on Character and relevant trade screens; there is no persistent money HUD.
 - Money is a **ledger-only universal transaction currency**. No NPC, mob or
   world node drops money or a physical coin item. Currency enters or moves
   only through explicit transactions: quest rewards, NPC purchases of

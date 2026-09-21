@@ -3,8 +3,8 @@
 -- Before this file the column was four negative pixel offsets (-70, -85,
 -- -110, -135) spread over three mods, and inserting anything at the bottom
 -- meant editing all of them. grug_core is below every consumer in the
--- dependency graph, so the stack lives here and grug_abilities, grug_xp and
--- grug_money read it instead of carrying a constant each.
+-- dependency graph, so grug_abilities and grug_xp share this layout. Money
+-- is displayed on Character instead of occupying a HUD row.
 --
 -- Everything is measured UPWARDS from the top edge of the builtin hotbar, in
 -- the pixel units `hud_add`'s `offset` uses. Those units are multiplied by
@@ -71,7 +71,6 @@ local STACK = {
 	{id = "life", kind = "bar", height = 16, gap = 4},
 	{id = "breath", kind = "bar", height = 16, gap = 4},
 	{id = "skill", kind = "text", height = 20, gap = 2},
-	{id = "money", kind = "text", height = 20, gap = 2},
 }
 
 -- id -> {kind, index, top, bottom, height, middle}. y grows DOWNWARDS, so
