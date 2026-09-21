@@ -21,6 +21,10 @@ final interpreter parity pass. The result is synchronized and pushed for the
 user's consolidated GUI playtest, whose acceptance remains pending.
 Whole-goal checkboxes remain unchanged until their complete scope is finished.
 
+The reviewed [Round 13 playtest followups](docs/research/round13-playtest-followups.md)
+restore initial skill ordering and non-grassing capital stable floors; these do
+not change whole-goal completion counts.
+
 ## Vision
 
 - **Two distinct faction continents.** The Accord holds southern Elandor and

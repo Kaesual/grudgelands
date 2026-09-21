@@ -27,8 +27,14 @@ function inventory_type:room_for_item(name)
 end
 local stack_type = getmetatable(ItemStack(""))
 function stack_type:get_count() return self:is_empty() and 0 or 1 end
+inv:set_stack("main", 1, ItemStack("default:torch 10"))
+inv:set_stack("main", 2, ItemStack("default:apple 10"))
 for _, callback in ipairs(fixture.class_callbacks) do callback(player, "warrior") end
 assert(inv:contains_item("main", "grug_abilities:strike"))
+assert(inv:get_stack("main", 1):get_name() == "grug_abilities:strike")
+assert(inv:get_stack("main", 5):get_name() == "default:torch 10")
+assert(inv:get_stack("main", 6):get_name() == "default:apple 10")
+assert(meta:get_int("grug_abilities:initial_kit_given") == 1)
 inv:set_size("grug_bag1_content", 8)
 inv:set_size("grug_weapon", 1)
 inv:set_size("craft", 9)
