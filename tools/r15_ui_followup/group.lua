@@ -100,6 +100,9 @@ end
 -- Choose Zebra from the displayed snapshot, then change the online roster.
 page:on_player_receive_fields(me, context, {grug_party_online_list = "CHG:4"})
 assert(context.grug_party_online == "Zebra")
+connected = {alpha, party, me, hostile, zebra, escaped}
+page:on_player_receive_fields(me, context, {grug_party_refresh = "Refresh"})
+assert(context.grug_party_online == "Zebra", "online selection did not survive reorder")
 local aaron = player("Aaron", "accord")
 connected = {aaron, me, alpha, hostile, party, escaped}
 page:on_player_receive_fields(me, context, {grug_party_invite = "Invite"})
@@ -110,8 +113,12 @@ assert(context.grug_party_notice == "Refused: Both players must be online.")
 names = {}
 for index, row in ipairs(context.grug_party_online_rows) do names[index] = row.name end
 assert(table.concat(names, "|") == "A,lice]|Aaron|Alpha|Party")
-assert(context.grug_party_online == "A,lice]")
+assert(context.grug_party_online == nil, "vanished selection redirected to another player")
 assert(not context.grug_party_online_rows[5])
+local calls = #invited
+page:on_player_receive_fields(me, context, {grug_party_invite = "Invite"})
+assert(#invited == calls and context.grug_party_notice ==
+	"Refused: Select an online same-faction player.")
 
 return "r15_group_roster PASS sorted=4 self=excluded hostile=excluded stale=safe status=shown escaping=pass\n"
 end

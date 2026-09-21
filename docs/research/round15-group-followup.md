@@ -12,8 +12,9 @@ party membership, leadership, capacity and cooldown at the moment of action.
 
 The selected name is stored alongside the displayed snapshot. A connection,
 faction or sort change therefore cannot reinterpret an old row number as a
-different player. Page entry, the explicit Refresh button and completed page
-actions rebuild the snapshot; there is no background polling. Existing pending
+different player. If a selected player disappears, selection clears instead
+of falling through to another row. Page entry, the explicit Refresh button and
+completed page actions rebuild the snapshot; there is no background polling. Existing pending
 invitations, party management and preference controls remain.
 
 The content switches to `real_coordinates[true]` after the shared SFINV wrapper

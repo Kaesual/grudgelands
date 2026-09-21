@@ -18,6 +18,7 @@ local function selected_member(view, context)
 end
 
 local function rebuild_roster(player, context)
+	local initial = context.grug_party_online_rows == nil
 	local own_name = player:get_player_name()
 	local own_faction = grug_factions.get_faction(player)
 	local rows = {}
@@ -40,7 +41,8 @@ local function rebuild_roster(player, context)
 	for _, row in ipairs(rows) do
 		if row.name == context.grug_party_online then selected = row.name end
 	end
-	context.grug_party_online = selected or (rows[1] and rows[1].name or nil)
+	context.grug_party_online = selected or
+		(initial and rows[1] and rows[1].name or nil)
 end
 
 local function online_roster(player, context)
@@ -59,7 +61,7 @@ local function content(player, context)
 		"label[0.20,0.78;Online same-faction players]",
 		"label[5.18,0.78;Pending invitations]",
 	}
-	local online, online_labels, online_index = online_roster(player, context), {}, 1
+	local online, online_labels, online_index = online_roster(player, context), {}, 0
 	for index, row in ipairs(online) do
 		online_labels[index] = esc(row.label)
 		if row.name == context.grug_party_online then online_index = index end
