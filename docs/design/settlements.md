@@ -119,7 +119,8 @@ Decided 2026-09-14.
   **workplaces**, and a quest-giver shell with a placeholder line. Since
   2026-09-15 a start also publishes three **spare** standing spots that nobody
   lives on (below).
-- **A settlement offers no quest and no storage services**, and a vendor is
+- Round 14 quest services follow `quests.md`; the earlier quest-shell-only
+  stage is superseded. A settlement offers no general storage services, and a vendor is
   the only trade there is. Since playtest round 3 a settlement may hold a
   PROFESSION vendor -- butcher, smith, fishmonger, baker, tailor, and since
   the wave-2 capitals also mason, brewer, bowyer, herbalist, armourer, tanner

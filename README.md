@@ -253,6 +253,13 @@ the boat itself is indestructible. The open sea stays lethal through the
 Kraken Guard rather than through boat damage, and the dragon channels carry
 none.
 
+[Quests](docs/design/quests.md) guide players through local stories with kills
+and item deliveries. [Parties](docs/design/parties.md) persist for two to ten
+same-faction friends, independently of combat-credit rules. The
+[world atlas](docs/design/world_map.md) shows authored geography without fog of
+war, while [world preparation](docs/design/world_preparation.md) defines optional
+full-world startup generation and resumable starts-only preparation.
+
 Full milestone view: [ROADMAP.md](ROADMAP.md).
 
 ## Current State
@@ -276,7 +283,9 @@ authority keeps its dishes exclusive. Larger inventory/Talents pages, onboarding
 Help, Creative Food, held-item fallback, revised food/wand/Greataxe art and the
 original-class X3 talent consumers are independently reviewed and integrated.
 
-**In progress:** WP11 retains WP44's measured respec-price calibration; WP13
+**In progress:** [Round 14](docs/research/round14-execution.md) adds quests, parties,
+the atlas, home-region POIs, resumable world preparation and playtest fixes.
+These are under implementation and are not yet installed. WP11 retains WP44's measured respec-price calibration; WP13
 retains most of the 100-anchor POI roster. WP10/WP29 retain broader catalog and
 economy work, WP14 carried light, and WP22 six-pick runtime calibration plus the
 deferred repair redesign. Ordinary farming is delivered; Claim Stone integration

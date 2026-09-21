@@ -29,7 +29,7 @@ projects: **[docs/research/](docs/research/)**.
   ordinary implementation/review uses native Sol, with native Astra allowed for
   hard/performance-critical work. This session restriction can change only by
   a later explicit user instruction. Durable active work state:
-  `docs/research/round10-execution.md`.
+  `docs/research/round14-execution.md` (current approved round).
 
 ## Fresh-server development mode
 
@@ -304,7 +304,7 @@ current state). It is **derived, never authoritative**:
   pattern).
 - Persistence:
   - Player data (race, class, faction, XP, level, talents, jobs, gold,
-    quest state, optional fog-of-war map exploration) → `player:get_meta()`
+    quest state, HUD preferences) → `player:get_meta()`
     (PlayerMetaRef, auto-persisted). Complex structures via `core.serialize`
     as string.
   - Mod-wide data → `core.get_mod_storage()` (fetch at load time).
@@ -1034,11 +1034,9 @@ Details + line numbers in [docs/research/](docs/research/).
   factions may mine them; the small functional anchor and sockets are
   protected, while the surrounding camp shell remains mutable and
   claim-excluded.
-- **Map/fog of war**: the global map does not require fog of war for its first
-  delivery. If the optional enhancement is implemented, VoxeLibre `mcl_maps`
-  renders explored chunks as PNG (`colors.json`, height shading) and pushes
-  them via `core.dynamic_add_media`, making it a candidate base. Minimap
-  gating: `hud_set_flags{minimap=...}` (pattern: minetest_game `map`).
+- **World atlas**: `docs/design/world_map.md` governs the cartographic Map tab,
+  with no fog of war and independent future-interactive markers. It needs no
+  generated-terrain bitmap and never unlocks waypoint travel.
 - **UI**: formspecs (`core.show_formspec` +
   `register_on_player_receive_fields`), set `formspec_version` +
   `real_coordinates[true]`. 3D character preview: `model[]` element.

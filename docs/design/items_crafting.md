@@ -1188,6 +1188,14 @@ Neither of these costs a main profession slot (professions.md §1).
   table is 78% its band fish, 12% stick and 10% papyrus. Fresh and salt water
   use the same table for the same level.
 
+  Round 14 fishing uses one visible bobber per angler. Right-click casts and
+  reels; a bite visibly dips the float and opens a 1.5-second catch window.
+  A missed bite returns to waiting, early reeling retrieves an empty line.
+  Successful catches show temporary HUD text `Caught: <Fish Name>`, not chat.
+  Current catch tables and catch-only rod wear stay unchanged. Death, logout,
+  unequipping or leaving the permitted range removes the line. No fishing
+  profession or lure system is introduced.
+
 - **First Aid** (trainer, free): Linen/Heavy/Silk Bandage — channel
   6 s (damage interrupts), restores 15%/30%/45% HP, then 30 s
   "recently bandaged". Cloth competes with Tailoring demand — intended.

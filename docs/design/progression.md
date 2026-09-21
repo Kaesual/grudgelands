@@ -99,3 +99,11 @@ depends on the death's attribution.
 - Gather and kill objectives use stable named-zone ids and authored biome/
   resource palettes so progression teaches exploration rather than old radial
   ring coordinates.
+
+## Round 14 quest participation
+
+Kill quests use the same per-mob damage/effective-heal participation as shared
+XP, preserving its current online/40-node eligibility and existing XP splitting.
+Party membership confers no automatic credit. Quest counters award a full kill
+to each eligible participant with the matching active quest; zero XP from a
+gray mob does not itself erase quest credit. See `quests.md`.

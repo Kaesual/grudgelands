@@ -42,6 +42,11 @@ announcement changes this rule; see [AGENTS.md](../../AGENTS.md#fresh-server-dev
 | [`farming.md`](farming.md) | Seventeen-family annual/regrowing/retained-base cultivation and vertical crop shapes, seven hoe lifetimes, halved wild-plant density, bounded depletion renewal, water-only buckets and the protected-water-flow prerequisite. | **decided** (2026-09-20); Round 11 foundation and Round 12 family iteration. |
 | [`durability_repair.md`](durability_repair.md) | Combat/tool wear, broken effects, city trainer service, atomic quotes and current purchase-price repair at at most 20%. | **decided** (2026-09-20); bounded WP22 implementation, future Housing hook. |
 
+| [`quests.md`](quests.md) | Twenty-slot quest journal, kill/item objectives, participation, rewards, markers and tracker. | **decided**, Round 14. |
+| [`parties.md`](parties.md) | Persistent same-faction parties, inviter-bound invitations, management and health HUD. | **decided**, Round 14. |
+| [`world_map.md`](world_map.md) | Cartographic atlas without fog, independent extensible markers and no travel unlock. | **decided**, Round 14. |
+| [`world_preparation.md`](world_preparation.md) | Immutable per-world full/starts mode, bounded chunk scheduling, shutdown/resume and waiting UI. | **decided**, Round 14. |
+
 ## Round 6 supporting records
 
 These research notes are evidence and implementation records, not design

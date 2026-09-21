@@ -860,8 +860,8 @@ administration system do not exist in the target design.
   travel hubs reserved by named zones. Exact density is part of the zone
   catalog; every main progression route must connect to the network.
 - **Unlocked by visiting, per character** (player meta); the world map shows
-  discovered waypoints. Fog of war is an optional map enhancement, not a
-  requirement for WP12's first delivery. Showing terrain or a waypoint on the
+  discovered waypoints when waypoint integration is delivered. The initial
+  cartographic atlas has no fog of war (`world_map.md`). Showing terrain or a waypoint on the
   map never unlocks waypoint travel; only visiting the waypoint does.
 - Teleporting works **only while standing at a waypoint**
   (waypoint → waypoint), instant and free — travel time is the cost;

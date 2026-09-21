@@ -338,26 +338,30 @@ warning and forced dismount are separate consumer states derived from
   Swimming, boats and any later deep-ocean damage effect remain ocean-system
   concerns rather than mount movement rules.
 
-### 4.2 Battlegrounds and housing claims
+### 4.2 Contested mainland, dragon islands and housing claims
 
 - **Both factions may summon and use either flying tier throughout the
-  Battlegrounds.** The shared-front territory is an intentional aerial PvP space,
+  contested mainland, including ordinary contested regions and the Battlegrounds.**
+  The shared-front territory is an intentional aerial PvP space,
   not enemy territory. Its planned water inherits this permission because it
   is not an ocean column.
 - PvP and NPC combat remain active there. Any incoming damage still dismounts
   immediately under §3.1, so permission to fly is not safety or immunity.
+- Both dragon islands forbid flight for both factions; ground riding remains
+  allowed. Villages and other POIs inherit their surrounding zone, never an
+  independent faction ownership rule.
 - Open-world housing claims add no special mount ban. They inherit the ordinary
   mount rule of their peaceful home-faction zone; a claim boundary itself never
   summons or dismounts a mount (`housing.md`; `world.md` §5).
 
-### 4.3 Enemy territory: land tiers yes, flying tiers no
+### 4.3 Enemy safe territory: land tiers yes, flying tiers no
 
 - **The two land tiers are allowed on enemy land.** A
   rider on a horse still walks the ground, still meets whatever
   `guard_level_at` has put on it (`world.md` §1), and still has to use an
   authored land connection or another physical route. Nothing about a land
   mount bypasses terrain, so nothing about it needs a rule.
-- **Flying mounts are banned in enemy territory.** Two halves, both
+- **Flying mounts are banned in enemy safe home territory, including capitals.** Two halves, both
   binding:
   - **A flying mount cannot be summoned there.** The mount action is
     refused outright with a message because a deliberate action needs no grace
@@ -380,9 +384,10 @@ waypoints closes the same bypass for teleportation.
 **The mechanism is the central territory/zone lookup, never a hand-picked
 coordinate.** `grug_zones.water_class_at(x,z)` separates authored ocean from
 land and planned inland water; the horizontal
-`grug_zones.at(pos).territory_rule` record allows only the rider's own
-`accord_home`/`throng_home` rule and `holy_grounds`. Every other territory is
-flight-restricted. Depth-sensitive civic protection does not alter this
+`grug_zones.at(pos).territory_rule` record allows the rider's own
+`accord_home`/`throng_home`, `holy_grounds` and ordinary `contested_land`.
+The two dragon-island identities override contested permission and are always
+flight-restricted; ocean is checked independently. Depth-sensitive civic protection does not alter this
 horizontal flight decision. The rider's identity comes from
 `grug_factions.get_faction(player)`. Literal coordinates are invalid once the
 authored zone graph replaces WP18. A character without a faction cannot have

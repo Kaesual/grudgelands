@@ -357,9 +357,9 @@ These subpackages do not close the larger whole-WP goals below.
 - [ ] WP24: complete Claim Stone state machine, protection/indexing and
   capacity-calibrated placement after WP40/WP43/WP44.
 - [ ] WP17 and WP12: claim-bound Home Stone, authored visit-unlocked waypoint
-  travel and the global map after claims and final zones. Fog of war is an
-  optional map enhancement, not part of the first-delivery gate. WP17 also
-  implements the decided boat contract plus the three ocean-danger
+  travel after claims and final zones. Round 14 separately implements the
+  cartographic Map tab without fog of war or a Housing/travel prerequisite
+  (`world_map.md`). WP17 also implements the decided boat contract plus the three ocean-danger
   prerequisites it needs, so its runtime test covers the whole mob roster.
 - [ ] WP41: implement the exact geographic PvP transaction after WP40.
 - [ ] WP42 and WP9: bounded war-front clashes and mandatory named-zone

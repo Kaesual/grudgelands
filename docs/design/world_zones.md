@@ -1758,3 +1758,11 @@ sand-with-kelp replace eligible natural bed nodes, with their actual rooted
 geometry/height semantics. Lakes, rivers, planned freshwater and functional
 surfaces receive no reef content. There is one terrain/VM writer and no competing
 engine decoration pass or global density/census target.
+
+## Round 14 flight policy
+
+Decided 2026-09-21. Ordinary contested mainland and all mainland Battlegrounds
+allow flight for both factions. Safe faction home zones (including capitals)
+allow only their own faction to fly. Other POIs inherit the surrounding zone.
+Both dragon islands prohibit flight for both factions, despite their contested
+status. Existing ocean/channel no-flight rules remain. See `mounts.md` section 4.
