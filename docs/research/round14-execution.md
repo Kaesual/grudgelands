@@ -37,9 +37,9 @@ rewrite. All suggested simplifications in the approved plan apply.
 | PREGEN | candidate; independent review queued | native r14_pregen, Astra + root waiting UI; bounded native stop/resume passes |
 | UI | running | native r14_ui, Sol; Quest/Group pages and HUD |
 | POI-ART / INTEGRATION | running | native r14_poi, Sol; 18 anchors through existing r7 settlement writer |
-| MAP | queued | Sol, atlas only |
-| FISH | queued | Sol |
-| Reviews / final drift | state review running | native r14_state_review, Astra; remaining lanes/final drift queued |
+| MAP | running | native r14_map, Sol; atlas only |
+| FISH | candidate; review queued | Root Astra, reused existing rod/HUD flow; bounded callback fixture passes |
+| Reviews / final drift | state core review PASS | fresh Astra r14_state_review; remaining lanes/final drift queued |
 
 ## Accepted operational plan
 
@@ -189,7 +189,8 @@ register_on_change. QUEST owns `start_villagers.lua` elder hook. FIX may request
 `start_npcs.lua`; coordinate before touching. STORY owns quest `content.lua` only.
 
 Existing shared HUD layout is `mods/CORE/grug_core/hud_layout.lua` (not a separate
-mod). UI lane will own its added party/quest anchors and notification helper,
+mod). UI lane owns its added party/quest anchors; root exposes the existing ability
+skill-name notification token for fishing,
 plus a new quest journal/HUD adapter; preserve bottom-centre bars and top-right
 status list. Core quest lane should not implement competing HUD coordinates.
 
@@ -251,3 +252,11 @@ Two warm surface-unit timings only suggest 16–23 hours if extrapolated; this i
 explicitly nonrepresentative and no full world was generated. Cold initialization
 can take 15–16 seconds; shutdown waits at most the active unit, not the full plan.
 Evidence and scratch-only execution details: `round14-pregen-work.md`.
+
+### Independent core review
+
+`round14-state-review.md`: fresh Astra reviewed QUEST/PARTY core with no confirmed
+Critical, High or Medium findings. UI suffixes and final integrated evidence are
+still pending and not covered by that verdict. No repeated native/PUC run.
+FISH candidate reuses the neutral skill-name notification row and has bounded
+production-callback tests; its independent review is queued with PREGEN/FIX.

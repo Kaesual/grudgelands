@@ -502,6 +502,10 @@ local function show_skill_name(player, text)
 	end)
 end
 
+-- Shared short neutral notification. Skill changes and fishing catches use
+-- the same row/token, so a previous timer cannot erase a newer message.
+grug_abilities.notify = show_skill_name
+
 -- Binary weapon-ready overlay (classes.md §2b). Lua HUD elements are drawn
 -- after the builtin crosshair (src/client/render/plain.cpp:48-52); z_index 1
 -- also orders this explicitly above the conventional z_index-0 gameplay HUD.

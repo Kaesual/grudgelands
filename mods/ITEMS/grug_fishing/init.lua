@@ -19,11 +19,9 @@
 -- groups); this mod ships the plain T1 dish the furnace can already make and
 -- nothing that would pre-empt that design.
 --
--- The mechanic is deliberately small and entirely server-side: no bobber
--- entity, no per-frame work, no client state. Right-click water with the rod
--- and the line is out; after a few seconds the water gives something back, as
--- long as the rod is still in the hand, the angler is still there and the
--- water still is too. Right-click again and the line comes back in.
+-- Cast with right-click, watch the float, and reel during its brief dip.
+-- A missed bite leaves the line out; early reeling retrieves an empty line.
+-- One throttled server pass owns validation, bite timing and float movement.
 --
 
 grug_fishing = {}
@@ -39,7 +37,8 @@ local ROD_GROUP = "fishing_rod"
 -- often a pending cast is looked at. The scan interval is also the worst-case
 -- lateness of a bite, which is why it is well under a second.
 local REEL_RANGE = 8
-local SCAN_INTERVAL = 0.5
+local SCAN_INTERVAL = 0.2
+local BITE_WINDOW = 1.5
 
 -- A rod lasts 64 catches. Nothing else wears it: casting is free, and only the
 -- water actually giving something back spends a use. Breaking needs no code of
@@ -164,141 +163,113 @@ core.register_craft({
 -- The mechanic
 --
 
--- player name -> {pos, due}. At most one line per angler, by construction.
+-- player name -> one ephemeral cast. No cast survives reconnect or shutdown.
 local casts = {}
-
--- A monotonic seconds clock. `os.time` has one-second resolution and
--- `core.get_us_time` is not available to a mod, so the globalstep's own dtime
--- is the clock, which is also exactly the timebase the bite is measured in.
-local clock = 0
-local scan_at = 0
-
--- PcgRandom, not `math.random`: AGENTS.md's rule for anything whose sequence
--- must not depend on what else called the RNG this session. Seeded from the
--- wall clock, because a bite is the one thing here that SHOULD differ between
--- two identical casts.
+local clock, scan_at = 0, 0
 local rng = PcgRandom(os.time())
 
+core.register_entity("grug_fishing:bobber", {
+	initial_properties = {
+		physical = false, pointable = false, collide_with_objects = false,
+		visual = "cube", visual_size = {x = 0.18, y = 0.25},
+		textures = {"[fill:8x8:#ed493d", "[fill:8x8:#faf2da",
+			"[combine:8x8:0,0=[fill\\:8x4\\:#ed493d:0,4=[fill\\:8x4\\:#faf2da",
+			"[combine:8x8:0,0=[fill\\:8x4\\:#ed493d:0,4=[fill\\:8x4\\:#faf2da",
+			"[combine:8x8:0,0=[fill\\:8x4\\:#ed493d:0,4=[fill\\:8x4\\:#faf2da",
+			"[combine:8x8:0,0=[fill\\:8x4\\:#ed493d:0,4=[fill\\:8x4\\:#faf2da"},
+		static_save = false,
+	},
+})
 local function is_water(pos)
 	return core.get_item_group(core.get_node(pos).name, "water") > 0
 end
-
 local function holding_rod(player)
-	return core.get_item_group(player:get_wielded_item():get_name(),
-		ROD_GROUP) > 0
+	return core.get_item_group(player:get_wielded_item():get_name(), ROD_GROUP) > 0
 end
-
-local function stop(name, message)
+local function stop(name)
+	local cast = casts[name]
 	casts[name] = nil
-	if message then
-		core.chat_send_player(name, message)
-	end
+	if cast and cast.bobber:is_valid() then cast.bobber:remove() end
 end
-
--- The bite. Every condition is re-checked here and not trusted from the cast:
--- between the cast and now the angler may have walked off, put the rod away or
--- drained the pond.
-local function reel(name, cast)
-	local player = core.get_player_by_name(name)
-	if not player then
-		casts[name] = nil
-		return
-	end
-	if not holding_rod(player) then
-		return stop(name, "You put the rod away; the line is lost.")
-	end
-	if vector.distance(player:get_pos(), cast.pos) > REEL_RANGE then
-		return stop(name, "You have drifted too far from your line.")
-	end
-	if not is_water(cast.pos) then
-		return stop(name, "There is no water left where your float was.")
-	end
-	casts[name] = nil
-
+local function valid(player, cast)
+	return player and player:get_hp() > 0 and holding_rod(player) and
+		vector.distance(player:get_pos(), cast.pos) <= REEL_RANGE and
+		is_water(cast.pos) and cast.bobber:is_valid()
+end
+local function next_bite(cast)
+	cast.biting = false
+	cast.due = clock + grug_fishing.wait_for(rng:next(0, grug_fishing.WAIT_SPREAD))
+end
+local function reel(player, cast, itemstack)
+	-- Clear the cast before rewards: another click cannot settle it twice.
+	stop(player:get_player_name())
 	local entry = grug_fishing.catch_at(grug_fishing.table_for(cast.pos),
 		rng:next(0, grug_fishing.CATCH_TOTAL - 1))
 	local stack = ItemStack(entry.name .. " " .. entry.count)
-	local description = core.registered_items[entry.name] and
-		core.registered_items[entry.name].description or entry.name
+	local description = core.registered_items[entry.name].description or entry.name
 	local left = player:get_inventory():add_item("main", stack)
-	if not left:is_empty() then
-		-- A full pack must not swallow the catch silently.
-		core.add_item(player:get_pos(), left)
-	end
-
-	-- Only a catch wears the rod, and the write goes back through
-	-- `set_wielded_item` so the client sees the new wear bar.
-	local wielded = player:get_wielded_item()
-	wielded:add_wear(ROD_WEAR)
-	player:set_wielded_item(wielded)
-
+	if not left:is_empty() then core.add_item(player:get_pos(), left) end
+	-- Return the worn callback stack; a separate set_wielded_item followed by
+	-- returning the old on_place stack would silently undo the wear.
+	itemstack:add_wear(ROD_WEAR)
 	core.sound_play("default_water_footstep",
 		{pos = cast.pos, gain = 0.5, max_hear_distance = 12}, true)
-	core.chat_send_player(name, "You land " .. description .. ".")
+	grug_abilities.notify(player, "Caught: " .. description)
+	return itemstack
 end
-
 core.register_globalstep(function(dtime)
 	clock = clock + dtime
-	if clock < scan_at then
-		return
-	end
+	if clock < scan_at then return end
 	scan_at = clock + SCAN_INTERVAL
-	-- Nobody fishing: one `next` and out. Throttled the AGENTS.md way, and the
-	-- table is empty on every server where nobody has cast.
-	if next(casts) == nil then
-		return
-	end
-	-- Collected first, because `reel` writes `casts`.
-	local due = {}
 	for name, cast in pairs(casts) do
-		if clock >= cast.due then
-			due[#due + 1] = name
-		end
-	end
-	table.sort(due) -- one deterministic order per tick
-	for _, name in ipairs(due) do
-		local cast = casts[name]
-		if cast then
-			reel(name, cast)
+		local player = core.get_player_by_name(name)
+		if not valid(player, cast) then
+			stop(name)
+		else
+			if cast.biting and clock >= cast.until_time then
+				next_bite(cast)
+			elseif not cast.biting and clock >= cast.due then
+				cast.biting = true
+				cast.until_time = clock + BITE_WINDOW
+				core.sound_play("default_water_footstep",
+					{pos = cast.pos, gain = 0.3, max_hear_distance = 8}, true)
+			end
+			local dip = cast.biting and (-0.20 + 0.07 * math.sin(clock * 25)) or
+				0.025 * math.sin(clock * 3)
+			cast.bobber:move_to({x=cast.pos.x,y=cast.pos.y+0.50+dip,z=cast.pos.z})
 		end
 	end
 end)
 
--- Right-click. Pointing at water casts (or reels an existing line in early);
--- pointing at anything else with a line out reels it in, which is the only
--- way to stop waiting.
 function cast_or_reel(itemstack, player, pointed_thing)
-	if not player or not player.is_player or not player:is_player() then
-		return itemstack
-	end
+	if not player or not player.is_player or not player:is_player() then return itemstack end
 	local name = player:get_player_name()
-	if casts[name] then
-		stop(name, "You reel the line back in.")
+	local cast = casts[name]
+	if cast then
+		if valid(player, cast) and cast.biting and clock < cast.until_time then
+			return reel(player, cast, itemstack)
+		end
+		stop(name)
 		return itemstack
 	end
-	if type(pointed_thing) ~= "table" or pointed_thing.type ~= "node" then
-		return itemstack
-	end
+	if player:get_hp() <= 0 or type(pointed_thing) ~= "table" or
+			pointed_thing.type ~= "node" then return itemstack end
 	local pos = pointed_thing.under
-	if not pos or not is_water(pos) then
-		return itemstack
-	end
-	casts[name] = {
-		pos = {x = pos.x, y = pos.y, z = pos.z},
-		due = clock + grug_fishing.wait_for(rng:next(0,
-			grug_fishing.WAIT_SPREAD)),
-	}
+	if not pos or vector.distance(player:get_pos(), pos) > REEL_RANGE or
+			not is_water(pos) then return itemstack end
+	local bobber = core.add_entity({x=pos.x,y=pos.y+0.5,z=pos.z}, "grug_fishing:bobber")
+	if not bobber then return itemstack end
+	cast = {pos={x=pos.x,y=pos.y,z=pos.z},bobber=bobber}
+	next_bite(cast)
+	casts[name] = cast
 	core.sound_play("default_water_footstep",
 		{pos = pos, gain = 0.3, max_hear_distance = 8}, true)
 	return itemstack
 end
-
-core.register_on_leaveplayer(function(player)
-	casts[player:get_player_name()] = nil
-end)
-
-core.register_on_dieplayer(function(player)
-	casts[player:get_player_name()] = nil
+core.register_on_leaveplayer(function(player) stop(player:get_player_name()) end)
+core.register_on_dieplayer(function(player) stop(player:get_player_name()) end)
+core.register_on_shutdown(function()
+	for name in pairs(casts) do stop(name) end
 end)
 
 --
