@@ -1,6 +1,6 @@
 # Round 14 execution
 
-Approved and started 2026-09-21. Root: GPT-6 Astra. User authorized autonomous
+Approved, implemented and delivered 2026-09-21. Root: GPT-6 Astra. User authorized autonomous
 implementation through the next playtest, local reviewed merges, installation
 sync and push. No Claude tasks or same-provider CLI delegation.
 
@@ -279,3 +279,11 @@ fixtures passed in the final PUC/LuaJIT pair; the fixture-only selection-id
 correction and two failed bounded PUC attempts are fully recorded in
 `round14-completion.md`. Final drift audit found only two low-severity stale status
 wording issues, corrected by root and independently closed. Main merge/sync/push remain pending final closure.
+
+## Delivered
+
+All lanes are complete for the approved scope, all reviews are closed, and the
+unchanged tested game payload is on main (`d4ac566b` merge), installed and pushed.
+See `round14-completion.md` and `round14-playtest.md`. Cooking isolation remains
+unreproduced and specifically diagnosed, not claimed fixed. No active agent work
+remains; the next step is the user's fresh-world GUI playtest.

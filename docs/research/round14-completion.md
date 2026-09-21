@@ -1,6 +1,6 @@
 # Round 14 completion record
 
-Status: all technical and independent review gates passed; delivery pending.
+Status: delivered on main, synchronized to the local Luanti installation and pushed.
 Date: 2026-09-21. Authoritative decisions remain in `docs/design/`.
 
 ## Delivered scope and limits
@@ -88,3 +88,13 @@ and four live NPCs with exact quest titles. The production preparation scheduler
 was disabled only in the disposable integration snapshot to keep this gate at
 three chunks; its actual starts/full lifecycle was independently tested in the
 separate bounded stop/resume evidence. No full world or user world was generated.
+
+## Delivery
+
+Reviewed candidate `23be0c39` was merged without squash as `d4ac566b`. The
+main game payload was synchronized with `tools/sync_to_luanti.sh`, all installed
+file names and contents were compared with the checkout, and `git push origin
+main` successfully updated `github.com/Kaesual/grudgelands`. The subsequent
+documentation-only delivery receipt does not alter the tested game bytes.
+GUI acceptance remains the next user action; no agents or server probes remain
+running.

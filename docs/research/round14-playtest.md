@@ -1,7 +1,7 @@
 # Round 14 playtest checklist
 
-Status: draft while implementation and independent reviews continue. This is
-not a delivery announcement; use after the coordinator's final sync confirmation.
+Status: delivered 2026-09-21; independently reviewed, merged, synchronized and
+pushed. Restart Luanti/server to load the new game definitions.
 Start with a fresh world and preferably two same-faction characters.
 
 ## First pass

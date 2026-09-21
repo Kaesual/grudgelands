@@ -266,7 +266,7 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 
 *Last updated: 2026-09-21. Derived from [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md). [Round 14](docs/research/round14-completion.md)
-is technically complete; fresh-world GUI acceptance remains separate.*
+is merged, synchronized and pushed; fresh-world GUI acceptance remains separate.*
 
 **Shipped foundation:** 27 of 53 tracked identities are complete: WP0–WP4,
 WP6–WP8, WP12, WP15, WP18–WP20, WP25, WP26, WP33, WP35, WP36, WP38–WP40,
