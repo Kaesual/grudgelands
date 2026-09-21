@@ -17,11 +17,11 @@ local function remove_rows(player, record, count)
 		record.rows[i] = nil
 	end
 end
-local function make_row(player, index, count)
+local function make_row(player, index, count, window)
 	local layout = grug_core.hud_layout
 	local anchor = layout.anchors.party_list
-	local offset = layout.party_row_offset(index, count, false)
-	local bar_offset = layout.party_row_offset(index, count, true)
+	local offset = layout.party_row_offset(index, count, false, window)
+	local bar_offset = layout.party_row_offset(index, count, true, window)
 	local function bar(color, layer)
 		return player:hud_add({type="image",position=anchor.position,
 			offset=bar_offset,alignment={x=1,y=1},
@@ -41,13 +41,14 @@ local function refresh(player)
 	if not view then remove_rows(player,record,0); return end
 	remove_rows(player,record,#view.members)
 	local layout = grug_core.hud_layout
-	local width = layout.side_text_width(core.get_player_window_information(player:get_player_name()))
+	local window = core.get_player_window_information(player:get_player_name())
+	local width = layout.side_text_width(window)
 	for index, member in ipairs(view.members) do
 		local row = record.rows[index]
-		if not row then row=make_row(player,index,#view.members);record.rows[index]=row end
-		change(player,row,"label_offset",row.label,"offset",layout.party_row_offset(index,#view.members,false))
-		change(player,row,"track_offset",row.track,"offset",layout.party_row_offset(index,#view.members,true))
-		change(player,row,"fill_offset",row.fill,"offset",layout.party_row_offset(index,#view.members,true))
+		if not row then row=make_row(player,index,#view.members,window);record.rows[index]=row end
+		change(player,row,"label_offset",row.label,"offset",layout.party_row_offset(index,#view.members,false,window))
+		change(player,row,"track_offset",row.track,"offset",layout.party_row_offset(index,#view.members,true,window))
+		change(player,row,"fill_offset",row.fill,"offset",layout.party_row_offset(index,#view.members,true,window))
 		local prefix = member.name == view.leader and "* " or ""
 		local suffix = member.online and ("  %d/%d"):format(member.hp,member.hp_max) or " [Offline]"
 		local limit = math.max(4, math.min(18, width - #prefix - #suffix))

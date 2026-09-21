@@ -23,9 +23,15 @@ party members use cyan directional triangles, with names and hover tooltips.
 Only positions within the selected view appear; offline members have no live
 map position. The viewer draws above other markers. Refresh at most twice per
 second while the atlas is open, only for changed visible state. Retain view,
-selection and stable click identity across updates.
+selection and stable click identity across updates while the selected marker
+remains visible; clear selection when it disappears or leaves the current view. Closing the atlas resets
+the inventory page to Character. A later explicit Map click starts a new live
+session; closed maps receive no polling or formspec refreshes.
 
 Authored quest givers have interactive markers with the same per-player
 ready/available/active/locked precedence as their world symbols. Tooltips show
-name and status. Map markers confer no remote quest interaction or travel.
+name and status. Givers within the same authored settlement share one marker
+using their highest-priority state; its tooltip lists every currently relevant
+giver and individual status. This grouping uses settlement identity, not a
+distance threshold. Map markers confer no remote quest interaction or travel.
 Waypoints remain a later package.

@@ -24,12 +24,12 @@ projects: **[docs/research/](docs/research/)**.
 - This changes execution mechanics, not model authorization or independent
   review requirements. Read `docs/process/agent-model-policy.md` and
   `docs/process/cross-cli-orchestration.md` for those rules.
-- **Current development session (Round 14):** Claude credits are exhausted. No Claude CLI,
+- **Current development session (Round 15):** Claude credits are exhausted. No Claude CLI,
   Claude agent, Opus or Fable task is authorized in this session. Root is Astra;
   ordinary implementation/review uses native Sol, with native Astra allowed for
   hard/performance-critical work. This session restriction can change only by
   a later explicit user instruction. Durable active work state:
-  `docs/research/round14-execution.md` (current approved round).
+  `docs/research/round15-execution.md` (current approved round).
 
 ## Fresh-server development mode
 
@@ -68,8 +68,8 @@ projects: **[docs/research/](docs/research/)**.
 ## Active round
 
 Round 15 is authorized and tracked in `docs/research/round15-execution.md`.
-Use native Astra for POI composition and Sol for quests/HUD/atlas; independent
-reviews remain required. No waypoints or new world anchors. Unexpected major
+Native Astra owns POI/HUD composition and root atlas integration; Sol owns
+quest content. Independent reviewers must not have authored their review scope. No waypoints or new world anchors. Unexpected major
 complexity pauses its lane for user discussion.
 
 ## Current resource-root authority
@@ -920,7 +920,7 @@ Details + line numbers in [docs/research/](docs/research/).
   anchor ids. Marker children partition observers through the existing tag
   carrier's one-second 25/30 hysteresis pass; no independent player scan.
   Quest UI tracks three selected quests and stores its HUD preference. The
-  66-quest starter catalog requires only V1 overworld content; the Nether is
+  102-quest catalog (66 starter + 36 local) requires only V1 overworld content; the Nether is
   reserved for the first expansion.
 - **Parties (Round 14):** `grug_parties` persists groups of 2–10 same-faction
   members and their leader in mod storage. Offline membership/leadership lasts
@@ -932,6 +932,10 @@ Details + line numbers in [docs/research/](docs/research/).
   extensible marker layer sourced from authored settlements. Its page switches
   to real coordinates after the existing legacy sfinv navigation. No fog,
   generated-world requirement, terrain bitmap extraction or travel unlocking.
+  Round 15 adds gold self/cyan online-party heading markers and per-viewer quest
+  status markers. Stable byte-encoded IDs own click identity. Only active Map
+  sessions poll at 0.5 seconds and write changed formspecs; closing Map resets
+  to Character, and leave/death clean up the live session.
 - **Preparation (Round 14):** `grug_core` freezes starts/full mode in world
   storage on first boot. A stable aligned plan has one in-flight chunk and a
   success-only cursor; dispatch occurs in throttled globalstep, not callbacks.

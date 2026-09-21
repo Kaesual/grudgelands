@@ -22,8 +22,9 @@ package scope and handoffs.
   XP change callbacks write only changed width/level. Other bar dimensions and
   the order of life/resource/breath/skill/money remain intact.
 - Shared `hud_layout.lua` owns all row, edge, centring and wrapping geometry.
-  Side-column wrapping uses current render-target width divided by real HUD
-  scaling, preserving room for the combat column. Existing half-second HUD
+  Side-column wrapping reserves HUD-scaled combat/edge space and divides
+  the remaining pixels by GUI-scaled text metrics. Party label slots use GUI
+  scaling independently from HUD-scaled bars and offsets. Existing half-second HUD
   passes detect resize/state changes without unchanged HUD packets.
 
 ## Engine geometry evidence
@@ -65,7 +66,7 @@ quests, long wrapped titles, current-window changes, both marker meshes,
 observer state replacement and marker cleanup. It returns one canonical line:
 
 ```
-r15_hud PASS xp=360x6 party=1..10 quest=right-centre markers=5x,top-fixed idle-writes=0
+r15_hud PASS xp=360x6 party=1..10 quest=right-centre scales=independent markers=5x,top-fixed idle-writes=0
 ```
 
 Development checks used LuaJIT only. The coordinator must include this fixture
@@ -74,11 +75,13 @@ Plain Lua 5.1 parsing, SETGLOBAL inspection and all five source sweeps include
 the tool fixture explicitly; evidence is in `tools/r15_hud/evidence/static.txt`.
 The only global write is the existing `grug_xp` mod table.
 
-The three gallery layout images are **schematics drawn from the actual fixture
+The five gallery layout images are **schematics drawn from the actual fixture
 HUD definitions, not engine screenshots**. Their TSV inputs are committed;
 `render_layout.py` regenerates them. Cases: 1280×720 scale 1, 1000×750 scale
-1.25, and 640×480 scale 1. All have three long tracked quests and ten party
-members. Neighbouring combat rows/hotbar are labelled schematic context.
+1.25, 640×480 scale 1, 640×480 HUD 0.5 / GUI 1, and 960×720 HUD 1 / GUI
+1.5. Equal-scale cases set both scales explicitly. Text uses shipped Arimo at
+16×GUI pixels and its font line metrics; image sizes and offsets use HUD
+scaling. All have three long tracked quests and ten party members. Neighbouring combat rows/hotbar are labelled schematic context.
 `marker-bounds.png` projects the actual OBJ faces before/after using the
 engine transform arithmetic; `render_markers.py` regenerates it.
 
@@ -86,6 +89,31 @@ The old `tools/ui/hud_bars_kat.lua` hard-codes XP as text and resource as the
 bottom row. Those expectations are superseded by the approved XP change; it
 was not run or rewritten as unrelated ownership. The new bounded fixture checks
 all shared rows remain disjoint and the existing combat widths remain 180.
+
+## R15-HUD-1 focused correction
+
+The independent review correctly found that fonts follow `real_gui_scaling`
+(`src/client/fontengine.cpp:259–261`), while HUD offsets and positive image
+sizes follow `real_hud_scaling` (`hud.cpp:423–424,496–505`). The former
+implementation and schematics conflated them. Party rows now reserve 20 GUI
+units for each label, convert this to HUD offset units, then add the six-unit
+bar and six-unit gap. The complete actual row block remains centred. Existing
+rows update their offsets without reconstruction when either scale changes.
+Side wrapping likewise uses GUI font scale after reserving HUD geometry.
+
+The bounded fixture checks physical label/bar separation for all ten rows,
+centred bounds, GUI-only and HUD-only changes, unchanged row identities and
+zero idle HUD writes. LuaJIT passes; refreshed parser, SETGLOBAL, five scoped
+sweeps (including the tool) and hashes are in the evidence directory. No PUC
+runtime or native engine run was performed. Both unequal-scale schematics
+were visually inspected: party rows and quest columns are separated.
+
+The corrected schematic also exposes the existing bottom combat column's
+fixed HUD spacing at extreme unequal scales: its GUI-scaled labels can overlap
+one another at GUI 1 / HUD 0.5. Those context rows were not changed by this
+focused party/side-width correction. Schematics do not certify arbitrary font
+settings or all viewport sizes; the 20-unit text allowance targets the shipped
+default 16px font, without client font detection.
 
 ## Remaining user runtime check
 

@@ -1,7 +1,8 @@
 # Progression — Pacing, Death, Reward Cadence
 
 Decided rules (established 2026-08-06; housing cadence integrated 2026-08-12).
-Round 14 implements 66 starter quests; the broader named-zone WP9 story remains open.
+Rounds 14–15 implement 66 starter quests and 36 optional local quests;
+the broader named-zone WP9 story remains open.
 
 ## 1. Leveling pace
 

@@ -33,9 +33,9 @@ layout.POSITION = {x = 0.5, y = 1}
 layout.BAR_WIDTH = 180
 layout.BAR_HEIGHT = 16
 layout.XP_WIDTH = 360
-layout.PARTY_ROW_HEIGHT = 30
+layout.PARTY_ROW_GAP = 6
 layout.PARTY_BAR_HEIGHT = 6
-layout.PARTY_BAR_Y = 18
+layout.PARTY_TEXT_HEIGHT = 20
 layout.QUEST_WRAP = 38
 layout.QUEST_TITLE_LINES = 2
 layout.QUEST_OBJECTIVE_LINES = 2
@@ -239,13 +239,24 @@ function layout.bar_fill(value, maximum, width)
 	return px
 end
 
+-- HUD images/offsets use HUD scaling; fonts independently use GUI scaling.
+-- Convert a conservative 20-GUI-unit label slot to HUD units before positioning
+-- the life bar. This includes default 16px-font ascenders/descenders and a gap.
+local function scales(window)
+	window = window or {}
+	return math.max(0.1, tonumber(window.real_hud_scaling) or 1),
+		math.max(0.1, tonumber(window.real_gui_scaling) or 1)
+end
+
 -- Side blocks use their actual content height, not a fixed ten-row box.
-function layout.party_row_offset(index, count, bar)
+function layout.party_row_offset(index, count, bar, window)
 	local anchor = layout.anchors.party_list
-	local height = (count - 1) * layout.PARTY_ROW_HEIGHT +
-		layout.PARTY_BAR_Y + layout.PARTY_BAR_HEIGHT
+	local hud, gui = scales(window)
+	local bar_y = math.ceil(layout.PARTY_TEXT_HEIGHT * gui / hud)
+	local row_height = bar_y + layout.PARTY_BAR_HEIGHT + layout.PARTY_ROW_GAP
+	local height = (count - 1) * row_height + bar_y + layout.PARTY_BAR_HEIGHT
 	return {x = anchor.offset.x, y = anchor.offset.y - height / 2 +
-		(index - 1) * layout.PARTY_ROW_HEIGHT + (bar and layout.PARTY_BAR_Y or 0)}
+		(index - 1) * row_height + (bar and bar_y or 0)}
 end
 
 function layout.xp_label(text)
@@ -257,11 +268,13 @@ end
 
 -- Reserve the combat column even in a narrow window. Window information is
 -- supplied by consumers; the layout remains independent of engine callbacks.
--- Nine HUD units per character is a conservative default-font estimate.
+-- Nine GUI units per character estimate the default font; reserve the combat
+-- column and edge padding in HUD units, then divide the remaining pixel space
+-- by GUI-scaled character width.
 function layout.side_text_width(window)
 	if not window or not window.size then return layout.QUEST_WRAP end
-	local scale = math.max(0.1, tonumber(window.real_hud_scaling) or 1)
-	local width = window.size.x / scale
+	local hud, gui = scales(window)
+	local width = (window.size.x - layout.BAR_WIDTH * hud) / 2 - 32 * hud
 	return math.max(12, math.min(layout.QUEST_WRAP,
-		math.floor(((width - layout.BAR_WIDTH) / 2 - 32) / 9)))
+		math.floor(width / (9 * gui))))
 end

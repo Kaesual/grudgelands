@@ -80,18 +80,27 @@ core.register_on_mods_loaded(function()
        for _,r in ipairs(selected) do
         local c=assert(census[r.profile.key])
         assert(c.live==c.roster and c.roster>0,"NPC roster not live: "..r.profile.key.." "..c.live.."/"..c.roster)
-        local quest_found=false
+        local quest_found={}
         for _,obj in ipairs(core.get_objects_inside_radius(r.record.anchor,35)) do
          local entity=obj:get_luaentity()
          if entity and entity._grug_start==r.profile.key then
           local id=grug_quests.npc_by_socket[r.profile.key.."/"..tostring(entity._grug_socket)]
           if id then
            assert(entity._grug_npc_name==grug_quests.registered_npcs[id].title,"NPC title differs")
-           quest_found=true
+           quest_found[id]=true
           end
          end
         end
-        assert(quest_found,"quest NPC missing")
+        local giver_count=0
+        for _,socket in ipairs(grug_core.settlement_sockets_at(r.profile.key)) do
+         local id=grug_quests.npc_by_socket[r.profile.key.."/"..socket.id]
+         if id then
+          assert(quest_found[id],"quest NPC missing: "..id)
+          giver_count=giver_count+1
+         end
+        end
+        assert(giver_count>0,"no authored quest NPCs")
+        if r.profile.slot=="village_1" then assert(giver_count==2,"new local giver missing") end
         log("NPC PASS key="..r.profile.key.." live="..c.live.." roster="..c.roster)
        end
        log("PASS three_chunks=3 catalog=102/30")

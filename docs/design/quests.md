@@ -75,6 +75,8 @@ and one additional village giver per race: 102 quests and 30 giver identities
 in total. Reuse kill/item-hand-in objectives and existing race/faction gates;
 no Nether, escort, custom quest drops or new world anchors. Compose tasks with
 the visible local workplaces and ensure targets/materials are locally available.
-Retune later quest XP modestly against authored target level/effort and required
-combat; fixed rewards do not scale with the level at turn-in. Introductory
-rewards must not receive a blanket increase.
+Fixed rewards follow authored target level/effort and required combat; they do
+not scale with the level at turn-in. The six local rewards per race are 550,
+700, 650, 800, 900 and 1,100 XP before race bonuses (4,700 total). Existing
+starter-chain rewards remain unchanged after the progression-budget check;
+there is no blanket reward increase.

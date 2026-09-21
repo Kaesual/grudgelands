@@ -86,3 +86,19 @@ and shed, climb Redtusk's lookout, inspect Mournfen's ruin and captive corner,
 and speak to both village quest givers. Verify camp combat/fire and outpost
 banner behavior, ordinary shell digging, lighting and approach continuity.
 Check Raincall's raised entrances and one remaining village for cultural contrast.
+
+## Final raised-landing correction
+
+Final inspection and independent Sol follow-up confirmed two Medium access
+issues: roof crossbeams blocked the head cell on four roofed outpost lookouts,
+and Copperfell's overlapping ruin arch blocked its landing foot cell. The
+roof beams now occupy the existing roof course one node higher; Copperfell's
+front arch is omitted while side/rear ruin walls remain. Mournfen, villages,
+camps, world anchors and terrain rules are unchanged.
+
+The bounded fixture now inspects every topmost ladder's inward landing for
+solid support and two free standing cells. Final canonical output is
+`r15_poi_v1 18 76032 972310740`; source hashes, affected outpost views, the
+contact sheet and Redtusk eye view are refreshed. Independent follow-up and
+native three-chunk integration passed; see round15-poi-review.md and
+round15-integration.md. No broad world population or extra PUC suite ran.

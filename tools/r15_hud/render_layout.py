@@ -5,10 +5,12 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 source = Path(sys.argv[1])
 out = Path(sys.argv[2]); out.mkdir(parents=True, exist_ok=True)
-for w,h,s in [(1280,720,1),(1000,750,1.25),(640,480,1)]:
-    rows = [line.split('\t') for line in (source/f'layout-{w}x{h}-scale{s}.tsv').read_text().splitlines()]
+for w,h,s,g in [(1280,720,1,1),(1000,750,1.25,1.25),(640,480,1,1),
+                (640,480,0.5,1),(960,720,1,1.5)]:
+    name = f"layout-{w}x{h}-scale{s}" if s == g else f"layout-{w}x{h}-hud{s}-gui{g}"
+    rows = [line.split('\t') for line in (source/f'{name}.tsv').read_text().splitlines()]
     image=Image.new('RGB',(w,h),'#24313a');draw=ImageDraw.Draw(image)
-    font=ImageFont.truetype('/usr/share/fonts/dejavu-sans-fonts/DejaVuSans.ttf',round(15*s))
+    font=ImageFont.truetype('reference_projects/luanti/fonts/Arimo-Regular.ttf',int(16*g))
     draw.text((12,10),'LAYOUT SCHEMATIC — engine font/rendering needs GUI check',fill='#b3bcc1',font=font)
     for row in rows:
         kind,px,py,ox,oy,ax,ay,sx,sy,color,text=row
@@ -21,14 +23,14 @@ for w,h,s in [(1280,720,1),(1000,750,1.25),(640,480,1)]:
             tint='#'+text.split('#')[-1].split(':')[0]
             draw.rectangle((x,y,x+width,y+height),fill=tint)
         elif text:
-            lines=text.split('\\n');line_height=18*s
+            lines=text.split('\\n');line_height=sum(font.getmetrics())
             y+=(ay-1)*len(lines)*line_height/2
             for line in lines:
                 width=draw.textlength(line,font=font)
                 draw.text((x+(ax-1)*width/2,y),line,font=font,fill=f'#{int(color):06x}')
                 y+=line_height
     # Shared stack context, labelled; these are schematic neighbours.
-    for middle,label in [(-92,'Mana / Rage'),(-112,'Life'),(-132,'Breath'),(-154,'Skill'),(-176,'Money')]:
+    for middle,label in [(-92,'Mana / Rage'),(-112,'Life'),(-132,'Breath'),(-152,'Skill'),(-174,'Money')]:
         x=w/2;y=h+middle*s
         if middle>=-132:
             draw.rectangle((x-90*s,y-8*s,x+90*s,y+8*s),outline='#758c99')
@@ -37,4 +39,4 @@ for w,h,s in [(1280,720,1),(1000,750,1.25),(640,480,1)]:
     draw.text((w/2,h-32*s),'HOTBAR',font=font,fill='#ac9772',anchor='mm')
     draw.line((w/2-6,h/2,w/2+6,h/2),fill='#b3bcc1')
     draw.line((w/2,h/2-6,w/2,h/2+6),fill='#b3bcc1')
-    image.save(out/f'layout-{w}x{h}-scale{s}.png')
+    image.save(out/f'{name}.png')

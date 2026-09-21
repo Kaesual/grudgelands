@@ -87,7 +87,7 @@ return function(spec)
 		if spec.race=="undead" then at(0,3,d-1,work[spec.race],1)
 		else at(w-1,1,d-2,work[spec.race]) end
 	end
-	local function canopy(label,cx,cz,w,d,h)
+	local function canopy(label,cx,cz,w,d,h,raised_beam)
 		record(label,cx,cz,w,d,h).kind="canopy"
 		for _,x in ipairs({-w,w}) do for _,z in ipairs({-d,d}) do
 			fill(cx+x,1,cz+z,cx+x,h,cz+z,p.post)
@@ -96,7 +96,9 @@ return function(spec)
 			local y,n=course(math.abs(z),d,h+1)
 			fill(cx-w,y,cz+z,cx+w,y,cz+z,n)
 		end
-		local beam_y=math.max(h,3)
+		-- A lookout's deck is above ground: its approach beam belongs in the
+		-- roof course, leaving two full standing nodes above the upper landing.
+		local beam_y=raised_beam and h+1 or math.max(h,3)
 		fill(cx-w,beam_y,cz-d,cx+w,beam_y,cz-d,p.post)
 		fill(cx-w,beam_y,cz+d,cx+w,beam_y,cz+d,p.post)
 	end
@@ -122,15 +124,17 @@ return function(spec)
 		put(x,1,z,"grug_decor:cottages_bench",dir or 0)
 		put(x+1,1,z,"grug_decor:cottages_bench",dir or 0)
 	end
-	local function ruin(x,z,w,d)
+	local function ruin(x,z,w,d,open_front)
 		record("broken enclosure",x,z,w,d)
 		for dz=-d,d do fill(x-w,1,z+dz,x-w,1+(dz+d)%3,z+dz,p.foundation) end
 		for dx=-w,w do fill(x+dx,1,z+d,x+dx,1+(dx+w)%2,z+d,p.foundation) end
 		-- Two unequal broken gate piers still carry the remnant of an arch.
-		fill(x-w,1,z-d,x-w,4,z-d,p.foundation)
-		fill(x-w+4,1,z-d,x-w+4,3,z-d,p.foundation)
-		fill(x-w+1,4,z-d,x-w+2,4,z-d,p.foundation)
-		put(x-w+3,3,z-d,"stairs:slab_mossycobble",20)
+		if not open_front then
+			fill(x-w,1,z-d,x-w,4,z-d,p.foundation)
+			fill(x-w+4,1,z-d,x-w+4,3,z-d,p.foundation)
+			fill(x-w+1,4,z-d,x-w+2,4,z-d,p.foundation)
+			put(x-w+3,3,z-d,"stairs:slab_mossycobble",20)
+		end
 	end
 	local function lookout(cx,cz,w,h,roofed)
 		record("lookout",cx,cz,w,w,h)
@@ -143,7 +147,7 @@ return function(spec)
 		-- Ladder faces its full-height support; a two-node opening admits the climber.
 		fill(cx,1,cz-w,cx,h,cz-w,p.post)
 		for y=1,h do put(cx,y,cz-w-1,"default:ladder_wood",4) end
-		if roofed then canopy("lookout roof",cx,cz,w,w,h+2) end
+		if roofed then canopy("lookout roof",cx,cz,w,w,h+2,true) end
 	end
 	fill(low,0,low,high,0,high,p.ground)
 	fill(low,1,low,high,8,high,"air")
@@ -215,7 +219,7 @@ return function(spec)
 			lookout(-4,3,2,4,true); house("side office",4,4,2,2,3,0)
 			stores(3,5,2)
 		elseif race=="dwarf" then
-			lookout(-4,3,2,3,false); ruin(-4,3,2,2)
+			lookout(-4,3,2,3,false); ruin(-4,3,2,2,true)
 			canopy("guard shelter",4,3,2,3,3); stores(4,5,2)
 		elseif race=="elf" then
 			lookout(-4,3,1,4,true); canopy("open stores",4,4,2,2,2)

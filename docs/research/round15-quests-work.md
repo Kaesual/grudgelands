@@ -77,7 +77,7 @@ Required-combat XP is bounded rather than simulated. The item tasks have no
 required combat because the engine accepts prior-owned or traded items. For a
 solo non-gray kill, the engine pays `10 * min(mob level, player level + 5)`.
 Assuming the local field is roughly L10–L17 across these L10–L12 tasks, that is
-about 100–170 XP before party splitting. The four local kill counters sum to
+about 100–170 XP before shared-participation splitting. The four local kill counters sum to
 19 targets, so completing them separately represents roughly 1,900–3,230 kill
 XP. Five camp bandits also guarantee at
 least the five linen needed by the paired hand-in when sourced there, so
@@ -94,7 +94,7 @@ overlap, the theoretical minimum additional local kills beyond steps 7–9 are
 Dwarf 6, Human 6, Elf 5, Undead 11, Orc 5 and Troll 5. The difference comes from whether each
 village/outpost target matches main steps 7/8; every camp bandit task overlaps
 step 9 except for one extra kill (5 versus 4). At the assumption above this is
-roughly 500–1,870 incremental kill XP, before party splitting or gray
+roughly 500–1,870 incremental kill XP, before shared-participation splitting or gray
 suppression. This is a lower-bound scheduling observation, not a promised or
 required play order; accepting or completing branches at other times spends
 more kills up to the 19-counter separate-task bound.
@@ -103,8 +103,8 @@ The existing nine-step main route already awards 14,800 quest XP before kills;
 the cumulative level-12 threshold is 12,100 and level 13 is 14,400. Its later
 quests (2,200 / 2,800 / 3,400) already equal or exceed their nearby level
 spans, so the requested targeted pass found no progression support for a
-15–20% uplift. Retaining those values avoids worsening the explicit level-10
-travel gap after step 6. The new village tasks become available at level 10
+15–20% uplift. Retaining those values avoids additional later-level overshoot. The explicit
+level-10 travel gap after step 6 is unchanged. The new village tasks become available at level 10
 and provide optional local play once the player reaches the home-region
 village; no introductory reward changed.
 

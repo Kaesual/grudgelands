@@ -115,6 +115,14 @@ for _,profile in ipairs(settlement.roster) do
 			if cell.name=="default:ladder_wood" then
 				assert(cell.param2==4 and at(cell.x,cell.y,cell.z+1)~="air","unsupported lookout ladder")
 				assert(cell.y==1 or at(cell.x,cell.y-1,cell.z)=="default:ladder_wood","broken ladder run")
+				if at(cell.x,cell.y+1,cell.z)~="default:ladder_wood" then
+					-- The topmost ladder must open inward onto supported two-node
+					-- standing space. Checking every ladder catches later overlays.
+					local support=registry[at(cell.x,cell.y,cell.z+1)]
+					assert(support and support.walkable~=false,"unsupported lookout landing "..profile.key)
+					assert(at(cell.x,cell.y+1,cell.z+1)=="air" and
+						at(cell.x,cell.y+2,cell.z+1)=="air","blocked lookout landing "..profile.key)
+				end
 			elseif cell.name=="grug_decor:xdecor_lantern" or cell.name=="grug_decor:xdecor_candle" then
 				assert(at(cell.x,cell.y-1,cell.z) and at(cell.x,cell.y-1,cell.z)~="air","unsupported light")
 			end

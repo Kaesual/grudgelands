@@ -79,11 +79,24 @@ return function(repo, dump_path, window)
 	changes={};env.grug_xp.set_xp(p,p.xp);step();step();assert(#changes==0,"idle HUD writes")
 	local function check_party(n)
 		local top,bottom=math.huge,-math.huge
+		local labels,bars={},{}
 		for _,row in ipairs(side(0)) do local d=row.def
-			if d.type=="text" then top=math.min(top,d.offset.y)
-			else bottom=math.max(bottom,d.offset.y+d.scale.y) end
+			if d.type=="text" then top=math.min(top,d.offset.y);labels[#labels+1]=d
+			else
+				bottom=math.max(bottom,d.offset.y+d.scale.y)
+				if d.z_index==0 then bars[#bars+1]=d end
+			end
 		end
 		assert(#side(0)==n*3 and top==-bottom,"party block not centred")
+		local function by_y(a,b) return a.offset.y<b.offset.y end
+		table.sort(labels,by_y);table.sort(bars,by_y)
+		local hud=window and window.real_hud_scaling or 1
+		local gui=window and window.real_gui_scaling or 1
+		for i=1,n do
+			assert((bars[i].offset.y-labels[i].offset.y)*hud>=20*gui-1e-9,
+				"HUD-scaled bar overlaps GUI-scaled text slot")
+			if i>1 then assert((labels[i].offset.y-bars[i-1].offset.y-bars[i-1].scale.y)*hud>=6*hud-1e-9) end
+		end
 	end
 	check_party(10)
 	local members=party.members
@@ -101,9 +114,20 @@ return function(repo, dump_path, window)
 		objectives={{type="kill",count=i,required=6,description="Defeat raiders on the orchard road"}}} end
 	step()
 	local initial_window=window
-	window={size={x=800,y=600},real_hud_scaling=1.25}
-	step();assert(q.text:find("...",1,true))
-	changes={};step();assert(#changes==0)
+	local original_ids=p.next_id
+	for _,w in ipairs({
+		{size={x=640,y=480},real_hud_scaling=0.5,real_gui_scaling=1},
+		{size={x=640,y=480},real_hud_scaling=0.5,real_gui_scaling=1.5},
+		{size={x=640,y=480},real_hud_scaling=1,real_gui_scaling=1.5},
+		{size={x=960,y=720},real_hud_scaling=1,real_gui_scaling=1.5},
+		{size={x=800,y=600},real_hud_scaling=1.25,real_gui_scaling=1},
+	}) do
+		window=w;step();check_party(10)
+		assert(p.next_id==original_ids,"resize replaced existing HUD rows")
+		local expected=math.floor(((w.size.x-180*w.real_hud_scaling)/2-32*w.real_hud_scaling)/(9*w.real_gui_scaling))
+		assert(layout.side_text_width(w)==math.max(12,math.min(38,expected)))
+		changes={};step();assert(#changes==0,"unchanged scaling writes HUD packets")
+	end
 	window=initial_window;step()
 	-- Exercise actual observer partitions, attach transform and teardown.
 	local parent={}
@@ -139,12 +163,12 @@ return function(repo, dump_path, window)
 	env.grug_xp.set_xp(p,50)
 	if dump_path then
 		local out=assert(io.open(dump_path,"w"))
-		for id=1,p.next_id do local d=p.elements[id];if d then
+		for id=1,p.next_id do local d=p.elements[id];if d and (d.type~="image" or d.text~="") then
 			out:write(table.concat({d.type,d.position.x,d.position.y,d.offset.x,d.offset.y,
 				d.alignment.x,d.alignment.y,d.scale and d.scale.x or 0,d.scale and d.scale.y or 0,
 				d.number or 0,(d.text:gsub("\n","\\n"))},"\t"),"\n")
 		end end
 		out:close()
 	end
-	return "r15_hud\tPASS\txp=360x6\tparty=1..10\tquest=right-centre\tmarkers=5x,top-fixed\tidle-writes=0\n"
+	return "r15_hud\tPASS\txp=360x6\tparty=1..10\tquest=right-centre\tscales=independent\tmarkers=5x,top-fixed\tidle-writes=0\n"
 end

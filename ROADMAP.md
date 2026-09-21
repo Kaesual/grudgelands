@@ -1,8 +1,8 @@
 # Roadmap — Grudgelands
 
-Final integrated status and exact gate identities: [Round 11 completion](docs/research/round11-completion.md).
-Final technical gates PASS. The reviewed changes are delivered on main, synchronized
-and pushed; GUI acceptance remains pending.
+Current technical status and evidence: [Round 15 completion](docs/research/round15-completion.md).
+Independent reviews and bounded final gates PASS; delivery is pending.
+Fresh-world GUI acceptance remains separate.
 
 Grudgelands is a standalone, WoW-inspired voxel RPG for Luanti. It combines
 two factions, races, classes, fast leveling, threat-based combat, professions,
@@ -15,11 +15,11 @@ the goal-level view.
 
 ## Current delivery checkpoint
 
-Round-10 EQUIP, GAME, WORLD, ART, CAP, FARM and MAP-B changes are integrated
-on main and independently clean. Six-capital and six-start engine checks and
-final interpreter parity pass. The result is synchronized and pushed for the
-user's consolidated GUI playtest, whose acceptance remains pending.
-Whole-goal checkboxes remain unchanged until their complete scope is finished.
+Round 15 recomposes the eighteen existing home-region POIs, adds 36 local
+quests (102 total / 30 givers), live atlas player/party/quest markers and clearer
+quest/party/XP HUD presentation. Reviewed and technically complete; merge,
+synchronization and push are pending. Broader WP9 story and WP13 world roster
+remain open, so whole-goal counts are unchanged.
 
 The reviewed [Round 13 playtest followups](docs/research/round13-playtest-followups.md)
 restore initial skill ordering and non-grassing capital stable floors; these do
@@ -191,8 +191,8 @@ The Nether is not part of V1.
   thirty numeric consumers, sfinv talent page, paid full-reset respec and
   level-up hint are in the game; `/talents` remains a read-only summary.
   Respec bracket values remain coordinator placeholders. Round 11 adds complete Scout trees and Ironbound/Unbroken. Round 12 completes the original classes' X3 consumers. Only measured WP44 respec-price calibration remains open.
-- [x] **WP8 / WP20:** Round 14 delivers the quest framework, 66 starter
-  quests and persistent same-faction groups with separate tabs and optional HUDs.
+- [x] **WP8 / WP20:** Rounds 14–15 deliver the quest framework, 66 starter
+  and 36 local quests and persistent same-faction groups with separate tabs and optional HUDs.
 - [ ] **WP14 / WP21:** carried light and recovery/rest remain independently
   ready behind their shipped prerequisites. Design revision 2 landed 2026-09-16
   ([skill_trees.md](docs/design/skill_trees.md)); implementation phase 1 and
@@ -357,15 +357,15 @@ These subpackages do not close the larger whole-WP goals below.
   map, materials, structures and economy; it is not an independent next WP.
 - [ ] WP24: complete Claim Stone state machine, protection/indexing and
   capacity-calibrated placement after WP40/WP43/WP44.
-- [x] WP12: Round 14 cartographic Map tab with seven views and interactive
-  markers, without fog or a Housing/travel prerequisite (`world_map.md`).
+- [x] WP12: Rounds 14–15 cartographic Map tab with seven views, live player/party
+  heading markers and quest-giver status markers, without fog or a Housing/travel prerequisite (`world_map.md`).
 - [ ] WP17: claim-bound Home Stone and authored visit-unlocked waypoint
   travel after claims and final zones. WP17 also implements the decided boat contract plus the three ocean-danger
   prerequisites it needs, so its runtime test covers the whole mob roster.
 - [ ] WP41: implement the exact geographic PvP transaction after WP40.
 - [ ] WP42 and WP9: bounded war-front clashes and mandatory named-zone
-  questlines after final structures/map/PvP. Round 14 supplies six starter
-  chains and eighteen home-region POIs; the broader story/roster remains open.
+  questlines after final structures/map/PvP. Rounds 14–15 supply six starter
+  chains, 36 optional local quests and eighteen recomposed home-region POIs; the broader story/roster remains open.
 - [ ] WP23: both dragon encounters after structures, playable boats, final
   map, contested PvP and renewable apex resources.
 - [ ] WP22: Round 11 delivers slow durability and money-only repair; explicit

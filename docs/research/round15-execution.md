@@ -1,6 +1,6 @@
 # Round 15 — POI character, regional quests and readable HUD
 
-Status: approved and active. User Go on 2026-09-21 includes the atlas
+Status: independent reviews and final technical gates PASS; delivery in progress. User Go on 2026-09-21 includes the atlas
 quest-giver layer. Waypoints are explicitly deferred. Unexpected complexity
 pauses the affected lane for escalation; unrelated work continues.
 Date: 2026-09-21. Coordinator: Astra; native agents only, no Claude this session.
@@ -95,7 +95,7 @@ reward without accelerating players past the newly authored content.
 Produce a small per-route progression ledger, including kill XP and the human
 quest-XP passive; no broad economy simulation.
 
-### C. Quest markers and HUD — Sol
+### C. Quest markers and HUD — Astra
 
 - Scale both question/exclamation models 5×; derive the attachment offset from
   actual model bounds so their world-space upper extent remains fixed. Preserve
@@ -112,7 +112,7 @@ quest-XP passive; no broad economy simulation.
 - Check long quest titles, three tracked quests, ten party members, small
   windows and HUD scaling. No per-tick unchanged HUD writes.
 
-### D. Live atlas markers — Sol
+### D. Live atlas markers — coordinator Astra
 
 Viewer: gold directional triangle with outline; online party members: cyan
 triangles with names/tooltips. Viewer draws last. Offline members retain their
@@ -165,15 +165,36 @@ and handoffs, not a competing game-design authority.
 ## Live execution ledger
 
 - Base: main `6908d1d5`; integration branch `wp15-world-polish`.
-- A POIs: native Astra `r15_poi_impl`, isolated `/tmp/grug-r15-poi`.
-- B quests: native Sol `r15_quests_impl`, isolated `/tmp/grug-r15-quests`.
-- C HUD: native Astra `r15_poi_design` reused, isolated `/tmp/grug-r15-hud`.
-  Runtime rejects a fourth child thread even when one is completed; own-provider
-  CLI is not a workaround. HUD geometry/parent scaling is handled by Astra.
-- D atlas: coordinator implementation, separate independent review required.
-  Engine has no server inventory-reopen event. User question pending: reset to
-  Character on closing Map (recommended, zero closed-map polling), or retain Map
-  and accept bounded polling while it remains selected. Lifecycle paused;
-  independent provider/media work may proceed.
-- Independent reviews, final gates, merge/sync/push: pending.
-- No CLI agents; do not edit reference projects or user worlds.
+- A POIs: native Astra `r15_poi_impl`, authored in `/tmp/grug-r15-poi`.
+  `f36b57c6` integrated as `4dc4f842`, then independent Sol review clean.
+  Two earlier visual corrections added working details and varied camp layouts.
+  Final author inspection identified two Medium raised-lookout landing gaps;
+  both corrected and independently re-reviewed clean by Sol.
+- B quests: native Sol `r15_quests_impl`, `/tmp/grug-r15-quests`.
+  `c07c8984` integrated as `4433b97c`; independent Astra review clean.
+  102 quests / 30 NPC identities, including 36 local quests. XP ledger accounts
+  for concurrent objectives; existing later rewards intentionally unchanged.
+- C HUD: native Astra `r15_poi_design`, originally `/tmp/grug-r15-hud`.
+  `75370cc7` integrated as `146c551f`. Independent Astra found one Medium:
+  GUI font scaling differs from HUD geometry scaling. Original author fixed
+  party/side-width handling directly in root; focused independent review clean.
+  Central legacy combat-stack text at extreme unequal scales remains a separately
+  documented limitation, not a newly claimed responsive-UI feature.
+- D atlas: coordinator Astra implementation; foundation `307d3ec2`.
+  User approved resetting to Character when Map closes. Open-only half-second
+  compare-first refresh is implemented; leave/death clean up live sessions.
+  Independent Astra provider review and Sol lifecycle review are clean after
+  correcting selected text surviving regional clipping (Medium) and replacing
+  an overstated reconnect fixture claim with the tested disconnect claim (Low).
+- Cooking user follow-up: Astra investigated actual NPC, formspec/peer and
+  PlayerMeta paths. No confirmed cause or safe production fix. Existing local
+  log has no instrumented trainer actions. Keep report open; see
+  round15-cooking-investigation.md for the focused two-client reproduction.
+- Final tools/r15_final parser/SETGLOBAL/five sweeps pass for 17 Lua files.
+  One final PUC/LuaJIT pair matches canonical SHA8de2aaf7c4080ad0d423f36177318a338c66cae5f72f8992cbc3bc14ab509f46.
+  Native3chunk integration passed: 102/30 registry,12,670cells,fiveNPCs.
+  Frozen production payload matches all2,045 files of the native snapshot.
+- Final completion/playtest docs record technical PASS; merge/sync/push pending.
+- Thread cap requires reusing non-author lanes: Sol reviews POIs/atlas; POI
+  author Astra reviews HUD; HUD author Astra reviews quests. Never self-review.
+  No CLI agents; no reference-project or user-world edits.

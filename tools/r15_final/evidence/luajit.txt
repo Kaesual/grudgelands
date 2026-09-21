@@ -1,0 +1,10 @@
+fixture=r15_map/kat.lua
+r15_map lifecycle=open-only idle-writes=0 close=Character death=clean disconnect=clean
+r15_map geometry=pass headings=16 identity=stable party=online quest=shared-priority views=clipped
+fixture=r15_quests/check_catalog.lua
+quests=102;r14=66;r15=36;npcs=30;routes=6;local_per_route=6;local_per_poi=2;items=12;kills=24
+fixture=r15_poi/poi_micro_kat.lua
+r15_poi_v1	18	76032	972310740
+fixture=r15_hud/hud_micro.lua
+r15_hud	PASS	xp=360x6	party=1..10	quest=right-centre	scales=independent	markers=5x,top-fixed	idle-writes=0
+round15-final-micro: PASS fixtures=4
