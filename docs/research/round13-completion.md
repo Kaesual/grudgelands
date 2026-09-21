@@ -3,9 +3,10 @@
 2026-09-21. Approved scope:
 [crafting/equipment contract](../design/crafting_equipment_revision.md).
 Implementation, code review and the final independent documentation drift audit
-are complete. The main/sync/push receipt is pending. GUI acceptance is user-owned.
+are complete. Main integration, local synchronization and publication are complete;
+GUI acceptance is user-owned.
 
-## Delivered candidate
+## Delivered scope
 
 Personal authored workspaces persist per player and physical station; all
 player-placed stations share their inputs and qualify each viewer's result.
@@ -67,3 +68,17 @@ The additional [independent Astra docs/code drift audit](round13-reviews/docs-dr
 is clean after one correction round: ten grouped documentation findings
 (0 Critical / 1 High / 7 Medium / 2 Low) were corrected and independently
 rechecked. Marked historical records remain history. No runtime reruns were needed.
+
+## Delivery receipt
+
+Reviewed integration `ed0e4de2` and independent docs corrections `ea4b2850`
+were fast-forwarded to main on 2026-09-21. `tools/sync_to_luanti.sh` ran from main.
+A SHA-256 comparison verified **1,967 installed files** (mods, menu and game
+configuration) equal the repository, with no extra mod/menu files. No player
+world or records were modified. Subsequent delivery-status edits are Markdown
+only and do not alter the tested or installed production bytes. Main is published
+to the authorized `github.com/Kaesual/grudgelands` origin.
+
+All Round13 agents completed normally; no interrupted implementation remains.
+Next action: [fresh-world GUI playtest](round13-next-playtest.md), especially
+real two-client station interaction, enchant selection/replacement and wear/repair.

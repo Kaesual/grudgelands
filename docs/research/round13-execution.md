@@ -39,8 +39,8 @@ from reviewed main and push under standing authorization. GUI playtest is user-o
 
 ## Next actions
 
-Implementation, code gates and the final independent documentation drift audit
-are complete. Finish main integration/sync/push.
+Implementation, code gates, the final independent documentation drift audit,
+main integration, sync and push are complete. The user owns the next GUI playtest.
 See [technical completion](round13-completion.md) and
 [next playtest](round13-next-playtest.md). No GUI acceptance is claimed.
 
@@ -82,3 +82,11 @@ Fresh native Astra `/root/r13_docs_drift` completed the requested final audit.
 Ten grouped stale-rule findings were corrected (1 High, 7 Medium, 2 Low), then
 independently rechecked clean. Receipt: [docs drift](round13-reviews/docs-drift.md).
 Only Markdown changed after the frozen native production verification.
+
+## Final delivery
+
+Main contains the reviewed integration and docs audit corrections through
+`ea4b2850`, plus a Markdown-only delivery receipt. Sync from main completed;
+1,967 installed payload files match, with no extra mod/menu files. Main published
+to the authorized origin. Agent status check found completed reviews, not stopped
+work. No implementation task remains; next is the user-run playtest.

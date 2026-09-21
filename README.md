@@ -1,6 +1,6 @@
 # Grudgelands
 
-Final integrated status and exact gate identities: [Round 11 completion](docs/research/round11-completion.md).
+Final integrated status and exact gate identities: [Round 13 completion](docs/research/round13-completion.md).
 Final technical gates PASS. The reviewed changes are delivered on main, synchronized
 and pushed; GUI acceptance remains pending.
 
@@ -163,8 +163,8 @@ material, without gating crafting. Each
 profession owns only its improvement and specialist routes; Weaponsmith and
 Armorsmith share the Forge with separate authorization. Cooking owns protected dish preparation; automatic baking and brewing are
 universal, while simple Bread, Cooked Meat and Cooked Fish belong to Basics.
-All food statuses last five minutes. Round 13 implements the simplified
-station/enchant model; its combined verification is still in progress.
+All food statuses last five minutes. Round 13 delivers the simplified
+station/enchant model with independent review and combined native verification.
 
 ### Economy
 
@@ -258,10 +258,8 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 ## Current State
 
 *Last updated: 2026-09-21. Derived from [BACKLOG.md](BACKLOG.md) and
-[ROADMAP.md](ROADMAP.md); [Round 12 technical delivery](docs/research/round12-completion.md)
-is complete. GUI acceptance is in progress; the first
-[playtest corrections](docs/research/round12-playtest-followups.md) address Skills
-recovery and missing starter tool recipes.*
+[ROADMAP.md](ROADMAP.md); [Round 13 technical delivery](docs/research/round13-completion.md)
+is complete, synchronized and pushed. GUI acceptance remains pending.*
 
 **Shipped foundation:** 24 of 53 tracked identities are complete: WP0–WP4,
 WP6, WP7, WP15, WP18, WP19, WP25, WP26, WP33, WP35, WP36, WP38, WP39, WP40,
@@ -287,15 +285,15 @@ still belongs to WP24/WP32.
 **Not yet:** quests, parties, remaining recovery work, Housing, geographic PvP,
 war fronts and first-public-release gates remain open. Focused LuaJIT, static
 Lua-5.1 and isolated native checks pass; PUC runtime was explicitly excluded.
-Use the [Round12 fresh-world checklist](docs/research/round12-next-playtest.md)
+Use the [Round13 fresh-world checklist](docs/research/round13-next-playtest.md)
 and [art gallery](docs/research/round12-gallery.md); the separate UX review is
 source/heuristic evidence and leaves four proposals for later selection.
-**Round 13 in progress:** approved personal/shared workspaces, protected
-preparation with universal automatic finishing, named fixed-tier enchantments
-without refinement, Bronze starter weapons and tiered durability. Native Astra
-implementation and independent reviews are tracked in
-[the execution record](docs/research/round13-execution.md); this work has not yet
-been synchronized for playtesting.
+**Delivered Round 13:** personal authored workspaces and shared player stations,
+protected preparation with universal automatic finishing, and 456 named fixed-tier
+enchantments including jewelry. Refinement is removed; starter weapons are Bronze
+and equipment uses the new durability ladders. Native Astra code reviews and the
+additional docs/code drift audit are clean; all reported findings are corrected.
+The installed payload matches main, ready for the next fresh-world playtest.
 
 Historical round records live under [docs/research/](docs/research/); current
 rules live in `docs/design/` and remaining work in BACKLOG/ROADMAP or topic TODOs.

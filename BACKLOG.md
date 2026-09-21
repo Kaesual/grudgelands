@@ -1,6 +1,6 @@
 # Backlog — Work Packages
 
-Round 13 is authorized and in progress: [execution record](docs/research/round13-execution.md), [current contract](docs/design/crafting_equipment_revision.md).
+Round 13 is delivered: [completion and exact evidence](docs/research/round13-completion.md), [current contract](docs/design/crafting_equipment_revision.md).
 
 Previous integrated status and exact gate identities: [Round 12 completion](docs/research/round12-completion.md).
 Final technical gates PASS. The reviewed changes are delivered on main, synchronized
@@ -317,14 +317,16 @@ These rules are implemented and independently reviewed; GUI acceptance remains s
 
 ### Round 13 — stations, enchanting and equipment
 
-**Approved and implementing (2026-09-21).** The
+**Delivered and independently reviewed (2026-09-21).** The
 [current contract](docs/design/crafting_equipment_revision.md) replaces the
 resolved station, enchanting and tool-lifetime TODOs. Personal authored
 workspaces and shared player stations, qualified viewer previews, universal
 automatic finishing, 456 fixed-tier enchant operations, removal of refinement,
 Bronze starters and revised wear are one coordinated delivery. The scope spans
 WP5/WP10/WP22/WP26/WP30 without claiming their wider remaining work complete.
-Review, exact evidence and delivery state: [execution](docs/research/round13-execution.md).
+Code and documentation reviews are clean; 55 station, five restart and 1,871
+combined native assertions pass. Main is synchronized and pushed; GUI acceptance
+is pending. [Completion and calibration](docs/research/round13-completion.md).
 
 ### WP48 — Mapgen writer performance and parallel emerge
 
