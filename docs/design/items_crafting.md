@@ -555,8 +555,10 @@ from `grug_gear`. Consequences, all binding:
   Farmer's Hoes use their canonical Minecraft shapes; axes and hoes
   accept both mirrored orientations. The exact non-Minecraft shapes are dagger = one
   material over one handle; greataxe = five material units symmetrically around
-  two vertical handles; wand = one processed wood over one handle; staff =
-  three processed wood in a column. No
+  two vertical handles. Wands and staves use ordinary sticks, matching metal
+  bars and the approved mob component; bows use sticks, metal and Thread.
+  Their exact shapes and ingredient ladder are in
+  [`crafting_equipment_revision.md`](crafting_equipment_revision.md#plain-caster-weapons-and-bows). No
   base recipe adds a gem or professional fitting beyond those stated shapes.
   **This supersedes §3.3's** "vendor floor sells up to the bronze pick —
   iron+ picks are smith products" (see the marked line there).
@@ -1010,12 +1012,17 @@ work; the two-piece runtime seam above is already authoritative.
 
 Woodcarver owns quality operations for the active wooden weapon families:
 staff, wand and bow. Their plain recipes remain universal Basics.
+Plain weapons use ordinary sticks and matching-tier metal bars. Wands and
+staves additionally use the tier's ordinary mob component; bows use Thread.
+The exact shapes and six-component ladder are defined in
+[`crafting_equipment_revision.md`](crafting_equipment_revision.md#plain-caster-weapons-and-bows).
 
 **Material chain**: wood, including the per-race woods of biomes_mobs §5 —
 silverwood and gravewood among them. Signature woods remain cultural inputs,
 not a mandatory universal tier ladder. The six processed grades are decided
 (2026-08-13): **Seasoned → Polished → Hardened → Inlaid → Lacquered →
-Heartwood** (T1→T6), each craftable from any `group:wood` — both continents
+Heartwood** (T1→T6), retained for enchanting rather than plain weapon recipes,
+each craftable from any `group:wood` — both continents
 reach every grade by construction, and the per-race woods stay a cosmetic/
 cultural skin on top, never a tier gate. These are component names; finished weapons follow the shared tier names,
 for example Steel Staff (§3.8).

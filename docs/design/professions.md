@@ -77,7 +77,7 @@ Two free main professions per player, unchanged. The roster is organised
 | **Armorsmith** | Bronze → Iron → Steel → Silversteel → Embersteel → Abyssal Steel | Metal armor and shield enchantments; plain shields are Basics |
 | **Leatherworker** | light → cured → heavy → scaled → sleek → nightscale leather | Leather armor, leather bags and the quiver |
 | **Tailor** | patch → woven → heavy → silkweave → silk → stormweave bolts | Cloth armor and cloth bags |
-| **Woodcarver** | any `group:wood`, graded Seasoned → Polished → Hardened → Inlaid → Lacquered → Heartwood | Staff, wand and bow enchantments; plain items are Basics |
+| **Woodcarver** | any `group:wood`, graded Seasoned → Polished → Hardened → Inlaid → Lacquered → Heartwood (enchant materials) | Staff, wand and bow enchantments; plain items use sticks + metal in Basics, with occult mob components for caster weapons |
 | **Goldsmith** | Gold + Quartz + the six regional G1/G2 gems | Both trinket slots, spellbooks, gem refinement, Settings and jewelry components |
 | **Alchemist** | healing herbs + spices | Potions, elixirs, apothecary gear — **gathers its own herbs** |
 
