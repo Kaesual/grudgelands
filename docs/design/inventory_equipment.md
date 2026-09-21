@@ -131,9 +131,10 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   UI, meta and the group-filtered `allow_put` shipped with WP15; what
   was missing was an item family, and **trinket items now ship in the
   MVP** as the **Goldsmith's** exclusive family (professions.md §2,
-  items_crafting.md §3.6b). A passive trinket has exactly **one primary-
-  attribute prefix, one HP/Mana/Crit suffix and one authored trinket
-  special** (items_crafting.md §6.2). It has no base-stat line, armor,
+  items_crafting.md §3.6b). A passive trinket has **one selectable primary-
+  attribute prefix channel, one selectable HP/Mana/Crit suffix channel and
+  one authored trinket special** (items_crafting.md §6.2). Goldsmith base items have empty enchant channels;
+  applications have fixed tier values. It has no base-stat line, armor,
   durability, refinement state, cultural finish or extra ordinary-special
   channel. Trinkets carry **no armor class and no class
   rank binding** — every class wears both slots, and they add no armor

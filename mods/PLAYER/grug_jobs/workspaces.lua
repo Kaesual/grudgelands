@@ -52,22 +52,44 @@ local function save(ctx)
 			record.lists[list] = values
 		end
 	end
-	core.get_meta(ctx.pos):set_string(PREFIX .. ctx.name, core.serialize(record))
+	local meta = core.get_meta(ctx.pos)
+	local key, encoded = PREFIX .. ctx.name, core.serialize(record)
+	-- The durable owner record must never be serialized to other clients.
+	-- mark_as_private also accepts a not-yet-written key in the pinned engine.
+	meta:mark_as_private(key)
+	if meta:get_string(key) ~= encoded then meta:set_string(key, encoded) end
 end
 
+local function inventory_signature(ctx)
+	local result = {}
+	for _, list in ipairs({"src", "input", "mixture", "fuel", "dst", "output"}) do
+		for _, stack in ipairs(ctx.inv:get_list(list) or {}) do
+			result[#result + 1] = stack:to_string()
+		end
+	end
+	return core.serialize(result)
+end
+
+-- Returns whether settlement changed an inventory slot. An allow callback
+-- refuses that stale transfer; the next request sees the settled inventory.
 local function advance(ctx)
-	if not ctx.personal or not ctx.automatic then return end
+	if not ctx.personal or not ctx.automatic then return false end
 	local now = core.get_gametime()
-	automatic.advance(ctx.station, ctx.inv, ctx.process,
-		math.max(0, now - (ctx.process.last or now)))
+	local elapsed = math.max(0, now - (ctx.process.last or now))
 	ctx.process.last = now
-	save(ctx)
+	if elapsed == 0 then return false end
+	local before = inventory_signature(ctx)
+	local fuel, progress, recipe = ctx.process.fuel, ctx.process.progress, ctx.process.recipe
+	automatic.advance(ctx.station, ctx.inv, ctx.process, elapsed)
+	local changed_inventory = before ~= inventory_signature(ctx)
+	-- Updating only the idle clock must not dirty the physical node every tick.
+	if changed_inventory or fuel ~= ctx.process.fuel or progress ~= ctx.process.progress or
+			recipe ~= ctx.process.recipe then save(ctx) end
+	return changed_inventory
 end
 
 local function qualified(player, recipe)
-	if not recipe or not grug_jobs.can_craft_recipe(player, recipe) then return false end
-	local quality = rawget(_G, "grug_items")
-	return not quality or not quality.can_craft_quality or quality.can_craft_quality(player, recipe)
+	return recipe and grug_jobs.can_craft_recipe(player, recipe)
 end
 
 local function selected(ctx)
@@ -181,6 +203,7 @@ local function callbacks(ctx)
 	return {
 		allow_put = function(inv, list, index, stack, player)
 			if not accessible(ctx, player) or not ctx.personal then return 0 end
+			if advance(ctx) then return 0 end
 			if list == "output" or list == "dst" then return 0 end
 			if list == "fuel" and core.get_craft_result({method = "fuel", width = 1,
 					items = {stack}}).time <= 0 then return 0 end
@@ -189,6 +212,7 @@ local function callbacks(ctx)
 		allow_move = function(inv, from, fi, to, ti, count, player)
 			if not accessible(ctx, player) or not ctx.personal or from == "output" or
 					from == "dst" or to == "output" or to == "dst" then return 0 end
+			if advance(ctx) then return 0 end
 			if to == "fuel" and core.get_craft_result({method = "fuel", width = 1,
 					items = {inv:get_stack(from, fi)}}).time <= 0 then return 0 end
 			return count
@@ -196,24 +220,30 @@ local function callbacks(ctx)
 		allow_take = function(inv, list, index, stack, player)
 			ctx.receipt = nil
 			if not accessible(ctx, player) then return 0 end
+			if advance(ctx) then return 0 end
 			if ctx.automatic or list ~= "output" or ctx.produced then return stack:get_count() end
 			if ctx.operation then return 0 end
 			local output, recipe = preview(ctx, player)
 			local current = inv:get_stack(list, index)
 			if not recipe or current:to_string() ~= output:to_string() then refresh(ctx, false) return 0 end
-			ctx.receipt = recipe
+			local consume = {}
+			for slot, ingredient in ipairs(inputs(ctx):get_list("craft") or {}) do
+				if not ingredient:is_empty() then consume[slot] = 1 end
+			end
+			ctx.receipt = {recipe = recipe, consume = consume}
 			return stack:get_count()
 		end,
 		on_put = function() changed(ctx) end,
 		on_move = function() changed(ctx) end,
 		on_take = function(inv, list, index, stack, player)
 			if not ctx.automatic and list == "output" and not ctx.produced then
-				local recipe = assert(ctx.receipt, "station result without authorized receipt")
+				local receipt = assert(ctx.receipt, "station result without authorized receipt")
+				local recipe = receipt.recipe
 				ctx.receipt = nil
 				local source = inputs(ctx)
-				for slot = 1, 9 do
+				for slot, count in pairs(receipt.consume) do
 					local ingredient = source:get_stack("craft", slot)
-					ingredient:take_item(1)
+					ingredient:take_item(count)
 					source:set_stack("craft", slot, ingredient)
 				end
 				grug_jobs.record_craft(player, recipe.profession, recipe.tier)

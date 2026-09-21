@@ -681,7 +681,6 @@ function grug_jobs.register_recipe(definition)
 		family = definition.family,
 		operation_material = definition.operation_material,
 		operation_reagent = definition.operation_reagent,
-		quality_mode = definition.quality_mode,
 		mastery_required = definition.mastery_required,
 		existing_engine_recipe = definition.existing_engine_recipe == true,
 		automatic_finish = station == "furnace" or station == "dual_furnace" or

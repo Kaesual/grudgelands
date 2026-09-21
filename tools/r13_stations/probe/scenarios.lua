@@ -199,6 +199,84 @@ di:set_stack("input", 1, alloy.inputs[1]) di:set_stack("input", 2, alloy.inputs[
 di:set_stack("fuel", 1, "default:coal_lump")
 ddef.on_timer(dual, alloy.time)
 check(di:contains_item("output", alloy.output) and di:is_empty("input"), "dual furnace exact pair completion")
+-- Review regression: the destination is written before source on_take.
+local backpos, backdef = station(0, "forge", false)
+local back = core.get_meta(backpos):get_inventory()
+back:set_stack("craft", 1, INPUT)
+back:set_stack("craft", 2, JAR)
+ai, ac = open(backpos, alice)
+local function return_to_inputs(count, slot)
+	local offered = ai:get_stack("output", 1)
+	offered:set_count(count)
+	assert(backdef.allow_metadata_inventory_put(backpos, "craft", slot, offered, alice) == count)
+	assert(ac.allow_take(ai, "output", 1, offered, alice) == count)
+	local remaining = ai:get_stack("output", 1)
+	local moved = remaining:take_item(count)
+	ai:set_stack("output", 1, remaining)
+	back:set_stack("craft", slot, moved)
+	ac.on_take(ai, "output", 1, moved, alice)
+	backdef.on_metadata_inventory_put(backpos)
+end
+return_to_inputs(1, 3)
+check(back:get_stack("craft", 3):get_count() == 1 and
+	back:get_stack("craft", 1):is_empty() and back:get_stack("craft", 2):is_empty(),
+	"single output returned to shared input survives ingredient debit")
+back:set_stack("craft", 3, "") back:set_stack("craft", 1, INPUT)
+backdef.on_metadata_inventory_put(backpos)
+local before_credit = grug_jobs.crafts_in_tier(alice, "weaponsmith")
+return_to_inputs(2, 2)
+check(back:get_stack("craft", 2):get_count() == 2 and ai:get_stack("output", 1):get_count() == 2,
+	"partial output returned to shared input preserves both halves")
+check(take(ai, ac, "output", 2, alice) == 2 and
+	grug_jobs.crafts_in_tier(alice, "weaponsmith") == before_credit + 1,
+	"returned partial output still credits exactly one craft")
+
+-- Settle old contents before allowing mutations, even after an inaccessible view.
+local old_clock, old_meta = core.get_gametime, core.get_meta
+local clock, writes, private = 100, 0, {}
+local idlepos = station(1, "furnace", true)
+core.get_gametime = function() return clock end
+core.get_meta = function(pos)
+	local actual = old_meta(pos)
+	if not vector.equals(pos, idlepos) then return actual end
+	return setmetatable({}, {__index = function(_, method)
+		return function(_, ...)
+			local args = {...}
+			if method == "mark_as_private" then private[args[1]] = true end
+			if method == "set_string" and args[1]:find("grug_jobs:workspace:", 1, true) == 1 then
+				assert(private[args[1]], "workspace must be private before first write")
+				writes = writes + 1
+			end
+			return actual[method](actual, unpack(args))
+		end
+	end})
+end
+local tick
+for _, callback in ipairs(core.registered_globalsteps) do
+	if debug.getinfo(callback, "S").source:match("/grug_jobs/workspaces%.lua$") then tick = callback end
+end
+assert(tick, "workspace globalstep found")
+ai, ac = open(idlepos, alice)
+alice.position = vector.add(root, 100)
+clock = 160 tick(1)
+alice.position = vector.new(root)
+put(ai, ac, "src", 1, "grug_cooking:wild_grain", alice)
+put(ai, ac, "fuel", 1, FUEL, alice)
+tick(1)
+check(ai:is_empty("dst"), "new input does not receive inaccessible idle time")
+clock = 164 tick(1)
+check(not ai:contains_item("dst", "grug_cooking:bread"), "four actual seconds cannot finish five-second recipe")
+clock = 165 tick(1)
+check(ai:contains_item("dst", "grug_cooking:bread"), "five actual seconds finish one recipe")
+clock = 170 tick(1)
+local stable_writes = writes
+clock = 200 tick(1)
+clock = 230 tick(1)
+check(writes == stable_writes, "idle viewer clock does not repeatedly write node metadata")
+check(private["grug_jobs:workspace:" .. alice.name], "durable personal record marked private")
+fields(alice, {quit = true})
+core.get_gametime, core.get_meta = old_clock, old_meta
+
 -- Personal catch-up uses persisted server time, not player uptime.
 local hearth = station(7, "furnace", true)
 local record = {lists = {src = {"grug_cooking:wild_grain"}, fuel = {FUEL}, dst = {"", "", "", ""}},

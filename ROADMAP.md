@@ -239,7 +239,7 @@ and war-front work were not included.
 ### Round 10 bounded corrections
 
 The independently reviewed delivery includes exclusive Basics and
-seven primaries, universal base gear, named enchantment operations, corrected
+seven primaries, universal base gear, refinement/affix operations, corrected
 mount/dragon/fall behavior, nonweapon art, all six capital service layouts,
 purpose-specific cave openings, rocky shores and Rock Salt endpoints. MAP-B adds
 fifteen Cooking wild sources, secondary ash/moss soils, real field soil and shallow
@@ -258,7 +258,7 @@ These subpackages do not close the larger whole-WP goals below.
   improvement workflow, but the whole chain remains open through the WP44 price
   migration and broader WP scope.
 - [ ] WP5 is design-unblocked (fixed-tier named enchantments
-  decided 2026-08-13, `items_crafting.md` §§6b.4/6b.7) and **startable now**:
+  decided 2026-09-21, `crafting_equipment_revision.md`) and **startable now**:
   all three dependencies are shipped and the executable card is
   [docs/research/wp5-task-card.md](docs/research/wp5-task-card.md). WP10 is
   design-unblocked (A1/A3/A4/A5/E21 decided 2026-08-13, incl. the revised

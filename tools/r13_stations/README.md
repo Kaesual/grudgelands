@@ -1,7 +1,8 @@
 # Round 13 STATIONS candidate
 
-2026-09-21. Implementation: native GPT-6 Astra. Independent review: pending
-coordinator assignment. Critical/High findings and review fix rounds: pending.
+2026-09-21. Implementation: native GPT-6 Astra. Independent review: native Astra, [initial report](../../docs/research/round13-reviews/stations.md)
+and [clean re-review](../../docs/research/round13-reviews/stations-recheck.md).
+Initial Critical/High: 0/1 plus two Medium; one fix round.
 Elapsed wall time: unknown. No merge, sync, push, PUC runtime or mapgen suite.
 
 ## Architecture and integration
@@ -105,3 +106,15 @@ finish it as a non-Alchemist, and compare progression before/after both stages.
 Repeat with a qualified raw Cooking dish and universal bread/meat/fish. On the
 integrated branch apply an enchant to a metadata-bearing/worn item and verify
 exact preview, preserved metadata, exact material debit and one progress credit.
+
+## Integrated final verification
+
+Root fixes freeze exact ingredient slots before output transfer, mark durable
+workspace metadata private before first write, skip idle-only persisted clock
+updates, and settle pre-edit time before allowed personal inventory mutation.
+A catch-up which changes slots refuses the stale request; a fresh request retries
+against current contents. Integrated native evidence is **55 assertions plus
+five actual restart assertions**, with no staged patch. The separate combined
+probe confirms the stale refusal/fresh retry and actual enchant Apply.
+`integrated-native.log` and `integrated-restart.log` supersede isolated-candidate
+verification for these corrected files. No PUC runtime or GUI claim is added.

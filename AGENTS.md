@@ -849,7 +849,7 @@ Details + line numbers in [docs/research/](docs/research/).
     tables without bypassing these APIs.
   - **Armor pipeline**: item `_grug_armor` values and every additive source
     aggregate as uncapped raw rating `A`. The deep Bulwark Unbroken capstone
-    multiplies that aggregate by 1.40 and its emergency window then adds 15.
+    multiplies that aggregate by 1.65 and its emergency window then adds 15.
     For authoritative attacker level `L >= 1`, `K = 20 + 0.5*min(L,60) +
     8.5*max(L-60,0)` and reduction is `min(0.70, A/(A+K))`. Apply once to
     player combat damage before absorb, with the existing final `math.ceil`;

@@ -8,10 +8,10 @@ contract: [current design](../design/crafting_equipment_revision.md).
 
 - STATIONS: native Astra `/root/r13_stations`, branch `r13-stations`, worktree
   `/tmp/grug-r13-stations`. Owns job registry/station runtime, automatic stations,
-  Cooking/Alchemy preparation and authored placement seams. Implementing.
+  Cooking/Alchemy preparation and authored placement seams. Implemented; independently reviewed.
 - ENCHANTS: native Astra reused `/root/station_rule_audit`, branch `r13-enchants`,
   worktree `/tmp/grug-r13-enchants`. Owns quality/professions/artisans, operation
-  catalog and pure metadata-preserving enchant application. Implementing.
+  catalog and pure metadata-preserving enchant application. Implemented; independently reviewed.
 - EQUIPMENT and integration: root Astra, branch `r13-integration`. Owns gear,
   material tools, hoes, starter kits, wear, root UI/catalog integration and docs.
   The reserved `/tmp/grug-r13-equipment` worktree is unused. Native thread ceiling
@@ -39,8 +39,10 @@ from reviewed main and push under standing authorization. GUI playtest is user-o
 
 ## Next actions
 
-Implement the three scopes; retain exact changed-byte gate evidence and review
-receipts here. No completion or GUI acceptance is claimed yet.
+Implementation and code gates are complete; finish the explicitly requested
+independent documentation drift audit, then main integration/sync/push.
+See [technical completion](round13-completion.md) and
+[next playtest](round13-next-playtest.md). No GUI acceptance is claimed.
 
 ## Implementation checkpoint
 
@@ -62,3 +64,14 @@ receipts here. No completion or GUI acceptance is claimed yet.
   random-trinket station workaround was stopped before any edits.
 - User explicitly requested a final native Astra docs/code drift audit after
   integration. This is a required delivery step, additional to code review.
+
+## Integrated verification checkpoint
+
+Candidate commits: root equipment/docs `230d6cd4`, STATIONS `f99393ce` (original
+`28ef4d85`), ENCHANTS `e37524a9` (original `dc91d65a`), deterministic trinkets
+`93631dfd` (original `d11d84d3`), plus pending joint integration commit.
+Root fixed all three STATIONS findings and removed obsolete crafted-quality
+hooks. Exact catalog now has 656 routes; 55 integrated station assertions,
+five restart assertions and 1,871 strict combined assertions pass. Final native
+staging hashes match all 42 changed production files. No production edits are
+expected before the docs audit unless a concrete new finding requires one.

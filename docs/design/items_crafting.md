@@ -585,14 +585,11 @@ from `grug_gear`. Consequences, all binding:
   real bar item — so skipping it would leave §3.0.4's T2 row without a pick.
   All six pick, axe and shovel tiers use the familiar Minecraft grid shapes and
   are universal Basics recipes. Their existing capability profiles remain the
-  authority; recipe completion does not recalibrate dig times or uses. A `default`
-  axe stays a one-handed hatchet and a mining tool; the two-handed ×1.5 Greataxe
-  is the weapon family (`inventory_equipment.md` §2).
-  **The caster starter is new**: `default` ships no staff, so
-  `grug_gear:staff_wood` (Wooden Staff, two-handed, 5 damage at 1.4 s) is the
-  stone sword's below-ladder equivalent for Priests and Mages. Like the wood and
-  stone swords it carries no ilvl and no level requirement, and a vendor sells
-  it at the same 15 c.
+  authority for dig times. Lifetime follows the current equipment revision.
+  Woodcutting Axes are damage-free tools; two-handed Battle Axes are weapons.
+  Wood and Stone exist only as tools. Fresh Warrior characters start with a
+  Bronze Sword, Mage/Priest with a Bronze Staff, Scout with a Bronze Bow,
+  backup Bronze Sword and 200 arrows. Ordinary T1 weapons are usable at level 1.
 - **All armor base recipes use the canonical shapes:** head 5, chest 8,
   legs 7 and feet 4 units, in the same grid positions for metal, cloth and
   leather. All three lines and all six material tiers are registered and
@@ -923,10 +920,8 @@ wearers are the **Warrior** (light avoidance set, §3.8 — decided
 
 **Exclusive recipes** (mastery cut decided 2026-08-13, §2.1): **weapon
 grips** at Apprentice — 2 leather of the item's tier, the
-professions.md §3 cross-buy as a concrete component item; the
-leather-armor imbue kit at Journeyman and its temper kit at Expert
-(§7). At Apprentice it also makes the four-stack **quiver**, an Offhand item
-that stores arrows but grants no stat, affix, refinement or combat bonus, plus
+professions.md §3 cross-buy as a concrete component item; named leather-armor enchantments across T1–T6 (§6b). At Apprentice it also makes the four-stack **quiver**, an Offhand item
+that stores arrows but grants no stat, affix or combat bonus, plus
 the 8-slot Leather Pouch. Its 16/24/32-slot leather bags follow at
 Journeyman/Expert/Master. Plain bows are Basics; Woodcarver owns their quality.
 
@@ -959,10 +954,7 @@ robe 8 / leggings 7 / cowl 5 / slippers 4 bolts.
   bolts + 4 spider silk + 2 heavy leather, and the 32-slot ("huge bag")
   is the Master-tier addition of 2026-08-07. Bags are the one signature
   recipe line that is fully decided.
-- **Embroidery kits** (§7): imbue at Journeyman, temper at Expert
-  (mastery cut decided 2026-08-13, §2.1). With one bag size per tier and
-  the later bag sizes and embroidery operations keep the Tailor's signature
-  row occupied across the mastery bands.
+- **Named cloth enchantments** across all six tiers (§6b); no separate kit line.
 
 ### 3.6 Alchemist (brewing stand) — potions and elixirs
 
@@ -973,12 +965,13 @@ profession authorizes all four. Cave Cap remains food-grade and universal.
 Recipe access is the Alchemist's effective profession tier (§2.2), not a herb
 or keystone book gate. Every tier-N recipe contains a declared tier-N reagent.
 
-The **Brewing Stand** has two reagent slots, one vial slot, one fuel slot and
-an output. It is node-timer driven. Output is revalidated against the taking
-player's Alchemy tier and only a successful take advances profession progress.
-Every capital has a public stand directly beside its Alchemist trainer. A
-private housing copy is a T3 Alchemist grid recipe: three Steel Bars, one
-Furnace and one Glass Bottle. Every vendor sells Glass Bottles for 3 copper.
+Alchemists assemble a potion mixture from its reagents and vial in their own
+inventory 3x3 grid; that qualified preparation awards current-tier progress.
+The **Brewing Stand** accepts one mixture, fuel and finished outputs. Its
+automatic completion and extraction are universal and grant no further progress.
+Capital stations are personal workspaces; all player-placed copies are shared
+stations subject to area access. The stand is a T3 Alchemist grid recipe:
+three Steel Bars, one Furnace and one Glass Bottle. Glass Bottles cost 3 copper.
 
 Potions restore or act immediately and share the persistent potion clock.
 Ordinary potions use 60 seconds; the Greater Healing and Greater Mana pair use
@@ -1037,13 +1030,11 @@ names WP29 uses (§3.8), such as a Hardened Staff.
 
 **Enchants**: staves, wands and bows.
 
-**Exclusive recipes** (mastery cut decided 2026-08-13, §2.1): the
-Apprentice cell is deliberately empty because plain staves, wands and bows are
-Basics (§3.0.3); **wood-oil kits** (§7) arrive at Journeyman, first temper at
-Expert and second temper at Master. The quiver stays Leatherworker (§3.4).
+**Exclusive operations:** named staff, wand and bow enchants across T1–T6.
+The quiver stays Leatherworker (§3.4).
 
 **Cross-buy: the Woodcarver buys metal fittings from the Weaponsmith.**
-The §3.2 family is literally called "metal-shod staff"; from T2 up its
+Every tier of
 professional enchanting needs a Weaponsmith-made fitting of the enchant tier.
 Universal plain caster weapons never require a professional component. That is
 the same deliberate supply loop the Leatherworker and Tailor already run
@@ -1073,12 +1064,9 @@ equipment recipe consumes Cut Gems where a gem is required.
   harvest and never converts one gem into another. Dragon-camp yield audits
   include it.
 
-**Mastery cut** (decided 2026-08-13, §2.1): Rough→Cut refinement and the
-Settings of the ladder below at Apprentice; **trinket assembly** (all
-six §6.2 identities — which material tier is the book group's business,
-§2.2) and the gem-setting imbue kit at Journeyman; the gem-setting
-temper kit and **ornament components** at Expert; Master adds no new
-row — §4's cultural jewelry services ride §2.2's earned unlocks.
+Rough→Cut conversion, Settings, trinket assembly and named enchantments use
+profession-tier qualification. Spellbooks retain their Journeyman prerequisite;
+ornament components remain T3–T6. Imbue/Temper kits are removed.
 
 The Gem Detector and Dowsing Rod are retired. Continental mining remains
 exploration rather than direction/radar gameplay, and the Goldsmith already
@@ -1761,22 +1749,17 @@ preserving the confirmed two-live-nodes-per-species budget.
 
 Item meta carries `grug_quality` (1 Common / 2 Uncommon / 3 Rare / 4
 Unique-reserved), one serialized ordinary-affix table (`grug_ench`),
-`grug_upgrades` (0–2, §7), and separate structured
-masterwork, cultural-finish and PvP-special state where applicable. These
+and separate structured cultural-finish and PvP-special state where applicable. These
 channels never overwrite one another. Exact storage keys are implementation
 owned; one idempotent description/stat regeneration path reads them all.
 
-**Weapon level requirement.** A weapon definition's `_grug_ilvl` is its
-minimum character level up to the character cap. The Weapon slot's
-group-filtered `allow_put` blocks a
-player below that level and explains the refusal in chat; meeting the level is
-enough, and there is no class-family gate. The generated catalogue therefore
-uses the six §3.8 requirements **3 / 10 / 20 / 30 / 40 / 50**. A weapon with no
-item level has no requirement: Wood and Stone swords, the Wooden Staff and the
-tool-ladder axes remain immediately equippable. Picks, shovels and generic
-tools are never subject to this slot gate; the crafting/material ladder gates
-them. Item-level armor, offhands and trinkets are not level-gated by this
-weapon-only rule. Higher-level weapons remain lootable and tradeable, just not
+**Weapon level requirement.** Ordinary base weapons require levels
+**1 / 10 / 20 / 30 / 40 / 50** across the six material tiers. T1 uses an explicit
+level-1 requirement while retaining item level 3 for base stats. Elevated found
+weapons require their actual item level up to the character cap. The Weapon slot
+refuses insufficient level but imposes no class-family gate. Wood/Stone weapons
+are absent; gathering tools cannot be equipped there. Armor, offhands and
+trinkets are not level-gated by this weapon-only rule. Higher-level weapons remain lootable and tradeable, just not
 equippable yet. Endgame ilvl 65/70/75 weapons all require level 60. The
 description is regenerated from meta on every change
 (name colorized: white `#FFFFFF`,
@@ -1787,14 +1770,12 @@ enchant).
 WP7): under the name and the item level, one grey line carrying the
 number the item actually contributes — `5 damage, 1.0 s swing` for
 weapons (the swing interval belongs next to the damage, or a dagger's
-higher rate is invisible — combat_stats.md §2), `3 armor (-3% damage
-taken)` for armor pieces. Without it a player cannot compare two pieces
+higher rate is invisible — combat_stats.md §2), `3 armor rating` for armor pieces. Without it a player cannot compare two pieces
 without re-deriving the §3.1/§3.2 curves by hand. The base stat does
 **not** live in item meta and cannot be reconstructed from an enchant
 roll, so the regeneration above must **preserve these lines and append
 the enchant lines below them**. Every Weapon-slot item with positive damage
-uses the same damage-and-swing line, including Wood and Stone swords and all
-axes; a missing item level omits only the `Item level` line, never the damage
+uses the same damage-and-swing line, including every Battle Axe; a missing item level omits only the `Item level` line, never the damage
 line. Every weapon stack in a player's inventory adds
 `Effective at level L: N damage per swing`, including melee bonus plus
 the character-level damage fit; ilvl is already present in the weapon's base

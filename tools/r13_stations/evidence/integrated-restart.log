@@ -1,0 +1,241 @@
+
+
+-------------
+  Separator
+-------------
+
+WARNING[Main]: /!\ You are using the old mod storage files backend. This backend is deprecated and may be removed in a future release /!\
+WARNING[Main]: Switching to SQLite3 is advised, please read https://docs.luanti.org/for-server-hosts/database-backends.
+ACTION[Main]: [grug_materials] 12 tools completing the six-tier pick/axe/shovel ladder
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:pick_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:shovel_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:axe_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sword_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:pick_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:shovel_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:axe_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sword_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sword_bronze'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sword_steel'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sword_stone'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:copper_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:tin_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:bronze_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:steel_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:gold_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:goldblock'])
+WARNING[Main]: No craft recipe known for output 'default:stone_with_mese'
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:stone_with_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_crystal'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_crystal_fragment'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:meselamp'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_acacia_wood'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_junglewood'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_pine_wood'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_aspen_wood'])
+WARNING[Main]: No craft recipe known for output 'default:stone_with_diamond'
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:stone_with_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:diamondblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sign_wall_steel'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:ladder_steel'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_goldblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_goldblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_goldblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_goldblock'])
+ACTION[Main]: [grug_gear] 6 bracket catalogs: 36 weapons + 72 armor pieces
+WARNING[Main]: [grug_mapgen] WP13 lethariel: the plot martial_woodyard at offset 210,-208 does not stand on this world's ground -- submerged columns 0, perimeter fall 8 against a skirt of 6, rise 0 against a clear of 8. Re-run tools/wp13/highcourt_plots.lua against this seed's field dump.
+WARNING[Main]: [grug_mapgen] WP13 lethariel: the plot mere_walk at offset 158,232 does not stand on this world's ground -- submerged columns 0, perimeter fall 7 against a skirt of 6, rise 5 against a clear of 8. Re-run tools/wp13/highcourt_plots.lua against this seed's field dump.
+WARNING[Main]: [grug_mapgen] WP13 nhal_veyr: the plot watch_armoury at offset 166,-84 does not stand on this world's ground -- submerged columns 0, perimeter fall 7 against a skirt of 6, rise 2 against a clear of 11. Re-run tools/wp13/highcourt_plots.lua against this seed's field dump.
+ACTION[Main]: [grug_quality] deterministic PcgRandom quality rolls enabled
+WARNING[Main]: No craft recipe known for output 'grug_gear:sword_bronze'
+WARNING[Main]: No craft recipe known for output 'grug_gear:dagger_bronze'
+WARNING[Main]: No craft recipe known for output 'grug_gear:greataxe_bronze'
+WARNING[Main]: No craft recipe known for output 'grug_gear:wand_bronze'
+WARNING[Main]: No craft recipe known for output 'grug_gear:staff_bronze'
+WARNING[Main]: No craft recipe known for output 'grug_gear:bow_bronze'
+WARNING[Main]: No craft recipe known for output 'grug_gear:shield_bronze'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_leather_light'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_leather_light'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_leather_light'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_leather_light'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_metal_bronze'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_metal_bronze'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_metal_bronze'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_metal_bronze'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_cloth_patch'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_cloth_patch'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_cloth_patch'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_cloth_patch'
+WARNING[Main]: No craft recipe known for output 'grug_gear:sword_iron'
+WARNING[Main]: No craft recipe known for output 'grug_materials:pick_iron'
+WARNING[Main]: No craft recipe known for output 'grug_materials:shovel_iron'
+WARNING[Main]: No craft recipe known for output 'grug_materials:axe_iron'
+WARNING[Main]: No craft recipe known for output 'grug_gear:dagger_iron'
+WARNING[Main]: No craft recipe known for output 'grug_gear:greataxe_iron'
+WARNING[Main]: No craft recipe known for output 'grug_gear:wand_iron'
+WARNING[Main]: No craft recipe known for output 'grug_gear:staff_iron'
+WARNING[Main]: No craft recipe known for output 'grug_gear:bow_iron'
+WARNING[Main]: No craft recipe known for output 'grug_gear:shield_iron'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_leather_cured'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_leather_cured'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_leather_cured'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_leather_cured'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_metal_iron'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_metal_iron'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_metal_iron'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_metal_iron'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_cloth_woven'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_cloth_woven'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_cloth_woven'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_cloth_woven'
+WARNING[Main]: No craft recipe known for output 'grug_gear:sword_steel'
+WARNING[Main]: No craft recipe known for output 'default:pick_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:dagger_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:greataxe_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:wand_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:staff_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:bow_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:shield_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_leather_heavy'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_leather_heavy'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_leather_heavy'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_leather_heavy'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_metal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_metal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_metal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_metal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_cloth_heavy'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_cloth_heavy'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_cloth_heavy'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_cloth_heavy'
+WARNING[Main]: No craft recipe known for output 'grug_gear:sword_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_materials:pick_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_materials:shovel_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_materials:axe_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:dagger_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:greataxe_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:wand_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:staff_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:bow_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:shield_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_leather_scaled'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_leather_scaled'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_leather_scaled'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_leather_scaled'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_metal_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_metal_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_metal_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_metal_silversteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_cloth_silkweave'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_cloth_silkweave'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_cloth_silkweave'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_cloth_silkweave'
+WARNING[Main]: No craft recipe known for output 'grug_gear:sword_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_materials:pick_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_materials:shovel_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_materials:axe_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:dagger_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:greataxe_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:wand_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:staff_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:bow_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:shield_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_leather_sleek'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_leather_sleek'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_leather_sleek'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_leather_sleek'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_metal_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_metal_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_metal_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_metal_embersteel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_cloth_silk'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_cloth_silk'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_cloth_silk'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_cloth_silk'
+WARNING[Main]: No craft recipe known for output 'grug_gear:sword_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_materials:pick_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_materials:shovel_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_materials:axe_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:dagger_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:greataxe_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:wand_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:staff_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:bow_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:shield_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_leather_nightscale'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_leather_nightscale'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_leather_nightscale'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_leather_nightscale'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_metal_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_metal_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_metal_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_metal_abyssal_steel'
+WARNING[Main]: No craft recipe known for output 'grug_gear:chest_cloth_stormweave'
+WARNING[Main]: No craft recipe known for output 'grug_gear:legs_cloth_stormweave'
+WARNING[Main]: No craft recipe known for output 'grug_gear:head_cloth_stormweave'
+WARNING[Main]: No craft recipe known for output 'grug_gear:feet_cloth_stormweave'
+WARNING[Main]: No craft recipe known for output 'grug_gear:arrow'
+WARNING[Main]: No craft recipe known for output 'grug_mobs:light_leather'
+WARNING[Main]: No craft recipe known for output 'grug_professions:cured_leather'
+WARNING[Main]: No craft recipe known for output 'grug_mobs:heavy_leather'
+WARNING[Main]: No craft recipe known for output 'grug_mobs:scaled_hide'
+WARNING[Main]: No craft recipe known for output 'grug_professions:sleek_leather'
+WARNING[Main]: No craft recipe known for output 'grug_professions:nightscale_leather'
+WARNING[Main]: No craft recipe known for output 'grug_professions:bolt_patch'
+WARNING[Main]: No craft recipe known for output 'grug_professions:bolt_woven'
+WARNING[Main]: No craft recipe known for output 'grug_professions:bolt_heavy'
+WARNING[Main]: No craft recipe known for output 'grug_professions:bolt_silkweave'
+WARNING[Main]: No craft recipe known for output 'grug_professions:bolt_silk'
+WARNING[Main]: No craft recipe known for output 'grug_professions:bolt_stormweave'
+ACTION[Main]: [grug_professions] registered Weaponsmith, Armorsmith, Leatherworker and Tailor catalogs
+WARNING[Main]: No craft recipe known for output 'grug_artisans:seasoned_wood'
+WARNING[Main]: No craft recipe known for output 'grug_artisans:polished_wood'
+WARNING[Main]: No craft recipe known for output 'grug_artisans:hardened_wood'
+WARNING[Main]: No craft recipe known for output 'grug_artisans:inlaid_wood'
+WARNING[Main]: No craft recipe known for output 'grug_artisans:lacquered_wood'
+WARNING[Main]: No craft recipe known for output 'grug_artisans:heartwood_wood'
+ACTION[Main]: [grug_artisans] registered Woodcarver and Goldsmith catalogs
+ACTION[Main]: [grug_materials] registry audit passed: 6 tiers, 15 resources, 12 processed forms, 6 race regions
+ACTION[Main]: [grug_smelting] recipe audit passed: 5 cooking, 5 dualfurn, 12 storage pairs, 1 station
+ACTION[Main]: [grug_visuals] 72 armor pieces indexed for overlays, 3 art lines x 4 slots
+ACTION[Main]: [grug_mobs] settlement work activities: tools 7, weapon families 1, all registered
+ACTION[Main]: [grug_fishing] tables=6 entries=18 weight=100 bite=3..10s rod_uses=64
+ACTION[Main]: [grug_inventory] starter weapons: mage=grug_gear:staff_bronze (2H), priest=grug_gear:staff_bronze (2H), scout=grug_gear:bow_bronze (2H), warrior=grug_gear:sword_bronze
+ACTION[Main]: [grug_traders] 12 profession shelves, 98 offers, all registered
+ACTION[Main]: [grug_traders] dwarf capital vendors come from the sockets of dur_brannoc
+ACTION[Main]: [grug_traders] elf capital vendors come from the sockets of lethariel
+ACTION[Main]: [grug_traders] human capital vendors come from the sockets of highcourt
+ACTION[Main]: [grug_traders] orc capital vendors come from the sockets of gor_drazhak
+ACTION[Main]: [grug_traders] troll capital vendors come from the sockets of kezamba
+ACTION[Main]: [grug_traders] undead capital vendors come from the sockets of nhal_veyr
+ACTION[Main]: [grug_traders] 12 settlements indexed for profession vendor appearance
+ACTION[Main]: [grug_traders] drop audit: 3 mob(s) use a `drops` FUNCTION and cannot be walked statically (grug_mobs:bandit, grug_mobs:bandit_archer, grug_mobs:poacher); their items are audited from the hardcoded FUNCTION_DROPS list
+WARNING[Main]: [grug_traders] no vendor price for dropped item 'default:apple' (dropped by grug_mobs:ashen_treant, grug_mobs:gravewood_treant) — add a _grug_sell_price to its def or a grug_traders.set_price override; traders must buy every mob drop (economy.md §3)
+WARNING[Main]: [grug_traders] no vendor price for dropped item 'default:stick' (dropped by grug_mobs:ashen_treant, grug_mobs:gravewood_treant) — add a _grug_sell_price to its def or a grug_traders.set_price override; traders must buy every mob drop (economy.md §3)
+ACTION[Main]: World at [/tmp/grudgelands-headless.BKhg3U/world]
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:32872.
+ACTION[Server]: R13 STATIONS RESTART PASS assertions=5 interpreter=LuaJIT 2.1.1784272936
+ACTION[Main]: Server: Shutting down
