@@ -1,7 +1,7 @@
 # Round 15 UI playtest follow-up
 
-Status: implementation, independent reviews and final technical gates PASS;
-merge/synchronization/push pending.
+Status: delivered on main, synchronized locally and pushed. Independent reviews
+and final technical gates PASS; GUI acceptance remains with the user.
 Base: main `8226cdff`. Branch: `wp15-ui-followups`.
 
 ## Scope and owners
@@ -81,3 +81,12 @@ payment notification, talent coordinate mode/bounds, and roster filtering,
 escaping, status display, changed sort order, stale target and cleared selection.
 Existing party authority is source-reviewed; its implementation is unchanged.
 These are technical checks, not a claimed in-client visual acceptance test.
+
+## Delivery receipt
+
+Candidate `f91afa99` merged without squash as `b9d96a8c`. The sync script
+installed main; all 2,047 installed names/contents matched and all eight final
+Lua hashes remained unchanged. Authorized `git push origin main` advanced
+Kaesual/grudgelands from `8226cdff` to `b9d96a8c`. This documentation-only
+receipt changes no tested game bytes. Restart the game/server for the GUI
+checks above; these UI changes do not require a fresh world.

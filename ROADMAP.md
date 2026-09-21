@@ -21,7 +21,7 @@ quest/party/XP HUD presentation. Reviewed, merged, synchronized and pushed; GUI
 acceptance remains pending. Broader WP9 story and WP13 world roster
 remain open, so whole-goal counts are unchanged.
 The reviewed Round 15 UI follow-up moves money to Character and improves
-Group invitations/Talents layout; delivery is pending, without new WP scope.
+Group invitations/Talents layout; merged, synchronized and pushed, without new WP scope.
 
 The reviewed [Round 13 playtest followups](docs/research/round13-playtest-followups.md)
 restore initial skill ordering and non-grassing capital stable floors; these do

@@ -11,7 +11,7 @@ remains open with targeted two-client diagnostics. Waypoints remain deferred.
 The [Round 15 UI follow-up](docs/research/round15-ui-followup.md) is technically
 complete and independently clean: Character money replaces the HUD line, Group
 uses an online same-faction roster, and Group/Talents controls have explicit
-non-overlapping geometry. Delivery is pending; GUI acceptance remains separate.
+non-overlapping geometry. Merged, synchronized and pushed; GUI acceptance remains separate.
 
 Round 14 is delivered: [completion](docs/research/round14-completion.md).
 

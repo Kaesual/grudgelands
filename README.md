@@ -286,7 +286,7 @@ navigation and progress feedback.
 **Latest UI follow-up:** independently reviewed changes move money to Character,
 add a scrollable online same-faction invitation list, and separate overlapping
 Group/Talents controls. [Delivery record and GUI checks](docs/research/round15-ui-followup.md);
-merge/synchronization/push pending.
+merged, synchronized and pushed.
 
 **Round 14 foundation:** persistent same-faction parties, quest journal and
 shared combat participation connect the starter stories to the seven-view atlas.
