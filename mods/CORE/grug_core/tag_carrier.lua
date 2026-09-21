@@ -12,6 +12,12 @@ local SNAPSHOT_INTERVAL = 1
 local player_snapshot = {}
 local player_count = 0
 local snapshot_elapsed = 0
+local visibility_callbacks = {}
+-- callback(parent, observers, removed): membership is borrowed, read-only.
+-- Called every existing visibility tick so consumers can refresh state without scans.
+function grug_core.register_tag_visibility(callback)
+	visibility_callbacks[#visibility_callbacks + 1] = callback
+end
 local managed_carriers = {}
 local carrier_by_parent = {}
 
@@ -72,6 +78,9 @@ core.register_entity(ENTITY_NAME, {
 
 local function forget_carrier(carrier, row)
 	if not carrier then return end
+	if row then
+		for _, callback in ipairs(visibility_callbacks) do callback(row.parent, {}, true) end
+	end
 	managed_carriers[carrier] = nil
 	if row and carrier_by_parent[row.parent] == carrier then
 		carrier_by_parent[row.parent] = nil
@@ -114,6 +123,8 @@ local function manage_carriers()
 			carrier:remove()
 		else
 			update_observers(carrier, parent, row.owner_name)
+			local observers = carrier:get_luaentity()._grug_observers or {}
+			for _, callback in ipairs(visibility_callbacks) do callback(parent, observers, false) end
 		end
 	end
 end

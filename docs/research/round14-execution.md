@@ -20,6 +20,8 @@ Six starter chains (8–12 quests each), six level-11–20 villages, six corresp
 outposts and six bandit camps on existing anchors; optional crafting lessons.
 Quest core/UI/markers, persistent party management/HUD, cartographic Map tab,
 resumable startup preparation, profession isolation and flight fixes, fishing.
+The Nether is reserved for the first expansion, not V1: no Nether-dependent
+quests, rewards or POIs in this round.
 No full 1–60 story, Housing, fast travel, boats, economy rebase or broad engine
 rewrite. All suggested simplifications in the approved plan apply.
 
@@ -28,13 +30,13 @@ rewrite. All suggested simplifications in the approved plan apply.
 | Lane | State | Owner / next step |
 |---|---|---|
 | SPEC | running | Root: authoritative documents and shared API/ownership agreements |
-| QUEST-CORE | running | native r14_quest_core, Astra; owns grug_quests core/tag_carrier/mobs kill seam/start_villagers |
-| STORY | running | native r14_story, Sol; catalog/content.lua after schema freeze |
-| FIX | running | native r14_fixes, Sol; jobs and mount flight |
-| PARTY | queued | Astra |
-| PREGEN | queued | Astra |
+| QUEST-CORE | candidate; review queued | native r14_quest_core, Astra; owns grug_quests core/tag_carrier/mobs kill seam/start_villagers |
+| STORY | candidate; review queued | native r14_story, Sol; 66 quests staged tools/r14_story/content.lua until POI sockets exist |
+| FIX | candidate; review queued, Cooking diagnosis unresolved | native r14_fixes, Sol; jobs and mount flight |
+| PARTY | running | native r14_party, Astra; new grug_parties core |
+| PREGEN | running | native r14_pregen, Astra; root owns selection waiting UI |
 | UI | queued | Sol |
-| POI-ART / INTEGRATION | queued | Sol / Astra if geometry is difficult |
+| POI-ART / INTEGRATION | running | native r14_poi, Sol; 18 anchors through existing r7 settlement writer |
 | MAP | queued | Sol, atlas only |
 | FISH | queued | Sol |
 | Reviews / final drift | queued | Fresh non-authors; final drift Astra |
@@ -193,3 +195,49 @@ status list. Core quest lane should not implement competing HUD coordinates.
 
 FIX additionally owns the affected flight assertions in
 `tools/r9_mounts/mounts_kat.lua`. No shared-file author overlap is authorized.
+
+## Root checkpoint: first-wave findings
+
+- QUEST core API/schema frozen; marker models must be original extruded 3D glyphs
+  rather than nametag characters, initialized with empty observers.
+- STORY POI handoff is in `round14-story.md`. New NPC sockets: village
+  `quest_steward`, outpost `quest_scout`, bandit `quest_captive`, all role quest.
+  Catalog is staged under `tools/r14_story/content.lua` until these sockets exist;
+  never weaken startup validation to hide missing content.
+- FIX flight matrix implemented; profession isolation remains **unreproduced**,
+  not fixed. Actual NPC/trainer/state call chain and two-player callback fixtures
+  isolate correctly. Root authorized narrow trainer action diagnostics (one log
+  per open/learn/unlearn) to obtain real two-client evidence, no new setting.
+- STORY instructed to avoid mandatory consecutive night-only waits and premature
+  travel into higher-level zones; validate level gates against real XP curve.
+
+### Waiting UI candidate
+
+Root owns `mods/PLAYER/grug_classes/selection.lua`: selected preparation mode,
+whole-percent progress, minute-rounded ETA and unchanged-form suppression.
+Complete characters reconnecting during preparation enter stasis, then resume
+at their previous position; only new characters perform the arrival teleport.
+`tools/r14_selection/kat.lua` loads the real module and passes under LuaJIT;
+parser/SETGLOBAL/five sweeps pass (two existing display-string pipe hits).
+Independent review is pending with PREGEN.
+
+### Party API handoff
+
+`grug_parties.view(player_or_name)` returns nil or a copied
+`{id, leader, faction, members={{name, online, hp, hp_max}, ...}}` in join order.
+`pending(player_or_name)` returns sorted `{inviter, expires_in, party}` entries.
+Authenticated online-player mutations: `invite`, `accept`, `decline`, `leave`,
+`kick`, `transfer_leader`; results are boolean/message. Preferences use
+`invitations_enabled` / `set_invitations_enabled` and `hud_enabled` /
+`set_hud_enabled`; subscriptions use `register_on_change(fn(name, reason))`.
+Core emits presence/membership/preferences/invitation changes; UI samples HP
+at a bounded interval and compares displayed values before sending changes.
+
+### Story review focus before integration
+
+The authored catalog is a candidate, not approved final content. Verify the
+actual spawn policy for every mandatory target (especially step 06 at level 8),
+level-gate pacing, and objective text: `Defeat the named threat` is too vague
+for a tracker unless target names are included by the UI. Ensure the optional
+tool lessons actually explain a useful mechanic rather than only promising
+a lesson. The Nether exclusion is now explicit in both story and quest specs.

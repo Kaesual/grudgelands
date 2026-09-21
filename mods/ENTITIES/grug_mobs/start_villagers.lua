@@ -1059,6 +1059,7 @@ for index = 1, #identities do
 				grug_mobs.start_npc_claim(self)
 			end,
 			on_rightclick = function(self, clicker)
+				if core.global_exists("grug_quests") and grug_quests.open_npc(clicker, self) then return end
 				answer(self, clicker, "quest")
 			end,
 		}))

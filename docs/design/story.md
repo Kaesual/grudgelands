@@ -4,6 +4,10 @@ Decided premise (2026-08-06; housing and royal roles revised 2026-08-12).
 Delivery: quests, setting and environmental storytelling (a light layer, not
 cutscene opera).
 
+V1 takes place entirely in the overworld. The Nether is the first expansion,
+not a V1 destination; V1 quests cannot require Nether-exclusive items, mobs
+or travel. Overworld foreshadowing does not unlock or include that expansion.
+
 ## 1. Premise
 
 > **"A darkness has befallen the land."**

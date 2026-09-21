@@ -60,4 +60,3 @@ Accepted defaults:
 - No automatic party cleanup for inactivity, region change, death or logout.
 - Party HUD rows need not support click-to-target for V1. Do not broaden the
   current spell ally/targeting rules merely because parties now exist.
-

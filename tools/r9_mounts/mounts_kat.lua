@@ -327,7 +327,13 @@ return function(root, options)
 			return "accord_home"
 		end,
 		at = function(pos)
-			if zone_mode == "battleground" then
+			if zone_mode == "dragon_wyrmglass" then
+				return {id = "front_wyrmglass_crown",
+					territory_rule = "contested_land"}
+			elseif zone_mode == "dragon_stormscale" then
+				return {id = "front_stormscale_summit",
+					territory_rule = "contested_land"}
+			elseif zone_mode == "battleground" then
 				return {territory_rule = "holy_grounds"}
 			elseif zone_mode == "battleground_protected" and
 					(pos.x == -2000 or pos.x == 2000) then
@@ -337,6 +343,8 @@ return function(root, options)
 			elseif zone_mode == "protected_enemy" then
 				return {territory_rule = "throng_home"}
 			elseif zone_mode == "protected_contested" then
+				return {territory_rule = "contested_land"}
+			elseif zone_mode == "contested" then
 				return {territory_rule = "contested_land"}
 			elseif zone_mode == "oblique" and pos.x + pos.z >= 0 then
 				return {territory_rule = "throng_home"}
@@ -543,7 +551,23 @@ return function(root, options)
 	assert(not legal and kind == "enemy")
 	zone_mode = "protected_contested"
 	legal, kind = grug_mounts.flight_state(rider, {x = 10, y = 30, z = 10})
-	assert(not legal and kind == "enemy")
+	assert(legal and kind == nil)
+	zone_mode = "contested"
+	assert(grug_mounts.flight_state(rider, {x = 10, y = 30, z = 10}))
+	local throng_rider = new_player("throng_rider", 60, "throng", "orc")
+	assert(grug_mounts.flight_state(throng_rider, {x = 10, y = 30, z = 10}))
+	zone_mode = "battleground"
+	assert(grug_mounts.flight_state(throng_rider, {x = 10, y = 30, z = 10}))
+	zone_mode = "dragon_wyrmglass"
+	legal, kind = grug_mounts.flight_state(rider, {x = 10, y = 30, z = 10})
+	assert(not legal and kind == "island")
+	legal, kind = grug_mounts.flight_state(throng_rider, {x = 10, y = 30, z = 10})
+	assert(not legal and kind == "island")
+	zone_mode = "dragon_stormscale"
+	legal, kind = grug_mounts.flight_state(rider, {x = 10, y = 30, z = 10})
+	assert(not legal and kind == "island")
+	legal, kind = grug_mounts.flight_state(throng_rider, {x = 10, y = 30, z = 10})
+	assert(not legal and kind == "island")
 	zone_mode = "vertical"
 	assert(grug_mounts.flight_state(rider, {x = -100, y = 100, z = -100}))
 	assert(grug_mounts.flight_state(rider, {x = -100, y = -701, z = -100}),

@@ -79,4 +79,3 @@ Before freezing bounds, report the resulting chunk count and an estimate from
 a tiny representative native sample. Surface walking is the coverage objective;
 preparing every possible high-altitude flight view or deep mine is not required.
 No hours-long full-world generation is an agent acceptance test.
-

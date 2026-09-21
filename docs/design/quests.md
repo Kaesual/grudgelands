@@ -5,6 +5,10 @@ Decided 2026-09-21; Round 14 user Go.
 
 ### Confirmed by the user
 
+- The Nether is excluded from V1 and reserved for the first expansion. V1
+  quests must not require visiting it or obtaining Nether-exclusive items,
+  kills or unlocks.
+
 - Exactly 20 active quests maximum; accepting beyond that is refused with a
   clear explanation. Completion or abandonment frees a slot.
 - A dedicated Quest inventory tab supports viewing and abandoning quests.
@@ -16,7 +20,7 @@ Decided 2026-09-21; Round 14 user Go.
 - Kill credit uses the same per-mob damage/effective-healing participation and
   eligibility mechanism as shared XP, never a killing-blow test and never
   party membership. Players from different parties are not a special case.
-- Quest-giver markers are attached visible symbols with `set_observers()`.
+- Quest-giver markers are attached floating 3D question/exclamation symbols with `set_observers()`.
   Use the existing tag visibility/hysteresis loop and distances, not a second
   independent all-players scan.
 - Marker precedence: ready to turn in (yellow question mark), available
@@ -58,4 +62,3 @@ Decided 2026-09-21; Round 14 user Go.
 - Opening kill lessons use common mobs and small counts (e.g. five boars).
   Avoid five low-drop-rate tusks as the first mandatory task. Quest materials
   must actually exist locally under the current zone/time spawn policies.
-

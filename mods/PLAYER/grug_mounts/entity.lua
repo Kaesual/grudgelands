@@ -4,6 +4,10 @@ local STATUS_ID = "mount"
 local WARNING_INTERVAL = 1
 local WARNING_DISTANCES = {1, 2, 4, 8, 16, 32, 48}
 local WARNING_DIRECTIONS = {}
+local DRAGON_ISLANDS = {
+	front_wyrmglass_crown = true,
+	front_stormscale_summit = true,
+}
 for index = 0, 15 do
 	local angle = index * math.pi / 8
 	WARNING_DIRECTIONS[#WARNING_DIRECTIONS + 1] = {
@@ -128,8 +132,12 @@ function grug_mounts.flight_state(player, pos)
 	-- Zone ownership is horizontal.  Altitude is handled independently by the
 	-- underground takeoff and y=600 ceiling rules below.
 	local zone = grug_zones.at(pos)
+	if zone and DRAGON_ISLANDS[zone.id] then
+		return false, "island"
+	end
 	local territory = zone and zone.territory_rule
-	if territory == "holy_grounds" or territory == faction .. "_home" then
+	if territory == "contested_land" or territory == "holy_grounds" or
+			territory == faction .. "_home" then
 		return true, nil
 	end
 	return false, "enemy"
