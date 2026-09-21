@@ -1,0 +1,1 @@
+r15_hud	PASS	xp=360x6	party=1..10	quest=right-centre	markers=5x,top-fixed	idle-writes=0

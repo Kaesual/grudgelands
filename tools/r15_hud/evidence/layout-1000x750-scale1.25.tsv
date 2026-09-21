@@ -1,0 +1,34 @@
+image	0.5	1	-180	-76	1	1	360	6	0	grug_core_hud_bar.png^[colorize:#141414:255
+image	0.5	1	-180	-76	1	1	180	6	0	grug_core_hud_bar.png^[colorize:#ffd100:255
+text	0.5	1	188	-73	1	0	0	0	16765184	Lv 1
+text	1	0.5	-20	0	-1	0	0	0	16769152	Supplies for the rain-soaked\nshelters beyond the old wat...\n1/6 Defeat raiders on the\norchard road\nSupplies for the rain-soaked\nshelters beyond the old wat...\n2/6 Defeat raiders on the\norchard road\nSupplies for the rain-soaked\nshelters beyond the old wat...\n3/6 Defeat raiders on the\norchard road
+text	0	0.5	20	-147	1	1	0	0	16777215	* viewer  123/456
+image	0	0.5	20	-129	1	1	180	6	0	grug_core_hud_bar.png^[colorize:#141414:255
+image	0	0.5	20	-129	1	1	49	6	0	grug_core_hud_bar.png^[colorize:#4caf50:255
+text	0	0.5	20	-117	1	1	0	0	16777215	Companion2  123/456
+image	0	0.5	20	-99	1	1	180	6	0	grug_core_hud_bar.png^[colorize:#141414:255
+image	0	0.5	20	-99	1	1	49	6	0	grug_core_hud_bar.png^[colorize:#4caf50:255
+text	0	0.5	20	-87	1	1	0	0	16777215	Companion3  123/456
+image	0	0.5	20	-69	1	1	180	6	0	grug_core_hud_bar.png^[colorize:#141414:255
+image	0	0.5	20	-69	1	1	49	6	0	grug_core_hud_bar.png^[colorize:#4caf50:255
+text	0	0.5	20	-57	1	1	0	0	16777215	Companion4  123/456
+image	0	0.5	20	-39	1	1	180	6	0	grug_core_hud_bar.png^[colorize:#141414:255
+image	0	0.5	20	-39	1	1	49	6	0	grug_core_hud_bar.png^[colorize:#4caf50:255
+text	0	0.5	20	-27	1	1	0	0	16777215	Companion5  123/456
+image	0	0.5	20	-9	1	1	180	6	0	grug_core_hud_bar.png^[colorize:#141414:255
+image	0	0.5	20	-9	1	1	49	6	0	grug_core_hud_bar.png^[colorize:#4caf50:255
+text	0	0.5	20	3	1	1	0	0	16777215	Companion6  123/456
+image	0	0.5	20	21	1	1	180	6	0	grug_core_hud_bar.png^[colorize:#141414:255
+image	0	0.5	20	21	1	1	49	6	0	grug_core_hud_bar.png^[colorize:#4caf50:255
+text	0	0.5	20	33	1	1	0	0	16777215	Companion7  123/456
+image	0	0.5	20	51	1	1	180	6	0	grug_core_hud_bar.png^[colorize:#141414:255
+image	0	0.5	20	51	1	1	49	6	0	grug_core_hud_bar.png^[colorize:#4caf50:255
+text	0	0.5	20	63	1	1	0	0	16777215	Companion8 [Offline]
+image	0	0.5	20	81	1	1	180	6	0	grug_core_hud_bar.png^[colorize:#141414:255
+image	0	0.5	20	81	1	1	1	6	0	
+text	0	0.5	20	93	1	1	0	0	16777215	Companion9  123/456
+image	0	0.5	20	111	1	1	180	6	0	grug_core_hud_bar.png^[colorize:#141414:255
+image	0	0.5	20	111	1	1	49	6	0	grug_core_hud_bar.png^[colorize:#4caf50:255
+text	0	0.5	20	123	1	1	0	0	16777215	Companion10  123/456
+image	0	0.5	20	141	1	1	180	6	0	grug_core_hud_bar.png^[colorize:#141414:255
+image	0	0.5	20	141	1	1	49	6	0	grug_core_hud_bar.png^[colorize:#4caf50:255

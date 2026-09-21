@@ -84,11 +84,16 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 end)
 core.register_on_leaveplayer(function(player) sessions[player:get_player_name()] = nil end)
 
+-- Both authored OBJ meshes have y=-0.30..0.54. Mesh coordinates and
+-- attachment translations use engine units (10 per node), and both inherit
+-- the same parent mesh scale. 24.84 + 5*0.54 == 27 + 0.54 for every race.
+local MARKER_SCALE = 5
+local MARKER_Y = 27 - (MARKER_SCALE - 1) * 0.54
 local symbols = {ready = "question", available = "exclamation", active = "question", locked = "exclamation"}
 core.register_entity("grug_quests:marker", {
 	initial_properties = {physical = false, collide_with_objects = false, pointable = false,
 		visual = "mesh", mesh = "grug_quests_question.obj",
-		visual_size = {x = 1, y = 1}, textures = {"[fill:16x16:#ffd700"}, glow = 8,
+		visual_size = {x = MARKER_SCALE, y = MARKER_SCALE, z = MARKER_SCALE}, textures = {"[fill:16x16:#ffd700"}, glow = 8,
 		static_save = false, nametag = "", selectionbox = {0,0,0,0,0,0}},
 	on_activate = function(self) self.object:set_observers({}) end,
 })
@@ -113,7 +118,7 @@ grug_core.register_tag_visibility(function(parent, observers, removed)
 		if partitions[state] and (not child or not child:is_valid()) then
 			child = core.add_entity(parent:get_pos(), "grug_quests:marker")
 			if child then
-				child:set_attach(parent, "", {x = 0, y = 27, z = 0}, {x = 0, y = 0, z = 0})
+				child:set_attach(parent, "", {x = 0, y = MARKER_Y, z = 0}, {x = 0, y = 0, z = 0})
 				child:set_properties({mesh = "grug_quests_" .. symbol .. ".obj", textures = {
 					(state == "ready" or state == "available") and "[fill:16x16:#ffd700" or "[fill:16x16:#c0c0c0"}})
 				children[state] = child

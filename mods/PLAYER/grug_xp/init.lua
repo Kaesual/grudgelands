@@ -104,9 +104,8 @@ core.register_on_dieplayer(function(player)
 end)
 
 --
--- HUD: "Level 12  |  3400 / 12100 XP" bottom center. Which row of the
--- bottom-centre column it lands on is grug_core.hud_layout's business, not
--- this mod's -- the offset used to be a hard-coded pixel number here.
+-- Thin gold progress above the hotbar. Exact XP remains in /xp.
+-- All geometry comes from grug_core.hud_layout.
 --
 
 local hud_ids = {}
@@ -122,19 +121,43 @@ local function hud_text(player)
 	return ("Level %d  |  %d / %d XP"):format(level, xp - floor_xp, next_xp - floor_xp)
 end
 
+local function hud_progress(player)
+	local layout = grug_core.hud_layout
+	local xp = grug_xp.get_xp(player)
+	local level = grug_xp.level_from_xp(xp)
+	local width = layout.XP_WIDTH
+	if level < grug_xp.MAX_LEVEL then
+		local floor_xp = grug_xp.xp_for_level(level)
+		width = layout.bar_fill(xp - floor_xp,
+			grug_xp.xp_for_level(level + 1) - floor_xp, layout.XP_WIDTH)
+	end
+	return width, "Lv " .. level
+end
+
 hud_update = function(player)
-	local id = hud_ids[player:get_player_name()]
-	if id then
-		player:hud_change(id, "text", hud_text(player))
+	local row = hud_ids[player:get_player_name()]
+	if not row then return end
+	local width, label = hud_progress(player)
+	local layout = grug_core.hud_layout
+	if row.width ~= width then
+		player:hud_change(row.fill, "scale", {x = width, y = layout.rows.xp.height})
+		row.width = width
+	end
+	if row.text ~= label then
+		player:hud_change(row.label, "text", label)
+		row.text = label
 	end
 end
 
 core.register_on_joinplayer(function(player)
-	hud_ids[player:get_player_name()] = player:hud_add(
-		grug_core.hud_layout.text_element("xp", {
-			number = 0xffd100,
-			text = hud_text(player),
-		}))
+	local layout = grug_core.hud_layout
+	local width, label = hud_progress(player)
+	hud_ids[player:get_player_name()] = {
+		track = player:hud_add(layout.bar_element("xp", layout.XP_WIDTH, layout.COLOR.track, 0)),
+		fill = player:hud_add(layout.bar_element("xp", width, layout.COLOR.xp, 1)),
+		label = player:hud_add(layout.xp_label(label)),
+		width = width, text = label,
+	}
 	run_level_callbacks(player, nil, grug_xp.get_level(player))
 end)
 

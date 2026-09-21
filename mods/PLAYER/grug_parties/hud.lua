@@ -1,6 +1,5 @@
 local huds = {}
 local elapsed = 0
-local ROW_HEIGHT = 30
 local WIDTH = grug_core.hud_layout.BAR_WIDTH
 
 local function change(player, row, key, id, property, value)
@@ -18,18 +17,19 @@ local function remove_rows(player, record, count)
 		record.rows[i] = nil
 	end
 end
-local function make_row(player, index)
+local function make_row(player, index, count)
 	local layout = grug_core.hud_layout
 	local anchor = layout.anchors.party_list
-	local y = anchor.offset.y + (index - 1) * ROW_HEIGHT
+	local offset = layout.party_row_offset(index, count, false)
+	local bar_offset = layout.party_row_offset(index, count, true)
 	local function bar(color, layer)
 		return player:hud_add({type="image",position=anchor.position,
-			offset={x=anchor.offset.x,y=y+18},alignment={x=1,y=1},
-			scale={x=WIDTH,y=6},text=layout.bar_texture(color),z_index=layer})
+			offset=bar_offset,alignment={x=1,y=1},
+			scale={x=WIDTH,y=layout.PARTY_BAR_HEIGHT},text=layout.bar_texture(color),z_index=layer})
 	end
 	return {
 		label=player:hud_add({type="text",position=anchor.position,
-			offset={x=anchor.offset.x,y=y},alignment={x=1,y=1},
+			offset=offset,alignment={x=1,y=1},
 			text="",number=0xffffff,z_index=2}),
 		track=bar(layout.COLOR.track,0), fill=bar(layout.COLOR.life,1),
 	}
@@ -40,20 +40,23 @@ local function refresh(player)
 	local view = grug_parties.hud_enabled(player) and grug_parties.view(player)
 	if not view then remove_rows(player,record,0); return end
 	remove_rows(player,record,#view.members)
+	local layout = grug_core.hud_layout
+	local width = layout.side_text_width(core.get_player_window_information(player:get_player_name()))
 	for index, member in ipairs(view.members) do
 		local row = record.rows[index]
-		if not row then row=make_row(player,index);record.rows[index]=row end
+		if not row then row=make_row(player,index,#view.members);record.rows[index]=row end
+		change(player,row,"label_offset",row.label,"offset",layout.party_row_offset(index,#view.members,false))
+		change(player,row,"track_offset",row.track,"offset",layout.party_row_offset(index,#view.members,true))
+		change(player,row,"fill_offset",row.fill,"offset",layout.party_row_offset(index,#view.members,true))
+		local prefix = member.name == view.leader and "* " or ""
+		local suffix = member.online and ("  %d/%d"):format(member.hp,member.hp_max) or " [Offline]"
+		local limit = math.max(4, math.min(18, width - #prefix - #suffix))
 		local name = member.name
-		if #name > 18 then name = name:sub(1,16) .. ".." end
-		local label = (member.name == view.leader and "* " or "") .. name
-		if member.online then
-			label = label .. ("  %d/%d"):format(member.hp,member.hp_max)
-		else
-			label = label .. " [Offline]"
-		end
+		if #name > limit then name = name:sub(1,limit-2) .. ".." end
+		local label = prefix .. name .. suffix
 		change(player,row,"text",row.label,"text",label)
 		local fill = member.online and grug_core.hud_layout.bar_fill(member.hp,member.hp_max) or 0
-		change(player,row,"width",row.fill,"scale",{x=math.max(1,fill),y=6})
+		change(player,row,"width",row.fill,"scale",{x=math.max(1,fill),y=layout.PARTY_BAR_HEIGHT})
 		change(player,row,"texture",row.fill,"text", fill > 0 and
 			grug_core.hud_layout.bar_texture(grug_core.hud_layout.COLOR.life) or "")
 	end
