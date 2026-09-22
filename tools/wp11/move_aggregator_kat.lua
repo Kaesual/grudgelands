@@ -26,12 +26,9 @@
 --      a test.
 --   7. THE JOIN/LEAVE RESET drops everything (physics overrides are not
 --      persisted by the engine).
---   8. THE THREE MIGRATED CALLERS produce the shipped numbers: the mob web's
---      stronger-and-longer merge, Frost Nova's two overlapping stages
---      (0.1/0.3 for 4 s, then 0.5/1 for 3 s) and Hamstring's 0.5 for 5 s.
---      Those are read off the real mods/ENTITIES/grug_mobs/verbs.lua and
---      mods/PLAYER/grug_abilities/kits.lua stage tables via the same public
---      API the game uses, so the KAT cannot drift from the shipped applier.
+--   8. THE MOB WEB uses its real stronger-and-longer merge; hard root and
+--      independent slow lifetimes overlap without lifting one another.
+--      Actual Nova casts are covered by tools/r16_combat/control_kat.lua.
 --   9. THE MUTATIONS the brief names go red: multiplicative combination,
 --      a root written as a -1000 % modifier, and a snapshot restore left in
 --      the hold. Run with MUTATION=<n> to see one fail on purpose.
@@ -128,6 +125,7 @@ return function(repo)
 		after = function(delay, fn) afters[#afters + 1] = {delay, fn} end,
 		log = function() end,
 		register_on_punchplayer = function() end,
+		register_on_dieplayer = function() end,
 		get_objects_inside_radius = function() return {} end,
 	}
 	grug_core = {}
@@ -407,71 +405,25 @@ return function(repo)
 	near(web.remaining, 3, "a shorter web must not cut a longer one short")
 	grug_core.clear_move_modifier(victim, "mob_web")
 
-	-- 8b/8c. The kits.lua stage tables, through the shipped applier. The
-	-- applier is a file-local, so it is reached the way the game reaches it:
-	-- the two ability definitions. Rather than booting all of
-	-- grug_abilities, the two stage tables are read out of the shipped file
-	-- and replayed through the same arithmetic the applier uses -- and the
-	-- arithmetic itself is asserted against the file's text, so an edit to
-	-- either one breaks this test.
-	local source = io.open(repo .. "/mods/PLAYER/grug_abilities/kits.lua")
-	want(source, "cannot read kits.lua")
-	local text = source:read("*a")
-	source:close()
-	want(text:find("elapsed = elapsed + stage.time", 1, true) and
-		text:find("speed = stage.speed - 1", 1, true) and
-		text:find("jump = (stage.jump or 1) - 1", 1, true) and
-		text:find("}, elapsed)", 1, true),
-		"the kits.lua applier no longer registers cumulative-duration " ..
-		"named modifiers with absolute-to-delta conversion")
-	-- The stage DURATIONS are talent-driven since WP11 phase 1 (Deep Chill and
-	-- Hoarfrost add to them; both are 0 without the talent, so the shipped
-	-- 4 s / 3 s are exact for an untalented caster and are what the replay
-	-- below uses). The stage VALUES are what this aggregator has to preserve,
-	-- so those are pinned and the time expression is not.
-	want(text:find("{speed = 0.1, jump = 0.3, time = ", 1, true) and
-		text:find("{speed = 0.5, time = ", 1, true),
-		"Frost Nova's shipped stage values moved")
-	want(text:find("{{speed = 0.5, time = 5}}", 1, true),
-		"Hamstring's shipped stage table moved")
-	want(text:find('"frost_nova"', 1, true) and text:find('"hamstring"', 1, true),
-		"the two abilities no longer name their modifiers")
-
-	local function apply_stages(target, stages, id)
-		local elapsed = 0
-		for index = 1, #stages do
-			local stage = stages[index]
-			local name = index == 1 and id or (id .. "_" .. index)
-			elapsed = elapsed + stage.time
-			grug_core.set_move_modifier(target, name, {
-				speed = stage.speed - 1,
-				jump = (stage.jump or 1) - 1,
-			}, elapsed)
-		end
-	end
-
+	-- Hard root + independent follow-up slow, including a second overlapping
+	-- snare. Actual Nova casts and accepted-hit semantics live in r16_combat.
 	local pvp = new_player("pvp")
-	apply_stages(pvp, {{speed = 0.1, jump = 0.3, time = 4},
-		{speed = 0.5, time = 3}}, "frost_nova")
-	near(pvp.physics.speed, 0.1, "Frost Nova stage 1 speed (shipped 0.1)")
-	near(pvp.physics.jump, 0.3, "Frost Nova stage 1 jump (shipped 0.3)")
+	grug_core.set_root(pvp, 4)
+	grug_core.set_move_modifier(pvp, "nova", {speed = -0.5}, 7)
+	near(pvp.physics.speed, 0, "root overrides the slow")
+	near(pvp.physics.jump, 0, "root blocks jumping")
 	advance(4.5)
-	near(pvp.physics.speed, 0.5, "Frost Nova stage 2 speed (shipped 0.5)")
-	near(pvp.physics.jump, 1, "Frost Nova stage 2 jump (shipped 1)")
+	near(pvp.physics.speed, 0.5, "slow survives root expiry")
+	near(pvp.physics.jump, 1, "root expiry restores jumping")
 	advance(3)
-	near(pvp.physics.speed, 1, "Frost Nova ends at the baseline")
-
-	apply_stages(pvp, {{speed = 0.5, time = 5}}, "hamstring")
-	near(pvp.physics.speed, 0.5, "Hamstring 50% slow (shipped)")
-	-- Overlap, which is the whole ruling: a Hamstring into a Frost Nova
-	-- adds instead of replacing, and cannot lift the root stage.
-	apply_stages(pvp, {{speed = 0.1, jump = 0.3, time = 4},
-		{speed = 0.5, time = 3}}, "frost_nova")
-	near(pvp.physics.speed, 0.1,
-		"Hamstring + Frost Nova must stay at the clamp floor, not lift it")
+	near(pvp.physics.speed, 1, "slow expires")
+	grug_core.set_move_modifier(pvp, "hamstring", {speed = -0.5}, 5)
+	grug_core.set_root(pvp, 4)
+	grug_core.set_move_modifier(pvp, "nova", {speed = -0.5}, 7)
+	near(pvp.physics.speed, 0, "overlapping snare cannot lift root")
 	advance(6)
-	near(pvp.physics.speed, 0.5, "Frost Nova's slow stage outlives Hamstring")
-	say("callers", "web_frost_nova_hamstring", "ok")
+	near(pvp.physics.speed, 0.5, "longer slow survives shorter snare")
+	say("callers", "web_root_slow_overlap", "ok")
 
 	--
 	-- 9. One engine write per change, not one per step.

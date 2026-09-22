@@ -517,7 +517,8 @@ local function check_switch(mob_ent, force)
 		return
 	end
 	if (mob_ent.temp.grug_forced_until or 0) > now then
-		return -- inside a taunt window: the target is locked
+		mob_ent.temp.grug_switch_pending = true
+		return -- retain the trailing check until the force window expires
 	end
 	local best_name, best, best_obj
 	for name, amount in pairs(threat) do
@@ -532,7 +533,8 @@ local function check_switch(mob_ent, force)
 		return
 	end
 	local cur = mob_ent.attack
-	if cur and core.is_player(cur) then
+	if cur and core.is_player(cur) and
+			valid_target(mob_ent, cur:get_player_name()) then
 		local cur_name = cur:get_player_name()
 		if cur_name == best_name then
 			return
@@ -566,7 +568,8 @@ end
 -- Base threat (= damage dealt) is added in exactly ONE place, see
 -- run_player_hit_mob below.
 function grug_core.add_threat(mob_ent, player, amount)
-	if not mob_ent or not mob_ent.object or not amount or amount <= 0 then
+	if not mob_ent or not mob_ent.object or not amount or amount <= 0
+			or (mob_ent.temp and mob_ent.temp.grug_evading) then
 		return
 	end
 	if not player or not core.is_player(player) then
@@ -627,8 +630,9 @@ end
 -- lives in the ability (grug_abilities/kits.lua) — this is the threat half.
 function grug_core.taunt(mob_ent, player)
 	if not mob_ent or not mob_ent.object or not player or
-			not core.is_player(player) then
-		return
+			not core.is_player(player) or
+			(mob_ent.temp and mob_ent.temp.grug_evading) then
+		return false
 	end
 	local threat = threat_table(mob_ent)
 	local name = player:get_player_name()
@@ -637,6 +641,7 @@ function grug_core.taunt(mob_ent, player)
 	local now = grug_core.mono_time()
 	mob_ent.temp.grug_forced_until = now + grug_core.TAUNT_FORCE_TIME
 	mob_ent.temp.grug_last_contact = now
+	return true
 end
 
 --

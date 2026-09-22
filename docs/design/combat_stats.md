@@ -917,3 +917,14 @@ design (`group_attack` stays on).
   cost).
 - MVP scope: torch + shield first; class-specific offhands once the
   items exist.
+
+### Round 16 control and threat expiry
+
+Taunt retains three seconds of forced targeting and top threat times 1.1. Threat
+accumulates without time decay; valid rivals need more than 120% of a valid
+current target's threat. Taunt and player threat refuse evading mobs before
+forcing a target or changing the ledger. A suppressed switch remains pending through the forced
+window and is reconsidered after expiry even without a new hit. Invalid current
+targets do not impose hysteresis on valid rivals. Charge stun lasts 1.5 seconds
+on accepted hits, excluding kings and dragons; it cancels pending attacks and
+blocks movement and attack execution, preserving gravity.

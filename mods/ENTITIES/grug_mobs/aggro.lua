@@ -314,17 +314,15 @@ local function evade_tick(self)
 		return
 	end
 	-- Belt and braces. The `_grug_ignore_player` veto (init.lua) covers
-	-- general_attack, which is the path that matters; four others reach past
+	-- general_attack, which is the path that matters; other paths reach past
 	-- it and are swept here instead, each costing at most one second of chase:
 	--   * mobs_redo's group alert calls do_attack DIRECTLY on nearby idle mobs
 	--     of the same name (api.lua:2927-3538), as do our pack-hunter and
 	--     camp-swarm verbs (verbs.lua);
 	--   * general_attack's NON-player half can still hand an evading guard a
-	--     wolf (the veto hook is a player filter);
-	--   * a tank ability's bonus threat (grug_core.deal_ability_damage's
-	--     `threat_mult` site) and a taunt still land on the threat table even
-	--     though the punch itself was cancelled, and check_switch/the taunt
-	--     ability then force a target.
+	--     wolf (the veto hook is a player filter).
+	-- Player threat and Taunt refuse active evade state at their shared seam;
+	-- ability bonus threat also requires an accepted damage settlement.
 	-- What CANNOT happen is retaliation against the evader's own attacker: its
 	-- punches are cancelled in do_punch, i.e. before api.lua's retaliation
 	-- block and before run_player_hit_mob's threat ever runs.

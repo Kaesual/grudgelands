@@ -376,3 +376,7 @@ force-detach skips animation and appearance restoration, clearing attachment
 bookkeeping without accessing player_api records already deleted by its leave
 callback. Death and ordinary detach keep their existing presentation behavior.
 The Grudgelands controller/child cleanup remains owned by `grug_mounts`.
+
+Round 16 combat patch: `mods/ENTITIES/mobs/api.lua` ticks the current stun
+countdown before native jumping/knockback pause; gravity and environmental
+damage continue, while custom/native attacks and jumping are blocked.

@@ -151,61 +151,6 @@ local function burst(pos, texture, amount)
 end
 
 --
--- Root/slow effects (Frost Nova, Hamstring). Mobs: grug_mobs.root/slow —
--- restore runs as a reload-safe countdown inside the mob's do_custom (a
--- core.after timer here once persisted permanently-immobile mobs into the
--- world file). Players (PvP): named modifiers on the grug_core movement
--- aggregator (ruling 11, 2026-09-16; skill_trees.md §3.9).
---
--- The staged chain this used to be is gone. It wrote `physics_override`
--- directly, walked its stages on a core.after chain and restored to
--- `{speed = 1, jump = 1}` after the last one — which clobbered every other
--- speed modifier in the game, and was the reason the old comment here said
--- "MVP caveat: the override clobbers other speed modifiers — fine while none
--- exist". Ruling 11 ends that: each stage is now its own NAMED modifier with
--- its OWN duration, they overlap freely, and the aggregator adds them per
--- axis under one clamp (ruling 26: `clamp(1 + Sum, 0.1, 1.5)`).
---
--- The shipped numbers are unchanged, and the arithmetic is worth writing out
--- because the overlap is what preserves them. Frost Nova's stages are
--- `{speed = 0.1, jump = 0.3, time = 4}` then `{speed = 0.5, time = 3}`:
---   * stage 1 registers speed -0.9 / jump -0.7 for 4 s,
---   * stage 2 registers speed -0.5 / jump 0 for 4+3 = 7 s (its duration runs
---     from NOW to the END of its window, so it overlaps stage 1),
---   * t < 4 s: speed = clamp(1 - 0.9 - 0.5) = 0.1, jump = 1 - 0.7 = 0.3,
---   * 4 s <= t < 7 s: speed = 1 - 0.5 = 0.5, jump = 1.
--- Both are exactly what the old chain wrote, and the clamp floor (0.1) is
--- the same number the design already used for the root stage.
---
--- The old "a stronger snare stage is running; keep it" guard is gone with
--- the chain, and nothing is lost: a Hamstring cast into a running Frost Nova
--- now ADDS -0.5 to the sum, which is already clamped at 0.1, so it still
--- cannot lift the ally's root. Effects overlapping freely is the ruling.
---
--- A relog inside the window still clears the effect (physics overrides are
--- not persisted, and the aggregator drops the record on join) — the accepted
--- MVP caveat is unchanged, and reconnecting takes longer than any current
--- effect.
---
-
--- stages: list of {speed = n, jump = n, time = seconds} — ABSOLUTE
--- multipliers, as the design writes them. `id` names the effect; stage i > 1
--- is registered as `id .. "_" .. i` so the stages of ONE cast overlap each
--- other but a second cast of the SAME ability refreshes rather than stacks.
-local function apply_player_speed_stages(target, stages, id)
-	local elapsed = 0
-	for index = 1, #stages do
-		local stage = stages[index]
-		local name = index == 1 and id or (id .. "_" .. index)
-		elapsed = elapsed + stage.time
-		grug_core.set_move_modifier(target, name, {
-			speed = stage.speed - 1,
-			jump = (stage.jump or 1) - 1,
-		}, elapsed)
-	end
-end
-
---
 -- Universal authoritative swing (classes.md §2b, combat_stats.md §2).
 --
 -- Swing ability items intentionally have NO on_use. Luanti therefore keeps
@@ -333,13 +278,13 @@ grug_abilities.register_ability({
 	kind = "cast",
 	target_kind = "hostile",
 	description = "Dash to an enemy up to 12 m away; damage scales with your level\n" ..
-		"and generating 15 rage.",
+		"generating 15 rage and stunning eligible targets for 1.5 s.",
 	values = function(user)
 		return {damage = 3}
 	end,
 	description_for = function(user, def)
 		return ("Dash to an enemy up to 12 m away, dealing %d damage\n" ..
-			"and generating 15 rage."):format(
+			"generating 15 rage and stunning eligible targets for 1.5 s."):format(
 				effective_number(user, def.values(user).damage))
 	end,
 	color = "#e8c85a",
@@ -362,7 +307,14 @@ grug_abilities.register_ability({
 		user:set_pos(dest)
 		grug_abilities.add_rage(user, 15)
 		grug_core.deal_ability_damage(user, target,
-			def.values(user).damage, {threat_mult = 3})
+			def.values(user).damage, {threat_mult = 3, on_accepted = function()
+				if target:is_player() then
+					grug_core.set_stun(target, 1.5)
+				else
+					local ent = mob_ent(target)
+					if ent then grug_mobs.stun(ent, 1.5) end
+				end
+			end})
 		burst(tpos, "default_item_smoke.png", 8)
 		return true
 	end,
@@ -483,8 +435,8 @@ grug_abilities.register_ability({
 			for _, obj in ipairs(core.get_objects_inside_radius(user:get_pos(), radius)) do
 				if grug_abilities.valid_target(user, obj, "hostile") then
 					local ent = mob_ent(obj)
-					if ent and ent.attack_type then
-						ent:do_attack(user, true); grug_core.taunt(ent, user); affected = true
+					if ent and ent.attack_type and grug_core.taunt(ent, user) then
+						ent:do_attack(user, true); affected = true
 					end
 				end
 			end
@@ -498,10 +450,12 @@ grug_abilities.register_ability({
 		if not ent or not ent.attack_type then
 			return false, "Cannot be taunted."
 		end
-		ent:do_attack(user, true)
 		-- Threat part (combat_stats.md §4): sets the taunter to top×1.1 and
 		-- suppresses hysteresis target switches for 3 s.
-		grug_core.taunt(ent, user)
+		if not grug_core.taunt(ent, user) then
+			return false, "That target is evading."
+		end
+		ent:do_attack(user, true)
 		burst(target:get_pos(), "default_item_smoke.png^[multiply:#e07b39", 6)
 		return true
 	end,
@@ -643,13 +597,22 @@ grug_abilities.register_ability({
 
 -- The rotation pivot (kit tuning 2026-08-06): kiting IS the Mage fantasy
 -- here — root, make distance, keep nuking, re-nova when it is back up.
+local function nova_values(user)
+	local control = grug_classes.get_talent_bonus(user, "control_damage_add")
+	local power = grug_classes.get_spell_power_bonus(user)
+	return {damage = spell_damage_value(user,
+		(grug_core.baseline_weapon_damage(grug_core.get_player_level(user)) + power) / 4
+		+ control + (control > 0 and math.floor(power / 2) or 0))}
+end
+
 grug_abilities.register_ability({
 	id = "frost_nova",
 	class = "mage",
 	name = "Frost Nova",
+	values = nova_values,
 	kind = "cast",
 	target_kind = "self",
-	description = "Roots all enemies within 5 m for 4 s,\n" ..
+	description = "Damages and roots enemies within 5 m for 4 s,\n" ..
 		"then slows them by 50% for 3 s.",
 	color = "#66b8ff",
 	cost = {mana_percent = 10},
@@ -666,8 +629,7 @@ grug_abilities.register_ability({
 			pos = target:get_pos()
 		end
 		-- Deep Chill and Hoarfrost (skill_trees.md §2.4); 0 each without the
-		-- talent, so the shipped 4 s root and 3 s slow are exact. Frostbind's
-		-- ranged origin and Rimebite's damage are lane X3's.
+		-- talent, so the base 4 s root and 3 s slow remain exact.
 		local root_time = 4 + grug_classes.get_talent_bonus(user,
 			"frost_nova_root_add")
 		local slow_time = 3 + grug_classes.get_talent_bonus(user,
@@ -676,28 +638,25 @@ grug_abilities.register_ability({
 		local action_id = {}
 		for _, obj in ipairs(core.get_objects_inside_radius(pos, radius)) do
 			if grug_abilities.valid_target(user, obj, "hostile") then
-				local control_damage = grug_classes.get_talent_bonus(user,
-					"control_damage_add")
-				if control_damage > 0 then
-					grug_core.deal_ability_damage(user, obj, spell_damage_value(user, control_damage
-						+ math.floor(grug_classes.get_spell_power_bonus(user) / 2)),
-						{action_id = action_id})
-				end
-				if obj:is_player() then
-					apply_player_speed_stages(obj, {
-						{speed = 0.1, jump = 0.3, time = root_time},
-						{speed = 0.5, time = slow_time},
-					}, "frost_nova")
-					burst(obj:get_pos(), "mobs_bubble_particle.png^[multiply:#88ccff", 8)
-				else
-					local ent = mob_ent(obj)
-					if ent then
-						grug_mobs.root(ent, root_time)
-						-- queued: starts after the root
-						grug_mobs.slow(ent, slow_time, 0.5)
-						burst(obj:get_pos(), "mobs_bubble_particle.png^[multiply:#88ccff", 8)
-					end
-				end
+				-- Capture before lethal mob punches can synchronously remove the object.
+				local ent = mob_ent(obj)
+				grug_core.deal_ability_damage(user, obj, nova_values(user).damage, {
+					action_id = action_id,
+					on_accepted = function()
+						if obj:is_player() then
+							if obj:get_hp() <= 0 then return end
+							if grug_core.set_root(obj, root_time) then
+								grug_core.mark_nova_root(obj, root_time)
+							end
+							grug_core.set_move_modifier(obj, "frost_nova_slow",
+								{speed = -0.5}, root_time + slow_time)
+						elseif ent and (ent.health or 0) > 0 and obj:get_pos() then
+							grug_mobs.root(ent, root_time)
+							ent._grug_nova_left = math.max(ent._grug_nova_left or 0, root_time)
+							grug_mobs.slow(ent, slow_time, 0.5)
+						end
+					end,
+				})
 			end
 		end
 		burst(pos, "default_item_smoke.png^[multiply:#aaddff", 20)

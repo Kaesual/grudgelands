@@ -97,8 +97,11 @@ local function prune(rec, t)
 			mods[dead[index]] = nil
 		end
 	end
+	if rec.stun and rec.stun <= t then rec.stun = nil end
+	if rec.ice and rec.ice <= t then rec.ice = nil end
 	if rec.root and rec.root <= t then
 		rec.root = nil
+		rec.ice = nil
 	end
 	if rec.immune and rec.immune <= t then
 		rec.immune = nil
@@ -107,7 +110,7 @@ end
 
 -- Is this record still worth a globalstep and a table entry?
 local function idle(rec)
-	if rec.root or rec.immune or rec.n_holds > 0 then
+	if rec.root or rec.stun or rec.immune or rec.n_holds > 0 then
 		return false
 	end
 	return next(rec.mods) == nil
@@ -132,7 +135,7 @@ local function combine(rec, t)
 		return 0, 0, 0
 	end
 	local immune = rec.immune ~= nil and rec.immune > t
-	if rec.root and not immune then
+	if rec.stun or (rec.root and not immune) then
 		return 0, 0, nil
 	end
 	local speed_sum, jump_sum = 0, 0
@@ -318,12 +321,60 @@ function grug_core.set_root(player, duration)
 	return true
 end
 
+-- Stun has an independent hard movement flag, not root/slow immunity.
+local stun_callbacks = {}
+function grug_core.register_on_stun(callback)
+	stun_callbacks[#stun_callbacks + 1] = callback
+end
+
+function grug_core.is_stunned(player)
+	local _, rec = peek(player)
+	return rec ~= nil and (rec.stun or 0) > now()
+end
+
+function grug_core.set_stun(player, duration)
+	local name, rec = resolve(player)
+	if not name or player:get_hp() <= 0 then return false end
+	local mounts = rawget(_G, "grug_mounts")
+	if mounts and mounts.is_mounted and mounts.is_mounted(player) then
+		mounts.dismount(player)
+	end
+	rec.stun = math.max(rec.stun or 0, now() + duration)
+	settle(player, name, rec)
+	for _, callback in ipairs(stun_callbacks) do callback(player) end
+	return true
+end
+
+-- Procedural texture uses built-in pixels: no imported media or entity.
+function grug_core.emit_root_crystals(object)
+	local pos = object:get_pos()
+	if not pos then return end
+	local props = object:get_properties() or {}
+	local box = props.collisionbox or {-0.3, 0, -0.3, 0.3, 1.7, 0.3}
+	local width = math.min(2, math.max(0.3, box[4] - box[1]))
+	core.add_particlespawner({
+		amount = 4, time = 0.25,
+		pos = {min = vector.offset(pos, -width / 2, box[2], -width / 2),
+			max = vector.offset(pos, width / 2, box[2] + math.min(1.5, box[5] - box[2]), width / 2)},
+		vel = {min = vector.new(0, 0.05, 0), max = vector.new(0, 0.2, 0)},
+		exptime = {min = 0.35, max = 0.6}, size = {min = 1, max = 2 * width},
+		texture = "[fill:5x7:#00000000^[fill:1x7:2,0:#bbedff^[fill:3x3:1,2:#bbedff",
+		glow = 4,
+	})
+end
+
+function grug_core.mark_nova_root(player, duration)
+	local _, rec = peek(player)
+	if rec and rec.root then rec.ice = math.max(rec.ice or 0, now() + duration) end
+end
+
 function grug_core.clear_root(player)
 	local pname, rec = peek(player)
 	if not pname or not rec then
 		return
 	end
 	rec.root = nil
+	rec.ice = nil
 	settle(player, pname, rec)
 end
 
@@ -335,6 +386,7 @@ function grug_core.clear_negative_move_modifiers(player)
 	if not pname or not rec then return end
 	prune(rec, now())
 	rec.root = nil
+	rec.ice = nil
 	for name, entry in pairs(rec.mods) do
 		if entry.speed < 0 or entry.jump < 0 then
 			rec.mods[name] = nil
@@ -354,6 +406,7 @@ function grug_core.set_move_immunity(player, duration)
 	end
 	rec.immune = now() + (duration or 0)
 	rec.root = nil
+	rec.ice = nil
 	settle(player, pname, rec)
 end
 
@@ -449,6 +502,8 @@ function grug_core.clear_movement(player)
 	end
 	rec.mods = {}
 	rec.root = nil
+	rec.ice = nil
+	rec.stun = nil
 	rec.immune = nil
 	rec.holds = {}
 	rec.n_holds = 0
@@ -474,6 +529,8 @@ end
 -- 1/1/1 whatever ran before the relog. Dropping the record is therefore the
 -- complete reset: there is no timer to cancel (see the header).
 --
+
+core.register_on_dieplayer(grug_core.clear_movement)
 
 core.register_on_joinplayer(function(player)
 	state[player:get_player_name()] = nil
@@ -512,6 +569,12 @@ core.register_globalstep(function(dtime)
 		local player = rec and core.get_player_by_name(name)
 		if player then
 			settle(player, name, rec)
+			local t = now()
+			if rec.ice and rec.root and player:get_hp() > 0
+					and t >= (rec.ice_next or 0) then
+				rec.ice_next = t + 0.3
+				grug_core.emit_root_crystals(player)
+			end
 		elseif rec then
 			state[name] = nil
 		end

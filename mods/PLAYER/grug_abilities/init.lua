@@ -1138,6 +1138,10 @@ reset_swing_boundary = function(player)
 	entry.ordinary = nil
 end
 
+grug_core.register_on_stun(function(player)
+	clear_swing_progress(player)
+end)
+
 local function selected_swing_def(player)
 	local def = item_defs[player:get_wielded_item():get_name()]
 	return (def and def.kind == "swing" and
@@ -1326,7 +1330,7 @@ end
 -- then enters WP38's exact claim-once/two-phase settlement unchanged.
 attempt_swing = function(player, selected, held, latched)
 	local name = player:get_player_name()
-	if player:get_hp() <= 0 then
+	if player:get_hp() <= 0 or grug_core.is_stunned(player) then
 		if swing_progress[name] then
 			clear_swing_progress(player)
 		end
@@ -1519,6 +1523,7 @@ end
 -- `control.dig`.
 -- Builtin item entities and ordinary tools/fists never enter this seam.
 grug_core.register_native_swing_input_handler(function(player, target)
+	if grug_core.is_stunned(player) then return true end
 	local selected = selected_swing_def(player)
 	if not selected then
 		return false
@@ -1584,7 +1589,7 @@ function grug_abilities.try_cast(user, def, pointed_thing)
 	if def.kind == "cast" then
 		reset_swing_boundary(user)
 	end
-	if user:get_hp() <= 0 then
+	if user:get_hp() <= 0 or grug_core.is_stunned(user) then
 		return
 	end
 	-- Swing items have no on_use and never enter this function. Their native
@@ -2361,6 +2366,9 @@ core.register_on_punchplayer(function(player, hitter, tflp, tool_capabilities, d
 	-- full interval) — handling them here would double-apply.
 	if not (hitter and hitter:is_player()) then
 		return
+	end
+	if grug_core.is_stunned(hitter) and not grug_core.in_ability_punch then
+		return true
 	end
 	if hitter == player or player:get_hp() <= 0 then
 		return

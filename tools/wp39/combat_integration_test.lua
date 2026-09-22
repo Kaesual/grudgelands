@@ -335,6 +335,12 @@ local function new_player(name, class_id, faction)
 	players_by_name[name] = player
 	return player
 end
+function Player:get_meta()
+ self.meta = self.meta or {}
+ local meta = self.meta
+ return {get_int = function(_, key) return meta[key] or 0 end,
+ set_int = function(_, key, value) meta[key] = value end}
+end
 function Player:get_player_name() return self.name end
 function Player:get_guid() return "player:" .. self.name end
 function Player:is_player() return true end
@@ -461,6 +467,7 @@ local function queue_ray(hits) ray_queue[#ray_queue + 1] = hits end
 -- overrides before loading the real ability mod and its real kit.
 dofile(repo .. "/mods/CORE/grug_core/combat.lua")
 dofile(repo .. "/mods/CORE/grug_core/combat_ray.lua")
+dofile(repo .. "/mods/CORE/grug_core/movement.lua")
 grug_core.get_player_faction = function(name)
 	local player = players_by_name[name]
 	return player and player.faction or nil
@@ -482,9 +489,16 @@ grug_core.register_on_status_modifiers_changed = function() end
 -- Round 4 (HUD bars): grug_abilities builds its bars from
 -- grug_core.hud_layout at join; the real file calls nothing from core.
 dofile(repo .. "/mods/CORE/grug_core/hud_layout.lua")
+local ability_first_step = #globalsteps + 1
 dofile(repo .. "/mods/PLAYER/grug_abilities/init.lua")
 for _, fn in ipairs(callbacks.mods_loaded) do fn() end
 
+if arg[2] == "r16-fixture" then
+	return {new_player = new_player, new_mob = new_mob, class_callbacks = class_callbacks,
+		callbacks = callbacks, steps = globalsteps, connected = connected,
+		spawns = projectile_spawns, queue_ray = queue_ray, pointed = pointed,
+		set_time = function(value) now = value end}
+end
 if arg[2] == "skills-fixture" then
 	return {new_player = new_player, class_callbacks = class_callbacks,
 		callbacks = callbacks, set_time = function(value) now = value end}
@@ -528,7 +542,7 @@ local function select_item(player, itemname)
 	player.wield = selected_index(player, itemname)
 end
 local function swing_pass(dtime)
-	globalsteps[1](dtime or 0.05)
+	globalsteps[ability_first_step](dtime or 0.05)
 end
 local function reticle(player)
 	-- Round 4: the HUD bars' fill strips are images at z_index 1 too, so the
