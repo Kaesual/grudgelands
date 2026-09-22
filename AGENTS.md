@@ -947,13 +947,21 @@ Details + line numbers in [docs/research/](docs/research/).
   to real coordinates after the existing legacy sfinv navigation. No fog,
   generated-world requirement, terrain bitmap extraction or travel unlocking.
   Round 15 adds gold self/cyan online-party heading markers and per-viewer quest
-  status markers. Stable byte-encoded IDs own click identity. Only active Map
+  status markers. Round 16 uses formspec v3 to keep markers above the atlas
+  raster, with legacy navigation coordinates retained. Individual quest givers,
+  profession/Riding trainers, kings and dragons use authored positions and
+  names-only tooltips; no marker grouping or collision handling. Stable
+  byte-encoded IDs own click identity. Only active Map
   sessions poll at 0.5 seconds and write changed formspecs; closing Map resets
   to Character, and leave/death clean up the live session.
 - **Preparation (Round 14):** `grug_core` freezes starts/full mode in world
   storage on first boot. A stable aligned plan has one in-flight chunk and a
   success-only cursor; dispatch occurs in throttled globalstep, not callbacks.
   Full mode includes a 320-node ocean margin and replaces starts preparation.
+  Round 16 resolves one conservative surface envelope at a time, counts completed
+  horizontal tiles and persists the inner Y-chunk cursor. Its authority identity
+  binds stable seed/content and bounded terrain-source bytes, never runtime CIDs.
+  No full-world height prepass, exact savings run or ETA retuning.
   Both creation and reconnect use the shared waiting/stasis gate. Native tests
   use isolated tiny bounds; never run production full generation as a test.
 - **Fishing (Round 14):** transient bobber, manual reel in a 1.5-second bite

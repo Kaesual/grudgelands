@@ -4,6 +4,7 @@ local fixtures = {
  "r16_mounts/lifecycle.lua", "r16_map/kat.lua", "r16_ui/food_hud.lua",
  "r16_progression/kat.lua", "r16_combat/control_kat.lua",
  "r16_surface/fixture.lua", "r16_surface/content_fixture.lua",
+ "r16_surface/identity_fixture.lua",
  -- Atmosphere fixture is added at its final reviewed handoff.
 }
 

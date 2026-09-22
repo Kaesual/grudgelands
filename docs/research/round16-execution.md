@@ -10,8 +10,8 @@ deleted. Claude prohibited this session; same-provider CLI prohibited.
 | Lane | Owner | Worktree | State |
 | --- | --- | --- | --- |
 | A Mount lifecycle | Astra | `/tmp/grug-r16-mounts` | review clean; integrated as `6a120d54` |
-| B Combat audit/control/Ibex | Astra | `/tmp/grug-r16-combat` | `be2cc9b9`; correcting 1 High + 1 Medium review findings |
-| G Surface preparation | Astra | `/tmp/grug-r16-surface` | `b009e778`; root correction `a4af5cfa` in focused review |
+| B Combat audit/control/Ibex | Astra | `/tmp/grug-r16-combat` | review + correction clean; integrated `8a0c502d`, `1e6fdae5` |
+| G Surface preparation | Astra | `/tmp/grug-r16-surface` | review + correction clean; integrated `18edbc22`, `ba51d38b` |
 | C Atlas | root Astra | root branch | `bddd1edf`; review clean |
 | D Quest progression/kill XP + XP UI/admin | Sol | `/tmp/grug-r16-progression` | `cb1ce4d0`; review clean, integrated `5934a0ae` |
 | E UI/food | root Astra | root branch | `1b2f0458`; review clean |
