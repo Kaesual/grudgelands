@@ -2,6 +2,7 @@
 return function(root)
  local env = setmetatable({}, {__index = _G})
  local clock, notices = 0, 0
+ local sounds = {}
  local steps, connected, leaves, items = {}, {}, {}, {}
  local function noop() end
  for _, id in ipairs({"default:apple", "default:blueberries", "mobs:meat_raw",
@@ -21,6 +22,9 @@ return function(root)
   register_on_leaveplayer = function(fn) leaves[#leaves + 1] = fn end,
   register_globalstep = function(fn) steps[#steps + 1] = fn end,
   chat_send_player = noop,
+  sound_play = function(spec, params, ephemeral)
+   sounds[#sounds + 1] = {spec = spec, params = params, ephemeral = ephemeral}
+  end,
   override_item = function(name, fields)
    for key, value in pairs(fields) do items[name][key] = value end
   end,
@@ -67,10 +71,15 @@ return function(root)
    items[id].on_use(stack, p)
    local status = assert(env.grug_core.get_status(p, "food"))
    assert(stack.count == 1 and status.expiry_us == (started + 300) * 1000000)
+   assert(#sounds == count + 1)
+   assert(sounds[#sounds].spec.name == "grug_food_eat")
+   assert(sounds[#sounds].spec.gain == 0.5 and sounds[#sounds].ephemeral == true)
+   assert(sounds[#sounds].params.to_player == "food")
    assert(p.hp == 1 + instant[tier] and p.mana == 0)
    p.combat = true
    items[id].on_use(stack, p)
    assert(stack.count == 1 and env.grug_core.get_status(p, "food") == status)
+   assert(#sounds == count + 1)
    advance(5)
    assert(p.hp == 1 + instant[tier] and p.mana == 0)
    p.combat = false
@@ -83,6 +92,7 @@ return function(root)
   end
  end
  assert(notices == 24)
+ assert(#sounds == 24)
  p.combat = true
  local before = p.hp
  advance(290)
@@ -113,5 +123,5 @@ return function(root)
  for _, fn in ipairs(leaves) do fn(p) end
  p.hp = 10
  advance(1); assert(added == 3)
- return "food-hud:24-routes:combat-refusal:double-regen:expiry:hud-lifecycle:ok"
+ return "food-hud:24-routes:success-audio:combat-refusal-silent:double-regen:expiry:hud-lifecycle:ok"
 end

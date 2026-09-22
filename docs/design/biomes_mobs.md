@@ -46,7 +46,12 @@ before WP13/WP33 author new surface content.
   tier) are the same item and the same chance on both sides; the **third
   slot is family-flavored** by design (§3.2).
 - Nature mobs aggro on sight vs players AND NPCs; density target ~1
-  visible mob per 15–20 m of wilderness travel.
+  visible mob per 15–20 m of wilderness travel. Round 16 raises ordinary
+  fightable open-world population pressure by approximately **30%**: each
+  eligible surface spawn row gets 1.3x attempt frequency and a nearest-integer
+  1.3x local species cap. Neutral hunted wildlife counts. Critters, underground
+  rows, NPCs, authored guards, kings, dragons, summoned/encounter adds, bosses
+  and named rares on their dedicated timers retain their prior rates and caps.
 - Target patch model: logical biomes vary only inside their zone-owned
   weighted palette. Fixed village/outpost/camp slots come from
   `world_zones.md` §§8/11; Elves keep tree-integrated settlements.

@@ -303,6 +303,7 @@ end
 -- keeps it from drifting the way a hand-kept hostile list would.
 local hostile_spawns = {}
 local spawn_clocks = {}
+local ambient_density_spawns = {}
 local zone_palette_at
 
 local function validate_clock(clock, name)
@@ -332,6 +333,12 @@ function grug_mobs.register_spawn_role(name, def)
 	validate_clock(def.clock, name)
 	hostile_spawns[name] = def.passive ~= true and def.attack_players ~= false
 	spawn_clocks[name] = def.clock
+	-- Ordinary natural rows include hostile creatures and neutral huntable
+	-- wildlife. Critters are scenery, while NPC/rare/boss/encounter populations
+	-- have authored or dedicated owners and never inherit ambient tuning.
+	local tier = def._grug_tier or "normal"
+	ambient_density_spawns[name] = def.type ~= "npc" and
+		tier ~= "critter" and tier ~= "rare" and tier ~= "boss"
 	return hostile_spawns[name]
 end
 
@@ -390,7 +397,9 @@ function grug_mobs.spawn_clock_allows(name, pos, timeofday)
 	if value == nil then
 		return true
 	end
-	local daylight = value >= 0.1875 and value <= 0.8125
+	local day_start = grug_core.DAY_PHASE_START or 0.1875
+	local day_end = grug_core.DAY_PHASE_END or 0.8125
+	local daylight = value >= day_start and value <= day_end
 	return clock == (daylight and "day" or "night")
 end
 
@@ -406,6 +415,18 @@ function grug_mobs.prepare_spawn_row(def)
 	if row.max_height and row.max_height <= -40 then
 		row.day_toggle = nil
 		return row
+	end
+	if ambient_density_spawns[row.name] then
+		-- `chance` is one success per N ABM hits, so division raises attempt
+		-- frequency. Nearest-integer caps keep small species budgets close to
+		-- the same 1.3x target without inventing fractional entities.
+		if row.chance then
+			row.chance = math.max(1, math.floor(row.chance / 1.3 + 0.5))
+		end
+		if row.active_object_count then
+			row.active_object_count = math.max(1,
+				math.floor(row.active_object_count * 1.3 + 0.5))
+		end
 	end
 	local clock = clock_for_palette(row.name, def._grug_clock_palette)
 	if not clock then

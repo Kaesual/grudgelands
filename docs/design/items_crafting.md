@@ -968,6 +968,8 @@ stations subject to area access. The stand is a T3 Alchemist grid recipe:
 three Steel Bars, one Furnace and one Glass Bottle. Glass Bottles cost 3 copper.
 
 Potions restore or act immediately and share the persistent potion clock.
+Every successfully consumed potion or elixir plays one shared drinking sound;
+refused uses play no sound.
 Ordinary potions use 60 seconds; the Greater Healing and Greater Mana pair use
 45 seconds on that same clock. A full-health healing potion is refused without
 consumption or cooldown. A mana potion may be consumed at full mana. Elixirs
@@ -1105,7 +1107,8 @@ Neither of these costs a main profession slot (professions.md §1).
   **Food restore values** (recovery amended 2026-09-22). A serving lasts **300 s**, ticks every **5 s**,
   and the newest food replaces the old one. Eating is refused before consumption while the player is in combat.
   Accepted food heals instantly; its regeneration pauses during later combat,
-  while secondary modifiers remain active.
+  while secondary modifiers remain active. Successful eating plays one shared
+  eating sound at 0.5 gain; rejected attempts play no sound.
 
   | Tier | Minimum level | Instant HP | Dish regeneration per tick | Hearty secondary | Caster secondary | Hunter secondary |
   |---|---:|---:|---:|---|---|---|

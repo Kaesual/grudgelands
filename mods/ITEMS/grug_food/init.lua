@@ -229,6 +229,9 @@ function grug_food.eat(itemstack, user, tier, kind, role)
 	end
 	if start_food_status(user, tier, effect) then
 		itemstack:take_item(1)
+		core.sound_play({name = "grug_food_eat", gain = 0.5}, {
+			to_player = user:get_player_name(),
+		}, true)
 	end
 	return itemstack
 end

@@ -19,8 +19,11 @@ end
 
 grug_alchemy.apothecary_bonus = equipment_bonus
 
-local function consume(itemstack)
+local function consume(itemstack, player)
 	itemstack:take_item(1)
+	core.sound_play("grug_alchemy_drink", {
+		to_player = player:get_player_name(),
+	}, true)
 	return itemstack
 end
 
@@ -75,7 +78,7 @@ local function potion_use(kind, cooldown)
 				instant_potion_amount(player, maximum))
 		end
 		grug_traders.start_potion_cooldown(player, cooldown)
-		return consume(itemstack)
+		return consume(itemstack, player)
 	end
 end
 
@@ -100,14 +103,16 @@ local function utility_use(kind, duration)
 				label = "Swiftness +10%", duration = effective_duration,
 			})
 		elseif kind == "cave" then
-			player:override_day_night_ratio(0.45)
+			grug_core.set_night_vision(player, grug_core.NIGHT_VISION_RATIO)
 			grug_core.set_status(player, "alchemy_cave", {
 				label = "Cave Draught", duration = effective_duration,
-				on_expire = function(target) target:override_day_night_ratio(nil) end,
+				on_expire = function(target)
+					grug_core.set_night_vision(target, nil)
+				end,
 			})
 		end
 		grug_traders.start_potion_cooldown(player, grug_alchemy.POTION_COOLDOWN)
-		return consume(itemstack)
+		return consume(itemstack, player)
 	end
 end
 
@@ -140,7 +145,7 @@ local function elixir_use(definition)
 			refill_breath(player)
 		end
 		grug_core.set_status(player, "elixir", status)
-		return consume(itemstack)
+		return consume(itemstack, player)
 	end
 end
 
@@ -165,10 +170,7 @@ grug_alchemy.utility_use = utility_use
 grug_alchemy.elixir_use = elixir_use
 
 local function clear_visual(player)
-	if player and player.override_day_night_ratio then
-		player:override_day_night_ratio(nil)
-	end
+	grug_core.set_night_vision(player, nil)
 end
 
 core.register_on_dieplayer(clear_visual)
-core.register_on_leaveplayer(clear_visual)

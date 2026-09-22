@@ -122,6 +122,21 @@ z-mirroring. Those values remain a description of the running code only; they
 are not constraints on the new macro-map. WP40 removes or migrates every
 consumer before WP13 authors permanent structures.
 
+### Day/night and exterior visibility
+
+One complete world day lasts **20 real minutes**. The shared phase boundary is
+04:30/19:30 engine time: the day phase, including dawn and dusk, lasts **15
+minutes**, and the night phase lasts **5 minutes**. The clock advances at 60x
+during the day phase and 108x during the night phase; changing phase changes
+speed without jumping the current world time.
+
+At low natural sunlight the player lighting owner raises the sunlight ratio to
+a moderate **0.30 floor**. This improves outdoor night travel while preserving
+the absence of sunlight in enclosed caves. Cave Draught night vision composes
+through the same owner at **0.45** and never makes a naturally brighter time of
+day darker. Dawn and dusk keep the engine's smooth light curve above the active
+floor. These values are game rules, not new user settings.
+
 ## 2. Destructibility
 
 Rationale: free digging/building would break guard gating (tunneling),

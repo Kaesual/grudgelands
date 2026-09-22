@@ -788,7 +788,8 @@ design (`group_attack` stays on).
   may run; the latest replaces it. Every food has fixed instant HP by tier.
   Eating in combat is rejected before consuming the item or replacing a buff,
   with a short HUD notice. Accepted eating heals immediately; there is no
-  deferred instant-heal queue. Existing regeneration pauses during combat;
+  deferred instant-heal queue. A successful serving plays the shared eating
+  sound at **0.5 gain**; every refusal is silent. Existing regeneration pauses during combat;
   the status duration and secondary modifiers continue normally.
   - Raw/unprocessed food regenerates **2%** of maximum HP per tick at every
     tier. Wild Cocoa follows that HP rule and has no mana-pool requirement.
@@ -804,7 +805,9 @@ design (`group_attack` stays on).
 - **Alchemy v1** (2026-09-18): Healing and Mana Potions restore 30% of their
   current maximum pool and share one persistent 60-second clock. Their Greater
   T3 pair retains the 30% amount but starts that same clock for 45 seconds;
-  the mana half may be consumed at full mana. Antivenom clears poison,
+  the mana half may be consumed at full mana. Every successfully consumed
+  potion, draught or elixir plays the shared drinking sound; a refused use is
+  silent. Antivenom clears poison,
   Swiftness grants +10% speed for 5 seconds, and Cave Draught grants night
   vision for 10 minutes. One elixir status is active at a time and stacks with
   food: Vigor grants +5/10/15/20% maximum HP at T3–T6, Focus the same maximum
