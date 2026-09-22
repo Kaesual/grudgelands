@@ -24,12 +24,12 @@ projects: **[docs/research/](docs/research/)**.
 - This changes execution mechanics, not model authorization or independent
   review requirements. Read `docs/process/agent-model-policy.md` and
   `docs/process/cross-cli-orchestration.md` for those rules.
-- **Current development session (Round 15):** Claude credits are exhausted. No Claude CLI,
+- **Current development session (Round 16):** Claude credits are exhausted. No Claude CLI,
   Claude agent, Opus or Fable task is authorized in this session. Root is Astra;
   ordinary implementation/review uses native Sol, with native Astra allowed for
   hard/performance-critical work. This session restriction can change only by
   a later explicit user instruction. Durable active work state:
-  `docs/research/round15-execution.md` (current approved round).
+  `docs/research/round16-execution.md` (current approved round).
 
 ## Fresh-server development mode
 
@@ -66,6 +66,14 @@ projects: **[docs/research/](docs/research/)**.
   confirmation.
 
 ## Active round
+
+Round 16 has explicit user Go; plan: `docs/research/round16-plan.md`,
+active assignments and handoffs: `docs/research/round16-execution.md`.
+Approved simplifications: tile-based surface preparation progress and lightweight
+ice-crystal particles. No full-world prepass or fitted ice-shell entity.
+Its latest user corrections supersede earlier proposals (no close atlas-marker
+handling; 15/5-minute day/night; +50% kill XP; +30% ambient fightable mob density
+only, no PERF campaign; surface-following full preparation).
 
 Round 15 is delivered; completion is recorded in
 `docs/research/round15-completion.md`, next GUI pass in round15-playtest.md.

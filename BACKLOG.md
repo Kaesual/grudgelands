@@ -1,5 +1,9 @@
 # Backlog — Work Packages
 
+[Round 16 planning](docs/research/round16-plan.md) captures the latest playtest
+fixes, combat/quest tuning and surface-following world preparation. Approved and
+executing; [ledger](docs/research/round16-execution.md). No shipped-WP counts change.
+
 Round 15 technical gates and independent reviews pass:
 [completion](docs/research/round15-completion.md),
 [playtest](docs/research/round15-playtest.md). Merged, synchronized and pushed;

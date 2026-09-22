@@ -265,10 +265,15 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 
 ## Current State
 
-*Last updated: 2026-09-21. Derived from [BACKLOG.md](BACKLOG.md) and
+*Last updated: 2026-09-22. Derived from [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md). [Round 15](docs/research/round15-completion.md)
 is independently reviewed, merged, synchronized and pushed; fresh-world GUI
 acceptance remains separate.*
+
+**Next round:** [Round 16 planning](docs/research/round16-plan.md) records the
+new playtest fixes, progression/control tuning and surface-following preparation.
+Explicit Go received; [execution is underway](docs/research/round16-execution.md).
+Current shipped counts are unchanged.
 
 **Shipped foundation:** 27 of 53 tracked identities are complete: WP0–WP4,
 WP6–WP8, WP12, WP15, WP18–WP20, WP25, WP26, WP33, WP35, WP36, WP38–WP40,

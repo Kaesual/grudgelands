@@ -1,5 +1,9 @@
 # Roadmap — Grudgelands
 
+Next increment: [Round 16 plan](docs/research/round16-plan.md), covering playtest
+fixes and surface-following preparation. Explicit Go received; implementation is
+tracked in the [execution ledger](docs/research/round16-execution.md).
+
 Current technical status and evidence: [Round 15 completion](docs/research/round15-completion.md).
 Independent reviews and bounded final gates PASS; merged, synchronized and pushed.
 Fresh-world GUI acceptance remains separate.

@@ -1,6 +1,6 @@
 # World preparation
 
-Decided 2026-09-21; Round 14 user Go.
+Decided 2026-09-21; surface-selection revision approved 2026-09-22 (Round 16).
 
 
 ### Confirmed by the user
@@ -19,19 +19,26 @@ Decided 2026-09-21; Round 14 user Go.
   deterministic chunk traversal after restart. Do not complete all remaining
   starts or the full world before shutting down.
 - Bounds are named code constants, not additional configuration settings:
-  x_min/x_max/z_min/z_max/y_min/y_max. Cover both continents, the mainland
+  x_min/x_max/z_min/z_max. Select heights from conservative local surface
+  envelopes, not one global y_min/y_max slab. Cover both continents, the mainland
   frontier, both islands and a generous ocean margin.
 - The ocean margin is **20 mapblocks = 320 nodes**, rounded outward to actual
-  generation boundaries. The approximate -100/+300 vertical figures are coverage
-  targets, not fixed values; derive them from terrain and surface loading needs.
+  generation boundaries. Include land/water surface, exposed cliffs, structures
+  and vegetation. Extra air/soil within selected chunks is acceptable. Deep mines,
+  deep ocean floors and arbitrary high-altitude flight volumes are outside scope.
 
 ### Implementation constraints
 
 - One scheduler and one immutable ordered work list definition for both modes.
   Starts-only uses the deduplicated union of all six necessary start envelopes;
-  full-world uses a simple bounding cuboid. Avoid coast-following masks.
+  full-world resolves and generates one horizontal tile's local Y envelope at a
+  time in deterministic order. No full-world height prepass or global 3D list.
+  Use actual terrain/water/functional/content authority with boundary neighbors;
+  center/corner-only samples must not miss narrow peaks or exposed cliff faces.
 - Store mode, resolved bounds/order/chunk geometry and the contiguous completed
   cursor together so resume cannot reinterpret the same index differently.
+  Full mode persists horizontal tile and inner-chunk progress plus the resolved
+  current selection. Do not lose partial-tile completion on normal restart.
   This is current-world persistence, not compatibility with earlier versions.
 - First version: one mapchunk-sized request in flight. Persist the completed
   prefix only after all relevant block callbacks succeed, then defer the next
@@ -66,7 +73,9 @@ Decided 2026-09-21; Round 14 user Go.
   justified explicitly; clean stop/restart is the required acceptance case.
 - An immutable world mode overrides later config edits visibly in the server
   log. Completed worlds skip preparation on later starts.
-- Progress counts distinct completed work units, not callbacks or attempts.
+- Full-mode progress counts fully completed horizontal tiles, each only after
+  all required Y chunks succeed. Starts-only retains completed chunk progress.
+  Neither mode counts callbacks or attempts as completed work.
   ETA is approximate; show “estimating” initially, not a made-up duration.
 - Retain the existing safe creation/stasis gate; full-world completion satisfies
   the start-readiness interface without running a second generation pass.
@@ -75,7 +84,9 @@ Decided 2026-09-21; Round 14 user Go.
 - Do not confuse mapblocks (16 nodes per axis) with generation chunks
   (normally 80 nodes per axis). No 1,600-node ocean margin is required.
 
-Before freezing bounds, report the resulting chunk count and an estimate from
-a tiny representative native sample. Surface walking is the coverage objective;
-preparing every possible high-altitude flight view or deep mine is not required.
-No hours-long full-world generation is an agent acceptance test.
+Surface walking is the coverage objective; preparing every possible high-altitude
+flight view or deep mine is not required. Exact savings are not a deliverable.
+The initial ETA can be pessimistic and naturally fall after early progress; this
+is accepted and must not trigger estimator tuning. An optional final runtime
+estimate may use exactly one 60–120-second generation sample after implementation,
+then normal shutdown; no repeated development timing runs or full-world test.
