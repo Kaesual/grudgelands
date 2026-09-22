@@ -360,6 +360,11 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 				-- can ask the final height of a district plot's reference column
 				-- with the same function the writer projects that plot with.
 				planner_source = r6_identity.planner_source,
+				preparation_source = dofile(wp40_directory .. "/preparation_source.lua")(
+					r6_identity.planner_source, r6_identity.template_records, cultural,
+					settlements, public_zones_session, anchor_roster,
+					full_seed .. ":" .. manifest.values.source_projection_sha256,
+					core_api.sha256),
 				mapgen_context = mapgen_context}
 		end
 		local direct_session, direct_fixture, direct_identity

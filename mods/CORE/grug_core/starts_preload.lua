@@ -16,6 +16,8 @@ else
 	-- Bind the mode before resolving anchors or queueing any native work.
 	storage:set_string(STORAGE_KEY, core.serialize(state))
 end
+local source, scan
+local tile_elapsed = 0
 local pending, stopped, failed = false, false, false
 local attempts, retry_at, elapsed, samples = 0, 0, 0, 0
 local clock, accumulator = 0, 0
@@ -47,16 +49,36 @@ local function initialize()
 	assert(#identities == 6, "Preparation requires six authenticated start identities")
 	for _, row in ipairs(identities) do races[row.race_id] = true end
 	local geometry = core.get_mapgen_chunksize()
+	if state.mode == "full" then
+		local authority = grug_mapgen and grug_mapgen.wp40
+		assert(core.get_mapgen_setting("mg_name") == "v7" and authority and
+			authority.production_enabled and authority.preparation_source,
+			"Full preparation requires the current Grudgelands v7 surface authority")
+		source = authority.preparation_source
+		assert(type(source.identity) == "string" and type(source.tile_bounds) == "function" and
+			type(source.column_bounds) == "function", "Invalid surface preparation authority")
+	end
 	if not state.total then
 		state = plan_api.new(state.mode, geometry, identities)
+		state.authority = source and source.identity or nil
 		persist()
 	else
-		assert(state.order == "z-y-x" and type(state.cursor) == "number" and
+		assert(state.order == (state.mode == "full" and "z-x-local-y-v1" or "z-y-x") and type(state.cursor) == "number" and
 			state.cursor >= 0 and state.cursor <= state.total and state.cursor % 1 == 0,
 			"Invalid persisted preparation cursor/order")
 		for _, axis in ipairs({"x","y","z"}) do
 			assert(state.geometry[axis] == geometry[axis],
 				"World preparation chunk geometry changed; restore the original mapgen settings")
+		end
+		if source then
+			assert(state.authority == source.identity,
+				"Surface preparation authority changed; restore the original game and mapgen settings")
+			local tile = state.selection
+			if tile then
+				assert(tile.index == state.cursor+1 and tile.inner >= 0 and tile.inner % 1 == 0 and
+					tile.y_min+tile.inner*geometry.y*16 <= tile.y_max,
+					"Invalid persisted surface preparation selection")
+			end
 		end
 	end
 	core.log("action", ("[grug_core] world preparation mode=%s cursor=%d/%d"):
@@ -77,10 +99,14 @@ local function dispatch()
 		if expected[key] and not bad then expected[key] = false; count = count + 1 end
 		if remaining ~= 0 then return end
 		if not bad and count == total then
-			state.cursor = index
+			local completed = plan_api.complete(state)
 			persist()
-			elapsed = elapsed + (core.get_us_time()-started)/1000000
-			samples, attempts = samples + 1, 0
+			tile_elapsed = tile_elapsed + (core.get_us_time()-started)/1000000
+			if completed then
+				elapsed = elapsed + tile_elapsed
+				tile_elapsed, samples = 0, samples + 1
+			end
+			attempts = 0
 		else
 			retry_at = clock + 5
 			if attempts >= 3 then
@@ -111,5 +137,19 @@ core.register_globalstep(function(dtime)
 			for _, fn in ipairs(start_listeners) do fn(status.ready and 6 or 0,6,failed) end
 		end
 	end
-	if state.total and not ready() and not pending and not failed and clock >= retry_at then dispatch() end
+	if state.total and not ready() and not pending and not failed and clock >= retry_at then
+		if source and not state.selection then
+			scan = scan or plan_api.begin(state,source)
+			-- One bounded local scan per step, no full-world prepass. Partial
+			-- selection can be rebuilt after restart; completed chunks cannot.
+			local started = core.get_us_time()
+			if plan_api.scan(state,scan,source,512) then
+				scan = nil
+				persist() -- Freeze this tile's Y selection before its first request.
+			end
+			tile_elapsed = tile_elapsed + (core.get_us_time()-started)/1000000
+			return
+		end
+		dispatch()
+	end
 end)

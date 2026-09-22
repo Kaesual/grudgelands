@@ -45,7 +45,7 @@ Decided 2026-09-21; surface-selection revision approved 2026-09-22 (Round 16).
   dispatch through the main loop. This avoids out-of-order completion journals
   and an enormous emerge queue; do not add a custom worker fleet.
 - Derive the aligned mapgen-chunk grid from the engine's actual chunk origin
-  and size, including negative coordinates. Each work index identifies exactly
+  and size, including negative coordinates. Each dispatched unit identifies exactly
   one aligned 3D mapchunk and its expected mapblock set. Count distinct successful
   block positions, accepting generated/memory/disk outcomes; duplicate callbacks
   or one successful corner must not mark the whole chunk complete.
@@ -90,3 +90,28 @@ The initial ETA can be pessimistic and naturally fall after early progress; this
 is accepted and must not trigger estimator tuning. An optional final runtime
 estimate may use exactly one 60–120-second generation sample after implementation,
 then normal shutdown; no repeated development timing runs or full-world test.
+
+### Surface selection and current-world resume
+
+Full mode walks horizontal tiles in z/x order and selected Y chunks bottom-up.
+Each tile reads every terrain column in its local rectangle, including neighboring
+columns for cliff exposure and the decoded horizontal reach of vegetation roots.
+Water columns retain the real shallow bed down to eight nodes below their surface;
+content support and chunk rounding may include additional depth. Functional
+crossings and waterfall upper/lower heights join the same local envelope.
+
+Decoded tree rotations and cultural cells provide conservative content height
+allowances. Fitted settlement blueprints contribute their actual world boxes;
+terrain-relative plots use the writer's reference-column height. Capital avenues
+also include their authored neighboring-ground reach. Every start's full readiness
+box is included wherever its horizontal footprint intersects a tile. Conservative
+content allowances may apply where that content does not spawn.
+
+Selection advances in bounded local batches before the tile's first emerge request.
+The resolved Y interval and successful inner-chunk cursor are stored together;
+an interrupted, unfinished selection may be recomputed because it has generated
+nothing yet. Resume validates engine geometry and stable semantic source/seed and
+content-extents identity. Runtime content IDs are excluded from this identity,
+because a normal restart may assign different IDs to the same registered nodes.
+A mismatch stops preparation with a restoration message; there is no fallback
+volume, old-plan reader or migration.

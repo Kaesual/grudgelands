@@ -161,7 +161,7 @@ local function show_class_selection(player)
 end
 
 local function loading_formspec(status, failed)
-	local scope = status.mode == "full" and "the world" or "the starting areas"
+	local scope = status.mode == "full" and "the world surface" or "the starting areas"
 	local eta = "Estimating time remaining..."
 	if status.eta_seconds then
 		local minutes = math.ceil(status.eta_seconds / 60)
