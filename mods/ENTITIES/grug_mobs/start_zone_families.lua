@@ -83,6 +83,8 @@ local ibex = ground_defaults({
 	view_range = 14, _grug_spawn_check = start_band(4),
 	visual = "mesh", mesh = "grug_mobs_ibex.b3d",
 	textures = {{"grug_mobs_ibex.png"}}, visual_size = {x = 1, y = 1},
+	-- Bound the visible body and horns; keep the locomotion collision footprint.
+	selectionbox = {-0.43, -0.02, -0.72, 0.43, 1.80, 0.97, rotate = true},
 	collisionbox = {-0.4, -0.01, -0.4, 0.4, 0.5, 0.4},
 	makes_footstep_sound = true,
 	animation = {

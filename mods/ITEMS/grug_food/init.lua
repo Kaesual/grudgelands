@@ -8,49 +8,42 @@ grug_food.INTERVAL = 5
 
 grug_food.TIERS = {
 	[1] = {instant_hp = 5, min_level = 1, dishes = {
-		hearty = {regen = {hp = 2}, modifiers = {}},
-		caster = {regen = {hp = 2, mana = 2}, modifiers = {}},
-		hunter = {regen = {hp = 2}, modifiers = {}},
+		hearty = {regen = {hp = 4}, modifiers = {}},
+		caster = {regen = {hp = 4, mana = 4}, modifiers = {}},
+		hunter = {regen = {hp = 4}, modifiers = {}},
 	}},
 	[2] = {instant_hp = 15, min_level = 11, dishes = {
-		hearty = {regen = {hp = 2.5}, modifiers = {}},
-		caster = {regen = {hp = 2.5, mana = 2.5}, modifiers = {}},
-		hunter = {regen = {hp = 2.5}, modifiers = {}},
+		hearty = {regen = {hp = 5}, modifiers = {}},
+		caster = {regen = {hp = 5, mana = 5}, modifiers = {}},
+		hunter = {regen = {hp = 5}, modifiers = {}},
 	}},
 	[3] = {instant_hp = 40, min_level = 21, dishes = {
-		hearty = {regen = {hp = 3}, modifiers = {hp_pool_percent = 2}},
-		caster = {regen = {hp = 3, mana = 3},
+		hearty = {regen = {hp = 6}, modifiers = {hp_pool_percent = 2}},
+		caster = {regen = {hp = 6, mana = 6},
 			modifiers = {mana_pool_percent = 2}},
-		hunter = {regen = {hp = 3}, modifiers = {hp_pool_percent = 2}},
+		hunter = {regen = {hp = 6}, modifiers = {hp_pool_percent = 2}},
 	}},
 	[4] = {instant_hp = 90, min_level = 31, dishes = {
-		hearty = {regen = {hp = 3.5}, modifiers = {hp_pool_percent = 4}},
-		caster = {regen = {hp = 3.5, mana = 3.5},
+		hearty = {regen = {hp = 7}, modifiers = {hp_pool_percent = 4}},
+		caster = {regen = {hp = 7, mana = 7},
 			modifiers = {mana_pool_percent = 4}},
-		hunter = {regen = {hp = 3.5}, modifiers = {hp_pool_percent = 4}},
+		hunter = {regen = {hp = 7}, modifiers = {hp_pool_percent = 4}},
 	}},
 	[5] = {instant_hp = 180, min_level = 41, dishes = {
-		hearty = {regen = {hp = 4}, modifiers = {hp_pool_percent = 6}},
-		caster = {regen = {hp = 4, mana = 4},
+		hearty = {regen = {hp = 8}, modifiers = {hp_pool_percent = 6}},
+		caster = {regen = {hp = 8, mana = 8},
 			modifiers = {mana_pool_percent = 6}},
-		hunter = {regen = {hp = 4}, modifiers = {crit_percent = 1}},
+		hunter = {regen = {hp = 8}, modifiers = {crit_percent = 1}},
 	}},
 	[6] = {instant_hp = 300, min_level = 51, dishes = {
-		hearty = {regen = {hp = 5}, modifiers = {hp_pool_percent = 8}},
-		caster = {regen = {hp = 5, mana = 5},
+		hearty = {regen = {hp = 10}, modifiers = {hp_pool_percent = 8}},
+		caster = {regen = {hp = 10, mana = 10},
 			modifiers = {mana_pool_percent = 8}},
-		hunter = {regen = {hp = 5}, modifiers = {crit_percent = 1}},
+		hunter = {regen = {hp = 10}, modifiers = {crit_percent = 1}},
 	}},
 }
 
 grug_food.converted = {}
-
--- An instant heal deferred by combat outlives the timed food status. Keeping
--- it here also makes replacement explicit: one player has at most one unpaid
--- serving, and a newer serving overwrites it.
-local pending_instant = {} -- player name -> fixed HP amount
-local instant_check_accumulator = 0
-local INSTANT_CHECK_INTERVAL = 1
 
 local function number_text(value)
 	return ("%g"):format(value)
@@ -68,7 +61,7 @@ function grug_food.effect_for(tier, kind, role)
 		return nil
 	end
 	if kind == "raw" and (role == "hp" or role == "mana") then
-		return {regen = {[role] = 1}, modifiers = {}}
+		return {regen = {[role] = 2}, modifiers = {}}
 	end
 	if kind == "dish" then
 		return tier_def.dishes[role]
@@ -110,16 +103,6 @@ local function restore_mana(player, percent)
 	end
 	return grug_abilities.restore_mana(player,
 		grug_food.tick_amount(maximum, percent))
-end
-
-local function assign_instant(player, amount)
-	local name = player:get_player_name()
-	if grug_core.in_combat(player) then
-		pending_instant[name] = amount
-		return
-	end
-	pending_instant[name] = nil
-	restore_health_flat(player, amount)
 end
 
 local function modifier_parts(modifiers, tooltip)
@@ -187,7 +170,7 @@ local function tooltip_for(tier, effect)
 		lines[#lines + 1] = "Grants " .. table.concat(bonuses, " and ") ..
 			" while active."
 	end
-	lines[#lines + 1] = "Instant heal and regeneration wait until you are out of combat; other bonuses stay."
+	lines[#lines + 1] = "Cannot eat in combat. Regeneration pauses in combat; other bonuses stay."
 	if tier_def.min_level > 1 then
 		lines[#lines + 1] = "Requires level " .. tier_def.min_level .. "."
 	end
@@ -215,40 +198,18 @@ local function start_food_status(player, tier, effect)
 		end,
 	})
 	if record then
-		assign_instant(player, tier_def.instant_hp)
+		restore_health_flat(player, tier_def.instant_hp)
 	end
 	return record
 end
 
-local function clear_pending_instant(player)
-	pending_instant[player:get_player_name()] = nil
-end
-
-core.register_on_dieplayer(clear_pending_instant)
-core.register_on_leaveplayer(clear_pending_instant)
-
--- The status registry deliberately removes food and its modifiers at the configured duration.
--- Check only players that still have an unpaid instant heal, so a long combat
--- can end later without extending the buff or scanning every connected player.
-core.register_globalstep(function(dtime)
-	instant_check_accumulator = instant_check_accumulator + dtime
-	if instant_check_accumulator < INSTANT_CHECK_INTERVAL then
-		return
-	end
-	instant_check_accumulator = instant_check_accumulator %
-		INSTANT_CHECK_INTERVAL
-	for name, amount in pairs(pending_instant) do
-		local player = core.get_player_by_name(name)
-		if player and player:get_hp() > 0 and not grug_core.in_combat(player) then
-			pending_instant[name] = nil
-			restore_health_flat(player, amount)
-		end
-	end
-end)
-
 function grug_food.eat(itemstack, user, tier, kind, role)
 	if not user or not user.is_player or not user:is_player() or
 			user:get_hp() <= 0 then
+		return itemstack
+	end
+	if grug_core.in_combat(user) then
+		grug_abilities.notify(user, "Cannot eat while in combat.")
 		return itemstack
 	end
 	local effect = grug_food.effect_for(tier, kind, role)
@@ -268,6 +229,9 @@ function grug_food.eat(itemstack, user, tier, kind, role)
 	end
 	if start_food_status(user, tier, effect) then
 		itemstack:take_item(1)
+		core.sound_play({name = "grug_food_eat", gain = 0.5}, {
+			to_player = user:get_player_name(),
+		}, true)
 	end
 	return itemstack
 end

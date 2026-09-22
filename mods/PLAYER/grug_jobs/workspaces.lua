@@ -164,7 +164,7 @@ local function formspec(ctx)
 		if ctx.operation then result = result .. "button[7.3,2.3;2,0.8;apply;Apply]" end
 	end
 	return result .. "list[current_player;main;1,6;8,1;]list[current_player;main;1,7.25;8,3;8]" ..
-		default.get_hotbar_bg(1, 6) .. grug_jobs.station_book_button(ctx.station)
+		default.get_hotbar_bg(1, 6) .. grug_jobs.station_book_button(ctx.station, 10.3, 2.3)
 end
 
 refresh = function(ctx, show)

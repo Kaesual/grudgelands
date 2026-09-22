@@ -1,5 +1,11 @@
 # Backlog — Work Packages
 
+[Round 16](docs/research/round16-completion.md) is technically complete and
+independently reviewed: mount/combat/map fixes, quest/kill XP, food/UI,
+atmosphere/audio/density and surface-following preparation. Final static,
+portable parity and native registration gates PASS; delivery receipt pending.
+No shipped-WP counts change. Next: [playtest](docs/research/round16-playtest.md).
+
 Round 15 technical gates and independent reviews pass:
 [completion](docs/research/round15-completion.md),
 [playtest](docs/research/round15-playtest.md). Merged, synchronized and pushed;

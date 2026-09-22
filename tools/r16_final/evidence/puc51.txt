@@ -1,0 +1,26 @@
+fixture=r16_mounts/lifecycle.lua
+mount-lifecycle:12:ok
+fixture=r16_map/kat.lua
+r16_map lifecycle=open-only idle-writes=0 close=Character death=clean disconnect=clean
+r16_map geometry=pass headings=16 identity=stable party=online quest=individual services=static draw-order=v3 views=clipped
+fixture=r16_ui/food_hud.lua
+food-hud:24-routes:success-audio:combat-refusal-silent:double-regen:expiry:hud-lifecycle:ok
+fixture=r16_progression/kat.lua
+quests=102;r14=66;r15=36;npcs=30;routes=6;handoffs=6;local_per_route=6;local_per_poi=2;items=12;kills=24
+r14-quests-core: PASS bag hand-in, live readiness, one-time claim, reward space, abandon/reset, 20 slots, HUD persistence, player isolation
+runtime=admin+kill;grant=25;split=75;racial=83;eligible=2;gray=0
+R16_PROGRESSION_OK
+fixture=r16_combat/control_kat.lua
+r16-combat	threat-expiry	stun	nova	PASS
+
+fixture=r16_surface/fixture.lua
+r16-surface: tiles=8811 flat peak cliff geometry starts inner-resume cancel retry authority=ok
+
+fixture=r16_surface/content_fixture.lua
+r16-surface-content: water bridge waterfall templates fixed/reference structures avenues anchors=ok
+
+fixture=r16_surface/identity_fixture.lua
+surface-identity:15-files:stable-restart:terrain-layout-selector-mismatch:ok
+fixture=r16_atmosphere/portable.lua
+atmosphere:15-5:light-floor:night-vision:audio-success-only:density-1.3:ok
+round16-final-micro: PASS fixtures=9

@@ -271,8 +271,8 @@ only mirrored into the registry for display.
   second, capped at eight lines. Each line is `Name  1:23`; a numeric value
   may follow the name, as in `Shield 12  0:09`. Durations under ten minutes
   use `m:ss`; longer durations use the largest fitting unit.
-- Food labels state the active effect, for example `Food +1% HP/5s` or
-  `Food +2% HP, +4% Mana/5s, +2% HP pool`. The regeneration text remains
+- Food labels state the active effect, for example `Food +2% HP/5s` or
+  `Food +6% HP, +6% Mana/5s, +2% Mana pool`. The regeneration text remains
   visible during combat even though those ticks pause; the item tooltip
   explains that secondary bonuses remain active.
 - One throttled 1 s pass owns timed ticks, expiry and display refresh. It
@@ -310,3 +310,11 @@ default on; empty quest logs and ungrouped players have no corresponding HUD.
 Party rows show name and HP only, with explicit offline state. HUD allocation
 uses the shared layout authority so party, quest and transient notices do not
 overlap existing combat bars, target information or status effects.
+
+## Round 16 readability amendments (2026-09-22)
+
+Armor hover descriptions explicitly state Cloth, Leather or Metal, including
+named enchanted variants. A compact Combat indicator appears beside the life
+bar only while the living player is in the existing combat state. Station recipe
+book buttons occupy a separate right-hand position clear of input/fuel/output
+slots, mode explanations and crafting-operation controls.

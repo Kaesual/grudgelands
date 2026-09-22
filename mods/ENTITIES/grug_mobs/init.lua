@@ -223,7 +223,9 @@ function grug_mobs.award_kill_xp(self)
 		for i = 1, count do
 			local player = eligible[i]
 			local player_level = grug_xp.get_level(player)
-			local xp = grug_mobs.kill_xp(self, player_level)
+			-- Round 16 raises kill XP once at the settlement authority, before
+			-- the existing participant split and per-recipient race bonus.
+			local xp = math.floor(grug_mobs.kill_xp(self, player_level) * 1.5)
 			if (self._grug_level or 1) <= player_level - 10
 					or grug_factions.same_faction(player, self.object) then
 				xp = 0
@@ -355,6 +357,23 @@ function grug_mobs.root(ent, duration)
 	end
 end
 
+-- Stun is independent of root, and blocks the complete custom/native AI pass.
+function grug_mobs.stun(ent, duration)
+	if not ent or ent._grug_boss_id or ent._grug_royal_king
+			or ent.state == "die" or (ent.health or 0) <= 0 then return false end
+	save_speed_base(ent)
+	ent._grug_stun_left = math.max(ent._grug_stun_left or 0, duration)
+	ent.walk_velocity, ent.run_velocity = 0, 0
+	ent.timer, ent.timer1 = 0, 0
+	ent.temp = ent.temp or {}
+	ent.temp.grug_tg_left, ent.temp.grug_tg_engaged = nil, nil
+	ent.temp.grug_telegraph = nil
+	if ent.update_tag then ent:update_tag() end
+	local velocity = ent.object:get_velocity()
+	if velocity then ent.object:set_velocity(vector.new(0, velocity.y, 0)) end
+	return true
+end
+
 -- Slow to `factor` (e.g. 0.5 = half speed) for `duration` seconds. While
 -- a root is active the slow is queued and its duration starts afterwards.
 -- Overlapping slows: the stronger factor and the longer remaining
@@ -370,7 +389,7 @@ function grug_mobs.slow(ent, duration, factor)
 	end
 end
 
-local function tick_speed_effects(self, dtime)
+function grug_mobs.tick_speed_effects(self, dtime)
 	-- EVADE OWNS THE SPEEDS (aggro.lua, combat_stats.md §4). An evading mob
 	-- runs home at 1.5x its run speed, and there must stay exactly ONE owner
 	-- of walk_velocity/run_velocity (the two-owner bug class crocodile.lua's
@@ -397,6 +416,8 @@ local function tick_speed_effects(self, dtime)
 	if self.temp and self.temp.grug_evading then
 		save_speed_base(self)
 		self._grug_root_left = nil
+		self._grug_stun_left = nil
+		self._grug_nova_left = nil
 		self._grug_slow_left = nil
 		self._grug_slow_factor = nil
 		local base = self._grug_speed_base
@@ -405,8 +426,21 @@ local function tick_speed_effects(self, dtime)
 		self.run_velocity = run * grug_mobs.EVADE_SPEED_FACTOR
 		return
 	end
+	if (self._grug_nova_left or 0) > 0 and (self._grug_root_left or 0) > 0
+			and self.health > 0 then
+		self.temp = self.temp or {}
+		self.temp.grug_ice_tick = (self.temp.grug_ice_tick or 0) + dtime
+		if self.temp.grug_ice_tick >= 0.3 then
+			self.temp.grug_ice_tick = 0
+			grug_core.emit_root_crystals(self.object)
+		end
+	end
 	if not self._grug_speed_base then
 		return
+	end
+	local stunned = (self._grug_stun_left or 0) > 0
+	if (self._grug_nova_left or 0) > 0 then
+		self._grug_nova_left = math.max(0, self._grug_nova_left - dtime)
 	end
 	if (self._grug_root_left or 0) > 0 then
 		self._grug_root_left = self._grug_root_left - dtime
@@ -416,15 +450,18 @@ local function tick_speed_effects(self, dtime)
 		self._grug_root_left = nil
 	end
 	if (self._grug_slow_left or 0) > 0 then
-		-- Re-applied every tick: idempotent field writes, self-heals mobs
-		-- reactivated mid-slow from a save.
+		-- The slow clock advances during stun, but starts only after root.
 		local factor = self._grug_slow_factor or 0.5
-		self.walk_velocity = self._grug_speed_base.walk * factor
-		self.run_velocity = self._grug_speed_base.run * factor
 		self._grug_slow_left = self._grug_slow_left - dtime
-		if self._grug_slow_left > 0 then
+		if self._grug_slow_left > 0 and not stunned then
+			self.walk_velocity = self._grug_speed_base.walk * factor
+			self.run_velocity = self._grug_speed_base.run * factor
 			return
 		end
+	end
+	if stunned then
+		self.walk_velocity, self.run_velocity = 0, 0
+		return
 	end
 	-- All effects expired (or stale state from an old/broken save): restore.
 	self.walk_velocity = self._grug_speed_base.walk
@@ -575,6 +612,8 @@ function grug_mobs.register_mob(name, def)
 	-- CMI have both accepted. NB any truthy do_punch return cancels.
 	local old_do_punch = def.do_punch
 	def.do_punch = function(self, hitter, tflp, tool_capabilities, dir, damage)
+		if hitter and core.is_player(hitter) and grug_core.is_stunned(hitter)
+				and not grug_core.in_ability_punch then return true end
 		--
 		-- EVADE = UNTOUCHABLE (combat_stats.md §4). An evading mob (aggro.lua)
 		-- cancels EVERY punch outright, and this is the first statement in the
@@ -668,8 +707,15 @@ function grug_mobs.register_mob(name, def)
 		-- (api.lua:3908-3935), so the aggro fields the api.lua patches read
 		-- are always in place in time.
 		grug_mobs.apply_aggro_fields(self, aggro_cfg)
-		tick_speed_effects(self, dtime)
+		grug_mobs.tick_speed_effects(self, dtime)
 		grug_mobs.leash_tick(self, dtime)
+
+		if (self._grug_stun_left or 0) > 0 then
+			local velocity = self.object:get_velocity()
+			if velocity then self.object:set_velocity(vector.new(0, velocity.y, 0)) end
+			self.timer, self.timer1 = 0, 0
+			return false
+		end
 		-- Elite/rare wind-up (telegraph.lua). Guarded here so a mob that does
 		-- not telegraph pays one table lookup per step and nothing else.
 		--

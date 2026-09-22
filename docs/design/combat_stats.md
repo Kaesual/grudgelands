@@ -417,7 +417,9 @@ the editable land rule.
 Normal tier at level L:
 
 - **HP** = `20 + 5×L + 0.66×L²` · **Damage/hit** =
-  `2 + 0.3×L + 0.005×L²`, rounded to one decimal · **XP** = `10×L`
+  `2 + 0.3×L + 0.005×L²`, rounded to one decimal · **base XP** = `10×L`.
+  The Round 16 kill award multiplies this base by 1.5 before participant
+  splitting and racial bonuses (normal same-level solo award: `15×L`).
 - mobs_redo armor: normal 100, **elite 80 (×3 HP, ×1.8 dmg, ×4 XP)**,
   **rare patrol 70 (×5 HP, ×2.2 dmg, ×6 XP)**, and the registered
   **boss tier (×20 HP only; normal damage, XP and armor; no telegraph)**.
@@ -496,8 +498,10 @@ Normal tier at level L:
   Archer**, one slot in three of the existing bandit camp, which takes the
   registered ranged roster from **4 of 43 to 5 of 44** and is the first ranged
   enemy a player meets in the inner ring.
-- Pacing property: ~**20 same-level mob kills per level** (XP=10L vs.
-  quadratic level curve); quests supply the rest.
+- Pacing property after Round 16: normal same-level solo kills award **15L XP**
+  before racial bonuses. The quadratic interval `(200L - 100)` needs about
+  7 kills at level 1 and approaches 13.3 at higher levels without quests;
+  quest rewards are additional.
 - **Gray kills award no XP**: a mob at level ≤ killer level − 10 gives 0
   XP (kills trivial-mob farming).
 - **XP level cap**: calculate each recipient's formula with effective mob
@@ -568,12 +572,12 @@ Normal tier at level L:
   designed fixed entity. Its implemented uses are the Kraken Guard at L100 and
   every WP13 king at L65. No second king-specific fixed-level path exists.
 
-| Mob level | HP | Dmg/hit | XP |
-|-----------|----|---------|----|
-| 1 | 26 | 2.3 | 10 |
-| 10 | 136 | 5.5 | 100 |
-| 30 | 764 | 15.5 | 300 |
-| 60 | 2696 | 38.0 | 600 |
+| Mob level | HP | Dmg/hit | Base XP | Normal same-level solo award, before race bonus |
+|-----------|----|---------|--------:|-----------------------------------------------:|
+| 1 | 26 | 2.3 | 10 | 15 |
+| 10 | 136 | 5.5 | 100 | 150 |
+| 30 | 764 | 15.5 | 300 | 450 |
+| 60 | 2696 | 38.0 | 600 | 900 |
 
 ### Same-level TTK check
 
@@ -786,15 +790,12 @@ design (`group_attack` stays on).
   2026-09-17; `items_crafting.md` §3.7 owns the tier table). Eating grants a
   runtime-only **300 s** buff with one tick every **5 s**. Only one food status
   may run; the latest replaces it. Every food has fixed instant HP by tier.
-  Out of combat that heal applies immediately. In combat the serving may be
-  eaten, but the heal waits exactly once for the first out-of-combat moment,
-  checked every second, and regeneration ticks do nothing. The unpaid instant
-  heal survives the buff's 300-second expiry; regeneration and secondary
-  modifiers still end on time.
-  A newer serving replaces, rather than adds to, an unpaid instant heal. Death
-  or leaving clears it. Combat never cancels or pauses the duration, and
-  secondary status modifiers remain active in combat.
-  - Raw/unprocessed food regenerates **1%** of maximum HP per tick at every
+  Eating in combat is rejected before consuming the item or replacing a buff,
+  with a short HUD notice. Accepted eating heals immediately; there is no
+  deferred instant-heal queue. A successful serving plays the shared eating
+  sound at **0.5 gain**; every refusal is silent. Existing regeneration pauses during combat;
+  the status duration and secondary modifiers continue normally.
+  - Raw/unprocessed food regenerates **2%** of maximum HP per tick at every
     tier. Wild Cocoa follows that HP rule and has no mana-pool requirement.
     Food restores mana only through the Caster dishes.
   - Dishes read their HP, mana or split regeneration plus secondary modifiers
@@ -808,7 +809,9 @@ design (`group_attack` stays on).
 - **Alchemy v1** (2026-09-18): Healing and Mana Potions restore 30% of their
   current maximum pool and share one persistent 60-second clock. Their Greater
   T3 pair retains the 30% amount but starts that same clock for 45 seconds;
-  the mana half may be consumed at full mana. Antivenom clears poison,
+  the mana half may be consumed at full mana. Every successfully consumed
+  potion, draught or elixir plays the shared drinking sound; a refused use is
+  silent. Antivenom clears poison,
   Swiftness grants +10% speed for 5 seconds, and Cave Draught grants night
   vision for 10 minutes. One elixir status is active at a time and stacks with
   food: Vigor grants +5/10/15/20% maximum HP at T3–T6, Focus the same maximum
@@ -921,3 +924,14 @@ design (`group_attack` stays on).
   cost).
 - MVP scope: torch + shield first; class-specific offhands once the
   items exist.
+
+### Round 16 control and threat expiry
+
+Taunt retains three seconds of forced targeting and top threat times 1.1. Threat
+accumulates without time decay; valid rivals need more than 120% of a valid
+current target's threat. Taunt and player threat refuse evading mobs before
+forcing a target or changing the ledger. A suppressed switch remains pending through the forced
+window and is reconsidered after expiry even without a new hit. Invalid current
+targets do not impose hysteresis on valid rivals. Charge stun lasts 1.5 seconds
+on accepted hits, excluding kings and dragons; it cancels pending attacks and
+blocks movement and attack execution, preserving gravity.

@@ -131,7 +131,12 @@ local function hud_progress(player)
 		width = layout.bar_fill(xp - floor_xp,
 			grug_xp.xp_for_level(level + 1) - floor_xp, layout.XP_WIDTH)
 	end
-	return width, "Lv " .. level
+	if level >= grug_xp.MAX_LEVEL then
+		return width, "Lv " .. level .. " (max)"
+	end
+	local floor_xp = grug_xp.xp_for_level(level)
+	local interval = grug_xp.xp_for_level(level + 1) - floor_xp
+	return width, ("Lv %d (%d/%d)"):format(level, xp - floor_xp, interval)
 end
 
 hud_update = function(player)
@@ -170,23 +175,36 @@ end)
 --
 
 core.register_chatcommand("xp", {
-	params = "[<amount>]",
-	description = "Show your XP or (as admin) add XP",
+	params = "[give <player> <amount>]",
+	description = "Show your XP or grant XP to an online player",
 	func = function(name, param)
 		local player = core.get_player_by_name(name)
 		if not player then
-			return false
+			return false, "Player is not online."
 		end
-		if param ~= "" then
-			local amount = tonumber(param)
-			if not amount then
-				return false, "Not a number: " .. param
-			end
-			if not core.check_player_privs(name, {server = true}) then
-				return false, "You need the 'server' privilege for this."
-			end
-			grug_xp.add_xp(player, amount)
+		if param == "" then
+			return true, hud_text(player)
 		end
-		return true, hud_text(player)
+		local target_name, amount_text = param:match("^give%s+(%S+)%s+(%S+)%s*$")
+		if not target_name then
+			return false, "Usage: /xp give <player> <positive amount>"
+		end
+		if not core.check_player_privs(name, {server = true}) then
+			return false, "You need the 'server' privilege for this."
+		end
+		local amount = tonumber(amount_text)
+		if not amount or amount < 1 or amount % 1 ~= 0 then
+			return false, "Amount must be a positive whole number."
+		end
+		local target = core.get_player_by_name(target_name)
+		if not target then
+			return false, "Player is not online: " .. target_name
+		end
+		local maximum = grug_xp.xp_for_level(grug_xp.MAX_LEVEL)
+		if amount > maximum - grug_xp.get_xp(target) then
+			return false, "Grant would exceed the level 60 XP maximum."
+		end
+		grug_xp.add_xp(target, amount)
+		return true, target_name .. ": " .. hud_text(target)
 	end,
 })

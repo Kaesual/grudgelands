@@ -79,6 +79,10 @@ local function make_player(harness, name, x, y, z)
 		harness.sent[#harness.sent + 1] = {name = name, kind = "clouds",
 			value = value}
 	end
+	function self.override_day_night_ratio(_, value)
+		harness.sent[#harness.sent + 1] = {name = name, kind = "ratio",
+			value = value}
+	end
 	-- The mod calls these with `:`, so the first argument is the table itself;
 	-- the closures above already ignore it.
 	return self
@@ -131,10 +135,13 @@ local function load_harness(opts)
 		joins = {},
 		leaves = {},
 		commands = {},
+		shutdowns = {},
 		players = {},
 		logs = {},
 		get_calls = 0,
 		id_at_calls = 0,
+		timeofday = 0.5,
+		time_speeds = {},
 	}
 
 	local core_stub = {}
@@ -148,13 +155,33 @@ local function load_harness(opts)
 		get = function()
 			return nil
 		end,
+		set = function(_, key, value)
+			assert(key == "time_speed")
+			harness.time_speeds[#harness.time_speeds + 1] = tonumber(value)
+		end,
 	}
+	function core_stub.get_timeofday()
+		return harness.timeofday
+	end
+	function core_stub.time_to_day_night_ratio(value)
+		return value >= 0.25 and value <= 0.75 and 1 or 0.175
+	end
+	function core_stub.get_connected_players()
+		local players = {}
+		for _, player in pairs(harness.players) do
+			players[#players + 1] = player
+		end
+		return players
+	end
 	function core_stub.log(level, message)
 		harness.logs[#harness.logs + 1] = tostring(level) .. ": " ..
 			tostring(message)
 	end
 	function core_stub.register_globalstep(fn)
 		harness.globalsteps[#harness.globalsteps + 1] = fn
+	end
+	function core_stub.register_on_shutdown(fn)
+		harness.shutdowns[#harness.shutdowns + 1] = fn
 	end
 	function core_stub.register_on_joinplayer(fn)
 		harness.joins[#harness.joins + 1] = fn
@@ -669,9 +696,9 @@ do
 	h.step(40, 0.25)
 	check(#h.sent == 0, "with grug_atmosphere_enabled = false, " .. #h.sent ..
 		" packet(s) were sent, want 0")
-	check(#h.globalsteps == 0,
+	check(#h.globalsteps == 1,
 		"with grug_atmosphere_enabled = false, " .. #h.globalsteps ..
-		" globalstep(s) were registered, want 0")
+		" globalstep(s) were registered, want the world-clock owner only")
 	local ok, message = h.command("carol", "dwarf")
 	check(not ok, "the master switch did not refuse /atmosphere dwarf")
 	ok, message = h.command("carol", "auto")
@@ -683,9 +710,9 @@ do
 	local h = load_harness({grug_atmosphere_zones = false})
 	h.join("dave", band_x(1), 20, 0)
 	h.step(40, 0.25)
-	check(#h.globalsteps == 0,
+	check(#h.globalsteps == 1,
 		"with grug_atmosphere_zones = false, " .. #h.globalsteps ..
-		" globalstep(s) were registered, want 0")
+		" globalstep(s) were registered, want the world-clock owner only")
 	-- Only the join preset from atmosphere.lua, and no zone evaluation.
 	check(#summarize(h.sent) == 1, "with the zone layer off, join sent " ..
 		#summarize(h.sent) .. " set(s), want 1 (the shipped default)")

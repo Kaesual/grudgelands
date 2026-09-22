@@ -364,6 +364,9 @@ function mobs:scale_mob(self, w, h, perma)
 		self.base_selbox[3] * w, self.base_selbox[4] * w,
 		self.base_selbox[5] * h, self.base_selbox[6] * w}
 
+	-- GRUG PATCH: retain oriented selection boxes when scaling (Ibex).
+	selbox.rotate = self.base_selbox.rotate
+
 	if perma then -- makes new scale permanent by overriding base values
 		self.base_size = vis_size
 		self.base_colbox = colbox
@@ -3878,6 +3881,20 @@ function mob_class:on_step(dtime, moveresult)
 
 	local pos = self.object:get_pos() ; if not pos then return end
 
+	-- GRUG PATCH: tick stun before native jump and knockback pause handling.
+	-- Preserve gravity/environment damage; no custom or native attack runs.
+	local grug_stunned = (self._grug_stun_left or 0) > 0
+	if grug_stunned then
+		self._grug_stun_left = math.max(0, self._grug_stun_left - dtime)
+		self.pause_timer = math.max(0, (self.pause_timer or 0) - dtime)
+		local velocity = self.object:get_velocity()
+		if velocity then self.object:set_velocity({x = 0, y = velocity.y, z = 0}) end
+		self.timer, self.timer1 = 0, 0
+		if grug_mobs and grug_mobs.tick_speed_effects then
+			grug_mobs.tick_speed_effects(self, dtime)
+		end
+	end
+
 	self.node_timer = (self.node_timer or 0) + dtime
 
 	-- get nodes (every 1/4 second by default)
@@ -3895,7 +3912,7 @@ function mob_class:on_step(dtime, moveresult)
 		-- has mob expired (0.25 instead of dtime since were in a timer)
 		if self:mob_expire(pos, node_timer_interval) then return end
 
-		self:do_jump() -- jump if not blocked
+		if not grug_stunned then self:do_jump() end -- GRUG PATCH: stun veto
 	end
 
 	-- falling check, return if dead
@@ -3925,6 +3942,8 @@ function mob_class:on_step(dtime, moveresult)
 
 		self:check_item_pickup(pos) -- look for dropped items
 	end
+
+	if grug_stunned then return end -- GRUG PATCH: no pending/custom attack
 
 	if self.pause_timer > 0 then -- knockback timer
 

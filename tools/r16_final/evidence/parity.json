@@ -1,0 +1,16 @@
+{
+  "fixtures": 9,
+  "changed_lua_files": 53,
+  "results": [
+    {
+      "interpreter": "puc51",
+      "seconds": 0.034638,
+      "sha256": "193d7aa7b7e653efa4aa97760111f6192ddb0fc184999f3a26afbb5f9975b2ee"
+    },
+    {
+      "interpreter": "luajit",
+      "seconds": 0.022603,
+      "sha256": "193d7aa7b7e653efa4aa97760111f6192ddb0fc184999f3a26afbb5f9975b2ee"
+    }
+  ]
+}

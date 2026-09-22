@@ -28,10 +28,12 @@ remains visible; clear selection when it disappears or leaves the current view. 
 the inventory page to Character. A later explicit Map click starts a new live
 session; closed maps receive no polling or formspec refreshes.
 
-Authored quest givers have interactive markers with the same per-player
-ready/available/active/locked precedence as their world symbols. Tooltips show
-name and status. Givers within the same authored settlement share one marker
-using their highest-priority state; its tooltip lists every currently relevant
-giver and individual status. This grouping uses settlement identity, not a
-distance threshold. Map markers confer no remote quest interaction or travel.
-Waypoints remain a later package.
+Round 16 (approved 2026-09-22): authored quest givers have individual icon
+markers with the same per-player ready/available/active/locked precedence as
+world symbols. Include individual profession/Riding trainers, the six kings and
+two dragons at their authored locations. NPC/boss markers do not query live
+entities, load terrain, reveal health or indicate respawn state. All NPC/player
+hover tooltips contain only the name. Markers are not clustered, displaced or
+merged when nearby; subsequent playtest feedback decides whether any handling
+is necessary. Map markers confer no remote interaction or travel. Waypoints
+remain a later package.

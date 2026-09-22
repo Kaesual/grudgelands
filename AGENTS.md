@@ -24,12 +24,12 @@ projects: **[docs/research/](docs/research/)**.
 - This changes execution mechanics, not model authorization or independent
   review requirements. Read `docs/process/agent-model-policy.md` and
   `docs/process/cross-cli-orchestration.md` for those rules.
-- **Current development session (Round 15):** Claude credits are exhausted. No Claude CLI,
+- **Current development session (Round 16):** Claude credits are exhausted. No Claude CLI,
   Claude agent, Opus or Fable task is authorized in this session. Root is Astra;
   ordinary implementation/review uses native Sol, with native Astra allowed for
   hard/performance-critical work. This session restriction can change only by
   a later explicit user instruction. Durable active work state:
-  `docs/research/round15-execution.md` (current approved round).
+  `docs/research/round16-execution.md` (current approved round).
 
 ## Fresh-server development mode
 
@@ -66,6 +66,16 @@ projects: **[docs/research/](docs/research/)**.
   confirmation.
 
 ## Active round
+
+Round 16 is technically complete and independently reviewed; final gates PASS.
+Delivery receipt: `docs/research/round16-completion.md`; next GUI pass:
+`docs/research/round16-playtest.md`. Plan: `docs/research/round16-plan.md`;
+execution history: `docs/research/round16-execution.md`.
+Approved simplifications: tile-based surface preparation progress and lightweight
+ice-crystal particles. No full-world prepass or fitted ice-shell entity.
+Its latest user corrections supersede earlier proposals (no close atlas-marker
+handling; 15/5-minute day/night; +50% kill XP; +30% ambient fightable mob density
+only, no PERF campaign; surface-following full preparation).
 
 Round 15 is delivered; completion is recorded in
 `docs/research/round15-completion.md`, next GUI pass in round15-playtest.md.
@@ -561,8 +571,9 @@ Details + line numbers in [docs/research/](docs/research/).
   and the modifier-change callback drives the same HP/mana clamp and HUD/page
   refresh path as talents. `grug_food.TIERS` owns fixed instant HP, minimum
   level and the Hearty/Caster/Hunter dish data; raw foods, including Wild
-  Cocoa, always regenerate 1% HP per 5 s. Food lasts 300 s; its instant heal
-  and regeneration defer/pause in combat, secondary modifiers do not, and the
+  Cocoa, always regenerate 2% HP per 5 s. Food lasts 300 s. Eating during
+  combat is refused before consumption; accepted food heals instantly, and its
+  regeneration pauses during later combat while secondary modifiers persist. The
   latest food replaces the previous one. `grug_core.can_use_item_level` is the
   shared `_grug_ilvl` gate for the Weapon slot and all consumables. Potions
   retain their instant channel and shared persistent cooldown.
@@ -938,13 +949,21 @@ Details + line numbers in [docs/research/](docs/research/).
   to real coordinates after the existing legacy sfinv navigation. No fog,
   generated-world requirement, terrain bitmap extraction or travel unlocking.
   Round 15 adds gold self/cyan online-party heading markers and per-viewer quest
-  status markers. Stable byte-encoded IDs own click identity. Only active Map
+  status markers. Round 16 uses formspec v3 to keep markers above the atlas
+  raster, with legacy navigation coordinates retained. Individual quest givers,
+  profession/Riding trainers, kings and dragons use authored positions and
+  names-only tooltips; no marker grouping or collision handling. Stable
+  byte-encoded IDs own click identity. Only active Map
   sessions poll at 0.5 seconds and write changed formspecs; closing Map resets
   to Character, and leave/death clean up the live session.
 - **Preparation (Round 14):** `grug_core` freezes starts/full mode in world
   storage on first boot. A stable aligned plan has one in-flight chunk and a
   success-only cursor; dispatch occurs in throttled globalstep, not callbacks.
   Full mode includes a 320-node ocean margin and replaces starts preparation.
+  Round 16 resolves one conservative surface envelope at a time, counts completed
+  horizontal tiles and persists the inner Y-chunk cursor. Its authority identity
+  binds stable seed/content and bounded terrain-source bytes, never runtime CIDs.
+  No full-world height prepass, exact savings run or ETA retuning.
   Both creation and reconnect use the shared waiting/stasis gate. Native tests
   use isolated tiny bounds; never run production full generation as a test.
 - **Fishing (Round 14):** transient bobber, manual reel in a 1.5-second bite

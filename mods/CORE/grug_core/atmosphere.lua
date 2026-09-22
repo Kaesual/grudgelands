@@ -59,6 +59,23 @@
 -- (lua_api.md:353-358).
 local atmosphere_enabled = core.settings:get_bool("grug_atmosphere_enabled", true)
 
+-- One 20-minute world day with a 15-minute day phase and 5-minute night
+-- phase. Luanti's speed is virtual hours per real hour
+-- (environment.cpp:281-308), so 15 virtual day hours / 0.25 real hours = 60,
+-- while 9 virtual night hours / (5 / 60) real hours = 108. The phase edges
+-- match grug_mobs' established spawn clock.
+grug_core.DAY_PHASE_START = 0.1875 -- 04:30
+grug_core.DAY_PHASE_END = 0.8125 -- 19:30
+grug_core.DAY_TIME_SPEED = 60
+grug_core.NIGHT_TIME_SPEED = 108
+grug_core.NIGHT_LIGHT_FLOOR = 0.30
+grug_core.NIGHT_VISION_RATIO = 0.45
+
+function grug_core.is_day_phase(timeofday)
+	return timeofday >= grug_core.DAY_PHASE_START and
+		timeofday <= grug_core.DAY_PHASE_END
+end
+
 -- Published so the zone package can decide at load time whether to register a
 -- globalstep at all. A plain boolean field, read once: the master switch never
 -- changes during a run.
@@ -170,6 +187,86 @@ presets["off"] = {
 -- defaults, and a stale entry here would suppress the join packet.
 local applied = {}
 
+-- Per-player ratio effects compose here rather than letting each consumable
+-- overwrite the engine override. A fixed ratio affects sunlight only, so an
+-- enclosed cave with no sunlight stays dark; see ObjectRef's
+-- override_day_night_ratio contract in lua_api.md:9553-9558.
+local night_vision = {}
+local applied_ratio = {}
+
+local function desired_ratio(name, timeofday)
+	local natural = core.time_to_day_night_ratio(timeofday)
+	local floor = atmosphere_enabled and grug_core.NIGHT_LIGHT_FLOOR or 0
+	if night_vision[name] and night_vision[name] > floor then
+		floor = night_vision[name]
+	end
+	if natural < floor then
+		return floor
+	end
+	return nil
+end
+
+local function sync_day_night_ratio(player, timeofday)
+	local name = player:get_player_name()
+	local ratio = desired_ratio(name, timeofday or core.get_timeofday())
+	if applied_ratio[name] == ratio then
+		return
+	end
+	player:override_day_night_ratio(ratio)
+	applied_ratio[name] = ratio
+end
+
+-- Cave Draught is the one current night-vision producer. `ratio = nil`
+-- removes it and immediately restores the natural/baseline composition.
+function grug_core.set_night_vision(player, ratio)
+	if not player or not player.is_player or not player:is_player() then
+		return false
+	end
+	if ratio ~= nil and (type(ratio) ~= "number" or ratio < 0 or ratio > 1) then
+		return false
+	end
+	local name = player:get_player_name()
+	night_vision[name] = ratio
+	sync_day_night_ratio(player)
+	return true
+end
+
+local clock_accumulator = 0
+local applied_time_speed
+local original_time_speed = core.settings:get("time_speed")
+
+local function sync_world_clock(timeofday)
+	local speed = grug_core.is_day_phase(timeofday) and
+		grug_core.DAY_TIME_SPEED or grug_core.NIGHT_TIME_SPEED
+	local live_speed = tonumber(core.settings:get("time_speed"))
+	if speed ~= applied_time_speed or live_speed ~= speed then
+		-- Settings:set updates the live g_settings value. Server::AsyncRunStep
+		-- reads it into both the environment clock and the client time packet on
+		-- every step (server.cpp:697-709). The shutdown hook below restores the
+		-- operator's value before an integrated client persists global settings.
+		core.settings:set("time_speed", tostring(speed))
+		applied_time_speed = speed
+	end
+end
+
+core.register_on_shutdown(function()
+	core.settings:set("time_speed", original_time_speed or "72")
+end)
+
+core.register_globalstep(function(dtime)
+	clock_accumulator = clock_accumulator + dtime
+	if clock_accumulator < 1 then
+		return
+	end
+	clock_accumulator = clock_accumulator % 1
+	local timeofday = core.get_timeofday()
+	sync_world_clock(timeofday)
+	local players = core.get_connected_players()
+	for index = 1, #players do
+		sync_day_night_ratio(players[index], timeofday)
+	end
+end)
+
 -- Returns the preset name currently applied to `name`, or nil.
 function grug_core.get_atmosphere(name)
 	return applied[name]
@@ -240,10 +337,14 @@ end
 
 core.register_on_joinplayer(function(player)
 	grug_core.set_atmosphere(player, DEFAULT_PRESET)
+	sync_day_night_ratio(player)
 end)
 
 core.register_on_leaveplayer(function(player)
-	applied[player:get_player_name()] = nil
+	local name = player:get_player_name()
+	applied[name] = nil
+	applied_ratio[name] = nil
+	night_vision[name] = nil
 end)
 
 local function preset_list()

@@ -968,6 +968,8 @@ stations subject to area access. The stand is a T3 Alchemist grid recipe:
 three Steel Bars, one Furnace and one Glass Bottle. Glass Bottles cost 3 copper.
 
 Potions restore or act immediately and share the persistent potion clock.
+Every successfully consumed potion or elixir plays one shared drinking sound;
+refused uses play no sound.
 Ordinary potions use 60 seconds; the Greater Healing and Greater Mana pair use
 45 seconds on that same clock. A full-health healing potion is refused without
 consumption or cooldown. A mana potion may be consumed at full mana. Elixirs
@@ -1102,21 +1104,23 @@ Neither of these costs a main profession slot (professions.md §1).
   T1 and shows the complete T1–T6 catalog; profession level gates crafting and
   `_grug_ilvl` gates eating independently. There is no Cooking Fire.
 
-  **Food restore values** (duration amended 2026-09-20). A serving lasts **300 s**, ticks every **5 s**,
-  and the newest food replaces the old one. Instant healing and regeneration
-  wait while the player is in combat; secondary modifiers remain active.
+  **Food restore values** (recovery amended 2026-09-22). A serving lasts **300 s**, ticks every **5 s**,
+  and the newest food replaces the old one. Eating is refused before consumption while the player is in combat.
+  Accepted food heals instantly; its regeneration pauses during later combat,
+  while secondary modifiers remain active. Successful eating plays one shared
+  eating sound at 0.5 gain; rejected attempts play no sound.
 
   | Tier | Minimum level | Instant HP | Dish regeneration per tick | Hearty secondary | Caster secondary | Hunter secondary |
   |---|---:|---:|---:|---|---|---|
-  | T1 | 1 | 5 | 2% | — | — | — |
-  | T2 | 11 | 15 | 2.5% | — | — | — |
-  | T3 | 21 | 40 | 3% | +2% HP pool | +2% mana pool | +2% HP pool |
-  | T4 | 31 | 90 | 3.5% | +4% HP pool | +4% mana pool | +4% HP pool |
-  | T5 | 41 | 180 | 4% | +6% HP pool | +6% mana pool | +1% Crit |
-  | T6 | 51 | 300 | 5% | +8% HP pool | +8% mana pool | +1% Crit |
+  | T1 | 1 | 5 | 4% | — | — | — |
+  | T2 | 11 | 15 | 5% | — | — | — |
+  | T3 | 21 | 40 | 6% | +2% HP pool | +2% mana pool | +2% HP pool |
+  | T4 | 31 | 90 | 7% | +4% HP pool | +4% mana pool | +4% HP pool |
+  | T5 | 41 | 180 | 8% | +6% HP pool | +6% mana pool | +1% Crit |
+  | T6 | 51 | 300 | 10% | +8% HP pool | +8% mana pool | +1% Crit |
 
   Hearty and Hunter dishes regenerate HP. Caster dishes regenerate both HP and
-  mana at the listed rate. Every raw edible regenerates 1% maximum HP per tick;
+  mana at the listed rate. Every raw edible regenerates 2% maximum HP per tick;
   Wild Cocoa is HP food, not mana food. Rock Salt and Salt Crust are inedible.
 
   **Cooking plant sources.** The current farming and renewal contract is in

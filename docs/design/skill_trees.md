@@ -380,7 +380,7 @@ rule-breaker besides its capstone — see §2.9's note on the bounded pass.
 | 1 | **Deep Chill** | Frost | 1 | 5 | — | Frost Nova root 4 s → 4.2 / 4.4 / 4.6 / 4.8 / 5.0 s | `kits.lua:581-598` | `frost_nova_root_add` |
 | 2 | **Hoarfrost** | Frost | 2 | 4 | — | Frost Nova follow-up slow 3 s → 4 / 5 / 6 / 7 s (the 50 % stays) | `kits.lua:583-598` | `frost_nova_slow_add` |
 | 3 | **Frostbind** *(keystone)* | Frost | 3 | 3 | **replaces Frost Nova** | Frost Nova stops being self-centred: it is cast at the pointed hostile up to 20 m away and roots everything within 3 / 4 / 5 m **of the target**. Same key, same 10% base-mana cost, same 12 s cooldown — a control tool instead of a panic button | `kits.lua` (the cast body and its radius origin) | `frost_nova_ranged` |
-| 4 | **Rimebite** *(capstone)* | Frost | 4 | **1** | **effect** | every root Frost Nova applies also deals `5 + floor(spell power / 2)` on application | `kits.lua:581-598` | `control_damage_add` |
+| 4 | **Rimebite** *(capstone)* | Frost | 4 | **1** | **effect** | Frost Nova adds `5 + floor(spell power / 2)` to its quarter-Fireball baseline before spell scaling, once per accepted hit | `kits.lua:581-598` | `control_damage_add` |
 | 5 | **Cold Focus** | Ward | 1 | 5 | — | in-combat mana regeneration ×1.2 / ×1.4 / ×1.6 / ×1.8 / ×2.0 (the base rate is `max(0.25 × (1 + 0.15 × level), 0.0025 × maximum mana)` mana/s, combat_stats.md §5) | `grug_abilities/init.lua` mana-regeneration ticker | `combat_mana_regen_add` |
 | 6 | **Quick Step** | Ward | 2 | 4 | — | Blink cooldown 15 s → 13.5 / 12 / 10.5 / 9 s | `grug_abilities/init.lua:1566-1567` — **not** the registration constant | `blink_cooldown_sub` |
 | 7 | **Glacial Ward** *(keystone)* | Ward | 3 | 3 | **new skill** | cast, 10% base mana, 30 s cooldown, self; absorbs 10% / 15% / 20% of the class-neutral base pool plus the spell-power percentage for 10 s | new; `grug_core.add_absorb` | — |
@@ -1121,16 +1121,13 @@ awkward kind for an aggregator:
   exists to end**, and one the aggregator does not fix unless this writer
   migrates too.
 
-**It is an aggregator for speed *and* jump, not speed alone.** The shipped
-roots are speed+jump pairs — Frost Nova's stages are
-`{speed = 0.1, jump = 0.3, time = 4}` (`kits.lua:495`) and the applier writes
-`jump = stage.jump or 1` (`:167`) — while `verbs.lua:114-116` deliberately
-records "We only ever write `speed`; `jump` is left alone, so a mob web can
-never lift a PvP jump root". A speed-only API cannot express the roots it is
-supposed to absorb. **Gravity stays out**: its only writer is
-`selection.lua:52`'s spawn freeze, which is a whole-player lock rather than a
-combat effect, and it migrates as a single named exclusive hold, not as a
-gravity modifier.
+**It is an aggregator for speed and jump.** Frost Nova uses the hard-root flag
+(logical speed 0, jump 0), followed by its independent 50% slow. The shared
+physics writer zeros locomotion targets with native braking enabled, so an
+already moving player stops; airborne falling and gravity remain active. Movement immunity
+removes roots and suppresses negative modifiers. Charge stun independently sets
+speed and jump to zero and blocks action execution. Gravity stays unchanged for
+combat control; the character-selection exclusive hold owns its gravity freeze.
 
 **Ruling 11 decides the shape**: one central aggregator in `grug_core` where
 each system registers a **named** modifier with its **own duration**; effects

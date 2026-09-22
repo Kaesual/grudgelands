@@ -211,3 +211,10 @@ head and must not read as a spear or halberd. Both families keep one silhouette
 across all six tier palettes and the established diagonal convention: grip at
 approximately `(3.4, 12.6)` in 16x16 sprite coordinates, business end toward
 the upper right. Accepted swords, one-handed axes and armor are unchanged.
+
+### Frost Nova feedback
+
+While a target remains under Nova's actual root, emit a few small pale-blue
+crystal particles around its lower body, scaled simply to the live collision
+box. Stop on root expiry, immunity, death or removal; particles may fade for
+less than one second. No fitted shell or persistent decorative entity is used.

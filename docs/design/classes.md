@@ -506,7 +506,7 @@ Mighty Blow is the design working, not a bug.
 
 | Ability | Cost | Cooldown | Effect |
 |---------|------|----------|--------|
-| Charge | — (generates 15 rage) | cast, 10 s | Dash to the currently pointed enemy up to 12 m away, 3 damage. No enemy-memory fallback. Engage tool. |
+| Charge | — (generates 15 rage) | cast, 10 s | Dash to the currently pointed enemy up to 12 m away, 3 damage and, on an accepted hit, a 1.5 s stun. Kings and dragons are stun-immune. Teleport movement is retained; no enemy-memory fallback. |
 | Mighty Blow | 25 rage | **swing**, no charge | On a completed landed swing with enough rage, the total is exactly floor(weapon damage × 1.5) + melee bonus instead of the plain hit. Its delta is folded into that native punch before its one crit/mitigation/dodge path — never a second punch. The rage dump. |
 | Hamstring | 10 rage | **swing**, 6 s charge | The swing lands as usual; on a charged proc it also applies a 50% slow for 5 s. **Not in the base kit since ruling 19** (2026-09-16): every class starts with Strike plus three, and Hamstring returns as the Ruin tree's keystone (`skill_trees.md` §2.2). It stays registered and talent-gated, exactly as Renew has been since WP19. |
 | Taunt | free | cast, 8 s | Currently pointed mob (8 m) is forced onto the Warrior for 3 s; no enemy-memory fallback; threat set to top×1.1 (combat_stats §4; threat part + force duration land with WP6). |
@@ -554,7 +554,7 @@ Nova became the rotation pivot — kiting IS the Mage fantasy here.
 | Ability | Cost | Cooldown | Effect |
 |---------|------|----------|--------|
 | Fireball | 6% base mana | **1 s cast interval** (server cadence, no cooldown bar) | Straight 20 m/s projectile along the cast-time crosshair, maximum 20 m, no homing/gravity/splash: baseline weapon + spell power through the damage fit on the first attackable target. A miss still spends mana; input inside the interval is refused without cost; at most eight shots per owner/session may be active. |
-| Frost Nova | 10% base mana | 12 s | Roots all enemies within 5 m for 4 s, then 50% slow for 3 s (no damage — pure control; rooted mobs keep attacking in melee range). |
+| Frost Nova | 10% base mana | 12 s | Deals one quarter of (level-baseline weapon damage + spell power), then roots accepted hostile hits within 5 m for 4 s, followed by 50% slow for 3 s. Spell damage scaling applies once. Players use the hard-root movement flag; rooted targets may still attack. Small crystal particles persist only while the Nova root is active. |
 | Blink | 8% base mana | 15 s | Teleport up to 10 m in look direction (blocked by walls). Escape valve. |
 
 ## 5. Priest (Mana)
@@ -608,3 +608,13 @@ moves into the talent tree.
   is a mob verb, not a player stat, and after this supersession there is
   no work package left that would turn it into one.
 - PvP tuning of roots/taunt (diminishing returns etc.) → balancing pass.
+
+### Round 16 control execution
+
+Stun prevents voluntary movement and all new or pending skills, native melee,
+held swings and bow release. Pending input is discarded without catch-up bursts;
+already launched projectiles continue. Gravity is unchanged. Stun and root have
+independent lifetimes; root/slow immunity does not grant stun immunity. Death
+and disconnect clear player control. Nova respects accepted damage/PvP gates
+and movement immunity. Its baseline excludes Fireball-specific talents; Rimebite
+adds its existing flat damage and half spell power once before spell scaling.

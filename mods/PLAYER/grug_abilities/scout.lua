@@ -303,6 +303,7 @@ local function effective_draw_time(player)
 end
 
 local function start_draw(player)
+	if grug_core.is_stunned(player) then return false, "You are stunned." end
 	local name = player:get_player_name()
 	if draws[name] then return true end
 	local bow = equipped_bow(player)
@@ -328,6 +329,7 @@ local function start_draw(player)
 end
 
 local function release_draw(player, rec)
+	if grug_core.is_stunned(player) then clear_draw(player); return end
 	local bow = equipped_bow(player)
 	if not bow or bow_identity(bow) ~= rec.bow then
 		clear_draw(player)
@@ -364,7 +366,8 @@ core.register_globalstep(function(dtime)
 	draw_accumulator = draw_accumulator % DRAW_STEP
 	for name, rec in pairs(draws) do
 		local player = core.get_player_by_name(name)
-		if not player or player ~= rec.player or player:get_hp() <= 0 then
+		if not player or player ~= rec.player or player:get_hp() <= 0
+				or grug_core.is_stunned(player) then
 			clear_draw(rec.player)
 		else
 			local wield = player:get_wielded_item()
@@ -383,6 +386,7 @@ core.register_globalstep(function(dtime)
 	end
 end)
 
+grug_core.register_on_stun(clear_draw)
 core.register_on_dieplayer(clear_draw)
 core.register_on_leaveplayer(function(player)
 	clear_draw(player)

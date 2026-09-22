@@ -2530,9 +2530,13 @@ return function(repo, changed_roster_relative, expected_changed_count)
 
 	tracking_dofile(wp40 .. "/init.lua")
 
-	local atmosphere_core = {settings = {get_bool = function() return true end}}
+	local atmosphere_core = {settings = {
+		get_bool = function() return true end,
+		get = function() return "72" end,
+		set = function() end,
+	}}
 	for _, name in ipairs({"register_on_joinplayer", "register_on_leaveplayer",
-			"register_chatcommand", "register_globalstep"}) do
+			"register_chatcommand", "register_globalstep", "register_on_shutdown"}) do
 		atmosphere_core[name] = function() end
 	end
 	local atmosphere_environment = setmetatable({core = atmosphere_core,

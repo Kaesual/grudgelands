@@ -102,6 +102,8 @@ end
 -- reason the rows are: so that "where does the error flash sit?" has one
 -- answer.
 layout.anchors = {
+	combat = {position = {x = 0.5, y = 1},
+		offset = {x = layout.BAR_WIDTH / 2 + 12, y = layout.rows.life.middle}},
 	flash = {position = {x = 0.5, y = 0.35}, offset = {x = 0, y = 0}},
 	reticle = {position = {x = 0.5, y = 0.5}, offset = {x = 0, y = 0}},
 	status_list = {

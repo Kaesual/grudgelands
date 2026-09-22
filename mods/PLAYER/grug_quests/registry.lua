@@ -38,6 +38,18 @@ function grug_quests.register_quest(id, def)
 			assert(#objective.mobs > 0)
 		end
 	end
+	local requirements = {"Minimum level: " .. def.min_level}
+	if #def.prerequisites > 0 then
+		local titles = {}
+		for _, prerequisite in ipairs(def.prerequisites) do
+			local prior = assert(quests[prerequisite],
+				"Register prerequisite before dependent quest: " .. prerequisite)
+			titles[#titles + 1] = prior.title
+		end
+		requirements[#requirements + 1] = "Complete: " .. table.concat(titles, ", ")
+	end
+	def.description = def.description .. "\n\nRequirements: " ..
+		table.concat(requirements, "; ") .. "."
 	quests[id] = def
 	for _, npc in ipairs({def.npc, def.turnin_npc}) do
 		local index = grug_quests.quests_by_npc[npc] or {}
