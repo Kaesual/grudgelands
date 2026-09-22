@@ -53,6 +53,10 @@ Decided 2026-09-21; Round 14 user Go.
 - One-time XP/coin/item rewards, with all prerequisites, consumed items and
   reward space preflighted together; insufficient space refuses the turn-in
   without consumption or a dropped reward. Avoid adding mail/escrow systems.
+- Every quest description includes its minimum level and the titles of its
+  prerequisite quests. Fixed XP rewards are based on the authored target level
+  and effort as specified in `progression.md`; the receiver's current level
+  never changes the reward.
 - Repeated packets and repeated dialogue clicks must not duplicate rewards.
   Persist active/completed state and HUD preference across reconnect/restart.
 - Locked markers only expose the next relevant chain step, not all distant
@@ -76,7 +80,7 @@ in total. Reuse kill/item-hand-in objectives and existing race/faction gates;
 no Nether, escort, custom quest drops or new world anchors. Compose tasks with
 the visible local workplaces and ensure targets/materials are locally available.
 Fixed rewards follow authored target level/effort and required combat; they do
-not scale with the level at turn-in. The six local rewards per race are 550,
-700, 650, 800, 900 and 1,100 XP before race bonuses (4,700 total). Existing
-starter-chain rewards remain unchanged after the progression-budget check;
-there is no blanket reward increase.
+not scale with the level at turn-in. Round 16 replaces the starter and local
+values with the fixed target-level table in `progression.md`. Each starting
+settlement finale is handed in to the next regional giver, who also offers the
+following quest.

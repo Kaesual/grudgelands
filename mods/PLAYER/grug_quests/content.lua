@@ -2,7 +2,9 @@
 
 local Q = grug_quests
 
-local XP = {150, 300, 550, 900, 1500, 3000, 2200, 2800, 3400}
+-- Fixed shares of the intended level interval: ordinary 20%, hard 25%,
+-- and the camp finale 35% (progression.md section 4).
+local XP = {20, 60, 100, 140, 180, 300, 380, 525, 805}
 local COPPER = {10, 15, 20, 25, 30, 40, 50, 60, 80}
 local LEVEL = {1, 2, 3, 4, 5, 8, 10, 11, 12}
 local COUNT = {5, 4, 5, 4, 5, 6, 6, 6, 4}
@@ -267,12 +269,12 @@ local local_stories = {
 }
 
 local LOCAL_REWARDS = {
-	village = {{xp = 550, copper = 40, level = 10, effort = "light"},
-		{xp = 700, copper = 45, level = 10, effort = "standard"}},
-	outpost = {{xp = 650, copper = 50, level = 11, effort = "light"},
-		{xp = 800, copper = 55, level = 11, effort = "standard"}},
-	camp = {{xp = 900, copper = 65, level = 12, effort = "standard"},
-		{xp = 1100, copper = 75, level = 12, effort = "hard"}},
+	village = {{xp = 285, copper = 40, level = 10, effort = "light"},
+		{xp = 380, copper = 45, level = 10, effort = "standard"}},
+	outpost = {{xp = 315, copper = 50, level = 11, effort = "light"},
+		{xp = 420, copper = 55, level = 11, effort = "standard"}},
+	camp = {{xp = 460, copper = 65, level = 12, effort = "standard"},
+		{xp = 575, copper = 75, level = 12, effort = "hard"}},
 }
 
 local function quest_id(culture, number, title)
@@ -315,7 +317,8 @@ for _, culture in ipairs(cultures) do
 		end
 		Q.register_quest(id, {
 			title = culture.titles[number], description = culture.descriptions[number] .. (number == 6 and "\n\nClear the local approach first. The village beyond is dangerous for beginners: reach level 10 before travelling there to seek its steward. Until then, continue hunting and preparing your equipment near home." or ""),
-			npc = giver, turnin_npc = number == 9 and npc.captive or giver,
+			npc = giver, turnin_npc = number == 6 and npc.steward or
+				(number == 9 and npc.captive or giver),
 			faction = culture.faction, race = culture.key, min_level = LEVEL[number],
 			target_level = LEVEL[number], effort = number >= 8 and "hard" or "standard",
 			prerequisites = previous and {previous} or {}, objectives = {objective},
@@ -332,7 +335,7 @@ for _, culture in ipairs(cultures) do
 		target_level = 1, effort = "lesson",
 		prerequisites = {first}, objectives = {{type = "item", item = "default:axe_wood",
 			count = 1, description = "Bring a wood axe"}},
-		rewards = {xp = 150, copper = 10, items = {}},
+		rewards = {xp = 15, copper = 10, items = {}},
 	})
 	Q.register_quest(quest_id(culture, 11, culture.lessons[2]), {
 		title = culture.lessons[2], description = culture.lessons[4] .. "\n\nUse Basics to make a wooden pick first, then mine stone. The stone pick recipe uses three stone blocks across the top and two sticks down the middle. Keep valuable tools repaired at a profession trainer or crafting station. This lesson is optional; a traded pick counts too.", npc = npc.elder,
@@ -340,7 +343,7 @@ for _, culture in ipairs(cultures) do
 		target_level = 2, effort = "lesson",
 		prerequisites = {axe}, objectives = {{type = "item", item = "default:pick_stone",
 			count = 1, description = "Bring a stone pick"}},
-		rewards = {xp = 250, copper = 15, items = {}},
+		rewards = {xp = 45, copper = 15, items = {}},
 	})
 
 	local site_seen = {village = 0, outpost = 0, camp = 0}

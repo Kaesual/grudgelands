@@ -95,6 +95,15 @@ depends on the death's attribution.
 ## 4. Quest structure & level gates
 
 - Main-questline beats use hard `min_level` gates (`story.md`).
+- Quest descriptions show their minimum level and named prerequisite quests.
+- Fixed XP rewards use the authored target level rather than the receiver's
+  level: ordinary quests grant 15–25% of that level interval, while a
+  substantial chain finale grants 30–40%. The starter catalog uses 20% for
+  ordinary quests and 35% for its camp finale. These rewards do not scale at
+  hand-in.
+- The final quest at each starting settlement is handed in to the next
+  regional giver, so completion and the following regional quest meet at the
+  same NPC.
 - First PvP quests begin in the level-31–40 contested approaches and
   Battlegrounds entry, never below level 31 (`world_zones.md` §§2/8).
 - Gather and kill objectives use stable named-zone ids and authored biome/
@@ -112,6 +121,16 @@ gray mob does not itself erase quest credit. See `quests.md`.
 ## Round 15 XP presentation
 
 The numeric XP HUD line is replaced with a gold progress bar directly above
-the hotbar, 360×6 HUD units (life remains 180×16). A small adjacent level label
-remains; the bar fills fully at maximum level. Exact XP remains available in
-the existing `/xp` command. All offsets use the shared HUD layout owner.
+the hotbar, 360×6 HUD units (life remains 180×16). A compact label to its right
+shows the level and current interval progress, for example
+`Lv 8 (520/1500)`. The bar fills fully at maximum level. `/xp` reports exact
+XP; a server administrator can grant a validated positive amount to an online
+player with `/xp give <player> <amount>`. All offsets use the shared HUD layout
+owner.
+
+## Round 16 kill XP
+
+Eligible mob-kill XP is increased by 50% at the shared settlement boundary,
+before the existing participant split. The one-settlement guard, 40-node
+eligibility, per-recipient gray rule, faction refusal and race bonus remain
+unchanged. Quest rewards and administrator grants are not multiplied.

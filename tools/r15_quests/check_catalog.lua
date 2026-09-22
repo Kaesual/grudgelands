@@ -96,15 +96,32 @@ local quest_count, npc_count, r14_count, r15_count = 0, 0, 0, 0
 local local_kills, local_items = 0, 0
 local local_by_race, local_by_npc = {}, {}
 local items_by_race = {}
+local expected_story_xp = {20, 60, 100, 140, 180, 300, 380, 525, 805}
+local expected_local_xp = {285, 380, 315, 420, 460, 575}
+local starter_handoffs = 0
 for id, def in pairs(grug_quests.registered_quests) do
 	quest_count = quest_count + 1
 	if id:match("^r14_") then
 		r14_count = r14_count + 1
 		assert(def.target_level and def.effort, "missing authored reward basis: " .. id)
+		local number = tonumber(id:match("^r14_[^_]+_(%d%d)_"))
+		if number and number <= 9 then
+			assert(def.rewards.xp == expected_story_xp[number], id .. " wrong fixed XP")
+			if number == 6 then
+				assert(def.turnin_npc:match("_steward$"), id .. " must hand off to steward")
+				starter_handoffs = starter_handoffs + 1
+			end
+		elseif number == 10 then
+			assert(def.rewards.xp == 15, id .. " wrong axe-lesson XP")
+		elseif number == 11 then
+			assert(def.rewards.xp == 45, id .. " wrong pick-lesson XP")
+		end
 	elseif id:match("^r15_") then
 		r15_count = r15_count + 1
 		assert(def.min_level == def.target_level and def.effort)
 		assert(#def.prerequisites == 1 and def.prerequisites[1]:match("^r14_"))
+		local local_number = tonumber(id:match("_(%d%d)$"))
+		assert(def.rewards.xp == expected_local_xp[local_number], id .. " wrong local XP")
 		local_by_race[def.race] = (local_by_race[def.race] or 0) + 1
 		local_by_npc[def.npc] = (local_by_npc[def.npc] or 0) + 1
 		for _, objective in ipairs(def.objectives) do
@@ -126,6 +143,13 @@ for id, def in pairs(grug_quests.registered_quests) do
 	else
 		error("unexpected quest namespace: " .. id)
 	end
+	assert(def.description:find("Requirements: Minimum level: " .. def.min_level,
+		1, true), id .. " missing visible minimum level")
+	if #def.prerequisites > 0 then
+		local prior = grug_quests.registered_quests[def.prerequisites[1]]
+		assert(def.description:find("Complete: " .. prior.title, 1, true),
+			id .. " missing visible prerequisite title")
+	end
 end
 for id in pairs(grug_quests.registered_npcs) do
 	npc_count = npc_count + 1
@@ -135,6 +159,7 @@ end
 assert(quest_count == 102 and r14_count == 66 and r15_count == 36)
 assert(npc_count == 30)
 assert(local_items == 12 and local_kills == 24)
+assert(starter_handoffs == 6)
 local village_items = {dwarf = {"default:cobble", 8},
 	human = {"mobs:meat_raw", 4}, elf = {"mobs:leather", 2},
 	undead = {"grug_mobs:slime_gel", 3}, orc = {"mobs:leather", 2},
@@ -148,4 +173,4 @@ for race in pairs(settlements) do
 	assert(items_by_race[race]["grug_mobs:linen_cloth"] == 5)
 end
 
-io.write("quests=102;r14=66;r15=36;npcs=30;routes=6;local_per_route=6;local_per_poi=2;items=12;kills=24\n")
+io.write("quests=102;r14=66;r15=36;npcs=30;routes=6;handoffs=6;local_per_route=6;local_per_poi=2;items=12;kills=24\n")
