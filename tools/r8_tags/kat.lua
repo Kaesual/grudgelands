@@ -88,6 +88,7 @@ local function run(repo)
 			pos = {x = 0, y = 0, z = 0},
 		}
 		function object:is_valid() return self.valid end
+		function object:is_player() return false end
 		function object:get_pos() return self.pos end
 		function object:get_properties() return self.properties end
 		function object:set_properties(values)
@@ -119,6 +120,7 @@ local function run(repo)
 			get = function() return nil end,
 			get_bool = function(_, name) return name == "enable_damage" end,
 		},
+		colorspec_to_colorstring = function(value) return value end,
 		get_connected_players = function() return players end,
 		register_globalstep = function(fn)
 			callbacks.globalstep[#callbacks.globalstep + 1] = fn

@@ -5,9 +5,35 @@
 -- independent 25/30-node hysteresis state while the parent stays unchanged.
 
 local ENTITY_NAME = "grug_core:tag_carrier"
+local HP_ENTITY_NAME = "grug_core:injured_hp_bar"
 local SHOW_D2 = 25 * 25
 local HIDE_D2 = 30 * 30
 local SNAPSHOT_INTERVAL = 1
+
+local CATEGORY_DEFAULTS = {
+	aggressive = {foreground = "#ff4b4b", background = "#00000040"},
+	neutral = {foreground = "#ffd447", background = "#00000040"},
+	guard = {foreground = "#b76cff", background = "#00000040"},
+	npc = {foreground = "#d8c5ff", background = "#00000040"},
+	player = {foreground = "#ffffff", background = "#00000040"},
+	critter = {foreground = "#ffffff", background = "#00000040"},
+}
+
+local function setting_color(name, fallback)
+	local value = core.settings:get(name)
+	return value and core.colorspec_to_colorstring(value) or fallback
+end
+
+local CATEGORY_COLORS = {}
+for category, defaults in pairs(CATEGORY_DEFAULTS) do
+	local prefix = "grug_nametag_" .. category .. "_"
+	CATEGORY_COLORS[category] = {
+		foreground = setting_color(prefix .. "foreground", defaults.foreground),
+		background = setting_color(prefix .. "background", defaults.background),
+	}
+end
+
+local HP_BARS_ENABLED = core.settings:get_bool("grug_injured_mob_hp_bars", true)
 
 local player_snapshot = {}
 local player_count = 0
@@ -33,6 +59,141 @@ local function same_set(left, right)
 		if not left[name] then return false end
 	end
 	return true
+end
+
+local function category_for(parent)
+	if parent:is_player() then return "player" end
+	local entity = parent:get_luaentity()
+	if not entity then return "npc" end
+	local name = entity.name or ""
+	if name == "grug_mobs:guard_accord" or name == "grug_mobs:guard_throng"
+			or name == "grug_mobs:land_guard"
+			or name:match("^grug_mobs:royal_guard_") then
+		return "guard"
+	end
+	if entity._grug_disposition == "aggressive"
+			or entity._grug_disposition == "neutral"
+			or entity._grug_disposition == "critter" then
+		return entity._grug_disposition
+	end
+	return "npc"
+end
+
+local function hp_texture(percent)
+	local width = math.max(1, math.floor(percent * 62 / 100 + 0.5))
+	return "[fill:64x8:#101810e0^[fill:" .. width ..
+		"x6:1,1:#39d353ff"
+end
+
+core.register_entity(HP_ENTITY_NAME, {
+	initial_properties = {
+		physical = false,
+		collide_with_objects = false,
+		pointable = false,
+		visual = "sprite",
+		visual_size = {x = 0.8, y = 0.1},
+		textures = {hp_texture(100)},
+		use_texture_alpha = true,
+		selectionbox = {0, 0, 0, 0, 0, 0},
+		static_save = false,
+		shaded = false,
+		show_on_minimap = false,
+	},
+
+	on_activate = function(self)
+		self._grug_observers = {}
+		self.object:set_observers({})
+	end,
+})
+
+local function remove_hp_bar(row)
+	local bar = row and row.hp_bar
+	if object_valid(bar) then bar:remove() end
+	if row then
+		row.hp_bar = nil
+		row.hp_percent = nil
+		row.hp_observers = nil
+		row.hp_scale_x = nil
+		row.hp_scale_y = nil
+	end
+end
+
+local function bar_height_and_scale(parent)
+	local properties = parent:get_properties() or {}
+	local box = properties.selectionbox or properties.collisionbox or
+		{0, 0, 0, 0, 1, 0}
+	local scale = properties.visual_size or {x = 1, y = 1}
+	local sx = math.abs(scale.x or 1)
+	local sy = math.abs(scale.y or 1)
+	if sx < 0.01 then sx = 1 end
+	if sy < 0.01 then sy = 1 end
+	-- Attachment coordinates are in tenths of a node and inherit the parent's
+	-- scene-node scale. Divide both offset and sprite size to keep one stable
+	-- world-space bar from rats through dragons. It sits below the nametag,
+	-- whose engine offset is selection-box max Y + 0.3 nodes.
+	return ((box[5] or 1) + 0.12) * 10 / sy, 0.8 / sx, 0.1 / sy
+end
+
+local function ensure_hp_bar(row)
+	if object_valid(row.hp_bar) then return row.hp_bar end
+	local parent = row.parent
+	local pos = parent:get_pos()
+	if not pos then return nil end
+	local bar = core.add_entity(pos, HP_ENTITY_NAME)
+	if not bar then return nil end
+	local height, sx, sy = bar_height_and_scale(parent)
+	bar:set_properties({visual_size = {x = sx, y = sy}})
+	bar:set_attach(parent, "", {x = 0, y = height, z = 0},
+		{x = 0, y = 0, z = 0})
+	row.hp_bar = bar
+	row.hp_scale_x, row.hp_scale_y = sx, sy
+	return bar
+end
+
+local function refresh_hp_bar(row, observers)
+	if not HP_BARS_ENABLED or (row.category ~= "aggressive"
+			and row.category ~= "neutral" and row.category ~= "guard") then
+		remove_hp_bar(row)
+		return
+	end
+	local entity = row.parent:get_luaentity()
+	local hp = entity and tonumber(entity.health)
+	local hp_max = entity and tonumber(entity.hp_max)
+	if not hp_max or hp_max <= 0 then
+		local properties = row.parent:get_properties() or {}
+		hp_max = tonumber(properties.hp_max)
+	end
+	if not hp or not hp_max or hp <= 0 or hp >= hp_max then
+		remove_hp_bar(row)
+		return
+	end
+	-- Defer creation and texture work until somebody can actually see it.
+	if next(observers) == nil then
+		if object_valid(row.hp_bar) and not same_set(row.hp_observers or {}, observers) then
+			row.hp_bar:set_observers(observers)
+			row.hp_observers = observers
+		end
+		return
+	end
+	local percent = math.max(1, math.min(99,
+		math.floor(hp * 100 / hp_max + 0.5)))
+	local bar = ensure_hp_bar(row)
+	if not bar then return end
+	local height, sx, sy = bar_height_and_scale(row.parent)
+	if row.hp_scale_x ~= sx or row.hp_scale_y ~= sy then
+		bar:set_properties({visual_size = {x = sx, y = sy}})
+		bar:set_attach(row.parent, "", {x = 0, y = height, z = 0},
+			{x = 0, y = 0, z = 0})
+		row.hp_scale_x, row.hp_scale_y = sx, sy
+	end
+	if row.hp_percent ~= percent then
+		row.hp_percent = percent
+		bar:set_properties({textures = {hp_texture(percent)}})
+	end
+	if not same_set(row.hp_observers or {}, observers) then
+		bar:set_observers(observers)
+		row.hp_observers = observers
+	end
 end
 
 local function refresh_snapshot()
@@ -82,6 +243,7 @@ local function forget_carrier(carrier, row)
 		for _, callback in ipairs(visibility_callbacks) do callback(row.parent, {}, true) end
 	end
 	managed_carriers[carrier] = nil
+	remove_hp_bar(row)
 	if row and carrier_by_parent[row.parent] == carrier then
 		carrier_by_parent[row.parent] = nil
 	end
@@ -124,6 +286,7 @@ local function manage_carriers()
 		else
 			update_observers(carrier, parent, row.owner_name)
 			local observers = carrier:get_luaentity()._grug_observers or {}
+			refresh_hp_bar(row, observers)
 			for _, callback in ipairs(visibility_callbacks) do callback(parent, observers, false) end
 		end
 	end
@@ -156,7 +319,8 @@ function grug_core.create_tag_carrier(parent, owner_name)
 	})
 	carrier:set_attach(parent, "", {x = 0, y = 0, z = 0},
 		{x = 0, y = 0, z = 0})
-	managed_carriers[carrier] = {parent = parent, owner_name = owner_name}
+	managed_carriers[carrier] = {parent = parent, owner_name = owner_name,
+		category = category_for(parent)}
 	carrier_by_parent[parent] = carrier
 	return carrier
 end
@@ -178,7 +342,11 @@ function grug_core.set_tag_carrier_text(carrier, text)
 	text = type(text) == "string" and text or ""
 	if entity._grug_text == text then return false end
 	entity._grug_text = text
-	carrier:set_properties({nametag = text, nametag_color = "#ffffff"})
+	local row = managed_carriers[carrier]
+	local colors = CATEGORY_COLORS[row and row.category or "npc"]
+	carrier:set_properties({nametag = text,
+		nametag_color = colors.foreground,
+		nametag_bgcolor = colors.background})
 	return true
 end
 

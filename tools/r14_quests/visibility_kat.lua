@@ -1,7 +1,10 @@
 local root=arg[1] or "."
 local objects, players, steps={}, {}, {}
 local scans=0
-core={registered_entities={},register_entity=function(n,d) core.registered_entities[n]=d end,
+core={registered_entities={},settings={get=function() return nil end,
+ get_bool=function(_,_,fallback) return fallback end},
+ colorspec_to_colorstring=function(value) return value end,
+ register_entity=function(n,d) core.registered_entities[n]=d end,
  register_globalstep=function(f) steps[#steps+1]=f end,
  get_connected_players=function() scans=scans+1;return players end,
  get_player_by_name=function(n) for _,p in ipairs(players) do if p.name==n then return p end end end,
@@ -9,6 +12,7 @@ core={registered_entities={},register_entity=function(n,d) core.registered_entit
 local function object(pos)
  local o={pos=pos,valid=true,properties={},observers=nil}
  function o:is_valid() return self.valid end
+ function o:is_player() return false end
  function o:get_pos() return self.pos end
  function o:get_properties() return self.properties end
  function o:set_properties(p) for k,v in pairs(p) do self.properties[k]=v end end
