@@ -24,12 +24,12 @@ projects: **[docs/research/](docs/research/)**.
 - This changes execution mechanics, not model authorization or independent
   review requirements. Read `docs/process/agent-model-policy.md` and
   `docs/process/cross-cli-orchestration.md` for those rules.
-- **Current development session (Round 16):** Claude credits are exhausted. No Claude CLI,
+- **Current development session (Round 17):** Claude credits are exhausted. No Claude CLI,
   Claude agent, Opus or Fable task is authorized in this session. Root is Astra;
   ordinary implementation/review uses native Sol, with native Astra allowed for
   hard/performance-critical work. This session restriction can change only by
   a later explicit user instruction. Durable active work state:
-  `docs/research/round16-execution.md` (current approved round).
+  `docs/research/round17-execution.md` (current approved round).
 
 ## Fresh-server development mode
 
@@ -66,6 +66,15 @@ projects: **[docs/research/](docs/research/)**.
   confirmation.
 
 ## Active round
+
+Round 17 is authorized and in progress: `docs/research/round17-plan.md` and
+`docs/research/round17-execution.md` own the current contract and lane status.
+Home travel, homing projectiles, global mob damage scale, fixed dispositions,
+configurable colored nametags/injured HP sprites and party class colors.
+The latest user-approved R17 contract supersedes earlier mechanics below while
+living docs are brought into agreement. Standard unmodified Luanti clients are
+required; no client/engine fork, upstream-PR dependency or required client mod.
+
 
 Round 16 is delivered on main, locally synchronized and pushed.
 Independent reviews and final gates PASS; GUI acceptance is pending.
