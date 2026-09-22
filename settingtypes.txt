@@ -44,3 +44,8 @@ grug_mapgen_r9_coast_band_enabled (Enable wide coast profiles) bool true
 #    longer. Deep mining, ocean depths and arbitrary flight are not prepared. Read once on the first fresh-world boot; changing this later does
 #    not change that world's mode. Normal shutdown saves progress for restart.
 grug_prepare_full_world (Prepare full world before entry) bool false
+
+# Multiplier for all non-player combat attack damage, including fixed DoTs,
+# auras and boss ground attacks. Player/environmental damage is unchanged.
+# Loaded at startup; restart after changing. 1.0 restores base attack damage.
+grug_mob_damage_scale (Non-player attack damage multiplier) float 1.5 0 10

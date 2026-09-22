@@ -172,7 +172,7 @@ core.register_globalstep(function(dtime)
 				grug_mobs.slow_player(player, 0.5, 0.6)
 			elseif do_scorch and node and node.name == SCORCH then
 				grug_core.mark_in_combat(player)
-				player:set_hp(math.max(0, player:get_hp() - 2), {
+				player:set_hp(math.max(0, player:get_hp() - grug_mobs.scale_attack_damage(2)), {
 					type = "node_damage", node = SCORCH,
 				})
 			end
@@ -184,7 +184,7 @@ local function projectile_hit(self, player)
 	if not hostile_player(player) then return end
 	player:punch(self.object, 1, {
 		full_punch_interval = 1,
-		damage_groups = {fleshy = (self._grug_damage or 1) * 1.5},
+		damage_groups = {fleshy = (self._grug_damage or grug_mobs.scale_attack_damage(1)) * 1.5},
 	}, nil)
 	place_ground_effect(self._grug_effect, player:get_pos(), self._grug_actor_name)
 end
@@ -215,7 +215,7 @@ local function projectile_trail(self, dtime)
 end
 
 local function register_breath_arrow(name, texture, effect)
-	mobs:register_arrow(name, {
+	grug_mobs.register_homing_arrow(name, {
 		visual = "sprite",
 		visual_size = {x = 1.4, y = 1.4},
 		textures = {texture},
@@ -345,7 +345,7 @@ end
 
 local function shoot_breath(self, action, opts)
 	local from = self.object and self.object:get_pos()
-	local to = action.snapshot
+	local to = action.target and action.target:get_pos()
 	if not from or not to then return end
 	from = {x = from.x, y = from.y + opts.eye_height, z = from.z}
 	to = {x = to.x, y = to.y + 1, z = to.z}
@@ -359,6 +359,7 @@ local function shoot_breath(self, action, opts)
 			local object = core.add_entity(from, opts.arrow)
 			local ent = object and object:get_luaentity()
 			if ent then
+				grug_mobs.stamp_arrow_damage(ent, self)
 				ent._grug_damage = self.damage
 				ent._grug_attacker_level = self._grug_level
 				ent._grug_source = self.object

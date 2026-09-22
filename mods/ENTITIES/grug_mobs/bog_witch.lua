@@ -4,7 +4,7 @@
 -- 160..170; the third material slot visibly carries the hex bottle.
 
 local function hex_hit(self, object)
-	local damage = self._grug_damage or 1
+	local damage = self._grug_damage or grug_mobs.scale_attack_damage(1)
 	object:punch(self.object, 1.0, {
 		full_punch_interval = 1.0, damage_groups = {fleshy = damage},
 	}, nil)
@@ -27,7 +27,7 @@ local function hex_hit(self, object)
 	end
 end
 
-mobs:register_arrow("grug_mobs:hex_bottle", {
+grug_mobs.register_homing_arrow("grug_mobs:hex_bottle", {
 	visual = "sprite", visual_size = {x = 0.5, y = 0.5},
 	textures = {"vessels_glass_bottle.png^[colorize:#7b2fa3:120"},
 	velocity = 8, glow = 4, lifetime = 5,

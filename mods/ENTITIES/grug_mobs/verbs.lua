@@ -200,6 +200,7 @@ end
 -- second DoT rather than refreshing one. Deliberate — serpent bites are
 -- rare, and per-source stacks are the readable behavior.
 function grug_mobs.poison_player(player, total_ticks, interval, dmg_per_tick)
+	dmg_per_tick = grug_mobs.scale_attack_damage(dmg_per_tick)
 	if not player or not core.is_player(player) then
 		return
 	end
@@ -525,7 +526,7 @@ end
 function grug_mobs.damage_aura(def, opts)
 	opts = opts or {}
 	local radius = opts.radius or 2
-	local damage = opts.damage or 2
+	local damage = grug_mobs.scale_attack_damage(opts.damage or 2)
 	local interval = opts.interval or 1
 	chain_do_custom(def, function(self, dtime)
 		if not due(self, "grug_aura_acc", dtime, interval) then
@@ -555,10 +556,48 @@ end
 -- that sees both the arrow entity and the mob. Damage therefore comes from
 -- the level engine's `mob.damage` (levels.lua) at FIRE time — an arrow def
 -- never carries a hand-written number.
+-- Keep the existing impact callbacks (including source/level attribution),
+-- replacing only flight and interception. Every shipped mob arrow uses this.
+function grug_mobs.register_homing_arrow(name, def)
+	def.physical = false
+	def.collide_with_objects = false
+	def.on_step = function(self, dtime)
+		if self._grug_settled then return end
+		local destination, arrived = grug_core.homing_step(self._grug_lock, dtime)
+		if not destination then
+			self._grug_settled = true
+			self.object:remove()
+			return
+		end
+		if arrived then
+			self._grug_settled = true
+			local target = self._grug_lock.target
+			local hit = target:is_player() and def.hit_player or def.hit_mob
+			if hit then hit(self, target) end
+			self.object:remove()
+			return
+		end
+		if def.do_custom then def.do_custom(self, dtime) end
+		if def.tail == 1 and def.tail_texture then
+			core.add_particle({pos = self.object:get_pos(), expirationtime = 0.25,
+				size = 2, texture = def.tail_texture, glow = def.glow or 0})
+		end
+		local remaining = math.max(0.01, self._grug_lock.duration - self._grug_lock.age)
+		self.object:set_velocity(vector.multiply(vector.subtract(destination,
+			self.object:get_pos()), 1 / remaining))
+	end
+	mobs:register_arrow(name, def)
+	core.registered_entities[name].initial_properties.pointable = false
+end
+
 function grug_mobs.stamp_arrow_damage(ent, mob)
 	if not ent then
 		return
 	end
+	ent._grug_lock = mob and grug_core.actor_projectile_lock(mob.object,
+		mob.attack, ent.object:get_pos(), ent.velocity or 14, mob.view_range or 16)
+	if not ent._grug_lock then ent.object:remove() end
+	ent._grug_source = mob and mob.object
 	ent._grug_damage = mob and mob.damage or nil
 	ent._grug_attacker_level = mob and mob._grug_level or nil
 end
@@ -567,7 +606,7 @@ end
 --       tail (bool -> particle trail), tail_texture, lifetime,
 --       damage (fallback only, when no shooter stamped one)
 function grug_mobs.register_simple_arrow(name, opts)
-	local fallback = opts.damage or 1
+	local fallback = grug_mobs.scale_attack_damage(opts.damage or 1)
 	local function hit(self, obj)
 		local dmg = self._grug_damage or fallback
 		obj:punch(self.object, 1.0, {
@@ -575,7 +614,7 @@ function grug_mobs.register_simple_arrow(name, opts)
 			damage_groups = {fleshy = dmg},
 		}, nil)
 	end
-	mobs:register_arrow(name, {
+	grug_mobs.register_homing_arrow(name, {
 		visual = "sprite",
 		visual_size = opts.size or {x = 0.5, y = 0.5},
 		textures = {opts.texture},
@@ -587,14 +626,7 @@ function grug_mobs.register_simple_arrow(name, opts)
 		tail_texture = opts.tail_texture or opts.texture,
 		hit_player = hit,
 		hit_mob = hit,
-		-- Expire on terrain: a no-op on purpose. mobs_redo's arrow on_step
-		-- removes the entity after ANY collision (api.lua:4515-4643) and the
-		-- only thing hit_node adds on top is the "drop the arrow as an
-		-- item" roll (api.lua:4515-4643) — which we do not want, `drop` stays
-		-- unset. Keeping the hook makes the intent explicit and gives the
-		-- roster tasks a place to put an impact effect later.
-		hit_node = function(self, pos, node)
-		end,
+
 	})
 end
 

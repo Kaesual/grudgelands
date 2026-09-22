@@ -758,16 +758,10 @@ return function(root, options)
 	assert(swing_target.pointed.ref == record.object and
 		cast_target.pointed.ref == record.object)
 
-	-- Swept projectiles retain the mount intersection point but settle on the
-	-- rider through the production collision seam.
-	grug_projectiles = {}
-	dofile(root .. "/mods/ENTITIES/grug_projectiles/collision.lua")
-	local projectile = {}
-	local origin = {x = mount_pos.x, y = aim_y, z = mount_pos.z - 3}
-	local projectile_hit = grug_projectiles.trace_segment(attacker, projectile,
-		origin, {x = mount_pos.x, y = aim_y, z = mount_pos.z + 3})
-	assert(projectile_hit.kind == "object" and projectile_hit.target == rider and
-		projectile_hit.pointed.ref == record.object)
+	-- Round 17 projectiles acquire through the same current ray as casts;
+	-- the launch target is the rider, never the ephemeral mount controller.
+	local projectile_target = acquire_mount_hit()
+	assert(projectile_target.status == "target" and projectile_target.target == rider)
 
 	-- mobs_redo redirects a melee hit on an attached player to get_attach().
 	-- The pointable mount forwards it through PlayerRef:punch; only accepted HP

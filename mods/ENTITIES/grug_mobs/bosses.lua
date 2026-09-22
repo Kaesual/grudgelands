@@ -219,6 +219,7 @@ core.register_craftitem("grug_mobs:fallen_crown", {
 })
 
 local function shoot(self, target, arrow, offset_angle)
+	target = self.attack -- Actual release, never the wind-up snapshot.
 	local from = self.object:get_pos()
 	local to = target and target:get_pos()
 	if not from or not to then return end
@@ -234,6 +235,7 @@ local function shoot(self, target, arrow, offset_angle)
 	local object = core.add_entity(from, arrow)
 	local ent = object and object:get_luaentity()
 	if not ent then return end
+	grug_mobs.stamp_arrow_damage(ent, self)
 	ent._grug_damage = self.damage
 	ent._grug_attacker_level = self._grug_level
 	ent.owner_id = tostring(self.object)
