@@ -3,16 +3,16 @@ GLOBAL mods/ENTITIES/mobs/api.lua 72	[26]	SETGLOBAL	8 -3	; mobs
 GLOBAL mods/PLAYER/grug_abilities/init.lua 2	[6]	SETGLOBAL	0 -1	; grug_abilities
 GLOBAL tools/r16_combat/control_kat.lua 6	[4]	SETGLOBAL	2 -1	; arg
 GLOBAL tools/r16_combat/control_kat.lua 12	[6]	SETGLOBAL	1 -1	; arg
-GLOBAL tools/r16_combat/control_kat.lua 564	[104]	SETGLOBAL	17 -115	; mobs
-GLOBAL tools/r16_combat/control_kat.lua 582	[107]	SETGLOBAL	18 -122	; grug_mobs
+GLOBAL tools/r16_combat/control_kat.lua 757	[130]	SETGLOBAL	17 -137	; mobs
+GLOBAL tools/r16_combat/control_kat.lua 775	[133]	SETGLOBAL	18 -144	; grug_mobs
 GLOBAL tools/wp11/move_aggregator_kat.lua 80	[130]	SETGLOBAL	18 -10	; core
 GLOBAL tools/wp11/move_aggregator_kat.lua 82	[131]	SETGLOBAL	18 -11	; grug_core
 GLOBAL tools/wp11/move_aggregator_kat.lua 104	[484]	SETGLOBAL	10 -13	; vector
 GLOBAL tools/wp11/move_aggregator_kat.lua 105	[484]	SETGLOBAL	22 -12	; grug_mobs
 GLOBAL tools/wp11/move_aggregator_kat.lua 106	[484]	SETGLOBAL	21 -11	; grug_core
 GLOBAL tools/wp11/move_aggregator_kat.lua 107	[484]	SETGLOBAL	20 -10	; core
-GLOBAL tools/wp11/move_aggregator_kat.lua 760	[393]	SETGLOBAL	7 -140	; grug_mobs
-GLOBAL tools/wp11/move_aggregator_kat.lua 764	[394]	SETGLOBAL	7 -141	; vector
+GLOBAL tools/wp11/move_aggregator_kat.lua 808	[393]	SETGLOBAL	7 -141	; grug_mobs
+GLOBAL tools/wp11/move_aggregator_kat.lua 812	[394]	SETGLOBAL	7 -142	; vector
 GLOBAL tools/wp39/combat_integration_test.lua 9	[8]	SETGLOBAL	1 -4	; player_api
 GLOBAL tools/wp39/combat_integration_test.lua 25	[12]	SETGLOBAL	1 -6	; grug_inventory
 GLOBAL tools/wp39/combat_integration_test.lua 54	[38]	SETGLOBAL	11 -25	; vector
@@ -29,69 +29,68 @@ PARSER PASS files=12
 SWEEP 1
 mods/PLAYER/grug_visuals/wield_geometry.lua:30:--    `core::Transform::buildMatrix`) cannot change the answer. The bone's own
 SWEEP 2
-mods/ENTITIES/grug_mobs/target_frame.lua:113:			-- UTF-8 written literally: \u{} escapes are LuaJIT-only
 mods/ENTITIES/grug_mobs/levels.lua:78:	-- UTF-8 written literally: \u{} escapes are LuaJIT-only (luanti-lua.md).
+mods/ENTITIES/grug_mobs/target_frame.lua:113:			-- UTF-8 written literally: \u{} escapes are LuaJIT-only
 SWEEP 3
 no hits
 SWEEP 4
+mods/PLAYER/grug_inventory/bags.lua:187:-- List setup & rules
+mods/PLAYER/grug_factions/init.lua:391:	params = "[<player>] [throng|accord]",
 mods/PLAYER/grug_classes/init.lua:130:-- level. resource = "mana" | "rage" (HUD/regen lands with WP4).
 mods/PLAYER/grug_visuals/compose.lua:279:	-- docs/research/luanti-lua.md flags `"|"` as a possible bitwise operator,
-mods/PLAYER/grug_inventory/bags.lua:187:-- List setup & rules
+mods/PLAYER/grug_inventory/init.lua:1:-- Character screen & bags (WP15, spec: docs/design/inventory_equipment.md).
 mods/PLAYER/grug_classes/selection.lua:557:		return true, ("%s %s %s, level %d | Str %d Int %d Dex %d | " ..
 mods/PLAYER/grug_classes/selection.lua:558:			"HP %d/%d, mana %d | melee +%d, spell +%d, crit %.1f%%, dodge %.1f%%"):format(
-mods/PLAYER/grug_factions/init.lua:391:	params = "[<player>] [throng|accord]",
-mods/PLAYER/grug_inventory/init.lua:1:-- Character screen & bags (WP15, spec: docs/design/inventory_equipment.md).
 mods/PLAYER/grug_inventory/pages.lua:298:-- Homepage & nav order: Character first, Bags second, Crafting after.
+mods/CORE/grug_core/atmosphere.lua:259:	params = "[<preset>|off|auto]",
 mods/ENTITIES/grug_traders/stock.lua:22:-- §8.2 VERBATIM; "Wood & stone tools / bronze pick | 5-15c / 40c" is the
 mods/ENTITIES/grug_traders/stock.lua:32:-- {item = <name>, price = <copper>, category = "goods" | "tools"}
 mods/ENTITIES/grug_traders/stock.lua:95:-- Bracket catalogs & the hourly rotation (§3.8)
-mods/CORE/grug_core/atmosphere.lua:259:	params = "[<preset>|off|auto]",
-mods/PLAYER/grug_abilities/init.lua:729:-- Ability registration & item. One tool per ability; the item's `range`
-mods/PLAYER/grug_abilities/init.lua:1880:	return SKIN_VERSION .. "|" .. color .. "|" .. src.inv .. "|" .. src.wield
-mods/PLAYER/grug_abilities/init.lua:1924:	local token = SWING_CAPS_VERSION .. "|" .. string.format("%.17g", interval)
-mods/MAPGEN/grug_mapgen/wp13/troll_parts.lua:19:-- row, quoted): "stilted cenote terrace, step 3 | stilt halls on basalt
 mods/CORE/grug_core/combat.lua:4:-- Damage pipeline & combat state (docs/design/classes.md §2,
 mods/CORE/grug_core/combat_debug.lua:64:	params = "on|off",
 mods/CORE/grug_core/combat_debug.lua:81:		return false, "Usage: /combatdebug on|off"
 mods/CORE/grug_core/combat_ray.lua:144:--   status = "target" | "aim_miss"
 mods/CORE/grug_core/combat_ray.lua:145:--   reason = hostile | friendly | dead | object | node | empty |
 mods/CORE/grug_core/combat_ray.lua:146:--            out_of_range | invalid
-mods/PLAYER/grug_abilities/scout.lua:214:	return stack:get_name() .. "|" .. item_id
+mods/PLAYER/grug_abilities/init.lua:729:-- Ability registration & item. One tool per ability; the item's `range`
+mods/PLAYER/grug_abilities/init.lua:1880:	return SKIN_VERSION .. "|" .. color .. "|" .. src.inv .. "|" .. src.wield
+mods/PLAYER/grug_abilities/init.lua:1924:	local token = SWING_CAPS_VERSION .. "|" .. string.format("%.17g", interval)
 mods/ENTITIES/grug_mobs/bandit.lua:2:-- humanoid; camps placed by §1.4, inner+outer, both continents) | defends
 mods/ENTITIES/grug_mobs/bandit.lua:3:-- camp (leashes to camp, group) | 24 h | 4.6 | linen cloth 1/1 x1-2 (inner
 mods/ENTITIES/grug_mobs/bandit.lua:143:			-- this: "Linen cloth | 10-30 | bandit camps", "Heavy cloth | 25-45 |
 mods/MAPGEN/grug_mapgen/wp13/gor_drazhak.lua:11:--     "Gor Drazhak | orc | mesa shelf, step 4 | adobe flat roofs with
-mods/ENTITIES/grug_mobs/levels.lua:2:-- Level & tier engine (combat_stats.md §3/§6, biomes_mobs.md §0).
-mods/ENTITIES/grug_mobs/mirefolk.lua:2:-- (fish-folk humanoid, camps at swamp pools; the 'murloc memory') | swarms
-mods/ENTITIES/grug_mobs/mirefolk.lua:3:-- (camp group aggro, all rush at once) | 24 h | 4.6 | linen cloth 1/2;
 mods/ENTITIES/grug_mobs/bear.lua:100:-- §4 row "Bear/Plaguehide | forest litter, bone litter | 20 | 2800 | 2 |
 mods/ENTITIES/grug_mobs/bear.lua:101:-- min 10 | outer, coast", split by continent-side top node.
 mods/ENTITIES/grug_mobs/bear.lua:115:-- WP6 time the centre band stopped at |z| 1500 and therefore could not reach
-mods/ENTITIES/grug_mobs/spider.lua:81:-- §4 row "Giant Spider (all) | forest litter, bone litter, rainforest litter
-mods/ENTITIES/grug_mobs/spider.lua:82:-- | 20 | 1800 | 4 | max 5 | outer, coast, underground", split by continent
-mods/ENTITIES/grug_mobs/spider.lua:144:-- every spider tint on the same table anyway ("spider table | Giant Spider |
-mods/ENTITIES/grug_mobs/boar_variants.lua:103:-- still reaches with zone `inner` up to |x| ~932, and the patch model (§1.4)
-mods/ENTITIES/grug_mobs/zebra.lua:7:-- table together with Stag and Gaunt Stag ("Stag, Zebra-mirror | Gaunt Stag,
-mods/ENTITIES/grug_mobs/zebra.lua:69:-- §4 row "Stag/Gaunt Stag/Zebra | forest litter, bone litter, grass, dry
-mods/ENTITIES/grug_mobs/zebra.lua:70:-- grass | 20 | 1800 | 3 | min 10 | inner, outer" — the Zebra's share of that
-mods/ENTITIES/grug_mobs/stag.lua:86:-- §4 row "Stag/Gaunt Stag/Zebra | forest litter, bone litter, grass, dry
-mods/ENTITIES/grug_mobs/stag.lua:87:-- grass | 20 | 1800 | 3 | min 10 | inner, outer", split by continent side.
-mods/ENTITIES/grug_mobs/wolf.lua:74:-- §4 row "Wolf/Blightfang | coniferous litter, forest litter, bone litter,
-mods/ENTITIES/grug_mobs/wolf.lua:75:-- grass | 20 | 1500 | 5 | any | inner, outer", split along the continent
-mods/ENTITIES/grug_mobs/bog_ooze.lua:87:-- §4 row "Bog Ooze | mud | 20 | 2000 | 3 | any | outer".
-mods/ENTITIES/grug_mobs/panther.lua:78:-- §4 row "Panther | rainforest litter | 20 | 1800 | 4 | max 5 | outer,
+mods/ENTITIES/grug_mobs/eagle.lua:119:-- §4 row "Crag Eagle/Vulture | gravel, mesa_clay | 20 | 2000 | 3 | min 10 |
+mods/ENTITIES/grug_mobs/levels.lua:2:-- Level & tier engine (combat_stats.md §3/§6, biomes_mobs.md §0).
+mods/PLAYER/grug_abilities/scout.lua:214:	return stack:get_name() .. "|" .. item_id
 mods/ENTITIES/grug_mobs/parrot.lua:2:-- jungle_edge critter | flees | day | 3.4 | feather 1/1; meat 1/2").
-mods/ENTITIES/grug_mobs/serpent.lua:75:-- §4 row "Serpent | rainforest litter, mud | 20 | 1800 | 4 | min 10 | outer,
-mods/ENTITIES/grug_mobs/skeleton_raider.lua:7:-- boar/zombie/bandit/skeleton | identical biomes both sides | identical" —
+mods/ENTITIES/grug_mobs/panther.lua:78:-- §4 row "Panther | rainforest litter | 20 | 1800 | 4 | max 5 | outer,
 mods/ENTITIES/grug_mobs/ram.lua:11:-- grug_mobs_hare_dust.png skin. That is why the §4 "Ram | gravel | 20 | 2200
 mods/ENTITIES/grug_mobs/ram.lua:12:-- | 2 | min 10 | outer" row is RAM-ONLY and has no mesa_clay twin — the Dust
 mods/ENTITIES/grug_mobs/ram.lua:72:-- §4 row "Ram | gravel | 20 | 2200 | 2 | min 10 | outer".
-mods/ENTITIES/grug_mobs/gull.lua:110:--   Shore Crab   | sand | 20 | 2200 | 3 | any | strait, war_coast, coast
-mods/ENTITIES/grug_mobs/gull.lua:111:--   Reef Lurker  | sand | 30 | 8000 | 1 | any | coast
+mods/ENTITIES/grug_mobs/boar_variants.lua:103:-- still reaches with zone `inner` up to |x| ~932, and the patch model (§1.4)
+mods/ENTITIES/grug_mobs/mirefolk.lua:2:-- (fish-folk humanoid, camps at swamp pools; the 'murloc memory') | swarms
+mods/ENTITIES/grug_mobs/mirefolk.lua:3:-- (camp group aggro, all rush at once) | 24 h | 4.6 | linen cloth 1/2;
+mods/ENTITIES/grug_mobs/spider.lua:81:-- §4 row "Giant Spider (all) | forest litter, bone litter, rainforest litter
+mods/ENTITIES/grug_mobs/spider.lua:82:-- | 20 | 1800 | 4 | max 5 | outer, coast, underground", split by continent
+mods/ENTITIES/grug_mobs/spider.lua:144:-- every spider tint on the same table anyway ("spider table | Giant Spider |
 mods/ENTITIES/grug_mobs/items.lua:85:-- Hides & pelts (§6 rows "light leather" / "heavy leather" / "scaled hide")
-mods/ENTITIES/grug_mobs/hyena.lua:73:-- §4 row "Hyena | dry grass, mesa_clay | 20 | 1500 | 5 | any | inner, outer".
+mods/ENTITIES/grug_mobs/bog_ooze.lua:87:-- §4 row "Bog Ooze | mud | 20 | 2000 | 3 | any | outer".
+mods/ENTITIES/grug_mobs/golem.lua:172:-- §4 row "Stone/Mesa Golem (elite) | gravel, stone, mesa_clay | 30 | 9000 |
+mods/ENTITIES/grug_mobs/golem.lua:173:-- 1 | any | outer, coast, underground", split by continent-side top node;
 mods/ENTITIES/grug_mobs/jungle_ape.lua:3:-- (§3.2 "bear table | Bear/Elder Bear | Plaguehide Bear, Jungle Ape/
 mods/ENTITIES/grug_mobs/jungle_ape.lua:102:-- §4 row "Jungle Ape | rainforest litter | 20 | 2800 | 2 | min 10 | outer,
+mods/ENTITIES/grug_mobs/stag.lua:86:-- §4 row "Stag/Gaunt Stag/Zebra | forest litter, bone litter, grass, dry
+mods/ENTITIES/grug_mobs/stag.lua:87:-- grass | 20 | 1800 | 3 | min 10 | inner, outer", split by continent side.
+mods/ENTITIES/grug_mobs/hyena.lua:73:-- §4 row "Hyena | dry grass, mesa_clay | 20 | 1500 | 5 | any | inner, outer".
+mods/ENTITIES/grug_mobs/jungle_lynx.lua:64:	-- Wolf table (§3.2: "wolf table | Wolf | ... Raptor*"): meat and leather
+mods/ENTITIES/grug_mobs/jungle_lynx.lua:82:-- §4 row "Raptor | rainforest litter | 20 | 1500 | 5 | min 10 | inner,
+mods/ENTITIES/grug_mobs/gull.lua:110:--   Shore Crab   | sand | 20 | 2200 | 3 | any | strait, war_coast, coast
+mods/ENTITIES/grug_mobs/gull.lua:111:--   Reef Lurker  | sand | 30 | 8000 | 1 | any | coast
+mods/ENTITIES/grug_mobs/carrion_crow.lua:118:	-- biome, so whatever the local band's voronoi produces at |z| 100..300 is
+mods/ENTITIES/grug_mobs/crocodile.lua:106:-- §4 row "Crocodile | mud, water at mud | 20 | 1800 | 3 | any | outer".
 mods/ENTITIES/grug_mobs/rares.lua:408:--   dz = | |z| - 900 |                  SEAT_Z = 900
 mods/ENTITIES/grug_mobs/rares.lua:414:-- coast band (needs |x| > 1350 or |z| > 1550) and all have |z| > 600, so the
 mods/ENTITIES/grug_mobs/rares.lua:445:-- axis, not by z: at |z| ~1000 the dz term is small, so the route has to sit
@@ -116,16 +115,18 @@ mods/ENTITIES/grug_mobs/rares.lua:599:--   x  555 -> dx 255 -> n 0.6698 -> L 31.
 mods/ENTITIES/grug_mobs/rares.lua:600:--   x  680 -> dx 380 -> n 0.7166 -> L 34.5   |  the level is uniform
 mods/ENTITIES/grug_mobs/rares.lua:602:-- Zone check: |z| 268 is > CONTINENT_Z_MIN (100) and <= WAR_COAST_Z (300),
 mods/ENTITIES/grug_mobs/rares.lua:635:-- Same |z|, same span, same level — different x because the coast noise is
-mods/ENTITIES/grug_mobs/golem.lua:172:-- §4 row "Stone/Mesa Golem (elite) | gravel, stone, mesa_clay | 30 | 9000 |
-mods/ENTITIES/grug_mobs/golem.lua:173:-- 1 | any | outer, coast, underground", split by continent-side top node;
-mods/ENTITIES/grug_mobs/jungle_lynx.lua:64:	-- Wolf table (§3.2: "wolf table | Wolf | ... Raptor*"): meat and leather
-mods/ENTITIES/grug_mobs/jungle_lynx.lua:82:-- §4 row "Raptor | rainforest litter | 20 | 1500 | 5 | min 10 | inner,
 mods/MAPGEN/grug_mapgen/wp13/nhal_veyr.lua:1302:	--     cap(p) = gate_y + |p - gate_at|      (gate_y = the free terrain at
-mods/ENTITIES/grug_mobs/crocodile.lua:106:-- §4 row "Crocodile | mud, water at mud | 20 | 1800 | 3 | any | outer".
-mods/ENTITIES/grug_mobs/eagle.lua:119:-- §4 row "Crag Eagle/Vulture | gravel, mesa_clay | 20 | 2000 | 3 | min 10 |
-mods/ENTITIES/grug_mobs/carrion_crow.lua:118:	-- biome, so whatever the local band's voronoi produces at |z| 100..300 is
+mods/ENTITIES/grug_mobs/serpent.lua:75:-- §4 row "Serpent | rainforest litter, mud | 20 | 1800 | 4 | min 10 | outer,
 mods/ENTITIES/grug_mobs/init.lua:69:--   def._grug_tier        — "normal" (default) | "elite" | "rare" | "boss"
+mods/ENTITIES/grug_mobs/skeleton_raider.lua:7:-- boar/zombie/bandit/skeleton | identical biomes both sides | identical" —
 mods/ENTITIES/grug_mobs/camps.lua:3:-- (docs/design/world.md §4a "NPC binding & respawn slots";
+mods/MAPGEN/grug_mapgen/wp13/troll_parts.lua:19:-- row, quoted): "stilted cenote terrace, step 3 | stilt halls on basalt
+mods/ENTITIES/grug_mobs/wolf.lua:74:-- §4 row "Wolf/Blightfang | coniferous litter, forest litter, bone litter,
+mods/ENTITIES/grug_mobs/wolf.lua:75:-- grass | 20 | 1500 | 5 | any | inner, outer", split along the continent
+mods/ENTITIES/grug_mobs/zebra.lua:7:-- table together with Stag and Gaunt Stag ("Stag, Zebra-mirror | Gaunt Stag,
+mods/ENTITIES/grug_mobs/zebra.lua:69:-- §4 row "Stag/Gaunt Stag/Zebra | forest litter, bone litter, grass, dry
+mods/ENTITIES/grug_mobs/zebra.lua:70:-- grass | 20 | 1800 | 3 | min 10 | inner, outer" — the Zebra's share of that
+mods/MAPGEN/grug_mapgen/wp13/kezamba.lua:11:-- is an answer to it: "Kezamba | troll | stilted cenote terrace, step 3 | stilt
 mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:6:AGENTS.md|b12f55731dfee4e050f97ea0c221415fdffd9cef7ded5b0b8b7a3b5c16c4a53b|55978
 mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:7:docs/design/biomes_mobs.md|f1f3255033565d2eecb7752ac96b0585946e631f8e19a8f8a8af2ccc704f1fe4|103928
 mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:8:docs/design/items_crafting.md|b1210336d8733fd4cc606bc40f19758229a8fa75c69dc92cc891b55abbbdcdd1|125115
@@ -252,12 +253,6 @@ mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:140:savanna_dry_shrub|grug_savan
 mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:141:swamp_dry_shrub|grug_swamp|simple|default:dry_shrub|grug_nodes:mud|1|250|param2_4|4
 mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:142:swamp_papyrus|grug_swamp|template|papyrus_on_dirt.mts|grug_nodes:mud|1|50|surface_y_1_to_4;replace_dirt_with_mud;center_xz;quarter_turn_rotation|1
 mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:147:	for value in (line .. "|"):gmatch("([^|]*)|") do result[#result + 1] = value end
-mods/MAPGEN/grug_mapgen/wp13/kezamba.lua:11:-- is an answer to it: "Kezamba | troll | stilted cenote terrace, step 3 | stilt
-mods/ITEMS/grug_farming/ecology.lua:22:		local cx, cz = key:match("|(-?%d+)|(-?%d+)$")
-mods/ITEMS/grug_farming/ecology.lua:24:		local coord = cx .. "|" .. cz
-mods/ITEMS/grug_farming/ecology.lua:47:		return species .. "|" .. math.floor(pos.x / CELL) .. "|" ..
-mods/ITEMS/grug_farming/ecology.lua:187:				local keys = cells_by_coord[(cx + dx) .. "|" .. (cz + dz)] or {}
-mods/MAPGEN/grug_mapgen/wp40/simple_map.lua:722:					-- open envelope is |d| < gate_half, so the closed box this
 mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:270:			"|offset=" .. string.format("%.0f", spec.offset) ..
 mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:271:			"|scale=" .. string.format("%.0f", spec.scale) ..
 mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:272:			"|spread=" .. string.format("%.0f", spec.spread_x) .. "," ..
@@ -276,6 +271,11 @@ mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:479:		string.format("%.0f", blob.y_ma
 mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:488:		rows[#rows + 1] = "stratum|" .. definition.name .. "|ore=" ..
 mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:489:			definition.ore .. "|wherein=default:stone|clust_scarcity=1|y_min=" ..
 mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:490:			string.format("%.0f", definition.y_min) .. "|y_max=" ..
+mods/MAPGEN/grug_mapgen/wp40/simple_map.lua:722:					-- open envelope is |d| < gate_half, so the closed box this
+mods/ITEMS/grug_farming/ecology.lua:22:		local cx, cz = key:match("|(-?%d+)|(-?%d+)$")
+mods/ITEMS/grug_farming/ecology.lua:24:		local coord = cx .. "|" .. cz
+mods/ITEMS/grug_farming/ecology.lua:47:		return species .. "|" .. math.floor(pos.x / CELL) .. "|" ..
+mods/ITEMS/grug_farming/ecology.lua:187:				local keys = cells_by_coord[(cx + dx) .. "|" .. (cz + dz)] or {}
 mods/MAPGEN/grug_mapgen/wp40/geometry/partition.lua:1678:				out.probe_forward}, "|")
 mods/MAPGEN/grug_mapgen/wp40/geometry/partition.lua:6336:							out.probe_digest}, "|")
 SWEEP 5

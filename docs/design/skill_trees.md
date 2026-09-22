@@ -1122,7 +1122,9 @@ awkward kind for an aggregator:
   migrates too.
 
 **It is an aggregator for speed and jump.** Frost Nova uses the hard-root flag
-(speed 0, jump 0), followed by its independent 50% slow. Movement immunity
+(logical speed 0, jump 0), followed by its independent 50% slow. The shared
+physics writer zeros locomotion targets with native braking enabled, so an
+already moving player stops; airborne falling and gravity remain active. Movement immunity
 removes roots and suppresses negative modifiers. Charge stun independently sets
 speed and jump to zero and blocks action execution. Gravity stays unchanged for
 combat control; the character-selection exclusive hold owns its gravity freeze.

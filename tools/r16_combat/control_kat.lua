@@ -62,13 +62,39 @@ grug_core.set_move_modifier(b,"web",{speed=-0.5},10)
 assert(grug_core.set_root(b,4)); grug_core.mark_nova_root(b,4)
 advance(0.3); assert(particles==1)
 grug_core.set_stun(b,1.5)
-assert(b.physics.speed==0 and b.physics.jump==0 and b.physics.gravity==nil)
+assert(b.physics.speed*b.physics.speed_walk==0 and b.physics.jump==0 and b.physics.gravity==nil)
+-- Engine LocalPlayer::accelerate horizontal clamp, node units; exercise
+-- moving players at 200fps including the minimum slippery-node factor.
+for _,case in ipairs({{"default",0.001},{"air",1},{"fast",0.001}}) do
+ local base=case[1]=="air" and 3 or 10
+ local increment=base*b.physics["acceleration_"..case[1]]*0.005*b.physics.speed*case[2]
+ local vx,vz,vy=6,8,-12
+ local length=math.sqrt(vx*vx+vz*vz)
+ local reduction=math.min(length,increment)/length
+ vx,vz=vx*(1-reduction),vz*(1-reduction)
+ assert(vx==0 and vz==0)
+ -- Engine air branch explicitly sets incV=0, unrelated to incH.
+ if case[1]=="air" then assert(vy==-12 and b.physics.gravity==nil) end
+end
 grug_core.set_move_immunity(b,2)
-assert(grug_core.is_stunned(b) and b.physics.speed==0)
+assert(grug_core.is_stunned(b) and b.physics.speed*b.physics.speed_walk==0)
 advance(1.6); assert(not grug_core.is_stunned(b) and b.physics.speed==1)
 assert(particles==1,"immunity must stop root particles")
-advance(0.5); assert(b.physics.speed==0.5)
+assert(b.physics.speed_walk==1 and b.physics.speed_fast==1 and b.physics.speed_climb==1
+ and b.physics.speed_crouch==1 and b.physics.acceleration_air==1
+ and b.physics.acceleration_default==1 and b.physics.acceleration_fast==1)
+advance(0.5); assert(b.physics.speed*b.physics.speed_walk==0.5)
 grug_core.clear_movement(b)
+-- Cache and forced watchdog must compare the physical representation.
+grug_core.set_root(b,4); grug_core.set_stun(b,1.5)
+grug_core.hold_movement(b,"fixture")
+b.physics.speed_fast=1; b.physics.acceleration_air=0
+grug_core.hold_movement(b,"fixture")
+assert(b.physics.speed_fast==0 and b.physics.acceleration_air>0 and b.physics.gravity==0)
+grug_core.release_movement(b,"fixture")
+assert(b.physics.gravity==1 and b.physics.speed_walk==0)
+grug_core.clear_movement(b)
+assert(b.physics.speed_walk==1 and b.physics.acceleration_air==1)
 -- New casts stop before resource payment or projectile spawn.
 local fireball=grug_abilities.registered.fireball
 local count=#f.spawns; local mana=grug_abilities.get_mana(b)
@@ -207,7 +233,22 @@ local family_env=setmetatable({grug_mobs=setmetatable({
  passive_prey=noop,melee_rider=noop,camp_swarm=noop,
 }, {__index=gm}),mobs={spawn=noop}},{__index=_G})
 local family=assert(loadfile(repo.."/mods/ENTITIES/grug_mobs/start_zone_families.lua")); setfenv(family,family_env); family()
-assert(captured["grug_mobs:ibex"].selectionbox[5]==1.8)
+local box=captured["grug_mobs:ibex"].selectionbox
+assert(box[5]==1.8 and box.rotate==true)
+-- The local head point remains in the oriented box at 0/90/180/270 yaw.
+for _,yaw in ipairs({0,math.pi/2,math.pi,3*math.pi/2}) do
+ local x,z=0.95*math.sin(yaw),0.95*math.cos(yaw)
+ local lx,lz=x*math.cos(yaw)-z*math.sin(yaw),x*math.sin(yaw)+z*math.cos(yaw)
+ assert(lx>=box[1] and lx<=box[4] and lz>=box[3] and lz<=box[6])
+end
 assert(captured["grug_mobs:ibex"].collisionbox[5]==0.5)
+local scaled
+local scale_object={get_properties=function() return {} end,
+ set_properties=function(_,props) scaled=props end}
+local scaled_mob={object=scale_object,base_size={x=1,y=1},base_selbox=box,
+ base_colbox=captured["grug_mobs:ibex"].collisionbox}
+api_env.mobs:scale_mob(scaled_mob,0.5,0.5,true)
+assert(scaled.selectionbox.rotate and scaled_mob.base_selbox.rotate)
+assert(scaled.selectionbox[6]==box[6]*0.5)
 return "r16-combat\tthreat-expiry\tstun\tnova\tPASS\n"
 end

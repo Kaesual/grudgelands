@@ -364,6 +364,9 @@ function mobs:scale_mob(self, w, h, perma)
 		self.base_selbox[3] * w, self.base_selbox[4] * w,
 		self.base_selbox[5] * h, self.base_selbox[6] * w}
 
+	-- GRUG PATCH: retain oriented selection boxes when scaling (Ibex).
+	selbox.rotate = self.base_selbox.rotate
+
 	if perma then -- makes new scale permanent by overriding base values
 		self.base_size = vis_size
 		self.base_colbox = colbox

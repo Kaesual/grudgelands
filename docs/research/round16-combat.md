@@ -128,3 +128,37 @@ and are excluded from staging.
    movement immunity and that gravity still works.
 5. Aim Strike/Fireball at the standing and walking Ibex's torso/head; verify
    reliable acquisition and unchanged movement through terrain.
+
+## Independent review corrections
+
+The independent B review found one High in native player braking and one Medium
+in oriented Ibex targeting. Both were corrected after reading the pinned engine:
+
+- `LocalPlayer::applyControl` (`src/client/localplayer.cpp:704-732`) multiplies
+  acceleration by `physics_override.speed`; speed zero therefore leaves previous
+  horizontal velocity unchanged in `accelerate` (`:784-824`). The aggregator now
+  retains logical zero speed but sends physical speed one with all four locomotion
+  multipliers zero. Its three acceleration multipliers become 1,000,000 during
+  hard control, then return to one together with locomotion on release. This
+  finite braking value also covers the minimum 0.001 slippery-node factor
+  (`:1153-1167`). Airborne vertical acceleration remains zero (`:710`), preserving
+  fall velocity and gravity. There are no velocity subtraction packets or position
+  resets. Root, stun and existing exclusive holds use the same cached writer;
+  its forced watchdog compares every owned physical field.
+- `selectionbox.rotate` is parsed by `c_content.cpp:369`; default false would
+  leave the elongated box world-aligned while the Ibex turns. Ibex now sets true,
+  and the vendored scaling helper preserves that flag in temporary/permanent
+  selection boxes. Registration and activation retain the base table.
+
+Repeated LuaJIT control, movement and full combat integration fixtures pass.
+The compact control fixture adds bounded native horizontal clamp calculations
+for moving ground/air/fast cases at 200 fps, including minimum slip; it verifies
+all physics restoration fields and root/stun/hold/watchdog overlap. It also
+checks oriented head inclusion at four yaw angles and the real mobs scaling
+helper. These checks inspect the production overrides and the pinned engine
+formula; they do not replace a real moving-client runtime check. Parser,
+SETGLOBAL and all five sweeps were repeated; no PUC runtime was run.
+
+Additional user runtime checks: Nova/Charge a player already running, falling
+and crossing slippery ground; horizontal motion stops while falling continues,
+and normal controls resume at expiry. Target an Ibex head after quarter-turns.

@@ -52,6 +52,14 @@ local JUMP_MAX = 1.5
 -- AGENTS.md: "Always throttle register_globalstep with a dtime accumulator."
 local STEP_INTERVAL = 0.1
 
+-- Native braking must remain enabled even on the minimum 0.001 slip factor.
+-- localplayer.cpp:704-732, 784-824, 1153-1167: speed=0 disables braking.
+local HARD_ACCELERATION = 1000000
+local CONTROL_FIELDS = {
+	"speed_walk", "speed_fast", "speed_crouch", "speed_climb",
+	"acceleration_default", "acceleration_air", "acceleration_fast",
+}
+
 -- player name -> {
 --   mods  = {name -> {speed = delta, jump = delta, expiry = t or nil}},
 --   root  = expiry or nil,
@@ -187,15 +195,26 @@ local function write(player, rec, force)
 			and owned == last.gravity then
 		return speed, jump
 	end
+	-- Keep desired movement at zero, but retain native acceleration to brake
+	-- existing horizontal velocity. In air the engine sets incV=0, preserving
+	-- falling/gravity. No stale server velocity is subtracted from the client.
+	local hard = speed == 0
+	local override = {speed = hard and 1 or speed, jump = jump}
+	for index, field in ipairs(CONTROL_FIELDS) do
+		override[field] = hard and (index <= 4 and 0 or HARD_ACCELERATION) or 1
+	end
 	if force then
 		local live = player:get_physics_override() or {}
-		if live.speed == speed and live.jump == jump
-				and (gravity == nil or live.gravity == gravity) then
+		local matches = live.speed == override.speed and live.jump == jump
+			and (gravity == nil or live.gravity == gravity)
+		for _, field in ipairs(CONTROL_FIELDS) do
+			matches = matches and live[field] == override[field]
+		end
+		if matches then
 			last.speed, last.jump, last.gravity = speed, jump, owned
 			return speed, jump
 		end
 	end
-	local override = {speed = speed, jump = jump}
 	if gravity ~= nil then
 		override.gravity = gravity
 	end

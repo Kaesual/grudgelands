@@ -380,3 +380,6 @@ The Grudgelands controller/child cleanup remains owned by `grug_mounts`.
 Round 16 combat patch: `mods/ENTITIES/mobs/api.lua` ticks the current stun
 countdown before native jumping/knockback pause; gravity and environmental
 damage continue, while custom/native attacks and jumping are blocked.
+
+Round 16 review correction: mobs `scale_mob` preserves the selectionbox `rotate`
+flag through temporary/permanent scaling for the oriented Ibex targeting box.
