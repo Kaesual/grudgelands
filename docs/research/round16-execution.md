@@ -9,13 +9,13 @@ deleted. Claude prohibited this session; same-provider CLI prohibited.
 
 | Lane | Owner | Worktree | State |
 | --- | --- | --- | --- |
-| A Mount lifecycle | Astra | `/tmp/grug-r16-mounts` | implemented `9f178c27`; review pending |
-| B Combat audit/control/Ibex | Astra | `/tmp/grug-r16-combat` | targeted JIT fixtures pass; finalizing |
-| G Surface preparation | Astra | `/tmp/grug-r16-surface` | bounded native stop/resume gate |
-| C Atlas | root Astra | root branch | `bddd1edf`; independent review pending |
-| D Quest progression/kill XP + XP UI/admin | Sol | `/tmp/grug-r16-progression` | implementing |
-| E UI/food | root Astra | root branch | `1b2f0458`; independent review pending |
-| F Atmosphere/audio/density | Sol | `/tmp/grug-r16-atmosphere` | prepared; awaiting worker slot |
+| A Mount lifecycle | Astra | `/tmp/grug-r16-mounts` | review clean; integrated as `6a120d54` |
+| B Combat audit/control/Ibex | Astra | `/tmp/grug-r16-combat` | `be2cc9b9`; correcting 1 High + 1 Medium review findings |
+| G Surface preparation | Astra | `/tmp/grug-r16-surface` | `b009e778`; root correction `a4af5cfa` in focused review |
+| C Atlas | root Astra | root branch | `bddd1edf`; review clean |
+| D Quest progression/kill XP + XP UI/admin | Sol | `/tmp/grug-r16-progression` | `cb1ce4d0`; review clean, integrated `5934a0ae` |
+| E UI/food | root Astra | root branch | `1b2f0458`; review clean |
+| F Atmosphere/audio/density | Sol | `/tmp/grug-r16-atmosphere` | implementing |
 
 Use at most three worker agents concurrently with root. Each lane owns its
 files and updates its design sections before implementation. Root owns this
@@ -43,3 +43,8 @@ cases; review pending. No GUI acceptance is claimed. Final PUC/JIT pair pending.
 Per-lane handoff includes commit hash, owned files, source/fixture hashes,
 LuaJIT evidence, remaining risks and callable compact final fixture entry point.
 Root records reviews, final gates, merge, sync and push here before completion.
+
+Review rotation: native Sol (D author) independently checks A/C/E, excluding
+its own XP work. Native Astra (B author) independently checks G/D, excluding B.
+Separate native Astra reviews B and root's G correction. Root never certifies
+its own C/E or G-fix code. Reports are linked from the completion record.

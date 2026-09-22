@@ -8,8 +8,7 @@ Baseline: `bddd1edfbf8516b8ec553886f554bc480ad63625`.
 The level interval is `100 * (2L - 1)`. Rewards are catalog constants and do
 not inspect the receiver's level. Ordinary starter quests use 20%, the hard
 outpost step uses 25%, and the camp finale uses 35%. Optional local work uses
-15%/20%/25% for light/standard/hard effort. Values are integral at every
-authored level, except L12 standard's exact 460 and therefore require no
+15%/20%/25% for light/standard/hard effort. Values are integral at every authored level and therefore require no
 runtime rounding policy.
 
 | Catalog row | Intended level | Effort | Old XP | New XP | Same-level normal kill XP after Round 16 |
