@@ -27,8 +27,10 @@ with their prior values, so unchanged health, class and preference produce no
 HUD packets. Class changes also use the established party change callback for
 an immediate refresh.
 
-`tools/r17_party/kat.lua` loads the production preference, party-view, HUD and
-layout paths. It checks the default, persistence, invalid-value refusal, all
-four exact colors, canonical online class projection, offline state and zero
-unchanged HUD writes. Root owns the final compact PUC 5.1/LuaJIT parity pair on
-integrated bytes.
+`tools/r17_party/kat.lua` loads the production preference, party-view, Group
+page, HUD and layout paths. Through the real `ui.lua` receive-fields callback it
+checks dropdown indices `2` and `1`, rejects an invalid field without mutation,
+and verifies the generated selected index and top-right geometry. It also checks
+the default, reconnect persistence, all four exact colors, canonical online
+class projection, offline state and zero unchanged HUD writes. Root owns the
+final compact PUC 5.1/LuaJIT parity pair on integrated bytes.

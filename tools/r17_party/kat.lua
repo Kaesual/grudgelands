@@ -76,6 +76,50 @@ view = api.view(viewer)
 check(not view.members[2].online and view.members[2].hp == nil
 	and view.members[2].class == nil, "offline row fabricated live state")
 
+-- Load the real Group page and submit the dropdown through its receive-fields
+-- path. Preference writes stay owned by the production API above.
+local page, context = nil, {page = "grug_parties:group"}
+core.formspec_escape = function(value)
+	return tostring(value):gsub("\\", "\\\\"):gsub("%]", "\\]")
+		:gsub("%[", "\\["):gsub(";", "\\;"):gsub(",", "\\,")
+end
+core.get_connected_players = function() return {reconnected} end
+core.explode_textlist_event = function() return {type = "INV", index = 0} end
+core.register_on_mods_loaded = function() end
+local sfinv = {
+	pages = {}, pages_unordered = {},
+	register_page = function(_, definition) page = definition end,
+	make_formspec = function(_, _, content) return content end,
+	get_page = function() return context.page end,
+	set_page = function() end,
+}
+local ui_env = setmetatable({core = core, grug_factions = env.grug_factions,
+	grug_parties = api, sfinv = sfinv}, {__index = _G})
+local ui_chunk = assert(loadfile(repo .. "/mods/PLAYER/grug_parties/ui.lua"))
+setfenv(ui_chunk, ui_env)
+ui_chunk()
+page:on_enter(viewer, context)
+local form = page:get(viewer, context)
+check(form:find("label[5.18,0.22;Health colors]", 1, true)
+	and form:find("dropdown[7.10,0.12;3.10;grug_party_health_colors;All green,By class;2;true]",
+		1, true), "by-class dropdown selection or geometry differs")
+local dropdown_x, dropdown_y, dropdown_w = form:match(
+	"dropdown%[([%d.]+),([%d.]+);([%d.]+);grug_party_health_colors;")
+check(dropdown_x and tonumber(dropdown_x) + tonumber(dropdown_w) <= 10.20
+	and tonumber(dropdown_y) < 0.78,
+	"health color dropdown overlaps roster columns")
+page:on_player_receive_fields(viewer, context, {grug_party_health_colors = "1"})
+check(api.health_color_mode(viewer) == "all_green",
+	"dropdown index 1 did not select all-green")
+page:on_player_receive_fields(viewer, context, {grug_party_health_colors = "2"})
+check(api.health_color_mode(viewer) == "by_class",
+	"dropdown index 2 did not select by-class")
+page:on_player_receive_fields(viewer, context, {grug_party_health_colors = "bad"})
+check(api.health_color_mode(viewer) == "by_class"
+	and context.grug_party_notice ==
+		"Refused: Invalid player or health color preference.",
+	"invalid dropdown value was not refused without mutation")
+
 -- Production HUD palette and unchanged-write suppression.
 local hooks, changes = {}, {}
 local hud_core = {
