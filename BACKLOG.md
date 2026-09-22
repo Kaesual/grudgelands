@@ -1,8 +1,10 @@
 # Backlog — Work Packages
 
-[Round 16 planning](docs/research/round16-plan.md) captures the latest playtest
-fixes, combat/quest tuning and surface-following world preparation. Approved and
-executing; [ledger](docs/research/round16-execution.md). No shipped-WP counts change.
+[Round 16](docs/research/round16-completion.md) is technically complete and
+independently reviewed: mount/combat/map fixes, quest/kill XP, food/UI,
+atmosphere/audio/density and surface-following preparation. Final static,
+portable parity and native registration gates PASS; delivery receipt pending.
+No shipped-WP counts change. Next: [playtest](docs/research/round16-playtest.md).
 
 Round 15 technical gates and independent reviews pass:
 [completion](docs/research/round15-completion.md),

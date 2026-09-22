@@ -417,7 +417,9 @@ the editable land rule.
 Normal tier at level L:
 
 - **HP** = `20 + 5×L + 0.66×L²` · **Damage/hit** =
-  `2 + 0.3×L + 0.005×L²`, rounded to one decimal · **XP** = `10×L`
+  `2 + 0.3×L + 0.005×L²`, rounded to one decimal · **base XP** = `10×L`.
+  The Round 16 kill award multiplies this base by 1.5 before participant
+  splitting and racial bonuses (normal same-level solo award: `15×L`).
 - mobs_redo armor: normal 100, **elite 80 (×3 HP, ×1.8 dmg, ×4 XP)**,
   **rare patrol 70 (×5 HP, ×2.2 dmg, ×6 XP)**, and the registered
   **boss tier (×20 HP only; normal damage, XP and armor; no telegraph)**.
@@ -496,8 +498,10 @@ Normal tier at level L:
   Archer**, one slot in three of the existing bandit camp, which takes the
   registered ranged roster from **4 of 43 to 5 of 44** and is the first ranged
   enemy a player meets in the inner ring.
-- Pacing property: ~**20 same-level mob kills per level** (XP=10L vs.
-  quadratic level curve); quests supply the rest.
+- Pacing property after Round 16: normal same-level solo kills award **15L XP**
+  before racial bonuses. The quadratic interval `(200L - 100)` needs about
+  7 kills at level 1 and approaches 13.3 at higher levels without quests;
+  quest rewards are additional.
 - **Gray kills award no XP**: a mob at level ≤ killer level − 10 gives 0
   XP (kills trivial-mob farming).
 - **XP level cap**: calculate each recipient's formula with effective mob
@@ -568,12 +572,12 @@ Normal tier at level L:
   designed fixed entity. Its implemented uses are the Kraken Guard at L100 and
   every WP13 king at L65. No second king-specific fixed-level path exists.
 
-| Mob level | HP | Dmg/hit | XP |
-|-----------|----|---------|----|
-| 1 | 26 | 2.3 | 10 |
-| 10 | 136 | 5.5 | 100 |
-| 30 | 764 | 15.5 | 300 |
-| 60 | 2696 | 38.0 | 600 |
+| Mob level | HP | Dmg/hit | Base XP | Normal same-level solo award, before race bonus |
+|-----------|----|---------|--------:|-----------------------------------------------:|
+| 1 | 26 | 2.3 | 10 | 15 |
+| 10 | 136 | 5.5 | 100 | 150 |
+| 30 | 764 | 15.5 | 300 | 450 |
+| 60 | 2696 | 38.0 | 600 | 900 |
 
 ### Same-level TTK check
 

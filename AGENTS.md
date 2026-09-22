@@ -67,8 +67,10 @@ projects: **[docs/research/](docs/research/)**.
 
 ## Active round
 
-Round 16 has explicit user Go; plan: `docs/research/round16-plan.md`,
-active assignments and handoffs: `docs/research/round16-execution.md`.
+Round 16 is technically complete and independently reviewed; final gates PASS.
+Delivery receipt: `docs/research/round16-completion.md`; next GUI pass:
+`docs/research/round16-playtest.md`. Plan: `docs/research/round16-plan.md`;
+execution history: `docs/research/round16-execution.md`.
 Approved simplifications: tile-based surface preparation progress and lightweight
 ice-crystal particles. No full-world prepass or fitted ice-shell entity.
 Its latest user corrections supersede earlier proposals (no close atlas-marker

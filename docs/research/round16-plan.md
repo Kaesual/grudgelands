@@ -1,6 +1,7 @@
 # Round 16 — Playtest fixes, combat feedback and surface preparation
 
-Status: approved and executing; explicit user Go on 2026-09-22.
+Status: implemented and independently reviewed; final technical gates PASS.
+Delivery receipt: [completion](round16-completion.md). User Go: 2026-09-22.
 Date: 2026-09-22. Coordinator: native GPT-6 Astra.
 Both proposed simplifications are approved: tile-based preparation progress and
 lightweight ice-crystal particles. Execution ledger: `round16-execution.md`.

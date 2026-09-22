@@ -5,7 +5,7 @@ local fixtures = {
  "r16_progression/kat.lua", "r16_combat/control_kat.lua",
  "r16_surface/fixture.lua", "r16_surface/content_fixture.lua",
  "r16_surface/identity_fixture.lua",
- -- Atmosphere fixture is added at its final reviewed handoff.
+ "r16_atmosphere/portable.lua",
 }
 
 local host_loadfile, host_loadstring = loadfile, loadstring

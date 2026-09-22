@@ -1,0 +1,109 @@
+GLOBAL mods/CORE/grug_core/init.lua 2	[1]	SETGLOBAL	0 -1	; grug_core
+GLOBAL mods/ENTITIES/grug_mobs/init.lua 2	[1]	SETGLOBAL	0 -1	; grug_mobs
+GLOBAL mods/ENTITIES/mobs/api.lua 72	[26]	SETGLOBAL	8 -3	; mobs
+GLOBAL mods/ITEMS/grug_food/init.lua 2	[4]	SETGLOBAL	0 -1	; grug_food
+GLOBAL mods/ITEMS/grug_gear/init.lua 2	[32]	SETGLOBAL	0 -1	; grug_gear
+GLOBAL mods/PLAYER/grug_abilities/init.lua 2	[6]	SETGLOBAL	0 -1	; grug_abilities
+GLOBAL mods/PLAYER/grug_xp/init.lua 2	[1]	SETGLOBAL	0 -1	; grug_xp
+GLOBAL tools/r15_quests/check_catalog.lua 114	[44]	SETGLOBAL	4 -49	; grug_core
+GLOBAL tools/r15_quests/check_catalog.lua 158	[59]	SETGLOBAL	5 -74	; core
+GLOBAL tools/r15_quests/check_catalog.lua 173	[62]	SETGLOBAL	5 -85	; ItemStack
+GLOBAL tools/r15_quests/check_catalog.lua 175	[68]	SETGLOBAL	5 -86	; grug_quests
+GLOBAL tools/r16_combat/control_kat.lua 6	[4]	SETGLOBAL	2 -1	; arg
+GLOBAL tools/r16_combat/control_kat.lua 12	[6]	SETGLOBAL	1 -1	; arg
+GLOBAL tools/r16_combat/control_kat.lua 757	[130]	SETGLOBAL	17 -137	; mobs
+GLOBAL tools/r16_combat/control_kat.lua 775	[133]	SETGLOBAL	18 -144	; grug_mobs
+GLOBAL tools/r16_progression/runtime_kat.lua 48	[21]	SETGLOBAL	5 -7	; core
+GLOBAL tools/r16_progression/runtime_kat.lua 82	[42]	SETGLOBAL	5 -23	; grug_core
+GLOBAL tools/r16_progression/runtime_kat.lua 86	[45]	SETGLOBAL	5 -42	; grug_classes
+GLOBAL tools/wp11/move_aggregator_kat.lua 80	[130]	SETGLOBAL	18 -10	; core
+GLOBAL tools/wp11/move_aggregator_kat.lua 82	[131]	SETGLOBAL	18 -11	; grug_core
+GLOBAL tools/wp11/move_aggregator_kat.lua 104	[484]	SETGLOBAL	10 -13	; vector
+GLOBAL tools/wp11/move_aggregator_kat.lua 105	[484]	SETGLOBAL	22 -12	; grug_mobs
+GLOBAL tools/wp11/move_aggregator_kat.lua 106	[484]	SETGLOBAL	21 -11	; grug_core
+GLOBAL tools/wp11/move_aggregator_kat.lua 107	[484]	SETGLOBAL	20 -10	; core
+GLOBAL tools/wp11/move_aggregator_kat.lua 808	[393]	SETGLOBAL	7 -141	; grug_mobs
+GLOBAL tools/wp11/move_aggregator_kat.lua 812	[394]	SETGLOBAL	7 -142	; vector
+GLOBAL tools/wp13/atmosphere_kat.lua 82	[228]	SETGLOBAL	2 -31	; core
+GLOBAL tools/wp13/atmosphere_kat.lua 83	[229]	SETGLOBAL	2 -32	; minetest
+GLOBAL tools/wp13/atmosphere_kat.lua 85	[230]	SETGLOBAL	8 -33	; grug_core
+GLOBAL tools/wp13/atmosphere_kat.lua 86	[231]	SETGLOBAL	3 -34	; grug_zones
+GLOBAL tools/wp13/atmosphere_kat.lua 100	[246]	SETGLOBAL	5 -32	; minetest
+GLOBAL tools/wp13/atmosphere_kat.lua 101	[246]	SETGLOBAL	10 -31	; core
+GLOBAL tools/wp13/atmosphere_kat.lua 103	[247]	SETGLOBAL	7 -34	; grug_zones
+GLOBAL tools/wp13/atmosphere_kat.lua 104	[247]	SETGLOBAL	10 -33	; grug_core
+GLOBAL tools/wp13/atmosphere_kat.lua 17	[259]	SETGLOBAL	10 -3	; minetest
+GLOBAL tools/wp13/atmosphere_kat.lua 18	[259]	SETGLOBAL	9 -2	; core
+GLOBAL tools/wp13/atmosphere_kat.lua 22	[260]	SETGLOBAL	10 -5	; grug_zones
+GLOBAL tools/wp13/atmosphere_kat.lua 23	[260]	SETGLOBAL	9 -4	; grug_core
+GLOBAL tools/wp13/atmosphere_kat.lua 37	[264]	SETGLOBAL	8 -5	; grug_zones
+GLOBAL tools/wp13/atmosphere_kat.lua 38	[264]	SETGLOBAL	11 -4	; grug_core
+GLOBAL tools/wp13/atmosphere_kat.lua 39	[264]	SETGLOBAL	10 -3	; minetest
+GLOBAL tools/wp13/atmosphere_kat.lua 40	[264]	SETGLOBAL	9 -2	; core
+GLOBAL tools/wp13/atmosphere_kat.lua 10	[271]	SETGLOBAL	7 -3	; minetest
+GLOBAL tools/wp13/atmosphere_kat.lua 11	[271]	SETGLOBAL	6 -2	; core
+GLOBAL tools/wp13/atmosphere_kat.lua 15	[272]	SETGLOBAL	7 -5	; grug_zones
+GLOBAL tools/wp13/atmosphere_kat.lua 16	[272]	SETGLOBAL	6 -4	; grug_core
+GLOBAL tools/wp13/atmosphere_kat.lua 30	[276]	SETGLOBAL	5 -5	; grug_zones
+GLOBAL tools/wp13/atmosphere_kat.lua 31	[276]	SETGLOBAL	8 -4	; grug_core
+GLOBAL tools/wp13/atmosphere_kat.lua 32	[276]	SETGLOBAL	7 -3	; minetest
+GLOBAL tools/wp13/atmosphere_kat.lua 33	[276]	SETGLOBAL	6 -2	; core
+GLOBAL tools/wp13/atmosphere_kat.lua 7	[283]	SETGLOBAL	7 -2	; minetest
+GLOBAL tools/wp13/atmosphere_kat.lua 8	[283]	SETGLOBAL	6 -1	; core
+GLOBAL tools/wp13/atmosphere_kat.lua 12	[284]	SETGLOBAL	7 -4	; grug_zones
+GLOBAL tools/wp13/atmosphere_kat.lua 13	[284]	SETGLOBAL	6 -3	; grug_core
+GLOBAL tools/wp13/atmosphere_kat.lua 32	[290]	SETGLOBAL	5 -4	; grug_zones
+GLOBAL tools/wp13/atmosphere_kat.lua 33	[290]	SETGLOBAL	8 -3	; grug_core
+GLOBAL tools/wp13/atmosphere_kat.lua 34	[290]	SETGLOBAL	7 -2	; minetest
+GLOBAL tools/wp13/atmosphere_kat.lua 35	[290]	SETGLOBAL	6 -1	; core
+GLOBAL tools/wp13/atmosphere_kat.lua 10	[296]	SETGLOBAL	8 -4	; minetest
+GLOBAL tools/wp13/atmosphere_kat.lua 11	[296]	SETGLOBAL	7 -3	; core
+GLOBAL tools/wp13/atmosphere_kat.lua 15	[297]	SETGLOBAL	8 -6	; grug_zones
+GLOBAL tools/wp13/atmosphere_kat.lua 16	[297]	SETGLOBAL	7 -5	; grug_core
+GLOBAL tools/wp13/atmosphere_kat.lua 24	[299]	SETGLOBAL	6 -6	; grug_zones
+GLOBAL tools/wp13/atmosphere_kat.lua 25	[299]	SETGLOBAL	11 -5	; grug_core
+GLOBAL tools/wp13/atmosphere_kat.lua 26	[299]	SETGLOBAL	10 -4	; minetest
+GLOBAL tools/wp13/atmosphere_kat.lua 27	[299]	SETGLOBAL	9 -3	; core
+GLOBAL tools/wp39/combat_integration_test.lua 9	[8]	SETGLOBAL	1 -4	; player_api
+GLOBAL tools/wp39/combat_integration_test.lua 25	[12]	SETGLOBAL	1 -6	; grug_inventory
+GLOBAL tools/wp39/combat_integration_test.lua 54	[38]	SETGLOBAL	11 -25	; vector
+GLOBAL tools/wp39/combat_integration_test.lua 93	[84]	SETGLOBAL	12 -38	; ItemStack
+GLOBAL tools/wp39/combat_integration_test.lua 239	[213]	SETGLOBAL	13 -47	; core
+GLOBAL tools/wp39/combat_integration_test.lua 241	[215]	SETGLOBAL	13 -103	; grug_core
+GLOBAL tools/wp39/combat_integration_test.lua 282	[248]	SETGLOBAL	14 -104	; grug_classes
+GLOBAL tools/wp39/combat_integration_test.lua 284	[250]	SETGLOBAL	14 -126	; grug_factions
+GLOBAL tools/wp39/combat_integration_test.lua 297	[260]	SETGLOBAL	14 -130	; grug_xp
+GLOBAL tools/wp39/combat_integration_test.lua 307	[268]	SETGLOBAL	15 -132	; grug_mobs
+GLOBAL tools/wp39/combat_integration_test.lua 319	[280]	SETGLOBAL	18 -136	; grug_projectiles
+GLOBAL tools/wp39/combat_integration_test.lua 1889	[852]	SETGLOBAL	64 -334	; grug_mounts
+PARSER PASS files=53
+SWEEP 1
+no hits
+SWEEP 2
+no hits
+SWEEP 3
+no hits
+SWEEP 4
+mods/CORE/grug_core/atmosphere.lua:360:	params = "[<preset>|off|auto]",
+mods/PLAYER/grug_abilities/scout.lua:214:	return stack:get_name() .. "|" .. item_id
+mods/ENTITIES/grug_mobs/init.lua:69:--   def._grug_tier        — "normal" (default) | "elite" | "rare" | "boss"
+mods/CORE/grug_core/combat.lua:4:-- Damage pipeline & combat state (docs/design/classes.md §2,
+mods/PLAYER/grug_classes/selection.lua:557:		return true, ("%s %s %s, level %d | Str %d Int %d Dex %d | " ..
+mods/PLAYER/grug_classes/selection.lua:558:			"HP %d/%d, mana %d | melee +%d, spell +%d, crit %.1f%%, dodge %.1f%%"):format(
+mods/PLAYER/grug_abilities/init.lua:729:-- Ability registration & item. One tool per ability; the item's `range`
+mods/PLAYER/grug_abilities/init.lua:1880:	return SKIN_VERSION .. "|" .. color .. "|" .. src.inv .. "|" .. src.wield
+mods/PLAYER/grug_abilities/init.lua:1924:	local token = SWING_CAPS_VERSION .. "|" .. string.format("%.17g", interval)
+mods/ENTITIES/mobs/api.lua:1:-- translation & mod checks
+mods/ENTITIES/mobs/api.lua:697:-- update nametag & infotext
+mods/ENTITIES/mobs/api.lua:1539:-- are we able to dig & drop a node?
+mods/ENTITIES/mobs/api.lua:2140:-- dogshoot attack switch & counter function
+mods/ENTITIES/mobs/api.lua:2159:-- stop attack & reset vars
+mods/ENTITIES/mobs/api.lua:2887:-- falling & fall damage
+mods/ENTITIES/mobs/api.lua:2940:-- deal damage & effects when mob punched
+mods/ENTITIES/mobs/api.lua:3811:-- handle mob lifetimer & expiration
+mods/ENTITIES/mobs/api.lua:5137:	-- sneak & right-click mob to show what it eats/follows
+SWEEP 5
+mods/ENTITIES/mobs/api.lua:4722:	if mobs_griefing and not minetest.is_protected(pos, "") then
+mods/CORE/grug_core/atmosphere.lua:10:-- the game-directory minetest.conf merely shifts client defaults for a locally
+mods/CORE/grug_core/atmosphere.lua:172:		-- lighting on in our minetest.conf, so this preset is opt-in twice.
+Inspect all global writes and sweep hits; strings/comments may match.

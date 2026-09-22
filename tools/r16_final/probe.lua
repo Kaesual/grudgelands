@@ -1,5 +1,6 @@
 -- Registration/integration smoke gate in an isolated native game snapshot.
 -- No client interaction or terrain coverage is claimed by this probe.
+local meta = core.get_mod_storage()
 core.register_on_mods_loaded(function()
  local armor, foods = 0, 0
  local labels = {[1] = "Cloth", [2] = "Leather", [3] = "Metal"}
@@ -12,15 +13,17 @@ core.register_on_mods_loaded(function()
    assert(table.concat(rebuilt, "\n"):find(label, 1, true), name .. " loses armor type")
    armor = armor + 1
   end
-  if (groups.grug_food or 0) > 0 then
-   assert(def.description:find("Cannot eat in combat.", 1, true), name)
-   foods = foods + 1
-  end
+ end
+ -- World crop nodes can inherit food groups for other purposes. The food
+ -- registrar's catalog identifies the actual edible item definitions.
+ for _, row in ipairs(grug_food.converted) do
+  local def = assert(core.registered_items[row.name])
+  assert(def.description:find("Cannot eat in combat.", 1, true), row.name)
+  foods = foods + 1
  end
  assert(armor >= 72 and foods > 20)
  grug_quests.validate_registry()
  -- Empty persistent state is sufficient for static authored service markers.
- local meta = core.get_mod_storage()
  local p = {
   get_player_name = function() return "round16_native_probe" end,
   get_meta = function() return meta end,

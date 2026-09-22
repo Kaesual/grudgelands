@@ -1,8 +1,8 @@
 # Grudgelands
 
-Latest delivered round: [Round 15 completion](docs/research/round15-completion.md).
-Final technical gates PASS. The reviewed changes are delivered on main, synchronized
-and pushed; GUI acceptance remains pending.
+Latest increment: [Round 16 completion](docs/research/round16-completion.md).
+Independent reviews and final technical gates PASS; delivery receipt pending.
+Next: [fresh-world playtest](docs/research/round16-playtest.md).
 
 **A WoW-inspired voxel RPG for [Luanti](https://www.luanti.org/)** — factions,
 classes, XP, quests, professions, housing, an item economy and geographic PvP,
@@ -266,14 +266,15 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 ## Current State
 
 *Last updated: 2026-09-22. Derived from [BACKLOG.md](BACKLOG.md) and
-[ROADMAP.md](ROADMAP.md). [Round 15](docs/research/round15-completion.md)
-is independently reviewed, merged, synchronized and pushed; fresh-world GUI
-acceptance remains separate.*
+[ROADMAP.md](ROADMAP.md). [Round 16](docs/research/round16-completion.md)
+is technically complete and independently reviewed; delivery receipt pending.*
 
-**Next round:** [Round 16 planning](docs/research/round16-plan.md) records the
-new playtest fixes, progression/control tuning and surface-following preparation.
-Explicit Go received; [execution is underway](docs/research/round16-execution.md).
-Current shipped counts are unchanged.
+**Latest increment:** Round 16 fixes mount teardown and atlas visibility, adds
+Charge stun/Nova control feedback, revises quest/kill XP and improves food/UI.
+Day/night, quiet food audio, ordinary surface density and resumable
+surface-following preparation are implemented. The final compact interpreter
+pair and isolated native registration gate pass; GUI acceptance remains in the
+[playtest checklist](docs/research/round16-playtest.md). Shipped counts are unchanged.
 
 **Shipped foundation:** 27 of 53 tracked identities are complete: WP0–WP4,
 WP6–WP8, WP12, WP15, WP18–WP20, WP25, WP26, WP33, WP35, WP36, WP38–WP40,
@@ -316,8 +317,8 @@ to WP24/WP32. The Nether is the first expansion, excluded from V1.
 
 **Validation and next step:** independent reviews, focused LuaJIT checks, static
 Lua-5.1 gates, the bounded final interpreter parity pair and isolated native
-integration support the technical delivery. Follow the [Round 15 fresh-world
-playtest](docs/research/round15-playtest.md), ideally with two players. The atlas
+integration support the technical delivery. Follow the [Round 16 fresh-world
+playtest](docs/research/round16-playtest.md), ideally with two players. The atlas
 is authored cartography; optional full preparation can take many hours and is
 not required to use it. No personal world was modified by the test harnesses.
 

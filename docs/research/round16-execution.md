@@ -15,7 +15,7 @@ deleted. Claude prohibited this session; same-provider CLI prohibited.
 | C Atlas | root Astra | root branch | `bddd1edf`; review clean |
 | D Quest progression/kill XP + XP UI/admin | Sol | `/tmp/grug-r16-progression` | `cb1ce4d0`; review clean, integrated `5934a0ae` |
 | E UI/food | root Astra | root branch | `1b2f0458`; review clean |
-| F Atmosphere/audio/density | Sol | `/tmp/grug-r16-atmosphere` | implementing |
+| F Atmosphere/audio/density | Sol | `/tmp/grug-r16-atmosphere` | review clean; integrated `a449549a` |
 
 Use at most three worker agents concurrently with root. Each lane owns its
 files and updates its design sections before implementation. Root owns this
@@ -37,12 +37,11 @@ different author; reviewers inspect evidence rather than repeat final tests.
 
 ## Integration and evidence
 
-Root implements C/E alongside the first worker wave. C real-form fixture and E
-24-route food/HUD fixture pass LuaJIT and static gates. A has twelve lifecycle
-cases; review pending. No GUI acceptance is claimed. Final PUC/JIT pair pending.
-Per-lane handoff includes commit hash, owned files, source/fixture hashes,
-LuaJIT evidence, remaining risks and callable compact final fixture entry point.
-Root records reviews, final gates, merge, sync and push here before completion.
+All seven lanes are integrated and independently clean. The final 53-file static
+gate, nine-fixture PUC/LuaJIT canonical parity and isolated native registration
+smoke pass. A separate Astra docs audit is clean after two documentation fixes.
+Delivery and exact evidence: [completion record](round16-completion.md).
+No GUI acceptance, full-world timing or PERF campaign is claimed.
 
 Review rotation: native Sol (D author) independently checks A/C/E, excluding
 its own XP work. Native Astra (B author) independently checks G/D, excluding B.
