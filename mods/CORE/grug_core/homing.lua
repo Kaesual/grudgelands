@@ -47,10 +47,18 @@ function grug_core.homing_step(lock, dtime)
 			or (generations[lock.target] or 0) ~= lock.target_generation then return nil end
 	local pos = lock.target:get_pos()
 	local velocity = lock.target:get_velocity() or vector.new(0, 0, 0)
+	local speed = vector.length(velocity)
+	-- Attached players report their own speed as zero. The engine-owned
+	-- current attachment supplies the movement of a live mount/controller.
+	local parent = lock.target:get_attach()
+	if parent and parent:get_pos() then
+		local parent_velocity = parent:get_velocity()
+		if parent_velocity then speed = math.max(speed, vector.length(parent_velocity)) end
+	end
 	local elapsed = math.max(0, dtime or 0)
 	-- Catch external/admin teleports as well as the explicit game teleport seam.
 	-- Velocity and elapsed time permit ordinary fast movement, including mounts.
-	if vector.distance(pos, lock.previous) > math.max(8, vector.length(velocity) * elapsed * 2 + 2) then
+	if vector.distance(pos, lock.previous) > math.max(8, speed * elapsed * 2 + 2) then
 		return nil
 	end
 	lock.previous = vector.new(pos)

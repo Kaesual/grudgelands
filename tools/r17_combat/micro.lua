@@ -64,6 +64,7 @@ return function(repo)
 		function o:get_pos() return not self.removed and self.pos end
 		function o:set_pos(p) self.pos=v.new(p) end
 		function o:get_velocity() return self.velocity end
+		function o:get_attach() return self.parent end
 		function o:get_properties() return {collisionbox={-0.3,0,-0.3,0.3,1.8,0.3}} end
 		function o:get_hp() return self.hp end
 		function o:set_hp(hp) self.hp=hp end
@@ -127,6 +128,19 @@ return function(repo)
 	assert(commits==1);step(spawned[#spawned-1],0.5);step(spawned[#spawned],0.5);assert(impacts==3)
 	assert(not env.grug_projectiles.spawn_batch('test',{params},function() return false end))
 	step(spawned[#spawned],1);assert(impacts==3)
+	-- Delayed T4 movement: the rider's own speed is zero; its live parent moves.
+	local mount=actor('mount',10,false);mount.velocity=v.new(12,0,0)
+	target.parent=mount;target.velocity=v.new();params.speed=10
+	p=shot();target.pos=v.new(19,0,0);mount.pos=v.new(19,0,0)
+	step(p,0.75);assert(not p.removed and impacts==3,'mounted pursuit survives nine-node movement')
+	target.pos=v.new(22,0,0);mount.pos=v.new(22,0,0)
+	step(p,0.25);assert(p.removed and impacts==4,'mounted target impacts at fixed arrival')
+	target.pos=v.new(10,0,0);p=shot();gc.invalidate_combat_identity(target)
+	target.pos=v.new(11,0,0);step(p,0.75);assert(p.removed and impacts==4,'mounted short teleport cancels')
+	target.pos=v.new(10,0,0);p=shot();target.pos=v.new(100,0,0)
+	step(p,0.75);assert(p.removed and impacts==4,'mounted external teleport cancels')
+	target.pos=v.new(10,0,0);target.parent=nil;params.speed=nil
+
 
 	-- Load real mob formula, all arrow definitions, fixed aura/poison/ground paths.
 	local gm=stub({is_noncombatant=function(e) return e.noncombatant end,atlas_textures=function() return {} end,guard_definition=function() return {} end,register_mob=function(n,d) entities[n]=d end})
@@ -186,6 +200,22 @@ return function(repo)
 	assert(target.hp==hp-2);node_name='air'
 	setting='1.5';load('mods/ENTITIES/grug_mobs/levels.lua')
 
+	-- Actual elite cone consumer: zero skips punches; positive rounding is unchanged.
+	load('mods/ENTITIES/grug_mobs/telegraph.lua')
+	core.yaw_to_dir=function() return v.new(1,0,0) end
+	core.line_of_sight=function() return true end
+	function mob:get_yaw() return 0 end
+	king._grug_tier='elite';target.pos=v.new(1,0,0)
+	for _,row in ipairs({{'0',0},{'1.0',30},{'1.5',45}}) do
+		setting=row[1];load('mods/ENTITIES/grug_mobs/levels.lua')
+		local _,scaled=gm.stats_for(10,'elite');king.damage=scaled
+		king.temp.grug_tg_left=0.01
+		local hits=target.hits
+		gm.telegraph_tick(king,0.1)
+		if row[2]==0 then assert(target.hits==hits,'zero multiplier must not punch')
+		else assert(target.hits==hits+1 and target.last_damage==row[2],'positive cone rounding preserved') end
+	end
+
 	-- Actual Scout batch transaction and Fireball cast callbacks.
 	local abilities={};env.grug_abilities=stub({register_ability=function(d) abilities[d.id]=d end})
 	env.player_api=stub()
@@ -203,5 +233,5 @@ return function(repo)
 	aim=target;assert(abilities.snare_shot.cast(owner));assert(ammo==3)
 	assert(abilities.fireball.cast(owner))
 	aim=nil;assert(not abilities.fireball.cast(owner))
-	return 'r17_combat PASS homing lifecycle walls range batch actors scale scout fireball\n'
+	return 'r17_combat PASS homing lifecycle walls range batch actors scale scout fireball mounted-motion zero-cone\n'
 end

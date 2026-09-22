@@ -91,7 +91,11 @@ local function resolve(self)
 		return
 	end
 	local range = (self.reach or 3) + RANGE_BONUS
-	local dmg = math.max(1, math.floor((self.damage or 1) * DAMAGE_MULT + 0.5))
+	local base_damage = self.damage or 1
+	-- Zero is an explicitly supported global attack multiplier. Do not revive
+	-- it through the historical minimum-one positive-hit rounding rule.
+	if base_damage <= 0 then return end
+	local dmg = math.max(1, math.floor(base_damage * DAMAGE_MULT + 0.5))
 	local dir = facing_dir(self)
 	local players = core.get_connected_players()
 	for i = 1, #players do

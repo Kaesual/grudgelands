@@ -12,9 +12,10 @@ Flight duration is launch distance/speed clamped to 0.05–2 seconds; the cap pr
 near-zero partial bow draws from creating long pursuit. Runtime collision-box
 center is the visual destination, including scaled creatures. No postlaunch
 terrain/object ray, range expiry or retarget exists. A discontinuity exceeding
-`max(8, 2 * target_speed * elapsed + 2)` cancels external/admin teleports; known
-game teleports explicitly invalidate even short moves. Normal velocity-based
-movement beyond launch range remains valid. Shots have no persistent state.
+`max(8, 2 * effective_target_speed * elapsed + 2)` cancels external/admin teleports; known
+game teleports explicitly invalidate even short moves. Effective speed includes the engine-owned live attachment parent, because mounted
+players can report zero own velocity. Normal velocity-based movement beyond
+launch range remains valid. Shots have no persistent state.
 
 Player shots acquire through the existing authoritative combat ray at release,
 reject noncombatants and preserve transactional spawn-batch rollback. Scout arrows
@@ -74,9 +75,33 @@ this compact function in its one integrated final PUC/JIT parity pair.
 
 ## Review calibration
 
-Author model: native Astra. Independent reviewer: pending. Findings/fix rounds:
-pending. Review elapsed time: unknown. Final parity/native smoke: root-owned.
+Author model: native Astra. Independent reviewer: native Astra (HOME author,
+independent of COMBAT). Original candidate `7bcac7c1` review: 0 Critical,
+0 High, 2 Medium, 0 Low; FIX FIRST. Fix round 1 corrects both findings below.
+Focused rereview pending. Review elapsed time: unknown. Final parity/native
+smoke: root-owned.
 No completion claim for the entire round or GUI acceptance.
+
+## Independent review corrections — fix round 1
+
+Original reviewer reproduction evidence and candidate `7bcac7c1` remain unchanged.
+M1 now derives its permitted displacement from the greater of target velocity
+and the current live attachment parent's velocity, obtained through the engine's
+`get_attach()` link. No client-supplied identity or speculative attachment search
+is used. The compact fixture verifies a zero-speed rider moves nine nodes in
+0.75 seconds on a 12-node/s parent, continues pursuit and receives one fixed-time
+impact after another three nodes in 0.25 seconds. Explicit short teleports and
+large external teleports still cancel while attached.
+
+M2 keeps the elite cone's existing positive rounding but returns before the
+punch loop when its scaled base damage is zero. The portable fixture loads the
+actual `telegraph.lua` consumer and verifies scale 0 makes no punch, while scale
+1.0 and 1.5 preserve rounded elite cone damage of 30 and 45 at level 10.
+
+LuaJIT compact regression, plain-5.1 parser, SETGLOBAL and five static sweeps
+pass on the correction. No PUC runtime was executed; final parity stays with
+root. These are narrow corrections without changes to range, LOS, impact
+settlement or the configured setting range.
 
 ## User runtime plan
 

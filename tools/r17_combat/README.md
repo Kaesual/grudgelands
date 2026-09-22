@@ -11,7 +11,8 @@ pair. The fixture loads the production ray/lock/projectile foundation, mob
 formula/verbs, changed actor definitions, Scout and Fireball callbacks. It checks
 release obstruction/no aim, target movement beyond range/behind cover, once-only
 impact, death/respawn/replacement/teleport/evade cancellation, batch rollback and
-cost, actual royal volley and generic actor launch, fixed aura/poison/scorch
+cost, mounted zero-own-speed pursuit and teleport cancellation, zero-scale elite
+cone refusal with preserved positive rounding, actual royal volley and generic actor launch, fixed aura/poison/scorch
 scaling, invalid-setting fallback and base/default formula values.
 
 Engine armor/dodge/absorb, inventory durability and actual client visuals remain
