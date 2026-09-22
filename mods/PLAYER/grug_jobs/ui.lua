@@ -656,9 +656,9 @@ core.register_on_leaveplayer(function(player)
 	sessions[player:get_player_name()] = nil
 end)
 
-function grug_jobs.station_book_button(station)
-	return ("image_button[0.35,1.45;0.85,0.85;%s;grug_jobs_book;]" ..
-		"tooltip[grug_jobs_book;Open station recipe books]"):format(BOOK_TEXTURE)
+function grug_jobs.station_book_button(station, x, y)
+	return ("image_button[%g,%g;0.85,0.85;%s;grug_jobs_book;]" ..
+		"tooltip[grug_jobs_book;Open station recipe books]"):format(x or 0.35, y or 1.45, BOOK_TEXTURE)
 end
 
 grug_jobs.BOOK_TEXTURE = BOOK_TEXTURE

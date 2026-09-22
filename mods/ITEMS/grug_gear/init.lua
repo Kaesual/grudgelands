@@ -169,6 +169,8 @@ local function weapon_stats(damage, fpi, hands)
 	return line
 end
 
+local ARMOR_LABELS = {[1] = "Cloth", [2] = "Leather", [3] = "Metal"}
+
 local function armor_stats(armor)
 	return string.format("%d armor rating", armor)
 end
@@ -310,6 +312,7 @@ function grug_gear.describe_stack_base(stack, ilvl)
 	end
 	local rank = tonumber(groups.grug_armor_class)
 	if rank then
+		lines[#lines + 1] = core.colorize(STAT_COLOR, ARMOR_LABELS[rank] or "Armor")
 		local line_key = rank == 3 and "metal" or rank == 2 and "leather" or
 			"cloth"
 		local slot_key
@@ -550,7 +553,7 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 				end
 				core.register_craftitem(itemname, {
 					description = describe(grade.name, line.nouns[slot.key],
-						br.ilvl, armor_stats(armor)),
+						br.ilvl, ARMOR_LABELS[line.rank] .. "\n" .. armor_stats(armor)),
 					inventory_image = armor_image,
 					groups = {
 						["grug_equip_" .. slot.key] = 1,

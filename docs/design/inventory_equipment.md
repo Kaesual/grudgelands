@@ -310,3 +310,11 @@ default on; empty quest logs and ungrouped players have no corresponding HUD.
 Party rows show name and HP only, with explicit offline state. HUD allocation
 uses the shared layout authority so party, quest and transient notices do not
 overlap existing combat bars, target information or status effects.
+
+## Round 16 readability amendments (2026-09-22)
+
+Armor hover descriptions explicitly state Cloth, Leather or Metal, including
+named enchanted variants. A compact Combat indicator appears beside the life
+bar only while the living player is in the existing combat state. Station recipe
+book buttons occupy a separate right-hand position clear of input/fuel/output
+slots, mode explanations and crafting-operation controls.

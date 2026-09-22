@@ -786,15 +786,11 @@ design (`group_attack` stays on).
   2026-09-17; `items_crafting.md` §3.7 owns the tier table). Eating grants a
   runtime-only **300 s** buff with one tick every **5 s**. Only one food status
   may run; the latest replaces it. Every food has fixed instant HP by tier.
-  Out of combat that heal applies immediately. In combat the serving may be
-  eaten, but the heal waits exactly once for the first out-of-combat moment,
-  checked every second, and regeneration ticks do nothing. The unpaid instant
-  heal survives the buff's 300-second expiry; regeneration and secondary
-  modifiers still end on time.
-  A newer serving replaces, rather than adds to, an unpaid instant heal. Death
-  or leaving clears it. Combat never cancels or pauses the duration, and
-  secondary status modifiers remain active in combat.
-  - Raw/unprocessed food regenerates **1%** of maximum HP per tick at every
+  Eating in combat is rejected before consuming the item or replacing a buff,
+  with a short HUD notice. Accepted eating heals immediately; there is no
+  deferred instant-heal queue. Existing regeneration pauses during combat;
+  the status duration and secondary modifiers continue normally.
+  - Raw/unprocessed food regenerates **2%** of maximum HP per tick at every
     tier. Wild Cocoa follows that HP rule and has no mana-pool requirement.
     Food restores mana only through the Caster dishes.
   - Dishes read their HP, mana or split regeneration plus secondary modifiers
