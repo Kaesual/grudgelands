@@ -91,3 +91,18 @@ normally partway through preparation and restart with the setting changed. It
 must keep full mode and resume without resetting progress. After completion,
 visit a settlement, a tall wooded slope/cliff and a shallow coast; enter all six
 starts normally. Repeat a fresh starts-only world to check its bounded wait.
+
+## Independent review correction G-1
+
+The initial source identity did not bind the actual terrain/layout code. Root
+added a bounded one-time 15-file source digest at authority construction: the
+column constructors, math/schema dependencies and local selection adapters.
+This excludes runtime CIDs and does not scan world columns or restore the old
+R7 audit roster. The real helper fixture confirms identical bytes give an
+identical identity and edits to terrain, layout or selection sources change it.
+The existing scheduler fixture already rejects a changed authority identity.
+The earlier native restart logs remain evidence for scheduling/cursor behavior;
+the integrated native smoke and final portable pair cover this corrected seam.
+No further generation or ETA run was performed for this correction.
+
+Root Astra authored G-1; the separate G reviewer must re-check it before release.

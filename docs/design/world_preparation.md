@@ -115,3 +115,8 @@ content-extents identity. Runtime content IDs are excluded from this identity,
 because a normal restart may assign different IDs to the same registered nodes.
 A mismatch stops preparation with a restoration message; there is no fallback
 volume, old-plan reader or migration.
+
+The persisted surface authority also binds a fixed, bounded source digest of
+its live terrain/layout constructors and selection adapters. This is calculated
+once at load and excludes engine-assigned content IDs; unchanged restarts must
+remain stable, while changed terrain or selection semantics reject reuse.

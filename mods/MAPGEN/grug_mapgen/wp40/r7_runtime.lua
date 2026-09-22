@@ -363,7 +363,9 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 				preparation_source = dofile(wp40_directory .. "/preparation_source.lua")(
 					r6_identity.planner_source, r6_identity.template_records, cultural,
 					settlements, public_zones_session, anchor_roster,
-					full_seed .. ":" .. manifest.values.source_projection_sha256,
+					full_seed .. ":" .. manifest.values.source_projection_sha256 .. ":" ..
+						dofile(wp40_directory .. "/preparation_identity.lua")(
+							wp40_directory, core_api.sha256),
 					core_api.sha256),
 				mapgen_context = mapgen_context}
 		end
