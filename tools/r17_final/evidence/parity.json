@@ -1,0 +1,12 @@
+{
+  "puc51": {
+    "seconds": 2.89,
+    "sha256": "10be3620f41cc2b6e1116b103f7f73a0e84de5353910180afdc22bbf7e53be3e",
+    "exit_code": 0
+  },
+  "luajit": {
+    "seconds": 1.246,
+    "sha256": "10be3620f41cc2b6e1116b103f7f73a0e84de5353910180afdc22bbf7e53be3e",
+    "exit_code": 0
+  }
+}

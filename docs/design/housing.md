@@ -267,9 +267,8 @@ death respawns. It is not implemented as part of the innkeeper return button.
 - Arrival is the standing node directly above the Claim Stone; the second
   reserved node is headroom. Temporary player or mob overlap does not block
   arrival.
-- Innkeepers may retain recovery and rest services but never bind or rebind a
-  Home Stone. The obsolete race-capital Home Stone destination is not part of
-  the game.
+- Innkeepers bind the separate V1 innkeeper home (`home_travel.md`), not this
+  deferred housing Home Stone. Housing return remains bound only to a claim.
 
 ## 5. Stable-id lifecycle, retention and administration
 

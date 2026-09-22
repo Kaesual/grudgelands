@@ -1,11 +1,8 @@
 # Grudgelands
 
-Active work: [Round 17 plan](docs/research/round17-plan.md), authorized and in progress.
-
-Latest delivered increment: [Round 16 completion](docs/research/round16-completion.md).
-Independent reviews and final technical gates PASS; merged to main, locally
-synchronized and pushed. GUI acceptance remains separate.
-Next: [fresh-world playtest](docs/research/round16-playtest.md).
+Latest increment: [Round 17 completion](docs/research/round17-completion.md).
+Independent reviews and final technical gates PASS; delivery is being finalized.
+GUI acceptance remains separate: [fresh-world playtest](docs/research/round17-playtest.md).
 
 **A WoW-inspired voxel RPG for [Luanti](https://www.luanti.org/)** — factions,
 classes, XP, quests, professions, housing, an item economy and geographic PvP,
@@ -38,7 +35,7 @@ two offshore level-60 dragon islands.
 
 At level 20, a passive Housing Steward introduces the open-world Claim Stone
 system. A home is protected inside eligible peaceful land, grows through four
-claim tiers and becomes the only destination of the character's Home Stone.
+claim tiers and is the destination of the separately planned housing Home Stone.
 It is neither a royal reward nor a private resource world; kings remain
 killable high-end combatants whose Fallen Crowns are optional masterwork
 trophies.
@@ -107,8 +104,11 @@ peaceful level-11–30 zones. Four tiers protect cube radii 20/30/40/50, while
 the first placement immediately reserves the complete future 101×101 x/z
 footprint. Different owners use an exact one-sided expanded-AABB ten-node gap;
 stable ids survive placement, recovery, dormancy, inactivity decay and
-reissue. The Home Stone stores a bound claim id, channels for ten seconds and
-has no capital fallback.
+reissue. The deferred housing Home Stone stores a bound claim id, channels for
+ten seconds and has no capital fallback. Current
+[innkeeper home travel](docs/design/home_travel.md) instead binds one of twelve
+start-town/capital homes, supplies death respawn and offers immediate
+out-of-combat return through the atlas on a thirty-minute cooldown.
 
 The Wyrmglass Crown and Stormscale Summit are equivalent contested offshore
 dragon destinations. Each contains an apex camp whose shell, tents and
@@ -195,12 +195,13 @@ Elites/rares telegraph their strongest attack so movement, not gear alone,
 answers it.
 
 The [MVP class kits](docs/design/classes.md) are Warrior, Mage, Priest and
-[Scout](docs/design/scout.md), whose bow arrows use held draw and ballistic flight.
+[Scout](docs/design/scout.md), whose bow arrows use held draw and target-locked homing flight.
 The equipped weapon drives every swing skill while a server-authoritative
 clock and current eye ray decide when and what it hits; click spam cannot
 outrun hold. Enemy memory is Target-Frame state only, ally memory remains a
-heal/shield fallback, and Fireball is a straight swept projectile that can
-miss. Individual skill charges and resources replace the retired global
+heal/shield fallback. Targeted projectiles acquire a visible hostile at release
+and follow it until impact; existing defensive checks still apply at impact.
+Individual skill charges and resources replace the retired global
 cooldown.
 
 [Progression](docs/design/progression.md) targets level 60 in roughly 10–20
@@ -268,22 +269,22 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 
 ## Current State
 
-**In progress:** [Round 17](docs/research/round17-plan.md) adds
-[innkeeper home travel](docs/design/home_travel.md), targeted homing projectiles,
-a global mob damage setting, fixed dispositions, configurable nametag/HP
-presentation and optional party class colors. These changes are not delivered
-yet; shipped-WP counts remain unchanged.
-
 *Last updated: 2026-09-22. Derived from [BACKLOG.md](BACKLOG.md) and
-[ROADMAP.md](ROADMAP.md). [Round 16](docs/research/round16-completion.md)
-is independently reviewed, merged to main, locally synchronized and pushed.*
+[ROADMAP.md](ROADMAP.md). Delivery operations are tracked in the
+[Round 17 completion record](docs/research/round17-completion.md).*
 
-**Latest increment:** Round 16 fixes mount teardown and atlas visibility, adds
-Charge stun/Nova control feedback, revises quest/kill XP and improves food/UI.
-Day/night, quiet food audio, ordinary surface density and resumable
-surface-following preparation are implemented. The final compact interpreter
-pair and isolated native registration gate pass; GUI acceptance remains in the
-[playtest checklist](docs/research/round16-playtest.md). Shipped counts are unchanged.
+**Latest increment:** Round 17 adds [innkeeper home travel](docs/design/home_travel.md),
+targeted homing projectiles, a global mob damage setting and fixed mob dispositions.
+Configurable colored nametags, injured-mob health bars and personal party class
+colors improve combat readability. Independent reviews, static checks, compact
+interpreter parity and isolated native registration pass; GUI acceptance remains
+in the [playtest checklist](docs/research/round17-playtest.md). Whole-WP counts
+are unchanged.
+
+**Round 16:** mount teardown and atlas visibility fixes, Charge/Nova feedback,
+quest/kill XP tuning, food/UI, day/night, quiet audio, ambient density and
+surface-following preparation are delivered. Its historical evidence remains
+in the [completion record](docs/research/round16-completion.md).
 
 **Shipped foundation:** 27 of 53 tracked identities are complete: WP0–WP4,
 WP6–WP8, WP12, WP15, WP18–WP20, WP25, WP26, WP33, WP35, WP36, WP38–WP40,

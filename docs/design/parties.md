@@ -83,6 +83,8 @@ the list; no background roster polling is required. Names need not be typed.
 Round 17: a saved personal Group-tab dropdown chooses **All green** (default,
 existing life-bar color) or **By class**. Class colors are Warrior brown, Mage
 blue, Priest white and Scout olive-green, with dark backing for readability.
+The colors are Warrior `#A66A3F`, Mage `#4A9BD8`, Priest `#F2F2F2` and
+Scout `#6B7D32`; all-green remains `#4CAF50`, backing `#141414`.
 Only the viewer's HUD changes. Offline rows remain labelled offline with no
 fabricated live HP. The existing HUD visibility preference is independent.
 Settings changes and health/class transitions update changed HUD fields only.

@@ -1,0 +1,56 @@
+GLOBAL mods/CORE/grug_core/init.lua 2	[1]	SETGLOBAL	0 -1	; grug_core
+GLOBAL mods/ENTITIES/grug_mobs/init.lua 2	[1]	SETGLOBAL	0 -1	; grug_mobs
+GLOBAL mods/ENTITIES/grug_projectiles/init.lua 2	[3]	SETGLOBAL	0 -1	; grug_projectiles
+GLOBAL mods/PLAYER/grug_factions/init.lua 2	[1]	SETGLOBAL	0 -1	; grug_factions
+GLOBAL mods/PLAYER/grug_home/init.lua 2	[1]	SETGLOBAL	0 -1	; grug_home
+GLOBAL mods/PLAYER/grug_parties/init.lua 2	[1]	SETGLOBAL	0 -1	; grug_parties
+GLOBAL tools/r14_quests/visibility_kat.lua 37	[11]	SETGLOBAL	5 -5	; core
+GLOBAL tools/r14_quests/visibility_kat.lua 57	[37]	SETGLOBAL	7 -27	; grug_core
+GLOBAL tools/r14_quests/visibility_kat.lua 68	[38]	SETGLOBAL	7 -28	; grug_quests
+GLOBAL tools/r17/disposition_test.lua 7	[3]	SETGLOBAL	1 -5	; grug_mobs
+GLOBAL tools/r17_display/kat.lua 44	[61]	SETGLOBAL	9 -12	; core
+GLOBAL tools/r17_display/kat.lua 60	[76]	SETGLOBAL	10 -25	; grug_core
+GLOBAL tools/r8_tags/kat.lua 180	[169]	SETGLOBAL	14 -14	; core
+GLOBAL tools/r8_tags/kat.lua 182	[170]	SETGLOBAL	14 -25	; minetest
+GLOBAL tools/r8_tags/kat.lua 198	[194]	SETGLOBAL	14 -21	; vector
+GLOBAL tools/r8_tags/kat.lua 210	[201]	SETGLOBAL	14 -17	; grug_core
+GLOBAL tools/r8_tags/kat.lua 411	[287]	SETGLOBAL	26 -18	; grug_mobs
+GLOBAL tools/r8_tags/kat.lua 432	[308]	SETGLOBAL	26 -19	; grug_zones
+GLOBAL tools/r8_tags/kat.lua 632	[384]	SETGLOBAL	30 -23	; grug_classes
+GLOBAL tools/r8_tags/kat.lua 634	[385]	SETGLOBAL	30 -24	; grug_factions
+GLOBAL tools/r8_tags/kat.lua 641	[388]	SETGLOBAL	30 -22	; grug_traders
+GLOBAL tools/r9_mounts/mounts_kat.lua 62	[41]	SETGLOBAL	13 -23	; ItemStack
+GLOBAL tools/r9_mounts/mounts_kat.lua 156	[228]	SETGLOBAL	16 -30	; core
+GLOBAL tools/r9_mounts/mounts_kat.lua 174	[257]	SETGLOBAL	16 -61	; vector
+GLOBAL tools/r9_mounts/mounts_kat.lua 180	[258]	SETGLOBAL	16 -67	; player_api
+GLOBAL tools/r9_mounts/mounts_kat.lua 193	[274]	SETGLOBAL	16 -70	; grug_core
+GLOBAL tools/r9_mounts/mounts_kat.lua 197	[281]	SETGLOBAL	16 -75	; grug_visuals
+GLOBAL tools/r9_mounts/mounts_kat.lua 201	[282]	SETGLOBAL	16 -77	; grug_xp
+GLOBAL tools/r9_mounts/mounts_kat.lua 207	[290]	SETGLOBAL	16 -79	; grug_money
+GLOBAL tools/r9_mounts/mounts_kat.lua 218	[301]	SETGLOBAL	16 -82	; grug_factions
+GLOBAL tools/r9_mounts/mounts_kat.lua 224	[303]	SETGLOBAL	16 -87	; grug_mobs
+GLOBAL tools/r9_mounts/mounts_kat.lua 231	[307]	SETGLOBAL	16 -90	; grug_classes
+GLOBAL tools/r9_mounts/mounts_kat.lua 233	[308]	SETGLOBAL	16 -93	; grug_jobs
+GLOBAL tools/r9_mounts/mounts_kat.lua 247	[355]	SETGLOBAL	16 -94	; grug_zones
+GLOBAL tools/r9_mounts/mounts_kat.lua 1550	[618]	SETGLOBAL	58 -94	; grug_zones
+GLOBAL tools/r9_mounts/mounts_kat.lua 1608	[626]	SETGLOBAL	57 -94	; grug_zones
+PARSER PASS files=48
+SWEEP 1
+no hits
+SWEEP 2
+mods/ENTITIES/grug_mobs/levels.lua:78:	-- UTF-8 written literally: \u{} escapes are LuaJIT-only (luanti-lua.md).
+SWEEP 3
+no hits
+SWEEP 4
+mods/ENTITIES/grug_mobs/levels.lua:2:-- Level & tier engine (combat_stats.md §3/§6, biomes_mobs.md §0).
+mods/PLAYER/grug_classes/selection.lua:558:		return true, ("%s %s %s, level %d | Str %d Int %d Dex %d | " ..
+mods/PLAYER/grug_classes/selection.lua:559:			"HP %d/%d, mana %d | melee +%d, spell +%d, crit %.1f%%, dodge %.1f%%"):format(
+mods/ENTITIES/grug_mobs/init.lua:69:--   def._grug_tier        — "normal" (default) | "elite" | "rare" | "boss"
+mods/PLAYER/grug_abilities/scout.lua:209:	return stack:get_name() .. "|" .. item_id
+mods/ENTITIES/grug_mobs/boar_variants.lua:103:-- still reaches with zone `inner` up to |x| ~932, and the patch model (§1.4)
+tools/r9_mounts/mounts_kat.lua:897:	return "r9_mounts_v3|tiers=4|models=12|warning=48|warning_probes=112|" ..
+tools/r9_mounts/mounts_kat.lua:898:		"warning_interval=1|ceiling=600|assets=" ..
+mods/PLAYER/grug_factions/init.lua:396:	params = "[<player>] [throng|accord]",
+SWEEP 5
+no hits
+Inspect all global writes and sweep hits; strings/comments may match.

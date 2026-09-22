@@ -365,13 +365,14 @@ because the fix belongs to `classes.md` §3 rather than to WP11.
 | 3 | **Brand** *(keystone)* | Blaze | 3 | 3 | **replaces Fireball** | Fireball's impact splashes `2 / 3 / 4 + floor(spell power / 2)` to every other hostile within 2 m. Same key, same 6% base-mana cost, same 1 s cast interval, same homing flight | `kits.lua` (the projectile's on-hit) plus its radius loop | `fireball_splash` |
 | 4 | **Whitehot** *(capstone)* | Blaze | 4 | **1** | **effect** ‼ | the first Fireball that **crits** starts an 8 s window in which Fireball costs **3% instead of 6% base mana** and deals **+6**. *Limit: 8 s, **120 s cooldown** on the trigger.* | the central cost seam and Fireball values | `whitehot_window` |
 | 5 | **Deep Well** | Cinder | 1 | 5 | — | max mana +3 / 6 / 9 / 12 / 15 % | `grug_classes/stats.lua:67-105` | `max_mana_percent_add` |
-| 6 | **Far Cast** | Cinder | 2 | 4 | — | Fireball maximum distance 20 m → 21.5 / 23 / 24.5 / 26 m | two per-player reads, neither at a registration constant: the spawn call (`kits.lua:534-547`, since `grug_projectiles/init.lua:195` prefers `params.max_distance` over the registered `kits.lua:470-479`), and targeting reach in `grug_abilities.get_range` (`init.lua:267-276`), whose item-meta override `normalize_kit` refreshes (`grug_abilities/init.lua:2181-2197`) | `fireball_range_add` |
+| 6 | **Far Cast** | Cinder | 2 | 4 | — | Fireball acquisition range 20 m → 21.5 / 23 / 24.5 / 26 m at release; no later range expiry | `grug_abilities.get_range` and the current combat ray at release; the ability stack mirrors targeting reach | `fireball_range_add` |
 | 7 | **Cinderfall** *(keystone)* | Cinder | 3 | 3 | **new skill** | cast, 12% base mana, 10 s cooldown, 20 m; a burst at the first thing the crosshair ray meets, dealing `5 / 7 / 9 + spell power` to every hostile within 3 m of it | new; `grug_core.combat_ray` plus the radius loop | — |
 | 8 | **Ashfall** | Cinder | 4 | 3 | — | Cinderfall's radius 3 m → 4 / 5 / 6 m | the new Cinderfall registration | `cinderfall_radius_add` |
 
-Fireball's flight is not eaten by the longer range: `lifetime = 2`
-(`kits.lua:479`) at `speed = 20` (`:471`) allows 40 m. Ember takes **no**
-rule-breaker besides its capstone — see §2.9's note on the bounded pass.
+Far Cast increases acquisition reach only. Once released, Fireball follows its
+locked target for the launch-distance-derived flight duration, even if the target
+moves beyond that reach (see `combat_stats.md`, “Hostile casts and projectiles”). Ember takes **no** rule-breaker
+besides its capstone — see §2.9's note on the bounded pass.
 
 ### 2.4 Mage — Rime
 

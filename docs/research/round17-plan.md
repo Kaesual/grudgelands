@@ -1,6 +1,7 @@
 # Round 17 — Home travel, combat readability and reliable ranged attacks
 
-Approved by the user on 2026-09-22. Status: implementation authorized.
+Approved by the user on 2026-09-22. Status: implemented and independently reviewed; final technical gates PASS.
+Delivery and GUI status: [round17-completion.md](round17-completion.md).
 Base: `2c0f444668e78f9d8904d53f751440536ade31f4` (Round 16 delivered).
 Root: native Astra. This contract records the latest user decisions and
 supersedes conflicting historical projectile/spawn/display rules. Living design

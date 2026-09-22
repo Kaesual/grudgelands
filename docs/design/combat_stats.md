@@ -932,7 +932,8 @@ blocks movement and attack execution, preserving gravity.
 ## Global non-player damage scale (Round 17)
 
 The startup setting `grug_mob_damage_scale` defaults to **1.5**; **1.0** retains
-the prior unscaled damage. Apply it exactly once to damage from all non-player
+the prior unscaled damage. Valid values are 0–10; invalid/nonfinite values
+fall back to 1.5. Apply it exactly once to damage from all non-player
 combat actors: ordinary/neutral mobs, guards, adds, elites/rares and bosses.
 It covers melee, projectiles, auras, DoTs and authored attack ground effects,
 including fixed-damage consumers as well as level-derived damage. Player
@@ -956,3 +957,19 @@ no bars for players, critters or peaceful NPCs. Keep existing HP text. Reuse the
 nametag visibility pass and observers; update fill only when visible integer
 percentage changes. Bars are ephemeral/nonphysical/nonpointable and removed
 with their parent. No individual-player copies or additional proximity scans.
+
+Startup presentation settings:
+
+| Category | Foreground setting/default | Background setting/default |
+|---|---|---|
+| Aggressive | `grug_nametag_aggressive_foreground` / `#ff4b4b` | `grug_nametag_aggressive_background` / `#00000040` |
+| Neutral | `grug_nametag_neutral_foreground` / `#ffd447` | `grug_nametag_neutral_background` / `#00000040` |
+| Guard | `grug_nametag_guard_foreground` / `#b76cff` | `grug_nametag_guard_background` / `#00000040` |
+| NPC | `grug_nametag_npc_foreground` / `#d8c5ff` | `grug_nametag_npc_background` / `#00000040` |
+| Player | `grug_nametag_player_foreground` / `#ffffff` | `grug_nametag_player_background` / `#00000040` |
+| Critter | `grug_nametag_critter_foreground` / `#ffffff` | `grug_nametag_critter_background` / `#00000040` |
+
+`grug_injured_mob_hp_bars` defaults to `true`. Invalid colors fall back to the
+category default. Bars have a nominal world size of 0.8 by 0.1 nodes; parent
+visual scale must not magnify them. Flight visuals use a duration bounded to
+0.05–2 seconds, so near-zero partial bow draws never cause long pursuit.

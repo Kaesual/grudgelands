@@ -1007,7 +1007,10 @@ collisionbox scaled by that same 1.4 (`0.4 → 0.6` high, `0.2 → 0.3` wide),
 and `punch` **aliased onto the fly clip** of the shared gull mesh so the
 retaliation reads. Same mesh, same texture, same spawn row, same `aoc`.
 
-**Enemies** — everything else, unchanged (§3.1's verbs).
+**Aggressive families** follow the fixed Round 17 disposition matrix.
+The earlier prey list does not make every unlisted family aggressive: Boar,
+Plague Boar and Jungle Boar also retaliate only after being attacked.
+Their attack verbs remain defined in §3.1.
 
 Consequence for the material map (§6): plain **feather** loses its critter
 source and moves to the **bird-of-prey table** (crag eagle / vulture), so
@@ -1795,3 +1798,12 @@ are aggressive. Higher-level areas predominantly contain aggressive species,
 without changing a family's temperament by location or imposing exact ratios.
 No total-density/range/HP/per-family-damage increase is part of this roster
 change. The global non-player damage scale is specified in `combat_stats.md`.
+
+The current family classification is:
+
+| Disposition | Existing families and named variants |
+|---|---|
+| Neutral | Boar, Plague Boar, Jungle Boar; Ibex, Tapir; Stag, Gaunt Stag, Zebra; Mountain Ram; Carrion Crow; Shore Crab, Reef Lurker |
+| Aggressive | Fox; Giant Rat; Bear, Plaguehide Bear; Wolf, Blightfang Wolf; Hyena; Jungle Lynx, Panther, Snow Leopard, Speargrass Tiger; Crag Eagle, Vulture; Crocodile; Jungle Ape; Giant Spider, Jungle Spider, Pale Spider, Spiderling; Serpent, Viper, Scorpion; Blood Bat; Goblin Raider, Goblin Slinger, Goblin Hound, Goblin Miner, Goblin Miner Slinger; Bandit, Bandit Archer, Poacher; Mirefolk; Skeleton Archer, Skeleton Raider, Zombie, Frost Stray, Sun-Dried Husk; Stone Golem, Mesa Golem, Stone Mite, War Construct; Ashen Treant, Gravewood Treant; Bog Ooze, Bog Witch; Wisp, Glowwing, Ember Wisp; Crystal Shard, Lava Flan; Oerkki, Rift Spawn, Dungeon Master; Kraken; Ice Dragon, Jungle Wyvern, Ice Whelp, Storm Whelp; kings |
+| Critter | Rabbit, Hare; Wild Turkey, Plains Runner; Parrot, Gull, Song Bird; Cave Bat, Cave Crawler; Bone Weevil, Bog Fowl |
+| Independent role | Accord/Throng guards, land guards, royal guards and peaceful settlement NPCs |

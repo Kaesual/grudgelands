@@ -338,7 +338,7 @@ conflicts if version 1 had stealth (§8).
 | **WP11 (skill trees)** | the Scout's 16 talents run on the shared talent machinery | `skill_trees.md` §4 |
 | **The speed aggregator** | ruling 11's `grug_core` aggregator drives Sprint, Snare Shot and Shake Loose | `skill_trees.md` §3.9; `docs/research/mob-pressure-task-card.md` |
 | **Weapon ladder §3.0.3** | six tier bows, the below-ladder starter bow, dedicated centre-grip pose and ballistic ability consumer | `items_crafting.md` §9; `character_visuals.md` §6 |
-| **Arrows** | the player arrow item and **ballistic** `grug_projectiles` entity; the Basics craft is 1 iron bar + 4 sticks + 4 sharp feathers → 20; the physics reference and its licence are §4.1 | `items_crafting.md` §9; reference entity `skeleton_archer.lua:18` |
+| **Arrows** | the player arrow item and Round-17 **homing** `grug_projectiles` entity; the Basics craft is 1 iron bar + 4 sticks + 4 sharp feathers → 20; the physics reference and its licence are §4.1 | `items_crafting.md` §9; reference entity `skeleton_archer.lua:18` |
 | **Leather armour** | consume the delivered 24-item leather family and its dedicated inventory/worn art; armor rank remains 2 | `inventory_equipment.md` §2; `character_visuals.md` §3 |
 | **Professions** | none created. Leatherworker owns the grades/current quiver; Woodcarver owns bow quality operations | `professions.md` §2–§3 |
 | **Traders** | the bowyer shelf exposes bows and player arrows; the tanner shelf exposes the leather grades through the existing rotation and quality paths | `grug_traders/stock.lua` |
