@@ -306,7 +306,7 @@ local by_key = {}
 
 -- Which log family a role reports under.
 local FAMILY = {guard_post = "guards", guard_patrol = "guards",
-	idle = "flair", work = "flair", trainer = "flair", vendor = "vendor",
+	idle = "flair", work = "flair", trainer = "flair", innkeeper = "flair", vendor = "vendor",
 	quest = "quest", king = "royal"}
 local FAMILY_ORDER = {"guards", "flair", "vendor", "quest", "royal"}
 
@@ -1168,6 +1168,9 @@ local function install(entity, row, slot)
 		entity._grug_display_tag = slot.tag
 		entity._grug_display_floor = slot.pos.y - 0.5
 		grug_mobs.configure_capital_display(entity)
+	elseif slot.role == "innkeeper" then
+		entity._grug_npc_name = "Innkeeper"
+		entity._grug_walker = false
 	elseif slot.role == "riding_trainer" then
 		entity._grug_npc_name = "Riding Trainer"
 		entity._grug_walker = false

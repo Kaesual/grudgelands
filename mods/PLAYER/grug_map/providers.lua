@@ -76,3 +76,16 @@ atlas.register_marker_provider("quest", function(player)
 	end
 	return result
 end)
+
+-- Home registry positions are resolved at server load; markers never emerge land.
+atlas.register_marker_provider("home", function(player)
+ local selected = grug_home.get(player)
+ local result = {}
+ for _, row in ipairs(grug_home.locations()) do
+  local chosen = selected and selected.id == row.id
+  result[#result + 1] = {id=row.id, label=row.label .. " Innkeeper",
+   detail=row.label .. (chosen and " — Your home / Innkeeper" or " — Innkeeper"),
+   position=row.pos, kind=chosen and "home" or "innkeeper"}
+ end
+ return result
+end)

@@ -155,8 +155,9 @@ local function loader(directory)
 			order = 5, x = 10, y = 1, z = 0, dir = {x = 1, z = 0}},
 		{id = "court_vendor", role = "vendor", kind = "race", x = 7, y = 1,
 			z = -4, dir = {x = -1, z = 0}},
-		{id = "idle_shrine_door", role = "idle", tags = {"door"}, x = -21,
-			y = 1, z = 16, dir = {x = 0, z = 1}},
+		-- Round 17: The existing west glade house hosts guests; the shrine keeps its own role.
+		{id = "home_innkeeper", role = "idle", tags = {"door"}, x = -35,
+			y = 1, z = -22, dir = {x = 0, z = 1}},
 		{id = "idle_court_bench", role = "idle", tags = {"bench"}, x = -7,
 			y = 1, z = 5, dir = {x = 0, z = -1}},
 		{id = "idle_bowyer", role = "idle", tags = {"work"}, x = 28, y = 1,
