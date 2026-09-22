@@ -538,6 +538,16 @@ local function dragon_pos(row, dx, dz)
 	return {x = x, y = grug_zones.terrain_height_at(x, z) + 1, z = z}
 end
 
+-- Static authored navigation locations; no live entity or respawn information.
+function grug_mobs.dragon_map_markers()
+	local result = {}
+	for id, row in pairs(DRAGONS) do
+		result[#result + 1] = {id = "dragon:" .. id, name = row.name, pos = dragon_pos(row)}
+	end
+	table.sort(result, function(a, b) return a.id < b.id end)
+	return result
+end
+
 local function spawn_dragon(id, row)
 	local pos = dragon_pos(row)
 	local node = core.get_node_or_nil(pos)

@@ -2,7 +2,7 @@ local atlas = grug_map.atlas
 
 local function player_marker(player, kind)
 	local name = player:get_player_name()
-	return {id = name, label = name, detail = name .. (kind == "player" and " (you)" or " (party)"),
+	return {id = name, label = name, detail = name,
 		kind = kind, position = player:get_pos(), heading = player:get_look_horizontal()}
 end
 
@@ -22,53 +22,57 @@ atlas.register_marker_provider("party", function(player)
 	return result
 end)
 
-local givers = {}
-local priority = {ready = 1, available = 2, active = 3, locked = 4}
-local labels = {ready = "Ready to turn in", available = "Quest available",
-	active = "Quest in progress", locked = "Requirements not met"}
+local givers, services = {}, {}
 
--- Authored sockets exist before terrain is emerged; the atlas never loads a
--- mapblock or searches live entities just to find a quest giver.
+-- Authored sockets exist before terrain is emerged. The atlas never loads a
+-- mapblock or searches live entities just to find a service or quest giver.
 core.register_on_mods_loaded(function()
 	local sockets = {}
 	for _, settlement in ipairs(grug_core.settlement_socket_settlements()) do
 		for _, socket in ipairs(grug_core.settlement_sockets_at(settlement.key)) do
-			sockets[settlement.key .. "/" .. socket.id] = socket.pos
+			local id = settlement.key .. "/" .. socket.id
+			sockets[id] = socket.pos
+			local label, texture, kind
+			if socket.role == "trainer" then
+				local profession = assert(grug_jobs.PROFESSIONS[socket.profession])
+				label, texture = profession.name .. " Trainer", "grug_jobs_book.png"
+				kind = "trainer"
+			elseif socket.role == "riding_trainer" then
+				label, texture = "Riding Trainer", "grug_mounts_icon_" .. settlement.race_id .. ".png"
+				kind = "trainer"
+			elseif socket.role == "king" then
+				local def = assert(core.registered_entities["grug_mobs:king_" .. settlement.race_id])
+				label, texture = def.description, "grug_mobs_item_fallen_crown.png"
+				kind = "boss"
+			end
+			if label and socket.spawn ~= false then
+				services[#services + 1] = {id = id, label = label, position = socket.pos,
+					kind = kind, texture = texture}
+			end
 		end
+	end
+	for _, dragon in ipairs(grug_mobs.dragon_map_markers()) do
+		services[#services + 1] = {id = dragon.id, label = dragon.name,
+			position = dragon.pos, kind = "boss", texture = "grug_mobs_item_fallen_crown.png"}
 	end
 	for id, npc in pairs(grug_quests.registered_npcs) do
 		local position = assert(sockets[npc.settlement .. "/" .. npc.socket],
 			"[grug_map] quest giver socket missing: " .. id)
-		givers[#givers + 1] = {id = id, title = npc.title, position = position,
-			settlement = npc.settlement}
+		givers[#givers + 1] = {id = id, title = npc.title, position = position}
 	end
 	table.sort(givers, function(a, b) return a.id < b.id end)
 end)
 
+atlas.register_marker_provider("service", function() return services end)
+
 atlas.register_marker_provider("quest", function(player)
-	local groups, result = {}, {}
+	local result = {}
 	for _, giver in ipairs(givers) do
 		local state = grug_quests.marker_state(player, giver.id)
 		if state then
-			-- Nearby NPCs share a legible settlement marker instead of covering
-			-- each other's buttons; every relevant giver remains in its tooltip.
-			local group = groups[giver.settlement]
-			if not group then
-				group = {id = giver.settlement, kind = "quest", status = state,
-					position = giver.position, lines = {}}
-				groups[giver.settlement] = group
-				result[#result + 1] = group
-			end
-			if priority[state] < priority[group.status] then
-				group.status, group.position = state, giver.position
-			end
-			group.lines[#group.lines + 1] = giver.title .. ": " .. labels[state]
+			result[#result + 1] = {id = giver.id, label = giver.title,
+				position = giver.position, kind = "quest", status = state}
 		end
-	end
-	for _, group in ipairs(result) do
-		group.label = labels[group.status]
-		group.detail = table.concat(group.lines, "\n")
-		group.lines = nil
 	end
 	return result
 end)

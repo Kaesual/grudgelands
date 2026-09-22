@@ -44,7 +44,7 @@ atlas.register_marker_provider("settlement", function()
 		local label = LABELS[row.key] or humanize(row.key)
 		result[index] = {id = row.key, label = label, position = row.anchor,
 			kind = row.key:find("bandit_camp", 1, true) and "hostile" or "settlement",
-			detail = label .. "\n" .. humanize(row.race_id) .. " settlement"}
+			detail = label}
 	end
 	return result
 end)
@@ -101,6 +101,9 @@ local function page_content(player, context)
 					format(sx - 0.21, sy - 0.21, texture, field)
 				-- Names stay in the hover/detail text to keep tightly grouped players
 				-- legible even at continental scale.
+			elseif marker.texture then
+				fs[#fs + 1] = ("image_button[%.3f,%.3f;0.34,0.34;%s;%s;;false;false]"):
+					format(sx - 0.17, sy - 0.17, esc(marker.texture), field)
 			else
 				local quest = marker.kind == "quest"
 				local symbol = quest and ((marker.status == "ready" or marker.status == "active")
@@ -123,7 +126,11 @@ local function page_content(player, context)
 end
 
 local function make_form(player, context)
-	return sfinv.make_formspec(player, context, page_content(player, context), false)
+	-- v1/v2 legacy-sort images ABOVE buttons, hiding every marker behind the
+	-- atlas raster. v3 preserves definition order. Keep the wrapper size/nav
+	-- in legacy units, then page_content switches only the map to real units.
+	return sfinv.make_formspec(player, context, page_content(player, context), false,
+		"formspec_version[3]size[10.4,11.1]real_coordinates[false]")
 end
 
 sfinv.register_page(PAGE, {
