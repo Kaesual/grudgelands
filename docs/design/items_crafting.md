@@ -2152,9 +2152,8 @@ are derived only after those rates are measured; the retired fixed
 
 **Its consumer is delivered in Round 11**: the Scout's base kit opens
 with a bow shot ([scout.md](scout.md) §2, rulings 7 and 12 of
-[skill_trees.md](skill_trees.md) §5) and the arrow is **ballistic** — gravity
-and a draw-time impulse, while Fireball stays straight (`combat_stats.md`
-§2, `classes.md` §2b). Round 11 has delivered the registered bow, arrow and
+[skill_trees.md](skill_trees.md) §5) and Round 17 changes the arrow to **targeted homing**, like Fireball
+(`combat_stats.md` §2, `classes.md` §2b). Round 11 has delivered the registered bow, arrow and
 quiver item foundation below. The Scout runtime owns draw, launch and
 accepted-action hit settlement.
 
@@ -2173,7 +2172,7 @@ consumer are active:
   Dexterity, Crit, draw speed, HP and Mana; draw speed uses the weapon-family
   attack-speed channel to shorten charge time.
 - **Arrows** stack to **200** per inventory/quiver slot (user playtest ruling
-  2026-09-20); new Scouts receive 200. Ammo also has a ballistic entity;
+  2026-09-20); new Scouts receive 200. Ammo also has a targeted projectile entity;
   craft 20/batch: 1 iron bar + 4 sticks + 4 feathers (sharp feathers —
   eagle/vulture drops finally get their reagent role). The optional quiver is
   a Leatherworker Offhand item with four arrow-only slots (§3.4). The current

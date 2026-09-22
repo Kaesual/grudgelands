@@ -37,3 +37,10 @@ hover tooltips contain only the name. Markers are not clustered, displaced or
 merged when nearby; subsequent playtest feedback decides whether any handling
 is necessary. Map markers confer no remote interaction or travel. Waypoints
 remain a later package.
+
+## Innkeeper home travel
+
+Round 17 adds the twelve innkeeper locations, labels/current-home distinction
+and a Return home button with destination and cooldown. Its server authority
+is [home_travel.md](home_travel.md). Map browsing itself grants no binding or
+waypoint unlock; binding still requires visiting an eligible innkeeper.

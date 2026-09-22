@@ -222,7 +222,11 @@ The Claim Stone is the centre of its protected area.
   container with an independent owner or ACL requires an explicit compatibility
   rule and cannot silently inherit a generic placer-owned convention.
 
-## 4. Home Stone
+## 4. Home Stone (deferred housing travel)
+
+This future housing-bound feature is separate from current V1
+[innkeeper home travel](home_travel.md), which owns the twelve home points and
+death respawns. It is not implemented as part of the innkeeper return button.
 
 - The Home Stone teleports only to the owner's currently bound, active Claim
   Stone. It has no capital fallback.

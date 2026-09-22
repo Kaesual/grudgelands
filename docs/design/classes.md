@@ -5,7 +5,7 @@ Implementation: WP4 (`grug_abilities`, resource HUD, damage pipeline hooks in
 `grug_core`), WP19 (kit tuning, GCD, target memory), WP35 (§2b's universal
 ability and §2c's ability-item skins), WP38 (§2b's proc model, which retires
 WP19's GCD), and WP39 (crosshair-authoritative hostile combat, weapon-ready
-reticle and directional Fireball, shipped 2026-08-10); skill trees extend these
+reticle and projectile Fireball, shipped 2026-08-10); skill trees extend these
 kits in WP11.
 Attribute/derived-stat formulas: `combat_stats.md` §1/§2; threat values:
 `combat_stats.md` §4.
@@ -193,7 +193,7 @@ ability, declared where it is registered:
 
 The whole Mage and Priest kit consists of cast skills; WP39 did not change
 that. Future ranged auto-attacks may arm their own ranged procs, but equipping a
-bow or wand does not replace Fireball's decided directional-projectile
+bow or wand does not replace Fireball's targeted-projectile
 behavior.
 
 ### Right-click with a skill in hand opens the door
@@ -330,18 +330,14 @@ promised away.
   their own range and server-validated line of sight. They never fall back to
   enemy target memory. No valid target means no effect, resource payment or
   cooldown.
-- Fireball is the first true directional projectile. A successful input spends
-  **6% base mana** and snapshots the player's current eye position and look direction
-  even when no object is pointed. It travels straight at **20 m/s**, has no
-  gravity, homing or splash, deals **baseline weapon damage + spell power**
-  through the damage level fit, and disappears after
-  **20 m**, on a blocking node or on its first attackable target. Missing still
-  spends mana. Friendly players/allied entities and dropped items are ignored
-  rather than consuming the projectile.
-- Projectile collision is swept over every travelled segment, not sampled only
-  at the entity's new position. The same ownership/collision foundation must
-  support later arrows, but WP39 does not implement bows: arrows add gravity
-  and take their initial impulse from bounded bow draw time.
+- Fireball and Scout arrows lock a current in-range visible hostile at actual
+  release, then home for a bounded launch-time flight duration. No target means
+  no shot/resource payment. After launch, terrain/characters do not intercept
+  and range is not rechecked. Damage resolves once at impact through existing
+  defenses; invalid lifecycle/target cancels. See `combat_stats.md` for the
+  shared Round 17 contract, also used by non-player projectiles.
+- Fireball retains 6% base mana, 20 m initial range, 20 m/s nominal speed and
+  baseline weapon damage + spell power, with existing talent modifiers.
 - Friendly heals and shields always resolve through pointed valid ally → the
   separate valid in-range 8 s ally-memory target → self. A pointed hostile,
   NPC, guard, item or dead player enters that same fallback chain rather than
@@ -553,7 +549,7 @@ Nova became the rotation pivot — kiting IS the Mage fantasy here.
 
 | Ability | Cost | Cooldown | Effect |
 |---------|------|----------|--------|
-| Fireball | 6% base mana | **1 s cast interval** (server cadence, no cooldown bar) | Straight 20 m/s projectile along the cast-time crosshair, maximum 20 m, no homing/gravity/splash: baseline weapon + spell power through the damage fit on the first attackable target. A miss still spends mana; input inside the interval is refused without cost; at most eight shots per owner/session may be active. |
+| Fireball | 6% base mana | **1 s cast interval** (server cadence, no cooldown bar) | Targeted homing projectile, nominal 20 m/s and initial range 20 m; current aim/LOS required at release. Baseline weapon + spell power through the damage fit at impact. No target or input inside the interval costs nothing; at most eight shots per owner/session may be active. |
 | Frost Nova | 10% base mana | 12 s | Deals one quarter of (level-baseline weapon damage + spell power), then roots accepted hostile hits within 5 m for 4 s, followed by 50% slow for 3 s. Spell damage scaling applies once. Players use the hard-root movement flag; rooted targets may still attack. Small crystal particles persist only while the Nova root is active. |
 | Blink | 8% base mana | 15 s | Teleport up to 10 m in look direction (blocked by walls). Escape valve. |
 

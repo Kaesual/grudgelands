@@ -418,8 +418,9 @@ The ordinary contested deep rule resumes at y = −701 even below a capital.
 - Its center has main roads in all four cardinal directions: toward level
   10–20 home territory, laterally into medium-level heartland and toward the
   high-level contested front (`world_zones.md` §3).
-- New characters and ordinary fallback respawns use their race's outer
-  level-1–10 starting settlement, not the capital.
+- New characters use their race's outer level-1–10 starting settlement.
+  Respawns follow the bound innkeeper home; the starting settlement is the
+  default. See [home travel](home_travel.md).
 - Every race has its own king in its own capital: **six kings total**. Housing
   is instead unlocked at level 20 through the separate passive, invulnerable
   Housing Steward and the open-world Claim Stone design of §5; no king grants
@@ -867,7 +868,11 @@ administration system do not exist in the target design.
   claim-exclusion envelopes. Dig/place and natural-spawn checks are point
   queries, never node scans or protection globalsteps.
 
-## 6. Travel: waypoints & Home Stone
+## 6. Travel: innkeeper homes and deferred travel
+
+The current V1 return and death destination is the twelve-location
+[innkeeper home system](home_travel.md). The waypoint network and housing-bound
+Home Stone below are deferred, separate travel features.
 
 **Waypoint network** (Diablo/PoE model, decided 2026-08-06):
 

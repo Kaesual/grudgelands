@@ -1783,3 +1783,15 @@ and 5 record what WP6 then actually shipped.
    flattened horizontally, fired at 4–10 m with an 8 s cooldown. One
    verb helper serves both families, and the boar reads as a charger
    without a second state machine.
+
+## Round 17 disposition contract
+
+Creature families (or explicitly named variants) have fixed aggressive,
+neutral or critter dispositions. Neutral creatures do not initiate player
+combat, but retaliate; ordinary starter Boars are neutral. Fightable Rats are
+aggressive, while true harmless critters retain their behavior. Grazer/prey
+families remain plausible neutral wildlife; hostile humanoids/undead/monsters
+are aggressive. Higher-level areas predominantly contain aggressive species,
+without changing a family's temperament by location or imposing exact ratios.
+No total-density/range/HP/per-family-damage increase is part of this roster
+change. The global non-player damage scale is specified in `combat_stats.md`.

@@ -1,6 +1,8 @@
 # Grudgelands
 
-Latest increment: [Round 16 completion](docs/research/round16-completion.md).
+Active work: [Round 17 plan](docs/research/round17-plan.md), authorized and in progress.
+
+Latest delivered increment: [Round 16 completion](docs/research/round16-completion.md).
 Independent reviews and final technical gates PASS; merged to main, locally
 synchronized and pushed. GUI acceptance remains separate.
 Next: [fresh-world playtest](docs/research/round16-playtest.md).
@@ -265,6 +267,12 @@ full-world startup generation and resumable starts-only preparation.
 Full milestone view: [ROADMAP.md](ROADMAP.md).
 
 ## Current State
+
+**In progress:** [Round 17](docs/research/round17-plan.md) adds
+[innkeeper home travel](docs/design/home_travel.md), targeted homing projectiles,
+a global mob damage setting, fixed dispositions, configurable nametag/HP
+presentation and optional party class colors. These changes are not delivered
+yet; shipped-WP counts remain unchanged.
 
 *Last updated: 2026-09-22. Derived from [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md). [Round 16](docs/research/round16-completion.md)

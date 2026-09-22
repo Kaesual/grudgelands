@@ -1,6 +1,6 @@
 # Round 17 execution ledger
 
-Status: authorized, preparing parallel implementation (2026-09-22).
+Status: authorized, A/B/C running in parallel (2026-09-22).
 Contract: [round17-plan.md](round17-plan.md). Base `2c0f4446`.
 Integration branch: `wp17-home-combat-feedback`.
 
@@ -16,15 +16,21 @@ persistent real-time cooldown. Fixed family dispositions. Standard client only.
 
 | Lane | Model | Worktree | State |
 |---|---|---|---|
-| A HOME | Astra | /tmp/grug-r17-home | Pending |
-| B COMBAT | Astra | /tmp/grug-r17-combat | Pending |
-| C DISPOSITION | Sol | /tmp/grug-r17-disposition | Pending |
+| A HOME | Astra | /tmp/grug-r17-home | Running |
+| B COMBAT | Astra | /tmp/grug-r17-combat | Running |
+| C DISPOSITION | Sol | /tmp/grug-r17-disposition | Running |
 | D DISPLAY | Sol | /tmp/grug-r17-display | Queued |
 | E PARTY | Sol | /tmp/grug-r17-party | Queued |
 
 Root owns integration, shared docs/settings reconciliation, final portable gates,
 independent review routing and delivery. No implementation agent launches more
 agents or provider CLIs. No PUC runtime in development; root final pair only.
+
+Native agents: `/root/r17_home`, `/root/r17_combat`, `/root/r17_disposition`.
+HOME calls COMBAT's `grug_core.invalidate_combat_identity` before teleport;
+DISPOSITION owns mobs/init registration; COMBAT owns levels damage/verbs.
+Root has folded accepted rules into living specs, including distinguishing
+deferred housing Home Stone from current innkeeper homes.
 
 ## Next actions after compaction
 
