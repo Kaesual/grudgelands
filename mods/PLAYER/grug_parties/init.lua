@@ -8,6 +8,8 @@ local membership, incoming, last_send, connected = {}, {}, {}, {}
 local callbacks = {}
 local INVITES = "grug_parties:invites_off"
 local HUD = "grug_parties:hud_off"
+local HEALTH_COLORS = "grug_parties:health_colors"
+local HEALTH_COLOR_MODES = {all_green = true, by_class = true}
 
 -- Membership order is canonical join order; the lookup is always derived.
 for id, group in pairs(state.groups) do
@@ -121,6 +123,7 @@ function grug_parties.view(player)
 		if member then
 			row.hp = member:get_hp()
 			row.hp_max = member:get_properties().hp_max
+			row.class = grug_classes and grug_classes.get_class(member) or nil
 		end
 		view.members[#view.members + 1] = row
 	end
@@ -143,6 +146,10 @@ end
 function grug_parties.hud_enabled(player)
 	return player:get_meta():get_int(HUD) == 0
 end
+function grug_parties.health_color_mode(player)
+	local mode = player:get_meta():get_string(HEALTH_COLORS)
+	return HEALTH_COLOR_MODES[mode] and mode or "all_green"
+end
 function grug_parties.set_invitations_enabled(player, enabled)
 	local name = actor(player)
 	if not name or type(enabled) ~= "boolean" then return false, "Invalid player or preference." end
@@ -157,6 +164,19 @@ function grug_parties.set_hud_enabled(player, enabled)
 	player:get_meta():set_int(HUD, enabled and 0 or 1)
 	emit({[name] = true}, "preferences")
 	return true, enabled and "Party HUD enabled." or "Party HUD disabled."
+end
+function grug_parties.set_health_color_mode(player, mode)
+	local name = actor(player)
+	if not name or not HEALTH_COLOR_MODES[mode] then
+		return false, "Invalid player or health color preference."
+	end
+	if grug_parties.health_color_mode(player) == mode then
+		return true, "Health colors unchanged."
+	end
+	player:get_meta():set_string(HEALTH_COLORS, mode)
+	emit({[name] = true}, "preferences")
+	return true, mode == "by_class" and "Class health colors enabled."
+		or "All-green health colors enabled."
 end
 local function eligible(inviter, recipient)
 	local sender, target = online(inviter), online(recipient)
@@ -284,6 +304,12 @@ core.register_on_leaveplayer(function(player)
 	for member in pairs(affected(group)) do changed[member] = true end
 	emit(changed, "presence")
 end)
+if grug_classes then
+	grug_classes.register_on_class_chosen(function(player)
+		local group = group_of(player:get_player_name())
+		if group then emit(affected(group), "class") end
+	end)
+end
 local elapsed = 0
 core.register_globalstep(function(dtime)
 	elapsed = elapsed + dtime

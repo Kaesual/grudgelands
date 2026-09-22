@@ -1,6 +1,22 @@
 local huds = {}
 local elapsed = 0
 local WIDTH = grug_core.hud_layout.BAR_WIDTH
+local CLASS_COLORS = {
+	warrior = 0xa66a3f,
+	mage = 0x4a9bd8,
+	priest = 0xf2f2f2,
+	scout = 0x6b7d32,
+}
+
+function grug_parties.health_bar_color(mode, class_id)
+	if mode == "by_class" then return CLASS_COLORS[class_id] or 0x4caf50 end
+	return 0x4caf50
+end
+
+local function health_color_mode(player)
+	return grug_parties.health_color_mode and
+		grug_parties.health_color_mode(player) or "all_green"
+end
 
 local function change(player, row, key, id, property, value)
 	local previous = row[key]
@@ -41,6 +57,7 @@ local function refresh(player)
 	if not view then remove_rows(player,record,0); return end
 	remove_rows(player,record,#view.members)
 	local layout = grug_core.hud_layout
+	local color_mode = health_color_mode(player)
 	local window = core.get_player_window_information(player:get_player_name())
 	local width = layout.side_text_width(window)
 	for index, member in ipairs(view.members) do
@@ -57,9 +74,10 @@ local function refresh(player)
 		local label = prefix .. name .. suffix
 		change(player,row,"text",row.label,"text",label)
 		local fill = member.online and grug_core.hud_layout.bar_fill(member.hp,member.hp_max) or 0
+		local color = grug_parties.health_bar_color(color_mode, member.class)
 		change(player,row,"width",row.fill,"scale",{x=math.max(1,fill),y=layout.PARTY_BAR_HEIGHT})
 		change(player,row,"texture",row.fill,"text", fill > 0 and
-			grug_core.hud_layout.bar_texture(grug_core.hud_layout.COLOR.life) or "")
+			grug_core.hud_layout.bar_texture(color) or "")
 	end
 end
 core.register_on_joinplayer(function(player)
