@@ -304,6 +304,7 @@ grug_abilities.register_ability({
 		local dir = vector.direction(tpos, user:get_pos())
 		local dest = vector.add(tpos, vector.multiply(dir, 1.3))
 		dest.y = tpos.y
+		grug_core.invalidate_combat_identity(user)
 		user:set_pos(dest)
 		grug_abilities.add_rage(user, 15)
 		grug_core.deal_ability_damage(user, target,
@@ -481,9 +482,6 @@ grug_projectiles.register("fireball", {
 	-- second. Eight leaves room for latency/session overlap while still bounding
 	-- stale shots per owner/session independently of the cast cadence.
 	active_limit = 8,
-	-- Distance expires after one second at the decided speed. The longer
-	-- lifetime is only a stalled/unloaded-motion safety guard.
-	lifetime = 2,
 	properties = {
 		is_visible = true,
 		visual = "sprite",
@@ -514,8 +512,7 @@ grug_projectiles.register("fireball", {
 
 -- Bread-and-butter nuke (kit tuning 2026-08-06): pays with mana plus a
 -- server-authoritative one-second cast cadence instead of a talent-visible
--- cooldown. It is directional:
--- target acquisition belongs to the projectile, not cast-time enemy memory.
+-- cooldown. Release locks the current crosshair target; enemy memory is never aim.
 local function fireball_values(user)
 	local window = grug_classes.talent_window_active(user, "whitehot") and 6 or 0
 	return {
@@ -534,11 +531,11 @@ grug_abilities.register_ability({
 	kind = "cast",
 	target_kind = "hostile",
 	description = "Hurls fire along your crosshair for up to 20 m;\n" ..
-		"damage scales with your level, and misses still cost mana.",
+		"damage scales with your level; requires a visible hostile target.",
 	values = fireball_values,
 	description_for = function(user, def)
 		return ("Hurls fire along your crosshair for up to 20 m:\n" ..
-			"%d damage; misses still cost mana."):format(
+			"%d damage; requires a visible hostile target."):format(
 				effective_number(user, def.values(user).damage))
 	end,
 	color = "#ff8833",
@@ -565,11 +562,9 @@ grug_abilities.register_ability({
 			owner = user,
 			origin = origin,
 			direction = direction,
-			-- The FLIGHT half of Far Cast. grug_projectiles prefers
-			-- params.max_distance over the registered one (init.lua:195), and
-			-- the registration's 20 is a load-time constant.
 			max_distance = 20 + grug_classes.get_talent_bonus(user,
-				"fireball_range_add"),
+				"fireball_range_add")
+				+ (grug_classes.get_race_perk(user, "ability_range_bonus") or 0),
 			data = {
 				-- Primary and Brand damage snapshot complete spell formulas at launch.
 				damage = fireball_values(user).damage,
@@ -708,6 +703,7 @@ grug_abilities.register_ability({
 			end
 			if free(feet) and free(head) then
 				burst(from, "default_item_smoke.png^[multiply:#b06aff", 10)
+				grug_core.invalidate_combat_identity(user)
 				user:set_pos(dest)
 				burst(dest, "default_item_smoke.png^[multiply:#b06aff", 10)
 				return true

@@ -1,8 +1,7 @@
--- Server-authoritative swept projectiles (docs/design/combat_stats.md §2).
+-- Server-authoritative homing projectiles (docs/design/combat_stats.md §2).
 
 grug_projectiles = {}
 
-local modpath = core.get_modpath(core.get_current_modname())
 local ENTITY_NAME = "grug_projectiles:projectile"
 local definitions = {}
 local sessions = {} -- player name -> runtime identity
@@ -12,8 +11,6 @@ local active_tokens = {} -- token -> {session, projectile_id}
 local session_tokens = {} -- session -> token -> true
 local next_active_token = 0
 local ARROW_MESH_YAW_OFFSET = -math.pi / 2
-
-dofile(modpath .. "/collision.lua")
 
 local function release_active(token)
 	local rec = token and active_tokens[token]
@@ -158,8 +155,6 @@ function grug_projectiles.register(id, def)
 		"projectile speed must be positive")
 	assert(type(def.max_distance) == "number" and def.max_distance > 0,
 		"projectile max_distance must be positive")
-	assert(type(def.lifetime) == "number" and def.lifetime > 0,
-		"projectile lifetime must be positive")
 	assert(def.active_limit == nil or (type(def.active_limit) == "number"
 		and def.active_limit > 0 and def.active_limit % 1 == 0),
 		"projectile active_limit must be a positive integer")
@@ -183,9 +178,8 @@ local function orient_to_velocity(object, velocity)
 end
 
 -- params = {owner=PlayerRef, origin=vector, direction=vector, data=table,
---           speed=number?, max_distance=number?, lifetime=number?,
---           acceleration=vector?}. Runtime entity state contains only copied
--- primitives/tables/vectors and the owner's name/session identity.
+--           speed=number?, max_distance=number?}. The ephemeral lock retains
+-- exact runtime identities; only initialization data passes through serialization.
 local function spawn_one(id, params)
 	local def = definitions[id]
 	local owner = params and params.owner
@@ -210,12 +204,17 @@ local function spawn_one(id, params)
 	end
 	local speed = params.speed or def.speed
 	local max_distance = params.max_distance or def.max_distance
-	local lifetime = params.lifetime or def.lifetime
 	if type(speed) ~= "number" or speed <= 0
-			or type(max_distance) ~= "number" or max_distance <= 0
-			or type(lifetime) ~= "number" or lifetime <= 0 then
+			or type(max_distance) ~= "number" or max_distance <= 0 then
 		return false
 	end
+	local ray = grug_core.combat_ray(owner, max_distance)
+	if not ray or ray.status ~= "target" then return false end
+	if not ray.target:is_player() and grug_mobs.is_noncombatant(ray.target:get_luaentity()) then
+		return false
+	end
+	local lock = grug_core.homing_lock(owner, ray.target, origin, speed)
+	if not lock then return false end
 	-- Reserve before add_entity so a modified client cannot interleave a ninth
 	-- spawn. The opaque token makes every failure/deactivation release
 	-- idempotent, including add_entity returning nil after on_activate removed.
@@ -229,7 +228,6 @@ local function spawn_one(id, params)
 		owner_name = owner_name,
 		owner_session = owner_session,
 		max_distance = max_distance,
-		lifetime = lifetime,
 		data = data,
 		active_token = active_token,
 		attacker_level = grug_core.get_player_level(owner),
@@ -239,14 +237,11 @@ local function spawn_one(id, params)
 		release_active(active_token)
 		return false
 	end
+	object:get_luaentity()._grug_lock = lock
 	local velocity = vector.multiply(direction, speed)
 	local ok = pcall(object.set_velocity, object, velocity)
 	if ok and def.orient_to_velocity then
 		ok = pcall(orient_to_velocity, object, velocity)
-	end
-	if ok and params.acceleration then
-		ok = pcall(object.set_acceleration, object,
-			vector.new(params.acceleration))
 	end
 	if not ok then
 		release_active(active_token)
@@ -362,7 +357,6 @@ core.register_entity(ENTITY_NAME, {
 				or type(payload.owner_session) ~= "number"
 				or type(payload.attacker_level) ~= "number"
 				or type(payload.max_distance) ~= "number"
-				or type(payload.lifetime) ~= "number"
 				or type(payload.data) ~= "table" then
 			self._grug_settled = true
 			release_projectile(self)
@@ -373,13 +367,10 @@ core.register_entity(ENTITY_NAME, {
 		self._grug_owner_name = payload.owner_name
 		self._grug_owner_session = payload.owner_session
 		self._grug_max_distance = payload.max_distance
-		self._grug_lifetime = payload.lifetime
 		self._grug_data = payload.data
 		self._grug_attacker_level = math.max(1,
 			tonumber(payload.attacker_level) or 1)
-		self._grug_age = 0
 		self._grug_travelled = 0
-		self._grug_previous = vector.new(self.object:get_pos())
 		self._grug_settled = false
 		if def.properties then
 			self.object:set_properties(def.properties)
@@ -397,75 +388,22 @@ core.register_entity(ENTITY_NAME, {
 			remove_projectile(self, "owner_lost", "owner/session invalid")
 			return
 		end
+		local destination, arrived = grug_core.homing_step(self._grug_lock, dtime)
+		if not destination then
+			remove_projectile(self, "target_lost", "combat identity invalid")
+			return
+		end
 		local current = self.object:get_pos()
-		local previous = self._grug_previous
-		if not current or not previous then
-			remove_projectile(self, "owner_lost", "projectile invalid")
+		if not current then return end
+		if arrived then
+			settle_hit(self, owner, {target = self._grug_lock.target,
+				point = destination, distance = vector.distance(current, destination)}, def)
 			return
 		end
-		if def.orient_to_velocity then
-			orient_to_velocity(self.object, self.object:get_velocity())
-		end
-
-		local elapsed = math.max(0, dtime or 0)
-		local remaining_distance = self._grug_max_distance - self._grug_travelled
-		local remaining_lifetime = self._grug_lifetime - self._grug_age
-		if remaining_distance <= 0 then
-			remove_projectile(self, "range", self._grug_travelled)
-			return
-		end
-		if remaining_lifetime <= 0 then
-			remove_projectile(self, "lifetime", self._grug_age)
-			return
-		end
-
-		local chord = vector.subtract(current, previous)
-		local chord_length = vector.length(chord)
-		if chord_length <= 0 then
-			self._grug_age = self._grug_age + elapsed
-			if self._grug_age >= self._grug_lifetime then
-				remove_projectile(self, "lifetime", self._grug_age)
-			end
-			return
-		end
-
-		local allowed = math.min(chord_length, remaining_distance)
-		local boundary = allowed < chord_length and "range" or nil
-		if elapsed > 0 and remaining_lifetime <= elapsed then
-			local lifetime_distance = chord_length * remaining_lifetime / elapsed
-			if lifetime_distance < allowed then
-				allowed = lifetime_distance
-				boundary = "lifetime"
-			elseif lifetime_distance == allowed and not boundary then
-				boundary = "lifetime"
-			end
-		end
-		allowed = math.max(0, allowed)
-		local segment_end = vector.add(previous,
-			vector.multiply(chord, allowed / chord_length))
-		-- Collision is resolved before expiry so an attackable selection box
-		-- exactly at the 20 m endpoint still receives the hit.
-		local hit = grug_projectiles.trace_segment(owner, self.object,
-			previous, segment_end)
-		if hit then
-			if hit.kind == "object" then
-				settle_hit(self, owner, hit, def)
-			else
-				self._grug_travelled = self._grug_travelled + hit.distance
-				remove_projectile(self, "node",
-					hit.node, self._grug_travelled)
-			end
-			return
-		end
-
-		self._grug_travelled = self._grug_travelled + allowed
-		self._grug_age = self._grug_age + elapsed
-		self._grug_previous = vector.new(segment_end)
-		if boundary == "range" then
-			remove_projectile(self, "range", self._grug_travelled)
-		elseif boundary == "lifetime" then
-			remove_projectile(self, "lifetime", self._grug_lifetime)
-		end
+		local remaining = math.max(0.01, self._grug_lock.duration - self._grug_lock.age)
+		local velocity = vector.multiply(vector.subtract(destination, current), 1 / remaining)
+		self.object:set_velocity(velocity)
+		if def.orient_to_velocity then orient_to_velocity(self.object, velocity) end
 	end,
 
 	-- Deactivation is cleanup only. Settlement always happens in on_step and

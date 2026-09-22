@@ -1022,6 +1022,10 @@ for index = 1, #identities do
 				grug_mobs.face_yaw(self, self._grug_face_yaw)
 			end,
 			on_rightclick = function(self, clicker)
+				if self._grug_socket_role == "innkeeper" then
+					grug_home.open_innkeeper(clicker, self)
+					return
+				end
 				if self._grug_socket_role == "riding_trainer" then
 					grug_mounts.open_trainer(clicker, self)
 					return

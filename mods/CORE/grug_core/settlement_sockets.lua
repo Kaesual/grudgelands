@@ -295,3 +295,20 @@ function grug_core.settlement_socket_anchor(settlement_key)
 	if not record then return nil end
 	return {x = record.anchor.x, y = record.anchor.y, z = record.anchor.z}
 end
+
+-- Home services reserve an existing authored resident before mods-loaded NPC
+-- placement. Coordinates remain the terrain-resolved socket authority's own.
+function grug_core.assign_innkeeper_socket(settlement_key, socket_id)
+ local record = by_key[settlement_key]
+ if not record then fail("home settlement missing: " .. settlement_key) end
+ for _, entry in ipairs(record.sockets) do
+  if entry.id == socket_id then
+   if entry.role ~= "idle" or not entry.spawn then
+    fail(settlement_key .. ": innkeeper must replace an inhabited idle socket")
+   end
+   entry.role = "innkeeper"
+   return copy_entry(entry)
+  end
+ end
+ fail(settlement_key .. ": innkeeper socket missing: " .. socket_id)
+end

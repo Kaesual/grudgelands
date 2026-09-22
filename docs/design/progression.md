@@ -78,9 +78,10 @@ WP6/WP19:
 The respawn and inventory rules apply to every death; the XP consequence
 depends on the death's attribution.
 
-- Death = **respawn at the own race's safe outer starting settlement** with
-  **full inventory**
-  (no corpse run, no item loss, no durability-on-death mechanic).
+- Death = **respawn at the bound innkeeper home with full inventory**
+  ([home travel](home_travel.md)). The initial home is the own race's safe
+  outer starting settlement. No corpse run, item loss or durability-on-death
+  mechanic.
 - **PvE XP loss: 25% of the whole current-level span, permanent**
   (floored at the current level start, so it never de-levels).
 - **Confirmed PvP deaths cost no XP.** A death whose final HP-lowering

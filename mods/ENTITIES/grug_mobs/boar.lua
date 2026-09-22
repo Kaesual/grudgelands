@@ -1,5 +1,5 @@
--- Boar: aggressive daytime mob of the safe core and inner ring (WoW
--- memory: the first quest mobs). Weak, but combative.
+-- Boar: neutral daytime mob of the safe core and inner ring. It does not
+-- initiate combat, but retaliates through the central disposition policy.
 
 local boar = {
 	description = "Boar",
@@ -10,7 +10,7 @@ local boar = {
 
 	reach = 3,
 	attack_type = "dogfight",
-	attack_players = true,
+	attack_players = false,
 	group_attack = true,
 	pathfinding = 1,
 

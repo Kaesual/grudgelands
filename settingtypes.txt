@@ -31,6 +31,27 @@ grug_atmosphere_enabled (Enable Grudgelands atmosphere presets) bool true
 #    Requires the master switch above.
 grug_atmosphere_zones (Drive the atmosphere from the player's zone) bool true
 
+[Nameplates]
+
+#    Global category colors used by observer-managed nametags. Each value is
+#    an RGBA color; the last byte controls opacity. These are startup settings.
+grug_nametag_aggressive_foreground (Aggressive nametag foreground) string #ff4b4b
+grug_nametag_aggressive_background (Aggressive nametag background) string #00000040
+grug_nametag_neutral_foreground (Neutral nametag foreground) string #ffd447
+grug_nametag_neutral_background (Neutral nametag background) string #00000040
+grug_nametag_guard_foreground (Guard nametag foreground) string #b76cff
+grug_nametag_guard_background (Guard nametag background) string #00000040
+grug_nametag_npc_foreground (NPC nametag foreground) string #d8c5ff
+grug_nametag_npc_background (NPC nametag background) string #00000040
+grug_nametag_player_foreground (Player nametag foreground) string #ffffff
+grug_nametag_player_background (Player nametag background) string #00000040
+grug_nametag_critter_foreground (Critter nametag foreground) string #ffffff
+grug_nametag_critter_background (Critter nametag background) string #00000040
+
+#    Show a small green sprite bar above injured combat mobs and guards. The
+#    existing per-viewer nametag range and hysteresis also control this bar.
+grug_injured_mob_hp_bars (Show injured mob health bars) bool true
+
 [Map generation]
 
 #    Deterministic wide coast profiles ship enabled under Round 9's
@@ -44,3 +65,8 @@ grug_mapgen_r9_coast_band_enabled (Enable wide coast profiles) bool true
 #    longer. Deep mining, ocean depths and arbitrary flight are not prepared. Read once on the first fresh-world boot; changing this later does
 #    not change that world's mode. Normal shutdown saves progress for restart.
 grug_prepare_full_world (Prepare full world before entry) bool false
+
+# Multiplier for all non-player combat attack damage, including fixed DoTs,
+# auras and boss ground attacks. Player/environmental damage is unchanged.
+# Loaded at startup; restart after changing. 1.0 restores base attack damage.
+grug_mob_damage_scale (Non-player attack damage multiplier) float 1.5 0 10

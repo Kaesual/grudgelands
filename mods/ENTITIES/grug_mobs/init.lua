@@ -562,6 +562,7 @@ local function apply_visual(self, cfg)
 end
 
 function grug_mobs.register_mob(name, def)
+	local disposition = grug_mobs.apply_disposition(name, def)
 	-- NB no blanket `attack_npcs = false` here any more (user ruling, playtest
 	-- round 2, 2026-09-15). Hostiles and guards may fight each other, so a
 	-- hostile keeps mobs_redo's own default; what a hostile may never touch is a
@@ -796,6 +797,12 @@ function grug_mobs.register_mob(name, def)
 	end
 
 	mobs:register_mob(name, def)
+	-- mobs_redo copies an explicit field whitelist, so publish the custom field
+	-- on its canonical registered prototype after registration as well. Live
+	-- entities inherit it directly from that prototype.
+	if disposition then
+		core.registered_entities[name]._grug_disposition = disposition
+	end
 end
 
 local modpath = core.get_modpath(core.get_current_modname())
@@ -805,6 +812,7 @@ dofile(modpath .. "/levels.lua")
 dofile(modpath .. "/aggro.lua")
 dofile(modpath .. "/flight.lua")
 dofile(modpath .. "/verbs.lua")
+dofile(modpath .. "/disposition.lua")
 dofile(modpath .. "/telegraph.lua")
 dofile(modpath .. "/patrol.lua")
 dofile(modpath .. "/target_frame.lua")

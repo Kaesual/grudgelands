@@ -276,6 +276,7 @@ end
 function grug_factions.teleport_to_spawn(player)
 	return grug_factions.prepare_spawn(player, function(p, spawn)
 		if spawn then
+			grug_core.invalidate_combat_identity(p)
 			p:set_pos(spawn)
 		end
 	end)
@@ -355,10 +356,13 @@ core.register_on_joinplayer(function(player)
 	end
 end)
 
--- Always respawn at the own race's stable starting settlement.
+-- Home owns current-character respawn; unfinished creation retains its racial fallback.
 core.register_on_respawnplayer(function(player)
 	if grug_core.player_in_creation_stasis and
 			grug_core.player_in_creation_stasis(player:get_player_name()) then
+		return true
+	end
+	if core.global_exists("grug_home") and grug_home.respawn(player) then
 		return true
 	end
 	local id = grug_factions.get_faction(player)
@@ -370,6 +374,7 @@ core.register_on_respawnplayer(function(player)
 	if not spawn then
 		return
 	end
+	grug_core.invalidate_combat_identity(player)
 	player:set_pos(spawn)
 	grug_factions.teleport_to_spawn(player)
 	return true

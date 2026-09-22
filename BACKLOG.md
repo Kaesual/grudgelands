@@ -1,5 +1,14 @@
 # Backlog — Work Packages
 
+[Round 17](docs/research/round17-completion.md) is technically complete and independently reviewed:
+innkeeper home travel/respawn, homing projectiles and non-player damage scale,
+fixed mob dispositions, colored nametags/injured bars and party class colors.
+Living specs: [home travel](docs/design/home_travel.md), combat_stats.md,
+biomes_mobs.md, parties.md and world_map.md. Execution is tracked in
+[round17-execution.md](docs/research/round17-execution.md). No whole-WP count
+changes are claimed for these bounded increments. Final technical gates PASS;
+delivery is being finalized. Next: [playtest](docs/research/round17-playtest.md).
+
 [Round 16](docs/research/round16-completion.md) is technically complete and
 independently reviewed: mount/combat/map fixes, quest/kill XP, food/UI,
 atmosphere/audio/density and surface-following preparation. Final static,

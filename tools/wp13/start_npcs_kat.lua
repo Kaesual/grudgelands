@@ -75,7 +75,7 @@ return function(repo)
 		report[#report + 1] = table.concat({...}, "\t") .. "\n"
 	end
 
-	local saved = {core = rawget(_G, "core"), grug_core = rawget(_G, "grug_core"),
+	local saved = {grug_home = rawget(_G, "grug_home"), core = rawget(_G, "core"), grug_core = rawget(_G, "grug_core"),
 		grug_mobs = rawget(_G, "grug_mobs"), mobs = rawget(_G, "mobs"),
 		vector = rawget(_G, "vector"), grug_jobs = rawget(_G, "grug_jobs"),
 		-- Wave 2: the wield seam and the gear name builder (see GLOBALS in
@@ -85,6 +85,7 @@ return function(repo)
 		grug_visuals = rawget(_G, "grug_visuals"),
 		grug_gear = rawget(_G, "grug_gear")}
 	local function restore()
+		rawset(_G, "grug_home", saved.grug_home)
 		rawset(_G, "core", saved.core)
 		rawset(_G, "grug_core", saved.grug_core)
 		rawset(_G, "grug_mobs", saved.grug_mobs)
@@ -809,6 +810,9 @@ return function(repo)
 		dofile(mod .. "start_npcs.lua")
 		grug_mobs.register_start_socket_role("mount_display", function()
 			return "grug_mobs:capital_display"
+		end)
+		grug_mobs.register_start_socket_role("innkeeper", function(socket, start)
+			return "grug_mobs:villager_" .. start.race_id
 		end)
 		grug_mobs.register_start_socket_role("trainer", function(socket, start)
 			return "grug_mobs:villager_" .. start.race_id
@@ -2283,6 +2287,24 @@ return function(repo)
 		"a direct first arrival at the outer district still required the core")
 	line("capital_direct_outer", "socket_block_authenticated",
 		"outer_trainer_placed")
+
+	-- Round 17: the same production roster claims, names and dispatches an innkeeper.
+	SOCKETS[#SOCKETS + 1] = {id="home_innkeeper",role="innkeeper",x=12,y=1,z=12,
+		dir={x=0,z=1},tags={"door"}}
+	world = {storage={},objects={}}
+	boot()
+	become_ready()
+	local keeper = entity_at("home_innkeeper")
+	check(keeper and keeper._grug_npc_name == "Innkeeper", "innkeeper placement/name failed")
+	check(keeper._grug_walker == false and not keeper._grug_idle_spots,
+		"innkeeper joined the citizen amble")
+	local opened_home = false
+	rawset(_G,"grug_home",{open_innkeeper=function(p,e)
+		opened_home = p == clicker and e == keeper
+	end})
+	harness.defs["grug_mobs:villager_dwarf"].on_rightclick(keeper,clicker)
+	check(opened_home,"innkeeper right-click did not dispatch HOME")
+	line("innkeeper","claimed","stationary","named","rightclick_home")
 
 	restore()
 	return table.concat(report)

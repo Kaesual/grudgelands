@@ -503,3 +503,10 @@ outposts; all buildings, roof overhangs and supports fit those cores. Existing
 anchors, roads, protection rules and functional roots remain authoritative.
 Each village gains one quest-giver socket `quest_local`; existing quest socket
 identities remain stable. No new world anchors are part of this increment.
+
+## Innkeepers (Round 17)
+
+Each of the six start towns and six capitals contains one innkeeper using a
+suitable existing building/socket. The twelve-entry shared registry supplies
+terrain-resolved NPC and safe arrival positions. Binding, home return and death
+respawn follow [home_travel.md](home_travel.md). No other V1 home points exist.

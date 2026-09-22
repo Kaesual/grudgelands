@@ -148,8 +148,9 @@ local function loader(directory)
 			order = 5, x = 10, y = 1, z = 0, dir = {x = 1, z = 0}},
 		{id = "green_vendor", role = "vendor", kind = "race", x = 6, y = 1,
 			z = -4, dir = {x = -1, z = 0}},
-		{id = "idle_cottage_door", role = "idle", tags = {"door"}, x = 10,
-			y = 1, z = -16, dir = {x = 0, z = -1}},
+		-- Round 17: The existing Harvest Inn receives the former cottage-door resident.
+		{id = "home_innkeeper", role = "idle", tags = {"door"}, x = 11,
+			y = 1, z = 9, dir = {x = 0, z = 1}},
 		{id = "idle_green_bench", role = "idle", tags = {"bench"}, x = -6,
 			y = 1, z = 7, dir = {x = 0, z = -1}},
 		{id = "idle_barn", role = "idle", tags = {"work"}, x = -19, y = 1,

@@ -355,6 +355,7 @@ finish_if_ready = function(player)
 	-- Position first, then persist the final identity. A disconnect before the
 	-- asynchronous load completes therefore cannot leave a fully-created
 	-- character behind at the unsafe engine spawn.
+	grug_core.invalidate_combat_identity(player)
 	player:set_pos(session.spawn_pos)
 	stop_velocity(player)
 	if not grug_classes.get_class(player) and

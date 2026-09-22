@@ -106,7 +106,8 @@ local function page_content(player, context)
 					format(sx - 0.17, sy - 0.17, esc(marker.texture), field)
 			else
 				local quest = marker.kind == "quest"
-				local symbol = quest and ((marker.status == "ready" or marker.status == "active")
+				local symbol = marker.kind == "home" and "H" or
+					marker.kind == "innkeeper" and "I" or quest and ((marker.status == "ready" or marker.status == "active")
 					and "?" or "!") or (marker.kind == "hostile" and "!" or "+")
 				local color = quest and ((marker.status == "ready" or marker.status == "available")
 					and "#ffd700" or "#c0c0c0") or "#ffe9a8"
@@ -122,6 +123,14 @@ local function page_content(player, context)
 		fs[#fs + 1] = ("label[0.15,0.50;Selected: %s]"):
 			format(esc(context.grug_map_detail:match("[^\n]*")))
 	end
+	local home = grug_home.get(player)
+	if home then
+		local remaining = grug_home.remaining(player)
+		local state = grug_home.is_pending(player) and "Preparing arrival" or
+			(remaining > 0 and ("%d:%02d"):format(math.floor(remaining / 60), remaining % 60) or "Ready")
+		fs[#fs + 1] = ("button[0.15,10.85;10.1,0.65;grug_map_home;Return home: %s (%s)]"):
+			format(esc(home.label), esc(state))
+	end
 	return table.concat(fs)
 end
 
@@ -130,7 +139,7 @@ local function make_form(player, context)
 	-- atlas raster. v3 preserves definition order. Keep the wrapper size/nav
 	-- in legacy units, then page_content switches only the map to real units.
 	return sfinv.make_formspec(player, context, page_content(player, context), false,
-		"formspec_version[3]size[10.4,11.1]real_coordinates[false]")
+		"formspec_version[3]size[10.4,11.7]real_coordinates[false]")
 end
 
 sfinv.register_page(PAGE, {
@@ -152,6 +161,11 @@ sfinv.register_page(PAGE, {
 			-- The engine cannot report a later inventory reopen. Returning to
 			-- Character makes the next Map tab click an explicit open event.
 			sfinv.set_page(player, "grug_inventory:character")
+			return true
+		end
+		if fields.grug_map_home then
+			grug_home.return_home(player)
+			sfinv.set_page(player, PAGE)
 			return true
 		end
 		local views = atlas.views()

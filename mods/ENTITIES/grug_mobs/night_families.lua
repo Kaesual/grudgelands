@@ -158,6 +158,7 @@ local wisp = {
 		local dest = {x = pos.x + dx * step / length,
 			y = pos.y + dy * step / length, z = pos.z + dz * step / length}
 		if open_node(dest) and open_node({x = dest.x, y = dest.y + 1, z = dest.z}) then
+			grug_core.invalidate_combat_identity(self.object)
 			self.object:set_pos(dest)
 			self.temp.grug_wisp_blink = 0
 		end

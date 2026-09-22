@@ -109,11 +109,20 @@ end
 -- stat. The critter tier fixes both reward stats; the boss tier fixes HP while
 -- retaining formula-derived damage and XP. Normal/elite/rare keep the original
 -- multiplier arithmetic.
+local damage_scale = tonumber(core.settings:get("grug_mob_damage_scale")) or 1.5
+if damage_scale ~= damage_scale or damage_scale < 0 or damage_scale > 10 then
+	core.log("warning", "[grug_mobs] invalid grug_mob_damage_scale; using 1.5")
+	damage_scale = 1.5
+end
+function grug_mobs.scale_attack_damage(base)
+	return base * damage_scale
+end
+
 function grug_mobs.stats_for(level, tier)
 	local t = tier_def(tier)
 	return t.hp_flat or math.floor((20 + 5 * level + 0.66 * level * level)
 			* t.hp + 0.5),
-		round1((2 + 0.3 * level + 0.005 * level * level) * t.dmg),
+		grug_mobs.scale_attack_damage(round1((2 + 0.3 * level + 0.005 * level * level) * t.dmg)),
 		t.xp_flat or math.floor(10 * level * t.xp + 0.5)
 end
 
@@ -399,7 +408,9 @@ end
 -- mob stays wounded across a reload.
 --
 local function reassert_max(self)
-	local hp = grug_mobs.stats_for(self._grug_level or 1, self._grug_tier)
+	local hp, damage = grug_mobs.stats_for(self._grug_level or 1, self._grug_tier)
+	-- Startup settings also apply after a current-world entity reactivation.
+	self.damage = damage
 	if self.hp_max == hp and self.hp_min == hp then
 		return -- steady state: two comparisons and nothing else
 	end

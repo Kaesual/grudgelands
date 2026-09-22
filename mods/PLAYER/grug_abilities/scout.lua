@@ -1,7 +1,6 @@
 -- Scout bow and melee abilities (docs/design/scout.md).
 
 local ARROW_PROJECTILE = "scout_arrow"
-local ARROW_GRAVITY = -9.81
 local ARROW_SPEED = 40
 local DRAW_STEP = 0.05
 local draws = {}
@@ -91,7 +90,6 @@ grug_projectiles.register(ARROW_PROJECTILE, {
 	speed = ARROW_SPEED,
 	max_distance = 25,
 	active_limit = 8,
-	lifetime = 8,
 	orient_to_velocity = true,
 	properties = {
 		is_visible = true,
@@ -147,15 +145,14 @@ local function launch(player, ability, count, fraction, effect, captured)
 		return false, "Cannot determine your aim."
 	end
 	local receipt = captured or repair_receipt(player, action_id(player, ability))
-	local range = effect.range or 25
+	local range = (effect.range or 25)
+		+ (grug_classes.get_race_perk(player, "ability_range_bonus") or 0)
 	local damage = math.floor((base_damage + (effect.damage_add or 0)) * fraction)
 	local common = {
 		origin = vector.new(origin),
 		direction = vector.new(direction),
 		speed = ARROW_SPEED * fraction,
 		max_distance = range,
-		lifetime = 8,
-		acceleration = vector.new(0, ARROW_GRAVITY, 0),
 	}
 	local launches = {}
 	for index = 1, count do
@@ -169,8 +166,6 @@ local function launch(player, ability, count, fraction, effect, captured)
 			direction = common.direction,
 			speed = common.speed,
 			max_distance = common.max_distance,
-			lifetime = common.lifetime,
-			acceleration = common.acceleration,
 			data = {
 				damage = shot_damage,
 				origin = common.origin,
@@ -415,7 +410,7 @@ grug_abilities.register_ability({
 	target_kind = "hostile", color = "#5fae5f", cost = {}, cooldown = 0,
 	range = 25, range_talent = "loose_range_add",
 	description = "Hold LMB to draw, then release along your current aim. " ..
-		"A full draw reaches 25 m and partial draws scale linearly.",
+		"Requires a visible hostile target within 25 m; draw scales damage.",
 	cast = start_draw,
 })
 

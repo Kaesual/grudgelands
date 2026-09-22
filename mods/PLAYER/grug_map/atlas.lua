@@ -86,7 +86,8 @@ function M.collect_markers(player)
 					z = row.position.z}}
 		end
 	end
-	local layers = {settlement = 1, hostile = 1, trainer = 2, boss = 2, quest = 3, party = 4, player = 5}
+	local layers = {settlement = 1, hostile = 1, trainer = 2, boss = 2,
+		innkeeper = 2, home = 2, quest = 3, party = 4, player = 5}
 	table.sort(result, function(a, b)
 		local al, bl = layers[a.kind] or 1, layers[b.kind] or 1
 		if al ~= bl then return al < bl end

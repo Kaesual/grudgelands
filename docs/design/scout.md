@@ -6,10 +6,10 @@ invisibility rules and the Sprint
 idea; **rulings 12 and 14 then cut the class back to its simplest workable
 form**, which is what this file now describes. Round 11 delivered the shared
 gear, leather and visual foundations plus the playable Scout class, four base
-abilities, ballistic bow flow, talent consumers, starter kit and trader stock.
+abilities, bow draw flow, talent consumers, starter kit and trader stock.
 
-> **Ruling 12 (user, 2026-09-16), and it has priority over everything else in
-> this file:** the Scout is to be **as simple as possible**, ahead of "as cool
+> **Historical Ruling 12 (user, 2026-09-16); Round 17 supersedes its
+> projectile trajectory only:** the Scout is to be **as simple as possible**, ahead of "as cool
 > as possible". **No invisibility in version 1**, no poison, no traps; the bow
 > family through the existing sprite generator; **arrows ballistic** with
 > gravity while **Fireball stays straight** — "the trajectory is what makes
@@ -20,8 +20,8 @@ abilities, ballistic bow flow, talent consumers, starter kit and trader stock.
 
 The Round 11 art ruling supersedes only the quoted implementation shortcuts:
 bows use the licensed LotT sprite family and leather has dedicated inventory
-and worn textures. The class simplification, ballistic arrows and four-skill
-kit remain binding.
+and worn textures. The class simplification and four-skill kit remain binding. Round 17 replaces
+ballistic arrows with release-target homing; `combat_stats.md` owns that rule.
 
 The invisibility rulings and the whole stealth analysis are **not deleted** —
 they are §8, "Deferred: stealth v2", intact, so that the day the user wants
@@ -76,7 +76,7 @@ ceiling of two talent buttons puts the worst case at 7 of 8.
 
 | Ability | Kind | Cost | Cooldown | Effect | Existing mechanic it reuses |
 |---|---|---|---|---|---|
-| **Loose** | cast | 1 arrow | none (ammo-limited) | Requires a bow in the weapon slot. A **ballistic** arrow along the cast-time crosshair, 25 m, initial impulse from a bounded draw time, gravity supplying the trajectory | `grug_projectiles` — swept collision, owner validation, the per-owner active cap and max-distance cleanup are all shipped (`classes.md:287-290`); only gravity is new, and `combat_stats.md:249-252` already specifies it |
+| **Loose** | cast | 1 arrow | none (ammo-limited) | Requires a bow in the weapon slot. A **homing** arrow locked to the current crosshair hostile at release, initially within 25 m; bounded draw scales damage/speed | Shared release validation, bounded target-following flight, owner/target lifecycle and once-only impact (`combat_stats.md`) |
 | **Snare Shot** | cast | 8 % base mana + 1 arrow | 12 s | The arrow slows the target by 50 % for 4 s | `grug_mobs.slow` for mobs and the player movement aggregator — the same two paths Hamstring uses (`kits.lua:421-430`) |
 | **Sidestep** | cast | 10 % base mana | 30 s | Dodge chance **+15** percentage points for 4 s, **inside** the 30 % cap. A base ability has no ranks; the Veil tree shortens its cooldown (Slip Away) and replaces it (Shake Loose) | `grug_classes.get_crit_chance`'s twin `get_dodge_chance` (`grug_classes/stats.lua:128-140`) and the timed-window table of `skill_trees.md` §3.2 |
 | **Sprint** ‼ | cast | 15 % base mana | **300 s** | Movement speed **+50 % for 10 s** — 6.0 nodes/s against the ordinary aggressive band's 4.6 | the speed aggregator of `skill_trees.md` §3.9, as one named modifier with its own duration |
@@ -127,8 +127,8 @@ The active contract is:
   owns named bow enchantments. Leatherworker makes the optional four-stack
   Offhand quiver at Apprentice.
 - `combat_stats.md` §2 defines the delivered bow flow: a bow is drawn up to a
-  maximum and releases a ballistic arrow whose initial impulse comes from draw
-  time; gravity supplies the trajectory.
+  maximum and releases a targeted homing arrow; draw affects damage and nominal
+  speed. No valid release-time target means no shot or ammo payment.
 - The six bow identities and their dedicated centre-grip wield pose are
   delivered from licensed LotT arc sprites. The Scout runtime consumes those
   registrations; it does not regenerate their art.
@@ -167,7 +167,10 @@ The downstream contract is:
   mirror assumption is superseded; the Scout does not revive that scope.
 
 
-### 4.1 The arrow's physics, and the licence question ruling 12 raises
+### 4.1 Historical ballistic research (superseded by Round 17)
+
+The physics recommendation below is historical evidence, not current gameplay
+authority. The license findings remain applicable to any reused assets.
 
 Ruling 12 asks for **ballistic arrows** — gravity, an impulse from draw time —
 while **Fireball stays straight**, "the trajectory is what makes the archer
@@ -335,7 +338,7 @@ conflicts if version 1 had stealth (§8).
 | **WP11 (skill trees)** | the Scout's 16 talents run on the shared talent machinery | `skill_trees.md` §4 |
 | **The speed aggregator** | ruling 11's `grug_core` aggregator drives Sprint, Snare Shot and Shake Loose | `skill_trees.md` §3.9; `docs/research/mob-pressure-task-card.md` |
 | **Weapon ladder §3.0.3** | six tier bows, the below-ladder starter bow, dedicated centre-grip pose and ballistic ability consumer | `items_crafting.md` §9; `character_visuals.md` §6 |
-| **Arrows** | the player arrow item and **ballistic** `grug_projectiles` entity; the Basics craft is 1 iron bar + 4 sticks + 4 sharp feathers → 20; the physics reference and its licence are §4.1 | `items_crafting.md` §9; reference entity `skeleton_archer.lua:18` |
+| **Arrows** | the player arrow item and Round-17 **homing** `grug_projectiles` entity; the Basics craft is 1 iron bar + 4 sticks + 4 sharp feathers → 20; the physics reference and its licence are §4.1 | `items_crafting.md` §9; reference entity `skeleton_archer.lua:18` |
 | **Leather armour** | consume the delivered 24-item leather family and its dedicated inventory/worn art; armor rank remains 2 | `inventory_equipment.md` §2; `character_visuals.md` §3 |
 | **Professions** | none created. Leatherworker owns the grades/current quiver; Woodcarver owns bow quality operations | `professions.md` §2–§3 |
 | **Traders** | the bowyer shelf exposes bows and player arrows; the tanner shelf exposes the leather grades through the existing rotation and quality paths | `grug_traders/stock.lua` |

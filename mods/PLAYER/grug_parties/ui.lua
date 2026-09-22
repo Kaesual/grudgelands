@@ -1,6 +1,10 @@
 local PAGE = "grug_parties:group"
 
 local function esc(value) return core.formspec_escape(tostring(value or "")) end
+local function health_color_mode(player)
+	return grug_parties.health_color_mode and
+		grug_parties.health_color_mode(player) or "all_green"
+end
 local function notice(context, ok, message)
 	context.grug_party_notice = (ok and "Success: " or "Refused: ") .. (message or "")
 end
@@ -58,6 +62,9 @@ local function content(player, context)
 			:format(grug_parties.invitations_enabled(player) and "true" or "false"),
 		("checkbox[3.25,0.22;grug_party_hud;Party HUD;%s]")
 			:format(grug_parties.hud_enabled(player) and "true" or "false"),
+		"label[5.18,0.22;Health colors]",
+		("dropdown[7.10,0.12;3.10;grug_party_health_colors;All green,By class;%d;true]")
+			:format(health_color_mode(player) == "by_class" and 2 or 1),
 		"label[0.20,0.78;Online same-faction players]",
 		"label[5.18,0.78;Pending invitations]",
 	}
@@ -161,6 +168,12 @@ end, on_player_receive_fields = function(_, player, context, fields)
 	elseif fields.grug_party_hud and
 			(fields.grug_party_hud == "true") ~= grug_parties.hud_enabled(player) then
 		ok, message = grug_parties.set_hud_enabled(player, fields.grug_party_hud == "true")
+	elseif fields.grug_party_health_colors then
+		local modes = {all_green = "1", by_class = "2"}
+		local mode = fields.grug_party_health_colors == modes.by_class
+			and "by_class" or fields.grug_party_health_colors == modes.all_green
+			and "all_green" or nil
+		ok, message = grug_parties.set_health_color_mode(player, mode)
 	end
 	if ok ~= nil then notice(context, ok, message) end
 	refresh(player)

@@ -24,12 +24,12 @@ projects: **[docs/research/](docs/research/)**.
 - This changes execution mechanics, not model authorization or independent
   review requirements. Read `docs/process/agent-model-policy.md` and
   `docs/process/cross-cli-orchestration.md` for those rules.
-- **Current development session (Round 16):** Claude credits are exhausted. No Claude CLI,
+- **Current development session (Round 17):** Claude credits are exhausted. No Claude CLI,
   Claude agent, Opus or Fable task is authorized in this session. Root is Astra;
   ordinary implementation/review uses native Sol, with native Astra allowed for
   hard/performance-critical work. This session restriction can change only by
   a later explicit user instruction. Durable active work state:
-  `docs/research/round16-execution.md` (current approved round).
+  `docs/research/round17-execution.md` (current approved round).
 
 ## Fresh-server development mode
 
@@ -66,6 +66,16 @@ projects: **[docs/research/](docs/research/)**.
   confirmation.
 
 ## Active round
+
+Round 17 is technically complete; final delivery operations pending: `docs/research/round17-plan.md` and
+`docs/research/round17-execution.md` own the current contract and lane status.
+Home travel, homing projectiles, global mob damage scale, fixed dispositions,
+configurable colored nametags/injured HP sprites and party class colors.
+Independent implementation reviews, living-doc drift review and final technical
+gates PASS. Receipt: `docs/research/round17-completion.md`; user GUI checklist:
+`docs/research/round17-playtest.md`. The R17 contract supersedes earlier mechanics. Standard unmodified Luanti clients are
+required; no client/engine fork, upstream-PR dependency or required client mod.
+
 
 Round 16 is delivered on main, locally synchronized and pushed.
 Independent reviews and final gates PASS; GUI acceptance is pending.
@@ -534,29 +544,17 @@ Details + line numbers in [docs/research/](docs/research/).
   clock's readiness and lifecycle cleanup removes it. It also ships permanent
   admin-only per-player `/combatdebug`; disabled sites do no ray/log
   formatting/globalstep work beyond the enabled check.
-  Hostile casts no longer use enemy memory: Charge/Taunt/Smite need current
-  pointed/server-validated aim. Fireball is a straight 20 m/s swept
-  projectile, max 20 m, no gravity/homing/splash, a **1 s server cast
-  cadence with no cooldown/wear**, and costs **6% of the base mana pool** even
-  on a miss. It deals baseline weapon damage + spell power through the shared
-  damage fit once; nodes/attackable targets stop it, while allies and
-  dropped items are ignored. The public
-  `grug_projectiles.register(id, def)` and
-  `grug_projectiles.spawn(id, params)` foundation owns swept collision,
-  ownership, exact-once settlement and terminal cleanup for later ballistic,
-  draw-impulse arrows; the bow/items are active and the ballistic ability
-  consumer remains the pending SCOUT package. Fireball uses
-  `active_limit = 8` per owner/session: failure happens before entity creation,
-  every terminal/failure path releases its opaque token idempotently, and a
-  reconnect/respawn creates a fresh session that old shots cannot charge.
-  Round 11's Scout uses the same foundation for ballistic arrows. Public
-  `grug_projectiles.spawn_batch(id, launches, commit)` reserves/spawns all
-  siblings before ammunition payment and rolls back every sibling/token on
-  failure. Quiver-first `grug_inventory.consume_ammo` / `refund_ammo` own
-  ammunition; Twin Shot carries one shared `grug_repair.capture_action`
-  receipt. Arrow control follows the settled outgoing-action hook, never the
-  published damage return alone. Opening resolves percentage mana once before
-  affordability and carries that snapshot through accepted swing settlement.
+  Hostile casts never use enemy memory. Round 17's targeted projectile contract
+  supersedes WP39/Scout ballistic flight: validate current target/range/LOS at
+  actual release, then home for a bounded launch-time duration with no later
+  range/terrain/body interception. Impact goes through ordinary mitigation and
+  settlement once; no valid release target costs no mana/ammo. Smite is still
+  direct, area spells unchanged. Projectile and target lifecycle prevents stale
+  hits across death, reconnect and teleport. `grug_projectiles.spawn_batch`
+  reserves all Scout siblings before ammo payment and shares one wear receipt.
+  `grug_mob_damage_scale` defaults to 1.5 for all non-player actors and their
+  melee/projectile/aura/DoT/ground attack paths exactly once; environment/fall
+  and player damage remain unchanged. See `round17-plan.md` and living specs.
   Round 6 centralizes player scaling in `grug_core.base_pool`: max HP and mana,
   percentage mana costs, pool-derived heals/absorbs and the damage-only
   `level_scale` fit follow `combat_stats.md` §2; Strength and Intelligence are

@@ -22,7 +22,7 @@ local function boar_def(description, texture)
 
 		reach = 3,
 		attack_type = "dogfight",
-		attack_players = true,
+		attack_players = false,
 		group_attack = true,
 		pathfinding = 1,
 

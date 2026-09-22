@@ -347,33 +347,26 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   heal/shield casts always resolve through pointed valid ally → valid in-range
   ally memory → self; any pointed invalid object enters that fallback chain
   (user ruling 2026-09-17).
-- **Fireball is directional, not targeted.** On successful input it spends
-  6% of the caster's base mana and starts a server-authoritative **1.0 s cast
-  interval**, then snapshots the cast-time eye direction and spawns one straight
-  projectile at **20 m/s**. It has no homing, gravity or splash, deals
-  **baseline weapon damage + spell power**, multiplied by active timed spell
-  damage percentages, through the damage fit, and disappears on its first
-  attackable target, a blocking node or **20 m** travelled. A shot into empty
-  space is still a cast and still spends mana. Friendly players/allied entities
-  and dropped items are ignored instead of body-blocking it. Input inside the
-  cast interval is refused without spending mana; the interval is a cadence,
-  not a cooldown,
-  has no wear bar and cannot be shortened by cooldown talents.
-- **Active Fireballs are bounded per owner session.** At most eight may exist
-  for one owner/session; the ninth spawn fails before entity creation and does
-  not spend mana. Hit, range, lifetime, node collision, deactivation, invalid
-  activation and spawn/velocity failure release the slot exactly once. A
-  reconnect or respawn starts a fresh session, and an old projectile cannot
-  consume its new limit.
-- **Fast projectiles use swept collision.** Each step raycasts the whole segment
-  from the previous position to the new one so walls and thin/moving targets
-  cannot be skipped by a large `dtime`. Owner/faction validation, one-hit
-  settlement, unloaded-object cleanup and max-distance cleanup are shared
-  projectile infrastructure, not Fireball-only branches.
-- **Bows use the infrastructure in the SCOUT package.** A bow is drawn up to a
-  maximum and releases a ballistic arrow whose initial impulse comes from draw
-  time; gravity supplies the trajectory and a lifetime/distance guard still
-  cleans the entity. The item/ammo numbers stay in `items_crafting.md` §9.
+- **All targeted projectiles lock at actual release (Round 17).** The current
+  server-validated crosshair hostile must be in range and initially visible;
+  no stale enemy memory and no valid target means no shot or mana/ammo payment.
+  Mob/boss/guard missiles lock their valid attack target under the same initial
+  range/line-of-sight rule. Smite stays immediate; area skills stay area skills.
+- Fireball keeps **6% base mana**, **1.0 s server cast cadence**, **20 m initial
+  range**, **20 m/s nominal speed**, baseline weapon damage + spell power and
+  its existing talent effects. Scout arrows retain bounded draw and ammo rules.
+- **Flight is homing with a launch-time duration** derived from initial
+  distance/speed. The visual converges on the moving target. Later movement out
+  of range, intervening actors or terrain do not intercept it. Cover protects
+  before launch only. No ballistic obstacle navigation or endless pursuit.
+- **Damage settles once at impact**, through existing armor, dodge, absorb,
+  immunity, PvP/evade, attribution, threat and action/wear rules. Geometric
+  arrival does not guarantee HP loss. Lost/dead/unloaded/teleported targets
+  cancel rather than retarget; respawned/replacement identities cannot be hit.
+- Active shots remain bounded and nonpersistent. Every terminal/failure path
+  releases its reservation exactly once. Reconnect/respawn cannot inherit old
+  session shots. Scout batch creation reserves all siblings before atomic ammo
+  payment and shares one action receipt for equipment wear.
 
 ### Combat diagnostics (shipped with WP39)
 
@@ -935,3 +928,48 @@ window and is reconsidered after expiry even without a new hit. Invalid current
 targets do not impose hysteresis on valid rivals. Charge stun lasts 1.5 seconds
 on accepted hits, excluding kings and dragons; it cancels pending attacks and
 blocks movement and attack execution, preserving gravity.
+
+## Global non-player damage scale (Round 17)
+
+The startup setting `grug_mob_damage_scale` defaults to **1.5**; **1.0** retains
+the prior unscaled damage. Valid values are 0–10; invalid/nonfinite values
+fall back to 1.5. Apply it exactly once to damage from all non-player
+combat actors: ordinary/neutral mobs, guards, adds, elites/rares and bosses.
+It covers melee, projectiles, auras, DoTs and authored attack ground effects,
+including fixed-damage consumers as well as level-derived damage. Player
+attacks, fall damage and ordinary environmental damage are unaffected.
+Derived arrow/boss damage must not be multiplied again. This setting does not
+change HP, density, aggression range, armor, rewards or ability cadence.
+
+## Nametag categories and injured health sprites (Round 17)
+
+All viewers see the same category colors; existing 25/30 m observer hysteresis
+still controls visibility independently. Six categories have configurable
+foreground/background RGBA settings loaded once at server start: aggressive,
+neutral, guard, npc, player, critter. Defaults are red/yellow/violet/light
+lavender/white/white respectively, with black background alpha 64/255 (about
+25%). Bosses, elites and adds reuse their behavior or faction-role category;
+mounts get no additional tags. A neutral animal stays yellow when provoked.
+
+A startup boolean (default on) enables a small green camera-facing sprite bar
+for living injured combat mobs, bosses and guards. Hide at full HP or death;
+no bars for players, critters or peaceful NPCs. Keep existing HP text. Reuse the
+nametag visibility pass and observers; update fill only when visible integer
+percentage changes. Bars are ephemeral/nonphysical/nonpointable and removed
+with their parent. No individual-player copies or additional proximity scans.
+
+Startup presentation settings:
+
+| Category | Foreground setting/default | Background setting/default |
+|---|---|---|
+| Aggressive | `grug_nametag_aggressive_foreground` / `#ff4b4b` | `grug_nametag_aggressive_background` / `#00000040` |
+| Neutral | `grug_nametag_neutral_foreground` / `#ffd447` | `grug_nametag_neutral_background` / `#00000040` |
+| Guard | `grug_nametag_guard_foreground` / `#b76cff` | `grug_nametag_guard_background` / `#00000040` |
+| NPC | `grug_nametag_npc_foreground` / `#d8c5ff` | `grug_nametag_npc_background` / `#00000040` |
+| Player | `grug_nametag_player_foreground` / `#ffffff` | `grug_nametag_player_background` / `#00000040` |
+| Critter | `grug_nametag_critter_foreground` / `#ffffff` | `grug_nametag_critter_background` / `#00000040` |
+
+`grug_injured_mob_hp_bars` defaults to `true`. Invalid colors fall back to the
+category default. Bars have a nominal world size of 0.8 by 0.1 nodes; parent
+visual scale must not magnify them. Flight visuals use a duration bounded to
+0.05–2 seconds, so near-zero partial bow draws never cause long pursuit.

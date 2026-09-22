@@ -1,6 +1,11 @@
 # Roadmap — Grudgelands
 
-Current increment: [Round 16 completion](docs/research/round16-completion.md).
+Technically complete: [Round 17](docs/research/round17-completion.md), home travel,
+reliable ranged combat and configurable combat readability/difficulty.
+Independent reviews and final technical gates PASS; delivery is being finalized.
+Next: [Round 17 GUI playtest](docs/research/round17-playtest.md).
+
+Previous increment: [Round 16 completion](docs/research/round16-completion.md).
 Playtest fixes, progression/control tuning, atmosphere/audio/density and
 surface-following preparation are independently reviewed. Final technical gates
 PASS; merged to main, synchronized locally and pushed. [GUI playtest](docs/research/round16-playtest.md)

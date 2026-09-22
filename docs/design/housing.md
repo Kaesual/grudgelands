@@ -222,7 +222,11 @@ The Claim Stone is the centre of its protected area.
   container with an independent owner or ACL requires an explicit compatibility
   rule and cannot silently inherit a generic placer-owned convention.
 
-## 4. Home Stone
+## 4. Home Stone (deferred housing travel)
+
+This future housing-bound feature is separate from current V1
+[innkeeper home travel](home_travel.md), which owns the twelve home points and
+death respawns. It is not implemented as part of the innkeeper return button.
 
 - The Home Stone teleports only to the owner's currently bound, active Claim
   Stone. It has no capital fallback.
@@ -263,9 +267,8 @@ The Claim Stone is the centre of its protected area.
 - Arrival is the standing node directly above the Claim Stone; the second
   reserved node is headroom. Temporary player or mob overlap does not block
   arrival.
-- Innkeepers may retain recovery and rest services but never bind or rebind a
-  Home Stone. The obsolete race-capital Home Stone destination is not part of
-  the game.
+- Innkeepers bind the separate V1 innkeeper home (`home_travel.md`), not this
+  deferred housing Home Stone. Housing return remains bound only to a claim.
 
 ## 5. Stable-id lifecycle, retention and administration
 
