@@ -1,386 +1,202 @@
+<p align="center">
+  <img src="menu/icon.png" alt="Grudgelands crest" width="96" height="96">
+</p>
+
 # Grudgelands
 
-Latest increment: [Round 17 completion](docs/research/round17-completion.md).
-Independent reviews and final technical gates PASS; merged to main, locally
-synchronized and pushed.
-GUI acceptance remains separate: [fresh-world playtest](docs/research/round17-playtest.md).
+**An open-source multiplayer voxel RPG for [Luanti](https://www.luanti.org/).**
+Explore, build and craft in an open world, with classes, quests and character
+progression inspired by classic MMORPGs. Grudgelands brings together ideas
+from the Luanti community's games and mods into a shared fantasy adventure.
 
-**A WoW-inspired voxel RPG for [Luanti](https://www.luanti.org/)** — factions,
-classes, XP, quests, professions, housing, an item economy and geographic PvP,
-built as a standalone Lua game rather than a mod pack.
+**[Play in your browser at kaesual.com](https://kaesual.com)** ·
+[Install locally](#play-with-luanti) · [Roadmap](#whats-ahead)
 
-> **Status: in development.** The world, mobs, four classes, combat,
-> equipment, XP, money/vendors, Cooking, Alchemy and the integrated seven-primary
-> profession/equipment work are delivered and playable.
-> The named-zone world is implemented and still has explicit release/runtime gates;
-> quests, parties and a world atlas are delivered; open-world housing and
-> geographic PvP remain unfinished. See
-> [Current State](#current-state).
+> **Playable and in active development.** The first release is still being
+> built. Expect rough edges, changing balance and development-world resets.
 
-## The story
+## What you can play today
 
-> **"A darkness has befallen the land."**
+- **Four classes, different ways to fight.** Play a Warrior, Mage, Priest or
+  Scout, with melee, spells, healing or a bow and blade. Each class has two
+  talent trees to shape its abilities as you level toward 60.
+- **An open world to explore and change.** Travel through named regions,
+  forests, mountains and caves; gather resources, dig and build outside
+  protected places. Six starting towns and six capitals give each people
+  its own home, architecture and surroundings.
+- **Quests and character progression.** Follow your starting town's stories,
+  help local inhabitants and take on stronger enemies. The current catalog
+  contains 102 quests across the six starts and their surrounding regions,
+  with a journal, quest tracker and world atlas to help you find your way.
+- **Crafting and equipment.** Make basic gear, choose two of seven primary
+  professions, and improve your equipment with enchantments. Weaponsmith,
+  Armorsmith, Alchemist, Tailor, Leatherworker, Woodcarver and Goldsmith each
+  have their own recipes; Cooking is available alongside them.
+- **Life between adventures.** Grow crops, go fishing, prepare food, visit
+  vendors and save for a mount. Bind your home at an innkeeper so you can
+  return after a journey.
+- **Adventure together.** Choose one of two factions and six peoples, then
+  form a party with up to ten players of your faction. Party health displays
+  and atlas markers help you stay together while exploring and fighting.
 
-The **Accord** holds southern **Elandor** and the **Throng** northern
-**Kragmar**. Their war over territory and pride is generations old. What is
-new is the ancient demonic threat reaching upward through the Nether: V1
-foreshadows it, while the walkable Nether is the main V2 content update. It
-endangers both factions without uniting them, so each side follows an
-equivalent campaign in parallel and competition.
-
-A new character chooses faction, race and class, wakes in one of six outer
-starting settlements and travels through stable named regions toward a
-central capital and the contested faction front. Local beasts, bandits and
-corrupted sites give way to dangerous frontier warfare, the Battlegrounds and
-two offshore level-60 dragon islands.
-
-At level 20, a passive Housing Steward introduces the open-world Claim Stone
-system. A home is protected inside eligible peaceful land, grows through four
-claim tiers and is the destination of the separately planned housing Home Stone.
-It is neither a royal reward nor a private resource world; kings remain
-killable high-end combatants whose Fallen Crowns are optional masterwork
-trophies.
-
-Full story frame: [docs/design/story.md](docs/design/story.md).
-
-## The design
-
-The authoritative game design lives in [docs/design/](docs/design/). Those
-documents contain decided rules, numbers and lists; open questions stay in
-focused `TODO-*.md` files until resolved.
-
-### World, housing and PvP
-
-[World design](docs/design/world.md) and the
-[38-zone catalog](docs/design/world_zones.md) define two independently shaped
-faction continents joined by the continuous four-zone Battlegrounds. Each zone
-has a stable id, level range, race region, political terrain rule, PvP state,
-biome palette, fixed hub and authored route neighbors. One fixed 2D layout
-uses small land/water shapes, nearest-hub ownership and reliable independent
-routes; seed variation begins with terrain, biome detail and content. Six
-outer level-1–10 starts lead through home and heartland zones to six central
-capitals; every level-1–30 zone is peaceful and every ordinary level-31–60
-frontier, Battlegrounds and dragon zone is contested. Surface difficulty rises
-through three integer bands along the continent axis inside every published
-zone range; Accord runs toward +z, Throng toward -z, the shared front toward
-z=0 and the two dragon summits remain flat level 60.
-
-PvP state is one central transaction, not a combat-path exception. A valid
-hostile action tags its initiator before resolution; safe→safe and
-tagged→safe damage are blocked, while safe→tagged and tagged→tagged may
-land. Effective PvP damage/support refreshes a 60-second tail, contested
-ground forces the tag, disconnect preserves it and death clears it. At
-y = −701 and below, non-ocean land is contested regardless of the peaceful
-surface above.
-
-Destructibility distinguishes actual anchors from scenery. Complete civic
-cores — capitals and starting settlements as whole build envelopes with
-10-node aprons — small functional NPC/resource anchors and irreplaceable
-route pieces are hard-protected and fail closed against indirect mutation;
-roads, villages, outpost/camp shells and battlefield dressing remain mutable
-but claim-excluded. Planned mainland water stays part
-of its zone, an editable 80-node shelf follows the outer coast, deep ocean is
-immutable, and full-column dragon channels keep the offshore islands boat-only.
-Natural resources exist under land and zone-owned planned water; the six-race
-supply gate compares all-resource deposit opportunities by exact host volume.
-Playable-boat behavior is decided in [boats.md](docs/design/boats.md).
-[Settlement design](docs/design/settlements.md) begins with the six race
-starts, each built from the same library and its own palette: Hearthpine Vale
-(dwarf, pine and stone), Dawnmere Fields (human, half-timbered loam on a
-village green), Silverleaf Glade (elf, slate and marble under columnar
-silverwoods), Stillgrave Hollow (undead, gravewood and obsidian round two
-burial grounds), Sunscar Camp (orc, adobe behind crenellated breastworks) and
-Kapok Cradle (troll, a plank village on stilts over a basin).
-
-[Character visuals](docs/design/character_visuals.md) give the six peoples
-recognisably different skins and a visual-only stature between 0.85 and 1.12 —
-the collision box and eye height never change, so a troll fits through a
-dwarf's door. Visible armor has dedicated cloth, leather and metal art across
-four slots and six material tiers, with matching inventory and worn designs.
-A character holds the weapon it has equipped. Players and the humanoid NPCs on the same model — guards, bandits,
-vendors — go through one composition function.
-
-[Open-world housing](docs/design/housing.md) uses Claim Stones in exactly ten
-peaceful level-11–30 zones. Four tiers protect cube radii 20/30/40/50, while
-the first placement immediately reserves the complete future 101×101 x/z
-footprint. Different owners use an exact one-sided expanded-AABB ten-node gap;
-stable ids survive placement, recovery, dormancy, inactivity decay and
-reissue. The deferred housing Home Stone stores a bound claim id, channels for
-ten seconds and has no capital fallback. Current
-[innkeeper home travel](docs/design/home_travel.md) instead binds one of twelve
-start-town/capital homes, supplies death respawn and offers immediate
-out-of-combat return through the atlas on a thirty-minute cooldown.
-
-The Wyrmglass Crown and Stormscale Summit are equivalent contested offshore
-dragon destinations. Each contains an apex camp whose shell, tents and
-dressing remain mutable and claim-excluded. Only its small functional anchor
-and twelve renewable sockets—two each of Citrine, Garnet, Jade, Diamond,
-Sapphire and Ruby—are protected; both factions may use them and no player may
-privatize them.
-
-### Materials, items and professions
-
-[Items and crafting](docs/design/items_crafting.md) distinguish the six-tier
-material ladder from the four-tier profession-mastery ladder. Universal gear
-progression is **Bronze → Iron → Steel → Silversteel → Embersteel →
-Abyssal Steel**. Picks open exact natural depths of
-−100/−300/−500/−700/−1000/map floor; resource harvesting has a
-separate minimum tier, so a pick may reach an ore yet destroy it without a
-drop when under-tier. The six strata remain visual depth language and ordinary
-building stone rather than the access mechanism.
-
-Quartz is universal. Citrine/Garnet/Jade form G1 and
-Diamond/Sapphire/Ruby G2; every race region selects one G1, one G2, one
-cultural material and one signature wood. The universal pick/bar spine never
-requires a regional monopoly. Foreign G2 and optional target-race materials
-come through contested and deep columns, the two apex camps and player trade.
-
-There is [one item per concept](docs/design/inventory_equipment.md): the
-vendor baseline and universal craft ladder are the same material-named items.
-Professions improve them through named prefix/suffix enchantments; future
-cultural finishes remain separate work rather than parallel base catalogs. The equipped weapon slot is the sole source of a
-skill's damage and appearance; the Character page also carries four armor
-slots, an offhand, two trinkets and four bags; the approved Round-11 catalog
-adds equivalent cloth and leather bag lines. The Skills tab lists unlocked
-abilities and every purchased mount tier; discarded representations can be
-recovered without losing entitlement or resetting cooldowns.
-
-[Farming](docs/design/farming.md) defines crop cultivation, tiered hoe lifetime,
-water-only buckets and slow bounded renewal of depleted wild plants. Seventeen
-crop families use distinct shapes and annual, regrowing or retained-base
-lifecycles, including vertical Corn, Cane and Bamboo.
-[Durability and repair](docs/design/durability_repair.md) keeps broken gear and
-lets every city profession trainer repair it for copper, with a maximum price
-of 20% of its reference purchase price. The Round 11 foundation is delivered; Round 12 extends the crop families.
-
-[Seven primary professions](docs/design/professions.md) are cut by material:
-Weaponsmith, Armorsmith, Leatherworker, Tailor, Woodcarver, Goldsmith and
-Alchemist. Characters choose two; Cooking is an unlimited secondary and First
-Aid stays universal. Profession level advances independently through six
-material tiers, while four mastery bands retain selected specialist recipes.
-[The current crafting/equipment contract](docs/design/crafting_equipment_revision.md)
-defines personal/shared workspaces, fixed-tier enchants and material lifetimes.
-
-Plain feedstocks and familiar base weapons, tools and metal, leather and cloth
-armor belong exclusively to **Basics** and require no profession. Starter routes
-are visible immediately; later routes appear after first acquiring their main
-material, without gating crafting. Each
-profession owns only its improvement and specialist routes; Weaponsmith and
-Armorsmith share the Forge with separate authorization. Cooking owns protected dish preparation; automatic baking and brewing are
-universal, while simple Bread, Cooked Meat and Cooked Fish belong to Basics.
-All food statuses last five minutes. Round 13 delivers the simplified
-station/enchant model with independent review and combined native verification.
-
-### Economy
-
-[Currency](docs/design/economy.md) is one ledger integer displayed as
-copper/silver/gold; physical Gold is a separate material. The target Common
-weapon axis is **25c / 65c / 1s60c / 4s / 10s / 25s**, with related slot
-tables and ceiling-rounded **5% vendor buy-back**. Every mob drop has a
-positive authored payout, but no mob or node directly drops ledger money.
-
-A reproducible Income Ledger measures reliable tier-appropriate solo income
-after routine repairs and consumables, excluding rare jackpots, bosses and an
-assumed player market. Claim upgrades and the four mounts derive exact prices
-from measured earning-time targets rather than stale fixed copper values. The
-first Claim Stone is free; later tiers consume universal bars plus 30 minutes,
-90 minutes and 3 hours of corresponding net income.
-
-### Combat, classes and progression
-
-[Combat](docs/design/combat_stats.md) uses one level-scaled pool curve, three
-secondary attributes, threat and the tank/healer/damage trinity while keeping
-all group content beatable without a healer. Mobs outrun an unmounted player, switch
-targets only at 120% threat and use a 25 m soft de-aggro plus 40 m leash.
-Elites/rares telegraph their strongest attack so movement, not gear alone,
-answers it.
-
-The [MVP class kits](docs/design/classes.md) are Warrior, Mage, Priest and
-[Scout](docs/design/scout.md), whose bow arrows use held draw and target-locked homing flight.
-The equipped weapon drives every swing skill while a server-authoritative
-clock and current eye ray decide when and what it hits; click spam cannot
-outrun hold. Enemy memory is Target-Frame state only, ally memory remains a
-heal/shield fallback. Targeted projectiles acquire a visible hostile at release
-and follow it until impact; existing defensive checks still apply at impact.
-Individual skill charges and resources replace the retired global
-cooldown.
-
-[Progression](docs/design/progression.md) targets level 60 in roughly 10–20
-played hours, with **one talent point every two levels** — thirty by level 60,
-enough to fill one whole tree — and a new active skill from a tree's
-keystone.
-
-The talent design is decided:
-[skill_trees.md](docs/design/skill_trees.md) gives every class two trees of
-two chains, twenty-eight ranks each, and lists all sixty-four talents. A
-tree's
-keystone either adds one new button or **replaces** one the player already
-has, so no build ever carries more than two extra keys, and nine talents
-deliberately break a cap or a control rule — each paying for it with a stated
-cooldown. Scout's two complete trees and four base abilities are implemented,
-alongside WP11's X1, X2 and X4 foundations. The original three classes still
-await most X3 keystones and capstones; Round 11 supplies the targeted
-Ironbound/Unbroken armor consumers without closing that wider work.
-
-Death returns a player to their race's starting settlement with inventory
-intact; the decided PvE penalty removes 25% of the whole current-level XP span,
-floored at the level start, while a death authoritatively attributed to an
-eligible hostile player by the PvP transaction costs no XP.
-
-### Biomes, mobs and mounts
-
-The [biome and mob catalog](docs/design/biomes_mobs.md) assigns final palettes,
-resource sources and named-rare routes to the 38 zones while retaining the
-running WP18/WP36 tables as an explicit migration baseline. Critters are
-level-1 scenery with food-only drops, passive prey retaliate without aggroing
-on sight, and enemies use the threat/chase model. Both factions receive every
-universal input; race woods and cultural materials stay intentionally
-asymmetric.
-
-[Mounts](docs/design/mounts.md) have integrated, independently reviewed Round-10
-runtime, capital-service and art changes. Final interpreter parity and delivery
-are complete; GUI acceptance remains pending. Riding unlocks at levels 15/30/45/60; T1
-moves at 6.4 nodes/s (+60%), while T2/T3/T4 run at 8/8/12 nodes/s. Purchased earlier tiers remain
-recoverable through Skills at their original speeds. The
-owner's mesh is hidden only in first person, an untimed status shows tier and
-actual speed, land mounts step over half/full blocks, and all mounted attacks are
-refused. Capital-only Riding Trainers, twelve rendered icons and all six stable layouts
-are delivered on main.
-
-[Boats](docs/design/boats.md) are specified but not built, and they are
-deliberately not an earned unlock: the base boat is five wood on any
-character's first day, moving at the player's own 4 nodes per second. A
-shipwright on each continent teaches the improved boat once from level 30 —
-paid in exactly one boat's worth of materials, rewarded with that boat — and
-it matches the 8 nodes per second of the land mount unlocked at the same
-level. One player per boat, never a mob; an empty boat may be picked up by
-anyone and disappears after 24 unused hours; any hit ejects the rider while
-the boat itself is indestructible. The open sea stays lethal through the
-Kraken Guard rather than through boat damage, and the dragon channels carry
-none.
-
-[Quests](docs/design/quests.md) guide players through local stories with kills
-and item deliveries. [Parties](docs/design/parties.md) persist for two to ten
-same-faction friends, independently of combat-credit rules. The
-[world atlas](docs/design/world_map.md) shows authored geography without fog of
-war, while [world preparation](docs/design/world_preparation.md) defines optional
-full-world startup generation and resumable starts-only preparation.
-
-Full milestone view: [ROADMAP.md](ROADMAP.md).
+The Accord and the Throng live on rival continents, divided by an old
+conflict. A rising threat beneath the world gives both sides something else
+to fear. Their story will grow as more regions and encounters are completed.
 
 ## Current State
 
-*Last updated: 2026-09-22. Derived from [BACKLOG.md](BACKLOG.md) and
-[ROADMAP.md](ROADMAP.md). Merged, synchronized and pushed; details in the
-[Round 17 completion record](docs/research/round17-completion.md).*
+*Last updated: 2026-09-22. Based on [BACKLOG.md](BACKLOG.md) and
+[ROADMAP.md](ROADMAP.md).*
 
-**Latest increment:** Round 17 adds [innkeeper home travel](docs/design/home_travel.md),
-targeted homing projectiles, a global mob damage setting and fixed mob dispositions.
-Configurable colored nametags, injured-mob health bars and personal party class
-colors improve combat readability. Independent reviews, static checks, compact
-interpreter parity and isolated native registration pass; GUI acceptance remains
-in the [playtest checklist](docs/research/round17-playtest.md). Whole-WP counts
-are unchanged.
+The systems above are implemented and available in the development build.
+Recent work adds innkeeper home travel, homing arrows and spell projectiles,
+and clearer health, name and party displays. Playtesting, balancing and
+finishing the wider world remain ongoing; implemented features are not all
+fully playtested.
 
-**Round 16:** mount teardown and atlas visibility fixes, Charge/Nova feedback,
-quest/kill XP tuning, food/UI, day/night, quiet audio, ambient density and
-surface-following preparation are delivered. Its historical evidence remains
-in the [completion record](docs/research/round16-completion.md).
+Open-world housing claims, boats, the full geographic PvP system, war fronts
+and the planned island dragon encounters are still unfinished. The current
+quest catalog does not yet cover the full journey through every region.
 
-**Shipped foundation:** 27 of 53 tracked identities are complete: WP0–WP4,
-WP6–WP8, WP12, WP15, WP18–WP20, WP25, WP26, WP33, WP35, WP36, WP38–WP40,
-WP43, WP45, WP47, WP-HUD, WP-Speed and WP-Scout. The denominator includes
-WP0–WP49 and three named packages; canceled WP16 is tracked but not shipped.
-Four classes, combat, mobs, professions, equipment, farming, mounts and safe
-character creation now connect to quests, parties and an atlas.
+<details>
+<summary>Development tracking and known caveats</summary>
 
-**Delivered Round 15:** the existing eighteen POIs now have distinct layouts,
-working interiors and cultural details. Thirty-six optional local quests bring
-the catalog to 102 quests and 30 givers. Larger quest symbols, centred side
-trackers, a thin XP bar and live player/party/quest atlas markers improve
-navigation and progress feedback.
+**Delivered:** 27 of 53 tracked work-package identities are complete; several
+others have playable portions. This is a tracking count, not a percentage of
+game completion. The latest increment is
+[Round 17](docs/research/round17-completion.md), with independent reviews and
+technical checks complete; in-game acceptance remains separate.
 
-**Latest UI follow-up:** independently reviewed changes move money to Character,
-add a scrollable online same-faction invitation list, and separate overlapping
-Group/Talents controls. [Delivery record and GUI checks](docs/research/round15-ui-followup.md);
-merged, synchronized and pushed.
+**Ready for further work:** the backlog identifies crafting/enchantment
+completion, carried light, recovery/rest and economy calibration as available
+next work. Housing, travel and the wider PvP/endgame content have additional
+dependencies; the [roadmap](ROADMAP.md) records their order.
 
-**Round 14 foundation:** persistent same-faction parties, quest journal and
-shared combat participation connect the starter stories to the seven-view atlas.
-Resumable starts/full-world preparation, interactive fishing and corrected flight
-rules are delivered. The repeated cross-player Cooking report remains open;
-additional Astra investigation found no confirmed cause, and the targeted
-two-client diagnostic is included in the next playtest.
+**Caveats:** the reported multiplayer Cooking issue remains unresolved and
+needs the two-player diagnostic in the playtest notes. Performance and
+first-release validation are still open. Optional full-world preparation can
+take many hours; the atlas does not require it. See the
+[latest playtest checklist](docs/research/round17-playtest.md) and the
+[preceding checks](docs/research/round16-playtest.md).
 
-**Earlier deliveries:** recoverable Skills, seventeen crop families, five-minute
-food buffs, Basics material discovery, UI/onboarding and reviewed item art came
-with Round 12. Round 13 supplies personal/shared stations, selected fixed-tier
-enchantments, Bronze starter weapons and simple durability/repair. Its playtest
-follow-ups restore skills-first hotbars and grass-free stables; wands, staves and
-bows use ordinary sticks, tier metal and the approved caster components.
+</details>
 
-**Still open:** WP9's broader progression/PvP story and WP13's remaining POI
-roster; Housing, boats/travel, geographic PvP, war fronts and release gates.
-WP11 retains measured respec-price calibration; WP10/WP29 broader catalog/economy
-work; WP14 carried light; WP21 recovery/rest; WP22 tool calibration and deferred
-repair redesign. Ordinary farming is delivered; Claim Stone integration belongs
-to WP24/WP32. The Nether is the first expansion, excluded from V1.
+## What's ahead
 
-**Validation and next step:** independent reviews, focused LuaJIT checks, static
-Lua-5.1 gates, the bounded final interpreter parity pair and isolated native
-integration support the technical delivery. Follow the [Round 16 fresh-world
-playtest](docs/research/round16-playtest.md), ideally with two players. The atlas
-is authored cartography; optional full preparation can take many hours and is
-not required to use it. No personal world was modified by the test harnesses.
+The [full roadmap](ROADMAP.md) separates planned features from delivered work.
+There are no fixed release dates yet.
 
-Historical round records live under [docs/research/](docs/research/); current
-rules live in `docs/design/` and remaining work in BACKLOG/ROADMAP or topic TODOs.
+- **Toward the first release:** protected player homes, boats and travel,
+  more settlements and regional quests, geographic PvP and faction clashes,
+  and completing the two offshore dragon encounters. Economy balance and
+  reliable everyday play are part of that work too.
+- **Later adventures:** a walkable underworld expansion with its own story,
+  creatures and terrain. Other plans include further classes, dungeons,
+  regional bosses, reputation and player trading.
+- **Continued refinement:** clearer onboarding, accessibility, localization,
+  art and sound, and multiplayer performance.
 
-## Running it
+## Play with Luanti
 
-Use Luanti 5.x with mapgen **v7** (pinned in `game.conf`). Copy or symlink the
-repository into the Luanti `games/` directory, then create a new world with
-the Grudgelands game.
+You can try the current version **[in your browser](https://kaesual.com)**,
+or run the game locally with Luanti. Grudgelands is a standalone game with
+its dependencies bundled; no client mod is required.
 
-For the Flatpak installation used in development:
+For a local world, place this repository in your Luanti `games/` directory
+as `grudgelands`, then select it when creating a **new world**. The game uses
+mapgen **v7**. Development uses Luanti **5.17.0-dev**; compatibility with older
+versions has not been established.
+
+<details>
+<summary>Local development setup</summary>
+
+For the Flatpak installation used in development, run this from the repository
+root to copy the game into Luanti's game directory:
 
 ```sh
 tools/sync_to_luanti.sh
 ```
 
-Engine log: `~/.var/app/org.luanti.luanti/.minetest/debug.txt`.
-
-### Reference projects (development only)
+For source-based development, also fetch the pinned reference projects:
 
 ```sh
 git submodule update --init --recursive --depth 1
 ```
 
-`reference_projects/` contains thirteen pinned, read-only upstream sources. The
-game builds and runs without them; they exist for engine/source verification,
-licensing and stable `file:line` citations. See
-[docs/reference_projects.md](docs/reference_projects.md).
+These reference checkouts are for development only; playing does not require
+them. See the [reference-project guide](docs/reference_projects.md) and
+[project conventions](AGENTS.md).
 
-## Repository layout
+</details>
 
-| Path | Contents |
-|------|----------|
-| [mods/](mods/) | Game code in `CORE`, `PLAYER`, `ENTITIES`, `ITEMS`, `MAPGEN` and `BASE` modpacks. |
-| [docs/design/](docs/design/) | Decided game design — the living specification. |
-| `TODO-*.md` | Open design questions awaiting a decision. |
-| [docs/research/](docs/research/) | Engine/API briefings, reference studies and asset research, including the Round 7 planning set: the [plants and potions reference survey](docs/research/plants-and-potions-reference.md), the [mob candidate evidence](docs/research/mob-candidates-evidence.md) and [game inventory extract](docs/research/round7-inventory-extract.md), and the two creative plans for the user's ruling, [Cooking and Alchemy](docs/research/cooking-alchemy-plan.md) and [the mob worlds](docs/research/mob-worlds-plan.md). |
-| [docs/process/](docs/process/) | Autonomous work-package workflow, the project-wide agent model policy, and the Claude CLI review procedure. |
-| [ROADMAP.md](ROADMAP.md) · [BACKLOG.md](BACKLOG.md) | Goal-level plan and implementation packages/status. |
-| [AGENTS.md](AGENTS.md) | Project conventions and Luanti/Lua contracts. |
-| [VENDOR.md](VENDOR.md) | Vendored third-party code, commits, licenses and patch inventory. |
-| [docs/reference_projects.md](docs/reference_projects.md) | Read-only source-submodule inventory and update discipline. |
+## Feedback and contributions
+
+Try a class, follow a few quests or explore with a friend. Feedback about
+confusing moments, combat, pacing and places worth exploring is especially
+useful. When reporting a bug, include what you were doing, your game version
+and whether you played through the browser or a native Luanti client.
+
+Code, artwork, sound and design feedback are welcome. For a larger change,
+start with a discussion of the idea and check the
+[design documents](docs/design/README.md) and [backlog](BACKLOG.md).
+
+## The person and tools behind it
+
+I'm Jan, the designer behind Grudgelands. I use AI extensively for development
+and some artwork, while shaping the game through hands-on planning,
+playtesting, review and repeated iteration. Making sandbox freedom and RPG
+progression work together takes many small decisions, experiments and
+revisions. This is a project I care deeply about, and I remain responsible
+for its direction and what goes into it.
+
+## Built on community work
+
+Grudgelands would not be possible without Luanti and the people who have
+spent years building its games, mods and tools. Their care, creativity and
+shared knowledge are a large part of its foundation. The project draws on
+both reference implementations and openly licensed code and artwork from
+projects such as Minetest Game, VoxeLibre, Lord of the Test,
+Mobs Redo, Animalia, Animal World and many others.
+
+The [reference-project list](docs/reference_projects.md) links to the projects
+we study; [VENDOR.md](VENDOR.md) records the code we ship and our changes.
+Media authors, sources and licenses are documented alongside the assets in
+per-mod license files.
+
+## Support development
+
+If you enjoy Grudgelands and would like to support its continued development,
+you can **[buy me a coffee](https://buymeacoffee.com/kaesual)**. Thank you for
+playing, sharing feedback or helping in whatever way suits you.
+
+## Explore the design
+
+The [design index](docs/design/README.md) contains the decided game rules.
+Some describe systems still being built; the [backlog](BACKLOG.md) tracks
+implementation, and [research notes](docs/research/) retain the supporting
+investigations and delivery records.
+
+<details>
+<summary>Browse the game design</summary>
+
+| Area | Design documents |
+|------|------------------|
+| World and places | [World](docs/design/world.md): geography and world rules; [zones](docs/design/world_zones.md): regions and level ranges; [settlements](docs/design/settlements.md): towns and capitals; [story](docs/design/story.md): factions and the campaign. |
+| Characters and combat | [Classes](docs/design/classes.md): abilities and resources; [Scout](docs/design/scout.md): bow and blade; [combat](docs/design/combat_stats.md): damage and defenses; [visuals](docs/design/character_visuals.md): peoples and equipment appearance. |
+| Progression and quests | [Progression](docs/design/progression.md): levels and rewards; [talents](docs/design/skill_trees.md): character builds; [quests](docs/design/quests.md): objectives, journal and credit. |
+| Items and crafting | [Items](docs/design/items_crafting.md): materials and recipes; [professions](docs/design/professions.md): trades; [stations and enchantments](docs/design/crafting_equipment_revision.md): current crafting rules; [equipment](docs/design/inventory_equipment.md): slots and bags; [durability](docs/design/durability_repair.md): wear and repair; [economy](docs/design/economy.md): money, prices and services. |
+| Wildlife and everyday life | [Biomes and mobs](docs/design/biomes_mobs.md): habitats and creatures; [farming](docs/design/farming.md): crops; [housing](docs/design/housing.md): planned homes and claims. |
+| Travel and playing together | [Mounts](docs/design/mounts.md): riding; [boats](docs/design/boats.md): planned water travel; [home travel](docs/design/home_travel.md): innkeepers and return; [parties](docs/design/parties.md): groups; [atlas](docs/design/world_map.md): maps and markers. |
+| Hosting | [World preparation](docs/design/world_preparation.md): generating starting areas or the full world. |
+
+</details>
 
 ## License
 
-- **Code: GPL-3.0** — our own files are GPL-3.0-or-later ([LICENSE.txt](LICENSE.txt)), but the combined game is GPL-3.0-only since the `grug_decor` kit includes GPL-3.0-only code from cottages (2026-09-14); with the
-  compatibility matrix in
-  [docs/research/licensing.md](docs/research/licensing.md).
-- **Media:** original CC0 / CC BY / CC BY-SA / GPL terms, documented per mod;
-  never NC or ND.
-- Inspired by World of Warcraft, using original names and assets rather than
-  Blizzard material.
+Grudgelands' own code is **GPL-3.0-or-later** ([LICENSE.txt](LICENSE.txt)).
+The combined game is **GPL-3.0-only** because it includes GPL-3.0-only code
+from cottages; see the [license overview](docs/research/licensing.md).
+
+Media retain their individual licenses, documented per mod: CC0, CC BY,
+CC BY-SA or GPL, as applicable. The
+[Grudgelands crest](menu/LICENSE-media.md) is CC0.
