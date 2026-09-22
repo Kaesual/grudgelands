@@ -9,13 +9,13 @@ deleted. Claude prohibited this session; same-provider CLI prohibited.
 
 | Lane | Owner | Worktree | State |
 | --- | --- | --- | --- |
-| A Mount lifecycle | Astra | `/tmp/grug-r16-mounts` | starting |
-| B Combat audit/control/Ibex | Astra | `/tmp/grug-r16-combat` | starting |
-| G Surface preparation | Astra | `/tmp/grug-r16-surface` | starting |
-| C Atlas | Astra | pending slot | queued |
-| D Quest progression/kill XP | Sol | pending slot | queued |
-| E UI/food | Sol | pending slot | queued |
-| F Atmosphere/audio/density | Sol | pending slot | queued |
+| A Mount lifecycle | Astra | `/tmp/grug-r16-mounts` | implemented `9f178c27`; review pending |
+| B Combat audit/control/Ibex | Astra | `/tmp/grug-r16-combat` | targeted JIT fixtures pass; finalizing |
+| G Surface preparation | Astra | `/tmp/grug-r16-surface` | bounded native stop/resume gate |
+| C Atlas | root Astra | root branch | `bddd1edf`; independent review pending |
+| D Quest progression/kill XP + XP UI/admin | Sol | `/tmp/grug-r16-progression` | implementing |
+| E UI/food | root Astra | root branch | `1b2f0458`; independent review pending |
+| F Atmosphere/audio/density | Sol | `/tmp/grug-r16-atmosphere` | prepared; awaiting worker slot |
 
 Use at most three worker agents concurrently with root. Each lane owns its
 files and updates its design sections before implementation. Root owns this
@@ -37,7 +37,9 @@ different author; reviewers inspect evidence rather than repeat final tests.
 
 ## Integration and evidence
 
-No implementation commits integrated yet. No new runtime evidence yet.
+Root implements C/E alongside the first worker wave. C real-form fixture and E
+24-route food/HUD fixture pass LuaJIT and static gates. A has twelve lifecycle
+cases; review pending. No GUI acceptance is claimed. Final PUC/JIT pair pending.
 Per-lane handoff includes commit hash, owned files, source/fixture hashes,
 LuaJIT evidence, remaining risks and callable compact final fixture entry point.
 Root records reviews, final gates, merge, sync and push here before completion.
