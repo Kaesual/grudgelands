@@ -1,7 +1,8 @@
 # Grudgelands
 
 Latest increment: [Round 17 completion](docs/research/round17-completion.md).
-Independent reviews and final technical gates PASS; delivery is being finalized.
+Independent reviews and final technical gates PASS; merged to main, locally
+synchronized and pushed.
 GUI acceptance remains separate: [fresh-world playtest](docs/research/round17-playtest.md).
 
 **A WoW-inspired voxel RPG for [Luanti](https://www.luanti.org/)** — factions,
@@ -270,7 +271,7 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 ## Current State
 
 *Last updated: 2026-09-22. Derived from [BACKLOG.md](BACKLOG.md) and
-[ROADMAP.md](ROADMAP.md). Delivery operations are tracked in the
+[ROADMAP.md](ROADMAP.md). Merged, synchronized and pushed; details in the
 [Round 17 completion record](docs/research/round17-completion.md).*
 
 **Latest increment:** Round 17 adds [innkeeper home travel](docs/design/home_travel.md),

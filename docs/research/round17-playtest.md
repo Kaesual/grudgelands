@@ -1,7 +1,7 @@
 # Round 17 — Fresh-world playtest
 
 Status: implementation, independent reviews and technical gates PASS.
-See the completion record for delivery status. GUI acceptance is pending.
+Merged to main, locally synchronized and pushed. GUI acceptance is pending.
 Restart the server after installing the completed round. Use a fresh world.
 Two same-faction players plus an enemy-faction character cover the group/PvP
 checks. Technical fixture evidence is not a substitute for these GUI checks.

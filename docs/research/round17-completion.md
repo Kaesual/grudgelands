@@ -1,6 +1,6 @@
 # Round 17 completion record
 
-Date: 2026-09-22. Status: technically complete; merge/sync/push pending.
+Date: 2026-09-22. Status: delivered on main, locally synchronized and pushed; GUI acceptance pending.
 Contract: [round17-plan.md](round17-plan.md).
 Execution: [round17-execution.md](round17-execution.md).
 GUI checklist: [round17-playtest.md](round17-playtest.md).
@@ -87,3 +87,17 @@ expectation is not a current acceptance gate. Current mount-motion regression
 is exercised by COMBAT's final fixture.
 
 Restart the server and use a fresh world; follow the linked playtest checklist.
+
+## Delivery receipt
+
+- Final reviewed integration/evidence commit: `bbf56f6b`.
+- Main merge: `5b91418e65c9a4d6f38aee997eef03a36f23f16f`.
+- `tools/sync_to_luanti.sh` ran successfully from main. Installed target:
+  `/home/jan/.var/app/org.luanti.luanti/.minetest/games/grudgelands`.
+  All 2060 reviewed production-manifest files match; complete mods/menu file
+  sets and contents match checkout, including deletion of the retired collider.
+- `git push origin main` succeeded to `github.com/Kaesual/grudgelands`,
+  advancing `2c0f4446` to `5b91418e`. The subsequent receipt-only commit
+  records this delivery and leaves installed production bytes unchanged.
+- No personal world or player data was changed; restart and fresh-world GUI
+  acceptance remain the user's next step.

@@ -2,7 +2,8 @@
 
 Technically complete: [Round 17](docs/research/round17-completion.md), home travel,
 reliable ranged combat and configurable combat readability/difficulty.
-Independent reviews and final technical gates PASS; delivery is being finalized.
+Independent reviews and final technical gates PASS; merged to main, locally
+synchronized and pushed.
 Next: [Round 17 GUI playtest](docs/research/round17-playtest.md).
 
 Previous increment: [Round 16 completion](docs/research/round16-completion.md).

@@ -1,6 +1,6 @@
 # Round 17 execution ledger
 
-Date: 2026-09-22. Status: technical work complete; merge/sync/push pending.
+Date: 2026-09-22. Status: delivered; user GUI acceptance pending.
 Contract: [round17-plan.md](round17-plan.md). Base `2c0f4446`.
 Integration branch: `wp17-home-combat-feedback`.
 Final evidence, calibration and limitations: [completion](round17-completion.md).
@@ -40,10 +40,12 @@ see completion/evidence. Native isolated registration gate PASS (12 homes,
 12 markers), all 2060 production hashes still match. No personal world writes,
 full-world generation or performance campaign. GUI checks remain user-run.
 
-## Resume / delivery
+## Delivery / resume
 
-Do not re-run finished development/review work. Check git status/log and this
-receipt before any operation. Commit final docs/evidence, merge the reviewed
-round branch to main, run tools/sync_to_luanti.sh from main, verify installed
-hashes and push origin main under existing user authorization. Record actual
-merge/sync/push identities in completion and update README/BACKLOG/ROADMAP/AGENTS.
+Final integration/evidence commit `bbf56f6b`; main merge `5b91418e`.
+Synced successfully from main and verified all 2060 reviewed production hashes
+plus exact mods/menu file sets against the installed game. Push to origin/main
+succeeded. The following receipt-only commit does not alter production bytes.
+No implementation task remains running. Do not repeat completed reviews or
+gates; wait for user playtest feedback. All current decisions, evidence and
+limitations are in the linked completion and living design documents.

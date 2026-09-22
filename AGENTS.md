@@ -67,13 +67,15 @@ projects: **[docs/research/](docs/research/)**.
 
 ## Active round
 
-Round 17 is technically complete; final delivery operations pending: `docs/research/round17-plan.md` and
+Round 17 is delivered on main, locally synchronized and pushed.
+`docs/research/round17-plan.md` and
 `docs/research/round17-execution.md` own the current contract and lane status.
 Home travel, homing projectiles, global mob damage scale, fixed dispositions,
 configurable colored nametags/injured HP sprites and party class colors.
 Independent implementation reviews, living-doc drift review and final technical
 gates PASS. Receipt: `docs/research/round17-completion.md`; user GUI checklist:
-`docs/research/round17-playtest.md`. The R17 contract supersedes earlier mechanics. Standard unmodified Luanti clients are
+`docs/research/round17-playtest.md`. The R17 contract supersedes earlier mechanics.
+Standard unmodified Luanti clients are
 required; no client/engine fork, upstream-PR dependency or required client mod.
 
 

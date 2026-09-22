@@ -7,7 +7,7 @@ Living specs: [home travel](docs/design/home_travel.md), combat_stats.md,
 biomes_mobs.md, parties.md and world_map.md. Execution is tracked in
 [round17-execution.md](docs/research/round17-execution.md). No whole-WP count
 changes are claimed for these bounded increments. Final technical gates PASS;
-delivery is being finalized. Next: [playtest](docs/research/round17-playtest.md).
+merged to main, locally synchronized and pushed. Next: [playtest](docs/research/round17-playtest.md).
 
 [Round 16](docs/research/round16-completion.md) is technically complete and
 independently reviewed: mount/combat/map fixes, quest/kill XP, food/UI,
