@@ -1,7 +1,8 @@
 # Grudgelands
 
 Latest increment: [Round 16 completion](docs/research/round16-completion.md).
-Independent reviews and final technical gates PASS; delivery receipt pending.
+Independent reviews and final technical gates PASS; merged to main, locally
+synchronized and pushed. GUI acceptance remains separate.
 Next: [fresh-world playtest](docs/research/round16-playtest.md).
 
 **A WoW-inspired voxel RPG for [Luanti](https://www.luanti.org/)** — factions,
@@ -267,7 +268,7 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 
 *Last updated: 2026-09-22. Derived from [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md). [Round 16](docs/research/round16-completion.md)
-is technically complete and independently reviewed; delivery receipt pending.*
+is independently reviewed, merged to main, locally synchronized and pushed.*
 
 **Latest increment:** Round 16 fixes mount teardown and atlas visibility, adds
 Charge stun/Nova control feedback, revises quest/kill XP and improves food/UI.

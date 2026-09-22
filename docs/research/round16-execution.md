@@ -47,3 +47,7 @@ Review rotation: native Sol (D author) independently checks A/C/E, excluding
 its own XP work. Native Astra (B author) independently checks G/D, excluding B.
 Separate native Astra reviews B and root's G correction. Root never certifies
 its own C/E or G-fix code. Reports are linked from the completion record.
+
+Delivery: candidate `adeae43d` merged as `00baacf8`; 2,056 installed files and
+53 final Lua hashes verified; authorized push advanced origin/main to `00baacf8`.
+Subsequent receipt changes documentation only. All lanes and reviews are finished.

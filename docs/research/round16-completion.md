@@ -1,7 +1,7 @@
 # Round 16 completion record
 
-Status: technically complete; independent reviews and final gates PASS.
-Merge, local sync and push receipt pending.
+Status: delivered on main, synchronized locally and pushed.
+Independent reviews and final gates PASS; GUI acceptance remains separate.
 Date: 2026-09-22. Contract: [approved plan](round16-plan.md).
 Execution: [lane ledger](round16-execution.md).
 
@@ -97,4 +97,11 @@ user check is [Round 16 playtest](round16-playtest.md).
 
 ## Delivery receipt
 
-Pending merge, local sync, installed-byte verification and authorized push.
+Reviewed candidate `adeae43d` merged without squash as `00baacf8`.
+`tools/sync_to_luanti.sh` installed main; all 2,056 installed names/contents
+match the checkout and all 53 final Lua hashes remained unchanged.
+Authorized `git push origin main` advanced `github.com/Kaesual/grudgelands`
+from `3e714e7e` to `00baacf8`. This subsequent documentation-only receipt
+changes no tested or installed game bytes. All implementation/review tasks and
+isolated server processes have finished. Next action is the linked fresh-world
+playtest; no additional implementation or approval is pending for Round 16.

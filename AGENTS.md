@@ -67,7 +67,8 @@ projects: **[docs/research/](docs/research/)**.
 
 ## Active round
 
-Round 16 is technically complete and independently reviewed; final gates PASS.
+Round 16 is delivered on main, locally synchronized and pushed.
+Independent reviews and final gates PASS; GUI acceptance is pending.
 Delivery receipt: `docs/research/round16-completion.md`; next GUI pass:
 `docs/research/round16-playtest.md`. Plan: `docs/research/round16-plan.md`;
 execution history: `docs/research/round16-execution.md`.

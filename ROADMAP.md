@@ -3,7 +3,7 @@
 Current increment: [Round 16 completion](docs/research/round16-completion.md).
 Playtest fixes, progression/control tuning, atmosphere/audio/density and
 surface-following preparation are independently reviewed. Final technical gates
-PASS; merge/sync/push receipt pending. [GUI playtest](docs/research/round16-playtest.md)
+PASS; merged to main, synchronized locally and pushed. [GUI playtest](docs/research/round16-playtest.md)
 remains separate. This increment does not change shipped-WP counts.
 
 Grudgelands is a standalone, WoW-inspired voxel RPG for Luanti. It combines
