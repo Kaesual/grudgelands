@@ -195,11 +195,13 @@ arbitrary fixed-price wall.
   the player on a free neighbouring node where geography permits — the
   `mobs.detach` / `find_free_pos` pattern of the vendored
   `mods/ENTITIES/mobs/mount.lua:183-198` and `:107-120`.
-- **Death, logout and server shutdown dismount automatically.** The
-  vendored mount API already registers `on_dieplayer`, `on_leaveplayer`
-  and `on_shutdown` force-detach handlers
-  (`mods/ENTITIES/mobs/mount.lua:47-97`), so no separate rule is needed:
-  you always come back on foot.
+- **Death, logout and server shutdown dismount automatically.** The shared
+  mount cleanup removes controller, visible child, warning and runtime status
+  exactly once, even when vendored attachment cleanup runs first. Logout and
+  shutdown skip animation/appearance restoration because player display records
+  may already be gone; ordinary dismount and death retain that restoration.
+  No deferred movement callback is scheduled during teardown. Mount ownership
+  remains in player metadata; every reconnect starts on foot.
 - **Entering a no-mount zone dismounts you** (§4) — via the same detach and
   entity-removal transaction.
 - **Taking damage dismounts you** (§3.1) — the same detach path again.

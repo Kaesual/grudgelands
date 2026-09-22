@@ -368,3 +368,11 @@ The owning `grug_jobs` adapter supplies that predicate and idempotent activation
 for VM-placed current-version hearths. Existing fuel, timer, recipe and Cooking
 output extraction/progression callbacks remain chained unchanged. No media or
 upstream pin changed.
+
+## Round 16 mount teardown
+
+`mods/ENTITIES/mobs/mount.lua` adds one `GRUG PATCH` block: leave/shutdown
+force-detach skips animation and appearance restoration, clearing attachment
+bookkeeping without accessing player_api records already deleted by its leave
+callback. Death and ordinary detach keep their existing presentation behavior.
+The Grudgelands controller/child cleanup remains owned by `grug_mounts`.

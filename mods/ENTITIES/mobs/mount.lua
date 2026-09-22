@@ -44,7 +44,7 @@ local function get_v(v)
 end
 
 
-local function force_detach(player)
+local function force_detach(player, teardown)
 
 	local attached_to = player and player:get_attach()
 
@@ -59,6 +59,15 @@ local function force_detach(player)
 	player:set_detach()
 
 	local name = player:get_player_name()
+
+	-- GRUG PATCH: leave/shutdown cleanup must not restore appearance after
+	-- player_api's leave callback has discarded its animation record.
+	if teardown then
+		if is_mc2 then mcl_player.player_attached[name] = nil
+		else player_api.player_attached[name] = nil end
+		player:set_eye_offset({x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
+		return
+	end
 
 	if is_mc2 then
 		mcl_player.player_attached[player:get_player_name()] = false
@@ -75,7 +84,7 @@ end
 -- detach player on leaving
 
 core.register_on_leaveplayer(function(player)
-	force_detach(player)
+	force_detach(player, true)
 end)
 
 -- detatch all players on shutdown
@@ -85,7 +94,7 @@ core.register_on_shutdown(function()
 	local players = core.get_connected_players()
 
 	for i = 1, #players do
-		force_detach(players[i])
+		force_detach(players[i], true)
 	end
 end)
 

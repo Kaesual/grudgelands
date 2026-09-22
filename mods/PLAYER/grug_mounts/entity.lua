@@ -82,7 +82,7 @@ local function restore_player(player, skip_animation)
 	end
 end
 
-function grug_mounts.dismount(player, reason, hard, skip_animation)
+local function dismount(player, reason, hard, skip_animation, teardown)
 	if not valid_player(player) then return false end
 	local name = player:get_player_name()
 	local record = active[name]
@@ -101,14 +101,23 @@ function grug_mounts.dismount(player, reason, hard, skip_animation)
 		end
 	end
 	player:set_detach()
-	restore_player(player, skip_animation)
+	-- Leave callbacks may run after player_api and grug_visuals have discarded
+	-- their player records. Teardown owns attachment cleanup, not appearance.
+	if teardown then
+		player_api.player_attached[name] = nil
+		player:set_eye_offset({x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
+	else
+		restore_player(player, skip_animation)
+	end
 	if hard then
 		if pos then player:set_pos(pos) end
 		zero_player_velocity(player)
-		core.after(0, function(player_name)
-			local current = core.get_player_by_name(player_name)
-			if current then zero_player_velocity(current) end
-		end, name)
+		if not teardown then
+			core.after(0, function(player_name)
+				local current = core.get_player_by_name(player_name)
+				if current then zero_player_velocity(current) end
+			end, name)
+		end
 	elseif pos then
 		player:set_pos(free_dismount_pos(pos))
 	end
@@ -118,6 +127,10 @@ function grug_mounts.dismount(player, reason, hard, skip_animation)
 		core.chat_send_player(name, reason)
 	end
 	return true
+end
+
+function grug_mounts.dismount(player, reason, hard, skip_animation)
+	return dismount(player, reason, hard, skip_animation, false)
 end
 
 function grug_mounts.flight_state(player, pos)
@@ -510,7 +523,7 @@ core.register_on_dieplayer(function(player)
 end)
 
 core.register_on_leaveplayer(function(player)
-	grug_mounts.dismount(player, nil, true)
+	dismount(player, nil, true, true, true)
 end)
 
 core.register_on_shutdown(function()
@@ -518,7 +531,7 @@ core.register_on_shutdown(function()
 	for name in pairs(active) do names[#names + 1] = name end
 	for _, name in ipairs(names) do
 		local player = core.get_player_by_name(name)
-		if player then grug_mounts.dismount(player, nil, true) end
+		if player then dismount(player, nil, true, true, true) end
 	end
 end)
 
