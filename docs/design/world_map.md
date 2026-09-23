@@ -16,7 +16,7 @@ Decided 2026-09-21; Round 14 user Go.
 - The native V minimap remains a separate client feature. No client mods or
   native-minimap bitmap extraction are used.
 
-## Round 15 live markers
+## Live markers
 
 Decided 2026-09-21: viewer position is a gold directional triangle; online
 party members use cyan directional triangles, with names and hover tooltips.
@@ -45,7 +45,7 @@ and a Return home button with destination and cooldown. Its server authority
 is [home_travel.md](home_travel.md). Map browsing itself grants no binding or
 waypoint unlock; binding still requires visiting an eligible innkeeper.
 
-## Atlas navigation (Round 19)
+## Atlas navigation
 
 The single full-world view replaces regional cutouts. A new Map-tab visit starts
 at 1x with origin scroll; no saved zoom/scroll preference. During that visit,
@@ -66,7 +66,7 @@ marker state is refreshed at most twice per second with current scroll values.
 While scroll changes continue, defer a live rebuild until a short 0.5-second
 quiet interval; pending marker changes must still appear afterward.
 
-## Native minimap (Round 18)
+## Native minimap
 
 Native surface minimap is selected by
 default, subject to client settings and the player's V toggle. It displays terrain

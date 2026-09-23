@@ -28,7 +28,7 @@ not `gpt-astra-6`).
   reviewers. Never copy the Claude-to-Codex commands below into a Codex
   coordinator's same-provider workflow, or invoke Claude CLI from Claude for
   its own subagents. Native thread limits do not permit that workaround.
-- **Current Round 10 session:** no Claude tasks/CLI calls; the user's Claude
+- **Current documentation session:** no Claude tasks/CLI calls; the user's Claude
   credits are exhausted. Use native Sol/Astra only as routed by the user.
   This session restriction does not remove the general cross-provider ability.
 

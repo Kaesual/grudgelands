@@ -2,11 +2,12 @@
 
 Decided 2026-08-10; complete named-zone pass 2026-08-11; fixed simple-map
 rebase 2026-08-25; Battlegrounds naming/protection amendment 2026-08-27; R6
-surface/resource decisions 2026-08-29. This
-document supersedes the old radial
-"safe core + war coast" surface layout in `world.md` and
-`biomes_mobs.md`. The shipped WP18/WP36 map still uses that old layout;
-WP40 replaces it with the complete catalog and contracts below.
+surface/resource decisions 2026-08-29, with later approved playtest revisions
+folded into the relevant sections. This is the current named-zone authority;
+the old radial "safe core + war coast" layout is retired. Catalog requirements
+for unimplemented housing, PvP, war-front and encounter work remain binding
+future scope. Section 14 retains its acceptance/evidence requirements; delivery
+history is tracked separately in BACKLOG and the WP40 completion record.
 
 ## 1. Authored macro-map, procedural local detail
 
@@ -1417,13 +1418,12 @@ are programmer errors rather than clamped or coerced input. One evaluator
 instance binds one canonical full seed string; public queries never accept a
 numeric-truncated seed.
 
-### 13.3 Policy and compatibility
+### 13.3 Policy and consumer adapters
 
 - `surface_mob_level_at` means the axial banded gameplay-difficulty field.
   `terrain_height_at` means elevation. Existing
   `grug_core.surface_level_at(x,z)` already means terrain height and retains
-  that semantic; it redirects to `terrain_height_at` only at the atomic
-  cutover.
+  that semantic through the `terrain_height_at` adapter.
 - `mob_level_at(pos)` combines the surface difficulty with the independent
   depth floor on land and zone-owned planned water. Exterior shelf returns nil
   at y >= 0 and the depth floor alone below y = 0. Deep ocean and dragon

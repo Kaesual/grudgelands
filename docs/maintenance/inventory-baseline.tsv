@@ -1,0 +1,612 @@
+path	provisional_role	review_coverage	lines	sha256	title
+AGENTS.md	navigation-process-planning	assigned-root-review	1181	8f3908becc28408e3487837a7cbb4f243d8967d5223207fc1997d06b9b766352	AGENTS.md — Project Guide
+BACKLOG.md	navigation-process-planning	assigned-root-review	1002	60893d3e30a3c2bd57be69afb444bf854249e741f8e832d40c9b9dfc9fd045ea	Backlog — Work Packages
+CLAUDE.md	navigation-process-planning	assigned-root-review	12	82dc0cb8eeb80ffb41cffab75c3f5d6468a5b5654a9caba1fc94d0e9c8e7ba8d	CLAUDE.md
+README.md	external-owner	excluded-from-rewrite	213	64f7caaec431e91f5fa4e609d28d3ca947cc319685d92f7f0138b67dd73e69c6	Grudgelands
+ROADMAP.md	navigation-process-planning	assigned-root-review	443	cef20fae3d8fd82c7a6f96c0496c5724de7dca920f48b48c0fc6b22fea192949	Roadmap — Grudgelands
+TODO-design-crafting-rework.md	open-decisions	assigned-topic-review	74	c0af4284bd56cfd50e3d734cdca704da5debf24c0c4fe79db223054f3ed751fc	TODO — Crafting rework: what the 2026-08-07 session left open
+TODO-design-depth.md	open-decisions	assigned-topic-review	220	232c71dc24e4b688f53019740f7fe52ca1452e4d0f4bcff7bbe29683386f2761	TODO — Depth: danger, spawn pressure and where resources come from
+TODO-design-nether.md	open-decisions	assigned-topic-review	67	de0ae0061a671299863f0b9d2c424e47ee271fe1d98c20e1ece9228b70e49500	TODO — The Nether (Phase 2; spec in progress)
+VENDOR.md	provenance-preserve	excluded-from-rewrite	393	32ad277a10d0d5e746e3fe04891a718c49f1173b6e0f67f2bfd1f44951b24a97	Vendored Third-Party Code
+docs/design/README.md	living-design	assigned-topic-review	63	df140455215b8fc782098b178e15679e458f005a18f4d1cde966716fef2be13b	Game Design Docs
+docs/design/biomes_mobs.md	living-design	assigned-topic-review	1840	2093f342987aa80977009022185877f34405518834cd77e45ca9b0b9d3b96ec5	Biomes & Mobs — Catalog
+docs/design/boats.md	living-design	assigned-topic-review	169	e6e5fae14a1ac82ff1b35a130217b69275a402830ac2e17d0978fca551d38d9e	Boats — Water Travel, Ocean Danger and the Dragon Islands
+docs/design/character_visuals.md	living-design	assigned-topic-review	220	eac09ff3128dd5ea913fc24be2081c245275019219e6b13a15d233ab2e35e055	Character visuals
+docs/design/classes.md	living-design	assigned-topic-review	579	f834dd5a0f5c234020b6e9fbb6ffcb1f56c44491e7e791022da0e931f7783529	Class Kits — Resources & Abilities (MVP)
+docs/design/combat_stats.md	living-design	assigned-topic-review	1023	9cb916bf87d94e8765e2cd9aaa235f53e35d44a93c03d08d03e3611610fd730c	Combat, Attributes & Progression Mechanics
+docs/design/crafting_equipment_revision.md	living-design	assigned-topic-review	164	ff5b2def31d68282299b9bd26e742c8269a3b4d518d83e72b4534d392a76d130	Crafting stations, enchanting and equipment — current rules
+docs/design/durability_repair.md	living-design	assigned-topic-review	82	3ffa1d3ba849bc02becc678a1b3bcfc56ef0fa8c0ef3d1f0b9d22602a172ca9d	Durability and repair
+docs/design/economy.md	living-design	assigned-topic-review	158	9fbbbe11974725642f74c98a733fdf9415783f724829b07d6c8f3d30625539b6	Economy — Currency & Money Flow
+docs/design/farming.md	living-design	assigned-topic-review	120	502e297614d9fe18db7c844377ef68425b1ec1db6fa1f37b19158882f267331e	Farming and wild plant renewal
+docs/design/home_travel.md	living-design	assigned-topic-review	30	77f7dd3d1d2bdcaefdf1e014d36454320a4dd01672ea098999920817deaffdbf	Innkeeper home travel
+docs/design/housing.md	living-design	assigned-topic-review	774	4c5bec5bb6f87c64b3cd99ea0ad524c6337e9e5a1941d526fefd2276d17bb868	Open-world Housing Claims
+docs/design/inventory_equipment.md	living-design	assigned-topic-review	332	78a9c803dc417e3f34e88b9cf392fcdac55dbc00c4a1581d47cb680ff458d989	Inventory, Character Screen & Equipment
+docs/design/items_crafting.md	living-design	assigned-topic-review	2375	a73b74f02b3c1170be235279d105b6a193e9a796aa35c767334207f54efc3b33	Items, Crafting & Loot — Full Design Spec
+docs/design/mounts.md	living-design	assigned-topic-review	437	9fc18b3474535f03101041cee6fe1be78dac767765ea5fc0540f3962b27b43d9	Mounts — Riding, Speed Tiers & No-Mount Zones
+docs/design/parties.md	living-design	assigned-topic-review	91	6dad94505c9173c0d0b9d37bd7eedaf2990ee4860eacf99bd504e17afab05ea6	Parties
+docs/design/playtest_quality_revision.md	living-design	assigned-topic-review	64	7241bd22896004c1497c48b85b52b2c99f8dfeaf138d8afb87c415f34fd4984f	Playtest quality revision — Round 18
+docs/design/professions.md	living-design	assigned-topic-review	244	3424f6ecf751717834b8b46781b03388aecc3e6df875576dae67660a6c08b271	Professions
+docs/design/progression.md	living-design	assigned-topic-review	154	4a419a3350b6018ae2a93674a58bc9baac2663703cd516d69a09c9a830449359	Progression — Pacing, Death, Reward Cadence
+docs/design/quests.md	living-design	assigned-topic-review	92	ac9f1cf9fe18b846342c1321683d6002812494f8991a967930e329f22ed5b43e	Quests
+docs/design/scout.md	living-design	assigned-topic-review	647	2f6fc72cc58ba2a53095786e11c2bd235b4b974b440cb156474597448bbc13da	Scout — the fourth class
+docs/design/settlements.md	living-design	assigned-topic-review	512	88c357a543cfddf92fbce26811971dc3cea32657aac23538b57ba0016f633dfb	Settlements
+docs/design/skill_trees.md	living-design	assigned-topic-review	1570	c358c194e93a28adcf50f7c1d3ab312735e098f25d4e4e91b3ab89a95f123ea3	Skill Trees (Talents) — WP11
+docs/design/story.md	living-design	assigned-topic-review	75	5557a3d59eea2a0efeb1370e34bcb2e492d7b211be32830d5017574f50f6d1fd	Story & Main Questline
+docs/design/world.md	living-design	assigned-topic-review	1055	aa0963bdfb90f4f66216bf9ebb3899abe02da258b2e7cf89bf852a4e9a64cafb	World Design
+docs/design/world_map.md	living-design	assigned-topic-review	75	49b20facb69e12d09d39501d4ebb77caa76bf397953aa2b3c4ee4a7a8cd0f560	World atlas
+docs/design/world_preparation.md	living-design	assigned-topic-review	135	509c50f22546ca80ed650edcb9d5f81d8fe4d7dfee012f051265f273f00baaab	World preparation
+docs/design/world_zones.md	living-design	assigned-topic-review	1768	beee3a7763f9195d036e6aeb8925f53ba048c59d1583a7e3e9097693cc4c3207	Named World Zones & PvP Geography
+docs/process/agent-model-policy.md	navigation-process-planning	assigned-root-review	291	2b66f7dbaf6eb0a2255a3576be734f2b9ed7a72d4fcfbb1f49488aabd42f6317	Agent model policy
+docs/process/claude-cli-review.md	navigation-process-planning	assigned-root-review	134	86512e94837c42ed3777dd330d46fa661bf548d83392c513522bb4ffc555284f	Claude CLI review procedure
+docs/process/cross-cli-orchestration.md	navigation-process-planning	assigned-root-review	330	133c8d6487b36d9d68e9e8bc008c4185b1a82504b1b6de65dbdfd434a14cded7	Cross-CLI orchestration: Claude and Codex driving each other
+docs/process/wp-workflow.md	navigation-process-planning	assigned-root-review	142	b5184994a689d73c54a98325d9013553acb6467a1d8addd8e5a6f3bc4cd9a2c5	Autonomous WP Workflow
+docs/reference_projects.md	supporting-markdown	structural-only	118	9229fba6439b6fcde2e5620b948442796911c85a65fee84b0705dee03cd99bc3	Reference projects
+docs/research/assets/asset-audit-2026-09-14.md	historical-evidence	structural-only	54	b69ed8411ce3b6da3129b9474838932ce27921216446dbafa17c0e7159d366ab	Asset/Code Source Audit — third-party Luanti mods for Grudgelands
+docs/research/assets/biomes_flora.md	research-or-decision-record	structural-only	60	fdfc5ef8a154106f0778cd59fb6919143f8a2f30403e0bfb0a897df7d2734daf	Research: Biome & Flora Assets (Trees, Plants, Terrain Nodes)
+docs/research/assets/humanoids_races.md	research-or-decision-record	structural-only	66	461535ec254012fecabdb924b6877dc5a7f24fc18a434a47e8bde886fcdaee80	Research: Humanoid & Race Models/Skins
+docs/research/assets/mobs_animals.md	research-or-decision-record	structural-only	60	a6d140371bb61739f15c4c17df4b129de296593baafea1ac99ffda9574e6f782	Research: Mob/Animal Mods — Reusable Assets
+docs/research/assets/plants_farming_food.md	research-or-decision-record	structural-only	103	68df31d12dd83e0342fbbda228293d6ce1edbb0e67d84fe4ffa3d2d58164d80b	Research: Plants, Herbs, Farming & Food Mods
+docs/research/assets/sounds_ambience.md	research-or-decision-record	structural-only	77	1a640da3d740bb788865ff9000a719440fe2332905309974dd5cefdba34ff988	Research: Sounds & Ambience
+docs/research/assets/structures_decor.md	research-or-decision-record	structural-only	73	17d09429a7cdc23b2bca9a0c849822c58ed7634a0ff4700d384a84e2e37010d6	Research: Structures, Schematics & Decoration
+docs/research/assets/weapons_armor.md	research-or-decision-record	structural-only	83	079a47018a750cded1eae97068706bcef53722d82b9e1803504afa60920955a6	Research: Weapons, Armor & Class Equipment
+docs/research/assets/wp6_model_notes.md	research-or-decision-record	structural-only	499	c98665bac199ffcc4f33948a890acf4decae11446582fd1020a4557ea74df8a6	WP6 Model Port Notes (mob media, T4 output)
+docs/research/balance-r6-after.md	research-or-decision-record	structural-only	33	3bff46a59d838e5775065439c8b7a51160b859f884f9ee5bb84f01610aff0579	Round 6 balance result
+docs/research/balance-r6-before.md	research-or-decision-record	structural-only	26	803acb5e139ba2cb4f6eb2c756b7a85774eaea8dae12f9356e61647164fe23bf	Round 6 balance baseline
+docs/research/balance-r6-start-levels.md	research-or-decision-record	structural-only	21	215ae944eeeb5f85ae1fbf049ee97f6c8c68411ab6dbf67b76db333bc0b58f0b	Round 6 start-level probe
+docs/research/cooking-alchemy-plan.md	research-or-decision-record	structural-only	386	11af22cc1b043382dca19ddf55fc21f3fa5724a27000234e66f77c12f69c7832	Creative plan: Cooking and Alchemy v1 (Round 7 deliverable R7-COOK)
+docs/research/design-decisions-2026-08-review.md	historical-evidence	structural-only	410	bf3daa4b65d1fd8ce59ce86c2467f46817673482932951f9c4cb2ce68864bae8	WP40-Independent Design Rounds — Independent Review Evidence (2026-08)
+docs/research/docs-alignment-2026-09-16-r4.md	research-or-decision-record	structural-only	375	4801aa825744a958db0254e9df9ac8e7a6e16edf659685c9a4fb901436b2c2fd	Docs alignment, round 4: what wave 3 shipped after the first sweep
+docs/research/docs-alignment-2026-09-16.md	research-or-decision-record	structural-only	333	d0a238b03d6562c6494a19ad5a88155b7dc4efd3e7d3b4bb09c87b3c97b60a38	Docs and WP-planning alignment sweep, 2026-09-16
+docs/research/fresh-server-cleanup-materials.md	research-or-decision-record	structural-only	77	61f053d4b444a2ff7390e0b0606d94e5a0fd1b9733c382a7656814eac7e2e9fe	Fresh-server cleanup: materials and camp anchor
+docs/research/graphics-improvements.md	research-or-decision-record	structural-only	427	8030752fa78ba6846ffbca75ac42e0cb11665e4a5e6a5041a5d58aa4383ddb55	Graphics Improvements — Research
+docs/research/hud-bars-task-card.md	work-brief-needs-status-check	structural-only	159	1afdbbb2e4c50cafae1e7c9efcbf6000a149b5d24d9a9a0831cb58d322151fcd	HUD bars — task card (2026-09-16)
+docs/research/hud-bars.md	research-or-decision-record	structural-only	387	8dce079b21c9a00f2accbfd557b3d0dbd7d90ab7d46c05014f9f94a7812cf1de	HUD bars — what shipped (round 4, lane H, 2026-09-16)
+docs/research/licensing.md	technical-reference	structural-only	130	af82b1e2eb1fd74b55b38f1af6444cd1f288d358bcbb46ce48a154b421094a03	Licensing Research — Grudgelands
+docs/research/lord_of_the_test.md	technical-reference	structural-only	34	0f71be4455a9215e3923d86f751fb7f14f573dfacf4f2a273c2d70c2de343010	Lord of the Test Briefing
+docs/research/luanti-lua.md	technical-reference	structural-only	401	1fa5a89806ea879e67d7b83eca561000367900f475f9fcdd759cbc11304e7823	The Lua environment inside Luanti
+docs/research/luanti_engine_api.md	technical-reference	structural-only	139	98d35d01887df5a4ba676ad6a8186bbe24c2ad099f4f2fcff1b4f58a40b6373b	Luanti-Engine / Lua-API Briefing
+docs/research/mapgen-control.md	research-or-decision-record	structural-only	2062	b18684bf582e36a98871924dd0b62dff2a5e2c1f16f085f62826e65fd553e247	Map Generation Control Feasibility Study
+docs/research/mapgen-performance-exploration.md	research-or-decision-record	structural-only	428	a5e72a0c02c4ccf14291bc346660e0e10b7282108eb2f82c6d9a66beca89ecdc	Mapgen performance exploration (read-only Astra study, 2026-09-19)
+docs/research/mob-candidates-evidence.md	historical-evidence	structural-only	380	4da1fe83e539d836fb67d6c2fa3db10d608dc5bded3a735b2d8c180644f3936f	Round 7 mob-candidate evidence
+docs/research/mob-pressure-task-card.md	work-brief-needs-status-check	structural-only	436	09ceb8c12c75c6a5e7c80b831da237af3ab781fd5fd902d9e0ea9da423d8956c	Mob pressure — task card (2026-09-16)
+docs/research/mob-pressure.md	research-or-decision-record	structural-only	559	3c77cd1f197779f7147f2289f8d84e1ee09bb50865a2532b2f0e4f162c05d23c	Mob pressure — what shipped (2026-09-16)
+docs/research/mob-worlds-plan.md	research-or-decision-record	structural-only	339	0c9e030254406557ddeaa87261a3f9988a6ece8cd3270a9fb50bec2a8e9447bd	Creative plan: mobs and spawns — three worlds (Round 7 deliverable R7-MOB)
+docs/research/mobs_redo.md	technical-reference	structural-only	16	09df44183cc263ff357565a8ec9e0c17f5a3d038e5305e84834643d7dbfd5e56	mobs_redo Briefing
+docs/research/plants-and-potions-reference.md	research-or-decision-record	structural-only	530	475aa8337a7f78a5883c750e434d3a2de7db112e9ee3a07d1c397b128e4dbdde	Plants and Potions Reference Survey
+docs/research/playtest12-audit/README.md	historical-evidence	structural-only	132	fcb616f126c98515406854ea801e5809eea607e1e1b68a3dc34cd3d3f089f051	Playtest 12 design-to-code audit — 2026-09-20
+docs/research/playtest12-audit/gameplay.md	historical-evidence	structural-only	151	e24a6b384daf1fbc661d5915876c52793a17030400f17457755e6ce0436bc74e	Coverage matrix
+docs/research/playtest12-audit/process.md	historical-evidence	structural-only	150	69149137f6d8f340a3f85cc224e7e1366d00f24254f9ec58587de670755bb090	Round 9 process-authority audit
+docs/research/playtest12-audit/professions.md	historical-evidence	structural-only	181	30ef8b8ec6659ffaa11dc8c439763d4ffac0a87fb8f1a70b6d11fd9ec7b1bdf9	Coverage matrix
+docs/research/playtest12-audit/world.md	historical-evidence	structural-only	110	8d41ab3844ca339a9d527ac2af2ba4c39015cfecd90ec2b8ba2b7af301efe9ff	Summary
+docs/research/post-wp40-planning-review.md	historical-evidence	structural-only	99	10f8d33a092077c85635f2f22f8e8120c7621f9f62c1ae7ee45046d8a7868e0a	Post-WP40 Planning Pass — Independent Review Record
+docs/research/post-wp40-readiness.md	research-or-decision-record	structural-only	287	29e8a49b265ad6613ff5c254d9a839a01da7efd4ff6a5405d39ed2d7dcd39f49	Post-WP40 Readiness — Sequence, Handoff Cards and Critical Path
+docs/research/r10-capital-services.md	research-or-decision-record	structural-only	104	fa8f1eed53b57748f403f0fa390839e8d3bf6d46681ceebe973f0175ca6a198b	Round 10 capital services
+docs/research/r10-equipment.md	research-or-decision-record	structural-only	79	4b78273911dc1f6203b10c7adf051e635c8ed81252fa1f116de2adf425eade36	Round 10 equipment delivery evidence
+docs/research/r10-farming-completion.md	historical-evidence	structural-only	50	89865262a4ee68f132679bafddb173cb8af5a7f49a988e5c09ff46d24549b81a	Round 10 farming completion
+docs/research/r10-gameplay.md	research-or-decision-record	structural-only	94	780f4122358f59985e86773949b2b59ec04a63e7f059bcd58af2982701619837	Round 10 gameplay implementation record
+docs/research/r10-visuals.md	research-or-decision-record	structural-only	111	29a2285a49bbac70609999af633b084009fa6f91a6e273f587af40b2a43302d3	R10 nonweapon visual correction record
+docs/research/r10-world-content.md	research-or-decision-record	structural-only	148	23e353dcb9619064bb11b5b1702753cc203623141b2b53fb4622064f4a724835	Round 10 — world content and farming integration
+docs/research/r10-world-corrections.md	research-or-decision-record	structural-only	117	e7568bd6b9006d83ef7a19667838fda1b5f2262b474f5263f0d8af347d893687	Round 10 world corrections
+docs/research/r9-perf-completion.md	historical-evidence	structural-only	105	843b129e7ca135664f8768efee09722df83276baa6cd6ca5c333a6520e543796	R9-PERF completion record — 2026-09-20
+docs/research/r9-perf-review.md	historical-evidence	structural-only	55	de399d06fe2ff7a8be7107f31011227e119d2e2cc45b7b5503fc9c6c61962b51	Independent R9-PERF Review
+docs/research/reference-media-candidates.md	research-or-decision-record	structural-only	245	83790c3011672285d37a79e0e30ece8b310422e17876630ed3a502b41f5e5bc0	Reference-media candidates: `wildlife` and `forgotten_monsters_reworked`
+docs/research/round10-closeout.md	research-or-decision-record	structural-only	133	0d21961bdfe3937a2f24f62b1327b25840a8acdc61fbb35b53c3d72a548f49bf	Round 9/10 decision reconciliation
+docs/research/round10-decisions.md	research-or-decision-record	structural-only	202	683ddc636d5001958ca5f0559c1623a26bad96d0309bc50caa2a6b9b838f6f6d	TODO — Round 10 scope and Playtest 12 follow-ups
+docs/research/round10-execution.md	research-or-decision-record	structural-only	192	4db0638d3cc728e8f9af388dc5b221b1097140d1efd276c34c316015fe0b0f4d	Round 10 execution and resumption record
+docs/research/round10-final-completion.md	historical-evidence	structural-only	106	3711a9d32f8e5c02ba8d101b5a38620793a664390ca10013001673eb611aaf18	Round 10 technical completion
+docs/research/round10-next-playtest.md	research-or-decision-record	structural-only	92	c79f2fc624f7e6f67ee0b0aabe5482e09a5bc984377a465713bc2f406ec738a4	Round 10 fresh-world playtest checklist
+docs/research/round10-reviews/README.md	historical-evidence	structural-only	86	bd44e1069bbfe75eb0bd09c7afadb1cf691ff7ba1690e96d03dcb91550a0da4b	Round 10 independent review records
+docs/research/round10-reviews/art-integration-review.md	historical-evidence	structural-only	62	ecb0b5c7d39ec6154f249f75f18b23fef65334ee2c4b8530385ba0912dcb398c	Independent ART integration merge review
+docs/research/round10-reviews/art-license-preflight.md	historical-evidence	structural-only	145	39818126076ba5bd2993f8673444823ad94cc34f0126606b03710f8601be203a	R10 ART immutable-source licence preflight
+docs/research/round10-reviews/art-review.md	historical-evidence	structural-only	132	a0f83ebc5aaaa189f0181f2458472e8abc68801c176dd9958babab6ec676becf	Independent ART review
+docs/research/round10-reviews/authority-refresh-review.md	historical-evidence	structural-only	37	f43f661ce77e66dbd8246e8f0df6d4c5b3f5f784a7057d885a678cc3bf2e391c	Independent AGENTS authority refresh review
+docs/research/round10-reviews/banner-fixture-review.md	historical-evidence	structural-only	59	95a5c971962dace5d085b2580c703b390bb2caf8a31920ac6a80e1417c1bdbcf	Independent integration micro-fix review
+docs/research/round10-reviews/cap-review.md	historical-evidence	structural-only	69	6ff12bf274f182f3d7484cf21bc435797deef7e9b57b59e87f60ae38273994d1	Independent CAP source review
+docs/research/round10-reviews/capital-current-baseline-review.md	historical-evidence	structural-only	39	e74fa97f6a9b34ffd28f2d2df7239f746b104b50819f9550342a900edd21070d	Independent current capital baseline review
+docs/research/round10-reviews/capital-overlay-attribution-review.md	historical-evidence	structural-only	30	46185819e0f64c854f5e51c3b7140d04be98e019f04aba5de4f7ccc67f977a71	Independent capital overlay attribution review
+docs/research/round10-reviews/capital-phase-review.md	historical-evidence	structural-only	49	6a3b8e2b74fb9e27d8ca52d48e471d3502d03e9fb9c75c09e76989a0d1dc22e3	Capital avenue phase correction review
+docs/research/round10-reviews/close-final-review.md	historical-evidence	structural-only	46	8a6b5779edbf0c83e2d80148b8f0cbf0204d6ea59c42a663557db64e7f3804a3	Independent CLOSE final documentation review
+docs/research/round10-reviews/close-review.md	historical-evidence	structural-only	31	35bb87eef9bcd281909c1ca4df763eb21e200f6128bfb7e153187bd58dd1907c	Independent CLOSE documentation review
+docs/research/round10-reviews/display-placement-review.md	historical-evidence	structural-only	46	c6a77722c3d599519f9c9475dfdf59d3b302121c44f8e5c312cc33e18d773bb8	Capital display placement crash review
+docs/research/round10-reviews/engine-gates-review.md	historical-evidence	structural-only	91	a25598c9dd85923415925a11b4785d0e1db2831c9dc9bff3cc8b04cee95b493b	Independent ENGINE-gates source review
+docs/research/round10-reviews/equip-review.md	historical-evidence	structural-only	31	5b5d24ef784314191b910ab36d8c19f14c81a2c3146dbf45286b45c3b5be07ff	Independent EQUIP review
+docs/research/round10-reviews/farm-review.md	historical-evidence	structural-only	34	c291cd70787b68a8eb3d84c0664d9ffd3012e1928d677ea07018754e42ee0e61	Independent FARM review
+docs/research/round10-reviews/final-applied-docs-review.md	historical-evidence	structural-only	39	1008f3313412b3ca785f1e928a2a451e1812c3f59fd24bf9d967d1fa9c3228f8	Round 10 final applied-document byte review
+docs/research/round10-reviews/final-capital-engine-review-correction-2026-09-20.md	historical-evidence	structural-only	38	86ed1948ff481836eb720dba4975781cc5f4d4fdc0f63209440f38020bcf103c	Correction to the final six-capital engine evidence review
+docs/research/round10-reviews/final-capital-engine-review.md	historical-evidence	structural-only	44	60b5107d774bacc66d0251b15526701483bfcede0396f62f13586423e7e4e241	Final six-capital engine evidence review
+docs/research/round10-reviews/final-docs-delivery-template-review.md	historical-evidence	structural-only	42	1eff4317b002bf1785816b3a1527a66a8c1a22c4c505d8b85ef3931bcb17a1ef	Round 10 conditional delivery-document review
+docs/research/round10-reviews/final-docs-staged-review.md	historical-evidence	structural-only	31	23b0575e617ed336e9517092d74d670c440a91195bfdb3f17c9ab6e8d56bcd85	Round 10 staged final-documentation review
+docs/research/round10-reviews/final-dynamic-docs-review.md	historical-evidence	structural-only	47	7b4a174e51a50265f866e593c5ea5ee18bbe4a253b12f8aa90b539b760d8df9f	Round 10 final dynamic documentation review
+docs/research/round10-reviews/final-evidence-review.md	historical-evidence	structural-only	47	4adf841015629aa66b1443bd4eb6ff83e5cff5304611dbddea16fbc226853eba	Independent Round 10 final evidence review
+docs/research/round10-reviews/final-runner-review.md	historical-evidence	structural-only	72	4e61ae5c8a27044961de1f92954189c58a913a752edbcadb5a9d5d8877b721e0	Independent final-runner composition review
+docs/research/round10-reviews/final-static-review.md	historical-evidence	structural-only	39	ce547e35236f279dbcb4f154d3c3e62823270562ffaab27a4f2577ebe4674dee	Round 10 final static-artifact review
+docs/research/round10-reviews/final-v3-runtime-review.md	historical-evidence	structural-only	56	7d1568fcaab997d34118cf60d22b3629e9077c3e2bb9f022681fd5260dc650d2	Round 10 final v3 artifact review
+docs/research/round10-reviews/game-rereview-final.md	historical-evidence	structural-only	22	4a77491bb4ea18daf135c62792b9a99be28971578f22cea800a2145025da9795	Final focused independent GAME re-review
+docs/research/round10-reviews/game-rereview.md	historical-evidence	structural-only	64	b5de67cbd8bfd5dbc3968c3683f1b1dd29b66e034fe93466af45a85fee4e9a5d	Focused independent GAME re-review
+docs/research/round10-reviews/game-review.md	historical-evidence	structural-only	107	f0e9ea77f3629a19cea74978f8d301046bab4d1359ae6fc5e0b862ca1c030d0f	Independent GAME review
+docs/research/round10-reviews/map-b-review.md	historical-evidence	structural-only	153	364ad73d15bfa5f8f48f2edf8275b050319896627dec38a32f47af79fb3daa89	Independent MAP-B review
+docs/research/round10-reviews/phase-hash-root-review.md	historical-evidence	structural-only	22	bed42dfd4e58de5cc3dc2b5c2bd9080339d6280e5cb1b4e9b95e57fdc536f590	Capital phase input-root review
+docs/research/round10-reviews/shared-fixtures-review.md	historical-evidence	structural-only	73	eaeb2b7bf05b4eaefc3b91edad725796612cda8a5b7a8a7cb2cb828998c1f8ae	Independent shared-fixture integration review
+docs/research/round10-reviews/six-start-engine-review.md	historical-evidence	structural-only	40	d74c9ee0ec2191337132fe380689abf5d1d3858538f4039b9d7af952558bec5a	Six-start engine evidence review
+docs/research/round10-reviews/world-review.md	historical-evidence	structural-only	75	e71008588cfa0dca1c2541ec44842a46ec6f3bf0e84486b30f5cfafc8c5521f9	Independent WORLD review
+docs/research/round11-art-brief.md	research-or-decision-record	structural-only	19	304aeb228b27bd9369a8a5f0d92779f12f7dcc24543fe8de6a6726820bf30ac3	Round 11 ART handoff
+docs/research/round11-art-evidence.md	historical-evidence	structural-only	67	aa9c4295a0865dd87141590e4fa28258e4166db53207f20e0e35541bd725a36b	Round 11 ART implementation evidence
+docs/research/round11-combat-evidence.md	historical-evidence	structural-only	89	013a9d2a08d1f7463dfa751bf38f5d2e1502cec468d504edbde151a75986b5cb	Round 11 COMBAT evidence
+docs/research/round11-completion.md	historical-evidence	structural-only	147	e3ce6407e2d580b89b9871faffdc8b9ebc366a47974d0739e61f068b1c9bb258	Round 11 completion
+docs/research/round11-execution.md	research-or-decision-record	structural-only	443	4435f5ff64252c78044bb1a511c439d803dc278a1ed3207bca2f425e54d789d8	Round 11 execution checkpoint
+docs/research/round11-farm-evidence.md	historical-evidence	structural-only	90	e0a8ee591de02a6b71bce4508892259996ce4d5addf6a4a5aedb491bd9f27886	Round 11 FARM implementation evidence
+docs/research/round11-followup-bow.md	research-or-decision-record	structural-only	85	06d97cbef36bb72c3714db6768c1b9cc381cd40792d1aa5453b30906f8c49595	Round 11 Scout bow presentation follow-up
+docs/research/round11-followup-review.md	historical-evidence	structural-only	75	84c9427b480e20b3c441c4b8e38cf2da5c36aa26a16ec2be48f7ba99f2160724	Independent review — Round 11 playtest follow-ups
+docs/research/round11-followup-trainers.md	research-or-decision-record	structural-only	49	9db19537da3f76d7987946c9bb965d8f980c75c0a7ebe177acf7414f84e01367	Round 11 playtest follow-up: capital trainers and Leatherworker sign
+docs/research/round11-game-evidence.md	historical-evidence	structural-only	95	fa8ac778e52d734e9485318f00cba6775938c46e857b34289741442a8a591aaf	Round 11 GAME evidence
+docs/research/round11-gear-evidence.md	historical-evidence	structural-only	44	4f66e41a1d12b3c0ec1563784d389527fcac9a2801fbd11d65ec4de062877b2c	Round 11 equipment implementation evidence
+docs/research/round11-initial-diagnosis.md	research-or-decision-record	structural-only	174	b8b39347ed10a549a3a570597fca651fe341ac677193e54c4da67dc11c3695fd	Round 11 initial read-only diagnosis (historical)
+docs/research/round11-interaction-followups.md	research-or-decision-record	structural-only	65	d767f5bb0fcd31e33a54e749a8de66dca772c58a23ba7663404bfe59fb8205eb	Round 11 interaction followups
+docs/research/round11-interaction-review.md	historical-evidence	structural-only	38	b9d0ee31575bb600070409d3348c5cfc918c0c181e450f5dfd37a7c872225c5f	Independent review — Round 11 interaction follow-ups
+docs/research/round11-next-playtest.md	research-or-decision-record	structural-only	136	577baa74f426ae120a90f878b220e5620952a139904484dcee41472fdc8f664b	Round 11 fresh-world playtest checklist
+docs/research/round11-plan/README.md	research-or-decision-record	structural-only	295	e34d2a60de6b3a26866db97f6bf6cb81eb1d4b3eb778873b6740e715230a426d	Round 11 execution plan
+docs/research/round11-plan/combat.md	research-or-decision-record	structural-only	220	788252021d900e790064d978df8b689009d112fa7ef133546e76583bbd50d278	Round 11 armor and small creature-presentation plan
+docs/research/round11-plan/gear.md	research-or-decision-record	structural-only	224	2caff3d1c32aff07235acb0aad4c560e8e451ec1085364f4618ed7915f977dda	Round 11 AFF / GEAR / SCOUT implementation proposal
+docs/research/round11-plan/review/art-final.md	historical-evidence	structural-only	28	bdeb447f89f206307290f0977aeed4aba4f5b85603edd6ce7a298d568435b7dc	Round 11 ART independent review — final focused rereview
+docs/research/round11-plan/review/art-initial.md	historical-evidence	structural-only	26	1edbe80437ede9cdb7b4a8f25d72e63c3609dd445f5040d870f9a45c71d6592f	Round 11 ART independent review
+docs/research/round11-plan/review/combat-final.md	historical-evidence	structural-only	35	630cc2246ecb142f1e06a027f4eb46dc82f977f3be5d1aa7e4b6e7d1d95a3a7b	Round 11 COMBAT independent review
+docs/research/round11-plan/review/engine-probe-static.md	historical-evidence	structural-only	23	bd31a3498c699f2d18eed2a8f94f687404b92c30c0417fec7e80829a4beb1982	Independent Round 11 engine-probe review
+docs/research/round11-plan/review/farm-final.md	historical-evidence	structural-only	28	65dd3d7ee28d763255d7af81ebb4e36d76bd79205b61bdd4e2152d942a05294b	Independent Round 11 FARM final review
+docs/research/round11-plan/review/farm-initial.md	historical-evidence	structural-only	51	7ec154fdc8f58372d3c6d2ebc0f66bda93a3427ea14840fb77b0b0c19123154d	Independent Round 11 FARM review
+docs/research/round11-plan/review/game-final.md	historical-evidence	structural-only	166	806bfb5f5e021f64cc1ee849170a705c4e5c396a3840b02ca10e0dad1bda5685	Round 11 GAME independent review
+docs/research/round11-plan/review/gear-final.md	historical-evidence	structural-only	15	e04750465d094c480100e5cdc71a227cad0a6c98fd2cbdd51464a89a1403af30	Round 11 GEAR focused independent rereview
+docs/research/round11-plan/review/gear-initial.md	historical-evidence	structural-only	28	a0ead34cb797153209b7b446e6b13a188b4a9e3c79790b7ae9f9838008f1f44b	Round 11 GEAR independent review
+docs/research/round11-plan/review/integration-final.md	historical-evidence	structural-only	35	9f6d8d14bdbc97740ecce6d9c552105bd8a72aff786080ebba7cb1929067ff4a	Round 11 final integration fixes — independent review
+docs/research/round11-plan/review/repair-final.md	historical-evidence	structural-only	42	350efab735237fa3b8d8bde7ef6cb232fbfcab38aec100c017a6c89d0143ba1a	R11 REPAIR final focused re-review
+docs/research/round11-plan/review/repair-initial.md	historical-evidence	structural-only	25	7e914e8feaca217340ca717334d4f28b3017973d9071e3b858b69c2bef2e9eed	R11 REPAIR independent review — findings
+docs/research/round11-plan/review/repair-second.md	historical-evidence	structural-only	46	9e005cb2949250df7e1682e3a57fc2420085c568f73fd24cdd0263817475972a	R11 REPAIR focused re-review — findings
+docs/research/round11-plan/review/report.md	historical-evidence	structural-only	47	1debbd7ece169690e78f802630acc7133d43e7593d2f7aad07816a1a4229858d	Independent Round 11 plan review
+docs/research/round11-plan/review/scout-final.md	historical-evidence	structural-only	65	0d37472ad64e255d72858106b8ec4203864c553b7e73fb7b70c53044f0355e21	Round 11 SCOUT independent review
+docs/research/round11-plan/review/scout-initial.md	historical-evidence	structural-only	43	126f3fc5ba81d436820be4941773863d731f11e43bfe438fddca6227ba62461b	Round 11 SCOUT independent review
+docs/research/round11-plan/review/scout-traders-final.md	historical-evidence	structural-only	27	149cc83354edfd7db7f857db0016c40e88ce819e72694606b8f4c9a8ea85a28f	R11 SCOUT-TRADERS final focused review
+docs/research/round11-plan/review/scout-traders-initial.md	historical-evidence	structural-only	22	c2ce4772ec88e186180c1697a61b635b75ee4a0e6fa2c2f77aeb959346b7e750	R11 SCOUT-TRADERS independent review — findings
+docs/research/round11-plan/review/spec-final.md	historical-evidence	structural-only	25	3075f14a8d3e65bb326c2c073c613f59a0b94400bbd5375106909a94deccb109	Independent Round 11 SPEC final review
+docs/research/round11-plan/review/spec-initial.md	historical-evidence	structural-only	42	f744d36a1074f40db167f6ca34df3ece4e6a0987f445ce35c186581b4a14d06e	Independent Round 11 SPEC authority review
+docs/research/round11-plan/review/world-final.md	historical-evidence	structural-only	77	ae71381381a8c74694569b94e34c5752a605b25ba1c32e120bfb10b57056903a	Independent WORLD-CAP review
+docs/research/round11-plan/world.md	research-or-decision-record	structural-only	299	6e7b802ac6bd3e0e6506d9165b348ed08b74455e0436b0c1118f9f86797a2db6	Round 11 WORLD / FARM / CAP implementation brief proposal
+docs/research/round11-planning-decisions.md	research-or-decision-record	structural-only	191	cdfe4379a2839870ef2c04ad275c3ec04c2520fe1f2de9dde9ae97312279a9d4	Round 11 planning decisions and source reconciliation
+docs/research/round11-playtest-followups.md	research-or-decision-record	structural-only	112	57c37e926290d024ec09bf6c5c825f866104d39885d1cacfa23f52adb5dcc823	Round 11 first playtest followups
+docs/research/round11-repair-evidence.md	historical-evidence	structural-only	63	c5e589bf7dc89666020da1e5f9739971f430b738f8ec7e8dcff9e6dc811908ca	Round 11 REPAIR evidence
+docs/research/round11-scout-evidence.md	historical-evidence	structural-only	100	5a002e5d4cfc34e92c898dd88de014fb70d2772d5ebadac45ee98d0de895fc8c	Round 11 Scout evidence
+docs/research/round11-spec-audit.md	historical-evidence	structural-only	85	d7277a0497276752584ecfecef52b5de20d08e51749e3a4f22dc81bc9cacb9f0	Round 11 living-spec authority audit
+docs/research/round11-vegetation-chase-fix.md	research-or-decision-record	structural-only	79	3223384927b8c54c143be9e39180edd921931defcd6a7b004f56652c59e44c01	Round 11 vegetation pursuit regression
+docs/research/round11-vegetation-review.md	historical-evidence	structural-only	27	f1937f79f60253693fa2ffe584e357776683916960dd1ed81156a2a41ee4154f	Independent review — Round 11 vegetation pursuit correction
+docs/research/round11-world-evidence.md	historical-evidence	structural-only	168	d9592d78a31193dbd8a23503c4ef9c06da4509d676dece6e5ca86638b76c82eb	Round 11 WORLD-CAP implementation evidence
+docs/research/round12-completion.md	historical-evidence	structural-only	110	3930185f384c6b0cec47a3e95175044f23700624428751e099c3c981a823b14f	Round 12 completion
+docs/research/round12-execution.md	research-or-decision-record	structural-only	219	88efa63abdbed8694db835c09c114dc4275012597e9a59cc7b288547b378e147	Round 12 execution checkpoint
+docs/research/round12-farming-evidence.md	historical-evidence	structural-only	91	fd26ee6eeb171de5a28fe0063feb8d53c2fd2d77a5db6d884e151b0d72daab76	Round 12 farming implementation evidence
+docs/research/round12-food-farming-audit.md	historical-evidence	structural-only	146	b347c7309ca8738b74fb85e4c2e1bab1b2b5dcb116beb530e7fa018645399790	Food, Creative Inventory, and Farming Audit
+docs/research/round12-gallery.md	research-or-decision-record	structural-only	30	4decff961019e034294259ba18b9d59ac19b8ebdc2fd2cad2fb73daf45da47b9	Round 12 visual gallery
+docs/research/round12-next-playtest.md	research-or-decision-record	structural-only	77	ab770f5585f038b9c78f26df4b83de5db8254d9d837307556c5b3140a08ad3b6	Round 12 playtest checklist
+docs/research/round12-plan/README.md	research-or-decision-record	structural-only	159	aa350234348f4f810d84c14e80da36334ab4afa78e795b909d07db210b081404	Round 12 — planning checkpoint
+docs/research/round12-plan/bound-inventory-research.md	research-or-decision-record	structural-only	233	ca9bbe5a11f335fb09074310afdf4b02da34515dd60d7e03ca6501b1f66dba92	WP47 bound-item transfer resolution
+docs/research/round12-plan/farming.md	research-or-decision-record	structural-only	167	90d7d84c8250ff8ce3c7abc6bf5f3fd6defcd1b2ec79192233bb21adeb8df4f0	Round 12 full farming family pass
+docs/research/round12-plan/interface-art-talents.md	research-or-decision-record	structural-only	115	d8e4d518aab7dc8367067d8d228acdb92142ec3cac4bad253c64c45588052633	Round 12 UI, art, recipes and original-class talents plan
+docs/research/round12-plan/review.md	historical-evidence	structural-only	51	8b73aa1c412309c57241776edc23c357455a5f717c4c17b6f1fb715bd3e2f7c9	Independent Round 12 plan review
+docs/research/round12-plan/skills-pose.md	research-or-decision-record	structural-only	425	603d6fba818dfcbe199af2e6670d95b13f31da98b02f2a45528a1eb0cabace25	WP47 / Round 12 plan: Skills tab, retained mount tiers, and generic held-item pose
+docs/research/round12-playtest-followups.md	research-or-decision-record	structural-only	67	adcf3d063042bdc55e99f104a695f28a8a4bc011707dd14acfaabd8d0a478817	Round 12 — First playtest corrections
+docs/research/round12-recipes-ui-audit.md	historical-evidence	structural-only	41	4acf74a9fcfcb800a2d1a3f4028a4506373001adcf3066b5fb4a8d8aecc17529	Recipes and UI audit (read-only)
+docs/research/round12-reviews/docs-final.md	historical-evidence	structural-only	87	53d6ec5f21b3985960ca3f583bbe33e3b245f3f704d5e2622b76ec5f45f2ee68	Round 12 final documentation review
+docs/research/round12-reviews/docs.md	historical-evidence	structural-only	164	ccc97041c56e06bc4bd73879b80ae5125f5c17323e01ab007671a5a900947276	Round 12 documentation consistency audit
+docs/research/round12-reviews/farming.md	historical-evidence	structural-only	72	00f223f3d02da9789bc1ac87fb2cf71520282745741b2c0ed87a7c4c50f17d7f	Independent review — Round 12 FARM
+docs/research/round12-reviews/food-pose-art-initial.md	historical-evidence	structural-only	57	0272c89a4ff3b7bda2715eb9817bc9f4778b77ae4c703458f8a5e53b9ba5b43b	Independent review — Round 12 FOOD, POSE and ART
+docs/research/round12-reviews/playtest-skills-restore.md	historical-evidence	structural-only	63	e368d72da6e477568179e6c1ce3e62950c9790e04a9ed8ff017422dcfa1d817e	Independent review: Skills catalog restore fix
+docs/research/round12-reviews/playtest-starter-recipes.md	historical-evidence	structural-only	32	0c2a22fd7ad6a6e35a68c0dbc5e27756958636ae354390978240bcf55af3d2e6	Independent review: Round 12 starter catalog fix
+docs/research/round12-reviews/recipes-initial.md	historical-evidence	structural-only	102	0be80cbb30802d86316f264edce87810d31121d4d586c597b2aabad0828feb39	Independent review: Round 12 Recipes
+docs/research/round12-reviews/recipes.md	historical-evidence	structural-only	151	85c0f1e012d086879971bc71ab72b18f2fcbc40eb6a267851161042ef39c1745	Independent review: Round 12 Recipes
+docs/research/round12-reviews/skills.md	historical-evidence	structural-only	105	0c6455b9ba4e48ee59b7c88886e4533b2591cfe30be71929082c72a9e3285192	Independent review: Round 12 Skills catalogue
+docs/research/round12-reviews/ui-art.md	historical-evidence	structural-only	31	bc10fa6dd239ec79bc9158b55fa53f6040e158aae1911b3630f73fbff9e3b95c	Round 12 UI and ART independent review
+docs/research/round12-reviews/ux.md	historical-evidence	structural-only	121	9929786de1ba749bca34bbffbd54edb56c556c211529667f84ae4f5b605e0f0a	Round 12 newcomer UI/UX audit — report only
+docs/research/round12-reviews/x3.md	historical-evidence	structural-only	315	e24eb818c2a77dccc69b580d278716aab320b1641172e96852e46fecb186764d	Independent Round 12 X3 review
+docs/research/round13-completion.md	historical-evidence	structural-only	84	048c64975d21a93d416c28aaa82c81e613e8c011fdf86c9c56616a64a75293cd	Round 13 technical delivery
+docs/research/round13-execution.md	research-or-decision-record	structural-only	92	ae0e309eda1d2be94737f3edb7336f616f4058422506ec614a1ac8dc4b12d25c	Round 13 execution
+docs/research/round13-next-playtest.md	research-or-decision-record	structural-only	41	0f0d1425656044a4c98bff10f29182a0e36d74159d4ed2ccf1aa02e6035e5d99	Round 13 next playtest
+docs/research/round13-occult-recipes.md	research-or-decision-record	structural-only	59	830d70b187d90a3146b6186444e39577731eed05008c8ccbbd0030fc0f903966	Round 13 occult weapon recipe followup
+docs/research/round13-planning-history.md	research-or-decision-record	structural-only	284	5218957abee92feac99a4dee61c030a6529ca8387584ba34b67cfd2fcb62a609	Round 13 planning history — historical only
+docs/research/round13-playtest-followups.md	research-or-decision-record	structural-only	45	4cb790b7503ba7d26170d82aec48ab5e3d2b7f8ca9a721cec02722ca7bd176ad	Round 13 playtest followups
+docs/research/round13-reviews/docs-drift.md	historical-evidence	structural-only	217	c12c133841c4d58d2d288162d03ffca3e5cbecd7506f2886b91c7541bac69bba	Round 13 independent documentation/code drift audit
+docs/research/round13-reviews/enchants.md	historical-evidence	structural-only	85	6bcd5823feab29b30d17be8e13fcce3390fc59d1a88cb255e05cd5d2c49bca1f	Independent ENCHANTS review
+docs/research/round13-reviews/equipment-recheck.md	historical-evidence	structural-only	3	8578e085ee309649f403b2d369ce7ca4747c453a140f7d691d0f35569da6435b	Repair finding recheck
+docs/research/round13-reviews/equipment.md	historical-evidence	structural-only	18	074a3946e978aed0fee22b6e1f076878216243375ebd7320892e6b1aa3b60dfc	Independent Round 13 equipment review
+docs/research/round13-reviews/hotbar-stables.md	historical-evidence	structural-only	63	1582521eb1141146f3cd6ef917b7d92e334022983889cef9a6325dae0c1f1a9e	Independent hotbar and stable-floor review
+docs/research/round13-reviews/occult-recipes.md	historical-evidence	structural-only	98	a82c5fc089d92b7290f8473b1f10e8eb44ec37a34135b4b0850aabcb6f2d3cda	Independent occult weapon recipe review
+docs/research/round13-reviews/stations-recheck.md	historical-evidence	structural-only	112	e6010fc127d571d3078f234c61d58c951652b233c221a2365a0d6009980fc9dc	Independent STATIONS fix re-review
+docs/research/round13-reviews/stations.md	historical-evidence	structural-only	99	bcb2e7b4515c60374542e57f84df825da688b770965614dc1cb34b73d9b0740d	Independent STATIONS review
+docs/research/round13-reviews/trinkets.md	historical-evidence	structural-only	71	d38b5e587f5347f46bc1e808555f603c09955095174b161363b3de331644cded	Independent ENCHANTS trinket-delta review
+docs/research/round13-reviews/ui-catalog.md	historical-evidence	structural-only	74	68f8894b052c20787bf9454c06cdb8f66f604907fcdc4008aa5b0ba3d7b2ce55	Independent Round 13 recipe-book and Basics integration review
+docs/research/round14-completion.md	historical-evidence	structural-only	100	0c5d0d4ed6bc518710f5a81f3c28f1397bcd6158380295b9d6cea6069634e7c5	Round 14 completion record
+docs/research/round14-drift-review.md	historical-evidence	structural-only	127	d87d7dd7e1c9beae23fb59b39527025e7bef92c0e062c05f9e7421a00d33d768	Round 14 final documentation/code drift review
+docs/research/round14-execution.md	research-or-decision-record	structural-only	289	5e09aa8dd02da404e871f261e444e99e9a41f32e45b64f4eda0c517ecb3636ae	Round 14 execution
+docs/research/round14-fishing-work.md	research-or-decision-record	structural-only	41	2593cbe5c51e517b7bae138e8de81265fed12524759fe301554996b263425dbd	Round 14 fishing candidate
+docs/research/round14-fixes-work.md	research-or-decision-record	structural-only	42	9867e42bc8ba70ce92bbe9b88b962075f41b263ddee72b0af722cca0e4e7118c	Round 14 fixes work
+docs/research/round14-integration.md	research-or-decision-record	structural-only	67	0597499d6c5252bfe6185d3f1d57bb55d2ab936620014ec43c2c166675c02eac	Round 14 bounded native integration
+docs/research/round14-map-work.md	research-or-decision-record	structural-only	47	dc832e8e064e604e887bfc120af2a5f70a518ed5116d7862718a49b70497844b	Round 14 map implementation record
+docs/research/round14-parties-work.md	research-or-decision-record	structural-only	76	2e60b26648c62223e8b8e1a1fda1d9cddbdf31dcbefb0205489ab8f8d01d468b	Round 14 party core implementation
+docs/research/round14-playtest.md	research-or-decision-record	structural-only	54	6353004f8aec4c8476a42bb334a262472117ec8ce70c65731316f1ed030b63e6	Round 14 playtest checklist
+docs/research/round14-poi-work.md	research-or-decision-record	structural-only	63	a0b1aeaaf58a2212fe4f1c5ecd3ecdd39c6489ad2085b6f329c4168a756deae9	Round 14 POI implementation record
+docs/research/round14-pregen-work.md	research-or-decision-record	structural-only	124	2cdb154f7696656e862449f35fbb521d47f5b64d16ab8b445924cb5884d49ca3	Round 14 preparation work record
+docs/research/round14-quests-work.md	research-or-decision-record	structural-only	86	016c304e6121d6b0938b51fd032ca3173fe8bf87c92b6da88af21c2e5c2155f9	Round 14 QUEST-CORE working record
+docs/research/round14-runtime-review.md	historical-evidence	structural-only	98	713938e87d63c2602ca6bbb727d5bd150caec9e476f46fb7eab489860508427c	Round 14 runtime package independent review
+docs/research/round14-state-review.md	historical-evidence	structural-only	103	c99ada45eddbfbf58106002f786080d499bfd700b648b465f65cfd7a0071b148	Round 14 QUEST/PARTY core independent review
+docs/research/round14-story.md	research-or-decision-record	structural-only	261	499e793aab1dcc4be42f1ecbc0f0ffd3cc43c4fb6bad6c6c8735a3d7b289dfec	Round 14 starter-story catalog
+docs/research/round14-ui-story-review.md	historical-evidence	structural-only	108	355271a3da5876213ab0c3daf7fde1f6fa23e3ea2d2988334902d1c01aa9645c	Round 14 UI and story independent review
+docs/research/round14-ui-work.md	research-or-decision-record	structural-only	48	fe54e87c9843256111f8fa3c74e10191c89bc5283803df5f9d6a67c6b1dd36c5	Round 14 quest and party UI working record
+docs/research/round14-world-review.md	historical-evidence	structural-only	177	d52386a6aa0f8c03e3ba290c7edb48c3fef61e39c7b1d9213ecc7347cdb134b5	Round 14 world integration review
+docs/research/round15-completion.md	historical-evidence	structural-only	93	501e03fb56f3c2b960db694c4e3264316d4265ceec9ae415686282da2f5a0e6d	Round 15 completion record
+docs/research/round15-cooking-investigation.md	research-or-decision-record	structural-only	135	bfaf4a2ff01525c9ee4b94cd4ae470a2f61d894742ad91fbfec0c1ec897fcb13	Round 15 Cooking trainer investigation
+docs/research/round15-docs-review.md	historical-evidence	structural-only	67	f7dcc10abe1f9e391716f73a7061f046d1c3be8785dfab4e10a5c63c6ee35173	Round 15 documentation drift review
+docs/research/round15-execution.md	research-or-decision-record	structural-only	203	714a08298af5e3d981561d4faf3770e7b4716d3a8395b3c58543e7e04a403430	Round 15 — POI character, regional quests and readable HUD
+docs/research/round15-group-followup-review.md	historical-evidence	structural-only	108	7cb5306f119678a17d49a52013ee9668d0364b49b74b8fdfb5bf851898c7c754	Round 15 Group roster — independent review
+docs/research/round15-group-followup.md	research-or-decision-record	structural-only	43	154d81fddff2eef7f40406dfebcf7c1964054c7bbea28e74bfa49335b230278c	Round 15 Group roster follow-up
+docs/research/round15-hud-review.md	historical-evidence	structural-only	127	5afd2ebc6c50c0a9e95454ac5ceba71265449c7c5494a85154c083e56c6b788f	Round 15 HUD independent review
+docs/research/round15-hud-work.md	research-or-decision-record	structural-only	126	e13ec6735e2cd2b3e5a49a3bc24cf5c30df25e38bd42c202a20826fc7d3f85a7	Round 15 HUD implementation evidence
+docs/research/round15-integration.md	research-or-decision-record	structural-only	43	bd9b4ac8bc5177e73079ff85f0aaeec1f5aa60a71f95b69339d34bdde6871ef4	Round 15 isolated native integration
+docs/research/round15-map-review.md	historical-evidence	structural-only	122	3097aa3b97a3c78115995175e8016f4cfba661513ad43fb4f8bb4e7f47898892	Round 15 atlas independent review
+docs/research/round15-map-work.md	research-or-decision-record	structural-only	41	3988fbd8b7baf2f074f133c5aac6ca81f3a9c9294fa5a6334cb154ec294cab89	Round 15 atlas work
+docs/research/round15-playtest.md	research-or-decision-record	structural-only	44	2a97ebe42661dc23bf68b71e3b9b11275a37c7d4a72d910b81f43f6a768cc2b0	Round 15 playtest
+docs/research/round15-poi-review.md	historical-evidence	structural-only	130	dea44ebe9f3c1fa55babe2cb531d7e442037bf7f31f0580aa65767e79e89411a	Round 15 POI composition — independent review
+docs/research/round15-poi-work.md	research-or-decision-record	structural-only	104	2b5022dd817a47b2a8ca326875202e4a9dc4d1a5f0619e409fe636d561483ac8	Round 15 POI composition work
+docs/research/round15-quests-review.md	historical-evidence	structural-only	129	bd97f507bcef560a532b21a3108d962bec1240d6aec0ac3905eb27e1eb9ff676	Round 15 local quests — independent review
+docs/research/round15-quests-work.md	research-or-decision-record	structural-only	128	bffa171be403433f20ccd6a6164c90a183d50158b1da02d4493e2ae07265f3db	Round 15 local quests — implementation record
+docs/research/round15-ui-followup-review.md	historical-evidence	structural-only	101	fd5e4e96354fbeadafb9978aa78b3d313c19070d01beb5db64331c7ebc1f517e	Round 15 UI followup — independent Character and Talents review
+docs/research/round15-ui-followup.md	research-or-decision-record	structural-only	92	08e79ae6e8a1b74a55e1001dd7492a20701a9ed3ad8c82c58a7db6ff9def7f6c	Round 15 UI playtest follow-up
+docs/research/round16-atmosphere-review.md	historical-evidence	structural-only	85	809356bd0bc9ade82e1b25604af1314c4ad6f152715dbce302cdc806c1e6f6f0	Round 16 F independent review
+docs/research/round16-atmosphere.md	research-or-decision-record	structural-only	42	1789bc82723f9acaa7eb4d4cea82de602f2157b63cb029f204435bcd9ebdfc18	Round 16 atmosphere, audio and density handoff
+docs/research/round16-combat-fix-review.md	historical-evidence	structural-only	71	0636ced17152c1a22a03504cc5ad747bebdba1449170aa2e96b08664ac38e1d1	Focused independent review — Round 16 B corrections
+docs/research/round16-combat-review.md	historical-evidence	structural-only	107	6ac124d8ee9cfbba6203d78388a270d0f9ad8947a9ffc24405f2f71235ede012	Round 16 B independent review
+docs/research/round16-combat.md	research-or-decision-record	structural-only	164	4a606ef9be40ed42b2ab03d947f8bfd29ecf1362c5c37231f30300d9d152e3fc	Round 16 B — Combat and control
+docs/research/round16-completion.md	historical-evidence	structural-only	107	1699e1d06bbc039fe8a5b635740b6d4cb92d76b86cbc61a3db6a020bd5ed8a50	Round 16 completion record
+docs/research/round16-docs-drift-review.md	historical-evidence	structural-only	146	69d46da4732f111eb558515894030dd9d829018a6ef66997d6e808d5bc068e2b	Round 16 bounded documentation/code drift review
+docs/research/round16-execution.md	research-or-decision-record	structural-only	53	3f4dff5ba64fbff66492da5d4fa08191093f6330aa420a2da12e8ec8d2e16c90	Round 16 execution ledger
+docs/research/round16-map.md	research-or-decision-record	structural-only	37	b42aeb815a5285517d191b6dee118b941ebf4daf900674fdea7e64c32c1be5bd	Round 16 atlas repair and service markers
+docs/research/round16-mounts-map-food-review.md	historical-evidence	structural-only	113	1a9317f3f828b8c20b6d19c230bae93322dbde88e9e23f3ea5408fb2e73666ea	Round 16 independent review — mount lifecycle, atlas, UI/food
+docs/research/round16-mounts.md	research-or-decision-record	structural-only	74	45bb5df6aa7eae2bcebf0d523a1aa9e8901cf5c42086ac6ff8a40dc82bf6fffe	Round 16 — Mount teardown
+docs/research/round16-plan.md	research-or-decision-record	structural-only	376	6cfd2fe6a1933a11a513557246218976b6bee3e68e2b276e52d8227626000902	Round 16 — Playtest fixes, combat feedback and surface preparation
+docs/research/round16-playtest.md	research-or-decision-record	structural-only	63	dabbb4263295be6420f0b0295b9b420e53f006297bc68784f1c2717d770a8e3b	Round 16 playtest
+docs/research/round16-progression.md	research-or-decision-record	structural-only	72	3a070711aa648e303b3d2c16cdf1c2895f522b026dfa4354d0bd5d772fa756e7	Round 16 progression handoff
+docs/research/round16-surface-fix-review.md	historical-evidence	structural-only	60	adfb991fb705c78c709ab115e3fead9f939ceff77395eb21e61f1fa8b66a1f2f	Focused independent review — Round 16 G-1
+docs/research/round16-surface-progression-review.md	historical-evidence	structural-only	159	007b2bcd7642b5013f3d74394532645f0d29826a0100f57521070165138a88a0	Independent review — Round 16 G and D
+docs/research/round16-surface.md	research-or-decision-record	structural-only	108	f8748e0ae7f2c7d154dc1c3f179c1bcf13547ffab01892d4b89df4e1c4cb6c88	Round 16 surface preparation — lane G
+docs/research/round16-ui-food.md	research-or-decision-record	structural-only	26	7eb14ab3dd5de6459c738298ab72d32a333d4ed66b5e81ef05ffbac594394a14	Round 16 UI and food implementation
+docs/research/round17-combat-fix-review.md	historical-evidence	structural-only	54	25f1d4e31639a75413a24f89d9d42aa60b796f6d27378aec22347a8e06cd58a7	Round 17 COMBAT focused correction review
+docs/research/round17-combat-review.md	historical-evidence	structural-only	105	6e32694fb5c5b9c019949b2cf3a4162e971f980a111739f809aa7f671ce990f6	Round 17 COMBAT independent review
+docs/research/round17-combat.md	research-or-decision-record	structural-only	114	82feeb2b8fa57ed76e5f865a871f2454eef232d09d53ef0ec5c2961c36ed8794	Round 17 B — Combat implementation
+docs/research/round17-completion.md	historical-evidence	structural-only	103	ce4d18fd28799b5bb1401674cdcaf14f5a8b48be46eb9421578338ed2895447c	Round 17 completion record
+docs/research/round17-display.md	research-or-decision-record	structural-only	86	ab733bde2fce08ac64b59c989af2ddaa614c961cf9ea4bf2f411c05b590018d1	Round 17 DISPLAY implementation report
+docs/research/round17-disposition.md	research-or-decision-record	structural-only	39	f58f185832b49590f46ba3135836170ad922be27dc5842293c87ac2f2f3d6fe1	Round 17 disposition implementation
+docs/research/round17-docs-drift-fix-review.md	historical-evidence	structural-only	30	079c30b5a79d07c17477eb56820ee943368b21531572920ee55d383afb54f7f7	Round 17 documentation drift — focused fix review
+docs/research/round17-docs-drift-review.md	historical-evidence	structural-only	75	9bb4399b190e83e8f224508d2689775fae34697a392a430b2a0c07b4296d6128	Round 17 independent living-document drift review
+docs/research/round17-execution.md	research-or-decision-record	structural-only	51	767d5c957b96288aadcc0db67eb10de9b5ea7c44c46012de4d333f649741ba7f	Round 17 execution ledger
+docs/research/round17-home-review.md	historical-evidence	structural-only	81	c2d20685698b2aa28194b41dc9b84b9194356d57e60cb0433dc0b03d829af9b0	Round 17 HOME independent review
+docs/research/round17-home.md	research-or-decision-record	structural-only	120	39ff9341cb8eca949cf4668744a59104d110e225672dd549fb174c78cd0708bc	Round 17 HOME implementation
+docs/research/round17-party.md	research-or-decision-record	structural-only	36	9054603eefafba5ce201b01a1c330e2f72c362ba458c794ee25880fb8161abb3	Round 17 party health colors
+docs/research/round17-plan.md	research-or-decision-record	structural-only	173	8a110018ec2cc9a58f0ccc6ce21f9435b348afc758b251ec4218d7ff3091b8fe	Round 17 — Home travel, combat readability and reliable ranged attacks
+docs/research/round17-playtest.md	research-or-decision-record	structural-only	68	0e0d47bfd64ec6a44a5cc4dde6e58762838546ec188686bb7a0b3b23fc4972b0	Round 17 — Fresh-world playtest
+docs/research/round17-ui-fix-review.md	historical-evidence	structural-only	43	b88a332680e3b4ea0a2bd092c666f5de2aab36133af24c7033b3403b6abe1d37	Round 17 C/D/E focused fix review
+docs/research/round17-ui-review.md	historical-evidence	structural-only	101	0804b26eabd18d6324b60ede55de5473d62cf7dbb3053dde7d6d0d87307e8bab	Round 17 C/D/E independent review
+docs/research/round18-art-report.md	research-or-decision-record	structural-only	86	9f058b07fc6d28a60806ef148d0adde653435bd40a1837bd00358f97af6032e1	Round 18 H1 — active-skill action artwork
+docs/research/round18-completion.md	historical-evidence	structural-only	134	c76a0d792c4038c99dc3069214b13d40e68161664f1b61555ece772b1b30407b	Round 18 completion record
+docs/research/round18-evade-report.md	research-or-decision-record	structural-only	94	f6b2d27b5491269ed5c675729c8bb92617e8556a15fa3f27397ccc114b933c88	Round 18 D — Damage-sustained pursuit
+docs/research/round18-execution.md	research-or-decision-record	structural-only	135	e0293564049a686651e41a2dabd6a0fe70bfd180ad45b4e01410e346ddfc6057	Round 18 execution ledger
+docs/research/round18-icons-tags-report.md	research-or-decision-record	structural-only	44	129d9a3acbd75549a291ae85c51719e580643679cefbf85830673e034722a631	Round 18 H2 — skill icons and stable display tags
+docs/research/round18-light-preflight.md	research-or-decision-record	structural-only	37	696594e9aae87ebd586cdb448411d01afe4c43278dcdf73794c7d3bd7cc98f03	Round 18 held-light preflight — deferred
+docs/research/round18-map-report.md	research-or-decision-record	structural-only	32	63ec69e39d8e3b47e4b4f00279058adc0840773a1aa76ca94094f3e5eae050ab	Round 18 B — atlas and native minimap
+docs/research/round18-plan.md	research-or-decision-record	structural-only	450	a77e18288163035f00e6acbc395b089e3e30ad437309dccb5b904eea8613e645	Round 18 — Playtest clarity, world consistency and preparation
+docs/research/round18-playtest.md	research-or-decision-record	structural-only	59	6c6c354b6ec4a7cb68cd8157942c9aa4789436b1bf12b6671d4e53592bcecf6e	Round 18 playtest
+docs/research/round18-populations-report.md	research-or-decision-record	structural-only	116	07fa6d56ece61455c8f5169053465794afb8e1f7d3864c7c799846ae4d6dd946	Round 18 population and quest audit
+docs/research/round18-preparation-report.md	research-or-decision-record	structural-only	88	63ce4fe41f6524086fb9a23f8f84c3a0461b37404c4f2a0b96238238dec4777d	Round 18 G — Surface preparation scheduler
+docs/research/round18-review-docs-art.md	historical-evidence	structural-only	165	bd59316d4753290be1f549d5dca06597ba6fe474e936181c5ed8f3b734930753	Round 18 independent design-drift and visual review
+docs/research/round18-review-ui.md	historical-evidence	structural-only	201	4771b0050e86682827487c63541e098379655e52525d414a593e9e2887439c0e	Round 18 independent implementation review — A/B/E/F/H2/J
+docs/research/round18-review-world.md	historical-evidence	structural-only	46	522917c4674932c74ffd1b78e4571f9337bb08629c270f2f6b8a23edee0d7ba9	Round 18 C/D/G independent review
+docs/research/round18-tools-report.md	research-or-decision-record	structural-only	80	0e596eab83085c528a33a00e8838bf1dbfe53793726eed2e70f7d3b5ebb07fc6	Round 18 J — Pickaxe and shovel material semantics
+docs/research/round18-waiting-report.md	research-or-decision-record	structural-only	24	13223c064bc41a27116d1d1a311a7128cd7e43856f37c1dcb900197e6be831d4	Round 18 preparation waiting report
+docs/research/round18-xp-report.md	research-or-decision-record	structural-only	55	b0d4a47567097b31d3f958a5752de91c5da39c0411f6078cb3595a9ec741a150	Round 18 XP lane report
+docs/research/round19-completion.md	historical-evidence	structural-only	105	7ab2a90ba10255363d9fd9ad9eb9dc797b6f71a7d320c155885533c46c418e36	Round 19 completion record
+docs/research/round19-execution.md	research-or-decision-record	structural-only	85	76374837358414c854f3eecb4cfd65a81e52424c0211b0b070e7dee4a4dd1119	Round 19 execution ledger
+docs/research/round19-hud-report.md	research-or-decision-record	structural-only	88	0c221bc33f1edd5e49240ac91cac4869476f87e37fb52d4461f143122c0e9f61	Round 19 party, status and dragon HUD implementation
+docs/research/round19-idle-health-review.md	historical-evidence	structural-only	114	0d50be7f1adc344acff0ed2eebd516c59417ca187e512539eb338a79643e94f8	Round 19 safe idle-health recovery — independent review
+docs/research/round19-map-report.md	research-or-decision-record	structural-only	72	4ced7f61920f1e80ca3f8553676138788693173df0c2ae193a9d39f69fcd6a83	Round 19 — Atlas lane implementation
+docs/research/round19-plan.md	research-or-decision-record	structural-only	216	523f356a0beb7b69603892e1fbb579993411fd1d6b87b5c4cfdbb203bc47ddf5	Round 19 — Atlas navigation and interface fixes
+docs/research/round19-playtest.md	research-or-decision-record	structural-only	41	46aaa9695f4ef0f6d23811f695825d6bcadf673f222f3c55087f1a51dc53d829	Round 19 playtest
+docs/research/round19-pursuit-followup.md	research-or-decision-record	structural-only	105	9d294bf62f66fba755477bdf37ec6456de8272dd578d100225763288241d2d5c	Round 19 follow-up — movement-gated ambient return
+docs/research/round19-pursuit-review.md	historical-evidence	structural-only	66	d5f2a25b8a6911c7ce43195d594ba948b6fb197fe7c08929505a53db110b55af	Round 19 pursuit-motion follow-up — independent review
+docs/research/round19-review-dragon-docs.md	historical-evidence	structural-only	112	bf2e8abb95c22127156c194dafe83384b766042cc6673bc92c4bb6cb3472ba4a	Round 19 D and living-document drift — independent review
+docs/research/round19-review-map.md	historical-evidence	structural-only	39	32c98d314b0c15b622a287c12844119a26a0c2d6de256fe9096d10276fa11622	Round 19 A — Independent atlas review
+docs/research/round19-review-ui.md	historical-evidence	structural-only	38	f56f7f13242515aa79efae60a01f7a807ae33df7dd482fefa5e3c64080845ea0	Round 19 independent review — lanes B/C
+docs/research/round19-ui-followup-review.md	historical-evidence	structural-only	23	91994fc0b2808c36e6f813d6c36726fadfd40fd8e7a403ccff56ee079b98a0d1	Talent presentation follow-up — PASS
+docs/research/round19-ui-followup.md	research-or-decision-record	structural-only	53	494e7191d5e59ab092fa85a0c7e9621b0b4a78a3232f9bf57504050b18107f07	Round 19 UI follow-up — shared Map window and talent affordance
+docs/research/round19-ui-report.md	research-or-decision-record	structural-only	75	57932ea7a2f48c3fce537123466de7936b77efd6e6e1cce310b55001ca08e426	Round 19 lane B — Character, Talents and Skills report
+docs/research/round7-decisions.md	research-or-decision-record	structural-only	204	42d5e2aa6cd30e2da755873e16bc715507991722df579f0f96a38f456ff8d6b2	Round 7 historical decisions
+docs/research/round7-inventory-extract.md	research-or-decision-record	structural-only	479	003535561b723a7b64009f4b7aca98d17056ef5a0c57d63b6465215d868a8157	Round 7 current-game inventory extract
+docs/research/round8-decisions.md	research-or-decision-record	structural-only	291	db7e68a016f182bec43eeff39c5eadd2db9177b5bba94dc9feb65a1e4bd35ef5	Round 8 historical decisions
+docs/research/round9-decisions.md	research-or-decision-record	structural-only	794	df23929a31edaaf435d58076dbc4a1b843e93195877a5bb8e94693cf44a70e1b	Round 9 historical decisions
+docs/research/round9-design-drift.md	research-or-decision-record	structural-only	121	1f769c9acca03d1dfc44fb208c0d25dcc8ca649cbbaa424188971388ea76f54d	Round 9 design-doc drift audit (R9-AUDIT, GPT-5.6 Sol, read-only, 2026-09-19)
+docs/research/shared-station-ownership-audit.md	historical-evidence	structural-only	115	b5145810fdfc5aa9c6d090da6d5793c84affd7d858ff250769aaf0d55402f087	Shared station inventory audit
+docs/research/spawn-variance-audit.md	historical-evidence	structural-only	81	f37f3188701df5536ca3122abe29e7452ae710ae4e08deb5bf172a6ecabde257	Spawn variance audit — round 5 baseline
+docs/research/station-viewer-rules-audit.md	historical-evidence	structural-only	58	7f3b48af0b557b414050d61aad313f42debb1cd9fa6236d0f20f40e830dbd577	Station viewer rules — design audit
+docs/research/voxelibre_minetest_game.md	technical-reference	structural-only	48	b9bdec03ed35f26c30d5e336e32d82e7f2c9bebbbf72112924191013dd4594d8	VoxeLibre + minetest_game Briefing
+docs/research/wp11-talents-phase1.md	research-or-decision-record	structural-only	416	c31bbd9bd26d5be698aa2ee41532e2b5b32399915661ad3543300532a6111523	WP11 talents, phase 1 — what shipped, what it measures, what is open
+docs/research/wp13-capital-library.md	research-or-decision-record	structural-only	516	31a99cb4f5f38a7ffad61a0e9c60d395e60868d4cd95b1511cdf16c8956c1fc3	WP13: the capital parts library
+docs/research/wp13-capital-terrain.md	research-or-decision-record	structural-only	429	da788064f0e2575cec09f4be8fbcd93404f80f24aee0c1e55f23b88b1cf64aa6	WP13 round 3, lane 1: capital terrain — step bands and race ground
+docs/research/wp13-capitals-pois-contract.md	research-or-decision-record	structural-only	252	6a3a8985d947e7f2aff10016f2342a268e3bbfb7b6783c34d0694f236e5f5cff	WP13: capitals and POI structures — contract draft
+docs/research/wp13-character-visuals-contract.md	research-or-decision-record	structural-only	59	26e93c992d200e90e77ce17cb01db87168ec933601f2f41650564bb6840289fc	WP13: character visuals — contract
+docs/research/wp13-character-visuals.md	research-or-decision-record	structural-only	444	41a9b9d7e95cdd5915278edf63ad58285ecec6fdf6df01738aca5ebda4b99029	WP13 increment: character visuals
+docs/research/wp13-dawnmere-fields.md	research-or-decision-record	structural-only	273	35489c61d4d43e8abb8bef3ac9db4fe0285f43993840f789ebea02a17cc9732f	WP13: Dawnmere Fields, the second start (fourth increment)
+docs/research/wp13-dur-brannoc.md	research-or-decision-record	structural-only	1272	69090a619581d3d5b78fe6471d6582921e9b0880a65da37f6611ba14f33afdc1	WP13: Dur Brannoc, the dwarf capital and the first walled one
+docs/research/wp13-fishing.md	research-or-decision-record	structural-only	447	8c9686720c01eff8234b14b07e201b446d0920758b88e84403492cb766ac2a2b	WP13 playtest round 5 — the axe in the hand, the rod, and fish
+docs/research/wp13-floating-bushes.md	research-or-decision-record	structural-only	293	eef60f465bd7b37a3212240cf0cf46f0d0b627146e924e45a2de774fc1dc6e70	WP13 playtest round 3, lane 2: the bushes that floated — 2026-09-15
+docs/research/wp13-gor_drazhak.md	research-or-decision-record	structural-only	1091	e826a23aa6bb081bf6b19fb3770ff1ca50bc5bc28963539f638753efe1d6b07e	WP13: Gor Drazhak, the orc capital
+docs/research/wp13-hearthpine-brief.md	research-or-decision-record	structural-only	134	eb03ccade6161c773c70cbe5e90c3ec06390a0df6c1420d5262c6cf70f3f306b	WP13: first Hearthpine settlement increment
+docs/research/wp13-hearthpine-library.md	research-or-decision-record	structural-only	457	18f1e77fac32f9998ca2c1bd6aae0ad0d9309ddcb509f8b43c01f0a36c4084ee	WP13: building library and Hearthpine rebuild (third increment)
+docs/research/wp13-hearthpine-polish.md	research-or-decision-record	structural-only	121	589bfc1474dda3cd1838c873d211cad8b9aa91a7f7976c76c99f895a3aaf106b	WP13: Hearthpine settlement polish
+docs/research/wp13-highcourt-districts.md	research-or-decision-record	structural-only	637	7220f5ede4f7946d60421d9fa054d5b29db9f9ee7b6c6ecfdca909b952a7810c	WP13: Highcourt's other three districts, and the quadrant permutation
+docs/research/wp13-highcourt-fill.md	research-or-decision-record	structural-only	701	be5079b4e4b6816cba3fe42c03b4292e04d7a87ce667b63aa6fa8548f57c5161	WP13: Highcourt's wall ring, its fill and its trades
+docs/research/wp13-highcourt.md	research-or-decision-record	structural-only	484	e18d48e08dc980b8c82b9b0974968279da410e6a2c72e0fee688e9035537df2f	WP13: Highcourt, the pilot capital
+docs/research/wp13-kapok.md	research-or-decision-record	structural-only	251	7c2abdd6457ed105f135693ca6b069d5bbd916fbfb9d0ba0e5ff37c63621d4ef	WP13: Kapok Cradle, the troll start (fifth increment, troll lane)
+docs/research/wp13-kezamba.md	research-or-decision-record	structural-only	1543	82fb271d0eb6ca6d9f5279b1d75569c8cc56ea5d7ef8bb3710cd5706a6620bea	WP13: Kezamba, the troll capital, and the one built round a lake
+docs/research/wp13-lane-routes.md	research-or-decision-record	structural-only	367	2e39f83fe76740e9098f984b36e5eff96fbacde99f1dda96090195146e9f7850	WP13: where a capital's streets meet WP40's routes
+docs/research/wp13-lethariel.md	research-or-decision-record	structural-only	937	2d6bf14ee1fb69d70c61181e77ca7ac0f94521928fc7db860e8b79c5616fe403	WP13: Lethariel, the elf capital and the first one built round a lake
+docs/research/wp13-nhal_veyr.md	research-or-decision-record	structural-only	1162	fb2ccd78d6cec81c48e361df05c7bc3f032fa4aaa5ae097f475ef78135c94d63	WP13: Nhal Veyr, the undead capital and the raised necropolis
+docs/research/wp13-npc-round-2.md	research-or-decision-record	structural-only	228	8c1cf8a93025046bd808f17dc705a91a2da8830b3fe9e2de32ec19c275cdfb9f	WP13 playtest round 2 — settlement NPC behaviour (2026-09-15)
+docs/research/wp13-npc-sockets-contract.md	research-or-decision-record	structural-only	319	9d53b0eee2d4d36d7312c05e0b617dd44d385c72a33d5d6dcdb298d14ae28a6b	WP13: settlement sockets for NPCs — contract
+docs/research/wp13-npc-vocabulary.md	research-or-decision-record	structural-only	653	277032adeb5a8b0cf070751a1b665d38e66105e616fc37ee957cfe5983190d56	WP13 wave 2: the NPC vocabulary — six activities, seven professions, a capital probe
+docs/research/wp13-npc-work.md	research-or-decision-record	structural-only	465	9e069b44afae71c10c6cdb40c4bc7586778b4bfceba703b7b52dc4b3883119a6	WP13 round 3: settlement work, the 80/20 split and profession vendors
+docs/research/wp13-polish-wave3.md	research-or-decision-record	structural-only	604	27439f451dd329308df1a0f0babe8369a40cd240f2213abc571cb95a6936212f	WP13 wave 3, Lane P: polish and carried-over items
+docs/research/wp13-route-gates.md	research-or-decision-record	structural-only	510	d2d3dff0368907c6cfe4b4d7cbff847be4f14cefb054f2ca836f1de582dc0308	WP13: WP40's routes end at the capital gates
+docs/research/wp13-seam-generalisation.md	research-or-decision-record	structural-only	559	0c41e27445026c4f1cf80406e22853bbf6b83b33712b38a9b1a138df44fe9efb	WP13: the settlement seam generalisation, and Highcourt in the world
+docs/research/wp13-settlement-pipeline.md	research-or-decision-record	structural-only	196	aa0df8db77d51a0fa4c1313a3ddfa0355d08fd0a9b4649944237a3751153960b	WP13: settlement authoring pipeline
+docs/research/wp13-silverleaf.md	research-or-decision-record	structural-only	176	0594d71896910a9801200b5d511ba4bd7ae68692bbecc9e47e30a42e897d0f1a	WP13: Silverleaf Glade, the third start (fifth increment)
+docs/research/wp13-start-npcs.md	research-or-decision-record	structural-only	775	ec8c3ecf11bcf0af8cdf256f52f62c835be8aa047aa384c5402e711e84b6587d	WP13: the start settlements' first NPC roster
+docs/research/wp13-start-preload.md	research-or-decision-record	structural-only	119	d98b92e1564e06baffa89397db71ad1147bdd20f21d9c94a08991d3adbbd3c2d	Start-area preload and start-footprint spawn refusal
+docs/research/wp13-stillgrave.md	research-or-decision-record	structural-only	316	8fbaf472eeb13b92215990341e13d8a60e7ae752fcca4be2a48c39158a1cce32	WP13: Stillgrave Hollow, the undead start (fifth increment)
+docs/research/wp13-street-geometry.md	research-or-decision-record	structural-only	400	c20b02992557dd1ef966969395a468d6a4710b1d971b3cb2547b59c704789bbe	WP13 — one street rule for all six capitals (2026-09-16)
+docs/research/wp13-streets-round4.md	research-or-decision-record	structural-only	601	8663844f154fbb56602ee9ae7cffb0742a79988e24a12c80ee5ca13939545522	WP13 — the streets after playtest 6 (2026-09-16)
+docs/research/wp13-sunscar-camp.md	research-or-decision-record	structural-only	296	f54df93261feb1f921ad69ef3fe6614da8160f2cd38925be72b8559e69501fa2	WP13: Sunscar Camp, the orc start (fifth increment)
+docs/research/wp13-weapon-ladder.md	research-or-decision-record	structural-only	396	367a787b686c71ade781bc5237924852feb6bbde8abe7051b52a02ad14fa6956	WP13 increment: one weapon ladder
+docs/research/wp26-implementation.md	research-or-decision-record	structural-only	276	dcebdfb52300e97a998cfbd787050a5f3b8772675214ba6566e3d735d863db9c	WP26 implementation — the two-slot furnace and the universal alloy chain
+docs/research/wp26-task-card.md	work-brief-needs-status-check	structural-only	223	e26cb2be344a00531b099725389aca0e5897085c4217c0d3dc0fde8a7c459dad	WP26 Task Card — Two-Slot Furnace and the Universal Alloy Chain
+docs/research/wp33-gathering-contract-candidate.md	research-or-decision-record	structural-only	607	45078cf93ebb012bdb2eeeffa481c86dccda65bd68002fc9455496cf62b1c598	WP33 / WP40 R7 Gathering Contract Candidate
+docs/research/wp33-gathering-cultural-preflight.md	research-or-decision-record	structural-only	358	6a32f3e6077e97c6d38d68e2ece840ff34b63a831290623cca0e7725f25bb846	WP33 Gathering and Cultural Surface Resources Preflight
+docs/research/wp33-r7-contract-candidate-review.md	historical-evidence	structural-only	185	530aa16bded6e42f94d6a88e1314f5c12a32ec8cab3653f3b0562f9008ff466d	WP33 / WP40 R7 Contract Candidate Review
+docs/research/wp33-r7-preflight-review.md	historical-evidence	structural-only	275	7210e5b1a2d7ed291cd2ad3a7f02c9fa154b9aca444ac9dff06c0b0501bba914	Independent Review: WP33 Gathering / WP40 R7 Cutover Preflights
+docs/research/wp37-task-card.md	work-brief-needs-status-check	structural-only	136	e0c314fc20b533121fa568b5d03156e00f4070de1654161afccf3b5506a9c5ad	WP37 Task Card — Apply the 0.75 Surface-Density Multiplier
+docs/research/wp40-acceleration-and-delivery-plan.md	research-or-decision-record	structural-only	1033	ab470ae90359b5411863bd7f4366e1092749a5480ffbb5135b47910217a68aa0	WP40 acceleration and delivery plan
+docs/research/wp40-biome-cover-junctions.md	research-or-decision-record	structural-only	136	62569d89e56608f1fd29ccae65685225e10765abeaef69051b52a477839287f3	WP40 biome cover and road junction follow-up
+docs/research/wp40-completion.md	historical-evidence	structural-only	159	90780dc9314b067bbf550d9c4b32205f91a5b199bfadfe1923544eea28f76776	WP40 completion record — 2026-09-13
+docs/research/wp40-engineering-brief.md	work-brief-needs-status-check	structural-only	494	3c87e3fb66c10022802fb356e38de9011c064186ac0f8a09cfcece9d0345fc2a	WP40 Simple Named-Zone World — Engineering Contract
+docs/research/wp40-flight-nudge.md	research-or-decision-record	structural-only	62	e702b97711bc9d17dc77720f0a7f043c1cff464c97d0c7ef7b9650a402dcc288	WP40 flying-mob near-ground nudge
+docs/research/wp40-hydrology-depth-evidence/README.md	historical-evidence	structural-only	32	8ddb929bf9d62a27e40548815d6477120c7b7f3735511d07dcec41965632e511	Hydrology depth crash reproduction
+docs/research/wp40-hydrology-depth-fix.md	research-or-decision-record	structural-only	62	65083eafc928f3b93b3ae5249819e1ab8e4424a5e769aed927747007aeccc3ab	Variable hydrology depth integration fix — 2026-09-13
+docs/research/wp40-mapgen-profile-tree-fix.md	research-or-decision-record	structural-only	262	3168d40d279a6c6d30b2a9693fbfed888c1879b07403847f44ae4036253795b3	WP40 tree slice correction and real-engine performance follow-up
+docs/research/wp40-mapgen-quality.md	research-or-decision-record	structural-only	191	e36e921b182a5d7ea2bdfb5c36c7e8a95025055f44d736546d855e211c56486a	WP40 local terrain quality follow-up
+docs/research/wp40-mapgen-throughput.md	research-or-decision-record	structural-only	108	78c7bf284769e166acb5d87cdce33029e05d35520d6fec98ff63cfa6fe7337c3	Mapgen throughput follow-up — 2026-09-13
+docs/research/wp40-planner-throughput-evidence/README.md	historical-evidence	structural-only	33	ba8fa6990f634ee1b8bac8fe5f913b0473256c5a00aa15b515ea9ad67cad5697	Planner-throughput evidence
+docs/research/wp40-planner-throughput-evidence/review.md	historical-evidence	structural-only	22	43f388a444bc36223de4022ab203255ad0d06e29574b1fb11fb97c677497a413	Independent review receipt — 2026-09-13
+docs/research/wp40-planner-throughput.md	research-or-decision-record	structural-only	124	b4bce775924e6d78ce041f62e5337db027ba453cf8e258875af14f434944f1a1	Planner throughput follow-up — 2026-09-13
+docs/research/wp40-puc-final-gate-inventory.md	research-or-decision-record	structural-only	1747	94f1c3a555b48b3158cde329631798694288798590899e7cd66c84337e8c5d82	WP40 PUC final-gate inventory
+docs/research/wp40-quality-caves.md	research-or-decision-record	structural-only	40	5d7b02335be7612619f0376f3129a48c7ab340d5c7871a39fbd0d4ef61fd5fab	WP40 quality follow-up: surface cave entrances
+docs/research/wp40-quality-geometry.md	research-or-decision-record	structural-only	143	1c5cca2e3c4403fbf4c9ac29674527b563729f648dc91eb9eeea7ed68f5f7058	WP40 quality geometry revision
+docs/research/wp40-quality-junctions.md	research-or-decision-record	structural-only	54	50b9d1685cbceeea40da093191c977fb9f155020a17feee6c97cfbcc557b93c8	WP40 terrain-fitted junction heights
+docs/research/wp40-quality-ore.md	research-or-decision-record	structural-only	20	62cccedba9305671d154295b8cb3729d1bb73e06b0ae45ef0a43b62d4fa54b2d	WP40 quality follow-up: natural ore persistence
+docs/research/wp40-quality-review.md	historical-evidence	structural-only	68	54984c182fb088f6cc914eee84717923fd28c0a16b488256f70f5559d2fb400e	WP40 quality and fresh-server review record
+docs/research/wp40-r7-cutover-preflight.md	research-or-decision-record	structural-only	440	ed620e8ccd4d2f987a4dee38b98d634868c5f7bfeaecaca7a0dd4bc2e7769806	WP40 R7 Atomic Cutover Preflight
+docs/research/wp40-r7-implementation-contract.md	research-or-decision-record	structural-only	344	97585ae4e6eb205cc30e338a0783e243b6f3fe02bfededea0c1a81cbdd816867	WP40 R7 Implementation Contract
+docs/research/wp40-r7-native-contract-candidate.md	research-or-decision-record	structural-only	691	a390959fcd7a1437a94741988fd8890ea643bc3cb5c501c1e62bf4ce20646b68	WP40 R7 Native/Input/Cutover Contract Candidate
+docs/research/wp40-r7-ratification-review.md	historical-evidence	structural-only	96	5ff060fc6786e14bc6d552f6a6189685f0b870dd8dc418ded10ba305961a0c07	WP40 R7 Ratification Fold Review
+docs/research/wp40-r8-cold-start-final-micro-evidence/README.md	historical-evidence	structural-only	22	f80f4ba4c0ee5442e6a63337f3a52a8d24fbcbb3ba435204272d6a772fddd4a3	WP40 R8 cold-start replacement micro-KAT evidence
+docs/research/wp40-r8-mapgen-performance-plan.md	research-or-decision-record	structural-only	187	5a319a3f9435165b391b61e747cb2db55c38b93b842a499f58589f29c9e59267	WP40 R8 production mapgen performance hardening
+docs/research/wp40-r8-mapgen-performance-review.md	historical-evidence	structural-only	104	41e806f570c481ee54b2f01f8e07148624900afa0d6b68a124c7b578968335ea	WP40 R8 mapgen performance review
+docs/research/wp40-r8-performance-final-micro-evidence/README.md	historical-evidence	structural-only	37	c5fdda9fc1842876d8ab54123589b7b8a7e51d370e94b5d36b29027fd15e57b3	WP40 R8 performance final micro-KAT evidence
+docs/research/wp40-r8-performance-final-micro-evidence/replacement/README.md	historical-evidence	structural-only	17	df3a76421599f8c2813540251ca30ab21ece450b73f5e2c9b11e6479a8913d72	Corrected replacement pair
+docs/research/wp40-r8-pilot.md	research-or-decision-record	structural-only	689	ca2439003bfbb9aef7423e17475dd5ebf822df07404b2c12b39aa245721d4a53	WP40 R8 real-engine pilot record
+docs/research/wp40-r8-preflight-review.md	historical-evidence	structural-only	710	fe2198a45350217c51bc7b5916a5f9759699b1010a5da8b82c86a1611c432589	WP40 R8 Preflight Review
+docs/research/wp40-r8-runner-preflight.md	research-or-decision-record	structural-only	215	fb79e5f31d3a5182c5845e0978977f8e17fd1d1f0c45e9b4b22900c93b1225f7	WP40 R8 headless runner preflight
+docs/research/wp40-r8-seed-visual-preflight.md	research-or-decision-record	structural-only	192	047dbda101968cf052acc42ecf96c70d96503096930b92fb9d06f15855c454cb	WP40 R8 Seed and Visual Preflight
+docs/research/wp40-reality-corrections.md	research-or-decision-record	structural-only	914	f8a9e0187af9fbd27dcf39fd1cfb3b8bfbcba877028ab4fb712c0392e36c69d7	WP40 T2 Reality corrections R7--R19
+docs/research/wp40-resource-sampling-evidence/README.md	historical-evidence	structural-only	58	233b9079ebeb0dd29b6992aa489a0026c1cb3ea71dabf53517975c4b2916bc46	Resource sampling prototype evidence
+docs/research/wp40-resource-sampling-evidence/review.md	historical-evidence	structural-only	42	47e2b759af94e566f2572396e16dc38636af1bf5c0031957996549804e81c338	Independent prototype review receipt — 2026-09-13
+docs/research/wp40-resource-sampling-integration-evidence/README.md	historical-evidence	structural-only	25	eb68b4673dffb29c51896774fb904a584decf70426c321861911058c1e89f88b	Resource-sampler integration evidence
+docs/research/wp40-resource-sampling-integration-evidence/review.md	historical-evidence	structural-only	21	58793263540ec95dd29019c29b67ba94f28527b02f9766c4bfd8503f6a5dbb32	Independent final review — 2026-09-13
+docs/research/wp40-resource-sampling-integration.md	research-or-decision-record	structural-only	89	4a4f7c2e3a0ee210dd7e52aa14860dfabcc43cf047e6808eb3e7312e7ae19105	Resource-root sampler adoption — 2026-09-13
+docs/research/wp40-resource-sampling-prototype.md	research-or-decision-record	structural-only	142	db255ce4471da8fc91e49a6e012c87c71b4ff299282eb16b66b5273b17ca17dd	Resource-root sampling prototype — 2026-09-13
+docs/research/wp40-simple-map-r2-review.md	historical-evidence	structural-only	90	6d5e8c2d585df53e3fe01d5649c307c224cb6e0a8627a501baa292588736a02c	WP40 Simple Map R2 Independent Review Record
+docs/research/wp40-simple-map-r3-contract.md	research-or-decision-record	structural-only	924	3dc33e0cf38b60adf092261faedb09c68427eed74d8da473d51c3f4be9446f36	WP40 simple-map R3 vertical contract
+docs/research/wp40-simple-map-r3-review.md	historical-evidence	structural-only	162	756e1a0240a9474975d6ce4a399a4f39c96eb9865a85eda7819c0d06172b2c82	WP40 Simple Map R3 Review
+docs/research/wp40-simple-map-r4-contract.md	research-or-decision-record	structural-only	1073	2275eb17f814017e6bbd640006a0f78168a8c016b17de3747c7abf98d1549d2a	WP40 simple-map R4 geography and policy contract
+docs/research/wp40-simple-map-r4-review.md	historical-evidence	structural-only	205	f0a8a59e43a678d388e92528f9d3bf4b3db49fa659548880ab094a5602070eab	WP40 Simple Map R4 Review
+docs/research/wp40-simple-map-r5-contract.md	research-or-decision-record	structural-only	3796	30d4c267986e43f3f6abeec7cd27abc0f4d44565a0439f5df26f567f849a8fda	WP40 simple-map R5 typed-planner and disabled-adapter contract
+docs/research/wp40-simple-map-r5-fable-task-c-report.md	research-or-decision-record	structural-only	75	5df5c7b8bc12b0f0d6c555d26861ae7602f91daef331683031e3b011ed8a6d67	Fable Task C — Bounded Completion Pass, WP40 simple-map R5 (commit `212f822d3bef8e87a48958ee2286adf00e525e87`)
+docs/research/wp40-simple-map-r5-review.md	historical-evidence	structural-only	241	21cd9494e0ac717340b9d041efd2aff22cead8c16003f25e15de814e0085c863	WP40 Simple Map R5 Review
+docs/research/wp40-simple-map-r6-contract-review.md	historical-evidence	structural-only	249	ffba613a9dbdbe73896f18fb8c389787978a569c62b2468d2613a98a4c68ec15	WP40 Simple Map R6 Contract Review Record
+docs/research/wp40-simple-map-r6-contract.md	research-or-decision-record	structural-only	1240	814fbb7915c6c1590f65ec4d6c34b165543528a76c14db5f570cc8e9710a954f	WP40 Simple Map R6 Exact Contract
+docs/research/wp40-simple-map-r6-decisions-review.md	historical-evidence	structural-only	94	64a13e8802938004556c99e8e1c3b39945d4c3b6d67ed0105a03256ab7f5fb5f	WP40 Simple Map R6 Decision-Closeout Review
+docs/research/wp40-simple-map-r6-decisions.md	research-or-decision-record	structural-only	110	af0860e5d03239f9074510bca2247d9d46eabdce54cb425f0cd833f708ffcc58	WP40 Simple Map R6 Decision Record
+docs/research/wp40-simple-map-r6-fable-task-a-report.md	research-or-decision-record	structural-only	154	792e8088210d91bf992466b8f95e907283917cecd0663ca0b9b13d75f92c2ba6	WP40 R6 pre-R5 package — adversarial audit (Fable Task A)
+docs/research/wp40-simple-map-r6-fable-task-d-report.md	research-or-decision-record	structural-only	121	9c5aaa99ace6b3b9ce9af3ac7d721f7d82f733b1002c2e6b4e5eae6348b3a0bb	WP40 R6 Exact Contract — Hard-Lens Review (Fable Task D)
+docs/research/wp40-simple-map-r6-preflight-review.md	historical-evidence	structural-only	112	aecdc4c1123bc854f5f4052a7d4f69037e258c89b743006106b68a2e62539a10	WP40 Simple Map R6 Preflight Review
+docs/research/wp40-simple-map-r6-preflight.md	research-or-decision-record	structural-only	324	080f33293b52e5b2c274049907a033b7e11a9ca3c913a3e1f6fd9a11452043a3	WP40 Simple Map R6 Consolidated Preflight
+docs/research/wp40-simple-map-r6-review.md	historical-evidence	structural-only	197	e0cd37ab0377976a9b16b5a7d1c8f3aacce063a2bc6fc9f3fe25b6e362d000b1	WP40 Simple Map R6 Review
+docs/research/wp40-simple-map-r7-review.md	historical-evidence	structural-only	178	2847c1e46f99a0fdd75d49def26f79e8477ceb967631f1edd557400e9df074a5	WP40 Simple Map R7 Review
+docs/research/wp40-simple-map-r8-contract.md	research-or-decision-record	structural-only	554	58b998f9f930c7fd46c055eedd8cb9f459fdb37ce0c858123acbfec6ff94a2de	WP40 simple-map R8 release and runtime contract
+docs/research/wp40-simple-map-rebase-plan.md	research-or-decision-record	structural-only	1082	e31b619c2c3206a5f33968db2ce3868d2abf3c54fb6821232d1a5f13d870aee3	WP40 Simple Map Rebase Plan
+docs/research/wp40-simple-map-v1e-r2-review.md	historical-evidence	structural-only	206	d4afbe1017072028924c51c1b02a45c4ed6f12198c9bddb614e164d86d24cb9d	WP40 Simple Map V1e R2 Review
+docs/research/wp40-simple-map-v1e-refresh-contract.md	research-or-decision-record	structural-only	670	ab051ec231564d41b417cb963a291a3fb53a07a688c2a7f984076bdf2f096ecc	WP40 simple-map V1e focused R2 refresh contract
+docs/research/wp40-source-authority.md	research-or-decision-record	structural-only	781	63ad1d8eeb234959cb455645c51fa6a60a56b9469e9d03093f130ec3dc6d1a8a	WP40 Compiled-Geometry Source Authority
+docs/research/wp40-startup-manifest-evidence/README.md	historical-evidence	structural-only	21	cea723b197131f046625b78c0ab3986c7ef493ae916e4d9c622875ef157f47b0	Startup manifest evidence
+docs/research/wp40-startup-manifest-fix.md	research-or-decision-record	structural-only	64	c38daee490ddd2144a3c5655f97c20c85e3b938cf3dd954916ef72175cef7820	R7 startup manifest repair — 2026-09-13
+docs/research/wp40-t2-contracts.md	research-or-decision-record	structural-only	4007	5be8efb3d75184d6af63a2edbf13871cc50e5803a680c40daea43a06d5f43cf3	WP40 T2 package contracts
+docs/research/wp40-t2-degeneracy-completeness.md	research-or-decision-record	structural-only	641	3eaf8e28d187cc6fc54cf4bdb946cfae06102490340a66e57c5a38b8ae9c8c73	WP40 T2 degeneracy-class completeness analysis
+docs/research/wp40-t2-handover.md	research-or-decision-record	structural-only	250	cddfda7de5b9bd914069e79423aafaa91ea96ec227f35f194911700b60419e0a	WP40 T2 factual handover
+docs/research/wp40-t2-plan.md	research-or-decision-record	structural-only	993	3a31fe147c6d967c07edc4a721cc85c800950152e5e88a8265bb86ec30168695	WP40 T2 execution plan and state
+docs/research/wp40-t5-0-engine-probe-contract.md	research-or-decision-record	structural-only	2341	1b526a50a833f01366d13deb53f3b225eb34519563acfacb06e2a9632468fa4c	WP40 T5-0 engine-seam probe — package contract
+docs/research/wp40-terrain-life-evidence/README.md	historical-evidence	structural-only	30	e3c025eca8a99486417ffbe66e4d1d904c1ebe30c8bdde3deea5a31d70c986aa	Integrated terrain-life validation
+docs/research/wp40-terrain-life-geometry.md	research-or-decision-record	structural-only	91	d41125525ffbe5c86761444bd2f69bdaf42c23834ebac671252b7a2442c2dba6	WP40 terrain, POI and inland-water geometry contract
+docs/research/wp40-terrain-life-polish.md	research-or-decision-record	structural-only	165	28fd39e508e9ef9f9fee84174fdca7bc92bdd39648cff1ff783d92d8fb802370	WP40 R8 terrain-life polish
+docs/research/wp40-water-road-polish-evidence/README.md	historical-evidence	structural-only	24	09433e86c3c33d3774e34f066c971b8957f181bfc5547ccbcc3d69ecc3d57dd8	Water and road polish evidence
+docs/research/wp40-water-road-polish-evidence/review.md	historical-evidence	structural-only	27	09032aa50740a0402c4a2aa90b976048e79644eec94f77ff821653de43ff8f90	Independent final review — 2026-09-13
+docs/research/wp40-water-road-polish.md	research-or-decision-record	structural-only	142	e590550486232a9fec1ab6324237de411d4fc0c56f7128111e5a6c5f1a8bba1b	Water containment, hillside roads and banner faces — 2026-09-13
+docs/research/wp41-engineering-brief.md	work-brief-needs-status-check	structural-only	506	828790e6bd4f12b532af2014d1da74ee55cec1e32c15cccb37e6223be7e1fc3f	WP41 Geographic PvP — Engineering Brief
+docs/research/wp43_implementation_brief.md	research-or-decision-record	structural-only	188	71ab86bf0e350fa7e0c8a33c3e693eec414093cb3585dfb1baf4a886762fd833	WP43 Material Progression Retrofit — implementation brief
+docs/research/wp43_review.md	historical-evidence	structural-only	100	e6365cd72adf9dba6c3f109fce554b6c7f28547711ca39e3593046a245eaf4b0	WP43 Independent Review Record
+docs/research/wp43_wp40_handoff.md	research-or-decision-record	structural-only	154	85d0d0a24ec49602c22443c42ab9c7aa1bab1d441376a1d4f7be2e89b63dd9d8	WP43 → WP40 material-registry handoff
+docs/research/wp44-engineering-brief.md	work-brief-needs-status-check	structural-only	324	2576c5ad486eb9751f5cde2686cefff7a49caaf0b5441edf679c6429d6651341	WP44 Economy Rebase — Engineering Brief
+docs/research/wp44-fable-task-b-report.md	research-or-decision-record	structural-only	166	1846a73d315926b970e3053d520495f0b05d8083437c8ac56f8956679fb6e8be	VERSIONED BASELINE GO
+docs/research/wp44-income-ledger-preflight.md	research-or-decision-record	structural-only	121	793fb2c08629ff14d6502a8e4d7995284a81cf2f1da7523bf6dcb3ec5c21819e	WP44 Income-Ledger Preflight Handoff
+docs/research/wp45-review.md	historical-evidence	structural-only	106	e31daf0c695224fcc22276b995540f762b0d46b379c4d23662f02fd3d8ecd379	WP45 Independent Review Record
+docs/research/wp5-task-card.md	work-brief-needs-status-check	structural-only	449	1959d0fd01044acbfd7061344e8e9fc0a2a7ba8a32fec1d4e2ef73d5228b488c	WP5 Task Card — Loot, Refinement Metadata and the Affix System
+docs/research/wp6_spawn_budget.md	research-or-decision-record	structural-only	590	0777733c9f5f762df1cf3da6010c27f888193bddabcb4bb4f47fa3036b5ac8a8	WP6 spawn budget — per-biome aoc sums and the density math
+menu/LICENSE-media.md	provenance-preserve	excluded-from-rewrite	35	3afae66c46ff104f89b4d7cc31d666f34903716155f91dd6cbaf56b48b8c3b65	Media Origin & Licenses (menu)
+mods/CORE/grug_core/LICENSE-media.md	provenance-preserve	excluded-from-rewrite	10	d53d512559215b156fa039e7f79987d5b4b4e8a4187063e4324b76e980a483d1	Media Origin & Licenses (grug_core)
+mods/ENTITIES/grug_mobs/LICENSE-media.md	provenance-preserve	excluded-from-rewrite	601	efb5251fdf6dbed017c456f40b9660af08220a8779690c0159075813dd8fd52c	Media Origin & Licenses (grug_mobs)
+mods/ENTITIES/grug_projectiles/LICENSE-media.md	provenance-preserve	excluded-from-rewrite	22	7c27e26602dd7bb72bbf8835a0f7a505915a222769ff96fc62fd427d0d466948	Media Origin & Licenses (grug_projectiles)
+mods/ENTITIES/grug_traders/LICENSE-media.md	provenance-preserve	excluded-from-rewrite	30	d83eb55d148be0d276ce6bda4e84320aa900bc7fbd259df9d3a37aedd6ff16d2	Media Origin & Licenses (grug_traders)
+mods/ENTITIES/mobs/readme.MD	third-party	excluded-from-rewrite	460	8a6c7554f4f17fee0036547a2006f8ab5e28dbca2eb6409cbcfb20a2bcd48f1d	MOBS REDO for MINETEST
+mods/ITEMS/grug_alchemy/LICENSE-media.md	provenance-preserve	excluded-from-rewrite	12	b975d0f3236c3ffa48fd4a98cfa995427a9baf9653bc2069ce60ba38b303bfe6	Media Origin and Licenses (grug_alchemy)
+mods/ITEMS/grug_brewing/LICENSE-media.md	provenance-preserve	excluded-from-rewrite	15	4472b69f94c4f375096701358bbf085daa71584278e292ef2ca29e50398f9cae	Media Origin and Licenses
+mods/ITEMS/grug_cooking/LICENSE-media.md	provenance-preserve	excluded-from-rewrite	46	2e8d2aa6ccb7610a49d6b8755a5ac71bfff1b338036f1fa07e3e6cc034fabb83	Media Origin and Licenses (grug_cooking)
+mods/ITEMS/grug_decor/LICENSE-media.md	provenance-preserve	excluded-from-rewrite	220	77758519de44faf5d24a04855e2f564d4b17f588894da9c4cab10f41d8de78c3	Media Origin & Licenses (grug_decor)
+mods/ITEMS/grug_farming/LICENSE-media.md	provenance-preserve	excluded-from-rewrite	76	c27fcea931388c6eccb2aa2f76dd979727d612f88123f3d964daaa7ab88d055e	`grug_farming` media ledger
+mods/ITEMS/grug_fishing/LICENSE-media.md	provenance-preserve	excluded-from-rewrite	69	71490d61afffa75e9e8c70d7b332be4e45929adb9a1cadc5bf3a296dce05bdd2	Media Origin & Licenses (grug_fishing)
+mods/ITEMS/grug_food/LICENSE-media.md	provenance-preserve	excluded-from-rewrite	15	df84045f7bc09471766e035850b41f049cdf53f87c8e229037f2ac863e36361b	Media Origin and Licenses (grug_food)
+mods/ITEMS/grug_gathering/LICENSE-media.md	provenance-preserve	excluded-from-rewrite	33	579433664257e357e770b38163222dff56dfaa92c27e2e995cd6f0e1863205d5	Media Origin and Licenses (grug_gathering)
+mods/ITEMS/grug_gear/LICENSE-media.md	provenance-preserve	excluded-from-rewrite	96	ab866786277cec8992ad6f7e0a60dc881a56d4af998b276cdb85e4a3c3ba5be1	Media Origin & Licenses (grug_gear)
+mods/ITEMS/grug_materials/LICENSE-media.md	provenance-preserve	excluded-from-rewrite	187	5d1a1b8f51db1bfde7bdd5a28080096c83f1e0d6c756487da4e52fc2936bea3f	Media Origin & Licenses (grug_materials)
+mods/ITEMS/grug_nodes/LICENSE-media.md	provenance-preserve	excluded-from-rewrite	68	c04efc0e9d6b22bc1d19cfb6c94df721ea8b5a40c78e3b48d73e7b03f2257fdf	Media Origin & Licenses (grug_nodes)
+mods/ITEMS/grug_smelting/LICENSE-media.md	provenance-preserve	excluded-from-rewrite	58	b66dd0838dd5783609e3bb0b47219bbb441150ed8411d2e4262335ae3a7f3c65	Media Origin & Licenses (grug_smelting)
+mods/ITEMS/grug_trees/LICENSE-media.md	provenance-preserve	excluded-from-rewrite	44	bc1d26333d5ddb598836e16ea30e6177b132fa93ff9709ad665b7753bac9551e	Media Origin & Licenses (grug_trees)
+mods/PLAYER/grug_abilities/LICENSE-media.md	provenance-preserve	excluded-from-rewrite	40	06000d9a2c3b9bde537a5bd16f3a83ea89092d2f633e519ce8c85e5a43b0f3c7	Media Origin & Licenses (grug_abilities)
+mods/PLAYER/grug_inventory/LICENSE-media.md	provenance-preserve	excluded-from-rewrite	10	73a9f3ed604b34f7ddc5003a93bde9d6274f74ae2636a86c65cf984700036a63	Media licenses — grug_inventory
+mods/PLAYER/grug_jobs/LICENSE-media.md	provenance-preserve	excluded-from-rewrite	22	2fc929125b8fbbd84f9ee2e8fabfdac83e994441b67851040cfaedcfc053d9cc	Profession station media
+mods/PLAYER/grug_map/LICENSE-media.md	provenance-preserve	excluded-from-rewrite	5	1d885fbd1913e9a28b3d35831f593a6936c8030a7ab41691c8e14da3e760bf68	Atlas direction marker media
+mods/PLAYER/grug_mounts/LICENSE-media.md	provenance-preserve	excluded-from-rewrite	53	d668df3c465d9efd5f0f34fd82384ab5f67097288cff0612e32aba79cf2740bd	Media licences — `grug_mounts`
+mods/PLAYER/grug_visuals/LICENSE-media.md	provenance-preserve	excluded-from-rewrite	75	2c8762faf64dfd7f1ff9fb85f571408b0dd21ddcac7e89659e83565bc9a17a8d	Media Origin & Licenses (grug_visuals)
+tools/biomecheck/README.md	supporting-markdown	structural-only	14	2f14b133b30fc99fd65c10e90e8c033760d446dcaad2549d0a56c41c6663e21d	biomecheck — retired WP36 diagnostic
+tools/branding/README.md	supporting-markdown	structural-only	40	47c95c5b3f9b8da6b8730e323172a84e68b102d6e005be62691b27c884df1963	Branding — the Grudgelands crest
+tools/r10_cap/README.md	supporting-markdown	structural-only	32	5817c7228b93b21e1975eeb1cd86751919570a21f0f30e8c2c61c180333cd214	Capital services checks
+tools/r10_cap/evidence/callbacks/README.md	supporting-markdown	structural-only	40	999047b85aef2a9327b33b2cbee760577dc34708d7ea96e7a5dddeb0079f8a46	CAP callback checkpoint
+tools/r10_capital_phase/ATTRIBUTION.md	supporting-markdown	structural-only	122	b40ec4a1d22f3ba1220a2dd0e6a64322893ff2a17675bd9969e09a6bb2ede2e2	Final capital overlay attribution
+tools/r10_capital_phase/README.md	supporting-markdown	structural-only	36	2a6bfbe2a1514979ca398f3f79e86fd4ee3df34c83f1d50e3c81c570e7f155fd	Capital avenue cadence correction
+tools/r10_engine/README.md	supporting-markdown	structural-only	37	779e8bd683a45eb5138ebc93424c58a9dc7f05f5527947f2dfee186096c931a7	Round 10 engine-gate handoff
+tools/r10_equip/evidence/README.md	supporting-markdown	structural-only	30	a7f61ff15a9a60276cd17fb4ff0094b1209103494cbfc8024f76b6de18a7697a	R10 equipment final evidence
+tools/r10_farm/evidence/README.md	supporting-markdown	structural-only	14	115e2df5907d14c4c2d2ea437ba93b5ee514b8900d1f7b50803e96d32001e738	R10 farming frozen evidence
+tools/r10_gameplay/evidence/README.md	supporting-markdown	structural-only	26	c0ce7564b4c6dbfaf810cf556c7101b605213f794a9d2e69d3560d63d443cd08	R10 GAME final parity evidence
+tools/r10_integration/evidence/delivery/README.md	supporting-markdown	structural-only	8	f1478371522d4cf4a53b8e09cbc78ea304003d5d568dd214ced11ac2dd23c984	Round 10 runtime delivery receipts
+tools/r10_integration/evidence/development/README.md	supporting-markdown	structural-only	22	2dffe12c16da3bb2c9fa48ac8bdae7086faf511c7fb7af943a9913c9ba20392a	Integrated development evidence
+tools/r10_integration/evidence/final-attempt1/README.md	supporting-markdown	structural-only	24	ca06f845b77f7b7ad6fb1c66948f45f361004a5150d8ede0caeb72cf8ef98514	First integrated Round 10 final-gate attempt
+tools/r10_integration/evidence/final-attempt1/parity/DISPOSITION.md	supporting-markdown	structural-only	8	eef037ee568bc0951f2b59752f4e7780902382d54454e789a6ba534247e026fb	Superseded candidate: incomplete parity
+tools/r10_integration/evidence/final-attempt2/README.md	supporting-markdown	structural-only	27	fb8c740d66d79a0dd9cda13ab8fc32c6e5721f841528c7545b48e244bbb276d6	Second integrated Round 10 gate attempt
+tools/r10_integration/evidence/final-attempt2/display-fix-report.md	supporting-markdown	structural-only	63	1a69531d1b82f82b553171ecdc083b70a6333fcb96fc41c18c962d713ae817b8	Capital display placement crash: correction evidence
+tools/r10_integration/evidence/final-parity/README.md	supporting-markdown	structural-only	19	49d5d74e06426d26f5e5ee7375aa94e43206f335c42de0daddb82c2743b3c430	Accepted final Round 10 interpreter pair
+tools/r10_integration/evidence/final-v3/README.md	supporting-markdown	structural-only	47	71caccc3cf084d98e6fd76cf289ea738d5da606ff3604f009e61b05631992b16	Round 10 final-v3 evidence archive
+tools/r10_integration/evidence/final-v3/reviews/final-v3-runtime-review.md	supporting-markdown	structural-only	56	7d1568fcaab997d34118cf60d22b3629e9077c3e2bb9f022681fd5260dc650d2	Round 10 final v3 artifact review
+tools/r10_map_b/README.md	supporting-markdown	structural-only	27	52529564462cb6ff96afa1e93e4dcc603dc88010ff089ad87ab21fa22ab19f5f	Round 10 world content checks
+tools/r10_map_b/evidence/acceptance-addendum/README.md	supporting-markdown	structural-only	44	4371e0efa657283fac2f06e4aeaa8fd60676668c8aa3f372942dfae2d179f8a9	Corrected regression and bounded engine evidence
+tools/r10_map_b/evidence/source-checkpoint/README.md	supporting-markdown	structural-only	30	36dce1c07253f1056cb61972f7d8a6de02228fe77f29390ce9f2adca3f028a47	Source checkpoint — review in progress
+tools/r10_world/README.md	supporting-markdown	structural-only	29	804360448fc3afe61390899eaff61fd7facf33c3093ace20a0938e4e27bd6b94	R10 world correctness fixtures
+tools/r11_art/README.md	supporting-markdown	structural-only	22	7c936308fb9c4b61641658fc6c442838d626b351cbcac28652d17f2391962859	Round 11 ART evidence
+tools/r11_followup/README.md	supporting-markdown	structural-only	6	b3c839511a00994bab612e56de9c201286a3d1ba6f2ffef0996b31e3bb511813	Round 11 follow-up evidence
+tools/r11_integration/evidence/planner-correction.md	supporting-markdown	structural-only	44	629bf4c6e86b6762bd43462af4c1623d62a107eef43c4e39d4eec84f6d894496	Round 11 live planner source integration fix
+tools/r11_scout_traders/README.md	supporting-markdown	structural-only	32	0bbced49baed1e80a917fcac79e21cbd326c4bf563e8a8bec7867a750aafc145	Round 11 Scout trader evidence
+tools/r11_scout_traders/evidence.md	supporting-markdown	structural-only	27	29c07a90be30623d99237f718cabc1f5966768ade8cec540993dd8a116be3698	Round 11 Scout trader implementation evidence
+tools/r11_world/README.md	supporting-markdown	structural-only	52	fd89c238fd1f5c67dd43e7da6d89f2847ad859f43a6849171ee60fc7528b5fe8	Round 11 WORLD-CAP focused evidence
+tools/r12_art/README.md	supporting-markdown	structural-only	30	eb05a3dca17b3a4295544f00a83cdce5a60917916c6afdbfe6864e9ca675e25c	Round 12 art evidence
+tools/r12_integration/README.md	supporting-markdown	structural-only	32	4bdcc37006eb514fa1748cb4b21db1214c8e0cf2ee8cdfa12d049eab50443447	Round12 integrated checks
+tools/r12_pose/README.md	supporting-markdown	structural-only	18	c5fa0a49eb724031d10b946136f565dfc82e8bbe5fa476b26785161b5e246d82	Round 12 generic held pose
+tools/r12_recipes/README.md	supporting-markdown	structural-only	38	3a6bb0bd1f3edd2318fe0ac1420fe94ebee347bd80c04ac67beb0de1b7514fe4	Round 12 Basics recipe discovery
+tools/r12_ui/README.md	supporting-markdown	structural-only	22	17cdd55f5abebc301c9ad6de02b8ec40073e4fd32e7c219fc989f4378799e841	Round 12 shared inventory UI
+tools/r13_enchants/README.md	supporting-markdown	structural-only	77	8021e79b691270b8dcfb6f41e550dc871ecf31f1d2c64be05b0e91f60eb48886	Round 13 named enchanting
+tools/r13_equipment/README.md	supporting-markdown	structural-only	28	1a3c44d81b49747a0306c0990da2df2eabce816ecde720f5ed3f00118392a2fa	Round 13 equipment verification
+tools/r13_integration/README.md	supporting-markdown	structural-only	86	ded0309120915d4ea2a1a7207dc21b99d0fd4c0d315dc0d8a4bdae74016764db	Round 13 combined native integration
+tools/r13_stations/README.md	supporting-markdown	structural-only	120	9dd29d0b89d58e25ccee86b3db63dcb00b9d185be9b19ac314762516ec9c342d	Round 13 STATIONS candidate
+tools/r14_final/README.md	supporting-markdown	structural-only	25	7728f42a69684fa8c8c77d45fcfd111406849af82bd08fa4f174a7b6ac8bca4c	Round 14 final portable gate
+tools/r14_parties/README.md	supporting-markdown	structural-only	23	ca2cb9799e7157f69e773121e2b52d10afa173da106eef7f80993e3824eedc35	Round 14 party core fixture
+tools/r14_quests/README.md	supporting-markdown	structural-only	15	71ceab07b1022656e789e18c45e4aced056b1b01bb9b26a772fb705c05fee4c6	Round 14 quest fixtures
+tools/r14_selection/README.md	supporting-markdown	structural-only	9	efc107a793cbab23240a0257faae5458b248a9f823361f784c145c05d8d79a36	Round 14 waiting UI fixture
+tools/r17_combat/README.md	supporting-markdown	structural-only	36	cc716dea878d46ee15922cdd1ef0b55a612b053c068753d58724740db944d9dc	Round 17 combat regression
+tools/r18_ux/REPORT.md	supporting-markdown	structural-only	62	9f4ffb12770e1054b715f9dccb07025558d14ae4be1a6d730d05681d804040d5	Round 18 lane A implementation report
+tools/r8_map_a/evidence/20260918-fix-round-1/README.md	supporting-markdown	structural-only	98	002739c0bc6dc9b7ba30ea2add8805291af21e56c0cf0fd3f8468157cbd381e0	R8-MAP-A fix round 1 engine evidence (2026-09-18)
+tools/r8_map_a/evidence/20260919-fix-round-2/README.md	supporting-markdown	structural-only	71	b872ad0c2cc78cc92a8f7a5cc4843b252f35d049271bd0573e16a3dd7a7c9ff1	R8-MAP-A fix round 2 cave evidence (2026-09-19)
+tools/r8_map_a/evidence/20260919-fix-round-3/README.md	supporting-markdown	structural-only	59	5ebe5f630e83abc32cd58a15937a61e7bed87db8f1ed323b0f938b05c858e121	R8-MAP-A fix round 3 cave evidence (2026-09-19)
+tools/r8_tags/evidence.md	supporting-markdown	structural-only	94	e3ae6b0acde8c38d2128d328f09daa287a8c7a9f39d5edb12492eb622aaaf0dd	R8-TAGS verification evidence
+tools/r9_perf/README.md	supporting-markdown	structural-only	51	735f49f71c5e11c255c395a69a15126c65904e2e09c6b6e2d65e52cec8a4b027	R9-PERF bounded checks
+tools/r9_perf/evidence/README.md	supporting-markdown	structural-only	68	8185124a4891637410227533f06deffd524cf5589cbbab221a88b23164be3a5b	R9-PERF fixed-corpus measurement evidence
+tools/spawn_probe/evidence/README.md	supporting-markdown	structural-only	119	1171079aa08d47bec40f552a6fd8758ddfe5e4966c6b507deadbf399aa5ecb5b	Lane S headless evidence
+tools/ui/evidence/20260916-hud-bars/README.md	supporting-markdown	structural-only	58	d18989bbb9edfbec6d8a74919281fe4463fad819a985e9a35711aeefddf50792	Evidence — HUD bars (round 4, lane H, 2026-09-16)
+tools/wp11/evidence/20260916-mob-pressure/README.md	supporting-markdown	structural-only	121	2ec130855d600c3e248d271fb84b5dd68b7321fd539a4071662704773756f66c	Mob pressure — evidence (round 4, 2026-09-16)
+tools/wp11/evidence/20260916-talents-phase1/README.md	supporting-markdown	structural-only	64	05503e1c9930e583d4aa491d4fa2b4dc3422b847a34e340239aeba62834fe4a1	WP11 talents, phase 1 — evidence (2026-09-16)
+tools/wp11/evidence/20260920-x3-corrections/README.md	supporting-markdown	structural-only	66	7c580847235b7b7d9d842294878f25e64ed5aeb27f32a5967e582a61798f74d1	Round 12 X3 corrective candidate
+tools/wp11/evidence/20260920-x3/README.md	supporting-markdown	structural-only	28	d36f453e69857548679db08b97726a3bdbe9c277d068266bd20e83548ce887c9	WP11 X3 validation evidence
+tools/wp13/README-render.md	supporting-markdown	structural-only	150	a77fa1977436eb9fc42c1d7ae5c8887df61e5c159f5eedd1156bc56b11408043	Textured blueprint renderer (`tools/wp13/render_blueprint.py`)
+tools/wp13/evidence/20260913-hearthpine/review.md	supporting-markdown	structural-only	31	da359b49fc30441d5b09de29a9d1a05797bcaa9447117d087fb3ab648c84fb11	Independent review: first Hearthpine increment
+tools/wp13/evidence/20260914-capital-parts/README.md	supporting-markdown	structural-only	36	66a824df9a8f4138f2191b5925bdb24f6dd40971b61d93f69131503e2fbbe3fe	WP13 capital parts — evidence, 2026-09-14
+tools/wp13/evidence/20260914-character-visuals/README.md	supporting-markdown	structural-only	94	db434776590b11988a1864ac22995334a2546d2ab4c588c57032d032c0d3f1d2	WP13 increment: character visuals
+tools/wp13/evidence/20260914-character-visuals/RESULTS.md	supporting-markdown	structural-only	80	06e4212336c0462388ccc23ff45ffe120d716ef8fbeab8031b0a0744c2b17c5c	Results — WP13 character visuals
+tools/wp13/evidence/20260914-dawnmere-fixes/README.md	supporting-markdown	structural-only	96	7e99afbdd78b8d0b65a87379a071326e8e0d3f31c95d9dc1271f69adb8a8b1ad	WP13 increment 4: the independent review's fixes
+tools/wp13/evidence/20260914-dawnmere/README.md	supporting-markdown	structural-only	111	f6a2c78b7cb8e0c014cd8bb058f48fc1dd82dca9a370421b1eb937a3fc75d4b5	WP13 increment 4: Dawnmere Fields, and one seam for every start
+tools/wp13/evidence/20260914-hearthpine-fixes/README.md	supporting-markdown	structural-only	91	66e95464a7f3e0a6df1816d4c8723b69ed7bdfec2e1841641423a0c2bd6ac9d7	WP13 review fixes: static furnishings, settled panes, honest param2
+tools/wp13/evidence/20260914-hearthpine-library/README.md	supporting-markdown	structural-only	46	7f39b8a08acfa8c40904dd6eae5c28cb8c35d390a4d6eb50bf3f32c43454eef0	WP13 increment 3 evidence: the building library and Hearthpine rebuilt
+tools/wp13/evidence/20260914-hearthpine-polish/review.md	supporting-markdown	structural-only	42	6044a092eaed53832c30af06d11876278d5719994e8081dd7e072d37431dbbbc	Independent review: WP13 Hearthpine polish
+tools/wp13/evidence/20260914-highcourt/README.md	supporting-markdown	structural-only	25	50ce018c306af4c5d89fdf749e8bc4463574ab5c234738a10fe5a51f0365d677	Evidence: Highcourt, the pilot capital (2026-09-14)
+tools/wp13/evidence/20260914-kapok/README.md	supporting-markdown	structural-only	101	755bb45e3f2b5c83118bdab0085007e5e57b06eed903732a0cad3e9212d92952	WP13 increment 5, troll lane: Kapok Cradle
+tools/wp13/evidence/20260914-round-a-blueprints/README.md	supporting-markdown	structural-only	290	3acc554a12ecea67b6687fca9e55d2a8a1178e01c00f4f8f5c69e133cf8d4d76	WP13 starts: round A of the user's playtest — the blueprint half
+tools/wp13/evidence/20260914-round-b-terrain/README.md	supporting-markdown	structural-only	449	02e9973dc983c5cd8693a1926161518d169f5578641d513e11cd20c19d375722	WP13 starts: round B of the user's playtest — the terrain half
+tools/wp13/evidence/20260914-silverleaf/README.md	supporting-markdown	structural-only	79	556d072f5fea830c3ec0ddcd26eaf0b717d63dfc694d1a35ef0f5480ced69f3a	WP13 increment 5: Silverleaf Glade, the elf start
+tools/wp13/evidence/20260914-silverleaf/RESULTS.md	supporting-markdown	structural-only	73	5b7a014319a9fad98b612df4f5e94d6d2aec54431dee001531e97d0d9e880051	Silverleaf increment: results
+tools/wp13/evidence/20260914-start-npcs/README.md	supporting-markdown	structural-only	49	e2636a43ac6e8b3ac76510911b0cda6c5d1a0ce6a4e6e10e150f22602325d305	WP13 start NPCs: the evidence of the 2026-09-14 socket increment
+tools/wp13/evidence/20260914-starts-fixes/README.md	supporting-markdown	structural-only	178	1695e7bbb991d9cfb8c782a06a8aa81cce32c38bb00cf572edd1dea127602adf	WP13 starts: the combined review-fix round — `wp13-starts`
+tools/wp13/evidence/20260914-starts-integration/README.md	supporting-markdown	structural-only	97	a6c0c172edbae09b5b0030cf9816141164f2c9ef5772de27ca1bd54e4639dc33	WP13 starts integration — `wp13-starts`
+tools/wp13/evidence/20260914-stillgrave/README.md	supporting-markdown	structural-only	117	06da91867de8000500f810f6cf0463d539f04bbfe80df2b2e9b4f1d9ad5762c3	WP13 increment 5, undead lane: Stillgrave Hollow
+tools/wp13/evidence/20260914-sunscar/README.md	supporting-markdown	structural-only	114	9251bf2571199c9a2b6f93442092424a66d005a820ee161594d5ae257893d9dd	WP13 increment 5a: Sunscar Camp, the orc start
+tools/wp13/evidence/20260915-apron-and-throne/README.md	supporting-markdown	structural-only	314	19555f5070c9fcaeba0e057d83b176e6dda0f4234b6395a8f07b35a6b10b6b67	WP13 playtest round 1: apron vegetation, and the throne that faced the wall
+tools/wp13/evidence/20260915-capital-terrain/README.md	supporting-markdown	structural-only	170	43de1089ff7e8ddc7603e6462d87e43d83784c7554f60749d85a0e4e46287b38	WP13 round 3, lane 1: capital terrain
+tools/wp13/evidence/20260915-dur-brannoc-upgrade/README.md	supporting-markdown	structural-only	49	b95a6ddd97ebbea5a7cf8db33fd2f46e05466fb3ade66bf08feb7da08c9d304c	Evidence: Dur Brannoc upgraded to the Highcourt standard (WP13 wave 2, lane D)
+tools/wp13/evidence/20260915-dur-brannoc/README.md	supporting-markdown	structural-only	63	5d02c65d42e410dedb1f64ee731494efc1d0cf8ae84b7aebc5024bc3f4a3a726	WP13 Dur Brannoc — evidence, 2026-09-15
+tools/wp13/evidence/20260915-dur-brannoc/REBASE.md	supporting-markdown	structural-only	101	38fb7d62c1eeccc32daea8523e3dc72713ef8bd2a676618029195486d5adaebb	Dur Brannoc: the review round and the rebase onto `7f988a60`
+tools/wp13/evidence/20260915-floating-bushes/README.md	supporting-markdown	structural-only	174	1d2051ab3f8d7f9ed21faf4a1753953cc1417d96289ec96f4ba1b7917cf86900	WP13 playtest round 3, lane 2: the bushes that floated
+tools/wp13/evidence/20260915-gor_drazhak/README.md	supporting-markdown	structural-only	78	d631dc74786dd855968c2e553e3ca0cccbd355ed1c36fe0fc7ef7e4c1da3f56c	WP13 evidence: Gor Drazhak, the orc capital (2026-09-15)
+tools/wp13/evidence/20260915-highcourt-districts/README.md	supporting-markdown	structural-only	38	eeb46181f0f57cb266de194779b385dc21c2cc3aa1317ad702573c9ccbbfde29	WP13: Highcourt's other three districts, and the quadrant permutation
+tools/wp13/evidence/20260915-highcourt-fill/README.md	supporting-markdown	structural-only	76	e8cdab0c62345616e5aee905381eea272123bf6348c14a2a821de00c61e52caa	WP13: Highcourt's wall ring, its fill and its trades
+tools/wp13/evidence/20260915-kezamba/README.md	supporting-markdown	structural-only	105	4bcb36e9951b6da14b8d7878b046a73531f3f9da2adf22ae994f3a4e05a36b4c	WP13 Kezamba — evidence
+tools/wp13/evidence/20260915-lane-routes/README.md	supporting-markdown	structural-only	76	644bea8de65500b4384cf62b4cbfa67012ef33f054cc1e019cf786b946bd6a2c	WP13 round 3, lane 3: where a capital's streets meet WP40's routes
+tools/wp13/evidence/20260915-lethariel/README.md	supporting-markdown	structural-only	94	3f721a4b8e7d43b3cdb77dadd7cc523648f7e9736378099db0adbdf4db2da876	Evidence: Lethariel, the elf capital (2026-09-15)
+tools/wp13/evidence/20260915-nhal_veyr/README.md	supporting-markdown	structural-only	106	332fdac8682491df69dd1ab5c96075f423a998dcb6a89e655eef6a35f9666309	WP13 Nhal Veyr — evidence, 2026-09-15
+tools/wp13/evidence/20260915-npc-playtest-1/README.md	supporting-markdown	structural-only	85	d33a0e82eea382ab362d102a15b20da34e5cc02d50554fda8d00a20449d4f28c	WP13 playtest round 1 — settlement NPC behaviour (2026-09-15)
+tools/wp13/evidence/20260915-npc-round-2/README.md	supporting-markdown	structural-only	130	9da812815c731ed3a5061e68c06a76b50a781e46fa04623496c14f15dd368ceb	WP13 playtest round 2 — settlement NPC behaviour (2026-09-15)
+tools/wp13/evidence/20260915-npc-vocabulary/README.md	supporting-markdown	structural-only	58	af45063e9c53ee9ab1f5c591b7fbe823d88d246250250920446684c7d747ae1a	WP13 wave 2: the NPC vocabulary
+tools/wp13/evidence/20260915-npc-work/README.md	supporting-markdown	structural-only	177	a982fc2ef617d687cc088f0169ae5a9c6fad3cac853f55a475edde45a1385095	WP13 round 3, NPC work lane — evidence
+tools/wp13/evidence/20260915-playtest-round-1/README.md	supporting-markdown	structural-only	118	5b4c3d17bfc519d026995fea1f6fb43d6fb8ae24b14a06bd55aa97e7236c1db9	WP13 playtest round 1 (2026-09-15)
+tools/wp13/evidence/20260915-route-gates/README.md	supporting-markdown	structural-only	138	9ab29926a7e86a1bc07edd977300d1f5cf705758a9bebd69ede133cfd0b7ebb8	Evidence: WP40's routes end at the capital gates (WP13 wave 2, lane R)
+tools/wp13/evidence/20260915-seam-generalisation/README.md	supporting-markdown	structural-only	36	0811c9bf046f4dc7d9ba20ec0824a0496a2eaf87c409710cfd85b9a05846ed59	WP13 seam generalisation — evidence, 2026-09-15
+tools/wp13/evidence/20260915-weapon-ladder/README.md	supporting-markdown	structural-only	21	eede724255298540abf1284109a64d037c1aa8903c9ced3b8c0ef1a528ca6cf6	WP13 playtest round 2, lane 1 — one weapon ladder
+tools/wp13/evidence/20260916-fishing/README.md	supporting-markdown	structural-only	137	ff7041301db74243dbc4c6f703e8a45afad6a817f1202368d3414d6fccadce1f	WP13 playtest round 5, wave 3 lane F — the axe in the hand, the rod, and fish
+tools/wp13/evidence/20260916-kezamba-terrain/README.md	supporting-markdown	structural-only	142	d89cafaa54feb54bff0c568f4cf7815c86beb3ec57d46e1453c8b3b9aae41469	WP13 wave 3, Lane K: Kezamba terrain and crops
+tools/wp13/evidence/20260916-polish/README.md	supporting-markdown	structural-only	64	d0e0e0fb7ca08a78d01f13625ebc792dd4025ae24dd18b9d221776a61bba2d4c	WP13 wave 3, Lane P: polish -- evidence
+tools/wp13/evidence/20260916-streets-r4/README.md	supporting-markdown	structural-only	77	60e9fd5785a6a67198e441fca0c7a1fb1023f79bf93c95f0b572389fca2161b4	Evidence: the streets after playtest 6 (2026-09-16)
+tools/wp13/evidence/20260916-streets/README.md	supporting-markdown	structural-only	108	a863db4223672abdfa02527b1563e05126df2b6a6a431fc9a99ad25c2ae999e7	Evidence: one street rule for all six capitals (2026-09-16)
+tools/wp13/evidence/20260920-capital-round10/README.md	supporting-markdown	structural-only	16	7a5318ad5ae191e52506607a767d7714fc5210fbfd4b16642196b354095134c4	Reviewed Round 10 capital overlay expectations
+tools/wp26/evidence/20260916/README.md	supporting-markdown	structural-only	137	07102a15c722abbde15f7a3dce135d5b9f23db8c843f57c53afaa27fca7e48d4	WP26 evidence — 2026-09-16 (WP13 wave 3, lane C)
+tools/wp39/README.md	supporting-markdown	structural-only	10	91ad2d41e83b34d73fd489e6d65a21f33b6a0871b24fff95eeb1f8d961a86604	WP39 historical combat fixtures
+tools/wp40/README.md	supporting-markdown	structural-only	1547	c9b8e7df16d598a45f45adb112d7742ca0f30804320e8e887629789ee607ead0	WP40 verification harness
+tools/wp40/dungeon_probe/README.md	supporting-markdown	structural-only	63	5ff69c2ee6ad66e89eed429d37404d989d53bff7de7442fb117eb0f2b95b9b83	WP40 native-dungeon provenance probe
+tools/wp40/evidence/t2-c1-v3-5d770365/README.md	supporting-markdown	structural-only	11	372f47e7c5c3cf181b5306e33a08c489c7e9797f395c1f2cf6cc973680ccd992	Historical C1-v3 evidence
+tools/wp40/evidence/t2-c1-v3-86e5071/README.md	supporting-markdown	structural-only	31	29e14a990bd4f7065bf7100cfa233e63b7f370c2e3843fc2fdf10f7a50605e3e	WARCOAST C1-v3 reacceptance evidence
+tools/wp40/evidence/t2-c1-v3-db9c344/README.md	supporting-markdown	structural-only	23	70f9cd766dcc4dcaacd903dbc36ed94283fe224f76b0ad3e1d01bf6115100bc2	Integrated Wave-1 C1-v3 evidence
+tools/wp40/evidence/t2-cb1-v1/REVIEW.md	supporting-markdown	structural-only	28	6dba0743b7f70fe9b7b7fded49d413f4e392b38dcd5943b35c81135f090e948b	WP40 CB-1 Review Closeout
+tools/wp40/evidence/t2-puc-core-v1/README.md	supporting-markdown	structural-only	71	25733e47af71c1b2e7914bf5daff8976854fd3846abbd493309070337e5d86b1	WP40 T2 Phase-0B Pinned PUC Conformance Core evidence
+tools/wp40/fixtures/t2_extreme_e0/README.md	supporting-markdown	structural-only	69	07127ff5b325cbefc35f5ca32a39fba8d5e5846acaf05d74e2457b5fa31c7428	T2 E0 retained measurement artifacts
+tools/wp40/fixtures/t2_puc_core/README.md	supporting-markdown	structural-only	43	44681fb5797cb8a72a3cea9f1cff21543c6ef79b6cd71354ce529baf8111727d	WP40 T2 pinned PUC conformance core fixtures
+tools/wp40/planner_throughput/README.md	supporting-markdown	structural-only	35	0988243340b85131b5a7752ab7c85d10cc6cfe4c16b8faf44cee74d1d1260909	Planner throughput checks
+tools/wp40/profile/README.md	supporting-markdown	structural-only	204	11694fc26b3973a00a594ee84fed7700c3487e553bcf9556532bbffce1b79178	WP40 real-engine mapgen profiler
+tools/wp40/profile/evidence/20260913/README.md	supporting-markdown	structural-only	42	b7750d019a46e4b74d1f449c1e52a93c7f5bf5df081001a36ce75aa0a45a90b6	2026-09-13 tree correction and real-engine profiling evidence
+tools/wp40/profile/evidence/20260913/review/independent-review.md	supporting-markdown	structural-only	24	e8e709dc38835120307b0ea6fc98ac622835dd298300c1d40f7d0b221aa65f06	Independent final review
+tools/wp40/quality/evidence/20260913-terrain-life/PROVENANCE.md	supporting-markdown	structural-only	42	57d16b49509c0f1dde756a71d2ad621a5615b4ed72ba9e9ad9a821eb13630210	Measurement provenance
+tools/wp40/quality/evidence/20260913-terrain-life/README.md	supporting-markdown	structural-only	38	d8282207e7e7d9a742fcb2a64065e95ac69de530b51b28267d65fbec6a7e956d	Terrain-life local evidence
+tools/wp40/r7/README.md	supporting-markdown	structural-only	165	6e8df3ca49f6c87e7ee427d6a0bbf1be43e128519bef68228367ce6afacfc8b3	WP40 R7 evidence harness
+tools/wp40/resource_sampling/README.md	supporting-markdown	structural-only	32	2037ca33418a68d55886391173997380341ae54ce9a71875544db91ff2033a8f	Resource-root sampling fixtures
+tools/wp40/road_polish/README.md	supporting-markdown	structural-only	25	9a800453f6be8269b7af9a469c2d1af29db631274a72a09c5c03f4ad5f85fb7e	Road cut preference witness
+tools/wp40/water_road/README.md	supporting-markdown	structural-only	40	4508b064c17c63affa7a7951c8d470181186229c9fe293d68cb1db9c047c2f68	Water-bank and road follow-up

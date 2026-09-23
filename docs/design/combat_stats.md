@@ -925,7 +925,7 @@ targets do not impose hysteresis on valid rivals. Charge stun lasts 1.5 seconds
 on accepted hits, excluding kings and dragons; it cancels pending attacks and
 blocks movement and attack execution, preserving gravity.
 
-## Global non-player damage scale (Round 17)
+## Global non-player damage scale
 
 The startup setting `grug_mob_damage_scale` defaults to **1.5**; **1.0** retains
 the prior unscaled damage. Valid values are 0–10; invalid/nonfinite values
@@ -937,7 +937,7 @@ attacks, fall damage and ordinary environmental damage are unaffected.
 Derived arrow/boss damage must not be multiplied again. This setting does not
 change HP, density, aggression range, armor, rewards or ability cadence.
 
-## Nametag categories and injured health sprites (Round 17)
+## Nametag categories and injured health sprites
 
 All viewers see the same category colors; existing 25/30 m observer hysteresis
 still controls visibility independently. Six categories have configurable
@@ -976,7 +976,7 @@ by that scale.
 This changes neither ordinary mobs/guards nor adds a screen-space boss HUD. The sprite remains perspective-scaled. Flight visuals use a duration bounded to
 0.05–2 seconds, so near-zero partial bow draws never cause long pursuit.
 
-## Ambient pursuit policy (Round 18, amended by Round 19 follow-up)
+## Ambient pursuit policy
 
 This revision supersedes ordinary ambient chase-anchor and contact rules in §4.
 Free-roaming combat mobs have a 15-second incoming-damage grace clock starting
@@ -1001,7 +1001,7 @@ existing encounter/post lifecycle and bounds. No additional terrain is loaded
 to preserve a distant target. Player participation/credit rules remain separate.
 Friendly guard healing stays deferred; current healing targets remain players.
 
-## Out-of-combat mob recovery (Round 19 follow-up)
+## Out-of-combat mob recovery
 
 Living registered world mobs, guards and bosses recover to full HP after 30
 continuous seconds of genuine idle time, rather than incremental regeneration.

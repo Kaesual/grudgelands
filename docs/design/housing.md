@@ -2,6 +2,9 @@
 
 Housing is an open-world, per-character land-claim system. A placed **Claim
 Stone** creates the only permanent player-owned protection in the game.
+This is approved future WP24 scope; current innkeeper home return is defined
+separately in [home_travel.md](home_travel.md). Claim-bound Home Stone rules
+below do not replace that delivered return/respawn mechanism.
 Separate private housing islands do not exist. The target game has no guild
 system: claim ownership, access, storage and services never depend on guild
 membership, guild roles, guild banks or guild terminals.

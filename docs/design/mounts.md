@@ -22,8 +22,8 @@ universal skills `professions.md` §1, the mob speed pillar
   the earlier job-trainer rule is superseded). There is no Riding Trainer in a
   race start, so the first tier requires a trip to a capital. A learned step is
   **player state, permanent and per character**,
-  and its purchase hands over the owner-bound mount item represented by that
-  step.
+  and purchase makes the owner-bound representation for that step available
+  for manual recovery from Skills; it inserts no stack automatically.
 - Every capital has one outer-district stable using the same shared building
   design, with the local architectural palette: earth floor, one-node fence,
   clear entrance and a flat roof on exactly six posts, without perimeter walls.
@@ -71,10 +71,10 @@ character state:
   nodes/s** (engine default `movement_speed_walk = 4`,
   `reference_projects/luanti/src/defaultsettings.cpp:520`; the game
   does not override it).
-- **Every tier is faster than every mob** — aggressive mobs run 4.6
-  (`combat_stats.md` §3; 4.4 until user ruling 2 of 2026-09-16, and the
-  slowest mount is still 6.4). That is deliberate, and it is exactly why
-  **incoming damage dismounts the rider** (§3.1): the speed is
+- **Every tier is faster than ordinary aggressive mobs** — they run 4.6
+  (`combat_stats.md` §3), while the slowest mount runs 6.4. Bespoke encounters
+  such as the Kraken Guard keep their separate speed rules.
+  **Incoming damage dismounts the rider** (§3.1): the travel speed is
   permanent, the immunity to the mob game is not.
 - The two flying tiers are the late-game milestones. Expert matches the
   level-30 fast land mount at +100% and adds direct aerial routes and terrain
@@ -183,10 +183,7 @@ arbitrary fixed-price wall.
   `skill_trees.md` §3.9) `physics_override` has exactly **one** owner,
   `mods/CORE/grug_core/movement.lua` — mob webs, the PvP snare chain and the
   character-creation freeze all register named modifiers there. Riding adds
-  no writer at all and can never collide with a slow, which is why the ruling
-  says **mounts stay outside the aggregator**. *(Before that change there were
-  three writers, not the two this paragraph used to name; the third was
-  `grug_classes/selection.lua`'s freeze.)*
+  no writer: **mounts stay outside the aggregator**.
 - **A mount carries no level, no XP, no threat and no aggro.** It is not
   registered through `grug_mobs.register_mob` — that wrapper *is* the
   level/XP engine (AGENTS.md, WP6 patterns) and would give a horse a
@@ -248,9 +245,12 @@ arbitrary fixed-price wall.
   the rider's complete velocity is cleared and ordinary gravity takes over.
 
 Ordinary aggressive mobs run at **4.6 nodes/s** against a player's **4.0**.
-Round 18 ordinary pursuit continues while incoming damage arrives and ends
-after 15 seconds without it; it no longer uses the old 25/40/45-node distance
-rules. Bosses and location-bound encounters retain their own limits.
+Ordinary pursuit follows `combat_stats.md`'s Round 19 rule: initial aggro
+starts a 15-second grace clock and effective incoming player/guard HP damage
+refreshes it. For a live current target, expiry triggers return only when the
+target moves at least 0.25 nodes horizontally between the existing one-second
+samples; standing still does not reset the clock. Outgoing attacks do not
+refresh it. Bosses and location-bound encounters retain their own limits.
 Mounts run **6.4–12 nodes/s** and could otherwise bypass ordinary chase danger
 indefinitely. Damage therefore dismounts a rider; mounted attacks remain blocked.
 
@@ -262,17 +262,10 @@ A mount breaks that ceiling permanently and by design; **the dismount is
 what pays for it.** Riding buys travel between fights, never an exit from
 one.
 
-**The pillar holds with one decided class of exception: named, long-cooldown
-skills.** `skill_trees.md` §5, ruling 10 (2026-09-16): "skills may explicitly
-**break the base inequalities** (mob 4.4 > player 4.0, stat caps, roots) —
-that is what skills are for… The rule: **the bigger the break, the stronger
-the limit**, usually cooldown or duration." *(Quoted verbatim; it says 4.4
-because ruling 2 of the same day moved the aggressive band to 4.6, and the
-numbers derived from it below are stated against the shipped 4.6.)* The first
-such skill is the Scout's **Sprint**, **+50 % for 10 s on a 300 s cooldown**
-(user playtest amendment 2026-09-20, `scout.md` §2): 6.0 nodes/s against ordinary
-aggressive mobs' 4.6, for ten seconds in every five minutes. Its 1.4 nodes/s
-margin is temporary; it does not replace a mount's permanent travel speed.
+Named, long-cooldown skills may temporarily exceed the ordinary speed
+inequality (`skill_trees.md` §5). The Scout's Sprint gives **+50% for 10 s on
+a 300 s cooldown** (`scout.md` §2): 6.0 nodes/s against ordinary aggressive
+mobs' 4.6. That temporary advantage does not replace permanent mount travel.
 The exception is deliberately narrow: it covers named, time-limited,
 long-cooldown abilities and nothing permanent or cheap. The
 **Swiftness Draught's +10 % for 5 s stays below the mob band** (4.0 × 1.10 =

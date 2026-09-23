@@ -16,7 +16,7 @@ Codex may invoke Claude CLI, subject to current model/task authorization. This
 applies to both implementation and independent review. A native slot/thread
 limit does not authorize a same-provider CLI workaround. The current development
 session excludes all Claude tasks because the user's Claude credits are
-exhausted; see `../research/round14-execution.md` for active session routing.
+exhausted; see `../maintenance/documentation-round.md` for active session routing.
 
 **Day-to-day routing rule (decided 2026-09-14):** the role assignments below
 are *defaults*, not mandates. The user decides per session which model

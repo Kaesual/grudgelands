@@ -92,9 +92,10 @@ That is the property the re-cut was made for, and it is checkable:
   armor *values* but it is a separate, three-piece identity line with
   potion effects on it, and the Alchemist cannot make the Tailor's cloth
   armor — which is why it cross-buys bolts.
-- **Every weapon family of `items_crafting.md` §3.2 is assigned.** 1H,
-  dagger and 2H to the Weaponsmith; wand, staff and bow quality to the
-  Woodcarver. Scepters and orbs are absent from V1.
+- **Every weapon family's professional enchantments are assigned.** Sword,
+  dagger and battle-axe enchantments belong to the Weaponsmith; wand, staff and
+  bow enchantments belong to the Woodcarver. Their plain base recipes are
+  universal Basics. Scepters and orbs are absent from V1.
 - **Both trinket slots finally have an owner** — the Goldsmith. In the
   old roster they had none at all. **The items ship in the MVP**
   (decided 2026-08-08): the slots are no longer reserved
@@ -213,7 +214,7 @@ who wants both specialties spends both slots, matching the two-profession cost
 of cloth or leather users who also want a professionally improved weapon.
 
 - **The Bowyer split is dropped entirely** (2026-08-07). Plain bows are Basics,
-  while Woodcarver owns their quality operations; the quiver stays
+  while Woodcarver owns their named enchant operations; the quiver stays
   Leatherworker, so there is nothing left for a Bowyer to own. The
   Leatherworker is not split.
   *A settlement shop called a bowyer is not this.* Since 2026-09-15 a

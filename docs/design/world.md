@@ -1,10 +1,12 @@
 # World Design
 
 Decided spec (2026-08-05/06; continent redesign 2026-08-06; named-zone
-redesign 2026-08-10; R6 camp quantity 2026-08-29). Implementation: WP2/WP18
-are the currently shipped map, WP6 supplies guards/outposts, WP40 replaces the
-surface geography with the named-zone map, and WP13 then supplies structures
-and villages. The binding macro-map and PvP rules are in `world_zones.md`.
+redesign 2026-08-10; R6 camp quantity 2026-08-29), with later approved
+playtest revisions folded into the relevant sections. The current surface is
+the WP40 named-zone map. Structure delivery and outstanding content are tracked
+in BACKLOG WP13; the binding macro-map and PvP rules are in `world_zones.md`.
+Planned travel, housing and depth mechanics below remain approved scope, not a
+claim that their work packages are complete.
 
 ## 0. Canonical names
 
@@ -20,11 +22,10 @@ docs, code and content — do not reintroduce the old ones.
 | Northern continent (Throng homeland) | **Kragmar** | `kragmar` * |
 | Shared macro region | **Battlegrounds** | `holy_grounds` ** |
 
-\* The two continent ids are **reserved, not yet used in code**: today a
-continent is only the sign of z (`grug_core.territory_at`). Use them if
-and when a continent ever becomes a first-class id.
+\* These are canonical continent identities. Territory and zone membership
+come from the authored zone authority, never merely the sign of z.
 
-\** `holy_grounds` is an accepted compatibility id for geometry, policy and
+\** `holy_grounds` is the retained internal id for geometry, policy and
 artifacts. It is not a player-facing name and does not imply blanket terrain
 protection.
 
@@ -114,14 +115,6 @@ six distributed north/south crossings rendered as damaged military routes,
 not one intact arterial road. Capital defense is the one fixed guard rule: its
 guards and important NPCs are level 60.
 
-### Current implementation before WP40
-
-WP18/WP36 still ship two 3000×1600 rectangles, a 200-node strait, radial
-`core/inner/outer/coast/war_coast` fields, capital spawn bubbles and exact
-z-mirroring. Those values remain a description of the running code only; they
-are not constraints on the new macro-map. WP40 removes or migrates every
-consumer before WP13 authors permanent structures.
-
 ### Day/night and exterior visibility
 
 One complete world day lasts **20 real minutes**. The shared phase boundary is
@@ -181,9 +174,7 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
     The registry separately stores mutable claim-exclusion/grading envelopes
     for ordinary roads and structures; those envelopes never become mutation
     protection. Terrain-derived placement heights are immutable mapgen output,
-    but no first generated chunk owns the decision. The running pre-WP40
-    placeholder generator may skip an anchor whose terrain is flooded or too
-    steep; this is legacy behavior, not the target contract. WP40 must grade
+    but no first generated chunk owns the decision. The terrain writer must grade
     every fixed reserved anchor position inside its owning envelope or fail
     that seed's generation audit; WP13 may not invent a replacement position.
     A mandatory graph/POI anchor may never disappear silently.
@@ -323,8 +314,9 @@ occupying a position (`world_zones.md` §7):
 - **Coastal shelf:** the nominal exterior band where
   `expanded_land_at(80) and not land_at` holds around authored positive
   mainland or island shapes. This is editable under the nearest eligible
-  mainland hub's zone terrain policy and reserved for later coral, kelp, fish,
-  coastal materials and shore wildlife. It is never housing-claim ground.
+  mainland hub's zone terrain policy. Coral, kelp and wild-source coverage
+  follow `world_zones.md`'s Round 10 rules; further coastal materials and shore
+  wildlife retain their own content scope. It is never housing-claim ground.
   As exterior water it has no authored surface or guard level. Ordinary
   `mob_level_at` is nil at normalized y >= 0; harmless/fixed shore wildlife is
   independently levelled. Below normalized y = 0, shelf caves use the standard
@@ -346,16 +338,19 @@ occupying a position (`world_zones.md` §7):
   travel from Kragmar and Elandor. They have no ordinary surface, guard or mob-
   level result.
 
-**Kraken Guard pursuit** (decided 2026-08-13) — the deep sea is dangerous
-because of what the guard does, not because water damages a boat:
+**Kraken Guard pursuit — approved future WP17 scope** (decided 2026-08-13).
+The position-dependent pursuit below remains a boat-system prerequisite; the
+current bespoke guard is not evidence that it is delivered. The deep sea is
+dangerous because of what the guard does, not because water damages a boat:
 
 - The Kraken Guard **spawns only in `deep_ocean`**. Neither the coastal shelf,
   nor planned zone water, nor a dragon channel ever spawns one.
 - **In deep ocean it never gives up.** While the guard itself stands in a
   deep-ocean column, three §3/§4 rules are suspended: the 40-metre drag leash,
   the 45-metre chase give-up and the 25-metre soft de-aggro that would drop it
-  to walking speed. A player who stays on the open sea is caught; the guard is
-  faster than the fastest boat, so this is not a race.
+  to walking speed. Its current decided run speed is 5 nodes/s
+  (`biomes_mobs.md` §3.1), below the improved boat's 8; danger must not be
+  justified by the superseded 8.8-nodes/s outrunning assumption.
 - **Everywhere else it retains the bounded land-actor rules.** The Round 18–19
   ambient pursuit changes do not apply to this bespoke guard. In shelf water, in
   planned zone water and inside a dragon channel all three of those rules
@@ -376,10 +371,8 @@ because of what the guard does, not because water damages a boat:
 - A dragon channel is safe passage for that reason alone; no separate
   channel exception is needed.
 
-The compatibility `open_sea_at` predicate must become true only for
-`deep_ocean`; it is false for planned zone water, shelf and dragon channel. The
-shipped WP18 rectangle/strait lookup remains running-code history only and is
-replaced by WP40.
+The `open_sea_at` adapter is true only for `deep_ocean`; it is false for
+planned zone water, shelf and dragon channel (`world_zones.md` §13.3).
 
 ## 2c. PvP geography and player tag
 
@@ -439,63 +432,7 @@ The ordinary contested deep rule resumes at y = −701 even below a capital.
   `biomes_mobs.md` §5; elven capital = treehouses). Mechanical race perks hang
   on individual vendors (§7).
 
-### Historical: the WP18/WP36 capital anchors (retired 2026-09-13)
-
-**None of this is running code any more.** WP40 R7 replaced it: the six
-capitals sit in their own named zones, spawns come from
-`grug_core.start_position`, and `grug_mapgen/structures.lua` -- the file that
-built the placeholder platforms -- no longer exists. The block below is kept
-because the biome-guarantee argument is worth re-reading before anyone
-re-proposes climate tuning, not because it describes the map. It placed six
-platforms at x = 0/±550, z = ±900 and used them as spawn points.
-
-**"In the race's own biome" is a guarantee, not a hope (decided
-2026-08-08).** It used to be neither enforced nor true: on a random
-seed the intended biome won at the anchor in 22–63 % of cases at four
-of the six capitals — the human capital came up deep forest, the dwarf
-capital meadows, undead and troll savanna. What ships now:
-
-- **Guaranteed radius R = 200.** In the whole ±200 box around every one
-  of the six anchors, exactly **one** biome is registered — the race's
-  own. Verified over 200 random seeds at 100 %.
-- **How**: geometry, not climate tuning. The engine filters biome
-  cuboids on the raw integer position *before* it reads heat/humidity
-  (`BiomeGenOriginal::calcBiomeFromNoise`), so a containment argument is
-  seed-proof, while the climate at a capital is effectively a coin flip
-  of the seed (spread 1000 over a 3000×1600 continent leaves only ~5
-  independent large-octave samples per continent — even collapsing every
-  settled point onto the noise mean scored 0 % at four capitals, and the
-  engine's `weight` knob tops out at 56–94 % while distorting shares
-  everywhere else).
-- **The carve box** (§1) pushes the four wild side bands out to
-  |x| ≥ 801, moves the badlands/deep-forest back country to |z| ≥ 1201,
-  narrows the centre band to |x| ≤ 349 over its whole z range, and lets
-  the side settled bands reach in to |x| ≥ 201.
-  R = min(800 − 550, 550 − 350) = 200; the theoretical maximum is 274,
-  because two neighbouring capitals are only 550 apart. Registration
-  detail and the resulting biome table: `biomes_mobs.md` §1.3.
-  The centre band first shipped as three slabs (a narrow belt inside the
-  box, full-width front and back slabs outside it) to keep the wide
-  centre↔side overlaps; that was **rolled back the same day** because the
-  slabs' four new cuboid faces cost 1 500 nodes of straight ground border
-  — three quarters of the whole regression the carve caused. Only the
-  deep forest still needs slabs, because only it needs a hole in the
-  middle of its cuboid. See the D4 note in `biomes_mobs.md` §1.3 before
-  re-proposing them.
-- **No coverage hole**: the narrowed centre band without the side-band
-  extension to |x| ≥ 201 would leave 5 % of the land with no eligible
-  biome at all, which generates as bare stone (measured negative control:
-  478 799 land columns). Verified on the shipped registrations: **0** land
-  columns without a biome, at every y from 4 to 31000.
-- **Accepted residual (D5)**: `grug_swamp` (y 1..6) and `grug_beach`
-  (y 1..4) are universal, x/z-unlimited and are **not** carved. A
-  capital whose terrain surface lands at y ≤ 6 can therefore still come
-  up swamp or beach — measured at ~30 % of the box at y 5–6 and ~75 % at
-  y 4. Accepted rather than split both into z-slabs as well: the camp
-  platform sits at the engine spawn level and our terrain baseline is
-  lifted ~6–10 nodes above sea level, so a capital that low is a corner
-  case, and the cost would be six more registrations plus their deco
-  lists.
+### Capital services and encounters
 
 The capital watch remains level 60 and still uses its guard banner; the six
 WP13 cities stand around it since 2026-09-16 (`settlements.md`, "Capitals in
@@ -1016,11 +953,12 @@ symmetry.
   Difficulty and biome still reinforce each other: high mountains and the
   dragon endpoints are high-level because their named zones say so, not
   because a global ring happened to reach them.
-- **Nature mobs are aggressive on sight against players AND NPCs**
-  (patrols visibly fight wolves — free world "life").
+- Nature mobs use the fixed aggressive/neutral dispositions in
+  `biomes_mobs.md`. Aggressive families can engage players and NPCs; neutral
+  hunted wildlife does not become aggressive merely because it is in wilderness.
 - **Mob density is deliberately high**: target ~1 visible mob per 15–20 m of
-  travel in wilderness zones. WP40 must re-derive every `biome × named zone`
-  spawn cell before replacing the old ring vocabulary.
+  travel in wilderness zones. Current density and spawn eligibility follow
+  `biomes_mobs.md` §0/§4; old ring-cell counts are historical evidence.
 
 ## 9. Settlements & world life
 
@@ -1036,9 +974,10 @@ local compositions need not mirror.
 - Dragon lairs only at the contested level-60 ocean endpoints (§4b).
 
 The 24 outpost anchors and 12 bandit camps are live, and since WP40 R7 they
-are no longer ring-derived: R7 authenticates all 24 anchors from the zone
-graph (`grug_mobs/camps.lua`, `grug_core.outpost_at`). WP13 still owes the
-real structures on those reserved slots.
+are no longer ring-derived: their positions come from the authored zone
+graph (`grug_mobs/camps.lua`, `grug_core.outpost_at`). The delivered regional
+structure subset is six villages, six outposts and six bandit camps
+(`settlements.md`); BACKLOG WP13 tracks the remaining roster.
 
 Life measures (cheap on a voxel budget): named NPCs with one-liner barks,
 visible patrols, light/smoke details and a quest board per village. Ordinary

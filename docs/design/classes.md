@@ -494,13 +494,6 @@ Two WP11 talents lean on this ledger and are calibrated against it: **Stoke**
 (Ruin, +1 rage per landed swing per rank, so 4/4 restores the old +12) and
 **Spite** (Bulwark, +1 rage per hit taken per rank, so 5/5 reaches +8).
 
-**If (b) overshoots and leaves the Warrior starved**, the recorded fallback is
-option (a): leave the income alone and raise the prices instead — Mighty Blow
-25 → 35 and Hamstring 10 → 15 (`skill_trees.md` §7, task 8). The three income
-numbers live as named constants in `grug_abilities/init.lua`
-(`RAGE_PER_SWING`, `RAGE_PER_HIT_TAKEN`, `RAGE_DECAY_PER_SECOND`), so
-reverting (b) is three edits.
-
 ## 4. Mage (Mana)
 
 Ranged damage; fragile, keeps enemies away.
@@ -543,29 +536,10 @@ moves into the talent tree.
   (WP11) or later. (Power Word: Shield moved into the base kit with the
   WP19 kit tuning, §5.) Party frames are implemented under the separate
   [party contract](parties.md).
-- **Poison → SUPERSEDED 2026-09-16.** The Phase-2 Rogue this bullet was
-  written for is replaced by the **Scout** ([scout.md](scout.md)), and the
-  user's ruling of 2026-09-16 is explicit that the Scout has **no poison**:
-  "no new combat mechanic". Its rogue-like melee tree is built from existing
-  stats only — timed dodge windows, crit chance, slows and escape moves;
-  **stealth is not in version 1 either** (ruling 12, `skill_trees.md` §2.8:
-  the melee capstone is a timed dodge effect, and the whole stealth design is
-  kept in [scout.md](scout.md) §8). There is therefore **no planned owner for
-  a player poison stat at all**, and the paragraph below stands unchanged as the description of what
-  exists today. The retired text: *"Poison → arrives with the Rogue in Phase
-  2 (noted 2026-08-08). Poison is intended as the Rogue's signature damage
-  type — the damage-over-time channel §2's pipeline does not have yet — and
-  the Rogue is the Phase 2 class (ROADMAP; `professions.md` §2 already builds
-  the leather line for it)."* The leather line still has its wearer; it is the
-  Scout. **There is no poison stat**: it appears in no `combat_stats.md` §2
-  formula, in no
-  `items_crafting.md` §6.2 enchant pool and in no §6.3 roll range, so
-  nothing may carry "+poison" — not an affix word, not a trinket, not a
-  drop. What exists today is poison as a **mob** effect only (the
-  serpent's flat damage-over-time on hit, `biomes_mobs.md` §3.1, and the
-  Alchemist's Antivenom that cures it, `items_crafting.md` §3.6); that
-  is a mob verb, not a player stat, and after this supersession there is
-  no work package left that would turn it into one.
+- The Scout has no player poison mechanic and no player poison stat. Its Veil
+  tree uses existing dodge, crit, slow and escape mechanics. Mob poison and
+  Alchemist Antivenom remain separate world mechanics. Stealth is deferred in
+  [scout.md](scout.md) §8; the current Veil capstone is Untouchable.
 - PvP tuning of roots/taunt (diminishing returns etc.) → balancing pass.
 
 ### Round 16 control execution

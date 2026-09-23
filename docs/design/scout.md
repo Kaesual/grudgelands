@@ -1,6 +1,6 @@
 # Scout — the fourth class
 
-The accepted Round 11 design creates a fourth class, **Scout**, in leather
+Round 11 delivered the fourth class, **Scout**, in leather
 armour, with two trees — ranged (bow) and melee. Rulings 8 and 9 added
 invisibility rules and the Sprint
 idea; **rulings 12 and 14 then cut the class back to its simplest workable
@@ -8,20 +8,15 @@ form**, which is what this file now describes. Round 11 delivered the shared
 gear, leather and visual foundations plus the playable Scout class, four base
 abilities, bow draw flow, talent consumers, starter kit and trader stock.
 
-> **Historical Ruling 12 (user, 2026-09-16); Round 17 supersedes its
-> projectile trajectory only:** the Scout is to be **as simple as possible**, ahead of "as cool
-> as possible". **No invisibility in version 1**, no poison, no traps; the bow
-> family through the existing sprite generator; **arrows ballistic** with
-> gravity while **Fireball stays straight** — "the trajectory is what makes
-> the archer hard"; leather borrows the cloth cut; a base kit of **four
-> abilities from existing mechanics only**.
+> **Current class constraint:** keep the Scout as simple as possible. Version 1
+> has no invisibility, poison or traps, and its base kit has four abilities
+> built from existing mechanics. Round 17 arrows lock onto a valid target at
+> release and home for a bounded flight.
 >
 > **Ruling 14 (user, 2026-09-16):** the Scout **uses mana**. No new resource.
 
-The Round 11 art ruling supersedes only the quoted implementation shortcuts:
-bows use the licensed LotT sprite family and leather has dedicated inventory
-and worn textures. The class simplification and four-skill kit remain binding. Round 17 replaces
-ballistic arrows with release-target homing; `combat_stats.md` owns that rule.
+Bows use the licensed LotT sprite family and leather has dedicated inventory
+and worn textures. `combat_stats.md` owns the projectile rule.
 
 The invisibility rulings and the whole stealth analysis are **not deleted** —
 they are §8, "Deferred: stealth v2", intact, so that the day the user wants
@@ -347,7 +342,7 @@ conflicts if version 1 had stealth (§8).
 | **Professions** | none created. Leatherworker owns the grades/current quiver; Woodcarver owns bow quality operations | `professions.md` §2–§3 |
 | **Traders** | the bowyer shelf exposes bows and player arrows; the tanner shelf exposes the leather grades through the existing rotation and quality paths | `grug_traders/stock.lua` |
 | **Character visuals** | consume the delivered leather family and bow pose without new Scout-specific art | `character_visuals.md` §§3, 6 |
-| **Combat stat consumers** | the ranged damage term and Scout dodge consumer are delivered. The shared cap rule and targeted Unbroken consumer are delivered; the Mage crit override remains WP11 X3 | `combat_stats.md` §2; `skill_trees.md` §3.2 |
+| **Combat stat consumers** | the ranged damage term, Scout dodge consumer and shared cap overrides are delivered | `combat_stats.md` §2; `skill_trees.md` §3.2 |
 | **PvP (WP41)** | nothing in version 1. Sprint and Sidestep are ordinary buffs under the existing tag rules | `combat_stats.md:270-289` |
 | **`grug_visuals`, `grug_mobs` AI, nametags** | **nothing** — every one of those was an invisibility dependency (§8) | — |
 

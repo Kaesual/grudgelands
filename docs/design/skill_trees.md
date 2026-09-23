@@ -1,17 +1,16 @@
 # Skill Trees (Talents) — WP11
 
-**DECIDED, revision 2 (2026-09-16).** Revision 1 (2026-09-16)
-built two trees of five talents per class on a 20-point budget. The user's
-rulings of **2026-09-16** (§5) replace the budget, the tree size, the tier
-shape, the capstone rule and the respec seam, and add a fourth class. This
-revision rebuilds the decided design on those rulings.
+**Current design, decided 2026-09-16 and implemented through Round 19.** Four
+classes each have two trees with two chains. Characters gain 30 points, each
+tree contains 28 ranks, and one capstone is reachable. The sections below state
+the current rules directly; older 20-point/five-talent proposals are historical.
 
-**Status, 2026-09-20: lanes X1–X4 of §4 are implemented.** X1/X2
-(round 4, lane W1) shipped `mods/PLAYER/grug_classes/talents.lua` with the 48 talents of the three
+**Implementation status:** the model, talent consumers, UI, respec and level-up
+notice are implemented. The initial model release shipped
+`mods/PLAYER/grug_classes/talents.lua` with the 48 talents of the three
 shipped classes, the point budget, both gate kinds, the spend/respec rules,
 the validating persistence path, the window table and the two accessors, plus
-the thirty numeric consumers of §3.8 and the code halves of rulings 19, 20 and
-25 and of §7 task 5. X4 adds the sfinv page, paid/free-first respec transaction
+the thirty numeric consumers of §3.8. The UI adds the sfinv page, paid/free-first respec transaction
 and level-up notice; `/talents` remains read-only and the interim `/talent` and
 `/respec` commands are gone. WP44 has not published measured income yet, so
 X4's six prices remain the explicitly named coordinator placeholder in

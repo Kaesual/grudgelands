@@ -5,6 +5,13 @@ Decided spec (established 2026-08-06; material and housing economy rebased
 `items_crafting.md` §8; this file owns the currency rules, shared price axis,
 income relationship and sink structure.
 
+The price axis in §2 is the approved **WP44 target**. It is not a claim about
+the current trader bytes: until WP44 lands, the shipped six-bracket Common
+weapon prices are 50c/70c/98c/1s37c/1s92c/2s69c and buy-back is 25% rounded
+down (minimum 1c). Round-11 repair deliberately quotes from that current
+purchase catalog. WP44 must switch traders, reference prices, buy-back,
+anti-loop audits and repair's price source together.
+
 ## 1. Currency: copper / silver / gold
 
 - Base-100 chain: **100 copper = 1 silver, 100 silver = 1 gold**.
@@ -34,7 +41,7 @@ income relationship and sink structure.
 
 ## 2. Ordinary price axis and buy-back
 
-The ordinary money axis follows one approximate **×2.5 tier index**. The
+The WP44 target money axis follows one approximate **×2.5 tier index**. The
 binding Common weapon anchors are 25c at T1 and 25s at T6; clean displayed
 prices take precedence over preserving the exact mathematical ratio.
 

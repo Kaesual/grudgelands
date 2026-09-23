@@ -249,8 +249,19 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   transactional in-place operations on one concrete stack and preserve its
   metadata and wear. Other profession recipes retain their explicit grid,
   furnace, dual-furnace or brewing-stand route.
-- Personal/shared workspaces, viewer-qualified output and universal automatic
-  processing follow [the current station contract](crafting_equipment_revision.md#workspaces-and-production).
+- Authored capital/POI stations are personal workspaces keyed by player and
+  physical station. Player-placed stations share node inventories; Housing
+  access comes from the area Protector Stone, with no station-specific owner or
+  ACL. Shared 3×3 inputs are common while each viewer's output preview is
+  qualified independently. A successful take revalidates recipe, station,
+  distance, access, inputs, profession tier and capacity before consuming or
+  awarding progress. Partial transfers retain produced remainder without a
+  second debit or progress award, and closing a UI loses no contents.
+- Personal processing state, fuel, inputs and outputs persist in the physical
+  node. Elapsed server game time may catch up lazily after unload/restart but
+  does not promise work during shutdown. Automatic furnace, dual-furnace and
+  brewing completion is universal and gives no profession progress; only the
+  protected qualified preparation/craft grants current-tier progress.
 - Learned profession and T1–T6 profession level gate professional operations.
   Universal Basics routes have neither gate and award no profession progress.
 - Recipe books display human item descriptions. A group slot lists concrete

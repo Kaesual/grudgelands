@@ -78,5 +78,6 @@ A stale form or changed item aborts without debit or inventory mutation.
 Commit the ledger payment and inventory restoration together. Preserve affixes, cultural information and item identity. No partial repair-all,
 duplication, stack destruction or unnoticed metadata replacement is allowed.
 
-Material-based self repair and differentiated profession repair remain later
-WP22 follow-up design; V1 does not anticipate them with extra rules.
+Material-based self repair and differentiated profession repair are possible
+future design topics, not approved WP22 behavior. V1 does not anticipate them
+with extra rules or hidden profession benefits.

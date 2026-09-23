@@ -77,13 +77,11 @@ budget, and stop conditions.
 5. **Mandatory code review**: under **Independent review** in
    [agent-model-policy.md](agent-model-policy.md), run at least one full
    independent strong-agent review of the WP diff using the checklist below.
-   **Run in-session review/research subagents synchronously**
-   (`run_in_background: false`) — the WP19 pilot showed that background
-   subagent results can route to the main session instead of the coordinator,
-   which then stalls waiting for a notification that never arrives. An
-   external Claude CLI review is different: run and monitor it non-blockingly
-   under [claude-cli-review.md](claude-cli-review.md), which owns its process,
-   JSONL stream and result parsing. Larger WPs: split lenses
+   Native agents run through the coordinator's native delegation interface;
+   use its normal completion notifications and wait mechanism rather than
+   imposing CLI-style foreground/background process rules. Cross-provider CLI
+   review follows [claude-cli-review.md](claude-cli-review.md), which owns its
+   process, JSONL stream and result parsing. Larger WPs: split lenses
    across 2–3 independent strong agents (correctness / Lua+perf /
    design-adherence) and adversarially verify High findings. Findings are
    fixed on the branch; High/Critical fixes get a focused re-review. A
@@ -106,6 +104,12 @@ budget, and stop conditions.
    tester). Regressions found there become fix commits on main.
    A real fallback-engine run is a separate runtime gate and is never inferred
    from standalone LuaJIT/PUC equality.
+
+Documentation-only changes that do not alter Lua, executable fixtures, generated
+runtime data or the installed game do not require Lua parser/static/runtime gates,
+the final interpreter pair, `tools/sync_to_luanti.sh`, or an in-game test plan.
+They still require proportionate link/content checks and independent review when
+non-trivial. Any runtime-relevant change follows the full gates above.
 
 ## Code review checklist (for independent reviewers)
 

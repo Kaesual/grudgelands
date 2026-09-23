@@ -55,13 +55,16 @@ and already live in `docs/design/world.md` §6 / `economy.md`):
 
 ## Open (to spec before the Phase 2 WP)
 
-- Nether materials in the tier table (items TODO §5) + what world
-  bosses drop (ties into boss loot, items TODO §3); the **Nether dragon
+- Exact enemy-exit interception/PvP rule from the gating requirement above.
+  The alternatives are still open, not permission to bypass authored fronts.
+
+- Nether materials in the tier table and world-boss drops, to be specified
+  alongside `docs/design/items_crafting.md`; the **Nether dragon
   lord** is the Phase 3 capstone boss (world.md §4b).
 - Challenge design for reaching world bosses (jump/lava puzzles? kill
   gates? key items?).
-- ~~Story framing~~ — decided, see `docs/design/story.md`: a demonic
-  evil opened the connections from the other side; Nether world bosses
-  are its lords.
+
+Story framing is already decided in `docs/design/story.md`: a demonic evil
+opened the connections from the other side; Nether world bosses are its lords.
 
 **Decision:** _pending (Phase 2 planning)_

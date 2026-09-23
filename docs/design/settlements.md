@@ -29,8 +29,10 @@ the zone name; this increment introduces no separate town name.
 The first settlement received focused visual and walkability playtests before
 its architecture was extended to other places. That extension has since
 happened: the other five starts landed on 2026-09-14 and all six capitals by
-2026-09-16 ("Capitals in the world" below). Villages, outposts, camps and the
-kings are the rest of WP13.
+2026-09-16 ("Capitals in the world" below). The remaining village, outpost and
+camp roster is tracked in BACKLOG WP13. The six kings and their
+royal guards are already delivered; their encounter rules live in `world.md`
+and `world_zones.md`.
 
 ## Hearthpine expansion and ground integration
 
@@ -61,12 +63,13 @@ Decided 2026-09-14 after the first native playtest.
 
 Decided 2026-09-14 after the round-A playtest.
 
-- The server prepares all six start areas at startup: it emerges each start's
-  128 × 128 build envelope (not its blend ring) once, at most two at a time,
-  and reports one log line per completed start plus one summary line.
-- Character creation's final teleport waits until every one of the six starts
-  is ready, not only the player's own, and shows the waiting player the
-  prepared-count progress while it waits.
+- Preparation follows [world_preparation.md](world_preparation.md): the fresh
+  world selects one persistent starts-only or full-world mode, with one aligned
+  mapchunk request in flight and resumable successful-prefix progress.
+- In starts-only mode, all six required start envelopes must be ready; full
+  mode satisfies the same readiness seam when its surface plan completes.
+  Preparation precedes faction/race/class creation. The waiting UI, stasis and
+  shutdown/resume behavior follow the same shared preparation contract.
 - No mob that can attack players spawns inside a start footprint — the
   128-node build envelope plus its 10-node apron, the 148 × 148 hard-protected
   square of [world.md](world.md) §2 R1. Passive critters and prey animals keep
@@ -116,17 +119,16 @@ Decided 2026-09-14.
   see [wp13-npc-sockets-contract.md](../research/wp13-npc-sockets-contract.md).
 - Every start receives a first NPC roster: two gate guards and one patrol,
   the race's own vendor, residents at doors, benches, work areas and
-  **workplaces**, and a quest-giver shell with a placeholder line. Since
-  2026-09-15 a start also publishes three **spare** standing spots that nobody
-  lives on (below).
-- Round 14 quest services follow `quests.md`; the earlier quest-shell-only
-  stage is superseded. A settlement offers no general storage services, and a vendor is
-  the only trade there is. Since playtest round 3 a settlement may hold a
+  **workplaces**, and a quest giver following `quests.md`. A start also
+  publishes three **spare** standing spots that nobody lives on (below).
+- Quest services follow `quests.md`. A settlement offers no general storage
+  services; trade shops follow the vendor contract. Since playtest round 3 a settlement may hold a
   PROFESSION vendor -- butcher, smith, fishmonger, baker, tailor, and since
   the wave-2 capitals also mason, brewer, bowyer, herbalist, armourer, tanner
   and embalmer -- but that is a shop with its own shelf, not the
-  crafting-profession system of [professions.md](professions.md): nothing
-  there is taught, levelled or unlocked in a settlement.
+  crafting-profession system of [professions.md](professions.md). Dedicated
+  capital trainers and public stations provide that separate system; a trade
+  shop alone teaches or unlocks nothing.
 - Race appearance (skin, visual-only stature) and visible armor and weapons
   are composed by one function for players and humanoid mobs, see
   [wp13-character-visuals-contract.md](../research/wp13-character-visuals-contract.md).
@@ -228,24 +230,20 @@ street like any other and is paved on whatever ground it finds. Guard posts
 belong to the garrison district, the two traders to the core, and every district
 keeps two spare standing spots its people may walk to.
 
-A capital's buildings are **not built until somebody goes there**: they are
-constructed the first time a mapchunk touches the capital's envelope and
-released again once the map has moved away, so six capitals never sit in memory
-at once. The six starts stay built from the start, because the spawn depends on
-them.
+Capital blueprint construction is lazy when map generation first touches its
+envelope; mapchunk traversal may release cached construction data. Full-world
+preparation can generate capitals before a player visits them. Starts-only
+preparation covers the six start readiness envelopes instead.
 
-**NPCs arrive with the place, not with the server.** The six starts are prepared
-and populated at startup; a capital is not preloaded, so its roster is placed
-the first time its area is actually emerged or loaded, and its outlying district
-plots fill in as a player walks up to them. A capital carries several patrol
-loops — a city ring, one per gate tower and one per district — and each loop
+**NPCs arrive when their authored blocks are loaded.** Current-world readiness
+and per-socket loading govern roster placement, including outlying district
+plots; preparation does not authorize an NPC in an unloaded block. A capital
+carries several patrol loops — a city ring, one per gate tower and one per district — and each loop
 gets its own guard,
 walking that loop and no other; its flair villagers keep to the composition they
 belong to, the core or their own plot, instead of wandering the whole city. Its
-two traders stand on the blueprint's own vendor sockets. (The fixed vendor
-offsets of `grug_traders/vendors.lua` are the fallback for a capital whose core
-has not been built; since 2026-09-16 all six cores export their two sockets, so
-no capital uses the offsets any more.)
+two traders stand on the blueprint's own vendor sockets; all six capitals
+export those sockets.
 
 **Walled capitals.** The user's ruling of 2026-09-17 fixes **four walled
 capitals** — Highcourt, Dur Brannoc, Gor Drazhak and Nhal Veyr — and **two
