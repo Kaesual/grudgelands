@@ -89,10 +89,10 @@ read-only reviewer.
 
 ## Non-blocking monitoring
 
-The external CLI process is the exception to the synchronous in-session
-subagent rule in [wp-workflow.md](wp-workflow.md): it has its own OS process,
-JSONL stream, and explicit result parsing, so it must not block the coordinator
-context. In-session review and research subagents remain synchronous.
+An external CLI review has its own OS process, JSONL stream and explicit result
+parsing. Monitor it without blocking the coordinator from handling native-agent
+notifications or other independent work. Native agents use their provider's
+delegation interface and are not governed by this OS-process procedure.
 
 Do not double-background Claude from a short-lived command-runner shell. The
 command-runner call itself must retain and expose the live foreground session;
