@@ -68,6 +68,7 @@ projects: **[docs/research/](docs/research/)**.
 ## Active round
 
 Round 19 implementation, independent reviews and final technical gates PASS.
+Merged to local main and synchronized; GUI acceptance pending.
 Contract: `docs/research/round19-plan.md`; durable status and delivery:
 `docs/research/round19-execution.md`, `docs/research/round19-completion.md`.
 Next GUI pass: `docs/research/round19-playtest.md`. Native Astra owned atlas;

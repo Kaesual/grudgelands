@@ -68,7 +68,7 @@ quest catalog does not yet cover the full journey through every region.
 others have playable portions. This is a tracking count, not a percentage of
 game completion. The latest increment is
 [Round 19](docs/research/round19-completion.md), with independent reviews and
-technical checks complete. Its receipt records local installation; remote push
+technical checks complete and installed locally; remote push
 awaits renewed approval. [In-game acceptance](docs/research/round19-playtest.md)
 remains separate.
 

@@ -93,7 +93,13 @@ Fallback-engine runtime remains a separate release gate from interpreter parity.
 
 ## Local delivery
 
-Main merge and installed-tree verification pending at receipt creation.
+Reviewed evidence/receipt commit: `51a9a63d`.
+Main merge: `c37e8a854cea9eb0711881bd79a28b91f0938af0`.
+`tools/sync_to_luanti.sh` completed from main; all 2077 production hashes and
+complete mods/menu trees match the installed game at
+`/home/jan/.var/app/org.luanti.luanti/.minetest/games/grudgelands`.
+Obsolete regional atlas textures are absent from both trees. No personal
+world/player data changed. See `tools/r19_final/evidence/local-delivery.json`.
 Remote delivery remains pending: prior `git push origin main` was rejected by
 automatic approval review because the earlier chat permission was not verifiable
 in its context. No retry or bypass is part of this round.

@@ -3,7 +3,7 @@
 Round 19 implementation, independent reviews and final technical gates PASS:
 [completion](docs/research/round19-completion.md),
 [execution](docs/research/round19-execution.md). Whole-atlas zoom/scroll, concise
-menus, party/status defaults and dragon bars are ready for local delivery and
+menus, party/status defaults and dragon bars are merged to main, installed locally, and ready for
 [GUI acceptance](docs/research/round19-playtest.md). No whole-WP count change;
 remote push remains blocked pending renewed confirmation.
 
