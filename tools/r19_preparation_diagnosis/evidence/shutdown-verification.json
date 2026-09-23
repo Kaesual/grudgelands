@@ -1,0 +1,9 @@
+{
+  "signal": "SIGINT",
+  "utc": "2026-09-23T15:57:10.000237+00:00",
+  "pid": 675697,
+  "starttime_verified": "3386888",
+  "reason": "Repeated low CPU windows and growing scan-gated dispatch gaps explained; authorized early stop",
+  "engine_exited": true,
+  "checked_utc": "2026-09-23T15:57:11.000457+00:00"
+}

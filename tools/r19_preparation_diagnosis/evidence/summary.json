@@ -1,0 +1,96 @@
+{
+  "settings": {
+    "emerge_threads": "1",
+    "jit": "LuaJIT 2.1.1784272936",
+    "seed": "8675309",
+    "step": "0.09",
+    "version": {
+      "is_dev": false,
+      "project": "Luanti",
+      "proto_max": 53,
+      "proto_min": 37,
+      "string": "5.17.0"
+    }
+  },
+  "shutdown": [
+    {
+      "data": {
+        "status": {
+          "completed": 561,
+          "eta_seconds": 2128.1329264705864,
+          "failed": false,
+          "mode": "full",
+          "percent": 6.367041198501872,
+          "ready": false,
+          "total": 8811
+        }
+      },
+      "kind": "shutdown",
+      "us": 34275852712
+    }
+  ],
+  "completed_requests": 561,
+  "last_complete": {
+    "actions": {
+      "2": 69564,
+      "4": 561
+    },
+    "cursor": 561,
+    "duration_us": 243782,
+    "id": 561
+  },
+  "last_dispatch": {
+    "cursor": 560,
+    "gap_us": 651043,
+    "hi": {
+      "x": 1327,
+      "y": 47,
+      "z": -3073
+    },
+    "id": 561,
+    "lo": {
+      "x": 1248,
+      "y": -32,
+      "z": -3152
+    },
+    "selection": {
+      "index": 561,
+      "inner": 0,
+      "x": 1248,
+      "y_max": -32,
+      "y_min": -32,
+      "z": -3152
+    }
+  },
+  "first_request_seconds": 15.893156,
+  "later_request_mean_seconds": 0.20958225535714287,
+  "later_request_max_seconds": 0.301305,
+  "cpu_min_one_core_pct": 13.199999329449527,
+  "cpu_max_one_core_pct": 66.599968724622,
+  "sample_first_utc": "2026-09-23T15:51:06.159071+00:00",
+  "sample_last_utc": "2026-09-23T15:57:06.159125+00:00",
+  "rss_min_bytes": 2341359616,
+  "rss_max_bytes": 2751668224,
+  "io_delta": {
+    "rchar": 15513088,
+    "wchar": 58977695,
+    "syscr": 134579,
+    "syscw": 27346,
+    "read_bytes": 0,
+    "write_bytes": 59699200,
+    "cancelled_write_bytes": 0
+  },
+  "engine_blkio_ticks_delta": 0,
+  "scan_envelopes": [
+    [
+      88,
+      88
+    ]
+  ],
+  "max_dispatched_inner": 0,
+  "step_mean_ms": 90.22804581766917,
+  "step_max_ms": 94.312,
+  "persist_total_ms": 97.062,
+  "scan_total_wall_seconds": 11.385673,
+  "system_iowait_pct": 0.0063614653377508275
+}
