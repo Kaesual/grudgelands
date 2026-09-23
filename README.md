@@ -49,11 +49,11 @@ to fear. Their story will grow as more regions and encounters are completed.
 [ROADMAP.md](ROADMAP.md).*
 
 The systems above are implemented and available in the development build.
-Recent work adds innkeeper home travel, homing arrows and spell projectiles,
-and clearer health, name and party displays. Playtesting, balancing and
-finishing the wider world remain ongoing; implemented features are not all
-fully playtested. [Round 18](docs/research/round18-plan.md) is in development,
-addressing playtest usability, world populations and preparation pauses.
+Recent work adds clearer equipment and trainer guidance, distinct skill icons,
+complete regional atlas coverage and more consistent starting populations.
+Playtesting, balancing and finishing the wider world remain ongoing; implemented features are not all
+fully playtested. [Round 18](docs/research/round18-completion.md) completes the
+latest usability, progression, pursuit, tool and preparation fixes.
 
 Open-world housing claims, boats, the full geographic PvP system, war fronts
 and the planned island dragon encounters are still unfinished. The current
@@ -65,7 +65,7 @@ quest catalog does not yet cover the full journey through every region.
 **Delivered:** 27 of 53 tracked work-package identities are complete; several
 others have playable portions. This is a tracking count, not a percentage of
 game completion. The latest increment is
-[Round 17](docs/research/round17-completion.md), with independent reviews and
+[Round 18](docs/research/round18-completion.md), with independent reviews and
 technical checks complete; in-game acceptance remains separate.
 
 **Ready for further work:** the backlog identifies crafting/enchantment
@@ -73,12 +73,13 @@ completion, carried light, recovery/rest and economy calibration as available
 next work. Housing, travel and the wider PvP/endgame content have additional
 dependencies; the [roadmap](ROADMAP.md) records their order.
 
-**Caveats:** the reported multiplayer Cooking issue remains unresolved and
-needs the two-player diagnostic in the playtest notes. Performance and
-first-release validation are still open. Optional full-world preparation can
+**Caveats:** the confusing Cooking feedback now has a distinct success message;
+the trainer flows still need in-game acceptance. Held-torch moving light and
+friendly-guard healing remain deferred. Performance and first-release validation
+are still open. Optional full-world preparation can
 take many hours; the atlas does not require it. See the
-[latest playtest checklist](docs/research/round17-playtest.md) and the
-[preceding checks](docs/research/round16-playtest.md).
+[latest playtest checklist](docs/research/round18-playtest.md) and the
+[preceding checks](docs/research/round17-playtest.md).
 
 </details>
 
@@ -188,7 +189,7 @@ investigations and delivery records.
 | Items and crafting | [Items](docs/design/items_crafting.md): materials and recipes; [professions](docs/design/professions.md): trades; [stations and enchantments](docs/design/crafting_equipment_revision.md): current crafting rules; [equipment](docs/design/inventory_equipment.md): slots and bags; [durability](docs/design/durability_repair.md): wear and repair; [economy](docs/design/economy.md): money, prices and services. |
 | Wildlife and everyday life | [Biomes and mobs](docs/design/biomes_mobs.md): habitats and creatures; [farming](docs/design/farming.md): crops; [housing](docs/design/housing.md): planned homes and claims. |
 | Travel and playing together | [Mounts](docs/design/mounts.md): riding; [boats](docs/design/boats.md): planned water travel; [home travel](docs/design/home_travel.md): innkeepers and return; [parties](docs/design/parties.md): groups; [atlas](docs/design/world_map.md): maps and markers. |
-| Current revision | [Round 18 decisions](docs/design/playtest_quality_revision.md): approved playtest-quality changes, in development. |
+| Current revision | [Round 18 decisions](docs/design/playtest_quality_revision.md): implemented playtest-quality rules; GUI acceptance pending. |
 | Hosting | [World preparation](docs/design/world_preparation.md): generating starting areas or the full world. |
 
 </details>

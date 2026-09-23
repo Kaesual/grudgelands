@@ -67,12 +67,14 @@ projects: **[docs/research/](docs/research/)**.
 
 ## Active round
 
-Round 18 is approved and in progress (user Go 2026-09-23).
-Contract: `docs/research/round18-plan.md`; resume and lane status:
+Round 18 implementation and independent reviews are complete.
+Contract: `docs/research/round18-plan.md`; durable lane status:
 `docs/research/round18-execution.md`; living revision:
-`docs/design/playtest_quality_revision.md`. Root Astra orchestrates native
-Sol/Astra lanes. Held-light implementation requires a prior VoxeLibre complexity
-assessment; pause that lane if already complex, before implementing it.
+`docs/design/playtest_quality_revision.md`. Delivery and exact technical evidence:
+`docs/research/round18-completion.md`; next user GUI pass:
+`docs/research/round18-playtest.md`. Held-torch moving light was deferred after the
+VoxeLibre complexity preflight; friendly-guard healing remains deferred too.
+Root Astra orchestrated native Sol/Astra lanes; no provider CLI.
 
 Round 17 is delivered on main, locally synchronized and pushed.
 `docs/research/round17-plan.md` and

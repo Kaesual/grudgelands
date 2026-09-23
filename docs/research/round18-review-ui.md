@@ -6,7 +6,7 @@ Reviewed snapshot: `85c162ab1e971333d90c41d440dc9a1b7f42467a`
 
 Baseline: `7460c49d227a3f66673ad1bf4b7ed429e4b62321`
 
-Review model: GPT-6 Sol
+Review model: GPT-5.6 Sol
 
 Independence: PASS. This reviewer authored none of the reviewed implementation,
 fixtures, contracts, or reports.
@@ -152,11 +152,50 @@ submodule was edited during review.
 ## Calibration record
 
 - Task classification: non-trivial, cross-package implementation review
-- Implementing model(s): native GPT-6 Sol for the reviewed lanes, with root
+- Implementing model(s): native GPT-5.6 Sol for the reviewed lanes, with root
   GPT-6 Astra integration/corrections as recorded by the lane reports
-- Reviewing model: GPT-6 Sol
+- Reviewing model: GPT-5.6 Sol
 - Initial review findings: 0 Critical / 1 High / 0 Medium / 0 Low
 - Fix rounds requested by this review: 1, focused on the cultural-source shovel
   route and final-registration fixture coverage
 - Final review state: CHANGES REQUIRED; after the High fix, focused independent
   re-review and the separately owned final PUC/LuaJIT micro-KAT remain required
+
+## Focused High-finding re-review
+
+Re-review date: 2026-09-23
+
+Re-reviewed snapshot: `4d7adb555494e130feffdde2f83da3d6be4dd05a`
+
+Author fix: `8a1a8fca9f128cc4e719d154a26ba3e4acacef52`, integrated by
+`44a1a9a0`
+
+**CLOSED — PASS.** `grug_gathering` now projects `grug_loose = 3` onto an
+actual cultural source definition whenever its ordinary or concentrated family
+is shovel (`mods/ITEMS/grug_gathering/nodes.lua:55`). Red Ochre therefore keeps
+its authored ordinary and concentrated shovel routes. Gravesalt receives the
+ordinary shovel route while retaining `cracky = 3` for its concentrated T4-pick
+route. The change is data-driven from the existing family fields and does not
+broaden unrelated hand/axe/pick sources.
+
+The focused fixture now loads the real gathering catalog, harvest policy and
+node registrar after the final tool registrations. It checks the actual Red
+Ochre and Gravesalt node definitions, ordinary shovel authorization,
+concentrated Red Ochre shovel authorization plus pick rejection, and
+concentrated Gravesalt wrong-family/T3 rejection plus T4-pick acceptance
+(`tools/r18_tools/fixture.lua:168`). The bounded LuaJIT run passed with:
+
+```text
+r18-tools: wood=30,stone=60,bronze=300,iron=600,steel=1000,silversteel=1500,embersteel=2000,abyssal_steel=3000 loose=shovel/pick2x solids=denied depth=denied harvest=shatter stack=override cultural=ordinary+concentrated family+tier
+```
+
+Final finding state after one fix round: 0 open Critical / 0 open High / 0 open
+Medium / 0 open Low. The independent implementation verdict is now **PASS**.
+After the focused source review, the root-owned isolated native gate also
+completed successfully on the same production bytes. Its archived log records
+`[r18_tools_native] PASS materials=8 loose=6 ratio=2 solids=denied cultural=diggable`
+and `[r18_integration] PASS` in
+`tools/r18_final/evidence/native.log`. Root verified all 2,083 production
+snapshot hashes against `4d7adb55`; this reviewer inspected the archived PASS
+lines. The required final frozen PUC 5.1/LuaJIT pair and native GUI/user
+acceptance remain separate gates.

@@ -1,7 +1,7 @@
 # Round 18 playtest
 
-Status: prepared checklist; technical delivery is recorded separately in
-[round18-completion.md](round18-completion.md) when the round is complete.
+Status: technical checks and independent reviews PASS. Delivery is recorded in
+[round18-completion.md](round18-completion.md); GUI acceptance is pending.
 Use a fresh development world. Existing personal worlds are not rewritten.
 
 ## First pass: clarity and presentation

@@ -134,3 +134,32 @@ catalogues and equipped/empty weapon presentation, cooldown and bow/swing charge
 six regional maps and minimap toggle/dots, trainer flows, nearby/far stable tags,
 population/quest fit, long pull/timeout, XP refill/death, tools, and waiting/menu/
 reconnect. Held light and guard healing are not acceptance requirements.
+
+## Focused documentation fix review — PASS
+
+Reviewed frozen `36be14cb` against the initial `85c162ab` snapshot on
+2026-09-23. Same independent native GPT-6 Astra reviewer; no implementation
+or artwork authored. Inspected only the requested documentation corrections.
+
+- D1 resolved: combat_stats explicitly restricts the old 25-node slowdown to
+  bounded actors; mounts and Scout describe the ordinary incoming-damage clock;
+  both the WP6 row and BACKLOG architecture summary distinguish historical
+  pursuit from the current ordinary/encounter split.
+- D2 resolved: skill_trees separates delivered active action icons from deferred
+  passive talent artwork; items_crafting now refers to in-hand weapon appearance.
+- D3 resolved: the contract's playtest explicitly excludes deferred held light.
+
+**Final scoped verdict: PASS.** No remaining findings from D1–D3. Initial counts
+remain 0 Critical / 0 High / 1 Medium / 2 Low; remaining counts are all zero;
+one documentation fix round. Elapsed time unknown. The prior visual PASS
+continues to apply to unchanged artwork. Final code/native/interpreter gates
+and delivery status are outside this focused re-review and remain separately
+owned; user GUI acceptance remains pending.
+
+## Final receipt consistency check
+
+Independent reviewer checked completion, README, BACKLOG, ROADMAP, AGENTS,
+execution and playtest status: no material contradictions. Cooking correctly
+records the user's identified UX issue rather than asserting a player-data leak.
+One stale design-index status was corrected to implemented / GUI acceptance
+pending. No code tests were repeated for this receipt check.

@@ -1,13 +1,13 @@
 # Round 18 execution ledger
 
-Date: 2026-09-23. **Approved and active — user Go 2026-09-23.**
+Date: 2026-09-23. **Implementation/reviews/gates PASS — delivery in progress.**
 Baseline inspected: `7460c49d227a3f66673ad1bf4b7ed429e4b62321` (main).
 Contract: [round18-plan.md](round18-plan.md).
 User source: [round18-playtest-input.txt](round18-playtest-input.txt).
 All decisions closed: [living revision](../design/playtest_quality_revision.md).
 
 Root Astra coordinates; native Sol default, Astra for complex lanes. No CLI
-agents or Claude. Integration branch: `wp18-playtest-quality`. Production work starts in isolated lane worktrees.
+agents or Claude. Integration branch: `wp18-playtest-quality`. Production work used isolated lane worktrees.
 Round 17 remains delivered; do not rerun its gates.
 
 ## Planning evidence
@@ -52,17 +52,17 @@ Do not rerun Round 17 gates. Native Sol default; Astra complex lanes and art.
 
 | Lane | Model | State | Ownership |
 |---|---|---|---|
-| G preparation | r18_preparation / Astra | integrated d4b38594; review pending | starts_preload |
-| D evade | r18_evade / Astra | integrated fbca258a; review pending | aggro / combat hooks |
-| C populations/quests | r18_populations / Sol | integrated c86621c4; review pending | spawn_policy / species / quest content |
-| A inventory/trainer UX | r18_ux / Sol | integrated 0e67a78b; review pending | inventory/jobs/skills UI |
-| E XP/level-up | r18_xp / Sol | integrated 486878ab; review pending | XP/stats/resource callback |
-| B atlas/minimap | r18_map / Sol | integrated 386f6216; review pending | map module/media |
-| F waiting/creation | r18_waiting / Sol | integrated 503948c6; review pending | selection/faction gates |
-| H1 icon art | r18_art / Astra | integrated d20c1423; visual review pending | icon assets/manifest/gallery |
-| H2 icons/tags integration | r18_icons_tags / Sol | integrated 8681af11; review pending | ability image seam/displays |
+| G preparation | r18_preparation / Astra | integrated d4b38594; independent review PASS | starts_preload |
+| D evade | r18_evade / Astra | integrated fbca258a; independent review PASS | aggro / combat hooks |
+| C populations/quests | r18_populations / Sol | integrated c86621c4; independent review PASS | spawn_policy / species / quest content |
+| A inventory/trainer UX | r18_ux / Sol | integrated 0e67a78b; independent review PASS | inventory/jobs/skills UI |
+| E XP/level-up | r18_xp / Sol | integrated 486878ab; independent review PASS | XP/stats/resource callback |
+| B atlas/minimap | r18_map / Sol | integrated 386f6216; independent review PASS | map module/media |
+| F waiting/creation | r18_waiting / Sol | integrated 503948c6; independent review PASS | selection/faction gates |
+| H1 icon art | r18_art / Astra | integrated d20c1423; visual independent review PASS | icon assets/manifest/gallery |
+| H2 icons/tags integration | r18_icons_tags / Sol | integrated 8681af11; independent review PASS | ability image seam/displays |
 | I light preflight | root Astra | deferred before implementation | round18-light-preflight.md |
-| J tools | r18_tools / Sol | integrated 27d8bae3; review pending | materials tool/mining capabilities |
+| J tools | r18_tools / Sol | integrated 27d8bae3; independent review PASS | materials tool/mining capabilities |
 
 Root owns docs and integration. Independent reviews required, final portable
 micro-KAT pair only after frozen integrated bytes. Current four total native slots
@@ -82,7 +82,7 @@ G preserves world_preparation_status and listeners unchanged, so F can start.
 A exports `grug_inventory.selected_button_style(fieldname, selected)` returning
 formspec markup; B owns atlas selection edits and consumes that style. E writes
 the resource callback in abilities/init before H2 changes image composition.
-Root owns tools/r18_final runner scaffold; fixture roster remains pending.
+Root owns tools/r18_final runner scaffold; final fixture roster contains 11 isolated checks.
 
 G report/evidence: round18-preparation-report.md. Author commit 7b3dec12,
 integrated d4b38594. Tiny synthetic test isolates scan wait, not real-world FPS;
@@ -93,13 +93,13 @@ Root added an 18-point real-authority/final-registration population probe to the
 final isolated native gate. The population author fixture uses mocked authority;
 it is not, by itself, evidence of actual six-culture level-field behavior.
 
-Independent Astra C/D/G review is running as r18_review_world against frozen
-fbdaac67 in /tmp/grug-r18-review-world. Remaining implementation: J and H2.
+Initial independent Astra C/D/G review used frozen fbdaac67 in
+/tmp/grug-r18-review-world; J and H2 were then integrated before their own review.
 
 C/D/G first review: 0 Critical, 1 High, 2 Medium. Root restores Whitebridge
 Boar selection, prevents Evade re-acquisition from restarting its fallback, and
 repairs the native population probe to use actual registration inputs. Targeted
-fix re-review is pending. H2 keeps the old neutral empty-slot wield placeholder.
+fix re-review PASS; all three findings closed. H2 keeps the old neutral empty-slot wield placeholder.
 
 Independent Sol A/B/E/F/H2/J review: 0 Critical / 1 High (cultural shovel
 source group mismatch); author J owns the focused correction. Independent Astra
@@ -109,3 +109,24 @@ Native registration/population gate passes at /tmp/grug-r18-integration-946xbnpq
 with real role capture, final ABM hosts, species predicates and actual day/night
 clock at 18 points. A prior probe attempt could not set time during init; moved
 checks to first server callback and rejected that earlier clock evidence.
+
+## Final checkpoint
+
+All nondeferred lanes and their independent implementation reviews PASS.
+C/D/G fixed one High and two Medium findings; A/B/E/F/H2/J fixed one High;
+visual/living-doc review fixed one Medium and two Low. All findings are closed.
+Final source identity: `4d7adb555494e130feffdde2f83da3d6be4dd05a`.
+Cultural source correction: author `8a1a8fca`, root integration `44a1a9a0`.
+
+Final static gate: 55 changed Lua files, plain-5.1 parser, inspected global
+writes and five sweeps PASS. One compact final PUC process (0.067794 s) and
+one LuaJIT process (0.026646 s) cover 11 isolated fixtures; byte-identical SHA256
+`d82a6c14aae29608178f351fc99822a417d0f414082809e34f40414785e8c2e8`.
+Final native gate `/tmp/grug-r18-integration-2l0_sxn1` PASS, including actual
+engine digging capabilities for eight tool materials. All 2083 production
+snapshot files match final checkout; archived in `tools/r18_final/evidence/`.
+No full-world generation, ETA campaign or intermediate PUC runtime.
+
+Remaining delivery actions: commit receipt, merge to main, sync installed game,
+push main. User GUI acceptance stays separate. See
+[completion](round18-completion.md) and [playtest](round18-playtest.md).

@@ -1,9 +1,13 @@
 # Backlog — Work Packages
 
-Round 18 is approved and in progress: [contract](docs/research/round18-plan.md),
+Round 18 is technically complete and independently reviewed:
+[completion](docs/research/round18-completion.md),
 [execution](docs/research/round18-execution.md),
-[living revision](docs/design/playtest_quality_revision.md). No whole-WP count
-change is claimed. Optional friendly-guard healing is deferred.
+[living revision](docs/design/playtest_quality_revision.md).
+Equipment/trainer guidance, action icons, atlas/minimap, population eligibility,
+ordinary pursuit, XP, tools and preparation/arrival flows are implemented.
+No whole-WP count change is claimed. Held-torch moving light and friendly-guard
+healing are deferred. Next: [GUI playtest](docs/research/round18-playtest.md).
 
 [Round 17](docs/research/round17-completion.md) is technically complete and independently reviewed:
 innkeeper home travel/respawn, homing projectiles and non-player damage scale,

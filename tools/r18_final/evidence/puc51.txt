@@ -1,0 +1,26 @@
+fixture=r18_preparation/fixture.lua
+r18-preparation: tiles=8811 coverage budget cadence pending stop resume retry mode-lock authority=ok
+
+fixture=r18_evade/micro.lua
+r18_evade: policy=13 sustained=60 threat=far timeout=15 home=4 fallback=40 guard=pass settlement=pass target=pass
+fixture=r18_populations/policy_fixture.lua
+r18-populations-policy: PASS
+fixture=r18_ux/fixture.lua
+r18_ux_v1|trainer=success+known+confirm|cooking=protected|players=isolated|style=tint+border|quest=concise+wear_identity|raw_weapon=observed_only
+fixture=r18_xp/micro.lua
+r18_xp	PASS	hp=full	mana=full	rage=unchanged	burst=once	cap=348100	death=preserved
+
+fixture=r18_map/atlas_kat.lua
+r18_map_atlas_kat_v1	coverage=ok	overlap=ok	capitals=6	projection=ok
+fixture=r18_map/minimap_kat.lua
+r18_map_minimap_kat_v1	entities=hidden	players=hidden	surface_default=ok	V=surface/off
+fixture=r14_map/page_kat.lua
+r14_map_page_kat_v2	bounds=ok	aspect=ok	marker=ok	click=ok	selection=ok
+fixture=r18_waiting/fixture.lua
+r18_waiting:v1:pending,forged,dismiss,failure,retry,ready,new,partial,complete,stale
+fixture=r18_tools/fixture.lua
+r18-tools: wood=30,stone=60,bronze=300,iron=600,steel=1000,silversteel=1500,embersteel=2000,abyssal_steel=3000 loose=shovel/pick2x solids=denied depth=denied harvest=shatter stack=override cultural=ordinary+concentrated family+tier
+fixture=r18_icons_tags/fixture.lua
+r18_icons_tags_v1	icons=22	wield=weapon_swap_empty_bow_contract	tags=dedup_remove_npc_peaceful
+
+round18-final-micro: PASS fixtures=11
