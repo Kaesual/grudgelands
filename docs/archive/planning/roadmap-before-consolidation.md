@@ -1,0 +1,452 @@
+# Historical planning snapshot
+
+Archived 2026-09-23 from `ROADMAP.md` at `d6937b31`.
+This records prior planning and delivery claims, including obsolete statements;
+it is not current design or a ready-to-execute work order. Unresolved scope is
+tracked in [BACKLOG](../../../BACKLOG.md). Original file SHA256: `cef20fae3d8fd82c7a6f96c0496c5724de7dca920f48b48c0fc6b22fea192949`.
+
+---
+
+# Roadmap — Grudgelands
+
+Technically complete: [Round 19](../../../docs/research/round19-completion.md), whole-atlas
+zoom/scroll and focused menu/HUD corrections. Independent reviews and final
+gates PASS; local delivery is recorded in the receipt. Remote push remains pending.
+
+Technically complete: [Round 18](../../../docs/research/round18-completion.md), playtest
+clarity, action icons, complete regional atlas coverage, population/pursuit,
+progression/tools and preparation/arrival fixes. Independent reviews and final
+technical gates are recorded in the completion receipt; GUI acceptance remains
+separate. Held light and friendly-guard healing are deferred.
+Next: [Round 19 GUI playtest](../../../docs/research/round19-playtest.md).
+
+Previous: [Round 17 completion](../../../docs/research/round17-completion.md), home travel,
+reliable ranged combat and configurable combat readability/difficulty.
+
+Previous increment: [Round 16 completion](../../../docs/research/round16-completion.md).
+Playtest fixes, progression/control tuning, atmosphere/audio/density and
+surface-following preparation are independently reviewed. Final technical gates
+PASS; merged to main, synchronized locally and pushed. [GUI playtest](../../../docs/research/round16-playtest.md)
+remains separate. This increment does not change shipped-WP counts.
+
+Grudgelands is a standalone, WoW-inspired voxel RPG for Luanti. It combines
+two factions, races, classes, fast leveling, threat-based combat, professions,
+an item economy, open-world housing and geographic PvP in an authored but
+procedurally detailed world.
+
+The decided game rules live in [docs/design/](../../../docs/design/). Implementation
+status and exact dependencies live in [BACKLOG.md](../../../BACKLOG.md); this roadmap is
+the goal-level view.
+
+## Current delivery checkpoint
+
+Round 15 recomposes the eighteen existing home-region POIs, adds 36 local
+quests (102 total / 30 givers), live atlas player/party/quest markers and clearer
+quest/party/XP HUD presentation. Reviewed, merged, synchronized and pushed; GUI
+acceptance remains pending. Broader WP9 story and WP13 world roster
+remain open, so whole-goal counts are unchanged.
+The reviewed Round 15 UI follow-up moves money to Character and improves
+Group invitations/Talents layout; merged, synchronized and pushed, without new WP scope.
+
+The reviewed [Round 13 playtest followups](../../../docs/research/round13-playtest-followups.md)
+restore initial skill ordering and non-grassing capital stable floors; these do
+not change whole-goal completion counts.
+The [caster/bow recipe followup](../../../docs/research/round13-occult-recipes.md) makes
+their base crafting use sticks and tier metal, with mob components for casters.
+
+## Vision
+
+- **Two distinct faction continents.** The Accord holds southern Elandor and
+  the Throng northern Kragmar. Their independently authored three-lobed
+  silhouettes meet along the continuous four-zone Battlegrounds; ocean
+  separates the rest of the coast. The stable 38-zone graph fixes names,
+  neighbors, level ranges, race regions, PvP rules, biome palettes and POI
+  budgets while seeds vary bounded borders and local terrain.
+- **Six races, six starts, six capitals and six kings.** Each race begins in
+  its own outer level-1–10 settlement and later reaches a central four-road
+  capital. Capitals are peaceful civic hubs with level-60 guards and no
+  ambient hostile mobs. Kings and royal guards are killable high-end
+  combatants; essential service NPCs are separate and invulnerable.
+- **Progression moves toward conflict.** All level-1–30 surface zones are
+  peaceful. Every ordinary level-31–60 frontier, Battlegrounds or dragon-island
+  zone is contested. At y = −701 and below, every non-ocean land column is
+  contested independently of its surface zone.
+- **PvP uses one exact transaction.** A safe player who initiates a valid
+  hostile action becomes tagged before resolution; safe→safe is blocked,
+  safe→tagged may land, tagged→safe is blocked and tagged→tagged may land.
+  Effective PvP damage or support refreshes the 60-second tail, contested
+  ground forces the tag, reconnect preserves it and death clears it. Melee,
+  casts, AoE, projectiles and support all use the same seam.
+- **Controlled destructibility keeps the world playable.** Peaceful home
+  terrain is editable by its faction; peaceful enemy land is not. Ordinary
+  contested land, including the Battlegrounds at every depth, is editable by
+  both sides. Deep ocean and full dragon channels are immutable. Roads,
+  village/outpost/camp
+  shells and battlefield dressing are mutable but claim-excluded; only
+  bounded functional anchors, complete civic cores — capitals and starting
+  settlements with their 10-node aprons — and irreplaceable route pieces are
+  hard-protected, fail-closed against indirect mutation.
+- **The ocean has authored classes.** Planned mainland water stays part of its
+  named zone. An editable 80-node coastal shelf follows the analytic outer
+  perimeter; immutable deep ocean begins beyond it. Two immutable channels
+  separate the offshore level-60 dragon islands and keep them boat-only.
+  Deep ocean is deadly through the Kraken Guard, which never breaks off a
+  pursuit while it stands in open water and leashes normally everywhere else.
+- **Two equivalent apex destinations.** The Wyrmglass Crown and Stormscale
+  Summit are contested offshore dragon islands. Each reserves an all-six-gem
+  apex camp with exactly twelve protected renewable sockets: two each of
+  Citrine, Garnet, Jade, Diamond, Sapphire and Ruby.
+- **Housing lives in the open world.** Exactly ten peaceful level-11–30 home
+  zones accept Claim Stones. Four stone tiers protect radii 20/30/40/50 while
+  every placement immediately reserves its future 101×101 footprint. Stable
+  ids survive recovery, dormancy, decay and reissue; a claim-bound Home Stone
+  has no capital fallback. Private housing islands do not exist.
+- **One six-tier material spine serves every race.** Bronze, Iron, Steel,
+  Silversteel, Embersteel and Abyssal Steel open exact natural depths of
+  −100/−300/−500/−700/−1000/map floor. Resource harvest tier is a
+  separate check: a pick can reach a node yet destroy it without a drop when
+  under-tier. Cosmetic strata no longer drive access.
+- **Regional materials add identity without blocking universal progression.**
+  Quartz is universal; Citrine/Garnet/Jade are G1 and
+  Diamond/Sapphire/Ruby G2. Each race region selects one G1, one G2, one
+  cultural material and one signature wood. Foreign G2 and cultural resources
+  come through contested/deep routes, both apex camps and trade, never through
+  a mandatory faction monopoly.
+- **The economy stays ledger-only.** Copper/silver/gold are one integer;
+  physical Gold is a separate crafting material. The target Common weapon
+  axis is 25c/65c/1s60c/4s/10s/25s and vendor buy-back is ceiling-rounded 5%.
+  An Income Ledger measures reliable net solo income after ordinary costs and
+  calibrates Claim Stone and mount prices.
+- **Combat supports solo play and the tank/healer/damage trinity.** Threat,
+  taunt and healing threat make group roles matter, but content is sized for
+  two or three players and remains beatable without a healer. Level 60 takes
+  roughly 10–20 played hours; endgame PvP, bosses, crafting and housing are
+  the destination.
+- **Travel is earned.** Visit-unlocked waypoints connect authored hubs. A Home
+  Stone channels to the active bound claim only. Universal riding unlocks at
+  levels 15/30/45/60 with land speeds 6.4/8 and flight speeds 7/10 nodes per
+  second; damage dismounts. Battlegrounds permit flight, enemy territory allows
+  land mounts only, and every exterior-ocean column forbids flight. Boats are
+  the deliberate exception to earning travel: the base boat costs five wood at
+  level 1, and only the twice-as-fast improved boat needs a recipe taught once
+  by a shipwright from level 30. Any damage ejects a rider from a boat exactly
+  as it dismounts one from a mount.
+- **Story remains light and environmental.** The Accord–Throng war is old; an
+  ancient demonic threat reaches upward through the Nether. Both factions face
+  it in parallel without becoming allies.
+
+**V1 boundary (decided 2026-09-18):** V1 comprises Rounds 1–9, open-world
+housing (WP24), mounts (WP31), the first-public-release gates and final polish.
+The Nether is not part of V1.
+
+## Phase 1 — Playable core and world foundation
+
+### Shipped foundation
+
+- [x] WP0–WP4: standalone game skeleton, factions, XP, three classes and the
+  first ability kits.
+- [x] WP6: complete mob roster, level/tier engine, threat, leash/evade,
+  pathfinding pass, guards, camps and named rares.
+- [x] WP7: ledger currency, generated gear catalogs, armor pipeline and eight
+  trader NPCs. **Legacy boundary:** the running implementation still uses its
+  old price curve and 25% buy-back until WP44.
+- [x] WP15: Character/Bags pages, equipment lists and four bag slots.
+- [x] WP18, WP36: the current two-continent map, biome baseline, repaired
+  coastline/capital generation, reference submodules and critter/prey pass.
+  WP40 now supersedes their surface geometry and difficulty authority.
+- [x] WP19, WP35, WP38, WP39: tuned class kits, race passives, weapon slot,
+  native-animation held swings, exact current-ray aim, PvP/PvE settlement,
+  ready reticle, diagnostics and swept Fireball projectiles.
+- [x] WP25: six visual strata and a first material implementation.
+  **Historical boundary:** its 2026-08-08 Completion Record describes the
+  Emberstone and coupled node-`level`/pick-`maxlevel` implementation that
+  WP43 now supersedes; development-era migrations have been removed.
+- [x] WP43: canonical Bronze→Abyssal Steel registry, Emberglass/Abyssal Steel
+  namespaces, exact natural depth, separate harvest tier, complete
+  G1/G2/cultural/race-region data and the protection-first mining transaction.
+- [x] WP45: safe character-creation stasis, opaque faction/race/class flow and
+  race-start preloading with one final teleport after successful emergence.
+- [x] **WP-HUD:** point-accurate LIFE and mana-or-rage bars above the hotbar,
+  with one shared HUD offset owner (2026-09-16).
+- [x] **WP-Speed:** one `grug_core` owner for named speed/jump modifiers,
+  roots and movement-immunity windows; all three former physics writers are
+  migrated (2026-09-16).
+- [x] **WP40 — Named-zone world foundation:** the fixed 38-zone world,
+  terrain/biome/content/resource generation, fitted pads/terraces and routes,
+  water handling and shared geography APIs are delivered. The first correction
+  round and native/browser-local Lua-5.1 user acceptance are complete on
+  2026-09-13. See the [completion record](../../../docs/research/wp40-completion.md).
+  This development completion leaves the explicitly separated first-public-
+  release gates below open and does not end fresh-server mode.
+- [x] **R9-PERF bounded writer pass (2026-09-20):** three single-thread
+  optimizations preserve all 97 measured owners and every content, param2 and
+  light channel while reducing the measured sequence endpoint by 17.26%.
+  [The completion record](../../../docs/research/r9-perf-completion.md) owns the evidence
+  and limits. WP48 remains open for broader post-processing work; parallel
+  emerge remains blocked by the pinned engine issue.
+- [x] **Round 6 integration (2026-09-17):** the shared HP/mana pool and damage
+  fit, maximum-pool Character/Help displays, effective ability/weapon tooltips,
+  total friendly-skill fallback and 5% suffocation are live. The first
+  `grug_core.status` registry and top-right text list drive three-minute food
+  buffs; the historical three-quality food model shipped here and was replaced
+  by Round 7 Food v2 below. Ordinary dry shore banks end at `water_y`, and
+  every start anchor has surface level 1 through 100 m and level 2 through
+  150 m. The media-candidate report imports nothing and awaits the user's
+  per-candidate decisions.
+- [x] **Round 7 Food v2 core (2026-09-18):** six data-driven food tiers,
+  fixed instant HP, five-second raw/dish regeneration, combat deferral,
+  status-stat modifiers and shared consumable level gates are live. Mana
+  regeneration uses the level-linear absolute curve, and completed start-area
+  preload is now marked per world so later server starts skip the emerge.
+
+### Next prerequisite roots
+
+- [x] **WP26 — Universal bars and furnace:** the dual-input furnace and the
+  six-tier alloy chain are implemented against WP43's shipped canonical
+  registry (2026-09-16). `mods/ITEMS/grug_smelting` ships the ported two-slot
+  station, the five single-input smelts, the five alloys, the twelve storage
+  pack/unpack pairs and the station's own T1 craft recipe, and extends
+  `grug_traders`' anti-loop audit to the alloy chain the engine cannot see.
+  Details: [WP26 implementation](../../../docs/research/wp26-implementation.md). The
+  user's ~10-minute runtime test plan (task card §8) is still open.
+- [ ] **WP44 — Economy Rebase:** migrate the Common-price axis, 5% buy-back
+  and Income Ledger against the final material ids; calibrate exact Claim
+  Stone and mount costs.
+- [ ] **WP37 — Surface density:** apply the already-decided 0.75 multiplier
+  and re-run the spawn-budget audit.
+- [ ] **WP11 — skill trees, lanes X1–X4 implemented:** the model,
+  thirty numeric consumers, sfinv talent page, paid full-reset respec and
+  level-up hint are in the game; `/talents` remains a read-only summary.
+  Respec bracket values remain coordinator placeholders. Round 11 adds complete Scout trees and Ironbound/Unbroken. Round 12 completes the original classes' X3 consumers. Only measured WP44 respec-price calibration remains open.
+- [x] **WP8 / WP20:** Rounds 14–15 deliver the quest framework, 66 starter
+  and 36 local quests and persistent same-faction groups with separate tabs and optional HUDs.
+- [ ] **WP14 / WP21:** carried light and recovery/rest remain independently
+  ready behind their shipped prerequisites. Design revision 2 landed 2026-09-16
+  ([skill_trees.md](../../../docs/design/skill_trees.md)); implementation phase 1 and
+  X4 and the Round 12 X3 consumers are delivered.
+- [x] **WP47 — Skills:** disposable bound representations, manual recovery,
+  every purchased mount tier at its original speed; delivered in Round 12.
+- [x] **WP-Scout:** fourth class, leather, bow and blade, four base abilities
+  and both complete trees delivered in Round 11; no stealth in V1. Sprint
+  consumes the existing movement aggregator. GUI acceptance remains pending.
+
+### Round 11 delivered work
+
+The [approved plan](../../../docs/research/round11-plan/README.md) delivers playtest fixes,
+Scout with both trees, ordinary offhands and bags, two family-filtered affixes,
+attacker-level armor with the deep-Bulwark tank multiplier, limited gear repair,
+and [farming/renewal/buckets](../../../docs/design/farming.md). Living design precedes
+code; every package passed independent review. Delivery and bounded gates are
+recorded in [Round 11 completion](../../../docs/research/round11-completion.md). PUC runtime is explicitly
+waived for this round, with plain-5.1 parser/static and targeted LuaJIT checks
+retained. Larger WP11/WP14/WP22/WP24/WP44/WP46 scopes remain separately open.
+
+
+The first-playtest [followups](../../../docs/research/round11-playtest-followups.md) are
+independently reviewed and delivered: directional arrows and bow draw stages,
+outer-district trainer activation, a leather/armor exterior sign, T3/T4 mount
+speed +100%/+200%, Scout Sprint +50%, and 200-arrow stacks/start supply. The
+beach correction is user-accepted; remaining GUI checks continue. LMB's initial
+first-person camera gesture remains an explicit engine limitation.
+The subsequent [vegetation pursuit regression](../../../docs/research/round11-vegetation-chase-fix.md)
+is also reviewed and delivered: harmless plants no longer masquerade as cliffs
+and stop pursuing mobs; real ground/hazard checks remain enforced.
+
+
+The [interaction followups](../../../docs/research/round11-interaction-followups.md) are
+reviewed and delivered: ability pickup is limited to 4 m, ground/flying mounts
+support A/D, and trainer right-click no longer also activates the held mount.
+The vegetation fix is user-accepted. The subsequent approved round is complete;
+see [Round 12 completion](../../../docs/research/round12-completion.md).
+
+### Round 12 delivered
+
+The independently reviewed round delivers WP47 Skills and retained mount tiers,
+seventeen-family farming, five-minute food, Basics main-material discovery,
+Cooking authority, larger UI/Help/Food navigation, held presentation, revised
+art and the remaining original-class X3 consumers. [Completion and evidence](../../../docs/research/round12-completion.md)
+record the bounded native/static checks and report-only UX findings. GUI acceptance
+uses the [next-playtest checklist](../../../docs/research/round12-next-playtest.md).
+WP11 remains open for WP44's measured respec prices; broader Housing/economy
+and war-front work were not included.
+
+### Round 10 bounded corrections
+
+The independently reviewed delivery includes exclusive Basics and
+seven primaries, universal base gear, refinement/affix operations, corrected
+mount/dragon/fall behavior, nonweapon art, all six capital service layouts,
+purpose-specific cave openings, rocky shores and Rock Salt endpoints. MAP-B adds
+fifteen Cooking wild sources, secondary ash/moss soils, real field soil and shallow
+sea coral/kelp; FARM completes the seventeen-family legal-ground loop. Final
+interpreter parity passes; main delivery, synchronization and push are complete. See the
+[execution record](../../../docs/research/round10-execution.md) and
+[fresh-world GUI checklist](../../../docs/research/round10-next-playtest.md).
+These subpackages do not close the larger whole-WP goals below.
+
+### Dependent world and item loop
+
+- [ ] WP27–WP30: base armor; the six-tier gear/tool merge; safe removal of
+  superseded vendored recipes; and trader-catalog migration onto WP44 prices.
+  Integrated, independently reviewed Round-10 EQUIP and ART work supplies
+  universal base equipment, seven profession catalogs, visuals and the retained
+  improvement workflow, but the whole chain remains open through the WP44 price
+  migration and broader WP scope.
+- [ ] WP5 is design-unblocked (fixed-tier named enchantments
+  decided 2026-09-21, `crafting_equipment_revision.md`) and **startable now**:
+  all three dependencies are shipped and the executable card is
+  [docs/research/wp5-task-card.md](../../../docs/research/wp5-task-card.md). WP10 is
+  design-unblocked (A1/A3/A4/A5/E21 decided 2026-08-13, incl. the revised
+  food-restore model); its priced content remainder follows WP44 alone, since
+  WP26, WP33 and WP43 are shipped. Round 6 already shipped the runtime status
+  registry/text list and Food v2 tier framework. Round 8 now has WP10's shared
+  profession registry, T1–T6 progression, UI books, station gates and trainer
+  sockets plus Cooking's eighteen dishes, raw/furnace paths and plant-item
+  catalog. Alchemy v1 now adds its 21 potions/elixirs and the capital brewing
+  stands. Integrated, independently reviewed Round-10 EQUIP adds all seven primary
+  catalogs, exclusive Basics provenance and station improvement operations;
+  CAP and ART dependencies are integrated as well.
+- [ ] **WP13 — in progress:** final starts, capitals, settlements, camps and
+  both all-six-gem apex camps on shipped WP40 geometry and
+  WP43 materials. **All six start settlements are built** (2026-09-14) on one
+  reusable building library with per-race palettes, together with the
+  atmosphere layer and a licence-audited decorative building kit: Hearthpine
+  Vale (dwarf), Dawnmere Fields (human), Silverleaf Glade (elf), Stillgrave
+  Hollow (undead), Sunscar Camp (orc) and Kapok Cradle (troll). The four
+  parallel lanes were merged onto one branch and given one combined
+  review-fix round. Every start awaits the user's GUI playtest; capitals are
+  built, while villages, outposts and camps remain in the package.
+  The **capital parts library** followed the same day: eighteen generators
+  (king's hall with throne room, curtain wall, tower, gatehouse, market
+  square, colonnade, temple, barracks, scriptorium, granary, stable,
+  statue, and hedge/grove/stilt/water edge pieces), the capital palette
+  vocabulary and the NPC socket seam, with the six starts byte-identical
+  (`docs/research/wp13-capital-library.md`).
+  **Highcourt**, the human capital and the pilot for the other five, was
+  composed out of those parts on 2026-09-14: a 96 x 96 civic core with the
+  king's hall, four gatehouses, market square, colonnades, chapel, service
+  court with the two royal vendors and a travel plaza reserved for WP17;
+  the market and professions district as nine terrain-relative plots; and
+  the gate avenues as a pure surface overlay a successor can run per
+  mapchunk (`docs/research/wp13-highcourt.md`).
+  On 2026-09-15 the **settlement seam was generalised** and Highcourt now
+  stands in the world: a settlement carries its own build envelope and may
+  own many blueprints, its district plots are projected from the terrain
+  under their own reference column, its avenues are computed per mapchunk
+  from the ground the map has, and a capital's buildings are constructed
+  only when somebody goes there. Its 71 NPCs arrive with the place rather
+  than at server start, and its two royal traders stand on the blueprint's
+  own sockets. The six starts are byte-identical, engine digests included
+  (`docs/research/wp13-seam-generalisation.md`).
+  **All six capitals stand** since 2026-09-16; every record named below is a
+  note in `docs/research/`. Highcourt's other three
+  districts and the seeded quadrant permutation landed first
+  (`wp13-highcourt-districts.md`), then its wall ring, fill and trades
+  (`wp13-highcourt-fill.md`); the wave-2 lanes added Dur Brannoc (dwarf),
+  Gor Drazhak (orc), Lethariel (elf), Kezamba (troll) and Nhal Veyr
+  (undead), each with four districts of nine plots plus four pieces of open
+  fill ground, its own envelope edge — masonry curtains for Highcourt, Dur
+  Brannoc and Nhal Veyr; a stake palisade on an earth rampart for Gor Drazhak;
+  and open planted edges for Lethariel and Kezamba — and its own trades
+  (`wp13-dur-brannoc.md`, `wp13-gor_drazhak.md`, `wp13-lethariel.md`,
+  `wp13-kezamba.md`, `wp13-nhal_veyr.md`). Alongside them: the terrace step
+  bands and per-race capital ground (`wp13-capital-terrain.md`), the one
+  material-named weapon ladder of `items_crafting.md` §3.0.3
+  (`wp13-weapon-ladder.md`), the NPC work/activity vocabulary, the twelve
+  profession shop vendors and the 80/20 walker split (`wp13-npc-work.md`,
+  `wp13-npc-vocabulary.md`), and the user's routes-end-at-the-gate ruling
+  (`wp13-route-gates.md`). Wave 3 (2026-09-16) then answered playtest 5 with
+  **one street rule for all six capitals** — a flat cross profile, junction
+  plateaus computed identically by both runs, deck-on-pillars where a street
+  stands three or more nodes above the ground, and a railed **bridge**
+  wherever a street crosses water (`wp13-street-geometry.md`) — with
+  **Kezamba's** pad edge terraced down to its lake instead of walled off and
+  its fields given something to grow (`wp13-kezamba.md`), thirteen Highcourt
+  lots moved onto ground nine worlds accept plus the basalt roof corners
+  (`wp13-polish-wave3.md`), and **fishing**: a rod, cooked fish and six
+  zone-level catch tables in `mods/ITEMS/grug_fishing`
+  (`wp13-fishing.md`). **Still open in WP13:** the user's GUI playtest
+  of the six capitals; the whole remainder of the contract's 100-anchor POI
+  roster (`wp13-capitals-pois-contract.md` §2.5) — 12 villages, two of them
+  with a shipwright's plot and display boat, 24 outposts, 12 bandit camps, 6
+  mining camps, 4 mirefolk camps, 16 clash anchors, 2 dragon arenas, 2 apex
+  camps and 10 rare-route pads, where the mirefolk camps, clash anchors and
+  dragon arenas are WP13 dressing only and WP42/WP23 own their encounters.
+  The six level-65 kings and their four level-60 royal guards per capital now
+  occupy the authored sockets, and the post-content boundary walker closes
+  every capital ring while preserving only its four gate bands. Round-10 CAP
+  additionally supplies outer workshops, separate Riding stables and protected
+  displays. The decided 24-node versus implemented 16-node bandit-frontier
+  building-core width remains an explicit WP13 correction; the design stays at 24.
+- [x] WP33: gathering plants, signature woods and cultural sources on final
+  zone/race-region ownership; accepted with WP40 R7 on 2026-09-02.
+- [ ] WP34: deep spawn pressure, corrected depth-level curve, camp-only
+  renewable resources, deep lava and final Abyssal/G1/G2 density. It follows
+  map, materials, structures and economy; it is not an independent next WP.
+- [ ] WP24: complete Claim Stone state machine, protection/indexing and
+  capacity-calibrated placement after WP40/WP43/WP44.
+- [x] WP12: Rounds 14–15 cartographic Map tab with seven views, live player/party
+  heading markers and quest-giver status markers, without fog or a Housing/travel prerequisite (`world_map.md`).
+- [ ] WP17: claim-bound Home Stone and authored visit-unlocked waypoint
+  travel after claims and final zones. WP17 also implements the decided boat contract plus the three ocean-danger
+  prerequisites it needs, so its runtime test covers the whole mob roster.
+- [ ] WP41: implement the exact geographic PvP transaction after WP40.
+- [ ] WP42 and WP9: bounded war-front clashes and mandatory named-zone
+  questlines after final structures/map/PvP. Rounds 14–15 supply six starter
+  chains, 36 optional local quests and eighteen recomposed home-region POIs; the broader story/roster remains open.
+- [ ] WP23: both dragon encounters after structures, playable boats, final
+  map, contested PvP and renewable apex resources.
+- [ ] WP22: Round 11 delivers slow durability and money-only repair; explicit
+  six-pick speed/use calibration and later repair redesign remain open.
+- [ ] WP31: the reviewed mount runtime, capital Riding services and twelve
+  model icons are delivered on main. Final interpreter parity passes; GUI
+  acceptance remains; no open design question or Housing prerequisite is introduced.
+
+### Before the first public release
+
+These gates remain **open** after WP40's user-approved development completion.
+The project coordinator owns them when preparing the release candidate, before
+user release approval: freeze game/engine/settings and the public seed; rebase
+current-sampler resource supply/regional access evidence; run current-candidate
+feature/native/generation-order and runtime/RSS checks; and confirm native plus
+actual fallback-engine startup/generation/restart. Historical source-bound
+results are not silently promoted to later bytes; native events not observed
+remain explicit coverage limits. Full tracking lives in
+[BACKLOG](../../../BACKLOG.md#first-public-release-gates) and the
+[WP40 completion record](../../../docs/research/wp40-completion.md).
+
+## Phase 2 — Expansion
+
+- [ ] Paladin, Rogue, Warlock and Shaman; decide the separate ranged-weapon
+  class direction before activating the already-catalogued bow family.
+- [ ] Coastal-shelf life: coral, kelp, fish, coastal materials and shore
+  wildlife inside the authored editable shelf, without redefining deep ocean
+  or the dragon channels.
+- [ ] **V2's main content update: the walkable Nether**, with its own mapgen,
+  story line and mob cast. The Fire Dragon and the Nether reserve from the mob
+  plan remain reserve content for that update.
+- [ ] Dungeons, regional apex encounters, reputation and player trading.
+
+## Phase 3 — Polish
+
+- [ ] Original textures, sounds and animated models with complete provenance.
+- [ ] Localization through Luanti's translation system; German first.
+- [ ] Balance, accessibility, onboarding and a measured 100-player
+  performance pass.
+
+## Deliberately outside the target
+
+- Private housing islands, purchased mining-depth rights and private material
+  sources.
+- A social-organization system, shared organization bank/chat or
+  organization-owned land.
+- Instanced PvP battlegrounds/arenas and permanent war-front capture in the
+  current scope.
+- A separate Enchanter profession; each profession enchants the families it
+  owns.
+- Taming mounts; riding is a permanent purchase and summons an ephemeral
+  owner-bound entity.
+
+Round 13 (delivered 2026-09-21) simplifies stations, enchanting and equipment;
+see [current rules](../../../docs/design/crafting_equipment_revision.md) and
+[execution status](../../../docs/research/round13-execution.md). Its bounded delivery does
+not close the wider WP5/WP10/WP22/WP30 scope.

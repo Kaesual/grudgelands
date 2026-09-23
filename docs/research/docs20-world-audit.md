@@ -2,7 +2,7 @@
 
 2026-09-23. Baseline `d6937b31`; implementation branch `docs20-world`.
 Documentation only: no game code, settings, media, references, tests or evidence
-artifacts changed. Author: native Sol. Independent review: pending coordinator
+artifacts changed. Author: native Astra. Independent review: pending coordinator
 handoff; findings/fix rounds and elapsed wall time: pending / unknown.
 
 ## Scope inspected

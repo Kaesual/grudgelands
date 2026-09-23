@@ -228,7 +228,7 @@ Basics book (§2.2/§2.3).
 refinement. Round 13 superseded the whole refinement model on 2026-09-21:
 refinement, its hidden stat/lifetime bonuses and Imbue/Temper no longer exist.
 The active deterministic named-enchant rules are in §6b and
-[crafting_equipment_revision.md](crafting_equipment_revision.md#enchanting).
+[crafting_equipment_revision.md](../../design/crafting_equipment_revision.md#enchanting).
 
 **D6 — Cooking gets a book, but not a profession slot.** Cooking and
 First Aid stay free and universal. Cooking's tiers are tied to regional
