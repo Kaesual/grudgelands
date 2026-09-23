@@ -56,6 +56,8 @@ fully playtested. [Round 18](docs/research/round18-completion.md) completes the
 latest usability, progression, pursuit, tool and preparation fixes.
 [Round 19](docs/research/round19-completion.md) adds atlas zoom/scroll, concise
 menus, first-click talents, top-center buffs and readable dragon bars.
+Its [UI follow-up](docs/research/round19-ui-followup.md) keeps Map at the shared
+window size and makes talent buttons and text alignment clearer.
 
 Open-world housing claims, boats, the full geographic PvP system, war fronts
 and the planned island dragon encounters are still unfinished. The current

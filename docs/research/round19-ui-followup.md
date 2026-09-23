@@ -32,8 +32,21 @@ page size, while retaining zoom/scroll/lifecycle checks. No new resolution suite
 
 ## Status and validation
 
-Implementation and independent review in progress. Root will run parser,
-SETGLOBAL and five static sweeps on touched Lua, followed by one bounded final
-interpreter pair using the existing map/UI fixtures. No headless world run or
-GUI automation is needed for these presentation-only changes. Sync locally
-after review; runtime acceptance is a quick user tab switch and talent glance.
+Implementation and independent native Sol review PASS at `f48b19b0`.
+Review: [round19-ui-followup-review.md](round19-ui-followup-review.md).
+Talent labels are centered; available buttons use a green background and native
+border, selected buttons retain gold. Static unnamed hypertext keeps locked/max
+entries noninteractive with their labels and hover reasons. Purchase logic is
+unchanged. Authors: root Astra (Map), native Sol (talents); independent reviewer
+native Sol; initial C/H/M/L 0/0/0/0, fix rounds 0, elapsed unknown.
+
+Parser, expected SETGLOBAL inventory and all five source sweeps PASS. Exactly
+one final PUC/LuaJIT pair over the existing three compact fixtures PASS, matching
+canonical SHA256 `8cec59ed485583831ee6afcded43fb8704e6f18d11ae8d4d5483efd4a69b81cf`.
+Timings 0.008459/0.008154 seconds; evidence and current source hashes live in
+`tools/r19_final/followup-evidence/`. The prior Round 19 evidence is preserved.
+No resolution test matrix, new GUI suite or headless world run was performed.
+
+Local main merge/sync follows. User acceptance: switch between Character and Map
+(the window must stay the same size), zoom/scroll once, then compare available
+and locked/maxed talents. First-click purchase remains unchanged.
