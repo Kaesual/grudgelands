@@ -3,7 +3,7 @@ local PAGE = "grug_parties:group"
 local function esc(value) return core.formspec_escape(tostring(value or "")) end
 local function health_color_mode(player)
 	return grug_parties.health_color_mode and
-		grug_parties.health_color_mode(player) or "all_green"
+		grug_parties.health_color_mode(player) or "by_class"
 end
 local function notice(context, ok, message)
 	context.grug_party_notice = (ok and "Success: " or "Refused: ") .. (message or "")
