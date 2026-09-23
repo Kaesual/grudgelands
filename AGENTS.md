@@ -24,12 +24,12 @@ projects: **[docs/research/](docs/research/)**.
 - This changes execution mechanics, not model authorization or independent
   review requirements. Read `docs/process/agent-model-policy.md` and
   `docs/process/cross-cli-orchestration.md` for those rules.
-- **Current development session (Round 17):** Claude credits are exhausted. No Claude CLI,
+- **Current development session (Round 18):** Claude credits are exhausted. No Claude CLI,
   Claude agent, Opus or Fable task is authorized in this session. Root is Astra;
   ordinary implementation/review uses native Sol, with native Astra allowed for
   hard/performance-critical work. This session restriction can change only by
   a later explicit user instruction. Durable active work state:
-  `docs/research/round17-execution.md` (current approved round).
+  `docs/research/round18-execution.md` (current approved round).
 
 ## Fresh-server development mode
 
@@ -66,6 +66,13 @@ projects: **[docs/research/](docs/research/)**.
   confirmation.
 
 ## Active round
+
+Round 18 is approved and in progress (user Go 2026-09-23).
+Contract: `docs/research/round18-plan.md`; resume and lane status:
+`docs/research/round18-execution.md`; living revision:
+`docs/design/playtest_quality_revision.md`. Root Astra orchestrates native
+Sol/Astra lanes. Held-light implementation requires a prior VoxeLibre complexity
+assessment; pause that lane if already complex, before implementing it.
 
 Round 17 is delivered on main, locally synchronized and pushed.
 `docs/research/round17-plan.md` and
