@@ -17,15 +17,14 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
 - Character separates the model, concise live HP/resource/armor values and
   equipment into three columns. The current money balance is shown here, with
   balance changes updating the cached Character view; money has no gameplay HUD.
-  Pool derivations use
-  `grug_classes.get_pool_breakdown` in a wrapped, scrollable text area;
-  long descriptions never share a rectangle with the model or slots.
-  Help explains the B/C/G/T/S formula legend.
+  Round 19 removes the pool/armor derivation section. Character shows concise
+  effective Crit and Dodge alongside armor rating/same-level reduction and
+  maximum pools. General formulas and the B/C/G/T/S legend belong to Help.
 - Talents keeps the shared legacy inventory geometry but uses real coordinates
-  for its page content. Class/stats, tree selection, rank rows and description
-  occupy separate vertical bands. It shows both chains with equally sized available/locked controls,
-  four ranks rows, and a taller wrapped selected-description area. Tooltips
-  wrap at word boundaries. Selection, purchase and respec rules are unchanged.
+  for its page content. Class, tree selection, rank rows and description occupy
+  separate bands; combat statistics belong to Character. Both chains use equally
+  sized available/locked controls and wrapped tooltips. Clicking an available
+  talent buys one rank immediately. Respec retains confirmation and its price.
 - Help opens with gathering, Basics, crafting/equipping, Skills, combat and
   city services. Starter recipes are visible immediately; acquiring their
   main material reveals later recipes without restricting crafting permission.
@@ -164,8 +163,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   - A cultural finish and a PvP special may coexist on the same eligible item.
     Neither consumes an affix slot, changes the base identity/material tier,
     nor creates a parallel registered-item catalog. Ordinary stat caps apply
-    after all equipment sources have been summed; the Talents header displays
-    effective/raw Crit, Dodge and Armor with their caps.
+    after all equipment sources have been summed; Character displays effective
+    Crit/Dodge and armor rating/reduction, with formulas and caps explained in Help.
   The complete effect, replacement, recipe and tooltip rules live in
   `items_crafting.md` §4/§6.
 - No ring/neck/shoulder slots in the MVP.
@@ -267,7 +266,8 @@ ordinary buffs and debuffs. A mechanic that must survive a relog keeps its own
 authoritative persistence; the potion cooldown remains in player meta and is
 only mirrored into the registry for display.
 
-- **First version:** one top-right HUD text list, buffs first and debuffs
+- **Round 19:** one top-center HUD text list, leaving top-right minimap and
+  top-left chat free; buffs first and debuffs
   second, capped at eight lines. Each line is `Name  1:23`; a numeric value
   may follow the name, as in `Shield 12  0:09`. Durations under ten minutes
   use `m:ss`; longer durations use the largest fitting unit.
@@ -301,6 +301,9 @@ other detached inventories, crafting and equipment refuse them. Source takes
 remain allowed so Q/drop reaches the item's deletion-only callback. Entitlement,
 cooldowns, charge, resources and active mounts are independent of the disposable
 item stack.
+
+The Skills catalog has a short visible hint: "Drop skills to remove them. Drag
+them back from here." This does not alter entitlement or the one-copy rule.
 
 ## Round 14 navigation pages
 

@@ -275,6 +275,10 @@ that must keep moving while its attack clock runs is the other consumer. The
 Scout's former "speed and stealth" lane collapses into the class lane once it
 exists.
 
+Sprint appears in the central status HUD as `Sprint (+50% Speed)` with its
+remaining 10-second duration. The status is display-only; the movement modifier
+is the effect authority, and absence/expiry/death/disconnect removes the display.
+
 ### 6.2 Sprint is a deliberate, bounded speed exception
 
 Ordinary aggressive mobs run **4.6** against a player's **4.0**
@@ -312,7 +316,8 @@ clamped — which means a Scout with good gear gets *less* from their own
 button, a real consequence and not a bug. The Veil capstone **Untouchable**
 raises only the dodge cap to 55% for six seconds once every three minutes,
 which is the named, time-limited capstone exception allowed by ruling 10. The
-Talents header shows the raised cap while it runs.
+Character displays the effective Dodge value while it runs; Help explains the
+raised-cap rule.
 
 ### 6.5 Bow pose and starter — **resolved in Round 11**
 

@@ -582,7 +582,7 @@ Details + line numbers in [docs/research/](docs/research/).
   current-level values to that player's stack on kit sync, level change and
   talent change. Suffocation is 5% maximum HP/s (minimum 1), with stasis and
   `noclip` exempt. `grug_core.status` is the runtime timed-effect registry and
-  top-right eight-line buff/debuff text list. Status definitions may carry only
+  top-center eight-line buff/debuff text list (Round 19). Status definitions may carry only
   `hp_pool_percent`, `mana_pool_percent`, `crit_percent`, `armor` and
   `spell_damage_percent`; `grug_core.status_modifier_sum` adds active statuses,
   and the modifier-change callback drives the same HP/mana clamp and HUD/page

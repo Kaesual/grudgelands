@@ -1516,7 +1516,7 @@ The resulting T6 per-stack values are:
 
 All finish, affix, attribute and base-equipment sources add before their final
 consumers. Crit and Dodge cap at 30%. Armor remains uncapped as raw rating;
-attacker-level mitigation alone caps at 70%. The Talents header displays raw
+attacker-level mitigation alone caps at 70%. Character displays armor
 rating and same-level reduction; there is no reroll or overflow conversion.
 The theoretical T6
 cultural-only mixed-set maxima are approximately +14.8 Crit percentage points
@@ -1956,8 +1956,8 @@ intended +50–60% fully equipped ceiling.
 prefixes/suffixes, cultural finishes, attributes and base equipment all add
 before their consumers. Crit and Dodge cap at 30%. Armor sources add uncapped
 raw rating; `combat_stats.md` §2 converts that rating against attacker level
-and caps only final reduction at 70%. The Talents header shows Crit/Dodge
-effective and raw values plus raw armor rating and same-level reduction.
+and caps only final reduction at 70%. Character shows effective Crit/Dodge
+plus armor rating and same-level reduction; Help explains formulas and caps.
 
 The old eight-identical-affix-slot calculation is retired: each trinket now has
 one primary prefix and one HP/Mana/Crit suffix rather than four ordinary slots.

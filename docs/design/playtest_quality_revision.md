@@ -42,7 +42,8 @@ Implementation contract: [Round 18](../research/round18-plan.md).
   controls are visibly highlighted. Quest objective names omit item stat lines;
   worn qualifying tools remain valid turn-ins.
 - Stable display nametags use managed 25/30-node hysteresis and NPC lilac.
-- Six regional atlas views cover the world atlas with overlap and correct aspect.
+- Round 19 supersedes regional cutouts with one complete atlas, 1x/2x/4x zoom
+  and native scrollbars; see world_map.md.
   Native minimap defaults to terrain + own arrow; all other object/player dots
   hidden. Rich party/quest/trainer markers stay on the atlas.
 - Preparation precedes faction/race/class selection. Waiting can be dismissed

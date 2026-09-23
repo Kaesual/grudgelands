@@ -7,10 +7,10 @@ three parallel native workers, no provider CLI or Claude.
 
 | Lane | Model | Branch/worktree | Status |
 |---|---|---|---|
-| A atlas | Astra | wp19-map / /tmp/grug-r19-map | queued |
-| B menus | Sol | wp19-ui / /tmp/grug-r19-ui | queued |
-| C party/status | Sol | wp19-hud / /tmp/grug-r19-hud | queued |
-| D dragon bars | Sol | C lane after C | queued |
+| A atlas | Astra | wp19-map / /tmp/grug-r19-map | implementing |
+| B menus | Sol | wp19-ui / /tmp/grug-r19-ui | implementing |
+| C party/status | Sol | wp19-hud / /tmp/grug-r19-hud | implementing |
+| D dragon bars | Sol | C lane after C | assigned, sequential |
 
 Root owns living docs, final integration/gates and receipt. Authors own only
 assigned code/tests plus their lane report. Independent reviewers have no

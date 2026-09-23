@@ -170,16 +170,15 @@ diminishing-returns curves.
 Equipment sources, ordinary affixes and cultural finishes add before final
 consumer caps. Crit and Dodge remain capped at 30%; armor reduction is capped
 at 70% after the attacker-level formula. Raw armor rating is never discarded.
-The Character/Talents UI exposes raw rating, the active Bulwark multiplier,
-the resulting rating and reduction evaluated against the player's own character
-level. This same-level display does not change with the selected target or the
+The Character UI exposes effective Crit/Dodge, resulting armor rating and
+reduction evaluated against the player's own character level. General formulas,
+cap rules and multiplier explanations belong to Help, not the Talents header.
+This same-level display does not change with the selected target or the
 last attacker.
 Unbroken does not override the reduction cap.
 
-The Character page contains only two live maximum-pool derivations: HP and
-mana, or HP and fixed Rage. Each compact line carries final value, base pool,
-HP class factor where applicable, and separate gear/talent/status percentages;
-the HUD bars are the sole display of current pool values. The Help page owns
+The Character page shows concise maximum HP and mana, or HP and fixed Rage,
+without a pool/armor derivation panel. The HUD bars display current pool values. The Help page owns
 the formula prose for pools, Strength, Intelligence, Dexterity and the three
 capped stats. Melee bonus, spell power and attributes are formulas there, not
 extra Character-page rows.
@@ -963,8 +962,11 @@ Startup presentation settings:
 | Critter | `grug_nametag_critter_foreground` / `#ffffff` | `grug_nametag_critter_background` / `#00000040` |
 
 `grug_injured_mob_hp_bars` defaults to `true`. Invalid colors fall back to the
-category default. Bars have a nominal world size of 0.8 by 0.1 nodes; parent
-visual scale must not magnify them. Flight visuals use a duration bounded to
+category default. Ordinary bars have a nominal world size of 0.8 by 0.1 nodes;
+parent visual scale must not magnify them. Round 19 gives the two dragons
+explicit world-space anchor/size overrides near their visible head/body for
+readability, without changing ordinary mobs/guards or adding a screen-space
+boss HUD. The sprite remains perspective-scaled. Flight visuals use a duration bounded to
 0.05–2 seconds, so near-zero partial bow draws never cause long pursuit.
 
 ## Round 18 pursuit policy
