@@ -1,0 +1,28 @@
+boot 1
+2026-09-23 12:45:11: ACTION[Main]: [grug_core] world preparation mode=full cursor=0/8811
+2026-09-23 12:45:11: ACTION[Main]: [r16_surface] column=-3952,-3552 ground=-23 water=1 low=-10 high=34 reach=4
+2026-09-23 12:45:11: ACTION[Main]: [r16_surface] column=0,0 ground=9 water=nil low=6 high=42 reach=4
+2026-09-23 12:45:11: ACTION[Main]: [r16_surface] column=-1700,-2500 ground=18 water=nil low=15 high=51 reach=4
+2026-09-23 12:45:11: ACTION[Main]: [r16_surface] column=1600,1900 ground=74 water=nil low=71 high=107 reach=4
+2026-09-23 12:45:11: ACTION[Main]: [r16_surface] column=2600,-1400 ground=-2 water=1 low=-5 high=34 reach=4
+2026-09-23 12:45:11: ACTION[Main]: [r16_surface] authority=grug_surface_v1:3eaf9e6c566e87dceef5dd24737eea7365cce64a6c284c40c279cfb662f84031
+2026-09-23 12:45:12: ACTION[Server]: [r16_surface] dispatch=1 lo=(-3952,-32,-3552) hi=(-3873,47,-3473)
+2026-09-23 12:45:28: ACTION[Emerge-0]: [r16_surface] settled status=return {ready=false,completed=1,percent=0.011349449551696743,failed=false,total=8811,mode="full"}
+2026-09-23 12:45:28: ACTION[Server]: [r16_surface] dispatch=2 lo=(-3872,-32,-3552) hi=(-3793,47,-3473)
+2026-09-23 12:45:29: ACTION[Emerge-0]: [r16_surface] settled status=return {ready=false,completed=1,percent=0.011349449551696743,failed=false,total=8811,mode="full"}
+2026-09-23 12:45:29: ACTION[Main]: [r16_surface] shutdown requests=2
+boot 2
+2026-09-23 12:45:29: WARNING[Main]: [grug_core] preparation config ignored: this world's immutable mode is full
+2026-09-23 12:45:50: ACTION[Main]: [grug_core] world preparation mode=full cursor=1/8811
+2026-09-23 12:45:50: ACTION[Main]: [r16_surface] column=-3952,-3552 ground=-23 water=1 low=-10 high=34 reach=4
+2026-09-23 12:45:50: ACTION[Main]: [r16_surface] column=0,0 ground=9 water=nil low=6 high=42 reach=4
+2026-09-23 12:45:50: ACTION[Main]: [r16_surface] column=-1700,-2500 ground=18 water=nil low=15 high=51 reach=4
+2026-09-23 12:45:50: ACTION[Main]: [r16_surface] column=1600,1900 ground=74 water=nil low=71 high=107 reach=4
+2026-09-23 12:45:50: ACTION[Main]: [r16_surface] column=2600,-1400 ground=-2 water=1 low=-5 high=34 reach=4
+2026-09-23 12:45:50: ACTION[Main]: [r16_surface] authority=grug_surface_v1:3eaf9e6c566e87dceef5dd24737eea7365cce64a6c284c40c279cfb662f84031
+2026-09-23 12:45:50: ACTION[Server]: [r16_surface] dispatch=1 lo=(-3872,-32,-3552) hi=(-3793,47,-3473)
+2026-09-23 12:46:06: ACTION[Emerge-0]: [r16_surface] settled status=return {percent=0.022698899103393486,total=8811,ready=false,failed=false,completed=2,mode="full"}
+2026-09-23 12:46:06: ACTION[Server]: [r16_surface] dispatch=2 lo=(-3792,-32,-3552) hi=(-3713,47,-3473)
+2026-09-23 12:46:06: ACTION[Emerge-0]: [r16_surface] settled status=return {percent=0.022698899103393486,total=8811,ready=false,failed=false,completed=2,mode="full"}
+2026-09-23 12:46:06: ACTION[Main]: [r16_surface] shutdown requests=2
+Both boots exited 0; runner validation PASS.
