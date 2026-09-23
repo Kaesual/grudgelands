@@ -135,7 +135,12 @@ end
 -- Default leash radius; a def may override it per mob with
 -- _grug_leash_range (installed onto the entity by apply_aggro_fields above).
 grug_mobs.LEASH_RANGE = 40 -- m dragged from where the chase began
-grug_mobs.LEASH_TIMEOUT = 15 -- s without player contact
+grug_mobs.LEASH_TIMEOUT = 15 -- s since the last effective incoming damage
+-- Once that damage grace has elapsed, horizontal movement by the current
+-- target is evidence that the mob is still being dragged. Sampled in the
+-- existing 1 Hz leash tick; squared distance avoids a square root. Vertical
+-- movement, mob movement and facing are deliberately irrelevant.
+local PURSUIT_TARGET_MOVE_SQ = 0.25 * 0.25
 -- Give-up distance handed to the api.lua do_states patch (see
 -- apply_aggro_fields): must sit ABOVE LEASH_RANGE so the leash — not the
 -- mob's eyesight — is what ends a chase, with a little hysteresis so a mob
@@ -168,6 +173,8 @@ function grug_mobs.leash_reset(self)
 	if self.temp then
 		self.temp.grug_last_contact = nil
 		self.temp.grug_damage_at = nil
+		self.temp.grug_pursuit_target = nil
+		self.temp.grug_pursuit_target_pos = nil
 		-- The chase is over, so its drag anchor is too: the NEXT pull anchors
 		-- wherever the mob stands then (see leash_check).
 		self.temp.grug_chase_anchor = nil
@@ -350,11 +357,14 @@ local function leash_check(self)
 		if self.temp.grug_evading then return end
 		if self.state == "die" or (self.health or 0) <= 0 then
 			self.temp.grug_damage_at = nil
+			self.temp.grug_pursuit_target = nil
+			self.temp.grug_pursuit_target_pos = nil
 			return
 		end
 		-- A vanished/dead target ends the encounter through the same reset.
 		-- No terrain loading, search, or target replacement is introduced.
-		if self.temp.grug_damage_at and target and (not target:get_pos()
+		local target_pos = target and target:get_pos()
+		if self.temp.grug_damage_at and target and (not target_pos
 				or target:get_hp() <= 0) then
 			grug_mobs.leash_reset(self)
 			return
@@ -363,10 +373,38 @@ local function leash_check(self)
 			grug_mobs.start_damage_pursuit(self)
 		end
 		-- Pack flight and flopping may temporarily leave attack state. Their
-		-- existing clock still expires; neither pause it nor instantly heal.
+		-- existing clock still expires; neither pause it nor instantly heal. A
+		-- missing live target cannot pin an abandoned fight after that grace.
 		local last = self.temp.grug_damage_at
 		if last and grug_core.mono_time() - last >= grug_mobs.LEASH_TIMEOUT then
-			grug_mobs.leash_reset(self)
+			if not target then
+				self.temp.grug_pursuit_target = nil
+				self.temp.grug_pursuit_target_pos = nil
+				grug_mobs.leash_reset(self)
+				return
+			end
+			local previous = self.temp.grug_pursuit_target_pos
+			local moved = self.temp.grug_pursuit_target == target and previous
+				and target_pos and ((target_pos.x - previous.x) * (target_pos.x - previous.x)
+					+ (target_pos.z - previous.z) * (target_pos.z - previous.z)
+					>= PURSUIT_TARGET_MOVE_SQ)
+			self.temp.grug_pursuit_target = target
+			self.temp.grug_pursuit_target_pos = target_pos and {
+				x = target_pos.x, z = target_pos.z,
+			} or nil
+			if moved then
+				grug_mobs.leash_reset(self)
+			end
+		elseif target and target_pos then
+			-- Keep the comparison current during the damage grace so movement
+			-- immediately after it expires is measured against the prior tick.
+			if self.temp.grug_pursuit_target ~= target then
+				self.temp.grug_pursuit_target = target
+			end
+			self.temp.grug_pursuit_target_pos = {x = target_pos.x, z = target_pos.z}
+		else
+			self.temp.grug_pursuit_target = nil
+			self.temp.grug_pursuit_target_pos = nil
 		end
 		return
 	end

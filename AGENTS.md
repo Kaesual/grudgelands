@@ -725,12 +725,16 @@ Details + line numbers in [docs/research/](docs/research/).
     persists plain fields — a lost timer would save the mob permanently
     rooted. (`core.after` is fine for PLAYER-side effects, re-fetching
     the player by name.)
-  - **Chase model** (combat_stats §3/§4): give up at **45 m** (an
-    api.lua patch — vanilla uses `view_range`, ≤ 16 m, which made every
-    other rule dead code), walk speed beyond **25 m** (soft de-aggro),
-    leash at **40 m dragged from the chase anchor** (not from home) or
-    15 s without contact, then the **evade run-home** if the mob stands
-    beyond its own radius from its post.
+  - **Chase model** (combat_stats §3/§4, Round 19 follow-up): ordinary
+    ambient mobs have no distance give-up/slowdown. After 15 s without effective
+    incoming damage from any player/eligible guard, a live current target must
+    move at least 0.25 nodes horizontally since the previous 1 Hz sample before
+    return starts. Standing still does not reset that clock; outgoing mob hits
+    do not refresh it. Sample only target X/Z in runtime temp, reseed on target
+    switch, and preserve dead/missing-target cleanup. Bosses/guards/camps/rares
+    retain their authored limits, including 45 m give-up, 25 m slowdown and
+    40 m chase-origin drag/contact timeout where applicable. Return-home and
+    the 40 s teleport fallback remain unchanged.
   - **`aoc` is per entity NAME**, counted in a 128-node sphere — two
     rows of one name share a budget, per-biome tints do not. Spawn
     calibration reference: **`docs/research/wp6_spawn_budget.md`**.

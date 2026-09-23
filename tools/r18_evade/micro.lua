@@ -77,10 +77,11 @@ for _,key in ipairs({"_grug_camp_pos","_grug_rare_id","_grug_boss_id","_grug_roy
 end
 clock(0); e:do_attack(a); assert(e.temp.grug_damage_at==0)
 for t=1,60 do
- clock(t); obj.position.x=t*100
- if t%10==0 then gm.received_pursuit_damage(e,a,1) end
- gm.leash_tick(e,1)
- assert(e.attack==a and not e.temp.grug_evading,"sustained pull "..t)
+	clock(t); a.position.x=t
+	obj.position.x=t*2
+	if t%10==0 then gm.received_pursuit_damage(e,a,1) end
+	gm.leash_tick(e,1)
+	assert(e.attack==a and not e.temp.grug_evading,"sustained pull "..t)
 end
 -- Temporary pack flight cannot pause expiry or reset/heal on a fresh hit.
 local flight=mob(); clock(60); flight:do_attack(a); flight.state="runaway"; flight.attack=nil; flight.health=20
@@ -92,7 +93,7 @@ grug_core.add_threat(e,a,10); grug_core.add_threat(e,b,30)
 grug_core.recheck_switch(e); assert(e.attack==b)
 clock(74); grug_core.taunt(e,a); e:do_attack(a,true); gm.received_pursuit_damage(e,a,0)
 gm.leash_tick(e,1); assert(e.attack==a)
-clock(75); gm.leash_tick(e,1)
+clock(75); a.position.x=a.position.x+1; gm.leash_tick(e,1)
 assert(not e.attack and e.health==100 and e.temp.grug_evading and not e.temp.grug_threat)
 assert(not e._grug_player_tag and not e.temp.grug_damage_at)
 local snapped=0
@@ -101,7 +102,8 @@ gm.place_on_ground=function(o,p) snapped=snapped+1; o.position=vector.new(p) end
 clock(116); gm.leash_tick(e,1); assert(snapped==1 and not e.temp.grug_evading)
 -- Reacquisition during a blocked return cannot restart the fallback deadline.
 e,obj=mob(); clock(120); e:do_attack(a); obj.position.x=100
-clock(135); gm.leash_tick(e,1)
+gm.leash_tick(e,1)
+clock(135); a.position.x=a.position.x+1; gm.leash_tick(e,1)
 local return_started=e.temp.grug_evading.started
 for t=136,175 do
  clock(t); e:do_attack(a); gm.leash_tick(e,1)
@@ -112,18 +114,49 @@ clock(176); e:do_attack(a); gm.leash_tick(e,1)
 assert(snapped==2 and not e.temp.grug_evading)
 -- Timeout also returns home inside the historical 40m radius.
 e,obj=mob(); clock(200); e:do_attack(a); obj.position.x=10
-clock(215); gm.leash_tick(e,1); assert(e.temp.grug_evading)
+clock(214); gm.leash_tick(e,1)
+clock(215); gm.leash_tick(e,1); assert(e.attack==a and not e.temp.grug_evading)
+a.position.x=a.position.x+0.25; clock(216); gm.leash_tick(e,1); assert(e.temp.grug_evading)
 obj.position=vector.new(e._grug_home); gm.leash_tick(e,1); assert(not e.temp.grug_evading)
+-- Only current-target horizontal displacement matters after the grace:
+-- vertical movement and sub-threshold jitter do not release the fight, and
+-- moving the mob itself cannot substitute for target movement.
+e,obj=mob(); clock(230); e:do_attack(a); gm.leash_tick(e,1)
+clock(245); a.position.y=a.position.y+20; a.position.x=a.position.x+0.24
+obj.position.x=obj.position.x+100; gm.leash_tick(e,1)
+assert(e.attack==a and not e.temp.grug_evading,"vertical/jitter/mob motion")
+-- A target switch seeds its own comparison even when the new target is far
+-- from the old one; only a later movement sample may release the pursuit.
+b.position.x=a.position.x+100
+e:do_attack(b,true); clock(246); gm.leash_tick(e,1)
+assert(e.attack==b and not e.temp.grug_evading,"target switch")
+clock(247); gm.leash_tick(e,1)
+assert(e.attack==b and not e.temp.grug_evading,"stationary switched target")
+b.position.z=b.position.z+1; clock(248); gm.leash_tick(e,1)
+assert(not e.attack and not e.temp.grug_pursuit_target_pos,"switched target movement")
 -- Guard input sustains a mob-vs-NPC fight without adding a player tap.
 local guard=f.new_mob("test:guard","accord")
 guard.entity.type="npc"; guard.entity.attack_monsters=true; guard.entity._grug_drop_rule=true
 e,obj=mob(); clock(300); e:do_attack(guard)
 clock(314); gm.received_pursuit_damage(e,guard,5); gm.leash_tick(e,1)
 clock(328); gm.leash_tick(e,1); assert(e.attack==guard and not e._grug_player_tag)
+guard.position.x=guard.position.x+1
 clock(329); gm.leash_tick(e,1); assert(not e.attack)
+-- Effective damage from any player refreshes the same clock, regardless of
+-- which player is the current target.
+e,obj=mob(); clock(340); e:do_attack(a); gm.leash_tick(e,1)
+clock(354); gm.received_pursuit_damage(e,b,1); a.position.x=a.position.x+1
+clock(355); gm.leash_tick(e,1); assert(e.attack==a and e.temp.grug_damage_at==354)
+clock(368); gm.leash_tick(e,1); assert(e.attack==a)
+a.position.x=a.position.x+1; clock(369); gm.leash_tick(e,1); assert(not e.attack)
 -- Death/unavailable target cannot keep a fight alive; dead mobs never heal.
-e,obj=mob(); clock(400); e:do_attack(a); a.hp=0; gm.leash_tick(e,1); assert(not e.attack); a.hp=40
+e,obj=mob(); clock(400); e:do_attack(a); gm.leash_tick(e,1); a.hp=0; gm.leash_tick(e,1)
+assert(not e.attack and not e.temp.grug_pursuit_target_pos); a.hp=40
+e,obj=mob(); clock(410); e:do_attack(a); gm.leash_tick(e,1); a.position=nil
+gm.leash_tick(e,1); assert(not e.attack and not e.temp.grug_pursuit_target_pos)
+a.position={x=0,y=0,z=0}
 e,obj=mob(); e:do_attack(a); e.health=0; gm.leash_tick(e,1); assert(e.health==0)
+assert(not e.temp.grug_pursuit_target_pos)
 -- Owner-bound pull keeps its existing distance leash.
 e,obj=mob(); e._grug_camp_pos={}; e._grug_leash_range=25; e:do_attack(a)
 gm.leash_tick(e,1); obj.position.x=30; gm.leash_tick(e,1); assert(not e.attack)
@@ -175,5 +208,5 @@ native.on_punch(e,guard,1,caps,{x=1,y=0,z=0},2); assert(e.temp.grug_damage_at==6
 grug_core.in_ability_punch=false
 -- Normal activation discards temp; a fresh pursuit obtains a fresh grace clock.
 e.temp={}; clock(700); gm.start_damage_pursuit(e); assert(e.temp.grug_damage_at==700)
-return "r18_evade: policy=13 sustained=60 threat=far timeout=15 home=4 fallback=40 guard=pass settlement=pass target=pass"
+return "r18_evade: policy=13 sustained=60 movement=horizontal threshold=0.25 switch=seeded timeout=15 home=4 fallback=40 guard=pass settlement=pass target=pass"
 end
