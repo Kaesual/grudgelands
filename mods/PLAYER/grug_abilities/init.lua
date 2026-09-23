@@ -2799,10 +2799,16 @@ core.register_on_leaveplayer(function(player)
 	dirty[name] = nil
 end)
 
--- The base mana pool grows with level: clamp/refresh the HUD (no refill).
+-- A real upward transition fills mana after the earlier stats callback has
+-- recomputed final pools. Join/recalculation/downward callbacks only clamp;
+-- rage is deliberately untouched.
 grug_xp.register_on_level_change(function(player, old_level, new_level)
 	sync_descriptions(player)
-	clamp_mana(player)
+	if old_level ~= nil and new_level > old_level and player:get_hp() > 0 then
+		refill_mana(player)
+	else
+		clamp_mana(player)
+	end
 	hud_update(player)
 end)
 
