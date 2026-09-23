@@ -37,3 +37,24 @@ Status: implementation in progress. Main merge/local sync after independent
 review and final gates. User runtime checks: let a melee and ranged mob attack
 while standing still for over 15 seconds; then move without dealing damage;
 repeat while another player periodically damages the mob.
+
+## Additional approved scope: safe idle full healing
+
+The user additionally requested full recovery for idle mobs, guards and bosses,
+explicitly warning against accidental immortality. Native Sol preflight found
+that the participation ledger cannot safely define an active encounter, and
+there is no common all-source damage clock. Implement HP sampling plus 30 seconds
+of continuous calm at the existing maintenance cadence; use the normal reset
+transaction only for living damaged actors. Any HP loss, attack target/state,
+evade or pending attack prevents recovery. Share actual recent activity across
+boss members, including summons/royal follow, without using a stale loot ledger
+or scanning the world. This adds no outgoing-attack refresh to pursuit's separate
+incoming-damage clock. Activation starts a fresh quiet period; no migration.
+
+Native Sol author `idle_heal_preflight` owns this additional implementation;
+separate native Sol reviewer follows. Existing pursuit correction at `ecec014a`
+already independently PASS (zero findings), report round19-pursuit-review.md.
+Final interpreter pair waits for both changes to be frozen, avoiding repeated
+intermediate PUC runs. Add a compact real-module idle-health fixture for target
+gaps, continuing combat, repeated environmental/DoT damage, dead actors and
+shared boss activity. No native-world or performance campaign.

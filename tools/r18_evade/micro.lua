@@ -34,6 +34,7 @@ local api_core=setmetatable({registered_aliases={},registered_nodes={air={groups
 local api_env=setmetatable({core=api_core,minetest=api_core,grug_mobs=gm},{__index=_G})
 setfenv(assert(loadfile(repo.."/mods/ENTITIES/mobs/api.lua")),api_env)()
 dofile(repo.."/mods/ENTITIES/grug_mobs/aggro.lua")
+dofile(repo.."/mods/ENTITIES/grug_mobs/idle_health.lua")
 local native=api_env.mobs.mob_class
 local a=f.new_player("pursuer","mage","accord")
 local b=f.new_player("rival","mage","accord")
@@ -59,6 +60,19 @@ for i,row in ipairs({{nil,"monster",false,true},{"elite","monster",false,true},
  local e=mob(); captured[name].do_punch(e,nil,1,{},nil,0)
  assert(gm.damage_pursuit(e)==row[4],"registration policy "..i)
 end
+-- The actual registration wrapper closes the group boundary immediately on a
+-- punch, before either actor's next one-second health sample.
+gm.register_mob("test:boss_activity", {
+ type="monster", attack_type="dogfight", _grug_tier="boss",
+})
+local boss_actor=mob(); boss_actor._grug_boss_id="test:encounter"
+local boss_buddy=mob(); boss_buddy._grug_boss_id="test:encounter"
+boss_actor.health=40; boss_buddy.health=40
+clock(10); gm.idle_health_tick(boss_actor); gm.idle_health_tick(boss_buddy)
+clock(40); captured["test:boss_activity"].do_punch(boss_actor,nil,1,{},nil,0)
+assert(not gm.idle_health_tick(boss_buddy) and boss_buddy.health==40,
+ "punch must block group reset before next sample")
+gm.clear_boss_activity("test:encounter")
 mobs.spawn=noop
 dofile(repo.."/mods/ENTITIES/grug_mobs/zombie.lua")
 assert(core.registered_entities["grug_mobs:zombie"]._grug_damage_pursuit_candidate)

@@ -554,6 +554,10 @@ function grug_mobs.leash_tick(self, dtime)
 	-- leash_check: that is what keeps the arrival/timeout handling ahead of any
 	-- fresh chase bookkeeping in the same slot.
 	evade_tick(self)
+	-- Any-source idle recovery shares this one-second cadence. It runs for
+	-- no-leash actors too (notably royal guards), while its own calm-state and
+	-- shared encounter gates prevent a transient target gap from healing them.
+	grug_mobs.idle_health_tick(self)
 	if self._grug_no_leash then
 		return
 	end

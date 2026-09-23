@@ -735,6 +735,12 @@ Details + line numbers in [docs/research/](docs/research/).
     retain their authored limits, including 45 m give-up, 25 m slowdown and
     40 m chase-origin drag/contact timeout where applicable. Return-home and
     the 40 s teleport fallback remain unchanged.
+  - **Idle recovery** (Round 19 follow-up): registered living mobs/guards/bosses
+    fully reset after 30 s calm without observed HP loss. Actual targets/actions,
+    runaway/flop, evade and shared recent boss-group activity block recovery.
+    Sample HP at the existing 1 Hz maintenance tick, all sources included;
+    reward ledgers are not combat state. Never refresh pursuit from outgoing
+    hits, never resurrect, never heal a retinue member mid-encounter.
   - **`aoc` is per entity NAME**, counted in a 128-node sphere — two
     rows of one name share a budget, per-biome tints do not. Spawn
     calibration reference: **`docs/research/wp6_spawn_budget.md`**.

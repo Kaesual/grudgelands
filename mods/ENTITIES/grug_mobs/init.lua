@@ -618,6 +618,11 @@ function grug_mobs.register_mob(name, def)
 	-- CMI have both accepted. NB any truthy do_punch return cancels.
 	local old_do_punch = def.do_punch
 	def.do_punch = function(self, hitter, tflp, tool_capabilities, dir, damage)
+		-- Close the one-second sampling boundary for grouped encounters. A
+		-- punch attempt is conservatively activity even when a later veto makes
+		-- it deal no damage; delaying a reset is safe, healing another royal or
+		-- dragon actor on the frame combat begins is not.
+		grug_mobs.touch_boss_activity(self)
 		if hitter and core.is_player(hitter) and grug_core.is_stunned(hitter)
 				and not grug_core.in_ability_punch then return true end
 		--
@@ -826,6 +831,7 @@ dofile(modpath .. "/spawn_policy.lua")
 grug_mobs.install_spawn_clock_wrapper()
 dofile(modpath .. "/levels.lua")
 dofile(modpath .. "/aggro.lua")
+dofile(modpath .. "/idle_health.lua")
 dofile(modpath .. "/flight.lua")
 dofile(modpath .. "/verbs.lua")
 dofile(modpath .. "/disposition.lua")

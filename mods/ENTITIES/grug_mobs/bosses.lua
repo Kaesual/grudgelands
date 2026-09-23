@@ -161,6 +161,7 @@ local function settle_boss(id, self, race)
 	local pos = self.object and self.object:get_pos()
 	if not row or not pos then
 		ledgers[id] = nil
+		grug_mobs.clear_boss_activity(id)
 		return
 	end
 	local now = os.time()
@@ -188,10 +189,14 @@ local function settle_boss(id, self, race)
 		end
 	end
 	ledgers[id] = nil
+	grug_mobs.clear_boss_activity(id)
 end
 
 function grug_mobs.boss_attempt_reset(id)
-	if id then ledgers[id] = nil end
+	if id then
+		ledgers[id] = nil
+		grug_mobs.clear_boss_activity(id)
+	end
 end
 
 function grug_mobs.boss_leash_reset(self)

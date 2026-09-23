@@ -1000,3 +1000,24 @@ Bosses/retinue, fixed guards, camp-owned mobs and location-bound rares keep thei
 existing encounter/post lifecycle and bounds. No additional terrain is loaded
 to preserve a distant target. Player participation/credit rules remain separate.
 Friendly guard healing stays deferred; current healing targets remain players.
+
+## Out-of-combat mob recovery (Round 19 follow-up)
+
+Living registered world mobs, guards and bosses recover to full HP after 30
+continuous seconds of genuine idle time, rather than incremental regeneration.
+This supplements the existing immediate full heal on a confirmed leash reset.
+It never revives dead entities or changes damage, resistance or pursuit rules.
+
+Use the existing one-second mob maintenance cadence. Observe actual entity HP:
+any decrease, regardless of source, restarts quiet time. An attack target,
+attack state, flight/flop, evade, or pending boss attack blocks idle recovery.
+Only calm standing/walking qualifies; temporary target gaps cannot immediately
+heal. Initialize a fresh quiet period on activation; clocks remain runtime-only.
+
+Members of one boss encounter share recent activity, including king/retinue and
+boss summons. A fighting or newly damaged member blocks the others' idle heal,
+even when a following guard temporarily has no target. Use runtime activity
+timestamps, not the reward-participation ledger (which can remain after combat).
+No additional proximity scan or pathfinding is required. The full-heal operation
+uses the existing reset transaction, retaining health bookkeeping, tag cleanup,
+boss action cancellation and encounter ownership rules.
