@@ -61,6 +61,8 @@ only positions scale with zoom; clipping and scroll translate image and markers
 together. Hover/click bounds remain aligned. No clustered/offset markers.
 Native scrolling does not itself trigger live-form rebuilds; actual changed
 marker state is refreshed at most twice per second with current scroll values.
+While scroll changes continue, defer a live rebuild until a short 0.5-second
+quiet interval; pending marker changes must still appear afterward.
 
 ## Native minimap (Round 18)
 

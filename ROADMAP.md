@@ -1,5 +1,9 @@
 # Roadmap — Grudgelands
 
+Active fix round: [Round 19](docs/research/round19-plan.md), whole-atlas
+zoom/scroll and focused menu/HUD corrections. User-approved; implementation and
+independent review are tracked in [execution](docs/research/round19-execution.md).
+
 Technically complete: [Round 18](docs/research/round18-completion.md), playtest
 clarity, action icons, complete regional atlas coverage, population/pursuit,
 progression/tools and preparation/arrival fixes. Independent reviews and final
