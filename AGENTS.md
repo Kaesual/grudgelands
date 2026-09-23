@@ -29,7 +29,7 @@ Research and historical evidence: **[docs/research/README.md](docs/research/READ
   ordinary implementation/review uses native Sol, with native Astra allowed for
   hard/performance-critical work. This session restriction can change only by
   a later explicit user instruction. Durable active work state:
-  `docs/maintenance/documentation-round.md` (current approved work).
+  `docs/research/pregen-scan-budget-plan.md` (current approved follow-up).
 
 ## Fresh-server development mode
 
@@ -67,12 +67,12 @@ Research and historical evidence: **[docs/research/README.md](docs/research/READ
 
 ## Active work and game status
 
-The user approved a documentation-only consolidation round on 2026-09-23.
-Completed with independent Astra review; receipt and remaining findings:
-[documentation round](docs/maintenance/documentation-round.md).
-Do not change game code, media, reference pins or root README in this round.
-README is owned by another agent; hand off proposed edits. Root Astra coordinates
-native Sol topic reviews and Astra world/final reviews; no Claude task is authorized.
+The user approved testing a larger full-preparation surface-scan budget on
+2026-09-23, with explicit verification that later on-demand cave generation is
+unaffected. Current contract: [budget follow-up](docs/research/pregen-scan-budget-plan.md).
+Root Astra coordinates native Astra implementation/measurement and independent
+Sol review. No Claude task is authorized. The previous documentation-only round
+is complete: [receipt](docs/maintenance/documentation-round.md).
 
 Game delivery and pending acceptance: [project status](docs/STATUS.md).
 Round 19 and follow-ups are locally delivered; GUI acceptance remains user-run.

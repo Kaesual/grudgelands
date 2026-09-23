@@ -23,7 +23,9 @@ local attempts, retry_at, elapsed, samples = 0, 0, 0, 0
 local clock, accumulator, notification_elapsed = 0, 0, 0
 -- UI updates remain at 5 Hz; work may resume on the next server step.
 local WORK_INTERVAL, NOTIFY_INTERVAL = 0.02, 0.2
-local SCAN_BUDGET_US, SCAN_BATCH, SCAN_LIMIT = 4000, 16, 8192
+-- Only unfinished full preparation scans columns; ready worlds and starts-only
+-- preparation never enter this budgeted branch or alter on-demand emergence.
+local FULL_PREPARATION_SCAN_BUDGET_US, SCAN_BATCH, SCAN_LIMIT = 40000, 16, 8192
 local listeners, start_listeners, races = {}, {}, {}
 local notify = true
 local was_ready = false
@@ -155,7 +157,7 @@ core.register_globalstep(function(dtime)
 					persist() -- Freeze selection before its first request.
 					break
 				end
-				if core.get_us_time() - started >= SCAN_BUDGET_US then break end
+				if core.get_us_time() - started >= FULL_PREPARATION_SCAN_BUDGET_US then break end
 			end
 			tile_elapsed = tile_elapsed + (core.get_us_time()-started)/1000000
 			if scan then return end

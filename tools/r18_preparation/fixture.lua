@@ -96,9 +96,11 @@ local function boot(mode)
 	local env=setmetatable({core=api,grug_core=game,
  grug_mapgen={wp40={production_enabled=true,preparation_source=source}}},{__index=_G})
 	local loader=assert(loadfile(repo .. "/mods/CORE/grug_core/starts_preload.lua"))
+	local native_emerge=api.emerge_area
 	setfenv(loader,env);loader();callbacks.init()
+	check(api.emerge_area==native_emerge,"preparation never replaces native emergence")
 	game.register_on_preparation_progress(function() notifications=notifications+1 end)
-	return game
+	return game, api
 end
 local function settle(kind)
 	local request=pending;pending=nil
@@ -117,6 +119,8 @@ local function settle(kind)
 	end
 	in_callback=false
 end
+source={identity="unused-starts-source",tile_bounds=function() error("starts must not select surfaces") end,
+ column_bounds=function() error("starts must not scan columns") end}
 local game=boot("starts")
 check(not game.world_preparation_status().ready,"initial gate")
 callbacks.step(0.2);check(dispatches==1,"first request")
@@ -160,7 +164,7 @@ local ticks=0
 repeat ticks=ticks+1;callbacks.step(0.02) until pending or ticks==200
 check(pending,"bounded selection dispatch")
 check(columns==82*82,"every surface column visited exactly once")
-check(ticks==2,"time budget removes selection sleeps and final dispatch delay")
+check(ticks==1,"full preparation budget completes inexpensive selection in one step")
 check(notifications==0,"UI cadence independent from work cadence")
 for i=1,20 do callbacks.step(0.02) end
 check(pending and columns==82*82,"pending emerge prevents more scan or dispatch")
@@ -168,7 +172,7 @@ check(notifications==1,"coalesced initial UI update")
 callbacks.stop();settle("success");callbacks.step(1)
 check(not pending,"shutdown settling cannot dispatch")
 check(game.world_preparation_status().completed==1,"shutdown success persisted")
--- A costly source yields after a single small batch. Stopping a partial
+-- A costly source yields at the full-preparation time budget. Stopping a partial
 -- selection persists no selected interval; restart deterministically resamples.
 backing={};columns=0
 source=synthetic(function() return 20 end)
@@ -178,11 +182,11 @@ source.column_bounds=function(x,z)
  return column_bounds(x,z)
 end
 game=boot("full");callbacks.step(0.02)
-check(columns==16 and not pending,"slow source time-budget yield")
+check(columns==80 and not pending,"slow source yields at forty milliseconds")
 callbacks.stop();callbacks.step(1)
-check(columns==16,"prompt stop during partial selection")
+check(columns==80,"prompt stop during partial selection")
 game=boot("starts");callbacks.step(0.02)
-check(columns==32 and not pending,"partial selection restarts safely")
+check(columns==160 and not pending,"partial selection restarts safely")
 -- Flat clock still has a strict count ceiling, even with larger source reach.
 backing={};columns=0
 source={identity="wide-fixture",tile_bounds=function() return 20,0,0 end,
@@ -215,5 +219,41 @@ while game.world_preparation_status().completed==0 do dispatch_next();settle("su
 check(game.world_preparation_status().completed==1,"tile finishes after every Y chunk")
 source.identity="changed-authority"
 check(not pcall(function() boot("full") end),"authority mismatch refused")
-return "r18-preparation: tiles=8811 coverage budget cadence pending stop resume retry mode-lock authority=ok\n"
+-- A completed full world stays inert, including after restart. Seed only the
+-- final tile of a current-format plan rather than generating the whole world.
+source=synthetic(function() return 20 end)
+local final_plan=plan.new("full",geometry,ids)
+final_plan.cursor=final_plan.total-1
+final_plan.authority=source.identity
+serial=serial+1;serials[tostring(serial)]=clone(final_plan)
+backing={world_preparation=tostring(serial)}
+local api
+game,api=boot("full")
+dispatch_next();settle("success")
+check(game.world_preparation_status().ready,"last full tile releases gate")
+source.tile_bounds=function() error("ready full world must not select surfaces") end
+source.column_bounds=function() error("ready full world must not scan columns") end
+local function check_ready_idle_and_cave()
+ local dispatch_before=dispatches
+ for i=1,100 do callbacks.step(0.09) end
+ check(dispatches==dispatch_before and not pending,"ready full world remains idle")
+ local cave_callbacks=0
+ api.emerge_area({x=0,y=-4096,z=0},{x=15,y=-4081,z=15},function(_,action,remaining)
+  check(action==api.EMERGE_GENERATED and remaining==0,"external cave callback unchanged")
+  cave_callbacks=cave_callbacks+1
+ end)
+ check(pending.lo.y==-4096 and pending.hi.y==-4081,"external cave coordinates unchanged")
+ callbacks.step(0.09)
+ check(dispatches==dispatch_before+1,"external cave request is sole dispatch")
+ settle("success")
+ for i=1,100 do callbacks.step(0.09) end
+ check(cave_callbacks==1 and dispatches==dispatch_before+1 and not pending,
+  "external cave emergence cannot restart preparation")
+ check(game.world_preparation_status().ready and
+  game.world_preparation_status().completed==8811,"cave emergence preserves ready prefix")
+end
+check_ready_idle_and_cave()
+game,api=boot("full")
+check_ready_idle_and_cave()
+return "r18-preparation: tiles=8811 coverage budget cadence pending stop resume retry mode-lock authority ready-idle external-cave=ok\n"
 end

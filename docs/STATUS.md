@@ -12,6 +12,12 @@ Updated 2026-09-23. This is the delivery pointer, not another game specification
   [combat follow-up](research/round19-pursuit-followup.md).
 - **Technical reviews/gates:** recorded PASS for those delivered candidates;
   not a fresh certification of arbitrary later changes.
+- **Preparation performance follow-up:** a bounded 40 ms surface-selection
+  budget completed the same measured prefix in 54% less time and raised matched
+  steady CPU use from 33% to 82% of one core. The completed preparation path
+  remains inactive during later on-demand cave generation. The code-safety
+  review and compact final interpreter parity passed; integration receipt:
+  [scan-budget follow-up](research/pregen-scan-budget.md).
 - **GUI acceptance:** user-run and pending where not explicitly accepted.
   [R19 checklist](research/round19-playtest.md) plus the follow-up checklists above.
 - **Remote observation:** the local `origin/main` tracking ref is `d6937b31`,
