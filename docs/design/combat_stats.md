@@ -962,11 +962,14 @@ Startup presentation settings:
 | Critter | `grug_nametag_critter_foreground` / `#ffffff` | `grug_nametag_critter_background` / `#00000040` |
 
 `grug_injured_mob_hp_bars` defaults to `true`. Invalid colors fall back to the
-category default. Ordinary bars have a nominal world size of 0.8 by 0.1 nodes;
-parent visual scale must not magnify them. Round 19 gives the two dragons
-explicit world-space anchor/size overrides near their visible head/body for
-readability, without changing ordinary mobs/guards or adding a screen-space
-boss HUD. The sprite remains perspective-scaled. Flight visuals use a duration bounded to
+category default. Ordinary bars retain their existing dimensions and attachment
+path; Round 19 does not retune them. Round 19 gives the two dragons
+explicit world-space anchor/size overrides near their visible head/body:
+Wyrmglass at 5 nodes above origin, Stormscale at 4 nodes, each 3 by 0.25 nodes.
+For these explicit overrides, attachment position compensates parent scale,
+while billboard width/height are already world dimensions and are not divided
+by that scale.
+This changes neither ordinary mobs/guards nor adds a screen-space boss HUD. The sprite remains perspective-scaled. Flight visuals use a duration bounded to
 0.05–2 seconds, so near-zero partial bow draws never cause long pursuit.
 
 ## Round 18 pursuit policy

@@ -1052,13 +1052,13 @@ tier-1 talent 6 ranks and group 1 goes red; make the `arm_cooldown` read
 default to 1 instead of 0 and group 8 goes red; let a window key leak past its
 expiry and group 7 goes red.
 
-`tools/wp11/talent_ui_kat.lua` loads the real model and page. It covers the
-select-then-buy interaction, budget/tier/prerequisite refusals, free-first and
-charged respecs through the public money API, the guarded level-up notice,
-numeric-field ownership, navigation order, formspec escaping, talent-data
-tooltips and the raw/effective/cap render. It runs byte-identically under both
-interpreters; changing the first-respec test from unused to used makes its
-free-first assertion fail.
+`tools/wp11/talent_ui_kat.lua` is historical pre-Round-19 evidence for the
+former select-then-buy interaction and raw/effective/cap header, alongside
+budget/tier/prerequisite, respec and escaping checks. It is not a current UI
+acceptance gate. Round 19's `tools/r19_ui/fixture.lua` loads the real talent
+model and page to verify first-click purchases, refusal paths, concise UI and
+serialized text/layout; `tools/r19_final/micro.lua` includes it in the bounded
+final interpreter-parity gate. Respec authorization and costs remain unchanged.
 
 ### 3.8 What changes where
 
