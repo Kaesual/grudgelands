@@ -13,7 +13,8 @@ end
 
 local function item_label(name)
 	local def = core.registered_items[name]
-	return def and def.description ~= "" and def.description or name
+	local description = def and def.description ~= "" and def.description or name
+	return description:match("^[^\n]+") or name
 end
 
 local function mob_label(name)

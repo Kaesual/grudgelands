@@ -155,9 +155,9 @@ local function talent_content(player, context)
 	for index, candidate in ipairs(trees) do
 		local label = candidate.name .. " " ..
 			grug_classes.tree_points(player, candidate.id)
-		if tree and candidate.id == tree.id then
-			label = "> " .. label
-		end
+		local field = "grug_talent_tree_" .. index
+		fs[#fs + 1] = grug_inventory.selected_button_style(field,
+			tree and candidate.id == tree.id)
 		fs[#fs + 1] = ("button[%.2f,2.10;2.10,0.60;grug_talent_tree_%d;%s]")
 			:format(0.2 + (index - 1) * 2.25, index, esc(label))
 	end
@@ -198,9 +198,7 @@ local function talent_content(player, context)
 				local rank = grug_classes.talent_rank(player, def.id)
 				local label = ("T%d %s%s %d/%d"):format(tier, def.name,
 					talent_mark(def), rank, def.ranks)
-				if context.grug_talent_selected == def.id then
-					label = "> " .. label
-				end
+				local selected = context.grug_talent_selected == def.id
 				local available, reason = grug_classes.can_spend_talent(player, def.id)
 				if available then
 					local field_index
@@ -210,6 +208,8 @@ local function talent_content(player, context)
 							break
 						end
 					end
+					fs[#fs + 1] = grug_inventory.selected_button_style(
+						"grug_talent_pick_" .. field_index, selected)
 					fs[#fs + 1] = ("button[%.2f,%.2f;6.05,0.65;grug_talent_pick_%d;%s]")
 						:format(x, y, field_index, esc(label))
 				else

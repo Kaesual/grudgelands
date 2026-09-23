@@ -288,6 +288,8 @@ function grug_gear.describe_stack_base(stack, ilvl)
 			lines[#lines + 1] = core.colorize(STAT_COLOR, weapon_stats(damage,
 				base_caps.full_punch_interval or 1.4, def._grug_hands or 1))
 		end
+		lines[#lines + 1] = core.colorize(STAT_COLOR,
+			"Equip in Character > Weapon; attack with a hotbar combat skill")
 		return lines, {damage = damage,
 			full_punch_interval = base_caps.full_punch_interval or 1.4}
 	end
@@ -472,7 +474,8 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 		if w.bow then image = BOW_IMAGE[bracket] end
 		core.register_tool(itemname, {
 			description = describe(metal.name, w.noun, br.ilvl,
-				weapon_stats(damage, w.fpi, w.hands)),
+				weapon_stats(damage, w.fpi, w.hands) ..
+				"\nEquip in Character > Weapon; attack with a hotbar combat skill"),
 			-- One sprite per family AND material, all in the one diagonal
 			-- convention (grip bottom-left) the wield transform is derived for.
 			inventory_image = image,
@@ -609,7 +612,8 @@ core.register_on_mods_loaded(function()
 			if type(damage) == "number" and damage > 0 then
 				local label = ((def.description or itemname):gsub("\n.*", ""))
 				local stat_line = weapon_stats(damage,
-					caps.full_punch_interval or 1.4, def._grug_hands or 1)
+					caps.full_punch_interval or 1.4, def._grug_hands or 1) ..
+					"\nEquip in Character > Weapon; attack with a hotbar combat skill"
 				core.override_item(itemname, {
 					description = describe(label, nil, def._grug_ilvl, stat_line),
 				})

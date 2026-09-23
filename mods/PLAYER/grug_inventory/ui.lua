@@ -3,6 +3,19 @@
 grug_inventory.UI = {width = 10.4, height = 11.1, inventory_y = 7.2,
 	content_bottom = 7.0}
 
+-- Shared selection treatment for page-local buttons. The selected state has
+-- both a gold tint and a border; the unselected state has neither, so the
+-- distinction remains visible without relying on colour alone.
+function grug_inventory.selected_button_style(fieldname, selected)
+	local field = core.formspec_escape(tostring(fieldname or ""))
+	if selected then
+		return ("style[%s;bgcolor=#8a682f;bgcolor_hovered=#a77f3b;" ..
+			"bgcolor_pressed=#6f5427;border=true]"):format(field)
+	end
+	return ("style[%s;bgcolor=#3d3d3d;bgcolor_hovered=#505050;" ..
+		"bgcolor_pressed=#303030;border=false]"):format(field)
+end
+
 function grug_inventory.wrap_text(value, width)
 	width = width or 58
 	local lines = {}
@@ -27,6 +40,8 @@ function sfinv.make_formspec(player, context, content, show_inv, size)
 	local parts = {size or "size[10.4,11.1]",
 		sfinv.get_nav_fs(player, context, context.nav_titles, context.nav_idx)}
 	if show_inv then
+		parts[#parts + 1] = "box[1.12,7.12;8.16,1.16;#8a682f44]" ..
+			"label[0.18,7.48;Hotbar]"
 		for index = 0, 7 do
 			parts[#parts + 1] = ("image[%.1f,7.2;1,1;gui_hb_bg.png]"):format(1.2 + index)
 		end

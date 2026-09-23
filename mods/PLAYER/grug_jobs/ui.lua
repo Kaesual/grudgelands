@@ -560,6 +560,7 @@ end
 function grug_jobs.crafting_page_content(player)
 	local fs = {
 		"label[0.05,0.15;Recipe books]",
+		"textarea[6.85,0.35;3.25,1.0;;;Start with Basics. Select a book, then choose a recipe to see its ingredients and station.]",
 		"list[current_player;craft;1.75,0.5;3,3;]",
 		"list[current_player;craftpreview;5.75,1.5;1,1;]",
 		"image[4.75,1.5;1,1;sfinv_crafting_arrow.png]",
