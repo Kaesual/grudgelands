@@ -797,7 +797,9 @@ function grug_abilities.register_ability(def)
 			or "no cooldown"
 	end
 	local itemname = "grug_abilities:" .. def.id
+	local skill_icon = "grug_abilities_skill_" .. def.id .. ".png"
 	item_defs[itemname] = def
+	def._grug_skill_icon = skill_icon
 	def._grug_owner_line = owner_line
 	def._grug_timing_line = cd_line
 	def._grug_description_prefix = grug_abilities.description_prefix(nil, def)
@@ -807,8 +809,8 @@ function grug_abilities.register_ability(def)
 		-- wording deliberately contains no damage/heal/absorb number, so a stack
 		-- without player context can never advertise a false value.
 		description = def._grug_description_prefix .. def.description,
-		inventory_image = "grug_abilities_orb.png^[multiply:" .. def.color,
-		wield_image = "grug_abilities_orb.png^[multiply:" .. def.color,
+		inventory_image = skill_icon,
+		wield_image = skill_icon,
 		range = def.range or 4,
 		stack_max = 1,
 		groups = {grug_ability = 1, grug_bound_skill = 1, not_in_creative_inventory = 1},
@@ -1652,29 +1654,9 @@ function grug_abilities.try_cast(user, def, pointed_thing)
 end
 
 --
--- Ability item skins (weapon-slot design C1-C4). Every ability item wears the
--- item that sits in its slot: a Warrior with a sword equipped holds HIS sword
--- no matter which ability is selected, and swapping the weapon swaps all four
--- icons at once. The mechanism is the per-stack meta override of A1
--- (lua_api.md:2929-2949, src/inventory.cpp:258-295) -- no new item
--- registrations, no new asset, no engine patch.
---
--- C3 (a), the orb backdrop: the hotbar icon is the tinted orb DIMMED, with the
--- weapon art composited on top, so the colour the eye already learned stays a
--- large area. The wield (in-hand) image is the weapon art ALONE -- a glowing
--- disc extruded into a slab in the player's hand is exactly the "round thing"
--- this work removes.
---
--- C2, empty slot: the meta keys are simply NOT written, so the item definition's
--- own tinted orb shows through and a character without a weapon looks exactly
--- like the game did before this. An empty slot makes skills weak, never
--- uncastable.
---
-
-local ORB_TEXTURE = "grug_abilities_orb.png"
--- Alpha of the backdrop, 0..255. Dimmed so the weapon on top stays the thing
--- you read first; the hue still carries the ability identity.
-local ORB_BACKDROP_ALPHA = 150
+-- Ability item presentation. Inventory, hotbar and catalogue resolve the
+-- registered semantic skill icon. The per-stack wield override alone follows
+-- the equipped hand item, preserving first/third-person weapon authority.
 
 -- The skin token: what a stack has to say about itself so a sync can decide, in
 -- ONE string compare, that it is already correct. Load-bearing, not polish --
@@ -1682,24 +1664,13 @@ local ORB_BACKDROP_ALPHA = 150
 -- cooldown-wear path above is so stingy (D2/2). Without it, dragging any item
 -- would rewrite four stacks.
 --
--- Shape: "<version>|<colour>|<inventory source>|<wield source>", or the empty
+-- Shape: "<version>|<wield source>", or the empty
 -- string for "no skin" (which is also what an untouched stack answers, so a
 -- weaponless character never writes anything).
 --
--- EVERY input of the composition below is in the token, and that is the whole
--- rule: the source images rather than just the item NAME (a per-stack image
--- override on the weapon -- a WP5 affix -- must not read as unchanged), and
--- def.color, because it lives in kits.lua, i.e. in a different file from the
--- SKIN_VERSION a colour edit would otherwise have to remember to bump. Without
--- it, changing an ability's colour left every already-granted stack tinted the
--- old way until the player next swapped weapons -- indefinitely, for a
--- character that keeps one sword.
---
--- SKIN_VERSION stays for what the token cannot see: a change to the
--- composition ITSELF (the modifier chain, the backdrop alpha, the orb
--- texture). Bump it there, or an already-granted stack keeps the old look
--- forever.
-local SKIN_VERSION = 2
+-- The resolved source rather than just the item name is included because a
+-- per-stack wield override must update an already-granted ability stack.
+local SKIN_VERSION = 3
 local SKIN_TOKEN_KEY = "grug_skin"
 
 -- The equipment list behind each ability slot. This is grug_inventory's
@@ -1746,8 +1717,7 @@ local function def_image(img)
 	return img or ""
 end
 
--- The two source images of what is in one hand slot: the one the hotbar icon is
--- composed from and the one that goes into the player's hand. Both "" when
+-- The wield source image of what is in one hand slot. Empty when
 -- there is nothing to wear (an empty slot, or an item with no inventory image
 -- -- a node item). Mirrors the engine's own resolution order: stack meta wins
 -- over the definition (src/inventory.cpp:258-295).
@@ -1758,7 +1728,7 @@ end
 -- (src/client/wieldmesh.cpp:454-493). No shipped weapon defines one today --
 -- taking the inventory image is correct for every one of them -- but the day
 -- one does, the ability item would have shown the wrong art in hand.
-local function slot_sources(player, slot)
+local function slot_source(player, slot)
 	local stack
 	if slot == "offhand" then
 		stack = grug_core.get_equipped_offhand(player)
@@ -1766,46 +1736,31 @@ local function slot_sources(player, slot)
 		stack = grug_core.get_equipped_weapon(player)
 	end
 	if not stack or stack:is_empty() then
-		return "", ""
+		return ""
 	end
 	local def = core.registered_items[stack:get_name()]
 	local meta = stack:get_meta()
-	local inv_src = meta:get_string("inventory_image")
-	if inv_src == "" then
-		inv_src = def_image(def and def.inventory_image)
+	local inventory_src = meta:get_string("inventory_image")
+	if inventory_src == "" then
+		inventory_src = def_image(def and def.inventory_image)
 	end
-	if inv_src == "" then
+	if inventory_src == "" then
 		-- Nothing to wear: an item the inventory itself cannot draw has no art
-		-- for us to borrow either, so the ability keeps its orb (C2).
-		return "", ""
+		-- for us to borrow either, so the registered skill icon remains.
+		return ""
 	end
 	local wield_src = meta:get_string("wield_image")
 	if wield_src == "" then
 		wield_src = def_image(def and def.wield_image)
 	end
 	if wield_src == "" then
-		wield_src = inv_src
+		wield_src = inventory_src
 	end
-	return inv_src, wield_src
+	return wield_src
 end
 
--- THE one place a texture-modifier string is composed (D2/5). These strings are
--- parsed CLIENT-side: a malformed one yields a generateImagePart error and an
--- untextured icon, not a server error, so there is exactly one site to get
--- right and no second one to drift from it.
---
--- Returns inventory_image, wield_image -- or nil, nil when there is nothing to
--- wear, which is the caller's signal to remove the overrides (C2).
---
--- Escaping: `src` is wrapped in `^( ... )` rather than backslash-escaped.
--- generateImage splits on top-level `^` only, tracking parentheses
--- (src/client/imagesource.cpp:1819-1847), so a source image that carries its
--- own modifier -- every grug_gear weapon does, they are tinted per bracket --
--- composes correctly as a group. Backslash escaping (lua_api.md:698-708) is
--- required only by modifiers that take a texture NAME as an argument
--- ([combine, [mask, [lowpart); we use none of those.
-
--- Would this source survive that splitter? Three inputs do not, and the source
+-- Would this source survive the client's image-source splitter? Three inputs
+-- do not, and the source
 -- is NOT ours: it is a per-stack override, i.e. exactly the key WP5's affix
 -- roller is planned to write. Verified against the engine
 -- (src/client/imagesource.cpp:1819-1866, the backwards scan):
@@ -1849,35 +1804,27 @@ local function reject_source(src, which)
 		core.log("error", "[grug_abilities] equipped item's " .. which ..
 			" image cannot be composed into an ability skin: \"" .. src ..
 			"\" (unbalanced parentheses, or a trailing backslash that would" ..
-			" escape the closing one). The ability items keep their orb icon.")
+			" escape the closing one). The ability item keeps its skill icon.")
 	end
 	return nil, nil
 end
 
-local function skin_images(color, src)
-	if src.inv == "" then
-		return nil, nil
+local function skin_wield_image(src)
+	if src == "" then
+		return nil
 	end
-	-- Refuse the WHOLE skin when either source is bad, not just the broken half:
-	-- the orb is a complete, correct look (C2), a sword icon over an untextured
-	-- hand is not. The wield source is emitted UNWRAPPED and therefore only
-	-- needs the two balance rules -- it gets the trailing-backslash rule too,
-	-- because one predicate slightly too strict beats two that can drift.
-	if not composable(src.inv) then
-		return reject_source(src.inv, "inventory")
+	if not composable(src) then
+		reject_source(src, "wield")
+		return nil
 	end
-	if not composable(src.wield) then
-		return reject_source(src.wield, "wield")
-	end
-	return ORB_TEXTURE .. "^[multiply:" .. color ..
-		"^[opacity:" .. ORB_BACKDROP_ALPHA .. "^(" .. src.inv .. ")", src.wield
+	return src
 end
 
-local function skin_token(color, src)
-	if src.inv == "" then
+local function skin_token(src)
+	if src == "" then
 		return ""
 	end
-	return SKIN_VERSION .. "|" .. color .. "|" .. src.inv .. "|" .. src.wield
+	return SKIN_VERSION .. "|" .. src
 end
 
 -- Skin one ability stack IN PLACE; returns true only when something actually
@@ -1887,14 +1834,16 @@ end
 -- and stays whatever it was, and so does the elf `range` override.
 local function apply_skin(stack, def, src)
 	local meta = stack:get_meta()
-	local token = skin_token(def.color, src)
+	local token = skin_token(src)
 	if meta:get_string(SKIN_TOKEN_KEY) == token then
 		return false
 	end
-	local inv_img, wield_img = skin_images(def.color, src)
-	-- Writing "" REMOVES the key (same as the `range` override below), which is
-	-- how the empty slot gets back to the definition's own orb.
-	meta:set_string("inventory_image", inv_img or "")
+	local wield_img = skin_wield_image(src)
+	-- Inventory and catalogue presentation always resolve from the registered
+	-- semantic skill icon. Only the wield override follows the equipped item.
+	-- Writing "" removes old weapon-overlay metadata and restores the registered
+	-- icon for an empty slot.
+	meta:set_string("inventory_image", "")
 	meta:set_string("wield_image", wield_img or "")
 	meta:set_string(SKIN_TOKEN_KEY, token)
 	return true
@@ -1997,8 +1946,7 @@ local function skin_source_cache(player)
 	return function(def)
 		local src = cache[def.slot]
 		if not src then
-			local inv_src, wield_src = slot_sources(player, def.slot)
-			src = {inv = inv_src, wield = wield_src}
+			src = slot_source(player, def.slot)
 			cache[def.slot] = src
 		end
 		return src

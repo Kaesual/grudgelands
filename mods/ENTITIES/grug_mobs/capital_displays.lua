@@ -73,6 +73,18 @@ local function valid_saved(data)
    data._grug_display_tag=="jewel")
 end
 
+local function remove_display_tag(self)
+ if not self._grug_tag_carrier then return end
+ grug_core.remove_tag_carrier(self._grug_tag_carrier)
+ self._grug_tag_carrier=nil
+end
+
+local function configure_display_tag(self,text)
+ local carrier=grug_core.create_tag_carrier(self.object)
+ self._grug_tag_carrier=carrier
+ if carrier then grug_core.set_tag_carrier_text(carrier,text) end
+end
+
 function grug_mobs.configure_capital_display(self)
  if not self._grug_display_tag then return end
  if self._grug_socket_role=="mount_display" then
@@ -82,8 +94,8 @@ function grug_mobs.configure_capital_display(self)
    (tier==3 and "expert_" or "master_")..faction
   local model=assert(grug_mounts.MODELS[key],"capital mount appearance missing")
   self.object:set_properties({visual="mesh",mesh=model.mesh,textures=model.textures,
-   visual_size=model.visual_size,collisionbox=model.collisionbox,
-   nametag=model.description})
+   visual_size=model.visual_size,collisionbox=model.collisionbox,nametag=""})
+  configure_display_tag(self,model.description)
   local pos=self.object:get_pos()
   local foot_y=tier<=2 and ground_foot_y(key) or assert(FOOT_Y[key])
   pos.y=assert(self._grug_display_floor)+0.02-foot_y
@@ -98,6 +110,7 @@ function grug_mobs.configure_capital_display(self)
   self._grug_display_pause=math.max(0,tonumber(self._grug_display_pause) or WALK_PAUSE)
   display_animation(self,"stand")
  else
+  remove_display_tag(self)
   local tag=self._grug_display_tag
   local item=tag=="weapon" and grug_gear.weapon_item("sword",1) or
    tag=="armor" and grug_gear.armor_item("chest","metal",1) or
@@ -161,6 +174,7 @@ core.register_entity("grug_mobs:capital_display",{
   display_animation(self,"move")
  end,
  on_deactivate=function(self,removal)
+  remove_display_tag(self)
   grug_mobs.start_npc_deactivate(self,removal)
  end,
  on_punch=function() return true end,
