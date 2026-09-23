@@ -113,8 +113,7 @@ craftable only with the Improved Boat unlock.
 - **Speed is the boat entity's velocity, never `physics_override.speed`** —
   the same rule and the same reason as `mounts.md` §3: that field has exactly
   one owner, the `grug_core` movement aggregator (ruling 11, 2026-09-16), and
-  must not gain a second. *(This sentence used to say "two owners"; there were
-  in fact three until the aggregator absorbed them.)*
+  must not gain a second.
 - The player attaches to the boat, steers with the ordinary movement
   controls, and accelerates and brakes rather than snapping to top speed.
 - Boats move on water only. They have no currents to fight, no fuel and no
@@ -158,8 +157,10 @@ are owned by `world.md` §2b. What matters for a boat:
   (`world.md` §2b, `combat_stats.md` §4) — so hugging the coast is safe
   travel but the shelf edge is not a safe firing position.
 - **Deep ocean is not survivable in a boat.** The Kraken Guard is faster than
-  the improved boat and does not give up while both stay in deep ocean.
-  Crossing open sea is a deliberate death, not a shortcut.
+  the base boat, but its revised 5 nodes/s is below the improved boat's 8
+  (`biomes_mobs.md` §3.1). The intended deadly deep-sea role relies on the
+  authored view range, reach and relentless pursuit, not the superseded 8.8
+  speed target. Boat-system acceptance must still validate that danger.
 - **The dragon channels are required boat routes and carry no Kraken.** Both
   96-node approaches to either island (`world_zones.md` §7) are ordinary safe
   water for a boat at any level; the level-60 island itself is the gate.

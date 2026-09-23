@@ -3,7 +3,7 @@
 Decided 2026-09-21; surface-selection revision approved 2026-09-22 (Round 16).
 
 
-### Confirmed by the user
+### Preparation modes and readiness
 
 - Option B only: preparation before players enter normal gameplay. No background
   idle-generation mode and no separately implemented LuaJIT world writer.
@@ -121,7 +121,7 @@ its live terrain/layout constructors and selection adapters. This is calculated
 once at load and excludes engine-assigned content IDs; unchanged restarts must
 remain stable, while changed terrain or selection semantics reject reuse.
 
-## Round 18 scheduling and waiting
+## Scheduling and waiting
 
 Use bounded productive work without artificial selection pauses; decouple UI
 notification cadence from scheduler work. Preserve the surface envelope, one
