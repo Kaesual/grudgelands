@@ -36,6 +36,12 @@ setfenv(assert(loadfile(repo.."/mods/ENTITIES/mobs/api.lua")),api_env)()
 dofile(repo.."/mods/ENTITIES/grug_mobs/aggro.lua")
 dofile(repo.."/mods/ENTITIES/grug_mobs/idle_health.lua")
 local native=api_env.mobs.mob_class
+-- init.lua's registration wrapper runs in `env`, while the vendored API was
+-- intentionally loaded in the separate `api_env`. Mirror the real inherited
+-- method into the registration environment before any fixture mob is
+-- registered; otherwise a combined runner's environment order can leave the
+-- mock class empty even though `native.do_attack` was loaded successfully.
+env.mobs.mob_class.do_attack=assert(native.do_attack)
 local a=f.new_player("pursuer","mage","accord")
 local b=f.new_player("rival","mage","accord")
 function a:get_luaentity() return nil end
@@ -77,14 +83,19 @@ gm.clear_boss_activity("test:encounter")
 -- prototype seam must publish before a calm peer reaches the t=30 boundary.
 local acquiring=mob(); acquiring._grug_boss_id="test:acquire"
 local acquire_peer=mob(); acquire_peer._grug_boss_id="test:acquire"
+acquiring.health=40; acquire_peer.health=40
 clock(0); gm.idle_health_tick(acquiring); gm.idle_health_tick(acquire_peer)
 clock(29); gm.idle_health_tick(acquiring); gm.idle_health_tick(acquire_peer)
 core.registered_entities["test:boss_activity"].do_attack(acquiring,a)
+assert(gm.boss_recently_active(acquire_peer,29,30),
+ "registered acquisition must publish group activity")
 clock(30)
+assert(gm.boss_recently_active(acquire_peer,30,30),
+ "group activity must survive through peer boundary")
 assert(not gm.idle_health_tick(acquire_peer) and acquire_peer.health==40,
  "post-sample acquisition must block peer boundary reset")
 assert(not acquiring.temp.grug_damage_at,
- "boss acquisition seam must not write pursuit damage clock")
+	"boss acquisition activity must not write pursuit damage clock")
 gm.clear_boss_activity("test:acquire")
 mobs.spawn=noop
 dofile(repo.."/mods/ENTITIES/grug_mobs/zombie.lua")
