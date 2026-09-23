@@ -3,3 +3,4 @@ r18_preparation/fixture.lua
 r18_evade/micro.lua
 r18_populations/policy_fixture.lua
 r18_ux/fixture.lua
+r18_xp/micro.lua

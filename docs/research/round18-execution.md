@@ -56,9 +56,9 @@ Do not rerun Round 17 gates. Native Sol default; Astra complex lanes and art.
 | D evade | r18_evade / Astra | integrated fbca258a; review pending | aggro / combat hooks |
 | C populations/quests | r18_populations / Sol | integrated c86621c4; review pending | spawn_policy / species / quest content |
 | A inventory/trainer UX | r18_ux / Sol | integrated 0e67a78b; review pending | inventory/jobs/skills UI |
-| E XP/level-up | r18_xp / Sol | running /tmp/grug-r18-xp | XP/stats/resource callback |
+| E XP/level-up | r18_xp / Sol | integrated 486878ab; review pending | XP/stats/resource callback |
 | B atlas/minimap | r18_map / Sol | running /tmp/grug-r18-map | map module/media |
-| F waiting/creation | Sol | queued | selection/faction gates |
+| F waiting/creation | r18_waiting / Sol | running /tmp/grug-r18-waiting | selection/faction gates |
 | H1 icon art | r18_art / Astra | running /tmp/grug-r18-art | icon assets/manifest/gallery |
 | H2 icons/tags integration | Sol | queued after E/H1 | ability image seam/displays |
 | I light preflight | root Astra | deferred before implementation | round18-light-preflight.md |
