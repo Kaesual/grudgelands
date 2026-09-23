@@ -52,6 +52,10 @@ return function(engine, catalog, harvest)
 		local concentrated_group = row.concentrated_family == "pick" and "cracky" or
 			(row.concentrated_family == "axe" and "choppy" or "crumbly")
 		groups[concentrated_group] = groups[concentrated_group] or 3
+		if row.ordinary_family == "shovel" or
+				row.concentrated_family == "shovel" then
+			groups.grug_loose = 3
+		end
 		engine.register_node(row.source_node,
 			source_definition(row, groups, true))
 		registered_nodes[#registered_nodes + 1] = row.source_node

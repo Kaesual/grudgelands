@@ -21,6 +21,14 @@ return function(repo)
 	function core_api.register_tool(name, def)
 		core_api.registered_items[name] = def
 	end
+	function core_api.register_node(name, def)
+		name = name:gsub("^:", "")
+		core_api.registered_items[name] = def
+		core_api.registered_nodes[name] = def
+	end
+	core_api.register_craftitem = function(name, def)
+		core_api.registered_items[name] = def
+	end
 	core_api.get_modpath = function() return nil end
 	core_api.register_on_leaveplayer = function() end
 	core_api.register_on_mods_loaded = function(fn) callbacks[#callbacks + 1] = fn end
@@ -32,6 +40,8 @@ return function(repo)
 	core_api.chat_send_player = function() end
 	core_api.sound_play = function() end
 	core_api.add_particlespawner = function() end
+	default = {node_sound_stone_defaults=function() return {} end,
+		node_sound_leaves_defaults=function() return {} end}
 
 	grug_materials = {}
 	dofile(repo .. "/mods/ITEMS/grug_materials/registry.lua")
@@ -154,6 +164,46 @@ return function(repo)
 			override_time)
 		lines[#lines + 1] = key .. "=" .. expected_uses[index]
 	end
+
+	-- Load the actual cross-mod cultural catalog, authorization and node
+	-- registrar after final tools, matching the production dependency order.
+	local catalog = dofile(repo .. "/mods/ITEMS/grug_gathering/catalog.lua")
+	local gathering_harvest = dofile(
+		repo .. "/mods/ITEMS/grug_gathering/harvest.lua")({
+		core=core_api, materials=grug_materials})
+	dofile(repo .. "/mods/ITEMS/grug_gathering/nodes.lua")(
+		core_api, catalog, gathering_harvest)
+	local cultural = {}
+	for _, row in ipairs(catalog.cultural_sources()) do cultural[row.key] = row end
+	local red = assert(core_api.registered_nodes[cultural.red_ochre.source_node])
+	local salt = assert(core_api.registered_nodes[cultural.gravesalt.source_node])
+	assert(red.groups.grug_loose == 3 and red.groups.crumbly == 3)
+	assert(salt.groups.grug_loose == 3 and salt.groups.crumbly == 3 and
+		salt.groups.cracky == 3)
+	local t4_shovel = core_api.registered_items["grug_materials:shovel_silversteel"]
+	local t3_pick = core_api.registered_items["default:pick_steel"]
+	local t4_pick = core_api.registered_items["grug_materials:pick_silversteel"]
+	assert(core_api.get_dig_params(red.groups,
+		t4_shovel.tool_capabilities).diggable)
+	assert(core_api.get_dig_params(salt.groups,
+		t4_shovel.tool_capabilities).diggable)
+	local zone = "ordinary"
+	grug_zones = {id_at=function() return zone end}
+	local function player(def)
+		return {is_player=function() return true end,
+			get_player_name=function() return "fixture" end,
+			get_wielded_item=function() return {is_empty=function() return false end,
+				get_definition=function() return def end} end}
+	end
+	assert(red.can_dig({x=0,z=0}, player(t4_shovel)))
+	assert(salt.can_dig({x=0,z=0}, player(t4_shovel)))
+	zone = cultural.red_ochre.concentrated_zone
+	assert(red.can_dig({x=0,z=0}, player(t4_shovel)))
+	assert(not red.can_dig({x=0,z=0}, player(t4_pick)))
+	zone = cultural.gravesalt.concentrated_zone
+	assert(not salt.can_dig({x=0,z=0}, player(t4_shovel)))
+	assert(not salt.can_dig({x=0,z=0}, player(t3_pick)))
+	assert(salt.can_dig({x=0,z=0}, player(t4_pick)))
 	local shallow = grug_materials.mining_decision({x=0,y=-101,z=0},
 		{name="default:stone_with_gold"}, {is_player=function() return true end,
 		get_player_name=function() return "fixture" end,get_wielded_item=function()
@@ -169,5 +219,6 @@ return function(repo)
 		end})
 	assert(harvest.reason == "shatter" and harvest.resource_harvest_tier == 2)
 	return "r18-tools: " .. table.concat(lines, ",") ..
-		" loose=shovel/pick2x solids=denied depth=denied harvest=shatter stack=override"
+		" loose=shovel/pick2x solids=denied depth=denied harvest=shatter stack=override" ..
+		" cultural=ordinary+concentrated family+tier"
 end
