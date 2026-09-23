@@ -11,7 +11,8 @@ stat, entitlement, inventory or respec rule.
   same-level reduction, effective Crit, effective Dodge and money. The former
   pool/armor derivation block and its duplicate armor summary are gone.
 - Help retains the general pool and attribute formulas and now owns the cap and
-  armor-rating explanations. Its assembled text remains formspec-escaped.
+  armor-rating explanations without referring to removed Character formula
+  lines. Its assembled text remains formspec-escaped.
 - Talents no longer presents Crit, Dodge or Armor. The freed header space moves
   the tree upward and enlarges the wrapped description area.
 - One click on an available talent buys exactly one rank. The callback binds a

@@ -206,7 +206,7 @@ sfinv.register_page("grug_inventory:help", {
 			"Visit city profession trainers for specialized crafts and equipment repair. Riding trainers in capital stables teach riding. Cooking has its own recipe book; new profession recipes stay in their profession's book.",
 			"Character formulas",
 			"Base pool = 20 + 5 x level + 0.66 x level squared (rounded).",
-			"The Character pool lines read maximum = B x C x (100 + G + T + S)%, where B is the base pool, C the class factor, G the gear percentage, T the talent percentage and S the active status percentage.",
+			"Maximum pools use B x C x (100 + G + T + S)%, where B is the base pool, C the class factor, G the gear percentage, T the talent percentage and S the active status percentage.",
 			"Caster mana uses the neutral base pool, then adds mana percentages. Rage is always 0-100.",
 			"Strength adds floor(Strength / 10) as flat melee damage.",
 			"Intelligence adds floor(Intelligence / 10) as spell power: flat spell damage and a percentage bonus to healing and absorbs.",
