@@ -1,6 +1,6 @@
 # Round 19 execution ledger
 
-2026-09-23. **Active, explicitly approved.**
+2026-09-23. **Implementation and independent reviews complete; final delivery in progress.**
 Baseline: `3b23a8f8` on main. Contract: [round19-plan.md](round19-plan.md).
 Integration branch: `wp19-atlas-interface-fixes`. Root native Astra;
 three parallel native workers, no provider CLI or Claude.
@@ -10,7 +10,7 @@ three parallel native workers, no provider CLI or Claude.
 | A atlas | Astra | wp19-map / /tmp/grug-r19-map | integrated c9e8c95c; independent Astra PASS |
 | B menus | Sol | wp19-ui / /tmp/grug-r19-ui | integrated with spacing/Help corrections; independent Sol PASS |
 | C party/status | Sol | wp19-hud / /tmp/grug-r19-hud | author db9d9927 integrated; independent Sol PASS |
-| D dragon bars | Sol | C lane after C | integrated 0b90752a; High billboard-size correction in progress |
+| D dragon bars | Sol | C lane after C | integrated with e398c90f/15f994a1 correction; independent Astra PASS |
 
 Root owns living docs, final integration/gates and receipt. Authors own only
 assigned code/tests plus their lane report. Independent reviewers have no
@@ -57,3 +57,21 @@ The initial isolated native registration check passed in
 /tmp/grug-r19-integration-p7mne4_m. It verifies registration metadata, not client
 sprite rendering, and predates the D correction; it is development evidence,
 not the frozen final acceptance run.
+
+## Frozen final candidate
+
+`15f994a18d25a7490c8ce161d6a55358de5cce02` is the final production/test identity.
+D High is closed by independent Astra review; the documentation Low is also
+closed. All lanes have independent PASS. Generic ordinary-mob sprite dimensions
+remain unchanged; explicit dragon sizes now match the native billboard renderer.
+Exactly one combined final PUC/LuaJIT pair passed (three fixtures, identical
+canonical SHA256 8cec59ed485583831ee6afcded43fb8704e6f18d11ae8d4d5483efd4a69b81cf).
+Parser/static gates pass on 18 Lua files; only expected mod globals and three
+comment/string sweep hits. Final isolated native registration run and local
+main delivery follow; no additional production edits are planned.
+
+Final native gate PASS: /tmp/grug-r19-integration-mim__g8n, 2077 production
+files match checkout. Independent Astra verified archived parity/source hashes
+against 15f994a1, every production file and exact scratch-only deviations;
+final evidence PASS without rerunning tests. Receipt: round19-completion.md.
+Main merge/local sync next; remote remains blocked, GUI acceptance pending.

@@ -67,9 +67,12 @@ projects: **[docs/research/](docs/research/)**.
 
 ## Active round
 
-Round 19 is approved and active (user Go 2026-09-23). Contract:
-`docs/research/round19-plan.md`; durable progress: `docs/research/round19-execution.md`.
-Astra owns atlas navigation; Sol owns menus, party/status HUD and dragon bars.
+Round 19 implementation, independent reviews and final technical gates PASS.
+Contract: `docs/research/round19-plan.md`; durable status and delivery:
+`docs/research/round19-execution.md`, `docs/research/round19-completion.md`.
+Next GUI pass: `docs/research/round19-playtest.md`. Native Astra owned atlas;
+Sol owned menus, party/status HUD and dragon bars. Remote push remains blocked
+by the prior automatic approval review pending renewed confirmation.
 
 Round 18 implementation, independent reviews and technical gates are complete.
 Merged to main and locally synchronized; remote push awaits renewed confirmation
