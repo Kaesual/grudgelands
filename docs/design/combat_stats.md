@@ -518,9 +518,10 @@ Normal tier at level L:
   guards farm it). Faction NPCs drop only when killed by ENEMY players
   (PvP); NPC-vs-mob kills never drop. Kills LotT's armor-litter
   problem.
-- **Soft de-aggro** (with the speed rule, decided 2026-08-06): beyond
-  ~25 m from its target a chasing mob drops to walk speed — fleeing is
-  hard, not impossible (mobs are otherwise faster than players).
+- **Bounded-actor soft de-aggro:** where the retained encounter policy enables
+  it, beyond ~25 m a chasing actor drops to walk speed. Round 18 ordinary
+  damage-sustained world mobs do not use this slowdown or distance give-up;
+  their incoming-damage clock governs disengagement.
 - **Readability rules for mobs** (decided 2026-08-06, shipped with WP6):
   elites/rares signal via **scale + tint** — elite `visual_size` ×1.6,
   gold `^[colorize:#ffa800:80`, nametag prefix `Elite `; rare ×2,

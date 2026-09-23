@@ -445,6 +445,6 @@ reopening after dismissal. This is a plan review, not implementation acceptance.
 4. Ordinary long pull with repeated damage, then 15-second disengagement; boss
    and post guards remain bound. XP death unchanged and level-up refill/burst.
 5. Six atlas regions, capitals and islands; native minimap policy; stable tags.
-6. Dirt/gravel/rock with shovel vs pick; two players carrying torches, changing
-   item and leaving, with no persistent light trails.
+6. Dirt/gravel/rock with shovel vs pick. Held-torch light is deferred after the
+   approved preflight and is not part of this round's runtime acceptance.
 

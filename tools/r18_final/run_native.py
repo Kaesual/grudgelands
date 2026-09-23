@@ -18,6 +18,13 @@ text = path.read_text()
 needle = 'local pending, stopped, failed = false, false, false'
 assert text.count(needle) == 1
 path.write_text(text.replace(needle, 'local pending, stopped, failed = false, true, false'))
+# Observe real registration inputs; mobs_redo deliberately does not publish
+# custom level fields on registered entity prototypes. Scratch-only capture.
+path = game/'mods/ENTITIES/grug_mobs/spawn_policy.lua'
+text = path.read_text()
+needle = 'function grug_mobs.register_spawn_role(name, def)'
+assert text.count(needle) == 1
+path.write_text(text.replace(needle, needle + '\n\tgrug_mobs._r18_roles = grug_mobs._r18_roles or {}\n\tgrug_mobs._r18_roles[name] = def'))
 probe = game/'mods/r18_integration_probe'
 probe.mkdir()
 (probe/'mod.conf').write_text('name = r18_integration_probe\ndepends = grug_quests, grug_mobs, grug_mapgen, grug_map, grug_gear, grug_food, grug_home, grug_parties\n')
@@ -33,7 +40,8 @@ print(root, flush=True)
 result = subprocess.run(['timeout', '--kill-after=5', '60']+cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
 (root/'console.log').write_text(result.stdout)
 text = log.read_text() if log.exists() else result.stdout
-print('\n'.join(line for line in text.splitlines() if 'r18_integration' in line or 'ERROR' in line), flush=True)
+print('\n'.join(line for line in text.splitlines() if 'r18_' in line or 'ERROR' in line), flush=True)
 assert result.returncode == 0 and 'ERROR[' not in text, str(log)
+assert 'Calling this function during script init is disallowed' not in text, str(log)
 assert '[r18_integration] PASS homes=' in text, str(log)
 print('PASS', root)

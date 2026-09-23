@@ -247,20 +247,12 @@ arbitrary fixed-price wall.
 - Geographic hard dismounts in mid-air have no glide, slow descent or grace:
   the rider's complete velocity is cleared and ordinary gravity takes over.
 
-**Why this rule exists: it is what keeps the speed pillar intact.**
-`combat_stats.md` §3 gives aggressive mobs `run_velocity` **4.6** against
-a player's **4.0** (it was 4.4 until user ruling 2 of 2026-09-16, "mobs
-should be a bit faster") — "evading must never be trivially easy" — and the
-whole mob game is built on top of that one inequality: the **25 m soft
-de-aggro** (`combat_stats.md` §3 — a chasing mob drops to walk speed, so
-fleeing is hard but not impossible) and the **45 m chase give-up** and
-**40 m leash** of `combat_stats.md` §4 all assume the mob can close the
-distance. A mount does **6.4–12 nodes/s
-permanently** (§1.1) and is therefore faster than every mob in the game.
-Without this rule a mounted player is simply immune to the mob game: no
-chase can ever be won, the soft de-aggro and the leash become
-unreachable by design, and the one number the design leans on hardest
-stops being true.
+Ordinary aggressive mobs run at **4.6 nodes/s** against a player's **4.0**.
+Round 18 ordinary pursuit continues while incoming damage arrives and ends
+after 15 seconds without it; it no longer uses the old 25/40/45-node distance
+rules. Bosses and location-bound encounters retain their own limits.
+Mounts run **6.4–12 nodes/s** and could otherwise bypass ordinary chase danger
+indefinitely. Damage therefore dismounts a rider; mounted attacks remain blocked.
 
 The same pillar is why the **Swiftness Draught** is capped where it is:
 `items_crafting.md` §3.6 gives it **+10 % for 5 s** and §10 P4 states the

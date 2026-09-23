@@ -100,3 +100,12 @@ C/D/G first review: 0 Critical, 1 High, 2 Medium. Root restores Whitebridge
 Boar selection, prevents Evade re-acquisition from restarting its fallback, and
 repairs the native population probe to use actual registration inputs. Targeted
 fix re-review is pending. H2 keeps the old neutral empty-slot wield placeholder.
+
+Independent Sol A/B/E/F/H2/J review: 0 Critical / 1 High (cultural shovel
+source group mismatch); author J owns the focused correction. Independent Astra
+visual review PASS for all 22 icons and six atlas views; doc drift 0 Critical /
+0 High / 1 Medium / 2 Low, root corrected stale pursuit/icon/torch references.
+Native registration/population gate passes at /tmp/grug-r18-integration-946xbnpq
+with real role capture, final ABM hosts, species predicates and actual day/night
+clock at 18 points. A prior probe attempt could not set time during init; moved
+checks to first server callback and rejected that earlier clock evidence.

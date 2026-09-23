@@ -971,8 +971,9 @@ the sfinv area only if the two trees are **tabbed rather than side by side**:
   below those controls and chain headings. A running named Crit/Dodge cap
   override shows its raised display cap; Unbroken instead shows the active
   rating multiplier and emergency addition.
-- No new texture is needed; signature talent icons are a later art pass, the
-  way `classes.md` §2c parks signature ability icons.
+- Round 18 supplies semantic action icons for active talent abilities as well
+  as base skills (`classes.md` §2c). Passive talent-tree artwork remains outside
+  that action-icon scope.
 
 ### 3.6 Level-up flow
 
