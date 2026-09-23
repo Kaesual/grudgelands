@@ -1,0 +1,7 @@
+{
+  "expected_boot_cursor": 561,
+  "instrumented_sha256": "ff0571772fe115055cd55245c6f61256ce1ad6e48d8a247982897ef318fb7a11",
+  "limit": 563,
+  "mode": "resume",
+  "production_sha256": "858df635037ccd64eef45c6c01a5a838022cae4562e94e8cc46e536631fc780e"
+}

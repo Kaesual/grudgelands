@@ -1,0 +1,11 @@
+{
+  "elapsed": 155.75712902800296,
+  "engine_exit_elapsed": null,
+  "exit": 0,
+  "pid": 773175,
+  "reason": "normal-prefix-shutdown",
+  "started_utc": "2026-09-23T17:30:29.920801+00:00",
+  "starttime": "3987537",
+  "survivors": [],
+  "world": "/home/jan/projects/grudgelands/tools/wp40/results/preparation-fullspeed-vqhquuz5/world"
+}

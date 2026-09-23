@@ -29,7 +29,7 @@ Research and historical evidence: **[docs/research/README.md](docs/research/READ
   ordinary implementation/review uses native Sol, with native Astra allowed for
   hard/performance-critical work. This session restriction can change only by
   a later explicit user instruction. Durable active work state:
-  `docs/research/pregen-scan-budget-plan.md` (current approved follow-up).
+  `docs/research/pregen-fullspeed-plan.md` (current approved follow-up).
 
 ## Fresh-server development mode
 
@@ -67,16 +67,16 @@ Research and historical evidence: **[docs/research/README.md](docs/research/READ
 
 ## Active work and game status
 
-The user approved testing a larger full-preparation surface-scan budget on
-2026-09-23, with explicit verification that later on-demand cave generation is
-unaffected. Current contract: [budget follow-up](docs/research/pregen-scan-budget-plan.md).
-Root Astra coordinates native Astra implementation/measurement and independent
-Sol review. No Claude task is authorized. The previous documentation-only round
+The user approved maximum-throughput world preparation on 2026-09-23, retaining
+bounded shutdown and unchanged later on-demand cave generation. Current contract:
+[full-speed follow-up](docs/research/pregen-fullspeed-plan.md). Root Astra
+coordinates native Astra implementation/measurement and independent Sol review.
+No Claude task is authorized. The previous documentation-only round
 is complete: [receipt](docs/maintenance/documentation-round.md).
 
 Game delivery and pending acceptance: [project status](docs/STATUS.md).
 Round 19 and follow-ups are locally delivered; GUI acceptance remains user-run.
-This documentation Go does not authorize a remote push or bypass a recorded
+The current local-development Go does not authorize a remote push or bypass a recorded
 automatic approval-review rejection. Current local tracking evidence is in STATUS;
 older round receipts are historical delivery observations.
 Standard unmodified Luanti clients are required: no client/engine fork,
