@@ -67,7 +67,7 @@ Decided 2026-09-21; Round 14 user Go.
   Avoid five low-drop-rate tusks as the first mandatory task. Quest materials
   must actually exist locally under the current zone/time spawn policies.
 
-## Round 15 presentation and regional expansion
+## Presentation and regional expansion
 
 Decided 2026-09-21: enlarge quest symbols fivefold while holding their upper
 extent fixed (growth downward). Keep per-viewer states and existing visibility
@@ -85,7 +85,7 @@ values with the fixed target-level table in `progression.md`. Each starting
 settlement finale is handed in to the next regional giver, who also offers the
 following quest.
 
-## Round 18 objective presentation
+## Objective presentation
 
 Item objectives show the concise item name, not description stat/durability lines.
 Worn qualifying items remain acceptable. Starter kill/drop targets follow the

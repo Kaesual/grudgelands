@@ -102,7 +102,7 @@ Revised 2026-09-23, Round 18:
   resource palettes so progression teaches exploration rather than old radial
   ring coordinates.
 
-## Round 14 quest participation
+## Quest participation
 
 Kill quests use the same per-mob damage/effective-heal participation as shared
 XP, preserving its current online/40-node eligibility and existing XP splitting.
@@ -110,7 +110,7 @@ Party membership confers no automatic credit. Quest counters award a full kill
 to each eligible participant with the matching active quest; zero XP from a
 gray mob does not itself erase quest credit. See `quests.md`.
 
-## Round 15 XP presentation
+## XP presentation
 
 The numeric XP HUD line is replaced with a gold progress bar directly above
 the hotbar, 360×6 HUD units (life remains 180×16). A compact label to its right
@@ -120,7 +120,7 @@ XP; a server administrator can grant a validated positive amount to an online
 player with `/xp give <player> <amount>`. All offsets use the shared HUD layout
 owner.
 
-## Round 16 kill XP
+## Kill XP
 
 Eligible mob-kill XP is increased by 50% at the shared settlement boundary,
 before the existing participant split. The one-settlement guard, 40-node

@@ -1,8 +1,12 @@
 # Playtest quality revision — Round 18
 
-Decided 2026-09-23, explicit user Go. This revision supersedes conflicting older
-rules while the corresponding living topic documents are updated in this round.
-Implementation contract: [Round 18](../research/round18-plan.md).
+Decided and implemented 2026-09-23. This file is the cross-topic index for the
+Round 18 playtest corrections, amended by the delivered Round 19 pursuit and UI
+follow-ups. The topical documents remain authoritative for the complete rules;
+implementation receipts are [Round 18](../research/round18-completion.md),
+[Round 19](../research/round19-completion.md), the
+[pursuit/idle-recovery follow-up](../research/round19-pursuit-followup.md) and
+the [Map/Talents follow-up](../research/round19-ui-followup.md).
 
 ## Combat and world populations
 
@@ -58,7 +62,7 @@ Implementation contract: [Round 18](../research/round18-plan.md).
   retries and tile progress; remove avoidable idle gaps, not legitimate I/O waits.
   Keep one emerge thread. Do not change accepted early ETA correction. Only short
   investigation; optional final 60–120-second observation occurs at most once.
-- Held-torch moving light is optional and deferred after the required VoxeLibre
+- Held-torch moving light is deferred after the required VoxeLibre
   preflight. The existing approach owns light propagation/removal and multiplayer
   restoration, exceeding this round's simplicity condition. No client overlay or
   general lighting framework is substituted. All other round scope remains.
