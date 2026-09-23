@@ -88,3 +88,7 @@ G report/evidence: round18-preparation-report.md. Author commit 7b3dec12,
 integrated d4b38594. Tiny synthetic test isolates scan wait, not real-world FPS;
 native stop/resume used existing bounded two-boot r16 runner once. No ETA run.
 Portable final component tools/r18_preparation/fixture.lua returns function(repo).
+
+Root added an 18-point real-authority/final-registration population probe to the
+final isolated native gate. The population author fixture uses mocked authority;
+it is not, by itself, evidence of actual six-culture level-field behavior.

@@ -56,6 +56,37 @@ before WP13/WP33 author new surface content.
   weighted palette. Fixed village/outpost/camp slots come from
   `world_zones.md` §§8/11; Elves keep tree-integrated settlements.
 
+### Round 18 surface eligibility and regional identities
+
+Ordinary surface spawns require their natural minimum level to fit the actual
+local difficulty query. The level field still rises toward the warfront on both
+continents; a species cannot clamp itself upward into an easier band. This gate
+does not change depth populations or authored encounters. Settlement spawn
+protection is unchanged and does not prevent an already spawned mob from
+walking into a town.
+
+A named zone selects one interchangeable regional wildlife tint. Host nodes and
+day/night clocks remain additional requirements, not alternative authorities.
+
+| Family | Current zone selection |
+|---|---|
+| Boar | Base in the eight Accord/Orc settled zones; Plague in Stillgrave/Mournfen; Jungle in Kapok/Raincall |
+| Zombie / Husk | Husk in Sunscar, Redtusk and Shattered Line; Zombie elsewhere |
+| Spider | Jungle in Glassroot, Thunderroot, Skyglass and Stormscale; existing faction forest tint on its exclusive hosts elsewhere |
+| Lynx / Panther / Snow Leopard | Panther in those four mixed/high-jungle zones; Lynx in jungle-edge start/home zones at L10+; Snow Leopard in its named mountain zones |
+| Skeleton archer tints | Raider in war zones; Frost Stray in Wyrmglass; Archer in other eligible forest/mountain zones |
+
+Distinct combat roles such as Goblin melee/ranged members and Bog Witch remain
+separate creatures. The same imported mesh does not by itself equate differently
+shaped/scaled bird species or visibly different combat roles. NPC/guard model
+reuse is unrestricted. Existing spawn caps/rates, dispositions and drop tables
+remain; this revision does not add a density multiplier.
+
+Troll early Lynx kill objectives use Tapir, while the later Raincall outpost Lynx
+objective remains. Orc early Zombie-or-Boar uses Husk-or-Boar, with Boar retaining
+an immediately available target below the Husk's L7 minimum. Counts and rewards
+are unchanged.
+
 Stats quick reference (normal tier; compute, don't copy):
 
 | L | HP | Dmg | XP | | L | HP | Dmg | XP |

@@ -160,7 +160,7 @@ local function character_content(player)
 	}
 
 	for _, slot in ipairs(grug_inventory.equipment_slots) do
-			local pos = SLOT_POS[slot.list]
+		local pos = SLOT_POS[slot.list]
 		if pos then
 			table.insert(fs, ("list[current_player;%s;%.1f,%.1f;1,1;]"):format(
 				slot.list, pos[1], pos[2]))
