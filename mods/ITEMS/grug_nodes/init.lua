@@ -22,8 +22,9 @@
 -- `default.can_grow()` refuses to grow a sapling unless the node below is
 -- in group `soil`; without it no tree could ever grow on an elf-forest or
 -- bone-forest floor.
-local function dirt_groups(extra)
+local function dirt_groups(extra, loose)
 	local groups = {crumbly = 3, soil = 1}
+	if loose ~= false then groups.grug_loose = 3 end
 	if extra then
 		for k, v in pairs(extra) do
 			groups[k] = v
@@ -88,7 +89,7 @@ register_litter("dirt_with_canopy_litter", "Dirt with Canopy Litter",
 core.register_node("grug_nodes:mud", {
 	description = "Swamp Mud",
 	tiles = {"grug_nodes_mud.png"},
-	groups = dirt_groups({mud = 1}),
+	groups = dirt_groups({mud = 1}, false),
 	sounds = default.node_sound_dirt_defaults(),
 })
 
