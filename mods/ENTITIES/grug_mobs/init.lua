@@ -562,6 +562,7 @@ local function apply_visual(self, cfg)
 end
 
 function grug_mobs.register_mob(name, def)
+	local hp_bar_presentation = def._grug_hp_bar_presentation
 	local disposition = grug_mobs.apply_disposition(name, def)
 	-- NB no blanket `attack_npcs = false` here any more (user ruling, playtest
 	-- round 2, 2026-09-15). Hostiles and guards may fight each other, so a
@@ -801,6 +802,13 @@ function grug_mobs.register_mob(name, def)
 	end
 
 	mobs:register_mob(name, def)
+	-- mobs_redo copies a fixed field set from the source definition. Install
+	-- our presentation metadata on the registered Lua-entity prototype so
+	-- tag carriers can read it from actual instances after activation.
+	if hp_bar_presentation then
+		assert(grug_core.register_hp_bar_presentation(name,
+			hp_bar_presentation))
+	end
 	-- mobs_redo copies an explicit field whitelist, so publish the custom field
 	-- on its canonical registered prototype after registration as well. Live
 	-- entities inherit it directly from that prototype.

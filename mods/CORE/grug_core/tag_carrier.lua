@@ -47,6 +47,23 @@ end
 local managed_carriers = {}
 local carrier_by_parent = {}
 
+function grug_core.register_hp_bar_presentation(entity_name, definition)
+	local registered = type(entity_name) == "string"
+		and core.registered_entities[entity_name]
+	if not registered or type(definition) ~= "table" then return false end
+	local anchor_y = tonumber(definition.anchor_y)
+	local width = tonumber(definition.width)
+	local height = tonumber(definition.height)
+	if not anchor_y or not width or not height or anchor_y < 0
+			or width <= 0 or height <= 0 then
+		return false
+	end
+	registered._grug_hp_bar_presentation = {
+		anchor_y = anchor_y, width = width, height = height,
+	}
+	return true
+end
+
 local function object_valid(object)
 	return object and object:is_valid()
 end
@@ -127,6 +144,22 @@ local function bar_height_and_scale(parent)
 	local sy = math.abs(scale.y or 1)
 	if sx < 0.01 then sx = 1 end
 	if sy < 0.01 then sy = 1 end
+	local entity = parent:get_luaentity()
+	local registered = entity and core.registered_entities[entity.name]
+	local presentation = entity and entity._grug_hp_bar_presentation
+		or registered and registered._grug_hp_bar_presentation
+	if presentation then
+		local anchor_y = tonumber(presentation.anchor_y)
+		local width = tonumber(presentation.width)
+		local height = tonumber(presentation.height)
+		if anchor_y and width and height and anchor_y >= 0 and width > 0
+				and height > 0 then
+			-- Empty-bone attachment translation and child visuals both inherit
+			-- the parent's scene-node scale. These conversions keep the explicit
+			-- dragon presentation values in world nodes.
+			return anchor_y * 10 / sy, width / sx, height / sy
+		end
+	end
 	-- Attachment coordinates are in tenths of a node and inherit the parent's
 	-- scene-node scale. Divide both offset and sprite size to keep one stable
 	-- world-space bar from rats through dragons. It sits below the nametag,
