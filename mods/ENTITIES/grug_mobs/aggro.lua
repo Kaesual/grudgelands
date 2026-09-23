@@ -9,55 +9,36 @@
 --
 -- Leash / reset (combat_stats.md §4)
 --
--- A mob chasing a PLAYER resets when it has been dragged more than
--- LEASH_RANGE from where THAT CHASE BEGAN, or when it has had no player
--- contact for LEASH_TIMEOUT seconds: threat table cleared, target dropped,
--- healed to full.
---
--- "Dragged from where the chase began", not "far from home" (fixed in the WP6
--- review, B4): the anti-kiting rule of combat_stats §4 is about how far a
--- player may PULL a mob, and `_grug_home` is only the point the mob happened
--- to activate at. A wandering mob drifts away from its home on its own — a
--- bear or jungle ape with the territorial 20 m radius reaches the edge of its
--- own leash within a minute of idle walking — and from then on EVERY
--- leash_check during combat fired: reset, heal to full, once a second,
--- forever. That mob was literally unkillable. Measuring against a per-chase
--- anchor (temp.grug_chase_anchor, seeded with the contact clock and dropped
--- with the chase) makes the rule mean what it says and makes it impossible
--- for a mob to out-drift its own leash while idle.
---
--- THE TWO POSITIONS DO DIFFERENT JOBS, and both are load-bearing:
---   * `temp.grug_chase_anchor` governs the DRAG DISTANCE — how far a player
---     may pull this mob before it gives up. Per chase, runtime only.
---   * `_grug_home` governs WHERE AN EVADED MOB ENDS UP — a mob that has
---     strayed further than its own radius RUNS back there when the chase ends
---     (see the evade block in leash_reset) — and, for a camp-bound mob, HOW
---     FAR IT MAY DRIFT WHILE IDLE (roam_check below, world.md §4a).
---     Persistent, one per mob, set at first activation (levels.lua
---     ensure_init) or by the camp that spawned it (camps.lua).
--- What `_grug_home` is NOT is an identity: a camp counts its members by
--- `_grug_camp_pos`, which camps.lua sets alongside it — and which is also
--- what tells the roam cap apart from wildlife.
---
--- "Player contact" reading (decided WP6-T2): contact is a hit BETWEEN the
--- mob and its target — grug_core.run_player_hit_mob (player hits mob), a
--- taunt, and our own threat-driven target switches all refresh
--- `temp.grug_last_contact`. The reverse direction (mob hits player) has no
--- cheap reliable hook — mob melee lands engine-side via object:punch, and
--- routing it through the central hp-change modifier would mean tracking
--- puncher->mob identity for every player hit in the game. It does not need
--- one: a mob that reaches its victim gets hit back within 15 s in any real
--- fight, and a target that neither hits nor is hit for 15 s is by
--- definition out of contact. That is exactly the spec's intent — "fleeing
--- works by breaking contact". A player who runs but keeps shooting stays
--- engaged; a player who just runs is dropped.
---
--- Mob-vs-NPC combat is deliberately NOT leashed (guards fighting wolves
--- must not reset mid-fight); the leash only governs player chases.
---
--- Opt-out: `_grug_no_leash = true` in the def (zombie: "never leashes";
--- kraken: has its own hand-rolled open-sea leash).
---
+-- Round 18: free ambient combat actors use incoming effective damage only.
+-- Owner-bound actors and explicit bespoke no-leash actors retain their rules.
+-- Home remains permanent; the runtime damage clock never becomes a new home.
+
+function grug_mobs.damage_pursuit(self)
+	return self._grug_damage_pursuit_candidate == true
+		and not (self._grug_camp_pos or self._grug_rare_id
+			or self._grug_boss_id or self._grug_royal_summon
+			or self._grug_boss_summon or self._grug_patrol_route
+			or self._grug_no_leash)
+end
+
+function grug_mobs.start_damage_pursuit(self)
+	if not grug_mobs.damage_pursuit(self) then return end
+	self.temp = self.temp or {}
+	if self.temp.grug_evading then return end
+	if not self.temp.grug_damage_at then
+		self.temp.grug_damage_at = grug_core.mono_time()
+	end
+end
+
+-- Called after actual HP subtraction, before synchronous lethal removal.
+function grug_mobs.received_pursuit_damage(self, hitter, amount)
+	if amount <= 0 or not grug_mobs.damage_pursuit(self) then return end
+	local ent = hitter and hitter:get_luaentity()
+	if not core.is_player(hitter) and not (ent and ent.type == "npc"
+			and ent._grug_drop_rule and ent.attack_monsters) then return end
+	self.temp = self.temp or {}
+	self.temp.grug_damage_at = grug_core.mono_time()
+end
 
 --
 -- Target acquisition for a mob that may target nobody (WP36 review, LOW 2).
@@ -110,6 +91,7 @@ local function no_target_acquisition() end
 -- upvalue table built in grug_mobs.register_mob.
 --
 function grug_mobs.apply_aggro_fields(self, cfg)
+	self._grug_damage_pursuit_candidate = cfg.damage_pursuit == true
 	-- The guaranteed-empty acquisition scan above.
 	if cfg.no_acquire and self.general_attack ~= no_target_acquisition then
 		self.general_attack = no_target_acquisition
@@ -185,6 +167,7 @@ function grug_mobs.leash_reset(self)
 	grug_core.clear_threat(self)
 	if self.temp then
 		self.temp.grug_last_contact = nil
+		self.temp.grug_damage_at = nil
 		-- The chase is over, so its drag anchor is too: the NEXT pull anchors
 		-- wherever the mob stands then (see leash_check).
 		self.temp.grug_chase_anchor = nil
@@ -258,12 +241,13 @@ function grug_mobs.leash_reset(self)
 	-- fight would delete the ambient-patrol feature. Its drift is bounded
 	-- instead by PATROL_INTERVAL in camps.lua.
 	--
-	-- Zombie and Kraken carry `_grug_no_leash` and therefore never reach this
+	-- Bespoke Kraken/royal actors carry `_grug_no_leash` and therefore never reach this
 	-- function at all — they can never evade, unchanged for them.
 	local home = self._grug_home
 	local pos = self.object and self.object:get_pos()
 	if home and pos and not self._grug_patrol_route then
-		local range = self._grug_leash_range or grug_mobs.LEASH_RANGE
+		local range = grug_mobs.damage_pursuit(self) and 4
+			or self._grug_leash_range or grug_mobs.LEASH_RANGE
 		local dx, dz = pos.x - home.x, pos.z - home.z
 		if dx * dx + dz * dz > range * range then
 			-- RUNTIME ONLY (self.temp), like the chase anchor: an evader that
@@ -362,6 +346,30 @@ end
 
 local function leash_check(self)
 	local target = self.attack
+	if grug_mobs.damage_pursuit(self) then
+		if self.temp.grug_evading then return end
+		if self.state == "die" or (self.health or 0) <= 0 then
+			self.temp.grug_damage_at = nil
+			return
+		end
+		-- A vanished/dead target ends the encounter through the same reset.
+		-- No terrain loading, search, or target replacement is introduced.
+		if self.temp.grug_damage_at and target and (not target:get_pos()
+				or target:get_hp() <= 0) then
+			grug_mobs.leash_reset(self)
+			return
+		end
+		if self.state == "attack" and target then
+			grug_mobs.start_damage_pursuit(self)
+		end
+		-- Pack flight and flopping may temporarily leave attack state. Their
+		-- existing clock still expires; neither pause it nor instantly heal.
+		local last = self.temp.grug_damage_at
+		if last and grug_core.mono_time() - last >= grug_mobs.LEASH_TIMEOUT then
+			grug_mobs.leash_reset(self)
+		end
+		return
+	end
 	if self.state ~= "attack" or not target or not core.is_player(target) then
 		-- Not chasing a player (idle, or fighting another mob/NPC): nothing
 		-- to leash, and the contact clock restarts with the next pull. The
@@ -494,7 +502,7 @@ function grug_mobs.leash_tick(self, dtime)
 	-- re-evaluation that the throttle parked, so the last (heaviest) hit of a
 	-- burst cannot lose a legitimate switch. Deliberately BEFORE the no-leash
 	-- early return — threat targeting has nothing to do with leashing, and the
-	-- zombie and the kraken have threat tables like everyone else.
+	-- bespoke actors have threat tables like everyone else.
 	grug_core.recheck_switch(self)
 	-- Idle roam cap (world.md §4a). Also BEFORE the no-leash early return:
 	-- being bound to an anchor is not the same question as being leashed to a
@@ -504,7 +512,7 @@ function grug_mobs.leash_tick(self, dtime)
 	-- The evade run (leash_reset above). BEFORE the no-leash early return only
 	-- for symmetry with the two rules above — a `_grug_no_leash` mob never
 	-- calls leash_reset and therefore can never carry the flag, so this costs
-	-- the zombie and the kraken one field test. It must, however, stay BEFORE
+	-- bespoke actors one field test. It must, however, stay BEFORE
 	-- leash_check: that is what keeps the arrival/timeout handling ahead of any
 	-- fresh chase bookkeeping in the same slot.
 	evade_tick(self)

@@ -18,7 +18,9 @@ local function trainer_formspec(player, profession, confirming)
 	local known = grug_jobs.has(player, profession)
 	local status
 	if known then
-		status = "You already know " .. definition.name .. "."
+		status = ("Known: %s — tier %d, %d crafts in this tier."):format(
+			definition.name, grug_jobs.profession_level(player, profession),
+			grug_jobs.crafts_in_tier(player, profession))
 	elseif definition.class == "primary" and grug_jobs.primary_at(player, 1) and
 			grug_jobs.primary_at(player, 2) then
 		status = "Two primary professions already learned."
@@ -26,27 +28,33 @@ local function trainer_formspec(player, profession, confirming)
 		status = "Learn " .. definition.name .. "?"
 	end
 	local fs = {
-		"size[5.5,3.2]",
+		"size[6.8,4.0]",
 		("label[0.35,0.35;%s Trainer]"):format(esc(definition.name)),
 		("label[0.35,0.95;%s]"):format(esc(status)),
 	}
-	if confirming then
-		fs[#fs + 1] = "label[0.35,1.40;Unlearning permanently loses progression.]"
-		fs[#fs + 1] = "button[0.35,2.05;2.0,0.7;grug_jobs_confirm;Confirm unlearn]"
-		fs[#fs + 1] = "button[2.55,2.05;1.3,0.7;grug_jobs_cancel;Cancel]"
+	local session = sessions[player:get_player_name()]
+	if session and session.notice then
+		fs[#fs + 1] = ("textarea[0.35,1.25;6.1,0.85;;;%s]"):format(
+			esc(session.notice))
 	elseif known then
-		fs[#fs + 1] = "button[0.35,1.65;1.8,0.7;grug_jobs_unlearn;Unlearn]"
-	else
-		fs[#fs + 1] = ("button[0.35,1.65;2.2,0.7;grug_jobs_learn;Learn %s]")
+		fs[#fs + 1] = "textarea[0.35,1.25;6.1,0.85;;;Open Inventory > Crafting and choose this profession's recipe book.]"
+	end
+	if confirming then
+		fs[#fs + 1] = ("label[0.35,2.15;Unlearn %s? Only this profession's progression will be permanently lost.]"):format(esc(definition.name))
+		fs[#fs + 1] = "button[0.35,2.75;2.0,0.7;grug_jobs_confirm;Confirm unlearn]"
+		fs[#fs + 1] = "button[2.55,2.75;1.3,0.7;grug_jobs_cancel;Cancel]"
+	elseif known and definition.class == "primary" then
+		fs[#fs + 1] = "button[0.35,2.15;1.8,0.7;grug_jobs_unlearn;Unlearn]"
+	elseif not known then
+		fs[#fs + 1] = ("button[0.35,2.15;2.2,0.7;grug_jobs_learn;Learn %s]")
 			:format(esc(definition.name))
 	end
-	local session = sessions[player:get_player_name()]
 	local repair = rawget(_G, "grug_repair")
 	if not confirming and repair and session and
 			repair.can_open_trainer(player, session.entity) then
-		fs[#fs + 1] = "button[2.8,1.65;2.2,0.7;grug_jobs_repair;Repair equipment]"
+		fs[#fs + 1] = "button[3.0,2.15;2.2,0.7;grug_jobs_repair;Repair equipment]"
 	end
-	fs[#fs + 1] = "button_exit[4.0,2.35;1.1,0.55;grug_jobs_close;Close]"
+	fs[#fs + 1] = "button_exit[5.35,3.15;1.1,0.55;grug_jobs_close;Close]"
 	return table.concat(fs)
 end
 
@@ -81,20 +89,44 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		if repair then repair.open_trainer(player, session.entity) end
 	elseif fields.grug_jobs_learn then
 		local before = grug_jobs.has(player, session.profession)
-		grug_jobs.learn(player, session.profession)
+		local ok, reason = grug_jobs.learn(player, session.profession)
+		if ok and not before then
+			session.notice = "Learned " ..
+				grug_jobs.PROFESSIONS[session.profession].name ..
+				". Open Inventory > Crafting and choose its recipe book."
+		else
+			session.notice = reason
+		end
 		log_action("learn", player, session.profession, before)
 		core.show_formspec(name, FORMNAME,
 			trainer_formspec(player, session.profession, false))
 	elseif fields.grug_jobs_unlearn then
-		core.show_formspec(name, FORMNAME,
-			trainer_formspec(player, session.profession, true))
+		local definition = grug_jobs.PROFESSIONS[session.profession]
+		if definition.class == "primary" and grug_jobs.has(player, session.profession) then
+			session.notice = nil
+			session.confirming_unlearn = true
+			core.show_formspec(name, FORMNAME,
+				trainer_formspec(player, session.profession, true))
+		else
+			session.notice = definition.name .. " cannot be unlearned."
+			core.show_formspec(name, FORMNAME,
+				trainer_formspec(player, session.profession, false))
+		end
 	elseif fields.grug_jobs_confirm then
 		local before = grug_jobs.has(player, session.profession)
-		grug_jobs.unlearn(player, session.profession)
+		local definition = grug_jobs.PROFESSIONS[session.profession]
+		local ok, reason = false, "Choose Unlearn before confirming."
+		if definition.class == "primary" and session.confirming_unlearn then
+			ok, reason = grug_jobs.unlearn(player, session.profession)
+		end
+		session.confirming_unlearn = nil
+		session.notice = reason
 		log_action("unlearn", player, session.profession, before)
 		core.show_formspec(name, FORMNAME,
 			trainer_formspec(player, session.profession, false))
 	elseif fields.grug_jobs_cancel then
+		session.confirming_unlearn = nil
+		session.notice = "Unlearn cancelled. Your profession and progression are unchanged."
 		core.show_formspec(name, FORMNAME,
 			trainer_formspec(player, session.profession, false))
 	end

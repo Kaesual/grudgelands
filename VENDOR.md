@@ -1,5 +1,13 @@
 # Vendored Third-Party Code
 
+Round 18 adds three narrowly scoped GRUG PATCH markers to `mobs/api.lua`: first
+aggro starts the ambient incoming-damage grace clock; the ambient policy bypasses
+chase distance, soft de-aggro speed and LOS patience while retaining target
+availability checks; committed HP subtraction reports effective incoming damage
+after cancellation and friendly-fire checks. The wrapper owns classification,
+the 15-second timeout and home return; owner-bound and bespoke actors retain
+their prior pursuit policy.
+
 Policy (decided 2026-08-06): third-party mods are **vendored** (copied into
 the repo), NOT git submodules. Rationale: a standalone Luanti game must
 bundle everything it ships; we patch vendored code in place where needed

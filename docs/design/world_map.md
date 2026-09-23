@@ -44,3 +44,14 @@ Round 17 adds the twelve innkeeper locations, labels/current-home distinction
 and a Return home button with destination and cooldown. Its server authority
 is [home_travel.md](home_travel.md). Map browsing itself grants no binding or
 waypoint unlock; binding still requires visiting an eligible innkeeper.
+
+## Round 18 coverage and minimap
+
+Six directional regional views form a 3-column x 2-row cover of the full
+world-atlas bounds, with 120 nodes of extension across each inner seam. They include frontiers,
+capitals and islands, with overlap and correct aspect. Renderer and marker
+projection share one bounds authority. Native surface minimap is selected by
+default, subject to client settings and the player's V toggle. It displays terrain
+and the local player's direction arrow only; other player/entity dots are hidden.
+Party, quest and trainer icons remain on the full atlas. No custom minimap,
+per-viewer marker proxies, client mod or fog of war is introduced.

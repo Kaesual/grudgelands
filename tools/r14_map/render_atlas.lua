@@ -5,16 +5,17 @@ local repo = assert(arg[1], "repository root required")
 local output = assert(arg[2], "SVG output required")
 local view_id = arg[3] or "world"
 local source = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua")
-
-local views = {
-	world = {-3600, 3600, -3200, 3200},
-	dwarf = {-2700, -900, -3000, -1400}, human = {-900, 900, -3000, -1400},
-	elf = {900, 2700, -3000, -1400}, undead = {-2700, -900, 1400, 3000},
-	orc = {-900, 900, 1400, 3000}, troll = {900, 2700, 1400, 3000},
-}
-local bounds = assert(views[view_id], "unknown atlas view")
-local min_x, max_x, min_z, max_z = bounds[1], bounds[2], bounds[3], bounds[4]
-local width, height = 900, 800
+local atlas = dofile(repo .. "/mods/PLAYER/grug_map/atlas.lua")
+local known_view = false
+for _, row in ipairs(atlas.views()) do
+	if row.id == view_id then known_view = true end
+end
+assert(known_view, "unknown atlas view")
+local bounds = atlas.view(view_id)
+local min_x, max_x = bounds.min_x, bounds.max_x
+local min_z, max_z = bounds.min_z, bounds.max_z
+local height = 800
+local width = math.floor(height * (max_x - min_x) / (max_z - min_z) + 0.5)
 local function sx(x) return (x - min_x) / (max_x - min_x) * width end
 local function sy(z) return (max_z - z) / (max_z - min_z) * height end
 local function n(value) return ("%.2f"):format(value) end
@@ -34,8 +35,9 @@ end
 local file = assert(io.open(output, "wb"))
 local function write(...) assert(file:write(...)) end
 write('<?xml version="1.0" encoding="UTF-8"?>\n')
-write('<svg xmlns="http://www.w3.org/2000/svg" width="900" height="800" viewBox="0 0 900 800">\n')
-write('<rect width="900" height="800" fill="#16384a"/>\n')
+write(('<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" viewBox="0 0 %d %d">\n'):
+	format(width, height, width, height))
+write(('<rect width="%d" height="%d" fill="#16384a"/>\n'):format(width, height))
 write('<g fill="#bba875" stroke="#eadca8" stroke-width="3">\n')
 for index = 1, #source.land_primitives do
 	local row = source.land_primitives[index]
@@ -118,5 +120,6 @@ else
 		end
 	end
 end
-write('</g>\n<rect x="2" y="2" width="896" height="796" fill="none" stroke="#e8d49a" stroke-width="4"/>\n</svg>\n')
+write(('</g>\n<rect x="2" y="2" width="%d" height="%d" fill="none" stroke="#e8d49a" stroke-width="4"/>\n</svg>\n'):
+	format(width - 4, height - 4))
 assert(file:close())

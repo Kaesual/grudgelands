@@ -879,3 +879,38 @@ core.register_on_joinplayer(arm_weapon_hint)
 -- grug_classes fires this after the class is written to meta, so
 -- grug_classes.get_class already answers inside the delayed check.
 grug_classes.register_on_class_chosen(arm_weapon_hint)
+
+-- A weapon carried on the hotbar is storage, not the combat authority. Watch
+-- the player's ordinary use control without consuming it or changing any item
+-- callback, damage path or equip state, and explain the intended route once
+-- per press with a small anti-spam interval.
+local raw_weapon_controls = {}
+local RAW_WEAPON_HINT_INTERVAL = 3
+local raw_weapon_elapsed = 0
+
+core.register_globalstep(function(dtime)
+	raw_weapon_elapsed = raw_weapon_elapsed + dtime
+	if raw_weapon_elapsed < 0.1 then return end
+	raw_weapon_elapsed = raw_weapon_elapsed % 0.1
+	local now = grug_core.mono_time()
+	for _, player in ipairs(core.get_connected_players()) do
+		local name = player:get_player_name()
+		local row = raw_weapon_controls[name] or {pressed = false, warned = -1000}
+		local pressed = player:get_player_control().dig == true
+		local wielded = player:get_wielded_item()
+		if pressed and not row.pressed and not wielded:is_empty() and
+				core.get_item_group(wielded:get_name(), "grug_equip_weapon") > 0 and
+				now - row.warned >= RAW_WEAPON_HINT_INTERVAL then
+			core.chat_send_player(name, core.colorize("#ffd100",
+				"Weapons work from the Character Weapon slot. Equip this weapon " ..
+				"there, then use a combat skill from your hotbar."))
+			row.warned = now
+		end
+		row.pressed = pressed
+		raw_weapon_controls[name] = row
+	end
+end)
+
+core.register_on_leaveplayer(function(player)
+	raw_weapon_controls[player:get_player_name()] = nil
+end)

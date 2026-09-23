@@ -1551,7 +1551,7 @@ cultures:
 
    It consumes no additional bar, gem, wood or trophy. Only an accepted attack
    sourced from the currently equipped weapon contributes counter damage; a
-   spell does not inherit it from the ability icon's weapon appearance. Add
+   spell does not inherit it from the equipped weapon's in-hand appearance. Add
    the flat amount after the ordinary Crit result and before armor and absorb,
    so armor mitigates it and Crit never multiplies it. It affects hostile
    players and combat-capable

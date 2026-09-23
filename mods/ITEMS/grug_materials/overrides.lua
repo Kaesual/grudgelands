@@ -52,6 +52,22 @@ for _, item_name in ipairs(grug_materials.NATURAL_GROUND_NODES) do
 	end
 end
 
+-- Exact loose-material membership. Do not derive this from `crumbly`: solid
+-- sandstone, clay and snow share that upstream group but are not shovel soil.
+local loose_nodes = {
+	"default:dirt", "default:dirt_with_grass",
+	"default:dirt_with_grass_footsteps", "default:dirt_with_dry_grass",
+	"default:dirt_with_snow", "default:dirt_with_rainforest_litter",
+	"default:dirt_with_coniferous_litter", "default:dry_dirt",
+	"default:dry_dirt_with_dry_grass", "default:sand",
+	"default:desert_sand", "default:silver_sand", "default:gravel",
+}
+for _, item_name in ipairs(loose_nodes) do
+	edit_groups(item_name, function(groups)
+		groups.grug_loose = groups.crumbly
+	end)
+end
+
 local normalized_blocks = {
 	"default:obsidian", "default:obsidianbrick", "default:obsidian_block",
 	"default:steelblock", "default:copperblock", "default:tinblock",
@@ -77,6 +93,38 @@ local function current_pick_values(item_name, values)
 	return values
 end
 
+local function current_shovel_values(item_name)
+	local def = core.registered_items[item_name]
+	local caps = assert(def and def.tool_capabilities,
+		"missing shovel capabilities for " .. item_name)
+	local crumbly = assert(caps.groupcaps and caps.groupcaps.crumbly,
+		"missing shovel crumbly capability for " .. item_name)
+	return {
+		full_punch_interval = caps.full_punch_interval,
+		max_drop_level = caps.max_drop_level,
+		punch_attack_uses = caps.punch_attack_uses,
+		groupcaps = {
+			grug_loose = {times = table.copy(crumbly.times),
+				uses = crumbly.uses, maxlevel = crumbly.maxlevel},
+		},
+		damage_groups = table.copy(caps.damage_groups or {}),
+	}
+end
+
+local starter_shovels = {
+	{"default:shovel_wood", 1}, {"default:shovel_stone", 1},
+	{"default:shovel_bronze", 1}, {"default:shovel_steel", 3},
+}
+local starter_shovel_times = {}
+for _, row in ipairs(starter_shovels) do
+	local values = current_shovel_values(row[1])
+	starter_shovel_times[row[1]] = values.groupcaps.grug_loose.times
+	edit_groups(row[1], function(groups)
+		groups.grug_shovel_tier = row[2]
+	end)
+	core.override_item(row[1], {tool_capabilities = values})
+end
+
 -- Preserve WP25's effective ordinary-rock values while retiring maxlevel as
 -- an authority. The three starter picks deliberately share T1 depth access;
 -- their differing speeds and uses remain their ordinary equipment quality.
@@ -85,6 +133,9 @@ core.override_item("default:pick_wood", {
 	tool_capabilities = grug_materials.build_pick_capabilities(1, {
 		ordinary_time = 1.60, uses = 30, full_punch_interval = 1.2,
 		cracky_times = {[3] = 1.60}, damage_groups = {fleshy = 2},
+		loose_times = grug_materials.build_loose_times(
+			starter_shovel_times["default:shovel_wood"]),
+		loose_maxlevel = 1,
 		punch_attack_uses = current_pick_values("default:pick_wood").punch_attack_uses,
 	}),
 })
@@ -94,6 +145,9 @@ core.override_item("default:pick_stone", {
 	tool_capabilities = grug_materials.build_pick_capabilities(1, {
 		ordinary_time = 1.00, uses = 60, full_punch_interval = 1.3,
 		cracky_times = {[2] = 2.0, [3] = 1.00}, damage_groups = {fleshy = 3},
+		loose_times = grug_materials.build_loose_times(
+			starter_shovel_times["default:shovel_stone"]),
+		loose_maxlevel = 1,
 		punch_attack_uses = current_pick_values("default:pick_stone").punch_attack_uses,
 	}),
 })
@@ -103,6 +157,9 @@ core.override_item("default:pick_bronze", {
 	tool_capabilities = grug_materials.build_pick_capabilities(1, current_pick_values(
 		"default:pick_bronze", {
 		max_drop_level = 1,
+		loose_times = grug_materials.build_loose_times(
+			starter_shovel_times["default:shovel_bronze"]),
+		loose_maxlevel = 2,
 	})),
 })
 
@@ -111,6 +168,9 @@ core.override_item("default:pick_steel", {
 	tool_capabilities = grug_materials.build_pick_capabilities(3, current_pick_values(
 		"default:pick_steel", {
 		max_drop_level = 1,
+		loose_times = grug_materials.build_loose_times(
+			starter_shovel_times["default:shovel_steel"]),
+		loose_maxlevel = 2,
 	})),
 })
 

@@ -84,3 +84,9 @@ not scale with the level at turn-in. Round 16 replaces the starter and local
 values with the fixed target-level table in `progression.md`. Each starting
 settlement finale is handed in to the next regional giver, who also offers the
 following quest.
+
+## Round 18 objective presentation
+
+Item objectives show the concise item name, not description stat/durability lines.
+Worn qualifying items remain acceptable. Starter kill/drop targets follow the
+minimum-level-aware local wildlife roster and remain locally achievable.

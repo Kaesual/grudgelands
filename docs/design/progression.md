@@ -71,30 +71,19 @@ rulings; the superseded text is named in `skill_trees.md` §5.2.
 
 ## 3. Death rules (MVP — deliberately simple)
 
-Decided 2026-08-06; PvP exemption decided 2026-08-13; refinements
-(graveyards at outposts, res sickness, Priest resurrection) come later with
-WP6/WP19:
+Revised 2026-09-23, Round 18:
 
-The respawn and inventory rules apply to every death; the XP consequence
-depends on the death's attribution.
+- Every death respawns at the bound innkeeper home with full inventory
+  ([home_travel.md](home_travel.md)). No corpse run or extra durability-on-death.
+- **No death causes XP loss**, including PvE, PvP and environmental deaths.
+  No replacement penalty is introduced; travel back remains a consequence.
+- XP is capped at the cumulative threshold for level 60; overflow from normal
+  rewards and `/xp give` is discarded. The command reports the actual award.
+- On a real upward level transition, living characters refill HP and mana after
+  final stats recompute; Warrior rage remains unchanged. One gold particle burst
+  occurs even for a multi-level grant. Join, equipment recalculation and downward
+  level changes do not refill; an XP grant does not resurrect a dead character.
 
-- Death = **respawn at the bound innkeeper home with full inventory**
-  ([home travel](home_travel.md)). The initial home is the own race's safe
-  outer starting settlement. No corpse run, item loss or durability-on-death
-  mechanic.
-- **PvE XP loss: 25% of the whole current-level span, permanent**
-  (floored at the current level start, so it never de-levels).
-- **Confirmed PvP deaths cost no XP.** A death whose final HP-lowering
-  committed transaction is attributed by the single PvP authority
-  (`grug_pvp.classify_death`, WP41) to an eligible hostile player applies
-  no XP loss. Every other death — PvE, environment, unclassified — keeps
-  the 25% rule. Standing in contested ground or carrying the PvP tag never
-  grants the exemption, and a death whose final commit is environmental
-  (fall or lava after PvP damage) is unclassified and keeps the loss. The
-  attribution seam belongs to WP41; the exemption is applied centrally in
-  the XP death path (WP9 wiring), never by individual combat paths.
-- The *distance* back is the real penalty: dying far from the spawn
-  costs travel time — which scales naturally with how deep you pushed.
 ## 4. Quest structure & level gates
 
 - Main-questline beats use hard `min_level` gates (`story.md`).

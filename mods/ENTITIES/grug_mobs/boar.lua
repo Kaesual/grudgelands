@@ -143,6 +143,9 @@ mobs:spawn({
 		"default:snowblock", -- grug_crags_snowy
 		"grug_nodes:mud", -- grug_swamp
 		"default:sand", -- grug_beach, incl. inland lake shores
+		"grug_nodes:blight_dirt",
+		"default:dirt_with_rainforest_litter",
+		"grug_nodes:dirt_with_canopy_litter",
 	},
 	min_light = 10,
 	interval = 20,

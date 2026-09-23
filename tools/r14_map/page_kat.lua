@@ -10,6 +10,9 @@ local core_api = {
 		return tostring(value):gsub("\\", "\\\\"):gsub("]", "\\]"):
 			gsub(";", "\\;"):gsub(",", "\\,")
 	end,
+	register_globalstep = function() end,
+	register_on_leaveplayer = function() end,
+	register_on_dieplayer = function() end,
 }
 local settlement = {key = "copperfell_village", race_id = "dwarf",
 	anchor = {x = -1800, y = 12, z = -2200}}
@@ -43,6 +46,11 @@ local environment = {
 	grug_zones = {at = function() return {id = "elandor_copperfell_foothills",
 		display_name = "Copperfell Foothills"} end},
 	grug_map = map_owner,
+	grug_home = {get = function() return nil end,
+		return_home = function() end},
+	grug_inventory = {selected_button_style = function(field, selected)
+		return ("style[%s;border=%s]"):format(field, selected and "true" or "false")
+	end},
 	sfinv = sfinv_api,
 }
 environment._G = environment
@@ -74,10 +82,10 @@ assert(form:find(expected, 1, true), "settlement overlay transform differs")
 
 assert(registered:on_player_receive_fields(player, context,
 	{[settlement_field] = true}))
-assert(context.grug_map_detail == "Copperfell Village\nDwarf settlement")
+assert(context.grug_map_detail == "Copperfell Village")
 assert(selected_page == "grug_map:atlas")
 form = registered:get(player, context)
-assert(form:find("Selected: Copperfell Village — Dwarf settlement", 1, true))
+assert(form:find("Selected: Copperfell Village", 1, true))
 
 selected_page = nil
 assert(registered:on_player_receive_fields(player, context,
@@ -86,4 +94,12 @@ assert(context.grug_map_view == "dwarf" and context.grug_map_detail == nil and
 	selected_page == "grug_map:atlas")
 form = registered:get(player, context)
 assert(form:find("grug_map_atlas_dwarf.png", 1, true))
-print("r14_map_page_kat_v1\tbounds=ok\tratio=9:8\tmarker=ok\tclick=ok\tview=ok")
+assert(form:find("style[grug_map_view_dwarf;border=true]", 1, true))
+assert(not form:find("> Southwest", 1, true))
+-- Regional view is centered at its actual 2520:3320 world aspect.
+local expected_width = 8.9778 * 2520 / 3320
+local expected_x = 0.15 + (10.1 - expected_width) / 2
+local image = ("image[%s,0.85;%s,8.9778;grug_map_atlas_dwarf.png]"):
+	format(expected_x, expected_width)
+assert(form:find(image, 1, true), "regional image aspect differs")
+print("r14_map_page_kat_v2\tbounds=ok\taspect=ok\tmarker=ok\tclick=ok\tselection=ok")

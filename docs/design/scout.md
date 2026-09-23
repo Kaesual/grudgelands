@@ -277,12 +277,11 @@ exists.
 
 ### 6.2 Sprint is a deliberate, bounded speed exception
 
-`mounts.md:173-190` states it outright: ordinary aggressive mobs run **4.6** against a
-player's **4.0** (`combat_stats.md:310-315`), and the 25 m soft de-aggro, the
-45 m chase give-up and the 40 m leash "all assume the mob can close the
-distance". It is why the Swiftness Draught is capped at **+8 % for 15 s**
-(`items_crafting.md` §10 P4: `4.0 × 1.08 = 4.32 < 4.6`) and why any damage
-dismounts a rider.
+Ordinary aggressive mobs run **4.6** against a player's **4.0**
+(`combat_stats.md` §3). Round 18 ordinary mobs keep chasing while receiving
+damage and disengage after 15 seconds without it; they no longer use distance
+slowdown/give-up. Mount damage still dismounts the rider. Sprint is a bounded
+exception to the ordinary movement-speed disadvantage.
 
 At +50 % a sprinting Scout runs 6.0 nodes/s and outruns ordinary aggressive
 mobs for ten seconds. Ruling 10 permits this deliberate exception; the

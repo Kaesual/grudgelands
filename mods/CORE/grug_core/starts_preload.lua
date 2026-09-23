@@ -20,7 +20,10 @@ local source, scan
 local tile_elapsed = 0
 local pending, stopped, failed = false, false, false
 local attempts, retry_at, elapsed, samples = 0, 0, 0, 0
-local clock, accumulator = 0, 0
+local clock, accumulator, notification_elapsed = 0, 0, 0
+-- UI updates remain at 5 Hz; work may resume on the next server step.
+local WORK_INTERVAL, NOTIFY_INTERVAL = 0.02, 0.2
+local SCAN_BUDGET_US, SCAN_BATCH, SCAN_LIMIT = 4000, 16, 8192
 local listeners, start_listeners, races = {}, {}, {}
 local notify = true
 local was_ready = false
@@ -123,12 +126,14 @@ end
 core.register_on_mods_loaded(initialize)
 core.register_on_shutdown(function() stopped = true end)
 core.register_globalstep(function(dtime)
-	accumulator = accumulator + dtime
-	if accumulator < 0.2 then return end
-	clock = clock + accumulator
-	accumulator = 0
 	if stopped then return end
-	if notify then
+	clock = clock + dtime
+	notification_elapsed = notification_elapsed + dtime
+	accumulator = accumulator + dtime
+	if accumulator < WORK_INTERVAL then return end
+	accumulator = 0
+	if notify and notification_elapsed >= NOTIFY_INTERVAL then
+		notification_elapsed = 0
 		notify = false
 		local status = grug_core.world_preparation_status()
 		for _, fn in ipairs(listeners) do fn(status) end
@@ -139,16 +144,23 @@ core.register_globalstep(function(dtime)
 	end
 	if state.total and not ready() and not pending and not failed and clock >= retry_at then
 		if source and not state.selection then
-			scan = scan or plan_api.begin(state,source)
-			-- One bounded local scan per step, no full-world prepass. Partial
-			-- selection can be rebuilt after restart; completed chunks cannot.
+			-- Include tile setup in the time budget. Check every small batch;
+			-- a slow source call cannot be preempted. The column cap also
+			-- bounds work with a coarse clock. No surface samples are skipped.
 			local started = core.get_us_time()
-			if plan_api.scan(state,scan,source,512) then
-				scan = nil
-				persist() -- Freeze this tile's Y selection before its first request.
+			scan = scan or plan_api.begin(state,source)
+			for _ = 1, SCAN_LIMIT / SCAN_BATCH do
+				if plan_api.scan(state,scan,source,SCAN_BATCH) then
+					scan = nil
+					persist() -- Freeze selection before its first request.
+					break
+				end
+				if core.get_us_time() - started >= SCAN_BUDGET_US then break end
 			end
 			tile_elapsed = tile_elapsed + (core.get_us_time()-started)/1000000
-			return
+			if scan then return end
+			-- Finished selection may dispatch immediately, from this server
+			-- step only; callbacks still never enqueue native work.
 		end
 		dispatch()
 	end

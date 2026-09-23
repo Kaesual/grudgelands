@@ -174,8 +174,11 @@ local function character_content(player)
 			-- runs the tooltip-RECT loop before the children are drawn, and
 			-- :3714-3717 lets the hovered ITEM tooltip overwrite the very same
 			-- m_tooltip_element afterwards, which is only painted at :3856.
+			local slot_label = slot.list == "grug_weapon" and
+				"Weapon — equip here, then use a combat skill from the hotbar" or
+				slot.label
 			table.insert(fs, ("tooltip[%.1f,%.1f;%.4f,%.4f;%s]"):format(
-				pos[1], pos[2], TOOLTIP_W, TOOLTIP_H, esc(slot.label)))
+				pos[1], pos[2], TOOLTIP_W, TOOLTIP_H, esc(slot_label)))
 			-- The ghost is drawn AFTER the list[] and only for empty slots,
 			-- never before it to fake a transparent cell: listcolors[] is
 			-- per-formspec and this page also carries sfinv's main inventory,
@@ -253,11 +256,12 @@ local function bags_content(player, context)
 	end
 	for i = 1, grug_inventory.BAG_COUNT do
 		local x = (i - 1) * 2 + 0.3
+		local field = "grug_open_" .. i
 		table.insert(fs, ("list[current_player;%s;%.1f,0.35;1,1;]"):format(
 			grug_inventory.bag_list(i), x))
-		local marker = (i == selected) and "> Bag " .. i or "Bag " .. i
+		table.insert(fs, grug_inventory.selected_button_style(field, i == selected))
 		table.insert(fs, ("button[%.1f,1.35;1.5,0.7;grug_open_%d;%s]"):format(
-			x - 0.25, i, esc(marker)))
+			x - 0.25, i, esc("Bag " .. i)))
 	end
 
 	local bag = inv:get_stack(grug_inventory.bag_list(selected), 1)

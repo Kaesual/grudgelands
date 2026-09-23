@@ -115,14 +115,13 @@ mobs:spawn({
 	min_height = 0, max_height = 300,
 })
 
--- Sun-Dried Husk: the desert Zombie; it keeps the relentless chase but does
--- not burn in sunlight because its family exists only in the night cast.
+-- Sun-Dried Husk: the desert Zombie shares ordinary damage-sustained pursuit.
+-- It does not burn in sunlight; its family exists only in the night cast.
 local husk = common_ground({
 	description = "Sun-Dried Husk",
 	clock = "night",
 	type = "monster",
 	_grug_min_level = 3,
-	_grug_no_leash = true,
 	_grug_spawn_check = function(pos)
 		if grug_zones.id_at(pos.x, pos.z) == "kragmar_sunscar_flats" then
 			return grug_zones.mob_level_at(pos) >= 7

@@ -81,8 +81,8 @@ end
 --                          chase began (default grug_mobs.LEASH_RANGE = 40);
 --                          the "territorial" verb of bear/ape uses ~20
 --   def._grug_no_leash    — true: never gives up a player chase and never
---                          resets/heals (zombie verb "never leashes"; mobs
---                          with a hand-rolled leash of their own: kraken)
+--                          resets/heals through the generic leash (bespoke
+--                          Kraken/royal actors retain their encounter rules)
 --   def._grug_soft_deaggro — false: opt out of the 25 m walk-speed rule
 --                          (GRUG PATCH in mobs/api.lua do_states)
 --
@@ -582,6 +582,10 @@ function grug_mobs.register_mob(name, def)
 	-- fields onto the entity, so the wrappers install them at runtime
 	-- (grug_mobs.apply_aggro_fields, aggro.lua).
 	local aggro_cfg = {
+		damage_pursuit = def.type ~= "npc" and def.passive ~= true
+			and def.attack_type ~= nil and not def._grug_no_leash
+			and (def._grug_tier == nil or def._grug_tier == "normal"
+				or def._grug_tier == "elite"),
 		no_leash = def._grug_no_leash,
 		soft_deaggro = def._grug_soft_deaggro,
 		leash_range = def._grug_leash_range,
@@ -800,6 +804,10 @@ function grug_mobs.register_mob(name, def)
 	-- mobs_redo copies an explicit field whitelist, so publish the custom field
 	-- on its canonical registered prototype after registration as well. Live
 	-- entities inherit it directly from that prototype.
+	-- Group alert may acquire before the first custom tick. Publish the
+	-- candidate policy now so that first aggro starts the grace clock exactly.
+	core.registered_entities[name]._grug_damage_pursuit_candidate =
+		aggro_cfg.damage_pursuit == true
 	if disposition then
 		core.registered_entities[name]._grug_disposition = disposition
 	end

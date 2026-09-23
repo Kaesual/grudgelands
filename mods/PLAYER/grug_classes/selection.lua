@@ -20,6 +20,7 @@ local creation_sessions = {}
 local continue_creation
 local start_spawn_load
 local finish_if_ready
+local show_loading
 
 local function copy_table(source)
 	local result = {}
@@ -134,6 +135,10 @@ local function forget_loading(player)
 end
 
 local function show_race_selection(player)
+	if not grug_core.world_preparation_status().ready then
+		show_loading(player)
+		return
+	end
 	forget_loading(player)
 	local faction_id = grug_factions.get_faction(player)
 	if not faction_id then
@@ -150,6 +155,10 @@ local function show_race_selection(player)
 end
 
 local function show_class_selection(player)
+	if not grug_core.world_preparation_status().ready then
+		show_loading(player)
+		return
+	end
 	forget_loading(player)
 	local options = {}
 	for _, id in ipairs(grug_classes.class_ids) do
@@ -187,10 +196,13 @@ end
 
 -- Progress callbacks are throttled by the scheduler. Compare the rendered
 -- text as well: chunk completions with the same percent/ETA send no packet.
-local function show_loading(player, failed)
+show_loading = function(player, failed, force)
 	local name = player:get_player_name()
 	local session = creation_sessions[name]
 	local status = grug_core.world_preparation_status()
+	if session and session.preparation_dismissed and not force then
+		return false
+	end
 	local form = loading_formspec(status, failed or status.failed)
 	if session then
 		if session.shown_loading and session.shown_form == form then return end
@@ -198,6 +210,7 @@ local function show_loading(player, failed)
 		session.shown_form = form
 	end
 	core.show_formspec(name, LOADING_FORM, form)
+	return true
 end
 
 local function identity_key(player)
@@ -253,11 +266,12 @@ local function start_arrival_load(player)
 					continue_creation(p)
 					return
 				end
-				if not spawn then
-					current.load_failed = failure or "spawn_unavailable"
-					if current.pending_class_id or character_complete(p) then
-						show_loading(p, true)
-					end
+					if not spawn then
+						local failure_transition = current.load_failed == nil
+						current.load_failed = failure or "spawn_unavailable"
+						if current.pending_class_id or character_complete(p) then
+							show_loading(p, true, failure_transition)
+						end
 					return
 				end
 				current.spawn_ready = true
@@ -268,6 +282,7 @@ local function start_arrival_load(player)
 	if not started then
 		session.loading = false
 		session.load_failed = "spawn_unavailable"
+		show_loading(player, true, true)
 		return false
 	end
 	return true
@@ -303,6 +318,11 @@ finish_if_ready = function(player)
 	local session = creation_sessions[name]
 	if not session then
 		return false
+	end
+	local preparation = grug_core.world_preparation_status()
+	if not preparation.ready then
+		show_loading(player, preparation.failed)
+		return
 	end
 	if session.preparation_only then
 		if grug_core.world_preparation_status().ready then
@@ -388,12 +408,18 @@ continue_creation = function(player)
 	if not session then
 		return
 	end
+	local preparation = grug_core.world_preparation_status()
+	if not preparation.ready then
+		show_loading(player, preparation.failed)
+		return
+	end
 	if session.preparation_only then
 		finish_if_ready(player)
 		return
 	end
 	if not grug_factions.get_faction(player) then
-		return -- grug_factions owns this step
+		grug_factions.show_selection(player)
+		return
 	end
 	if not grug_classes.get_race(player) then
 		show_race_selection(player)
@@ -448,6 +474,10 @@ end
 
 core.register_on_player_receive_fields(function(player, formname, fields)
 	if formname == RACE_FORM then
+		if not grug_core.world_preparation_status().ready then
+			show_loading(player)
+			return true
+		end
 		if grug_classes.get_race(player) or
 				not grug_classes.set_race(player, chosen_id(fields) or "") then
 			reopen_later(player)
@@ -460,6 +490,10 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		show_class_selection(player)
 		return true
 	elseif formname == CLASS_FORM then
+		if not grug_core.world_preparation_status().ready then
+			show_loading(player)
+			return true
+		end
 		local session = creation_sessions[player:get_player_name()]
 		local id = chosen_id(fields) or ""
 		if grug_classes.get_class(player) or not session or
@@ -480,13 +514,15 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 			-- Retry the failed preparation unit without resetting its cursor,
 			-- then retry a new character's separate arrival load if needed.
 			grug_core.request_starts_preload()
+			session.preparation_dismissed = false
+			session.preparation_failed = false
 			if not session.preparation_only then start_spawn_load(player) end
 			finish_if_ready(player)
 		else
-			-- The player closed the form (Esc). It is gone from the screen, so
-			-- the send-on-change memo must not suppress the re-send.
+			-- Esc dismisses waiting. Stasis remains active, while the next Esc is
+			-- left to the native client menu because progress does not steal focus.
 			forget_loading(player)
-			reopen_later(player)
+			if session then session.preparation_dismissed = true end
 		end
 		return true
 	end
@@ -498,12 +534,28 @@ end)
 
 -- The scheduler supplies one throttled progress stream for either plan.
 -- Do not open a loading form over an unfinished race/class selection.
-grug_core.register_on_preparation_progress(function()
+grug_core.register_on_preparation_progress(function(status)
 	for name, session in pairs(creation_sessions) do
 		local player = core.get_player_by_name(name)
-		if player and (session.preparation_only or session.pending_class_id or
-				grug_classes.get_class(player)) then
-			finish_if_ready(player)
+		if player then
+			local failure_transition = status.failed and
+				not session.preparation_failed
+			session.preparation_failed = status.failed
+			if failure_transition then
+				session.preparation_dismissed = false
+				show_loading(player, true, true)
+			elseif status.ready then
+				-- Clear a shared-wait dismissal only on the readiness edge. Repeated
+				-- ready notifications must not reopen a dismissed arrival error.
+				if not session.preparation_ready then
+					session.preparation_dismissed = false
+				end
+				session.preparation_ready = true
+				continue_creation(player)
+			elseif not session.preparation_dismissed then
+				session.preparation_ready = false
+				show_loading(player)
+			end
 		end
 	end
 end)

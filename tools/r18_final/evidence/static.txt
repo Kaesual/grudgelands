@@ -1,0 +1,65 @@
+GLOBAL mods/ENTITIES/grug_mobs/init.lua 2	[1]	SETGLOBAL	0 -1	; grug_mobs
+GLOBAL mods/ENTITIES/mobs/api.lua 72	[26]	SETGLOBAL	8 -3	; mobs
+GLOBAL mods/ITEMS/grug_gear/init.lua 2	[32]	SETGLOBAL	0 -1	; grug_gear
+GLOBAL mods/ITEMS/grug_nodes/init.lua 304	[248]	SETGLOBAL	3 -108	; grug_nodes
+GLOBAL mods/PLAYER/grug_abilities/init.lua 2	[6]	SETGLOBAL	0 -1	; grug_abilities
+GLOBAL mods/PLAYER/grug_factions/init.lua 2	[1]	SETGLOBAL	0 -1	; grug_factions
+GLOBAL mods/PLAYER/grug_map/init.lua 2	[1]	SETGLOBAL	0 -1	; grug_map
+GLOBAL mods/PLAYER/grug_xp/init.lua 2	[1]	SETGLOBAL	0 -1	; grug_xp
+GLOBAL tools/r18_evade/micro.lua 6	[4]	SETGLOBAL	2 -1	; arg
+GLOBAL tools/r18_evade/micro.lua 12	[6]	SETGLOBAL	1 -1	; arg
+GLOBAL tools/r18_evade/micro.lua 47	[16]	SETGLOBAL	7 -14	; mobs
+GLOBAL tools/r18_evade/micro.lua 63	[19]	SETGLOBAL	7 -23	; grug_mobs
+GLOBAL tools/r18_populations/policy_fixture.lua 12	[14]	SETGLOBAL	3 -4	; core
+GLOBAL tools/r18_populations/policy_fixture.lua 18	[25]	SETGLOBAL	3 -6	; grug_core
+GLOBAL tools/r18_populations/policy_fixture.lua 33	[32]	SETGLOBAL	3 -12	; grug_zones
+GLOBAL tools/r18_populations/policy_fixture.lua 35	[33]	SETGLOBAL	3 -18	; grug_mobs
+GLOBAL tools/r18_populations/policy_fixture.lua 39	[34]	SETGLOBAL	3 -19	; mobs
+GLOBAL tools/r18_tools/fixture.lua 11	[13]	SETGLOBAL	3 -5	; core
+GLOBAL tools/r18_tools/fixture.lua 18	[16]	SETGLOBAL	4 -6	; vector
+GLOBAL tools/r18_tools/fixture.lua 59	[44]	SETGLOBAL	4 -24	; default
+GLOBAL tools/r18_tools/fixture.lua 61	[46]	SETGLOBAL	4 -27	; grug_materials
+GLOBAL tools/r18_tools/fixture.lua 684	[191]	SETGLOBAL	21 -153	; grug_zones
+GLOBAL tools/r18_ux/fixture.lua 31	[34]	SETGLOBAL	7 -5	; core
+GLOBAL tools/r18_ux/fixture.lua 35	[36]	SETGLOBAL	7 -12	; grug_xp
+GLOBAL tools/r18_ux/fixture.lua 39	[37]	SETGLOBAL	7 -14	; grug_inventory
+GLOBAL tools/r18_ux/fixture.lua 43	[38]	SETGLOBAL	7 -16	; grug_mobs
+GLOBAL tools/r18_ux/fixture.lua 55	[42]	SETGLOBAL	7 -18	; grug_jobs
+GLOBAL tools/r18_ux/fixture.lua 270	[91]	SETGLOBAL	18 -14	; grug_inventory
+GLOBAL tools/r18_ux/fixture.lua 276	[92]	SETGLOBAL	18 -60	; sfinv
+GLOBAL tools/r18_ux/fixture.lua 284	[97]	SETGLOBAL	18 -5	; core
+PARSER PASS files=55
+SWEEP 1
+no hits
+SWEEP 2
+no hits
+SWEEP 3
+no hits
+SWEEP 4
+mods/ENTITIES/grug_mobs/boar_variants.lua:106:-- still reaches with zone `inner` up to |x| ~932, and the patch model (§1.4)
+mods/ENTITIES/grug_mobs/init.lua:69:--   def._grug_tier        — "normal" (default) | "elite" | "rare" | "boss"
+tools/r18_ux/fixture.lua:32:	chat_send_player = function(name, text) chats[#chats + 1] = name .. "|" .. text end,
+tools/r18_ux/fixture.lua:124:io.write("r18_ux_v1|trainer=success+known+confirm|cooking=protected|players=isolated|style=tint+border|quest=concise+wear_identity|raw_weapon=observed_only\n")
+mods/PLAYER/grug_inventory/pages.lua:302:-- Homepage & nav order: Character first, Bags second, Crafting after.
+mods/PLAYER/grug_factions/init.lua:407:	params = "[<player>] [throng|accord]",
+mods/ENTITIES/grug_mobs/spider.lua:81:-- §4 row "Giant Spider (all) | forest litter, bone litter, rainforest litter
+mods/ENTITIES/grug_mobs/spider.lua:82:-- | 20 | 1800 | 4 | max 5 | outer, coast, underground", split by continent
+mods/ENTITIES/grug_mobs/spider.lua:144:-- every spider tint on the same table anyway ("spider table | Giant Spider |
+mods/PLAYER/grug_classes/selection.lua:610:		return true, ("%s %s %s, level %d | Str %d Int %d Dex %d | " ..
+mods/PLAYER/grug_classes/selection.lua:611:			"HP %d/%d, mana %d | melee +%d, spell +%d, crit %.1f%%, dodge %.1f%%"):format(
+mods/CORE/grug_core/combat.lua:4:-- Damage pipeline & combat state (docs/design/classes.md §2,
+mods/PLAYER/grug_abilities/init.lua:729:-- Ability registration & item. One tool per ability; the item's `range`
+mods/PLAYER/grug_abilities/init.lua:1829:	return SKIN_VERSION .. "|" .. src
+mods/PLAYER/grug_abilities/init.lua:1875:	local token = SWING_CAPS_VERSION .. "|" .. string.format("%.17g", interval)
+mods/ENTITIES/mobs/api.lua:1:-- translation & mod checks
+mods/ENTITIES/mobs/api.lua:701:-- update nametag & infotext
+mods/ENTITIES/mobs/api.lua:1543:-- are we able to dig & drop a node?
+mods/ENTITIES/mobs/api.lua:2144:-- dogshoot attack switch & counter function
+mods/ENTITIES/mobs/api.lua:2163:-- stop attack & reset vars
+mods/ENTITIES/mobs/api.lua:2896:-- falling & fall damage
+mods/ENTITIES/mobs/api.lua:2949:-- deal damage & effects when mob punched
+mods/ENTITIES/mobs/api.lua:3826:-- handle mob lifetimer & expiration
+mods/ENTITIES/mobs/api.lua:5152:	-- sneak & right-click mob to show what it eats/follows
+SWEEP 5
+mods/ENTITIES/mobs/api.lua:4737:	if mobs_griefing and not minetest.is_protected(pos, "") then
+Inspect all global writes and sweep hits; strings/comments may match.

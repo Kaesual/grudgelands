@@ -195,6 +195,87 @@ local MOB_PALETTES = {
 	["grug_mobs:rift_spawn"] = {rift_spawn = true},
 }
 
+-- Boars share one family budget and one visual identity per named zone. The
+-- node whitelist remains a habitat check, but a biome patch inside a zone may
+-- no longer switch the family to a second lookalike registration.
+local BOAR_VARIANT_BY_ZONE = {
+	elandor_hearthpine_vale = "grug_mobs:boar",
+	elandor_copperfell_foothills = "grug_mobs:boar",
+	elandor_dawnmere_fields = "grug_mobs:boar",
+	elandor_goldmead_vale = "grug_mobs:boar",
+	elandor_whitebridge_shire = "grug_mobs:boar",
+	elandor_silverleaf_glades = "grug_mobs:boar",
+	elandor_starbough_vale = "grug_mobs:boar",
+	kragmar_stillgrave_hollow = "grug_mobs:plague_boar",
+	kragmar_mournfen = "grug_mobs:plague_boar",
+	kragmar_sunscar_flats = "grug_mobs:boar",
+	kragmar_redtusk_savanna = "grug_mobs:boar",
+	kragmar_kapok_cradle = "grug_mobs:jungle_boar",
+	kragmar_raincall_basin = "grug_mobs:jungle_boar",
+}
+
+local BOAR_VARIANTS = {
+	["grug_mobs:boar"] = true,
+	["grug_mobs:plague_boar"] = true,
+	["grug_mobs:jungle_boar"] = true,
+}
+
+-- Other shared-model regional tints use the same zone-level selection. Rows
+-- with genuinely different silhouettes or combat roles are not folded into
+-- this table merely because their imported mesh is shared.
+local LOOKALIKE_FAMILY = {
+	["grug_mobs:zombie"] = "zombie",
+	["grug_mobs:sun_dried_husk"] = "zombie",
+	["grug_mobs:giant_spider"] = "spider",
+	["grug_mobs:pale_spider"] = "spider",
+	["grug_mobs:jungle_spider"] = "spider",
+	["grug_mobs:jungle_lynx"] = "cat",
+	["grug_mobs:panther"] = "cat",
+	["grug_mobs:snow_leopard"] = "cat",
+	["grug_mobs:skeleton_archer"] = "skeleton_archer",
+	["grug_mobs:skeleton_raider"] = "skeleton_archer",
+	["grug_mobs:frost_stray"] = "skeleton_archer",
+}
+
+local ZONE_LOOKALIKE_SELECTION = {
+	kragmar_sunscar_flats = {zombie = "grug_mobs:sun_dried_husk"},
+	kragmar_redtusk_savanna = {zombie = "grug_mobs:sun_dried_husk"},
+	elandor_glassroot_wilds = {
+		spider = "grug_mobs:jungle_spider", cat = "grug_mobs:panther",
+	},
+	kragmar_thunderroot_wilds = {
+		spider = "grug_mobs:jungle_spider", cat = "grug_mobs:panther",
+	},
+	front_stormscale_summit = {
+		spider = "grug_mobs:jungle_spider", cat = "grug_mobs:panther",
+		skeleton_archer = "grug_mobs:skeleton_raider",
+	},
+	front_wyrmglass_crown = {
+		cat = "grug_mobs:snow_leopard",
+		skeleton_archer = "grug_mobs:frost_stray",
+	},
+	elandor_ashenward_march = {
+		skeleton_archer = "grug_mobs:skeleton_raider",
+	},
+	kragmar_bannerbreak_mesa = {
+		skeleton_archer = "grug_mobs:skeleton_raider",
+	},
+	front_gravesalt_escarpment = {
+		skeleton_archer = "grug_mobs:skeleton_raider",
+	},
+	front_broken_causeway = {
+		skeleton_archer = "grug_mobs:skeleton_raider",
+	},
+	front_shattered_line = {
+		zombie = "grug_mobs:sun_dried_husk",
+		skeleton_archer = "grug_mobs:skeleton_raider",
+	},
+	front_skyglass_canopy = {
+		spider = "grug_mobs:jungle_spider", cat = "grug_mobs:panther",
+		skeleton_archer = "grug_mobs:skeleton_raider",
+	},
+}
+
 -- Kraken has an independent authority instead of a named-zone mob palette:
 -- water_class_at == deep_ocean in kraken.lua.
 local INDEPENDENT_AUTHORITY = {
@@ -304,6 +385,7 @@ end
 local hostile_spawns = {}
 local spawn_clocks = {}
 local ambient_density_spawns = {}
+local natural_min_levels = {}
 local zone_palette_at
 
 local function validate_clock(clock, name)
@@ -333,6 +415,7 @@ function grug_mobs.register_spawn_role(name, def)
 	validate_clock(def.clock, name)
 	hostile_spawns[name] = def.passive ~= true and def.attack_players ~= false
 	spawn_clocks[name] = def.clock
+	natural_min_levels[name] = def._grug_min_level or 1
 	-- Ordinary natural rows include hostile creatures and neutral huntable
 	-- wildlife. Critters are scenery, while NPC/rare/boss/encounter populations
 	-- have authored or dedicated owners and never inherit ambient tuning.
@@ -616,6 +699,10 @@ function grug_mobs.spawn_policy_allows(mob_name, pos)
 	if pos.y < 0 then
 		return false
 	end
+	local local_level = grug_zones.mob_level_at(pos)
+	if not local_level or local_level < (natural_min_levels[mob_name] or 1) then
+		return false
+	end
 	-- The Gull follows the logical beach palette. Crab rows are narrower:
 	-- their only host is dry `default:sand`, and their central level band
 	-- distinguishes neutral shores from the elite coast roster. The node host
@@ -632,11 +719,21 @@ function grug_mobs.spawn_policy_allows(mob_name, pos)
 		end
 		return level >= 45 and level <= 60
 	end
+	local zone_id = grug_zones.id_at(pos.x, pos.z)
+	if BOAR_VARIANTS[mob_name] and BOAR_VARIANT_BY_ZONE[zone_id] ~= mob_name then
+		return false
+	end
+	local family = LOOKALIKE_FAMILY[mob_name]
+	local selection = zone_id and ZONE_LOOKALIKE_SELECTION[zone_id]
+	if family and selection and selection[family] and
+			selection[family] ~= mob_name then
+		return false
+	end
 	local mob_palettes = MOB_PALETTES[mob_name]
 	if not mob_palettes then
 		return false
 	end
-	local zone_palette = zone_palette_at(pos)
+	local zone_palette = zone_id and ZONE_MOB_PALETTES[zone_id] or nil
 	if not zone_palette then
 		return false
 	end

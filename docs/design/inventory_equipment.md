@@ -231,7 +231,7 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   or automatic ammunition until repaired. Removing a filled quiver
   transfers all arrows to `main` atomically or refuses unchanged if they do not
   all fit.
-- No item drop on death (unchanged; death costs XP, not gear).
+- No item drop or XP loss on death (Round 18).
 
 ## 4. Crafting model (revised 2026-09-21)
 
@@ -318,3 +318,12 @@ named enchanted variants. A compact Combat indicator appears beside the life
 bar only while the living player is in the existing combat state. Station recipe
 book buttons occupy a separate right-hand position clear of input/fuel/output
 slots, mode explanations and crafting-operation controls.
+
+## Round 18 interaction clarity
+
+Weapon-slot tooltips and contextual raw-weapon hints explain that equipped
+weapons provide combat stats while hotbar skills execute attacks. No automatic
+equipping or hotbar-weapon combat fallback. The top inventory row is explicitly
+highlighted as Hotbar. Selected page controls use a visible border/tint rather
+than a `>` prefix. Crafting starts with recipe-book guidance; Skills explains
+safe icon deletion/recovery and one carried copy across main/craft/owned bags.

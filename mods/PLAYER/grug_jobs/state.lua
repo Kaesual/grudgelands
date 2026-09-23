@@ -88,14 +88,13 @@ function grug_jobs.unlearn(player, profession)
 	if not definition or not grug_jobs.has(player, profession) then
 		return false, "You do not know that profession."
 	end
+	if definition.class ~= "primary" then
+		return false, definition.name .. " cannot be unlearned."
+	end
 	local meta = player:get_meta()
-	if definition.class == "primary" then
-		for slot = 1, PRIMARY_SLOTS do
-			local key = META_PRIMARY .. slot
-			if meta:get_string(key) == profession then set_string(meta, key, "") end
-		end
-	else
-		set_int(meta, META_LEARNED .. profession, 0)
+	for slot = 1, PRIMARY_SLOTS do
+		local key = META_PRIMARY .. slot
+		if meta:get_string(key) == profession then set_string(meta, key, "") end
 	end
 	set_int(meta, META_LEVEL .. profession, 0)
 	set_int(meta, META_CRAFTS .. profession, 0)

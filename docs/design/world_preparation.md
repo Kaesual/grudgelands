@@ -120,3 +120,16 @@ The persisted surface authority also binds a fixed, bounded source digest of
 its live terrain/layout constructors and selection adapters. This is calculated
 once at load and excludes engine-assigned content IDs; unchanged restarts must
 remain stable, while changed terrain or selection semantics reject reuse.
+
+## Round 18 scheduling and waiting
+
+Use bounded productive work without artificial selection pauses; decouple UI
+notification cadence from scheduler work. Preserve the surface envelope, one
+emerge thread, ordered successful-prefix persistence and stop/resume. Constant
+CPU utilization is not an invariant. Keep the accepted ETA behavior.
+
+Pending preparation comes before faction/race/class creation; both page display
+and receive-fields actions honor it. Escape dismisses the form without releasing
+stasis, allowing the native menu on a subsequent Escape. Routine progress does
+not reopen it. A new failure opens the error/retry form once. Readiness continues
+creation or releases an existing complete character without regranting its kit.

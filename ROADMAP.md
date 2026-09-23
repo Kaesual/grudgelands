@@ -1,10 +1,14 @@
 # Roadmap — Grudgelands
 
-Technically complete: [Round 17](docs/research/round17-completion.md), home travel,
+Technically complete: [Round 18](docs/research/round18-completion.md), playtest
+clarity, action icons, complete regional atlas coverage, population/pursuit,
+progression/tools and preparation/arrival fixes. Independent reviews and final
+technical gates are recorded in the completion receipt; GUI acceptance remains
+separate. Held light and friendly-guard healing are deferred.
+Next: [Round 18 GUI playtest](docs/research/round18-playtest.md).
+
+Previous: [Round 17 completion](docs/research/round17-completion.md), home travel,
 reliable ranged combat and configurable combat readability/difficulty.
-Independent reviews and final technical gates PASS; merged to main, locally
-synchronized and pushed.
-Next: [Round 17 GUI playtest](docs/research/round17-playtest.md).
 
 Previous increment: [Round 16 completion](docs/research/round16-completion.md).
 Playtest fixes, progression/control tuning, atmosphere/audio/density and

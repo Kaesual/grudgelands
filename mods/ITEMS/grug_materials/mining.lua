@@ -92,12 +92,26 @@ function grug_materials.build_pick_capabilities(tier, values)
 			cracky = {times = copy_times(values.cracky_times or
 				profile.cracky_times), uses = uses,
 				maxlevel = 0},
+			grug_loose = {times = copy_times(values.loose_times), uses = uses,
+				maxlevel = tonumber(values.loose_maxlevel) or 0},
 			grug_resource = {times = resource_times(tier, ordinary_time),
 				uses = uses, maxlevel = 0},
 		},
 		damage_groups = table.copy(values.damage_groups or profile.damage_groups or
 			{fleshy = 4}),
 	}
+end
+
+-- Keep the material taxonomy separate from `crumbly`: that upstream group
+-- also contains solid sandstone, clay and snow. The engine selects the fastest
+-- matching groupcap, so a dedicated group makes the allowed shovel surface
+-- explicit and gives picks one unambiguous slower route.
+function grug_materials.build_loose_times(shovel_times)
+	local times = {}
+	for rating, seconds in pairs(shovel_times or {}) do
+		times[rating] = seconds * 2
+	end
+	return times
 end
 
 function grug_materials.pick_tier_for_stack(stack)

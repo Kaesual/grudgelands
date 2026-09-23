@@ -20,6 +20,7 @@ announcement changes this rule; see [AGENTS.md](../../AGENTS.md#fresh-server-dev
 
 | File | Scope | Status |
 |------|-------|--------|
+| [`playtest_quality_revision.md`](playtest_quality_revision.md) | Round 18 approved combat, XP, onboarding, map and preparation revisions. | **decided**, implemented; GUI acceptance pending. |
 | [`world.md`](world.md) | Canonical names, target named-zone geography, destructibility, natural depth and harvesting, ocean classes, capitals/kings, structures, dragons, housing integration, travel, races and settlements. The WP18 radial map appears only as a labeled running-code migration baseline. | **decided**; feeds WP13/WP17/WP23/WP24/WP34/WP40. |
 | [`world_zones.md`](world_zones.md) | Complete 38-zone macro-map: stable ids, independent race-region/territory/PvP fields, exact adjacency, relief and POI budgets, six starts/capitals, all level-31–60 ordinary zones contested, shared mutable Battlegrounds, offshore dragons, housing masks, hybrid-v7 API, WP40 gate, exact WP41 transaction and bounded WP42 encounters. | **decided**; authoritative surface contract for WP9/WP12/WP13/WP17/WP23/WP31/WP33/WP40–WP42. |
 | [`housing.md`](housing.md) | Open-world Claim Stones in ten level-11–30 zones; four radii; 101×101 reservation and exact AABB spacing; trust, Home Stone, stable ids, live/dormant/decay/recovery/reissue lifecycle, mutability boundaries, persistence and capacity audits. | **decided** (2026-08-12); implementation WP24, travel integration WP17. |

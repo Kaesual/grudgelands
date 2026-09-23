@@ -162,6 +162,10 @@ mobs:spawn({
 	nodes = {
 		"default:dirt_with_rainforest_litter", -- grug_jungle_fringe (Accord)
 		"grug_nodes:dirt_with_canopy_litter", -- grug_deep_jungle (Throng)
+		-- Glassroot mixes the jungle and forest palettes but selects one
+		-- regional spider identity for the whole named zone.
+		"grug_nodes:dirt_with_forest_litter",
+		"grug_nodes:dirt_with_silver_litter",
 	},
 	max_light = 5,
 	day_toggle = false,

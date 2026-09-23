@@ -24,12 +24,12 @@ projects: **[docs/research/](docs/research/)**.
 - This changes execution mechanics, not model authorization or independent
   review requirements. Read `docs/process/agent-model-policy.md` and
   `docs/process/cross-cli-orchestration.md` for those rules.
-- **Current development session (Round 17):** Claude credits are exhausted. No Claude CLI,
+- **Current development session (Round 18):** Claude credits are exhausted. No Claude CLI,
   Claude agent, Opus or Fable task is authorized in this session. Root is Astra;
   ordinary implementation/review uses native Sol, with native Astra allowed for
   hard/performance-critical work. This session restriction can change only by
   a later explicit user instruction. Durable active work state:
-  `docs/research/round17-execution.md` (current approved round).
+  `docs/research/round18-execution.md` (current approved round).
 
 ## Fresh-server development mode
 
@@ -66,6 +66,15 @@ projects: **[docs/research/](docs/research/)**.
   confirmation.
 
 ## Active round
+
+Round 18 implementation and independent reviews are complete.
+Contract: `docs/research/round18-plan.md`; durable lane status:
+`docs/research/round18-execution.md`; living revision:
+`docs/design/playtest_quality_revision.md`. Delivery and exact technical evidence:
+`docs/research/round18-completion.md`; next user GUI pass:
+`docs/research/round18-playtest.md`. Held-torch moving light was deferred after the
+VoxeLibre complexity preflight; friendly-guard healing remains deferred too.
+Root Astra orchestrated native Sol/Astra lanes; no provider CLI.
 
 Round 17 is delivered on main, locally synchronized and pushed.
 `docs/research/round17-plan.md` and
@@ -365,7 +374,8 @@ Details + line numbers in [docs/research/](docs/research/).
   `register_on_player_hpchange`).
 - **XP/levels**: template VoxeLibre `mods/HUD/mcl_experience/init.lua` — XP
   as an int in player meta, `level_to_xp` curve, `register_on_add_xp`
-  pipeline, HUD bar. XP loss on death via `core.register_on_dieplayer`.
+  pipeline, HUD bar. Round 18: no death XP loss; cumulative XP caps at level 60,
+  and real upward level changes fill living HP/mana with one gold burst.
 - **Professions**: `grug_jobs` owns the exact seven primaries — Weaponsmith,
   Armorsmith, Alchemist, Tailor, Leatherworker, Woodcarver and Goldsmith — plus Cooking,
   two primary slots, player-meta progression and the UI-only recipe books.
@@ -493,7 +503,7 @@ Details + line numbers in [docs/research/](docs/research/).
   without going through `grug_inventory.equipment_changed`. That notifier is
   the sole equipment-driven stats/page refresh source:
   `grug_classes.apply_stats` is the deliberately first consumer (through a
-  wrapper so `listname` is not mistaken for its `heal_gain` argument), then
+  wrapper so `listname` is not mistaken for its `fill_hp` argument), then
   exactly one Character-page refresh consumer; normal equip, class change
   and join add no direct duplicate refresh (a genuine nested write may still
   earn the second pass).

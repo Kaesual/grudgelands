@@ -119,7 +119,7 @@ local function content(player)
 		"textarea[0.25,3.75;9.9,2.3;;;" ..
 		core.formspec_escape(passive_text(player)) .. "]" ..
 		"textarea[0.25,6.15;9.9,0.7;;;" ..
-		"Drag an unlocked ability or mount to inventory. Drop its icon or drag it back here to remove it.]"
+		"Drag an unlocked ability or mount to inventory. You can own one copy across inventory, crafting and bags. Dropping or returning the icon deletes only that copy, never the unlock; recover it here when no owned copy remains.]"
 
 end
 

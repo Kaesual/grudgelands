@@ -147,7 +147,7 @@ Core principles:
   weapon's T4/T5/T6 counter finish adds +1/+2/+3 flat damage to an accepted
   attack sourced from that equipped weapon, after the one ordinary Crit result
   and before armor/absorb; Crit never multiplies it. It does not ride on a
-  spell merely because ability icons inherit the weapon's appearance. An
+  spell merely because the held skill uses the weapon's appearance. An
   active Warding Draught applies its 5/7.5/10% target-race reduction after
   armor and before absorb. Both require matching race identity on a hostile
   player or combat-capable NPC/mob and ignore passive invulnerable service
@@ -437,55 +437,18 @@ cooldown/charge display. Server ledgers remain authoritative.
 
 ## 2c. What an ability item looks like
 
-Decided 2026-08-08, shipped with WP35. This **answers** §6's old deferral
-of "own ability icons": the icon *is* the equipped weapon plus the ability
-color, and the tinted orb becomes the no-weapon fallback.
+Revised 2026-09-23, Round 18:
 
-- Every ability item **wears the equipped item's skin**. An ability reads
-  either the weapon slot (the default — every shipped ability) or the
-  offhand (for WP14's shield abilities). A Warrior with a sword equipped
-  holds *his* sword whichever ability is selected, and swapping the weapon
-  reskins every ability at once, without reopening the character screen.
-- **No exception list.** The abilities that do no weapon damage at all —
-  Blink, Renew, Power Word: Shield and every future utility spell — take
-  the weapon skin like the rest. An exception list would put the orb back
-  on exactly the abilities whose color is hardest to remember.
-- **Hotbar icon = the shared orb texture, tinted in the ability's color
-  and dimmed, with the weapon art composited on top.** The color the eye
-  already learned stays a large area, so the abilities stay tellable apart.
-  No new asset is needed for it.
-- **The in-hand (wield) image is the weapon art alone, no glow** — a
-  glowing disc extruded into a slab in the player's hand is exactly the
-  "round thing" this replaces.
-- **Empty slot = the plain tinted orb**, i.e. the look the game shipped
-  with before the weapon slot existed.
-- **Which skill is this? — the name goes on the HUD, not on the icon**
-  (decided 2026-08-09, WP38). Color alone was judged not enough to tell
-  eight ability items apart. Writing the name into the icon is **not
-  possible**: Luanti has no text texture modifier — the complete list is
-  `doc/lua_api.md` "Texture modifiers" (`[combine`, `[resize`, `[opacity`,
-  `[invert`, `[brighten`, `[noalpha`, `[makealpha`, `[transform`,
-  `[inventorycube`, `[fill`, `[lowpart`, `[verticalframe`, `[mask`,
-  `[sheet`, `[colorize`, `[colorizehsl`, `[multiply`, `[screen`, `[hsl`,
-  `[contrast`, `[overlay`, `[hardlight`, `[png`) and there is no `[text`.
-  Baking labels into PNGs would mean one authored texture per ability for
-  about four legible characters at 16 px. Instead: **when the wielded
-  ability item changes, the HUD shows that skill's name** — no asset, fully
-  legible, and it answers the question at the moment the player asks it.
-- **Signature icons, after the MVP.** The long-term answer is one
-  **recognizable symbol per ability** replacing the tinted orb backdrop,
-  with the weapon art still composited on top — recognition beats color
-  coding. Layering is already how the icon is built (a `^` overlay chain in
-  one composition site), so this costs **art and no machinery**: the same
-  helper, a different backdrop texture per ability, and the color coding
-  becomes redundant. Not in WP38.
-- Still deferred: the alternative composition (weapon art plus a tinted
-  border/halo overlay) — it needs art, not a redesign. The weapon **is** shown
-  on the character model in third person since WP13 (2026-09-14): one attached
-  `wielditem` entity on the right-hand bone, held hilt-in-fist with the blade
-  forward (`character_visuals.md` §4). That did not need the multiskin layering
-  `inventory_equipment.md` §1 parks in Phase 3, which is still what a *layered*
-  weapon texture would need.
+- Every active class/talent ability has a recognizable action icon in inventory,
+  hotbar and Skills catalogue. It does not composite the equipped weapon into
+  that icon. The skill name still appears briefly on selection.
+- First-person wield and third-person held presentation still use the equipped
+  weapon (or the ability's declared equipment source); utilities follow the same
+  rule. Swapping equipment refreshes presentation without changing the action icon.
+- Preserve bow draw stages, cooldown/charge wear, material-tier weapon appearance
+  and honest empty-slot presentation. Icons grant no entitlement or combat power.
+- Existing accepted weapon and armor media are unchanged. The round delivers a
+  reviewed active-skill contact sheet and provenance for imported/generated icons.
 
 ## 3. Warrior (Rage)
 
@@ -573,7 +536,7 @@ moves into the talent tree.
 ## 6. Explicitly deferred
 
 - Cast times / cast-bar spells, ability sounds → Phase 3 polish.
-  (**Ability icons are no longer deferred**: since 2026-08-08 an ability
+  (**Ability icons are no longer deferred**: Round 18 separates action icons from held weapon art; historically an ability
   item shows the equipped weapon plus its own color — §2c.)
 - Warrior shield abilities → after WP14 (offhand/shields).
 - Buffs/auras (e.g. Battle Shout) → with skill trees

@@ -6,18 +6,21 @@ local M = {}
 local VIEWS = {
 	world = {label = "World", texture = "grug_map_atlas_world.png",
 		min_x = -3600, max_x = 3600, min_z = -3200, max_z = 3200},
-	dwarf = {label = "Dwarf lands", texture = "grug_map_atlas_dwarf.png",
-		min_x = -2700, max_x = -900, min_z = -3000, max_z = -1400},
-	human = {label = "Human lands", texture = "grug_map_atlas_human.png",
-		min_x = -900, max_x = 900, min_z = -3000, max_z = -1400},
-	elf = {label = "Elf lands", texture = "grug_map_atlas_elf.png",
-		min_x = 900, max_x = 2700, min_z = -3000, max_z = -1400},
-	undead = {label = "Undead lands", texture = "grug_map_atlas_undead.png",
-		min_x = -2700, max_x = -900, min_z = 1400, max_z = 3000},
-	orc = {label = "Orc lands", texture = "grug_map_atlas_orc.png",
-		min_x = -900, max_x = 900, min_z = 1400, max_z = 3000},
-	troll = {label = "Troll lands", texture = "grug_map_atlas_troll.png",
-		min_x = 900, max_x = 2700, min_z = 1400, max_z = 3000},
+	-- The six regional views are the complete 3 x 2 cover of the world extent.
+	-- Each internal seam has 120 nodes of overlap on both sides. Stable ids and
+	-- texture names remain unchanged so open-page state and media stay stable.
+	dwarf = {label = "Southwest", texture = "grug_map_atlas_dwarf.png",
+		min_x = -3600, max_x = -1080, min_z = -3200, max_z = 120},
+	human = {label = "South-central", texture = "grug_map_atlas_human.png",
+		min_x = -1320, max_x = 1320, min_z = -3200, max_z = 120},
+	elf = {label = "Southeast", texture = "grug_map_atlas_elf.png",
+		min_x = 1080, max_x = 3600, min_z = -3200, max_z = 120},
+	undead = {label = "Northwest", texture = "grug_map_atlas_undead.png",
+		min_x = -3600, max_x = -1080, min_z = -120, max_z = 3200},
+	orc = {label = "North-central", texture = "grug_map_atlas_orc.png",
+		min_x = -1320, max_x = 1320, min_z = -120, max_z = 3200},
+	troll = {label = "Northeast", texture = "grug_map_atlas_troll.png",
+		min_x = 1080, max_x = 3600, min_z = -120, max_z = 3200},
 }
 local VIEW_ORDER = {"world", "dwarf", "human", "elf", "undead", "orc", "troll"}
 local providers = {}
@@ -108,4 +111,3 @@ function M.heading_frame(yaw)
 end
 
 return M
-

@@ -438,7 +438,7 @@ Normal tier at level L:
   remains **2.6** because its roster role is explicitly the one slow tank. The
   deep-sea Kraken Guard's shipped value is **5.0**. The ordinary 4.6 band keeps
   the Swiftness Draught below it (4.0 × 1.10 = 4.4), and continues to feed the
-  25 m soft de-aggro and 45 m / 40 m chase rules of §4. Current definition
+  pursuit policy of §4. Current definition
   sites for the changed families: `grug_mobs/stag.lua:21`, `ram.lua:26`, `zebra.lua:20`,
   `carrion_crow.lua:54`, `zombie.lua:29` and `golem.lua:87`; the exceptions
   are `bandit_archer.lua:78`, `skeleton_archer.lua:81`,
@@ -485,8 +485,8 @@ Normal tier at level L:
 - **View range follows the attack type** (decided 2026-09-16, user ruling 3):
   a **`dogshoot` family sees 16 m**, a **melee family 10–14 m by habitat**.
   The full per-mob table and the habitat reasons are `biomes_mobs.md` §3.1;
-  **16 is the ceiling for a land mob**, because §4's 45 m chase give-up and
-  40 m leash both depend on a mob keeping a target it can no longer see. The
+  **16 is the ceiling for a land mob**. Acquisition range remains separate
+  from Round 18 damage-sustained chase persistence. The
   same ruling asks for more ranged families: the first is the **Bandit
   Archer**, one slot in three of the existing bandit camp, which takes the
   registered ranged roster from **4 of 43 to 5 of 44** and is the first ranged
@@ -509,9 +509,7 @@ Normal tier at level L:
   shared mobs_redo death boundary regardless of whether a player, NPC, mob or
   the environment dealt the final damage, without replacing the mob's death
   callback, animation or smoke fallback (`mods/ENTITIES/mobs/api.lua:887-975`).
-- **PvE death loss** is 25% of the whole current-level XP span, clamped at the
-  current level start; it never de-levels. Level 60 has no following span and
-  therefore no PvE XP loss (`mods/PLAYER/grug_xp/init.lua:86-104`).
+- **Death never removes XP** (Round 18), regardless of level or cause.
 - **Player-tag drop rule** (decided 2026-08-06, WP6): a mob drops loot
   only if a player damaged it (`do_punch` sets a tag; the tag stores
   the attacker's professions for loot-table hooks like the
@@ -520,9 +518,10 @@ Normal tier at level L:
   guards farm it). Faction NPCs drop only when killed by ENEMY players
   (PvP); NPC-vs-mob kills never drop. Kills LotT's armor-litter
   problem.
-- **Soft de-aggro** (with the speed rule, decided 2026-08-06): beyond
-  ~25 m from its target a chasing mob drops to walk speed — fleeing is
-  hard, not impossible (mobs are otherwise faster than players).
+- **Bounded-actor soft de-aggro:** where the retained encounter policy enables
+  it, beyond ~25 m a chasing actor drops to walk speed. Round 18 ordinary
+  damage-sustained world mobs do not use this slowdown or distance give-up;
+  their incoming-damage clock governs disengagement.
 - **Readability rules for mobs** (decided 2026-08-06, shipped with WP6):
   elites/rares signal via **scale + tint** — elite `visual_size` ×1.6,
   gold `^[colorize:#ffa800:80`, nametag prefix `Elite `; rare ×2,
@@ -537,7 +536,7 @@ Normal tier at level L:
   winds up into empty air), afterwards one every **10 s**. The same
   mechanic later scales up to bosses. **One behavior
   verb per mob family** (boars charge, wolves hunt in packs and flee
-  low to return with friends, zombies never leash, skeleton archers
+  low to return with friends, zombies pursue while damage sustains the fight, skeleton archers
   `dogshoot`). **Named rares broadcast** their spawn faction-wide
   ("Grimtusk has been sighted…") — a meeting point for a low-population
   server.
@@ -674,31 +673,25 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
 - A mob switches targets only when a rival exceeds **120%** of the
   current target's threat (hysteresis against ping-pong). A threat entry
   is only a switch candidate while its player is connected, alive and
-  within the **threat validity radius of 40 m** (= the leash radius): a
+  within the ordinary **threat candidate radius of 40 m**; active ambient
+  pursuit follows the Round 18 exception below. A
   stale entry from someone who left the fight can never pull the mob.
-- **Leash/reset**: **40 m of DRAG measured from where THAT chase began**
-  (the anti-kiting rule — not distance from home, or a mob that merely
-  wandered would reset itself forever) or 15 s without player contact →
-  threat table cleared, target dropped, drop tag cleared, mob heals to
-  full. A reset mob then **evades home** (decided 2026-08-07, WoW
-  model): if it stands further from its own post/spawn than its own
-  leash radius, it **runs back visibly at 1.5× its run speed**, and
-  while evading it is **untouchable** — every attack is cancelled
-  outright (no damage, no weapon wear, no feedback) and it acquires no
-  targets — until it arrives (~4 nodes from home), where it instantly
-  becomes a normal mob again. Safety net: a mob whose straight walk
-  home is blocked by terrain falls back to the old **teleport snap
-  after ~40 s** — broken mobs self-heal, and in the normal case the
-  player sees the mob recognizably run away instead of vanishing.
-  A floating "Evade!" combat text is deferred until a combat-text
-  system exists (future WP idea). Designated patrollers are exempt —
-  being far from the post is their job. Mob-vs-NPC fights are not
-  leashed.
-- **Chase persistence**: a mob gives up a chase at **45 m**, not at its
-  `view_range` (mobs_redo's default, ≤ 16 m for ground mobs — with it,
-  neither the 25 m soft de-aggro nor the 40 m leash could ever fire). The
-  45 m sits deliberately above the leash so the LEASH is what ends a
-  chase, with a little hysteresis.
+- **Ambient pursuit (Round 18):** ordinary free-roaming combat mobs, including
+  Zombies and their ambient variants, use a 15-second clock since incoming
+  effective player/guard damage. Initial aggro seeds the clock. Outgoing hits,
+  taunt and threat-only updates do not refresh it. No chase-origin distance or
+  ordinary LOS-patience timeout ends a damage-sustained fight; a valid available
+  target remains required. No distant terrain is loaded to keep a target alive.
+- **Encounter-owned exceptions:** bosses/retinue, fixed guards, camp-owned mobs,
+  location-bound rares and the bespoke ocean Kraken retain their previous
+  home/post/encounter bounds and lifecycle. The old 40 m chase-origin drag,
+  15-second contact and 45 m give-up rules apply only where these actors already
+  used them; explicit encounter overrides remain authoritative.
+- **Evade:** reset clears threat, target and drop tag and heals the mob. Ambient
+  mobs more than about four nodes from home run back visibly at 1.5× run speed,
+  untouchable and without reacquiring targets. Arriving ends evade; a blocked
+  return teleports home after about 40 seconds. Bound actors keep their prior
+  return thresholds. Incoming NPC damage does not create player reward credit.
 - **Catching up must be enough to hit** (decided 2026-08-13): a mob that has
   closed to within its `reach` lands its attacks on a target fleeing at full
   speed. The **attack cadence therefore runs during the chase**, not only
@@ -973,3 +966,16 @@ Startup presentation settings:
 category default. Bars have a nominal world size of 0.8 by 0.1 nodes; parent
 visual scale must not magnify them. Flight visuals use a duration bounded to
 0.05–2 seconds, so near-zero partial bow draws never cause long pursuit.
+
+## Round 18 pursuit policy
+
+This revision supersedes ordinary ambient chase-anchor and contact rules in §4.
+Free-roaming combat mobs have a 15-second incoming-damage grace clock starting
+on initial aggro. Effective player/guard HP damage, including DoT ticks, resets
+it; outgoing hits, taunt and threat-only changes do not. There is no distance
+from a damage-origin anchor. Expiry resets and returns to original home with
+existing healing, invulnerable return and the 40-second teleport fallback.
+Bosses/retinue, fixed guards, camp-owned mobs and location-bound rares keep their
+existing encounter/post lifecycle and bounds. No additional terrain is loaded
+to preserve a distant target. Player participation/credit rules remain separate.
+Friendly guard healing stays deferred; current healing targets remain players.

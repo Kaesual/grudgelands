@@ -288,6 +288,10 @@ function mob_class:do_attack(player, force)
 		end
 	end
 
+	-- GRUG PATCH: seed the ordinary incoming-damage grace clock at first aggro.
+	if grug_mobs and grug_mobs.start_damage_pursuit then
+		grug_mobs.start_damage_pursuit(self)
+	end
 	self.attack = player ; self.state = "attack"
 
 	if random(100) < 90 then self:mob_sound(self.sounds.war_cry) end
@@ -2355,7 +2359,12 @@ function mob_class:do_states(dtime)
 		-- NB this also bounds mob-vs-NPC chases at 45 for our mobs (the leash
 		-- only governs player chases) — intended: it caps the "guard chases the
 		-- wolf across the continent" drift that view_range used to cap.
-		local give_up = self._grug_chase_range or self.view_range
+		-- GRUG PATCH: ambient pursuit is bounded by damage timeout, not distance
+		-- or LOS patience. Availability/death/invisibility checks still apply.
+		local damage_pursuit = grug_mobs and grug_mobs.damage_pursuit
+			and grug_mobs.damage_pursuit(self)
+		local give_up = damage_pursuit and math.huge
+			or self._grug_chase_range or self.view_range
 
 		-- stop attacking if player out of range or invisible
 		if dist > give_up
@@ -2386,7 +2395,7 @@ function mob_class:do_states(dtime)
 
 			self.target_time_lost = (self.target_time_lost or 0) + dtime
 
-			if self.target_time_lost > self.attack_patience then
+			if not damage_pursuit and self.target_time_lost > self.attack_patience then
 				self:stop_attack() ; return
 			end
 		else
@@ -2682,7 +2691,7 @@ function mob_class:do_states(dtime)
 					-- where the chase began, or 15 s without contact) — not by
 					-- the mob's eyesight.
 					if self.path.stuck or (dist > 25
-					and self._grug_soft_deaggro ~= false) then
+					and self._grug_soft_deaggro ~= false and not damage_pursuit) then
 						self:set_velocity(self.walk_velocity)
 					else
 						self:set_velocity(self.run_velocity)
@@ -3452,6 +3461,8 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 	end
 
 	if subtract >= 1 then
+		-- GRUG PATCH: measure committed HP damage, including non-player guards.
+		local grug_health_before = self.health
 
 		-- check for friendly fire (arrows from same mob)
 		if self.friendly_fire then
@@ -3465,6 +3476,10 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 			end
 		end
 
+		if grug_mobs and grug_mobs.received_pursuit_damage then
+			grug_mobs.received_pursuit_damage(self, hitter,
+				grug_health_before - self.health)
+		end
 		-- exit here if dead, check for tools with fire damage
 		local hot = tool_capabilities and tool_capabilities.damage_groups
 				and tool_capabilities.damage_groups.fire

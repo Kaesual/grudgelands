@@ -146,20 +146,19 @@ function grug_classes.get_dodge_chance(player)
 		grug_classes.get_dodge_chance_raw(player))
 end
 
--- Recomputes hp_max from level + class. heal_gain grants the gained
--- maximum as healing — ONLY for real level-ups/class picks; the join
--- callback must not pass it (properties reset to engine defaults every
--- session, so healing the join delta would make relogging a free heal).
-function grug_classes.apply_stats(player, heal_gain)
+-- Recomputes hp_max from level + class. fill_hp fills a living character to
+-- the final maximum -- ONLY for real level-ups/class picks; the join callback
+-- must not pass it (properties reset to engine defaults every session, so a
+-- join refill would make relogging a free heal).
+function grug_classes.apply_stats(player, fill_hp)
 	local max_hp = grug_classes.get_max_hp(player)
 	local old_max = player:get_properties().hp_max
-	if old_max == max_hp then
-		return
+	if old_max ~= max_hp then
+		player:set_properties({hp_max = max_hp})
 	end
-	player:set_properties({hp_max = max_hp})
 	local hp = player:get_hp()
-	if heal_gain and hp > 0 and max_hp > old_max then
-		player:set_hp(hp + max_hp - old_max)
+	if fill_hp and hp > 0 then
+		player:set_hp(max_hp)
 	elseif hp > max_hp then
 		player:set_hp(max_hp)
 	end

@@ -71,7 +71,11 @@ for _, id in ipairs(TIERS_WITH_TOOLS) do
 	core.register_tool("grug_materials:pick_" .. tier.key, {
 		description = tier.name .. " Pickaxe",
 		inventory_image = texture(tier.key, "pick"),
-		tool_capabilities = grug_materials.build_pick_capabilities(id),
+		tool_capabilities = grug_materials.build_pick_capabilities(id, {
+			loose_times = grug_materials.build_loose_times(
+				SHOVEL_PROFILES[id].times),
+			loose_maxlevel = 2,
+		}),
 		sound = {breaks = "default_tool_breaks"},
 		groups = {pickaxe = 1, grug_pick_tier = id},
 	})
@@ -104,13 +108,13 @@ for _, id in ipairs(TIERS_WITH_TOOLS) do
 			full_punch_interval = 1.1,
 			max_drop_level = 1,
 			groupcaps = {
-				crumbly = {times = shovel.times, uses = shovel.uses,
+				grug_loose = {times = shovel.times, uses = shovel.uses,
 					maxlevel = 2},
 			},
 			damage_groups = {fleshy = 3},
 		},
 		sound = {breaks = "default_tool_breaks"},
-		groups = {shovel = 1},
+		groups = {shovel = 1, grug_shovel_tier = id},
 	})
 end
 

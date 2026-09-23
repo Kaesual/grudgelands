@@ -3,9 +3,6 @@ grug_xp = {}
 local META_XP = "grug_xp:xp"
 
 grug_xp.MAX_LEVEL = 60
--- Share of the progress within the current level that is lost on death.
--- There is no de-leveling: the loss reaches at most the level floor.
-grug_xp.DEATH_XP_LOSS = 0.25
 
 --
 -- Level curve: cumulative XP for level L (level 1 = 0 XP).
@@ -56,7 +53,13 @@ grug_core.get_player_level = grug_xp.get_level
 local hud_update -- forward (defined below)
 
 function grug_xp.set_xp(player, xp)
-	xp = math.max(0, math.floor(xp))
+	if type(xp) ~= "number" or xp ~= xp or
+			xp == math.huge or xp == -math.huge then
+		return false, 0
+	end
+	local maximum = grug_xp.xp_for_level(grug_xp.MAX_LEVEL)
+	xp = math.max(0, math.min(maximum, math.floor(xp)))
+	local old_xp = grug_xp.get_xp(player)
 	local old_level = grug_xp.get_level(player)
 	player:get_meta():set_int(META_XP, xp)
 	local new_level = grug_xp.level_from_xp(xp)
@@ -65,9 +68,24 @@ function grug_xp.set_xp(player, xp)
 		if new_level > old_level then
 			core.chat_send_player(player:get_player_name(),
 				core.colorize("#ffd100", "Reached level " .. new_level .. "!"))
+			local pos = player:get_pos()
+			if pos then
+				core.add_particlespawner({
+					amount = 18,
+					time = 0.2,
+					pos = {min = vector.offset(pos, -0.5, 0.2, -0.5),
+						max = vector.offset(pos, 0.5, 1.8, 0.5)},
+					vel = {min = vector.new(-1, 1, -1),
+						max = vector.new(1, 3, 1)},
+					exptime = {min = 0.35, max = 0.7},
+					size = {min = 1.5, max = 3},
+					texture = "default_item_smoke.png^[multiply:#ffd100",
+				})
+			end
 		end
 	end
 	hud_update(player)
+	return true, xp - old_xp
 end
 
 -- `source` (optional) tags where the XP comes from ("kill", "quest", ...)
@@ -79,29 +97,8 @@ function grug_xp.add_xp(player, amount, source)
 	if source and core.global_exists("grug_classes") then
 		amount = math.floor(amount * grug_classes.get_xp_bonus(player, source) + 0.5)
 	end
-	grug_xp.set_xp(player, grug_xp.get_xp(player) + amount)
+	return grug_xp.set_xp(player, grug_xp.get_xp(player) + amount)
 end
-
---
--- XP loss on death: 25% of the whole current-level span, clamped to the
--- current level floor. A low-progress death therefore reaches the floor but
--- never de-levels. Level 60 has no following span and loses no XP.
---
-
-core.register_on_dieplayer(function(player)
-	local xp = grug_xp.get_xp(player)
-	local level = grug_xp.level_from_xp(xp)
-	local floor_xp = grug_xp.xp_for_level(level)
-	local next_xp = grug_xp.xp_for_level(math.min(grug_xp.MAX_LEVEL, level + 1))
-	local span = next_xp - floor_xp
-	local wanted = math.floor(span * grug_xp.DEATH_XP_LOSS)
-	local loss = math.min(xp - floor_xp, wanted)
-	if loss > 0 then
-		grug_xp.set_xp(player, xp - loss)
-		core.chat_send_player(player:get_player_name(),
-			core.colorize("#ff4444", "You lost " .. loss .. " XP."))
-	end
-end)
 
 --
 -- Thin gold progress above the hotbar. Exact XP remains in /xp.
@@ -193,18 +190,19 @@ core.register_chatcommand("xp", {
 			return false, "You need the 'server' privilege for this."
 		end
 		local amount = tonumber(amount_text)
-		if not amount or amount < 1 or amount % 1 ~= 0 then
+		if not amount or amount ~= amount or amount == math.huge or
+				amount == -math.huge or amount < 1 or amount % 1 ~= 0 then
 			return false, "Amount must be a positive whole number."
 		end
 		local target = core.get_player_by_name(target_name)
 		if not target then
 			return false, "Player is not online: " .. target_name
 		end
-		local maximum = grug_xp.xp_for_level(grug_xp.MAX_LEVEL)
-		if amount > maximum - grug_xp.get_xp(target) then
-			return false, "Grant would exceed the level 60 XP maximum."
+		local ok, granted = grug_xp.add_xp(target, amount)
+		if not ok then
+			return false, "Amount must be a finite whole number."
 		end
-		grug_xp.add_xp(target, amount)
-		return true, target_name .. ": " .. hud_text(target)
+		return true, target_name .. ": granted " .. granted .. " XP; " ..
+			hud_text(target)
 	end,
 })
