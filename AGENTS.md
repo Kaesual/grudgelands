@@ -24,12 +24,12 @@ projects: **[docs/research/](docs/research/)**.
 - This changes execution mechanics, not model authorization or independent
   review requirements. Read `docs/process/agent-model-policy.md` and
   `docs/process/cross-cli-orchestration.md` for those rules.
-- **Current development session (Round 18):** Claude credits are exhausted. No Claude CLI,
+- **Current development session (Round 19):** Claude credits are exhausted. No Claude CLI,
   Claude agent, Opus or Fable task is authorized in this session. Root is Astra;
   ordinary implementation/review uses native Sol, with native Astra allowed for
   hard/performance-critical work. This session restriction can change only by
   a later explicit user instruction. Durable active work state:
-  `docs/research/round18-execution.md` (current approved round).
+  `docs/research/round19-execution.md` (current approved round).
 
 ## Fresh-server development mode
 
@@ -67,8 +67,9 @@ projects: **[docs/research/](docs/research/)**.
 
 ## Active round
 
-Next proposed fix round: `docs/research/round19-plan.md`. Planning only; explicit
-user Go is still required. No Round 19 implementation is authorized yet.
+Round 19 is approved and active (user Go 2026-09-23). Contract:
+`docs/research/round19-plan.md`; durable progress: `docs/research/round19-execution.md`.
+Astra owns atlas navigation; Sol owns menus, party/status HUD and dragon bars.
 
 Round 18 implementation, independent reviews and technical gates are complete.
 Merged to main and locally synchronized; remote push awaits renewed confirmation

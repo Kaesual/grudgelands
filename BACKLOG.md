@@ -1,5 +1,9 @@
 # Backlog — Work Packages
 
+Round 19 is approved and active: [contract](docs/research/round19-plan.md),
+[execution](docs/research/round19-execution.md). Atlas zoom/scroll, menu clarity,
+party/status defaults and dragon health-bar placement; no whole-WP count change.
+
 Round 18 is technically complete and independently reviewed, merged to main
 and locally synchronized. Remote push awaits renewed confirmation after an
 automatic approval-review rejection. Receipt:

@@ -54,6 +54,8 @@ complete regional atlas coverage and more consistent starting populations.
 Playtesting, balancing and finishing the wider world remain ongoing; implemented features are not all
 fully playtested. [Round 18](docs/research/round18-completion.md) completes the
 latest usability, progression, pursuit, tool and preparation fixes.
+[Round 19](docs/research/round19-plan.md) is in development: atlas navigation
+and focused menu/HUD fixes.
 
 Open-world housing claims, boats, the full geographic PvP system, war fronts
 and the planned island dragon encounters are still unfinished. The current
