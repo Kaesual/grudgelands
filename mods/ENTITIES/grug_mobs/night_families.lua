@@ -33,7 +33,7 @@ local function goblin_def(description, texture, ranged)
 	local def = ground({
 		description = description,
 		attack_type = ranged and "dogshoot" or "dogfight",
-		group_attack = true, _grug_no_leash = true,
+		group_attack = true,
 		view_range = ranged and 16 or 12,
 		visual = "mesh", mesh = "grug_mobs_goblin.b3d",
 		textures = {{texture}}, visual_size = {x = 1, y = 1},
@@ -65,7 +65,7 @@ grug_mobs.register_mob("grug_mobs:goblin_slinger",
 
 local goblin_hound = ground({
 	description = "Goblin Raider Hound", attack_type = "dogfight",
-	group_attack = true, _grug_no_leash = true, view_range = 15,
+	group_attack = true, view_range = 15,
 	visual = "mesh", mesh = "grug_mobs_goblin_hound.b3d",
 	textures = {{"grug_mobs_goblin_hound.png"}}, visual_size = {x = 1, y = 1},
 	collisionbox = {-0.45, -0.01, -0.45, 0.45, 0.85, 0.45},

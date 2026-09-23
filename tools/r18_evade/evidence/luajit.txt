@@ -1,0 +1,1 @@
+r18_evade: policy=13 sustained=60 threat=far timeout=15 home=4 fallback=40 guard=pass settlement=pass target=pass

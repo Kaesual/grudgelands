@@ -451,7 +451,9 @@ local function valid_target(mob_ent, name)
 	if not mpos or not ppos then
 		return nil
 	end
-	if vector.distance(mpos, ppos) > grug_core.THREAT_RANGE then
+	if not (grug_mobs and grug_mobs.damage_pursuit
+			and grug_mobs.damage_pursuit(mob_ent))
+			and vector.distance(mpos, ppos) > grug_core.THREAT_RANGE then
 		return nil
 	end
 	return player

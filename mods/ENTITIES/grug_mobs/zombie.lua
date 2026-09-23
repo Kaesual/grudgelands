@@ -14,10 +14,7 @@ grug_mobs.register_mob("grug_mobs:zombie", {
 	_grug_min_level = 3,
 	-- Undead race passive (world.md §7): ignored at night unless provoked.
 	_grug_night_truce_perk = "zombie_night_truce",
-	-- Behavior verb (combat_stats.md §3): "zombies never leash" — once
-	-- pulled it follows forever, never resets its threat and never heals up.
-	-- Running away does not work; you have to lose it or kill it.
-	_grug_no_leash = true,
+	-- Round 18: ordinary ambient undead share damage-sustained pursuit.
 
 	reach = 3,
 	attack_type = "dogfight",
