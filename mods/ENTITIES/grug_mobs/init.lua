@@ -807,6 +807,17 @@ function grug_mobs.register_mob(name, def)
 	end
 
 	mobs:register_mob(name, def)
+	-- Target acquisition can happen after do_custom in mobs_redo's one-second
+	-- general_attack pass, or before the first custom tick through group alert.
+	-- Put the boss-group activity seam on the registered prototype so every
+	-- accepted do_attack path publishes immediately; this does not touch the
+	-- separate pursuit damage/contact clocks.
+	local prototype = core.registered_entities[name]
+	local native_do_attack = prototype.do_attack or mobs.mob_class.do_attack
+	prototype.do_attack = function(self, target, force)
+		grug_mobs.touch_boss_activity(self)
+		return native_do_attack(self, target, force)
+	end
 	-- mobs_redo copies a fixed field set from the source definition. Install
 	-- our presentation metadata on the registered Lua-entity prototype so
 	-- tag carriers can read it from actual instances after activation.

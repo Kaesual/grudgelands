@@ -33,7 +33,10 @@ coverage. LuaJIT development only; changed Lua parser/SETGLOBAL/five sweeps.
 After independent review, one compact final PUC/LuaJIT pair with identical
 canonical output. No native world, performance campaign or broad test fleet.
 
-Status: implementation in progress. Main merge/local sync after independent
+Status: pursuit implementation/review PASS; idle recovery implementation frozen
+at `edabd948`; independent review found an attack-acquisition ordering hole in
+shared boss recovery. The author is fixing it before focused re-review.
+Main merge/local sync after independent
 review and final gates. User runtime checks: let a melee and ranged mob attack
 while standing still for over 15 seconds; then move without dealing damage;
 repeat while another player periodically damages the mob.
@@ -58,3 +61,17 @@ Final interpreter pair waits for both changes to be frozen, avoiding repeated
 intermediate PUC runs. Add a compact real-module idle-health fixture for target
 gaps, continuing combat, repeated environmental/DoT damage, dead actors and
 shared boss activity. No native-world or performance campaign.
+
+## User runtime acceptance
+
+- Restart Luanti to load the installed code. Let a melee and ranged ambient mob
+  attack a stationary character for more than 15 seconds without retaliation;
+  neither should abandon that stationary target because of the damage timer.
+- Start moving after that grace without damaging it: it should return home.
+  Repeat while another player or eligible guard damages it periodically; those
+  hits keep the pull alive. Authored guards/bosses keep their bounded policy.
+- Observe an injured idle ordinary mob and guard for about 30 seconds: each
+  returns to full health. Continued combat or repeated HP loss prevents this.
+- In a boss encounter, engage a retinue member while the leader is wounded:
+  the new idle recovery must not heal/reset the group during that fight.
+  Check the group can recover after the whole encounter becomes quiet.

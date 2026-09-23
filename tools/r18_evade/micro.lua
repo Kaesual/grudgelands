@@ -73,6 +73,19 @@ clock(40); captured["test:boss_activity"].do_punch(boss_actor,nil,1,{},nil,0)
 assert(not gm.idle_health_tick(boss_buddy) and boss_buddy.health==40,
  "punch must block group reset before next sample")
 gm.clear_boss_activity("test:encounter")
+-- Acquisition may happen after this actor's t=29 custom sample. The registered
+-- prototype seam must publish before a calm peer reaches the t=30 boundary.
+local acquiring=mob(); acquiring._grug_boss_id="test:acquire"
+local acquire_peer=mob(); acquire_peer._grug_boss_id="test:acquire"
+clock(0); gm.idle_health_tick(acquiring); gm.idle_health_tick(acquire_peer)
+clock(29); gm.idle_health_tick(acquiring); gm.idle_health_tick(acquire_peer)
+core.registered_entities["test:boss_activity"].do_attack(acquiring,a)
+clock(30)
+assert(not gm.idle_health_tick(acquire_peer) and acquire_peer.health==40,
+ "post-sample acquisition must block peer boundary reset")
+assert(not acquiring.temp.grug_damage_at,
+ "boss acquisition seam must not write pursuit damage clock")
+gm.clear_boss_activity("test:acquire")
 mobs.spawn=noop
 dofile(repo.."/mods/ENTITIES/grug_mobs/zombie.lua")
 assert(core.registered_entities["grug_mobs:zombie"]._grug_damage_pursuit_candidate)

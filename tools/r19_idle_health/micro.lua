@@ -98,4 +98,32 @@ local boss = mob("dragon:stormscale")
 assert(not tick(boss, 800))
 assert(tick(boss, 830))
 
+-- Load the actual boss lifecycle module with bounded registration stubs and
+-- verify its public attempt reset clears the production shared-activity store.
+local function noop() end
+core.get_mod_storage = function()
+	return {get_string = function() return "" end, set_string = noop}
+end
+core.register_on_joinplayer = noop
+core.register_on_dieplayer = noop
+core.register_craftitem = noop
+core.register_globalstep = noop
+core.get_player_by_name = function() return nil end
+core.get_objects_inside_radius = function() return {} end
+grug_core.register_on_player_hit_mob = noop
+grug_core.register_on_effective_heal = noop
+grug_core.register_on_effective_absorb = noop
+grug_core.get_player_faction = function() return nil end
+grug_core.opposing_faction = function() return nil end
+grug_mobs.register_dragon_bosses = noop
+grug_mobs.register_mob = noop
+grug_mobs.guard_definition = function() return {do_custom = noop} end
+mobs = {spawn = noop}
+assert(loadfile(repo .. "/mods/ENTITIES/grug_mobs/bosses.lua"))()
+local lifecycle = mob("dragon:lifecycle")
+grug_mobs.touch_boss_activity(lifecycle, 900)
+assert(grug_mobs.boss_recently_active(lifecycle, 901, 30))
+grug_mobs.boss_attempt_reset("dragon:lifecycle")
+assert(not grug_mobs.boss_recently_active(lifecycle, 901, 30))
+
 print("r19 idle health micro: ok")
