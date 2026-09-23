@@ -301,8 +301,14 @@ local function selection_formspec()
 	})
 end
 
-local function show_selection(player)
-	core.show_formspec(player:get_player_name(), FORMNAME, selection_formspec())
+
+function grug_factions.show_selection(player)
+	if grug_core.world_preparation_status().ready and
+			not grug_factions.get_faction(player) then
+		core.show_formspec(player:get_player_name(), FORMNAME, selection_formspec())
+		return true
+	end
+	return false
 end
 
 core.register_on_player_receive_fields(function(player, formname, fields)
@@ -310,6 +316,11 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		return
 	end
 	if grug_factions.get_faction(player) then
+		return true
+	end
+	-- Form fields are client input. A form displayed before preparation changed
+	-- state (or a forged packet) must not commit character identity early.
+	if not grug_core.world_preparation_status().ready then
 		return true
 	end
 
@@ -326,7 +337,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		core.after(REOPEN_DELAY, function()
 			local p = core.get_player_by_name(name)
 			if p and not grug_factions.get_faction(p) then
-				show_selection(p)
+				grug_factions.show_selection(p)
 			end
 		end)
 		return true
@@ -350,7 +361,7 @@ core.register_on_joinplayer(function(player)
 		core.after(0, function()
 			local p = core.get_player_by_name(name)
 			if p and not grug_factions.get_faction(p) then
-				show_selection(p)
+				grug_factions.show_selection(p)
 			end
 		end)
 	end
