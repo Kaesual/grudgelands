@@ -228,8 +228,8 @@ return function(repo)
 	tag_grug.manage_tag_carriers()
 	local dragon_bar = spawned[2]
 	check(dragon_bar and dragon_bar.attach_offset.y == 6.25
-		and dragon_bar.properties.visual_size.x == 0.375
-		and dragon_bar.properties.visual_size.y == 0.03125,
+		and dragon_bar.properties.visual_size.x == 3
+		and dragon_bar.properties.visual_size.y == 0.25,
 		"dragon metadata did not convert to 5x3x0.25 world geometry: " ..
 		tostring(dragon_bar and dragon_bar.attach_offset.y) .. "/" ..
 		tostring(dragon_bar and dragon_bar.properties.visual_size.x) .. "/" ..
@@ -245,8 +245,8 @@ return function(repo)
 	tag_grug.manage_tag_carriers()
 	local wyvern_bar = spawned[4]
 	check(wyvern_bar and wyvern_bar.attach_offset.y == 5
-		and wyvern_bar.properties.visual_size.x == 0.375
-		and wyvern_bar.properties.visual_size.y == 0.03125,
+		and wyvern_bar.properties.visual_size.x == 3
+		and wyvern_bar.properties.visual_size.y == 0.25,
 		"wyvern metadata did not convert to 4x3x0.25 world geometry")
 
 	local ordinary_entity = {name = "grug_mobs:rat",
@@ -263,6 +263,6 @@ return function(repo)
 		"ordinary HP bar geometry changed")
 
 	return ("r19-hud\tPASS\tchecks=%d\tparty=by-class\tstatus=top-centre\t" ..
-		"sprint=authoritative\tdragon=5x3x0.25\tordinary=0.8x0.1")
+		"sprint=authoritative\tdragon=5x3x0.25\tordinary=legacy-unit-scale")
 		:format(checks)
 end

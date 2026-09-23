@@ -154,10 +154,10 @@ local function bar_height_and_scale(parent)
 		local height = tonumber(presentation.height)
 		if anchor_y and width and height and anchor_y >= 0 and width > 0
 				and height > 0 then
-			-- Empty-bone attachment translation and child visuals both inherit
-			-- the parent's scene-node scale. These conversions keep the explicit
-			-- dragon presentation values in world nodes.
-			return anchor_y * 10 / sy, width / sx, height / sy
+			-- Empty-bone attachment translation inherits the parent's scene-node
+			-- scale. Irrlicht billboards build their vertices in world space from
+			-- their own Size, so their dimensions do not inherit that scale.
+			return anchor_y * 10 / sy, width, height
 		end
 	end
 	-- Attachment coordinates are in tenths of a node and inherit the parent's

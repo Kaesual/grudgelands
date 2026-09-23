@@ -31,13 +31,19 @@ registered Lua-entity prototype after `mobs:register_mob` returns.
 The Wyrmglass Ice Dragon uses a world-space anchor of 5.0 nodes, matching its
 combat eye height. Stormscale uses 4.0 nodes, matching its eye height. Both
 bars are 3.0 nodes wide and 0.25 nodes high. With their current 8x parent
-visual scale those values become attachment offsets 6.25/5.0 engine attachment
-units and child visual sizes 0.375 by 0.03125; empty-bone attachment then
-inherits the parent scale and restores the requested world dimensions.
-Ordinary mobs, guards and whelps retain the generic 0.8 by 0.1-node bar and
-selection-box-derived anchor. Injured-only creation, HP fraction, observer
-filtering, 25/30-node hysteresis, perspective scaling and cleanup remain on the
-existing tag-carrier path.
+visual scale those anchors become attachment offsets 6.25/5.0 engine attachment
+units. Their child billboard visual sizes remain 3.0 by 0.25 because Irrlicht
+constructs billboard vertices in world space and does not apply the parent's
+scale to their dimensions. Empty-bone attachment inherits the parent transform
+for position only.
+
+The generic path for ordinary mobs, guards and whelps remains numerically
+unchanged: it still emits `0.8 / sx` by `0.1 / sy` and the existing
+selection-box-derived anchor. The unit-scale fixture therefore remains 0.8 by
+0.1, but this report makes no world-size-invariance claim for scaled generic
+entities. A broader generic retune is outside this focused correction.
+Injured-only creation, HP fraction, observer filtering, 25/30-node hysteresis,
+perspective behavior and cleanup remain on the existing tag-carrier path.
 
 ## Validation
 
@@ -47,13 +53,14 @@ ability registration, dragon definitions and tag-carrier adapter. LuaJIT
 returned:
 
 ```text
-r19-hud	PASS	checks=16	party=by-class	status=top-centre	sprint=authoritative	dragon=5x3x0.25	ordinary=0.8x0.1
+r19-hud	PASS	checks=16	party=by-class	status=top-centre	sprint=authoritative	dragon=5x3x0.25	ordinary=legacy-unit-scale
 ```
 
 The fixture covers absent and explicit party preferences; the production
 top-center anchor; Sprint start, expiry, explicit movement removal, death and
 reconnect; both real dragon metadata records through the registered-prototype
-adapter; inherited attachment conversion; and unchanged ordinary geometry.
+adapter; inherited attachment-position conversion; direct billboard dimensions;
+and unchanged ordinary unit-scale geometry.
 
 All nine changed Lua files parse with the repository's PUC 5.1 compiler. The
 SETGLOBAL inventory contains only the established `grug_parties` and
@@ -68,3 +75,14 @@ including party rows and transient center notices, and both injured dragons at
 combat distance. The 3.0 by 0.25-node dragon size and eye-height anchors are a
 bounded first pass; the fixture proves the engine-unit conversion, not screen
 pixel readability or animated-mesh head tracking.
+
+## Focused attachment-size correction
+
+Independent review found that the original implementation incorrectly treated
+billboard dimensions like attachment translation. Native client code sets the
+billboard size directly from `visual_size`, then constructs world-space vertices
+and renders them with the identity world matrix. The focused correction keeps
+the parent-scale division for attachment height, removes it from explicit
+billboard width/height, and updates the fixture expectations. The legacy generic
+inverse-size compensation remains unchanged by scope. No native GUI claim is
+added; focused independent re-review remains required.
