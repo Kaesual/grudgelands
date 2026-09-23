@@ -99,6 +99,30 @@ core.register_on_mods_loaded(function()
  end
  core.set_timeofday(old_time)
  assert(policy_samples==18)
+ -- Actual engine dig parameters, final registrations, all eight materials.
+ local materials={{"default","wood"},{"default","stone"},{"default","bronze"},
+  {"grug_materials","iron"},{"default","steel"},{"grug_materials","silversteel"},
+  {"grug_materials","embersteel"},{"grug_materials","abyssal_steel"}}
+ for _,material in ipairs(materials) do
+  local prefix,key=material[1]..":",material[2]
+  local pick=ItemStack(prefix.."pick_"..key):get_tool_capabilities()
+  local shovel=ItemStack(prefix.."shovel_"..key):get_tool_capabilities()
+  for _,name in ipairs({"default:dirt","default:gravel","default:sand",
+    "grug_nodes:ash_ground","grug_farming:soil","grug_farming:soil_wet"}) do
+   local groups=assert(core.registered_nodes[name]).groups
+   local a,b=core.get_dig_params(groups,pick),core.get_dig_params(groups,shovel)
+   assert(a.diggable and b.diggable and math.abs(a.time-2*b.time)<0.0001,
+    key.." effective pick/shovel time differs on "..name)
+  end
+  for _,name in ipairs({"default:stone","default:sandstone","default:stone_with_coal"}) do
+   assert(not core.get_dig_params(core.registered_nodes[name].groups,shovel).diggable)
+  end
+  for _,name in ipairs({"grug_gathering:red_ochre_source","grug_gathering:gravesalt_source"}) do
+   assert(core.get_dig_params(assert(core.registered_nodes[name]).groups,shovel).diggable,
+    key.." cannot shovel cultural source "..name)
+  end
+ end
+ core.log("action","[r18_tools_native] PASS materials=8 loose=6 ratio=2 solids=denied cultural=diggable")
  grug_quests.validate_registry()
  -- Active skill identities remain registered while their visual layer changes.
  local abilities = 0
