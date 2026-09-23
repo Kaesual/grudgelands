@@ -47,6 +47,7 @@ Timings 0.008459/0.008154 seconds; evidence and current source hashes live in
 `tools/r19_final/followup-evidence/`. The prior Round 19 evidence is preserved.
 No resolution test matrix, new GUI suite or headless world run was performed.
 
-Local main merge/sync follows. User acceptance: switch between Character and Map
+Local main merge `54c4ec64a562a22b261f4a75bb02caf23fa8e4e4` and sync completed; complete installed mods/menu
+trees match checkout. No personal world changed. User acceptance: switch between Character and Map
 (the window must stay the same size), zoom/scroll once, then compare available
 and locked/maxed talents. First-click purchase remains unchanged.
