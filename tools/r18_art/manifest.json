@@ -1,0 +1,166 @@
+{
+  "tool": "built-in image_gen.imagegen",
+  "date": "2026-09-23",
+  "size": [
+    64,
+    64
+  ],
+  "license": "CC0-1.0 (project dedication, to the extent rights exist)",
+  "composition": "Use icon unchanged for inventory/hotbar/catalogue; no multiply or weapon overlay. Preserve engine wear bar and wield weapon separately. Opaque background is intentional.",
+  "assets": [
+    {
+      "id": "strike",
+      "file": "grug_abilities_skill_strike.png",
+      "source": "/home/jan/.codex/generated_images/01a0cde8-9b66-7a31-b892-a8ccba50dca8/exec-7a4c7aa5-77fc-44ae-a950-630ef14d0386.png",
+      "prompt": "Use case: stylized-concept. Asset type: one square fantasy RPG ability inventory icon, readable at 32x32 pixels. Subject: STRIKE, a single broad silver sword blade sweeping diagonally through a bright ivory crescent slash; only blade and large slash, no person. Style: bold hand-painted pixel-art inspired fantasy game icon, chunky shapes, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: centered single action emblem filling 85% of square, dark charcoal-blue opaque background, subtle dark edge, no ornamental frame. Colors: steel silver with warm amber motion accent. No text, letters, numbers, UI, watermark, tiny detail, multiple panels. Output a single square PNG.",
+      "sha256": "968807c4e730a4e07ba1d9a34271dac725def0ea24aa6765476fc223a08dc1e8"
+    },
+    {
+      "id": "charge",
+      "file": "grug_abilities_skill_charge.png",
+      "source": "/home/jan/.codex/generated_images/01a0cde8-9b66-7a31-b892-a8ccba50dca8/exec-104de8b6-fd8f-417c-8f02-4e41fcdfbac6.png",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG ability inventory icon, readable at 32x32 pixels. Style: bold hand-painted pixel-art inspired fantasy icon, chunky shapes, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: centered single action emblem filling 85% of square, dark charcoal-blue opaque background, subtle dark edge, no ornamental frame. No text, letters, numbers, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: CHARGE: bronze armored shoulder rushing to the right like a battering ram, three large amber speed streaks trailing left; forceful forward impact.",
+      "sha256": "6fea5cafa56296e0d9933d3d16b613b5b271296c464d4e91abdaa3d4f978f72b"
+    },
+    {
+      "id": "mighty_blow",
+      "file": "grug_abilities_skill_mighty_blow.png",
+      "source": "/home/jan/.codex/generated_images/01a0cde8-9b66-7a31-b892-a8ccba50dca8/exec-6de6c725-2b70-4f81-ae76-479a78d0db26.png",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG ability inventory icon, readable at 32x32 pixels. Style: bold hand-painted pixel-art inspired fantasy icon, chunky shapes, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: centered single action emblem filling 85% of square, dark charcoal-blue opaque background, subtle dark edge, no ornamental frame. No text, letters, numbers, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: MIGHTY BLOW: massive iron hammer head crashing down onto one bright orange impact burst, thick short handle, overwhelming heavy overhead force.",
+      "sha256": "b0a02aeb124880b5f72b603ab08fb199d2e8347c6ae74ca3edef3d34f553a054"
+    },
+    {
+      "id": "hamstring",
+      "file": "grug_abilities_skill_hamstring.png",
+      "source": "/home/jan/.codex/generated_images/01a0cde8-9b66-7a31-b892-a8ccba50dca8/exec-55f0c2e5-5c06-4d90-966e-a275935232ca.png",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG ability inventory icon, readable at 32x32 pixels. Style: bold hand-painted pixel-art inspired fantasy icon, chunky shapes, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: centered single action emblem filling 85% of square, dark charcoal-blue opaque background, subtle dark edge, no ornamental frame. No text, letters, numbers, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: HAMSTRING: a bent leather boot and lower leg with a single crimson horizontal cutting arc across the back of ankle; slowing tendon strike, no blood.",
+      "sha256": "95d2025c86e9aa5645899e0dfb1019b5c95413922238adfd7c329ff2d80896b2"
+    },
+    {
+      "id": "taunt",
+      "file": "grug_abilities_skill_taunt.png",
+      "source": "/home/jan/.codex/generated_images/01a0cde8-9b66-7a31-b892-a8ccba50dca8/exec-2d71be1e-216f-4a28-984d-bbeff799567c.png",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG ability inventory icon, readable at 32x32 pixels. Style: bold hand-painted pixel-art inspired fantasy icon, chunky shapes, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: centered single action emblem filling 85% of square, dark charcoal-blue opaque background, subtle dark edge, no ornamental frame. No text, letters, numbers, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: TAUNT: roaring open bear-like armored face with wide open mouth and two strong orange sound-wave arcs; intimidating challenge, tight close-up.",
+      "sha256": "5090cbff248aa418565224021c2c0dbb4cb56d52752be2f51c74629433fd0c23"
+    },
+    {
+      "id": "fireball",
+      "file": "grug_abilities_skill_fireball.png",
+      "source": "/home/jan/.codex/generated_images/01a0cde8-9b66-7a31-b892-a8ccba50dca8/exec-a50dec5f-c4fd-4325-8a74-2a4ffc44f152.png",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG ability inventory icon, readable at 32x32 pixels. Style: bold hand-painted pixel-art inspired fantasy icon, chunky shapes, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: centered single action emblem filling 85% of square, dark charcoal-blue opaque background, subtle dark edge, no ornamental frame. No text, letters, numbers, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: FIREBALL: a huge round molten orange fireball with ivory core and three bold licking red flame trails streaming diagonally behind; no weapon.",
+      "sha256": "93ca48384e8fbd89f4493eb8d2a5a7b4544928ed28d7056ebf8ddc9889d71cb1"
+    },
+    {
+      "id": "frost_nova",
+      "file": "grug_abilities_skill_frost_nova.png",
+      "source": "/home/jan/.codex/generated_images/01a0cde8-9b66-7a31-b892-a8ccba50dca8/exec-5a63d510-0eb5-4b8a-83b4-40b62b238907.png",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG ability inventory icon, readable at 32x32 pixels. Style: bold hand-painted pixel-art inspired fantasy icon, chunky shapes, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: centered single action emblem filling 85% of square, dark charcoal-blue opaque background, subtle dark edge, no ornamental frame. No text, letters, numbers, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: FROST NOVA: outward circular explosion of six chunky cyan ice spikes radiating from an icy white central burst; radial frost shockwave.",
+      "sha256": "e5e5207e0aca51f5ddab5a6813a47e30cd82985f06b03c700d35fce8d444fde1"
+    },
+    {
+      "id": "blink",
+      "file": "grug_abilities_skill_blink.png",
+      "source": "/home/jan/.codex/generated_images/01a0cde8-9b66-7a31-b892-a8ccba50dca8/exec-88d4a50c-5dfd-45c9-8e39-bbfaa5aa07b6.png",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG ability inventory icon, readable at 32x32 pixels. Style: bold hand-painted pixel-art inspired fantasy icon, chunky shapes, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: centered single action emblem filling 85% of square, dark charcoal-blue opaque background, subtle dark edge, no ornamental frame. No text, letters, numbers, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: BLINK: two upright violet portal slits, one small fading silhouette on the left and one bright figure emerging on the right, joined by a broad short violet motion streak; instantaneous teleport.",
+      "sha256": "0c231530724b473acfc9c7f4d8c84500b574aee6f3f06143818d322695c36f91"
+    },
+    {
+      "id": "smite",
+      "file": "grug_abilities_skill_smite.png",
+      "source": "/home/jan/.codex/generated_images/01a0cde8-9b66-7a31-b892-a8ccba50dca8/exec-cdba9ba9-6630-438e-966c-8cca4d5f9f49.png",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG ability inventory icon, readable at 32x32 pixels. Style: bold hand-painted pixel-art inspired fantasy icon, chunky shapes, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: centered single action emblem filling 85% of square, dark charcoal-blue opaque background, subtle dark edge, no ornamental frame. No text, letters, numbers, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: SMITE: a single large brilliant gold lightning bolt descending from above onto a white starburst; divine offensive light, no hammer.",
+      "sha256": "e845d749a84cd1738777b24bb591e32714cd076c4d38b71226d5664ce56e38a2"
+    },
+    {
+      "id": "flash_heal",
+      "file": "grug_abilities_skill_flash_heal.png",
+      "source": "/home/jan/.codex/generated_images/01a0cde8-9b66-7a31-b892-a8ccba50dca8/exec-7dc79dfa-6817-485b-b1ee-bb3171edb49a.png",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG ability inventory icon, readable at 32x32 pixels. Style: bold hand-painted pixel-art inspired fantasy icon, chunky shapes, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: centered single action emblem filling 85% of square, dark charcoal-blue opaque background, subtle dark edge, no ornamental frame. No text, letters, numbers, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: FLASH HEAL: two cupped warm ivory hands holding one large luminous golden healing cross, teal glow; immediate healing.",
+      "sha256": "a7fbb622be409dc315181d0e14aa2488adc28469505c6bad1db638cd9790aae0"
+    },
+    {
+      "id": "power_word_shield",
+      "file": "grug_abilities_skill_power_word_shield.png",
+      "source": "/home/jan/.codex/generated_images/01a0cde8-9b66-7a31-b892-a8ccba50dca8/exec-3f4f1a51-f55d-4932-bd6a-f7c8d1c07313.png",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG ability inventory icon, readable at 32x32 pixels. Style: bold hand-painted pixel-art inspired fantasy icon, chunky shapes, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: centered single action emblem filling 85% of square, dark charcoal-blue opaque background, subtle dark edge, no ornamental frame. No text, letters, numbers, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: POWER WORD SHIELD: a large translucent round golden protective bubble enclosing a simple bright upright person silhouette, radiant upper rim; spherical magical absorption barrier, no physical shield.",
+      "sha256": "8b88365d5c085f40454edc27118cfd018bc039fdbfeaa48ea0ce1699ff035b6d"
+    },
+    {
+      "id": "renew",
+      "file": "grug_abilities_skill_renew.png",
+      "source": "/home/jan/.codex/generated_images/01a0cde8-9b66-7a31-b892-a8ccba50dca8/exec-6b596c55-58a9-4ad8-b242-cad718be5ebb.png",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG ability inventory icon, readable at 32x32 pixels. Style: bold hand-painted pixel-art inspired fantasy icon, chunky shapes, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: centered single action emblem filling 85% of square, dark charcoal-blue opaque background, subtle dark edge, no ornamental frame. No text, letters, numbers, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: RENEW: a warm glowing heart wrapped in a broad green circular arrow made of two unfurling leaves, sustained regenerating life.",
+      "sha256": "ffb8e64c8183611707f7034a89e048f6d4d42424baf164f8bc37339a71e20c5e"
+    },
+    {
+      "id": "hold_ground",
+      "file": "grug_abilities_skill_hold_ground.png",
+      "source": "/home/jan/.codex/generated_images/01a0cde8-9b66-7a31-b892-a8ccba50dca8/exec-11ccf90b-93ec-4c18-b668-c39a7fdf73a3.png",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG ability inventory icon, readable at 32x32 pixels. Style: bold hand-painted pixel-art inspired fantasy icon, chunky shapes, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: centered single action emblem filling 85% of square, dark charcoal-blue opaque background, subtle dark edge, no ornamental frame. No text, letters, numbers, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: HOLD GROUND: two heavy steel armored boots planted firmly behind a large stone-gray shield with a bronze rim, small solid ground ridge; immovable defensive stance.",
+      "sha256": "d66bcf76ccba326fd0e8285be9d4f1c4859cb1176c0417cd1ae09895c9ee7fc6"
+    },
+    {
+      "id": "cinderfall",
+      "file": "grug_abilities_skill_cinderfall.png",
+      "source": "/home/jan/.codex/generated_images/01a0cde8-9b66-7a31-b892-a8ccba50dca8/exec-72705ac1-faae-4c7a-896f-c0988fde8b80.png",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG ability inventory icon, readable at 32x32 pixels. Style: bold hand-painted pixel-art inspired fantasy icon, chunky shapes, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: centered single action emblem filling 85% of square, dark charcoal-blue opaque background, subtle dark edge, no ornamental frame. No text, letters, numbers, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: CINDERFALL: three large blazing orange meteors falling diagonally down from upper left into one fiery ground impact arc; fire raining on an area.",
+      "sha256": "4455a0f392424767ed9ac6911c1d769305def646f61bd26673363692974a2f3d"
+    },
+    {
+      "id": "glacial_ward",
+      "file": "grug_abilities_skill_glacial_ward.png",
+      "source": "/home/jan/.codex/generated_images/01a0cde8-9b66-7a31-b892-a8ccba50dca8/exec-b5b9ce43-9522-43c2-9756-9d91fb36cf08.png",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG ability inventory icon, readable at 32x32 pixels. Style: bold hand-painted pixel-art inspired fantasy icon, chunky shapes, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: centered single action emblem filling 85% of square, dark charcoal-blue opaque background, subtle dark edge, no ornamental frame. No text, letters, numbers, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: GLACIAL WARD: massive angular cyan crystalline ice shield with three pointed icicles hanging from its lower edge, dark blue frosty interior; frozen magical defensive ward.",
+      "sha256": "3d1f7a5edf575c42b2baf30f1a1cf5567c83e0a844afd9d00f5fe16562076740"
+    },
+    {
+      "id": "word_of_ruin",
+      "file": "grug_abilities_skill_word_of_ruin.png",
+      "source": "/home/jan/.codex/generated_images/01a0cde8-9b66-7a31-b892-a8ccba50dca8/exec-0c7f5839-baa4-4aa9-a835-867f20f1fa4f.png",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG ability inventory icon, readable at 32x32 pixels. Style: bold hand-painted pixel-art inspired fantasy icon, chunky shapes, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: centered single action emblem filling 85% of square, dark charcoal-blue opaque background, subtle dark edge, no ornamental frame. No text, letters, numbers, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: WORD OF RUIN: large ominous violet skull split by one bright jagged magenta fracture, two dark empty eye sockets; destructive curse, no letters or runes.",
+      "sha256": "4e26894c4cd55f9c6cdb21e12f32ae053ba4130c92bde1adadcefb7668d2127d"
+    },
+    {
+      "id": "loose",
+      "file": "grug_abilities_skill_loose.png",
+      "source": "/home/jan/.codex/generated_images/01a0cde8-9b66-7a31-b892-a8ccba50dca8/exec-ed368e71-1c9a-4379-8cfc-6dbf10595cd2.png",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG ability inventory icon, readable at 32x32 pixels. Style: bold hand-painted pixel-art inspired fantasy icon, chunky shapes, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: centered single action emblem filling 85% of square, dark charcoal-blue opaque background, subtle dark edge, no ornamental frame. No text, letters, numbers, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: LOOSE: one large wooden arrow with broad steel tip flying diagonally toward upper right, two pale green speed trails, feathered tail; released arrow, no bow.",
+      "sha256": "4beca49e89f9209d21d1f33af0a4b95751f049b6c26f4d83a37bb18d2af794fc"
+    },
+    {
+      "id": "snare_shot",
+      "file": "grug_abilities_skill_snare_shot.png",
+      "source": "/home/jan/.codex/generated_images/01a0cde8-9b66-7a31-b892-a8ccba50dca8/exec-5aaac07f-c02d-4d66-bd00-79d693d2c85f.png",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG ability inventory icon, readable at 32x32 pixels. Style: bold hand-painted pixel-art inspired fantasy icon, chunky shapes, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: centered single action emblem filling 85% of square, dark charcoal-blue opaque background, subtle dark edge, no ornamental frame. No text, letters, numbers, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: SNARE SHOT: one large diagonal arrow piercing a clearly visible broad loop of tan rope tied as a snare, green slowing swirl; no spider web.",
+      "sha256": "fcdfc888522d1a4fa28d85dc276d8b16638148a2beadfadbcfbc48679acd306c"
+    },
+    {
+      "id": "sidestep",
+      "file": "grug_abilities_skill_sidestep.png",
+      "source": "/home/jan/.codex/generated_images/01a0cde8-9b66-7a31-b892-a8ccba50dca8/exec-9475878d-bba5-4511-9447-9f0476b1f9f0.png",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG ability inventory icon, readable at 32x32 pixels. Style: bold hand-painted pixel-art inspired fantasy icon, chunky shapes, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: centered single action emblem filling 85% of square, dark charcoal-blue opaque background, subtle dark edge, no ornamental frame. No text, letters, numbers, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: SIDESTEP: one large tan leather boot dodging sharply sideways left, a pale turquoise curved arrow sweeping left behind it; sideways evasion.",
+      "sha256": "ab50a69dd62024f3874904c80cc612140cd664c6ed290ce980247fe7c973d8c7"
+    },
+    {
+      "id": "sprint",
+      "file": "grug_abilities_skill_sprint.png",
+      "source": "/home/jan/.codex/generated_images/01a0cde8-9b66-7a31-b892-a8ccba50dca8/exec-c290c9ec-b5a7-4660-be48-135d06a3e9ad.png",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG ability inventory icon, readable at 32x32 pixels. Style: bold hand-painted pixel-art inspired fantasy icon, chunky shapes, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: centered single action emblem filling 85% of square, dark charcoal-blue opaque background, subtle dark edge, no ornamental frame. No text, letters, numbers, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: SPRINT: two tan leather boots in a long running stride to the right, three bright lime horizontal speed streaks behind; forward speed.",
+      "sha256": "10497be0c72168ccc0918d8bd3024f4de5fdc2bc17e1420c63009a218c6bcd8e"
+    },
+    {
+      "id": "pinning_shot",
+      "file": "grug_abilities_skill_pinning_shot.png",
+      "source": "/home/jan/.codex/generated_images/01a0cde8-9b66-7a31-b892-a8ccba50dca8/exec-574aaced-7cda-40a8-93eb-97e34baaab91.png",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG ability inventory icon, readable at 32x32 pixels. Style: bold hand-painted pixel-art inspired fantasy icon, chunky shapes, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: centered single action emblem filling 85% of square, dark charcoal-blue opaque background, subtle dark edge, no ornamental frame. No text, letters, numbers, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: PINNING SHOT: one thick downward steel arrow pinning a tan leather boot to a dark wooden plank, two emerald root tendrils curling firmly around boot; immobilization, no blood.",
+      "sha256": "e442d34443a552b167b5dd8536d598f14f71b28c5bba4a130e6ed74cc7437622"
+    },
+    {
+      "id": "opening",
+      "file": "grug_abilities_skill_opening.png",
+      "source": "/home/jan/.codex/generated_images/01a0cde8-9b66-7a31-b892-a8ccba50dca8/exec-4740f16e-09fb-4f12-ad3f-dc589beaa367.png",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG ability inventory icon, readable at 32x32 pixels. Style: bold hand-painted pixel-art inspired fantasy icon, chunky shapes, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: centered single action emblem filling 85% of square, dark charcoal-blue opaque background, subtle dark edge, no ornamental frame. No text, letters, numbers, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: OPENING: a bright silver dagger stabbing into a single clear gap between two dark purple armor plates, small sharp golden burst at gap; precise exploit of exposed defense.",
+      "sha256": "3b9ab486e2ed06981a8de9c17f71790fd45a75d6b73ab010184fc08f8c57f5f6"
+    }
+  ]
+}

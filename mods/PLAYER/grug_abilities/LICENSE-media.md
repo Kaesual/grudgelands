@@ -1,12 +1,25 @@
 # Media Origin & Licenses (grug_abilities)
 
 - `grug_abilities_orb.png`: 16×16 radial gradient orb, generated with
-  ImageMagick for this project (own work), **CC0**. Ability icons are
-  produced from it via `^[multiply:<color>` texture modifiers; own real
-  icons are a Phase 3 task (docs/design/classes.md §6).
+  ImageMagick for this project (own work), **CC0**. Historical ability
+  backdrop; Round 18 replaces active-skill inventory art with the action
+  icons below.
 - `grug_abilities_weapon_ready.png`: 20×20 gold readiness ring generated for
   this project with OpenAI image generation, chroma-keyed and reduced to the
   final HUD sprite (own work), **CC0**.
+
+## Round 18 active-skill action icons — CC0
+
+All 22 `textures/grug_abilities_skill_*.png` files were generated for this
+project on 2026-09-23 with OpenAI's built-in `image_gen.imagegen` tool, one
+separate prompt/call per asset. No third-party image was supplied to the tool.
+The project dedicates any rights it holds in these generated images to
+**CC0-1.0**, to the extent such rights exist. They are not imported game art.
+The final files are opaque 64×64 RGB PNGs, reduced with Pillow's Lanczos
+filter from the generated originals. No recoloring or compositing was applied
+to the new art. Full per-file IDs, source output paths, exact prompts and
+final SHA-256 hashes: `tools/r18_art/manifest.json` at the repository root.
+Design rationale and reference inspection: `docs/research/round18-art-report.md`.
 
 ## Bow draw stages — CC BY-SA 4.0
 
