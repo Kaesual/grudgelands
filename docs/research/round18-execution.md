@@ -60,9 +60,9 @@ Do not rerun Round 17 gates. Native Sol default; Astra complex lanes and art.
 | B atlas/minimap | r18_map / Sol | integrated 386f6216; review pending | map module/media |
 | F waiting/creation | r18_waiting / Sol | integrated 503948c6; review pending | selection/faction gates |
 | H1 icon art | r18_art / Astra | integrated d20c1423; visual review pending | icon assets/manifest/gallery |
-| H2 icons/tags integration | r18_icons_tags / Sol | running /tmp/grug-r18-icons-tags | ability image seam/displays |
+| H2 icons/tags integration | r18_icons_tags / Sol | integrated 8681af11; review pending | ability image seam/displays |
 | I light preflight | root Astra | deferred before implementation | round18-light-preflight.md |
-| J tools | r18_tools / Sol | running /tmp/grug-r18-tools | materials tool/mining capabilities |
+| J tools | r18_tools / Sol | integrated 27d8bae3; review pending | materials tool/mining capabilities |
 
 Root owns docs and integration. Independent reviews required, final portable
 micro-KAT pair only after frozen integrated bytes. Current four total native slots
@@ -95,3 +95,8 @@ it is not, by itself, evidence of actual six-culture level-field behavior.
 
 Independent Astra C/D/G review is running as r18_review_world against frozen
 fbdaac67 in /tmp/grug-r18-review-world. Remaining implementation: J and H2.
+
+C/D/G first review: 0 Critical, 1 High, 2 Medium. Root restores Whitebridge
+Boar selection, prevents Evade re-acquisition from restarting its fallback, and
+repairs the native population probe to use actual registration inputs. Targeted
+fix re-review is pending. H2 keeps the old neutral empty-slot wield placeholder.

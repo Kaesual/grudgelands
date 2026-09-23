@@ -38,3 +38,7 @@ r18_icons_tags_v1 icons=22 wield=weapon_swap_empty_bow_contract tags=dedup_remov
 The development fixture passed under LuaJIT. Plain Lua 5.1 was used only for
 the parser/static gates in this lane; the coordinator owns the round's frozen
 final PUC/LuaJIT micro-KAT pair.
+
+Coordinator correction: the registered empty-slot wield fallback remains the
+neutral colored orb. A weapon depicted in an action icon is not falsely held
+when no weapon is equipped. Inventory icons remain semantic at all times.

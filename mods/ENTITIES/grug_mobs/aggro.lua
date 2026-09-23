@@ -24,6 +24,7 @@ end
 function grug_mobs.start_damage_pursuit(self)
 	if not grug_mobs.damage_pursuit(self) then return end
 	self.temp = self.temp or {}
+	if self.temp.grug_evading then return end
 	if not self.temp.grug_damage_at then
 		self.temp.grug_damage_at = grug_core.mono_time()
 	end
@@ -346,6 +347,7 @@ end
 local function leash_check(self)
 	local target = self.attack
 	if grug_mobs.damage_pursuit(self) then
+		if self.temp.grug_evading then return end
 		if self.state == "die" or (self.health or 0) <= 0 then
 			self.temp.grug_damage_at = nil
 			return

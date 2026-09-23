@@ -99,6 +99,17 @@ local snapped=0
 gm.walk_toward=noop
 gm.place_on_ground=function(o,p) snapped=snapped+1; o.position=vector.new(p) end
 clock(116); gm.leash_tick(e,1); assert(snapped==1 and not e.temp.grug_evading)
+-- Reacquisition during a blocked return cannot restart the fallback deadline.
+e,obj=mob(); clock(120); e:do_attack(a); obj.position.x=100
+clock(135); gm.leash_tick(e,1)
+local return_started=e.temp.grug_evading.started
+for t=136,175 do
+ clock(t); e:do_attack(a); gm.leash_tick(e,1)
+ assert(e.temp.grug_evading.started==return_started)
+ assert(not e.temp.grug_damage_at)
+end
+clock(176); e:do_attack(a); gm.leash_tick(e,1)
+assert(snapped==2 and not e.temp.grug_evading)
 -- Timeout also returns home inside the historical 40m radius.
 e,obj=mob(); clock(200); e:do_attack(a); obj.position.x=10
 clock(215); gm.leash_tick(e,1); assert(e.temp.grug_evading)

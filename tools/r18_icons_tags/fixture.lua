@@ -59,7 +59,7 @@ return function(repo)
 	end
 	assert(icon_count == 22)
 	assert(ability_source:find('inventory_image = skill_icon', 1, true))
-	assert(ability_source:find('wield_image = skill_icon', 1, true))
+	assert(ability_source:find('wield_image = "grug_abilities_orb.png^[multiply:" .. def.color', 1, true))
 
 	local entities, roles = {}, {}
 	local cap_core = {registered_items = { ["gear:sword"] = {} },

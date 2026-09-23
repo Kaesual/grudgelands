@@ -8,3 +8,5 @@ r18_map/atlas_kat.lua
 r18_map/minimap_kat.lua
 r14_map/page_kat.lua
 r18_waiting/fixture.lua
+r18_tools/fixture.lua
+r18_icons_tags/fixture.lua

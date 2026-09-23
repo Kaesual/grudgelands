@@ -810,7 +810,9 @@ function grug_abilities.register_ability(def)
 		-- without player context can never advertise a false value.
 		description = def._grug_description_prefix .. def.description,
 		inventory_image = skill_icon,
-		wield_image = skill_icon,
+		-- An empty weapon slot keeps its neutral baseline placeholder; action
+		-- artwork must not masquerade as an equipped weapon in the hand.
+		wield_image = "grug_abilities_orb.png^[multiply:" .. def.color,
 		range = def.range or 4,
 		stack_max = 1,
 		groups = {grug_ability = 1, grug_bound_skill = 1, not_in_creative_inventory = 1},
