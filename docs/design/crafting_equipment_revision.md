@@ -1,17 +1,23 @@
-# Crafting stations, enchanting and equipment — current rules
+# Crafting stations, enchanting and equipment — topic index
 
-Decided 2026-09-21, implementation authorized for Round 13. This document
-supersedes conflicting refinement, affix application, station ownership and
-durability clauses in older design sections. Existing trinket authored specials,
-item-family affix pools, repair prices and mining access/depth rules continue.
+This stable path indexes the current crafting/equipment rules decided on
+2026-09-21. Topic ownership is split deliberately:
 
-The topic owners now carry the reusable rules: production and recipe-book
-behavior in [inventory_equipment.md](inventory_equipment.md#4-crafting-model-revised-2026-09-21)
-and [professions.md](professions.md), wear and repair in
-[durability_repair.md](durability_repair.md), and item/enchant catalogs in
-[items_crafting.md](items_crafting.md). This document remains the approved
-Round-13 cross-cutting contract and calibration record; it does not make the
-WP44 target price table current runtime behavior.
+- production, workspace behavior and recipe-book presentation:
+  [inventory_equipment.md](inventory_equipment.md#4-crafting-model-revised-2026-09-21)
+  and [professions.md](professions.md);
+- item families, enchant pools, fixed values and operation catalogs:
+  [items_crafting.md](items_crafting.md);
+- wear, broken-item behavior, providers and repair transactions:
+  [durability_repair.md](durability_repair.md);
+- armor-reduction and Protection specialization math:
+  [combat_stats.md](combat_stats.md) and [skill_trees.md](skill_trees.md).
+
+The sections below retain the exact cross-topic tables and rules used by
+Round 13 evidence and immutable tool documentation. They are current rules,
+not a temporary override layer. Where a topical owner states the same rule,
+the topical owner is the maintenance location. The WP44 target price table is
+future behavior until its coordinated economy cutover.
 
 ## Workspaces and production
 

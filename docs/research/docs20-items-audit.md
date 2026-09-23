@@ -70,8 +70,9 @@ was promoted into design merely because it exists.
    material/profession repair later WP22 design. No approved detailed design
    exists. It is now an optional future topic and grants no hidden V1 benefit.
 6. **Cross-cutting contract routing.** `crafting_equipment_revision.md` now
-   identifies the living topic owners to support eventual archival after root
-   remaps repository-wide inbound links. It remains present during this lane.
+   serves as a stable topic index for immutable README/tool/research links. It
+   identifies the maintenance owner for each rule family while preserving the
+   exact Round-13 tables and cross-topic rules those records cite.
 
 ## Verified alignment and preserved future work
 
@@ -111,17 +112,19 @@ was promoted into design merely because it exists.
    assign GUI inspection to the user. This documentation pass makes no visual,
    multiplayer, persistence or real-engine acceptance claim.
 
-## Archive candidates and cross-domain requests
+## Archive extraction and cross-domain requests
 
-- `items_crafting.md` §1 is reference-study history and §10 is a long
-  non-authoritative decision log. Both are candidates for relocation to
-  `docs/research/` once root verifies inbound section links; the active catalog
-  and formulas should remain in the living spec.
-- `crafting_equipment_revision.md` is now substantially distributed among
-  `inventory_equipment.md`, `professions.md`, `durability_repair.md` and
-  `items_crafting.md`. It is an archive candidate after root remaps all inbound
-  references and verifies that the station persistence/transaction details and
-  Protection calibration retain a canonical owner.
+- `items_crafting.md` §1 reference study and §10 non-authoritative decision log
+  moved to `docs/archive/design/items-history.md`, with baseline provenance and
+  a warning that the archive is not living authority. Short §1/§1.1/§1.2 and
+  §10/§10.1/§10.2/§10.3 link stubs preserve existing numbered anchors. Every
+  still-current outcome has a topical rule or pointer in §§0–§9.
+- The active `items_crafting.md` shrank from 2,386 to 2,094 lines: **292 lines
+  net active reduction**. The 334-line archive includes its provenance header
+  and preserves historical evidence without burdening the active rule flow.
+- `crafting_equipment_revision.md` remains at its stable path because the root
+  README, immutable Round-13 evidence and tools cite it. Its introduction now
+  makes it a durable topic index rather than a temporary superior override.
 - Root should reconcile the profession-book visibility implementation finding
   above and stale cross-domain summaries that still cite 3,000/6,000 combat
   budgets. This lane intentionally did not edit `BACKLOG.md`, `AGENTS.md` or
