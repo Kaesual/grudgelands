@@ -76,8 +76,9 @@ native Sol topic reviews and Astra world/final reviews; no Claude task is author
 
 Game delivery and pending acceptance: [project status](docs/STATUS.md).
 Round 19 and follow-ups are locally delivered; GUI acceptance remains user-run.
-Remote delivery is pending renewed authorization after the previously recorded
-automatic approval-review rejection; this docs Go does not bypass that block.
+This documentation Go does not authorize a remote push or bypass a recorded
+automatic approval-review rejection. Current local tracking evidence is in STATUS;
+older round receipts are historical delivery observations.
 Standard unmodified Luanti clients are required: no client/engine fork,
 upstream-PR dependency or required client mod.
 

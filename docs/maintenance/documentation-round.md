@@ -96,6 +96,9 @@ and future boat/Kraken danger acceptance. They are not hidden behind the review
 PASS. No code fix, balance change, future-scope cancellation or GUI acceptance
 was inferred. Root README-owner suggestions are recorded in the same findings.
 
-Delivery: reviewed local documentation branch, to be merged to local main.
+Delivery: merged to local main as `aa06429e5ea448573a65b5fb74fce472bbea385d`.
+The local `origin/main` ref at delivery is the pre-round baseline `d6937b31`;
+no network operation was performed. STATUS corrects the inherited stale claim
+that the earlier game baseline was still absent from the tracking ref.
 This does not alter the installed game; no runtime test is needed for this
 round. Existing user playtests and first-public-release obligations remain.

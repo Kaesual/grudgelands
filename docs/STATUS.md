@@ -14,9 +14,11 @@ Updated 2026-09-23. This is the delivery pointer, not another game specification
   not a fresh certification of arbitrary later changes.
 - **GUI acceptance:** user-run and pending where not explicitly accepted.
   [R19 checklist](research/round19-playtest.md) plus the follow-up checklists above.
-- **Remote:** R18/R19 and later local follow-ups await renewed push authorization
-  after automatic approval review rejected the earlier attempt. No push is part
-  of the documentation round. R17 was pushed successfully.
+- **Remote observation:** the local `origin/main` tracking ref is `d6937b31`,
+  already containing the game baseline and R19 follow-ups. Earlier R18/R19
+  receipts' “remote pending” statements are historical, not current proof of
+  missing delivery. No network fetch/push was performed in this round. The new
+  documentation commits are local; no remote delivery is claimed for them.
 - **Release:** unreleased fresh-server development. The Nether is expansion
   content. [First-public-release gates](../BACKLOG.md#first-public-release-gates)
   remain open.
