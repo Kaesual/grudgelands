@@ -129,20 +129,8 @@ local function character_content(player)
 			result = grug_core.get_armor_rating(player), emergency = 0}
 	local armor_reduction = grug_core.armor_reduction(armor.result,
 		grug_core.get_player_level(player), 0.70) * 100
-
-	local lines = {
-		("HP %d=B%dxC%.2fx(100+G%g+T%g+S%g)%%"):format(
-			hp.final, hp.base, hp.class_factor, hp.gear_percent,
-			hp.talent_percent, hp.status_percent),
-		mana and
-			("Mana %d=B%dxC%.2fx(100+G%g+T%g+S%g)%%"):format(
-				mana.final, mana.base, mana.class_factor, mana.gear_percent,
-				mana.talent_percent, mana.status_percent)
-			or "Rage 100=fixed; no C/G/T scaling",
-		("Armor %.1f x %.2f + %.1f = %.1f; own-level %.1f%%"):format(
-			armor.base, armor.multiplier, armor.emergency,
-			armor.result, armor_reduction),
-	}
+	local crit = grug_classes.get_crit_chance(player) * 100
+	local dodge = grug_classes.get_dodge_chance(player) * 100
 
 	local mesh, textures = preview_model(player)
 	local fs = {
@@ -153,9 +141,9 @@ local function character_content(player)
 			("Maximum mana: " .. mana.final) or "Maximum rage: 100")),
 		("label[2.75,1.40;Armor: %.1f]"):format(armor.result),
 		("label[2.75,1.85;Own-level reduction: %.1f%%]"):format(armor_reduction),
-		("label[2.75,2.30;Money: %s]"):format(esc(grug_money.format(grug_money.get(player)))),
-		"label[2.75,2.95;Pool and armor details]",
-		"textarea[2.90,3.35;4.95,3.0;;;" .. esc(table.concat(lines, "\n\n")) .. "]",
+		("label[2.75,2.30;Crit: %.1f%%]"):format(crit),
+		("label[2.75,2.75;Dodge: %.1f%%]"):format(dodge),
+		("label[2.75,3.20;Money: %s]"):format(esc(grug_money.format(grug_money.get(player)))),
 		"label[8.3,0.50;Armor]label[9.3,0.50;Gear]",
 	}
 
@@ -218,12 +206,12 @@ sfinv.register_page("grug_inventory:help", {
 			"Visit city profession trainers for specialized crafts and equipment repair. Riding trainers in capital stables teach riding. Cooking has its own recipe book; new profession recipes stay in their profession's book.",
 			"Character formulas",
 			"Base pool = 20 + 5 x level + 0.66 x level squared (rounded).",
-			"The Character pool lines read maximum = B x C x (100 + G + T + S)%, where B is the base pool, C the class factor, G the gear percentage, T the talent percentage and S the active status percentage.",
+			"Maximum pools use B x C x (100 + G + T + S)%, where B is the base pool, C the class factor, G the gear percentage, T the talent percentage and S the active status percentage.",
 			"Caster mana uses the neutral base pool, then adds mana percentages. Rage is always 0-100.",
 			"Strength adds floor(Strength / 10) as flat melee damage.",
 			"Intelligence adds floor(Intelligence / 10) as spell power: flat spell damage and a percentage bonus to healing and absorbs.",
 			"Dexterity adds 0.1 percentage point each of Crit and Dodge per point; Crit starts at 5%.",
-			"The Talents header shows effective/raw Crit and Dodge with their caps, plus raw Armor rating, its active Unbroken multiplier and same-level reduction.",
+			"Crit and Dodge are each capped at 30% unless a named talent temporarily raises that cap. Character shows the effective values after caps.",
 			"Crit multiplies damage by 1.5.",
 			"Dodge avoids the hit entirely.",
 			"Armor is a rating resolved against the attacker's level; only the final reduction is capped at 70%.",
@@ -233,7 +221,7 @@ sfinv.register_page("grug_inventory:help", {
 			"Mana costs are percentages of the unmodified neutral base pool. Enchants and talents do not make a spell cost more.",
 			"Mana regeneration is 1 + 0.15 x level per second out of combat. The Troll multiplier applies only out of combat. In combat you regenerate the larger of one quarter of that rate and 0.25% of your maximum mana per second; Cold Focus multiplies that combat rate.",
 			"A food's instant heal and regeneration wait until you are out of combat. Its pool, Crit, armor and spell-damage bonuses remain active.",
-			"The Character page keeps only the live HP and class-resource derivations beside the model and equipment.",
+			"Armor rating includes gear, statuses and talents. Unbroken multiplies the rating and can add its emergency bonus; damage reduction is rating / (rating + 85 x attacker level + 400), capped at 70%.",
 		}, "\n\n")
 		return sfinv.make_formspec(player, context,
 			"textarea[0.2,0.25;10.0,6.5;;;" .. esc(text) .. "]", true)

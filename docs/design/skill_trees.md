@@ -581,10 +581,9 @@ ratio** (Last Word). The Scout's base-kit Sprint is a tenth, and it is not a
 talent — [scout.md](scout.md) §2 carries it.
 
 `combat_stats.md` §2 owns the armor formula and the named Crit/Dodge cap
-exceptions. The Talents header shows raw rating, Unbroken's multiplier and the
-resulting armor rating rather than presenting rating as a percentage.
-That amendment is lane X3's, and it is the only decided-doc change the talent
-system forces. Talents that are *not* marked `‼` stay inside every cap, so
+exceptions. Character shows resulting armor rating and same-level reduction;
+Help explains Unbroken's multiplier and cap rules. Talents contains only build
+selection, descriptions and purchases (Round 19). Talents that are *not* marked `‼` stay inside every cap, so
 Turn Aside's +20 dodge is clamped at 30 % like any gear roll.
 
 ### 2.11 Name audit (ruling 5)
@@ -940,8 +939,6 @@ the sfinv area only if the two trees are **tabbed rather than side by side**:
 | Character | Bags | Talents |                        (sfinv tabs)
 +---------------------------------------------------------------+
 | Warrior      [ BULWARK 21 ] [ Ruin 9 ]      Points left: 0     |
-| Crit 30/42% (30)                  Armor rating 299 (181 x1.65) |
-| Dodge 20/20% (30)                                             |
 |                                            [ Respec  --  1s25c]|
 |      WALL                       ANVIL                          |
 | T1 | Ironbound      5/5 |   | Spite          5/5 |             |
@@ -957,20 +954,17 @@ the sfinv area only if the two trees are **tabbed rather than side by side**:
 - `*` marks a keystone, `**` the capstone; a locked talent is a plain label
   (no click target) with its reason spelled out ("needs 12 points in Bulwark"
   or "needs Weathered 4/4").
-- Clicking a talent selects it and writes the one-line explanation; clicking
-  the selected talent again spends a point, so the page needs no "+" column
-  and no confirmation dialog.
+- Clicking an available talent immediately spends one point for one rank.
+  Hover explains the effect before purchase; selected/last-purchased detail
+  may remain visible. There is no preselection click or purchase confirmation.
 - The **Respec button lives here** (ruling 4) with its price in the label and
   an inline confirmation prompt, since there is no NPC to host the transaction.
 - Fixed numeric button fields map only to registered trees and talents of the
   submitting PlayerRef's own class. Names and descriptions are escaped with
   `core.formspec_escape`; no player name or free-text field enters a purchase.
-- Two compact header rows above the tree controls show effective/raw Crit and
-  Dodge plus raw/resulting Armor rating and its active multiplier. Every label stays inside the
-  eight-unit form, and both rows end before the tree controls; the T1 row starts
-  below those controls and chain headings. A running named Crit/Dodge cap
-  override shows its raised display cap; Unbroken instead shows the active
-  rating multiplier and emergency addition.
+- Combat statistics are on Character, not Talents. The freed space belongs to
+  tree controls, ranks and wrapped descriptions. Effective Character values
+  include active effects; Help explains caps, multipliers and exceptions.
 - Round 18 supplies semantic action icons for active talent abilities as well
   as base skills (`classes.md` §2c). Passive talent-tree artwork remains outside
   that action-icon scope.
@@ -1058,13 +1052,13 @@ tier-1 talent 6 ranks and group 1 goes red; make the `arm_cooldown` read
 default to 1 instead of 0 and group 8 goes red; let a window key leak past its
 expiry and group 7 goes red.
 
-`tools/wp11/talent_ui_kat.lua` loads the real model and page. It covers the
-select-then-buy interaction, budget/tier/prerequisite refusals, free-first and
-charged respecs through the public money API, the guarded level-up notice,
-numeric-field ownership, navigation order, formspec escaping, talent-data
-tooltips and the raw/effective/cap render. It runs byte-identically under both
-interpreters; changing the first-respec test from unused to used makes its
-free-first assertion fail.
+`tools/wp11/talent_ui_kat.lua` is historical pre-Round-19 evidence for the
+former select-then-buy interaction and raw/effective/cap header, alongside
+budget/tier/prerequisite, respec and escaping checks. It is not a current UI
+acceptance gate. Round 19's `tools/r19_ui/fixture.lua` loads the real talent
+model and page to verify first-click purchases, refusal paths, concise UI and
+serialized text/layout; `tools/r19_final/micro.lua` includes it in the bounded
+final interpreter-parity gate. Respec authorization and costs remain unchanged.
 
 ### 3.8 What changes where
 

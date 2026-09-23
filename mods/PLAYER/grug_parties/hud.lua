@@ -15,7 +15,7 @@ end
 
 local function health_color_mode(player)
 	return grug_parties.health_color_mode and
-		grug_parties.health_color_mode(player) or "all_green"
+		grug_parties.health_color_mode(player) or "by_class"
 end
 
 local function change(player, row, key, id, property, value)

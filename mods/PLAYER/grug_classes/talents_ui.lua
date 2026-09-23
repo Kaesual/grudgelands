@@ -55,30 +55,6 @@ local function talent_mark(def)
 	return ""
 end
 
--- Header stats occupy their own band above tree selection. Page content uses
--- real coordinates so button heights and text bounds share one geometry.
-local function stat_lines(player)
-	local crit_raw = grug_classes.get_crit_chance_raw(player) * 100
-	local dodge_raw = grug_classes.get_dodge_chance_raw(player) * 100
-	local crit = grug_classes.get_crit_chance(player) * 100
-	local dodge = grug_classes.get_dodge_chance(player) * 100
-	local armor = grug_core.get_armor_rating_breakdown and
-		grug_core.get_armor_rating_breakdown(player) or {
-			base = grug_core.get_armor_rating(player), multiplier = 1,
-			result = grug_core.get_armor_rating(player), emergency = 0}
-	local armor_reduction = grug_core.armor_reduction(armor.result,
-		grug_core.get_player_level(player), 0.70) * 100
-	local crit_cap = math.max(30,
-		grug_classes.get_talent_bonus(player, "crit_cap_override"))
-	local dodge_cap = math.max(30,
-		grug_classes.get_talent_bonus(player, "dodge_cap_override"))
-	return ("Crit %.1f/%.1f%% (%.0f)"):format(crit, crit_raw, crit_cap),
-		("Dodge %.1f/%.1f%% (%.0f)"):format(dodge, dodge_raw, dodge_cap),
-		("Armor %.1f x %.2f + %.1f = %.1f (own-level %.1f%%)"):format(
-			armor.base, armor.multiplier, armor.emergency,
-			armor.result, armor_reduction)
-end
-
 local function trees_for_player(player)
 	return grug_classes.trees_of_class(grug_classes.get_class(player))
 end
@@ -121,7 +97,7 @@ local function selected_description(player, context, tree)
 	if not def or not tree or def.tree ~= tree.id
 			or def.class ~= grug_classes.get_class(player) then
 		return context.grug_talent_notice
-			or "Select an available talent, then click it again to buy one rank."
+			or "Click an available talent to buy one rank."
 	end
 	local rank = grug_classes.talent_rank(player, def.id)
 	local status
@@ -129,7 +105,7 @@ local function selected_description(player, context, tree)
 		status = "Maximum rank reached."
 	else
 		local ok, reason = grug_classes.can_spend_talent(player, def.id)
-		status = ok and "Click again to buy the next rank." or reason
+		status = ok and "Click to buy the next rank." or reason
 	end
 	return ("%s%s — rank %d/%d: %s  %s"):format(def.name,
 		talent_mark(def), rank, def.ranks,
@@ -140,16 +116,12 @@ local function talent_content(player, context)
 	local class_id = grug_classes.get_class(player)
 	local class_def = class_id and grug_classes.registered_classes[class_id]
 	local tree, trees = active_tree(player, context)
-	local crit_line, dodge_line, armor_line = stat_lines(player)
 	local fs = {
 		"real_coordinates[true]",
 		("label[0.20,0.35;%s]"):format(esc(class_def and class_def.name or "No class")),
 		("label[9.50,0.35;%s]"):format(esc(("Points %d/%d")
 			:format(grug_classes.talent_points_total(player),
 				grug_classes.talent_points_available(player)))),
-		("label[0.20,0.85;%s]"):format(esc(crit_line)),
-		("textarea[6.65,0.65;5.95,1.00;;;%s]"):format(esc(armor_line)),
-		("label[0.20,1.40;%s]"):format(esc(dodge_line)),
 	}
 
 	for index, candidate in ipairs(trees) do
@@ -158,32 +130,32 @@ local function talent_content(player, context)
 		local field = "grug_talent_tree_" .. index
 		fs[#fs + 1] = grug_inventory.selected_button_style(field,
 			tree and candidate.id == tree.id)
-		fs[#fs + 1] = ("button[%.2f,2.10;2.10,0.60;grug_talent_tree_%d;%s]")
+		fs[#fs + 1] = ("button[%.2f,0.80;2.10,0.60;grug_talent_tree_%d;%s]")
 			:format(0.2 + (index - 1) * 2.25, index, esc(label))
 	end
 
 	local spent = grug_classes.talent_points_spent(player)
 	if spent <= 0 then
-		fs[#fs + 1] = "label[9.50,2.40;" .. esc("No ranks spent") .. "]"
+		fs[#fs + 1] = "label[9.50,1.10;" .. esc("No ranks spent") .. "]"
 	elseif context.grug_talent_respec_pending then
-		fs[#fs + 1] = "button[9.50,2.10;1.45,0.60;grug_talent_respec_confirm;Confirm]"
-		fs[#fs + 1] = "button[11.10,2.10;1.50,0.60;grug_talent_respec_cancel;Cancel]"
+		fs[#fs + 1] = "button[9.50,0.80;1.45,0.60;grug_talent_respec_confirm;Confirm]"
+		fs[#fs + 1] = "button[11.10,0.80;1.50,0.60;grug_talent_respec_cancel;Cancel]"
 	else
 		local price = grug_classes.respec_price(player)
 		local price_text = price == 0 and "Free" or grug_money.format(price)
-		fs[#fs + 1] = "button[9.50,2.10;3.10,0.60;grug_talent_respec;" ..
+		fs[#fs + 1] = "button[9.50,0.80;3.10,0.60;grug_talent_respec;" ..
 			esc("Respec: " .. price_text) .. "]"
 	end
 
 	if not tree then
-		fs[#fs + 1] = "label[0.20,3.10;" ..
+		fs[#fs + 1] = "label[0.20,1.70;" ..
 			esc("Choose a class before spending talent points.") .. "]"
 		return table.concat(fs)
 	end
 
 	for chain_index, chain in ipairs(tree.chains) do
 		local x = 0.2 + (chain_index - 1) * 6.3
-		fs[#fs + 1] = ("label[%.2f,3.00;%s]"):format(x + 0.1,
+		fs[#fs + 1] = ("label[%.2f,1.65;%s]"):format(x + 0.1,
 			esc(chain:sub(1, 1):upper() .. chain:sub(2)))
 		for tier = 1, 4 do
 			local def
@@ -194,7 +166,7 @@ local function talent_content(player, context)
 				end
 			end
 			if def then
-				local y = 3.35 + (tier - 1) * 0.80
+				local y = 2.00 + (tier - 1) * 0.80
 				local rank = grug_classes.talent_rank(player, def.id)
 				local label = ("T%d %s%s %d/%d"):format(tier, def.name,
 					talent_mark(def), rank, def.ranks)
@@ -230,7 +202,7 @@ local function talent_content(player, context)
 
 	local description = context.grug_talent_notice
 		or selected_description(player, context, tree)
-	fs[#fs + 1] = "textarea[0.20,6.65;12.35,1.45;;;" .. esc(description) .. "]"
+	fs[#fs + 1] = "textarea[0.20,5.35;12.35,1.75;;;" .. esc(description) .. "]"
 	return table.concat(fs)
 end
 
@@ -294,15 +266,13 @@ local function receive_fields(player, context, fields)
 	for index, id in ipairs(grug_classes.talent_ids) do
 		if fields["grug_talent_pick_" .. index] then
 			local def = grug_classes.registered_talents[id]
-			if not def or def.class ~= grug_classes.get_class(player) then
+			local tree = active_tree(player, context)
+			if not def or not tree or def.tree ~= tree.id or
+					def.class ~= grug_classes.get_class(player) then
 				return true
 			end
 			context.grug_talent_notice = nil
-			if context.grug_talent_selected ~= id then
-				context.grug_talent_selected = id
-				refresh_open_page(player)
-				return true
-			end
+			context.grug_talent_selected = id
 			local ok, reason = grug_classes.spend_talent(player, id)
 			if not ok then
 				context.grug_talent_notice = reason

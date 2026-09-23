@@ -169,7 +169,7 @@ arbitrary fixed-price wall.
   step height to clear the engine's strict collision comparison; taller
   obstacles and low ceilings continue to block them. Flying movement is
   unchanged.
-- While mounted, the existing top-right status list shows the live tier and
+- While mounted, the existing top-center status list shows the live tier and
   speed bonus (for example `T1 Mount, +60% Speed`) without a countdown. This is
   runtime-only UI state, supplies no movement modifier and is cleared by the
   shared dismount path.

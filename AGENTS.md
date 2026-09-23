@@ -24,12 +24,12 @@ projects: **[docs/research/](docs/research/)**.
 - This changes execution mechanics, not model authorization or independent
   review requirements. Read `docs/process/agent-model-policy.md` and
   `docs/process/cross-cli-orchestration.md` for those rules.
-- **Current development session (Round 18):** Claude credits are exhausted. No Claude CLI,
+- **Current development session (Round 19):** Claude credits are exhausted. No Claude CLI,
   Claude agent, Opus or Fable task is authorized in this session. Root is Astra;
   ordinary implementation/review uses native Sol, with native Astra allowed for
   hard/performance-critical work. This session restriction can change only by
   a later explicit user instruction. Durable active work state:
-  `docs/research/round18-execution.md` (current approved round).
+  `docs/research/round19-execution.md` (current approved round).
 
 ## Fresh-server development mode
 
@@ -67,8 +67,12 @@ projects: **[docs/research/](docs/research/)**.
 
 ## Active round
 
-Next proposed fix round: `docs/research/round19-plan.md`. Planning only; explicit
-user Go is still required. No Round 19 implementation is authorized yet.
+Round 19 implementation, independent reviews and final technical gates PASS.
+Contract: `docs/research/round19-plan.md`; durable status and delivery:
+`docs/research/round19-execution.md`, `docs/research/round19-completion.md`.
+Next GUI pass: `docs/research/round19-playtest.md`. Native Astra owned atlas;
+Sol owned menus, party/status HUD and dragon bars. Remote push remains blocked
+by the prior automatic approval review pending renewed confirmation.
 
 Round 18 implementation, independent reviews and technical gates are complete.
 Merged to main and locally synchronized; remote push awaits renewed confirmation
@@ -581,7 +585,7 @@ Details + line numbers in [docs/research/](docs/research/).
   current-level values to that player's stack on kit sync, level change and
   talent change. Suffocation is 5% maximum HP/s (minimum 1), with stasis and
   `noclip` exempt. `grug_core.status` is the runtime timed-effect registry and
-  top-right eight-line buff/debuff text list. Status definitions may carry only
+  top-center eight-line buff/debuff text list (Round 19). Status definitions may carry only
   `hp_pool_percent`, `mana_pool_percent`, `crit_percent`, `armor` and
   `spell_damage_percent`; `grug_core.status_modifier_sum` adds active statuses,
   and the modifier-change callback drives the same HP/mana clamp and HUD/page

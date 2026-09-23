@@ -1,11 +1,15 @@
 # Roadmap — Grudgelands
 
+Technically complete: [Round 19](docs/research/round19-completion.md), whole-atlas
+zoom/scroll and focused menu/HUD corrections. Independent reviews and final
+gates PASS; local delivery is recorded in the receipt. Remote push remains pending.
+
 Technically complete: [Round 18](docs/research/round18-completion.md), playtest
 clarity, action icons, complete regional atlas coverage, population/pursuit,
 progression/tools and preparation/arrival fixes. Independent reviews and final
 technical gates are recorded in the completion receipt; GUI acceptance remains
 separate. Held light and friendly-guard healing are deferred.
-Next: [Round 18 GUI playtest](docs/research/round18-playtest.md).
+Next: [Round 19 GUI playtest](docs/research/round19-playtest.md).
 
 Previous: [Round 17 completion](docs/research/round17-completion.md), home travel,
 reliable ranged combat and configurable combat readability/difficulty.

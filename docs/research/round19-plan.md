@@ -1,16 +1,15 @@
 # Round 19 — Atlas navigation and interface fixes
 
-Date: 2026-09-23. **Planning only; awaiting explicit user Go.**
+Date: 2026-09-23. **Approved; explicit user Go received 2026-09-23.**
 Inspected baseline: `7ff76555` on main (Round 18 locally delivered).
 Round 18 remote push remains blocked by automatic approval review pending renewed
 confirmation; this plan does not claim remote delivery or authorize a workaround.
 
 ## Authority and boundaries
 
-Latest user feedback in this conversation owns this proposed contract. The user
-requests a new fix round and explicitly prohibits implementation before Go.
-This file preserves the proposed implementation and routing across compaction;
-it does not amend living decided mechanics until the round is approved.
+Latest user feedback and the explicit Go own this approved contract.
+This file preserves implementation and routing across compaction. Living specs
+are updated alongside the implementation; no further Go is needed for this scope.
 
 Root: native GPT-6 Astra orchestrator. Native GPT-5.6 Sol for bounded UI/HUD work;
 Astra for the atlas interaction and its independent review. No provider CLI,
@@ -41,7 +40,7 @@ rendering/media tooling; targeted map fixtures. Other lanes do not edit these.
   retaining the current 9:8 image ratio does not remove unused wrapper space.
   Navigation,
   +/- controls, marker detail and Return Home stay outside the clipped canvas.
-- Proposed zoom stops: **1x, 2x, 4x**. +/- operate on these stops. Preserve the
+- Approved zoom stops: **1x, 2x, 4x**. +/- operate on these stops. Preserve the
   viewport's world center on zoom and clamp at edges; 1x always shows everything.
   No cursor-centered zoom, zoom animation, drag-to-pan or mousewheel-to-zoom.
 - At zoom >1 use horizontal and vertical native scrollbars to reach every point
@@ -117,7 +116,7 @@ hud_layout/status/movement only as needed, grug_abilities/scout.lua.
 - Missing/unset party color preference defaults to **by_class** consistently in
   accessor, dropdown and HUD. Explicit all_green remains respected. No migration
   or overwrite of existing explicit preference; class palette unchanged.
-- Proposed simple placement: move buffs/debuffs to **top center**, with consistent
+- Approved simple placement: move buffs/debuffs to **top center**, with consistent
   edge padding. Native minimap stays top right; party/quest HUDs stay vertically
   centered left/right; the top-left chat area remains free. Avoid a dependency
   on the client's chosen minimap size.
@@ -165,7 +164,7 @@ unload/reload and removal leave no floating stale sprite.
 
 ## Routing and sequencing
 
-After explicit Go:
+Approved execution sequence:
 
 1. Freeze approved refinements here and fold decided rules into living docs.
 2. Run A/Astra, B/Sol, C/Sol in parallel using isolated worktrees. Root handles
@@ -201,7 +200,7 @@ starting map generation, not against the user's world.
 
 Deliver a concise completion receipt, independent reports, exact gate results,
 updated living docs/status and a short fresh-world GUI checklist. No migration
-or personal world edits. No implementation has started at this planning stage.
+or personal world edits. Implementation is authorized; current state lives in round19-execution.md.
 
 ## Planning evidence (read-only)
 
@@ -214,5 +213,4 @@ or personal world edits. No implementation has started at this planning stage.
 - Root Astra: verified raw semicolon in Skills hint against the engine textarea
   parser; inspected Character/Talents layout and first-click purchase branch.
   Selected top-center buffs to avoid both minimap and top-left chat without
-  client-minimap-size probing. All three zoom stops and this placement remain
-  proposed implementation choices until user Go.
+  client-minimap-size probing. The user approved all three zoom stops and this placement with the round Go.

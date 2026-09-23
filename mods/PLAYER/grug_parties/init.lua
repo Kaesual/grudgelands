@@ -148,7 +148,7 @@ function grug_parties.hud_enabled(player)
 end
 function grug_parties.health_color_mode(player)
 	local mode = player:get_meta():get_string(HEALTH_COLORS)
-	return HEALTH_COLOR_MODES[mode] and mode or "all_green"
+	return HEALTH_COLOR_MODES[mode] and mode or "by_class"
 end
 function grug_parties.set_invitations_enabled(player, enabled)
 	local name = actor(player)

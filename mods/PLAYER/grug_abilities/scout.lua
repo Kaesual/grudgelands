@@ -443,6 +443,19 @@ grug_abilities.register_ability({
 	description = "Move 50% faster for 10 s.",
 	cast = function(user)
 		grug_core.set_move_modifier(user, "scout_sprint", {speed = 0.50}, 10)
+		grug_core.set_status(user, "scout_sprint", {
+			label = "Sprint (+50% Speed)",
+			duration = 10,
+			kind = "buff",
+			-- The movement aggregator remains the sole effect authority. An
+			-- explicit removal hides this display on the next status refresh.
+			value = function(player)
+				if grug_core.get_move_modifier(player, "scout_sprint") then
+					return nil
+				end
+				return false
+			end,
+		})
 		return true
 	end,
 })

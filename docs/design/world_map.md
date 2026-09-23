@@ -6,8 +6,8 @@ Decided 2026-09-21; Round 14 user Go.
   world: coasts/regions, roads, zone names, settlements and player position.
 - No fog of war and no per-character terrain discovery mask. The atlas does not
   require full-world generation and does not render actual player-built terrain.
-- Use existing world authority and stable anchors; support zoom/pan or bounded
-  region views without adding travel or visit objectives.
+- Use existing world authority and stable anchors. The whole-world atlas uses
+  zoom and scrolling without adding travel or visit objectives.
 - Separate the shared map base from marker records and world-to-screen mapping.
   Markers must remain extensible for hover tooltips and/or click actions; do not
   bake labels and all marker semantics irreversibly into one raster.
@@ -45,12 +45,28 @@ and a Return home button with destination and cooldown. Its server authority
 is [home_travel.md](home_travel.md). Map browsing itself grants no binding or
 waypoint unlock; binding still requires visiting an eligible innkeeper.
 
-## Round 18 coverage and minimap
+## Atlas navigation (Round 19)
 
-Six directional regional views form a 3-column x 2-row cover of the full
-world-atlas bounds, with 120 nodes of extension across each inner seam. They include frontiers,
-capitals and islands, with overlap and correct aspect. Renderer and marker
-projection share one bounds authority. Native surface minimap is selected by
+The single full-world view replaces regional cutouts. A new Map-tab visit starts
+at 1x with origin scroll; no saved zoom/scroll preference. During that visit,
+live marker updates, detail clicks and home-status refresh preserve the view.
+Closing returns to Character as above. Zoom +/- offers 1x, 2x and 4x, preserving
+the current world center and clamping at edges. Native horizontal/vertical
+scrollbars reach the complete map at enlarged zooms. No drag-to-pan or animation.
+
+The map fills its 9:8 viewport, with page geometry sized around it and compact
+controls outside. Never distort/crop the full overview. Renderer and marker
+projection use the same world bounds. Markers retain constant UI dimensions:
+only positions scale with zoom; clipping and scroll translate image and markers
+together. Hover/click bounds remain aligned. No clustered/offset markers.
+Native scrolling does not itself trigger live-form rebuilds; actual changed
+marker state is refreshed at most twice per second with current scroll values.
+While scroll changes continue, defer a live rebuild until a short 0.5-second
+quiet interval; pending marker changes must still appear afterward.
+
+## Native minimap (Round 18)
+
+Native surface minimap is selected by
 default, subject to client settings and the player's V toggle. It displays terrain
 and the local player's direction arrow only; other player/entity dots are hidden.
 Party, quest and trainer icons remain on the full atlas. No custom minimap,
