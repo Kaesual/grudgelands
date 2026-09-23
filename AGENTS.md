@@ -67,6 +67,9 @@ projects: **[docs/research/](docs/research/)**.
 
 ## Active round
 
+Next proposed fix round: `docs/research/round19-plan.md`. Planning only; explicit
+user Go is still required. No Round 19 implementation is authorized yet.
+
 Round 18 implementation, independent reviews and technical gates are complete.
 Merged to main and locally synchronized; remote push awaits renewed confirmation
 after automatic approval review could not verify the earlier chat permission.
