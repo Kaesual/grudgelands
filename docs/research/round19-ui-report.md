@@ -39,7 +39,8 @@ handling. Semicolon-bearing Help prose, a semicolon-bearing selected talent
 description and semicolon-bearing passive Skills text each remain one textarea
 text field; every touched textarea serializes with exactly five fields. This
 checks the serialized structure rather than the presence of an escaped source
-literal.
+literal. The same generated Skills form is parsed for element geometry and
+proves that the purchased-mount row ends before the passive-talents heading.
 
 LuaJIT development result:
 

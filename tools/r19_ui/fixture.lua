@@ -308,15 +308,28 @@ return function(repo)
 	local skill_spec = skills_env.grug_skills.page_content(skill_player)
 	assert(skill_spec:find("Drop skills to remove them. Drag them back from here.",
 		1, true), "Skills hint missing")
-	local textareas = 0
+	local textareas, mount_bottom, passive_top = 0
 	for _, element in ipairs(elements(skill_spec)) do
 		if element.kind == "textarea" then
 			textareas = textareas + 1
 			assert(#element.fields == 5,
 				"Skills textarea serialized with " .. #element.fields .. " fields")
+		elseif element.kind == "list" and element.fields[2] == "catalog" and
+				element.fields[5] == "8" then
+			local _, y = element.fields[3]:match("^([^,]+),([^,]+)$")
+			local _, height = element.fields[4]:match("^([^,]+),([^,]+)$")
+			-- Legacy list cells occupy image height 13/15 of their spacing.
+			mount_bottom = tonumber(y) + tonumber(height) * 13 / 15
+		elseif element.kind == "label" and
+				element.fields[2] == "Passive and replacement talents" then
+			local _, y = element.fields[1]:match("^([^,]+),([^,]+)$")
+			-- Legacy labels are vertically centered with a 0.375-unit text box.
+			passive_top = tonumber(y) - 0.375 / 2
 		end
 	end
 	assert(textareas == 1, "unexpected Skills textarea count")
+	assert(mount_bottom and passive_top and mount_bottom <= passive_top,
+		"Purchased mounts overlap the passive-talents heading")
 	record("skills", "textarea-fields-5")
 
 	table.sort(rows)

@@ -118,8 +118,8 @@ local function content(player)
 		"list[" .. location .. ";catalog;0.25,1.05;8,1;0]" ..
 		"label[0.25,2.25;Purchased mounts]" ..
 		"list[" .. location .. ";catalog;0.25,2.65;4,1;8]" ..
-		"label[0.25,3.35;Passive and replacement talents]" ..
-		"textarea[0.25,3.75;9.9,2.3;;;" ..
+		"label[0.25,3.75;Passive and replacement talents]" ..
+		"textarea[0.25,4.15;9.9,2.3;;;" ..
 		core.formspec_escape(passive_text(player)) .. "]"
 
 end
