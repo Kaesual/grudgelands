@@ -68,7 +68,8 @@ Research and historical evidence: **[docs/research/README.md](docs/research/READ
 ## Active work and game status
 
 The user approved a documentation-only consolidation round on 2026-09-23.
-Contract, lane ownership and progress: [documentation round](docs/maintenance/documentation-round.md).
+Completed with independent Astra review; receipt and remaining findings:
+[documentation round](docs/maintenance/documentation-round.md).
 Do not change game code, media, reference pins or root README in this round.
 README is owned by another agent; hand off proposed edits. Root Astra coordinates
 native Sol topic reviews and Astra world/final reviews; no Claude task is authorized.

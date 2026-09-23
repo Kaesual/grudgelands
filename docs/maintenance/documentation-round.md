@@ -32,8 +32,8 @@ No assertion that every historical document has been read in full is permitted.
 | Items | Sol | Crafting, professions, gear, food/farming, economy, equipment | integrated; e2295c59 + ba6138f2 |
 | World | Astra | World/mapgen, populations, settlements, housing, boats/mounts, preparation | integrated; e1096c6c |
 | Play | Sol | Combat/classes, progression, quests/groups, atlas/home, UI revision | integrated; bc87d184 + process 5fb2c4b9 |
-| Navigation/process | Root Astra | Inventory, entry points, AGENTS, backlog/roadmap, archive routing | integrated candidate; checks in progress |
-| Final review | Independent Astra | Rule preservation, authority, links, unresolved findings, scope | pending |
+| Navigation/process | Root Astra | Inventory, entry points, AGENTS, backlog/roadmap, archive routing | complete |
+| Final review | Independent Astra | Rule preservation, authority, links, unresolved findings, scope | PASS at `1ab46e99`; initial 3 Medium/1 Low closed |
 
 Authors own separate worktrees and non-overlapping files. Reports identify
 inspected sources, corrected findings, unresolved findings and cross-lane edits.
@@ -64,3 +64,38 @@ delivery remains Round 19 plus its follow-ups; do not mark GUI checks passed.
 
 Findings and README-owner handoff: [reconciliation findings](findings.md).
 The inventory records baseline classification; topic reports record actual reading coverage.
+
+## Completion
+
+Documentation consolidation complete; independent Astra re-review PASS at
+`1ab46e99` after one focused correction round. [Review and re-review](review.md).
+No Critical/High findings; three Medium planning defects and one Low routing
+issue were corrected. Authors: root Astra, world Astra, items/play/process Sol.
+Review: fresh independent Astra. Classification: non-trivial documentation and
+process authority; observed elapsed wall time: unknown.
+
+Checks on the reviewed candidate and completion prose:
+
+- Baseline inventory covers all **611/611 tracked Markdown files**; third-party,
+  root README and provenance exclusions are explicit. Topic reports state actual
+  reading limits; the whole historical corpus was not reread line by line.
+- All changed Markdown local file targets and checked fragment targets resolve;
+  `git diff --check` passes.
+- All **10,270 existing protected files** retain baseline SHA256, including game
+  code/runtime tools, media, root README, reference pins and license ledgers.
+  Diff contains Markdown and the documentation inventory TSV only.
+- No Lua, native world, GUI, performance, sync or remote push performed.
+- AGENTS shrank from 1,181 to 383 lines; BACKLOG from 1,002 to approximately 265;
+  ROADMAP from 443 to 194. Living design shrank from 14,848 to 13,850 lines.
+  Historical archives, the technical guide and audit evidence remain accessible;
+  total repository documentation size is not the success metric.
+
+[D1–D4 findings](findings.md) remain explicitly routed: pending WP37 scope
+reconciliation, profession-book code drift, specialist mastery audit coverage,
+and future boat/Kraken danger acceptance. They are not hidden behind the review
+PASS. No code fix, balance change, future-scope cancellation or GUI acceptance
+was inferred. Root README-owner suggestions are recorded in the same findings.
+
+Delivery: reviewed local documentation branch, to be merged to local main.
+This does not alter the installed game; no runtime test is needed for this
+round. Existing user playtests and first-public-release obligations remain.

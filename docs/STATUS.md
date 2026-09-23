@@ -2,7 +2,9 @@
 
 Updated 2026-09-23. This is the delivery pointer, not another game specification.
 
-- **Current task:** documentation consolidation; [contract and execution](maintenance/documentation-round.md).
+- **Documentation consolidation:** complete with independent Astra PASS;
+  [receipt and coverage](maintenance/documentation-round.md). Remaining decisions
+  and code/design discrepancies: [findings](maintenance/findings.md).
 - **Latest game:** Round 19 plus UI and pursuit/idle-recovery follow-ups, merged
   to local main and synchronized before this documentation branch began.
   [R19 receipt](research/round19-completion.md),

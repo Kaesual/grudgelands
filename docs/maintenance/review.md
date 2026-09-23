@@ -121,3 +121,70 @@ Author-reported possible specialist mastery/catalog mismatch remains an honest
 coverage concern. Existing D1–D4 findings and the user's GUI/release gates are
 not resolved by this review. Root should fix the findings above, rerun bounded
 documentation checks, and record the disposition on the final candidate.
+
+---
+
+# Independent focused documentation re-review
+
+Date: 2026-09-23. Reviewer: native Astra, independent of the authors.
+Candidate: `1ab46e99`; previous reviewed candidate: `b1587c54`.
+Read-only review; only this report was written. No Lua/runtime/PERF tests.
+
+## Verdict
+
+**PASS: all three Medium findings and the Low finding are closed.** No new
+finding in the focused fix diff. This verdict covers documentation integrity,
+not pending GUI acceptance, gameplay correctness or public-release evidence.
+The original review's coverage limits and unresolved D1–D4 remain applicable.
+
+## Disposition
+
+- **M1 closed:** WP22 now names the current 1000/1500/2000/2500/3000/4000
+  combat budgets, explicitly excludes refinement/doubled lifetime and treats
+  material/profession repair only as a possible future discussion. Approved
+  pick-speed calibration and Housing integration remain open.
+- **M2 closed:** WP13 replaces the conflicting incremental chronicle with
+  delivered slices, the remaining acceptance inventory, explicit 24-versus-16
+  `bandit_frontier` correction, ownership boundaries and pending GUI acceptance.
+  It preserves shipwrights, sockets, encounter/Crown acceptance and protection.
+  The old chronicle remains in the historical backlog.
+- **M3 closed:** WP34 explicitly retains the delivered depth curve while
+  preserving the unfinished pulse and resource/depth remainder.
+- **L1 closed:** BACKLOG now includes deferred friendly-guard healing and its
+  combat-spec owner without scheduling implementation.
+- The additional WP21 edit correctly distinguishes delivered innkeeper
+  binding/return/death respawn from future claim-bound Home Stone travel and
+  does not remove rested-XP/recovery work.
+
+## WP13 roster cross-check
+
+The new arithmetic is structurally supported, not an inferred cancellation:
+
+- `mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua`'s `source.anchors` declares
+  IDs 1–6 starts, 7–12 capitals, 13–24 villages, 25–48 outposts, 49–60 bandit
+  camps, 61–66 mines, 67–70 mirefolk, 71–86 clash, 87–88 dragon, 89–90 apex,
+  91–100 rare routes. Therefore 100 total includes 12 civic plus 88 other slots.
+- `r7_anchor_roster.lua` independently requires 100 total source anchors and
+  selects the same capital/outpost/bandit intervals for its 42 activation rows.
+- `docs/research/round14-poi-work.md` identifies exactly six villages
+  (13/15/17/19/21/23), six outposts (25/29/33/37/41/45) and six inner bandit
+  camps (49/51/53/55/57/59). `round15-poi-work.md` explicitly recomposes those
+  same eighteen locations without adding anchors.
+- Hence 88 minus 18 equals 70 remaining wider acceptance slots, distributed
+  exactly as the new table states. Its explicit warning that existing mobs,
+  banners, bosses and functional anchors already exist avoids treating the
+  seventy slots as empty or authorizing wholesale rebuilding.
+
+This is a source/record inventory check, not a new per-slot visual completion
+or runtime certification. The ambiguous older “100 POIs” heading in the
+historical contract is appropriately corrected in current planning.
+
+## Checks and limits
+
+Reviewed all four changed files in the fix diff. The archived initial report
+`docs/maintenance/review.md` is byte-identical to the original reviewer report
+(`cmp` passes). `git diff --check b1587c54 1ab46e99` passes. The fix diff remains
+Markdown-only and does not change process gates, protected runtime content,
+WP37's pause, the release boundaries or any game code. No broader repeat audit
+of unchanged history was needed. Root remains responsible for final structural
+link/protected-file checks and recording delivery state.
