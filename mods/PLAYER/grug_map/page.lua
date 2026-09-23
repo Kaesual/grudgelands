@@ -2,9 +2,9 @@ local atlas = grug_map.atlas
 local active, elapsed = {}, 0
 local PAGE = "grug_map:atlas"
 
--- The 900 x 800 media is displayed at the same 9:8 ratio. This page carries
--- no inventory rows, so the atlas uses the full custom-page height.
-local MAP_X, MAP_Y, MAP_W, MAP_H = 0.15, 0.85, 10.1, 8.9778
+-- Media is rendered at each view's world aspect. This page carries no
+-- inventory rows, so the atlas uses the full custom-page height.
+local MAP_X, MAP_Y, MAP_MAX_W, MAP_H = 0.15, 0.85, 10.1, 8.9778
 local LABELS = {
 	hearthpine = "Hearthpine", dawnmere = "Dawnmere", silverleaf = "Silverleaf",
 	stillgrave = "Stillgrave", sunscar = "Sunscar", kapok = "Kapok Cradle",
@@ -62,22 +62,28 @@ end
 local function page_content(player, context)
 	context.grug_map_view = context.grug_map_view or "world"
 	local view = atlas.view(context.grug_map_view)
+	-- Keep one formspec unit per world-axis scale. Regional views are taller
+	-- than they are wide, so they are centered instead of stretching terrain.
+	local aspect = (view.max_x - view.min_x) / (view.max_z - view.min_z)
+	local map_w = math.min(MAP_MAX_W, MAP_H * aspect)
+	local map_x = MAP_X + (MAP_MAX_W - map_w) / 2
 	-- sfinv's wrapper and navigation are legacy-coordinate formspecs. Switching
 	-- here affects only this page content (which the wrapper appends after nav)
 	-- and makes image and marker coordinates share one real unit system.
 	local fs = {"real_coordinates[true]",
 		("label[0.15,0.15;%s]"):format(esc(view.label)),
 		("label[2.35,0.15;Current: %s]"):format(esc(current_zone(player))),
-		("image[%s,%s;%s,%s;%s]"):format(MAP_X, MAP_Y, MAP_W, MAP_H,
+		("image[%s,%s;%s,%s;%s]"):format(map_x, MAP_Y, map_w, MAP_H,
 			esc(view.texture))}
 	local views = atlas.views()
 	for index = 1, #views do
 		local row = views[index]
 		local x = 0.15 + (index - 1) * 1.44
-		local label = row.id == context.grug_map_view and "> " .. row.view.label or
-			row.view.label
+		local field = "grug_map_view_" .. row.id
+		fs[#fs + 1] = grug_inventory.selected_button_style(field,
+			row.id == context.grug_map_view)
 		fs[#fs + 1] = ("button[%.2f,10.05;1.4,0.65;grug_map_view_%s;%s]"):
-			format(x, row.id, esc(label))
+			format(x, row.id, esc(row.view.label))
 	end
 	context.grug_map_marker_fields = {}
 	local markers = atlas.collect_markers(player)
@@ -85,7 +91,7 @@ local function page_content(player, context)
 	for index = 1, #markers do
 		local marker = markers[index]
 		local sx, sy = atlas.world_to_screen(view, marker.position,
-			MAP_X, MAP_Y, MAP_W, MAP_H)
+			map_x, MAP_Y, map_w, MAP_H)
 		if sx then
 			if marker.id == context.grug_map_selected then
 				context.grug_map_detail = marker.detail
