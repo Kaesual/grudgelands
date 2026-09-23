@@ -13,7 +13,7 @@ the material ladder is its §3.0, the per-profession catalogs are
 - **Exactly 2 primary profession slots per character, freely filled at
   profession trainers**
   (never class-bound — interdependence drives the server economy).
-  Switching later is allowed at a trainer, but unlearning immediately wipes
+  Switching later is allowed at a trainer, but confirmed unlearning wipes
   the dropped profession's level and current-tier craft count. The seven
   primaries are Weaponsmith, Armorsmith, Alchemist, Tailor, Leatherworker,
   Woodcarver and Goldsmith.
@@ -234,3 +234,11 @@ of cloth or leather users who also want a professionally improved weapon.
   effects to families their profession owns, while finished stacks remain
   tradeable and wearable by anyone. The retired one-recipe-per-race model does
   not return in Phase 2.
+
+## Round 18 trainer feedback
+
+A successful Learn action displays explicit success and points to the profession
+recipe book in Crafting. Subsequent visits show known state/progress and guidance.
+Cooking has no Unlearn action. Primary professions require confirmation that
+all progression in the selected profession will be lost; cancellation preserves
+it. Failed learning never displays success. Repair access is unchanged.

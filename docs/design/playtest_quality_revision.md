@@ -55,7 +55,7 @@ Implementation contract: [Round 18](../research/round18-plan.md).
   retries and tile progress; remove avoidable idle gaps, not legitimate I/O waits.
   Keep one emerge thread. Do not change accepted early ETA correction. Only short
   investigation; optional final 60–120-second observation occurs at most once.
-- Held-torch light covers the main-hand torch only, roughly 1 Hz/staggered.
-  Before implementation assess VoxeLibre and multiplayer lighting correctness.
-  If complexity is already disproportionate, pause without starting implementation
-  and discuss. No broad lighting framework or client changes are authorized.
+- Held-torch moving light is optional and deferred after the required VoxeLibre
+  preflight. The existing approach owns light propagation/removal and multiplayer
+  restoration, exceeding this round's simplicity condition. No client overlay or
+  general lighting framework is substituted. All other round scope remains.

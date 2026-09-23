@@ -208,9 +208,7 @@ spare**. Every other keystone and every capstone changes a button the player
 already has, or no button at all. §3.4 works the budget out per class; with
 ruling 19's Warrior change the worst case is now **6 of 8**.
 
-XP loss is 25% of the current level's whole XP span and never de-levels
-(`combat_stats.md` §3; `mods/PLAYER/grug_xp/init.lua:86-104` clamps the fixed
-loss to the level floor), so a point is never taken back by dying.
+Death costs no XP (Round 18); dying never removes talent points.
 
 ### 1.4 Respec, and the class change that no longer exists (rulings 4, 20, 22)
 

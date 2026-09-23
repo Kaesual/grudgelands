@@ -509,9 +509,7 @@ Normal tier at level L:
   shared mobs_redo death boundary regardless of whether a player, NPC, mob or
   the environment dealt the final damage, without replacing the mob's death
   callback, animation or smoke fallback (`mods/ENTITIES/mobs/api.lua:887-975`).
-- **PvE death loss** is 25% of the whole current-level XP span, clamped at the
-  current level start; it never de-levels. Level 60 has no following span and
-  therefore no PvE XP loss (`mods/PLAYER/grug_xp/init.lua:86-104`).
+- **Death never removes XP** (Round 18), regardless of level or cause.
 - **Player-tag drop rule** (decided 2026-08-06, WP6): a mob drops loot
   only if a player damaged it (`do_punch` sets a tag; the tag stores
   the attacker's professions for loot-table hooks like the
@@ -973,3 +971,16 @@ Startup presentation settings:
 category default. Bars have a nominal world size of 0.8 by 0.1 nodes; parent
 visual scale must not magnify them. Flight visuals use a duration bounded to
 0.05–2 seconds, so near-zero partial bow draws never cause long pursuit.
+
+## Round 18 pursuit policy
+
+This revision supersedes ordinary ambient chase-anchor and contact rules in §4.
+Free-roaming combat mobs have a 15-second incoming-damage grace clock starting
+on initial aggro. Effective player/guard HP damage, including DoT ticks, resets
+it; outgoing hits, taunt and threat-only changes do not. There is no distance
+from a damage-origin anchor. Expiry resets and returns to original home with
+existing healing, invulnerable return and the 40-second teleport fallback.
+Bosses/retinue, fixed guards, camp-owned mobs and location-bound rares keep their
+existing encounter/post lifecycle and bounds. No additional terrain is loaded
+to preserve a distant target. Player participation/credit rules remain separate.
+Friendly guard healing stays deferred; current healing targets remain players.

@@ -325,9 +325,11 @@ resource callback commit, or root integrates their non-overlapping hunks once.
 Checks: catalogue vs hotbar vs wield separation, actual bow charge, equipped
 weapon replacement, unchanged stack-authority/wear; stable close/far observers.
 
-### I — Held-torch moving light (Astra, complexity-gated)
+### I — Held-torch moving light (deferred after Astra preflight)
 
-Feedback 19. Independent reviewer: fresh Astra or Sol with lighting lens.
+Feedback 19. **Deferred before implementation** under the user's optional/low-priority simplicity instruction. See [preflight](round18-light-preflight.md).
+The following is retained future scope, not an active delivery promise.
+Independent reviewer: fresh Astra or Sol with lighting lens.
 Ownership: isolated light owner plus minimal registration/dependency wiring.
 
 - Torch held in main hand provides its ordinary light strength around a moving
@@ -391,7 +393,7 @@ Suggested launch sequence after Go:
 2. As slots free: A Sol UX, E Sol XP, B Sol maps; H1 Astra art can run alongside
    code once its input manifest is frozen. Do not hold free slots unnecessarily.
 3. F Sol waits only for G's status interface to be frozen, not full G completion.
-   J Sol tools and I Astra light are independent. H2 Sol waits for E's shared
+   J Sol tools is independent; I light is deferred after preflight. H2 Sol waits for E's shared
    ability file edit and H1 media. B adopts A's selected-control convention.
 4. Schedule fresh independent reviewers per scope, reuse completed agents only
    for scopes they never authored. Final Astra documentation-drift review.

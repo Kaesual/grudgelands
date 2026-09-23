@@ -35,8 +35,8 @@ Round 17 remains delivered; do not rerun its gates.
 
 Independent Astra review of the assembled root plan: no blockers or missing
 feedback. Incorporated actor-policy classification and one-time error-form
-reopening. All three direct user answers are recorded. Remaining recommendations
-are in the TODO file; no implementation Go received. Production code unchanged.
+reopening. All three direct user answers are recorded. This planning checkpoint preceded the explicit Go below; the former TODO is
+now resolved/deleted.
 
 ## Approval and resume
 
@@ -52,18 +52,26 @@ Do not rerun Round 17 gates. Native Sol default; Astra complex lanes and art.
 
 | Lane | Model | State | Ownership |
 |---|---|---|---|
-| G preparation | Astra | starting | starts_preload / preparation helpers |
-| D evade | Astra | starting | aggro / combat hooks |
-| C populations/quests | Sol | starting | spawn_policy / species / quest content |
+| G preparation | Astra | running | starts_preload / preparation helpers |
+| D evade | Astra | running | aggro / combat hooks |
+| C populations/quests | Sol | running | spawn_policy / species / quest content |
 | A inventory/trainer UX | Sol | queued | inventory/jobs/skills UI |
 | E XP/level-up | Sol | queued | XP/stats/resource callback |
 | B atlas/minimap | Sol | queued | map module/media |
 | F waiting/creation | Sol | queued | selection/faction gates |
 | H1 icon art | Astra | queued | icon assets/manifest/gallery |
 | H2 icons/tags integration | Sol | queued after E/H1 | ability image seam/displays |
-| I light preflight | Astra | queued, read-only first | upstream/lighting feasibility |
+| I light preflight | root Astra | deferred before implementation | round18-light-preflight.md |
 | J tools | Sol | queued | materials tool/mining capabilities |
 
 Root owns docs and integration. Independent reviews required, final portable
 micro-KAT pair only after frozen integrated bytes. Current four total native slots
 mean root + three workers; queue as available. No provider CLI.
+
+## Later user steering
+
+Held light is entirely optional/lowest priority; other-player light visibility
+may be omitted. Root read the exact newer VoxeLibre algorithm and deferred the
+lane before coding because it owns light-bank removal/spread and multiplayer
+restoration. [Preflight](round18-light-preflight.md). No approval needed to omit
+under the explicit simplicity condition; all other lanes continue.

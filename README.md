@@ -45,14 +45,15 @@ to fear. Their story will grow as more regions and encounters are completed.
 
 ## Current State
 
-*Last updated: 2026-09-22. Based on [BACKLOG.md](BACKLOG.md) and
+*Last updated: 2026-09-23. Based on [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md).*
 
 The systems above are implemented and available in the development build.
 Recent work adds innkeeper home travel, homing arrows and spell projectiles,
 and clearer health, name and party displays. Playtesting, balancing and
 finishing the wider world remain ongoing; implemented features are not all
-fully playtested.
+fully playtested. [Round 18](docs/research/round18-plan.md) is in development,
+addressing playtest usability, world populations and preparation pauses.
 
 Open-world housing claims, boats, the full geographic PvP system, war fronts
 and the planned island dragon encounters are still unfinished. The current
@@ -187,6 +188,7 @@ investigations and delivery records.
 | Items and crafting | [Items](docs/design/items_crafting.md): materials and recipes; [professions](docs/design/professions.md): trades; [stations and enchantments](docs/design/crafting_equipment_revision.md): current crafting rules; [equipment](docs/design/inventory_equipment.md): slots and bags; [durability](docs/design/durability_repair.md): wear and repair; [economy](docs/design/economy.md): money, prices and services. |
 | Wildlife and everyday life | [Biomes and mobs](docs/design/biomes_mobs.md): habitats and creatures; [farming](docs/design/farming.md): crops; [housing](docs/design/housing.md): planned homes and claims. |
 | Travel and playing together | [Mounts](docs/design/mounts.md): riding; [boats](docs/design/boats.md): planned water travel; [home travel](docs/design/home_travel.md): innkeepers and return; [parties](docs/design/parties.md): groups; [atlas](docs/design/world_map.md): maps and markers. |
+| Current revision | [Round 18 decisions](docs/design/playtest_quality_revision.md): approved playtest-quality changes, in development. |
 | Hosting | [World preparation](docs/design/world_preparation.md): generating starting areas or the full world. |
 
 </details>
