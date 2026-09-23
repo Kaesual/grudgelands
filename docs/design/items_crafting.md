@@ -25,6 +25,13 @@ the rebased 25c→25s Common-price axis are authoritative below. Private housing
 isles, guild systems, finder items and the Amplifier are absent from the target
 design. Historical decisions in §10 remain design history only.
 
+**Economy delivery boundary.** The 25c→25s Common-price axis and 5% buy-back
+in §8 are the approved **WP44 target**, not the current trader runtime. Until
+WP44 lands, vendors and the Round-11 repair service continue to use the shipped
+50c→2s69c Common-weapon ladder and 25% buy-back/reference catalog. New design
+must not treat that temporary runtime curve as the target, and current repair
+quotes must not silently price against the future table.
+
 Feeds: WP5 (loot/enchant rolls), WP7 (traders/consumables), WP10
 (professions/workbenches), WP22 (repair). Crafting mechanics frame:
 `inventory_equipment.md` §4 (3×3 grid, multi-stage, profession-level
@@ -1012,7 +1019,7 @@ work; the two-piece runtime seam above is already authoritative.
 
 ### 3.6a Woodcarver (carving bench) — wood, bows and caster weapons
 
-Woodcarver owns quality operations for the active wooden weapon families:
+Woodcarver owns named enchant operations for the active wooden weapon families:
 staff, wand and bow. Their plain recipes remain universal Basics.
 Plain weapons use ordinary sticks and matching-tier metal bars. Wands and
 staves additionally use the tier's ordinary mob component; bows use Thread.
@@ -2045,6 +2052,11 @@ Imbue/Temper kits, random crafted application rolls or separate refinement steps
 
 ## 8. Prices and money pacing
 
+This section specifies the WP44 target economy. The currently shipped trader
+and repair price catalog remains the legacy curve stated in the delivery
+boundary at the top of this document; [durability_repair.md](durability_repair.md)
+owns how repair quotes use it before and after the WP44 cutover.
+
 All values use ledger copper (100c = 1s, 100s = 1g). No creature, NPC or
 world node drops currency or a physical coin. Tiered combat income is the
 expected vendor value of sellable loot; physical Gold remains a separate
@@ -2098,8 +2110,9 @@ rows are deleted; no Dowsing Rod or Gem Detector is sold or crafted.
 ### 8.3 Recurring sinks
 
 - **Repair:** [durability_repair.md](durability_repair.md) is authoritative for
-  eligible identities, exact wear events, non-destruction, the 3,000/6,000
-  budgets, all-trainer service and the money-only 20%-of-reference-price quote.
+  eligible identities, exact wear events, non-destruction, the current
+  tier-specific lifetime tables, all-trainer service and the money-only
+  20%-of-reference-price quote.
 - **Respec:** repeatable **in the talent UI, with no class trainer and no
   NPC** (ruling 4 of 2026-09-16, `skill_trees.md` §5). It costs **five
   minutes of measured reliable net solo income** at the character's bracket,
@@ -2261,15 +2274,13 @@ controls crafting permission while locked rows remain visible. Quest and boss
 recipes land in the same book, and universal base recipes remain in the
 Basics book (§2.2/§2.3).
 
-**D5 — Refinement is the profession's product.** The 2026-08-07 form used
-+15 % base damage or armor and +100 % durability; only refined items could be
-enchanted; affixes were 2 prefixes + 2 suffixes, with mastery filling the four.
-**Superseded 2026-09-20:** ordinary gear now has one prefix and one suffix,
-and Expert/Master temper values rather than adding slots (§0, §6b.5). The
-15 % refinement and doubled durability remain. 15 % was chosen against 25 % because a refined tier-n
-item must not beat an unrefined tier-n+1 item — §3.8 shows it holds at
-every step of the ladder. The refinement word drops out of the name once
-an affix is present, since only refined items can carry one (§6b).
+**D5 — Refinement was the profession's product.** The 2026-08-07 form used
++15% base damage or armor, doubled durability and four affix slots. An interim
+2026-09-20 revision reduced that to one prefix and one suffix while retaining
+refinement. Round 13 superseded the whole refinement model on 2026-09-21:
+refinement, its hidden stat/lifetime bonuses and Imbue/Temper no longer exist.
+The active deterministic named-enchant rules are in §6b and
+[crafting_equipment_revision.md](crafting_equipment_revision.md#enchanting).
 
 **D6 — Cooking gets a book, but not a profession slot.** Cooking and
 First Aid stay free and universal. Cooking's tiers are tied to regional

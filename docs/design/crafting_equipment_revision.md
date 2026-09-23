@@ -5,6 +5,14 @@ supersedes conflicting refinement, affix application, station ownership and
 durability clauses in older design sections. Existing trinket authored specials,
 item-family affix pools, repair prices and mining access/depth rules continue.
 
+The topic owners now carry the reusable rules: production and recipe-book
+behavior in [inventory_equipment.md](inventory_equipment.md#4-crafting-model-revised-2026-09-21)
+and [professions.md](professions.md), wear and repair in
+[durability_repair.md](durability_repair.md), and item/enchant catalogs in
+[items_crafting.md](items_crafting.md). This document remains the approved
+Round-13 cross-cutting contract and calibration record; it does not make the
+WP44 target price table current runtime behavior.
+
 ## Workspaces and production
 
 Authored capital/POI stations provide a **Personal workspace**: durable inputs,
