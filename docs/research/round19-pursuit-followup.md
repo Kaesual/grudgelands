@@ -33,13 +33,9 @@ coverage. LuaJIT development only; changed Lua parser/SETGLOBAL/five sweeps.
 After independent review, one compact final PUC/LuaJIT pair with identical
 canonical output. No native world, performance campaign or broad test fleet.
 
-Status: pursuit implementation/review PASS; idle recovery implementation frozen
-at `edabd948`; independent review found an attack-acquisition ordering hole in
-shared boss recovery. The author is fixing it before focused re-review.
-Main merge/local sync after independent
-review and final gates. User runtime checks: let a melee and ranged mob attack
-while standing still for over 15 seconds; then move without dealing damage;
-repeat while another player periodically damages the mob.
+Status: implementation and independent review PASS at `033d894f` (production `87423283`) after one
+idle-recovery fix round. Technical evidence is recorded below; local integration
+and GUI acceptance are tracked separately.
 
 ## Additional approved scope: safe idle full healing
 
@@ -75,3 +71,26 @@ shared boss activity. No native-world or performance campaign.
 - In a boss encounter, engage a retinue member while the leader is wounded:
   the new idle recovery must not heal/reset the group during that fight.
   Check the group can recover after the whole encounter becomes quiet.
+
+## Final technical evidence and review
+
+- Pursuit author native Sol; independent native Sol review at `ecec014a`:
+  0 Critical / 0 High / 0 Medium / 0 Low, no fix rounds.
+- Idle recovery author native Sol; independent native Sol review:
+  one High (post-sample target acquisition could let a peer reset), corrected
+  at `87423283` and focused re-review PASS; one production fix round plus one final-harness correction, no open findings.
+- Root native Astra coordinated and updated living docs; no provider CLI.
+  Observed elapsed wall time: unknown. Pre-review clock propagation fixes
+  separated actual group activity from local activation/post-heal grace.
+- Review records: [pursuit](round19-pursuit-review.md),
+  [idle recovery](round19-idle-health-review.md).
+- Plain Lua 5.1 parser, expected SETGLOBAL inventory and all five static sweeps
+  PASS on changed Lua. The two compact fixtures load actual registration,
+  vendored attack/damage paths, pursuit/reset, idle recovery and boss lifecycle.
+- The first final PUC attempt failed on a test-environment binding error before
+  parity comparison. Corrected fixture `033d894f` supplies the real inherited
+  attack method and damaged peer setup; prior standalone PASS claims are withdrawn.
+  One replacement frozen PUC-5.1/LuaJIT pair PASS with byte-identical output:
+  SHA256 `cf8a99b5aaec803e92c723248fa9991bf3bb102f992712522e3e366236e14c53`. Timings 0.008284/0.011987 seconds.
+  Evidence and source hashes: `tools/r19_pursuit/evidence/`.
+  No headless world, performance campaign or broad population tests were run.

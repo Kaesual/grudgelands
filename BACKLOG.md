@@ -5,9 +5,12 @@ Round 19 implementation, independent reviews and final technical gates PASS:
 [execution](docs/research/round19-execution.md). Whole-atlas zoom/scroll, concise
 menus, party/status defaults and dragon bars are merged to main, installed locally, and ready for
 [GUI acceptance](docs/research/round19-playtest.md). No whole-WP count change;
-remote push remains blocked pending renewed confirmation.
+latest follow-ups have not been pushed.
 The [UI follow-up](docs/research/round19-ui-followup.md) corrects Map window
 consistency and talent affordance; independent review and compact gates PASS.
+The [combat follow-up](docs/research/round19-pursuit-followup.md) adds movement-gated
+ambient return and safe 30-second idle recovery for mobs/guards/bosses;
+independent review and compact final gates PASS. No whole-WP count change.
 
 Round 18 is technically complete and independently reviewed, merged to main
 and locally synchronized. Remote push awaits renewed confirmation after an

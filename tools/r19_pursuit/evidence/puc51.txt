@@ -1,0 +1,5 @@
+fixture=r18_evade/micro.lua
+r18_evade: policy=13 sustained=60 movement=horizontal threshold=0.25 switch=seeded timeout=15 home=4 fallback=40 guard=pass settlement=pass target=pass
+fixture=r19_idle_health/micro.lua
+r19 idle health micro: ok
+round19-pursuit-idle-micro: PASS fixtures=2

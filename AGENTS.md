@@ -72,8 +72,10 @@ Merged to local main and synchronized; GUI acceptance pending.
 Contract: `docs/research/round19-plan.md`; durable status and delivery:
 `docs/research/round19-execution.md`, `docs/research/round19-completion.md`.
 Next GUI pass: `docs/research/round19-playtest.md`. Native Astra owned atlas;
-Sol owned menus, party/status HUD and dragon bars. Remote push remains blocked
-by the prior automatic approval review pending renewed confirmation.
+Sol owned menus, party/status HUD and dragon bars. Latest follow-ups are local.
+Movement-gated pursuit and safe idle full recovery are delivered separately in
+`docs/research/round19-pursuit-followup.md`, with independent Sol review and
+compact final conformance evidence. GUI acceptance remains user-run.
 
 Round 18 implementation, independent reviews and technical gates are complete.
 Merged to main and locally synchronized; remote push awaits renewed confirmation
