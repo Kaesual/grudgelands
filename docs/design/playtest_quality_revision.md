@@ -9,8 +9,10 @@ Implementation contract: [Round 18](../research/round18-plan.md).
 - Ordinary free-roaming world mobs can be pulled indefinitely while receiving
   effective incoming HP damage from players or guards. Initial aggro starts a
   15-second grace clock; further incoming damage resets it. Without incoming
-  damage for 15 seconds they evade and return to original home, retaining the
-  existing heal/untouchable-return and 40-second fallback teleport.
+  damage for 15 seconds, the Round 19 follow-up permits return only when their
+  current live target moves horizontally (see combat_stats.md). Standing still
+  does not reset the clock. Missing/dead-target cleanup remains unchanged, as do
+  the heal/untouchable-return and 40-second fallback teleport.
 - Bosses/retinue, location-bound guards, camp-owned mobs and location-bound rares
   retain existing encounter/post/slot bounds. No new damage-origin anchor rule.
 - Ordinary surface species spawn only where their natural minimum level fits

@@ -520,7 +520,8 @@ Normal tier at level L:
 - **Bounded-actor soft de-aggro:** where the retained encounter policy enables
   it, beyond ~25 m a chasing actor drops to walk speed. Round 18 ordinary
   damage-sustained world mobs do not use this slowdown or distance give-up;
-  their incoming-damage clock governs disengagement.
+  their incoming-damage clock plus current-target horizontal movement govern
+  disengagement (Round 19 follow-up).
 - **Readability rules for mobs** (decided 2026-08-06, shipped with WP6):
   elites/rares signal via **scale + tint** — elite `visual_size` ×1.6,
   gold `^[colorize:#ffa800:80`, nametag prefix `Elite `; rare ×2,
@@ -678,7 +679,10 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
 - **Ambient pursuit (Round 18):** ordinary free-roaming combat mobs, including
   Zombies and their ambient variants, use a 15-second clock since incoming
   effective player/guard damage. Initial aggro seeds the clock. Outgoing hits,
-  taunt and threat-only updates do not refresh it. No chase-origin distance or
+  taunt and threat-only updates do not refresh it. The Round 19 follow-up
+  requires noticeable horizontal movement of the current live target before
+  an expired clock triggers return. Standing still never refreshes the clock.
+  No chase-origin distance or
   ordinary LOS-patience timeout ends a damage-sustained fight; a valid available
   target remains required. No distant terrain is loaded to keep a target alive.
 - **Encounter-owned exceptions:** bosses/retinue, fixed guards, camp-owned mobs,
@@ -972,15 +976,48 @@ by that scale.
 This changes neither ordinary mobs/guards nor adds a screen-space boss HUD. The sprite remains perspective-scaled. Flight visuals use a duration bounded to
 0.05–2 seconds, so near-zero partial bow draws never cause long pursuit.
 
-## Round 18 pursuit policy
+## Ambient pursuit policy (Round 18, amended by Round 19 follow-up)
 
 This revision supersedes ordinary ambient chase-anchor and contact rules in §4.
 Free-roaming combat mobs have a 15-second incoming-damage grace clock starting
 on initial aggro. Effective player/guard HP damage, including DoT ticks, resets
 it; outgoing hits, taunt and threat-only changes do not. There is no distance
-from a damage-origin anchor. Expiry resets and returns to original home with
-existing healing, invulnerable return and the 40-second teleport fallback.
+from a damage-origin anchor. For a live current target, expiry only triggers
+return when that target has moved at least 0.25 nodes horizontally since the
+previous existing roughly one-second leash sample (squared X/Z displacement,
+no direction or mob-distance comparison). Initial samples and target changes
+establish a new baseline and never imply movement. Stationary targets keep the
+fight active without resetting the damage clock: moving later can immediately
+trigger return, and sideways/circular movement counts. Vertical motion alone
+and smaller per-sample jitter do not count. This applies to melee and ranged
+pursuit; outgoing mob attacks never sustain or end the clock.
+
+Dead/unavailable targets and abandoned no-target encounters retain existing
+cleanup; temporary pack flight without a target must not pin an expired fight.
+Sampling state is runtime-only and cleared with the encounter. Return retains
+existing healing, invulnerability and the 40-second teleport fallback.
 Bosses/retinue, fixed guards, camp-owned mobs and location-bound rares keep their
 existing encounter/post lifecycle and bounds. No additional terrain is loaded
 to preserve a distant target. Player participation/credit rules remain separate.
 Friendly guard healing stays deferred; current healing targets remain players.
+
+## Out-of-combat mob recovery (Round 19 follow-up)
+
+Living registered world mobs, guards and bosses recover to full HP after 30
+continuous seconds of genuine idle time, rather than incremental regeneration.
+This supplements the existing immediate full heal on a confirmed leash reset.
+It never revives dead entities or changes damage, resistance or pursuit rules.
+
+Use the existing one-second mob maintenance cadence. Observe actual entity HP:
+any decrease, regardless of source, restarts quiet time. An attack target,
+attack state, flight/flop, evade, or pending boss attack blocks idle recovery.
+Only calm standing/walking qualifies; temporary target gaps cannot immediately
+heal. Initialize a fresh quiet period on activation; clocks remain runtime-only.
+
+Members of one boss encounter share recent activity, including king/retinue and
+boss summons. A fighting or newly damaged member blocks the others' idle heal,
+even when a following guard temporarily has no target. Use runtime activity
+timestamps, not the reward-participation ledger (which can remain after combat).
+No additional proximity scan or pathfinding is required. The full-heal operation
+uses the existing reset transaction, retaining health bookkeeping, tag cleanup,
+boss action cancellation and encounter ownership rules.

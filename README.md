@@ -58,6 +58,8 @@ latest usability, progression, pursuit, tool and preparation fixes.
 menus, first-click talents, top-center buffs and readable dragon bars.
 Its [UI follow-up](docs/research/round19-ui-followup.md) keeps Map at the shared
 window size and makes talent buttons and text alignment clearer.
+The [combat follow-up](docs/research/round19-pursuit-followup.md) keeps ambient
+mobs attacking stationary targets and restores idle enemies after a safe quiet period.
 
 Open-world housing claims, boats, the full geographic PvP system, war fronts
 and the planned island dragon encounters are still unfinished. The current
@@ -70,8 +72,8 @@ quest catalog does not yet cover the full journey through every region.
 others have playable portions. This is a tracking count, not a percentage of
 game completion. The latest increment is
 [Round 19](docs/research/round19-completion.md), with independent reviews and
-technical checks complete and installed locally; remote push
-awaits renewed approval. [In-game acceptance](docs/research/round19-playtest.md)
+technical checks complete and installed locally. Latest follow-ups have not
+been pushed. [In-game acceptance](docs/research/round19-playtest.md)
 remains separate.
 
 **Ready for further work:** the backlog identifies crafting/enchantment

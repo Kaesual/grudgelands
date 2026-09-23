@@ -618,6 +618,11 @@ function grug_mobs.register_mob(name, def)
 	-- CMI have both accepted. NB any truthy do_punch return cancels.
 	local old_do_punch = def.do_punch
 	def.do_punch = function(self, hitter, tflp, tool_capabilities, dir, damage)
+		-- Close the one-second sampling boundary for grouped encounters. A
+		-- punch attempt is conservatively activity even when a later veto makes
+		-- it deal no damage; delaying a reset is safe, healing another royal or
+		-- dragon actor on the frame combat begins is not.
+		grug_mobs.touch_boss_activity(self)
 		if hitter and core.is_player(hitter) and grug_core.is_stunned(hitter)
 				and not grug_core.in_ability_punch then return true end
 		--
@@ -802,6 +807,17 @@ function grug_mobs.register_mob(name, def)
 	end
 
 	mobs:register_mob(name, def)
+	-- Target acquisition can happen after do_custom in mobs_redo's one-second
+	-- general_attack pass, or before the first custom tick through group alert.
+	-- Put the boss-group activity seam on the registered prototype so every
+	-- accepted do_attack path publishes immediately; this does not touch the
+	-- separate pursuit damage/contact clocks.
+	local prototype = core.registered_entities[name]
+	local native_do_attack = prototype.do_attack or mobs.mob_class.do_attack
+	prototype.do_attack = function(self, target, force)
+		grug_mobs.touch_boss_activity(self)
+		return native_do_attack(self, target, force)
+	end
 	-- mobs_redo copies a fixed field set from the source definition. Install
 	-- our presentation metadata on the registered Lua-entity prototype so
 	-- tag carriers can read it from actual instances after activation.
@@ -826,6 +842,7 @@ dofile(modpath .. "/spawn_policy.lua")
 grug_mobs.install_spawn_clock_wrapper()
 dofile(modpath .. "/levels.lua")
 dofile(modpath .. "/aggro.lua")
+dofile(modpath .. "/idle_health.lua")
 dofile(modpath .. "/flight.lua")
 dofile(modpath .. "/verbs.lua")
 dofile(modpath .. "/disposition.lua")

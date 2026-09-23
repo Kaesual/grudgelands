@@ -356,7 +356,8 @@ because of what the guard does, not because water damages a boat:
   the 45-metre chase give-up and the 25-metre soft de-aggro that would drop it
   to walking speed. A player who stays on the open sea is caught; the guard is
   faster than the fastest boat, so this is not a race.
-- **Everywhere else it behaves like an ordinary land mob.** In shelf water, in
+- **Everywhere else it retains the bounded land-actor rules.** The Round 18–19
+  ambient pursuit changes do not apply to this bespoke guard. In shelf water, in
   planned zone water and inside a dragon channel all three of those rules
   apply again, together with the rest of the §4 model — threat reset, the
   accelerated untouchable run home to its post and the teleport backstop. Full
