@@ -47,7 +47,8 @@ waypoint unlock; binding still requires visiting an eligible innkeeper.
 
 ## Round 18 coverage and minimap
 
-Six regional views jointly cover the full world-atlas bounds, including frontiers,
+Six directional regional views form a 3-column x 2-row cover of the full
+world-atlas bounds, with 120 nodes of extension across each inner seam. They include frontiers,
 capitals and islands, with overlap and correct aspect. Renderer and marker
 projection share one bounds authority. Native surface minimap is selected by
 default, subject to client settings and the player's V toggle. It displays terrain

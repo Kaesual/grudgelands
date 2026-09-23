@@ -57,12 +57,12 @@ Do not rerun Round 17 gates. Native Sol default; Astra complex lanes and art.
 | C populations/quests | r18_populations / Sol | integrated c86621c4; review pending | spawn_policy / species / quest content |
 | A inventory/trainer UX | r18_ux / Sol | integrated 0e67a78b; review pending | inventory/jobs/skills UI |
 | E XP/level-up | r18_xp / Sol | integrated 486878ab; review pending | XP/stats/resource callback |
-| B atlas/minimap | r18_map / Sol | running /tmp/grug-r18-map | map module/media |
+| B atlas/minimap | r18_map / Sol | integrated 386f6216; review pending | map module/media |
 | F waiting/creation | r18_waiting / Sol | running /tmp/grug-r18-waiting | selection/faction gates |
-| H1 icon art | r18_art / Astra | running /tmp/grug-r18-art | icon assets/manifest/gallery |
-| H2 icons/tags integration | Sol | queued after E/H1 | ability image seam/displays |
+| H1 icon art | r18_art / Astra | integrated d20c1423; visual review pending | icon assets/manifest/gallery |
+| H2 icons/tags integration | r18_icons_tags / Sol | running /tmp/grug-r18-icons-tags | ability image seam/displays |
 | I light preflight | root Astra | deferred before implementation | round18-light-preflight.md |
-| J tools | Sol | queued | materials tool/mining capabilities |
+| J tools | r18_tools / Sol | running /tmp/grug-r18-tools | materials tool/mining capabilities |
 
 Root owns docs and integration. Independent reviews required, final portable
 micro-KAT pair only after frozen integrated bytes. Current four total native slots

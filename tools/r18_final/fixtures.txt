@@ -4,3 +4,6 @@ r18_evade/micro.lua
 r18_populations/policy_fixture.lua
 r18_ux/fixture.lua
 r18_xp/micro.lua
+r18_map/atlas_kat.lua
+r18_map/minimap_kat.lua
+r14_map/page_kat.lua
