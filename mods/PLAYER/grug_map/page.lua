@@ -2,9 +2,9 @@ local atlas = grug_map.atlas
 local active, elapsed = {}, 0
 local PAGE = "grug_map:atlas"
 
--- Media is rendered at each view's world aspect. This page carries no
--- inventory rows, so the atlas uses the full custom-page height.
-local MAP_X, MAP_Y, MAP_MAX_W, MAP_H = 0.15, 0.85, 10.1, 8.9778
+-- The wrapper uses real units too: no legacy spacing multiplier/unused band.
+local MAP_X, MAP_Y, MAP_W, MAP_H = 0.15, 0.85, 10.08, 8.96
+local SCROLL_X, SCROLL_Y = "grug_map_scroll_x", "grug_map_scroll_y"
 local LABELS = {
 	hearthpine = "Hearthpine", dawnmere = "Dawnmere", silverleaf = "Silverleaf",
 	stillgrave = "Stillgrave", sunscar = "Sunscar", kapok = "Kapok Cradle",
@@ -60,38 +60,30 @@ local function current_zone(player)
 end
 
 local function page_content(player, context)
-	context.grug_map_view = context.grug_map_view or "world"
-	local view = atlas.view(context.grug_map_view)
-	-- Keep one formspec unit per world-axis scale. Regional views are taller
-	-- than they are wide, so they are centered instead of stretching terrain.
-	local aspect = (view.max_x - view.min_x) / (view.max_z - view.min_z)
-	local map_w = math.min(MAP_MAX_W, MAP_H * aspect)
-	local map_x = MAP_X + (MAP_MAX_W - map_w) / 2
-	-- sfinv's wrapper and navigation are legacy-coordinate formspecs. Switching
-	-- here affects only this page content (which the wrapper appends after nav)
-	-- and makes image and marker coordinates share one real unit system.
+	local zoom = context.grug_map_zoom or 1
+	local view = atlas.view()
 	local fs = {"real_coordinates[true]",
-		("label[0.15,0.15;%s]"):format(esc(view.label)),
-		("label[2.35,0.15;Current: %s]"):format(esc(current_zone(player))),
-		("image[%s,%s;%s,%s;%s]"):format(map_x, MAP_Y, map_w, MAP_H,
+		-- Focus outside the canvas prevents engine autoScroll from moving to a
+		-- focused marker after the form is regenerated (including keyboard focus).
+		("label[0.15,0.22;World — %dx]"):format(zoom),
+		("label[2.35,0.22;Current: %s]"):format(esc(current_zone(player))),
+		"button[8.88,0.02;0.60,0.48;grug_map_zoom_out;-]",
+		"button[9.58,0.02;0.60,0.48;grug_map_zoom_in;+]",
+		("scroll_container[%s,%s;%s,%s;%s;horizontal;%.5f]"):
+			format(MAP_X, MAP_Y, MAP_W, MAP_H, SCROLL_X, MAP_W / 1000),
+		-- The inner clipper spans the full scaled width so horizontal scrolling
+		-- cannot expose an empty strip after leaving the first viewport.
+		("scroll_container[0,0;%s,%s;%s;vertical;%.5f]"):
+			format(MAP_W * zoom, MAP_H, SCROLL_Y, MAP_H / 1000),
+		("image[0,0;%s,%s;%s]"):format(MAP_W * zoom, MAP_H * zoom,
 			esc(view.texture))}
-	local views = atlas.views()
-	for index = 1, #views do
-		local row = views[index]
-		local x = 0.15 + (index - 1) * 1.44
-		local field = "grug_map_view_" .. row.id
-		fs[#fs + 1] = grug_inventory.selected_button_style(field,
-			row.id == context.grug_map_view)
-		fs[#fs + 1] = ("button[%.2f,10.05;1.4,0.65;grug_map_view_%s;%s]"):
-			format(x, row.id, esc(row.view.label))
-	end
 	context.grug_map_marker_fields = {}
 	local markers = atlas.collect_markers(player)
 	context.grug_map_detail = nil
 	for index = 1, #markers do
 		local marker = markers[index]
 		local sx, sy = atlas.world_to_screen(view, marker.position,
-			map_x, MAP_Y, map_w, MAP_H)
+			0, 0, MAP_W * zoom, MAP_H * zoom)
 		if sx then
 			if marker.id == context.grug_map_selected then
 				context.grug_map_detail = marker.detail
@@ -124,9 +116,10 @@ local function page_content(player, context)
 			fs[#fs + 1] = ("tooltip[%s;%s]"):format(field, esc(marker.detail))
 		end
 	end
+	fs[#fs + 1] = "scroll_container_end[]scroll_container_end[]"
 	if not context.grug_map_detail then context.grug_map_selected = nil end
 	if context.grug_map_detail then
-		fs[#fs + 1] = ("label[0.15,0.50;Selected: %s]"):
+		fs[#fs + 1] = ("label[0.15,0.62;Selected: %s]"):
 			format(esc(context.grug_map_detail:match("[^\n]*")))
 	end
 	local home = grug_home.get(player)
@@ -134,32 +127,44 @@ local function page_content(player, context)
 		local remaining = grug_home.remaining(player)
 		local state = grug_home.is_pending(player) and "Preparing arrival" or
 			(remaining > 0 and ("%d:%02d"):format(math.floor(remaining / 60), remaining % 60) or "Ready")
-		fs[#fs + 1] = ("button[0.15,10.85;10.1,0.65;grug_map_home;Return home: %s (%s)]"):
+		fs[#fs + 1] = ("button[0.15,10.40;10.08,0.65;grug_map_home;Return home: %s (%s)]"):
 			format(esc(home.label), esc(state))
 	end
-	return table.concat(fs)
+	-- Scrollbar starting values are transport state, not render semantics.
+	-- Only signatures actually sent to the client may advance session.signature.
+	local signature = table.concat(fs)
+	table.insert(fs, 1, "set_focus[" .. (context.grug_map_focus or SCROLL_X) .. ";true]")
+	fs[#fs + 1] = ("scrollbaroptions[min=0;max=%d;smallstep=40;largestep=900;thumbsize=%d;arrows=hide]"):
+		format(atlas.scroll_limit(zoom), math.max(1, math.floor((atlas.scroll_limit(zoom) + 1) / zoom)))
+	fs[#fs + 1] = ("scrollbar[0.15,9.86;10.08,0.28;horizontal;%s;%d]"):
+		format(SCROLL_X, context.grug_map_scroll_x or 0)
+	fs[#fs + 1] = ("scrollbar[10.28,0.85;0.28,8.96;vertical;%s;%d]"):
+		format(SCROLL_Y, context.grug_map_scroll_y or 0)
+	return table.concat(fs), signature
 end
 
 local function make_form(player, context)
-	-- v1/v2 legacy-sort images ABOVE buttons, hiding every marker behind the
-	-- atlas raster. v3 preserves definition order. Keep the wrapper size/nav
-	-- in legacy units, then page_content switches only the map to real units.
-	return sfinv.make_formspec(player, context, page_content(player, context), false,
-		"formspec_version[3]size[10.4,11.7]real_coordinates[false]")
+	local content, signature = page_content(player, context)
+	return sfinv.make_formspec(player, context, content, false,
+		"formspec_version[4]size[10.65,11.20]"), signature
 end
 
 sfinv.register_page(PAGE, {
 	title = "Map",
-	on_enter = function(self, player)
+	on_enter = function(self, player, context)
+		context.grug_map_focus = SCROLL_X
+		context.grug_map_zoom = 1
+		context.grug_map_scroll_x, context.grug_map_scroll_y = 0, 0
+		context.grug_map_selected, context.grug_map_detail = nil, nil
 		active[player:get_player_name()] = {}
 	end,
 	on_leave = function(self, player)
 		active[player:get_player_name()] = nil
 	end,
 	get = function(self, player, context)
-		local form = make_form(player, context)
+		local form, signature = make_form(player, context)
 		local session = active[player:get_player_name()]
-		if session then session.form = form end
+		if session then session.signature = signature end
 		return form
 	end,
 	on_player_receive_fields = function(self, player, context, fields)
@@ -169,27 +174,42 @@ sfinv.register_page(PAGE, {
 			sfinv.set_page(player, "grug_inventory:character")
 			return true
 		end
+		-- Buttons submit VAL for both axes; a scrollbar movement submits CHG.
+		-- Validate both before zoom/home/detail so their redraw uses current scroll.
+		for _, axis in ipairs({"x", "y"}) do
+			local key = "grug_map_scroll_" .. axis
+			local raw = fields[key]
+			if type(raw) == "string" then
+				local kind, value = raw:match("^(%u+):([+-]?%d+)$")
+				if kind == "CHG" or kind == "VAL" then
+					if kind == "CHG" then
+						context.grug_map_focus = key
+						local session = active[player:get_player_name()]
+						if session then session.scroll_quiet = 0.5 end
+					end
+					context[key] = atlas.clamp_scroll(tonumber(value), context.grug_map_zoom or 1)
+				end
+			end
+		end
 		if fields.grug_map_home then
 			grug_home.return_home(player)
-			sfinv.set_page(player, PAGE)
+			sfinv.set_player_inventory_formspec(player, context)
 			return true
 		end
-		local views = atlas.views()
-		for index = 1, #views do
-			local id = views[index].id
-			if fields["grug_map_view_" .. id] then
-				context.grug_map_view = id
-				context.grug_map_detail = nil
-				context.grug_map_selected = nil
-				sfinv.set_page(player, "grug_map:atlas")
-				return true
-			end
+		if fields.grug_map_zoom_in or fields.grug_map_zoom_out then
+			local old = context.grug_map_zoom or 1
+			local zoom = fields.grug_map_zoom_in and math.min(4, old * 2) or math.max(1, old / 2)
+			context.grug_map_scroll_x = atlas.zoom_scroll(context.grug_map_scroll_x or 0, old, zoom)
+			context.grug_map_scroll_y = atlas.zoom_scroll(context.grug_map_scroll_y or 0, old, zoom)
+			context.grug_map_zoom = zoom
+			sfinv.set_player_inventory_formspec(player, context)
+			return true
 		end
 		for field, marker in pairs(context.grug_map_marker_fields or {}) do
 			if fields[field] then
 				context.grug_map_detail = marker.detail
 				context.grug_map_selected = marker.id
-				sfinv.set_page(player, "grug_map:atlas")
+				sfinv.set_player_inventory_formspec(player, context)
 				return true
 			end
 		end
@@ -208,11 +228,15 @@ core.register_globalstep(function(dtime)
 		local context = sfinv.contexts[name]
 		if not player or not context or context.page ~= PAGE then
 			active[name] = nil
+		elseif (session.scroll_quiet or 0) > 0 then
+			-- Avoid replacing native widgets during an actively moving scrollbar.
+			-- Pending marker changes are rendered once scrolling has settled.
+			session.scroll_quiet = math.max(0, session.scroll_quiet - 0.5)
 		else
-			local form = make_form(player, context)
-			if session.form ~= form then
+			local form, signature = make_form(player, context)
+			if session.signature ~= signature then
 				player:set_inventory_formspec(form)
-				session.form = form
+				session.signature = signature
 			end
 		end
 	end

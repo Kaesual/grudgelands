@@ -3,44 +3,32 @@
 
 local M = {}
 
-local VIEWS = {
-	world = {label = "World", texture = "grug_map_atlas_world.png",
-		min_x = -3600, max_x = 3600, min_z = -3200, max_z = 3200},
-	-- The six regional views are the complete 3 x 2 cover of the world extent.
-	-- Each internal seam has 120 nodes of overlap on both sides. Stable ids and
-	-- texture names remain unchanged so open-page state and media stay stable.
-	dwarf = {label = "Southwest", texture = "grug_map_atlas_dwarf.png",
-		min_x = -3600, max_x = -1080, min_z = -3200, max_z = 120},
-	human = {label = "South-central", texture = "grug_map_atlas_human.png",
-		min_x = -1320, max_x = 1320, min_z = -3200, max_z = 120},
-	elf = {label = "Southeast", texture = "grug_map_atlas_elf.png",
-		min_x = 1080, max_x = 3600, min_z = -3200, max_z = 120},
-	undead = {label = "Northwest", texture = "grug_map_atlas_undead.png",
-		min_x = -3600, max_x = -1080, min_z = -120, max_z = 3200},
-	orc = {label = "North-central", texture = "grug_map_atlas_orc.png",
-		min_x = -1320, max_x = 1320, min_z = -120, max_z = 3200},
-	troll = {label = "Northeast", texture = "grug_map_atlas_troll.png",
-		min_x = 1080, max_x = 3600, min_z = -120, max_z = 3200},
-}
-local VIEW_ORDER = {"world", "dwarf", "human", "elf", "undead", "orc", "troll"}
+local WORLD = {label = "World", texture = "grug_map_atlas_world.png",
+	min_x = -3600, max_x = 3600, min_z = -3200, max_z = 3200}
 local providers = {}
 
-local function copy_view(view)
-	return {label = view.label, texture = view.texture, min_x = view.min_x,
-		max_x = view.max_x, min_z = view.min_z, max_z = view.max_z}
-end
-
 function M.views()
-	local result = {}
-	for index = 1, #VIEW_ORDER do
-		local id = VIEW_ORDER[index]
-		result[index] = {id = id, view = copy_view(VIEWS[id])}
-	end
-	return result
+	return {{id = "world", view = M.view()}}
 end
 
-function M.view(id)
-	return copy_view(VIEWS[id] or VIEWS.world)
+function M.view()
+	return {label = WORLD.label, texture = WORLD.texture, min_x = WORLD.min_x,
+		max_x = WORLD.max_x, min_z = WORLD.min_z, max_z = WORLD.max_z}
+end
+
+-- Scroll units represent one thousandth of the unzoomed viewport on each axis.
+-- Thus both axes use the same integer range despite the 9:8 viewport aspect.
+function M.scroll_limit(zoom)
+	return (zoom - 1) * 1000
+end
+
+function M.clamp_scroll(value, zoom)
+	if type(value) ~= "number" or value ~= value then return 0 end
+	return math.floor(math.max(0, math.min(M.scroll_limit(zoom), value)) + 0.5)
+end
+
+function M.zoom_scroll(value, old_zoom, new_zoom)
+	return M.clamp_scroll((value + 500) * new_zoom / old_zoom - 500, new_zoom)
 end
 
 function M.contains(view, position)
