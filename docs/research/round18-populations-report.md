@@ -58,7 +58,7 @@ active-object cap, disposition, behavior, and drops.
 
 | Zones | Selected identity | Accepted local host families |
 | --- | --- | --- |
-| Hearthpine, Copperfell, Dawnmere, Goldmead, Silverleaf, Starbough, Sunscar, Redtusk | Boar | all already accepted settled/wild patch tops |
+| Hearthpine, Copperfell, Dawnmere, Goldmead, Whitebridge, Silverleaf, Starbough, Sunscar, Redtusk | Boar | all already accepted settled/wild patch tops |
 | Stillgrave, Mournfen | Plague Boar | blight, bone litter, mud |
 | Kapok, Raincall | Jungle Boar | rainforest litter, canopy litter, mud |
 
@@ -78,7 +78,7 @@ regional tints are resolved as follows:
 
 | Shared form | Overlap found before | Selection after |
 | --- | --- | --- |
-| Boar / Plague Boar / Jungle Boar | Any settled zone whose biome patches exposed more than one tint host | one boar identity for each of the 12 settled start/home zones, listed above |
+| Boar / Plague Boar / Jungle Boar | Any settled zone whose biome patches exposed more than one tint host | one boar identity for each of the 13 settled start/home/heartland zones, listed above |
 | Zombie / Sun-Dried Husk | Sunscar Flats, Redtusk Savanna and Shattered Line admitted both through settled/war plus the explicit Husk palette | Husk only in those three desert zones; ordinary Zombie elsewhere |
 | Giant / Bonelurker / Jungle Spider | Mixed forest+jungle palettes could admit forest and jungle tints in one named zone | Jungle Spider in Glassroot Wilds, Thunderroot Wilds, Skyglass Canopy and Stormscale Summit; node-exclusive forest tint elsewhere |
 | Jungle Lynx / Panther / Snow Leopard | Jungle palettes admitted Lynx and Panther; Wyrmglass explicitly admitted Snow Leopard | Panther in the four mixed/high-jungle zones above, Lynx in jungle-edge start/home zones, Snow Leopard in Wyrmglass and its other explicitly named mountain zones |
@@ -110,3 +110,7 @@ species with different scale/behavior and no regional-tint substitution.
 
 Counts and rewards are unchanged. No custom drop, density retune, mapgen edit,
 new asset, or safe-town movement rule was introduced.
+
+Independent review correction: the mixed settled/forest Whitebridge palette
+must retain its base Boar. The initial closed variant map omitted it; the
+coordinator restored the explicit row and added a targeted policy regression.

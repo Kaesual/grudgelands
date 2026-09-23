@@ -70,7 +70,7 @@ day/night clocks remain additional requirements, not alternative authorities.
 
 | Family | Current zone selection |
 |---|---|
-| Boar | Base in the eight Accord/Orc settled zones; Plague in Stillgrave/Mournfen; Jungle in Kapok/Raincall |
+| Boar | Base in the nine Accord/Orc settled zones (including Whitebridge); Plague in Stillgrave/Mournfen; Jungle in Kapok/Raincall |
 | Zombie / Husk | Husk in Sunscar, Redtusk and Shattered Line; Zombie elsewhere |
 | Spider | Jungle in Glassroot, Thunderroot, Skyglass and Stormscale; existing faction forest tint on its exclusive hosts elsewhere |
 | Lynx / Panther / Snow Leopard | Panther in those four mixed/high-jungle zones; Lynx in jungle-edge start/home zones at L10+; Snow Leopard in its named mountain zones |

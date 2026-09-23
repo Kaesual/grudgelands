@@ -91,6 +91,11 @@ assert(grug_mobs.spawn_policy_allows("grug_mobs:jungle_lynx", natural_lynx))
 local troll_main_quest = point(47, "kragmar_kapok_cradle", 8,
 	"grug_jungle_edge")
 assert(grug_mobs.spawn_policy_allows("grug_mobs:tapir", troll_main_quest))
+local whitebridge = point(48, "elandor_whitebridge_shire", 25)
+assert(grug_mobs.spawn_policy_allows("grug_mobs:boar", whitebridge),
+	"Whitebridge's mixed settled/forest palette lost its settled boar")
+assert(not grug_mobs.spawn_policy_allows("grug_mobs:plague_boar", whitebridge))
+assert(not grug_mobs.spawn_policy_allows("grug_mobs:jungle_boar", whitebridge))
 
 local low_zombie = point(42, "elandor_dawnmere_fields", 2)
 local natural_zombie = point(43, "elandor_dawnmere_fields", 3)

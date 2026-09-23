@@ -203,6 +203,7 @@ local BOAR_VARIANT_BY_ZONE = {
 	elandor_copperfell_foothills = "grug_mobs:boar",
 	elandor_dawnmere_fields = "grug_mobs:boar",
 	elandor_goldmead_vale = "grug_mobs:boar",
+	elandor_whitebridge_shire = "grug_mobs:boar",
 	elandor_silverleaf_glades = "grug_mobs:boar",
 	elandor_starbough_vale = "grug_mobs:boar",
 	kragmar_stillgrave_hollow = "grug_mobs:plague_boar",

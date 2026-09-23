@@ -58,7 +58,7 @@ Do not rerun Round 17 gates. Native Sol default; Astra complex lanes and art.
 | A inventory/trainer UX | r18_ux / Sol | integrated 0e67a78b; review pending | inventory/jobs/skills UI |
 | E XP/level-up | r18_xp / Sol | integrated 486878ab; review pending | XP/stats/resource callback |
 | B atlas/minimap | r18_map / Sol | integrated 386f6216; review pending | map module/media |
-| F waiting/creation | r18_waiting / Sol | running /tmp/grug-r18-waiting | selection/faction gates |
+| F waiting/creation | r18_waiting / Sol | integrated 503948c6; review pending | selection/faction gates |
 | H1 icon art | r18_art / Astra | integrated d20c1423; visual review pending | icon assets/manifest/gallery |
 | H2 icons/tags integration | r18_icons_tags / Sol | running /tmp/grug-r18-icons-tags | ability image seam/displays |
 | I light preflight | root Astra | deferred before implementation | round18-light-preflight.md |
@@ -92,3 +92,6 @@ Portable final component tools/r18_preparation/fixture.lua returns function(repo
 Root added an 18-point real-authority/final-registration population probe to the
 final isolated native gate. The population author fixture uses mocked authority;
 it is not, by itself, evidence of actual six-culture level-field behavior.
+
+Independent Astra C/D/G review is running as r18_review_world against frozen
+fbdaac67 in /tmp/grug-r18-review-world. Remaining implementation: J and H2.

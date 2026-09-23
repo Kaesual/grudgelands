@@ -20,6 +20,8 @@ core.register_on_mods_loaded(function()
  assert(factions.accord == 6 and factions.throng == 6)
  local neutral, aggressive, critter = 0, 0, 0
  for name,def in pairs(core.registered_entities) do
+  assert(def.initial_properties.show_on_minimap==false,
+   name.." still exposes a native minimap dot")
   local kind = grug_mobs.disposition(name)
   if kind then
    assert(def._grug_disposition == kind, name .. " lost disposition prototype")
@@ -72,6 +74,9 @@ core.register_on_mods_loaded(function()
  for id, definition in pairs(grug_abilities.registered) do
   assert(definition.id == id, "ability registry identity drift")
   assert(type(definition.name) == "string" and definition.name ~= "")
+  local item=assert(core.registered_items["grug_abilities:"..id])
+  assert(item.inventory_image=="grug_abilities_skill_"..id..".png",
+   id.." lacks its semantic action icon")
   abilities = abilities + 1
  end
  assert(abilities >= 22, "active ability registry unexpectedly shrank")
