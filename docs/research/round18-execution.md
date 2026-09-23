@@ -52,10 +52,10 @@ Do not rerun Round 17 gates. Native Sol default; Astra complex lanes and art.
 
 | Lane | Model | State | Ownership |
 |---|---|---|---|
-| G preparation | Astra | running | starts_preload / preparation helpers |
-| D evade | Astra | running | aggro / combat hooks |
-| C populations/quests | Sol | running | spawn_policy / species / quest content |
-| A inventory/trainer UX | Sol | queued | inventory/jobs/skills UI |
+| G preparation | r18_preparation / Astra | integrated d4b38594; review pending | starts_preload |
+| D evade | r18_evade / Astra | running /tmp/grug-r18-evade | aggro / combat hooks |
+| C populations/quests | r18_populations / Sol | running /tmp/grug-r18-populations | spawn_policy / species / quest content |
+| A inventory/trainer UX | r18_ux / Sol | running /tmp/grug-r18-ux | inventory/jobs/skills UI |
 | E XP/level-up | Sol | queued | XP/stats/resource callback |
 | B atlas/minimap | Sol | queued | map module/media |
 | F waiting/creation | Sol | queued | selection/faction gates |
@@ -75,3 +75,16 @@ may be omitted. Root read the exact newer VoxeLibre algorithm and deferred the
 lane before coding because it owns light-bank removal/spread and multiplayer
 restoration. [Preflight](round18-light-preflight.md). No approval needed to omit
 under the explicit simplicity condition; all other lanes continue.
+
+## Interface / test coordination
+
+G preserves world_preparation_status and listeners unchanged, so F can start.
+A exports `grug_inventory.selected_button_style(fieldname, selected)` returning
+formspec markup; B owns atlas selection edits and consumes that style. E writes
+the resource callback in abilities/init before H2 changes image composition.
+Root owns tools/r18_final runner scaffold; fixture roster remains pending.
+
+G report/evidence: round18-preparation-report.md. Author commit 7b3dec12,
+integrated d4b38594. Tiny synthetic test isolates scan wait, not real-world FPS;
+native stop/resume used existing bounded two-boot r16 runner once. No ETA run.
+Portable final component tools/r18_preparation/fixture.lua returns function(repo).

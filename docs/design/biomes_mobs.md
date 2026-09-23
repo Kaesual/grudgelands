@@ -1045,7 +1045,7 @@ and the Mage take damage sooner"):
 |-----|------|-----------|-------|-------|-------|
 | Boar (exists; per-biome tint: Plague Boar in blight, Jungle Boar east) | charges — a mid-range **rush**: the stalker impulse flattened horizontally, triggered at 4–10 m with an 8 s cooldown | day | 4.6 (WP6 retune to 4.4, band raise 2026-09-16) | meat 1/1 ×1–2; light leather 1/2 `[leather]`; tusk 1/3 | grug_mobs_boar.b3d (have) |
 | Rabbit/Hare (tints) | flees (**critter**, §3.0) | day | 3.4 | meat 1/1 — food only | mobs_mc_rabbit |
-| Zombie (exists) | never leashes | night (in grug_blight: 24 h — Undead identity) | 4.6 | zombie flesh 1/1; linen scrap 1/2; steel ingot 1/10 | mobs_mc_zombie (have) |
+| Zombie (exists) | damage-sustained pursuit; 15 s idle-damage evade | night (in grug_blight: 24 h — Undead identity) | 4.6 | zombie flesh 1/1; linen scrap 1/2; steel ingot 1/10 | mobs_mc_zombie (have) |
 | Bandit (camp humanoid; two fixed camps per race region) | defends camp (leashes to camp, group) | 24 h | 4.6 | linen cloth 1/1 ×1–2 (home camp) / heavy cloth (frontier camp); copper coins | character.b3d + bandit skins (LotT-derived) |
 | **Bandit Archer** (added 2026-09-16, ruling 3) — the same camp, one slot in three | dogshoot (ranged); view range **16** | 24 h | **4.0 walk**, like the Skeleton Archer: an archer keeps its distance rather than sprinting | the Bandit's table **plus arrows 1/3** | character.b3d + the same bandit skins; the Skeleton Archer's arrow entity, no new art |
 
@@ -1140,7 +1140,7 @@ and apply texture modifiers at runtime; they add no media file.
 |-----|------|-------|--------------------|-------|---------------|
 | Poacher | dogshoot, roaming | night | Goldmead, Whitebridge, Ashenward, Starbough, Moonfall; Silverleaf band 3 and Lorindor | Bandit table + arrows 1/3 | Bandit Archer / dark skin modifier |
 | Frost Stray | dogshoot | night | Stormvault and Wyrmglass, L31–60 | Skeleton table | Skeleton Archer / ice-blue modifier |
-| Sun-Dried Husk | never leashes | night | Redtusk and Shattered Line; Sunscar band 3, L7–50 | Zombie table | Zombie / sand-gold modifier |
+| Sun-Dried Husk | damage-sustained pursuit; 15 s idle-damage evade | night | Redtusk and Shattered Line; Sunscar band 3, L7–50 | Zombie table | Zombie / sand-gold modifier |
 | Song Bird | flees (**critter**) | day | Silverleaf, L1 fixed | meat 1/1 — food only | Gull / blue modifier, ×0.8 |
 | Spiderling | weak web (20% slow, 2 s) | any (cave) | y −40…−100, L3–6 | spider silk 1/2 | Giant Spider / stone-brown modifier, ×0.5 |
 | Blood Bat | swarm dive | any (cave) | y −101…−300, L6–18 | meat 1/1 | Cave Bat / blood-red modifier, ×1.25 |
