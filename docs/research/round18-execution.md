@@ -53,13 +53,13 @@ Do not rerun Round 17 gates. Native Sol default; Astra complex lanes and art.
 | Lane | Model | State | Ownership |
 |---|---|---|---|
 | G preparation | r18_preparation / Astra | integrated d4b38594; review pending | starts_preload |
-| D evade | r18_evade / Astra | running /tmp/grug-r18-evade | aggro / combat hooks |
-| C populations/quests | r18_populations / Sol | running /tmp/grug-r18-populations | spawn_policy / species / quest content |
-| A inventory/trainer UX | r18_ux / Sol | running /tmp/grug-r18-ux | inventory/jobs/skills UI |
-| E XP/level-up | Sol | queued | XP/stats/resource callback |
-| B atlas/minimap | Sol | queued | map module/media |
+| D evade | r18_evade / Astra | integrated fbca258a; review pending | aggro / combat hooks |
+| C populations/quests | r18_populations / Sol | integrated c86621c4; review pending | spawn_policy / species / quest content |
+| A inventory/trainer UX | r18_ux / Sol | integrated 0e67a78b; review pending | inventory/jobs/skills UI |
+| E XP/level-up | r18_xp / Sol | running /tmp/grug-r18-xp | XP/stats/resource callback |
+| B atlas/minimap | r18_map / Sol | running /tmp/grug-r18-map | map module/media |
 | F waiting/creation | Sol | queued | selection/faction gates |
-| H1 icon art | Astra | queued | icon assets/manifest/gallery |
+| H1 icon art | r18_art / Astra | running /tmp/grug-r18-art | icon assets/manifest/gallery |
 | H2 icons/tags integration | Sol | queued after E/H1 | ability image seam/displays |
 | I light preflight | root Astra | deferred before implementation | round18-light-preflight.md |
 | J tools | Sol | queued | materials tool/mining capabilities |

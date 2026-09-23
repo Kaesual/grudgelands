@@ -32,6 +32,40 @@ core.register_on_mods_loaded(function()
  end
  assert(neutral >= 12 and aggressive >= 40 and critter >= 10)
  assert(math.abs(grug_mobs.scale_attack_damage(10)-15)<0.0001)
+ -- Real authority + final registered species, no terrain generation required.
+ -- Sample each culture toward the front across the three starting bands.
+ local old_time = core.get_timeofday()
+ local band_limits = {{151,1,3},{300,4,6},{500,7,10}}
+ local policy_samples = 0
+ for _,start in ipairs(grug_core.start_identities()) do
+  local direction = start.faction_id == "accord" and 1 or -1
+  for _,band in ipairs(band_limits) do
+   local pos = {x=start.anchor.x,y=20,z=start.anchor.z+direction*band[1]}
+   local level = grug_zones.mob_level_at(pos)
+   assert(level and level>=band[2] and level<=band[3],
+    start.race_id.." unexpected actual starting band at "..band[1])
+   local counts = {}
+   for _,clock in ipairs({0.5,0}) do
+    core.set_timeofday(clock)
+    local allowed = 0
+    for name,def in pairs(core.registered_entities) do
+     if name~="grug_mobs:kraken" and def._grug_min_level and
+       def.type~="npc" and def._grug_tier~="boss" and def._grug_tier~="rare" and
+       grug_mobs.spawn_policy_allows(name,pos) then
+      assert(def._grug_min_level<=level,name.." exceeds actual local level")
+      allowed=allowed+1
+     end
+    end
+    assert(allowed>0,start.race_id.." empty policy roster")
+    counts[#counts+1]=allowed
+   end
+   core.log("action",("[r18_population] %s distance=%d zone=%s level=%d day=%d night=%d"):
+    format(start.race_id,band[1],tostring(grug_zones.id_at(pos.x,pos.z)),level,counts[1],counts[2]))
+   policy_samples=policy_samples+1
+  end
+ end
+ core.set_timeofday(old_time)
+ assert(policy_samples==18)
  grug_quests.validate_registry()
  -- Active skill identities remain registered while their visual layer changes.
  local abilities = 0
