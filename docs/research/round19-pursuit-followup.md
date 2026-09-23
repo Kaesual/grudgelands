@@ -94,3 +94,12 @@ shared boss activity. No native-world or performance campaign.
   SHA256 `cf8a99b5aaec803e92c723248fa9991bf3bb102f992712522e3e366236e14c53`. Timings 0.008284/0.011987 seconds.
   Evidence and source hashes: `tools/r19_pursuit/evidence/`.
   No headless world, performance campaign or broad population tests were run.
+
+## Local installation receipt
+
+Merged to local main as `ebe221fed232f209f8ed8e330c7a26b1d56e6e79` and synchronized with
+`tools/sync_to_luanti.sh` on 2026-09-23. Complete installed mods/menu trees and
+game configuration files match checkout by content. No personal world changed;
+this follow-up was not pushed. Independent reviewer verified all 11 final input
+hashes and matching output files without duplicating runtime tests. GUI acceptance
+remains the user checklist above.
