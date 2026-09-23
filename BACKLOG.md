@@ -1,6 +1,8 @@
 # Backlog — Work Packages
 
-Round 18 is technically complete and independently reviewed:
+Round 18 is technically complete and independently reviewed, merged to main
+and locally synchronized. Remote push awaits renewed confirmation after an
+automatic approval-review rejection. Receipt:
 [completion](docs/research/round18-completion.md),
 [execution](docs/research/round18-execution.md),
 [living revision](docs/design/playtest_quality_revision.md).

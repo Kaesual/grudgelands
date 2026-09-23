@@ -1,7 +1,8 @@
 # Round 18 completion record
 
 Date: 2026-09-23. Status: implementation, independent reviews and final technical
-gates PASS; merge/sync/push pending. GUI acceptance remains user-run.
+gates PASS; merged to main and locally synchronized. Remote push is blocked by
+automatic approval review pending renewed confirmation. GUI acceptance remains user-run.
 Contract: [round18-plan.md](round18-plan.md).
 Execution: [round18-execution.md](round18-execution.md).
 Next runtime pass: [round18-playtest.md](round18-playtest.md).
@@ -114,3 +115,20 @@ playtest checklist, especially trainer messages, hotbar/skill appearance,
 atlas/minimap, long pulls and timeout, shovel use and waiting-screen Escape.
 User GUI acceptance and actual fallback-engine runtime remain separate from
 standalone interpreter parity and the headless native integration checks.
+
+## Delivery receipt
+
+- Reviewed evidence/receipt commit: `145cc77d`.
+- Main merge: `92d63113982f2b7e03c814bf5d2a49cfdbe09584`.
+- `tools/sync_to_luanti.sh` completed from main. Installed game:
+  `/home/jan/.var/app/org.luanti.luanti/.minetest/games/grudgelands`.
+  All 2083 production-manifest hashes match; complete mods/menu trees are
+  byte-identical to checkout. No personal world/player data was modified.
+- `git push origin main` was rejected by automatic approval review before
+  execution. Root supplied the explicit earlier in-chat permission verbatim;
+  the second review still rejected it because that earlier transcript was not
+  verifiable in its context. Root did not bypass the block and requested renewed
+  confirmation. Remote delivery is therefore **not complete**.
+- Local playtest readiness is unaffected. Restart Luanti/server and use the
+  linked fresh-world checklist. A later receipt-only commit may record the
+  eventual push; it does not alter installed production bytes.

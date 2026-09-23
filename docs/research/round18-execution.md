@@ -1,6 +1,6 @@
 # Round 18 execution ledger
 
-Date: 2026-09-23. **Implementation/reviews/gates PASS — delivery in progress.**
+Date: 2026-09-23. **Locally delivered; remote push awaits renewed approval.**
 Baseline inspected: `7460c49d227a3f66673ad1bf4b7ed429e4b62321` (main).
 Contract: [round18-plan.md](round18-plan.md).
 User source: [round18-playtest-input.txt](round18-playtest-input.txt).
@@ -127,6 +127,9 @@ engine digging capabilities for eight tool materials. All 2083 production
 snapshot files match final checkout; archived in `tools/r18_final/evidence/`.
 No full-world generation, ETA campaign or intermediate PUC runtime.
 
-Remaining delivery actions: commit receipt, merge to main, sync installed game,
-push main. User GUI acceptance stays separate. See
+Main merge `92d63113` and local game sync are complete; installed hashes match.
+Remaining delivery action: push main. Automatic approval review rejected the
+push twice, including a retry quoting the earlier explicit permission; it could
+not verify that prior transcript. Root requested renewed confirmation and did
+not bypass the rejection. User GUI acceptance stays separate. See
 [completion](round18-completion.md) and [playtest](round18-playtest.md).

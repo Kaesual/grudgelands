@@ -67,7 +67,9 @@ projects: **[docs/research/](docs/research/)**.
 
 ## Active round
 
-Round 18 implementation and independent reviews are complete.
+Round 18 implementation, independent reviews and technical gates are complete.
+Merged to main and locally synchronized; remote push awaits renewed confirmation
+after automatic approval review could not verify the earlier chat permission.
 Contract: `docs/research/round18-plan.md`; durable lane status:
 `docs/research/round18-execution.md`; living revision:
 `docs/design/playtest_quality_revision.md`. Delivery and exact technical evidence:

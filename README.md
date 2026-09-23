@@ -66,7 +66,8 @@ quest catalog does not yet cover the full journey through every region.
 others have playable portions. This is a tracking count, not a percentage of
 game completion. The latest increment is
 [Round 18](docs/research/round18-completion.md), with independent reviews and
-technical checks complete; in-game acceptance remains separate.
+technical checks complete and installed locally; remote push awaits renewed
+approval. In-game acceptance remains separate.
 
 **Ready for further work:** the backlog identifies crafting/enchantment
 completion, carried light, recovery/rest and economy calibration as available
