@@ -35,6 +35,9 @@ GUI and first-public-release gates remain open where recorded.
   to detailed pending scopes. Root README is unchanged.
 - AGENTS retains working constraints; detailed module knowledge moved to a
   technical guide and stale migration, brewing, enchant and atlas claims corrected.
+- Independent review also removed old WP13 construction instructions, made its
+  24-versus-16 core discrepancy explicit, corrected WP22 old wear budgets and
+  marked the depth-level curve as delivered rather than future WP34 work.
 - Native-agent workflow replaces the obsolete synchronous-subagent workaround;
   documentation-only gates are explicit. Runtime gates remain unchanged.
 

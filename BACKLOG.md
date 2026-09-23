@@ -18,10 +18,12 @@ claim any additional implementation or GUI acceptance.
   and masterwork remain. WP44's economy/measurement remains open.
 - WP11's talent consumers are delivered; measured respec prices await WP44.
 - WP13 has six starts/capitals and eighteen regional POIs; its broader roster and
-  recorded geometry discrepancy remain. Existing POIs must not be rebuilt as
+  recorded `bandit_frontier` core-width discrepancy (24 decided, 16 implemented) remain. Existing POIs must not be rebuilt as
   though none had shipped.
 - WP14 ordinary offhands are delivered; moving held-torch light was deferred
   after the R18 complexity preflight. WP21's broader rest/recovery scope remains.
+- Friendly-guard healing remains deferred as a coherent support-combat feature;
+  its rule owner is combat_stats.md. No implementation is scheduled here.
 - WP37's old blanket density reduction conflicts with later scoped increases:
   **do not execute the old task card until reconciled**. See the documentation
   round findings. Current runtime tuning is not changed here.
