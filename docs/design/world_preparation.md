@@ -44,6 +44,16 @@ Decided 2026-09-21; surface-selection revision approved 2026-09-22 (Round 16).
   prefix only after all relevant block callbacks succeed, then defer the next
   dispatch through the main loop. This avoids out-of-order completion journals
   and an enormous emerge queue; do not add a custom worker fleet.
+- Full preparation selects surface columns with a cooperative **40 ms** budget
+  per eligible server step, checked after batches of 16 columns with an
+  8,192-column ceiling. One source call/batch can exceed the time budget; this
+  is not a hard real-time deadline. Work remains interruptible between steps.
+  This budget applies only while the full preparation plan is incomplete.
+  Starts-only preparation does not scan surfaces, and completed worlds perform
+  no further preparation scans or dispatches, including after restart.
+  Ordinary on-demand generation (including deep caves) retains the engine's
+  existing behavior; do not change global server-step or emerge-thread settings
+  to accelerate preparation.
 - Derive the aligned mapgen-chunk grid from the engine's actual chunk origin
   and size, including negative coordinates. Each dispatched unit identifies exactly
   one aligned 3D mapchunk and its expected mapblock set. Count distinct successful
