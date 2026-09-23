@@ -1,0 +1,16 @@
+--- tools/r19_preparation_fullspeed/evidence/run_native-executed.py	2026-09-23 19:36:56.186330622 +0200
++++ tools/r19_preparation_fullspeed/run_native.py	2026-09-23 19:36:56.186415902 +0200
+@@ -144,7 +144,12 @@
+         settled=max([cursor]+[e['data']['cursor'] for e in completions])
+         assert shutdown['status']['completed']==settled and shutdown['inflight']==0
+         assert shutdown['queue_depth']<=2
+-        assert all(row['status']!='pending' for row in shutdown.get('queue_rows',[]))
++        queue_rows=shutdown.get('queue_rows')
++        if queue_rows is None:
++            assert shutdown['queue_depth']==0
++            queue_rows=[]
++        assert len(queue_rows)==shutdown['queue_depth']
++        assert all(row['status']!='pending' for row in queue_rows)
+         if label=='B' and previous_selection is not None:
+             assert requests[0]['data']['selection']==previous_selection
+         if label=='A':

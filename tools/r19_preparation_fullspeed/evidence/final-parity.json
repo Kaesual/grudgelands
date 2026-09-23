@@ -1,0 +1,23 @@
+{
+  "source_sha256": {
+    "mods/CORE/grug_core/starts_preload.lua": "858df635037ccd64eef45c6c01a5a838022cae4562e94e8cc46e536631fc780e",
+    "mods/CORE/grug_core/preparation_plan.lua": "e4384961e5e10c31260a4553bd957cfedaffbc206ac567ac6898620949910195",
+    "tools/r19_preparation_fullspeed/fixture.lua": "d23e48559a8ead4171277f0a4e0cc944cfd2ad1058c73a3553bba0ad1ad87282",
+    "tools/r19_preparation_fullspeed/micro.lua": "d2f79cf0e873b451a1c9e18beb17b72ea8b354fa1792dbb095ca8b327000000b"
+  },
+  "runs": {
+    "puc51": {
+      "exit_code": 0,
+      "elapsed_seconds": 0.040514327003620565,
+      "stdout_sha256": "db7fda65073b5c54504bda3675a5080960d17d3b67b8be8d798eb22f722389e5",
+      "stderr_bytes": 0
+    },
+    "luajit": {
+      "exit_code": 0,
+      "elapsed_seconds": 0.00988297399453586,
+      "stdout_sha256": "db7fda65073b5c54504bda3675a5080960d17d3b67b8be8d798eb22f722389e5",
+      "stderr_bytes": 0
+    }
+  },
+  "byte_identical": true
+}

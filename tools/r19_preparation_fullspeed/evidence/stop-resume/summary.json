@@ -1,0 +1,191 @@
+[
+  {
+    "boot": "A",
+    "result": {
+      "elapsed": 37.12099205200502,
+      "exit": 0,
+      "forced": false,
+      "pid": 779272,
+      "starttime": "4009125",
+      "survivors": []
+    },
+    "settled_cursor": 561,
+    "shutdown": {
+      "dispatches": 2,
+      "inflight": 0,
+      "max_inflight": 2,
+      "queue_depth": 2,
+      "queue_rows": [
+        {
+          "index": 562,
+          "selection": {
+            "index": 562,
+            "inner": 0,
+            "x": 1328,
+            "y_max": -32,
+            "y_min": -32,
+            "z": -3152
+          },
+          "status": "retry"
+        },
+        {
+          "index": 563,
+          "selection": {
+            "index": 563,
+            "inner": 0,
+            "x": 1408,
+            "y_max": -32,
+            "y_min": -32,
+            "z": -3152
+          },
+          "status": "retry"
+        }
+      ],
+      "selection": {
+        "index": 562,
+        "inner": 0,
+        "x": 1328,
+        "y_max": -32,
+        "y_min": -32,
+        "z": -3152
+      },
+      "status": {
+        "completed": 561,
+        "failed": false,
+        "mode": "full",
+        "percent": 6.367041198501872,
+        "ready": false,
+        "total": 8811
+      }
+    },
+    "start_cursor": 561,
+    "stop": {
+      "cursor": 561,
+      "inflight": 2,
+      "mode": "stop_pending",
+      "queue_depth": 2
+    },
+    "terminal_requests": [
+      {
+        "actions": {
+          "0": 125
+        },
+        "cursor": 561,
+        "duration_us": 15917192,
+        "id": 1,
+        "inflight": 1,
+        "queue_depth": 2,
+        "request_actions": {
+          "0": 125
+        },
+        "selection": {
+          "index": 562,
+          "inner": 0,
+          "x": 1328,
+          "y_max": -32,
+          "y_min": -32,
+          "z": -3152
+        },
+        "status": "retry"
+      },
+      {
+        "actions": {
+          "0": 250
+        },
+        "cursor": 561,
+        "duration_us": 15781118,
+        "id": 2,
+        "inflight": 0,
+        "queue_depth": 2,
+        "request_actions": {
+          "0": 125
+        },
+        "selection": {
+          "index": 562,
+          "inner": 0,
+          "x": 1328,
+          "y_max": -32,
+          "y_min": -32,
+          "z": -3152
+        },
+        "status": "retry"
+      }
+    ]
+  },
+  {
+    "boot": "B",
+    "result": {
+      "elapsed": 36.67076881400135,
+      "exit": 0,
+      "forced": false,
+      "pid": 779890,
+      "starttime": "4012842",
+      "survivors": []
+    },
+    "settled_cursor": 563,
+    "shutdown": {
+      "dispatches": 2,
+      "inflight": 0,
+      "max_inflight": 2,
+      "queue_depth": 0,
+      "queue_rows": null,
+      "status": {
+        "completed": 563,
+        "failed": false,
+        "mode": "full",
+        "percent": 6.389740097605266,
+        "ready": false,
+        "total": 8811
+      }
+    },
+    "start_cursor": 561,
+    "stop": {
+      "cursor": 563,
+      "inflight": 0,
+      "mode": "resume",
+      "queue_depth": 0
+    },
+    "terminal_requests": [
+      {
+        "actions": {
+          "2": 124,
+          "4": 1
+        },
+        "cursor": 562,
+        "duration_us": 16082998,
+        "id": 1,
+        "inflight": 1,
+        "queue_depth": 1,
+        "request_actions": {
+          "2": 124,
+          "4": 1
+        },
+        "selection": {
+          "index": 563,
+          "inner": 0,
+          "x": 1408,
+          "y_max": -32,
+          "y_min": -32,
+          "z": -3152
+        },
+        "status": "success"
+      },
+      {
+        "actions": {
+          "2": 248,
+          "4": 2
+        },
+        "cursor": 563,
+        "duration_us": 16308637,
+        "id": 2,
+        "inflight": 0,
+        "queue_depth": 0,
+        "request_actions": {
+          "2": 124,
+          "4": 1
+        },
+        "status": "success"
+      }
+    ]
+  }
+]

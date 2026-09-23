@@ -1,0 +1,7 @@
+{
+  "scope": "offline receipt decoder only",
+  "finding": "Luanti JSON encoder emitted null for an empty queue_rows Lua table; iteration raised TypeError after Boot B exited normally",
+  "resolution": "normalize null to empty list only after queue_depth==0 assertion; replay validations on retained logs without another engine run",
+  "executed_harness_sha256": "66dad86733d7072c332affb22e9c1983ef2b889f60355bf270f6f58e575c360c",
+  "corrected_harness_sha256": "6099774d7fa4b7b457830d1c1b4d6364c37c18b76226042b628b69b9b985057c"
+}

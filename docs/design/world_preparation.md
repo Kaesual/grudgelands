@@ -1,6 +1,7 @@
 # World preparation
 
 Decided 2026-09-21; surface-selection revision approved 2026-09-22 (Round 16).
+Bounded full-throughput scheduling approved 2026-09-23.
 
 
 ### Preparation modes and readiness
@@ -40,20 +41,23 @@ Decided 2026-09-21; surface-selection revision approved 2026-09-22 (Round 16).
   Full mode persists horizontal tile and inner-chunk progress plus the resolved
   current selection. Do not lose partial-tile completion on normal restart.
   This is current-world persistence, not compatibility with earlier versions.
-- First version: one mapchunk-sized request in flight. Persist the completed
-  prefix only after all relevant block callbacks succeed, then defer the next
-  dispatch through the main loop. This avoids out-of-order completion journals
-  and an enormous emerge queue; do not add a custom worker fleet.
-- Full preparation selects surface columns with a cooperative **40 ms** budget
-  per eligible server step, checked after batches of 16 columns with an
-  8,192-column ceiling. One source call/batch can exceed the time budget; this
-  is not a hard real-time deadline. Work remains interruptible between steps.
-  This budget applies only while the full preparation plan is incomplete.
-  Starts-only preparation does not scan surfaces, and completed worlds perform
-  no further preparation scans or dispatches, including after restart.
+- Supply the single native emerge worker through at most **two** outstanding
+  mapchunk-sized requests. Refill from the main loop only, including selection
+  while earlier work runs. Each request owns its outcome; persist only the
+  contiguous successful prefix, never a later success across a pending/failed
+  head. Failed requests pause new filling and retry their exact coordinates.
+  There is no persistent out-of-order journal or custom worker fleet.
+- Full preparation selects surface columns in cooperative **100 ms** slices
+  per server step, checked after batches of 16 columns with an 8,192-column
+  ceiling across that step. One source call/batch can exceed the time budget;
+  this is not a hard real-time deadline. Stop early when the bounded queue is
+  supplied; never busy-wait for native completion. There is no additional
+  work-interval timer; UI notifications retain their separate 200 ms cadence.
+  This work applies only while preparation is incomplete. Starts-only mode
+  uses the same bounded request pipeline without surface scans. Completed worlds
+  perform no preparation scans or dispatches, including after restart.
   Ordinary on-demand generation (including deep caves) retains the engine's
-  existing behavior; do not change global server-step or emerge-thread settings
-  to accelerate preparation.
+  existing behavior; global server-step and emerge-thread settings are unchanged.
 - Derive the aligned mapgen-chunk grid from the engine's actual chunk origin
   and size, including negative coordinates. Each dispatched unit identifies exactly
   one aligned 3D mapchunk and its expected mapblock set. Count distinct successful
@@ -118,9 +122,12 @@ box is included wherever its horizontal footprint intersects a tile. Conservativ
 content allowances may apply where that content does not spawn.
 
 Selection advances in bounded local batches before the tile's first emerge request.
-The resolved Y interval and successful inner-chunk cursor are stored together;
-an interrupted, unfinished selection may be recomputed because it has generated
-nothing yet. Resume validates engine geometry and stable semantic source/seed and
+The current head's resolved Y interval and successful inner-chunk cursor are
+stored together. Forward selections and request outcomes are bounded ephemeral
+lookahead. On interruption they can be deterministically recomputed/re-requested
+from the committed prefix; speculative chunks may already exist and then load
+again. This does not advance saved progress over a gap or require a new saved
+format. Resume validates engine geometry and stable semantic source/seed and
 content-extents identity. Runtime content IDs are excluded from this identity,
 because a normal restart may assign different IDs to the same registered nodes.
 A mismatch stops preparation with a restoration message; there is no fallback
@@ -136,7 +143,9 @@ remain stable, while changed terrain or selection semantics reject reuse.
 Use bounded productive work without artificial selection pauses; decouple UI
 notification cadence from scheduler work. Preserve the surface envelope, one
 emerge thread, ordered successful-prefix persistence and stop/resume. Constant
-CPU utilization is not an invariant. Keep the accepted ETA behavior.
+CPU utilization is not an invariant. Estimate remaining time from committed
+tile progress and elapsed wall time, without summing overlapping request times;
+the accepted approximate early-estimation behavior remains.
 
 Pending preparation comes before faction/race/class creation; both page display
 and receive-fields actions honor it. Escape dismisses the form without releasing

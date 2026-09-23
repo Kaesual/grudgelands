@@ -1,0 +1,23 @@
+[
+  "flatpak",
+  "run",
+  "--command=luanti",
+  "--filesystem=/tmp/grug-preparation-fullspeed-ronde0xm/stop-resume/B",
+  "--filesystem=/home/jan/projects/grudgelands/tools/wp40/results/preparation-fullspeed-vqhquuz5",
+  "--env=LUANTI_USER_PATH=/tmp/grug-preparation-fullspeed-ronde0xm/stop-resume/B/user",
+  "--env=XDG_CACHE_HOME=/tmp/grug-preparation-fullspeed-ronde0xm/stop-resume/B/cache",
+  "--env=XDG_DATA_HOME=/tmp/grug-preparation-fullspeed-ronde0xm/stop-resume/B/data",
+  "--env=XDG_CONFIG_HOME=/tmp/grug-preparation-fullspeed-ronde0xm/stop-resume/B/config",
+  "org.luanti.luanti",
+  "--server",
+  "--gameid",
+  "grudgelands",
+  "--world",
+  "/home/jan/projects/grudgelands/tools/wp40/results/preparation-fullspeed-vqhquuz5/world",
+  "--config",
+  "/tmp/grug-preparation-fullspeed-ronde0xm/stop-resume/B/run.conf",
+  "--logfile",
+  "/tmp/grug-preparation-fullspeed-ronde0xm/stop-resume/B/engine.log",
+  "--color",
+  "never"
+]

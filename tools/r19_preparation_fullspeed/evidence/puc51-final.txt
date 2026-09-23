@@ -1,0 +1,1 @@
+r19-preparation-fullspeed: coverage pipeline=2 ordered-prefix retry stop replay inner-resume budget mode authority ready-idle external-cave=ok
