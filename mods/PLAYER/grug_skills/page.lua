@@ -111,15 +111,16 @@ local function content(player)
 	grug_skills.guard_destinations()
 	rebuild(player)
 	local location = "detached:" .. core.formspec_escape(inv_name(player:get_player_name()))
-	return "label[0.25,0.2;Abilities]" ..
-		"list[" .. location .. ";catalog;0.25,0.65;8,1;0]" ..
-		"label[0.25,1.85;Purchased mounts]" ..
-		"list[" .. location .. ";catalog;0.25,2.25;4,1;8]" ..
+	local hint = core.formspec_escape(
+		"Drop skills to remove them. Drag them back from here.")
+	return "label[0.25,0.2;" .. hint .. "]" ..
+		"label[0.25,0.65;Abilities]" ..
+		"list[" .. location .. ";catalog;0.25,1.05;8,1;0]" ..
+		"label[0.25,2.25;Purchased mounts]" ..
+		"list[" .. location .. ";catalog;0.25,2.65;4,1;8]" ..
 		"label[0.25,3.35;Passive and replacement talents]" ..
 		"textarea[0.25,3.75;9.9,2.3;;;" ..
-		core.formspec_escape(passive_text(player)) .. "]" ..
-		"textarea[0.25,6.15;9.9,0.7;;;" ..
-		"Drag an unlocked ability or mount to inventory. You can own one copy across inventory, crafting and bags. Dropping or returning the icon deletes only that copy, never the unlock; recover it here when no owned copy remains.]"
+		core.formspec_escape(passive_text(player)) .. "]"
 
 end
 
