@@ -922,6 +922,11 @@ then re-tuning it with three separate talents.
 
 ### 3.5 UI
 
+Round 19 follow-up: talent names/ranks share the same text alignment in every
+state. Purchasable talents have a clearly visible button background and border;
+locked/maxed entries remain visibly distinct and retain their status and tooltip.
+This is presentation only: first-click purchases and authorization are unchanged.
+
 A third `sfinv` page beside Character and Bags (`grug_inventory/pages.lua:182`,
 `:246`), registered from `grug_classes/talents_ui.lua` so the page lives
 with the data it shows and `grug_inventory` keeps its two pages. This costs

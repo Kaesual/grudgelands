@@ -112,6 +112,14 @@ local function selected_description(player, context, tree)
 		grug_classes.talent_description_for(player, def), status)
 end
 
+local function buyable_talent_style(fieldname, selected)
+	if selected then
+		return grug_inventory.selected_button_style(fieldname, true)
+	end
+	return ("style[%s;bgcolor=#526f3f;bgcolor_hovered=#688d50;" ..
+		"bgcolor_pressed=#3e552f;border=true]"):format(esc(fieldname))
+end
+
 local function talent_content(player, context)
 	local class_id = grug_classes.get_class(player)
 	local class_def = class_id and grug_classes.registered_classes[class_id]
@@ -180,14 +188,20 @@ local function talent_content(player, context)
 							break
 						end
 					end
-					fs[#fs + 1] = grug_inventory.selected_button_style(
+					fs[#fs + 1] = buyable_talent_style(
 						"grug_talent_pick_" .. field_index, selected)
 					fs[#fs + 1] = ("button[%.2f,%.2f;6.05,0.65;grug_talent_pick_%d;%s]")
 						:format(x, y, field_index, esc(label))
 				else
-					fs[#fs + 1] = ("box[%.2f,%.2f;6.05,0.65;#303030]" ..
-						"textarea[%.2f,%.2f;5.89,0.65;;;%s]"):format(
-						x, y, x + 0.08, y, esc(label .. (rank >= def.ranks and " [max]" or " [locked]")))
+					local locked_label = label ..
+						(rank >= def.ranks and " [max]" or " [locked]")
+					local markup = "<global margin=0 halign=center valign=middle>" ..
+						locked_label
+					fs[#fs + 1] = ("box[%.2f,%.2f;6.05,0.65;#606060]" ..
+						"box[%.2f,%.2f;5.99,0.59;#303030]" ..
+						"hypertext[%.2f,%.2f;5.99,0.59;;%s]"):format(
+						x, y, x + 0.03, y + 0.03,
+						x + 0.03, y + 0.03, esc(markup))
 				end
 				local tooltip = def.name .. " — " ..
 					grug_classes.talent_description_for(player, def)

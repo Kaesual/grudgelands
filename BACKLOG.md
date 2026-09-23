@@ -6,6 +6,8 @@ Round 19 implementation, independent reviews and final technical gates PASS:
 menus, party/status defaults and dragon bars are merged to main, installed locally, and ready for
 [GUI acceptance](docs/research/round19-playtest.md). No whole-WP count change;
 remote push remains blocked pending renewed confirmation.
+The [UI follow-up](docs/research/round19-ui-followup.md) corrects Map window
+consistency and talent affordance; independent review and compact gates PASS.
 
 Round 18 is technically complete and independently reviewed, merged to main
 and locally synchronized. Remote push awaits renewed confirmation after an

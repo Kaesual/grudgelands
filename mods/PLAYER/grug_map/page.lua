@@ -2,8 +2,16 @@ local atlas = grug_map.atlas
 local active, elapsed = {}, 0
 local PAGE = "grug_map:atlas"
 
--- The wrapper uses real units too: no legacy spacing multiplier/unused band.
-local MAP_X, MAP_Y, MAP_W, MAP_H = 0.15, 0.85, 10.08, 8.96
+-- Keep the shared legacy window sizing/scaling, then draw the map in real units.
+-- Engine legacy spacing: 5/4 horizontally, 15/13 vertically, plus window padding
+-- and button allowance (guiFormSpecMenu.cpp). Fit the atlas inside that window.
+local UI = grug_inventory.UI
+local PAGE_W = (UI.width - 1) * 5 / 4 + 1.75
+local PAGE_H = (UI.height - 1) * 15 / 13 + 1.75 + 7 / 26
+local MAP_Y, GUTTER = 0.85, 0.33
+local MAP_W = math.min(PAGE_W - 0.8 - GUTTER, (PAGE_H - MAP_Y - 1.5) * 9 / 8)
+local MAP_H = MAP_W * 8 / 9
+local MAP_X = (PAGE_W - MAP_W - GUTTER) / 2
 local SCROLL_X, SCROLL_Y = "grug_map_scroll_x", "grug_map_scroll_y"
 local LABELS = {
 	hearthpine = "Hearthpine", dawnmere = "Dawnmere", silverleaf = "Silverleaf",
@@ -67,8 +75,8 @@ local function page_content(player, context)
 		-- focused marker after the form is regenerated (including keyboard focus).
 		("label[0.15,0.22;World — %dx]"):format(zoom),
 		("label[2.35,0.22;Current: %s]"):format(esc(current_zone(player))),
-		"button[8.88,0.02;0.60,0.48;grug_map_zoom_out;-]",
-		"button[9.58,0.02;0.60,0.48;grug_map_zoom_in;+]",
+		("button[%.3f,0.02;0.60,0.48;grug_map_zoom_out;-]"):format(PAGE_W - 1.72),
+		("button[%.3f,0.02;0.60,0.48;grug_map_zoom_in;+]"):format(PAGE_W - 1.02),
 		("scroll_container[%s,%s;%s,%s;%s;horizontal;%.5f]"):
 			format(MAP_X, MAP_Y, MAP_W, MAP_H, SCROLL_X, MAP_W / 1000),
 		-- The inner clipper spans the full scaled width so horizontal scrolling
@@ -127,8 +135,8 @@ local function page_content(player, context)
 		local remaining = grug_home.remaining(player)
 		local state = grug_home.is_pending(player) and "Preparing arrival" or
 			(remaining > 0 and ("%d:%02d"):format(math.floor(remaining / 60), remaining % 60) or "Ready")
-		fs[#fs + 1] = ("button[0.15,10.40;10.08,0.65;grug_map_home;Return home: %s (%s)]"):
-			format(esc(home.label), esc(state))
+		fs[#fs + 1] = ("button[%.3f,%.3f;%.3f,0.65;grug_map_home;Return home: %s (%s)]"):
+			format(MAP_X, MAP_Y + MAP_H + 0.59, MAP_W, esc(home.label), esc(state))
 	end
 	-- Scrollbar starting values are transport state, not render semantics.
 	-- Only signatures actually sent to the client may advance session.signature.
@@ -136,17 +144,18 @@ local function page_content(player, context)
 	table.insert(fs, 1, "set_focus[" .. (context.grug_map_focus or SCROLL_X) .. ";true]")
 	fs[#fs + 1] = ("scrollbaroptions[min=0;max=%d;smallstep=40;largestep=900;thumbsize=%d;arrows=hide]"):
 		format(atlas.scroll_limit(zoom), math.max(1, math.floor((atlas.scroll_limit(zoom) + 1) / zoom)))
-	fs[#fs + 1] = ("scrollbar[0.15,9.86;10.08,0.28;horizontal;%s;%d]"):
-		format(SCROLL_X, context.grug_map_scroll_x or 0)
-	fs[#fs + 1] = ("scrollbar[10.28,0.85;0.28,8.96;vertical;%s;%d]"):
-		format(SCROLL_Y, context.grug_map_scroll_y or 0)
+	fs[#fs + 1] = ("scrollbar[%.3f,%.3f;%.3f,0.28;horizontal;%s;%d]"):
+		format(MAP_X, MAP_Y + MAP_H + 0.05, MAP_W, SCROLL_X, context.grug_map_scroll_x or 0)
+	fs[#fs + 1] = ("scrollbar[%.3f,%.3f;0.28,%.3f;vertical;%s;%d]"):
+		format(MAP_X + MAP_W + 0.05, MAP_Y, MAP_H, SCROLL_Y, context.grug_map_scroll_y or 0)
 	return table.concat(fs), signature
 end
 
 local function make_form(player, context)
 	local content, signature = page_content(player, context)
 	return sfinv.make_formspec(player, context, content, false,
-		"formspec_version[4]size[10.65,11.20]"), signature
+		("formspec_version[4]size[%s,%s]real_coordinates[false]"):
+			format(UI.width, UI.height)), signature
 end
 
 sfinv.register_page(PAGE, {

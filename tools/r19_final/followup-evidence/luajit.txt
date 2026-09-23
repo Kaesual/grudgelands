@@ -1,0 +1,10 @@
+fixture=r19_map/micro.lua
+r19_map: whole-world, projection, center-zoom, clipping-structure, fixed-markers, scroll-signature, lifecycle PASS
+fixture=r19_ui/fixture.lua
+character=concise-totals
+skills=textarea-fields-5
+talents=first-click+authority
+
+fixture=r19_hud/fixture.lua
+r19-hud	PASS	checks=16	party=by-class	status=top-centre	sprint=authoritative	dragon=5x3x0.25	ordinary=legacy-unit-scale
+round19-final-micro: PASS fixtures=3

@@ -54,8 +54,10 @@ Closing returns to Character as above. Zoom +/- offers 1x, 2x and 4x, preserving
 the current world center and clamping at edges. Native horizontal/vertical
 scrollbars reach the complete map at enlarged zooms. No drag-to-pan or animation.
 
-The map fills its 9:8 viewport, with page geometry sized around it and compact
-controls outside. Never distort/crop the full overview. Renderer and marker
+The Map tab uses the same outer window size and legacy scaling as the other
+inventory tabs. Fit and center the 9:8 map viewport inside that shared window,
+reserving space for controls and scrollbars. The map never determines window
+size; a small unused margin is acceptable. Never distort/crop the full overview. Renderer and marker
 projection use the same world bounds. Markers retain constant UI dimensions:
 only positions scale with zoom; clipping and scroll translate image and markers
 together. Hover/click bounds remain aligned. No clustered/offset markers.
