@@ -160,10 +160,10 @@ local function bar_height_and_scale(parent)
 			return anchor_y * 10 / sy, width, height
 		end
 	end
-	-- Attachment coordinates are in tenths of a node and inherit the parent's
-	-- scene-node scale. Divide both offset and sprite size to keep one stable
-	-- world-space bar from rats through dragons. It sits below the nametag,
-	-- whose engine offset is selection-box max Y + 0.3 nodes.
+	-- Preserve the ordinary-mob path: its legacy dimensions vary inversely
+	-- with parent scale. Only explicit profiles above use direct world sizes.
+	-- The attachment position is below the nametag, whose engine offset is
+	-- selection-box max Y + 0.3 nodes.
 	return ((box[5] or 1) + 0.12) * 10 / sy, 0.8 / sx, 0.1 / sy
 end
 
