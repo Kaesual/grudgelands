@@ -88,5 +88,5 @@ PUC-5.1/LuaJIT pair passed with identical output
 Native measurement and final independent evidence review PASS. Same 561-unit
 prefix: 135.07 s versus 177.76 s for the previous scheduler; matched native
 worker CPU 99.43% of one core. Two-pending stop/resume passed. Implementation
-and calibration details: [receipt](pregen-fullspeed.md). Local integration is
-the final step; no remote push or production deployment is included.
+and calibration details: [receipt](pregen-fullspeed.md). Merged into local main
+as `19acb7a8` and synchronized; no remote push or production deployment.

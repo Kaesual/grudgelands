@@ -18,7 +18,7 @@ Updated 2026-09-23. This is the delivery pointer, not another game specification
   matched steady interval. Completed preparation remains inactive during later
   on-demand cave generation; engine tick/thread settings are unchanged.
   Independent review, native comparison, two-pending stop/resume and final
-  interpreter parity passed. Local integration receipt:
+  interpreter parity passed. Merged to local main and synchronized. Receipt:
   [full-speed follow-up](research/pregen-fullspeed.md). No remote deployment
   claimed. Prior measurement: [scan-budget follow-up](research/pregen-scan-budget.md).
 - **GUI acceptance:** user-run and pending where not explicitly accepted.

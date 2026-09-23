@@ -181,3 +181,11 @@ preparation, stop it once and verify progress resumes on restart. Once preparati
 is complete, normal play and exploration of new deep cave chunks should retain
 their existing behavior. The bounded headless measurements and portable routing
 fixture do not replace this user-run GUI/multiplayer acceptance.
+
+## Local delivery
+
+Implementation commit `23439c97`, merged into local main as `19acb7a8`.
+Synced from main using `tools/sync_to_luanti.sh`; the installed scheduler is
+byte-identical and all frozen final-parity source hashes remain unchanged.
+No remote push or production-server deployment was performed. Restart loads
+the new scheduler; its persisted format and surface-source identity are unchanged.

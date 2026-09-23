@@ -71,6 +71,8 @@ The user approved maximum-throughput world preparation on 2026-09-23, retaining
 bounded shutdown and unchanged later on-demand cave generation. Current contract:
 [full-speed follow-up](docs/research/pregen-fullspeed-plan.md). Root Astra
 coordinates native Astra implementation/measurement and independent Sol review.
+Delivered on local main and synchronized; receipt:
+[full-speed preparation](docs/research/pregen-fullspeed.md).
 No Claude task is authorized. The previous documentation-only round
 is complete: [receipt](docs/maintenance/documentation-round.md).
 
