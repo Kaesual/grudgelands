@@ -169,3 +169,13 @@ responsive and normal stop/restart resumes progress. After preparation has
 completed, explore previously ungenerated deep cave chunks and confirm ordinary
 gameplay. This GUI/multiplayer acceptance is not claimed by the headless prefix
 measurement or mocked deep-request routing fixture.
+
+## Local delivery
+
+Implementation commit `d47e58de`, merged into local main as
+`f2c8998475239eaf9e25fd0ffb72606fded57142`. Synced from main with
+`tools/sync_to_luanti.sh`; the installed scheduler was verified byte-identical
+and all final-parity source hashes remain unchanged. No remote push or
+production-server deployment was performed. Restart is required to load the
+new Lua code; the preparation persistence format and source identity are
+unchanged.
