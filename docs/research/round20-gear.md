@@ -92,3 +92,22 @@ remaining durability after one use, then break and repair a weapon, tool,
 armor piece and offhand. Verify inventory, first-person skill skin,
 third-person held item and only the affected armor layer retain their shape
 with cracks while broken, lose usable stats, and restore cleanly after repair.
+
+## Review follow-up: real equipment and repair boundaries
+
+`tools/r20/gear_boundary.lua` is called by the existing gear micro fixture in
+the consolidated final interpreter pair. It loads the actual inventory
+equipment and repair runtime modules, captures the real allow callback, and
+checks all 24 class/family equip decisions. It exercises one actual first wear
+event, duplicate-event suppression, a seeded penultimate state followed by one
+actual final wear event, broken combat versus cosmetic getters, owned cosmetic
+copies, and the actual service quote/apply path. An equipment notification
+assertion reads the combat getter during notification, proving invalidation
+precedes consumers. Repair restores durability/remainder, removes cracks and
+consumes the quote. Money's atomic transaction is a bounded fixture double;
+this is not a replacement for its separate transaction tests.
+
+No lifetime loops or runtime were added to the implementation lane. Both
+fixture files pass the parser and five sweeps; their intentional fixture-global
+writes are covered by the parent r13 fixture's save/restore boundary. Final
+runtime evidence remains pending with the consolidated root run.

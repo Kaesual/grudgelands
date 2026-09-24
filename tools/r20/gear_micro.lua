@@ -127,5 +127,6 @@ return function(repo, definitions, check)
  end
  check(grug_classes.get_spell_power_bonus({class="mage"}) == 9,
   "caster dagger keeps Intelligence spell scaling")
- return "PASS r20 gear permissions=144 pools durability fractions broken-art repair armor-layer scout-dex\n"
+ dofile(repo .. "/tools/r20/gear_boundary.lua")(repo, check)
+ return "PASS r20 gear permissions=144 pools durability fractions broken-art repair armor-layer scout-dex real-equip wear-service-cache\n"
 end
