@@ -302,8 +302,6 @@ return function()
      for _, mob in ipairs(assert(grug_mobs.zone_clock_cast(o.zone, clock), o.zone)) do cast[mob] = true end
     end
     for _, mob in ipairs(o.mobs) do
-     local entity = assert(core.registered_entities[mob], id)
-     assert((entity._grug_min_level or 1) <= q.min_level, id .. " mob minimum level")
      if cast[mob] then ambient_targets = ambient_targets + 1
      else
       assert(camps[o.zone] and camps[o.zone][mob], id .. " unavailable ambient/camp target: " .. mob)

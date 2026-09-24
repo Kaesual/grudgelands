@@ -120,7 +120,8 @@ ooze/wisp jobs. Every involved zone includes the required biome. Minimum gates
 are compatible: tiger explicitly 21–50; wolves/hyena/lynx minimum 10; the
 start-family level-4 restriction does not restrict these level-21+ jobs.
 Night-only targets retain the explicit night descriptions. The fixture now also
-checks objective-zone level bands and registered entity minimum levels.
+checks objective-zone level bands. Mob minimum levels remain source-reviewed:
+the runtime entity registry does not expose the private level configuration.
 
 No engine or Lua runtime was run in the correction lane. Parser, SETGLOBAL and
 all five static sweeps passed; root owns the replacement smoke and independent
