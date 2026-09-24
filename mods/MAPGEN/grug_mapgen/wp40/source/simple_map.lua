@@ -17,7 +17,7 @@ local source = {
 	schema = "grug_wp40_simple_map_source_v2",
 	layout_id = "wp40-simple-map-v1d",
 	layout_revision_id = "wp40-simple-map-v1e",
-	height_revision_id = "wp40-height-shore-v5",
+	height_revision_id = "wp40-height-shore-v6",
 	extent = {min_x = -3600, max_x = 3600, min_z = -3200, max_z = 3200},
 	warp = {cell = 256, maximum = 60,
 		hash_domain = "fixed_visual_warp_v1"},
@@ -809,12 +809,12 @@ source.relief_profiles = {
 			{period=512,amplitude=fraction(2,5)},
 			{period=256,amplitude=fraction(3,5)}}},
 	{id="lowland",min_above_water=8,max_above_water=56,
-		detail_amplitude=6,
+		detail_amplitude=9,
 		noise_domain="relief_lowland",octaves={
 			{period=768,amplitude=fraction(1,2)},
 			{period=256,amplitude=fraction(1,2)}}},
 	{id="rolling_hills",min_above_water=24,max_above_water=96,
-		detail_amplitude=9,
+		detail_amplitude=12,
 		noise_domain="relief_rolling_hills",octaves={
 			{period=768,amplitude=fraction(9,20)},
 			{period=384,amplitude=fraction(11,20)}}},

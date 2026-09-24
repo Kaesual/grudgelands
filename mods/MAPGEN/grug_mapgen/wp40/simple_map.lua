@@ -1,7 +1,31 @@
 -- Pure fixed-layout WP40 horizontal evaluator. It registers no engine hooks
 -- and performs no map writes.
 
-return function(dependencies)
+-- Shared bounded lake-edge field. It changes widths, never water levels or
+-- authored centre lines. The caller freezes all civic/interface reaches.
+local function new_lake_rules(seed)
+	local phase = 0
+	for i = 1, #seed do phase = (phase * 131 + seed:byte(i)) % 65521 end
+	local M = {amplitude = 8, period = 48}
+	local function corner(x, z, salt)
+		local value = (x * 374761 + z * 668265 + phase * 69069 + salt) % 16777213
+		value = (value * value) % 16777213
+		return ((value * 48271) % 16777213) % 17 - 8
+	end
+	local function smooth(t) return t * t * (3072 - 2 * t) / 1048576 end
+	function M.offset(x, z, salt)
+		local ix, iz = math.floor(x / 48), math.floor(z / 48)
+		local tx = smooth(math.floor((x - ix * 48) * 1024 / 48)) / 1024
+		local tz = smooth(math.floor((z - iz * 48) * 1024 / 48)) / 1024
+		local a, b = corner(ix, iz, salt), corner(ix + 1, iz, salt)
+		local c, d = corner(ix, iz + 1, salt), corner(ix + 1, iz + 1, salt)
+		return math.floor((a + (b - a) * tx) * (1 - tz) +
+			(c + (d - c) * tx) * tz + 0.5)
+	end
+	return M
+end
+
+local function simple_map_factory(dependencies)
 	if type(dependencies) ~= "table" then
 		error("WP40 simple map dependencies missing", 0)
 	end
@@ -283,12 +307,13 @@ return function(dependencies)
 		fail("unknown primitive kind " .. tostring(row.kind))
 	end
 
-	local function bay_member(bay, x, z)
+	local function bay_member(bay, x, z, offset)
+		offset = offset or 0
 		local samples = bay.centreline
 		for index = 1, #samples do
 			local sample = samples[index]
 			if squared_distance(x,z,sample.x,sample.z) <=
-					sample.half_width*sample.half_width then
+					(sample.half_width + offset)^2 then
 				return true
 			end
 		end
@@ -300,7 +325,7 @@ return function(dependencies)
 			local dot=wx*vx+wz*vz
 			if dot >= 0 and dot <= length_squared then
 				local cross=wx*vz-wz*vx
-				local width_numerator=a.half_width*length_squared+
+				local width_numerator=(a.half_width + offset)*length_squared+
 					(b.half_width-a.half_width)*dot
 				if rational_compare(cross*cross,length_squared,
 						width_numerator*width_numerator,
@@ -1179,6 +1204,19 @@ return function(dependencies)
 		end
 		feature_bounds[row]=bounds
 	end
+	local lake_variation = {}
+	for index, row in ipairs(source.hydrology) do
+		if not row.civic_core_zone_numeric_id and
+				(row.profile_id == "ordinary_lake" or row.profile_id == "shallow_pond") then
+			lake_variation[row.id] = index * 104729
+		end
+	end
+	for _, row in ipairs(source.hydrology_interfaces) do
+		for _, field in ipairs({"hydrology_id", "upper_id", "lower_id", "outgoing_reach_id"}) do
+			if row[field] then lake_variation[row[field]] = nil end
+		end
+		for _, id in ipairs(row.from_ids or {}) do lake_variation[id] = nil end
+	end
 	for index = 1, #source.hydrology do
 		local row=source.hydrology[index]
 		local bounds={min_x=math.huge,max_x=-math.huge,
@@ -1189,6 +1227,10 @@ return function(dependencies)
 			bounds.max_x=math.max(bounds.max_x,sample.x+sample.half_width)
 			bounds.min_z=math.min(bounds.min_z,sample.z-sample.half_width)
 			bounds.max_z=math.max(bounds.max_z,sample.z+sample.half_width)
+		end
+		if lake_variation[row.id] then
+			bounds.min_x, bounds.max_x = bounds.min_x - 8, bounds.max_x + 8
+			bounds.min_z, bounds.max_z = bounds.min_z - 8, bounds.max_z + 8
 		end
 		feature_bounds[row]=bounds
 	end
@@ -1789,6 +1831,42 @@ return function(dependencies)
 		local hash = deterministic.new_hash(canonical,raw_sha256,
 			schemas.simple_map,full_seed_string)
 
+		local lake_rules = new_lake_rules(full_seed_string)
+		local lake_reserved = {}
+		for _, reach in ipairs(source.hydrology) do
+			if lake_variation[reach.id] then
+				local reservations, b = {}, feature_bounds[reach]
+				lake_reserved[reach.id] = reservations
+				for _, shape in ipairs(exclusion_shapes) do
+					local r = shape.bounds
+					if (shape.kind == "square" or shape.kind == "polyline") and
+							b.min_x <= r.max_x + 24 and b.max_x >= r.min_x - 24 and
+							b.min_z <= r.max_z + 24 and b.max_z >= r.min_z - 24 then
+						reservations[#reservations + 1] = shape
+					end
+				end
+			end
+		end
+		local function lake_weight(reach_id, x, z)
+			if not lake_variation[reach_id] then return 0 end
+			local weight = 16
+			for _, shape in ipairs(lake_reserved[reach_id]) do
+				-- A conservative rectangle around each overlapping reservation:
+				-- no query back into classification, and a 16-node feather outside.
+				local r = shape.bounds
+				local distance = math.max(r.min_x - x, x - r.max_x,
+					r.min_z - z, z - r.max_z) - 8
+				weight = math.min(weight, math.max(0, distance))
+			end
+			return weight
+		end
+		local function lake_offset(reach_id, x, z, weight)
+			weight = weight or lake_weight(reach_id, x, z)
+			if weight == 0 then return 0 end
+			return math.floor(lake_rules.offset(x, z, lake_variation[reach_id]) *
+				weight / 16 + 0.5)
+		end
+
 		local function fixed_owner_at(x, z, expansion)
 			expansion = expansion or 0
 			for group_index = 1, #fixed_core_groups do
@@ -1846,7 +1924,7 @@ return function(dependencies)
 						zone.macro_region == macro_region)) and
 						hydrology_profile_by_id[row.profile_id].depth > 0 and
 						in_rectangle(x,z,feature_bounds[row],0) and
-						bay_member(row,x,z) then
+						bay_member(row,x,z,lake_offset(row.id,x,z)) then
 					return row
 				end
 			end
@@ -2086,7 +2164,8 @@ return function(dependencies)
 					elseif shape.kind == "tapered" then
 						local query_x,query_z=x,z
 						if shape.warped then query_x,query_z=warp(x,z) end
-						member=query_x and bay_member(shape.record,query_x,query_z) or false
+						member=query_x and bay_member(shape.record,query_x,query_z,
+							lake_offset(shape.record.id,query_x,query_z)) or false
 					elseif shape.kind == "polygon" then
 						local query_x,query_z=x,z
 						if shape.warped then query_x,query_z=warp(x,z) end
@@ -2112,6 +2191,12 @@ return function(dependencies)
 		end
 
 		local session = {}
+
+		-- Same offset/fade used by wet membership, bank shape and lake bottom.
+		function session.hydrology_edge_at(reach_id, x, z)
+			local weight = lake_weight(reach_id, x, z)
+			return lake_offset(reach_id, x, z, weight), weight
+		end
 
 		function session.warp_at(x, z)
 			local warped_x, warped_z = warp(x,z)
@@ -2609,3 +2694,5 @@ return function(dependencies)
 
 	return module
 end
+
+return simple_map_factory, new_lake_rules

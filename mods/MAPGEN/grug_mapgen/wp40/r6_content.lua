@@ -12,6 +12,15 @@ local function coast_profile_applies(profile, distance, width, freshwater)
 	return profile ~= nil and distance <= width
 end
 
+-- Sand follows the final height, not the selected run's unblended label.
+-- The half-node-per-column envelope admits broad beaches but excludes their
+-- high lateral cliff blends. No repeated neighbor/height lookup is required.
+local function low_sand_surface(terrain_y, water_y, distance, freshwater)
+	local maximum = freshwater and 4 or 12
+	if distance then maximum = math.min(maximum, 2 + math.floor(distance / 2)) end
+	return terrain_y <= water_y + maximum
+end
+
 local function wet_bed_names(id, bed)
 	if id == "grug_swamp" then
 		return {bed, bed, "default:gravel", "default:stone"}
@@ -735,9 +744,9 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 		return function(id, x, z, water_y, terrain_y)
 			local base = surface_by_id[id]
 			if not base then return nil end
-			local profile, distance, width, freshwater
+			local profile, distance, width, freshwater, run_key, target, profile_relief, shore_water
 			if type(planner_source.coast_profile_at) == "function" then
-				profile, distance, width, freshwater =
+				profile, distance, width, freshwater, run_key, target, profile_relief, shore_water =
 					planner_source.coast_profile_at(x, z)
 			end
 			local relief = planner_source.primary_relief_at and
@@ -759,6 +768,11 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 					local patch = math.floor((3 * noise(x, z, 32, 19349663) + detail) / 4)
 					return rocky_shores[id][patch < 512 and 1 or 2]
 				end
+			end
+			if dry and (profile == "beach" or id == "grug_beach") and
+					not low_sand_surface(terrain_y, shore_water or water_y or 1,
+						distance, freshwater) then
+				return rocky_shores[id][2]
 			end
 			if coast_profile_applies(profile, distance, width, freshwater) then
 				return coast_variants[id][profile]
@@ -821,5 +835,5 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 	return module
 end
 
-return content_factory, coast_surface_rule, {coast_profile_applies = coast_profile_applies,
+return content_factory, coast_surface_rule, {coast_profile_applies = coast_profile_applies, low_sand_surface = low_sand_surface,
 	wet_bed_names = wet_bed_names}

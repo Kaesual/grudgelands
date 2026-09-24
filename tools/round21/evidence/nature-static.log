@@ -1,0 +1,12 @@
+Sweep 1: no hits
+Sweep 2: no hits
+Sweep 3: no hits
+Sweep 4: mods/MAPGEN/grug_mapgen/wp40/simple_map.lua:747:					-- open envelope is |d| < gate_half, so the closed box this
+Sweep 5: no hits
+Parser / SETGLOBAL pass: mods/MAPGEN/grug_mapgen/wp40/height.lua
+Parser / SETGLOBAL pass: mods/MAPGEN/grug_mapgen/wp40/simple_map.lua
+Parser / SETGLOBAL pass: mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua
+Parser / SETGLOBAL pass: mods/MAPGEN/grug_mapgen/wp40/r6_content.lua
+Parser / SETGLOBAL pass: tools/round21/nature_micro.lua
+Parser / SETGLOBAL pass: tools/round21/nature_columns.lua
+Parser / SETGLOBAL pass: tools/wp40/quality/surface_fixture.lua

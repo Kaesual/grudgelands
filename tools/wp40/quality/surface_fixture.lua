@@ -75,8 +75,10 @@ return function(repo, expanded)
 				assert(deep.bed == base.bed and deep.bed_ref == base.bed_ref,
 					"deep ocean/channel bed material changed")
 				if base.id == "grug_beach" then
-					shore_materials[row.shore] = true
-					assert(row.shore_ref == content.content_ref(row.shore))
+					assert(row.top == "default:stone", "high beach surface remains sand")
+					local low_shore = select(base.id, x, z, nil, 2)
+					shore_materials[low_shore.shore] = true
+					assert(low_shore.shore_ref == content.content_ref(low_shore.shore))
 				end
 				rows[#rows + 1] = "wet/" .. key .. "\t" .. wet.bed .. "\n"
 			end
