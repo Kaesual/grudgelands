@@ -19,7 +19,7 @@ return function(repo)
 			landmarks = plot and {plot = {min = min, max = max}, entry = {x = 0, y = 1, z = -1},
 				sockets = {{id = "worker", role = "citizen", x = 0, y = 1, z = 0}}} or {}}
 	end
-	local runs = streets.attach({{id = "street", axis = "x", at = 10, from = -10, to = 10}})
+	local runs = streets.attach({{id = "street", axis = "x", at = 10, from = -10, to = 10, lamp_phase = 0}})
 	local source = {schema = "grug_wp13_capital_source_v1",
 		core = {schema = "micro_blueprint_v1", build = function() return build(false) end},
 		plots = {{id = "test", x = 0, z = 16, schema = "micro_blueprint_v1", build = function() return build(true) end}},

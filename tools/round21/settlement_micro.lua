@@ -74,10 +74,12 @@ return function(repo)
 	for _, natural in ipairs({2, 10}) do
 		assert(fitted.surface(5, 4, natural) == 6, "inner collar not flush")
 		assert(fitted.surface(13, 4, natural) == natural, "collar escaped bound")
-		for z = -4, -1 do assert(fitted.surface(0, z, natural) == 6, "entrance disconnected") end
+		for z = -3, -1 do assert(fitted.surface(0, z, natural) == 6, "entrance disconnected") end
 	end
 	fitted.plots[1].road_y = 8
-	assert(fitted.surface(0, -4, 2) == 8 and fitted.surface(0, -1, 2) == 7, "sloped approach lost road grade")
+	assert(fitted.surface(0, -4, 2) == 2 and fitted.surface(0, -1, 2) == 7,
+		"approach overwrote road or lost slope")
+	assert(fitted.surface(4, -4, 2) == 2, "collar buried carriageway")
 	local ramp = dofile(dir .. "/kezamba_ramp.lua")(dir)
 	local gate = dofile(dir .. "/kezamba_gate.lua")(dir)
 	local spec = {id = "gate", axis = "x", at = 0, from = 0, to = 16, width = 5, reach = 40}

@@ -1639,6 +1639,16 @@ function M.config(prepared, content, raw_sha256)
 							if high > run.to then high = run.to end
 							if low <= high then
 								metrics.overlay_calls = metrics.overlay_calls + 1
+								local clear_verge = {}
+								for _, span in ipairs(run.clear_verge or {}) do clear_verge[#clear_verge + 1] = span end
+								for _, record in ipairs(fittings.plots) do
+									if record.road_id == run.id and record.entry_x + 1 >= low and record.entry_x - 1 <= high then
+										prepare_approach(record)
+										if not record.unreachable then
+											clear_verge[#clear_verge + 1] = {record.entry_x - 1, record.entry_x + 1, 1}
+										end
+									end
+								end
 								local piece = blueprint.run({id = run.id, axis = run.axis,
 									anchor_y = anchor.y,
 									at = run.at, from = low, to = high,
@@ -1657,7 +1667,7 @@ function M.config(prepared, content, raw_sha256)
 									wet = local_wet,
 									junctions = run.junctions,
 									plain_verge = run.plain_verge,
-									clear_verge = run.clear_verge},
+									clear_verge = clear_verge},
 									local_surface)
 								-- Rule 2: the standards this run may not raise, by the
 								-- three cells each of them occupies (post, post, torch,

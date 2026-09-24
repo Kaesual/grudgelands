@@ -57,6 +57,22 @@ function M.new(plots, runs)
 				end
 			end
 		end
+		if chosen then
+			for _, run in ipairs(runs) do
+				if run.junctions then
+					local along = run.axis == "x" and x or z
+					local across = math.abs((run.axis == "x" and z or x) - run.at)
+					if along >= run.from and along <= run.to and
+							(across <= 2 or (across <= 3 and not is_access)) then
+						return natural
+					end
+					for _, joint in ipairs(run.junctions) do
+						if joint.min_x and x >= joint.min_x and x <= joint.max_x and
+								z >= joint.min_z and z <= joint.max_z then return natural end
+					end
+				end
+			end
+		end
 		return target or natural, chosen, is_access
 	end
 	return {surface = surface, plots = plots}
