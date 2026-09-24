@@ -137,6 +137,12 @@ local function loader(directory)
 							min_x = min_x, max_x = max_x,
 							min_z = min_z, max_z = max_z}
 					else
+						-- Complete the square around the two centre lines, including
+						-- the outside quarter of an L-shaped endpoint junction.
+						local across_x = one.axis == "x" and one or two
+						local across_z = one.axis == "z" and one or two
+						min_x, max_x = across_z.at - half, across_z.at + half
+						min_z, max_z = across_x.at - half, across_x.at + half
 						local range = {}
 						for _, run in ipairs({one, two}) do
 							if run.axis == "x" then
@@ -219,8 +225,16 @@ local function loader(directory)
 					end
 				end
 				local list = by_id[id]
+				local x0, x1, z0, z1
+				for _, member_id in ipairs(group.order) do
+					local run = runs[index_of[member_id]]
+					local range = group.range[member_id]
+					if run.axis == "x" then x0, x1 = range[1], range[2]
+					else z0, z1 = range[1], range[2] end
+				end
 				list[#list + 1] = {low = mine[1], high = mine[2],
-					members = members}
+					members = members, owner = group.order[1],
+					min_x = x0, max_x = x1, min_z = z0, max_z = z1}
 			end
 		end
 		-- Sorted by their own position, so the list a run is handed does not
@@ -414,11 +428,21 @@ local function loader(directory)
 	function M.attach(runs, width, barriers)
 		width = width or M.WIDTH
 		local junctions = M.junctions(runs, width)
-		local passages = M.barrier_spans(runs, barriers, width)
-		local clearances = M.verge_clearance(runs, width)
+		local extended = {}
+		for index, run in ipairs(runs) do
+			local copy = {}
+			for name, value in pairs(run) do copy[name] = value end
+			for _, joint in ipairs(junctions[run.id]) do
+				copy.from = math.min(copy.from, joint.low)
+				copy.to = math.max(copy.to, joint.high)
+			end
+			extended[index] = copy
+		end
+		local passages = M.barrier_spans(extended, barriers, width)
+		local clearances = M.verge_clearance(extended, width)
 		local out = {}
-		for index = 1, #runs do
-			local run = runs[index]
+		for index = 1, #extended do
+			local run = extended[index]
 			local copy = {}
 			for name, value in pairs(run) do copy[name] = value end
 			copy.junctions = junctions[run.id]

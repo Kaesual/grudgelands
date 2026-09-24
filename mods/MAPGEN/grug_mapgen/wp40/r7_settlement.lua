@@ -59,6 +59,8 @@ local module_dir = type(module_info)=="table" and type(module_info.source)=="str
 	module_info.source:sub(1,1)=="@" and module_info.source:sub(2):match("^(.*)[/\\][^/\\]*$")
 if not module_dir or module_dir=="" then module_dir=core.get_modpath("grug_mapgen").."/wp40" end
 local round20_catalog = dofile(module_dir.."/r20_poi_catalog.lua")
+local plot_approach = dofile(module_dir.."/../wp13/plot_approach.lua")
+local approach_palettes = dofile(module_dir.."/../wp13/palette.lua")
 
 -- The authorized volume per blueprint kind (contract sections 2.1 and 2.2).
 -- The start's numbers are the literal the first four increments typed in
@@ -1168,8 +1170,8 @@ function M.config(prepared, content, raw_sha256)
 		-- decides nothing: the deck height is what WP40 built, not what WP13
 		-- would like it to be.
 		local function walkable_values(x, z)
-			local _, _, _, _, _, terrain_y, water_y, _, _, functional_kind,
-				functional_y = column_values_at(x, z)
+			local water_class, _, _, _, _, terrain_y, water_y, _, _, functional_kind,
+				functional_y, feature_id = column_values_at(x, z)
 			if type(terrain_y) ~= "number" or terrain_y % 1 ~= 0 then
 				fail("final height at " .. x .. "," .. z .. " differs")
 			end
@@ -1190,9 +1192,12 @@ function M.config(prepared, content, raw_sha256)
 			-- all along, and one more return value is what it took to ask it.
 			if type(water_y) == "number" and water_y % 1 == 0 and
 					water_y > terrain_y then
-				return water_y, deck_y, true
+				return water_y, deck_y, true, true
 			end
-			return terrain_y, deck_y, false
+			local engineered = water_class ~= "land" or (functional_kind ~= nil and
+				not (functional_kind == "land_grade" and type(feature_id) == "string" and
+					feature_id:match("^anchor_%d+$")))
+			return terrain_y, deck_y, false, engineered
 		end
 
 		local metrics = {plan_calls = 0, settle_calls = 0, replay_calls = 0,
@@ -1323,6 +1328,100 @@ function M.config(prepared, content, raw_sha256)
 			end
 		end
 
+		local approaches
+		local approach_findings = {}
+		local road_states = {}
+		local function raw_road_values(state, x, z)
+			local wx, wz = anchor.x + x, anchor.z + z
+			local key = column_key(wx, wz)
+			if state.ground[key] == nil then
+				metrics.height_calls = metrics.height_calls + 1
+				local y, deck, wet = walkable_values(wx, wz)
+				state.ground[key], state.deck[key], state.wet[key] = y, deck or false, wet
+			end
+			return state.ground[key], state.deck[key] or nil, state.wet[key]
+		end
+		local function prepare_approach(record)
+			if record.sampled then return end
+			record.sampled = true
+			if not record.road_id then
+				approach_findings[#approach_findings + 1] = record.state.descriptor.id .. ": no bounded north street"
+				return
+			end
+			local road = road_states[record.road_id]
+			local state, run = road.state, road.run
+			local blueprint = state.blueprint
+			local function surface(x, z) return raw_road_values(state, x, z) end
+			local function overhead(x, z) local _, deck = raw_road_values(state, x, z); return deck end
+			local function wet(x, z) local _, _, value = raw_road_values(state, x, z); return value end
+			local piece = blueprint.run({id = run.id, axis = run.axis, at = run.at,
+				from = record.entry_x, to = record.entry_x, width = blueprint.width,
+				lamp_spacing = blueprint.lamp_spacing, lamp_phase = run.lamp_phase,
+				reach = blueprint.reach, anchor_y = anchor.y, junctions = run.junctions,
+				plain_verge = run.plain_verge, clear_verge = run.clear_verge,
+				overhead = overhead, wet = wet}, surface)
+			for _, cell in ipairs(piece.cells) do
+				if cell.x == record.entry_x and cell.z == run.at and cell.name ~= "air" then
+					record.road_y = math.max(record.road_y or cell.y, cell.y)
+				end
+			end
+			-- If another strip owns this junction, sample that owner at the
+			-- same column rather than infer its built height from bare terrain.
+			if record.road_y == nil then
+				for _, joint in ipairs(run.junctions or {}) do
+					if record.entry_x >= joint.low and record.entry_x <= joint.high then
+						local owner = road_states[joint.owner]
+						if owner then
+							local os = owner.run
+							local along = os.axis == "x" and record.entry_x or run.at
+							local part = blueprint.run({id = os.id, axis = os.axis, at = os.at,
+								from = along, to = along, width = blueprint.width,
+								lamp_spacing = blueprint.lamp_spacing, lamp_phase = os.lamp_phase,
+								reach = blueprint.reach, anchor_y = anchor.y, junctions = os.junctions,
+								plain_verge = os.plain_verge, clear_verge = os.clear_verge,
+								overhead = overhead, wet = wet}, surface)
+							for _, cell in ipairs(part.cells) do
+								if cell.x == record.entry_x and cell.z == run.at and cell.name ~= "air" then
+									record.road_y = math.max(record.road_y or cell.y, cell.y)
+								end
+							end
+						end
+					end
+				end
+			end
+			if record.road_y == nil or math.abs(record.road_y - record.y) > record.min_z - record.road_z then
+				record.unreachable = true
+				approach_findings[#approach_findings + 1] = record.state.descriptor.id .. ": approach exceeds one-node rise"
+			end
+		end
+		local function prepare_approaches()
+			if approaches then return approaches end
+			local plots, runs = {}, {}
+			for _, state in ipairs(states) do
+				if state.descriptor.kind == "reference" then
+					local base = base_of(state)
+					local marks = state.blueprint.landmarks
+					local plot = marks and marks.plot
+					local entry = marks and marks.entry
+					if plot and entry then
+						plots[#plots + 1] = {state = state, y = base.y,
+							min_x = base.x + plot.min.x - anchor.x,
+							max_x = base.x + plot.max.x - anchor.x,
+							min_z = base.z + plot.min.z - anchor.z,
+							max_z = base.z + plot.max.z - anchor.z,
+							entry_x = base.x + entry.x - anchor.x}
+					end
+				elseif state.descriptor.kind == "overlay" then
+					for _, run in ipairs(state.blueprint.runs) do
+						runs[#runs + 1] = run
+						road_states[run.id] = {run = run, state = state}
+					end
+				end
+			end
+			approaches = plot_approach.new(plots, runs)
+			return approaches
+		end
+
 		local bound_plan, bound_generation = false, 0
 		local tail = {key = profile.key}
 
@@ -1379,6 +1478,49 @@ function M.config(prepared, content, raw_sha256)
 			local reserved_x, reserved_y, reserved_z
 			if profile.reserve_anchor_root then
 				reserved_x, reserved_y, reserved_z = anchor.x, anchor.y + 1, anchor.z
+			end
+			-- Natural cut/fill precedes every authored plot and street. Work is
+			-- clipped to this owner; neighbouring chunks ask the same pure field.
+			local fittings = prepare_approaches()
+			local fit_palette = approach_palettes.new(profile.race)
+			local ground_ref, air_ref = refs[fit_palette.node("ground")], refs.air
+			local fill_ref = refs[fit_palette.node("subsoil")] or ground_ref
+			local path_ref = refs[fit_palette.maybe("castle_paving") or fit_palette.node("plaza")]
+			local step_ref = refs[fit_palette.maybe("castle_wall_stair") or fit_palette.node("roof_stair")]
+			local function fit_write(x, y, z, ref, face)
+				if not ref then fail("plot approach material is outside settlement palette") end
+				if context.inside_owner(x, y, z) then
+					local cid, param2 = content.resolve(ref, face or 0)
+					context.write_hearthpine(x, y, z, cid, param2, ref, 1)
+					written = written + 1
+				end
+			end
+			if #fittings.plots > 0 then
+				for z = context.min_z, context.max_z do
+					for x = context.min_x, context.max_x do
+						local lx, lz = x - anchor.x, z - anchor.z
+						if math.abs(lx) < 266 and math.abs(lz) < 266 then
+							-- Probe membership cheaply before querying terrain.
+							local _, record = fittings.surface(lx, lz, 0)
+							if record then
+								prepare_approach(record)
+								local natural, _, wet, engineered = walkable_values(x, z)
+								local top, _, access = fittings.surface(lx, lz, natural)
+								if not wet and (not engineered or access) and (top ~= natural or access) then
+									for y = natural, top - 1 do fit_write(x, y, z, fill_ref) end
+									local before = access and plot_approach.path_height(record, lz - 1) or top
+									local after = access and plot_approach.path_height(record, lz + 1) or top
+									if access and (top > before or top > after) then
+										fit_write(x, top, z, step_ref, after >= before and 0 or 2)
+									else fit_write(x, top, z, access and path_ref or ground_ref) end
+									for y = top + 1, math.max(natural, top + 3) do
+										fit_write(x, y, z, air_ref)
+									end
+								end
+							end
+						end
+					end
+				end
 			end
 			-- Cells first, in blueprint order (the core, then the plots), and the
 			-- overlay last: the contract's "a surface overlay written by the same
@@ -1498,6 +1640,7 @@ function M.config(prepared, content, raw_sha256)
 							if low <= high then
 								metrics.overlay_calls = metrics.overlay_calls + 1
 								local piece = blueprint.run({id = run.id, axis = run.axis,
+									anchor_y = anchor.y,
 									at = run.at, from = low, to = high,
 									width = blueprint.width,
 									lamp_spacing = blueprint.lamp_spacing,
@@ -1579,7 +1722,8 @@ function M.config(prepared, content, raw_sha256)
 				metrics.written = metrics.written + written
 			end
 			return {schema = profile.ledger_schema,
-				blueprint_sha256 = config.identity.sha256, written = written}
+				blueprint_sha256 = config.identity.sha256, written = written,
+				approach_findings = approach_findings}
 		end
 
 		function tail.metrics(self)
@@ -1596,7 +1740,7 @@ function M.config(prepared, content, raw_sha256)
 				overlay_overlaps = metrics.overlay_overlaps,
 				overlay_lamps_dropped = metrics.overlay_lamps_dropped,
 				overlay_cells_dropped = metrics.overlay_cells_dropped,
-				blueprint_sha256 = config.identity.sha256}
+				blueprint_sha256 = config.identity.sha256, approach_findings = approach_findings}
 		end
 		return tail
 	end

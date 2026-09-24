@@ -1086,15 +1086,14 @@ local function settlement_factory()
 			-- CAPITALS. A capital fitting grades its whole 704-node blend square
 			-- and everything inside it was `default:stone` before, which is why
 			-- all six looked like the same slab. They keep the surface of their
-			-- own zone's biomes now, exactly as a start does. Anchors 13 and up
-			-- are ordinary POIs and keep the path surface.
-			local dry_start_grade = functional_kind == "land_grade" and
+			-- own zone's biomes. Ordinary POI collars use this same natural
+			-- skin; their authored buildings and short paving overwrite it later.
+			local dry_anchor_grade = functional_kind == "land_grade" and
 				type(functional_feature_id) == "string" and
-				(functional_feature_id:match("^anchor_00[1-9]$") ~= nil or
-					functional_feature_id:match("^anchor_01[0-2]$") ~= nil) and
+				functional_feature_id:match("^anchor_%d+$") ~= nil and
 				(water_y == nil or water_y <= terrain_y)
 			if functional_kind == "anchor_platform" or
-					(functional_kind == "land_grade" and not dry_start_grade) or
+					(functional_kind == "land_grade" and not dry_anchor_grade) or
 					functional_kind == "causeway" or
 					(functional_kind == "ford" and y == terrain_y) or
 					(functional_kind == "tunnel_floor" and functional_y <= y and
@@ -2248,7 +2247,7 @@ local function settlement_factory()
 					local alternate_ref = plan.column_values[base + 10]
 					local filler_depth = plan.column_values[base + 11]
 					local dust_ref = plan.column_values[base + 12]
-					local dry_start_grade
+					local dry_anchor_grade
 					if top_ref ~= 0 and terrain_y >= min_y and terrain_y <= max_y and
 							surface_skin_column[column] == 2 then
 						local index = index_at(x, terrain_y, z)
@@ -2262,13 +2261,12 @@ local function settlement_factory()
 						if predecessor == 22 then
 							local _, _, _, _, _, _, water_y, _, _, functional_kind, _,
 								functional_feature_id = planner_source.column_values_at(x, z)
-							dry_start_grade = functional_kind == "land_grade" and
+							dry_anchor_grade = functional_kind == "land_grade" and
 								type(functional_feature_id) == "string" and
-								(functional_feature_id:match("^anchor_00[1-9]$") ~= nil or
-									functional_feature_id:match("^anchor_01[0-2]$") ~= nil) and
+								functional_feature_id:match("^anchor_%d+$") ~= nil and
 								(water_y == nil or water_y <= terrain_y)
 						end
-						if predecessor == 28 or dry_start_grade and predecessor == 22 then
+						if predecessor == 28 or dry_anchor_grade and predecessor == 22 then
 							local opcode = surface_kind == 1 and 4 or
 								(surface_kind == 2 and 3 or 1)
 							write_intent(x, terrain_y, z,
@@ -2280,16 +2278,15 @@ local function settlement_factory()
 						if y >= min_y and y <= max_y then
 							local rbase = run_at(plan, column, y)
 							local predecessor = rbase and plan.r5_plan.run_values[rbase + 4]
-							if predecessor == 21 and dry_start_grade == nil then
+							if predecessor == 21 and dry_anchor_grade == nil then
 								local _, _, _, _, _, _, water_y, _, _, functional_kind, _,
 									functional_feature_id = planner_source.column_values_at(x, z)
-								dry_start_grade = functional_kind == "land_grade" and
+								dry_anchor_grade = functional_kind == "land_grade" and
 									type(functional_feature_id) == "string" and
-									(functional_feature_id:match("^anchor_00[1-9]$") ~= nil or
-										functional_feature_id:match("^anchor_01[0-2]$") ~= nil) and
+									functional_feature_id:match("^anchor_%d+$") ~= nil and
 									(water_y == nil or water_y <= terrain_y)
 							end
-							if predecessor == 27 or dry_start_grade == true and predecessor == 21 then
+							if predecessor == 27 or dry_anchor_grade == true and predecessor == 21 then
 								local index = index_at(x, y, z)
 								local class_id = classify(final_data[index], final_param2[index])
 								if filler_ref ~= 0 and class_id ~= CLASS_AIR and

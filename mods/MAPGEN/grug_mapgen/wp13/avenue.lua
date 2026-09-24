@@ -192,7 +192,7 @@ local function loader(directory)
 	-- the standard is built from, so a change to any of them cannot leave this
 	-- list behind.
 	function M.palette_names(palette)
-		local names, seen, list = {paving(palette), kerb(palette),
+		local names, seen, list = {"air", paving(palette), kerb(palette),
 			tread(palette), plank(palette), railing(palette), pier(palette),
 			palette.node("post"), palette.node("light_post")}, {}, {}
 		for index = 1, #names do
@@ -432,6 +432,12 @@ local function loader(directory)
 		-- composition ever authors two crossings that close together.
 		local junctions = spec.junctions
 		local floor = {}
+		local function junction_at(x, z)
+			for _, joint in ipairs(junctions or {}) do
+				if joint.min_x and x >= joint.min_x and x <= joint.max_x and
+						z >= joint.min_z and z <= joint.max_z then return joint end
+			end
+		end
 		if junctions and #junctions > 0 then
 			-- The other run's bare envelope, over the window of ITS OWN axis
 			-- that can still reach the square. Its lanes are read here and
@@ -592,6 +598,24 @@ local function loader(directory)
 			end
 		end
 
+		-- Exact endpoint landings. Clamp the existing one-node profile between
+		-- the two cones of each fixed landing; this permits a bounded cut as
+		-- well as fill and cannot introduce a two-node step.
+		for _, landing in ipairs(spec.landings or {}) do
+			for _, other in ipairs(spec.landings) do
+				local gap = math.max(0, math.abs(landing.p - other.p) -
+					(landing.half or 0) - (other.half or 0))
+				if math.abs(landing.y - other.y) > gap then
+					error("wp13 avenue: incompatible fixed landings on " .. tostring(spec.id), 0)
+				end
+			end
+			for p = low_end, high_end do
+				local distance = math.max(0, math.abs(p - landing.p) - (landing.half or 0))
+				level[p] = math.max(landing.y - distance,
+					math.min(level[p], landing.y + distance))
+			end
+		end
+
 		-- ------------------------------------------------------------------
 		-- 4. THE CELLS.
 		--
@@ -655,7 +679,8 @@ local function loader(directory)
 			if wet_here then bridged = bridged + 1 end
 			for offset = -half, half do
 				local x, z = column(p, offset)
-				local surface_name = (offset == -half or offset == half) and
+				local joint = junction_at(x, z)
+				local surface_name = (not joint and (offset == -half or offset == half)) and
 					KERB or PAVING
 				-- WHAT THE COLUMN STANDS ON. Ordinarily the ground it was read
 				-- from. A column the crossing rule raised stands on the DECK
@@ -670,6 +695,9 @@ local function loader(directory)
 					base = spanned_by
 				end
 				local raise = top - base
+				if spec.landings and base > top then
+					buf:clear(x, top + 1, z, x, math.max(base, top + 3), z)
+				end
 				if raise > 0 then raised_columns = raised_columns + 1 end
 				if raise > 0 and not wetlane[offset][p] and
 						(raise < M.MIN_CLEAR or on_deck) then
@@ -682,7 +710,7 @@ local function loader(directory)
 						end
 					end
 				end
-				if step then
+				if step and not joint then
 					-- A one-node change is walked as the two halves of a stair.
 					-- The raised half faces the higher neighbour, which is the
 					-- way a walker climbs it; a column higher than both is
@@ -853,7 +881,13 @@ local function loader(directory)
 
 		local source, count = buf:cells()
 		local cells = {}
-		for index = 1, count do cells[index] = source[index] end
+		for index = 1, count do
+			local cell = source[index]
+			local joint = junction_at(cell.x, cell.z)
+			-- Incident strips stop at the square's ports. One run emits its
+			-- complete square, so different-height voxel stacks cannot overlap.
+			if not joint or joint.owner == spec.id then cells[#cells + 1] = cell end
+		end
 		table.sort(cells, function(a, b)
 			if a.z ~= b.z then return a.z < b.z end
 			if a.y ~= b.y then return a.y < b.y end
