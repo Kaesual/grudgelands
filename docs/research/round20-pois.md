@@ -108,3 +108,15 @@ and rare scene. Walk every doorway and work aisle; confirm actors and resource
 access are unobstructed. Inspect Whitebridge/Whisperreed shipwright hulls. Speak
 to separate cooks and trainers in a start and capital, use the cook's oven,
 and follow the level10 capital introduction to the existing envoy.
+
+## Construction corrections
+
+The first central final construction exposed an anchor034 flower extending into
+the central clearance; independent source review also found the missing anchor077
+slab dispatcher. The flower pair now sits one cell west, and the tombroad scene
+has its authored three-cell slab remnant. A specifically authorized builder-only
+LuaJIT reproduction constructed all70 profiles successfully, exercising every
+prop dispatch, emitted-cell envelope assertion and central5×5×3 clearance.
+No manifest, planner, engine or PUC runtime was repeated in this correction.
+Both changed Lua files pass the plain5.1 parser, SETGLOBAL and five sweeps.
+Full integration and doorway evidence remain owned by the central final run.

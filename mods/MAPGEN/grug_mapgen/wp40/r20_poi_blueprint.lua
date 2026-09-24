@@ -175,6 +175,8 @@ return function(options, profile)
 			at(0,1,0,"default:dry_shrub",4);at(1,1,0,"default:dry_shrub",4)
 		elseif kind=="flower" then
 			at(0,1,0,"grug_decor:xdecor_potted_viola");at(1,1,0,"grug_decor:xdecor_potted_dandelion_yellow")
+		elseif kind=="slab" then
+			for dz=-1,1 do at(0,1,dz,p.slab) end
 		elseif kind=="grave" then column(0,0,2,p.stone);at(0,1,1,p.slab)
 		elseif kind=="totem" then column(0,0,3,p.post);at(0,3,0,"grug_mapgen:poi_display_"..spec.race)
 		elseif kind=="rail" or kind=="oar" or kind=="tools" then
