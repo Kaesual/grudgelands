@@ -29,7 +29,7 @@ Research and historical evidence: **[docs/research/README.md](docs/research/READ
   ordinary implementation/review uses native Sol, with native Astra allowed for
   hard/performance-critical work. This session restriction can change only by
   a later explicit user instruction. Durable active work state:
-  `docs/planning/round20-state.md` (Round 20 delivered; await playtest).
+  `docs/planning/round21-state.md` (Round 21 delivered; await playtest).
 
 ## Fresh-server development mode
 
@@ -67,10 +67,13 @@ Research and historical evidence: **[docs/research/README.md](docs/research/READ
 
 ## Active work and game status
 
-**Round 21 is active (user Go 2026-09-24).** Read
-[the execution ledger](docs/planning/round21-state.md) before starting or resuming.
-Root Astra coordinates native Astra/Sol lanes. Minimal mapgen tests, maximum
-six CPU workers for this round, no full-world/census fleets. No remote push.
+**Round 21 delivered locally, 2026-09-24.** Reviewed terrain/access, mining,
+furnaces, aquatic detail and playtest fixes merged as `96c40fa3` and synchronized
+from main. [Receipt](docs/research/round21-completion.md),
+[playtest checklist](docs/research/round21-playtest.md),
+[execution ledger](docs/planning/round21-state.md). All native implementation
+agents finished. Recorded larger mapgen checks cost about 95 CPU seconds; no
+full-world/census fleets. No remote push. Await user GUI acceptance.
 
 
 **Round 20 delivered locally, 2026-09-24:** POI/quest expansion and playtest
@@ -91,7 +94,7 @@ No Claude task is authorized. The previous documentation-only round
 is complete: [receipt](docs/maintenance/documentation-round.md).
 
 Game delivery and pending acceptance: [project status](docs/STATUS.md).
-Round 20 and earlier follow-ups are locally delivered; GUI acceptance remains user-run.
+Round 21 and earlier follow-ups are locally delivered; GUI acceptance remains user-run.
 The current local-development Go does not authorize a remote push or bypass a recorded
 automatic approval-review rejection. Current local tracking evidence is in STATUS;
 older round receipts are historical delivery observations.

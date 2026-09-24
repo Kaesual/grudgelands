@@ -1,6 +1,6 @@
 # Round 21 execution state
 
-Updated 2026-09-24. **ACTIVE: user Go received.** Root GPT-6 Astra orchestrates.
+Updated 2026-09-24. **DELIVERED LOCALLY; user playtest pending.** Root GPT-6 Astra coordinated.
 Integration branch `wp21-round21`, baseline `b5cf84d0`.
 Plans: [round scope](round21-mapgen-and-playtest-fixes.md),
 [mining/furnaces/ammunition](round21-mining-furnaces.md).
@@ -166,3 +166,12 @@ progress update or compaction as completion.
 
 Final independent evidence review: nature Astra PASS, all 990 hashes verified;
 no open blocker. Local merge/sync authorized by the user's round Go.
+
+### Local delivery receipt
+
+Merged to main as `96c40fa3` and successfully synchronized with
+`tools/sync_to_luanti.sh` on 2026-09-24. All implementation and review tasks are
+complete; earlier pending checkpoints above are historical. No remote push or
+fetch; local `origin/main` remains `e346ec48`. Next action is the user's fresh
+world [playtest](../research/round21-playtest.md), not additional autonomous
+implementation or another test fleet.

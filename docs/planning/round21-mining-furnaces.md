@@ -1,7 +1,7 @@
 # Round 21 discussion: mining progression, density and furnaces
 
-Date: 2026-09-24. Status: **approved and active, including corrected Gold
-and Bronze-only basic arrows; user Go received**. See [state](round21-state.md).
+Date: 2026-09-24. Status: **delivered locally, including corrected Gold
+and Bronze-only basic arrows; user playtest pending**. See [state](round21-state.md).
 Extends [Round 21](round21-mapgen-and-playtest-fixes.md), replacing its initial
 blanket shallow doubling and starter-log quest recommendations.
 

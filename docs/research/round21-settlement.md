@@ -1,7 +1,8 @@
 # Round 21 constructed-ground candidate
 
-2026-09-24. G1 implementation candidate; independent review, combined real
-manifest/writer checks and GUI acceptance are still pending.
+2026-09-24. G1 author receipt. Independent review and combined real
+manifest/writer checks passed in the [integrated delivery](round21-completion.md).
+GUI acceptance remains pending; the implementation-stage notes below are historical.
 
 ## Changes
 

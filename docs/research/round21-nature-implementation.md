@@ -1,7 +1,7 @@
 # Round 21 nature implementation
 
 G2, 2026-09-24. Author: native Astra; independent review and integrated final
-portable pair remain coordinator-owned. Branch `wp21-nature`, baseline
+portable pair passed in the [coordinator receipt](round21-completion.md). Branch `wp21-nature`, baseline
 `fbd23c7b`. No engine, full-world generation, VM owner or seed fleet was run.
 
 ## Delivered behavior

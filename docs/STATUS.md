@@ -2,10 +2,11 @@
 
 Updated 2026-09-24. This is the delivery pointer, not another game specification.
 
-- **Round 21 active:** user Go received, including corrected Gold densities,
-  Bronze-only cheap arrows and 10-second metal smelts. [Plan](planning/round21-mapgen-and-playtest-fixes.md),
-  [execution state](planning/round21-state.md). Minimal mapgen checks; at most
-  six CPU workers. No remote push authorized.
+- **Round 21 delivered locally:** terrain/POI access, resource calibration,
+  furnaces, aquatic detail and feedback fixes. Independently reviewed, final
+  gates passed, merged as `96c40fa3` and synchronized to Luanti on 2026-09-24.
+  [Receipt](research/round21-completion.md), [playtest](research/round21-playtest.md),
+  [execution state](planning/round21-state.md). No remote push.
 - **Round 20 delivered locally:** 240 quests, all 100 anchor art slots, contextual
   input and equipment/UX fixes. Independently reviewed, final gates passed,
   merged as `8308229f` and synchronized to Luanti on 2026-09-24. No push.
@@ -15,7 +16,7 @@ Updated 2026-09-24. This is the delivery pointer, not another game specification
 - **Documentation consolidation:** complete with independent Astra PASS;
   [receipt and coverage](maintenance/documentation-round.md). Remaining decisions
   and code/design discrepancies: [findings](maintenance/findings.md).
-- **Latest game:** Round 20 includes the earlier Round 19 UI, pursuit/idle-recovery
+- **Latest game:** Round 21 includes Round 20 and earlier Round 19 UI, pursuit/idle-recovery
   and full-speed preparation follow-ups. GUI acceptance of the new round is
   pending; fresh-world development remains in force.
 - **Technical reviews/gates:** recorded PASS for those delivered candidates;
@@ -30,9 +31,10 @@ Updated 2026-09-24. This is the delivery pointer, not another game specification
   [full-speed follow-up](research/pregen-fullspeed.md). No remote deployment
   claimed. Prior measurement: [scan-budget follow-up](research/pregen-scan-budget.md).
 - **GUI acceptance:** user-run and pending where not explicitly accepted.
-  [R20 checklist](research/round20-playtest.md) includes the new input limits.
+  [R21 checklist](research/round21-playtest.md) covers the new changes; the
+  R20 input limits remain documented in its earlier checklist.
 - **Remote observation:** local `origin/main` remains `e346ec48`. No network
-  fetch/push occurred in this round; the new Round 20 commits are local.
+  fetch/push occurred in this round; the Round 20 and Round 21 commits are local.
 - **Release:** unreleased fresh-server development. The Nether is expansion
   content. [First-public-release gates](../BACKLOG.md#first-public-release-gates)
   remain open.

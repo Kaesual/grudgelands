@@ -1,7 +1,8 @@
 # Round 21: terrain integration and playtest fixes
 
 Date: 2026-09-24. Coordinator: GPT-6 Astra.
-Status: **approved and active; user Go received 2026-09-24**.
+Status: **delivered locally, 2026-09-24; user playtest pending**.
+[Completion receipt](../research/round21-completion.md).
 Execution ledger: [Round 21 state](round21-state.md).
 Baseline: local `main` at `b5cf84d0`, Round 20 delivered.
 

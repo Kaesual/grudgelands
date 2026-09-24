@@ -1,7 +1,8 @@
 # Round 21 integration receipt
 
 Date: 2026-09-24. Coordinator GPT-6 Astra. Baseline `b5cf84d0`.
-**Technical gates passed; final local merge/sync pending.**
+**Delivered locally: reviewed and merged as `96c40fa3`, synchronized to the
+local Luanti game on 2026-09-24. User GUI acceptance remains pending.**
 [Execution ledger](../planning/round21-state.md),
 [approved plan](../planning/round21-mapgen-and-playtest-fixes.md),
 [playtest](round21-playtest.md).
@@ -102,4 +103,6 @@ Evidence: [real integration](../../tools/round21/evidence/integration.log),
 Final independent evidence review: native Astra `r21_nature_preflight` verified
 all 990 hashes, final parity outputs, three-owner integration, static matches
 and unchanged reference pins. **PASS, no open blocker.** No runtime repeated.
-Local merge/sync receipt follows below.
+Local merge `96c40fa3` completed cleanly; `tools/sync_to_luanti.sh` from main
+reported success. No production bytes changed after the final gates. No remote
+fetch/push; local `origin/main` remains `e346ec48`.
