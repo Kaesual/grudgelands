@@ -117,6 +117,18 @@ check(dual:get_stack("output",1):get_name()=="alloy" and dual_state.fuel==76,
 local fuel_fraction,progress_fraction=automatic.fractions("dual_furnace",dual,dual_state)
 check(fuel_fraction==0.95 and progress_fraction==0,"fractions")
 
+-- Two private viewers contribute only cosmetic deadlines. The later expiry
+-- wins, survives a serialize/reload-shaped numeric copy and expires without
+-- advancing either private inventory.
+local first_deadline=automatic.personal_light_deadline(100,0,15)
+local second_deadline=automatic.personal_light_deadline(101,first_deadline,80)
+check(first_deadline==115 and second_deadline==181,"personal light max deadline")
+local reloaded=tonumber(tostring(second_deadline))
+check(automatic.personal_light_active(180,reloaded) and
+	not automatic.personal_light_active(181,reloaded),"personal light reload expiry")
+check(dual:get_stack("output",1):get_name()=="alloy" and dual_state.fuel==76,
+	"cosmetic deadline processed private inventory")
+
 local brewing=inventory({mixture=1,fuel=1,output=2})
 brewing:set_stack("mixture",1,"brewinput");brewing:set_stack("fuel",1,"brewfuel")
 local brewing_state={}

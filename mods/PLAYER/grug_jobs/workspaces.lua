@@ -5,6 +5,7 @@ local viewers = {}
 local sequence = 0
 local FORM = "grug_jobs:workspace"
 local PREFIX = "grug_jobs:workspace:"
+local PERSONAL_BURN_UNTIL = "grug_jobs:personal_burn_until"
 local refresh
 
 local function node_station(pos)
@@ -36,6 +37,25 @@ end
 
 local function inputs(ctx)
 	return ctx.personal and ctx.inv or core.get_meta(ctx.pos):get_inventory()
+end
+
+-- Private jobs keep their inventories private, but a burning furnace is a
+-- shared world visual. Record only the latest cosmetic expiry at the node;
+-- the node timer never scans or advances a player's saved workspace.
+local function extend_personal_light(ctx)
+	if not ctx.personal or (ctx.station ~= "furnace" and
+			ctx.station ~= "dual_furnace") or (ctx.process.fuel or 0) <= 0 then return end
+	local meta = core.get_meta(ctx.pos)
+	local deadline = automatic.personal_light_deadline(core.get_gametime(),
+		meta:get_int(PERSONAL_BURN_UNTIL), ctx.process.fuel)
+	if deadline > meta:get_int(PERSONAL_BURN_UNTIL) then
+		meta:set_int(PERSONAL_BURN_UNTIL, deadline)
+	end
+	local node = core.get_node(ctx.pos)
+	local active = grug_jobs.station_info(ctx.station).node .. "_active"
+	if node.name ~= active then node.name = active core.swap_node(ctx.pos, node) end
+	local timer = core.get_node_timer(ctx.pos)
+	if not timer:is_started() then timer:start(1) end
 end
 
 local function save(ctx)
@@ -81,6 +101,7 @@ local function advance(ctx)
 	local before = inventory_signature(ctx)
 	local fuel, progress, recipe = ctx.process.fuel, ctx.process.progress, ctx.process.recipe
 	automatic.advance(ctx.station, ctx.inv, ctx.process, elapsed)
+	extend_personal_light(ctx)
 	local changed_inventory = before ~= inventory_signature(ctx)
 	-- Updating only the idle clock must not dirty the physical node every tick.
 	if changed_inventory or fuel ~= ctx.process.fuel or progress ~= ctx.process.progress or
@@ -209,6 +230,7 @@ end
 local function changed(ctx)
 	if ctx.personal and (ctx.station == "furnace" or ctx.station == "dual_furnace") then
 		automatic.advance(ctx.station, ctx.inv, ctx.process, 0)
+		extend_personal_light(ctx)
 	end
 	save(ctx)
 	refresh_position(ctx.pos)
@@ -446,11 +468,20 @@ local function install_node(name, station)
 			automatic.advance(station, meta:get_inventory(), state, elapsed)
 			meta:set_string("grug_jobs:process", core.serialize(state))
 			local running = automatic.running(station, meta:get_inventory(), state)
+			local personal_lit = false
+			if station == "furnace" or station == "dual_furnace" then
+				personal_lit = automatic.personal_light_active(core.get_gametime(),
+					meta:get_int(PERSONAL_BURN_UNTIL))
+				if not personal_lit and meta:get_int(PERSONAL_BURN_UNTIL) ~= 0 then
+					meta:set_int(PERSONAL_BURN_UNTIL, 0)
+				end
+			end
 			local node = core.get_node(pos)
 			local inactive = grug_jobs.station_info(station).node
-			local wanted = (state.fuel or 0) > 0 and inactive .. "_active" or inactive
+			local wanted = ((state.fuel or 0) > 0 or personal_lit) and
+				inactive .. "_active" or inactive
 			if node.name ~= wanted then node.name = wanted core.swap_node(pos, node) end
-			return running
+			return running or personal_lit
 		end,
 		on_receive_fields = function() end,
 	})
@@ -467,7 +498,23 @@ core.register_on_mods_loaded(function()
 	end
 	core.register_lbm({name = ":grug_jobs:workspace_activation", label = "Activate station workspaces",
 		nodenames = names, run_at_every_load = true,
-		action = function(pos) initialize(pos, node_station(pos)) end})
+		action = function(pos)
+			local station = node_station(pos)
+			initialize(pos, station)
+			if station == "furnace" or station == "dual_furnace" then
+				local meta = core.get_meta(pos)
+				local personal_lit = automatic.personal_light_active(core.get_gametime(),
+					meta:get_int(PERSONAL_BURN_UNTIL))
+				if not personal_lit then meta:set_int(PERSONAL_BURN_UNTIL, 0) end
+				local state = core.deserialize(meta:get_string("grug_jobs:process")) or {}
+				local shared_lit = (state.fuel or 0) > 0
+				local node = core.get_node(pos)
+				local inactive = grug_jobs.station_info(station).node
+				local wanted = (shared_lit or personal_lit) and inactive .. "_active" or inactive
+				if node.name ~= wanted then node.name = wanted core.swap_node(pos, node) end
+				if shared_lit or personal_lit then core.get_node_timer(pos):start(1) end
+			end
+		end})
 end)
 
 return workspaces

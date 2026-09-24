@@ -62,6 +62,18 @@ end
 
 automatic.fit = fit
 
+function automatic.personal_light_deadline(now, current, remaining_fuel)
+	now = tonumber(now) or 0
+	current = tonumber(current) or 0
+	remaining_fuel = tonumber(remaining_fuel) or 0
+	if remaining_fuel <= 0 then return current end
+	return math.max(current, now + math.ceil(remaining_fuel))
+end
+
+function automatic.personal_light_active(now, deadline)
+	return (tonumber(deadline) or 0) > (tonumber(now) or 0)
+end
+
 function automatic.advance(station, inv, state, elapsed)
 	local output_list = station == "furnace" and "dst" or "output"
 	state.fuel = state.fuel or 0

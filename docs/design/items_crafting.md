@@ -386,7 +386,10 @@ one distinct charcoal item in 10s. New fuel ignites only with a valid recipe
 and output space; the current piece burns out even if work stops. Continued
 processing refuels without an intervening dark tick. Flame shows remaining
 burn time; arrow shows recipe progress. Personal/shared inventory semantics
-remain unchanged. Charcoal does not replace mined coal in Steel or coal quests.
+remain unchanged. Active personal jobs illuminate the physical furnace until
+the latest observed private fuel piece expires; only that cosmetic deadline is
+shared, while each player's flame and progress remain private. Charcoal does
+not replace mined coal in Steel or coal quests.
 
 Two smelting nodes. The **normal furnace** does single-input smelting;
 the **dual furnace** (ported from LotT, §1.1) does two-input alloys.
