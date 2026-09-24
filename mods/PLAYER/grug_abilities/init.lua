@@ -1733,9 +1733,9 @@ end
 local function slot_source(player, slot)
 	local stack
 	if slot == "offhand" then
-		stack = grug_core.get_equipped_offhand(player)
+		stack = grug_inventory.get_cosmetic_offhand(player)
 	else
-		stack = grug_core.get_equipped_weapon(player)
+		stack = grug_inventory.get_cosmetic_weapon(player)
 	end
 	if not stack or stack:is_empty() then
 		return ""

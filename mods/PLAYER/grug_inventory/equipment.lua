@@ -353,6 +353,13 @@ core.register_allow_player_inventory_action(function(player, action, inventory, 
 			return 0
 		end
 		if to_list == WEAPON_LIST then
+			if not grug_gear.can_equip_weapon(player, stack) then
+				local name = claim_warn(player, "weapon_class:" .. stack:get_name())
+				if name then core.chat_send_player(name, core.colorize(WARN_COLOR,
+					"Your class cannot equip " .. piece_name(stack) .. ". " ..
+					grug_gear.usable_by(stack))) end
+				return 0
+			end
 			local allowed, required, current =
 				grug_core.can_use_item_level(player, stack)
 			if not allowed then
@@ -369,9 +376,7 @@ core.register_allow_player_inventory_action(function(player, action, inventory, 
 		elseif to_list == WEAPON_LIST or to_list == OFFHAND_LIST then
 			-- The two-handed rule, both directions (B4). Armor lists and hand
 			-- lists are disjoint, hence the elseif: no equip pays for both
-			-- checks. NB the rank gate above stays armor-lists-only, and there
-			-- is no class gate on the weapon slot at all (B3) — a Mage may
-			-- equip a greataxe and simply gains nothing from it.
+			-- checks. The weapon-family permission was checked above.
 			if not allow_hands(player, inventory, to_list, stack, action, info) then
 				return 0
 			end
@@ -527,9 +532,19 @@ local function cached_slot_item(player, list)
 	return ItemStack(entry)
 end
 
+-- Cosmetic accessors include broken equipment; callers receive owned copies.
+function grug_inventory.get_cosmetic_weapon(player)
+	return cached_slot_item(player, WEAPON_LIST)
+end
+
+function grug_inventory.get_cosmetic_offhand(player)
+	return cached_slot_item(player, OFFHAND_LIST)
+end
+
 function grug_inventory.get_equipped_weapon(player)
 	local stack = cached_slot_item(player, WEAPON_LIST)
-	return stack and not grug_core.equipment_is_broken(stack) and stack or nil
+	return stack and grug_gear.can_equip_weapon(player, stack) and
+		not grug_core.equipment_is_broken(stack) and stack or nil
 end
 
 function grug_inventory.get_equipped_offhand(player)
@@ -588,10 +603,14 @@ grug_classes.register_on_class_chosen(function(player)
 	end
 	local rank = grug_classes.get_armor_rank(player)
 	local removed, stuck = {}, {}
-	for _, list in ipairs(ARMOR_LISTS) do
+	local restricted_lists = {WEAPON_LIST}
+	for _, list in ipairs(ARMOR_LISTS) do restricted_lists[#restricted_lists + 1] = list end
+	for _, list in ipairs(restricted_lists) do
 		local stack = inv:get_stack(list, 1)
-		if not stack:is_empty() and
-				core.get_item_group(stack:get_name(), "grug_armor_class") > rank then
+		local disallowed = list == WEAPON_LIST and
+			not grug_gear.can_equip_weapon(player, stack) or
+			core.get_item_group(stack:get_name(), "grug_armor_class") > rank
+		if not stack:is_empty() and disallowed then
 			local label = piece_name(stack)
 			-- add_item first, then write the LEFTOVER back into the slot: the
 			-- piece is either in `main` or still in the slot, never nowhere
@@ -677,7 +696,8 @@ local CLASS_STARTER_WEAPON = grug_inventory.STARTER_WEAPON
 local function place_starter_weapon(player, inv, stack)
 	local free_hands = inv:get_stack(OFFHAND_LIST, 1):is_empty() or
 		grug_inventory.hands_of(stack) < 2
-	if free_hands and inv:get_stack(WEAPON_LIST, 1):is_empty() then
+	if free_hands and grug_gear.can_equip_weapon(player, stack) and
+			inv:get_stack(WEAPON_LIST, 1):is_empty() then
 		inv:set_stack(WEAPON_LIST, 1, stack)
 		return "weapon"
 	end

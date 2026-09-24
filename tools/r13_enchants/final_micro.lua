@@ -4,7 +4,8 @@ return function(repo)
 	local globals = {"core", "PcgRandom", "ItemStack", "grug_items",
 		"grug_gear", "grug_mobs", "grug_inventory", "grug_classes",
 		"grug_xp", "grug_core", "grug_zones", "mobs", "grug_jobs",
-		"grug_professions", "grug_artisans", "grug_traders", "grug_materials"}
+		"grug_professions", "grug_artisans", "grug_traders", "grug_materials",
+		"grug_repair", "grug_visuals", "grug_money"}
 	local saved = {}
 	for index = 1, #globals do saved[globals[index]] = rawget(_G, globals[index]) end
 	local function restore()
@@ -107,7 +108,7 @@ return function(repo)
 		return chunk and chunk() or nil
 	end
 	function core.colorize(_, text) return text end
-	function core.get_us_time() return 123456789 end
+	function core.get_us_time() return 123588789 end
 	function core.get_gametime() return 123 end
 	function core.add_item(_, stack)
 		ground_drops[#ground_drops + 1] = ItemStack(stack)
@@ -241,8 +242,12 @@ return function(repo)
 	function core.get_modpath(name)
 		return repo .. "/mods/" .. (name == "grug_jobs" and "PLAYER/" or "ITEMS/") .. name
 	end
-	function core.register_tool(name, def) definitions[name:gsub("^:", "")] = def end
-	core.register_craftitem = core.register_tool
+	function core.register_tool(name, def)
+		def.type = "tool"; definitions[name:gsub("^:", "")] = def
+	end
+	function core.register_craftitem(name, def)
+		def.type = "craft"; definitions[name:gsub("^:", "")] = def
+	end
 	function core.override_item(name, changes)
 		local def = assert(definitions[name], name)
 		for key, value in pairs(changes) do def[key] = value end
@@ -311,7 +316,7 @@ return function(repo)
 	end
 	check(grug_jobs.profession_level(player, "weaponsmith") == 6, "profession progression setup")
 	local operations = grug_jobs.station_operations()
-	check(#operations == 456, "complete named catalog must have 456 operations")
+	check(#operations == 588, "complete named catalog must have 588 operations")
 	local masters = {weaponsmith = player}
 	local tested = 0
 	for _, recipe in ipairs(operations) do
@@ -339,8 +344,8 @@ return function(repo)
 		check(grid[1]:get_meta():get_string("grug_ench") == "", "catalog preview mutated target")
 		tested = tested + 1
 	end
-	check(tested == 456, "catalog application coverage")
-	local operation = assert(grug_jobs.station_operation("enchant:melee_weapon:suffix:str:t1"))
+	check(tested == 588, "catalog application coverage")
+	local operation = assert(grug_jobs.station_operation("enchant:sword:suffix:str:t1"))
 	local target = ItemStack("grug_gear:sword_abyssal_steel")
 	target:set_wear(12345)
 	target:get_meta():set_string("_grug_repair_item_id", "identity-1")
@@ -362,19 +367,19 @@ return function(repo)
 	check(plan.output:get_meta():get_string("description"):find("of the Bear", 1, true),
 		"suffix-first name became prefix")
 	check(not grug_items.operation_plan(operation, inputs(operation, plan.output), player), "no-op accepted")
-	local prefix_same = grug_jobs.station_operation("enchant:melee_weapon:prefix:str:t6")
+	local prefix_same = grug_jobs.station_operation("enchant:sword:prefix:str:t6")
 	check(not grug_items.operation_plan(prefix_same, inputs(prefix_same, plan.output), player),
 		"duplicate opposite stat accepted")
-	local prefix = grug_jobs.station_operation("enchant:melee_weapon:prefix:dex:t6")
+	local prefix = grug_jobs.station_operation("enchant:sword:prefix:dex:t6")
 	local both = assert(grug_items.operation_plan(prefix, inputs(prefix, plan.output), player)).output
 	local both_affixes = grug_items.get_affixes(both)
 	check(#both_affixes == 2 and both_affixes[1].value == 10 and both_affixes[2].value == 2,
 		"adding prefix changed suffix")
-	local replacement = grug_jobs.station_operation("enchant:melee_weapon:suffix:max_hp_percent:t4")
+	local replacement = grug_jobs.station_operation("enchant:sword:suffix:max_hp_percent:t4")
 	local changed = assert(grug_items.operation_plan(replacement, inputs(replacement, both), player)).output
 	check(grug_items.get_affixes(changed)[1].stat == "dex" and
 		grug_items.get_affixes(changed)[2].value == 3, "replacement changed opposite channel")
-	local speed_recipe = grug_jobs.station_operation("enchant:melee_weapon:prefix:attack_speed_percent:t6")
+	local speed_recipe = grug_jobs.station_operation("enchant:sword:prefix:attack_speed_percent:t6")
 	local fast = assert(grug_items.operation_plan(speed_recipe, inputs(speed_recipe, target), player)).output
 	check(fast:get_tool_capabilities().full_punch_interval < target:get_tool_capabilities().full_punch_interval,
 		"attack-speed capability not applied")
@@ -403,7 +408,7 @@ return function(repo)
 		not grug_core.can_use_item_level(novice, elevated), "starter exception lowered found requirement")
 	check(not grug_items.operation_plan(prefix, inputs(prefix, target), novice), "above-profession-tier allowed")
 	definitions["test:gathering"] = {description = "Gathering Axe", _grug_bracket = 6,
-		_grug_quality_family = "melee_weapon", groups = {grug_gathering_tool = 1, axe = 1}}
+		_grug_quality_family = "sword", groups = {grug_gathering_tool = 1, axe = 1}}
 	check(grug_items.family_for(ItemStack("test:gathering")) == "tool", "gathering tool classified as weapon")
 	check(not grug_items.operation_plan(operation, inputs(operation, ItemStack("test:gathering")), player),
 		"gathering tool accepted as enchantable weapon")
@@ -481,7 +486,8 @@ return function(repo)
 		check(not name:find("_imbue_", 1, true) and not name:find("_temper_", 1, true),
 			"retired kit remains registered")
 	end
+	local gear_receipt = dofile(repo .. "/tools/r20/gear_micro.lua")(repo, definitions, check)
 	table.copy = old_table_copy
 	restore()
-	return "PASS r13 enchants operations=456 applications=456 suffix-first fixed-tier replacement no-op profession family materials metadata broken found trinket-bases=36 trinket-channels starter-level speed-replacement\n"
+	return "PASS r13 enchants operations=588 applications=588 suffix-first fixed-tier replacement no-op profession family materials metadata broken found trinket-bases=36 trinket-channels starter-level speed-replacement\n" .. gear_receipt
 end

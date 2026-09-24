@@ -255,7 +255,8 @@ function grug_visuals.compose(spec)
 		local entry = type(itemname) == "string" and armor_appearance[itemname]
 			or nil
 		if entry then
-			pieces[index] = {line = entry.line, bracket = entry.bracket}
+			pieces[index] = {line = entry.line, bracket = entry.bracket,
+				broken = spec.armor_broken and spec.armor_broken[slot] == true}
 		elseif line_default then
 			pieces[index] = {line = line_default, bracket = bracket_default}
 		end
@@ -282,7 +283,7 @@ function grug_visuals.compose(spec)
 	for index = 1, #SLOTS do
 		local piece = pieces[index]
 		key = key .. ";" ..
-			(piece and (piece.line .. piece.bracket) or "-")
+			(piece and (piece.line .. piece.bracket .. (piece.broken and "!" or "")) or "-")
 	end
 	key = key .. ";" .. (weapon or "-")
 
@@ -295,8 +296,9 @@ function grug_visuals.compose(spec)
 	for index, slot in ipairs(SLOTS) do
 		local piece = pieces[index]
 		if piece then
-			texture = texture .. "^" ..
-				OVERLAY[LINE_ART[piece.line]][slot][piece.bracket]
+			local overlay = OVERLAY[LINE_ART[piece.line]][slot][piece.bracket]
+			if piece.broken then overlay = "(" .. grug_gear.broken_image(overlay) .. ")" end
+			texture = texture .. "^" .. overlay
 		end
 	end
 

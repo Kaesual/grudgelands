@@ -92,9 +92,11 @@ function grug_classes.get_max_mana(player)
 	return grug_classes.get_pool_breakdown(player, "mana").final
 end
 
--- Flat bonus added to weapon damage.
+-- Flat melee bonus: Scouts use Dexterity, other classes use Strength.
 function grug_classes.get_melee_bonus(player)
-	return math.floor(grug_classes.get_attributes(player).str / 10)
+	local attributes = grug_classes.get_attributes(player)
+	return math.floor((grug_classes.get_class(player) == "scout" and
+		attributes.dex or attributes.str) / 10)
 end
 
 -- Flat bonus added to bow damage (Scout ruling 28).
@@ -175,7 +177,7 @@ end)
 -- same pattern as grug_core.get_player_faction).
 grug_core.get_crit_chance = grug_classes.get_crit_chance
 grug_core.get_dodge_chance = grug_classes.get_dodge_chance
--- Native proportional melee Strength bonus (combat_stats.md §2); read by the
+-- Native proportional melee attribute bonus (combat_stats.md §2); read by the
 -- player-melee patch in mobs/api.lua and the hostile-PvP handler.
 grug_core.get_melee_bonus = grug_classes.get_melee_bonus
 grug_core.get_ranged_bonus = grug_classes.get_ranged_bonus

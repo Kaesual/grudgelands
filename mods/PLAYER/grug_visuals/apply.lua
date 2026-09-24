@@ -79,6 +79,18 @@ local function drawable(itemname)
 		core.registered_items[itemname] ~= nil
 end
 
+-- A visual-only stack lets the native wielditem mesh honor per-stack images.
+-- No wear/action identity enters this cache token, only appearance overrides.
+function grug_visuals.wield_appearance(stack)
+ local visual = ItemStack(stack:get_name())
+ local source, meta = stack:get_meta(), visual:get_meta()
+ for _, key in ipairs({"inventory_image", "inventory_overlay", "wield_image",
+   "wield_overlay", "wield_scale", "color"}) do
+  meta:set_string(key, source:get_string(key))
+ end
+ return visual:to_string()
+end
+
 -- WHICH POSE an item is held in. The tables and the rule are in
 -- `wield_geometry.lua` next to the derivation they belong to -- they ARE the
 -- sprite convention -- and that is also what lets `wield_transform_kat.lua`
@@ -87,7 +99,7 @@ end
 local pose_for = grug_visuals.pose_for
 local get_item_group = core.get_item_group
 
-local function spawn_wield(parent, itemname, stature, pose)
+local function spawn_wield(parent, itemname, stature, pose, appearance)
 	local pos = parent:get_pos()
 	if not pos then
 		return nil
@@ -97,7 +109,7 @@ local function spawn_wield(parent, itemname, stature, pose)
 		return nil
 	end
 	local wield = wield_transform(stature, pose)
-	obj:set_properties({textures = {itemname}, visual_size = wield.size})
+	obj:set_properties({textures = {itemname}, wield_item = appearance, visual_size = wield.size})
 	obj:set_attach(parent, WIELD_BONE, wield.pos, wield.rot)
 	return obj
 end
@@ -114,7 +126,10 @@ end
 -- anything else that is its own size). A CHANGED stature re-attaches rather
 -- than re-textures: position and size both depend on it, and an admin `/race`
 -- switch is the only thing that can move it.
-local function sync_wield(holder, parent, itemname, stature)
+local function sync_wield(holder, parent, shown, stature)
+	local stack = type(shown) == "string" and ItemStack(shown) or shown
+	local itemname = stack and stack:get_name() or nil
+	local appearance = stack and grug_visuals.wield_appearance(stack) or nil
 	if not drawable(itemname) then
 		itemname = nil
 	end
@@ -142,14 +157,16 @@ local function sync_wield(holder, parent, itemname, stature)
 		end
 		holder._grug_wield_obj = nil
 		holder._grug_wield_item = nil
+		holder._grug_wield_appearance = nil
 		holder._grug_wield_stature = nil
 		holder._grug_wield_pose = nil
 		return
 	end
 	if obj then
-		if holder._grug_wield_item ~= itemname then
-			obj:set_properties({textures = {itemname}})
+		if holder._grug_wield_appearance ~= appearance then
+			obj:set_properties({textures = {itemname}, wield_item = appearance})
 			holder._grug_wield_item = itemname
+			holder._grug_wield_appearance = appearance
 		end
 		return
 	end
@@ -157,16 +174,18 @@ local function sync_wield(holder, parent, itemname, stature)
 	-- entity budget). Leaving both fields nil is what makes the next pass --
 	-- the once-a-second poll below for players, the next equipment change or
 	-- activation otherwise -- try again instead of believing the hand is empty.
-	holder._grug_wield_obj = spawn_wield(parent, itemname, stature, pose)
+	holder._grug_wield_obj = spawn_wield(parent, itemname, stature, pose, appearance)
 	-- Written as a branch, not as `obj and value or nil`: a failed spawn must
 	-- leave every one of the three fields empty, so that the next pass retries
 	-- instead of believing the pose it never attached is the pose on show.
 	if holder._grug_wield_obj then
 		holder._grug_wield_item = itemname
+		holder._grug_wield_appearance = appearance
 		holder._grug_wield_stature = stature
 		holder._grug_wield_pose = pose
 	else
 		holder._grug_wield_item = nil
+		holder._grug_wield_appearance = nil
 		holder._grug_wield_stature = nil
 		holder._grug_wield_pose = nil
 	end
@@ -212,23 +231,22 @@ end
 
 -- What this player currently IS, in compose's vocabulary.
 function grug_visuals.player_spec(player)
-	local armor = {}
+	local armor, armor_broken = {}, {}
 	local inv = player:get_inventory()
 	if inv then
 		for list, slot in pairs(ARMOR_LIST_SLOT) do
 			local stack = inv:get_stack(list, 1)
 			if stack and not stack:is_empty() then
 				armor[slot] = stack:get_name()
+				armor_broken[slot] = grug_core.equipment_is_broken(stack)
 			end
 		end
 	end
-	-- grug_core's stub-override accessor, not grug_inventory's: the weapon slot
-	-- is published there precisely so a consumer needs no dependency on the
-	-- inventory mod, and the returned stack is our own copy.
-	local weapon = grug_core.get_equipped_weapon(player)
+	-- Cosmetic inventory reads preserve broken equipment independently of combat.
+	local weapon = grug_inventory.get_cosmetic_weapon(player)
 	return {
 		race = grug_classes.get_race(player),
-		armor = armor,
+		armor = armor, armor_broken = armor_broken,
 		weapon = weapon and weapon:get_name() or nil,
 	}
 end
@@ -258,12 +276,11 @@ local function shown_item(player)
 		return nil
 	end
 	if core.get_item_group(name, ABILITY_GROUP) > 0 then
-		-- grug_core's stub-override accessor, not grug_inventory's: no
-		-- dependency on the inventory mod, and the stack is our own copy.
-		local weapon = grug_core.get_equipped_weapon(player)
-		return weapon and weapon:get_name() or nil
+		-- The cosmetic copy retains broken gear even while combat excludes it.
+		local weapon = grug_inventory.get_cosmetic_weapon(player)
+		return weapon
 	end
-	return name
+	return wielded
 end
 
 -- Compose and apply. Cheap on a no-op: one compose (cached) and one compare.

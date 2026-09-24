@@ -32,7 +32,7 @@ function P.register_enchants(profession, station, family, materials, representat
 	end
 end
 
-local fittings, bars, swords, shields, metal_armor = {}, {}, {}, {}, {}
+local fittings, bars, shields, metal_armor = {}, {}, {}, {}
 local leathers, leather_armor, bolts, cloth_armor = {}, {}, {}, {}
 local LEATHER_KEYS = {"light", "cured", "heavy", "scaled", "sleek", "nightscale"}
 local LEATHERS = {"grug_mobs:light_leather", "grug_professions:cured_leather",
@@ -43,7 +43,6 @@ for tier = 1, 6 do
 	local metal = METALS[tier]
 	fittings[tier] = "grug_professions:metal_fittings_" .. metal
 	bars[tier] = "grug_materials:" .. metal .. "_bar"
-	swords[tier] = "grug_gear:sword_" .. metal
 	shields[tier] = "grug_gear:shield_" .. metal
 	metal_armor[tier] = "grug_gear:chest_metal_" .. metal
 	leathers[tier] = LEATHERS[tier]
@@ -51,7 +50,13 @@ for tier = 1, 6 do
 	bolts[tier] = "grug_professions:bolt_" .. CLOTH_KEYS[tier]
 	cloth_armor[tier] = "grug_gear:chest_cloth_" .. CLOTH_KEYS[tier]
 end
-P.register_enchants("weaponsmith", "forge", "melee_weapon", fittings, swords)
+for _, family in ipairs({"sword", "dagger", "greataxe"}) do
+	local representatives = {}
+	for tier, metal in ipairs(METALS) do
+		representatives[tier] = "grug_gear:" .. family .. "_" .. metal
+	end
+	P.register_enchants("weaponsmith", "forge", family, fittings, representatives)
+end
 P.register_enchants("armorsmith", "forge", "metal_armor", bars, metal_armor)
 P.register_enchants("armorsmith", "forge", "shield", bars, shields)
 P.register_enchants("leatherworker", "tanning_rack", "leather_armor", leathers, leather_armor)
