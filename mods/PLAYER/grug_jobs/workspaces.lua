@@ -137,8 +137,13 @@ local function formspec(ctx)
 		local furnace_kind = ctx.station == "furnace" or ctx.station == "dual_furnace"
 		local fuel_percent, progress_percent = 0, 0
 		if furnace_kind then
+			local process = ctx.process
+			if not ctx.personal then
+				process = core.deserialize(core.get_meta(ctx.pos):get_string(
+					"grug_jobs:process")) or {}
+			end
 			local fuel_fraction, progress_fraction = automatic.fractions(ctx.station,
-				inputs(ctx), ctx.process)
+				inputs(ctx), process)
 			fuel_percent = math.floor(fuel_fraction * 100 + 0.5)
 			progress_percent = math.floor(progress_fraction * 100 + 0.5)
 		end
