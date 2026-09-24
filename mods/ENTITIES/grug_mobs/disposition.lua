@@ -17,7 +17,7 @@ end
 classify("critter", {
 	"bog_fowl", "bone_weevil", "cave_bat", "cave_crawler", "gull",
 	"hare", "parrot", "plains_runner", "rabbit", "song_bird",
-	"wild_turkey",
+	"wild_turkey", "reed_angelfish",
 })
 
 classify("neutral", {

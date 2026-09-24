@@ -24,3 +24,9 @@ before rerunning anything. User GUI acceptance is separate.
 No full-world preparation, seed fleet, census or historical omnibus runner is
 part of this evidence. Maximum parallel CPU workers authorized for the round:
 six; the actual checks needed at most two concurrent interpreters.
+
+Startup follow-up: `startup_micro.lua` covers the fixed fish disposition and
+the engine's seven-slot arrow recipe representation. `startup_probe/` is a
+disposable native registration probe for `PROBE=... tools/luanti_headless.sh`;
+it checks actual fish and Basics/crafting registration and immediately requests
+shutdown. It is never shipped. Evidence is under `evidence/startup-fix/`.

@@ -1,0 +1,15 @@
+parser PASS mods/ENTITIES/grug_mobs/disposition.lua
+parser PASS mods/PLAYER/grug_jobs/basics_presentation.lua
+parser PASS mods/PLAYER/grug_jobs/basics_routes.lua
+parser PASS tools/r21_aquatic/fish_spawn_kat.lua
+	11	[5]	SETGLOBAL	2 -5	; core
+	15	[6]	SETGLOBAL	2 -7	; grug_zones
+	18	[8]	SETGLOBAL	3 -9	; grug_mobs
+	31	[14]	SETGLOBAL	3 -13	; mobs
+parser PASS tools/round21/startup_probe/init.lua
+parser PASS tools/round21/startup_micro.lua
+sweep 1 PASS
+sweep 2 PASS
+sweep 3 PASS
+sweep 4 PASS
+sweep 5 PASS
