@@ -24,10 +24,6 @@ return function(options, profile)
 	end
 	fill(lo,0,lo,hi,0,hi,p.ground)
 	fill(lo,1,lo,hi,spec.height,hi,"air")
-	-- Open cross-court links the fixed root and all perimeter approaches.
-	-- Buildings replace their own floor, so this is not a four-house street grid.
-	fill(-1,0,lo,1,0,hi,p.stone)
-	fill(lo,0,-1,hi,0,1,p.stone)
 	local footprints={}
 	local function house(b,index)
 		local cx,cz,w,d,h,turn,form=unpack(b)
@@ -106,6 +102,60 @@ return function(options, profile)
 		end
 	end
 	for index,b in ipairs(spec.buildings) do house(b,index) end
+	-- Paths follow this composition's actual doors, not the axes of its tile.
+	-- Leave buildings/foundations intact and preserve cultural ground between
+	-- short worn connections. Open encounter scenes keep their natural floor.
+	local function paving(x,z)
+		if x<lo or x>hi or z<lo or z>hi then return end
+		for _,f in ipairs(footprints) do
+			if x>=f.x1 and x<=f.x2 and z>=f.z1 and z<=f.z2 then return end
+		end
+		put(x,0,z,p.stone)
+	end
+	local function connection(ax,az,bx,bz,bend,broken)
+		local steps=math.max(math.abs(bx-ax),math.abs(bz-az))*3
+		if steps==0 then return end
+		local mx,mz=(ax+bx)/2,(az+bz)/2
+		if math.abs(bx-ax)>math.abs(bz-az) then mz=mz+bend else mx=mx+bend end
+		local previous
+		for i=0,steps do
+			local t=i/steps
+			local x=math.floor((1-t)^2*ax+2*(1-t)*t*mx+t^2*bx+0.5)
+			local z=math.floor((1-t)^2*az+2*(1-t)*t*mz+t^2*bz+0.5)
+			-- Broken paving is intentional grass, not a missing walkable floor.
+			if not broken or (x+2*z+spec.number)%5~=0 then paving(x,z) end
+			if previous and previous.x~=x and previous.z~=z and not broken then
+				paving(x,previous.z)
+			end
+			previous={x=x,z=z}
+		end
+	end
+	if #structures>0 then
+		local court_x,court_z=spec.number%3-1,math.floor(spec.number/3)%3-1
+		-- A small irregular apron: clipped corners and an offset working edge.
+		for z=-1,1 do for x=-1,1 do
+			if x*x+z*z<2 or (x==1 and z==(spec.number%2==0 and 1 or -1)) then
+				paving(court_x+x,court_z+z)
+			end
+		end end
+		local first
+		for index,building in ipairs(structures) do
+			local e=building.entry
+			local direction=({{0,-1},{1,0},{0,1},{-1,0}})[building.entry_turn+1]
+			local ax,az=e.x+direction[1],e.z+direction[2]
+			local broken=spec.race=="elf" or spec.race=="troll" or spec.kind=="bandit_frontier"
+			connection(ax,az,court_x,court_z,index%2==0 and -2 or 2,broken)
+			-- Each threshold has only a small working step, not a paved quadrant.
+			paving(ax,az)
+			if not first then first={x=ax,z=az,dx=direction[1],dz=direction[2]} end
+		end
+		-- One arrival trace belongs to the first workplace's orientation. It
+		-- meets the nearer edge; there is no opposing through-road or full cross.
+		local edge_x,edge_z=first.x,first.z
+		if first.dx~=0 then edge_x=first.x<0 and lo or hi
+		else edge_z=first.z<0 and lo or hi end
+		connection(edge_x,edge_z,first.x,first.z,spec.number%2==0 and 2 or -2,true)
+	end
 	local function prop(q)
 		local kind,x,z=q[1],q[2],q[3]
 		local function at(dx,y,dz,name,param2) put(x+dx,y,z+dz,name,param2) end

@@ -131,3 +131,17 @@ cell bounds passed, including the anchor090 counterpart. It loaded fixture node
 definitions from the primary checkout because worktree reference submodules are
 empty, and used the corrected worktree builders; no runtime.build or planner
 was invoked. The changed catalog passes all static gates.
+
+## Visual pathway correction
+
+Coordinator review of the actual-cell gallery rejected the universal full-core
+three-wide paving cross. The revised builder retains cultural ground throughout
+open encounter scenes. In inhabited sites it places a small offset, clipped
+court, narrow bent connections from the actual building thresholds and one
+broken arrival trace toward the first workplace. Elf/troll/frontier camp paths
+have deliberate grass breaks. Foundations and every above-ground cell remain
+unchanged; no layout, socket, reservation or terrain envelope expands.
+The specifically authorized pure-builder circulation check again passed all70
+profiles and105 interiors/entrances with real walkability; parser, SETGLOBAL and
+five sweeps are clean. Final planner construction and refreshed visual
+acceptance remain with the coordinator.
