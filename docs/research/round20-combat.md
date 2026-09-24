@@ -1,5 +1,10 @@
 # Round 20 combat presentation and reset audit
 
+**Current gate:** implementation, independent review and technical validation
+passed. Delivery: [Round 20 integration receipt](round20-completion.md).
+Earlier implementation-milestone notes below describe their original evidence;
+the final integration section supersedes their pending-gate wording.
+
 Author: root GPT-6 Astra. Date: 2026-09-24.
 Status: code prepared; independent review and final runtime gate pending.
 
@@ -51,3 +56,9 @@ visible effect and unchanged stun duration. Verify immune bosses have none.
 Kill a crab and check ordinary removal/loot. Fight a bandit within its camp,
 then deliberately pull beyond its leash and distinguish reset behavior. Report
 coordinates/species for any persistent actor stack or in-bounds instant heal.
+
+## Final integration gate
+
+Independent reviewer: Astra `poi_quest_round_preflight`, 0 Critical/High, no fixes, about five minutes review. Final real-module compact fixture passed in both interpreters.
+
+Final evidence and delivery state: [Round 20 receipt](round20-completion.md).

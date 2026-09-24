@@ -125,13 +125,9 @@ anything). Item enchants (+Str etc.) are the player-driven part.
     Foreign entities without a Grudgelands level bypass the pressure fit.
     Authoritative swing abilities assemble gear, the class melee attribute and a selected proc,
     then apply the level scalar and mob-level malus once before crit and armor.
-    Ordinary native tools/fists against hostile players apply the level scalar
-    to their full-swing equivalent before crit, armor, proportional scaling and
-    accumulation. Raw tool/fist punches against Grudgelands mobs are vetoed:
-    all player damage to those mobs comes through the once-scaled authoritative
-    swing or ability seams.
-    Both then enter the modifier for dodge and absorb and use a namespaced
-    `custom_type` that skips
+    Raw native tool/fist punches cannot initiate player combat against mobs or
+    players. Authoritative attacks enter the modifier for dodge and absorb
+    using a namespaced `custom_type` that skips
     only the already-performed armor step. Fall damage is separate: a native
     negative fall change of `r` settles as `ceil(max_hp × r / 20)`. Native zero
     stays zero and there is no 100%-of-pool cap. This preserves the engine's
@@ -217,9 +213,10 @@ Two optional target-race systems use the central pipeline:
 
 ### Environmental damage, deaths and shore movement
 
-- A player whose head point is inside a walkable, non-liquid node takes
-  **floor(5% of maximum HP) per second, minimum 1 HP**. Non-walkable nodes,
-  including plants, do not suffocate; neither do liquid nodes. The
+- A player whose head point is inside an opaque, walkable, non-liquid full
+  regular cube takes **floor(5% of maximum HP) per second, minimum 1 HP**.
+  Thin doors, panes, shutters, meshes, non-walkable plants, liquids and nodes
+  explicitly opting out do not suffocate. The
   character-creation stasis state and players holding the `noclip` privilege
   are exempt.
 - Every player death sends exactly **one** short English line to all players.
@@ -346,8 +343,8 @@ charged effect. Enemy target memory is UI state and never supplies aim.
 Balance note: the swing-ability DPS baseline remains one full slot-fed swing
 per weapon interval while a continuously tracked hostile stays in the current
 ray. Aim gaps may delay a ready swing but never bank more than one. Ordinary
-tool/fist accumulation remains proportional and target-keyed. WP39 changed
-target authority and Fireball travel, not the melee damage tables.
+tools and fists provide no parallel player-damage path. Contextual input does
+not alter the melee damage tables.
 
 ### PvP eligibility and tag
 
@@ -987,3 +984,9 @@ timestamps, not the reward-participation ledger (which can remain after combat).
 No additional proximity scan or pathfinding is required. The full-heal operation
 uses the existing reset transaction, retaining health bookkeeping, tag cleanup,
 boss action cancellation and encounter ownership rules.
+
+## Stun presentation
+
+An accepted stun emits one small, bounded golden particle burst above its
+target. Rejected, immune and dead targets emit none. This is feedback for the
+existing stun result, not a separate control effect or damage source.

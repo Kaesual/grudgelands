@@ -113,8 +113,11 @@ for _,profile in ipairs(settlement.roster) do
 			local written={}
 			written[key(anchor.x,anchor.y+1,anchor.z)]="ACTOR_ROOT"
 			for side=1,2 do
-				local minp={x=anchor.x+(side==1 and source.bounds.min.x or 0),y=anchor.y,z=anchor.z+source.bounds.min.z}
-				local maxp={x=anchor.x+(side==1 and -1 or source.bounds.max.x),y=anchor.y+spec.height,z=anchor.z+source.bounds.max.z}
+				-- The production successor requires a complete 80x80 column plan.
+				-- Adjacent owners split the authored core at x=0; their extra
+				-- terrain remains outside this settlement-only captured writer.
+				local minp={x=anchor.x+(side==1 and -80 or 0),y=anchor.y,z=anchor.z-40}
+				local maxp={x=minp.x+79,y=anchor.y+79,z=minp.z+79}
 				local plan,generation=built.session.plan_slice(minp,maxp)
 				tail:bind_plan(minp,maxp,plan,generation)
 				local function inside(x,y,z) return x>=minp.x and x<=maxp.x and y>=minp.y and y<=maxp.y and z>=minp.z and z<=maxp.z end

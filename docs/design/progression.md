@@ -135,11 +135,11 @@ catalog values before any applicable racial modifier; no runtime level scaling.
 | Quest position / work | Intended level | XP |
 | --- | ---: | ---: |
 | Starter 1 | 1 | 20 |
-| Starter 2 | 2 | 60 |
+| Starter 2 (parallel cook delivery) | 1 | 20 |
 | Starter 3 | 3 | 100 |
 | Starter 4 | 4 | 140 |
 | Starter 5 | 5 | 180 |
-| Starter 6 (regional handoff) | 8 | 300 |
+| Starter 6 (conversation-only regional handoff) | 10 | 285 |
 | Regional 7 | 10 | 380 |
 | Regional 8 (hard) | 11 | 525 |
 | Regional 9 (camp finale) | 12 | 805 |

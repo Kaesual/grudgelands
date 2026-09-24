@@ -1,0 +1,12 @@
+manifest	b440dbd6110a047e402765b9ccaa54b1f09b9bb5c707ad566fcdfae1eed5c866
+projection	village	anchor_014	2 owners
+projection	outpost	anchor_026	2 owners
+projection	bandit_frontier	anchor_050	2 owners
+projection	mine	anchor_061	2 owners
+projection	mirefolk	anchor_067	2 owners
+projection	clash	anchor_071	2 owners
+projection	dragon	anchor_087	2 owners
+projection	apex_mine	anchor_089	2 owners
+projection	rare_route	anchor_091	2 owners
+civic	PASS	12 cooks / 6 existing envoys
+round20-pois	PASS	sites=70	hosts=30	buildings=105

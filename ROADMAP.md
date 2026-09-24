@@ -111,7 +111,7 @@ baseline. This documentation round neither expands nor removes release scope.
 - [x] Currency/traders, inventory/bags, Skills recovery, ordinary equipment/offhands,
   fixed-tier enchanting, wear/repair, profession workspaces, food, farming and fishing.
   WP44 target economy and broader item/loot scope remain separate.
-- [x] Quest framework with 66 starter and 36 local quests, eighteen regional POIs,
+- [x] Quest framework; Round 20 extends the catalog to 240 quests and all 100 anchor art slots,
   persistent same-faction parties and optional HUDs.
 - [x] World atlas with zoom/scroll, self/party/quest/service markers; innkeeper home
   return and respawn; riding/flight. No fog-of-war or waypoint prerequisite.
@@ -128,9 +128,9 @@ baseline. This documentation round neither expands nor removes release scope.
   ordinary gear and seven profession catalogs already exist; do not rebuild them.
 - [ ] **WP11:** measured respec-price calibration through WP44; talent consumer lanes
   are implemented, including Scout and the original-class X3 consumers.
-- [ ] **WP13 / WP9 / WP42:** remaining authored POI roster and story progression,
-  then bounded war-front encounters with their PvP dependencies. Existing start/local
-  quests and POIs do not close the full world-story plan. The bandit-frontier
+- [ ] **WP13 / WP9 / WP42:** final POI geometry/GUI acceptance and wider story progression,
+  then bounded war-front encounters with their PvP dependencies. The Round 20
+  authored roster and quests do not close the full world-story plan. The bandit-frontier
   building-core width discrepancy remains explicit in BACKLOG.
 - [ ] **WP24 Housing:** complete Claim Stone protection/state/indexing, capacity
   and pricing integration. No private housing islands or old-world migration.

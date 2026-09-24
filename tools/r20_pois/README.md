@@ -3,8 +3,9 @@
 Run only once the coordinator freezes the round candidate. This is the bounded
 LuaJIT-only real construction gate, not the portable PUC micro-KAT. It constructs
 the production runtime/strict manifest from real MTS and the100-profile roster,
-checks all70 new emitted compositions, and sends18 small half-core slices through
-the actual planner (two adjacent owners for each of nine construction families).
+checks all70 new emitted compositions, and sends18 full-size planner owners
+through the actual planner (two adjacent owners splitting each of nine authored
+construction-family cores).
 A captured settlement writer compares every emitted cell and preserves an actor
 root sentinel. This is projection evidence, not a full VoxelManip population or
 engine/visual acceptance claim. Successor source order remains terrain/world,

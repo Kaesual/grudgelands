@@ -508,3 +508,27 @@ Each of the six start towns and six capitals contains one innkeeper using a
 suitable existing building/socket. The twelve-entry shared registry supplies
 terrain-resolved NPC and safe arrival positions. Binding, home return and death
 respawn follow [home_travel.md](home_travel.md). No other V1 home points exist.
+
+## Round 20 authored regional places
+
+The 100-anchor roster retains its six starts, six capitals and eighteen earlier
+regional compositions. The remaining 70 art slots receive individually authored
+building placement, entrances and cultural palettes: six villages, eighteen
+outposts, six frontier bandit camps, six mines, four mirefolk camps, sixteen
+clash sites, two dragon arenas, two apex camps and ten rare-route pads. Inhabited
+sites have multiple structures; encounter clearings and rare pads intentionally
+remain open. Villages include four to six buildings. Shared building components
+are allowed; an identical rotated town layout is not the design.
+
+Art uses the existing settlement projection, actor-root priority and reserved
+footprints. It neither adds duplicate bosses/guards/resources nor expands
+terrain reservations. The frontier bandit 16-node implementation versus decided
+24-node core remains an explicit backlog correction. Whitebridge and Whispering
+Reedlands retain shipwright workplaces/display hulls; boat teaching is future
+WP17 work.
+
+Thirty peaceful regional sites (villages, outposts and mines) each provide one
+quest host. Hostile new camps do not gain friendly residents. Each starting
+town and capital has a separate cook questgiver near its oven, distinct from
+the Cooking profession trainer. Capitals reuse existing quest shells for their
+envoy. Quest identities and journey structure belong to `quests.md`.

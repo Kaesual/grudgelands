@@ -1,5 +1,10 @@
 # Round 20 authored POI implementation
 
+**Current gate:** implementation, independent review and technical validation
+passed. Delivery: [Round 20 integration receipt](round20-completion.md).
+Earlier implementation-milestone notes below describe their original evidence;
+the final integration section supersedes their pending-gate wording.
+
 Date: 2026-09-24. Status: implementation candidate; independent review and the
 coordinator's consolidated final runtime gate are pending. No main merge,
 synchronization or remote push is claimed here.
@@ -145,3 +150,9 @@ The specifically authorized pure-builder circulation check again passed all70
 profiles and105 interiors/entrances with real walkability; parser, SETGLOBAL and
 five sweeps are clean. Final planner construction and refreshed visual
 acceptance remain with the coordinator.
+
+## Final integration gate
+
+Independent reviewer: Astra `r20_input_state_review`. Missing slab dispatcher and root runtime clearance failure corrected; blocked apex entrance and overly uniform paths corrected and re-reviewed. Final real manifest/planner gate passed 70 sites / 105 buildings / 30 hosts / 12 cooks / 6 envoys. Root inspected all 15 schematic gallery entries; GUI/media acceptance remains open.
+
+Final evidence and delivery state: [Round 20 receipt](round20-completion.md).

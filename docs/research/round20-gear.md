@@ -1,5 +1,10 @@
 # Round 20 F3: equipment, enchantments and durability presentation
 
+**Current gate:** implementation, independent review and technical validation
+passed. Delivery: [Round 20 integration receipt](round20-completion.md).
+Earlier implementation-milestone notes below describe their original evidence;
+the final integration section supersedes their pending-gate wording.
+
 Implementation lane: native Astra, branch `wp20-gear`, 2026-09-24.
 Contract: [Round 20 plan, F3](../planning/round20-pois-quests-fixes.md#f3--equipment-permissions-enchant-pools-and-wear-display-astra).
 Status: implementation and static checks complete; independent review and
@@ -111,3 +116,9 @@ No lifetime loops or runtime were added to the implementation lane. Both
 fixture files pass the parser and five sweeps; their intentional fixture-global
 writes are covered by the parent r13 fixture's save/restore boundary. Final
 runtime evidence remains pending with the consolidated root run.
+
+## Final integration gate
+
+Independent source reviewer: Astra root, 0 Critical/High, no production fixes, elapsed unknown. Actual equipment callbacks, wear/repair service and catalog fixture passed in the final portable pair.
+
+Final evidence and delivery state: [Round 20 receipt](round20-completion.md).

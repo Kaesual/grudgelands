@@ -550,57 +550,12 @@ local function watch_wield()
 end
 
 --
--- RIGHT-CLICK PASS-THROUGH (playtest round 1, decided 2026-09-15).
---
--- With a skill in hand a door would not open. The cause is NOT that a cast
--- consumed the click -- no ability item has ever had an `on_place` or an
--- `on_secondary_use`, and casting lives on `on_use`/LMB. It is the swing items'
--- own `pointabilities` above: `doors:door_wood_*` carries
--- `oddly_breakable_by_hand`, so with Strike, Mighty Blow or Hamstring selected
--- the door is `"blocking"` -- the ray stops on it and the client reports
--- POINTEDTHING_NOTHING (src/environment.cpp:276). Right-click on nothing sends
--- INTERACT_ACTIVATE (src/client/game.cpp:2803-2923), which reaches
--- `on_secondary_use`, never `on_place`. The same is true of the wooden
--- trapdoor, every fence gate, chests and signs.
---
--- So the repair is exactly there: `on_secondary_use` re-finds the node the
--- client refused to hand over and passes the click to its `on_rightclick`.
--- `on_place` is defined for the same rule on the nodes that ARE pointable (a
--- steel door is only `cracky`), which is what `core.item_place` already did for
--- us -- writing it out makes the rule one readable thing instead of an
--- inherited default, and lets the fixture drive it.
---
--- WHAT THIS REACHES is exactly "a node whose definition has an
--- `on_rightclick`": every door, gate and trapdoor, and the chests. A node whose
--- right-click is the engine's NODEMETA FORMSPEC path instead (signs, bookshelf,
--- the vessels shelf, beds, the furnace) is NOT reachable and is not attempted:
--- the client opens those itself off `meta:get_string("formspec")` and answers
--- fields on a separate NODEMETA_FIELDS packet that only a client-opened form
--- can send, so `core.show_formspec` is not an equivalent -- it would show the
--- form and then drop every field. With a swing skill wielded such a node stays
--- unopenable; `classes.md` §2b says so rather than promising it.
---
--- Three bounds keep this from becoming a second targeting system:
---
---   * SNEAK KEEPS THE SKILL. Builtin's own placement rule is
---     "on_rightclick unless sneaking" (builtin/game/item.lua:337-347); holding
---     sneak therefore keeps whatever right-click meant before, so a skill bound
---     to it later still works while pointing at a door.
---   * HAND REACH, not skill range, on BOTH callbacks. A 20 m Fireball must not
---     flip a lever across a courtyard, so the node has to be within the
---     engine's own default item range (4, lua_api.md:10455) -- which is also
---     exactly what every swing skill declares. `on_place` needs this check of
---     its own: a cast item has no blocking pointabilities and its `range` is up
---     to 20 (plus the elf's +5 in stack meta), so the client happily points a
---     door across a courtyard and hands it to `on_place`.
---   * ONLY WHEN NOTHING WAS POINTED. `on_secondary_use` is not only the
---     "pointing at air" callback: INTERACT_PLACE on an OBJECT calls it too,
---     before `pointed_object->rightClick` (serverpackethandler.cpp:1192-1208).
---     Without the type guard, right-clicking a vendor would open the shop AND
---     fire the `on_rightclick` of the first node behind him.
---
--- Nothing here touches the cast path: `try_cast` is not reachable from either
--- callback.
+-- Context-first right-click interaction. Native pointable nodes retain their
+-- callbacks and nodemeta forms. The fallback ray includes actors so it cannot
+-- reach a door through an NPC; native object clicks remain engine-dispatched.
+-- Interaction is limited to hand reach, independent of spell range, and owns
+-- the current RMB press so it cannot also draw a bow or consume food.
+-- Sneaking retains the ordinary node-placement bypass rule.
 --
 local NODE_INTERACT_RANGE = 4
 
@@ -666,10 +621,8 @@ local function ability_on_place(itemstack, placer, pointed_thing)
 		itemstack
 end
 
--- The client pointed at NOTHING -- including the "blocking" case a swing item's
--- pointabilities create. One ray, first node only: reaching past the node in
--- front of the player would be an exploit, so a first hit without an
--- `on_rightclick` ends the attempt.
+-- Air/secondary fallback: the first visible actor or node owns interaction.
+-- Never reach through a foreground blocker or duplicate native object dispatch.
 local function ability_on_secondary_use(itemstack, user, pointed_thing)
 	if user and grug_abilities.input then grug_abilities.input.right_action(user) end
 	-- An OBJECT click arrives here too (see the header): the engine is about to

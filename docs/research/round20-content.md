@@ -1,5 +1,10 @@
 # Round 20 Q3: quest catalog
 
+**Current gate:** implementation, independent review and technical validation
+passed. Delivery: [Round 20 integration receipt](round20-completion.md).
+Earlier implementation-milestone notes below describe their original evidence;
+the final integration section supersedes their pending-gate wording.
+
 Implementation receipt; independent review and final runtime acceptance pending.
 
 ## Delivered scope
@@ -126,3 +131,9 @@ the runtime entity registry does not expose the private level configuration.
 No engine or Lua runtime was run in the correction lane. Parser, SETGLOBAL and
 all five static sweeps passed; root owns the replacement smoke and independent
 reviewer verification.
+
+## Final integration gate
+
+Independent reviewer: Astra `poi_quest_round_preflight`, 0 Critical/High production; Medium camp-source test defect and Low ineffective assertion corrected/re-reviewed. Real engine catalog/socket gate passed. No production quest changed for the fixture correction.
+
+Final evidence and delivery state: [Round 20 receipt](round20-completion.md).

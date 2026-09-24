@@ -1,5 +1,10 @@
 # Round 20 quest framework receipt
 
+**Current gate:** implementation, independent review and technical validation
+passed. Delivery: [Round 20 integration receipt](round20-completion.md).
+Earlier implementation-milestone notes below describe their original evidence;
+the final integration section supersedes their pending-gate wording.
+
 Status: implementation prepared, independent review and final runtime gate pending.
 Author: root GPT-6 Astra. Date: 2026-09-24.
 
@@ -35,3 +40,9 @@ GUI acceptance: accept parallel starter tasks; complete but do not turn in one
 and verify its successor stays hidden. Turn it in and inspect the follow-up's
 level lock. Accept a travel lead, open the named destination NPC, then complete
 there without a return trip. Check log/HUD and map marker agree.
+
+## Final integration gate
+
+Independent source reviewer: Astra `r20_input_state_review`, 0 Critical/High, no fixes, elapsed unknown. Actual transaction fixture passed in the final portable pair.
+
+Final evidence and delivery state: [Round 20 receipt](round20-completion.md).

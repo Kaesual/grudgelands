@@ -1,5 +1,10 @@
 # Round 20 F5 contextual input implementation
 
+**Current gate:** implementation, independent review and technical validation
+passed. Delivery: [Round 20 integration receipt](round20-completion.md).
+Earlier implementation-milestone notes below describe their original evidence;
+the final integration section supersedes their pending-gate wording.
+
 Status: implemented on `wp20-ux`; independent review and final runtime evidence
 pending. Implementer: GPT-6 Astra. Reviewer: pending. Critical/High findings,
 fix rounds and elapsed time: pending/unknown.
@@ -134,3 +139,9 @@ prepared only, not executed in this lane. Parent integration must include it in
 the replacement final interpreter pair. Parser, SETGLOBAL, all five sweeps and
 whitespace checks completed; existing pipe literals/comment are sweep-4 false
 positives. No runtime or engine process was run for these fixes.
+
+## Final integration gate
+
+Independent reviewer: Astra `r20_creative`, 0 Critical/High, two Medium findings corrected in one pass and focused re-review clean. Obsolete no-dig comments removed. Final portable dispatch and real Scout/Food transaction fixtures plus real engine registrations passed; elapsed unknown.
+
+Final evidence and delivery state: [Round 20 receipt](round20-completion.md).

@@ -13,13 +13,14 @@ There are **53 identities**: WP0–WP49 and WP-Scout/WP-HUD/WP-Speed.
 old summary's omission of the already-delivered WP8, WP12 and WP20; it does not
 claim any additional implementation or GUI acceptance.
 
-- Current work: [documentation consolidation](docs/maintenance/documentation-round.md).
+- Current work: [Round 20](docs/planning/round20-state.md), integration and final gates.
 - WP5's selected fixed-tier enchanting is delivered; loot, cultural/PvP finishes
   and masterwork remain. WP44's economy/measurement remains open.
 - WP11's talent consumers are delivered; measured respec prices await WP44.
-- WP13 has six starts/capitals and eighteen regional POIs; its broader roster and
-  recorded `bandit_frontier` core-width discrepancy (24 decided, 16 implemented) remain. Existing POIs must not be rebuilt as
-  though none had shipped.
+- Round 20 supplies authored art for the remaining 70 WP13 slots (100 total
+  anchors), subject to its final gates and GUI acceptance. The recorded
+  `bandit_frontier` core-width discrepancy (24 decided, 16 implemented) remains;
+  new art fits the existing core and does not silently expand it.
 - WP14 ordinary offhands are delivered; moving held-torch light was deferred
   after the R18 complexity preflight. WP21's broader rest/recovery scope remains.
 - Friendly-guard healing remains deferred as a coherent support-combat feature;
@@ -50,15 +51,15 @@ technical evidence certifies its recorded bytes, never an arbitrary later head.
 | WP5 | [Loot, found-item affixes and cultural/PvP finishes](docs/planning/work-package-scopes.md#wp5) | Selected enchanting delivered; broader loot/finish/masterwork open. | WP1 ✅, WP3 ✅, WP43 ✅ |
 | WP6 | Mob roster, threat, guards and combat feel | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP7 | Ledger currency and traders (WP44 rebase outstanding) | Delivered legacy economy; current price curve and 25% buy-back await WP44. | — |
-| WP8 | Quest framework | Delivered R14–15: 102 quests; broader story remains WP9. | — |
-| WP9 | [Named-zone story and questlines](docs/planning/work-package-scopes.md#wp9) | Starter/local quests delivered; broader named-zone story open. | WP6, WP8, WP40, WP41 |
+| WP8 | Quest framework | Framework delivered; Round 20 candidate: 240 quests with talk handoffs. Broader story remains WP9. | — |
+| WP9 | [Named-zone story and questlines](docs/planning/work-package-scopes.md#wp9) | Round 20 adds capital/regional journeys; full high-level story and finale remain open. | WP6, WP8, WP40, WP41 |
 | WP10 | [Profession content and priced integration](docs/planning/work-package-scopes.md#wp10) | Framework and seven catalogs delivered; wider/priced content remains. | WP26 ✅, WP33 ✅, WP43 ✅, WP44 |
 | WP11 | [Talent trees: measured respec-price remainder](docs/planning/work-package-scopes.md#wp11) | Talents implemented; WP44 respec calibration open. | WP3 ✅, WP4 ✅, WP-Speed ✅ |
 | WP-Scout | Scout class and talent trees | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP-HUD | Exact health/resource HUD | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP-Speed | Shared movement modifiers | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP12 | World atlas | Delivered through R19: whole-atlas zoom/scroll and live markers; waypoints remain WP17. | — |
-| WP13 | [Remaining authored structures and POI roster](docs/planning/work-package-scopes.md#wp13) | Six starts/capitals and 18 regional POIs delivered; roster/geometry remainder. | WP40 ✅, WP43 ✅ |
+| WP13 | [Remaining authored structures and POI roster](docs/planning/work-package-scopes.md#wp13) | Round 20 completes authored roster art; geometry discrepancy and GUI acceptance remain. | WP40 ✅, WP43 ✅ |
 | WP14 | [Offhands delivered; carried-light remainder](docs/planning/work-package-scopes.md#wp14) | Ordinary offhands delivered; moving light deferred. | WP3 |
 | WP15 | Character equipment and bags | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP16 | Canceled historical proposal | Canceled 2026-08-12; no game code shipped. | — |

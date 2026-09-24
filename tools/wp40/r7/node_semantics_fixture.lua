@@ -230,15 +230,10 @@ return function(repo, catalog, expected_names)
 		current_modname = "grug_trees"
 		dofile(repo .. "/mods/ITEMS/grug_trees/init.lua")
 
-		-- The material initializer modifies four vendored tools. Their item
-		-- semantics are irrelevant here, but the authentic initializer requires
-		-- the registrations to exist before applying its production overrides.
-		for _, name in ipairs({"default:pick_wood", "default:pick_stone",
-				"default:pick_bronze", "default:pick_steel", "default:shovel_wood",
-				"default:shovel_stone", "default:shovel_bronze", "default:shovel_steel"}) do
-			api.register_tool(name, {groups = {pickaxe = 1}, tool_capabilities = {
-				punch_attack_uses = 20, groupcaps = {}, damage_groups = {}}})
-		end
+		-- Material overrides now preserve real shovel groupcap timing. Load the
+		-- vendored definitions rather than inventing empty tool capabilities.
+		api.register_tool("", {}) -- The engine pre-registers the hand.
+		dofile(repo .. "/mods/BASE/default/tools.lua")
 		current_modname = "grug_materials"
 		dofile(repo .. "/mods/ITEMS/grug_materials/init.lua")
 
