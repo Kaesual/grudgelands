@@ -1,5 +1,7 @@
 -- Readonly surface envelopes derived from the same decoded content and fitted
 -- column authority as the writer. This does not plan or write mapgen content.
+local path = assert(debug.getinfo(1, "S").source:sub(2):match("^(.*)[/\\]"))
+local plot_approach = dofile(path .. "/../wp13/plot_approach.lua")
 return function(columns, templates, cultural, settlements, zones, anchors, identity, sha256)
 	assert(type(columns.column_values_at) == "function" and #templates > 0)
 	local reach, below, above = 1, -1, 1
@@ -36,9 +38,24 @@ return function(columns, templates, cultural, settlements, zones, anchors, ident
 				assert(d.kind == "anchor" or d.kind == "overlay",
 					"Unsupported preparation blueprint kind")
 			end
-			boxes[#boxes+1] = {x_min=x+b.min.x,x_max=x+b.max.x,
-				z_min=z+b.min.z,z_max=z+b.max.z,
-				y_min=y+b.min.y,y_max=y+b.max.y,
+			local x_min, x_max, z_min, z_max = x+b.min.x, x+b.max.x, z+b.min.z, z+b.max.z
+			local y_min, y_max = y+b.min.y, y+b.max.y
+			if d.kind == "reference" then
+				local plot = blueprint.landmarks and blueprint.landmarks.plot
+				if plot then
+					-- The successor may cut/fill outside the authored cell box.
+					-- Cover the bounded approach and its headroom explicitly;
+					-- an incidental avenue envelope is not its authority.
+					x_min = math.min(x_min, math.max(anchor.x-265, x+plot.min.x-plot_approach.COLLAR))
+					x_max = math.max(x_max, math.min(anchor.x+265, x+plot.max.x+plot_approach.COLLAR))
+					z_min = math.min(z_min, math.max(anchor.z-265, z+plot.min.z-plot_approach.MAX_APPROACH))
+					z_max = math.max(z_max, math.min(anchor.z+265, z+plot.max.z+plot_approach.COLLAR))
+					y_min = math.min(y_min, y-plot_approach.MAX_APPROACH)
+					y_max = math.max(y_max, y+plot_approach.MAX_APPROACH+3)
+				end
+			end
+			boxes[#boxes+1] = {x_min=x_min,x_max=x_max,
+				z_min=z_min,z_max=z_max,y_min=y_min,y_max=y_max,
 				-- Avenue envelopes read every lane within their authored reach;
 				-- use that neighborhood as well as their authorized volume.
 				radius=d.kind == "overlay" and blueprint.reach+blueprint.half+1 or 0}

@@ -48,6 +48,12 @@ return function(repo)
 	local function ground(x, z) return (math.abs(x) <= 2 and z >= 14 and z <= 18) and plot_level or 10 end
 	local deps = {zones_session = {anchor = function() return {id = "anchor_999", numeric_id = 999, x = 0, y = 10, z = 0} end},
 		planner_source = {column_values_at = function(x, z) return "land", 1, "micro", "biome", "human", ground(x, z) end}}
+	local preparation = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/preparation_source.lua")(
+		deps.planner_source, {{rotations = {{min_x=0,max_x=0,min_y=0,max_y=0,min_z=0,max_z=0}}}},
+		{}, {{profile=profile,prepared=prepared}}, deps.zones_session,
+		{copy_rows=function() return {} end}, "micro", sha)
+	local _, bottom, ceiling = preparation.tile_bounds({x=10,z=25}, {x=10,z=25})
+	assert(bottom <= 8-24 and ceiling >= 8+27, "preparation omitted collar/approach outside authored box")
 	local function emit(x0, x1)
 		local tail, plan = config.new(deps), {}
 		local lo, hi = {x = x0, y = 0, z = -3}, {x = x1, y = 16, z = 27}
