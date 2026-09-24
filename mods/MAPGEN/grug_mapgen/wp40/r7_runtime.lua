@@ -178,8 +178,11 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	for index = 1, #r7_settlement_module.roster do
 		local profile = r7_settlement_module.roster[index]
 		local source = dofile(wp40_directory .. "/" .. profile.blueprint_file)(
-			blueprint_options)
+			blueprint_options, profile)
 		if type(source) == "function" then source = source(blueprint_options) end
+		if profile.slot=="start" then
+			source=dofile(wp40_directory.."/r20_civic.lua")(source,profile)
+		end
 		local prepared = r7_settlement_module.prepare(profile, source, raw_sha256)
 		settlements[index] = {profile = profile, prepared = prepared}
 		settlement_keys[index] = profile.key

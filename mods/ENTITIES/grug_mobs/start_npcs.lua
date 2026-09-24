@@ -540,7 +540,7 @@ local function settlement_kind(record, faction_id, sockets)
 	-- which is already the story/map integration authority. This avoids
 	-- restating either coordinates or settlement-key naming conventions here.
 	local poi_by_socket = {quest_steward = "village", quest_scout = "outpost",
-		quest_captive = "bandit_camp"}
+		quest_captive = "bandit_camp", quest_host = "regional"}
 	for index = 1, #sockets do
 		local socket = sockets[index]
 		if socket.role == "quest" and poi_by_socket[socket.id] then
@@ -570,7 +570,9 @@ local function build_rows()
 		-- settlement that matches neither published anchor is a defect rather
 		-- than a settlement placed against a guess.
 		local kind = faction_id and settlement_kind(record, faction_id, sockets) or nil
-		if not faction_id then
+		if #sockets==0 then
+			-- Authored encounter scenery has no peaceful actor roster.
+		elseif not faction_id then
 			core.log("error", "[grug_mobs] settlement npcs: no faction for race " ..
 				record.race_id)
 		elseif not kind then
@@ -578,9 +580,7 @@ local function build_rows()
 				" socket anchor " .. core.pos_to_string(record.anchor) ..
 				" is not a published start, capital or Round 14 POI of " ..
 				record.race_id)
-		elseif #sockets == 0 then
-			core.log("warning", "[grug_mobs] settlement npcs: " .. record.key ..
-				" exports no socket")
+
 		else
 			local settlement = {race_id = record.race_id, faction_id = faction_id,
 				key = record.key, kind = kind, anchor = record.anchor}
