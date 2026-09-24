@@ -1689,14 +1689,14 @@ local function settlement_factory()
 					occupied[key] = -2
 					occupied_positions[key] = {x, y, z}
 					written[key] = {x, y, z, cid, param2, -2, 36, feature, 0,
-						(#contract.content_names + 34 + local_ref - 1) * 256 + param2}
+						(#contract.content_names + 36 + local_ref - 1) * 256 + param2}
 				end
 				function context.write_hearthpine(x, y, z, cid, param2, local_ref, feature)
 					local key = occupied_key(x, y, z)
 					occupied[key] = -2
 					occupied_positions[key] = {x, y, z}
 					written[key] = {x, y, z, cid, param2, -2, 37, feature, 0,
-						(#contract.content_names + 36 + local_ref - 1) * 256 + param2}
+						(#contract.content_names + 38 + local_ref - 1) * 256 + param2}
 				end
 				local successor_result = successor_tail:settle(context)
 				if type(successor_result) ~= "table" or
@@ -3043,7 +3043,7 @@ local function settlement_factory()
 					final_data[index], final_param2[index] = cid, param2
 					intent_opcode[index], intent_feature[index], intent_interface[index] =
 						36, feature_ref, 0
-					local successor_ref = #contract.content_names + 34 + local_ref
+					local successor_ref = #contract.content_names + 36 + local_ref
 					if successor_refs.anchor_min == 0 or
 							successor_ref < successor_refs.anchor_min then
 						successor_refs.anchor_min = successor_ref
@@ -3074,7 +3074,7 @@ local function settlement_factory()
 					final_data[index], final_param2[index] = cid, param2
 					intent_opcode[index], intent_feature[index], intent_interface[index] =
 						37, feature_ref, 0
-					local successor_ref = #contract.content_names + 34 + 2 + local_ref
+					local successor_ref = #contract.content_names + 36 + 2 + local_ref
 					if successor_refs.settlement_min == 0 or
 							successor_ref < successor_refs.settlement_min then
 						successor_refs.settlement_min = successor_ref
