@@ -42,6 +42,7 @@ local function boar_def(description, texture)
 		-- Mesh scale rule, see boar.lua: 8.0 units = 0.80 nodes at size 1.
 		visual_size = {x = 1, y = 1},
 		collisionbox = {-0.45, -0.01, -0.45, 0.45, 0.86, 0.45},
+		selectionbox = {-0.62, -0.06, -0.76, 0.62, 1.04, 0.76, rotate = true},
 		makes_footstep_sound = true,
 
 		-- No punch clip in the mesh — reuse the walk range at attack speed
