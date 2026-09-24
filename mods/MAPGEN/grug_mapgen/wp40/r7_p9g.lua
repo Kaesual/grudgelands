@@ -113,8 +113,8 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 		fail("gathering manifest identity differs")
 	end
 	dense(rows, 12, "P9G catalog")
-	dense(p9g_content.content_names, 34, "P9G content names")
-	dense(p9g_content.content_cids, 34, "P9G content CIDs")
+	dense(p9g_content.content_names, 36, "P9G content names")
+	dense(p9g_content.content_cids, 36, "P9G content CIDs")
 
 	local zone_sets, host_sets, shore_sets = {}, {}, {}
 	for index = 1, #rows do

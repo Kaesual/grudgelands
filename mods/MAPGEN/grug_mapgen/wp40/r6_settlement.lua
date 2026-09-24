@@ -3008,8 +3008,8 @@ local function settlement_factory()
 					end
 					integer(cid, "P9G CID", 0, MAX_SAFE, "fail_content_manifest")
 					integer(param2, "P9G param2", 0, 255, "fail_content_manifest")
-					integer(local_ref, "P9G local ref", 1, 34, "fail_content_manifest")
-					integer(feature_ref, "P9G feature ref", 1, 34, "fail_content_manifest")
+					integer(local_ref, "P9G local ref", 1, 36, "fail_content_manifest")
+					integer(feature_ref, "P9G feature ref", 1, 36, "fail_content_manifest")
 					if cid == contract.ignore_cid then
 						fail("fail_content_manifest", "P9G target is ignore")
 					end

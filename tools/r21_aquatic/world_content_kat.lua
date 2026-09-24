@@ -41,7 +41,7 @@ local p9g = {
 local habitat = {initial_denominator = function() return 999999 end}
 local config = dofile(dir .. "/world_content.lua")(catalog, p9g, habitat)
 
-local function sample(water_class, denied)
+local function sample(water_class, denied, omit_surface_water_owner)
 	local plan, writes = {}, {}
 	local tail = config.new({
 		content = content,
@@ -54,7 +54,8 @@ local function sample(water_class, denied)
 		min_y = -5, max_y = 1,
 	}
 	function ctx.inside_owner(x, y, z)
-		return x == ctx.min_x and z == ctx.min_z and y >= -5 and y <= 1
+		return x == ctx.min_x and z == ctx.min_z and y >= -5 and y <= 1 and
+			(not omit_surface_water_owner or y ~= 0)
 	end
 	function ctx.column_values_at()
 		return water_class, 1, "fixture_zone", "fixture_biome", "neutral", -4, 0
@@ -110,6 +111,13 @@ for _, row in ipairs(fresh) do
 	else error("unexpected freshwater ref") end
 end
 assert(weeds > 200 and lilies > 100, "freshwater variants absent")
+local boundary = sample("planned_water", false, true)
+local boundary_weeds = 0
+for _, row in ipairs(boundary) do
+	assert(row.ref == 36, "lily crossed owner boundary")
+	boundary_weeds = boundary_weeds + 1
+end
+assert(boundary_weeds > 200, "owner-boundary fixture lost independent waterweed")
 assert(#sample("planned_water", true) == 0, "excluded freshwater decoration")
 assert(#sample("immutable_dragon_channel", false) == 0, "functional channel decoration")
 

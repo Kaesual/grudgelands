@@ -168,7 +168,8 @@ return function(catalog, content, habitat)
      end
      if not excluded and not housing and water=="planned_water" and water_y and
       water_y-ground>=2 and water_y-ground<=6 and
-      ctx.inside_owner(x,water_y+1,z) and reef_hash(x,z,223)%192==0 then
+      ctx.inside_owner(x,water_y,z) and ctx.inside_owner(x,water_y+1,z) and
+      reef_hash(x,z,223)%192==0 then
       local surface,param2,occupancy,opcode=ctx.settled_at(x,water_y+1,z)
       local below,below_p2=ctx.settled_at(x,water_y,z)
       local _,family,liquid=contract.classify(below,below_p2)
