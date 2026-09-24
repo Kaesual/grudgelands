@@ -71,6 +71,8 @@ Research and historical evidence: **[docs/research/README.md](docs/research/READ
 furnaces, aquatic detail and playtest fixes merged as `96c40fa3` and synchronized
 from main. [Receipt](docs/research/round21-completion.md),
 [playtest checklist](docs/research/round21-playtest.md),
+[startup correction](docs/research/round21-startup-fix.md) (fish disposition and
+native arrow catalog binding; real engine registration verified),
 [execution ledger](docs/planning/round21-state.md). All native implementation
 agents finished. Recorded larger mapgen checks cost about 95 CPU seconds; no
 full-world/census fleets. No remote push. Await user GUI acceptance.

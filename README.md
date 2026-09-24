@@ -54,7 +54,9 @@ furnace feedback and fuel rules, inexpensive Bronze arrows, food feedback and
 boar targeting. Lakes and coasts gain bounded visual variation, aquatic plants
 and passive fish. The preceding Round 20 supplies 240 quests, the full 100-anchor
 art roster and contextual combat/digging controls. In-game visual acceptance and
-longer-term balancing remain ongoing.
+longer-term balancing remain ongoing. A [startup correction](docs/research/round21-startup-fix.md)
+fixes the new fish registration and native arrow recipe binding; isolated server
+startup and the 200-arrow Basics recipe are verified.
 
 Open-world housing claims, boats, the full geographic PvP system, war fronts
 and the planned island dragon encounters are still unfinished. The current

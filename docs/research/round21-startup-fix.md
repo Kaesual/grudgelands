@@ -2,7 +2,8 @@
 
 2026-09-24. User-reported follow-up to [Round 21](round21-completion.md).
 Baseline `7908d494`. Native Astra root implementation and independent Astra
-`r21_nature_preflight` review. Local integration pending.
+`r21_nature_preflight` review. Delivered locally as source commit `03f3e78f`, merged as
+`f00433c7` and synchronized to Luanti on 2026-09-24.
 
 Two startup blockers were confirmed and fixed:
 
@@ -41,7 +42,9 @@ Evidence: [engine](../../tools/round21/evidence/startup-fix/engine.log),
 Review found no remaining blocker; the native catalog test closed a gap in the
 previous source-only arrow review. Calibration: nontrivial, Astra/Astra,
 0 newly review-raised Critical/High, two confirmed startup blockers fixed;
-elapsed implementation time unknown. No remote push.
+elapsed implementation time unknown. No remote push. The original Round 21 hash list is historical for changed files;
+replacement [source hashes](../../tools/round21/evidence/startup-fix/inputs.sha256)
+identify this follow-up.
 
 Runtime acceptance: restart the game/server, open Basics and find Arrows;
 craft 200 with one Bronze Bar and two diagonal Sticks. No new world is needed

@@ -175,3 +175,11 @@ complete; earlier pending checkpoints above are historical. No remote push or
 fetch; local `origin/main` remains `e346ec48`. Next action is the user's fresh
 world [playtest](../research/round21-playtest.md), not additional autonomous
 implementation or another test fleet.
+
+### Startup follow-up delivered
+
+The user-reported fish disposition crash and an additional native arrow recipe
+binding error were corrected as `03f3e78f`, merged as `f00433c7` and synchronized.
+Actual isolated engine registration/Basic visibility/200-arrow craft passed;
+all scratch worlds removed. [Receipt](../research/round21-startup-fix.md).
+No further implementation task is running. No remote push.

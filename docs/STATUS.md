@@ -2,6 +2,10 @@
 
 Updated 2026-09-24. This is the delivery pointer, not another game specification.
 
+- **Round 21 startup correction:** fixed the missing fish disposition and native
+  arrow recipe catalog binding; real isolated server startup and 200-arrow craft
+  passed. Merged as `f00433c7` and synchronized.
+  [Receipt](research/round21-startup-fix.md). No remote push.
 - **Round 21 delivered locally:** terrain/POI access, resource calibration,
   furnaces, aquatic detail and feedback fixes. Independently reviewed, final
   gates passed, merged as `96c40fa3` and synchronized to Luanti on 2026-09-24.
