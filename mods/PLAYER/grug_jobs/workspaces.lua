@@ -376,7 +376,6 @@ local function install_node(name, station)
 			not core.is_protected(pos, player:get_player_name()) and node_station(pos) == station
 	end
 	local function update(pos)
-		refresh_position(pos)
 		if automatic.sizes[station] then
 			local meta = core.get_meta(pos)
 			if station == "furnace" or station == "dual_furnace" then
@@ -388,8 +387,10 @@ local function install_node(name, station)
 				local wanted = (state.fuel or 0) > 0 and inactive .. "_active" or inactive
 				if node.name ~= wanted then node.name = wanted core.swap_node(pos, node) end
 			end
-			core.get_node_timer(pos):start(1)
+			local timer = core.get_node_timer(pos)
+			if not timer:is_started() then timer:start(1) end
 		end
+		refresh_position(pos)
 	end
 	local function allow_put(pos, list, index, stack, player)
 		if not allowed(pos, player) or list == "output" or list == "dst" then return 0 end
