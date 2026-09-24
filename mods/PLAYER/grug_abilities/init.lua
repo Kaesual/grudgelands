@@ -704,22 +704,27 @@ local function ability_on_secondary_use(itemstack, user, pointed_thing)
 	end
 	local destination = vector.add(origin,
 		vector.multiply(vector.normalize(look), NODE_INTERACT_RANGE))
-	-- `objects = false`: an object hit cannot reach this line any more (the type
-	-- guard above returned), and the engine owns an entity's right-click anyway.
-	-- Liquids stay excluded, like a hand click.
+	-- Even a client "nothing" result can hide an object behind skill-specific
+	-- pointability. Resolve both kinds by physical distance; never reach a door
+	-- through the first visible actor. Liquids stay excluded like hand clicks.
 	local nearest, nearest_distance
-	for pointed in core.raycast(origin, destination, false, false) do
-		if pointed.type == "node" then
-			-- Raycast order is not line-of-sight order (see grug_core's
-			-- combat_ray note), so compare the real intersection distances.
+	for pointed in core.raycast(origin, destination, true, false) do
+		if pointed.type == "node" or
+				(pointed.type == "object" and pointed.ref ~= user) then
 			local point = pointed.intersection_point
 			local distance = point and vector.distance(origin, point) or math.huge
-			if not nearest_distance or distance < nearest_distance then
+			if not nearest_distance or distance < nearest_distance or
+					(distance == nearest_distance and pointed.type == "node") then
 				nearest, nearest_distance = pointed, distance
 			end
 		end
 	end
 	if not nearest then
+		return itemstack
+	end
+	if nearest.type == "object" then
+		local entity = nearest.ref and nearest.ref:get_luaentity()
+		if entity and entity.on_rightclick then entity:on_rightclick(user) end
 		return itemstack
 	end
 	return pass_to_node(nearest.under, user, itemstack, nearest) or itemstack
