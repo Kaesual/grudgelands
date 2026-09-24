@@ -1217,5 +1217,19 @@ The current family classification is:
 |---|---|
 | Neutral | Boar, Plague Boar, Jungle Boar; Ibex, Tapir; Stag, Gaunt Stag, Zebra; Mountain Ram; Carrion Crow; Shore Crab, Reef Lurker |
 | Aggressive | Fox; Giant Rat; Bear, Plaguehide Bear; Wolf, Blightfang Wolf; Hyena; Jungle Lynx, Panther, Snow Leopard, Speargrass Tiger; Crag Eagle, Vulture; Crocodile; Jungle Ape; Giant Spider, Jungle Spider, Pale Spider, Spiderling; Serpent, Viper, Scorpion; Blood Bat; Goblin Raider, Goblin Slinger, Goblin Hound, Goblin Miner, Goblin Miner Slinger; Bandit, Bandit Archer, Poacher; Mirefolk; Skeleton Archer, Skeleton Raider, Zombie, Frost Stray, Sun-Dried Husk; Stone Golem, Mesa Golem, Stone Mite, War Construct; Ashen Treant, Gravewood Treant; Bog Ooze, Bog Witch; Wisp, Glowwing, Ember Wisp; Crystal Shard, Lava Flan; Oerkki, Rift Spawn, Dungeon Master; Kraken; Ice Dragon, Jungle Wyvern, Ice Whelp, Storm Whelp; kings |
-| Critter | Rabbit, Hare; Wild Turkey, Plains Runner; Parrot, Gull, Song Bird; Cave Bat, Cave Crawler; Bone Weevil, Bog Fowl |
+| Critter | Rabbit, Hare; Wild Turkey, Plains Runner; Parrot, Gull, Song Bird; Cave Bat, Cave Crawler; Bone Weevil, Bog Fowl; Reed Angelfish |
 | Independent role | Accord/Throng guards, land guards, royal guards and peaceful settlement NPCs |
+
+
+## Round 21 targeting and freshwater life
+
+Boars retain their existing physical collision box and movement behavior. Their
+yaw-rotated targeting box is separately padded to cover the visible body:
+`{-0.62, -0.06, -0.76, 0.62, 1.04, 0.76}`. The base, plague and jungle boars
+share this correction. Other families are adjusted from specific playtest reports.
+
+Reed Angelfish are passive freshwater critters, with no XP, quality loot or item
+drops. Their habitat is planned natural inland water, with source water at the
+spawn position and above it, next to a sand bed. They use the existing critter
+spawn machinery: interval 30s, chance 1/4000, local active-object cap 2,
+y=-30 through 80. They add ambient movement, not a fishing-resource system.

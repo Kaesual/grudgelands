@@ -1,4 +1,4 @@
-# Round 21 proposal: terrain integration and playtest fixes
+# Round 21: terrain integration and playtest fixes
 
 Date: 2026-09-24. Coordinator: GPT-6 Astra.
 Status: **approved and active; user Go received 2026-09-24**.
@@ -13,11 +13,10 @@ accepted. The corrected Gold row and Bronze-only arrows are approved with the ro
 
 ## Authority and scope
 
-This plan records the user's latest playtest report and read-only source
-investigation. Recommendations are not approved design. Open decisions are in
-[the approved decision record](round21-state.md#approved-decisions). After approval, fold decided
-rules into their living design owners before implementation; remove the decision
-sheet once resolved. Do not infer approval from earlier rounds.
+This plan records the approved playtest fixes and source investigation. Final
+decisions are in [the execution record](round21-state.md#approved-decisions) and
+the living design owners. Baseline tables below preserve the planning evidence;
+they do not override the approved replacement matrix in the mining supplement.
 
 Read `AGENTS.md`, `docs/process/wp-workflow.md`,
 `docs/process/agent-model-policy.md`, `docs/research/luanti-lua.md` (especially

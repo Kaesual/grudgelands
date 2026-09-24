@@ -29,12 +29,12 @@ Plans: [round scope](round21-mapgen-and-playtest-fixes.md),
 
 | Lane | Agent/model | Worktree | Status |
 |---|---|---|---|
-| G1 constructed-ground geometry | r21_settlement_preflight / Astra | /tmp/grug-r21-settlement | running |
-| G2 terrain/lakes/coast | r21_nature_preflight / Astra | /tmp/grug-r21-nature | running |
-| F1/F2/F3/F5 feedback/names/ammo | r21_feedback_preflight / Sol | /tmp/grug-r21-feedback | running |
-| F4 furnaces | Sol slot after feedback | TBD | queued |
-| G3 aquatic decor/fish | Sol slot after interface freeze | TBD | queued |
-| R1 resources + docs | root Astra | primary integration checkout | running |
+| G1 constructed-ground geometry | r21_settlement_preflight / Astra | /tmp/grug-r21-settlement | integrated; independent Astra review clean |
+| G2 terrain/lakes/coast | r21_nature_preflight / Astra | /tmp/grug-r21-nature | integrated, root reviewed |
+| F1/F2/F3/F5 feedback/names/ammo | r21_feedback_preflight / Sol | /tmp/grug-r21-feedback | integrated, root reviewed |
+| F4 furnaces | r21_feedback_preflight / Sol | /tmp/grug-r21-feedback | reviewed; final personal-light scope closure running |
+| G3 aquatic decor/fish | r21_feedback_preflight / Sol | /tmp/grug-r21-feedback | integrated; independent Astra review clean |
+| R1 resources + docs | root Astra | primary integration checkout | implemented, independent Astra reviewed |
 
 G1 owns wp13 street/avenue/landing/plot helpers, wp40 r7_settlement and planner
 grading consumer. G2 owns height.lua and simple_map geometry, shore material
@@ -70,8 +70,8 @@ implementation/review duration. Six workers are a ceiling, not a target.
 
 ### Evidence ledger
 
-No Round21 test commands run yet. Record commands, inputs, times, hashes and
-findings here as work proceeds.
+Evidence below is cumulative; earlier pending checkpoints are retained as
+chronological records and superseded by the final integration checkpoint.
 
 ## Completion obligations
 
@@ -100,3 +100,53 @@ progress update or compaction as completion.
 - Feedback existing R7 micro attempt cost11.7 CPU s and failed in stale factory
   setup before changed code; do not repeat. Targeted input/socket/atlas JIT
   fixtures passed. No PUC runtime or engine test yet.
+
+### Review/integration checkpoint
+
+- G2 `35ff7360` integrated as `f4c01d7a`; independent root review clean.
+- R1 `84592a9c`: independent Astra (nature agent) review clean; constructor gate pending.
+- Feedback through `95beab13` and follow-ups `dbe7dbf5`, `6a4b243d`,
+  `2e3f323d` integrated. Root reviewed sound cleanup, boar box, label chain,
+  arrows, fuel and UI. Independent Astra F4 medium finding (brewing exact
+  zero-elapsed refuel) fixed in `6a4b243d` and closed by reviewer.
+- G1 `510596d6` independent Astra review clean; 0.166s six-descriptor inspection
+  proved current junction writer coverage. Author is adding explicit preparation
+  envelopes for collars/approaches and a real-owner assertion helper.
+- G3 first candidate has waterweed/reef/fish; root requested surface lily using
+  pinned minetest_game flowers media, corrected pre-offset fish spawn check,
+  and moving reef-only hash work inside its eligible-water branch.
+- `tools/round21/integration.lua` is prepared but NOT RUN: real constructor,
+  actual planner/writer and <=4 chosen owners. Derived density pins are not
+  independent construction proof; final integration remains mandatory.
+
+### Final integration checkpoint (2026-09-24)
+
+- G1 through `9854b3e4` / integrated `8e5ecd15`, G3 through `c7828ae5` /
+  integrated `9f9c5299` independently reviewed clean by nature Astra.
+- Real integration `tools/round21/integration.lua` PASS on final mapgen bytes:
+  actual manifest constructor, preparation source, planner and writer; three
+  selected 80-cubed owners; core landing, gate and real plot approach walkable;
+  zero approach findings. Final run 19.46s wall / 19.39s CPU. Manifest
+  `3575ddcb09da9209be3f9dd57abac20b3f589ba1d7452f35fbb92752033e560a`.
+- Previous bounded attempts: fixture missing actual R20 scenery (5.88s wall,
+  5.86s CPU); gate fixture demanded half-steps on ordinary exterior terrain
+  (19.38s wall, 19.30s CPU); replay capture exposed a no-nearby-street entrance
+  (20.31s wall, 20.25s CPU). That plot now connects to natural terrain within
+  its eight-node collar. Three unique owners reused, nine owner emissions total
+  across three full attempts; no other VM owners. Sparse replay avoids further
+  constructor runs for inspection. All attempts stayed within the CPU budget.
+- Including nature scalar runs and the earlier obsolete feedback fixture, the
+  recorded larger mapgen checks total about **95 CPU seconds**. Small micro
+  fixtures add less than a few seconds. No mapgen test remains scheduled.
+- Initial compact final interpreter pair passed identically, digest
+  `486402fe35b65c4a1e0d8fcdc59164fefd358077330ead8ccd07883d8a6ecd88`;
+  PUC0.52s CPU / JIT0.24s CPU. Both actual small planner fixtures included.
+- Scope audit found personal furnace world light still omitted. F4 §7 already
+  authorizes a bounded cosmetic deadline. Sol is closing it using the existing
+  node timer; no player-record scan/new scheduler. Independent source review,
+  tiny fixture and one replacement portable pair required afterward. **Do not
+  rerun mapgen for this UI/world-light-only change.**
+- Root corrected remaining stale implementation-pending wording and added fish
+  to the living critter table after independent Sol documentation review.
+- Remaining: personal light closure, replacement final static/portable gates,
+  frozen source hashes and final receipt review, local commit/merge/sync. No push.

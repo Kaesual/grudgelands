@@ -1079,9 +1079,8 @@ asks for it.
   retains its T4 density in T5/ordinary T6 and then receives the shared deep-T6
   multiplier. G2 is sparse in T4 (1×), clearer in T5 (2×) and abundant in
   ordinary T6 (4×), with initial targets of approximately one eligible ore per
-  2,048/1,024/512 host nodes per species (Round 21 target; implementation
-  pending). All G2 requires a T4 pick to harvest.
-- **Round 21 density calibration (accepted 2026-09-24; implementation pending):**
+  2,048/1,024/512 host nodes per species (Round 21 calibration). All G2 requires a T4 pick to harvest.
+- **Round 21 density calibration (accepted 2026-09-24):**
   numbers below are eligible host nodes per target resource node. Dashes mean
   absent. Tiers are absolute-Y strata; existing deep multipliers apply afterward.
   Keep existing vein caps and first-appearance/harvest boundaries. These are
@@ -1792,19 +1791,19 @@ status. Existing ocean/channel no-flight rules remain. See `mounts.md` section 4
 
 ## Round 21 natural-surface iteration
 
-Approved 2026-09-24; implementation pending. Preserve continental profile roles
-and ranges, improve intermediate hills and ordinary transitions with existing
-noise first and at most one extra 128–192-node octave. Ordinary lake edges and
-beds gain bounded irregularity/shallow margins while functional connections,
+Approved 2026-09-24. Preserve continental profile roles and ranges. The broad
+64-node lattice is smoothed once with 1:2:1 weights; the two existing detail
+scales are 128/32 nodes with 3:1 weights. Lowland and rolling amplitudes are
+9 and 12 respectively. No additional noise octave is evaluated. Frostbarrow
+and Moonfall lake edges gain bounded irregularity and shallow margins while functional connections,
 fixed levels and reservations remain protected. Beach/cliff transitions adjust
 height and material together; sand is limited to low/gentle shore surfaces.
 Corals form varied deterministic patches at similar overall density. Rooted
 freshwater waterweed sparsely decorates safe, 2–6-node-deep authored water over
 natural sand without displacing the water column. Thin waterlilies occupy the
 air node immediately above a similarly safe freshwater surface and remain
-passable. One licensed animated ambient fish family
-may use existing capped critter spawning, without XP/loot or fishing changes;
-complex movement/asset blockers are escalated.
+passable. Reed Angelfish use existing capped critter spawning, without
+XP/loot or fishing changes.
 
 The freshwater family is the Reed Angelfish, using ElCeejo's MIT-licensed
 Animalia angelfish mesh and texture at commit

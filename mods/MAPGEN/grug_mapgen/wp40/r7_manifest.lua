@@ -39,7 +39,7 @@ return function(canonical, raw_sha256, settlement_order)
 	-- content refs shift with sorted soil rows while MTS geometry stays fixed.
 	-- R21: approved ore/gem density rows and matching WP43 density projection.
 	local SOURCE_PROJECTION_SHA256 =
-		"794306821af00350d85288a3be810e843b2bd09f2c9c6f73ce46df808123a324"
+		"b178dc17c8c1bc7c2c977d7ee71cfcdb315d82f5ddd3123f5c84002f45dcf466"
 	local FIELD_HEAD = {
 		"schema", "full_seed", "r5_schema", "r5_manifest_sha256",
 		"r5_artifact_sha256", "r6_schema", "r6_contract_sha256",
@@ -306,7 +306,7 @@ return function(canonical, raw_sha256, settlement_order)
 		if inputs.production_content.semantic_digest ~=
 				"e7f1204a434fb773b78562c4655cb949e7f5637b6c165b7d3228056d6ed56296" or
 				inputs.p9g_content.semantic_digest ~=
-				"4982608737ad1a25f5af057bb18db19af28cfc65482225bda954fcdc1868da03" then
+				"b4ca49bd01c47cd9915c07a57a7cdfc5346c2f49a7916e7834cb5b5056250cb0" then
 			fail("frozen content semantics differ")
 		end
 		local anchors = inputs.anchor_content

@@ -535,7 +535,7 @@ envoy. Quest identities and journey structure belong to `quests.md`.
 
 ## Round 21 ground and access correction
 
-Approved 2026-09-24; implementation pending. Preserve anchor/reservation extents
+Approved 2026-09-24. Preserve anchor/reservation extents
 while separating natural terrain fitting from visible masonry. POI collars
 retain biome/cultural ground. Street junctions have complete shared footprints
 and a single landing surface, with incident runs ending at their ports. Core,

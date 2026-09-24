@@ -118,7 +118,7 @@ The active contract is:
   **25 m range, 0.5 s charge**, partial charge scales linearly, and the affix
   pool is Dex, Crit, attack/draw speed, HP and Mana. One bow per material tier,
   material-named under §3.0.3. Round 21 arrows craft 200 per batch from 1 Bronze Bar +
-  2 Sticks diagonally, without feathers (approved; implementation pending). Plain bows and arrows are Basics; Woodcarver
+  2 Sticks diagonally, without feathers (approved 2026-09-24). Plain bows and arrows are Basics; Woodcarver
   owns named bow enchantments. Leatherworker makes the optional four-stack
   Offhand quiver at Apprentice.
 - `combat_stats.md` §2 defines the delivered bow flow: a bow is drawn up to a
@@ -338,7 +338,7 @@ conflicts if version 1 had stealth (§8).
 | **WP11 (skill trees)** | the Scout's 16 talents run on the shared talent machinery | `skill_trees.md` §4 |
 | **The speed aggregator** | ruling 11's `grug_core` aggregator drives Sprint, Snare Shot and Shake Loose | `skill_trees.md` §3.9; `docs/research/mob-pressure-task-card.md` |
 | **Weapon ladder §3.0.3** | six tier bows, the below-ladder starter bow, dedicated centre-grip pose and ballistic ability consumer | `items_crafting.md` §9; `character_visuals.md` §6 |
-| **Arrows** | the player arrow item and Round-17 **homing** `grug_projectiles` entity; the Basics craft is 1 Bronze Bar + 2 diagonal Sticks → 200 (Round 21 target); the physics reference and its licence are §4.1 | `items_crafting.md` §9; reference entity `skeleton_archer.lua:18` |
+| **Arrows** | the player arrow item and Round-17 **homing** `grug_projectiles` entity; the Basics craft is 1 Bronze Bar + 2 diagonal Sticks → 200 (Round 21 calibration); the physics reference and its licence are §4.1 | `items_crafting.md` §9; reference entity `skeleton_archer.lua:18` |
 | **Leather armour** | consume the delivered 24-item leather family and its dedicated inventory/worn art; armor rank remains 2 | `inventory_equipment.md` §2; `character_visuals.md` §3 |
 | **Professions** | none created. Leatherworker owns the grades/current quiver; Woodcarver owns bow quality operations | `professions.md` §2–§3 |
 | **Traders** | the bowyer shelf exposes bows and player arrows; the tanner shelf exposes the leather grades through the existing rotation and quality paths | `grug_traders/stock.lua` |
