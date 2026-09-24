@@ -1079,8 +1079,31 @@ asks for it.
   retains its T4 density in T5/ordinary T6 and then receives the shared deep-T6
   multiplier. G2 is sparse in T4 (1×), clearer in T5 (2×) and abundant in
   ordinary T6 (4×), with initial targets of approximately one eligible ore per
-  12,000/6,000/3,000 host nodes per species. All G2 requires a T4 pick to
-  harvest.
+  2,048/1,024/512 host nodes per species (Round 21 target; implementation
+  pending). All G2 requires a T4 pick to harvest.
+- **Round 21 density calibration (accepted 2026-09-24; implementation pending):**
+  numbers below are eligible host nodes per target resource node. Dashes mean
+  absent. Tiers are absolute-Y strata; existing deep multipliers apply afterward.
+  Keep existing vein caps and first-appearance/harvest boundaries. These are
+  placement budgets, not independent discovery odds or measured mining time.
+
+  | Resource | T1 | T2 | T3 | T4 | T5 | T6 |
+  |---|---:|---:|---:|---:|---:|---:|
+  | Coal | 64 | 128 | 128 | 128 | 128 | 128 |
+  | Copper | 96 | 192 | 384 | 384 | 384 | 384 |
+  | Tin | 96 | 192 | 384 | 384 | 384 | 384 |
+  | Iron | 128 | 96 | 192 | 384 | 384 | 384 |
+  | Quartz | 128 | 256 | 512 | 512 | 512 | 512 |
+  | Gold | — | 512 | 256 | 128 | 256 | 256 |
+  | Silver | — | — | 256 | 128 | 256 | 512 |
+  | Emberglass | — | — | — | 256 | 128 | 256 |
+  | Abyssal Crystal | — | — | — | — | 512 | 256 |
+  | Assigned G1 species | — | 2048 | 1024 | 512 | 512 | 512 |
+  | Assigned G2 species | — | — | — | 2048 | 1024 | 512 |
+
+  The quarter-density floor retains older inputs at depth; T1 Iron keeps its
+  former density as a bootstrap exception. Gold peaks at T4 and remains useful at T5/T6, matching Goldsmith demand. This decision does not claim the full corpus
+  parity gate below was rerun.
 - Natural-resource placement and its accessible-host denominator admit only
   horizontal classes `land` and zone-owned `planned_water`. Rivers, lakes,
   marsh channels, cenotes and the landward bay masks therefore retain their
@@ -1766,3 +1789,16 @@ allow flight for both factions. Safe faction home zones (including capitals)
 allow only their own faction to fly. Other POIs inherit the surrounding zone.
 Both dragon islands prohibit flight for both factions, despite their contested
 status. Existing ocean/channel no-flight rules remain. See `mounts.md` section 4.
+
+## Round 21 natural-surface iteration
+
+Approved 2026-09-24; implementation pending. Preserve continental profile roles
+and ranges, improve intermediate hills and ordinary transitions with existing
+noise first and at most one extra 128–192-node octave. Ordinary lake edges and
+beds gain bounded irregularity/shallow margins while functional connections,
+fixed levels and reservations remain protected. Beach/cliff transitions adjust
+height and material together; sand is limited to low/gentle shore surfaces.
+Corals form varied deterministic patches at similar overall density; suitable
+freshwater plants decorate safe water. One licensed animated ambient fish family
+may use existing capped critter spawning, without XP/loot or fishing changes;
+complex movement/asset blockers are escalated.

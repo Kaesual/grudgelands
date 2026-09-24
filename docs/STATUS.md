@@ -2,6 +2,10 @@
 
 Updated 2026-09-24. This is the delivery pointer, not another game specification.
 
+- **Round 21 active:** user Go received, including corrected Gold densities,
+  Bronze-only cheap arrows and 10-second metal smelts. [Plan](planning/round21-mapgen-and-playtest-fixes.md),
+  [execution state](planning/round21-state.md). Minimal mapgen checks; at most
+  six CPU workers. No remote push authorized.
 - **Round 20 delivered locally:** 240 quests, all 100 anchor art slots, contextual
   input and equipment/UX fixes. Independently reviewed, final gates passed,
   merged as `8308229f` and synchronized to Luanti on 2026-09-24. No push.

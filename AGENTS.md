@@ -67,6 +67,12 @@ Research and historical evidence: **[docs/research/README.md](docs/research/READ
 
 ## Active work and game status
 
+**Round 21 is active (user Go 2026-09-24).** Read
+[the execution ledger](docs/planning/round21-state.md) before starting or resuming.
+Root Astra coordinates native Astra/Sol lanes. Minimal mapgen tests, maximum
+six CPU workers for this round, no full-world/census fleets. No remote push.
+
+
 **Round 20 delivered locally, 2026-09-24:** POI/quest expansion and playtest
 fixes, including contextual input. Independent reviews and final static,
 portable-interpreter, real POI and isolated engine gates passed. Merged to main
