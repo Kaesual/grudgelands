@@ -154,11 +154,11 @@ local function formspec(ctx)
 			(ctx.station == "furnace" and 2 or 1) .. ";]listring[" .. location .. ";" .. output ..
 			"]listring[current_player;main]listring[" .. location .. ";" .. source ..
 			"]listring[current_player;main]listring[" .. location .. ";fuel]listring[current_player;main]" ..
-			(furnace_kind and "image[4.6,2.3;0.8,0.8;default_furnace_fire_bg.png]" or "") ..
-			(furnace_kind and fuel_percent > 0 and "image[4.6,2.3;0.8,0.8;default_furnace_fire_bg.png^[lowpart:" ..
+			(furnace_kind and "image[4.55,2.4;0.6,0.6;default_furnace_fire_bg.png]" or "") ..
+			(furnace_kind and fuel_percent > 0 and "image[4.55,2.4;0.6,0.6;default_furnace_fire_bg.png^[lowpart:" ..
 				fuel_percent .. ":default_furnace_fire_fg.png]" or "") ..
-			(furnace_kind and "image[5.45,2.3;0.8,0.8;gui_furnace_arrow_bg.png^[transformR270]" or "") ..
-			(furnace_kind and progress_percent > 0 and "image[5.45,2.3;0.8,0.8;gui_furnace_arrow_bg.png^[lowpart:" ..
+			(furnace_kind and "image[5.25,2.4;0.6,0.6;gui_furnace_arrow_bg.png^[transformR270]" or "") ..
+			(furnace_kind and progress_percent > 0 and "image[5.25,2.4;0.6,0.6;gui_furnace_arrow_bg.png^[lowpart:" ..
 				progress_percent .. ":gui_furnace_arrow_fg.png^[transformR270]" or "")
 	else
 		result = result .. "list[" .. location .. ";craft;1,2;3,3;]" ..
@@ -338,7 +338,7 @@ core.register_globalstep(function(dtime)
 	for _, ctx in pairs(viewers) do
 		if accessible(ctx, core.get_player_by_name(ctx.name)) then
 			advance(ctx)
-			refresh(ctx, ctx.automatic)
+			refresh(ctx, ctx.station == "furnace" or ctx.station == "dual_furnace")
 		end
 	end
 end)
