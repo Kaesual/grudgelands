@@ -461,13 +461,17 @@ local function install_node(name, station)
 		on_metadata_inventory_put = update, on_metadata_inventory_take = update,
 		on_metadata_inventory_move = update,
 		on_timer = function(pos, elapsed)
-			if not automatic.sizes[station] or grug_jobs.is_public_station(station, pos) then return false end
+			if not automatic.sizes[station] then return false end
 			initialize(pos, station)
 			local meta = core.get_meta(pos)
 			local state = core.deserialize(meta:get_string("grug_jobs:process")) or {}
-			automatic.advance(station, meta:get_inventory(), state, elapsed)
-			meta:set_string("grug_jobs:process", core.serialize(state))
-			local running = automatic.running(station, meta:get_inventory(), state)
+			local public = grug_jobs.is_public_station(station, pos)
+			if not public then
+				automatic.advance(station, meta:get_inventory(), state, elapsed)
+				meta:set_string("grug_jobs:process", core.serialize(state))
+			end
+			local running = not public and
+				automatic.running(station, meta:get_inventory(), state) or false
 			local personal_lit = false
 			if station == "furnace" or station == "dual_furnace" then
 				personal_lit = automatic.personal_light_active(core.get_gametime(),

@@ -6,6 +6,7 @@ return function(repo)
 		{"food_input", "tools/r20_input/controls_micro.lua"},
 		{"socket_labels", "tools/wp13/settlement_sockets_kat.lua"},
 		{"furnaces", "tools/r21_furnace/automatic_kat.lua"},
+		{"furnace_light", "tools/r21_furnace/workspaces_light_kat.lua"},
 		{"aquatic_content", "tools/r21_aquatic/world_content_kat.lua"},
 		{"fish_spawn", "tools/r21_aquatic/fish_spawn_kat.lua"},
 	}
