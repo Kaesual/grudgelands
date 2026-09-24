@@ -49,7 +49,8 @@ env.grug_quests = {
 	marker_state=function(_,id) collections=collections+1;return state[id] end,
 }
 env.grug_core = {
-	settlement_socket_settlements=function() return {{key="goldmead_village",race_id="human",anchor=sockets[1].pos}} end,
+	settlement_socket_settlements=function() return {{key="goldmead_village",
+		display_name="Tarnwatch Fold",race_id="human",anchor=sockets[1].pos}} end,
 	settlement_sockets_at=function() return sockets end,
 	zone_authority_installed=function() return false end,
 }
@@ -77,6 +78,7 @@ for _,f in ipairs(loaded) do f() end
 local rows=atlas.collect_markers(me)
 assert(#rows==10 and rows[#rows].kind=="player")
 local by_id={}; for _,r in ipairs(rows) do by_id[r.id]=r end
+assert(by_id["settlement:goldmead_village"].label=="Tarnwatch Fold")
 assert(by_id["quest:elder"].status=="available" and by_id["quest:elder"].detail=="Marta")
 assert(by_id["quest:second"].status=="ready" and by_id["quest:second"].detail=="Local")
 assert(by_id["service:goldmead_village/trainer"].detail=="Cooking Trainer")

@@ -49,7 +49,7 @@ atlas.register_marker_provider("settlement", function()
 	local result = {}
 	for index = 1, #rows do
 		local row = rows[index]
-		local label = LABELS[row.key] or humanize(row.key)
+		local label = row.display_name or LABELS[row.key] or humanize(row.key)
 		result[index] = {id = row.key, label = label, position = row.anchor,
 			kind = row.key:find("bandit_camp", 1, true) and "hostile" or "settlement",
 			detail = label}

@@ -80,7 +80,7 @@ return function(repo)
 	}
 
 	local count = grug_core.register_settlement_sockets("hearthpine", "dwarf",
-		ANCHOR, SOCKETS)
+		ANCHOR, SOCKETS, "Tarnwatch Fold")
 	check(count == #SOCKETS, "registration count differs")
 	line("registered", "hearthpine", "dwarf", count)
 
@@ -169,6 +169,7 @@ return function(repo)
 	check(#settlements == 1, "settlement roster length differs")
 	-- (still one here: the capital is registered further down)
 	check(settlements[1].key == "hearthpine" and
+		settlements[1].display_name == "Tarnwatch Fold" and
 		settlements[1].race_id == "dwarf" and
 		settlements[1].anchor.y == ANCHOR.y, "settlement roster row differs")
 	settlements[1].anchor.y = 0

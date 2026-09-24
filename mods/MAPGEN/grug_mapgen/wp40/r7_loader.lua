@@ -89,7 +89,7 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 			if row.slot == wanted then
 				registered_rows = registered_rows + 1
 				socket_count = socket_count + core_owner.register_settlement_sockets(
-					row.key, row.race, row.anchor, row.sockets)
+					row.key, row.race, row.anchor, row.sockets, row.label)
 			end
 		end
 	end
