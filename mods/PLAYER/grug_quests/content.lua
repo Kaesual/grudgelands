@@ -1,13 +1,14 @@
--- Round 14 V1 overworld quest catalog. The Nether is reserved for expansion one.
+-- Round 20 revision of the 102 established quests. Stable IDs retain their
+-- original slugs; current titles and objectives describe the revised tasks.
 
 local Q = grug_quests
 
 -- Fixed shares of the intended level interval: ordinary 20%, hard 25%,
 -- and the camp finale 35% (progression.md section 4).
-local XP = {20, 60, 100, 140, 180, 300, 380, 525, 805}
+local XP = {20, 20, 100, 140, 180, 285, 380, 525, 805}
 local COPPER = {10, 15, 20, 25, 30, 40, 50, 60, 80}
-local LEVEL = {1, 2, 3, 4, 5, 8, 10, 11, 12}
-local COUNT = {5, 4, 5, 4, 5, 6, 6, 6, 4}
+local LEVEL = {1, 1, 3, 4, 5, 10, 10, 11, 12}
+local COUNT = {3, 4, 6, 3, 5, 1, 6, 6, 4}
 
 local BANDITS = {"grug_mobs:bandit", "grug_mobs:bandit_archer"}
 local GOBLINS = {"grug_mobs:goblin_raider", "grug_mobs:goblin_slinger",
@@ -28,10 +29,10 @@ local cultures = {
 			"The smokehouse feeds every shift. Bring ordinary meat; who hunted it does not matter.",
 			"Clear pests from the stores: boars by day or the giant rats that emerge after dusk.",
 			"Patrol the lantern posts. Boars press the boundary by day and the restless dead replace them after dusk.",
-			"Ibex are knocking loose slate above the high path. Clear the animals crowding the ledges.",
+			"Ibex knock loose slate above Hearthpine's high path by day. Clear the animals on level-4-and-up ground along the ledges.",
 			"Boars and ibex have loosened stone over Copper Road. Clear the approach to Copper Road.",
 			"Foxes scattered an ore ledger in the scrub. Clear the den so Orrik can recover the pages.",
-			"A second goblin pack circles the outpost stones. Mara needs the road held before dusk.",
+			"Goblins use Copperfell's marker stones to signal across the pass at night. Break their signal party so Mara can guide the next ore wagon.",
 			"The bandits stole ore tallies and marked them with a hooked sun. Defeat the camp; Tovin waits inside with what he learned.",
 		},
 		targets = {{"grug_mobs:boar"}, false, {"grug_mobs:giant_rat", "grug_mobs:boar"},
@@ -56,7 +57,7 @@ local cultures = {
 			"Dawnmere owes the smokehouse a share. Bring ordinary meat for the common table.",
 			"Clear pests from the granary: boars by day or the giant rats that emerge after dusk.",
 			"Patrol the lantern road. Boars press the fields by day and breathless figures replace them after dusk.",
-			"Wild turkeys have drawn off the village flock. Thin them near the outer fields.",
+			"Wild turkeys draw off Dawnmere's village flock by day. Thin them near the outer fields while the store frame is repaired.",
 			"Boars and wild turkeys crowd Mill Road. Clear the local approach to Mill Road.",
 			"Foxes have moved into the orchard margins. Give Marta's pickers room to work.",
 			"The poachers left empty snares around the outpost. Jon wants the hunters found before they return.",
@@ -84,7 +85,7 @@ local cultures = {
 			"The grove wastes nothing. Bring ordinary meat to be shared at the evening table.",
 			"Clear pests from the seed stores: boars by day or the giant rats that emerge after dusk.",
 			"Patrol the moss ring. Boars root there by day and the restless dead bend it after dusk.",
-			"Foxes are worrying the sapling guards. Clear the animals from the tended ring.",
+			"Foxes worry the sapling guards by day on level-4-and-up ground outside Silverleaf. Clear the animals from the tended ring.",
 			"Secure the Silverleaf approach: poachers cut boughs by night and foxes scatter the road stores by day.",
 			"More poachers hide beneath the lower boughs. Give the wardens room to restore the grove.",
 			"Foxes scatter the scouts' trail signs. Clear the green road before Theren patrols it.",
@@ -176,7 +177,7 @@ local cultures = {
 			"Patrol the rootways. Jungle boars dig there by day and old dead wander there after dusk.",
 			"Vipers shelter beneath the broad leaves beside the homes. Clear the nearest nests.",
 			"Tapirs crowd Raincall Road and scatter travellers from the narrow path. Thin the herd near Kapok.",
-			"Vipers have coiled along the village footpath. Make the walk safe again.",
+			"Vipers emerge along the village footpath after nightfall. Clear Raincall's nearby rainforest ground so Daro can reopen the walk.",
 			"Jungle lynx watch the reed line below the outpost. Clear Neshi's patrol route.",
 			"The bandits' wet cargo smoulders without being consumed and bears a hooked sun. Defeat them and speak with Veko.",
 		},
@@ -282,6 +283,66 @@ local function quest_id(culture, number, title)
 	return ("r14_%s_%02d_%s"):format(culture.key, number, slug)
 end
 
+local START_REWORK = {
+ dwarf = {wood = "default:pine_wood", title = "Boards for the Winter Stacks",
+  repairs = "The woodpile pests exposed rotten braces beneath the winter stacks. Bring six pine planks for the store frames; ordinary boards from local pine trunks, carried or traded, are equally useful.",
+  night = "After nightfall, zombies approach the lantern line outside Hearthpine. Defeat three on that night patrol. They begin in the level-3 country; do the daytime store work or optional tool lessons if the sun is still up.",
+  road = "At level 10, take the road to Copperfell Village and speak with Orrik Pineledger. Copperfell Foothills is level 11–20 country: this is a conversation handoff, not a demand to clear the whole road. Complete it with Orrik at the village.",
+  day = "Boars are tearing through the timberline stores outside Hearthpine. Drive off three by day, and bring any ordinary meat you keep to Hilda Hearthspoon at the separate oven."},
+ human = {wood = "default:wood", title = "Braces for the Granary",
+  repairs = "The granary's damaged braces leave the baskets open to pests. Bring six oak planks to repair the store frame. Boards already in your pack or obtained by trade count too.",
+  night = "Zombies approach Dawnmere's lantern road after nightfall. Defeat three beyond the houses in the level-3-and-up fields. The daytime repair work and optional tool lessons remain alternatives while the road is quiet.",
+  road = "At level 10, travel to Goldmead Village and speak with Marta Millward. Goldmead Vale is level 11–20 country; follow the road instead of trying to clear every creature. Complete this handoff with Marta there.",
+  day = "Boars root through the outer seed rows by day. Drive off three beyond Dawnmere's fence, and take spare raw meat to Bess Honeycrust beside the village oven."},
+ elf = {wood = "default:wood", title = "A Frame for the Seed Baskets",
+  repairs = "The seed baskets need a sound frame before the youngest roots can be covered again. Bring six ordinary oak planks; nearby oak trunks provide them, and traded boards are welcome. Silverwood is not required.",
+  night = "Zombies cross the moss ring outside Silverleaf after nightfall. Defeat three in the level-3-and-up glades. Store repairs and optional tool lessons need not wait for darkness.",
+  road = "At level 10, follow the road to Starbough Village and speak with Ilyra Mossveil. Starbough Vale is level 11–20 country, so prepare before leaving the safer glades. Complete the conversation with Ilyra; no fighting or return trip is part of this handoff.",
+  day = "Boars expose young roots outside Silverleaf by day. Drive off three, then consider taking spare raw meat to Liora Dewpot at the grove's separate oven."},
+ undead = {wood = "grug_trees:gravewood_wood", title = "Dry Shelves for the Crypt Stores",
+  repairs = "The crypt stores need dry shelves above the damp soil. Bring six gravewood planks, the ordinary boards cut from this region's gravewood trunks. Existing or traded boards count; nothing must be taken from a protected tomb.",
+  night = "Three uncalled zombies have wandered into Stillgrave's outer furrows. The patrol sets out after nightfall, although blight-ground zombies can linger through daylight too. Seek level-3-and-up ground; the store repairs do not depend on this patrol.",
+  road = "At level 10, take the fen road to Mournfen Village and speak with Mordec Silt. Mournfen is level 11–20 country; keep clear of its hungry banks while travelling. Complete this conversation with Mordec there, without an added hunt or return journey.",
+  day = "Plague boars churn Stillgrave's outer furrows by day. Drive off three before the retaining stones loosen, and take spare raw meat to Neral Saltkeeper by the oven."},
+ orc = {wood = "default:acacia_wood", title = "Posts Beneath the Hide Racks",
+  repairs = "The hide racks need new feet before another load pulls them into the dust. Bring six acacia planks from the ordinary local timber, or use boards already carried or traded.",
+  night = "Sun-dried husks walk beyond Sunscar after nightfall. Defeat three in the level-3-and-up flats before they reach the water skins. The rack repairs and optional tool lessons remain daytime work.",
+  road = "At level 10, follow Redtusk Road to Redtusk Village and speak with Borak Redgrass. Redtusk Savanna is level 11–20 country, not a beginner hunting ground. Complete the conversation with Borak; this handoff requires neither a kill nor a return trip.",
+  day = "Boars tear the water skins outside Sunscar by day. Drive off three and carry spare raw meat to Ugra Brothstone at the separate oven."},
+ troll = {wood = "default:junglewood", title = "A Dry Frame for the Baskets",
+  repairs = "Kapok's dry baskets need a new frame above the wet ground. Bring six junglewood planks for the supports. Ordinary planks from local jungle trunks, existing supplies and traded boards all count.",
+  night = "Zombies wander the rootways beyond Kapok after nightfall. Defeat three on level-3-and-up ground. The basket repair and optional tool lessons are available without waiting for the night patrol.",
+  road = "At level 10, follow the route to Raincall Village and speak with Daro Kapok. Raincall Basin is level 11–20 country; prepare your equipment and avoid wandering into its hunters. Complete this handoff with Daro, with no fighting errand or return trip.",
+  day = "Jungle boars turn up the yam beds outside Kapok by day. Drive off three, and bring spare raw meat to Zemi Sweetroot at the separate oven shelter."},
+}
+
+-- These collection jobs share the main story's outing rather than asking for
+-- a second, larger count of the same creature after returning to the giver.
+local LOCAL_REWORK = {
+ dwarf = {
+  [2] = {"Fangs in the Tool Baskets", "Foxes leave fangs among the scattered tool baskets. Bring two ordinary fox fangs from the Copperfell hunt so Dagna can show the workers which animals caused the damage.", "grug_mobs:fang", 2},
+  [3] = {"Scraps from the Signal Path", "The goblins on Copperfell's night signal path carry linen scraps. Bring two while helping Mara hold the marker stones; Mara can bind the recovered signal poles with the scraps.", "grug_mobs:linen_scrap", 2},
+ },
+ human = {
+  [2] = {"Apples for the Orchard Crew", "The orchard crew needs provisions while Marta's watch clears the foxes. Bring four ordinary apples, gathered from nearby apple trees or supplied from your pack.", "default:apple", 4},
+  [3] = {"Cloth from the Empty Snares", "The night poachers around Goldmead carry ordinary linen cloth. Bring three pieces while helping Jon investigate the empty snares, rather than setting out on a second identical hunt.", "grug_mobs:linen_cloth", 3},
+ },
+ elf = {
+  [2] = {"Linen at the Sapling Cuts", "Bring three ordinary linen cloth pieces from the local night poachers so Lethri can bind the damaged guards while Ilyra clears the lower boughs.", "grug_mobs:linen_cloth", 3},
+  [4] = {"Fangs Beside the Trail Signs", "Bring two ordinary fox fangs from the Starbough road hunt. Theren uses them to explain the warning signs while the trail markers are reset; no second fox count is needed.", "grug_mobs:fang", 2},
+ },
+ undead = {
+  [3] = {"Teeth from the Watch Channel", "Bring two ordinary crocodile teeth from Mournfen's muddy banks while helping Sera clear the sluice. They will mark the safest side of the watch channel without another counted crocodile hunt.", "grug_mobs:croc_tooth", 2},
+ },
+ orc = {
+  [2] = {"Fangs Beyond the Annex", "Bring two ordinary fangs from the hyenas circling Redtusk's herd. Morga will hang them beside the repaired hide screens while Borak's herd patrol is under way.", "grug_mobs:fang", 2},
+  [4] = {"Venom Beside the Palisade", "The scorpions in Redtusk's dry wash emerge after sunset. Bring two ordinary venom sacs from that same outing so Kesh can show the guards what to avoid along the angled palisade.", "grug_mobs:venom_sac", 2},
+ },
+ troll = {
+  [4] = {"Leather for the Reed-Line Packs", "Bring two ordinary leather pieces for Neshi's patrol packs while clearing the daytime jungle lynx from Raincall's reed line. Carried or traded leather is welcome; there is no second counted cat hunt.", "mobs:leather", 2},
+ },
+}
+
 for _, culture in ipairs(cultures) do
 	local npc = {
 		elder = "r14_" .. culture.key .. "_elder",
@@ -302,43 +363,76 @@ for _, culture in ipairs(cultures) do
 	Q.register_npc(npc.local_worker, {settlement = culture.village,
 		socket = "quest_local", title = story.name})
 
-	local previous
+	local rework = START_REWORK[culture.key]
+	local start_cook = "r20_" .. culture.key .. "_start_cook"
 	for number = 1, 9 do
 		local id = quest_id(culture, number, culture.titles[number])
 		local giver = number <= 6 and npc.elder or
 			(number == 7 and npc.steward or npc.scout)
+		local title, description = culture.titles[number], culture.descriptions[number]
 		local objective
-		if number == 2 then
-			objective = {type = "item", item = "mobs:meat_raw", count = COUNT[number],
-				description = "Bring raw meat"}
-		else
+		if number == 1 then
+			description = rework.day
+		elseif number == 2 then
+			giver = start_cook
+			description = "The shared oven feeds everyone returning from " .. culture.start:gsub("_", " ") ..
+				"'s outer paths. Bring four raw meat portions to " .. Q.registered_npcs[start_cook].title ..
+				" beside the oven. Take this provision job before the short local hunt; carried or traded meat counts, and Cooking is not required."
+			objective = {type = "item", item = "mobs:meat_raw", count = 4}
+		elseif number == 3 then
+			title, description = rework.title, rework.repairs
+			objective = {type = "item", item = rework.wood, count = 6}
+		elseif number == 4 then
+			description = rework.night
+			objective = {type = "kill", mobs = {culture.targets[4][1]}, count = 3}
+		elseif number == 5 and culture.key == "undead" then
+			title = "Stones Against the Sour Furrows"
+			description = "Bring eight cobble blocks to shore up Stillgrave's outer retaining stones. The boar patrol has already done its part; this repair is ordinary material delivery, not another hunt."
+			objective = {type = "item", item = "default:cobble", count = 8}
+		elseif number == 6 then
+			title = "The Road to " .. Q.registered_npcs[npc.steward].title
+			description = rework.road
+			objective = {type = "talk", npc = npc.steward, count = 1}
+		end
+		if not objective then
 			objective = {type = "kill", mobs = culture.targets[number],
 				count = COUNT[number], zone = culture.zones[number]}
 		end
+		if number == 5 and (culture.key == "orc" or culture.key == "troll") then
+			description = description .. " These creatures emerge after nightfall on level-4-and-up ground."
+		elseif number == 7 and culture.key == "elf" then
+			description = "Poachers cut beside Starbough's lower boughs after nightfall. Defeat six in Starbough Vale so Ilyra can put the wardens back on their working paths."
+		elseif number == 8 and (culture.key == "dwarf" or culture.key == "human" or culture.key == "orc") then
+			description = description .. " Look for this threat after nightfall in the named regional zone."
+		elseif number == 9 then
+			description = description .. " Speak with the captive for compatible supply tasks before clearing the camp; the captive also accepts this combat report."
+		end
+		local prior = number >= 7 and number - 1 or
+			(number == 6 and 5 or number == 5 and 3 or (number == 3 or number == 4) and 1)
 		Q.register_quest(id, {
-			title = culture.titles[number], description = culture.descriptions[number] .. (number == 6 and "\n\nClear the local approach first. The village beyond is dangerous for beginners: reach level 10 before travelling there to seek its steward. Until then, continue hunting and preparing your equipment near home." or ""),
-			npc = giver, turnin_npc = number == 6 and npc.steward or
-				(number == 9 and npc.captive or giver),
+			title = title, description = description, npc = giver,
+			turnin_npc = number == 6 and npc.steward or (number == 9 and npc.captive or giver),
 			faction = culture.faction, race = culture.key, min_level = LEVEL[number],
-			target_level = LEVEL[number], effort = number >= 8 and "hard" or "standard",
-			prerequisites = previous and {previous} or {}, objectives = {objective},
-			rewards = {xp = XP[number], copper = COPPER[number], items = {}},
+			target_level = LEVEL[number], effort = number == 6 and "lesson" or
+				(number == 9 and "finale" or number == 8 and "hard" or "standard"),
+			prerequisites = prior and {quest_id(culture, prior, culture.titles[prior])} or {},
+			objectives = {objective},
+			rewards = {xp = XP[number], copper = number == 2 and 10 or
+				(number == 6 and 40 or COPPER[number]), items = {}},
 		})
-		previous = id
 	end
 
-	local first = quest_id(culture, 1, culture.titles[1])
 	local axe = quest_id(culture, 10, culture.lessons[1])
 	Q.register_quest(axe, {
 		title = culture.lessons[1], description = culture.lessons[3] .. "\n\nOpen Basics in your Crafting tab to see the wood axe recipe: three planks and two sticks. You can make planks from a tree trunk and sticks from planks. Wood tools are fragile; stone lasts longer and bronze is your first durable upgrade. This lesson is optional; an axe made by a friend is welcome too.", npc = npc.elder,
 		faction = culture.faction, race = culture.key, min_level = 1,
 		target_level = 1, effort = "lesson",
-		prerequisites = {first}, objectives = {{type = "item", item = "default:axe_wood",
+		prerequisites = {}, objectives = {{type = "item", item = "default:axe_wood",
 			count = 1, description = "Bring a wood axe"}},
 		rewards = {xp = 15, copper = 10, items = {}},
 	})
 	Q.register_quest(quest_id(culture, 11, culture.lessons[2]), {
-		title = culture.lessons[2], description = culture.lessons[4] .. "\n\nUse Basics to make a wooden pick first, then mine stone. The stone pick recipe uses three stone blocks across the top and two sticks down the middle. Keep valuable tools repaired at a profession trainer or crafting station. This lesson is optional; a traded pick counts too.", npc = npc.elder,
+		title = culture.lessons[2], description = culture.lessons[4] .. "\n\nUse Basics to make a wooden pick first, then mine stone. The stone pick recipe uses three stone blocks across the top and two sticks down the middle. Keep valuable tools repaired through a profession trainer in a settlement. This lesson is optional; a traded pick counts too.", npc = npc.elder,
 		faction = culture.faction, race = culture.key, min_level = 2,
 		target_level = 2, effort = "lesson",
 		prerequisites = {axe}, objectives = {{type = "item", item = "default:pick_stone",
@@ -346,6 +440,14 @@ for _, culture in ipairs(cultures) do
 		rewards = {xp = 45, copper = 15, items = {}},
 	})
 
+	local camp_reports = {
+		dwarf = {"The Ore Carriers' Purses", "Tovin recognises the ore carriers' tally knots on the stolen purses. Recover two from the camp so he can identify whose winter wages went missing."},
+		human = {"The Millers' Missing Pay", "Pella saw the millers' purses thrown beside the scorched grain tallies. Recover two stolen purses from the camp before the bandits divide the harvest pay."},
+		elf = {"Knots from the Bough Road", "The stolen purses carry travel knots from the bough road. Recover two for the captive; their owners can then be traced through the wardens' records."},
+		undead = {"Names on the Purse Tags", "Two stolen purses may still carry the names scratched into their bone tags. Bring them to the captive so the missing carriers can be entered in the camp account."},
+		orc = {"The Carriers' Cut", "The bandits kept the carriers' pay in stolen purses instead of adding it to the food stores. Recover two for the captive so the raided herd crews can reclaim their share."},
+		troll = {"Pay from the Ferry Road", "Ferry workers tie coloured cords around their pay purses. Recover two stolen purses from the camp and let the captive match those cords to the missing crews."},
+	}
 	local site_seen = {village = 0, outpost = 0, camp = 0}
 	for number, task in ipairs(story.tasks) do
 		local site = task[1]
@@ -355,6 +457,14 @@ for _, culture in ipairs(cultures) do
 			(site == "outpost" and npc.scout or npc.captive)
 		local prerequisite_number = site == "village" and 6 or
 			(site == "outpost" and 7 or 8)
+		local replacement = (LOCAL_REWORK[culture.key] or {})[number]
+		if number == 5 then
+			local report = camp_reports[culture.key]
+			replacement = {report[1], report[2] .. " Accept this request before the camp fight; ordinary carried or traded purses also count.", "grug_mobs:stolen_purse", 2}
+		end
+		if replacement then
+			task = {site, replacement[1], replacement[2], item = replacement[3], count = replacement[4]}
+		end
 		local objective
 		if task.item then
 			objective = {type = "item", item = task.item, count = task.count,

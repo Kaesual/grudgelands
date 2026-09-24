@@ -1,0 +1,300 @@
+-- Run after mods_loaded against the actual server registry and socket provider.
+-- Callable only: the parent smoke runner owns scheduling, timeout and shutdown.
+return function()
+ local Q = assert(grug_quests)
+ Q.validate_registry()
+ local expected = {
+  "r14_dwarf_01_tusks_at_the_timberline",
+  "r14_dwarf_02_meat_for_the_smokehouse",
+  "r14_dwarf_03_rats_in_the_woodpiles",
+  "r14_dwarf_04_lanterns_after_sundown",
+  "r14_dwarf_05_the_high_path",
+  "r14_dwarf_06_loose_stone_on_copper_road",
+  "r14_dwarf_07_a_ledger_in_the_scrub",
+  "r14_dwarf_08_hold_the_marker_stones",
+  "r14_dwarf_09_ash_under_the_nails",
+  "r14_dwarf_10_an_axe_worth_carrying",
+  "r14_dwarf_11_stone_before_steel",
+  "r14_elf_01_roots_laid_bare",
+  "r14_elf_02_the_grove_s_portion",
+  "r14_elf_03_beneath_the_seed_baskets",
+  "r14_elf_04_footfalls_without_breath",
+  "r14_elf_05_keepers_of_the_saplings",
+  "r14_elf_06_axes_without_leave",
+  "r14_elf_07_quiet_the_lower_boughs",
+  "r14_elf_08_watch_the_green_road",
+  "r14_elf_09_cinders_in_green_cloth",
+  "r14_elf_10_the_careful_axe",
+  "r14_elf_11_stone_s_patient_lesson",
+  "r14_human_01_boars_beyond_the_fence",
+  "r14_human_02_the_smokehouse_share",
+  "r14_human_03_granary_teeth",
+  "r14_human_04_shapes_by_lanternlight",
+  "r14_human_05_the_missing_flock",
+  "r14_human_06_flock_on_mill_road",
+  "r14_human_07_orchard_watch",
+  "r14_human_08_empty_snares",
+  "r14_human_09_the_blackened_tally",
+  "r14_human_10_a_woodsman_s_edge",
+  "r14_human_11_a_pick_for_the_road",
+  "r14_orc_01_tusks_at_the_water_skins",
+  "r14_orc_02_meat_for_the_long_fire",
+  "r14_orc_03_rats_under_the_hide_racks",
+  "r14_orc_04_the_thirsting_dead",
+  "r14_orc_05_shells_by_the_bedrolls",
+  "r14_orc_06_husks_on_redtusk_road",
+  "r14_orc_07_teeth_around_the_herd",
+  "r14_orc_08_scour_the_dry_wash",
+  "r14_orc_09_no_forge_made_this_brand",
+  "r14_orc_10_edge_of_the_first_camp",
+  "r14_orc_11_stone_has_no_pride",
+  "r14_troll_01_boars_in_the_yam_beds",
+  "r14_troll_02_fill_the_evening_pot",
+  "r14_troll_03_teeth_in_the_basket_weave",
+  "r14_troll_04_dead_in_the_rootways",
+  "r14_troll_05_vipers_under_broad_leaves",
+  "r14_troll_06_claws_on_raincall_road",
+  "r14_troll_07_the_coiled_footpath",
+  "r14_troll_08_cats_at_the_reed_line",
+  "r14_troll_09_smoke_beneath_the_rain",
+  "r14_troll_10_a_dry_handled_axe",
+  "r14_troll_11_stone_beneath_the_moss",
+  "r14_undead_01_boars_in_the_dead_furrows",
+  "r14_undead_02_salt_for_what_remains",
+  "r14_undead_03_gnawing_in_the_crypt_stores",
+  "r14_undead_04_the_uncalled_dead",
+  "r14_undead_05_furrows_gone_sour",
+  "r14_undead_06_tusks_along_the_fen_road",
+  "r14_undead_07_mud_that_moves",
+  "r14_undead_08_clear_the_sluice",
+  "r14_undead_09_fire_that_the_fen_cannot_drown",
+  "r14_undead_10_a_handle_that_will_not_rot",
+  "r14_undead_11_a_pick_among_headstones",
+  "r15_dwarf_local_01",
+  "r15_dwarf_local_02",
+  "r15_dwarf_local_03",
+  "r15_dwarf_local_04",
+  "r15_dwarf_local_05",
+  "r15_dwarf_local_06",
+  "r15_elf_local_01",
+  "r15_elf_local_02",
+  "r15_elf_local_03",
+  "r15_elf_local_04",
+  "r15_elf_local_05",
+  "r15_elf_local_06",
+  "r15_human_local_01",
+  "r15_human_local_02",
+  "r15_human_local_03",
+  "r15_human_local_04",
+  "r15_human_local_05",
+  "r15_human_local_06",
+  "r15_orc_local_01",
+  "r15_orc_local_02",
+  "r15_orc_local_03",
+  "r15_orc_local_04",
+  "r15_orc_local_05",
+  "r15_orc_local_06",
+  "r15_troll_local_01",
+  "r15_troll_local_02",
+  "r15_troll_local_03",
+  "r15_troll_local_04",
+  "r15_troll_local_05",
+  "r15_troll_local_06",
+  "r15_undead_local_01",
+  "r15_undead_local_02",
+  "r15_undead_local_03",
+  "r15_undead_local_04",
+  "r15_undead_local_05",
+  "r15_undead_local_06",
+  "r20_anchor_014_01",
+  "r20_anchor_014_02",
+  "r20_anchor_014_03",
+  "r20_anchor_016_01",
+  "r20_anchor_016_02",
+  "r20_anchor_016_03",
+  "r20_anchor_018_01",
+  "r20_anchor_018_02",
+  "r20_anchor_018_03",
+  "r20_anchor_020_01",
+  "r20_anchor_020_02",
+  "r20_anchor_020_03",
+  "r20_anchor_022_01",
+  "r20_anchor_022_02",
+  "r20_anchor_022_03",
+  "r20_anchor_024_01",
+  "r20_anchor_024_02",
+  "r20_anchor_024_03",
+  "r20_anchor_026_01",
+  "r20_anchor_026_02",
+  "r20_anchor_026_03",
+  "r20_anchor_027_01",
+  "r20_anchor_027_02",
+  "r20_anchor_027_03",
+  "r20_anchor_028_01",
+  "r20_anchor_028_02",
+  "r20_anchor_028_03",
+  "r20_anchor_030_01",
+  "r20_anchor_030_02",
+  "r20_anchor_030_03",
+  "r20_anchor_031_01",
+  "r20_anchor_031_02",
+  "r20_anchor_031_03",
+  "r20_anchor_032_01",
+  "r20_anchor_032_02",
+  "r20_anchor_032_03",
+  "r20_anchor_034_01",
+  "r20_anchor_034_02",
+  "r20_anchor_034_03",
+  "r20_anchor_035_01",
+  "r20_anchor_035_02",
+  "r20_anchor_035_03",
+  "r20_anchor_036_01",
+  "r20_anchor_036_02",
+  "r20_anchor_036_03",
+  "r20_anchor_038_01",
+  "r20_anchor_038_02",
+  "r20_anchor_038_03",
+  "r20_anchor_039_01",
+  "r20_anchor_039_02",
+  "r20_anchor_039_03",
+  "r20_anchor_040_01",
+  "r20_anchor_040_02",
+  "r20_anchor_040_03",
+  "r20_anchor_042_01",
+  "r20_anchor_042_02",
+  "r20_anchor_042_03",
+  "r20_anchor_043_01",
+  "r20_anchor_043_02",
+  "r20_anchor_043_03",
+  "r20_anchor_044_01",
+  "r20_anchor_044_02",
+  "r20_anchor_044_03",
+  "r20_anchor_046_01",
+  "r20_anchor_046_02",
+  "r20_anchor_046_03",
+  "r20_anchor_047_01",
+  "r20_anchor_047_02",
+  "r20_anchor_047_03",
+  "r20_anchor_048_01",
+  "r20_anchor_048_02",
+  "r20_anchor_048_03",
+  "r20_anchor_061_01",
+  "r20_anchor_061_02",
+  "r20_anchor_061_03",
+  "r20_anchor_062_01",
+  "r20_anchor_062_02",
+  "r20_anchor_062_03",
+  "r20_anchor_063_01",
+  "r20_anchor_063_02",
+  "r20_anchor_063_03",
+  "r20_anchor_064_01",
+  "r20_anchor_064_02",
+  "r20_anchor_064_03",
+  "r20_anchor_065_01",
+  "r20_anchor_065_02",
+  "r20_anchor_065_03",
+  "r20_anchor_066_01",
+  "r20_anchor_066_02",
+  "r20_anchor_066_03",
+  "r20_dwarf_capital_cook",
+  "r20_dwarf_capital_intro",
+  "r20_dwarf_capital_services",
+  "r20_dwarf_capital_stores",
+  "r20_dwarf_journey_01",
+  "r20_dwarf_journey_02",
+  "r20_dwarf_journey_03",
+  "r20_dwarf_start_cook",
+  "r20_elf_capital_cook",
+  "r20_elf_capital_intro",
+  "r20_elf_capital_services",
+  "r20_elf_capital_stores",
+  "r20_elf_journey_01",
+  "r20_elf_journey_02",
+  "r20_elf_journey_03",
+  "r20_elf_start_cook",
+  "r20_human_capital_cook",
+  "r20_human_capital_intro",
+  "r20_human_capital_services",
+  "r20_human_capital_stores",
+  "r20_human_journey_01",
+  "r20_human_journey_02",
+  "r20_human_journey_03",
+  "r20_human_start_cook",
+  "r20_orc_capital_cook",
+  "r20_orc_capital_intro",
+  "r20_orc_capital_services",
+  "r20_orc_capital_stores",
+  "r20_orc_journey_01",
+  "r20_orc_journey_02",
+  "r20_orc_journey_03",
+  "r20_orc_start_cook",
+  "r20_troll_capital_cook",
+  "r20_troll_capital_intro",
+  "r20_troll_capital_services",
+  "r20_troll_capital_stores",
+  "r20_troll_journey_01",
+  "r20_troll_journey_02",
+  "r20_troll_journey_03",
+  "r20_troll_start_cook",
+  "r20_undead_capital_cook",
+  "r20_undead_capital_intro",
+  "r20_undead_capital_services",
+  "r20_undead_capital_stores",
+  "r20_undead_journey_01",
+  "r20_undead_journey_02",
+  "r20_undead_journey_03",
+  "r20_undead_start_cook",
+ }
+ local expected_set = {}
+ for _, id in ipairs(expected) do expected_set[id] = true; assert(Q.registered_quests[id], id) end
+ local quests, npcs, talk, regional, guards = 0, 0, 0, 0, 0
+ for _ in pairs(Q.registered_npcs) do npcs = npcs + 1 end
+ local rows = {}
+ for id, q in pairs(Q.registered_quests) do
+  quests = quests + 1
+  assert(expected_set[id], "Unexpected quest: " .. id)
+  assert(q.faction == "accord" or q.faction == "throng", id)
+  assert(q.min_level >= 1 and q.min_level <= 40, id)
+  for _, prior in ipairs(q.prerequisites) do
+   local p = assert(Q.registered_quests[prior])
+   assert(p.faction == q.faction and p.min_level <= q.min_level, id)
+  end
+  local o = q.objectives[1]
+  if o.type == "talk" then
+   talk = talk + 1
+   assert(#q.objectives == 1 and o.count == 1 and o.npc == q.turnin_npc, id)
+   assert(q.rewards.xp == math.floor(100 * (2 * q.target_level - 1) * 0.15 + 0.5), id)
+  end
+  if id:match("^r20_anchor_") then
+   regional = regional + 1
+   assert(not q.race and q.npc == id:sub(1,14) .. "_host", id)
+   if o.type == "kill" then
+    assert(type(o.zone) == "string", id)
+    local cast = {}
+    for _, clock in ipairs({"day", "night"}) do
+     for _, mob in ipairs(assert(grug_mobs.zone_clock_cast(o.zone, clock), o.zone)) do cast[mob] = true end
+    end
+    for _, mob in ipairs(o.mobs) do
+     if mob:match("^grug_mobs:guard_") then
+      guards = guards + 1
+      assert(q.min_level == 40 and mob == "grug_mobs:guard_" .. (q.faction == "accord" and "throng" or "accord"), id)
+     else assert(cast[mob], id .. " unavailable zone palette: " .. mob) end
+    end
+   end
+  end
+  rows[#rows + 1] = id .. ":" .. q.min_level .. ":" .. q.rewards.xp
+ end
+ for _, race in ipairs({"dwarf", "human", "elf", "undead", "orc", "troll"}) do
+  local initial = 0
+  for id, q in pairs(Q.registered_quests) do
+   if q.race == race and id:match("^r14_") and q.min_level == 1 and #q.prerequisites == 0 then initial = initial + 1 end
+  end
+  assert(initial == 3, race .. " initial parallel tasks")
+  local intro = assert(Q.registered_quests["r20_" .. race .. "_capital_intro"])
+  assert(intro.min_level == 10 and #intro.prerequisites == 0 and intro.objectives[1].type == "talk", race)
+ end
+ assert(quests == 240 and npcs == 78 and regional == 90 and talk == 36 and guards == 6,
+  table.concat({quests, npcs, regional, talk, guards}, ":"))
+ table.sort(rows)
+ return "r20-content:240:78:90:36:6:" .. core.sha1(table.concat(rows, "\n"))
+end
