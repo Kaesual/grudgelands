@@ -532,3 +532,16 @@ quest host. Hostile new camps do not gain friendly residents. Each starting
 town and capital has a separate cook questgiver near its oven, distinct from
 the Cooking profession trainer. Capitals reuse existing quest shells for their
 envoy. Quest identities and journey structure belong to `quests.md`.
+
+## Round 21 ground and access correction
+
+Approved 2026-09-24. Preserve anchor/reservation extents
+while separating natural terrain fitting from visible masonry. POI collars
+retain biome/cultural ground. Street junctions have complete shared footprints
+and a single landing surface, with incident runs ending at their ports. Core,
+gate and entrance approaches share consistent endpoint heights and headroom.
+Plot collars may cut/fill natural terrain before final paths; each entrance must
+connect to a nearby street within 24 nodes, or to natural terrain within its
+eight-node collar when no street is nearby. Such natural connections retain
+the same slope and headroom requirements. Retaining walls elsewhere are allowed. These rules
+replace the prior no-outside-apron policy where it prevents access.

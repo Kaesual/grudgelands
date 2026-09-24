@@ -1079,8 +1079,30 @@ asks for it.
   retains its T4 density in T5/ordinary T6 and then receives the shared deep-T6
   multiplier. G2 is sparse in T4 (1×), clearer in T5 (2×) and abundant in
   ordinary T6 (4×), with initial targets of approximately one eligible ore per
-  12,000/6,000/3,000 host nodes per species. All G2 requires a T4 pick to
-  harvest.
+  2,048/1,024/512 host nodes per species (Round 21 calibration). All G2 requires a T4 pick to harvest.
+- **Round 21 density calibration (accepted 2026-09-24):**
+  numbers below are eligible host nodes per target resource node. Dashes mean
+  absent. Tiers are absolute-Y strata; existing deep multipliers apply afterward.
+  Keep existing vein caps and first-appearance/harvest boundaries. These are
+  placement budgets, not independent discovery odds or measured mining time.
+
+  | Resource | T1 | T2 | T3 | T4 | T5 | T6 |
+  |---|---:|---:|---:|---:|---:|---:|
+  | Coal | 64 | 128 | 128 | 128 | 128 | 128 |
+  | Copper | 96 | 192 | 384 | 384 | 384 | 384 |
+  | Tin | 96 | 192 | 384 | 384 | 384 | 384 |
+  | Iron | 128 | 96 | 192 | 384 | 384 | 384 |
+  | Quartz | 128 | 256 | 512 | 512 | 512 | 512 |
+  | Gold | — | 512 | 256 | 128 | 256 | 256 |
+  | Silver | — | — | 256 | 128 | 256 | 512 |
+  | Emberglass | — | — | — | 256 | 128 | 256 |
+  | Abyssal Crystal | — | — | — | — | 512 | 256 |
+  | Assigned G1 species | — | 2048 | 1024 | 512 | 512 | 512 |
+  | Assigned G2 species | — | — | — | 2048 | 1024 | 512 |
+
+  The quarter-density floor retains older inputs at depth; T1 Iron keeps its
+  former density as a bootstrap exception. Gold peaks at T4 and remains useful at T5/T6, matching Goldsmith demand. This decision does not claim the full corpus
+  parity gate below was rerun.
 - Natural-resource placement and its accessible-host denominator admit only
   horizontal classes `land` and zone-owned `planned_water`. Rivers, lakes,
   marsh channels, cenotes and the landward bay masks therefore retain their
@@ -1766,3 +1788,26 @@ allow flight for both factions. Safe faction home zones (including capitals)
 allow only their own faction to fly. Other POIs inherit the surrounding zone.
 Both dragon islands prohibit flight for both factions, despite their contested
 status. Existing ocean/channel no-flight rules remain. See `mounts.md` section 4.
+
+## Round 21 natural-surface iteration
+
+Approved 2026-09-24. Preserve continental profile roles and ranges. The broad
+64-node lattice is smoothed once with 1:2:1 weights; the two existing detail
+scales are 128/32 nodes with 3:1 weights. Lowland and rolling amplitudes are
+9 and 12 respectively. No additional noise octave is evaluated. Frostbarrow
+and Moonfall lake edges gain bounded irregularity and shallow margins while functional connections,
+fixed levels and reservations remain protected. Beach/cliff transitions adjust
+height and material together; sand is limited to low/gentle shore surfaces.
+Corals form varied deterministic patches at similar overall density. Rooted
+freshwater waterweed sparsely decorates safe, 2–6-node-deep authored water over
+natural sand without displacing the water column. Thin waterlilies occupy the
+air node immediately above a similarly safe freshwater surface and remain
+passable. Reed Angelfish use existing capped critter spawning, without
+XP/loot or fishing changes.
+
+The freshwater family is the Reed Angelfish, using ElCeejo's MIT-licensed
+Animalia angelfish mesh and texture at commit
+`5895f403fd43a9464e06b3675af3495f50565a3f`. It swims only in authored
+freshwater source columns over natural sand, has no XP or drops, and uses the
+ambient spawn cap of two. It has no school, breeding, pathfinding or fishing
+integration.

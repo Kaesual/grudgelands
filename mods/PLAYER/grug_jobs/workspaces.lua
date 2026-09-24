@@ -5,6 +5,7 @@ local viewers = {}
 local sequence = 0
 local FORM = "grug_jobs:workspace"
 local PREFIX = "grug_jobs:workspace:"
+local PERSONAL_BURN_UNTIL = "grug_jobs:personal_burn_until"
 local refresh
 
 local function node_station(pos)
@@ -36,6 +37,25 @@ end
 
 local function inputs(ctx)
 	return ctx.personal and ctx.inv or core.get_meta(ctx.pos):get_inventory()
+end
+
+-- Private jobs keep their inventories private, but a burning furnace is a
+-- shared world visual. Record only the latest cosmetic expiry at the node;
+-- the node timer never scans or advances a player's saved workspace.
+local function extend_personal_light(ctx)
+	if not ctx.personal or (ctx.station ~= "furnace" and
+			ctx.station ~= "dual_furnace") or (ctx.process.fuel or 0) <= 0 then return end
+	local meta = core.get_meta(ctx.pos)
+	local deadline = automatic.personal_light_deadline(core.get_gametime(),
+		meta:get_int(PERSONAL_BURN_UNTIL), ctx.process.fuel)
+	if deadline > meta:get_int(PERSONAL_BURN_UNTIL) then
+		meta:set_int(PERSONAL_BURN_UNTIL, deadline)
+	end
+	local node = core.get_node(ctx.pos)
+	local active = grug_jobs.station_info(ctx.station).node .. "_active"
+	if node.name ~= active then node.name = active core.swap_node(ctx.pos, node) end
+	local timer = core.get_node_timer(ctx.pos)
+	if not timer:is_started() then timer:start(1) end
 end
 
 local function save(ctx)
@@ -81,6 +101,7 @@ local function advance(ctx)
 	local before = inventory_signature(ctx)
 	local fuel, progress, recipe = ctx.process.fuel, ctx.process.progress, ctx.process.recipe
 	automatic.advance(ctx.station, ctx.inv, ctx.process, elapsed)
+	extend_personal_light(ctx)
 	local changed_inventory = before ~= inventory_signature(ctx)
 	-- Updating only the idle clock must not dirty the physical node every tick.
 	if changed_inventory or fuel ~= ctx.process.fuel or progress ~= ctx.process.progress or
@@ -134,13 +155,32 @@ local function formspec(ctx)
 			(ctx.station == "dual_furnace" and "input" or "mixture")
 		local output = ctx.station == "furnace" and "dst" or "output"
 		local width = ctx.station == "dual_furnace" and 2 or 1
+		local furnace_kind = ctx.station == "furnace" or ctx.station == "dual_furnace"
+		local fuel_percent, progress_percent = 0, 0
+		if furnace_kind then
+			local process = ctx.process
+			if not ctx.personal then
+				process = core.deserialize(core.get_meta(ctx.pos):get_string(
+					"grug_jobs:process")) or {}
+			end
+			local fuel_fraction, progress_fraction = automatic.fractions(ctx.station,
+				inputs(ctx), process)
+			fuel_percent = math.floor(fuel_fraction * 100 + 0.5)
+			progress_percent = math.floor(progress_fraction * 100 + 0.5)
+		end
 		result = result .. "label[1,1.9;" .. (source == "mixture" and "Prepared mixture" or "Input") ..
 			"]list[" .. location .. ";" .. source .. ";1,2.3;" .. width .. ",1;]" ..
 			"label[3.5,1.9;Fuel]list[" .. location .. ";fuel;3.5,2.3;1,1;]" ..
 			"label[6,1.9;Finished output]list[" .. location .. ";" .. output .. ";6,2.3;2," ..
 			(ctx.station == "furnace" and 2 or 1) .. ";]listring[" .. location .. ";" .. output ..
 			"]listring[current_player;main]listring[" .. location .. ";" .. source ..
-			"]listring[current_player;main]listring[" .. location .. ";fuel]listring[current_player;main]"
+			"]listring[current_player;main]listring[" .. location .. ";fuel]listring[current_player;main]" ..
+			(furnace_kind and "image[4.55,2.4;0.6,0.6;default_furnace_fire_bg.png]" or "") ..
+			(furnace_kind and fuel_percent > 0 and "image[4.55,2.4;0.6,0.6;default_furnace_fire_bg.png^[lowpart:" ..
+				fuel_percent .. ":default_furnace_fire_fg.png]" or "") ..
+			(furnace_kind and "image[5.25,2.4;0.6,0.6;gui_furnace_arrow_bg.png^[transformR270]" or "") ..
+			(furnace_kind and progress_percent > 0 and "image[5.25,2.4;0.6,0.6;gui_furnace_arrow_bg.png^[lowpart:" ..
+				progress_percent .. ":gui_furnace_arrow_fg.png^[transformR270]" or "")
 	else
 		result = result .. "list[" .. location .. ";craft;1,2;3,3;]" ..
 			"label[6,1.8;" .. (ctx.produced and "Crafted remainder" or "Qualified result") ..
@@ -188,6 +228,10 @@ local function refresh_position(pos)
 end
 
 local function changed(ctx)
+	if ctx.personal and (ctx.station == "furnace" or ctx.station == "dual_furnace") then
+		automatic.advance(ctx.station, ctx.inv, ctx.process, 0)
+		extend_personal_light(ctx)
+	end
 	save(ctx)
 	refresh_position(ctx.pos)
 end
@@ -205,16 +249,15 @@ local function callbacks(ctx)
 			if not accessible(ctx, player) or not ctx.personal then return 0 end
 			if advance(ctx) then return 0 end
 			if list == "output" or list == "dst" then return 0 end
-			if list == "fuel" and core.get_craft_result({method = "fuel", width = 1,
-					items = {stack}}).time <= 0 then return 0 end
+			if list == "fuel" and automatic.fuel_time(ctx.station, stack) <= 0 then return 0 end
 			return stack:get_count()
 		end,
 		allow_move = function(inv, from, fi, to, ti, count, player)
 			if not accessible(ctx, player) or not ctx.personal or from == "output" or
 					from == "dst" or to == "output" or to == "dst" then return 0 end
 			if advance(ctx) then return 0 end
-			if to == "fuel" and core.get_craft_result({method = "fuel", width = 1,
-					items = {inv:get_stack(from, fi)}}).time <= 0 then return 0 end
+			if to == "fuel" and automatic.fuel_time(ctx.station,
+					inv:get_stack(from, fi)) <= 0 then return 0 end
 			return count
 		end,
 		allow_take = function(inv, list, index, stack, player)
@@ -318,7 +361,10 @@ core.register_globalstep(function(dtime)
 	if accumulator < 1 then return end
 	accumulator = 0
 	for _, ctx in pairs(viewers) do
-		if accessible(ctx, core.get_player_by_name(ctx.name)) then advance(ctx) refresh(ctx, false) end
+		if accessible(ctx, core.get_player_by_name(ctx.name)) then
+			advance(ctx)
+			refresh(ctx, ctx.station == "furnace" or ctx.station == "dual_furnace")
+		end
 	end
 end)
 
@@ -352,14 +398,26 @@ local function install_node(name, station)
 			not core.is_protected(pos, player:get_player_name()) and node_station(pos) == station
 	end
 	local function update(pos)
+		if automatic.sizes[station] then
+			local meta = core.get_meta(pos)
+			if station == "furnace" or station == "dual_furnace" then
+				local state = core.deserialize(meta:get_string("grug_jobs:process")) or {}
+				automatic.advance(station, meta:get_inventory(), state, 0)
+				meta:set_string("grug_jobs:process", core.serialize(state))
+				local node = core.get_node(pos)
+				local inactive = grug_jobs.station_info(station).node
+				local wanted = (state.fuel or 0) > 0 and inactive .. "_active" or inactive
+				if node.name ~= wanted then node.name = wanted core.swap_node(pos, node) end
+			end
+			local timer = core.get_node_timer(pos)
+			if not timer:is_started() then timer:start(1) end
+		end
 		refresh_position(pos)
-		if automatic.sizes[station] then core.get_node_timer(pos):start(1) end
 	end
 	local function allow_put(pos, list, index, stack, player)
 		if not allowed(pos, player) or list == "output" or list == "dst" then return 0 end
 		if not (automatic.sizes[station] or {craft = 9})[list] then return 0 end
-		if list == "fuel" and core.get_craft_result({method = "fuel", width = 1,
-				items = {stack}}).time <= 0 then return 0 end
+		if list == "fuel" and automatic.fuel_time(station, stack) <= 0 then return 0 end
 		return stack:get_count()
 	end
 	core.override_item(name, {
@@ -403,18 +461,31 @@ local function install_node(name, station)
 		on_metadata_inventory_put = update, on_metadata_inventory_take = update,
 		on_metadata_inventory_move = update,
 		on_timer = function(pos, elapsed)
-			if not automatic.sizes[station] or grug_jobs.is_public_station(station, pos) then return false end
+			if not automatic.sizes[station] then return false end
 			initialize(pos, station)
 			local meta = core.get_meta(pos)
 			local state = core.deserialize(meta:get_string("grug_jobs:process")) or {}
-			automatic.advance(station, meta:get_inventory(), state, elapsed)
-			meta:set_string("grug_jobs:process", core.serialize(state))
-			local running = automatic.running(station, meta:get_inventory(), state)
+			local public = grug_jobs.is_public_station(station, pos)
+			if not public then
+				automatic.advance(station, meta:get_inventory(), state, elapsed)
+				meta:set_string("grug_jobs:process", core.serialize(state))
+			end
+			local running = not public and
+				automatic.running(station, meta:get_inventory(), state) or false
+			local personal_lit = false
+			if station == "furnace" or station == "dual_furnace" then
+				personal_lit = automatic.personal_light_active(core.get_gametime(),
+					meta:get_int(PERSONAL_BURN_UNTIL))
+				if not personal_lit and meta:get_int(PERSONAL_BURN_UNTIL) ~= 0 then
+					meta:set_int(PERSONAL_BURN_UNTIL, 0)
+				end
+			end
 			local node = core.get_node(pos)
 			local inactive = grug_jobs.station_info(station).node
-			local wanted = (state.fuel or 0) > 0 and inactive .. "_active" or inactive
+			local wanted = ((state.fuel or 0) > 0 or personal_lit) and
+				inactive .. "_active" or inactive
 			if node.name ~= wanted then node.name = wanted core.swap_node(pos, node) end
-			return running
+			return running or personal_lit
 		end,
 		on_receive_fields = function() end,
 	})
@@ -431,7 +502,23 @@ core.register_on_mods_loaded(function()
 	end
 	core.register_lbm({name = ":grug_jobs:workspace_activation", label = "Activate station workspaces",
 		nodenames = names, run_at_every_load = true,
-		action = function(pos) initialize(pos, node_station(pos)) end})
+		action = function(pos)
+			local station = node_station(pos)
+			initialize(pos, station)
+			if station == "furnace" or station == "dual_furnace" then
+				local meta = core.get_meta(pos)
+				local personal_lit = automatic.personal_light_active(core.get_gametime(),
+					meta:get_int(PERSONAL_BURN_UNTIL))
+				if not personal_lit then meta:set_int(PERSONAL_BURN_UNTIL, 0) end
+				local state = core.deserialize(meta:get_string("grug_jobs:process")) or {}
+				local shared_lit = (state.fuel or 0) > 0
+				local node = core.get_node(pos)
+				local inactive = grug_jobs.station_info(station).node
+				local wanted = (shared_lit or personal_lit) and inactive .. "_active" or inactive
+				if node.name ~= wanted then node.name = wanted core.swap_node(pos, node) end
+				if shared_lit or personal_lit then core.get_node_timer(pos):start(1) end
+			end
+		end})
 end)
 
 return workspaces

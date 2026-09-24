@@ -333,12 +333,14 @@ contested route to the missing G2 must exist before the level-60 islands.
 - G1 starts sparse in the upper progression, rises through T4, retains exactly
   its T4 ordinary density in T5 and ordinary T6, and rises again only through
   the shared deep-T6 multiplier.
-- G2 is sparse in T4 (about one ore per 12,000 eligible host nodes per species),
-  doubles in T5 (one per 6,000) and reaches four times the T4 rate in ordinary
-  T6 y = −1001…−1499 (one per 3,000). All three require a T4 pick.
+- G2 starts in T4, doubles in T5 and reaches four times the T4 rate in ordinary
+  T6 y = −1001…−1499. Accepted Round 21 calibrations are one per 2,048/1,024/512
+  eligible host nodes respectively. All require a T4
+  pick. Full table: [world_zones.md §11](world_zones.md#11-resource-loot-and-poi-budgets).
 - Continental Abyssal Crystal exists for both factions throughout T5 and T6.
-  The first calibration starts near **one crystal per 2,048 eligible host
-  nodes**; the y = −701…−1000 entry band alone must yield enough for an
+  Accepted Round 21 calibrations are **one crystal per 512 eligible host nodes in
+  T5 and per 256 in T6**; the y = −701…−1000 entry
+  band alone must yield enough for an
   Abyssal Steel pick without T6 access.
 - At y = −1500…−1999, ordinary continental ores, G1, G2 and Abyssal
   Crystal receive **+25%** bounded placement budget; at y ≤ −2000 they
@@ -373,9 +375,21 @@ purchase token; no claim upgrade or universal progression step requires it.
 **Shipped 2026-09-16** (WP26, `mods/ITEMS/grug_smelting`): both smelting
 nodes, the five single-input smelts, the five alloys below, the storage
 pack/unpack pairs of §3.0.1 and the station's own craft recipe are registered
-and audited at every server start. Cook durations are WP26 runtime calibration
-and are deliberately not frozen here; see
+and audited at every server start. **Round 21 decision (2026-09-24):** normal Copper, Tin, Iron, Silver and Gold smelts
+each take **10 seconds**. Separate alloy durations retain the existing
+4/6/8/10/12-second calibration. Earlier measured timings:
 [`wp26-implementation.md`](../research/wp26-implementation.md).
+
+Round 21 furnace rules: both furnaces accept
+only logs (15s), mined coal (80s) and charcoal (80s) as fuel. One log cooks into
+one distinct charcoal item in 10s. New fuel ignites only with a valid recipe
+and output space; the current piece burns out even if work stops. Continued
+processing refuels without an intervening dark tick. Flame shows remaining
+burn time; arrow shows recipe progress. Personal/shared inventory semantics
+remain unchanged. Active personal jobs illuminate the physical furnace until
+the latest observed private fuel piece expires; only that cosmetic deadline is
+shared, while each player's flame and progress remain private. Charcoal does
+not replace mined coal in Steel or coal quests.
 
 Two smelting nodes. The **normal furnace** does single-input smelting;
 the **dual furnace** (ported from LotT, §1.1) does two-input alloys.
@@ -2094,3 +2108,12 @@ See [archived §10.2](../archive/design/items-history.md#102-2026-08-07-crafting
 ### 10.3 2026-08-08
 
 See [archived §10.3](../archive/design/items-history.md#103-2026-08-08).
+
+### Round 21 visual and basic-ammunition decisions
+
+Approved 2026-09-24: a valid 1.5s food hold provides
+continuous bite feedback at gain 0.5; a modest moving HUD food image may
+substitute for the native wield image with full cancellation cleanup. Keep
+consumption timing and interaction priority. Basic arrows craft 200 from one
+Bronze Bar and two Sticks diagonally (`--M / -S- / S--`), without feathers or
+a profession. No other metal recipe or bonus-damage ammo tier is included.

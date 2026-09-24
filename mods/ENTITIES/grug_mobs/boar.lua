@@ -55,6 +55,9 @@ local boar = {
 	-- registered from T5 on follows the rule.
 	visual_size = {x = 1, y = 1},
 	collisionbox = {-0.45, -0.01, -0.45, 0.45, 0.86, 0.45},
+	-- Targeting is deliberately more forgiving than physical movement. The
+	-- mesh's long axis follows yaw; `rotate` keeps this padded box on it.
+	selectionbox = {-0.62, -0.06, -0.76, 0.62, 1.04, 0.76, rotate = true},
 	makes_footstep_sound = true,
 
 	animation = {

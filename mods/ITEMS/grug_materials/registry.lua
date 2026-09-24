@@ -317,11 +317,11 @@ grug_materials.DENSITY = {
 	},
 	g2 = {
 		harvest_tier = 4,
-		host_nodes_per_ore = {[4] = 12000, [5] = 6000, [6] = 3000},
+		host_nodes_per_ore = {[4] = 2048, [5] = 1024, [6] = 512},
 	},
 	abyssal_crystal = {
 		first_tier = 5,
-		host_nodes_per_ore = 2048,
+		host_nodes_per_ore = {[5] = 512, [6] = 256},
 	},
 	deep_bands = {
 		{y_max = -1500, y_min = -1999, multiplier = 1.25},

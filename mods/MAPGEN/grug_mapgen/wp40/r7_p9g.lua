@@ -95,7 +95,7 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 
 	if type(catalog) ~= "table" or type(catalog.manifest) ~= "function" or
 			type(catalog.p9g_sources) ~= "function" or type(p9g_content) ~= "table" or
-			p9g_content.schema ~= "grug_wp40_r7_p9g_content_v2" or
+			p9g_content.schema ~= "grug_wp40_r7_p9g_content_v3" or
 			type(p9g_content.resolve_p9g) ~= "function" or
 			type(p9g_content.content_ref) ~= "function" or type(raw_sha256) ~= "function" then
 		fail("construction seam differs")
@@ -113,8 +113,8 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 		fail("gathering manifest identity differs")
 	end
 	dense(rows, 12, "P9G catalog")
-	dense(p9g_content.content_names, 34, "P9G content names")
-	dense(p9g_content.content_cids, 34, "P9G content CIDs")
+	dense(p9g_content.content_names, 36, "P9G content names")
+	dense(p9g_content.content_cids, 36, "P9G content CIDs")
 
 	local zone_sets, host_sets, shore_sets = {}, {}, {}
 	for index = 1, #rows do

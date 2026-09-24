@@ -1,3 +1,32 @@
+local nature_rules = {}
+function nature_rules.smooth_lattice(values, min_x, max_x, min_z, max_z, round)
+	local smoothed = {}
+	for z = min_z, max_z do
+		local row = {}
+		smoothed[z] = row
+		for x = min_x, max_x do
+			local total = 0
+			for dz = -1, 1 do
+				local source_row = values[math.max(min_z, math.min(max_z, z + dz))]
+				for dx = -1, 1 do
+					total = total + source_row[math.max(min_x, math.min(max_x, x + dx))] *
+						(dx == 0 and 2 or 1) * (dz == 0 and 2 or 1)
+				end
+			end
+			row[x] = round(total, 16)
+		end
+	end
+	return smoothed
+end
+function nature_rules.bowl_depth(depth, inside, weight, round)
+	local bowl = 1 + round((depth - 1) * math.min(16, math.max(0, inside)), 16)
+	return round(depth * (16 - weight) + bowl * weight, 16)
+end
+function nature_rules.lateral_blend(target, other, offset, round)
+	local weight = offset < 16 and 16 - offset or offset - 32
+	return round(target * (32 - weight) + other * weight, 32)
+end
+
 -- Engine-free deterministic vertical model for the accepted WP40 simple map.
 -- All construction is session-local; scalar query seams allocate no records.
 
@@ -125,17 +154,16 @@ local function new_coast_rules(full_seed_string)
 			class_salt, distance, incoming, water_y, axis, round_ratio)
 		local offset = axis % 48
 		if offset < 0 then offset = offset + 48 end
-		if offset < 4 or offset >= 44 then
-			local neighbor = offset < 4 and run - 1 or run + 1
+		if offset < 16 or offset >= 32 then
+			local neighbor = offset < 16 and run - 1 or run + 1
 			local other_profile, _, other_salt = result.r8_profile(owner, orientation,
 				neighbor, freshwater, relief_profile, relief)
 			local other = result.r8_target(owner, orientation, neighbor, other_profile,
 				other_salt, distance, incoming, water_y, axis, round_ratio)
-			local weight = offset < 4 and 4 - offset or offset - 43
-			target = round_ratio(target * (4 - weight) + other * weight, 4)
+			target = nature_rules.lateral_blend(target, other, offset, round_ratio)
 		end
 		return profile, distance, width, freshwater,
-			result.run_key(owner, orientation, run, run_class), target, relief_profile
+			result.run_key(owner, orientation, run, run_class), target, relief_profile, water_y
 	end
 	function result.band(draw, profile, freshwater)
 		if profile ~= "beach" then return nil, nil, 4 end
@@ -269,6 +297,7 @@ local function height_factory(dependencies)
 	-- Store the portable R8 rule factory on the already-captured deterministic
 	-- helper table; Lua 5.1's construct closure is at its 60-upvalue ceiling.
 	deterministic.r8_coast_rules = new_coast_rules
+	deterministic.r21_nature_rules = nature_rules
 	local core_api = rawget(_G, "core")
 	deterministic.r9_coast_band_enabled = true
 	if core_api and core_api.settings and
@@ -289,7 +318,7 @@ local function height_factory(dependencies)
 	local WATER_LEVEL = 1
 	local GRADE_MIN = -30912
 	local GRADE_MAX = 30927
-	local HEIGHT_SCHEMA = "grug_wp40_simple_map_height_v5"
+	local HEIGHT_SCHEMA = "grug_wp40_simple_map_height_v6"
 	local HEIGHT_RANDOM_SCHEMA = "grug_wp40_simple_map_height_v2"
 	local BASE_CELL = 64
 	local FEATURE_CELL = 128
@@ -1028,7 +1057,7 @@ local function height_factory(dependencies)
 		if source.schema ~= "grug_wp40_simple_map_source_v2" or
 				source.layout_id ~= "wp40-simple-map-v1d" or
 				source.layout_revision_id ~= "wp40-simple-map-v1e" or
-				source.height_revision_id ~= "wp40-height-shore-v5" then
+				source.height_revision_id ~= "wp40-height-shore-v6" then
 			fail("source schema/layout identity differs from V1e R2")
 		end
 		if #source.relief_profiles ~= 6 or #source.landmarks ~= 70 or
@@ -1158,7 +1187,7 @@ local function height_factory(dependencies)
 		local detail_root = digest_first_word(counted_sha(detail_root_input)) % P
 		if detail_root == 0 then detail_root = 1 end
 		local detail_octaves = {}
-		for detail_index, detail_period in ipairs({64, 32}) do
+		for detail_index, detail_period in ipairs({128, 32}) do
 			note_lattice_construction()
 			local min_ix = floor_div(bounds.min_x - BASE_CELL, detail_period) - 1
 			local max_ix = floor_div(bounds.max_x + BASE_CELL, detail_period) + 1
@@ -1179,7 +1208,7 @@ local function height_factory(dependencies)
 				end
 			end
 			detail_octaves[detail_index] = {period = detail_period,
-				values = values, numerator = 1, denominator = 2,
+				values = values, numerator = detail_index == 1 and 3 or 1, denominator = 4,
 				digest = not runtime_mode and counted_digest(rows) or nil}
 			if not runtime_mode then
 				octave_digest_rows[#octave_digest_rows + 1] = canonical.array({
@@ -1258,9 +1287,19 @@ local function height_factory(dependencies)
 				row[ix] = height
 				owner_row[ix] = owner or 0
 				amplitude_row[ix] = profile.detail_amplitude
-				if not runtime_mode then
+			end
+		end
+		-- Smooth only the broad lattice once, before queries begin. The convex
+		-- 1:2:1 kernel spreads profile changes across three 64-node cells without
+		-- extra per-column classification/noise or changing macro profile ranges.
+		base_values = deterministic.r21_nature_rules.smooth_lattice(base_values,
+			base_min_ix, base_max_ix, base_min_iz, base_max_iz, round_ratio)
+		if not runtime_mode then
+			base_rows = {}
+			for iz = base_min_iz, base_max_iz do
+				for ix = base_min_ix, base_max_ix do
 					base_rows[#base_rows + 1] = canonical.array({signed(ix), signed(iz),
-						signed(height), text(profile.id)})
+						signed(base_values[iz][ix]), signed(base_owners[iz][ix])})
 				end
 			end
 		end
@@ -1482,7 +1521,7 @@ local function height_factory(dependencies)
 				local a, b = reach.centreline[segment_index],
 					reach.centreline[segment_index + 1]
 				local maximum_half = math.max(a.half_width, b.half_width) +
-					profile.bank_blend_width
+					profile.bank_blend_width + 8
 				local segment = {reach = record, ordinal = segment_index,
 					a = a, b = b, maximum_half = maximum_half}
 				record.segments[#record.segments + 1] = segment
@@ -1536,13 +1575,16 @@ local function height_factory(dependencies)
 			return best, best_numerator, best_denominator
 		end
 
-		local function hydrology_half_width(segment, x, z)
+		local function hydrology_half_width(segment, x, z, offset)
 			local vx, vz = segment.b.x - segment.a.x,
 				segment.b.z - segment.a.z
 			local length_squared = vx * vx + vz * vz
 			local dot = (x - segment.a.x) * vx + (z - segment.a.z) * vz
 			dot = clamp(dot, 0, length_squared)
-			return segment.a.half_width + round_ratio(
+			if offset == nil then
+				offset = horizontal.hydrology_edge_at(segment.reach.id, x, z)
+			end
+			return segment.a.half_width + offset + round_ratio(
 				(segment.b.half_width - segment.a.half_width) * dot,
 				length_squared)
 		end
@@ -1554,7 +1596,20 @@ local function height_factory(dependencies)
 				if not reach or reach.profile.depth <= 0 then
 					fail("classified wet hydrology reference differs")
 				end
-				return reach.water_y - varied_depth(reach.profile.depth, x, z)
+				local depth = varied_depth(reach.profile.depth, x, z)
+				local offset, weight = horizontal.hydrology_edge_at(reach.id, x, z)
+				if weight > 0 then
+					-- The deepest overlapping disc/segment wins, as in wet membership.
+					-- Keep one water node at the rim and reach the varied bed over 16.
+					local inside = 0
+					for _, segment in ipairs(reach.segments) do
+						local numerator, denominator = point_segment_ratio(x, z, segment.a, segment.b)
+						local distance = deterministic.isqrt(math.floor(numerator / denominator))
+						inside = math.max(inside, hydrology_half_width(segment, x, z, offset) - distance)
+					end
+					depth = deterministic.r21_nature_rules.bowl_depth(depth, inside, weight, round_ratio)
+				end
+				return reach.water_y - depth
 			end
 			if water_class == "land" then
 				local segment, numerator, denominator = nearest_hydrology_segment(
@@ -5269,9 +5324,9 @@ local function height_factory(dependencies)
 
 		-- A shore run is a 48-node interval split again at stable water-kind and
 		-- relief-fallback boundaries.  Orientation, zone owner, signed interval,
-		-- water kind and fallback class are its identity.  Four nodes at either
-		-- interval end blend the adjacent run's target, so profile changes do not
-		-- form a seam.  All arithmetic in this query is integral.
+		-- water kind and fallback class are its identity. Sixteen nodes at either
+		-- interval end blend toward a common half-weight boundary, rather than
+		-- exchanging the two full targets at the boundary. Arithmetic is integral.
 		do
 			local coast_rules = deterministic.r8_coast_rules(full_seed_string)
 			local coast_band_enabled = deterministic.r9_coast_band_enabled
@@ -5449,18 +5504,17 @@ local function height_factory(dependencies)
 				local target, width = target_for(profile, best_distance, incoming, water_y,
 					owner, orientation, run, axis, class_salt, freshwater)
 				local offset = floor_mod(axis, 48)
-				if offset < 4 or offset >= 44 then
-					local neighbor = offset < 4 and run - 1 or run + 1
+				if offset < 16 or offset >= 32 then
+					local neighbor = offset < 16 and run - 1 or run + 1
 					local other_profile, _, other_salt = selected_profile(owner,
 						orientation, neighbor, freshwater, relief_profile, relief)
 					local other = target_for(other_profile, best_distance, incoming, water_y,
 						owner, orientation, neighbor, axis, other_salt, freshwater)
-					local weight = offset < 4 and 4 - offset or offset - 43
-					target = round_ratio(target * (4 - weight) + other * weight, 4)
+					target = deterministic.r21_nature_rules.lateral_blend(target, other, offset, round_ratio)
 				end
 				return profile, best_distance, width, freshwater,
 					coast_rules.run_key(owner, orientation, run, run_class),
-					target, relief_profile
+					target, relief_profile, water_y
 			end
 		end
 
@@ -5781,4 +5835,4 @@ local function height_factory(dependencies)
 	return module
 end
 
-return height_factory, new_coast_rules
+return height_factory, new_coast_rules, nature_rules

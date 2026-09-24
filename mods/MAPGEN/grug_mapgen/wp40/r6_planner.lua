@@ -289,7 +289,8 @@ local function planner_factory()
 			-- excluded: the build envelope, the road corridors, water and coast. So
 			-- the pad has no host, the apron has one outside a jagged inner edge,
 			-- and the ring around both does. The extra query runs only after the
-			-- anchor-id match, i.e. only inside those twelve envelopes.
+			-- anchor-id match. Ordinary POI collars now share the natural skin;
+			-- their existing exclusion still controls vegetation eligibility.
 			--
 			-- THE CAPITALS JOINED IT IN WP13 ROUND 3 (2026-09-15). A capital
 			-- fitting grades its whole 704-node blend square, so before this every
@@ -302,14 +303,13 @@ local function planner_factory()
 			-- -- and the DECORATION host follows the same claim rule, so the
 			-- 532-node hard build square where WP13 stamps the city stays host-free
 			-- and the collar around it grows its biome again.
-			local dry_start_grade = functional_kind == "land_grade" and
+			local dry_anchor_grade = functional_kind == "land_grade" and
 				type(functional_feature_id) == "string" and
-				(functional_feature_id:match("^anchor_00[1-9]$") ~= nil or
-					functional_feature_id:match("^anchor_01[0-2]$") ~= nil) and
+				functional_feature_id:match("^anchor_%d%d%d$") ~= nil and
 				not wet and (not excluded or
 					horizontal.static_exclusion_values_at(x, z, "vegetation") == nil)
 			if functional_kind == "anchor_platform" or
-					(functional_kind == "land_grade" and not dry_start_grade) or
+					(functional_kind == "land_grade" and not dry_anchor_grade) or
 					functional_kind == "ford" or
 					functional_kind == "causeway" then
 				p7_support = false

@@ -1125,8 +1125,15 @@ local function loader(directory)
 		if threshold then
 			return gates.run(palette, spec, surface, threshold)
 		end
-		local piece = avenue.run(palette, spec, surface)
 		local approach = M.avenue_plan[spec.id]
+		if approach and spec.anchor_y then
+			local sign = approach.gate < 0 and -1 or 1
+			local landings = {}
+			for _, landing in ipairs(spec.landings or {}) do landings[#landings + 1] = landing end
+			landings[#landings + 1] = {p = sign * (RADIUS + 1), y = spec.anchor_y}
+			spec.landings = landings
+		end
+		local piece = avenue.run(palette, spec, surface)
 		if approach then
 			piece = ramp.run(palette, spec, surface, piece, approach)
 		end

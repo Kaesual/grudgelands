@@ -1,7 +1,7 @@
 -- P9G-2 surface/cave/reef extension, inside the existing R6 private transaction.
 return function(catalog, content, habitat)
  assert(type(habitat)=="table" and type(habitat.initial_denominator)=="function")
- assert(catalog.schema=="grug_world_content_v1" and #catalog.plants==15 and #catalog.names==22)
+ assert(catalog.schema=="grug_world_content_v1" and #catalog.plants==15 and #catalog.names==24)
  for i,name in ipairs(catalog.names) do assert(content.content_names[i+12]==name) end
  local config={}
  function config.new(deps)
@@ -13,6 +13,13 @@ return function(catalog, content, habitat)
   local function hash(x,y,z,salt)
    local value=(x*374761+y*193939+z*668265+phase*69069+salt*83491)%16777213
    return (value*48271)%16777213
+  end
+  -- A separate mixed stream prevents the visible axis-aligned runs produced
+  -- by the general linear plant hash. Keep it local so existing wild plants
+  -- retain their exact positions.
+  local function reef_hash(x,z,salt)
+   local a=hash(x*37+z*11,salt,x*7-z*29,151)
+   return hash(a%4093,x*53-z*17,math.floor(a/4093),salt+157)
   end
   local zones,hosts={},{}
   for i,row in ipairs(catalog.plants) do
@@ -49,7 +56,7 @@ return function(catalog, content, habitat)
   function tail.bind(plan,gen) bound,generation=plan,gen end
   function tail.settle(ctx)
    assert(ctx.plan==bound and ctx.generation==generation,"world content plan binding differs")
-   local counts={};for i=1,22 do counts[i]=0 end
+   local counts={};for i=1,#catalog.names do counts[i]=0 end
    local function write(index,x,y,z,param2)
     local ref=index+12
     local cid=content.resolve_p9g(ref,param2)
@@ -105,14 +112,27 @@ return function(catalog, content, habitat)
      -- Rooted meshes occupy their bed cube; all stems must remain in sea water.
      if not excluded and not housing and water=="coastal_shelf" and water_y and
       water_y-ground>=2 and water_y-ground<=10 and
-      ctx.inside_owner(x,ground,z) and
-      hash(math.floor(x/16),0,math.floor(z/16),101)%8==0 and hash(x,0,z,103)%16==0 then
+      ctx.inside_owner(x,ground,z) then
+      local cell_x=math.floor(x/16)
+      local cell_z=math.floor(z/16)
+      local local_x=x-cell_x*16
+      local local_z=z-cell_z*16
+      local reef_cell=reef_hash(cell_x,cell_z,101)
+      local center_x=3+reef_hash(cell_x,cell_z,103)%10
+      local center_z=3+reef_hash(cell_x,cell_z,107)%10
+      local dx=local_x-center_x
+      local dz=local_z-center_z
+      local swapped=reef_hash(cell_x,cell_z,109)%2==1
+      local long=swapped and dz or dx
+      local short=swapped and dx or dz
+      local patch=long*long+2*short*short<=15 and reef_hash(x,z,113)%5~=0
+      if reef_cell%8==0 and patch then
       local bed,p2,occupancy,opcode=ctx.settled_at(x,ground,z)
       local _,sand=ctx.production_content("default:sand")
       local _,gravel=ctx.production_content("default:gravel")
       local _,stone=ctx.production_content("default:stone")
       if (bed==sand or bed==gravel or bed==stone) and p2==0 and occupancy==0 and opcode>=1 and opcode<=4 then
-       local index=16+hash(x,0,z,107)%7
+       local index=16+reef_hash(x,z,127)%7
        local height=index==22 and math.min(6,water_y-ground-1) or 1
        local clear=true
        if index==22 and bed~=sand then clear=false end
@@ -123,6 +143,39 @@ return function(catalog, content, habitat)
         if family~=contract.ordinary_water_family_id or liquid~=1 then clear=false;break end
        end
        if clear then write(index,x,ground,z,index==22 and height*16 or 0) end
+      end
+      end
+     end
+     -- Freshwater waterweed uses only a natural sand bed. Functional water
+     -- corridors and authored structures are already closed by the water
+     -- class and the shared exclusion/housing predicates above.
+     if not excluded and not housing and water=="planned_water" and water_y and
+      water_y-ground>=2 and water_y-ground<=6 and
+      ctx.inside_owner(x,ground,z) and reef_hash(x,z,211)%96==0 then
+      local bed,p2,occupancy,opcode=ctx.settled_at(x,ground,z)
+      local _,sand=ctx.production_content("default:sand")
+      if bed==sand and p2==0 and occupancy==0 and opcode>=1 and opcode<=4 then
+       local height=math.min(4,water_y-ground-1)
+       local clear=true
+       for y=ground+1,ground+height do
+        if not ctx.inside_owner(x,y,z) then clear=false;break end
+        local current,param2=ctx.settled_at(x,y,z)
+        local _,family,liquid=contract.classify(current,param2)
+        if family~=contract.ordinary_water_family_id or liquid~=1 then clear=false;break end
+       end
+       if clear then write(24,x,ground,z,height*16) end
+      end
+     end
+     if not excluded and not housing and water=="planned_water" and water_y and
+      water_y-ground>=2 and water_y-ground<=6 and
+      ctx.inside_owner(x,water_y,z) and ctx.inside_owner(x,water_y+1,z) and
+      reef_hash(x,z,223)%192==0 then
+      local surface,param2,occupancy,opcode=ctx.settled_at(x,water_y+1,z)
+      local below,below_p2=ctx.settled_at(x,water_y,z)
+      local _,family,liquid=contract.classify(below,below_p2)
+      if surface==air and param2==0 and occupancy==0 and opcode==0 and
+       family==contract.ordinary_water_family_id and liquid==1 then
+       write(23,x,water_y+1,z,reef_hash(x,z,227)%4)
       end
      end
     end

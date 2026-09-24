@@ -158,7 +158,6 @@ local function loader(directory)
 		-- with the road rather than a step in it. Only the columns of THIS
 		-- piece, and only where the avenue has not already claimed the cell --
 		-- which the successor decides, not this run.
-		local MARK = signature(palette)
 		local KERB = palette.node("plaza_edge")
 		local POST = palette.node("post")
 		local BEAM = palette.node("beam")
@@ -170,10 +169,13 @@ local function loader(directory)
 				local x, z = column(p, lane)
 				-- The marker course goes at the ROAD's level and not at the
 				-- ground's, for the same reason the posts do.
-				buf:put(x, base, z,
-					(lane == -M.HALF or lane == M.HALF) and KERB or MARK)
-				buf:clear(x, base + 1, z, x, base + M.RISE + 2, z)
-				paved = paved + 1
+				-- The ramp owns the full carriageway and its headroom. A flat
+				-- threshold course here otherwise leaves masonry in its stairs.
+				if lane == -M.HALF or lane == M.HALF then
+					buf:put(x, base, z, KERB)
+					buf:clear(x, base + 1, z, x, base + M.RISE + 2, z)
+					paved = paved + 1
+				end
 			end
 		end
 

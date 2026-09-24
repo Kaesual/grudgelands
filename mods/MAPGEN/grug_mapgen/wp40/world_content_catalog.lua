@@ -1,5 +1,5 @@
 -- MAP-B P9G-2 extension. Pure data shared by registration and mapgen.
-local M={schema="grug_world_content_v1", p9g_count=34}
+local M={schema="grug_world_content_v1", p9g_count=36}
 local starts={"elandor_hearthpine_vale","elandor_dawnmere_fields","elandor_silverleaf_glades",
  "kragmar_stillgrave_hollow","kragmar_sunscar_flats","kragmar_kapok_cradle"}
 local homes={"elandor_copperfell_foothills","elandor_goldmead_vale","elandor_starbough_vale",
@@ -46,7 +46,9 @@ M.plants={
 }
 M.reef={"default:coral_brown","default:coral_cyan","default:coral_green",
  "default:coral_orange","default:coral_pink","default:coral_skeleton","default:sand_with_kelp"}
+M.freshwater={"grug_mapgen:freshwater_waterlily","grug_mapgen:freshwater_waterweed"}
 M.names={}
 for _,p in ipairs(M.plants) do M.names[#M.names+1]=p.node end
 for _,name in ipairs(M.reef) do M.names[#M.names+1]=name end
+for _,name in ipairs(M.freshwater) do M.names[#M.names+1]=name end
 return M

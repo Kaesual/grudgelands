@@ -133,10 +133,10 @@ for tier = 1, #tiers do
 end
 
 core.clear_craft({output = G .. "arrow"})
-core.register_craft({type = "shapeless", output = G .. "arrow 20", recipe = {
-	M .. "iron_bar", "group:stick", "group:stick", "group:stick", "group:stick",
-	"grug_mobs:sharp_feather", "grug_mobs:sharp_feather",
-	"grug_mobs:sharp_feather", "grug_mobs:sharp_feather",
+core.register_craft({output = G .. "arrow 200", recipe = {
+	{"", "", M .. "bronze_bar"},
+	{"", "group:stick", ""},
+	{"group:stick", "", ""},
 }})
 
 if core.registered_items["grug_farming:hoe"] then

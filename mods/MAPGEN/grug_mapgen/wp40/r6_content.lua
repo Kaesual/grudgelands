@@ -12,6 +12,15 @@ local function coast_profile_applies(profile, distance, width, freshwater)
 	return profile ~= nil and distance <= width
 end
 
+-- Sand follows the final height, not the selected run's unblended label.
+-- The half-node-per-column envelope admits broad beaches but excludes their
+-- high lateral cliff blends. No repeated neighbor/height lookup is required.
+local function low_sand_surface(terrain_y, water_y, distance, freshwater)
+	local maximum = freshwater and 4 or 12
+	if distance then maximum = math.min(maximum, 2 + math.floor(distance / 2)) end
+	return terrain_y <= water_y + maximum
+end
+
 local function wet_bed_names(id, bed)
 	if id == "grug_swamp" then
 		return {bed, bed, "default:gravel", "default:stone"}
@@ -111,21 +120,21 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 		grug_swamp = {"grug_nodes:mud", "grug_nodes:mud", 2, "grug_nodes:mud", "-"},
 	}
 	local RESOURCE_EXPECTED = {
-		abyssal_crystal = {"universal", 5, 2, {false, false, false, false, 2048, 2048}},
-		citrine = {"regional_g1", 2, 3, {false, 12000, 6000, 3000, 3000, 3000}},
-		coal = {"universal", 1, 8, {128, 128, 128, 128, 128, 128}},
-		copper = {"universal", 1, 8, {256, 256, 256, 256, 256, 256}},
-		diamond = {"regional_g2", 4, 2, {false, false, false, 12000, 6000, 3000}},
-		emberglass = {"universal", 4, 4, {false, false, false, 2048, 2048, 2048}},
-		garnet = {"regional_g1", 2, 3, {false, 12000, 6000, 3000, 3000, 3000}},
-		gold = {"universal", 2, 4, {false, 1024, 1024, 1024, 1024, 1024}},
-		iron = {"universal", 1, 8, {128, 128, 128, 128, 128, 128}},
-		jade = {"regional_g1", 2, 3, {false, 12000, 6000, 3000, 3000, 3000}},
-		quartz = {"universal", 1, 8, {256, 256, 256, 256, 256, 256}},
-		ruby = {"regional_g2", 4, 2, {false, false, false, 12000, 6000, 3000}},
-		sapphire = {"regional_g2", 4, 2, {false, false, false, 12000, 6000, 3000}},
-		silver = {"universal", 3, 4, {false, false, 1024, 1024, 1024, 1024}},
-		tin = {"universal", 1, 8, {384, 384, 384, 384, 384, 384}},
+		abyssal_crystal = {"universal", 5, 2, {false, false, false, false, 512, 256}},
+		citrine = {"regional_g1", 2, 3, {false, 2048, 1024, 512, 512, 512}},
+		coal = {"universal", 1, 8, {64, 128, 128, 128, 128, 128}},
+		copper = {"universal", 1, 8, {96, 192, 384, 384, 384, 384}},
+		diamond = {"regional_g2", 4, 2, {false, false, false, 2048, 1024, 512}},
+		emberglass = {"universal", 4, 4, {false, false, false, 256, 128, 256}},
+		garnet = {"regional_g1", 2, 3, {false, 2048, 1024, 512, 512, 512}},
+		gold = {"universal", 2, 4, {false, 512, 256, 128, 256, 256}},
+		iron = {"universal", 1, 8, {128, 96, 192, 384, 384, 384}},
+		jade = {"regional_g1", 2, 3, {false, 2048, 1024, 512, 512, 512}},
+		quartz = {"universal", 1, 8, {128, 256, 512, 512, 512, 512}},
+		ruby = {"regional_g2", 4, 2, {false, false, false, 2048, 1024, 512}},
+		sapphire = {"regional_g2", 4, 2, {false, false, false, 2048, 1024, 512}},
+		silver = {"universal", 3, 4, {false, false, 256, 128, 256, 512}},
+		tin = {"universal", 1, 8, {96, 192, 384, 384, 384, 384}},
 	}
 	local CULTURAL_EXPECTED = {
 		dwarf = {"runeslate", "elandor_stormvault_heights",
@@ -422,10 +431,12 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 			type(density.abyssal_crystal) ~= "table" or
 			type(density.g2.host_nodes_per_ore) ~= "table" or
 			dense(density.deep_bands, "WP43 deep bands", "fail_resource_manifest") ~= 2 or
-			density.g2.host_nodes_per_ore[4] ~= 12000 or
-			density.g2.host_nodes_per_ore[5] ~= 6000 or
-			density.g2.host_nodes_per_ore[6] ~= 3000 or
-			density.abyssal_crystal.host_nodes_per_ore ~= 2048 or
+			density.g2.host_nodes_per_ore[4] ~= 2048 or
+			density.g2.host_nodes_per_ore[5] ~= 1024 or
+			density.g2.host_nodes_per_ore[6] ~= 512 or
+			type(density.abyssal_crystal.host_nodes_per_ore) ~= "table" or
+			density.abyssal_crystal.host_nodes_per_ore[5] ~= 512 or
+			density.abyssal_crystal.host_nodes_per_ore[6] ~= 256 or
 			density.deep_bands[1].multiplier_numerator ~= 5 or
 			density.deep_bands[1].multiplier_denominator ~= 4 or
 			density.deep_bands[2].multiplier_numerator ~= 3 or
@@ -733,9 +744,9 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 		return function(id, x, z, water_y, terrain_y)
 			local base = surface_by_id[id]
 			if not base then return nil end
-			local profile, distance, width, freshwater
+			local profile, distance, width, freshwater, run_key, target, profile_relief, shore_water
 			if type(planner_source.coast_profile_at) == "function" then
-				profile, distance, width, freshwater =
+				profile, distance, width, freshwater, run_key, target, profile_relief, shore_water =
 					planner_source.coast_profile_at(x, z)
 			end
 			local relief = planner_source.primary_relief_at and
@@ -757,6 +768,11 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 					local patch = math.floor((3 * noise(x, z, 32, 19349663) + detail) / 4)
 					return rocky_shores[id][patch < 512 and 1 or 2]
 				end
+			end
+			if dry and (profile == "beach" or id == "grug_beach") and
+					not low_sand_surface(terrain_y, shore_water or water_y or 1,
+						distance, freshwater) then
+				return rocky_shores[id][2]
 			end
 			if coast_profile_applies(profile, distance, width, freshwater) then
 				return coast_variants[id][profile]
@@ -819,5 +835,5 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 	return module
 end
 
-return content_factory, coast_surface_rule, {coast_profile_applies = coast_profile_applies,
+return content_factory, coast_surface_rule, {coast_profile_applies = coast_profile_applies, low_sand_surface = low_sand_surface,
 	wet_bed_names = wet_bed_names}

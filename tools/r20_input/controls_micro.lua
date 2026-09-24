@@ -8,6 +8,7 @@ return function(root)
 	env.table = setmetatable({copy = copy}, {__index = table})
 	local time, hits, selected, slot, current, stunned = 0, {}, nil, 1, "skill", false
 	local controls, casts, strikes, pickups, bows, food, digged, punched = {}, 0, 0, 0, 0, 0, 0, 0
+	local food_begins, food_steps, food_ends, food_active = 0, 0, 0, false
 	local next_strike, cast_ready, loaded = 0, true, {}
 	local function point(x) return {x=x,y=0,z=0} end
 	local v = {copy=copy,add=function(a,b) return point(a.x+b.x) end,
@@ -65,7 +66,12 @@ return function(root)
 		try_cast=function() casts=casts+1;return true end,
 		start_bow_draw=function() bows=bows+1;return true end,cancel_bow_draw=function() end}
 	env.grug_abilities=Q
-	env.grug_food={consume_held=function() food=food+1 end}
+	env.grug_food={
+		begin_hold=function() food_begins=food_begins+1;food_active=true end,
+		step_hold=function() if food_active then food_steps=food_steps+1 end end,
+		end_hold=function() if food_active then food_ends=food_ends+1;food_active=false end end,
+		consume_held=function() food=food+1 end,
+	}
 	local fn=assert(loadfile(root.."/mods/PLAYER/grug_abilities/input.lua"));setfenv(fn,env)
 	local input=fn()({selected=function() return selected end,
 		can_cast=function(_,def) return def.kind=="cast" and cast_ready end,
@@ -113,8 +119,11 @@ return function(root)
 	release();selected=loose;hits={object(enemy,2)};controls={place=true,dig=true}
 	local old_strikes=strikes;input.step(player);assert(bows==1 and strikes==old_strikes)
 	release();selected=nil;current="food";input.step(player);release();hits={};controls={place=true}
-	input.step(player);time=time+1499999;input.step(player);assert(food==0)
-	time=time+1;input.step(player);input.step(player);assert(food==1)
+	input.step(player);assert(food_begins==1 and food_steps>=1 and food_ends==0)
+	local immediate_steps=food_steps
+	time=time+1499999;input.step(player);assert(food==0 and food_steps==immediate_steps+1)
+	time=time+1;input.step(player);input.step(player)
+	assert(food==1 and food_ends==1 and not food_active)
 	-- Slot changes/stun cancel an ambiguous release instead of casting it later.
 	release();selected=heal;current="skill";input.step(player);release();hits={node(2)};controls={dig=true}
 	input.step(player);before=casts;slot=2;input.step(player);controls={};input.step(player);assert(casts==before)

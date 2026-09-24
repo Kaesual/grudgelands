@@ -40,6 +40,8 @@ return function(api)
 		return s
 	end
 	local function cancel(player, s)
+		local food = rawget(_G, "grug_food")
+		if food and food.end_hold then food.end_hold(player) end
 		s.pending, s.dig, s.right = nil, nil, nil
 		s.cancelled = true
 		if Q.cancel_bow_draw then Q.cancel_bow_draw(player) end
@@ -89,6 +91,8 @@ return function(api)
 			Q.start_bow_draw(player)
 		elseif core.get_item_group(player:get_wielded_item():get_name(), "grug_food") > 0 then
 			s.right, s.right_started = "food", core.get_us_time()
+			local food = rawget(_G, "grug_food")
+			if food and food.begin_hold then food.begin_hold(player) end
 		else
 			s.right = "other"
 		end
@@ -164,6 +168,8 @@ return function(api)
 		end
 		if s.cancelled then s.down, s.rmb = down, right; return end
 		if not down and not right and not s.pending then
+			local food = rawget(_G, "grug_food")
+			if food and food.end_hold then food.end_hold(player) end
 			s.down, s.rmb, s.right, s.dig = false, false, nil, nil
 			return
 		end
@@ -174,10 +180,15 @@ return function(api)
 		end
 		local hit, distance = ray(player, math.max(HAND_RANGE, def and Q.get_range(player, def) or 0))
 		if right and not s.rmb then right_begin(player, s, def, hit, distance) end
+		if right and s.right == "food" then
+			local food = rawget(_G, "grug_food")
+			if food and food.step_hold then food.step_hold(player) end
+		end
 		if right and s.right == "food" and core.get_us_time() - s.right_started >= FOOD_US then
 			s.right = "food_done"
 			local food = rawget(_G, "grug_food")
 			if food then food.consume_held(player) end
+			if food and food.end_hold then food.end_hold(player) end
 		end
 		if right then
 			s.pending, s.dig, s.down, s.rmb = nil, nil, down, true
@@ -186,6 +197,8 @@ return function(api)
 		if s.rmb then
 			-- Bow release is settled by the existing Scout draw loop. Native
 			-- inventory/pause/GUI releases are indistinguishable and accepted.
+			local food = rawget(_G, "grug_food")
+			if food and food.end_hold then food.end_hold(player) end
 			s.right, s.rmb, s.down = nil, false, down
 			return -- Scout settles the release before another weapon action.
 		end
@@ -214,6 +227,8 @@ return function(api)
 	function M.cancel(player) cancel(player, state(player)) end
 	function M.interaction(player)
 		local s = state(player)
+		local food = rawget(_G, "grug_food")
+		if food and food.end_hold then food.end_hold(player) end
 		s.pending, s.dig, s.right, s.rmb = nil, nil, "interaction", true
 		if Q.cancel_bow_draw then Q.cancel_bow_draw(player) end
 	end

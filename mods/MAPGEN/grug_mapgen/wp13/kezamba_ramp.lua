@@ -155,7 +155,7 @@ local function loader(directory)
 			local cell = piece.cells[index]
 			local p = (dx == 1) and cell.x or cell.z
 			local lane = (dx == 1) and (cell.z - at) or (cell.x - at)
-			if lane >= -half and lane <= half then
+			if cell.name ~= "air" and lane >= -half and lane <= half then
 				if deck[p] == nil or cell.y > deck[p] then deck[p] = cell.y end
 			end
 			if lane >= -band and lane <= band then
@@ -167,7 +167,7 @@ local function loader(directory)
 		-- than a piece can see.
 		local band_columns, drop = {}, 0
 		for p = spec.from, spec.to do
-			local distance = math.abs(p - gate)
+			local distance = math.max(0, math.abs(p - gate) - 1)
 			local D = deck[p]
 			if D ~= nil and distance <= reach then
 				local target = g + distance
@@ -232,7 +232,7 @@ local function loader(directory)
 		local function level_at(p)
 			if level[p] ~= nil then return level[p] end
 			if deck[p] ~= nil then return deck[p] end
-			return g + math.abs(p - gate)
+			return g + math.max(0, math.abs(p - gate) - 1)
 		end
 		local piers, rails, treads, standards = 0, 0, 0, 0
 		for index = 1, #band_columns do

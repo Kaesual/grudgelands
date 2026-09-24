@@ -219,7 +219,7 @@ end
 -- `anchor` is the settlement's published anchor, `sockets` its blueprint's
 -- authored array. Both are read, never kept: the caller may reuse its table.
 function grug_core.register_settlement_sockets(settlement_key, race_id, anchor,
-		sockets)
+		sockets, display_name)
 	if type(settlement_key) ~= "string" or settlement_key == "" then
 		fail("settlement key differs")
 	end
@@ -234,12 +234,16 @@ function grug_core.register_settlement_sockets(settlement_key, race_id, anchor,
 	integer(anchor.y, settlement_key .. ": anchor y")
 	integer(anchor.z, settlement_key .. ": anchor z")
 	if type(sockets) ~= "table" then fail(settlement_key .. ": socket list differs") end
+	if display_name ~= nil and (type(display_name) ~= "string" or display_name == "") then
+		fail(settlement_key .. ": display name differs")
+	end
 	local compiled, seen = {}, {}
 	for index = 1, #sockets do
 		compiled[index] = compile(settlement_key, anchor, sockets[index], seen)
 	end
 	local record = {
 		key = settlement_key,
+		display_name = display_name,
 		race_id = race_id,
 		anchor = {x = anchor.x, y = anchor.y, z = anchor.z},
 		sockets = compiled,
@@ -268,7 +272,8 @@ function grug_core.settlement_socket_settlements()
 	local result = {}
 	for index = 1, #order do
 		local record = order[index]
-		result[index] = {key = record.key, race_id = record.race_id,
+		result[index] = {key = record.key, display_name = record.display_name,
+			race_id = record.race_id,
 			anchor = {x = record.anchor.x, y = record.anchor.y,
 				z = record.anchor.z}}
 	end

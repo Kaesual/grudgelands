@@ -229,9 +229,6 @@ function grug_food.eat(itemstack, user, tier, kind, role)
 	end
 	if start_food_status(user, tier, effect) then
 		itemstack:take_item(1)
-		core.sound_play({name = "grug_food_eat", gain = 0.5}, {
-			to_player = user:get_player_name(),
-		}, true)
 	end
 	return itemstack
 end
@@ -245,6 +242,63 @@ local function copied_groups(groups)
 end
 
 local held_foods = {}
+local hold_feedback = {}
+local MOTION_INTERVAL_US = 250000
+
+local function stop_hold_feedback(player)
+	local name = player:get_player_name()
+	local record = hold_feedback[name]
+	if not record then return end
+	if record.sound_handle then core.sound_stop(record.sound_handle) end
+	if record.hud_id then player:hud_remove(record.hud_id) end
+	if record.wielditem ~= nil then player:hud_set_flags({wielditem = record.wielditem}) end
+	hold_feedback[name] = nil
+end
+
+function grug_food.begin_hold(player)
+	stop_hold_feedback(player)
+	local stack = player:get_wielded_item()
+	local item_name = stack:get_name()
+	if not held_foods[item_name] then return false end
+	local definition = core.registered_items[item_name]
+	local image = definition and definition.inventory_image
+	local flags = player:hud_get_flags()
+	local record = {next_motion = 0, raised = false,
+		wielditem = flags and flags.wielditem ~= false}
+	player:hud_set_flags({wielditem = false})
+	record.sound_handle = core.sound_play({name = "grug_food_eat", gain = 0.5}, {
+		to_player = player:get_player_name(), loop = true,
+	})
+	if type(image) == "string" and image ~= "" then
+		record.hud_id = player:hud_add({
+			hud_elem_type = "image", position = {x = 0.5, y = 1},
+			offset = {x = 92, y = -98}, text = image,
+			scale = {x = 2.5, y = 2.5}, alignment = {x = 0, y = 0},
+		})
+	end
+	hold_feedback[player:get_player_name()] = record
+	grug_food.step_hold(player)
+	return true
+end
+
+function grug_food.step_hold(player)
+	local record = hold_feedback[player:get_player_name()]
+	if not record then return end
+	local now = core.get_us_time()
+	if now >= record.next_motion then
+		record.next_motion = now + MOTION_INTERVAL_US
+		record.raised = not record.raised
+		if record.hud_id then
+			player:hud_change(record.hud_id, "offset",
+				{x = record.raised and 64 or 92, y = record.raised and -132 or -98})
+		end
+	end
+end
+
+function grug_food.end_hold(player)
+	stop_hold_feedback(player)
+end
+
 function grug_food.consume_held(player)
 	local stack = player:get_wielded_item()
 	local food = held_foods[stack:get_name()]
@@ -254,6 +308,10 @@ function grug_food.consume_held(player)
 	if stack:get_count() ~= before then player:set_wielded_item(stack) end
 	return stack:get_count() ~= before
 end
+
+core.register_on_leaveplayer(function(player)
+	hold_feedback[player:get_player_name()] = nil
+end)
 
 function grug_food.register_item(item_name, tier, kind, role)
 	local definition = core.registered_items[item_name]

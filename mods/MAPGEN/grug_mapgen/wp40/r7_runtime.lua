@@ -479,7 +479,7 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 					type(anchor.y) ~= "number" then
 				fail("settlement socket anchor differs: " .. profile.key)
 			end
-			rows[index] = {key = profile.key, race = profile.race,
+			rows[index] = {key = profile.key, label = profile.label, race = profile.race,
 				slot = profile.slot, zone_id = profile.zone_id, anchor = anchor,
 				sockets = r7_settlement_module.sockets(row.prepared, anchor,
 					height_at)}

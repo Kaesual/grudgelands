@@ -11,7 +11,7 @@ Q.register_quest("r20_dwarf_start_cook", {
 	race = "dwarf",
 	effort = "standard",
 	prerequisites = {},
-	description = "Hilda keeps the timber shift fed beside Hearthpine's oven. Bring three coal lumps for its fuel box; existing or traded coal is welcome. If you mine it yourself, use a bronze-or-better pick on a natural coal source rather than dismantling protected village scenery.",
+	description = "Hilda keeps the timber shift fed beside Hearthpine's oven. Bring three coal lumps for its fuel box; existing or traded coal is welcome. If you mine it yourself, use a pickaxe, even wood or stone, on a natural coal source rather than dismantling protected village scenery.",
 	objectives = {{type = "item", item = "default:coal_lump", count = 3}},
 	rewards = {xp = 20, copper = 10, items = {}},
 })
@@ -131,7 +131,7 @@ Q.register_quest("r20_human_start_cook", {
 	race = "human",
 	effort = "standard",
 	prerequisites = {},
-	description = "Bess Honeycrust has a second oven ready for Dawnmere's returning field hands. Bring three coal lumps for its fuel store. Traded supplies count; mining natural coal yourself requires a bronze-or-better pick, not wood or stone.",
+	description = "Bess Honeycrust has a second oven ready for Dawnmere's returning field hands. Bring three coal lumps for its fuel store. Traded supplies count; mining natural coal yourself only requires a pickaxe; wood and stone picks work too.",
 	objectives = {{type = "item", item = "default:coal_lump", count = 3}},
 	rewards = {xp = 20, copper = 10, items = {}},
 })
@@ -251,7 +251,7 @@ Q.register_quest("r20_elf_start_cook", {
 	race = "elf",
 	effort = "standard",
 	prerequisites = {},
-	description = "Liora Dewpot wants the grove's evening meal ready before the gatherers return. Bring three coal lumps to the oven in Silverleaf. Existing or traded fuel is welcome; a bronze-or-better pick is needed if you choose to mine natural coal yourself.",
+	description = "Liora Dewpot wants the grove's evening meal ready before the gatherers return. Bring three coal lumps to the oven in Silverleaf. Existing or traded fuel is welcome; a pickaxe is needed (wood and stone work too) if you choose to mine natural coal yourself.",
 	objectives = {{type = "item", item = "default:coal_lump", count = 3}},
 	rewards = {xp = 20, copper = 10, items = {}},
 })
@@ -371,7 +371,7 @@ Q.register_quest("r20_undead_start_cook", {
 	race = "undead",
 	effort = "standard",
 	prerequisites = {},
-	description = "Neral Saltkeeper warms Stillgrave's salting room from the oven beside the common table. Bring three coal lumps to keep the damp out. Traded fuel counts; if you mine coal yourself, bring a bronze-or-better pick.",
+	description = "Neral Saltkeeper warms Stillgrave's salting room from the oven beside the common table. Bring three coal lumps to keep the damp out. Traded fuel counts; if you mine coal yourself, bring a pickaxe; wood and stone picks work too.",
 	objectives = {{type = "item", item = "default:coal_lump", count = 3}},
 	rewards = {xp = 20, copper = 10, items = {}},
 })
@@ -491,7 +491,7 @@ Q.register_quest("r20_orc_start_cook", {
 	race = "orc",
 	effort = "standard",
 	prerequisites = {},
-	description = "Ugra Brothstone keeps Sunscar's long fire supplied beside the oven. Bring three coal lumps for the covered fuel box. Existing or traded coal is welcome; natural coal requires a bronze-or-better pick if you choose to gather it yourself.",
+	description = "Ugra Brothstone keeps Sunscar's long fire supplied beside the oven. Bring three coal lumps for the covered fuel box. Existing or traded coal is welcome; You can mine natural coal with any pickaxe, including wood or stone.",
 	objectives = {{type = "item", item = "default:coal_lump", count = 3}},
 	rewards = {xp = 20, copper = 10, items = {}},
 })
@@ -611,7 +611,7 @@ Q.register_quest("r20_troll_start_cook", {
 	race = "troll",
 	effort = "standard",
 	prerequisites = {},
-	description = "Zemi Sweetroot has moved the common pot under Kapok's oven shelter before the rain arrives. Bring three coal lumps for the dry fuel basket. Traded supplies count; mining coal yourself requires a bronze-or-better pick.",
+	description = "Zemi Sweetroot has moved the common pot under Kapok's oven shelter before the rain arrives. Bring three coal lumps for the dry fuel basket. Traded supplies count; mining coal yourself only requires a pickaxe; wood and stone picks work too.",
 	objectives = {{type = "item", item = "default:coal_lump", count = 3}},
 	rewards = {xp = 20, copper = 10, items = {}},
 })

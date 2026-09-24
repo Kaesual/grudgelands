@@ -105,7 +105,8 @@ baseline. This documentation round neither expands nor removes release scope.
 - [x] Standalone game, faction/race/class creation, progression and four classes
   including Scout; current-ray combat, equipped weapons, talents and shared movement.
 - [x] Named-zone world foundation, six starts and capitals, gathering/materials,
-  strata and bounded terrain/coast/cave corrections. Public-release evidence remains open.
+  strata and bounded terrain/coast/cave corrections. Round 21 improves access,
+  natural POI ground, inland/coastal detail and resource density. Public-release evidence remains open.
 - [x] Threat/taunt, populations, kings/dragons, homing ranged attacks, dispositions,
   nametags and injured bars. Full endgame encounter scope remains WP23.
 - [x] Currency/traders, inventory/bags, Skills recovery, ordinary equipment/offhands,

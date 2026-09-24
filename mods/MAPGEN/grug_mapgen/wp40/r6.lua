@@ -449,6 +449,12 @@ return function(dependencies)
 				if successor_metrics.schema == "grug_wp40_r7_successor_metrics_v1" then
 					result.p9g, result.anchors = successor_metrics.p9g,
 						successor_metrics.anchors
+					result.settlements = {}
+					for key, value in pairs(successor_metrics) do
+						if type(value) == "table" and value.approach_findings then
+							result.settlements[key] = value
+						end
+					end
 				else
 					result.p9g = successor_metrics
 				end

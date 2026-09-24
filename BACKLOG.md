@@ -13,7 +13,9 @@ There are **53 identities**: WP0–WP49 and WP-Scout/WP-HUD/WP-Speed.
 old summary's omission of the already-delivered WP8, WP12 and WP20; it does not
 claim any additional implementation or GUI acceptance.
 
-- Latest delivery: [Round 20](docs/research/round20-completion.md); user playtest pending.
+- Latest delivery: [Round 21](docs/research/round21-completion.md); user playtest pending.
+  Terrain/POI access, resources, furnaces and bounded feedback fixes do not close
+  another full WP identity. Counts remain 27 delivered / 53 tracked.
 - WP5's selected fixed-tier enchanting is delivered; loot, cultural/PvP finishes
   and masterwork remain. WP44's economy/measurement remains open.
 - WP11's talent consumers are delivered; measured respec prices await WP44.
@@ -59,7 +61,7 @@ technical evidence certifies its recorded bytes, never an arbitrary later head.
 | WP-HUD | Exact health/resource HUD | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP-Speed | Shared movement modifiers | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP12 | World atlas | Delivered through R19: whole-atlas zoom/scroll and live markers; waypoints remain WP17. | — |
-| WP13 | [Remaining authored structures and POI roster](docs/planning/work-package-scopes.md#wp13) | Round 20 completes authored roster art; geometry discrepancy and GUI acceptance remain. | WP40 ✅, WP43 ✅ |
+| WP13 | [Remaining authored structures and POI roster](docs/planning/work-package-scopes.md#wp13) | Round 20 completes roster art; Round 21 improves access/ground. Core-width discrepancy and GUI acceptance remain. | WP40 ✅, WP43 ✅ |
 | WP14 | [Offhands delivered; carried-light remainder](docs/planning/work-package-scopes.md#wp14) | Ordinary offhands delivered; moving light deferred. | WP3 |
 | WP15 | Character equipment and bags | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP16 | Canceled historical proposal | Canceled 2026-08-12; no game code shipped. | — |

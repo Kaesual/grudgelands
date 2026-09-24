@@ -49,19 +49,12 @@ to fear. Their story will grow as more regions and encounters are completed.
 [ROADMAP.md](ROADMAP.md).*
 
 The systems above are implemented and installed in the local development build.
-Round 20 adds authored compositions for the remaining 70 POI art slots,
-parallel starter errands, destination conversations and more regional quests.
-It also aligns class equipment permissions, broken-item appearance and
-contextual skill combat/digging; right-click holds draw bows or consume food.
-Playtesting, balancing and finishing the wider world remain ongoing; implemented features are not all
-fully playtested. [Round 18](docs/research/round18-completion.md) completes the
-latest usability, progression, pursuit, tool and preparation fixes.
-[Round 19](docs/research/round19-completion.md) adds atlas zoom/scroll, concise
-menus, first-click talents, top-center buffs and readable dragon bars.
-Its [UI follow-up](docs/research/round19-ui-followup.md) keeps Map at the shared
-window size and makes talent buttons and text alignment clearer.
-The [combat follow-up](docs/research/round19-pursuit-followup.md) keeps ambient
-mobs attacking stationary targets and restores idle enemies after a safe quiet period.
+Round 21 improves terrain, POI ground and capital access, resource availability,
+furnace feedback and fuel rules, inexpensive Bronze arrows, food feedback and
+boar targeting. Lakes and coasts gain bounded visual variation, aquatic plants
+and passive fish. The preceding Round 20 supplies 240 quests, the full 100-anchor
+art roster and contextual combat/digging controls. In-game visual acceptance and
+longer-term balancing remain ongoing.
 
 Open-world housing claims, boats, the full geographic PvP system, war fronts
 and the planned island dragon encounters are still unfinished. The current
@@ -73,9 +66,9 @@ quest catalog does not yet cover the full journey through every region.
 **Delivered:** 27 of 53 tracked work-package identities are complete; several
 others have playable portions. This is a tracking count, not a percentage of
 game completion. The latest delivered increment is
-[Round 20](docs/research/round20-completion.md), independently reviewed and
+[Round 21](docs/research/round21-completion.md), independently reviewed and
 locally synchronized; [project status](docs/STATUS.md) records acceptance. No remote
-delivery is claimed. [In-game acceptance](docs/research/round20-playtest.md)
+delivery is claimed. [In-game acceptance](docs/research/round21-playtest.md)
 remains separate.
 
 **Ready for further work:** the backlog identifies crafting/enchantment
