@@ -44,6 +44,7 @@ tools/r20_input/controls_micro.lua
 tools/r21_aquatic/fish_spawn_kat.lua
 tools/r21_aquatic/world_content_kat.lua
 tools/r21_furnace/automatic_kat.lua
+tools/r21_furnace/workspaces_light_kat.lua
 tools/round21/feedback_micro.lua
 tools/round21/final_micro.lua
 tools/round21/integration.lua
@@ -54,5 +55,6 @@ tools/round21/settlement_integration.lua
 tools/round21/settlement_micro.lua
 tools/round21/settlement_seam_micro.lua
 tools/wp13/settlement_sockets_kat.lua
+tools/wp40/planner_throughput/fixture.lua
 tools/wp40/quality/surface_fixture.lua
 tools/wp40/r7/micro_kat_fixture.lua

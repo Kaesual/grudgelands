@@ -26,8 +26,9 @@ to ordinary new seeds. No full-world preparation is necessary for this test.
    and make an alloy in the dual furnace. Try logs, coal and charcoal as fuel;
    sticks/planks/other items should be rejected. Watch flame and arrow progress,
    seamless refueling, blocked output, reopening and normal save/reload.
-   Personal workspaces show their individual flame in the UI; they do not
-   change the public world node's light for that player's private job.
+   Personal workspaces show individual progress in the UI and light the shared
+   world oven. Check that it goes dark after the observed fuel burns out,
+   including after leaving and returning to the area.
 5. **Scout:** craft 200 arrows with one Bronze Bar and two diagonal Sticks:
    `--M / -S- / S--`. No feathers or profession required.
 6. **Food and targeting:** hold RMB with food for bite sound and the small food

@@ -50,6 +50,11 @@ parser PASS tools/r21_aquatic/fish_spawn_kat.lua
 	25	[9]	SETGLOBAL	3 -11	; mobs
 parser PASS tools/r21_aquatic/world_content_kat.lua
 parser PASS tools/r21_furnace/automatic_kat.lua
+parser PASS tools/r21_furnace/workspaces_light_kat.lua
+	88	[44]	SETGLOBAL	11 -17	; core
+	94	[45]	SETGLOBAL	11 -38	; vector
+	100	[46]	SETGLOBAL	11 -41	; default
+	108	[51]	SETGLOBAL	11 -44	; grug_jobs
 parser PASS tools/round21/feedback_micro.lua
 parser PASS tools/round21/final_micro.lua
 parser PASS tools/round21/integration.lua
@@ -60,13 +65,16 @@ parser PASS tools/round21/settlement_integration.lua
 parser PASS tools/round21/settlement_micro.lua
 parser PASS tools/round21/settlement_seam_micro.lua
 parser PASS tools/wp13/settlement_sockets_kat.lua
+parser PASS tools/wp40/planner_throughput/fixture.lua
 parser PASS tools/wp40/quality/surface_fixture.lua
 parser PASS tools/wp40/r7/micro_kat_fixture.lua
 sweep 1 PASS
 sweep 2 PASS
 sweep 3 PASS
+tools/round21/feedback_micro.lua:35:		report[#report + 1] = fixture[1] .. "\t" .. table.concat(output, " | ")
 mods/ENTITIES/grug_mobs/boar_variants.lua:107:-- still reaches with zone `inner` up to |x| ~932, and the patch model (§1.4)
-mods/MAPGEN/grug_mapgen/wp40/simple_map.lua:747:					-- open envelope is |d| < gate_half, so the closed box this
+mods/ENTITIES/grug_mobs/init.lua:69:--   def._grug_tier        — "normal" (default) | "elite" | "rare" | "boss"
+mods/MAPGEN/grug_mapgen/wp13/kezamba.lua:11:-- is an answer to it: "Kezamba | troll | stilted cenote terrace, step 3 | stilt
 mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:6:AGENTS.md|b12f55731dfee4e050f97ea0c221415fdffd9cef7ded5b0b8b7a3b5c16c4a53b|55978
 mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:7:docs/design/biomes_mobs.md|f1f3255033565d2eecb7752ac96b0585946e631f8e19a8f8a8af2ccc704f1fe4|103928
 mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:8:docs/design/items_crafting.md|b1210336d8733fd4cc606bc40f19758229a8fa75c69dc92cc891b55abbbdcdd1|125115
@@ -193,8 +201,6 @@ mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:140:savanna_dry_shrub|grug_savan
 mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:141:swamp_dry_shrub|grug_swamp|simple|default:dry_shrub|grug_nodes:mud|1|250|param2_4|4
 mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:142:swamp_papyrus|grug_swamp|template|papyrus_on_dirt.mts|grug_nodes:mud|1|50|surface_y_1_to_4;replace_dirt_with_mud;center_xz;quarter_turn_rotation|1
 mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:147:	for value in (line .. "|"):gmatch("([^|]*)|") do result[#result + 1] = value end
-tools/round21/feedback_micro.lua:34:		report[#report + 1] = fixture[1] .. "\t" .. table.concat(output, " | ")
-mods/ENTITIES/grug_mobs/init.lua:69:--   def._grug_tier        — "normal" (default) | "elite" | "rare" | "boss"
-mods/MAPGEN/grug_mapgen/wp13/kezamba.lua:11:-- is an answer to it: "Kezamba | troll | stilted cenote terrace, step 3 | stilt
+mods/MAPGEN/grug_mapgen/wp40/simple_map.lua:747:					-- open envelope is |d| < gate_half, so the closed box this
 sweep 4: inspect hits (comments may match)
 sweep 5 PASS

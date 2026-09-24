@@ -32,7 +32,7 @@ Plans: [round scope](round21-mapgen-and-playtest-fixes.md),
 | G1 constructed-ground geometry | r21_settlement_preflight / Astra | /tmp/grug-r21-settlement | integrated; independent Astra review clean |
 | G2 terrain/lakes/coast | r21_nature_preflight / Astra | /tmp/grug-r21-nature | integrated, root reviewed |
 | F1/F2/F3/F5 feedback/names/ammo | r21_feedback_preflight / Sol | /tmp/grug-r21-feedback | integrated, root reviewed |
-| F4 furnaces | r21_feedback_preflight / Sol | /tmp/grug-r21-feedback | reviewed; final personal-light scope closure running |
+| F4 furnaces | r21_feedback_preflight / Sol | /tmp/grug-r21-feedback | integrated; final independent review clean |
 | G3 aquatic decor/fish | r21_feedback_preflight / Sol | /tmp/grug-r21-feedback | integrated; independent Astra review clean |
 | R1 resources + docs | root Astra | primary integration checkout | implemented, independent Astra reviewed |
 
@@ -150,3 +150,19 @@ progress update or compaction as completion.
   to the living critter table after independent Sol documentation review.
 - Remaining: personal light closure, replacement final static/portable gates,
   frozen source hashes and final receipt review, local commit/merge/sync. No push.
+
+### Final technical gate (2026-09-24)
+
+- F4 personal world light through `b253af51` / integration `9ddee22b` reviewed
+  clean by independent nature Astra. One Medium public-timer early-return
+  blocker was caught and corrected; real timer/LBM fixture now covers it.
+- Replacement final pair PASS: SHA256
+  `6b09edb0246c65d291770626ffed3dc3b287cb7775b8c4e0464e22480b8fc58e`.
+  PUC0.53CPU s, JIT0.23CPU s. No more mapgen runs.
+- Final static: 60 Lua files parse, expected globals only; sweeps1/2/3/5 clean,
+  sweep4 literal data/comments reviewed. 990 frozen source/media/fixture hashes.
+- All implementation lanes complete; remaining operations are final evidence
+  review, local commit/merge/sync and the delivery receipt. No remote push.
+
+Final independent evidence review: nature Astra PASS, all 990 hashes verified;
+no open blocker. Local merge/sync authorized by the user's round Go.
