@@ -280,6 +280,7 @@ local ZONE_LOOKALIKE_SELECTION = {
 -- water_class_at == deep_ocean in kraken.lua.
 local INDEPENDENT_AUTHORITY = {
 	["grug_mobs:kraken"] = true,
+	["grug_mobs:reed_angelfish"] = true,
 }
 
 -- The existing cave rows are exact. Keeping this list closed preserves their

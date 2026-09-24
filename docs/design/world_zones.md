@@ -1798,7 +1798,15 @@ noise first and at most one extra 128–192-node octave. Ordinary lake edges and
 beds gain bounded irregularity/shallow margins while functional connections,
 fixed levels and reservations remain protected. Beach/cliff transitions adjust
 height and material together; sand is limited to low/gentle shore surfaces.
-Corals form varied deterministic patches at similar overall density; suitable
-freshwater plants decorate safe water. One licensed animated ambient fish family
+Corals form varied deterministic patches at similar overall density. Rooted
+freshwater waterweed sparsely decorates safe, 2–6-node-deep authored water over
+natural sand without displacing the water column. One licensed animated ambient fish family
 may use existing capped critter spawning, without XP/loot or fishing changes;
 complex movement/asset blockers are escalated.
+
+The freshwater family is the Reed Angelfish, using ElCeejo's MIT-licensed
+Animalia angelfish mesh and texture at commit
+`5895f403fd43a9464e06b3675af3495f50565a3f`. It swims only in authored
+freshwater source columns over natural sand, has no XP or drops, and uses the
+ambient spawn cap of two. It has no school, breeding, pathfinding or fishing
+integration.

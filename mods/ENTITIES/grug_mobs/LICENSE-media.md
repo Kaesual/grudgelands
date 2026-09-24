@@ -11,6 +11,17 @@ never on ContentDB).
 `animalworld` / `mobs_mc` needs per-file license verification, which is
 deferred to a later work package.
 
+## 0. Animalia freshwater fish
+
+* Repo: <https://github.com/ElCeejo/animalia>
+* Commit: `5895f403fd43a9464e06b3675af3495f50565a3f`
+* License evidence: top-level `LICENSE`, MIT, Copyright (c) 2022 ElCeejo.
+
+| File | Upstream | Author | License | Modifications |
+|------|----------|--------|---------|---------------|
+| `grug_mobs_reed_angelfish.b3d` | `models/animalia_angelfish.b3d` | ElCeejo | MIT | renamed only; byte-identical |
+| `grug_mobs_reed_angelfish.png` | `textures/fish/animalia_angelfish.png` | ElCeejo | MIT | renamed only; byte-identical |
+
 **Re-verified 2026-08-08 (WP36/0b)** against the `reference_projects/`
 submodules, now that they pin exactly the commits quoted below: every one of
 the 21 `.b3d` files in `models/` is **byte-identical** (`cmp`) to the upstream

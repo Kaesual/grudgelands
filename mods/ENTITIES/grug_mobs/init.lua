@@ -874,6 +874,7 @@ dofile(modpath .. "/serpent.lua")
 dofile(modpath .. "/jungle_ape.lua")
 dofile(modpath .. "/parrot.lua")
 dofile(modpath .. "/kraken.lua")
+dofile(modpath .. "/reed_angelfish.lua")
 -- Swamp, shore and war coast + the humanoid camp mechanism
 -- (biomes_mobs.md §3.1/§4, WP6/T7). skeleton_raider.lua reuses the arrow
 -- entity registered by skeleton_archer.lua above, so it must come after it;
