@@ -207,6 +207,9 @@ local function refresh_position(pos)
 end
 
 local function changed(ctx)
+	if ctx.personal and (ctx.station == "furnace" or ctx.station == "dual_furnace") then
+		automatic.advance(ctx.station, ctx.inv, ctx.process, 0)
+	end
 	save(ctx)
 	refresh_position(ctx.pos)
 end
@@ -374,7 +377,19 @@ local function install_node(name, station)
 	end
 	local function update(pos)
 		refresh_position(pos)
-		if automatic.sizes[station] then core.get_node_timer(pos):start(1) end
+		if automatic.sizes[station] then
+			local meta = core.get_meta(pos)
+			if station == "furnace" or station == "dual_furnace" then
+				local state = core.deserialize(meta:get_string("grug_jobs:process")) or {}
+				automatic.advance(station, meta:get_inventory(), state, 0)
+				meta:set_string("grug_jobs:process", core.serialize(state))
+				local node = core.get_node(pos)
+				local inactive = grug_jobs.station_info(station).node
+				local wanted = (state.fuel or 0) > 0 and inactive .. "_active" or inactive
+				if node.name ~= wanted then node.name = wanted core.swap_node(pos, node) end
+			end
+			core.get_node_timer(pos):start(1)
+		end
 	end
 	local function allow_put(pos, list, index, stack, player)
 		if not allowed(pos, player) or list == "output" or list == "dst" then return 0 end

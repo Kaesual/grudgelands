@@ -90,6 +90,9 @@ function automatic.advance(station, inv, state, elapsed)
 			return
 		end
 		if state.fuel <= 0 then
+			-- Brewing keeps its earlier exact-boundary behavior: the next fuel
+			-- item is acquired only once positive elapsed time is available.
+			if station ~= "furnace" and station ~= "dual_furnace" and elapsed <= 0 then return end
 			local fuel_stack = inv:get_stack("fuel", 1)
 			local fuel_time = automatic.fuel_time(station, fuel_stack)
 			if fuel_time <= 0 then state.progress = 0 return end

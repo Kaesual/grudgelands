@@ -124,4 +124,11 @@ automatic.advance("brewing_stand",brewing,brewing_state,5)
 check(brewing:get_stack("output",1):get_name()=="jar" and
 	brewing:get_stack("output",2):get_name()=="potion","brewing replacements preserved")
 
+local boundary=inventory({mixture=1,fuel=1,output=2})
+boundary:set_stack("mixture",1,"brewinput");boundary:set_stack("fuel",1,"brewfuel 2")
+local boundary_state={fuel=0,progress=0}
+automatic.advance("brewing_stand",boundary,boundary_state,0)
+check(boundary:get_stack("fuel",1):get_count()==2 and boundary_state.fuel==0,
+	"brewing exact boundary consumed new fuel")
+
 print("r21_furnace_automatic_kat\tpass")
