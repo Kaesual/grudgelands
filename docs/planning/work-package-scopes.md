@@ -72,8 +72,8 @@ compositions from the latter to identify the 70 Round 20 art slots:
 | Apex camps | 2 | 0 in that increment | 2 |
 | Rare-route pads | 10 | 0 in that increment | 10 |
 
-These 70 slots now have authored compositions in the Round 20 candidate; final
-gates and GUI acceptance are recorded in STATUS. Existing banners, mobs, bosses
+These 70 slots now have authored compositions in the Round 20 local delivery; technical gates passed and GUI acceptance remains
+open as recorded in STATUS. Existing banners, mobs, bosses
 and functional anchors are preserved. Do not schedule these as 70 empty sites. The earlier phrase
 “100 POIs” conflated the whole anchor roster with the 88 non-civic slots.
 

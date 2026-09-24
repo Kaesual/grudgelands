@@ -1,5 +1,10 @@
 # Round 20 F1/F2 implementation receipt
 
+**Current gate:** independently reviewed by Astra root, 0 Critical/High, no
+production correction; elapsed unknown. Final compact fixture passed and the
+round is delivered locally. [Receipt](round20-completion.md). The original
+implementation-milestone notes below predate that final evidence.
+
 Status: implemented on `wp20-ux`; independent review and final runtime evidence pending.
 Implementer: GPT-6 Astra (native thread reused by coordinator due slot availability).
 Reviewer: pending. Critical/High findings, fix rounds and elapsed time: pending/unknown.

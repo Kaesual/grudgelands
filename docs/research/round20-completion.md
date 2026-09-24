@@ -1,7 +1,7 @@
 # Round 20 integration receipt
 
-Date: 2026-09-24. Coordinator: GPT-6 Astra. **Reviewed candidate: all technical gates passed;
-local main merge and synchronization are the remaining delivery steps.** [Execution ledger](../planning/round20-state.md).
+Date: 2026-09-24. Coordinator: GPT-6 Astra. **Delivered locally: all technical gates passed, merged to main
+as `8308229f` and synchronized to the local Luanti game on 2026-09-24.** [Execution ledger](../planning/round20-state.md).
 Baseline: `e346ec482c34d1a494ebcdf32be61eb152653e83`.
 
 ## Scope

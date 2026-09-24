@@ -13,12 +13,12 @@ There are **53 identities**: WP0–WP49 and WP-Scout/WP-HUD/WP-Speed.
 old summary's omission of the already-delivered WP8, WP12 and WP20; it does not
 claim any additional implementation or GUI acceptance.
 
-- Current work: [Round 20](docs/planning/round20-state.md), integration and final gates.
+- Latest delivery: [Round 20](docs/research/round20-completion.md); user playtest pending.
 - WP5's selected fixed-tier enchanting is delivered; loot, cultural/PvP finishes
   and masterwork remain. WP44's economy/measurement remains open.
 - WP11's talent consumers are delivered; measured respec prices await WP44.
 - Round 20 supplies authored art for the remaining 70 WP13 slots (100 total
-  anchors), subject to its final gates and GUI acceptance. The recorded
+  anchors), with final technical gates passed; GUI acceptance remains open. The recorded
   `bandit_frontier` core-width discrepancy (24 decided, 16 implemented) remains;
   new art fits the existing core and does not silently expand it.
 - WP14 ordinary offhands are delivered; moving held-torch light was deferred
@@ -51,7 +51,7 @@ technical evidence certifies its recorded bytes, never an arbitrary later head.
 | WP5 | [Loot, found-item affixes and cultural/PvP finishes](docs/planning/work-package-scopes.md#wp5) | Selected enchanting delivered; broader loot/finish/masterwork open. | WP1 ✅, WP3 ✅, WP43 ✅ |
 | WP6 | Mob roster, threat, guards and combat feel | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP7 | Ledger currency and traders (WP44 rebase outstanding) | Delivered legacy economy; current price curve and 25% buy-back await WP44. | — |
-| WP8 | Quest framework | Framework delivered; Round 20 candidate: 240 quests with talk handoffs. Broader story remains WP9. | — |
+| WP8 | Quest framework | Framework delivered; Round 20: 240 quests with talk handoffs. Broader story remains WP9. | — |
 | WP9 | [Named-zone story and questlines](docs/planning/work-package-scopes.md#wp9) | Round 20 adds capital/regional journeys; full high-level story and finale remain open. | WP6, WP8, WP40, WP41 |
 | WP10 | [Profession content and priced integration](docs/planning/work-package-scopes.md#wp10) | Framework and seven catalogs delivered; wider/priced content remains. | WP26 ✅, WP33 ✅, WP43 ✅, WP44 |
 | WP11 | [Talent trees: measured respec-price remainder](docs/planning/work-package-scopes.md#wp11) | Talents implemented; WP44 respec calibration open. | WP3 ✅, WP4 ✅, WP-Speed ✅ |

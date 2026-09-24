@@ -48,8 +48,7 @@ to fear. Their story will grow as more regions and encounters are completed.
 *Last updated: 2026-09-24. Based on [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md).*
 
-The systems above are implemented; Round 20 is currently the integration
-candidate until the final delivery gate recorded in STATUS.
+The systems above are implemented and installed in the local development build.
 Round 20 adds authored compositions for the remaining 70 POI art slots,
 parallel starter errands, destination conversations and more regional quests.
 It also aligns class equipment permissions, broken-item appearance and
@@ -73,9 +72,9 @@ quest catalog does not yet cover the full journey through every region.
 
 **Delivered:** 27 of 53 tracked work-package identities are complete; several
 others have playable portions. This is a tracking count, not a percentage of
-game completion. The current candidate is
-[Round 20](docs/research/round20-completion.md); its integration status and
-remaining gates are tracked in [project status](docs/STATUS.md). No remote
+game completion. The latest delivered increment is
+[Round 20](docs/research/round20-completion.md), independently reviewed and
+locally synchronized; [project status](docs/STATUS.md) records acceptance. No remote
 delivery is claimed. [In-game acceptance](docs/research/round20-playtest.md)
 remains separate.
 

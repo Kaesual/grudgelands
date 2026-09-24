@@ -2,18 +2,18 @@
 
 Updated 2026-09-24. This is the delivery pointer, not another game specification.
 
-- **Active Round 20:** [Round 20 POIs, quests and playtest fixes](planning/round20-pois-quests-fixes.md)
-  is approved and in progress. [Execution state](planning/round20-state.md)
-  tracks parallel lanes, ownership, reviews and remaining gates. Housing and
-  geographic PvP are excluded; input and crosshair-only healing are included.
+- **Round 20 delivered locally:** 240 quests, all 100 anchor art slots, contextual
+  input and equipment/UX fixes. Independently reviewed, final gates passed,
+  merged as `8308229f` and synchronized to Luanti on 2026-09-24. No push.
+  [Completion receipt](research/round20-completion.md),
+  [playtest checklist](research/round20-playtest.md),
+  [schematic POI gallery](../tools/r20/evidence/pois/index.html).
 - **Documentation consolidation:** complete with independent Astra PASS;
   [receipt and coverage](maintenance/documentation-round.md). Remaining decisions
   and code/design discrepancies: [findings](maintenance/findings.md).
-- **Latest game:** Round 19 plus UI and pursuit/idle-recovery follow-ups, merged
-  to local main and synchronized before this documentation branch began.
-  [R19 receipt](research/round19-completion.md),
-  [UI follow-up](research/round19-ui-followup.md),
-  [combat follow-up](research/round19-pursuit-followup.md).
+- **Latest game:** Round 20 includes the earlier Round 19 UI, pursuit/idle-recovery
+  and full-speed preparation follow-ups. GUI acceptance of the new round is
+  pending; fresh-world development remains in force.
 - **Technical reviews/gates:** recorded PASS for those delivered candidates;
   not a fresh certification of arbitrary later changes.
 - **Preparation performance follow-up:** the bounded two-request pipeline
@@ -26,12 +26,9 @@ Updated 2026-09-24. This is the delivery pointer, not another game specification
   [full-speed follow-up](research/pregen-fullspeed.md). No remote deployment
   claimed. Prior measurement: [scan-budget follow-up](research/pregen-scan-budget.md).
 - **GUI acceptance:** user-run and pending where not explicitly accepted.
-  [R19 checklist](research/round19-playtest.md) plus the follow-up checklists above.
-- **Remote observation:** the local `origin/main` tracking ref is `d6937b31`,
-  already containing the game baseline and R19 follow-ups. Earlier R18/R19
-  receipts' “remote pending” statements are historical, not current proof of
-  missing delivery. No network fetch/push was performed in this round. The new
-  documentation commits are local; no remote delivery is claimed for them.
+  [R20 checklist](research/round20-playtest.md) includes the new input limits.
+- **Remote observation:** local `origin/main` remains `e346ec48`. No network
+  fetch/push occurred in this round; the new Round 20 commits are local.
 - **Release:** unreleased fresh-server development. The Nether is expansion
   content. [First-public-release gates](../BACKLOG.md#first-public-release-gates)
   remain open.

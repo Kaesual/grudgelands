@@ -29,7 +29,7 @@ Research and historical evidence: **[docs/research/README.md](docs/research/READ
   ordinary implementation/review uses native Sol, with native Astra allowed for
   hard/performance-critical work. This session restriction can change only by
   a later explicit user instruction. Durable active work state:
-  `docs/planning/round20-state.md` (current approved round).
+  `docs/planning/round20-state.md` (Round 20 delivered; await playtest).
 
 ## Fresh-server development mode
 
@@ -67,10 +67,12 @@ Research and historical evidence: **[docs/research/README.md](docs/research/READ
 
 ## Active work and game status
 
-**Active Round 20, user Go 2026-09-24:** POI/quest expansion and playtest fixes,
-including the agreed contextual input contract. Root Astra orchestrates native
-Astra/Sol lanes. Read [execution state](docs/planning/round20-state.md) and its
-linked plan before resuming. Escalate unexpected complexity; no Claude tasks.
+**Round 20 delivered locally, 2026-09-24:** POI/quest expansion and playtest
+fixes, including contextual input. Independent reviews and final static,
+portable-interpreter, real POI and isolated engine gates passed. Merged to main
+and synchronized; no remote push. Read [receipt](docs/research/round20-completion.md)
+and [playtest checklist](docs/research/round20-playtest.md). No implementation
+agent is still running; await user GUI feedback. No Claude tasks.
 
 
 The user approved maximum-throughput world preparation on 2026-09-23, retaining
@@ -83,7 +85,7 @@ No Claude task is authorized. The previous documentation-only round
 is complete: [receipt](docs/maintenance/documentation-round.md).
 
 Game delivery and pending acceptance: [project status](docs/STATUS.md).
-Round 19 and follow-ups are locally delivered; GUI acceptance remains user-run.
+Round 20 and earlier follow-ups are locally delivered; GUI acceptance remains user-run.
 The current local-development Go does not authorize a remote push or bypass a recorded
 automatic approval-review rejection. Current local tracking evidence is in STATUS;
 older round receipts are historical delivery observations.
