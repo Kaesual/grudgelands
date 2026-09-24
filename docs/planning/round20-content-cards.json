@@ -1,0 +1,6215 @@
+{
+  "schema": "round20_creative_cards_v1",
+  "source": "mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua",
+  "cards": [
+    {
+      "number": 14,
+      "id": "anchor_014",
+      "zone": {
+        "id": "elandor_frostbarrow_shelf",
+        "name": "Frostbarrow Shelf",
+        "race": "dwarf",
+        "faction": "accord",
+        "level_min": 21,
+        "level_max": 30
+      },
+      "slot": "village_1",
+      "profile": "village",
+      "x": -2404,
+      "z": -1576,
+      "name": "Tarnwatch Fold",
+      "buildings": 5,
+      "palette": "granite lower walls, pine, soot-grey slate",
+      "layout": "long low communal hall west; two unequal homes north; smith east; store southeast",
+      "details": [
+        "cairn niche",
+        "split sled runners"
+      ],
+      "purpose": "shelter shelf caravans",
+      "approach": "south lane bends round cairn to hall",
+      "bounds": {
+        "min_x": -12,
+        "max_x": 11,
+        "min_z": -12,
+        "max_z": 11,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_014",
+      "quest_host": {
+        "id": "r20_anchor_014_host",
+        "socket": "quest_host",
+        "role": "quest",
+        "x": 2,
+        "y": 1,
+        "z": 0,
+        "dir": {
+          "x": -1,
+          "z": 0
+        },
+        "name": "Edda Tarnmantle",
+        "faction": "accord"
+      },
+      "quests": [
+        {
+          "id": "r20_anchor_014_01",
+          "title": "The Cairn Mortar",
+          "npc": "r20_anchor_014_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "item",
+            "item": "default:cobble",
+            "count": 10
+          }
+        },
+        {
+          "id": "r20_anchor_014_02",
+          "title": "Hooves Above the Sleds",
+          "npc": "r20_anchor_014_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:ibex"
+            ],
+            "zone": "elandor_frostbarrow_shelf",
+            "count": 4
+          }
+        },
+        {
+          "id": "r20_anchor_014_03",
+          "title": "The Bell After Dark",
+          "npc": "r20_anchor_014_host",
+          "min_level": 23,
+          "target_level": 23,
+          "effort": "standard",
+          "prerequisites": [
+            "r20_anchor_014_02"
+          ],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:goblin_raider"
+            ],
+            "zone": "elandor_frostbarrow_shelf",
+            "count": 4
+          }
+        }
+      ],
+      "actor_policy": "one new peaceful quest host; retain existing guard roster without duplication"
+    },
+    {
+      "number": 16,
+      "id": "anchor_016",
+      "zone": {
+        "id": "elandor_whitebridge_shire",
+        "name": "Whitebridge Shire",
+        "race": "human",
+        "faction": "accord",
+        "level_min": 21,
+        "level_max": 30
+      },
+      "slot": "village_1",
+      "profile": "village",
+      "x": -924,
+      "z": -1556,
+      "name": "Whitebridge Market Close",
+      "buildings": 5,
+      "palette": "chalk plaster, oak beams, dull red tile",
+      "layout": "market hall northeast; baker northwest; two homes along a bent west lane; shipwright shed southeast",
+      "details": [
+        "half-built display hull",
+        "apple press"
+      ],
+      "purpose": "bridge provisioning and boat craft",
+      "approach": "southwest opens onto narrow market elbow",
+      "bounds": {
+        "min_x": -12,
+        "max_x": 11,
+        "min_z": -12,
+        "max_z": 11,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_016",
+      "quest_host": {
+        "id": "r20_anchor_016_host",
+        "socket": "quest_host",
+        "role": "quest",
+        "x": 2,
+        "y": 1,
+        "z": 0,
+        "dir": {
+          "x": -1,
+          "z": 0
+        },
+        "name": "Merren Oakstamp",
+        "faction": "accord"
+      },
+      "quests": [
+        {
+          "id": "r20_anchor_016_01",
+          "title": "The Press Frame",
+          "npc": "r20_anchor_016_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "item",
+            "item": "default:wood",
+            "count": 8
+          }
+        },
+        {
+          "id": "r20_anchor_016_02",
+          "title": "The Poacher's Market",
+          "npc": "r20_anchor_016_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:poacher"
+            ],
+            "zone": "elandor_whitebridge_shire",
+            "count": 4
+          }
+        },
+        {
+          "id": "r20_anchor_016_03",
+          "title": "A Light Beyond the Bridge",
+          "npc": "r20_anchor_016_host",
+          "min_level": 23,
+          "target_level": 23,
+          "effort": "standard",
+          "prerequisites": [
+            "r20_anchor_016_02"
+          ],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:wisp"
+            ],
+            "zone": "elandor_whitebridge_shire",
+            "count": 3
+          }
+        }
+      ],
+      "actor_policy": "one new peaceful quest host; retain existing guard roster without duplication"
+    },
+    {
+      "number": 18,
+      "id": "anchor_018",
+      "zone": {
+        "id": "elandor_lorindor",
+        "name": "Lorindor",
+        "race": "elf",
+        "faction": "accord",
+        "level_min": 21,
+        "level_max": 30
+      },
+      "slot": "village_1",
+      "profile": "village",
+      "x": 876,
+      "z": -1556,
+      "name": "Lorindor Berrycourt",
+      "buildings": 4,
+      "palette": "pale stone, silverwood boards, moss-green roofs",
+      "layout": "tall orchard house northwest; low drying house east; two cottages staggered south",
+      "details": [
+        "berry trellis",
+        "white-flower trough"
+      ],
+      "purpose": "marsh-fed orchard work",
+      "approach": "east lane skirts trellis into off-centre green",
+      "bounds": {
+        "min_x": -12,
+        "max_x": 11,
+        "min_z": -12,
+        "max_z": 11,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_018",
+      "quest_host": {
+        "id": "r20_anchor_018_host",
+        "socket": "quest_host",
+        "role": "quest",
+        "x": 2,
+        "y": 1,
+        "z": 0,
+        "dir": {
+          "x": -1,
+          "z": 0
+        },
+        "name": "Ilwen Petalmeasure",
+        "faction": "accord"
+      },
+      "quests": [
+        {
+          "id": "r20_anchor_018_01",
+          "title": "Stones Around the Roots",
+          "npc": "r20_anchor_018_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "item",
+            "item": "default:cobble",
+            "count": 8
+          }
+        },
+        {
+          "id": "r20_anchor_018_02",
+          "title": "No Snares in Berrycourt",
+          "npc": "r20_anchor_018_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:poacher"
+            ],
+            "zone": "elandor_lorindor",
+            "count": 4
+          }
+        },
+        {
+          "id": "r20_anchor_018_03",
+          "title": "The Uninvited Lanterns",
+          "npc": "r20_anchor_018_host",
+          "min_level": 23,
+          "target_level": 23,
+          "effort": "standard",
+          "prerequisites": [
+            "r20_anchor_018_02"
+          ],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:wisp"
+            ],
+            "zone": "elandor_lorindor",
+            "count": 3
+          }
+        }
+      ],
+      "actor_policy": "one new peaceful quest host; retain existing guard roster without duplication"
+    },
+    {
+      "number": 20,
+      "id": "anchor_020",
+      "zone": {
+        "id": "kragmar_ossuary_reach",
+        "name": "Ossuary Reach",
+        "race": "undead",
+        "faction": "throng",
+        "level_min": 21,
+        "level_max": 30
+      },
+      "slot": "village_1",
+      "profile": "village",
+      "x": -2380,
+      "z": 1600,
+      "name": "Ossuary Ledgerstead",
+      "buildings": 4,
+      "palette": "gravewood, pale fossil stone, charcoal roofs",
+      "layout": "archive hall north; stonecutter west; two narrow houses southeast at unequal depths",
+      "details": [
+        "labelled stone shelves",
+        "candle recess"
+      ],
+      "purpose": "care for remembered dead and living supply routes",
+      "approach": "south approach sees archive gable beyond low yard",
+      "bounds": {
+        "min_x": -12,
+        "max_x": 11,
+        "min_z": -12,
+        "max_z": 11,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_020",
+      "quest_host": {
+        "id": "r20_anchor_020_host",
+        "socket": "quest_host",
+        "role": "quest",
+        "x": 2,
+        "y": 1,
+        "z": 0,
+        "dir": {
+          "x": -1,
+          "z": 0
+        },
+        "name": "Sovel Namekeeper",
+        "faction": "throng"
+      },
+      "quests": [
+        {
+          "id": "r20_anchor_020_01",
+          "title": "Shelves for the Remembered",
+          "npc": "r20_anchor_020_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "item",
+            "item": "default:wood",
+            "count": 8
+          }
+        },
+        {
+          "id": "r20_anchor_020_02",
+          "title": "Teeth Beside the Archive",
+          "npc": "r20_anchor_020_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:blightfang_wolf"
+            ],
+            "zone": "kragmar_ossuary_reach",
+            "count": 4
+          }
+        },
+        {
+          "id": "r20_anchor_020_03",
+          "title": "The Trees That Refuse Rest",
+          "npc": "r20_anchor_020_host",
+          "min_level": 23,
+          "target_level": 23,
+          "effort": "standard",
+          "prerequisites": [
+            "r20_anchor_020_02"
+          ],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:gravewood_treant"
+            ],
+            "zone": "kragmar_ossuary_reach",
+            "count": 3
+          }
+        }
+      ],
+      "actor_policy": "one new peaceful quest host; retain existing guard roster without duplication"
+    },
+    {
+      "number": 22,
+      "id": "anchor_022",
+      "zone": {
+        "id": "kragmar_speargrass_reach",
+        "name": "Speargrass Reach",
+        "race": "orc",
+        "faction": "throng",
+        "level_min": 21,
+        "level_max": 30
+      },
+      "slot": "village_1",
+      "profile": "village",
+      "x": -868,
+      "z": 1564,
+      "name": "Speargrass Wellhold",
+      "buildings": 5,
+      "palette": "ochre earth, acacia beams, basalt feet",
+      "layout": "wide shade hall west; tanner north; store northeast; two small homes south of uneven court",
+      "details": [
+        "water jars under awning",
+        "worn hunting stone"
+      ],
+      "purpose": "protect water and travelling herds",
+      "approach": "east opens beside water shade with clear western exit",
+      "bounds": {
+        "min_x": -12,
+        "max_x": 11,
+        "min_z": -12,
+        "max_z": 11,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_022",
+      "quest_host": {
+        "id": "r20_anchor_022_host",
+        "socket": "quest_host",
+        "role": "quest",
+        "x": 2,
+        "y": 1,
+        "z": 0,
+        "dir": {
+          "x": -1,
+          "z": 0
+        },
+        "name": "Brakka Jarward",
+        "faction": "throng"
+      },
+      "quests": [
+        {
+          "id": "r20_anchor_022_01",
+          "title": "Shade Before Strength",
+          "npc": "r20_anchor_022_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "item",
+            "item": "default:acacia_wood",
+            "count": 8
+          }
+        },
+        {
+          "id": "r20_anchor_022_02",
+          "title": "Stripes in the Cutting Grass",
+          "npc": "r20_anchor_022_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:speargrass_tiger"
+            ],
+            "zone": "kragmar_speargrass_reach",
+            "count": 3
+          }
+        },
+        {
+          "id": "r20_anchor_022_03",
+          "title": "Night at the Water Jars",
+          "npc": "r20_anchor_022_host",
+          "min_level": 23,
+          "target_level": 23,
+          "effort": "standard",
+          "prerequisites": [
+            "r20_anchor_022_02"
+          ],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:scorpion"
+            ],
+            "zone": "kragmar_speargrass_reach",
+            "count": 4
+          }
+        }
+      ],
+      "actor_policy": "one new peaceful quest host; retain existing guard roster without duplication"
+    },
+    {
+      "number": 24,
+      "id": "anchor_024",
+      "zone": {
+        "id": "kragmar_whispering_reedlands",
+        "name": "Whispering Reedlands",
+        "race": "troll",
+        "faction": "throng",
+        "level_min": 21,
+        "level_max": 30
+      },
+      "slot": "village_1",
+      "profile": "village",
+      "x": 876,
+      "z": 1604,
+      "name": "Whisperreed Landing",
+      "buildings": 5,
+      "palette": "junglewood, dark stone piers, reed-toned roofs",
+      "layout": "raised common house northwest; net loft east; two homes staggered west; shipwright shelter southeast",
+      "details": [
+        "display skiff",
+        "hanging drying poles"
+      ],
+      "purpose": "reed-path provisions and boat craft",
+      "approach": "south dry path opens to common-house stair",
+      "bounds": {
+        "min_x": -12,
+        "max_x": 11,
+        "min_z": -12,
+        "max_z": 11,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_024",
+      "quest_host": {
+        "id": "r20_anchor_024_host",
+        "socket": "quest_host",
+        "role": "quest",
+        "x": 2,
+        "y": 1,
+        "z": 0,
+        "dir": {
+          "x": -1,
+          "z": 0
+        },
+        "name": "Taleko Drycord",
+        "faction": "throng"
+      },
+      "quests": [
+        {
+          "id": "r20_anchor_024_01",
+          "title": "A Landing That Holds",
+          "npc": "r20_anchor_024_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "item",
+            "item": "default:junglewood",
+            "count": 8
+          }
+        },
+        {
+          "id": "r20_anchor_024_02",
+          "title": "Tapirs on the Dry Path",
+          "npc": "r20_anchor_024_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:tapir"
+            ],
+            "zone": "kragmar_whispering_reedlands",
+            "count": 4
+          }
+        },
+        {
+          "id": "r20_anchor_024_03",
+          "title": "Cold Lights in the Reeds",
+          "npc": "r20_anchor_024_host",
+          "min_level": 23,
+          "target_level": 23,
+          "effort": "standard",
+          "prerequisites": [
+            "r20_anchor_024_02"
+          ],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:wisp"
+            ],
+            "zone": "kragmar_whispering_reedlands",
+            "count": 3
+          }
+        }
+      ],
+      "actor_policy": "one new peaceful quest host; retain existing guard roster without duplication"
+    },
+    {
+      "number": 26,
+      "id": "anchor_026",
+      "zone": {
+        "id": "elandor_frostbarrow_shelf",
+        "name": "Frostbarrow Shelf",
+        "race": "dwarf",
+        "faction": "accord",
+        "level_min": 21,
+        "level_max": 30
+      },
+      "slot": "outpost_1",
+      "profile": "outpost",
+      "x": -2300,
+      "z": -1250,
+      "name": "Rimebell Watch",
+      "buildings": 2,
+      "palette": "granite, pine, slate",
+      "layout": "squat bell-house northwest; long bunkhouse east leaving bent yard",
+      "details": [
+        "stacked signal wood",
+        "low windbreak"
+      ],
+      "purpose": "watch the shelf road",
+      "approach": "south entrance shows bell above bunk roof",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_026",
+      "quest_host": {
+        "id": "r20_anchor_026_host",
+        "socket": "quest_host",
+        "role": "quest",
+        "x": 2,
+        "y": 1,
+        "z": 0,
+        "dir": {
+          "x": -1,
+          "z": 0
+        },
+        "name": "Hedra Rimebell",
+        "faction": "accord"
+      },
+      "quests": [
+        {
+          "id": "r20_anchor_026_01",
+          "title": "Fuel Under Cover",
+          "npc": "r20_anchor_026_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "item",
+            "item": "default:coal_lump",
+            "count": 6
+          }
+        },
+        {
+          "id": "r20_anchor_026_02",
+          "title": "The Sled Track Pack",
+          "npc": "r20_anchor_026_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:snow_leopard"
+            ],
+            "zone": "elandor_frostbarrow_shelf",
+            "count": 3
+          }
+        },
+        {
+          "id": "r20_anchor_026_03",
+          "title": "Notches on the Signal Pole",
+          "npc": "r20_anchor_026_host",
+          "min_level": 23,
+          "target_level": 23,
+          "effort": "standard",
+          "prerequisites": [
+            "r20_anchor_026_02"
+          ],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:goblin_slinger"
+            ],
+            "zone": "elandor_frostbarrow_shelf",
+            "count": 4
+          }
+        }
+      ],
+      "actor_policy": "one new peaceful quest host; retain existing guard roster without duplication"
+    },
+    {
+      "number": 27,
+      "id": "anchor_027",
+      "zone": {
+        "id": "elandor_stormvault_heights",
+        "name": "Stormvault Heights",
+        "race": "dwarf",
+        "faction": false,
+        "level_min": 31,
+        "level_max": 40
+      },
+      "slot": "outpost_1",
+      "profile": "outpost",
+      "x": -2074,
+      "z": -826,
+      "name": "Splitbolt Station",
+      "buildings": 2,
+      "palette": "dark granite, pine, weathered iron accents",
+      "layout": "tall narrow watchhouse west; low provision lodge northeast",
+      "details": [
+        "lightning-split post",
+        "weighted shutters"
+      ],
+      "purpose": "monitor Stormvault ascent",
+      "approach": "southeast path faces watchhouse then turns west",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_027",
+      "quest_host": {
+        "id": "r20_anchor_027_host",
+        "socket": "quest_host",
+        "role": "quest",
+        "x": 2,
+        "y": 1,
+        "z": 0,
+        "dir": {
+          "x": -1,
+          "z": 0
+        },
+        "name": "Borin Splitbolt",
+        "faction": "accord"
+      },
+      "quests": [
+        {
+          "id": "r20_anchor_027_01",
+          "title": "Shutters Against the Storm",
+          "npc": "r20_anchor_027_host",
+          "min_level": 31,
+          "target_level": 31,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "item",
+            "item": "default:pine_wood",
+            "count": 8
+          }
+        },
+        {
+          "id": "r20_anchor_027_02",
+          "title": "The Frost That Walks",
+          "npc": "r20_anchor_027_host",
+          "min_level": 31,
+          "target_level": 31,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:frost_stray"
+            ],
+            "zone": "elandor_stormvault_heights",
+            "count": 4
+          }
+        },
+        {
+          "id": "r20_anchor_027_03",
+          "title": "Slatehook's Cargo",
+          "npc": "r20_anchor_027_host",
+          "min_level": 33,
+          "target_level": 33,
+          "effort": "standard",
+          "prerequisites": [
+            "r20_anchor_027_02"
+          ],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:bandit_archer"
+            ],
+            "zone": "elandor_stormvault_heights",
+            "count": 4
+          }
+        }
+      ],
+      "actor_policy": "one new peaceful quest host; retain existing guard roster without duplication"
+    },
+    {
+      "number": 28,
+      "id": "anchor_028",
+      "zone": {
+        "id": "elandor_stormvault_heights",
+        "name": "Stormvault Heights",
+        "race": "dwarf",
+        "faction": false,
+        "level_min": 31,
+        "level_max": 40
+      },
+      "slot": "outpost_2",
+      "profile": "outpost",
+      "x": -1500,
+      "z": -450,
+      "name": "Archshadow Post",
+      "buildings": 2,
+      "palette": "slate stone, pine, faded blue cloth",
+      "layout": "low guard hall north; compact chart hut southwest",
+      "details": [
+        "ridge sighting stones",
+        "repaired shield rack"
+      ],
+      "purpose": "hold the high ridge crossing",
+      "approach": "east sightline across open southern yard",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_028",
+      "quest_host": {
+        "id": "r20_anchor_028_host",
+        "socket": "quest_host",
+        "role": "quest",
+        "x": 2,
+        "y": 1,
+        "z": 0,
+        "dir": {
+          "x": -1,
+          "z": 0
+        },
+        "name": "Alna Archsight",
+        "faction": "accord"
+      },
+      "quests": [
+        {
+          "id": "r20_anchor_028_01",
+          "title": "Stones for the Sighting Line",
+          "npc": "r20_anchor_028_host",
+          "min_level": 31,
+          "target_level": 31,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "item",
+            "item": "default:cobble",
+            "count": 8
+          }
+        },
+        {
+          "id": "r20_anchor_028_02",
+          "title": "Wings Over the Crossing",
+          "npc": "r20_anchor_028_host",
+          "min_level": 31,
+          "target_level": 31,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:crag_eagle"
+            ],
+            "zone": "elandor_stormvault_heights",
+            "count": 3
+          }
+        },
+        {
+          "id": "r20_anchor_028_03",
+          "title": "The Watch Beyond the Ash Wind",
+          "npc": "r20_anchor_028_host",
+          "min_level": 40,
+          "target_level": 40,
+          "effort": "hard",
+          "prerequisites": [
+            "r20_anchor_028_02"
+          ],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:guard_throng"
+            ],
+            "zone": "kragmar_blackwind_rise",
+            "count": 3
+          }
+        }
+      ],
+      "actor_policy": "one new peaceful quest host; retain existing guard roster without duplication"
+    },
+    {
+      "number": 30,
+      "id": "anchor_030",
+      "zone": {
+        "id": "elandor_whitebridge_shire",
+        "name": "Whitebridge Shire",
+        "race": "human",
+        "faction": "accord",
+        "level_min": 21,
+        "level_max": 30
+      },
+      "slot": "outpost_1",
+      "profile": "outpost",
+      "x": -618,
+      "z": -1266,
+      "name": "Oakspan Tollhouse",
+      "buildings": 3,
+      "palette": "white stone, oak, brick-red tile",
+      "layout": "tollhouse northwest; narrow guard hut east; roofed store southwest",
+      "details": [
+        "broken cart axle",
+        "stamped crate stack"
+      ],
+      "purpose": "keep market wagons moving",
+      "approach": "south arrival pinches between store and open yard",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_030",
+      "quest_host": {
+        "id": "r20_anchor_030_host",
+        "socket": "quest_host",
+        "role": "quest",
+        "x": 2,
+        "y": 1,
+        "z": 0,
+        "dir": {
+          "x": -1,
+          "z": 0
+        },
+        "name": "Jessa Axlewright",
+        "faction": "accord"
+      },
+      "quests": [
+        {
+          "id": "r20_anchor_030_01",
+          "title": "An Axle for the Empty Cart",
+          "npc": "r20_anchor_030_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "item",
+            "item": "default:wood",
+            "count": 8
+          }
+        },
+        {
+          "id": "r20_anchor_030_02",
+          "title": "The Tollhouse Snares",
+          "npc": "r20_anchor_030_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:poacher"
+            ],
+            "zone": "elandor_whitebridge_shire",
+            "count": 4
+          }
+        },
+        {
+          "id": "r20_anchor_030_03",
+          "title": "Night Lights at Oakspan",
+          "npc": "r20_anchor_030_host",
+          "min_level": 23,
+          "target_level": 23,
+          "effort": "standard",
+          "prerequisites": [
+            "r20_anchor_030_02"
+          ],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:wisp"
+            ],
+            "zone": "elandor_whitebridge_shire",
+            "count": 3
+          }
+        }
+      ],
+      "actor_policy": "one new peaceful quest host; retain existing guard roster without duplication"
+    },
+    {
+      "number": 31,
+      "id": "anchor_031",
+      "zone": {
+        "id": "elandor_ashenward_march",
+        "name": "Ashenward March",
+        "race": "human",
+        "faction": false,
+        "level_min": 31,
+        "level_max": 40
+      },
+      "slot": "outpost_1",
+      "profile": "outpost",
+      "x": -350,
+      "z": -850,
+      "name": "Cinderline Watch",
+      "buildings": 2,
+      "palette": "smoke-dark oak, pale masonry, dull red cloth",
+      "layout": "bunkhouse west; taller lookout hut northeast",
+      "details": [
+        "burned beam retained in fence",
+        "water barrels"
+      ],
+      "purpose": "watch fire-scarred approaches",
+      "approach": "south path reveals intact pale doorway against char",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_031",
+      "quest_host": {
+        "id": "r20_anchor_031_host",
+        "socket": "quest_host",
+        "role": "quest",
+        "x": 2,
+        "y": 1,
+        "z": 0,
+        "dir": {
+          "x": -1,
+          "z": 0
+        },
+        "name": "Toren Waterbarrel",
+        "faction": "accord"
+      },
+      "quests": [
+        {
+          "id": "r20_anchor_031_01",
+          "title": "A Wall Against Embers",
+          "npc": "r20_anchor_031_host",
+          "min_level": 31,
+          "target_level": 31,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "item",
+            "item": "default:cobble",
+            "count": 10
+          }
+        },
+        {
+          "id": "r20_anchor_031_02",
+          "title": "The Ashen Wood Stirs",
+          "npc": "r20_anchor_031_host",
+          "min_level": 31,
+          "target_level": 31,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:ashen_treant"
+            ],
+            "zone": "elandor_ashenward_march",
+            "count": 3
+          }
+        },
+        {
+          "id": "r20_anchor_031_03",
+          "title": "Coalbrand's Watchers",
+          "npc": "r20_anchor_031_host",
+          "min_level": 33,
+          "target_level": 33,
+          "effort": "standard",
+          "prerequisites": [
+            "r20_anchor_031_02"
+          ],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:bandit_archer"
+            ],
+            "zone": "elandor_ashenward_march",
+            "count": 4
+          }
+        }
+      ],
+      "actor_policy": "one new peaceful quest host; retain existing guard roster without duplication"
+    },
+    {
+      "number": 32,
+      "id": "anchor_032",
+      "zone": {
+        "id": "elandor_ashenward_march",
+        "name": "Ashenward March",
+        "race": "human",
+        "faction": false,
+        "level_min": 31,
+        "level_max": 40
+      },
+      "slot": "outpost_2",
+      "profile": "outpost",
+      "x": 300,
+      "z": -450,
+      "name": "Last Hedge Redoubt",
+      "buildings": 2,
+      "palette": "rough stone, oak, faded linen",
+      "layout": "guardhouse southeast; low dispatch shed northwest",
+      "details": [
+        "clipped surviving hedge",
+        "scorched message board"
+      ],
+      "purpose": "maintain a frontier supply stop",
+      "approach": "west approach crosses open centre without funnel trap",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_032",
+      "quest_host": {
+        "id": "r20_anchor_032_host",
+        "socket": "quest_host",
+        "role": "quest",
+        "x": 2,
+        "y": 1,
+        "z": 0,
+        "dir": {
+          "x": -1,
+          "z": 0
+        },
+        "name": "Nella Hedgeward",
+        "faction": "accord"
+      },
+      "quests": [
+        {
+          "id": "r20_anchor_032_01",
+          "title": "Posts for the Last Hedge",
+          "npc": "r20_anchor_032_host",
+          "min_level": 31,
+          "target_level": 31,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "item",
+            "item": "default:wood",
+            "count": 8
+          }
+        },
+        {
+          "id": "r20_anchor_032_02",
+          "title": "Dead on the Dispatch Road",
+          "npc": "r20_anchor_032_host",
+          "min_level": 31,
+          "target_level": 31,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:skeleton_raider"
+            ],
+            "zone": "elandor_ashenward_march",
+            "count": 4
+          }
+        },
+        {
+          "id": "r20_anchor_032_03",
+          "title": "Standards Across the Mesa",
+          "npc": "r20_anchor_032_host",
+          "min_level": 40,
+          "target_level": 40,
+          "effort": "hard",
+          "prerequisites": [
+            "r20_anchor_032_02"
+          ],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:guard_throng"
+            ],
+            "zone": "kragmar_bannerbreak_mesa",
+            "count": 3
+          }
+        }
+      ],
+      "actor_policy": "one new peaceful quest host; retain existing guard roster without duplication"
+    },
+    {
+      "number": 34,
+      "id": "anchor_034",
+      "zone": {
+        "id": "elandor_lorindor",
+        "name": "Lorindor",
+        "race": "elf",
+        "faction": "accord",
+        "level_min": 21,
+        "level_max": 30
+      },
+      "slot": "outpost_1",
+      "profile": "outpost",
+      "x": 626,
+      "z": -1226,
+      "name": "Petalbank Wardenry",
+      "buildings": 2,
+      "palette": "silverwood, pale stone, green shingles",
+      "layout": "long warden hall northeast; small herb shelter southwest",
+      "details": [
+        "flower troughs",
+        "stacked pruning poles"
+      ],
+      "purpose": "protect berry gatherers",
+      "approach": "west path follows low planted edge to hall",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_034",
+      "quest_host": {
+        "id": "r20_anchor_034_host",
+        "socket": "quest_host",
+        "role": "quest",
+        "x": 2,
+        "y": 1,
+        "z": 0,
+        "dir": {
+          "x": -1,
+          "z": 0
+        },
+        "name": "Orya Petalward",
+        "faction": "accord"
+      },
+      "quests": [
+        {
+          "id": "r20_anchor_034_01",
+          "title": "The Trough's New Kerb",
+          "npc": "r20_anchor_034_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "item",
+            "item": "default:cobble",
+            "count": 8
+          }
+        },
+        {
+          "id": "r20_anchor_034_02",
+          "title": "Wardens Without Arrows",
+          "npc": "r20_anchor_034_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:poacher"
+            ],
+            "zone": "elandor_lorindor",
+            "count": 4
+          }
+        },
+        {
+          "id": "r20_anchor_034_03",
+          "title": "Lanterns We Did Not Hang",
+          "npc": "r20_anchor_034_host",
+          "min_level": 23,
+          "target_level": 23,
+          "effort": "standard",
+          "prerequisites": [
+            "r20_anchor_034_02"
+          ],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:wisp"
+            ],
+            "zone": "elandor_lorindor",
+            "count": 3
+          }
+        }
+      ],
+      "actor_policy": "one new peaceful quest host; retain existing guard roster without duplication"
+    },
+    {
+      "number": 35,
+      "id": "anchor_035",
+      "zone": {
+        "id": "elandor_moonfall_wood",
+        "name": "Moonfall Wood",
+        "race": "elf",
+        "faction": "accord",
+        "level_min": 21,
+        "level_max": 30
+      },
+      "slot": "outpost_1",
+      "profile": "outpost",
+      "x": 2376,
+      "z": -1326,
+      "name": "Moonfall Observatory",
+      "buildings": 2,
+      "palette": "silverwood, dark oak, pale stone",
+      "layout": "tall narrow lookout west; long chart room south",
+      "details": [
+        "crescent paving fragment",
+        "fallen bough bench"
+      ],
+      "purpose": "observe lake paths without new telescope mechanics",
+      "approach": "northeast approach sees offset roof pair",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_035",
+      "quest_host": {
+        "id": "r20_anchor_035_host",
+        "socket": "quest_host",
+        "role": "quest",
+        "x": 2,
+        "y": 1,
+        "z": 0,
+        "dir": {
+          "x": -1,
+          "z": 0
+        },
+        "name": "Lethen Moonledger",
+        "faction": "accord"
+      },
+      "quests": [
+        {
+          "id": "r20_anchor_035_01",
+          "title": "A Chart Table Repaired",
+          "npc": "r20_anchor_035_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "item",
+            "item": "default:wood",
+            "count": 8
+          }
+        },
+        {
+          "id": "r20_anchor_035_02",
+          "title": "Fangs Beneath the Fallen Bough",
+          "npc": "r20_anchor_035_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:wolf"
+            ],
+            "zone": "elandor_moonfall_wood",
+            "count": 4
+          }
+        },
+        {
+          "id": "r20_anchor_035_03",
+          "title": "The Moonlit Snare Line",
+          "npc": "r20_anchor_035_host",
+          "min_level": 23,
+          "target_level": 23,
+          "effort": "standard",
+          "prerequisites": [
+            "r20_anchor_035_02"
+          ],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:poacher"
+            ],
+            "zone": "elandor_moonfall_wood",
+            "count": 4
+          }
+        }
+      ],
+      "actor_policy": "one new peaceful quest host; retain existing guard roster without duplication"
+    },
+    {
+      "number": 36,
+      "id": "anchor_036",
+      "zone": {
+        "id": "elandor_glassroot_wilds",
+        "name": "Glassroot Wilds",
+        "race": "elf",
+        "faction": false,
+        "level_min": 31,
+        "level_max": 40
+      },
+      "slot": "outpost_1",
+      "profile": "outpost",
+      "x": 1932,
+      "z": -566,
+      "name": "Glassroot Gate",
+      "buildings": 2,
+      "palette": "pale stone, dark timber, green-grey roofs",
+      "layout": "guard lodge north; short rootworkers hut southeast",
+      "details": [
+        "glass-coloured inset stones",
+        "bundled rope"
+      ],
+      "purpose": "keep cliff passages usable",
+      "approach": "west arrival looks between lodge and hut",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_036",
+      "quest_host": {
+        "id": "r20_anchor_036_host",
+        "socket": "quest_host",
+        "role": "quest",
+        "x": 2,
+        "y": 1,
+        "z": 0,
+        "dir": {
+          "x": -1,
+          "z": 0
+        },
+        "name": "Faeris Rootbinder",
+        "faction": "accord"
+      },
+      "quests": [
+        {
+          "id": "r20_anchor_036_01",
+          "title": "Stone Under the Passage",
+          "npc": "r20_anchor_036_host",
+          "min_level": 31,
+          "target_level": 31,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "item",
+            "item": "default:cobble",
+            "count": 10
+          }
+        },
+        {
+          "id": "r20_anchor_036_02",
+          "title": "Rootsnare's Stolen Cloth",
+          "npc": "r20_anchor_036_host",
+          "min_level": 31,
+          "target_level": 31,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:bandit"
+            ],
+            "zone": "elandor_glassroot_wilds",
+            "count": 4
+          }
+        },
+        {
+          "id": "r20_anchor_036_03",
+          "title": "The Other Rootwatch",
+          "npc": "r20_anchor_036_host",
+          "min_level": 40,
+          "target_level": 40,
+          "effort": "hard",
+          "prerequisites": [
+            "r20_anchor_036_02"
+          ],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:guard_throng"
+            ],
+            "zone": "kragmar_thunderroot_wilds",
+            "count": 3
+          }
+        }
+      ],
+      "actor_policy": "one new peaceful quest host; retain existing guard roster without duplication"
+    },
+    {
+      "number": 38,
+      "id": "anchor_038",
+      "zone": {
+        "id": "kragmar_ossuary_reach",
+        "name": "Ossuary Reach",
+        "race": "undead",
+        "faction": "throng",
+        "level_min": 21,
+        "level_max": 30
+      },
+      "slot": "outpost_1",
+      "profile": "outpost",
+      "x": -2268,
+      "z": 1234,
+      "name": "Boneledger Post",
+      "buildings": 2,
+      "palette": "fossil stone, gravewood, grey slate",
+      "layout": "low barracks southwest; square records house northeast",
+      "details": [
+        "stone rubbing table",
+        "covered lantern alcove"
+      ],
+      "purpose": "guard the ossuary road",
+      "approach": "northwest lane reaches sheltered records porch",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_038",
+      "quest_host": {
+        "id": "r20_anchor_038_host",
+        "socket": "quest_host",
+        "role": "quest",
+        "x": 2,
+        "y": 1,
+        "z": 0,
+        "dir": {
+          "x": -1,
+          "z": 0
+        },
+        "name": "Mereth Rubbinghand",
+        "faction": "throng"
+      },
+      "quests": [
+        {
+          "id": "r20_anchor_038_01",
+          "title": "A Shelf for Stone Names",
+          "npc": "r20_anchor_038_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "item",
+            "item": "default:wood",
+            "count": 8
+          }
+        },
+        {
+          "id": "r20_anchor_038_02",
+          "title": "The Hungry Gravewood",
+          "npc": "r20_anchor_038_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:gravewood_treant"
+            ],
+            "zone": "kragmar_ossuary_reach",
+            "count": 3
+          }
+        },
+        {
+          "id": "r20_anchor_038_03",
+          "title": "A Pack on the Ledger Road",
+          "npc": "r20_anchor_038_host",
+          "min_level": 23,
+          "target_level": 23,
+          "effort": "standard",
+          "prerequisites": [
+            "r20_anchor_038_02"
+          ],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:blightfang_wolf"
+            ],
+            "zone": "kragmar_ossuary_reach",
+            "count": 4
+          }
+        }
+      ],
+      "actor_policy": "one new peaceful quest host; retain existing guard roster without duplication"
+    },
+    {
+      "number": 39,
+      "id": "anchor_039",
+      "zone": {
+        "id": "kragmar_blackwind_rise",
+        "name": "Blackwind Rise",
+        "race": "undead",
+        "faction": false,
+        "level_min": 31,
+        "level_max": 40
+      },
+      "slot": "outpost_1",
+      "profile": "outpost",
+      "x": -2018,
+      "z": 834,
+      "name": "Ashveil Watch",
+      "buildings": 2,
+      "palette": "black stone, gravewood, pale cloth",
+      "layout": "tall watchhouse northwest; shallow resting hall east",
+      "details": [
+        "ash-catching trough",
+        "tied wind chimes"
+      ],
+      "purpose": "read wind and patrol signals",
+      "approach": "south arrival sees pale pennant beside black gable",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_039",
+      "quest_host": {
+        "id": "r20_anchor_039_host",
+        "socket": "quest_host",
+        "role": "quest",
+        "x": 2,
+        "y": 1,
+        "z": 0,
+        "dir": {
+          "x": -1,
+          "z": 0
+        },
+        "name": "Vaska Ashlistener",
+        "faction": "throng"
+      },
+      "quests": [
+        {
+          "id": "r20_anchor_039_01",
+          "title": "Keep the Lamps Burning",
+          "npc": "r20_anchor_039_host",
+          "min_level": 31,
+          "target_level": 31,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "item",
+            "item": "default:coal_lump",
+            "count": 6
+          }
+        },
+        {
+          "id": "r20_anchor_039_02",
+          "title": "Ash Among Living Branches",
+          "npc": "r20_anchor_039_host",
+          "min_level": 31,
+          "target_level": 31,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:gravewood_treant"
+            ],
+            "zone": "kragmar_blackwind_rise",
+            "count": 3
+          }
+        },
+        {
+          "id": "r20_anchor_039_03",
+          "title": "The Pallcloth Thieves",
+          "npc": "r20_anchor_039_host",
+          "min_level": 33,
+          "target_level": 33,
+          "effort": "standard",
+          "prerequisites": [
+            "r20_anchor_039_02"
+          ],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:bandit_archer"
+            ],
+            "zone": "kragmar_blackwind_rise",
+            "count": 4
+          }
+        }
+      ],
+      "actor_policy": "one new peaceful quest host; retain existing guard roster without duplication"
+    },
+    {
+      "number": 40,
+      "id": "anchor_040",
+      "zone": {
+        "id": "kragmar_blackwind_rise",
+        "name": "Blackwind Rise",
+        "race": "undead",
+        "faction": false,
+        "level_min": 31,
+        "level_max": 40
+      },
+      "slot": "outpost_2",
+      "profile": "outpost",
+      "x": -1468,
+      "z": 434,
+      "name": "Hollowarch Station",
+      "buildings": 2,
+      "palette": "pale fossil masonry, dark boards",
+      "layout": "long guardroom north; small messenger house southwest",
+      "details": [
+        "bone-shaped stone arch fragment",
+        "covered dispatch shelf"
+      ],
+      "purpose": "secure the approach to the old arches",
+      "approach": "east-to-west open yard preserves retreat",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_040",
+      "quest_host": {
+        "id": "r20_anchor_040_host",
+        "socket": "quest_host",
+        "role": "quest",
+        "x": 2,
+        "y": 1,
+        "z": 0,
+        "dir": {
+          "x": -1,
+          "z": 0
+        },
+        "name": "Orrel Hollowstep",
+        "faction": "throng"
+      },
+      "quests": [
+        {
+          "id": "r20_anchor_040_01",
+          "title": "The Dispatch Shelf",
+          "npc": "r20_anchor_040_host",
+          "min_level": 31,
+          "target_level": 31,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "item",
+            "item": "default:wood",
+            "count": 8
+          }
+        },
+        {
+          "id": "r20_anchor_040_02",
+          "title": "Claws Beneath the Arch",
+          "npc": "r20_anchor_040_host",
+          "min_level": 31,
+          "target_level": 31,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:plaguehide_bear"
+            ],
+            "zone": "kragmar_blackwind_rise",
+            "count": 3
+          }
+        },
+        {
+          "id": "r20_anchor_040_03",
+          "title": "The Watch Under the Storm",
+          "npc": "r20_anchor_040_host",
+          "min_level": 40,
+          "target_level": 40,
+          "effort": "hard",
+          "prerequisites": [
+            "r20_anchor_040_02"
+          ],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:guard_accord"
+            ],
+            "zone": "elandor_stormvault_heights",
+            "count": 3
+          }
+        }
+      ],
+      "actor_policy": "one new peaceful quest host; retain existing guard roster without duplication"
+    },
+    {
+      "number": 42,
+      "id": "anchor_042",
+      "zone": {
+        "id": "kragmar_speargrass_reach",
+        "name": "Speargrass Reach",
+        "race": "orc",
+        "faction": "throng",
+        "level_min": 21,
+        "level_max": 30
+      },
+      "slot": "outpost_1",
+      "profile": "outpost",
+      "x": -650,
+      "z": 1250,
+      "name": "Cutgrass Watch",
+      "buildings": 2,
+      "palette": "acacia, ochre plaster, basalt",
+      "layout": "broad shade barracks northwest; narrow lookout southeast",
+      "details": [
+        "grass bundles",
+        "marked water jars"
+      ],
+      "purpose": "protect cutters and hunters",
+      "approach": "east entry turns round shade porch",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_042",
+      "quest_host": {
+        "id": "r20_anchor_042_host",
+        "socket": "quest_host",
+        "role": "quest",
+        "x": 2,
+        "y": 1,
+        "z": 0,
+        "dir": {
+          "x": -1,
+          "z": 0
+        },
+        "name": "Morga Cutgrass",
+        "faction": "throng"
+      },
+      "quests": [
+        {
+          "id": "r20_anchor_042_01",
+          "title": "Posts for the Shade",
+          "npc": "r20_anchor_042_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "item",
+            "item": "default:acacia_wood",
+            "count": 8
+          }
+        },
+        {
+          "id": "r20_anchor_042_02",
+          "title": "The Cutters' Long Walk",
+          "npc": "r20_anchor_042_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:speargrass_tiger"
+            ],
+            "zone": "kragmar_speargrass_reach",
+            "count": 3
+          }
+        },
+        {
+          "id": "r20_anchor_042_03",
+          "title": "Raiders at the Signal Fire",
+          "npc": "r20_anchor_042_host",
+          "min_level": 23,
+          "target_level": 23,
+          "effort": "standard",
+          "prerequisites": [
+            "r20_anchor_042_02"
+          ],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:goblin_raider"
+            ],
+            "zone": "kragmar_speargrass_reach",
+            "count": 4
+          }
+        }
+      ],
+      "actor_policy": "one new peaceful quest host; retain existing guard roster without duplication"
+    },
+    {
+      "number": 43,
+      "id": "anchor_043",
+      "zone": {
+        "id": "kragmar_bannerbreak_mesa",
+        "name": "Bannerbreak Mesa",
+        "race": "orc",
+        "faction": false,
+        "level_min": 31,
+        "level_max": 40
+      },
+      "slot": "outpost_1",
+      "profile": "outpost",
+      "x": -374,
+      "z": 874,
+      "name": "Red Ramp Post",
+      "buildings": 2,
+      "palette": "red stone, black beams, ochre cloth",
+      "layout": "high signal hut northeast; low guard hall west",
+      "details": [
+        "stacked ramp planks",
+        "battered practice shield"
+      ],
+      "purpose": "hold the mesa ascent",
+      "approach": "southwest entry frames narrow signal roof",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_043",
+      "quest_host": {
+        "id": "r20_anchor_043_host",
+        "socket": "quest_host",
+        "role": "quest",
+        "x": 2,
+        "y": 1,
+        "z": 0,
+        "dir": {
+          "x": -1,
+          "z": 0
+        },
+        "name": "Drek Rampbinder",
+        "faction": "throng"
+      },
+      "quests": [
+        {
+          "id": "r20_anchor_043_01",
+          "title": "Planks for the Ascent",
+          "npc": "r20_anchor_043_host",
+          "min_level": 31,
+          "target_level": 31,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "item",
+            "item": "default:acacia_wood",
+            "count": 10
+          }
+        },
+        {
+          "id": "r20_anchor_043_02",
+          "title": "Shells Among the Planks",
+          "npc": "r20_anchor_043_host",
+          "min_level": 31,
+          "target_level": 31,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:scorpion"
+            ],
+            "zone": "kragmar_bannerbreak_mesa",
+            "count": 4
+          }
+        },
+        {
+          "id": "r20_anchor_043_03",
+          "title": "Sunderstrap's Sentinels",
+          "npc": "r20_anchor_043_host",
+          "min_level": 33,
+          "target_level": 33,
+          "effort": "standard",
+          "prerequisites": [
+            "r20_anchor_043_02"
+          ],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:bandit_archer"
+            ],
+            "zone": "kragmar_bannerbreak_mesa",
+            "count": 4
+          }
+        }
+      ],
+      "actor_policy": "one new peaceful quest host; retain existing guard roster without duplication"
+    },
+    {
+      "number": 44,
+      "id": "anchor_044",
+      "zone": {
+        "id": "kragmar_bannerbreak_mesa",
+        "name": "Bannerbreak Mesa",
+        "race": "orc",
+        "faction": false,
+        "level_min": 31,
+        "level_max": 40
+      },
+      "slot": "outpost_2",
+      "profile": "outpost",
+      "x": 276,
+      "z": 474,
+      "name": "Tornstandard Hold",
+      "buildings": 2,
+      "palette": "basalt, acacia, faded red cloth",
+      "layout": "guard hall south; compact chart house northwest",
+      "details": [
+        "tattered standard on short pole",
+        "shaded map slab"
+      ],
+      "purpose": "keep the border line supplied",
+      "approach": "northeast approach crosses unequal open court",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_044",
+      "quest_host": {
+        "id": "r20_anchor_044_host",
+        "socket": "quest_host",
+        "role": "quest",
+        "x": 2,
+        "y": 1,
+        "z": 0,
+        "dir": {
+          "x": -1,
+          "z": 0
+        },
+        "name": "Yarra Standardmender",
+        "faction": "throng"
+      },
+      "quests": [
+        {
+          "id": "r20_anchor_044_01",
+          "title": "A Standard Needs a Footing",
+          "npc": "r20_anchor_044_host",
+          "min_level": 31,
+          "target_level": 31,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "item",
+            "item": "default:cobble",
+            "count": 8
+          }
+        },
+        {
+          "id": "r20_anchor_044_02",
+          "title": "The Empty Mesa Patrol",
+          "npc": "r20_anchor_044_host",
+          "min_level": 31,
+          "target_level": 31,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:skeleton_raider"
+            ],
+            "zone": "kragmar_bannerbreak_mesa",
+            "count": 4
+          }
+        },
+        {
+          "id": "r20_anchor_044_03",
+          "title": "The Last Hedge Abroad",
+          "npc": "r20_anchor_044_host",
+          "min_level": 40,
+          "target_level": 40,
+          "effort": "hard",
+          "prerequisites": [
+            "r20_anchor_044_02"
+          ],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:guard_accord"
+            ],
+            "zone": "elandor_ashenward_march",
+            "count": 3
+          }
+        }
+      ],
+      "actor_policy": "one new peaceful quest host; retain existing guard roster without duplication"
+    },
+    {
+      "number": 46,
+      "id": "anchor_046",
+      "zone": {
+        "id": "kragmar_whispering_reedlands",
+        "name": "Whispering Reedlands",
+        "race": "troll",
+        "faction": "throng",
+        "level_min": 21,
+        "level_max": 30
+      },
+      "slot": "outpost_1",
+      "profile": "outpost",
+      "x": 682,
+      "z": 1234,
+      "name": "Reedvoice Station",
+      "buildings": 2,
+      "palette": "junglewood, stone feet, reed roofs",
+      "layout": "raised watchroom east; low provisions house northwest",
+      "details": [
+        "split reed signal pipes",
+        "drying rope coils"
+      ],
+      "purpose": "mark safe paths through reeds",
+      "approach": "south approach sees open under-eaves passage",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_046",
+      "quest_host": {
+        "id": "r20_anchor_046_host",
+        "socket": "quest_host",
+        "role": "quest",
+        "x": 2,
+        "y": 1,
+        "z": 0,
+        "dir": {
+          "x": -1,
+          "z": 0
+        },
+        "name": "Enashi Reedvoice",
+        "faction": "throng"
+      },
+      "quests": [
+        {
+          "id": "r20_anchor_046_01",
+          "title": "A Dry Signal Shelf",
+          "npc": "r20_anchor_046_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "item",
+            "item": "default:junglewood",
+            "count": 8
+          }
+        },
+        {
+          "id": "r20_anchor_046_02",
+          "title": "Cats by the Reed Pipes",
+          "npc": "r20_anchor_046_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:jungle_lynx"
+            ],
+            "zone": "kragmar_whispering_reedlands",
+            "count": 4
+          }
+        },
+        {
+          "id": "r20_anchor_046_03",
+          "title": "The False Answering Lights",
+          "npc": "r20_anchor_046_host",
+          "min_level": 23,
+          "target_level": 23,
+          "effort": "standard",
+          "prerequisites": [
+            "r20_anchor_046_02"
+          ],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:wisp"
+            ],
+            "zone": "kragmar_whispering_reedlands",
+            "count": 3
+          }
+        }
+      ],
+      "actor_policy": "one new peaceful quest host; retain existing guard roster without duplication"
+    },
+    {
+      "number": 47,
+      "id": "anchor_047",
+      "zone": {
+        "id": "kragmar_totemwater_reach",
+        "name": "Totemwater Reach",
+        "race": "troll",
+        "faction": "throng",
+        "level_min": 21,
+        "level_max": 30
+      },
+      "slot": "outpost_1",
+      "profile": "outpost",
+      "x": 2400,
+      "z": 1350,
+      "name": "Totemwater Post",
+      "buildings": 2,
+      "palette": "dark stone, junglewood, teal cloth",
+      "layout": "carved-post guard hall west; short boat-rope store northeast",
+      "details": [
+        "small carved marker",
+        "empty mooring bollard"
+      ],
+      "purpose": "watch inland river crossings",
+      "approach": "southeast entry faces carved porch",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_047",
+      "quest_host": {
+        "id": "r20_anchor_047_host",
+        "socket": "quest_host",
+        "role": "quest",
+        "x": 2,
+        "y": 1,
+        "z": 0,
+        "dir": {
+          "x": -1,
+          "z": 0
+        },
+        "name": "Tokai Knotreader",
+        "faction": "throng"
+      },
+      "quests": [
+        {
+          "id": "r20_anchor_047_01",
+          "title": "Rope Rack Timbers",
+          "npc": "r20_anchor_047_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "item",
+            "item": "default:junglewood",
+            "count": 8
+          }
+        },
+        {
+          "id": "r20_anchor_047_02",
+          "title": "Jaws at the River Path",
+          "npc": "r20_anchor_047_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:crocodile"
+            ],
+            "zone": "kragmar_totemwater_reach",
+            "count": 3
+          }
+        },
+        {
+          "id": "r20_anchor_047_03",
+          "title": "Mud Around the Marker",
+          "npc": "r20_anchor_047_host",
+          "min_level": 23,
+          "target_level": 23,
+          "effort": "standard",
+          "prerequisites": [
+            "r20_anchor_047_02"
+          ],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:bog_ooze"
+            ],
+            "zone": "kragmar_totemwater_reach",
+            "count": 4
+          }
+        }
+      ],
+      "actor_policy": "one new peaceful quest host; retain existing guard roster without duplication"
+    },
+    {
+      "number": 48,
+      "id": "anchor_048",
+      "zone": {
+        "id": "kragmar_thunderroot_wilds",
+        "name": "Thunderroot Wilds",
+        "race": "troll",
+        "faction": false,
+        "level_min": 31,
+        "level_max": 40
+      },
+      "slot": "outpost_1",
+      "profile": "outpost",
+      "x": 1900,
+      "z": 550,
+      "name": "Thunderstep Watch",
+      "buildings": 2,
+      "palette": "ochre stone, junglewood, dark green roof",
+      "layout": "tall narrow guard house north; broad rain shelter southwest",
+      "details": [
+        "storm-split stump",
+        "hanging runoff trough"
+      ],
+      "purpose": "maintain the storm-forest ascent",
+      "approach": "east entry stays clear of stump and shelter",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_048",
+      "quest_host": {
+        "id": "r20_anchor_048_host",
+        "socket": "quest_host",
+        "role": "quest",
+        "x": 2,
+        "y": 1,
+        "z": 0,
+        "dir": {
+          "x": -1,
+          "z": 0
+        },
+        "name": "Rumela Stormstep",
+        "faction": "throng"
+      },
+      "quests": [
+        {
+          "id": "r20_anchor_048_01",
+          "title": "A Gutter Before the Rain",
+          "npc": "r20_anchor_048_host",
+          "min_level": 31,
+          "target_level": 31,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "item",
+            "item": "default:cobble",
+            "count": 8
+          }
+        },
+        {
+          "id": "r20_anchor_048_02",
+          "title": "Rainchar's Burning Cargo",
+          "npc": "r20_anchor_048_host",
+          "min_level": 31,
+          "target_level": 31,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:bandit"
+            ],
+            "zone": "kragmar_thunderroot_wilds",
+            "count": 4
+          }
+        },
+        {
+          "id": "r20_anchor_048_03",
+          "title": "Across the Glass Passage",
+          "npc": "r20_anchor_048_host",
+          "min_level": 40,
+          "target_level": 40,
+          "effort": "hard",
+          "prerequisites": [
+            "r20_anchor_048_02"
+          ],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:guard_accord"
+            ],
+            "zone": "elandor_glassroot_wilds",
+            "count": 3
+          }
+        }
+      ],
+      "actor_policy": "one new peaceful quest host; retain existing guard roster without duplication"
+    },
+    {
+      "number": 50,
+      "id": "anchor_050",
+      "zone": {
+        "id": "elandor_stormvault_heights",
+        "name": "Stormvault Heights",
+        "race": "dwarf",
+        "faction": false,
+        "level_min": 31,
+        "level_max": 40
+      },
+      "slot": "bandit_1",
+      "profile": "bandit_frontier",
+      "x": -1824,
+      "z": -406,
+      "name": "Slatehook Hideout",
+      "buildings": 2,
+      "palette": "stolen pine boards, slate, patched dark cloth",
+      "layout": "heavy-cloth store northwest; small bunk cabin southeast",
+      "details": [
+        "ore tally boards",
+        "snagged blue pennant"
+      ],
+      "purpose": "bandits divert ridge cargo",
+      "approach": "southwest broken fence opens onto central fight space",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_050",
+      "quest_host": null,
+      "actor_policy": "retain existing hostile camp roster; no peaceful quest NPC"
+    },
+    {
+      "number": 52,
+      "id": "anchor_052",
+      "zone": {
+        "id": "elandor_ashenward_march",
+        "name": "Ashenward March",
+        "race": "human",
+        "faction": false,
+        "level_min": 31,
+        "level_max": 40
+      },
+      "slot": "bandit_1",
+      "profile": "bandit_frontier",
+      "x": -24,
+      "z": -406,
+      "name": "Coalbrand Yard",
+      "buildings": 2,
+      "palette": "charred oak, salvaged pale brick, soot cloth",
+      "layout": "long loot lodge east; short lookout shack northwest",
+      "details": [
+        "burned crate ends",
+        "hooked-sun charcoal mark"
+      ],
+      "purpose": "bandits disguise stolen supply fires",
+      "approach": "south entry keeps both doorways visible",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_052",
+      "quest_host": null,
+      "actor_policy": "retain existing hostile camp roster; no peaceful quest NPC"
+    },
+    {
+      "number": 54,
+      "id": "anchor_054",
+      "zone": {
+        "id": "elandor_glassroot_wilds",
+        "name": "Glassroot Wilds",
+        "race": "elf",
+        "faction": false,
+        "level_min": 31,
+        "level_max": 40
+      },
+      "slot": "bandit_1",
+      "profile": "bandit_frontier",
+      "x": 1776,
+      "z": -406,
+      "name": "Rootsnare Camp",
+      "buildings": 2,
+      "palette": "dark timber, pale stone feet, ragged green roof",
+      "layout": "sleep hut northeast; long textile shed west",
+      "details": [
+        "cut vine coils",
+        "confiscated pruning tools"
+      ],
+      "purpose": "bandits strip the forest trade",
+      "approach": "southeast gap leads to open central yard",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_054",
+      "quest_host": null,
+      "actor_policy": "retain existing hostile camp roster; no peaceful quest NPC"
+    },
+    {
+      "number": 56,
+      "id": "anchor_056",
+      "zone": {
+        "id": "kragmar_blackwind_rise",
+        "name": "Blackwind Rise",
+        "race": "undead",
+        "faction": false,
+        "level_min": 31,
+        "level_max": 40
+      },
+      "slot": "bandit_1",
+      "profile": "bandit_frontier",
+      "x": -1800,
+      "z": 430,
+      "name": "Pallcloth Den",
+      "buildings": 2,
+      "palette": "gravewood, fossil rubble, dull grey cloth",
+      "layout": "loot cabin southwest; narrow watch hut northeast",
+      "details": [
+        "stolen mourning cloth",
+        "cold ash bowls"
+      ],
+      "purpose": "bandits raid funeral caravans",
+      "approach": "northwest approach sees watch hut across yard",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_056",
+      "quest_host": null,
+      "actor_policy": "retain existing hostile camp roster; no peaceful quest NPC"
+    },
+    {
+      "number": 58,
+      "id": "anchor_058",
+      "zone": {
+        "id": "kragmar_bannerbreak_mesa",
+        "name": "Bannerbreak Mesa",
+        "race": "orc",
+        "faction": false,
+        "level_min": 31,
+        "level_max": 40
+      },
+      "slot": "bandit_1",
+      "profile": "bandit_frontier",
+      "x": 32,
+      "z": 414,
+      "name": "Sunderstrap Camp",
+      "buildings": 2,
+      "palette": "acacia salvage, red rubble, brown cloth",
+      "layout": "long hide store north; low bunkhouse southeast",
+      "details": [
+        "cut harnesses",
+        "shattered water jars"
+      ],
+      "purpose": "bandits raid frontier pack trains",
+      "approach": "west gap opens away from stored hides",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_058",
+      "quest_host": null,
+      "actor_policy": "retain existing hostile camp roster; no peaceful quest NPC"
+    },
+    {
+      "number": 60,
+      "id": "anchor_060",
+      "zone": {
+        "id": "kragmar_thunderroot_wilds",
+        "name": "Thunderroot Wilds",
+        "race": "troll",
+        "faction": false,
+        "level_min": 31,
+        "level_max": 40
+      },
+      "slot": "bandit_1",
+      "profile": "bandit_frontier",
+      "x": 1776,
+      "z": 454,
+      "name": "Rainchar Camp",
+      "buildings": 2,
+      "palette": "wet junglewood, ochre rubble, patched reed roof",
+      "layout": "raised loot hut west; compact sleeper lodge northeast",
+      "details": [
+        "blackened wet cargo",
+        "broken rain gutter"
+      ],
+      "purpose": "bandits hide smouldering contraband",
+      "approach": "south path keeps loot door and escape gap visible",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_060",
+      "quest_host": null,
+      "actor_policy": "retain existing hostile camp roster; no peaceful quest NPC"
+    },
+    {
+      "number": 61,
+      "id": "anchor_061",
+      "zone": {
+        "id": "elandor_frostbarrow_shelf",
+        "name": "Frostbarrow Shelf",
+        "race": "dwarf",
+        "faction": "accord",
+        "level_min": 21,
+        "level_max": 30
+      },
+      "slot": "mine",
+      "profile": "mine",
+      "x": -2418,
+      "z": -1296,
+      "name": "Tarncut Mine",
+      "buildings": 3,
+      "palette": "granite, pine, slate roofs",
+      "layout": "assay hut northwest; braced adit facade northeast; low tool shed south",
+      "details": [
+        "sorted scree trays",
+        "sled rail ends"
+      ],
+      "purpose": "peaceful shelf extraction",
+      "approach": "west arrival reaches tool shed before mouth",
+      "bounds": {
+        "min_x": -10,
+        "max_x": 9,
+        "min_z": -10,
+        "max_z": 9,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_061",
+      "quest_host": {
+        "id": "r20_anchor_061_host",
+        "socket": "quest_host",
+        "role": "quest",
+        "x": 2,
+        "y": 1,
+        "z": 0,
+        "dir": {
+          "x": -1,
+          "z": 0
+        },
+        "name": "Kelda Screesort",
+        "faction": "accord"
+      },
+      "quests": [
+        {
+          "id": "r20_anchor_061_01",
+          "title": "A Handle for the Cutting",
+          "npc": "r20_anchor_061_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "item",
+            "item": "default:pick_stone",
+            "count": 1
+          }
+        },
+        {
+          "id": "r20_anchor_061_02",
+          "title": "Rams on the Haul Lane",
+          "npc": "r20_anchor_061_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:mountain_ram"
+            ],
+            "zone": "elandor_frostbarrow_shelf",
+            "count": 4
+          }
+        },
+        {
+          "id": "r20_anchor_061_03",
+          "title": "The Cold Shift",
+          "npc": "r20_anchor_061_host",
+          "min_level": 23,
+          "target_level": 23,
+          "effort": "standard",
+          "prerequisites": [
+            "r20_anchor_061_02"
+          ],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:snow_leopard"
+            ],
+            "zone": "elandor_frostbarrow_shelf",
+            "count": 3
+          }
+        }
+      ],
+      "actor_policy": "one new peaceful quest host; retain existing guard roster without duplication"
+    },
+    {
+      "number": 62,
+      "id": "anchor_062",
+      "zone": {
+        "id": "elandor_whitebridge_shire",
+        "name": "Whitebridge Shire",
+        "race": "human",
+        "faction": "accord",
+        "level_min": 21,
+        "level_max": 30
+      },
+      "slot": "mine",
+      "profile": "mine",
+      "x": -1074,
+      "z": -1256,
+      "name": "Bridgechalk Dig",
+      "buildings": 3,
+      "palette": "chalk stone, oak, brown roofs",
+      "layout": "long sorting house west; low braced adit facade northeast; tool cabin southeast",
+      "details": [
+        "chalk-marked tally wall",
+        "stone wheel fragment"
+      ],
+      "purpose": "provide bridge repair stone",
+      "approach": "south path sees pale working face behind open sorting court",
+      "bounds": {
+        "min_x": -10,
+        "max_x": 9,
+        "min_z": -10,
+        "max_z": 9,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_062",
+      "quest_host": {
+        "id": "r20_anchor_062_host",
+        "socket": "quest_host",
+        "role": "quest",
+        "x": 2,
+        "y": 1,
+        "z": 0,
+        "dir": {
+          "x": -1,
+          "z": 0
+        },
+        "name": "Halen Chalkthumb",
+        "faction": "accord"
+      },
+      "quests": [
+        {
+          "id": "r20_anchor_062_01",
+          "title": "Braces for the Pale Face",
+          "npc": "r20_anchor_062_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "item",
+            "item": "default:wood",
+            "count": 10
+          }
+        },
+        {
+          "id": "r20_anchor_062_02",
+          "title": "The Surveyor's Snare",
+          "npc": "r20_anchor_062_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:poacher"
+            ],
+            "zone": "elandor_whitebridge_shire",
+            "count": 4
+          }
+        },
+        {
+          "id": "r20_anchor_062_03",
+          "title": "A Quarry Hand's Pick",
+          "npc": "r20_anchor_062_host",
+          "min_level": 23,
+          "target_level": 23,
+          "effort": "standard",
+          "prerequisites": [
+            "r20_anchor_062_02"
+          ],
+          "objective": {
+            "type": "item",
+            "item": "default:pick_stone",
+            "count": 1
+          }
+        }
+      ],
+      "actor_policy": "one new peaceful quest host; retain existing guard roster without duplication"
+    },
+    {
+      "number": 63,
+      "id": "anchor_063",
+      "zone": {
+        "id": "elandor_lorindor",
+        "name": "Lorindor",
+        "race": "elf",
+        "faction": "accord",
+        "level_min": 21,
+        "level_max": 30
+      },
+      "slot": "mine",
+      "profile": "mine",
+      "x": 1026,
+      "z": -1256,
+      "name": "Paleroot Cutting",
+      "buildings": 2,
+      "palette": "pale stone, silverwood, green roof",
+      "layout": "survey hut southwest; broad braced quarry shelter north",
+      "details": [
+        "root-safe cutting marks",
+        "sorted rubble baskets"
+      ],
+      "purpose": "extract stone without burying orchard roots",
+      "approach": "east entrance passes empty haul lane",
+      "bounds": {
+        "min_x": -10,
+        "max_x": 9,
+        "min_z": -10,
+        "max_z": 9,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_063",
+      "quest_host": {
+        "id": "r20_anchor_063_host",
+        "socket": "quest_host",
+        "role": "quest",
+        "x": 2,
+        "y": 1,
+        "z": 0,
+        "dir": {
+          "x": -1,
+          "z": 0
+        },
+        "name": "Saevin Rootscribe",
+        "faction": "accord"
+      },
+      "quests": [
+        {
+          "id": "r20_anchor_063_01",
+          "title": "A Gentle Edge",
+          "npc": "r20_anchor_063_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "item",
+            "item": "default:pick_stone",
+            "count": 1
+          }
+        },
+        {
+          "id": "r20_anchor_063_02",
+          "title": "The Survey Stakes Vanish",
+          "npc": "r20_anchor_063_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:poacher"
+            ],
+            "zone": "elandor_lorindor",
+            "count": 4
+          }
+        },
+        {
+          "id": "r20_anchor_063_03",
+          "title": "Light on the Cutting Marks",
+          "npc": "r20_anchor_063_host",
+          "min_level": 23,
+          "target_level": 23,
+          "effort": "standard",
+          "prerequisites": [
+            "r20_anchor_063_02"
+          ],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:wisp"
+            ],
+            "zone": "elandor_lorindor",
+            "count": 3
+          }
+        }
+      ],
+      "actor_policy": "one new peaceful quest host; retain existing guard roster without duplication"
+    },
+    {
+      "number": 64,
+      "id": "anchor_064",
+      "zone": {
+        "id": "kragmar_ossuary_reach",
+        "name": "Ossuary Reach",
+        "race": "undead",
+        "faction": "throng",
+        "level_min": 21,
+        "level_max": 30
+      },
+      "slot": "mine",
+      "profile": "mine",
+      "x": -2418,
+      "z": 1264,
+      "name": "Memoryvein Dig",
+      "buildings": 3,
+      "palette": "fossil stone, gravewood, black roof",
+      "layout": "stonecutters lodge east; braced adit facade northwest; record shed southwest",
+      "details": [
+        "labelled fossil shelves",
+        "candle niche"
+      ],
+      "purpose": "separate useful rock from memorial stone",
+      "approach": "south lane reaches records before working face",
+      "bounds": {
+        "min_x": -10,
+        "max_x": 9,
+        "min_z": -10,
+        "max_z": 9,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_064",
+      "quest_host": {
+        "id": "r20_anchor_064_host",
+        "socket": "quest_host",
+        "role": "quest",
+        "x": 2,
+        "y": 1,
+        "z": 0,
+        "dir": {
+          "x": -1,
+          "z": 0
+        },
+        "name": "Neris Fossilhand",
+        "faction": "throng"
+      },
+      "quests": [
+        {
+          "id": "r20_anchor_064_01",
+          "title": "The Record Shed Frame",
+          "npc": "r20_anchor_064_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "item",
+            "item": "default:wood",
+            "count": 8
+          }
+        },
+        {
+          "id": "r20_anchor_064_02",
+          "title": "The Cutters' Uneasy Night",
+          "npc": "r20_anchor_064_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:gravewood_treant"
+            ],
+            "zone": "kragmar_ossuary_reach",
+            "count": 3
+          }
+        },
+        {
+          "id": "r20_anchor_064_03",
+          "title": "A Tool for Unnamed Stone",
+          "npc": "r20_anchor_064_host",
+          "min_level": 23,
+          "target_level": 23,
+          "effort": "standard",
+          "prerequisites": [
+            "r20_anchor_064_02"
+          ],
+          "objective": {
+            "type": "item",
+            "item": "default:pick_stone",
+            "count": 1
+          }
+        }
+      ],
+      "actor_policy": "one new peaceful quest host; retain existing guard roster without duplication"
+    },
+    {
+      "number": 65,
+      "id": "anchor_065",
+      "zone": {
+        "id": "kragmar_speargrass_reach",
+        "name": "Speargrass Reach",
+        "race": "orc",
+        "faction": "throng",
+        "level_min": 21,
+        "level_max": 30
+      },
+      "slot": "mine",
+      "profile": "mine",
+      "x": -1050,
+      "z": 1280,
+      "name": "Redpick Yard",
+      "buildings": 2,
+      "palette": "red rock, acacia, ochre canvas accents",
+      "layout": "long ore shelter west; squat miners lodge northeast with braced cutting beside it",
+      "details": [
+        "water jars",
+        "stacked drill poles"
+      ],
+      "purpose": "supply metalwork from dry gullies",
+      "approach": "southeast entry opens to shaded sorting space",
+      "bounds": {
+        "min_x": -10,
+        "max_x": 9,
+        "min_z": -10,
+        "max_z": 9,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_065",
+      "quest_host": {
+        "id": "r20_anchor_065_host",
+        "socket": "quest_host",
+        "role": "quest",
+        "x": 2,
+        "y": 1,
+        "z": 0,
+        "dir": {
+          "x": -1,
+          "z": 0
+        },
+        "name": "Gorren Redpick",
+        "faction": "throng"
+      },
+      "quests": [
+        {
+          "id": "r20_anchor_065_01",
+          "title": "Roof Over the Sorting Trays",
+          "npc": "r20_anchor_065_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "item",
+            "item": "default:acacia_wood",
+            "count": 10
+          }
+        },
+        {
+          "id": "r20_anchor_065_02",
+          "title": "Hunters at the Water Shade",
+          "npc": "r20_anchor_065_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:hyena"
+            ],
+            "zone": "kragmar_speargrass_reach",
+            "count": 4
+          }
+        },
+        {
+          "id": "r20_anchor_065_03",
+          "title": "Stings in the Drill Stack",
+          "npc": "r20_anchor_065_host",
+          "min_level": 23,
+          "target_level": 23,
+          "effort": "standard",
+          "prerequisites": [
+            "r20_anchor_065_02"
+          ],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:scorpion"
+            ],
+            "zone": "kragmar_speargrass_reach",
+            "count": 4
+          }
+        }
+      ],
+      "actor_policy": "one new peaceful quest host; retain existing guard roster without duplication"
+    },
+    {
+      "number": 66,
+      "id": "anchor_066",
+      "zone": {
+        "id": "kragmar_whispering_reedlands",
+        "name": "Whispering Reedlands",
+        "race": "troll",
+        "faction": "throng",
+        "level_min": 21,
+        "level_max": 30
+      },
+      "slot": "mine",
+      "profile": "mine",
+      "x": 1026,
+      "z": 1304,
+      "name": "Reedstone Cut",
+      "buildings": 3,
+      "palette": "dark stone, junglewood, reed roof",
+      "layout": "raised tally hut northwest; low tool store east; braced adit facade southwest",
+      "details": [
+        "rope drying frame",
+        "runoff channels drawn in paving"
+      ],
+      "purpose": "keep a wet-region quarry workable",
+      "approach": "south entry bends clear of mine mouth",
+      "bounds": {
+        "min_x": -10,
+        "max_x": 9,
+        "min_z": -10,
+        "max_z": 9,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_066",
+      "quest_host": {
+        "id": "r20_anchor_066_host",
+        "socket": "quest_host",
+        "role": "quest",
+        "x": 2,
+        "y": 1,
+        "z": 0,
+        "dir": {
+          "x": -1,
+          "z": 0
+        },
+        "name": "Zali Runoff",
+        "faction": "throng"
+      },
+      "quests": [
+        {
+          "id": "r20_anchor_066_01",
+          "title": "Timbers Kept Above Water",
+          "npc": "r20_anchor_066_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "item",
+            "item": "default:junglewood",
+            "count": 8
+          }
+        },
+        {
+          "id": "r20_anchor_066_02",
+          "title": "The Quarry Pool Moves",
+          "npc": "r20_anchor_066_host",
+          "min_level": 21,
+          "target_level": 21,
+          "effort": "standard",
+          "prerequisites": [],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:bog_ooze"
+            ],
+            "zone": "kragmar_whispering_reedlands",
+            "count": 4
+          }
+        },
+        {
+          "id": "r20_anchor_066_03",
+          "title": "Jaws Along the Haul Path",
+          "npc": "r20_anchor_066_host",
+          "min_level": 23,
+          "target_level": 23,
+          "effort": "standard",
+          "prerequisites": [
+            "r20_anchor_066_02"
+          ],
+          "objective": {
+            "type": "kill",
+            "mobs": [
+              "grug_mobs:crocodile"
+            ],
+            "zone": "kragmar_whispering_reedlands",
+            "count": 3
+          }
+        }
+      ],
+      "actor_policy": "one new peaceful quest host; retain existing guard roster without duplication"
+    },
+    {
+      "number": 67,
+      "id": "anchor_067",
+      "zone": {
+        "id": "elandor_whitebridge_shire",
+        "name": "Whitebridge Shire",
+        "race": "human",
+        "faction": "accord",
+        "level_min": 21,
+        "level_max": 30
+      },
+      "slot": "mirefolk",
+      "profile": "mirefolk",
+      "x": -620,
+      "z": -1760,
+      "name": "Siltbasket Camp",
+      "buildings": 2,
+      "palette": "mud-coloured masonry, weathered wood, reed roof",
+      "layout": "wide basket lodge west; small sentry shelter northeast",
+      "details": [
+        "fishbone rack",
+        "stolen market basket"
+      ],
+      "purpose": "Mirefolk control a marsh margin",
+      "approach": "south gap exposes central ground before huts",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_067",
+      "quest_host": null,
+      "actor_policy": "retain existing hostile camp roster; no peaceful quest NPC"
+    },
+    {
+      "number": 68,
+      "id": "anchor_068",
+      "zone": {
+        "id": "elandor_lorindor",
+        "name": "Lorindor",
+        "race": "elf",
+        "faction": "accord",
+        "level_min": 21,
+        "level_max": 30
+      },
+      "slot": "mirefolk",
+      "profile": "mirefolk",
+      "x": 1096,
+      "z": -1716,
+      "name": "Whitepetal Fenhold",
+      "buildings": 2,
+      "palette": "pale rubble, dark reeds, mossed wood",
+      "layout": "tall narrow reed hut north; low net house southwest",
+      "details": [
+        "flower-filled cracked urn",
+        "fish drying pole"
+      ],
+      "purpose": "Mirefolk occupy abandoned orchard works",
+      "approach": "east gap bypasses urn and sees both entries",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_068",
+      "quest_host": null,
+      "actor_policy": "retain existing hostile camp roster; no peaceful quest NPC"
+    },
+    {
+      "number": 69,
+      "id": "anchor_069",
+      "zone": {
+        "id": "kragmar_mournfen",
+        "name": "Mournfen",
+        "race": "undead",
+        "faction": "throng",
+        "level_min": 11,
+        "level_max": 20
+      },
+      "slot": "mirefolk",
+      "profile": "mirefolk",
+      "x": -2074,
+      "z": 2274,
+      "name": "Blackreed Enclosure",
+      "buildings": 2,
+      "palette": "grave-stained rubble, dark boards, brown reeds",
+      "layout": "low longhouse southeast; squat rack shelter northwest",
+      "details": [
+        "sunken grave marker prop",
+        "mud-covered bowls"
+      ],
+      "purpose": "Mirefolk claim drowned grave-road stores",
+      "approach": "west opening retains broad line into centre",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_069",
+      "quest_host": null,
+      "actor_policy": "retain existing hostile camp roster; no peaceful quest NPC"
+    },
+    {
+      "number": 70,
+      "id": "anchor_070",
+      "zone": {
+        "id": "kragmar_whispering_reedlands",
+        "name": "Whispering Reedlands",
+        "race": "troll",
+        "faction": "throng",
+        "level_min": 21,
+        "level_max": 30
+      },
+      "slot": "mirefolk",
+      "profile": "mirefolk",
+      "x": 1096,
+      "z": 1764,
+      "name": "Hushwater Nests",
+      "buildings": 2,
+      "palette": "junglewood, ochre stone, reed roof",
+      "layout": "wide net lodge northeast; narrow lookout shelter southwest",
+      "details": [
+        "shell strings",
+        "torn route totem"
+      ],
+      "purpose": "Mirefolk interrupt reed-path traffic",
+      "approach": "northwest opening leaves side retreat visible",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_070",
+      "quest_host": null,
+      "actor_policy": "retain existing hostile camp roster; no peaceful quest NPC"
+    },
+    {
+      "number": 71,
+      "id": "anchor_071",
+      "zone": {
+        "id": "elandor_ashenward_march",
+        "name": "Ashenward March",
+        "race": "human",
+        "faction": false,
+        "level_min": 31,
+        "level_max": 40
+      },
+      "slot": "clash_1",
+      "profile": "clash",
+      "x": -274,
+      "z": -296,
+      "name": "Ashen Wheelbreak",
+      "buildings": 0,
+      "palette": "charred oak, pale rubble, ash",
+      "layout": "collapsed wagon northwest; low breastwork east; open southwest passage",
+      "details": [
+        "wheel halves",
+        "spilled dark crates"
+      ],
+      "purpose": "static evidence of failed supply crossing",
+      "approach": "south diagonal remains open",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_071",
+      "quest_host": null,
+      "actor_policy": "retain existing encounters; no additional actor"
+    },
+    {
+      "number": 72,
+      "id": "anchor_072",
+      "zone": {
+        "id": "elandor_ashenward_march",
+        "name": "Ashenward March",
+        "race": "human",
+        "faction": false,
+        "level_min": 31,
+        "level_max": 40
+      },
+      "slot": "clash_2",
+      "profile": "clash",
+      "x": 250,
+      "z": -320,
+      "name": "Hedgefire Crossing",
+      "buildings": 0,
+      "palette": "scorched timber, pale stones, brown soil accents",
+      "layout": "broken hedge line west; ruined firing step northeast",
+      "details": [
+        "burned gatepost",
+        "bent banner stand"
+      ],
+      "purpose": "abandoned contested checkpoint",
+      "approach": "southeast-to-northwest path stays clear",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_072",
+      "quest_host": null,
+      "actor_policy": "retain existing encounters; no additional actor"
+    },
+    {
+      "number": 73,
+      "id": "anchor_073",
+      "zone": {
+        "id": "kragmar_bannerbreak_mesa",
+        "name": "Bannerbreak Mesa",
+        "race": "orc",
+        "faction": false,
+        "level_min": 31,
+        "level_max": 40
+      },
+      "slot": "clash_1",
+      "profile": "clash",
+      "x": -218,
+      "z": 304,
+      "name": "Redcut Breach",
+      "buildings": 0,
+      "palette": "red stone, basalt, old acacia",
+      "layout": "wall stump northwest; shallow ramp rubble southeast",
+      "details": [
+        "snapped spear rack",
+        "empty water jar"
+      ],
+      "purpose": "static failed mesa assault",
+      "approach": "east-west centre is free",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_073",
+      "quest_host": null,
+      "actor_policy": "retain existing encounters; no additional actor"
+    },
+    {
+      "number": 74,
+      "id": "anchor_074",
+      "zone": {
+        "id": "kragmar_bannerbreak_mesa",
+        "name": "Bannerbreak Mesa",
+        "race": "orc",
+        "faction": false,
+        "level_min": 31,
+        "level_max": 40
+      },
+      "slot": "clash_2",
+      "profile": "clash",
+      "x": 282,
+      "z": 304,
+      "name": "Bannerfall Pocket",
+      "buildings": 0,
+      "palette": "basalt rubble, ochre cloth, red stone",
+      "layout": "fallen standard west; unequal cover stones northeast and south",
+      "details": [
+        "torn cloth at ground level",
+        "broken crate"
+      ],
+      "purpose": "cost of a stalled frontier patrol",
+      "approach": "north approach reveals fallen standard beyond clear centre",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_074",
+      "quest_host": null,
+      "actor_policy": "retain existing encounters; no additional actor"
+    },
+    {
+      "number": 75,
+      "id": "anchor_075",
+      "zone": {
+        "id": "front_wyrmglass_crown",
+        "name": "The Wyrmglass Crown",
+        "race": "dwarf",
+        "faction": false,
+        "level_min": 60,
+        "level_max": 60
+      },
+      "slot": "clash_1",
+      "profile": "clash",
+      "x": -3024,
+      "z": 194,
+      "name": "Crystal Landing Scar",
+      "buildings": 0,
+      "palette": "pale crystalline stone, slate, weathered pine",
+      "layout": "shattered shelter edge west; low lookout rubble northeast",
+      "details": [
+        "salt-worn crate",
+        "cracked signal slab"
+      ],
+      "purpose": "arrival route has seen earlier expeditions",
+      "approach": "southeast lane remains clear toward island paths",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_075",
+      "quest_host": null,
+      "actor_policy": "retain existing encounters; no additional actor"
+    },
+    {
+      "number": 76,
+      "id": "anchor_076",
+      "zone": {
+        "id": "front_gravesalt_escarpment",
+        "name": "Gravesalt Escarpment",
+        "race": "undead",
+        "faction": false,
+        "level_min": 51,
+        "level_max": 59
+      },
+      "slot": "clash_1",
+      "profile": "clash",
+      "x": -2200,
+      "z": -80,
+      "name": "Saltgate Remnant",
+      "buildings": 0,
+      "palette": "white salt-like stone, gravewood, dark rubble",
+      "layout": "doorless gate stump north; low barricade southwest",
+      "details": [
+        "memorial tablet",
+        "rotted beam"
+      ],
+      "purpose": "broken coastal checkpoint",
+      "approach": "east approach sees through gate gap",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_076",
+      "quest_host": null,
+      "actor_policy": "retain existing encounters; no additional actor"
+    },
+    {
+      "number": 77,
+      "id": "anchor_077",
+      "zone": {
+        "id": "front_gravesalt_escarpment",
+        "name": "Gravesalt Escarpment",
+        "race": "undead",
+        "faction": false,
+        "level_min": 51,
+        "level_max": 59
+      },
+      "slot": "clash_2",
+      "profile": "clash",
+      "x": -1768,
+      "z": 64,
+      "name": "Tombroad Ambush",
+      "buildings": 0,
+      "palette": "fossil rubble, dark boards, pale soil accents",
+      "layout": "cart remains southeast; tomb-wall corner northwest",
+      "details": [
+        "dragged stone slab",
+        "empty lantern bracket"
+      ],
+      "purpose": "failed escort beside tomb galleries",
+      "approach": "southwest-northeast diagonal remains open",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_077",
+      "quest_host": null,
+      "actor_policy": "retain existing encounters; no additional actor"
+    },
+    {
+      "number": 78,
+      "id": "anchor_078",
+      "zone": {
+        "id": "front_broken_causeway",
+        "name": "The Broken Causeway",
+        "race": "human",
+        "faction": false,
+        "level_min": 31,
+        "level_max": 40
+      },
+      "slot": "clash_1",
+      "profile": "clash",
+      "x": -1274,
+      "z": -76,
+      "name": "Causeway Toll Ruin",
+      "buildings": 0,
+      "palette": "pale masonry, oak, dark moss",
+      "layout": "half toll arch west; fallen booth wall northeast",
+      "details": [
+        "weathered toll slab",
+        "broken bench"
+      ],
+      "purpose": "old civic road becoming a battlefield",
+      "approach": "south approach sees arch against open centre",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_078",
+      "quest_host": null,
+      "actor_policy": "retain existing encounters; no additional actor"
+    },
+    {
+      "number": 79,
+      "id": "anchor_079",
+      "zone": {
+        "id": "front_broken_causeway",
+        "name": "The Broken Causeway",
+        "race": "human",
+        "faction": false,
+        "level_min": 31,
+        "level_max": 40
+      },
+      "slot": "clash_2",
+      "profile": "clash",
+      "x": -774,
+      "z": 124,
+      "name": "Fordward Wreck",
+      "buildings": 0,
+      "palette": "mud-dark stone, oak, muted linen",
+      "layout": "cart bed northwest; low crossing marker southeast",
+      "details": [
+        "loose barrel hoops",
+        "split route stone"
+      ],
+      "purpose": "supply failure on a ford approach",
+      "approach": "east-west centre stays clear",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_079",
+      "quest_host": null,
+      "actor_policy": "retain existing encounters; no additional actor"
+    },
+    {
+      "number": 80,
+      "id": "anchor_080",
+      "zone": {
+        "id": "front_broken_causeway",
+        "name": "The Broken Causeway",
+        "race": "human",
+        "faction": false,
+        "level_min": 31,
+        "level_max": 40
+      },
+      "slot": "clash_3",
+      "profile": "clash",
+      "x": -274,
+      "z": -76,
+      "name": "Aqueduct Last Step",
+      "buildings": 0,
+      "palette": "pale stone, brick, moss",
+      "layout": "broken aqueduct pier northeast; stone fragments southwest",
+      "details": [
+        "dry channel fragment",
+        "discarded masonry tools"
+      ],
+      "purpose": "abandoned high route across the marsh",
+      "approach": "northwest approach sees tall pier to one side",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_080",
+      "quest_host": null,
+      "actor_policy": "retain existing encounters; no additional actor"
+    },
+    {
+      "number": 81,
+      "id": "anchor_081",
+      "zone": {
+        "id": "front_shattered_line",
+        "name": "The Shattered Line",
+        "race": "orc",
+        "faction": false,
+        "level_min": 41,
+        "level_max": 50
+      },
+      "slot": "clash_1",
+      "profile": "clash",
+      "x": 250,
+      "z": 100,
+      "name": "West Trench Mouth",
+      "buildings": 0,
+      "palette": "red earth tones, basalt, charred beams",
+      "layout": "low trench revetment west above grade; collapsed shelter northeast",
+      "details": [
+        "plank bundles",
+        "broken spade prop"
+      ],
+      "purpose": "static trench-edge position without terrain excavation",
+      "approach": "south-north channel stays walkable",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_081",
+      "quest_host": null,
+      "actor_policy": "retain existing encounters; no additional actor"
+    },
+    {
+      "number": 82,
+      "id": "anchor_082",
+      "zone": {
+        "id": "front_shattered_line",
+        "name": "The Shattered Line",
+        "race": "orc",
+        "faction": false,
+        "level_min": 41,
+        "level_max": 50
+      },
+      "slot": "clash_2",
+      "profile": "clash",
+      "x": 782,
+      "z": -116,
+      "name": "Siege Ramp Foot",
+      "buildings": 0,
+      "palette": "red stone, acacia beams, blackened iron accents",
+      "layout": "short ruined ramp northeast; sparse barrier southwest",
+      "details": [
+        "broken wheel rim",
+        "stacked empty crates"
+      ],
+      "purpose": "spent siege route",
+      "approach": "west entry faces ramp side with bypass to south",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_082",
+      "quest_host": null,
+      "actor_policy": "retain existing encounters; no additional actor"
+    },
+    {
+      "number": 83,
+      "id": "anchor_083",
+      "zone": {
+        "id": "front_shattered_line",
+        "name": "The Shattered Line",
+        "race": "orc",
+        "faction": false,
+        "level_min": 41,
+        "level_max": 50
+      },
+      "slot": "clash_3",
+      "profile": "clash",
+      "x": 1282,
+      "z": 84,
+      "name": "No-Man's Orchard",
+      "buildings": 0,
+      "palette": "charred wood, red rubble, brown soil accents",
+      "layout": "two unequal dead stumps northwest; wall ruin southeast",
+      "details": [
+        "blackened basket",
+        "low grave stones"
+      ],
+      "purpose": "civilian land consumed by war",
+      "approach": "east-west centre preserves open sightline",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_083",
+      "quest_host": null,
+      "actor_policy": "retain existing encounters; no additional actor"
+    },
+    {
+      "number": 84,
+      "id": "anchor_084",
+      "zone": {
+        "id": "front_skyglass_canopy",
+        "name": "The Skyglass Canopy",
+        "race": "elf",
+        "faction": false,
+        "level_min": 51,
+        "level_max": 59
+      },
+      "slot": "clash_1",
+      "profile": "clash",
+      "x": 1832,
+      "z": -96,
+      "name": "Skyroot Crossing",
+      "buildings": 0,
+      "palette": "pale stone, dark timber, faded green cloth",
+      "layout": "root-shaped timber remnant west; low wall elbow northeast",
+      "details": [
+        "cut rope coils",
+        "cracked route marker"
+      ],
+      "purpose": "failed crossing in cloud forest",
+      "approach": "southeast approach stays below props and open",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_084",
+      "quest_host": null,
+      "actor_policy": "retain existing encounters; no additional actor"
+    },
+    {
+      "number": 85,
+      "id": "anchor_085",
+      "zone": {
+        "id": "front_skyglass_canopy",
+        "name": "The Skyglass Canopy",
+        "race": "elf",
+        "faction": false,
+        "level_min": 51,
+        "level_max": 59
+      },
+      "slot": "clash_2",
+      "profile": "clash",
+      "x": 2176,
+      "z": 104,
+      "name": "Cloudwatch Fall",
+      "buildings": 0,
+      "palette": "pale cliff rubble, silverwood, grey cloth",
+      "layout": "broken watch platform northwest; scattered masonry east",
+      "details": [
+        "fallen signal post",
+        "empty lantern cup"
+      ],
+      "purpose": "abandoned elevated observation point",
+      "approach": "south clear strip leaves both exits visible",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_085",
+      "quest_host": null,
+      "actor_policy": "retain existing encounters; no additional actor"
+    },
+    {
+      "number": 86,
+      "id": "anchor_086",
+      "zone": {
+        "id": "front_stormscale_summit",
+        "name": "Stormscale Summit",
+        "race": "troll",
+        "faction": false,
+        "level_min": 60,
+        "level_max": 60
+      },
+      "slot": "clash_1",
+      "profile": "clash",
+      "x": 3000,
+      "z": 170,
+      "name": "Thunder Shore Wreck",
+      "buildings": 0,
+      "palette": "ochre basalt, wet junglewood, green-grey cloth",
+      "layout": "split expedition frame southeast; low stone shield northwest",
+      "details": [
+        "rain-filled bowl prop",
+        "broken oar"
+      ],
+      "purpose": "island arrival under repeated storms",
+      "approach": "northeast-southwest diagonal stays clear",
+      "bounds": {
+        "min_x": -8,
+        "max_x": 7,
+        "min_z": -8,
+        "max_z": 7,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_086",
+      "quest_host": null,
+      "actor_policy": "retain existing encounters; no additional actor"
+    },
+    {
+      "number": 87,
+      "id": "anchor_087",
+      "zone": {
+        "id": "front_wyrmglass_crown",
+        "name": "The Wyrmglass Crown",
+        "race": "dwarf",
+        "faction": false,
+        "level_min": 60,
+        "level_max": 60
+      },
+      "slot": "dragon",
+      "profile": "dragon",
+      "x": -3260,
+      "z": -40,
+      "name": "Wyrmglass Dragonspire",
+      "buildings": 0,
+      "palette": "pale crystalline stone, grey slate, sparse frost tones",
+      "layout": "three uneven perimeter rock teeth north/west; low broken offering wall southeast",
+      "details": [
+        "scored stones",
+        "empty hoard recess"
+      ],
+      "purpose": "frame the existing dragon encounter",
+      "approach": "keep both island-route accesses and central arena open",
+      "bounds": {
+        "min_x": -16,
+        "max_x": 15,
+        "min_z": -16,
+        "max_z": 15,
+        "min_y": 0,
+        "max_y": 12
+      },
+      "settlement_key": "r20_anchor_087",
+      "quest_host": null,
+      "actor_policy": "retain existing encounters; no additional actor"
+    },
+    {
+      "number": 88,
+      "id": "anchor_088",
+      "zone": {
+        "id": "front_stormscale_summit",
+        "name": "Stormscale Summit",
+        "race": "troll",
+        "faction": false,
+        "level_min": 60,
+        "level_max": 60
+      },
+      "slot": "dragon",
+      "profile": "dragon",
+      "x": 3260,
+      "z": -40,
+      "name": "Stormscale Dragonroost",
+      "buildings": 0,
+      "palette": "dark basalt, ochre rock, restrained green vegetation",
+      "layout": "broken basalt rib west; low storm-shattered altar northeast",
+      "details": [
+        "split tree trunk",
+        "rain-cut stone grooves"
+      ],
+      "purpose": "frame the existing dragon encounter",
+      "approach": "two independent island approaches remain open",
+      "bounds": {
+        "min_x": -16,
+        "max_x": 15,
+        "min_z": -16,
+        "max_z": 15,
+        "min_y": 0,
+        "max_y": 12
+      },
+      "settlement_key": "r20_anchor_088",
+      "quest_host": null,
+      "actor_policy": "retain existing encounters; no additional actor"
+    },
+    {
+      "number": 89,
+      "id": "anchor_089",
+      "zone": {
+        "id": "front_wyrmglass_crown",
+        "name": "The Wyrmglass Crown",
+        "race": "dwarf",
+        "faction": false,
+        "level_min": 60,
+        "level_max": 60
+      },
+      "slot": "apex_mine",
+      "profile": "apex_mine",
+      "x": -3200,
+      "z": 80,
+      "name": "Wyrmglass Fault Camp",
+      "buildings": 2,
+      "palette": "granite, pine, slate, pale crystal accents",
+      "layout": "long survey lodge northwest; shorter braced assay shelter southeast",
+      "details": [
+        "six labelled sample recesses",
+        "rope coil rack"
+      ],
+      "purpose": "dangerous all-gem expedition workplace",
+      "approach": "southern arrival splits to camp and independent dragon path",
+      "bounds": {
+        "min_x": -16,
+        "max_x": 15,
+        "min_z": -16,
+        "max_z": 15,
+        "min_y": 0,
+        "max_y": 12
+      },
+      "settlement_key": "r20_anchor_089",
+      "quest_host": null,
+      "actor_policy": "retain existing encounters; no additional actor"
+    },
+    {
+      "number": 90,
+      "id": "anchor_090",
+      "zone": {
+        "id": "front_stormscale_summit",
+        "name": "Stormscale Summit",
+        "race": "troll",
+        "faction": false,
+        "level_min": 60,
+        "level_max": 60
+      },
+      "slot": "apex_mine",
+      "profile": "apex_mine",
+      "x": 3200,
+      "z": 80,
+      "name": "Stormscale Gem Camp",
+      "buildings": 2,
+      "palette": "basalt, junglewood, ochre roof accents",
+      "layout": "broad rain lodge northeast; narrow assay house southwest",
+      "details": [
+        "six labelled sample recesses",
+        "storm gauge prop"
+      ],
+      "purpose": "dangerous all-gem expedition workplace",
+      "approach": "northwestern arrival sees both roofs and unblocked mine access",
+      "bounds": {
+        "min_x": -16,
+        "max_x": 15,
+        "min_z": -16,
+        "max_z": 15,
+        "min_y": 0,
+        "max_y": 12
+      },
+      "settlement_key": "r20_anchor_090",
+      "quest_host": null,
+      "actor_policy": "retain existing encounters; no additional actor"
+    },
+    {
+      "number": 91,
+      "id": "anchor_091",
+      "zone": {
+        "id": "elandor_goldmead_vale",
+        "name": "Goldmead Vale",
+        "race": "human",
+        "faction": "accord",
+        "level_min": 11,
+        "level_max": 20
+      },
+      "slot": "rare_grimtusk",
+      "profile": "rare_route",
+      "x": 152,
+      "z": -2116,
+      "name": "Grimtusk's Rooting",
+      "buildings": 0,
+      "palette": "oak roots, brown soil accents, low grey stone",
+      "layout": "broken fence northwest; uprooted log east",
+      "details": [
+        "furrow marks in surface dressing",
+        "overturned feed trough"
+      ],
+      "purpose": "signs of Grimtusk on an orchard margin",
+      "approach": "south centre is clear for existing rare route",
+      "bounds": {
+        "min_x": -6,
+        "max_x": 5,
+        "min_z": -6,
+        "max_z": 5,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_091",
+      "quest_host": null,
+      "actor_policy": "retain existing encounters; no additional actor"
+    },
+    {
+      "number": 92,
+      "id": "anchor_092",
+      "zone": {
+        "id": "elandor_ashenward_march",
+        "name": "Ashenward March",
+        "race": "human",
+        "faction": false,
+        "level_min": 31,
+        "level_max": 40
+      },
+      "slot": "rare_old_whitefang",
+      "profile": "rare_route",
+      "x": -180,
+      "z": -650,
+      "name": "Whitefang's Cold Den",
+      "buildings": 0,
+      "palette": "grey stone, dark oak, pale lichen accents",
+      "layout": "low rock crescent northeast; fallen trunk west",
+      "details": [
+        "gnawed bone props",
+        "rubbed stone"
+      ],
+      "purpose": "signs of Old Whitefang along the march",
+      "approach": "southwest gap keeps escape from rock crescent",
+      "bounds": {
+        "min_x": -6,
+        "max_x": 5,
+        "min_z": -6,
+        "max_z": 5,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_092",
+      "quest_host": null,
+      "actor_policy": "retain existing encounters; no additional actor"
+    },
+    {
+      "number": 93,
+      "id": "anchor_093",
+      "zone": {
+        "id": "elandor_stormvault_heights",
+        "name": "Stormvault Heights",
+        "race": "dwarf",
+        "faction": false,
+        "level_min": 31,
+        "level_max": 40
+      },
+      "slot": "rare_korgans_bane",
+      "profile": "rare_route",
+      "x": -1874,
+      "z": -596,
+      "name": "The Bane's Scar",
+      "buildings": 0,
+      "palette": "slate, granite, storm-scorched pine",
+      "layout": "split monolith west; low scree heap southeast",
+      "details": [
+        "scarred shield prop",
+        "crushed pine bough"
+      ],
+      "purpose": "signs of Korgan's Bane on exposed ridge",
+      "approach": "north-south strip stays open",
+      "bounds": {
+        "min_x": -6,
+        "max_x": 5,
+        "min_z": -6,
+        "max_z": 5,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_093",
+      "quest_host": null,
+      "actor_policy": "retain existing encounters; no additional actor"
+    },
+    {
+      "number": 94,
+      "id": "anchor_094",
+      "zone": {
+        "id": "front_skyglass_canopy",
+        "name": "The Skyglass Canopy",
+        "race": "elf",
+        "faction": false,
+        "level_min": 51,
+        "level_max": 59
+      },
+      "slot": "rare_silkfang",
+      "profile": "rare_route",
+      "x": 2026,
+      "z": 94,
+      "name": "Silkfang's Loom",
+      "buildings": 0,
+      "palette": "pale rock, dark timber, pale web-like decoration",
+      "layout": "two uneven dead limbs northwest; low cocoon-shaped stone east",
+      "details": [
+        "silken pale bands",
+        "abandoned pack"
+      ],
+      "purpose": "Silkfang's ambush scene",
+      "approach": "south approach sees through props with free centre",
+      "bounds": {
+        "min_x": -6,
+        "max_x": 5,
+        "min_z": -6,
+        "max_z": 5,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_094",
+      "quest_host": null,
+      "actor_policy": "retain existing encounters; no additional actor"
+    },
+    {
+      "number": 95,
+      "id": "anchor_095",
+      "zone": {
+        "id": "kragmar_blackwind_rise",
+        "name": "Blackwind Rise",
+        "race": "undead",
+        "faction": false,
+        "level_min": 31,
+        "level_max": 40
+      },
+      "slot": "rare_marrowclaw",
+      "profile": "rare_route",
+      "x": -1818,
+      "z": 604,
+      "name": "Marrowclaw's Scrape",
+      "buildings": 0,
+      "palette": "fossil stone, gravewood, ash-grey soil accents",
+      "layout": "clawed fossil block northeast; fallen gravewood southwest",
+      "details": [
+        "scattered bone props",
+        "stripped bark"
+      ],
+      "purpose": "Marrowclaw's feeding trace",
+      "approach": "east-west gap avoids support surfaces under actor",
+      "bounds": {
+        "min_x": -6,
+        "max_x": 5,
+        "min_z": -6,
+        "max_z": 5,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_095",
+      "quest_host": null,
+      "actor_policy": "retain existing encounters; no additional actor"
+    },
+    {
+      "number": 96,
+      "id": "anchor_096",
+      "zone": {
+        "id": "kragmar_bannerbreak_mesa",
+        "name": "Bannerbreak Mesa",
+        "race": "orc",
+        "faction": false,
+        "level_min": 31,
+        "level_max": 40
+      },
+      "slot": "rare_dustwing",
+      "profile": "rare_route",
+      "x": 156,
+      "z": 674,
+      "name": "Dustwing's Perch",
+      "buildings": 0,
+      "palette": "ochre stone, acacia, dull feathers as texture accents",
+      "layout": "low broken pillar northwest; wind-scoured rubble south",
+      "details": [
+        "shed feather motif",
+        "shattered bowl"
+      ],
+      "purpose": "Dustwing's exposed resting ground",
+      "approach": "east approach keeps central perch root clear",
+      "bounds": {
+        "min_x": -6,
+        "max_x": 5,
+        "min_z": -6,
+        "max_z": 5,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_096",
+      "quest_host": null,
+      "actor_policy": "retain existing encounters; no additional actor"
+    },
+    {
+      "number": 97,
+      "id": "anchor_097",
+      "zone": {
+        "id": "front_stormscale_summit",
+        "name": "Stormscale Summit",
+        "race": "troll",
+        "faction": false,
+        "level_min": 60,
+        "level_max": 60
+      },
+      "slot": "rare_emerald_coil",
+      "profile": "rare_route",
+      "x": 3000,
+      "z": -120,
+      "name": "Emerald Coil's Hollow",
+      "buildings": 0,
+      "palette": "basalt, junglewood, deep green accents",
+      "layout": "curved fallen trunk north; low warm stone southeast",
+      "details": [
+        "shed-skin motif",
+        "crushed ferns"
+      ],
+      "purpose": "Emerald Coil's humid island refuge",
+      "approach": "southwest opening keeps encounter footprint broad",
+      "bounds": {
+        "min_x": -6,
+        "max_x": 5,
+        "min_z": -6,
+        "max_z": 5,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_097",
+      "quest_host": null,
+      "actor_policy": "retain existing encounters; no additional actor"
+    },
+    {
+      "number": 98,
+      "id": "anchor_098",
+      "zone": {
+        "id": "kragmar_redtusk_savanna",
+        "name": "Redtusk Savanna",
+        "race": "orc",
+        "faction": "throng",
+        "level_min": 11,
+        "level_max": 20
+      },
+      "slot": "rare_ashmaw",
+      "profile": "rare_route",
+      "x": 152,
+      "z": 2084,
+      "name": "Ashmaw's Burnt Hollow",
+      "buildings": 0,
+      "palette": "red rubble, charred acacia, brown soil accents",
+      "layout": "burned trough west; low split rock northeast",
+      "details": [
+        "scorched grass pattern",
+        "cracked clay jar"
+      ],
+      "purpose": "Ashmaw's feeding trace on the savanna",
+      "approach": "south arrival sees centre before cover",
+      "bounds": {
+        "min_x": -6,
+        "max_x": 5,
+        "min_z": -6,
+        "max_z": 5,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_098",
+      "quest_host": null,
+      "actor_policy": "retain existing encounters; no additional actor"
+    },
+    {
+      "number": 99,
+      "id": "anchor_099",
+      "zone": {
+        "id": "front_broken_causeway",
+        "name": "The Broken Causeway",
+        "race": "human",
+        "faction": false,
+        "level_min": 31,
+        "level_max": 40
+      },
+      "slot": "rare_captain_bonerattle",
+      "profile": "rare_route",
+      "x": -568,
+      "z": 64,
+      "name": "Bonerattle's Broken Toll",
+      "buildings": 0,
+      "palette": "pale road stone, oak, faded cloth",
+      "layout": "leaning toll slab northwest; broken cart rail southeast",
+      "details": [
+        "old coin motif in fixed prop",
+        "empty hat peg"
+      ],
+      "purpose": "western scene on Captain Bonerattle's existing migration",
+      "approach": "east-west lane remains unblocked",
+      "bounds": {
+        "min_x": -6,
+        "max_x": 5,
+        "min_z": -6,
+        "max_z": 5,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_099",
+      "quest_host": null,
+      "actor_policy": "retain existing encounters; no additional actor"
+    },
+    {
+      "number": 100,
+      "id": "anchor_100",
+      "zone": {
+        "id": "front_shattered_line",
+        "name": "The Shattered Line",
+        "race": "orc",
+        "faction": false,
+        "level_min": 41,
+        "level_max": 50
+      },
+      "slot": "rare_captain_bonerattle",
+      "profile": "rare_route",
+      "x": 600,
+      "z": -80,
+      "name": "Bonerattle's Siege Halt",
+      "buildings": 0,
+      "palette": "red rubble, acacia, grey cloth",
+      "layout": "wheel-less supply frame northeast; low marker stones west",
+      "details": [
+        "matching toll motif",
+        "snapped drum frame"
+      ],
+      "purpose": "eastern scene for the same migrating Captain Bonerattle",
+      "approach": "south-north gap retains existing route passage",
+      "bounds": {
+        "min_x": -6,
+        "max_x": 5,
+        "min_z": -6,
+        "max_z": 5,
+        "min_y": 0,
+        "max_y": 8
+      },
+      "settlement_key": "r20_anchor_100",
+      "quest_host": null,
+      "actor_policy": "retain existing encounters; no additional actor"
+    }
+  ],
+  "civic_npcs": [
+    {
+      "id": "r20_dwarf_start_cook",
+      "name": "Hilda Hearthspoon",
+      "settlement": "hearthpine",
+      "socket": "quest_cook",
+      "frame": "anchor",
+      "x": 2,
+      "y": 1,
+      "z": 13,
+      "dir": {
+        "x": -1,
+        "z": 0
+      },
+      "oven": {
+        "x": 4,
+        "y": 1,
+        "z": 13
+      }
+    },
+    {
+      "id": "r20_dwarf_capital_cook",
+      "name": "Varda Copperpan",
+      "settlement": "dur_brannoc",
+      "socket": "terrace_bakehouse/terrace_bakehouse_quest_cook",
+      "frame": "service_plot",
+      "plot": "terrace_bakehouse",
+      "x": 2,
+      "y": 1,
+      "z": -1,
+      "dir": {
+        "x": 0,
+        "z": -1
+      }
+    },
+    {
+      "id": "r20_dwarf_capital_envoy",
+      "name": "Dorrin Gateledger",
+      "settlement": "dur_brannoc",
+      "socket_selector": "existing unique core role=quest socket",
+      "frame": "existing_socket",
+      "reuse_actor": true,
+      "socket": "ancestor_hall_quest"
+    },
+    {
+      "id": "r20_human_start_cook",
+      "name": "Bess Honeycrust",
+      "settlement": "dawnmere",
+      "socket": "quest_cook",
+      "frame": "anchor",
+      "x": 2,
+      "y": 1,
+      "z": 13,
+      "dir": {
+        "x": -1,
+        "z": 0
+      },
+      "oven": {
+        "x": 4,
+        "y": 1,
+        "z": 13
+      }
+    },
+    {
+      "id": "r20_human_capital_cook",
+      "name": "Ansel Ovenward",
+      "settlement": "highcourt",
+      "socket": "homes_bakehouse/homes_bakehouse_quest_cook",
+      "frame": "service_plot",
+      "plot": "homes_bakehouse",
+      "x": 2,
+      "y": 1,
+      "z": -1,
+      "dir": {
+        "x": 0,
+        "z": -1
+      }
+    },
+    {
+      "id": "r20_human_capital_envoy",
+      "name": "Mariel Waybook",
+      "settlement": "highcourt",
+      "socket_selector": "existing unique core role=quest socket",
+      "frame": "existing_socket",
+      "reuse_actor": true,
+      "socket": "chapel_quest"
+    },
+    {
+      "id": "r20_elf_start_cook",
+      "name": "Liora Dewpot",
+      "settlement": "silverleaf",
+      "socket": "quest_cook",
+      "frame": "anchor",
+      "x": 2,
+      "y": 1,
+      "z": 13,
+      "dir": {
+        "x": -1,
+        "z": 0
+      },
+      "oven": {
+        "x": 4,
+        "y": 1,
+        "z": 13
+      }
+    },
+    {
+      "id": "r20_elf_capital_cook",
+      "name": "Mirael Petalpot",
+      "settlement": "lethariel",
+      "socket": "market_bakehouse/market_bakehouse_quest_cook",
+      "frame": "service_plot",
+      "plot": "market_bakehouse",
+      "x": 2,
+      "y": 1,
+      "z": -1,
+      "dir": {
+        "x": 0,
+        "z": -1
+      }
+    },
+    {
+      "id": "r20_elf_capital_envoy",
+      "name": "Eriath Boughwarden",
+      "settlement": "lethariel",
+      "socket_selector": "existing unique core role=quest socket",
+      "frame": "existing_socket",
+      "reuse_actor": true,
+      "socket": "star_hall_quest"
+    },
+    {
+      "id": "r20_undead_start_cook",
+      "name": "Neral Saltkeeper",
+      "settlement": "stillgrave",
+      "socket": "quest_cook",
+      "frame": "anchor",
+      "x": 2,
+      "y": 1,
+      "z": -13,
+      "dir": {
+        "x": -1,
+        "z": 0
+      },
+      "oven": {
+        "x": 4,
+        "y": 1,
+        "z": -13
+      }
+    },
+    {
+      "id": "r20_undead_capital_cook",
+      "name": "Velis Mourningbowl",
+      "settlement": "nhal_veyr",
+      "socket": "homes_mourners_hall/homes_mourners_hall_quest_cook",
+      "frame": "service_plot",
+      "plot": "homes_mourners_hall",
+      "x": 2,
+      "y": 1,
+      "z": -1,
+      "dir": {
+        "x": 0,
+        "z": -1
+      }
+    },
+    {
+      "id": "r20_undead_capital_envoy",
+      "name": "Ossa Quietregister",
+      "settlement": "nhal_veyr",
+      "socket_selector": "existing unique core role=quest socket",
+      "frame": "existing_socket",
+      "reuse_actor": true,
+      "socket": "vigil_hall_quest"
+    },
+    {
+      "id": "r20_orc_start_cook",
+      "name": "Ugra Brothstone",
+      "settlement": "sunscar",
+      "socket": "quest_cook",
+      "frame": "anchor",
+      "x": 2,
+      "y": 1,
+      "z": -13,
+      "dir": {
+        "x": -1,
+        "z": 0
+      },
+      "oven": {
+        "x": 4,
+        "y": 1,
+        "z": -13
+      }
+    },
+    {
+      "id": "r20_orc_capital_cook",
+      "name": "Gorla Longladle",
+      "settlement": "gor_drazhak",
+      "socket": "warren_cook_court/warren_cook_court_quest_cook",
+      "frame": "service_plot",
+      "plot": "warren_cook_court",
+      "x": 2,
+      "y": 1,
+      "z": -1,
+      "dir": {
+        "x": 0,
+        "z": -1
+      }
+    },
+    {
+      "id": "r20_orc_capital_envoy",
+      "name": "Thorga Roadspeaker",
+      "settlement": "gor_drazhak",
+      "socket_selector": "existing unique core role=quest socket",
+      "frame": "existing_socket",
+      "reuse_actor": true,
+      "socket": "skull_hall_quest"
+    },
+    {
+      "id": "r20_troll_start_cook",
+      "name": "Zemi Sweetroot",
+      "settlement": "kapok",
+      "socket": "quest_cook",
+      "frame": "anchor",
+      "x": 2,
+      "y": 1,
+      "z": -13,
+      "dir": {
+        "x": -1,
+        "z": 0
+      },
+      "oven": {
+        "x": 4,
+        "y": 1,
+        "z": -13
+      }
+    },
+    {
+      "id": "r20_troll_capital_cook",
+      "name": "Teshani Smokereed",
+      "settlement": "kezamba",
+      "socket": "shore_smokehouse/shore_smokehouse_quest_cook",
+      "frame": "service_plot",
+      "plot": "shore_smokehouse",
+      "x": 2,
+      "y": 1,
+      "z": -1,
+      "dir": {
+        "x": 0,
+        "z": -1
+      }
+    },
+    {
+      "id": "r20_troll_capital_envoy",
+      "name": "Nalo Pathdrum",
+      "settlement": "kezamba",
+      "socket_selector": "existing unique core role=quest socket",
+      "frame": "existing_socket",
+      "reuse_actor": true,
+      "socket": "shrine_quest"
+    }
+  ],
+  "additional_quests": [
+    {
+      "id": "r20_dwarf_start_cook",
+      "title": "Warmth for the Timber Shift",
+      "npc": "r20_dwarf_start_cook",
+      "turnin_npc": "r20_dwarf_start_cook",
+      "min_level": 1,
+      "target_level": 1,
+      "faction": "accord",
+      "race": "dwarf",
+      "effort": "standard",
+      "prerequisites": [],
+      "objective": {
+        "type": "item",
+        "item": "default:coal_lump",
+        "count": 3
+      }
+    },
+    {
+      "id": "r20_dwarf_capital_cook",
+      "title": "Copperpan Supper",
+      "npc": "r20_dwarf_capital_cook",
+      "turnin_npc": "r20_dwarf_capital_cook",
+      "min_level": 10,
+      "target_level": 10,
+      "faction": "accord",
+      "race": "dwarf",
+      "effort": "standard",
+      "prerequisites": [],
+      "objective": {
+        "type": "item",
+        "item": "mobs:meat_raw",
+        "count": 5
+      }
+    },
+    {
+      "id": "r20_dwarf_capital_intro",
+      "title": "The Road to Dur Brannoc",
+      "npc": "r14_dwarf_elder",
+      "turnin_npc": "r20_dwarf_capital_envoy",
+      "min_level": 10,
+      "target_level": 10,
+      "faction": "accord",
+      "race": "dwarf",
+      "effort": "lesson",
+      "prerequisites": [],
+      "objective": {
+        "type": "talk",
+        "npc": "r20_dwarf_capital_envoy",
+        "count": 1
+      }
+    },
+    {
+      "id": "r20_dwarf_capital_services",
+      "title": "A Seat at Copperpan",
+      "npc": "r20_dwarf_capital_envoy",
+      "turnin_npc": "r20_dwarf_capital_cook",
+      "min_level": 10,
+      "target_level": 10,
+      "faction": "accord",
+      "race": "dwarf",
+      "effort": "lesson",
+      "prerequisites": [
+        "r20_dwarf_capital_intro"
+      ],
+      "objective": {
+        "type": "talk",
+        "npc": "r20_dwarf_capital_cook",
+        "count": 1
+      }
+    },
+    {
+      "id": "r20_dwarf_capital_stores",
+      "title": "Lamp Coal for the Gate Shift",
+      "npc": "r20_dwarf_capital_envoy",
+      "turnin_npc": "r20_dwarf_capital_envoy",
+      "min_level": 20,
+      "target_level": 20,
+      "faction": "accord",
+      "race": "dwarf",
+      "effort": "standard",
+      "prerequisites": [],
+      "objective": {
+        "type": "item",
+        "item": "default:coal_lump",
+        "count": 8
+      }
+    },
+    {
+      "id": "r20_dwarf_journey_01",
+      "title": "Word for Edda Tarnmantle",
+      "npc": "r20_dwarf_capital_envoy",
+      "turnin_npc": "r20_anchor_014_host",
+      "min_level": 21,
+      "target_level": 21,
+      "faction": "accord",
+      "race": "dwarf",
+      "effort": "lesson",
+      "prerequisites": [],
+      "objective": {
+        "type": "talk",
+        "npc": "r20_anchor_014_host",
+        "count": 1
+      }
+    },
+    {
+      "id": "r20_dwarf_journey_02",
+      "title": "Word for Kelda Screesort",
+      "npc": "r20_anchor_014_host",
+      "turnin_npc": "r20_anchor_061_host",
+      "min_level": 24,
+      "target_level": 24,
+      "faction": "accord",
+      "race": "dwarf",
+      "effort": "lesson",
+      "prerequisites": [],
+      "objective": {
+        "type": "talk",
+        "npc": "r20_anchor_061_host",
+        "count": 1
+      }
+    },
+    {
+      "id": "r20_dwarf_journey_03",
+      "title": "Word for Borin Splitbolt",
+      "npc": "r20_anchor_061_host",
+      "turnin_npc": "r20_anchor_027_host",
+      "min_level": 31,
+      "target_level": 31,
+      "faction": "accord",
+      "race": "dwarf",
+      "effort": "lesson",
+      "prerequisites": [],
+      "objective": {
+        "type": "talk",
+        "npc": "r20_anchor_027_host",
+        "count": 1
+      }
+    },
+    {
+      "id": "r20_human_start_cook",
+      "title": "The Second Oven",
+      "npc": "r20_human_start_cook",
+      "turnin_npc": "r20_human_start_cook",
+      "min_level": 1,
+      "target_level": 1,
+      "faction": "accord",
+      "race": "human",
+      "effort": "standard",
+      "prerequisites": [],
+      "objective": {
+        "type": "item",
+        "item": "default:coal_lump",
+        "count": 3
+      }
+    },
+    {
+      "id": "r20_human_capital_cook",
+      "title": "Bread for the Late Arrivals",
+      "npc": "r20_human_capital_cook",
+      "turnin_npc": "r20_human_capital_cook",
+      "min_level": 10,
+      "target_level": 10,
+      "faction": "accord",
+      "race": "human",
+      "effort": "standard",
+      "prerequisites": [],
+      "objective": {
+        "type": "item",
+        "item": "mobs:meat_raw",
+        "count": 5
+      }
+    },
+    {
+      "id": "r20_human_capital_intro",
+      "title": "The Road to Highcourt",
+      "npc": "r14_human_elder",
+      "turnin_npc": "r20_human_capital_envoy",
+      "min_level": 10,
+      "target_level": 10,
+      "faction": "accord",
+      "race": "human",
+      "effort": "lesson",
+      "prerequisites": [],
+      "objective": {
+        "type": "talk",
+        "npc": "r20_human_capital_envoy",
+        "count": 1
+      }
+    },
+    {
+      "id": "r20_human_capital_services",
+      "title": "The Ovenward Welcome",
+      "npc": "r20_human_capital_envoy",
+      "turnin_npc": "r20_human_capital_cook",
+      "min_level": 10,
+      "target_level": 10,
+      "faction": "accord",
+      "race": "human",
+      "effort": "lesson",
+      "prerequisites": [
+        "r20_human_capital_intro"
+      ],
+      "objective": {
+        "type": "talk",
+        "npc": "r20_human_capital_cook",
+        "count": 1
+      }
+    },
+    {
+      "id": "r20_human_capital_stores",
+      "title": "Stone for the River Watch",
+      "npc": "r20_human_capital_envoy",
+      "turnin_npc": "r20_human_capital_envoy",
+      "min_level": 20,
+      "target_level": 20,
+      "faction": "accord",
+      "race": "human",
+      "effort": "standard",
+      "prerequisites": [],
+      "objective": {
+        "type": "item",
+        "item": "default:cobble",
+        "count": 12
+      }
+    },
+    {
+      "id": "r20_human_journey_01",
+      "title": "Word for Merren Oakstamp",
+      "npc": "r20_human_capital_envoy",
+      "turnin_npc": "r20_anchor_016_host",
+      "min_level": 21,
+      "target_level": 21,
+      "faction": "accord",
+      "race": "human",
+      "effort": "lesson",
+      "prerequisites": [],
+      "objective": {
+        "type": "talk",
+        "npc": "r20_anchor_016_host",
+        "count": 1
+      }
+    },
+    {
+      "id": "r20_human_journey_02",
+      "title": "Word for Halen Chalkthumb",
+      "npc": "r20_anchor_016_host",
+      "turnin_npc": "r20_anchor_062_host",
+      "min_level": 24,
+      "target_level": 24,
+      "faction": "accord",
+      "race": "human",
+      "effort": "lesson",
+      "prerequisites": [],
+      "objective": {
+        "type": "talk",
+        "npc": "r20_anchor_062_host",
+        "count": 1
+      }
+    },
+    {
+      "id": "r20_human_journey_03",
+      "title": "Word for Toren Waterbarrel",
+      "npc": "r20_anchor_062_host",
+      "turnin_npc": "r20_anchor_031_host",
+      "min_level": 31,
+      "target_level": 31,
+      "faction": "accord",
+      "race": "human",
+      "effort": "lesson",
+      "prerequisites": [],
+      "objective": {
+        "type": "talk",
+        "npc": "r20_anchor_031_host",
+        "count": 1
+      }
+    },
+    {
+      "id": "r20_elf_start_cook",
+      "title": "A Shared Grove Supper",
+      "npc": "r20_elf_start_cook",
+      "turnin_npc": "r20_elf_start_cook",
+      "min_level": 1,
+      "target_level": 1,
+      "faction": "accord",
+      "race": "elf",
+      "effort": "standard",
+      "prerequisites": [],
+      "objective": {
+        "type": "item",
+        "item": "default:coal_lump",
+        "count": 3
+      }
+    },
+    {
+      "id": "r20_elf_capital_cook",
+      "title": "The Petalpot Share",
+      "npc": "r20_elf_capital_cook",
+      "turnin_npc": "r20_elf_capital_cook",
+      "min_level": 10,
+      "target_level": 10,
+      "faction": "accord",
+      "race": "elf",
+      "effort": "standard",
+      "prerequisites": [],
+      "objective": {
+        "type": "item",
+        "item": "mobs:meat_raw",
+        "count": 5
+      }
+    },
+    {
+      "id": "r20_elf_capital_intro",
+      "title": "The Road to Lethariel",
+      "npc": "r14_elf_elder",
+      "turnin_npc": "r20_elf_capital_envoy",
+      "min_level": 10,
+      "target_level": 10,
+      "faction": "accord",
+      "race": "elf",
+      "effort": "lesson",
+      "prerequisites": [],
+      "objective": {
+        "type": "talk",
+        "npc": "r20_elf_capital_envoy",
+        "count": 1
+      }
+    },
+    {
+      "id": "r20_elf_capital_services",
+      "title": "Petalpot Hospitality",
+      "npc": "r20_elf_capital_envoy",
+      "turnin_npc": "r20_elf_capital_cook",
+      "min_level": 10,
+      "target_level": 10,
+      "faction": "accord",
+      "race": "elf",
+      "effort": "lesson",
+      "prerequisites": [
+        "r20_elf_capital_intro"
+      ],
+      "objective": {
+        "type": "talk",
+        "npc": "r20_elf_capital_cook",
+        "count": 1
+      }
+    },
+    {
+      "id": "r20_elf_capital_stores",
+      "title": "Boards for the Grove Patrol",
+      "npc": "r20_elf_capital_envoy",
+      "turnin_npc": "r20_elf_capital_envoy",
+      "min_level": 20,
+      "target_level": 20,
+      "faction": "accord",
+      "race": "elf",
+      "effort": "standard",
+      "prerequisites": [],
+      "objective": {
+        "type": "item",
+        "item": "default:wood",
+        "count": 10
+      }
+    },
+    {
+      "id": "r20_elf_journey_01",
+      "title": "Word for Ilwen Petalmeasure",
+      "npc": "r20_elf_capital_envoy",
+      "turnin_npc": "r20_anchor_018_host",
+      "min_level": 21,
+      "target_level": 21,
+      "faction": "accord",
+      "race": "elf",
+      "effort": "lesson",
+      "prerequisites": [],
+      "objective": {
+        "type": "talk",
+        "npc": "r20_anchor_018_host",
+        "count": 1
+      }
+    },
+    {
+      "id": "r20_elf_journey_02",
+      "title": "Word for Saevin Rootscribe",
+      "npc": "r20_anchor_018_host",
+      "turnin_npc": "r20_anchor_063_host",
+      "min_level": 24,
+      "target_level": 24,
+      "faction": "accord",
+      "race": "elf",
+      "effort": "lesson",
+      "prerequisites": [],
+      "objective": {
+        "type": "talk",
+        "npc": "r20_anchor_063_host",
+        "count": 1
+      }
+    },
+    {
+      "id": "r20_elf_journey_03",
+      "title": "Word for Faeris Rootbinder",
+      "npc": "r20_anchor_063_host",
+      "turnin_npc": "r20_anchor_036_host",
+      "min_level": 31,
+      "target_level": 31,
+      "faction": "accord",
+      "race": "elf",
+      "effort": "lesson",
+      "prerequisites": [],
+      "objective": {
+        "type": "talk",
+        "npc": "r20_anchor_036_host",
+        "count": 1
+      }
+    },
+    {
+      "id": "r20_undead_start_cook",
+      "title": "Salt Against the Damp",
+      "npc": "r20_undead_start_cook",
+      "turnin_npc": "r20_undead_start_cook",
+      "min_level": 1,
+      "target_level": 1,
+      "faction": "throng",
+      "race": "undead",
+      "effort": "standard",
+      "prerequisites": [],
+      "objective": {
+        "type": "item",
+        "item": "default:coal_lump",
+        "count": 3
+      }
+    },
+    {
+      "id": "r20_undead_capital_cook",
+      "title": "Bowls for the Vigil",
+      "npc": "r20_undead_capital_cook",
+      "turnin_npc": "r20_undead_capital_cook",
+      "min_level": 10,
+      "target_level": 10,
+      "faction": "throng",
+      "race": "undead",
+      "effort": "standard",
+      "prerequisites": [],
+      "objective": {
+        "type": "item",
+        "item": "mobs:meat_raw",
+        "count": 5
+      }
+    },
+    {
+      "id": "r20_undead_capital_intro",
+      "title": "The Road to Nhal Veyr",
+      "npc": "r14_undead_elder",
+      "turnin_npc": "r20_undead_capital_envoy",
+      "min_level": 10,
+      "target_level": 10,
+      "faction": "throng",
+      "race": "undead",
+      "effort": "lesson",
+      "prerequisites": [],
+      "objective": {
+        "type": "talk",
+        "npc": "r20_undead_capital_envoy",
+        "count": 1
+      }
+    },
+    {
+      "id": "r20_undead_capital_services",
+      "title": "The Vigil Table",
+      "npc": "r20_undead_capital_envoy",
+      "turnin_npc": "r20_undead_capital_cook",
+      "min_level": 10,
+      "target_level": 10,
+      "faction": "throng",
+      "race": "undead",
+      "effort": "lesson",
+      "prerequisites": [
+        "r20_undead_capital_intro"
+      ],
+      "objective": {
+        "type": "talk",
+        "npc": "r20_undead_capital_cook",
+        "count": 1
+      }
+    },
+    {
+      "id": "r20_undead_capital_stores",
+      "title": "Coal for the Vigil Lamps",
+      "npc": "r20_undead_capital_envoy",
+      "turnin_npc": "r20_undead_capital_envoy",
+      "min_level": 20,
+      "target_level": 20,
+      "faction": "throng",
+      "race": "undead",
+      "effort": "standard",
+      "prerequisites": [],
+      "objective": {
+        "type": "item",
+        "item": "default:coal_lump",
+        "count": 8
+      }
+    },
+    {
+      "id": "r20_undead_journey_01",
+      "title": "Word for Sovel Namekeeper",
+      "npc": "r20_undead_capital_envoy",
+      "turnin_npc": "r20_anchor_020_host",
+      "min_level": 21,
+      "target_level": 21,
+      "faction": "throng",
+      "race": "undead",
+      "effort": "lesson",
+      "prerequisites": [],
+      "objective": {
+        "type": "talk",
+        "npc": "r20_anchor_020_host",
+        "count": 1
+      }
+    },
+    {
+      "id": "r20_undead_journey_02",
+      "title": "Word for Neris Fossilhand",
+      "npc": "r20_anchor_020_host",
+      "turnin_npc": "r20_anchor_064_host",
+      "min_level": 24,
+      "target_level": 24,
+      "faction": "throng",
+      "race": "undead",
+      "effort": "lesson",
+      "prerequisites": [],
+      "objective": {
+        "type": "talk",
+        "npc": "r20_anchor_064_host",
+        "count": 1
+      }
+    },
+    {
+      "id": "r20_undead_journey_03",
+      "title": "Word for Vaska Ashlistener",
+      "npc": "r20_anchor_064_host",
+      "turnin_npc": "r20_anchor_039_host",
+      "min_level": 31,
+      "target_level": 31,
+      "faction": "throng",
+      "race": "undead",
+      "effort": "lesson",
+      "prerequisites": [],
+      "objective": {
+        "type": "talk",
+        "npc": "r20_anchor_039_host",
+        "count": 1
+      }
+    },
+    {
+      "id": "r20_orc_start_cook",
+      "title": "Keep the Long Fire Fed",
+      "npc": "r20_orc_start_cook",
+      "turnin_npc": "r20_orc_start_cook",
+      "min_level": 1,
+      "target_level": 1,
+      "faction": "throng",
+      "race": "orc",
+      "effort": "standard",
+      "prerequisites": [],
+      "objective": {
+        "type": "item",
+        "item": "default:coal_lump",
+        "count": 3
+      }
+    },
+    {
+      "id": "r20_orc_capital_cook",
+      "title": "The Longladle Ration",
+      "npc": "r20_orc_capital_cook",
+      "turnin_npc": "r20_orc_capital_cook",
+      "min_level": 10,
+      "target_level": 10,
+      "faction": "throng",
+      "race": "orc",
+      "effort": "standard",
+      "prerequisites": [],
+      "objective": {
+        "type": "item",
+        "item": "mobs:meat_raw",
+        "count": 5
+      }
+    },
+    {
+      "id": "r20_orc_capital_intro",
+      "title": "The Road to Gor Drazhak",
+      "npc": "r14_orc_elder",
+      "turnin_npc": "r20_orc_capital_envoy",
+      "min_level": 10,
+      "target_level": 10,
+      "faction": "throng",
+      "race": "orc",
+      "effort": "lesson",
+      "prerequisites": [],
+      "objective": {
+        "type": "talk",
+        "npc": "r20_orc_capital_envoy",
+        "count": 1
+      }
+    },
+    {
+      "id": "r20_orc_capital_services",
+      "title": "A Bowl at Longladle",
+      "npc": "r20_orc_capital_envoy",
+      "turnin_npc": "r20_orc_capital_cook",
+      "min_level": 10,
+      "target_level": 10,
+      "faction": "throng",
+      "race": "orc",
+      "effort": "lesson",
+      "prerequisites": [
+        "r20_orc_capital_intro"
+      ],
+      "objective": {
+        "type": "talk",
+        "npc": "r20_orc_capital_cook",
+        "count": 1
+      }
+    },
+    {
+      "id": "r20_orc_capital_stores",
+      "title": "Stone for the Muster Yard",
+      "npc": "r20_orc_capital_envoy",
+      "turnin_npc": "r20_orc_capital_envoy",
+      "min_level": 20,
+      "target_level": 20,
+      "faction": "throng",
+      "race": "orc",
+      "effort": "standard",
+      "prerequisites": [],
+      "objective": {
+        "type": "item",
+        "item": "default:cobble",
+        "count": 12
+      }
+    },
+    {
+      "id": "r20_orc_journey_01",
+      "title": "Word for Brakka Jarward",
+      "npc": "r20_orc_capital_envoy",
+      "turnin_npc": "r20_anchor_022_host",
+      "min_level": 21,
+      "target_level": 21,
+      "faction": "throng",
+      "race": "orc",
+      "effort": "lesson",
+      "prerequisites": [],
+      "objective": {
+        "type": "talk",
+        "npc": "r20_anchor_022_host",
+        "count": 1
+      }
+    },
+    {
+      "id": "r20_orc_journey_02",
+      "title": "Word for Gorren Redpick",
+      "npc": "r20_anchor_022_host",
+      "turnin_npc": "r20_anchor_065_host",
+      "min_level": 24,
+      "target_level": 24,
+      "faction": "throng",
+      "race": "orc",
+      "effort": "lesson",
+      "prerequisites": [],
+      "objective": {
+        "type": "talk",
+        "npc": "r20_anchor_065_host",
+        "count": 1
+      }
+    },
+    {
+      "id": "r20_orc_journey_03",
+      "title": "Word for Drek Rampbinder",
+      "npc": "r20_anchor_065_host",
+      "turnin_npc": "r20_anchor_043_host",
+      "min_level": 31,
+      "target_level": 31,
+      "faction": "throng",
+      "race": "orc",
+      "effort": "lesson",
+      "prerequisites": [],
+      "objective": {
+        "type": "talk",
+        "npc": "r20_anchor_043_host",
+        "count": 1
+      }
+    },
+    {
+      "id": "r20_troll_start_cook",
+      "title": "The Pot Before the Rain",
+      "npc": "r20_troll_start_cook",
+      "turnin_npc": "r20_troll_start_cook",
+      "min_level": 1,
+      "target_level": 1,
+      "faction": "throng",
+      "race": "troll",
+      "effort": "standard",
+      "prerequisites": [],
+      "objective": {
+        "type": "item",
+        "item": "default:coal_lump",
+        "count": 3
+      }
+    },
+    {
+      "id": "r20_troll_capital_cook",
+      "title": "Smoke Above the Cenote",
+      "npc": "r20_troll_capital_cook",
+      "turnin_npc": "r20_troll_capital_cook",
+      "min_level": 10,
+      "target_level": 10,
+      "faction": "throng",
+      "race": "troll",
+      "effort": "standard",
+      "prerequisites": [],
+      "objective": {
+        "type": "item",
+        "item": "mobs:meat_raw",
+        "count": 5
+      }
+    },
+    {
+      "id": "r20_troll_capital_intro",
+      "title": "The Road to Kezamba",
+      "npc": "r14_troll_elder",
+      "turnin_npc": "r20_troll_capital_envoy",
+      "min_level": 10,
+      "target_level": 10,
+      "faction": "throng",
+      "race": "troll",
+      "effort": "lesson",
+      "prerequisites": [],
+      "objective": {
+        "type": "talk",
+        "npc": "r20_troll_capital_envoy",
+        "count": 1
+      }
+    },
+    {
+      "id": "r20_troll_capital_services",
+      "title": "The Smokereed Welcome",
+      "npc": "r20_troll_capital_envoy",
+      "turnin_npc": "r20_troll_capital_cook",
+      "min_level": 10,
+      "target_level": 10,
+      "faction": "throng",
+      "race": "troll",
+      "effort": "lesson",
+      "prerequisites": [
+        "r20_troll_capital_intro"
+      ],
+      "objective": {
+        "type": "talk",
+        "npc": "r20_troll_capital_cook",
+        "count": 1
+      }
+    },
+    {
+      "id": "r20_troll_capital_stores",
+      "title": "Boards for the Rain Stores",
+      "npc": "r20_troll_capital_envoy",
+      "turnin_npc": "r20_troll_capital_envoy",
+      "min_level": 20,
+      "target_level": 20,
+      "faction": "throng",
+      "race": "troll",
+      "effort": "standard",
+      "prerequisites": [],
+      "objective": {
+        "type": "item",
+        "item": "default:junglewood",
+        "count": 10
+      }
+    },
+    {
+      "id": "r20_troll_journey_01",
+      "title": "Word for Taleko Drycord",
+      "npc": "r20_troll_capital_envoy",
+      "turnin_npc": "r20_anchor_024_host",
+      "min_level": 21,
+      "target_level": 21,
+      "faction": "throng",
+      "race": "troll",
+      "effort": "lesson",
+      "prerequisites": [],
+      "objective": {
+        "type": "talk",
+        "npc": "r20_anchor_024_host",
+        "count": 1
+      }
+    },
+    {
+      "id": "r20_troll_journey_02",
+      "title": "Word for Zali Runoff",
+      "npc": "r20_anchor_024_host",
+      "turnin_npc": "r20_anchor_066_host",
+      "min_level": 24,
+      "target_level": 24,
+      "faction": "throng",
+      "race": "troll",
+      "effort": "lesson",
+      "prerequisites": [],
+      "objective": {
+        "type": "talk",
+        "npc": "r20_anchor_066_host",
+        "count": 1
+      }
+    },
+    {
+      "id": "r20_troll_journey_03",
+      "title": "Word for Rumela Stormstep",
+      "npc": "r20_anchor_066_host",
+      "turnin_npc": "r20_anchor_048_host",
+      "min_level": 31,
+      "target_level": 31,
+      "faction": "throng",
+      "race": "troll",
+      "effort": "lesson",
+      "prerequisites": [],
+      "objective": {
+        "type": "talk",
+        "npc": "r20_anchor_048_host",
+        "count": 1
+      }
+    }
+  ],
+  "existing_quest_rework": [
+    {
+      "id": "r14_dwarf_01_tusks_at_the_timberline",
+      "title": "Tusks at the Timberline",
+      "race": "dwarf",
+      "change": "Initial independent local hunt; short count, unchanged locally achievable target."
+    },
+    {
+      "id": "r14_dwarf_02_meat_for_the_smokehouse",
+      "title": "Meat for the Smokehouse",
+      "race": "dwarf",
+      "change": "Initial independent raw-meat delivery; transfer ownership/turn-in to new start cook."
+    },
+    {
+      "id": "r14_dwarf_03_rats_in_the_woodpiles",
+      "title": "Rats in the Woodpiles",
+      "race": "dwarf",
+      "change": "After main01 completed: replace repeated kill fallback with six ordinary building planks for local store repairs."
+    },
+    {
+      "id": "r14_dwarf_04_lanterns_after_sundown",
+      "title": "Lanterns After Sundown",
+      "race": "dwarf",
+      "change": "After main01 completed: explicit night threat, count3, preserve target minimum level; no repeated daytime boar fallback."
+    },
+    {
+      "id": "r14_dwarf_05_the_high_path",
+      "title": "The High Path",
+      "race": "dwarf",
+      "change": "After main03 completed: retain distinct animal; undead uses eight cobble for retaining stones instead of repeated plague boars."
+    },
+    {
+      "id": "r14_dwarf_06_loose_stone_on_copper_road",
+      "title": "Loose Stone on Copper Road",
+      "race": "dwarf",
+      "change": "Replace kill-and-travel with pure talk to existing village steward; minimum level10; after main05 completed."
+    },
+    {
+      "id": "r14_dwarf_07_a_ledger_in_the_scrub",
+      "title": "A Ledger in the Scrub",
+      "race": "dwarf",
+      "change": "After main06 completed: local village story, retain appropriate home-zone target; remove repeated chase framing."
+    },
+    {
+      "id": "r14_dwarf_08_hold_the_marker_stones",
+      "title": "Hold the Marker Stones",
+      "race": "dwarf",
+      "change": "After main07 completed: outpost story, actual reachable target and nonduplicated outing."
+    },
+    {
+      "id": "r14_dwarf_09_ash_under_the_nails",
+      "title": "Ash Under the Nails",
+      "race": "dwarf",
+      "change": "After main08 completed: existing bandit fight and captive turn-in; explicit combat job, no new encounter."
+    },
+    {
+      "id": "r14_dwarf_10_an_axe_worth_carrying",
+      "title": "An Axe Worth Carrying",
+      "race": "dwarf",
+      "change": "Independent optional wood-axe delivery available at level1; no main01 prerequisite."
+    },
+    {
+      "id": "r14_dwarf_11_stone_before_steel",
+      "title": "Stone Before Steel",
+      "race": "dwarf",
+      "change": "After lesson10 completed: optional stone-pick delivery, not proof of crafting."
+    },
+    {
+      "id": "r15_dwarf_local_01",
+      "race": "dwarf",
+      "change": "Review village task 1; available in independent local pair after main06 completion. Preserve valid material/mob source, revise prose to visible work, remove duplicate outing with main story. No pair member prerequisite."
+    },
+    {
+      "id": "r15_dwarf_local_02",
+      "race": "dwarf",
+      "change": "Review village task 2; available in independent local pair after main06 completion. Preserve valid material/mob source, revise prose to visible work, remove duplicate outing with main story. No pair member prerequisite."
+    },
+    {
+      "id": "r15_dwarf_local_03",
+      "race": "dwarf",
+      "change": "Review outpost task 1; available in independent local pair after main07 completion. Preserve valid material/mob source, revise prose to visible work, remove duplicate outing with main story. No pair member prerequisite."
+    },
+    {
+      "id": "r15_dwarf_local_04",
+      "race": "dwarf",
+      "change": "Review outpost task 2; available in independent local pair after main07 completion. Preserve valid material/mob source, revise prose to visible work, remove duplicate outing with main story. No pair member prerequisite."
+    },
+    {
+      "id": "r15_dwarf_local_05",
+      "race": "dwarf",
+      "change": "Review camp task 1; available in independent local pair after main08 completion. Preserve valid material/mob source, revise prose to visible work, remove duplicate outing with main story. No pair member prerequisite."
+    },
+    {
+      "id": "r15_dwarf_local_06",
+      "race": "dwarf",
+      "change": "Review camp task 2; available in independent local pair after main08 completion. Preserve valid material/mob source, revise prose to visible work, remove duplicate outing with main story. No pair member prerequisite."
+    },
+    {
+      "id": "r14_human_01_boars_beyond_the_fence",
+      "title": "Boars Beyond the Fence",
+      "race": "human",
+      "change": "Initial independent local hunt; short count, unchanged locally achievable target."
+    },
+    {
+      "id": "r14_human_02_the_smokehouse_share",
+      "title": "The Smokehouse Share",
+      "race": "human",
+      "change": "Initial independent raw-meat delivery; transfer ownership/turn-in to new start cook."
+    },
+    {
+      "id": "r14_human_03_granary_teeth",
+      "title": "Granary Teeth",
+      "race": "human",
+      "change": "After main01 completed: replace repeated kill fallback with six ordinary building planks for local store repairs."
+    },
+    {
+      "id": "r14_human_04_shapes_by_lanternlight",
+      "title": "Shapes by Lanternlight",
+      "race": "human",
+      "change": "After main01 completed: explicit night threat, count3, preserve target minimum level; no repeated daytime boar fallback."
+    },
+    {
+      "id": "r14_human_05_the_missing_flock",
+      "title": "The Missing Flock",
+      "race": "human",
+      "change": "After main03 completed: retain distinct animal; undead uses eight cobble for retaining stones instead of repeated plague boars."
+    },
+    {
+      "id": "r14_human_06_flock_on_mill_road",
+      "title": "Flock on Mill Road",
+      "race": "human",
+      "change": "Replace kill-and-travel with pure talk to existing village steward; minimum level10; after main05 completed."
+    },
+    {
+      "id": "r14_human_07_orchard_watch",
+      "title": "Orchard Watch",
+      "race": "human",
+      "change": "After main06 completed: local village story, retain appropriate home-zone target; remove repeated chase framing."
+    },
+    {
+      "id": "r14_human_08_empty_snares",
+      "title": "Empty Snares",
+      "race": "human",
+      "change": "After main07 completed: outpost story, actual reachable target and nonduplicated outing."
+    },
+    {
+      "id": "r14_human_09_the_blackened_tally",
+      "title": "The Blackened Tally",
+      "race": "human",
+      "change": "After main08 completed: existing bandit fight and captive turn-in; explicit combat job, no new encounter."
+    },
+    {
+      "id": "r14_human_10_a_woodsman_s_edge",
+      "title": "A Woodsman's Edge",
+      "race": "human",
+      "change": "Independent optional wood-axe delivery available at level1; no main01 prerequisite."
+    },
+    {
+      "id": "r14_human_11_a_pick_for_the_road",
+      "title": "A Pick for the Road",
+      "race": "human",
+      "change": "After lesson10 completed: optional stone-pick delivery, not proof of crafting."
+    },
+    {
+      "id": "r15_human_local_01",
+      "race": "human",
+      "change": "Review village task 1; available in independent local pair after main06 completion. Preserve valid material/mob source, revise prose to visible work, remove duplicate outing with main story. No pair member prerequisite."
+    },
+    {
+      "id": "r15_human_local_02",
+      "race": "human",
+      "change": "Review village task 2; available in independent local pair after main06 completion. Preserve valid material/mob source, revise prose to visible work, remove duplicate outing with main story. No pair member prerequisite."
+    },
+    {
+      "id": "r15_human_local_03",
+      "race": "human",
+      "change": "Review outpost task 1; available in independent local pair after main07 completion. Preserve valid material/mob source, revise prose to visible work, remove duplicate outing with main story. No pair member prerequisite."
+    },
+    {
+      "id": "r15_human_local_04",
+      "race": "human",
+      "change": "Review outpost task 2; available in independent local pair after main07 completion. Preserve valid material/mob source, revise prose to visible work, remove duplicate outing with main story. No pair member prerequisite."
+    },
+    {
+      "id": "r15_human_local_05",
+      "race": "human",
+      "change": "Review camp task 1; available in independent local pair after main08 completion. Preserve valid material/mob source, revise prose to visible work, remove duplicate outing with main story. No pair member prerequisite."
+    },
+    {
+      "id": "r15_human_local_06",
+      "race": "human",
+      "change": "Review camp task 2; available in independent local pair after main08 completion. Preserve valid material/mob source, revise prose to visible work, remove duplicate outing with main story. No pair member prerequisite."
+    },
+    {
+      "id": "r14_elf_01_roots_laid_bare",
+      "title": "Roots Laid Bare",
+      "race": "elf",
+      "change": "Initial independent local hunt; short count, unchanged locally achievable target."
+    },
+    {
+      "id": "r14_elf_02_the_grove_s_portion",
+      "title": "The Grove's Portion",
+      "race": "elf",
+      "change": "Initial independent raw-meat delivery; transfer ownership/turn-in to new start cook."
+    },
+    {
+      "id": "r14_elf_03_beneath_the_seed_baskets",
+      "title": "Beneath the Seed Baskets",
+      "race": "elf",
+      "change": "After main01 completed: replace repeated kill fallback with six ordinary building planks for local store repairs."
+    },
+    {
+      "id": "r14_elf_04_footfalls_without_breath",
+      "title": "Footfalls Without Breath",
+      "race": "elf",
+      "change": "After main01 completed: explicit night threat, count3, preserve target minimum level; no repeated daytime boar fallback."
+    },
+    {
+      "id": "r14_elf_05_keepers_of_the_saplings",
+      "title": "Keepers of the Saplings",
+      "race": "elf",
+      "change": "After main03 completed: retain distinct animal; undead uses eight cobble for retaining stones instead of repeated plague boars."
+    },
+    {
+      "id": "r14_elf_06_axes_without_leave",
+      "title": "Axes Without Leave",
+      "race": "elf",
+      "change": "Replace kill-and-travel with pure talk to existing village steward; minimum level10; after main05 completed."
+    },
+    {
+      "id": "r14_elf_07_quiet_the_lower_boughs",
+      "title": "Quiet the Lower Boughs",
+      "race": "elf",
+      "change": "After main06 completed: local village story, retain appropriate home-zone target; remove repeated chase framing."
+    },
+    {
+      "id": "r14_elf_08_watch_the_green_road",
+      "title": "Watch the Green Road",
+      "race": "elf",
+      "change": "After main07 completed: outpost story, actual reachable target and nonduplicated outing."
+    },
+    {
+      "id": "r14_elf_09_cinders_in_green_cloth",
+      "title": "Cinders in Green Cloth",
+      "race": "elf",
+      "change": "After main08 completed: existing bandit fight and captive turn-in; explicit combat job, no new encounter."
+    },
+    {
+      "id": "r14_elf_10_the_careful_axe",
+      "title": "The Careful Axe",
+      "race": "elf",
+      "change": "Independent optional wood-axe delivery available at level1; no main01 prerequisite."
+    },
+    {
+      "id": "r14_elf_11_stone_s_patient_lesson",
+      "title": "Stone's Patient Lesson",
+      "race": "elf",
+      "change": "After lesson10 completed: optional stone-pick delivery, not proof of crafting."
+    },
+    {
+      "id": "r15_elf_local_01",
+      "race": "elf",
+      "change": "Review village task 1; available in independent local pair after main06 completion. Preserve valid material/mob source, revise prose to visible work, remove duplicate outing with main story. No pair member prerequisite."
+    },
+    {
+      "id": "r15_elf_local_02",
+      "race": "elf",
+      "change": "Review village task 2; available in independent local pair after main06 completion. Preserve valid material/mob source, revise prose to visible work, remove duplicate outing with main story. No pair member prerequisite."
+    },
+    {
+      "id": "r15_elf_local_03",
+      "race": "elf",
+      "change": "Review outpost task 1; available in independent local pair after main07 completion. Preserve valid material/mob source, revise prose to visible work, remove duplicate outing with main story. No pair member prerequisite."
+    },
+    {
+      "id": "r15_elf_local_04",
+      "race": "elf",
+      "change": "Review outpost task 2; available in independent local pair after main07 completion. Preserve valid material/mob source, revise prose to visible work, remove duplicate outing with main story. No pair member prerequisite."
+    },
+    {
+      "id": "r15_elf_local_05",
+      "race": "elf",
+      "change": "Review camp task 1; available in independent local pair after main08 completion. Preserve valid material/mob source, revise prose to visible work, remove duplicate outing with main story. No pair member prerequisite."
+    },
+    {
+      "id": "r15_elf_local_06",
+      "race": "elf",
+      "change": "Review camp task 2; available in independent local pair after main08 completion. Preserve valid material/mob source, revise prose to visible work, remove duplicate outing with main story. No pair member prerequisite."
+    },
+    {
+      "id": "r14_undead_01_boars_in_the_dead_furrows",
+      "title": "Boars in the Dead Furrows",
+      "race": "undead",
+      "change": "Initial independent local hunt; short count, unchanged locally achievable target."
+    },
+    {
+      "id": "r14_undead_02_salt_for_what_remains",
+      "title": "Salt for What Remains",
+      "race": "undead",
+      "change": "Initial independent raw-meat delivery; transfer ownership/turn-in to new start cook."
+    },
+    {
+      "id": "r14_undead_03_gnawing_in_the_crypt_stores",
+      "title": "Gnawing in the Crypt Stores",
+      "race": "undead",
+      "change": "After main01 completed: replace repeated kill fallback with six ordinary building planks for local store repairs."
+    },
+    {
+      "id": "r14_undead_04_the_uncalled_dead",
+      "title": "The Uncalled Dead",
+      "race": "undead",
+      "change": "After main01 completed: explicit night threat, count3, preserve target minimum level; no repeated daytime boar fallback."
+    },
+    {
+      "id": "r14_undead_05_furrows_gone_sour",
+      "title": "Furrows Gone Sour",
+      "race": "undead",
+      "change": "After main03 completed: retain distinct animal; undead uses eight cobble for retaining stones instead of repeated plague boars."
+    },
+    {
+      "id": "r14_undead_06_tusks_along_the_fen_road",
+      "title": "Tusks Along the Fen Road",
+      "race": "undead",
+      "change": "Replace kill-and-travel with pure talk to existing village steward; minimum level10; after main05 completed."
+    },
+    {
+      "id": "r14_undead_07_mud_that_moves",
+      "title": "Mud That Moves",
+      "race": "undead",
+      "change": "After main06 completed: local village story, retain appropriate home-zone target; remove repeated chase framing."
+    },
+    {
+      "id": "r14_undead_08_clear_the_sluice",
+      "title": "Clear the Sluice",
+      "race": "undead",
+      "change": "After main07 completed: outpost story, actual reachable target and nonduplicated outing."
+    },
+    {
+      "id": "r14_undead_09_fire_that_the_fen_cannot_drown",
+      "title": "Fire That the Fen Cannot Drown",
+      "race": "undead",
+      "change": "After main08 completed: existing bandit fight and captive turn-in; explicit combat job, no new encounter."
+    },
+    {
+      "id": "r14_undead_10_a_handle_that_will_not_rot",
+      "title": "A Handle That Will Not Rot",
+      "race": "undead",
+      "change": "Independent optional wood-axe delivery available at level1; no main01 prerequisite."
+    },
+    {
+      "id": "r14_undead_11_a_pick_among_headstones",
+      "title": "A Pick Among Headstones",
+      "race": "undead",
+      "change": "After lesson10 completed: optional stone-pick delivery, not proof of crafting."
+    },
+    {
+      "id": "r15_undead_local_01",
+      "race": "undead",
+      "change": "Review village task 1; available in independent local pair after main06 completion. Preserve valid material/mob source, revise prose to visible work, remove duplicate outing with main story. No pair member prerequisite."
+    },
+    {
+      "id": "r15_undead_local_02",
+      "race": "undead",
+      "change": "Review village task 2; available in independent local pair after main06 completion. Preserve valid material/mob source, revise prose to visible work, remove duplicate outing with main story. No pair member prerequisite."
+    },
+    {
+      "id": "r15_undead_local_03",
+      "race": "undead",
+      "change": "Review outpost task 1; available in independent local pair after main07 completion. Preserve valid material/mob source, revise prose to visible work, remove duplicate outing with main story. No pair member prerequisite."
+    },
+    {
+      "id": "r15_undead_local_04",
+      "race": "undead",
+      "change": "Review outpost task 2; available in independent local pair after main07 completion. Preserve valid material/mob source, revise prose to visible work, remove duplicate outing with main story. No pair member prerequisite."
+    },
+    {
+      "id": "r15_undead_local_05",
+      "race": "undead",
+      "change": "Review camp task 1; available in independent local pair after main08 completion. Preserve valid material/mob source, revise prose to visible work, remove duplicate outing with main story. No pair member prerequisite."
+    },
+    {
+      "id": "r15_undead_local_06",
+      "race": "undead",
+      "change": "Review camp task 2; available in independent local pair after main08 completion. Preserve valid material/mob source, revise prose to visible work, remove duplicate outing with main story. No pair member prerequisite."
+    },
+    {
+      "id": "r14_orc_01_tusks_at_the_water_skins",
+      "title": "Tusks at the Water Skins",
+      "race": "orc",
+      "change": "Initial independent local hunt; short count, unchanged locally achievable target."
+    },
+    {
+      "id": "r14_orc_02_meat_for_the_long_fire",
+      "title": "Meat for the Long Fire",
+      "race": "orc",
+      "change": "Initial independent raw-meat delivery; transfer ownership/turn-in to new start cook."
+    },
+    {
+      "id": "r14_orc_03_rats_under_the_hide_racks",
+      "title": "Rats Under the Hide Racks",
+      "race": "orc",
+      "change": "After main01 completed: replace repeated kill fallback with six ordinary building planks for local store repairs."
+    },
+    {
+      "id": "r14_orc_04_the_thirsting_dead",
+      "title": "The Thirsting Dead",
+      "race": "orc",
+      "change": "After main01 completed: explicit night threat, count3, preserve target minimum level; no repeated daytime boar fallback."
+    },
+    {
+      "id": "r14_orc_05_shells_by_the_bedrolls",
+      "title": "Shells by the Bedrolls",
+      "race": "orc",
+      "change": "After main03 completed: retain distinct animal; undead uses eight cobble for retaining stones instead of repeated plague boars."
+    },
+    {
+      "id": "r14_orc_06_husks_on_redtusk_road",
+      "title": "Husks on Redtusk Road",
+      "race": "orc",
+      "change": "Replace kill-and-travel with pure talk to existing village steward; minimum level10; after main05 completed."
+    },
+    {
+      "id": "r14_orc_07_teeth_around_the_herd",
+      "title": "Teeth Around the Herd",
+      "race": "orc",
+      "change": "After main06 completed: local village story, retain appropriate home-zone target; remove repeated chase framing."
+    },
+    {
+      "id": "r14_orc_08_scour_the_dry_wash",
+      "title": "Scour the Dry Wash",
+      "race": "orc",
+      "change": "After main07 completed: outpost story, actual reachable target and nonduplicated outing."
+    },
+    {
+      "id": "r14_orc_09_no_forge_made_this_brand",
+      "title": "No Forge Made This Brand",
+      "race": "orc",
+      "change": "After main08 completed: existing bandit fight and captive turn-in; explicit combat job, no new encounter."
+    },
+    {
+      "id": "r14_orc_10_edge_of_the_first_camp",
+      "title": "Edge of the First Camp",
+      "race": "orc",
+      "change": "Independent optional wood-axe delivery available at level1; no main01 prerequisite."
+    },
+    {
+      "id": "r14_orc_11_stone_has_no_pride",
+      "title": "Stone Has No Pride",
+      "race": "orc",
+      "change": "After lesson10 completed: optional stone-pick delivery, not proof of crafting."
+    },
+    {
+      "id": "r15_orc_local_01",
+      "race": "orc",
+      "change": "Review village task 1; available in independent local pair after main06 completion. Preserve valid material/mob source, revise prose to visible work, remove duplicate outing with main story. No pair member prerequisite."
+    },
+    {
+      "id": "r15_orc_local_02",
+      "race": "orc",
+      "change": "Review village task 2; available in independent local pair after main06 completion. Preserve valid material/mob source, revise prose to visible work, remove duplicate outing with main story. No pair member prerequisite."
+    },
+    {
+      "id": "r15_orc_local_03",
+      "race": "orc",
+      "change": "Review outpost task 1; available in independent local pair after main07 completion. Preserve valid material/mob source, revise prose to visible work, remove duplicate outing with main story. No pair member prerequisite."
+    },
+    {
+      "id": "r15_orc_local_04",
+      "race": "orc",
+      "change": "Review outpost task 2; available in independent local pair after main07 completion. Preserve valid material/mob source, revise prose to visible work, remove duplicate outing with main story. No pair member prerequisite."
+    },
+    {
+      "id": "r15_orc_local_05",
+      "race": "orc",
+      "change": "Review camp task 1; available in independent local pair after main08 completion. Preserve valid material/mob source, revise prose to visible work, remove duplicate outing with main story. No pair member prerequisite."
+    },
+    {
+      "id": "r15_orc_local_06",
+      "race": "orc",
+      "change": "Review camp task 2; available in independent local pair after main08 completion. Preserve valid material/mob source, revise prose to visible work, remove duplicate outing with main story. No pair member prerequisite."
+    },
+    {
+      "id": "r14_troll_01_boars_in_the_yam_beds",
+      "title": "Boars in the Yam Beds",
+      "race": "troll",
+      "change": "Initial independent local hunt; short count, unchanged locally achievable target."
+    },
+    {
+      "id": "r14_troll_02_fill_the_evening_pot",
+      "title": "Fill the Evening Pot",
+      "race": "troll",
+      "change": "Initial independent raw-meat delivery; transfer ownership/turn-in to new start cook."
+    },
+    {
+      "id": "r14_troll_03_teeth_in_the_basket_weave",
+      "title": "Teeth in the Basket Weave",
+      "race": "troll",
+      "change": "After main01 completed: replace repeated kill fallback with six ordinary building planks for local store repairs."
+    },
+    {
+      "id": "r14_troll_04_dead_in_the_rootways",
+      "title": "Dead in the Rootways",
+      "race": "troll",
+      "change": "After main01 completed: explicit night threat, count3, preserve target minimum level; no repeated daytime boar fallback."
+    },
+    {
+      "id": "r14_troll_05_vipers_under_broad_leaves",
+      "title": "Vipers Under Broad Leaves",
+      "race": "troll",
+      "change": "After main03 completed: retain distinct animal; undead uses eight cobble for retaining stones instead of repeated plague boars."
+    },
+    {
+      "id": "r14_troll_06_claws_on_raincall_road",
+      "title": "Claws on Raincall Road",
+      "race": "troll",
+      "change": "Replace kill-and-travel with pure talk to existing village steward; minimum level10; after main05 completed."
+    },
+    {
+      "id": "r14_troll_07_the_coiled_footpath",
+      "title": "The Coiled Footpath",
+      "race": "troll",
+      "change": "After main06 completed: local village story, retain appropriate home-zone target; remove repeated chase framing."
+    },
+    {
+      "id": "r14_troll_08_cats_at_the_reed_line",
+      "title": "Cats at the Reed Line",
+      "race": "troll",
+      "change": "After main07 completed: outpost story, actual reachable target and nonduplicated outing."
+    },
+    {
+      "id": "r14_troll_09_smoke_beneath_the_rain",
+      "title": "Smoke Beneath the Rain",
+      "race": "troll",
+      "change": "After main08 completed: existing bandit fight and captive turn-in; explicit combat job, no new encounter."
+    },
+    {
+      "id": "r14_troll_10_a_dry_handled_axe",
+      "title": "A Dry-Handled Axe",
+      "race": "troll",
+      "change": "Independent optional wood-axe delivery available at level1; no main01 prerequisite."
+    },
+    {
+      "id": "r14_troll_11_stone_beneath_the_moss",
+      "title": "Stone Beneath the Moss",
+      "race": "troll",
+      "change": "After lesson10 completed: optional stone-pick delivery, not proof of crafting."
+    },
+    {
+      "id": "r15_troll_local_01",
+      "race": "troll",
+      "change": "Review village task 1; available in independent local pair after main06 completion. Preserve valid material/mob source, revise prose to visible work, remove duplicate outing with main story. No pair member prerequisite."
+    },
+    {
+      "id": "r15_troll_local_02",
+      "race": "troll",
+      "change": "Review village task 2; available in independent local pair after main06 completion. Preserve valid material/mob source, revise prose to visible work, remove duplicate outing with main story. No pair member prerequisite."
+    },
+    {
+      "id": "r15_troll_local_03",
+      "race": "troll",
+      "change": "Review outpost task 1; available in independent local pair after main07 completion. Preserve valid material/mob source, revise prose to visible work, remove duplicate outing with main story. No pair member prerequisite."
+    },
+    {
+      "id": "r15_troll_local_04",
+      "race": "troll",
+      "change": "Review outpost task 2; available in independent local pair after main07 completion. Preserve valid material/mob source, revise prose to visible work, remove duplicate outing with main story. No pair member prerequisite."
+    },
+    {
+      "id": "r15_troll_local_05",
+      "race": "troll",
+      "change": "Review camp task 1; available in independent local pair after main08 completion. Preserve valid material/mob source, revise prose to visible work, remove duplicate outing with main story. No pair member prerequisite."
+    },
+    {
+      "id": "r15_troll_local_06",
+      "race": "troll",
+      "change": "Review camp task 2; available in independent local pair after main08 completion. Preserve valid material/mob source, revise prose to visible work, remove duplicate outing with main story. No pair member prerequisite."
+    }
+  ],
+  "talk_reward_contract": {
+    "xp_interval_share_percent": 15,
+    "effort": "lesson",
+    "kill_xp_included": false,
+    "copper": "existing light quests at comparable authored target level",
+    "one_time": true
+  }
+}
