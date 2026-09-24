@@ -165,6 +165,9 @@ Hold RMB to draw the bow; release RMB to shoot." Existing range/ammunition
 requirements remain visible. Strike is only the fallback when the selected
 LMB skill is unavailable/inapplicable; Loose is explicitly an RMB action.
 
+Food requires 1.5 seconds of uninterrupted RMB hold for exactly one serving;
+release rearms the next serving. Keep the eating sound at gain 0.5.
+
 RMB food/draw owns the item action until released. No simultaneous
 LMB digging/attack while that hold is active; do not allow double-use of the
 weapon/ammunition. Define this as a single input-action priority, not a new
@@ -206,3 +209,23 @@ not yet implemented. Explicit round execution Go followed on 2026-09-24.
 
 Independent final documentation review: GPT-5.6 Sol PASS, 0 High/Medium
 findings. No game changes or executable tests were part of this approval.
+
+## Accepted native-client limits (user follow-up during execution)
+
+The user accepted both limits explicitly on 2026-09-24:
+
+- Opening the native inventory, pause menu, chat or losing focus releases the
+  client's controls without a distinct server-visible GUI-open event. Treat
+  this as ordinary release: a drawn bow may fire or a pending short-click
+  skill may activate. Known server-side NPC/node interactions cancel first.
+  The earlier universal GUI-cancellation requirement is narrowed accordingly.
+- With native digging enabled, a very short air click can fall between control
+  reports (about 90 ms at the default server step) and be missed. Native
+  node/object interaction packets provide additional press events; pure air
+  input uses the observed control edges. The user accepted this for playtest;
+  do not claim guaranteed capture of all short air clicks or add a client mod.
+
+Native crack feedback may start before the approximately 200 ms decision;
+actual node removal must still wait for arbitration and its normal dig time.
+The skill-only guard delegates the real node callbacks and never reproduces
+node digging, drop, protection or wear rules in a second engine.

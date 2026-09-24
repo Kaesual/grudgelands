@@ -351,6 +351,26 @@ function grug_core.is_stunned(player)
 	return rec ~= nil and (rec.stun or 0) > now()
 end
 
+-- A bounded one-shot burst at the accepted stun seam, shared by players and
+-- mobs. No extra entity, recurring scan or per-frame particle maintenance.
+function grug_core.emit_stun_particles(object, duration)
+	local pos = object and object:get_pos()
+	if not pos then return end
+	local props = object:get_properties() or {}
+	local box = props.collisionbox or {-0.3, 0, -0.3, 0.3, 1.7, 0.3}
+	local width = math.min(1.5, math.max(0.3, box[4] - box[1]))
+	local lifetime = math.min(2, math.max(0.3, duration))
+	core.add_particlespawner({
+		amount = 8, time = 0.1,
+		pos = {min = vector.offset(pos, -width / 2, box[5] + 0.1, -width / 2),
+			max = vector.offset(pos, width / 2, box[5] + 0.4, width / 2)},
+		vel = {min = vector.new(-0.1, 0, -0.1), max = vector.new(0.1, 0.1, 0.1)},
+		exptime = {min = lifetime, max = lifetime}, size = {min = 2, max = 3},
+		texture = "[fill:5x5:#00000000^[fill:1x5:2,0:#ffe066^[fill:5x1:0,2:#ffe066",
+		glow = 10, collisiondetection = false,
+	})
+end
+
 function grug_core.set_stun(player, duration)
 	local name, rec = resolve(player)
 	if not name or player:get_hp() <= 0 then return false end
@@ -360,6 +380,7 @@ function grug_core.set_stun(player, duration)
 	end
 	rec.stun = math.max(rec.stun or 0, now() + duration)
 	settle(player, name, rec)
+	grug_core.emit_stun_particles(player, duration)
 	for _, callback in ipairs(stun_callbacks) do callback(player) end
 	return true
 end

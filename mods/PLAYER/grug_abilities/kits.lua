@@ -316,7 +316,6 @@ grug_abilities.register_ability({
 					if ent then grug_mobs.stun(ent, 1.5) end
 				end
 			end})
-		burst(tpos, "default_item_smoke.png", 8)
 		return true
 	end,
 })
