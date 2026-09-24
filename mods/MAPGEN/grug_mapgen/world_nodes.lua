@@ -19,6 +19,24 @@ return function(engine, directory, nodes, gathering)
   elseif row.key=="sugar_cane" then def.groups.grug_sweetener=1
   elseif row.key=="salt_crust" then def.groups.grug_salt=1
   else def.groups.grug_food=1 end
-  engine.register_node(row.node,def)
+ engine.register_node(row.node,def)
  end
+
+ -- A rooted node keeps the water column intact: only the natural sand bed is
+ -- replaced, while the special tile grows upward through source water.
+ engine.register_node(catalog.freshwater[1], {
+  description="Freshwater Waterweed",
+  drawtype="plantlike_rooted",
+  waving=1,
+  tiles={"default_sand.png"},
+  special_tiles={{name="default_kelp.png^[colorize:#4F8A52:45",tileable_vertical=true}},
+  inventory_image="default_kelp.png^[colorize:#4F8A52:45",
+  wield_image="default_kelp.png^[colorize:#4F8A52:45",
+  paramtype="light",
+  paramtype2="leveled",
+  groups={crumbly=3,sand=1,not_in_creative_inventory=1},
+  sounds=default.node_sound_sand_defaults(),
+  selection_box={type="fixed",fixed={-0.5,-0.5,-0.5,0.5,-0.3,0.5}},
+  drop="default:sand",
+ })
 end
