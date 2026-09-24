@@ -120,3 +120,14 @@ prop dispatch, emitted-cell envelope assertion and central5×5×3 clearance.
 No manifest, planner, engine or PUC runtime was repeated in this correction.
 Both changed Lua files pass the plain5.1 parser, SETGLOBAL and five sweeps.
 Full integration and doorway evidence remain owned by the central final run.
+
+The subsequent central construction reached anchor089 and exposed its sample
+rack immediately outside both doorway cells. Moving the rack two cells east
+keeps the authored assay detail while opening the entrance. A second authorized
+builder-only LuaJIT check reused the exact final-runner open/reach/BFS assertions
+and real registered node walkability across all70 profiles:105 interiors,
+two-cell entrances, perimeter access, central clearance, registered names and
+cell bounds passed, including the anchor090 counterpart. It loaded fixture node
+definitions from the primary checkout because worktree reference submodules are
+empty, and used the corrected worktree builders; no runtime.build or planner
+was invoked. The changed catalog passes all static gates.
