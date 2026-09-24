@@ -31,12 +31,13 @@ local function rebuild_roster(player, context)
 		if name ~= own_name and own_faction and
 				grug_factions.get_faction(target) == own_faction then
 			local status = {}
+			local label = name .. " [Lv " .. grug_xp.get_level(target) .. "]"
 			if not grug_parties.invitations_enabled(target) then
 				status[#status + 1] = "Invites off"
 			end
 			if grug_parties.view(target) then status[#status + 1] = "In party" end
 			rows[#rows + 1] = {name = name,
-				label = #status > 0 and name .. " (" .. table.concat(status, ", ") .. ")" or name}
+				label = #status > 0 and label .. " (" .. table.concat(status, ", ") .. ")" or label}
 		end
 	end
 	table.sort(rows, function(a, b) return a.name < b.name end)
@@ -58,6 +59,7 @@ local function content(player, context)
 	local view, pending = grug_parties.view(player), grug_parties.pending(player)
 	local fs = {
 		"real_coordinates[true]",
+		"set_focus[grug_party_invite;false]",
 		("checkbox[0.20,0.22;grug_party_invites;Allow invitations;%s]")
 			:format(grug_parties.invitations_enabled(player) and "true" or "false"),
 		("checkbox[3.25,0.22;grug_party_hud;Party HUD;%s]")
@@ -82,7 +84,7 @@ local function content(player, context)
 	local invites = {}
 	for _, row in ipairs(pending) do
 		local size = row.party and #row.party.members or 1
-		invites[#invites + 1] = esc(("%s (%d/10, %ds)"):format(row.inviter, size, row.expires_in))
+		invites[#invites + 1] = esc(("%s [Lv %d] (%d/10, %ds)"):format(row.inviter, row.level, size, row.expires_in))
 	end
 	local selected_index
 	context.grug_party_invite_rows = {}
@@ -104,7 +106,7 @@ local function content(player, context)
 		context.grug_party_member_rows = {}
 		for index, row in ipairs(view.members) do
 			context.grug_party_member_rows[index] = row.name
-			members[#members + 1] = esc((row.name == view.leader and "* " or "") .. row.name ..
+			members[#members + 1] = esc((row.name == view.leader and "* " or "") .. row.name .. " [Lv " .. row.level .. "]" ..
 				(row.online and ("  %d/%d HP"):format(row.hp, row.hp_max) or "  Offline"))
 		end
 		local selected = selected_member(view, context)
@@ -179,9 +181,14 @@ end, on_player_receive_fields = function(_, player, context, fields)
 	refresh(player)
 end})
 
-grug_parties.register_on_change(function(name)
+grug_parties.register_on_change(function(name, reason)
 	local player = core.get_player_by_name(name)
-	if player then refresh(player) end
+	if player then
+		if reason == "level" and sfinv.get_page(player) == PAGE then
+			rebuild_roster(player, sfinv.get_or_create_context(player))
+		end
+		refresh(player)
+	end
 end)
 
 core.register_on_mods_loaded(function()

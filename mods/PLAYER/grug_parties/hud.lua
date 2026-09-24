@@ -67,7 +67,8 @@ local function refresh(player)
 		change(player,row,"track_offset",row.track,"offset",layout.party_row_offset(index,#view.members,true,window))
 		change(player,row,"fill_offset",row.fill,"offset",layout.party_row_offset(index,#view.members,true,window))
 		local prefix = member.name == view.leader and "* " or ""
-		local suffix = member.online and ("  %d/%d"):format(member.hp,member.hp_max) or " [Offline]"
+		local suffix = " [Lv " .. member.level .. "]" ..
+			(member.online and ("  %d/%d"):format(member.hp,member.hp_max) or " [Offline]")
 		local limit = math.max(4, math.min(18, width - #prefix - #suffix))
 		local name = member.name
 		if #name > limit then name = name:sub(1,limit-2) .. ".." end

@@ -487,6 +487,8 @@ local function make_formspec(player, book, station, state)
 	local counts = grug_jobs.book_undiscovered_counts(player, records)
 	local fs = {
 		"formspec_version[4]size[10,10.4]",
+		-- Leave typing opt-in; preserve the chosen focus on subsequent updates.
+		"set_focus[grug_jobs_do_search;false]",
 		("label[0.25,0.25;%s]"):format(esc(title_for(book, station))),
 		("field[0.3,0.72;3.7,0.7;grug_jobs_search;;%s]"):format(esc(state.search)),
 		"field_close_on_enter[grug_jobs_search;false]",

@@ -14,11 +14,14 @@ local HEALTH_COLOR_MODES = {all_green = true, by_class = true}
 -- Membership order is canonical join order; the lookup is always derived.
 for id, group in pairs(state.groups) do
 	assert(type(group.members) == "table" and #group.members >= 2
-		and #group.members <= 10 and type(group.faction) == "string",
+		and #group.members <= 10 and type(group.faction) == "string"
+		and type(group.levels) == "table",
 		"[grug_parties] Invalid stored group")
 	local leader_found = false
 	for _, name in ipairs(group.members) do
-		assert(type(name) == "string" and not membership[name],
+		assert(type(name) == "string" and not membership[name]
+			and type(group.levels[name]) == "number"
+			and group.levels[name] >= 1 and group.levels[name] % 1 == 0,
 			"[grug_parties] Duplicate/invalid stored member")
 		membership[name] = id
 		leader_found = leader_found or name == group.leader
@@ -100,6 +103,7 @@ local function remove_member(name)
 		if member == name then table.remove(group.members, i); break end
 	end
 	membership[name] = nil
+	group.levels[name] = nil
 	if #group.members == 1 then
 		membership[group.members[1]] = nil
 		state.groups[id] = nil
@@ -119,7 +123,8 @@ function grug_parties.view(player)
 	local view = {id = id, leader = group.leader, faction = group.faction, members = {}}
 	for _, name in ipairs(group.members) do
 		local member = online(name)
-		local row = {name = name, online = member ~= nil}
+		local row = {name = name, online = member ~= nil,
+			level = member and grug_xp.get_level(member) or group.levels[name]}
 		if member then
 			row.hp = member:get_hp()
 			row.hp_max = member:get_properties().hp_max
@@ -135,7 +140,7 @@ function grug_parties.pending(player)
 	local result = {}
 	for inviter, expiry in pairs(incoming[name] or {}) do
 		result[#result + 1] = {inviter = inviter, expires_in = math.ceil(expiry - time),
-			party = grug_parties.view(inviter)}
+			party = grug_parties.view(inviter), level = grug_xp.get_level(online(inviter))}
 	end
 	table.sort(result, function(a, b) return a.inviter < b.inviter end)
 	return result
@@ -227,10 +232,12 @@ function grug_parties.accept(player, inviter)
 	if not group then
 		state.next_id = state.next_id + 1
 		id = tostring(state.next_id)
-		group = {leader = inviter, faction = faction, members = {inviter}}
+		group = {leader = inviter, faction = faction, members = {inviter},
+			levels = {[inviter] = grug_xp.get_level(online(inviter))}}
 		state.groups[id], membership[inviter] = group, id
 	end
 	group.members[#group.members + 1] = name
+	group.levels[name] = grug_xp.get_level(player)
 	membership[name] = id
 	incoming[name] = nil
 	persist()
@@ -289,15 +296,35 @@ local function faction_changed(player)
 		emit(changed, "membership")
 	end
 end
+local function remember_level(player)
+	local name = player:get_player_name()
+	local group = group_of(name)
+	if group then
+		local level = grug_xp.get_level(player)
+		if group.levels[name] ~= level then
+			group.levels[name] = level
+			persist()
+		end
+	end
+end
+grug_xp.register_on_level_change(function(player)
+	remember_level(player)
+	-- Pending invitations also display live levels, even before a party exists.
+	local names = {}
+	for name in pairs(connected) do names[name] = true end
+	emit(names, "level")
+end)
 grug_factions.register_on_faction_chosen(faction_changed)
 core.register_on_joinplayer(function(player)
 	local name = player:get_player_name()
 	connected[name] = true
+	remember_level(player)
 	faction_changed(player)
 	emit(affected(group_of(name), name), "presence")
 end)
 core.register_on_leaveplayer(function(player)
 	local name = player:get_player_name()
+	remember_level(player)
 	connected[name] = nil
 	local changed = clear_invitations(name)
 	local group = group_of(name)
