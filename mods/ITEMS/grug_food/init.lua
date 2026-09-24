@@ -243,13 +243,15 @@ end
 
 local held_foods = {}
 local hold_feedback = {}
-local BITE_INTERVAL_US = 450000
+local MOTION_INTERVAL_US = 250000
 
 local function stop_hold_feedback(player)
 	local name = player:get_player_name()
 	local record = hold_feedback[name]
 	if not record then return end
+	if record.sound_handle then core.sound_stop(record.sound_handle) end
 	if record.hud_id then player:hud_remove(record.hud_id) end
+	if record.wielditem ~= nil then player:hud_set_flags({wielditem = record.wielditem}) end
 	hold_feedback[name] = nil
 end
 
@@ -260,7 +262,13 @@ function grug_food.begin_hold(player)
 	if not held_foods[item_name] then return false end
 	local definition = core.registered_items[item_name]
 	local image = definition and definition.inventory_image
-	local record = {next_bite = 0, raised = false}
+	local flags = player:hud_get_flags()
+	local record = {next_motion = 0, raised = false,
+		wielditem = flags and flags.wielditem ~= false}
+	player:hud_set_flags({wielditem = false})
+	record.sound_handle = core.sound_play({name = "grug_food_eat", gain = 0.5}, {
+		to_player = player:get_player_name(), loop = true,
+	})
 	if type(image) == "string" and image ~= "" then
 		record.hud_id = player:hud_add({
 			hud_elem_type = "image", position = {x = 0.5, y = 1},
@@ -277,11 +285,8 @@ function grug_food.step_hold(player)
 	local record = hold_feedback[player:get_player_name()]
 	if not record then return end
 	local now = core.get_us_time()
-	if now >= record.next_bite then
-		core.sound_play({name = "grug_food_eat", gain = 0.5}, {
-			to_player = player:get_player_name(),
-		}, true)
-		record.next_bite = now + BITE_INTERVAL_US
+	if now >= record.next_motion then
+		record.next_motion = now + MOTION_INTERVAL_US
 		record.raised = not record.raised
 		if record.hud_id then
 			player:hud_change(record.hud_id, "offset",
