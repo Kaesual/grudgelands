@@ -1090,7 +1090,7 @@ local function settlement_factory()
 			-- skin; their authored buildings and short paving overwrite it later.
 			local dry_anchor_grade = functional_kind == "land_grade" and
 				type(functional_feature_id) == "string" and
-				functional_feature_id:match("^anchor_%d+$") ~= nil and
+				functional_feature_id:match("^anchor_%d%d%d$") ~= nil and
 				(water_y == nil or water_y <= terrain_y)
 			if functional_kind == "anchor_platform" or
 					(functional_kind == "land_grade" and not dry_anchor_grade) or
@@ -2263,7 +2263,7 @@ local function settlement_factory()
 								functional_feature_id = planner_source.column_values_at(x, z)
 							dry_anchor_grade = functional_kind == "land_grade" and
 								type(functional_feature_id) == "string" and
-								functional_feature_id:match("^anchor_%d+$") ~= nil and
+								functional_feature_id:match("^anchor_%d%d%d$") ~= nil and
 								(water_y == nil or water_y <= terrain_y)
 						end
 						if predecessor == 28 or dry_anchor_grade and predecessor == 22 then
@@ -2283,7 +2283,7 @@ local function settlement_factory()
 									functional_feature_id = planner_source.column_values_at(x, z)
 								dry_anchor_grade = functional_kind == "land_grade" and
 									type(functional_feature_id) == "string" and
-									functional_feature_id:match("^anchor_%d+$") ~= nil and
+									functional_feature_id:match("^anchor_%d%d%d$") ~= nil and
 									(water_y == nil or water_y <= terrain_y)
 							end
 							if predecessor == 27 or dry_anchor_grade == true and predecessor == 21 then
@@ -2336,8 +2336,7 @@ local function settlement_factory()
 								local feature_id = feature_ref ~= 0 and
 									plan.r5_plan.stable_refs[feature_ref] or nil
 								local anchor_grade = type(feature_id) == "string" and
-									(feature_id:match("^anchor_00[1-9]$") ~= nil or
-										feature_id:match("^anchor_01[0-2]$") ~= nil)
+									feature_id:match("^anchor_%d%d%d$") ~= nil
 							if original_data[index] == native_air_cid and
 										final_data[index] == original_data[index] and
 										(opcode == 27 or opcode == 21 and anchor_grade) then

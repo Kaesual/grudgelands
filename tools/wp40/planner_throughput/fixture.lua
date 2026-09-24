@@ -132,20 +132,16 @@ return function(repo, planner_repo)
 	-- Compact final-parity witnesses for dry-anchor grade eligibility. They use
 	-- the actual planner with scalar fixtures, never a seed/world population.
 	--
-	-- ANCHORS 1..12, not 1..6, since WP13 round 3: the six CAPITALS keep their
-	-- own biome surface for the same reason the six starts do, because a
-	-- capital fitting grades its whole 704-node blend square and everything
-	-- inside it was `default:stone` before. Anchor 13 and up are ordinary POIs
-	-- and are still refused, and so is `anchor_0010`, which is not an anchor id
-	-- at all -- it is the four-digit typo the predicate has to keep rejecting.
+	-- All 100 current anchors retain their biome surface, including ordinary
+	-- POIs. Malformed IDs must not acquire anchor surface semantics.
 	if planner_repo == repo then
 		mode, feature_kind = "dry", "land_grade"
-		for index = 1, 12 do
+		for index = 1, 100 do
 			feature_id = string.format("anchor_%03d", index)
 			assert(select(12, fixture.column_values_at(0, 0)) == true,
-				"dry start or capital grade must support its biome surface")
+				"dry anchor grade must support its biome surface")
 		end
-		for _, id in ipairs({"anchor_013", "anchor_099", "anchor_0010",
+		for _, id in ipairs({"anchor_0010", "anchor_01", "anchor_1", "anchor_001x",
 				"road_001", "poi_001"}) do
 			feature_id = id
 			assert(select(12, fixture.column_values_at(0, 0)) == false,

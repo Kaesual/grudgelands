@@ -305,7 +305,7 @@ local function planner_factory()
 			-- and the collar around it grows its biome again.
 			local dry_anchor_grade = functional_kind == "land_grade" and
 				type(functional_feature_id) == "string" and
-				functional_feature_id:match("^anchor_%d+$") ~= nil and
+				functional_feature_id:match("^anchor_%d%d%d$") ~= nil and
 				not wet and (not excluded or
 					horizontal.static_exclusion_values_at(x, z, "vegetation") == nil)
 			if functional_kind == "anchor_platform" or
