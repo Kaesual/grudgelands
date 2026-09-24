@@ -42,7 +42,7 @@ return function(repo)
 	local manifest = catalog.manifest()
 	assert(common.hex(sha(manifest.canonical_bytes)) == manifest.sha256)
 	local rows, index_by_name, salt_index = catalog.p9g_sources(), {}, nil
-	local p9g = {schema = "grug_wp40_r7_p9g_content_v2", content_names = {}, content_cids = {}}
+	local p9g = {schema = "grug_wp40_r7_p9g_content_v3", content_names = {}, content_cids = {}}
 	for index, row in ipairs(rows) do
 		p9g.content_names[index], p9g.content_cids[index] = row.source_node, 1000 + index
 		index_by_name[row.source_node] = index

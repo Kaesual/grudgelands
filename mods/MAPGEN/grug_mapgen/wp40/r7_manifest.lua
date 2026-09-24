@@ -35,7 +35,7 @@ return function(canonical, raw_sha256, settlement_order)
 	-- authenticated gathering limb and this roll-up move again.
 	-- R10 WORLD: catalog v2 authenticates zone-scoped Rock Salt support rows.
 	-- Only the gathering limb changes; native inputs and the 157-source roster stay.
-	-- R10 MAP-B adds two soil rows and 22 P9G nodes/rules; decoded template
+	-- R10 MAP-B and R21 aquatic decor add two soil rows and 24 P9G nodes/rules; decoded template
 	-- content refs shift with sorted soil rows while MTS geometry stays fixed.
 	-- R21: approved ore/gem density rows and matching WP43 density projection.
 	local SOURCE_PROJECTION_SHA256 =
@@ -247,11 +247,11 @@ return function(canonical, raw_sha256, settlement_order)
 			fail("successor window population differs")
 		end
 		return {p9g_min = production_count + 1,
-			p9g_max = production_count + 34,
-			anchor_min = production_count + 35,
-			anchor_max = production_count + 36,
-			settlement_min = production_count + 37,
-			settlement_max = production_count + 36 + settlement_count}
+			p9g_max = production_count + 36,
+			anchor_min = production_count + 37,
+			anchor_max = production_count + 38,
+			settlement_min = production_count + 39,
+			settlement_max = production_count + 38 + settlement_count}
 	end
 	function module.new(inputs)
 		if type(inputs) ~= "table" or getmetatable(inputs) ~= nil then

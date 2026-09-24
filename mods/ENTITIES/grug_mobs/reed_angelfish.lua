@@ -5,7 +5,7 @@
 local function in_natural_freshwater(pos)
 	if grug_zones.water_class_at(pos.x, pos.z) ~= "planned_water" then return false end
 	if core.get_node(pos).name ~= "default:water_source" then return false end
-	return core.get_node({x = pos.x, y = pos.y - 1, z = pos.z}).name ==
+	return core.get_node({x = pos.x, y = pos.y + 1, z = pos.z}).name ==
 		"default:water_source"
 end
 

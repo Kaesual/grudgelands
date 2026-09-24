@@ -1,11 +1,11 @@
 -- Closed R7 production content resolvers. The accepted 84-row R8 terrain
 -- namespace remains separate from the 90-row production-R6 namespace and the
--- 34-row P9G suffix.
+-- 36-row P9G suffix.
 
 return function(core_api, projection, raw_sha256, settlement_palette)
 	local MAX_SAFE = 9007199254740991
 	local PRODUCTION_SCHEMA = "grug_wp40_r7_production_r6_content_v1"
-	local P9G_SCHEMA = "grug_wp40_r7_p9g_content_v2"
+	local P9G_SCHEMA = "grug_wp40_r7_p9g_content_v3"
 	local ANCHOR_SCHEMA = "grug_wp40_r7_anchor_content_v1"
 	local SETTLEMENT_SCHEMA = "grug_wp13_settlement_content_v1"
 	local ACCEPTED_R6_ROWS = {
@@ -137,6 +137,8 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		"default:coral_pink",
 		"default:coral_skeleton",
 		"default:sand_with_kelp",
+		"grug_mapgen:freshwater_waterlily",
+		"grug_mapgen:freshwater_waterweed",
 	}
 	local ANCHOR_NAMES = {
 		"grug_nodes:camp_fire",
@@ -208,7 +210,7 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		rows[#rows + 1] = {CULTURAL_NAMES[index], 16}
 	end
 	table.sort(rows, function(left, right) return less_bytes(left[1], right[1]) end)
-	if #ACCEPTED_R6_ROWS ~= 84 or #rows ~= 90 or #P9G_NAMES ~= 34 then
+	if #ACCEPTED_R6_ROWS ~= 84 or #rows ~= 90 or #P9G_NAMES ~= 36 then
 		fail("closed population differs")
 	end
 
@@ -353,7 +355,8 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 	local p9g_cids = {}
 	for index = 1, #P9G_NAMES do
 		local name = P9G_NAMES[index]
-		if index > 1 and index ~= 28 and not less_bytes(P9G_NAMES[index - 1], name) then
+		if index > 1 and index ~= 28 and index ~= 35 and
+				not less_bytes(P9G_NAMES[index - 1], name) then
 			fail("P9G names are not ASCII ordered")
 		end
 		local def = rawget(core_api.registered_nodes, name)
@@ -369,10 +372,15 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		content_cids = p9g_cids}
 	function p9g.resolve_p9g(content_ref, param2)
 		calls.p9g_resolve = calls.p9g_resolve + 1
-		integer(content_ref, "P9G content ref", 1, 34)
+		integer(content_ref, "P9G content ref", 1, 36)
 		if content_ref == 34 then
 			integer(param2, "kelp height", 16, 160)
 			if param2 % 16 ~= 0 then fail("kelp height differs") end
+		elseif content_ref == 35 then
+			integer(param2, "waterlily rotation", 0, 3)
+		elseif content_ref == 36 then
+			integer(param2, "waterweed height", 16, 64)
+			if param2 % 16 ~= 0 then fail("waterweed height differs") end
 		elseif param2 ~= 0 then fail("P9G param2 differs") end
 		return p9g_cids[content_ref], 1, 1, param2, 8
 	end

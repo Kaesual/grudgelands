@@ -24,7 +24,7 @@ return function(engine, directory, nodes, gathering)
 
  -- A rooted node keeps the water column intact: only the natural sand bed is
  -- replaced, while the special tile grows upward through source water.
- engine.register_node(catalog.freshwater[1], {
+ engine.register_node(catalog.freshwater[2], {
   description="Freshwater Waterweed",
   drawtype="plantlike_rooted",
   waving=1,
@@ -38,5 +38,27 @@ return function(engine, directory, nodes, gathering)
   sounds=default.node_sound_sand_defaults(),
   selection_box={type="fixed",fixed={-0.5,-0.5,-0.5,0.5,-0.3,0.5}},
   drop="default:sand",
+ })
+
+ -- This occupies the air node immediately above the source-water surface;
+ -- its thin box sits at the bottom of that node and never replaces water.
+ engine.register_node(catalog.freshwater[1], {
+  description="Freshwater Waterlily",
+  drawtype="nodebox",
+  paramtype="light",
+  paramtype2="facedir",
+  tiles={"grug_mapgen_waterlily.png","grug_mapgen_waterlily_bottom.png"},
+  inventory_image="grug_mapgen_waterlily.png",
+  wield_image="grug_mapgen_waterlily.png",
+  use_texture_alpha="clip",
+  walkable=false,
+  pointable=true,
+  buildable_to=true,
+  floodable=true,
+  groups={snappy=3,flora=1,flammable=1,not_in_creative_inventory=1},
+  sounds=default.node_sound_leaves_defaults(),
+  node_box={type="fixed",fixed={-0.5,-0.5,-0.5,0.5,-15/32,0.5}},
+  selection_box={type="fixed",fixed={-7/16,-0.5,-7/16,7/16,-15/32,7/16}},
+  drop="",
  })
 end

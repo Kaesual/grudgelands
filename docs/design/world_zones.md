@@ -1800,7 +1800,9 @@ fixed levels and reservations remain protected. Beach/cliff transitions adjust
 height and material together; sand is limited to low/gentle shore surfaces.
 Corals form varied deterministic patches at similar overall density. Rooted
 freshwater waterweed sparsely decorates safe, 2–6-node-deep authored water over
-natural sand without displacing the water column. One licensed animated ambient fish family
+natural sand without displacing the water column. Thin waterlilies occupy the
+air node immediately above a similarly safe freshwater surface and remain
+passable. One licensed animated ambient fish family
 may use existing capped critter spawning, without XP/loot or fishing changes;
 complex movement/asset blockers are escalated.
 

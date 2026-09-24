@@ -51,10 +51,10 @@ local function sample(water_class, denied)
 	tail.bind(plan, 1)
 	local ctx = {
 		plan = plan, generation = 1, call_mode = "evidence_fixture",
-		min_y = -5, max_y = 0,
+		min_y = -5, max_y = 1,
 	}
 	function ctx.inside_owner(x, y, z)
-		return x == ctx.min_x and z == ctx.min_z and y >= -5 and y <= 0
+		return x == ctx.min_x and z == ctx.min_z and y >= -5 and y <= 1
 	end
 	function ctx.column_values_at()
 		return water_class, 1, "fixture_zone", "fixture_biome", "neutral", -4, 0
@@ -63,6 +63,7 @@ local function sample(water_class, denied)
 	function ctx.housing_excluded_at() return false end
 	function ctx.settled_at(_, y)
 		if y == -4 then return sand_cid, 0, 0, 1 end
+		if y > 0 then return 1, 0, 0, 0 end
 		return water_cid, 0, 0, 0
 	end
 	function ctx.production_content(name)
@@ -99,11 +100,17 @@ for _ in pairs(columns) do column_count = column_count + 1 end
 assert(row_count > 20 and column_count > 20, "reef collapsed into strips")
 
 local fresh = sample("planned_water", false)
-assert(#fresh > 200 and #fresh < 1200, "bounded freshwater density")
+assert(#fresh > 300 and #fresh < 1800, "bounded freshwater density")
+local weeds, lilies = 0, 0
 for _, row in ipairs(fresh) do
-	assert(row.ref == 35 and row.param2 == 48 and row.y == -4)
+	if row.ref == 36 then
+		assert(row.param2 == 48 and row.y == -4); weeds = weeds + 1
+	elseif row.ref == 35 then
+		assert(row.param2 >= 0 and row.param2 <= 3 and row.y == 1); lilies = lilies + 1
+	else error("unexpected freshwater ref") end
 end
+assert(weeds > 200 and lilies > 100, "freshwater variants absent")
 assert(#sample("planned_water", true) == 0, "excluded freshwater decoration")
 assert(#sample("immutable_dragon_channel", false) == 0, "functional channel decoration")
 
-print("r21_aquatic_world_content_kat\tpass\t" .. #reef .. "\t" .. #fresh)
+print("r21_aquatic_world_content_kat\tpass\t" .. #reef .. "\t" .. weeds .. "\t" .. lilies)

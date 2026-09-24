@@ -1,7 +1,7 @@
 -- P9G-2 surface/cave/reef extension, inside the existing R6 private transaction.
 return function(catalog, content, habitat)
  assert(type(habitat)=="table" and type(habitat.initial_denominator)=="function")
- assert(catalog.schema=="grug_world_content_v1" and #catalog.plants==15 and #catalog.names==23)
+ assert(catalog.schema=="grug_world_content_v1" and #catalog.plants==15 and #catalog.names==24)
  for i,name in ipairs(catalog.names) do assert(content.content_names[i+12]==name) end
  local config={}
  function config.new(deps)
@@ -110,23 +110,23 @@ return function(catalog, content, habitat)
       end
      end
      -- Rooted meshes occupy their bed cube; all stems must remain in sea water.
-     local cell_x=math.floor(x/16)
-     local cell_z=math.floor(z/16)
-     local local_x=x-cell_x*16
-     local local_z=z-cell_z*16
-     local reef_cell=reef_hash(cell_x,cell_z,101)
-     local center_x=3+reef_hash(cell_x,cell_z,103)%10
-     local center_z=3+reef_hash(cell_x,cell_z,107)%10
-     local dx=local_x-center_x
-     local dz=local_z-center_z
-     local swapped=reef_hash(cell_x,cell_z,109)%2==1
-     local long=swapped and dz or dx
-     local short=swapped and dx or dz
-     local patch=long*long+2*short*short<=15 and
-      reef_hash(x,z,113)%5~=0
      if not excluded and not housing and water=="coastal_shelf" and water_y and
       water_y-ground>=2 and water_y-ground<=10 and
-      ctx.inside_owner(x,ground,z) and reef_cell%8==0 and patch then
+      ctx.inside_owner(x,ground,z) then
+      local cell_x=math.floor(x/16)
+      local cell_z=math.floor(z/16)
+      local local_x=x-cell_x*16
+      local local_z=z-cell_z*16
+      local reef_cell=reef_hash(cell_x,cell_z,101)
+      local center_x=3+reef_hash(cell_x,cell_z,103)%10
+      local center_z=3+reef_hash(cell_x,cell_z,107)%10
+      local dx=local_x-center_x
+      local dz=local_z-center_z
+      local swapped=reef_hash(cell_x,cell_z,109)%2==1
+      local long=swapped and dz or dx
+      local short=swapped and dx or dz
+      local patch=long*long+2*short*short<=15 and reef_hash(x,z,113)%5~=0
+      if reef_cell%8==0 and patch then
       local bed,p2,occupancy,opcode=ctx.settled_at(x,ground,z)
       local _,sand=ctx.production_content("default:sand")
       local _,gravel=ctx.production_content("default:gravel")
@@ -143,6 +143,7 @@ return function(catalog, content, habitat)
         if family~=contract.ordinary_water_family_id or liquid~=1 then clear=false;break end
        end
        if clear then write(index,x,ground,z,index==22 and height*16 or 0) end
+      end
       end
      end
      -- Freshwater waterweed uses only a natural sand bed. Functional water
@@ -162,7 +163,18 @@ return function(catalog, content, habitat)
         local _,family,liquid=contract.classify(current,param2)
         if family~=contract.ordinary_water_family_id or liquid~=1 then clear=false;break end
        end
-       if clear then write(23,x,ground,z,height*16) end
+       if clear then write(24,x,ground,z,height*16) end
+      end
+     end
+     if not excluded and not housing and water=="planned_water" and water_y and
+      water_y-ground>=2 and water_y-ground<=6 and
+      ctx.inside_owner(x,water_y+1,z) and reef_hash(x,z,223)%192==0 then
+      local surface,param2,occupancy,opcode=ctx.settled_at(x,water_y+1,z)
+      local below,below_p2=ctx.settled_at(x,water_y,z)
+      local _,family,liquid=contract.classify(below,below_p2)
+      if surface==air and param2==0 and occupancy==0 and opcode==0 and
+       family==contract.ordinary_water_family_id and liquid==1 then
+       write(23,x,water_y+1,z,reef_hash(x,z,227)%4)
       end
      end
     end

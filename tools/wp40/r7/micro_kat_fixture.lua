@@ -348,7 +348,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		new_capture = runtime_constructor, new_evidence = runtime_constructor}
 	local runtime_content_set = {
 		production = {schema = "grug_wp40_r7_production_r6_content_v1"},
-		p9g = {schema = "grug_wp40_r7_p9g_content_v2"},
+		p9g = {schema = "grug_wp40_r7_p9g_content_v3"},
 		production_digest = string.rep("1", 64),
 		production_semantic_digest = string.rep("2", 64),
 		p9g_digest = string.rep("3", 64), p9g_semantic_digest = string.rep("4", 64),
