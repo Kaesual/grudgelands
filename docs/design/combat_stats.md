@@ -33,9 +33,9 @@ anything). Item enchants (+Str etc.) are the player-driven part.
 
 | Attribute | Effects |
 |-----------|---------|
-| Strength | melee damage |
+| Strength | non-Scout melee damage |
 | Intelligence | spell damage; percentage bonus to healing/absorbs |
-| Dexterity | crit chance, dodge chance |
+| Dexterity | crit chance, dodge chance, Scout melee/ranged damage |
 
 - Base at level 1: **10 / 10 / 10** (Str/Int/Dex), all classes.
 - Growth per level (4 points): **Warrior +3 Str / +1 Dex · Mage +3 Int /
@@ -50,7 +50,8 @@ anything). Item enchants (+Str etc.) are the player-driven part.
 - **Mana** = `round(P(L) × (1 + gear% + talent%))` for Mage/Priest.
   The Warrior uses flat Rage 0–100. Strength never adds HP and Intelligence
   never adds mana.
-- **Melee damage** = weapon damage + floor(Str/10). Since 2026-08-08,
+- **Melee damage** = weapon damage + floor(melee attribute/10), where the
+  attribute is Dexterity for Scout and Strength for other classes. Since 2026-08-08,
   **"weapon damage" has a source: the item in the WEAPON SLOT**
   (`inventory_equipment.md` §2) — the single, fixed source for every
   sword-type skill, with **no fallback to the wielded item**. An empty slot
@@ -122,7 +123,7 @@ anything). Item enchants (+Str etc.) are the player-driven part.
     modifier: **dodge (cancels the hit entirely) → Grudgelands-mob pressure
     fit → armor → applicable target-race Warding Draught → absorb shield.**
     Foreign entities without a Grudgelands level bypass the pressure fit.
-    Authoritative swing abilities assemble gear, Strength and a selected proc,
+    Authoritative swing abilities assemble gear, the class melee attribute and a selected proc,
     then apply the level scalar and mob-level malus once before crit and armor.
     Ordinary native tools/fists against hostile players apply the level scalar
     to their full-swing equivalent before crit, armor, proportional scaling and
@@ -240,18 +241,12 @@ weapon supplies damage and `full_punch_interval`; the current crosshair ray
 supplies the target; each selected swing skill supplies only its optional
 charged effect. Enemy target memory is UI state and never supplies aim.
 
-- **Swing items keep native interaction, not native combat damage.** Strike,
-  Mighty Blow and Hamstring have no `on_use`, so the client keeps its fast
-  first-person held-LMB animation. Their no-dig pointabilities can mask a drop
-  resting against blocked ground, so a fresh server-visible LMB press also
-  raycasts the unchanged 4 m range and invokes builtin pickup only when the
-  first visible object is a dropped item. A native enemy punch packet is
-  suppressed before damage, rage, threat, wear or proc. The engine's object
-  packet repeat is not the held-damage chassis: runtime testing showed its
-  client ray could change to `nothing` after one punch while server control
-  `dig` remained true. The source split is in
-  `reference_projects/luanti/src/client/game.cpp:3218-3247` and
-  `reference_projects/luanti/src/script/lua_api/l_object.cpp:1816-1832`.
+- **Skill items keep native interaction, not native combat damage.** All
+  skills preserve native empty-hand digging and first-person LMB animation.
+  Node/object press events supplement sampled controls; a fresh press may
+  pick up one visible drop within 4 m. Native enemy punch packets are input
+  only and cannot create damage, rage, threat, wear or procs by themselves.
+  `classes.md` §2b owns current input arbitration and accepted engine limits.
 - **One server-authoritative clock owns all swing-ability damage.** LMB held
   with a swing selected allows attempts; it never creates partial or fast
   ability damage. The combat pass has a 0.05 s accumulator threshold but runs
@@ -287,34 +282,14 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   valid attack hides it immediately and expiry shows it once; an aim miss
   leaves it visible. There is no smooth progress animation and no periodic
   inventory rewrite.
-- **The weapon slot is the sole swing source.** On kit/equipment sync every
-  swing ItemStack mirrors slot `full_punch_interval`, but carries
-  `damage_groups.fleshy = 0`, empty `groupcaps`, `max_drop_level = 0` and
-  `punch_attack_uses = 0`; an empty slot uses the registered hand interval.
-  Zero native damage preserves client animation while preventing builtin PvP
-  knockback before suppression. The authoritative swing rebuilds real full
-  capabilities from the slot, never from a wielded tool. The ability stack
-  takes no equipment wear. The concrete main-hand weapon wears once on qualifying settled damage or
-  effective in-combat healing under the current durability model, while the
-  ability token never spends equipment durability. Swing definitions keep `crumbly`, `snappy`,
-  `oddly_breakable_by_hand` and `dig_immediate` node pointabilities blocking.
-- **Skill selection is live at the attempted swing.** Switching Strike ↔
-  Mighty Blow ↔ Hamstring preserves the weapon clock and reads the new skill.
-  A non-swing/cast boundary stops attempts and discards ordinary tool remainder
-  but preserves due time; lifecycle/class reset clears it. A concrete equipped
-  weapon change starts the new weapon at one full interval, preventing swap
-  spam.
-- **Ordinary hostile tools/fists cannot form a second stream.** Against a
-  Grudgelands mob their raw punch is input only and deals **0 damage**; only a
-  current-ray authoritative swing or an ability punch can damage it. Against a
-  hostile player the native proportional path remains and moves the next full
-  ability swing to at least `now + equipped FPI`. Its transition clears an old
-  bank once; consecutive ordinary PvP packets retain their fractions, and
-  returning to a swing clears the remainder once. Cast use alone preserves
-  ability due time (`mods/ENTITIES/mobs/api.lua:2969-2974`,
-  `mods/PLAYER/grug_abilities/init.lua:1271-1310`, `:2322-2489`).
+- **The weapon slot is the sole swing source.** Ability stacks expose zero
+  native combat damage while retaining native hand digging and animation. Their
+  charge wear is not equipment wear. The server builds actual attacks from the
+  equipped usable weapon; cosmetic getters separately retain broken equipment.
+  Selected-skill/fallback scheduling and click arbitration are defined in
+  `classes.md` §2b. Native tools/fists are not a second combat stream.
 - **One accepted full swing resolves once.** Against players the order is
-  **slot weapon + Strength → selected proc replacement → level scalar (plus
+  **slot weapon + melee attribute (Scout Dexterity, otherwise Strength) → selected proc replacement → level scalar (plus
   mob-level malus when the target is a mob) → one crit → armor → integer
   damage → one dodge → one absorb →
   HP**. mobs_redo commits the proc
@@ -328,15 +303,6 @@ charged effect. Enemy target memory is UI state and never supplies aim.
 - **Accepted mob side effects share the same boundary.** Provocation, loot tag,
   combat/threat/rage callbacks, crit visual and lethal rare/XP credit run only
   after `do_punch` and CMI accept, immediately before health subtraction.
-- **Ordinary tools and fists remain proportional native melee.** They use the
-  wielded source and `clamp(tflp / fpi, 0, 1)`, plus Strength/crit/armor. Their
-  per-player accumulator stores its own target GUID and forfeits damage
-  remainder below 1 plus pending rage credit when an actual damage contribution
-  switches target; it does not use target memory. Target death/leave invalidates
-  Core banks. Wear remains per concrete ItemStack id and is spent once per
-  completed native tool swing; empty/non-tool, creative and use-0 hits consume
-  no wear state. Swing ability items never enter this proportional path.
-
 ### Hostile casts and projectiles (shipped with WP39)
 
 - **Hostile direct casts require current aim.** Charge, Taunt and Smite accept
@@ -345,7 +311,7 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   to acquire a target spends no resource and arms no cooldown. Friendly
   heal/shield casts resolve through currently pointed valid in-range visible
   ally → self, never ally memory. Looking into empty space selects self
-  (user ruling 2026-09-24; implementation pending Round 20).
+  (user ruling 2026-09-24).
 - **All targeted projectiles lock at actual release (Round 17).** The current
   server-validated crosshair hostile must be in range and initially visible;
   no stale enemy memory and no valid target means no shot or mana/ammo payment.

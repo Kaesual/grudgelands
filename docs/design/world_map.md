@@ -70,6 +70,7 @@ quiet interval; pending marker changes must still appear afterward.
 
 Native surface minimap is selected by
 default, subject to client settings and the player's V toggle. It displays terrain
-and the local player's direction arrow only; other player/entity dots are hidden.
+and player markers, including the local player's direction arrow; ordinary NPC
+and mob dots are hidden. Player markers are not filtered by faction or party.
 Party, quest and trainer icons remain on the full atlas. No custom minimap,
 per-viewer marker proxies, client mod or fog of war is introduced.

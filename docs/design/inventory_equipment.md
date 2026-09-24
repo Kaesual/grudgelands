@@ -68,22 +68,13 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   skills carry no item, look as they did before the slot existed and hit
   for the bare-handed baseline. **Weapons are therefore no longer hotbar
   items** — a sword lying in the hotbar drives no skill and no skin.
-  - Swing ability stacks mirror this slot's `full_punch_interval` in a
-    per-stack tool-capability override whenever the kit or equipment syncs,
-    but publish `fleshy = 0`, no digging groupcaps and no attack wear. The
-    interval keeps native animation and direct object acquisition aligned with
-    the slot; zero damage prevents acquisition-only PvP packets from causing
-    builtin knockback. The authoritative held-LMB clock rebuilds the real full
-    damage capabilities from this same slot only when WP39's current server
-    crosshair ray finds a valid hostile; enemy target memory is not an attack
-    source. Their
-    item definitions additionally mark the `crumbly`, `snappy` and
-    `oddly_breakable_by_hand` groupcaps plus the engine's independent
-    `dig_immediate` path as pointability `"blocking"`, so objects remain
-    natively punchable without held LMB continuing into node digging. Because
-    blocked ground can mask a resting drop's native selection box, a fresh
-    Swing LMB press additionally restores builtin-item pickup through a 4 m
-    first-visible-object server ray; nodes and other objects stop that ray.
+  - Ability stacks preserve native held-LMB hand digging and animation while
+    publishing zero native combat damage. The server selects combat, hand digging
+    or pickup from the current crosshair; abilities never borrow tool digging
+    power. Held input can move between combat and digging without releasing.
+    The equipped weapon supplies combat damage and cadence; the skill token
+    takes no equipment wear. See `classes.md` §2b for click arbitration,
+    cooldown fallback, right-click actions and accepted engine limits.
   - **Eligible items carry `grug_equip_weapon`**: sword, dagger, Battle Axe,
     staff, wand and bow across the six metal tiers. Wood/Stone weapons are
     absent. All gathering tools, including Woodcutting Axes, are excluded.
@@ -99,13 +90,13 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     (with a chat line saying so) if the slot cannot take the item. The starter
     torch stays in `main` for the same reason: in the offhand it would cost
     every caster their two-handed staff.
-  - **No class gate.** Weapon families are class *flavor*, not a power
-    ladder (`items_crafting.md` §8.2), so a Mage may equip a greataxe and
-    simply gains nothing from it. The **only** gate on this slot is the
-    item's minimum level. Ordinary T1 weapons use level 1 despite base-stat
-    item level 3; elevated found-item levels retain their own requirement.
-  - The slot is **family-agnostic** — it holds whatever carries the group,
-    including the current bow family, without a second slot.
+  - **Class-family permissions:** Warrior: sword, dagger, Battle Axe;
+    Scout: bow, sword, dagger; Mage and Priest: staff, wand, dagger.
+    All share the Weapon slot. Level and occupied-hand checks also apply.
+    Ordinary T1 weapons require level 1 despite base-stat item level 3;
+    elevated found-item levels retain their own requirement. Common `Usable by`
+    tooltip text lists permitted classes; it never changes with the viewer.
+    Broken items remain visibly equipped but provide no usable combat weapon.
   - **No migration**: weapons stay valid `main` items and nothing of a
     character's is moved behind its back. A character that owns a
     slot-eligible weapon, has finished character creation and has the slot

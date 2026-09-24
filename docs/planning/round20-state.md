@@ -21,14 +21,14 @@ fresh independent reviews. Do not confuse design approval with game validation.
 
 | Lane | Model | State | Owned scope / workspace |
 |---|---|---|---|
-| P1/Q2 creative cards and NPC/content contract | Astra | active | `/root/r20_creative`, `/tmp/grug-r20-creative`; cards/NPC contract |
-| F1/F2 suffocation, minimap, party level, focus | Astra (thread availability) | implemented, review pending | `/root/poi_quest_round_preflight`, `/tmp/grug-r20-ux`; `c785d2b3` |
-| F3 equipment, enchants, durability and broken art | Astra | active | `/root/r20_input_state_review`, `/tmp/grug-r20-gear`; cosmetic slot interface |
-| F4 mobs, recovery, stacking, stun | Astra | queued | queued until slot free; no general crowd-AI rewrite |
-| F5 contextual input and heal targeting | Astra | active preflight | `/root/poi_quest_round_preflight`, same UX worktree; F3 only changes slot_source cosmetic getters |
-| Q1 quest framework | root Astra | implemented, review pending | integration checkout; registry/state/dialog/UI/HUD and compact fixture |
-| P2/P3 authored POI implementation | Sol/Astra | queued | after creative cards/NPC IDs; split content ownership |
-| Q3 quest content | Sol | queued | after shared NPC/quest contract |
+| P1/Q2 creative cards and NPC/content contract | Astra | integrated `e32e9d2d` | `/root/r20_creative`, `/tmp/grug-r20-creative`; cards/NPC contract |
+| F1/F2 suffocation, minimap, party level, focus | Astra (thread availability) | integrated `0cfb377d`; root source review clean, runtime pending | `/root/poi_quest_round_preflight`, `/tmp/grug-r20-ux`; `c785d2b3` |
+| F3 equipment, enchants, durability and broken art | Astra | integrated `f327f8e7`; root source review clean, boundary fixture pending | `/root/r20_input_state_review`, `/tmp/grug-r20-gear`; cosmetic slot interface |
+| F4 mobs, recovery, stacking, stun | root Astra | implemented `d19a3882`; independent review pending | stun stars/crab; no speculative aggro/crowd-AI change |
+| F5 contextual input and heal targeting | Astra | implementation active | `/root/poi_quest_round_preflight`, same UX worktree; F3 only changes slot_source cosmetic getters |
+| Q1 quest framework | root Astra | integrated `dc3cc60f`; independent Astra source review clean, runtime pending | integration checkout; registry/state/dialog/UI/HUD and compact fixture |
+| P2/P3 authored POI implementation | Astra | active | `/root/r20_creative`, creative worktree; geometry, sockets, start_npcs only |
+| Q3 quest content | Astra (thread availability) | active | `/root/r20_input_state_review`, gear worktree; 102 rewrites + 138 new entries |
 | Independent lane reviews | fresh Sol/Astra | queued | read-only before integration |
 | Final integration/docs/gates | root Astra | active | design reconciliation, branch ledger, bounded final validation |
 
@@ -73,9 +73,18 @@ Frozen seams: new regional `r20_anchor_NNN` settlement / `quest_host` socket /
 count=1}` with `turnin_npc=destination`. Existing capital quest shells become
 envoys rather than duplicate NPCs. Creative cards provide exact new cook sockets.
 F3 exposes cosmetic equipment separately from combat getters; F5 leaves
-`slot_source` untouched until integration. F4 has not started.
+`slot_source` untouched until integration. Q1 independent source review by
+`r20_input_state_review`: no confirmed findings. Root independently source-reviewed
+F1/F2 and F3: no confirmed production findings; F3 fixture extension requested
+for actual equipment callbacks and wear/repair boundaries. No runtime executed.
 
-Next: finish creative cards, Q1 documentation and commits; implement F5 after
-its engine feasibility preflight; allocate the next free worker to F4. Then
-split POI construction and quest content using frozen cards. All code still
-needs independent review and the consolidated final runtime gate.
+Latest accepted input limits: native GUI opening can look like release; very
+short air clicks may be missed between control reports. Both explicitly accepted
+by the user; see the input contract receipt. Food: one serving after 1.5 s RMB,
+sound gain 0.5. F4 audit found no reproducible early recovery/collision defect;
+its receipt distinguishes observations from fixed behavior.
+
+Next: finish F5, POIs and Q3; review each independently, including root F4.
+Root is reconciling living design docs. Freeze final bytes, execute compact
+portable pair plus real POI manifest/planner samples, inspect visual artifacts,
+close any findings, then merge main and sync. No remote push.

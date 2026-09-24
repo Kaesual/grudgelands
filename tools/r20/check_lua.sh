@@ -18,12 +18,14 @@ patterns=(
   '[^:/]//|[[:alnum:]_)"] *(&|\||<<|>>) *[[:alnum:]_("]'
   '\brequire[[:space:]]*\(|io\.popen|os\.(execute|exit)|\bminetest\.'
 )
+findings=0
 for index in "${!patterns[@]}"; do
   if rg -n "${patterns[$index]}" "$@"; then
     printf 'sweep %s: inspect hits (comments may match)\n' "$((index+1))" >&2
-    exit 1
+    findings=1
   else
     test "$?" -eq 1
     printf 'sweep %s PASS\n' "$((index+1))"
   fi
 done
+exit "$findings"

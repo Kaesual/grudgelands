@@ -37,7 +37,7 @@ decided specifications under the shared arithmetic in `skill_trees.md`.
 | | |
 |---|---|
 | **Armour** | leather — armor class 2 (`inventory_equipment.md:184-193`) |
-| **Weapons** | bow (ranged); dagger / 1H sword (one-handed melee); greataxe (two-handed melee). The ordinary weapon slot remains family-agnostic, and every melee family uses the same equipped-main-hand formula. |
+| **Weapons** | bow (ranged); dagger / 1H sword (one-handed melee). Battle Axes are Warrior-only. Scout melee and ranged damage use Dexterity; equipped-main-hand authority remains unchanged. |
 | **Resource** | **mana** — ruling 14, decided. The bar uses the class-neutral level pool `round(20 + 5L + 0.66L²)` before mana-percent gear/talents (`combat_stats.md` §2); Intelligence does not add mana |
 | **Trees** | **Quarry** (bow) and **Veil** (blade and evasion) — `skill_trees.md` §2.7/§2.8, named by ruling 27 |
 | **Attributes** | Dexterity-led; growth **+2 Dex / +1 Str / +1 Int** per level, against `combat_stats.md:40-41`'s Warrior +3 Str/+1 Dex, Mage +3 Int/+1 Dex, Priest +1 Str/+2 Int/+1 Dex |
@@ -122,7 +122,8 @@ The active contract is:
   owns named bow enchantments. Leatherworker makes the optional four-stack
   Offhand quiver at Apprentice.
 - `combat_stats.md` §2 defines the delivered bow flow: a bow is drawn up to a
-  maximum and releases a targeted homing arrow; draw affects damage and nominal
+  maximum by holding RMB and releases a targeted homing arrow on RMB release;
+  Loose LMB uses melee Strike or hand digging. Draw affects damage and nominal
   speed. No valid release-time target means no shot or ammo payment.
 - The six bow identities and their dedicated centre-grip wield pose are
   delivered from licensed LotT arc sprites. The Scout runtime consumes those

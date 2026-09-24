@@ -89,3 +89,9 @@ Scout `#6B7D32`; all-green remains `#4CAF50`, backing `#141414`.
 Only the viewer's HUD changes. Offline rows remain labelled offline with no
 fabricated live HP. The existing HUD visibility preference is independent.
 Settings changes and health/class transitions update changed HUD fields only.
+
+## Level presentation
+
+Member and invitation labels include `[Lv X]`. Online levels are live; an
+offline member retains the last known level in the persisted group record.
+This does not introduce a separate global offline-player database.

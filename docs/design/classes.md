@@ -39,14 +39,9 @@ Core principles:
   Reconnect and talent changes normalize existing copies without re-granting
   discarded ones. Left click attacks or casts; the wear bar shows the skill's
   charge or cooldown. Appearance follows §2c.
-- **An ability item picks up dropped items like a weapon does.** Swing skills
-  have no `on_use`, but their no-dig pointabilities can mask a ground-level
-  item's native selection box. A fresh LMB press therefore checks the first
-  visible object on the same 4 m eye ray server-side and calls the builtin
-  pickup path only when it is a dropped item. Cast skills retain the WP38
-  `on_use` pickup bridge with the same server-checked 4 m maximum and first-visible
-  blocker rule. Combat range and range talents never extend pickup reach;
-  clicking loot does **not** cast.
+- **Skills pick up drops within hand reach.** A fresh physical LMB press
+  attempts pickup of the first visible dropped item within 4 m exactly once.
+  Combat range never extends pickup reach; pickup does not also cast.
 - **No global cooldown** (removed 2026-08-09 with the proc model of §2b;
   it was 1.0 s from 2026-08-06 to WP35). A GCD existed to stop instant
   chaining, and the two limiters that replaced it do that job better and
@@ -55,7 +50,7 @@ Core principles:
   delay — and against §2b's swing skills it would have capped attack speed,
   which is the defect that already made the Strike an exception.
 - **Target memory is not action aim authority** (healing revision decided
-  2026-09-24; implementation pending Round 20). Enemy and
+  2026-09-24). Enemy and
   ally use separate 8 s slots. The enemy slot feeds only the Target Frame and
   other UI context: no melee hit, hostile cast or projectile may fall back to
   it. Hostile damage always follows the current crosshair ray. The ally slot
@@ -70,7 +65,7 @@ Core principles:
   same-faction player. Friendly skills resolve to a currently pointed valid
   ally within the skill's range and line of sight, otherwise the caster.
   There is no remembered-ally fallback; looking into empty space always selects
-  self (user ruling 2026-09-24; implementation pending Round 20).
+  self (user ruling 2026-09-24).
   Service NPCs, guards and mobs are not player party
   members and cannot receive player heals or shields. `self`
   ignores all pointed and remembered objects and anchors the
@@ -158,158 +153,101 @@ Core principles:
   ability stacks mirror the equipped weapon's interval for native
   animation/interaction but publish zero damage; their combat packets are
   input only, and the authoritative held loop builds a full slot-fed swing
-  against the current server ray. Tools and fists keep their own native
-  proportional pipeline while moving the next full ability swing out on the
-  shared cadence bound.
+  against the current server ray. Ordinary tools and fists do not initiate player combat; only selected
+  skills may attack.
 - **Threat hooks are stubs in WP4** (`grug_core.add_threat`,
   `add_heal_threat`): abilities already report their threat values
   (combat_stats §4: tank abilities ×3, healing ×0.5); WP6 replaces the
   stubs with the real threat table. Taunt's forced-target effect works
   already via mobs_redo `do_attack(player, force)`.
 
-## 2b. How a skill fires — swing skills and cast skills
+## 2b. Contextual skill input
 
-Shipped with **WP39 on 2026-08-10**. It retains WP38's proven separation of native
-animation from authoritative full-swing damage, but replaces WP38's implicit
-enemy-lock targeting with current crosshair authority. It also replaces both
-the model of
-2026-08-08, in which every skill owned the melee clock while its own
-cooldown ran, and WP38's short-lived server-side toggle loop. Rationale and
-the melee side of it: `combat_stats.md` §2.
+All selected skills support native empty-hand digging and zero native combat
+damage. Swing versus cast describes the effect, not a different mouse binding.
+Only skills initiate player combat; ordinary tools retain their gathering role.
+The equipped Weapon slot is the combat source, never a weapon in the hotbar.
 
-Every ability is one of **two kinds**, and the kind is a property of the
-ability, declared where it is registered:
+### Left click and held input
 
-1. **Swing skills** — the item has no `on_use`, so Luanti keeps native
-   first-person held-LMB animation. A bounded server ray restores dropped-item
-   pickup where the no-dig pointabilities mask it. Against enemies native punch
-   packets are input only: one server-authoritative weapon clock produces a
-   full attack only when the current eye ray contains a valid hostile. The
-   selected skill's effect rides on that attempted swing when its own commit
-   conditions succeed. Today exactly the three melee abilities: Strike, Mighty
-   Blow, Hamstring.
-2. **Cast skills** — a discrete action that is not a weapon swing: heals,
-   shields, Blink, Frost Nova, Smite, Charge, Taunt. A gap closer is
-   wanted *now*, from 10 m, and a heal must not require punching the
-   patient. These keep the familiar shape: a cost, a cooldown, a target.
+The current first visible crosshair target determines the action. Held LMB may
+move between combat, hand digging and empty space without releasing. Every
+operation checks its own reach: 4 m interaction/digging, 3 m Strike, and the
+selected spell's authored range. Solid terrain and intervening objects matter.
 
-The whole Mage and Priest kit consists of cast skills; WP39 did not change
-that. Future ranged auto-attacks may arm their own ranged procs, but equipping a
-bow or wand does not replace Fireball's targeted-projectile
-behavior.
+- **Hostile:** use the selected applicable ready skill immediately. If it is
+  unavailable (including cooldown, resources or applicability), use ordinary
+  melee Strike when in range. Holding repeats at the appropriate clocks;
+  once the selected skill is ready it takes precedence again. An applicable
+  heal here targets self, never the hostile or a remembered ally.
+- **Friendly player:** use an applicable heal/support action on the currently
+  aimed eligible ally. No Strike fallback or attack through that ally.
+- **Hand-diggable node:** dig with hand capabilities, never equipped-weapon
+  mining power. On the initial press only, a competing usable self/support
+  skill waits approximately 200 ms: short release casts; continued hold digs.
+  Without such a competing action, digging begins immediately. Leaving the
+  initial node discards its pending release-cast. Later held retargeting enters
+  digging directly; a cooldown becoming ready cannot interrupt the dig.
+- **Dropped item:** one pickup attempt at the beginning of each physical press,
+  including when inventory is full. That decision does not also cast. Holding
+  may subsequently dig or attack, but another drop requires another press.
+- **Empty or otherwise inapplicable context:** one applicable self/support
+  activation per press, otherwise no mechanical effect. Retargeting while held
+  may enter combat or digging.
 
-### Right-click with a skill in hand opens the door
+Block progress belongs to the current node and is lost on retargeting. Apples,
+plants and torches require positive digging time; the initial torch timing is
+0.3 s. Actual removal preserves normal node callbacks, protection, `can_dig`,
+drops and empty-hand tool restrictions. A skill's charge wear is never mining
+wear. Crack feedback may begin during click arbitration, but removal may not.
 
-Decided 2026-09-15 (playtest round 1). **A skill in hand never costs the player
-a door.** Right-click with an ability item wielded goes to the pointed node's own
-`on_rightclick` — **every door, gate and trapdoor, and the chests**, i.e. exactly
-the nodes whose definition carries that callback — for both kinds of skill, and
-it does so even when the skill's own pointabilities hide that node from the
-client (a wooden door is `oddly_breakable_by_hand`, which a swing skill declares
-`"blocking"`, so the client reports "pointing at nothing"; the server then
-re-finds the node itself).
+### Scheduling and effect boundaries
 
-Three bounds:
+Selected skill and fallback Strike are mutually exclusive in one decision.
+After a successful skill, Strike must wait at least the actual weapon interval,
+without shortening a later existing deadline. Skill cooldowns/cast intervals
+still apply; no global cooldown is added. Early clicks, release/repress,
+retargeting and skill swaps cannot reset the weapon clock. Concrete equipped
+weapon changes start a full interval; lag never replays missed attacks.
 
-- **Sneak + right-click keeps whatever right-click otherwise means**, so a skill
-  may still be bound to it later while pointing at a door.
-- **Hand distance only** — 4 m, the engine's default item range — on both
-  callbacks, so a 20 m Fireball cannot flip a lever across a courtyard.
-- **An object click stays the object's.** Right-clicking a vendor opens the shop
-  and nothing else; the node behind him is not touched.
+Combat and healing actions repeat against appropriate aimed targets. Movement
+utilities such as Blink and Sprint activate once per physical press, even if
+cooldown expires during the hold; Frost Nova remains a combat action. In empty
+space self/support actions fire only once per press.
 
-Right-click has never cast and still does not; casting stays on `on_use`.
+A melee attempt uses a single-use authoritative transaction for the current
+ray-selected hostile. Native skill punch packets are acquisition/input only,
+not another damage stream. Aim misses do not spend the weapon interval;
+a valid attempted attack does, including a later dodge, immunity or rejection.
+Existing damage, resource/proc acceptance, PvP, absorb and wear boundaries remain.
+Enemy target-frame memory is presentation only and never authorizes an attack.
+Friendly spells choose the current eligible visible in-range ally, otherwise
+self; already-applied periodic effects retain their original recipient.
 
-**Not covered, deliberately:** a node whose right-click is the engine's *node
-meta formspec* and which has no `on_rightclick` at all — signs, the bookshelf,
-the vessels shelf, beds, the furnace. The client opens those itself and answers
-them on a packet only a client-opened form can send, so with a *swing* skill
-wielded (the only case where the client reports nothing) they stay unopenable:
-switch to any other hotbar slot. This is a limitation of the blocking
-pointabilities, not of the rule above, and it is written down rather than
-promised away.
+### Right click
 
-### Rules for swing skills
+A short RMB interaction opens the aimed NPC, door, container or other normal
+interactive target. An interaction owns that press until release and cancels
+pending item actions; it cannot also consume food or launch a bow. Interaction
+reach remains 4 m even with a long-range spell selected.
 
-- **A skill never makes you slower or weaker than the bare weapon.** Every
-  granted swing ItemStack mirrors `full_punch_interval` from the equipped
-  weapon slot, but advertises `fleshy = 0`, with no digging groupcaps and no
-  item wear. Zero native damage prevents the acquisition packet from producing
-  builtin PvP knockback before the server callback suppresses it; the
-  authoritative swing rebuilds real damage from the slot. Its item definition
-  also marks the hand digging
-  groups (`crumbly`, `snappy`, `oddly_breakable_by_hand`) and the engine's
-  independent `dig_immediate` path as `pointabilities.nodes = "blocking"`:
-  objects remain natively punchable when their ray wins; the fresh-press loot
-  bridge covers ground-level drops without making nodes transparent. Killing a
-  mob while holding LMB cannot roll straight into digging the ground or leaves. An empty slot
-  mirrors the registered hand.
-  The capabilities are interaction metadata, not a second damage stream.
-- **Every skill charges on its own timer, and the timer runs always** —
-  including while the skill is *not* selected. That is what makes the
-  hotbar a rotation: several skills come up during a fight and are spent in
-  consecutive swings.
-- **Charges do not stack.** One charge maximum, and a full charge never
-  decays. Stacking would bring back burst hoarding; decay would punish a
-  player for looking at the map.
-- **Hold, click-spam and ordinary hostile tool/fist input share one per-player
-  ability cadence bound.** LMB may keep the client's fast cosmetic attack
-  animation running, but it creates no proportional or fast-attack ability
-  damage. Early clicks neither attack nor move the due time. Every actual
-  hostile tool/fist combat packet pushes the next full ability swing at least
-  one equipped-weapon interval out, preventing a second damage stream;
-  consecutive tool packets retain their own proportional accumulator. Cast use
-  alone keeps the due time unchanged. A real attack carries at most 0.1 s, and
-  never more than half an interval, of server-step lateness into the next due
-  time. At most one swing runs per throttled pass, so lag never replays missed
-  swings.
-- **Readiness waits for aim.** When the weapon interval expires, the full swing
-  remains ready. While a swing skill is selected and LMB is held, each
-  throttled combat pass raycasts from the player's eye through the current
-  crosshair to the skill range (3 m today). A hostile living mob/player must be
-  the first valid visible combat object; walkable nodes block. No target, a
-  friendly target, a blocking node or out-of-range aim is an **aim miss**: it
-  deals nothing and does not advance the weapon clock. As soon as the server
-  observes a valid target on that ray, it starts one full attack and advances
-  the clock. A subsequent evade, immunity, PvP refusal, dodge, full absorb or
-  callback cancellation is a **combat miss** and still consumes the interval,
-  while its existing no-rage/no-cost/no-charge/no-effect result remains.
-- **A due landed swing with a charged skill selected fires the effect
-  and resets that skill's charge.** Only the *selected* skill is read at the
-  due instant, so only one effect can ride on one swing. Evade, immunity, PvP
-  refusal, dodge and full absorb pay no cost, consume no charge and fire no
-  effect.
-- **The crosshair target is live.** No stored enemy ObjectRef authorizes a
-  swing. Moving the crosshair to another hostile changes the next possible
-  target immediately; looking away stops damage immediately without clearing
-  readiness. An attempted or accepted hostile hit may still refresh the enemy
-  Target Frame's 8 s memory, but that memory cannot be read back as combat aim.
-- **Clock boundaries are explicit.** Switching among swing skills preserves
-  the clock and reads the new selection live. Wielding a non-swing item or
-  entering a cast stops loop input and discards ordinary tool/fist remainder,
-  but preserves the weapon due time: swing → tool/cast → swing cannot grant an
-  instant hit. Death, respawn, class sync and disconnect clear clock state. A
-  concrete equipped-weapon change starts the new weapon at one full interval,
-  so A→B→A cannot manufacture immediate hits. Owner lifecycle also clears both
-  target slots; player target death/leave clears all locks that reference that
-  ObjectRef.
-- **The authoritative entry is exact and single-use.** Its opaque transaction
-  token names the expected attacker and concrete target and can be claimed
-  once. A synchronous callback-triggered second punch by that attacker, on the
-  same or another target, is suppressed before damage or proc preparation.
-- **The resource cost is paid at the proc, and an unaffordable proc does
-  not consume the charge.** This is the decision layer: Mighty Blow's rage
-  is the reason to keep swinging with it rather than to spend the rage
-  elsewhere. Silently not firing is correct — a warning on every swing
-  would be noise.
-- **Rotation is the hotbar.** Keys 1–8 pick which effect is armed; no cast
-  click is needed to switch. Switching between swing skills preserves proc
-  cadence, so the newly selected charged skill rides on the next due swing.
-- **There is no toggle.** Native no-`on_use` interaction supplies the fast
-  animation; the bounded fresh-press ray supplies loot pickup; the server loop
-  supplies the one crosshair-authoritative damage stream only while LMB is
-  held. Native swing-item combat packets themselves deal no
-  damage/rage/threat/wear/proc.
+Loose is the explicit exception to LMB casting: **LMB uses melee Strike or hand
+digging; hold RMB to draw, release RMB to shoot.** Its tooltip states both.
+Other instant bow skills retain their LMB casts and authored ammo/cooldowns.
+Food requires 1.5 s uninterrupted RMB hold for one serving and eating sound at
+half gain; release rearms consumption. Active RMB food/draw suppresses LMB
+combat/digging. Seeds, buckets, hoes, fishing, mounts and ordinary placed items
+retain their own context-appropriate actions.
+
+### Cancellation and native-client limits
+
+Stun, death and item swap cancel pending actions. Our own NPC/node interactions
+cancel before opening. Native inventory, pause, chat and focus loss are observed
+as ordinary release: they may launch a drawn bow or resolve a pending short
+skill click. Very fast air clicks (under roughly 90 ms at the default server
+step) can fall between control reports; node/object events supply additional
+press evidence. Both limitations are explicitly accepted for the playtest;
+no client changes are required or promised.
 
 ### The weapon-ready reticle
 
@@ -341,8 +279,7 @@ promised away.
 - Fireball retains 6% base mana, 20 m initial range, 20 m/s nominal speed and
   baseline weapon damage + spell power, with existing talent modifiers.
 - Friendly heals and shields resolve through currently pointed valid in-range
-  visible ally → self, with no ally-memory fallback (user ruling 2026-09-24;
-  implementation pending Round 20). A hostile, NPC, guard, item or dead player
+  visible ally → self, with no ally-memory fallback (user ruling 2026-09-24). A hostile, NPC, guard, item or dead player
   is not an eligible ally target. Input routing may consume a drop click for
   pickup before a spell is invoked; that does not alter spell target resolution.
 
@@ -395,7 +332,7 @@ it, including one that has not picked a class yet.
 
 | Ability | Cost | Charge | Effect |
 |---------|------|--------|--------|
-| Strike | free | none — it is the plain attack | Native melee (3 m) with the item in the weapon slot: weapon damage + floor(Str/10), crit ×1.5, threat ×1. Grants the Warrior 8 rage per landed swing (§1, §3). Hold or click LMB. |
+| Strike | free | none — it is the plain attack | Native melee (3 m) with the item in the weapon slot: weapon damage + floor(melee attribute/10) (Scout Dex, otherwise Str), crit ×1.5, threat ×1. Grants the Warrior 8 rage per landed swing (§1, §3). Hold or click LMB. |
 
 - **Granted to every class and to a classless character**, and placed
   **first in the hotbar** so it lands on key 1 for everyone — a fresh
