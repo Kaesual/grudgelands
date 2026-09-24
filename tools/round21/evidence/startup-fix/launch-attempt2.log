@@ -1,0 +1,12 @@
+staged probe: startup_probe
+headless boot: FAIL (port 32866, 60 s)
+log: /tmp/grudgelands-headless.Zvxhh4/server.log
+236:ERROR[Main]: ModError: Runtime error from mod 'grug_jobs' in callback on_mods_loaded(): ...rudgelands/mods/PLAYER/grug_jobs/basics_presentation.lua:40: missing Basics catalog declaration: "grid\0grug_gear:arrow\0normal\0003\0false\0\1\1grug_materials:bronze_bar\1\1grou
+237:ERROR[Main]: p:stick\1\1group:stick"
+238:ERROR[Main]: stack traceback:
+239:ERROR[Main]: 	[C]: in function 'assert'
+240:ERROR[Main]: 	...rudgelands/mods/PLAYER/grug_jobs/basics_presentation.lua:40: in function 'bind'
+241:ERROR[Main]: 	...xhh4/user/games/grudgelands/mods/PLAYER/grug_jobs/ui.lua:191: in function 'engine_general_recipes'
+242:ERROR[Main]: 	...xhh4/user/games/grudgelands/mods/PLAYER/grug_jobs/ui.lua:200: in function <...xhh4/user/games/grudgelands/mods/PLAYER/grug_jobs/ui.lua:199>
+243:ERROR[Main]: 	/app/share/luanti/builtin/common/register.lua:27: in function </app/share/luanti/builtin/common/register.lua:13>
+kept: /tmp/grudgelands-headless.Zvxhh4

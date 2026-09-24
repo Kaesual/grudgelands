@@ -35,7 +35,9 @@ function M.bind(records)
 		local recipe = records[index]
 		local key = M.route_key(recipe)
 		local declaration = M.declarations[key]
-		assert(declaration, "missing Basics catalog declaration: " .. key)
+		-- Route keys contain NUL separators; escape them so engine logs retain
+		-- the item and recipe details instead of truncating after the station.
+		assert(declaration, "missing Basics catalog declaration: " .. string.format("%q", key))
 		assert(not used[key], "duplicate runtime Basics route: " .. key)
 		used[key] = true
 		if declaration.owner == "general" then

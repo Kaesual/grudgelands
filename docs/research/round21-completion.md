@@ -7,6 +7,10 @@ local Luanti game on 2026-09-24. User GUI acceptance remains pending.**
 [approved plan](../planning/round21-mapgen-and-playtest-fixes.md),
 [playtest](round21-playtest.md).
 
+The first user startup exposed two missed registration blockers, now corrected
+and checked with a real isolated engine start: [startup follow-up](round21-startup-fix.md).
+Its evidence supersedes this receipt for fish disposition and arrow catalog binding.
+
 ## Scope
 
 - Shared complete street junctions, corrected Kezamba core/gate landings,
