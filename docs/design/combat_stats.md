@@ -343,9 +343,9 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   only a currently pointed valid hostile within their individual range and a
   server line-of-sight check. Enemy target memory is never a fallback. Failure
   to acquire a target spends no resource and arms no cooldown. Friendly
-  heal/shield casts always resolve through pointed valid ally → valid in-range
-  ally memory → self; any pointed invalid object enters that fallback chain
-  (user ruling 2026-09-17).
+  heal/shield casts resolve through currently pointed valid in-range visible
+  ally → self, never ally memory. Looking into empty space selects self
+  (user ruling 2026-09-24; implementation pending Round 20).
 - **All targeted projectiles lock at actual release (Round 17).** The current
   server-validated crosshair hostile must be in range and initially visible;
   no stale enemy memory and no valid target means no shot or mana/ammo payment.

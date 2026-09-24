@@ -54,22 +54,24 @@ Core principles:
   a **resource**. A flat second on top of both only added an invisible
   delay — and against §2b's swing skills it would have capped attack speed,
   which is the defect that already made the Strike an exception.
-- **Target memory is not hostile aim authority** (shipped with WP39). Enemy and
+- **Target memory is not action aim authority** (healing revision decided
+  2026-09-24; implementation pending Round 20). Enemy and
   ally use separate 8 s slots. The enemy slot feeds only the Target Frame and
   other UI context: no melee hit, hostile cast or projectile may fall back to
   it. Hostile damage always follows the current crosshair ray. The ally slot
-  remains an actual heal/shield fallback because tracking a moving party member
-  is a different interaction. Owner death, respawn, disconnect or class sync
+  must not redirect heals or shields; those use a currently pointed valid ally
+  or the caster. Owner death, respawn, disconnect or class sync
   clears both slots, and a dead/unloaded/left target is invalidated.
 - **Every ability declares one target kind.** `hostile` requires a current
   living hostile player or combat-capable mob; a client label or remembered
   target cannot override the server's faction check. Civilian non-combatants
   are never hostile targets: direct casts refuse them, projectiles pass through
   them and hostile area effects skip them. `friendly` accepts another living
-  same-faction player. Friendly skills always resolve: a pointed valid ally is
-  used and locked; every other pointed result follows the same path as no
-  explicit object — a valid in-range ally-memory target, otherwise the caster
-  (user ruling 2026-09-17). Service NPCs, guards and mobs are not player party
+  same-faction player. Friendly skills resolve to a currently pointed valid
+  ally within the skill's range and line of sight, otherwise the caster.
+  There is no remembered-ally fallback; looking into empty space always selects
+  self (user ruling 2026-09-24; implementation pending Round 20).
+  Service NPCs, guards and mobs are not player party
   members and cannot receive player heals or shields. `self`
   ignores all pointed and remembered objects and anchors the
   cast on its user. Strike, Charge, Mighty Blow, Hamstring, Taunt, Fireball and
@@ -338,10 +340,11 @@ promised away.
   shared Round 17 contract, also used by non-player projectiles.
 - Fireball retains 6% base mana, 20 m initial range, 20 m/s nominal speed and
   baseline weapon damage + spell power, with existing talent modifiers.
-- Friendly heals and shields always resolve through pointed valid ally → the
-  separate valid in-range 8 s ally-memory target → self. A pointed hostile,
-  NPC, guard, item or dead player enters that same fallback chain rather than
-  refusing the cast (user ruling 2026-09-17).
+- Friendly heals and shields resolve through currently pointed valid in-range
+  visible ally → self, with no ally-memory fallback (user ruling 2026-09-24;
+  implementation pending Round 20). A hostile, NPC, guard, item or dead player
+  is not an eligible ally target. Input routing may consume a drop click for
+  pickup before a spell is invoked; that does not alter spell target resolution.
 
 ### The charge bar
 
@@ -522,9 +525,9 @@ moves into the talent tree.
 | Ability | Cost | Cooldown | Effect |
 |---------|------|----------|--------|
 | Smite | 5% base mana | 2 s | Current-crosshair 20 m hit with no enemy-memory fallback: 1.5 × (baseline weapon + spell power), then the damage fit. Solo viability. |
-| Flash Heal | 8% base mana | 4 s | Heals 25% of the class-neutral base pool, with spell power as a percentage bonus. Resolves pointed ally (15 m) → valid ally memory → self. Threat: 0.5× effective healing (WP6). |
-| Power Word: Shield | 8% base mana | 10 s | Resolves pointed ally → valid ally memory → self; soaks 25% of the class-neutral base pool plus the spell-power percentage for 15 s or until consumed. |
-| Renew *(talent)* | 6% base mana | 8 s | Resolves pointed ally → valid ally memory → self; heals 8% of the class-neutral base pool plus the spell-power percentage every 3 s for 12 s. Unlocked via the Mercy tree (WP11). |
+| Flash Heal | 8% base mana | 4 s | Heals 25% of the class-neutral base pool, with spell power as a percentage bonus. Resolves currently pointed valid ally (15 m) → self. Threat: 0.5× effective healing (WP6). |
+| Power Word: Shield | 8% base mana | 10 s | Resolves currently pointed valid ally → self; soaks 25% of the class-neutral base pool plus the spell-power percentage for 15 s or until consumed. |
+| Renew *(talent)* | 6% base mana | 8 s | Resolves currently pointed valid ally → self; heals 8% of the class-neutral base pool plus the spell-power percentage every 3 s for 12 s. Unlocked via the Mercy tree (WP11). |
 
 ## 6. Explicitly deferred
 
