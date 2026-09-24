@@ -31,8 +31,13 @@ function grug_quests.register_quest(id, def)
 	assert(type(def.objectives) == "table" and #def.objectives > 0)
 	for _, objective in ipairs(def.objectives) do
 		assert(integer(objective.count) and objective.count > 0)
-		assert(objective.type == "item" or objective.type == "kill")
+		assert(objective.type == "item" or objective.type == "kill" or objective.type == "talk")
 		if objective.type == "item" then assert(type(objective.item) == "string")
+		elseif objective.type == "talk" then
+			assert(type(objective.npc) == "string" and objective.count == 1,
+				"A conversation objective names one destination NPC")
+			assert(#def.objectives == 1 and objective.npc == def.turnin_npc,
+				"Travel handoffs contain only a conversation at their turn-in NPC")
 		else
 			objective.mobs = objective.mobs or {objective.mob}
 			assert(#objective.mobs > 0)
@@ -86,6 +91,8 @@ function grug_quests.validate_registry()
 		for _, objective in ipairs(def.objectives) do
 			if objective.type == "item" then
 				assert(core.registered_items[objective.item], "Unknown quest item: " .. id)
+			elseif objective.type == "talk" then
+				assert(npcs[objective.npc], "Unknown conversation NPC: " .. id)
 			else
 				for _, mob in ipairs(objective.mobs) do
 					assert(core.registered_entities[mob], "Unknown quest mob: " .. id)

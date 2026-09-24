@@ -45,12 +45,12 @@ local function progress(player, def, active, snapshot)
 	local counts, rows, ready = table.copy(snapshot or holdings(player)), {}, true
 	for index, objective in ipairs(def.objectives) do
 		local count
-		if objective.type == "kill" then count = active[index] or 0
+		if objective.type == "kill" or objective.type == "talk" then count = active[index] or 0
 		else
 			count = math.min(objective.count, counts[objective.item] or 0)
 			counts[objective.item] = (counts[objective.item] or 0) - count
 		end
-		rows[index] = {type = objective.type, item = objective.item, mobs = objective.mobs,
+		rows[index] = {type = objective.type, item = objective.item, mobs = objective.mobs, npc = objective.npc,
 			count = count, required = objective.count, description = objective.description}
 		if count < objective.count then ready = false end
 	end
@@ -76,7 +76,7 @@ function Q.npc_quests(player, npc)
 			(not def.faction or def.faction == grug_factions.get_faction(player)) and
 			(not def.race or def.race == grug_classes.get_race(player))
 		for _, prior in ipairs(def.prerequisites) do
-			if not state.completed[prior] and not state.active[prior] then relevant = false end
+			if not state.completed[prior] then relevant = false end
 		end
 		local active = state.active[id]
 		if relevant and (active and def.turnin_npc or def.npc) == npc then
@@ -109,6 +109,25 @@ function Q.accept(player, id)
 	save(player, state)
 	changed(player)
 	return true
+end
+-- Called only after the dialogue owner verifies the live NPC and handoff
+-- distance. Merely viewing its atlas marker or quest-log entry earns no credit.
+function Q.credit_conversation(player, npc)
+	if not Q.registered_npcs[npc] then return false end
+	local state, dirty = load(player), false
+	for id, counters in pairs(state.active) do
+		local def = Q.registered_quests[id]
+		if permitted(player, def, state) then
+			for index, objective in ipairs(def.objectives) do
+				if objective.type == "talk" and objective.npc == npc and
+						(counters[index] or 0) < 1 then
+					counters[index], dirty = 1, true
+				end
+			end
+		end
+	end
+	if dirty then save(player, state); changed(player) end
+	return dirty
 end
 local function untrack(state, id)
 	for i = #state.tracked, 1, -1 do

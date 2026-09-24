@@ -21,12 +21,12 @@ fresh independent reviews. Do not confuse design approval with game validation.
 
 | Lane | Model | State | Owned scope / workspace |
 |---|---|---|---|
-| P1/Q2 creative cards and NPC/content contract | Astra | queued | dedicated creative worktree; plan/art records only initially |
-| F1/F2 suffocation, minimap, party level, focus | Sol | queued | dedicated UX worktree; no abilities input or equipment files |
-| F3 equipment, enchants, durability and broken art | Astra | queued | dedicated gear worktree; coordinate skill-skin seam |
+| P1/Q2 creative cards and NPC/content contract | Astra | active | `/root/r20_creative`, `/tmp/grug-r20-creative`; cards/NPC contract |
+| F1/F2 suffocation, minimap, party level, focus | Astra (thread availability) | implemented, review pending | `/root/poi_quest_round_preflight`, `/tmp/grug-r20-ux`; `c785d2b3` |
+| F3 equipment, enchants, durability and broken art | Astra | active | `/root/r20_input_state_review`, `/tmp/grug-r20-gear`; cosmetic slot interface |
 | F4 mobs, recovery, stacking, stun | Astra | queued | queued until slot free; no general crowd-AI rewrite |
-| F5 contextual input and heal targeting | Astra | queued | after F3 shared-file interface freeze |
-| Q1 quest framework | Sol | queued | quest state/registry/UI; not content authoring |
+| F5 contextual input and heal targeting | Astra | active preflight | `/root/poi_quest_round_preflight`, same UX worktree; F3 only changes slot_source cosmetic getters |
+| Q1 quest framework | root Astra | implemented, review pending | integration checkout; registry/state/dialog/UI/HUD and compact fixture |
 | P2/P3 authored POI implementation | Sol/Astra | queued | after creative cards/NPC IDs; split content ownership |
 | Q3 quest content | Sol | queued | after shared NPC/quest contract |
 | Independent lane reviews | fresh Sol/Astra | queued | read-only before integration |
@@ -59,6 +59,23 @@ if needed, with a five-minute ceiling. GUI testing belongs to the user.
 
 ## Current evidence / next action
 
-Branch created; contracts and authorization pointers being recorded. Next:
-commit approved planning baseline, create isolated native-agent worktrees and
-start the three first-wave lanes. No runtime tests executed yet.
+Approved planning baseline committed as `32c03a4d`. Implementation branches
+`wp20-creative`, `wp20-ux` and `wp20-gear` start there. All worktrees are under
+`/tmp/grug-r20-*`; shared references and parser binaries remain read-only in
+the primary checkout. No runtime tests executed yet.
+
+New native Sol thread creation and revival both hit the session thread limit.
+Reuse the three existing Astra threads; no provider CLI workaround. Preserve
+independent review by assigning each lane to a non-authoring agent later.
+
+Frozen seams: new regional `r20_anchor_NNN` settlement / `quest_host` socket /
+`r20_anchor_NNN_host` NPC; talk objective `{type="talk", npc=destination,
+count=1}` with `turnin_npc=destination`. Existing capital quest shells become
+envoys rather than duplicate NPCs. Creative cards provide exact new cook sockets.
+F3 exposes cosmetic equipment separately from combat getters; F5 leaves
+`slot_source` untouched until integration. F4 has not started.
+
+Next: finish creative cards, Q1 documentation and commits; implement F5 after
+its engine feasibility preflight; allocate the next free worker to F4. Then
+split POI construction and quest content using frozen cards. All code still
+needs independent review and the consolidated final runtime gate.

@@ -152,3 +152,9 @@ catalog values before any applicable racial modifier; no runtime level scaling.
 Ordinary rewards use 15%, 20% or 25% of the intended level interval; the camp
 finale uses 35%. Kill XP earned while doing the objective is additional and
 continues to use the shared participation/split rules.
+
+Round 20 conversation-only travel handoffs use the existing light/lesson rate:
+15% of the authored target-level interval, rounded to a fixed integer catalog
+reward. They award no kill XP and do not scale to the receiving player's level.
+Comparable light quests provide the coin budget; no new reward currency or
+travel-distance formula is introduced.

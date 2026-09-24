@@ -23,6 +23,7 @@ end
 function Q.open_npc(player, entity, selected, notice)
 	local id = npc_id(entity)
 	if not id or not in_reach(player, entity) then return false end
+	Q.credit_conversation(player, id)
 	local rows = Q.npc_quests(player, id)
 	if #rows == 0 then return false end
 	local esc, entries = core.formspec_escape, {}
@@ -37,8 +38,16 @@ function Q.open_npc(player, entity, selected, notice)
 			local registered = core.registered_entities[name] or {}
 			mob_names[#mob_names + 1] = registered.description or name
 		end
-		detail = detail .. (objective.description or (objective.type == "item" and
-			("Bring " .. (core.registered_items[objective.item].description or objective.item)) or ("Defeat " .. table.concat(mob_names, ", ")))) .. " × " .. objective.count .. "\n"
+		local subject = objective.description
+		if not subject then
+			if objective.type == "item" then
+				subject = "Bring " .. (core.registered_items[objective.item].description or objective.item)
+			elseif objective.type == "talk" then
+				local destination = Q.registered_npcs[objective.npc]
+				subject = "Speak with " .. (destination and destination.title or objective.npc)
+			else subject = "Defeat " .. table.concat(mob_names, ", ") end
+		end
+		detail = detail .. subject .. " × " .. objective.count .. "\n"
 	end
 	detail = detail .. "\nRewards: " .. def.rewards.xp .. " XP, " .. grug_money.format(def.rewards.copper)
 	for _, item in ipairs(def.rewards.items) do

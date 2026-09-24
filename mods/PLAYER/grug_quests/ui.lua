@@ -30,6 +30,9 @@ local function objective_label(objective)
 	local subject
 	if objective.type == "item" then
 		subject = "Bring " .. item_label(objective.item)
+	elseif objective.type == "talk" then
+		local npc = grug_quests.registered_npcs[objective.npc]
+		subject = "Speak with " .. (npc and npc.title or objective.npc)
 	else
 		local names = {}
 		for _, name in ipairs(objective.mobs or {}) do names[#names + 1] = mob_label(name) end

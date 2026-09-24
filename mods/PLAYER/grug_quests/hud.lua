@@ -7,6 +7,9 @@ local function objective_text(objective)
 		local def = core.registered_items[objective.item]
 		local description = def and def.description ~= "" and def.description or objective.item
 		subject = "Bring " .. (description:match("^[^\n]+") or objective.item)
+	elseif objective.type == "talk" then
+		local npc = grug_quests.registered_npcs[objective.npc]
+		subject = "Speak with " .. (npc and npc.title or objective.npc)
 	elseif not subject or subject == "Defeat named threat" then
 		local names = {}
 		for _, name in ipairs(objective.mobs or {}) do
