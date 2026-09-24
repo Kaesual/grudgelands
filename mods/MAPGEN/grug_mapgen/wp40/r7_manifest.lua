@@ -37,8 +37,9 @@ return function(canonical, raw_sha256, settlement_order)
 	-- Only the gathering limb changes; native inputs and the 157-source roster stay.
 	-- R10 MAP-B adds two soil rows and 22 P9G nodes/rules; decoded template
 	-- content refs shift with sorted soil rows while MTS geometry stays fixed.
+	-- R21: approved ore/gem density rows and matching WP43 density projection.
 	local SOURCE_PROJECTION_SHA256 =
-		"461d67ef63c4364764a615871fd1771a5a6ef636796f82511b6de563a7bb056b"
+		"794306821af00350d85288a3be810e843b2bd09f2c9c6f73ce46df808123a324"
 	local FIELD_HEAD = {
 		"schema", "full_seed", "r5_schema", "r5_manifest_sha256",
 		"r5_artifact_sha256", "r6_schema", "r6_contract_sha256",
@@ -466,13 +467,13 @@ return function(canonical, raw_sha256, settlement_order)
 			consumer_payload = graph_digest(inputs.consumer_payload),
 		}
 		if frozen.r6_catalog ~=
-				"71686cbaff9a2b6acb0415a3eda0ebc2d056412db1879c1bf4fcb162e14f4f74" or
+				"63084c82f34606c98fc68902ff9a1bdbbc752bde4dbca017660b430eacd3fff9" or
 			frozen.accepted_r6_content ~=
 				"0c1c1efa25f1d173680ebc94aeed87d969ca56572a06b0e1fcb8378f16a2783d" or
 			frozen.decoded_templates ~=
 				"0f9c1230f22f7a2782cd57d3b7d5d5029d9f3eeed18a29f729f10b8bf92b9ec0" or
 			frozen.wp43_projection ~=
-				"3fe1fef43404bdddb1d5cb84669d73f393460e74542d2f95ad6494f91569dc25" or
+				"77e5b5b14c98f17250b03c5aeb817db332f85b5414311defe1f4945174f1f8bf" or
 			frozen.cultural ~=
 				"263b9bf0a470295b62791f85effd59eee9090c82d5f4d050e4f97ba88bb79fb6" or
 			frozen.consumer_payload ~=

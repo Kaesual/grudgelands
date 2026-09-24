@@ -29,12 +29,12 @@ Plans: [round scope](round21-mapgen-and-playtest-fixes.md),
 
 | Lane | Agent/model | Worktree | Status |
 |---|---|---|---|
-| G1 constructed-ground geometry | r21_settlement_preflight / Astra | /tmp/grug-r21-settlement | queued |
-| G2 terrain/lakes/coast | r21_nature_preflight / Astra | /tmp/grug-r21-nature | queued |
-| F1/F2/F3/F5 feedback/names/ammo | r21_feedback_preflight / Sol | /tmp/grug-r21-feedback | queued |
+| G1 constructed-ground geometry | r21_settlement_preflight / Astra | /tmp/grug-r21-settlement | running |
+| G2 terrain/lakes/coast | r21_nature_preflight / Astra | /tmp/grug-r21-nature | running |
+| F1/F2/F3/F5 feedback/names/ammo | r21_feedback_preflight / Sol | /tmp/grug-r21-feedback | running |
 | F4 furnaces | Sol slot after feedback | TBD | queued |
 | G3 aquatic decor/fish | Sol slot after interface freeze | TBD | queued |
-| R1 resources + docs | root Astra | primary integration checkout | starting |
+| R1 resources + docs | root Astra | primary integration checkout | running |
 
 G1 owns wp13 street/avenue/landing/plot helpers, wp40 r7_settlement and planner
 grading consumer. G2 owns height.lua and simple_map geometry, shore material
@@ -80,3 +80,23 @@ Review independently, fix verified findings, merge no-squash to main, sync from
 main, update BACKLOG/ROADMAP/README/status and completion/playtest receipt.
 No user permission re-request for this authorized local round. Do not treat a
 progress update or compaction as completion.
+
+### First implementation checkpoint
+
+- Feedback commits `af72c406`, `39d3b59b`, `7b3bb090`, `4e905186` are ready
+  for independent root review. F4 now running in the same Sol worktree.
+  Root requested stoppable food sound and native-wield visibility restoration.
+- G2 bounded scalar runs: 8.87s +9.15s wall, 8.84s +9.12s user; zero VM owners.
+  First fixture assumption rejected a dry rapid sample, corrected once. Water
+  tuples unchanged. Natural lake-edge changes cover Frostbarrow/Moonfall;
+  functional/civic connected reaches retain their shore footprints.
+- G1 two tiny geometry/seam fixtures: each <=0.01 CPU s, zero VM owners.
+  Plot approaches must slope toward authoritative shared street height, not
+  force street junctions to match plot heights.
+- R1 actual content validator + quota fixture passes (0.01s). Derived density
+  pins update only catalog/WP43 limbs; real `r7_manifest.new` integration still
+  REQUIRED after all mapgen branches merge. Do not mistake derived pins for
+  an executed constructor gate.
+- Feedback existing R7 micro attempt cost11.7 CPU s and failed in stale factory
+  setup before changed code; do not repeat. Targeted input/socket/atlas JIT
+  fixtures passed. No PUC runtime or engine test yet.

@@ -65,21 +65,21 @@ grug_swamp|grug_nodes:mud|grug_nodes:mud|2|grug_nodes:mud|grug_nodes:mud|-
 ]]
 
 local RESOURCE_ROWS = [[
-abyssal_crystal|universal|5|-;-;-;-;2048;2048|2
-citrine|regional_g1|2|-;12000;6000;3000;3000;3000|3
-coal|universal|1|128;128;128;128;128;128|8
-copper|universal|1|256;256;256;256;256;256|8
-diamond|regional_g2|4|-;-;-;12000;6000;3000|2
-emberglass|universal|4|-;-;-;2048;2048;2048|4
-garnet|regional_g1|2|-;12000;6000;3000;3000;3000|3
-gold|universal|2|-;1024;1024;1024;1024;1024|4
-iron|universal|1|128;128;128;128;128;128|8
-jade|regional_g1|2|-;12000;6000;3000;3000;3000|3
-quartz|universal|1|256;256;256;256;256;256|8
-ruby|regional_g2|4|-;-;-;12000;6000;3000|2
-sapphire|regional_g2|4|-;-;-;12000;6000;3000|2
-silver|universal|3|-;-;1024;1024;1024;1024|4
-tin|universal|1|384;384;384;384;384;384|8
+abyssal_crystal|universal|5|-;-;-;-;512;256|2
+citrine|regional_g1|2|-;2048;1024;512;512;512|3
+coal|universal|1|64;128;128;128;128;128|8
+copper|universal|1|96;192;384;384;384;384|8
+diamond|regional_g2|4|-;-;-;2048;1024;512|2
+emberglass|universal|4|-;-;-;256;128;256|4
+garnet|regional_g1|2|-;2048;1024;512;512;512|3
+gold|universal|2|-;512;256;128;256;256|4
+iron|universal|1|128;96;192;384;384;384|8
+jade|regional_g1|2|-;2048;1024;512;512;512|3
+quartz|universal|1|128;256;512;512;512;512|8
+ruby|regional_g2|4|-;-;-;2048;1024;512|2
+sapphire|regional_g2|4|-;-;-;2048;1024;512|2
+silver|universal|3|-;-;256;128;256;512|4
+tin|universal|1|96;192;384;384;384;384|8
 ]]
 
 local CULTURAL_ROWS = [[
