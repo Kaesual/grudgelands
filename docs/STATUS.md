@@ -1,7 +1,11 @@
 # Project status
 
-Updated 2026-09-23. This is the delivery pointer, not another game specification.
+Updated 2026-09-24. This is the delivery pointer, not another game specification.
 
+- **Active Round 20:** [Round 20 POIs, quests and playtest fixes](planning/round20-pois-quests-fixes.md)
+  is approved and in progress. [Execution state](planning/round20-state.md)
+  tracks parallel lanes, ownership, reviews and remaining gates. Housing and
+  geographic PvP are excluded; input and crosshair-only healing are included.
 - **Documentation consolidation:** complete with independent Astra PASS;
   [receipt and coverage](maintenance/documentation-round.md). Remaining decisions
   and code/design discrepancies: [findings](maintenance/findings.md).

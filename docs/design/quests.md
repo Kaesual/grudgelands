@@ -1,6 +1,6 @@
 # Quests
 
-Decided 2026-09-21; Round 14 user Go.
+Decided 2026-09-21; extended by Round 20 user Go, 2026-09-24.
 
 
 ### Confirmed by the user
@@ -14,8 +14,12 @@ Decided 2026-09-21; Round 14 user Go.
 - A dedicated Quest inventory tab supports viewing and abandoning quests.
 - A quest HUD toggle lives in this tab, defaults on and is saved per player.
   No active quests means no quest HUD, without changing the saved preference.
-- Objective families are **item turn-in** and **kill**. A crafting lesson can
-  request the resulting item. No separate crafting, mining, visit or escort
+- Objective families are **item turn-in**, **kill** and **conversation**. A
+  crafting lesson requests the resulting item, never provenance. Travel handoffs
+  contain exactly one conversation with the named destination NPC, who also
+  accepts the turn-in. No hidden item, secondary errand, arrival-radius check
+  or return trip. A live, in-reach conversation completes the objective; the
+  ordinary Complete button awards rewards. No crafting, mining or escort
   objective engine is required for V1.
 - Kill credit uses the same per-mob damage/effective-healing participation and
   eligibility mechanism as shared XP, never a killing-blow test and never
@@ -25,7 +29,7 @@ Decided 2026-09-21; Round 14 user Go.
   independent all-players scan.
 - Marker precedence: ready to turn in (yellow question mark), available
   (yellow exclamation mark), active but incomplete (silver question mark),
-  relevant prerequisite-locked quest (silver exclamation mark), otherwise none.
+  relevant level-locked quest (silver exclamation mark), otherwise none.
 - Quest chains use existing faction story and zone identities. No cross-faction
   cooperative questline is introduced.
 
@@ -59,8 +63,12 @@ Decided 2026-09-21; Round 14 user Go.
   never changes the reward.
 - Repeated packets and repeated dialogue clicks must not duplicate rewards.
   Persist active/completed state and HUD preference across reconnect/restart.
-- Locked markers only expose the next relevant chain step, not all distant
-  future quests. NPCs with multiple quests offer a simple list.
+- Dependent quests remain hidden until every prerequisite has been turned in.
+  Acceptance or completed objectives alone do not reveal successors. Once race,
+  faction and prerequisite gates pass, a level-locked quest is visible with its
+  required level. Dialog, floating symbols and atlas use the same visibility.
+  NPCs with multiple quests offer a simple list; independent tasks can form
+  bundles without a separate bundle engine.
 - Explain optional crafting through a side branch; do not force every player
   to craft as a prerequisite for the local combat story.
 - Opening kill lessons use common mobs and small counts (e.g. five boars).
@@ -74,16 +82,23 @@ extent fixed (growth downward). Keep per-viewer states and existing visibility
 hysteresis. The optional three-quest HUD sits at screen middle-right, with
 right-aligned wrapped text and edge padding.
 
-Add six optional local quests per race at the existing village/outpost/camp
-and one additional village giver per race: 102 quests and 30 giver identities
-in total. Reuse kill/item-hand-in objectives and existing race/faction gates;
-no Nether, escort, custom quest drops or new world anchors. Compose tasks with
-the visible local workplaces and ensure targets/materials are locally available.
-Fixed rewards follow authored target level/effort and required combat; they do
-not scale with the level at turn-in. Round 16 replaces the starter and local
-values with the fixed target-level table in `progression.md`. Each starting
-settlement finale is handed in to the next regional giver, who also offers the
-following quest.
+Round 20 expands authored journeys to approximately 240 quests including
+revision of the initial 102. This is an editorial budget, not a filler quota.
+Offer roughly three independent local starter tasks across the adventure giver
+and a separate cook near an oven. Compatible tasks share an outing; avoid
+repeated returns for increasing counts of the same mob. Optional item/cooking
+lessons do not block the combat story or implicitly require a profession.
+
+Each race has a level-10 capital/service introduction, followed by capital and
+regional bundles and explicit destination-only travel handoffs. Keep existing
+regional giver identities and add hosts at authored peaceful villages, outposts
+and mining camps. Existing hostile camps do not acquire friendly quest hosts.
+Enemy-guard objectives use existing reachable guards and contribution credit;
+no civilian kills, player kills, king finale, Nether or future warfront AI.
+Fixed rewards follow authored target-level/effort values in `progression.md`,
+not the receiver's current level. Content, actor sockets and local materials
+must agree with the current world roster. Exact cards/IDs are maintained in the
+Round 20 content contract; delivery status belongs in STATUS/BACKLOG.
 
 ## Objective presentation
 

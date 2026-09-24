@@ -24,7 +24,7 @@ Loot and enchantments: implement the one-prefix/one-suffix family-filtered syste
 
 **Dependencies:** WP6, WP8, WP40, WP41.
 
-**Status:** open; Rounds 14–15 deliver 66 starter + 36 local quests, not the full progression story; the death/XP consequence is revised (all deaths cost no XP, `progression.md` §3, 2026-09-23); geography and quest-interaction slots are fixed in `world_zones.md` §§8/16
+**Status:** open; Round 20 expands the 102 earlier quests to 240 starter/capital/regional quests, not the full progression story; the death/XP consequence is revised (all deaths cost no XP, `progression.md` §3, 2026-09-23); geography and quest-interaction slots are fixed in `world_zones.md` §§8/16
 
 Mandatory questlines: named-zone progression, first PvP quests through Ashenward March / Bannerbreak Mesa and The Broken Causeway, war-front guards, elite quests and level gates; all deaths now cost no XP under Round 18, so no PvP-only XP exemption wiring remains
 
@@ -56,11 +56,11 @@ bandit camps). Current preparation and settlement behavior belong to
 [world preparation](../design/world_preparation.md). Historical construction
 increments and old performance numbers stay in the archived backlog.
 
-**Remaining acceptance inventory:** the 100-anchor world roster includes the
+**Round 20 art coverage:** the 100-anchor world roster includes the
 12 starts/capitals and 88 other slots. Subtract the eighteen documented regional
-compositions from the latter before scheduling new work:
+compositions from the latter to identify the 70 Round 20 art slots:
 
-| Kind | Total non-civic slots | R14/R15 delivered | Wider WP13 remainder |
+| Kind | Total non-civic slots | R14/R15 delivered | Round 20 art slots |
 |---|---:|---:|---:|
 | Villages | 12 | 6 | 6 |
 | Outposts | 24 | 6 | 18 |
@@ -72,13 +72,13 @@ compositions from the latter before scheduling new work:
 | Apex camps | 2 | 0 in that increment | 2 |
 | Rare-route pads | 10 | 0 in that increment | 10 |
 
-These 70 remaining acceptance slots are not a claim that every slot is empty:
-existing banners, mobs, bosses and functional anchors already exist. Verify
-current dressing before each bounded implementation. The earlier phrase
+These 70 slots now have authored compositions in the Round 20 candidate; final
+gates and GUI acceptance are recorded in STATUS. Existing banners, mobs, bosses
+and functional anchors are preserved. Do not schedule these as 70 empty sites. The earlier phrase
 “100 POIs” conflated the whole anchor roster with the 88 non-civic slots.
 
-- Place the two shipwright plots/display boats in Whitebridge Shire and Whispering
-  Reedlands village slots; their level-30 teaching transaction is WP17.
+- The two shipwright plots/display hulls are present in Whitebridge Shire and
+  Whispering Reedlands village slots; their level-30 teaching transaction remains WP17.
 - Keep mining/apex socket ownership in WP34 (twelve renewable sockets per apex
   camp), encounter behavior in WP23/WP42 and structure dressing in WP13.
 - **Known correction:** `bandit_frontier` building core is decided at **24 nodes**

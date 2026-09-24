@@ -8,8 +8,16 @@ function grug_core.should_suffocate(node_def, in_stasis, has_noclip)
 	if in_stasis or has_noclip or not node_def then
 		return false
 	end
-	return node_def.walkable == true and
-		(node_def.liquidtype == nil or node_def.liquidtype == "none")
+	-- Ordinary opaque cubes inherit these defaults from Luanti. Explicit
+	-- non-regular geometry must never suffocate (doors, panes, stairs, etc.).
+	-- Unlike VoxeLibre, our full stone nodes do not carry an opaque group.
+	local groups = node_def.groups or {}
+	return node_def.walkable ~= false and
+		(node_def.liquidtype == nil or node_def.liquidtype == "none") and
+		(node_def.collision_box == nil or node_def.collision_box.type == "regular") and
+		(node_def.node_box == nil or node_def.node_box.type == "regular") and
+		(node_def.drawtype == nil or node_def.drawtype == "normal") and
+		node_def.sunlight_propagates ~= true and groups.disable_suffocation ~= 1
 end
 
 function grug_core.suffocation_damage(hp_max)

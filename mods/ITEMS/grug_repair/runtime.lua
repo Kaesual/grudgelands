@@ -19,11 +19,6 @@ local function creative(player)
 	return core.is_creative_enabled(player:get_player_name())
 end
 
-local function combat_lifetime(stack)
-	local def = stack:get_definition() or {}
-	local tier = tonumber(def._grug_bracket or def._grug_tier) or 1
-	return ({1000, 1500, 2000, 2500, 3000, 4000})[tier] or 4000
-end
 
 local function wear_stack(player, list, index)
 	if creative(player) then return false end
@@ -33,12 +28,13 @@ local function wear_stack(player, list, index)
 		return false
 	end
 	local meta = stack:get_meta()
-	local lifetime = combat_lifetime(stack)
+	local lifetime = grug_repair.maximum_durability(stack)
 	local amount = meta:get_int(WEAR_REMAINDER) + 65535
 	local whole = math.floor(amount / lifetime)
 	meta:set_int(WEAR_REMAINDER, amount % lifetime)
 	stack:set_wear(math.min(65535, stack:get_wear() + whole))
 	disable_broken_operation(stack)
+	grug_repair.refresh_stack(stack, player)
 	inv:set_stack(list, index, stack)
 	if grug_inventory.is_equipment_list(list) then
 		grug_inventory.equipment_changed(player, list, "durability_metadata")
@@ -156,6 +152,8 @@ core.register_on_mods_loaded(function()
 	for name, def in pairs(core.registered_items) do
 		local probe = ItemStack(name)
 		if grug_repair.eligible(probe) then
+			core.override_item(name, {description = grug_repair.decorate_description(
+				probe, def.description or name)})
 			if not grug_gear.reference_purchase_price(probe) then
 				missing[#missing + 1] = name
 			end
@@ -164,7 +162,10 @@ core.register_on_mods_loaded(function()
 				if on_use then
 					core.override_item(name, {on_use = function(stack, user, pointed)
 						if grug_core.equipment_is_broken(stack) then return stack end
-						return on_use(stack, user, pointed) or stack
+						stack = on_use(stack, user, pointed) or stack
+						disable_broken_operation(stack)
+						grug_repair.refresh_stack(stack, user)
+						return stack
 					end})
 				end
 				local original = def.after_use
@@ -185,6 +186,7 @@ core.register_on_mods_loaded(function()
 						end
 					end
 					disable_broken_operation(stack)
+					grug_repair.refresh_stack(stack, user)
 					return stack
 				end})
 			end

@@ -132,6 +132,8 @@ function M.decorate(city, plot, buf, palette, sockets, area)
    socket("jewel","gear_display",3,2,2,{tags={"jewel"}})
   elseif service=="cooking" then
    decor(-3,1,2,"counter");decor(3,1,2,"counter")
+   -- The quest cook is a separate person opposite the existing trainer.
+   socket("quest_cook","quest",2,1,-1)
   end
  end
 end

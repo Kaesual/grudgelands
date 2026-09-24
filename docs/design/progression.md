@@ -135,11 +135,11 @@ catalog values before any applicable racial modifier; no runtime level scaling.
 | Quest position / work | Intended level | XP |
 | --- | ---: | ---: |
 | Starter 1 | 1 | 20 |
-| Starter 2 | 2 | 60 |
+| Starter 2 (parallel cook delivery) | 1 | 20 |
 | Starter 3 | 3 | 100 |
 | Starter 4 | 4 | 140 |
 | Starter 5 | 5 | 180 |
-| Starter 6 (regional handoff) | 8 | 300 |
+| Starter 6 (conversation-only regional handoff) | 10 | 285 |
 | Regional 7 | 10 | 380 |
 | Regional 8 (hard) | 11 | 525 |
 | Regional 9 (camp finale) | 12 | 805 |
@@ -152,3 +152,9 @@ catalog values before any applicable racial modifier; no runtime level scaling.
 Ordinary rewards use 15%, 20% or 25% of the intended level interval; the camp
 finale uses 35%. Kill XP earned while doing the objective is additional and
 continues to use the shared participation/split rules.
+
+Round 20 conversation-only travel handoffs use the existing light/lesson rate:
+15% of the authored target-level interval, rounded to a fixed integer catalog
+reward. They award no kill XP and do not scale to the receiving player's level.
+Comparable light quests provide the coin budget; no new reward currency or
+travel-distance formula is introduced.

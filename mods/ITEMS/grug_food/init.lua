@@ -244,6 +244,17 @@ local function copied_groups(groups)
 	return copy
 end
 
+local held_foods = {}
+function grug_food.consume_held(player)
+	local stack = player:get_wielded_item()
+	local food = held_foods[stack:get_name()]
+	if not food then return false end
+	local before = stack:get_count()
+	stack = grug_food.eat(stack, player, food.tier, food.kind, food.role)
+	if stack:get_count() ~= before then player:set_wielded_item(stack) end
+	return stack:get_count() ~= before
+end
+
 function grug_food.register_item(item_name, tier, kind, role)
 	local definition = core.registered_items[item_name]
 	local tier_def = grug_food.TIERS[tier]
@@ -251,6 +262,7 @@ function grug_food.register_item(item_name, tier, kind, role)
 	if not definition or not tier_def or not effect then
 		return false
 	end
+	held_foods[item_name] = {tier = tier, kind = kind, role = role}
 	local groups = copied_groups(definition.groups)
 	groups.grug_food = 1
 	groups.grug_food_tier = tier
@@ -258,12 +270,48 @@ function grug_food.register_item(item_name, tier, kind, role)
 	groups["grug_food_role_" .. role] = 1
 	core.override_item(item_name, {
 		description = tostring(definition.description or item_name) .. "\n" ..
-			tooltip_for(tier, effect),
+			tooltip_for(tier, effect) .. "\nHold RMB for 1.5 s to eat one portion.",
 		groups = groups,
 		_grug_ilvl = tier_def.min_level,
 		_grug_tier = tier,
-		on_use = function(itemstack, user)
-			return grug_food.eat(itemstack, user, tier, kind, role)
+		-- Food is a deliberate 1.5-second RMB hold, owned by contextual input.
+		-- Keep any native planting/placement callback and object interaction.
+		on_use = false,
+	})
+	-- Preserve native planting and context-first node/object interaction even
+	-- when that callback removes the target before the next control sample.
+	local place, secondary = definition.on_place, definition.on_secondary_use
+	local placement = definition.type == "node" or (place and place ~= core.item_place)
+	core.override_item(item_name, {
+		on_place = function(stack, player, pointed)
+			if player and grug_abilities.input then
+				grug_abilities.input.right_action(player)
+				-- A due held-food action may already have consumed the wield stack.
+				-- Delegate and return that current stack, never the engine's old copy.
+				stack = player:get_wielded_item()
+			end
+			if player and pointed and pointed.type == "node" and grug_abilities.input then
+				local node = core.get_node_or_nil(pointed.under)
+				local def = node and core.registered_nodes[node.name]
+				if placement or (def and def.on_rightclick) or
+						core.get_meta(pointed.under):get_string("formspec") ~= "" then
+					grug_abilities.input.interaction(player)
+				end
+			end
+			return place and place(stack, player, pointed) or stack
+		end,
+		on_secondary_use = function(stack, player, pointed)
+			if player and grug_abilities.input then
+				grug_abilities.input.right_action(player)
+				-- A due held-food action may already have consumed the wield stack.
+				-- Delegate and return that current stack, never the engine's old copy.
+				stack = player:get_wielded_item()
+			end
+			if player and pointed and pointed.type == "object" and grug_abilities.input then
+				local ent = pointed.ref and pointed.ref:get_luaentity()
+				if ent and ent.on_rightclick then grug_abilities.input.interaction(player) end
+			end
+			return secondary and secondary(stack, player, pointed) or stack
 		end,
 	})
 	grug_food.converted[#grug_food.converted + 1] = {

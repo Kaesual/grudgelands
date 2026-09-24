@@ -1,0 +1,109 @@
+parser PASS mods/CORE/grug_core/movement.lua
+parser PASS mods/CORE/grug_core/suffocation.lua
+parser PASS mods/ENTITIES/grug_mobs/init.lua
+	2	[1]	SETGLOBAL	0 -1	; grug_mobs
+parser PASS mods/ENTITIES/grug_mobs/shore_crab.lua
+parser PASS mods/ENTITIES/grug_mobs/start_npcs.lua
+parser PASS mods/ITEMS/grug_food/init.lua
+	2	[4]	SETGLOBAL	0 -1	; grug_food
+parser PASS mods/ITEMS/grug_gear/init.lua
+	2	[32]	SETGLOBAL	0 -1	; grug_gear
+parser PASS mods/ITEMS/grug_gear/permissions.lua
+parser PASS mods/ITEMS/grug_professions/enchants.lua
+parser PASS mods/ITEMS/grug_quality/init.lua
+	2	[22]	SETGLOBAL	0 -1	; grug_items
+parser PASS mods/ITEMS/grug_repair/init.lua
+	2	[1]	SETGLOBAL	0 -1	; grug_repair
+parser PASS mods/ITEMS/grug_repair/presentation.lua
+parser PASS mods/ITEMS/grug_repair/runtime.lua
+parser PASS mods/ITEMS/grug_repair/service.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp13/capital_services.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp40/r20_civic.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp40/r20_poi_blueprint.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp40/r20_poi_catalog.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp40/r7_runtime.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua
+parser PASS mods/PLAYER/grug_abilities/init.lua
+	2	[6]	SETGLOBAL	0 -1	; grug_abilities
+parser PASS mods/PLAYER/grug_abilities/input.lua
+parser PASS mods/PLAYER/grug_abilities/kits.lua
+parser PASS mods/PLAYER/grug_abilities/scout.lua
+parser PASS mods/PLAYER/grug_abilities/strike_delay.lua
+parser PASS mods/PLAYER/grug_classes/stats.lua
+parser PASS mods/PLAYER/grug_inventory/bags.lua
+parser PASS mods/PLAYER/grug_inventory/equipment.lua
+parser PASS mods/PLAYER/grug_jobs/ui.lua
+parser PASS mods/PLAYER/grug_map/minimap.lua
+parser PASS mods/PLAYER/grug_parties/hud.lua
+parser PASS mods/PLAYER/grug_parties/init.lua
+	2	[1]	SETGLOBAL	0 -1	; grug_parties
+parser PASS mods/PLAYER/grug_parties/ui.lua
+parser PASS mods/PLAYER/grug_quests/content.lua
+parser PASS mods/PLAYER/grug_quests/content_civic.lua
+parser PASS mods/PLAYER/grug_quests/content_npcs.lua
+parser PASS mods/PLAYER/grug_quests/content_regions.lua
+parser PASS mods/PLAYER/grug_quests/hud.lua
+parser PASS mods/PLAYER/grug_quests/init.lua
+	2	[1]	SETGLOBAL	0 -1	; grug_quests
+parser PASS mods/PLAYER/grug_quests/npc.lua
+parser PASS mods/PLAYER/grug_quests/registry.lua
+parser PASS mods/PLAYER/grug_quests/state.lua
+parser PASS mods/PLAYER/grug_quests/ui.lua
+parser PASS mods/PLAYER/grug_visuals/apply.lua
+parser PASS mods/PLAYER/grug_visuals/compose.lua
+parser PASS tools/r13_enchants/final_micro.lua
+	45	[37]	SETGLOBAL	7 -2	; PcgRandom
+	84	[88]	SETGLOBAL	12 -3	; ItemStack
+	90	[104]	SETGLOBAL	16 -1	; core
+	208	[150]	SETGLOBAL	17 -5	; grug_gear
+	256	[200]	SETGLOBAL	21 -6	; grug_mobs
+	260	[201]	SETGLOBAL	21 -11	; grug_zones
+	264	[202]	SETGLOBAL	21 -12	; mobs
+	291	[213]	SETGLOBAL	23 -7	; grug_inventory
+	299	[215]	SETGLOBAL	23 -9	; grug_xp
+	315	[224]	SETGLOBAL	23 -8	; grug_classes
+	328	[235]	SETGLOBAL	23 -10	; grug_core
+	402	[269]	SETGLOBAL	26 -16	; grug_traders
+	406	[270]	SETGLOBAL	26 -17	; grug_materials
+	439	[277]	SETGLOBAL	26 -13	; grug_jobs
+parser PASS tools/r20/combat_micro.lua
+parser PASS tools/r20/content_server.lua
+parser PASS tools/r20/gear_boundary.lua
+	310	[86]	SETGLOBAL	14 -83	; grug_money
+parser PASS tools/r20/gear_micro.lua
+	150	[36]	SETGLOBAL	7 -38	; grug_repair
+	541	[105]	SETGLOBAL	12 -115	; grug_visuals
+parser PASS tools/r20/quests_micro.lua
+	15	[9]	SETGLOBAL	3 -7	; ItemStack
+	54	[32]	SETGLOBAL	5 -14	; core
+	56	[33]	SETGLOBAL	5 -26	; grug_quests
+	65	[34]	SETGLOBAL	5 -27	; grug_inventory
+	71	[35]	SETGLOBAL	5 -32	; grug_factions
+	75	[36]	SETGLOBAL	5 -35	; grug_classes
+	81	[37]	SETGLOBAL	5 -37	; grug_xp
+	88	[38]	SETGLOBAL	5 -40	; grug_money
+	92	[39]	SETGLOBAL	5 -45	; grug_mobs
+	96	[40]	SETGLOBAL	5 -47	; grug_zones
+	104	[43]	SETGLOBAL	5 -49	; grug_core
+	364	[100]	SETGLOBAL	11 -114	; vector
+	645	[154]	SETGLOBAL	20 -151	; sfinv
+parser PASS tools/r20_input/controls_micro.lua
+parser PASS tools/r20_input/friendly_micro.lua
+parser PASS tools/r20_input/transactions_micro.lua
+parser PASS tools/r20_pois/final_jit.lua
+parser PASS tools/r20_ux/micro.lua
+parser PASS tools/wp40/r7/node_semantics_fixture.lua
+parser PASS tools/r20/final_micro.lua
+parser PASS tools/r20/probe/init.lua
+sweep 1 PASS
+sweep 2 PASS
+sweep 3 PASS
+mods/PLAYER/grug_visuals/compose.lua:280:	-- docs/research/luanti-lua.md flags `"|"` as a possible bitwise operator,
+mods/PLAYER/grug_abilities/scout.lua:209:	return stack:get_name() .. "|" .. item_id
+mods/ENTITIES/grug_mobs/init.lua:69:--   def._grug_tier        — "normal" (default) | "elite" | "rare" | "boss"
+mods/PLAYER/grug_inventory/bags.lua:189:-- List setup & rules
+mods/PLAYER/grug_abilities/init.lua:679:-- Ability registration & item. One tool per ability; the item's `range`
+mods/PLAYER/grug_abilities/init.lua:1661:	return SKIN_VERSION .. "|" .. src
+mods/PLAYER/grug_abilities/init.lua:1695:	local token = SWING_CAPS_VERSION .. "|" .. string.format("%.17g", interval)
+sweep 4: inspect hits (comments may match)
+sweep 5 PASS

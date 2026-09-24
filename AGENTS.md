@@ -29,7 +29,7 @@ Research and historical evidence: **[docs/research/README.md](docs/research/READ
   ordinary implementation/review uses native Sol, with native Astra allowed for
   hard/performance-critical work. This session restriction can change only by
   a later explicit user instruction. Durable active work state:
-  `docs/research/pregen-fullspeed-plan.md` (current approved follow-up).
+  `docs/planning/round20-state.md` (current approved round).
 
 ## Fresh-server development mode
 
@@ -66,6 +66,12 @@ Research and historical evidence: **[docs/research/README.md](docs/research/READ
   confirmation.
 
 ## Active work and game status
+
+**Active Round 20, user Go 2026-09-24:** POI/quest expansion and playtest fixes,
+including the agreed contextual input contract. Root Astra orchestrates native
+Astra/Sol lanes. Read [execution state](docs/planning/round20-state.md) and its
+linked plan before resuming. Escalate unexpected complexity; no Claude tasks.
+
 
 The user approved maximum-throughput world preparation on 2026-09-23, retaining
 bounded shutdown and unchanged later on-demand cave generation. Current contract:

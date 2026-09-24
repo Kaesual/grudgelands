@@ -54,6 +54,11 @@
 -- Plain Lua 5.1, no globals.
 
 local M = {}
+local module_info = debug and debug.getinfo and debug.getinfo(1, "S")
+local module_dir = type(module_info)=="table" and type(module_info.source)=="string" and
+	module_info.source:sub(1,1)=="@" and module_info.source:sub(2):match("^(.*)[/\\][^/\\]*$")
+if not module_dir or module_dir=="" then module_dir=core.get_modpath("grug_mapgen").."/wp40" end
+local round20_catalog = dofile(module_dir.."/r20_poi_catalog.lua")
 
 -- The authorized volume per blueprint kind (contract sections 2.1 and 2.2).
 -- The start's numbers are the literal the first four increments typed in
@@ -408,6 +413,23 @@ M.roster = {
 	{
 		key="raincall_bandit_camp",label="Raincall Bandit Camp",race="troll",slot="bandit_1",bounds="poi",lazy=true,zone_id="kragmar_raincall_basin",anchor_id="anchor_059",numeric_id=59,x=1632,z=2034,blueprint_file="r7_raincall_bandit_camp_blueprint.lua",blueprint_schema="grug_r14_raincall_bandit_camp_v1",identity_schema="grug_r14_raincall_bandit_camp_identity_v1",config_schema="grug_r14_raincall_bandit_camp_config_v1",ledger_schema="grug_r14_raincall_bandit_camp_ledger_v1",metrics_schema="grug_r14_raincall_bandit_camp_metrics_v1",delta_schema="grug_r14_raincall_bandit_camp_delta_v1",reserve_anchor_root=true},
 }
+
+-- The remaining authored roster uses the same projection/manifest authority.
+-- All profiles bind existing anchors; the catalog introduces no world positions.
+for _, art in ipairs(round20_catalog) do
+	local bounds_key="r20_"..art.kind
+	M.BOUNDS[bounds_key]={min={x=-art.width/2,y=0,z=-art.width/2},
+		max={x=art.width/2-1,y=art.height,z=art.width/2-1}}
+	local stem="grug_r20_"..art.key
+	M.roster[#M.roster+1]={key=art.key,label=art.label,race=art.race,slot=art.slot,
+		bounds=bounds_key,lazy=true,zone_id=art.zone_id,
+		anchor_id=("anchor_%03d"):format(art.number),numeric_id=art.number,
+		x=art.x,z=art.z,blueprint_file="r20_poi_blueprint.lua",art=art,
+		blueprint_schema=stem.."_v1",identity_schema=stem.."_identity_v1",
+		config_schema=stem.."_config_v1",ledger_schema=stem.."_ledger_v1",
+		metrics_schema=stem.."_metrics_v1",delta_schema=stem.."_delta_v1",
+		reserve_anchor_root=true}
+end
 
 -- ASCII byte order. Lua's `<` on strings is `strcoll`, so under a locale that
 -- is not C it can order two node names differently from the byte order
@@ -1015,7 +1037,11 @@ function M.sockets(prepared, anchor, height_at)
 		rows[#rows + 1] = {id = "trainer_cooking", role = "trainer",
 			profession = "cooking", x = position.x, y = position.y,
 			z = position.z, dir = position.dir}
-
+		local cook_z=position.z>0 and 13 or -13
+		rows[#rows+1]={id="quest_cook",role="quest",x=2,y=1,z=cook_z,
+			dir={x=-1,z=0}}
+		rows[#rows+1]={id="cook_oven",role="public_station",x=4,y=1,z=cook_z,
+			dir={x=-1,z=0},tags={"furnace"}}
 	end
 	return rows
 end

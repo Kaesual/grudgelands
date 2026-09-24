@@ -1654,7 +1654,7 @@ owned; one idempotent description/stat regeneration path reads them all.
 **1 / 10 / 20 / 30 / 40 / 50** across the six material tiers. T1 uses an explicit
 level-1 requirement while retaining item level 3 for base stats. Elevated found
 weapons require their actual item level up to the character cap. The Weapon slot
-refuses insufficient level but imposes no class-family gate. Wood/Stone weapons
+enforces level and the class-family permissions in `inventory_equipment.md`. Wood/Stone weapons
 are absent; gathering tools cannot be equipped there. Armor, offhands and
 trinkets are not level-gated by this weapon-only rule. Higher-level weapons remain lootable and tradeable, just not
 equippable yet. Endgame ilvl 65/70/75 weapons all require level 60. The
@@ -1710,7 +1710,9 @@ preserves the requirement while rebuilding the description.
 
 | Family | Pool |
 |---|---|
-| Sword, dagger, greataxe | +Str, +Dex, +attack speed%, +crit%, +max HP%, +max Mana% |
+| Sword | +Str, +Dex, +attack speed%, +crit%, +max HP%, +max Mana% |
+| Dagger | +Str, +Dex, +Int, +attack speed%, +crit%, +max HP%, +max Mana% |
+| Battle Axe | +Str, +attack speed%, +crit%, +max HP% |
 | Bow | +Dex, +crit%, +attack/draw speed%, +max HP%, +max Mana% |
 | Staff, wand | +Int, +max Mana%, +crit%, +max HP% |
 | Shield | +Str, +Dex, +max HP%, +armor rating |
@@ -1875,7 +1877,7 @@ legal enchants. Tools are not weapons and receive no ordinary combat enchants.
 
 ### 6b.2 Fixed tier bonuses
 
-The nine stat curves, material costs and 456 operations are defined in
+The nine stat curves, material costs and 588 operations are defined in
 [the current contract](crafting_equipment_revision.md#enchanting). Bonuses depend
 on enchant tier, never a higher target tier. No extra base-damage or lifetime
 multiplier exists.

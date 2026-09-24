@@ -371,6 +371,7 @@ function grug_mobs.stun(ent, duration)
 	if ent.update_tag then ent:update_tag() end
 	local velocity = ent.object:get_velocity()
 	if velocity then ent.object:set_velocity(vector.new(0, velocity.y, 0)) end
+	grug_core.emit_stun_particles(ent.object, duration)
 	return true
 end
 

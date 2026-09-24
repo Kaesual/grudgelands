@@ -3,8 +3,8 @@
 
 --
 -- Targeting helpers. Hostile casts use one current server eye/look ray;
--- pointed_thing and enemy memory are presentation/input context only. Friendly
--- heals retain their separate ally-memory fallback.
+-- pointed_thing and target memory are presentation context only. Every
+-- activation resolves its current visible target on the server.
 --
 
 local function mob_ent(obj)
@@ -17,11 +17,6 @@ end
 
 local function valid_ally(user, obj, def)
 	return grug_abilities.valid_target(user, obj, def.target_kind)
-end
-
-local function in_lock_range(user, obj, def)
-	return vector.distance(user:get_pos(), obj:get_pos())
-		<= grug_abilities.get_range(user, def)
 end
 
 local function debug_cast_ray(user, def, ray)
@@ -65,22 +60,14 @@ local function current_enemy_target(user, def)
 	return ray.target
 end
 
--- Friendly target for heals: a valid pointed ally locks. Every other pointed
--- result follows the same fallback as no object: a valid in-range ally lock,
--- then the caster. Deliberately no LOS check on the fallback: healing the ally
--- who just kited around a tree is the point of the lock.
+-- A current visible ally receives support; all other aim resolves to self.
+-- The shared ray checks exact selection-box range and solid blockers. Neither
+-- a stale client pointed reference nor Target Frame memory grants authority.
 function grug_abilities.resolve_friendly_target(user, pointed, def)
-	if pointed and pointed.type == "object" then
-		if pointed.ref and valid_ally(user, pointed.ref, def) then
-			grug_abilities.set_target(user, pointed.ref, true)
-			return pointed.ref
-		end
-	end
-	local obj = grug_abilities.get_target(user, true)
-	if obj and valid_ally(user, obj, def)
-			and in_lock_range(user, obj, def) then
-		grug_abilities.set_target(user, obj, true) -- refresh the lock
-		return obj
+	local ray = grug_core.combat_ray(user, grug_abilities.get_range(user, def))
+	if ray.target and ray.reason == "friendly" and valid_ally(user, ray.target, def) then
+		grug_abilities.set_target(user, ray.target, true)
+		return ray.target
 	end
 	return user
 end
@@ -316,7 +303,6 @@ grug_abilities.register_ability({
 					if ent then grug_mobs.stun(ent, 1.5) end
 				end
 			end})
-		burst(tpos, "default_item_smoke.png", 8)
 		return true
 	end,
 })
@@ -601,7 +587,7 @@ local function nova_values(user)
 end
 
 grug_abilities.register_ability({
-	id = "frost_nova",
+	id = "frost_nova", offensive = true,
 	class = "mage",
 	name = "Frost Nova",
 	values = nova_values,
@@ -661,7 +647,7 @@ grug_abilities.register_ability({
 })
 
 grug_abilities.register_ability({
-	id = "blink",
+	id = "blink", repeat_policy = "once",
 	class = "mage",
 	name = "Blink",
 	kind = "cast",

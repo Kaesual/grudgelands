@@ -6,9 +6,8 @@ local MODES = {
 }
 
 local function configure_player(player)
-	-- Remote players use ObjectProperties markers. The local direction arrow is
-	-- rendered separately by the client and therefore survives this property.
-	player:set_properties({show_on_minimap = false})
+	-- Player markers include both factions; only non-player dots are suppressed.
+	player:set_properties({show_on_minimap = true})
 	player:set_minimap_modes(MODES, 0)
 end
 

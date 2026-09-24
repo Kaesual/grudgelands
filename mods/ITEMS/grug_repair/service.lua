@@ -92,6 +92,7 @@ function grug_repair.apply(player, quote)
 			meta:set_tool_capabilities(type(saved) == "table" and saved or nil)
 		end
 		meta:set_string("_grug_repair_caps", "")
+		grug_repair.refresh_stack(stack, player)
 		changes[#changes + 1] = {list = row.list, index = row.index,
 			expected = row.expected, replacement = stack}
 		if grug_inventory.is_equipment_list(row.list) then equipment = true end

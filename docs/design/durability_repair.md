@@ -81,3 +81,16 @@ duplication, stack destruction or unnoticed metadata replacement is allowed.
 Material-based self repair and differentiated profession repair are possible
 future design topics, not approved WP22 behavior. V1 does not anticipate them
 with extra rules or hidden profession benefits.
+
+## Wear presentation
+
+Tooltips show whole remaining durability against the authoritative item lifetime,
+including the fractional wear remainder, rounded upward. Native wear bars are
+available for armor and offhands as well as weapons and tools. Skill charge bars
+remain cooldown indicators and are not equipment durability.
+
+A broken item retains its model and receives a crack overlay in inventory,
+first-person and third-person presentation. Only the affected worn armor layer
+is cracked. Cosmetic equipment reads include broken items; combat/stat reads
+still reject them. Repair restores the current base or enchanted appearance;
+it does not remove or reroll enchantments.

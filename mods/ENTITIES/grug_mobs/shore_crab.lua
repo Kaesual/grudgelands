@@ -25,7 +25,6 @@ local function crab_def(description, tier, spawn_check, drop_scale)
 			walk_start = 100, walk_end = 200, walk_speed = 75,
 			run_start = 100, run_end = 200, run_speed = 100,
 			punch_start = 200, punch_end = 400, punch_speed = 100,
-			die_start = 200, die_end = 300, die_speed = 50, die_loop = false,
 		},
 		drops = {
 			{name = "mobs:meat_raw", chance = 1, min = drop_scale,

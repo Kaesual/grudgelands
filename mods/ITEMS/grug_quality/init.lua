@@ -52,7 +52,10 @@ local AFFIX = {
 }
 
 local POOLS = {
-	melee_weapon = {"str", "dex", "attack_speed_percent", "crit_percent",
+	greataxe = {"str", "attack_speed_percent", "crit_percent", "max_hp_percent"},
+	sword = {"str", "dex", "attack_speed_percent", "crit_percent",
+		"max_hp_percent", "max_mana_percent"},
+	dagger = {"str", "dex", "int", "attack_speed_percent", "crit_percent",
 		"max_hp_percent", "max_mana_percent"},
 	bow = {"dex", "crit_percent", "attack_speed_percent", "max_hp_percent",
 		"max_mana_percent"},
@@ -247,7 +250,7 @@ local function family_for(stack)
 				(groups.grug_caster_weapon or 0) > 0 then
 			return "caster_weapon"
 		end
-		return "melee_weapon"
+		return grug_gear.weapon_family(stack)
 	end
 	local rank = tonumber(groups.grug_armor_class)
 	if rank == 3 then return "metal_armor" end
@@ -438,6 +441,13 @@ function grug_items.regenerate_description(stack, player)
 	local inherited = base_lines(stack, ilvl)
 	for index = 1, #inherited do lines[#lines + 1] = inherited[index] end
 	for index = 1, #affixes do lines[#lines + 1] = affix_line(affixes[index], player) end
+	lines[#lines + 1] = grug_gear.usable_by(stack)
+	local repair = rawget(_G, "grug_repair")
+	if repair then
+		local durability = repair.durability_line(stack)
+		if durability then lines[#lines + 1] = durability end
+		repair.refresh_appearance(stack)
+	end
 	write_derived(meta, affixes)
 	local desired = table.concat(lines, "\n")
 	if meta:get_string("description") == desired then return false end

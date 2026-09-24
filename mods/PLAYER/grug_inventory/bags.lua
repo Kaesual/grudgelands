@@ -69,7 +69,9 @@ for _, row in ipairs(extra_bags) do
 end
 
 grug_inventory.QUIVER_LIST = "grug_quiver_content"
-core.register_craftitem("grug_inventory:quiver", {
+core.register_tool("grug_inventory:quiver", {
+	tool_capabilities = {full_punch_interval=1.4, damage_groups={fleshy=0},
+		groupcaps={}, punch_attack_uses=0},
 	description = "Quiver (4 arrow stacks)",
 	inventory_image = "grug_inventory_quiver.png^[resize:64x64",
 	stack_max = 1, _grug_hands = 0, _grug_tier = 1,

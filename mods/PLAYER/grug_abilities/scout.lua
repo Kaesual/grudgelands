@@ -351,7 +351,11 @@ local function release_draw(player, rec)
 	local ok, err = launch(player, "loose", effect.count, fraction, effect,
 		rec.action_id)
 	finish_draw_wear(player)
-	if not ok then grug_abilities.flash(player, err) end
+	if ok then
+		grug_abilities.delay_strike(player)
+	else
+		grug_abilities.flash(player, err)
+	end
 end
 
 local draw_accumulator = 0
@@ -370,7 +374,7 @@ core.register_globalstep(function(dtime)
 			if not def or wield:get_name() ~= "grug_abilities:loose" or
 					not equipped_bow(player) then
 				clear_draw(player)
-			elseif not player:get_player_control().dig then
+			elseif not player:get_player_control().place then
 				release_draw(player, rec)
 			else
 				local fraction = math.min(1, (core.get_us_time() - rec.started) /
@@ -409,7 +413,7 @@ grug_abilities.register_ability({
 	id = "loose", class = "scout", name = "Loose", kind = "cast",
 	target_kind = "hostile", color = "#5fae5f", cost = {}, cooldown = 0,
 	range = 25, range_talent = "loose_range_add",
-	description = "Hold LMB to draw, then release along your current aim. " ..
+	description = "LMB: melee Strike or hand digging. Hold RMB to draw the bow; release RMB to shoot. " ..
 		"Requires a visible hostile target within 25 m; draw scales damage.",
 	cast = start_draw,
 })
@@ -437,7 +441,7 @@ grug_abilities.register_ability({
 })
 
 grug_abilities.register_ability({
-	id = "sprint", class = "scout", name = "Sprint", kind = "cast",
+	id = "sprint", repeat_policy = "once", class = "scout", name = "Sprint", kind = "cast",
 	target_kind = "self", color = "#c9b85d", cost = {mana_percent = 15},
 	cooldown = 300, range = 0,
 	description = "Move 50% faster for 10 s.",
@@ -505,3 +509,7 @@ grug_abilities.register_ability({
 grug_abilities.scout_draw_active = function(player)
 	return draws[player:get_player_name()] ~= nil
 end
+
+-- The contextual RMB owner starts/cancels the existing draw transaction.
+grug_abilities.start_bow_draw = start_draw
+grug_abilities.cancel_bow_draw = clear_draw

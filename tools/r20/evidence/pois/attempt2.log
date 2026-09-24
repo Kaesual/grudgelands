@@ -1,0 +1,7 @@
+luajit: ...lands/mods/MAPGEN/grug_mapgen/wp40/r20_poi_blueprint.lua:199: r20_anchor_034: central actor clearance blocked
+stack traceback:
+	[C]: in function 'assert'
+	...lands/mods/MAPGEN/grug_mapgen/wp40/r20_poi_blueprint.lua:199: in function <...lands/mods/MAPGEN/grug_mapgen/wp40/r20_poi_blueprint.lua:3>
+	.../grudgelands/mods/MAPGEN/grug_mapgen/wp40/r7_runtime.lua:180: in function <.../grudgelands/mods/MAPGEN/grug_mapgen/wp40/r7_runtime.lua:4>
+	tools/r20_pois/final_jit.lua:21: in main chunk
+	[C]: at 0x556896a91b00

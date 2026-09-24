@@ -26,7 +26,7 @@ from the Luanti community's games and mods into a shared fantasy adventure.
   its own home, architecture and surroundings.
 - **Quests and character progression.** Follow your starting town's stories,
   help local inhabitants and take on stronger enemies. The current catalog
-  contains 102 quests across the six starts and their surrounding regions,
+  contains 240 quests across starts, capitals and named regions,
   with a journal, quest tracker and world atlas to help you find your way.
 - **Crafting and equipment.** Make basic gear, choose two of seven primary
   professions, and improve your equipment with enchantments. Weaponsmith,
@@ -45,12 +45,15 @@ to fear. Their story will grow as more regions and encounters are completed.
 
 ## Current State
 
-*Last updated: 2026-09-23. Based on [BACKLOG.md](BACKLOG.md) and
+*Last updated: 2026-09-24. Based on [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md).*
 
-The systems above are implemented and available in the development build.
-Recent work adds clearer equipment and trainer guidance, distinct skill icons,
-a scrollable whole-world atlas and more consistent starting populations.
+The systems above are implemented; Round 20 is currently the integration
+candidate until the final delivery gate recorded in STATUS.
+Round 20 adds authored compositions for the remaining 70 POI art slots,
+parallel starter errands, destination conversations and more regional quests.
+It also aligns class equipment permissions, broken-item appearance and
+contextual skill combat/digging; right-click holds draw bows or consume food.
 Playtesting, balancing and finishing the wider world remain ongoing; implemented features are not all
 fully playtested. [Round 18](docs/research/round18-completion.md) completes the
 latest usability, progression, pursuit, tool and preparation fixes.
@@ -70,10 +73,10 @@ quest catalog does not yet cover the full journey through every region.
 
 **Delivered:** 27 of 53 tracked work-package identities are complete; several
 others have playable portions. This is a tracking count, not a percentage of
-game completion. The latest increment is
-[Round 19](docs/research/round19-completion.md), with independent reviews and
-technical checks complete and installed locally. Latest follow-ups have not
-been pushed. [In-game acceptance](docs/research/round19-playtest.md)
+game completion. The current candidate is
+[Round 20](docs/research/round20-completion.md); its integration status and
+remaining gates are tracked in [project status](docs/STATUS.md). No remote
+delivery is claimed. [In-game acceptance](docs/research/round20-playtest.md)
 remains separate.
 
 **Ready for further work:** the backlog identifies crafting/enchantment

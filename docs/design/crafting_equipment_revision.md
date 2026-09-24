@@ -94,7 +94,7 @@ reagent: Coal / Venom Gland / Slime Gel / Croc Tooth / Stormkelp / Stone Core.
 Components: Weaponsmith metal fittings; Armorsmith metal bar; Leatherworker
 leather grade; Tailor cloth bolt; Woodcarver graded wood plus a matching metal
 fitting; Goldsmith setting. Existing ingredient identities and component recipes
-remain authoritative. These are 420 ordinary family/stat/channel/tier operations plus 36 Goldsmith
+remain authoritative. These are 552 ordinary family/stat/channel/tier operations plus 36 Goldsmith
 trinket operations (three choices per channel across six tiers);
 UI selection distinguishes operations without manufacturing ambiguous grid recipes.
 

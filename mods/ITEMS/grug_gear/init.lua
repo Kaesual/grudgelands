@@ -30,6 +30,7 @@
 -- tools/gen_mob_item_textures.py -- see LICENSE-media.md.
 
 grug_gear = {}
+dofile(core.get_modpath(core.get_current_modname()) .. "/permissions.lua")
 
 --
 -- Brackets. Prices are the §8.2 ladder VERBATIM: the x1.4 step is already
@@ -347,7 +348,9 @@ function grug_gear.describe_stack_base(stack, ilvl)
 	local description = tostring(def.description or "")
 	for line in description:gmatch("[^\n]+") do
 		if line ~= description:match("^[^\n]+") and
-				not line:match("^Effective at level %d+:") then
+				not line:match("^Effective at level %d+:") and
+				not line:match("^Durability:") and not line:match("^Usable by:") and
+				not line:match("^%d+ uses$") then
 			lines[#lines + 1] = line
 		end
 	end
@@ -460,12 +463,8 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 	for _, w in ipairs(WEAPONS) do
 		local itemname = grug_gear.weapon_item(w.key, bracket)
 		local damage = grug_gear.weapon_damage_at_level(br.ilvl, w.key)
-		-- Every weapon family is weapon-slot eligible (weapon-slot design B3).
-		-- No class gate: weapon families are class FLAVOR, not a power ladder
-		-- (§8.2), so a Mage may equip a greataxe and simply gains nothing from
-		-- it; the only gate on the slot is the `_grug_ilvl` minimum. The slot
-		-- itself is family-agnostic, which is how the future bow family joins
-		-- without a second slot.
+		-- Weapon-slot eligibility and class permissions are separate gates.
+		-- Each family retains its authored combat capabilities and level gate.
 		local groups = {grug_gear = 1, grug_equip_weapon = 1}
 		groups[w.group] = 1
 		if w.caster then groups.grug_caster_weapon = 1 end
@@ -487,6 +486,7 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 				max_drop_level = 0,
 				groupcaps = {},
 			},
+			_grug_weapon_family = w.key,
 			_grug_ilvl = br.ilvl,
 			_grug_req_level = bracket == 1 and 1 or br.ilvl,
 			_grug_bracket = bracket,
@@ -512,7 +512,9 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 			(metal_line.base + metal_line.per_ilvl * br.ilvl) * slot.share + 0.5))
 	end
 	local shield = "grug_gear:shield_" .. metal.key
-	core.register_craftitem(shield, {
+	core.register_tool(shield, {
+		tool_capabilities = {full_punch_interval=1.4, damage_groups={fleshy=0},
+			groupcaps={}, punch_attack_uses=0},
 		description = describe(metal.name, "Shield", br.ilvl,
 			shield_rating .. " armor rating"),
 		inventory_image = SHIELD_IMAGE[bracket],
@@ -524,7 +526,9 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 	buy_price[shield], sell_price[shield] = br.price.other, buyback(br.price.other)
 	local mana = math.ceil(bracket / 2)
 	local book = "grug_gear:spellbook_" .. metal.key
-	core.register_craftitem(book, {
+	core.register_tool(book, {
+		tool_capabilities = {full_punch_interval=1.4, damage_groups={fleshy=0},
+			groupcaps={}, punch_attack_uses=0},
 		description = describe(metal.name, "Spellbook", br.ilvl,
 			"+" .. mana .. "% maximum Mana"),
 		inventory_image = BOOK_IMAGE .. "^[colorize:" .. BRACKET_TINT[bracket] .. ":48",
@@ -554,7 +558,9 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 				if line.key == "metal" and grade.key == "silversteel" then
 					armor_image = armor_image .. "^[hsl:0:-90:5"
 				end
-				core.register_craftitem(itemname, {
+				core.register_tool(itemname, {
+					tool_capabilities = {full_punch_interval=1.4, damage_groups={fleshy=0},
+						groupcaps={}, punch_attack_uses=0},
 					description = describe(grade.name, line.nouns[slot.key],
 						br.ilvl, ARMOR_LABELS[line.rank] .. "\n" .. armor_stats(armor)),
 					inventory_image = armor_image,
@@ -605,6 +611,10 @@ core.log("action", "[grug_gear] " .. NUM_BRACKETS .. " bracket catalogs: " ..
 -- Refresh weapon descriptions after all item registrations.
 core.register_on_mods_loaded(function()
 	for itemname, def in pairs(core.registered_items) do
+		if def.groups and (def.groups.grug_gear or 0) > 0 then
+			core.override_item(itemname, {description = (def.description or itemname) ..
+				"\n" .. grug_gear.usable_by(ItemStack(itemname))})
+		end
 		if def.groups and def.groups.grug_equip_weapon then
 			local caps = def.tool_capabilities or {}
 			local damage_groups = caps.damage_groups or {}
@@ -615,7 +625,8 @@ core.register_on_mods_loaded(function()
 					caps.full_punch_interval or 1.4, def._grug_hands or 1) ..
 					"\nEquip in Character > Weapon; attack with a hotbar combat skill"
 				core.override_item(itemname, {
-					description = describe(label, nil, def._grug_ilvl, stat_line),
+					description = describe(label, nil, def._grug_ilvl, stat_line) ..
+					"\n" .. grug_gear.usable_by(ItemStack(itemname)),
 				})
 			end
 		end
@@ -634,19 +645,26 @@ function grug_gear.initialize_weapon_tooltip(stack, player)
 	end
 	local meta = stack:get_meta()
 	local original_description = meta:get_string("description")
+	local repair = rawget(_G, "grug_repair")
+	local appearance_changed = repair and repair.refresh_appearance(stack) or false
 	local quality_api = rawget(_G, "grug_items")
 	if quality_api and
 			type(quality_api.regenerate_description) == "function" then
 		quality_api.regenerate_description(stack, player)
 	end
+	if repair and repair.eligible(stack) then
+		local description = meta:get_string("description")
+		if description == "" then description = (stack:get_definition() or {}).description or "" end
+		meta:set_string("description", repair.decorate_description(stack, description))
+	end
 	local def = stack:get_definition()
 	if not def or not def.groups or (def.groups.grug_equip_weapon or 0) <= 0 then
-		return meta:get_string("description") ~= original_description
+		return appearance_changed or meta:get_string("description") ~= original_description
 	end
 	local caps = stack:get_tool_capabilities() or {}
 	local damage = caps.damage_groups and caps.damage_groups.fleshy or 0
 	if type(damage) ~= "number" or damage <= 0 then
-		return meta:get_string("description") ~= original_description
+		return appearance_changed or meta:get_string("description") ~= original_description
 	end
 	local level = xp_api.get_level(player)
 	local effective = math.max(1, math.floor(
@@ -660,10 +678,10 @@ function grug_gear.initialize_weapon_tooltip(stack, player)
 	local desired = base ..
 		("\nEffective at level %d: %d damage per swing"):format(level, effective)
 	if meta:get_string("description") == desired then
-		return desired ~= original_description
+		return appearance_changed or desired ~= original_description
 	end
 	meta:set_string("description", desired)
-	return desired ~= original_description
+	return appearance_changed or desired ~= original_description
 end
 
 -- Refresh every weapon stack the player can see, including the one just moved
@@ -721,10 +739,10 @@ core.register_on_mods_loaded(function()
 			type(xp_api.register_on_level_change) ~= "function" then
 		return
 	end
-	grug_core.register_on_equipment_change(function(player, listname)
-		if listname == nil or listname == "grug_weapon" then
-			refresh_weapon_descriptions(player)
-		end
+	grug_core.register_on_equipment_change(function(player, listname, reason)
+		-- Wear writers already refresh their one stack before notification.
+		if reason == "durability_metadata" then return end
+		refresh_weapon_descriptions(player)
 	end)
 	xp_api.register_on_level_change(function(player, old_level)
 		if old_level ~= nil then

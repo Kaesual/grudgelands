@@ -218,3 +218,10 @@ While a target remains under Nova's actual root, emit a few small pale-blue
 crystal particles around its lower body, scaled simply to the live collision
 box. Stop on root expiry, immunity, death or removal; particles may fade for
 less than one second. No fitted shell or persistent decorative entity is used.
+
+## Broken equipment
+
+Cosmetic hand attachments retain broken equipped items with a crack overlay;
+combat eligibility remains disabled. Worn armor cracks affect only the broken
+slot's texture layer, not skin or intact equipment. Repair removes the overlay
+and preserves the item's current enchantment appearance.
