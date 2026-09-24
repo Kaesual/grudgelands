@@ -92,3 +92,36 @@ meat at the start cook, and verify that successors appear only after turn-in.
 At level 10, use the capital introduction without finishing the combat chain.
 Visit a new regional host, complete one night task and its consequence, and
 check that the capital envoy is a single actor in the existing hall socket.
+
+## Final-smoke fixture correction: ambient versus camp authority
+
+The first real-server catalog assertion incorrectly required ambient membership
+for bandit archers. This was a fixture defect, not an unobtainable quest target.
+The all-90 regional source audit contains 32 item jobs and 58 kill jobs: 46
+ambient targets, four camp-archer targets, two camp-bandit targets and six
+opposing guard targets. No production quest change is necessary.
+
+The corrected server fixture joins actual `simple_map.lua` anchor templates
+and zone identities with `grug_mobs.registered_camp_types` primary/variant mobs.
+It requires a matching camp in the objective zone, including the race-bound
+outpost faction, instead of exempting bandit/guard names. The six frontier
+bandit anchors are 050/052/054/056/058/060 in Stormvault/Ashenward/Glassroot/
+Blackwind/Bannerbreak/Thunderroot. `camps.lua` registers bandit archers as the
+one-in-three variant and selects that variant when filling a real camp slot.
+All six frontier regions also contain the opposing quests' authenticated
+race-bound outposts. These are level-31–40 regions; guard jobs require 40.
+
+All 46 ambient objective pairs intersect the actual zone and mob palettes.
+Their selected lookalikes agree with the zone filter (notably skeleton raiders
+in Ashenward/Bannerbreak and frost strays in Stormvault). Habitat review matches
+rock/gravel/snow in the mountain zones, forest/bone litter for wolves/treants,
+savanna/clay for tigers/scorpions, jungle for tapir/lynx, and mud for crocodile/
+ooze/wisp jobs. Every involved zone includes the required biome. Minimum gates
+are compatible: tiger explicitly 21–50; wolves/hyena/lynx minimum 10; the
+start-family level-4 restriction does not restrict these level-21+ jobs.
+Night-only targets retain the explicit night descriptions. The fixture now also
+checks objective-zone level bands and registered entity minimum levels.
+
+No engine or Lua runtime was run in the correction lane. Parser, SETGLOBAL and
+all five static sweeps passed; root owns the replacement smoke and independent
+reviewer verification.

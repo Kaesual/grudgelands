@@ -3,6 +3,30 @@
 return function()
  local Q = assert(grug_quests)
  Q.validate_registry()
+ -- Camp spawns have independent authority and are absent from ambient casts.
+ -- Join the actual source anchors to the runtime camp registry; never exempt
+ -- all bandits or all guards merely because their entity names are known.
+ local source = dofile(core.get_modpath("grug_mapgen") .. "/wp40/source/simple_map.lua")
+ local zones, camps = {}, {}
+ local factions = {dwarf="accord", human="accord", elf="accord",
+  undead="throng", orc="throng", troll="throng"}
+ for _, zone in ipairs(source.zones) do zones[zone.id] = zone end
+ for _, anchor in ipairs(source.anchors) do
+  local zone = assert(source.zones[anchor.zone_numeric_id])
+  local template = anchor.template_id
+  local kind
+  if template == "bandit_home" or template == "bandit_frontier" then kind = "bandit"
+  elseif template == "outpost" then kind = "guard_" .. assert(factions[zone.race_region]) end
+  if kind then
+   local cfg = assert(grug_mobs.registered_camp_types[kind], kind)
+   local members = camps[zone.id] or {}; camps[zone.id] = members
+   members[cfg.mob] = true
+   if cfg.variant then
+    assert(cfg.variant_chance >= 1 and cfg.variant_chance % 1 == 0, kind)
+    members[cfg.variant] = true
+   end
+  end
+ end
  local expected = {
   "r14_dwarf_01_tusks_at_the_timberline",
   "r14_dwarf_02_meat_for_the_smokehouse",
@@ -248,6 +272,7 @@ return function()
  local expected_set = {}
  for _, id in ipairs(expected) do expected_set[id] = true; assert(Q.registered_quests[id], id) end
  local quests, npcs, talk, regional, guards = 0, 0, 0, 0, 0
+ local ambient_targets, camp_targets = 0, 0
  for _ in pairs(Q.registered_npcs) do npcs = npcs + 1 end
  local rows = {}
  for id, q in pairs(Q.registered_quests) do
@@ -270,15 +295,24 @@ return function()
    assert(not q.race and q.npc == id:sub(1,14) .. "_host", id)
    if o.type == "kill" then
     assert(type(o.zone) == "string", id)
+    local zone = assert(zones[o.zone], id)
+    assert(q.min_level >= zone.level_min and q.min_level <= zone.level_max, id)
     local cast = {}
     for _, clock in ipairs({"day", "night"}) do
      for _, mob in ipairs(assert(grug_mobs.zone_clock_cast(o.zone, clock), o.zone)) do cast[mob] = true end
     end
     for _, mob in ipairs(o.mobs) do
+     local entity = assert(core.registered_entities[mob], id)
+     assert((entity._grug_min_level or 1) <= q.min_level, id .. " mob minimum level")
+     if cast[mob] then ambient_targets = ambient_targets + 1
+     else
+      assert(camps[o.zone] and camps[o.zone][mob], id .. " unavailable ambient/camp target: " .. mob)
+      camp_targets = camp_targets + 1
+     end
      if mob:match("^grug_mobs:guard_") then
       guards = guards + 1
       assert(q.min_level == 40 and mob == "grug_mobs:guard_" .. (q.faction == "accord" and "throng" or "accord"), id)
-     else assert(cast[mob], id .. " unavailable zone palette: " .. mob) end
+     end
     end
    end
   end
@@ -295,6 +329,7 @@ return function()
  end
  assert(quests == 240 and npcs == 78 and regional == 90 and talk == 36 and guards == 6,
   table.concat({quests, npcs, regional, talk, guards}, ":"))
+ assert(ambient_targets == 46 and camp_targets == 12, "regional spawn authority counts")
  table.sort(rows)
  return "r20-content:240:78:90:36:6:" .. core.sha1(table.concat(rows, "\n"))
 end
