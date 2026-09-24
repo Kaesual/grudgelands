@@ -284,7 +284,12 @@ function grug_food.register_item(item_name, tier, kind, role)
 	local placement = definition.type == "node" or (place and place ~= core.item_place)
 	core.override_item(item_name, {
 		on_place = function(stack, player, pointed)
-			if player and grug_abilities.input then grug_abilities.input.right_action(player) end
+			if player and grug_abilities.input then
+				grug_abilities.input.right_action(player)
+				-- A due held-food action may already have consumed the wield stack.
+				-- Delegate and return that current stack, never the engine's old copy.
+				stack = player:get_wielded_item()
+			end
 			if player and pointed and pointed.type == "node" and grug_abilities.input then
 				local node = core.get_node_or_nil(pointed.under)
 				local def = node and core.registered_nodes[node.name]
@@ -296,7 +301,12 @@ function grug_food.register_item(item_name, tier, kind, role)
 			return place and place(stack, player, pointed) or stack
 		end,
 		on_secondary_use = function(stack, player, pointed)
-			if player and grug_abilities.input then grug_abilities.input.right_action(player) end
+			if player and grug_abilities.input then
+				grug_abilities.input.right_action(player)
+				-- A due held-food action may already have consumed the wield stack.
+				-- Delegate and return that current stack, never the engine's old copy.
+				stack = player:get_wielded_item()
+			end
 			if player and pointed and pointed.type == "object" and grug_abilities.input then
 				local ent = pointed.ref and pointed.ref:get_luaentity()
 				if ent and ent.on_rightclick then grug_abilities.input.interaction(player) end

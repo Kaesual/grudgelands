@@ -351,7 +351,11 @@ local function release_draw(player, rec)
 	local ok, err = launch(player, "loose", effect.count, fraction, effect,
 		rec.action_id)
 	finish_draw_wear(player)
-	if not ok then grug_abilities.flash(player, err) end
+	if ok then
+		grug_abilities.delay_strike(player)
+	else
+		grug_abilities.flash(player, err)
+	end
 end
 
 local draw_accumulator = 0

@@ -113,3 +113,24 @@ Pick one drop from a pile per press. Use Loose RMB draw/release and food RMB
 1.5-second hold; interaction before a door/container must not also eat/fire.
 Test simultaneous buttons, slot switch and stun. Observe the accepted GUI-release
 and very-short-air-click limits, including ordinary configured inventory keys.
+
+## Independent review follow-up: release transactions
+
+Two Medium findings were confirmed in source review. A successful Loose release
+now extends the same melee deadline used by generic successful casts, through
+`strike_delay.lua`; it preserves any later existing deadline. A failed projectile
+launch does not extend it. Food's native placement/secondary callback refreshes
+its stack after contextual input runs, because that call can consume a due held
+portion. The original delegate runs once on that current copy and its result is
+returned to the engine, preventing the stale incoming copy restoring consumed
+food. Ordinary placement changes remain authoritative.
+
+`tools/r20_input/transactions_micro.lua` loads the actual Scout, shared deadline
+and food modules. It prepares successful/failed release and later-deadline
+assertions, then models native callback copy/write-back for partial/last food
+portions and a mutating placement delegate. It checks the actual melee deadline;
+it does not claim full init.lua damage settlement coverage. The fixture is
+prepared only, not executed in this lane. Parent integration must include it in
+the replacement final interpreter pair. Parser, SETGLOBAL, all five sweeps and
+whitespace checks completed; existing pipe literals/comment are sweep-4 false
+positives. No runtime or engine process was run for these fixes.

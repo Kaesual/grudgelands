@@ -2600,10 +2600,14 @@ grug_xp.register_on_level_change(function(player, old_level, new_level)
 	hud_update(player)
 end)
 
+-- Generic casts and released arrows share the actual melee deadline.
+grug_abilities.delay_strike = dofile(core.get_modpath(core.get_current_modname()) ..
+	"/strike_delay.lua")(swing_progress)
+
 dofile(core.get_modpath(core.get_current_modname()) .. "/kits.lua")
 dofile(core.get_modpath(core.get_current_modname()) .. "/scout.lua")
 
--- Local transaction seams stay private to this constructor. No alternate damage
+-- Transaction seams retain the existing authorities. No alternate damage
 -- or digging implementation is introduced by contextual dispatch.
 grug_abilities.input = dofile(core.get_modpath(core.get_current_modname()) ..
 	"/input.lua")({
@@ -2618,13 +2622,6 @@ grug_abilities.input = dofile(core.get_modpath(core.get_current_modname()) ..
 		return grug_abilities.charge_ready(player, def) and
 			affordable(player, grug_abilities.cost_for(player, def.cost, def.id))
 	end,
-	delay_strike = function(player)
-		local name, now = player:get_player_name(), core.get_us_time()
-		local weapon = grug_core.get_equipped_weapon(player) or ItemStack("")
-		local _, interval = grug_abilities.swing_stats(player, weapon)
-		local rec = swing_progress[name] or {weapon = ItemStack(weapon), next_due = 0}
-		rec.next_due = math.max(rec.next_due, now + interval * 1000000)
-		swing_progress[name] = rec
-	end,
+	delay_strike = grug_abilities.delay_strike,
 	within_hand_reach = within_hand_reach,
 })
