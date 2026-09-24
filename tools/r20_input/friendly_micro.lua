@@ -11,7 +11,7 @@ return function(root)
 	local env = setmetatable({}, {__index = _G})
 	env._G = env
 	env.core = registry()
-	env.grug_projectiles = registry()
+	env.grug_projectiles = registry({register = noop})
 	env.grug_classes = registry()
 	env.grug_abilities = registry({
 		valid_target = function(_, target, kind) return target == ally and kind == "friendly" end,

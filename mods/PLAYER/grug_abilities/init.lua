@@ -16,14 +16,12 @@ local clear_swing_progress -- assigned after the swing-clock declaration
 local reset_swing_boundary -- assigned after the swing-clock declaration
 local swing_progress -- assigned after ability registration helpers
 local attempt_swing -- assigned after the swing-clock declaration
-local pickup_visible_loot -- assigned with the shared 4 m pickup ray
 
 local function refuse_mounted_attack(player)
 	return grug_core.refuse_mounted_attack and
 		grug_core.refuse_mounted_attack(player) == true
 end
 local swing_input_latch = {} -- player name -> one direct hostile object click
-local swing_pickup_dig = {} -- player name -> LMB was held on the last swing pass
 
 local mana = {} -- player name -> current mana (fractional)
 local rage = {} -- player name -> current rage (fractional)
@@ -46,9 +44,9 @@ local skillname_huds = {} -- player name -> {id = hud id, token = n}
 local wield_watch = {} -- player name -> {index = hotbar index, item = name}
 local dirty = {} -- player name -> true (inventory action since last pass)
 
--- Target memory (classes.md core principles): enemy and ally use separate
+-- Presentation target memory: enemy and ally use separate
 -- slots. Enemy memory is Target-Frame state only and is never hostile aim
--- authority; ally memory remains the heal/shield fallback.
+-- authority; ally memory likewise supplies presentation only.
 grug_abilities.TARGET_LOCK = 8
 
 local function resource_of(player)
@@ -275,30 +273,9 @@ local function invalidate_target_locks(obj)
 	end
 end
 
--- Effective targeting range of an ability for this player (elf passive:
--- +5 m on RANGED abilities, world.md §7). The granted item's meta `range`
--- override (sync_kit) keeps pointed_thing in step with this — both go through
--- here, so the reach the engine allows and the reach the lock fallback checks
--- can never disagree.
---
--- `def.melee = true` opts an ability OUT of the perk (weapon-slot design E7).
--- The perk is written as "+5 m on every ability", and on native Strike that
--- is a 9 m sword: an elf would hit things it cannot reach with a weapon,
--- through the one ability every character has. The opt-out is an explicit
--- flag rather than a range threshold because a threshold silently re-tunes
--- the perk the day an ability's range changes.
---
--- Mighty Blow and Hamstring are melee at 4 m and carried the same pre-existing
--- bug; T4 set the flag on both (kits.lua). Every ability that is still meant to
--- reach further -- Fireball and Smite at 20 m, Flash Heal / Power Word: Shield /
--- Renew at 15 m, Charge at 12 m, Taunt at 8 m, and the two self-centred Mage
--- spells -- keeps the perk, because it is granted by the ABSENCE of the flag.
---
--- A talent that re-tunes a RANGE cannot be written at the kit table's `range`
--- field: that field is evaluated once at load time with no player in scope
--- (skill_trees.md §3.2). `def.range_talent` names the effect key instead, and
--- the read happens here, the one place both the engine's pointing reach (via
--- sync_kit's per-stack meta override) and the lock fallback go through.
+-- Effective server action range, including race/talent bonuses. Native skill
+-- representations keep a separate four-node hand interaction/digging reach.
+-- Melee explicitly opts out of the ranged race bonus.
 function grug_abilities.get_range(player, def)
 	local base = def.range or 4
 	if def.range_talent then
@@ -636,6 +613,11 @@ local function pass_to_node(pos, clicker, itemstack, pointed_thing)
 	if not def or not def.on_rightclick then
 		return nil
 	end
+	if grug_abilities.input then
+		local owner = grug_abilities.input.right_action(clicker)
+		if owner and owner ~= "interaction" then return itemstack end
+		grug_abilities.input.interaction(clicker)
+	end
 	return def.on_rightclick(pos, node, clicker, itemstack, pointed_thing) or
 		itemstack
 end
@@ -672,6 +654,7 @@ end
 -- The client DID point at a node: builtin's placement rule, spelled out, plus
 -- the hand-reach bound builtin does not have.
 local function ability_on_place(itemstack, placer, pointed_thing)
+	if placer and grug_abilities.input then grug_abilities.input.right_action(placer) end
 	if not placer or not pointed_thing or pointed_thing.type ~= "node" or
 			sneaking(placer) then
 		return itemstack
@@ -688,9 +671,15 @@ end
 -- front of the player would be an exploit, so a first hit without an
 -- `on_rightclick` ends the attempt.
 local function ability_on_secondary_use(itemstack, user, pointed_thing)
+	if user and grug_abilities.input then grug_abilities.input.right_action(user) end
 	-- An OBJECT click arrives here too (see the header): the engine is about to
 	-- run that object's own right-click, so this callback must do nothing at all.
 	if pointed_thing and pointed_thing.type ~= "nothing" then
+		if grug_abilities.input and pointed_thing.type == "object" then
+			local entity = pointed_thing.ref and pointed_thing.ref:get_luaentity()
+			if entity and entity.on_rightclick then grug_abilities.input.interaction(user)
+			else grug_abilities.input.right_action(user) end
+		end
 		return itemstack
 	end
 	if not user or not user.is_player or not user:is_player() or
@@ -724,7 +713,10 @@ local function ability_on_secondary_use(itemstack, user, pointed_thing)
 	end
 	if nearest.type == "object" then
 		local entity = nearest.ref and nearest.ref:get_luaentity()
-		if entity and entity.on_rightclick then entity:on_rightclick(user) end
+		if entity and entity.on_rightclick then
+			if grug_abilities.input then grug_abilities.input.interaction(user) end
+			entity:on_rightclick(user)
+		end
 		return itemstack
 	end
 	return pass_to_node(nearest.under, user, itemstack, nearest) or itemstack
@@ -737,6 +729,8 @@ end
 --
 
 function grug_abilities.register_ability(def)
+	def.repeat_policy = def.repeat_policy or "repeat"
+	assert(def.repeat_policy == "repeat" or def.repeat_policy == "once")
 	assert(def.id and (def.kind == "swing" or def.kind == "cast"),
 		"ability needs kind = \"swing\" or \"cast\"")
 	assert(def.target_kind == "friendly" or def.target_kind == "hostile"
@@ -818,7 +812,7 @@ function grug_abilities.register_ability(def)
 		-- An empty weapon slot keeps its neutral baseline placeholder; action
 		-- artwork must not masquerade as an equipped weapon in the hand.
 		wield_image = "grug_abilities_orb.png^[multiply:" .. def.color,
-		range = def.range or 4,
+		range = 4, -- Native pointing/digging has hand reach; casts use server rays.
 		stack_max = 1,
 		groups = {grug_ability = 1, grug_bound_skill = 1, not_in_creative_inventory = 1},
 		on_drop = function()
@@ -830,49 +824,15 @@ function grug_abilities.register_ability(def)
 		on_place = ability_on_place,
 		on_secondary_use = ability_on_secondary_use,
 	}
-	if def.kind == "swing" then
-		-- Empty groupcaps remove this tool's explicit dig capabilities, but the
-		-- engine can still fall back to the registered hand. Item-specific
-		-- pointabilities prevent the standard client from retargeting the
-		-- ground/leaves after a mob dies and sending a native dig. These are the
-		-- three hand groupcaps plus the engine's independent dig_immediate path.
-		-- "blocking" keeps the ray hit as a blocker without making the node an
-		-- interaction target; objects retain ordinary pointability/punching.
-		tool_def.pointabilities = {nodes = {
-			["group:crumbly"] = "blocking",
-			["group:snappy"] = "blocking",
-			["group:oddly_breakable_by_hand"] = "blocking",
-			["group:dig_immediate"] = "blocking",
-		}}
-	else
-		tool_def.on_use = function(itemstack, user, pointed_thing)
-			-- Every observable cast-item use is a synchronous non-swing boundary,
-			-- including the builtin-loot early return below. try_cast repeats this
-			-- idempotently for direct callers that bypass the item definition.
-			reset_swing_boundary(user)
-			-- Loot pickup (classes.md core principles, WP38): an item with an
-			-- on_use makes the client send INTERACT_USE instead of a punch, so a
-			-- click on dropped loot never reached the item entity's on_punch.
-			-- Run the builtin item entity's own on_punch — the exact pickup path
-			-- a weapon punch takes (on_pickup callback, inventory add, entity
-			-- removal, item_entity.lua:325-347) — and do NOT cast.
-			-- The client points with this ability item's combat range, so never
-			-- trust that object reference as pickup authority. Reacquire the
-			-- first visible thing on the shared, fixed-distance loot ray.
-			if pointed_thing and pointed_thing.type == "object" then
-				local ent = pointed_thing.ref and pointed_thing.ref:get_luaentity()
-				if ent and ent.name == "__builtin:item" then
-					pickup_visible_loot(user)
-					return
-				end
-			end
-			grug_abilities.try_cast(user, def, pointed_thing)
-		end
-	end
-	-- Swing tools deliberately have no on_use. The client therefore keeps its
-	-- native object-punch path and first-person animation/repeat. The no-dig
-	-- pointabilities can mask ground-level drops; pickup_swing_loot restores
-	-- that one builtin interaction from the server-visible LMB edge.
+	-- Every representation retains the native hand-dig path. The server input
+	-- owner dispatches skills from native press events and sampled controls.
+	tool_def.tool_capabilities = {
+		full_punch_interval = 0.9, max_drop_level = 0, punch_attack_uses = 0,
+		groupcaps = {dig_immediate = {times = {[2] = 0.3, [3] = 0.3}, uses = 0, maxlevel = 0}},
+		damage_groups = {fleshy = 0},
+	}
+	tool_def.after_use = function(stack) return stack end
+
 	core.register_tool(itemname, tool_def)
 end
 
@@ -1121,7 +1081,6 @@ clear_swing_progress = function(player)
 	grug_core.reset_accumulated_melee(player)
 	swing_progress[name] = nil
 	swing_input_latch[name] = nil
-	swing_pickup_dig[name] = nil
 	set_ready_reticle(player, false)
 end
 
@@ -1132,7 +1091,6 @@ reset_swing_boundary = function(player)
 	local name = player:get_player_name()
 	local entry = swing_progress[name]
 	swing_input_latch[name] = nil
-	swing_pickup_dig[name] = nil
 	set_ready_reticle(player, false)
 	if not entry then
 		grug_core.reset_accumulated_melee(player)
@@ -1160,66 +1118,6 @@ end
 local function valid_swing_enemy(player, target, def)
 	return grug_abilities.valid_target(player, target,
 		(def and def.target_kind) or "hostile")
-end
-
--- Swing items need node pointabilities = "blocking" so the engine cannot
--- fall back to hand digging after a mob dies. Runtime testing showed that this
--- can also hide a dropped item's small selection box when it rests against the
--- blocked ground, so no native object packet reaches builtin pickup. Restore
--- only that one interaction server-side: one new LMB press, the first visible
--- thing on the ordinary eye ray, the shared 4 m pickup range, and builtin items
--- only.
--- Nodes and non-item objects stop the ray; this is neither auto-loot nor a
--- through-wall/proximity pickup.
-local LOOT_PICKUP_RANGE = 4
-local LOOT_DISTANCE_TIE_EPSILON = 0.000001
-
-pickup_visible_loot = function(player)
-	local eye = grug_core.combat_eye_pos(player)
-	if not eye then
-		return false
-	end
-	local dest = vector.add(eye, vector.multiply(player:get_look_dir(),
-		LOOT_PICKUP_RANGE))
-	local best_distance
-	local best_is_drop = false
-	local best_drop
-	for pointed in core.raycast(eye, dest, true, false) do
-		if pointed.type == "object" and pointed.ref == player then
-			-- The server ray includes the player whose eye starts inside their
-			-- own selection box. It is not an interaction blocker.
-		else
-			-- RaycastSort gives objects a BS^2 preference over nodes, so the
-			-- iterator's first hit is not necessarily the physically nearest one.
-			-- Exhaust this same ray and compare its exact selection-box points.
-			local distance = pointed.intersection_point and
-				vector.distance(eye, pointed.intersection_point) or math.huge
-			local ent = pointed.type == "object" and pointed.ref and
-				pointed.ref:get_luaentity()
-			local is_drop = pointed.intersection_point and
-				distance <= LOOT_PICKUP_RANGE + LOOT_DISTANCE_TIE_EPSILON and
-				ent and ent.name == "__builtin:item" or false
-			local nearer = not best_distance or
-				distance < best_distance - LOOT_DISTANCE_TIE_EPSILON
-			local blocker_tie = best_distance and
-				math.abs(distance - best_distance) <=
-					LOOT_DISTANCE_TIE_EPSILON and not is_drop and best_is_drop
-			if nearer or blocker_tie then
-				best_distance = distance
-				best_is_drop = is_drop
-				best_drop = is_drop and ent or nil
-			end
-		end
-	end
-	if best_drop then
-		best_drop:on_punch(player)
-		return true
-	end
-	return false
-end
-
-local function pickup_swing_loot(player)
-	return pickup_visible_loot(player)
 end
 
 -- Proc preparation still uses the two-phase grug_core seam because mobs_redo
@@ -1522,39 +1420,13 @@ attempt_swing = function(player, selected, held, latched)
 	return true
 end
 
--- Vendored mobs_redo and the PvP callback call this seam for a direct native
--- object punch. Returning true means "this is a swing item": the caller must
--- suppress its native damage path. A direct hostile object packet replaces the
--- lock and sets one input latch for the next throttled attack pass (0.05 s
--- threshold; execution waits for the next actual engine step). That pass
--- consumes the latch even if the clock/target/range/LOS check fails; it is
--- never queued until a later due time. Held repeats still require live
--- `control.dig`.
--- Builtin item entities and ordinary tools/fists never enter this seam.
+-- Native object punches are input edges only. Contextual input revalidates
+-- current aim and owns the action; tools/fists never initiate native combat.
 grug_core.register_native_swing_input_handler(function(player, target)
-	if grug_core.is_stunned(player) then return true end
-	local selected = selected_swing_def(player)
-	if not selected then
-		return false
-	end
-	if grug_core.authoritative_swing_active(player) then
-		-- The claimed outer token is the only authoritative entry. Suppress any
-		-- callback-triggered same-player punch without changing its target/latch.
-		return true
-	end
-	if valid_swing_enemy(player, target, selected) then
-		grug_abilities.set_target(player, target, false)
-		swing_input_latch[player:get_player_name()] = true
-	elseif target and target:is_player()
-			and grug_factions.same_faction(player, target) then
-		grug_abilities.set_target(player, target, true)
-	end
-	local name = player:get_player_name()
-	if grug_core.combat_debug_due(name, "swing:input", 0.25) then
-		grug_core.combat_debug_log(name, "swing_input",
-			"native target=" .. debug_target_name(target) ..
-			" hostile_latch=" .. tostring(swing_input_latch[name] == true))
-	end
+	if grug_core.authoritative_swing_active(player) then return true end
+	if grug_abilities.input then grug_abilities.input.press(player) end
+	-- Only the selected skill's authoritative path may initiate player combat.
+	-- Ordinary held tools retain harvesting and interaction, not native damage.
 	return true
 end)
 
@@ -1591,7 +1463,10 @@ grug_core.register_ordinary_melee_input_handler(function(player, target)
 	swing_input_latch[name] = nil
 end)
 
-function grug_abilities.try_cast(user, def, pointed_thing)
+function grug_abilities.try_cast(user, def, pointed_thing, quiet)
+	local function notice(message)
+		if not quiet then grug_abilities.flash(user, message) end
+	end
 	-- A cast is a synchronous boundary even if the player switches back before
 	-- the 0.5 s wield watcher sees it. Stop swing input and discard ordinary tool
 	-- remainder before affordability, while preserving the anti-spam due time.
@@ -1601,8 +1476,7 @@ function grug_abilities.try_cast(user, def, pointed_thing)
 	if user:get_hp() <= 0 or grug_core.is_stunned(user) then
 		return
 	end
-	-- Swing items have no on_use and never enter this function. Their native
-	-- object punches are input only; the authoritative clock owns damage.
+	-- Swing skills use the authoritative melee transaction, not the cast path.
 	if def.kind ~= "cast" then
 		return
 	end
@@ -1612,12 +1486,12 @@ function grug_abilities.try_cast(user, def, pointed_thing)
 	-- Universal abilities have no class to be (E1) — without this a Mage
 	-- using the universal Strike was told "You are no Warrior".
 	if not def.universal and grug_classes.get_class(user) ~= def.class then
-		grug_abilities.flash(user, "You are no " ..
+		notice("You are no " ..
 			grug_classes.registered_classes[def.class].name .. ".")
 		return
 	end
 	if not grug_abilities.is_unlocked(user, def.id) then
-		grug_abilities.flash(user, "This skill is not unlocked.")
+		notice("This skill is not unlocked.")
 		return
 	end
 	-- Cast skills: ready check, affordable check, cast, spend, arm the
@@ -1625,17 +1499,16 @@ function grug_abilities.try_cast(user, def, pointed_thing)
 	local name = user:get_player_name()
 	cooldowns[name] = cooldowns[name] or {}
 	if not grug_abilities.ready(user, def.id) then
-		grug_abilities.flash(user, def.name .. " is not ready.")
+		notice(def.name .. " is not ready.")
 		return
 	end
 	if not cast_interval_ready(user, def) then
-		grug_abilities.flash(user, def.name .. " cast interval is not ready.")
+		notice(def.name .. " cast interval is not ready.")
 		return
 	end
 	local effective_cost = grug_abilities.cost_for(user, def.cost, def.id)
 	if not affordable(user, effective_cost) then
-		grug_abilities.flash(user,
-			"Not enough " .. (effective_cost.mana and "mana" or "rage") .. ".")
+		notice("Not enough " .. (effective_cost.mana and "mana" or "rage") .. ".")
 		return
 	end
 	-- A false return means "no valid cast" (e.g. no target): no cost, no
@@ -1651,13 +1524,14 @@ function grug_abilities.try_cast(user, def, pointed_thing)
 	end
 	local ok, err = def.cast(user, cast_pointed, def)
 	if not ok then
-		grug_abilities.flash(user, err or "Invalid target.")
+		notice(err or "Invalid target.")
 		return
 	end
 	spend(user, effective_cost)
 	arm_cast_interval(user, def)
 	grug_abilities.arm_cooldown(user, def,
 		grug_abilities.effective_cooldown(user, def))
+	return true
 end
 
 --
@@ -1856,26 +1730,14 @@ local function apply_skin(stack, def, src)
 	return true
 end
 
--- Native swing items carry the equipped weapon's interval but ZERO combat
--- damage. Native object-punch packets are independently capped at one per
--- 0.2 s; full_punch_interval drives the client animation/reload indication and
--- our authoritative weapon clock, not that packet cap. Zero damage still sends
--- the direct object packet (game.cpp:3220-3247; content_cao.cpp:1880-1920) but
--- prevents it from feeding builtin PvP knockback before our OR callback can
--- suppress it. The authoritative server punch rebuilds real damage from the
--- slot. Empty equipment resolves to the registered hand interval in kits.lua.
--- Empty groupcaps keep the ability from supplying its own dig capability;
--- definition pointabilities above block the standard client's hand fallback.
--- Use 0 keeps the ability item indestructible. The token is the
--- compare-before-write gate;
--- the override has no Lua getter distinct from the resolved capabilities.
-local SWING_CAPS_VERSION = 2
+-- All skill representations carry zero native combat damage and no tool-tier
+-- capability. Ordinary digging falls back to the actual hand; short harvests
+-- have a positive zero-wear capability. The clock retains the equipped weapon
+-- interval. A compare-before-write token avoids repeated inventory packets.
+local SWING_CAPS_VERSION = 3
 local SWING_CAPS_TOKEN_KEY = "grug_swing_caps"
 
 local function apply_swing_caps(stack, def, player)
-	if def.kind ~= "swing" then
-		return false
-	end
 	local _, interval = grug_abilities.swing_stats(player)
 	local token = SWING_CAPS_VERSION .. "|" .. string.format("%.17g", interval)
 	local meta = stack:get_meta()
@@ -1885,7 +1747,7 @@ local function apply_swing_caps(stack, def, player)
 	meta:set_tool_capabilities({
 		full_punch_interval = interval,
 		max_drop_level = 0,
-		groupcaps = {},
+		groupcaps = {dig_immediate = {times = {[2] = 0.3, [3] = 0.3}, uses = 0, maxlevel = 0}},
 		damage_groups = {fleshy = 0},
 		punch_attack_uses = 0,
 	})
@@ -2135,8 +1997,7 @@ function grug_abilities.stack_for(player, ability_id)
 	local def = grug_abilities.registered[ability_id]
 	if not def or not grug_abilities.is_unlocked(player, ability_id) then return nil end
 	local stack = ItemStack("grug_abilities:" .. ability_id)
-	local effective = grug_abilities.get_range(player, def)
-	if effective > (def.range or 4) then stack:get_meta():set_float("range", effective) end
+
 	apply_skin(stack, def, skin_source_cache(player)(def))
 	if def.slot == "weapon" then apply_swing_caps(stack, def, player) end
 	apply_charge_bar(stack, def)
@@ -2348,7 +2209,7 @@ core.register_on_punchplayer(function(player, hitter, tflp, tool_capabilities, d
 		return true
 	end
 	local selected = selected_swing_def(hitter)
-	if selected and not authoritative_token then
+	if not authoritative_token then
 		-- The handler sets the enemy/ally lock as appropriate. A direct hostile
 		-- packet sets one latch for the next throttled attack pass even after release;
 		-- suppress original engine damage for every swing item, including neutral
@@ -2521,44 +2382,16 @@ local function weapon_clock_ready(player, selected)
 	return core.get_us_time() >= entry.next_due
 end
 
--- Held-LMB authoritative loop. The client continues to animate the no-on_use
--- swing tool, while the server reads control state and one current combat ray
--- at the shared weapon clock. A direct hostile-object packet
--- contributes one latch for the next throttled attack pass, even after release;
--- the latch is consumed immediately and never waits for a later due time.
--- One player can produce at most one attempt per pass.
+-- The contextual input owner drives the same authoritative swing transaction.
 local swing_step_acc = 0
-
 core.register_globalstep(function(dtime)
 	swing_step_acc = swing_step_acc + dtime
-	if swing_step_acc < SWING_STEP then
-		return
-	end
+	if swing_step_acc < SWING_STEP then return end
 	swing_step_acc = 0
+	if not grug_abilities.input then return end
 	for _, player in ipairs(core.get_connected_players()) do
-		local name = player:get_player_name()
-		local selected = selected_swing_def(player)
-		local dig = player:get_player_control().dig == true
-		local latched = swing_input_latch[name] == true
-		swing_input_latch[name] = nil
-		if selected then
-			local new_press = dig and swing_pickup_dig[name] ~= true
-			swing_pickup_dig[name] = dig or nil
-			local picked_up = new_press and pickup_swing_loot(player, selected)
-			if not picked_up and (dig or latched) then
-				attempt_swing(player, selected, dig, latched)
-			end
-			set_ready_reticle(player, weapon_clock_ready(player, selected))
-		elseif swing_progress[name] and not swing_progress[name].inactive then
-			swing_pickup_dig[name] = nil
-			-- This throttled attack pass (0.05 s threshold, actual engine-step
-			-- scheduling) closes the slower HUD watcher's window when a player
-			-- crosses to a cast, ordinary tool or empty hand.
-			reset_swing_boundary(player)
-		else
-			swing_pickup_dig[name] = nil
-			set_ready_reticle(player, false)
-		end
+		grug_abilities.input.step(player)
+		set_ready_reticle(player, weapon_clock_ready(player, selected_swing_def(player)))
 	end
 end)
 
@@ -2769,3 +2602,29 @@ end)
 
 dofile(core.get_modpath(core.get_current_modname()) .. "/kits.lua")
 dofile(core.get_modpath(core.get_current_modname()) .. "/scout.lua")
+
+-- Local transaction seams stay private to this constructor. No alternate damage
+-- or digging implementation is introduced by contextual dispatch.
+grug_abilities.input = dofile(core.get_modpath(core.get_current_modname()) ..
+	"/input.lua")({
+	selected = function(player) return item_defs[player:get_wielded_item():get_name()] end,
+	swing = function(player, def) return attempt_swing(player, def, true, false) end,
+	can_cast = function(player, def)
+		return def.kind == "cast" and grug_abilities.is_unlocked(player, def.id) and
+			grug_abilities.ready(player, def.id) and cast_interval_ready(player, def) and
+			affordable(player, grug_abilities.cost_for(player, def.cost, def.id))
+	end,
+	swing_ready = function(player, def)
+		return grug_abilities.charge_ready(player, def) and
+			affordable(player, grug_abilities.cost_for(player, def.cost, def.id))
+	end,
+	delay_strike = function(player)
+		local name, now = player:get_player_name(), core.get_us_time()
+		local weapon = grug_core.get_equipped_weapon(player) or ItemStack("")
+		local _, interval = grug_abilities.swing_stats(player, weapon)
+		local rec = swing_progress[name] or {weapon = ItemStack(weapon), next_due = 0}
+		rec.next_due = math.max(rec.next_due, now + interval * 1000000)
+		swing_progress[name] = rec
+	end,
+	within_hand_reach = within_hand_reach,
+})

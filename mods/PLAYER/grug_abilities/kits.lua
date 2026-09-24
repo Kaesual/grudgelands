@@ -587,7 +587,7 @@ local function nova_values(user)
 end
 
 grug_abilities.register_ability({
-	id = "frost_nova",
+	id = "frost_nova", offensive = true,
 	class = "mage",
 	name = "Frost Nova",
 	values = nova_values,
@@ -647,7 +647,7 @@ grug_abilities.register_ability({
 })
 
 grug_abilities.register_ability({
-	id = "blink",
+	id = "blink", repeat_policy = "once",
 	class = "mage",
 	name = "Blink",
 	kind = "cast",
