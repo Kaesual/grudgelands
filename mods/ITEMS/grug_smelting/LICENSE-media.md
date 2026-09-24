@@ -39,6 +39,11 @@ minetest_game files directly and modify none of them:
 `default_furnace_fire_fg.png`, `gui_furnace_arrow_bg.png`,
 `gui_furnace_arrow_fg.png`.
 
+The Charcoal craftitem references `default_coal_lump.png` with the runtime
+texture modifier `^[colorize:#302a28:110`. This is a darker presentation of
+the same vendored minetest_game coal sprite; no copied VoxeLibre texture is
+stored. The source and resulting presentation remain CC BY-SA 3.0 Unported.
+
 The node inherits `default.node_sound_stone_defaults()` and therefore refers to
 the vendored `default_hard_footstep.*`, `default_dig_cracky.*`,
 `default_dug_node.*` and `default_place_node_hard.*` files. No sound is copied,

@@ -134,13 +134,27 @@ local function formspec(ctx)
 			(ctx.station == "dual_furnace" and "input" or "mixture")
 		local output = ctx.station == "furnace" and "dst" or "output"
 		local width = ctx.station == "dual_furnace" and 2 or 1
+		local furnace_kind = ctx.station == "furnace" or ctx.station == "dual_furnace"
+		local fuel_percent, progress_percent = 0, 0
+		if furnace_kind then
+			local fuel_fraction, progress_fraction = automatic.fractions(ctx.station,
+				inputs(ctx), ctx.process)
+			fuel_percent = math.floor(fuel_fraction * 100 + 0.5)
+			progress_percent = math.floor(progress_fraction * 100 + 0.5)
+		end
 		result = result .. "label[1,1.9;" .. (source == "mixture" and "Prepared mixture" or "Input") ..
 			"]list[" .. location .. ";" .. source .. ";1,2.3;" .. width .. ",1;]" ..
 			"label[3.5,1.9;Fuel]list[" .. location .. ";fuel;3.5,2.3;1,1;]" ..
 			"label[6,1.9;Finished output]list[" .. location .. ";" .. output .. ";6,2.3;2," ..
 			(ctx.station == "furnace" and 2 or 1) .. ";]listring[" .. location .. ";" .. output ..
 			"]listring[current_player;main]listring[" .. location .. ";" .. source ..
-			"]listring[current_player;main]listring[" .. location .. ";fuel]listring[current_player;main]"
+			"]listring[current_player;main]listring[" .. location .. ";fuel]listring[current_player;main]" ..
+			(furnace_kind and "image[4.6,2.3;0.8,0.8;default_furnace_fire_bg.png]" or "") ..
+			(furnace_kind and fuel_percent > 0 and "image[4.6,2.3;0.8,0.8;default_furnace_fire_bg.png^[lowpart:" ..
+				fuel_percent .. ":default_furnace_fire_fg.png]" or "") ..
+			(furnace_kind and "image[5.45,2.3;0.8,0.8;gui_furnace_arrow_bg.png^[transformR270]" or "") ..
+			(furnace_kind and progress_percent > 0 and "image[5.45,2.3;0.8,0.8;gui_furnace_arrow_bg.png^[lowpart:" ..
+				progress_percent .. ":gui_furnace_arrow_fg.png^[transformR270]" or "")
 	else
 		result = result .. "list[" .. location .. ";craft;1,2;3,3;]" ..
 			"label[6,1.8;" .. (ctx.produced and "Crafted remainder" or "Qualified result") ..
@@ -205,16 +219,15 @@ local function callbacks(ctx)
 			if not accessible(ctx, player) or not ctx.personal then return 0 end
 			if advance(ctx) then return 0 end
 			if list == "output" or list == "dst" then return 0 end
-			if list == "fuel" and core.get_craft_result({method = "fuel", width = 1,
-					items = {stack}}).time <= 0 then return 0 end
+			if list == "fuel" and automatic.fuel_time(ctx.station, stack) <= 0 then return 0 end
 			return stack:get_count()
 		end,
 		allow_move = function(inv, from, fi, to, ti, count, player)
 			if not accessible(ctx, player) or not ctx.personal or from == "output" or
 					from == "dst" or to == "output" or to == "dst" then return 0 end
 			if advance(ctx) then return 0 end
-			if to == "fuel" and core.get_craft_result({method = "fuel", width = 1,
-					items = {inv:get_stack(from, fi)}}).time <= 0 then return 0 end
+			if to == "fuel" and automatic.fuel_time(ctx.station,
+					inv:get_stack(from, fi)) <= 0 then return 0 end
 			return count
 		end,
 		allow_take = function(inv, list, index, stack, player)
@@ -318,7 +331,10 @@ core.register_globalstep(function(dtime)
 	if accumulator < 1 then return end
 	accumulator = 0
 	for _, ctx in pairs(viewers) do
-		if accessible(ctx, core.get_player_by_name(ctx.name)) then advance(ctx) refresh(ctx, false) end
+		if accessible(ctx, core.get_player_by_name(ctx.name)) then
+			advance(ctx)
+			refresh(ctx, ctx.automatic)
+		end
 	end
 end)
 
@@ -358,8 +374,7 @@ local function install_node(name, station)
 	local function allow_put(pos, list, index, stack, player)
 		if not allowed(pos, player) or list == "output" or list == "dst" then return 0 end
 		if not (automatic.sizes[station] or {craft = 9})[list] then return 0 end
-		if list == "fuel" and core.get_craft_result({method = "fuel", width = 1,
-				items = {stack}}).time <= 0 then return 0 end
+		if list == "fuel" and automatic.fuel_time(station, stack) <= 0 then return 0 end
 		return stack:get_count()
 	end
 	core.override_item(name, {

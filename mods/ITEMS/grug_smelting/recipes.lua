@@ -35,7 +35,20 @@ local SMELTS = {
 
 -- The engine's own default is 3 s; it is spelled out because it is a number
 -- WP26 chose, not one it inherited.
-local SMELT_TIME = 3
+local SMELT_TIME = 10
+
+core.register_craftitem("grug_smelting:charcoal", {
+	description = "Charcoal",
+	inventory_image = "default_coal_lump.png^[colorize:#302a28:110",
+	groups = {grug_furnace_fuel = 1},
+})
+
+core.register_craft({
+	type = "cooking",
+	output = "grug_smelting:charcoal",
+	recipe = "group:tree",
+	cooktime = 10,
+})
 
 for _, row in ipairs(SMELTS) do
 	core.register_craft({

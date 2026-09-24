@@ -26,6 +26,7 @@ return {
 	{station="furnace",output="grug_materials:iron_bar",method="cooking",width=0,shapeless=false,inputs={"default:iron_lump"},owner="general",main_material="default:iron_lump"},
 	{station="furnace",output="grug_materials:silver_bar",method="cooking",width=0,shapeless=false,inputs={"grug_materials:silver_lump"},owner="general",main_material="grug_materials:silver_lump"},
 	{station="furnace",output="grug_materials:tin_bar",method="cooking",width=0,shapeless=false,inputs={"default:tin_lump"},owner="general",starter=true},
+	{station="furnace",output="grug_smelting:charcoal",method="cooking",width=0,shapeless=false,inputs={"group:tree"},owner="general",starter=true},
 	{station="furnace",output="mobs:meat",method="cooking",width=0,shapeless=false,inputs={"mobs:meat_raw"},owner="general",starter=true},
 	{station="furnace",output="mobs:meatblock",method="cooking",width=0,shapeless=false,inputs={"mobs:meatblock_raw"},owner="general",main_material="mobs:meatblock_raw"},
 	{station="grid",output="beds:bed_bottom",method="normal",width=3,shapeless=false,inputs={"wool:white","wool:white","wool:white","group:wood","group:wood","group:wood"},owner="general",main_material="group:wood"},
