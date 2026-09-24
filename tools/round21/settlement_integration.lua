@@ -13,7 +13,7 @@ function M.owners(built)
 	local _, _, _, _, _, gate_y = columns.column_values_at(2056, 1500)
 	local cases = {
 		{label = "Kezamba core", x = 1800, z = 1446, dx = 0, dz = 1, length = 5, expected = anchor.y},
-		{label = "Kezamba east gate", x = 2053, z = 1499, dx = 1, dz = 0, length = 5, expected = gate_y},
+		{label = "Kezamba east gate", x = 2053, z = 1499, dx = 1, dz = 0, length = 5, expected = gate_y, natural_from = 5},
 	}
 	local owners, seen = {}, {}
 	local function add(b)
@@ -106,7 +106,10 @@ function M.check(built, api, outputs, metrics)
 					local direction = ({[0]={0,1},[1]={1,0},[2]={0,-1},[3]={-1,0}})[floor.node.param2]
 					if offset * (direction[1]*case.dx+direction[2]*case.dz) < 0 then y = floor.y end
 				end
-				assert(not previous or math.abs(y-previous) <= 0.6,
+				-- Keep the authored gate and its first exterior connection strict;
+				-- the remaining exterior terrain permits ordinary one-node steps.
+				local limit = case.natural_from and p >= case.natural_from and 1.01 or 0.6
+				assert(not previous or math.abs(y-previous) <= limit,
 					case.label .. ": unwalkable half-step at " .. x .. "," .. z .. " (" .. tostring(previous) .. " -> " .. y .. ")")
 				previous = y
 			end

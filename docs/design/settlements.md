@@ -541,5 +541,7 @@ retain biome/cultural ground. Street junctions have complete shared footprints
 and a single landing surface, with incident runs ending at their ports. Core,
 gate and entrance approaches share consistent endpoint heights and headroom.
 Plot collars may cut/fill natural terrain before final paths; each entrance must
-connect to its street. Retaining walls elsewhere are allowed. These rules
+connect to a nearby street within 24 nodes, or to natural terrain within its
+eight-node collar when no street is nearby. Such natural connections retain
+the same slope and headroom requirements. Retaining walls elsewhere are allowed. These rules
 replace the prior no-outside-apron policy where it prevents access.

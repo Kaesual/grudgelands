@@ -45,6 +45,7 @@ return function(repo)
 		content_ref = function(name) return refs[name] end, resolve = function(ref, param2) return ref, param2 end}
 	local config = settlement.config(prepared, content, sha)
 	local plot_level = 8
+	local natural_access = false
 	local function ground(x, z) return (math.abs(x) <= 2 and z >= 14 and z <= 18) and plot_level or 10 end
 	local deps = {zones_session = {anchor = function() return {id = "anchor_999", numeric_id = 999, x = 0, y = 10, z = 0} end},
 		planner_source = {column_values_at = function(x, z) return "land", 1, "micro", "biome", "human", ground(x, z) end}}
@@ -69,7 +70,7 @@ return function(repo)
 			result[x .. ":" .. y .. ":" .. z] = prepared.palette[cid] .. ":" .. param2
 		end
 		local ledger = tail:settle(context)
-		if plot_level == 8 then
+		if plot_level == 8 or natural_access then
 			assert(#ledger.approach_findings == 0, table.concat(ledger.approach_findings, "; "))
 		else assert(#ledger.approach_findings == 1, "impossible approach was hidden") end
 		return result
@@ -91,5 +92,20 @@ return function(repo)
 	assert(sockets[1].y == -1, "plot socket projection changed")
 	plot_level = 6
 	emit(-12, 12)
+	-- Move only the synthetic street outside the bounded entrance search.
+	-- The real writer must connect the unchanged plot to natural terrain.
+	for _, run in ipairs(source.overlay.runs) do run.at = -20 end
+	prepared = settlement.prepare(profile, source, sha)
+	config = settlement.config(prepared, content, sha)
+	natural_access = true
+	local natural_path = emit(-12, 12)
+	for z = 6, 13 do
+		local top = math.floor(6 + 4 * (14-z)/8 + 0.5)
+		assert(natural_path["0:" .. top .. ":" .. z] and
+			not natural_path["0:" .. top .. ":" .. z]:match("^air"), "natural entrance floor missing")
+		for y = top + 1, top + 3 do
+			assert(natural_path["0:" .. y .. ":" .. z] == "air:0", "natural entrance headroom missing")
+		end
+	end
 	return "round21_settlement_seam\tprepare+config=real\tsplit=equal\troot=preserved\tentry=clear\n"
 end

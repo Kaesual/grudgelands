@@ -1345,7 +1345,12 @@ function M.config(prepared, content, raw_sha256)
 			if record.sampled then return end
 			record.sampled = true
 			if not record.road_id then
-				approach_findings[#approach_findings + 1] = record.state.descriptor.id .. ": no bounded north street"
+				local y, _, wet, engineered = walkable_values(anchor.x + record.entry_x, anchor.z + record.road_z)
+				record.road_y = y
+				if wet or engineered or math.abs(y - record.y) > plot_approach.COLLAR then
+					record.unreachable = true
+					approach_findings[#approach_findings + 1] = record.state.descriptor.id .. ": natural entrance cannot fit within collar"
+				end
 				return
 			end
 			local road = road_states[record.road_id]

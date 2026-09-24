@@ -21,13 +21,14 @@ manifest/writer checks and GUI acceptance are still pending.
   plot and cached, including a junction owner when necessary. Approaches slope
   toward that existing street height and use oriented stairs. Plot reference
   height and socket projection are unchanged. Collars and approaches are
-  emitted before plots and streets, with owner clipping.
+  emitted before plots and streets, with owner clipping. Without a nearby
+  street, a short entrance aisle meets natural terrain within the eight-node
+  collar; a distant street is not a requirement for every building.
 
 ## Deliberate bounded failure reporting
 
-The implementation does not invent a new route solver. A plot with no street
-in its bounded north corridor, or with more rise than the free straight
-approach can accommodate, is reported in `approach_findings` on its settlement
+The implementation does not invent a new route solver. A plot with more rise than its bounded straight
+approach can accommodate, or an unsuitable natural endpoint, is reported in `approach_findings` on its settlement
 ledger and metrics. It does not abort world generation. Such a report is **an
 unresolved access case**, not acceptance evidence; inspect these findings in
 combined real-owner checks and resolve or explicitly scope any actual case
@@ -57,3 +58,9 @@ planner/writer checks. Check final nodes around `(1800,66,1448)` and
 walk surfaces and two nodes of headroom, and inspect at least one actual plot
 approach plus its `approach_findings`. Scalar profiles alone do not prove the
 final writer's composed walkability. Visual acceptance remains user-run.
+
+The selected-owner replay confirmed a clear core, gate and canopy-muster
+entrance. The gate helper retains half-node steps through the first exterior
+connection, then permits ordinary one-node exterior terrain steps. The actual
+totem-store layout has no nearby street; its bounded natural entrance is
+covered by the real synthetic writer fixture and awaits combined owner evidence.

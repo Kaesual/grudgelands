@@ -23,6 +23,8 @@ function M.new(plots, runs)
 		end
 		if best then
 			p.road_axis, p.road_z, p.road_id = best.at, best.at + 2, best.id
+		else
+			p.road_z = p.min_z - M.COLLAR
 		end
 		p.outer_min_x, p.outer_max_x = p.min_x - M.COLLAR, p.max_x + M.COLLAR
 		p.outer_min_z = math.min(p.min_z - M.COLLAR, p.road_z or p.min_z)
