@@ -6,6 +6,12 @@ return function(repo)
 	local streets = dofile(dir .. "/street_plan.lua")(dir)
 	local approach = dofile(dir .. "/plot_approach.lua")
 	local palette = palettes.new("troll")
+	local kezamba = dofile(dir .. "/kezamba.lua")(dir)
+	-- Load portable definitions without constructing a terrain or VM session.
+	local r6dir = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
+	assert(type(dofile(r6dir .. "/r6.lua")) == "function")
+	assert(type(dofile(r6dir .. "/r6_planner.lua").new_runtime) == "function")
+	assert(type(dofile(r6dir .. "/r6_settlement.lua")) == "table")
 	local function key(c) return c.x .. ":" .. c.y .. ":" .. c.z end
 	local function cells(runs, height, split)
 		local out = {}
@@ -60,15 +66,15 @@ return function(repo)
 		joint_y = joint_y or top
 		assert(top == joint_y, "junction is not one flat landing")
 	end end
-	local landing = {id = "landing", axis = "x", at = 0, from = 0, to = 20,
-		landings = {{p = 0, y = 6}}}
-	local cut = avenue.run(palette, landing, function(x) return x < 4 and 9 or 6 end)
+	local landing = {id = "avenue_east", axis = "x", at = 0, from = 50, to = 70,
+		width = 5, reach = 40, anchor_y = 6}
+	local cut = kezamba.overlay_run(avenue, palette, landing, function(x) return x < 54 and 9 or 6 end)
 	local top = {}
 	for _, cell in ipairs(cut.cells) do
 		if cell.z == 0 and cell.name ~= "air" then top[cell.x] = math.max(top[cell.x] or -1000, cell.y) end
 	end
-	assert(top[0] == 6, "core landing is not pinned")
-	for x = 1, 20 do assert(math.abs(top[x] - top[x - 1]) <= 1, "landing step") end
+	assert(top[50] == 6, "Kezamba wrapper did not pin its core landing")
+	for x = 51, 70 do assert(math.abs(top[x] - top[x - 1]) <= 1, "landing step") end
 	local fitted = approach.new({{min_x = -4, max_x = 4, min_z = 0, max_z = 8,
 		entry_x = 0, y = 6}}, {{id = "street", axis = "x", at = -6, from = -12, to = 12, junctions = {}}})
 	for _, natural in ipairs({2, 10}) do
