@@ -14,7 +14,11 @@ Decided 2026-09-21; Round 14 user Go.
   (coarse sampling, `core.encode_png`), caches it in the world directory and
   sends it to clients as dynamic media. Markers stay separate as before.
   The base shows land/water, zone areas in race-region colours with borders
-  and a light hillshade; roads join it in Phase 4. The hillshade samples
+  and a light hillshade; roads join it in Phase 4. Lakes show as water
+  pixels; rivers (3–25 nodes wide, below one map pixel) are stroked from
+  the water layout's centrelines onto land, one pixel wide and three pixels
+  from 11 nodes of channel width (Phase 5). The cache key includes the
+  water layout, so a changed layout re-renders the base. The hillshade samples
   terrain height on one fixed 8-node grid on every server (D29: no time
   budget, hardware never changes the image); that costs about 24 s once per
   world at first start, then the cached image is reused. It carries no text:

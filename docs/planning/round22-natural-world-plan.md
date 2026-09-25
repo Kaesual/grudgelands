@@ -3,7 +3,7 @@
 Date: 2026-09-25. Coordinator: Claude Opus 5.5 (root), implementation by
 Opus 5.5 subagents; the user may re-route per session
 (`../process/agent-model-policy.md`, "Day-to-day routing rule").
-Status: **in progress.** Phases 0–3 and 3b are done, accepted by the user, merged to main and synced (not pushed). Phase 5 (water) is running: lane W0 (legacy cleanup) merged 97dedcc8; the offline water prototype W1 is next to the user. Then Phase 4 (roads) (D30), then Phase 6. Each phase still needs the user's Go.
+Status: **in progress.** Phases 0–3 and 3b are done, accepted by the user, merged to main and synced (not pushed). Phase 5 (water) is running: W0 (cleanup) and W2a (rivers and lakes) merged; W2b and W2c running. Then Phase 4 (roads) (D30), then Phase 6. Each phase still needs the user's Go.
 
 This document records the goal, the analysis it rests on, every decision taken
 with the user on 2026-09-25 and its basis, the phases, and the guardrails
@@ -195,6 +195,8 @@ Road shape decisions (2026-09-25, user with coordinator, before Phase 4):
 | D49 | **Grade rule:** the road profile runs in half-node steps and neighbouring road columns differ by at most ½ node (max grade 1:2, every rise walkable without jumping, a slab on every half step). On top of that hard rule, routing cost prefers gentle grades (penalty rising above roughly 1:4; the exact preference is chosen by comparing variants in the Phase 4 prototype). | User: half-block steps walk far better and allow a finer, better-fitted profile. |
 | D50 | **Stairs only on trails:** the narrow trails to outposts, mines and camps (D19) may use stair flights (up to 1:1) on straight stretches; main roads stay ≤ 1:2 with slabs (mounts, later carts). Compared as a variant in the prototype. | Stairs have an orientation and look wrong in curves. |
 | D51 | **No long ramps into flat land.** Routing follows the terrain so the road lies near ground level; the profile both cuts and fills (never only fills downward from a high point); no fixed high control points (bridges sit on bank height with small clearance, junctions and gates take their ground's height). Metric: the longest stretch where the road lies more than 2 nodes above or below the terrain; a large value means the route is wrong and the costs get tuned, not longer ramps built. | User: in the old mapgen, ramps ran far into flat land before reaching their height. |
+| D52 | **Moonfall keeps its crescent lake in a calm bowl** added to the terrain field around the landmark (radius ~120, blend ~90, the steep-POI bowl mechanism), with a natural-water keep-out; the terrain and rivers around it change. | User, 2026-09-26, on lane W2b's images: the landmark sits on a 30–90-node coastal slope on every seed. |
+| D53 | **Highcourt's canals are one continuous canal with river water and small 1-node rapids** (like the natural rivers), not a chain of basins with dry weirs. | User, 2026-09-26, on lane W2b's images ("sausage chain"). |
 
 All §9 questions are answered.
 
@@ -507,10 +509,22 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   cheap (called per voxel in `r6_settlement.lua`); the `r7_manifest`
   roll-up pin will trip on freshwater content (remove pins per guardrail 6
   when it does).
-  **W2a (water integration) status:** reviewed, fix round running (capital
-  keep-out from the real lot extent, tributary tails inside the parent
-  channel, cave overhang at chunk borders, dry-junction tributaries, a
-  straight outlet ramp, bank material for authored lakes). Deviation from
+  **W2a (water integration) merged 0dce6bed** after review and one fix
+  round: capital keep-out = farthest lot corner + 16 (280–355, noise edge,
+  soft apron), plot warnings 0; chunk time +4.5 % median, server start
+  +1.8 s (reports). Open for Phase 6: two reverse confluences (tributary
+  lower than its parent, contained). **W2c merged 8909c913** (map rivers,
+  water/bank exclusion kinds via `overlay_exclusion_at` — Phase 4 can add
+  road corridors there — freshwater content, sand/gravel tops over the water
+  seal, SOURCE_PROJECTION pin removed). Review nice-to-haves for Phase 6 /
+  cleanup: the settlement analytic mirror differs from the writer on sealed
+  anchor-grade/POI-collar columns (write the top over opcodes 17/18 only
+  where `analytic_p7_support_ref` is non-nil); dead `scratch.wet_surface` in
+  `r6_planner.lua`; crab `near_water` scan cost; river width comment
+  mismatch in `grug_map/base.lua`; the housing scan (101² exclusion queries
+  near water) needs care when housing gets a consumer; settlement time on
+  river chunks +22–38 % (report). Papyrus and Frost Melon densities are gut
+  values for the playtest. Running: W2b (authored water). Deviation from
   stale-rule D3 found in the engine: at reach steps the **higher** reach
   decides the bank ("lower decides" let a lake-to-river fall spill sideways
   and spawn new sources), and a lake's outlet step face holds river water.

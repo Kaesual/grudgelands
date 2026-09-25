@@ -330,6 +330,7 @@ local function planner_factory(allocator_factory)
 		primary_relief_at = true,
 		landmark_excluded_at = true,
 		static_exclusion_values_at = true,
+		overlay_exclusion_at = true,
 		housing_mask_id_at = true,
 		functional_surface_values_at = true,
 		hard_row_at = true,

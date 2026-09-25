@@ -395,8 +395,13 @@ replaced; git history before this rewrite records that model.
   water as authored lakes (below). Inland and
   bay water belong to the zone around them: a wet river or lake column has the
   zone-owned class `planned_water` (like a bay), its dry banks stay land. Shelf, bay water and every
-  road/POI exclusion are claim-ineligible. Deep ocean and dragon channels are
-  immutable at every y.
+  road/POI exclusion are claim-ineligible. So are wet river and lake columns
+  and their **water bank**, dry land within two nodes of such a column
+  (exclusion kinds `inland_water` and `water_bank`, reason `route_or_water`,
+  Round 22 Phase 5): no cultural reservation or gathering source stands in
+  or right beside inland water, except content that seeks it (shore rows on
+  the bank, freshwater plants in the water). Decorations are not claims and
+  may grow on banks. Deep ocean and dragon channels are immutable at every y.
 - **Dragon channels.** The two island channels are roughly 200 water nodes
   wide between mainland and island land; the construction self-check (§7.1)
   requires at least 104. Each shore contributes a 48-node flight-warning
@@ -449,7 +454,8 @@ replaced; git history before this rewrite records that model.
   sheets. Oceans, bays, lakes and civic water use `default:water_source`.
   Every river and lake bed is sealed three nodes deep, and its banks are
   sealed too, so inland water does not drain into the caves of its own
-  mapchunk. A native cave of a neighbouring mapchunk generated later can
+  mapchunk; the top node of a sealed bed or bank keeps its surface material
+  (bed patches, shore material, biome top). A native cave of a neighbouring mapchunk generated later can
   still cut up to about 13 nodes into an already generated one (engine
   behaviour); forced-order engine tests found no bed cut open that way.
 - Wet inland beds vary in depth with the terrain detail; continental bays are
@@ -512,7 +518,7 @@ replaced; git history before this rewrite records that model.
 - Housing is available only in the ten zones listed by `world.md` §5. A true
   housing-centre mask means the complete 101 by 101 future reservation passes
   every static exclusion (anchor envelopes, road and trail corridors, water,
-  protected content).
+  protected content) and keeps off inland water and its two-node banks.
 - Copperfell Foothills, Mournfen, Starbough Vale and Raincall Basin each keep
   one **coastal housing area**: a long stretch of gentle, dry coast, roughly
   600 nodes of shoreline frontage and 300 nodes of buildable inland depth,
@@ -1547,7 +1553,7 @@ bands 1–2 mean levels 1–6 and bands 2–3 mean 4–10.
 | blightberry | Mournfen 11–20 | blight viable soil | none; 1/256 |
 | sunberry | Redtusk 11–20 | savanna viable soil | none; 1/256 |
 | jungle_berry | Raincall 11–20 | jungle-edge viable soil | none; 1/256 |
-| frost_melon | Frostbarrow, Whitebridge 21–30 | crags gravel or swamp mud at a freshwater margin | fresh cardinal contact; 1/256 |
+| frost_melon | Frostbarrow, Whitebridge 21–30 | crags gravel or swamp mud, or sand in either, at a freshwater margin (Round 22 Phase 5: margins are mostly sand) | fresh cardinal contact; 1/64 (the margin is a thin band) |
 | sugar_cane | every named zone and band with a shore | shore sand only; no rock support | fresh or sea cardinal contact; 1/256 |
 | bamboo_shoot | every named zone with matching shore host | jungle-edge, deep-jungle or swamp; sand or mud | fresh or sea cardinal contact; 1/256 |
 | cave_cap | continental cave air at y −500…−100 | actual stone/granite/slate/basalt support | no surface placement; 1/768 |
@@ -1598,8 +1604,9 @@ lowland/rolling amplitudes, "no additional noise octave") are replaced by
 §7.6. The lake-edge and beach/cliff rules are replaced by Phase 5 water
 (natural lake shores, levels from the terrain) and the shore material rule
 in §7.4. The coral rule remains. The waterweed, lily and fish rules remain
-as content for Phase 5 freshwater; until Phase 5 there is no inland water to
-host them.
+and are hosted by Phase 5 inland water: waterweed in lakes and, at half the
+rate, in river reaches away from rapids and falls; lilies and Reed Angelfish
+in lakes only (a river holds river water).
 
 Approved 2026-09-24. Preserve continental profile roles and ranges. The broad
 64-node lattice is smoothed once with 1:2:1 weights; the two existing detail
