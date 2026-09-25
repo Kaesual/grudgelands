@@ -317,6 +317,9 @@ function M.new(seed, source, o, warp_scale)
 		COX[k], COZ[k] = offset(), offset()
 	end
 	local NC = #CP
+	local COAST_AMP = 0
+	for k = 1, NC do COAST_AMP = COAST_AMP + CA[k] end
+	if COAST_AMP <= 0 then COAST_AMP = 1 end
 	local function coast_noise(x, z)
 		local v = 0
 		for k = 1, NC do
@@ -357,7 +360,12 @@ function M.new(seed, source, o, warp_scale)
 		end
 		islands[#islands + 1] = {pts = pts, zone = isl.zone_numeric_id}
 		island_env[isl.zone_numeric_id] = {min_x = hx - env.half_x, max_x = hx + env.half_x,
-			min_z = hz - env.half_z, max_z = hz + env.half_z, radius = env.radius}
+			min_z = hz - env.half_z, max_z = hz + env.half_z, radius = env.radius,
+			landings = {}}
+	end
+	for _, l in ipairs(source.island_landings) do
+		local e = island_env[l.zone_numeric_id]
+		if e then e.landings[#e.landings + 1] = {x = l.position.x, z = l.position.z} end
 	end
 
 	-- S(p): signed distance to the static continent at (already warped) p;
@@ -508,8 +516,34 @@ function M.new(seed, source, o, warp_scale)
 		local s, iz = static_land(x + d * wx, z + d * wz)
 		if iz ~= 0 then
 			local v = s + CS * o.island_noise * coast_noise(x, z) + land_bonus(x, z)
-			local e = sdf_rrect(x, z, island_env[iz]) - 6
-			if v > e then v = e end
+			-- The envelope clamp is pulled inward by up to `island_envelope_jitter`
+			-- nodes with the coast noise (at decorrelated coordinates), so a coast
+			-- that reaches the envelope stays irregular instead of following its
+			-- straight edge. A small cone keeps each landing on land. Smooth
+			-- min/max keep the result free of creases; it never leaves the box.
+			local env_r = island_env[iz]
+			local plain = sdf_rrect(x, z, env_r) - 6
+			local n = coast_noise(2 * x + 7919, 2 * z - 5023) / COAST_AMP
+			if n > 1 then n = 1 elseif n < -1 then n = -1 end
+			local e = plain - o.island_envelope_jitter * (0.5 + 0.5 * n)
+			local near = math.huge
+			for k = 1, #env_r.landings do
+				local l = env_r.landings[k]
+				local dx, dz = x - l.x, z - l.z
+				local dl = sqrt(dx * dx + dz * dz)
+				if dl < near then near = dl end
+			end
+			local keep = o.island_landing_keep - near
+			if keep > plain then keep = plain end
+			if keep > e - 32 then
+				local m = max(e, keep)
+				e = m + 4 * math.log(math.exp((e - m) / 4) + math.exp((keep - m) / 4))
+				if e > plain + 2 then e = plain + 2 end
+			end
+			if v > e - 48 then
+				local m = min(v, e)
+				v = m - 8 * math.log(math.exp((m - v) / 8) + math.exp((m - e) / 8))
+			end
 			return v, iz
 		end
 		return s + CS * coast_noise(x, z) + land_bonus(x, z), iz

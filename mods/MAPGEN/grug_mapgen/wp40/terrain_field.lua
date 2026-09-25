@@ -688,21 +688,50 @@ return function(data)
 			return h, hscale * sum_hi, wx, wz, coastw
 		end
 
-		-- Coast ramp and sea floor on top of the natural field.
+		-- Soft floor of dry land. Inland it keeps land about one node above the
+		-- water (floor 1, knee 4); toward the shore it sinks to the water
+		-- surface itself (floor 0, knee 1.5), so a beach runs down to the water
+		-- instead of standing on a step (plan D35). C1 at the knee.
+		local SHORE_FLOOR_REACH = 48
+		local function soft_floor(h, sd)
+			local t = smoothstep(0, SHORE_FLOOR_REACH, sd)
+			local knee = 1.5 + 1.5 * t
+			local k = t + knee
+			if h < k then return t + knee * exp((h - k) / knee) end
+			return h
+		end
+
+		-- Coast ramp and sea floor on top of the natural field. One profile
+		-- runs through the waterline (plan D35): near the water the land's
+		-- blend target slopes down to the water surface (1:8) and the sea floor
+		-- starts just below it and deepens across a shallow shelf (the coral
+		-- depths), then falls away to the deep sea. Gentle coasts shelve
+		-- slowly; short ramps, where the land meets the sea steeply, shelve
+		-- faster. Returns the height and the coast distance.
+		local BEACH, SHELF, SHELF_NEAR, SHELF_EDGE = 0.12, 0.07, 1.8, 70
 		local function with_coast(x, z, h, land, cw)
 			local sd = coast_signed(x, z)
 			local steep = smoothstep(0.35, 0.7, nmisc(x / 700 + 91, z / 700 - 13))
 			cw = cw + (40 - cw) * steep
 			if land then
 				local r = smoothstep(-20, cw, sd + 30 * nmisc(x / 260, z / 260 + 50))
-				h = 1.5 + (h - 1.5) * r
-				-- Soft floor: land approaches one node above water smoothly.
-				if h < 4 then h = 1 + 3 * exp((h - 4) / 3) end
+				local shore = BEACH * sd
+				if shore > 1.5 then shore = 1.5 end
+				h = shore + (h - shore) * r
+				h = soft_floor(h, sd)
 			else
-				h = -(2 + min(30, 0.1 * max(0, -sd))) + 1.5 * nmisc(x / 120, z / 120)
-				if h > -1 then h = -1 end
+				local d = sd < 0 and -sd or 0
+				local k = 150 / cw
+				if k < 0.75 then k = 0.75 elseif k > 1.25 then k = 1.25 end
+				local depth = k * (SHELF * d + SHELF_NEAR * (1 - exp(-d / 10)))
+				-- Past the shallow shelf the floor falls away to the deep sea.
+				local off = d - SHELF_EDGE
+				if off > 0 then depth = depth + 0.12 * off * off / (off + 40) end
+				if depth > 31.7 then depth = 31.7 end
+				h = -(0.3 + depth) + 1.5 * nmisc(x / 120, z / 120) * smoothstep(0, 40, d)
+				if h > -0.3 then h = -0.3 end
 			end
-			return h
+			return h, sd
 		end
 
 		-----------------------------------------------------------------------
@@ -748,7 +777,52 @@ return function(data)
 				end
 				e.natural_mean = sum / n
 				e.target = max(e.band[1], min(e.band[2], e.natural_mean))
+				e.edge_p = EDGE_P
 				ANCH[#ANCH + 1] = e
+			end
+		end
+		-- POIs on steep ground (plan D33): where the natural relief under a
+		-- POI's building core exceeds `poi_bowl_relief`, a small calm bowl
+		-- around it turns the slope or summit into a shelf at the local
+		-- ground's mean height, so the core is fitted onto a natural-looking
+		-- plateau instead of dug into the slope. Unwarped distance (the bowl
+		-- is small), an irregular outer edge.
+		local profile_by_id = {}
+		for _, p in ipairs(opts.anchor_profiles or {}) do profile_by_id[p.id] = p end
+		local function undamped(x, z)
+			local h, _, _, _, cw = natural(x, z)
+			return (with_coast(x, z, h, true, cw))
+		end
+		for _, a in ipairs(opts.anchors or {}) do
+			local profile = profile_by_id[a.template_id]
+			local core = profile and profile.building_core_width
+			if core and a.slot_id ~= "start" and a.slot_id ~= "capital" then
+				local ax, az, half = a.position.x, a.position.z, core / 2
+				local lo, hi = math.huge, -math.huge
+				for dz = -half, half, 4 do
+					for dx = -half, half, 4 do
+						if land_at(ax + dx, az + dz) then
+							local h = undamped(ax + dx, az + dz)
+							if h < lo then lo = h end
+							if h > hi then hi = h end
+						end
+					end
+				end
+				if hi - lo > V.poi_bowl_relief then
+					local r_in = core * V.poi_bowl_core + V.poi_bowl_pad
+					local sum, n = 0, 0
+					for dz = -r_in, r_in, 4 do
+						for dx = -r_in, r_in, 4 do
+							if dx * dx + dz * dz <= r_in * r_in and land_at(ax + dx, az + dz) then
+								sum, n = sum + undamped(ax + dx, az + dz), n + 1
+							end
+						end
+					end
+					ANCH[#ANCH + 1] = {id = a.id, slot = a.slot_id, x = ax, z = az,
+						r_in = r_in, r_out = r_in + V.poi_bowl_width, resid = V.poi_bowl_resid,
+						target = sum / n, natural_mean = sum / n, wave = 0,
+						edge = V.poi_bowl_edge, edge_p = V.poi_bowl_edge_period, nowarp = true}
+				end
 			end
 		end
 		local AW = V.anchor_warp
@@ -770,10 +844,11 @@ return function(data)
 		local function damp(x, z, h, hills_hi, wx, wz)
 			local ax, az = x + AW * wx, z + AW * wz
 			local best_m, best, best_calm, count = 1, nil, nil, 0
-			local w_sum, c_sum = 0, 0
+			local w_sum, c_sum, m_prod = 0, 0, 1
 			for i = 1, #ANCH do
 				local e = ANCH[i]
 				local dx, dz = ax - e.x, az - e.z
+				if e.nowarp then dx, dz = x - e.x, z - e.z end
 				local d2 = dx * dx + dz * dz
 				local r_out = e.r_out * (1 + e.edge)
 				if d2 < r_out * r_out then
@@ -784,7 +859,7 @@ return function(data)
 					-- plots never lose calm ground.
 					if e.edge > 0 then
 						r_out = e.r_out * (1 + e.edge * 0.5 *
-							(1 + nedge(x / EDGE_P, z / EDGE_P)))
+							(1 + nedge(x / e.edge_p, z / e.edge_p)))
 					else
 						r_out = e.r_out
 					end
@@ -793,20 +868,22 @@ return function(data)
 						local calm = calm_at(e, x, z, hills_hi)
 						if m < best_m then best_m, best, best_calm = m, e, calm end
 						count = count + 1
+						m_prod = m_prod * m
 						local w = 1 - m
 						w_sum, c_sum = w_sum + w, c_sum + w * calm
 					end
 				end
 			end
 			if not best then return h, 1 end
-			local m = best_m
 			if count == 1 or w_sum <= 0 then
-				return best_calm + m * (h - best_calm), m
+				return best_calm + best_m * (h - best_calm), best_m
 			end
-			-- Overlapping bowls (a capital's calm zone can reach a start's): blend their calm
-			-- grounds by influence, so no switch line becomes a cliff.
+			-- Overlapping bowls (a capital's calm zone can reach a start's, two
+			-- POI bowls can meet): blend their calm grounds by influence and
+			-- multiply their fade factors. The minimum of the factors would
+			-- crease along the straight bisector between the two anchors.
 			local calm = c_sum / w_sum
-			return calm + m * (h - calm), m
+			return calm + m_prod * (h - calm), m_prod
 		end
 
 		local field = {anchors = ANCH, landmarks = LMS, coast_signed = coast_signed,
@@ -817,10 +894,10 @@ return function(data)
 		function field.height_at(x, z, land)
 			if land == nil then land = land_at(x, z) end
 			local h, hills_hi, wx, wz, cw = natural(x, z)
-			h = with_coast(x, z, h, land, cw)
+			local sd
+			h, sd = with_coast(x, z, h, land, cw)
 			if land then
-				h = damp(x, z, h, hills_hi, wx, wz)
-				if h < 4 then h = 1 + 3 * exp((h - 4) / 3) end
+				h = soft_floor(damp(x, z, h, hills_hi, wx, wz), sd)
 			end
 			return WATER + h
 		end
@@ -829,11 +906,12 @@ return function(data)
 		function field.parts_at(x, z, land)
 			if land == nil then land = land_at(x, z) end
 			local h, hills_hi, wx, wz, cw = natural(x, z)
-			h = with_coast(x, z, h, land, cw)
+			local sd
+			h, sd = with_coast(x, z, h, land, cw)
 			local m = 1
 			if land then
 				h, m = damp(x, z, h, hills_hi, wx, wz)
-				if h < 4 then h = 1 + 3 * exp((h - 4) / 3) end
+				h = soft_floor(h, sd)
 			end
 			return WATER + h, land, m
 		end

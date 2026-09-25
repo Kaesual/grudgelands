@@ -621,7 +621,7 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 			phase = (phase * 131 + string.byte(full_seed, index)) % 65521
 		end
 		local variants, sand_shores = {}, {}
-		local wet_variants, beach_shores, rocky_shores = {}, {}, {}
+		local wet_variants, rocky_shores = {}, {}
 		local function ordinary_filler(id, base)
 			if id == "grug_beach" then return "default:sand" end
 			if id == "grug_savanna" then return "default:dry_dirt" end
@@ -689,14 +689,6 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 				rocky_shores[id][index] = row
 			end
 		end
-		for shore_index, shore_name in ipairs({"default:sand", "default:sand",
-				"default:sand", "default:gravel"}) do
-			local shore = deep_copy(surface_by_id.grug_beach)
-			shore.shore = shore_name
-			shore.shore_ref = require_role(shore.shore, 1, p7_classes,
-				"varied beach shore")
-			beach_shores[shore_index] = shore
-		end
 		-- Integer lattice mixing is scenery noise, not a resource rank. Every
 		-- product stays below 2^53; fixed-point interpolation is identical in
 		-- LuaJIT and PUC 5.1 and adds no SHA work or per-query table allocation.
@@ -726,15 +718,12 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 			local shore = dry and planner_source.coast_material_at(x, z) or nil
 			if shore == "sand" then return sand_shores[id] end
 			if shore then return rocky_shores[id][shore == "gravel" and 1 or 2] end
-			-- The palette beach biome away from the shore: no sand on mountain
-			-- land or high ground.
+			-- The coast rule is the only source of dry beach sand: where it
+			-- gives nothing, the palette beach biome is shingle and rock.
 			if dry and id == "grug_beach" then
-				if planner_source.primary_relief_at(x, z) == "mountain" then
-					local patch = math.floor((3 * noise(x, z, 32, 19349663) +
-						noise(x, z, 8, 29712151)) / 4)
-					return rocky_shores[id][patch < 512 and 1 or 2]
-				end
-				if terrain_y > (water_y or 1) + 12 then return rocky_shores[id][2] end
+				local patch = math.floor((3 * noise(x, z, 32, 19349663) +
+					noise(x, z, 8, 29712151)) / 4)
+				return rocky_shores[id][patch < 512 and 1 or 2]
 			end
 			local detail = noise(x, z, 8, 29712151)
 			local patch = math.floor((3 * noise(x, z, 32, 19349663) + detail) / 4)
@@ -743,9 +732,6 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 				if water_depth >= 20 then return base end
 				local bed_index = 1 + math.min(3, math.floor(patch / 256))
 				return wet_variants[id][bed_index]
-			elseif id == "grug_beach" then
-				local shore_index = 1 + math.min(3, math.floor(patch / 256))
-				return beach_shores[shore_index]
 			elseif id == "grug_swamp" then
 				return base
 			end

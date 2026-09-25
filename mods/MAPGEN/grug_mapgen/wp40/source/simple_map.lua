@@ -217,6 +217,9 @@ source.zone_field = {
 	-- dragon islands: polygon scale towards the hub, coast-noise factor, envelope
 	island_scale = 0.85, island_noise = 0.5,
 	island_envelope = {half_x = 300, half_z = 350, radius = 140},
+	-- how far coast noise pulls the envelope clamp inward (nodes), and the
+	-- radius of land kept around each island landing
+	island_envelope_jitter = 56, island_landing_keep = 20,
 	-- construction self-check (rough targets) and its weaker-warp fallback
 	check = {grid = 24, inland_cells = 2, coast_cells = 24, min_strait = 104,
 		min_x = -3600, max_x = 3600, min_z = -3200, max_z = 3200,
@@ -938,16 +941,16 @@ source.anchor_profiles = {
 	{id="capital_undead",shape="raised_necropolis",fitting_width=512,blend_width=704,civic_width=96,terrace_step=3,max_cut=24,max_fill=16,force_native_dungeon=false},
 	{id="capital_orc",shape="mesa_shelf",fitting_width=512,blend_width=704,civic_width=96,terrace_step=4,max_cut=24,max_fill=16,force_native_dungeon=false},
 	{id="capital_troll",shape="cenote_terrace",fitting_width=512,blend_width=704,civic_width=96,terrace_step=3,max_cut=24,max_fill=16,force_native_dungeon=false},
-	{id="village",shape="gentle_grade",building_core_width=24,fitting_width=96,blend_width=160,max_cut=8,max_fill=6,force_native_dungeon=false},
-	{id="outpost",shape="gentle_grade",building_core_width=16,fitting_width=64,blend_width=112,max_cut=8,max_fill=6,force_native_dungeon=false},
-	{id="bandit_home",shape="gentle_grade",building_core_width=24,fitting_width=64,blend_width=112,max_cut=8,max_fill=6,force_native_dungeon=false},
-	{id="bandit_frontier",shape="gentle_grade",building_core_width=16,fitting_width=64,blend_width=112,max_cut=8,max_fill=6,force_native_dungeon=false},
-	{id="mine",shape="gentle_grade",building_core_width=20,fitting_width=80,blend_width=128,max_cut=8,max_fill=6,force_native_dungeon=false},
-	{id="mirefolk",shape="shallow_marsh_island",building_core_width=16,fitting_width=64,blend_width=112,max_cut=8,max_fill=6,force_native_dungeon=false},
-	{id="clash",shape="battlefield_grade",building_core_width=16,fitting_width=64,blend_width=112,max_cut=8,max_fill=6,force_native_dungeon=false},
-	{id="dragon",shape="arena_terrace",building_core_width=32,fitting_width=96,blend_width=160,max_cut=8,max_fill=6,force_native_dungeon=false},
-	{id="apex_mine",shape="mine_terrace",building_core_width=32,fitting_width=96,blend_width=160,max_cut=8,max_fill=6,force_native_dungeon=false},
-	{id="rare_route",shape="patrol_route",building_core_width=12,fitting_width=32,blend_width=64,max_cut=3,max_fill=2,force_native_dungeon=false},
+	{id="village",shape="gentle_grade",building_core_width=24,fitting_width=96,blend_width=160,force_native_dungeon=false},
+	{id="outpost",shape="gentle_grade",building_core_width=16,fitting_width=64,blend_width=112,force_native_dungeon=false},
+	{id="bandit_home",shape="gentle_grade",building_core_width=24,fitting_width=64,blend_width=112,force_native_dungeon=false},
+	{id="bandit_frontier",shape="gentle_grade",building_core_width=16,fitting_width=64,blend_width=112,force_native_dungeon=false},
+	{id="mine",shape="gentle_grade",building_core_width=20,fitting_width=80,blend_width=128,force_native_dungeon=false},
+	{id="mirefolk",shape="shallow_marsh_island",building_core_width=16,fitting_width=64,blend_width=112,force_native_dungeon=false},
+	{id="clash",shape="battlefield_grade",building_core_width=16,fitting_width=64,blend_width=112,force_native_dungeon=false},
+	{id="dragon",shape="arena_terrace",building_core_width=32,fitting_width=96,blend_width=160,force_native_dungeon=false},
+	{id="apex_mine",shape="mine_terrace",building_core_width=32,fitting_width=96,blend_width=160,force_native_dungeon=false},
+	{id="rare_route",shape="patrol_route",building_core_width=12,fitting_width=32,blend_width=64,force_native_dungeon=false},
 }
 local hydrology_landmarks = {
 	copperfell_drainage=true,frostbarrow_tarns=true,dawnmere_headwaters=true,
