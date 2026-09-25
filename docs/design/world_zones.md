@@ -1008,7 +1008,7 @@ code, not by this document.
   uses Lorindor, Whitebridge Shire, Ossuary Reach and Whispering Reedlands;
   this 2026-08-31 ruling replaces the former Mournfen row with Ossuary Reach
   to preserve paired level-21–30 supply. Stormkelp uses both endpoint island
-  coasts and the Gravesalt and Skyglass coasts.
+  coasts and the Gravesalt, Skyglass and Shattered Line coasts.
 - Zone level controls gear tier. A visual biome patch never authorizes a mob,
   drop or gathering tier above the zone's content palette.
 

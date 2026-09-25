@@ -471,8 +471,8 @@ Protection and claim eligibility are independent systems.
 - Road exclusions follow the road classes of `world_zones.md` §7.5: a 7-node
   primary road in a 16-node total corridor, a 5-node secondary road in a
   12-node corridor, and a 3-node trail in an 8-node corridor.
-- The corridor is measured from the routed road path (Round 22 Phase 4), so
-  it follows the road wherever it runs. Removing or rebuilding visible road
+- From Round 22 Phase 4 on, the corridor is measured from the routed road
+  path, so it follows the road wherever it runs. Removing or rebuilding visible road
   nodes never removes the exclusion.
 
 ### 6.1 Boundary visibility
@@ -626,7 +626,7 @@ but its authored envelope can never be privatized:
 - A reproducible gameplay loop attaches to a small protected functional
   anchor, not a destructible wall, tent or road node.
 - Open-world bridges are mutable like roads. Gates are protected only as part
-  of a capital (§7.1).
+  of a capital or starting settlement (§7.1).
 
 ### 7.3 Mutable and claimable ground
 

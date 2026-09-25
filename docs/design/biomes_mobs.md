@@ -1171,7 +1171,7 @@ create it.
 | Reindeer→Stag, Song bird→Gull/Crow | animalia (ElCeejo) | MIT / MIT | asset harvest, re-register on mobs_redo, remap anim frames |
 | ~~Raptor~~ → **Jungle Lynx** | paleotest media unverifiable per file → big-cat retint of the panther mesh (animalworld, MIT) | MIT / MIT | fallback executed in WP6, retint only |
 | Bandit, Mirefolk | character.b3d + skins | LGPL 2.1 mesh; LotT skins CC BY-SA 3.0 | 2D skin work (mirefolk fully custom) |
-| Shore Crab | no verified source yet (check marinara / nssm in-repo) | — | decided: deferred until sourced |
+| Shore Crab / Reef Lurker | Liil/Wilhelmine crab (`grug_mobs` LICENSE-media §9) | MIT / MIT | shipped; spawn rule §3.1/§4 |
 | Trees/nodes | MTG media retints + 2 hand-built schematics | CC BY-SA 3.0 | see §5 |
 
 Never import without checking LICENSE in the source repo; document
@@ -1189,11 +1189,10 @@ and 5 record what WP6 then actually shipped.
    verb and drop table). **The fallback was executed** — the paleotest
    media could not be verified per file, so the family ships as the
    Jungle Lynx (same verb, same drops, `raptor_claw` item id kept).
-3. **Mirefolk is in** (custom 2D skin work); **Shore Crab deferred**
-   until a licensed model is sourced — the strait launches with Gull
-   only. WP6 confirmed the deferral: neither Shore Crab nor its elite
-   Reef Lurker is registered, and the §3.1/§4 rows for both stay in
-   this catalog as the spec to implement once a model exists.
+3. **Mirefolk is in** (custom 2D skin work). The Shore Crab was first
+   deferred until a licensed model was sourced; it has since shipped with
+   the MIT Liil/Wilhelmine crab model, together with its elite Reef
+   Lurker, under the §3.1/§4 rows.
 4. **Jungle fringe reuses the deep Troll jungle nodes 1:1** on the Accord
    side (max drop symmetry, zero new assets). Since 2026-08-11 this names
    `grug_deep_jungle` explicitly: target top
