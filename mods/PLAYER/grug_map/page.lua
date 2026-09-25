@@ -34,6 +34,23 @@ local LABELS = {
 	raincall_bandit_camp = "Raincall Bandit Camp",
 }
 
+-- Region names were baked into the old shipped atlas image. The per-world base
+-- carries no text, so they are a formspec layer under the markers, positioned
+-- like every marker through world_to_screen (fixed macro layout, world_zones.md
+-- §7.1). At whole-world scale 38 zone names would be unreadable.
+-- Each row: text, world x, world z, box width, box height (formspec units).
+-- The island boxes are narrow so the name wraps onto the island itself.
+local REGION_LABELS = {
+	{"Dwarven Lands", -1800, -2350, 3.4, 0.5}, {"Human Lands", 0, -2350, 3.4, 0.5},
+	{"Elven Lands", 1800, -2350, 3.4, 0.5}, {"Undead Lands", -1800, 2350, 3.4, 0.5},
+	{"Orc Lands", 0, 2350, 3.4, 0.5}, {"Troll Lands", 1800, 2350, 3.4, 0.5},
+	{"The Contested Front", 0, 0, 3.4, 0.5},
+	{"Wyrmglass Crown", -3150, 0, 1.5, 0.9}, {"Stormscale Summit", 3150, 0, 1.5, 0.9},
+}
+-- Dark text over a light halo of four offset copies reads on land and sea.
+local LABEL_TEXT, LABEL_HALO, HALO = "#2a1c10", "#f3e8c8", 0.025
+local HALO_OFFSETS = {{-HALO, -HALO}, {HALO, -HALO}, {-HALO, HALO}, {HALO, HALO}}
+
 local function esc(value)
 	return core.formspec_escape(tostring(value or ""))
 end
@@ -85,6 +102,23 @@ local function page_content(player, context)
 			format(MAP_W * zoom, MAP_H, SCROLL_Y, MAP_H / 1000),
 		("image[0,0;%s,%s;%s]"):format(MAP_W * zoom, MAP_H * zoom,
 			esc(view.texture))}
+	for index, row in ipairs(REGION_LABELS) do
+		local sx, sy = atlas.world_to_screen(view, {x = row[2], z = row[3]},
+			0, 0, MAP_W * zoom, MAP_H * zoom)
+		local w, h = row[4], row[5]
+		-- Clamp the box into the image; the text stays centred in the box.
+		local lx = math.max(0, math.min(MAP_W * zoom - w, sx - w / 2))
+		local function text(dx, dy, color, suffix)
+			fs[#fs + 1] = ("hypertext[%.3f,%.3f;%s,%s;grug_map_region_%d%s;%s]"):
+				format(lx + dx, sy - h / 2 + dy, w, h, index, suffix,
+				esc("<global halign=center valign=middle color=" .. color ..
+					"><b>" .. row[1] .. "</b>"))
+		end
+		for halo, offset in ipairs(HALO_OFFSETS) do
+			text(offset[1], offset[2], LABEL_HALO, "_" .. halo)
+		end
+		text(0, 0, LABEL_TEXT, "")
+	end
 	context.grug_map_marker_fields = {}
 	local markers = atlas.collect_markers(player)
 	context.grug_map_detail = nil

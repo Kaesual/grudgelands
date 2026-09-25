@@ -334,6 +334,65 @@ mood("underground", "Underground: near-black rock, torch bloom, short fog",
 grug_core.atmosphere_moods = MOODS
 
 ---------------------------------------------------------------------------
+-- Region-relative cloud base (Round 22 D7, world_zones.md §7.6)
+---------------------------------------------------------------------------
+
+-- Terrain height differs per world, so a fixed cloud y per race mood can put
+-- a capital inside its own clouds. Once the world authority exists, each race
+-- mood's cloud base (set_clouds `height`, the y of the cloud bottom) is raised
+-- to at least CLOUD_CLEARANCE above that capital's ground: the highest of the
+-- capital anchor's own y and nine terrain samples across its 96 by 96 civic
+-- core. A mood already high enough keeps its value, as does every mood if the
+-- computation fails. Every other mood field is unchanged. Runs before any
+-- player can join, so no player carries a stale copy of the preset.
+local CLOUD_CLEARANCE = 60
+local CIVIC_HALF = 48
+
+-- Computes every new cloud base first and returns them; nothing is written,
+-- so an error anywhere leaves all presets authored.
+local function region_cloud_bases()
+	local result = {}
+	-- start_identities is the authority's six-race roster (race + faction).
+	for _, row in ipairs(grug_core.start_identities()) do
+		local anchor = grug_core.capital_anchor(row.faction_id, row.race_id)
+		local preset = presets[row.race_id]
+		if anchor and preset and MOODS[row.race_id] then
+			local ground = anchor.y
+			for dz = -CIVIC_HALF, CIVIC_HALF, CIVIC_HALF do
+				for dx = -CIVIC_HALF, CIVIC_HALF, CIVIC_HALF do
+					ground = math.max(ground,
+						grug_zones.terrain_height_at(anchor.x + dx, anchor.z + dz))
+				end
+			end
+			result[#result + 1] = {preset = preset, race = row.race_id,
+				ground = ground,
+				height = math.max(preset.clouds.height, ground + CLOUD_CLEARANCE)}
+		end
+	end
+	return result
+end
+
+core.register_on_mods_loaded(function()
+	if not grug_core.zone_authority_installed() then
+		return
+	end
+	local ok, result = pcall(region_cloud_bases)
+	if ok then
+		local report = {}
+		for _, row in ipairs(result) do
+			report[#report + 1] = ("%s %d (capital ground %d, authored %d)"):
+				format(row.race, row.height, row.ground, row.preset.clouds.height)
+			row.preset.clouds.height = row.height
+		end
+		core.log("action", "[grug_core] region cloud base: " ..
+			table.concat(report, ", "))
+	else
+		core.log("error", "[grug_core] region cloud base kept authored: " ..
+			tostring(result))
+	end
+end)
+
+---------------------------------------------------------------------------
 -- Zone resolution
 ---------------------------------------------------------------------------
 

@@ -58,6 +58,14 @@ grug_injured_mob_hp_bars (Show injured mob health bars) bool true
 #    20 percent soft emerge-time gate.
 grug_mapgen_r9_coast_band_enabled (Enable wide coast profiles) bool true
 
+[World map]
+
+#    The world map base is rendered once per world at first start and cached
+#    in the world directory. Its hillshade samples terrain height on a coarse
+#    grid; this is the time budget for that sampling in seconds. When even the
+#    coarsest grid would exceed it, the map is drawn without hillshade.
+grug_map_relief_budget (World map relief time budget in seconds) float 2.5 0 120
+
 [World preparation]
 
 #    Prepare the bounded world surface before entry instead of only the six
