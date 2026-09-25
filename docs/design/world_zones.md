@@ -512,8 +512,15 @@ replaced; git history before this rewrite records that model.
   escarpments may come from the noise itself or from a landmark; the former
   rule that every abrupt feature needs a named landmark is retired.
 - **Calm ground around cities.** Roughness is damped around starts (about
-  300 nodes) and capitals (about 500 nodes), keyed to the start centre and the
-  capital civic core, not to the build envelope. Each capital's ground sits
+  300 nodes) and capitals, keyed to the start centre and the capital civic
+  core, not to the build envelope. Start pads sit in a calm bowl. Around a
+  capital only the 96×96 civic core is flat: the calm zone around it keeps
+  long-wave hills and hollows (wavelengths of about 100 nodes and more, a
+  race-specific amplitude of roughly ±8–12 nodes, no fine detail), full
+  natural relief returns by about 520–750 nodes, and that outer edge varies
+  with noise, so the zone is neither flat nor round. The WP13 district plots
+  must still stand on this ground until the capital rework (§12). Each
+  capital's ground sits
   well below its region's cloud layer: clouds are placed relative to the
   region, at least about 60 nodes above capital ground. Capital and start
   fitting must stay within their cut/fill limits on the new terrain.
@@ -1096,9 +1103,11 @@ one-cell settlement checks are unchanged.
   elf/undead/troll 3. The next 32 nodes blend to these terraces; the outer
   96-node collar returns to incoming terrain. The 512×512 envelope remains
   buildable/protected space, not one mandatory flat slab.
-- **Round 22 (D7, D11, D16):** terrain roughness is damped around each capital
-  (keyed to the civic core: calm out to about 260 nodes so the district plots
-  stand on calm ground, natural relief again by about 520), and each capital's target ground
+- **Round 22 (D7, D11, D16, D28):** terrain roughness is damped around each
+  capital (keyed to the civic core: no fine detail out to about 260 nodes so
+  the district plots stand, natural relief again by about 520–750 along an
+  irregular edge). Only the civic core is flat; the ground around it keeps
+  long-wave hills and hollows of limited height (§7.6). Each capital's target ground
   height sits well below its region's clouds (§7.6). The outer edge of the
   terrace/blend outline may become organic instead of square; district layout,
   blueprints and the build envelope stay as they are this round. Capital
