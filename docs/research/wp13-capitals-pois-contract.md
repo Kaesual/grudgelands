@@ -76,6 +76,15 @@ decisions are the coordinator's and are open to the user's correction.
 
 ### 2.1.1 Routes and gates
 
+**Round 22 note (2026-09-25):** the route rules in this section are
+historical: gate stations, exactly four routes per capital, the 144-node
+straight approach, `route_gates_kat`, the nine-seed `route_gates.lua` check,
+and the both-interpreter and digest-continuity requirements in §2.2 and §2.3.
+What still holds is that the road arrives at the gate's own ground, centred
+on the gate axis with a passage at least 7 nodes wide, after a short gate-axis
+approach; Round 22 Phase 4 pathfinding does the rest (`world_zones.md` §9.2,
+§12). The blueprint's `GATE_OUT` points are the real gates.
+
 Playtest round 4, 2026-09-15. In Dur Brannoc the incoming WP40 route is cut by
 the curtain wall at (-1847,-1756) while the gate stands at (-1801,-1756) --
 anchor (-1800,-1500), so the south gate is at `z = anchor.z - 256` on the

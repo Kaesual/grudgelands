@@ -312,11 +312,11 @@ warning and forced dismount are separate consumer states derived from
 - Width is spatial, not a timer, so the +100% and +200% flyers receive the same
   boundary. The **first ocean node** is already illegal and dismounts
   immediately at every y, with no grace, slow descent or maximum-trip rule.
-- WP40 supplies the exact channel geometry through the public zone queries.
-  Both shore-side warning bands leave a certified hard no-flight strip at least
-  **104 nodes** wide, so neither island is reachable by flying mount from a
-  continent. Clearing residual velocity on the hard dismount prevents
-  high-altitude drift onto the island.
+- The public zone queries supply the channel geometry. Each channel is
+  roughly 200 water nodes wide, and the world's construction self-check
+  requires at least **104 nodes** (`world_zones.md` §7.4), so neither island is
+  reachable by flying mount from a continent. Clearing residual velocity on
+  the hard dismount prevents high-altitude drift onto the island.
 - The two dragon islands remain boat destinations. Their complete water
   channels are immutable at every depth, and the flight classification may not
   accidentally create a bridge, tunnel or aerial-access exception.
@@ -378,7 +378,7 @@ The two dragon-island identities override contested permission and are always
 flight-restricted; ocean is checked independently. Depth-sensitive civic protection does not alter this
 horizontal flight decision. The rider's identity comes from
 `grug_factions.get_faction(player)`. Literal coordinates are invalid once the
-authored zone graph replaces WP18. A character without a faction cannot have
+authored zone layout replaces WP18. A character without a faction cannot have
 bought a mount, so the nil case needs no rule of its own.
 
 **Ocean is a separate classification with the same border transaction.** The

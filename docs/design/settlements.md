@@ -80,14 +80,14 @@ Decided 2026-09-14 after the round-A playtest.
 Decided 2026-09-14 after the round-B playtest. These are terrain rules; the
 blueprints are unchanged by them.
 
-- The road reaches a start **on its gate axis**. The last stretch before the
-  gate runs straight along the blueprint's `main_street` axis, centred on it,
-  at the gate street's width, and meets the gate passage exactly; the bend back
-  to the route's ordinary course happens outside the build envelope. Which side
-  the gate faces follows the blueprint's own `main_street` landmark and the
-  authored gate station, never an assumed sign. That stretch is part of the
-  route's authored geometry, so it keeps the claim exclusion, the clear corridor
-  and every other rule an ordinary road carries ([world.md](world.md) §2 R1).
+- The road reaches a start **on its gate axis**. A short last stretch before
+  the gate, roughly 16–32 nodes, runs along the blueprint's `main_street`
+  axis, centred on it, at the gate street's width, and meets the gate passage
+  on the gate's own ground; outside that stretch the road follows its routed
+  course (Round 22 Phase 4). Which side the gate faces follows the blueprint's
+  own `main_street` landmark, never an assumed sign. That stretch is ordinary
+  road, so it keeps the claim exclusion, the clear corridor and every other
+  rule an ordinary road carries ([world.md](world.md) §2 R1).
 - **Biome decorations grow in the blend ring.** Trees, plants and ground cover
   are generated normally in the 256-node blend ring outside the 148-node
   protected footprint, so a start does not sit in a cleared square. The build
