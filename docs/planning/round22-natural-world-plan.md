@@ -3,7 +3,7 @@
 Date: 2026-09-25. Coordinator: Claude Opus 5.5 (root), implementation by
 Opus 5.5 subagents; the user may re-route per session
 (`../process/agent-model-policy.md`, "Day-to-day routing rule").
-Status: **in progress.** On 2026-09-25 the user gave the Go for Phases 0, 1 and 2/2b. Phase 0 (audit) and Phase 1 (design rewrite) are approved; Phase 2/2b prototypes delivered their first round and iterate. Phases 3–6 still wait for an explicit Go.
+Status: **in progress.** On 2026-09-25 the user approved Phases 0, 1 and 2/2b (prototypes in `~/projects/grudgelands-orchestration/r22/prototype-b/` and `prototype-zones/`, each with an `INTEGRATION.md`) and gave the Go for Phase 3 with variant (a): old roads and inland water are switched off until Phases 4/5, and the playtest after Phase 3 covers terrain, zones and coast only. Phases 4–6 still wait for an explicit Go.
 
 This document records the goal, the analysis it rests on, every decision taken
 with the user on 2026-09-25 and its basis, the phases, and the guardrails
@@ -339,10 +339,12 @@ user gate.
   - Apply the zone border warp (2b) and remove the Battlegrounds rectangle
     (D8).
   - Smoke test, fresh world.
-- **Lanes (proposal):**
-  1. height and zone,
-  2. anchors and clouds,
-  3. performance memo.
+- **Lanes (as run, 2026-09-25):**
+  A. horizontal: zones and coast, levels by zone, `holy_grounds` rename,
+     geometric neighbors, coastal housing from the coast, old roads and inland
+     water off;
+  B. height: new field, damping and anchor fitting, per-chunk memo, chunk time;
+  C. per-world map render and region-relative clouds.
 - **Gate:** user playtest.
 
 ### Phase 4 — Roads v2
