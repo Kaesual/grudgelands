@@ -334,6 +334,51 @@ mood("underground", "Underground: near-black rock, torch bloom, short fog",
 grug_core.atmosphere_moods = MOODS
 
 ---------------------------------------------------------------------------
+-- Region-relative cloud base (Round 22 D7, world_zones.md §7.6)
+---------------------------------------------------------------------------
+
+-- Terrain height differs per world, so a fixed cloud y per race mood can put
+-- a capital inside its own clouds. Once the world authority exists, each race
+-- mood's cloud base (set_clouds `height`, the y of the cloud bottom) is raised
+-- to at least CLOUD_CLEARANCE above the highest of nine samples across that
+-- capital's 96 by 96 civic core; a mood already high enough keeps its value.
+-- Every other mood field is unchanged. Runs before any player can join, so no
+-- player carries a stale copy of the preset.
+local CLOUD_CLEARANCE = 60
+local CIVIC_HALF = 48
+local CAPITAL_RACES = {
+	{"dwarf", "accord"}, {"human", "accord"}, {"elf", "accord"},
+	{"undead", "throng"}, {"orc", "throng"}, {"troll", "throng"},
+}
+
+core.register_on_mods_loaded(function()
+	if not grug_core.zone_authority_installed() then
+		return
+	end
+	local report = {}
+	for _, row in ipairs(CAPITAL_RACES) do
+		local race, faction = row[1], row[2]
+		local anchor = grug_core.capital_anchor(faction, race)
+		local preset = presets[race]
+		if anchor and preset then
+			local ground = -math.huge
+			for dz = -CIVIC_HALF, CIVIC_HALF, CIVIC_HALF do
+				for dx = -CIVIC_HALF, CIVIC_HALF, CIVIC_HALF do
+					ground = math.max(ground,
+						grug_zones.terrain_height_at(anchor.x + dx, anchor.z + dz))
+				end
+			end
+			local authored = preset.clouds.height
+			preset.clouds.height = math.max(authored, ground + CLOUD_CLEARANCE)
+			report[#report + 1] = ("%s %d (capital ground %d, authored %d)"):
+				format(race, preset.clouds.height, ground, authored)
+		end
+	end
+	core.log("action", "[grug_core] region cloud base: " ..
+		table.concat(report, ", "))
+end)
+
+---------------------------------------------------------------------------
 -- Zone resolution
 ---------------------------------------------------------------------------
 

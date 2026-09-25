@@ -34,6 +34,19 @@ local LABELS = {
 	raincall_bandit_camp = "Raincall Bandit Camp",
 }
 
+-- Region names were baked into the old shipped atlas image. The per-world base
+-- carries no text, so they are a formspec layer under the markers, positioned
+-- like every marker through world_to_screen (fixed macro layout, world_zones.md
+-- §7.1). At whole-world scale 38 zone names would be unreadable.
+local REGION_LABELS = {
+	{"Dwarven Lands", -1800, -2350}, {"Human Lands", 0, -2350},
+	{"Elven Lands", 1800, -2350}, {"Undead Lands", -1800, 2350},
+	{"Orc Lands", 0, 2350}, {"Troll Lands", 1800, 2350},
+	{"The Contested Front", 0, 0},
+	{"Wyrmglass Crown", -3150, 0}, {"Stormscale Summit", 3150, 0},
+}
+local LABEL_W, LABEL_H = 3.4, 0.5
+
 local function esc(value)
 	return core.formspec_escape(tostring(value or ""))
 end
@@ -85,6 +98,15 @@ local function page_content(player, context)
 			format(MAP_W * zoom, MAP_H, SCROLL_Y, MAP_H / 1000),
 		("image[0,0;%s,%s;%s]"):format(MAP_W * zoom, MAP_H * zoom,
 			esc(view.texture))}
+	for index, row in ipairs(REGION_LABELS) do
+		local sx, sy = atlas.world_to_screen(view, {x = row[2], z = row[3]},
+			0, 0, MAP_W * zoom, MAP_H * zoom)
+		local lx = math.max(0, math.min(MAP_W * zoom - LABEL_W, sx - LABEL_W / 2))
+		fs[#fs + 1] = ("hypertext[%.3f,%.3f;%s,%s;grug_map_region_%d;%s]"):format(
+			lx, sy - LABEL_H / 2, LABEL_W, LABEL_H, index,
+			esc("<global halign=center valign=middle color=#2a1c10><b>" ..
+				row[1] .. "</b>"))
+	end
 	context.grug_map_marker_fields = {}
 	local markers = atlas.collect_markers(player)
 	context.grug_map_detail = nil
