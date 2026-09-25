@@ -1,60 +1,36 @@
-local nature_rules = {}
-function nature_rules.smooth_lattice(values, min_x, max_x, min_z, max_z, round)
-	local smoothed = {}
-	for z = min_z, max_z do
-		local row = {}
-		smoothed[z] = row
-		for x = min_x, max_x do
-			local total = 0
-			for dz = -1, 1 do
-				local source_row = values[math.max(min_z, math.min(max_z, z + dz))]
-				for dx = -1, 1 do
-					total = total + source_row[math.max(min_x, math.min(max_x, x + dx))] *
-						(dx == 0 and 2 or 1) * (dz == 0 and 2 or 1)
-				end
-			end
-			row[x] = round(total, 16)
-		end
-	end
-	return smoothed
-end
-function nature_rules.bowl_depth(depth, inside, weight, round)
-	local bowl = 1 + round((depth - 1) * math.min(16, math.max(0, inside)), 16)
-	return round(depth * (16 - weight) + bowl * weight, 16)
-end
-function nature_rules.lateral_blend(target, other, offset, round)
+-- WP40 vertical model, Round 22 (world_zones.md §7.6).
+--
+-- One globally queryable surface: the natural float field of
+-- `terrain_field.lua`, floored to a node y, with the anchor fittings (starts,
+-- capitals, villages, outposts, camps, mines, dragons ...), the sea shore rule
+-- and the coast profiles on top. Roads and inland water are switched off until
+-- their Phase 4/5 rebuild (user ruling "variant (a)"): no route, junction,
+-- bank or hydrology grading runs here, and inland planned water is dry land.
+--
+-- Every query is a pure function of (seed, x, z). Heights are memoised per
+-- 80x80 mapchunk block, so planning and the writer read one memo per chunk.
+
+-- Small integer rule kept from Round 21: blend of two neighbouring coast runs.
+local function lateral_blend(target, other, offset, round)
 	local weight = offset < 16 and 16 - offset or offset - 32
 	return round(target * (32 - weight) + other * weight, 32)
 end
 
--- Engine-free deterministic vertical model for the accepted WP40 simple map.
--- All construction is session-local; scalar query seams allocate no records.
-
--- Seed/session-local FIFO. Numeric coordinate keys avoid string allocation;
--- explicit tuple length preserves nil holes, false and short ocean results.
+-- Seed/session-local FIFO over the horizontal classification. Numeric keys,
+-- explicit tuple length so nil holes survive.
 local function new_classification_cache(classify, limit)
-	assert(type(limit) == "number" and limit >= 1 and limit % 1 == 0)
-	local by_x, slots, cursor, count = {}, {}, 1, 0
-	local hits, misses, evictions = 0, 0, 0
+	local by_x, slots, cursor = {}, {}, 1
 	local function tuple(...) return {n = select("#", ...), ...} end
-	local function query(x, z)
+	return function(x, z)
 		local row = by_x[x]
 		local entry = row and row[z]
-		if entry then
-			hits = hits + 1
-			return unpack(entry.value, 1, entry.value.n)
-		end
-		-- Compute before eviction: a failed classifier must not publish a row.
+		if entry then return unpack(entry.value, 1, entry.value.n) end
 		local value = tuple(classify(x, z))
-		misses = misses + 1
 		local old = slots[cursor]
 		if old then
 			local old_row = by_x[old.x]
 			old_row[old.z] = nil
 			if next(old_row) == nil then by_x[old.x] = nil end
-			evictions = evictions + 1
-		else
-			count = count + 1
 		end
 		row = by_x[x]
 		if not row then row = {} by_x[x] = row end
@@ -63,9 +39,11 @@ local function new_classification_cache(classify, limit)
 		cursor = cursor % limit + 1
 		return unpack(value, 1, value.n)
 	end
-	return query, function() return count, hits, misses, evictions end
 end
 
+-- Coast runs (Round 8/9): a shore is split into 48-node runs per owner and
+-- orientation; each run draws one profile (beach, bluff, cliff, terraced
+-- cliff) from its zone's relief character.
 local function new_coast_rules(full_seed_string)
 	local PRIME = 16777213
 	local phase = 0
@@ -79,91 +57,9 @@ local function new_coast_rules(full_seed_string)
 		value = (value * value) % PRIME
 		return (value * 48271) % PRIME
 	end
-	function result.run_class(freshwater, relief_profile, relief)
-		if freshwater then return "fresh_" .. relief_profile end
-		return "sea_" .. relief_profile
-	end
 	function result.run_key(owner, orientation, run, run_class)
-		return tostring(owner) .. "/" .. tostring(orientation) .. "/" .. tostring(run) ..
-			"/" .. run_class
-	end
-	function result.r8_profile(owner, orientation, run, freshwater, relief_profile,
-			relief)
-		local run_class
-		if freshwater then run_class = "fresh"
-		elseif relief_profile == "wetland_delta" or relief < 7 then
-			run_class = "sea_low"
-		else run_class = "sea_ordinary" end
-		local class_salt = run_class == "fresh" and 104729 or
-			run_class == "sea_low" and 130363 or 155921
-		local draw = result.hash(owner, orientation, run, 19349663 + class_salt) % 100
-		local profile
-		if run_class ~= "sea_ordinary" then
-			profile = draw < 60 and "beach" or "bluff"
-		elseif draw < 40 then profile = "beach"
-		elseif draw < 65 then profile = "bluff"
-		elseif draw < 85 then profile = "cliff"
-		else profile = "terraced_cliff" end
-		return profile, run_class, class_salt
-	end
-	function result.r8_target(owner, orientation, selected_run, profile, class_salt,
-			distance, incoming, water_y, axis, round_ratio)
-		local draw = result.hash(owner, orientation, selected_run, 83492791 + class_salt)
-		local width, target
-		if profile == "beach" then
-			width = 4 + draw % 7
-			local denominator = 4 + math.floor(draw / 7) % 5
-			target = water_y + math.floor((distance - 1) / denominator)
-		elseif profile == "bluff" then
-			width = 6 + draw % 4
-			local rise = 1 + math.floor(draw / 11) % 2
-			target = water_y + (distance - 1) * rise
-		elseif profile == "cliff" then
-			width = 5 + draw % 3
-			local irregular = result.hash(owner, orientation, selected_run,
-				axis * 17 + 480752697 + class_salt) % 5 - 2
-			local setback = 2 + math.floor(draw / 13) % 3
-			local top = math.max(7, incoming - water_y) + irregular
-			local rise = math.min(top, 1 + math.max(0, distance - 2) * setback)
-			if distance > 2 and result.hash(owner, orientation, selected_run,
-					axis * 31 + distance * 43 + class_salt) % 11 == 0 then
-				rise = math.max(1, rise - setback)
-			end
-			target = water_y + rise
-		else
-			local steps = 2 + draw % 2
-			local step_height = 3 + math.floor(draw / 7) % 3
-			local step_width = 3 + math.floor(draw / 17) % 3
-			width = steps * step_width + 1
-			target = water_y + math.min(steps, math.floor((distance - 2) /
-				step_width) + 1) * step_height
-		end
-		if distance == 1 then target = water_y end
-		if distance > width then
-			local blend = distance - width
-			if blend >= 4 then return incoming, width end
-			target = round_ratio(target * (4 - blend) + incoming * blend, 4)
-		end
-		return target, width
-	end
-	function result.r8_column(owner, orientation, run, freshwater, relief_profile,
-			relief, distance, incoming, water_y, axis, round_ratio)
-		local profile, run_class, class_salt = result.r8_profile(owner, orientation,
-			run, freshwater, relief_profile, relief)
-		local target, width = result.r8_target(owner, orientation, run, profile,
-			class_salt, distance, incoming, water_y, axis, round_ratio)
-		local offset = axis % 48
-		if offset < 0 then offset = offset + 48 end
-		if offset < 16 or offset >= 32 then
-			local neighbor = offset < 16 and run - 1 or run + 1
-			local other_profile, _, other_salt = result.r8_profile(owner, orientation,
-				neighbor, freshwater, relief_profile, relief)
-			local other = result.r8_target(owner, orientation, neighbor, other_profile,
-				other_salt, distance, incoming, water_y, axis, round_ratio)
-			target = nature_rules.lateral_blend(target, other, offset, round_ratio)
-		end
-		return profile, distance, width, freshwater,
-			result.run_key(owner, orientation, run, run_class), target, relief_profile, water_y
+		return tostring(owner) .. "/" .. tostring(orientation) .. "/" ..
+			tostring(run) .. "/" .. run_class
 	end
 	function result.band(draw, profile, freshwater)
 		if profile ~= "beach" then return nil, nil, 4 end
@@ -172,9 +68,7 @@ local function new_coast_rules(full_seed_string)
 		local blend = freshwater and 4 or 16 + math.floor(draw / 37) % 9
 		return width, denominator, blend
 	end
-	result.new_classification_cache = new_classification_cache
 	function result.new_lattice_cache(limit)
-		assert(type(limit) == "number" and limit >= 1 and limit % 1 == 0)
 		local entries, clock = {}, 0
 		local cache = {}
 		function cache.get(chunk_x, chunk_z, build)
@@ -220,12 +114,10 @@ local function new_coast_rules(full_seed_string)
 		return orientation
 	end
 	function result.nearest_lattice_sample(query_x, query_z, sample_min_x,
-			sample_min_z, sample_class, sample_level, sample_freshwater)
+			sample_min_z, sample_water)
 		local query_lattice_x = math.floor(query_x / 4)
 		local query_lattice_z = math.floor(query_z / 4)
-		local best_squared, best_orientation, best_level, best_freshwater
-		-- The traversal retains the smallest exact (dx,dz) on an equal squared
-		-- distance: lattice_dx and lattice_dz are monotone translations of it.
+		local best_squared, best_orientation
 		for lattice_dx = -13, 13 do
 			for lattice_dz = -13, 13 do
 				local lattice_x = query_lattice_x + lattice_dx
@@ -235,8 +127,7 @@ local function new_coast_rules(full_seed_string)
 				local dx, dz = lattice_x * 4 - query_x, lattice_z * 4 - query_z
 				local squared = dx * dx + dz * dz
 				if squared > 256 and squared <= 2704 and
-						sample_class[sample_index] ~= "land" and
-						sample_level[sample_index] ~= nil and
+						sample_water[sample_index] and
 						(best_squared == nil or squared < best_squared) then
 					best_squared = squared
 					if math.abs(dx) >= math.abs(dz) then
@@ -244,37 +135,25 @@ local function new_coast_rules(full_seed_string)
 					else
 						best_orientation = dz >= 0 and 3 or 4
 					end
-					best_level = sample_level[sample_index]
-					best_freshwater = sample_freshwater[sample_index]
 				end
 			end
 		end
-		return best_squared, best_orientation, best_level,
-			best_freshwater == true
+		return best_squared, best_orientation
 	end
-	function result.profile(owner, orientation, run, freshwater, relief_profile, relief)
-		local run_class = result.run_class(freshwater, relief_profile, relief)
-		local relief_salts = {wetland_delta = 104729, lowland = 130363,
-			rolling_hills = 155921, plateau = 196613, highland = 225287,
-			mountain = 262147}
+	local relief_salts = {wetland_delta = 104729, lowland = 130363,
+		rolling_hills = 155921, plateau = 196613, highland = 225287,
+		mountain = 262147}
+	function result.profile(owner, orientation, run, freshwater, relief_profile)
+		local run_class = (freshwater and "fresh_" or "sea_") .. relief_profile
 		local class_salt = (relief_salts[relief_profile] or 294001) +
 			(freshwater and 524287 or 0)
 		local draw = result.hash(owner, orientation, run, 19349663 + class_salt) % 100
-		local profile
 		local beach_share = relief_profile == "wetland_delta" and 75 or
 			relief_profile == "lowland" and 65 or
 			relief_profile == "rolling_hills" and 45 or
 			relief_profile == "plateau" and 18 or
 			relief_profile == "highland" and 8 or 0
-		if freshwater then
-			if relief_profile == "wetland_delta" or relief_profile == "lowland" or
-					relief_profile == "rolling_hills" then
-				beach_share = 100
-			elseif relief_profile == "plateau" or relief_profile == "highland" or
-					relief_profile == "mountain" then
-				beach_share = 0
-			end
-		end
+		local profile
 		if draw < beach_share then profile = "beach"
 		elseif draw < beach_share + 34 then profile = "bluff"
 		elseif draw < beach_share + 70 then profile = "cliff"
@@ -286,2102 +165,355 @@ end
 
 local function height_factory(dependencies)
 	if type(dependencies) ~= "table" then
-		error("WP40 simple-map height dependencies missing", 0)
+		error("WP40 height dependencies missing", 0)
 	end
-	local source = assert(dependencies.source,
-		"WP40 simple-map height source missing")
-	local canonical = assert(dependencies.canonical,
-		"WP40 simple-map height canonical dependency missing")
+	local source = assert(dependencies.source, "WP40 height source missing")
 	local deterministic = assert(dependencies.deterministic,
-		"WP40 simple-map height deterministic dependency missing")
-	-- Store the portable R8 rule factory on the already-captured deterministic
-	-- helper table; Lua 5.1's construct closure is at its 60-upvalue ceiling.
-	deterministic.r8_coast_rules = new_coast_rules
-	deterministic.r21_nature_rules = nature_rules
-	local core_api = rawget(_G, "core")
-	deterministic.r9_coast_band_enabled = true
-	if core_api and core_api.settings and
-			type(core_api.settings.get_bool) == "function" then
-		deterministic.r9_coast_band_enabled = core_api.settings:get_bool(
-			"grug_mapgen_r9_coast_band_enabled", true)
-	end
-	local raw_sha256 = assert(dependencies.raw_sha256,
-		"WP40 simple-map height SHA-256 dependency missing")
+		"WP40 height deterministic dependency missing")
 	local horizontal = assert(dependencies.horizontal_session,
-		"WP40 simple-map horizontal session missing")
-	local coupled_grade = assert(dependencies.coupled_grade,
-		"WP40 coupled grade dependency missing")
-	local Q = 65536
-	local P = 2147483647
-	local B = 32768
-	local MAX_SAFE = 9007199254740991
+		"WP40 height horizontal session missing")
+	local terrain_field = assert(dependencies.terrain_field,
+		"WP40 height terrain field missing")
+
 	local WATER_LEVEL = 1
-	local GRADE_MIN = -30912
-	local GRADE_MAX = 30927
-	local HEIGHT_SCHEMA = "grug_wp40_simple_map_height_v6"
-	local HEIGHT_RANDOM_SCHEMA = "grug_wp40_simple_map_height_v2"
-	local BASE_CELL = 64
+	-- Same query bounds as zones.lua; outside them the world is deep sea.
+	local MIN_X, MAX_X, MIN_Z, MAX_Z = -3740, 3740, -3340, 3340
+	local OUTSIDE_FLOOR = WATER_LEVEL - 24
 	local FEATURE_CELL = 128
-	local CONTACT_FACE_SCOPE = "orthogonal_reach_contact_face_v1"
-	local CONTACT_FACE_EXPECTATIONS = {
-		highcourt_goldmead_fall = {
-			edges = 13, upper = 13, lower = 13,
-			first = {-106, -1756, -106, -1757},
-			upper_bounds = {-106, -94, -1756, -1756},
-			lower_bounds = {-106, -94, -1757, -1757},
-		},
-		gravesalt_broken_fall = {
-			edges = 163, upper = 114, lower = 114,
-			first = {-1713, 21, -1712, 21},
-			upper_bounds = {-1713, -1650, 21, 110},
-			lower_bounds = {-1712, -1649, 21, 110},
-		},
-		raincall_reedmaze_fall = {
-			edges = 109, upper = 66, lower = 65,
-			first = {2070, 1864, 2069, 1864},
-			upper_bounds = {2026, 2070, 1864, 1929},
-			lower_bounds = {2026, 2069, 1864, 1928},
-		},
-	}
+	local COAST_REACH = 96
+	-- Memo blocks are mapchunks: 80 nodes, offset by -32 like the engine's.
+	local BLOCK, BLOCK_OFFSET, BLOCK_LIMIT = 80, 32, 48
+	-- Column classes of the vertical model.
+	local LAND, SEA, BAY = 1, 2, 3
+
+	local floor, abs, max, min, sqrt = math.floor, math.abs, math.max,
+		math.min, math.sqrt
+	local round_ratio = deterministic.round_ratio
+	local floor_div, floor_mod = deterministic.floor_div, deterministic.floor_mod
 
 	local function fail(message)
-		error("WP40 simple-map height: " .. message, 0)
+		error("WP40 height: " .. message, 0)
 	end
-
-	local function integer(value, label)
-		if type(value) ~= "number" or value ~= value or
-				value == math.huge or value == -math.huge or value % 1 ~= 0 or
-				math.abs(value) > MAX_SAFE then
-			fail((label or "value") .. " is not a safe integer")
-		end
-		return value
-	end
-
 	local function coordinate(value, label)
-		integer(value, label)
-		if value < -2147483648 or value > 2147483647 then
-			fail((label or "coordinate") .. " is outside signed 32-bit range")
+		if type(value) ~= "number" or value % 1 ~= 0 then
+			fail(label .. " is not an integer coordinate")
 		end
-		return value
 	end
-
-	local function dense_count(values, label)
-		if type(values) ~= "table" then fail(label .. " is not an array") end
-		local count = #values
-		for index = 1, count do
-			if values[index] == nil then fail(label .. " has a hole") end
-		end
-		for key in pairs(values) do
-			if type(key) ~= "number" or key % 1 ~= 0 or key < 1 or
-					key > count then fail(label .. " is not a dense array") end
-		end
-		return count
-	end
-
-	local function deep_copy(value, active)
-		if type(value) ~= "table" then return value end
-		active = active or {}
-		if active[value] then fail("cyclic evidence value") end
-		active[value] = true
-		local copy = {}
-		for key, child in pairs(value) do
-			copy[deep_copy(key, active)] = deep_copy(child, active)
-		end
-		active[value] = nil
-		return copy
-	end
-
-	local function round_ratio(numerator, denominator)
-		integer(numerator, "round numerator")
-		integer(denominator, "round denominator")
-		if denominator <= 0 then fail("round denominator is not positive") end
-		return deterministic.round_ratio(numerator, denominator)
-	end
-
-	local function floor_div(value, divisor)
-		return deterministic.floor_div(value, divisor)
-	end
-
-	local function floor_mod(value, divisor)
-		return deterministic.floor_mod(value, divisor)
-	end
-
 	local function clamp(value, minimum, maximum)
 		if value < minimum then return minimum end
 		if value > maximum then return maximum end
 		return value
 	end
-
-	local function record_road_land_preference(preferred, run_index, natural)
-		local previous = preferred[run_index]
-		if previous == nil or natural < previous then
-			preferred[run_index] = natural
-		end
-	end
-
-	local function feasible_preferred(preferred, lower, upper)
-		if lower > upper then return nil end
-		return clamp(preferred, lower, upper)
-	end
-
-	local function tighten_grade_edge(a_lower, a_upper, b_lower, b_upper,
-			distance)
-		local next_a_lower = math.max(a_lower, b_lower - distance)
-		local next_a_upper = math.min(a_upper, b_upper + distance)
-		local next_b_lower = math.max(b_lower, next_a_lower - distance)
-		local next_b_upper = math.min(b_upper, next_a_upper + distance)
-		if next_a_lower > next_a_upper or next_b_lower > next_b_upper then
-			return nil
-		end
-		return next_a_lower, next_a_upper, next_b_lower, next_b_upper
-	end
-
-	local function qweight(outside, width)
-		if outside <= 0 then return Q end
+	-- 1 inside, 0 beyond `width`, a smootherstep between.
+	local function weight_at(outside, width)
+		if outside <= 0 then return 1 end
 		if outside >= width then return 0 end
-		return Q - deterministic.smootherstep(
-			deterministic.qfrom_ratio(outside, width))
+		local t = outside / width
+		return 1 - t * t * t * (t * (t * 6 - 15) + 10)
 	end
-
-	local function qlerp_integer(a, b, weight_q)
-		return round_ratio(a * Q + (b - a) * weight_q, Q)
+	local function lerp_node(a, b, weight)
+		return floor(a + (b - a) * weight + 0.5)
 	end
-
-	-- A dry column that directly touches an exposed water surface uses that
-	-- surface as its own top. This is the single round-6 shore-height rule;
-	-- inland bank blends, civic apron rims and the final coast check all call it.
-	local function shore_surface_y(water_y)
-		return water_y
+	local function deep_copy(value)
+		if type(value) ~= "table" then return value end
+		local result = {}
+		for key, child in pairs(value) do result[key] = deep_copy(child) end
+		return result
 	end
-
-	-- The same two-node Manhattan shore neighborhood used by the R5 seals.
-	local function ford_bank_water_floor(water_y, hydro_id, path, run)
-		if water_y and path then
-			for index = 1, #path.fords do
-				local ford = path.fords[index]
-				if ford.hydrology_id == hydro_id then
-					water_y = math.min(water_y, ford.ford_pin_y + math.abs(run - ford.ford_run))
-				end
-			end
-		end
-		return water_y
-	end
-
-	local function cached_bank_floor(query)
-		local xs, zs, values = {}, {}, {}
-		return function(x, z, path, run)
-			-- Ford caps depend on the path/run. Ordinary banks depend only on
-			-- the immutable seed and coordinates and fit a bounded direct cache.
-			if path and #path.fords > 0 then return query(x, z, path, run) end
-			local index = (z % 64) * 64 + (x % 64) + 1
-			if xs[index] == x and zs[index] == z then return values[index] or nil end
-			local value = query(x, z)
-			xs[index], zs[index], values[index] = x, z, value or false
-			return value
-		end
-	end
-
-	local function neighboring_water_floor(x, z, water_at, path, run)
-		local floor_y
-		for dx = -2, 2 do
-			for dz = -2, 2 do
-				local distance = math.abs(dx) + math.abs(dz)
-				if distance >= 1 and distance <= 2 then
-					local water_y = water_at(x + dx, z + dz, path, run)
-					if water_y and (not floor_y or water_y > floor_y) then
-						floor_y = water_y
-					end
-				end
-			end
-		end
-		return floor_y
-	end
-
 	local function lower_median(values)
 		if #values == 0 then return nil end
 		table.sort(values)
-		return values[math.floor((#values + 1) / 2)]
+		return values[floor((#values + 1) / 2)]
 	end
-
-	local function start_reference_value(natural_values, old_reference,
-			max_cut, max_fill, minimum_y)
-		local values = {}
-		local feasible_lower, feasible_upper
-		local old_cost = 0
-		for index = 1, #natural_values do
-			local natural = natural_values[index]
-			values[index] = natural
-			feasible_lower = math.max(feasible_lower or -math.huge,
-				natural - max_cut)
-			feasible_upper = math.min(feasible_upper or math.huge,
-				natural + max_fill)
-			old_cost = old_cost + math.abs(old_reference - natural)
-		end
-		local preferred = lower_median(values)
-		if preferred == nil then fail("start fitting has no natural samples") end
-		local lower = math.max(feasible_lower, minimum_y)
-		local target, rule
-		if lower <= feasible_upper then
-			target = clamp(preferred, lower, feasible_upper)
-			rule = "start_natural_samples_feasible"
-		else
-			target = math.max(preferred, minimum_y)
-			rule = "start_natural_samples_median_excess"
-		end
-		local fit_cost, limit_excess = 0, 0
-		for index = 1, #natural_values do
-			local delta = math.abs(target - natural_values[index])
-			fit_cost = fit_cost + delta
-			limit_excess = math.max(limit_excess,
-				math.max(0, delta - (target < natural_values[index] and
-					max_cut or max_fill)))
-		end
-		return target, rule, preferred, feasible_lower, feasible_upper,
-			limit_excess, old_cost, fit_cost
-	end
-
-	local function capital_reference_value(center_natural, feasible_lower,
-			feasible_upper, route_min_y, water_min_y)
-		local reference, rule
-		if feasible_lower <= feasible_upper then
-			reference = clamp(center_natural, feasible_lower, feasible_upper)
-			rule = "capital_natural_core_feasible"
-		else
-			reference = round_ratio(feasible_lower + feasible_upper, 2)
-			rule = "capital_natural_core_minimax"
-		end
-		if reference < route_min_y then
-			reference = route_min_y
-			rule = rule .. "_route_min"
-		end
-		if water_min_y and reference < water_min_y then
-			reference = water_min_y
-			rule = rule .. "_water_min"
-		end
-		return reference, rule, math.max(0, feasible_lower - reference,
-			reference - feasible_upper)
-	end
-
-	-- THE STEP BAND'S QUANTISER.
-	--
-	-- `round_ratio` rounds half AWAY FROM ZERO, so the bin it puts around zero
-	-- is one node narrower than every other bin for an even divisor: for step 4
-	-- it maps -1, 0 and 1 to the same level while every other level owns four
-	-- values. A terrace lattice with one short bin is not translation
-	-- invariant, and the band built on it is not 1-Lipschitz -- on a plain
-	-- one-node-per-column ramp crossing the reference it emits a two-node step
-	-- for step 2 and step 4 (step 3 is spared because an odd divisor's zero bin
-	-- is already the right width). Widening the disc does not help; only the
-	-- lattice does.
-	--
-	-- `terrace_bin` is round-half-up everywhere, so every bin is exactly `step`
-	-- wide wherever zero happens to fall, and `terrace_middle` is the same
-	-- rounding for the erosion/dilation midpoint, which has the identical
-	-- defect at a capital sitting below y = 0.
-	local function terrace_bin(value, step)
-		return floor_div(2 * value + step, 2 * step)
-	end
-
-	local function terrace_middle(sum)
-		return floor_div(sum + 1, 2)
-	end
-
-	-- THE STEP BAND'S RADIUS, per race terrace step: one column short of the
-	-- riser it has to bridge.
-	--
-	-- A riser of `step` is turned into a band of one-block ground steps by
-	-- taking the arithmetic middle of the terraced field's morphological
-	-- EROSION and DILATION over a Chebyshev disc of this radius (see
-	-- `fitting_grids.band.value`). The middle of two 1-Lipschitz fields is
-	-- 1-Lipschitz, so a disc that reaches across a whole riser is exactly what
-	-- turns that riser into a walkable band, and a disc of radius r spreads it
-	-- over about 2r + 1 columns.
-	--
-	-- `step - 1` and not `ceil(step / 2)`, which is all an ISOLATED riser needs,
-	-- because a capital envelope's risers are not isolated: where the ground
-	-- under the fitting is steep, two terrace levels stand two or three columns
-	-- apart and a disc that only spans one riser leaves the pair a wall.
-	-- Measured over the +-250 envelope of Dur Brannoc, the steepest of the six:
-	-- of its land columns 79.9 and 76.1 per thousand were unclimbable with
-	-- vertical risers, 32.2 and 34.5 with a disc of 2, and 27.4 and 29.8 with
-	-- this one, against 26.5 and 28.7 for the same envelope's UNGRADED relief.
-	-- A wider disc buys almost nothing more and every column of radius costs a
-	-- quadratic number of relief queries.
-	local CAPITAL_BAND_RADIUS = {[2] = 1, [3] = 2, [4] = 3}
-
-	-- THE APRON, and the ONE capital shape that asks for it.
-	--
-	-- `capital_terrace_value`'s cut/fill clamp is applied OUTSIDE the civic
-	-- core and not inside it, so wherever the fitted reference stands further
-	-- above the natural ground than `max_fill`, the civic pad ends in a
-	-- VERTICAL FACE: the last core column is the reference and the first column
-	-- outside it is `natural + max_fill`. On five of the six capitals that face
-	-- is zero nodes tall on both gate seeds, because their reference is a
-	-- median of their own core's natural ground. Kezamba's is not: its civic
-	-- reference is raised to clear the authored `hydro_kezamba_cenote`
-	-- (`capital_..._water_min`), the lake stands twenty to thirty nodes above
-	-- the wetland delta around it, and the pad therefore measured a face of 17
-	-- to 28 nodes over the nine fixture seeds -- with the same thing happening
-	-- a second time round the lake itself, where `water_banks.protect` holds a
-	-- two-column rim at the water floor and the graded ground beside it falls
-	-- to the natural relief in one column (worst 4-neighbour drop 27 to 39).
-	--
-	-- Playtest 5 (2026-09-16, user): "The capital core in Kezamba stands on an
-	-- unnatural plateau, the terrain has no natural course there." The apron is
-	-- the answer, and it is exactly one rule:
-	--
-	--     the graded land of this capital may not stand more than one TERRACE
-	--     STEP below the civic reference per column of distance from the civic
-	--     core, nor more than one terrace step below the lake's own dry rim per
-	--     column of distance from the lake's edge.
-	--
-	-- Both cones are `constant - step * a DISTANCE`, and both distances are
-	-- 1-Lipschitz on the integer lattice by CONSTRUCTION: `civic_outside` is a
-	-- Chebyshev excess, and the lake cone's is a minimum of distances to the
-	-- reach's sample discs (see `fitting_grids.apron.value`, which also records
-	-- the two earlier formulations the independent review of 2026-09-16
-	-- measured out and what each of them cost). So each cone is exactly
-	-- `step`-Lipschitz, and the shaped value is their MAXIMUM with the clamped
-	-- terrace -- `max` of fields steps by at most the worst of them -- so the
-	-- apron adds no face of its own beyond `step`.
-	-- `tools/wp13/kezamba_water.lua --walls` gates both halves of that rather
-	-- than leaving it asserted: the cone's own worst 4-neighbour step, and the
-	-- over-step faces in the SHIPPED field that the apron is the binding
-	-- constraint on.
-	-- Each cone dies where it falls below the ground it is drawn over, which is
-	-- what makes it a SKIRT of about `(fall / step)` columns and not a plateau:
-	-- the fall is 20 to 30 nodes, so the skirt is seven to ten columns wide.
-	--
-	-- It is SHAPE-GUARDED. `capital_terrace_value` takes `apron` as an eighth
-	-- OPTIONAL argument for the same reason it takes `banded` as a seventh: the
-	-- five other capital shapes and the frozen scalar cases of
-	-- `module.quality_geometry_micro_kat` pass nothing, reach none of this code
-	-- and keep their answer to the byte.
-	-- ONE TABLE AND NOT FOUR LOCALS. `construct` below sits at Lua 5.1's
-	-- 60-UPVALUE ceiling the way it sits at the 200-local one, and every
-	-- module local this apron names from inside it costs one of those: four
-	-- constants would not compile. The values are the four paragraphs above.
-	local CAPITAL_APRON = {shape = "cenote_terrace"}
-
-	-- HOW WIDE THE APRON HOLDS THE WATER FLOOR before it starts stepping down,
-	-- and it is a measurement of `water_banks.protect` and not a taste.
-	--
-	-- `protect` lifts every land column within TWO Manhattan steps of planned
-	-- water to that water's floor, and it does so whatever this apron says. So
-	-- a cone that had already stepped below the water floor at such a column
-	-- would leave `protect`'s own ring standing over it -- a fresh face at the
-	-- exact shore this whole change exists to flatten. The cone therefore has
-	-- to be at or above the floor on every column `protect` can touch, and two
-	-- is how far that reaches.
-	--
-	-- It is two and not more because the cone's disc set is DENSE (see
-	-- `CAPITAL_APRON.spacing`): measured over this cenote, no column of
-	-- the mask stands outside every disc at all, and a land column in
-	-- `protect`'s ring stands at most 2 outside. On the four authored samples
-	-- alone those numbers are 5 and 6, which would have forced a hold of six
-	-- and four more columns of flat rim than the shore needs.
-	CAPITAL_APRON.hold = 2
-
-	-- HOW FINELY THE REACH IS SAMPLED INTO DISCS, and why the cone is built out
-	-- of discs at all.
-	--
-	-- The cone needs "how far outside the lake is this column", and the only
-	-- form of that answer which is 1-Lipschitz by CONSTRUCTION -- rather than by
-	-- an argument that turned out to be false, twice, see
-	-- `fitting_grids.apron.value` -- is a minimum of distances to discs. The
-	-- mask (`simple_map.lua`'s `bay_member`) is the union of the centreline's
-	-- own sample discs AND the tapered capsules between them, so four authored
-	-- samples under-cover it; interpolating extra samples along each segment
-	-- closes that gap with more discs, and a disc is still a disc.
-	--
-	-- Sixteen is measured. The worst distance from a mask column to the nearest
-	-- disc, over this cenote's 30 354 wet columns:
-	--
-	--     spacing        authored only   32   16    8    4
-	--     mask column         5           1    0    0    0
-	--     protect ring        6           3    2    2    2
-	--
-	-- so sixteen is the coarsest spacing at which the discs cover the mask
-	-- completely and the hold above can stay at `protect`'s own two. It turns
-	-- this cenote's four samples into fourteen discs.
-	CAPITAL_APRON.spacing = 16
-
-	-- WHERE A DISC STOPS BEING ASKED, and why that cannot be a second pruning
-	-- cliff like the one the review found. At `half_width + this` the cone from
-	-- that disc stands at `water_y + 1 - step * (64 - 2)` = 186 nodes below the
-	-- lake's rim, which for this capital is y -120: below `WATER_LEVEL - 24`,
-	-- the value the height session itself returns for a column outside the map.
-	-- A disc that far away can never be the maximum, so skipping it changes no
-	-- answer -- which is exactly what the earlier `maximum_half +
-	-- bank_blend_width` window did NOT guarantee, because at the wide end of a
-	-- tapered segment it cut off nine columns outside the water.
-	CAPITAL_APRON.reach = 64
-
-	-- `banded` is the stepped terrace of `fitting_grids.band.value`. It is
-	-- OPTIONAL so the frozen scalar cases of `module.quality_geometry_micro_kat`
-	-- keep calling this function with six arguments and keep their old answer:
-	-- the band changes where the terrace lattice is READ, never how the civic
-	-- core, the 32-node civic blend or the cut/fill clamp behave. `apron` is
-	-- OPTIONAL for the same reason and is the floor described above; it is nil
-	-- for every capital shape but `cenote_terrace`.
-	local function capital_terrace_value(incoming, reference, step,
-			civic_outside, max_cut, max_fill, banded, apron)
-		local terrace = banded or
-			reference + step * round_ratio(incoming - reference, step)
-		local shaped = terrace
-		if civic_outside == 0 then
-			shaped = reference
-		elseif civic_outside < 32 then
-			shaped = qlerp_integer(terrace, reference,
-				qweight(civic_outside, 32))
-		end
-		if civic_outside > 0 then
-			shaped = clamp(shaped, incoming - max_cut, incoming + max_fill)
-			if apron ~= nil and apron > shaped then shaped = apron end
-		end
-		return shaped
-	end
-
-	local function backtrack_preferred_grade(preferred, reachable_lower,
-			reachable_upper)
-		local last_run = #preferred
-		local result = {}
-		result[last_run] = clamp(preferred[last_run],
-			reachable_lower[last_run], reachable_upper[last_run])
-		for run_index = last_run - 1, 1, -1 do
-			local lower_y = math.max(reachable_lower[run_index],
-				result[run_index + 1] - 1)
-			local upper_y = math.min(reachable_upper[run_index],
-				result[run_index + 1] + 1)
-			if lower_y > upper_y then
-				return nil, run_index, lower_y, upper_y
-			end
-			result[run_index] = clamp(preferred[run_index], lower_y, upper_y)
-		end
-		return result
-	end
-
-	local function squared_distance(ax, az, bx, bz)
-		local dx, dz = ax - bx, az - bz
-		return dx * dx + dz * dz
-	end
-
-	local function divmod_nonnegative(numerator, denominator)
-		local quotient = math.floor(numerator / denominator)
-		local product = quotient * denominator
-		while product > numerator do
-			quotient = quotient - 1
-			product = product - denominator
-		end
-		while numerator - product >= denominator do
-			quotient = quotient + 1
-			product = product + denominator
-		end
-		return quotient, numerator - product
-	end
-
-	-- Continued fractions compare positive ratios without unsafe products.
-	local function rational_compare(a, b, c, d)
-		local direction = 1
-		while true do
-			local left, left_remainder = divmod_nonnegative(a, b)
-			local right, right_remainder = divmod_nonnegative(c, d)
-			if left < right then return -direction end
-			if left > right then return direction end
-			if left_remainder == 0 or right_remainder == 0 then
-				if left_remainder == right_remainder then return 0 end
-				return (left_remainder == 0 and -1 or 1) * direction
-			end
-			a, b = b, left_remainder
-			c, d = d, right_remainder
-			direction = -direction
-		end
-	end
-
-	local function point_segment_ratio(x, z, a, b)
-		local vx, vz = b.x - a.x, b.z - a.z
-		local wx, wz = x - a.x, z - a.z
-		local length_squared = vx * vx + vz * vz
-		if length_squared == 0 then
-			return wx * wx + wz * wz, 1, 0, 1
-		end
-		local dot = wx * vx + wz * vz
-		if dot <= 0 then return wx * wx + wz * wz, 1, 0, length_squared end
-		if dot >= length_squared then
-			return squared_distance(x, z, b.x, b.z), 1,
-				length_squared, length_squared
-		end
-		local cross = wx * vz - wz * vx
-		return cross * cross, length_squared, dot, length_squared
-	end
-
-	local function corridor_member_ratio(numerator, denominator, total_width)
-		return 4 * numerator <= total_width * total_width * denominator
-	end
-
-	local function in_polygon(x, z, points)
-		local inside = false
-		local previous = points[#points]
-		for index = 1, #points do
-			local current = points[index]
-			local cross = (x - previous.x) * (current.z - previous.z) -
-				(z - previous.z) * (current.x - previous.x)
-			if cross == 0 and x >= math.min(previous.x, current.x) and
-					x <= math.max(previous.x, current.x) and
-					z >= math.min(previous.z, current.z) and
-					z <= math.max(previous.z, current.z) then return true end
-			if (current.z > z) ~= (previous.z > z) then
-				local orientation = (previous.x - current.x) * (z - current.z) -
-					(previous.z - current.z) * (x - current.x)
-				if (previous.z > current.z and orientation > 0) or
-						(previous.z < current.z and orientation < 0) then
-					inside = not inside
-				end
-			end
-			previous = current
-		end
-		return inside
-	end
-
 	local function in_half_open_square(x, z, center, width)
-		return 2 * x >= 2 * center.x - width and
-			2 * x < 2 * center.x + width and
-			2 * z >= 2 * center.z - width and
-			2 * z < 2 * center.z + width
+		local half = width / 2
+		return x >= center.x - half and x <= center.x + half - 1 and
+			z >= center.z - half and z <= center.z + half - 1
 	end
-
 	local function half_open_square_excess(x, z, center, width)
 		local half = width / 2
-		local min_x, max_x = center.x - half, center.x + half - 1
-		local min_z, max_z = center.z - half, center.z + half - 1
-		return math.max(0, min_x - x, x - max_x, min_z - z, z - max_z)
+		local dx = max(center.x - half - x, x - (center.x + half - 1), 0)
+		local dz = max(center.z - half - z, z - (center.z + half - 1), 0)
+		return max(dx, dz)
 	end
-
-	local function text(value) return canonical.text(value or "") end
-	local function signed(value) return canonical.signed(value or 0) end
-
 	local function add_bucket(grid, record, min_x, max_x, min_z, max_z)
-		local min_ix, max_ix = floor_div(min_x, FEATURE_CELL),
-			floor_div(max_x, FEATURE_CELL)
-		local min_iz, max_iz = floor_div(min_z, FEATURE_CELL),
-			floor_div(max_z, FEATURE_CELL)
-		for iz = min_iz, max_iz do
+		for iz = floor_div(min_z, FEATURE_CELL), floor_div(max_z, FEATURE_CELL) do
 			local row = grid[iz]
 			if not row then row = {} grid[iz] = row end
-			for ix = min_ix, max_ix do
+			for ix = floor_div(min_x, FEATURE_CELL), floor_div(max_x, FEATURE_CELL) do
 				local bucket = row[ix]
 				if not bucket then bucket = {} row[ix] = bucket end
 				bucket[#bucket + 1] = record
 			end
 		end
 	end
-
 	local function bucket_at(grid, x, z)
 		local row = grid[floor_div(z, FEATURE_CELL)]
 		return row and row[floor_div(x, FEATURE_CELL)] or nil
 	end
 
-	local function mulmod(a, b)
-		a, b = floor_mod(a, P), floor_mod(b, P)
-		local a1, a0 = math.floor(a / B), a % B
-		local b1, b0 = math.floor(b / B), b % B
-		local r = (a1 * b1) % P
-		r = (r * B + a1 * b0 + a0 * b1) % P
-		r = (r * B + a0 * b0) % P
-		return r
+	-- Start pad reference: the lower median of 9x9 natural samples, clamped
+	-- into every sample's cut/fill interval where that is feasible.
+	local function start_reference_value(natural_values, max_cut, max_fill,
+			minimum_y)
+		local feasible_lower, feasible_upper = -math.huge, math.huge
+		local values = {}
+		for index = 1, #natural_values do
+			local natural = natural_values[index]
+			values[index] = natural
+			feasible_lower = max(feasible_lower, natural - max_cut)
+			feasible_upper = min(feasible_upper, natural + max_fill)
+		end
+		local preferred = lower_median(values)
+		local lower = max(feasible_lower, minimum_y)
+		if lower <= feasible_upper then return clamp(preferred, lower, feasible_upper) end
+		return max(preferred, minimum_y)
 	end
 
-	local function digest_first_word(digest)
-		if type(digest) ~= "string" or #digest ~= 32 then
-			fail("raw SHA-256 injection did not return 32 bytes")
+	-- Capital civic reference: the natural centre clamped into the civic
+	-- core's cut/fill interval, or its midpoint when that interval is empty.
+	local function capital_reference_value(center_natural, feasible_lower,
+			feasible_upper, water_min_y)
+		local reference
+		if feasible_lower <= feasible_upper then
+			reference = clamp(center_natural, feasible_lower, feasible_upper)
+		else
+			reference = round_ratio(feasible_lower + feasible_upper, 2)
 		end
-		local a, b, c, d = digest:byte(1, 4)
-		return ((a * 256 + b) * 256 + c) * 256 + d
+		if water_min_y and reference < water_min_y then reference = water_min_y end
+		return reference
 	end
 
-	local function lattice_corner(root, ix, iz, octave)
-		local x, z = floor_mod(ix, P), floor_mod(iz, P)
-		local s = (root + mulmod(x, 73856093) + mulmod(z, 19349663) +
-			octave * 83492791) % P
-		s = (mulmod((s + 104729) % P, (s + 130363) % P) + 12345) % P
-		s = (mulmod((s + mulmod((x + 37) % P, (z + 53) % P)) % P,
-			48271) + 1) % P
-		s = (mulmod((s + 32452843) % P, (s + 49979687) % P) +
-			86028121) % P
-		return math.floor(s * 131073 / P) - 65536, s
+	-- Capital terraces (settlements.md): round-half-up bins, so every bin is
+	-- exactly `step` wide, and the walkable band between two terraces is the
+	-- middle of the terraced field's erosion and dilation over a Chebyshev disc
+	-- of `step - 1`.
+	local function terrace_bin(value, step)
+		return floor_div(2 * value + step, 2 * step)
 	end
-
-	-- WP13 round B, the start gate approach.
-	--
-	-- Every WP13 start blueprint opens a five-wide main street on the z axis and
-	-- puts its gate at anchor.z +/- 63; the authored catalog places that start's
-	-- `start_gate` station one node further out (`source/catalog.lua`, the six
-	-- "start:north"/"start:south" rows), and since round B the COMPILED
-	-- centreline carries the straight run down that axis as its first segment
-	-- (`source/simple_map.lua`, `START_GATE_ZONES`). It has to be authored there
-	-- and not rebuilt here: `exclude:route:<id>` is compiled from those same
-	-- points, so a road the raster followed but the centreline did not know about
-	-- would lie outside its own claim-excluded corridor.
-	--
-	-- This function only verifies that the compiled centreline really opens on
-	-- the gate axis and reports the one thing the source cannot express: that the
-	-- first segment carries the gate street's five-node width instead of the
-	-- route class's seven. The three failures are deliberate -- the compiled
-	-- layout is load-bearing for the six start routes, and a source edit that
-	-- moved a start hub, took a start off its z axis or dropped the axis run
-	-- must stop construction rather than silently produce a road beside a gate.
-	local START_GATE_RUN = 128
-	-- Read-only; `make_path` only reads the three fields.
-	local START_GATE_PREFIX = {segments = 1, surface_width = 5,
-		corridor_width = 12}
-	local function start_gate_prefix(source, route, start_a, start_b)
-		if not start_a then
-			if start_b then
-				fail("start route reaches its start as endpoint b at " .. route.id)
-			end
-			return nil
+	local CAPITAL_BAND_RADIUS = {[2] = 1, [3] = 2, [4] = 3}
+	local function capital_terrace_value(incoming, reference, step,
+			civic_outside, max_cut, max_fill, banded)
+		local shaped = banded
+		if civic_outside == 0 then
+			shaped = reference
+		elseif civic_outside < 32 then
+			shaped = lerp_node(banded, reference, weight_at(civic_outside, 32))
 		end
-		local hub = source.zones[route.zone_a].hub
-		local other = source.zones[route.zone_b].hub
-		if hub.x ~= start_a.center.x or hub.z ~= start_a.center.z then
-			fail("start route hub is not the start anchor at " .. route.id)
+		if civic_outside > 0 then
+			shaped = clamp(shaped, incoming - max_cut, incoming + max_fill)
 		end
-		if other.x ~= hub.x or other.z == hub.z then
-			fail("start gate axis is not the z axis at " .. route.id)
-		end
-		local first, second = route.centreline[1], route.centreline[2]
-		if type(first) ~= "table" or type(second) ~= "table" or
-				first.x ~= hub.x or first.z ~= hub.z or second.x ~= hub.x or
-				second.z ~= hub.z + (other.z > hub.z and 1 or -1) * START_GATE_RUN then
-			fail("compiled start route does not open on its gate axis at " ..
-				route.id)
-		end
-		return START_GATE_PREFIX
-	end
-
-	-- WP13 round B, the soft pad edge.
-	--
-	-- A start pad is a half-open 128-node square that is flat at the fitted
-	-- reference height, and the 64 nodes outside it smootherstep down to the
-	-- natural terrain. The inner edge of that ramp -- where flat ground becomes
-	-- slope -- is therefore an exact square, and the user can see it from the
-	-- ground.
-	--
-	-- The jitter below pushes that inner edge OUTWARD by 0..6 nodes, from one
-	-- seed-derived value-noise lattice per start (period 24, smootherstepped, so
-	-- the outline undulates instead of dithering). Outward only, and the ramp's
-	-- span shrinks by the same amount: a column inside the 128 square keeps
-	-- excess 0 and therefore weight Q -- the envelope's surface height, the
-	-- spawn height, the road pins and every blueprint cell cannot move -- and a
-	-- column at the outer envelope edge keeps weight 0, so the 256 boundary stays
-	-- continuous and nothing escapes the fitting's own bucket. Same world seed,
-	-- same bytes; a different seed gives a different outline.
-	local START_EDGE_PERIOD = 24
-	local START_EDGE_AMPLITUDE = 6
-	local START_EDGE_OCTAVE = 200
-	local function start_edge_root(counted_sha, full_seed_string)
-		local root = digest_first_word(counted_sha("GRUGWP40HEIGHT" ..
-			string.char(0) .. canonical.encode(text(HEIGHT_RANDOM_SCHEMA)) ..
-			canonical.encode(text(full_seed_string)) ..
-			canonical.encode(text("start-edge-jitter-v1")))) % P
-		if root == 0 then root = 1 end
-		return root
-	end
-	-- The lattice is memoised on demand rather than precomputed over a box,
-	-- because a fitting's bucket cell reaches further than its own envelope and a
-	-- box would have to guess how much further.
-	local function start_edge_corner(fitting, ix, iz)
-		local row = fitting.edge_jitter[iz]
-		if not row then row = {} fitting.edge_jitter[iz] = row end
-		local value = row[ix]
-		if value == nil then
-			value = lattice_corner(fitting.edge_root, ix, iz, START_EDGE_OCTAVE)
-			row[ix] = value
-		end
-		return value
-	end
-	local function start_edge_offset(fitting, x, z)
-		local ix, iz = floor_div(x, START_EDGE_PERIOD),
-			floor_div(z, START_EDGE_PERIOD)
-		local tx = deterministic.smootherstep(deterministic.qfrom_ratio(
-			x - ix * START_EDGE_PERIOD, START_EDGE_PERIOD))
-		local tz = deterministic.smootherstep(deterministic.qfrom_ratio(
-			z - iz * START_EDGE_PERIOD, START_EDGE_PERIOD))
-		local value = deterministic.qlerp(
-			deterministic.qlerp(start_edge_corner(fitting, ix, iz),
-				start_edge_corner(fitting, ix + 1, iz), tx),
-			deterministic.qlerp(start_edge_corner(fitting, ix, iz + 1),
-				start_edge_corner(fitting, ix + 1, iz + 1), tx), tz)
-		return round_ratio((clamp(value, -Q, Q) + Q) * START_EDGE_AMPLITUDE, 2 * Q)
-	end
-	-- The outline itself, as measurable output: the jitter offset at every column
-	-- of the pad's four sides, in a fixed order, with its observed range. This is
-	-- what a fixture digests and compares between seeds and between runs.
-	local function start_edge_witness(fitting)
-		local offsets, minimum, maximum = {}, nil, nil
-		for side = -64, 63 do
-			offsets[#offsets + 1] = start_edge_offset(fitting,
-				fitting.center.x + side, fitting.center.z - 64)
-			offsets[#offsets + 1] = start_edge_offset(fitting,
-				fitting.center.x + side, fitting.center.z + 63)
-			offsets[#offsets + 1] = start_edge_offset(fitting,
-				fitting.center.x - 64, fitting.center.z + side)
-			offsets[#offsets + 1] = start_edge_offset(fitting,
-				fitting.center.x + 63, fitting.center.z + side)
-		end
-		for index = 1, #offsets do
-			minimum = minimum and math.min(minimum, offsets[index]) or offsets[index]
-			maximum = math.max(maximum or offsets[index], offsets[index])
-		end
-		return {amplitude = START_EDGE_AMPLITUDE, minimum = minimum,
-			maximum = maximum, count = #offsets, offsets = offsets}
+		return shaped
 	end
 
 	local module = {}
-	local bound_seed_string
 
-	local function construct(full_seed_string, diagnose_final_axis, runtime_mode,
-			scan_runtime_axis)
-		if runtime_mode ~= nil and runtime_mode ~= true then
-			fail("runtime construction mode differs")
-		end
-		if runtime_mode and diagnose_final_axis then
-			fail("runtime construction cannot diagnose final axes")
-		end
+	local function construct(full_seed_string)
 		deterministic.validate_seed(full_seed_string)
-		if bound_seed_string and bound_seed_string ~= full_seed_string then
-			fail("one height factory cannot reuse its horizontal session for a " ..
-				"different full seed")
-		end
-		bound_seed_string = full_seed_string
-		if source.schema ~= "grug_wp40_simple_map_source_v2" or
-				source.layout_id ~= "wp40-simple-map-v1d" or
-				source.layout_revision_id ~= "wp40-simple-map-v1e" or
-				source.height_revision_id ~= "wp40-height-shore-v6" then
-			fail("source schema/layout identity differs from V1e R2")
-		end
-		if #source.relief_profiles ~= 6 or #source.landmarks ~= 70 or
-				#source.anchors ~= 100 or #source.hard_protection ~= 42 or
-				#source.hydrology ~= 25 or #source.hydrology_interfaces ~= 15 then
-			fail("accepted R2 source population differs")
-		end
-		for _, route_class in ipairs({"primary", "secondary", "trail"}) do
-			local profile = source.route_profiles[route_class]
-			if type(profile) ~= "table" or
-					profile.grade_preference ~= "natural_surface_low_edge_v1" then
-				fail("route grade preference differs")
+		local classified = new_classification_cache(
+			horizontal.classification_values_at, 65536)
+
+		-- Inland planned water (rivers, lakes) is dry land until Phase 5; bays
+		-- and the open sea stay water at WATER_LEVEL.
+		local function column_class(x, z)
+			local water_class, _, owner, bay_id, hydrology_id = classified(x, z)
+			if water_class == "land" then return LAND, owner end
+			if water_class == "planned_water" then
+				if bay_id == nil and hydrology_id ~= nil then return LAND, owner end
+				return BAY, owner
 			end
+			return SEA, owner
 		end
-		local proof = horizontal.warp_proof()
-		local bounds = {min_x = proof.min_x, max_x = proof.max_x,
-			min_z = proof.min_z, max_z = proof.max_z}
-		for _, key in ipairs({"min_x", "max_x", "min_z", "max_z"}) do
-			coordinate(bounds[key], "query bound " .. key)
+
+		local field = terrain_field.new(full_seed_string, {
+			zones = source.zones, anchors = source.anchors,
+			zone_at = function(x, z)
+				local class, owner = column_class(x, z)
+				return class == LAND and owner or nil
+			end,
+			land_at = function(x, z) return (column_class(x, z)) == LAND end,
+		})
+		local edge_noise = terrain_field.simplex(full_seed_string, "start_edge")
+
+		-----------------------------------------------------------------------
+		-- Per-chunk memo. One block per mapchunk column, filled lazily per
+		-- column; FIFO eviction keeps BLOCK_LIMIT blocks per session.
+		-----------------------------------------------------------------------
+		local blocks, block_ring, block_cursor = {}, {}, 1
+		local memo_hits, memo_misses, block_builds = 0, 0, 0
+		local function block_for(x, z)
+			local bx = floor_div(x + BLOCK_OFFSET, BLOCK)
+			local bz = floor_div(z + BLOCK_OFFSET, BLOCK)
+			local key = bx * 1048576 + bz
+			local block = blocks[key]
+			if block then return block, bx, bz end
+			block = {key = key, class = {}, owner = {}, natural = {},
+				terrain = {}, kind = {}, surface = {}, feature = {}}
+			local old = block_ring[block_cursor]
+			if old then blocks[old.key] = nil end
+			block_ring[block_cursor] = block
+			block_cursor = block_cursor % BLOCK_LIMIT + 1
+			blocks[key] = block
+			block_builds = block_builds + 1
+			return block, bx, bz
 		end
-		local construction_complete = false
-		local construction_sha_calls, query_sha_calls = 0, 0
-		local query_lattice_constructions = 0
-		local function counted_sha(data)
-			if construction_complete then
-				query_sha_calls = query_sha_calls + 1
+		-- Returns the memo block and this column's slot with the class and
+		-- owner filled. The natural height is filled on first demand only:
+		-- coast scans classify far more columns than they ever grade.
+		local function column(x, z)
+			local block, bx, bz = block_for(x, z)
+			local slot = (z + BLOCK_OFFSET - bz * BLOCK) * BLOCK +
+				(x + BLOCK_OFFSET - bx * BLOCK) + 1
+			if block.class[slot] == nil then
+				local class, owner = column_class(x, z)
+				block.class[slot] = class
+				block.owner[slot] = owner or false
+			end
+			return block, slot
+		end
+		local function natural_height_at(x, z)
+			local block, slot = column(x, z)
+			local natural = block.natural[slot]
+			if natural == nil then
+				memo_misses = memo_misses + 1
+				natural = floor(field.height_at(x, z, block.class[slot] == LAND))
+				block.natural[slot] = natural
 			else
-				construction_sha_calls = construction_sha_calls + 1
-			end
-			local result = raw_sha256(data)
-			if type(result) ~= "string" or #result ~= 32 then
-				fail("raw SHA-256 injection did not return 32 bytes")
-			end
-			return result
-		end
-		local function counted_digest(rows)
-			return canonical.hex(counted_sha(canonical.encode(canonical.array(rows))))
-		end
-		local function note_lattice_construction()
-			if construction_complete then
-				query_lattice_constructions = query_lattice_constructions + 1
-			end
-		end
-
-		local profile_by_id, profiles = {}, {}
-		local relief_roots, octave_evidence = {}, {}
-		local octave_digest_rows = {}
-		for profile_index = 1, #source.relief_profiles do
-			local source_profile = source.relief_profiles[profile_index]
-			if profile_by_id[source_profile.id] then
-				fail("duplicate relief profile " .. source_profile.id)
-			end
-			local root_input = "GRUGWP40HEIGHT" .. string.char(0) ..
-				canonical.encode(text(HEIGHT_RANDOM_SCHEMA)) ..
-				canonical.encode(text(full_seed_string)) ..
-				canonical.encode(text(source_profile.noise_domain))
-			local root = digest_first_word(counted_sha(root_input)) % P
-			if root == 0 then root = 1 end
-			local profile = {id = source_profile.id,
-				min_above_water = source_profile.min_above_water,
-				max_above_water = source_profile.max_above_water,
-				detail_amplitude = integer(source_profile.detail_amplitude,
-					"relief detail amplitude"),
-				noise_domain = source_profile.noise_domain, root = root, octaves = {}}
-			if profile.detail_amplitude < 0 or profile.detail_amplitude > 16 then
-				fail("relief detail amplitude differs")
-			end
-			profiles[profile_index] = profile
-			profile_by_id[profile.id] = profile
-			relief_roots[profile_index] = {id = profile.id,
-				domain = profile.noise_domain, root = root}
-			for octave_index = 1, #source_profile.octaves do
-				note_lattice_construction()
-				local source_octave = source_profile.octaves[octave_index]
-				local period = source_octave.period
-				local min_ix = floor_div(bounds.min_x - BASE_CELL, period) - 1
-				local max_ix = floor_div(bounds.max_x + BASE_CELL, period) + 1
-				local min_iz = floor_div(bounds.min_z - BASE_CELL, period) - 1
-				local max_iz = floor_div(bounds.max_z + BASE_CELL, period) + 1
-				local values, rows = {}, {}
-				local observed_min, observed_max, min_x, min_z, max_x, max_z
-				for iz = min_iz, max_iz do
-					local row = {} values[iz] = row
-					for ix = min_ix, max_ix do
-						local value = lattice_corner(root, ix, iz, octave_index)
-						row[ix] = value
-						if not runtime_mode then
-							rows[#rows + 1] = canonical.array({signed(ix), signed(iz),
-								signed(value)})
-						end
-						if not observed_min or value < observed_min then
-							observed_min, min_x, min_z = value, ix, iz
-						end
-						if not observed_max or value > observed_max then
-							observed_max, max_x, max_z = value, ix, iz
-						end
-					end
-				end
-				local digest = not runtime_mode and counted_digest(rows) or nil
-				local octave = {period = period,
-					amplitude_numerator = source_octave.amplitude.numerator,
-					amplitude_denominator = source_octave.amplitude.denominator,
-					values = values, min_ix = min_ix, max_ix = max_ix,
-					min_iz = min_iz, max_iz = max_iz, digest = digest}
-				profile.octaves[octave_index] = octave
-				local evidence = {profile_id = profile.id, ordinal = octave_index,
-					period = period, digest = digest, observed_min = observed_min,
-					observed_min_ix = min_x, observed_min_iz = min_z,
-					observed_max = observed_max, observed_max_ix = max_x,
-					observed_max_iz = max_z}
-				if not runtime_mode then
-					octave_evidence[#octave_evidence + 1] = evidence
-					octave_digest_rows[#octave_digest_rows + 1] = canonical.array({
-						text(profile.id), signed(octave_index), text(digest)})
-				end
-			end
-		end
-
-		-- The accepted profile periods remain the broad authority.  These two
-		-- common fields are evaluated only after the 64-node owner lattice, so
-		-- local relief is interpolated once instead of being baked into and then
-		-- smootherstepped through that lattice a second time.
-		local detail_root_input = "GRUGWP40HEIGHT" .. string.char(0) ..
-			canonical.encode(text(HEIGHT_RANDOM_SCHEMA)) ..
-			canonical.encode(text(full_seed_string)) ..
-			canonical.encode(text("relief_detail_after_64_v1"))
-		local detail_root = digest_first_word(counted_sha(detail_root_input)) % P
-		if detail_root == 0 then detail_root = 1 end
-		local detail_octaves = {}
-		for detail_index, detail_period in ipairs({128, 32}) do
-			note_lattice_construction()
-			local min_ix = floor_div(bounds.min_x - BASE_CELL, detail_period) - 1
-			local max_ix = floor_div(bounds.max_x + BASE_CELL, detail_period) + 1
-			local min_iz = floor_div(bounds.min_z - BASE_CELL, detail_period) - 1
-			local max_iz = floor_div(bounds.max_z + BASE_CELL, detail_period) + 1
-			local values, rows = {}, {}
-			for iz = min_iz, max_iz do
-				local row = {}
-				values[iz] = row
-				for ix = min_ix, max_ix do
-					local value = lattice_corner(detail_root, ix, iz,
-						100 + detail_index)
-					row[ix] = value
-					if not runtime_mode then
-						rows[#rows + 1] = canonical.array({signed(ix), signed(iz),
-							signed(value)})
-					end
-				end
-			end
-			detail_octaves[detail_index] = {period = detail_period,
-				values = values, numerator = detail_index == 1 and 3 or 1, denominator = 4,
-				digest = not runtime_mode and counted_digest(rows) or nil}
-			if not runtime_mode then
-				octave_digest_rows[#octave_digest_rows + 1] = canonical.array({
-					text("detail"), signed(detail_index), signed(detail_period),
-					text(detail_octaves[detail_index].digest)})
-			end
-		end
-
-		local function raw_profile_height(profile, x, z)
-			local total = 0
-			for octave_index = 1, #profile.octaves do
-				local octave = profile.octaves[octave_index]
-				local ix, iz = floor_div(x, octave.period),
-					floor_div(z, octave.period)
-				local row0, row1 = octave.values[iz], octave.values[iz + 1]
-				if not row0 or not row1 or row0[ix] == nil or
-						row0[ix + 1] == nil or row1[ix] == nil or
-						row1[ix + 1] == nil then
-					fail("relief query escaped its precomputed lattice")
-				end
-				local tx = deterministic.smootherstep(deterministic.qfrom_ratio(
-					x - ix * octave.period, octave.period))
-				local tz = deterministic.smootherstep(deterministic.qfrom_ratio(
-					z - iz * octave.period, octave.period))
-				local top = deterministic.qlerp(row0[ix], row0[ix + 1], tx)
-				local bottom = deterministic.qlerp(row1[ix], row1[ix + 1], tx)
-				local value = deterministic.qlerp(top, bottom, tz)
-				total = total + round_ratio(value * octave.amplitude_numerator,
-					octave.amplitude_denominator)
-			end
-			total = clamp(total, -Q, Q)
-			return WATER_LEVEL + profile.min_above_water + math.floor(
-				(total + Q) * (profile.max_above_water -
-				profile.min_above_water) / (2 * Q))
-		end
-
-		local base_min_ix = floor_div(bounds.min_x, BASE_CELL) - 1
-		local base_max_ix = floor_div(bounds.max_x, BASE_CELL) + 1
-		local base_min_iz = floor_div(bounds.min_z, BASE_CELL) - 1
-		local base_max_iz = floor_div(bounds.max_z, BASE_CELL) + 1
-		local base_values, base_owners, base_detail_amplitudes, base_rows = {}, {}, {}, {}
-		local primary_profile_stats = {}
-		note_lattice_construction()
-		for profile_index = 1, #profiles do
-			primary_profile_stats[profile_index] = {count = 0}
-		end
-		for iz = base_min_iz, base_max_iz do
-			local row, owner_row, amplitude_row = {}, {}, {}
-			base_values[iz], base_owners[iz], base_detail_amplitudes[iz] =
-				row, owner_row, amplitude_row
-			for ix = base_min_ix, base_max_ix do
-				local x, z = ix * BASE_CELL, iz * BASE_CELL
-				local _, _, owner = horizontal.classification_values_at(x, z)
-				local profile = owner and
-					profile_by_id[source.zones[owner].primary_relief_id] or
-					profile_by_id.lowland
-				local height = raw_profile_height(profile, x, z)
-				local profile_index
-				for index = 1, #profiles do
-					if profiles[index] == profile then profile_index = index break end
-				end
-				local stats = primary_profile_stats[profile_index]
-				stats.count = stats.count + 1
-				if not stats.minimum or height < stats.minimum then
-					stats.minimum, stats.minimum_count, stats.minimum_x,
-						stats.minimum_z = height, 1, x, z
-				elseif height == stats.minimum then
-					stats.minimum_count = stats.minimum_count + 1
-				end
-				if not stats.maximum or height > stats.maximum then
-					stats.maximum, stats.maximum_count, stats.maximum_x,
-						stats.maximum_z = height, 1, x, z
-				elseif height == stats.maximum then
-					stats.maximum_count = stats.maximum_count + 1
-				end
-				row[ix] = height
-				owner_row[ix] = owner or 0
-				amplitude_row[ix] = profile.detail_amplitude
-			end
-		end
-		-- Smooth only the broad lattice once, before queries begin. The convex
-		-- 1:2:1 kernel spreads profile changes across three 64-node cells without
-		-- extra per-column classification/noise or changing macro profile ranges.
-		base_values = deterministic.r21_nature_rules.smooth_lattice(base_values,
-			base_min_ix, base_max_ix, base_min_iz, base_max_iz, round_ratio)
-		if not runtime_mode then
-			base_rows = {}
-			for iz = base_min_iz, base_max_iz do
-				for ix = base_min_ix, base_max_ix do
-					base_rows[#base_rows + 1] = canonical.array({signed(ix), signed(iz),
-						signed(base_values[iz][ix]), signed(base_owners[iz][ix])})
-				end
-			end
-		end
-		local base_lattice_digest = not runtime_mode and
-			counted_digest(base_rows) or nil
-		local octave_lattice_digest = not runtime_mode and
-			counted_digest(octave_digest_rows) or nil
-
-		local function base_height_at(x, z)
-			local ix, iz = floor_div(x, BASE_CELL), floor_div(z, BASE_CELL)
-			local tx = deterministic.qfrom_ratio(x - ix * BASE_CELL, BASE_CELL)
-			local tz = deterministic.qfrom_ratio(z - iz * BASE_CELL, BASE_CELL)
-			local row0, row1 = base_values[iz], base_values[iz + 1]
-			if not row0 or not row1 or not row0[ix] or not row0[ix + 1] or
-					not row1[ix] or not row1[ix + 1] then
-				fail("base-height query escaped its precomputed lattice")
-			end
-			local top = deterministic.qlerp(row0[ix] * Q, row0[ix + 1] * Q, tx)
-			local bottom = deterministic.qlerp(row1[ix] * Q,
-				row1[ix + 1] * Q, tx)
-			return deterministic.qround(deterministic.qlerp(top, bottom, tz))
-		end
-
-		local function base_corner_q_at(values, x, z)
-			local ix, iz = floor_div(x, BASE_CELL), floor_div(z, BASE_CELL)
-			local tx = deterministic.qfrom_ratio(x - ix * BASE_CELL, BASE_CELL)
-			local tz = deterministic.qfrom_ratio(z - iz * BASE_CELL, BASE_CELL)
-			local row0, row1 = values[iz], values[iz + 1]
-			if not row0 or not row1 or row0[ix] == nil or row0[ix + 1] == nil or
-					row1[ix] == nil or row1[ix + 1] == nil then
-				fail("base-corner query escaped its precomputed lattice")
-			end
-			local a00, a10 = row0[ix] * Q, row0[ix + 1] * Q
-			local a01, a11 = row1[ix] * Q, row1[ix + 1] * Q
-			local top = deterministic.qlerp(a00, a10, tx)
-			local bottom = deterministic.qlerp(a01, a11, tx)
-			return deterministic.qlerp(top, bottom, tz)
-		end
-
-		local function detail_noise_q_at(octave, x, z)
-			local period = octave.period
-			local ix, iz = floor_div(x, period), floor_div(z, period)
-			local tx = deterministic.smootherstep(deterministic.qfrom_ratio(
-				x - ix * period, period))
-			local tz = deterministic.smootherstep(deterministic.qfrom_ratio(
-				z - iz * period, period))
-			local row0, row1 = octave.values[iz], octave.values[iz + 1]
-			if not row0 or not row1 or row0[ix] == nil or row0[ix + 1] == nil or
-					row1[ix] == nil or row1[ix + 1] == nil then
-				fail("detail query escaped its precomputed lattice")
-			end
-			local top = deterministic.qlerp(row0[ix], row0[ix + 1], tx)
-			local bottom = deterministic.qlerp(row1[ix], row1[ix + 1], tx)
-			return deterministic.qlerp(top, bottom, tz)
-		end
-
-		local function detail_height_and_q_at(x, z)
-			local total_q = 0
-			for index = 1, #detail_octaves do
-				local octave = detail_octaves[index]
-				total_q = total_q + round_ratio(detail_noise_q_at(octave, x, z) *
-					octave.numerator, octave.denominator)
-			end
-			total_q = clamp(total_q, -Q, Q)
-			local amplitude_q = base_corner_q_at(base_detail_amplitudes, x, z)
-			return round_ratio(total_q * amplitude_q, Q * Q), total_q
-		end
-
-		local function varied_depth(base_depth, x, z)
-			if base_depth <= 1 then return base_depth end
-			local _, detail_q = detail_height_and_q_at(x, z)
-			local minimum, maximum
-			if base_depth == 2 then minimum, maximum = 1, 3
-			elseif base_depth == 4 then minimum, maximum = 2, 6
-			elseif base_depth == 8 then minimum, maximum = 5, 11
-			elseif base_depth == 12 then minimum, maximum = 8, 15
-			else return base_depth end
-			local span = maximum - minimum + 1
-			local bucket = math.floor((detail_q + Q) * span / (2 * Q + 1))
-			return minimum + clamp(bucket, 0, span - 1)
-		end
-
-		local function bay_depth_at(x, z)
-			local _, detail_q = detail_height_and_q_at(x, z)
-			return 6 + clamp(math.floor((detail_q + Q) * 5 /
-				(2 * Q + 1)), 0, 4)
-		end
-
-		local function owner_affinity_q_at(owner_numeric_id, x, z)
-			local ix, iz = floor_div(x, BASE_CELL), floor_div(z, BASE_CELL)
-			local tx = deterministic.qfrom_ratio(x - ix * BASE_CELL, BASE_CELL)
-			local tz = deterministic.qfrom_ratio(z - iz * BASE_CELL, BASE_CELL)
-			local row0, row1 = base_owners[iz], base_owners[iz + 1]
-			if not row0 or not row1 or row0[ix] == nil or row0[ix + 1] == nil or
-					row1[ix] == nil or row1[ix + 1] == nil then
-				fail("owner-affinity query escaped its precomputed lattice")
-			end
-			local top = deterministic.qlerp(row0[ix] == owner_numeric_id and Q or 0,
-				row0[ix + 1] == owner_numeric_id and Q or 0, tx)
-			local bottom = deterministic.qlerp(
-				row1[ix] == owner_numeric_id and Q or 0,
-				row1[ix + 1] == owner_numeric_id and Q or 0, tx)
-			return deterministic.qlerp(top, bottom, tz)
-		end
-
-		local landmark_grid, landmark_evidence = {}, {}
-		local landmarks = {}
-		for index = 1, #source.landmarks do
-			local row = source.landmarks[index]
-			if row.numeric_id ~= index then fail("landmark order differs") end
-			local replacement = profile_by_id[row.secondary_relief_id]
-			if not replacement then fail("landmark relief reference differs") end
-			local record = {numeric_id = index, id = row.id,
-				zone_numeric_id = row.zone_numeric_id, primitive = row.primitive,
-				center = row.center, radius_x = row.radius_x,
-				radius_z = row.radius_z, replacement = replacement,
-				collar = BASE_CELL}
-			if owner_affinity_q_at(record.zone_numeric_id, record.center.x,
-					record.center.z) <= 0 then
-				fail("landmark centre has zero owner affinity at " .. record.id)
-			end
-			landmarks[index] = record
-			add_bucket(landmark_grid, record,
-				row.center.x - row.radius_x - BASE_CELL,
-				row.center.x + row.radius_x + BASE_CELL,
-				row.center.z - row.radius_z - BASE_CELL,
-				row.center.z + row.radius_z + BASE_CELL)
-			landmark_evidence[index] = {numeric_id = index, id = row.id,
-				zone_numeric_id = row.zone_numeric_id, primitive = row.primitive,
-				center_x = row.center.x, center_z = row.center.z,
-				radius_x = row.radius_x, radius_z = row.radius_z,
-				secondary_relief_id = row.secondary_relief_id,
-				collar_width = BASE_CELL}
-		end
-
-		local function landmark_weight(record, x, z)
-			local dx, dz = x - record.center.x, z - record.center.z
-			local ax, az = math.abs(dx), math.abs(dz)
-			if math.max(ax - record.radius_x, az - record.radius_z) >=
-					record.collar then return 0 end
-			local signed_distance_q
-			if record.primitive == "rectangle" then
-				signed_distance_q = math.max(ax - record.radius_x,
-					az - record.radius_z) * Q
-			elseif record.primitive == "ellipse" then
-				local ux = deterministic.qdiv(dx * Q, record.radius_x * Q)
-				local uz = deterministic.qdiv(dz * Q, record.radius_z * Q)
-				local square = deterministic.qmul(ux, ux) +
-					deterministic.qmul(uz, uz)
-				if square < 0 then fail("ellipse distance became negative") end
-				local rho = deterministic.isqrt(square * Q)
-				signed_distance_q = deterministic.qmul(rho - Q,
-					math.min(record.radius_x, record.radius_z) * Q)
-			elseif record.primitive == "capsule" then
-				local x_axis = record.radius_x >= record.radius_z
-				local short = math.min(record.radius_x, record.radius_z)
-				local long = math.max(record.radius_x, record.radius_z)
-				local along, perpendicular = x_axis and ax or az, x_axis and az or ax
-				local excess = math.max(0, along - (long - short))
-				local excess_q, perpendicular_q = excess * Q, perpendicular * Q
-				signed_distance_q = deterministic.isqrt(excess_q * excess_q +
-					perpendicular_q * perpendicular_q) - short * Q
-			else
-				fail("unknown landmark primitive " .. tostring(record.primitive))
-			end
-			if signed_distance_q <= 0 then return round_ratio(3 * Q, 4) end
-			if signed_distance_q >= record.collar * Q then return 0 end
-			return round_ratio(3 * (Q - deterministic.smootherstep(
-				deterministic.qdiv(signed_distance_q, record.collar * Q))), 4)
-		end
-
-		-- The optional id reports the actual composition branch for construction
-		-- evidence without allocating a per-query contributor record.
-		local function natural_height_at(x, z, audit_landmark_numeric_id)
-			local height = base_height_at(x, z)
-			local audited_landmark_applied = false
-			local candidates = bucket_at(landmark_grid, x, z)
-			if candidates then
-				for index = 1, #candidates do
-					local record = candidates[index]
-					local weight = landmark_weight(record, x, z)
-					if weight > 0 then
-						weight = deterministic.qmul(weight,
-							owner_affinity_q_at(record.zone_numeric_id, x, z))
-						if weight > 0 then
-							local replacement = raw_profile_height(record.replacement, x, z)
-							height = qlerp_integer(height, replacement, weight)
-							if record.numeric_id == audit_landmark_numeric_id then
-								audited_landmark_applied = true
-							end
-						end
-					end
-				end
-			end
-			height = height + detail_height_and_q_at(x, z)
-			if audit_landmark_numeric_id ~= nil then
-				return height, audited_landmark_applied
-			end
-			return height
-		end
-
-		local hydro_profile_by_id = {}
-		for index = 1, #source.hydrology_profiles do
-			local row = source.hydrology_profiles[index]
-			hydro_profile_by_id[row.id] = row
-		end
-		local hydrology_by_id, hydro_segments, hydro_grid = {}, {}, {}
-		local hydrology_evidence = {}
-		for reach_index = 1, #source.hydrology do
-			local reach = source.hydrology[reach_index]
-			local profile = hydro_profile_by_id[reach.profile_id]
-			if not profile then fail("hydrology profile reference differs") end
-			local record = {numeric_id = reach_index, id = reach.id,
-				zone_numeric_id = reach.zone_numeric_id, profile = profile,
-				water_y = WATER_LEVEL + reach.water_surface_offset,
-				reach = reach, segments = {}}
-			hydrology_by_id[record.id] = record
-			for segment_index = 1, #reach.centreline - 1 do
-				local a, b = reach.centreline[segment_index],
-					reach.centreline[segment_index + 1]
-				local maximum_half = math.max(a.half_width, b.half_width) +
-					profile.bank_blend_width + 8
-				local segment = {reach = record, ordinal = segment_index,
-					a = a, b = b, maximum_half = maximum_half}
-				record.segments[#record.segments + 1] = segment
-				hydro_segments[#hydro_segments + 1] = segment
-				add_bucket(hydro_grid, segment,
-					math.min(a.x, b.x) - maximum_half,
-					math.max(a.x, b.x) + maximum_half,
-					math.min(a.z, b.z) - maximum_half,
-					math.max(a.z, b.z) + maximum_half)
-			end
-			hydrology_evidence[reach_index] = {numeric_id = reach_index,
-				id = reach.id, zone_numeric_id = reach.zone_numeric_id,
-				profile_id = reach.profile_id, depth = profile.depth,
-				water_surface_y = profile.depth > 0 and record.water_y or nil,
-				dry_datum_y = profile.depth == 0 and record.water_y or nil,
-				bed_y = profile.depth > 0 and record.water_y - profile.depth or
-					record.water_y, bank_blend_width = profile.bank_blend_width,
-				segment_count = #record.segments}
-		end
-
-		local function nearest_hydrology_segment(x, z, owner, allow_wet,
-				allow_dry)
-			local candidates = bucket_at(hydro_grid, x, z)
-			local best, best_numerator, best_denominator
-			if not candidates then return nil end
-			for index = 1, #candidates do
-				local segment = candidates[index]
-				local reach = segment.reach
-				local dry = reach.profile.depth == 0
-				if reach.zone_numeric_id == owner and
-						((dry and allow_dry) or (not dry and allow_wet)) then
-					local numerator, denominator = point_segment_ratio(x, z,
-						segment.a, segment.b)
-					if numerator <= segment.maximum_half * segment.maximum_half *
-							denominator then
-						local better = not best or rational_compare(numerator,
-							denominator, best_numerator, best_denominator) < 0
-						if not better and best and rational_compare(numerator,
-								denominator, best_numerator, best_denominator) == 0 then
-							better = reach.numeric_id < best.reach.numeric_id or
-								(reach.numeric_id == best.reach.numeric_id and
-								segment.ordinal < best.ordinal)
-						end
-						if better then
-							best, best_numerator, best_denominator = segment,
-								numerator, denominator
-						end
-					end
-				end
-			end
-			return best, best_numerator, best_denominator
-		end
-
-		local function hydrology_half_width(segment, x, z, offset)
-			local vx, vz = segment.b.x - segment.a.x,
-				segment.b.z - segment.a.z
-			local length_squared = vx * vx + vz * vz
-			local dot = (x - segment.a.x) * vx + (z - segment.a.z) * vz
-			dot = clamp(dot, 0, length_squared)
-			if offset == nil then
-				offset = horizontal.hydrology_edge_at(segment.reach.id, x, z)
-			end
-			return segment.a.half_width + offset + round_ratio(
-				(segment.b.half_width - segment.a.half_width) * dot,
-				length_squared)
-		end
-
-		local function hydrology_scalar_at(x, z, natural, water_class, owner,
-				classified_hydrology_id)
-			if classified_hydrology_id then
-				local reach = hydrology_by_id[classified_hydrology_id]
-				if not reach or reach.profile.depth <= 0 then
-					fail("classified wet hydrology reference differs")
-				end
-				local depth = varied_depth(reach.profile.depth, x, z)
-				local offset, weight = horizontal.hydrology_edge_at(reach.id, x, z)
-				if weight > 0 then
-					-- The deepest overlapping disc/segment wins, as in wet membership.
-					-- Keep one water node at the rim and reach the varied bed over 16.
-					local inside = 0
-					for _, segment in ipairs(reach.segments) do
-						local numerator, denominator = point_segment_ratio(x, z, segment.a, segment.b)
-						local distance = deterministic.isqrt(math.floor(numerator / denominator))
-						inside = math.max(inside, hydrology_half_width(segment, x, z, offset) - distance)
-					end
-					depth = deterministic.r21_nature_rules.bowl_depth(depth, inside, weight, round_ratio)
-				end
-				return reach.water_y - depth
-			end
-			if water_class == "land" then
-				local segment, numerator, denominator = nearest_hydrology_segment(
-					x, z, owner, true, true)
-				if segment then
-					local reach = segment.reach
-					local axis_distance = deterministic.isqrt(math.floor(
-						numerator / denominator))
-					local half_width = hydrology_half_width(segment, x, z)
-					local outside = math.max(0, axis_distance - half_width)
-					local weight = qweight(outside,
-						reach.profile.bank_blend_width)
-					if weight > 0 then
-						local target = reach.profile.depth == 0 and reach.water_y or
-							shore_surface_y(reach.water_y)
-						return qlerp_integer(natural, target, weight)
-					end
-				end
+				memo_hits = memo_hits + 1
 			end
 			return natural
 		end
-
-		local function ordinary_water_surface(water_class, bay_id,
-				classified_hydrology_id)
-			if classified_hydrology_id then
-				local reach = hydrology_by_id[classified_hydrology_id]
-				return reach and reach.profile.depth > 0 and reach.water_y or nil
+		local function class_owner_at(x, z)
+			local block, slot = column(x, z)
+			return block.class[slot], block.owner[slot] or nil
 		end
-		if water_class == "planned_water" and bay_id then return WATER_LEVEL end
-		if water_class == "coastal_shelf" or water_class == "deep_ocean" or
-				water_class == "immutable_dragon_channel" then return WATER_LEVEL end
-			return nil
+		local function water_surface_for(class)
+			if class == LAND then return nil end
+			return WATER_LEVEL
 		end
 
-		local function raster_line(a, b)
-			local dx, dz = b.x - a.x, b.z - a.z
-			local steps = math.max(math.abs(dx), math.abs(dz))
-			local points = {}
-			if steps == 0 then
-				points[1] = {x = a.x, z = a.z}
-				return points
-			end
-			for k = 0, steps do
-				points[#points + 1] = {x = a.x + round_ratio(dx * k, steps),
-					z = a.z + round_ratio(dz * k, steps)}
-			end
-			return points
-		end
-
-		local function raster_polyline(points)
-			local result, segments = {}, {}
-			for source_segment = 1, #points - 1 do
-				local line = raster_line(points[source_segment],
-					points[source_segment + 1])
-				local first_run = #result == 0 and 0 or #result - 1
-				for index = 1, #line do
-					if source_segment == 1 or index > 1 then
-						result[#result + 1] = line[index]
-					end
-				end
-				segments[source_segment] = {a = points[source_segment],
-					b = points[source_segment + 1], first_run = first_run,
-					steps = #line - 1, ordinal = source_segment}
-			end
-			local seen = {}
-			for index = 1, #result do
-				local key = result[index].x .. ":" .. result[index].z
-				if seen[key] then fail("non-join duplicate in canonical raster") end
-				seen[key] = true
-			end
-			return result, segments
-		end
-
-		local function reach_support_bounds(record)
-			local min_x, max_x, min_z, max_z
-			for point_index = 1, #record.reach.centreline do
-				local point = record.reach.centreline[point_index]
-				local point_min_x, point_max_x = point.x - point.half_width,
-					point.x + point.half_width
-				local point_min_z, point_max_z = point.z - point.half_width,
-					point.z + point.half_width
-				min_x = min_x and math.min(min_x, point_min_x) or point_min_x
-				max_x = max_x and math.max(max_x, point_max_x) or point_max_x
-				min_z = min_z and math.min(min_z, point_min_z) or point_min_z
-				max_z = max_z and math.max(max_z, point_max_z) or point_max_z
-			end
-			return {min_x = min_x - 1, max_x = max_x + 1,
-				min_z = min_z - 1, max_z = max_z + 1}
-		end
-
-		local function point_before(a, b)
-			return a.z < b.z or (a.z == b.z and a.x < b.x)
-		end
-
-		local function contact_edge_before(a, b)
-			if a.upper_z ~= b.upper_z then return a.upper_z < b.upper_z end
-			if a.upper_x ~= b.upper_x then return a.upper_x < b.upper_x end
-			if a.lower_z ~= b.lower_z then return a.lower_z < b.lower_z end
-			return a.lower_x < b.lower_x
-		end
-
-		local function point_set_bounds(points)
-			if #points == 0 then fail("contact-face point set is empty") end
-			local min_x, max_x = points[1].x, points[1].x
-			local min_z, max_z = points[1].z, points[1].z
-			for point_index = 2, #points do
-				local point = points[point_index]
-				min_x, max_x = math.min(min_x, point.x), math.max(max_x, point.x)
-				min_z, max_z = math.min(min_z, point.z), math.max(max_z, point.z)
-			end
-			return {min_x = min_x, max_x = max_x, min_z = min_z, max_z = max_z}
-		end
-
-		local function eight_connected_component_count(points)
-			local members, visited = {}, {}
-			for point_index = 1, #points do
-				local point = points[point_index]
-				local row = members[point.z]
-				if not row then row = {} members[point.z] = row end
-				row[point.x] = true
-			end
-			local components = 0
-			for point_index = 1, #points do
-				local point = points[point_index]
-				local visited_row = visited[point.z]
-				if not visited_row or not visited_row[point.x] then
-					components = components + 1
-					local queue_x, queue_z = {point.x}, {point.z}
-					local cursor = 1
-					visited_row = visited_row or {}
-					visited[point.z] = visited_row
-					visited_row[point.x] = true
-					while cursor <= #queue_x do
-						local x, z = queue_x[cursor], queue_z[cursor]
-						cursor = cursor + 1
-						for dz = -1, 1 do
-							local member_row = members[z + dz]
-							if member_row then
-								local neighbour_visited = visited[z + dz]
-								for dx = -1, 1 do
-									if (dx ~= 0 or dz ~= 0) and member_row[x + dx] and
-											(not neighbour_visited or
-											not neighbour_visited[x + dx]) then
-										neighbour_visited = neighbour_visited or {}
-										visited[z + dz] = neighbour_visited
-										neighbour_visited[x + dx] = true
-										queue_x[#queue_x + 1] = x + dx
-										queue_z[#queue_z + 1] = z + dz
-									end
-								end
-							end
-						end
-					end
-				end
-			end
-			return components
-		end
-
-		local function contact_face_mask_bit(upper_x, upper_z, lower_x, lower_z)
-			if upper_x == lower_x - 1 and upper_z == lower_z then return 1 end
-			if upper_x == lower_x + 1 and upper_z == lower_z then return 2 end
-			if upper_x == lower_x and upper_z == lower_z - 1 then return 4 end
-			if upper_x == lower_x and upper_z == lower_z + 1 then return 8 end
-			fail("contact-face edge is not orthogonal")
-		end
-
-		local function bounds_differ(bounds, expected)
-			return bounds.min_x ~= expected[1] or bounds.max_x ~= expected[2] or
-				bounds.min_z ~= expected[3] or bounds.max_z ~= expected[4]
-		end
-
-		local transition_grid, transitions, interface_evidence = {}, {}, {}
-		local contact_face_grid, contact_face_records, contact_face_evidence =
-			{}, {}, {}
-		local contact_face_seen, unequal_pair_seen = {}, {}
-		local hydrology_interface_population = {total = 0,
-			unequal_level_pairs = 0, rapids = 0, waterfalls = 0,
-			cardinal_waterfalls = 0, contact_face_waterfalls = 0, other = 0}
-
-		local function build_contact_face_record(row, evidence)
-			local expected = CONTACT_FACE_EXPECTATIONS[row.id]
-			local upper, lower = hydrology_by_id[row.upper_id],
-				hydrology_by_id[row.lower_id]
-			if not expected or contact_face_seen[row.id] or not upper or not lower or
-					upper.profile.depth <= 0 or lower.profile.depth <= 0 or
-					row.upper_level_offset ~= upper.reach.water_surface_offset or
-					row.lower_level_offset ~= lower.reach.water_surface_offset or
-					row.transition_profile_id ~= "waterfall_drop" or
-					row.plunge_profile_id ~= lower.profile.id or
-					row.drop ~= row.upper_level_offset - row.lower_level_offset or
-					row.drop_height ~= row.drop or row.bed_seal_layers ~= 3 or
-					row.bank_seal_nodes ~= 2 or
-					row.receiver_source_omission_nodes ~= 1 or row.sealed ~= true then
-				fail("contact-face waterfall source contract differs")
-			end
-			for _, forbidden in ipairs({"axis_start", "axis_end", "run", "width",
-					"drop_mask_width", "drop_mask_length", "plunge_width",
-					"plunge_length"}) do
-				if row[forbidden] ~= nil then
-					fail("contact-face waterfall carries axis or rectangle geometry")
-				end
-			end
-			contact_face_seen[row.id] = true
-
-			local upper_support, lower_support = reach_support_bounds(upper),
-				reach_support_bounds(lower)
-			local scan_min_x = math.max(upper_support.min_x, lower_support.min_x)
-			local scan_max_x = math.min(upper_support.max_x, lower_support.max_x)
-			local scan_min_z = math.max(upper_support.min_z, lower_support.min_z)
-			local scan_max_z = math.min(upper_support.max_z, lower_support.max_z)
-			if scan_min_x > scan_max_x or scan_min_z > scan_max_z then
-				fail("contact-face reach support intersection is empty")
-			end
-
-			local edges, upper_lips, lower_faces = {}, {}, {}
-			local upper_seen, lower_by_coordinate = {}, {}
-			local neighbour_x, neighbour_z = {-1, 1, 0, 0}, {0, 0, -1, 1}
-			for z = scan_min_z, scan_max_z do
-				for x = scan_min_x, scan_max_x do
-					local water_class, _, _, _, hydrology_id =
-						horizontal.classification_values_at(x, z)
-					if water_class == "planned_water" and hydrology_id == upper.id then
-						for direction = 1, 4 do
-							local lower_x, lower_z = x + neighbour_x[direction],
-								z + neighbour_z[direction]
-							local lower_class, _, _, _, lower_hydrology_id =
-								horizontal.classification_values_at(lower_x, lower_z)
-							if lower_class == "planned_water" and
-									lower_hydrology_id == lower.id then
-								local bit = contact_face_mask_bit(x, z, lower_x, lower_z)
-								edges[#edges + 1] = {upper_x = x, upper_z = z,
-									lower_x = lower_x, lower_z = lower_z,
-									face_mask_bit = bit}
-								local upper_key = x .. ":" .. z
-								if not upper_seen[upper_key] then
-									upper_seen[upper_key] = true
-									upper_lips[#upper_lips + 1] = {x = x, z = z}
-								end
-								local lower_key = lower_x .. ":" .. lower_z
-								local face = lower_by_coordinate[lower_key]
-								if not face then
-									face = {x = lower_x, z = lower_z, face_mask = 0}
-									lower_by_coordinate[lower_key] = face
-									lower_faces[#lower_faces + 1] = face
-								end
-								if math.floor(face.face_mask / bit) % 2 ~= 0 then
-									fail("duplicate contact-face direction bit")
-								end
-								face.face_mask = face.face_mask + bit
-							end
-						end
-					end
-				end
-			end
-
-			table.sort(edges, contact_edge_before)
-			table.sort(upper_lips, point_before)
-			table.sort(lower_faces, point_before)
-			local upper_components = eight_connected_component_count(upper_lips)
-			local lower_components = eight_connected_component_count(lower_faces)
-			local upper_bounds, lower_bounds = point_set_bounds(upper_lips),
-				point_set_bounds(lower_faces)
-			local first = edges[1]
-			if #edges ~= expected.edges or #upper_lips ~= expected.upper or
-					#lower_faces ~= expected.lower or upper_components ~= 1 or
-					lower_components ~= 1 or not first or
-					first.upper_x ~= expected.first[1] or
-					first.upper_z ~= expected.first[2] or
-					first.lower_x ~= expected.first[3] or
-					first.lower_z ~= expected.first[4] or
-					bounds_differ(upper_bounds, expected.upper_bounds) or
-					bounds_differ(lower_bounds, expected.lower_bounds) then
-				fail("contact-face waterfall population or bounds differ")
-			end
-
-			local direction_counts = {}
-			for face_index = 1, #lower_faces do
-				local mask = lower_faces[face_index].face_mask
-				if mask <= 0 or mask > 15 then fail("contact-face mask differs") end
-				direction_counts[mask] = (direction_counts[mask] or 0) + 1
-			end
-			local direction_mask_counts = {}
-			for mask = 1, 15 do
-				if direction_counts[mask] then
-					direction_mask_counts[#direction_mask_counts + 1] = {
-						face_mask = mask, column_count = direction_counts[mask]}
-				end
-			end
-
-			local edge_lines, upper_lines, lower_lines, direction_lines = {}, {}, {}, {}
-			for edge_index = 1, #edges do
-				local edge = edges[edge_index]
-				edge_lines[edge_index] = table.concat({"edge", row.id,
-					tostring(edge.upper_x), tostring(edge.upper_z),
-					tostring(edge.lower_x), tostring(edge.lower_z),
-					tostring(edge.face_mask_bit)}, "\t") .. "\n"
-			end
-			for lip_index = 1, #upper_lips do
-				local lip = upper_lips[lip_index]
-				upper_lines[lip_index] = table.concat({"upper_lip", row.id,
-					tostring(lip.x), tostring(lip.z)}, "\t") .. "\n"
-			end
-			for face_index = 1, #lower_faces do
-				local face = lower_faces[face_index]
-				lower_lines[face_index] = table.concat({"lower_face", row.id,
-					tostring(face.x), tostring(face.z), tostring(face.face_mask)},
-					"\t") .. "\n"
-			end
-			for count_index = 1, #direction_mask_counts do
-				local count = direction_mask_counts[count_index]
-				direction_lines[count_index] = table.concat({"direction_mask", row.id,
-					tostring(count.face_mask), tostring(count.column_count)}, "\t") .. "\n"
-			end
-			local edge_bytes, upper_bytes, lower_bytes, direction_bytes =
-				table.concat(edge_lines), table.concat(upper_lines),
-				table.concat(lower_lines), table.concat(direction_lines)
-			local edge_digest = canonical.hex(counted_sha(edge_bytes))
-			local upper_digest = canonical.hex(counted_sha(upper_bytes))
-			local lower_digest = canonical.hex(counted_sha(lower_bytes))
-			local direction_digest = canonical.hex(counted_sha(direction_bytes))
-			local contact_digest = canonical.hex(counted_sha(edge_bytes .. upper_bytes ..
-				lower_bytes .. direction_bytes))
-
-			local record = {kind = "waterfall", id = row.id, row = row,
-				contact_face = true, transition_scope_id = CONTACT_FACE_SCOPE,
-				upper_y = WATER_LEVEL + row.upper_level_offset,
-				lower_y = WATER_LEVEL + row.lower_level_offset,
-				upper_bed = WATER_LEVEL + row.upper_level_offset - upper.profile.depth,
-				lower_bed = WATER_LEVEL + row.lower_level_offset - lower.profile.depth,
-				lower_face_columns = lower_faces}
-			transitions[#transitions + 1] = record
-			contact_face_records[#contact_face_records + 1] = record
-			for face_index = 1, #lower_faces do
-				local face = lower_faces[face_index]
-				local grid_row = contact_face_grid[face.z]
-				if not grid_row then grid_row = {} contact_face_grid[face.z] = grid_row end
-				if grid_row[face.x] then fail("contact-face waterfalls overlap") end
-				grid_row[face.x] = {record = record, face_mask = face.face_mask}
-			end
-
-			evidence.transition_profile_id = row.transition_profile_id
-			evidence.transition_scope_id = row.transition_scope_id
-			evidence.upper_id, evidence.lower_id = row.upper_id, row.lower_id
-			evidence.upper_y, evidence.lower_y = record.upper_y, record.lower_y
-			evidence.upper_bed, evidence.lower_bed = record.upper_bed, record.lower_bed
-			evidence.lip_id, evidence.drop_id = row.lip_id, row.drop_id
-			evidence.plunge_id, evidence.plunge_profile_id = row.plunge_id,
-				row.plunge_profile_id
-			evidence.drop, evidence.drop_height = row.drop, row.drop_height
-			evidence.bed_seal_layers = row.bed_seal_layers
-			evidence.bank_seal_nodes = row.bank_seal_nodes
-			evidence.receiver_source_omission_nodes =
-				row.receiver_source_omission_nodes
-			evidence.sealed = row.sealed
-			evidence.scan_min_x, evidence.scan_max_x = scan_min_x, scan_max_x
-			evidence.scan_min_z, evidence.scan_max_z = scan_min_z, scan_max_z
-			evidence.contact_edge_count = #edges
-			evidence.upper_lip_count, evidence.lower_face_count = #upper_lips,
-				#lower_faces
-			evidence.upper_lip_component_count = upper_components
-			evidence.lower_face_component_count = lower_components
-			evidence.first_upper_x, evidence.first_upper_z = first.upper_x, first.upper_z
-			evidence.first_lower_x, evidence.first_lower_z = first.lower_x, first.lower_z
-			evidence.upper_min_x, evidence.upper_max_x = upper_bounds.min_x,
-				upper_bounds.max_x
-			evidence.upper_min_z, evidence.upper_max_z = upper_bounds.min_z,
-				upper_bounds.max_z
-			evidence.lower_min_x, evidence.lower_max_x = lower_bounds.min_x,
-				lower_bounds.max_x
-			evidence.lower_min_z, evidence.lower_max_z = lower_bounds.min_z,
-				lower_bounds.max_z
-			evidence.receiver_opening_count = #lower_faces
-			evidence.receiver_y = record.lower_y
-			evidence.receiver_source_min_y = record.lower_bed + 1
-			evidence.receiver_source_max_y = record.lower_y - 1
-			evidence.authored_falling_water_columns = 0
-			evidence.contact_edges = edges
-			evidence.upper_lip_columns = upper_lips
-			evidence.lower_face_columns = lower_faces
-			evidence.direction_mask_counts = direction_mask_counts
-			evidence.contact_edge_digest = edge_digest
-			evidence.upper_lip_digest = upper_digest
-			evidence.lower_face_digest = lower_digest
-			evidence.direction_mask_digest = direction_digest
-			evidence.contact_face_digest = contact_digest
-			contact_face_evidence[#contact_face_evidence + 1] = evidence
-		end
-		for interface_index = 1, #source.hydrology_interfaces do
-			local row = source.hydrology_interfaces[interface_index]
-			if row.transition_scope_id ~= nil and
-					row.transition_scope_id ~= CONTACT_FACE_SCOPE then
-				fail("unknown hydrology transition scope")
-			elseif row.transition_scope_id == CONTACT_FACE_SCOPE and
-					row.kind ~= "waterfall" then
-				fail("non-waterfall entered contact-face scope")
-			end
-			hydrology_interface_population.total =
-				hydrology_interface_population.total + 1
-			if row.upper_id and row.lower_id and row.upper_level_offset ~= nil and
-					row.lower_level_offset ~= nil and
-					row.upper_level_offset ~= row.lower_level_offset then
-				local pair_a, pair_b = row.upper_id, row.lower_id
-				if pair_b < pair_a then pair_a, pair_b = pair_b, pair_a end
-				local pair_key = pair_a .. "\t" .. pair_b
-				if unequal_pair_seen[pair_key] then
-					fail("duplicate unequal-level hydrology interface pair")
-				end
-				unequal_pair_seen[pair_key] = true
-				hydrology_interface_population.unequal_level_pairs =
-					hydrology_interface_population.unequal_level_pairs + 1
-			end
-			if row.kind == "rapid" then
-				hydrology_interface_population.rapids =
-					hydrology_interface_population.rapids + 1
-			elseif row.kind == "waterfall" then
-				hydrology_interface_population.waterfalls =
-					hydrology_interface_population.waterfalls + 1
-				if row.transition_scope_id == CONTACT_FACE_SCOPE then
-					hydrology_interface_population.contact_face_waterfalls =
-						hydrology_interface_population.contact_face_waterfalls + 1
-				else
-					hydrology_interface_population.cardinal_waterfalls =
-						hydrology_interface_population.cardinal_waterfalls + 1
-				end
-			else
-				hydrology_interface_population.other =
-					hydrology_interface_population.other + 1
-			end
-			local evidence = {numeric_id = interface_index, id = row.id,
-				kind = row.kind, position_x = row.position.x,
-				position_z = row.position.z}
-			interface_evidence[interface_index] = evidence
-			if row.kind == "rapid" then
-				local upper, lower = hydrology_by_id[row.upper_id],
-					hydrology_by_id[row.lower_id]
-				if not upper or not lower or row.upper_level_offset ~=
-						upper.reach.water_surface_offset or row.lower_level_offset ~=
-						lower.reach.water_surface_offset then
-					fail("rapid reach/level reference differs")
-				end
-				local first = lower.reach.centreline[1]
-				local second
-				for point_index = 2, #lower.reach.centreline do
-					local candidate = lower.reach.centreline[point_index]
-					if candidate.x ~= first.x or candidate.z ~= first.z then
-						second = candidate break
-					end
-				end
-				if not second then fail("rapid lower reach has no direction") end
-				local dx, dz = second.x - first.x, second.z - first.z
-				local m = math.max(math.abs(dx), math.abs(dz))
-				local axis_steps = row.run - 1
-				local before = math.floor(axis_steps / 2)
-				local after = axis_steps - before
-				local a = {x = row.position.x - round_ratio(dx * before, m),
-					z = row.position.z - round_ratio(dz * before, m)}
-				local b = {x = row.position.x + round_ratio(dx * after, m),
-					z = row.position.z + round_ratio(dz * after, m)}
-				local axis = raster_line(a, b)
-				if #axis ~= row.run or axis[before + 1].x ~= row.position.x or
-						axis[before + 1].z ~= row.position.z then
-					fail("rapid raster length/position differs")
-				end
-				local record = {kind = "rapid", id = row.id, row = row,
-					axis = axis, width = row.width,
-					upper_y = WATER_LEVEL + row.upper_level_offset,
-					lower_y = WATER_LEVEL + row.lower_level_offset,
-					upper_bed = WATER_LEVEL + row.upper_level_offset -
-						upper.profile.depth,
-					lower_bed = WATER_LEVEL + row.lower_level_offset -
-						lower.profile.depth}
-				transitions[#transitions + 1] = record
-				add_bucket(transition_grid, record,
-					math.min(a.x, b.x) - row.width,
-					math.max(a.x, b.x) + row.width,
-					math.min(a.z, b.z) - row.width,
-					math.max(a.z, b.z) + row.width)
-				evidence.upper_y, evidence.lower_y = record.upper_y, record.lower_y
-				evidence.upper_bed, evidence.lower_bed = record.upper_bed,
-					record.lower_bed
-				evidence.run, evidence.width = #axis, row.width
-				evidence.axis_start_x, evidence.axis_start_z = a.x, a.z
-				evidence.axis_end_x, evidence.axis_end_z = b.x, b.z
-			elseif row.kind == "waterfall" and
-					row.transition_scope_id == CONTACT_FACE_SCOPE then
-				build_contact_face_record(row, evidence)
-			elseif row.kind == "waterfall" then
-				local upper, lower = hydrology_by_id[row.upper_id],
-					hydrology_by_id[row.lower_id]
-				if not upper or not lower or
-						row.upper_level_offset ~= upper.reach.water_surface_offset or
-						row.lower_level_offset ~= lower.reach.water_surface_offset or
-						lower.profile.id ~= row.plunge_profile_id then
-					fail("waterfall reach/profile reference differs")
-				end
-				local a = upper.reach.centreline[#upper.reach.centreline]
-				local b = lower.reach.centreline[1]
-				local dx, dz = b.x - a.x, b.z - a.z
-				if (dx == 0) == (dz == 0) or math.max(math.abs(dx),
-						math.abs(dz)) ~= row.drop_mask_length or
-						a.x + b.x ~= 2 * row.position.x or
-						a.z + b.z ~= 2 * row.position.z then
-					fail("waterfall cardinal axis/midpoint differs")
-				end
-				local axis = raster_line(a, b)
-				local direction_x = dx == 0 and 0 or (dx > 0 and 1 or -1)
-				local direction_z = dz == 0 and 0 or (dz > 0 and 1 or -1)
-				local lower_class, _, _, _, lower_hydrology_id =
-					horizontal.classification_values_at(b.x, b.z)
-				if lower_class ~= "planned_water" or
-						lower_hydrology_id ~= lower.id or row.plunge_width <= 0 or
-						row.plunge_length <= 0 then
-					fail("waterfall plunge footprint/reference differs")
-				end
-				local record = {kind = "waterfall", id = row.id, row = row,
-					axis = axis, width = row.drop_mask_width,
-					upper_y = WATER_LEVEL + row.upper_level_offset,
-					lower_y = WATER_LEVEL + row.lower_level_offset,
-					upper_bed = WATER_LEVEL + row.upper_level_offset -
-						upper.profile.depth,
-					lower_bed = WATER_LEVEL + row.lower_level_offset -
-						lower.profile.depth,
-					direction_x = direction_x, direction_z = direction_z}
-				transitions[#transitions + 1] = record
-				add_bucket(transition_grid, record,
-					math.min(a.x, b.x) - row.drop_mask_width,
-					math.max(a.x, b.x) + row.drop_mask_width,
-					math.min(a.z, b.z) - row.drop_mask_width,
-					math.max(a.z, b.z) + row.drop_mask_width)
-				evidence.upper_y, evidence.lower_y = record.upper_y, record.lower_y
-				evidence.upper_bed, evidence.lower_bed = record.upper_bed,
-					record.lower_bed
-				evidence.run, evidence.width = #axis, row.drop_mask_width
-				evidence.axis_start_x, evidence.axis_start_z = a.x, a.z
-				evidence.axis_end_x, evidence.axis_end_z = b.x, b.z
-				evidence.plunge_width = row.plunge_width
-				evidence.plunge_length = row.plunge_length
-			else
-				local hydrology_id = row.hydrology_id or row.outgoing_reach_id
-				local reach = hydrology_id and hydrology_by_id[hydrology_id] or nil
-				evidence.hydrology_id = hydrology_id
-				evidence.water_surface_y = reach and reach.water_y or nil
-				evidence.route_interface_id = row.route_interface_id
-			end
-		end
-		if hydrology_interface_population.total ~= 15 or
-				hydrology_interface_population.unequal_level_pairs ~= 7 or
-				hydrology_interface_population.rapids ~= 2 or
-				hydrology_interface_population.waterfalls ~= 5 or
-				hydrology_interface_population.cardinal_waterfalls ~= 2 or
-				hydrology_interface_population.contact_face_waterfalls ~= 3 or
-				hydrology_interface_population.other ~= 8 or
-				#contact_face_records ~= 3 or #contact_face_evidence ~= 3 then
-			fail("hydrology interface population differs from V1e closure")
-		end
-		for interface_id in pairs(CONTACT_FACE_EXPECTATIONS) do
-			if not contact_face_seen[interface_id] then
-				fail("contact-face waterfall roster differs")
-			end
-		end
-
-		local function transition_progress(record, x, z)
-			local best_index, best_numerator, best_denominator, best_dot,
-				best_length
-			for index = 1, #record.axis - 1 do
-				local numerator, denominator, dot, length_squared =
-					point_segment_ratio(x, z, record.axis[index],
-						record.axis[index + 1])
-				if corridor_member_ratio(numerator, denominator, record.width) and
-						(not best_index or rational_compare(numerator, denominator,
-							best_numerator, best_denominator) < 0) then
-					best_index, best_numerator, best_denominator = index, numerator,
-						denominator
-					best_dot, best_length = dot, length_squared
-				end
-			end
-			if not best_index then return nil end
-			local numerator = (best_index - 1) * best_length + best_dot
-			local denominator = (#record.axis - 1) * best_length
-			return clamp(deterministic.qfrom_ratio(numerator, denominator), 0, Q)
-		end
-
-		local function axis_transition_values_at(x, z)
-			local candidates = bucket_at(transition_grid, x, z)
-			if not candidates then return nil end
-			for index = 1, #candidates do
-				local record = candidates[index]
-				local progress = transition_progress(record, x, z)
-				if progress then return record, progress end
-			end
-			return nil
-		end
-
-		for record_index = 1, #contact_face_records do
-			local record = contact_face_records[record_index]
-			for face_index = 1, #record.lower_face_columns do
-				local face = record.lower_face_columns[face_index]
-				if axis_transition_values_at(face.x, face.z) then
-					fail("contact-face overlaps a rapid or cardinal waterfall mask")
-				end
-			end
-		end
-
-		local function transition_values_at(x, z)
-			local face_row = contact_face_grid[z]
-			local face = face_row and face_row[x] or nil
-			if face then return face.record, nil, face.face_mask end
-			return axis_transition_values_at(x, z)
-		end
-
-		local classified_values = deterministic.r8_coast_rules(full_seed_string).
-			new_classification_cache(horizontal.classification_values_at, 65536)
-
-		local function pregrade_water_surface_at(x, z, water_class, bay_id,
-				hydrology_id)
-			local transition, progress = transition_values_at(x, z)
-			if transition then
-				if transition.kind == "waterfall" then return nil end
-				return qlerp_integer(transition.upper_y, transition.lower_y,
-					progress)
-			end
-			return ordinary_water_surface(water_class, bay_id, hydrology_id)
-		end
-
-		local water_banks = {}
-		function water_banks.named_at(x, z, path, run)
-			local water_class, _, _, bay_id, hydro_id = classified_values(x, z)
-			if water_class ~= "planned_water" or not hydro_id then return nil end
-			local transition = transition_values_at(x, z)
-			local water_y = transition and transition.contact_face and transition.lower_y or
-				pregrade_water_surface_at(x, z, water_class, bay_id, hydro_id)
-			-- Authored fords deliberately enter the water. Preserve their exact
-			-- bed and one-step approach; ordinary roads retain the full bank floor.
-			return ford_bank_water_floor(water_y, hydro_id, path, run)
-		end
-
-		function water_banks.query_at(x, z, path, run)
-			-- Most land is nowhere near a reach. The conservative segment bound
-			-- only prunes work; exact classified neighbors decide the actual floor.
-			local candidates = bucket_at(hydro_grid, x, z)
-			if not candidates then return nil end
-			for index = 1, #candidates do
-				local segment = candidates[index]
-				if segment.reach.profile.depth > 0 then
-					local radius = math.max(segment.a.half_width, segment.b.half_width) + 2
-					local numerator, denominator = point_segment_ratio(x, z, segment.a, segment.b)
-					if numerator <= radius * radius * denominator then
-						return neighboring_water_floor(x, z, water_banks.named_at, path, run)
-					end
-				end
-			end
-			return nil
-		end
-
-		water_banks.floor_at = cached_bank_floor(water_banks.query_at)
-
-		function water_banks.protect(x, z, value, path, run)
-			local floor_y = water_banks.floor_at(x, z, path, run)
-			return floor_y and math.max(value, floor_y) or value
-		end
-
+		-----------------------------------------------------------------------
+		-- Anchor fittings. Starts and capitals sit in the field's calm bowls
+		-- (damping keyed to the anchor), so their cores fit the cut/fill limits
+		-- of their profile; every other anchor flattens a compact building core.
+		-----------------------------------------------------------------------
 		local anchor_profile_by_id = {}
 		for index = 1, #source.anchor_profiles do
 			local row = source.anchor_profiles[index]
 			anchor_profile_by_id[row.id] = row
 		end
-		local function clearance_datum_at(x, z, water_class, bay_id,
-				hydrology_id)
-			local water_y = pregrade_water_surface_at(x, z, water_class, bay_id,
-				hydrology_id)
-			if water_y ~= nil then return water_y end
-			local transition = transition_values_at(x, z)
-			if transition and transition.kind == "waterfall" then
-				return math.max(transition.upper_y, transition.lower_y)
+		local anchor_by_id, fittings = {}, {}
+		local grids = {start = {}, capital = {}, selected = {}}
+		for anchor_index = 1, #source.anchors do
+			local anchor = source.anchors[anchor_index]
+			anchor_by_id[anchor.id] = anchor
+			local selected = horizontal.selected_anchor_by_id(anchor.id) or {
+				x = anchor.position.x, z = anchor.position.z,
+				selection_mode = anchor.placement_mode == "authored_fixed" and
+					"authored_fixed" or "frozen_layout",
+				approved_candidate_index = anchor.approved_candidate_index}
+			local profile = anchor_profile_by_id[anchor.template_id]
+			if not profile then fail("anchor profile reference differs") end
+			local is_capital = anchor.slot_id == "capital"
+			local is_start = anchor.slot_id == "start"
+			local zone = anchor.zone_numeric_id
+			local fitting = {numeric_id = anchor_index, id = anchor.id,
+				anchor = anchor, profile = profile,
+				center = {x = selected.x, z = selected.z},
+				selection_mode = selected.selection_mode,
+				approved_candidate_index = selected.approved_candidate_index,
+				zone_numeric_id = zone, is_capital = is_capital, is_start = is_start}
+			if is_start then
+				local natural_values = {}
+				for sample_z = 0, 8 do
+					local offset_z = -64 + floor(sample_z * 127 / 8)
+					for sample_x = 0, 8 do
+						local offset_x = -64 + floor(sample_x * 127 / 8)
+						natural_values[#natural_values + 1] = natural_height_at(
+							selected.x + offset_x, selected.z + offset_z)
+					end
+				end
+				fitting.reference_y = start_reference_value(natural_values,
+					profile.max_cut, profile.max_fill, WATER_LEVEL + 1)
+			elseif is_capital then
+				local civic_half = profile.civic_width / 2
+				local feasible_lower, feasible_upper, water_floor
+				for z = selected.z - civic_half, selected.z + civic_half - 1 do
+					for x = selected.x - civic_half, selected.x + civic_half - 1 do
+						local class, owner = class_owner_at(x, z)
+						if owner == zone and class == LAND then
+							local natural = natural_height_at(x, z)
+							feasible_lower = max(feasible_lower or -math.huge,
+								natural - profile.max_cut)
+							feasible_upper = min(feasible_upper or math.huge,
+								natural + profile.max_fill)
+						elseif owner == zone and class == BAY then
+							water_floor = WATER_LEVEL + 1
+						end
+					end
+				end
+				local center_natural = natural_height_at(selected.x, selected.z)
+				if feasible_lower == nil then
+					feasible_lower, feasible_upper = center_natural, center_natural
+				end
+				fitting.reference_y = capital_reference_value(center_natural,
+					feasible_lower, feasible_upper, water_floor)
+				fitting.core_range = feasible_upper - feasible_lower
+			else
+				local core_half = profile.building_core_width / 2
+				local natural_values = {}
+				local feasible_lower, feasible_upper, water_lower
+				for z = selected.z - core_half, selected.z + core_half - 1 do
+					for x = selected.x - core_half, selected.x + core_half - 1 do
+						local class, owner = class_owner_at(x, z)
+						if owner == zone and class == LAND then
+							local natural = natural_height_at(x, z)
+							natural_values[#natural_values + 1] = natural
+							feasible_lower = max(feasible_lower or -math.huge,
+								natural - profile.max_cut)
+							feasible_upper = min(feasible_upper or math.huge,
+								natural + profile.max_fill)
+						elseif owner == zone and class == BAY then
+							water_lower = WATER_LEVEL + 1
+						end
+					end
+				end
+				local preferred = lower_median(natural_values) or water_lower or
+					natural_height_at(selected.x, selected.z)
+				if feasible_lower ~= nil and feasible_lower <= feasible_upper then
+					fitting.reference_y = clamp(preferred, feasible_lower, feasible_upper)
+				elseif feasible_lower ~= nil then
+					fitting.reference_y = round_ratio(feasible_lower + feasible_upper, 2)
+				else
+					fitting.reference_y = preferred
+				end
+				if water_lower ~= nil then
+					fitting.reference_y = max(fitting.reference_y, water_lower)
+				end
 			end
-			return nil
+			fittings[anchor_index] = fitting
+			local class = is_start and "start" or is_capital and "capital" or "selected"
+			local envelope_half = profile.blend_width / 2
+			add_bucket(grids[class], fitting,
+				selected.x - envelope_half, selected.x + envelope_half,
+				selected.z - envelope_half, selected.z + envelope_half)
 		end
 
-		local zone_station_y, zone_midpoint_y = {}, {}
-		for zone_index = 1, #source.zones do
-			local zone = source.zones[zone_index]
-			local primary = profile_by_id[zone.primary_relief_id]
-			if not primary then fail("zone primary relief reference differs") end
-			zone_station_y[zone_index] = WATER_LEVEL + primary.min_above_water
-			zone_midpoint_y[zone_index] = WATER_LEVEL + math.floor(
-				(primary.min_above_water + primary.max_above_water) / 2)
+		-- Soft start pad edge: the flat square grows outward by 0..6 nodes along
+		-- a smooth noise outline and the ramp gives the same amount up, so the
+		-- pad itself and the outer envelope edge stay put.
+		local function start_edge_offset(x, z)
+			local value = edge_noise(x / 24, z / 24)
+			return clamp(floor((value + 1) * 3.5), 0, 6)
 		end
 
-		local anchor_by_id, fittings, start_fittings, capital_fittings,
-			selected_fittings = {}, {}, {}, {}, {}
-		local start_by_zone, capital_by_zone = {}, {}
-		local fitting_grids = {start = {}, capital = {}, selected = {},
-			band = {keys = {}, values = {}}, apron = {discs = {}}}
-
-		-- THE RELIEF THE CAPITAL STEP BAND IS CUT FROM.
-		--
-		-- The band needs the terrace lattice of a column's NEIGHBOURS, and a
-		-- neighbour's `incoming` is not something the caller of
-		-- `fitting_grade_at` holds: `incoming` is whatever the seam that called
-		-- it had in hand, which at `composed_land_values_at` already carries
-		-- the road and coastal grades. `fitting_grids.band.relief_at` is the
-		-- one field the band can read for a neighbour -- the scalar before any
-		-- grade -- and the band therefore reads it as a SHAPE and not as a
-		-- height: every column of the disc is shifted by the centre column's
-		-- own `incoming - relief`, so the centre keeps exactly the terrace it
-		-- had and the disc describes how the ground runs around it. Without
-		-- that shift the terrace follows the ungraded relief and drops away
-		-- from a graded shoulder -- measured on Dur Brannoc's north-west road
-		-- shoulder, where the grade lifts the ground 10 nodes and the unshifted
-		-- band cut 13 of them back out.
-		--
-		-- It is assigned below, once `scalar_before_nonpath_grades` exists;
-		-- `fitting_grade_at` only ever calls it for a capital column, which is
-		-- long after construction.
-		--
-		-- THE CACHE is a 128 x 128 direct-mapped tile: slot (x mod 128, z mod
-		-- 128), one key array and one value array, 16384 entries. A band of
-		-- radius 3 asks for 49 columns and 48 of them are asked for again by the
-		-- neighbouring columns, so without a cache the band would multiply the
-		-- pre-grade cost of every step-4 capital column by 49. Two columns
-		-- collide only if they are 128 apart on an axis, which no band ever
-		-- spans, and the cache is pure memoisation of a pure function: a hit and
-		-- a miss return the same number, so no digest depends on it.
-		--
-		-- `construct` sits at Lua 5.1's 200-local ceiling the way
-		-- `build_public_session` sits at its 60-upvalue one, so the band's
-		-- relief seam, its two cache arrays and its own function are hung off
-		-- `fitting_grids` -- the one per-construction table that already exists
-		-- for exactly this, the lookup structures the fittings are graded
-		-- through, and that is only ever read by explicit key.
-
-		-- The stepped terrace: the arithmetic middle of the terraced relief
-		-- field's erosion and dilation over a Chebyshev disc.
-		--
-		-- WHY THE MIDDLE, AND NOT THE EROSION OR THE DILATION. Erosion alone
-		-- cuts the band out of the UPPER terrace, dilation alone fills it onto
-		-- the LOWER one; either way one plateau loses `step` columns of flat
-		-- ground and the other keeps all of its own. The middle is CENTRED on
-		-- the old riser: both plateaus give up about `step / 2` columns, the
-		-- band's mean height is the old riser's, and a plot reference column
-		-- therefore moves by at most half of what a one-sided band would move
-		-- it. Plot-carrying ground is what this choice is for.
-		--
-		-- WHY IT IS WALKABLE. Erosion and dilation of any field are each
-		-- 1-Lipschitz under the Chebyshev metric, so their middle changes by at
-		-- most one node between neighbouring columns -- which is the jump
-		-- height. The radius has to reach across a whole riser for that to hold
-		-- at the truncation edge, which is what `CAPITAL_BAND_RADIUS` is.
-		--
-		-- WHY THE DISC IS LIMITED TO ONE STEP. A capital envelope also carries
-		-- NATURAL cliffs, where the terrace lattice jumps by several steps at
-		-- once, and an unlimited middle averages such a cliff away: measured on
-		-- Dur Brannoc's crag at (-1902, -1533) it cut and filled up to 13 nodes
-		-- and turned an 8-node natural wall into a 12-node one. A cliff is not
-		-- a terrace riser and is not this band's business, so a neighbour whose
-		-- terrace is more than one step from the centre's is not in the disc.
-		-- The band then never moves a column further than `step` from the
-		-- terrace it had, and an isolated riser -- every riser the terracing
-		-- itself made -- sees exactly the same disc as before.
-		function fitting_grids.band.value(x, z, incoming, reference, step)
-			local radius = CAPITAL_BAND_RADIUS[step]
-			if radius == nil then fail("capital terrace step has no band radius") end
-			local relief_at = fitting_grids.band.relief_at
-			-- `datum` is what a column's relief has to be measured against for its
-			-- terrace: the fitting's reference, moved by the grade the caller
-			-- already applied to the CENTRE column. Written this way the loop does
-			-- no closure allocation and no subtraction per neighbour, which matters
-			-- because it runs 49 times for every step-4 capital column the writer
-			-- asks for.
-			local datum = reference - incoming + relief_at(x, z)
-			local centre = reference +
-				step * terrace_bin(relief_at(x, z) - datum, step)
+		-- The capital band reads the natural relief of its neighbours as a
+		-- shape, shifted by the centre column's own grade.
+		local function band_value(x, z, incoming, reference, step)
+			local radius = CAPITAL_BAND_RADIUS[step] or 1
+			local datum = reference - incoming + natural_height_at(x, z)
+			local centre = reference + step * terrace_bin(natural_height_at(x, z) -
+				datum, step)
 			local erosion, dilation = centre, centre
 			for dz = -radius, radius do
 				local az = dz < 0 and -dz or dz
@@ -2389,7 +521,7 @@ local function height_factory(dependencies)
 					local ax = dx < 0 and -dx or dx
 					local distance = ax > az and ax or az
 					local terrace = reference + step * terrace_bin(
-						relief_at(x + dx, z + dz) - datum, step)
+						natural_height_at(x + dx, z + dz) - datum, step)
 					local offset = terrace - centre
 					if offset <= step and offset >= -step then
 						local low, high = terrace + distance, terrace - distance
@@ -2398,458 +530,47 @@ local function height_factory(dependencies)
 					end
 				end
 			end
-			return terrace_middle(erosion + dilation)
+			return floor_div(erosion + dilation + 1, 2)
 		end
 
-		-- THE APRON FLOOR of the `cenote_terrace` capital: the higher of the
-		-- two cones described above `capital_terrace_value`.
-		--
-		-- It is hung off `fitting_grids` for the reason `band` is -- `construct`
-		-- sits at Lua 5.1's 200-local ceiling -- and it is only ever called for
-		-- a land column of a capital whose profile names
-		-- `CAPITAL_APRON.shape`, which is one capital in the roster.
-		--
-		-- THE LAKE CONE MEASURES ITS DISTANCE TO THE REACH'S SAMPLE DISCS, and
-		-- that is what makes the Lipschitz claim above a construction rather
-		-- than a hope. The first two versions of this function did it
-		-- differently and the independent review of 2026-09-16 measured both
-		-- out:
-		--
-		--   1. `nearest_hydrology_segment` answers with the segment whose
-		--      CENTRELINE is closest, which is not the segment whose EDGE is
-		--      closest when a reach tapers. At (1864, 1634), five columns off
-		--      this cenote's south shore, the closest centreline is the narrow
-		--      first segment 62 columns away behind a half-width of 49 --
-		--      thirteen columns outside it -- while the wide second segment is
-		--      72 away behind a half-width of 70, two columns outside, which is
-		--      where the water actually is. The lake rim kept its 29-node wall.
-		--   2. Taking the MINIMUM over the candidate segments fixed that, and
-		--      left two of its own. A segment leaves the candidate set at
-		--      `max(half_width) + bank_blend_width` of its centreline, and at
-		--      the WIDE end of a tapered segment that cut-off still sits nine
-		--      columns outside the water, so the cone fell off a cliff of its
-		--      own when a segment was pruned. And `hydrology_half_width`
-		--      interpolates along the segment, so it carries the reach's taper
-		--      gradient (0.460 and 0.401 on this cenote's first and third
-		--      segments) on top of the distance's own 1. Measured exhaustively
-		--      over the capsule window, the cone's own worst 4-neighbour step
-		--      was **54 nodes** -- eighteen terrace steps -- and it leaked into
-		--      the shipped field as up to a 6-node face (9 on seed 0) that the
-		--      ground had not had before.
-		--
-		-- A DISTANCE TO A DISC IS A REAL DISTANCE. `isqrt(dx*dx + dz*dz) - r`
-		-- is 1-Lipschitz on the integer lattice (the true distance is, and an
-		-- integer floor of a 1-Lipschitz function moves by at most one), the
-		-- MINIMUM of finitely many 1-Lipschitz functions is 1-Lipschitz, and
-		-- `max(0, D - hold)` and a multiplication by `step` keep it that way.
-		-- So this cone is exactly `step`-Lipschitz, with no pruning to fall off
-		-- and no interpolation to carry a gradient. Measured the same way as
-		-- the two above: **worst own 4-neighbour step 3 over 99 193 columns,
-		-- with no exception**, and `tools/wp13/kezamba_water.lua --walls` gates
-		-- it.
-		--
-		-- WHAT THE DISCS MISS, and why they are densified until they miss
-		-- nothing. The mask is the union of the AUTHORED sample discs and the
-		-- tapered capsules between them, and on the four authored samples alone
-		-- the capsules add a sliver of 291 of the mask's 30 354 columns
-		-- (0.96 %) that no disc covers -- enough to force the shore hold to six
-		-- and lay four more columns of flat rim than the water needs.
-		-- `CAPITAL_APRON.spacing` interpolates extra samples along each
-		-- segment until the discs cover the mask completely (measured: zero
-		-- mask columns outside every disc, at a spacing of sixteen), and an
-		-- interpolated disc is as much a disc as an authored one, so the
-		-- Lipschitz property is untouched.
-		--
-		-- Neither cone can raise a WATER column: `fitting_grade_at` reaches
-		-- this only on the land branch, and a capital never grades planned
-		-- water at all. The wet mask, the water surface and the civic
-		-- reference are therefore untouched by construction.
-		--
-		-- The disc list is built once per owning zone, on the first column that
-		-- asks for it, and is empty for a zone with no wet reach of its own --
-		-- which is every zone but this one, and the loop below then does
-		-- nothing.
-		function fitting_grids.apron.value(x, z, owner, reference, step,
-				civic_outside)
-			local floor_y = reference - step * civic_outside
-			local discs = fitting_grids.apron.discs[owner]
-			if discs == nil then
-				discs = {}
-				for index = 1, #source.hydrology do
-					local row = source.hydrology[index]
-					local record = hydrology_by_id[row.id]
-					if record and record.zone_numeric_id == owner and
-							record.profile.depth > 0 then
-						local line = row.centreline
-						for point = 1, #line do
-							local sample = line[point]
-							discs[#discs + 1] = {x = sample.x, z = sample.z,
-								half_width = sample.half_width,
-								rim = shore_surface_y(record.water_y),
-								limit = sample.half_width +
-									CAPITAL_APRON.reach}
-							-- The interpolated samples of this segment, evenly
-							-- spaced and rounded the way every other authored
-							-- interpolation in this file is.
-							local next_sample = line[point + 1]
-							if next_sample then
-								local vx = next_sample.x - sample.x
-								local vz = next_sample.z - sample.z
-								local length = deterministic.isqrt(
-									vx * vx + vz * vz)
-								local parts = floor_div(length +
-									CAPITAL_APRON.spacing - 1,
-									CAPITAL_APRON.spacing)
-								for part = 1, parts - 1 do
-									local half = sample.half_width +
-										round_ratio((next_sample.half_width -
-											sample.half_width) * part, parts)
-									discs[#discs + 1] = {
-										x = sample.x +
-											round_ratio(vx * part, parts),
-										z = sample.z +
-											round_ratio(vz * part, parts),
-										half_width = half,
-										rim = shore_surface_y(record.water_y),
-										limit = half +
-											CAPITAL_APRON.reach}
-								end
-							end
-						end
-					end
-				end
-				fitting_grids.apron.discs[owner] = discs
-			end
-			for index = 1, #discs do
-				local disc = discs[index]
-				local dx, dz = x - disc.x, z - disc.z
-				local square = dx * dx + dz * dz
-				if square <= disc.limit * disc.limit then
-					local outside = deterministic.isqrt(square) -
-						disc.half_width
-					if outside < CAPITAL_APRON.hold then
-						outside = CAPITAL_APRON.hold
-					end
-					local from_water = disc.rim -
-						step * (outside - CAPITAL_APRON.hold)
-					if from_water > floor_y then floor_y = from_water end
-				end
-			end
-			return floor_y
-		end
-
-		for anchor_index = 1, #source.anchors do
-			local anchor = source.anchors[anchor_index]
-			anchor_by_id[anchor.id] = anchor
-			local selected = horizontal.selected_anchor_by_id(anchor.id)
-			if not selected or selected.anchor_id ~= anchor.id then
-				fail("selected anchor missing or differs")
-			end
-			local profile = anchor_profile_by_id[anchor.template_id]
-			if not profile then fail("anchor profile reference differs") end
-			local expected_selection_mode =
-				anchor.placement_mode == "authored_fixed" and
-				"authored_fixed" or "frozen_layout"
-			if selected.selection_mode ~= expected_selection_mode or
-					selected.approved_candidate_index ~=
-					anchor.approved_candidate_index then
-				fail("selected anchor fixed-layout provenance differs")
-			end
-			local fitting = {numeric_id = anchor_index, id = anchor.id,
-				anchor = anchor, profile = profile,
-				center = {x = selected.x, z = selected.z},
-				selection_mode = selected.selection_mode,
-				approved_candidate_index = selected.approved_candidate_index,
-				zone_numeric_id = anchor.zone_numeric_id,
-				is_capital = anchor.slot_id == "capital"}
-			if profile.fitting_width <= 0 or profile.blend_width <= 0 or
-					profile.fitting_width % 2 ~= 0 or profile.blend_width % 2 ~= 0 or
-					profile.blend_width <= profile.fitting_width then
-				fail("anchor fitting widths differ from the exact primitive")
-			end
-			if fitting.is_capital and (profile.civic_width ~= 96 or
-					profile.civic_width % 2 ~= 0 or profile.terrace_step == nil or
-					profile.terrace_step < 2 or profile.terrace_step > 4) then
-				fail("capital civic/terrace profile differs")
-			elseif not fitting.is_capital and
-					(profile.civic_width ~= nil or profile.terrace_step ~= nil) then
-				fail("non-capital profile carries capital terrain fields")
-			end
-			if anchor_index > 12 and (type(profile.building_core_width) ~= "number" or
-					profile.building_core_width % 2 ~= 0 or
-					profile.building_core_width < 2 or
-					profile.building_core_width > profile.fitting_width) then
-				fail("ordinary anchor building core differs")
-			elseif anchor_index <= 12 and profile.building_core_width ~= nil then
-				fail("start/capital profile carries ordinary building core")
-			end
-			local half = profile.fitting_width / 2
-			local land_count, water_count, civic_water_count = 0, 0, 0
-			local platform_witness_x, platform_witness_z
-			local civic_max_clearance_y, civic_witness_x, civic_witness_z
-			local center_class, _, center_owner, center_bay, center_hydrology =
-				classified_values(selected.x, selected.z)
-			if center_owner ~= anchor.zone_numeric_id then
-				fail("selected anchor centre owner differs at " .. anchor.id)
-			end
-			local is_start = anchor_index <= 6
-			if fitting.is_capital and center_class ~= "land" then
-				fail("capital centre is not land at " .. anchor.id)
-			elseif center_class ~= "land" and center_class ~= "planned_water" then
-				fail("anchor centre enters unsupported water at " .. anchor.id)
-			end
-			if is_start then
-				if center_class ~= "land" then fail("start centre is not land") end
-				local natural_values = {}
-				for sample_z = 0, 8 do
-					local offset_z = -64 + math.floor(sample_z * 127 / 8)
-					for sample_x = 0, 8 do
-						local offset_x = -64 + math.floor(sample_x * 127 / 8)
-						natural_values[#natural_values + 1] = natural_height_at(
-							selected.x + offset_x, selected.z + offset_z)
-					end
-				end
-				fitting.reference_y, fitting.reference_rule,
-					fitting.start_preferred_y, fitting.start_feasible_lower_y,
-					fitting.start_feasible_upper_y, fitting.start_limit_excess,
-					fitting.start_old_sample_cost, fitting.start_fit_sample_cost =
-						start_reference_value(natural_values,
-							zone_station_y[anchor.zone_numeric_id], 8, 8,
-							WATER_LEVEL + 1)
-				fitting.start_sample_count = #natural_values
-				fitting.start_old_reference_y =
-					zone_station_y[anchor.zone_numeric_id]
-			elseif fitting.is_capital then
-				local civic_half = profile.civic_width / 2
-				local feasible_lower, feasible_upper
-				local lower_x, lower_z, upper_x, upper_z
-				local dry_civic_columns, civic_water_floor = 0, nil
-				for z = selected.z - civic_half, selected.z + civic_half - 1 do
-					for x = selected.x - civic_half, selected.x + civic_half - 1 do
-						local water_class, _, owner, bay_id, hydrology_id =
-							classified_values(x, z)
-						if owner ~= anchor.zone_numeric_id then
-							fail("capital civic core escaped its owner at " .. anchor.id)
-						elseif water_class == "land" then
-							local natural = natural_height_at(x, z)
-							local lower = natural - profile.max_cut
-							local upper = natural + profile.max_fill
-							if feasible_lower == nil or lower > feasible_lower then
-								feasible_lower, lower_x, lower_z = lower, x, z
-							end
-							if feasible_upper == nil or upper < feasible_upper then
-								feasible_upper, upper_x, upper_z = upper, x, z
-							end
-							dry_civic_columns = dry_civic_columns + 1
-						elseif water_class == "planned_water" then
-							local datum = clearance_datum_at(x, z, water_class,
-								bay_id, hydrology_id)
-							if datum == nil then
-								fail("capital civic water has no clearance datum")
-							end
-							civic_water_floor = math.max(civic_water_floor or datum + 1, datum + 1)
-							if feasible_lower == nil or datum + 1 > feasible_lower then
-								feasible_lower, lower_x, lower_z = datum + 1, x, z
-							end
-						else
-							fail("capital civic core enters unsupported water at " .. anchor.id)
-						end
-					end
-				end
-				if dry_civic_columns == 0 or feasible_lower == nil or
-						feasible_upper == nil then
-					fail("capital civic core has no dry height interval at " .. anchor.id)
-				end
-				local center_natural = natural_height_at(selected.x, selected.z)
-				local route_min_y = zone_station_y[anchor.zone_numeric_id]
-				fitting.reference_y, fitting.reference_rule,
-					fitting.civic_limit_excess = capital_reference_value(center_natural,
-						feasible_lower, feasible_upper, route_min_y, civic_water_floor)
-				fitting.civic_feasible_lower_y = feasible_lower
-				fitting.civic_feasible_upper_y = feasible_upper
-				fitting.civic_center_natural_y = center_natural
-				fitting.civic_dry_columns = dry_civic_columns
-				fitting.civic_route_min_y = route_min_y
-				fitting.civic_water_floor_y = civic_water_floor
-				fitting.civic_lower_witness_x = lower_x
-				fitting.civic_lower_witness_z = lower_z
-				fitting.civic_upper_witness_x = upper_x
-				fitting.civic_upper_witness_z = upper_z
-			else
-				local core_half = profile.building_core_width / 2
-				local natural_values = {}
-				local feasible_lower, feasible_upper, water_lower
-				for z = selected.z - core_half, selected.z + core_half - 1 do
-					for x = selected.x - core_half, selected.x + core_half - 1 do
-						local water_class, _, owner, bay_id, hydrology_id =
-							classified_values(x, z)
-						if owner == anchor.zone_numeric_id and water_class == "land" then
-							local natural = natural_height_at(x, z)
-							natural_values[#natural_values + 1] = natural
-							feasible_lower = math.max(feasible_lower or -math.huge,
-								natural - profile.max_cut)
-							feasible_upper = math.min(feasible_upper or math.huge,
-								natural + profile.max_fill)
-						elseif owner == anchor.zone_numeric_id and
-								water_class == "planned_water" then
-							local datum = clearance_datum_at(x, z, water_class,
-								bay_id, hydrology_id)
-							if datum == nil then fail("anchor core water has no clearance datum") end
-							water_lower = math.max(water_lower or -math.huge, datum + 1)
-						end
-					end
-				end
-				local preferred = lower_median(natural_values) or water_lower
-				if preferred == nil then
-					fail("ordinary anchor core has no owner-valid columns")
-				end
-				if feasible_lower ~= nil and feasible_upper ~= nil and
-						feasible_lower <= feasible_upper then
-					fitting.reference_y = clamp(preferred, feasible_lower, feasible_upper)
-					fitting.reference_rule = "ordinary_natural_core_feasible"
-					fitting.core_limit_excess = 0
-				elseif feasible_lower ~= nil and feasible_upper ~= nil then
-					fitting.reference_y = round_ratio(feasible_lower + feasible_upper, 2)
-					fitting.reference_rule = "ordinary_natural_core_minimax"
-					fitting.core_limit_excess = math.max(feasible_lower - fitting.reference_y,
-						fitting.reference_y - feasible_upper)
-				else
-					fitting.reference_y = preferred
-					fitting.reference_rule = "ordinary_water_core"
-					fitting.core_limit_excess = 0
-				end
-				if water_lower ~= nil then
-					fitting.reference_y = math.max(fitting.reference_y, water_lower)
-				end
-				fitting.core_preferred_y = preferred
-				fitting.core_feasible_lower_y = feasible_lower
-				fitting.core_feasible_upper_y = feasible_upper
-				fitting.core_water_lower_y = water_lower
-				fitting.core_dry_columns = #natural_values
-			end
-			for z = selected.z - half, selected.z + half - 1 do
-				for x = selected.x - half, selected.x + half - 1 do
-					local water_class, _, owner, bay_id, hydrology_id =
-						classified_values(x, z)
-					if owner == anchor.zone_numeric_id then
-						if water_class == "land" then
-							land_count = land_count + 1
-						elseif water_class == "planned_water" then
-							local datum = clearance_datum_at(x, z, water_class,
-								bay_id, hydrology_id)
-							if datum == nil then fail("anchor water has no clearance datum") end
-							if fitting.is_capital and in_half_open_square(x, z,
-									fitting.center, profile.civic_width) then
-								civic_water_count = civic_water_count + 1
-								if civic_max_clearance_y == nil or
-										datum > civic_max_clearance_y then
-									civic_max_clearance_y, civic_witness_x,
-										civic_witness_z = datum, x, z
-								end
-							elseif not fitting.is_capital then
-								water_count = water_count + 1
-								if not platform_witness_x then
-									platform_witness_x, platform_witness_z = x, z
-								end
-							end
-						end
-					end
-				end
-			end
-			fitting.target_y = fitting.reference_y
-			fitting.land_count, fitting.water_count = land_count, water_count
-			fitting.civic_water_count = civic_water_count
-			fitting.civic_max_clearance_y = civic_max_clearance_y
-			fitting.civic_witness_x, fitting.civic_witness_z = civic_witness_x,
-				civic_witness_z
-			fitting.platform_witness_x = platform_witness_x
-			fitting.platform_witness_z = platform_witness_z
-			fittings[anchor_index] = fitting
-			local class, collection
-			if anchor_index <= 6 then
-				class, collection = "start", start_fittings
-				start_by_zone[anchor.zone_numeric_id] = fitting
-			elseif anchor_index <= 12 then
-				class, collection = "capital", capital_fittings
-				capital_by_zone[anchor.zone_numeric_id] = fitting
-			else class, collection = "selected", selected_fittings end
-			collection[#collection + 1] = fitting
-			local envelope_half = profile.blend_width / 2
-			if class == "start" then
-				-- The soft pad edge: one memoised jitter lattice per start, plus the
-				-- perimeter witness the start quality record publishes.
-				-- `build_public_session` sits at Lua 5.1's 60-upvalue ceiling, so the
-				-- witness is built here and only read there.
-				fitting.edge_root = start_edge_root(counted_sha, full_seed_string)
-				fitting.edge_jitter = {}
-				fitting.edge_witness = start_edge_witness(fitting)
-			end
-			add_bucket(fitting_grids[class], fitting,
-				selected.x - envelope_half, selected.x + envelope_half,
-				selected.z - envelope_half, selected.z + envelope_half)
-		end
-
-		local function fitting_grade_at(grid, x, z, incoming, owner,
-				water_class, platform_only)
+		local function fitting_grade_at(grid, x, z, incoming, owner, class)
 			local candidates = bucket_at(grid, x, z)
 			if not candidates then return nil end
 			for index = 1, #candidates do
 				local fitting = candidates[index]
 				if owner == fitting.zone_numeric_id then
 					local profile = fitting.profile
-					if water_class == "planned_water" and not fitting.is_capital and
+					if class == BAY and not fitting.is_capital and
+							not fitting.is_start and
 							in_half_open_square(x, z, fitting.center,
 								profile.building_core_width) then
-						local _, _, _, bay_id, hydrology_id = classified_values(x, z)
-						local datum = clearance_datum_at(x, z, water_class,
-							bay_id, hydrology_id)
-						if datum == nil then fail("anchor platform water has no clearance datum") end
-						return math.max(fitting.reference_y, datum + 1), fitting, true, Q
-					elseif not platform_only and water_class == "land" then
+						return max(fitting.reference_y, WATER_LEVEL + 1), fitting, true
+					elseif class == LAND then
 						local envelope_half = profile.blend_width / 2
-						local grade_width = fitting.numeric_id <= 12 and
+						local grade_width = (fitting.is_capital or fitting.is_start) and
 							profile.fitting_width or profile.building_core_width
-						local grade_half = grade_width / 2
-						local outside = half_open_square_excess(x, z,
-							fitting.center, grade_width)
-						-- Soft pad edge (starts only): the flat square grows outward by
-						-- 0..6 seed-derived nodes and the ramp gives the same amount up,
-						-- so excess 0 and the outer envelope edge are both untouched.
-						local span = envelope_half - grade_half
-						if fitting.edge_jitter then
-							local offset = start_edge_offset(fitting, x, z)
-							outside = math.max(0, outside - offset)
+						local outside = half_open_square_excess(x, z, fitting.center,
+							grade_width)
+						local span = envelope_half - grade_width / 2
+						if fitting.is_start then
+							local offset = start_edge_offset(x, z)
+							outside = max(0, outside - offset)
 							span = span - offset
 						end
 						if outside < span then
-							local weight = qweight(math.max(0, outside), span)
-							if weight > 0 then
-								if fitting.is_capital then
-									local step = profile.terrace_step
-									local civic_outside = half_open_square_excess(x, z,
-										fitting.center, profile.civic_width)
-									-- The apron is asked for only by the shape that
-									-- has one, so the other five capitals reach
-									-- `capital_terrace_value` with eight arguments
-									-- whose last is nil and take the same code path
-									-- they took before it existed.
-									local apron
-									if profile.shape == CAPITAL_APRON.shape and
-											civic_outside > 0 then
-										apron = fitting_grids.apron.value(x, z, owner,
-											fitting.reference_y, step, civic_outside)
-									end
-									local shaped = capital_terrace_value(incoming,
-										fitting.reference_y, step, civic_outside,
-										profile.max_cut, profile.max_fill,
-										fitting_grids.band.value(x, z, incoming,
-											fitting.reference_y, step), apron)
-									return qlerp_integer(incoming, shaped, weight), fitting,
-										civic_outside == 0, weight
-								end
-								return qlerp_integer(incoming, fitting.reference_y,
-									weight), fitting, false, weight
-						end
+							local weight = weight_at(outside, span)
+							if fitting.is_capital then
+								local step = profile.terrace_step
+								local civic_outside = half_open_square_excess(x, z,
+									fitting.center, profile.civic_width)
+								local shaped = capital_terrace_value(incoming,
+									fitting.reference_y, step, civic_outside,
+									profile.max_cut, profile.max_fill,
+									band_value(x, z, incoming, fitting.reference_y, step))
+								return lerp_node(incoming, shaped, weight), fitting, false
+							end
+							return lerp_node(incoming, fitting.reference_y, weight),
+								fitting, false
 						end
 					end
 				end
@@ -2857,2982 +578,347 @@ local function height_factory(dependencies)
 			return nil
 		end
 
-		local landmark_by_id = {}
-		for index = 1, #source.landmarks do
-			landmark_by_id[source.landmarks[index].id] = source.landmarks[index]
+		-----------------------------------------------------------------------
+		-- Coast profiles (Round 8/9 rules) on the sea coast. Freshwater shores
+		-- are gone with inland water.
+		-----------------------------------------------------------------------
+		local coast_rules = new_coast_rules(full_seed_string)
+		local lattice_cache = coast_rules.new_lattice_cache(16)
+		local direction_x, direction_z = {1, -1, 0, 0}, {0, 0, 1, -1}
+		local function water_at(x, z)
+			return (class_owner_at(x, z)) ~= LAND
 		end
-		local coastal_grid, coastal_cores, coastal_evidence = {}, {}, {}
-		for core_index = 1, #source.coastal_housing_cores do
-			local row = source.coastal_housing_cores[core_index]
-			local landmark = landmark_by_id[row.landmark_id]
-			if not landmark or landmark.primitive ~= "rectangle" then
-				fail("coastal core landmark differs")
+		local function build_lattice(chunk_x, chunk_z)
+			local sample_min_x, sample_min_z = chunk_x * 20 - 13, chunk_z * 20 - 13
+			local sample_water = {}
+			for lattice_z = sample_min_z, sample_min_z + 45 do
+				for lattice_x = sample_min_x, sample_min_x + 45 do
+					local index = (lattice_z - sample_min_z) * 46 +
+						(lattice_x - sample_min_x) + 1
+					sample_water[index] = water_at(lattice_x * 4, lattice_z * 4)
+				end
 			end
-			local radius = landmark.radius_x
-			local half_axis = landmark.radius_z - radius
-			local domain = "coastal-core-gentle-v1:" .. row.id
-			local root_input = "GRUGWP40HEIGHT" .. string.char(0) ..
-				canonical.encode(text(HEIGHT_RANDOM_SCHEMA)) ..
-				canonical.encode(text(full_seed_string)) ..
-				canonical.encode(text(domain))
-			local root = digest_first_word(counted_sha(root_input)) % P
-			if root == 0 then root = 1 end
-			local min_ix = floor_div(landmark.center.x - landmark.radius_x -
-				BASE_CELL, BASE_CELL) - 1
-			local max_ix = floor_div(landmark.center.x + landmark.radius_x +
-				BASE_CELL, BASE_CELL) + 1
-			local min_iz = floor_div(landmark.center.z - landmark.radius_z -
-				BASE_CELL, BASE_CELL) - 1
-			local max_iz = floor_div(landmark.center.z + landmark.radius_z +
-				BASE_CELL, BASE_CELL) + 1
-			local values, rows = {}, {}
-			note_lattice_construction()
-			for iz = min_iz, max_iz do
-				local values_row = {} values[iz] = values_row
-				for ix = min_ix, max_ix do
-					local _, state = lattice_corner(root, ix, iz, 1)
-					local value = math.floor(state * 13 / P) - 6
-					values_row[ix] = value
-					if not runtime_mode then
-						rows[#rows + 1] = canonical.array({signed(ix), signed(iz),
-							signed(value)})
+			local squared_by, orientation_by = {}, {}
+			local world_min_x, world_min_z = chunk_x * 80, chunk_z * 80
+			for query_z = world_min_z, world_min_z + 79 do
+				for query_x = world_min_x, world_min_x + 79 do
+					local query_index = (query_z - world_min_z) * 80 +
+						(query_x - world_min_x) + 1
+					local squared, orientation = coast_rules.nearest_lattice_sample(
+						query_x, query_z, sample_min_x, sample_min_z, sample_water)
+					squared_by[query_index] = squared or false
+					orientation_by[query_index] = orientation or false
+				end
+			end
+			return {squared = squared_by, orientation = orientation_by}
+		end
+		local function lattice_shore_at(x, z)
+			local chunk_x, chunk_z = floor_div(x, 80), floor_div(z, 80)
+			local lattice = lattice_cache.get(chunk_x, chunk_z, build_lattice)
+			local index = (z - chunk_z * 80) * 80 + (x - chunk_x * 80) + 1
+			local squared = lattice.squared[index]
+			if not squared then return nil end
+			return floor(sqrt(squared) + 0.5), coast_rules.cardinal_orientation(x, z,
+				lattice.orientation[index], water_at)
+		end
+		local function target_for(profile, distance, incoming, water_y, owner,
+				orientation, run, axis, class_salt)
+			local draw = coast_rules.hash(owner, orientation, run, 83492791 + class_salt)
+			local width, target, denominator
+			if profile == "beach" then
+				width, denominator = coast_rules.band(draw, profile, false)
+				target = water_y + floor((distance - 1) / denominator)
+			elseif profile == "bluff" then
+				width = 6 + draw % 4
+				local rise = 1 + floor(draw / 11) % 2
+				target = water_y + (distance - 1) * rise
+			elseif profile == "cliff" then
+				width = 5 + draw % 3
+				local irregular = coast_rules.hash(owner, orientation, run,
+					axis * 17 + 480752697 + class_salt) % 5 - 2
+				local setback = 2 + floor(draw / 13) % 3
+				local top = max(7, incoming - water_y) + irregular
+				local rise = min(top, 1 + max(0, distance - 2) * setback)
+				if distance > 2 and coast_rules.hash(owner, orientation, run,
+					axis * 31 + distance * 43 + class_salt) % 11 == 0 then
+					rise = max(1, rise - setback)
+				end
+				target = water_y + rise
+			else
+				local steps = 2 + draw % 2
+				local step_height = 3 + floor(draw / 7) % 3
+				local step_width = 3 + floor(draw / 17) % 3
+				width = steps * step_width + 1
+				target = water_y + min(steps, floor((distance - 2) /
+					step_width) + 1) * step_height
+			end
+			if distance == 1 then target = water_y end
+			if distance > width then
+				local offset = distance - width
+				local _, _, blend_width = coast_rules.band(draw, profile, false)
+				if offset >= blend_width then return incoming, width end
+				local edge = profile == "beach" and
+					(water_y + floor((width - 1) / denominator)) or target
+				target = round_ratio(edge * (blend_width - offset) +
+					incoming * offset, blend_width)
+			end
+			return target, width
+		end
+		-- profile, distance, width, freshwater, run key, target y, relief id,
+		-- water y; nil away from the coast and inside static exclusions.
+		local function coast_profile_at(x, z, supplied_incoming, material_only)
+			coordinate(x, "coast query x") coordinate(z, "coast query z")
+			local class, owner = class_owner_at(x, z)
+			if class ~= LAND or owner == nil then return nil end
+			-- The field's true coast distance (16-node chamfer, B-spline read)
+			-- rules out inland columns before the shore scans: a profile reaches
+			-- at most 52 nodes from water, and the grid errs by far less than
+			-- the remaining margin.
+			if field.coast_signed(x, z) > COAST_REACH then return nil end
+			local geometry_excluded = horizontal.static_exclusion_values_at(x, z) ~= nil or
+				(type(horizontal.housing_mask_id_at) == "function" and
+					horizontal.housing_mask_id_at(x, z) ~= nil)
+			if material_only then
+				if not geometry_excluded then return nil end
+			elseif geometry_excluded then return nil end
+			local best_distance, orientation
+			for direction = 1, 4 do
+				for distance = 1, 16 do
+					if water_at(x + direction_x[direction] * distance,
+							z + direction_z[direction] * distance) then
+						if best_distance == nil or distance < best_distance then
+							best_distance, orientation = distance, direction
+						end
+						break
 					end
 				end
 			end
-			local core = {numeric_id = core_index, id = row.id, row = row,
-				zone_numeric_id = row.zone_numeric_id, center = landmark.center,
-				radius_x = landmark.radius_x, radius_z = landmark.radius_z,
-				radius = radius, half_axis = half_axis, root = root,
-				values = values, target_y = natural_height_at(landmark.center.x,
-					landmark.center.z)}
-			coastal_cores[core_index] = core
-			add_bucket(coastal_grid, core,
-				landmark.center.x - landmark.radius_x - BASE_CELL,
-				landmark.center.x + landmark.radius_x + BASE_CELL,
-				landmark.center.z - landmark.radius_z - BASE_CELL,
-				landmark.center.z + landmark.radius_z + BASE_CELL)
-			if not runtime_mode then
-				coastal_evidence[core_index] = {numeric_id = core_index, id = row.id,
-					zone_numeric_id = row.zone_numeric_id, root = root,
-					target_y = core.target_y, theoretical_min_y = core.target_y - 6,
-					theoretical_max_y = core.target_y + 6,
-					lattice_digest = counted_digest(rows), relief_max = row.relief_max,
-					center_x = landmark.center.x, center_z = landmark.center.z,
-					radius_x = landmark.radius_x, radius_z = landmark.radius_z}
+			if best_distance == nil then
+				best_distance, orientation = lattice_shore_at(x, z)
 			end
-		end
-
-		local function coastal_weight(core, x, z)
-			local dx, dz = math.abs(x - core.center.x), math.abs(z - core.center.z)
-			if math.max(dx - core.radius_x, dz - core.radius_z) >= BASE_CELL then
-				return 0
+			if best_distance == nil then return nil end
+			local water_y = WATER_LEVEL
+			local axis = orientation <= 2 and z or x
+			local run = floor_div(axis, 48)
+			local incoming = supplied_incoming or natural_height_at(x, z)
+			local relief_profile = source.zones[owner].primary_relief_id
+			local profile, run_class, class_salt = coast_rules.profile(owner,
+				orientation, run, false, relief_profile)
+			local target, width = target_for(profile, best_distance, incoming,
+				water_y, owner, orientation, run, axis, class_salt)
+			local offset = floor_mod(axis, 48)
+			if offset < 16 or offset >= 32 then
+				local neighbor = offset < 16 and run - 1 or run + 1
+				local other_profile, _, other_salt = coast_rules.profile(owner,
+					orientation, neighbor, false, relief_profile)
+				local other = target_for(other_profile, best_distance, incoming,
+					water_y, owner, orientation, neighbor, axis, other_salt)
+				target = lateral_blend(target, other, offset, round_ratio)
 			end
-			local excess = math.max(0, dz - core.half_axis)
-			local distance_q = deterministic.isqrt((dx * Q) * (dx * Q) +
-				(excess * Q) * (excess * Q)) - core.radius * Q
-			if distance_q <= 0 then return Q end
-			if distance_q >= BASE_CELL * Q then return 0 end
-			return Q - deterministic.smootherstep(deterministic.qdiv(
-				distance_q, BASE_CELL * Q))
+			return profile, best_distance, width, false,
+				coast_rules.run_key(owner, orientation, run, run_class),
+				target, relief_profile, water_y
 		end
 
-		local function coastal_target_at(core, x, z)
-			local ix, iz = floor_div(x, BASE_CELL), floor_div(z, BASE_CELL)
-			local tx = deterministic.smootherstep(deterministic.qfrom_ratio(
-				x - ix * BASE_CELL, BASE_CELL))
-			local tz = deterministic.smootherstep(deterministic.qfrom_ratio(
-				z - iz * BASE_CELL, BASE_CELL))
-			local row0, row1 = core.values[iz], core.values[iz + 1]
-			local top = deterministic.qlerp(row0[ix] * Q, row0[ix + 1] * Q, tx)
-			local bottom = deterministic.qlerp(row1[ix] * Q,
-				row1[ix + 1] * Q, tx)
-			return core.target_y + deterministic.qround(
-				deterministic.qlerp(top, bottom, tz))
+		-----------------------------------------------------------------------
+		-- Composition, memoised per column.
+		-----------------------------------------------------------------------
+		-- Water columns: the field's sea floor, or an anchor platform in a bay.
+		local function compose_water(x, z, class, owner, incoming)
+			if class == BAY then
+				local value, fitting = fitting_grade_at(grids.selected, x, z,
+					incoming, owner, class)
+				if value ~= nil then
+					return value, "anchor_platform", value, fitting.id
+				end
+			end
+			return incoming, nil, nil, nil
 		end
 
-		local function coastal_grade_at(x, z, incoming, owner, water_class)
-			if water_class ~= "land" then return nil end
-			local candidates = bucket_at(coastal_grid, x, z)
-			if not candidates then return nil end
-			for index = 1, #candidates do
-				local core = candidates[index]
-				if owner == core.zone_numeric_id then
-					local weight = coastal_weight(core, x, z)
-					if weight > 0 then
-						return qlerp_integer(incoming,
-							coastal_target_at(core, x, z), weight), core, weight
-					end
+		-- The sea shore rule: a dry column that touches exposed water takes
+		-- that water surface as its own top.
+		-- The field's sea floor is always below WATER_LEVEL, so only a bay
+		-- platform can cover the water.
+		local function exposed_shore_at(x, z)
+			for direction = 1, 4 do
+				local nx, nz = x + direction_x[direction], z + direction_z[direction]
+				local class, owner = class_owner_at(nx, nz)
+				if class == SEA then return WATER_LEVEL end
+				if class == BAY then
+					local platform = fitting_grade_at(grids.selected, nx, nz,
+						WATER_LEVEL - 1, owner, class)
+					if platform == nil or platform < WATER_LEVEL then return WATER_LEVEL end
 				end
 			end
 			return nil
 		end
 
-		local function exterior_bed_at(x, z, water_class)
-			if water_class == "coastal_shelf" then
-				local low, high = 1, source.shelf_width
-				while low < high do
-					local middle = math.floor((low + high) / 2)
-					if horizontal.expanded_land_at(x, z, middle) then high = middle
-					else low = middle + 1 end
-				end
-				local depth = 1 + math.floor(7 * (low - 1) / 79)
-				if low > 4 then
-					local _, detail_q = detail_height_and_q_at(x, z)
-					if detail_q > Q / 3 then depth = depth + 1
-					elseif detail_q < -Q / 3 then depth = depth - 1 end
-					depth = clamp(depth, 1, 8)
-				end
-				return WATER_LEVEL - depth
-		elseif water_class == "deep_ocean" or
-				water_class == "immutable_dragon_channel" then
-				return WATER_LEVEL - 24
-		end
-		return nil
-		end
-
-		local function scalar_before_nonpath_grades(x, z, water_class, owner,
-				bay_id, hydrology_id)
-			local transition, progress = transition_values_at(x, z)
-			if transition then
-				if transition.contact_face then return transition.lower_bed end
-				return qlerp_integer(transition.upper_bed,
-					transition.lower_bed, progress)
+		local function compose_land(x, z, owner, incoming)
+			local terrain_y, kind, feature_id = incoming, nil, nil
+			local value, fitting = fitting_grade_at(grids.selected, x, z,
+				terrain_y, owner, LAND)
+			if value ~= nil then terrain_y, kind, feature_id = value, "land_grade", fitting.id end
+			value, fitting = fitting_grade_at(grids.capital, x, z, terrain_y, owner, LAND)
+			if value ~= nil then terrain_y, kind, feature_id = value, "land_grade", fitting.id end
+			value, fitting = fitting_grade_at(grids.start, x, z, terrain_y, owner, LAND)
+			if value ~= nil then terrain_y, kind, feature_id = value, "land_grade", fitting.id end
+			if kind == nil then
+				local _, _, _, _, _, coast_y = coast_profile_at(x, z, terrain_y)
+				if coast_y ~= nil then terrain_y = coast_y end
 			end
-			local exterior = exterior_bed_at(x, z, water_class)
-			if exterior then return exterior end
-			if water_class == "planned_water" and bay_id then
-				return WATER_LEVEL - bay_depth_at(x, z)
-			end
-			local natural = natural_height_at(x, z)
-			return hydrology_scalar_at(x, z, natural, water_class, owner,
-				hydrology_id)
+			local shore_y = exposed_shore_at(x, z)
+			if shore_y ~= nil then terrain_y = shore_y end
+			return terrain_y, kind, kind and terrain_y or nil, feature_id
 		end
 
-		function fitting_grids.band.relief_at(x, z)
-			local keys, values = fitting_grids.band.keys, fitting_grids.band.values
-			local slot = (x % 128) * 128 + (z % 128) + 1
-			local key = x * 131072 + z
-			if keys[slot] == key then return values[slot] end
-			local water_class, _, owner, bay_id, hydrology_id =
-				classified_values(x, z)
-			local value = scalar_before_nonpath_grades(x, z, water_class, owner,
-				bay_id, hydrology_id)
-			keys[slot], values[slot] = key, value
-			return value
-		end
-
-		local function scalar_before_paths(x, z)
-			local water_class, _, owner, bay_id, hydrology_id =
-				classified_values(x, z)
-			local incoming = scalar_before_nonpath_grades(x, z, water_class,
-				owner, bay_id, hydrology_id)
-			if water_class ~= "land" then return incoming end
-			local value = fitting_grade_at(fitting_grids.start, x, z, incoming,
-				owner, water_class, false)
-			if value ~= nil then return water_banks.protect(x, z, value) end
-			value = fitting_grade_at(fitting_grids.capital, x, z, incoming,
-				owner, water_class, false)
-			if value ~= nil then return water_banks.protect(x, z, value) end
-			value = coastal_grade_at(x, z, incoming, owner, water_class)
-			if value ~= nil then return water_banks.protect(x, z, value) end
-			value = fitting_grade_at(fitting_grids.selected, x, z, incoming,
-				owner, water_class, false)
-			if value ~= nil then return water_banks.protect(x, z, value) end
-			return water_banks.protect(x, z, incoming)
-		end
-
-		-- Every path that meets at the same free junction must inherit one
-		-- terrain-derived target.  Keeping this registry coordinate-keyed also
-		-- covers island junctions, which do not have route-station records.
-		local junction_by_coordinate, junction_records = {}, {}
-		local function junction_target(owner, point, fixed_y, constraint_kind,
-				constraint_id, feasible_lower, feasible_upper)
-			local key = point.x .. ":" .. point.z
-			local water_class, _, classified_owner, bay_id, hydrology_id =
-				classified_values(point.x, point.z)
-			if classified_owner ~= owner then
-				fail("junction owner differs at " .. key)
-			end
-			local natural_y = scalar_before_paths(point.x, point.z)
-			local target, kind = fixed_y, constraint_kind
-			if target == nil then
-				if water_class == "land" then
-					target, kind = natural_y, "free_terrain"
-				elseif water_class == "planned_water" then
-					local datum = clearance_datum_at(point.x, point.z, water_class,
-						bay_id, hydrology_id)
-					if datum == nil then fail("junction water has no clearance datum") end
-					target, kind = math.max(zone_station_y[owner], datum + 1),
-						"water_clearance"
+		-- Final terrain y, functional kind, functional y, feature id.
+		local function final_values_at(x, z)
+			local block, slot = column(x, z)
+			local terrain_y = block.terrain[slot]
+			if terrain_y == nil then
+				local class, owner = block.class[slot], block.owner[slot] or nil
+				local natural = natural_height_at(x, z)
+				local kind, surface_y, feature_id
+				if class == LAND then
+					terrain_y, kind, surface_y, feature_id = compose_land(x, z, owner,
+						natural)
 				else
-					fail("junction enters unsupported water at " .. key)
+					terrain_y, kind, surface_y, feature_id = compose_water(x, z, class,
+						owner, natural)
 				end
+				block.terrain[slot] = terrain_y
+				block.kind[slot] = kind or false
+				block.surface[slot] = surface_y or false
+				block.feature[slot] = feature_id or false
+				return terrain_y, kind, surface_y, feature_id
 			end
-			local old = junction_by_coordinate[key]
-			if old then
-				if old.owner ~= owner or old.target_y ~= target then
-					fail("conflicting shared junction target at " .. key)
-				end
-				return target, old
-			end
-			local record = {id = "junction:" .. key, x = point.x, z = point.z,
-				owner = owner, target_y = target, natural_y = natural_y,
-				previous_target_y = zone_station_y[owner],
-				water_class = water_class, constraint_kind = kind,
-				constraint_id = constraint_id, feasible_lower_y = feasible_lower,
-				feasible_upper_y = feasible_upper, uses = {}}
-			junction_by_coordinate[key] = record
-			junction_records[#junction_records + 1] = record
-			return target, record
+			return terrain_y, block.kind[slot] or nil, block.surface[slot] or nil,
+				block.feature[slot] or nil
 		end
 
-		-- A free station may also terminate fixed-building spurs.  Derive the
-		-- station interval reachable from every such hard endpoint before
-		-- choosing the terrain-preferred junction height.
-		local station_lower, station_upper = {}, {}
-		for zone_index = 1, #source.zones do
-			station_lower[zone_index], station_upper[zone_index] = GRADE_MIN, GRADE_MAX
+		local function outside(x, z)
+			return x < MIN_X or x > MAX_X or z < MIN_Z or z > MAX_Z
 		end
-		for spur_index = 1, #source.poi_spurs do
-			local spur = source.poi_spurs[spur_index]
-			local anchor = anchor_by_id[spur.anchor_id]
-			local fitting = fittings[anchor.numeric_id]
-			local axis = raster_polyline(spur.centreline)
-			local distance = #axis - 1
-			local owner = anchor.zone_numeric_id
-			station_lower[owner] = math.max(station_lower[owner],
-				fitting.reference_y - distance)
-			station_upper[owner] = math.min(station_upper[owner],
-				fitting.reference_y + distance)
-			if station_lower[owner] > station_upper[owner] then
-				fail("fixed-building station interval is infeasible at " ..
-					source.zones[owner].id)
-			end
+		local function final_terrain_height_at(x, z)
+			coordinate(x, "terrain query x") coordinate(z, "terrain query z")
+			if outside(x, z) then return OUTSIDE_FLOOR end
+			return (final_values_at(x, z))
+		end
+		local function final_functional_values_at(x, z)
+			coordinate(x, "functional query x") coordinate(z, "functional query z")
+			if outside(x, z) then return nil, nil, nil, nil end
+			local _, kind, surface_y, feature_id = final_values_at(x, z)
+			if kind == nil then return nil, nil, nil, nil end
+			return kind, surface_y, feature_id, nil
+		end
+		local function final_water_surface_at(x, z)
+			coordinate(x, "water query x") coordinate(z, "water query z")
+			if outside(x, z) then return WATER_LEVEL end
+			return water_surface_for((class_owner_at(x, z)))
 		end
 
-		local route_station_target, route_station_junction, station_evidence = {}, {}, {}
-		-- THE CAPITAL GATE STATIONS (WP13 playtest round 4, 2026-09-15: an
-		-- incoming route ends at a planned point of the city boundary and no
-		-- longer runs into the interior).
-		--
-		-- A capital's hub station carries the anchor's own platform height,
-		-- because the hub IS the anchor column: a route that ended there had to
-		-- arrive at the level the city stands on. A GATE is 256 nodes out, on the
-		-- edge of the 512 envelope, where the capital fitting has already run out
-		-- of cut and fill and the ground is whatever the blend left. Pinning a
-		-- gate to the anchor's platform height would make the road build an
-		-- embankment the whole height of the plateau and then drop off a cliff
-		-- just inside the wall -- measured at Dur Brannoc's west gate on seed
-		-- 531802985935182545 before this was written: 97 at the gate turned into
-		-- 149, a 52-node fill, and the fitted ground was back at 97 four columns
-		-- further in (local 252: 149, 251: 145, 250: 129, 249: 105, 248: 97).
-		--
-		-- So a gate station is a FREE TERRAIN junction: `junction_target` with no
-		-- fixed height takes `scalar_before_paths`, which is the fitted and
-		-- blended ground the WP13 avenue will pave at that same column. The road
-		-- arrives at the height the gate actually has.
-		--
-		-- The junction's owner is the zone the gate column CLASSIFIES into and
-		-- not the capital's own zone: `junction_target` asserts the two agree,
-		-- and 256 nodes out through a warped boundary is far enough that they
-		-- need not.
-		--
-		-- `route_station_target` and `route_station_junction` are keyed by ZONE
-		-- INDEX for a hub and by STATION ID for a gate. One pair of tables rather
-		-- than two: `height.lua` stands at Lua 5.1's 200-local ceiling for this
-		-- function and two more names do not fit.
-		for gate_index = 1, #source.capital_gates do
-			local gate = source.capital_gates[gate_index]
-			local _, _, gate_owner = classified_values(gate.position.x,
-				gate.position.z)
-			local target, record = junction_target(gate_owner, gate.position, nil,
-				nil, nil, station_lower[gate_owner], station_upper[gate_owner])
-			route_station_target[gate.id] = target
-			route_station_junction[gate.id] = record
-			-- `hub_water` is MEASURED and not assumed. No capital gate column is
-			-- planned water on any of the nine fixture seeds, but a value that is
-			-- right today by hard-coding is wrong tomorrow by construction, and
-			-- `junction_target` above would have taken the water-clearance branch
-			-- had it been.
-			local gate_water_class = classified_values(gate.position.x,
-				gate.position.z)
-			station_evidence[#source.zones + gate_index] = {id = gate.id,
-				kind = "gate",
-				zone_id = source.zones[gate.zone_numeric_id].id,
-				zone_numeric_id = gate.zone_numeric_id,
-				capital_gate_side = gate.side,
-				capital_gate_owner_zone_numeric_id = gate_owner,
-				primary_profile_id =
-					profile_by_id[source.zones[gate.zone_numeric_id].primary_relief_id].id,
-				zone_station_y = zone_station_y[gate_owner],
-				hub_x = gate.position.x, hub_z = gate.position.z,
-				hub_target_y = target,
-				hub_water = gate_water_class == "planned_water"}
-		end
-		for zone_index = 1, #source.zones do
-			local zone = source.zones[zone_index]
-			local primary = profile_by_id[zone.primary_relief_id]
-			local water_class, _, _, bay_id, hydrology_id =
-				classified_values(zone.hub.x, zone.hub.z)
-			local hub_water = water_class == "planned_water"
-			local clearance_y
-			local capital = capital_by_zone[zone_index]
-			local start = start_by_zone[zone_index]
-			local target, constraint_kind, constraint_id
-			if capital then
-				if hub_water then fail("capital hub is planned water") end
-				target, constraint_kind, constraint_id = capital.reference_y,
-					"capital_fitting", capital.id
-			elseif start then
-				target, constraint_kind, constraint_id = start.reference_y,
-					"start_fitting", start.id
-			elseif hub_water then
-				clearance_y = clearance_datum_at(zone.hub.x, zone.hub.z,
-					water_class, bay_id, hydrology_id)
-				if clearance_y == nil then
-					fail("planned-water route station has no clearance datum at " ..
-						zone.id)
-				end
-				target, constraint_kind = math.max(zone_station_y[zone_index],
-					clearance_y + 1), "water_clearance"
-			elseif water_class ~= "land" then
-				fail("route station enters unsupported water at " .. zone.id)
-			end
-			if target == nil then
-				target = feasible_preferred(
-					scalar_before_paths(zone.hub.x, zone.hub.z),
-					station_lower[zone_index], station_upper[zone_index])
-				constraint_kind, constraint_id = "free_terrain_feasible", zone.id
-			end
-			target, route_station_junction[zone_index] = junction_target(zone_index,
-				zone.hub, target, constraint_kind, constraint_id,
-				station_lower[zone_index], station_upper[zone_index])
-			route_station_target[zone_index] = target
-			station_evidence[zone_index] = {id = source.route_stations[zone_index].id,
-				kind = "hub",
-				zone_id = zone.id,
-				zone_numeric_id = zone_index,
-				primary_profile_id = primary.id,
-				primary_min_above_water = primary.min_above_water,
-				primary_max_above_water = primary.max_above_water,
-				zone_station_y = zone_station_y[zone_index],
-				hub_x = zone.hub.x, hub_z = zone.hub.z,
-				hub_target_y = target, hub_water = hub_water,
-				hub_clearance_y = clearance_y,
-				capital_anchor_id = capital and capital.id or nil}
-		end
-
-		-- A route endpoint reads the STATION THE SOURCE PINNED IT TO, so the
-		-- compiled centreline and the graded path cannot drift apart: a hub for
-		-- an ordinary zone, a capital gate for one of the twenty-four. Hubs are
-		-- registered under their id beside their zone index so that the lookup
-		-- below is one table and not two.
-		for zone_index = 1, #source.zones do
-			local hub = source.route_stations[zone_index]
-			-- Positional, and therefore asserted: `route_stations[zone_index]` is
-			-- that zone's hub only because the gates are appended after the hubs.
-			if hub == nil or hub.kind ~= "hub" or
-					hub.zone_numeric_id ~= zone_index then
-				fail("route station " .. zone_index .. " is not its zone's hub")
-			end
-			route_station_target[hub.id] = route_station_target[zone_index]
-			route_station_junction[hub.id] = route_station_junction[zone_index]
-		end
-
-		local paths, path_by_id = {}, {}
-		local function make_path(id, kind, priority, centreline, surface_width,
-				corridor_width, owner_a, owner_b, narrow_prefix)
-			if path_by_id[id] then fail("duplicate graded path " .. id) end
-			local axis, source_segments = raster_polyline(centreline)
-			local path = {id = id, kind = kind, priority = priority,
-				centreline = centreline, surface_width = surface_width,
-				corridor_width = corridor_width, owner_a = owner_a,
-				owner_b = owner_b, axis = axis, source_segments = source_segments,
-				pins = {}, operations = {}, fords = {}}
-			-- A leading run of source segments may be narrower than the rest of
-			-- the path (the start gate approach is the only such case).
-			-- `path.surface_width`/`path.corridor_width` stay the path's WIDEST
-			-- values, because every bounding box, grid insertion and surface scan
-			-- reads them as an upper bound; the three membership tests
-			-- (`path_surface_run_at`, `nearest_path_segment_at`, `path_grade_at`)
-			-- ask the segment first and fall back to the path.
-			if narrow_prefix then
-				if narrow_prefix.segments < 1 or
-						narrow_prefix.segments >= #source_segments or
-						narrow_prefix.surface_width > surface_width or
-						narrow_prefix.corridor_width > corridor_width then
-					fail("narrow path prefix differs at " .. id)
-				end
-				for index = 1, narrow_prefix.segments do
-					source_segments[index].surface_width = narrow_prefix.surface_width
-					source_segments[index].corridor_width = narrow_prefix.corridor_width
-				end
-			end
-			paths[#paths + 1] = path
-			path_by_id[id] = path
-			return path
-		end
-
-		local function add_pin(path, run_index, y, pin_kind, source_id)
-			integer(run_index, "route pin run") integer(y, "route pin y")
-			if run_index < 1 or run_index > #path.axis then
-				fail("route pin escaped axis at " .. path.id)
-			end
-			local old = path.pins[run_index]
-			if old and old.y ~= y then
-				fail("conflicting route pins at " .. path.id .. " (" ..
-					old.pin_kind .. " versus " .. pin_kind .. ")")
-			end
-			path.pins[run_index] = old or {y = y, pin_kind = pin_kind,
-				source_id = source_id}
-		end
-		local function note_junction_use(record, path, run_index)
-			record.uses[#record.uses + 1] = {path_id = path.id, run = run_index}
-		end
-
-		for route_index = 1, #source.routes do
-			local route = source.routes[route_index]
-			local narrow_prefix = start_gate_prefix(source, route,
-				start_by_zone[route.zone_a], start_by_zone[route.zone_b])
-			local path = make_path(route.id, "land_route", 1, route.centreline,
-				route.surface_width, route.corridor_width, route.zone_a,
-				route.zone_b, narrow_prefix)
-			path.source_route = route
-			if route_station_target[route.station_a_id] == nil or
-					route_station_target[route.station_b_id] == nil then
-				fail("route station is unknown at " .. route.id)
-			end
-			add_pin(path, 1, route_station_target[route.station_a_id], "endpoint_a",
-				source.zones[route.zone_a].id)
-			note_junction_use(route_station_junction[route.station_a_id], path, 1)
-			add_pin(path, #path.axis, route_station_target[route.station_b_id],
-				"endpoint_b", source.zones[route.zone_b].id)
-			note_junction_use(route_station_junction[route.station_b_id], path,
-				#path.axis)
-		end
-
-		local trail_template = {bandit_home = true, bandit_frontier = true,
-			mirefolk = true, clash = true}
-		for spur_index = 1, #source.poi_spurs do
-			local spur = source.poi_spurs[spur_index]
-			local anchor = anchor_by_id[spur.anchor_id]
-			local fitting = fittings[anchor.numeric_id]
-			local centreline = spur.centreline
-			if not centreline then
-				fail("fixed POI spur centreline differs")
-			end
-			local corridor_width = trail_template[anchor.template_id] and 8 or 12
-			local surface_width = corridor_width == 8 and 3 or 5
-			local path = make_path(spur.id, "selected_poi_spur", 2, centreline,
-				surface_width, corridor_width, anchor.zone_numeric_id,
-				anchor.zone_numeric_id)
-			path.source_spur, path.anchor_id = spur, anchor.id
-			add_pin(path, 1, fitting.reference_y, "anchor_endpoint", anchor.id)
-			add_pin(path, #path.axis, route_station_target[anchor.zone_numeric_id],
-				"station_endpoint", source.zones[anchor.zone_numeric_id].id)
-			note_junction_use(route_station_junction[anchor.zone_numeric_id], path,
-				#path.axis)
-		end
-
-		local fixed_fitting_by_coordinate = {}
-		for fitting_index = 1, #fittings do
-			local fitting = fittings[fitting_index]
-			local template_id = fitting.anchor.template_id
-			if template_id == "dragon" or template_id == "apex_mine" then
-				local key = fitting.center.x .. ":" .. fitting.center.z
-				if fixed_fitting_by_coordinate[key] then
-					fail("duplicate island anchor fitting coordinate")
-				end
-				fixed_fitting_by_coordinate[key] = fitting
-			end
-		end
-		local landing_by_coordinate = {}
-		for landing_index = 1, #source.island_landings do
-			local landing = source.island_landings[landing_index]
-			local key = landing.position.x .. ":" .. landing.position.z
-			if landing_by_coordinate[key] then
-				fail("duplicate island landing coordinate")
-			end
-			landing_by_coordinate[key] = landing
-		end
-		local island_node_by_coordinate, island_edges = {}, {}
-		local function island_node(point)
-			local key = point.x .. ":" .. point.z
-			local node = island_node_by_coordinate[key]
-			if node then return node end
-			local landing = landing_by_coordinate[key]
-			local fitting = fixed_fitting_by_coordinate[key]
-			local fixed_y
-			if landing then fixed_y = WATER_LEVEL + 1
-			elseif fitting then fixed_y = fitting.reference_y end
-			node = {point = point, lower = fixed_y or GRADE_MIN,
-				upper = fixed_y or GRADE_MAX, fixed_y = fixed_y}
-			island_node_by_coordinate[key] = node
-			return node
-		end
-		for route_index = 1, #source.island_routes do
-			local route = source.island_routes[route_index]
-			local first = island_node(route.centreline[1])
-			local last = island_node(route.centreline[#route.centreline])
-			local axis = raster_polyline(route.centreline)
-			island_edges[#island_edges + 1] = {a = first, b = last,
-				distance = #axis - 1, id = route.id}
-		end
-		local changed = true
-		while changed do
-			changed = false
-			for edge_index = 1, #island_edges do
-				local edge = island_edges[edge_index]
-				local a_lower, a_upper, b_lower, b_upper = tighten_grade_edge(
-					edge.a.lower, edge.a.upper, edge.b.lower, edge.b.upper,
-					edge.distance)
-				if not a_lower then
-					fail("fixed island junction graph is infeasible at " .. edge.id)
-				end
-				if a_lower ~= edge.a.lower or a_upper ~= edge.a.upper or
-						b_lower ~= edge.b.lower or b_upper ~= edge.b.upper then
-					edge.a.lower, edge.a.upper = a_lower, a_upper
-					edge.b.lower, edge.b.upper = b_lower, b_upper
-					changed = true
-				end
-			end
-		end
-		local function island_endpoint_target(owner, point)
-			local key = point.x .. ":" .. point.z
-			local landing = landing_by_coordinate[key]
-			if landing then
-				local y, record = junction_target(owner, point, WATER_LEVEL + 1,
-					"landing_endpoint", landing.id)
-				return y, "landing_endpoint", landing.id, record
-			end
-			local fitting = fixed_fitting_by_coordinate[key]
-			if fitting then
-				local y, record = junction_target(owner, point, fitting.reference_y,
-					"island_anchor_endpoint", fitting.id)
-				return y, "island_anchor_endpoint", fitting.id, record
-			end
-			local node = island_node_by_coordinate[key]
-			local preferred = scalar_before_paths(point.x, point.z)
-			local y, record = junction_target(owner, point,
-				feasible_preferred(preferred, node.lower, node.upper),
-				"free_terrain_feasible", nil, node.lower, node.upper)
-			return y, "island_junction", source.zones[owner].id, record
-		end
-		local function island_endpoint_owner(point)
-			local key = point.x .. ":" .. point.z
-			local landing = landing_by_coordinate[key]
-			local fitting = fixed_fitting_by_coordinate[key]
-			if landing and fitting and
-					landing.zone_numeric_id ~= fitting.zone_numeric_id then
-				fail("island endpoint owner differs between source records")
-			end
-			if landing then return landing.zone_numeric_id end
-			if fitting then return fitting.zone_numeric_id end
-			return nil
-		end
-		for route_index = 1, #source.island_routes do
-			local route = source.island_routes[route_index]
-			local first = route.centreline[1]
-			local last = route.centreline[#route.centreline]
-			local first_owner = island_endpoint_owner(first)
-			local last_owner = island_endpoint_owner(last)
-			if first_owner and last_owner and first_owner ~= last_owner then
-				fail("island route endpoint owners differ")
-			end
-			local owner = first_owner or last_owner
-			if not owner then
-				fail("island route has no authoritative endpoint owner")
-			end
-			local path = make_path(route.id, "island_route", 3,
-				route.centreline, 5, 12, owner, owner)
-			path.source_island_route = route
-			local first_y, first_kind, first_id, first_junction =
-				island_endpoint_target(owner, first)
-			local last_y, last_kind, last_id, last_junction =
-				island_endpoint_target(owner, last)
-			add_pin(path, 1, first_y, first_kind, first_id)
-			note_junction_use(first_junction, path, 1)
-			add_pin(path, #path.axis, last_y, last_kind, last_id)
-			note_junction_use(last_junction, path, #path.axis)
-		end
-
-		-- Record route runs through each fixed 96-node civic core.  Their land
-		-- samples already prefer the flat capital grade; water and exact route
-		-- pins remain the harder constraints when a gate approach must ramp.
-		for path_index = 1, #paths do
-			local path = paths[path_index]
-			path.civic_preference_run_count = 0
-			for run_index = 1, #path.axis do
-				local point = path.axis[run_index]
-				local water_class, _, owner = classified_values(point.x, point.z)
-				local capital = owner and capital_by_zone[owner] or nil
-				if water_class == "land" and capital and
-						(owner == path.owner_a or owner == path.owner_b) and
-						in_half_open_square(point.x, point.z, capital.center,
-							capital.profile.civic_width) then
-					path.civic_preference_run_count =
-						path.civic_preference_run_count + 1
-				end
-			end
-		end
-
-		local landing_grades, landing_route_by_id = {}, {}
-		for path_index = 1, #paths do
-			local path = paths[path_index]
-			if path.kind == "island_route" then
-				local first = path.axis[1]
-				local landing = landing_by_coordinate[first.x .. ":" .. first.z]
-				if landing then landing_route_by_id[landing.id] = path.id end
-			end
-		end
-		for landing_index = 1, #source.island_landings do
-			local row = source.island_landings[landing_index]
-			local boat
-			for boat_index = 1, #source.boat_paths do
-				if source.boat_paths[boat_index].id == row.boat_path_id then
-					boat = source.boat_paths[boat_index] break
-				end
-			end
-			if not boat or not landing_route_by_id[row.id] then
-				fail("island landing route/boat reference differs")
-			end
-			local _, segments = raster_polyline(boat.centreline)
-			landing_grades[landing_index] = {numeric_id = landing_index,
-				id = row.id, boat_path_id = boat.id,
-				route_id = landing_route_by_id[row.id],
-				zone_numeric_id = row.zone_numeric_id, width = row.width,
-				surface_y = WATER_LEVEL + 1, centreline = boat.centreline,
-				source_segments = segments}
-		end
-
-		local crossing_by_id = {}
-		for index = 1, #source.crossing_interfaces do
-			crossing_by_id[source.crossing_interfaces[index].id] =
-				source.crossing_interfaces[index]
-		end
-
-		local function projected_run_for_segment(segment, dot, length_squared)
-			local numerator = segment.first_run * length_squared +
-				dot * segment.steps
-			local quotient, remainder = divmod_nonnegative(numerator,
-				length_squared)
-			if 2 * remainder > length_squared then quotient = quotient + 1 end
-			return quotient + 1
-		end
-
-		local function path_surface_run_at(path, x, z)
-			local best, best_numerator, best_denominator, best_dot, best_length
-			for segment_index = 1, #path.source_segments do
-				local segment = path.source_segments[segment_index]
-				local numerator, denominator, dot, length_squared =
-					point_segment_ratio(x, z, segment.a, segment.b)
-				if corridor_member_ratio(numerator, denominator,
-						segment.surface_width or path.surface_width) then
-					local better = not best or rational_compare(numerator, denominator,
-						best_numerator, best_denominator) < 0
-					if not better and best and rational_compare(numerator, denominator,
-							best_numerator, best_denominator) == 0 then
-						better = segment.ordinal < best.ordinal
-					end
-					if better then
-						best, best_numerator, best_denominator = segment, numerator,
-							denominator
-						best_dot, best_length = dot, length_squared
-					end
-				end
-			end
-			return best and projected_run_for_segment(best, best_dot, best_length) or nil
-		end
-
-		local function named_operation_column_at(path, x, z, run_index)
-			for operation_index = 1, #path.operations do
-				local operation = path.operations[operation_index]
-				if operation.named_non_tunnel and run_index >= operation.first_run and
-						run_index <= operation.last_run then
-					local water_class, _, _, _, hydrology_id = classified_values(x, z)
-					if water_class == "planned_water" and
-							hydrology_id == operation.hydrology_id and
-							in_polygon(x, z, operation.authorization_polygon) then
-						return operation
-					end
-				end
-			end
-			return nil
-		end
-
-		local water_operations, named_water_operations = {}, {}
-		for interface_index = 1, #source.hydrology_interfaces do
-			local interface = source.hydrology_interfaces[interface_index]
-			if interface.route_interface_id then
-				local crossing = crossing_by_id[interface.route_interface_id]
-				local path = crossing and path_by_id[crossing.route_id] or nil
-				if not crossing or not path or crossing.kind == "tunnel" then
-					fail("named water route interface differs")
-				end
-				local reach = hydrology_by_id[interface.hydrology_id]
-				if not reach then fail("named water reach missing") end
-				local first_run, last_run
-				for run_index = 1, #path.axis do
-					local point = path.axis[run_index]
-					local water_class, _, _, _, hydrology_id =
-						classified_values(point.x, point.z)
-					local authorized = crossing.authorization_polygon and
-						in_polygon(point.x, point.z,
-							crossing.authorization_polygon) or false
-					if water_class == "planned_water" and
-							hydrology_id == interface.hydrology_id and authorized then
-						if first_run and run_index ~= last_run + 1 then
-							fail("named operation axis is disconnected")
-						end
-						first_run, last_run = first_run or run_index, run_index
-					end
-				end
-				if not first_run then fail("named operation has empty axis footprint") end
-				local kind
-				if crossing.kind == "bridge" then
-					kind = "bridge_deck"
-				elseif crossing.kind == "ford" then
-					kind = "ford"
-				elseif crossing.kind == "causeway" then
-					kind = "causeway"
-				else fail("unknown named crossing kind") end
-				local operation = {kind = kind, feature_id = path.id,
-					interface_id = crossing.id, path = path,
-					first_run = first_run, last_run = last_run,
-					hydrology_id = interface.hydrology_id,
-					authorization_polygon = crossing.authorization_polygon,
-					named_non_tunnel = true}
-				path.operations[#path.operations + 1] = operation
-				water_operations[#water_operations + 1] = operation
-				named_water_operations[#named_water_operations + 1] = operation
-				if kind == "ford" then
-					local ford_run
-					for run_index = 1, #path.axis do
-						local point = path.axis[run_index]
-						if point.x == crossing.position.x and
-								point.z == crossing.position.z then
-							ford_run = run_index break
-						end
-					end
-					if not ford_run then fail("ford centre is absent from route axis") end
-					local point = path.axis[ford_run]
-					local ford_class, _, _, ford_bay, ford_hydrology =
-						classified_values(point.x, point.z)
-					if ford_class ~= "planned_water" or
-							ford_hydrology ~= operation.hydrology_id then
-						fail("ford centre hydrology differs")
-					end
-					local datum = clearance_datum_at(point.x, point.z, ford_class,
-						ford_bay, ford_hydrology)
-					if datum == nil then fail("ford centre has no clearance datum") end
-					operation.ford_run, operation.ford_pin_y = ford_run, datum - 1
-					path.fords[#path.fords + 1] = operation
-					add_pin(path, ford_run, operation.ford_pin_y, "ford_center",
-						crossing.id)
-				end
-			end
-		end
-
-		local final_terrain_height_at, final_functional_values_at,
-			final_water_surface_at, route_evidence, tunnel_operations,
-			operation_raw_member, operation_member, path_grid,
-			route_exact_pin_evidence, route_lower_bound_evidence,
-			route_raise_evidence, ford_approach_evidence,
-			ford_approach_summary_evidence, named_operation_evidence,
-			derived_water_evidence, landing_evidence,
-			visible_surface_classification_digest
-		local function build_public_session(runtime_construction)
-			local anchor_records, anchor_evidence, capital_quality_records,
-				start_quality_records = {}, {}, {}, {}
-			local spur_id_by_anchor = {}
-			for index = 1, #source.poi_spurs do
-				spur_id_by_anchor[source.poi_spurs[index].anchor_id] =
-					source.poi_spurs[index].id
-			end
-			for anchor_index = 1, #fittings do
-				local fitting = fittings[anchor_index]
-				local anchor = fitting.anchor
-				local observed_max_cut, observed_max_fill = 0, 0
-				local core_max_cut, core_max_fill = 0, 0
-				local collar_max_cut, collar_max_fill = 0, 0
-				local cut_x, cut_z, fill_x, fill_z
-				local fitting_columns, collar_columns = 0, 0
-				local platform_columns = 0
-				local owner_escape_columns = 0
-				local platform_witness_x, platform_witness_z
-				local profile = fitting.profile
-				local envelope_half = profile.blend_width / 2
-				local grade_width = fitting.numeric_id > 12 and
-					profile.building_core_width or profile.fitting_width
-				local grade_half = grade_width / 2
-			if not runtime_construction then
-				for z = fitting.center.z - envelope_half,
-						fitting.center.z + envelope_half - 1 do
-					for x = fitting.center.x - envelope_half,
-							fitting.center.x + envelope_half - 1 do
-						local water_class, _, owner = classified_values(x, z)
-						local _, _, functional_feature_id =
-							final_functional_values_at(x, z)
-						local outside = half_open_square_excess(x, z,
-							fitting.center, grade_width)
-						if owner == fitting.zone_numeric_id then
-							if outside == 0 then fitting_columns = fitting_columns + 1
-							elseif outside < envelope_half - grade_half then
-								collar_columns = collar_columns + 1 end
-						else
-							if functional_feature_id == fitting.id then
-								owner_escape_columns = owner_escape_columns + 1
-							end
-						end
-						if not fitting.is_capital and outside == 0 and
-								owner == fitting.zone_numeric_id and
-								water_class == "planned_water" then
-							local platform_kind, _, platform_feature_id =
-								final_functional_values_at(x, z)
-							if platform_kind == "anchor_platform" and
-									platform_feature_id == fitting.id then
-								platform_columns = platform_columns + 1
-								if not platform_witness_x then
-									platform_witness_x, platform_witness_z = x, z
-								end
-							end
-						end
-						if functional_feature_id == fitting.id and
-								water_class == "land" and owner == fitting.zone_numeric_id and
-								outside < envelope_half - grade_half then
-							local natural = natural_height_at(x, z)
-							local value = final_terrain_height_at(x, z)
-							local cut, fill = natural - value, value - natural
-							if outside == 0 then
-								core_max_cut = math.max(core_max_cut, cut)
-								core_max_fill = math.max(core_max_fill, fill)
-							else
-								collar_max_cut = math.max(collar_max_cut, cut)
-								collar_max_fill = math.max(collar_max_fill, fill)
-							end
-							if cut_x == nil or cut > observed_max_cut then
-								observed_max_cut, cut_x, cut_z = cut, x, z
-							end
-							if fill_x == nil or fill > observed_max_fill then
-								observed_max_fill, fill_x, fill_z = fill, x, z
-							end
-						end
-					end
-				end
-			end
-			if owner_escape_columns ~= 0 then
-				fail("anchor fitting escaped its owner at " .. fitting.id)
-			end
+		-----------------------------------------------------------------------
+		-- Published records.
+		-----------------------------------------------------------------------
+		local anchor_records = {}
+		for anchor_index = 1, #fittings do
+			local fitting = fittings[anchor_index]
+			local anchor = fitting.anchor
 			local kind, surface_y, feature_id = final_functional_values_at(
 				fitting.center.x, fitting.center.z)
-			surface_y = surface_y or final_terrain_height_at(fitting.center.x,
-				fitting.center.z)
-			local record = {id = anchor.id, numeric_id = anchor_index,
+			anchor_records[anchor_index] = {id = anchor.id, numeric_id = anchor_index,
 				zone_numeric_id = anchor.zone_numeric_id, slot_id = anchor.slot_id,
 				template_id = anchor.template_id,
 				selection_mode = fitting.selection_mode,
 				approved_candidate_index = fitting.approved_candidate_index,
 				x = fitting.center.x,
-				y = surface_y, z = fitting.center.z,
+				y = surface_y or final_terrain_height_at(fitting.center.x,
+					fitting.center.z),
+				z = fitting.center.z,
 				platform_kind = kind == "anchor_platform" and kind or nil,
-				path_kind = spur_id_by_anchor[anchor.id],
-				functional_feature_id = feature_id}
-			anchor_records[anchor_index] = record
-			if fitting.is_capital then
-				capital_quality_records[#capital_quality_records + 1] = {
-					id = anchor.id, reference_y = fitting.reference_y,
-					reference_rule = fitting.reference_rule,
-					feasible_lower_y = fitting.civic_feasible_lower_y,
-					feasible_upper_y = fitting.civic_feasible_upper_y,
-					limit_excess = fitting.civic_limit_excess,
-					lower_witness_x = fitting.civic_lower_witness_x,
-					lower_witness_z = fitting.civic_lower_witness_z,
-					upper_witness_x = fitting.civic_upper_witness_x,
-					upper_witness_z = fitting.civic_upper_witness_z,
-				}
-			elseif fitting.start_sample_count then
-				start_quality_records[#start_quality_records + 1] = {
-					id = anchor.id, x = fitting.center.x, z = fitting.center.z,
-					reference_y = fitting.reference_y,
-					reference_rule = fitting.reference_rule,
-					sample_count = fitting.start_sample_count,
-					preferred_y = fitting.start_preferred_y,
-					feasible_lower_y = fitting.start_feasible_lower_y,
-					feasible_upper_y = fitting.start_feasible_upper_y,
-					limit_excess = fitting.start_limit_excess,
-					old_reference_y = fitting.start_old_reference_y,
-					old_sample_cost = fitting.start_old_sample_cost,
-					fit_sample_cost = fitting.start_fit_sample_cost,
-					edge_jitter = fitting.edge_witness,
-				}
-			end
-			if not runtime_construction then
-				anchor_evidence[anchor_index] = deep_copy(record)
-				anchor_evidence[anchor_index].reference_y = fitting.reference_y
-				anchor_evidence[anchor_index].reference_rule = fitting.reference_rule
-				anchor_evidence[anchor_index].start_sample_count =
-					fitting.start_sample_count
-				anchor_evidence[anchor_index].start_preferred_y =
-					fitting.start_preferred_y
-				anchor_evidence[anchor_index].start_feasible_lower_y =
-					fitting.start_feasible_lower_y
-				anchor_evidence[anchor_index].start_feasible_upper_y =
-					fitting.start_feasible_upper_y
-				anchor_evidence[anchor_index].start_limit_excess =
-					fitting.start_limit_excess
-				anchor_evidence[anchor_index].start_old_reference_y =
-					fitting.start_old_reference_y
-				anchor_evidence[anchor_index].start_old_sample_cost =
-					fitting.start_old_sample_cost
-				anchor_evidence[anchor_index].start_fit_sample_cost =
-					fitting.start_fit_sample_cost
-				anchor_evidence[anchor_index].profile_midpoint_y =
-					zone_midpoint_y[anchor.zone_numeric_id]
-				anchor_evidence[anchor_index].fitting_width = profile.fitting_width
-				anchor_evidence[anchor_index].building_core_width =
-					profile.building_core_width
-				anchor_evidence[anchor_index].blend_width = profile.blend_width
-				anchor_evidence[anchor_index].collar_width =
-					(profile.blend_width - profile.fitting_width) / 2
-				anchor_evidence[anchor_index].fitting_columns = fitting_columns
-				anchor_evidence[anchor_index].collar_columns = collar_columns
-				anchor_evidence[anchor_index].owner_escape_columns = owner_escape_columns
-				anchor_evidence[anchor_index].observed_max_cut = observed_max_cut
-				anchor_evidence[anchor_index].observed_max_cut_witness_x = cut_x
-				anchor_evidence[anchor_index].observed_max_cut_witness_z = cut_z
-				anchor_evidence[anchor_index].observed_max_fill = observed_max_fill
-				anchor_evidence[anchor_index].observed_max_fill_witness_x = fill_x
-				anchor_evidence[anchor_index].observed_max_fill_witness_z = fill_z
-				anchor_evidence[anchor_index].core_max_cut = core_max_cut
-				anchor_evidence[anchor_index].core_max_fill = core_max_fill
-				anchor_evidence[anchor_index].collar_max_cut = collar_max_cut
-				anchor_evidence[anchor_index].collar_max_fill = collar_max_fill
-				anchor_evidence[anchor_index].rejected = false
-				anchor_evidence[anchor_index].reselected = false
-				anchor_evidence[anchor_index].platform_columns = platform_columns
-				anchor_evidence[anchor_index].civic_water_columns =
-					fitting.civic_water_count
-				anchor_evidence[anchor_index].civic_max_clearance_y =
-					fitting.civic_max_clearance_y
-				anchor_evidence[anchor_index].civic_max_clearance_witness_x =
-					fitting.civic_witness_x
-				anchor_evidence[anchor_index].civic_max_clearance_witness_z =
-					fitting.civic_witness_z
-				anchor_evidence[anchor_index].civic_width = profile.civic_width
-				anchor_evidence[anchor_index].terrace_step = profile.terrace_step
-				anchor_evidence[anchor_index].civic_feasible_lower_y =
-					fitting.civic_feasible_lower_y
-				anchor_evidence[anchor_index].civic_feasible_upper_y =
-					fitting.civic_feasible_upper_y
-				anchor_evidence[anchor_index].civic_center_natural_y =
-					fitting.civic_center_natural_y
-				anchor_evidence[anchor_index].civic_limit_excess =
-					fitting.civic_limit_excess
-				anchor_evidence[anchor_index].civic_route_min_y =
-					fitting.civic_route_min_y
-				anchor_evidence[anchor_index].civic_dry_columns =
-					fitting.civic_dry_columns
-				anchor_evidence[anchor_index].core_preferred_y =
-					fitting.core_preferred_y
-				anchor_evidence[anchor_index].core_feasible_lower_y =
-					fitting.core_feasible_lower_y
-				anchor_evidence[anchor_index].core_feasible_upper_y =
-					fitting.core_feasible_upper_y
-				anchor_evidence[anchor_index].core_water_lower_y =
-					fitting.core_water_lower_y
-				anchor_evidence[anchor_index].core_limit_excess =
-					fitting.core_limit_excess
-				anchor_evidence[anchor_index].core_dry_columns =
-					fitting.core_dry_columns
-				anchor_evidence[anchor_index].civic_lower_witness_x =
-					fitting.civic_lower_witness_x
-				anchor_evidence[anchor_index].civic_lower_witness_z =
-					fitting.civic_lower_witness_z
-				anchor_evidence[anchor_index].civic_upper_witness_x =
-					fitting.civic_upper_witness_x
-				anchor_evidence[anchor_index].civic_upper_witness_z =
-					fitting.civic_upper_witness_z
-				anchor_evidence[anchor_index].platform_witness_x = platform_witness_x
-				anchor_evidence[anchor_index].platform_witness_z = platform_witness_z
-			end
-			end
-
-			local hard_records, hard_evidence = {}, {}
-			for hard_index = 1, #source.hard_protection do
-				local source_hard = source.hard_protection[hard_index]
-				local record = deep_copy(source_hard)
-				local recipe
-				for recipe_index = 1, #source.hard_protection_recipes do
-					if source.hard_protection_recipes[recipe_index].id == record.recipe_id then
-						recipe = source.hard_protection_recipes[recipe_index] break
-					end
-				end
-				if not recipe then fail("hard-protection recipe missing") end
-				record.y_min = recipe.y_min
-				record.upward_unbounded = recipe.upward_unbounded
-				record.y_policy_id = recipe.y_policy_id
-				if record.center then
-					local _, surface_y = final_functional_values_at(record.center.x,
-						record.center.z)
-					record.surface_y = surface_y or final_terrain_height_at(record.center.x,
-						record.center.z)
-				else record.surface_y = nil end
-				hard_records[hard_index] = record
-				if not runtime_construction then
-					hard_evidence[hard_index] = deep_copy(record)
-				end
-			end
-
-		if runtime_construction then
-			local metrics = {relief_profile_count = #profiles,
-				octave_lattice_count = #octave_evidence,
-				base_lattice_vertex_count = #base_rows,
-				graded_path_count = #paths,
-				contact_face_waterfall_count = #contact_face_records}
-			local session = {}
-			function session.terrain_height_at(x, z)
-				return final_terrain_height_at(x, z)
-			end
-			function session.water_surface_at(x, z)
-				return final_water_surface_at(x, z)
-			end
-			function session.coast_profile_at(x, z)
-				return derived_water_evidence.coast_profile_at(x, z)
-			end
-			function session.coast_material_at(x, z)
-				return derived_water_evidence.coast_profile_at(x, z, nil, true)
-			end
-			function session.landmark_excluded_at(x, z)
-				return derived_water_evidence.landmark_excluded_at(x, z)
-			end
-			function session.functional_surface_values_at(x, z)
-				return final_functional_values_at(x, z)
-			end
-			function session.hydrology_transition_values_at(x, z)
-				coordinate(x, "transition query x") coordinate(z, "transition query z")
-				if x < bounds.min_x or x > bounds.max_x or z < bounds.min_z or
-						z > bounds.max_z then return nil, nil, nil, nil, nil, nil end
-				local transition, progress, face_mask = transition_values_at(x, z)
-				if not transition then return nil, nil, nil, nil, nil, nil end
-				return transition.kind, transition.id, transition.upper_y,
-					transition.lower_y, progress, face_mask
-			end
-			function session.selected_anchor_3d_by_id(anchor_id)
-				if type(anchor_id) ~= "string" then return nil end
-				local anchor = anchor_by_id[anchor_id]
-				return anchor and deep_copy(anchor_records[anchor.numeric_id]) or nil
-			end
-			function session.hard_protection_volumes()
-				return deep_copy(hard_records)
-			end
-			function session.quality_geometry_records()
-				return deep_copy(capital_quality_records)
-			end
-			function session.quality_start_fitting_records()
-				return deep_copy(start_quality_records)
-			end
-			function session.quality_junction_records()
-				return deep_copy(fittings.junctions)
-			end
-			function session.metrics()
-				local result = deep_copy(metrics)
-				result.construction_sha256_calls = construction_sha_calls
-				result.query_sha256_calls = query_sha_calls
-				result.query_lattice_constructions = query_lattice_constructions
-				return result
-			end
-			return session
+				functional_feature_id = feature_id,
+				reference_y = fitting.reference_y}
 		end
 
-		local operation_evidence, tunnel_evidence = {}, {}
-		local operation_counts = {named = #named_operation_evidence,
-			derived_runs = #derived_water_evidence, tunnels = #tunnel_operations,
-			ford_approach_runs = #ford_approach_evidence,
-			causeway_columns = 0, bridge_columns = 0,
-			tunnel_named_operation_overlap_columns = 0}
-		local operation_digest_rows = {}
-		for operation_index = 1, #named_operation_evidence do
-			local evidence = named_operation_evidence[operation_index]
-			operation_evidence[#operation_evidence + 1] = deep_copy(evidence)
-			operation_digest_rows[#operation_digest_rows + 1] = canonical.array({
-				text("named"), text(evidence.interface_id), text(evidence.path_id),
-				text(evidence.kind), signed(evidence.footprint_columns),
-				text(evidence.classification_digest)})
+		local recipe_by_id = {}
+		for index = 1, #(source.hard_protection_recipes or {}) do
+			local recipe = source.hard_protection_recipes[index]
+			recipe_by_id[recipe.id] = recipe
 		end
-		for index = 1, #derived_water_evidence do
-			local evidence = derived_water_evidence[index]
-			operation_counts.causeway_columns = operation_counts.causeway_columns +
-				evidence.causeway_columns
-			operation_counts.bridge_columns = operation_counts.bridge_columns +
-				evidence.bridge_columns
-			operation_digest_rows[#operation_digest_rows + 1] = canonical.array({
-				text("derived"), text(evidence.path_id), signed(evidence.run),
-				signed(evidence.causeway_columns), signed(evidence.bridge_columns),
-				text(evidence.classification_digest)})
-		end
-		for tunnel_index = 1, #tunnel_operations do
-			local operation = tunnel_operations[tunnel_index]
-			local evidence = {interface_id = operation.interface_id,
-				path_id = operation.path.id, center_run = operation.center_run,
-				first_run = operation.first_run, last_run = operation.last_run,
-				axis_node_count = operation.last_run - operation.first_run + 1,
-				footprint_columns = operation.footprint_columns,
-				interior_min = operation.interior_min,
-				interior_min_witness_x = operation.interior_min_witness_x,
-				interior_min_witness_z = operation.interior_min_witness_z,
-				baseline_y = operation.baseline_y,
-				feasible_lower_y = operation.feasible_lower_y,
-				feasible_upper_y = operation.feasible_upper_y,
-				floor_y = operation.surface_y,
-				before_pin_run = operation.before_pin_run,
-				before_pin_y = operation.before_pin_y,
-				before_pin_source_id = operation.before_pin_source_id,
-				after_pin_run = operation.after_pin_run,
-				after_pin_y = operation.after_pin_y,
-				after_pin_source_id = operation.after_pin_source_id,
-				minimum_overburden = operation.minimum_overburden,
-				overburden_witness_x = operation.overburden_witness_x,
-				overburden_witness_z = operation.overburden_witness_z,
-				named_overlap_columns = operation.named_overlap_columns,
-				tunnel_overlap_columns = operation.tunnel_overlap_columns,
-				classification_digest = operation.classification_digest}
-			tunnel_evidence[tunnel_index] = evidence
-			operation_counts.tunnel_named_operation_overlap_columns =
-				operation_counts.tunnel_named_operation_overlap_columns +
-				evidence.named_overlap_columns
-			operation_evidence[#operation_evidence + 1] = deep_copy(evidence)
-			operation_evidence[#operation_evidence].kind = "tunnel_floor"
-			operation_digest_rows[#operation_digest_rows + 1] = canonical.array({
-				text("tunnel"), text(evidence.interface_id), text(evidence.path_id),
-				signed(evidence.first_run), signed(evidence.last_run),
-				signed(evidence.floor_y), text(evidence.classification_digest)})
-		end
-		if operation_counts.tunnel_named_operation_overlap_columns ~= 0 then
-			fail("tunnel footprints overlap named water operations")
-		end
-		operation_counts.total = operation_counts.named +
-			operation_counts.derived_runs + operation_counts.tunnels
-		local operation_digest = counted_digest(operation_digest_rows)
-		local route_digest_rows = {}
-		for index = 1, #route_evidence do
-			local row = route_evidence[index]
-			route_digest_rows[#route_digest_rows + 1] = canonical.array({
-				text(row.id), text(row.kind), signed(row.node_count),
-				signed(row.baseline_min_y), signed(row.baseline_max_y),
-				signed(row.final_min_y), signed(row.final_max_y),
-				signed(row.maximum_step), text(row.final_grade_digest)})
-		end
-		local route_digest = counted_digest(route_digest_rows)
-		local primary_profile_evidence = {}
-		for profile_index = 1, #profiles do
-			local profile = profiles[profile_index]
-			local stats = primary_profile_stats[profile_index]
-			primary_profile_evidence[profile_index] = {numeric_id = profile_index,
-				id = profile.id, root = profile.root,
-				authored_min_y = WATER_LEVEL + profile.min_above_water,
-				authored_max_y = WATER_LEVEL + profile.max_above_water,
-				octave_count = #profile.octaves,
-				sample_count = stats.count, observed_min_y = stats.minimum,
-				observed_min_count = stats.minimum_count,
-				observed_min_witness_x = stats.minimum_x,
-				observed_min_witness_z = stats.minimum_z,
-				observed_max_y = stats.maximum,
-				observed_max_count = stats.maximum_count,
-				observed_max_witness_x = stats.maximum_x,
-				observed_max_witness_z = stats.maximum_z}
-		end
-
-		for landmark_index = 1, #landmarks do
-			local landmark = landmarks[landmark_index]
-			local applied_count, full_mask_count, collar_count = 0, 0, 0
-			local rejected_owner_count, owner_feather_columns = 0, 0
-			local observed_min, observed_max
-			local min_x, min_z, max_x, max_z
-			for z = math.max(bounds.min_z,
-					landmark.center.z - landmark.radius_z - BASE_CELL),
-					math.min(bounds.max_z,
-					landmark.center.z + landmark.radius_z + BASE_CELL) do
-				for x = math.max(bounds.min_x,
-						landmark.center.x - landmark.radius_x - BASE_CELL),
-						math.min(bounds.max_x,
-						landmark.center.x + landmark.radius_x + BASE_CELL) do
-					local shape_weight = landmark_weight(landmark, x, z)
-					if shape_weight > 0 then
-						local _, _, owner = classified_values(x, z)
-						local affinity = owner_affinity_q_at(
-							landmark.zone_numeric_id, x, z)
-						local weight = deterministic.qmul(shape_weight, affinity)
-						if weight > 0 then
-							applied_count = applied_count + 1
-							if weight == Q then full_mask_count = full_mask_count + 1
-							else collar_count = collar_count + 1 end
-							if owner ~= landmark.zone_numeric_id then
-								owner_feather_columns = owner_feather_columns + 1
-							end
-							local replacement = raw_profile_height(landmark.replacement,
-								x, z)
-							if not observed_min or replacement < observed_min then
-								observed_min, min_x, min_z = replacement, x, z
-							end
-							if not observed_max or replacement > observed_max then
-								observed_max, max_x, max_z = replacement, x, z
-							end
-						elseif owner ~= landmark.zone_numeric_id then
-							rejected_owner_count = rejected_owner_count + 1
-						end
-					end
-				end
+		local hard_records = {}
+		for hard_index = 1, #(source.hard_protection or {}) do
+			local record = deep_copy(source.hard_protection[hard_index])
+			local recipe = recipe_by_id[record.recipe_id]
+			if not recipe then fail("hard-protection recipe missing") end
+			record.y_min = recipe.y_min
+			record.upward_unbounded = recipe.upward_unbounded
+			record.y_policy_id = recipe.y_policy_id
+			if record.center then
+				local _, surface_y = final_functional_values_at(record.center.x,
+					record.center.z)
+				record.surface_y = surface_y or final_terrain_height_at(
+					record.center.x, record.center.z)
 			end
-			local evidence = landmark_evidence[landmark_index]
-			evidence.center_weight_q = landmark_weight(landmark,
-				landmark.center.x, landmark.center.z)
-			evidence.center_owner_affinity_q = owner_affinity_q_at(
-				landmark.zone_numeric_id, landmark.center.x, landmark.center.z)
-			if evidence.center_owner_affinity_q <= 0 then
-				fail("landmark centre has zero owner affinity at " .. landmark.id)
-			end
-			evidence.center_natural_y = natural_height_at(landmark.center.x,
-				landmark.center.z)
-			evidence.owner_clipped_count = applied_count
-			evidence.mask_columns = full_mask_count
-			evidence.collar_columns = collar_count
-			evidence.rejected_owner_count = rejected_owner_count
-			evidence.owner_escape_columns = 0
-			evidence.owner_feather_columns = owner_feather_columns
-			evidence.observed_min_y = observed_min
-			evidence.observed_min_witness_x = min_x
-			evidence.observed_min_witness_z = min_z
-			evidence.observed_max_y = observed_max
-			evidence.observed_max_witness_x = max_x
-			evidence.observed_max_witness_z = max_z
+			hard_records[hard_index] = record
 		end
 
-		local exterior_evidence, exterior_seen = {}, {}
-		for z = bounds.min_z, bounds.max_z, 32 do
-			for x = bounds.min_x, bounds.max_x, 32 do
-				local water_class, _, _, bay_id = classified_values(x, z)
-				local key = bay_id and "bay" or water_class
-				if (key == "bay" or key == "coastal_shelf" or
-						key == "deep_ocean" or
-						key == "immutable_dragon_channel") and not exterior_seen[key] then
-					exterior_seen[key] = true
-					exterior_evidence[#exterior_evidence + 1] = {kind = key,
-						x = x, z = z, terrain_y = final_terrain_height_at(x, z),
-						water_y = final_water_surface_at(x, z), bay_id = bay_id}
-				end
-			end
-		end
-		for _, key in ipairs({"bay", "coastal_shelf", "deep_ocean",
-				"immutable_dragon_channel"}) do
-			if not exterior_seen[key] then fail("missing exterior witness " .. key) end
-		end
-
-		local relief_lattice_digest = counted_digest({canonical.array({
-			text(HEIGHT_SCHEMA), text(octave_lattice_digest),
-			text(base_lattice_digest)})})
-		local artifact_evidence = {
-			height_schema = HEIGHT_SCHEMA,
-			schema = HEIGHT_SCHEMA,
-			source_schema = source.schema,
-			layout_id = source.layout_id,
-			layout_revision_id = source.layout_revision_id,
-			full_seed_string = full_seed_string,
-			water_level = WATER_LEVEL,
-			base_lattice_digest = base_lattice_digest,
-			relief_lattice_digest = relief_lattice_digest,
-			octave_lattice_digest = octave_lattice_digest,
-			relief_roots = relief_roots,
-			octave_lattices = octave_evidence,
-			primary_profiles = primary_profile_evidence,
-			landmarks = landmark_evidence,
-			stations = station_evidence,
-			anchors = anchor_evidence,
-			source_cut_fill_limits_consumed = true,
-			capital_cut_fill_limits_consumed = true,
-			hard_protection = hard_evidence,
-			routes = route_evidence,
-			route_exact_pins = route_exact_pin_evidence,
-			route_water_lower_bounds = route_lower_bound_evidence,
-			route_raise_witnesses = route_raise_evidence,
-			ford_approaches = ford_approach_evidence,
-			ford_approach_summaries = ford_approach_summary_evidence,
-			named_water_operations = named_operation_evidence,
-			derived_water_runs = derived_water_evidence,
-			landings = landing_evidence,
-			tunnels = tunnel_evidence,
-			water_operations = operation_evidence,
-			operation_counts = operation_counts,
-			operation_digest = operation_digest,
-			route_digest = route_digest,
-			visible_surface_classification_digest =
-				visible_surface_classification_digest,
-			hydrology = hydrology_evidence,
-			interfaces = interface_evidence,
-			wet_reach_contact_pairs = 12,
-			unequal_interface_pairs =
-				hydrology_interface_population.unequal_level_pairs,
-			hydrology_interface_population = hydrology_interface_population,
-			contact_face_waterfalls = contact_face_evidence,
-			exterior_witnesses = exterior_evidence,
-			coastal_cores = coastal_evidence,
-		}
-
-		local kat_rows = {canonical.array({text("schema"), text(HEIGHT_SCHEMA),
-			text(source.schema), text(source.layout_id),
-			text(source.layout_revision_id), text(full_seed_string),
-			signed(WATER_LEVEL), text(relief_lattice_digest),
-			text(base_lattice_digest)})}
-		for index = 1, #relief_roots do
-			local row = relief_roots[index]
-			kat_rows[#kat_rows + 1] = canonical.array({text("root"), signed(index),
-				text(row.id), signed(row.root)})
-		end
-		for _, coordinates in ipairs({{bounds.min_x, bounds.min_z}, {-2049, -1537},
-				{-1, -1}, {0, 0}, {1, 1}, {2049, 1537},
-				{bounds.max_x, bounds.max_z}}) do
-			local x, z = coordinates[1], coordinates[2]
-			local kind, surface_y, feature_id, interface_id =
-				final_functional_values_at(x, z)
-			local transition_kind, transition_id, upper_y, lower_y, progress_q,
-				face_mask
-			local transition, progress, transition_face_mask =
-				transition_values_at(x, z)
-			if transition then transition_kind, transition_id, upper_y, lower_y,
-				progress_q = transition.kind, transition.id, transition.upper_y,
-				transition.lower_y, progress
-				face_mask = transition_face_mask end
-			kat_rows[#kat_rows + 1] = canonical.array({text("query"), signed(x),
-				signed(z), signed(final_terrain_height_at(x, z)),
-				signed(final_water_surface_at(x, z) or -2147483648), text(kind),
-				signed(surface_y or -2147483648), text(feature_id),
-				text(interface_id), text(transition_kind), text(transition_id),
-				signed(upper_y or -2147483648), signed(lower_y or -2147483648),
-				signed(progress_q or -2147483648),
-				signed(face_mask or -2147483648)})
-		end
-		for index = 1, #anchor_records do
-			local row = anchor_records[index]
-			kat_rows[#kat_rows + 1] = canonical.array({text("anchor"),
-				signed(index), text(row.id), text(row.selection_mode),
-				signed(row.approved_candidate_index),
-				signed(row.x), signed(row.y), signed(row.z),
-				text(row.platform_kind), text(row.path_kind)})
-		end
-		for index = 1, #contact_face_evidence do
-			local row = contact_face_evidence[index]
-			kat_rows[#kat_rows + 1] = canonical.array({text("contact_face"),
-				text(row.id), text(row.upper_id), text(row.lower_id),
-				signed(row.upper_y), signed(row.lower_y),
-				signed(row.contact_edge_count), signed(row.upper_lip_count),
-				signed(row.lower_face_count), signed(row.receiver_y),
-				signed(row.receiver_source_min_y),
-				signed(row.receiver_source_max_y),
-				signed(row.authored_falling_water_columns),
-				text(row.contact_edge_digest), text(row.upper_lip_digest),
-				text(row.lower_face_digest), text(row.direction_mask_digest),
-				text(row.contact_face_digest)})
-		end
-		kat_rows[#kat_rows + 1] = canonical.array({text("route_digest"),
-			text(route_digest), text("operation_digest"), text(operation_digest),
-			text("visible_surface_classification_digest"),
-			text(visible_surface_classification_digest)})
-		local canonical_kat = canonical.encode(canonical.array(kat_rows))
-		local canonical_kat_digest = canonical.hex(counted_sha(canonical_kat))
-
-		local metrics = {relief_profile_count = #profiles,
-			octave_lattice_count = #octave_evidence,
-			base_lattice_vertex_count = #base_rows,
-			graded_path_count = #paths,
-			contact_face_waterfall_count = #contact_face_records,
-			water_operation_count = operation_counts.total}
-
-		local session = {}
-
+		local session = {field = field}
 		function session.terrain_height_at(x, z)
 			return final_terrain_height_at(x, z)
 		end
-
 		function session.water_surface_at(x, z)
 			return final_water_surface_at(x, z)
 		end
-
 		function session.coast_profile_at(x, z)
-			return derived_water_evidence.coast_profile_at(x, z)
+			return coast_profile_at(x, z)
 		end
 		function session.coast_material_at(x, z)
-			return derived_water_evidence.coast_profile_at(x, z, nil, true)
+			return coast_profile_at(x, z, nil, true)
 		end
-
-		function session.landmark_excluded_at(x, z)
-			return derived_water_evidence.landmark_excluded_at(x, z)
+		-- Soft landmark fields exclude nothing (plan D13, Round 22 Phase 3).
+		function session.landmark_excluded_at()
+			return false
 		end
-
 		function session.functional_surface_values_at(x, z)
 			return final_functional_values_at(x, z)
 		end
-
+		-- Inland water transitions are off until Phase 5.
 		function session.hydrology_transition_values_at(x, z)
 			coordinate(x, "transition query x") coordinate(z, "transition query z")
-			if x < bounds.min_x or x > bounds.max_x or z < bounds.min_z or
-					z > bounds.max_z then return nil, nil, nil, nil, nil, nil end
-			local transition, progress, face_mask = transition_values_at(x, z)
-			if not transition then return nil, nil, nil, nil, nil, nil end
-			return transition.kind, transition.id, transition.upper_y,
-				transition.lower_y, progress, face_mask
+			return nil, nil, nil, nil, nil, nil
 		end
-
+		-- The natural (pre-fitting) surface, for tools and fit reports.
+		function session.natural_height_at(x, z)
+			coordinate(x, "natural query x") coordinate(z, "natural query z")
+			if outside(x, z) then return OUTSIDE_FLOOR end
+			return natural_height_at(x, z)
+		end
 		function session.selected_anchor_3d_by_id(anchor_id)
 			if type(anchor_id) ~= "string" then return nil end
 			local anchor = anchor_by_id[anchor_id]
-			return anchor and deep_copy(anchor_records[anchor.numeric_id]) or nil
-		end
-
-		function session.hard_protection_volumes()
-			return deep_copy(hard_records)
-		end
-
-		function session.quality_geometry_records()
-			return deep_copy(capital_quality_records)
-		end
-
-		function session.quality_start_fitting_records()
-			return deep_copy(start_quality_records)
-		end
-
-		function session.quality_junction_records()
-			return deep_copy(fittings.junctions)
-		end
-
-		function session.relief_lattice_digest()
-			return relief_lattice_digest
-		end
-
-		function session.base_lattice_digest()
-			return base_lattice_digest
-		end
-
-		function session.canonical_kat()
-			return canonical_kat
-		end
-
-		function session.canonical_kat_digest()
-			return canonical_kat_digest
-		end
-
-		function session.artifact_evidence()
-			return deep_copy(artifact_evidence)
-		end
-
-		function session.metrics()
-			local result = deep_copy(metrics)
-			result.construction_sha256_calls = construction_sha_calls
-			result.query_sha256_calls = query_sha_calls
-			result.query_lattice_constructions = query_lattice_constructions
-			return result
-		end
-
-		return session
-	end
-
-		local function ordered_pin_indices(path)
-			local result = {}
-			for run_index in pairs(path.pins) do result[#result + 1] = run_index end
-			table.sort(result)
-			return result
-		end
-
-		local function baseline_from_pins(path)
-			local pins = path.pins
-			local indices = ordered_pin_indices(path)
-			local result = {}
-			if #indices < 2 or indices[1] ~= 1 or
-					indices[#indices] ~= #path.axis then
-				fail("route pin set does not cover axis at " .. path.id)
-			end
-			for index = 1, #indices - 1 do
-				local a, b = indices[index], indices[index + 1]
-				local ay, by = pins[a].y, pins[b].y
-				if math.abs(by - ay) > b - a then
-					fail("route exact-pin interval is infeasible at " .. path.id)
-				end
-				for run_index = a, b do
-					result[run_index] = ay + round_ratio(
-						(by - ay) * (run_index - a), b - a)
-				end
-			end
-			return result
-		end
-
-		local function visit_path_surface(path, first_run, last_run, callback)
-			local seen = {}
-			for segment_index = 1, #path.source_segments do
-				local segment = path.source_segments[segment_index]
-				local min_x = math.min(segment.a.x, segment.b.x) - path.surface_width
-				local max_x = math.max(segment.a.x, segment.b.x) + path.surface_width
-				local min_z = math.min(segment.a.z, segment.b.z) - path.surface_width
-				local max_z = math.max(segment.a.z, segment.b.z) + path.surface_width
-				for z = min_z, max_z do
-					local row = seen[z]
-					if not row then row = {} seen[z] = row end
-					for x = min_x, max_x do
-						if not row[x] then
-							row[x] = true
-							local run_index = path_surface_run_at(path, x, z)
-							if run_index and run_index >= first_run and
-									run_index <= last_run then
-								callback(x, z, run_index)
-							end
-						end
-					end
-				end
-			end
-		end
-
-		tunnel_operations = {}
-		local tunnel_column_owner = {}
-		for crossing_index = 1, #source.crossing_interfaces do
-			local crossing = source.crossing_interfaces[crossing_index]
-			if crossing.kind == "tunnel" then
-				local path = path_by_id[crossing.route_id]
-				if not path then fail("tunnel route missing") end
-				local center_run
-				for run_index = 1, #path.axis do
-					local point = path.axis[run_index]
-					if point.x == crossing.position.x and point.z == crossing.position.z then
-						center_run = run_index break
-					end
-				end
-				if not center_run or center_run <= 16 or
-						center_run + 16 > #path.axis then
-					fail("tunnel does not have its exact 33-node span")
-				end
-				local first_run, last_run = center_run - 16, center_run + 16
-				for index = 1, #tunnel_operations do
-					local old = tunnel_operations[index]
-					if old.path == path and first_run <= old.last_run and
-							last_run >= old.first_run then
-						fail("tunnel interfaces overlap")
-					end
-				end
-				local pin_indices = ordered_pin_indices(path)
-				local before_run, after_run
-				for index = 1, #pin_indices do
-					local run_index = pin_indices[index]
-					if run_index < first_run then before_run = run_index end
-					if run_index > last_run then after_run = run_index break end
-				end
-				if not before_run or not after_run then
-					fail("tunnel lacks external non-tunnel pins")
-				end
-				local baseline = baseline_from_pins(path)
-				local baseline_y = baseline[center_run]
-				local interior_min, interior_x, interior_z, footprint_columns
-				local tunnel_rows, named_overlap_columns, tunnel_overlap_columns =
-					{}, 0, 0
-				visit_path_surface(path, first_run, last_run,
-					function(x, z, run_index)
-						footprint_columns = (footprint_columns or 0) + 1
-						local water_class = classified_values(x, z)
-						if water_class ~= "land" then
-							fail("tunnel footprint is not land at " .. crossing.id)
-						end
-						if named_operation_column_at(path, x, z, run_index) then
-							named_overlap_columns = named_overlap_columns + 1
-						end
-						local key = x .. ":" .. z
-						if tunnel_column_owner[key] then
-							tunnel_overlap_columns = tunnel_overlap_columns + 1
-						else tunnel_column_owner[key] = crossing.id end
-						local h = scalar_before_paths(x, z)
-						if interior_min == nil or h < interior_min then
-							interior_min, interior_x, interior_z = h, x, z
-						end
-						if not runtime_mode then
-							tunnel_rows[#tunnel_rows + 1] = canonical.array({
-								signed(x), signed(z), signed(run_index), signed(h)})
-						end
-					end)
-				if named_overlap_columns ~= 0 or tunnel_overlap_columns ~= 0 then
-					fail("tunnel footprint overlaps another operation")
-				end
-				local before_y, after_y = path.pins[before_run].y,
-					path.pins[after_run].y
-				local before_distance, after_distance = first_run - before_run,
-					after_run - last_run
-				local lower = math.max(before_y - before_distance,
-					after_y - after_distance)
-				local upper = math.min(interior_min - 5,
-					before_y + before_distance, after_y + after_distance)
-				if lower > upper then
-					fail("tunnel floor interval is empty at " .. crossing.id)
-				end
-				local floor_y = clamp(baseline_y, lower, upper)
-				add_pin(path, first_run, floor_y, "tunnel_first", crossing.id)
-				add_pin(path, last_run, floor_y, "tunnel_last", crossing.id)
-				local operation = {kind = "tunnel_floor", feature_id = path.id,
-					interface_id = crossing.id, path = path, first_run = first_run,
-					last_run = last_run, surface_y = floor_y, tunnel = true,
-					center_run = center_run, interior_min = interior_min,
-					interior_min_witness_x = interior_x,
-					interior_min_witness_z = interior_z,
-					footprint_columns = footprint_columns,
-					baseline_y = baseline_y, feasible_lower_y = lower,
-					feasible_upper_y = upper, before_pin_run = before_run,
-					before_pin_y = before_y,
-					before_pin_source_id = path.pins[before_run].source_id,
-					after_pin_run = after_run, after_pin_y = after_y,
-					after_pin_source_id = path.pins[after_run].source_id,
-					minimum_overburden = interior_min - floor_y,
-					overburden_witness_x = interior_x,
-					overburden_witness_z = interior_z,
-					named_overlap_columns = named_overlap_columns,
-					tunnel_overlap_columns = tunnel_overlap_columns,
-					classification_digest = not runtime_mode and
-						counted_digest(tunnel_rows) or nil}
-				path.operations[#path.operations + 1] = operation
-				tunnel_operations[#tunnel_operations + 1] = operation
-				water_operations[#water_operations + 1] = operation
-			end
-		end
-
-		local function lexicographically_before(x, z, old_x, old_z)
-			return old_x == nil or x < old_x or (x == old_x and z < old_z)
-		end
-
-		local function ford_cap_at(path, hydrology_id, run_index, ordinary_lower)
-			local best, best_cap
-			for index = 1, #path.fords do
-				local ford = path.fords[index]
-				if ford.hydrology_id == hydrology_id then
-					local cap = ford.ford_pin_y + math.abs(run_index - ford.ford_run)
-					if cap < ordinary_lower and (not best or cap < best_cap or
-							(cap == best_cap and ford.interface_id < best.interface_id)) then
-						best, best_cap = ford, cap
-					end
-				end
-			end
-			return best, best_cap
-		end
-
-		path_grid = {}
-		for path_index = 1, #paths do
-			local path = paths[path_index]
-			for segment_index = 1, #path.source_segments do
-				local segment = path.source_segments[segment_index]
-				segment.path = path
-				add_bucket(path_grid, segment,
-					math.min(segment.a.x, segment.b.x) - path.corridor_width,
-					math.max(segment.a.x, segment.b.x) + path.corridor_width,
-					math.min(segment.a.z, segment.b.z) - path.corridor_width,
-					math.max(segment.a.z, segment.b.z) + path.corridor_width)
-			end
-		end
-
-		local function path_segment_better(segment, numerator, denominator,
-				best, best_numerator, best_denominator)
-			if not best then return true end
-			local comparison = rational_compare(numerator, denominator,
-				best_numerator, best_denominator)
-			if comparison ~= 0 then return comparison < 0 end
-			if segment.path.priority ~= best.path.priority then
-				return segment.path.priority < best.path.priority
-			end
-			if segment.path.id ~= best.path.id then
-				return segment.path.id < best.path.id
-			end
-			return segment.ordinal < best.ordinal
-		end
-
-		local function nearest_path_segment_at(x, z, width_kind, only_path)
-			local candidates = only_path and only_path.source_segments or
-				bucket_at(path_grid, x, z)
-			if not candidates then return nil end
-			local best, best_numerator, best_denominator, best_dot, best_length
-			for index = 1, #candidates do
-				local segment = candidates[index]
-				local path = segment.path or only_path
-				local width = width_kind == "surface" and
-					(segment.surface_width or path.surface_width) or
-					(segment.corridor_width or path.corridor_width)
-				local numerator, denominator, dot, length_squared =
-					point_segment_ratio(x, z, segment.a, segment.b)
-				if corridor_member_ratio(numerator, denominator, width) and
-						path_segment_better(segment, numerator, denominator, best,
-							best_numerator, best_denominator) then
-					best, best_numerator, best_denominator = segment, numerator,
-						denominator
-					best_dot, best_length = dot, length_squared
-				end
-			end
-			if not best then return nil end
-			return best, best_numerator, best_denominator,
-				projected_run_for_segment(best, best_dot, best_length)
-		end
-
-		local function winning_named_operation_at(x, z)
-			local winner
-			for operation_index = 1, #named_water_operations do
-				local operation = named_water_operations[operation_index]
-				local run_index = path_surface_run_at(operation.path, x, z)
-				if run_index and named_operation_column_at(operation.path, x, z,
-						run_index) == operation and (not winner or
-						operation.interface_id < winner.interface_id) then
-					winner = operation
-				end
-			end
-			return winner
-		end
-
-		route_evidence, route_exact_pin_evidence = {}, {}
-		route_lower_bound_evidence, route_raise_evidence = {}, {}
-		ford_approach_evidence, ford_approach_summary_evidence = {}, {}
-		named_operation_evidence, derived_water_evidence = {}, {}
-		local complete_classification_rows = {}
-		for path_index = 1, #paths do
-			local path = paths[path_index]
-			path.baseline = baseline_from_pins(path)
-			path.lower, path.lower_columns, path.lower_witness = {}, {}, {}
-			path.preferred_land = {}
-			path.ford_cap_by_run = {}
-			visit_path_surface(path, 1, #path.axis, function(x, z, run_index)
-				local water_class, _, owner, bay_id, hydrology_id =
-					classified_values(x, z)
-				if water_class == "planned_water" then
-					if owner ~= path.owner_a and owner ~= path.owner_b then
-						fail("graded path enters non-local planned water at " .. path.id)
-					end
-					local datum = clearance_datum_at(x, z, water_class, bay_id,
-						hydrology_id)
-					if datum == nil then fail("path water has no clearance datum") end
-					local operation = named_operation_column_at(path, x, z, run_index)
-					local lower_y, bound_kind, interface_id
-					if operation then
-						bound_kind, interface_id = operation.kind, operation.interface_id
-						if operation.kind == "bridge_deck" then lower_y = datum + 4
-						elseif operation.kind == "causeway" then lower_y = datum + 1
-						else lower_y = datum - 1 end
-					else
-						local uncapped = datum + 1
-						local ford, cap = ford_cap_at(path, hydrology_id, run_index,
-							uncapped)
-						if ford then
-							lower_y, bound_kind, interface_id = cap, "ford_approach",
-								ford.interface_id
-							local active = path.ford_cap_by_run[run_index]
-							if not active or uncapped > active.uncapped_lower_y or
-									(uncapped == active.uncapped_lower_y and
-										lexicographically_before(x, z, active.witness_x,
-											active.witness_z)) then
-								path.ford_cap_by_run[run_index] = {path_id = path.id,
-									run = run_index, interface_id = ford.interface_id,
-									hydrology_id = hydrology_id, ford_run = ford.ford_run,
-									ford_pin_y = ford.ford_pin_y,
-									distance = math.abs(run_index - ford.ford_run),
-									uncapped_lower_y = uncapped, capped_lower_y = cap,
-									witness_x = x, witness_z = z}
-							end
-						else lower_y, bound_kind = uncapped, "ordinary_water" end
-					end
-					path.lower_columns[run_index] =
-						(path.lower_columns[run_index] or 0) + 1
-					local old = path.lower[run_index]
-					local witness = path.lower_witness[run_index]
-					if old == nil or lower_y > old or (lower_y == old and
-							lexicographically_before(x, z, witness.x, witness.z)) then
-						path.lower[run_index] = lower_y
-						path.lower_witness[run_index] = {x = x, z = z,
-							kind = bound_kind, interface_id = interface_id,
-							water_y = datum, lower_y = lower_y, run = run_index}
-					end
-				elseif water_class == "land" then
-					local bank_floor = water_banks.floor_at(x, z, path, run_index)
-					if bank_floor then
-						path.lower_columns[run_index] = (path.lower_columns[run_index] or 0) + 1
-						local old = path.lower[run_index]
-						local witness = path.lower_witness[run_index]
-						if not old or bank_floor > old or (bank_floor == old and
-								lexicographically_before(x, z, witness.x, witness.z)) then
-							path.lower[run_index] = bank_floor
-							path.lower_witness[run_index] = {x = x, z = z, kind = "water_bank",
-								water_y = bank_floor, lower_y = bank_floor, run = run_index}
-						end
-					end
-					local natural = scalar_before_paths(x, z)
-					-- Prefer cutting the uphill side over raising the downhill edge.
-					-- This is a preference only; pins, water and step limits win.
-					record_road_land_preference(path.preferred_land, run_index, natural)
-				elseif water_class ~= "land" then
-					fail("graded path enters forbidden exterior water at " .. path.id)
-				end
-			end)
-			path.preferred, path.reachable_lower, path.reachable_upper = {}, {}, {}
-			for run_index = 1, #path.axis do
-				path.preferred[run_index] = path.preferred_land[run_index] or
-					path.baseline[run_index]
-				local lower_y = path.lower[run_index] or GRADE_MIN
-				local upper_y = GRADE_MAX
-				local pin = path.pins[run_index]
-				if pin then
-					if pin.y < lower_y then
-						fail("route exact pin violates water lower bound at " .. path.id)
-					end
-					lower_y, upper_y = pin.y, pin.y
-				end
-				if run_index > 1 then
-					lower_y = math.max(lower_y,
-						path.reachable_lower[run_index - 1] - 1)
-					upper_y = math.min(upper_y,
-						path.reachable_upper[run_index - 1] + 1)
-				end
-				if lower_y > upper_y then
-					fail("route pin/water/grade interval is infeasible at " .. path.id ..
-						" run " .. tostring(run_index) .. " lower " ..
-						tostring(lower_y) .. " upper " .. tostring(upper_y) ..
-						" pin " .. tostring(pin and pin.y or nil) ..
-						" water " .. tostring(path.lower[run_index]))
-				end
-				path.reachable_lower[run_index] = lower_y
-				path.reachable_upper[run_index] = upper_y
-			end
-			local failed_run, failed_lower, failed_upper
-			path.y, failed_run, failed_lower, failed_upper =
-				backtrack_preferred_grade(path.preferred, path.reachable_lower,
-					path.reachable_upper)
-			if not path.y then
-				fail("route backtracking interval is infeasible at " .. path.id ..
-					" run " .. tostring(failed_run) .. " lower " ..
-					tostring(failed_lower) .. " upper " .. tostring(failed_upper))
-			end
-		end
-
-		local function visible_path_at(x, z)
-			local operation = winning_named_operation_at(x, z)
-			local path, run_index
-			if not operation then
-				for index = 1, #tunnel_operations do
-					local tunnel = tunnel_operations[index]
-					local segment, _, _, tunnel_run = nearest_path_segment_at(x, z,
-						"surface", tunnel.path)
-					if segment and tunnel_run >= tunnel.first_run and
-							tunnel_run <= tunnel.last_run then
-						operation = tunnel
-						break
-					end
-				end
-			end
-			if operation then
-				if operation.kind == "tunnel_floor" then
-					return nil, nil, operation.interface_id, operation.surface_y
-				end
-				path = operation.path
-				run_index = path_surface_run_at(path, x, z)
-			else
-				local segment, _, _, nearest_run =
-					nearest_path_segment_at(x, z, "surface", nil)
-				run_index = nearest_run
-				path = segment and segment.path or nil
-			end
-			return path, run_index
-		end
-		local solved, failed_path, failed_run, failed_lower, failed_upper =
-			coupled_grade.solve_paths(paths, GRADE_MIN, GRADE_MAX, visible_path_at)
-		if not solved then
-			local path, run = failed_path, failed_run
-			fail("coupled route grade is infeasible at " .. path.id .. " run " ..
-				tostring(run) .. " lower " .. tostring(failed_lower) .. " upper " ..
-				tostring(failed_upper))
-		end
-		for path_index = 1, #paths do
-			local path = paths[path_index]
-
-			local pin_indices = ordered_pin_indices(path)
-			for pin_index = 1, #pin_indices do
-				local run_index = pin_indices[pin_index]
-				local pin = path.pins[run_index]
-				if path.y[run_index] ~= pin.y then
-					fail("route envelope changed exact pin at " .. path.id)
-				end
-				if not runtime_mode then
-					route_exact_pin_evidence[#route_exact_pin_evidence + 1] = {
-						path_id = path.id, run = run_index, pin_kind = pin.pin_kind,
-						source_id = pin.source_id, y = pin.y,
-						baseline_y = path.baseline[run_index],
-						final_y = path.y[run_index]}
-				end
-			end
-			if not runtime_mode then
-				local baseline_rows, final_rows, pin_rows, lower_rows = {}, {}, {}, {}
-				local baseline_min, baseline_max, final_min, final_max, maximum_step
-				local preferred_min, preferred_max, maximum_preference_deviation =
-					nil, nil, 0
-				local lower_run_count, lower_column_count, raised_run_count = 0, 0, 0
-				for run_index = 1, #path.axis do
-					local point = path.axis[run_index]
-					local base_y, final_y = path.baseline[run_index], path.y[run_index]
-					local preferred_y = path.preferred[run_index]
-					baseline_min = baseline_min and math.min(baseline_min, base_y) or base_y
-					baseline_max = baseline_max and math.max(baseline_max, base_y) or base_y
-					final_min = final_min and math.min(final_min, final_y) or final_y
-					final_max = final_max and math.max(final_max, final_y) or final_y
-					preferred_min = preferred_min and math.min(preferred_min,
-						preferred_y) or preferred_y
-					preferred_max = preferred_max and math.max(preferred_max,
-						preferred_y) or preferred_y
-					maximum_preference_deviation = math.max(
-						maximum_preference_deviation, math.abs(final_y - preferred_y))
-					baseline_rows[#baseline_rows + 1] = canonical.array({signed(run_index),
-						signed(point.x), signed(point.z), signed(base_y)})
-					final_rows[#final_rows + 1] = canonical.array({signed(run_index),
-						signed(final_y)})
-					if run_index > 1 then
-						local step = math.abs(final_y - path.y[run_index - 1])
-						maximum_step = math.max(maximum_step or 0, step)
-						if step > 1 then fail("final route step exceeds one at " .. path.id) end
-					end
-					if path.lower[run_index] then
-						lower_run_count = lower_run_count + 1
-						lower_column_count = lower_column_count + path.lower_columns[run_index]
-						local witness = path.lower_witness[run_index]
-						local row = {path_id = path.id, run = run_index,
-							column_count = path.lower_columns[run_index],
-							lower_y = path.lower[run_index], witness_x = witness.x,
-							witness_z = witness.z, bound_kind = witness.kind,
-							interface_id = witness.interface_id}
-						route_lower_bound_evidence[#route_lower_bound_evidence + 1] = row
-						lower_rows[#lower_rows + 1] = canonical.array({signed(run_index),
-							signed(row.column_count), signed(row.lower_y), signed(row.witness_x),
-							signed(row.witness_z), text(row.bound_kind), text(row.interface_id)})
-					end
-					if final_y > base_y then
-						raised_run_count = raised_run_count + 1
-						local support = path.lower_witness[run_index]
-						local support_point = path.axis[run_index]
-						route_raise_evidence[#route_raise_evidence + 1] = {
-							path_id = path.id, run = run_index, baseline_y = base_y,
-							final_y = final_y, support_run = support and support.run or
-								run_index,
-							support_lower_y = support and support.lower_y or preferred_y,
-							support_x = support and support.x or support_point.x,
-							support_z = support and support.z or support_point.z,
-							support_kind = support and support.kind or
-								"natural_preference",
-							support_id = support and support.interface_id or nil}
-					end
-					local active = path.ford_cap_by_run[run_index]
-					if active then ford_approach_evidence[#ford_approach_evidence + 1] =
-						deep_copy(active) end
-				end
-				for pin_index = 1, #pin_indices do
-					local run_index = pin_indices[pin_index]
-					local pin = path.pins[run_index]
-					pin_rows[#pin_rows + 1] = canonical.array({signed(run_index),
-						text(pin.pin_kind), text(pin.source_id), signed(pin.y)})
-				end
-
-				local classification_rows = {}
-				local derived_by_run = {}
-				local observed_max_cut, observed_max_fill = 0, 0
-				local cut_x, cut_z, fill_x, fill_z
-				visit_path_surface(path, 1, #path.axis, function(x, z, run_index)
-					local water_class, _, owner, bay_id, hydrology_id =
-						classified_values(x, z)
-					if water_class == "land" then
-						local natural = scalar_before_paths(x, z)
-						local cut = natural - path.y[run_index]
-						local fill = path.y[run_index] - natural
-						if cut > observed_max_cut then
-							observed_max_cut, cut_x, cut_z = cut, x, z
-						end
-						if fill > observed_max_fill then
-							observed_max_fill, fill_x, fill_z = fill, x, z
-						end
-					end
-					local kind, interface_id = "land_grade", nil
-					if water_class == "planned_water" and
-							(owner == path.owner_a or owner == path.owner_b) then
-						local operation = named_operation_column_at(path, x, z, run_index)
-						if operation then kind, interface_id = operation.kind,
-							operation.interface_id
-						else
-							local datum = clearance_datum_at(x, z, water_class, bay_id,
-								hydrology_id)
-							local ford = ford_cap_at(path, hydrology_id, run_index, datum + 1)
-							if ford then kind, interface_id = "ford", ford.interface_id
-							elseif path.y[run_index] == datum + 1 then kind = "causeway"
-							else kind = "bridge_deck" end
-							local winning_segment = nearest_path_segment_at(x, z,
-								"surface", nil)
-							local visible_derived = not ford and winning_segment and
-								winning_segment.path == path and
-								winning_named_operation_at(x, z) == nil
-							if visible_derived then
-								local row = derived_by_run[run_index]
-								if not row then row = {path_id = path.id, run = run_index,
-									causeway_columns = 0, bridge_columns = 0, rows = {}}
-									derived_by_run[run_index] = row end
-								if kind == "causeway" then
-									row.causeway_columns = row.causeway_columns + 1
-									if lexicographically_before(x, z, row.causeway_witness_x,
-											row.causeway_witness_z) then
-										row.causeway_witness_x, row.causeway_witness_z = x, z
-									end
-								else
-									row.bridge_columns = row.bridge_columns + 1
-									if lexicographically_before(x, z, row.bridge_witness_x,
-											row.bridge_witness_z) then
-										row.bridge_witness_x, row.bridge_witness_z = x, z
-									end
-								end
-								row.rows[#row.rows + 1] = canonical.array({signed(x), signed(z),
-									signed(run_index), text(kind), signed(path.y[run_index])})
-							end
-						end
-					end
-					local encoded = canonical.array({text(path.id), signed(x), signed(z),
-						signed(run_index), text(kind), signed(path.y[run_index]),
-						text(interface_id)})
-					classification_rows[#classification_rows + 1] = encoded
-					complete_classification_rows[#complete_classification_rows + 1] = encoded
-				end)
-				for run_index = 1, #path.axis do
-					local row = derived_by_run[run_index]
-					if row then
-						row.classification_digest = counted_digest(row.rows)
-						row.rows = nil
-						derived_water_evidence[#derived_water_evidence + 1] = row
-					end
-				end
-				local classification_digest = counted_digest(classification_rows)
-				route_evidence[path_index] = {numeric_id = path_index, id = path.id,
-					kind = path.kind, node_count = #path.axis,
-					civic_preference_run_count = path.civic_preference_run_count,
-					baseline_min_y = baseline_min, baseline_max_y = baseline_max,
-					preferred_min_y = preferred_min, preferred_max_y = preferred_max,
-					maximum_preference_deviation = maximum_preference_deviation,
-					final_min_y = final_min, final_max_y = final_max,
-					observed_max_cut = observed_max_cut,
-					observed_max_cut_witness_x = cut_x,
-					observed_max_cut_witness_z = cut_z,
-					observed_max_fill = observed_max_fill,
-					observed_max_fill_witness_x = fill_x,
-					observed_max_fill_witness_z = fill_z,
-					maximum_step = maximum_step or 0, exact_pin_count = #pin_indices,
-					water_lower_bound_run_count = lower_run_count,
-					water_lower_bound_column_count = lower_column_count,
-					raised_run_count = raised_run_count,
-					support_witness_count = raised_run_count,
-					baseline_digest = counted_digest(baseline_rows),
-					final_grade_digest = counted_digest(final_rows),
-					exact_pin_digest = counted_digest(pin_rows),
-					lower_bound_digest = counted_digest(lower_rows),
-					classification_digest = classification_digest}
-			end
-		end
-
-		if not runtime_mode then
-			for operation_index = 1, #named_water_operations do
-				local operation = named_water_operations[operation_index]
-				local count, minimum, maximum, witness_x, witness_z = 0
-				local rows = {}
-				visit_path_surface(operation.path, operation.first_run,
-					operation.last_run, function(x, z, run_index)
-						if named_operation_column_at(operation.path, x, z, run_index) ==
-								operation then
-							local surface_y = operation.path.y[run_index]
-							count = count + 1
-							minimum = minimum and math.min(minimum, surface_y) or surface_y
-							maximum = maximum and math.max(maximum, surface_y) or surface_y
-							local identity_wins = true
-							for other_index = 1, #named_water_operations do
-								local other = named_water_operations[other_index]
-								if other ~= operation and
-										other.interface_id < operation.interface_id then
-									local other_run = path_surface_run_at(other.path, x, z)
-									if other_run and named_operation_column_at(other.path,
-											x, z, other_run) == other then
-										identity_wins = false
-										break
-									end
-								end
-							end
-							if identity_wins and
-									lexicographically_before(x, z, witness_x, witness_z) then
-								witness_x, witness_z = x, z
-							end
-							rows[#rows + 1] = canonical.array({signed(x), signed(z),
-								signed(run_index), signed(surface_y)})
-						end
-					end)
-				if count == 0 then fail("named operation has empty 2D footprint") end
-				if not witness_x then fail("named operation has no final identity witness") end
-				named_operation_evidence[operation_index] = {
-					interface_id = operation.interface_id, path_id = operation.path.id,
-					kind = operation.kind, footprint_columns = count,
-					min_surface_y = minimum, max_surface_y = maximum,
-					first_witness_x = witness_x, first_witness_z = witness_z,
-					classification_digest = counted_digest(rows)}
-			end
-			visible_surface_classification_digest =
-				counted_digest(complete_classification_rows)
-
-			for path_index = 1, #paths do
-				local path = paths[path_index]
-				for ford_index = 1, #path.fords do
-					local ford = path.fords[ford_index]
-					local count, first_run, last_run = 0
-					for run_index = 1, #path.axis do
-						local active = path.ford_cap_by_run[run_index]
-						if active and active.interface_id == ford.interface_id then
-							count = count + 1
-							first_run = first_run and math.min(first_run, run_index) or run_index
-							last_run = last_run and math.max(last_run, run_index) or run_index
-						end
-					end
-					local resume_before_run, resume_after_run
-					if first_run then
-						for run_index = first_run - 1, 1, -1 do
-							local witness = path.lower_witness[run_index]
-							if witness and witness.kind == "ordinary_water" then
-								resume_before_run = run_index
-								break
-							end
-						end
-						for run_index = last_run + 1, #path.axis do
-							local witness = path.lower_witness[run_index]
-							if witness and witness.kind == "ordinary_water" then
-								resume_after_run = run_index
-								break
-							end
-						end
-					end
-					ford_approach_summary_evidence[#ford_approach_summary_evidence + 1] = {
-						interface_id = ford.interface_id, path_id = path.id,
-						ford_run = ford.ford_run, ford_pin_y = ford.ford_pin_y,
-						capped_run_count = count, first_run = first_run, last_run = last_run,
-						resume_before_run = resume_before_run,
-						resume_after_run = resume_after_run}
-					end
-				end
-		end
-
-		local function landing_member(landing, x, z)
-			for segment_index = 1, #landing.source_segments do
-				local segment = landing.source_segments[segment_index]
-				local numerator, denominator = point_segment_ratio(x, z,
-					segment.a, segment.b)
-				if corridor_member_ratio(numerator, denominator, landing.width) then
-					return true
-				end
-			end
-			return false
-		end
-
-		local function landing_grade_at(x, z, owner, water_class)
-			if water_class ~= "land" then return nil end
-			for landing_index = 1, #landing_grades do
-				local landing = landing_grades[landing_index]
-				if owner == landing.zone_numeric_id and landing_member(landing, x, z) then
-					return landing.surface_y, landing
+			if not anchor then return nil end
+			for index = 1, #fittings do
+				if fittings[index].anchor == anchor then
+					return deep_copy(anchor_records[index])
 				end
 			end
 			return nil
 		end
-
-		landing_evidence = {}
-		if not runtime_mode then
-			for landing_index = 1, #landing_grades do
-				local landing = landing_grades[landing_index]
-				local min_x, max_x, min_z, max_z
-				for point_index = 1, #landing.centreline do
-					local point = landing.centreline[point_index]
-					min_x = min_x and math.min(min_x, point.x) or point.x
-					max_x = max_x and math.max(max_x, point.x) or point.x
-					min_z = min_z and math.min(min_z, point.z) or point.z
-					max_z = max_z and math.max(max_z, point.z) or point.z
-				end
-				local land_columns, graded_columns, water_unchanged, mainland_unchanged =
-					0, 0, 0, 0
-				local witness_x, witness_z, rows = nil, nil, {}
-				for z = min_z - landing.width, max_z + landing.width do
-					for x = min_x - landing.width, max_x + landing.width do
-						if landing_member(landing, x, z) then
-							local water_class, _, owner = classified_values(x, z)
-							local result = "unchanged"
-							if water_class == "land" and owner == landing.zone_numeric_id then
-								land_columns, graded_columns = land_columns + 1,
-									graded_columns + 1
-								result = "landing_grade"
-								if lexicographically_before(x, z, witness_x, witness_z) then
-									witness_x, witness_z = x, z
-								end
-							elseif water_class ~= "land" then
-								water_unchanged = water_unchanged + 1
-							else mainland_unchanged = mainland_unchanged + 1 end
-							rows[#rows + 1] = canonical.array({signed(x), signed(z),
-								text(water_class), signed(owner or 0), text(result)})
-						end
-					end
-				end
-				landing_evidence[landing_index] = {id = landing.id,
-					boat_path_id = landing.boat_path_id, route_id = landing.route_id,
-					surface_y = landing.surface_y, corridor_land_columns = land_columns,
-					graded_columns = graded_columns,
-					water_columns_unchanged = water_unchanged,
-					mainland_columns_unchanged = mainland_unchanged,
-					witness_x = witness_x, witness_z = witness_z,
-						classification_digest = counted_digest(rows)}
-			end
+		function session.hard_protection_volumes()
+			return deep_copy(hard_records)
 		end
-
-		local operation_grid = {}
-		for operation_index = 1, #water_operations do
-			local operation = water_operations[operation_index]
-			local min_x, max_x, min_z, max_z
-			for run_index = operation.first_run, operation.last_run do
-				local point = operation.path.axis[run_index]
-				min_x = not min_x and point.x or math.min(min_x, point.x)
-				max_x = not max_x and point.x or math.max(max_x, point.x)
-				min_z = not min_z and point.z or math.min(min_z, point.z)
-				max_z = not max_z and point.z or math.max(max_z, point.z)
-			end
-			operation.priority = operation.named_non_tunnel and 1 or 2
-			add_bucket(operation_grid, operation,
-				min_x - operation.path.surface_width,
-				max_x + operation.path.surface_width,
-				min_z - operation.path.surface_width,
-				max_z + operation.path.surface_width)
+		function session.metrics()
+			return {query_lattice_constructions = 0, memo_hits = memo_hits,
+				memo_misses = memo_misses, memo_blocks = block_builds}
 		end
-
-		operation_raw_member = function(operation, x, z)
-			local segment, _, _, run_index = nearest_path_segment_at(x, z,
-				"surface", operation.path)
-			if not segment or run_index < operation.first_run or
-					run_index > operation.last_run then return false end
-			if operation.named_non_tunnel then
-				local water_class, _, _, _, hydrology_id = classified_values(x, z)
-				return water_class == "planned_water" and
-					hydrology_id == operation.hydrology_id and
-					in_polygon(x, z, operation.authorization_polygon)
-			end
-			return true
-		end
-
-		operation_member = function(operation, x, z)
-			return operation_raw_member(operation, x, z)
-		end
-
-		local function functional_operation_at(x, z)
-			local candidates = bucket_at(operation_grid, x, z)
-			local best
-			if not candidates then return nil end
-			for index = 1, #candidates do
-				local operation = candidates[index]
-				if operation_member(operation, x, z) and
-						(not best or operation.priority < best.priority or
-						(operation.priority == best.priority and
-							operation.interface_id < best.interface_id)) then
-					best = operation
-				end
-			end
-			return best
-		end
-
-		local function path_grade_at(x, z, incoming)
-			local segment, numerator, denominator, run_index =
-				nearest_path_segment_at(x, z, "surface", nil)
-			if segment then
-				local path = segment.path
-				return path.y[run_index], path, run_index, true
-			end
-			segment, numerator, denominator, run_index =
-				nearest_path_segment_at(x, z, "corridor", nil)
-			if not segment then return nil end
-			local path = segment.path
-			local target = path.y[run_index]
-			local surface = segment.surface_width or path.surface_width
-			local corridor = segment.corridor_width or path.corridor_width
-			local qnumerator = 4 * numerator - surface * surface * denominator
-			local qdenominator = (corridor * corridor - surface * surface) *
-				denominator
-			local fraction = clamp(deterministic.qfrom_ratio(qnumerator,
-				qdenominator), 0, Q)
-			local weight = Q - deterministic.smootherstep(fraction)
-			return qlerp_integer(incoming, target, weight), path, run_index, false
-		end
-
-		local function operation_surface_at(operation, x, z)
-			if operation.tunnel then return operation.surface_y end
-			local _, _, _, run_index = nearest_path_segment_at(x, z, "surface",
-				operation.path)
-			if not run_index then fail("operation lost its projected route run") end
-			return operation.path.y[run_index]
-		end
-
-		local function derived_water_surface_at(x, z, water_class, owner, bay_id,
-				hydrology_id)
-			if water_class ~= "planned_water" then return nil end
-			local segment, _, _, run_index = nearest_path_segment_at(x, z,
-				"surface", nil)
-			if not segment then return nil end
-			local path = segment.path
-			if owner ~= path.owner_a and owner ~= path.owner_b then return nil end
-			local datum = clearance_datum_at(x, z, water_class, bay_id, hydrology_id)
-			if datum == nil then fail("derived water query has no clearance datum") end
-			local ford = ford_cap_at(path, hydrology_id, run_index, datum + 1)
-			if ford then return "ford", path.y[run_index], path,
-				ford.interface_id end
-			local kind = path.y[run_index] == datum + 1 and "causeway" or
-				"bridge_deck"
-			return kind, path.y[run_index], path, nil
-		end
-
-		local function composed_land_values_at(x, z, incoming, owner, water_class)
-			local terrain_y = incoming
-			local kind, surface_y, feature_id, interface_id
-			local value, feature = fitting_grade_at(fitting_grids.selected, x, z,
-				terrain_y, owner, water_class, false)
-			if value ~= nil then
-				terrain_y, kind, surface_y, feature_id = value, "land_grade", value,
-					feature.id
-			end
-			value, feature = landing_grade_at(x, z, owner, water_class)
-			if value ~= nil then
-				terrain_y, kind, surface_y, feature_id = value, "land_grade", value,
-					feature.id
-			end
-			local operation = functional_operation_at(x, z)
-			local on_path_surface = false
-			local bank_path, bank_run
-			if operation and operation.kind == "tunnel_floor" then
-				on_path_surface = true
-				kind, surface_y, feature_id, interface_id = operation.kind,
-					operation.surface_y, operation.feature_id, operation.interface_id
-			else
-				local path, projected_run
-				value, path, projected_run, on_path_surface = path_grade_at(x, z,
-					terrain_y)
-				if on_path_surface then bank_path, bank_run = path, projected_run end
-				if value ~= nil then
-					terrain_y, kind, surface_y, feature_id, interface_id = value,
-						"land_grade", value, path.id, nil
-				end
-			end
-			local weight, platform
-			value, feature, weight = coastal_grade_at(x, z, terrain_y, owner,
-				water_class)
-			if value ~= nil and not (on_path_surface and weight > 0) then
-				terrain_y, kind, surface_y, feature_id, interface_id = value,
-					"land_grade", value, feature.id, nil
-			end
-			value, feature, platform, weight = fitting_grade_at(
-				fitting_grids.capital, x, z,
-				terrain_y, owner, water_class, false)
-			if value ~= nil and not (on_path_surface and weight > 0) then
-				terrain_y, kind, surface_y, feature_id, interface_id = value,
-					"land_grade", value, feature.id, nil
-			end
-			value, feature, platform, weight = fitting_grade_at(fitting_grids.start,
-				x, z,
-				terrain_y, owner, water_class, false)
-			if value ~= nil and not (on_path_surface and weight > 0) then
-				terrain_y, kind, surface_y, feature_id, interface_id = value,
-					"land_grade", value, feature.id, nil
-			end
-			-- R8 coast profiles begin behind the invariant first dry bank column.
-			-- Anything already carrying a functional grade keeps its established
-			-- priority and never reaches this seam.
-			if kind == nil and not on_path_surface and
-					derived_water_evidence.coast_profile_at then
-				local _, _, _, _, _, coast_y =
-					derived_water_evidence.coast_profile_at(x, z, terrain_y)
-				if coast_y ~= nil then terrain_y = coast_y end
-			end
-			terrain_y = water_banks.protect(x, z, terrain_y, bank_path, bank_run)
-			local shore_y = water_banks.exposed_shore_surface_at(x, z)
-			if shore_y ~= nil and not on_path_surface then
-				terrain_y = shore_surface_y(shore_y)
-			end
-			if kind == "land_grade" then surface_y = terrain_y end
-			return terrain_y, kind, surface_y, feature_id, interface_id
-		end
-
-		final_terrain_height_at = function(x, z)
-			coordinate(x, "terrain query x") coordinate(z, "terrain query z")
-			if x < bounds.min_x or x > bounds.max_x or z < bounds.min_z or
-					z > bounds.max_z then return WATER_LEVEL - 24 end
-			local water_class, _, owner, bay_id, hydrology_id =
-				classified_values(x, z)
-			local incoming = scalar_before_nonpath_grades(x, z, water_class,
-				owner, bay_id, hydrology_id)
-			local operation = functional_operation_at(x, z)
-			if water_class == "planned_water" and operation then
-				if operation.kind == "causeway" or operation.kind == "ford" then
-					return operation_surface_at(operation, x, z)
-				end
-			end
-			if water_class == "planned_water" then
-				local kind, surface_y = derived_water_surface_at(x, z, water_class,
-					owner, bay_id, hydrology_id)
-				if kind == "causeway" or kind == "ford" then return surface_y end
-				local value = fitting_grade_at(fitting_grids.selected, x, z, incoming,
-					owner, water_class, false)
-				if value ~= nil then return value end
-				return incoming
-			elseif water_class ~= "land" then return incoming end
-			return composed_land_values_at(x, z, incoming, owner, water_class)
-		end
-
-		final_functional_values_at = function(x, z)
-			coordinate(x, "functional query x") coordinate(z, "functional query z")
-			if x < bounds.min_x or x > bounds.max_x or z < bounds.min_z or
-					z > bounds.max_z then return nil, nil, nil, nil end
-			local water_class, _, owner, bay_id, hydrology_id =
-				classified_values(x, z)
-			local incoming = scalar_before_nonpath_grades(x, z, water_class,
-				owner, bay_id, hydrology_id)
-			local operation = functional_operation_at(x, z)
-			if water_class == "planned_water" and operation then return operation.kind,
-				operation_surface_at(operation, x, z), operation.feature_id,
-				operation.interface_id end
-			if water_class == "planned_water" then
-				local kind, surface_y, path, interface_id =
-					derived_water_surface_at(x, z, water_class, owner, bay_id,
-						hydrology_id)
-				if kind then return kind, surface_y, path.id, interface_id end
-			elseif water_class == "land" then
-				local _, kind, surface_y, feature_id, interface_id =
-					composed_land_values_at(x, z, incoming, owner, water_class)
-				return kind, surface_y, feature_id, interface_id
-			end
-			local value, fitting = fitting_grade_at(fitting_grids.selected, x, z,
-				incoming, owner, water_class, false)
-			if value ~= nil then
-				return water_class == "planned_water" and "anchor_platform" or
-					"land_grade", value, fitting.id, nil
-			end
-			return nil, nil, nil, nil
-		end
-
-		final_water_surface_at = function(x, z)
-			coordinate(x, "water query x") coordinate(z, "water query z")
-			if x < bounds.min_x or x > bounds.max_x or z < bounds.min_z or
-					z > bounds.max_z then return WATER_LEVEL end
-			local water_class, _, _, bay_id, hydrology_id = classified_values(x, z)
-			return pregrade_water_surface_at(x, z, water_class, bay_id,
-				hydrology_id)
-		end
-
-		-- A shore run is a 48-node interval split again at stable water-kind and
-		-- relief-fallback boundaries.  Orientation, zone owner, signed interval,
-		-- water kind and fallback class are its identity. Sixteen nodes at either
-		-- interval end blend toward a common half-weight boundary, rather than
-		-- exchanging the two full targets at the boundary. Arithmetic is integral.
-		do
-			local coast_rules = deterministic.r8_coast_rules(full_seed_string)
-			local coast_band_enabled = deterministic.r9_coast_band_enabled
-			local direction_x, direction_z = {1, -1, 0, 0}, {0, 0, 1, -1}
-			local coast_hash = coast_rules.hash
-			local selected_profile = coast_rules.profile
-			local selected_band = coast_rules.band
-			-- An engine owner straddles four world-anchored tiles. Retain the
-			-- 4x4 tile footprint of neighboring owners, still bounded per session.
-			local lattice_cache = coast_rules.new_lattice_cache(16)
-			local function landmark_excluded_at(x, z)
-				local candidates = bucket_at(landmark_grid, x, z)
-				if candidates then
-					for index = 1, #candidates do
-						local landmark = candidates[index]
-						if landmark_weight(landmark, x, z) > 0 and
-								owner_affinity_q_at(landmark.zone_numeric_id, x, z) > 0 then
-							return true
-						end
-					end
-				end
-				return false
-			end
-			derived_water_evidence.landmark_excluded_at = landmark_excluded_at
-			local function build_lattice(chunk_x, chunk_z)
-				local query_min_x, query_min_z = chunk_x * 20, chunk_z * 20
-				local sample_min_x, sample_min_z = query_min_x - 13, query_min_z - 13
-				local sample_class, sample_level, sample_freshwater = {}, {}, {}
-				local nearest_squared, nearest_orientation = {}, {}
-				local nearest_level, nearest_freshwater = {}, {}
-				for lattice_z = sample_min_z, sample_min_z + 45 do
-					for lattice_x = sample_min_x, sample_min_x + 45 do
-						local index = (lattice_z - sample_min_z) * 46 +
-							(lattice_x - sample_min_x) + 1
-						local world_x, world_z = lattice_x * 4, lattice_z * 4
-						local class, _, _, bay_id, hydrology_id =
-							classified_values(world_x, world_z)
-						sample_class[index] = class
-						if class ~= "land" then
-							sample_level[index] = pregrade_water_surface_at(world_x, world_z,
-								class, bay_id, hydrology_id)
-							sample_freshwater[index] = hydrology_id ~= nil and bay_id == nil
-						end
-					end
-				end
-				local world_min_x, world_min_z = chunk_x * 80, chunk_z * 80
-				for query_z = world_min_z, world_min_z + 79 do
-					for query_x = world_min_x, world_min_x + 79 do
-						local query_index = (query_z - world_min_z) * 80 +
-							(query_x - world_min_x) + 1
-						local best_squared, best_orientation, best_level, best_freshwater =
-							coast_rules.nearest_lattice_sample(query_x, query_z,
-								sample_min_x, sample_min_z, sample_class, sample_level,
-								sample_freshwater)
-						nearest_squared[query_index] = best_squared or false
-						nearest_orientation[query_index] = best_orientation or false
-						nearest_level[query_index] = best_level or false
-						nearest_freshwater[query_index] = best_freshwater == true
-					end
-				end
-				return {squared = nearest_squared, orientation = nearest_orientation,
-					level = nearest_level, freshwater = nearest_freshwater}
-			end
-			local function cardinal_water_at(x, z)
-				local class, _, _, bay_id, hydrology_id = classified_values(x, z)
-				return class ~= "land" and pregrade_water_surface_at(x, z,
-					class, bay_id, hydrology_id) ~= nil
-			end
-			local function lattice_shore_at(x, z)
-				local chunk_x, chunk_z = floor_div(x, 80), floor_div(z, 80)
-				local lattice = lattice_cache.get(chunk_x, chunk_z, build_lattice)
-				local index = (z - chunk_z * 80) * 80 + (x - chunk_x * 80) + 1
-				local squared = lattice.squared[index]
-				if not squared then return nil end
-				local distance = math.floor(math.sqrt(squared) + 0.5)
-				return distance, coast_rules.cardinal_orientation(x, z,
-					lattice.orientation[index], cardinal_water_at), lattice.level[index],
-					lattice.freshwater[index]
-			end
-			local function target_for(profile, distance, incoming, water_y, owner,
-					orientation, run, axis, class_salt, freshwater)
-				local draw = coast_hash(owner, orientation, run, 83492791 + class_salt)
-				local width, target, denominator
-				if profile == "beach" then
-					width, denominator = selected_band(draw, profile, freshwater)
-					target = water_y + math.floor((distance - 1) / denominator)
-				elseif profile == "bluff" then
-					width = 6 + draw % 4
-					local rise = 1 + math.floor(draw / 11) % 2
-					target = water_y + (distance - 1) * rise
-				elseif profile == "cliff" then
-					width = 5 + draw % 3
-					local irregular = coast_hash(owner, orientation, run,
-						axis * 17 + 480752697 + class_salt) % 5 - 2
-					local setback = 2 + math.floor(draw / 13) % 3
-					local top = math.max(7, incoming - water_y) + irregular
-					local rise = math.min(top, 1 + math.max(0, distance - 2) * setback)
-					if distance > 2 and coast_hash(owner, orientation, run,
-						axis * 31 + distance * 43 + class_salt) % 11 == 0 then
-						rise = math.max(1, rise - setback)
-					end
-					target = water_y + rise
-				else
-					local steps = 2 + draw % 2
-					local step_height = 3 + math.floor(draw / 7) % 3
-					local step_width = 3 + math.floor(draw / 17) % 3
-					width = steps * step_width + 1
-					target = water_y + math.min(steps, math.floor((distance - 2) /
-						step_width) + 1) * step_height
-				end
-				if distance == 1 then target = water_y end
-				if distance > width then
-					local offset = distance - width
-					local _, _, blend_width = selected_band(draw, profile, freshwater)
-					if offset >= blend_width then return incoming, width end
-					local edge = profile == "beach" and
-						(water_y + math.floor((width - 1) / denominator)) or target
-					target = round_ratio(edge * (blend_width - offset) +
-						incoming * offset, blend_width)
-				end
-				return target, width
-			end
-
-			derived_water_evidence.coast_profile_at = function(x, z, supplied_incoming,
-					material_only)
-				coordinate(x, "coast query x") coordinate(z, "coast query z")
-				local water_class, _, owner = classified_values(x, z)
-				if water_class ~= "land" or owner == nil then return nil end
-				-- Material queries reuse the shore classification without opting an
-				-- excluded column into coast geometry. Authored writes still win P7.
-				local geometry_excluded = horizontal.static_exclusion_values_at(x, z) ~= nil or
-					(type(horizontal.housing_mask_id_at) == "function" and
-						horizontal.housing_mask_id_at(x, z) ~= nil) or
-					landmark_excluded_at(x, z)
-				if material_only then
-					-- Fallback only for excluded geometry: an eligible inland column
-					-- has already paid the shore scan in coast_profile_at. Do not repeat it.
-					if not geometry_excluded then return nil end
-				elseif geometry_excluded then return nil end
-				local best_distance, orientation, water_y, freshwater
-				for direction = 1, 4 do
-					for distance = 1, 16 do
-						local nx, nz = x + direction_x[direction] * distance,
-							z + direction_z[direction] * distance
-						local class, _, _, bay_id, hydrology_id = classified_values(nx, nz)
-						if class ~= "land" then
-							local level = pregrade_water_surface_at(nx, nz, class, bay_id,
-								hydrology_id)
-							if level ~= nil and (best_distance == nil or
-									distance < best_distance) then
-								best_distance, orientation, water_y = distance, direction, level
-								freshwater = hydrology_id ~= nil and bay_id == nil
-							end
-							break
-						end
-					end
-				end
-				if best_distance == nil and coast_band_enabled then
-					best_distance, orientation, water_y, freshwater = lattice_shore_at(x, z)
-				end
-				if best_distance == nil then return nil end
-				local axis = orientation <= 2 and z or x
-				local run = floor_div(axis, 48)
-				local incoming = supplied_incoming or scalar_before_nonpath_grades(x, z,
-					water_class, owner, nil, nil)
-				local relief_profile = source.zones[owner].primary_relief_id
-				local relief = math.max(0, incoming - water_y)
-				if not coast_band_enabled then
-					return coast_rules.r8_column(owner, orientation, run, freshwater,
-						relief_profile, relief, best_distance, incoming, water_y, axis,
-						round_ratio)
-				end
-				local profile, run_class, class_salt = selected_profile(owner,
-					orientation, run, freshwater, relief_profile, relief)
-				local target, width = target_for(profile, best_distance, incoming, water_y,
-					owner, orientation, run, axis, class_salt, freshwater)
-				local offset = floor_mod(axis, 48)
-				if offset < 16 or offset >= 32 then
-					local neighbor = offset < 16 and run - 1 or run + 1
-					local other_profile, _, other_salt = selected_profile(owner,
-						orientation, neighbor, freshwater, relief_profile, relief)
-					local other = target_for(other_profile, best_distance, incoming, water_y,
-						owner, orientation, neighbor, axis, other_salt, freshwater)
-					target = deterministic.r21_nature_rules.lateral_blend(target, other, offset, round_ratio)
-				end
-				return profile, best_distance, width, freshwater,
-					coast_rules.run_key(owner, orientation, run, run_class),
-					target, relief_profile, water_y
-			end
-		end
-
-		-- Final cardinal contact check for every exposed surface-water class.
-		-- Named hydrology already has its wider authored blend; this closes the
-		-- same first-column rule at bays, the coastal shelf and island shores.
-		water_banks.exposed_shore_surface_at = cached_bank_floor(function(x, z)
-			local highest
-			for direction_index = 1, 4 do
-				local dx = direction_index == 1 and 1 or
-					direction_index == 2 and -1 or 0
-				local dz = direction_index == 3 and 1 or
-					direction_index == 4 and -1 or 0
-				local neighbor_x, neighbor_z = x + dx, z + dz
-				local water_class, _, _, bay_id, hydrology_id =
-					classified_values(neighbor_x, neighbor_z)
-				if water_class ~= "land" then
-					local water_y = pregrade_water_surface_at(neighbor_x, neighbor_z,
-						water_class, bay_id, hydrology_id)
-					if water_y ~= nil and
-							final_terrain_height_at(neighbor_x, neighbor_z) < water_y and
-							(highest == nil or water_y > highest) then
-						highest = water_y
-					end
-				end
-			end
-			return highest
-		end)
-
-
-		-- This is the sole final-axis scan. Normal construction fails on its first
-		-- violation; the read-only diagnosis mode records the same composed query
-		-- results without introducing a second height or path authority.
-		local function final_axis_witness(path, run_index, from_point, from_y,
-				from_feature_id, to_point, to_y, to_feature_id)
-			local foreign_id, foreign_x, foreign_z
-			for _, endpoint in ipairs({
-				{feature_id = from_feature_id, x = from_point.x, z = from_point.z},
-				{feature_id = to_feature_id, x = to_point.x, z = to_point.z},
-			}) do
-				if not path_by_id[endpoint.feature_id] then
-					fail("final-axis feature identity is not a graded path at " ..
-						path.id .. " run " .. tostring(run_index))
-				end
-				if endpoint.feature_id ~= path.id then
-					if foreign_id and foreign_id ~= endpoint.feature_id then
-						fail("final-axis violation has multiple foreign winners at " ..
-							path.id .. " run " .. tostring(run_index))
-					end
-					if not foreign_id then
-						foreign_id, foreign_x, foreign_z = endpoint.feature_id,
-							endpoint.x, endpoint.z
-					end
-				end
-			end
-			if not foreign_id then
-				fail("final-axis violation has no foreign winning path at " ..
-					path.id .. " run " .. tostring(run_index))
-			end
-			local winner = path_by_id[foreign_id]
-			local winner_run = path_surface_run_at(winner, foreign_x, foreign_z)
-			if not winner_run then
-				fail("final-axis winner is not attributable to its visible surface")
-			end
-			local winner_point = winner.axis[winner_run]
-			if not winner_point then fail("final-axis winner run escaped its axis") end
-			local pair_a, pair_b = path.id, foreign_id
-			if pair_b < pair_a then pair_a, pair_b = pair_b, pair_a end
-			return {
-				losing_path_id = path.id,
-				losing_run = run_index,
-				from_x = from_point.x,
-				from_z = from_point.z,
-				from_y = from_y,
-				to_x = to_point.x,
-				to_z = to_point.z,
-				to_y = to_y,
-				absolute_step = math.abs(to_y - from_y),
-				winner_path_id = foreign_id,
-				winner_run = winner_run,
-				winner_x = winner_point.x,
-				winner_z = winner_point.z,
-				pair_a = pair_a,
-				pair_b = pair_b,
-			}
-		end
-
-		local final_axis_sort_fields = {"losing_path_id", "losing_run",
-			"from_x", "from_z", "to_x", "to_z", "winner_path_id",
-			"winner_run", "winner_x", "winner_z"}
-		local final_axis_record_fields = {"losing_path_id", "losing_run",
-			"from_x", "from_z", "from_y", "to_x", "to_z", "to_y",
-			"absolute_step", "winner_path_id", "winner_run", "winner_x",
-			"winner_z", "pair_a", "pair_b"}
-		local function ascii_record_key(record, fields)
-			local values = {}
-			for index = 1, #fields do
-				values[index] = tostring(record[fields[index]])
-			end
-			return table.concat(values, "\t")
-		end
-
-		local function scan_final_axes(collect)
-			local violations, record_keys, sort_keys = {}, {}, {}
-			for path_index = 1, #paths do
-				local path = paths[path_index]
-				local previous_point, previous_y, previous_feature_id
-				for run_index = 1, #path.axis do
-					local point = path.axis[run_index]
-					local _, surface_y, feature_id = final_functional_values_at(
-						point.x, point.z)
-					local y = surface_y or final_terrain_height_at(point.x, point.z)
-					local absolute_step = previous_y and
-						math.abs(y - previous_y) or 0
-					if previous_y and absolute_step > 1 then
-						if not collect then
-							fail("final composed route step exceeds one at " .. path.id ..
-								" run " .. tostring(run_index) .. " x/z " ..
-								tostring(point.x) .. "/" .. tostring(point.z) .. " (" ..
-								tostring(previous_y) .. " [" ..
-								tostring(previous_feature_id) .. "] -> " .. tostring(y) ..
-								" [" .. tostring(feature_id) .. "])")
-						end
-						local witness = final_axis_witness(path, run_index,
-							previous_point, previous_y, previous_feature_id,
-							point, y, feature_id)
-						local record_key = ascii_record_key(witness,
-							final_axis_record_fields)
-						if record_keys[record_key] then
-							fail("duplicate final-axis diagnosis row")
-						end
-						local sort_key = ascii_record_key(witness,
-							final_axis_sort_fields)
-						if sort_keys[sort_key] then
-							fail("ambiguous final-axis diagnosis sort key")
-						end
-						record_keys[record_key], sort_keys[sort_key] = true, true
-						witness._ascii_sort_key = sort_key
-						violations[#violations + 1] = witness
-					end
-					previous_point, previous_y, previous_feature_id = point, y,
-						feature_id
-				end
-			end
-			table.sort(violations, function(a, b)
-				return a._ascii_sort_key < b._ascii_sort_key
-			end)
-			for index = 1, #violations do
-				violations[index]._ascii_sort_key = nil
-			end
-			return violations
-		end
-
-		local final_axis_violations = runtime_mode and not scan_runtime_axis and {} or
-			scan_final_axes(diagnose_final_axis)
-		if diagnose_final_axis then return nil, final_axis_violations end
-		for record_index = 1, #junction_records do
-			local record = junction_records[record_index]
-			record.maximum_natural_deviation = math.abs(record.target_y -
-				record.natural_y)
-			for use_index = 1, #record.uses do
-				local use = record.uses[use_index]
-				local path = path_by_id[use.path_id]
-				use.final_y = path.y[use.run]
-				if use.final_y ~= record.target_y then
-					fail("connected path endpoint differs at " .. record.id)
-				end
-			end
-		end
-		-- Reuse an aggregate already captured by both public session
-		-- constructors; height.lua sits at Lua 5.1's upvalue ceiling.
-		fittings.junctions = junction_records
-		local public_session = build_public_session(runtime_mode)
-		construction_complete = true
-		return public_session, final_axis_violations
-	end
-
-	function module.new(full_seed_string)
-		local session = construct(full_seed_string, false, nil)
 		return session
 	end
 
 	function module.new_runtime(full_seed_string)
-		-- Live mapgen needs the same query closures, but none of the construction-
-		-- time ledgers and canonical digests already frozen by R3-R7 evidence.
-		local session = construct(full_seed_string, false, true)
-		return session
+		return construct(full_seed_string)
 	end
-
-	function module.new_runtime_checked(full_seed_string)
-		return construct(full_seed_string, false, true, true)
-	end
-
-	function module.diagnose_final_axis_violations(full_seed_string)
-		local _, violations = construct(full_seed_string, true, nil)
-		return deep_copy(violations)
-	end
-
-	-- Compact interpreter-parity seam.  It exercises the exact helpers used by
-	-- live capital and road construction without constructing a seed population.
-	function module.quality_geometry_micro_kat()
-		local rows = {HEIGHT_SCHEMA}
-		local target, rule, preferred, lower, upper, excess, old_cost, fit_cost =
-			start_reference_value({4, 6, 8, 10, 12}, 2, 8, 8, WATER_LEVEL + 1)
-		assert(target == 8 and rule == "start_natural_samples_feasible" and
-			preferred == 8 and lower == 4 and upper == 12 and excess == 0 and
-			fit_cost <= old_cost)
-		rows[#rows + 1] = table.concat({"start_reference", target, rule,
-			preferred, lower, upper, excess, old_cost, fit_cost}, "\t")
-		target, rule, preferred, lower, upper, excess = start_reference_value(
-			{2, 30}, 2, 8, 8, WATER_LEVEL + 1)
-		assert(target == 2 and rule == "start_natural_samples_median_excess" and
-			preferred == 2 and lower == 22 and upper == 10 and excess == 20)
-		rows[#rows + 1] = table.concat({"start_excess", target, rule,
-			preferred, lower, upper, excess}, "\t")
-		for _, case in ipairs({
-			{50, 33, 63, 9},
-			{40, 66, 27, 57},
-			{-20, -30, -10, -40},
-		}) do
-			local reference, rule, excess = capital_reference_value(case[1],
-				case[2], case[3], case[4])
-			rows[#rows + 1] = table.concat({"reference", reference, rule, excess}, "\t")
-		end
-		for _, case in ipairs({
-			{200, 57, 4, 0, 24, 16},
-			{73, 57, 4, 16, 24, 16},
-			{-9, 0, 4, 40, 24, 16},
-		}) do
-			rows[#rows + 1] = table.concat({"terrace",
-				capital_terrace_value(unpack(case))}, "\t")
-		end
-		local road_preferences = {}
-		for _, sample in ipairs({{1, 9}, {1, 4}, {1, 7}, {2, -3}, {2, 0}}) do
-			record_road_land_preference(road_preferences, sample[1], sample[2])
-		end
-		assert(road_preferences[1] == 4 and road_preferences[2] == -3 and
-			road_preferences[3] == nil, "road low-edge preference differs")
-		rows[#rows + 1] = table.concat({"road_low_edge", road_preferences[1],
-			road_preferences[2]}, "\t")
-		-- The soft pad edge, with a fixed root instead of a seed digest: integer
-		-- Q16 interpolation over the memoised jitter lattice, which is the one
-		-- new arithmetic the two interpreters have to agree on byte for byte.
-		local edge_fitting = {edge_root = 1234567, edge_jitter = {}}
-		local edge_offsets = {}
-		for _, case in ipairs({{-1800, -2486}, {-1800, -2480}, {-1736, -2550},
-				{0, 2486}, {1800, 2514}, {12, -36}, {-13, 37}}) do
-			local offset = start_edge_offset(edge_fitting, case[1], case[2])
-			assert(offset >= 0 and offset <= START_EDGE_AMPLITUDE and
-				offset % 1 == 0 and
-				start_edge_offset(edge_fitting, case[1], case[2]) == offset,
-				"start edge jitter offset differs")
-			edge_offsets[#edge_offsets + 1] = offset
-		end
-		rows[#rows + 1] = "start_edge\t" .. table.concat(edge_offsets, "\t")
-		local grade = assert(backtrack_preferred_grade({5, 20, 20, 5},
-			{5, 4, 3, 5}, {5, 6, 7, 5}))
-		rows[#rows + 1] = table.concat({"grade", unpack(grade)}, "\t")
-		local bank_queries = 0
-		local function wet_at(x, z)
-			bank_queries = bank_queries + 1
-			if x == 1 and z == 0 then return 65 end
-			if x == -2 and z == 0 then return 68 end
-			if x == 2 and z == 2 then return 100 end
-		end
-		local floor_y = neighboring_water_floor(0, 0, wet_at)
-		assert(floor_y == 68 and bank_queries == 12)
-		assert(neighboring_water_floor(10, 10, wet_at) == nil)
-		local reference, rule = capital_reference_value(40, 66, 50, 9, 66)
-		assert(reference == 66 and rule == "capital_natural_core_minimax_water_min")
-		local ford = {fords = {{hydrology_id = "river", ford_pin_y = 16, ford_run = 5}}}
-		assert(ford_bank_water_floor(17, "river", ford, 5) == 16)
-		assert(ford_bank_water_floor(17, "river", ford, 6) == 17)
-		assert(ford_bank_water_floor(20, "other", ford, 5) == 20)
-		assert(ford_bank_water_floor(nil, "river", ford, 5) == nil)
-		rows[#rows + 1] = table.concat({"bank_floor", floor_y, reference, rule}, "\t")
-		rows[#rows + 1] = "ford_bank\t16\t17\t20"
-		local cache_calls = 0
-		local cached = cached_bank_floor(function(x, z, path, run)
-			cache_calls = cache_calls + 1
-			if path then return run end
-			if x == 0 then return 0 end
-			if x == -1 then return 65 end
-		end)
-		assert(cached(0, 0) == 0 and cached(0, 0) == 0 and cache_calls == 1)
-		assert(cached(1, 0) == nil and cached(1, 0) == nil and cache_calls == 2)
-		assert(cached(-1, -1) == 65 and cached(-1, -1) == 65 and cache_calls == 3)
-		assert(cached(63, 63) == nil and cache_calls == 4)
-		assert(cached(-1, -1) == 65 and cache_calls == 5)
-		assert(cached(-1, -1, ford, 7) == 7 and cache_calls == 6)
-		assert(cached(-1, -1, ford, 8) == 8 and cache_calls == 7)
-		assert(cached(-1, -1, {fords = {}}, 9) == 65 and cache_calls == 7)
-		rows[#rows + 1] = "bank_cache\t7\t4096"
-
-		return table.concat(rows, "\n") .. "\n"
-	end
-
-	function module.junction_micro_kat()
-		local rows = {HEIGHT_SCHEMA}
-		for _, case in ipairs({
-			{40, 10, 50}, {4, 10, 50}, {70, 10, 50},
-		}) do
-			rows[#rows + 1] = table.concat({"preferred",
-				feasible_preferred(unpack(case))}, "\t")
-		end
-		for _, case in ipairs({
-			{0, 100, 40, 40, 12},
-			{10, 10, 40, 40, 12},
-			{-20, 20, -5, 15, 4},
-		}) do
-			local a, b, c, d = tighten_grade_edge(unpack(case))
-			rows[#rows + 1] = table.concat({"edge", a or "infeasible",
-				b or "", c or "", d or ""}, "\t")
-		end
-		return table.concat(rows, "\n") .. "\n"
-	end
-
+	module.new = module.new_runtime
 	return module
 end
 
-return height_factory, new_coast_rules, nature_rules
+return height_factory

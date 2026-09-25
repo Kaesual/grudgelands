@@ -194,7 +194,7 @@ local function zones_factory(dependencies)
 		index128 = true,
 		horizontal_factory = true,
 		height_factory = true,
-		coupled_grade = true,
+		terrain_field = true,
 		raw_sha256 = true,
 	}
 	for key in pairs(dependencies) do
@@ -215,7 +215,7 @@ local function zones_factory(dependencies)
 	local index128 = dependencies.index128
 	local horizontal_factory = dependencies.horizontal_factory
 	local height_factory = dependencies.height_factory
-	local coupled_grade = dependencies.coupled_grade
+	local terrain_field = dependencies.terrain_field
 	local injected_raw_sha256 = dependencies.raw_sha256
 	local MAX_SAFE = 9007199254740991
 	local WATER_LEVEL = 1
@@ -472,7 +472,7 @@ local function zones_factory(dependencies)
 			deterministic = deterministic,
 			raw_sha256 = counted_sha,
 			horizontal_session = horizontal,
-			coupled_grade = coupled_grade,
+			terrain_field = terrain_field,
 		})
 		if type(height_module) ~= "table" or
 				type(height_module.new) ~= "function" or

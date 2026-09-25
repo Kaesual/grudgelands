@@ -342,9 +342,9 @@ return function(canonical, raw_sha256, settlement_order)
 			-- This is the only field of the roster row that moves, and it moves
 			-- the roster digest with it. A POI anchor is unchanged: its spur
 			-- still ends on it.
-			local expected_feature = numeric <= 12 and
-				string.format("anchor_%03d", numeric) or
-				string.format("poi_spur_%03d", numeric)
+			-- Round 22 (roads off until Phase 4): no spur reaches a POI anchor,
+			-- so every anchor column carries its own fitting.
+			local expected_feature = string.format("anchor_%03d", numeric)
 			if type(row) ~= "table" or row.numeric_id ~= numeric or
 					row.id ~= string.format("anchor_%03d", numeric) or
 					row.family ~= family or row.content_ref ~= ref or seen[row.id] or
