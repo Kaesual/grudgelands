@@ -106,7 +106,7 @@ mobs:spawn({
 	chance = 1600,
 	active_object_count = 4,
 	min_height = 0,
-	max_height = 200,
+	max_height = 600,
 })
 
 -- The blight identity (biomes_mobs.md §3.1 "in grug_blight: 24 h — Undead
@@ -128,7 +128,7 @@ mobs:spawn({
 	chance = 1600,
 	active_object_count = 4,
 	min_height = 0,
-	max_height = 200,
+	max_height = 600,
 	-- mobs_redo calls this as on_spawn(luaentity, pos) (api.lua:4450-4460); the
 	-- entity is nil if core.add_entity failed.
 	on_spawn = function(ent)

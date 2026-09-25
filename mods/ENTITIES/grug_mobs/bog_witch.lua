@@ -71,4 +71,4 @@ mobs:spawn({name = "grug_mobs:bog_witch",
 	nodes = {"grug_nodes:mud", "grug_nodes:dirt_with_bone_litter",
 		"default:dirt_with_rainforest_litter", "grug_nodes:dirt_with_canopy_litter"},
 	interval = 20, chance = 2400, active_object_count = 3,
-	min_height = 0, max_height = 300})
+	min_height = 0, max_height = 600})

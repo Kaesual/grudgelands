@@ -61,7 +61,7 @@ mobs:spawn({
 		"grug_nodes:dirt_with_silver_litter",
 	},
 	interval = 20, chance = 2200, active_object_count = 3,
-	min_height = 0, max_height = 200,
+	min_height = 0, max_height = 600,
 })
 
 -- Frost Stray: Skeleton Archer numbers and projectile, cold-blue bones.
@@ -112,7 +112,7 @@ mobs:spawn({
 	name = "grug_mobs:frost_stray",
 	nodes = {"default:gravel", "default:snowblock"},
 	interval = 20, chance = 2400, active_object_count = 3,
-	min_height = 0, max_height = 300,
+	min_height = 0, max_height = 600,
 })
 
 -- Sun-Dried Husk: the desert Zombie shares ordinary damage-sustained pursuit.
@@ -162,7 +162,7 @@ mobs:spawn({
 	name = "grug_mobs:sun_dried_husk",
 	nodes = {"default:dry_dirt_with_dry_grass", "grug_nodes:mesa_clay"},
 	interval = 20, chance = 2000, active_object_count = 4,
-	min_height = 0, max_height = 200,
+	min_height = 0, max_height = 600,
 })
 
 -- Song Bird: the gull chassis in a bright forest tint, fixed critter tier.
@@ -204,7 +204,7 @@ mobs:spawn({
 	name = "grug_mobs:song_bird",
 	nodes = {"grug_nodes:dirt_with_silver_litter"},
 	interval = 20, chance = 2200, active_object_count = 2,
-	min_height = 0, max_height = 200,
+	min_height = 0, max_height = 600,
 })
 
 -- Spiderling: half-size cave spider with a weaker web.

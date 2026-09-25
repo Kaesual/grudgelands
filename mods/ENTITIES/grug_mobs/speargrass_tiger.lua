@@ -37,4 +37,4 @@ grug_mobs.register_mob("grug_mobs:speargrass_tiger", tiger)
 mobs:spawn({name = "grug_mobs:speargrass_tiger",
 	nodes = {"default:dry_dirt_with_dry_grass", "grug_nodes:mesa_clay"},
 	interval = 20, chance = 2500, active_object_count = 3,
-	min_height = 0, max_height = 200})
+	min_height = 0, max_height = 600})

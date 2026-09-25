@@ -130,7 +130,7 @@ mobs:spawn({
 	chance = 2800,
 	active_object_count = 2,
 	min_height = 0,
-	max_height = 200,
+	max_height = 600,
 	on_spawn = elder_roll("Elder Bear"),
 })
 
@@ -171,6 +171,6 @@ mobs:spawn({
 	chance = 2800,
 	active_object_count = 2,
 	min_height = 0,
-	max_height = 200,
+	max_height = 600,
 	on_spawn = elder_roll("Elder Plaguehide Bear"),
 })

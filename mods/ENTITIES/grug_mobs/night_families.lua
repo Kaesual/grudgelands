@@ -89,7 +89,7 @@ for _, name in ipairs({"goblin_raider", "goblin_slinger", "goblin_hound"}) do
 			"grug_nodes:mesa_clay"},
 		interval = 20, chance = 2400,
 		active_object_count = name == "goblin_raider" and 2 or 1,
-		min_height = 0, max_height = 200,
+		min_height = 0, max_height = 600,
 	})
 end
 
@@ -118,7 +118,7 @@ grug_mobs.register_mob("grug_mobs:snow_leopard", snow_leopard)
 mobs:spawn({name = "grug_mobs:snow_leopard",
 	nodes = {"default:gravel", "default:snowblock"},
 	interval = 20, chance = 2100, active_object_count = 3,
-	min_height = 0, max_height = 200})
+	min_height = 0, max_height = 600})
 
 local function open_node(pos)
 	local node = core.get_node_or_nil(pos)
@@ -170,7 +170,7 @@ mobs:spawn({name = "grug_mobs:wisp",
 		"grug_nodes:dirt_with_forest_litter", "grug_nodes:dirt_with_bone_litter",
 		"default:dirt_with_rainforest_litter", "grug_nodes:dirt_with_canopy_litter"},
 	interval = 20, chance = 2200, active_object_count = 3,
-	min_height = 0, max_height = 200})
+	min_height = 0, max_height = 600})
 
 local function treant_def(description, tint)
 	return ground({
@@ -212,10 +212,10 @@ grug_mobs.register_mob("grug_mobs:ashen_treant",
 	treant_def("Ashen Treant", "#6d5140"))
 mobs:spawn({name = "grug_mobs:ashen_treant",
 	nodes = {"grug_nodes:dirt_with_forest_litter"}, interval = 20, chance = 2600,
-	active_object_count = 2, min_height = 0, max_height = 200})
+	active_object_count = 2, min_height = 0, max_height = 600})
 
 grug_mobs.register_mob("grug_mobs:gravewood_treant",
 	treant_def("Gravewood Treant", "#c2bba8"))
 mobs:spawn({name = "grug_mobs:gravewood_treant",
 	nodes = {"grug_nodes:dirt_with_bone_litter"}, interval = 20, chance = 2600,
-	active_object_count = 2, min_height = 0, max_height = 200})
+	active_object_count = 2, min_height = 0, max_height = 600})

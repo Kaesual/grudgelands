@@ -30,4 +30,4 @@ mobs:spawn({name = "grug_mobs:war_construct",
 	nodes = {"grug_nodes:mud", "grug_nodes:mesa_clay",
 		"default:dry_dirt_with_dry_grass", "default:stone"},
 	interval = 30, chance = 7000, active_object_count = 1,
-	min_height = 0, max_height = 300})
+	min_height = 0, max_height = 600})

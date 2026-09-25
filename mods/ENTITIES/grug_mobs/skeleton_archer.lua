@@ -156,7 +156,7 @@ mobs:spawn({
 	chance = 2000,
 	active_object_count = 3,
 	min_height = 0,
-	max_height = 200,
+	max_height = 600,
 })
 
 -- Row B: the settled tops — the battlefield dead of the war coast. The
@@ -179,5 +179,5 @@ mobs:spawn({
 	chance = 2000,
 	active_object_count = 3,
 	min_height = 0,
-	max_height = 200,
+	max_height = 600,
 })

@@ -176,12 +176,12 @@ grug_mobs.register_mob("grug_mobs:stone_golem", stone_golem)
 -- mobs_redo counts the aoc per entity NAME, so neither row can exceed 1
 -- active golem.
 -- "any light" = no min_light/max_light and no day_toggle: 24 h.
--- max_height 300 per §4's crags/golem exception; min_height 0 keeps this row
+-- max_height 600 like every surface row (§4); min_height 0 keeps this row
 -- on the surface — the cave row (same nodes, negative heights) is T7's,
 -- which is why the zone list above already allows "underground".
 --
 -- ABM CANDIDATE VOLUME (T10 sanity check, the same argument the cave rows
--- make in zombie.lua): `default:stone` between y 0 and 300 is not "the whole
+-- make in zombie.lua): `default:stone` between y 0 and 600 is not "the whole
 -- world". mobs:spawn defaults the ABM's neighbour list to {"air"}
 -- (api.lua:4498-4510), so only stone with air beside it counts — on the surface
 -- that is exposed bare rock, which the crags/badlands cuboids produce in
@@ -208,7 +208,7 @@ mobs:spawn({
 	chance = 9000,
 	active_object_count = 1,
 	min_height = 0,
-	max_height = 300,
+	max_height = 600,
 })
 
 --
@@ -229,7 +229,7 @@ mobs:spawn({
 	chance = 9000,
 	active_object_count = 1,
 	min_height = 0,
-	max_height = 300,
+	max_height = 600,
 })
 
 --

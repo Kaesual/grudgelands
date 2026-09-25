@@ -160,6 +160,15 @@ local function planner_factory()
 			for b = 1, #cultural[index].biomes do set[cultural[index].biomes[b]] = true end
 			cultural_biome[index] = set
 		end
+		-- Decoration site rules (biomes_mobs.md §2.1). The manifest tokens are
+		-- frozen by the r6_catalog digest pin, so two of them keep their
+		-- flat-world names while meaning the Round 22 rules (D37):
+		--   `surface_y_at_most_32` (emergent jungle tree): not in a zone of
+		--     mountain relief. Natural jungle land spans y 0-400; only ~10 %
+		--     of it lies at or below 32.
+		--   `surface_y_1_to_4` (swamp papyrus): a dry root at most 4 above the
+		--     highest water surface in its own 16x16 candidate cell, so the
+		--     reeds follow sea, lake and river water wherever it lies.
 		local decoration_biome, decoration_height_rule = {}, {}
 		for index = 1, #decorations do
 			local set = {}
@@ -170,6 +179,11 @@ local function planner_factory()
 				rule:find("surface_y_at_least_60", 1, true) and 1 or
 				(rule:find("surface_y_at_most_32", 1, true) and 2 or
 					(rule:find("surface_y_1_to_4", 1, true) and 3 or 0))
+		end
+		local mountain_zone = {}
+		for index = 1, #(source.zones or {}) do
+			local zone = source.zones[index]
+			if zone.primary_relief_id == "mountain" then mountain_zone[zone.id] = true end
 		end
 		local profile_depth, hydrology_depth, lower_hydrology = {}, {}, {}
 		for index = 1, #(source.hydrology_profiles or {}) do
@@ -547,6 +561,15 @@ local function planner_factory()
 					end
 				end
 			end
+			-- The highest water surface standing in this cell, for rule 3.
+			local cell_water_y = false
+			for column = 1, column_count do
+				local water_y = scratch.water_y[column]
+				if water_y and water_y > scratch.terrain_y[column] and
+						(not cell_water_y or water_y > cell_water_y) then
+					cell_water_y = water_y
+				end
+			end
 			for catalog = 1, #decorations do
 				local row = decorations[catalog]
 				local height_rule = decoration_height_rule[catalog]
@@ -557,9 +580,10 @@ local function planner_factory()
 					if height_rule == 1 then
 						special_ok = terrain_y >= 60
 					elseif height_rule == 2 then
-						special_ok = terrain_y <= 32
+						special_ok = not mountain_zone[scratch.zone_id[column]]
 					elseif height_rule == 3 then
-						special_ok = terrain_y >= 1 and terrain_y <= 4
+						special_ok = cell_water_y and scratch.surface_kind[column] ~= 3 and
+							terrain_y <= cell_water_y + 4 or false
 					end
 					local cover = terrain_y >= 1 and special_ok and
 						decoration_biome[catalog][scratch.biome[column]] and
