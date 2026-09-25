@@ -217,6 +217,9 @@ source.zone_field = {
 	-- dragon islands: polygon scale towards the hub, coast-noise factor, envelope
 	island_scale = 0.85, island_noise = 0.5,
 	island_envelope = {half_x = 300, half_z = 350, radius = 140},
+	-- how far coast noise pulls the envelope clamp inward (nodes), and the
+	-- radius of land kept around each island landing
+	island_envelope_jitter = 56, island_landing_keep = 20,
 	-- construction self-check (rough targets) and its weaker-warp fallback
 	check = {grid = 24, inland_cells = 2, coast_cells = 24, min_strait = 104,
 		min_x = -3600, max_x = 3600, min_z = -3200, max_z = 3200,
