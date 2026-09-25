@@ -387,7 +387,10 @@ replaced; git history before this rewrite records that model.
   zone. Bay outlines get the same coast warp as the rest of the shore; their
   authored centrelines live in the source data.
 - **Water classes.** Every column is land, inland water (rivers, lakes, civic
-  water), bay water, coastal shelf, deep ocean or dragon channel. Inland and
+  water), bay water, coastal shelf, deep ocean or dragon channel. Until Round
+  22 Phase 5 there is no inland water at all, civic water included (the
+  Kezamba cenote, the Lethariel lake, Highcourt's river arms, the Dawnmere and
+  Sunscar ponds); their hydrology rows stay in the source as legacy data. Inland and
   bay water belong to the zone around them. Shelf, bay water and every
   road/POI exclusion are claim-ineligible. Deep ocean and dragon channels are
   immutable at every y.
