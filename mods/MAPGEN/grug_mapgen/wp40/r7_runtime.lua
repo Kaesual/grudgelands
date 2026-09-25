@@ -96,7 +96,8 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	local horizontal_factory = dofile(wp40_directory .. "/simple_map.lua")(
 		dofile(wp40_directory .. "/zone_field.lua"))
 	local height_factory = dofile(wp40_directory .. "/height.lua")
-	local coupled_grade = dofile(wp40_directory .. "/coupled_grade.lua")()
+	local terrain_field = dofile(wp40_directory .. "/terrain_field.lua")(
+		dofile(wp40_directory .. "/terrain_data.lua"))
 	local zones_factory = dofile(wp40_directory .. "/zones.lua")
 	local r5_planner_factory = dofile(wp40_directory .. "/planner.lua")
 	local r5_adapter_factory = dofile(wp40_directory .. "/map_adapter.lua")
@@ -134,7 +135,7 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		allocator_factory = allocator_factory, source = source, schemas = schemas,
 		canonical = canonical, deterministic = deterministic, index128 = index128,
 		horizontal_factory = horizontal_factory, height_factory = height_factory,
-		coupled_grade = coupled_grade,
+		terrain_field = terrain_field,
 		raw_sha256 = raw_sha256, hash_factory = hash_factory,
 		content_factory = r6_content_factory, templates_factory = r6_templates_factory,
 		planner_factory = r6_planner_factory, settlement_factory = r6_settlement_factory})

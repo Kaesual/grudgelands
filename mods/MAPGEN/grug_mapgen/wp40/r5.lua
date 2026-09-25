@@ -17,7 +17,7 @@ return function(dependencies)
 		index128 = true,
 		horizontal_factory = true,
 		height_factory = true,
-		coupled_grade = true,
+		terrain_field = true,
 		raw_sha256 = true,
 	}
 	for key in pairs(dependencies) do
@@ -115,7 +115,7 @@ return function(dependencies)
 		index128 = dependencies.index128,
 		horizontal_factory = dependencies.horizontal_factory,
 		height_factory = dependencies.height_factory,
-		coupled_grade = dependencies.coupled_grade,
+		terrain_field = dependencies.terrain_field,
 		raw_sha256 = dependencies.raw_sha256,
 	})
 	local planner_module = dependencies.planner_factory(allocator_factory)
