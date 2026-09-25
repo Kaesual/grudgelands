@@ -19,6 +19,10 @@
 -- of which cannot be found with lanes between them. A rotating layout would
 -- have had to put a building in a river to keep its shape.
 --
+-- (Since Round 22 Phase 5 the two arms are civic canals, authored in
+-- `wp40/water_authored.lua` along the lot-free corridors this grid leaves,
+-- plan D42; they keep eight nodes off every lot and its margin.)
+--
 -- So each quadrant carries its OWN nine lots, and the four grids are what the
 -- same authored 3 x 3 layout becomes when it is rotated into that quadrant
 -- and then allowed to slide to the nearest ground that will carry it. Three

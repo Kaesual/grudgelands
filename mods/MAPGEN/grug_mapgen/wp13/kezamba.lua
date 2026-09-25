@@ -21,12 +21,11 @@
 -- false of the other 2 645, and `tools/wp13/kezamba_water.lua` is the
 -- measurement rather than the impression:
 --
---   * 2 645 columns are the CENOTE. WP40's `hydro_kezamba_cenote` is an
---     authored `deep_cenote` at fixed world coordinates and its north-east
---     wedge reaches into the core. Its surface stands at y = 65, exactly ONE
---     NODE below the fitted reference of 66, on all nine seeds of
---     `tools/wp13/capital_anchor_fixture.lua` -- which is the WP40 water
---     correction of 2026-09-13 doing what it says.
+--   * 2 645 columns are the CENOTE, the authored lake `kezamba_cenote` of
+--     `wp40/water_authored.lua` (Round 22 Phase 5), whose north-east wedge
+--     reaches into the core. Its surface stands two nodes below the fitted
+--     reference on every seed: the piers below (y -2..-1) stand in it and
+--     the decks (y 0) keep a node of air over it.
 --   * ZERO columns are a RAVINE, since main `f5583e13`. Until WP40's routes
 --     were taught to end at the capital gates, 188 to 273 columns were one
 --     diagonal cut running into the pad from its south-west edge, up to 26

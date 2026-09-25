@@ -105,10 +105,10 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	-- this runtime builds (main builds it once, emerge deserializes main's).
 	local water = {module = dofile(wp40_directory .. "/water_layout.lua")(
 		terrain_data.water), text = water_layout_text,
-		authored = dofile(wp40_directory .. "/water_authored.lua"),
+		authored = dofile(wp40_directory .. "/water_authored.lua")(terrain_data.water),
 		-- filled below from the prepared settlement blueprints, before any
 		-- height session is built
-		capital_reach = {}}
+		capital_reach = {}, plot_rects = {}}
 	local height_module_factory = dofile(wp40_directory .. "/height.lua")
 	local function height_factory(dependencies)
 		local bound = {}
@@ -210,6 +210,11 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		if profile.slot == "capital" then
 			water.capital_reach[profile.anchor_id] =
 				r7_settlement_module.horizontal_reach(prepared)
+		end
+		-- Authored lakes keep their water and bank shaping off every plot.
+		for _, rect in ipairs(r7_settlement_module.plot_rects(prepared,
+				profile.x, profile.z)) do
+			water.plot_rects[#water.plot_rects + 1] = rect
 		end
 		settlement_keys[index] = profile.key
 		local blueprints = {}

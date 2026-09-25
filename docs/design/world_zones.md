@@ -389,11 +389,10 @@ replaced; git history before this rewrite records that model.
   zone. Bay outlines get the same coast warp as the rest of the shore; their
   authored centrelines live in the source data.
 - **Water classes.** Every column is land, inland water (rivers, lakes, civic
-  water), bay water, coastal shelf, deep ocean or dragon channel. Until Round
-  22 Phase 5 there is no inland water at all, civic water included (the
-  Kezamba cenote, the Lethariel lake, Highcourt's river arms, the Dawnmere and
-  Sunscar ponds); their old hydrology rows were removed at the start of Phase 5,
-  which lays out all inland water anew from the terrain. Inland and
+  water), bay water, coastal shelf, deep ocean or dragon channel. The old
+  hydrology rows were removed at the start of Round 22 Phase 5, which lays out
+  all inland water anew: rivers and lakes from the terrain's drainage, civic
+  water as authored lakes (below). Inland and
   bay water belong to the zone around them: a wet river or lake column has the
   zone-owned class `planned_water` (like a bay), its dry banks stay land. Shelf, bay water and every
   road/POI exclusion are claim-ineligible. So are wet river and lake columns
@@ -432,6 +431,22 @@ replaced; git history before this rewrite records that model.
   with an irregular edge; a gentle apron beyond the keep-out turns rivers away
   early instead of letting them hug its edge. Civic water and Moonfall's
   crescent lake are authored lakes in the same format.
+- **Civic water (Round 22, D26, D34, D42).** Authored lakes sit on the fitted
+  terrain (`wp40/water_authored.lua`): the Kezamba cenote and the Lethariel
+  crown lake two nodes below their civic pads, inside the civic core exactly
+  on the committed blueprint footprints (the Kezamba lagoon mask, the
+  Lethariel `MERE`), outside it with warped coves and points, a carved bed
+  (the cenote's in ledges) and shores shaped into banks and low natural dams;
+  Highcourt's two blueprint river arms and their outflow as one continuous
+  civic canal of river water, gently meandering, in level reaches of about 24
+  nodes, each at the lowest ground of its own banks, stepping down in rapids
+  of one node (two where the ground drops faster) like a river's; small ponds on the calm ground beside the Dawnmere and Sunscar
+  starts. Authored water and its bank shaping keep at least eight nodes off
+  every district plot and fill lot (margin included), so the plots stand on
+  the ground they were measured on. Moonfall's crescent lake (D41) lies on a
+  calm bowl the landmark adds to the terrain field (like a steep POI's, at
+  the mean natural height), with its own natural-water keep-out, so rivers
+  and drainage lakes bend around it.
 - **Lakes have irregular shores** with coves and shallow margins.
 - Every wet river reach uses `default:river_water_source` /
   `default:river_water_flowing`. This non-renewable, range-two liquid keeps

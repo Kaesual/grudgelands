@@ -107,6 +107,10 @@ data.params = {
 --   S      escarpment step half width (cliff steepness), default 14
 --   side   escarpment high side: +1 left of the axis direction, -1 right
 -- Types: basin, lake, dome, ridge, ring, peak, caldera, valley, escarpment, mesa.
+--   bowl   optional {r, width, resid}: a calm bowl like a steep POI's (the
+--          mean natural height inside r, fading out over width, keeping resid
+--          of the small hills), for a water landmark that is an authored lake
+--          (plan D41) and needs a shelf to lie on
 -- The order is part of the field (each entry's noise salt is its index).
 data.landmarks = {
 	{id = "hearthpine_bowl", type = "basin", x = -1800, z = -2480, angle = 20, L = 120, R = 380, A = 14},
@@ -122,7 +126,8 @@ data.landmarks = {
 	{id = "starbough_canopy_steps", type = "escarpment", x = 1950, z = -2050, angle = 120, L = 220, R = 180, A = 28, S = 16, side = 1},
 	{id = "lorindor_silverorchards", type = "dome", x = 900, z = -1500, angle = 0, L = 120, R = 260, A = 22},
 	{id = "lorindor_berrymarsh", type = "basin", x = 1080, z = -1740, angle = 20, L = 80, R = 130, A = 10},
-	{id = "moonfall_crescent", type = "lake", x = 2400, z = -1480, angle = 70, L = 100, R = 120, A = 14},
+	{id = "moonfall_crescent", type = "lake", x = 2400, z = -1480, angle = 70, L = 100, R = 120, A = 14,
+		bowl = {r = 120, width = 90, resid = 0.12}},
 	{id = "glassroot_pale_cliffs", type = "escarpment", x = 1550, z = -650, angle = 75, L = 300, R = 200, A = 45, S = 10, side = -1},
 	{id = "stillgrave_basin", type = "basin", x = -1800, z = 2480, angle = 0, L = 150, R = 380, A = 16},
 	{id = "stillgrave_ringbarrows", type = "ring", x = -1800, z = 2480, angle = 0, L = 0, R = 440, A = 10},
@@ -228,7 +233,7 @@ data.water = {
 	-- landmarks whose shallow depressions stay ponds (plus wetland zones),
 	-- within their radius + marsh_pad
 	marsh_landmarks = {"frostbarrow_tarns", "dawnmere_headwaters",
-		"lorindor_berrymarsh", "moonfall_crescent", "mournfen_drowned_roads",
+		"lorindor_berrymarsh", "mournfen_drowned_roads",
 		"sunscar_waterholes", "whispering_reedmaze", "totemwater_delta",
 		"broken_marsh", "raincall_falls"},
 	marsh_pad = 40,

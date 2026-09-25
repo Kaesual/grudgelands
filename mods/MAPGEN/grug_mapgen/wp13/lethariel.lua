@@ -16,18 +16,16 @@
 -- THE MERE, and why this core is not a square.
 -- -------------------------------------------
 -- WP40 fits and flattens the 96 x 96 civic core at the anchor's own height --
--- and then leaves the lake that was already there. Measured offline on the two
--- gate seeds and on the user's seed, and identical on all three because a
--- planned water body is a property of the static world plan and not of the
--- seed: 1 393 of the 9 409 columns inside +-47 are `planned_water`, in ONE
--- contiguous wedge whose tip is at (0, 22) and which widens northward to the
--- pad's own north-east corner. The lake surface stands some thirteen nodes
--- BELOW the core's ground course.
+-- and then lays the crown lake into it: the authored lake
+-- `lethariel_crown_lake` of `wp40/water_authored.lua` (Round 22 Phase 5,
+-- plan D34), whose surface stands two nodes below the core's ground course on
+-- every seed. Inside +-47 it is exactly the `MERE` wedge below, 1 393 of the
+-- 9 409 columns, whose tip is at (0, 22) and which widens northward to the
+-- pad's own north-east corner; outside the core its shore is warped and its
+-- bed carved.
 --
--- A composition that laid its pad across that wedge would hang a one-node
--- slab of turf thirteen nodes over open water, and no blueprint can reach
--- down to meet it: the core's authorized volume starts at y = -2. So this
--- composition DOES NOT WRITE THERE. The wedge is committed as `MERE` below
+-- A composition that laid its pad across that wedge would lay a slab of turf
+-- over open water. So this composition DOES NOT WRITE THERE. The wedge is committed as `MERE` below
 -- with a one-node margin, everything the core lays is masked against it, and
 -- what the player gets is the thing the ground already was: a civic terrace
 -- above a mere, with a marble quay along its edge.
@@ -71,16 +69,17 @@ local function loader(directory)
 	-- The city's own patrol loop.
 	local WATCH = "lethariel_watch"
 
-	-- THE MERE, as the static world plan draws it inside the core pad: for
-	-- every z from the tip northward, the first and last x of the water.
-	-- Measured by `tools/wp13/lethariel_plots.lua --shore`, which reads the
-	-- same `water_class_at` the engine does and re-checks this table on all
-	-- nine seeds of the capital anchor fixture.
+	-- THE MERE, as the crown lake lies inside the core pad: for every z from
+	-- the tip northward, the first and last x of the water. It was measured
+	-- from the old static world plan (by the since-deleted
+	-- `tools/wp13/lethariel_plots.lua --shore`); the authored lake of
+	-- `wp40/water_authored.lua` is the same capsule chain, and the two agree
+	-- column for column inside +-47 (checked on three seeds when the lake was
+	-- authored, Round 22 Phase 5 lane W2b).
 	--
 	-- It is committed as DATA and not derived, because a blueprint is a fixed
-	-- cell list built once at load with no world to ask. The fixture is what
-	-- keeps the data honest: the day WP40 moves this lake, the fixture says so
-	-- and this table is re-taken, exactly as the built-road digests are.
+	-- cell list built once at load with no world to ask. The day the lake's
+	-- chain moves, this table is re-taken with it.
 	local MERE_FIRST = 22
 	local MERE = {
 		[22] = {0, 0}, [23] = {-8, 8}, [24] = {-12, 12}, [25] = {-14, 14},
