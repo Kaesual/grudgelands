@@ -230,9 +230,9 @@ that release. These obligations remain visible after WP40 development completion
 by explicit user decision on 2026-09-13; they are not passed or waived gates.
 
 - Freeze game/engine/settings identity and choose the intended public seed.
-- Rebase resource supply and regional access checks onto the current sampler
-  and candidate. Historical 32-seed per-host-hash artifacts are not a current
-  supply/access certificate.
+- One spot check of resource supply and regional access on the release
+  candidate (a few seeds, rough ~5 % parity target, `world_zones.md` §11); no
+  release gate (Round 22 D21, user 2026-09-25).
 - Execute the reviewed current-candidate feature/native and generation-order
   smoke with runtime/RSS evidence. Historical seed-0 G3 predates later changes;
   it also did not prove native dungeon preservation. Record event absence and
