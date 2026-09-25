@@ -3,7 +3,7 @@
 Date: 2026-09-25. Coordinator: Claude Opus 5.5 (root), implementation by
 Opus 5.5 subagents; the user may re-route per session
 (`../process/agent-model-policy.md`, "Day-to-day routing rule").
-Status: **in progress.** Phases 0–2 approved on 2026-09-25. **Phase 3 merged to main (592ae060) and synced for the user's playtest** (terrain, zones, coast; roads and all inland water off per variant (a) and D26). Phases 4–6 wait for an explicit Go after the playtest.
+Status: **in progress.** Phases 0–3 and 3b are done, merged to main and synced (last merge 6db5c02e, 2026-09-25; not pushed). Next: Phase 5 (water), then Phase 4 (roads) (D30), then Phase 6. Each phase still needs the user's Go.
 
 This document records the goal, the analysis it rests on, every decision taken
 with the user on 2026-09-25 and its basis, the phases, and the guardrails
@@ -382,6 +382,18 @@ Findings of the user's Phase 3 playtest; the terrain direction is confirmed
 
 Gate: user look at the fixes and decisions on the audit list.
 
+**Result (2026-09-25, merged):** coast profiles retired, terrain-derived
+shore material with a reusable `bank_material_at(x, z, water_y, distance)`
+hook; beaches continuous through the waterline; capitals flat only in the
+core with long-wave limited relief and an irregular calm edge (plot warnings
+0); POIs sit in the terrain (D33) with calm bowls for steep ones (dragon
+arenas on summit shelves), vegetation exclusion cropped to core + 4; island
+coasts at the channels jittered; world-map relief at a fixed 8-node grid
+(~22 s once per world); surface spawn caps 600, jungle/papyrus gates relative,
+shore crabs on sand near water; design text cleaned per the stale-rule
+audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
+~258 ms/tile (report only, D32).
+
 ### Phase 4 — Roads v2
 
 - **Goal:** a small, natural-looking network.
@@ -406,6 +418,17 @@ Gate: user look at the fixes and decisions on the audit list.
      shallow water.
 - **Removal:** the 57-edge graph, hub stations, shared junction grade solving
   and ingress corridors, with consumers adapted per the Phase 0 findings.
+- **Start points from Phases 3/3b:**
+  - Road nodes also serve the quest texts (audit): start→village,
+    start→capital, capital→outpost/mine "follow the road" beats.
+  - Capital endpoints come from the blueprint gates (stale-rule R11/D22); POIs
+    already sit in the terrain (D33), so trails end on natural ground.
+  - Route the network once in main and hand it to emerge via `ipc_set`, no
+    cache file (D37). Measured: an 8-node whole-map grid costs ~13 s on the
+    natural field, ~45 s on final heights, per build.
+  - Map hook: `road_polylines()` in `mods/PLAYER/grug_map/base.lua` returns
+    `{}` today; fill it and the map base re-renders.
+  - Water exists first (D30), so crossings fall out of routing.
 - **Gate:** user playtest.
 
 ### Phase 5 — Water v2
@@ -422,12 +445,39 @@ Gate: user look at the fixes and decisions on the audit list.
   level surfaces. Transitions, contact faces and waterfalls are where earlier
   rounds spent effort, so relax early, for example with fewer, simpler step
   types.
+- **Start points from Phases 3/3b (do first, one commit):** remove the old R5
+  planner water/road contract and the legacy source tables it pins (routes,
+  stations, spurs, crossings, ingresses, landmarks, hydrology in
+  `source/simple_map.lua`), including the "4 routes per capital" load assert
+  and the frozen manifest checksum that pins rule-token names; relax the
+  planner to "river water by column" (D37, stale-rule R1–R3). Then:
+  - compute the river/lake layout once in main and hand it to emerge via
+    `ipc_set` (D37);
+  - city water follows the terrain (D34): the Lethariel lake keeps an authored
+    approximate location in the city's north-east, the Kezamba cenote stays a
+    self-contained sinkhole, a Highcourt fork only if natural;
+  - the shore rule needs an exception at river steps (stale-rule D3);
+  - reuse `bank_material_at` for banks;
+  - freshwater content waits for this phase: papyrus (add a lower bound,
+    swamps need water so the Whispering Reedlands get reeds), waterweed,
+    lilies, Reed Angelfish (cap y 80 to revisit); decide whether shore crabs
+    also use lake/river sand;
+  - soften the straight 1–2-node contour at the dragon-channel box edges in
+    the sea floor (Phase 3b review).
 - **Gate:** user playtest.
 
 ### Phase 6 — Details and polish
 
 - Rock and scree on steep slopes, cliff materials, transitions, and what the
   user finds while playing.
+- Collected so far: cliff faces show dirt before stone; fine gravel speckles
+  in sand; more corals and sea plants (the reef rule only uses the
+  coastal-shelf class — extend to bays/near-shore sea); outpost `anchor_041`
+  collar overlaps rare route `anchor_098`'s core (`height.lua`
+  `fitting_grade_at` takes the first candidate); golem density on high stone
+  mountains after the cap raise; emergent jungle trees may be refused by the
+  writer (−4 offset, `docs/research/wp13-floating-bushes.md`); high relief
+  may lack native caves (check in playtest); shore-crab spawn rate retune.
 - Afterwards, the general runtime cleanup round (D4).
 
 ### Orchestration and compaction points
