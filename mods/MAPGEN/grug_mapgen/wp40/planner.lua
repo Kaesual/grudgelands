@@ -326,7 +326,6 @@ local function planner_factory(allocator_factory)
 		surface_cave_candidate_at_cell = true,
 		surface_cave_cell_at = true,
 		surface_cave_constants = true,
-		coast_profile_at = true,
 		coast_material_at = true,
 		primary_relief_at = true,
 		landmark_excluded_at = true,
@@ -461,7 +460,6 @@ local function planner_factory(allocator_factory)
 				type(planner_source.hydrology_metric_values_at) ~= "function" or
 				type(planner_source.surface_cave_run_at) ~= "function" or
 				type(planner_source.surface_cave_candidate_at_cell) ~= "function" or
-				type(planner_source.coast_profile_at) ~= "function" or
 				type(planner_source.coast_material_at) ~= "function" or
 				type(planner_source.primary_relief_at) ~= "function" or
 				type(planner_source.static_exclusion_values_at) ~= "function" or

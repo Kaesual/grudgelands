@@ -2,19 +2,14 @@
 --
 -- One globally queryable surface: the natural float field of
 -- `terrain_field.lua`, floored to a node y, with the anchor fittings (starts,
--- capitals, villages, outposts, camps, mines, dragons ...), the sea shore rule
--- and the coast profiles on top. Roads and inland water are switched off until
+-- capitals, villages, outposts, camps, mines, dragons ...) and the sea shore
+-- rule on top. The coast takes its shape from the field alone; only its
+-- near-water material is derived here (world_zones.md §7.4, plan D27). Roads and inland water are switched off until
 -- their Phase 4/5 rebuild (user ruling "variant (a)"): no route, junction,
 -- bank or hydrology grading runs here, and inland planned water is dry land.
 --
 -- Every query is a pure function of (seed, x, z). Heights are memoised per
 -- 80x80 mapchunk block, so planning and the writer read one memo per chunk.
-
--- Small integer rule kept from Round 21: blend of two neighbouring coast runs.
-local function lateral_blend(target, other, offset, round)
-	local weight = offset < 16 and 16 - offset or offset - 32
-	return round(target * (32 - weight) + other * weight, 32)
-end
 
 -- Seed/session-local FIFO over the horizontal classification. Numeric keys,
 -- explicit tuple length so nil holes survive.
@@ -41,155 +36,6 @@ local function new_classification_cache(classify, limit)
 	end
 end
 
--- Coast runs (Round 8/9): a shore is split into 48-node runs per owner and
--- orientation; each run draws one profile (beach, bluff, cliff, terraced
--- cliff) from its zone's relief character.
-local function new_coast_rules(full_seed_string)
-	local PRIME = 16777213
-	local phase = 0
-	for index = 1, #full_seed_string do
-		phase = (phase * 131 + string.byte(full_seed_string, index)) % 65521
-	end
-	local result = {}
-	function result.hash(owner, orientation, run, salt)
-		local value = (owner * 374761 + orientation * 668265 + run * 982451 +
-			phase * 69069 + salt) % PRIME
-		value = (value * value) % PRIME
-		return (value * 48271) % PRIME
-	end
-	function result.run_key(owner, orientation, run, run_class)
-		return tostring(owner) .. "/" .. tostring(orientation) .. "/" ..
-			tostring(run) .. "/" .. run_class
-	end
-	function result.band(draw, profile, freshwater)
-		if profile ~= "beach" then return nil, nil, 4 end
-		local width = freshwater and 2 + draw % 3 or 20 + draw % 9
-		local denominator = 2 + math.floor(draw / 9) % 4
-		local blend = freshwater and 4 or 16 + math.floor(draw / 37) % 9
-		return width, denominator, blend
-	end
-	function result.new_lattice_cache(limit)
-		local entries, clock = {}, 0
-		local cache = {}
-		function cache.peek(chunk_x, chunk_z)
-			for index = 1, #entries do
-				local entry = entries[index]
-				if entry.chunk_x == chunk_x and entry.chunk_z == chunk_z then
-					return entry.value
-				end
-			end
-			return nil
-		end
-		function cache.get(chunk_x, chunk_z, build)
-			clock = clock + 1
-			for index = 1, #entries do
-				local entry = entries[index]
-				if entry.chunk_x == chunk_x and entry.chunk_z == chunk_z then
-					entry.used = clock
-					return entry.value
-				end
-			end
-			local value = build(chunk_x, chunk_z)
-			local replacement = #entries + 1
-			if replacement > limit then
-				replacement = 1
-				for index = 2, #entries do
-					if entries[index].used < entries[replacement].used then
-						replacement = index
-					end
-				end
-			end
-			entries[replacement] = {chunk_x = chunk_x, chunk_z = chunk_z,
-				used = clock, value = value}
-			return value
-		end
-		return cache
-	end
-	-- The fallback's Euclidean distance is useful, but the dominant component
-	-- of a nearest four-node sample aliases on diagonal shores. Keep its
-	-- distance and resolve run orientation from an actual cardinal contact.
-	function result.cardinal_orientation(x, z, fallback, water_at)
-		local best_distance, orientation = 53, fallback
-		for direction = 1, 4 do
-			local dx = direction == 1 and 1 or direction == 2 and -1 or 0
-			local dz = direction == 3 and 1 or direction == 4 and -1 or 0
-			for distance = 17, best_distance - 1 do
-				if water_at(x + dx * distance, z + dz * distance) then
-					best_distance, orientation = distance, direction
-					break
-				end
-			end
-		end
-		return orientation
-	end
-	-- `sample_water(lattice_x, lattice_z)` answers for the 4-node lattice.
-	-- The nearest water sample with squared distance in (256, 2704]; ties go to
-	-- the lowest (lattice_dx, lattice_dz). The candidate offsets are sorted
-	-- once per query residue (x mod 4, z mod 4), so the scan stops at the
-	-- first water sample instead of visiting all 27 x 27.
-	local sorted_offsets = {}
-	for residue_x = 0, 3 do
-		for residue_z = 0, 3 do
-			local list = {}
-			for lattice_dx = -13, 13 do
-				for lattice_dz = -13, 13 do
-					local dx, dz = lattice_dx * 4 - residue_x, lattice_dz * 4 - residue_z
-					local squared = dx * dx + dz * dz
-					if squared > 256 and squared <= 2704 then
-						local orientation
-						if math.abs(dx) >= math.abs(dz) then
-							orientation = dx >= 0 and 1 or 2
-						else
-							orientation = dz >= 0 and 3 or 4
-						end
-						list[#list + 1] = {lattice_dx, lattice_dz, squared,
-							orientation, #list}
-					end
-				end
-			end
-			table.sort(list, function(a, b)
-				if a[3] ~= b[3] then return a[3] < b[3] end
-				return a[5] < b[5]
-			end)
-			sorted_offsets[residue_x * 4 + residue_z] = list
-		end
-	end
-	function result.nearest_lattice_sample(query_x, query_z, sample_water)
-		local query_lattice_x = math.floor(query_x / 4)
-		local query_lattice_z = math.floor(query_z / 4)
-		local list = sorted_offsets[(query_x - query_lattice_x * 4) * 4 +
-			(query_z - query_lattice_z * 4)]
-		for index = 1, #list do
-			local offset = list[index]
-			if sample_water(query_lattice_x + offset[1], query_lattice_z + offset[2]) then
-				return offset[3], offset[4]
-			end
-		end
-		return nil, nil
-	end
-	local relief_salts = {wetland_delta = 104729, lowland = 130363,
-		rolling_hills = 155921, plateau = 196613, highland = 225287,
-		mountain = 262147}
-	function result.profile(owner, orientation, run, freshwater, relief_profile)
-		local run_class = (freshwater and "fresh_" or "sea_") .. relief_profile
-		local class_salt = (relief_salts[relief_profile] or 294001) +
-			(freshwater and 524287 or 0)
-		local draw = result.hash(owner, orientation, run, 19349663 + class_salt) % 100
-		local beach_share = relief_profile == "wetland_delta" and 75 or
-			relief_profile == "lowland" and 65 or
-			relief_profile == "rolling_hills" and 45 or
-			relief_profile == "plateau" and 18 or
-			relief_profile == "highland" and 8 or 0
-		local profile
-		if draw < beach_share then profile = "beach"
-		elseif draw < beach_share + 34 then profile = "bluff"
-		elseif draw < beach_share + 70 then profile = "cliff"
-		else profile = "terraced_cliff" end
-		return profile, run_class, class_salt
-	end
-	return result
-end
-
 local function height_factory(dependencies)
 	if type(dependencies) ~= "table" then
 		error("WP40 height dependencies missing", 0)
@@ -207,8 +53,6 @@ local function height_factory(dependencies)
 	local MIN_X, MAX_X, MIN_Z, MAX_Z = -3740, 3740, -3340, 3340
 	local OUTSIDE_FLOOR = WATER_LEVEL - 24
 	local FEATURE_CELL = 128
-	local COAST_REACH = 96
-	local LATTICE_LIMIT, LATTICE_DENSE = 262144, 256
 	-- Boat water floor (y) and the landing approach radius / ramp in nodes.
 	local BOAT_FLOOR_Y, BOAT_APPROACH, BOAT_RAMP = WATER_LEVEL - 9, 100, 24
 	-- Memo blocks are mapchunks: 80 nodes, offset by -32 like the engine's.
@@ -219,7 +63,7 @@ local function height_factory(dependencies)
 	local floor, abs, max, min, sqrt = math.floor, math.abs, math.max,
 		math.min, math.sqrt
 	local round_ratio = deterministic.round_ratio
-	local floor_div, floor_mod = deterministic.floor_div, deterministic.floor_mod
+	local floor_div = deterministic.floor_div
 
 	local function fail(message)
 		error("WP40 height: " .. message, 0)
@@ -659,175 +503,6 @@ local function height_factory(dependencies)
 		end
 
 		-----------------------------------------------------------------------
-		-- Coast profiles (Round 8/9 rules) on the sea coast. Freshwater shores
-		-- are gone with inland water.
-		-----------------------------------------------------------------------
-		local coast_rules = new_coast_rules(full_seed_string)
-		local lattice_cache = coast_rules.new_lattice_cache(16)
-		local direction_x, direction_z = {1, -1, 0, 0}, {0, 0, 1, -1}
-		local function water_at(x, z)
-			return (class_owner_at(x, z)) ~= LAND
-		end
-		-- The 4-node water lattice, memoised by lattice coordinate (bounded:
-		-- the table is dropped when it grows past LATTICE_LIMIT entries).
-		local lattice_water, lattice_count = {}, 0
-		local function sample_water(lattice_x, lattice_z)
-			local key = lattice_x * 8192 + lattice_z
-			local value = lattice_water[key]
-			if value == nil then
-				if lattice_count >= LATTICE_LIMIT then
-					lattice_water, lattice_count = {}, 0
-				end
-				-- Classified directly: a lattice sample needs no memo block.
-				value = (column_class(lattice_x * 4, lattice_z * 4)) ~= LAND
-				lattice_water[key] = value
-				lattice_count = lattice_count + 1
-			end
-			return value
-		end
-		local function build_lattice(chunk_x, chunk_z)
-			local squared_by, orientation_by = {}, {}
-			local world_min_x, world_min_z = chunk_x * 80, chunk_z * 80
-			for query_z = world_min_z, world_min_z + 79 do
-				for query_x = world_min_x, world_min_x + 79 do
-					local query_index = (query_z - world_min_z) * 80 +
-						(query_x - world_min_x) + 1
-					local squared, orientation = coast_rules.nearest_lattice_sample(
-						query_x, query_z, sample_water)
-					squared_by[query_index] = squared or false
-					orientation_by[query_index] = orientation or false
-				end
-			end
-			return {squared = squared_by, orientation = orientation_by}
-		end
-		-- A whole 80x80 lattice pays off only for dense queries (planning, the
-		-- writer). Scattered callers (spawning, NPC placement, map render)
-		-- search the lattice for their one column; the answer is identical.
-		local lattice_queries = {}
-		local function lattice_shore_at(x, z)
-			local chunk_x, chunk_z = floor_div(x, 80), floor_div(z, 80)
-			local lattice = lattice_cache.peek(chunk_x, chunk_z)
-			local squared, orientation
-			if not lattice then
-				local key = chunk_x * 1048576 + chunk_z
-				local count = (lattice_queries[key] or 0) + 1
-				lattice_queries[key] = count
-				if count >= LATTICE_DENSE then
-					lattice_queries[key] = nil
-					lattice = lattice_cache.get(chunk_x, chunk_z, build_lattice)
-				else
-					squared, orientation = coast_rules.nearest_lattice_sample(x, z,
-						sample_water)
-				end
-			end
-			if lattice then
-				local index = (z - chunk_z * 80) * 80 + (x - chunk_x * 80) + 1
-				squared, orientation = lattice.squared[index], lattice.orientation[index]
-			end
-			if not squared then return nil end
-			return floor(sqrt(squared) + 0.5), coast_rules.cardinal_orientation(x, z,
-				orientation, water_at)
-		end
-		local function target_for(profile, distance, incoming, water_y, owner,
-				orientation, run, axis, class_salt)
-			local draw = coast_rules.hash(owner, orientation, run, 83492791 + class_salt)
-			local width, target, denominator
-			if profile == "beach" then
-				width, denominator = coast_rules.band(draw, profile, false)
-				target = water_y + floor((distance - 1) / denominator)
-			elseif profile == "bluff" then
-				width = 6 + draw % 4
-				local rise = 1 + floor(draw / 11) % 2
-				target = water_y + (distance - 1) * rise
-			elseif profile == "cliff" then
-				width = 5 + draw % 3
-				local irregular = coast_rules.hash(owner, orientation, run,
-					axis * 17 + 480752697 + class_salt) % 5 - 2
-				local setback = 2 + floor(draw / 13) % 3
-				local top = max(7, incoming - water_y) + irregular
-				local rise = min(top, 1 + max(0, distance - 2) * setback)
-				if distance > 2 and coast_rules.hash(owner, orientation, run,
-					axis * 31 + distance * 43 + class_salt) % 11 == 0 then
-					rise = max(1, rise - setback)
-				end
-				target = water_y + rise
-			else
-				local steps = 2 + draw % 2
-				local step_height = 3 + floor(draw / 7) % 3
-				local step_width = 3 + floor(draw / 17) % 3
-				width = steps * step_width + 1
-				target = water_y + min(steps, floor((distance - 2) /
-					step_width) + 1) * step_height
-			end
-			if distance == 1 then target = water_y end
-			if distance > width then
-				local offset = distance - width
-				local _, _, blend_width = coast_rules.band(draw, profile, false)
-				if offset >= blend_width then return incoming, width end
-				local edge = profile == "beach" and
-					(water_y + floor((width - 1) / denominator)) or target
-				target = round_ratio(edge * (blend_width - offset) +
-					incoming * offset, blend_width)
-			end
-			return target, width
-		end
-		-- profile, distance, width, freshwater, run key, target y, relief id,
-		-- water y; nil away from the coast and inside static exclusions.
-		local function coast_profile_at(x, z, supplied_incoming, material_only)
-			coordinate(x, "coast query x") coordinate(z, "coast query z")
-			local class, owner = class_owner_at(x, z)
-			if class ~= LAND or owner == nil then return nil end
-			-- The field's true coast distance (16-node chamfer, B-spline read)
-			-- rules out inland columns before the shore scans: a profile reaches
-			-- at most 52 nodes from water, and the grid errs by far less than
-			-- the remaining margin.
-			if field.coast_signed(x, z) > COAST_REACH then return nil end
-			local geometry_excluded = horizontal.static_exclusion_values_at(x, z) ~= nil or
-				(type(horizontal.housing_mask_id_at) == "function" and
-					horizontal.housing_mask_id_at(x, z) ~= nil)
-			if material_only then
-				if not geometry_excluded then return nil end
-			elseif geometry_excluded then return nil end
-			local best_distance, orientation
-			for direction = 1, 4 do
-				for distance = 1, 16 do
-					if water_at(x + direction_x[direction] * distance,
-							z + direction_z[direction] * distance) then
-						if best_distance == nil or distance < best_distance then
-							best_distance, orientation = distance, direction
-						end
-						break
-					end
-				end
-			end
-			if best_distance == nil then
-				best_distance, orientation = lattice_shore_at(x, z)
-			end
-			if best_distance == nil then return nil end
-			local water_y = WATER_LEVEL
-			local axis = orientation <= 2 and z or x
-			local run = floor_div(axis, 48)
-			local incoming = supplied_incoming or natural_height_at(x, z)
-			local relief_profile = source.zones[owner].primary_relief_id
-			local profile, run_class, class_salt = coast_rules.profile(owner,
-				orientation, run, false, relief_profile)
-			local target, width = target_for(profile, best_distance, incoming,
-				water_y, owner, orientation, run, axis, class_salt)
-			local offset = floor_mod(axis, 48)
-			if offset < 16 or offset >= 32 then
-				local neighbor = offset < 16 and run - 1 or run + 1
-				local other_profile, _, other_salt = coast_rules.profile(owner,
-					orientation, neighbor, false, relief_profile)
-				local other = target_for(other_profile, best_distance, incoming,
-					water_y, owner, orientation, neighbor, axis, other_salt)
-				target = lateral_blend(target, other, offset, round_ratio)
-			end
-			return profile, best_distance, width, false,
-				coast_rules.run_key(owner, orientation, run, run_class),
-				target, relief_profile, water_y
-		end
-
-		-----------------------------------------------------------------------
 		-- Composition, memoised per column.
 		-----------------------------------------------------------------------
 		-- Water columns: the field's sea floor, or an anchor platform in a bay.
@@ -844,6 +519,7 @@ local function height_factory(dependencies)
 
 		-- The sea shore rule: a dry column that touches exposed water takes
 		-- that water surface as its own top.
+		local direction_x, direction_z = {1, -1, 0, 0}, {0, 0, 1, -1}
 		-- The field's sea floor is always below WATER_LEVEL, so only a bay
 		-- platform can cover the water.
 		local function exposed_shore_at(x, z)
@@ -869,10 +545,6 @@ local function height_factory(dependencies)
 			if value ~= nil then terrain_y, kind, feature_id = value, "land_grade", fitting.id end
 			value, fitting = fitting_grade_at(grids.start, x, z, terrain_y, owner, LAND)
 			if value ~= nil then terrain_y, kind, feature_id = value, "land_grade", fitting.id end
-			if kind == nil then
-				local _, _, _, _, _, coast_y = coast_profile_at(x, z, terrain_y)
-				if coast_y ~= nil then terrain_y = coast_y end
-			end
 			local shore_y = exposed_shore_at(x, z)
 			if shore_y ~= nil then terrain_y = shore_y end
 			return terrain_y, kind, kind and terrain_y or nil, feature_id
@@ -922,6 +594,81 @@ local function height_factory(dependencies)
 			coordinate(x, "water query x") coordinate(z, "water query z")
 			if outside(x, z) then return WATER_LEVEL end
 			return water_surface_for((class_owner_at(x, z)))
+		end
+
+		-----------------------------------------------------------------------
+		-- Near-water material (world_zones.md §7.4, plan D27). The coast has no
+		-- geometric profile; the rule only reads the final terrain. Low, gentle
+		-- ground near water is sand with sparse gravel; steep ground at the
+		-- water and cliff edges are gravel or stone; mountain land never gets
+		-- sand. Every threshold is jittered at two noise scales, so material
+		-- edges follow the terrain and never run straight. `bank_material` takes
+		-- the water surface and the distance to that water as inputs, so lake
+		-- and river banks (Phase 5) can reuse it; the sea coast passes the sea
+		-- level and the field's true coast distance.
+		-----------------------------------------------------------------------
+		local shore_noise = terrain_field.simplex(full_seed_string, "shore_material")
+		-- Reach of sand and of rock from the water (nodes), the highest sand and
+		-- rock above the water surface, the gentle slope limit and the slope
+		-- where gravel turns to stone (nodes per node).
+		local SAND_REACH, ROCK_REACH, SHORE_JITTER = 40, 24, 16
+		local SAND_TOP, ROCK_TOP = 4, 9
+		local GENTLE_SLOPE, STONE_SLOPE = 0.5, 1.25
+		-- A water column counts at the water surface, so the shore line
+		-- itself does not read as a slope.
+		local function bank_surface_y(x, z, water_y)
+			if outside(x, z) or class_owner_at(x, z) ~= LAND then return water_y end
+			return (final_values_at(x, z))
+		end
+		-- "sand", "gravel", "stone" or nil for the dry column (x, z) of zone
+		-- `owner` at `distance` nodes from water whose surface is `water_y`.
+		local function bank_material(x, z, owner, water_y, distance)
+			if distance > SAND_REACH + SHORE_JITTER then return nil end
+			local rise = final_values_at(x, z) - water_y
+			if rise > SAND_TOP + 4 and distance > ROCK_REACH + 8 then return nil end
+			local broad = shore_noise(x / 96, z / 96)
+			local fine = shore_noise(x / 9 + 311.7, z / 9 - 97.1)
+			local slope = max(
+				abs(bank_surface_y(x + 2, z, water_y) - bank_surface_y(x - 2, z, water_y)),
+				abs(bank_surface_y(x, z + 2, water_y) - bank_surface_y(x, z - 2, water_y))) / 4
+			local mountain = source.zones[owner].primary_relief_id == "mountain"
+			local steep = slope > GENTLE_SLOPE + 0.2 * fine
+			if not mountain and not steep and
+					distance <= SAND_REACH + SHORE_JITTER * broad and
+					rise <= SAND_TOP + 2.5 * broad + 1.5 * fine then
+				if fine > 0.55 and broad < -0.2 then return "gravel" end
+				return "sand"
+			end
+			if not (mountain or steep) or distance > ROCK_REACH + 8 * broad then
+				return nil
+			end
+			local cliff = slope > STONE_SLOPE + 0.5 * fine
+			if rise <= ROCK_TOP + 3 * broad + fine then
+				if cliff or (mountain and broad + 0.5 * fine > 0) then return "stone" end
+				return "gravel"
+			end
+			return cliff and "stone" or nil
+		end
+		local function dry_owner_at(x, z)
+			if outside(x, z) then return nil end
+			local class, owner = class_owner_at(x, z)
+			if class ~= LAND then return nil end
+			return owner
+		end
+		local function coast_material_at(x, z)
+			coordinate(x, "coast query x") coordinate(z, "coast query z")
+			local owner = dry_owner_at(x, z)
+			if owner == nil then return nil end
+			return bank_material(x, z, owner, WATER_LEVEL, field.coast_signed(x, z))
+		end
+		local function bank_material_at(x, z, water_y, distance)
+			coordinate(x, "bank query x") coordinate(z, "bank query z")
+			if type(water_y) ~= "number" or type(distance) ~= "number" then
+				fail("bank material query needs a water y and a distance")
+			end
+			local owner = dry_owner_at(x, z)
+			if owner == nil then return nil end
+			return bank_material(x, z, owner, water_y, distance)
 		end
 
 		-----------------------------------------------------------------------
@@ -976,11 +723,14 @@ local function height_factory(dependencies)
 		function session.water_surface_at(x, z)
 			return final_water_surface_at(x, z)
 		end
-		function session.coast_profile_at(x, z)
-			return coast_profile_at(x, z)
-		end
+		-- "sand", "gravel", "stone" or nil for a dry column near the sea.
 		function session.coast_material_at(x, z)
-			return coast_profile_at(x, z, nil, true)
+			return coast_material_at(x, z)
+		end
+		-- The same rule for any water body: its surface y and the column's
+		-- distance to it (the Phase 5 lake and river bank hook).
+		function session.bank_material_at(x, z, water_y, distance)
+			return bank_material_at(x, z, water_y, distance)
 		end
 		-- Soft landmark fields exclude nothing (plan D13, Round 22 Phase 3).
 		function session.landmark_excluded_at()

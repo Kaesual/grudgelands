@@ -53,6 +53,13 @@ data.capital_target = {
 	undead = {14, 45}, orc = {18, 60}, troll = {10, 36},
 }
 
+-- Long-wave relief amplitude (nodes, +-) around each race's capital, keyed to
+-- the civic core like the target band (D28): the district plots of the WP13
+-- blueprints must still stand on it.
+data.capital_wave = {
+	dwarf = 12, human = 8, elf = 10, undead = 9, orc = 11, troll = 9,
+}
+
 -- Mechanism knobs (prototype DEFAULT with the R2 overrides folded in).
 data.params = {
 	warp = 260, warp_period = 1600,
@@ -67,7 +74,13 @@ data.params = {
 	-- The capital bowl is calm out to the WP13 district plots (offsets up to
 	-- ~240 from the civic core); at r_in 80 their perimeters fell and rose by
 	-- up to 40 nodes (Phase 3 integration, seed 15140735923413111218).
-	capital_r_in = 260, capital_r_out = 520, capital_resid = 0.2,
+	capital_r_in = 260, capital_r_out = 520, capital_resid = 0.08,
+	-- D28: long-wave hills and hollows inside the capital calm zone (period
+	-- in nodes, faded in between these distances from the civic-core centre;
+	-- amplitudes per race in `data.capital_wave`), and the outer edge radius
+	-- grown by up to capital_edge (share of r_out) with a noise of this period.
+	capital_wave_period = 360, capital_wave_core = 60, capital_wave_full = 180,
+	capital_edge = 0.45, capital_edge_period = 420,
 	spines = true, spine_warp = 0.7, range_ridge = 210,
 	mid = 1.35, neg_compress = 0.5, crest_warp = 0.4, massif_min = 0.75,
 	start_band = {6, 36},

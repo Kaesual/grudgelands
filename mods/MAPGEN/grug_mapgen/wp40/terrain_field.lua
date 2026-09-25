@@ -709,6 +709,15 @@ return function(data)
 		-- Starts and capitals: damping masks keyed to the anchor (the civic-core
 		-- centre for a capital, D7 and guardrail 8).
 		-----------------------------------------------------------------------
+		-- Capitals (D28): only the civic core is flat. Around it the calm zone
+		-- keeps long-wave hills and hollows of limited height, faded in from
+		-- the core, and its outer edge is pulled in and out by noise, so the
+		-- zone is neither flat nor round. Starts keep a plain calm bowl.
+		local nwave = simplex(seed, "capital_wave")
+		local nedge = simplex(seed, "capital_edge")
+		local WAVE_P, WAVE_CORE, WAVE_FULL = V.capital_wave_period,
+			V.capital_wave_core, V.capital_wave_full
+		local EDGE, EDGE_P = V.capital_edge, V.capital_edge_period
 		local ANCH = {}
 		for _, a in ipairs(opts.anchors or {}) do
 			local slot = a.slot_id
@@ -719,9 +728,12 @@ return function(data)
 				if slot == "capital" then
 					e.r_in, e.r_out, e.resid = V.capital_r_in, V.capital_r_out, V.capital_resid
 					e.band = data.capital_target[zone.race_region] or V.start_band
+					e.wave = data.capital_wave[zone.race_region] or 0
+					e.edge = EDGE
 				else
 					e.r_in, e.r_out, e.resid = V.start_r_in, V.start_r_out, V.start_resid
 					e.band = V.start_band
+					e.wave, e.edge = 0, 0
 				end
 				local sum, n = 0, 0
 				local r, step = V.target_radius, V.target_step
@@ -740,31 +752,61 @@ return function(data)
 			end
 		end
 		local AW = V.anchor_warp
+		-- The calm ground of one anchor at distance `d`: its target, the
+		-- long-wave undulation (capitals) and a residual of the small hills.
+		local function calm_at(e, x, z, hills_hi)
+			local y = e.target + e.resid * hills_hi
+			if e.wave > 0 then
+				-- Faded in by the true distance from the civic-core centre, so
+				-- the core itself stays at the target.
+				local cx, cz = x - e.x, z - e.z
+				local n = nwave(x / WAVE_P, z / WAVE_P) +
+					0.3 * nwave(x / WAVE_P * 2 + 37.1, z / WAVE_P * 2 - 11.9)
+				y = y + e.wave * n / 1.3 *
+					smoothstep(WAVE_CORE, WAVE_FULL, sqrt(cx * cx + cz * cz))
+			end
+			return y
+		end
 		local function damp(x, z, h, hills_hi, wx, wz)
 			local ax, az = x + AW * wx, z + AW * wz
-			local best_m, best, count = 1, nil, 0
-			local w_sum, t_sum, r_sum = 0, 0, 0
+			local best_m, best, best_calm, count = 1, nil, nil, 0
+			local w_sum, c_sum = 0, 0
 			for i = 1, #ANCH do
 				local e = ANCH[i]
 				local dx, dz = ax - e.x, az - e.z
 				local d2 = dx * dx + dz * dz
-				if d2 < e.r_out * e.r_out then
-					local m = smootherstep(e.r_in, e.r_out, sqrt(d2))
-					if m < best_m then best_m, best = m, e end
-					count = count + 1
-					local w = 1 - m
-					w_sum, t_sum, r_sum = w_sum + w, t_sum + w * e.target, r_sum + w * e.resid
+				local r_out = e.r_out * (1 + e.edge)
+				if d2 < r_out * r_out then
+					local d = sqrt(d2)
+					-- Irregular outer edge: the fade-out radius grows by up to
+					-- `edge` with a smooth 2D noise (seam rules: no angle
+					-- parameter, no crease). It only grows, so the district
+					-- plots never lose calm ground.
+					if e.edge > 0 then
+						r_out = e.r_out * (1 + e.edge * 0.5 *
+							(1 + nedge(x / EDGE_P, z / EDGE_P)))
+					else
+						r_out = e.r_out
+					end
+					local m = smootherstep(e.r_in, r_out, d)
+					if m < 1 then
+						local calm = calm_at(e, x, z, hills_hi)
+						if m < best_m then best_m, best, best_calm = m, e, calm end
+						count = count + 1
+						local w = 1 - m
+						w_sum, c_sum = w_sum + w, c_sum + w * calm
+					end
 				end
 			end
 			if not best then return h, 1 end
 			local m = best_m
 			if count == 1 or w_sum <= 0 then
-				return best.target + m * (h - best.target) + (1 - m) * best.resid * hills_hi, m
+				return best_calm + m * (h - best_calm), m
 			end
-			-- Overlapping bowls (none in the current layout): blend their targets
-			-- and residuals by influence, so no switch line becomes a cliff.
-			local target, resid = t_sum / w_sum, r_sum / w_sum
-			return target + m * (h - target) + (1 - m) * resid * hills_hi, m
+			-- Overlapping bowls (none in the current layout): blend their calm
+			-- grounds by influence, so no switch line becomes a cliff.
+			local calm = c_sum / w_sum
+			return calm + m * (h - calm), m
 		end
 
 		local field = {anchors = ANCH, landmarks = LMS, coast_signed = coast_signed,
