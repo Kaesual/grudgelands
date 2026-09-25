@@ -192,6 +192,9 @@ Road shape decisions (2026-09-25, user with coordinator, before Phase 4):
 | D46 | **Tunnels are staged:** Phase 4 first ships routing, cuts, embankments and decks; then images show where deep cuts over ridges appear, and only there a tunnel rule is added (about 7 wide, 5 high, stone arch lining, torches about every 8 nodes, portals; e.g. from more than ~8–10 nodes of cut over some length). Dropped if it gets complex; routing then avoids ridges by cost. | User: tunnels are welcome if they look good. |
 | D47 | **Height changes use slabs, not full-block jumps.** The player step height is 0.6, so a slab turns every 1-node rise into two walkable half steps; slabs have no orientation, so curves with height change work. The existing `stairs` mod provides them. Sloped ramp nodes are at most a Phase 6 look option (their collision stays stepped). | User. |
 | D48 | **One deck, pillar and railing design** to start, with materials per race. | User. |
+| D49 | **Grade rule:** the road profile runs in half-node steps and neighbouring road columns differ by at most ½ node (max grade 1:2, every rise walkable without jumping, a slab on every half step). On top of that hard rule, routing cost prefers gentle grades (penalty rising above roughly 1:4; the exact preference is chosen by comparing variants in the Phase 4 prototype). | User: half-block steps walk far better and allow a finer, better-fitted profile. |
+| D50 | **Stairs only on trails:** the narrow trails to outposts, mines and camps (D19) may use stair flights (up to 1:1) on straight stretches; main roads stay ≤ 1:2 with slabs (mounts, later carts). Compared as a variant in the prototype. | Stairs have an orientation and look wrong in curves. |
+| D51 | **No long ramps into flat land.** Routing follows the terrain so the road lies near ground level; the profile both cuts and fills (never only fills downward from a high point); no fixed high control points (bridges sit on bank height with small clearance, junctions and gates take their ground's height). Metric: the longest stretch where the road lies more than 2 nodes above or below the terrain; a large value means the route is wrong and the costs get tuned, not longer ramps built. | User: in the old mapgen, ramps ran far into flat land before reaching their height. |
 
 All §9 questions are answered.
 
@@ -452,6 +455,23 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   - Map hook: `road_polylines()` in `mods/PLAYER/grug_map/base.lua` returns
     `{}` today; fill it and the map base re-renders.
   - Water exists first (D30), so crossings fall out of routing.
+- **Road shape (D44–D51, 2026-09-25):**
+  - Cross-section per column: uphill cut with ~1:1 slope back, downhill
+    embankment up to ~2 nodes, beyond that a deck on pillars with railing;
+    bridges are the same deck system. One design, materials per race.
+  - Profile in half-node steps, ≤ ½ node between neighbouring road columns,
+    slabs on half steps; routing prefers gentle grades; serpentines with
+    flat hairpin platforms, legs ≥ ~16 apart; stairs only on straight trail
+    stretches.
+  - Tunnels only after the first images, where deep ridge cuts appear (D46).
+- **Order:** an offline prototype first (like Phase 5), reusing the water
+  lane's 16-node grid. It shows the whole map, a serpentine on a mountain, a
+  bridge, a hillside gallery on pillars and long profiles with the half
+  steps, and compares variants: hard 1:2 only vs an added preference for
+  ~1:4 or ~1:3, and stairs on trails vs none. Metrics per variant: detour
+  factor (road length / straight distance), number of hairpins, longest
+  stretch > 2 nodes off the terrain (D51), cut/fill/deck column counts,
+  construction time. The user picks, then integration.
 - **Gate:** user playtest.
 
 ### Phase 5 — Water v2
