@@ -325,7 +325,8 @@ local function height_factory(dependencies)
 		local water = water_cache.sampler
 		local water_seg_river = water.seg_river
 		-- Sealed inland water ids (the planner's column tuple): "river:<n>" is
-		-- written as river water, "lake:<n>" as ordinary water.
+		-- written as river water, "lake:<n>" as ordinary water (zones.lua gives
+		-- a lake's step-face columns river water).
 		local river_names, lake_names = {}, {}
 		for id in ipairs(water.rivers) do river_names[id] = "river:" .. id end
 		for id in ipairs(water.lakes) do lake_names[id] = "lake:" .. id end
@@ -866,7 +867,7 @@ local function height_factory(dependencies)
 		-- but the step face stays a water-water contact inside the channel.
 		-- (Set false to let the higher reach decide: nothing spills sideways,
 		-- the bank then stands one step above the lower water.)
-		local STEP_BANK_LOWER = true
+		local STEP_BANK_LOWER = false
 		local direction_x, direction_z = {1, -1, 0, 0}, {0, 0, 1, -1}
 		local function exposed_shore_at(x, z, near)
 			local shore_y
@@ -1123,8 +1124,8 @@ local function height_factory(dependencies)
 		-- Inland water by column (plan D37): a wet river or lake column returns
 		-- its kind ("river" or "lake"), its sealed water id ("river:<n>",
 		-- "lake:<n>") and its surface y; every other column nil. The planner
-		-- seals the bed and banks of every such column and writes river water
-		-- for "river:" ids, ordinary water for "lake:" ids.
+		-- seals the bed and banks of every such column and writes ordinary
+		-- water for lakes, river water for rivers and for a lake's step faces.
 		function session.inland_water_at(x, z)
 			coordinate(x, "inland water query x") coordinate(z, "inland water query z")
 			return inland_water_at(x, z)

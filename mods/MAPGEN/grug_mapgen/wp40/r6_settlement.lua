@@ -965,7 +965,8 @@ local function settlement_factory()
 		-- The planner's river/lake bed and bank seal (planner.lua) as a y range,
 		-- or nil. A wet sealed column seals its bed; a column beside such water
 		-- gets the bank seal. Neighbours are only read near sealed water. The
-		-- sealed id "river:<n>" holds river water, "lake:<n>" ordinary water.
+		-- sealed id "lake:<n>" holds ordinary water, every other id ("river:",
+		-- a lake's step face "outlet:") river water.
 		local function river_liquid(river_id)
 			return river_id ~= nil and river_id:sub(1, 5) ~= "lake:"
 		end

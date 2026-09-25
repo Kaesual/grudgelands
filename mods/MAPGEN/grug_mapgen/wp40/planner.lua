@@ -637,7 +637,8 @@ local function planner_factory(allocator_factory)
 
 		-- The column tuple (zones.lua). Inland water by column: the river-id
 		-- slot holds the sealed water id of a wet river or lake column
-		-- ("river:<n>" is river water, "lake:<n>" ordinary water) and nothing
+		-- ("lake:<n>" is ordinary water; any other id, "river:<n>" or a lake's
+		-- step face "outlet:<n>", is river water) and nothing
 		-- is registered; its bed depth is `water_y - terrain_y`. Step faces
 		-- carry a transition kind and their upper and lower surface y.
 		local function validate_column_tuple(x, z, water_class, zone_numeric_id,

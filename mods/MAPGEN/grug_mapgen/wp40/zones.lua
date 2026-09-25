@@ -1053,10 +1053,11 @@ local function zones_factory(dependencies)
 			-- Inland water by column (Round 22 Phase 5, plan D37): a wet river
 			-- or lake column (`height.inland_water_at`) is `planned_water`, the
 			-- zone-owned water class (world_zones.md §7.4), and carries its
-			-- sealed water id in the river-id slot ("river:<n>" or "lake:<n>")
+			-- sealed water id in the river-id slot ("river:<n>", "lake:<n>", or
+			-- "outlet:<n>" on a lake's step face)
 			-- with `water_y - terrain_y` as its bed depth; the planner seals its
-			-- bed and banks and writes range-2 river water for "river:" ids,
-			-- ordinary water for "lake:" ids. Its dry banks stay `land`. A step
+			-- bed and banks and writes ordinary water for "lake:" ids, range-2
+			-- river water for every other id. Its dry banks stay `land`. A step
 			-- face between reaches fills the transition slots with its kind
 			-- ("rapid" or "fall"), upper and lower surface y; the other three
 			-- stay nil.
@@ -1125,6 +1126,12 @@ local function zones_factory(dependencies)
 							type(step_lower) ~= "number" or step_lower % 1 ~= 0 or
 							step_lower >= step_upper) then
 						fail("planner step transition differs")
+					end
+					-- A lake column on a step face (its outflow over a fall or
+					-- rapid) holds river water: the renewable range-8 lake water
+					-- would otherwise flood the flat shore below the step.
+					if step_kind ~= nil and inland_kind == "lake" then
+						river_id = "outlet:" .. inland_id:sub(6)
 					end
 				end
 				local hard_foundation = hard_row_at(x, terrain_y, z) ~= nil
