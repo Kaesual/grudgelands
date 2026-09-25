@@ -409,9 +409,16 @@ replaced; git history before this rewrite records that model.
   meanders and its width varies along its course.
 - **Water steps down downstream.** Luanti water needs level surfaces, so a
   river's surface is constant along one reach and steps down to the next reach
-  downstream through a small fall or rapids. Use few, simple step types; a
-  river layout driven by drainage is an option only if coarse erosion (Round
-  22 option C, D6) is adopted.
+  downstream through a small fall or rapids. Use few, simple step types:
+  gentle terrain gets many small rapids (1–3 nodes), tall falls (up to about
+  16) only on steep slopes.
+- **Layout from drainage (Round 22, D38).** Rivers and lakes come from the
+  drainage of the natural terrain on a coarse grid, without erosion: shallow
+  pits are breached, deeper basins keep a lake below their spill level, and
+  wetland zones and water landmarks keep shallow ponds. No river or lake lies
+  within about 300 nodes of a start or inside a capital's built area (about
+  280 nodes from its core, irregular edge). Civic water and Moonfall's
+  crescent lake are authored lakes in the same format.
 - **Lakes have irregular shores** with coves and shallow margins.
 - Every wet river reach uses `default:river_water_source` /
   `default:river_water_flowing`. This non-renewable, range-two liquid keeps
@@ -701,10 +708,10 @@ or rights (§7.1).
 | `kragmar_speargrass_reach` | Speargrass Reach | Orc | 21–30 peaceful | savanna 55 / badlands 40 / swamp 5 | Tall cutting grass, dry rivers and hunting stones; savanna/mountain mobs; day Speargrass Tiger; night Scorpion/Goblin Raid; **V, O, M** |
 | `kragmar_bannerbreak_mesa` | Bannerbreak Mesa | Orc | 31–40 **contested** | badlands 70 / savanna 25 / swamp 5 | Wind-torn standards, red trenches and siege ramps; mountain/war mobs, night Scorpion/Goblin Raid, dragonweed; **O×2, B, K×2, R:Dustwing** |
 | `kragmar_kapok_cradle` | Kapok Cradle | Troll | 1–10 peaceful | jungle edge 90 / swamp 10 | Sheltered jungle basin beneath one giant kapok; settled/jungle-edge mobs; day band-2 Tapir, night Giant Rat and band-2 Viper; **S** |
-| `kragmar_raincall_basin` | Raincall Basin | Troll | 11–20 peaceful | jungle edge 65 / deep jungle 15 / swamp 20 | Monsoon pools and waterfall stairs; settled/jungle-edge mobs, day Tapir, night Viper, sunleaf; **V, O, B** |
+| `kragmar_raincall_basin` | Raincall Basin | Troll | 11–20 peaceful | jungle edge 65 / deep jungle 15 / swamp 20 | Monsoon pools on stepped slopes; settled/jungle-edge mobs, day Tapir, night Viper, sunleaf; **V, O, B** |
 | `kragmar_kezamba` | Kezamba | Troll | capital, civic L20–30 profile, peaceful | jungle edge 75 / deep jungle 20 / swamp 5 | Stilt-and-stone city around a stepped cenote; no ambient hostiles; **C** |
 | `kragmar_whispering_reedlands` | Whispering Reedlands | Troll | 21–30 peaceful | jungle edge 45 / deep jungle 25 / swamp 30 | Flooded reed maze crossed by raised totem paths; jungle-edge/swamp mobs, day Tapir, night Wisp, marshbloom; **V, O, M, W** |
-| `kragmar_totemwater_reach` | Totemwater Reach | Troll | 21–30 peaceful | jungle edge 35 / deep jungle 45 / swamp 20 | Broad river delta marked by colossal carved totems; jungle-edge/swamp mobs, day Tapir, night Wisp; **O** |
+| `kragmar_totemwater_reach` | Totemwater Reach | Troll | 21–30 peaceful | jungle edge 35 / deep jungle 45 / swamp 20 | Broad river mouth and marsh ponds marked by colossal carved totems; jungle-edge/swamp mobs, day Tapir, night Wisp; **O** |
 | `kragmar_thunderroot_wilds` | Thunderroot Wilds | Troll | 31–40 **contested** | deep jungle 55 / east badlands 30 / swamp 15 | Storm forest with exposed roots and ochre stone islands; jungle mobs; night Bog Witch; **O, B** |
 
 ### 8.3 Battlegrounds and offshore dragon islands
@@ -784,10 +791,10 @@ player-visible today: `kezamba_cenote` (quest "Smoke Above the Cenote"),
 | Speargrass Reach | `rolling_hills` | `speargrass_dryriver` (dry river): a wide seasonal riverbed; `speargrass_hunting_stones` (mesa): low tablelands with standing stones |
 | Bannerbreak Mesa | `plateau` | `bannerbreak_crowned_mesa` (mesa): the high tableland crowned by torn standards |
 | Kapok Cradle | `lowland` | `kapok_worldtree_basin` (basin): the sheltered basin under the giant kapok |
-| Raincall Basin | `rolling_hills` | `raincall_falls` (escarpment): steps with inland waterfalls and monsoon pools |
+| Raincall Basin | `rolling_hills` | `raincall_falls` (escarpment): stepped slopes with monsoon pools |
 | Kezamba | `plateau` | `kezamba_cenote` (civic): the stepped central cenote |
 | Whispering Reedlands | `wetland_delta` | `whispering_reedmaze` (basin): the flooded reed maze |
-| Totemwater Reach | `wetland_delta` | `totemwater_delta` (basin): the broad branching river delta |
+| Totemwater Reach | `wetland_delta` | `totemwater_delta` (basin): a broad river mouth among marsh ponds |
 | Thunderroot Wilds | `highland` | `thunderroot_exposures` (escarpment): storm-forest steps with exposed roots; `thunderroot_ochresteps` (mesa): ochre rock terraces |
 | The Wyrmglass Crown | `mountain` | `wyrmglass_ring` (caldera): the ring-mountain island; `wyrmglass_dragonspire` (peak): the dragon summit, beside rather than on the arena |
 | Gravesalt Escarpment | `highland` | `gravesalt_whitewall` (escarpment): the white salt cliffs with several passes |

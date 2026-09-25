@@ -170,6 +170,19 @@ Added at the Phase 0/1 gates (2026-09-25):
 | D36 | **Shore crabs spawn on sandy shore near water,** not gated by a narrow level band that zone-based levels (D20) no longer produce along most beaches, and not on inland sand. | User playtest of Phase 3b. |
 | D37 | **Stale-rule audit decisions** (`../research/round22-stale-rules.md` §5), all as recommended: POI fitting per D33 now; planner water contract relaxed to "river water by column", named-relation checks dropped (Phase 5 start); Highcourt per D34; route and river layouts computed once in main and handed to emerge via `ipc_set`, no cache file (Phases 5/4); surface spawn caps raised to 600 and jungle/papyrus gates made relative to terrain/water; high relief without native caves accepted, checked in the Phase 6 playtest; design-text cleanup as one commit before Phase 5. | User. |
 
+Added at the Phase 5 prototype gate (2026-09-25, user accepted all
+recommendations; prototype and images in
+`~/projects/grudgelands-orchestration/r22/phase5-proto/`):
+
+| # | Decision | Basis |
+|---|---|---|
+| D38 | **Water layout from drainage, without erosion.** Priority-flood, flow directions and accumulation on a 16-node grid of the natural field; shallow pits (≤ ~24) are breached, deeper ones keep a lake below their spill level with the shore where the fine terrain lies below the surface; wetland zones and water landmarks keep shallow ponds. Built once in main (~4 s), handed to emerge via `ipc_set` (~70 KB). Option C stays deferred. | Prototype W1: rivers lie in plausible valleys, lakes get irregular shores for free; 0 containment violations on 3 seeds; +2–4 % field cost on ordinary chunks, ~+6 % tile time on river chunks. Supersedes the "drainage only with C" wording of D10. |
+| D39 | **Steps follow the slope:** gentle terrain gets many small steps (rapids of 1–3 nodes); tall falls (up to ~16) only on steep slopes. | Prototype showed mostly 10–16-node falls even in gentle hills. |
+| D40 | **Capital water keep-out covers the whole built area** (about 280 nodes from the core, irregular noise edge like the D28 calm edge), so districts stay dry and rivers bend around cities naturally instead of in circle arcs; rivers may still pass close by. Starts keep ~300–320. | Prototype: rivers crossed the district ring (155–260) at almost every capital; circular bends around the 140 ring. |
+| D41 | **Water landmarks that do not arise naturally:** Moonfall's crescent lake is an authored lake (same format as civic water); Raincall shows monsoon ponds instead of a waterfall stair and Totemwater a river mouth with marsh ponds instead of a branching delta (design text adjusted). | Prototype: none of the three emerged from drainage; a Raincall source hint made a U-bend and seeped. |
+| D42 | **Highcourt:** no forced fork (D34). A natural river passes nearby on most seeds; the blueprint's two dry river arms are filled as civic canals, like the Kezamba cenote, the Lethariel lake and the start ponds. | No natural fork on 3 seeds; the lots are cut around the arms. |
+| D43 | **Lake count may vary by seed** (1.7–2.7 % of land on the tested seeds; some seeds get many mountain lakes). | User. |
+
 All §9 questions are answered.
 
 ## 4. Guardrails for the whole round
