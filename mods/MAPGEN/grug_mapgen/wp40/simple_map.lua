@@ -263,6 +263,9 @@ return function(zone_field)
 			local count = level_max - level_min + 1
 			if count == 1 then
 				return {{level_min, level_max}, {level_min, level_max}, {level_min, level_max}}
+			elseif count == 2 then
+				-- Integer thirds of two levels leave an empty first band.
+				return {{level_min, level_min}, {level_min, level_max}, {level_max, level_max}}
 			end
 			local cut1 = floor(count / 3)
 			local cut2 = floor(count * 2 / 3)

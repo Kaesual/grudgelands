@@ -226,8 +226,8 @@ local function is_island_region(region)
 end
 
 -- ---------------------------------------------------------------- key points
--- Every fixed point the field keeps: anchors (with their fitting-width
--- footprint), zone hubs, island landings and boat-path mainland ends.
+-- Every fixed point the field keeps: anchors (with their fitting-width or
+-- hard-protected footprint), zone hubs, island landings and boat-path mainland ends.
 local function footprint_samples(cx, cz, half, step)
 	local s = {{cx, cz}}
 	if half <= 0 then return s end
@@ -246,12 +246,21 @@ end
 function M.keypoints(source)
 	local prof = {}
 	for _, p in ipairs(source.anchor_profiles) do prof[p.id] = p end
+	local hard = {}
+	for _, r in ipairs(source.hard_protection_recipes or {}) do hard[r.id] = r.total_width end
 	local kp = {}
 	for _, a in ipairs(source.anchors) do
 		local p = prof[a.template_id]
 		-- the footprint that must be in-zone and on land: the fitting square
-		-- (capitals: 512 build envelope, starts 128, villages 96, ...)
-		local half = p.fitting_width / 2
+		-- (villages 96, ...); for starts and capitals their hard-protected
+		-- square (capitals 532 = build envelope plus apron, starts 148)
+		local width = p.fitting_width
+		if a.slot_id == "capital" then
+			width = max(width, hard.hard_capital_build_plus_apron_v1 or width)
+		elseif a.slot_id == "start" then
+			width = max(width, hard.hard_start_core_v1 or width)
+		end
+		local half = width / 2
 		kp[#kp + 1] = {kind = "anchor", id = a.id .. ":" .. a.template_id .. ":" ..
 			source.zones[a.zone_numeric_id].id, zone = a.zone_numeric_id,
 			x = a.position.x, z = a.position.z, half = half,
@@ -664,6 +673,8 @@ end
 --   3. every zone's main part on the main land mass
 --   4. dragon straits at least `min_strait` nodes of water wide
 --   5. dragon island land inside its 600 x 700 envelope
+--   6. no Accord zone borders a Throng zone (a shared border of at least
+--      `faction_contact` nodes on the grid fails)
 -- Returns ok, list of failure strings, stats.
 function M.check(s, c)
 	local grid = c.grid
@@ -803,7 +814,28 @@ function M.check(s, c)
 		end
 	end
 	if min_gap < min_strait then fails[#fails + 1] = ("dragon strait %d < %d nodes"):format(min_gap, min_strait) end
-	return #fails == 0, fails, {min_strait = min_gap, grid_samples = W * H}
+	-- 6: Accord/Throng contact (world_zones.md: the Battlegrounds separate them)
+	local faction = {}
+	for zn, zr in ipairs(zones) do
+		if zr.faction == "accord" or zr.faction == "throng" then faction[zn] = zr.faction end
+	end
+	local contact = 0
+	for j = 0, H - 1 do
+		for i = 0, W - 1 do
+			local a = faction[zone[j * W + i]]
+			if a then
+				local b = i < W - 1 and faction[zone[j * W + i + 1]] or nil
+				if b and b ~= a then contact = contact + 1 end
+				b = j < H - 1 and faction[zone[(j + 1) * W + i]] or nil
+				if b and b ~= a then contact = contact + 1 end
+			end
+		end
+	end
+	if contact * grid >= (c.faction_contact or 64) then
+		fails[#fails + 1] = ("accord/throng contact %d grid edges"):format(contact)
+	end
+	return #fails == 0, fails, {min_strait = min_gap, grid_samples = W * H,
+		faction_contact = contact}
 end
 
 -- Build, check, and fall back to a weaker warp until the check passes.
