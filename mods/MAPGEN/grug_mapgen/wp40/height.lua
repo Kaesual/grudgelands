@@ -2,11 +2,12 @@
 --
 -- One globally queryable surface: the natural float field of
 -- `terrain_field.lua`, floored to a node y, with the anchor fittings (starts,
--- capitals, villages, outposts, camps, mines, dragons ...) and the sea shore
--- rule on top. The coast takes its shape from the field alone; only its
--- near-water material is derived here (world_zones.md §7.4, plan D27). Roads
--- and inland water are rebuilt in Round 22 Phases 4 and 5; until then no route,
--- bank or river grading runs here and only bays and the sea carry water.
+-- capitals, villages, outposts, camps, mines, dragons ...) and the shore rule
+-- on top. The coast takes its shape from the field alone; only its near-water
+-- material is derived here (world_zones.md §7.4, plan D27). Inland water
+-- (Round 22 Phase 5, plan D38-D40): rivers and lakes from `water_layout.lua`
+-- carve the natural height and carry their own water surfaces; authored lakes
+-- (civic water) sit on the fitted terrain. Roads are rebuilt in Phase 4.
 --
 -- Every query is a pure function of (seed, x, z). Heights are memoised per
 -- 80x80 mapchunk block, so planning and the writer read one memo per chunk.
@@ -47,6 +48,16 @@ local function height_factory(dependencies)
 		"WP40 height horizontal session missing")
 	local terrain_field = assert(dependencies.terrain_field,
 		"WP40 height terrain field missing")
+	-- Inland water (plan D37/D38): `module` is `water_layout.lua` bound to its
+	-- data; `text` the serialized layout main handed over (emerge), else nil
+	-- and the session builds it (main, offline tools). The table is shared by
+	-- every session of one environment and keeps the built sampler, so a
+	-- second session of the same seed does not rebuild. `authored` lists the
+	-- authored lakes (see `resolve_authored_lakes`).
+	local water_dependency = assert(dependencies.water,
+		"WP40 height water layout missing")
+	local water_module = assert(water_dependency.module,
+		"WP40 height water module missing")
 
 	local WATER_LEVEL = 1
 	-- Same query bounds as zones.lua; outside them the world is deep sea.
@@ -199,9 +210,10 @@ local function height_factory(dependencies)
 		local classified = new_classification_cache(
 			horizontal.classification_values_at, 65536)
 
-		-- Column classes. Only bays (planned water) and the open sea carry
-		-- water, at WATER_LEVEL. Phase 5 adds its river and lake classes here
-		-- and their surfaces in `water_surface_for`.
+		-- Column classes. Bays (planned water) and the open sea carry water at
+		-- WATER_LEVEL. Inland water (rivers, lakes) stays class LAND: its
+		-- surfaces come from the water layout per column, and its banks follow
+		-- the inland shore rule, not the sea's.
 		local function column_class(x, z)
 			local water_class, _, owner = classified(x, z)
 			if water_class == "land" then return LAND, owner end
@@ -220,6 +232,150 @@ local function height_factory(dependencies)
 		})
 		local edge_noise = terrain_field.simplex(full_seed_string, "start_edge")
 		local poi_edge_noise = terrain_field.simplex(full_seed_string, "poi_edge")
+
+		-----------------------------------------------------------------------
+		-- Inland water layout (plan D38): built once from the natural field in
+		-- main and handed to emerge as text (D37). Both environments sample the
+		-- deserialized text, so they agree exactly.
+		-----------------------------------------------------------------------
+		local WP = water_module.P
+		local function water_inputs()
+			local land_at = function(x, z) return (column_class(x, z)) == LAND end
+			local profiles = {}
+			for index = 1, #source.anchor_profiles do
+				local row = source.anchor_profiles[index]
+				profiles[row.id] = row
+			end
+			local keepouts, pois = {}, {}
+			for index = 1, #source.anchors do
+				local a = source.anchors[index]
+				local x, z = a.position.x, a.position.z
+				if a.slot_id == "start" or a.slot_id == "capital" then
+					local start = a.slot_id == "start"
+					local e = {x = x, z = z, id = a.id,
+						r = start and WP.start_keepout or WP.capital_keepout,
+						edge = start and WP.start_keepout_edge or WP.capital_keepout_edge}
+					-- A capital's keep-out covers its whole built area: the
+					-- farthest corner of its core, plots and fill lots (from the
+					-- prepared blueprints) plus a margin; the noise edge only
+					-- grows it.
+					local reach = not start and water_dependency.capital_reach and
+						water_dependency.capital_reach[a.id]
+					if reach then
+						e.r = max(e.r, reach + WP.capital_keepout_margin)
+					end
+					-- the lowest natural ground inside the disc (lake rule)
+					local g, r = math.huge, e.r * (1 + e.edge)
+					for dz = -r, r, 16 do
+						for dx = -r, r, 16 do
+							if dx * dx + dz * dz <= r * r and land_at(x + dx, z + dz) then
+								g = min(g, field.height_at(x + dx, z + dz, true))
+							end
+						end
+					end
+					e.ground = g < math.huge and g or nil
+					keepouts[#keepouts + 1] = e
+				else
+					local core = profiles[a.template_id].building_core_width
+					-- the lowest natural ground under the core (+4)
+					local g, half = math.huge, core / 2 + 4
+					for dz = -half, half, 4 do
+						for dx = -half, half, 4 do
+							if land_at(x + dx, z + dz) then
+								g = min(g, field.height_at(x + dx, z + dz, true))
+							end
+						end
+					end
+					pois[#pois + 1] = {x = x, z = z, r = core * 0.75, id = a.id,
+						ground = g < math.huge and g or nil}
+				end
+			end
+			-- Wetland zones and the water landmarks keep their shallow
+			-- depressions as ponds at the spill level.
+			local marsh = {}
+			for _, id in ipairs(WP.marsh_landmarks) do marsh[id] = true end
+			local lms = {}
+			for _, l in ipairs(field.landmarks) do
+				if marsh[l.id] then lms[#lms + 1] = l end
+			end
+			local function breach_at(x, z)
+				for index = 1, #lms do
+					local l = lms[index]
+					local dx, dz = x - l.x, z - l.z
+					local u = dx * l.ca + dz * l.sa
+					local v = -dx * l.sa + dz * l.ca
+					if u > l.L then u = u - l.L elseif u < -l.L then u = u + l.L else u = 0 end
+					if u * u + v * v <= (l.R + WP.marsh_pad) ^ 2 then return 0, 1 end
+				end
+				local class, owner = column_class(x, z)
+				if class == LAND and owner and
+						source.zones[owner].primary_relief_id == WP.marsh_relief then
+					return 0, 1
+				end
+				return nil
+			end
+			return {field = field, land_at = land_at, simplex = terrain_field.simplex,
+				keepouts = keepouts, pois = pois, breach_at = breach_at}
+		end
+		local water_cache = water_dependency.cache
+		if not water_cache or water_cache.seed ~= full_seed_string then
+			local text, grid, stats = water_dependency.text, nil, nil
+			if text == nil then
+				local layout = water_module.build(full_seed_string, water_inputs())
+				text, grid, stats = water_module.serialize(layout), layout.grid,
+					layout.stats
+			end
+			water_cache = {seed = full_seed_string, text = text, grid = grid,
+				stats = stats, sampler = water_module.sampler(
+					water_module.deserialize(text), full_seed_string,
+					terrain_field.simplex)}
+			water_dependency.cache = water_cache
+		end
+		local water = water_cache.sampler
+		local water_seg_river = water.seg_river
+		-- Sealed inland water ids (the planner's column tuple): "river:<n>" is
+		-- written as river water, "lake:<n>" as ordinary water (zones.lua gives
+		-- a lake's step-face columns river water).
+		local river_names, lake_names = {}, {}
+		for id in ipairs(water.rivers) do river_names[id] = "river:" .. id end
+		for id in ipairs(water.lakes) do lake_names[id] = "lake:" .. id end
+
+		-- Authored lakes (civic water, Moonfall; Round 22 Phase 5 lane W2b).
+		-- They are not part of the drainage layout, so no keep-out applies to
+		-- them, and they sit on the FITTED terrain (a capital or start core is
+		-- graded first). One row:
+		--   id        unique text; the column's water id is "lake:<id>"
+		--   min_x, min_z, max_x, max_z   bounds of every column it touches
+		--   indicator function(x, z) -> m in 0..1, a pure function: wet where
+		--             m >= 0.5 and the ground lies below the level, bank fill
+		--             to the level where m >= rim (default water LAKE_RIM)
+		--   level     absolute surface y, or nil with
+		--   anchor, level_offset   the surface relative to that anchor's fitted
+		--             reference y (resolved once per session)
+		--   depth     optional carved bed: inside m >= 0.5 the ground is lowered
+		--             to at most level - 1 - (depth - 1) * smoothstep(0.5, 0.9, m)
+		-- Ordinary water (`default:water_source`), sealed like every inland water.
+		local authored, authored_grid = {}, {}
+		for index, row in ipairs(water_dependency.authored or {}) do
+			if type(row.id) ~= "string" or row.id == "" or
+					type(row.indicator) ~= "function" or
+					type(row.min_x) ~= "number" or type(row.max_x) ~= "number" or
+					type(row.min_z) ~= "number" or type(row.max_z) ~= "number" or
+					(row.level == nil) == (row.anchor == nil) then
+				fail("authored lake row differs at " .. index)
+			end
+			local e = {name = "lake:" .. row.id, row = row, indicator = row.indicator,
+				min_x = row.min_x, max_x = row.max_x, min_z = row.min_z,
+				max_z = row.max_z, level = row.level, depth = row.depth,
+				rim = row.rim or WP.LAKE_RIM}
+			authored[#authored + 1] = e
+			-- one node wider, so a column beside the lake knows it is near
+			add_bucket(authored_grid, e, e.min_x - 1, e.max_x + 1, e.min_z - 1,
+				e.max_z + 1)
+		end
+		local function authored_near(x, z)
+			return #authored > 0 and bucket_at(authored_grid, x, z) ~= nil
+		end
 
 		-----------------------------------------------------------------------
 		-- Boat water: the dragon channels, the boat paths and the approach
@@ -318,7 +474,15 @@ local function height_factory(dependencies)
 			local key = bx * 1048576 + bz
 			local block = blocks[key]
 			if block then return block, bx, bz end
+			-- natural stage: natural (carved) y, its inland water (nwater,
+			-- nkind "river" or "lake", nid) and the bank inputs of a column near
+			-- water (bank_d, bank_y, near); fitted stage: terrain before the
+			-- shore rule (pre, pkind, pfeature) and the water that stays wet
+			-- on it (water, wkind, wid); final stage: terrain ... feature.
 			block = {key = key, class = {}, owner = {}, natural = {},
+				nwater = {}, nkind = {}, nid = {}, bank_d = {}, bank_y = {},
+				near = {}, pre = {}, pkind = {}, pfeature = {}, water = {},
+				wkind = {}, wid = {},
 				terrain = {}, kind = {}, surface = {}, feature = {}}
 			local old = block_ring[block_cursor]
 			if old then blocks[old.key] = nil end
@@ -348,8 +512,24 @@ local function height_factory(dependencies)
 			if natural == nil then
 				memo_misses = memo_misses + 1
 				local land = block.class[slot] == LAND
-				natural = floor(field.height_at(x, z, land))
-				if not land then
+				if land then
+					-- Rivers and lakes carve the natural float field before it
+					-- is floored (so the terrain stays an integer node y).
+					local h, water_y, kind, id, bank_d, bank_y =
+						water.column(x, z, field.height_at(x, z, true))
+					natural = floor(h)
+					if water_y then
+						block.nwater[slot], block.nkind[slot] = water_y, kind
+						block.nid[slot] = kind == "river" and
+							river_names[water_seg_river[id]] or lake_names[id]
+					else
+						block.nwater[slot] = false
+					end
+					block.bank_d[slot], block.bank_y[slot] = bank_d or false,
+						bank_y or false
+					block.near[slot] = bank_d ~= nil or authored_near(x, z)
+				else
+					natural = floor(field.height_at(x, z, false))
 					local deep_y = boat_floor_at(x, z)
 					if deep_y ~= nil and deep_y < natural then natural = deep_y end
 				end
@@ -362,10 +542,6 @@ local function height_factory(dependencies)
 		local function class_owner_at(x, z)
 			local block, slot = column(x, z)
 			return block.class[slot], block.owner[slot] or nil
-		end
-		local function water_surface_for(class)
-			if class == LAND then return nil end
-			return WATER_LEVEL
 		end
 
 		-----------------------------------------------------------------------
@@ -489,6 +665,24 @@ local function height_factory(dependencies)
 				selected.z - envelope_half, selected.z + envelope_half)
 		end
 
+		-- Authored lake levels relative to an anchor's fitted reference.
+		for index = 1, #authored do
+			local e = authored[index]
+			if e.level == nil then
+				local fitted
+				for anchor_index = 1, #fittings do
+					if fittings[anchor_index].id == e.row.anchor then
+						fitted = fittings[anchor_index]
+					end
+				end
+				if not fitted then fail("authored lake anchor differs: " .. e.name) end
+				e.level = fitted.reference_y + (e.row.level_offset or 0)
+			end
+			if type(e.level) ~= "number" or e.level % 1 ~= 0 then
+				fail("authored lake level differs: " .. e.name)
+			end
+		end
+
 		-- Soft start pad edge: the flat square grows outward by 0..6 nodes along
 		-- a smooth noise outline and the ramp gives the same amount up, so the
 		-- pad itself and the outer envelope edge stay put.
@@ -597,26 +791,8 @@ local function height_factory(dependencies)
 			return incoming, nil, nil, nil
 		end
 
-		-- The sea shore rule: a dry column that touches exposed water takes
-		-- that water surface as its own top.
-		local direction_x, direction_z = {1, -1, 0, 0}, {0, 0, 1, -1}
-		-- The field's sea floor is always below WATER_LEVEL, so only a bay
-		-- platform can cover the water.
-		local function exposed_shore_at(x, z)
-			for direction = 1, 4 do
-				local nx, nz = x + direction_x[direction], z + direction_z[direction]
-				local class, owner = class_owner_at(nx, nz)
-				if class == SEA then return WATER_LEVEL end
-				if class == BAY then
-					local platform = fitting_grade_at(grids.selected, nx, nz,
-						WATER_LEVEL - 1, owner, class)
-					if platform == nil or platform < WATER_LEVEL then return WATER_LEVEL end
-				end
-			end
-			return nil
-		end
-
-		local function compose_land(x, z, owner, incoming)
+		-- Anchor fittings of a land column: terrain y, functional kind, feature.
+		local function fit_land(x, z, owner, incoming)
 			local terrain_y, kind, feature_id = incoming, nil, nil
 			local value, fitting = fitting_grade_at(grids.selected, x, z,
 				terrain_y, owner, LAND)
@@ -625,9 +801,117 @@ local function height_factory(dependencies)
 			if value ~= nil then terrain_y, kind, feature_id = value, "land_grade", fitting.id end
 			value, fitting = fitting_grade_at(grids.start, x, z, terrain_y, owner, LAND)
 			if value ~= nil then terrain_y, kind, feature_id = value, "land_grade", fitting.id end
-			local shore_y = exposed_shore_at(x, z)
-			if shore_y ~= nil then terrain_y = shore_y end
-			return terrain_y, kind, kind and terrain_y or nil, feature_id
+			return terrain_y, kind, feature_id
+		end
+
+		-- Authored lakes on the fitted terrain: an optional carved bed, the
+		-- water where the indicator reaches 0.5 and the ground lies below the
+		-- level, and the bank fill on the rim.
+		local function smoothstep(a, b, v)
+			local t = (v - a) / (b - a)
+			if t <= 0 then return 0 elseif t >= 1 then return 1 end
+			return t * t * (3 - 2 * t)
+		end
+		-- Also returns the bank inputs of the nearest authored lake (the same
+		-- indicator distance proxy as a natural lake), for the bank material.
+		local function authored_at(x, z, terrain_y, water_y, kind, id)
+			local list = bucket_at(authored_grid, x, z)
+			if not list then return terrain_y, water_y, kind, id end
+			local bank_d, bank_y
+			for index = 1, #list do
+				local e = list[index]
+				if x >= e.min_x and x <= e.max_x and z >= e.min_z and z <= e.max_z then
+					local m = e.indicator(x, z)
+					if type(m) == "number" and m > 0 then
+						local d = (0.5 - m) * WP.LAKE_PROXY
+						if d < 0 then d = 0 end
+						if bank_d == nil or d < bank_d then bank_d, bank_y = d, e.level end
+						if e.depth and m >= 0.5 then
+							local bed = floor(e.level - 1 - (e.depth - 1) *
+								smoothstep(0.5, 0.9, m))
+							if bed < terrain_y then terrain_y = bed end
+						end
+						if m >= 0.5 and terrain_y < e.level then
+							water_y, kind, id = e.level, "lake", e.name
+						elseif m >= e.rim and terrain_y < e.level and water_y == nil then
+							terrain_y = e.level
+						end
+					end
+				end
+			end
+			return terrain_y, water_y, kind, id, bank_d, bank_y
+		end
+
+		-- Fitted stage of a land column (memoised): the terrain after the
+		-- anchor fittings and authored lakes, before the shore rule, and the
+		-- inland water that stays wet on it. A fitting that lifts a wet column
+		-- to its water surface makes it dry ground.
+		local function land_values_at(x, z)
+			local block, slot = column(x, z)
+			if block.pre[slot] == nil then
+				local natural = natural_height_at(x, z)
+				local terrain_y, kind, feature_id = fit_land(x, z,
+					block.owner[slot] or nil, natural)
+				local water_y = block.nwater[slot] or nil
+				local water_kind, water_id
+				if water_y then
+					if terrain_y < water_y then
+						water_kind, water_id = block.nkind[slot], block.nid[slot]
+					else
+						water_y = nil
+					end
+				end
+				if #authored > 0 then
+					local bank_d, bank_y
+					terrain_y, water_y, water_kind, water_id, bank_d, bank_y =
+						authored_at(x, z, terrain_y, water_y, water_kind, water_id)
+					if bank_d and (not block.bank_d[slot] or bank_d < block.bank_d[slot]) then
+						block.bank_d[slot], block.bank_y[slot] = bank_d, bank_y
+					end
+				end
+				block.pre[slot], block.pkind[slot], block.pfeature[slot] =
+					terrain_y, kind or false, feature_id or false
+				block.water[slot], block.wkind[slot], block.wid[slot] =
+					water_y or false, water_kind or false, water_id or false
+			end
+			return block, slot
+		end
+
+		-- The shore rule: a dry column that touches exposed water takes that
+		-- water surface as its own top (world_zones.md §7.4). The field's sea
+		-- floor is always below WATER_LEVEL, so only a bay platform can cover
+		-- sea water. Beside inland water the neighbour's surface counts; at a
+		-- river step two surfaces touch one bank and the HIGHER one decides
+		-- (stale-rule D3, as INTEGRATION.md's fallback): nothing spills over
+		-- the bank corner and the step face stays a water-water contact inside
+		-- the channel. Letting the lower reach decide spilled renewable lake
+		-- water over a flat shore in the engine check (Round 22 Phase 5 W2a).
+		-- (true lets the lower reach decide instead: the bank then sits at the
+		-- lower water and the upper water may spill sideways over it.)
+		local STEP_BANK_LOWER = false
+		local direction_x, direction_z = {1, -1, 0, 0}, {0, 0, 1, -1}
+		local function exposed_shore_at(x, z, near)
+			local shore_y
+			for direction = 1, 4 do
+				local nx, nz = x + direction_x[direction], z + direction_z[direction]
+				local class, owner = class_owner_at(nx, nz)
+				local y
+				if class == SEA then
+					y = WATER_LEVEL
+				elseif class == BAY then
+					local platform = fitting_grade_at(grids.selected, nx, nz,
+						WATER_LEVEL - 1, owner, class)
+					if platform == nil or platform < WATER_LEVEL then y = WATER_LEVEL end
+				elseif near then
+					local block, slot = land_values_at(nx, nz)
+					y = block.water[slot] or nil
+				end
+				if y and (shore_y == nil or (STEP_BANK_LOWER and y < shore_y) or
+						(not STEP_BANK_LOWER and y > shore_y)) then
+					shore_y = y
+				end
+			end
+			return shore_y
 		end
 
 		-- Final terrain y, functional kind, functional y, feature id.
@@ -636,14 +920,19 @@ local function height_factory(dependencies)
 			local terrain_y = block.terrain[slot]
 			if terrain_y == nil then
 				local class, owner = block.class[slot], block.owner[slot] or nil
-				local natural = natural_height_at(x, z)
 				local kind, surface_y, feature_id
 				if class == LAND then
-					terrain_y, kind, surface_y, feature_id = compose_land(x, z, owner,
-						natural)
+					land_values_at(x, z)
+					terrain_y = block.pre[slot]
+					kind, feature_id = block.pkind[slot] or nil, block.pfeature[slot] or nil
+					if not block.water[slot] then
+						local shore_y = exposed_shore_at(x, z, block.near[slot])
+						if shore_y ~= nil then terrain_y = shore_y end
+					end
+					surface_y = kind and terrain_y or nil
 				else
 					terrain_y, kind, surface_y, feature_id = compose_water(x, z, class,
-						owner, natural)
+						owner, natural_height_at(x, z))
 				end
 				block.terrain[slot] = terrain_y
 				block.kind[slot] = kind or false
@@ -670,10 +959,28 @@ local function height_factory(dependencies)
 			if kind == nil then return nil, nil, nil, nil end
 			return kind, surface_y, feature_id, nil
 		end
+		-- The water surface y of a water column: the sea level for sea and bay
+		-- columns, the inland surface of a wet river or lake column, else nil.
 		local function final_water_surface_at(x, z)
 			coordinate(x, "water query x") coordinate(z, "water query z")
 			if outside(x, z) then return WATER_LEVEL end
-			return water_surface_for((class_owner_at(x, z)))
+			if class_owner_at(x, z) ~= LAND then return WATER_LEVEL end
+			local block, slot = land_values_at(x, z)
+			return block.water[slot] or nil
+		end
+		-- "river" or "lake" and the sealed water id of a wet inland column. A
+		-- cold column is only computed where the layout says water may lie, so
+		-- scattered queries (the world map, spawn checks) stay cheap.
+		local function inland_water_at(x, z)
+			if outside(x, z) or class_owner_at(x, z) ~= LAND then return nil end
+			local block, slot = column(x, z)
+			if block.pre[slot] == nil and not water.maybe_wet(x, z) and
+					not authored_near(x, z) then
+				return nil
+			end
+			land_values_at(x, z)
+			if not block.water[slot] then return nil end
+			return block.wkind[slot], block.wid[slot], block.water[slot]
 		end
 
 		-----------------------------------------------------------------------
@@ -699,6 +1006,8 @@ local function height_factory(dependencies)
 		-- itself does not read as a slope.
 		local function bank_surface_y(x, z, water_y)
 			if outside(x, z) or class_owner_at(x, z) ~= LAND then return water_y end
+			local block, slot = land_values_at(x, z)
+			if block.water[slot] then return block.water[slot] end
 			return (final_values_at(x, z))
 		end
 		-- "sand", "gravel", "stone" or nil for the dry column (x, z) of zone
@@ -755,7 +1064,19 @@ local function height_factory(dependencies)
 			coordinate(x, "coast query x") coordinate(z, "coast query z")
 			local owner = dry_owner_at(x, z)
 			if owner == nil then return nil end
-			return bank_material(x, z, owner, WATER_LEVEL, field.coast_signed(x, z))
+			local material = bank_material(x, z, owner, WATER_LEVEL,
+				field.coast_signed(x, z))
+			if material == nil then
+				-- River and lake banks: the same rule with the nearest inland
+				-- water's surface and (scaled) distance.
+				local block, slot = land_values_at(x, z)
+				local distance = block.bank_d[slot]
+				if distance and not block.water[slot] then
+					material = bank_material(x, z, owner, block.bank_y[slot],
+						distance * WP.bank_distance_scale)
+				end
+			end
+			return material
 		end
 		local function bank_material_at(x, z, water_y, distance)
 			coordinate(x, "bank query x") coordinate(z, "bank query z")
@@ -816,24 +1137,53 @@ local function height_factory(dependencies)
 		function session.terrain_height_at(x, z)
 			return final_terrain_height_at(x, z)
 		end
-		-- The water surface y of a water column, nil on dry land.
+		-- The water surface y of a water column (sea, bay, river, lake), nil on
+		-- dry land.
 		function session.water_surface_at(x, z)
 			return final_water_surface_at(x, z)
 		end
-		-- River water by column (Phase 5 hooks). A water column whose water is a
-		-- river returns a non-empty name here (any text; nothing is registered)
-		-- and the planner writes it as range-2 river water with a bed seal;
-		-- every other water column is ordinary water. `river_water_in` is true
-		-- when a river column may lie in the rectangle, so bed/bank seal scans
-		-- only run near rivers. There are no rivers until Phase 5.
-		function session.river_water_at(x, z)
-			coordinate(x, "river query x") coordinate(z, "river query z")
-			return nil
+		-- Inland water by column (plan D37): a wet river or lake column returns
+		-- its kind ("river" or "lake"), its sealed water id ("river:<n>",
+		-- "lake:<n>") and its surface y; every other column nil. The planner
+		-- seals the bed and banks of every such column and writes ordinary
+		-- water for lakes, river water for rivers and for a lake's step faces.
+		function session.inland_water_at(x, z)
+			coordinate(x, "inland water query x") coordinate(z, "inland water query z")
+			return inland_water_at(x, z)
 		end
+		-- True when a wet river or lake column may lie in the rectangle: a
+		-- bucket lookup, so the planner's bed/bank seal scans run only there.
 		function session.river_water_in(min_x, min_z, max_x, max_z)
+			if water.water_in(min_x, min_z, max_x, max_z) then return true end
+			for index = 1, #authored do
+				local e = authored[index]
+				if min_x <= e.max_x and max_x >= e.min_x and min_z <= e.max_z and
+						max_z >= e.min_z then
+					return true
+				end
+			end
 			return false
 		end
-		-- "sand", "gravel", "stone" or nil for a dry column near the sea.
+		-- The serialized water layout (the ipc_set payload main hands emerge).
+		function session.water_layout_text()
+			return water_cache.text
+		end
+		-- The coarse natural field the water layout was drained on (16-node
+		-- grid; `height[k]`/`land[k]` at k = iz * nx + ix, 0-based, x = x0 +
+		-- ix * cell): shared with Phase 4 road routing (stale-rule H5). Only in
+		-- the environment that built the layout (main); nil in emerge.
+		function session.water_coarse_grid()
+			return water_cache.grid
+		end
+		-- Layout construction statistics (main only) and the sampler (tools).
+		function session.water_layout_stats()
+			return water_cache.stats
+		end
+		function session.water_sampler()
+			return water
+		end
+		-- "sand", "gravel", "stone" or nil for a dry column near the sea, a
+		-- river or a lake.
 		function session.coast_material_at(x, z)
 			return coast_material_at(x, z)
 		end
@@ -849,12 +1199,31 @@ local function height_factory(dependencies)
 		function session.functional_surface_values_at(x, z)
 			return final_functional_values_at(x, z)
 		end
-		-- Step transitions (rapids, falls) between river reaches: the Phase 5
-		-- hook. The zone authority rejects any non-nil result until Phase 5
-		-- defines its step types.
+		-- Steps between reaches (world_zones.md §7.4): a wet inland column with
+		-- a cardinal wet neighbour whose surface is lower is a step face, a
+		-- water-water contact inside the channel. Two step types, by the drop
+		-- to the lowest such neighbour: "rapid" (up to rapid_max nodes) and
+		-- "fall". Returns kind, nil (no interface), upper y, lower y, nil, nil;
+		-- nil for every other column. Content may dress falls; the planner
+		-- only validates them (the water is written per column).
 		function session.hydrology_transition_values_at(x, z)
 			coordinate(x, "transition query x") coordinate(z, "transition query z")
-			return nil, nil, nil, nil, nil, nil
+			if outside(x, z) or class_owner_at(x, z) ~= LAND then return nil end
+			local block, slot = land_values_at(x, z)
+			local upper = block.water[slot]
+			if not upper then return nil end
+			local lower
+			for direction = 1, 4 do
+				local nx, nz = x + direction_x[direction], z + direction_z[direction]
+				if not outside(nx, nz) and class_owner_at(nx, nz) == LAND then
+					local nb, ns = land_values_at(nx, nz)
+					local y = nb.water[ns]
+					if y and y < upper and (lower == nil or y < lower) then lower = y end
+				end
+			end
+			if lower == nil then return nil end
+			return upper - lower <= WP.rapid_max and "rapid" or "fall", nil, upper,
+				lower, nil, nil
 		end
 		-- The natural (pre-fitting) surface, for tools and fit reports.
 		function session.natural_height_at(x, z)

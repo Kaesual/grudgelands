@@ -457,7 +457,7 @@ local function zones_factory(dependencies)
 				type(height.terrain_height_at) ~= "function" or
 				type(height.water_surface_at) ~= "function" or
 				type(height.functional_surface_values_at) ~= "function" or
-				type(height.river_water_at) ~= "function" or
+				type(height.inland_water_at) ~= "function" or
 				type(height.river_water_in) ~= "function" or
 				type(height.hydrology_transition_values_at) ~= "function" or
 				type(height.selected_anchor_3d_by_id) ~= "function" or
@@ -932,10 +932,17 @@ local function zones_factory(dependencies)
 			return integer(value, "R3 terrain height")
 		end
 
+		-- Wet river and lake columns are `planned_water` (zone-owned water,
+		-- world_zones.md §7.4), like the planner's column tuple; their dry
+		-- banks stay `land`.
 		function session.water_class_at(x, z)
 			local outside
 			x, z, outside = normalize_xz(x, z, "water-class query")
 			local water_class = classification_values(x, z, outside)
+			if water_class == "land" and not outside and
+					height.inland_water_at(x, z) ~= nil then
+				return "planned_water"
+			end
 			return water_class
 		end
 
@@ -1040,19 +1047,28 @@ local function zones_factory(dependencies)
 			-- The planner column tuple (20 values): water class, zone numeric id,
 			-- zone id, logical biome, race region, terrain y, water y, river id,
 			-- river bed depth, functional kind, functional y, functional feature
-			-- id, functional interface id, six transition values (always nil)
-			-- and the hard-foundation flag.
+			-- id, functional interface id, six transition values and the
+			-- hard-foundation flag.
 			--
-			-- River water by column (Round 22 Phase 5): a water column whose
-			-- height session names a river (`height.river_water_at`, any
-			-- non-empty text, nothing registered) carries that name as its river
-			-- id and `water_y - terrain_y` as its bed depth; the planner writes it
-			-- as range-2 river water with a bed seal. Every other water column is
-			-- ordinary water. Step transitions (rapids, falls) are not supported
-			-- until Phase 5 defines them; their six tuple slots stay nil.
+			-- Inland water by column (Round 22 Phase 5, plan D37): a wet river
+			-- or lake column (`height.inland_water_at`) is `planned_water`, the
+			-- zone-owned water class (world_zones.md §7.4), and carries its
+			-- sealed water id in the river-id slot ("river:<n>", "lake:<n>", or
+			-- "outlet:<n>" on a lake's step face)
+			-- with `water_y - terrain_y` as its bed depth; the planner seals its
+			-- bed and banks and writes ordinary water for "lake:" ids, range-2
+			-- river water for every other id. Its dry banks stay `land`. A step
+			-- face between reaches fills the transition slots with its kind
+			-- ("rapid" or "fall"), upper and lower surface y; the other three
+			-- stay nil.
 			local function compute_column_values_at(x, z, outside)
 				local water_class, _, zone_numeric_id = classification_values(x, z,
 					outside)
+				local inland_kind, inland_id
+				if water_class == "land" and not outside then
+					inland_kind, inland_id = height.inland_water_at(x, z)
+					if inland_kind ~= nil then water_class = "planned_water" end
+				end
 				local zone = zone_numeric_id and zone_by_numeric[zone_numeric_id] or nil
 				if zone_numeric_id ~= nil and not zone then
 					fail("planner column zone identity differs")
@@ -1069,15 +1085,12 @@ local function zones_factory(dependencies)
 					water_y = integer(water_y, "planner R3 water height")
 				end
 				local river_id, river_depth
-				if not outside then
-					river_id = height.river_water_at(x, z)
-					if river_id ~= nil then
-						if type(river_id) ~= "string" or river_id == "" or
-								water_y == nil then
-							fail("planner river water column differs")
-						end
-						river_depth = water_y - terrain_y
+				if inland_id ~= nil then
+					if type(inland_id) ~= "string" or inland_id == "" or
+							water_y == nil or water_y <= terrain_y then
+						fail("planner inland water column differs")
 					end
+					river_id, river_depth = inland_id, water_y - terrain_y
 				end
 				local functional_kind, functional_y, functional_feature_id,
 					functional_interface_id =
@@ -1102,15 +1115,31 @@ local function zones_factory(dependencies)
 						fail("planner functional interface identity differs")
 					end
 				end
-				if height.hydrology_transition_values_at(x, z) ~= nil then
-					fail("hydrology transitions are not supported until Phase 5")
+				local step_kind, step_upper, step_lower
+				if river_id ~= nil then
+					local interface, progress, face
+					step_kind, interface, step_upper, step_lower, progress, face =
+						height.hydrology_transition_values_at(x, z)
+					if step_kind ~= nil and ((step_kind ~= "rapid" and
+							step_kind ~= "fall") or interface ~= nil or
+							progress ~= nil or face ~= nil or step_upper ~= water_y or
+							type(step_lower) ~= "number" or step_lower % 1 ~= 0 or
+							step_lower >= step_upper) then
+						fail("planner step transition differs")
+					end
+					-- A lake column on a step face (its outflow over a fall or
+					-- rapid) holds river water: the renewable range-8 lake water
+					-- would otherwise flood the flat shore below the step.
+					if step_kind ~= nil and inland_kind == "lake" then
+						river_id = "outlet:" .. inland_id:sub(6)
+					end
 				end
 				local hard_foundation = hard_row_at(x, terrain_y, z) ~= nil
 				return water_class, zone_numeric_id, zone_id, logical_biome_id,
 					race_region_id, terrain_y, water_y, river_id, river_depth,
 					functional_kind, functional_y, functional_feature_id,
-					functional_interface_id, nil, nil, nil, nil, nil, nil,
-					hard_foundation
+					functional_interface_id, step_kind, nil, step_upper, step_lower,
+					nil, nil, hard_foundation
 			end
 
 			function planner_source.column_values_at(x, z)
@@ -1179,9 +1208,10 @@ local function zones_factory(dependencies)
 				return unpack(row, 1, 20)
 			end
 
-			-- True when a river-water column may lie in the rectangle; the
-			-- planner and the settlement replay skip their bed/bank seal scans
-			-- elsewhere. Always false until Phase 5 adds rivers.
+			-- True when a sealed (river or lake) water column may lie in the
+			-- rectangle, a bucket lookup; the planner and the settlement replay
+			-- skip their bed/bank seal scans elsewhere, and fail on a wet sealed
+			-- column this says is absent.
 			function planner_source.river_water_in(min_x, min_z, max_x, max_z)
 				return height.river_water_in(min_x, min_z, max_x, max_z) == true
 			end

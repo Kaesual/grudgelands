@@ -172,4 +172,74 @@ data.ranges = {
 		pts = {{-3400, 2300}, {-2800, 1000}, {-2100, 750}, {-1200, 600}}},
 }
 
+-- Inland water (world_zones.md §7.4, plan D38-D40): rivers and lakes from the
+-- drainage of the natural field, `water_layout.lua` the mechanism. Accepted
+-- Phase 5 prototype W1 values, with the D39 step shaping and the D40 keep-outs.
+data.water = {
+	-- coarse drainage grid (nodes)
+	C = 16, GX0 = -3744, GX1 = 3744, GZ0 = -3344, GZ1 = 3344,
+	EPS = 1e-3,             -- priority-flood epsilon per cell step
+	-- lakes: a depression deeper than DEP_MIN is breached up to BREACH_MAX;
+	-- a deeper basin keeps a lake at spill - BREACH_MAX. Wetland zones and
+	-- the water landmarks keep depressions up to MARSH_MAX_DEPTH as ponds.
+	DEP_MIN = 0.25, BREACH_MAX = 24, LAKE_MIN_CELLS = 4, MARSH_MAX_DEPTH = 10,
+	LAKE_MAX_CELLS = 600,   -- ~150k node^2; bigger lakes get a lower level
+	LAKE_RIM = 0.45,        -- lake bank fill where the mask indicator reaches this
+	LAKE_UNCARVE = 0.15,    -- a river valley's carve is undone from here to LAKE_RIM
+	LAKE_PROXY = 40,        -- bank distance proxy: (0.5 - indicator) * this
+	-- rivers
+	RIVER_ACC = 900,        -- catchment cells (x256 node^2) that make a river
+	MIN_TRIB_CELLS = 10,    -- shorter tributaries are pruned
+	SEG = 8, PATH_SMOOTH = 3, -- centreline spacing; moving-average passes
+	W_A = 0.0105,           -- width = W_A * sqrt(catchment in node^2), +-W_NOISE
+	W_MIN = 3, W_MAX = 16, W_NOISE = 0.25, MOUTH_FLARE = 0.6,
+	W_SRC = 1.6, SRC_KEEP = 0.25, SRC_TAPER = 220, -- springs start narrow
+	MEANDER_P = 5.5, MEANDER_A = 1.8, MEANDER_MAX = 36,
+	INC_A = 2.2, INC_B = 0.12, -- incision of the surface below the band terrain
+	BAND = 3,               -- level band: min terrain within w/2 + BAND across
+	-- steps (D39): steps closer than FALL_GAP vertices merge into one, up to
+	-- STEP_GENTLE nodes where the profile's slope (over +-SLOPE_K vertices) is
+	-- at most SLOPE_GENTLE, rising to FALL_MAX at SLOPE_STEEP and beyond
+	FALL_GAP = 2, FALL_MAX = 16, STEP_GENTLE = 3,
+	SLOPE_GENTLE = 0.10, SLOPE_STEEP = 0.25, SLOPE_K = 4,
+	CUT_MAX = 30,           -- a river never cuts deeper than this: it sinks
+	SINK_GAP = 6, SINK_MAX = 60, SINK_BACK = 6,
+	-- valley profile
+	FP_A = 3, FP_B = 1.0, FP_KEEP = 0.30, -- floodplain half-width, kept relief
+	V_A = 26, V_B = 4.0, V_MAX = 100, WALL_WOBBLE = 0.18,
+	BLEND_K = 8,            -- attribute blend length over segment distances
+	WET_B = 2,              -- low spots this far beyond the channel flood
+	-- keep-outs: POI cores get a one-sided detour with this clearance; start
+	-- and capital keep-outs lift the routing surface, their radius grown by up
+	-- to `edge` (share) with a noise of period KEEP_EDGE_P
+	POI_PAD = 12, KEEP_LIFT = 400, KEEP_EDGE_P = 160,
+	-- a gentle apron (KEEP_RAMP per node over KEEP_RAMP_W nodes) outside each
+	-- keep-out, so water turns away early instead of hugging the edge in a
+	-- circle arc (D40)
+	KEEP_RAMP = 0.12, KEEP_RAMP_W = 160,
+	start_keepout = 300, start_keepout_edge = 0.15,
+	-- D40: a capital's keep-out covers its whole built area: the farthest
+	-- corner of its civic core, district plots and fill lots (measured from the
+	-- prepared blueprints, 252-339 on the current capitals) plus the margin,
+	-- at least capital_keepout
+	capital_keepout = 280, capital_keepout_margin = 16, capital_keepout_edge = 0.15,
+	-- sampler buckets (segments by reach) and wet-occupancy cells (nodes)
+	BUCKET = 32, OCC = 16,
+	-- landmarks whose shallow depressions stay ponds (plus wetland zones),
+	-- within their radius + marsh_pad
+	marsh_landmarks = {"frostbarrow_tarns", "dawnmere_headwaters",
+		"lorindor_berrymarsh", "moonfall_crescent", "mournfen_drowned_roads",
+		"sunscar_waterholes", "whispering_reedmaze", "totemwater_delta",
+		"broken_marsh", "raincall_falls"},
+	marsh_pad = 40,
+	marsh_relief = "wetland_delta",
+	-- a step of at most this many nodes is a "rapid", taller is a "fall"
+	rapid_max = 3,
+	-- river and lake banks use the coast's near-water material rule with the
+	-- distance to the water times this (narrower sand and gravel bands than
+	-- the sea's). With LAKE_PROXY it must put a lake's whole mask support
+	-- beyond the rule's reach, or the support's square edge would show.
+	bank_distance_scale = 4,
+}
+
 return data

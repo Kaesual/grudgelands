@@ -123,9 +123,11 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 		end
 	end
 
+	-- The inland water layout travels with the payload, so emerge never
+	-- rebuilds it (plan D37: no cache file).
 	local payload = {schema = "grug_wp40_r7_ipc_v1",
 		manifest_sha256 = built.manifest.sha256, full_seed = built.full_seed,
-		projection = projection}
+		projection = projection, water_layout = runtime.water_layout_text()}
 
 	-- No fallible semantic validation follows this line.
 	native.register_ores(native_token)
