@@ -93,7 +93,8 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	local canonical = dofile(wp40_directory .. "/canonical.lua")
 	local deterministic = dofile(wp40_directory .. "/deterministic.lua")
 	local index128 = dofile(wp40_directory .. "/index128.lua")
-	local horizontal_factory = dofile(wp40_directory .. "/simple_map.lua")
+	local horizontal_factory = dofile(wp40_directory .. "/simple_map.lua")(
+		dofile(wp40_directory .. "/zone_field.lua"))
 	local height_factory = dofile(wp40_directory .. "/height.lua")
 	local coupled_grade = dofile(wp40_directory .. "/coupled_grade.lua")()
 	local zones_factory = dofile(wp40_directory .. "/zones.lua")

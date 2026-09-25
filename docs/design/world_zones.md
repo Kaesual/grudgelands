@@ -253,10 +253,9 @@ replaced; git history before this rewrite records that model.
   Their borders with each other and with the faction frontiers are natural
   borders like every other zone border (§7.3). Both factions may dig and place
   ordinary terrain there at every depth, subject to tools, claim exclusion and
-  explicit hard-protected functional envelopes. The internal source keys
-  `holy_grounds` (macro region and `territory_rule`) are legacy tokens without
-  geometry or rights of their own; Round 22 Phase 3 renames the territory
-  token to `contested_land` (D22).
+  explicit hard-protected functional envelopes. Their `territory_rule` is
+  `contested_land` (Round 22 Phase 3, D22); the internal macro-region key
+  `holy_grounds` is a legacy token without geometry or rights of its own.
 - Unwarped authored mainland primitives stay within x = -2600..+2600 and
   z = -3000..+3000. These are source bounds, not a coastline or world border;
   the warped coast may leave them by at most the coast warp amplitude. Open
@@ -371,10 +370,10 @@ replaced; git history before this rewrite records that model.
   function and is never imposed on it: no neighbor or graph requirement may
   shape a zone border (D14). The dragon islands have no land neighbors; their
   boat connections are in §9.4.
-- Borders between logical biomes of neighboring zones may blend over a narrow
-  noise-dithered band instead of switching the palette on one line, provided
-  the cost stays small. Whether and how wide is decided from the Round 22
-  Phase 2b evaluation.
+- Borders between logical biomes of neighboring zones blend over a narrow
+  noise-dithered band instead of switching the palette on one line: within
+  about 40 nodes of a border, one small noise jitter (about ±24 nodes) moves
+  both the palette-zone and the biome-patch lookup (Round 22 Phase 3).
 - Surface level follows the owning zone (§2). Warped borders therefore move
   level and PvP status together; there is no separate difficulty geometry.
   Capital guard floors, depth progression, civic hostility policy and
@@ -636,9 +635,9 @@ Peaceful §8.1 zones use `territory_rule = "accord_home"` and peaceful §8.2
 zones use `territory_rule = "throng_home"`. Every level-31–60 ordinary
 frontier or island uses `territory_rule = "contested_land"`: both factions may
 edit ordinary terrain subject to tools and explicit protected envelopes. The
-four Battlegrounds zones have exactly the rights of `contested_land`; their
-legacy `territory_rule = "holy_grounds"` token has no geometry and no rights
-of its own (§7.1).
+four Battlegrounds zones use `territory_rule = "contested_land"` too; only
+their macro-region key keeps the legacy `holy_grounds` name, without geometry
+or rights (§7.1).
 `race_region` never changes any of these rights.
 
 ### 8.1 Elandor — Accord
@@ -1203,7 +1202,7 @@ one-cell settlement checks are unchanged.
   competing biome authority.
 - The pure horizontal module exposes at least
   `macro_region_at(x,z)`, `land_at(x,z)`, `id_at(x,z)`,
-  `water_class_at(x,z)`, `nearest_path_at(x,z,optional_kind)` and
+  `water_class_at(x,z)`, `neighbors(id)` and
   `selected_anchor_2d(zone_id,slot_id)`. The world-map renderer and the mapgen
   adapter consume this same evaluator; no renderer-owned geometry exists.
 - Engine climate competition is not authoritative inside the authored world.
@@ -1231,13 +1230,16 @@ one-cell settlement checks are unchanged.
 The final registry exposes:
 
 - defensive-copy `get(id)`, `at(pos)`, `neighbors(id)` (geometric land
-  neighbors, §9.1), `travel_links(id)` and `anchor(zone_id,slot_id)`;
+  neighbors, §9.1) and `anchor(zone_id,slot_id)`;
 - allocation-free `id_at`, `biome_at`, `race_region_at`, `faction_at`,
   `territory_rule_at`, `pvp_rule_at`, `surface_mob_level_at`,
   `mob_level_at`, `guard_level_at`, `terrain_height_at` and
   `water_class_at`; and
-- indexed `nearest_route_at`, `nearest_hydrology_at` and the unconditional
-  `housing_eligible_at` centre predicate.
+- the unconditional `housing_eligible_at` centre predicate.
+
+Route and hydrology queries (`travel_links`, `nearest_route_at`,
+`nearest_hydrology_at`) left the public surface in Round 22 (D22); Phases 4
+and 5 add road and water queries back only where a consumer needs them.
 
 `housing_eligible_at(x,z) == true` means the complete 101 by 101 future
 reservation passed every static exclusion. It never checks dynamic claims.

@@ -149,8 +149,7 @@ function grug_mounts.flight_state(player, pos)
 		return false, "island"
 	end
 	local territory = zone and zone.territory_rule
-	if territory == "contested_land" or territory == "holy_grounds" or
-			territory == faction .. "_home" then
+	if territory == "contested_land" or territory == faction .. "_home" then
 		return true, nil
 	end
 	return false, "enemy"
