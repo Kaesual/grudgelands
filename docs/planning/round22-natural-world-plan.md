@@ -3,7 +3,7 @@
 Date: 2026-09-25. Coordinator: Claude Opus 5.5 (root), implementation by
 Opus 5.5 subagents; the user may re-route per session
 (`../process/agent-model-policy.md`, "Day-to-day routing rule").
-Status: **in progress.** Phases 0–3 and 3b are done, accepted by the user, merged to main and synced (not pushed). Phase 5 (water) is running: W0 (cleanup) and W2a (rivers and lakes) merged; W2b and W2c running. Then Phase 4 (roads) (D30), then Phase 6. Each phase still needs the user's Go.
+Status: **in progress.** Phases 0–3 and 3b are done, accepted by the user, merged to main and synced (not pushed). Phase 5 (water) is merged and synced (W0, W2a, W2b, W2c) and waits for the user's playtest; then Phase 4 (roads, prototype first) without compaction in between. Then Phase 4 (roads) (D30), then Phase 6. Each phase still needs the user's Go.
 
 This document records the goal, the analysis it rests on, every decision taken
 with the user on 2026-09-25 and its basis, the phases, and the guardrails
@@ -524,7 +524,16 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   mismatch in `grug_map/base.lua`; the housing scan (101² exclusion queries
   near water) needs care when housing gets a consumer; settlement time on
   river chunks +22–38 % (report). Papyrus and Frost Melon densities are gut
-  values for the playtest. Running: W2b (authored water). Deviation from
+  values for the playtest. **W2b merged 68869173** (+ 4a318076): Kezamba
+  cenote, Lethariel crown lake, Highcourt canal (D53), Dawnmere/Sunscar
+  ponds, Moonfall bowl and crescent (D52); civic water keeps ≥ 8 nodes off
+  every plot (`r7_settlement.plot_rects`); wet civic columns drop
+  `land_grade` (its air clearance had beaten water). Notes for Phase 6: the
+  exclusion `bank_d` prefilter relies on the authored warp gradient (≈ 2
+  nodes of slack at Dawnmere; add a comment or a checker line); the
+  Highcourt canal starts and ends blind and its east arm is nearly straight
+  (user judges in the playtest); ~+12 % chunk time on lake chunks (report).
+  **Phase 5 complete, waiting for the user's playtest.** Deviation from
   stale-rule D3 found in the engine: at reach steps the **higher** reach
   decides the bank ("lower decides" let a lake-to-river fall spill sideways
   and spawn new sources), and a lake's outlet step face holds river water.
