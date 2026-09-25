@@ -511,8 +511,18 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   round: capital keep-out = farthest lot corner + 16 (280–355, noise edge,
   soft apron), plot warnings 0; chunk time +4.5 % median, server start
   +1.8 s (reports). Open for Phase 6: two reverse confluences (tributary
-  lower than its parent, contained). Running: W2b (authored water) and W2c
-  (map, water claim exclusions, freshwater content). Deviation from
+  lower than its parent, contained). **W2c merged 8909c913** (map rivers,
+  water/bank exclusion kinds via `overlay_exclusion_at` — Phase 4 can add
+  road corridors there — freshwater content, sand/gravel tops over the water
+  seal, SOURCE_PROJECTION pin removed). Review nice-to-haves for Phase 6 /
+  cleanup: the settlement analytic mirror differs from the writer on sealed
+  anchor-grade/POI-collar columns (write the top over opcodes 17/18 only
+  where `analytic_p7_support_ref` is non-nil); dead `scratch.wet_surface` in
+  `r6_planner.lua`; crab `near_water` scan cost; river width comment
+  mismatch in `grug_map/base.lua`; the housing scan (101² exclusion queries
+  near water) needs care when housing gets a consumer; settlement time on
+  river chunks +22–38 % (report). Papyrus and Frost Melon densities are gut
+  values for the playtest. Running: W2b (authored water). Deviation from
   stale-rule D3 found in the engine: at reach steps the **higher** reach
   decides the bank ("lower decides" let a lake-to-river fall spill sideways
   and spawn new sources), and a lake's outlet step face holds river water.
