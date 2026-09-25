@@ -808,7 +808,7 @@ return function(data)
 						end
 					end
 				end
-				if hi - lo > V.poi_bowl_relief then
+				if hi > lo and hi - lo > V.poi_bowl_relief then
 					local r_in = core * V.poi_bowl_core + V.poi_bowl_pad
 					local sum, n = 0, 0
 					for dz = -r_in, r_in, 4 do
@@ -818,10 +818,10 @@ return function(data)
 							end
 						end
 					end
-					ANCH[#ANCH + 1] = {id = a.id, slot = a.slot_id, x = ax, z = az,
+					if n > 0 then ANCH[#ANCH + 1] = {id = a.id, slot = a.slot_id, x = ax, z = az,
 						r_in = r_in, r_out = r_in + V.poi_bowl_width, resid = V.poi_bowl_resid,
 						target = sum / n, natural_mean = sum / n, wave = 0,
-						edge = V.poi_bowl_edge, edge_p = V.poi_bowl_edge_period, nowarp = true}
+						edge = V.poi_bowl_edge, edge_p = V.poi_bowl_edge_period, nowarp = true} end
 				end
 			end
 		end
