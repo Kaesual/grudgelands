@@ -421,10 +421,11 @@ replaced; git history before this rewrite records that model.
   drainage of the natural terrain on a coarse grid, without erosion: shallow
   pits are breached, deeper basins keep a lake below their spill level, and
   wetland zones and water landmarks keep shallow ponds. No river or lake lies
-  within about 300 nodes of a start or inside a capital's built area (about
-  300 nodes from its core, the district ring's diagonal corners included,
-  irregular edge); a gentle apron beyond the keep-out turns rivers away early
-  instead of letting them hug its edge. Civic water and Moonfall's
+  within about 300 nodes of a start or inside a capital's built area: the
+  capital keep-out reaches the farthest corner of its civic core, district
+  plots and fill lots plus a margin (about 280-355 nodes from the core today),
+  with an irregular edge; a gentle apron beyond the keep-out turns rivers away
+  early instead of letting them hug its edge. Civic water and Moonfall's
   crescent lake are authored lakes in the same format.
 - **Lakes have irregular shores** with coves and shallow margins.
 - Every wet river reach uses `default:river_water_source` /
@@ -432,7 +433,10 @@ replaced; git history before this rewrite records that model.
   river edges and the pools below falls from regenerating hanging source
   sheets. Oceans, bays, lakes and civic water use `default:water_source`.
   Every river and lake bed is sealed three nodes deep, and its banks are
-  sealed too, so no inland water drains into caves.
+  sealed too, so inland water does not drain into the caves of its own
+  mapchunk. A native cave of a neighbouring mapchunk generated later can
+  still cut up to about 13 nodes into an already generated one (engine
+  behaviour); forced-order engine tests found no bed cut open that way.
 - Wet inland beds vary in depth with the terrain detail; continental bays are
   6–10 nodes deep; the coastal shelf slopes from the shore to deep water; deep
   ocean and dragon channels are 24 nodes deep.

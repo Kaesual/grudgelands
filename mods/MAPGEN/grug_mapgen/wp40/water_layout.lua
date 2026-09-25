@@ -44,7 +44,6 @@ return function(P)
 		return (1 - f) ^ 3 / 6, (3 * f2 * f - 6 * f2 + 4) / 6,
 			(-3 * f2 * f + 3 * f2 + 3 * f + 1) / 6, f2 * f / 6
 	end
-	M.smoothstep = smoothstep
 
 	-- Binary min-heap of (value, key).
 	local function heap_new() return {v = {}, k = {}, n = 0} end
@@ -799,9 +798,15 @@ return function(P)
 			-- a keep-out) keeps its own profile to the end.
 			local end_level
 			if rv.end_kind == "sea" then end_level = 1 end
-			if rv.parent then
-				local par = S.rivers[rv.parent]
-				end_level = par.levels[min(#par.levels, rv.junction_index + 1)]
+			local par = rv.parent and S.rivers[rv.parent]
+			if par then
+				-- A parent that is dry at the junction (inside its sink gap)
+				-- has no surface to meet: the tributary keeps its own profile.
+				local ji = rv.junction_index
+				local jb = min(#par.levels, ji + 1)
+				if not (par.dry[ji] or par.dry[jb]) and par.w[ji] > 0 and par.w[jb] > 0 then
+					end_level = par.levels[jb]
+				end
 			elseif rv.end_kind == "lake" then
 				end_level = lakes[rv.end_lake].level
 			end
@@ -854,7 +859,37 @@ return function(P)
 				end
 			end
 			stats.sinks = stats.sinks + #rv.sinks
-			if end_level and end_level <= lv[max(1, n - 1)] then lv[n] = end_level end
+			if end_level and not par and end_level <= lv[max(1, n - 1)] then
+				lv[n] = end_level
+			end
+			-- A tributary's tail that already runs inside the parent's channel
+			-- (the junction snap can overlap it for a few vertices) takes the
+			-- parent's surface, so the two channels never hold different
+			-- surfaces side by side. The parent's banks contain that surface,
+			-- so this never perches the tributary.
+			if par and end_level then
+				lv[n] = end_level
+				local ji = rv.junction_index
+				for q = n - 1, 2, -1 do
+					local x, z = rv.pts[q][1], rv.pts[q][2]
+					local inside = false
+					for k = max(1, ji - 12), min(#par.pts - 1, ji + 12) do
+						local a, b = par.pts[k], par.pts[k + 1]
+						local vx, vz = b[1] - a[1], b[2] - a[2]
+						local l2 = vx * vx + vz * vz
+						local t = l2 > 0 and ((x - a[1]) * vx + (z - a[2]) * vz) / l2 or 0
+						if t < 0 then t = 0 elseif t > 1 then t = 1 end
+						local ex, ez = x - a[1] - t * vx, z - a[2] - t * vz
+						local reach = max(par.w[k], par.w[k + 1]) / 2 + P.WET_B + 2
+						if par.w[k] > 0 and ex * ex + ez * ez <= reach * reach then
+							inside = true
+							break
+						end
+					end
+					if not inside then break end
+					lv[q] = end_level
+				end
+			end
 			-- Steps closer than FALL_GAP vertices merge into one step at the
 			-- run's first step (the lower reach reaches back and cuts a notch),
 			-- as long as the merged drop stays within the slope's limit.
@@ -1250,13 +1285,16 @@ return function(P)
 				if u < V * (1 + 1.5 * P.WALL_WOBBLE) then
 					-- Near the channel the floor never sits below the reach's own
 					-- surface (no pool above a fall): the level reference is the
-					-- reach's level across the whole bank band (so neither a
-					-- spring's end nor the upper side of a step is ringed by bank
-					-- fill) and blends to the neighbours' levels farther out.
+					-- reach's level across the bank band (so neither a spring's
+					-- end nor the upper side of a step is ringed by bank fill)
+					-- and blends to the neighbours' levels within three nodes.
+					-- The nearest reach changes on a straight step bisector, so
+					-- this band is kept narrow: a wide one draws a long straight
+					-- ramp across the floodplain at every step.
 					local fp = P.FP_A + P.FP_B * w
 					if level > lref then
 						lref = lref + (level - lref) *
-							(1 - smoothstep(P.WET_B + 2, P.WET_B + 2 + fp, u))
+							(1 - smoothstep(P.WET_B + 2, P.WET_B + 5, u))
 					end
 					if h > lref then
 						-- the wall distance wobbles by a 2D noise beyond the
@@ -1343,12 +1381,6 @@ return function(P)
 			end
 			local lid, m = lake_at(x, z)
 			return lid ~= nil and m >= 0.5
-		end
-		-- True when a neighbour of (x, z) could be wet: the column lies in a
-		-- river segment's reach or in a lake mask's support.
-		function api.near(x, z)
-			if buckets[bkey(floor(x / BUCKET), floor(z / BUCKET))] then return true end
-			return lake_at(x, z) ~= nil
 		end
 		api.river_at, api.lake_at = river_at, lake_at
 		api.rivers, api.lakes = layout.rivers, lakes

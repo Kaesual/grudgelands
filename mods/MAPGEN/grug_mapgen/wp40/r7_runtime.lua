@@ -105,7 +105,10 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	-- this runtime builds (main builds it once, emerge deserializes main's).
 	local water = {module = dofile(wp40_directory .. "/water_layout.lua")(
 		terrain_data.water), text = water_layout_text,
-		authored = dofile(wp40_directory .. "/water_authored.lua")}
+		authored = dofile(wp40_directory .. "/water_authored.lua"),
+		-- filled below from the prepared settlement blueprints, before any
+		-- height session is built
+		capital_reach = {}}
 	local height_module_factory = dofile(wp40_directory .. "/height.lua")
 	local function height_factory(dependencies)
 		local bound = {}
@@ -202,6 +205,12 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		end
 		local prepared = r7_settlement_module.prepare(profile, source, raw_sha256)
 		settlements[index] = {profile = profile, prepared = prepared}
+		-- A capital's built area (civic core, plots, fill lots) sizes its
+		-- inland water keep-out (plan D40).
+		if profile.slot == "capital" then
+			water.capital_reach[profile.anchor_id] =
+				r7_settlement_module.horizontal_reach(prepared)
+		end
 		settlement_keys[index] = profile.key
 		local blueprints = {}
 		for blueprint_index = 1, #prepared.blueprints do

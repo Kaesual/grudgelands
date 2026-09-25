@@ -915,6 +915,35 @@ end
 -- `column_at(x, z)` is `planner_source.column_values_at`: its first return is
 -- the water class and its sixth the final terrain height, so one query answers
 -- both questions.
+-- The built area's horizontal reach from the anchor: the farthest corner of the
+-- anchor blueprint and of every terrain-relative (reference) blueprint, i.e.
+-- the civic core and every district plot or fill lot. The street overlay is
+-- left out: its box is the whole envelope square, not where streets stand, and
+-- a street over water becomes a bridge anyway. Inland water keeps out of this
+-- reach (world_zones.md §7.4, plan D40).
+function M.horizontal_reach(prepared)
+	if type(prepared) ~= "table" or
+			prepared.schema ~= "grug_wp13_settlement_prepared_v1" then
+		error("WP13 settlement: prepared settlement differs", 0)
+	end
+	local reach = 0
+	for index = 1, #prepared.blueprints do
+		local blueprint = prepared.blueprints[index]
+		local descriptor = blueprint.descriptor
+		if descriptor.kind == "reference" or descriptor.kind == "anchor" then
+			local offset = descriptor.offset or {x = 0, z = 0}
+			local box = blueprint.bounds or descriptor.bounds
+			for _, x in ipairs({offset.x + box.min.x, offset.x + box.max.x}) do
+				for _, z in ipairs({offset.z + box.min.z, offset.z + box.max.z}) do
+					local distance = math.sqrt(x * x + z * z)
+					if distance > reach then reach = distance end
+				end
+			end
+		end
+	end
+	return reach
+end
+
 function M.audit_terrain(prepared, anchor, column_at, tolerance)
 	if type(prepared) ~= "table" or
 			prepared.schema ~= "grug_wp13_settlement_prepared_v1" then

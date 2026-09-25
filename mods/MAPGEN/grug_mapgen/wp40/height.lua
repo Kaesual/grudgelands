@@ -255,6 +255,15 @@ local function height_factory(dependencies)
 					local e = {x = x, z = z, id = a.id,
 						r = start and WP.start_keepout or WP.capital_keepout,
 						edge = start and WP.start_keepout_edge or WP.capital_keepout_edge}
+					-- A capital's keep-out covers its whole built area: the
+					-- farthest corner of its core, plots and fill lots (from the
+					-- prepared blueprints) plus a margin; the noise edge only
+					-- grows it.
+					local reach = not start and water_dependency.capital_reach and
+						water_dependency.capital_reach[a.id]
+					if reach then
+						e.r = max(e.r, reach + WP.capital_keepout_margin)
+					end
 					-- the lowest natural ground inside the disc (lake rule)
 					local g, r = math.huge, e.r * (1 + e.edge)
 					for dz = -r, r, 16 do
@@ -803,14 +812,20 @@ local function height_factory(dependencies)
 			if t <= 0 then return 0 elseif t >= 1 then return 1 end
 			return t * t * (3 - 2 * t)
 		end
+		-- Also returns the bank inputs of the nearest authored lake (the same
+		-- indicator distance proxy as a natural lake), for the bank material.
 		local function authored_at(x, z, terrain_y, water_y, kind, id)
 			local list = bucket_at(authored_grid, x, z)
 			if not list then return terrain_y, water_y, kind, id end
+			local bank_d, bank_y
 			for index = 1, #list do
 				local e = list[index]
 				if x >= e.min_x and x <= e.max_x and z >= e.min_z and z <= e.max_z then
 					local m = e.indicator(x, z)
 					if type(m) == "number" and m > 0 then
+						local d = (0.5 - m) * WP.LAKE_PROXY
+						if d < 0 then d = 0 end
+						if bank_d == nil or d < bank_d then bank_d, bank_y = d, e.level end
 						if e.depth and m >= 0.5 then
 							local bed = floor(e.level - 1 - (e.depth - 1) *
 								smoothstep(0.5, 0.9, m))
@@ -824,7 +839,7 @@ local function height_factory(dependencies)
 					end
 				end
 			end
-			return terrain_y, water_y, kind, id
+			return terrain_y, water_y, kind, id, bank_d, bank_y
 		end
 
 		-- Fitted stage of a land column (memoised): the terrain after the
@@ -847,8 +862,12 @@ local function height_factory(dependencies)
 					end
 				end
 				if #authored > 0 then
-					terrain_y, water_y, water_kind, water_id = authored_at(x, z,
-						terrain_y, water_y, water_kind, water_id)
+					local bank_d, bank_y
+					terrain_y, water_y, water_kind, water_id, bank_d, bank_y =
+						authored_at(x, z, terrain_y, water_y, water_kind, water_id)
+					if bank_d and (not block.bank_d[slot] or bank_d < block.bank_d[slot]) then
+						block.bank_d[slot], block.bank_y[slot] = bank_d, bank_y
+					end
 				end
 				block.pre[slot], block.pkind[slot], block.pfeature[slot] =
 					terrain_y, kind or false, feature_id or false
@@ -862,11 +881,13 @@ local function height_factory(dependencies)
 		-- water surface as its own top (world_zones.md §7.4). The field's sea
 		-- floor is always below WATER_LEVEL, so only a bay platform can cover
 		-- sea water. Beside inland water the neighbour's surface counts; at a
-		-- river step two surfaces touch one bank and the lower reach decides
-		-- (stale-rule D3): its water may spill a little over the bank corner,
-		-- but the step face stays a water-water contact inside the channel.
-		-- (Set false to let the higher reach decide: nothing spills sideways,
-		-- the bank then stands one step above the lower water.)
+		-- river step two surfaces touch one bank and the HIGHER one decides
+		-- (stale-rule D3, as INTEGRATION.md's fallback): nothing spills over
+		-- the bank corner and the step face stays a water-water contact inside
+		-- the channel. Letting the lower reach decide spilled renewable lake
+		-- water over a flat shore in the engine check (Round 22 Phase 5 W2a).
+		-- (true lets the lower reach decide instead: the bank then sits at the
+		-- lower water and the upper water may spill sideways over it.)
 		local STEP_BANK_LOWER = false
 		local direction_x, direction_z = {1, -1, 0, 0}, {0, 0, 1, -1}
 		local function exposed_shore_at(x, z, near)

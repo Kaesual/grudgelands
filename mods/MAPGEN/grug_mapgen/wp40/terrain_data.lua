@@ -218,9 +218,11 @@ data.water = {
 	-- circle arc (D40)
 	KEEP_RAMP = 0.12, KEEP_RAMP_W = 160,
 	start_keepout = 300, start_keepout_edge = 0.15,
-	-- D40: the whole built area of a capital (its square district ring reaches
-	-- ~300 from the civic core on the diagonals)
-	capital_keepout = 300, capital_keepout_edge = 0.15,
+	-- D40: a capital's keep-out covers its whole built area: the farthest
+	-- corner of its civic core, district plots and fill lots (measured from the
+	-- prepared blueprints, 252-339 on the current capitals) plus the margin,
+	-- at least capital_keepout
+	capital_keepout = 280, capital_keepout_margin = 16, capital_keepout_edge = 0.15,
 	-- sampler buckets (segments by reach) and wet-occupancy cells (nodes)
 	BUCKET = 32, OCC = 16,
 	-- landmarks whose shallow depressions stay ponds (plus wetland zones),
