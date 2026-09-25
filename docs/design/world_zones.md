@@ -109,9 +109,11 @@ in this file as of commit `082982da`.
   beside any exposed water-surface node has its terrain surface at exactly the
   water-surface y. The inland terrain then continues through its existing bank
   blend. No dry shore column may end below its neighboring water surface.
-  Authored bridge, causeway, ford, route-deck and culvert surfaces are
-  functional crossings or cut rims rather than dry-land banks and retain their
-  existing grade constraints.
+  Where one bank touches two water surfaces (beside a river step), it takes
+  the higher one, so nothing spills sideways and the step stays a water-water
+  contact inside the channel (Round 22 Phase 5). Authored bridge, causeway,
+  ford and culvert surfaces are functional crossings or cut rims rather than
+  dry-land banks and retain their existing grade constraints.
 
 ## 3. Starting zones and capitals
 
@@ -392,7 +394,8 @@ replaced; git history before this rewrite records that model.
   Kezamba cenote, the Lethariel lake, Highcourt's river arms, the Dawnmere and
   Sunscar ponds); their old hydrology rows were removed at the start of Phase 5,
   which lays out all inland water anew from the terrain. Inland and
-  bay water belong to the zone around them. Shelf, bay water and every
+  bay water belong to the zone around them: a wet river or lake column has the
+  zone-owned class `planned_water` (like a bay), its dry banks stay land. Shelf, bay water and every
   road/POI exclusion are claim-ineligible. Deep ocean and dragon channels are
   immutable at every y.
 - **Dragon channels.** The two island channels are roughly 200 water nodes
@@ -411,19 +414,25 @@ replaced; git history before this rewrite records that model.
   river's surface is constant along one reach and steps down to the next reach
   downstream through a small fall or rapids. Use few, simple step types:
   gentle terrain gets many small rapids (1–3 nodes), tall falls (up to about
-  16) only on steep slopes.
+  16) only on steep slopes. The two step types are a rapid (a drop of up to 3)
+  and a fall; a lake's outflow over a step is river water, so it cannot flood
+  the shore below.
 - **Layout from drainage (Round 22, D38).** Rivers and lakes come from the
   drainage of the natural terrain on a coarse grid, without erosion: shallow
   pits are breached, deeper basins keep a lake below their spill level, and
   wetland zones and water landmarks keep shallow ponds. No river or lake lies
   within about 300 nodes of a start or inside a capital's built area (about
-  280 nodes from its core, irregular edge). Civic water and Moonfall's
+  300 nodes from its core, the district ring's diagonal corners included,
+  irregular edge); a gentle apron beyond the keep-out turns rivers away early
+  instead of letting them hug its edge. Civic water and Moonfall's
   crescent lake are authored lakes in the same format.
 - **Lakes have irregular shores** with coves and shallow margins.
 - Every wet river reach uses `default:river_water_source` /
   `default:river_water_flowing`. This non-renewable, range-two liquid keeps
   river edges and the pools below falls from regenerating hanging source
   sheets. Oceans, bays, lakes and civic water use `default:water_source`.
+  Every river and lake bed is sealed three nodes deep, and its banks are
+  sealed too, so no inland water drains into caves.
 - Wet inland beds vary in depth with the terrain detail; continental bays are
   6–10 nodes deep; the coastal shelf slopes from the shore to deep water; deep
   ocean and dragon channels are 24 nodes deep.

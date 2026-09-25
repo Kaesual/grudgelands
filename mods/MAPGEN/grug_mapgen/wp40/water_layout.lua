@@ -283,7 +283,22 @@ return function(P)
 				local b, mc = opts.breach_at(GX0 + (lc % nx) * C, GZ0 + floor(lc / nx) * C)
 				if b and dp.depth <= P.MARSH_MAX_DEPTH then lim, minc = b, mc or minc end
 			end
-			local level = floor(dp.spill - lim + 1e-6)
+			-- The spill comes from the routing surface; where a keep-out apron
+			-- is the barrier it stands above the natural rim. The natural rim
+			-- (the lowest natural cell around the depression) caps the level,
+			-- so no lake is perched on bank walls above its own ground.
+			local rim = math.huge
+			for _, c in ipairs(dp.cells) do
+				local cx, cz = c % nx, floor(c / nx)
+				for d = 1, 8 do
+					local jx, jz = cx + DX[d], cz + DZ[d]
+					if jx >= 0 and jx < nx and jz >= 0 and jz < nz then
+						local j = jz * nx + jx
+						if comp[j] ~= id and H[j] < rim then rim = land[j] and H[j] or 1 end
+					end
+				end
+			end
+			local level = floor(min(dp.spill, rim) - lim + 1e-6)
 			local function count(lv)
 				local n = 0
 				for _, c in ipairs(dp.cells) do if H[c] < lv then n = n + 1 end end
@@ -708,6 +723,8 @@ return function(P)
 				end
 			end
 			rv.pts, rv.w, rv.acc = out, widths, accs
+			-- the geometry's widths; `levels` narrows its own copy at sinks
+			rv.w_geom = widths
 		end
 	end
 
@@ -716,6 +733,7 @@ return function(P)
 	local function levels(S, opts)
 		local field, land_at = opts.field, opts.land_at
 		local lakes, stats = S.lakes, S.stats
+		stats.sinks, stats.max_cut = 0, 0
 		local function fh(x, z)
 			if not land_at(x, z) then return 1 end
 			return field.height_at(x, z, true)
@@ -771,15 +789,23 @@ return function(P)
 		end
 		for _, rv in ipairs(S.rivers) do
 			local n = #rv.pts
+			local w = {}
+			for q = 1, n do w[q] = rv.w_geom[q] end
+			rv.w = w
 			local m = {}
 			for i = 1, n do m[i] = band_min(rv, i) end
-			local end_level = 1
+			-- The downstream end fixes the last level: the sea, a lake, the
+			-- parent river. A river that ends dry (in a sink, a drained lake,
+			-- a keep-out) keeps its own profile to the end.
+			local end_level
+			if rv.end_kind == "sea" then end_level = 1 end
 			if rv.parent then
 				local par = S.rivers[rv.parent]
 				end_level = par.levels[min(#par.levels, rv.junction_index + 1)]
 			elseif rv.end_kind == "lake" then
 				end_level = lakes[rv.end_lake].level
 			end
+			local sea_floor = rv.end_kind == "sea" and not rv.parent and 1 or nil
 			local start_cap = math.huge
 			if rv.src_lake then start_cap = lakes[rv.src_lake].level end
 			-- A river may not climb: where the band terrain stands more than
@@ -799,13 +825,18 @@ return function(P)
 				if m[i] < run then run = m[i] end
 				p[i] = run
 				local tt = run - inc(i)
-				if tt < end_level then tt = end_level end
+				-- The sea is a floor for the whole river. A lake or parent
+				-- river is not: raising a river that runs below its end would
+				-- perch it on bank walls above its own valley (a terminal lake
+				-- can lie above a neighbouring basin); it keeps its own profile
+				-- and the higher end falls into it instead.
+				if sea_floor and tt < sea_floor then tt = sea_floor end
 				if L == nil then
 					L = floor(tt)
 					if i == 1 and rv.src_lake then L = lakes[rv.src_lake].level end
 				end
 				if tt <= L - 1 then L = floor(tt) + 1 end
-				if tt <= end_level or L < end_level then L = end_level end
+				if sea_floor and (tt <= sea_floor or L < sea_floor) then L = sea_floor end
 				if m[i] - L > P.CUT_MAX and i > 1 and i + P.SINK_GAP < n then
 					rv.sinks[#rv.sinks + 1] = i
 					local j = i
@@ -822,8 +853,8 @@ return function(P)
 					i = i + 1
 				end
 			end
-			stats.sinks = (stats.sinks or 0) + #rv.sinks
-			lv[n] = end_level
+			stats.sinks = stats.sinks + #rv.sinks
+			if end_level and end_level <= lv[max(1, n - 1)] then lv[n] = end_level end
 			-- Steps closer than FALL_GAP vertices merge into one step at the
 			-- run's first step (the lower reach reaches back and cuts a notch),
 			-- as long as the merged drop stays within the slope's limit.
@@ -939,6 +970,9 @@ return function(P)
 		geometry(S, seed, opts)
 		levels(S, opts)
 		drain_crossed_lakes(S)
+		-- a river that ended in (or left) a drained lake must not keep that
+		-- lake's level: the levels are computed again without it
+		if S.stats.lakes_drained > 0 then levels(S, opts) end
 		local stats = S.stats
 		local nsteps, maxstep, hist = 0, 0, {}
 		for _, rv in ipairs(S.rivers) do
