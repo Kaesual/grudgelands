@@ -64,7 +64,10 @@ data.params = {
 	param_warp = 0.6, landmark_warp = 0.4, anchor_warp = 0.3,
 	ridge_mul = 1.5, rshare_add = 0.2, hill_mul = 1.25, rough_mul = 1, base_add = 8,
 	start_r_in = 70, start_r_out = 300, start_resid = 0.15,
-	capital_r_in = 80, capital_r_out = 350, capital_resid = 0.2,
+	-- The capital bowl is calm out to the WP13 district plots (offsets up to
+	-- ~240 from the civic core); at r_in 80 their perimeters fell and rose by
+	-- up to 40 nodes (Phase 3 integration, seed 15140735923413111218).
+	capital_r_in = 260, capital_r_out = 520, capital_resid = 0.2,
 	spines = true, spine_warp = 0.7, range_ridge = 210,
 	mid = 1.35, neg_compress = 0.5, crest_warp = 0.4, massif_min = 0.75,
 	start_band = {6, 36},

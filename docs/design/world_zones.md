@@ -1100,7 +1100,8 @@ one-cell settlement checks are unchanged.
   96-node collar returns to incoming terrain. The 512×512 envelope remains
   buildable/protected space, not one mandatory flat slab.
 - **Round 22 (D7, D11, D16):** terrain roughness is damped around each capital
-  (about 500 nodes, keyed to the civic core), and each capital's target ground
+  (keyed to the civic core: calm out to about 260 nodes so the district plots
+  stand on calm ground, natural relief again by about 520), and each capital's target ground
   height sits well below its region's clouds (§7.6). The outer edge of the
   terrace/blend outline may become organic instead of square; district layout,
   blueprints and the build envelope stay as they are this round. Capital
