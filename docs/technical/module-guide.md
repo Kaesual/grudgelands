@@ -736,8 +736,8 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   Race region, territory and PvP rule are independent fields. Every ordinary
   level-31–60 land zone is contested and editable by both factions. Roads,
   camp shells, tents, fences and battlefield dressing remain mutable but
-  claim-excluded; only bounded functional anchors, irreplaceable route pieces
-  and renewable-resource sockets receive hard protection.
+  claim-excluded; only bounded functional anchors and renewable-resource
+  sockets receive hard protection.
   Material design owns the complete `race_region` mapping of
   G1, G2, cultural material and signature wood; map code stores only the
   region identity and placement data needed to consume that mapping. Each

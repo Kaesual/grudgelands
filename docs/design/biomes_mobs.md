@@ -248,13 +248,14 @@ Saplings choose either size and a quarter-turn rotation, using these same assets
 obstructed or unloaded growth volumes retry without removing the sapling. Simple variant ranges above mean one independently
 settled entry per named variant at the displayed fill.
 
-Candidate cells are globally anchored 16-column squares. Exact rational fills,
-full-seed domain-separated hashes, canonical candidate rank, quarter-turn
-rotation and the largest rotated-footprint neighbor halo replace engine
-randomness and the legacy emergent-tree `sidelen = 80`. Cultural reservations
-settle first, followed by emergent/other large templates, ordinary trees,
-simple multi-node trunks and ground cover. Wrong hosts, exclusions, clearance
-or collisions reject without movement, retry or fallback placement.
+Candidate cells are globally anchored 16-column squares. Deterministic
+per-world placement and rotation, with a neighbor halo large enough for
+rotated footprints, replace engine randomness and the legacy emergent-tree
+`sidelen = 80`; the code specifies the hashing and ranking. Cultural
+reservations settle first, followed by emergent/other large templates,
+ordinary trees, simple multi-node trunks and ground cover. Wrong hosts,
+exclusions, clearance or collisions reject without movement, retry or
+fallback placement.
 
 R6 emits no placeholder for meadow flowers, Elf white flowers, Pine Hills
 boulders, Blight grey-grass tufts or optional Swamp willow/gravewood retint.
@@ -313,9 +314,9 @@ stone, gravel, mesa clay, dead-wood litter or jungle floor.
 The lotus source is the one that had to be repaired: until 2026-08-08 the
 Accord's `grug_jungle_fringe` generated at 0.08 % of the land because the
 deep forest contained its cuboid, so in practice **only the Throng had a
-T3 healing herb**. The deep forest is now capped at x 1250 and the fringe
-owns the east flank strip uncontested — 2.71 % of the land, against deep
-jungle's 3.13 % on the Throng side (§1.3).
+T3 healing herb**. Biomes now follow the zone palettes of `world_zones.md`
+§8, and the fringe's lotus comes from The Skyglass Canopy (`world_zones.md`
+§11).
 
 **Spices** (gathered by everyone, used by both the Alchemist and
 Cooking — which costs no main slot — and farmable once farming ships):
@@ -1116,7 +1117,7 @@ Regional geology follows the owning `race_region` column at every depth:
 | Food plants, **found-only** (everyone, never farmable) | 25–60 (wild cocoa 51–60) | mushrooms (deep forest/swamp), wild cocoa (The Skyglass Canopy — shared contested front, §2), rock salt (coast beaches) | mushrooms (bone forest/swamp), wild cocoa (The Skyglass Canopy — shared contested front; Stormscale Summit — offshore island bonus, §2), rock salt (coast beaches) |
 | Healing herbs T1 (Alchemist) | 10–25 | gravemoss (pine hills) | gravemoss (blight) |
 | Healing herbs T2 | 25–45 | dragonweed (crags, deep forest) | dragonweed (badlands, bone forest) |
-| Healing herbs T3 | 45–60 | crimson lotus (jungle fringe — the east flank strip x 1251..1500, which the fringe only got on 2026-08-08, §1.3) | crimson lotus (deep jungle) |
+| Healing herbs T3 | 45–60 | crimson lotus (jungle fringe, The Skyglass Canopy) | crimson lotus (deep jungle) |
 | Spices T1 (everyone gathers; Alchemist + Cooking use) | 10–25 | sunleaf (meadows, elf forest) | sunleaf (savanna, jungle edge) |
 | Spices T2 | 25–45 | marshbloom (swamp) | marshbloom (swamp) |
 | Spices T3 (stormkelp also weaves the Tailor's T6 stormweave bolt, `items_crafting.md` §3.5) | 45–60 | stormkelp (coast) | stormkelp (coast) |

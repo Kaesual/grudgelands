@@ -465,16 +465,15 @@ A reservation may never intersect:
 Roads and ordinary POIs may be mutable while remaining claim-excluded.
 Protection and claim eligibility are independent systems.
 
-- There is no general runtime slope test. Outside the four guaranteed gentle
-  cores, players may claim steep or unusual ground when the complete
-  reservation passes every authored mask and exclusion.
-- The gentle-core relief limit is audited against mapgen's natural
-  surface-height field over 32 seeds and is not recomputed at placement.
-- Road exclusions use exactly the world plan's three fixed classes: a 7-node
+- There is no runtime slope test. Players may claim steep or unusual ground
+  when the complete reservation passes every authored mask and exclusion; the
+  four gentle coastal housing areas (§1) are rough targets, not audited.
+- Road exclusions follow the road classes of `world_zones.md` §7.5: a 7-node
   primary road in a 16-node total corridor, a 5-node secondary road in a
   12-node corridor, and a 3-node trail in an 8-node corridor.
-- Deterministic road meanders move the analytic corridor with the road.
-  Removing or rebuilding visible road nodes never removes the exclusion.
+- The corridor is measured from the routed road path (Round 22 Phase 4), so
+  it follows the road wherever it runs. Removing or rebuilding visible road
+  nodes never removes the exclusion.
 
 ### 6.1 Boundary visibility
 
@@ -599,8 +598,7 @@ players in its shallow protection volume:
 - waypoints and graveyards;
 - essential service and quest-giver platforms;
 - small functional NPC spawn/return anchors;
-- renewable mining sockets and other bounded renewable-resource mechanisms;
-- critical bridges or gates with no adequate alternate route;
+- renewable mining sockets and other bounded renewable-resource mechanisms.
 
 - Every land-side hard-protected footprint extends upward without limit and
   downward through y = −700 inclusive.
@@ -615,7 +613,7 @@ players in its shallow protection volume:
 The following content is generated once and may be damaged, dug or rebuilt,
 but its authored envelope can never be privatized:
 
-- ordinary roads and their travel corridors;
+- roads, open-world bridges and their travel corridors;
 - villages outside small functional cores;
 - ordinary outposts, bandit or Mirefolk camps and war camps outside their
   functional anchors;
@@ -627,8 +625,8 @@ but its authored envelope can never be privatized:
 - Destruction of this layer persists; it is not structurally regenerated.
 - A reproducible gameplay loop attaches to a small protected functional
   anchor, not a destructible wall, tent or road node.
-- Only a bridge or gate without an adequate alternate route is promoted to
-  hard protection. A bridge or gate is not immutable by type alone.
+- Open-world bridges are mutable like roads. Gates are protected only as part
+  of a capital (§7.1).
 
 ### 7.3 Mutable and claimable ground
 
@@ -711,9 +709,9 @@ per-stone radii up to 50 or the project's 100-player target.
   at every y, but no claim may be placed there. Only explicit bounded
   hard-protection volumes apply.
 - Dragon-island centres are (−3,150, 0) and (+3,150, 0), each inside a fixed
-  600×700 envelope. Their channels retain at least 200 ocean nodes, 48-node
-  flight-warning bands on both shores and at least 104 hard no-flight nodes.
-  The channel columns are immutable at every depth.
+  600×700 envelope. Their channels are roughly 200 ocean nodes wide (at least
+  104, checked when the world is built) with 48-node flight-warning bands on
+  both shores. The channel columns are immutable at every depth.
 - Authored lakes, rivers, zone-water masks and the landward parts of bays
   remain zone-classified and claim-ineligible even if filled or drained. The
   four declared outer bay-mouth caps are ownerless deep ocean and likewise

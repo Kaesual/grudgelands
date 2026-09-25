@@ -394,14 +394,15 @@ replaced; git history before this rewrite records that model.
   bay water belong to the zone around them. Shelf, bay water and every
   road/POI exclusion are claim-ineligible. Deep ocean and dragon channels are
   immutable at every y.
-- **Dragon channels.** The two island channels keep at least 200 water nodes
-  between mainland and island land. Each shore contributes a 48-node
-  flight-warning band, leaving at least 104 nodes of hard no-flight water.
-  Filling, draining, bridging or tunnelling through the channel is forbidden.
-- **Island approaches.** Each island keeps two distinct 96-node-wide boat
-  approaches and landing beaches, centred at z = -125 and z = +125. The
-  southern and northern faction-oriented boat routes to either island differ
-  by at most 10% in length. Both approaches are open to both factions.
+- **Dragon channels.** The two island channels are roughly 200 water nodes
+  wide between mainland and island land; the construction self-check (§7.1)
+  requires at least 104. Each shore contributes a 48-node flight-warning
+  band (`mounts.md` §4.1). Filling, draining, bridging or tunnelling through
+  the channel is forbidden.
+- **Island approaches.** Each island keeps two boat approaches, one northern
+  and one southern, each ending at a landing beach at a fixed point in the
+  source data. The northern and southern boat routes to either island are
+  roughly equal in length. Both approaches are open to both factions.
 - **Rivers carve their valleys.** A river lowers the terrain around it into a
   valley profile instead of being cut into unchanged terrain. Its centreline
   meanders and its width varies along its course.
@@ -446,8 +447,7 @@ replaced; git history before this rewrite records that model.
 - Primary roads use a 7-node visible surface and 16-node exclusion corridor;
   secondary roads use 5/12; trails use 3/8. The corridor remains
   claim-ineligible even after players alter the visible road.
-- Ordinary roads and ordinary bridges are mutable. Only a bridge without an
-  adequate alternate crossing may receive bounded hard protection.
+- Roads and open-world bridges are mutable and never hard-protected.
 - Starts keep their start-pad fitting (`settlements.md`); capitals keep their
   96-node civic core and terrace contract (§12). Every other anchor flattens only a compact
   building core: village and bandit camp 24; outpost, Mirefolk camp and clash
@@ -524,10 +524,10 @@ replaced; git history before this rewrite records that model.
   well below its region's cloud layer: clouds are placed relative to the
   region, at least about 60 nodes above capital ground. Capital and start
   fitting must stay within their cut/fill limits on the new terrain.
-- **Order of grading.** Start, capital, coastal housing, road and anchor
-  grading override natural relief in that order of functional necessity. On a
-  road's visible surface, the road grade wins. Roads are walkable: at most one
-  node of step between neighboring road columns.
+- **Order of grading.** Start, capital, road and anchor grading override
+  natural relief in that order of functional necessity. On a road's visible
+  surface, the road grade wins. Roads are walkable: at most one node of step
+  between neighboring road columns.
 - **Natural cave roofs and openings (2026-09-20):** native v7 caves remain
   authoritative; no synthetic cave-mouth writer runs. After terrain and
   surface refinement, dry eligible columns receive a three-node skin below
@@ -701,10 +701,14 @@ and terrain rules without deriving political ownership from cultural origin.
 |---|---|---|---|---|---|
 | `front_wyrmglass_crown` | The Wyrmglass Crown | Dwarf | 60 | crags 55 / snowy crags 30 / beach 15 | Offshore ring-mountain island, crystalline fault terraces and dragon hoard; mountain/war mobs; night Frost Stray/Snow Leopard/Rift Spawn; **D/M6, K×1** |
 | `front_gravesalt_escarpment` | Gravesalt Escarpment | Undead | 51–59 | bone forest 55 / blight 15 / swamp 15 / beach 15 | White salt cliffs cut with tomb galleries and a coastal war road; forest/war mobs; night Bog Witch/Rift Spawn; stormkelp; **K×2** |
-| `front_broken_causeway` | The Broken Causeway | Human | 31–40 | meadows 40 / deep forest 25 / swamp 35 | Collapsed royal road over marsh and river: raised causeway, ford and aqueduct path form three routes; war mobs; 24 h War Construct; night Wisp/Bog Witch; **K×3, R:Captain Bonerattle** |
+| `front_broken_causeway` | The Broken Causeway | Human | 31–40 | meadows 40 / deep forest 25 / swamp 35 | Collapsed royal road over marsh and river, with remnants of a raised causeway, fords and an aqueduct; war mobs; 24 h War Construct; night Wisp/Bog Witch; **K×3, R:Captain Bonerattle** |
 | `front_shattered_line` | The Shattered Line | Orc | 41–50 | badlands 65 / savanna 20 / swamp 15 | Main battlefield of breached walls, western trenches, eastern siege ramp and burned no-man's-land; mountain/war mobs; day Speargrass Tiger; 24 h War Construct; night Scorpion and Sun-Dried Husk; **K×3, R:Captain Bonerattle** |
 | `front_skyglass_canopy` | The Skyglass Canopy | Elf | 51–59 | jungle fringe 60 / deep forest 25 / elf forest 15 | Cloud forest above pale escarpments, hanging roots and two high approaches; high-jungle/war mobs, crimson lotus; **K×2, R:Silkfang** |
 | `front_stormscale_summit` | Stormscale Summit | Troll | 60 | deep jungle 50 / east badlands 20 / swamp 15 / beach 15 | Offshore jungle-clad volcanic island, thunder terraces and dragon hoard; high-jungle/war mobs; night Bog Witch/Rift Spawn; stormkelp; **D/M6, K×1, R:Emerald Coil** |
+
+The identity column is flavour. Routes, trenches, siege ramps, galleries and
+approaches named there may appear as POI or dressing content (§8.4); the road
+network (§9.2) owes none of them.
 
 Underground casts ignore the surface clock. Light and the exact y band drive
 spawning, and flying families have no near-ground bias.
@@ -843,8 +847,8 @@ graph requirement may shape a zone, and nothing may require a graph to be
 ### 9.4 Offshore travel
 
 - The Wyrmglass Crown and Stormscale Summit have no land routes. Their four
-  boat routes form a separate travel graph: a z = -125 southern and z = +125
-  northern approach to each island (§7.4). Wyrmglass routes start from the
+  boat routes form a separate travel graph: a southern and a northern
+  approach to each island (§7.4). Wyrmglass routes start from the
   Gravesalt Escarpment coast; Stormscale routes start from The Skyglass
   Canopy coast. They are open to both factions and never add a land neighbor.
 
@@ -871,10 +875,11 @@ asks for it.
 
 ## 11. Resource, loot and POI budgets
 
-**Round 22 note (2026-09-25):** the budgets and parity rules below remain
-design targets. Where they name the 32-seed corpus, a resource census or a
-release supply/access gate, they are confirmed by spot checks on
-representative seeds (§14.1), not by multi-seed population gates.
+**Round 22 note (2026-09-25):** the budgets and parity rules below are
+design targets, confirmed by spot checks on representative seeds (§14.1),
+not by multi-seed population gates, a resource census or a release
+supply/access gate. Sampling and hashing algorithms are specified by the
+code, not by this document.
 
 - Each race has exactly one safe start, one home zone, one capital, at least
   one level-21–30 heartland and one level-31–40 frontier; exactly one
@@ -919,8 +924,8 @@ representative seeds (§14.1), not by multi-seed population gates.
   | Assigned G2 species | — | — | — | 2048 | 1024 | 512 |
 
   The quarter-density floor retains older inputs at depth; T1 Iron keeps its
-  former density as a bootstrap exception. Gold peaks at T4 and remains useful at T5/T6, matching Goldsmith demand. This decision does not claim the full corpus
-  parity gate below was rerun.
+  former density as a bootstrap exception. Gold peaks at T4 and remains
+  useful at T5/T6, matching Goldsmith demand.
 - Natural-resource placement and its accessible-host denominator admit only
   horizontal classes `land` and zone-owned `planned_water`. Rivers, lakes,
   marsh channels, cenotes and the landward bay masks therefore retain their
@@ -928,43 +933,18 @@ representative seeds (§14.1), not by multi-seed population gates.
   `immutable_dragon_channel` admit no natural resource. Eligibility still
   requires the exact WP43 stratum host at y; water, bed material, routes,
   dungeons, foreign nodes and protected content are not hosts.
-- **Natural-resource root sampling (2026-09-13):** each resource/16-node
-  cell/host/tier/deep-band group keeps its eligible-host count, density budget
-  and balanced capped vein targets. Enumerate eligible hosts in ascending
-  z/y/x order. For a positive budget, seed one local draw stream with the full
-  world-seed string and the seven group fields in the canonical
-  `resource_root_shuffle_v1` SHA-256 frame. Take the first four digest bytes
-  as a big-endian integer; initial state is `value % 2147483646 + 1`. Each
-  draw advances `state = state * 16807 % 2147483647`; reject `state - 1` at
-  or above `floor(2147483646 / remaining) * remaining`, then select
-  `(state - 1) % remaining + 1`. Swap that candidate with the active tail and
-  shrink the prefix. Claimed candidates consume a draw; no candidate repeats.
-  Zero-budget groups seed no stream. Resource precedence, exclusion rules,
-  frontier hashing and shortfall accounting remain unchanged; the VM writer
-  and resource census use the same selection. Natural ore stays finite.
-  Specific positions and growth-dependent shortfalls may change relative to
-  the former per-host hash ranking. This reproducible 31-bit stream is not a
-  cryptographic or perfectly uniform permutation: initial states 1–4 have
-  three 32-bit preimages, all others two. Historical supply/access artifacts
-  retain their original algorithm identity; the sampler's measured comparison
-  does not replace the full release supply/access gate.
-- The six-race **strict 5%-over-lowest natural-resource-parity ledger** counts
-  every natural resource eligible in the race-region column: all universal
-  resources plus that region's assigned G1 and G2. Placed natural nodes remain
-  a separate density/material-volume ledger. Across the fixed 32-seed corpus
-  and the exact representative resource census, let `V_r` be race `r`'s
-  accepted natural veins and `H_r` its accessible host volume. `H_r` counts
-  each exact eligible WP43 stratum-host position once in every admitted
-  tier/deep band where at least one counted resource is eligible, regardless
-  of how many counted resources can use that position. The exact sampled
-  natural rate is `V_r / H_r`. If `lo` and `hi` are the lowest and highest of
-  the six exact rational rates, acceptance requires the strict
-  pairwise-extrema rule `20 * hi <= 21 * lo`; implementations compare
-  cross-products and use no floating-point tolerance.
-- Ordinary-camp equality is a separate gate: each race has exactly 12 sockets
-  per seed and therefore exactly 384 across the 32-seed corpus. Camp sockets
-  are never added to a sample-only natural-vein numerator. Apex-camp sockets
-  remain shared bonuses and are not part of either regional gate.
+- **Natural-resource root sampling:** each resource/16-node cell/host/tier/
+  deep-band group keeps its eligible-host count, density budget and balanced
+  capped vein targets. Roots are drawn from a deterministic per-world stream
+  without repeats, so natural ore is finite and reproducible for a world seed.
+- **Natural-resource parity:** the six race regions receive about the same
+  natural-resource rate, within roughly 5%: accepted natural veins per
+  accessible host volume, counting all universal resources plus the region's
+  assigned G1 and G2. Placed natural nodes are a separate density concern.
+  Spot-checked on representative seeds.
+- Ordinary-camp equality is separate: each race has exactly 12 renewable
+  camp sockets per world. Camp sockets never count toward natural-vein parity.
+  Apex-camp sockets remain shared bonuses outside both.
 - Every race region supplies its cultural material ordinarily at the surface
   for its own architecture, trade and quests and supplies one concentrated T4
   source in exactly one race-frontier zone. Foreign cultural material is
@@ -986,14 +966,13 @@ representative seeds (§14.1), not by multi-seed population gates.
   registers and realizes their visible source features through the same WP40
   writer. Every slot reserves the centred 5 by 5 horizontal square from
   `surface_y - 1` through `surface_y + 7`. A registration may occupy any
-  subset of that envelope; a larger footprint fails closed. Slots never move,
+  subset of that envelope; a larger footprint is rejected. Slots never move,
   retry or search for fallback ground, and the envelope is collision space,
   not a structure, yield promise or R6 world mutation. The ratified WP33
   registration is exactly one source cell at `(0, 1, 0)` with
   `lower_two_policy = "preserve_p7"`; it replaces neither P7 top nor filler.
-  WP33 registrations must be accepted against the frozen R6 slot API before R7
-  activates the writer; no production world is generated with permanently
-  empty cultural reservations.
+  No production world is generated with permanently empty cultural
+  reservations.
 - Both apex camps contain the same count of every one of the six gem species:
   exactly two renewable sockets per species per island.
   Endpoint deposits are a shared bonus and do not compensate a deficient home
@@ -1005,17 +984,17 @@ representative seeds (§14.1), not by multi-seed population gates.
   species by boat. Trade remains an alternative, never the only route.
 - Every level-31–60 frontier and dragon-island zone has no home-faction
   construction owner. Both factions may dig and place ordinary terrain there,
-  subject to tools and explicit hard-protected capital,
-  functional-anchor or irreplaceable-route envelopes. Ordinary road and camp
-  envelopes exclude claims and grade mapgen but do not block terrain mutation.
+  subject to tools and explicit hard-protected capital or functional-anchor
+  envelopes. Road and camp envelopes exclude claims and grade mapgen but do
+  not block terrain mutation.
   This applies equally to all six faction frontier approaches and to both
   dragon islands.
 - The four Battlegrounds zones follow the same shared construction rule at
   every y: both factions may dig and place ordinary terrain, while no housing
-  claim may privatize it. Explicit hard-protected functional anchors and
-  irreplaceable bridges retain their bounded envelopes. The immutable ocean channels around the dragon islands remain
-  non-editable at every y; protected lair/camp structures and their renewable
-  sockets keep their own envelopes.
+  claim may privatize it. Explicit hard-protected functional anchors retain
+  their bounded envelopes. The immutable ocean channels around the dragon
+  islands remain non-editable at every y; protected lair/camp structures and
+  their renewable sockets keep their own envelopes.
 - `race_region`, `territory_rule` and `pvp_rule` are independent registry
   fields. In particular, a Human/Orc/Dwarf/Undead/Elf/Troll cultural label
   grants no home-faction terrain privilege in any contested zone.
@@ -1028,8 +1007,8 @@ representative seeds (§14.1), not by multi-seed population gates.
   level-51–59 Skyglass Canopy / level-60 Stormscale Summit palettes. Marshbloom
   uses Lorindor, Whitebridge Shire, Ossuary Reach and Whispering Reedlands;
   this 2026-08-31 ruling replaces the former Mournfen row with Ossuary Reach
-  to preserve paired level-21–30 supply. Stormkelp uses both endpoint coasts
-  and both high coastal approaches.
+  to preserve paired level-21–30 supply. Stormkelp uses both endpoint island
+  coasts and the Gravesalt and Skyglass coasts.
 - Zone level controls gear tier. A visual biome patch never authorizes a mob,
   drop or gathering tier above the zone's content palette.
 
@@ -1073,7 +1052,7 @@ requires logical biome `grug_beach`. In Gravesalt its support is exactly
 `default:gravel`. These are zone-scoped alternatives, not a global expansion
 of accepted hosts. The analytic P7 support and actual settled/lower-owner
 support must identify the same accepted node. Stormkelp does not require the
-beach biome, so the Skyglass coastal approach remains reachable. The three
+beach biome, so the Skyglass coast also hosts it. The three
 Rock Salt zone endpoints remain exact; Salt Crust is a distinct Cooking item.
 
 The claim-exclusion records `exclude:coast:island_wyrmglass` and
@@ -1096,9 +1075,9 @@ one-cell settlement checks are unchanged.
   The target reference interval for natural height N is [N-24, N+16],
   intersected over core columns with water lower bounds. A feasible interval
   clamps the natural centre; an infeasible interval uses its rounded midpoint.
-  Existing station floors and the highest civic water level plus one remain
-  hard lower bounds even when the terrain interval is infeasible. Any resulting cut/fill excess
-  is explicitly reported rather than hidden or used to move the fixed core.
+  The highest civic water level plus one remains a hard lower bound even when
+  the terrain interval is infeasible. Any resulting cut/fill excess is
+  reported rather than hidden or used to move the fixed core.
   Outside the core, terrain terraces use steps dwarf/orc 4, human 2 and
   elf/undead/troll 3. The next 32 nodes blend to these terraces; the outer
   96-node collar returns to incoming terrain. The 512×512 envelope remains
@@ -1257,10 +1236,7 @@ No stable `nearest_boundary_at`, boundary id or coast-component id is public.
 A later consumer may add an approximate scalar margin query, but may not
 restore boundary materialization without a separately reviewed requirement.
 
-Every node-addressed public query accepts only finite Lua-number coordinates
-inside the exact safe-integer range before and after nearest-integer,
-half-away-from-zero normalization. Invalid, unsafe or malformed coordinates
-are programmer errors rather than clamped or coerced input. One evaluator
+Node-addressed public queries take integer node coordinates. One evaluator
 instance binds one canonical full seed string; public queries never accept a
 numeric-truncated seed.
 
@@ -1298,10 +1274,10 @@ numeric-truncated seed.
   `bandit_<n>`, `mine`, `mirefolk`, `clash_<n>`, `dragon`,
   `apex_mine` and `rare_<stable_rare_id>`. An absent slot returns nil;
   consumers never synthesize a replacement coordinate.
-- Zone lookup scans only the small eligible macro-region set. A 128-node x/z
-  index serves route, hydrology and other sparse-feature queries. Hot paths do
+- Zone lookup scans only the small eligible macro-region set. Hot paths do
   not scan every feature record and reuse one x/z classification for the
-  complete vertical column.
+  complete vertical column. Roads and water (Phases 4 and 5) choose their own
+  spatial index.
 
 ## 14. World acceptance
 
@@ -1556,26 +1532,26 @@ status. Existing ocean/channel no-flight rules remain. See `mounts.md` section 4
 **Superseded in part by Round 22 (2026-09-25):** the height rules below
 (64-node lattice, 1:2:1 smoothing, 128/32 detail scales and weights,
 lowland/rolling amplitudes, "no additional noise octave") are replaced by
-§7.6. The lake-edge, beach/cliff, coral, waterweed, lily and fish rules
-remain.
+§7.6. The lake-edge and beach/cliff rules are replaced by Phase 5 water
+(natural lake shores, levels from the terrain) and the shore material rule
+in §7.4. The coral rule remains. The waterweed, lily and fish rules remain
+as content for Phase 5 freshwater; until Phase 5 there is no inland water to
+host them.
 
 Approved 2026-09-24. Preserve continental profile roles and ranges. The broad
 64-node lattice is smoothed once with 1:2:1 weights; the two existing detail
 scales are 128/32 nodes with 3:1 weights. Lowland and rolling amplitudes are
-9 and 12 respectively. No additional noise octave is evaluated. Frostbarrow
-and Moonfall lake edges gain bounded irregularity and shallow margins while functional connections,
-fixed levels and reservations remain protected. Beach/cliff transitions adjust
-height and material together; sand is limited to low/gentle shore surfaces.
-Corals form varied deterministic patches at similar overall density. Rooted
-freshwater waterweed sparsely decorates safe, 2–6-node-deep authored water over
-natural sand without displacing the water column. Thin waterlilies occupy the
-air node immediately above a similarly safe freshwater surface and remain
-passable. Reed Angelfish use existing capped critter spawning, without
-XP/loot or fishing changes.
+9 and 12 respectively. No additional noise octave is evaluated. Corals form
+varied deterministic patches at similar overall density. Rooted freshwater
+waterweed sparsely decorates safe, 2–6-node-deep freshwater over natural sand
+without displacing the water column. Thin waterlilies occupy the air node
+immediately above a similarly safe freshwater surface and remain passable.
+Reed Angelfish use existing capped critter spawning, without XP/loot or
+fishing changes.
 
 The freshwater family is the Reed Angelfish, using ElCeejo's MIT-licensed
 Animalia angelfish mesh and texture at commit
-`5895f403fd43a9464e06b3675af3495f50565a3f`. It swims only in authored
-freshwater source columns over natural sand, has no XP or drops, and uses the
-ambient spawn cap of two. It has no school, breeding, pathfinding or fishing
+`5895f403fd43a9464e06b3675af3495f50565a3f`. It swims only in freshwater
+source columns over natural sand, has no XP or drops, and uses the ambient
+spawn cap of two. It has no school, breeding, pathfinding or fishing
 integration.

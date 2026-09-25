@@ -162,7 +162,7 @@ are owned by `world.md` §2b. What matters for a boat:
   authored view range, reach and relentless pursuit, not the superseded 8.8
   speed target. Boat-system acceptance must still validate that danger.
 - **The dragon channels are required boat routes and carry no Kraken.** Both
-  96-node approaches to either island (`world_zones.md` §7) are ordinary safe
+  approaches to either island (`world_zones.md` §7.4) are ordinary safe
   water for a boat at any level; the level-60 island itself is the gate.
 - Because the shelf follows the entire mainland perimeter, a low-level
   character may legally coast all the way to a channel mouth and visit an

@@ -108,9 +108,8 @@ Each land zone has a character preset (wetland/delta, lowland, rolling hills,
 plateau, highland or mountain) that blends softly into its neighbors, with
 mild race accents, and one or two strong landmark features. Terrain is
 calmer around starts and capitals, and capital ground sits well below the
-region's clouds. Roads, civic envelopes, structures and
-the coastal housing areas apply their own grading afterward. Full contract:
-`world_zones.md` §7.6.
+region's clouds. Roads, civic envelopes and structures apply their own
+grading afterward. Full contract: `world_zones.md` §7.6.
 
 Every capital sits centrally in its own city zone with four cardinal gates.
 Toward the outer side lies a level-10–20 neighbor, laterally along the capital
@@ -146,15 +145,14 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   complete starting settlements (decided 2026-08-13: the full 128×128 build
   envelope plus a 10-node apron — the same envelope-plus-apron rule as a
   capital; spawn, waypoint, graveyard and service platforms all lie inside
-  it), essential service/quest/waypoint/graveyard platforms,
-  small functional NPC and renewable-resource anchors, and a bridge or gate for
-  which no adequate alternate route exists. Ordinary roads, villages,
-  outpost/camp shells, ruins, tents, fences and battlefield dressing are
-  generated once, remain claim-excluded and may be changed under their zone's
-  terrain rule. A start settlement needs no runtime pit or flood detection:
-  by construction of `world_zones.md` §7's 600×500 dry start core (no planned
-  water, forced cliff or ravine; gentle start grading only), an enclosed or
-  flooded start cannot generate.
+  it), essential service/quest/waypoint/graveyard platforms, and small
+  functional NPC and renewable-resource anchors. Roads, open-world bridges,
+  villages, outpost/camp shells, ruins, tents, fences and battlefield dressing
+  are generated once, remain claim-excluded and may be changed under their
+  zone's terrain rule. A start settlement needs no runtime pit or flood
+  detection: by construction of `world_zones.md` §7's 600×500 dry start core
+  (no planned water, forced cliff or ravine; gentle start grading only), an
+  enclosed or flooded start cannot generate.
   - **Shape of a hard-protected world volume**: its authored x/z footprint is
     exact and protection runs upward without limit and downward through
     y = -700 inclusive. At y = -701 and below, the universal contested deep
@@ -178,10 +176,11 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
     The registry separately stores mutable claim-exclusion/grading envelopes
     for ordinary roads and structures; those envelopes never become mutation
     protection. Terrain-derived placement heights are immutable mapgen output,
-    but no first generated chunk owns the decision. The terrain writer must grade
-    every fixed reserved anchor position inside its owning envelope or fail
-    that seed's generation audit; WP13 may not invent a replacement position.
-    A mandatory graph/POI anchor may never disappear silently.
+    but no first generated chunk owns the decision. Terrain fitting adapts to
+    every fixed reserved anchor position; WP13 may not invent a replacement
+    position. The construction self-check (`world_zones.md` §7.1) confirms
+    that every anchor lies in its own zone and on land, so no POI anchor
+    disappears silently.
 - **R2 — Peaceful enemy territory**: in level-1–30 land, an enemy faction may
   not dig or place any node, including torches and ladders. Items remain
   usable. At y = -701 and below the universal contested deep rule overrides
@@ -336,11 +335,11 @@ occupying a position (`world_zones.md` §7):
   mainland and the two offshore islands. They are required boat routes and
   carry no Kraken Guard at all. Their warning and
   hard-flight bands come from the same 2D distance field. Each channel carries
-  two distinct 96-node-wide approaches centred at z = -125 and z = +125,
-  joining its Battlegrounds endpoint to two inward-shore island beaches. Both
-  are usable by both factions; their north/south orientation only equalizes
-  travel from Kragmar and Elandor. They have no ordinary surface, guard or mob-
-  level result.
+  two boat approaches, one northern and one southern, joining its
+  Battlegrounds endpoint to two inward-shore island beaches at fixed landing
+  points. Both are usable by both factions; their north/south orientation only
+  roughly equalizes travel from Kragmar and Elandor. They have no ordinary
+  surface, guard or mob-level result.
 
 **Kraken Guard pursuit — approved future WP17 scope** (decided 2026-08-13).
 The position-dependent pursuit below remains a boat-system prerequisite; the
@@ -449,7 +448,8 @@ specified in `world_zones.md` §12.
 ## 4. Outposts & patrols
 
 Military outposts, road forts and war-front anchors are reserved by named
-zones. They enforce authored routes and make the zone's strategic role visible:
+zones. They watch roads and frontiers and make the zone's strategic role
+visible:
 
 - Roles: guard spawner/anchor, quest hub, graveyard/respawn point for the
   own faction, protector of resource-rich mining sites (e.g. a dwarven
@@ -480,8 +480,8 @@ zones. They enforce authored routes and make the zone's strategic role visible:
   separate from both resolvers.
   A guard at level ≥ 60 is automatically an elite (scale/tint/telegraph,
   `combat_stats.md` §3).
-- Each named zone reserves its required outposts, road patrol legs and special
-  camps explicitly. The old fixed minimum of 24 ring outposts is not a target
+- Each named zone reserves its required outposts, patrols and special camps
+  explicitly. The old fixed minimum of 24 ring outposts is not a target
   budget; the complete zone catalog must replace it with equivalent faction
   coverage before any old anchor is removed.
 - **Ordinary guards attack enemy players and monsters, never arbitrary NPCs**
@@ -573,8 +573,8 @@ ordinary five-second combat window.
   implemented through one encounter chassis with two regional variants.
 - Every overworld dragon occupies a separate **offshore island** beyond one
   ocean endpoint of the Battlegrounds. An immutable full-column channel removes
-  land, bridge and tunnel access; both factions receive equivalent authored
-  boat routes through separate 96-node northern and southern approaches. Each
+  land, bridge and tunnel access; both factions receive roughly equivalent
+  boat routes through separate northern and southern approaches. Each
   island is a contested level-60 mountain zone with strong level-60 creatures,
   war remains and a culminating summit or hoard.
 - An overworld dragon is a PvP world boss from its first stage, not a private
@@ -688,12 +688,11 @@ administration system do not exist in the target design.
   Claims are dry-land housing only: no protected underwater claims or private
   harbors.
 - Copperfell Foothills, Mournfen, Starbough Vale and Raincall Basin each retain
-  a continuous gentle coastal housing area with at least 600 shoreline nodes,
-  at least 300 nodes of buildable inland depth and at most 12 nodes of
-  natural-ground relief in every wholly contained 101×101 reservation. The
-  area is dry, zone-owned and static-exclusion-free and follows the natural
-  coast (`world_zones.md` §7.5). Elsewhere
-  there is no general runtime slope test.
+  a continuous gentle coastal housing area of roughly 600 nodes of shoreline
+  frontage and 300 nodes of buildable inland depth. These are rough targets,
+  not measured guarantees (Round 22 D21). The area is dry, zone-owned and
+  follows the natural coast (`world_zones.md` §7.5). There is no runtime slope
+  test.
 
 ### 5.2 Ownership, ACL and active-world behavior
 
@@ -818,7 +817,7 @@ Home Stone below are deferred, separate travel features.
 
 - Waypoints: every race starting settlement, every capital and the authored
   travel hubs reserved by named zones. Exact density is part of the zone
-  catalog; every main progression route must connect to the network.
+  catalog.
 - **Unlocked by visiting, per character** (player meta); the world map shows
   discovered waypoints when waypoint integration is delivered. The initial
   cartographic atlas has no fog of war (`world_map.md`). Showing terrain or a waypoint on the
@@ -881,9 +880,9 @@ territory.
 
 (Own names/flavor later — no 1:1 Blizzard copies.)
 
-- The authored zone graph fixes every race's approximate compass position,
-  starting zone, capital and cultural routes. Seed variation may jitter local
-  borders but never move or exchange them.
+- The authored layout (hubs and anchors, `world_zones.md` §7.1) fixes every
+  race's approximate compass position, starting zone and capital. Seed
+  variation changes local borders but never moves or exchanges them.
 - The two factions receive equivalent access to all level/material bands, but
   race geography is not required to be a geometric mirror. A character begins
   in its race's outer starting settlement and reaches its central capital
@@ -976,8 +975,8 @@ local compositions need not mirror.
 - Dragon lairs only at the contested level-60 ocean endpoints (§4b).
 
 The 24 outpost anchors and 12 bandit camps are live, and since WP40 R7 they
-are no longer ring-derived: their positions come from the authored zone
-graph (`grug_mobs/camps.lua`, `grug_core.outpost_at`). The delivered regional
+are no longer ring-derived: their positions come from the authored anchor
+layout (`grug_mobs/camps.lua`, `grug_core.outpost_at`). The delivered regional
 structure subset is six villages, six outposts and six bandit camps
 (`settlements.md`); BACKLOG WP13 tracks the remaining roster.
 
