@@ -222,7 +222,7 @@ contract error rather than a fallback to an engine biome.
 | `grug_crags_snowy` | `default:snowblock` / 1 | `default:gravel` / 2 | `default:gravel` | none |
 | `grug_elf_forest` | `grug_nodes:dirt_with_silver_litter` / 1 | `default:dirt` / 3 | `default:sand` | silverwood via replaced aspen tree `1/200`; apple tree `1/500`; each grass 1–3 `1/50` |
 | `grug_deep_forest` | `grug_nodes:dirt_with_forest_litter` / 1 | `default:dirt` / 3 | `default:sand` | apple tree `3/250`; aspen tree `1/125`; fallen apple log `1/1000`; each fern 1–3 `1/50` |
-| `grug_swamp` | `grug_nodes:mud` / 1 | `grug_nodes:mud` / 2 | `grug_nodes:mud` | papyrus `1/50`, only on a dry mud or sand root at most 4 above the highest water surface in its 16×16 candidate cell, replacing template `default:dirt` with `grug_nodes:mud`; dry shrub `1/250` |
+| `grug_swamp` | `grug_nodes:mud` / 1 | `grug_nodes:mud` / 2 | `grug_nodes:mud` | papyrus `1/50`, only on a dry mud or sand root beside standing water: a wet column (sea, bay, lake or river) within two nodes whose surface lies 0–3 below the root's ground (Round 22 Phase 5), so a swamp grows reeds wherever it has water and none where it has none; replacing template `default:dirt` with `grug_nodes:mud`; dry shrub `1/250` |
 | `grug_savanna` | `default:dry_dirt_with_dry_grass` / 1 | `default:dry_dirt` / 3 | `default:sand` | acacia tree `1/500`; acacia bush `1/250`; dry shrub `1/250`; each dry grass 1–5 `3/50` |
 | `grug_badlands` | `grug_nodes:mesa_clay` / 1 | `grug_nodes:mesa_clay` / 3 | `default:gravel` | large cactus `1/1000`; dry shrub `1/125` |
 | `grug_badlands_east` | `grug_nodes:mesa_clay` / 1 | `grug_nodes:mesa_clay` / 3 | `default:gravel` | large cactus `1/1000`; dry shrub `1/125` |
@@ -608,8 +608,10 @@ coast, 38–60) + grug_jungle_edge inner (10–25):
 | Shore Crab | retaliates (pinches when punched) | 24 h | 3.4 | meat 1/1; scaled hide 1/2 | `grug_mobs_shore_crab.b3d` |
 | Gull | flees (**critter**, §3.0) | day | 3.4 fly | meat 1/1 — food only | animalia song bird retexture |
 
-Crabs spawn on dry `default:sand` at y 0–20 with water within 6 nodes, so
-the wide coastal sand band and inland sand stay crab-free (Round 22 D36).
+Crabs spawn on dry `default:sand` at y 0–20 with water at or below the sea
+surface (y ≤ 1) within 6 nodes, so the wide coastal sand band and inland
+sand, lake and river shores above sea level included, stay crab-free
+(Round 22 D36).
 The local level splits every such shore: the Shore Crab below level 45, and
 from 45 to 60 the **elite** "Reef Lurker" (same model, ×3 drops).
 
@@ -793,8 +795,9 @@ admit the family. The retired `_grug_spawn_zones` field is not a current gate. `
 ceiling) on all surface entries, since the natural terrain reaches past
 y 500 and the zone palettes already gate the habitat (Round 22 D37). Only
 water-bound rows keep a low cap, for a gameplay reason: the Kraken at 4
-(sea surface), the Shore Crab and Reef Lurker at 20 (sea shore), and the
-Reed Angelfish at 80 (freshwater; revisited with Phase 5 inland water).
+(sea surface) and the Shore Crab and Reef Lurker at 20 (sea shore). The
+Reed Angelfish uses the flight ceiling too; its height rule is relative to
+the water body (above the column's natural bed, Round 22 Phase 5).
 Every family declares one spawn role, `clock = "day" | "night" | "any"`;
 Zombie uses the palette-keyed form (`settled`/`war` night, `blight` any).
 `grug_mobs` stamps day rows with `min_light = 10`, night rows with
@@ -881,7 +884,7 @@ re-run against the new values once the change ships.
 | Bog Ooze | mud | 20 | 1500 | 3 | any | outer |
 | Parrot | rainforest litter | 20 | 1875 | 2 | min 10 | core, inner |
 | Carrion Crow | **every land top** except sand (the Gull holds that slot); war_coast-exclusive | 20 | 1875 | 2 | min 10 | war_coast |
-| Shore Crab | sand within 6 nodes of water, y 0–20 | 20 | 400 | 3 | any | level below 45 (§3.1) |
+| Shore Crab | sand within 6 nodes of sea-level water, y 0–20 | 20 | 400 | 3 | any | level below 45 (§3.1) |
 | Gull | sand | 20 | 1875 | 2 | min 10 | strait, war_coast, coast, **outer** |
 | **Cave Bat** (critter) | stone **+ `group:grug_stratum`** | 20 | 2200 | 2 | max 5 | underground |
 | **Cave Crawler** (critter) | stone **+ `group:grug_stratum`** | 20 | 2200 | **1** | max 5 | underground |
@@ -907,7 +910,7 @@ re-run against the new values once the change ships.
 | **Snow Leopard** | gravel, snowblock | 20 | 2100 | **4 at night** (base 3 ×1.25, ceiling) | night | Frostbarrow, Stormvault, Wyrmglass |
 | **Wisp** | mud, silver/forest/bone/canopy/rainforest litter | 20 | 2200 | **4 at night** (base 3 ×1.25, ceiling) | night | exact named-zone routes |
 | **Ashen / Gravewood Treant** | forest litter / bone litter | 20 | 2600 | **3 each at night** (base 2 ×1.25, ceiling) | night | exact tint-specific routes |
-| Reef Lurker (elite crab) | sand within 6 nodes of water, y 0–20 | 30 | 1500 | 1 | any | level 45–60 (§3.1) |
+| Reef Lurker (elite crab) | sand within 6 nodes of sea-level water, y 0–20 | 30 | 1500 | 1 | any | level 45–60 (§3.1) |
 | Kraken Guard | ocean water surface, open sea only (own check) | 60 | 12000 | 1 | any | (outside continents) |
 | Bandits / Mirefolk | **no ABM** — camp anchor with **respawn slots** (world.md §4a): max 3–5, one refill per 120–300 s, dormant catch-up | — | — | 3–5 per camp | — | camp pos |
 | Named rares | **no ABM** — scheduled spawner, 2–4 h respawn, broadcast | — | — | 1 | — | fixed routes |
@@ -1237,6 +1240,9 @@ share this correction. Other families are adjusted from specific playtest report
 
 Reed Angelfish are passive freshwater critters, with no XP, quality loot or item
 drops. Their habitat is planned natural inland water, with source water at the
-spawn position and above it, next to a sand bed. They use the existing critter
-spawn machinery: interval 30s, chance 1/4000, local active-object cap 2,
-y=-30 through 80. They add ambient movement, not a fishing-resource system.
+spawn position and above it, next to a sand bed, above the column's natural
+bed: lakes (and bays) at any altitude, not rivers, whose river water is
+another liquid, and not cave pools. They use the existing critter spawn
+machinery: interval 30s, chance 1/4000, local active-object cap 2, no fixed
+height cap (y -30 to the 600 flight ceiling; Round 22 Phase 5). They add
+ambient movement, not a fishing-resource system.
