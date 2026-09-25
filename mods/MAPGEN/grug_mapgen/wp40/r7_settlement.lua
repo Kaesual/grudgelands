@@ -285,9 +285,9 @@ M.roster = {
 	-- a curtain (`r7_lethariel_blueprint.lua`).
 	--
 	-- It is also the only capital whose 96 x 96 civic core is not a full pad:
-	-- WP40 leaves a planned lake inside it, and the composition writes nothing
-	-- over the water rather than hanging a slab of turf thirteen nodes above
-	-- it. See `wp13/lethariel.lua`.
+	-- WP40's authored crown lake (`wp40/water_authored.lua`) reaches into it,
+	-- and the composition writes nothing over the water. See
+	-- `wp13/lethariel.lua`.
 	{
 		key = "lethariel", label = "Lethariel", race = "elf",
 		slot = "capital", bounds = "capital_core", plot_bounds = "capital_plot",
@@ -308,13 +308,13 @@ M.roster = {
 		-- the two great avenues.
 		reserve_anchor_root = true,
 	},
-	-- The fifth capital: the troll one, and the only
-	-- capital of the six whose 512 envelope carries an AUTHORED LAKE. WP40's
-	-- `hydro_kezamba_cenote` fills 11.5 per cent of it -- essentially the whole
-	-- north-east quadrant and a wedge of the civic core itself -- in the same
-	-- columns on all nine seeds of `tools/wp13/capital_anchor_fixture.lua`, with
-	-- its surface one node below the fitted civic reference. The composition
-	-- therefore builds ROUND the water rather than over it, and the roster row
+	-- The fifth capital: the troll one, whose 512 envelope carries the
+	-- authored cenote (`kezamba_cenote` in `wp40/water_authored.lua`). It fills
+	-- about 11.5 per cent of it -- essentially the whole north-east quadrant
+	-- and a wedge of the civic core itself, there exactly the committed lagoon
+	-- mask -- with its surface two nodes below the fitted civic reference. The
+	-- composition therefore builds ROUND the water rather than over it, and the
+	-- roster row
 	-- is otherwise an ordinary capital's.
 	--
 	-- Kezamba is OPEN (the user's ruling of 2026-09-14, unchanged by the round-3
@@ -942,6 +942,30 @@ function M.horizontal_reach(prepared)
 		end
 	end
 	return reach
+end
+
+-- The world rectangles of every terrain-relative (reference) blueprint -- the
+-- district plots and fill lots -- for a settlement anchored at (x, z).
+-- Authored lakes keep their water and their bank shaping off these
+-- (world_zones.md §7.4): a plot stands on the ground the audit below checks.
+function M.plot_rects(prepared, x, z)
+	if type(prepared) ~= "table" or
+			prepared.schema ~= "grug_wp13_settlement_prepared_v1" then
+		error("WP13 settlement: prepared settlement differs", 0)
+	end
+	local rects = {}
+	for index = 1, #prepared.blueprints do
+		local blueprint = prepared.blueprints[index]
+		local descriptor = blueprint.descriptor
+		if descriptor.kind == "reference" then
+			local identity = blueprint.identity
+			local ox, oz = x + descriptor.offset.x, z + descriptor.offset.z
+			rects[#rects + 1] = {min_x = ox + identity.min_x,
+				max_x = ox + identity.max_x, min_z = oz + identity.min_z,
+				max_z = oz + identity.max_z}
+		end
+	end
+	return rects
 end
 
 function M.audit_terrain(prepared, anchor, column_at, tolerance)

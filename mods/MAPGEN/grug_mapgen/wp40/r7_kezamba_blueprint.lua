@@ -26,9 +26,9 @@
 --
 -- WHY THE PLOT OFFSETS ARE NOT SEEDED. Highcourt permutes its four districts
 -- between four quadrants with the world seed. Kezamba's quadrants are not
--- interchangeable: WP40's authored `hydro_kezamba_cenote` fills the north-east
--- one in every world (`tools/wp13/kezamba_water.lua` measures one wet mask on
--- all nine seeds of `capital_anchor_fixture.lua`), so a permutation would put a
+-- interchangeable: WP40's authored cenote (`kezamba_cenote` in
+-- `wp40/water_authored.lua`, the footprint of the old `hydro_kezamba_cenote`)
+-- fills the north-east one in every world, so a permutation would put a
 -- district in the lake three times out of four. The offsets come from
 -- `wp13/kezamba_lots.lua`, searched against the terrain and gated by
 -- `tools/wp13/kezamba_lots.lua check`.

@@ -3,8 +3,9 @@
 -- 2.2.3).
 --
 --   * the 96 x 96 civic core, anchor-relative exactly like a start -- and the
---     only core of the six with a hole in it, because WP40 leaves a LAKE
---     inside this capital's pad (`wp13/lethariel.lua`, "the mere");
+--     only core of the six with a hole in it, because WP40 lays its authored
+--     crown lake into this capital's pad (`wp40/water_authored.lua`;
+--     `wp13/lethariel.lua`, "the mere");
 --   * the 44 plots of the four districts, each with its own offset from the
 --     capital anchor and its own reference column, because WP40 terraces the
 --     rest of the 512 envelope in three-node steps and a plot sixty nodes out
