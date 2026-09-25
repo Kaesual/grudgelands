@@ -635,10 +635,11 @@ local function planner_factory(allocator_factory)
 			candidate_values[base + R_AUX] = AUX_NONE
 		end
 
-		-- The column tuple (zones.lua). River water by column: a river id is
-		-- any non-empty text on a water column and nothing is registered; its
-		-- bed depth is `water_y - terrain_y`. The six transition values stay
-		-- nil until Phase 5 defines step transitions.
+		-- The column tuple (zones.lua). Inland water by column: the river-id
+		-- slot holds the sealed water id of a wet river or lake column
+		-- ("river:<n>" is river water, "lake:<n>" ordinary water) and nothing
+		-- is registered; its bed depth is `water_y - terrain_y`. Step faces
+		-- carry a transition kind and their upper and lower surface y.
 		local function validate_column_tuple(x, z, water_class, zone_numeric_id,
 				zone_id, logical_biome_id, race_region_id, terrain_y, water_y,
 				river_id, river_depth, functional_kind,
@@ -699,10 +700,23 @@ local function planner_factory(allocator_factory)
 					fail("fail_source", "functional interface differs")
 				end
 			end
-			if transition_kind ~= nil or transition_interface_id ~= nil or
+			-- A step face between two reaches (a water-water contact inside the
+			-- channel): "rapid" or "fall" on a wet sealed column, its own surface
+			-- as the upper y and the lower neighbour's as the lower y. No
+			-- relation is registered; the water is written per column.
+			if transition_kind ~= nil then
+				if (transition_kind ~= "rapid" and transition_kind ~= "fall") or
+						river_id == nil or transition_upper_y ~= water_y or
+						transition_interface_id ~= nil or
+						transition_progress_q ~= nil or transition_face_mask ~= nil then
+					fail("fail_source", "step transition differs")
+				end
+				safe_integer(transition_lower_y, "step lower y", OWNER_MIN,
+					transition_upper_y - 1, "fail_source")
+			elseif transition_interface_id ~= nil or
 					transition_upper_y ~= nil or transition_lower_y ~= nil or
 					transition_progress_q ~= nil or transition_face_mask ~= nil then
-				fail("fail_source", "hydrology transitions are not supported")
+				fail("fail_source", "nil step transition carries values")
 			end
 			if type(hard_foundation) ~= "boolean" then
 				fail("fail_source", "hard-foundation scalar differs")
@@ -732,8 +746,8 @@ local function planner_factory(allocator_factory)
 				transition_progress_q, transition_face_mask, hard_foundation
 		end
 
-		-- Bed y and surface y of a wet river column; nil for every other column.
-		-- The bed of a river column is its terrain.
+		-- Bed y and surface y of a wet sealed (river or lake) column; nil for
+		-- every other column. The bed of such a column is its terrain.
 		local function wet_river_at(x, z)
 			local _, _, _, _, _, terrain_y, water_y, river_id = tuple_at(x, z)
 			if river_id ~= nil and terrain_y < water_y then
@@ -822,10 +836,11 @@ local function planner_factory(allocator_factory)
 			end
 		end
 
-		-- Bank seal of a column that is not wet river water: from two below the
-		-- lowest neighbouring river bed up to the highest neighbouring river
+		-- Bank seal of a column that is not wet sealed water: from two below
+		-- the lowest neighbouring river/lake bed up to the highest neighbouring
 		-- surface (capped at the column's terrain), over the owner plus a
-		-- two-column diamond. Only scanned when a river may lie near the slice.
+		-- two-column diamond. Only scanned when such water may lie near the
+		-- slice.
 		local river_near = false
 		local function bank_seal_values(x, z)
 			local seal_low, water_high
@@ -972,12 +987,17 @@ local function planner_factory(allocator_factory)
 					functional_feature_id, functional_interface_id)
 			end
 
-			-- River water by column: a wet river column seals its bed (three
-			-- layers down from its terrain) and holds range-2 river water; any
-			-- other water column holds ordinary water. A column beside river
-			-- water gets a bank seal.
+			-- Inland water by column: a wet river or lake column seals its bed
+			-- (three layers down from its terrain), a river holds range-2 river
+			-- water and a lake ordinary water; sea and bay columns hold ordinary
+			-- water. A column beside sealed water gets a bank seal.
 			local wet = water_y ~= nil and terrain_y < water_y
 			if river_id ~= nil and wet then
+				-- tripwire: the bucket lookup must know every sealed column, or
+				-- the bank seals around it would be skipped
+				if not river_near then
+					fail("fail_source", "sealed water column outside river_water_in")
+				end
 				add_seal_subtracted(terrain_y - 2, terrain_y,
 					OP_HYDROLOGY_BED_SEAL, nil, nil)
 			elseif river_near then
@@ -991,7 +1011,7 @@ local function planner_factory(allocator_factory)
 				end
 			end
 			if wet then
-				if river_id ~= nil then
+				if river_id ~= nil and river_id:sub(1, 5) ~= "lake:" then
 					add_candidate(terrain_y + 1, water_y, 6, OP_RIVER_WATER,
 						ROLE_RIVER_WATER_SOURCE, POLICY_WRITE_WATER, nil, nil)
 				else

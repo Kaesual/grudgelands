@@ -962,9 +962,13 @@ local function settlement_factory()
 			return "deep_2000_floor", 3, 2
 		end
 
-		-- The planner's river bed and bank seal (planner.lua) as a y range, or
-		-- nil. A wet river column seals its bed; a column beside river water
-		-- gets the bank seal. Neighbours are only read near a river.
+		-- The planner's river/lake bed and bank seal (planner.lua) as a y range,
+		-- or nil. A wet sealed column seals its bed; a column beside such water
+		-- gets the bank seal. Neighbours are only read near sealed water. The
+		-- sealed id "river:<n>" holds river water, "lake:<n>" ordinary water.
+		local function river_liquid(river_id)
+			return river_id ~= nil and river_id:sub(1, 5) ~= "lake:"
+		end
 		local function wet_river_at(x, z)
 			local _, _, _, _, _, terrain_y, water_y, river_id =
 				planner_source.column_values_at(x, z)
@@ -975,10 +979,16 @@ local function settlement_factory()
 		end
 		local function analytic_hydrology_seal(x, z)
 			local bed_y = wet_river_at(x, z)
-			if bed_y then return bed_y - 2, bed_y end
-			if not planner_source.river_water_in(x - 2, z - 2, x + 2, z + 2) then
-				return nil, nil
+			local near = planner_source.river_water_in(x - 2, z - 2, x + 2, z + 2)
+			if bed_y then
+				-- tripwire, as in the planner: a sealed column the bucket
+				-- lookup misses would lose the bank seals around it
+				if not near then
+					fail("fail_source", "sealed water column outside river_water_in")
+				end
+				return bed_y - 2, bed_y
 			end
+			if not near then return nil, nil end
 			local terrain_y = select(6, planner_source.column_values_at(x, z))
 			local minimum_seal_y, maximum_water_y
 			for dx = -2, 2 do
@@ -1104,7 +1114,7 @@ local function settlement_factory()
 			end
 			if water_y ~= nil and terrain_y < water_y and
 					within(terrain_y + 1, water_y) then
-				offer(6, river_id and 13 or 10, 7)
+				offer(6, river_liquid(river_id) and 13 or 10, 7)
 			end
 			local cave_low, cave_high = planner_source.surface_cave_run_at(x, z)
 			if within(cave_low, cave_high) then offer(5, 1, 1)
@@ -1117,7 +1127,7 @@ local function settlement_factory()
 			local base_role
 			if y <= terrain_y then base_role = 14
 			elseif water_y ~= nil and y <= water_y then
-				base_role = river_id and 13 or 10
+				base_role = river_liquid(river_id) and 13 or 10
 			else base_role = 1 end
 			local old_cid = r5_target_cid(base_role, y)
 			if old_cid == target_cid then return old_cid, winner_priority end

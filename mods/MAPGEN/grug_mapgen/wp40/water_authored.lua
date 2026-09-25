@@ -1,0 +1,31 @@
+-- Authored lakes (world_zones.md §7.4; plan D26, D34, D41, D42): civic water
+-- and water landmarks that do not arise from drainage -- the Kezamba cenote,
+-- the Lethariel crown lake, Highcourt's canals, the Dawnmere and Sunscar
+-- ponds, Moonfall's crescent. Loaded in main and in emerge alike (every value
+-- must be a pure function of the coordinates), handed to `height.lua`, which
+-- applies them on the FITTED terrain (after the anchor fittings, before the
+-- shore rule). They are not part of the drainage layout, so no start or
+-- capital keep-out applies to them; natural rivers and lakes still keep out
+-- of the keep-outs. Their water is ordinary water, sealed like every inland
+-- water body, and the columns are `planned_water`.
+--
+-- One row per lake:
+--   id           unique text; the column's sealed water id is "lake:<id>"
+--   min_x, min_z, max_x, max_z
+--                integer bounds of every column the lake touches (its bank
+--                fill included)
+--   indicator    function(x, z) -> m in 0..1: wet where m >= 0.5 and the
+--                ground lies below the level; the bank is raised to the level
+--                where rim <= m < 0.5. A soft, warped field keeps shores
+--                natural (seam rules: true distances into ramps, no bilinear
+--                reads, no arc parameters, rounded creases).
+--   level        absolute water surface y, or omit it and give
+--   anchor, level_offset
+--                the anchor id whose fitted reference y (the flat core of a
+--                start or capital) plus level_offset is the surface
+--   depth        optional carved bed: where m >= 0.5 the ground is lowered to
+--                at most level - 1 - (depth - 1) * smoothstep(0.5, 0.9, m)
+--   rim          optional bank-fill threshold (default water LAKE_RIM, 0.45)
+--
+-- Round 22 Phase 5 lane W2b fills this list.
+return {}

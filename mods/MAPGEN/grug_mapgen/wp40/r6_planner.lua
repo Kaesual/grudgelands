@@ -322,7 +322,8 @@ local function planner_factory()
 			if cave_low ~= nil and cave_low <= terrain_y and terrain_y <= cave_high then
 				p7_support = false
 			end
-			-- A wet river column's bed is its terrain (planner.lua).
+			-- A wet sealed (river or lake) column's bed is its terrain
+			-- (planner.lua).
 			local wet_surface, wet_bed
 			if river_id ~= nil and wet then wet_surface, wet_bed = water_y, terrain_y end
 			return water_class, zone_numeric, zone_id, biome, race, terrain_y,
@@ -367,7 +368,16 @@ local function planner_factory()
 			-- R5's dry-bank seal is the only surface winner derived from neighbor
 			-- columns.  Reproduce that exact yes/no decision once on a retained
 			-- 20-by-20 halo, instead of re-querying twelve neighbors per column.
-			if not river_near then return count end
+			if not river_near then
+				-- tripwire, as in the planner: a wet sealed (river or lake)
+				-- column the bucket lookup misses would lose its bank seals
+				for halo_index = 1, 400 do
+					if scratch.wet_bed[halo_index] then
+						fail("fail_source", "sealed water column outside river_water_in")
+					end
+				end
+				return count
+			end
 			for local_z = 0, 19 do
 				for local_x = 0, 19 do
 					local halo_index = local_z * 20 + local_x + 1

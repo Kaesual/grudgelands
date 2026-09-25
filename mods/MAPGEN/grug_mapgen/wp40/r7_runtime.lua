@@ -1,7 +1,10 @@
 -- Shared production R7 assembly. Main and emerge load these same pure source
 -- bytes and independently rebuild the live content and semantic manifest.
 
-return function(core_api, wp40_directory, schematic_directory, projection, catalog)
+-- `water_layout_text` is the serialized inland water layout main built and
+-- handed over (emerge); nil in main, which builds it (plan D37).
+return function(core_api, wp40_directory, schematic_directory, projection, catalog,
+		water_layout_text)
 	local function fail(message)
 		error("WP40 R7 runtime: " .. message, 0)
 	end
@@ -10,7 +13,8 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			type(core_api.get_mapgen_setting) ~= "function" or
 			type(wp40_directory) ~= "string" or wp40_directory == "" or
 			type(schematic_directory) ~= "string" or schematic_directory == "" or
-			type(projection) ~= "table" or type(catalog) ~= "table" then
+			type(projection) ~= "table" or type(catalog) ~= "table" or
+			(water_layout_text ~= nil and type(water_layout_text) ~= "string") then
 		fail("construction seam differs")
 	end
 
@@ -95,9 +99,20 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	local index128 = dofile(wp40_directory .. "/index128.lua")
 	local horizontal_factory = dofile(wp40_directory .. "/simple_map.lua")(
 		dofile(wp40_directory .. "/zone_field.lua"))
-	local height_factory = dofile(wp40_directory .. "/height.lua")
-	local terrain_field = dofile(wp40_directory .. "/terrain_field.lua")(
-		dofile(wp40_directory .. "/terrain_data.lua"))
+	local terrain_data = dofile(wp40_directory .. "/terrain_data.lua")
+	local terrain_field = dofile(wp40_directory .. "/terrain_field.lua")(terrain_data)
+	-- Inland water: one layout per environment, shared by every height session
+	-- this runtime builds (main builds it once, emerge deserializes main's).
+	local water = {module = dofile(wp40_directory .. "/water_layout.lua")(
+		terrain_data.water), text = water_layout_text,
+		authored = dofile(wp40_directory .. "/water_authored.lua")}
+	local height_module_factory = dofile(wp40_directory .. "/height.lua")
+	local function height_factory(dependencies)
+		local bound = {}
+		for key, value in pairs(dependencies) do bound[key] = value end
+		bound.water = water
+		return height_module_factory(bound)
+	end
 	local zones_factory = dofile(wp40_directory .. "/zones.lua")
 	local r5_planner_factory = dofile(wp40_directory .. "/planner.lua")
 	local r5_adapter_factory = dofile(wp40_directory .. "/map_adapter.lua")
@@ -523,6 +538,14 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 
 	function module.build(...)
 		return build(...)
+	end
+	-- The serialized water layout of the last built session (main hands it to
+	-- emerge through ipc_set).
+	function module.water_layout_text()
+		if not water.cache or type(water.cache.text) ~= "string" then
+			fail("water layout was never built")
+		end
+		return water.cache.text
 	end
 	function module.build_authority(native_identities, expected_manifest_sha256)
 		return build(native_identities, expected_manifest_sha256, nil, true)
