@@ -44,11 +44,11 @@ local function new_surface_cave_factory(definition)
 
 	local function ordinary_column(x, z, wanted_zone)
 		local water_class, _, zone_id, biome, _, terrain_y, water_y,
-			classified_hydrology_id, _, functional_kind, _, _, _, transition_kind,
+			river_id, _, functional_kind, _, _, _, transition_kind,
 			_, _, _, _, _, hard_foundation = definition.column_values_at(x, z)
 		if water_class ~= "land" or zone_id == nil or biome == nil or
 				(wanted_zone ~= nil and zone_id ~= wanted_zone) or water_y ~= nil or
-				classified_hydrology_id ~= nil or functional_kind ~= nil or
+				river_id ~= nil or functional_kind ~= nil or
 				transition_kind ~= nil or hard_foundation ~= false or
 				definition.static_exclusion_values_at(x, z) ~= nil or
 				definition.housing_mask_id_at(x, z) ~= nil then
@@ -457,6 +457,8 @@ local function zones_factory(dependencies)
 				type(height.terrain_height_at) ~= "function" or
 				type(height.water_surface_at) ~= "function" or
 				type(height.functional_surface_values_at) ~= "function" or
+				type(height.river_water_at) ~= "function" or
+				type(height.river_water_in) ~= "function" or
 				type(height.hydrology_transition_values_at) ~= "function" or
 				type(height.selected_anchor_3d_by_id) ~= "function" or
 				type(height.hard_protection_volumes) ~= "function" or
@@ -584,8 +586,7 @@ local function zones_factory(dependencies)
 
 		local function classification_values(x, z, outside)
 			if outside then return "deep_ocean", nil, nil end
-			local water_class, macro_region, zone_numeric_id, bay_id,
-				classified_hydrology_id, channel_id, fixed, civic_water =
+			local water_class, macro_region, zone_numeric_id, bay_id, channel_id =
 				horizontal.classification_values_at(x, z)
 			if not WATER_CLASSES[water_class] then
 				fail("unknown horizontal water class")
@@ -597,8 +598,7 @@ local function zones_factory(dependencies)
 			elseif zone_numeric_id ~= nil then
 				fail("ownerless water class carries a zone")
 			end
-			return water_class, macro_region, zone_numeric_id, bay_id,
-				classified_hydrology_id, channel_id, fixed, civic_water
+			return water_class, macro_region, zone_numeric_id, bay_id, channel_id
 		end
 
 		-- R11 uses squared integer distance so the public level field stays
@@ -688,74 +688,13 @@ local function zones_factory(dependencies)
 			fail("logical biome roll escaped its palette")
 		end
 
-		-- Sparse civic-water and hard-footprint indexes follow. Roads are gone
-		-- until Round 22 Phase 4 and ordinary inland water until Phase 5; the
-		-- civic water inside start and capital cores is the only indexed
-		-- hydrology. The indexes hold acceleration data only.
-		local hydrology_profile_by_id = {}
-		for profile_index = 1, dense_count(source.hydrology_profiles or {},
-				"hydrology profiles") do
-			local profile = source.hydrology_profiles[profile_index]
-			hydrology_profile_by_id[profile.id] = profile
-		end
-		local hydrology_by_id, hydrology_segments = {}, {}
-		for reach_index = 1, #(source.hydrology or {}) do
-			local reach = source.hydrology[reach_index]
-			local profile = hydrology_profile_by_id[reach.profile_id]
-			if reach.civic_core_zone_numeric_id and profile then
-				hydrology_by_id[reach.id] = {id = reach.id, order = reach_index,
-					profile_id = profile.id, profile_depth = profile.depth}
-				local points = reach.centreline
-				for segment = 1, #points - 1 do
-					local a, b = points[segment], points[segment + 1]
-					if a.x ~= b.x or a.z ~= b.z then
-						hydrology_segments[#hydrology_segments + 1] = {
-							feature_id = reach.id,
-							feature_order = reach_index,
-							segment = segment,
-							ax = a.x,
-							az = a.z,
-							bx = b.x,
-							bz = b.z,
-						}
-					end
-				end
-			end
-		end
-		local hydrology_index = #hydrology_segments > 0 and
-			index128.compile_sparse_segments({
-				schema = SPARSE_SCHEMA,
-				min_x = MIN_X,
-				max_x = MAX_X,
-				min_z = MIN_Z,
-				max_z = MAX_Z,
-				tie_break = "feature_order",
-				segments = hydrology_segments,
-			}, SPARSE_SCHEMA) or nil
-		local hydrology_scalar_scratch
-		if planner_source_requested and hydrology_index then
-			hydrology_scalar_scratch = {}
-			for segment_index = 1, #hydrology_segments do
-				hydrology_scalar_scratch[segment_index] = 0
-			end
-			hydrology_scalar_scratch._index128_compiled = hydrology_index
-			hydrology_scalar_scratch._index128_capacity = #hydrology_segments
-			hydrology_scalar_scratch._index128_generation = 0
-			hydrology_scalar_scratch._index128_best_index = 0
-			hydrology_scalar_scratch._index128_best_numerator = 0
-			hydrology_scalar_scratch._index128_best_denominator = 1
-			hydrology_scalar_scratch._index128_cells_scanned = 0
-			hydrology_scalar_scratch._index128_candidates_scanned = 0
-		end
-
+		-- Sparse hard-footprint index. It holds acceleration data only.
 		local recipe_by_id = {}
 		for recipe_index = 1, #source.hard_protection_recipes do
 			local recipe = source.hard_protection_recipes[recipe_index]
 			recipe_by_id[recipe.id] = recipe
 		end
-		-- Hard protection: start and capital cores and apex socket columns. The
-		-- capital ingress corridors are retired (D9); their legacy source rows
-		-- are skipped.
+		-- Hard protection: start and capital cores and apex socket columns.
 		local height_hard_by_id = {}
 		local height_hard_records = height.hard_protection_volumes()
 		for index = 1, #height_hard_records do
@@ -767,48 +706,46 @@ local function zones_factory(dependencies)
 			local source_hard = source.hard_protection[hard_index]
 			local recipe = recipe_by_id[source_hard.recipe_id]
 			if not recipe then fail("hard recipe missing") end
-			if recipe.shape ~= "polyline_corridor" then
-				local height_hard = height_hard_by_id[source_hard.id]
-				if type(height_hard) ~= "table" or
-						not source_subset_matches(source_hard, height_hard) or
-						height_hard.recipe_id ~= source_hard.recipe_id or
-						height_hard.y_min ~= -700 or
-						height_hard.upward_unbounded ~= true or
-						height_hard.y_policy_id ~= recipe.y_policy_id then
-					fail("R3 hard-volume passthrough differs")
-				end
-				local internal = {
-					id = source_hard.id,
-					record = deep_copy(height_hard),
-					shape = recipe.shape,
-					total_width = recipe.total_width,
-					y_min = recipe.y_min,
-				}
-				local bbox
-				if recipe.shape == "centered_half_open_square" then
-					local center = source_hard.center
-					if type(center) ~= "table" or recipe.total_width % 2 ~= 0 then
-						fail("hard square geometry differs")
-					end
-					local half = recipe.total_width / 2
-					internal.center = center
-					bbox = {min_x = center.x - half, max_x = center.x + half,
-						min_z = center.z - half, max_z = center.z + half}
-				elseif recipe.shape == "exact_column" then
-					local center = source_hard.center
-					if type(center) ~= "table" then fail("hard socket center missing") end
-					internal.center = center
-					bbox = {min_x = center.x, max_x = center.x + 1,
-						min_z = center.z, max_z = center.z + 1}
-				else
-					fail("unknown hard footprint shape")
-				end
-				internal.bbox = bbox
-				if hard_by_id[internal.id] then fail("duplicate hard footprint id") end
-				hard_rows[#hard_rows + 1] = internal
-				hard_by_id[internal.id] = internal
-				footprint_records[#footprint_records + 1] = {id = internal.id, bbox = bbox}
+			local height_hard = height_hard_by_id[source_hard.id]
+			if type(height_hard) ~= "table" or
+					not source_subset_matches(source_hard, height_hard) or
+					height_hard.recipe_id ~= source_hard.recipe_id or
+					height_hard.y_min ~= -700 or
+					height_hard.upward_unbounded ~= true or
+					height_hard.y_policy_id ~= recipe.y_policy_id then
+				fail("R3 hard-volume passthrough differs")
 			end
+			local internal = {
+				id = source_hard.id,
+				record = deep_copy(height_hard),
+				shape = recipe.shape,
+				total_width = recipe.total_width,
+				y_min = recipe.y_min,
+			}
+			local bbox
+			if recipe.shape == "centered_half_open_square" then
+				local center = source_hard.center
+				if type(center) ~= "table" or recipe.total_width % 2 ~= 0 then
+					fail("hard square geometry differs")
+				end
+				local half = recipe.total_width / 2
+				internal.center = center
+				bbox = {min_x = center.x - half, max_x = center.x + half,
+					min_z = center.z - half, max_z = center.z + half}
+			elseif recipe.shape == "exact_column" then
+				local center = source_hard.center
+				if type(center) ~= "table" then fail("hard socket center missing") end
+				internal.center = center
+				bbox = {min_x = center.x, max_x = center.x + 1,
+					min_z = center.z, max_z = center.z + 1}
+			else
+				fail("unknown hard footprint shape")
+			end
+			internal.bbox = bbox
+			if hard_by_id[internal.id] then fail("duplicate hard footprint id") end
+			hard_rows[#hard_rows + 1] = internal
+			hard_by_id[internal.id] = internal
+			footprint_records[#footprint_records + 1] = {id = internal.id, bbox = bbox}
 		end
 		local hard_index = index128.compile_footprints({
 			schema = SPARSE_SCHEMA,
@@ -1100,9 +1037,22 @@ local function zones_factory(dependencies)
 			local column_cache_hits, column_cache_misses,
 				column_cache_evictions = 0, 0, 0
 
+			-- The planner column tuple (20 values): water class, zone numeric id,
+			-- zone id, logical biome, race region, terrain y, water y, river id,
+			-- river bed depth, functional kind, functional y, functional feature
+			-- id, functional interface id, six transition values (always nil)
+			-- and the hard-foundation flag.
+			--
+			-- River water by column (Round 22 Phase 5): a water column whose
+			-- height session names a river (`height.river_water_at`, any
+			-- non-empty text, nothing registered) carries that name as its river
+			-- id and `water_y - terrain_y` as its bed depth; the planner writes it
+			-- as range-2 river water with a bed seal. Every other water column is
+			-- ordinary water. Step transitions (rapids, falls) are not supported
+			-- until Phase 5 defines them; their six tuple slots stay nil.
 			local function compute_column_values_at(x, z, outside)
-				local water_class, _, zone_numeric_id, _,
-					classified_hydrology_id = classification_values(x, z, outside)
+				local water_class, _, zone_numeric_id = classification_values(x, z,
+					outside)
 				local zone = zone_numeric_id and zone_by_numeric[zone_numeric_id] or nil
 				if zone_numeric_id ~= nil and not zone then
 					fail("planner column zone identity differs")
@@ -1118,13 +1068,16 @@ local function zones_factory(dependencies)
 				if water_y ~= nil then
 					water_y = integer(water_y, "planner R3 water height")
 				end
-				local classified_profile_depth
-				if classified_hydrology_id ~= nil then
-					local hydrology = hydrology_by_id[classified_hydrology_id]
-					if not hydrology then
-						fail("planner classified hydrology identity differs")
+				local river_id, river_depth
+				if not outside then
+					river_id = height.river_water_at(x, z)
+					if river_id ~= nil then
+						if type(river_id) ~= "string" or river_id == "" or
+								water_y == nil then
+							fail("planner river water column differs")
+						end
+						river_depth = water_y - terrain_y
 					end
-					classified_profile_depth = hydrology.profile_depth
 				end
 				local functional_kind, functional_y, functional_feature_id,
 					functional_interface_id =
@@ -1149,62 +1102,15 @@ local function zones_factory(dependencies)
 						fail("planner functional interface identity differs")
 					end
 				end
-				local transition_kind, transition_interface_id,
-					transition_upper_y, transition_lower_y, transition_progress_q,
-					transition_face_mask =
-					height.hydrology_transition_values_at(x, z)
-				if transition_kind == nil then
-					if transition_interface_id ~= nil or transition_upper_y ~= nil or
-							transition_lower_y ~= nil or transition_progress_q ~= nil or
-							transition_face_mask ~= nil then
-						fail("planner nil transition tuple differs")
-					end
-				elseif transition_kind ~= "rapid" and
-						transition_kind ~= "waterfall" then
-					fail("planner transition kind differs")
-				else
-					if type(transition_interface_id) ~= "string" or
-							transition_interface_id == "" then
-						fail("planner transition interface identity differs")
-					end
-					transition_upper_y = integer(transition_upper_y,
-						"planner transition upper height")
-					transition_lower_y = integer(transition_lower_y,
-						"planner transition lower height")
-					if transition_face_mask ~= nil then
-						if transition_kind ~= "waterfall" or
-								transition_progress_q ~= nil then
-							fail("planner contact transition tuple differs")
-						end
-						transition_face_mask = integer(transition_face_mask,
-							"planner transition face mask")
-						if transition_face_mask < 1 or transition_face_mask > 15 then
-							fail("planner transition face mask differs")
-						end
-					else
-						transition_progress_q = integer(transition_progress_q,
-							"planner transition progress")
-						if transition_progress_q < 0 or
-								transition_progress_q > 65536 then
-							fail("planner transition progress differs")
-						end
-					end
-				end
-				-- Ordinary wet columns publish the actual authored bed depth. Named
-				-- transitions and raised functional crossings retain the fixed profile
-				-- depth consumed by their seal and clearance contracts.
-				if classified_hydrology_id ~= nil and transition_kind == nil and
-						functional_kind == nil and
-						water_y ~= nil and water_y > terrain_y then
-					classified_profile_depth = water_y - terrain_y
+				if height.hydrology_transition_values_at(x, z) ~= nil then
+					fail("hydrology transitions are not supported until Phase 5")
 				end
 				local hard_foundation = hard_row_at(x, terrain_y, z) ~= nil
 				return water_class, zone_numeric_id, zone_id, logical_biome_id,
-					race_region_id, terrain_y, water_y, classified_hydrology_id,
-					classified_profile_depth, functional_kind, functional_y,
-					functional_feature_id, functional_interface_id, transition_kind,
-					transition_interface_id, transition_upper_y, transition_lower_y,
-					transition_progress_q, transition_face_mask, hard_foundation
+					race_region_id, terrain_y, water_y, river_id, river_depth,
+					functional_kind, functional_y, functional_feature_id,
+					functional_interface_id, nil, nil, nil, nil, nil, nil,
+					hard_foundation
 			end
 
 			function planner_source.column_values_at(x, z)
@@ -1273,24 +1179,11 @@ local function zones_factory(dependencies)
 				return unpack(row, 1, 20)
 			end
 
-			function planner_source.hydrology_metric_values_at(x, z)
-				local outside
-				x, z, outside = normalize_xz(x, z, "planner hydrology metric query")
-				if outside or not hydrology_index then return nil, nil, nil, nil end
-				local feature_id, _, segment, numerator, denominator =
-					index128.nearest_segment_values(hydrology_index, x, z,
-						hydrology_scalar_scratch)
-				if feature_id == nil then return nil, nil, nil, nil end
-				if not hydrology_by_id[feature_id] then
-					fail("planner nearest hydrology identity differs")
-				end
-				integer(segment, "planner hydrology source segment")
-				integer(numerator, "planner hydrology distance numerator")
-				integer(denominator, "planner hydrology distance denominator")
-				if numerator < 0 or denominator <= 0 then
-					fail("planner hydrology distance ratio differs")
-				end
-				return feature_id, segment, numerator, denominator
+			-- True when a river-water column may lie in the rectangle; the
+			-- planner and the settlement replay skip their bed/bank seal scans
+			-- elsewhere. Always false until Phase 5 adds rivers.
+			function planner_source.river_water_in(min_x, min_z, max_x, max_z)
+				return height.river_water_in(min_x, min_z, max_x, max_z) == true
 			end
 
 			local surface_caves = new_surface_cave_factory({

@@ -229,11 +229,11 @@ local function settlement_factory()
 		local function eligible_column(x, z)
 			local key = coordinate_key(x, z)
 			if eligible_columns[key] ~= nil then return eligible_columns[key] end
-			local water_class, _, zone_id, _, _, terrain_y, water_y, hydrology_id, _,
+			local water_class, _, zone_id, _, _, terrain_y, water_y, river_id, _,
 				functional_kind, _, _, _, transition_kind, _, _, _, _, _, hard =
 					context.column_values_at(x, z)
 			local eligible = water_class == "land" and zone_id == cave.zone_id and
-				water_y == nil and hydrology_id == nil and functional_kind == nil and
+				water_y == nil and river_id == nil and functional_kind == nil and
 				transition_kind == nil and not hard and
 				context.static_exclusion_values_at(x, z) == nil and
 				not context.housing_excluded_at(x, z)
@@ -708,6 +708,7 @@ local function settlement_factory()
 				type(planner_source.surface_cave_candidate_at_cell) ~= "function" or
 				type(planner_source.surface_cave_cell_at) ~= "function" or
 				type(planner_source.coast_material_at) ~= "function" or
+				type(planner_source.river_water_in) ~= "function" or
 				type(planner_source.landmark_excluded_at) ~= "function" or
 				type(source) ~= "table" or
 				(successor_tail ~= nil and (type(successor_tail) ~= "table" or
@@ -838,19 +839,6 @@ local function settlement_factory()
 		local function overlaps_apex(x, y, z)
 			return y >= -700 and apex_columns[tostring(x) .. "/" .. tostring(z)] ~= nil
 		end
-		local hydrology_profile_depth, hydrology_depth, lower_hydrology = {}, {}, {}
-		for index = 1, #(source.hydrology_profiles or {}) do
-			local row = source.hydrology_profiles[index]
-			hydrology_profile_depth[row.id] = row.depth
-		end
-		for index = 1, #(source.hydrology or {}) do
-			local row = source.hydrology[index]
-			hydrology_depth[row.id] = hydrology_profile_depth[row.profile_id]
-		end
-		for index = 1, #(source.hydrology_interfaces or {}) do
-			local row = source.hydrology_interfaces[index]
-			if row.kind == "waterfall" then lower_hydrology[row.id] = row.lower_id end
-		end
 
 		local retained_volume = evidence_only and 1 or MAX_VOLUME
 		local original_data = retained_array("r6_settlement_original_data",
@@ -974,44 +962,33 @@ local function settlement_factory()
 			return "deep_2000_floor", 3, 2
 		end
 
+		-- The planner's river bed and bank seal (planner.lua) as a y range, or
+		-- nil. A wet river column seals its bed; a column beside river water
+		-- gets the bank seal. Neighbours are only read near a river.
+		local function wet_river_at(x, z)
+			local _, _, _, _, _, terrain_y, water_y, river_id =
+				planner_source.column_values_at(x, z)
+			if river_id ~= nil and terrain_y < water_y then
+				return terrain_y, water_y
+			end
+			return nil, nil
+		end
 		local function analytic_hydrology_seal(x, z)
-			local _, _, _, _, _, terrain_y, water_y, classified_id,
-				classified_depth, _, _, _, _, transition_kind, transition_id,
-				_, transition_lower_y, _, transition_face_mask =
-					planner_source.column_values_at(x, z)
-			local wet_surface, wet_depth
-			if transition_kind == "waterfall" and transition_face_mask ~= nil then
-				wet_surface = transition_lower_y
-				wet_depth = hydrology_depth[lower_hydrology[transition_id]]
-			elseif classified_id ~= nil and water_y ~= nil and
-					transition_kind ~= "waterfall" then
-				wet_surface, wet_depth = water_y, classified_depth
+			local bed_y = wet_river_at(x, z)
+			if bed_y then return bed_y - 2, bed_y end
+			if not planner_source.river_water_in(x - 2, z - 2, x + 2, z + 2) then
+				return nil, nil
 			end
-			if wet_surface and wet_depth then
-				local bed = wet_surface - wet_depth
-				return bed - 2, bed
-			end
+			local terrain_y = select(6, planner_source.column_values_at(x, z))
 			local minimum_seal_y, maximum_water_y
 			for dx = -2, 2 do
 				for dz = -2, 2 do
 					local distance = math.abs(dx) + math.abs(dz)
 					if distance >= 1 and distance <= 2 then
-						local _, _, _, _, _, _, neighbor_water, neighbor_classified,
-							neighbor_depth, _, _, _, _, neighbor_transition,
-							neighbor_transition_id, _, neighbor_lower_y, _, neighbor_face =
-								planner_source.column_values_at(x + dx, z + dz)
-						local neighbor_surface, depth
-						if neighbor_transition == "waterfall" and neighbor_face ~= nil then
-							neighbor_surface = neighbor_lower_y
-							depth = hydrology_depth[lower_hydrology[neighbor_transition_id]]
-						elseif neighbor_water ~= nil and neighbor_classified ~= nil and
-								neighbor_transition ~= "waterfall" then
-							neighbor_surface, depth = neighbor_water, neighbor_depth
-						end
-						if neighbor_surface and depth and depth > 0 then
-							local seal_y = neighbor_surface - depth - 2
+						local neighbor_bed, neighbor_surface = wet_river_at(x + dx, z + dz)
+						if neighbor_bed then
 							minimum_seal_y = minimum_seal_y and
-								math.min(minimum_seal_y, seal_y) or seal_y
+								math.min(minimum_seal_y, neighbor_bed - 2) or neighbor_bed - 2
 							maximum_water_y = maximum_water_y and
 								math.max(maximum_water_y, neighbor_surface) or neighbor_surface
 						end
@@ -1025,11 +1002,8 @@ local function settlement_factory()
 		end
 
 		local function analytic_p7_material_ref(x, y, z)
-			local _, _, zone_id, biome, _, terrain_y, water_y, classified_id,
-				classified_depth,
-				functional_kind, functional_y, functional_feature_id, _,
-				transition_kind, transition_id,
-				_, transition_lower_y, _, transition_face_mask =
+			local _, _, zone_id, biome, _, terrain_y, water_y, _, _,
+				functional_kind, functional_y, functional_feature_id =
 					planner_source.column_values_at(x, z)
 			local surface = select_surface(biome, x, z, water_y, terrain_y)
 			if not zone_id or not surface or y < terrain_y - surface.filler_depth or
@@ -1081,14 +1055,10 @@ local function settlement_factory()
 		-- deterministic P5/P6 base. This is the horizontal evidence authority for
 		-- decoration predecessors and shares production resolvers/source scalars.
 		local function analytic_r5_material_cid(x, y, z)
-			local _, _, _, _, _, terrain_y, water_y, classified_id, classified_depth,
-				functional_kind, functional_y, _, _, transition_kind, transition_id,
-				transition_upper_y, transition_lower_y, _, transition_face_mask,
+			local _, _, _, _, _, terrain_y, water_y, river_id, _,
+				functional_kind, functional_y, _, _, _, _, _, _, _, _,
 				hard_foundation = planner_source.column_values_at(x, z)
 			local clearance_y = water_y
-			if clearance_y == nil and transition_upper_y ~= nil then
-				clearance_y = math.max(transition_upper_y, transition_lower_y)
-			end
 			local surface_cap = clearance_y and math.max(terrain_y, clearance_y) or
 				terrain_y
 			local winner_priority, winner_role, winner_policy
@@ -1119,18 +1089,8 @@ local function settlement_factory()
 				elseif y == functional_y then offer(3, 2, 6)
 				elseif within(functional_y + 1, functional_y + 4) then offer(3, 1, 1) end
 			elseif functional_kind == "causeway" then
-				local culvert = false
-				if classified_id ~= nil and water_y ~= nil and
-						type(planner_source.hydrology_metric_values_at) == "function" then
-					local metric_id, _, numerator, denominator =
-						planner_source.hydrology_metric_values_at(x, z)
-					culvert = metric_id == classified_id and numerator <= denominator
-				end
-				local culvert_bed = culvert and water_y - classified_depth or nil
-				local fill_low = culvert and water_y + 1 or -37
-				if within(fill_low, terrain_y - 1) then offer(3, 4, 3)
+				if within(-37, terrain_y - 1) then offer(3, 4, 3)
 				elseif y == terrain_y then offer(3, 5, 6)
-				elseif culvert and within(culvert_bed + 1, water_y) then offer(3, 13, 7)
 				elseif within(terrain_y + 1, terrain_y + 4) then offer(4, 1, 1) end
 			elseif functional_kind == "tunnel_floor" then
 				if y == functional_y then offer(3, 15, 6)
@@ -1142,15 +1102,9 @@ local function settlement_factory()
 				local seal_min, seal_max = analytic_hydrology_seal(x, z)
 				if within(seal_min, seal_max) then offer(3, 9, 5) end
 			end
-			if transition_kind == "waterfall" and transition_face_mask ~= nil then
-				local lower_depth = hydrology_depth[lower_hydrology[transition_id]]
-				local lower_bed = transition_lower_y - lower_depth
-				if within(lower_bed + 1, transition_lower_y - 1) then offer(6, 13, 7)
-				elseif y == transition_lower_y then offer(6, 1, 4)
-				elseif y >= transition_lower_y + 1 then offer(3, 1, 4) end
-			elseif water_y ~= nil and terrain_y < water_y and
+			if water_y ~= nil and terrain_y < water_y and
 					within(terrain_y + 1, water_y) then
-				offer(6, classified_id and 13 or 10, 7)
+				offer(6, river_id and 13 or 10, 7)
 			end
 			local cave_low, cave_high = planner_source.surface_cave_run_at(x, z)
 			if within(cave_low, cave_high) then offer(5, 1, 1)
@@ -1162,12 +1116,8 @@ local function settlement_factory()
 			if winner_priority >= 5 then return target_cid, winner_priority end
 			local base_role
 			if y <= terrain_y then base_role = 14
-			elseif transition_kind == "waterfall" and transition_face_mask ~= nil then
-				local lower_depth = hydrology_depth[lower_hydrology[transition_id]]
-				base_role = y < transition_lower_y and
-					y > transition_lower_y - lower_depth and 13 or 1
 			elseif water_y ~= nil and y <= water_y then
-				base_role = classified_id and 13 or 10
+				base_role = river_id and 13 or 10
 			else base_role = 1 end
 			local old_cid = r5_target_cid(base_role, y)
 			if old_cid == target_cid then return old_cid, winner_priority end

@@ -4,9 +4,9 @@
 -- `terrain_field.lua`, floored to a node y, with the anchor fittings (starts,
 -- capitals, villages, outposts, camps, mines, dragons ...) and the sea shore
 -- rule on top. The coast takes its shape from the field alone; only its
--- near-water material is derived here (world_zones.md §7.4, plan D27). Roads and inland water are switched off until
--- their Phase 4/5 rebuild (user ruling "variant (a)"): no route, junction,
--- bank or hydrology grading runs here, and inland planned water is dry land.
+-- near-water material is derived here (world_zones.md §7.4, plan D27). Roads
+-- and inland water are rebuilt in Round 22 Phases 4 and 5; until then no route,
+-- bank or river grading runs here and only bays and the sea carry water.
 --
 -- Every query is a pure function of (seed, x, z). Heights are memoised per
 -- 80x80 mapchunk block, so planning and the writer read one memo per chunk.
@@ -199,15 +199,13 @@ local function height_factory(dependencies)
 		local classified = new_classification_cache(
 			horizontal.classification_values_at, 65536)
 
-		-- Inland planned water (rivers, lakes) is dry land until Phase 5; bays
-		-- and the open sea stay water at WATER_LEVEL.
+		-- Column classes. Only bays (planned water) and the open sea carry
+		-- water, at WATER_LEVEL. Phase 5 adds its river and lake classes here
+		-- and their surfaces in `water_surface_for`.
 		local function column_class(x, z)
-			local water_class, _, owner, bay_id, hydrology_id = classified(x, z)
+			local water_class, _, owner = classified(x, z)
 			if water_class == "land" then return LAND, owner end
-			if water_class == "planned_water" then
-				if bay_id == nil and hydrology_id ~= nil then return LAND, owner end
-				return BAY, owner
-			end
+			if water_class == "planned_water" then return BAY, owner end
 			return SEA, owner
 		end
 
@@ -818,8 +816,22 @@ local function height_factory(dependencies)
 		function session.terrain_height_at(x, z)
 			return final_terrain_height_at(x, z)
 		end
+		-- The water surface y of a water column, nil on dry land.
 		function session.water_surface_at(x, z)
 			return final_water_surface_at(x, z)
+		end
+		-- River water by column (Phase 5 hooks). A water column whose water is a
+		-- river returns a non-empty name here (any text; nothing is registered)
+		-- and the planner writes it as range-2 river water with a bed seal;
+		-- every other water column is ordinary water. `river_water_in` is true
+		-- when a river column may lie in the rectangle, so bed/bank seal scans
+		-- only run near rivers. There are no rivers until Phase 5.
+		function session.river_water_at(x, z)
+			coordinate(x, "river query x") coordinate(z, "river query z")
+			return nil
+		end
+		function session.river_water_in(min_x, min_z, max_x, max_z)
+			return false
 		end
 		-- "sand", "gravel", "stone" or nil for a dry column near the sea.
 		function session.coast_material_at(x, z)
@@ -837,7 +849,9 @@ local function height_factory(dependencies)
 		function session.functional_surface_values_at(x, z)
 			return final_functional_values_at(x, z)
 		end
-		-- Inland water transitions are off until Phase 5.
+		-- Step transitions (rapids, falls) between river reaches: the Phase 5
+		-- hook. The zone authority rejects any non-nil result until Phase 5
+		-- defines its step types.
 		function session.hydrology_transition_values_at(x, z)
 			coordinate(x, "transition query x") coordinate(z, "transition query z")
 			return nil, nil, nil, nil, nil, nil

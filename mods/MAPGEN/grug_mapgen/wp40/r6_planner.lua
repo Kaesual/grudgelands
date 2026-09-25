@@ -88,6 +88,7 @@ local function planner_factory()
 		if type(planner_source) ~= "table" or
 				planner_source.schema ~= "grug_wp40_r5_planner_source_v1" or
 				type(planner_source.column_values_at) ~= "function" or
+				type(planner_source.river_water_in) ~= "function" or
 				type(planner_source.surface_cave_run_at) ~= "function" or
 				type(planner_source.surface_cave_candidate_at_cell) ~= "function" or
 				type(planner_source.coast_material_at) ~= "function" or
@@ -160,9 +161,10 @@ local function planner_factory()
 			for b = 1, #cultural[index].biomes do set[cultural[index].biomes[b]] = true end
 			cultural_biome[index] = set
 		end
-		-- Decoration site rules (biomes_mobs.md §2.1). The manifest tokens are
-		-- frozen by the r6_catalog digest pin, so two of them keep their
-		-- flat-world names while meaning the Round 22 rules (D37):
+		-- Decoration site rules (biomes_mobs.md §2.1). Two manifest tokens keep
+		-- their flat-world names while meaning the Round 22 rules (D37); the
+		-- digest pin that froze them was removed in Phase 5, so a later change
+		-- may rename them:
 		--   `surface_y_at_most_32` (emergent jungle tree): not in a zone of
 		--     mountain relief. Natural jungle land spans y 0-400; only ~10 %
 		--     of it lies at or below 32.
@@ -184,19 +186,6 @@ local function planner_factory()
 		for index = 1, #(source.zones or {}) do
 			local zone = source.zones[index]
 			if zone.primary_relief_id == "mountain" then mountain_zone[zone.id] = true end
-		end
-		local profile_depth, hydrology_depth, lower_hydrology = {}, {}, {}
-		for index = 1, #(source.hydrology_profiles or {}) do
-			local row = source.hydrology_profiles[index]
-			profile_depth[row.id] = row.depth
-		end
-		for index = 1, #(source.hydrology or {}) do
-			local row = source.hydrology[index]
-			hydrology_depth[row.id] = profile_depth[row.profile_id]
-		end
-		for index = 1, #(source.hydrology_interfaces or {}) do
-			local row = source.hydrology_interfaces[index]
-			if row.kind == "waterfall" then lower_hydrology[row.id] = row.lower_id end
 		end
 		local max_footprint_x, _, max_footprint_z = templates.maximum_footprint()
 		local halo_x = math.ceil(math.max(0, max_footprint_x - 1) / 16)
@@ -269,11 +258,8 @@ local function planner_factory()
 
 		local function column_tuple(x, z)
 			local water_class, zone_numeric, zone_id, biome, race, terrain_y,
-				water_y, classified_hydrology_id, classified_depth, functional_kind,
-				functional_y, functional_feature_id,
-				_, transition_kind, transition_id, _, transition_lower_y, _,
-				transition_face_mask =
-					planner_source.column_values_at(x, z)
+				water_y, river_id, _, functional_kind, functional_y,
+				functional_feature_id = planner_source.column_values_at(x, z)
 			if not WATER_CLASS_ID[water_class] or
 					((zone_numeric == nil) ~= (zone_id == nil)) or
 					((biome == nil) ~= (zone_id == nil)) or
@@ -331,28 +317,14 @@ local function planner_factory()
 					functional_y <= terrain_y and terrain_y <= functional_y + 5 then
 				p7_support = false
 			end
-			if (classified_hydrology_id ~= nil and water_y ~= nil and
-					transition_kind ~= "waterfall") or
-					(transition_kind == "waterfall" and transition_face_mask ~= nil) then
-				p7_support = false
-			end
+			if river_id ~= nil then p7_support = false end
 			local cave_low, cave_high = planner_source.surface_cave_run_at(x, z)
 			if cave_low ~= nil and cave_low <= terrain_y and terrain_y <= cave_high then
 				p7_support = false
 			end
-			local wet_surface, wet_bed, depth
-			if transition_kind == "waterfall" and transition_face_mask ~= nil then
-				wet_surface = transition_lower_y
-				depth = hydrology_depth[lower_hydrology[transition_id]]
-			elseif water_y ~= nil and classified_hydrology_id ~= nil and
-					transition_kind ~= "waterfall" then
-				wet_surface, depth = water_y, classified_depth
-			end
-			if wet_surface and depth and depth > 0 then
-				wet_bed = wet_surface - depth
-			else
-				wet_surface = nil
-			end
+			-- A wet river column's bed is its terrain (planner.lua).
+			local wet_surface, wet_bed
+			if river_id ~= nil and wet then wet_surface, wet_bed = water_y, terrain_y end
 			return water_class, zone_numeric, zone_id, biome, race, terrain_y,
 				water_y, surface_kind, surface, support_name,
 				excluded, p7_support,
@@ -362,6 +334,9 @@ local function planner_factory()
 		local function load_cell(cell_x, cell_z)
 			local count = 0
 			local start_x, start_z = cell_x * 16, cell_z * 16
+			-- The bank seal scan below runs only where a river may lie.
+			local river_near = planner_source.river_water_in(start_x - 2,
+				start_z - 2, start_x + 17, start_z + 17) == true
 			for halo_index = 1, 400 do
 				scratch.wet_bed[halo_index], scratch.wet_surface[halo_index] = false, false
 			end
@@ -392,6 +367,7 @@ local function planner_factory()
 			-- R5's dry-bank seal is the only surface winner derived from neighbor
 			-- columns.  Reproduce that exact yes/no decision once on a retained
 			-- 20-by-20 halo, instead of re-querying twelve neighbors per column.
+			if not river_near then return count end
 			for local_z = 0, 19 do
 				for local_x = 0, 19 do
 					local halo_index = local_z * 20 + local_x + 1
@@ -400,21 +376,11 @@ local function planner_factory()
 						local_z >= 2 and local_z <= 17 and
 						x >= -3740 and x <= 3740 and z >= -3340 and z <= 3340
 					if not central then
-						local _, _, _, _, _, _, water_y, classified_id,
-							classified_depth, _, _, _, _, transition_kind,
-							transition_id, _, transition_lower_y, _, transition_face_mask =
-								planner_source.column_values_at(x, z)
-						local wet_surface, depth
-						if transition_kind == "waterfall" and transition_face_mask ~= nil then
-							wet_surface = transition_lower_y
-							depth = hydrology_depth[lower_hydrology[transition_id]]
-						elseif water_y ~= nil and classified_id ~= nil and
-								transition_kind ~= "waterfall" then
-							wet_surface, depth = water_y, classified_depth
-						end
-						if wet_surface and depth and depth > 0 then
-							scratch.wet_surface[halo_index] = wet_surface
-							scratch.wet_bed[halo_index] = wet_surface - depth
+						local _, _, _, _, _, terrain_y, water_y, river_id =
+							planner_source.column_values_at(x, z)
+						if river_id ~= nil and terrain_y < water_y then
+							scratch.wet_surface[halo_index] = water_y
+							scratch.wet_bed[halo_index] = terrain_y
 						end
 					end
 				end

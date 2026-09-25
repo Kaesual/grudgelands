@@ -302,14 +302,13 @@ occupying a position (`world_zones.md` §7):
 
 - **Planned zone water:** the landward parts of bays, lakes, rivers, marsh
   channels, cenotes and other authored water inside a named zone remain part
-  of their named zone. Wet named WP40 hydrology reaches use non-renewable,
-  range-two `default:river_water_source` / `default:river_water_flowing`;
-  oceans, bays and other non-hydrology surface-water classes use
-  `default:water_source`. The owning logical biome or an explicit landmark
-  changes bed, shore, depth and decorations within that material rule. Named
-  waterfall contact faces leave one source-node-deep receiver opening in the
-  lower bed so native falling liquid enters the pool instead of spreading
-  across its surface; WP40 does not author falling-liquid columns. Planned
+  of their named zone. River water columns use non-renewable, range-two
+  `default:river_water_source` / `default:river_water_flowing`; oceans, bays,
+  lakes and other surface water use `default:water_source`. The owning logical
+  biome or an explicit landmark changes bed, shore, depth and decorations
+  within that material rule. Step transitions between river reaches (falls,
+  rapids) are defined by Round 22 Phase 5; WP40 does not author
+  falling-liquid columns. Planned
   water inherits the zone's terrain, PvP and flight rules and can never become
   deep ocean. Its authored masks remain claim-ineligible even if players later
   fill or drain them. The four explicitly declared outer bay-mouth caps are
