@@ -1,9 +1,0 @@
-capital	sockets	idle	spares	walkers	min_ring	worst_socket	worst_composition	composition_idle
-highcourt	256	108	26	22	1	market_workshop/market_workshop_gate_idle	market_workshop	1
-dur_brannoc	269	106	23	22	1	forge_store/forge_store_gate_idle	forge_store	1
-gor_drazhak	315	104	73	21	2	bazaar_brewhouse/bazaar_brewhouse_idle_grog_bench	bazaar_brewhouse	2
-lethariel	253	106	24	22	1	martial_lodge/martial_lodge_gate_idle	martial_lodge	1
-kezamba	262	101	11	21	1	shore_house/shore_house_gate_idle	shore_house	1
-nhal_veyr	274	116	26	24	1	market_grave_field/market_grave_field_gate_idle	market_grave_field	1
-
-WALKER_EVERY=5 WALK_RADIUS=20 WALK_MIN_RING=3 worst ring over the six capitals=1 seed=531802985935182545

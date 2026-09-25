@@ -140,7 +140,9 @@ rows assert exact node names after all requests, before shutdown, without
 requesting any additional generation; the dedicated quality cave corpus uses
 this to check the entire tube after P7/P8/P9 settlement.
 
-Select the checked-in ten-owner cave integration corpus with an absolute path:
+The checked-in ten-owner cave integration corpus below was retired in Round 22
+(D22; git history keeps it), as was this directory's `evidence/`. Any cases file
+is selected the same way, with an absolute path:
 
 ```sh
 WP40_PROFILE_CASES="$PWD/tools/wp40/quality/cave_engine_cases.lua" \

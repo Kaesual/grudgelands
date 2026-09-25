@@ -1,6 +1,0 @@
-COMPOSITE highcourt    seed 42                     unwalkable_pairs=0     worst=0  
-COMPOSITE dur_brannoc  seed 42                     unwalkable_pairs=0     worst=0  
-COMPOSITE gor_drazhak  seed 42                     unwalkable_pairs=0     worst=0  
-COMPOSITE lethariel    seed 42                     unwalkable_pairs=0     worst=0  
-COMPOSITE kezamba      seed 42                     unwalkable_pairs=0     worst=0  
-COMPOSITE nhal_veyr    seed 42                     unwalkable_pairs=0     worst=0  

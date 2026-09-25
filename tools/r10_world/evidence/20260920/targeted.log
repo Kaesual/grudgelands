@@ -1,8 +1,0 @@
-tools/r10_world/cave_boundary_fixture.lua 0
-tools/r10_world/material_salt_fixture.lua 0
-tools/wp40/planner_throughput/r5_fixture.lua 0
-tools/r9_perf/writer_equivalence.lua 0
-tools/wp40/resource_sampling/writer_fixture.lua 0
-tools/wp40/tree_slices/fixture.lua 0
-tools/wp40/r7/contract_kat.lua 0
-tools/wp40/r7/native_inputs_kat.lua 0

@@ -16,7 +16,8 @@ Updated 2026-09-24. This is the delivery pointer, not another game specification
   merged as `8308229f` and synchronized to Luanti on 2026-09-24. No push.
   [Completion receipt](research/round20-completion.md),
   [playtest checklist](research/round20-playtest.md),
-  [schematic POI gallery](../tools/r20/evidence/pois/index.html).
+  schematic POI gallery (`tools/r20/evidence/pois/`, retired in Round 22;
+  git history keeps it).
 - **Documentation consolidation:** complete with independent Astra PASS;
   [receipt and coverage](maintenance/documentation-round.md). Remaining decisions
   and code/design discrepancies: [findings](maintenance/findings.md).

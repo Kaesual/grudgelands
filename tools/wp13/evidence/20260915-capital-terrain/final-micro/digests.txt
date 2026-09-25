@@ -1,5 +1,0 @@
-f31d4480a3a674499518b92a5e4fa037740fca2104f4a518be95be9acdf30db4  tools/wp13/evidence/20260915-capital-terrain/final-micro/micro-luajit.tsv
-f31d4480a3a674499518b92a5e4fa037740fca2104f4a518be95be9acdf30db4  tools/wp13/evidence/20260915-capital-terrain/final-micro/micro-puc51.tsv
-03ce0aaf077f6b33d2d518906af42a279da50dc7af039253c2f780dca86c5941  tools/wp13/evidence/20260915-capital-terrain/final-micro/start-terrain.tsv
-7e8fe52fda6f2249ad4747ec6e50f1d156a6cf26ace3305c0e67061829084247  tools/wp13/evidence/20260915-capital-terrain/final-micro/capital-walk.tsv
-0a008cf76ea8f82b37e2651b192ee3f364eda2f94caf4236e79cdd298c828c78  tools/wp13/evidence/20260915-capital-terrain/final-micro/capital-anchor.tsv

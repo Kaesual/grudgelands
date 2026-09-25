@@ -1,4 +1,0 @@
-strike_description_rage=A full melee swing with your equipped weapon. Hold LMB and keep a hostile in your crosshair; the shared weapon clock prevents click spam. Generates 12 rage when it lands.
-strike_description_mana=A full melee swing with your equipped weapon. Hold LMB and keep a hostile in your crosshair; the shared weapon clock prevents click spam.
-strike_description_classless=A full melee swing with your equipped weapon. Hold LMB and keep a hostile in your crosshair; the shared weapon clock prevents click spam.
-combat_integration_test: ok

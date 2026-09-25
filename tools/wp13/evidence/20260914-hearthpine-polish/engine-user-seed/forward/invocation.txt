@@ -1,1 +1,0 @@
-LUANTI_USER_PATH=/tmp/grudgelands-wp40-profile-run.eTF6is2p/user /tmp/grug-throughput-flatpak.sh --server --gameid grudgelands --world /tmp/grudgelands-wp40-profile-run.eTF6is2p/world --config PHASE.conf

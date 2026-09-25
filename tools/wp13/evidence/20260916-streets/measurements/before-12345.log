@@ -1,8 +1,0 @@
-street_geometry: /home/jan/projects/grudgelands/mods/MAPGEN/grug_mapgen/wp13 carries no street_plan.lua; using ./mods/MAPGEN/grug_mapgen/wp13
-highcourt    seed 12345  spread 3  step 1  junc 2/1  walled 0 (solid 0)  wet 2811  lamps_off 133/794
-dur_brannoc  seed 12345  spread 8  step 1  junc 22/1  walled 1411 (solid 1411)  wet 0  lamps_off 389/864
-gor_drazhak  seed 12345  spread 3  step 1  junc 3/1  walled 0 (solid 0)  wet 0  lamps_off 214/800
-lethariel    seed 12345  spread 3  step 1  junc 2/1  walled 1 (solid 1)  wet 2528  lamps_off 162/669
-kezamba      seed 12345  spread 5  step 1  junc 0/1  walled 1035 (solid 1035)  wet 2136  lamps_off 112/416
-nhal_veyr    seed 12345  spread 3  step 1  junc 4/1  walled 13 (solid 13)  wet 0  lamps_off 219/800
-TOTAL seed 12345  spread 8  step 1  lane_step 1  junc 22/1  raised 6089 (max 35) walled 2460 solid 2460 pillars 0  wet 7475 piers 0 rails 0  lamps 4343 off 1229

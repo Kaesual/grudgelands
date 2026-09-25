@@ -444,7 +444,8 @@ from `grug_gear`. Consequences, all binding:
   Jerkin / Pants / Boots (leather) — so the catalogue reads *Abyssal Steel
   Battle Axe*, *Silkweave Cowl*, *Iron Helm*. Itemstrings follow the same
   ladder (`grug_gear:sword_bronze`, `grug_gear:head_cloth_silkweave`); the
-  full list is pinned by `tools/wp13/gear_catalogue_kat.lua`.
+  full list was pinned by `tools/wp13/gear_catalogue_kat.lua` (retired in
+  Round 22).
 - **Everyone can craft the base items of every material tier** — tools,
   weapons, armor. This is the deliberate "Minecraft feel", and it is what
   makes mining and smelting worth doing for a player with no crafting

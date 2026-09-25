@@ -1,9 +1,0 @@
-exit=0 errors=0 complete=1 log=/tmp/grug-w3-streets-reb/highcourt-full-531802985935182545/server.log
-avenue overlay digest matches the committed value
-WP13 highcourt: the built rampart moved.
-  now      8118864bac90befe1c950eca9f5a8365e1c0a9d94466c6602feed65c8897ce27
-  expected 2f2f4fce86f5779e8bb5513ffa0504000710c2012c50a09124b9505edc75f942 (/home/jan/projects/grudgelands/.claude/worktrees/agent-a4db17bfc00ad1ab1/tools/wp13/evidence/20260915-capital-terrain/highcourt/rampart-digest-531802985935182545.txt)
-corner overlay digest matches the committed value
-WP13 highcourt: the built gate moved.
-  now      038dd1e62688766e8e1e5902f91da27e9b4837b36a8a09c8ff6d0dc576eae859
-  expected 1a0101652c2ca5e1f8862b0cc608aa3d7214d9c413c15818b256aa731a5fb78b (/home/jan/projects/grudgelands/.claude/worktrees/agent-a4db17bfc00ad1ab1/tools/wp13/evidence/20260915-capital-terrain/highcourt/gate-digest-531802985935182545.txt)

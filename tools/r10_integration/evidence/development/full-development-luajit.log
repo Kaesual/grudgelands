@@ -1,7 +1,0 @@
-Lua 5.1	LuaJIT 2.1.1767980792
-luajit: ...ion-smoke/root/tools/r10_world/material_salt_fixture.lua:43: assertion failed!
-stack traceback:
-	[C]: in function 'assert'
-	...ion-smoke/root/tools/r10_world/material_salt_fixture.lua:43: in function <...ion-smoke/root/tools/r10_world/material_salt_fixture.lua:2>
-	tools/wp40/quality/final_micro.lua:35: in main chunk
-	[C]: at 0x563f8c462b00

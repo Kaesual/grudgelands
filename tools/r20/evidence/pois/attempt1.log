@@ -1,8 +1,0 @@
-luajit: ...ects/grudgelands/mods/ITEMS/grug_materials/overrides.lua:100: missing shovel crumbly capability for default:shovel_wood
-stack traceback:
-	[C]: in function 'error'
-	...cts/grudgelands/tools/wp40/r7/node_semantics_fixture.lua:328: in function <...cts/grudgelands/tools/wp40/r7/node_semantics_fixture.lua:6>
-	...projects/grudgelands/tools/r10_map_b/content_fixture.lua:17: in function <...projects/grudgelands/tools/r10_map_b/content_fixture.lua:2>
-	...projects/grudgelands/tools/r10_map_b/runtime_fixture.lua:4: in function <...projects/grudgelands/tools/r10_map_b/runtime_fixture.lua:2>
-	tools/r20_pois/final_jit.lua:7: in main chunk
-	[C]: at 0x5651923ecb00

@@ -1,7 +1,0 @@
-== user-seed: seed 531802985935182545, ports 32800 ==
-WP13 engine PASS: forward/reverse, cold/disk: /tmp/grug-wp13-round-a-user-seed
-no user-seed server remains
-== boundary-seed: seed 8675309, ports 32840 ==
-WP13 engine PASS: forward/reverse, cold/disk: /tmp/grug-wp13-round-a-boundary-seed
-no boundary-seed server remains
-WP13 six-start engine gate: both seeds PASS

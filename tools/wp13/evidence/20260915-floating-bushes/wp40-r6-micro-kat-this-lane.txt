@@ -1,9 +1,0 @@
-luajit: r6 micro KAT: short-vein witness differs
-stack traceback:
-	[C]: in function 'error'
-	./tools/wp40/r6/micro_kat_fixture.lua:12: in function 'fail'
-	./tools/wp40/r6/micro_kat_fixture.lua:14: in function 'check'
-	./tools/wp40/r6/micro_kat_fixture.lua:617: in function <./tools/wp40/r6/micro_kat_fixture.lua:3>
-	tools/wp40/r6/micro_kat.lua:5: in function <tools/wp40/r6/micro_kat.lua:3>
-	(command line):1: in main chunk
-	[C]: at 0x558519639b00

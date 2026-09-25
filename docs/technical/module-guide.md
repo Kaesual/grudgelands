@@ -252,8 +252,8 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   per piece (maximum two), but does not change instant potions.
   `grug_gathering`'s herb authorizer delegates to
   `grug_jobs.has(player, "alchemist")`; Cave Cap remains universal food.
-  Real-code Lua 5.1 regressions live under `tools/wp39/` and must stay green
-  when changing the ray, clock, settlement, reticle, casts or projectiles.
+  The former real-code Lua 5.1 regressions under `tools/wp39/` were retired in
+  Round 22 (D22); git history keeps them.
   **Ordinary tool WEAR is spent per swing, not per punch**
   (`grug_core.melee_wear_due`, keyed per player AND per persistent opaque
   `_grug_melee_wear_id` on the concrete ItemStack): A→B cannot transfer A's

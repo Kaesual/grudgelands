@@ -1,3 +1,0 @@
-260941bbefb14a94caefd3f566b4fa6401f04ff029fe4d65dce78ec2dfd67aa9  avenue seed=8675309 overlay_cells=3630
-13ed6dfb45e9734ea29401541d12d4fcb6ff4e4ad01fe936d03bd8f8a3c6d660  rampart seed=8675309 overlay_cells=9077
-38c4f36208906ac80965515aa3f5d50ab270d0c81dba4b627a1a5e86c659c920  gate seed=8675309 overlay_cells=2472

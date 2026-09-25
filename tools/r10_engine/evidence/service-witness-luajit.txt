@@ -1,1 +1,0 @@
-service_witness_kat:v1:canonical_slash,float_roundtrip,outside_socket,unexpected_entity,unloaded_node,wrong_race,display_intrinsic,bad_float

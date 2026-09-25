@@ -1,8 +1,0 @@
-luac51 -p PASS: 328 files (all first-party mods plus changed Lua, including tools/vendor)
-Sweep 1: 1 hit lines; inspect raw log for comment/string/tool-host exceptions
-Sweep 2: 2 hit lines; inspect raw log for comment/string/tool-host exceptions
-Sweep 3: 0 hit lines; inspect raw log for comment/string/tool-host exceptions
-Sweep 4: 245 hit lines; inspect raw log for comment/string/tool-host exceptions
-Sweep 5: 3 hit lines; inspect raw log for comment/string/tool-host exceptions
-git diff --check PASS
-reference pins PASS: 13 unchanged initialized references

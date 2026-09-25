@@ -1,9 +1,0 @@
-pools	eight ordinary families	exact
-roll_matrix	240	legal unique bounded
-trinket	one prefix	one suffix	unrefined exception
-station_ops	preserve stack	append one	mastery prefix/suffix
-kits	imbue 1-2	temper values	cap two	trinkets fixed two
-crafted	Common/refined/Fine/Masterwork	100% exact rows
-drop	3/20+3/100+25/100	ledger hook	King 70 Dragon 75	immediate+queued player descriptions
-description	meta round-trip	prefix/suffix positional	fixed seed 424242
-consumers	attributes	crit/dodge/armor/pools cached

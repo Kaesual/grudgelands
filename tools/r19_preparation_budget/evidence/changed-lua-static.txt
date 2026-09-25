@@ -1,1 +1,0 @@
-All three candidate Lua files: luac51 parse PASS; SETGLOBAL none; five explicit sweeps zero hits.

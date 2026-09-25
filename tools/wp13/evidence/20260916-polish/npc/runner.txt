@@ -1,2 +1,0 @@
-errors=1 complete=1 windows=7/7 load=/tmp/grug-w3-polish-npcload/load.txt
-WP13 NPC load probe FAILED; inspect /tmp/grug-w3-polish-npcload

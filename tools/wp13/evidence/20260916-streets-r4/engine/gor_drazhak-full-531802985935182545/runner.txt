@@ -1,7 +1,0 @@
-exit=0 errors=0 complete=1 log=/tmp/grug-w4-G/eng/gor_drazhak-full-531802985935182545/server.log
-WP13 gor_drazhak: the built avenue moved.
-  now      b5d947a639e85d56a1de207474257d35cf5e14a0018513ce3b8e92c835bd7714
-  expected b93337ec736e0ff0238b624d714723da346dd1427429d8746eb416d030a6b51d (/home/jan/projects/grudgelands/.claude/worktrees/agent-a72ec4c633f00efbc/tools/wp13/evidence/20260915-capital-terrain/gor_drazhak/avenue-digest-531802985935182545.txt)
-rampart overlay digest matches the committed value
-corner overlay digest matches the committed value
-gate overlay digest matches the committed value

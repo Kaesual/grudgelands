@@ -1,7 +1,0 @@
-exit=0 errors=0 complete=1 log=/tmp/grudgelands-r10-final-engines/capitals-v3/kezamba/server.log
-WP13 kezamba: the built avenue moved.
-  now      d3ebf22f2d3784654dd99584c5f08b093059b25f4402297d631ffd37c32811eb
-  expected d021d645432a42f41325188c542ff081856e1c9965f54681d9fd668ebba5635d (/home/jan/projects/grudgelands/.claude/worktrees/r10-integration/tools/wp13/evidence/20260915-capital-terrain/kezamba/avenue-digest-531802985935182545.txt)
-rampart: this capital publishes no such overlay region
-corner: this capital publishes no such overlay region
-gate: this capital publishes no such overlay region

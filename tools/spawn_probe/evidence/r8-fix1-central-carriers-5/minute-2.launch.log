@@ -1,6 +1,0 @@
-staged patch: player_shim.patch
-staged probe: grug_spawn_probe
-headless boot: PASS (port 31621, 120 s)
-log: /tmp/grudgelands-headless.JhuaZW/server.2.log
-84:ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:31621.
-kept: /tmp/grudgelands-headless.JhuaZW

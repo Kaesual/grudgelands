@@ -1,6 +1,0 @@
-Candidate 87423283, first final PUC attempt (2026-09-23):
-Combined runner failed before LuaJIT comparison.
-init.lua:819: attempt to call upvalue native_do_attack (a nil value)
-stack: tools/r18_evade/micro.lua:82 -> tools/r19_pursuit/micro.lua:29.
-The test registration adapter retained an empty mobs.mob_class instead of the loaded vendor class.
-No PASS or parity was claimed. A corrected frozen fixture earns one replacement final pair.

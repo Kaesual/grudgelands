@@ -1,8 +1,0 @@
-mods/ITEMS/grug_food/init.lua
-2	[4]	SETGLOBAL	0 -1	; grug_food
-tools/r12_food/kat.lua
-38	[12]	SETGLOBAL	5 -21	; grug_gathering
-61	[28]	SETGLOBAL	6 -23	; core
-67	[32]	SETGLOBAL	6 -34	; grug_core
-73	[36]	SETGLOBAL	6 -37	; grug_classes
-77	[37]	SETGLOBAL	6 -40	; grug_abilities

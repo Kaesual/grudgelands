@@ -1,2 +1,0 @@
-R11 sockets PASS: actual rotation and registry, four orientations, absolute terrain y, immutable lookup copies
-R11 coast PASS: 25 diagonal samples, deterministic ties, unchanged absent-shore fallback, max144 cached water probes per fallback

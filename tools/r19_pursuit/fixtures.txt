@@ -1,2 +1,0 @@
-r18_evade/micro.lua
-r19_idle_health/micro.lua

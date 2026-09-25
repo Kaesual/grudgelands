@@ -1,4 +1,0 @@
-wp11_talents_result	PASS	0
-wp11_talents_result	PASS	0
-hud_bars_result	PASS	0
-hud_bars_result	PASS	0

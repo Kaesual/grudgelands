@@ -1,5 +1,0 @@
-ACTION[Main]: [grug_materials] registry audit passed: 6 tiers, 15 resources, 12 processed forms, 6 race regions
-ACTION[Main]: [grug_smelting] recipe audit passed: 5 cooking, 5 dualfurn, 12 storage pairs, 1 station
-ACTION[Main]: [grug_mobs] settlement work activities: tools 7, weapon families 1, all registered
-ACTION[Main]: [grug_traders] 12 profession shelves, 74 offers, all registered
-ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:32175.

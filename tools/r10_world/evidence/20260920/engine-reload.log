@@ -1,5 +1,0 @@
-staged probe: engine_probe
-headless boot: PASS (port 32735, 120 s)
-log: /tmp/grudgelands-headless.niwPZq/server.2.log
-90:ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:32735.
-kept: /tmp/grudgelands-headless.niwPZq

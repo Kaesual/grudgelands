@@ -1,8 +1,0 @@
-mods/CORE/grug_core/starts_preload.lua: plain-5.1 parser PASS; SETGLOBAL none
-tools/r18_preparation/fixture.lua: plain-5.1 parser PASS; SETGLOBAL none
-tools/r19_preparation_budget/micro.lua: plain-5.1 parser PASS; SETGLOBAL none
-sweep 1: zero hits in all changed Lua including tools
-sweep 2: zero hits in all changed Lua including tools
-sweep 3: zero hits in all changed Lua including tools
-sweep 4: zero hits in all changed Lua including tools
-sweep 5: zero hits in all changed Lua including tools

@@ -1,1 +1,0 @@
-LUANTI_USER_PATH=/tmp/grudgelands-wp40-profile-run.Y2NEZZrN/user /tmp/grug-engine-launcher-v2.sh --gameid grudgelands --world /tmp/grudgelands-wp40-profile-run.Y2NEZZrN/world --config PHASE.conf

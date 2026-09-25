@@ -176,6 +176,7 @@ def main():
     if args.stop_resume_root is not None:
         return stop_resume(args.stop_resume_root,args.production_sha256)
     root = pathlib.Path(tempfile.mkdtemp(prefix='grug-preparation-fullspeed-', dir='/tmp'))
+    (REPO / 'tools/wp40/results').mkdir(exist_ok=True)
     world_root = pathlib.Path(tempfile.mkdtemp(prefix='preparation-fullspeed-', dir=REPO / 'tools/wp40/results'))
     world = world_root / 'world'
     world.mkdir()

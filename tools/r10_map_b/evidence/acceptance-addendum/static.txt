@@ -1,6 +1,0 @@
-sweep 1 PASS
-sweep 2 PASS
-sweep 3 PASS
-sweep 4 PASS
-sweep 5 PASS
-parser PASS; SETGLOBAL absent (see addendum-luac.txt)

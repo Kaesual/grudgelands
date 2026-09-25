@@ -1,5 +1,0 @@
-staged probe: probe-seed0-after
-headless boot: PASS (port 31075, 1800 s)
-log: /tmp/grudgelands-headless.SkVIQS/server.4.log
-86:ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:31075.
-kept: /tmp/grudgelands-headless.SkVIQS

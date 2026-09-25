@@ -1,4 +1,0 @@
-== boot 1 (fresh world, seed 531802985935182545) ==
-ERROR+ModError lines: 0
-== boot 2 (same world) ==
-ERROR+ModError lines: 0

@@ -1,6 +1,0 @@
-{
-  "clock_ticks_per_second": 100,
-  "logical_cpus": 16,
-  "cpu_percent_one_core": 100,
-  "machine_divisor": 16
-}

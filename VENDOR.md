@@ -337,8 +337,8 @@ the header comment of `mods/ITEMS/grug_smelting/node.lua`, each citing the
 upstream line it came from.
 
 The recipe surface itself is enforced at every server start by
-`grug_smelting`'s own audit (`recipes.lua`) and headlessly by
-`tools/wp26/smelting_kat.lua`.
+`grug_smelting`'s own audit (`recipes.lua`). The headless
+`tools/wp26/smelting_kat.lua` was retired in Round 22 (git history keeps it).
 
 ## Curated copies -- `mods/ITEMS/grug_decor` (WP13)
 
@@ -362,7 +362,8 @@ shape registrations of `mods/BASE/stairs/init.lua` re-namespaced to
 `stairs.register_stair_and_slab` can only ever produce `stairs:stair_<subname>`
 and every grug_decor node name must start with `grug_decor:`.
 
-The registration contract is enforced by `tools/wp13/decor_registry_kat.lua`,
+The registration contract was enforced by `tools/wp13/decor_registry_kat.lua`
+(retired in Round 22; git history keeps it),
 an engine-free smoke test that loads the mod against a stub `core` and asserts
 the namespace, that every texture and mesh resolves, and that nothing
 mechanical was registered.

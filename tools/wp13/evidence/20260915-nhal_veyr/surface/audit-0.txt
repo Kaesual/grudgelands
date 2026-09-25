@@ -1,1 +1,0 @@
-WARNING[Main]: [grug_mapgen] WP13 highcourt: the plot homes_kitchen_garden at offset -144,-104 does not stand on this world's ground -- submerged columns 0, perimeter fall 8 against a skirt of 6, rise 3 against a clear of 8. Re-run tools/wp13/highcourt_plots.lua against this seed's field dump.

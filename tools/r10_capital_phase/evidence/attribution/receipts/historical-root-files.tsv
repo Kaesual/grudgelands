@@ -1,6 +1,0 @@
-path	sha256_or_absence	status
-game.conf	393732a5b99e9bee3f6554ecf9bdbdab3956aab12ddbf950a0e1dc7d91dd5f47	PASS
-minetest.conf	647e1b70abc0d8a8189379ed6d17af7b36658f1e1aeb240d3c6de4bfa88696bf	PASS
-settingtypes.txt	f05f5711cf5af6717d34857a4a3924ed1f41f597bbd1a652b8f759dbc923a1ed	PASS
-menu	absent-in-6cd	PASS
-textures	absent-in-6cd	PASS

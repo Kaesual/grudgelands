@@ -1,9 +1,0 @@
-r20-quests: PASS parallel-hidden-level-lock-talk-distance-turnin-replay-persistence
-r20_ux:full-cube+minimap+party-level-persistence:ok
-PASS r13 enchants operations=588 applications=588 suffix-first fixed-tier replacement no-op profession family materials metadata broken found trinket-bases=36 trinket-channels starter-level speed-replacement
-PASS r20 gear permissions=144 pools durability fractions broken-art repair armor-layer scout-dex real-equip wear-service-cache
-
-r20-combat:accepted-stun+crab+live-camp+quiet-reset:PASS
-r20_input:friendly-current-ray:ok
-r20_input:arbitration+native-dig+combat+pickup+RMB+cancel:ok
-r20_input:real-loose-delay+food-callback-stack:ok

@@ -1,7 +1,0 @@
-highcourt    seed 2  spread 0  step 1  junc 0/1  walled 37 (solid 0)  wet 2811  lamps_off 0/794
-dur_brannoc  seed 2  spread 0  step 1  junc 0/1  walled 391 (solid 0)  wet 0  lamps_off 0/864
-gor_drazhak  seed 2  spread 0  step 1  junc 0/1  walled 89 (solid 0)  wet 0  lamps_off 0/800
-lethariel    seed 2  spread 0  step 1  junc 0/1  walled 63 (solid 0)  wet 2528  lamps_off 0/770
-kezamba      seed 2  spread 0  step 1  junc 0/1  walled 1030 (solid 0)  wet 2136  lamps_off 0/416
-nhal_veyr    seed 2  spread 0  step 1  junc 0/1  walled 40 (solid 4)  wet 0  lamps_off 0/800
-TOTAL seed 2  spread 0  step 1  lane_step 1  junc 0/1  raised 24918 (max 28) walled 1650 solid 4 pillars 1646  wet 7475 piers 556 rails 3702  lamps 4444 off 0

@@ -1,8 +1,0 @@
-Lua 5.1	LuaJIT 2.1.1767980792
-luajit: ...jects/grudgelands/mods/ENTITIES/grug_traders/vendors.lua:290: attempt to call field 'noncombatant' (a nil value)
-stack traceback:
-	...jects/grudgelands/mods/ENTITIES/grug_traders/vendors.lua:290: in function 'register_vendor'
-	...jects/grudgelands/mods/ENTITIES/grug_traders/vendors.lua:300: in function 'dofile'
-	...ojects/grudgelands/tools/wp40/quality/vendor_fixture.lua:120: in function <...ojects/grudgelands/tools/wp40/quality/vendor_fixture.lua:2>
-	.../projects/grudgelands/tools/wp40/quality/final_micro.lua:26: in main chunk
-	[C]: at 0x559b7920db00

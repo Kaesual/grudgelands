@@ -1,5 +1,0 @@
-staged probe: grug_despawn_probe
-headless boot: PASS (port 31133, 120 s)
-log: /tmp/grudgelands-headless.cJDsnP/server.log
-84:ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:31133.
-kept: /tmp/grudgelands-headless.cJDsnP

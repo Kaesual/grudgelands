@@ -5,6 +5,11 @@ bounded lookahead preparation experiment. Production scheduler and Lua fixture
 ownership are separate from this measurement package. Results and scope:
 [full-speed report](../../docs/research/pregen-fullspeed.md).
 
+Round 22 (D22) kept only the method (`run_native.py`, `instrument.py`,
+`compare.py`'s `analyze()`, this README). The retained `evidence/`, `fixture.lua`,
+`micro.lua` and the 4 ms/40 ms baselines that `compare.py main()` asserts were
+retired; git history keeps them, so references to them below are historical.
+
 `run_native.py --execute --production-sha256 <approved hash>` performs exactly
 one fresh native comparison, using isolated Luanti user/XDG directories and a
 fresh disposable world on the workspace's disk filesystem. It requires the

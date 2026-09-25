@@ -1,1 +1,0 @@
-ACTION[Server]: [grug_mobs] start npcs troll kezamba: guards 18/18 flair 163/163 vendor 7/7 quest 1/1 new 3 pending 0 spare 11 residents 163 walkers 21

@@ -217,14 +217,10 @@ After the last merge of a round, before the sync (measured 2026-09-17/18):
   `grep -c ERROR <output>/server.log` = 0. `run_capital.sh` is for capitals
   only: on a start village its probe fails at load (`attempt to index field
   'core'`, the start has no capital core), which is a misuse, not a defect;
-- the six starts: `tools/wp13/run_engine.sh <absent output dir> <launcher>`
-  is the six-start digest gate (forward/reverse, cold/disk, four identical
-  digests). The launcher must forward the caller's scratch
-  `LUANTI_USER_PATH` and XDG directories into the Flatpak
-  (`flatpak run --command=luanti --filesystem=<scratch root> --env=LUANTI_USER_PATH=... org.luanti.luanti "$@"`);
-  a launcher that ignores them would touch the user's personal folder;
-- `tools/wp40/quality/final_micro.sh <absent output dir>` on the merge HEAD
-  (exit 0, byte-identical PUC/LuaJIT TSVs).
+- the six starts: `tools/wp13/run_engine.sh` (six-start digest gate) and
+  `tools/wp40/quality/final_micro.sh` (PUC/LuaJIT micro pair) were retired in
+  Round 22 (D22); a headless boot through `tools/luanti_headless.sh` is the
+  registration smoke test.
 
 ## 3. Codex orchestrating Claude workers
 
@@ -311,18 +307,10 @@ with a correction.
 | Headless boot: `Unable to allocate instance id` | Flatpak cannot write `$XDG_RUNTIME_DIR/.flatpak` | writable root `$XDG_RUNTIME_DIR/.flatpak` (2.1) |
 | Fresh worktree has no `tools/bin/lua51` or `tools/bin/luac51` | `tools/bin/` is gitignored | immediately after `git worktree add`, copy both binaries from the main checkout into the lane's `tools/bin/` |
 | `resume` with an empty id reports "direct app-server input is not allowed for multi-agent v2 sub-agents" and does nothing | the first JSONL record's `thread_id` was not saved | extract and persist `thread_id` immediately after launch; never construct a resume before it is non-empty |
-| WP40 KATs or `quality_geometry_micro_kat.lua` fail to locate repository files | their repository-root argument was relative | orchestrator gate scripts pass the absolute root `$(pwd -P)`, never `.` |
-| `luajit tools/wp40/r7/micro_kat.lua <root>` exits successfully but prints no digest and tests nothing | the file returns its runner function instead of invoking it | use `tools/wp40/quality/final_micro.sh`, or explicitly call the returned function with `io.write(dofile("tools/wp40/r7/micro_kat.lua")(root))` (measured 2026-09-18) |
-| WP40 final micro fails after a lane adds a load-time `grug_core.*` or `core.*` registration | the R7 micro fixture's registration stubs are deliberately closed | every such lane runs `tools/wp40/quality/final_micro.sh` and extends the fixture in scope (measured 2026-09-18) |
-| `tools/wp11/static.sh` reports later checks after `tools/check_fresh_server.py` failed | the static script has no `set -e` and does not make that checker an independent gate | run `python3 tools/check_fresh_server.py` as its own required gate step (measured 2026-09-18) |
+| `tools/check_fresh_server.py` failure hidden by a later check in a combined static script | the former `tools/wp11/static.sh` (retired in Round 22) had no `set -e` | run `python3 tools/check_fresh_server.py` as its own required gate step (measured 2026-09-18) |
 | A Codex review ends with `turn.failed: Selected model is at capacity` and produces no report | the selected model had no available capacity; this is not a review verdict | relaunch the review and require a real report before continuing (measured 2026-09-18) |
 | A lane that edits `start_npcs.lua` or `AGENTS.md` conflicts when the orchestrator merges it | another concurrent lane changed the shared file first | merge `main` into that lane before its review and resolve the conflict there, so the reviewer sees the integrated result (measured 2026-09-18) |
-| WP40 final micro fails with `missing production node` after a settlement palette gains a node | the closed semantics fixture has no definition for the new production node | extend `tools/wp40/r7/node_semantics_fixture.lua` in the same lane (measured 2026-09-18) |
-| An R6 gate runs for hours when the brief intended one bounded KAT | `tools/wp40/r6/run.sh` is the multi-hour census runner, not the individual micro-KAT | briefs name the exact KAT, such as `tools/wp40/r6/micro_kat.lua`; never substitute `tools/wp40/r6/run.sh` (measured 2026-09-18/19) |
-| Shore and start-band KATs cannot run under PUC 5.1 in a read-only review sandbox | `tools/wp40/r6/common.lua:29` falls back to SHA files under `/tmp`, which that sandbox cannot write | reviewers verify the recorded byte-identical PUC/LuaJIT pair instead; an injectable in-memory hasher is a possible later improvement, not an implemented path |
-| Historical R7 static runner flags `core::Transform` in `mods/PLAYER/grug_visuals/wield_geometry.lua` | its C++-token regex also scans Lua comments | known false positive: leave the production comment unchanged and read this hit manually until the historical runner's pattern is narrowed |
-| Orchestrator shell dies with exit 144 while `tools/wp13/run_engine.sh` runs, although its log ends with `WP13 engine PASS` | the gate's EXIT trap kills every process whose command line names its output directory, and the orchestrator's own `bash -c` wrapper named that path | start the gate from a script file or a command line that does not repeat the output path; on exit 144 read the gate's log and `digests.txt` before treating the run as failed |
-| `run_capital.sh` on a start village: `grug_wp13_capital_probe/init.lua: attempt to index field 'core'` | the capital probe expects a capital core blueprint; starts have none | starts are validated by `tools/wp13/run_engine.sh` (2.6), capitals by `run_capital.sh` |
+| `run_capital.sh` on a start village: `grug_wp13_capital_probe/init.lua: attempt to index field 'core'` | the capital probe expects a capital core blueprint; starts have none | use `run_capital.sh` for capitals only (2.6) |
 | `git worktree remove` refuses: "Arbeitsverzeichnisse, die Submodule enthalten, können nicht ... entfernt werden" | the worktree carries the reference_projects submodule directories | `git worktree remove --force --force <dir>` after confirming `git -C <dir> status --porcelain` is empty and the branch is merged |
 | Every command in a Codex lane fails before it runs: `bwrap: Can't write data to file /tmp/<dir>: Bad file descriptor`; the worker reports a broken environment and stops | a `sandbox_workspace_write.writable_roots` entry names a directory that does not exist yet | create every writable root (`mkdir -p`) before the launch; the sandbox does not create them (measured 2026-09-18, five lanes lost their first run) |
 | A lane's final commit adds its report (`last.md`) to the repository root | the worker wrote its `-o` report a second time into the worktree and committed it | the brief says explicitly that reports go to the `-o` path only; on review, remove the file from the branch (measured 2026-09-18: two of three implementation lanes did this) |

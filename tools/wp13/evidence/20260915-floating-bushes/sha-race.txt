@@ -1,6 +1,0 @@
-PUC SHA-256 vectors PASS (empty string and "abc")
-four concurrent tools/bin/lua51 processes, 200 digests each:
-ok
-ok
-ok
-ok

@@ -1,7 +1,0 @@
-exit=0 errors=0 complete=1 log=/tmp/grug-w3-polish-hc8/highcourt/server.log
-WP13 highcourt: the built avenue moved.
-  now      fde348c9d5855952604dcd0cfd7c3b9e4758742994692d69ea910e3ccea5a6c4
-  expected 8383b2983fdbb612997c290b2d01dbee90131a0208bdd81fbe4deb0a159fba1f (/home/jan/projects/grudgelands/.claude/worktrees/agent-a7c106f5a3d6d7232/tools/wp13/evidence/20260915-capital-terrain/highcourt/avenue-digest-8675309.txt)
-rampart overlay digest recorded (no committed value for seed 8675309 yet)
-corner overlay digest recorded (no committed value for seed 8675309 yet)
-gate overlay digest recorded (no committed value for seed 8675309 yet)

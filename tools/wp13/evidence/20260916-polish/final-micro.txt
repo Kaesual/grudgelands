@@ -1,4 +1,0 @@
-luajit: WP13 final micro PASS interpreter=luajit output_sha256=165d50acb073befd7415f8e8c90e5024c7cb75c0b4a5872ccdf55fe5369280ae
-puc51:  WP13 final micro PASS interpreter=puc51 output_sha256=165d50acb073befd7415f8e8c90e5024c7cb75c0b4a5872ccdf55fe5369280ae
-inputs immutable across the pair
-PAIR IDENTICAL: 165d50acb073befd7415f8e8c90e5024c7cb75c0b4a5872ccdf55fe5369280ae  -

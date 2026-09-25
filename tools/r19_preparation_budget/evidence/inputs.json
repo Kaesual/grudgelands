@@ -1,6 +1,0 @@
-{
-  "mods/CORE/grug_core/starts_preload.lua": "3d1c34073b2a61ed0f9969f1401295cdedba79d6ac1bd8b7eb0683f465ac2bde",
-  "tools/r18_preparation/fixture.lua": "1cbd394de955ddd2b44d44831c909bec8a0af70845355d7e7680ba8bb71c5250",
-  "tools/r19_preparation_budget/instrument.py": "8f048db3ace064ddab44531c352c841dcd9664e3bf669ba238474cd34df26092",
-  "tools/r19_preparation_budget/run_native.py": "fc899f6faaf08b347f61edc1565a348855234bf3de41b0f7c463d69a5435934c"
-}

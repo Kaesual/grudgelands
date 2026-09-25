@@ -1,4 +1,0 @@
-# Frozen candidate will use one combined process per interpreter.
-r19_map/micro.lua
-r19_ui/fixture.lua
-r19_hud/fixture.lua

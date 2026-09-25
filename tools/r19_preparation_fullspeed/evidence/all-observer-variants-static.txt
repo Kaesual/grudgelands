@@ -1,1 +1,0 @@
-Prefix, stop_pending, resume source copies: luac51 parser PASS; SETGLOBAL none; all five explicit source sweeps zero hits. No standalone PUC runtime used for native observers.

@@ -1,3 +1,0 @@
-ERROR[Server]: An unhandled exception occurred: "Failed to save block: disk I/O error"
-ERROR[Server]: In thread 7f8b5d3ca6c0:
-ERROR[Server]: /run/build/luanti/src/server.cpp:174: virtual void* ServerThread::run(): A fatal error occurred: "Failed to save block: disk I/O error"

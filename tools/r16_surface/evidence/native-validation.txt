@@ -1,6 +1,0 @@
-Corrected native snapshot: two boots, one world, seed 8675309.
-Boot 1 exit 0, completed 2 tiles; boot 2 exit 0, restored 2 and completed 4.
-Exactly two dispatches per boot, normal shutdown during second; no third dispatch or ERROR.
-Five actual authority column samples per boot; semantic identity unchanged.
-The runner initially expected exactly one completed tile after boot 1. Actual successful completion of both requests is valid. Revised log assertions pass on these same logs; no extra generation run.
-Production source hashes match the immutable executed snapshot.

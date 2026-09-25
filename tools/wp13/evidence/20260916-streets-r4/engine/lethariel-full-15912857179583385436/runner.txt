@@ -1,6 +1,0 @@
-exit=0 errors=0 complete=1 log=/tmp/grug-w4-G/eng/lethariel-full-15912857179583385436/server.log
-avenue overlay digest recorded (no committed value for seed 15912857179583385436 yet)
-rampart: this capital publishes no such overlay region
-corner: this capital publishes no such overlay region
-gate: this capital publishes no such overlay region
-WP13 capital pass PASS: lethariel full /tmp/grug-w4-G/eng/lethariel-full-15912857179583385436

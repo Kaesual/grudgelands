@@ -110,8 +110,9 @@ upstream-PR dependency or required client mod.
   the VM writer and resource census. The per-host root SHA ranking in the
   frozen R6 contract/artifacts is historical evidence; it is not a current
   output oracle. Do not restore it or add a compatibility path.
-- Current resource integration checks live in `tools/wp40/resource_sampling/`
-  and run through `tools/wp40/quality/final_micro.lua`. Historical 32-seed
+- The former resource integration checks (`tools/wp40/resource_sampling/`,
+  run through `tools/wp40/quality/final_micro.lua`) were retired in Round 22
+  (D22); git history keeps them. Historical 32-seed
   supply/access evidence has not been regenerated for the adopted sampler.
 
 ## Documentation layers
@@ -234,7 +235,7 @@ current state). It is **derived, never authoritative**:
     `string.pack`/`unpack`/`packsize`.
 - **Interpreter/test layers are binding:** on every Lua change run
   `tools/bin/luac51 -p`, the `SETGLOBAL` check and all five sweeps in
-  `docs/research/luanti-lua.md`. Two things about those sweeps are easy to
+  `docs/research/luanti-lua.md` (`bash tools/check_lua.sh <files>` runs all three). Two things about those sweeps are easy to
   get wrong. They are scoped to `mods/*/grug_*`, so Lua under `tools/`
   is **not** covered by them and needs the check run explicitly. And the
   harness scripts that run them require **ripgrep** (`dnf install ripgrep`):
@@ -403,7 +404,7 @@ behavior from an old completion report or source-line citation.
   XDG dirs, `--logfile` inside it, a `timeout --kill-after`, cleanup of the
   directory, and `pgrep -f '^luanti.bin'` empty when the task ends. A
   launcher that falls back to the personal folder when `LUANTI_USER_PATH` is
-  empty is a defect. The WP40 profiler and `tools/wp13/run_engine.sh` set
-  their own scratch user path; pass them a launcher that forwards it.
+  empty is a defect. The WP40 profiler (`tools/wp40/profile/run.sh`) sets
+  its own scratch user path; pass it a launcher that forwards it.
 - Take `strict.lua` warnings (undeclared global) seriously — usually typos.
 - Server log via `core.log("action"|"warning"|"error", msg)`.

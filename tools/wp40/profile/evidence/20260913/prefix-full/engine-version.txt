@@ -1,8 +1,0 @@
-Luanti 5.17.0 (Linux)
-Using LuaJIT 2.1.1787165859
-Built by GCC 15.2
-Running on Linux/7.0.0 x86_64
-BUILD_TYPE=Release
-RUN_IN_PLACE=0
-USE_CURL=1
-STATIC_SHAREDIR="/usr/local/share/luanti"

@@ -1,1 +1,0 @@
-LUANTI_USER_PATH=/tmp/grudgelands-wp40-profile-run.3aFBIO2R/user /tmp/claude-1000/-home-jan-projects-grudgelands/88b11b8e-1bc0-449b-b428-2465f67bb80e/scratchpad/luanti-flatpak.sh --server --gameid grudgelands --world /tmp/grudgelands-wp40-profile-run.3aFBIO2R/world --config PHASE.conf

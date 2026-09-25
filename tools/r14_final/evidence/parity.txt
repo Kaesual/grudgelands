@@ -1,4 +1,0 @@
-PASS one bounded final replacement process per interpreter
-SHA256 e553a3e219d50aa2c44fa118689ec555f32368a15e217a2361f66b543b25c7a3
-puc51 seconds=0.424
-luajit seconds=0.144

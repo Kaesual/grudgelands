@@ -1,9 +1,0 @@
-rotate_param2	facedir+upsidedown+wallmounted	pass
-rotate_footprint	bijective	pass
-palette	dwarf	51	curated_names	3	51
-roofs	hip_corners+cross_gable_valleys	16
-rotation	cottage	22	1	4	90
-determinism	cottage	1331
-guards	param2_kind	pass
-wp13_blueprint	63620	48084	38	66	2095	9	10	10	174	15041
-wp13_integration	48baeac9b7af36bf79fddc5ec3715e956897e892ef69b9366eaf837f279372e9/63620/12/1

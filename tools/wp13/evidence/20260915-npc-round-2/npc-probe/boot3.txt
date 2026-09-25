@@ -1,5 +1,0 @@
-staged probe: npc_probe
-headless boot: PASS (port 31142, 300 s)
-log: /tmp/grudgelands-headless.AtmL7i/server.3.log
-70:ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:31142.
-kept: /tmp/grudgelands-headless.AtmL7i

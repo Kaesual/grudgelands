@@ -1,5 +1,0 @@
-staged probe: probe-seed0-writer-baseline
-headless boot: PASS (port 31066, 1800 s)
-log: /tmp/grudgelands-headless.JmhNhD/server.log
-86:ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:31066.
-kept: /tmp/grudgelands-headless.JmhNhD

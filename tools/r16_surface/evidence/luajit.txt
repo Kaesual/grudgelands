@@ -1,2 +1,0 @@
-r16-surface: tiles=8811 flat peak cliff geometry starts inner-resume cancel retry authority=ok
-r16-surface-content: water bridge waterfall templates fixed/reference structures avenues anchors=ok

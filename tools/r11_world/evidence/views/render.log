@@ -1,9 +1,0 @@
-00:00.008  color_management | ERROR OpenColorIO Error: Error: Loading the OCIO profile '/usr/share/blender/5.2/datafiles/colormanagement/config.ocio' failed. This .ocio config  '/usr/share/blender/5.2/datafiles/colormanagement/config.ocio' is version 2.5. This version of the OpenColorIO library (2.4.2) is not able to load that config version.
-                            | The minor version 5 is not supported for major version 2. Maximum minor version is 4.
-00:00.008  color_management | Using fallback mode for management
-[ALSOFT] (EE) Failed to connect PipeWire event context (errno: 1)
-/home/jan/projects/grudgelands/.claude/worktrees/r11-world/tools/r11_world/render_views.py:21: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
-  mat=bpy.data.materials.new(path);mat.use_nodes=True;mat.blend_method="CLIP"
-00:06.023  render           | Saved: '/tmp/grudgelands-r11-world/views/highcourt-riding-cutaway.png'
-00:16.720  render           | Saved: '/tmp/grudgelands-r11-world/views/highcourt-forge-cutaway.png'
-00:27.048  render           | Saved: '/tmp/grudgelands-r11-world/views/highcourt-tailor-cutaway.png'

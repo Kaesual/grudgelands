@@ -1,5 +1,0 @@
-minute_1=15
-minute_2=22
-minute_3=18
-total=55
-rate_per_minute=18.333

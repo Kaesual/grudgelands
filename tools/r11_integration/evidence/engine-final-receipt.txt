@@ -1,5 +1,0 @@
-R11_INTEGRATION_PASS
-engine=5.17.0
-interpreter=LuaJIT 2.1.1784272936
-protected_air_callbacks=22
-allowed_plant_callbacks=4

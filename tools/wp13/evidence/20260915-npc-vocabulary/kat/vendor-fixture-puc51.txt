@@ -1,1 +1,0 @@
-vendor_current_version	PASS	player-appearance,book,chest,creative,torch,stairs,furnace,mob-reload,mob-reset-reload,mount

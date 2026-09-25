@@ -1,7 +1,0 @@
-highcourt    seed 8675309  spread 0  step 1  junc 0/1  walled 59 (solid 0)  wet 2811  lamps_off 0/794
-dur_brannoc  seed 8675309  spread 0  step 1  junc 0/1  walled 2508 (solid 0)  wet 0  lamps_off 0/864
-gor_drazhak  seed 8675309  spread 0  step 1  junc 0/1  walled 90 (solid 0)  wet 0  lamps_off 0/800
-lethariel    seed 8675309  spread 0  step 1  junc 0/1  walled 272 (solid 0)  wet 2528  lamps_off 0/770
-kezamba      seed 8675309  spread 0  step 1  junc 0/1  walled 1197 (solid 0)  wet 2136  lamps_off 0/416
-nhal_veyr    seed 8675309  spread 0  step 1  junc 0/1  walled 59 (solid 5)  wet 0  lamps_off 0/800
-TOTAL seed 8675309  spread 0  step 1  lane_step 1  junc 0/1  raised 27962 (max 26) walled 4185 solid 5 pillars 4180  wet 7475 piers 758 rails 5116  lamps 4444 off 0

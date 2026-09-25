@@ -1,2 +1,0 @@
-/tmp/claude-1000/-home-jan-projects-grudgelands/88b11b8e-1bc0-449b-b428-2465f67bb80e/scratchpad/nv/full-nhal_veyr/server.log: 0 error line(s)
-every pass logs no ERROR and no ModError line

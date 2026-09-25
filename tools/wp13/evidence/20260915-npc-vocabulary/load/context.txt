@@ -1,3 +1,0 @@
-Concurrent workstation load during this window (16 cores):
-load average 4.66 / 4.32 / 3.55 with three other WP13 wave-2 lanes running
-their own headless capital servers at the same time.

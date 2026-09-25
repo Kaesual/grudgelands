@@ -1,9 +1,0 @@
-R11 ART static PASS
-Lua 5.1 parser: 8 changed production/fixture Lua files parsed successfully.
-SETGLOBAL: exactly grug_gear from grug_gear/init.lua; no other changed mod global writes.
-Sweep 1: only existing C++ :: prose hit in wield_geometry.lua.
-Sweep 2: only existing explanatory comments about forbidden escapes.
-Sweep 3: no hits.
-Sweep 4: existing comment/documentation and string-vocabulary hits only.
-Sweep 5: existing comments mentioning minetest.conf only; no forbidden call or namespace.
-git diff --check: PASS.

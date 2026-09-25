@@ -1,2 +1,0 @@
-f3a38c47a3a94715ae318beca0d8f45bb8f395e807f286a7ed261f6a053b343e  tools/wp13/evidence/20260914-capital-parts/final-micro/micro-luajit.tsv
-f3a38c47a3a94715ae318beca0d8f45bb8f395e807f286a7ed261f6a053b343e  tools/wp13/evidence/20260914-capital-parts/final-micro/micro-puc51.tsv

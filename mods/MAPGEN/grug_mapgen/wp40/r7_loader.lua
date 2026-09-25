@@ -118,7 +118,7 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 				finding.submerged .. ", perimeter fall " .. finding.fall ..
 				" against a skirt of " .. finding.skirt .. ", rise " ..
 				finding.rise .. " against a clear of " .. finding.clear ..
-				". Re-run tools/wp13/highcourt_plots.lua against this seed's " ..
+				". Re-run tools/wp13/capital_lots.lua against this seed's " ..
 				"field dump.")
 		end
 	end

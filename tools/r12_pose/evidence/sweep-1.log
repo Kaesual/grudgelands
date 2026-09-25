@@ -1,2 +1,0 @@
-tools/wp13/wield_transform_kat.lua:212:-- `core::Transform::buildMatrix` rotates with `quaternion::getMatrix_transposed`.
-mods/PLAYER/grug_visuals/wield_geometry.lua:30:--    `core::Transform::buildMatrix`) cannot change the answer. The bone's own
