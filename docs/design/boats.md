@@ -42,7 +42,8 @@ channels lie in level-51–59 contested zones.
 ## 2. The shipwright
 
 - **Exactly one shipwright per continent.** Each lives in the mandatory
-  village (**V**) of a peaceful level-21–30 zone with authored inland water:
+  village (**V**) of a peaceful level-21–30 zone with inland water (rivers
+  and lakes from the terrain's drainage, Round 22 Phase 5):
   **Whitebridge Shire** (`elandor_whitebridge_shire`) for the Accord and
   **Whispering Reedlands** (`kragmar_whispering_reedlands`) for the Throng.
   Both sit on the lateral capital axis of their continent and are reachable
@@ -56,10 +57,14 @@ channels lie in level-51–59 contested zones.
   Boat unlock, and the shipwright hands back **one finished improved boat** —
   he demonstrates the build rather than selling a lesson. A character below
   level 30, or without the full ingredients, is refused and loses nothing.
-- His plot carries **one improved boat floating in the adjacent water as
-  scenery**. It cannot be entered, driven or collected, and it is not a
-  spawned boat entity that decays under §3. The shipwright, his plot and that
-  display water form one **bounded functional anchor**: `world.md` §2 R1
+- His plot carries **one improved boat on display as scenery**, on a
+  slipway or trestle at the plot. The village keeps its fixed position and
+  need not border water: inland water is laid out per world seed, and the
+  nearest river or lake usually lies a few dozen nodes away (Round 22
+  Phase 5). The display boat cannot be entered, driven or collected, and it
+  is not a spawned boat entity that decays under §3. The shipwright, his
+  plot and the display boat form one **bounded functional anchor**:
+  `world.md` §2 R1
   hard-protects "small functional NPC and renewable-resource anchors" with an
   exact authored footprint, and this is one of them. The surrounding village
   shell stays mutable and claim-excluded like every other village.

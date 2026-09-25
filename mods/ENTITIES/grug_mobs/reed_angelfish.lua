@@ -1,9 +1,14 @@
 -- One low-density freshwater critter. The water-class authority prevents
 -- player-built pools and sea water from becoming spawn habitat; the physical
 -- checks additionally require a natural sand bed and two source-water nodes.
+-- The height rule is relative to the water body (Round 22 Phase 5): the
+-- position lies above the column's natural bed, so a lake at any altitude
+-- qualifies and a pool in a cave below it does not. Lakes hold ordinary
+-- water; rivers hold river water and stay fish-free.
 
 local function in_natural_freshwater(pos)
 	if grug_zones.water_class_at(pos.x, pos.z) ~= "planned_water" then return false end
+	if pos.y <= grug_zones.terrain_height_at(pos.x, pos.z) then return false end
 	if core.get_node(pos).name ~= "default:water_source" then return false end
 	return core.get_node({x = pos.x, y = pos.y + 1, z = pos.z}).name ==
 		"default:water_source"
@@ -56,5 +61,5 @@ mobs:spawn({
 	chance = 4000,
 	active_object_count = 2,
 	min_height = -30,
-	max_height = 80,
+	max_height = 600,
 })

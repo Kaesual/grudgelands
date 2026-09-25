@@ -556,6 +556,13 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		end
 		return water.cache.text
 	end
+	-- River centrelines of that layout for drawing (the world map).
+	function module.river_polylines()
+		if not water.cache or not water.cache.sampler then
+			fail("water layout was never built")
+		end
+		return water.cache.sampler.polylines()
+	end
 	function module.build_authority(native_identities, expected_manifest_sha256)
 		return build(native_identities, expected_manifest_sha256, nil, true)
 	end

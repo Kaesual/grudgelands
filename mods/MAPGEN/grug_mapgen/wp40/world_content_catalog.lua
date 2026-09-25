@@ -35,7 +35,11 @@ M.plants={
  row("cave_cap",{}, {stone={"default:stone","grug_materials:granite","grug_materials:slate","grug_materials:basalt"}},-500,-100,"none",768,"cave"),
  row("ember_moss",{}, {stone={"grug_materials:emberrock"}},-30912,-701,"none",1024,"cave"),
  row("fire_pepper",subset(starts,4,6,homes),hosts({"savanna","blight","jungle_edge","badlands"}),1,20,"none",512),
- row("frost_melon",{"elandor_frostbarrow_shelf","elandor_whitebridge_shire"},hosts({"crags","swamp"}),21,30,"fresh"),
+ -- Freshwater margins are mostly sand (the near-water material rule), so the
+ -- melon also roots in sand there, and the margin is a thin band, so its
+ -- rate is four times the default (Round 22 Phase 5).
+ row("frost_melon",{"elandor_frostbarrow_shelf","elandor_whitebridge_shire"},
+  {grug_crags={"default:gravel","default:sand"},grug_swamp={"grug_nodes:mud","default:sand"}},21,30,"fresh",64),
  row("jungle_berry",{homes[6]},hosts({"jungle_edge"}),11,20),
  row("pumpkin",subset(homes,1,6),hosts({"meadows","swamp","blight"}),11,20),
  row("salt_crust",{"front_shattered_line"},hosts({"badlands"}),44,50,"none",512),

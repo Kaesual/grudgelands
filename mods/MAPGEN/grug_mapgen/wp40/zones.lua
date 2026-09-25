@@ -458,6 +458,7 @@ local function zones_factory(dependencies)
 				type(height.water_surface_at) ~= "function" or
 				type(height.functional_surface_values_at) ~= "function" or
 				type(height.inland_water_at) ~= "function" or
+				type(height.inland_exclusion_at) ~= "function" or
 				type(height.river_water_in) ~= "function" or
 				type(height.hydrology_transition_values_at) ~= "function" or
 				type(height.selected_anchor_3d_by_id) ~= "function" or
@@ -950,7 +951,21 @@ local function zones_factory(dependencies)
 			local outside
 			x, z, outside = normalize_xz(x, z, "housing query")
 			if outside then return false end
-			return horizontal.housing_eligible_at(x, z)
+			if not horizontal.housing_eligible_at(x, z) then return false end
+			-- The reservation also keeps off inland water and its banks
+			-- (stale-rule R5); the scan runs only where water may lie.
+			local radius = source.housing_policy.reservation_radius
+			if height.river_water_in(x - radius - 2, z - radius - 2,
+					x + radius + 2, z + radius + 2) then
+				for dz = -radius, radius do
+					for dx = -radius, radius do
+						if height.inland_exclusion_at(x + dx, z + dz) ~= nil then
+							return false
+						end
+					end
+				end
+			end
+			return true
 		end
 
 		local compatibility = {}
@@ -1214,6 +1229,18 @@ local function zones_factory(dependencies)
 			-- column this says is absent.
 			function planner_source.river_water_in(min_x, min_z, max_x, max_z)
 				return height.river_water_in(min_x, min_z, max_x, max_z) == true
+			end
+
+			-- Claim exclusions derived from the terrain overlays rather than
+			-- the static source shapes (stale-rule R5): "inland_water" on a wet
+			-- river or lake column, "water_bank" on dry land within two nodes
+			-- of one, else nil. Settlement maps both to `route_or_water` by
+			-- kind; Phase 4's road corridor joins here as one more kind.
+			function planner_source.overlay_exclusion_at(x, z)
+				local outside
+				x, z, outside = normalize_xz(x, z, "overlay exclusion query")
+				if outside then return nil end
+				return height.inland_exclusion_at(x, z)
 			end
 
 			local surface_caves = new_surface_cave_factory({

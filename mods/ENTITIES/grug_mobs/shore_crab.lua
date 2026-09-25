@@ -1,15 +1,23 @@
 -- Shore Crab and its high-level elite beach variant, the Reef Lurker.
 --
--- Both live on sandy shore near water (Round 22 D36): the host is dry
--- `default:sand` at y 0..20 with water within NEAR_WATER nodes, so the
--- coast's wide sand band and inland sand stay crab-free. The level split is
--- spawn_policy.lua's: the Shore Crab below level 45, the Reef Lurker 45-60,
--- so every sandy sea shore carries one of the pair.
+-- Both live on sandy sea shore (Round 22 D36): the host is dry
+-- `default:sand` at y 0..20 with water at or below the sea surface within
+-- NEAR_WATER nodes, so the coast's wide sand band and inland sand stay
+-- crab-free, the sand of rivers and lakes above sea level included (Round 22
+-- Phase 5). The level split is spawn_policy.lua's: the Shore Crab below
+-- level 45, the Reef Lurker 45-60, so every sandy sea shore carries one of
+-- the pair.
 
 local NEAR_WATER = 6
+local SEA_SURFACE = 1 -- the world's water_level: the sea's top water node
 
 local function near_water(pos)
-	return core.find_node_near(pos, NEAR_WATER, "group:water") ~= nil
+	local top = math.min(pos.y + NEAR_WATER, SEA_SURFACE)
+	if top < pos.y - NEAR_WATER then return false end
+	return #core.find_nodes_in_area(
+		{x = pos.x - NEAR_WATER, y = pos.y - NEAR_WATER, z = pos.z - NEAR_WATER},
+		{x = pos.x + NEAR_WATER, y = top, z = pos.z + NEAR_WATER},
+		"group:water") > 0
 end
 
 local function crab_def(description, tier, spawn_check, drop_scale)

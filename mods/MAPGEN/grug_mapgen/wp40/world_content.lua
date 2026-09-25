@@ -65,8 +65,14 @@ return function(catalog, content, habitat)
    end
    for z=ctx.min_z,ctx.max_z do
     for x=ctx.min_x,ctx.max_x do
-     local water,_,zone,biome,_,ground,water_y=ctx.column_values_at(x,z)
-     local excluded=ctx.exclusion_at(x,z)
+     local water,_,zone,biome,_,ground,water_y,river_id,_,_,_,_,_,step=
+      ctx.column_values_at(x,z)
+     local excluded,excluded_id=ctx.exclusion_at(x,z)
+     -- Inland water and its banks (stale-rule R5) are claim exclusions of
+     -- their own: freshwater plants belong in that water, and shore rows
+     -- on the bank; everything else keeps off both.
+     local bank=excluded_id=="exclude:water_bank"
+     if excluded_id=="exclude:inland_water" or bank then excluded=nil end
      local housing=ctx.housing_excluded_at(x,z)
      if water=="land" and not excluded and not housing then
       local level=deps.zones_session.surface_mob_level_at(x,z)
@@ -78,7 +84,8 @@ return function(catalog, content, habitat)
         if below_p2==0 and below_op>=1 and below_op<=4 then
          for i,row in ipairs(catalog.plants) do
           local allowed=hosts[i][biome] or hosts[i].any
-          if row.mode=="surface" and allowed and allowed[below] and level and
+          if row.mode=="surface" and (not bank or row.shore~="none") and
+           allowed and allowed[below] and level and
            level>=row.min and level<=row.max and (#row.zones==0 or zones[i][zone]) and
            hash(x,y,z,i)%habitat.initial_denominator(row.key,row.density)==0 and
            shore(ctx,row,x,ground,z) then
@@ -148,10 +155,15 @@ return function(catalog, content, habitat)
      end
      -- Freshwater waterweed uses only a natural sand bed. Functional water
      -- corridors and authored structures are already closed by the water
-     -- class and the shared exclusion/housing predicates above.
+     -- class and the shared exclusion/housing predicates above. Lakes (and
+     -- bays) hold ordinary water; a river reach holds river water and gets
+     -- weed at half the rate, never on a step face (rapid or fall).
+     local river=type(river_id)=="string" and river_id:sub(1,6)=="river:"
+     local family=river and contract.river_water_family_id or
+      contract.ordinary_water_family_id
      if not excluded and not housing and water=="planned_water" and water_y and
-      water_y-ground>=2 and water_y-ground<=6 and
-      ctx.inside_owner(x,ground,z) and reef_hash(x,z,211)%96==0 then
+      water_y-ground>=2 and water_y-ground<=6 and step==nil and
+      ctx.inside_owner(x,ground,z) and reef_hash(x,z,211)%(river and 192 or 96)==0 then
       local bed,p2,occupancy,opcode=ctx.settled_at(x,ground,z)
       local _,sand=ctx.production_content("default:sand")
       if bed==sand and p2==0 and occupancy==0 and opcode>=1 and opcode<=4 then
@@ -160,8 +172,8 @@ return function(catalog, content, habitat)
        for y=ground+1,ground+height do
         if not ctx.inside_owner(x,y,z) then clear=false;break end
         local current,param2=ctx.settled_at(x,y,z)
-        local _,family,liquid=contract.classify(current,param2)
-        if family~=contract.ordinary_water_family_id or liquid~=1 then clear=false;break end
+        local _,found,liquid=contract.classify(current,param2)
+        if found~=family or liquid~=1 then clear=false;break end
        end
        if clear then write(24,x,ground,z,height*16) end
       end

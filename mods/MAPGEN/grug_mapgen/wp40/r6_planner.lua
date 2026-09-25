@@ -168,9 +168,13 @@ local function planner_factory()
 		--   `surface_y_at_most_32` (emergent jungle tree): not in a zone of
 		--     mountain relief. Natural jungle land spans y 0-400; only ~10 %
 		--     of it lies at or below 32.
-		--   `surface_y_1_to_4` (swamp papyrus): a dry root at most 4 above the
-		--     highest water surface in its own 16x16 candidate cell, so the
-		--     reeds follow sea, lake and river water wherever it lies.
+		--   `surface_y_1_to_4` (swamp papyrus): a dry root beside standing
+		--     water -- a wet column (sea, bay, lake or river) within two
+		--     nodes whose surface lies at most 3 below the root's ground and
+		--     never above it -- so the reeds follow the water wherever it
+		--     lies and a swamp without water grows none (Round 22 Phase 5).
+		--     The candidate cell must hold water itself, which keeps the
+		--     neighbourhood test off dry cells.
 		local decoration_biome, decoration_height_rule = {}, {}
 		for index = 1, #decorations do
 			local set = {}
@@ -335,7 +339,7 @@ local function planner_factory()
 		local function load_cell(cell_x, cell_z)
 			local count = 0
 			local start_x, start_z = cell_x * 16, cell_z * 16
-			-- The bank seal scan below runs only where a river may lie.
+			-- The tripwire below runs only where no river may lie.
 			local river_near = planner_source.river_water_in(start_x - 2,
 				start_z - 2, start_x + 17, start_z + 17) == true
 			for halo_index = 1, 400 do
@@ -365,68 +369,38 @@ local function planner_factory()
 					end
 				end
 			end
-			-- R5's dry-bank seal is the only surface winner derived from neighbor
-			-- columns.  Reproduce that exact yes/no decision once on a retained
-			-- 20-by-20 halo, instead of re-querying twelve neighbors per column.
+			-- A wet sealed (river or lake) column must lie where the bucket
+			-- lookup says water may lie, or its bank seals would be skipped
+			-- (tripwire, as in the planner). The seals themselves no longer
+			-- touch the surface: settlement writes the P7 top over a bed or
+			-- bank seal (Round 22 Phase 5), so a sealed bank keeps its
+			-- decoration host.
 			if not river_near then
-				-- tripwire, as in the planner: a wet sealed (river or lake)
-				-- column the bucket lookup misses would lose its bank seals
 				for halo_index = 1, 400 do
 					if scratch.wet_bed[halo_index] then
 						fail("fail_source", "sealed water column outside river_water_in")
 					end
 				end
-				return count
-			end
-			for local_z = 0, 19 do
-				for local_x = 0, 19 do
-					local halo_index = local_z * 20 + local_x + 1
-					local x, z = start_x + local_x - 2, start_z + local_z - 2
-					local central = local_x >= 2 and local_x <= 17 and
-						local_z >= 2 and local_z <= 17 and
-						x >= -3740 and x <= 3740 and z >= -3340 and z <= 3340
-					if not central then
-						local _, _, _, _, _, terrain_y, water_y, river_id =
-							planner_source.column_values_at(x, z)
-						if river_id ~= nil and terrain_y < water_y then
-							scratch.wet_surface[halo_index] = water_y
-							scratch.wet_bed[halo_index] = terrain_y
-						end
-					end
-				end
-			end
-			for column = 1, count do
-				if scratch.p7_support[column] and not scratch.excluded[column] and
-						scratch.surface_kind[column] ~= 3 then
-					local local_x = scratch.x[column] - start_x + 2
-					local local_z = scratch.z[column] - start_z + 2
-					local minimum_seal_y, maximum_water_y
-					for dx = -2, 2 do
-						for dz = -2, 2 do
-							local distance = math.abs(dx) + math.abs(dz)
-							if distance >= 1 and distance <= 2 then
-								local halo_index = (local_z + dz) * 20 +
-									(local_x + dx) + 1
-								local bed = scratch.wet_bed[halo_index]
-								if bed then
-									local seal_y = bed - 2
-									minimum_seal_y = minimum_seal_y and
-										math.min(minimum_seal_y, seal_y) or seal_y
-									local water = scratch.wet_surface[halo_index]
-									maximum_water_y = maximum_water_y and
-										math.max(maximum_water_y, water) or water
-								end
-							end
-						end
-					end
-					local terrain_y = scratch.terrain_y[column]
-					if minimum_seal_y and minimum_seal_y <= terrain_y and
-							terrain_y <= maximum_water_y then
-						scratch.p7_support[column] = false
-					end
-				end
 			end
 			return count
+		end
+
+		-- True when a wet column within two nodes (square) of (x, z) has its
+		-- surface between `ground - 3` and `ground` (papyrus, rule 3).
+		local function water_beside(x, z, ground)
+			for dz = -2, 2 do
+				for dx = -2, 2 do
+					if dx ~= 0 or dz ~= 0 then
+						local _, _, _, _, _, terrain_y, water_y =
+							planner_source.column_values_at(x + dx, z + dz)
+						if water_y and water_y > terrain_y and ground >= water_y and
+								ground <= water_y + 3 then
+							return true
+						end
+					end
+				end
+			end
+			return false
 		end
 
 		local function rank_less(left, right)
@@ -537,13 +511,18 @@ local function planner_factory()
 					end
 				end
 			end
-			-- The highest water surface standing in this cell, for rule 3.
-			local cell_water_y = false
+			-- The lowest and highest water surface standing in this cell, for
+			-- rule 3.
+			local cell_water_y, cell_water_low = false, false
 			for column = 1, column_count do
 				local water_y = scratch.water_y[column]
-				if water_y and water_y > scratch.terrain_y[column] and
-						(not cell_water_y or water_y > cell_water_y) then
-					cell_water_y = water_y
+				if water_y and water_y > scratch.terrain_y[column] then
+					if not cell_water_y or water_y > cell_water_y then
+						cell_water_y = water_y
+					end
+					if not cell_water_low or water_y < cell_water_low then
+						cell_water_low = water_y
+					end
 				end
 			end
 			for catalog = 1, #decorations do
@@ -559,7 +538,10 @@ local function planner_factory()
 						special_ok = not mountain_zone[scratch.zone_id[column]]
 					elseif height_rule == 3 then
 						special_ok = cell_water_y and scratch.surface_kind[column] ~= 3 and
-							terrain_y <= cell_water_y + 4 or false
+							terrain_y >= cell_water_low and terrain_y <= cell_water_y + 3 and
+							decoration_biome[catalog][scratch.biome[column]] and
+							water_beside(scratch.x[column], scratch.z[column], terrain_y) or
+							false
 					end
 					local cover = terrain_y >= 1 and special_ok and
 						decoration_biome[catalog][scratch.biome[column]] and
