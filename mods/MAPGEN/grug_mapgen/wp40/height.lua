@@ -71,6 +71,15 @@ local function new_coast_rules(full_seed_string)
 	function result.new_lattice_cache(limit)
 		local entries, clock = {}, 0
 		local cache = {}
+		function cache.peek(chunk_x, chunk_z)
+			for index = 1, #entries do
+				local entry = entries[index]
+				if entry.chunk_x == chunk_x and entry.chunk_z == chunk_z then
+					return entry.value
+				end
+			end
+			return nil
+		end
 		function cache.get(chunk_x, chunk_z, build)
 			clock = clock + 1
 			for index = 1, #entries do
@@ -113,32 +122,50 @@ local function new_coast_rules(full_seed_string)
 		end
 		return orientation
 	end
-	function result.nearest_lattice_sample(query_x, query_z, sample_min_x,
-			sample_min_z, sample_water)
-		local query_lattice_x = math.floor(query_x / 4)
-		local query_lattice_z = math.floor(query_z / 4)
-		local best_squared, best_orientation
-		for lattice_dx = -13, 13 do
-			for lattice_dz = -13, 13 do
-				local lattice_x = query_lattice_x + lattice_dx
-				local lattice_z = query_lattice_z + lattice_dz
-				local sample_index = (lattice_z - sample_min_z) * 46 +
-					(lattice_x - sample_min_x) + 1
-				local dx, dz = lattice_x * 4 - query_x, lattice_z * 4 - query_z
-				local squared = dx * dx + dz * dz
-				if squared > 256 and squared <= 2704 and
-						sample_water[sample_index] and
-						(best_squared == nil or squared < best_squared) then
-					best_squared = squared
-					if math.abs(dx) >= math.abs(dz) then
-						best_orientation = dx >= 0 and 1 or 2
-					else
-						best_orientation = dz >= 0 and 3 or 4
+	-- `sample_water(lattice_x, lattice_z)` answers for the 4-node lattice.
+	-- The nearest water sample with squared distance in (256, 2704]; ties go to
+	-- the lowest (lattice_dx, lattice_dz). The candidate offsets are sorted
+	-- once per query residue (x mod 4, z mod 4), so the scan stops at the
+	-- first water sample instead of visiting all 27 x 27.
+	local sorted_offsets = {}
+	for residue_x = 0, 3 do
+		for residue_z = 0, 3 do
+			local list = {}
+			for lattice_dx = -13, 13 do
+				for lattice_dz = -13, 13 do
+					local dx, dz = lattice_dx * 4 - residue_x, lattice_dz * 4 - residue_z
+					local squared = dx * dx + dz * dz
+					if squared > 256 and squared <= 2704 then
+						local orientation
+						if math.abs(dx) >= math.abs(dz) then
+							orientation = dx >= 0 and 1 or 2
+						else
+							orientation = dz >= 0 and 3 or 4
+						end
+						list[#list + 1] = {lattice_dx, lattice_dz, squared,
+							orientation, #list}
 					end
 				end
 			end
+			table.sort(list, function(a, b)
+				if a[3] ~= b[3] then return a[3] < b[3] end
+				return a[5] < b[5]
+			end)
+			sorted_offsets[residue_x * 4 + residue_z] = list
 		end
-		return best_squared, best_orientation
+	end
+	function result.nearest_lattice_sample(query_x, query_z, sample_water)
+		local query_lattice_x = math.floor(query_x / 4)
+		local query_lattice_z = math.floor(query_z / 4)
+		local list = sorted_offsets[(query_x - query_lattice_x * 4) * 4 +
+			(query_z - query_lattice_z * 4)]
+		for index = 1, #list do
+			local offset = list[index]
+			if sample_water(query_lattice_x + offset[1], query_lattice_z + offset[2]) then
+				return offset[3], offset[4]
+			end
+		end
+		return nil, nil
 	end
 	local relief_salts = {wetland_delta = 104729, lowland = 130363,
 		rolling_hills = 155921, plateau = 196613, highland = 225287,
@@ -181,6 +208,9 @@ local function height_factory(dependencies)
 	local OUTSIDE_FLOOR = WATER_LEVEL - 24
 	local FEATURE_CELL = 128
 	local COAST_REACH = 96
+	local LATTICE_LIMIT, LATTICE_DENSE = 262144, 256
+	-- Boat water floor (y) and the landing approach radius / ramp in nodes.
+	local BOAT_FLOOR_Y, BOAT_APPROACH, BOAT_RAMP = WATER_LEVEL - 9, 100, 24
 	-- Memo blocks are mapchunks: 80 nodes, offset by -32 like the engine's.
 	local BLOCK, BLOCK_OFFSET, BLOCK_LIMIT = 80, 32, 48
 	-- Column classes of the vertical model.
@@ -336,6 +366,51 @@ local function height_factory(dependencies)
 		local edge_noise = terrain_field.simplex(full_seed_string, "start_edge")
 
 		-----------------------------------------------------------------------
+		-- Boat water: the dragon channels, the boat paths and the approach
+		-- water around the island landings keep at least nine nodes of water
+		-- (boats.md). Outside the corridors the floor ramps back to the
+		-- field's sea floor over BOAT_RAMP nodes.
+		-----------------------------------------------------------------------
+		local boat_segments, boat_discs = {}, {}
+		for _, path in ipairs(source.boat_paths or {}) do
+			local line = path.centreline
+			for index = 1, #line - 1 do
+				local a, b = line[index], line[index + 1]
+				boat_segments[#boat_segments + 1] = {ax = a.x, az = a.z,
+					vx = b.x - a.x, vz = b.z - a.z,
+					radius = (path.width or 96) / 2 + 16}
+			end
+		end
+		for _, landing in ipairs(source.island_landings or {}) do
+			boat_discs[#boat_discs + 1] = {x = landing.position.x,
+				z = landing.position.z, radius = BOAT_APPROACH}
+		end
+		local function boat_floor_at(x, z)
+			local water_class = classified(x, z)
+			if water_class == "immutable_dragon_channel" then return BOAT_FLOOR_Y end
+			local excess = BOAT_RAMP
+			for index = 1, #boat_segments do
+				local g = boat_segments[index]
+				local ox, oz = x - g.ax, z - g.az
+				local length2 = g.vx * g.vx + g.vz * g.vz
+				local t = length2 > 0 and (ox * g.vx + oz * g.vz) / length2 or 0
+				if t < 0 then t = 0 elseif t > 1 then t = 1 end
+				local ex, ez = ox - t * g.vx, oz - t * g.vz
+				local d = sqrt(ex * ex + ez * ez) - g.radius
+				if d < excess then excess = d end
+			end
+			for index = 1, #boat_discs do
+				local disc = boat_discs[index]
+				local dx, dz = x - disc.x, z - disc.z
+				local d = sqrt(dx * dx + dz * dz) - disc.radius
+				if d < excess then excess = d end
+			end
+			if excess >= BOAT_RAMP then return nil end
+			if excess <= 0 then return BOAT_FLOOR_Y end
+			return floor(BOAT_FLOOR_Y + (WATER_LEVEL - 1 - BOAT_FLOOR_Y) * excess / BOAT_RAMP)
+		end
+
+		-----------------------------------------------------------------------
 		-- Per-chunk memo. One block per mapchunk column, filled lazily per
 		-- column; FIFO eviction keeps BLOCK_LIMIT blocks per session.
 		-----------------------------------------------------------------------
@@ -376,7 +451,12 @@ local function height_factory(dependencies)
 			local natural = block.natural[slot]
 			if natural == nil then
 				memo_misses = memo_misses + 1
-				natural = floor(field.height_at(x, z, block.class[slot] == LAND))
+				local land = block.class[slot] == LAND
+				natural = floor(field.height_at(x, z, land))
+				if not land then
+					local deep_y = boat_floor_at(x, z)
+					if deep_y ~= nil and deep_y < natural then natural = deep_y end
+				end
 				block.natural[slot] = natural
 			else
 				memo_hits = memo_hits + 1
@@ -588,16 +668,24 @@ local function height_factory(dependencies)
 		local function water_at(x, z)
 			return (class_owner_at(x, z)) ~= LAND
 		end
-		local function build_lattice(chunk_x, chunk_z)
-			local sample_min_x, sample_min_z = chunk_x * 20 - 13, chunk_z * 20 - 13
-			local sample_water = {}
-			for lattice_z = sample_min_z, sample_min_z + 45 do
-				for lattice_x = sample_min_x, sample_min_x + 45 do
-					local index = (lattice_z - sample_min_z) * 46 +
-						(lattice_x - sample_min_x) + 1
-					sample_water[index] = water_at(lattice_x * 4, lattice_z * 4)
+		-- The 4-node water lattice, memoised by lattice coordinate (bounded:
+		-- the table is dropped when it grows past LATTICE_LIMIT entries).
+		local lattice_water, lattice_count = {}, 0
+		local function sample_water(lattice_x, lattice_z)
+			local key = lattice_x * 8192 + lattice_z
+			local value = lattice_water[key]
+			if value == nil then
+				if lattice_count >= LATTICE_LIMIT then
+					lattice_water, lattice_count = {}, 0
 				end
+				-- Classified directly: a lattice sample needs no memo block.
+				value = (column_class(lattice_x * 4, lattice_z * 4)) ~= LAND
+				lattice_water[key] = value
+				lattice_count = lattice_count + 1
 			end
+			return value
+		end
+		local function build_lattice(chunk_x, chunk_z)
 			local squared_by, orientation_by = {}, {}
 			local world_min_x, world_min_z = chunk_x * 80, chunk_z * 80
 			for query_z = world_min_z, world_min_z + 79 do
@@ -605,21 +693,40 @@ local function height_factory(dependencies)
 					local query_index = (query_z - world_min_z) * 80 +
 						(query_x - world_min_x) + 1
 					local squared, orientation = coast_rules.nearest_lattice_sample(
-						query_x, query_z, sample_min_x, sample_min_z, sample_water)
+						query_x, query_z, sample_water)
 					squared_by[query_index] = squared or false
 					orientation_by[query_index] = orientation or false
 				end
 			end
 			return {squared = squared_by, orientation = orientation_by}
 		end
+		-- A whole 80x80 lattice pays off only for dense queries (planning, the
+		-- writer). Scattered callers (spawning, NPC placement, map render)
+		-- search the lattice for their one column; the answer is identical.
+		local lattice_queries = {}
 		local function lattice_shore_at(x, z)
 			local chunk_x, chunk_z = floor_div(x, 80), floor_div(z, 80)
-			local lattice = lattice_cache.get(chunk_x, chunk_z, build_lattice)
-			local index = (z - chunk_z * 80) * 80 + (x - chunk_x * 80) + 1
-			local squared = lattice.squared[index]
+			local lattice = lattice_cache.peek(chunk_x, chunk_z)
+			local squared, orientation
+			if not lattice then
+				local key = chunk_x * 1048576 + chunk_z
+				local count = (lattice_queries[key] or 0) + 1
+				lattice_queries[key] = count
+				if count >= LATTICE_DENSE then
+					lattice_queries[key] = nil
+					lattice = lattice_cache.get(chunk_x, chunk_z, build_lattice)
+				else
+					squared, orientation = coast_rules.nearest_lattice_sample(x, z,
+						sample_water)
+				end
+			end
+			if lattice then
+				local index = (z - chunk_z * 80) * 80 + (x - chunk_x * 80) + 1
+				squared, orientation = lattice.squared[index], lattice.orientation[index]
+			end
 			if not squared then return nil end
 			return floor(sqrt(squared) + 0.5), coast_rules.cardinal_orientation(x, z,
-				lattice.orientation[index], water_at)
+				orientation, water_at)
 		end
 		local function target_for(profile, distance, incoming, water_y, owner,
 				orientation, run, axis, class_salt)

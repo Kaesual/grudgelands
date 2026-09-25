@@ -250,6 +250,14 @@ return function(data)
 			end
 		end
 		wgrid = nil
+		-- Interleave the channels (cell-major) so one lookup touches a few
+		-- cache lines instead of nine scattered grids: scattered queries
+		-- (spawning, NPC placement, map render) are dominated by memory reads.
+		local G = {}
+		for k = 0, pnx * pnz - 1 do
+			for c = 1, NC do G[k * NC + c] = pgrid[c][k] end
+		end
+		pgrid = nil
 		local P = {}
 		local function params_at(x, z)
 			local u = (x - GX0) / cell
@@ -259,14 +267,16 @@ return function(data)
 			local wv0, wv1, wv2, wv3 = bspline(v - iv)
 			local ix0 = max(1, min(pnx - 3, iu)) - 1
 			local iz0 = max(1, min(pnz - 3, iv)) - 1
-			local k0 = iz0 * pnx + ix0
-			local k1, k2, k3 = k0 + pnx, k0 + 2 * pnx, k0 + 3 * pnx
+			local k0 = (iz0 * pnx + ix0) * NC
+			local row = pnx * NC
+			local k1, k2, k3 = k0 + row, k0 + 2 * row, k0 + 3 * row
+			local a, b, d = NC, 2 * NC, 3 * NC
 			for c = 1, NC do
-				local g = pgrid[c]
-				P[c] = wv0 * (wu0 * g[k0] + wu1 * g[k0 + 1] + wu2 * g[k0 + 2] + wu3 * g[k0 + 3])
-					+ wv1 * (wu0 * g[k1] + wu1 * g[k1 + 1] + wu2 * g[k1 + 2] + wu3 * g[k1 + 3])
-					+ wv2 * (wu0 * g[k2] + wu1 * g[k2 + 1] + wu2 * g[k2 + 2] + wu3 * g[k2 + 3])
-					+ wv3 * (wu0 * g[k3] + wu1 * g[k3 + 1] + wu2 * g[k3 + 2] + wu3 * g[k3 + 3])
+				local q0, q1, q2, q3 = k0 + c, k1 + c, k2 + c, k3 + c
+				P[c] = wv0 * (wu0 * G[q0] + wu1 * G[q0 + a] + wu2 * G[q0 + b] + wu3 * G[q0 + d])
+					+ wv1 * (wu0 * G[q1] + wu1 * G[q1 + a] + wu2 * G[q1 + b] + wu3 * G[q1 + d])
+					+ wv2 * (wu0 * G[q2] + wu1 * G[q2 + a] + wu2 * G[q2 + b] + wu3 * G[q2 + d])
+					+ wv3 * (wu0 * G[q3] + wu1 * G[q3 + a] + wu2 * G[q3 + b] + wu3 * G[q3 + d])
 			end
 			return P
 		end
@@ -732,7 +742,8 @@ return function(data)
 		local AW = V.anchor_warp
 		local function damp(x, z, h, hills_hi, wx, wz)
 			local ax, az = x + AW * wx, z + AW * wz
-			local best_m, best = 1, nil
+			local best_m, best, count = 1, nil, 0
+			local w_sum, t_sum, r_sum = 0, 0, 0
 			for i = 1, #ANCH do
 				local e = ANCH[i]
 				local dx, dz = ax - e.x, az - e.z
@@ -740,11 +751,20 @@ return function(data)
 				if d2 < e.r_out * e.r_out then
 					local m = smootherstep(e.r_in, e.r_out, sqrt(d2))
 					if m < best_m then best_m, best = m, e end
+					count = count + 1
+					local w = 1 - m
+					w_sum, t_sum, r_sum = w_sum + w, t_sum + w * e.target, r_sum + w * e.resid
 				end
 			end
 			if not best then return h, 1 end
 			local m = best_m
-			return best.target + m * (h - best.target) + (1 - m) * best.resid * hills_hi, m
+			if count == 1 or w_sum <= 0 then
+				return best.target + m * (h - best.target) + (1 - m) * best.resid * hills_hi, m
+			end
+			-- Overlapping bowls (none in the current layout): blend their targets
+			-- and residuals by influence, so no switch line becomes a cliff.
+			local target, resid = t_sum / w_sum, r_sum / w_sum
+			return target + m * (h - target) + (1 - m) * resid * hills_hi, m
 		end
 
 		local field = {anchors = ANCH, landmarks = LMS, coast_signed = coast_signed,
