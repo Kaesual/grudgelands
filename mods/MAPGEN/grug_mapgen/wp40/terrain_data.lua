@@ -84,6 +84,14 @@ data.params = {
 	spines = true, spine_warp = 0.7, range_ridge = 210,
 	mid = 1.35, neg_compress = 0.5, crest_warp = 0.4, massif_min = 0.75,
 	start_band = {6, 36},
+	-- POI calm bowls (plan D33): a POI whose natural core relief exceeds
+	-- poi_bowl_relief gets a bowl of inner radius core * poi_bowl_core +
+	-- poi_bowl_pad, fading out over poi_bowl_width nodes (grown by up to
+	-- poi_bowl_edge with a noise of poi_bowl_edge_period), at the mean natural
+	-- height inside the inner radius, keeping poi_bowl_resid of the small hills.
+	poi_bowl_relief = 40, poi_bowl_core = 0.75, poi_bowl_pad = 8,
+	poi_bowl_width = 90, poi_bowl_resid = 0.15, poi_bowl_edge = 0.35,
+	poi_bowl_edge_period = 60,
 	-- Anchor target: mean natural height within this radius, sampled on a grid.
 	target_radius = 200, target_step = 40,
 	-- Grid extent of the precomputed character and coast-distance grids.

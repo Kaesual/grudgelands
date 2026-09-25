@@ -777,7 +777,52 @@ return function(data)
 				end
 				e.natural_mean = sum / n
 				e.target = max(e.band[1], min(e.band[2], e.natural_mean))
+				e.edge_p = EDGE_P
 				ANCH[#ANCH + 1] = e
+			end
+		end
+		-- POIs on steep ground (plan D33): where the natural relief under a
+		-- POI's building core exceeds `poi_bowl_relief`, a small calm bowl
+		-- around it turns the slope or summit into a shelf at the local
+		-- ground's mean height, so the core is fitted onto a natural-looking
+		-- plateau instead of dug into the slope. Unwarped distance (the bowl
+		-- is small), an irregular outer edge.
+		local profile_by_id = {}
+		for _, p in ipairs(opts.anchor_profiles or {}) do profile_by_id[p.id] = p end
+		local function undamped(x, z)
+			local h, _, _, _, cw = natural(x, z)
+			return (with_coast(x, z, h, true, cw))
+		end
+		for _, a in ipairs(opts.anchors or {}) do
+			local profile = profile_by_id[a.template_id]
+			local core = profile and profile.building_core_width
+			if core and a.slot_id ~= "start" and a.slot_id ~= "capital" then
+				local ax, az, half = a.position.x, a.position.z, core / 2
+				local lo, hi = math.huge, -math.huge
+				for dz = -half, half, 4 do
+					for dx = -half, half, 4 do
+						if land_at(ax + dx, az + dz) then
+							local h = undamped(ax + dx, az + dz)
+							if h < lo then lo = h end
+							if h > hi then hi = h end
+						end
+					end
+				end
+				if hi - lo > V.poi_bowl_relief then
+					local r_in = core * V.poi_bowl_core + V.poi_bowl_pad
+					local sum, n = 0, 0
+					for dz = -r_in, r_in, 4 do
+						for dx = -r_in, r_in, 4 do
+							if dx * dx + dz * dz <= r_in * r_in and land_at(ax + dx, az + dz) then
+								sum, n = sum + undamped(ax + dx, az + dz), n + 1
+							end
+						end
+					end
+					ANCH[#ANCH + 1] = {id = a.id, slot = a.slot_id, x = ax, z = az,
+						r_in = r_in, r_out = r_in + V.poi_bowl_width, resid = V.poi_bowl_resid,
+						target = sum / n, natural_mean = sum / n, wave = 0,
+						edge = V.poi_bowl_edge, edge_p = V.poi_bowl_edge_period, nowarp = true}
+				end
 			end
 		end
 		local AW = V.anchor_warp
@@ -803,6 +848,7 @@ return function(data)
 			for i = 1, #ANCH do
 				local e = ANCH[i]
 				local dx, dz = ax - e.x, az - e.z
+				if e.nowarp then dx, dz = x - e.x, z - e.z end
 				local d2 = dx * dx + dz * dz
 				local r_out = e.r_out * (1 + e.edge)
 				if d2 < r_out * r_out then
@@ -813,7 +859,7 @@ return function(data)
 					-- plots never lose calm ground.
 					if e.edge > 0 then
 						r_out = e.r_out * (1 + e.edge * 0.5 *
-							(1 + nedge(x / EDGE_P, z / EDGE_P)))
+							(1 + nedge(x / e.edge_p, z / e.edge_p)))
 					else
 						r_out = e.r_out
 					end

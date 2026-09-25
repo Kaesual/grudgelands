@@ -474,6 +474,7 @@ return function(zone_field)
 			local island_zone_by_id = {}
 			for _, row in ipairs(source.islands) do island_zone_by_id[row.id] = row.zone_numeric_id end
 			local BAY_REACH = 450  -- warp + coast noise reach of a bay body (nodes)
+			local POI_VEGETATION_MARGIN = 4  -- bare ground around a POI core (nodes)
 			local shapes = {}
 			for index = 1, #source.claim_exclusions do
 				local exclusion = source.claim_exclusions[index]
@@ -488,6 +489,13 @@ return function(zone_field)
 					-- A start's or capital's blend envelope is terrain, not settlement
 					-- ground: a "vegetation" query skips it (its hard core still answers).
 					shape.anchor_blend = record.slot_id == "start" or record.slot_id == "capital"
+					-- A POI's ground is its building core; its collar is natural
+					-- terrain (plan D33), so vegetation grows up to a small margin
+					-- around the core instead of stopping at the old blend square.
+					if not shape.anchor_blend and profile.building_core_width then
+						shape.vegetation_width = profile.building_core_width +
+							2 * POI_VEGETATION_MARGIN
+					end
 				elseif recipe == "exclude_planned_water_v1" and bay_by_id[exclusion.source_id] then
 					local b = centreline_bounds(record)
 					shape.kind = "bay"
@@ -625,6 +633,10 @@ return function(zone_field)
 						-- Island/channel coast claims do not occupy their dry interior.
 					elseif shape.anchor_blend and purpose == "vegetation" then
 						-- Skipped: the remaining shapes in this bucket still answer.
+					elseif purpose == "vegetation" and shape.vegetation_width and
+							not in_centered_half_open_square(x, z, shape.center,
+								shape.vegetation_width, 0) then
+						-- Skipped the same way: outside a POI's core and margin.
 					elseif shape.start_apron_envelope and purpose == "vegetation" and
 							in_rectangle(x, z, shape.bounds, 0) and
 							in_centered_half_open_square(x, z, shape.center,

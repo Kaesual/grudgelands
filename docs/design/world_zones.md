@@ -467,8 +467,12 @@ replaced; git history before this rewrite records that model.
   A short collar follows the core's outline with round corners and a
   noise-varied width and returns to natural terrain: about 6 nodes on level
   ground, longer where the core's edge stands higher or lower than the
-  ground, and never more than about 28 nodes. On steep ground the cut or fill
-  at the core's edge stays as a short bank; there are no square plates.
+  ground, and never more than about 28 nodes. Where the natural ground under
+  the core varies by more than about 40 nodes (dragon arenas, apex mines and
+  POIs on steep slopes), a small calm bowl in the terrain field first turns
+  the slope or summit into a shelf at the local ground's mean height, with an
+  irregular edge. There are no square plates. Vegetation is kept off only
+  the core and a 4-node margin.
 - Housing is available only in the ten zones listed by `world.md` §5. A true
   housing-centre mask means the complete 101 by 101 future reservation passes
   every static exclusion (anchor envelopes, road and trail corridors, water,

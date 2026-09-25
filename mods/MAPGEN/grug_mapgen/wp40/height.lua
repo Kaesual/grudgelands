@@ -213,6 +213,7 @@ local function height_factory(dependencies)
 
 		local field = terrain_field.new(full_seed_string, {
 			zones = source.zones, anchors = source.anchors,
+			anchor_profiles = source.anchor_profiles,
 			zone_at = function(x, z)
 				local class, owner = column_class(x, z)
 				return class == LAND and owner or nil
