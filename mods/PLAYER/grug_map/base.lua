@@ -25,7 +25,7 @@ local WIDTH, HEIGHT = 1080, 960
 -- grid's time still fits, and the finest completed grid wins. With no
 -- completed grid the map has no relief.
 local RELIEF_BUDGET_US = (tonumber(core.settings:get("grug_map_relief_budget"))
-	or 2.5) * 1000000
+	or 6) * 1000000
 local RELIEF_STEPS = {64, 32, 16}
 -- Shown if rendering fails: plain sea, so the markers stay usable.
 local FALLBACK_TEXTURE = "[fill:90x80:#1c3a52"
