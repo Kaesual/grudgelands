@@ -158,6 +158,12 @@ Added at the Phase 0/1 gates (2026-09-25):
 | D24 | **Coast and zone borders vary per world seed.** Hubs, anchors and the macro silhouette stay fixed; anchors stay in their zone and on land by construction; a construction-time self-check falls back to a weaker warp on failure. The server renders the world map per world at first start. Coast-dependent content (river mouths, boat routes, landings, coastal housing) is derived from the coast rather than hand-placed. | User, after the coordinator's risk estimate: small risk, little extra work, and the map must be rendered per world anyway because roads depend on seed-dependent terrain. |
 | D25 | **Terrain direction B accepted; option C (coarse erosion) deferred.** The prototype look (variant B base plus two continental mountain ranges and hill country) is the target; ruggedness is judged in the playtest. C may return after the playtest if valleys are missing. | User, 2026-09-25, on the round-2 prototype images. |
 | D26 | **All inland water moves to Phase 5,** including civic water: Kezamba cenote, Lethariel crown lake, Highcourt river arms, Dawnmere and Sunscar ponds. Phase 3 keeps none, so Kezamba and Lethariel show dry basins in the Phase 3 playtest. Phase 5 embeds them naturally: the lake with irregular shores and possibly a river, a real river through Highcourt; the cenote stays a self-contained sinkhole with a more natural rim. | User, 2026-09-25, after discussing a split; one rule is simpler and lets Phase 5 embed city water in the landscape. |
+| D27 | **Geometric coast profiles are retired.** The Round 8/9 rules (48-node runs, beach/bluff/cliff/terraced-cliff draws, fixed beach ramps, minimum cliff height) fought the new field and made pillars, notches and raised beaches, worst in dwarf highlands. The coast's shape comes from the terrain alone; only a material rule remains (sand on low, gentle shores; gravel/stone on steep or mountain shores), derived from the actual terrain. The shore rule (first dry column at water level) stays. | User playtest 2026-09-25; the user never asked for cliffs and the fixed beach slope was an unnecessary rule. |
+| D28 | **Capital surroundings:** only the civic core is flat. Around it, terrain keeps long-wave variation (hills and hollows over ~100+ nodes) with limited amplitude, without fine detail, and the calm zone's edge is irregular, not round. Constraint until the capital rework: district plots still stand (plot warnings stay near zero). Terrain shape belongs to this round; buildings, walls, density and footprint belong to the capital rework (§11). | User playtest: "too flat and too round". |
+| D29 | **No time budgets that change output.** The world-map relief renders at one fixed resolution on every server (one-time cost at first start, cached); hardware must never change what is produced. | User: time budgets are hardware-dependent and create bug classes. |
+| D30 | **Water before roads:** Phase 5 (water) runs before Phase 4 (roads). Rivers carve valleys that roads then follow, and roads cross water where pathfinding finds it cheap, so bridges and fords fall out of routing instead of being retrofitted. Phase numbers stay as names. | User question, coordinator recommendation. |
+| D31 | **Temporary defects are allowed** in intermediate states (e.g. capitals, quest texts saying "follow the road") when their repair is a planned step of this round. Everything is repaired by the end of the round. | User. |
+| D32 | **Performance numbers are reports, not targets.** Guardrail 5 asks for a before/after comparison with the same method to catch gross regressions; there is no pass/fail limit. The real measure is whether chunk loading is noticeable in play. | User. |
 
 All §9 questions are answered.
 
@@ -348,6 +354,29 @@ user gate.
   C. per-world map render and region-relative clouds.
 - **Gate:** user playtest.
 
+### Phase 3b — Post-playtest round (2026-09-25)
+
+Findings of the user's Phase 3 playtest; the terrain direction is confirmed
+("looks really good for the first time"). Run in parallel:
+1. **Coast (D27):** remove the geometric coast profiles from `height.lua`
+   and `world_zones.md` §7.4; add the terrain-derived material rule; compare
+   human and dwarf coasts before/after by image.
+2. **Capital surroundings (D28):** flat civic core, long-wave limited
+   variation around it, irregular edge; plot warnings measured.
+3. **Map relief (D29):** fixed resolution, no time budget.
+4. **Capital alley stubs:** house-to-lane path segments point in one direction
+   and end in the void. Check whether Phase 3 caused it. If yes, fix now; if
+   it predates Round 22, it moves to the capital rework (§11).
+5. **Stale-rule audit (read-only):** find rules in the world/design docs and
+   assumptions in runtime mapgen code that date from the old flat world or
+   WP40 and no longer fit (like the coast profiles), plus known hot-path
+   costs (e.g. scattered `terrain_height_at` at 3–4 ms on the old code). Each
+   finding gets keep / relax / remove and a reason; the user decides. Scope:
+   world and mapgen rules and code that Phases 4–6 touch, not the whole
+   codebase.
+
+Gate: user look at the fixes and decisions on the audit list.
+
 ### Phase 4 — Roads v2
 
 - **Goal:** a small, natural-looking network.
@@ -395,6 +424,20 @@ user gate.
 - Rock and scree on steep slopes, cliff materials, transitions, and what the
   user finds while playing.
 - Afterwards, the general runtime cleanup round (D4).
+
+### Orchestration and compaction points
+
+The coordinator cuts the remaining work into packages that belong together
+thematically and technically, runs independent lanes in parallel, and
+compacts its context only at these points:
+
+1. **After Phase 3b and the user's decisions on the stale-rule audit, before
+   water starts.** Before compacting, this plan is brought up to date and a
+   short handover note records branches, worktrees, agent results and open
+   points that do not belong in the plan.
+2. **Not between water (Phase 5) and roads (Phase 4):** road planning needs the
+   full water context.
+3. Next candidate point: after roads, before Phase 6.
 
 ## 7. Where we go for the optimum, and where we relax
 
