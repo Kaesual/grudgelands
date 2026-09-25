@@ -59,9 +59,12 @@ local function height_factory(dependencies)
 	local BLOCK, BLOCK_OFFSET, BLOCK_LIMIT = 80, 32, 48
 	-- Column classes of the vertical model.
 	local LAND, SEA, BAY = 1, 2, 3
+	-- POI collar (plan D33): shortest and longest collar in nodes, and how far
+	-- a smooth noise stretches or shrinks it around the core (share).
+	local POI_BLEND_MIN, POI_BLEND_MAX, POI_EDGE_JITTER = 6, 28, 0.25
 
-	local floor, abs, max, min, sqrt = math.floor, math.abs, math.max,
-		math.min, math.sqrt
+	local floor, ceil, abs, max, min, sqrt = math.floor, math.ceil, math.abs,
+		math.max, math.min, math.sqrt
 	local round_ratio = deterministic.round_ratio
 	local floor_div = deterministic.floor_div
 
@@ -109,6 +112,15 @@ local function height_factory(dependencies)
 		local dx = max(center.x - half - x, x - (center.x + half - 1), 0)
 		local dz = max(center.z - half - z, z - (center.z + half - 1), 0)
 		return max(dx, dz)
+	end
+	-- True distance from (x, z) to the half-open square, 0 inside.
+	local function square_distance(x, z, center, width)
+		local half = width / 2
+		local dx = max(center.x - half - x, x - (center.x + half - 1), 0)
+		local dz = max(center.z - half - z, z - (center.z + half - 1), 0)
+		if dx == 0 then return dz end
+		if dz == 0 then return dx end
+		return sqrt(dx * dx + dz * dz)
 	end
 	local function add_bucket(grid, record, min_x, max_x, min_z, max_z)
 		for iz = floor_div(min_z, FEATURE_CELL), floor_div(max_z, FEATURE_CELL) do
@@ -208,6 +220,7 @@ local function height_factory(dependencies)
 			land_at = function(x, z) return (column_class(x, z)) == LAND end,
 		})
 		local edge_noise = terrain_field.simplex(full_seed_string, "start_edge")
+		local poi_edge_noise = terrain_field.simplex(full_seed_string, "poi_edge")
 
 		-----------------------------------------------------------------------
 		-- Boat water: the dragon channels, the boat paths and the approach
@@ -319,7 +332,9 @@ local function height_factory(dependencies)
 		-----------------------------------------------------------------------
 		-- Anchor fittings. Starts and capitals sit in the field's calm bowls
 		-- (damping keyed to the anchor), so their cores fit the cut/fill limits
-		-- of their profile; every other anchor flattens a compact building core.
+		-- of their profile. Every other anchor (a POI) takes its height from the
+		-- terrain under its building core and flattens only that core, with a
+		-- short collar that follows the core (plan D33).
 		-----------------------------------------------------------------------
 		local anchor_profile_by_id = {}
 		for index = 1, #source.anchor_profiles do
@@ -384,40 +399,52 @@ local function height_factory(dependencies)
 					feasible_lower, feasible_upper, water_floor)
 				fitting.core_range = feasible_upper - feasible_lower
 			else
+				-- POIs sit in the terrain (plan D33): the core's height is the
+				-- lower median of the natural ground under it, and only the
+				-- building core is flat.
 				local core_half = profile.building_core_width / 2
 				local natural_values = {}
-				local feasible_lower, feasible_upper, water_lower
+				local water_lower
 				for z = selected.z - core_half, selected.z + core_half - 1 do
 					for x = selected.x - core_half, selected.x + core_half - 1 do
 						local class, owner = class_owner_at(x, z)
 						if owner == zone and class == LAND then
-							local natural = natural_height_at(x, z)
-							natural_values[#natural_values + 1] = natural
-							feasible_lower = max(feasible_lower or -math.huge,
-								natural - profile.max_cut)
-							feasible_upper = min(feasible_upper or math.huge,
-								natural + profile.max_fill)
+							natural_values[#natural_values + 1] = natural_height_at(x, z)
 						elseif owner == zone and class == BAY then
 							water_lower = WATER_LEVEL + 1
 						end
 					end
 				end
-				local preferred = lower_median(natural_values) or water_lower or
+				local reference = lower_median(natural_values) or water_lower or
 					natural_height_at(selected.x, selected.z)
-				if feasible_lower ~= nil and feasible_lower <= feasible_upper then
-					fitting.reference_y = clamp(preferred, feasible_lower, feasible_upper)
-				elseif feasible_lower ~= nil then
-					fitting.reference_y = round_ratio(feasible_lower + feasible_upper, 2)
-				else
-					fitting.reference_y = preferred
+				reference = max(reference, WATER_LEVEL + 1)
+				-- The step at the core's edge sets the collar: short on level
+				-- ground, longer on a slope, never beyond POI_BLEND_MAX.
+				local step = 0
+				for offset = -core_half - 1, core_half do
+					local ring = {
+						{selected.x + offset, selected.z - core_half - 1},
+						{selected.x + offset, selected.z + core_half},
+						{selected.x - core_half - 1, selected.z + offset},
+						{selected.x + core_half, selected.z + offset}}
+					for side = 1, 4 do
+						local x, z = ring[side][1], ring[side][2]
+						local class, owner = class_owner_at(x, z)
+						if owner == zone and class == LAND then
+							step = max(step, abs(natural_height_at(x, z) - reference))
+						end
+					end
 				end
-				if water_lower ~= nil then
-					fitting.reference_y = max(fitting.reference_y, water_lower)
-				end
+				fitting.reference_y = reference
+				fitting.blend = clamp(POI_BLEND_MIN + step, POI_BLEND_MIN, POI_BLEND_MAX)
 			end
 			fittings[anchor_index] = fitting
 			local class = is_start and "start" or is_capital and "capital" or "selected"
 			local envelope_half = profile.blend_width / 2
+			if fitting.blend then
+				envelope_half = profile.building_core_width / 2 +
+					ceil(fitting.blend / (1 - POI_EDGE_JITTER)) + 1
+			end
 			add_bucket(grids[class], fitting,
 				selected.x - envelope_half, selected.x + envelope_half,
 				selected.z - envelope_half, selected.z + envelope_half)
@@ -469,6 +496,20 @@ local function height_factory(dependencies)
 							in_half_open_square(x, z, fitting.center,
 								profile.building_core_width) then
 						return max(fitting.reference_y, WATER_LEVEL + 1), fitting, true
+					elseif class == LAND and fitting.blend then
+						-- A POI: the flat building core, then a collar that
+						-- follows the core's outline (true distance, so round
+						-- corners), its width varied smoothly around the core.
+						local outside = square_distance(x, z, fitting.center,
+							profile.building_core_width)
+						if outside == 0 then return fitting.reference_y, fitting, false end
+						local blend = fitting.blend
+						local edge = outside * (1 + POI_EDGE_JITTER *
+							poi_edge_noise(x / 40, z / 40))
+						if edge < blend then
+							return lerp_node(incoming, fitting.reference_y,
+								weight_at(edge, blend)), fitting, false
+						end
 					elseif class == LAND then
 						local envelope_half = profile.blend_width / 2
 						local grade_width = (fitting.is_capital or fitting.is_start) and
@@ -601,8 +642,9 @@ local function height_factory(dependencies)
 		-- geometric profile; the rule only reads the final terrain. Low, gentle
 		-- ground near water is sand with sparse gravel; steep ground at the
 		-- water and cliff edges are gravel or stone; mountain land never gets
-		-- sand. Every threshold is jittered at two noise scales, so material
-		-- edges follow the terrain and never run straight. `bank_material` takes
+		-- sand (its border with other zones is dithered, not a line). Every
+		-- threshold is jittered at two noise scales, so material edges follow
+		-- the terrain and never run straight. `bank_material` takes
 		-- the water surface and the distance to that water as inputs, so lake
 		-- and river banks (Phase 5) can reuse it; the sea coast passes the sea
 		-- level and the field's true coast distance.
@@ -622,6 +664,21 @@ local function height_factory(dependencies)
 		end
 		-- "sand", "gravel", "stone" or nil for the dry column (x, z) of zone
 		-- `owner` at `distance` nodes from water whose surface is `water_y`.
+		-- Mountain character near a zone border: the owner is read at a point
+		-- moved up to MOUNTAIN_JITTER nodes by noise, so the sand/rock switch
+		-- dithers along an irregular band instead of following the border
+		-- line. A moved point off dry land keeps the column's own owner, so
+		-- the dragon islands stay rock to their shores.
+		local MOUNTAIN_JITTER = 48
+		local function mountain_owner_at(x, z, owner)
+			local jx = x + floor(MOUNTAIN_JITTER * shore_noise(x / 64 - 57.3, z / 64 + 12.9))
+			local jz = z + floor(MOUNTAIN_JITTER * shore_noise(x / 64 + 44.1, z / 64 - 81.7))
+			if not outside(jx, jz) then
+				local class, jittered = class_owner_at(jx, jz)
+				if class == LAND and jittered then owner = jittered end
+			end
+			return source.zones[owner].primary_relief_id == "mountain"
+		end
 		local function bank_material(x, z, owner, water_y, distance)
 			if distance > SAND_REACH + SHORE_JITTER then return nil end
 			local rise = final_values_at(x, z) - water_y
@@ -631,7 +688,7 @@ local function height_factory(dependencies)
 			local slope = max(
 				abs(bank_surface_y(x + 2, z, water_y) - bank_surface_y(x - 2, z, water_y)),
 				abs(bank_surface_y(x, z + 2, water_y) - bank_surface_y(x, z - 2, water_y))) / 4
-			local mountain = source.zones[owner].primary_relief_id == "mountain"
+			local mountain = mountain_owner_at(x, z, owner)
 			local steep = slope > GENTLE_SLOPE + 0.2 * fine
 			if not mountain and not steep and
 					distance <= SAND_REACH + SHORE_JITTER * broad and

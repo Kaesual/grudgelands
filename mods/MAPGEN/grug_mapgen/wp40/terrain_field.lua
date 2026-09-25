@@ -688,21 +688,50 @@ return function(data)
 			return h, hscale * sum_hi, wx, wz, coastw
 		end
 
-		-- Coast ramp and sea floor on top of the natural field.
+		-- Soft floor of dry land. Inland it keeps land about one node above the
+		-- water (floor 1, knee 4); toward the shore it sinks to the water
+		-- surface itself (floor 0, knee 1.5), so a beach runs down to the water
+		-- instead of standing on a step (plan D35). C1 at the knee.
+		local SHORE_FLOOR_REACH = 48
+		local function soft_floor(h, sd)
+			local t = smoothstep(0, SHORE_FLOOR_REACH, sd)
+			local knee = 1.5 + 1.5 * t
+			local k = t + knee
+			if h < k then return t + knee * exp((h - k) / knee) end
+			return h
+		end
+
+		-- Coast ramp and sea floor on top of the natural field. One profile
+		-- runs through the waterline (plan D35): near the water the land's
+		-- blend target slopes down to the water surface (1:8) and the sea floor
+		-- starts just below it and deepens across a shallow shelf (the coral
+		-- depths), then falls away to the deep sea. Gentle coasts shelve
+		-- slowly; short ramps, where the land meets the sea steeply, shelve
+		-- faster. Returns the height and the coast distance.
+		local BEACH, SHELF, SHELF_NEAR, SHELF_EDGE = 0.12, 0.07, 1.8, 70
 		local function with_coast(x, z, h, land, cw)
 			local sd = coast_signed(x, z)
 			local steep = smoothstep(0.35, 0.7, nmisc(x / 700 + 91, z / 700 - 13))
 			cw = cw + (40 - cw) * steep
 			if land then
 				local r = smoothstep(-20, cw, sd + 30 * nmisc(x / 260, z / 260 + 50))
-				h = 1.5 + (h - 1.5) * r
-				-- Soft floor: land approaches one node above water smoothly.
-				if h < 4 then h = 1 + 3 * exp((h - 4) / 3) end
+				local shore = BEACH * sd
+				if shore > 1.5 then shore = 1.5 end
+				h = shore + (h - shore) * r
+				h = soft_floor(h, sd)
 			else
-				h = -(2 + min(30, 0.1 * max(0, -sd))) + 1.5 * nmisc(x / 120, z / 120)
-				if h > -1 then h = -1 end
+				local d = sd < 0 and -sd or 0
+				local k = 150 / cw
+				if k < 0.75 then k = 0.75 elseif k > 1.25 then k = 1.25 end
+				local depth = k * (SHELF * d + SHELF_NEAR * (1 - exp(-d / 10)))
+				-- Past the shallow shelf the floor falls away to the deep sea.
+				local off = d - SHELF_EDGE
+				if off > 0 then depth = depth + 0.12 * off * off / (off + 40) end
+				if depth > 31.7 then depth = 31.7 end
+				h = -(0.3 + depth) + 1.5 * nmisc(x / 120, z / 120) * smoothstep(0, 40, d)
+				if h > -0.3 then h = -0.3 end
 			end
-			return h
+			return h, sd
 		end
 
 		-----------------------------------------------------------------------
@@ -817,10 +846,10 @@ return function(data)
 		function field.height_at(x, z, land)
 			if land == nil then land = land_at(x, z) end
 			local h, hills_hi, wx, wz, cw = natural(x, z)
-			h = with_coast(x, z, h, land, cw)
+			local sd
+			h, sd = with_coast(x, z, h, land, cw)
 			if land then
-				h = damp(x, z, h, hills_hi, wx, wz)
-				if h < 4 then h = 1 + 3 * exp((h - 4) / 3) end
+				h = soft_floor(damp(x, z, h, hills_hi, wx, wz), sd)
 			end
 			return WATER + h
 		end
@@ -829,11 +858,12 @@ return function(data)
 		function field.parts_at(x, z, land)
 			if land == nil then land = land_at(x, z) end
 			local h, hills_hi, wx, wz, cw = natural(x, z)
-			h = with_coast(x, z, h, land, cw)
+			local sd
+			h, sd = with_coast(x, z, h, land, cw)
 			local m = 1
 			if land then
 				h, m = damp(x, z, h, hills_hi, wx, wz)
-				if h < 4 then h = 1 + 3 * exp((h - 4) / 3) end
+				h = soft_floor(h, sd)
 			end
 			return WATER + h, land, m
 		end

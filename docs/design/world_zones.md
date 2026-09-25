@@ -425,14 +425,23 @@ replaced; git history before this rewrite records that model.
   terrain field alone: it mostly ramps gently to the water, with occasional
   steep coasts. There are no geometric coast profiles, runs or fixed beach
   slopes.
+- **Shore profile (Round 22, D35):** the height runs continuously through the
+  waterline. Where the terrain is gentle, a beach slopes down to the water
+  surface, the first water is one node deep and the floor deepens across a
+  shallow shelf (the reef depths) before falling to the deep sea; steep
+  terrain may still meet the sea steeply. Boat water keeps its own minimum
+  depth.
 - **Near-water materials (Round 22, D27):** one rule derived from the final
   terrain, near the water. Low, gentle ground within roughly 40 nodes of the
   water is sand above three sandstone filler nodes, with sparse gravel. Steep
   ground at the water and the edges of cliffs are gravel or stone. Mountain
-  land, including both dragon islands, never gets dry sand. The height,
-  slope and reach limits are jittered by noise, so material edges follow the
-  terrain and never run straight. Lake and river banks (Phase 5) reuse the
-  same rule with their own water surface.
+  land, including both dragon islands, never gets dry sand; where mountain
+  land borders other land the switch is dithered by noise, not a line. The
+  height, slope and reach limits are jittered by noise, so material edges
+  follow the terrain and never run straight. This rule is the only source of
+  dry beach sand: the palette beach biome shows shingle and rock wherever the
+  rule gives no sand. Lake and river banks (Phase 5) reuse the same rule with
+  their own water surface.
 - **Shore height:** the first cardinal dry-land column beside any exposed
   water surface has its terrain surface at exactly the water-surface y (§2).
   No dry shore column ends below its neighboring water surface. Bridges,
@@ -449,13 +458,17 @@ replaced; git history before this rewrite records that model.
 - Ordinary roads and ordinary bridges are mutable. Only a bridge without an
   adequate alternate crossing may receive bounded hard protection.
 - Starts keep their start-pad fitting (`settlements.md`); capitals keep their
-  96-node civic core and terrace contract (§12). Every other anchor flattens only a compact
-  building core: village and bandit camp 24; outpost, Mirefolk camp and clash
-  site 16; mine 20; dragon and apex mine 32; rare route 12 nodes. Dry core
-  columns contribute natural heights; the lower median is clamped into the
-  common `[natural-max_cut, natural+max_fill]` interval, and an empty interval
-  uses its minimax midpoint. Planned-water columns add a water-surface-plus-one
-  lower bound. One smootherstep collar returns to natural terrain.
+  96-node civic core and terrace contract (§12).
+- **POIs sit in the terrain (Round 22, D33).** Every other anchor keeps its
+  x/z, and its height comes from the terrain: the lower median of the natural
+  ground under its building core (village and bandit camp 24; outpost,
+  Mirefolk camp and clash site 16; mine 20; dragon and apex mine 32; rare
+  route 12 nodes), at least one node above water. Only that core is flat.
+  A short collar follows the core's outline with round corners and a
+  noise-varied width and returns to natural terrain: about 6 nodes on level
+  ground, longer where the core's edge stands higher or lower than the
+  ground, and never more than about 28 nodes. On steep ground the cut or fill
+  at the core's edge stays as a short bank; there are no square plates.
 - Housing is available only in the ten zones listed by `world.md` §5. A true
   housing-centre mask means the complete 101 by 101 future reservation passes
   every static exclusion (anchor envelopes, road and trail corridors, water,
