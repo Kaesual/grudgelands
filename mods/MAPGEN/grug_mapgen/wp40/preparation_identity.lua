@@ -2,7 +2,7 @@
 -- are deliberately absent: normal engine restarts can assign different IDs.
 return function(directory, sha256)
 	local files = {
-		"source/simple_map.lua", "schemas.lua", "canonical.lua",
+		"source/simple_map.lua", "zone_field.lua", "schemas.lua", "canonical.lua",
 		"deterministic.lua", "index128.lua", "simple_map.lua", "height.lua",
 		"coupled_grade.lua", "zones.lua", "r5.lua", "r6.lua",
 		"r7_runtime.lua", "preparation_source.lua", "preparation_identity.lua",

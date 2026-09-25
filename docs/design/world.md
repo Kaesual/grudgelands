@@ -26,9 +26,10 @@ docs, code and content — do not reintroduce the old ones.
 come from the authored zone authority, never merely the sign of z.
 
 \** `holy_grounds` is a legacy internal token. The Battlegrounds have no
-special geometry or rights (Round 22, `world_zones.md` §7.1); the territory
-token becomes `contested_land` when the new mapgen lands. It is not a
-player-facing name and implies no terrain protection.
+special geometry or rights (Round 22, `world_zones.md` §7.1); it survives
+only as the macro-region key of the four Battlegrounds zones, whose territory
+token is `contested_land`. It is not a player-facing name and implies no
+terrain protection.
 
 - In running prose the factions take the article: *the Accord*, *the
   Throng*; the full form "The Accord" is for titles and UI labels.

@@ -6,7 +6,6 @@ local PUBLIC_METHODS = {
 	"get",
 	"at",
 	"neighbors",
-	"travel_links",
 	"anchor",
 	"id_at",
 	"biome_at",
@@ -19,8 +18,6 @@ local PUBLIC_METHODS = {
 	"guard_level_at",
 	"terrain_height_at",
 	"water_class_at",
-	"nearest_route_at",
-	"nearest_hydrology_at",
 	"housing_eligible_at",
 }
 
@@ -213,7 +210,7 @@ end
 
 local function validate_outposts(session, rows)
 	dense_array(rows, 24, "outpost anchors")
-	local result, by_id, race_counts = {}, {}, {}
+	local result, by_id = {}, {}
 	for i = 1, #rows do
 		local row = rows[i]
 		exact_fields(row, {race_id = true, faction_id = true, anchor = true},
@@ -241,12 +238,6 @@ local function validate_outposts(session, rows)
 		}
 		result[i] = record
 		by_id[anchor.id] = record
-		race_counts[row.race_id] = (race_counts[row.race_id] or 0) + 1
-	end
-	for race_id in pairs(EXPECTED_RACES) do
-		if race_counts[race_id] ~= 4 then
-			fail("outpost count differs for " .. race_id)
-		end
 	end
 	return result
 end

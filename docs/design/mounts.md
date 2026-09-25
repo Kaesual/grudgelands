@@ -372,7 +372,8 @@ waypoints closes the same bypass for teleportation.
 coordinate.** `grug_zones.water_class_at(x,z)` separates authored ocean from
 land and planned inland water; the horizontal
 `grug_zones.at(pos).territory_rule` record allows the rider's own
-`accord_home`/`throng_home`, `holy_grounds` and ordinary `contested_land`.
+`accord_home`/`throng_home` and `contested_land` (which the four
+Battlegrounds zones also use).
 The two dragon-island identities override contested permission and are always
 flight-restricted; ocean is checked independently. Depth-sensitive civic protection does not alter this
 horizontal flight decision. The rider's identity comes from

@@ -269,7 +269,7 @@ mood("troll", "Troll region: warm humid jungle haze",
 	{density = 0.8, color = "#e8f0d8e5", ambient = "#101a10",
 		height = 100, thickness = 28, drift = -1.0, shadow = "#94a382"})
 
--- The four shared Battlegrounds (world_zones.md §8.3, territory_rule
+-- The four shared Battlegrounds (world_zones.md §8.3, macro region
 -- "holy_grounds"): ash and smoke, grey-brown, desaturated, short view.
 mood("battlegrounds", "Battlegrounds: ash haze over the shared front",
 	{shadow_intensity = 0.28, shadow_r = 24, shadow_g = 20, shadow_b = 16,
@@ -384,10 +384,10 @@ local function classify(zones, zone_id)
 	if not record then
 		return DEFAULT_MOOD
 	end
-	-- The four mainland Battlegrounds are exactly the holy_grounds rule
-	-- (world_zones.md §8.3); the token names the macro rectangle, not a
-	-- protection right, which is why it is safe to read as "this is the front".
-	if record.territory_rule == "holy_grounds" then
+	-- The four mainland Battlegrounds are exactly the zones of the legacy
+	-- "holy_grounds" macro region (world_zones.md §8.3); it carries no geometry
+	-- or rights, which is why it is safe to read as "this is the front".
+	if record.macro_region == "holy_grounds" then
 		return "battlegrounds"
 	end
 	-- The two dragon islands are the only 60/60 zones in the catalog

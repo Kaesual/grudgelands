@@ -838,52 +838,6 @@ local function settlement_factory()
 		local function overlaps_apex(x, y, z)
 			return y >= -700 and apex_columns[tostring(x) .. "/" .. tostring(z)] ~= nil
 		end
-		local route_by_id, hard_ingresses = {}, {}
-		for index = 1, #(source.routes or {}) do
-			route_by_id[source.routes[index].id] = source.routes[index]
-		end
-		for index = 1, #(source.hard_protection or {}) do
-			local row = source.hard_protection[index]
-			if row.recipe_id == "hard_capital_ingress_corridor_v1" then
-				hard_ingresses[#hard_ingresses + 1] = row
-			end
-		end
-		local function segment_corridor_member(x, z, a, b, total_width)
-			local half_floor = math.floor(total_width / 2)
-			if x < math.min(a.x, b.x) - half_floor - 1 or
-					x > math.max(a.x, b.x) + half_floor + 1 or
-					z < math.min(a.z, b.z) - half_floor - 1 or
-					z > math.max(a.z, b.z) + half_floor + 1 then return false end
-			local vx, vz = b.x - a.x, b.z - a.z
-			local wx, wz = x - a.x, z - a.z
-			local length_squared = vx * vx + vz * vz
-			local numerator, denominator
-			local dot = wx * vx + wz * vz
-			if dot <= 0 then
-				numerator, denominator = wx * wx + wz * wz, 1
-			elseif dot >= length_squared then
-				local dx, dz = x - b.x, z - b.z
-				numerator, denominator = dx * dx + dz * dz, 1
-			else
-				local cross = wx * vz - wz * vx
-				numerator, denominator = cross * cross, length_squared
-			end
-			return 4 * numerator <= total_width * total_width * denominator
-		end
-		local function in_hard_ingress(x, z)
-			for hard_index = 1, #hard_ingresses do
-				local hard = hard_ingresses[hard_index]
-				for route_index = 1, #hard.route_ids do
-					local route = route_by_id[hard.route_ids[route_index]]
-					if not route then fail("fail_settlement", "hard ingress route differs") end
-					for point = 1, #route.centreline - 1 do
-						if segment_corridor_member(x, z, route.centreline[point],
-								route.centreline[point + 1], 128) then return true end
-					end
-				end
-			end
-			return false
-		end
 		local hydrology_profile_depth, hydrology_depth, lower_hydrology = {}, {}, {}
 		for index = 1, #(source.hydrology_profiles or {}) do
 			local row = source.hydrology_profiles[index]
@@ -1953,7 +1907,6 @@ local function settlement_factory()
 		end
 		helpers = {equal_graph = equal_graph,
 			primary_reason = primary_reason, exclusion_reason = exclusion_reason,
-			in_hard_ingress = in_hard_ingress,
 			housing_excluded_at = housing_excluded_at,
 			analytic_p7_material_ref = analytic_p7_material_ref,
 			analytic_p7_support_ref = analytic_p7_support_ref,
@@ -2478,8 +2431,8 @@ local function settlement_factory()
 				for x = min_x, max_x do
 					local column = column_index(x, z)
 					local reason = helpers.exclusion_reason(x, z)
-					local excluded = reason == "fixed_or_protected" or
-						(reason == "route_or_water" and helpers.in_hard_ingress(x, z))
+					-- The capital ingress corridors are retired (Round 22, D9).
+					local excluded = reason == "fixed_or_protected"
 					-- Bit 2 is the immutable shallow exclusion. Bit 1 is filled for
 					-- each resource below from immutable water/race column values.
 					resource_column_state[column] = excluded and 2 or 0

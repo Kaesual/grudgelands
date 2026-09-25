@@ -356,14 +356,6 @@ local function zones_factory(dependencies)
 				type(injected_raw_sha256) ~= "function" then
 			fail("dependency type differs")
 		end
-		if source.schema ~= "grug_wp40_simple_map_source_v2" or
-				schemas.simple_map_source ~= source.schema or
-				schemas.simple_map ~= "grug_wp40_simple_map_v1" or
-				schemas.geometry_source ~= "grug_wp40_geometry_source_v1" or
-				source.layout_id ~= "wp40-simple-map-v1d" or
-				source.layout_revision_id ~= "wp40-simple-map-v1e" then
-			fail("source/schema/layout authority differs")
-		end
 		if type(canonical.encode) ~= "function" or
 				type(canonical.text) ~= "function" or
 				type(canonical.signed) ~= "function" or
@@ -379,28 +371,6 @@ local function zones_factory(dependencies)
 			if type(index128[name]) ~= "function" then
 				fail("sparse index seam missing: " .. name)
 			end
-		end
-		local expected_counts = {
-			zones = 38,
-			routes = 57,
-			boat_paths = 4,
-			island_routes = 8,
-			anchors = 100,
-			poi_spurs = 74,
-			hydrology = 25,
-			hard_protection = 42,
-			hard_protection_recipes = 4,
-			capital_ingresses = 6,
-		}
-		for key, expected in pairs(expected_counts) do
-			if dense_count(source[key], key) ~= expected then
-				fail(key .. " count differs")
-			end
-		end
-		if source.housing_policy.reservation_width ~= 101 or
-				source.housing_policy.reservation_radius ~= 50 or
-				dense_count(source.claim_exclusions, "claim exclusions") ~= 314 then
-			fail("housing authority differs")
 		end
 	end
 
@@ -458,8 +428,9 @@ local function zones_factory(dependencies)
 		if type(horizontal) ~= "table" or
 				type(horizontal.classification_values_at) ~= "function" or
 				type(horizontal.warp_at) ~= "function" or
-				type(horizontal.difficulty_for_macro_at) ~= "function" or
-				type(horizontal.polyline_corridor_member) ~= "function" or
+				type(horizontal.zone_level_at) ~= "function" or
+				type(horizontal.biome_lookup_at) ~= "function" or
+				type(horizontal.neighbors) ~= "function" or
 				type(horizontal.housing_eligible_at) ~= "function" or
 				type(horizontal.static_exclusion_values_at) ~= "function" or
 				type(horizontal.housing_mask_id_at) ~= "function" then
@@ -509,8 +480,7 @@ local function zones_factory(dependencies)
 			end
 			if row.territory_rule ~= "accord_home" and
 					row.territory_rule ~= "throng_home" and
-					row.territory_rule ~= "contested_land" and
-					row.territory_rule ~= "holy_grounds" then
+					row.territory_rule ~= "contested_land" then
 				fail("zone territory rule differs")
 			end
 			if row.pvp_rule ~= "peaceful" and row.pvp_rule ~= "contested" then
@@ -548,65 +518,11 @@ local function zones_factory(dependencies)
 			zone_by_numeric[zone_index] = record
 			zone_by_id[row.id] = record
 		end
+		-- Gameplay neighbours are geometric zone adjacency (world_zones.md §9.1,
+		-- D14), computed once per world by the horizontal session.
 		local neighbor_ids = {}
-		for zone_index = 1, #source.zones do neighbor_ids[zone_index] = {} end
-		local neighbor_seen = {}
-		local neighbor_edges = {}
-		for route_index = 1, #source.routes do
-			local route = source.routes[route_index]
-			local a, b = integer(route.zone_a, "route zone a"),
-				integer(route.zone_b, "route zone b")
-			if not zone_by_numeric[a] or not zone_by_numeric[b] or a == b then
-				fail("route endpoint zone differs")
-			end
-			local first, second = a, b
-			if second < first then first, second = second, first end
-			local key = tostring(first) .. ":" .. tostring(second)
-			if neighbor_seen[key] then fail("duplicate land neighbor edge") end
-			neighbor_seen[key] = true
-			neighbor_ids[a][#neighbor_ids[a] + 1] = zone_by_numeric[b].id
-			neighbor_ids[b][#neighbor_ids[b] + 1] = zone_by_numeric[a].id
-			neighbor_edges[#neighbor_edges + 1] = {
-				a = zone_by_numeric[first].id,
-				b = zone_by_numeric[second].id,
-				route_id = route.id,
-			}
-		end
-		for zone_index = 1, #neighbor_ids do table.sort(neighbor_ids[zone_index]) end
-		table.sort(neighbor_edges, function(a, b)
-			if a.a ~= b.a then return a.a < b.a end
-			if a.b ~= b.b then return a.b < b.b end
-			return a.route_id < b.route_id
-		end)
-
-		local travel_by_zone, travel_records = {}, {}
-		for zone_index = 1, #source.zones do travel_by_zone[zone_index] = {} end
-		for boat_index = 1, #source.boat_paths do
-			local boat = source.boat_paths[boat_index]
-			if type(boat.id) ~= "string" or not zone_by_numeric[boat.from_zone] or
-					not zone_by_numeric[boat.to_zone] or
-					boat.from_zone == boat.to_zone or boat.kind ~= "boat" then
-				fail("boat path record differs")
-			end
-			local absolute = {
-				id = boat.id,
-				kind = "boat",
-				from_zone_id = zone_by_numeric[boat.from_zone].id,
-				to_zone_id = zone_by_numeric[boat.to_zone].id,
-				landing_id = boat.landing_id,
-				width = boat.width,
-				centreline = deep_copy(boat.centreline),
-			}
-			travel_records[boat_index] = absolute
-			for _, zone_index in ipairs({boat.from_zone, boat.to_zone}) do
-				local row = deep_copy(absolute)
-				row.destination_zone_id = zone_by_numeric[
-					zone_index == boat.from_zone and boat.to_zone or boat.from_zone].id
-				travel_by_zone[zone_index][#travel_by_zone[zone_index] + 1] = row
-			end
-		end
-		for zone_index = 1, #travel_by_zone do
-			table.sort(travel_by_zone[zone_index], function(a, b) return a.id < b.id end)
+		for zone_index = 1, #source.zones do
+			neighbor_ids[zone_index] = horizontal.neighbors(zone_index)
 		end
 
 		local anchor_by_zone_slot, anchor_records = {}, {}
@@ -649,7 +565,7 @@ local function zones_factory(dependencies)
 		local max_cell_x = deterministic.floor_div(MAX_X, cell_size) + 1
 		local min_cell_z = deterministic.floor_div(MIN_Z, cell_size) - 1
 		local max_cell_z = deterministic.floor_div(MAX_Z, cell_size) + 1
-		local logical_sites, logical_digest_rows = {}, {}
+		local logical_sites = {}
 		local logical_site_count = 0
 		for cell_x = min_cell_x, max_cell_x do
 			local column = {}
@@ -665,15 +581,8 @@ local function zones_factory(dependencies)
 					{cell_x, cell_z}, 0, selector.hash_lanes.palette, 100)
 				column[cell_z] = {x = site_x, z = site_z, roll = roll}
 				logical_site_count = logical_site_count + 1
-				logical_digest_rows[#logical_digest_rows + 1] = canonical.array({
-					canonical.signed(cell_x), canonical.signed(cell_z),
-					canonical.signed(site_x), canonical.signed(site_z),
-					canonical.signed(roll),
-				})
 			end
 		end
-		local logical_site_digest = canonical.hex(counted_sha(canonical.encode(
-			canonical.array(logical_digest_rows))))
 
 		local function classification_values(x, z, outside)
 			if outside then return "deep_ocean", nil, nil end
@@ -732,12 +641,13 @@ local function zones_factory(dependencies)
 			return nil
 		end
 
-		local function surface_level_from_classification(x, z, water_class,
-				macro_region)
+		-- Levels follow the owning zone (world_zones.md §2, D20); the inner start
+		-- band overrides them around the six starts.
+		local function surface_level_from_classification(x, z, water_class, owner)
 			if water_class ~= "land" and water_class ~= "planned_water" then
 				return nil
 			end
-			local level = horizontal.difficulty_for_macro_at(x, z, macro_region)
+			local level = horizontal.zone_level_at(x, z, owner)
 			if type(level) ~= "number" or level % 1 ~= 0 or
 					level < 1 or level > 60 then
 				fail("surface mob level differs")
@@ -746,6 +656,14 @@ local function zones_factory(dependencies)
 		end
 
 		local function logical_biome_at(x, z, zone_numeric_id)
+			-- Biome dither at zone borders (world_zones.md §7.3): the palette zone
+			-- and the patch lookup both use one jittered point.
+			local palette_zone, qx, qz = horizontal.biome_lookup_at(x, z)
+			if palette_zone then
+				zone_numeric_id = palette_zone
+				x = math.min(MAX_X, math.max(MIN_X, qx))
+				z = math.min(MAX_Z, math.max(MIN_Z, qz))
+			end
 			local own_x = deterministic.floor_div(x, cell_size)
 			local own_z = deterministic.floor_div(z, cell_size)
 			local best_site, best_x, best_z, best_distance
@@ -772,170 +690,52 @@ local function zones_factory(dependencies)
 			fail("logical biome roll escaped its palette")
 		end
 
-		-- Sparse path/hydrology and hard-footprint compilation follows below.
-		-- All three indexes contain acceleration data only; exact policy and
-		-- membership remain in this session and the accepted evaluators.
-		local source_anchor_by_id = {}
-		for anchor_index = 1, #source.anchors do
-			source_anchor_by_id[source.anchors[anchor_index].id] =
-				source.anchors[anchor_index]
-		end
-		local trail_templates = {
-			bandit_home = true,
-			bandit_frontier = true,
-			mirefolk = true,
-			clash = true,
-		}
-		local path_by_id, path_rows, route_segments = {}, {}, {}
-		local function add_path(source_path, path_kind, route_class, order,
-				surface_width, corridor_width)
-			if type(source_path.id) ~= "string" or source_path.id == "" or
-					path_by_id[source_path.id] then
-				fail("graded path identity differs")
-			end
-			if not source.route_profiles[route_class] or
-					source.route_profiles[route_class].surface_width ~= surface_width or
-					source.route_profiles[route_class].corridor_width ~= corridor_width then
-				fail("graded path profile differs")
-			end
-			local points = source_path.centreline
-			if dense_count(points, "graded path points") < 2 then
-				fail("graded path has fewer than two points")
-			end
-			local row = {
-				id = source_path.id,
-				path_kind = path_kind,
-				route_class = route_class,
-				surface_width = surface_width,
-				corridor_width = corridor_width,
-				centreline = points,
-				feature_order = order,
-			}
-			path_rows[#path_rows + 1] = row
-			path_by_id[row.id] = row
-			for segment = 1, #points - 1 do
-				local a, b = points[segment], points[segment + 1]
-				integer(a.x, "path point x") integer(a.z, "path point z")
-				integer(b.x, "path point x") integer(b.z, "path point z")
-				if a.x == b.x and a.z == b.z then
-					fail("graded path has a degenerate source segment")
-				end
-				route_segments[#route_segments + 1] = {
-					feature_id = row.id,
-					feature_order = order,
-					segment = segment,
-					ax = a.x,
-					az = a.z,
-					bx = b.x,
-					bz = b.z,
-				}
-			end
-		end
-		for route_index = 1, #source.routes do
-			local route = source.routes[route_index]
-			local profile = source.route_profiles[route.class]
-			if not profile or route.surface_width ~= profile.surface_width or
-					route.corridor_width ~= profile.corridor_width then
-				fail("authored land-route profile differs")
-			end
-			add_path(route, "land_route", route.class, #path_rows + 1,
-				profile.surface_width, profile.corridor_width)
-		end
-		for spur_index = 1, #source.poi_spurs do
-			local spur = source.poi_spurs[spur_index]
-			local anchor = source_anchor_by_id[spur.anchor_id]
-			if not anchor then fail("POI spur anchor missing") end
-			local route_class = trail_templates[anchor.template_id] and
-				"trail" or "secondary"
-			local profile = source.route_profiles[route_class]
-			add_path(spur, "poi_spur", route_class, #path_rows + 1,
-				profile.surface_width, profile.corridor_width)
-		end
-		for island_index = 1, #source.island_routes do
-			local profile = source.route_profiles.secondary
-			add_path(source.island_routes[island_index], "island_route",
-				"secondary", #path_rows + 1, profile.surface_width,
-				profile.corridor_width)
-		end
-		-- 139 graded paths, unchanged: this round adds no path. The segment count
-		-- was 476 until WP13 round B compiled the gate-axis run into the six start
-		-- routes' first leg, which inserts two vertices -- the gate point and the
-		-- second eased vertex -- and therefore two segments each: 476 + 6 x 2 = 488.
-		if #path_rows ~= 139 or #route_segments ~= 488 then
-			fail("graded path/segment population differs")
-		end
-		local route_index = index128.compile_sparse_segments({
-			schema = SPARSE_SCHEMA,
-			min_x = MIN_X,
-			max_x = MAX_X,
-			min_z = MIN_Z,
-			max_z = MAX_Z,
-			tie_break = "feature_id",
-			segments = route_segments,
-		}, SPARSE_SCHEMA)
-
+		-- Sparse civic-water and hard-footprint indexes follow. Roads are gone
+		-- until Round 22 Phase 4 and ordinary inland water until Phase 5; the
+		-- civic water inside start and capital cores is the only indexed
+		-- hydrology. The indexes hold acceleration data only.
 		local hydrology_profile_by_id = {}
-		for profile_index = 1, dense_count(source.hydrology_profiles,
+		for profile_index = 1, dense_count(source.hydrology_profiles or {},
 				"hydrology profiles") do
 			local profile = source.hydrology_profiles[profile_index]
-			if type(profile.id) ~= "string" or profile.id == "" or
-					hydrology_profile_by_id[profile.id] then
-				fail("hydrology profile identity differs")
-			end
-			local depth = integer(profile.depth, "hydrology profile depth")
-			if depth < 0 or profile.bed_seal_layers ~= 3 or
-					profile.bank_seal_nodes ~= 2 then
-				fail("hydrology profile planner fields differ")
-			end
 			hydrology_profile_by_id[profile.id] = profile
 		end
 		local hydrology_by_id, hydrology_segments = {}, {}
-		for reach_index = 1, #source.hydrology do
+		for reach_index = 1, #(source.hydrology or {}) do
 			local reach = source.hydrology[reach_index]
-			if type(reach.id) ~= "string" or reach.id == "" or
-					hydrology_by_id[reach.id] then
-				fail("hydrology identity differs")
-			end
 			local profile = hydrology_profile_by_id[reach.profile_id]
-			if not profile then fail("hydrology profile reference differs") end
-			hydrology_by_id[reach.id] = {id = reach.id, order = reach_index,
-				profile_id = profile.id, profile_depth = profile.depth}
-			local points = reach.centreline
-			if dense_count(points, "hydrology points") < 2 then
-				fail("hydrology has fewer than two points")
-			end
-			for segment = 1, #points - 1 do
-				local a, b = points[segment], points[segment + 1]
-				integer(a.x, "hydrology point x") integer(a.z, "hydrology point z")
-				integer(b.x, "hydrology point x") integer(b.z, "hydrology point z")
-				if a.x == b.x and a.z == b.z then
-					fail("hydrology has a degenerate source segment")
+			if reach.civic_core_zone_numeric_id and profile then
+				hydrology_by_id[reach.id] = {id = reach.id, order = reach_index,
+					profile_id = profile.id, profile_depth = profile.depth}
+				local points = reach.centreline
+				for segment = 1, #points - 1 do
+					local a, b = points[segment], points[segment + 1]
+					if a.x ~= b.x or a.z ~= b.z then
+						hydrology_segments[#hydrology_segments + 1] = {
+							feature_id = reach.id,
+							feature_order = reach_index,
+							segment = segment,
+							ax = a.x,
+							az = a.z,
+							bx = b.x,
+							bz = b.z,
+						}
+					end
 				end
-				hydrology_segments[#hydrology_segments + 1] = {
-					feature_id = reach.id,
-					feature_order = reach_index,
-					segment = segment,
-					ax = a.x,
-					az = a.z,
-					bx = b.x,
-					bz = b.z,
-				}
 			end
 		end
-		if #hydrology_segments ~= 102 then
-			fail("hydrology segment population differs")
-		end
-		local hydrology_index = index128.compile_sparse_segments({
-			schema = SPARSE_SCHEMA,
-			min_x = MIN_X,
-			max_x = MAX_X,
-			min_z = MIN_Z,
-			max_z = MAX_Z,
-			tie_break = "feature_order",
-			segments = hydrology_segments,
-		}, SPARSE_SCHEMA)
+		local hydrology_index = #hydrology_segments > 0 and
+			index128.compile_sparse_segments({
+				schema = SPARSE_SCHEMA,
+				min_x = MIN_X,
+				max_x = MAX_X,
+				min_z = MIN_Z,
+				max_z = MAX_Z,
+				tie_break = "feature_order",
+				segments = hydrology_segments,
+			}, SPARSE_SCHEMA) or nil
 		local hydrology_scalar_scratch
-		if planner_source_requested then
+		if planner_source_requested and hydrology_index then
 			hydrology_scalar_scratch = {}
 			for segment_index = 1, #hydrology_segments do
 				hydrology_scalar_scratch[segment_index] = 0
@@ -950,95 +750,67 @@ local function zones_factory(dependencies)
 			hydrology_scalar_scratch._index128_candidates_scanned = 0
 		end
 
-		local recipe_by_id, source_route_by_id = {}, {}
+		local recipe_by_id = {}
 		for recipe_index = 1, #source.hard_protection_recipes do
 			local recipe = source.hard_protection_recipes[recipe_index]
 			recipe_by_id[recipe.id] = recipe
 		end
-		for source_route_index = 1, #source.routes do
-			local route = source.routes[source_route_index]
-			source_route_by_id[route.id] = route
-		end
+		-- Hard protection: start and capital cores and apex socket columns. The
+		-- capital ingress corridors are retired (D9); their legacy source rows
+		-- are skipped.
+		local height_hard_by_id = {}
 		local height_hard_records = height.hard_protection_volumes()
-		if dense_count(height_hard_records, "R3 hard volumes") ~= 42 then
-			fail("R3 hard-volume count differs")
+		for index = 1, #height_hard_records do
+			local row = height_hard_records[index]
+			if type(row) == "table" and row.id then height_hard_by_id[row.id] = row end
 		end
 		local hard_by_id, hard_rows, footprint_records = {}, {}, {}
-		local function add_ingress_path_bounds(paths, points, bounds)
-			paths[#paths + 1] = points
-			for point_index = 1, #points do
-				local point = points[point_index]
-				bounds.min_x = bounds.min_x and math.min(bounds.min_x, point.x) or
-					point.x
-				bounds.max_x = bounds.max_x and math.max(bounds.max_x, point.x) or
-					point.x
-				bounds.min_z = bounds.min_z and math.min(bounds.min_z, point.z) or
-					point.z
-				bounds.max_z = bounds.max_z and math.max(bounds.max_z, point.z) or
-					point.z
-			end
-		end
 		for hard_index = 1, #source.hard_protection do
 			local source_hard = source.hard_protection[hard_index]
-			local height_hard = height_hard_records[hard_index]
 			local recipe = recipe_by_id[source_hard.recipe_id]
 			if not recipe then fail("hard recipe missing") end
-			if type(height_hard) ~= "table" or
-					not source_subset_matches(source_hard, height_hard) or
-					height_hard.id ~= source_hard.id or
-					height_hard.recipe_id ~= source_hard.recipe_id or
-					height_hard.y_min ~= -700 or
-					height_hard.upward_unbounded ~= true or
-					height_hard.y_policy_id ~= recipe.y_policy_id then
-				fail("R3 hard-volume passthrough differs")
+			if recipe.shape ~= "polyline_corridor" then
+				local height_hard = height_hard_by_id[source_hard.id]
+				if type(height_hard) ~= "table" or
+						not source_subset_matches(source_hard, height_hard) or
+						height_hard.recipe_id ~= source_hard.recipe_id or
+						height_hard.y_min ~= -700 or
+						height_hard.upward_unbounded ~= true or
+						height_hard.y_policy_id ~= recipe.y_policy_id then
+					fail("R3 hard-volume passthrough differs")
+				end
+				local internal = {
+					id = source_hard.id,
+					record = deep_copy(height_hard),
+					shape = recipe.shape,
+					total_width = recipe.total_width,
+					y_min = recipe.y_min,
+				}
+				local bbox
+				if recipe.shape == "centered_half_open_square" then
+					local center = source_hard.center
+					if type(center) ~= "table" or recipe.total_width % 2 ~= 0 then
+						fail("hard square geometry differs")
+					end
+					local half = recipe.total_width / 2
+					internal.center = center
+					bbox = {min_x = center.x - half, max_x = center.x + half,
+						min_z = center.z - half, max_z = center.z + half}
+				elseif recipe.shape == "exact_column" then
+					local center = source_hard.center
+					if type(center) ~= "table" then fail("hard socket center missing") end
+					internal.center = center
+					bbox = {min_x = center.x, max_x = center.x + 1,
+						min_z = center.z, max_z = center.z + 1}
+				else
+					fail("unknown hard footprint shape")
+				end
+				internal.bbox = bbox
+				if hard_by_id[internal.id] then fail("duplicate hard footprint id") end
+				hard_rows[#hard_rows + 1] = internal
+				hard_by_id[internal.id] = internal
+				footprint_records[#footprint_records + 1] = {id = internal.id, bbox = bbox}
 			end
-			local internal = {
-				id = source_hard.id,
-				record = deep_copy(height_hard),
-				shape = recipe.shape,
-				total_width = recipe.total_width,
-				y_min = recipe.y_min,
-			}
-			local bbox
-			if recipe.shape == "centered_half_open_square" then
-				local center = source_hard.center
-				if type(center) ~= "table" or recipe.total_width % 2 ~= 0 then
-					fail("hard square geometry differs")
-				end
-				local half = recipe.total_width / 2
-				internal.center = center
-				bbox = {min_x = center.x - half, max_x = center.x + half,
-					min_z = center.z - half, max_z = center.z + half}
-			elseif recipe.shape == "polyline_corridor" then
-				if dense_count(source_hard.route_ids, "hard ingress routes") ~= 2 then
-					fail("hard ingress route count differs")
-				end
-				internal.paths = {}
-				local raw_bounds = {}
-				for route_id_index = 1, #source_hard.route_ids do
-					local route = source_route_by_id[source_hard.route_ids[route_id_index]]
-					if not route then fail("hard ingress route missing") end
-					add_ingress_path_bounds(internal.paths, route.centreline, raw_bounds)
-				end
-				local expansion = math.floor((recipe.total_width + 1) / 2)
-				bbox = {min_x = raw_bounds.min_x - expansion,
-					max_x = raw_bounds.max_x + expansion + 1,
-					min_z = raw_bounds.min_z - expansion,
-					max_z = raw_bounds.max_z + expansion + 1}
-			elseif recipe.shape == "exact_column" then
-				local center = source_hard.center
-				if type(center) ~= "table" then fail("hard socket center missing") end
-				internal.center = center
-				bbox = {min_x = center.x, max_x = center.x + 1,
-					min_z = center.z, max_z = center.z + 1}
-			else
-				fail("unknown hard footprint shape")
-			end
-			internal.bbox = bbox
-			hard_rows[hard_index] = internal
-			if hard_by_id[internal.id] then fail("duplicate hard footprint id") end
-			hard_by_id[internal.id] = internal
-			footprint_records[hard_index] = {id = internal.id, bbox = bbox}
 		end
 		local hard_index = index128.compile_footprints({
 			schema = SPARSE_SCHEMA,
@@ -1060,53 +832,11 @@ local function zones_factory(dependencies)
 		local function hard_horizontal_member(row, x, z)
 			if row.shape == "centered_half_open_square" then
 				return square_member(x, z, row.center, row.total_width)
-			elseif row.shape == "polyline_corridor" then
-				for path_index = 1, #row.paths do
-					if horizontal.polyline_corridor_member(x, z,
-							row.paths[path_index], row.total_width) then
-						return true
-					end
-				end
-				return false
 			elseif row.shape == "exact_column" then
 				return x == row.center.x and z == row.center.z
 			end
 			fail("unknown hard footprint at query")
 		end
-
-		local hard_membership_counts = {}
-		if not runtime_mode then
-			for hard_row_index = 1, #hard_rows do
-				local row = hard_rows[hard_row_index]
-				local count = 0
-				for z = row.bbox.min_z, row.bbox.max_z - 1 do
-					for x = row.bbox.min_x, row.bbox.max_x - 1 do
-						if hard_horizontal_member(row, x, z) then
-							count = count + 1
-							local water_class, _, owner =
-								horizontal.classification_values_at(x, z)
-							if not OWNER_CLASSES[water_class] or
-									not zone_by_numeric[owner] then
-								fail("hard footprint overlaps immutable/ownerless water")
-							end
-						end
-					end
-				end
-				if count == 0 then fail("hard footprint is empty") end
-				hard_membership_counts[hard_row_index] = count
-			end
-		end
-
-		local route_index_metrics = index128.sparse_metrics(route_index)
-		local hydrology_index_metrics = index128.sparse_metrics(hydrology_index)
-		local hard_index_metrics = index128.sparse_metrics(hard_index)
-		local nearest_route_query_count, nearest_hydrology_query_count = 0, 0
-		local nearest_route_rings, nearest_hydrology_rings = 0, 0
-		local nearest_route_cells, nearest_hydrology_cells = 0, 0
-		local nearest_route_candidates, nearest_hydrology_candidates = 0, 0
-		local nearest_route_max_rings, nearest_hydrology_max_rings = 0, 0
-		local nearest_route_max_cells, nearest_hydrology_max_cells = 0, 0
-		local nearest_route_max_candidates, nearest_hydrology_max_candidates = 0, 0
 
 		local session = {}
 
@@ -1164,12 +894,6 @@ local function zones_factory(dependencies)
 			require_text(zone_id, "neighbor zone id")
 			local record = zone_by_id[zone_id]
 			return record and deep_copy(neighbor_ids[record.numeric_id]) or {}
-		end
-
-		function session.travel_links(zone_id)
-			require_text(zone_id, "travel zone id")
-			local record = zone_by_id[zone_id]
-			return record and deep_copy(travel_by_zone[record.numeric_id]) or {}
 		end
 
 		function session.anchor(zone_id, slot_id)
@@ -1235,18 +959,16 @@ local function zones_factory(dependencies)
 		function session.surface_mob_level_at(x, z)
 			local outside
 			x, z, outside = normalize_xz(x, z, "surface-level query")
-			local water_class, macro_region = classification_values(x, z, outside)
-			return surface_level_from_classification(x, z, water_class,
-				macro_region)
+			local water_class, _, owner = classification_values(x, z, outside)
+			return surface_level_from_classification(x, z, water_class, owner)
 		end
 
 		function session.mob_level_at(position)
 			local x, y, z, outside = normalize_position(position, "mob-level query")
-			local water_class, macro_region = classification_values(x, z, outside)
+			local water_class, _, owner = classification_values(x, z, outside)
 			if water_class == "deep_ocean" or
 					water_class == "immutable_dragon_channel" then return nil end
-			local surface = surface_level_from_classification(x, z, water_class,
-				macro_region)
+			local surface = surface_level_from_classification(x, z, water_class, owner)
 			if y >= 0 then return surface end
 			local depth = depth_level(y)
 			if surface and surface > depth then return surface end
@@ -1256,13 +978,12 @@ local function zones_factory(dependencies)
 		function session.guard_level_at(position)
 			local x, y, z, outside = normalize_position(position,
 				"guard-level query")
-			local water_class, macro_region = classification_values(x, z, outside)
+			local water_class, _, owner = classification_values(x, z, outside)
 			if water_class ~= "land" and water_class ~= "planned_water" then
 				return nil
 			end
 			if capital_member(x, y, z) then return 60 end
-			local surface = surface_level_from_classification(x, z, water_class,
-				macro_region)
+			local surface = surface_level_from_classification(x, z, water_class, owner)
 			if surface < 20 then return 20 end
 			if surface > 70 then return 70 end
 			return surface
@@ -1281,69 +1002,6 @@ local function zones_factory(dependencies)
 			x, z, outside = normalize_xz(x, z, "water-class query")
 			local water_class = classification_values(x, z, outside)
 			return water_class
-		end
-
-		function session.nearest_route_at(x, z)
-			local outside
-			x, z, outside = normalize_xz(x, z, "nearest-route query")
-			if outside then return nil end
-			local nearest = index128.nearest_segment(route_index, x, z)
-			if not nearest then return nil end
-			local path = path_by_id[nearest.feature_id]
-			if not path then fail("nearest route identity differs") end
-			nearest_route_query_count = nearest_route_query_count + 1
-			nearest_route_rings = nearest_route_rings + nearest.rings_scanned
-			nearest_route_cells = nearest_route_cells + nearest.cells_scanned
-			nearest_route_candidates = nearest_route_candidates +
-				nearest.candidates_scanned
-			nearest_route_max_rings = math.max(nearest_route_max_rings,
-				nearest.rings_scanned)
-			nearest_route_max_cells = math.max(nearest_route_max_cells,
-				nearest.cells_scanned)
-			nearest_route_max_candidates = math.max(nearest_route_max_candidates,
-				nearest.candidates_scanned)
-			return {
-				route_id = path.id,
-				path_kind = path.path_kind,
-				route_class = path.route_class,
-				segment = nearest.segment,
-				distance_numerator = nearest.distance_numerator,
-				distance_denominator = nearest.distance_denominator,
-				distance_squared = nearest.distance_squared,
-				surface_width = path.surface_width,
-				corridor_width = path.corridor_width,
-			}
-		end
-
-		function session.nearest_hydrology_at(x, z)
-			local outside
-			x, z, outside = normalize_xz(x, z, "nearest-hydrology query")
-			if outside then return nil end
-			local nearest = index128.nearest_segment(hydrology_index, x, z)
-			if not nearest then return nil end
-			if not hydrology_by_id[nearest.feature_id] then
-				fail("nearest hydrology identity differs")
-			end
-			nearest_hydrology_query_count = nearest_hydrology_query_count + 1
-			nearest_hydrology_rings = nearest_hydrology_rings +
-				nearest.rings_scanned
-			nearest_hydrology_cells = nearest_hydrology_cells +
-				nearest.cells_scanned
-			nearest_hydrology_candidates = nearest_hydrology_candidates +
-				nearest.candidates_scanned
-			nearest_hydrology_max_rings = math.max(nearest_hydrology_max_rings,
-				nearest.rings_scanned)
-			nearest_hydrology_max_cells = math.max(nearest_hydrology_max_cells,
-				nearest.cells_scanned)
-			nearest_hydrology_max_candidates = math.max(
-				nearest_hydrology_max_candidates, nearest.candidates_scanned)
-			return {
-				hydrology_id = nearest.feature_id,
-				segment = nearest.segment,
-				distance_numerator = nearest.distance_numerator,
-				distance_denominator = nearest.distance_denominator,
-				distance_squared = nearest.distance_squared,
-			}
 		end
 
 		function session.housing_eligible_at(x, z)
@@ -1404,117 +1062,13 @@ local function zones_factory(dependencies)
 				return actor_faction ~= "accord"
 			elseif territory == "throng_home" then
 				return actor_faction ~= "throng"
-			elseif territory == "contested_land" or
-					territory == "holy_grounds" then
+			elseif territory == "contested_land" then
 				return false
 			end
 			fail("unknown protection territory result")
 		end
 		session.compatibility = compatibility
 
-		if not runtime_mode then
-			local horizontal_kat_digest = horizontal.canonical_kat_digest()
-			local height_kat_digest = height.canonical_kat_digest()
-			local evidence_hard = {}
-			for hard_row_index = 1, #hard_rows do
-				evidence_hard[hard_row_index] = deep_copy(hard_rows[hard_row_index].record)
-				evidence_hard[hard_row_index].membership_columns =
-					hard_membership_counts[hard_row_index]
-				evidence_hard[hard_row_index].bbox =
-					deep_copy(hard_rows[hard_row_index].bbox)
-			end
-			local artifact_evidence = {
-				schema = ZONES_SCHEMA,
-				sparse_schema = SPARSE_SCHEMA,
-				layout_id = source.layout_id,
-				layout_revision_id = source.layout_revision_id,
-				full_seed = full_seed_string,
-				water_level = WATER_LEVEL,
-				bounds = {min_x = MIN_X, max_x = MAX_X,
-					min_z = MIN_Z, max_z = MAX_Z},
-				zone_records = deep_copy(zone_records),
-				neighbor_edges = deep_copy(neighbor_edges),
-				boat_paths = deep_copy(travel_records),
-				anchors = deep_copy(anchor_records),
-				hard_protection = evidence_hard,
-				logical_biome = {
-					cell_size = cell_size,
-					min_cell_x = min_cell_x,
-					max_cell_x = max_cell_x,
-					min_cell_z = min_cell_z,
-					max_cell_z = max_cell_z,
-					site_count = logical_site_count,
-					digest = logical_site_digest,
-				},
-				path_population = {features = #path_rows, segments = #route_segments},
-				hydrology_population = {features = #source.hydrology,
-					segments = #hydrology_segments},
-				route_index = deep_copy(route_index_metrics),
-				hydrology_index = deep_copy(hydrology_index_metrics),
-				hard_index = deep_copy(hard_index_metrics),
-				horizontal_canonical_kat_digest = horizontal_kat_digest,
-				height_canonical_kat_digest = height_kat_digest,
-				height_relief_lattice_digest = height.relief_lattice_digest(),
-			}
-
-			local function kat_text(value)
-				return canonical.text(value or "")
-			end
-			local function kat_signed(value)
-				return canonical.signed(value or 0)
-			end
-			local kat_rows = {
-				canonical.array({kat_text("identity"), kat_text(ZONES_SCHEMA),
-					kat_text(SPARSE_SCHEMA), kat_text(source.layout_id),
-					kat_text(source.layout_revision_id), kat_text(full_seed_string),
-					kat_signed(WATER_LEVEL), kat_text(horizontal_kat_digest),
-					kat_text(height_kat_digest), kat_text(logical_site_digest)}),
-				canonical.array({kat_text("counts"), kat_signed(#zone_records),
-					kat_signed(#neighbor_edges), kat_signed(#travel_records),
-					kat_signed(#anchor_records), kat_signed(#hard_rows),
-					kat_signed(#path_rows), kat_signed(#route_segments),
-					kat_signed(#source.hydrology), kat_signed(#hydrology_segments),
-					kat_signed(logical_site_count)}),
-			}
-			for zone_index = 1, #zone_records do
-				local row = zone_records[zone_index]
-				kat_rows[#kat_rows + 1] = canonical.array({kat_text("zone"),
-					kat_signed(zone_index), kat_text(row.id), kat_text(row.display_name),
-					kat_text(row.macro_region), kat_text(row.race_region),
-					kat_text(row.faction), kat_text(row.territory_rule),
-					kat_text(row.pvp_rule), kat_signed(row.level_min),
-					kat_signed(row.level_max), kat_text(row.primary_relief_id),
-					kat_signed(row.hub.x), kat_signed(row.hub.z)})
-			end
-			for _, point in ipairs({
-				{0, 0, 0}, {-1800, -1500, -700}, {1800, 1500, -701},
-				{-3740, -3340, -1000}, {3740, 3340, 1},
-			}) do
-				local x, z, y = point[1], point[2], point[3]
-				kat_rows[#kat_rows + 1] = canonical.array({kat_text("sample"),
-					kat_signed(x), kat_signed(y), kat_signed(z),
-					kat_text(session.id_at(x, z)), kat_text(session.biome_at(x, z)),
-					kat_text(session.water_class_at(x, z)),
-					kat_text(session.territory_rule_at({x = x, y = y, z = z})),
-					kat_text(session.pvp_rule_at({x = x, y = y, z = z})),
-					kat_signed(session.surface_mob_level_at(x, z)),
-					kat_signed(session.mob_level_at({x = x, y = y, z = z})),
-					kat_signed(session.guard_level_at({x = x, y = y, z = z})),
-					kat_signed(session.terrain_height_at(x, z))})
-			end
-			local canonical_kat = canonical.encode(canonical.array(kat_rows))
-			local canonical_kat_digest = canonical.hex(counted_sha(canonical_kat))
-
-			function session.canonical_kat()
-				return canonical_kat
-			end
-			function session.canonical_kat_digest()
-				return canonical_kat_digest
-			end
-			function session.artifact_evidence()
-				return deep_copy(artifact_evidence)
-			end
-		end
 		function session.metrics()
 			local height_metrics = height.metrics()
 			if type(height_metrics) ~= "table" or
@@ -1530,25 +1084,6 @@ local function zones_factory(dependencies)
 				query_unindexed_catalog_scans = 0,
 				logical_lattice_constructions = 1,
 				logical_site_count = logical_site_count,
-				nearest_route_query_count = nearest_route_query_count,
-				nearest_route_rings_scanned = nearest_route_rings,
-				nearest_route_cells_scanned = nearest_route_cells,
-				nearest_route_candidates_scanned = nearest_route_candidates,
-				nearest_route_maximum_rings_scanned = nearest_route_max_rings,
-				nearest_route_maximum_cells_scanned = nearest_route_max_cells,
-				nearest_route_maximum_candidates_scanned =
-					nearest_route_max_candidates,
-				nearest_hydrology_query_count = nearest_hydrology_query_count,
-				nearest_hydrology_rings_scanned = nearest_hydrology_rings,
-				nearest_hydrology_cells_scanned = nearest_hydrology_cells,
-				nearest_hydrology_candidates_scanned =
-					nearest_hydrology_candidates,
-				nearest_hydrology_maximum_rings_scanned =
-					nearest_hydrology_max_rings,
-				nearest_hydrology_maximum_cells_scanned =
-					nearest_hydrology_max_cells,
-				nearest_hydrology_maximum_candidates_scanned =
-					nearest_hydrology_max_candidates,
 			}
 		end
 
@@ -1743,7 +1278,7 @@ local function zones_factory(dependencies)
 			function planner_source.hydrology_metric_values_at(x, z)
 				local outside
 				x, z, outside = normalize_xz(x, z, "planner hydrology metric query")
-				if outside then return nil, nil, nil, nil end
+				if outside or not hydrology_index then return nil, nil, nil, nil end
 				local feature_id, _, segment, numerator, denominator =
 					index128.nearest_segment_values(hydrology_index, x, z,
 						hydrology_scalar_scratch)
