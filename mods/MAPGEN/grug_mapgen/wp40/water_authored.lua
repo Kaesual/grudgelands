@@ -33,6 +33,9 @@
 --                instead of walls, natural dams instead of one-column dikes
 --   bank_weight  optional function(x, z) -> 0..1 scaling the envelope
 --   rim          optional bank-fill threshold (default here 0.4)
+--   river, reach_of, reach_count, reach_links, step_max, step_cut
+--                a river-water body of level reaches with small rapids
+--                between them (height.lua; the Highcourt canal)
 --   keepout      optional {x, z, r}: a natural-water keep-out disc for a lake
 --                outside every start and capital (height.lua water inputs)
 --
@@ -255,26 +258,33 @@ return function(P)
 	---------------------------------------------------------------------------
 	-- Highcourt canals (plan D42). The blueprint's lots are staggered round two
 	-- river arms that meet north of the core (`wp13/highcourt_quadrants.lua`);
-	-- they are filled as civic canals: a chain of level pools along each arm,
-	-- each pool at the lowest ground of its own banks, with a short dry weir
-	-- between two pools, so the water steps down the terraces without a
-	-- water-to-water fall. Narrow, walled where a terrace rises beside them.
+	-- they are one continuous civic canal of river water: the two arms and the
+	-- outflow below their join, each cut into level reaches of about REACH
+	-- nodes, every reach at the lowest ground of its own banks and linked
+	-- reaches one node apart (two where the ground drops faster), so the water
+	-- steps down the terraces in small rapids like a river's (height.lua,
+	-- `river` rows). Narrow, gently meandering, its width varied along it.
 	---------------------------------------------------------------------------
 	do
 		local cx, cz = 0, -1500
-		local HW, POOL, WEIR = 5, 80, 4
-		-- the centreline meanders by up to MEANDER nodes over about WAVE
-		local MEANDER, WAVE = 7, 90
+		local HW, REACH = 5, 24
+		-- the centreline meanders by up to MEANDER nodes over about WAVE; the
+		-- half width varies by WIDTH_VAR (share) over about WIDTH_WAVE
+		local MEANDER, WAVE, WIDTH_VAR, WIDTH_WAVE = 7, 90, 0.2, 50
+		local WARP = {cove = 1.2, point = 0.8, period = 20, salt = 11.3}
 		local arms = {
-			{id = "west", points = {{-112, -236}, {-170, -180}, {-180, -80},
-				{-100, 40}, {0, 180}}, tail = WEIR + HW},
-			{id = "east", points = {{236, -85}, {180, -10}, {0, 180}}, tail = WEIR + HW},
-			{id = "outflow", points = {{0, 180}, {30, 236}}, tail = 0},
+			{points = {{-112, -236}, {-170, -180}, {-180, -80}, {-100, 40}, {0, 180}}},
+			{points = {{236, -85}, {180, -10}, {0, 180}}},
+			{points = {{0, 180}, {30, 236}}},
 		}
+		local segs, links, count = {}, {}, 0
+		local maxr = 0
+		local x0, x1, z0, z1 = math.huge, -math.huge, math.huge, -math.huge
 		for arm_index, arm in ipairs(arms) do
 			local pts = {}
 			for i, p in ipairs(arm.points) do pts[i] = {cx + p[1], cz + p[2]} end
 			pts = smooth(pts, 3)
+			local total = length(pts)
 			local bent, s = {}, 0
 			for i = 1, #pts do
 				local a, b = pts[max(1, i - 1)], pts[min(#pts, i + 1)]
@@ -284,29 +294,93 @@ return function(P)
 					s = s + sqrt((pts[i][1] - pts[i - 1][1]) ^ 2 + (pts[i][2] - pts[i - 1][2]) ^ 2)
 				end
 				-- no bend at the two ends (the join and the arm's head stay put)
-				local w = smoothstep(0, 40, s) * smoothstep(0, 40, length(pts) - s)
+				local w = smoothstep(0, 40, s) * smoothstep(0, 40, total - s)
 				local o = MEANDER * w * noise(s / WAVE + 0.37, arm_index * 3.3)
-				bent[i] = {pts[i][1] - tz / l * o, pts[i][2] + tx / l * o}
+				local r = HW * (1 + WIDTH_VAR * noise(s / WIDTH_WAVE - 5.9, arm_index * 7.1))
+				bent[i] = {pts[i][1] - tz / l * o, pts[i][2] + tx / l * o, r}
 			end
-			pts = bent
-			local total = length(pts) - arm.tail
-			local n = max(1, floor(total / POOL + 0.5))
-			local span = total / n
-			for k = 1, n do
-				-- wet caps end HW beyond the centreline piece, so a gap of WEIR
-				-- dry columns remains between two pools
-				local s0 = (k - 1) * span + (k > 1 and (WEIR / 2 + HW) or 0)
-				local s1 = k * span - (WEIR / 2 + HW)
-				if k == n then s1 = total - HW end
-				local piece = cut(pts, s0, s1)
-				local points = {}
-				for i, p in ipairs(piece) do points[i] = {p[1], p[2], HW} end
-				lake({id = "highcourt_canal_" .. arm.id .. "_" .. k,
-					shore_level = true, points = points,
-					warp = {cove = 1.5, point = 1, period = 20, salt = 11.3 + k},
-					depth = 6, bank = {up = 1.2, down = 0.5}})
+			total = length(bent)
+			local n = max(1, floor(total / REACH + 0.5))
+			local first = count + 1
+			arm.first, arm.last = first, count + n
+			for k = first, count + n - 1 do links[#links + 1] = {k, k + 1} end
+			count = count + n
+			local s0 = 0
+			for i = 1, #bent - 1 do
+				local a, b = bent[i], bent[i + 1]
+				local vx, vz = b[1] - a[1], b[2] - a[2]
+				local len = sqrt(vx * vx + vz * vz)
+				segs[#segs + 1] = {ax = a[1], az = a[2], vx = vx, vz = vz,
+					l2 = vx * vx + vz * vz, ra = a[3], dr = b[3] - a[3], s0 = s0,
+					len = len, first = first, n = n, span = total / n}
+				s0 = s0 + len
+				maxr = max(maxr, a[3], b[3])
+				x0, x1 = min(x0, a[1], b[1]), max(x1, a[1], b[1])
+				z0, z1 = min(z0, a[2], b[2]), max(z1, a[2], b[2])
 			end
 		end
+		-- the join: both arms' last reaches and the outflow's first touch
+		links[#links + 1] = {arms[1].last, arms[2].last}
+		links[#links + 1] = {arms[1].last, arms[3].first}
+		links[#links + 1] = {arms[2].last, arms[3].first}
+		-- segments by 32-node cell, each within reach of its cell
+		local CELL, reach = 32, maxr + SUPPORT + WARP.point + 2
+		local cells = {}
+		for _, g in ipairs(segs) do
+			local gx0, gx1 = min(g.ax, g.ax + g.vx) - reach, max(g.ax, g.ax + g.vx) + reach
+			local gz0, gz1 = min(g.az, g.az + g.vz) - reach, max(g.az, g.az + g.vz) + reach
+			for iz = floor(gz0 / CELL), floor(gz1 / CELL) do
+				for ix = floor(gx0 / CELL), floor(gx1 / CELL) do
+					local key = iz * 4096 + ix
+					cells[key] = cells[key] or {}
+					table.insert(cells[key], g)
+				end
+			end
+		end
+		-- signed distance (negative inside) and reach of the nearest piece
+		local last_x, last_z, last_d, last_k
+		local function canal_at(x, z)
+			if x == last_x and z == last_z then return last_d, last_k end
+			local list = cells[floor(z / CELL) * 4096 + floor(x / CELL)]
+			local best, k = math.huge, 1
+			if list then
+				for i = 1, #list do
+					local g = list[i]
+					local ox, oz = x - g.ax, z - g.az
+					local t = g.l2 > 0 and (ox * g.vx + oz * g.vz) / g.l2 or 0
+					if t < 0 then t = 0 elseif t > 1 then t = 1 end
+					local ex, ez = ox - t * g.vx, oz - t * g.vz
+					local d = sqrt(ex * ex + ez * ez) - (g.ra + g.dr * t)
+					if d < best then
+						best = d
+						k = g.first + min(g.n - 1, floor((g.s0 + t * g.len) / g.span))
+					end
+				end
+			end
+			last_x, last_z, last_d, last_k = x, z, best, k
+			return best, k
+		end
+		local function indicator(x, z)
+			local s = -(canal_at(x, z))
+			if s < -SUPPORT - WARP.point then return 0 end
+			local u, v = x / WARP.period + WARP.salt, z / WARP.period - WARP.salt
+			local n = (noise(u, v) + 0.5 * noise(2.1 * u + 17.3, 2.1 * v - 5.1)) / 1.2
+			if n > 1 then n = 1 elseif n < -1 then n = -1 end
+			s = s + (n < 0 and WARP.cove * n or WARP.point * n)
+			local m = 0.5 + s / PROXY
+			if m <= 0 then return 0 elseif m >= 1 then return 1 end
+			return m
+		end
+		rows[#rows + 1] = {id = "highcourt_canal", river = true, shore_level = true,
+			indicator = indicator,
+			reach_of = function(x, z)
+				local _, k = canal_at(x, z)
+				return k
+			end,
+			reach_count = count, reach_links = links, step_max = 1, step_cut = 2,
+			min_x = floor(x0 - reach), max_x = floor(x1 + reach) + 1,
+			min_z = floor(z0 - reach), max_z = floor(z1 + reach) + 1,
+			depth = 6, bank = {up = 1.2, down = 0.5}, rim = 0.4}
 	end
 
 	---------------------------------------------------------------------------

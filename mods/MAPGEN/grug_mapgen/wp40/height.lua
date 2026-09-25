@@ -386,6 +386,14 @@ local function height_factory(dependencies)
 		--   bank_weight optional function(x, z) -> 0..1 scaling that envelope
 		--             (0 keeps the ground, e.g. a civic core)
 		-- Ordinary water (`default:water_source`), sealed like every inland water.
+		-- A `river` row (civic canals) is river water instead ("river:<id>") and
+		-- is a chain of level REACHES: reach_of(x, z) -> 1..reach_count, and
+		-- reach_links {{a, b}, ...} the reaches that touch. With shore_level
+		-- each reach starts at the lowest fitted ground of its own bank ring;
+		-- then the higher of two linked reaches is lowered until they differ by
+		-- at most step_max (default 1), or by step_max + 1 where the lower
+		-- step would cut the higher reach more than step_cut (default 2) below
+		-- its own ground. The steps are water-water rapids like a river's.
 		local authored, authored_grid = {}, {}
 		for index, row in ipairs(water_dependency.authored or {}) do
 			local sources = (row.level ~= nil and 1 or 0) +
@@ -394,10 +402,17 @@ local function height_factory(dependencies)
 					type(row.indicator) ~= "function" or
 					type(row.min_x) ~= "number" or type(row.max_x) ~= "number" or
 					type(row.min_z) ~= "number" or type(row.max_z) ~= "number" or
-					sources ~= 1 or (row.bank ~= nil and type(row.bank) ~= "table") then
+					sources ~= 1 or (row.bank ~= nil and type(row.bank) ~= "table") or
+				(row.river and (not row.shore_level or
+					type(row.reach_of) ~= "function" or
+					type(row.reach_count) ~= "number" or
+					type(row.reach_links) ~= "table")) then
 				fail("authored lake row differs at " .. index)
 			end
-			local e = {name = "lake:" .. row.id, row = row, indicator = row.indicator,
+			local e = {name = (row.river and "river:" or "lake:") .. row.id,
+				kind = row.river and "river" or "lake", row = row,
+				reach_of = row.river and row.reach_of or nil,
+				indicator = row.indicator,
 				min_x = row.min_x, max_x = row.max_x, min_z = row.min_z,
 				max_z = row.max_z, level = row.level, depth = row.depth,
 				bed_step = row.bed_step, bank = row.bank,
@@ -887,7 +902,7 @@ local function height_factory(dependencies)
 		-- ring (natural water columns left out), resolved on the first query
 		-- that needs it. A pure function of the seed, so every session agrees.
 		local function resolve_shore_level(e)
-			local low
+			local low, lows = nil, {}
 			for z = e.min_z, e.max_z, 2 do
 				for x = e.min_x, e.max_x, 2 do
 					local m = e.indicator(x, z)
@@ -898,12 +913,60 @@ local function height_factory(dependencies)
 						if not block.nwater[slot] then
 							local y = fit_land(x, z, block.owner[slot] or nil, natural)
 							if low == nil or y < low then low = y end
+							if e.reach_of then
+								local k = e.reach_of(x, z)
+								if lows[k] == nil or y < lows[k] then lows[k] = y end
+							end
 						end
 					end
 				end
 			end
 			if low == nil then fail("authored lake has no bank: " .. e.name) end
-			e.level = low + (e.row.level_offset or 0)
+			local offset = e.row.level_offset or 0
+			e.level = low + offset
+			if e.reach_of then
+				-- reaches without a bank sample take a linked neighbour's
+				local row, levels, ground = e.row, {}, {}
+				for k = 1, row.reach_count do ground[k] = lows[k] end
+				local filled = false
+				while not filled do
+					filled = true
+					for _, link in ipairs(row.reach_links) do
+						local a, b = link[1], link[2]
+						if ground[a] == nil and ground[b] ~= nil then ground[a] = ground[b] end
+						if ground[b] == nil and ground[a] ~= nil then ground[b] = ground[a] end
+					end
+					for k = 1, row.reach_count do
+						if ground[k] == nil then filled = false end
+					end
+				end
+				for k = 1, row.reach_count do levels[k] = ground[k] + offset end
+				local step, cut = row.step_max or 1, row.step_cut or 2
+				local changed = true
+				while changed do
+					changed = false
+					for _, link in ipairs(row.reach_links) do
+						for side = 1, 2 do
+							local hi, lo = link[side], link[3 - side]
+							local allowed = step
+							if ground[hi] + offset - (levels[lo] + step) > cut then
+								allowed = step + 1
+							end
+							if levels[hi] > levels[lo] + allowed then
+								levels[hi] = levels[lo] + allowed
+								changed = true
+							end
+						end
+					end
+				end
+				e.levels = levels
+			end
+			return e.level
+		end
+		-- The surface of an authored water body at a column.
+		local function authored_level(e, x, z)
+			if e.level == nil then resolve_shore_level(e) end
+			if e.levels then return e.levels[e.reach_of(x, z)] end
 			return e.level
 		end
 		-- Also returns the bank inputs of the nearest authored lake (the same
@@ -933,7 +996,7 @@ local function height_factory(dependencies)
 				end
 				ms[index] = m
 				if m > 0 then
-					local level = e.level or resolve_shore_level(e)
+					local level = authored_level(e, x, z)
 					local d = (0.5 - m) * WP.LAKE_PROXY
 					if d < 0 then d = 0 end
 					if bank_d == nil or d < bank_d then bank_d, bank_y = d, level end
@@ -941,7 +1004,7 @@ local function height_factory(dependencies)
 				end
 			end
 			if wet then
-				local level = wet.level
+				local level = authored_level(wet, x, z)
 				if wet.depth then
 					local carve = (wet.depth - 1) * smoothstep(0.5, 0.9, wet_m)
 					if wet.bed_step then
@@ -951,7 +1014,7 @@ local function height_factory(dependencies)
 					if bed < terrain_y then terrain_y = bed end
 				end
 				if terrain_y < level then
-					return terrain_y, level, "lake", wet.name, bank_d, bank_y, true
+					return terrain_y, level, wet.kind, wet.name, bank_d, bank_y, true
 				end
 				return terrain_y, water_y, kind, id, bank_d, bank_y
 			end
@@ -961,7 +1024,7 @@ local function height_factory(dependencies)
 				local m = ms[index]
 				if m > 0 then
 					local e = list[index]
-					local level = e.level
+					local level = authored_level(e, x, z)
 					local d = (0.5 - m) * WP.LAKE_PROXY
 					if d < 0 then d = 0 end
 					if m >= e.rim and (hard == nil or level > hard) then hard = level end
