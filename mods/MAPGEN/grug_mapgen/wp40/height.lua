@@ -930,7 +930,9 @@ local function height_factory(dependencies)
 					local bed = floor(level - 1 - carve)
 					if bed < terrain_y then terrain_y = bed end
 				end
-				if terrain_y < level then water_y, kind, id = level, "lake", wet.name end
+				if terrain_y < level then
+					return terrain_y, level, "lake", wet.name, bank_d, bank_y, true
+				end
 				return terrain_y, water_y, kind, id, bank_d, bank_y
 			end
 			if water_y ~= nil then return terrain_y, water_y, kind, id, bank_d, bank_y end
@@ -998,12 +1000,15 @@ local function height_factory(dependencies)
 					end
 				end
 				if #authored > 0 then
-					local bank_d, bank_y
-					terrain_y, water_y, water_kind, water_id, bank_d, bank_y =
+					local bank_d, bank_y, lake_wet
+					terrain_y, water_y, water_kind, water_id, bank_d, bank_y, lake_wet =
 						authored_at(x, z, terrain_y, water_y, water_kind, water_id)
 					if bank_d and (not block.bank_d[slot] or bank_d < block.bank_d[slot]) then
 						block.bank_d[slot], block.bank_y[slot] = bank_d, bank_y
 					end
+					-- A lake column is water, not the graded ground of a start
+					-- or capital: a functional grade would clear its water.
+					if lake_wet then kind, feature_id = nil, nil end
 				end
 				block.pre[slot], block.pkind[slot], block.pfeature[slot] =
 					terrain_y, kind or false, feature_id or false
