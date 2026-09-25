@@ -437,7 +437,10 @@ replaced; git history before this rewrite records that model.
   two pools; small ponds on the calm ground beside the Dawnmere and Sunscar
   starts. Authored water and its bank shaping keep at least eight nodes off
   every district plot and fill lot (margin included), so the plots stand on
-  the ground they were measured on.
+  the ground they were measured on. Moonfall's crescent lake (D41) lies on a
+  calm bowl the landmark adds to the terrain field (like a steep POI's, at
+  the mean natural height), with its own natural-water keep-out, so rivers
+  and drainage lakes bend around it.
 - **Lakes have irregular shores** with coves and shallow margins.
 - Every wet river reach uses `default:river_water_source` /
   `default:river_water_flowing`. This non-renewable, range-two liquid keeps

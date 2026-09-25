@@ -290,6 +290,26 @@ local function height_factory(dependencies)
 						ground = g < math.huge and g or nil}
 				end
 			end
+			-- An authored lake outside every start and capital (Moonfall's
+			-- crescent) carries its own keep-out, so natural rivers and lakes
+			-- bend around it instead of meeting it at another level.
+			for _, row in ipairs(water_dependency.authored or {}) do
+				local k = row.keepout
+				if k then
+					local e = {x = k.x, z = k.z, id = row.id, r = k.r,
+						edge = WP.start_keepout_edge}
+					local g, r = math.huge, e.r * (1 + e.edge)
+					for dz = -r, r, 16 do
+						for dx = -r, r, 16 do
+							if dx * dx + dz * dz <= r * r and land_at(k.x + dx, k.z + dz) then
+								g = min(g, field.height_at(k.x + dx, k.z + dz, true))
+							end
+						end
+					end
+					e.ground = g < math.huge and g or nil
+					keepouts[#keepouts + 1] = e
+				end
+			end
 			-- Wetland zones and the water landmarks keep their shallow
 			-- depressions as ponds at the spill level.
 			local marsh = {}

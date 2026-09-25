@@ -32,7 +32,9 @@
 --   bank         optional shore envelope {up, down} (height.lua): banks
 --                instead of walls, natural dams instead of one-column dikes
 --   bank_weight  optional function(x, z) -> 0..1 scaling the envelope
---   rim          optional bank-fill threshold (default water LAKE_RIM, 0.45)
+--   rim          optional bank-fill threshold (default here 0.4)
+--   keepout      optional {x, z, r}: a natural-water keep-out disc for a lake
+--                outside every start and capital (height.lua water inputs)
 --
 -- Every indicator here is m = 0.5 + s / LAKE_PROXY, s a signed distance in
 -- nodes (positive inside), so the height code's bank distance proxy
@@ -212,7 +214,8 @@ return function(P)
 			min_z = floor(z0 - reach), max_z = floor(z1 + reach) + 1,
 			level = spec.level, anchor = spec.anchor, shore_level = spec.shore_level,
 			level_offset = spec.level_offset, depth = spec.depth,
-			bed_step = spec.bed_step, bank = spec.bank, rim = spec.rim or 0.4}
+			bed_step = spec.bed_step, bank = spec.bank, rim = spec.rim or 0.4,
+			keepout = spec.keepout}
 		if keep then row.bank_weight = keep_weight end
 		rows[#rows + 1] = row
 		return row
@@ -323,6 +326,27 @@ return function(P)
 		points = {{146, 2508, 7}},
 		warp = {cove = 4, point = 2, period = 12, salt = 9.4},
 		depth = 2, bank = {up = 0.5, down = 0.5}})
+
+	---------------------------------------------------------------------------
+	-- Moonfall's crescent lake (plan D41; world_zones.md: "the crescent lake
+	-- beneath the fallen great silverwood"). The landmark's calm bowl
+	-- (`terrain_data.lua`, `bowl`) gives it a shelf; a crescent of capsules
+	-- opening south, thick in the middle and tapering to both horns, at the
+	-- lowest ground of its banks; a natural-water keep-out round it.
+	---------------------------------------------------------------------------
+	do
+		local cx, cz, R = 2400, -1560, 100
+		local points = {}
+		for i, a in ipairs({160, 138, 115, 90, 65, 42, 20}) do
+			local t = math.rad(a)
+			local r = ({7, 15, 22, 26, 22, 15, 7})[i]
+			points[i] = {cx + R * math.cos(t), cz + R * math.sin(t), r}
+		end
+		lake({id = "moonfall_crescent", shore_level = true, points = points,
+			warp = {cove = 9, point = 4, period = 36, salt = 13.9},
+			depth = 8, bank = {up = 0.6, down = 0.5},
+			keepout = {x = 2400, z = -1510, r = 160}})
+	end
 
 	return rows
 end

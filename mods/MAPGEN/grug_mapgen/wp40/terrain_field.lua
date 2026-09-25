@@ -825,6 +825,26 @@ return function(data)
 				end
 			end
 		end
+		-- Water landmarks that are authored lakes (plan D41, Moonfall's
+		-- crescent): a calm bowl at the landmark's mean natural height, so the
+		-- lake lies on a shelf instead of a hillside.
+		for _, l in ipairs(data.landmarks) do
+			local b = l.bowl
+			if b then
+				local sum, n = 0, 0
+				for dz = -b.r, b.r, 8 do
+					for dx = -b.r, b.r, 8 do
+						if dx * dx + dz * dz <= b.r * b.r and land_at(l.x + dx, l.z + dz) then
+							sum, n = sum + undamped(l.x + dx, l.z + dz), n + 1
+						end
+					end
+				end
+				if n > 0 then ANCH[#ANCH + 1] = {id = l.id, slot = "landmark", x = l.x, z = l.z,
+					r_in = b.r, r_out = b.r + b.width, resid = b.resid, target = sum / n,
+					natural_mean = sum / n, wave = 0, edge = V.poi_bowl_edge,
+					edge_p = V.poi_bowl_edge_period, nowarp = true} end
+			end
+		end
 		local AW = V.anchor_warp
 		-- The calm ground of one anchor at distance `d`: its target, the
 		-- long-wave undulation (capitals) and a residual of the small hills.
