@@ -6,12 +6,14 @@
 -- applies them on the FITTED terrain (after the anchor fittings, before the
 -- shore rule). They are not part of the drainage layout, so no start or
 -- capital keep-out applies to them; natural rivers and lakes still keep out
--- of the keep-outs. Their water is ordinary water, sealed like every inland
--- water body, and the columns are `planned_water`.
+-- of the keep-outs. Lake rows hold ordinary water, river rows (`river = true`,
+-- the Highcourt canal) river water; both are sealed like every inland water
+-- body, and the columns are `planned_water`.
 --
 -- The file returns function(P) -> rows, P the water parameters of
 -- `terrain_data.lua` (LAKE_PROXY scales the indicators). One row per lake:
 --   id           unique text; the column's sealed water id is "lake:<id>"
+--                ("river:<id>" for river rows)
 --   min_x, min_z, max_x, max_z
 --                integer bounds of every column the lake touches (its bank
 --                envelope included)

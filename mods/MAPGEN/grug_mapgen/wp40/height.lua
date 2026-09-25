@@ -928,9 +928,12 @@ local function height_factory(dependencies)
 				-- reaches without a bank sample take a linked neighbour's
 				local row, levels, ground = e.row, {}, {}
 				for k = 1, row.reach_count do ground[k] = lows[k] end
-				local filled = false
+				local filled, passes = false, 0
 				while not filled do
-					filled = true
+					filled, passes = true, passes + 1
+					if passes > row.reach_count then
+						fail("authored river reach without a bank: " .. e.name)
+					end
 					for _, link in ipairs(row.reach_links) do
 						local a, b = link[1], link[2]
 						if ground[a] == nil and ground[b] ~= nil then ground[a] = ground[b] end

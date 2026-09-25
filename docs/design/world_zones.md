@@ -440,7 +440,8 @@ replaced; git history before this rewrite records that model.
   Highcourt's two blueprint river arms and their outflow as one continuous
   civic canal of river water, gently meandering, in level reaches of about 24
   nodes, each at the lowest ground of its own banks, stepping down in rapids
-  of one node (two where the ground drops faster) like a river's; small ponds on the calm ground beside the Dawnmere and Sunscar
+  of one node (two where the ground drops faster) like a river's; small
+  ponds on the calm ground beside the Dawnmere and Sunscar
   starts. Authored water and its bank shaping keep at least eight nodes off
   every district plot and fill lot (margin included), so the plots stand on
   the ground they were measured on. Moonfall's crescent lake (D41) lies on a
