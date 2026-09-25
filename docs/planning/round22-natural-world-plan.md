@@ -3,7 +3,7 @@
 Date: 2026-09-25. Coordinator: Claude Opus 5.5 (root), implementation by
 Opus 5.5 subagents; the user may re-route per session
 (`../process/agent-model-policy.md`, "Day-to-day routing rule").
-Status: **in progress.** Phases 0–3 and 3b are done, accepted by the user, merged to main and synced (last merge 6db5c02e, 2026-09-25; not pushed); the round's worktrees are removed. Next: Phase 5 (water), then Phase 4 (roads) (D30), then Phase 6. Each phase still needs the user's Go.
+Status: **in progress.** Phases 0–3 and 3b are done, accepted by the user, merged to main and synced (not pushed). Phase 5 (water) is running: lane W0 (legacy cleanup) merged 97dedcc8; the offline water prototype W1 is next to the user. Then Phase 4 (roads) (D30), then Phase 6. Each phase still needs the user's Go.
 
 This document records the goal, the analysis it rests on, every decision taken
 with the user on 2026-09-25 and its basis, the phases, and the guardrails
@@ -450,7 +450,20 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   stations, spurs, crossings, ingresses, landmarks, hydrology in
   `source/simple_map.lua`), including the "4 routes per capital" load assert
   and the frozen manifest checksum that pins rule-token names; relax the
-  planner to "river water by column" (D37, stale-rule R1–R3). Then:
+  planner to "river water by column" (D37, stale-rule R1–R3). **Done as lane
+  W0 (merged 97dedcc8, output byte-identical, planning ~9 % faster).** Its
+  seam: `height.river_water_at(x, z)` returns any non-empty name for river
+  columns (river water, bed seal); `height.river_water_in(box)` must be true
+  near rivers or bank seals are skipped; lakes return nil and get ordinary
+  water; transitions are rejected until step types exist. Review notes for
+  the integration lane: lakes above sea level are unsealed today (seal all
+  inland water or route lakes through the river path, since native caves
+  survive under the heightmap); fix the `water_class` of river/lake columns
+  (`reed_angelfish.lua` and settlement paths read it); make a wet river
+  column with `river_water_in == false` fail loudly; keep `river_water_in`
+  cheap (called per voxel in `r6_settlement.lua`); the `r7_manifest`
+  roll-up pin will trip on freshwater content (remove pins per guardrail 6
+  when it does). Then:
   - compute the river/lake layout once in main and hand it to emerge via
     `ipc_set` (D37);
   - city water follows the terrain (D34): the Lethariel lake keeps an authored
