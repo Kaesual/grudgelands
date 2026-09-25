@@ -11,19 +11,22 @@
 
 local M = {}
 
--- Bump when the palette or drawing changes, so cached bases re-render.
-local RENDER_VERSION = "grug_map_base_v1"
+-- This file's own source enters the cache key, so any palette or drawing
+-- change re-renders cached bases without a manual version bump.
+local SOURCE_PATH = core.get_modpath(core.get_current_modname()) .. "/base.lua"
 local MEDIA_NAME = "grug_map_base.png"
 local CACHE_PNG = core.get_worldpath() .. "/grug_map_base.png"
 local CACHE_KEY = core.get_worldpath() .. "/grug_map_base.key"
 -- 9:8 like the atlas bounds; 6.67 nodes per pixel.
 local WIDTH, HEIGHT = 1080, 960
--- Relief costs one terrain_height_at per grid node. The step is chosen from a
--- measured per-call cost so that relief stays inside this budget; relief is
--- skipped when even the coarsest useful step would exceed it.
+-- Relief costs one terrain_height_at per grid node. The real grids are
+-- sampled coarse to fine under this total time budget: a grid that runs out of
+-- budget is abandoned, a finer one is only started when four times the last
+-- grid's time still fits, and the finest completed grid wins. With no
+-- completed grid the map has no relief.
 local RELIEF_BUDGET_US = (tonumber(core.settings:get("grug_map_relief_budget"))
 	or 2.5) * 1000000
-local RELIEF_STEPS = {16, 32, 64}
+local RELIEF_STEPS = {64, 32, 16}
 -- Shown if rendering fails: plain sea, so the markers stay usable.
 local FALLBACK_TEXTURE = "[fill:90x80:#1c3a52"
 
@@ -136,39 +139,36 @@ local function new_canvas(view, pixels)
 	return canvas
 end
 
--- Measured cost of one terrain_height_at, in microseconds.
-local function height_cost(zones, view)
-	local started = core.get_us_time()
-	for gz = 1, 4 do
-		for gx = 1, 6 do
-			zones.terrain_height_at(
-				view.min_x + math.floor((view.max_x - view.min_x) * gx / 7),
-				view.min_z + math.floor((view.max_z - view.min_z) * gz / 5))
-		end
-	end
-	return (core.get_us_time() - started) / 24
-end
-
--- Coarse hillshade factor grid, or nil when relief does not fit the budget.
-local function relief_grid(zones, view)
-	local per_call = height_cost(zones, view)
-	local step, nx, nz
-	for index = 1, #RELIEF_STEPS do
-		step = RELIEF_STEPS[index]
-		nx = math.ceil((view.max_x - view.min_x) / step) + 1
-		nz = math.ceil((view.max_z - view.min_z) / step) + 1
-		if nx * nz * per_call <= RELIEF_BUDGET_US then break end
-		step = nil
-	end
-	if not step then return nil, per_call end
+-- Heights on the grid of one step, or nil once `deadline` (us) has passed.
+local function height_grid(zones, view, step, deadline)
+	local nx = math.ceil((view.max_x - view.min_x) / step) + 1
+	local nz = math.ceil((view.max_z - view.min_z) / step) + 1
 	local heights = {}
 	for gz = 0, nz - 1 do
+		if core.get_us_time() > deadline then return nil end
 		local z = view.max_z - gz * step
 		for gx = 0, nx - 1 do
 			heights[gz * nx + gx + 1] =
 				zones.terrain_height_at(view.min_x + gx * step, z)
 		end
 	end
+	return heights, nx, nz
+end
+
+-- Coarse hillshade factor grid, or nil when no grid fits the budget.
+local function relief_grid(zones, view)
+	local started = core.get_us_time()
+	local deadline = started + RELIEF_BUDGET_US
+	local heights, nx, nz, step
+	for index = 1, #RELIEF_STEPS do
+		local before = core.get_us_time()
+		local grid, gx, gz = height_grid(zones, view, RELIEF_STEPS[index], deadline)
+		if not grid then break end
+		heights, nx, nz, step = grid, gx, gz, RELIEF_STEPS[index]
+		local now = core.get_us_time()
+		if now + 4 * (now - before) > deadline then break end
+	end
+	if not heights then return nil end
 	-- Light from the north-west (map top-left): a slope rising toward +x or
 	-- falling toward +z faces it. Central differences; row gz grows southward.
 	local shade = {}
@@ -182,7 +182,7 @@ local function relief_grid(zones, view)
 			shade[gz * nx + gx + 1] = math.max(0.8, math.min(1.14, value))
 		end
 	end
-	return {shade = shade, nx = nx, nz = nz, step = step}, per_call
+	return {shade = shade, nx = nx, nz = nz, step = step}
 end
 
 -- Bilinear hillshade at fractional grid position (fx, fz).
@@ -224,7 +224,7 @@ local function render(zones, view)
 	end
 	local classified = core.get_us_time()
 	local colors = palette(zones, seen)
-	local relief, per_call = relief_grid(zones, view)
+	local relief = relief_grid(zones, view)
 	local shaded = core.get_us_time()
 
 	-- Pass 2: land takes its zone colour times the hillshade; a land pixel
@@ -290,17 +290,19 @@ local function render(zones, view)
 		"(zones/water %.2f s, relief %s %.2f s, colour+encode %.2f s, %d bytes)"):
 		format(WIDTH, HEIGHT, (finished - started) / 1e6,
 		(classified - started) / 1e6,
-		relief and ("step " .. relief.step) or
-			("skipped at " .. math.floor(per_call) .. " us/height"),
+		relief and ("step " .. relief.step) or "skipped (over budget)",
 		(shaded - classified) / 1e6, (finished - shaded) / 1e6, #png))
 	return png
 end
 
--- Re-render only when this key changes: render version and size, world seed,
+-- Re-render only when this key changes: this file's source, world seed,
 -- the generator identity when grug_mapgen publishes one, a cheap fingerprint
 -- of public query results and the road network (none until Phase 4).
 local function cache_key(zones, view)
-	local parts = {RENDER_VERSION, WIDTH .. "x" .. HEIGHT,
+	local file = assert(io.open(SOURCE_PATH, "rb"), "cannot read " .. SOURCE_PATH)
+	local source_bytes = file:read("*a")
+	file:close()
+	local parts = {core.sha256(source_bytes), RELIEF_BUDGET_US,
 		tostring(core.get_mapgen_setting("seed"))}
 	local mapgen = rawget(_G, "grug_mapgen")
 	local wp40 = type(mapgen) == "table" and mapgen.wp40
