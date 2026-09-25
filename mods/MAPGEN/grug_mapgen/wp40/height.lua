@@ -1225,19 +1225,9 @@ local function height_factory(dependencies)
 		-- column's own bank distance from the layout (true distance to a
 		-- river's channel edge, a proxy for lakes) is a cheap pre-test: a wet
 		-- column two nodes away puts it well below BANK_PREFILTER, so only a
-		-- narrow band along the water scans its neighbours. Authored lakes
-		-- (not in the layout) always scan.
+		-- narrow band along the water scans its neighbours. Authored lakes set
+		-- the same bank distance (their indicator proxy) in the fitted stage.
 		local BANK_REACH, BANK_PREFILTER = 2, 8
-		local function authored_within(x, z, r)
-			for index = 1, #authored do
-				local e = authored[index]
-				if x >= e.min_x - r and x <= e.max_x + r and z >= e.min_z - r and
-						z <= e.max_z + r then
-					return true
-				end
-			end
-			return false
-		end
 		local function inland_exclusion_at(x, z)
 			if outside(x, z) or class_owner_at(x, z) ~= LAND then return nil end
 			local block, slot = column(x, z)
@@ -1250,8 +1240,7 @@ local function height_factory(dependencies)
 					local bank_d = own.bank_d[own_slot]
 					if own.water[own_slot] then
 						cached = "inland_water"
-					elseif (bank_d and bank_d <= BANK_PREFILTER) or
-							authored_within(x, z, BANK_REACH) then
+					elseif bank_d and bank_d <= BANK_PREFILTER then
 						for dz = -BANK_REACH, BANK_REACH do
 							for dx = -BANK_REACH, BANK_REACH do
 								if (dx ~= 0 or dz ~= 0) and
