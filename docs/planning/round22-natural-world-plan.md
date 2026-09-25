@@ -3,7 +3,7 @@
 Date: 2026-09-25. Coordinator: Claude Opus 5.5 (root), implementation by
 Opus 5.5 subagents; the user may re-route per session
 (`../process/agent-model-policy.md`, "Day-to-day routing rule").
-Status: **in progress.** Phases 0–3 and 3b are done, merged to main and synced (last merge 6db5c02e, 2026-09-25; not pushed). Next: Phase 5 (water), then Phase 4 (roads) (D30), then Phase 6. Each phase still needs the user's Go.
+Status: **in progress.** Phases 0–3 and 3b are done, accepted by the user, merged to main and synced (last merge 6db5c02e, 2026-09-25; not pushed); the round's worktrees are removed. Next: Phase 5 (water), then Phase 4 (roads) (D30), then Phase 6. Each phase still needs the user's Go.
 
 This document records the goal, the analysis it rests on, every decision taken
 with the user on 2026-09-25 and its basis, the phases, and the guardrails
@@ -478,6 +478,8 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   mountains after the cap raise; emergent jungle trees may be refused by the
   writer (−4 offset, `docs/research/wp13-floating-bushes.md`); high relief
   may lack native caves (check in playtest); shore-crab spawn rate retune.
+- Accepted as is (user, Phase 3 playtest): natural cave mouths that open into
+  flooded pits at sea level.
 - Afterwards, the general runtime cleanup round (D4).
 
 ### Orchestration and compaction points
