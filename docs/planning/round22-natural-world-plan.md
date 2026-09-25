@@ -183,6 +183,16 @@ recommendations; prototype and images in
 | D42 | **Highcourt:** no forced fork (D34). A natural river passes nearby on most seeds; the blueprint's two dry river arms are filled as civic canals, like the Kezamba cenote, the Lethariel lake and the start ponds. | No natural fork on 3 seeds; the lots are cut around the arms. |
 | D43 | **Lake count may vary by seed** (1.7–2.7 % of land on the tested seeds; some seeds get many mountain lakes). | User. |
 
+Road shape decisions (2026-09-25, user with coordinator, before Phase 4):
+
+| # | Decision | Basis |
+|---|---|---|
+| D44 | **Road cross-section per column** from road height vs terrain: uphill the terrain is cut to road level with a ~1:1 slope back (a low stone retaining wall at the foot of high cuts); downhill up to ~2 nodes of difference is a natural sloped embankment (dirt/grass), never a vertical wall; beyond that the road becomes a **deck on pillars** (posts every ~4–6 nodes down to the ground, railing on the open edge). Hillside galleries, valley crossings and bridges over water are one deck-and-pillar system. | User: the old mapgen's solid road foundations on slopes steeper than 45° looked like giant walls. |
+| D45 | **Serpentines emerge from grade-limited routing;** hairpins get a flat turning platform and their legs stay ≥ ~16 nodes apart (the shared 16-node grid). | User and coordinator. |
+| D46 | **Tunnels are staged:** Phase 4 first ships routing, cuts, embankments and decks; then images show where deep cuts over ridges appear, and only there a tunnel rule is added (about 7 wide, 5 high, stone arch lining, torches about every 8 nodes, portals; e.g. from more than ~8–10 nodes of cut over some length). Dropped if it gets complex; routing then avoids ridges by cost. | User: tunnels are welcome if they look good. |
+| D47 | **Height changes use slabs, not full-block jumps.** The player step height is 0.6, so a slab turns every 1-node rise into two walkable half steps; slabs have no orientation, so curves with height change work. The existing `stairs` mod provides them. Sloped ramp nodes are at most a Phase 6 look option (their collision stays stepped). | User. |
+| D48 | **One deck, pillar and railing design** to start, with materials per race. | User. |
+
 All §9 questions are answered.
 
 ## 4. Guardrails for the whole round
