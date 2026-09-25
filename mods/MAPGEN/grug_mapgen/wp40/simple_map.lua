@@ -124,32 +124,6 @@ return function(zone_field)
 			return false
 		end
 
-		-- Tapered centreline body (civic water).
-		local function tapered_member(row, x, z)
-			local points = row.centreline
-			for index = 1, #points do
-				local p = points[index]
-				local dx, dz = x - p.x, z - p.z
-				if dx * dx + dz * dz <= p.half_width * p.half_width then return true end
-			end
-			for index = 1, #points - 1 do
-				local a, b = points[index], points[index + 1]
-				local vx, vz = b.x - a.x, b.z - a.z
-				local length_squared = vx * vx + vz * vz
-				local wx, wz = x - a.x, z - a.z
-				local dot = wx * vx + wz * vz
-				if dot >= 0 and dot <= length_squared and length_squared > 0 then
-					local half_width = a.half_width +
-						(b.half_width - a.half_width) * dot / length_squared
-					local cross = wx * vz - wz * vx
-					if cross * cross <= half_width * half_width * length_squared then
-						return true
-					end
-				end
-			end
-			return false
-		end
-
 		local function centreline_bounds(row)
 			local bounds = {min_x = math.huge, max_x = -math.huge,
 				min_z = math.huge, max_z = -math.huge}
@@ -179,58 +153,6 @@ return function(zone_field)
 
 		local function is_island_region(region)
 			return region == "wyrmglass_island" or region == "stormscale_island"
-		end
-
-		-- Fixed start/capital cores (world_zones.md §7.1): the first twelve
-		-- anchors. They no longer force ownership; the zone field keeps the
-		-- fitting footprint in its zone, and the core only scopes civic water.
-		local fixed_cores = {}
-		for index = 1, 12 do
-			local anchor = source.anchors[index]
-			local dims = anchor.slot_id == "start" and source.start_core or source.capital_core
-			local half_x, half_z = dims.width_x / 2, dims.width_z / 2
-			fixed_cores[#fixed_cores + 1] = {zone = anchor.zone_numeric_id,
-				min_x = anchor.position.x - half_x, max_x = anchor.position.x + half_x,
-				min_z = anchor.position.z - half_z, max_z = anchor.position.z + half_z}
-		end
-		local function fixed_core_member(x, z, zone)
-			for index = 1, #fixed_cores do
-				local core = fixed_cores[index]
-				if core.zone == zone and x >= core.min_x and x < core.max_x and
-						z >= core.min_z and z < core.max_z then
-					return true, core
-				end
-			end
-			return false
-		end
-
-		-- Civic water: the only inland water left until Round 22 Phase 5 (water
-		-- v2). It is the authored civic hydrology inside a start or capital core.
-		local hydrology_depth = {}
-		for _, profile in ipairs(source.hydrology_profiles or {}) do
-			hydrology_depth[profile.id] = profile.depth
-		end
-		local civic_by_zone = {}
-		for _, row in ipairs(source.hydrology or {}) do
-			local zone = row.civic_core_zone_numeric_id
-			if zone and (hydrology_depth[row.profile_id] or 0) > 0 then
-				local list = civic_by_zone[zone]
-				if not list then list = {} civic_by_zone[zone] = list end
-				list[#list + 1] = {row = row, bounds = centreline_bounds(row)}
-			end
-		end
-		local function civic_water_at(x, z, zone)
-			local list = civic_by_zone[zone]
-			if not list then return nil end
-			local inside = fixed_core_member(x, z, zone)
-			if not inside then return nil end
-			for index = 1, #list do
-				local entry = list[index]
-				if in_rectangle(x, z, entry.bounds, 0) and tapered_member(entry.row, x, z) then
-					return entry.row
-				end
-			end
-			return nil
 		end
 
 		local channel_bounds = {}
@@ -414,13 +336,7 @@ return function(zone_field)
 			local function classification_values_at(x, z)
 				local zone, coast, owner = sample(x, z)
 				if zone ~= 0 then
-					local macro_region = zones[zone].macro_region
-					local civic = civic_water_at(x, z, zone)
-					if civic then
-						return "planned_water", macro_region, zone, nil, civic.id, nil, true, true
-					end
-					return "land", macro_region, zone, nil, nil, nil,
-						(fixed_core_member(x, z, zone)), false
+					return "land", zones[zone].macro_region, zone
 				end
 				if coast > -shelf_width * 8 then
 					local bay_index, _, warped_z = field.bay_at(x, z)
@@ -432,7 +348,7 @@ return function(zone_field)
 				end
 				local channel = channel_at(x, z)
 				if channel then
-					return "immutable_dragon_channel", nil, nil, nil, nil, channel.id
+					return "immutable_dragon_channel", nil, nil, nil, channel.id
 				end
 				if coast > -shelf_width and owner and owner ~= 0 then
 					return "coastal_shelf", zones[owner].macro_region, owner
@@ -457,12 +373,12 @@ return function(zone_field)
 			end
 
 			-- Static claim exclusions (world_zones.md §7.4-7.5): anchor blend
-			-- envelopes, active hard cores, civic water, bay water, and the dragon
-			-- island/channel coast. Roads and ingress corridors are gone (D9) and
-			-- ordinary inland water waits for Phase 5.
+			-- envelopes, active hard cores, bay water, and the dragon island/channel
+			-- coast. Road (Phase 4) and river/lake (Phase 5) exclusions are not
+			-- built yet.
 			local exclusion_source_by_id = {}
-			for _, collection in ipairs({source.anchors, source.hydrology or {},
-					source.bays, source.islands, source.channels, source.hard_protection}) do
+			for _, collection in ipairs({source.anchors, source.bays, source.islands,
+					source.channels, source.hard_protection}) do
 				for index = 1, #collection do
 					exclusion_source_by_id[collection[index].id] = collection[index]
 				end
@@ -501,10 +417,6 @@ return function(zone_field)
 					shape.kind = "bay"
 					shape.bounds = {min_x = b.min_x - BAY_REACH, max_x = b.max_x + BAY_REACH,
 						min_z = b.min_z - BAY_REACH, max_z = b.max_z + BAY_REACH}
-				elseif recipe == "exclude_planned_water_v1" and record and
-						record.civic_core_zone_numeric_id and civic_by_zone[record.zone_numeric_id] then
-					shape.kind = "civic_water"
-					shape.bounds = centreline_bounds(record)
 				elseif recipe == "exclude_coast_v1" and island_zone_by_id[exclusion.source_id] then
 					local zone = zones[island_zone_by_id[exclusion.source_id]]
 					local env = params.island_envelope
@@ -526,20 +438,18 @@ return function(zone_field)
 						min_z = b.min_z - e, max_z = b.max_z + e}
 				elseif recipe == "exclude_active_core_v1" then
 					local hard_recipe = hard_recipe_by_id[record.recipe_id]
-					if hard_recipe.shape ~= "polyline_corridor" then
-						if record.recipe_id == "hard_start_core_v1" then
-							local anchor = exclusion_source_by_id[record.source_anchor_id]
-							local envelope = profile_by_id[anchor.template_id].fitting_width
-							local apron = (hard_recipe.total_width - envelope) / 2
-							if envelope % 2 ~= 0 or apron % 1 ~= 0 or
-									apron < START_APRON_AMPLITUDE + 1 then
-								fail("start apron cannot carry a jittered treeline")
-							end
-							shape.start_apron_envelope = envelope
+					if record.recipe_id == "hard_start_core_v1" then
+						local anchor = exclusion_source_by_id[record.source_anchor_id]
+						local envelope = profile_by_id[anchor.template_id].fitting_width
+						local apron = (hard_recipe.total_width - envelope) / 2
+						if envelope % 2 ~= 0 or apron % 1 ~= 0 or
+								apron < START_APRON_AMPLITUDE + 1 then
+							fail("start apron cannot carry a jittered treeline")
 						end
-						shape.kind = "square" shape.center = record.center
-						shape.total_width = hard_recipe.total_width or 1
+						shape.start_apron_envelope = envelope
 					end
+					shape.kind = "square" shape.center = record.center
+					shape.total_width = hard_recipe.total_width or 1
 				end
 				if shape.kind == "square" then
 					local half = floor((shape.total_width + 1) / 2)
@@ -604,8 +514,6 @@ return function(zone_field)
 				local kind = shape.kind
 				if kind == "square" then
 					return in_centered_half_open_square(x, z, shape.center, shape.total_width, 0)
-				elseif kind == "civic_water" then
-					return (civic_water_at(x, z, shape.record.zone_numeric_id)) == shape.record
 				elseif kind == "bay" then
 					return select(4, classification_values_at(x, z)) == shape.record.id
 				elseif kind == "island_coast" then
@@ -697,12 +605,11 @@ return function(zone_field)
 			end
 
 			function session.classification_at(x, z)
-				local water_class, macro_region, zone_numeric_id, bay_id, hydrology_id,
-					channel_id, fixed, civic_water = classification_values_at(x, z)
+				local water_class, macro_region, zone_numeric_id, bay_id, channel_id =
+					classification_values_at(x, z)
 				return {water_class = water_class, macro_region = macro_region,
 					zone_numeric_id = zone_numeric_id, bay_id = bay_id,
-					hydrology_id = hydrology_id, channel_id = channel_id,
-					fixed = fixed or nil, civic_water = civic_water or nil}
+					channel_id = channel_id}
 			end
 
 			function session.id_at(x, z)

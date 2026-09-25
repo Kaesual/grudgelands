@@ -210,7 +210,7 @@ local function planner_factory(allocator_factory)
 	local MAX_SAFE = 9007199254740991
 	local SOURCE_SCHEMA = "grug_wp40_r5_planner_source_v1"
 	local PLAN_SCHEMA = "grug_wp40_r5_column_run_plan_v1"
-	local RELATION_SCHEMA = "grug_wp40_r5_relational_lookup_v1"
+	local LOOKUP_SCHEMA = "grug_wp40_r5_feature_lookup_v2"
 	local MANIFEST_SCHEMA = "grug_wp40_r5_mapgen_manifest_v1"
 	local MANIFEST_MARKER = "grug_wp40_r5_validated_manifest_v1"
 	local PLANNER_ALLOCATOR_DOMAIN = "grug_wp40_r5_planner_allocator_v1"
@@ -321,7 +321,7 @@ local function planner_factory(allocator_factory)
 	local SOURCE_FIELDS = {
 		schema = true,
 		column_values_at = true,
-		hydrology_metric_values_at = true,
+		river_water_in = true,
 		surface_cave_run_at = true,
 		surface_cave_candidate_at_cell = true,
 		surface_cave_cell_at = true,
@@ -335,22 +335,10 @@ local function planner_factory(allocator_factory)
 		hard_row_at = true,
 		metrics = true,
 	}
-	local RELATION_FIELDS = {
+	local LOOKUP_FIELDS = {
 		schema = true,
 		allocator_identity = true,
 		stable_refs = true,
-		hydrology_ids = true,
-		hydrology_profile_ids = true,
-		hydrology_depths = true,
-		hydrology_bed_seal_layers = true,
-		hydrology_bank_seal_nodes = true,
-		interface_ids = true,
-		interface_kinds = true,
-		interface_hydrology_ordinals = true,
-		interface_upper_ordinals = true,
-		interface_lower_ordinals = true,
-		interface_member_start = true,
-		interface_members = true,
 	}
 	local MANIFEST_FIELDS = {
 		schema = true,
@@ -440,7 +428,7 @@ local function planner_factory(allocator_factory)
 	local allocator_factory_new = rawget(allocator_factory, "new")
 	local module = {}
 
-	function module.new(planner_source, validated_manifest, relational_lookup,
+	function module.new(planner_source, validated_manifest, feature_lookup,
 			counting_allocator, construction_identity)
 		-- The few vocabulary constants used by generic candidate helpers are
 		-- local scalars so this Lua 5.1 constructor stays below 60 upvalues.
@@ -449,15 +437,15 @@ local function planner_factory(allocator_factory)
 			OP_CAUSEWAY_SURFACE = 8, 9, 10
 		local OP_CONTACT_FALL_CLEAR, OP_FORD_BED = 11, 13
 		local OP_RECEIVER_OPEN, OP_RIVER_WATER = 23, 25
-		local OP_TUNNEL_FLOOR, OP_TUNNEL_LUMEN, OP_TUNNEL_ROOF,
-			OP_TUNNEL_WALL = 29, 30, 31, 32
-		local ROLE_HYDROLOGY_SEAL, ROLE_TUNNEL_WALL = 9, 16
+		local OP_TUNNEL_FLOOR, OP_TUNNEL_ROOF, OP_TUNNEL_WALL = 29, 31, 32
+		local OP_TUNNEL_LUMEN = 30
+		local ROLE_HYDROLOGY_SEAL = 9
 		local POLICY_SEAL_VOID = 5
 		exact_raw_fields(planner_source, SOURCE_FIELDS, "planner source",
 			"fail_source")
 		if planner_source.schema ~= SOURCE_SCHEMA or
 				type(planner_source.column_values_at) ~= "function" or
-				type(planner_source.hydrology_metric_values_at) ~= "function" or
+				type(planner_source.river_water_in) ~= "function" or
 				type(planner_source.surface_cave_run_at) ~= "function" or
 				type(planner_source.surface_cave_candidate_at_cell) ~= "function" or
 				type(planner_source.coast_material_at) ~= "function" or
@@ -470,8 +458,7 @@ local function planner_factory(allocator_factory)
 			fail("fail_source", "planner source API differs")
 		end
 		local column_values_at = planner_source.column_values_at
-		local hydrology_metric_values_at =
-			planner_source.hydrology_metric_values_at
+		local river_water_in = planner_source.river_water_in
 		local surface_cave_run_at = planner_source.surface_cave_run_at
 
 		exact_raw_fields(validated_manifest, MANIFEST_FIELDS, "manifest",
@@ -514,15 +501,17 @@ local function planner_factory(allocator_factory)
 			end
 		end
 
-		if type(relational_lookup) ~= "table" or
-				relational_lookup.schema ~= RELATION_SCHEMA or
-				not rawequal(relational_lookup.allocator_identity,
+		-- The feature lookup interns the anchor fittings' IDs (r5.lua). Any
+		-- other feature or interface ID (roads, rivers) is ordinal 0.
+		if type(feature_lookup) ~= "table" or
+				feature_lookup.schema ~= LOOKUP_SCHEMA or
+				not rawequal(feature_lookup.allocator_identity,
 					counting_allocator) then
-			fail("fail_source", "relational lookup provenance differs")
+			fail("fail_source", "feature lookup provenance differs")
 		end
-		for key in pairs(RELATION_FIELDS) do
-			if rawget(relational_lookup, key) == nil then
-				fail("fail_source", "relational lookup is missing field " .. key)
+		for key in pairs(LOOKUP_FIELDS) do
+			if rawget(feature_lookup, key) == nil then
+				fail("fail_source", "feature lookup is missing field " .. key)
 			end
 		end
 		if type(construction_identity) ~= "table" or
@@ -533,213 +522,29 @@ local function planner_factory(allocator_factory)
 			fail("fail_source", "construction identity is not empty")
 		end
 
-		local stable_refs = relational_lookup.stable_refs
+		local stable_refs = feature_lookup.stable_refs
 		local stable_count = exact_dense_count(stable_refs, "stable refs",
 			MAX_STABLE_REFS, "fail_source")
-		local LOOKUP_BASE = 513
-		local LOOKUP_BASE_2 = LOOKUP_BASE * LOOKUP_BASE
-		local LOOKUP_BASE_3 = LOOKUP_BASE_2 * LOOKUP_BASE
-		local function lookup_components(id, label)
-			local packed = relational_lookup[id]
-			safe_integer(packed, label .. " packed lookup", 1, MAX_SAFE,
-				"fail_source")
-			local stable = packed % LOOKUP_BASE
-			local quotient = math.floor(packed / LOOKUP_BASE)
-			local hydro = quotient % LOOKUP_BASE
-			quotient = math.floor(quotient / LOOKUP_BASE)
-			local interface = quotient % LOOKUP_BASE
-			local route_interface = math.floor(quotient / LOOKUP_BASE)
-			if route_interface > MAX_STABLE_REFS then
-				fail("fail_source", label .. " packed component exceeds bound")
-			end
-			return stable, hydro, interface, route_interface
-		end
 		local previous_ref
 		for index = 1, stable_count do
 			local id = stable_refs[index]
-			if type(id) ~= "string" or id == "" or RELATION_FIELDS[id] or
-					(previous_ref ~= nil and not (previous_ref < id)) then
+			if type(id) ~= "string" or id == "" or LOOKUP_FIELDS[id] or
+					(previous_ref ~= nil and not (previous_ref < id)) or
+					feature_lookup[id] ~= index then
 				fail("fail_source", "stable refs are not canonical")
-			end
-			local stable = lookup_components(id, "stable ref")
-			if stable ~= index then
-				fail("fail_source", "stable lookup ordinal differs")
 			end
 			previous_ref = id
 		end
-		local relation_key_count = 0
-		for key in pairs(relational_lookup) do
-			if not RELATION_FIELDS[key] then
-				if type(key) ~= "string" then
-					fail("fail_source", "relational lookup has non-text dynamic key")
-				end
-				local stable = lookup_components(key, "dynamic relation key")
-				if stable_refs[stable] ~= key then
-					fail("fail_source", "relational lookup has unknown dynamic key")
-				end
+		local lookup_key_count = 0
+		for key, value in pairs(feature_lookup) do
+			if not LOOKUP_FIELDS[key] and
+					(type(key) ~= "string" or stable_refs[value] ~= key) then
+				fail("fail_source", "feature lookup has an unknown key")
 			end
-			relation_key_count = relation_key_count + 1
+			lookup_key_count = lookup_key_count + 1
 		end
-		local fixed_relation_count = 0
-		for _ in pairs(RELATION_FIELDS) do fixed_relation_count = fixed_relation_count + 1 end
-		if relation_key_count ~= fixed_relation_count + stable_count then
-			fail("fail_source", "relational lookup key population differs")
-		end
-
-		local hydrology_ids = relational_lookup.hydrology_ids
-		local hydro_profile_ids = relational_lookup.hydrology_profile_ids
-		local hydro_depths = relational_lookup.hydrology_depths
-		local hydro_bed_layers = relational_lookup.hydrology_bed_seal_layers
-		local hydro_bank_nodes = relational_lookup.hydrology_bank_seal_nodes
-		if not rawequal(hydrology_ids, hydro_profile_ids) or
-				not rawequal(hydrology_ids, hydro_depths) or
-				not rawequal(hydrology_ids, hydro_bed_layers) or
-				not rawequal(hydrology_ids, hydro_bank_nodes) then
-			fail("fail_source", "hydrology stride aliases differ")
-		end
-		local hydro_cells = exact_dense_count(hydrology_ids,
-			"hydrology stride", MAX_STABLE_REFS * 5, "fail_source")
-		if hydro_cells % 5 ~= 0 then
-			fail("fail_source", "hydrology stride length differs")
-		end
-		local hydro_count = hydro_cells / 5
-		local function hydro_value(ordinal, offset)
-			return hydrology_ids[(ordinal - 1) * 5 + offset]
-		end
-		for index = 1, hydro_count do
-			local id = hydro_value(index, 1)
-			local profile_id = hydro_value(index, 2)
-			local stable, hydro = lookup_components(id, "hydrology ID")
-			if type(id) ~= "string" or id == "" or hydro ~= index or
-					stable_refs[stable] ~= id or type(profile_id) ~= "string" or
-					profile_id == "" then
-				fail("fail_source", "hydrology identity/profile differs")
-			end
-			safe_integer(hydro_value(index, 3), "hydrology depth", 0, MAX_SAFE,
-				"fail_source")
-			if safe_integer(hydro_value(index, 4), "hydrology bed seal", 0,
-					MAX_SAFE, "fail_source") ~= 3 or
-					safe_integer(hydro_value(index, 5), "hydrology bank seal", 0,
-						MAX_SAFE, "fail_source") ~= 2 then
-				fail("fail_source", "hydrology seal profile differs")
-			end
-		end
-
-		local interface_ids = relational_lookup.interface_ids
-		local interface_kinds = relational_lookup.interface_kinds
-		local interface_hydro = relational_lookup.interface_hydrology_ordinals
-		local interface_upper = relational_lookup.interface_upper_ordinals
-		local interface_lower = relational_lookup.interface_lower_ordinals
-		local interface_start = relational_lookup.interface_member_start
-		local interface_members = relational_lookup.interface_members
-		if not rawequal(interface_ids, interface_kinds) or
-				not rawequal(interface_ids, interface_hydro) or
-				not rawequal(interface_ids, interface_upper) or
-				not rawequal(interface_ids, interface_lower) or
-				not rawequal(interface_ids, interface_start) then
-			fail("fail_source", "interface stride aliases differ")
-		end
-		local interface_cells = exact_dense_count(interface_ids,
-			"interface stride", MAX_STABLE_REFS * 6 + 1, "fail_source")
-		if interface_cells < 1 or (interface_cells - 1) % 6 ~= 0 then
-			fail("fail_source", "interface stride length differs")
-		end
-		local interface_count = (interface_cells - 1) / 6
-		local function interface_value(ordinal, offset)
-			return interface_ids[(ordinal - 1) * 6 + offset]
-		end
-		local function interface_after(ordinal)
-			if ordinal < interface_count then return interface_value(ordinal + 1, 6) end
-			return interface_ids[interface_count * 6 + 1]
-		end
-		local member_count = exact_dense_count(interface_members,
-			"interface members", MAX_STABLE_REFS, "fail_source")
-		if interface_count == 0 or interface_value(1, 6) ~= 1 or
-				interface_ids[interface_count * 6 + 1] ~= member_count + 1 then
-			fail("fail_source", "interface member starts differ")
-		end
-		for index = 1, interface_count do
-			local id = interface_value(index, 1)
-			local kind = interface_value(index, 2)
-			local first, after = interface_value(index, 6), interface_after(index)
-			local hydrology_ordinal = interface_value(index, 3)
-			local upper_ordinal = interface_value(index, 4)
-			local lower_ordinal = interface_value(index, 5)
-			local stable, _, interface = lookup_components(id, "interface ID")
-			if type(id) ~= "string" or id == "" or interface ~= index or
-					stable_refs[stable] ~= id or type(kind) ~= "string" or kind == "" or
-					first > after or first < 1 or after > member_count + 1 then
-				fail("fail_source", "interface identity/member span differs")
-			end
-			safe_integer(hydrology_ordinal, "interface hydrology ordinal", 0,
-				hydro_count, "fail_source")
-			safe_integer(upper_ordinal, "interface upper ordinal", 0,
-				hydro_count, "fail_source")
-			safe_integer(lower_ordinal, "interface lower ordinal", 0,
-				hydro_count, "fail_source")
-			local previous_member_id
-			for member_index = first, after - 1 do
-				local member = safe_integer(interface_members[member_index],
-					"interface member", 1, hydro_count, "fail_source")
-				local member_id = hydro_value(member, 1)
-				if previous_member_id ~= nil and not (previous_member_id < member_id) then
-					fail("fail_source", "interface members are not sorted and unique")
-				end
-				previous_member_id = member_id
-			end
-			local relation_member_count = after - first
-			local route_reference_count = 0
-			for stable_index = 1, stable_count do
-				local _, _, _, route_interface = lookup_components(
-					stable_refs[stable_index], "route-interface validation")
-				if route_interface == index then
-					route_reference_count = route_reference_count + 1
-				end
-			end
-			if kind == "bridge" or kind == "ford" or kind == "causeway" then
-				if hydrology_ordinal == 0 or upper_ordinal ~= 0 or lower_ordinal ~= 0 or
-						relation_member_count ~= 1 or
-						interface_members[first] ~= hydrology_ordinal or
-						route_reference_count < 1 then
-					fail("fail_source", "route-interface relation shape differs")
-				end
-			elseif kind == "rapid" or kind == "waterfall" then
-				local first_member, second_member = interface_members[first],
-					interface_members[first + 1]
-				if hydrology_ordinal ~= 0 or upper_ordinal == 0 or
-						lower_ordinal == 0 or upper_ordinal == lower_ordinal or
-						relation_member_count ~= 2 or route_reference_count ~= 0 or
-						not ((first_member == upper_ordinal and
-							second_member == lower_ordinal) or
-							(first_member == lower_ordinal and
-							second_member == upper_ordinal)) then
-					fail("fail_source", "transition relation shape differs")
-				end
-			elseif kind == "confluence" then
-				if hydrology_ordinal ~= 0 or upper_ordinal ~= 0 or lower_ordinal ~= 0 or
-						relation_member_count < 2 or route_reference_count ~= 0 then
-					fail("fail_source", "confluence relation shape differs")
-				end
-			else
-				fail("fail_source", "unknown relation kind")
-			end
-		end
-		for stable_index = 1, stable_count do
-			local id = stable_refs[stable_index]
-			local stable, hydro, interface, route_interface =
-				lookup_components(id, "stable lookup")
-			if stable ~= stable_index or hydro > hydro_count or
-					interface > interface_count or route_interface > interface_count or
-					(hydro > 0 and hydro_value(hydro, 1) ~= id) or
-					(interface > 0 and interface_value(interface, 1) ~= id) or
-					(route_interface > 0 and
-						(interface_value(route_interface, 2) ~= "bridge" and
-						interface_value(route_interface, 2) ~= "ford" and
-						interface_value(route_interface, 2) ~= "causeway")) or
-					(route_interface > 0 and
-						interface_value(route_interface, 3) == 0) then
-				fail("fail_source", "packed lookup component differs")
-			end
+		if lookup_key_count ~= 3 + stable_count then
+			fail("fail_source", "feature lookup key population differs")
 		end
 
 		local function new_full_array(label, maximum)
@@ -748,10 +553,6 @@ local function planner_factory(allocator_factory)
 			return result
 		end
 
-		-- A bank query visits only the owner plus a two-column perimeter. Cache
-		-- its validated wet scalars for this plan, including dry results. The
-		-- first field is ordinal + 1; zero means not evaluated this transaction.
-		local wet_values = new_full_array("planner_wet_neighbor_values", 84 * 84 * 4)
 		local column_start = new_full_array("planner_column_start", MAX_COLUMNS + 1)
 		local run_values = new_full_array("planner_run_values", MAX_RUN_CELLS)
 		local candidate_values = new_full_array("planner_candidate_values",
@@ -786,18 +587,14 @@ local function planner_factory(allocator_factory)
 		local candidate_count = 0
 		local current_min_y, current_max_y
 
+		-- Interned feature ordinal of an ID; 0 for nil and for any ID the
+		-- lookup does not intern.
 		local function stable_ordinal(id, label)
 			if id == nil then return 0 end
 			if type(id) ~= "string" or id == "" then
 				fail("fail_source", label .. " is not a stable ID")
 			end
-			local packed = relational_lookup[id]
-			if packed == nil then fail("fail_source", label .. " is not interned") end
-			local ordinal = packed % LOOKUP_BASE
-			if stable_refs[ordinal] ~= id then
-				fail("fail_source", label .. " lookup differs")
-			end
-			return ordinal
+			return feature_lookup[id] or 0
 		end
 
 		local function add_candidate(y_min, y_max, priority, opcode, role, policy,
@@ -838,55 +635,13 @@ local function planner_factory(allocator_factory)
 			candidate_values[base + R_AUX] = AUX_NONE
 		end
 
-		local function hydrology_ordinal(id, depth, label)
-			if id == nil then
-				if depth ~= nil then fail("fail_source", label .. " depth lacks ID") end
-				return 0
-			end
-			if type(id) ~= "string" or id == "" then
-				fail("fail_source", label .. " ID differs")
-			end
-			local packed = relational_lookup[id]
-			if packed == nil then fail("fail_source", label .. " ID is unknown") end
-			local ordinal = math.floor(packed / LOOKUP_BASE) % LOOKUP_BASE
-			if ordinal == 0 then fail("fail_source", label .. " profile is unknown") end
-			safe_integer(depth, label .. " depth", 0, MAX_SAFE, "fail_source")
-			return ordinal
-		end
-
-		local function route_relation(interface_id, wanted_kind,
-				classified_ordinal, required)
-			if interface_id == nil then
-				if required then fail("fail_mask", wanted_kind .. " interface missing") end
-				return 0
-			end
-			local packed = relational_lookup[interface_id]
-			local ordinal = packed and math.floor(packed / LOOKUP_BASE_3) or 0
-			if ordinal == 0 or interface_value(ordinal, 2) ~= wanted_kind or
-					interface_value(ordinal, 3) ~= classified_ordinal then
-				fail("fail_mask", wanted_kind .. " relation differs")
-			end
-			return ordinal
-		end
-
-		local function transition_relation(interface_id, wanted_kind)
-			if type(interface_id) ~= "string" or interface_id == "" then
-				fail("fail_mask", "transition interface missing")
-			end
-			local packed = relational_lookup[interface_id]
-			local ordinal = packed and
-				(math.floor(packed / LOOKUP_BASE_2) % LOOKUP_BASE) or 0
-			if ordinal == 0 or interface_value(ordinal, 2) ~= wanted_kind or
-					interface_value(ordinal, 4) == 0 or
-					interface_value(ordinal, 5) == 0 then
-				fail("fail_mask", "transition relation differs")
-			end
-			return ordinal
-		end
-
+		-- The column tuple (zones.lua). River water by column: a river id is
+		-- any non-empty text on a water column and nothing is registered; its
+		-- bed depth is `water_y - terrain_y`. The six transition values stay
+		-- nil until Phase 5 defines step transitions.
 		local function validate_column_tuple(x, z, water_class, zone_numeric_id,
 				zone_id, logical_biome_id, race_region_id, terrain_y, water_y,
-				classified_hydrology_id, classified_depth, functional_kind,
+				river_id, river_depth, functional_kind,
 				functional_y, functional_feature_id, functional_interface_id,
 				transition_kind, transition_interface_id, transition_upper_y,
 				transition_lower_y, transition_progress_q, transition_face_mask,
@@ -911,26 +666,13 @@ local function planner_factory(allocator_factory)
 			if water_y ~= nil then
 				safe_integer(water_y, "water y", OWNER_MIN, OWNER_MAX, "fail_bound")
 			end
-			local hydro_ordinal = hydrology_ordinal(classified_hydrology_id,
-				classified_depth, "classified hydrology")
-			if hydro_ordinal > 0 then
-				local nominal = hydro_value(hydro_ordinal, 3)
-				local minimum, maximum = nominal, nominal
-				-- Only ordinary wet columns publish a variable bed depth. All
-				-- engineered crossings, transitions and dry profiles stay exact.
-				if functional_kind == nil and transition_kind == nil and
-						water_y ~= nil and water_y > terrain_y then
-					if nominal == 2 then minimum, maximum = 1, 3
-					elseif nominal == 4 then minimum, maximum = 2, 6
-					elseif nominal == 8 then minimum, maximum = 5, 11
-					elseif nominal == 12 then minimum, maximum = 8, 15 end
-					if classified_depth ~= water_y - terrain_y then
-						fail("fail_source", "classified hydrology bed depth differs")
-					end
+			if river_id == nil then
+				if river_depth ~= nil then
+					fail("fail_source", "river depth lacks a river")
 				end
-				if classified_depth < minimum or classified_depth > maximum then
-					fail("fail_source", "classified hydrology profile depth differs")
-				end
+			elseif type(river_id) ~= "string" or river_id == "" or water_y == nil or
+					river_depth ~= water_y - terrain_y then
+				fail("fail_source", "river water column differs")
 			end
 			if functional_kind == nil then
 				if functional_y ~= nil or functional_feature_id ~= nil or
@@ -951,120 +693,53 @@ local function planner_factory(allocator_factory)
 						functional_feature_id == "" then
 					fail("fail_source", "functional feature is missing")
 				end
-				stable_ordinal(functional_feature_id, "functional feature")
-				if functional_interface_id ~= nil then
-					stable_ordinal(functional_interface_id, "functional interface")
+				if functional_interface_id ~= nil and
+						(type(functional_interface_id) ~= "string" or
+						functional_interface_id == "") then
+					fail("fail_source", "functional interface differs")
 				end
 			end
-			if transition_kind == nil then
-				if transition_interface_id ~= nil or transition_upper_y ~= nil or
-						transition_lower_y ~= nil or transition_progress_q ~= nil or
-						transition_face_mask ~= nil then
-					fail("fail_source", "nil transition carries values")
-				end
-			else
-				if transition_kind ~= "rapid" and transition_kind ~= "waterfall" then
-					fail("fail_source", "unknown transition kind")
-				end
-				transition_relation(transition_interface_id, transition_kind)
-				safe_integer(transition_upper_y, "transition upper y", OWNER_MIN,
-					OWNER_MAX, "fail_bound")
-				safe_integer(transition_lower_y, "transition lower y", OWNER_MIN,
-					OWNER_MAX, "fail_bound")
-				if transition_face_mask ~= nil then
-					if transition_kind ~= "waterfall" or
-							transition_progress_q ~= nil then
-						fail("fail_source", "contact transition tuple differs")
-					end
-					safe_integer(transition_face_mask, "transition face mask", 1, 15,
-						"fail_source")
-				else
-					safe_integer(transition_progress_q, "transition progress", 0, 65536,
-						"fail_source")
-				end
+			if transition_kind ~= nil or transition_interface_id ~= nil or
+					transition_upper_y ~= nil or transition_lower_y ~= nil or
+					transition_progress_q ~= nil or transition_face_mask ~= nil then
+				fail("fail_source", "hydrology transitions are not supported")
 			end
 			if type(hard_foundation) ~= "boolean" then
 				fail("fail_source", "hard-foundation scalar differs")
 			end
-			return hydro_ordinal
 		end
 
 		local function tuple_at(x, z)
 			local water_class, zone_numeric_id, zone_id, logical_biome_id,
-				race_region_id, terrain_y, water_y, classified_hydrology_id,
-				classified_depth, functional_kind, functional_y,
+				race_region_id, terrain_y, water_y, river_id,
+				river_depth, functional_kind, functional_y,
 				functional_feature_id, functional_interface_id, transition_kind,
 				transition_interface_id, transition_upper_y, transition_lower_y,
 				transition_progress_q, transition_face_mask, hard_foundation =
 					column_values_at(x, z)
 			validate_column_tuple(x, z, water_class, zone_numeric_id, zone_id,
 				logical_biome_id, race_region_id, terrain_y, water_y,
-				classified_hydrology_id, classified_depth, functional_kind,
+				river_id, river_depth, functional_kind,
 				functional_y, functional_feature_id, functional_interface_id,
 				transition_kind, transition_interface_id, transition_upper_y,
 				transition_lower_y, transition_progress_q, transition_face_mask,
 				hard_foundation)
 			return water_class, zone_numeric_id, zone_id, logical_biome_id,
-				race_region_id, terrain_y, water_y, classified_hydrology_id,
-				classified_depth, functional_kind, functional_y,
+				race_region_id, terrain_y, water_y, river_id,
+				river_depth, functional_kind, functional_y,
 				functional_feature_id, functional_interface_id, transition_kind,
 				transition_interface_id, transition_upper_y, transition_lower_y,
 				transition_progress_q, transition_face_mask, hard_foundation
 		end
 
-		local function compute_named_wet_values(x, z)
-			local _, _, _, _, _, _, water_y, classified_id, classified_depth,
-				_, _, _, _, transition_kind, transition_id, _, transition_lower_y,
-				_, transition_face_mask = tuple_at(x, z)
-			if transition_kind == "waterfall" and transition_face_mask ~= nil then
-				local relation_ordinal = transition_relation(transition_id, "waterfall")
-				local hydro_ordinal = interface_value(relation_ordinal, 5)
-				local depth = hydro_value(hydro_ordinal, 3)
-				if depth <= 0 then fail("fail_mask", "contact lower profile is dry") end
-				return hydro_ordinal, transition_lower_y,
-					transition_lower_y - depth, relation_ordinal
+		-- Bed y and surface y of a wet river column; nil for every other column.
+		-- The bed of a river column is its terrain.
+		local function wet_river_at(x, z)
+			local _, _, _, _, _, terrain_y, water_y, river_id = tuple_at(x, z)
+			if river_id ~= nil and terrain_y < water_y then
+				return terrain_y, water_y
 			end
-			if water_y ~= nil and classified_id ~= nil and
-					transition_kind ~= "waterfall" then
-				local hydro_ordinal = hydrology_ordinal(classified_id,
-					classified_depth, "wet hydrology")
-				if classified_depth <= 0 then
-					fail("fail_mask", "named wet hydrology has dry profile")
-				end
-				local relation_ordinal = 0
-				if transition_kind == "rapid" then
-					relation_ordinal = transition_relation(transition_id, "rapid")
-				end
-				return hydro_ordinal, water_y, water_y - classified_depth,
-					relation_ordinal
-			end
-			return 0, nil, nil, 0
-		end
-
-		local function named_wet_values(x, z)
-			local local_x, local_z = x - plan.min_x + 2, z - plan.min_z + 2
-			if local_x < 0 or local_x >= 84 or local_z < 0 or local_z >= 84 then
-				fail("fail_bound", "wet neighbor escaped plan halo")
-			end
-			local base = (local_z * 84 + local_x) * 4
-			if wet_values[base + 1] ~= 0 then
-				return wet_values[base + 1] - 1, wet_values[base + 2],
-					wet_values[base + 3], wet_values[base + 4]
-			end
-			local ordinal, water_y, bed_y, relation = compute_named_wet_values(x, z)
-			wet_values[base + 2], wet_values[base + 3], wet_values[base + 4] =
-				water_y, bed_y, relation
-			wet_values[base + 1] = ordinal + 1
-			return ordinal, water_y, bed_y, relation
-		end
-
-		local function relation_contains(relation_ordinal, hydro_ordinal)
-			local first = interface_value(relation_ordinal, 6)
-			local after = interface_after(relation_ordinal)
-			for index = first, after - 1 do
-				if interface_members[index] == hydro_ordinal then return true end
-			end
-			return false
+			return nil, nil
 		end
 
 		local function candidate_is_p3_solid(opcode)
@@ -1147,142 +822,41 @@ local function planner_factory(allocator_factory)
 			end
 		end
 
-		local function metric_hydrology_at(x, z)
-			local id, segment, numerator, denominator =
-				hydrology_metric_values_at(x, z)
-			if id == nil then
-				if segment ~= nil or numerator ~= nil or denominator ~= nil then
-					fail("fail_source", "nil hydrology metric carries values")
-				end
-				return nil, nil, nil, nil
-			end
-			if type(id) ~= "string" or id == "" or relational_lookup[id] == nil then
-				fail("fail_source", "hydrology metric ID differs")
-			end
-			local packed = relational_lookup[id]
-			local hydro = math.floor(packed / LOOKUP_BASE) % LOOKUP_BASE
-			if hydro == 0 then fail("fail_source", "hydrology metric ID is unknown") end
-			safe_integer(segment, "hydrology metric segment", 1, MAX_SAFE,
-				"fail_source")
-			safe_integer(numerator, "hydrology metric numerator", 0, MAX_SAFE,
-				"fail_source")
-			safe_integer(denominator, "hydrology metric denominator", 1, MAX_SAFE,
-				"fail_source")
-			return id, segment, numerator, denominator
-		end
-
-		local function validate_wet_profile(hydro_ordinal)
-			local depth = hydro_value(hydro_ordinal, 3)
-			if depth <= 0 or hydro_value(hydro_ordinal, 4) ~= 3 or
-					hydro_value(hydro_ordinal, 5) ~= 2 then
-				fail("fail_mask", "wet hydrology seal profile differs")
-			end
-			return depth
-		end
-
-		local function current_named_wet(water_y, classified_id,
-				classified_depth, transition_kind, transition_id, transition_lower_y,
-				transition_face_mask)
-			if transition_kind == "waterfall" and transition_face_mask ~= nil then
-				local relation_ordinal = transition_relation(transition_id, "waterfall")
-				local hydro_ordinal = interface_value(relation_ordinal, 5)
-				local depth = validate_wet_profile(hydro_ordinal)
-				return hydro_ordinal, transition_lower_y,
-					transition_lower_y - depth, relation_ordinal
-			end
-			if water_y ~= nil and classified_id ~= nil and
-					transition_kind ~= "waterfall" then
-				local hydro_ordinal = hydrology_ordinal(classified_id,
-					classified_depth, "current wet hydrology")
-				validate_wet_profile(hydro_ordinal)
-				local relation_ordinal = 0
-				if transition_kind == "rapid" then
-					relation_ordinal = transition_relation(transition_id, "rapid")
-				end
-				return hydro_ordinal, water_y, water_y - classified_depth, relation_ordinal
-			end
-			return 0, nil, nil, 0
-		end
-
-		local function scan_bank_samples(x, z)
-			local sample_count = 0
-			local first_hydro = 0
-			local all_same = true
-			local first_surface
-			local all_same_surface = true
-			local minimum_seal_y, maximum_water_y
-			local smallest_id
+		-- Bank seal of a column that is not wet river water: from two below the
+		-- lowest neighbouring river bed up to the highest neighbouring river
+		-- surface (capped at the column's terrain), over the owner plus a
+		-- two-column diamond. Only scanned when a river may lie near the slice.
+		local river_near = false
+		local function bank_seal_values(x, z)
+			local seal_low, water_high
 			for dx = -2, 2 do
 				for dz = -2, 2 do
 					local distance = math.abs(dx) + math.abs(dz)
 					if distance >= 1 and distance <= 2 then
-						local hydro_ordinal, water_y, bed_y =
-							named_wet_values(x + dx, z + dz)
-						if hydro_ordinal > 0 then
-							sample_count = sample_count + 1
-							if first_hydro == 0 then first_hydro = hydro_ordinal
-							elseif hydro_ordinal ~= first_hydro then all_same = false end
-							if first_surface == nil then first_surface = water_y
-							elseif water_y ~= first_surface then all_same_surface = false end
-							local seal_y = bed_y - 2
-							minimum_seal_y = minimum_seal_y and
-								math.min(minimum_seal_y, seal_y) or seal_y
-							maximum_water_y = maximum_water_y and
-								math.max(maximum_water_y, water_y) or water_y
-							local id = hydro_value(hydro_ordinal, 1)
-							if smallest_id == nil or id < smallest_id then smallest_id = id end
+						local bed_y, surface_y = wet_river_at(x + dx, z + dz)
+						if bed_y ~= nil then
+							seal_low = seal_low and math.min(seal_low, bed_y - 2) or
+								bed_y - 2
+							water_high = water_high and math.max(water_high, surface_y) or
+								surface_y
 						end
 					end
 				end
 			end
-			return sample_count, first_hydro, all_same, minimum_seal_y,
-				maximum_water_y, smallest_id, all_same_surface
-		end
-
-		local function bank_relation_for(x, z, sample_count)
-			local best_relation = 0
-			local best_id
-			for relation_ordinal = 1, interface_count do
-				local kind = interface_value(relation_ordinal, 2)
-				if kind == "confluence" or kind == "rapid" or kind == "waterfall" then
-					local compatible = true
-					local observed = 0
-					for dx = -2, 2 do
-						for dz = -2, 2 do
-							local distance = math.abs(dx) + math.abs(dz)
-							if distance >= 1 and distance <= 2 then
-								local hydro_ordinal = named_wet_values(x + dx, z + dz)
-								if hydro_ordinal > 0 then
-									observed = observed + 1
-									if not relation_contains(relation_ordinal,
-											hydro_ordinal) then compatible = false end
-								end
-							end
-						end
-					end
-					local relation_id = interface_value(relation_ordinal, 1)
-					if compatible and observed == sample_count and
-							(best_id == nil or relation_id < best_id) then
-						best_relation = relation_ordinal
-						best_id = relation_id
-					end
-				end
-			end
-			return best_relation
+			return seal_low, water_high
 		end
 
 		local function add_column_candidates(x, z)
 			-- Scalar locals keep the Lua 5.1 closure below its 60-upvalue ceiling.
 			local OP_BRIDGE_CLEAR, OP_BRIDGE_DECK, OP_BRIDGE_SUPPORT = 5, 6, 7
-			local OP_CAUSEWAY_CULVERT, OP_CAUSEWAY_FILL,
-				OP_CAUSEWAY_SURFACE = 8, 9, 10
-			local OP_CONTACT_FALL_CLEAR, OP_FORD_BED = 11, 13
+			local OP_CAUSEWAY_FILL, OP_CAUSEWAY_SURFACE = 9, 10
+			local OP_FORD_BED = 13
 			local OP_FOUNDATION_CLEAR, OP_FOUNDATION_FILL,
 				OP_FOUNDATION_SURFACE = 14, 15, 16
 			local OP_HYDROLOGY_BANK_SEAL, OP_HYDROLOGY_BED_SEAL = 17, 18
 			local OP_ORDINARY_WATER, OP_PATH_CLEAR, OP_PATH_FILL,
 				OP_PATH_SURFACE = 19, 20, 21, 22
-			local OP_RECEIVER_OPEN, OP_RIVER_WATER = 23, 25
+			local OP_RIVER_WATER = 25
 			local OP_TERRAIN_CLEAR, OP_TERRAIN_FILL,
 				OP_TERRAIN_SURFACE = 26, 27, 28
 			local OP_TUNNEL_FLOOR, OP_TUNNEL_LUMEN,
@@ -1299,56 +873,20 @@ local function planner_factory(allocator_factory)
 				POLICY_OPEN_ENGINEERED = 1, 3, 4
 			local POLICY_SEAL_VOID, POLICY_SURFACE_EXACT,
 				POLICY_WRITE_WATER = 5, 6, 7
-			local water_class, zone_numeric_id, zone_id, logical_biome_id,
-				race_region_id, terrain_y, water_y, classified_id, classified_depth,
+			local _, _, _, _, _, terrain_y, water_y, river_id, _,
 				functional_kind, functional_y, functional_feature_id,
-				functional_interface_id, transition_kind, transition_id,
-				transition_upper_y, transition_lower_y, transition_progress_q,
-				transition_face_mask, hard_foundation = tuple_at(x, z)
-			local classified_ordinal = hydrology_ordinal(classified_id,
-				classified_depth, "column hydrology")
+				functional_interface_id, _, _, _, _, _, _, hard_foundation =
+					tuple_at(x, z)
 			local clearance_y = water_y
-			if clearance_y == nil and transition_upper_y ~= nil then
-				clearance_y = math.max(transition_upper_y, transition_lower_y)
-			end
 			local surface_cap = clearance_y and math.max(terrain_y, clearance_y) or
 				terrain_y
 			if terrain_y < AUTHORED_FLOOR or terrain_y > surface_cap or
 					surface_cap > OWNER_MAX then
 				fail("fail_bound", "column surface interval differs")
 			end
-			local contact_lower_hydro, contact_lower_bed
-			if transition_kind == "waterfall" and
-					transition_face_mask ~= nil then
-				local contact_relation_ordinal = transition_relation(transition_id,
-					"waterfall")
-				contact_lower_hydro = interface_value(contact_relation_ordinal, 5)
-				local contact_lower_depth = validate_wet_profile(contact_lower_hydro)
-				contact_lower_bed = transition_lower_y - contact_lower_depth
-				if terrain_y ~= contact_lower_bed then
-					fail("fail_mask", "contact-face bed differs")
-				end
-			end
-
-			local culvert = false
-			local culvert_bed
-			if functional_kind == "causeway" then
-				if functional_y ~= terrain_y or clearance_y == nil or
-						terrain_y < clearance_y + 1 then
-					fail("fail_mask", "causeway scalar contract differs")
-				end
-				local relation_ordinal = route_relation(functional_interface_id,
-					"causeway", classified_ordinal, false)
-				if relation_ordinal > 0 and water_y ~= nil and classified_ordinal > 0 then
-					local metric_id, _, numerator, denominator = metric_hydrology_at(x, z)
-					if metric_id == classified_id and numerator <= denominator then
-						culvert = true
-						culvert_bed = water_y - validate_wet_profile(classified_ordinal)
-						if culvert_bed >= water_y then
-							fail("fail_mask", "causeway culvert bed differs")
-						end
-					end
-				end
+			if functional_kind == "causeway" and (functional_y ~= terrain_y or
+					clearance_y == nil or terrain_y < clearance_y + 1) then
+				fail("fail_mask", "causeway scalar contract differs")
 			end
 
 			if hard_foundation and functional_kind == "anchor_platform" then
@@ -1382,21 +920,14 @@ local function planner_factory(allocator_factory)
 				if water_y == nil or functional_y ~= terrain_y then
 					fail("fail_mask", "ford scalar contract differs")
 				end
-				if functional_interface_id ~= nil then
-					route_relation(functional_interface_id, "ford", classified_ordinal,
-						true)
-				end
 				add_candidate(terrain_y, terrain_y, 3, OP_FORD_BED,
 					ROLE_FORD_SURFACE, POLICY_SURFACE_EXACT, functional_feature_id,
 					functional_interface_id)
 			elseif functional_kind == "bridge_deck" then
 				if clearance_y == nil then fail("fail_mask", "bridge clearance is nil") end
-				local named = functional_interface_id ~= nil
-				if named then
-					route_relation(functional_interface_id, "bridge",
-						classified_ordinal, true)
-				end
-				local required = named and 4 or 2
+				-- A bridge with a named interface keeps four nodes of
+				-- clearance, an unnamed one two.
+				local required = functional_interface_id ~= nil and 4 or 2
 				if functional_y < clearance_y + required then
 					fail("fail_guard", "bridge clearance threshold differs")
 				end
@@ -1417,19 +948,12 @@ local function planner_factory(allocator_factory)
 					OP_BRIDGE_CLEAR, ROLE_AIR, POLICY_CUT_NATURAL,
 					functional_feature_id, functional_interface_id)
 			elseif functional_kind == "causeway" then
-				local fill_low = culvert and water_y + 1 or AUTHORED_FLOOR
-				add_candidate(fill_low, terrain_y - 1, 3, OP_CAUSEWAY_FILL,
+				add_candidate(AUTHORED_FLOOR, terrain_y - 1, 3, OP_CAUSEWAY_FILL,
 					ROLE_CAUSEWAY_CORE, POLICY_FILL_VOID, functional_feature_id,
 					functional_interface_id)
 				add_candidate(terrain_y, terrain_y, 3, OP_CAUSEWAY_SURFACE,
 					ROLE_CAUSEWAY_SURFACE, POLICY_SURFACE_EXACT,
 					functional_feature_id, functional_interface_id)
-				if culvert then
-					add_candidate(culvert_bed + 1, water_y, 3,
-						OP_CAUSEWAY_CULVERT, ROLE_RIVER_WATER_SOURCE,
-						POLICY_WRITE_WATER, functional_feature_id,
-						functional_interface_id)
-				end
 				add_candidate(terrain_y + 1, terrain_y + 4, 4, OP_PATH_CLEAR,
 					ROLE_AIR, POLICY_CUT_NATURAL, functional_feature_id,
 					functional_interface_id)
@@ -1448,50 +972,28 @@ local function planner_factory(allocator_factory)
 					functional_feature_id, functional_interface_id)
 			end
 
-			local wet_hydro, wet_surface, wet_bed, wet_relation = current_named_wet(
-				water_y, classified_id, classified_depth, transition_kind,
-				transition_id, transition_lower_y, transition_face_mask)
-			if wet_hydro > 0 then
-				add_seal_subtracted(wet_bed - 2, wet_bed,
-					OP_HYDROLOGY_BED_SEAL, hydro_value(wet_hydro, 1),
-					wet_relation > 0 and interface_value(wet_relation, 1) or nil)
-			else
-				local sample_count, _, all_same, seal_low, sample_high,
-					smallest_id, all_same_surface = scan_bank_samples(x, z)
-				if sample_count > 0 then
-					local bank_relation = 0
-					if not all_same then
-						bank_relation = bank_relation_for(x, z, sample_count)
-						if bank_relation == 0 and not all_same_surface then
-							fail("fail_conflict", "bank samples lack one accepted relation")
-						end
-					end
-					local seal_high = math.min(terrain_y, sample_high)
+			-- River water by column: a wet river column seals its bed (three
+			-- layers down from its terrain) and holds range-2 river water; any
+			-- other water column holds ordinary water. A column beside river
+			-- water gets a bank seal.
+			local wet = water_y ~= nil and terrain_y < water_y
+			if river_id ~= nil and wet then
+				add_seal_subtracted(terrain_y - 2, terrain_y,
+					OP_HYDROLOGY_BED_SEAL, nil, nil)
+			elseif river_near then
+				local seal_low, water_high = bank_seal_values(x, z)
+				if seal_low ~= nil then
+					local seal_high = math.min(terrain_y, water_high)
 					if seal_low <= seal_high then
 						add_seal_subtracted(seal_low, seal_high,
-							OP_HYDROLOGY_BANK_SEAL, smallest_id,
-							bank_relation > 0 and
-								interface_value(bank_relation, 1) or nil)
+							OP_HYDROLOGY_BANK_SEAL, nil, nil)
 					end
 				end
 			end
-
-			if transition_kind == "waterfall" and
-					transition_face_mask ~= nil then
-				add_candidate(contact_lower_bed + 1, transition_lower_y - 1, 6,
-					OP_RIVER_WATER, ROLE_RIVER_WATER_SOURCE, POLICY_WRITE_WATER,
-					hydro_value(contact_lower_hydro, 1), transition_id)
-				add_candidate(transition_lower_y, transition_lower_y, 6,
-					OP_RECEIVER_OPEN, ROLE_AIR, POLICY_OPEN_ENGINEERED,
-					hydro_value(contact_lower_hydro, 1), transition_id)
-				add_candidate(transition_lower_y + 1, OWNER_MAX, 3,
-					OP_CONTACT_FALL_CLEAR, ROLE_AIR, POLICY_OPEN_ENGINEERED,
-					hydro_value(contact_lower_hydro, 1), transition_id)
-			elseif water_y ~= nil and terrain_y < water_y then
-				if classified_ordinal > 0 then
+			if wet then
+				if river_id ~= nil then
 					add_candidate(terrain_y + 1, water_y, 6, OP_RIVER_WATER,
-						ROLE_RIVER_WATER_SOURCE, POLICY_WRITE_WATER, classified_id,
-						transition_id)
+						ROLE_RIVER_WATER_SOURCE, POLICY_WRITE_WATER, nil, nil)
 				else
 					add_candidate(terrain_y + 1, water_y, 6, OP_ORDINARY_WATER,
 						ROLE_ORDINARY_WATER_SOURCE, POLICY_WRITE_WATER, nil, nil)
@@ -1574,7 +1076,8 @@ local function planner_factory(allocator_factory)
 			plan.run_count = 0
 			build_run_count = 0
 			current_min_y, current_max_y = min_y, max_y
-			for index = 1, 84 * 84 * 4, 4 do wet_values[index] = 0 end
+			river_near = river_water_in(min_x - 2, min_z - 2, max_x + 2,
+				max_z + 2) == true
 			local column_index = 0
 			for z = min_z, max_z do
 				for x = min_x, max_x do

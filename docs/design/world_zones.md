@@ -390,7 +390,8 @@ replaced; git history before this rewrite records that model.
   water), bay water, coastal shelf, deep ocean or dragon channel. Until Round
   22 Phase 5 there is no inland water at all, civic water included (the
   Kezamba cenote, the Lethariel lake, Highcourt's river arms, the Dawnmere and
-  Sunscar ponds); their hydrology rows stay in the source as legacy data. Inland and
+  Sunscar ponds); their old hydrology rows were removed at the start of Phase 5,
+  which lays out all inland water anew from the terrain. Inland and
   bay water belong to the zone around them. Shelf, bay water and every
   road/POI exclusion are claim-ineligible. Deep ocean and dragon channels are
   immutable at every y.

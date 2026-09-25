@@ -38,8 +38,11 @@ return function(canonical, raw_sha256, settlement_order)
 	-- R10 MAP-B and R21 aquatic decor add two soil rows and 24 P9G nodes/rules; decoded template
 	-- content refs shift with sorted soil rows while MTS geometry stays fixed.
 	-- R21: approved ore/gem density rows and matching WP43 density projection.
+	-- Round 22 Phase 5: the R6 catalog digest leaves this roll-up and is no
+	-- longer pinned, so decoration rule tokens can be renamed; the receipt
+	-- still publishes it as `r6_catalog_sha256`. Was `b178dc17c8c1bc7c...`.
 	local SOURCE_PROJECTION_SHA256 =
-		"b178dc17c8c1bc7c2c977d7ee71cfcdb315d82f5ddd3123f5c84002f45dcf466"
+		"3f962cd235725510251324fc777309b48bd0a8de82e1128795541d0034589a0a"
 	local FIELD_HEAD = {
 		"schema", "full_seed", "r5_schema", "r5_manifest_sha256",
 		"r5_artifact_sha256", "r6_schema", "r6_contract_sha256",
@@ -329,21 +332,8 @@ return function(canonical, raw_sha256, settlement_order)
 			local family = index <= 6 and "capital" or
 				(index <= 30 and "outpost" or "bandit")
 			local ref = family == "bandit" and 1 or 2
-			-- WHAT GRADES A CAPITAL ANCHOR'S OWN COLUMN. It used to be a ROUTE:
-			-- a capital anchor sits on its zone hub and every route that named
-			-- that zone ran to the hub, so `route_002`, `route_005`, ... were
-			-- written across the middle of the city and the anchor column
-			-- carried the first of them. Playtest round 4 ruled the routes back
-			-- to the gates on the envelope edge (`source/simple_map.lua`,
-			-- `CAPITAL_GATE_SIDES`), so nothing but the capital's own fitting
-			-- reaches the anchor column any more and the feature is the fitting's
-			-- id, which is the anchor's.
-			--
-			-- This is the only field of the roster row that moves, and it moves
-			-- the roster digest with it. A POI anchor is unchanged: its spur
-			-- still ends on it.
-			-- Round 22 (roads off until Phase 4): no spur reaches a POI anchor,
-			-- so every anchor column carries its own fitting.
+			-- Every anchor column carries its own fitting, whose feature id is
+			-- the anchor's (no road reaches an anchor column until Phase 4).
 			local expected_feature = string.format("anchor_%03d", numeric)
 			if type(row) ~= "table" or row.numeric_id ~= numeric or
 					row.id ~= string.format("anchor_%03d", numeric) or
@@ -449,11 +439,11 @@ return function(canonical, raw_sha256, settlement_order)
 				#inputs.decoded_templates ~= 21 then
 			fail("decoded template population differs")
 		end
+		local r6_catalog = graph_digest({surfaces = r6.surfaces,
+			resources = r6.resources, cultural = r6.cultural,
+			decorations = r6.decorations})
 		local frozen = {
 			schema = "grug_wp40_r7_source_projection_v1",
-			r6_catalog = graph_digest({surfaces = r6.surfaces,
-				resources = r6.resources, cultural = r6.cultural,
-				decorations = r6.decorations}),
 			accepted_r6_content = graph_digest(inputs.accepted_r6_rows),
 			decoded_templates = graph_digest(inputs.decoded_templates),
 			wp43_projection = graph_digest(inputs.wp43_projection),
@@ -466,9 +456,7 @@ return function(canonical, raw_sha256, settlement_order)
 			cultural = graph_digest(cultural),
 			consumer_payload = graph_digest(inputs.consumer_payload),
 		}
-		if frozen.r6_catalog ~=
-				"63084c82f34606c98fc68902ff9a1bdbbc752bde4dbca017660b430eacd3fff9" or
-			frozen.accepted_r6_content ~=
+		if frozen.accepted_r6_content ~=
 				"0c1c1efa25f1d173680ebc94aeed87d969ca56572a06b0e1fcb8378f16a2783d" or
 			frozen.decoded_templates ~=
 				"0f9c1230f22f7a2782cd57d3b7d5d5029d9f3eeed18a29f729f10b8bf92b9ec0" or
@@ -551,7 +539,7 @@ return function(canonical, raw_sha256, settlement_order)
 			r5_artifact_sha256 = ACCEPTED_R5_ARTIFACT_SHA256,
 			r6_schema = r6.schema, r6_contract_sha256 = r6.contract_sha256,
 			r6_artifact_sha256 = ACCEPTED_R6_ARTIFACT_SHA256,
-			r6_catalog_sha256 = frozen.r6_catalog,
+			r6_catalog_sha256 = r6_catalog,
 			r6_accepted_content_sha256 = frozen.accepted_r6_content,
 			r6_template_inputs_sha256 = frozen.decoded_templates,
 			wp43_projection_sha256 = frozen.wp43_projection,
