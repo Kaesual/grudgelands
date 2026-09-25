@@ -506,7 +506,15 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   column with `river_water_in == false` fail loudly; keep `river_water_in`
   cheap (called per voxel in `r6_settlement.lua`); the `r7_manifest`
   roll-up pin will trip on freshwater content (remove pins per guardrail 6
-  when it does). Then:
+  when it does).
+  **W2a (water integration) status:** reviewed, fix round running (capital
+  keep-out from the real lot extent, tributary tails inside the parent
+  channel, cave overhang at chunk borders, dry-junction tributaries, a
+  straight outlet ramp, bank material for authored lakes). Deviation from
+  stale-rule D3 found in the engine: at reach steps the **higher** reach
+  decides the bank ("lower decides" let a lake-to-river fall spill sideways
+  and spawn new sources), and a lake's outlet step face holds river water.
+  Then:
   - compute the river/lake layout once in main and hand it to emerge via
     `ipc_set` (D37);
   - city water follows the terrain (D34): the Lethariel lake keeps an authored
