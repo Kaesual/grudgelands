@@ -3,7 +3,7 @@
 Date: 2026-09-25. Coordinator: Claude Opus 5.5 (root), implementation by
 Opus 5.5 subagents; the user may re-route per session
 (`../process/agent-model-policy.md`, "Day-to-day routing rule").
-Status: **in progress.** On 2026-09-25 the user approved Phases 0, 1 and 2/2b (prototypes in `~/projects/grudgelands-orchestration/r22/prototype-b/` and `prototype-zones/`, each with an `INTEGRATION.md`) and gave the Go for Phase 3 with variant (a): old roads and inland water are switched off until Phases 4/5, and the playtest after Phase 3 covers terrain, zones and coast only. Phases 4–6 still wait for an explicit Go.
+Status: **in progress.** Phases 0–2 approved on 2026-09-25. **Phase 3 merged to main (592ae060) and synced for the user's playtest** (terrain, zones, coast; roads and all inland water off per variant (a) and D26). Phases 4–6 wait for an explicit Go after the playtest.
 
 This document records the goal, the analysis it rests on, every decision taken
 with the user on 2026-09-25 and its basis, the phases, and the guardrails
