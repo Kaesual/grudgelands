@@ -217,8 +217,8 @@ All §9 questions are answered.
      queryable. Chunks generate in arbitrary order and planning needs heights
      before a chunk exists; without this there are seams at chunk borders.
    - Starts and capitals keep their approximate x/z and stay in their zone.
-   - Roads are walkable, with at most one node of step between neighboring
-     road columns, so mounts and players can use them.
+   - Roads are walkable without jumping: at most ½ node between neighboring
+     road columns (D49), so mounts and players can use them.
    - Towns and POIs are never damaged; the terrain-damage guard still applies.
 4. **Interfaces over rewrites.** Settlement, P9G and writer code consume height
    through existing seams: `terrain_height_at`, `functional_surface_values_at`,
@@ -252,7 +252,7 @@ Kept, and to be built or kept small:
 3. **Playability checks** (cheap, offline where possible):
    - no spawn in water;
    - starts and capitals connected by road;
-   - roads walkable (≤ 1 node step);
+   - roads walkable (≤ ½ node between neighbouring road columns, D49);
    - POI footprints on solid ground;
    - fixed anchors inside their own zone.
 4. **Chunk seam check:** the same column queried from two adjacent chunks gives
@@ -438,7 +438,7 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   4. Pathfinding runs once at construction on an 8-node cost grid (slope,
      water, cliffs) and is cached for the session.
   5. Smooth the result into a spline and raster it as many short pieces.
-  6. Keep the ≤ 1-step grade, using cut and fill along the found path.
+  6. Keep the ≤ ½-node grade (D49), using cut and fill along the found path.
   7. Water crossings are chosen by cost (prefer narrow and shallow). Use one
      good bridge design (abutments, simple deck, railings) and fords for
      shallow water.

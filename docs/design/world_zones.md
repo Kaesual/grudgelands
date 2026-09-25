@@ -551,8 +551,9 @@ replaced; git history before this rewrite records that model.
   fitting must stay within their cut/fill limits on the new terrain.
 - **Order of grading.** Start, capital, road and anchor grading override
   natural relief in that order of functional necessity. On a road's visible
-  surface, the road grade wins. Roads are walkable: at most one node of step
-  between neighboring road columns.
+  surface, the road grade wins. Roads are walkable: their profile runs in half-node
+  steps (slabs), at most ½ node between neighboring road columns (Round 22
+  D49).
 - **Natural cave roofs and openings (2026-09-20):** native v7 caves remain
   authoritative; no synthetic cave-mouth writer runs. After terrain and
   surface refinement, dry eligible columns receive a three-node skin below
@@ -846,9 +847,18 @@ graph requirement may shape a zone, and nothing may require a graph to be
   cached for the session. The found path is smoothed into a curve and
   rasterized as many short pieces, so no long straight segment appears and the
   road follows the terrain.
-- **Grade.** Roads are walkable by players and mounts: at most one node of
-  step between neighboring road columns, achieved by cut and fill along the
-  found path.
+- **Grade (Round 22, D49–D51).** Roads are walkable by players and mounts
+  without jumping: the profile runs in half-node steps with a slab on every
+  half step, at most ½ node between neighboring road columns (max grade
+  1:2), achieved by cut and fill along the found path. Routing prefers
+  gentler grades; serpentines with flat hairpin platforms climb steep
+  slopes. Only trails may use straight stair flights. The road stays near
+  ground level: no long ramps into flat land and no high fixed control
+  points.
+- **Cross-section (Round 22, D44).** Uphill the terrain is cut to road level
+  with a slope back; downhill up to about 2 nodes is a sloped natural
+  embankment, beyond that the road is a deck on pillars with a railing.
+  Bridges use the same deck system; one design with materials per race.
 - **Water crossings** are chosen by cost, preferring narrow and shallow
   places. Deep crossings use one good bridge design (abutments, simple deck,
   railings); shallow crossings use fords. Ugly open-world bridges are a named
@@ -1321,7 +1331,7 @@ playtests; numbers support that judgment and never replace it.
 - **Playability checks,** cheap and offline where possible:
   - no spawn in water;
   - starts and capitals are connected by road;
-  - roads are walkable (at most one node of step);
+  - roads are walkable (at most ½ node between neighboring road columns);
   - POI footprints stand on solid ground;
   - every fixed anchor lies inside its own zone;
   - every zone is one connected region;
