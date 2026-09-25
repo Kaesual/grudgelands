@@ -3,7 +3,7 @@
 Date: 2026-09-25. Coordinator: Claude Opus 5.5 (root), implementation by
 Opus 5.5 subagents; the user may re-route per session
 (`../process/agent-model-policy.md`, "Day-to-day routing rule").
-Status: **in progress.** Phases 0–3 and 3b are done, accepted by the user, merged to main and synced (not pushed). Phase 5 (water) is running: lane W0 (legacy cleanup) merged 97dedcc8; the offline water prototype W1 is next to the user. Then Phase 4 (roads) (D30), then Phase 6. Each phase still needs the user's Go.
+Status: **in progress.** Phases 0–3 and 3b are done, accepted by the user, merged to main and synced (not pushed). Phase 5 (water) is running: W0 (cleanup) and W2a (rivers and lakes) merged; W2b and W2c running. Then Phase 4 (roads) (D30), then Phase 6. Each phase still needs the user's Go.
 
 This document records the goal, the analysis it rests on, every decision taken
 with the user on 2026-09-25 and its basis, the phases, and the guardrails
@@ -507,10 +507,12 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   cheap (called per voxel in `r6_settlement.lua`); the `r7_manifest`
   roll-up pin will trip on freshwater content (remove pins per guardrail 6
   when it does).
-  **W2a (water integration) status:** reviewed, fix round running (capital
-  keep-out from the real lot extent, tributary tails inside the parent
-  channel, cave overhang at chunk borders, dry-junction tributaries, a
-  straight outlet ramp, bank material for authored lakes). Deviation from
+  **W2a (water integration) merged 0dce6bed** after review and one fix
+  round: capital keep-out = farthest lot corner + 16 (280–355, noise edge,
+  soft apron), plot warnings 0; chunk time +4.5 % median, server start
+  +1.8 s (reports). Open for Phase 6: two reverse confluences (tributary
+  lower than its parent, contained). Running: W2b (authored water) and W2c
+  (map, water claim exclusions, freshwater content). Deviation from
   stale-rule D3 found in the engine: at reach steps the **higher** reach
   decides the bank ("lower decides" let a lake-to-river fall spill sideways
   and spawn new sources), and a lake's outlet step face holds river water.
