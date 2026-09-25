@@ -55,9 +55,10 @@ separates the remaining coast. The old mandatory open-water strait, three-loop
 contact model and exact geometric mirroring are retired.
 
 The target surface map is a stable set of named zones. Hub position, level
-range, PvP status, biome palette, strategic landmarks, coast and zone
-borders are fixed by the layout; the world seed varies terrain and content.
-Zones border each other naturally, and neighbors follow from those borders. Both faction
+range, PvP status, biome palette and strategic landmarks are fixed by the
+layout; the world seed varies terrain, content and the natural course of coast
+and zone borders, never the hubs, anchors or macro silhouette. Zones border
+each other naturally, and neighbors follow from those borders. Both faction
 sides have equivalent progression and content budgets but deliberately
 different shapes and zone identities. Full contract: `world_zones.md` §1.
 

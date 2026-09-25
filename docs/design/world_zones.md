@@ -35,10 +35,10 @@ in this file as of commit `082982da`.
 - The macro-map is fixed by one authored layout rather than regenerated from
   each world seed. Every named zone has a stable hub, approximate extent,
   level range and biome palette, and every anchor has a fixed position. The
-  layout's own fixed warp gives coastline and zone borders their natural
-  course (§7.2, §7.3), so land, zone ownership and housing masks are the same
-  for every world seed. The world seed varies terrain, biome detail, content
-  and therefore the exact course of roads; it never moves a hub or an anchor.
+  world seed varies terrain, biome detail, content, the course of coastline
+  and zone borders within bounded warps (§7.2, §7.3) and therefore the course
+  of roads. It never moves a hub or an anchor, never puts an anchor into
+  another zone or into the water and never changes the macro silhouette.
 - The two faction sides are **progression and content-budget mirrors, not
   geometric mirrors**. They receive equivalent access to level bands,
   materials, PvP fronts, travel services and POI budgets, while their shapes,
@@ -236,11 +236,17 @@ replaced; git history before this rewrite records that model.
 - World axes stay conventional: west/east is x, Kragmar lies north at positive
   z, Elandor lies south at negative z, and the shared front is centred on z = 0.
 - One authored layout fixes the macro silhouette, the zone hubs, the island
-  hubs, every anchor position and the warps of §7.2 and §7.3. Land, coastline,
-  zone ownership and housing masks are therefore identical for every world
-  seed, and the world map shows the same coast and borders in every world. The
-  world seed varies terrain, biome detail and content, and with the terrain
-  the exact course of roads (§9.2). It never moves a hub or an anchor.
+  hubs and every anchor position. The world seed drives the warps of §7.2 and
+  §7.3, so every world has its own coastline and zone borders, plus its own
+  terrain and road courses (§9.2). It never moves a hub or an anchor, never
+  changes which zone an anchor belongs to and never changes the macro
+  silhouette a player learns from the map (Round 22 D24).
+- When a world is built, one cheap self-check confirms that every anchor lies
+  in its own zone and on land, every zone is connected and the dragon channels
+  keep their width. If it fails for a seed, that world falls back to a weaker
+  warp and logs a warning; it is a safeguard, not a test suite.
+- Because coast, borders and roads differ per world, the server renders the
+  world map for its own world at first start (§13.1, `world_map.md`).
 - The **Battlegrounds** are the four front zones between the continents
   (§8.3). They have no special geometry: no rectangle, no exact edge and no
   technical role beyond being ordinary contested zones with story weight.
@@ -1198,7 +1204,7 @@ one-cell settlement checks are unchanged.
 - The pure horizontal module exposes at least
   `macro_region_at(x,z)`, `land_at(x,z)`, `id_at(x,z)`,
   `water_class_at(x,z)`, `nearest_path_at(x,z,optional_kind)` and
-  `selected_anchor_2d(zone_id,slot_id)`. The canonical SVG and the mapgen
+  `selected_anchor_2d(zone_id,slot_id)`. The world-map renderer and the mapgen
   adapter consume this same evaluator; no renderer-owned geometry exists.
 - Engine climate competition is not authoritative inside the authored world.
   A full-seed selector chooses only from the owning zone's logical-biome

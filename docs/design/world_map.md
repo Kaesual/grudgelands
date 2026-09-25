@@ -8,6 +8,11 @@ Decided 2026-09-21; Round 14 user Go.
   require full-world generation and does not render actual player-built terrain.
 - Use existing world authority and stable anchors. The whole-world atlas uses
   zoom and scrolling without adding travel or visit objectives.
+- **Round 22 (2026-09-25):** coast, zone borders and roads differ per world
+  seed, so the map base can no longer ship as a pre-rendered PNG. The server
+  renders it once for its own world at first start from the world authority
+  (coarse sampling, `core.encode_png`), caches it in the world directory and
+  sends it to clients as dynamic media. Markers stay separate as before.
 - Separate the shared map base from marker records and world-to-screen mapping.
   Markers must remain extensible for hover tooltips and/or click actions; do not
   bake labels and all marker semantics irreversibly into one raster.
