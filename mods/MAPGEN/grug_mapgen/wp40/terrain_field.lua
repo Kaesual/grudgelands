@@ -803,7 +803,7 @@ return function(data)
 			if count == 1 or w_sum <= 0 then
 				return best_calm + m * (h - best_calm), m
 			end
-			-- Overlapping bowls (none in the current layout): blend their calm
+			-- Overlapping bowls (a capital's calm zone can reach a start's): blend their calm
 			-- grounds by influence, so no switch line becomes a cliff.
 			local calm = c_sum / w_sum
 			return calm + m * (h - calm), m

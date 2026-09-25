@@ -54,9 +54,6 @@ grug_injured_mob_hp_bars (Show injured mob health bars) bool true
 
 [Map generation]
 
-#    Deterministic wide coast profiles ship enabled under Round 9's
-#    20 percent soft emerge-time gate.
-grug_mapgen_r9_coast_band_enabled (Enable wide coast profiles) bool true
 
 [World preparation]
 
