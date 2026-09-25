@@ -844,7 +844,7 @@ return function(data)
 		local function damp(x, z, h, hills_hi, wx, wz)
 			local ax, az = x + AW * wx, z + AW * wz
 			local best_m, best, best_calm, count = 1, nil, nil, 0
-			local w_sum, c_sum = 0, 0
+			local w_sum, c_sum, m_prod = 0, 0, 1
 			for i = 1, #ANCH do
 				local e = ANCH[i]
 				local dx, dz = ax - e.x, az - e.z
@@ -868,20 +868,22 @@ return function(data)
 						local calm = calm_at(e, x, z, hills_hi)
 						if m < best_m then best_m, best, best_calm = m, e, calm end
 						count = count + 1
+						m_prod = m_prod * m
 						local w = 1 - m
 						w_sum, c_sum = w_sum + w, c_sum + w * calm
 					end
 				end
 			end
 			if not best then return h, 1 end
-			local m = best_m
 			if count == 1 or w_sum <= 0 then
-				return best_calm + m * (h - best_calm), m
+				return best_calm + best_m * (h - best_calm), best_m
 			end
-			-- Overlapping bowls (a capital's calm zone can reach a start's): blend their calm
-			-- grounds by influence, so no switch line becomes a cliff.
+			-- Overlapping bowls (a capital's calm zone can reach a start's, two
+			-- POI bowls can meet): blend their calm grounds by influence and
+			-- multiply their fade factors. The minimum of the factors would
+			-- crease along the straight bisector between the two anchors.
 			local calm = c_sum / w_sum
-			return calm + m * (h - calm), m
+			return calm + m_prod * (h - calm), m_prod
 		end
 
 		local field = {anchors = ANCH, landmarks = LMS, coast_signed = coast_signed,

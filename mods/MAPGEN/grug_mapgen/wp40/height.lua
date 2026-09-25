@@ -63,8 +63,8 @@ local function height_factory(dependencies)
 	-- a smooth noise stretches or shrinks it around the core (share).
 	local POI_BLEND_MIN, POI_BLEND_MAX, POI_EDGE_JITTER = 6, 28, 0.25
 
-	local floor, ceil, abs, max, min, sqrt = math.floor, math.ceil, math.abs,
-		math.max, math.min, math.sqrt
+	local floor, ceil, abs, max, min, sqrt, exp = math.floor, math.ceil,
+		math.abs, math.max, math.min, math.sqrt, math.exp
 	local round_ratio = deterministic.round_ratio
 	local floor_div = deterministic.floor_div
 
@@ -226,10 +226,15 @@ local function height_factory(dependencies)
 		-----------------------------------------------------------------------
 		-- Boat water: the dragon channels, the boat paths and the approach
 		-- water around the island landings keep at least nine nodes of water
-		-- (boats.md). Outside the corridors the floor ramps back to the
-		-- field's sea floor over BOAT_RAMP nodes.
+		-- (boats.md), away from the shore. The shapes are joined by a smooth
+		-- minimum of their distances and the edge is moved by noise, and the
+		-- floor fades in over the first BOAT_SHORE nodes off the coast, so no
+		-- straight trench wall shows in the shallows (seam rules 1-4). Water
+		-- columns only; outside the shapes the floor ramps back to the field's
+		-- sea floor over BOAT_RAMP nodes.
 		-----------------------------------------------------------------------
-		local boat_segments, boat_discs = {}, {}
+		local BOAT_SMOOTH, BOAT_JITTER, BOAT_SHORE = 16, 12, 48
+		local boat_segments, boat_discs, boat_boxes = {}, {}, {}
 		for _, path in ipairs(source.boat_paths or {}) do
 			local line = path.centreline
 			for index = 1, #line - 1 do
@@ -243,10 +248,22 @@ local function height_factory(dependencies)
 			boat_discs[#boat_discs + 1] = {x = landing.position.x,
 				z = landing.position.z, radius = BOAT_APPROACH}
 		end
+		for _, channel in ipairs(source.channels or {}) do
+			local box = {min_x = math.huge, max_x = -math.huge,
+				min_z = math.huge, max_z = -math.huge}
+			for _, point in ipairs(channel.polygon or {}) do
+				box.min_x, box.max_x = min(box.min_x, point.x), max(box.max_x, point.x)
+				box.min_z, box.max_z = min(box.min_z, point.z), max(box.max_z, point.z)
+			end
+			if box.min_x <= box.max_x then boat_boxes[#boat_boxes + 1] = box end
+		end
+		local boat_noise = terrain_field.simplex(full_seed_string, "boat_edge")
+		local boat_distances = {}
 		local function boat_floor_at(x, z)
-			local water_class = classified(x, z)
-			if water_class == "immutable_dragon_channel" then return BOAT_FLOOR_Y end
-			local excess = BOAT_RAMP
+			-- The distances are collected first; the smooth minimum only runs
+			-- when a shape is near.
+			local nearest, count = math.huge, 0
+			local ds = boat_distances
 			for index = 1, #boat_segments do
 				local g = boat_segments[index]
 				local ox, oz = x - g.ax, z - g.az
@@ -255,17 +272,40 @@ local function height_factory(dependencies)
 				if t < 0 then t = 0 elseif t > 1 then t = 1 end
 				local ex, ez = ox - t * g.vx, oz - t * g.vz
 				local d = sqrt(ex * ex + ez * ez) - g.radius
-				if d < excess then excess = d end
+				count = count + 1 ds[count] = d
+				if d < nearest then nearest = d end
 			end
 			for index = 1, #boat_discs do
 				local disc = boat_discs[index]
 				local dx, dz = x - disc.x, z - disc.z
 				local d = sqrt(dx * dx + dz * dz) - disc.radius
-				if d < excess then excess = d end
+				count = count + 1 ds[count] = d
+				if d < nearest then nearest = d end
 			end
+			for index = 1, #boat_boxes do
+				local box = boat_boxes[index]
+				local dx = max(box.min_x - x, x - box.max_x, 0)
+				local dz = max(box.min_z - z, z - box.max_z, 0)
+				local d = sqrt(dx * dx + dz * dz)
+				count = count + 1 ds[count] = d
+				if d < nearest then nearest = d end
+			end
+			if nearest >= BOAT_RAMP + BOAT_JITTER then return nil end
+			local sum = 0
+			for index = 1, count do sum = sum + exp((nearest - ds[index]) / BOAT_SMOOTH) end
+			local excess = nearest - BOAT_SMOOTH * math.log(sum) +
+				BOAT_JITTER * boat_noise(x / 48, z / 48)
 			if excess >= BOAT_RAMP then return nil end
-			if excess <= 0 then return BOAT_FLOOR_Y end
-			return floor(BOAT_FLOOR_Y + (WATER_LEVEL - 1 - BOAT_FLOOR_Y) * excess / BOAT_RAMP)
+			local weight = 1
+			if excess > 0 then
+				local t = excess / BOAT_RAMP
+				weight = 1 - t * t * (3 - 2 * t)
+			end
+			local sd = field.coast_signed(x, z)
+			local shore = (-sd - 8) / (BOAT_SHORE - 8)
+			if shore <= 0 then return nil end
+			if shore < 1 then weight = weight * shore * shore * (3 - 2 * shore) end
+			return floor(WATER_LEVEL - 1 + (BOAT_FLOOR_Y - WATER_LEVEL + 1) * weight)
 		end
 
 		-----------------------------------------------------------------------
