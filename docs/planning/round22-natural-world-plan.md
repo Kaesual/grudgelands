@@ -156,6 +156,7 @@ Added at the Phase 0/1 gates (2026-09-25):
 | D22 | **Audit Q1–Q6 as recommended** (`../research/round22-audit.md` §7): keep list as proposed; archive the unique text of `tools/wp40/results/` outside the repo and delete the rest; keep the `luac51 -p` parse gate; keep `neighbors` as geometric adjacency and drop `travel_links`, `nearest_route_at`, `nearest_hydrology_at`; keep the WP13 capital kit; rename the `holy_grounds` territory token to `contested_land`. | User. |
 | D23 | **Phase 1 text approved.** | User. |
 | D24 | **Coast and zone borders vary per world seed.** Hubs, anchors and the macro silhouette stay fixed; anchors stay in their zone and on land by construction; a construction-time self-check falls back to a weaker warp on failure. The server renders the world map per world at first start. Coast-dependent content (river mouths, boat routes, landings, coastal housing) is derived from the coast rather than hand-placed. | User, after the coordinator's risk estimate: small risk, little extra work, and the map must be rendered per world anyway because roads depend on seed-dependent terrain. |
+| D25 | **Terrain direction B accepted; option C (coarse erosion) deferred.** The prototype look (variant B base plus two continental mountain ranges and hill country) is the target; ruggedness is judged in the playtest. C may return after the playtest if valleys are missing. | User, 2026-09-25, on the round-2 prototype images. |
 
 All §9 questions are answered.
 
