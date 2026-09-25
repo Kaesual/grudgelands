@@ -52,9 +52,6 @@ grug_nametag_critter_background (Critter nametag background) string #00000040
 #    existing per-viewer nametag range and hysteresis also control this bar.
 grug_injured_mob_hp_bars (Show injured mob health bars) bool true
 
-[Map generation]
-
-
 [World preparation]
 
 #    Prepare the bounded world surface before entry instead of only the six
