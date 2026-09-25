@@ -135,6 +135,15 @@ Decided 2026-09-14.
 
 ## Capitals in the world
 
+**Planned direction (recorded 2026-09-25, not yet scheduled):** capitals become
+denser and more natural. The civic core stays as it is. The city around it
+moves closer together, with more and denser buildings, a smaller total area than
+today's 512×512 build envelope and 704×704 blend, and a natural,
+non-rectangular outline. Today's capitals are large and fairly empty; the goal
+is more flair. Round 22 only prepares this: it damps terrain around the civic
+core, keeps capital ground well below the clouds and may make the outer terrace edge
+organic, without district or blueprint changes (`world_zones.md` §12).
+
 Decided 2026-09-15 with the pilot capital, Highcourt.
 
 A capital is not one blueprint but a civic core, a list of district plots and

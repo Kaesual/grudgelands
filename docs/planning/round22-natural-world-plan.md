@@ -3,7 +3,7 @@
 Date: 2026-09-25. Coordinator: Claude Opus 5.5 (root), implementation by
 Opus 5.5 subagents; the user may re-route per session
 (`../process/agent-model-policy.md`, "Day-to-day routing rule").
-Status: **planned, all planning questions answered (D1–D19); not started. No phase begins before the user's explicit Go.**
+Status: **in progress.** On 2026-09-25 the user gave the Go for Phases 0, 1 and 2/2b. Phase 0 (audit) and Phase 1 (design rewrite) are approved; Phase 2/2b prototypes delivered their first round and iterate. Phases 3–6 still wait for an explicit Go.
 
 This document records the goal, the analysis it rests on, every decision taken
 with the user on 2026-09-25 and its basis, the phases, and the guardrails
@@ -147,6 +147,15 @@ planning. Richer noise is affordable **if** heights are memoized per chunk.
 | D18 | **Road endpoints in contested zones:** the outpost or clash site nearest the home side. Roads need not reach the Battlegrounds. | User, answering Q2. |
 | D19 | **Outposts, mines and camps** get narrow natural trails where cheap. This goal may be relaxed if it brings unexpected complexity. | User, answering Q3. |
 
+Added at the Phase 0/1 gates (2026-09-25):
+
+| # | Decision | Basis |
+|---|---|---|
+| D20 | **Mob levels follow the owning zone,** rising inside each zone toward the front; the R7.6 axial bands are retired. | User, on the Phase 2b finding that warped borders put 13.8% of land on the wrong side of the level-30/31 PvP line under position-based bands. |
+| D21 | **Rough targets over exact rules.** Housing capacity is not measured; "ample level-20–30 land" suffices. Coastal housing frontage, depth and relief are rough targets. New rules default to guide values, not hard conditions. | User: many former hard conditions never needed to be hard and cost much time. |
+| D22 | **Audit Q1–Q6 as recommended** (`../research/round22-audit.md` §7): keep list as proposed; archive the unique text of `tools/wp40/results/` outside the repo and delete the rest; keep the `luac51 -p` parse gate; keep `neighbors` as geometric adjacency and drop `travel_links`, `nearest_route_at`, `nearest_hydrology_at`; keep the WP13 capital kit; rename the `holy_grounds` territory token to `contested_land`. | User. |
+| D23 | **Phase 1 text approved.** | User. |
+
 All §9 questions are answered.
 
 ## 4. Guardrails for the whole round
@@ -263,7 +272,7 @@ user gate.
 - Zone adjacency as the gameplay neighbor relation, with roads as an overlay
   (D14, D15). Road endpoints and trails per D18/D19.
 - Coastline principles (D17).
-- Align `world.md` §2c and the Battlegrounds wording with D8.
+- Align `world.md` §1 and §2c and the Battlegrounds wording with D8.
 - Record the capital follow-up goal (§11) in the settlements design as a
   planned direction.
 - **Model:** coordinator drafts, 1 Opus subagent checks consistency across

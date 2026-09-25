@@ -11,11 +11,11 @@ Earlier delivery narratives are preserved in the
 - **Two distinct faction continents.** The Accord holds southern Elandor and
   the Throng northern Kragmar. Their independently authored three-lobed
   silhouettes meet along the continuous four-zone Battlegrounds; ocean
-  separates the rest of the coast. The stable 38-zone graph fixes names,
-  neighbors, level ranges, race regions, PvP rules, biome palettes and POI
-  budgets while seeds vary bounded borders and local terrain.
+  separates the rest of the coast. The stable 38-zone map fixes names, hubs,
+  level ranges, race regions, PvP rules, biome palettes and POI budgets;
+  neighbors follow the natural zone borders, and seeds vary local terrain.
 - **Six races, six starts, six capitals and six kings.** Each race begins in
-  its own outer level-1–10 settlement and later reaches a central four-road
+  its own outer level-1–10 settlement and later reaches a central gated
   capital. Capitals are peaceful civic hubs with level-60 guards and no
   ambient hostile mobs. Kings and royal guards are killable high-end
   combatants; essential service NPCs are separate and invulnerable.

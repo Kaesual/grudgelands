@@ -6,7 +6,7 @@ replaces `TODO-design-boats.md`, which is deleted.
 
 Neighbouring rules: ocean classes and deep-sea danger in `world.md` §2b, the
 authored channel geometry and both offshore islands in `world_zones.md` §7 and
-§9.3, waypoints and the Home Stone in `world.md` §6, riding in `mounts.md`, the
+§9.4, waypoints and the Home Stone in `world.md` §6, riding in `mounts.md`, the
 two recipes in `items_crafting.md` §3.0.5 and the Kraken Guard in
 `biomes_mobs.md` §3.
 
@@ -46,8 +46,8 @@ channels lie in level-51–59 contested zones.
   **Whitebridge Shire** (`elandor_whitebridge_shire`) for the Accord and
   **Whispering Reedlands** (`kragmar_whispering_reedlands`) for the Throng.
   Both sit on the lateral capital axis of their continent and are reachable
-  from all three of that faction's races over peaceful primary road
-  (`world_zones.md` §9.4), so the two faction routes stay equivalent.
+  from all three of that faction's races over peaceful roads
+  (`world_zones.md` §9.2), so the two faction routes stay equivalent.
 - The shipwright is an ordinary **passive, invulnerable service NPC**, not a
   trainer role and not a vendor: he sells nothing and buys nothing.
 - **The teaching transaction** is one exchange, repeatable never: a character

@@ -25,9 +25,10 @@ docs, code and content — do not reintroduce the old ones.
 \* These are canonical continent identities. Territory and zone membership
 come from the authored zone authority, never merely the sign of z.
 
-\** `holy_grounds` is the retained internal id for geometry, policy and
-artifacts. It is not a player-facing name and does not imply blanket terrain
-protection.
+\** `holy_grounds` is a legacy internal token. The Battlegrounds have no
+special geometry or rights (Round 22, `world_zones.md` §7.1); the territory
+token becomes `contested_land` when the new mapgen lands. It is not a
+player-facing name and implies no terrain protection.
 
 - In running prose the factions take the article: *the Accord*, *the
   Throng*; the full form "The Accord" is for titles and UI labels.
@@ -53,9 +54,10 @@ beyond its western and eastern ends and have no land-neighbor edges. Ocean
 separates the remaining coast. The old mandatory open-water strait, three-loop
 contact model and exact geometric mirroring are retired.
 
-The target surface map is a stable graph of named zones. Position, neighbors,
-level range, PvP status, biome palette and strategic landmarks are fixed;
-bounded noise may vary only local borders and terrain detail. Both faction
+The target surface map is a stable set of named zones. Hub position, level
+range, PvP status, biome palette, strategic landmarks, coast and zone
+borders are fixed by the layout; the world seed varies terrain and content.
+Zones border each other naturally, and neighbors follow from those borders. Both faction
 sides have equivalent progression and content budgets but deliberately
 different shapes and zone identities. Full contract: `world_zones.md` §1.
 
@@ -63,17 +65,18 @@ Each mainland has a memorable three-lobed progression silhouette. Three outer
 cultural peninsulas hold the start/home spines and are separated by two long
 bays; they join at a continuous capital-and-heartland belt, then broaden into
 a three-sector frontier at the Battlegrounds. Elandor and Kragmar share that
-high-level composition but use separately authored simple land primitives
-under the single shared layout-bound warp, never mirrored coast geometry. The
-bays stay outside the capital envelopes and coastal housing cores and may not
-create or remove zone neighbors.
+high-level composition but use separately authored coarse land shapes, never
+mirrored coast geometry. A multi-scale warp gives the coast coves and
+headlands and gives zone borders a natural course; nothing straight or
+rectangular remains, including the Battlegrounds. The bays stay outside the
+capital envelopes and coastal housing areas.
 
-The fixed hubs, simple macro-land primitives and integer power ownership in
+The fixed hubs, coarse land shapes and warped power ownership in
 `world_zones.md` §7 are the sole horizontal authority. Each 512×512 capital
-envelope is guaranteed to its capital zone; its wider 704×704 terrain blend
-may cross a zone boundary and is not an ownership constraint. The authored
-route graph, not separator vertices or a geometric dual, defines gameplay
-neighbors toward the Battlegrounds.
+envelope is guaranteed to its capital zone; its wider terrain blend may cross
+a zone border and is not an ownership constraint. Gameplay neighbors are the
+geometric land neighbors; roads are an overlay and never define them
+(`world_zones.md` §9).
 
 ### Difficulty layout: outer starts to high-level front
 
@@ -97,23 +100,23 @@ Named zones and an authored within-zone gradient replace radial distance as
 the surface input to `mob_level_at`. The depth floor remains unchanged and
 can still overtake the local surface level underground.
 
-Physical height is a separate authored field. Each land zone chooses one of
-six water-level-relative macro-relief profiles—wetland/delta +2..+24, lowland
-+8..+56, rolling hills +24..+96, plateau +56..+144, highland +96..+224 or
-mountain +160..+360—and may add explicitly masked secondary profiles. V7
-provides fine natural detail inside those envelopes. Sharp cliffs, ravines and
-steps require named landmark masks; roads, civic envelopes, structures and the
-guaranteed coastal-housing cores apply their own grading afterward.
+Physical height is a separate field with variation at every scale: mountain
+ranges with ridges and valleys, hills, gentle lowlands and occasional cliffs.
+Each land zone has a character preset (wetland/delta, lowland, rolling hills,
+plateau, highland or mountain) that blends softly into its neighbors, with
+mild race accents, and one or two strong landmark features. Terrain is
+calmer around starts and capitals, and capital ground sits well below the
+region's clouds. Roads, civic envelopes, structures and
+the coastal housing areas apply their own grading afterward. Full contract:
+`world_zones.md` §7.6.
 
-Every capital sits centrally in its own city zone with four cardinal roads.
-The road toward the outer side reaches a level-10–20 neighbor, lateral roads
-along the capital axis reach medium-level heartland, and the road toward the
-faction front reaches high-level territory. These safe progression spines and
-both west/east capital axes are primary roads. Cross-links and all twelve
-frontier/Battlegrounds contacts are secondary roads; across the front they form
-six distributed north/south crossings rendered as damaged military routes,
-not one intact arterial road. Capital defense is the one fixed guard rule: its
-guards and important NPCs are level 60.
+Every capital sits centrally in its own city zone with four cardinal gates.
+Toward the outer side lies a level-10–20 neighbor, laterally along the capital
+axis medium-level heartland, and toward the faction front high-level
+territory. Roads connect capitals, starts and villages and reach into each
+contested frontier zone; they follow the terrain, branch at T or Y junctions
+and need not reach the Battlegrounds (`world_zones.md` §9). Capital defense is
+the one fixed guard rule: its guards and important NPCs are level 60.
 
 ### Day/night and exterior visibility
 
@@ -142,8 +145,7 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   envelope plus a 10-node apron — the same envelope-plus-apron rule as a
   capital; spawn, waypoint, graveyard and service platforms all lie inside
   it), essential service/quest/waypoint/graveyard platforms,
-  small functional NPC and renewable-resource anchors, the six 128-node
-  capital-ingress corridors (`world_zones.md` §12), and a bridge or gate for
+  small functional NPC and renewable-resource anchors, and a bridge or gate for
   which no adequate alternate route exists. Ordinary roads, villages,
   outpost/camp shells, ruins, tents, fences and battlefield dressing are
   generated once, remain claim-excluded and may be changed under their zone's
@@ -186,7 +188,7 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   frontier or dragon-island zone has no construction owner; both factions may
   dig and place subject to tools and explicit protected envelopes. The four
   Battlegrounds zones follow the same shared edit rule at every y, remain
-  claim-excluded and retain their separate flight classification. Dragon
+  claim-excluded and follow the Round 14 contested-mainland flight rule. Dragon
   channels remain immutable at every y. A cultural `race_region` never grants
   terrain rights (`world_zones.md` §§8.3/11).
 - **R3 — Water columns**: classification is analytic in x/z and does not
@@ -409,9 +411,9 @@ The ordinary contested deep rule resumes at y = −701 even below a capital.
 - Its guards and important faction NPCs are level 60; the killable race king
   is the explicit level-65 elite exception and is protected by four level-60
   elite royal guards (`world_zones.md` §12).
-- Its center has main roads in all four cardinal directions: toward level
-  10–20 home territory, laterally into medium-level heartland and toward the
-  high-level contested front (`world_zones.md` §3).
+- Its center has four cardinal gates facing level 10–20 home territory,
+  medium-level heartland and the high-level contested front; roads reach it
+  through them (`world_zones.md` §§3, 9).
 - New characters use their race's outer level-1–10 starting settlement.
   Respawns follow the bound innkeeper home; the starting settlement is the
   default. See [home travel](home_travel.md).
@@ -684,11 +686,11 @@ administration system do not exist in the target design.
   Claims are dry-land housing only: no protected underwater claims or private
   harbors.
 - Copperfell Foothills, Mournfen, Starbough Vale and Raincall Basin each retain
-  a continuous gentle vertical-capsule coastal housing core with at least 600
-  shoreline nodes, at least 300 nodes of buildable inland depth and at most 12
-  nodes of natural-ground relief in every wholly contained 101×101
-  reservation. The complete mutable capsule is dry, zone-owned and
-  static-exclusion-free; it is not a visible rectangular coast. Elsewhere
+  a continuous gentle coastal housing area with at least 600 shoreline nodes,
+  at least 300 nodes of buildable inland depth and at most 12 nodes of
+  natural-ground relief in every wholly contained 101×101 reservation. The
+  area is dry, zone-owned and static-exclusion-free and follows the natural
+  coast (`world_zones.md` §7.5). Elsewhere
   there is no general runtime slope test.
 
 ### 5.2 Ownership, ACL and active-world behavior
@@ -764,11 +766,9 @@ administration system do not exist in the target design.
   `dormant`. Every live location consumes one faction slot. Registry generation
   numbers and one canonical live location invalidate stale ItemStacks without
   cloning or reviving protection; spatial indexes are rebuilt from mod storage.
-- Each faction has an administrator-configurable live-Stone limit. Its safe
-  default is selected below the once-per-layout canonical packing capacity of
-  the real fixed exclusion masks, never inferred from gross zone area or an
-  arbitrary population quota. Varying-seed height/content conformance remains
-  a separate audit.
+- Each faction has an administrator-configurable live-Stone limit with a
+  generous default. There is no capacity measurement (Round 22, 2026-09-25):
+  the ten housing zones are large level-20–30 regions with ample room.
 - Issuance is first come, first served, with no wait list or reservation. The
   integer `grug_housing_inactivity_days` setting ranges 0..3650 and defaults to
   0 (disabled). With decay enabled and a full legal pool, an issuance request

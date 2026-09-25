@@ -37,24 +37,18 @@ drop-in implementation.
 - Four level-11–20 zones provide guaranteed coastal alternatives:
   Copperfell Foothills and Mournfen on the west coasts, and Starbough Vale and
   Raincall Basin on the east coasts.
-- Each guaranteed coastal housing strip is one fixed vertical capsule: a
-  straight middle section with rounded ends, at least 600 continuous nodes of
-  shoreline frontage and at least 300 nodes of buildable inland depth. The
-  entire mutable capsule is dry, owned by its named housing zone and free of
-  every static exclusion after final coastline variation.
-- The capsule may taper at its rounded ends. Frontage and depth are audit
-  minima, not a visible rectangle and not a Claim-Stone quota.
-- Every possible 101×101 reservation wholly inside a guaranteed core has at
-  most 12 nodes of generated natural-ground height variation and contains no
-  forced cliff, ravine, river or lake. Trees, structures and later player
-  edits do not count as natural-ground relief.
+- Each coastal housing area follows the natural coast (`world_zones.md`
+  §7.5): roughly 600 nodes of shoreline frontage and 300 nodes of buildable
+  inland depth, dry and owned by its named housing zone. These are rough
+  targets, not audit minima or a Claim-Stone quota.
+- The ground in a coastal housing area is gentle: roughly at most 12 nodes of
+  natural relief across a 101×101 reservation, with no forced cliff, ravine,
+  river or lake.
 - A complete 101×101 reservation may meet the final shoreline but may not
   contain any coastal-shelf column. Protected underwater claims and private
   harbors do not exist.
-- Each of the ten housing masks must admit at least one constructive complete
-  reservation in the fixed-layout packing audit. No higher per-mask quota is
-  promised; the administrator-facing faction limit is chosen below measured
-  faction-wide capacity.
+- The ten housing zones offer ample buildable level-20–30 land. There is no
+  per-mask quota and no capacity measurement (Round 22, 2026-09-25).
 - Permanent player-owned protection exists only inside an active Claim Stone
   volume. Building elsewhere follows the ordinary faction, zone and contested
   terrain rules and is not private property.
@@ -308,9 +302,8 @@ It is not a canonical state and is not synonymous with `dormant`.
   consumes one slot.
 - Voluntary relocation never risks losing its faction slot between recovery
   and placement.
-- The exact per-faction limits are selected below demonstrated fixed-layout
-  physical capacity under §10, not from gross zone area. Varying-seed
-  height/content conformance is separate evidence.
+- The per-faction limits are administrator settings with a generous default
+  (§10).
 
 ### 5.2 Inactivity and on-demand decay
 
@@ -607,7 +600,6 @@ players in its shallow protection volume:
 - essential service and quest-giver platforms;
 - small functional NPC spawn/return anchors;
 - renewable mining sockets and other bounded renewable-resource mechanisms;
-- the six 128-node capital-ingress corridors (`world_zones.md` §12);
 - critical bridges or gates with no adequate alternate route;
 
 - Every land-side hard-protected footprint extends upward without limit and
@@ -630,8 +622,7 @@ but its authored envelope can never be privatized:
 - ruins, tents, fences, decorative fortifications and battlefield dressing;
 - terrain surrounding quest and NPC platforms.
 - ordinary Battlegrounds terrain, roads, galleries and battlefield
-  fortifications outside explicit hard-protected functional or ingress
-  envelopes.
+  fortifications outside explicit hard-protected functional envelopes.
 
 - Destruction of this layer persists; it is not structurally regenerated.
 - A reproducible gameplay loop attaches to a small protected functional
@@ -715,11 +706,10 @@ per-stone radii up to 50 or the project's 100-player target.
 
 - The authored mainland frame is x = −2,600..+2,600 and
   z = −3,000..+3,000. It bounds mainland authoring, not the generated world.
-- The Battlegrounds is x = −2,500..+2,500 and z = −250..+250. Its four-zone
-  internal ownership follows the fixed Battlegrounds hubs and integer power
-  rule in `world_zones.md` §§7.1/7.3. Both factions may edit ordinary terrain
-  at every y, but the whole macro region remains claim-ineligible. Only
-  explicit bounded hard-protection volumes apply there.
+- The four Battlegrounds zones are ordinary warped zones
+  (`world_zones.md` §§7.1/7.3). Both factions may edit ordinary terrain there
+  at every y, but no claim may be placed there. Only explicit bounded
+  hard-protection volumes apply.
 - Dragon-island centres are (−3,150, 0) and (+3,150, 0), each inside a fixed
   600×700 envelope. Their channels retain at least 200 ocean nodes, 48-node
   flight-warning bands on both shores and at least 104 hard no-flight nodes.
@@ -731,9 +721,8 @@ per-stone radii up to 50 or the project's 100-player target.
 - The editable nominal shelf is exactly
   `expanded_land_at(80) and not land_at`; deep ocean beyond it is immutable at
   every depth. Dragon-channel masks override the shelf.
-- The Copperfell, Starbough, Mournfen and Raincall coastal-core records each
-  reference their corresponding fixed 600-by-300 landmark geometry. They do
-  not depend on a materialized perimeter or zone boundary.
+- The Copperfell, Starbough, Mournfen and Raincall coastal housing areas are
+  derived from the coast (`world_zones.md` §7.5) and reference no landmark.
 - Kragmar capital centres are (−1,800, +1,500), (0, +1,500) and
   (+1,800, +1,500). Elandor capital centres are (−1,800, −1,500),
   (0, −1,500) and (+1,800, −1,500). Surface y is terrain-derived.
@@ -754,24 +743,14 @@ per-stone radii up to 50 or the project's 100-player target.
 - Each faction has five housing zones. The ten-zone supply replaces the former
   four-zone working scope and the former 150-claims-per-faction suggestion is
   not a target.
-- The per-faction live-Stone defaults are selected below measured physical
-  capacity. They bound permanent occupancy and create a soft availability
-  incentive without directly balancing active PvP population.
-- The two-dimensional capacity audit runs once per accepted fixed layout and
-  uses final housing-centre masks, real exclusion masks and the canonical
-  portfolio of lattice, greedy, row-major/reverse, edge-biased and 16
-  hash-order placement sequences. Gross area alone is not a capacity result.
-  Varying-seed height/content conformance is a separate audit and never
-  recomputes the horizontal mask or packing portfolio.
-- The fixed-layout capacity audit may not enlarge the fixed mainland frame to
-  satisfy a quota.
-- For each guaranteed coastal core, the fixed layout proves at least 600
-  continuous shoreline nodes and 300 usable inland nodes after static
-  exclusions.
-- The varying-seed height/content audit slides the complete 101×101 reservation
-  over every guaranteed core and proves no more than 12 nodes of natural-ground
-  relief and no forced cliff, ravine, river, lake or coastal-shelf intersection.
-- Coastal geometry minima do not replace the packing simulation.
+- The per-faction live-Stone defaults bound permanent occupancy and create a
+  soft availability incentive without directly balancing active PvP
+  population.
+- **Round 22 (2026-09-25): no capacity measurement.** The ten housing zones
+  are large level-20–30 regions and give ample room; there is no packing
+  audit, capacity gate or per-mask quota. The coastal housing areas'
+  frontage, depth and relief values are rough targets, confirmed by looking
+  at the rendered map, not by a proof.
 - Revised T4, T5 and T6 reliable net-income measurements convert the fixed
   30-minute, 90-minute, 3-hour, 5-hour and 10-hour targets into ledger copper
   values using §2's fixed rounding algorithm.

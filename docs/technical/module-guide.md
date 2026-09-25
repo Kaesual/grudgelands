@@ -625,7 +625,8 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   `ocean_mask.lua`, `ocean_mask_mapgen.lua` and `structures.lua` **no longer
   exist**, and neither do `register_mirrored`, `column_cap`, `clean_shell`,
   `_grug_spawn_zones` or the `grug_core.*camp_platform*` family. Do not write
-  code or a brief against them; `docs/design/world_zones.md` §§8–14 and
+  code or a brief against them; `docs/design/world_zones.md` §§8–14 (with
+  §§7, 9 and 14 describing the Round 22 target, not yet the code) and
   `docs/research/wp40-completion.md` are the current contract, and
   `docs/design/biomes_mobs.md` §1/§4 keep the retired WP18/WP36 tables as a
   labelled historical record only.
@@ -729,7 +730,8 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   `docs/design/world_zones.md` §§8–9, each with one `race_region`; six
   start/home/capital chains, every ordinary level-31–60 zone contested, and
   two level-60 dragon endpoints. The hybrid-v7
-  pass and `grug_zones` API are §13; the 32-seed acceptance gate is §14.
+  pass and `grug_zones` API are §13; acceptance is §14 (Round 22 minimal
+  policy).
   Race region, territory and PvP rule are independent fields. Every ordinary
   level-31–60 land zone is contested and editable by both factions. Roads,
   camp shells, tents, fences and battlefield dressing remain mutable but

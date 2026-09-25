@@ -241,7 +241,10 @@ current state). It is **derived, never authoritative**:
   until 2026-08-15 a missing `rg` made nine of them report success without
   running, because exit status 127 inside an `if` condition reads exactly
   like "no match found". Use LuaJIT for development and exhaustive runs
-  where supported. Do not run PUC runtime at intermediate milestones. On
+  where supported. **Mapgen work is exempt (Round 22 D1, 2026-09-25):** no
+  PUC runs, parity tests or gates during mapgen development; at most one
+  optional PUC crash smoke test once the mapgen is finished. For all other
+  work: do not run PUC runtime at intermediate milestones. On
   frozen final bytes, run one compact PUC-5.1 micro-KAT process
   and the same fixture once under LuaJIT, requiring a byte-identical canonical
   digest. WP40 R1-R4 retain their historical targeted-PUC evidence; R5-R8 use

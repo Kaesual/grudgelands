@@ -565,16 +565,14 @@ not level drift: the L20 and L60 baseline feel remains the same.
 `grug_zones.surface_mob_level_at(x, z)` supplies the authored surface level;
 `grug_core.mob_level_at(pos)` applies that surface result together with the
 depth and exterior-class rules and returns the final level directly. Target
-surface geometry (`world_zones.md` §2): the named zone and its authored local
-progression supply levels 1–60 through three rational z-axis bands, rising
-from outer race starts toward the faction front. Accord profiles run toward
-+z and Throng profiles toward -z; the Battlegrounds profiles run from their
-faction-facing edge toward z = 0, while both level-60 summits stay flat. Each
-zone range is split into three consecutive integer sub-ranges and each band is
-an evenly placed integer staircase as specified in `world_zones.md` §2.
+surface geometry (`world_zones.md` §2, Round 22): the owning zone supplies
+the level. Inside each zone its published range rises in three sub-ranges
+from the home-facing side toward the faction front; Battlegrounds zones rise
+from both sides toward the middle of the band, and both level-60 summits stay
+flat.
 Within 100 horizontal nodes of every authored start anchor the surface level
-is 1, from 101 through 150 nodes it is 2, and beyond 150 nodes the axial field
-applies. Capital city zones contain no ambient hostile mobs. Guards use
+is 1, from 101 through 150 nodes it is 2, and beyond 150 nodes the zone's
+level field applies. Capital city zones contain no ambient hostile mobs. Guards use
 the separate positional `guard_level_at` contract above; the depth formula
 does not affect that guard base. Every exterior class has no surface level.
 Shelf `mob_level_at` is nil at normalized y >= 0 and uses the depth term alone
