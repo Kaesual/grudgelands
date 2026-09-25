@@ -74,7 +74,7 @@ mobs:spawn({
 	nodes = {"default:dirt_with_grass", "default:dirt_with_coniferous_litter",
 		"grug_nodes:dirt_with_silver_litter"},
 	interval = 20, chance = 1900, active_object_count = 3,
-	min_height = 0, max_height = 200,
+	min_height = 0, max_height = 600,
 })
 
 local ibex = ground_defaults({
@@ -106,7 +106,7 @@ mobs:spawn({
 	nodes = {"default:dirt_with_coniferous_litter", "default:gravel",
 		"default:snowblock"},
 	interval = 20, chance = 1900, active_object_count = 3,
-	min_height = 0, max_height = 200,
+	min_height = 0, max_height = 600,
 })
 
 local function critter(description, mesh, texture, size, box, animation)
@@ -132,7 +132,7 @@ local turkey = critter("Wild Turkey", "grug_mobs_wild_turkey.b3d",
 grug_mobs.register_mob("grug_mobs:wild_turkey", turkey)
 mobs:spawn({name = "grug_mobs:wild_turkey",
 	nodes = {"default:dirt_with_grass"}, interval = 20, chance = 2100,
-	active_object_count = 2, min_height = 0, max_height = 200})
+	active_object_count = 2, min_height = 0, max_height = 600})
 
 local runner = critter("Plains Runner", "grug_mobs_plains_runner.b3d",
 	"grug_mobs_plains_runner.png", {x = 1, y = 1},
@@ -144,7 +144,7 @@ local runner = critter("Plains Runner", "grug_mobs_plains_runner.b3d",
 grug_mobs.register_mob("grug_mobs:plains_runner", runner)
 mobs:spawn({name = "grug_mobs:plains_runner",
 	nodes = {"default:dry_dirt_with_dry_grass"}, interval = 20, chance = 2100,
-	active_object_count = 2, min_height = 0, max_height = 200})
+	active_object_count = 2, min_height = 0, max_height = 600})
 
 local tapir = ground_defaults({
 	description = "Tapir", clock = "day", type = "animal",
@@ -171,7 +171,7 @@ grug_mobs.register_mob("grug_mobs:tapir", tapir)
 mobs:spawn({name = "grug_mobs:tapir",
 	nodes = {"default:dirt_with_rainforest_litter",
 		"grug_nodes:dirt_with_canopy_litter"}, interval = 20, chance = 1900,
-	active_object_count = 3, min_height = 0, max_height = 200})
+	active_object_count = 3, min_height = 0, max_height = 600})
 
 local rat = ground_defaults({
 	description = "Giant Rat", clock = "night", type = "monster",
@@ -195,7 +195,7 @@ mobs:spawn({name = "grug_mobs:giant_rat",
 		"grug_nodes:dirt_with_silver_litter", "grug_nodes:blight_dirt",
 		"default:dry_dirt_with_dry_grass", "default:dirt_with_rainforest_litter"},
 	interval = 20, chance = 1600, active_object_count = 4,
-	min_height = 0, max_height = 200})
+	min_height = 0, max_height = 600})
 mobs:spawn({name = "grug_mobs:giant_rat",
 	nodes = {"default:stone", "group:grug_stratum"}, max_light = 5,
 	interval = 20, chance = 1800, active_object_count = 4,
@@ -233,7 +233,7 @@ grug_mobs.register_mob("grug_mobs:scorpion", scorpion)
 mobs:spawn({name = "grug_mobs:scorpion",
 	nodes = {"default:dry_dirt_with_dry_grass", "grug_nodes:mesa_clay"},
 	interval = 20, chance = 1800, active_object_count = 4,
-	min_height = 0, max_height = 200})
+	min_height = 0, max_height = 600})
 
 local viper = poison_family("Viper", "grug_mobs_viper.b3d",
 	"grug_mobs_viper.png", {x = 0.6, y = 0.6},
@@ -248,4 +248,4 @@ grug_mobs.register_mob("grug_mobs:viper", viper)
 mobs:spawn({name = "grug_mobs:viper",
 	nodes = {"default:dirt_with_rainforest_litter"},
 	interval = 20, chance = 1800, active_object_count = 4,
-	min_height = 0, max_height = 200})
+	min_height = 0, max_height = 600})

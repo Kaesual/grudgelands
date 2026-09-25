@@ -105,7 +105,7 @@ mobs:spawn({
 	chance = 1800,
 	active_object_count = 4,
 	min_height = 0,
-	max_height = 200,
+	max_height = 600,
 })
 
 --
@@ -133,7 +133,7 @@ mobs:spawn({
 	chance = 1800,
 	active_object_count = 4,
 	min_height = 0,
-	max_height = 200,
+	max_height = 600,
 })
 
 --
@@ -173,7 +173,7 @@ mobs:spawn({
 	chance = 1800,
 	active_object_count = 4,
 	min_height = 0,
-	max_height = 200,
+	max_height = 600,
 })
 
 --

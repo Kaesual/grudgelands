@@ -94,5 +94,5 @@ mobs:spawn({
 	chance = 2200,
 	active_object_count = 2,
 	min_height = 0,
-	max_height = 200,
+	max_height = 600,
 })

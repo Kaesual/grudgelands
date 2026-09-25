@@ -607,6 +607,9 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 			end
 		end
 	end
+	-- Papyrus stands at the water (r6_planner rule 3), where the near-water
+	-- material turns the swamp's mud into sand; the reeds root there too.
+	decoration_cover.swamp_papyrus.grug_swamp[content_ref_by_name["default:sand"]] = 1
 	function module.decoration_cover(id, biome, support_ref)
 		local biomes = decoration_cover[id]
 		local hosts = biomes and biomes[biome]

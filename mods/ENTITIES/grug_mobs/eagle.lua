@@ -118,9 +118,8 @@ grug_mobs.register_mob("grug_mobs:crag_eagle",
 
 -- §4 row "Crag Eagle/Vulture | gravel, mesa_clay | 20 | 2000 | 3 | min 10 |
 -- outer, coast", split by continent-side top node.
--- max_height 300 instead of the usual 200: §4's note gives the crags rows
--- that exception, and the crags reach y 79 (biome cuboid, §1.3) with the
--- snowy sibling above.
+-- max_height 600 like every surface row (§4, Round 22 D37): the natural
+-- terrain reaches past y 500, and zone palettes gate the habitat.
 -- SNOWBLOCK: grug_crags_snowy is the alpine sibling of the crags — same
 -- cuboid, same climate point, snow top above y = 80 (§1.3). It was added in
 -- WP18 and §4's table was never extended, so NO spawn row in the roster
@@ -139,7 +138,7 @@ mobs:spawn({
 	chance = 2000,
 	active_object_count = 3,
 	min_height = 0,
-	max_height = 300,
+	max_height = 600,
 })
 
 --
@@ -157,5 +156,5 @@ mobs:spawn({
 	chance = 2000,
 	active_object_count = 3,
 	min_height = 0,
-	max_height = 300,
+	max_height = 600,
 })

@@ -119,8 +119,8 @@ frontier and Stormscale palettes, not a transfer of Orc cultural ownership.
 
 The coastal habitat follows the authored shelf; planned inland water keeps its
 zone classification. Coral, kelp and wild-source details follow
-`world_zones.md`'s Round 10 source/reef rules. Shore Crab and Reef Lurker remain
-deferred pending suitable licensed models (§8). Registered node/biome names
+`world_zones.md`'s Round 10 source/reef rules. Shore Crab and Reef Lurker live
+on sandy sea shore near water (§3.1, §4). Registered node/biome names
 must resolve before they are used by ore or decoration definitions.
 
 ### 1.4 Settlements
@@ -196,7 +196,7 @@ placeholder.
 | grug_blight | gravewood (knotted dead branches, sparse grey leaf remnants) sparse | grey grass tufts, bone piles (deco); gravemoss `[herb T1]` | fireflies/wisp particles optional |
 | grug_bone_forest | gravewood dense (fill 0.015), bone piles | mushrooms `[food found-only]`; dragonweed `[herb T2]` | shares deep-forest drop tables (§3.2) |
 | grug_jungle_edge | jungle_tree.mts (0.008) | jungle grass; wild bananas? → wild melon `[food]` (BASE-compatible); sunleaf `[spice T1]` | |
-| grug_deep_jungle / grug_jungle_fringe | jungle + emergent_jungle (0.025); papyrus lives in the adjacent swamp/shore band (v7 has no water above sea level, so the jungle cuboids at y ≥ 4 cannot host waterside papyrus) | vines/lianas (asset list); crimson lotus `[herb T3]`; wild cocoa `[food found-only]` — **level-51–60 zones only** (§2 tightening 2026-08-13); wild melon `[food]` | same flora, roster and ground: `grug_nodes:dirt_with_canopy_litter`, shipped as the fringe's top node by WP40 R7 (`r7_r6_manifest.lua`); only `grug_jungle_edge` still uses rainforest litter |
+| grug_deep_jungle / grug_jungle_fringe | jungle + emergent_jungle (0.025; emergent trees everywhere except zones of mountain relief); papyrus lives at the water in the swamp (§2.1) | vines/lianas (asset list); crimson lotus `[herb T3]`; wild cocoa `[food found-only]` — **level-51–60 zones only** (§2 tightening 2026-08-13); wild melon `[food]` | same flora, roster and ground: `grug_nodes:dirt_with_canopy_litter`, shipped as the fringe's top node by WP40 R7 (`r7_r6_manifest.lua`); only `grug_jungle_edge` still uses rainforest litter |
 | grug_swamp | papyrus_on_dirt, dead bush; willow-ish gravewood retint optional | reeds, waterlilies; marshbloom `[spice T2]`; mushrooms `[food found-only]` | shallow water pools (mud floor) |
 | grug_beach | — | shells (deco); rock salt crust on coast-zone beaches `[found-only salt, inedible]` | Stormkelp uses the cross-biome dry-shore predicate below, not a beach-only row. |
 | war-coast overlay | local band biome | battlefield decos: broken carts, bone piles, burnt patches (schematic decos) | no separate biome (decided); decoration set ships with WP13's schematic pass |
@@ -222,7 +222,7 @@ contract error rather than a fallback to an engine biome.
 | `grug_crags_snowy` | `default:snowblock` / 1 | `default:gravel` / 2 | `default:gravel` | none |
 | `grug_elf_forest` | `grug_nodes:dirt_with_silver_litter` / 1 | `default:dirt` / 3 | `default:sand` | silverwood via replaced aspen tree `1/200`; apple tree `1/500`; each grass 1–3 `1/50` |
 | `grug_deep_forest` | `grug_nodes:dirt_with_forest_litter` / 1 | `default:dirt` / 3 | `default:sand` | apple tree `3/250`; aspen tree `1/125`; fallen apple log `1/1000`; each fern 1–3 `1/50` |
-| `grug_swamp` | `grug_nodes:mud` / 1 | `grug_nodes:mud` / 2 | `grug_nodes:mud` | papyrus `1/50`, only at `surface_y = 1..4`, replacing template `default:dirt` with `grug_nodes:mud`; dry shrub `1/250` |
+| `grug_swamp` | `grug_nodes:mud` / 1 | `grug_nodes:mud` / 2 | `grug_nodes:mud` | papyrus `1/50`, only on a dry mud or sand root at most 4 above the highest water surface in its 16×16 candidate cell, replacing template `default:dirt` with `grug_nodes:mud`; dry shrub `1/250` |
 | `grug_savanna` | `default:dry_dirt_with_dry_grass` / 1 | `default:dry_dirt` / 3 | `default:sand` | acacia tree `1/500`; acacia bush `1/250`; dry shrub `1/250`; each dry grass 1–5 `3/50` |
 | `grug_badlands` | `grug_nodes:mesa_clay` / 1 | `grug_nodes:mesa_clay` / 3 | `default:gravel` | large cactus `1/1000`; dry shrub `1/125` |
 | `grug_badlands_east` | `grug_nodes:mesa_clay` / 1 | `grug_nodes:mesa_clay` / 3 | `default:gravel` | large cactus `1/1000`; dry shrub `1/125` |
@@ -237,8 +237,12 @@ Every decoration root requires `surface_y >= 1`. Template schematics are
 centred in x/z and rotate by a domain-separated choice among 0/90/180/270
 degrees. The blueberry bush and fallen apple log use y offset +1; the log is
 centred only in x and replaces its unavailable brown mushroom with `air`. The
-emergent jungle tree uses y offset −4, is limited to `surface_y <= 32`, and all
-other template offsets are zero. Silverwood applies the accepted aspen-node
+emergent jungle tree uses y offset −4 and grows everywhere except in zones of
+mountain relief (Round 22 D37; the natural jungle spans y 0–400), and all
+other template offsets are zero. The manifest still names these two site
+rules by their flat-world tokens (`surface_y_at_most_32`, `surface_y_1_to_4`),
+which the r6_catalog digest pin freezes; `r6_planner.lua` reads them as the
+rules above. Silverwood applies the accepted aspen-node
 replacement. Every dry shrub has exact `param2 = 4`. Gravewood uses original
 7×7×7 (Blight) and 7×9×7 (Bone Forest) schematics with 17/23 face-connected
 wood cells and only 5/8 optional dead-leaf cells (MTS probability value 96 each; mapgen inclusion 3/8).
@@ -596,17 +600,17 @@ coast, 38–60) + grug_jungle_edge inner (10–25):
 | Mirefolk (fish-folk humanoid, camps at swamp pools; the "murloc memory") | swarms (camp group aggro, all rush at once) | 24 h | 4.6 | linen cloth 1/2; fish 1/1; shiny scale 1/4 | character.b3d small scale + custom skin (2D work) — decided: include |
 | **Bog Fowl** — the swamp critter; universal biome, so the one new critter both continents share | flees (**critter**, §3.0) | day | 3.4 | meat 1/1 — food only (**not** its upstream's feather) | mobs_mc_chicken, marsh tint |
 
-**grug_beach / strait (L1–5 neutral — attack only when provoked):**
+**Sandy sea shore (neutral — attack only when provoked):**
 
 | Mob | Verb | Day/Night | Speed | Drops | Model |
 |-----|------|-----------|-------|-------|-------|
-| Shore Crab — **deferred (§8.3), not shipped** | retaliates (pinches when punched) | 24 h | 3.4 | crab meat 1/1; chitin 1/2 | deferred until a licensed model is sourced (decided); strait launches with Gull only |
+| Shore Crab | retaliates (pinches when punched) | 24 h | 3.4 | meat 1/1; scaled hide 1/2 | `grug_mobs_shore_crab.b3d` |
 | Gull | flees (**critter**, §3.0) | day | 3.4 fly | meat 1/1 — food only | animalia song bird retexture |
 
-Coast-zone beaches (45–60) reuse Crab as an **elite** "Reef Lurker"
-(scale ×1.6, armor 80) — same table ×3 quantity. **Deferred with the
-Crab (§8.3)**: neither is registered, so the beach cells currently carry
-the Gull alone.
+Crabs spawn on dry `default:sand` at y 0–20 with water within 6 nodes, so
+the wide coastal sand band and inland sand stay crab-free (Round 22 D36).
+The local level splits every such shore: the Shore Crab below level 45, and
+from 45 to 60 the **elite** "Reef Lurker" (same model, ×3 drops).
 
 **War coast (20–30, both continents):** local settled-biome roster
 continues; plus Skeleton Raider (dogshoot, night — battlefield dead;
@@ -784,9 +788,12 @@ rolls ride on WP5's item/enchantment tables.
 
 Mechanism: mobs_redo `mobs:spawn` plus the named-zone spawn policy.
 Host nodes, authored zone palettes, regional identity and local level must all
-admit the family. The retired `_grug_spawn_zones` field is not a current gate. `min_height 0, max_height 200` on all surface entries
-(golems and the crags rows — Ram, Crag Eagle — 300; the **Vulture
-shares that 300 exception**, its mesa-clay badlands run just as high).
+admit the family. The retired `_grug_spawn_zones` field is not a current gate. `min_height 0, max_height 600` (the flight
+ceiling) on all surface entries, since the natural terrain reaches past
+y 500 and the zone palettes already gate the habitat (Round 22 D37). Only
+water-bound rows keep a low cap, for a gameplay reason: the Kraken at 4
+(sea surface), the Shore Crab and Reef Lurker at 20 (sea shore), and the
+Reed Angelfish at 80 (freshwater; revisited with Phase 5 inland water).
 Every family declares one spawn role, `clock = "day" | "night" | "any"`;
 Zombie uses the palette-keyed form (`settled`/`war` night, `blight` any).
 `grug_mobs` stamps day rows with `min_light = 10`, night rows with
@@ -873,7 +880,7 @@ re-run against the new values once the change ships.
 | Bog Ooze | mud | 20 | 1500 | 3 | any | outer |
 | Parrot | rainforest litter | 20 | 1875 | 2 | min 10 | core, inner |
 | Carrion Crow | **every land top** except sand (the Gull holds that slot); war_coast-exclusive | 20 | 1875 | 2 | min 10 | war_coast |
-| Shore Crab — *deferred (§8.3)* | sand | 20 | 1650 | 3 | any | strait, war_coast, coast |
+| Shore Crab | sand within 6 nodes of water, y 0–20 | 20 | 400 | 3 | any | level below 45 (§3.1) |
 | Gull | sand | 20 | 1875 | 2 | min 10 | strait, war_coast, coast, **outer** |
 | **Cave Bat** (critter) | stone **+ `group:grug_stratum`** | 20 | 2200 | 2 | max 5 | underground |
 | **Cave Crawler** (critter) | stone **+ `group:grug_stratum`** | 20 | 2200 | **1** | max 5 | underground |
@@ -899,7 +906,7 @@ re-run against the new values once the change ships.
 | **Snow Leopard** | gravel, snowblock | 20 | 2100 | **4 at night** (base 3 ×1.25, ceiling) | night | Frostbarrow, Stormvault, Wyrmglass |
 | **Wisp** | mud, silver/forest/bone/canopy/rainforest litter | 20 | 2200 | **4 at night** (base 3 ×1.25, ceiling) | night | exact named-zone routes |
 | **Ashen / Gravewood Treant** | forest litter / bone litter | 20 | 2600 | **3 each at night** (base 2 ×1.25, ceiling) | night | exact tint-specific routes |
-| Reef Lurker (elite crab) — *deferred (§8.3)* | sand | 30 | 6000 | 1 | any | coast |
+| Reef Lurker (elite crab) | sand within 6 nodes of water, y 0–20 | 30 | 1500 | 1 | any | level 45–60 (§3.1) |
 | Kraken Guard | ocean water surface, open sea only (own check) | 60 | 12000 | 1 | any | (outside continents) |
 | Bandits / Mirefolk | **no ABM** — camp anchor with **respawn slots** (world.md §4a): max 3–5, one refill per 120–300 s, dormant catch-up | — | — | 3–5 per camp | — | camp pos |
 | Named rares | **no ABM** — scheduled spawner, 2–4 h respawn, broadcast | — | — | 1 | — | fixed routes |

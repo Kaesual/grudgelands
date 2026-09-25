@@ -92,25 +92,8 @@ mobs:spawn({
 	chance = 2500,
 	active_object_count = 2,
 	min_height = 0,
-	max_height = 200,
+	max_height = 600,
 })
 
---
--- DEFERRED, on purpose: Shore Crab and Reef Lurker
---
--- biomes_mobs.md §8.3 (resolved decision points, 2026-08-06): "Shore Crab
--- deferred until a licensed model is sourced — the strait launches with Gull
--- only", and §7's asset table says the same ("no verified source yet (check
--- marinara / nssm in-repo)"). The Reef Lurker of §3.1 is the coast-zone
--- ELITE variant of that same crab (scale x1.6, armor 80, same table x3), so
--- it falls with it.
---
--- When a model arrives, both belong in this file and both rows already exist
--- in §4:
---   Shore Crab   | sand | 20 | 2200 | 3 | any | strait, war_coast, coast
---   Reef Lurker  | sand | 30 | 8000 | 1 | any | coast
--- Verb: "retaliates (pinches when punched)" — that is native mobs_redo
--- (`type = "animal"`, `passive = false`, no attack_players), no verbs.lua
--- helper needed. The elite is `_grug_tier = "elite"` (golem.lua pattern), not
--- a second texture (wp6_model_notes §0.4).
---
+-- The beach's other residents, Shore Crab and Reef Lurker, live in
+-- shore_crab.lua.

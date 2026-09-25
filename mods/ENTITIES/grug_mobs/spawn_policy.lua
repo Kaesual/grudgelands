@@ -704,21 +704,19 @@ function grug_mobs.spawn_policy_allows(mob_name, pos)
 	if not local_level or local_level < (natural_min_levels[mob_name] or 1) then
 		return false
 	end
-	-- The Gull follows the logical beach palette. Crab rows are narrower:
-	-- their only host is dry `default:sand`, and their central level band
-	-- distinguishes neutral shores from the elite coast roster. The node host
-	-- is enforced by mobs_redo before this allocation-free policy callback.
+	-- The Gull follows the logical beach palette. Crab rows ignore palettes:
+	-- their host is dry `default:sand` near water (shore_crab.lua, D36), and
+	-- the level splits every such shore between the neutral Shore Crab below
+	-- level 45 and the elite Reef Lurker from 45 to 60. The node host is
+	-- enforced by mobs_redo before this allocation-free policy callback.
 	if mob_name == "grug_mobs:gull" then
 		return grug_zones.biome_at(pos.x, pos.z) == "grug_beach"
 	end
-	if mob_name == "grug_mobs:shore_crab" or
-			mob_name == "grug_mobs:reef_lurker" then
-		local level = grug_zones.mob_level_at(pos)
-		if not level then return false end
-		if mob_name == "grug_mobs:shore_crab" then
-			return level >= 1 and level <= 5
-		end
-		return level >= 45 and level <= 60
+	if mob_name == "grug_mobs:shore_crab" then
+		return local_level < 45
+	end
+	if mob_name == "grug_mobs:reef_lurker" then
+		return local_level >= 45 and local_level <= 60
 	end
 	local zone_id = grug_zones.id_at(pos.x, pos.z)
 	if BOAR_VARIANTS[mob_name] and BOAR_VARIANT_BY_ZONE[zone_id] ~= mob_name then

@@ -1,10 +1,15 @@
 -- Shore Crab and its high-level elite beach variant, the Reef Lurker.
+--
+-- Both live on sandy shore near water (Round 22 D36): the host is dry
+-- `default:sand` at y 0..20 with water within NEAR_WATER nodes, so the
+-- coast's wide sand band and inland sand stay crab-free. The level split is
+-- spawn_policy.lua's: the Shore Crab below level 45, the Reef Lurker 45-60,
+-- so every sandy sea shore carries one of the pair.
 
-local function beach_band(low, high)
-	return function(pos)
-		local level = grug_zones.mob_level_at(pos)
-		return level and level >= low and level <= high or false
-	end
+local NEAR_WATER = 6
+
+local function near_water(pos)
+	return core.find_node_near(pos, NEAR_WATER, "group:water") ~= nil
 end
 
 local function crab_def(description, tier, spawn_check, drop_scale)
@@ -39,13 +44,16 @@ local function crab_def(description, tier, spawn_check, drop_scale)
 end
 
 grug_mobs.register_mob("grug_mobs:shore_crab",
-	crab_def("Shore Crab", "normal", beach_band(1, 5), 1))
+	crab_def("Shore Crab", "normal", near_water, 1))
 grug_mobs.register_mob("grug_mobs:reef_lurker",
-	crab_def("Reef Lurker", "elite", beach_band(45, 60), 3))
+	crab_def("Reef Lurker", "elite", near_water, 3))
 
+-- The near-water strip is about a quarter of the coast's sand (measured), so
+-- both chances are a quarter of their former all-sand values to keep the
+-- attempt rate.
 mobs:spawn({name = "grug_mobs:shore_crab", nodes = {"default:sand"},
-	interval = 20, chance = 1650, active_object_count = 3,
+	interval = 20, chance = 400, active_object_count = 3,
 	min_height = 0, max_height = 20})
 mobs:spawn({name = "grug_mobs:reef_lurker", nodes = {"default:sand"},
-	interval = 30, chance = 6000, active_object_count = 1,
+	interval = 30, chance = 1500, active_object_count = 1,
 	min_height = 0, max_height = 20})
