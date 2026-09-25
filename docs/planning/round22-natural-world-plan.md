@@ -512,3 +512,13 @@ Recorded 2026-09-25 as the target of a later round, not this one.
 - Intent: more flair. Today's capitals are large and fairly empty.
 - This round only supports and prepares it (D16, guardrail 8). Phase 0
   records what depends on the current envelope size.
+- **Known defect to fix there (found in the Phase 3 playtest, predates Round
+  22):** house-to-lane approach stubs. Every plot puts its doorstep path on
+  its −z edge and is never turned toward its lane
+  (`wp13/highcourt_plot.lua` ~291–299, entry ~495; the other capitals'
+  `*_plot.lua` alike); `wp13/plot_approach.lua` ~15–27 only looks for streets
+  on that side within 24 nodes and otherwise paves an 8-node stub into open
+  ground (`r7_settlement.lua` ~1346–1353, writer ~1503–1523). On the default
+  seed only 12–16 of 52 stubs per capital reach a street. Introduced in Round
+  21 (`e5611479`, `4575d691`). Fix: turn plots toward their nearest street, or
+  route approaches around buildings.
