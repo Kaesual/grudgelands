@@ -1,11 +1,19 @@
--- Pure atlas geometry and marker collection. The background images use these
--- exact authored bounds; runtime markers never become pixels in those images.
+-- Pure atlas geometry and marker collection. The per-world base image
+-- (base.lua) is rendered over these exact bounds; runtime markers and labels
+-- never become pixels in it.
 
 local M = {}
 
-local WORLD = {label = "World", texture = "grug_map_atlas_world.png",
+local WORLD = {label = "World", texture = "",
 	min_x = -3600, max_x = 3600, min_z = -3200, max_z = 3200}
 local providers = {}
+
+-- Set once at load time to the rendered base's media name (or a fallback).
+function M.set_base_texture(texture)
+	assert(type(texture) == "string" and texture ~= "",
+		"[grug_map] invalid base texture")
+	WORLD.texture = texture
+end
 
 function M.views()
 	return {{id = "world", view = M.view()}}

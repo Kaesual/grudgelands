@@ -17,7 +17,7 @@ function grug_core.world_alterable(pos)
 	if not grug_core.zone_authority_installed() then return false end
 	local territory = grug_zones.territory_rule_at(pos)
 	if territory ~= "accord_home" and territory ~= "throng_home" and
-			territory ~= "contested_land" and territory ~= "holy_grounds" then
+			territory ~= "contested_land" then
 		return false
 	end
 	for index = 1, #world_alteration_guards do

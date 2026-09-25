@@ -269,7 +269,7 @@ mood("troll", "Troll region: warm humid jungle haze",
 	{density = 0.8, color = "#e8f0d8e5", ambient = "#101a10",
 		height = 100, thickness = 28, drift = -1.0, shadow = "#94a382"})
 
--- The four shared Battlegrounds (world_zones.md §8.3, territory_rule
+-- The four shared Battlegrounds (world_zones.md §8.3, macro region
 -- "holy_grounds"): ash and smoke, grey-brown, desaturated, short view.
 mood("battlegrounds", "Battlegrounds: ash haze over the shared front",
 	{shadow_intensity = 0.28, shadow_r = 24, shadow_g = 20, shadow_b = 16,
@@ -334,6 +334,65 @@ mood("underground", "Underground: near-black rock, torch bloom, short fog",
 grug_core.atmosphere_moods = MOODS
 
 ---------------------------------------------------------------------------
+-- Region-relative cloud base (Round 22 D7, world_zones.md §7.6)
+---------------------------------------------------------------------------
+
+-- Terrain height differs per world, so a fixed cloud y per race mood can put
+-- a capital inside its own clouds. Once the world authority exists, each race
+-- mood's cloud base (set_clouds `height`, the y of the cloud bottom) is raised
+-- to at least CLOUD_CLEARANCE above that capital's ground: the highest of the
+-- capital anchor's own y and nine terrain samples across its 96 by 96 civic
+-- core. A mood already high enough keeps its value, as does every mood if the
+-- computation fails. Every other mood field is unchanged. Runs before any
+-- player can join, so no player carries a stale copy of the preset.
+local CLOUD_CLEARANCE = 60
+local CIVIC_HALF = 48
+
+-- Computes every new cloud base first and returns them; nothing is written,
+-- so an error anywhere leaves all presets authored.
+local function region_cloud_bases()
+	local result = {}
+	-- start_identities is the authority's six-race roster (race + faction).
+	for _, row in ipairs(grug_core.start_identities()) do
+		local anchor = grug_core.capital_anchor(row.faction_id, row.race_id)
+		local preset = presets[row.race_id]
+		if anchor and preset and MOODS[row.race_id] then
+			local ground = anchor.y
+			for dz = -CIVIC_HALF, CIVIC_HALF, CIVIC_HALF do
+				for dx = -CIVIC_HALF, CIVIC_HALF, CIVIC_HALF do
+					ground = math.max(ground,
+						grug_zones.terrain_height_at(anchor.x + dx, anchor.z + dz))
+				end
+			end
+			result[#result + 1] = {preset = preset, race = row.race_id,
+				ground = ground,
+				height = math.max(preset.clouds.height, ground + CLOUD_CLEARANCE)}
+		end
+	end
+	return result
+end
+
+core.register_on_mods_loaded(function()
+	if not grug_core.zone_authority_installed() then
+		return
+	end
+	local ok, result = pcall(region_cloud_bases)
+	if ok then
+		local report = {}
+		for _, row in ipairs(result) do
+			report[#report + 1] = ("%s %d (capital ground %d, authored %d)"):
+				format(row.race, row.height, row.ground, row.preset.clouds.height)
+			row.preset.clouds.height = row.height
+		end
+		core.log("action", "[grug_core] region cloud base: " ..
+			table.concat(report, ", "))
+	else
+		core.log("error", "[grug_core] region cloud base kept authored: " ..
+			tostring(result))
+	end
+end)
+
+---------------------------------------------------------------------------
 -- Zone resolution
 ---------------------------------------------------------------------------
 
@@ -384,10 +443,10 @@ local function classify(zones, zone_id)
 	if not record then
 		return DEFAULT_MOOD
 	end
-	-- The four mainland Battlegrounds are exactly the holy_grounds rule
-	-- (world_zones.md §8.3); the token names the macro rectangle, not a
-	-- protection right, which is why it is safe to read as "this is the front".
-	if record.territory_rule == "holy_grounds" then
+	-- The four mainland Battlegrounds are exactly the zones of the legacy
+	-- "holy_grounds" macro region (world_zones.md §8.3); it carries no geometry
+	-- or rights, which is why it is safe to read as "this is the front".
+	if record.macro_region == "holy_grounds" then
 		return "battlegrounds"
 	end
 	-- The two dragon islands are the only 60/60 zones in the catalog

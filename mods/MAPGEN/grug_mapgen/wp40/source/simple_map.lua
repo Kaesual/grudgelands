@@ -19,13 +19,7 @@ local source = {
 	layout_revision_id = "wp40-simple-map-v1e",
 	height_revision_id = "wp40-height-shore-v6",
 	extent = {min_x = -3600, max_x = 3600, min_z = -3200, max_z = 3200},
-	warp = {cell = 256, maximum = 60,
-		hash_domain = "fixed_visual_warp_v1"},
-	mainland_partition = {axis = "warped_z", split = 0,
-		negative_region = "elandor_mainland",
-		nonnegative_region = "kragmar_mainland"},
 	shelf_width = 80,
-	holy_grounds = {min_x = -2500, max_x = 2500, min_z = -250, max_z = 250},
 	start_core = {width_x = 600, width_z = 500},
 	capital_core = {width_x = 512, width_z = 512},
 	housing_policy = {
@@ -113,10 +107,10 @@ source.zones = {
 	zone(31,"kragmar_totemwater_reach","Totemwater Reach","troll","throng","throng_home","peaceful",21,30,"wetland_delta",2400,1500,{"grug_jungle_edge","grug_deep_jungle","grug_swamp"}),
 	zone(32,"kragmar_thunderroot_wilds","Thunderroot Wilds","troll",false,"contested_land","contested",31,40,"highland",1800,700,{"grug_deep_jungle","grug_badlands_east","grug_swamp"}),
 	zone(33,"front_wyrmglass_crown","The Wyrmglass Crown","dwarf",false,"contested_land","contested",60,60,"mountain",-3150,0,{"grug_crags","grug_crags_snowy","grug_beach"}),
-	zone(34,"front_gravesalt_escarpment","Gravesalt Escarpment","undead",false,"holy_grounds","contested",51,59,"highland",-2000,0,{"grug_bone_forest","grug_blight","grug_swamp","grug_beach"}),
-	zone(35,"front_broken_causeway","The Broken Causeway","human",false,"holy_grounds","contested",31,40,"wetland_delta",-750,0,{"grug_meadows","grug_deep_forest","grug_swamp"}),
-	zone(36,"front_shattered_line","The Shattered Line","orc",false,"holy_grounds","contested",41,50,"plateau",750,0,{"grug_badlands","grug_savanna","grug_swamp"}),
-	zone(37,"front_skyglass_canopy","The Skyglass Canopy","elf",false,"holy_grounds","contested",51,59,"highland",2000,0,{"grug_jungle_fringe","grug_deep_forest","grug_elf_forest"}),
+	zone(34,"front_gravesalt_escarpment","Gravesalt Escarpment","undead",false,"contested_land","contested",51,59,"highland",-2000,0,{"grug_bone_forest","grug_blight","grug_swamp","grug_beach"}),
+	zone(35,"front_broken_causeway","The Broken Causeway","human",false,"contested_land","contested",31,40,"wetland_delta",-750,0,{"grug_meadows","grug_deep_forest","grug_swamp"}),
+	zone(36,"front_shattered_line","The Shattered Line","orc",false,"contested_land","contested",41,50,"plateau",750,0,{"grug_badlands","grug_savanna","grug_swamp"}),
+	zone(37,"front_skyglass_canopy","The Skyglass Canopy","elf",false,"contested_land","contested",51,59,"highland",2000,0,{"grug_jungle_fringe","grug_deep_forest","grug_elf_forest"}),
 	zone(38,"front_stormscale_summit","Stormscale Summit","troll",false,"contested_land","contested",60,60,"mountain",3150,0,{"grug_deep_jungle","grug_badlands_east","grug_swamp","grug_beach"}),
 }
 
@@ -186,6 +180,68 @@ source.channels = {
 	{id="channel_stormscale",polygon=polygon(point(2500,-350),point(2860,-350),point(2860,350),point(2500,350)),warning_width=48,minimum_hard_width=104},
 }
 
+-- Round 22 zone borders and coastline (world_zones.md §7.1-7.4, D24): the
+-- parameters of `zone_field.lua`. The land primitives, bays and island
+-- polygons above give the macro silhouette; the world seed warps it.
+source.zone_field = {
+	seed_domain = "r22-zones:",
+	-- Composed warp steps (periods and per-component amplitudes in nodes). Keep
+	-- every step at amp * 7.3 * sqrt(2) / period < 0.8: that is the no-fold
+	-- guarantee, so re-tune amplitudes only under this bound.
+	warp_periods = {3000, 1800, 1000, 450, 200, 90, 40},
+	warp_amps = {150, 70, 40, 22, 12, 5, 2.5},
+	-- small-scale coast irregularity added to the signed distance (nodes)
+	coast_periods = {480, 220, 90, 36},
+	coast_amps = {50, 45, 16, 4},
+	-- power weight (node^2) of the four Battlegrounds zones
+	front_bias = -160000,
+	-- land joining the two mainland fronts (replaces the old front rectangle)
+	front_band = {min_x = -2520, max_x = 2520, min_z = -300, max_z = 300, radius = 160},
+	-- Segment sites {x_from, x_to[, z]}: the Battlegrounds zones on z = 0 and the
+	-- six frontier zones on their hub rows, so the front stays one band and no
+	-- Elandor zone touches a Kragmar zone.
+	front_segments = {[34] = {-2450, -1425}, [35] = {-1325, -50},
+		[36] = {50, 1325}, [37] = {1425, 2450},
+		[5] = {-2250, -1350, -700}, [10] = {-450, 450, -700}, [16] = {1350, 2250, -700},
+		[21] = {-2250, -1350, 700}, [26] = {-450, 450, 700}, [32] = {1350, 2250, 700}},
+	-- extra power weight (node^2): the side zones between a capital and the
+	-- coast would otherwise be squeezed into coastal slivers
+	zone_bias = {[4] = 60000, [15] = 60000, [20] = 60000, [31] = 60000, [25] = 30000},
+	-- anchor keeping (one construction pass)
+	zone_margin = 24,       -- nodes a key-point footprint sits inside its zone
+	land_margin = 16,       -- nodes a key-point footprint sits above the coast
+	bulge_falloff = 140,    -- nodes from footprint edge to zero bulge
+	bonus_falloff = 220,    -- nodes from footprint edge to zero land bonus
+	landing_damp = 0.15, landing_damp_r0 = 120, landing_damp_falloff = 380,
+	island_damp = 0.05, island_damp_r0 = 320, island_damp_falloff = 420,
+	-- dragon islands: polygon scale towards the hub, coast-noise factor, envelope
+	island_scale = 0.85, island_noise = 0.5,
+	island_envelope = {half_x = 300, half_z = 350, radius = 140},
+	-- construction self-check (rough targets) and its weaker-warp fallback
+	check = {grid = 24, inland_cells = 2, coast_cells = 24, min_strait = 104,
+		min_x = -3600, max_x = 3600, min_z = -3200, max_z = 3200,
+		strait_from = 2200, strait_to = 3450},
+	fallback_scales = {1, 0.8, 0.6, 0.4, 0.2, 0},
+	-- gameplay neighbours: zones sharing at least this much land border (D14),
+	-- counted on a grid of this spacing
+	neighbor_grid = 16, neighbor_min_border = 64,
+	-- coastal housing areas: own-zone land up to this far from the coast
+	coastal_housing_depth = 300,
+	-- biome dither at zone borders: jitter amplitude and period (nodes), and
+	-- the border band (warped-space nodes) where the palette zone is re-looked up
+	biome_dither = {amplitude = 24, period = 18, band = 40},
+}
+
+-- LEGACY until Round 22 Phases 4/5 (roads v2, water v2): the route, station,
+-- spur, crossing, island-route, ingress, landmark and hydrology tables below
+-- are no longer part of the horizontal world. The horizontal session, the
+-- zone authority and the settlement exclusions ignore them. No hydrology row
+-- names a civic core zone any more, so no civic water is classified either:
+-- the Kezamba cenote, the Lethariel lake, Highcourt's river arms and the
+-- Dawnmere and Sunscar ponds all return with Phase 5 (user ruling
+-- 2026-09-25). They stay because the
+-- pre-Round-22 height stack and the R5 feature-id tables still read them;
+-- Phases 4/5 replace them.
 source.route_profiles = {
 	primary = {surface_width=7,corridor_width=16,
 		grade_preference="natural_surface_low_edge_v1"},
@@ -578,6 +634,20 @@ source.housing_masks = {
 	{id="housing_kragmar_speargrass",zone_numeric_id=25,polygon=polygon(point(-1360,1140),point(-440,1140),point(-440,1860),point(-1360,1860))},
 	{id="housing_kragmar_whispering",zone_numeric_id=30,polygon=polygon(point(440,1140),point(1360,1140),point(1360,1860),point(440,1860))},
 }
+-- The four coastal housing areas (world_zones.md §7.5, D21, D24): the layout
+-- authors only an approximate stretch; the exact mask is the zone's own land
+-- within `zone_field.coastal_housing_depth` of the finished coast inside this
+-- window. The window spans the zone's rows from the bay to past the outer
+-- coast, because the per-seed borders can hand either coast to a neighbour.
+local coastal_housing_windows = {
+	housing_elandor_copperfell={min_x=-2900,max_x=-900,min_z=-2500,max_z=-1900},
+	housing_elandor_starbough={min_x=900,max_x=2900,min_z=-2500,max_z=-1900},
+	housing_kragmar_mournfen={min_x=-2900,max_x=-900,min_z=1900,max_z=2500},
+	housing_kragmar_raincall={min_x=900,max_x=2900,min_z=1900,max_z=2500},
+}
+for _, mask in ipairs(source.housing_masks) do
+	mask.coastal_window = coastal_housing_windows[mask.id]
+end
 
 source.coastal_housing_cores = {
 	{id="coastal_core_copperfell",shape="vertical_capsule_v1",zone_numeric_id=2,housing_mask_id="housing_elandor_copperfell",landmark_id="copperfell_coastal_terraces",frontage_min=600,inland_depth_min=300,relief_max=12},
@@ -1032,25 +1102,25 @@ end
 source.hydrology = {
 	hydro("hydro_copperfell_streams","copperfell_drainage",2,"stream",18,{{x=-2320,z=-1780,half_width=18},{x=-2260,z=-1880,half_width=20},{x=-2150,z=-1950,half_width=22},{x=-2010,z=-2040,half_width=24},{x=-1850,z=-2100,half_width=26},{x=-1650,z=-2160,half_width=28},{x=-1450,z=-2140,half_width=30},{x=-1260,z=-2070,half_width=32},{x=-1060,z=-2020,half_width=34}},"copperfell_spring","copperfell_sink"),
 	hydro("hydro_frostbarrow_tarns","frostbarrow_tarns",4,"shallow_pond",62,{{x=-2440,z=-1710,half_width=35},{x=-2380,z=-1670,half_width=60},{x=-2300,z=-1680,half_width=72},{x=-2220,z=-1740,half_width=54},{x=-2180,z=-1800,half_width=34}},"frostbarrow_inflow","frostbarrow_basin"),
-	hydro("hydro_dawnmere_headwaters","dawnmere_headwaters",6,"spring",12,{{x=70,z=-2440,half_width=30},{x=115,z=-2400,half_width=48},{x=180,z=-2410,half_width=55},{x=225,z=-2460,half_width=34}},"dawnmere_spring","dawnmere_outflow",6),
+	hydro("hydro_dawnmere_headwaters","dawnmere_headwaters",6,"spring",12,{{x=70,z=-2440,half_width=30},{x=115,z=-2400,half_width=48},{x=180,z=-2410,half_width=55},{x=225,z=-2460,half_width=34}},"dawnmere_spring","dawnmere_outflow"),
 	hydro("hydro_goldmead_millriver","goldmead_millriver",7,"river",16,{{x=-80,z=-2250,half_width=22},{x=-20,z=-2140,half_width=23},{x=60,z=-2020,half_width=24},{x=20,z=-1900,half_width=24},{x=-100,z=-1780,half_width=24}},"goldmead_upstream","goldmead_downstream"),
-	hydro("hydro_highcourt_fork_west","highcourt_riverfork",8,"river",34,{{x=-100,z=-1780,half_width=24},{x=-170,z=-1680,half_width=25},{x=-180,z=-1580,half_width=26},{x=-100,z=-1460,half_width=25},{x=0,z=-1320,half_width=24}},"highcourt_west_source","highcourt_fork_join",8),
-	hydro("hydro_highcourt_fork_east","highcourt_riverfork",8,"river",34,{{x=500,z=-1850,half_width=18},{x=410,z=-1750,half_width=20},{x=300,z=-1670,half_width=22},{x=180,z=-1510,half_width=23},{x=0,z=-1320,half_width=24}},"highcourt_east_source","highcourt_fork_join",8),
-	hydro("hydro_highcourt_outflow","highcourt_riverfork",8,"river",34,{{x=0,z=-1320,half_width=24},{x=120,z=-1100,half_width=22}},"highcourt_fork_join","highcourt_outflow",8),
+	hydro("hydro_highcourt_fork_west","highcourt_riverfork",8,"river",34,{{x=-100,z=-1780,half_width=24},{x=-170,z=-1680,half_width=25},{x=-180,z=-1580,half_width=26},{x=-100,z=-1460,half_width=25},{x=0,z=-1320,half_width=24}},"highcourt_west_source","highcourt_fork_join"),
+	hydro("hydro_highcourt_fork_east","highcourt_riverfork",8,"river",34,{{x=500,z=-1850,half_width=18},{x=410,z=-1750,half_width=20},{x=300,z=-1670,half_width=22},{x=180,z=-1510,half_width=23},{x=0,z=-1320,half_width=24}},"highcourt_east_source","highcourt_fork_join"),
+	hydro("hydro_highcourt_outflow","highcourt_riverfork",8,"river",34,{{x=0,z=-1320,half_width=24},{x=120,z=-1100,half_width=22}},"highcourt_fork_join","highcourt_outflow"),
 	hydro("hydro_whitebridge_main","whitebridge_crossing",9,"river",16,{{x=-1060,z=-2020,half_width=26},{x=-1040,z=-1900,half_width=25},{x=-980,z=-1800,half_width=24},{x=-850,z=-1680,half_width=23},{x=-700,z=-1600,half_width=22},{x=-540,z=-1530,half_width=21},{x=-400,z=-1500,half_width=20}},"whitebridge_upstream","whitebridge_downstream"),
 	hydro("hydro_whitebridge_ford","whitebridge_ford",9,"ford",16,{{x=-900,z=-1100,half_width=18},{x=-850,z=-1140,half_width=18},{x=-820,z=-1180,half_width=18},{x=-760,z=-1230,half_width=18},{x=-720,z=-1260,half_width=18},{x=-560,z=-1400,half_width=19},{x=-400,z=-1500,half_width=20}},"whitebridge_ford_upstream","whitebridge_ford_downstream"),
-	hydro("hydro_lethariel_lake","lethariel_crownlake",13,"ordinary_lake",34,{{x=1800,z=-1440,half_width=38},{x=1840,z=-1390,half_width=62},{x=1900,z=-1380,half_width=78},{x=1960,z=-1420,half_width=68},{x=1990,z=-1480,half_width=42}},"lethariel_inflow","lethariel_outflow",13),
+	hydro("hydro_lethariel_lake","lethariel_crownlake",13,"ordinary_lake",34,{{x=1800,z=-1440,half_width=38},{x=1840,z=-1390,half_width=62},{x=1900,z=-1380,half_width=78},{x=1960,z=-1420,half_width=68},{x=1990,z=-1480,half_width=42}},"lethariel_inflow","lethariel_outflow"),
 	hydro("hydro_lorindor_marsh","lorindor_berrymarsh",14,"shallow_marsh",28,{{x=1930,z=-1420,half_width=24},{x=1810,z=-1490,half_width=26},{x=1700,z=-1550,half_width=28},{x=1570,z=-1600,half_width=29},{x=1450,z=-1650,half_width=30},{x=1320,z=-1710,half_width=35},{x=1200,z=-1770,half_width=40},{x=1100,z=-1880,half_width=36},{x=1020,z=-1990,half_width=32}},"lorindor_inflow","lorindor_sink"),
 	hydro("hydro_moonfall_lake","moonfall_crescent",15,"ordinary_lake",18,{{x=2260,z=-1540,half_width=42},{x=2310,z=-1470,half_width=68},{x=2400,z=-1440,half_width=84},{x=2490,z=-1480,half_width=72},{x=2540,z=-1560,half_width=44}},"moonfall_inflow","moonfall_outflow"),
 	hydro("hydro_mournfen_marsh","mournfen_drowned_roads",18,"shallow_marsh",8,{{x=-2380,z=1750,half_width=30},{x=-2280,z=1810,half_width=36},{x=-2200,z=1900,half_width=45},{x=-2140,z=2010,half_width=54},{x=-2050,z=2100,half_width=60},{x=-1850,z=2160,half_width=54},{x=-1600,z=2150,half_width=45},{x=-1330,z=2080,half_width=39},{x=-1060,z=2010,half_width=34}},"mournfen_inflow","mournfen_sink"),
-	hydro("hydro_sunscar_waterholes","sunscar_waterholes",22,"shallow_pond",12,{{x=170,z=2470,half_width=34},{x=220,z=2425,half_width=58},{x=290,z=2420,half_width=68},{x=350,z=2470,half_width=42}},"sunscar_seep","sunscar_basin",22),
+	hydro("hydro_sunscar_waterholes","sunscar_waterholes",22,"shallow_pond",12,{{x=170,z=2470,half_width=34},{x=220,z=2425,half_width=58},{x=290,z=2420,half_width=68},{x=350,z=2470,half_width=42}},"sunscar_seep","sunscar_basin"),
 	hydro("hydro_speargrass_dryriver","speargrass_dryriver",25,"dry_channel",28,{{x=-1100,z=1900,half_width=18},{x=-1000,z=1700,half_width=18},{x=-900,z=1500,half_width=18},{x=-780,z=1300,half_width=18}},"speargrass_dry_head","speargrass_dry_mouth"),
 	hydro("hydro_raincall_headwater","raincall_falls",28,"shallow_pond",72,{{x=1850,z=2280,half_width=42},{x=1880,z=2250,half_width=70},{x=1930,z=2200,half_width=65},{x=1960,z=2140,half_width=40}},"raincall_headwater","raincall_upper_rapid"),
 	hydro("hydro_raincall_upper_lip","raincall_falls",28,"shallow_pond",68,{{x=1960,z=2140,half_width=40},{x=1990,z=2110,half_width=38}},"raincall_upper_rapid","raincall_upper_lip"),
 	hydro("hydro_raincall_middle_upper","raincall_falls",28,"shallow_pond",56,{{x=1990,z=2070,half_width=34},{x=2020,z=2040,half_width=32}},"raincall_upper_drop","raincall_middle_rapid"),
 	hydro("hydro_raincall_middle_lip","raincall_falls",28,"shallow_pond",52,{{x=2020,z=2040,half_width=32},{x=2050,z=2010,half_width=38}},"raincall_middle_rapid","raincall_lower_lip"),
 	hydro("hydro_raincall_plunge","raincall_falls",28,"plunge_pool",44,{{x=2050,z=1970,half_width=45},{x=2130,z=1900,half_width=70}},"raincall_lower_drop","raincall_outflow"),
-	hydro("hydro_kezamba_cenote","kezamba_cenote",29,"deep_cenote",64,{{x=1810,z=1600,half_width=42},{x=1850,z=1560,half_width=68},{x=1910,z=1565,half_width=75},{x=1960,z=1610,half_width=48}},"kezamba_inflow","kezamba_cenote_sink",29),
+	hydro("hydro_kezamba_cenote","kezamba_cenote",29,"deep_cenote",64,{{x=1810,z=1600,half_width=42},{x=1850,z=1560,half_width=68},{x=1910,z=1565,half_width=75},{x=1960,z=1610,half_width=48}},"kezamba_inflow","kezamba_cenote_sink"),
 	hydro("hydro_whispering_reedmaze","whispering_reedmaze",30,"shallow_marsh",8,{{x=2130,z=1900,half_width=34},{x=1940,z=1890,half_width=33},{x=1750,z=1850,half_width=32},{x=1560,z=1825,half_width=35},{x=1350,z=1770,half_width=40},{x=1170,z=1710,half_width=43},{x=1000,z=1650,half_width=45}},"reedmaze_inflow","reedmaze_outflow"),
 	hydro("hydro_totemwater_delta","totemwater_delta",31,"delta_arm",8,{{x=1000,z=1650,half_width=45},{x=990,z=1750,half_width=50},{x=950,z=1850,half_width=55},{x=920,z=1920,half_width=62},{x=900,z=1980,half_width=70}},"totemwater_upstream","totemwater_mouth"),
 	hydro("hydro_gravesalt_pans","gravesalt_whitewall",34,"shallow_marsh",100,{{x=-2200,z=0,half_width=55},{x=-2080,z=-20,half_width=66},{x=-1950,z=0,half_width=75},{x=-1820,z=45,half_width=64},{x=-1700,z=80,half_width=50}},"gravesalt_seep","gravesalt_pan"),
