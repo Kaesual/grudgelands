@@ -19,14 +19,14 @@ local CACHE_PNG = core.get_worldpath() .. "/grug_map_base.png"
 local CACHE_KEY = core.get_worldpath() .. "/grug_map_base.key"
 -- 9:8 like the atlas bounds; 6.67 nodes per pixel.
 local WIDTH, HEIGHT = 1080, 960
--- Relief costs one terrain_height_at per grid node. The real grids are
--- sampled coarse to fine under this total time budget: a grid that runs out of
--- budget is abandoned, a finer one is only started when four times the last
--- grid's time still fits, and the finest completed grid wins. With no
--- completed grid the map has no relief.
-local RELIEF_BUDGET_US = (tonumber(core.settings:get("grug_map_relief_budget"))
-	or 6) * 1000000
-local RELIEF_STEPS = {64, 32, 16}
+-- Relief samples terrain_height_at on one fixed grid, the same on every
+-- server (Round 22 D29: hardware never changes what is produced). 8 nodes is
+-- about one map pixel (6.67 nodes); measured 2026-09-25 on seed
+-- 15140735923413111218 at ~22 s for the 901x801 grid (~24 s for the whole
+-- base; 16 nodes would be ~6 s), paid once per world because the image is
+-- cached. The step is part of this file's source and
+-- therefore of the cache key, so changing it re-renders cached bases.
+local RELIEF_STEP = 8
 -- Shown if rendering fails: plain sea, so the markers stay usable.
 local FALLBACK_TEXTURE = "[fill:90x80:#1c3a52"
 
@@ -139,36 +139,19 @@ local function new_canvas(view, pixels)
 	return canvas
 end
 
--- Heights on the grid of one step, or nil once `deadline` (us) has passed.
-local function height_grid(zones, view, step, deadline)
+-- Hillshade factor grid on the fixed relief step.
+local function relief_grid(zones, view)
+	local step = RELIEF_STEP
 	local nx = math.ceil((view.max_x - view.min_x) / step) + 1
 	local nz = math.ceil((view.max_z - view.min_z) / step) + 1
 	local heights = {}
 	for gz = 0, nz - 1 do
-		if core.get_us_time() > deadline then return nil end
 		local z = view.max_z - gz * step
 		for gx = 0, nx - 1 do
 			heights[gz * nx + gx + 1] =
 				zones.terrain_height_at(view.min_x + gx * step, z)
 		end
 	end
-	return heights, nx, nz
-end
-
--- Coarse hillshade factor grid, or nil when no grid fits the budget.
-local function relief_grid(zones, view)
-	local started = core.get_us_time()
-	local deadline = started + RELIEF_BUDGET_US
-	local heights, nx, nz, step
-	for index = 1, #RELIEF_STEPS do
-		local before = core.get_us_time()
-		local grid, gx, gz = height_grid(zones, view, RELIEF_STEPS[index], deadline)
-		if not grid then break end
-		heights, nx, nz, step = grid, gx, gz, RELIEF_STEPS[index]
-		local now = core.get_us_time()
-		if now + 4 * (now - before) > deadline then break end
-	end
-	if not heights then return nil end
 	-- Light from the north-west (map top-left): a slope rising toward +x or
 	-- falling toward +z faces it. Central differences; row gz grows southward.
 	local shade = {}
@@ -234,7 +217,7 @@ local function render(zones, view)
 	for class, color in pairs(WATER) do water_colors[class] = pack(color) end
 	local coast = pack(COAST)
 	for j = 0, HEIGHT - 1 do
-		local fz = relief and (j + 0.5) * scale_z / relief.step
+		local fz = (j + 0.5) * scale_z / relief.step
 		for i = 0, WIDTH - 1 do
 			local index = j * WIDTH + i + 1
 			local class = water[index]
@@ -247,8 +230,7 @@ local function render(zones, view)
 				pixels[index] = coast
 			else
 				local id = owner[index]
-				local factor = relief and
-					relief_at(relief, (i + 0.5) * scale_x / relief.step, fz) or 1
+				local factor = relief_at(relief, (i + 0.5) * scale_x / relief.step, fz)
 				local right = i < WIDTH - 1 and owner[index + 1]
 				local below = j < HEIGHT - 1 and owner[index + WIDTH]
 				if (right and right ~= id) or (below and below ~= id) then
@@ -287,10 +269,10 @@ local function render(zones, view)
 	local png = core.encode_png(WIDTH, HEIGHT, table.concat(rows), 9)
 	local finished = core.get_us_time()
 	core.log("action", ("[grug_map] rendered world map base %dx%d in %.2f s " ..
-		"(zones/water %.2f s, relief %s %.2f s, colour+encode %.2f s, %d bytes)"):
+		"(zones/water %.2f s, relief step %d %.2f s, colour+encode %.2f s, %d bytes)"):
 		format(WIDTH, HEIGHT, (finished - started) / 1e6,
 		(classified - started) / 1e6,
-		relief and ("step " .. relief.step) or "skipped (over budget)",
+		relief.step,
 		(shaded - classified) / 1e6, (finished - shaded) / 1e6, #png))
 	return png
 end
@@ -302,7 +284,7 @@ local function cache_key(zones, view)
 	local file = assert(io.open(SOURCE_PATH, "rb"), "cannot read " .. SOURCE_PATH)
 	local source_bytes = file:read("*a")
 	file:close()
-	local parts = {core.sha256(source_bytes), RELIEF_BUDGET_US,
+	local parts = {core.sha256(source_bytes),
 		tostring(core.get_mapgen_setting("seed"))}
 	local mapgen = rawget(_G, "grug_mapgen")
 	local wp40 = type(mapgen) == "table" and mapgen.wp40

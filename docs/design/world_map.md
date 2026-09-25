@@ -14,9 +14,12 @@ Decided 2026-09-21; Round 14 user Go.
   (coarse sampling, `core.encode_png`), caches it in the world directory and
   sends it to clients as dynamic media. Markers stay separate as before.
   The base shows land/water, zone areas in race-region colours with borders
-  and, where the height query is cheap enough, a light hillshade; roads join
-  it in Phase 4. It carries no text: the region names are a label layer
-  under the markers. No pre-rendered atlas image ships.
+  and a light hillshade; roads join it in Phase 4. The hillshade samples
+  terrain height on one fixed 8-node grid on every server (D29: no time
+  budget, hardware never changes the image); that costs about 24 s once per
+  world at first start, then the cached image is reused. It carries no text:
+  the region names are a label layer under the markers. No pre-rendered atlas
+  image ships.
 - Separate the shared map base from marker records and world-to-screen mapping.
   Markers must remain extensible for hover tooltips and/or click actions; do not
   bake labels and all marker semantics irreversibly into one raster.
