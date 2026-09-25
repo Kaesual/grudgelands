@@ -1311,9 +1311,6 @@ local function zones_factory(dependencies)
 			function planner_source.surface_cave_constants()
 				return surface_caves.constants()
 			end
-			function planner_source.coast_profile_at(x, z)
-				return height.coast_profile_at(x, z)
-			end
 			function planner_source.coast_material_at(x, z)
 				return height.coast_material_at(x, z)
 			end

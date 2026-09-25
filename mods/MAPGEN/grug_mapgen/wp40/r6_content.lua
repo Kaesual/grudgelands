@@ -1,26 +1,5 @@
 -- Closed WP40 R6 catalogs and injected content-contract validation.
 
-local function coast_surface_rule(profile, freshwater, distance)
-	if profile ~= "beach" and profile ~= "bluff" and profile ~= "cliff" and
-			profile ~= "terraced_cliff" then return nil end
-	if profile == "beach" then return "default:sand", "default:sandstone", 3 end
-	if profile == "bluff" then return "biome_lip", "default:gravel", 3 end
-	return "biome_lip", "default:stone", 3
-end
-
-local function coast_profile_applies(profile, distance, width, freshwater)
-	return profile ~= nil and distance <= width
-end
-
--- Sand follows the final height, not the selected run's unblended label.
--- The half-node-per-column envelope admits broad beaches but excludes their
--- high lateral cliff blends. No repeated neighbor/height lookup is required.
-local function low_sand_surface(terrain_y, water_y, distance, freshwater)
-	local maximum = freshwater and 4 or 12
-	if distance then maximum = math.min(maximum, 2 + math.floor(distance / 2)) end
-	return terrain_y <= water_y + maximum
-end
-
 local function wet_bed_names(id, bed)
 	if id == "grug_swamp" then
 		return {bed, bed, "default:gravel", "default:stone"}
@@ -638,7 +617,7 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 		for index = 1, #full_seed do
 			phase = (phase * 131 + string.byte(full_seed, index)) % 65521
 		end
-		local variants, coast_variants = {}, {}
+		local variants, sand_shores = {}, {}
 		local wet_variants, beach_shores, rocky_shores = {}, {}, {}
 		local function ordinary_filler(id, base)
 			if id == "grug_beach" then return "default:sand" end
@@ -692,16 +671,12 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 			row.dust, row.dust_ref = "-", 0
 			return row
 		end
+		-- Near-water materials (world_zones.md §7.4): sand over sandstone, or a
+		-- gravel / stone shore; `coast_material_at` picks one from the terrain.
+		local sandstone = content_ref_by_name["default:sandstone"] and
+			"default:sandstone" or "default:stone"
 		for id, base in pairs(surface_by_id) do
-			local lip = ordinary_filler(id, base)
-			local sandstone = content_ref_by_name["default:sandstone"] and
-				"default:sandstone" or "default:stone"
-			coast_variants[id] = {
-				beach = coast_row(base, "default:sand", sandstone, 3),
-				bluff = coast_row(base, lip, "default:gravel", 3),
-				cliff = coast_row(base, lip, "default:stone", 3),
-				terraced_cliff = coast_row(base, lip, "default:stone", 3),
-			}
+			sand_shores[id] = coast_row(base, "default:sand", sandstone, 3)
 		end
 		for id, base in pairs(surface_by_id) do
 			rocky_shores[id] = {}
@@ -744,38 +719,19 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 		return function(id, x, z, water_y, terrain_y)
 			local base = surface_by_id[id]
 			if not base then return nil end
-			local profile, distance, width, freshwater, run_key, target, profile_relief, shore_water
-			if type(planner_source.coast_profile_at) == "function" then
-				profile, distance, width, freshwater, run_key, target, profile_relief, shore_water =
-					planner_source.coast_profile_at(x, z)
-			end
-			local relief = planner_source.primary_relief_at and
-				planner_source.primary_relief_at(x, z)
 			local dry = water_y == nil or water_y <= terrain_y
-			if dry and (relief == "mountain" or relief == "highland" or
-					relief == "plateau") then
-				local material_profile, material_distance, material_width, material_fresh =
-					profile, distance, width, freshwater
-				if not material_profile and planner_source.coast_material_at then
-					material_profile, material_distance, material_width, material_fresh =
-						planner_source.coast_material_at(x, z)
-				end
-				local rim = coast_profile_applies(material_profile, material_distance,
-					material_width, material_fresh)
-				if (relief == "mountain" and (id == "grug_beach" or rim)) or
-						(material_fresh and rim) then
-					local detail = noise(x, z, 8, 29712151)
-					local patch = math.floor((3 * noise(x, z, 32, 19349663) + detail) / 4)
+			local shore = dry and planner_source.coast_material_at(x, z) or nil
+			if shore == "sand" then return sand_shores[id] end
+			if shore then return rocky_shores[id][shore == "gravel" and 1 or 2] end
+			-- The palette beach biome away from the shore: no sand on mountain
+			-- land or high ground.
+			if dry and id == "grug_beach" then
+				if planner_source.primary_relief_at(x, z) == "mountain" then
+					local patch = math.floor((3 * noise(x, z, 32, 19349663) +
+						noise(x, z, 8, 29712151)) / 4)
 					return rocky_shores[id][patch < 512 and 1 or 2]
 				end
-			end
-			if dry and (profile == "beach" or id == "grug_beach") and
-					not low_sand_surface(terrain_y, shore_water or water_y or 1,
-						distance, freshwater) then
-				return rocky_shores[id][2]
-			end
-			if coast_profile_applies(profile, distance, width, freshwater) then
-				return coast_variants[id][profile]
+				if terrain_y > (water_y or 1) + 12 then return rocky_shores[id][2] end
 			end
 			local detail = noise(x, z, 8, 29712151)
 			local patch = math.floor((3 * noise(x, z, 32, 19349663) + detail) / 4)
@@ -817,9 +773,6 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 			return variants[id][kind][depth]
 		end
 	end
-	function module.coast_surface_rule(profile, freshwater, distance)
-		return coast_surface_rule(profile, freshwater, distance)
-	end
 	function module.resource(key) return deep_copy(resource_by_key[key]) end
 	function module.cultural_for_race(race) return deep_copy(cultural_by_race[race]) end
 	function module.cultural_for_key(key) return deep_copy(cultural_by_key[key]) end
@@ -835,5 +788,4 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 	return module
 end
 
-return content_factory, coast_surface_rule, {coast_profile_applies = coast_profile_applies, low_sand_surface = low_sand_surface,
-	wet_bed_names = wet_bed_names}
+return content_factory

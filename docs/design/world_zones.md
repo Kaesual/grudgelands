@@ -421,21 +421,18 @@ replaced; git history before this rewrite records that model.
 - Wet beds use deterministic patches of their bed material, sand, gravel and
   stone; mud remains the dominant swamp bed. Dry continental beaches are
   mostly sand with sparse gravel.
-- **Coast profiles (2026-09-18):** shore runs choose between beach, bluff,
-  cliff and terraced cliff. Ordinary sea runs target 40% beach, 25% bluff, 20%
-  cliff and 15% terraced cliff. Freshwater and low-relief sea runs select only
-  beach or bluff. The first dry bank column stays at water level. Behind it,
-  beaches rise between 1:4 and 1:8 through a 4–10-node sand band; bluffs rise
-  at 1:1 or 2:1 with a gravel/stone face and a biome-soil lip; cliffs have an
-  irregular top edge, may lean back and may expose ledges; terraced cliffs use
-  two or three 3–5-node steps. Start cores, capital envelopes, coastal housing
-  areas, roads, crossings and civic water keep their own grade and material
-  priority.
-- **Near-water materials (2026-09-20):** eligible sea beaches use sand above
-  three sandstone filler nodes. Freshwater beach bands remain local shore
-  lips. Mountain coasts, including both dragon islands, have no dry beach
-  sand; their beach patches use stone and gravel. Plateau, highland and
-  mountain freshwater rims use stone or gravel rather than biome soil or sand.
+- **Coast shape (Round 22, D27):** the coast takes its shape from the
+  terrain field alone: it mostly ramps gently to the water, with occasional
+  steep coasts. There are no geometric coast profiles, runs or fixed beach
+  slopes.
+- **Near-water materials (Round 22, D27):** one rule derived from the final
+  terrain, near the water. Low, gentle ground within roughly 40 nodes of the
+  water is sand above three sandstone filler nodes, with sparse gravel. Steep
+  ground at the water and the edges of cliffs are gravel or stone. Mountain
+  land, including both dragon islands, never gets dry sand. The height,
+  slope and reach limits are jittered by noise, so material edges follow the
+  terrain and never run straight. Lake and river banks (Phase 5) reuse the
+  same rule with their own water surface.
 - **Shore height:** the first cardinal dry-land column beside any exposed
   water surface has its terrain surface at exactly the water-surface y (§2).
   No dry shore column ends below its neighboring water surface. Bridges,

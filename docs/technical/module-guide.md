@@ -697,11 +697,12 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   The unchanged underground term already supplies three integer threshold
   steps per uncapped 50-node window, and `mob_level_at` remains
   `max(surface, depth)`.
-  **R8-MAP-A terrain seams (2026-09-18):** `height.lua` owns 48-node coast-run
-  identity split by stable water/relief class, one seeded profile per identity
-  and bounded height blending behind the exact first dry bank. `r6_content.lua`
-  owns the corresponding beach/bluff/cliff surface rows and is the only new
-  source of dry near-water sand; ordinary wet-bed sand remains unchanged.
+  **Near-water materials (Round 22 D27):** the R8-MAP-A coast runs and
+  profiles are retired. `height.lua` derives `coast_material_at` (sand,
+  gravel, stone or nil) from the final terrain and exposes the same rule as
+  `bank_material_at(x, z, water_y, distance)` for Phase 5 banks.
+  `r6_content.lua` maps it to surface rows and is the only source of dry
+  near-water sand; ordinary wet-bed sand remains unchanged.
   `r6_settlement.lua` owns shallow filler/stone-only strata and the final cave
   transaction. `zones.lua` publishes 80-node owner-local cave candidates but
   never an offline cut; the writer carves only after immutable native-v7 air

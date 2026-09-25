@@ -707,7 +707,7 @@ local function settlement_factory()
 				type(planner_source.surface_cave_run_at) ~= "function" or
 				type(planner_source.surface_cave_candidate_at_cell) ~= "function" or
 				type(planner_source.surface_cave_cell_at) ~= "function" or
-				type(planner_source.coast_profile_at) ~= "function" or
+				type(planner_source.coast_material_at) ~= "function" or
 				type(planner_source.landmark_excluded_at) ~= "function" or
 				type(source) ~= "table" or
 				(successor_tail ~= nil and (type(successor_tail) ~= "table" or
