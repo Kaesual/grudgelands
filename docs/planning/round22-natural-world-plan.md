@@ -157,6 +157,7 @@ Added at the Phase 0/1 gates (2026-09-25):
 | D23 | **Phase 1 text approved.** | User. |
 | D24 | **Coast and zone borders vary per world seed.** Hubs, anchors and the macro silhouette stay fixed; anchors stay in their zone and on land by construction; a construction-time self-check falls back to a weaker warp on failure. The server renders the world map per world at first start. Coast-dependent content (river mouths, boat routes, landings, coastal housing) is derived from the coast rather than hand-placed. | User, after the coordinator's risk estimate: small risk, little extra work, and the map must be rendered per world anyway because roads depend on seed-dependent terrain. |
 | D25 | **Terrain direction B accepted; option C (coarse erosion) deferred.** The prototype look (variant B base plus two continental mountain ranges and hill country) is the target; ruggedness is judged in the playtest. C may return after the playtest if valleys are missing. | User, 2026-09-25, on the round-2 prototype images. |
+| D26 | **Civic water split.** Water that is part of a capital's own architecture (Kezamba cenote, Lethariel crown lake) stays with its city through Phase 3. Landscape water inside cities and starts (Highcourt river arms, Dawnmere and Sunscar ponds) is dropped in Phase 3 and returns in Phase 5, connected to the natural water network (a real river runs through Highcourt). | User question, coordinator recommendation, 2026-09-25. |
 
 All §9 questions are answered.
 
