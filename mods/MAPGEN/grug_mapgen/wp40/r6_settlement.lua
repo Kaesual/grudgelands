@@ -710,6 +710,7 @@ local function settlement_factory()
 				type(planner_source.coast_material_at) ~= "function" or
 				type(planner_source.river_water_in) ~= "function" or
 				type(planner_source.landmark_excluded_at) ~= "function" or
+				type(planner_source.overlay_exclusion_at) ~= "function" or
 				type(source) ~= "table" or
 				(successor_tail ~= nil and (type(successor_tail) ~= "table" or
 					type(successor_tail.settle) ~= "function")) then
@@ -779,14 +780,29 @@ local function settlement_factory()
 				evidence_stable_ref[id] = index
 			end
 		end
+		-- Exclusion reasons by kind: routes, water and coast are
+		-- `route_or_water`, every other kind (anchor envelopes, active cores)
+		-- `fixed_or_protected`. The static rows take their kind from their
+		-- recipe; the overlay kinds come from the planner source (inland water
+		-- and its banks, stale-rule R5; Phase 4 adds the road corridor).
+		local ROUTE_OR_WATER_KIND = {route_corridor = true, planned_water = true,
+			coast = true, inland_water = true, water_bank = true}
+		local recipe_kind = {}
+		for index = 1, #(source.claim_exclusion_recipes or {}) do
+			local recipe = source.claim_exclusion_recipes[index]
+			recipe_kind[recipe.id] = recipe.kind
+		end
 		local exclusion_reason_by_id = {}
 		for index = 1, #(source.claim_exclusions or {}) do
 			local row = source.claim_exclusions[index]
-			local reason = (row.recipe_id == "exclude_route_corridor_v1" or
-				row.recipe_id == "exclude_planned_water_v1" or
-				row.recipe_id == "exclude_coast_v1") and "route_or_water" or
-				"fixed_or_protected"
-			exclusion_reason_by_id[row.id] = reason
+			local kind = recipe_kind[row.recipe_id]
+			if not kind then fail("fail_settlement", "exclusion recipe differs") end
+			exclusion_reason_by_id[row.id] = ROUTE_OR_WATER_KIND[kind] and
+				"route_or_water" or "fixed_or_protected"
+		end
+		local overlay_exclusion_id = {}
+		for kind in pairs(ROUTE_OR_WATER_KIND) do
+			overlay_exclusion_id[kind] = "exclude:" .. kind
 		end
 		-- `purpose` is the exclusion-set selector of
 		-- `simple_map.lua`'s `static_exclusion_values_at`. Everything that claims,
@@ -800,7 +816,7 @@ local function settlement_factory()
 		-- the 128-node build envelope, the road corridors, planned water and the
 		-- coast projection, so the pad, the blueprint volume and the road surfaces
 		-- stay clear.
-		local function exclusion_reason(x, z, purpose)
+		local function static_exclusion_reason(x, z, purpose)
 			local _, id = horizontal.static_exclusion_values_at(x, z, purpose)
 			if not id then return nil end
 			local reason = exclusion_reason_by_id[id]
@@ -810,6 +826,20 @@ local function settlement_factory()
 				return "fixed_or_protected", id
 			end
 			return reason, id
+		end
+		-- The territory rule (purpose nil) adds the overlay kinds after the
+		-- static shapes: a wet river or lake column is "exclude:inland_water",
+		-- dry land within two nodes of one "exclude:water_bank" (stale-rule
+		-- R5). Content that seeks a shore (P9G and world-content shore rows)
+		-- ignores the bank id. Vegetation and cave skins never see them.
+		local function exclusion_reason(x, z, purpose)
+			local reason, id = static_exclusion_reason(x, z, purpose)
+			if reason or purpose ~= nil then return reason, id end
+			local kind = planner_source.overlay_exclusion_at(x, z)
+			if kind == nil then return nil end
+			id = overlay_exclusion_id[kind]
+			if not id then fail("fail_settlement", "overlay exclusion kind differs") end
+			return "route_or_water", id
 		end
 		local function housing_excluded_at(x, z)
 			return type(horizontal.housing_mask_id_at) == "function" and
@@ -1039,10 +1069,14 @@ local function settlement_factory()
 						y <= functional_y + 5) then
 				return nil
 			end
-			local seal_min, seal_max = analytic_hydrology_seal(x, z)
-			if seal_min and seal_min <= y and y <= seal_max then return nil end
-			if y < terrain_y then return surface.filler_ref end
 			local wet = water_y ~= nil and water_y > terrain_y
+			-- The seal keeps the ground solid; only the top of a sealed bed or
+			-- bank takes its surface material over it (below).
+			local seal_min, seal_max = analytic_hydrology_seal(x, z)
+			if seal_min and seal_min <= y and y <= seal_max and y ~= terrain_y then
+				return nil
+			end
+			if y < terrain_y then return surface.filler_ref end
 			local name = wet and surface.bed or
 				(biome == "grug_beach" and surface.shore or surface.top)
 			return content.content_ref(name)
@@ -1684,7 +1718,7 @@ local function settlement_factory()
 			for z = min_z, min_z + 15 do
 				for x = min_x, min_x + 15 do
 					local column = (z - min_z) * 16 + (x - min_x) + 1
-					census_column_allowed[column] = exclusion_reason(x, z) == nil and
+					census_column_allowed[column] = static_exclusion_reason(x, z) == nil and
 						analytic_p7_material_ref(x, max_y, z) == nil
 				end
 			end
@@ -1868,6 +1902,7 @@ local function settlement_factory()
 		end
 		helpers = {equal_graph = equal_graph,
 			primary_reason = primary_reason, exclusion_reason = exclusion_reason,
+			static_exclusion_reason = static_exclusion_reason,
 			housing_excluded_at = housing_excluded_at,
 			analytic_p7_material_ref = analytic_p7_material_ref,
 			analytic_p7_support_ref = analytic_p7_support_ref,
@@ -2180,7 +2215,13 @@ local function settlement_factory()
 								functional_feature_id:match("^anchor_%d%d%d$") ~= nil and
 								(water_y == nil or water_y <= terrain_y)
 						end
-						if predecessor == 28 or dry_anchor_grade and predecessor == 22 then
+						-- A sealed river or lake bed (R5 opcode 18) and a sealed
+						-- bank (17) get their surface on top like any natural
+						-- column: bed patches of sand, gravel, stone and swamp mud,
+						-- the near-water shore material or the biome top
+						-- (world_zones.md §7.4; Round 22 Phase 5).
+						if predecessor == 28 or dry_anchor_grade and predecessor == 22 or
+								predecessor == 17 or predecessor == 18 then
 							local opcode = surface_kind == 1 and 4 or
 								(surface_kind == 2 and 3 or 1)
 							write_intent(x, terrain_y, z,
@@ -2391,7 +2432,9 @@ local function settlement_factory()
 			for z = min_z, max_z do
 				for x = min_x, max_x do
 					local column = column_index(x, z)
-					local reason = helpers.exclusion_reason(x, z)
+					-- Only fixed/protected ground matters here, so the overlay
+					-- (water) kinds are not asked.
+					local reason = helpers.static_exclusion_reason(x, z)
 					-- The capital ingress corridors are retired (Round 22, D9).
 					local excluded = reason == "fixed_or_protected"
 					-- Bit 2 is the immutable shallow exclusion. Bit 1 is filled for

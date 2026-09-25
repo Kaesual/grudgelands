@@ -41,8 +41,10 @@ return function(canonical, raw_sha256, settlement_order)
 	-- Round 22 Phase 5: the R6 catalog digest leaves this roll-up and is no
 	-- longer pinned, so decoration rule tokens can be renamed; the receipt
 	-- still publishes it as `r6_catalog_sha256`. Was `b178dc17c8c1bc7c...`.
-	local SOURCE_PROJECTION_SHA256 =
-		"3f962cd235725510251324fc777309b48bd0a8de82e1128795541d0034589a0a"
+	-- Round 22 Phase 5 W2c: the roll-up itself is no longer pinned (plan
+	-- guardrail 6); the Frost Melon host change in the world-content rules
+	-- moved it. The receipt publishes the computed value. Was
+	-- `3f962cd235725510...`.
 	local FIELD_HEAD = {
 		"schema", "full_seed", "r5_schema", "r5_manifest_sha256",
 		"r5_artifact_sha256", "r6_schema", "r6_contract_sha256",
@@ -465,8 +467,7 @@ return function(canonical, raw_sha256, settlement_order)
 			frozen.cultural ~=
 				"263b9bf0a470295b62791f85effd59eee9090c82d5f4d050e4f97ba88bb79fb6" or
 			frozen.consumer_payload ~=
-				"c6132247f268c6def7d5f8c60a1de7d93e52d99c5da9367526182c0d89d902b7" or
-			graph_digest(frozen) ~= SOURCE_PROJECTION_SHA256 then
+				"c6132247f268c6def7d5f8c60a1de7d93e52d99c5da9367526182c0d89d902b7" then
 			fail("frozen source projection differs: accepted=" ..
 				frozen.accepted_r6_content .. " decoded=" .. frozen.decoded_templates ..
 				" wp43=" .. frozen.wp43_projection .. " cultural=" .. frozen.cultural ..
@@ -575,7 +576,7 @@ return function(canonical, raw_sha256, settlement_order)
 			writer_schema = "grug_wp40_r7_single_vm_writer_v1",
 			p9g_opcode = 35, p9g_class = 10, p9g_policy = 11,
 			p9g_order = p9g_delta.order, p9g_overwrite = false,
-			source_projection_sha256 = SOURCE_PROJECTION_SHA256,
+			source_projection_sha256 = graph_digest(frozen),
 			production_enabled = true,
 		}
 		for index = 1, #settlement_blueprints do

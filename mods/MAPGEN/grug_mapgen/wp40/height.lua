@@ -483,7 +483,7 @@ local function height_factory(dependencies)
 				nwater = {}, nkind = {}, nid = {}, bank_d = {}, bank_y = {},
 				near = {}, pre = {}, pkind = {}, pfeature = {}, water = {},
 				wkind = {}, wid = {},
-				terrain = {}, kind = {}, surface = {}, feature = {}}
+				terrain = {}, kind = {}, surface = {}, feature = {}, excl = {}}
 			local old = block_ring[block_cursor]
 			if old then blocks[old.key] = nil end
 			block_ring[block_cursor] = block
@@ -982,6 +982,70 @@ local function height_factory(dependencies)
 			if not block.water[slot] then return nil end
 			return block.wkind[slot], block.wid[slot], block.water[slot]
 		end
+		-- True when a wet river or lake column may lie in the rectangle.
+		local function river_water_in(min_x, min_z, max_x, max_z)
+			if water.water_in(min_x, min_z, max_x, max_z) then return true end
+			for index = 1, #authored do
+				local e = authored[index]
+				if min_x <= e.max_x and max_x >= e.min_x and min_z <= e.max_z and
+						max_z >= e.min_z then
+					return true
+				end
+			end
+			return false
+		end
+		-- Claim exclusion of inland water (stale-rule R5): "inland_water" on a
+		-- wet river or lake column, "water_bank" on a dry land column within
+		-- BANK_REACH nodes (square) of one, else nil. Away from water this is
+		-- a bucket lookup; near it the answer is memoised per column. The
+		-- column's own bank distance from the layout (true distance to a
+		-- river's channel edge, a proxy for lakes) is a cheap pre-test: a wet
+		-- column two nodes away puts it well below BANK_PREFILTER, so only a
+		-- narrow band along the water scans its neighbours. Authored lakes
+		-- (not in the layout) always scan.
+		local BANK_REACH, BANK_PREFILTER = 2, 8
+		local function authored_within(x, z, r)
+			for index = 1, #authored do
+				local e = authored[index]
+				if x >= e.min_x - r and x <= e.max_x + r and z >= e.min_z - r and
+						z <= e.max_z + r then
+					return true
+				end
+			end
+			return false
+		end
+		local function inland_exclusion_at(x, z)
+			if outside(x, z) or class_owner_at(x, z) ~= LAND then return nil end
+			local block, slot = column(x, z)
+			local cached = block.excl[slot]
+			if cached == nil then
+				cached = false
+				if river_water_in(x - BANK_REACH, z - BANK_REACH, x + BANK_REACH,
+						z + BANK_REACH) then
+					local own, own_slot = land_values_at(x, z)
+					local bank_d = own.bank_d[own_slot]
+					if own.water[own_slot] then
+						cached = "inland_water"
+					elseif (bank_d and bank_d <= BANK_PREFILTER) or
+							authored_within(x, z, BANK_REACH) then
+						for dz = -BANK_REACH, BANK_REACH do
+							for dx = -BANK_REACH, BANK_REACH do
+								if (dx ~= 0 or dz ~= 0) and
+										inland_water_at(x + dx, z + dz) then
+									cached = "water_bank"
+									break
+								end
+							end
+							if cached then break end
+						end
+					end
+				end
+				-- The neighbour queries may have evicted this block; the memo
+				-- is then simply rebuilt on the next query.
+				block.excl[slot] = cached
+			end
+			return cached or nil
+		end
 
 		-----------------------------------------------------------------------
 		-- Near-water material (world_zones.md §7.4, plan D27). The coast has no
@@ -1154,15 +1218,19 @@ local function height_factory(dependencies)
 		-- True when a wet river or lake column may lie in the rectangle: a
 		-- bucket lookup, so the planner's bed/bank seal scans run only there.
 		function session.river_water_in(min_x, min_z, max_x, max_z)
-			if water.water_in(min_x, min_z, max_x, max_z) then return true end
-			for index = 1, #authored do
-				local e = authored[index]
-				if min_x <= e.max_x and max_x >= e.min_x and min_z <= e.max_z and
-						max_z >= e.min_z then
-					return true
-				end
-			end
-			return false
+			return river_water_in(min_x, min_z, max_x, max_z)
+		end
+		-- "inland_water", "water_bank" (dry land within two nodes of it) or
+		-- nil: the claim exclusion kinds of inland water (stale-rule R5).
+		function session.inland_exclusion_at(x, z)
+			coordinate(x, "inland exclusion query x")
+			coordinate(z, "inland exclusion query z")
+			return inland_exclusion_at(x, z)
+		end
+		-- River centrelines for drawing (the world map), see the sampler's
+		-- `polylines`.
+		function session.river_polylines()
+			return water.polylines()
 		end
 		-- The serialized water layout (the ipc_set payload main hands emerge).
 		function session.water_layout_text()

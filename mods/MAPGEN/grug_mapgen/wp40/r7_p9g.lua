@@ -323,6 +323,12 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 					context.column_values_at(x, z) == "land" then
 				exclusion = nil
 			end
+			-- A river or lake bank (stale-rule R5) is exactly where a shore row
+			-- grows; only rows without a shore predicate keep off it.
+			if exclusion_id == "exclude:water_bank" and
+					rows[catalog_index].shore_predicate ~= "none" then
+				exclusion = nil
+			end
 			if exclusion == "fixed_or_protected" or exclusion == "route_or_water" then
 				return exclusion, value
 			elseif context.housing_excluded_at(x, z) then

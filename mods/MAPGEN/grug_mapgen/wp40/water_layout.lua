@@ -1382,6 +1382,26 @@ return function(P)
 			local lid, m = lake_at(x, z)
 			return lid ~= nil and m >= 0.5
 		end
+		-- River centrelines for drawing (the world map): one row per run of
+		-- vertices of positive width (the runs the segments above cover),
+		-- {id =, points = {{x =, z =, w =}, ...}} in layout order. A fresh
+		-- copy per call.
+		function api.polylines()
+			local result = {}
+			for _, r in ipairs(layout.rivers) do
+				local points = {}
+				for i = 1, #r.x + 1 do
+					local w = r.w[i]
+					if w and w > 0 then
+						points[#points + 1] = {x = r.x[i], z = r.z[i], w = w}
+					else
+						if #points > 1 then result[#result + 1] = {id = r.id, points = points} end
+						points = {}
+					end
+				end
+			end
+			return result
+		end
 		api.river_at, api.lake_at = river_at, lake_at
 		api.rivers, api.lakes = layout.rivers, lakes
 		api.segments = ns

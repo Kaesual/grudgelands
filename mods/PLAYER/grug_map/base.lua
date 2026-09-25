@@ -7,7 +7,8 @@
 -- separate formspec layer (page.lua); nothing here knows about them.
 --
 -- Only pure public queries are used (water_class_at, id_at, get,
--- terrain_height_at): no chunk is generated, loaded or read.
+-- terrain_height_at) plus the river centrelines grug_mapgen publishes: no
+-- chunk is generated, loaded or read.
 
 local M = {}
 
@@ -107,24 +108,48 @@ end
 local ROAD_STYLE = {road = {color = pack(rgb(112, 84, 52)), radius = 1},
 	trail = {color = pack(rgb(132, 104, 70)), radius = 0}}
 
+-- Rivers (Round 22 Phase 5). Lakes are `planned_water` columns and show in
+-- the per-pixel pass; rivers are 3-16 nodes wide, below one map pixel, so
+-- they are stroked from the water layout's centrelines, as
+-- {points = {{x =, z =, w =}, ...}} rows (w = channel width in nodes).
+local function river_polylines()
+	local mapgen = rawget(_G, "grug_mapgen")
+	local wp40 = type(mapgen) == "table" and mapgen.wp40
+	local rivers = type(wp40) == "table" and wp40.river_polylines
+	return type(rivers) == "table" and rivers or {}
+end
+local function water_layout_text()
+	local mapgen = rawget(_G, "grug_mapgen")
+	local wp40 = type(mapgen) == "table" and mapgen.wp40
+	local text = type(wp40) == "table" and wp40.water_layout_text
+	return type(text) == "string" and text or ""
+end
+local RIVER_COLOR = pack(rgb(62, 118, 152))
+-- A river this wide or wider is stroked three pixels wide (radius 1), a
+-- narrower one one pixel; one pixel is about 7 nodes.
+local RIVER_WIDE = 11
+
 -- World-coordinate drawing surface over the packed pixel array, for overlays
 -- such as the Phase 4 roads.
 local function new_canvas(view, pixels)
 	local canvas = {}
 	local sx = WIDTH / (view.max_x - view.min_x)
 	local sz = HEIGHT / (view.max_z - view.min_z)
-	function canvas.plot(x, z, color, radius)
+	-- `only`, if given, is a per-pixel predicate: other pixels stay as they are.
+	function canvas.plot(x, z, color, radius, only)
 		local px = math.floor((x - view.min_x) * sx)
 		local py = math.floor((view.max_z - z) * sz)
 		for j = py - radius, py + radius do
 			for i = px - radius, px + radius do
 				if i >= 0 and i < WIDTH and j >= 0 and j < HEIGHT then
-					pixels[j * WIDTH + i + 1] = color
+					local index = j * WIDTH + i + 1
+					if not only or only(index) then pixels[index] = color end
 				end
 			end
 		end
 	end
-	function canvas.polyline(points, color, radius)
+	-- `radius` is a number or a function(a, b, t) of the segment's two points.
+	function canvas.polyline(points, color, radius, only)
 		for index = 2, #points do
 			local a, b = points[index - 1], points[index]
 			local steps = math.max(1, math.ceil(math.max(
@@ -132,7 +157,8 @@ local function new_canvas(view, pixels)
 			for step = 0, steps do
 				local t = step / steps
 				canvas.plot(a.x + (b.x - a.x) * t, a.z + (b.z - a.z) * t,
-					color, radius)
+					color, type(radius) == "function" and radius(a, b, t) or radius,
+					only)
 			end
 		end
 	end
@@ -241,9 +267,19 @@ local function render(zones, view)
 		end
 	end
 
+	-- Rivers go on land only (their mouths and lake reaches are water
+	-- pixels already), under the roads.
+	local canvas = new_canvas(view, pixels)
+	local function on_land(index) return water[index] == "land" end
+	local function river_radius(a, b, t)
+		return a.w + (b.w - a.w) * t >= RIVER_WIDE and 1 or 0
+	end
+	for _, river in ipairs(river_polylines()) do
+		canvas.polyline(river.points, RIVER_COLOR, river_radius, on_land)
+	end
+
 	local roads = road_polylines()
 	if #roads > 0 then
-		local canvas = new_canvas(view, pixels)
 		for _, road in ipairs(roads) do
 			local style = ROAD_STYLE[road.kind] or ROAD_STYLE.road
 			canvas.polyline(road.points, style.color, style.radius)
@@ -279,7 +315,8 @@ end
 
 -- Re-render only when this key changes: this file's source, world seed,
 -- the generator identity when grug_mapgen publishes one, a cheap fingerprint
--- of public query results and the road network (none until Phase 4).
+-- of public query results, the inland water layout and the road network
+-- (none until Phase 4).
 local function cache_key(zones, view)
 	local file = assert(io.open(SOURCE_PATH, "rb"), "cannot read " .. SOURCE_PATH)
 	local source_bytes = file:read("*a")
@@ -307,6 +344,7 @@ local function cache_key(zones, view)
 			parts[#parts + 1] = tostring(zones.terrain_height_at(anchor.x, anchor.z))
 		end
 	end
+	parts[#parts + 1] = core.sha256(water_layout_text())
 	for _, road in ipairs(road_polylines()) do
 		parts[#parts + 1] = tostring(road.kind)
 		for _, point in ipairs(road.points) do
