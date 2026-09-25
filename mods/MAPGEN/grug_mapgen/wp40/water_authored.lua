@@ -186,7 +186,11 @@ return function(P)
 			if not keep then return 1 end
 			local dx = max(0, math.abs(x - keep.x) - keep.half)
 			local dz = max(0, math.abs(z - keep.z) - keep.half)
-			return smoothstep(2, keep.fade, sqrt(dx * dx + dz * dz))
+			-- smootherstep: the warp sets in with no kink in the shore at the
+			-- core's edge
+			local t = (sqrt(dx * dx + dz * dz) - 2) / (keep.fade - 2)
+			if t <= 0 then return 0 elseif t >= 1 then return 1 end
+			return t * t * t * (t * (t * 6 - 15) + 10)
 		end
 		local grow = warp and warp.point or 0
 		local function indicator(x, z)
@@ -238,7 +242,7 @@ return function(P)
 		points = {{1810, 1600, 42}, {1850, 1560, 68}, {1910, 1565, 75},
 			{1960, 1610, 48}},
 		warp = {cove = 16, point = 6, period = 56, salt = 3.1},
-		keep = {x = 1800, z = 1500, half = 47, fade = 30},
+		keep = {x = 1800, z = 1500, half = 47, fade = 44},
 		depth = 18, bed_step = 3, bank = {up = 0.9, down = 0.5}})
 
 	---------------------------------------------------------------------------
@@ -252,7 +256,7 @@ return function(P)
 		points = {{1800, -1440, 38}, {1840, -1390, 62}, {1900, -1380, 78},
 			{1960, -1420, 68}, {1990, -1480, 42}},
 		warp = {cove = 16, point = 6, period = 60, salt = 7.7},
-		keep = {x = 1800, z = -1500, half = 47, fade = 30},
+		keep = {x = 1800, z = -1500, half = 47, fade = 44},
 		depth = 9, bank = {up = 0.7, down = 0.5}})
 
 	---------------------------------------------------------------------------
