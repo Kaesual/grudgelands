@@ -1811,15 +1811,43 @@ local function new_module(P)
 	--   kind: nil (untouched), "surface" (road surface column; extra = class
 	--   "grade"/"cut"/"fill"/"deck"/"bridge"/"ford"), "cutslope",
 	--   "wall", "embslope"; new_t: the terrain after the road (for surface
-	--   columns on a deck/bridge: the untouched terrain). extra.pillar /
-	--   extra.rail flags on deck/bridge columns.
+	--   columns on a deck/bridge: the untouched terrain). extra.pillar flags
+	--   pillar columns on a deck/bridge; extra.bridge flags every surface
+	--   column of a bridge run (below).
+	-- Bridge runs (D74): a raised run is a maximal run of consecutive deck
+	-- or bridge points ("D"/"B") of one road; it is a bridge run when it
+	-- holds at least one water-crossing point ("B"). Every surface column
+	-- whose nearest point lies in a bridge run takes the bridge material,
+	-- bank to bank, whatever supports it; every other column takes the
+	-- road's one surface material. The runs come from the serialized
+	-- classes alone, so main and emerge and every chunk agree.
 	---------------------------------------------------------------------------
+	function M.bridge_points(cls)
+		local out, n, i = {}, #cls, 1
+		while i <= n do
+			local c = cls[i]
+			if c == "D" or c == "B" then
+				local j, wet = i, c == "B"
+				while j < n and (cls[j + 1] == "D" or cls[j + 1] == "B") do
+					j = j + 1
+					if cls[j] == "B" then wet = true end
+				end
+				if wet then for q = i, j do out[q] = true end end
+				i = j + 1
+			else
+				i = i + 1
+			end
+		end
+		return out
+	end
 	function M.sampler(layout)
 		local BUCKET = P.BUCKET
 		local buckets = {}
 		local SIDE = P.SIDE_MAX
 		local function bkey(bx, bz) return bz * 8192 + bx end
+		local bridge_at = {}
 		for _, r in ipairs(layout.roads) do
+			bridge_at[r.id] = M.bridge_points(r.cls)
 			local X, Z = r.X, r.Z
 			local reach = r.hw + SIDE + 1
 			for i = 1, #X - 1 do
@@ -1913,12 +1941,9 @@ local function new_module(P)
 				elseif ry > t then kind = "fill"
 				elseif ry < t then kind = "cut"
 				else kind = "grade" end
-				local extra = {class = kind}
+				local extra = {class = kind, bridge = bridge_at[br.id][idx]}
 				if kind == "deck" or kind == "bridge" then
 					extra.pillar = (idx % P.PILLAR_EVERY == 0) and best > -1.2
-					-- the rail stands on the open edge only (the ground beside
-					-- the deck at least 2 below it)
-					extra.rail = best > -1 and ry - t >= 2
 				end
 				local newt = t
 				if kind == "cut" or kind == "fill" or kind == "grade" then newt = top end
