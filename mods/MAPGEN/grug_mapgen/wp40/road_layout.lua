@@ -71,6 +71,8 @@ local DEFAULT_P = {
 	BUCKET = 32, SIDE_MAX = 24, EMB_TOE = 3, EMB_REACH = 6, CUT_SLOPE = 1,
 	CUT_SOIL = 6, CUT_ROCK = 2, EMB_SLOPE = 1,
 	WALL_MIN = 5, WALL_H = 3, PILLAR_EVERY = 5,
+	-- ground points a bridge run lands on at each bank (D74)
+	BRIDGE_LAND = 2,
 	-- road-corridor claim exclusion beyond the road edge (nodes)
 	EXCLUDE_PAD = 2,
 	-- a road ends CORE_GAP nodes (square distance) outside a village's or
@@ -1816,14 +1818,17 @@ local function new_module(P)
 	--   column of a bridge run (below).
 	-- Bridge runs (D74): a raised run is a maximal run of consecutive deck
 	-- or bridge points ("D"/"B") of one road; it is a bridge run when it
-	-- holds at least one water-crossing point ("B"). Every surface column
-	-- whose nearest point lies in a bridge run takes the bridge material,
-	-- bank to bank, whatever supports it; every other column takes the
-	-- road's one surface material. The runs come from the serialized
-	-- classes alone, so main and emerge and every chunk agree.
+	-- holds at least one water-crossing point ("B"). It lands on each bank
+	-- with up to BRIDGE_LAND ground points ("G"), so the wet edge columns of
+	-- an oblique bank still belong to it. Every surface column whose nearest
+	-- point lies in a bridge run takes the bridge material, bank to bank,
+	-- whatever supports it; every other column takes the road's one surface
+	-- material. The runs come from the serialized classes alone, so main
+	-- and emerge and every chunk agree.
 	---------------------------------------------------------------------------
 	function M.bridge_points(cls)
 		local out, n, i = {}, #cls, 1
+		local land = P.BRIDGE_LAND
 		while i <= n do
 			local c = cls[i]
 			if c == "D" or c == "B" then
@@ -1832,7 +1837,12 @@ local function new_module(P)
 					j = j + 1
 					if cls[j] == "B" then wet = true end
 				end
-				if wet then for q = i, j do out[q] = true end end
+				if wet then
+					local a, b = i, j
+					while a > 1 and a > i - land and cls[a - 1] == "G" do a = a - 1 end
+					while b < n and b < j + land and cls[b + 1] == "G" do b = b + 1 end
+					for q = a, b do out[q] = true end
+				end
 				i = j + 1
 			else
 				i = i + 1
