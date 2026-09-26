@@ -230,6 +230,13 @@ recommendations; report in
 |---|---|---|
 | D66 | **Merge the seven byte-identical D63 patches now,** after an independent review and before the road integration starts (the road prototype is offline): R6 planner cell cache, LuaJIT `hotexit=200` in main and emerge, writer anchor-grade memo, allocation-free `prepare_cells`, direct-mapped field-sample memo, packed-key blueprint sort, `param2_kind` memo. **Re-check the planner cell cache's purity** when the road-corridor exclusion kind joins the static exclusions. **Cleanup round (D4):** remove the two redundant full-volume validity checks (`map_adapter.lua`, `r6_settlement.lua`, ~1 % of chunk time); make the main-start terrain audit (`settlement_terrain_findings`, log warnings only, ~3.7 s) switchable — it stays on while roads and the capital planner still need its warnings; emerge re-preparing all settlement blueprints (~3.5 s); noise code still 38 % interpreted. Column cache 64k → 256k dropped (gain within noise, +50 MB). | Engine, three swapped pairs over 98 chunks: chunk time ×0.61–0.69 (~500 → ~320 ms on expensive chunks), main construction ×0.72–0.81, emerge construction ×0.64–0.73. Byte identity: engine digest over 50 M voxels on two seeds, whole-map probe grids on three seeds, 510 blueprint identities. |
 
+Decisions on the Phase 4 road prototype (2026-09-26, user; prototype in
+`~/projects/grudgelands-orchestration/r22/phase4-proto/`):
+
+| # | Decision | Basis |
+|---|---|---|
+| D67 | **Integrate variant p4** (hard ≤ ½ rule, routing preference for grades gentler than ~1:4) on the shared 16-node grid; **no stairs on trails; no tunnels yet** (decide after the playtest); **Stormvault's outpost `anchor_027` stays** the showcase mountain road. **More connections:** all trail candidates are built (no cost budget; drop one only for a stated reason), and the loop threshold is lowered for about 2–4 loops per world. **Decks** only as a one-sided gallery (uphill side on the ground or in a shallow cut, downhill side on pillars — typical at serpentines) or as a short valley crossing (both ends on the ground, about ≤ 32 long, ground below lower than both ends); any other deck (free on both sides, the profile lagging behind the terrain) is a route error and feeds back into routing cost (D51); metric: free deck columns outside short crossings, rough target 0. **Cuts:** cut slopes get the terrain's own surface (grass/dirt, rock in stone), retaining walls only at the foot of deep cuts; on steep side slopes a half gallery (shallow uphill cut, downhill half on pillars) beats a deep uphill cut; cuts deeper than ~6 cost more in routing. | Prototype: p4 cuts deep-cut runs and long decks sharply against the hard rule for ~4 % more length; 70–80 % of deck columns were already one-sided, but 105–258 per world floated free on both sides (mostly the Stormvault serpentine); 7–10 % of road points lie in 2–6-node cuts, < 1 % deeper. The user: roads should look like "yes, this is how one would build a road"; floating roads only one-sided at serpentines or as short crossings; cuts are always unsightly. |
+
 All §9 questions are answered.
 
 ## 4. Guardrails for the whole round
@@ -507,6 +514,9 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   - Water may now cross capital reserved areas (D57); roads end at the
     reserved area's edge (D59), so roads never need to cross water inside a
     capital.
+  - The capital planner (D60) must be able to route the connector from a
+    road end to its gate with the same routing, profile and raster (§11), so
+    the road module exposes point-to-point routing as a reusable function.
 - **Road shape (D44–D51, 2026-09-25):**
   - Cross-section per column: uphill cut with ~1:1 slope back, downhill
     embankment up to ~2 nodes, beyond that a deck on pillars with railing;
@@ -818,6 +828,14 @@ planner work package that follows water and roads (D57–D60).
   its edge (D59). Inside it the planner decides districts, houses, lanes,
   walls, the four cardinal gates and connector roads from each gate to the
   road end at the edge.
+- **Gates and connector roads (user, 2026-09-26, on the road prototype):**
+  roads may meet the reserved area anywhere on its edge, also near a
+  corner. The planner places the gates freely but takes the incoming road
+  ends into account, and it builds the last stretch from a road end to its
+  gate with the **road module's own routing, profile and raster** (same
+  grade rule, cross-section and look). So the road integration must expose
+  routing between two arbitrary points as a reusable function, not only the
+  one-time network build.
 - **Water:** rivers and lakes may cross the reserved area (D57). Walls may
   run over rivers, lanes cross them by bridges. Canals follow D58 (one level
   per canal system, trough filled to the highest non-spilling level, raised
