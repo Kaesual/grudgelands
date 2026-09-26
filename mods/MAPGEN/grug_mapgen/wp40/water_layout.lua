@@ -1384,22 +1384,32 @@ return function(P)
 		troughs(S, opts)
 		-- A river's vertices well inside its source or end lake carry no
 		-- trough (a straight trench across the lake bed with straight
-		-- edges at the shore): the river starts and ends at the shore.
+		-- edges at the shore): the river starts at the shore; a river
+		-- ending in a lake keeps reaching into it a little further, so its
+		-- mouth joins the lake's water (a shorter one ends in a bank dam).
 		local lake_ind = M.lake_indicator(S.mask, S.nx, S.nz)
-		local function inside(rv, i, lid)
+		local function inside(rv, i, lid, limit)
 			local id, m = lake_ind(rv.pts[i][1], rv.pts[i][2])
-			return id == lid and m >= P.LAKE_TRIM
+			return id == lid and m >= limit
 		end
 		for _, rv in ipairs(S.rivers) do
 			local n = #rv.pts
 			if rv.src_lake then
 				for i = 1, n - 1 do
-					if rv.w[i] > 0 and inside(rv, i, rv.src_lake) then rv.w[i] = 0 else break end
+					if rv.w[i] > 0 and inside(rv, i, rv.src_lake, P.LAKE_TRIM) then
+						rv.w[i] = 0
+					else
+						break
+					end
 				end
 			end
 			if rv.end_lake and not rv.parent then
 				for i = n, 2, -1 do
-					if rv.w[i] > 0 and inside(rv, i, rv.end_lake) then rv.w[i] = 0 else break end
+					if rv.w[i] > 0 and inside(rv, i, rv.end_lake, P.LAKE_TRIM_END) then
+						rv.w[i] = 0
+					else
+						break
+					end
 				end
 			end
 		end

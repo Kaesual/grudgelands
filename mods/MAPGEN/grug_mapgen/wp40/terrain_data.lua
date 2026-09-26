@@ -195,7 +195,8 @@ data.water = {
 	LAKE_UNCARVE = 0.15,    -- a river valley's carve is undone from here to LAKE_RIM
 	LAKE_PROXY = 40,        -- bank distance proxy: (0.5 - indicator) * this
 	LAKE_RISE_D = 4,        -- dry ground inside the mask: height above water * this
-	LAKE_TRIM = 0.65,       -- river vertices this deep in their own lake carry no trough
+	LAKE_TRIM = 0.65,       -- river vertices this deep in their source lake carry no trough
+	LAKE_TRIM_END = 0.9,    -- ... and this deep in their end lake
 	-- rivers
 	RIVER_ACC = 900,        -- catchment cells (x256 node^2) that make a river
 	MIN_TRIB_CELLS = 10,    -- shorter tributaries are pruned
