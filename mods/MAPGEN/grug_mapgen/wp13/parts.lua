@@ -226,13 +226,22 @@ local PREFIX_KIND = {
 	["beds:"] = M.FACEDIR,
 }
 
+-- Memoized per name: `Buffer:put` asks this two or three times for every
+-- cell of every blueprint (hundreds of thousands per construction, twice per
+-- process), and both tables above are fixed once this file has loaded.
+local param2_kind_memo = {}
 function M.param2_kind(name)
-	local kind = PARAM2_KIND[name]
+	local kind = param2_kind_memo[name]
 	if kind then return kind end
-	for prefix, value in pairs(PREFIX_KIND) do
-		if name:sub(1, #prefix) == prefix then return value end
+	kind = PARAM2_KIND[name]
+	if not kind then
+		kind = M.NONE
+		for prefix, value in pairs(PREFIX_KIND) do
+			if name:sub(1, #prefix) == prefix then kind = value break end
+		end
 	end
-	return M.NONE
+	if type(name) == "string" then param2_kind_memo[name] = kind end
+	return kind
 end
 
 -- ---------------------------------------------------------------------------
