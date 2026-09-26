@@ -935,7 +935,7 @@ local function settlement_factory()
 			param2_dirty_columns = 0, light_dirty_columns = 0,
 			liquid_dirty_columns = 0, replay_count = 0,
 		}
-		local last_ledger, last_run_count, last_light_seed_runs = false, 0, 0
+		local last_ledger, last_run_count, last_sun_runs = false, 0, 0
 
 		local function classify(cid, param2, code)
 			if runtime_mode then
@@ -978,36 +978,46 @@ local function settlement_factory()
 		-- whole or not at all (one emerge thread, num_emerge_threads = 1), so
 		-- one probe node per group tells whether its chunk is still fresh: the
 		-- top shell row, the owner's min_y + 40 and the bottom shell row hold
-		-- ignore exactly then (v7 writes provisional rows into a fresh block
-		-- only next to a generated chunk, i.e. at a chunk's first or last row,
-		-- never at a probe).
+		-- ignore then. v7 writes provisional rows into a fresh block only next
+		-- to a generated chunk, i.e. at a chunk's first or last row, never at a
+		-- probe. The exception is v7's random-walk caves (only in chunks with
+		-- maxp.y <= -33), which can carve into a fresh block and hit a probe;
+		-- harmless, as no sun reaches that depth, so every group there reads
+		-- "no sun" either way.
 		--   generated group: the final content decides. The sun enters with
-		--     the top shell's stored day light (15 is sun: spread decays and
-		--     no light source exceeds 14) and runs down while nodes pass
-		--     sunlight;
+		--     the top shell's stored day light and runs down while nodes pass
+		--     sunlight. Stored day 15 is sun (spread decays, and no light
+		--     source exceeds 14); a sun-passing light source reads 14 even
+		--     under the sun, so it defers to the node below (entry_sun);
 		--   fresh group: unknown. Its real nodes are v7's provisional rows;
 		--     they neither block nor carry the sun (their chunk rewrites
 		--     them);
 		--   first generated group below a fresh one: an owner column takes the
 		--     sky the plan predicts for the chunk above (sky_open), a halo
-		--     column the stored day light of that group's top node, i.e. the
-		--     decision its own chunk made.
+		--     column the stored day light of that group's top node (entry_sun),
+		--     i.e. the decision its own chunk made.
 		-- Sun runs go to set_lighting batched along x. Left open: a sun change
 		-- deeper than the bottom shell (D65 B2), structures the plan cannot
 		-- predict above a fresh chunk top (sky_open).
 		-- (one table: the transaction closure is at Lua 5.1's upvalue limit)
 		local halo = {sun_cache = {}, args = {}, vm = false,
 			shell_light = {day = 15, night = 0}}
-		function halo.passes_sun(cid, param2)
+		-- per (content, param2): 0 blocks the sun, 1 passes it, 2 passes it and
+		-- emits light
+		function halo.sun_class(cid, param2)
 			local key = cid * 256 + param2
 			local value = halo.sun_cache[key]
 			if value == nil then
-				local _, _, _, _, _, _, _, sunlight = classify(cid, param2,
+				local _, _, _, _, _, _, _, sunlight, source = classify(cid, param2,
 					"fail_lighting_context")
-				value = sunlight and true or false
+				value = not sunlight and 0 or source > 0 and 2 or 1
 				halo.sun_cache[key] = value
 			end
 			return value
+		end
+		function halo.passes_sun(cid, param2)
+			return (halo.sun_cache[cid * 256 + param2] or
+				halo.sun_class(cid, param2)) > 0
 		end
 		function halo.set_sun(x0, y0, z, x1, y1)
 			local low, high = transaction_state.call_min, transaction_state.call_max
@@ -1039,6 +1049,22 @@ local function settlement_factory()
 			end
 			return value % 16 == 15
 		end
+		-- The sun its own chunk recorded at node i, the top of a generated group
+		-- or the top shell: stored day 15 on a sun-passing node. A sun-passing
+		-- light source is the exception: spreadLight stores its own level in
+		-- both banks and its sunlit neighbours raise the day bank to 14 only,
+		-- so it defers to the node below, at most `rows` nodes down (never as
+		-- far as the rows v7's temporary sun reaches).
+		function halo.entry_sun(data, param2, light, i, ex, rows)
+			for _ = 1, rows do
+				local class = halo.sun_class(data[i], param2[i])
+				if class == 0 then return false end
+				if halo.stored_sun(light, i) then return true end
+				if class == 1 then return false end
+				i = i - ex
+			end
+			return false
+		end
 
 		-- a: data, param2 (final content), light (the ORIGINAL light),
 		--   ignore_cid, emerged bounds eminx .. emaxz, owner bounds min_x ..
@@ -1052,6 +1078,7 @@ local function settlement_factory()
 				a.min_x, a.min_y, a.min_z, a.max_x, a.max_y, a.max_z
 			local passes_sun, set_sun, stored_sun = halo.passes_sun, halo.set_sun,
 				halo.stored_sun
+			local entry_sun = halo.entry_sun
 			local shell_light = halo.shell_light
 			local vm = halo.vm
 			local ex = emaxx - eminx + 1
@@ -1065,6 +1092,9 @@ local function settlement_factory()
 			local top_offset = (emaxy - eminy) * ex
 			local probe_offset = (min_y + 40 - eminy) * ex
 			local owner_top_offset = (max_y - eminy) * ex
+			-- entry_sun's reach: from the top shell down to max_y + 2 (v7's sun
+			-- ends at max_y + 1 over the owner)
+			local entry_rows = emaxy - max_y - 1
 			local calls = 0
 			-- one pending sun run along x, extended while columns share a segment
 			local run_x0, run_x1, run_top, run_bottom, run_z
@@ -1097,8 +1127,7 @@ local function settlement_factory()
 					-- true / false, nil = unknown (below a fresh group)
 					local sun
 					if not fresh_above then
-						sun = stored_sun(light, top_i) and
-							passes_sun(data[top_i], param2[top_i])
+						sun = entry_sun(data, param2, light, top_i, ex, entry_rows)
 					end
 					local seg_top, seg_bottom
 					for group = 1, 3 do
@@ -1117,7 +1146,7 @@ local function settlement_factory()
 									sun = passes_sun(data[top], param2[top]) and
 										halo.sky_open(x, z, max_y)
 								else
-									sun = stored_sun(light, i)
+									sun = entry_sun(data, param2, light, i, ex, entry_rows)
 								end
 							end
 							if sun then
@@ -3405,7 +3434,7 @@ local function settlement_factory()
 
 			local content_changed, param2_changed, light_changed, liquid_changed =
 				false, false, false, false
-			last_light_seed_runs = 0
+			last_sun_runs = 0
 			local modified, content_columns, param2_columns, light_columns,
 				liquid_columns = 0, 0, 0, 0, 0
 			local function compatible_liquid(family, kind)
@@ -3506,7 +3535,7 @@ local function settlement_factory()
 				a.min_x, a.min_y, a.min_z, a.max_x, a.max_y, a.max_z =
 					min_x, min_y, min_z, max_x, max_y, max_z
 				halo.vm = vm
-				last_light_seed_runs = halo.relight(a)
+				last_sun_runs = halo.relight(a)
 			end
 			if liquid_changed then
 				local ok = pcall(vm.update_liquids, vm)
@@ -3554,8 +3583,8 @@ local function settlement_factory()
 			last_ledger = false
 			return result
 		end
-		function fixture.last_light_seed_runs()
-			return last_light_seed_runs
+		function fixture.last_sun_runs()
+			return last_sun_runs
 		end
 		function fixture.last_successor_refs()
 			return copy_map(transaction_state.successor_refs)
