@@ -35,9 +35,15 @@
 --                instead of walls, natural dams instead of one-column dikes
 --   bank_weight  optional function(x, z) -> 0..1 scaling the envelope
 --   rim          optional bank-fill threshold (default here 0.4)
---   river, reach_of, reach_count, reach_links, step_max, step_cut
---                a river-water body of level reaches with small rapids
---                between them (height.lua; the Highcourt canal)
+--   river        river water instead of ordinary water, one level (the
+--                Highcourt canal)
+--   balanced     with shore_level: the level halfway between the lowest bank
+--                ground and the highest ground under the water (canals;
+--                height.lua), the rim raised to it where the ground is lower;
+--                rim_max bounds that raise (the carve deepens instead)
+--   natural_clear
+--                the shore keeps at least this many nodes off natural rivers
+--                and lakes: where one comes close the row ends in a sealed rim
 --   keepout      optional {x, z, r}: a natural-water keep-out disc for a lake
 --                outside every start and capital (height.lua water inputs)
 --
@@ -262,18 +268,21 @@ return function(P)
 		depth = 9, bank = {up = 0.7, down = 0.5}})
 
 	---------------------------------------------------------------------------
-	-- Highcourt canals (plan D42). The blueprint's lots are staggered round two
-	-- river arms that meet north of the core (`wp13/highcourt_quadrants.lua`);
-	-- they are one continuous civic canal of river water: the two arms and the
-	-- outflow below their join, each cut into level reaches of about REACH
-	-- nodes, every reach at the lowest ground of its own banks and linked
-	-- reaches one node apart (two where the ground drops faster), so the water
-	-- steps down the terraces in small rapids like a river's (height.lua,
-	-- `river` rows). Narrow, gently meandering, its width varied along it.
+	-- Highcourt canals (plan D42, D58 interim). The blueprint's lots are
+	-- staggered round two river arms that meet north of the core
+	-- (`wp13/highcourt_quadrants.lua`); they are one civic canal of river water
+	-- with ONE level: the two arms and the outflow below their join, the level
+	-- halfway between the lowest bank ground and the highest ground under the
+	-- water, the trough carved into the terrain where it is higher and the
+	-- rim raised where it is lower (height.lua, `balanced`). No rapids and no
+	-- link to world water: where a natural river or lake comes within
+	-- `natural_clear` nodes the canal ends there in its sealed rim. Narrow,
+	-- gently meandering, its width varied along it. The capital planner
+	-- (plan D60) will lay canals out anew.
 	---------------------------------------------------------------------------
 	do
 		local cx, cz = 0, -1500
-		local HW, REACH = 5, 24
+		local HW = 5
 		-- the centreline meanders by up to MEANDER nodes over about WAVE; the
 		-- half width varies by WIDTH_VAR (share) over about WIDTH_WAVE
 		local MEANDER, WAVE, WIDTH_VAR, WIDTH_WAVE = 7, 90, 0.2, 50
@@ -283,7 +292,7 @@ return function(P)
 			{points = {{236, -85}, {180, -10}, {0, 180}}},
 			{points = {{0, 180}, {30, 236}}},
 		}
-		local segs, links, count = {}, {}, 0
+		local segs = {}
 		local maxr = 0
 		local x0, x1, z0, z1 = math.huge, -math.huge, math.huge, -math.huge
 		for arm_index, arm in ipairs(arms) do
@@ -305,30 +314,16 @@ return function(P)
 				local r = HW * (1 + WIDTH_VAR * noise(s / WIDTH_WAVE - 5.9, arm_index * 7.1))
 				bent[i] = {pts[i][1] - tz / l * o, pts[i][2] + tx / l * o, r}
 			end
-			total = length(bent)
-			local n = max(1, floor(total / REACH + 0.5))
-			local first = count + 1
-			arm.first, arm.last = first, count + n
-			for k = first, count + n - 1 do links[#links + 1] = {k, k + 1} end
-			count = count + n
-			local s0 = 0
 			for i = 1, #bent - 1 do
 				local a, b = bent[i], bent[i + 1]
 				local vx, vz = b[1] - a[1], b[2] - a[2]
-				local len = sqrt(vx * vx + vz * vz)
 				segs[#segs + 1] = {ax = a[1], az = a[2], vx = vx, vz = vz,
-					l2 = vx * vx + vz * vz, ra = a[3], dr = b[3] - a[3], s0 = s0,
-					len = len, first = first, n = n, span = total / n}
-				s0 = s0 + len
+					l2 = vx * vx + vz * vz, ra = a[3], dr = b[3] - a[3]}
 				maxr = max(maxr, a[3], b[3])
 				x0, x1 = min(x0, a[1], b[1]), max(x1, a[1], b[1])
 				z0, z1 = min(z0, a[2], b[2]), max(z1, a[2], b[2])
 			end
 		end
-		-- the join: both arms' last reaches and the outflow's first touch
-		links[#links + 1] = {arms[1].last, arms[2].last}
-		links[#links + 1] = {arms[1].last, arms[3].first}
-		links[#links + 1] = {arms[2].last, arms[3].first}
 		-- segments by 32-node cell, each within reach of its cell
 		local CELL, reach = 32, maxr + SUPPORT + WARP.point + 2
 		local cells = {}
@@ -343,12 +338,10 @@ return function(P)
 				end
 			end
 		end
-		-- signed distance (negative inside) and reach of the nearest piece
-		local last_x, last_z, last_d, last_k
+		-- signed distance to the nearest piece (negative inside)
 		local function canal_at(x, z)
-			if x == last_x and z == last_z then return last_d, last_k end
 			local list = cells[floor(z / CELL) * 4096 + floor(x / CELL)]
-			local best, k = math.huge, 1
+			local best = math.huge
 			if list then
 				for i = 1, #list do
 					local g = list[i]
@@ -357,17 +350,13 @@ return function(P)
 					if t < 0 then t = 0 elseif t > 1 then t = 1 end
 					local ex, ez = ox - t * g.vx, oz - t * g.vz
 					local d = sqrt(ex * ex + ez * ez) - (g.ra + g.dr * t)
-					if d < best then
-						best = d
-						k = g.first + min(g.n - 1, floor((g.s0 + t * g.len) / g.span))
-					end
+					if d < best then best = d end
 				end
 			end
-			last_x, last_z, last_d, last_k = x, z, best, k
-			return best, k
+			return best
 		end
 		local function indicator(x, z)
-			local s = -(canal_at(x, z))
+			local s = -canal_at(x, z)
 			if s < -SUPPORT - WARP.point then return 0 end
 			local u, v = x / WARP.period + WARP.salt, z / WARP.period - WARP.salt
 			local n = (noise(u, v) + 0.5 * noise(2.1 * u + 17.3, 2.1 * v - 5.1)) / 1.2
@@ -378,12 +367,7 @@ return function(P)
 			return m
 		end
 		rows[#rows + 1] = {id = "highcourt_canal", river = true, shore_level = true,
-			indicator = indicator,
-			reach_of = function(x, z)
-				local _, k = canal_at(x, z)
-				return k
-			end,
-			reach_count = count, reach_links = links, step_max = 1, step_cut = 2,
+			balanced = true, rim_max = 6, natural_clear = 8, indicator = indicator,
 			min_x = floor(x0 - reach), max_x = floor(x1 + reach) + 1,
 			min_z = floor(z0 - reach), max_z = floor(z1 + reach) + 1,
 			depth = 6, bank = {up = 1.2, down = 0.5}, rim = 0.4}

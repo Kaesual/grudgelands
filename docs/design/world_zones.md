@@ -437,10 +437,15 @@ replaced; git history before this rewrite records that model.
   on the committed blueprint footprints (the Kezamba lagoon mask, the
   Lethariel `MERE`), outside it with warped coves and points, a carved bed
   (the cenote's in ledges) and shores shaped into banks and low natural dams;
-  Highcourt's two blueprint river arms and their outflow as one continuous
-  civic canal of river water, gently meandering, in level reaches of about 24
-  nodes, each at the lowest ground of its own banks, stepping down in rapids
-  of one node (two where the ground drops faster) like a river's; small
+  Highcourt's two blueprint river arms and their outflow as one civic canal
+  of river water, gently meandering, with one level everywhere (D58 interim):
+  halfway between the lowest ground of its banks and the highest ground under
+  it, the trough carved into the terrain where that is higher and the rim
+  raised to the level (a raised bank) where it is lower; no rapids and no link
+  to world water: where a natural river or lake comes within eight nodes the
+  canal ends there in its sealed rim. Steps between planned surfaces that do
+  lie in protected territory (a river crossing a capital) flow like any other:
+  the water guard exempts exactly that flow. Small
   ponds on the calm ground beside the Dawnmere and Sunscar
   starts. Authored water and its bank shaping keep at least eight nodes off
   every district plot and fill lot (margin included), so the plots stand on
