@@ -85,14 +85,20 @@ end
 -- cannot reach would get decaying spread only: the slice above the owner (the
 -- chunk above) and, in a halo column, every real segment below a still-fresh
 -- (ignore) block. The sun goes straight down there first, through the final
--- content while nodes pass sunlight: in the slice from the seed row, and below
--- every ignore-to-real transition, where the first real node's ORIGINAL day
--- bank is 15. The guarantee is "day bank 15 => real sun": light spread never
--- reaches 15 (it decays, and no light source exceeds 14), a lantern's night
--- light does not count, and v7's sun scan reaches outside the owner only its
--- overtop row max_y + 1 over the owner's own columns, where 15 means the same
--- open sky the owner's own scan assumes. A stale 15 cannot brighten anything:
--- merge never lets the halo get brighter than its original light.
+-- content while nodes pass sunlight: in the slice from the seed row, below
+-- every ignore-to-real transition whose first real node's ORIGINAL day bank is
+-- 15, and, in a halo column holding ignore, from EVERY node whose original day
+-- bank is 15. The rule for every seeded node is "day bank 15 => real sun":
+-- light spread never reaches 15 (it decays, and no light source exceeds 14), a
+-- lantern's night light does not count, and v7's sun scan reaches outside the
+-- owner only its overtop row max_y + 1 over the owner's own columns, where 15
+-- means the same open sky the owner's own scan assumes. Seeding only the first
+-- node below ignore is not enough: v7 writes provisional terrain one row above
+-- its chunk, into the still-fresh block above, so the first real node below
+-- ignore can be stone that blocks the sun, while the planned air below it still carries its original 15
+-- and would otherwise get decaying spread only (merge keeps the lower light,
+-- so that darkness would stay). A stale 15 cannot brighten anything: merge
+-- never lets the halo get brighter than its original light.
 --
 -- merge: outside the owner the original light stays, except inside the zeroed
 -- box, where each bank takes the lower of original and recomputed. Before the
@@ -161,7 +167,8 @@ function halo_light.presun(a)
 					if node == ignore_cid then
 						sunny, above_ignore = false, true
 					else
-						if not sunny and above_ignore and light[index] % 16 == 15 then
+						if not sunny and (above_ignore or scan_all) and
+								light[index] % 16 == 15 then
 							sunny = true
 						end
 						above_ignore = false
