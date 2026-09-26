@@ -656,6 +656,12 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   may lack native caves (check in playtest); shore-crab spawn rate retune.
 - Accepted as is (user, Phase 3 playtest): natural cave mouths that open into
   flooded pits at sea level.
+- Accepted for now (user, 2026-09-26, Phase 5b): native v7 caves of a
+  later-generated chunk can cut up to ~13 nodes into an already generated
+  neighbour's river bed (395 air nodes in beds on seed 8675309; no leak
+  observed). Resealing the halo would need out-of-owner writes past the
+  map adapter's run validation and the new halo light transaction; revisit
+  in Phase 6 only if it shows in play.
 - Afterwards, the general runtime cleanup round (D4).
 
 ### Orchestration and compaction points
