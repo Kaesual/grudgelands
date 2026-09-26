@@ -1287,25 +1287,39 @@ local function height_factory(dependencies)
 			end
 			return high
 		end
-		-- True inside a POI's or village's fitted building core (plus one
-		-- node): the road ends at the core's edge at pad height and never
-		-- changes the core's ground (towns and POIs are never damaged).
-		local function in_building_core(x, z)
+		-- A POI's or village's fitted building core: the road ends at its edge
+		-- at pad height and never changes the core's ground (towns and POIs
+		-- are never damaged).
+		-- Returns the smallest square distance outside any such core (0
+		-- inside), or nil when no core is near.
+		local function core_excess(x, z)
 			local candidates = bucket_at(grids.selected, x, z)
-			if not candidates then return false end
+			if not candidates then return nil end
+			local best
 			for index = 1, #candidates do
 				local fitting = candidates[index]
-				if fitting.blend and half_open_square_excess(x, z, fitting.center,
-						fitting.profile.building_core_width) <= 1 then
-					return true
+				if fitting.blend then
+					local e = half_open_square_excess(x, z, fitting.center,
+						fitting.profile.building_core_width)
+					if best == nil or e < best then best = e end
 				end
 			end
-			return false
+			return best
 		end
+		-- Side slopes near a core ease into its untouched ground: a column e
+		-- nodes outside the core changes by at most e - 1 (no cliff against
+		-- the core's edge).
+		local CORE_EASE = 16
 		local function road_at(x, z, terrain_y, water_y)
 			local kind, road_y, new_y, road_id, index, extra =
 				road_sampler.column(x, z, terrain_y, water_y)
-			if kind == nil or in_building_core(x, z) then return terrain_y, false end
+			if kind == nil then return terrain_y, false end
+			-- the road surface may reach the core's edge (its end sits at the
+			-- core's height); side slopes keep one node off and ease in
+			local excess = core_excess(x, z)
+			if excess and (excess == 0 or (excess <= 1 and kind ~= "surface")) then
+				return terrain_y, false
+			end
 			local wet = water_y ~= nil and water_y > terrain_y
 			local class = extra and extra.class or nil
 			local pillar = extra and extra.pillar or nil
@@ -1316,6 +1330,11 @@ local function height_factory(dependencies)
 			if wet and class == "ford" and road_y >= water_y then
 				class, new_y = "deck", terrain_y
 				pillar = index % road_cache.module.P.PILLAR_EVERY == 0
+			end
+			if new_y ~= nil and kind ~= "surface" and excess and excess <= CORE_EASE then
+				local ease = excess - 1
+				if new_y > terrain_y + ease then new_y = terrain_y + ease end
+				if new_y < terrain_y - ease then new_y = terrain_y - ease end
 			end
 			if new_y == nil then
 				new_y = terrain_y

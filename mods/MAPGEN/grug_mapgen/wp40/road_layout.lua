@@ -73,6 +73,10 @@ local DEFAULT_P = {
 	WALL_MIN = 5, WALL_H = 3, PILLAR_EVERY = 5,
 	-- road-corridor claim exclusion beyond the road edge (nodes)
 	EXCLUDE_PAD = 2,
+	-- a road ends CORE_GAP nodes (square distance) outside a village's or
+	-- POI's core, at the core's fitted height; a join is taken only where
+	-- that height can be reached: |dy| <= PIN_GRADE * (distance - PIN_SLACK)
+	CORE_GAP = 0.5, PIN_GRADE = 0.35, PIN_SLACK = 24, PIN_TRIES = 4,
 }
 
 local function new_module(P)
@@ -337,6 +341,7 @@ local function new_module(P)
 		local ndist_dirty = true
 		local on_road_penalty = nil   -- set while routing loops
 		local road_check = nil        -- set while routing loops
+		local bad_join, pin_check = {}, false  -- core-pin join checks (routed)
 		-- move cost from li (heading da) to lj (heading d) along DIRS[d]
 		local function move_cost(li, lj, d, trail)
 			local D = DIRS[d]
@@ -833,7 +838,15 @@ local function new_module(P)
 			for _, r in ipairs(runs("D")) do
 				if r[2] - r[1] + 1 < P.DECK_MIN then for i = r[1], r[2] do cls[i] = "G" end end
 			end
-			-- a deck run next to a bridge becomes part of it
+			-- a pinned core end stands on the ground (fill, never a deck
+			-- ending at the core's edge)
+			local reach = P.END_FLAT + floor(road.hw) + 1
+			if road.a_core and not road.no_core_pin then
+				for i = 1, min(n, reach) do if cls[i] == "D" then cls[i] = "G" end end
+			end
+			if road.b_core and not road.no_core_pin and not road.parent then
+				for i = max(1, n - reach + 1), n do if cls[i] == "D" then cls[i] = "G" end end
+			end
 			road.cls = cls
 		end
 
@@ -1248,11 +1261,15 @@ local function new_module(P)
 				road.b = b and b.id or "?"
 				road.b_kind = b and b.kind or b_kind
 			end
-			-- a road ends at a village's or POI's core edge, at both ends
+			-- a road ends at a village's or POI's core edge, at both ends; the
+			-- core is a square, so the distance is the larger axis distance
+			-- from the core centre (the road's round end then stays clear of
+			-- the core and its one-node margin on every side)
+			local function cheb(i, nd) return max(abs(X[i] - nd.x), abs(Z[i] - nd.z)) end
 			local function trim_back(r)
 				local n = #X
 				local cut = n
-				while cut > 1 and (X[cut] - X[n]) ^ 2 + (Z[cut] - Z[n]) ^ 2 < r * r do cut = cut - 1 end
+				while cut > 1 and cheb(cut, b) < r do cut = cut - 1 end
 				if cut < n then
 					local nX, nZ = {}, {}
 					for i = 1, cut do nX[i], nZ[i] = X[i], Z[i] end
@@ -1261,7 +1278,7 @@ local function new_module(P)
 			end
 			local function trim_front(r)
 				local cut = 1
-				while cut < #X and (X[cut] - X[1]) ^ 2 + (Z[cut] - Z[1]) ^ 2 < r * r do cut = cut + 1 end
+				while cut < #X and cheb(cut, a) < r do cut = cut + 1 end
 				if cut > 1 then
 					local nX, nZ = {}, {}
 					for i = cut, #X do nX[#nX + 1], nZ[#nZ + 1] = X[i], Z[i] end
@@ -1269,8 +1286,8 @@ local function new_module(P)
 				end
 			end
 			-- (its round end stays outside the building core)
-			if a.core then trim_front(a.core / 2 + 2 + hw) end
-			if b and b.core and info.kind == "node" then trim_back(b.core / 2 + 2 + hw) end
+			if a.core then trim_front(a.core / 2 + P.CORE_GAP + hw) end
+			if b and b.core and info.kind == "node" then trim_back(b.core / 2 + P.CORE_GAP + hw) end
 			if #X < 2 then return nil end
 			-- a trimmed end is pinned to the core's fitted height, so the road
 			-- meets the pad level and leaves the core's ground alone
@@ -1310,11 +1327,31 @@ local function new_module(P)
 		-- one routed road: search, candidate (geometry, samples, provisional
 		-- profile, audit), commit. Free decks are a last resort (D68): the
 		-- audit only classifies them.
+		-- A road whose core pin does not fit is routed again (the join it
+		-- took is excluded) up to PIN_TRIES times; a loop is dropped instead.
 		local function routed(kind, a, b_fixed, do_search)
-			local path, info, cost, dirs, lead = do_search()
-			if not path then return nil end
-			local b = b_fixed or (info.node and node_by_id[info.node]) or nil
-			local road = make_candidate(kind, a, b, path, info, dirs, lead)
+			bad_join, pin_check = {}, true
+			local road, cost
+			for _ = 1, P.PIN_TRIES do
+				local path, info, c, dirs, lead = do_search()
+				if not path and pin_check then
+					-- no join carries the pin: route without the check
+					pin_check = false
+					path, info, c, dirs, lead = do_search()
+				end
+				if not path then break end
+				local b = b_fixed or (info.node and node_by_id[info.node]) or nil
+				road, cost = make_candidate(kind, a, b, path, info, dirs, lead), c
+				if not road or not road.no_core_pin then break end
+				if not road.parent then
+					if road_check then road = nil end    -- a loop: dropped
+					break
+				end
+				local bucket = floor(road.parent_idx / 16)
+				for k = bucket - 1, bucket + 1 do bad_join[road.parent .. ":" .. k] = true end
+				stats.pin_rerouted = (stats.pin_rerouted or 0) + 1
+			end
+			pin_check = false
 			if not road then return nil end
 			audit(road)
 			return commit(road), cost
@@ -1366,11 +1403,20 @@ local function new_module(P)
 				if d == INF then return 0 end
 				return d * hk
 			end
+			-- a core end is pinned to its pad: a join is taken only where the
+			-- parent's height can be reached from it (plus the retry list)
+			local function pin_fits(road, idx)
+				if not (pin_check and a.core and a.y and road.R) then return true end
+				if bad_join[road.id .. ":" .. floor(idx / 16)] then return false end
+				local d = sqrt((road.X[idx] - a.x) ^ 2 + (road.Z[idx] - a.z) ^ 2) -
+					a.core / 2 - P.CORE_GAP
+				return abs(road.R[idx] - a.y) <= P.PIN_GRADE * (d - P.PIN_SLACK)
+			end
 			local function target(li, d)
 				local nc = netcell[li]
 				if nc and joinable_kinds[nc.kind] then
 					local road = roads[nc.road]
-					if join_ok(road, nc.idx) then
+					if join_ok(road, nc.idx) and pin_fits(road, nc.idx) then
 						-- junction angle: no shallow merges
 						local i = nc.idx
 						local j = min(#road.X, i + 3)
