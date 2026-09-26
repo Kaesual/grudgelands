@@ -227,6 +227,10 @@ data.water = {
 	-- a river's mouth is raised to its lake's level by at most this; a lake
 	-- standing higher above the river is lowered to it (D56)
 	LAKE_RAISE = 3,
+	-- a lake is lowered by at most this (its basin above the new level turns
+	-- to ordinary terrain); where it would have to drop further it keeps its
+	-- level and the river sinks before reaching it
+	LAKE_LOWER = 4,
 	CUT_MAX = 30,           -- a river never cuts deeper than this: it sinks
 	SINK_GAP = 6, SINK_MAX = 60, SINK_BACK = 6,
 	-- Trough (D54): the ground is pulled toward the bed B = level - D with a
@@ -247,6 +251,11 @@ data.water = {
 	-- min(R, W + WET_X) + WET_B of the centreline; a ring 1.5 nodes beyond
 	-- that is raised to the level where lower (the containment margin)
 	WET_X = 6, WET_B = 2,
+	-- a river reports its distance (water.column's bank_distance) this far
+	-- beyond its wet limit; height.lua's authored-water clearance
+	-- (`natural_capped`: natural_clear + LAKE_PROXY / 2, 28 for the
+	-- Highcourt canal) must fit inside it
+	BANK_REACH = 30,
 	-- keep-outs: POI cores get a one-sided detour with this clearance; start
 	-- and capital keep-outs lift the routing surface, their radius grown by up
 	-- to `edge` (share) with a noise of period KEEP_EDGE_P
@@ -256,10 +265,6 @@ data.water = {
 	-- corner distance (civic_width / 2 * sqrt 2) plus this margin, grown by up
 	-- to the edge share; rivers may cross the reserved area around it
 	capital_keepout_margin = 32, capital_keepout_edge = 0.3,
-	-- a capital core's keep-out is soft: water drains through the reserved
-	-- area and the course bends past the core along a smooth one-sided lens
-	-- stretched LENS times along the flow (no circle arc round the core)
-	LENS = 2.5,
 	-- sampler buckets (segments by reach) and wet-occupancy cells (nodes)
 	BUCKET = 32, OCC = 16,
 	-- landmarks whose shallow depressions stay ponds (plus wetland zones),

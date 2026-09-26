@@ -263,8 +263,6 @@ local function height_factory(dependencies)
 					end
 					local e = {x = x, z = z, id = a.id, r = r,
 						edge = start and WP.start_keepout_edge or WP.capital_keepout_edge}
-					-- a capital core is soft: rivers bend past it (D57)
-					if not start then e.soft = true end
 					-- the lowest natural ground inside the disc (lake rule)
 					local g, r = math.huge, e.r * (1 + e.edge)
 					for dz = -r, r, 16 do
@@ -324,9 +322,6 @@ local function height_factory(dependencies)
 							local d = math.sqrt((p[1] - cx) ^ 2 + (p[2] - cz) ^ 2)
 							if d > r then r = d end
 						end
-						-- hard (a lifted routing surface): a soft one lets the
-						-- drainage into the lake's basin and the course then
-						-- rings the lake
 						k = {x = cx, z = cz, r = r + 8}
 					end
 				end
@@ -932,6 +927,9 @@ local function height_factory(dependencies)
 		-- field, so no channel is filled dry and no grading edge crosses a
 		-- valley side. Protected cores lie outside every trough.
 		local function keep_trough(x, z, value, incoming)
+			-- the grading reads neighbours, which may have evicted this
+			-- column's block: recompute before reading its carve (purity)
+			natural_height_at(x, z)
 			local block, slot = column(x, z)
 			local keep = clamp(((block.carve[slot] or 0) - 0.5) / 2.5, 0, 1)
 			if keep > 0 then

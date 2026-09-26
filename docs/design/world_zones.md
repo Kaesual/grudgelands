@@ -445,11 +445,16 @@ replaced; git history before this rewrite records that model.
   higher than the one before), at confluences (a tributary's level at the
   junction caps its parent's levels below it, so a tributary meets its parent
   at or above the parent's surface), at a lake mouth (a river meets the lake
-  at the lake's level; its last reaches are raised by at most three nodes,
-  and a lake standing higher above the river's own profile is lowered to it)
-  and between lakes (a lake fed by a river from another lake stands no
+  at the lake's level, at most three nodes above the river's own level at
+  the shore, except where two touching lakes must share a level; a lake
+  standing higher is lowered by at most four nodes, its basin above the new
+  level turning to ordinary terrain; where it would have to drop further it
+  keeps its level and shores and the river sinks before reaching it) and
+  between lakes (a lake fed by a river from another lake stands no
   higher than that lake, and at the same level when their water could meet).
-  The trough's fill level absorbs the small raises.
+  The trough's fill level absorbs the small raises. A drop that a junction
+  or a sink imposes is spread upstream in steps the slope allows (D39), so
+  flat ground gets no tall fall at a confluence.
 - **Layout from drainage (Round 22, D38, D57).** Rivers and lakes come from
   the drainage of the natural terrain on a coarse grid, without erosion:
   shallow pits are breached, deeper basins keep a lake below their spill
@@ -458,10 +463,8 @@ replaced; git history before this rewrite records that model.
   for each capital's protected civic core (the core's corner distance plus a
   margin, about 100-130 nodes, with an irregular edge); a capital's own lake
   (Lethariel's crown lake, Kezamba's cenote) keeps natural water off within
-  its bounds. Water routes around a start's or a lake's keep-out; a capital
-  core's keep-out is soft: the drainage runs through the reserved area as the
-  terrain says and the river bends past the core along a smooth lens
-  stretched along the flow, so it does not circle the core. Rivers and lakes
+  its bounds. Water routes around every keep-out (a river may skirt a core in
+  an arc). Rivers and lakes
   may cross the rest of a capital's reserved area: plots or lanes standing in
   water there are allowed until the capital planner (plan D60) builds the
   capital around its water, and the capital's and a start's terrace grading

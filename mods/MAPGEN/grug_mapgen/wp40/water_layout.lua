@@ -58,8 +58,13 @@ return function(P)
 	-- floor), v = 1 a V (ease-out: a straight floor that rounds off at the
 	-- top). `trough_inv` is its (approximate) inverse: the mix of the two
 	-- exact inverses, used to size a trough and to estimate a water edge.
+	-- The V's floor is rounded (seam rule 4: no knife-edge thalweg along a
+	-- dry gully): t runs through sqrt(t^2 + e^2) - e, rescaled to reach 1.
+	local ROUND = 0.1
+	local ROUND_N = sqrt(1 + ROUND * ROUND) - ROUND
 	local function trough_g(t, v)
 		if t >= 1 then return 1 elseif t <= 0 then return 0 end
+		t = (sqrt(t * t + ROUND * ROUND) - ROUND) / ROUND_N
 		local u = 1 - t
 		return (1 - v) * t * t * (3 - 2 * t) + v * (1 - u * u)
 	end
@@ -154,14 +159,10 @@ return function(P)
 		local nwob = opts.simplex(seed, "river_keepout")
 		local R, keep = {}, {}
 		for k = 0, N - 1 do R[k] = H[k] end
-		-- A soft keep-out (a capital core, D57) lifts nothing: rivers drain
-		-- through the reserved area as the terrain says, and the centreline
-		-- bends past the core on one side (`detour`); it only keeps lakes out
-		-- of the core. A hard one (a start, a civic lake) lifts the routing
-		-- surface, so water routes around it.
-		local soft = {}
+		-- Keep-outs (starts, protected capital cores, civic lakes, D57) raise
+		-- the routing surface so rivers and lakes route around them; the
+		-- terrain itself is unchanged.
 		for ei, e in ipairs(opts.keepouts or {}) do
-			soft[ei] = e.soft or nil
 			local rr = e.r * (1 + (e.edge or 0))
 			for iz = max(0, floor((e.z - rr - GZ0) / C)),
 					min(nz - 1, floor((e.z + rr - GZ0) / C) + 1) do
@@ -172,7 +173,7 @@ return function(P)
 					local k = iz * nx + ix
 					if sqrt(dx * dx + dz * dz) <= keep_radius(e, nwob, x, z) then
 						keep[k] = ei
-						if land[k] and not e.soft then R[k] = R[k] + P.KEEP_LIFT end
+						if land[k] then R[k] = R[k] + P.KEEP_LIFT end
 					end
 				end
 			end
@@ -405,7 +406,7 @@ return function(P)
 			for _, j in ipairs(ring_cells) do mask[j] = L.id end
 		end
 		stats.t_drainage = os.clock() - t0
-		return {nx = nx, nz = nz, N = N, H = H, land = land, keep = keep, soft = soft,
+		return {nx = nx, nz = nz, N = N, H = H, land = land, keep = keep,
 			recv = recv, acc = acc, lakes = lakes, lake_of = lake_of, mask = mask,
 			stats = stats, t0 = t0}
 	end
@@ -414,7 +415,6 @@ return function(P)
 	local function river_tree(S, opts)
 		local nx, nz, N = S.nx, S.nz, S.N
 		local land, keep, recv, acc, lake_of = S.land, S.keep, S.recv, S.acc, S.lake_of
-		local soft = S.soft
 		for _, hnt in ipairs(opts.sources or {}) do
 			local k = floor((hnt.x - P.GX0) / P.C + 0.5) + floor((hnt.z - P.GZ0) / P.C + 0.5) * nx
 			local guard = 0
@@ -426,8 +426,7 @@ return function(P)
 		end
 		local isriv = {}
 		for k = 0, N - 1 do
-			if land[k] and acc[k] >= P.RIVER_ACC and not lake_of[k] and
-					not (keep[k] and not soft[keep[k]]) then
+			if land[k] and acc[k] >= P.RIVER_ACC and not lake_of[k] and not keep[k] then
 				isriv[k] = true
 			end
 		end
@@ -454,7 +453,7 @@ return function(P)
 			local e = {start = k}
 			if r < 0 or not land[r] then e.end_kind, e.end_cell = "sea", r
 			elseif lake_of[r] then e.end_kind, e.end_cell, e.end_lake = "lake", r, lake_of[r]
-			elseif keep[r] and not soft[keep[r]] then e.end_kind = "keepout"
+			elseif keep[r] then e.end_kind = "keepout"
 			else e.end_kind = "land" end
 			queue[#queue + 1] = e
 		end
@@ -619,114 +618,59 @@ return function(P)
 			local rmax_all = 0
 			for i = 1, n do if reach[i] > rmax_all then rmax_all = reach[i] end end
 			for _, e in ipairs(opts.keepouts or {}) do
-				if e.soft then
-					-- A soft keep-out: the course bends past it on the side it
-					-- already leans to, along a smooth lens stretched LENS times
-					-- along the flow, so the bend starts early and never
-					-- follows the core's outline.
-					local best, bi = math.huge, nil
-					for i = 1, n do
-						local d2 = (out[i][1] - e.x) ^ 2 + (out[i][2] - e.z) ^ 2
-						if d2 < best then best, bi = d2, i end
-					end
-					local rc = e.r * (1 + (e.edge or 0)) + rmax_all + P.POI_PAD
-					if bi and best < rc * rc then
-						local function frame(i)
-							local ia, ib = max(1, i - 4), min(n, i + 4)
-							local tx, tz = out[ib][1] - out[ia][1], out[ib][2] - out[ia][2]
-							local tl = sqrt(tx * tx + tz * tz)
-							if tl < 1e-6 then return 1, 0 end
-							return tx / tl, tz / tl
-						end
-						local tx, tz = frame(bi)
-						local side = (tx * (out[bi][2] - e.z) - tz * (out[bi][1] - e.x)) >= 0 and 1 or -1
-						-- the push along each vertex's own normal (its local
-						-- frame, so a curved course keeps its shape), then
-						-- smoothed along the course
-						local px, pz = {}, {}
-						for i = 1, n do
-							px[i], pz[i] = 0, 0
-							local x, z = out[i][1], out[i][2]
-							local dx, dz = x - e.x, z - e.z
-							local r0 = keep_radius(e, nwob, x, z) + reach[i] + P.POI_PAD
-							local A = P.LENS * r0
-							local fx, fz = frame(i)
-							local a = dx * fx + dz * fz
-							if a * a < A * A then
-								local f = 1 - abs(a) / A
-								local lim = r0 * f * f * (3 - 2 * f)
-								local l0 = -dx * fz + dz * fx
-								if abs(l0) < lim and side * l0 < lim then
-									local dl = side * lim - l0
-									px[i], pz[i] = -fz * dl, fx * dl
-								end
-							end
-						end
-						for _ = 1, 6 do
-							local ox, oz = {}, {}
-							for i = 1, n do
-								local ia, ib = max(1, i - 1), min(n, i + 1)
-								ox[i] = (px[ia] + 2 * px[i] + px[ib]) / 4
-								oz[i] = (pz[ia] + 2 * pz[i] + pz[ib]) / 4
-							end
-							px, pz = ox, oz
-						end
-						for i = 1, n do
-							local x, z = out[i][1] + px[i], out[i][2] + pz[i]
-							-- the smoothing may leave a vertex short of the core:
-							-- the radial clearance still holds
-							local r = keep_radius(e, nwob, x, z) + reach[i] + P.POI_PAD
-							local dx, dz = x - e.x, z - e.z
-							local d2 = dx * dx + dz * dz
-							if d2 < r * r then
-								local d = sqrt(d2)
-								if d < 1e-3 then dx, dz, d = 1, 0, 1 end
-								x, z = e.x + dx / d * r, e.z + dz / d * r
-							end
-							out[i] = {x, z}
-						end
-					end
-				else
-					for i = 1, n do
-						local x, z = out[i][1], out[i][2]
-						local r = keep_radius(e, nwob, x, z) + reach[i] + P.POI_PAD
-						local dx, dz = x - e.x, z - e.z
-						local d2 = dx * dx + dz * dz
-						if d2 < r * r then
-							local d = sqrt(d2)
-							if d < 1e-3 then dx, dz, d = 1, 0, 1 end
-							out[i] = {e.x + dx / d * r, e.z + dz / d * r}
-						end
+				for i = 1, n do
+					local x, z = out[i][1], out[i][2]
+					local r = keep_radius(e, nwob, x, z) + reach[i] + P.POI_PAD
+					local dx, dz = x - e.x, z - e.z
+					local d2 = dx * dx + dz * dz
+					if d2 < r * r then
+						local d = sqrt(d2)
+						if d < 1e-3 then dx, dz, d = 1, 0, 1 end
+						out[i] = {e.x + dx / d * r, e.z + dz / d * r}
 					end
 				end
 			end
+			-- POI cores: every run of the course that enters a core's clearance
+			-- is replaced, with a few vertices of lead-in either side, by the
+			-- short arc round the core between the run's ends (angle
+			-- interpolated in order along the run), so the course never folds
+			-- back on itself.
 			for _, p in ipairs(opts.pois or {}) do
-				local best, bi = math.huge, nil
-				for i = 1, n do
-					local d2 = (out[i][1] - p.x) ^ 2 + (out[i][2] - p.z) ^ 2
-					if d2 < best then best, bi = d2, i end
-				end
-				local rmax = p.r + rmax_all + P.POI_PAD + P.MEANDER_MAX
-				if bi and best < rmax * rmax then
-					local ia, ib = max(1, bi - 3), min(n, bi + 3)
-					local tx, tz = out[ib][1] - out[ia][1], out[ib][2] - out[ia][2]
-					local tl = sqrt(tx * tx + tz * tz)
-					if tl < 1e-6 then tx, tz, tl = 1, 0, 1 end
-					tx, tz = tx / tl, tz / tl
-					local side = (tx * (out[bi][2] - p.z) - tz * (out[bi][1] - p.x)) >= 0 and 1 or -1
-					for i = 1, n do
-						local x, z = out[i][1], out[i][2]
-						local r = p.r + reach[i] + P.POI_PAD
-						local dx, dz = x - p.x, z - p.z
-						local a = dx * tx + dz * tz
-						local l0 = -dx * tz + dz * tx
-						if a * a < r * r then
-							local lim = r * sqrt(1 - (a / r) ^ 2)
-							if abs(l0) < lim then
-								local l = side * lim
-								out[i] = {p.x + a * tx - l * tz, p.z + a * tz + l * tx}
-							end
+				local function clear(i) return p.r + reach[i] + P.POI_PAD end
+				local i = 1
+				while i <= n do
+					local dx, dz = out[i][1] - p.x, out[i][2] - p.z
+					if dx * dx + dz * dz < clear(i) ^ 2 then
+						local i1 = i
+						while i1 < n do
+							local ex, ez = out[i1 + 1][1] - p.x, out[i1 + 1][2] - p.z
+							if ex * ex + ez * ez >= clear(i1 + 1) ^ 2 then break end
+							i1 = i1 + 1
 						end
+						local j0, j1 = max(1, i - 3), min(n, i1 + 3)
+						if j1 > j0 then
+							local ax, az = out[j0][1] - p.x, out[j0][2] - p.z
+							local bx, bz = out[j1][1] - p.x, out[j1][2] - p.z
+							local t0, t1 = math.atan2(az, ax), math.atan2(bz, bx)
+							-- the short arc between the run's ends (the minor arc
+							-- lies on the far side of the core from the chord)
+							local dt = t1 - t0
+							while dt > math.pi do dt = dt - 2 * math.pi end
+							while dt < -math.pi do dt = dt + 2 * math.pi end
+							local r0 = sqrt(ax * ax + az * az)
+							local r1 = sqrt(bx * bx + bz * bz)
+							local o = {}
+							for q = j0, j1 do
+								local f = (q - j0) / (j1 - j0)
+								local t = t0 + dt * f
+								local rad = max(clear(q), r0 + (r1 - r0) * f)
+								o[q] = {p.x + rad * math.cos(t), p.z + rad * math.sin(t)}
+							end
+							for q = j0, j1 do out[q] = o[q] end
+						end
+						i = j1 + 1
+					else
+						i = i + 1
 					end
 				end
 			end
@@ -977,6 +921,17 @@ return function(P)
 			return floor(P.STEP_GENTLE + (P.FALL_MAX - P.STEP_GENTLE) *
 				smoothstep(P.SLOPE_GENTLE, P.SLOPE_STEEP, g) + 0.5)
 		end
+		-- Walking upstream from `from`, a reach standing more than the
+		-- slope's step limit above the next one is lowered to that limit
+		-- (never across a dry gap).
+		local function grade(lv, dry, p, n, from)
+			for q = from - 1, 1, -1 do
+				if not (dry[q] or dry[q + 1]) then
+					local limit = fall_limit(profile_slope(p, n, q + 1))
+					if lv[q] - lv[q + 1] > limit then lv[q] = lv[q + 1] + limit end
+				end
+			end
+		end
 		-- the sea is a floor for every river of a system that reaches it
 		local function reaches_sea(rv)
 			while rv.parent do rv = S.rivers[rv.parent] end
@@ -1102,6 +1057,11 @@ return function(P)
 					end
 				end
 			end
+			-- D39 also for the steps a junction cap or a sink cap made: a
+			-- step taller than the slope allows lowers the reaches above it,
+			-- so the drop spreads upstream as smaller steps
+			grade(lv, dry, p, n, n)
+			rv.p = p
 			-- A lake mouth meets the lake at its level (D56); `settle_lakes`
 			-- keeps that raise small.
 			rv.mouth = nil
@@ -1115,9 +1075,13 @@ return function(P)
 					rv.mouth = lv[q]
 					if m[q] >= ll then break end
 				end
+				-- the raise the rule bounds: lake level over the river's own
+				-- level at the shore
+				if rv.mouth and ll - rv.mouth > stats.lake_raise then
+					stats.lake_raise = ll - rv.mouth
+				end
 				for q = n, 1, -1 do
 					if dry[q] or lv[q] >= ll then break end
-					if ll - lv[q] > stats.lake_raise then stats.lake_raise = ll - lv[q] end
 					lv[q] = ll
 				end
 			end
@@ -1190,6 +1154,9 @@ return function(P)
 						end
 						lv[q] = end_level
 					end
+					-- the drop onto the parent spreads up the tributary in
+					-- steps the slope allows (D39), no tall fall on flat land
+					grade(lv, rv.dry, rv.p, n, n)
 				else
 					stats.dry_junctions = stats.dry_junctions + 1
 				end
@@ -1220,6 +1187,45 @@ return function(P)
 		return false
 	end
 
+	-- A lowered lake keeps only the cells below its new level (plus one ring
+	-- of cells at or above it), so its old basin becomes ordinary terrain.
+	local function lower_lake(S, id, level)
+		local L, nx, nz, H, land = S.lakes[id], S.nx, S.nz, S.H, S.land
+		local stats = S.stats
+		stats.lakes_lowered = (stats.lakes_lowered or 0) + 1
+		local drop = (L.level0 or L.level) - level
+		if drop > (stats.lake_lower_max or 0) then stats.lake_lower_max = drop end
+		L.level = level
+		for k, v in pairs(S.mask) do if v == id then S.mask[k] = nil end end
+		local cells = {}
+		for _, c in ipairs(L.cells) do
+			if H[c] < level then cells[#cells + 1] = c else S.lake_of[c] = nil end
+		end
+		L.cells = cells
+		for _, c in ipairs(cells) do S.mask[c] = id end
+		local ring = {}
+		for _, c in ipairs(cells) do
+			local cx, cz = c % nx, floor(c / nx)
+			for d = 1, 8 do
+				local jx, jz = cx + DX[d], cz + DZ[d]
+				if jx >= 0 and jx < nx and jz >= 0 and jz < nz then
+					local j = jz * nx + jx
+					if land[j] and S.mask[j] == nil and H[j] >= level then ring[#ring + 1] = j end
+				end
+			end
+		end
+		table.sort(ring)
+		for _, j in ipairs(ring) do S.mask[j] = id end
+	end
+	-- A lake that would have to drop more than LAKE_LOWER keeps its level
+	-- and shores; the river sinks before reaching it instead (its tail near
+	-- the lake is dry, `sink_before_lakes`).
+	local function sink_before(S, rv)
+		S.stats.rivers_sunk_before_lake = (S.stats.rivers_sunk_before_lake or 0) + 1
+		rv.sink_lake = rv.end_lake
+		rv.end_kind, rv.end_lake = "sink", nil
+	end
+
 	local function settle_lakes(S)
 		local changed = false
 		for _, rv in ipairs(S.rivers) do
@@ -1241,9 +1247,13 @@ return function(P)
 					end
 				end
 				if L.level > cap then
-					L.level = cap
+					L.level0 = L.level0 or L.level
+					if L.level0 - cap > P.LAKE_LOWER then
+						sink_before(S, rv)
+					else
+						lower_lake(S, rv.end_lake, cap)
+					end
 					changed = true
-					S.stats.lakes_lowered = (S.stats.lakes_lowered or 0) + 1
 				end
 			end
 		end
@@ -1377,10 +1387,12 @@ return function(P)
 		-- a river that ended in (or left) a drained lake must not keep that
 		-- lake's level: the levels are computed again without it
 		if S.stats.lakes_drained > 0 then levels(S, opts) end
-		for _ = 1, 6 do
-			if not settle_lakes(S) then break end
+		local settled = false
+		for _ = 1, 8 do
+			if not settle_lakes(S) then settled = true; break end
 			levels(S, opts)
 		end
+		S.stats.settle_unconverged = settled and 0 or 1
 		troughs(S, opts)
 		-- A river's vertices well inside its source or end lake carry no
 		-- trough (a straight trench across the lake bed with straight
@@ -1394,6 +1406,27 @@ return function(P)
 		end
 		for _, rv in ipairs(S.rivers) do
 			local n = #rv.pts
+			-- a river that sinks before its lake: dry from where the lake's
+			-- mask support begins, and a water reach further back, so its
+			-- water never meets the higher lake
+			if rv.sink_lake then
+				local first
+				for i = 1, n do
+					local id, m = lake_ind(rv.pts[i][1], rv.pts[i][2])
+					if id == rv.sink_lake and m > 0.01 then first = i; break end
+				end
+				if first then
+					local reach = (rv.w[first] > 0 and rv.w[first] or P.W_MIN) + P.WET_X +
+						P.WET_B + 4
+					local i, back = first, 0
+					while i > 1 and back < reach do
+						back = back + sqrt((rv.pts[i][1] - rv.pts[i - 1][1]) ^ 2 +
+							(rv.pts[i][2] - rv.pts[i - 1][2]) ^ 2)
+						i = i - 1
+					end
+					for q = i, n do rv.w[q] = 0 end
+				end
+			end
 			if rv.src_lake then
 				for i = 1, n - 1 do
 					if rv.w[i] > 0 and inside(rv, i, rv.src_lake, P.LAKE_TRIM) then
@@ -1732,8 +1765,8 @@ return function(P)
 		--   bank_distance  for a column near natural water: its distance in
 		--            nodes to where that water may stand (rivers: beyond the
 		--            wet limit, never an overestimate; lakes: the indicator
-		--            proxy), nil when no natural water is near (more than
-		--            about ten nodes)
+		--            proxy), nil when no natural water is near (rivers: more
+		--            than BANK_REACH beyond the wet limit)
 		--   bank_y   that water's surface
 		--   material_distance  the distance the bank material rule reads
 		--            (rivers: the estimated water edge for this column's bank
@@ -1747,7 +1780,7 @@ return function(P)
 			if d then
 				local a = w / 2
 				local t = R > 0 and d / (R * (1 + WOB * nwall(x / 53, z / 53))) or 1
-				if t < 1 or d <= wl + 10 then
+				if t < 1 or d <= wl + P.BANK_REACH then
 					-- The trough (D54): the ground is pulled toward the bed B =
 					-- lb - D with the weight G(t), lb the smooth blend of the
 					-- reach levels. At a step within one river, near the water,
@@ -1793,9 +1826,11 @@ return function(P)
 			if lid then
 				local L = lakes[lid].level
 				local ld = (0.5 - m) * P.LAKE_PROXY
-				-- dry ground inside the mask (an island, or a basin a lowered
-				-- lake no longer fills): its height above the water stands in
-				-- for the distance, so no dry lake bed turns to beach
+				-- dry ground inside the mask (an island, the rim ring): its
+				-- height above the water stands in for the distance, so only
+				-- ground within about two nodes of the water can turn to beach
+				-- (a lowered lake's old basin has left the mask, see
+				-- lower_lake)
 				if ld < 0 then ld = h > L and (h - L) * P.LAKE_RISE_D or 0 end
 				if not bank_distance or ld < bank_distance then
 					bank_distance, bank_y, material_distance = ld, L, ld
