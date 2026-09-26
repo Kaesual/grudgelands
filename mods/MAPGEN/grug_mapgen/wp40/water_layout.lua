@@ -618,20 +618,53 @@ return function(P)
 		-- `reach` is how far water may stand from the centreline.
 		local function detour(out, reach)
 			local n = #out
+			-- A few smoothing passes over a replaced or pushed run and its
+			-- lead-in (the ends fixed), then the radial clearance again, so the
+			-- run joins the course without a corner.
+			local function smooth_clear(j0, j1, cx, cz, clear)
+				local a, b = max(2, j0 - 3), min(n - 1, j1 + 3)
+				for _ = 1, 3 do
+					local o = {}
+					for q = a, b do
+						o[q] = {(out[q - 1][1] + 2 * out[q][1] + out[q + 1][1]) / 4,
+							(out[q - 1][2] + 2 * out[q][2] + out[q + 1][2]) / 4}
+					end
+					for q = a, b do out[q] = o[q] end
+				end
+				for q = a, b do
+					local dx, dz = out[q][1] - cx, out[q][2] - cz
+					local r = clear(q, out[q][1], out[q][2])
+					local d2 = dx * dx + dz * dz
+					if d2 < r * r then
+						local d = sqrt(d2)
+						if d < 1e-3 then dx, dz, d = 1, 0, 1 end
+						out[q] = {cx + dx / d * r, cz + dz / d * r}
+					end
+				end
+			end
 			local rmax_all = 0
 			for i = 1, n do if reach[i] > rmax_all then rmax_all = reach[i] end end
 			for _, e in ipairs(opts.keepouts or {}) do
+				local function clear(q, x, z)
+					return keep_radius(e, nwob, x, z) + reach[q] + P.POI_PAD
+				end
+				local j0, j1
 				for i = 1, n do
 					local x, z = out[i][1], out[i][2]
-					local r = keep_radius(e, nwob, x, z) + reach[i] + P.POI_PAD
+					local r = clear(i, x, z)
 					local dx, dz = x - e.x, z - e.z
 					local d2 = dx * dx + dz * dz
 					if d2 < r * r then
 						local d = sqrt(d2)
 						if d < 1e-3 then dx, dz, d = 1, 0, 1 end
 						out[i] = {e.x + dx / d * r, e.z + dz / d * r}
+						j0, j1 = j0 or i, i
+					elseif j0 and i > j1 + 6 then
+						smooth_clear(j0, j1, e.x, e.z, clear)
+						j0, j1 = nil, nil
 					end
 				end
+				if j0 then smooth_clear(j0, j1, e.x, e.z, clear) end
 			end
 			-- POI cores: every run of the course that enters a core's clearance
 			-- is replaced, with a few vertices of lead-in either side, by the
@@ -670,6 +703,7 @@ return function(P)
 								o[q] = {p.x + rad * math.cos(t), p.z + rad * math.sin(t)}
 							end
 							for q = j0, j1 do out[q] = o[q] end
+							smooth_clear(j0, j1, p.x, p.z, clear)
 						end
 						i = j1 + 1
 					else
@@ -877,7 +911,7 @@ return function(P)
 		local field, land_at = opts.field, opts.land_at
 		local lakes, stats = S.lakes, S.stats
 		stats.sinks, stats.max_cut, stats.lake_raise, stats.dry_junctions = 0, 0, 0, 0
-		stats.trib_raise = 0
+		stats.trib_raise, stats.grade_clamped = 0, 0
 		local function fh(x, z)
 			if not land_at(x, z) then return 1 end
 			return field.height_at(x, z, true)
@@ -927,11 +961,19 @@ return function(P)
 		-- Walking upstream from `from`, a reach standing more than the
 		-- slope's step limit above the next one is lowered to that limit
 		-- (never across a dry gap).
-		local function grade(lv, dry, p, n, from)
+		local function grade(lv, dry, p, m, n, from)
 			for q = from - 1, 1, -1 do
 				if not (dry[q] or dry[q + 1]) then
 					local limit = fall_limit(profile_slope(p, n, q + 1))
-					if lv[q] - lv[q + 1] > limit then lv[q] = lv[q + 1] + limit end
+					if lv[q] - lv[q + 1] > limit then
+						local low = lv[q + 1] + limit
+						-- never cut deeper than CUT_MAX: the step stays taller
+						if m[q] - low > P.CUT_MAX then
+							stats.grade_clamped = stats.grade_clamped + 1
+							break
+						end
+						lv[q] = low
+					end
 				end
 			end
 		end
@@ -1063,8 +1105,8 @@ return function(P)
 			-- D39 also for the steps a junction cap or a sink cap made: a
 			-- step taller than the slope allows lowers the reaches above it,
 			-- so the drop spreads upstream as smaller steps
-			grade(lv, dry, p, n, n)
-			rv.p = p
+			grade(lv, dry, p, m, n, n)
+			rv.p, rv.m = p, m
 			-- A lake mouth meets the lake at its level (D56); `settle_lakes`
 			-- keeps that raise small.
 			rv.mouth = nil
@@ -1082,8 +1124,7 @@ return function(P)
 				-- level at the shore
 				if rv.mouth and ll - rv.mouth > stats.lake_raise then
 					stats.lake_raise = ll - rv.mouth
-				end
-				for q = n, 1, -1 do
+				end				for q = n, 1, -1 do
 					if dry[q] or lv[q] >= ll then break end
 					lv[q] = ll
 				end
@@ -1159,7 +1200,7 @@ return function(P)
 					end
 					-- the drop onto the parent spreads up the tributary in
 					-- steps the slope allows (D39), no tall fall on flat land
-					grade(lv, rv.dry, rv.p, n, n)
+					grade(lv, rv.dry, rv.p, rv.m, n, n)
 				else
 					stats.dry_junctions = stats.dry_junctions + 1
 				end
@@ -1234,6 +1275,13 @@ return function(P)
 		for _, rv in ipairs(S.rivers) do
 			local L = rv.end_kind == "lake" and not rv.parent and rv.end_lake and
 				S.lakes[rv.end_lake]
+			-- a river that leaves a lake and runs back into the same lake
+			-- ends dry before returning (it cannot meet the lake's level)
+			if L and rv.src_lake == rv.end_lake then
+				sink_before(S, rv)
+				changed = true
+				L = nil
+			end
 			if L then
 				local cap = rv.mouth and rv.mouth + P.LAKE_RAISE or math.huge
 				if rv.lcap < cap then cap = rv.lcap end
@@ -1251,7 +1299,17 @@ return function(P)
 				end
 				if L.level > cap then
 					L.level0 = L.level0 or L.level
-					if L.level0 - cap > P.LAKE_LOWER then
+					L.cells0 = L.cells0 or L.cells
+					-- a lowering that would leave less than LAKE_KEEP of the
+					-- lake's area wet turns a flat basin into a beach plain:
+					-- the river sinks before the lake instead (not for a lake
+					-- in a chain, which takes its upstream lake's level)
+					local kept = 0
+					for _, c in ipairs(L.cells0) do
+						if S.H[c] < cap then kept = kept + 1 end
+					end
+					local small = not rv.src_lake and kept < P.LAKE_KEEP * #L.cells0
+					if L.level0 - cap > P.LAKE_LOWER or small then
 						sink_before(S, rv)
 					else
 						lower_lake(S, rv.end_lake, cap)

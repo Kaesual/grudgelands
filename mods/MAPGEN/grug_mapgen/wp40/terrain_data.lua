@@ -231,6 +231,8 @@ data.water = {
 	-- to ordinary terrain); where it would have to drop further it keeps its
 	-- level and the river sinks before reaching it
 	LAKE_LOWER = 4,
+	-- ... and only while at least this share of its cells stays wet
+	LAKE_KEEP = 0.5,
 	CUT_MAX = 30,           -- a river never cuts deeper than this: it sinks
 	SINK_GAP = 6, SINK_MAX = 60, SINK_BACK = 6,
 	-- Trough (D54): the ground is pulled toward the bed B = level - D with a
