@@ -196,7 +196,7 @@ Road shape decisions (2026-09-25, user with coordinator, before Phase 4):
 | D50 | **Stairs only on trails:** the narrow trails to outposts, mines and camps (D19) may use stair flights (up to 1:1) on straight stretches; main roads stay ≤ 1:2 with slabs (mounts, later carts). Compared as a variant in the prototype. | Stairs have an orientation and look wrong in curves. |
 | D51 | **No long ramps into flat land.** Routing follows the terrain so the road lies near ground level; the profile both cuts and fills (never only fills downward from a high point); no fixed high control points (bridges sit on bank height with small clearance, junctions and gates take their ground's height). Metric: the longest stretch where the road lies more than 2 nodes above or below the terrain; a large value means the route is wrong and the costs get tuned, not longer ramps built. | User: in the old mapgen, ramps ran far into flat land before reaching their height. |
 | D52 | **Moonfall keeps its crescent lake in a calm bowl** added to the terrain field around the landmark (radius ~120, blend ~90, the steep-POI bowl mechanism), with a natural-water keep-out; the terrain and rivers around it change. | User, 2026-09-26, on lane W2b's images: the landmark sits on a 30–90-node coastal slope on every seed. |
-| D53 | **Highcourt's canals are one continuous canal with river water and small 1-node rapids** (like the natural rivers), not a chain of basins with dry weirs. As built: 1-node steps, 2 where the ground drops faster (max 2 on the tested seeds). | User, 2026-09-26, on lane W2b's images ("sausage chain"). |
+| D53 | *(Superseded by D58, 2026-09-26: one level, no rapids.)* **Highcourt's canals are one continuous canal with river water and small 1-node rapids** (like the natural rivers), not a chain of basins with dry weirs. As built: 1-node steps, 2 where the ground drops faster (max 2 on the tested seeds). | User, 2026-09-26, on lane W2b's images ("sausage chain"). |
 
 Decisions after the Phase 5 playtest (2026-09-26, user with coordinator):
 
@@ -588,6 +588,17 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   - Highcourt canal interim (D58): one level for the whole canal, rims raised
     where needed, interrupted with a sealed end where natural water comes
     close.
+  - **Done on the W3a branch (not merged):** lighting — v7 lit its temporary
+    geometry and spread that light up to 14 nodes into an already generated
+    neighbour, which the writer restored; the halo now takes the lower of
+    original and recomputed light inside the relit box (engine: brighter
+    liquid nodes 19772 → 0 at the lake, 158 → 0 sea floor, 328 → 0 river).
+    Civic steps — `grug_core`'s water guard reverted all flow in protected
+    territory; planned step flow is now exempt (Highcourt steps flowing
+    0/276 → 266/276 before the canal became one level). Canal — one level
+    halfway between the lowest bank ground and the highest ground under it
+    (raised banks up to 6, trough cut up to 6 on the three seeds), sealed
+    8 nodes off natural water (checked with keep-outs shrunk to ~core).
 - **Lane W3b — rivers v2:**
   - trough model (D54): a smooth V/U trough blended into the terrain, width
     varying with flow, noise and terrain; water fills to the flat reach level;
