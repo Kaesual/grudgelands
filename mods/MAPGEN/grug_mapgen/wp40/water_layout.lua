@@ -58,13 +58,16 @@ return function(P)
 	-- floor), v = 1 a V (ease-out: a straight floor that rounds off at the
 	-- top). `trough_inv` is its (approximate) inverse: the mix of the two
 	-- exact inverses, used to size a trough and to estimate a water edge.
-	-- The V's floor is rounded (seam rule 4: no knife-edge thalweg along a
-	-- dry gully): t runs through sqrt(t^2 + e^2) - e, rescaled to reach 1.
+	-- `round` (0..1, the sampler passes 1 in a dry gully, 0 under water)
+	-- rounds the V's floor (seam rule 4: no knife-edge thalweg along a dry
+	-- gully): t runs through sqrt(t^2 + e^2) - e, rescaled to reach 1.
 	local ROUND = 0.1
-	local ROUND_N = sqrt(1 + ROUND * ROUND) - ROUND
-	local function trough_g(t, v)
+	local function trough_g(t, v, round)
 		if t >= 1 then return 1 elseif t <= 0 then return 0 end
-		t = (sqrt(t * t + ROUND * ROUND) - ROUND) / ROUND_N
+		if round and round > 0 then
+			local e = ROUND * round
+			t = (sqrt(t * t + e * e) - e) / (sqrt(1 + e * e) - e)
+		end
 		local u = 1 - t
 		return (1 - v) * t * t * (3 - 2 * t) + v * (1 - u * u)
 	end
@@ -1801,7 +1804,9 @@ return function(P)
 						wl = wl + (a + P.WET_B - wl) * smoothstep(0.15, 0.6, level - lown)
 					end
 					local B = lb - D * (1 + P.BED_NOISE * nbed(x / 11, z / 11))
-					if h > B then h = B + (h - B) * trough_g(t, V) end
+					if h > B then
+						h = B + (h - B) * trough_g(t, V, 1 - (D < 1 and D or 1))
+					end
 					if wl > 0 then
 						-- the water edge for this column's own bank height (an
 						-- estimate): the bank rule's distance, never beyond
