@@ -3,7 +3,7 @@
 Date: 2026-09-25. Coordinator: Claude Opus 5.5 (root), implementation by
 Opus 5.5 subagents; the user may re-route per session
 (`../process/agent-model-policy.md`, "Day-to-day routing rule").
-Status: **in progress.** Phases 0–3, 3b and 5 are done, merged and synced (not pushed). Phase 5b (water rework after the playtest, D54–D62) is running; after the user accepts water the context is compacted (D62), then Phase 4 (roads, prototype first), then the capital planner package (D60, §11) and Phase 6. Each phase still needs the user's Go.
+Status: **in progress.** Phases 0–3, 3b, 5 and 5b are merged and synced (not pushed; last merge 4d74c2e8, 2026-09-26). Phase 5b waits for the user's water playtest; when the user accepts water, the context is compacted (D62), then three packages start: the Phase 4 road prototype, the D63 performance analysis and the D64 chunk-edge analysis; later the capital planner (D60, §11) and Phase 6. Each phase still needs the user's Go.
 
 This document records the goal, the analysis it rests on, every decision taken
 with the user on 2026-09-25 and its basis, the phases, and the guardrails
@@ -629,6 +629,21 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   census joins the windows as the lighting check
   (`~/projects/grudgelands-orchestration/r22/lighting-checks/`), run when
   lighting code changes, reduced while iterating — not on every change.
+- **Result (2026-09-26, merged 4d74c2e8, after three review rounds):**
+  troughs blended into the terrain (U in flat, V in steep ground), water
+  width median 13–14 (was 7), fewer than 6 nodes only at 1–6 samples per
+  seed, width variation doubled; levels never rise downstream (0 on three
+  seeds, confluences and lakes included); dry source gullies; hard
+  keep-outs only for start towns (300) and capital cores (~100–130) plus a
+  disc around the crown lake and cenote — the soft lens around cores was
+  tried and rejected (it folded centrelines), so rivers bend around cores in
+  arcs (user judges in the playtest); lakes are lowered at most 4 and only if
+  half their cells stay wet, otherwise the river sinks before the lake with
+  a tapered end; tall falls at flat confluences spread over small steps;
+  POI and keep-out detours smoothed. Capital plot warnings 26–58 per seed
+  (allowed, D57). Chunk time about +3 %, layout build ~5 s, payload
+  ~125 KB (reports). Lighting Fix A merged 9f8cbf44 (census 3/0 like the
+  pre-W3a base).
 - **Lane W3b — rivers v2:**
   - trough model (D54): a smooth V/U trough blended into the terrain, width
     varying with flow, noise and terrain; water fills to the flat reach level;
