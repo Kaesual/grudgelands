@@ -102,7 +102,8 @@ local function loader(directory)
 		local BUCKET = 8
 		local buckets = {}
 		local function bkey(bx, bz) return bz * 65536 + bx end
-		local reach = HALF + 2
+		-- a segment reaches every column of its belt and of a turret disc on it
+		local reach = max(HALF, TURRET) + 2
 		local min_x, max_x, min_z, max_z = math.huge, -math.huge, math.huge, -math.huge
 		for i = 1, n do
 			local a, b = pts[i], pts[i % n + 1]
@@ -123,6 +124,26 @@ local function loader(directory)
 		end
 		local turret_at = {}
 		for _, i in ipairs(W.turrets) do turret_at[#turret_at + 1] = pts[i] end
+		-- the open belt's trees: every eighth point off gaps and water, as
+		-- rounded trunk columns bucketed by the 5 x 5 crown square they own
+		local TREE_EVERY, CROWN = 8, 2
+		local trees = {}
+		if kind == "open" then
+			for i = TREE_EVERY, n, TREE_EVERY do
+				if not W.gap[i] and not W.gap[i % n + 1] and not W.wet[i] then
+					local tx, tz = floor(pts[i][1] + 0.5), floor(pts[i][2] + 0.5)
+					local t = {tx, tz}
+					for bz = floor((tz - CROWN) / BUCKET), floor((tz + CROWN) / BUCKET) do
+						for bx = floor((tx - CROWN) / BUCKET), floor((tx + CROWN) / BUCKET) do
+							local k = bkey(bx, bz)
+							local l = trees[k]
+							if not l then l = {}; trees[k] = l end
+							l[#l + 1] = t
+						end
+					end
+				end
+			end
+		end
 		local gates = {}
 		for c = 1, 4 do gates[c] = layout.gates[c] end
 		local extra = max(DEPTH, WIDTH, TURRET) + 1
@@ -197,11 +218,15 @@ local function loader(directory)
 				end
 				return
 			end
+			-- a road or street column is never built over (a connector may
+			-- cross the edge next to a turret)
+			if road then return end
 			for _, t in ipairs(turret_at) do
 				local dx, dz = lx - t[1], lz - t[2]
 				local r2 = dx * dx + dz * dz
 				if r2 <= TURRET * TURRET + 1 then
 					local d, i, u = nearest(lx, lz)
+					if not d then return end
 					local top = walk_at(i, u)
 					local crown = top + 5
 					for y = ground - 2, crown - 1 do put(y, R.face) end
@@ -219,7 +244,6 @@ local function loader(directory)
 					return
 				end
 			end
-			if road then return end
 			local d, i, u, outside = nearest(lx, lz)
 			if not d or d > HALF + 0.5 then return end
 			if W.gap[i] or W.gap[i % n + 1] then return end
@@ -231,9 +255,8 @@ local function loader(directory)
 			if wet and not pier then low = top - 3 end
 			for y = low, top - 1 do put(y, edge_lane and R.face or R.core) end
 			if edge_lane then
-				put(top, R.face)
 				local rise = top + (slab and 1 or 0)
-				put(rise + 1, R.face)
+				for y = top, rise + 1 do put(y, R.face) end
 				if outside then
 					-- merlons on the field side, two nodes on and two off
 					if i % 2 == 0 then put(rise + 2, R.face); put(rise + 3, R.cap) end
@@ -264,11 +287,13 @@ local function loader(directory)
 				end
 				return
 			end
+			if road then return end
 			for _, t in ipairs(turret_at) do
 				local dx, dz = lx - t[1], lz - t[2]
 				local r2 = dx * dx + dz * dz
 				if r2 <= TURRET * TURRET + 1 then
 					local d, i, u = nearest(lx, lz)
+					if not d then return end
 					local top = walk_at(i, u)
 					local crown = top + 4
 					if r2 >= (TURRET - 1) ^ 2 then
@@ -282,7 +307,6 @@ local function loader(directory)
 					return
 				end
 			end
-			if road then return end
 			local d, i, u, outside = nearest(lx, lz)
 			if not d or d > HALF + 0.5 then return end
 			if W.gap[i] or W.gap[i % n + 1] then return end
@@ -323,22 +347,25 @@ local function loader(directory)
 				return
 			end
 			if road then return end
+			if water ~= nil and water > ground then return end
+			-- a tree every eight points (iterated as tree points, so the crown
+			-- square never depends on which segment is nearest), a hedge between
+			local crowned = false
+			for _, t in ipairs(trees[bkey(floor(lx / BUCKET), floor(lz / BUCKET))] or {}) do
+				if lx == t[1] and lz == t[2] then
+					for y = ground + 1, ground + 5 do put(y, R.log) end
+					put(ground + 6, R.crown)
+					return
+				end
+				if not crowned and abs(lx - t[1]) <= CROWN and abs(lz - t[2]) <= CROWN then
+					for y = ground + 4, ground + 6 do put(y, R.crown) end
+					crowned = true
+				end
+			end
 			local d, i = nearest(lx, lz)
 			if not d or d > HALF + 0.5 then return end
 			if W.gap[i] or W.gap[i % n + 1] then return end
-			if W.wet[i] or (water ~= nil and water > ground) then return end
-			-- a tree every eight points, a hedge between
-			local p = pts[i]
-			local tree = i % 8 == 0
-			local tx, tz = floor(p[1] + 0.5), floor(p[2] + 0.5)
-			if tree and lx == tx and lz == tz then
-				for y = ground + 1, ground + 5 do put(y, R.log) end
-				put(ground + 6, R.crown)
-				return
-			end
-			if tree and abs(lx - tx) <= 2 and abs(lz - tz) <= 2 then
-				for y = ground + 4, ground + 6 do put(y, R.crown) end
-			end
+			if W.wet[i] then return end
 			if d <= HALF - 0.5 then
 				put(ground + 1, R.stem ~= R.log and R.stem or R.leaves)
 				put(ground + 2, R.leaves)

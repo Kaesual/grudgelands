@@ -81,6 +81,8 @@ M.BOUNDS = {
 	-- what that protection exists to prevent, so the envelope and the
 	-- protection are deliberately the same number in one place. (The streets
 	-- and connectors are roads, `road_layout.lua`, not blueprints.)
+	-- (Only its x and z are an envelope; the edge publishes its own absolute y
+	-- range, `r7_capital_blueprint.lua`.)
 	capital_overlay = {min = {x = -266, y = -2, z = -266},
 		max = {x = 266, y = 40, z = 266}},
 	-- Authored POIs stay inside the exact half-open flat terrain cores.
@@ -633,8 +635,12 @@ local function prepare_city(fail, descriptor, overlay)
 		names[index] = name
 		bytes[#bytes + 1] = table.concat({"palette", index, name}, "\t") .. "\n"
 	end
-	local bounds = {min = {x = reach.min_x, y = descriptor.bounds.min.y, z = reach.min_z},
-		max = {x = reach.max_x, y = descriptor.bounds.max.y, z = reach.max_z}}
+	-- the edge's own absolute y range (walk, gatehouses, piers), published in
+	-- place of the anchor-relative y of a cell blueprint
+	integer_or_fail(fail, overlay.y_min, "city edge y_min", -31000, 31000)
+	integer_or_fail(fail, overlay.y_max, "city edge y_max", overlay.y_min, 31000)
+	local bounds = {min = {x = reach.min_x, y = overlay.y_min, z = reach.min_z},
+		max = {x = reach.max_x, y = overlay.y_max, z = reach.max_z}}
 	bytes[#bytes + 1] = table.concat({"reach", bounds.min.x, bounds.min.y,
 		bounds.min.z, bounds.max.x, bounds.max.y, bounds.max.z}, "\t") .. "\n"
 	return {palette = names, identity_bytes = table.concat(bytes), city = overlay,
@@ -1092,7 +1098,7 @@ function M.config(prepared, content, raw_sha256)
 		end
 
 		local metrics = {plan_calls = 0, settle_calls = 0, replay_calls = 0,
-			written = 0, build_calls = 0, release_calls = 0, height_calls = 0,
+			written = 0, build_calls = 0, release_calls = 0,
 			overlay_calls = 0}
 
 		-- Per-session state of every blueprint: the world box it occupies, the
@@ -1414,7 +1420,6 @@ function M.config(prepared, content, raw_sha256)
 				replay_calls = metrics.replay_calls, written = metrics.written,
 				build_calls = metrics.build_calls,
 				release_calls = metrics.release_calls,
-				height_calls = metrics.height_calls,
 				overlay_calls = metrics.overlay_calls,
 				blueprint_sha256 = config.identity.sha256, approach_findings = approach_findings}
 		end

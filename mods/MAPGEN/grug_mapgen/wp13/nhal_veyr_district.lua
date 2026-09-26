@@ -163,10 +163,10 @@ local function loader(directory)
 			end},
 	}
 
-	-- THE DISTRICT'S OWN FILL: four dressings on the quadrant's four fill
-	-- lots, in the order they take them. The reaches are 11, 11, 8 and 5 and
-	-- the old lot table owns those numbers, so a roster says
-	-- WHAT a dressing is and never how big its lot is.
+	-- THE DISTRICT'S OWN FILL: four dressings on the district's four fill
+	-- plots, in the order they take them. The reaches are 11, 11, 8 and 5 and
+	-- `fill_reaches` below owns those numbers, so a roster says WHAT a
+	-- dressing is and never how big its lot is.
 	--
 	-- EVERY DRESSING IS LAID OUT THE SAME WAY, and the reason is the sockets.
 	-- The three rows nearest the street (`z0` to `z0 + 2`) are the FORECOURT:

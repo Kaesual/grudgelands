@@ -175,6 +175,18 @@ return function(wp40_directory)
 			local t0 = os.clock()
 			local plan = planner.plan(env.seed, inputs, opts)
 			local seconds = os.clock() - t0
+			-- the required plots are always placed (the planner forces them in
+			-- before any other plot); a missing one fails the load here, named
+			local placed_ids = {}
+			for _, p in ipairs(plan.plots) do placed_ids[p.id] = true end
+			local missing = {}
+			for id in pairs(required) do
+				if not placed_ids[id] then missing[#missing + 1] = id end
+			end
+			if #missing > 0 then
+				table.sort(missing)
+				fail(key .. ": required plot not placed: " .. table.concat(missing, ", "))
+			end
 			local text = planner.serialize(plan)
 			local layout = planner.deserialize(text)
 			-- streets and connectors join the road layout (session-level

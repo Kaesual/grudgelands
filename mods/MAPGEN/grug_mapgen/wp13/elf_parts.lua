@@ -26,10 +26,10 @@
 --
 -- There is deliberately NO THRESHOLD part either, and it is the same lesson
 -- twice. This file carried one -- a pair of marble pillars with a lintel --
--- while the threshold that actually ships is `elf_grove.lua`'s own inline code
--- at the four envelope gates, because a threshold has to read the ROAD's
--- walking level and only the edge overlay has the surface callback that says
--- what that is. Eighty-three lines nothing called, advertised in the note as if
+-- while the threshold that actually ships is the city edge's own inline code
+-- (`city_edge.lua`) at the four gates, because a threshold has to read the
+-- ROAD's walking level and only the edge overlay has the surface callback
+-- that says what that is. Eighty-three lines nothing called, advertised in the note as if
 -- they shipped. The independent review found it; it is gone.
 --
 -- There is deliberately NO fishing-stage part. The first version of this file

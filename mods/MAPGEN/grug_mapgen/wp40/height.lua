@@ -83,11 +83,10 @@ local function height_factory(dependencies)
 	-- a smooth noise stretches or shrinks it around the core (share).
 	local POI_BLEND_MIN, POI_BLEND_MAX, POI_EDGE_JITTER = 6, 28, 0.25
 	-- Capital collar (plan D70, capital planner): the flat civic core, then a
-	-- collar of this width that follows the core with the POI collar's noisy
-	-- edge; no square terraces and no square blend (their straight grading
-	-- edges were the user's top complaint, e.g. Nhal Veyr). The planner lays
-	-- the city out on this ground.
-	local CAPITAL_COLLAR = 40
+	-- collar of the profile's `capital_collar` width that follows the core
+	-- with the POI collar's noisy edge; no square terraces and no square
+	-- blend (their straight grading edges were the user's top complaint, e.g.
+	-- Nhal Veyr). The planner lays the city out on this ground.
 
 	local floor, ceil, abs, max, min, sqrt, exp = math.floor, math.ceil,
 		math.abs, math.max, math.min, math.sqrt, math.exp
@@ -739,8 +738,12 @@ local function height_factory(dependencies)
 				envelope_half = profile.building_core_width / 2 +
 					ceil(fitting.blend / (1 - POI_EDGE_JITTER)) + 1
 			elseif is_capital then
+				local collar = profile.capital_collar
+				if type(collar) ~= "number" or collar < 1 or collar % 1 ~= 0 then
+					fail("capital profile needs an integer capital_collar: " .. tostring(profile.id))
+				end
 				envelope_half = profile.civic_width / 2 +
-					ceil(CAPITAL_COLLAR / (1 - POI_EDGE_JITTER)) + 1
+					ceil(collar / (1 - POI_EDGE_JITTER)) + 1
 			end
 			add_bucket(grids[class], fitting,
 				selected.x - envelope_half, selected.x + envelope_half,
@@ -874,9 +877,10 @@ local function height_factory(dependencies)
 						if outside == 0 then return fitting.reference_y, fitting, false end
 						local edge = outside * (1 + POI_EDGE_JITTER *
 							poi_edge_noise(x / 40, z / 40))
-						if edge < CAPITAL_COLLAR then
+						local collar = profile.capital_collar
+						if edge < collar then
 							return lerp_node(incoming, fitting.reference_y,
-								weight_at(edge, CAPITAL_COLLAR)), fitting, false
+								weight_at(edge, collar)), fitting, false
 						end
 					elseif class == LAND then
 						local envelope_half = profile.blend_width / 2
@@ -1228,9 +1232,24 @@ local function height_factory(dependencies)
 		-- nodes outside the core changes by at most e - 1 (no cliff against
 		-- the core's edge).
 		local CORE_EASE = 16
+		-- True inside a capital's civic core square: the capital's streets end
+		-- at the core's edge (the core gate owns the passage), as network
+		-- roads end CORE_GAP outside a village's core.
+		local function in_capital_core(x, z)
+			local candidates = bucket_at(grids.capital, x, z)
+			if not candidates then return false end
+			for index = 1, #candidates do
+				local fitting = candidates[index]
+				if in_half_open_square(x, z, fitting.center, fitting.profile.civic_width) then
+					return true
+				end
+			end
+			return false
+		end
 		local function road_at(x, z, terrain_y, water_y)
 			local kind, road_y, new_y, road_id, index, extra =
 				road_sampler.column(x, z, terrain_y, water_y)
+			if kind ~= nil and in_capital_core(x, z) then return terrain_y, false end
 			-- A capital square: flat paving at its street's level wherever no
 			-- street surface or water lies (a street through it stays within
 			-- 1/2 of its level by construction).
@@ -1515,47 +1534,54 @@ local function height_factory(dependencies)
 		-----------------------------------------------------------------------
 		-- Published records.
 		-----------------------------------------------------------------------
-		local anchor_records = {}
-		for anchor_index = 1, #fittings do
-			local fitting = fittings[anchor_index]
-			local anchor = fitting.anchor
-			local kind, surface_y, feature_id = final_functional_values_at(
-				fitting.center.x, fitting.center.z)
-			anchor_records[anchor_index] = {id = anchor.id, numeric_id = anchor_index,
-				zone_numeric_id = anchor.zone_numeric_id, slot_id = anchor.slot_id,
-				template_id = anchor.template_id,
-				selection_mode = fitting.selection_mode,
-				approved_candidate_index = fitting.approved_candidate_index,
-				x = fitting.center.x,
-				y = surface_y or final_terrain_height_at(fitting.center.x,
-					fitting.center.z),
-				z = fitting.center.z,
-				platform_kind = kind == "anchor_platform" and kind or nil,
-				functional_feature_id = feature_id,
-				reference_y = fitting.reference_y}
-		end
-
 		local recipe_by_id = {}
 		for index = 1, #(source.hard_protection_recipes or {}) do
 			local recipe = source.hard_protection_recipes[index]
 			recipe_by_id[recipe.id] = recipe
 		end
-		local hard_records = {}
-		for hard_index = 1, #(source.hard_protection or {}) do
-			local record = deep_copy(source.hard_protection[hard_index])
-			local recipe = recipe_by_id[record.recipe_id]
-			if not recipe then fail("hard-protection recipe missing") end
-			record.y_min = recipe.y_min
-			record.upward_unbounded = recipe.upward_unbounded
-			record.y_policy_id = recipe.y_policy_id
-			if record.center then
-				local _, surface_y = final_functional_values_at(record.center.x,
-					record.center.z)
-				record.surface_y = surface_y or final_terrain_height_at(
-					record.center.x, record.center.z)
+		-- The anchor and hard-protection records sample the final surface, so
+		-- they are built again whenever the session's layouts change
+		-- (`add_roads`, `add_authored`).
+		local anchor_records, hard_records
+		local function publish_records()
+			anchor_records = {}
+			for anchor_index = 1, #fittings do
+				local fitting = fittings[anchor_index]
+				local anchor = fitting.anchor
+				local kind, surface_y, feature_id = final_functional_values_at(
+					fitting.center.x, fitting.center.z)
+				anchor_records[anchor_index] = {id = anchor.id, numeric_id = anchor_index,
+					zone_numeric_id = anchor.zone_numeric_id, slot_id = anchor.slot_id,
+					template_id = anchor.template_id,
+					selection_mode = fitting.selection_mode,
+					approved_candidate_index = fitting.approved_candidate_index,
+					x = fitting.center.x,
+					y = surface_y or final_terrain_height_at(fitting.center.x,
+						fitting.center.z),
+					z = fitting.center.z,
+					platform_kind = kind == "anchor_platform" and kind or nil,
+					functional_feature_id = feature_id,
+					reference_y = fitting.reference_y}
 			end
-			hard_records[hard_index] = record
+
+			hard_records = {}
+			for hard_index = 1, #(source.hard_protection or {}) do
+				local record = deep_copy(source.hard_protection[hard_index])
+				local recipe = recipe_by_id[record.recipe_id]
+				if not recipe then fail("hard-protection recipe missing") end
+				record.y_min = recipe.y_min
+				record.upward_unbounded = recipe.upward_unbounded
+				record.y_policy_id = recipe.y_policy_id
+				if record.center then
+					local _, surface_y = final_functional_values_at(record.center.x,
+						record.center.z)
+					record.surface_y = surface_y or final_terrain_height_at(
+						record.center.x, record.center.z)
+				end
+				hard_records[hard_index] = record
+			end
 		end
+		publish_records()
 
 		local session = {field = field}
 		-- The fitted ground of a column before the shore rule and before any
@@ -1582,9 +1608,10 @@ local function height_factory(dependencies)
 		-- and the connectors from the network's road ends to the gates) join
 		-- the road layout. The combined layout is serialized again (the text
 		-- main hands emerge), the sampler is rebuilt from that text exactly as
-		-- emerge builds it, the capital squares are indexed and every memoised
-		-- column is flushed, so this session answers exactly what a fresh
-		-- session built from the new text does. `layout` (the network, for
+		-- emerge builds it, the capital squares are indexed, every memoised
+		-- column is flushed and the published anchor and hard-protection
+		-- records are sampled again, so this session answers exactly what a
+		-- fresh session built from the new text does. `layout` (the network, for
 		-- statistics and showcase spots) keeps only the network's roads.
 		function session.add_roads(extra, squares)
 			if not road_cache or not road_cache.layout then
@@ -1619,6 +1646,7 @@ local function height_factory(dependencies)
 			road_sampler = road_cache.sampler
 			index_squares()
 			flush_memo()
+			publish_records()
 			return road_cache.text
 		end
 		-- The planner's canals (plan D58) as a second step: authored rows added
@@ -1632,6 +1660,7 @@ local function height_factory(dependencies)
 				end
 			end
 			flush_memo()
+			publish_records()
 		end
 		function session.terrain_height_at(x, z)
 			return final_terrain_height_at(x, z)

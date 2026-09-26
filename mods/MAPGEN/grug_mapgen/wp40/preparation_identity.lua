@@ -7,6 +7,8 @@ return function(directory, sha256)
 		"terrain_field.lua", "terrain_data.lua", "water_layout.lua", "road_layout.lua",
 		"water_authored.lua", "zones.lua", "r5.lua", "r6.lua",
 		"r7_runtime.lua", "preparation_source.lua", "preparation_identity.lua",
+		"capital_planner.lua", "r7_capitals.lua", "r7_capital_blueprint.lua",
+		"../wp13/city_edge.lua", "../wp13/plot_approach.lua",
 		"../../../CORE/grug_core/preparation_plan.lua",
 	}
 	local parts = {}

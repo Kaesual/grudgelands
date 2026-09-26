@@ -1238,7 +1238,8 @@ one-cell settlement checks are unchanged.
   The highest civic water level plus one remains a hard lower bound even when
   the terrain interval is infeasible. Any resulting cut/fill excess is
   reported rather than hidden or used to move the fixed core.
-  Outside the core a 40-node collar with a noisy edge (the POI collar rule of
+  Outside the core a 40-node collar (the capital profile's `capital_collar`)
+  with a noisy edge (the POI collar rule of
   §7.6) blends back to the damped terrain; there are no terraces and no square
   blend (Round 22 capital planner, D70), so no straight grading edge.
 - **Round 22 (D7, D11, D16, D28):** terrain roughness is damped around each
@@ -1265,12 +1266,14 @@ one-cell settlement checks are unchanged.
     lanes, not closed everywhere, a few cross-lanes and small flat squares at
     crossings and lane ends; streets and connectors are road-module roads
     (≤ ½ node between neighbouring columns, slabs on half steps, bridges over
-    water, §9);
+    water, §9); the street surface stops at the civic core's edge, where the
+    core gate takes the passage over;
   - the existing district plots, each turned in quarter turns so its entry
     faces its street, with a short path to it; the four districts stay
     recognisable groups (one quarter each where the ground allows, overflow
     into a neighbouring quarter). Required plots (the inn, the eight service
-    plots with the cook and the stable) are always placed; only fields and
+    plots with the cook and the stable) are always placed (a capital missing
+    one fails the load, named); only fields and
     fill dressings may be left out on cramped ground. Plots never stand in
     water. Lethariel's mere precinct and Kezamba's shore market stay beside
     their civic lake;
