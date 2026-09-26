@@ -996,7 +996,8 @@ local function settlement_factory()
 		-- deeper than the bottom shell (D65 B2), structures the plan cannot
 		-- predict above a fresh chunk top (sky_open).
 		-- (one table: the transaction closure is at Lua 5.1's upvalue limit)
-		local halo = {sun_cache = {}, args = {}, vm = false}
+		local halo = {sun_cache = {}, args = {}, vm = false,
+			shell_light = {day = 15, night = 0}}
 		function halo.passes_sun(cid, param2)
 			local key = cid * 256 + param2
 			local value = halo.sun_cache[key]
@@ -1051,6 +1052,7 @@ local function settlement_factory()
 				a.min_x, a.min_y, a.min_z, a.max_x, a.max_y, a.max_z
 			local passes_sun, set_sun, stored_sun = halo.passes_sun, halo.set_sun,
 				halo.stored_sun
+			local shell_light = halo.shell_light
 			local vm = halo.vm
 			local ex = emaxx - eminx + 1
 			local zs = ex * (emaxy - eminy + 1)
@@ -1137,15 +1139,26 @@ local function settlement_factory()
 						end
 					end
 					if seg_top ~= nil then emit(x, z, seg_top, seg_bottom) end
+					-- A run down to the bottom shell's top neighbour continues
+					-- into the shell node, keeping its night bank (the node's
+					-- night light may come from below the VM).
+					if sun and not fresh_below and passes_sun(data[col], param2[col]) and
+							not stored_sun(light, col) then
+						shell_light.night = (light[col] - light[col] % 16) / 16
+						low.x, low.y, low.z = x, eminy, z
+						high.x, high.y, high.z = x, eminy, z
+						ok = pcall(vm.set_lighting, vm, shell_light, low, high)
+						if not ok then fail("fail_vm_contract", "shell sun setter failed") end
+					end
 					col = col + 1
 				end
 			end
 			flush()
-			-- Spread only: calc_lighting spreads over the whole VM; its own sun
-			-- scan is confined to the bottom shell row, where it continues a
-			-- sun run that reached the row above (shadow otherwise).
-			low.x, low.y, low.z = eminx, eminy, eminz
-			high.x, high.y, high.z = emaxx, eminy, emaxz
+			-- Spread only: calc_lighting spreads over the whole VM. Its own sun
+			-- scan (param1 = 15, clearing the night bank) is confined to the
+			-- interior's bottom row, where it repeats what the sun runs did.
+			low.x, low.y, low.z = eminx + 1, eminy + 1, eminz + 1
+			high.x, high.y, high.z = emaxx - 1, eminy + 1, emaxz - 1
 			ok = pcall(vm.calc_lighting, vm, low, high, true)
 			if not ok then fail("fail_vm_contract", "light spread failed") end
 			return calls
