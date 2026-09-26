@@ -97,10 +97,11 @@ return function(columns, templates, cultural, settlements, zones, anchors, ident
 		if upper then surface_high = math.max(surface_high,upper) end
 		if lower then surface_low = math.min(surface_low,lower) end
 		-- Roads (Round 22 Phase 4): a deck or bridge stands above its ground,
-		-- with a slab and a rail on top; cuts already lower `ground`.
+		-- with a slab on a half step (no rails, D74); cuts already lower
+		-- `ground`.
 		if columns.road_column_at then
 			local _, road_y = columns.road_column_at(x,z)
-			if road_y then surface_high = math.max(surface_high,math.floor(road_y)+2) end
+			if road_y then surface_high = math.max(surface_high,math.floor(road_y)+1) end
 		end
 		return surface_low+below,surface_high+above
 	end

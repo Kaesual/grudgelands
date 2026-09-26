@@ -552,8 +552,9 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   `road_layout`, 144–153 KB), raster in `height.lua` `final_values_at`
   (roads never change a POI/village building core; every road end is pinned
   to the fitted pad and meets it walkably), `wp40/road_writer.lua` (road
-  material + slabs, decks/bridges with pillars and open-edge rails, retaining
-  walls, materials per race; stamps win), `road_corridor` exclusion kind,
+  material + slabs, decks/bridges with pillars, retaining walls, materials
+  per race; stamps win; since D74 one surface material per road, no rails,
+  whole wooden bridge runs), `road_corridor` exclusion kind,
   world map `road_polylines()`, preparation bounds, `/road_spots` and a start
   log line with showcase spots. Road build 8–10 s in main; road chunks
   +3–13 % chunk time. Evidence: engine 0 steps > ½, 0 seam defects, 0 leaks;
@@ -783,7 +784,7 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   from the mapgen's surface authority (`wp40/preparation_source.lua`: tile
   boxes from the settlement blueprints with a hard-coded ±265 plot-approach
   clamp, column bounds from `column_values_at` ground, water, functional and
-  upper/lower heights). Roads (decks, pillars, railings, cut slopes) and the
+  upper/lower heights). Roads (decks, pillars, cut slopes) and the
   capital planner (rotated plots, walls, new outline) change what lies above
   and below the ground. A short headless run with the option on, not a full
   preparation: it starts, prepares a few tiles around a capital, a road deck

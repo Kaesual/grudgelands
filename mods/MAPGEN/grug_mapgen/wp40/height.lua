@@ -1274,7 +1274,7 @@ local function height_factory(dependencies)
 			end
 			return new_y, {kind = kind, road_y = road_y, road_id = road_id,
 				index = index, class = class,
-				pillar = pillar, rail = extra and extra.rail or nil,
+				pillar = pillar, bridge = extra and extra.bridge or nil,
 				wall_base = extra and extra.base or nil}
 		end
 
@@ -1665,8 +1665,9 @@ local function height_factory(dependencies)
 		-- ("surface", "cutslope", "wall", "embslope" or "embwall"), the road
 		-- surface y (surface columns, in half nodes), the column's final
 		-- terrain y, the surface class ("grade", "cut", "fill", "deck",
-		-- "bridge", "ford"), the pillar and rail flags of deck and bridge
-		-- columns, a retaining wall's lowest y and the road kind ("primary",
+		-- "bridge", "ford"), the pillar flag of deck and bridge columns, the
+		-- bridge-run flag of surface columns (D74: the column takes the
+		-- bridge material), a retaining wall's lowest y and the road kind ("primary",
 		-- "secondary", "trail"); nil off the roads. The writer dresses the
 		-- surface; the terrain y already carries the cut and fill.
 		function session.road_column_at(x, z)
@@ -1676,7 +1677,7 @@ local function height_factory(dependencies)
 			if not road then return nil end
 			local r = road.road_id and road_sampler.roads[road.road_id]
 			return road.kind, road.road_y, terrain_y, road.class, road.pillar,
-				road.rail, road.wall_base, road.road_kind or (r and r.kind) or nil
+				road.bridge, road.wall_base, road.road_kind or (r and r.kind) or nil
 		end
 		-- "road_corridor" on a road column (surface or side slope) and within
 		-- the module's EXCLUDE_PAD of a road's edge, else nil: the claim
