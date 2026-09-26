@@ -971,8 +971,8 @@ graph requirement may shape a zone, and nothing may require a graph to be
   fences anywhere. Pillars are a second material. A true bridge is wood as a
   whole: a raised run (consecutive deck or bridge points of one road) that
   crosses water takes the race's bridge wood on every column, surface and
-  slabs, bank to bank, whatever supports it; every other raised run keeps the
-  road material, and fords keep it too. Surface, slab / bridge wood /
+  slabs, bank to bank and two nodes onto each bank, whatever supports it;
+  every other raised run keeps the road material, and fords keep it too. Surface, slab / bridge wood /
   pillars / retaining wall per race: humans cobble / wood / tree trunk /
   stone brick; dwarves stone block / pine wood / stone brick / stone brick;
   elves silver sandstone block / aspen wood / aspen trunk / silver sandstone
