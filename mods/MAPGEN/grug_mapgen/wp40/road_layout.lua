@@ -348,7 +348,7 @@ local function new_module(P)
 			if g > gmax then c = c + L * P.K_STEEP * (g - gmax) / gmax end
 			-- every grade costs a little: roads bend around hills
 			c = c + L * P.K_GENTLE * min(g, 0.25) / 0.25
-			local g0 = trail and P.TRAIL_G0 or variant.G0
+			local g0 = variant.G0
 			if g0 and g > g0 then
 				c = c + L * variant.K_G * ((g - g0) / (gmax - g0)) ^ 2
 			end
@@ -561,7 +561,7 @@ local function new_module(P)
 				if rr == INF then f = 1 elseif rr <= e + 0.5 then f = INF else f = max(1, rr / (rr - e)) end
 				local kj = max(kink[max(1, i - 1)], kink[i])
 				if f < INF then f = max(f, 1 + e * kj * 1.05) end
-				-- the step i-1 -> i spans d nodes of arc (the 1/16 lattice
+				-- the step i-1 -> i spans d nodes of arc (the 1/128 lattice
 				-- makes it 0.9-1.1): the bound is on the slope per node
 				local d = i > 1 and sqrt((X[i] - X[i - 1]) ^ 2 + (Z[i] - Z[i - 1]) ^ 2) or 1
 				dmax[i] = f == INF and 0 or floor(Q * 0.5 * d / f + 1e-9)
@@ -589,6 +589,11 @@ local function new_module(P)
 				-- the gate stretch starts on the start pad's ground, level
 				pin_start = floor((road.a_y or T[1][1]) * Q + 0.5)
 				for i = 1, min(n, P.START_STRETCH) do dmax[i] = 0 end
+			end
+			local core_pins = not road.no_core_pin
+			if core_pins and road.a_core and road.a_y then pin_start = floor(road.a_y * Q + 0.5) end
+			if core_pins and road.b_core and road.b_y and not road.parent then
+				pin_end = floor(road.b_y * Q + 0.5)
 			end
 			-- a point-to-point road may pin its ends (a gate's ground)
 			if road.pin_a then pin_start = floor(road.pin_a * Q + 0.5) end
@@ -756,9 +761,26 @@ local function new_module(P)
 				if val < last then last, bestv = val, v end
 			end
 			local RQ, Rv = {}, {}
+			if not bestv and core_pins and (road.a_core or road.b_core) then
+				-- the core pins do not fit (a core far above or below its
+				-- approach within the road's length): free those ends
+				road.no_core_pin = true
+				stats.core_pin_dropped = (stats.core_pin_dropped or 0) + 1
+				return solve(road)
+			end
 			if not bestv then
+				-- no profile within the windows (should not happen): follow the
+				-- ground within the step bound, so the road stays walkable
 				stats.infeasible = (stats.infeasible or 0) + 1
-				for i = 1, n do RQ[i] = floor(T[i][1] * Q + 0.5); Rv[i] = RQ[i] / Q end
+				for i = 1, n do
+					local want = floor(T[i][1] * Q + 0.5)
+					if i > 1 then
+						local a = dmax[i]
+						if want > RQ[i - 1] + a then want = RQ[i - 1] + a end
+						if want < RQ[i - 1] - a then want = RQ[i - 1] - a end
+					end
+					RQ[i], Rv[i] = want, want / Q
+				end
 				road.RQ, road.R, road.cost = RQ, Rv, INF
 				return
 			end
@@ -929,7 +951,6 @@ local function new_module(P)
 					end
 					X, Z = NXs, NZs
 				end
-				n0 = n0
 				local q = {}
 				for i = 1, #X do q[i] = {X[i], Z[i]} end
 				q = resample(q, 1)
@@ -1213,7 +1234,7 @@ local function new_module(P)
 				local idx = nearest_idx(parent, X[#X], Z[#Z])
 				X[#X], Z[#Z] = parent.X[idx], parent.Z[idx]
 				-- the snapped end may sit off the 1-node spacing: resample
-				-- and put the result back on the 1/16 lattice
+				-- and put the result back on the 1/128 lattice
 				local q = {}
 				for i = 1, #X do q[i] = {X[i], Z[i]} end
 				q = resample(q, 1)
@@ -1227,7 +1248,17 @@ local function new_module(P)
 				road.b = b and b.id or "?"
 				road.b_kind = b and b.kind or b_kind
 			end
-			-- a village/outpost road ends at its core's edge
+			-- a road ends at a village's or POI's core edge, at both ends
+			local function trim_back(r)
+				local n = #X
+				local cut = n
+				while cut > 1 and (X[cut] - X[n]) ^ 2 + (Z[cut] - Z[n]) ^ 2 < r * r do cut = cut - 1 end
+				if cut < n then
+					local nX, nZ = {}, {}
+					for i = 1, cut do nX[i], nZ[i] = X[i], Z[i] end
+					X, Z = nX, nZ
+				end
+			end
 			local function trim_front(r)
 				local cut = 1
 				while cut < #X and (X[cut] - X[1]) ^ 2 + (Z[cut] - Z[1]) ^ 2 < r * r do cut = cut + 1 end
@@ -1239,6 +1270,13 @@ local function new_module(P)
 			end
 			-- (its round end stays outside the building core)
 			if a.core then trim_front(a.core / 2 + 2 + hw) end
+			if b and b.core and info.kind == "node" then trim_back(b.core / 2 + 2 + hw) end
+			if #X < 2 then return nil end
+			-- a trimmed end is pinned to the core's fitted height, so the road
+			-- meets the pad level and leaves the core's ground alone
+			road.a_core = a.core ~= nil
+			road.b_core = b ~= nil and b.core ~= nil and info.kind == "node"
+			road.b_y = b and b.y or nil
 			road.X, road.Z = X, Z
 			if road_check and not road_check(road) then return nil end
 			road.expand = last_expand
@@ -1427,10 +1465,15 @@ local function new_module(P)
 			local cands = {}
 			for _, c in ipairs(opts.loop_candidates) do
 				local a, b = node_by_id[c[1]], node_by_id[c[2]]
-				local straight = sqrt((a.x - b.x) ^ 2 + (a.z - b.z) ^ 2)
-				local nd = netdist(a.id, b.id)
-				if nd < INF and nd > P.LOOP_RATIO * straight then
-					cands[#cands + 1] = {a = a, b = b, gain = nd - straight, ratio = nd / straight}
+				-- a start is always the near end (its gate stretch leads out);
+				-- two starts never form a loop
+				if b.kind == "start" then a, b = b, a end
+				if b.kind ~= "start" then
+					local straight = sqrt((a.x - b.x) ^ 2 + (a.z - b.z) ^ 2)
+					local nd = netdist(a.id, b.id)
+					if nd < INF and nd > P.LOOP_RATIO * straight then
+						cands[#cands + 1] = {a = a, b = b, gain = nd - straight, ratio = nd / straight}
+					end
 				end
 			end
 			table.sort(cands, function(p, q) if p.gain ~= q.gain then return p.gain > q.gain end return p.a.id < q.a.id end)
@@ -1544,7 +1587,7 @@ local function new_module(P)
 	---------------------------------------------------------------------------
 	-- Serialization (the ipc_set payload), plain text, deterministic:
 	--   R3 <nroads>
-	--   r <id> <kind> <parent or 0> <parent idx or 0> <n> <a> <b> <x0*16> <z0*16> <v0>
+	--   r <id> <kind> <parent or 0> <parent idx or 0> <n> <a> <b> <x0*128> <z0*128> <v0>
 	--   <3 chars per step: centreline delta in 1/LAT node>
 	--   <1 char per step: profile delta in 1/Q node>
 	--   c <run-length classes>
@@ -1748,7 +1791,9 @@ local function new_module(P)
 				local extra = {class = kind}
 				if kind == "deck" or kind == "bridge" then
 					extra.pillar = (idx % P.PILLAR_EVERY == 0) and best > -1.2
-					extra.rail = best > -1
+					-- the rail stands on the open edge only (the ground beside
+					-- the deck at least 2 below it)
+					extra.rail = best > -1 and ry - t >= 2
 				end
 				local newt = t
 				if kind == "cut" or kind == "fill" or kind == "grade" then newt = top end
@@ -1874,13 +1919,14 @@ local function new_module(P)
 			elseif a.slot_id ~= "capital" then
 				local core = prof[a.template_id].building_core_width or 16
 				reserved[#reserved + 1] = {id = a.id, x = x, z = z, half = core / 2 + 10, round = true}
+				local _, _, core_y = pos(a)
 				if a.template_id == "village" then
-					nodes[#nodes + 1] = {id = a.id, kind = "village", x = x, z = z, faction = fac,
-						core = core, zone = a.zone_numeric_id}
+					nodes[#nodes + 1] = {id = a.id, kind = "village", x = x, z = z, y = core_y,
+						faction = fac, core = core, zone = a.zone_numeric_id}
 					used[a.id] = true
 				elseif contested[a.zone_numeric_id] and contested[a.zone_numeric_id].a == a then
-					nodes[#nodes + 1] = {id = a.id, kind = "contested", x = x, z = z, faction = fac,
-						core = core, zone = a.zone_numeric_id}
+					nodes[#nodes + 1] = {id = a.id, kind = "contested", x = x, z = z, y = core_y,
+						faction = fac, core = core, zone = a.zone_numeric_id}
 					used[a.id] = true
 				end
 			end
@@ -1890,8 +1936,8 @@ local function new_module(P)
 			local fac = faction(a.zone_numeric_id)
 			if not used[a.id] and fac ~= "front" and (t == "outpost" or t == "mine" or
 					t == "bandit_home" or t == "bandit_frontier" or t == "mirefolk") then
-				local x, z = pos(a)
-				trail_nodes[#trail_nodes + 1] = {id = a.id, kind = t, x = x, z = z,
+				local x, z, core_y = pos(a)
+				trail_nodes[#trail_nodes + 1] = {id = a.id, kind = t, x = x, z = z, y = core_y,
 					core = prof[t].building_core_width, faction = fac, zone = a.zone_numeric_id}
 			end
 		end

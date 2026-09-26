@@ -1287,17 +1287,35 @@ local function height_factory(dependencies)
 			end
 			return high
 		end
+		-- True inside a POI's or village's fitted building core (plus one
+		-- node): the road ends at the core's edge at pad height and never
+		-- changes the core's ground (towns and POIs are never damaged).
+		local function in_building_core(x, z)
+			local candidates = bucket_at(grids.selected, x, z)
+			if not candidates then return false end
+			for index = 1, #candidates do
+				local fitting = candidates[index]
+				if fitting.blend and half_open_square_excess(x, z, fitting.center,
+						fitting.profile.building_core_width) <= 1 then
+					return true
+				end
+			end
+			return false
+		end
 		local function road_at(x, z, terrain_y, water_y)
 			local kind, road_y, new_y, road_id, index, extra =
 				road_sampler.column(x, z, terrain_y, water_y)
-			if kind == nil then return terrain_y, false end
+			if kind == nil or in_building_core(x, z) then return terrain_y, false end
 			local wet = water_y ~= nil and water_y > terrain_y
 			local class = extra and extra.class or nil
+			local pillar = extra and extra.pillar or nil
 			-- A wet column the road passes above the water surface (a bridge
-			-- end or a low crossing) is a low deck over the water; only a road
-			-- below the surface fords on a raised bed.
+			-- end or a low crossing) is a low deck over the water, on pillars
+			-- like the bridge; only a road below the surface fords on a
+			-- raised bed.
 			if wet and class == "ford" and road_y >= water_y then
 				class, new_y = "deck", terrain_y
+				pillar = index % road_cache.module.P.PILLAR_EVERY == 0
 			end
 			if new_y == nil then
 				new_y = terrain_y
@@ -1309,7 +1327,7 @@ local function height_factory(dependencies)
 			end
 			return new_y, {kind = kind, road_y = road_y, road_id = road_id,
 				index = index, class = class,
-				pillar = extra and extra.pillar or nil, rail = extra and extra.rail or nil,
+				pillar = pillar, rail = extra and extra.rail or nil,
 				wall_base = extra and extra.base or nil}
 		end
 
