@@ -776,6 +776,11 @@ planner work package that follows water and roads (D57–D60).
   water).
 - **Interim:** until this package, defects inside the reserved area are
   allowed (D31, D57); Highcourt's canal is a one-level interim (Phase 5b).
+- **Known items for this package (found in Phase 5b):** Nhal Veyr's capital
+  grading edge shows as a straight line (e.g. z = 1804 on seed 8675309 beside
+  a lake; pre-existing); arcs of rivers around hard core keep-outs (the soft
+  lens was tried and rejected, W3b); dry source gullies look straight in the
+  flat capital bowls; plots and lanes in rivers inside the reserved areas.
 
 - Keep the civic core as it is.
 - The surrounding city moves closer together:
