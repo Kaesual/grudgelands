@@ -785,8 +785,8 @@ local function settlement_factory()
 		-- `route_or_water`, every other kind (anchor envelopes, active cores)
 		-- `fixed_or_protected`. The static rows take their kind from their
 		-- recipe; the overlay kinds come from the planner source (inland water
-		-- and its banks, stale-rule R5; Phase 4 adds the road corridor).
-		local ROUTE_OR_WATER_KIND = {route_corridor = true, planned_water = true,
+		-- and its banks, stale-rule R5; the road corridor, Round 22 Phase 4).
+		local ROUTE_OR_WATER_KIND = {road_corridor = true, planned_water = true,
 			coast = true, inland_water = true, water_bank = true}
 		local recipe_kind = {}
 		for index = 1, #(source.claim_exclusion_recipes or {}) do
@@ -832,10 +832,18 @@ local function settlement_factory()
 		-- static shapes: a wet river or lake column is "exclude:inland_water",
 		-- dry land within two nodes of one "exclude:water_bank" (stale-rule
 		-- R5). Content that seeks a shore (P9G and world-content shore rows)
-		-- ignores the bank id. Vegetation and cave skins never see them.
+		-- ignores the bank id. Vegetation sees only the road corridor (nothing
+		-- grows on a road or its side slopes); cave skins see none of them.
 		local function exclusion_reason(x, z, purpose)
 			local reason, id = static_exclusion_reason(x, z, purpose)
-			if reason or purpose ~= nil then return reason, id end
+			if reason then return reason, id end
+			if purpose == "vegetation" then
+				if planner_source.overlay_exclusion_at(x, z) == "road_corridor" then
+					return "route_or_water", overlay_exclusion_id.road_corridor
+				end
+				return nil
+			end
+			if purpose ~= nil then return nil end
 			local kind = planner_source.overlay_exclusion_at(x, z)
 			if kind == nil then return nil end
 			id = overlay_exclusion_id[kind]
@@ -3237,6 +3245,28 @@ local function settlement_factory()
 					end
 					intent_aux[index] = (successor_ref - 1) * 256 + param2
 					occupancy[index] = -2
+				end
+				-- Round 22 Phase 4: the road dressing (`road_writer.lua`) reads a
+				-- column's road record and writes plain nodes; everything
+				-- settled later (P9G, anchors, settlements) may overwrite them.
+				function successor_context.road_column_at(x, z)
+					return planner_source.road_column_at(x, z)
+				end
+				function successor_context.write_road(x, y, z, cid, param2)
+					if not inside_owner(x, y, z) then
+						fail("fail_settlement", "road write escaped central owner")
+					end
+					integer(cid, "road CID", 0, MAX_SAFE, "fail_content_manifest")
+					integer(param2, "road param2", 0, 255, "fail_content_manifest")
+					if cid == contract.ignore_cid then
+						fail("fail_content_manifest", "road target is ignore")
+					end
+					local index = index_at(x, y, z)
+					final_data[index], final_param2[index] = cid, param2
+					intent_opcode[index], intent_feature[index], intent_interface[index] =
+						38, 0, 0
+					intent_aux[index] = 0
+					occupancy[index] = 0
 				end
 				function successor_context.write_hearthpine(x, y, z, cid, param2,
 						local_ref, feature_ref)

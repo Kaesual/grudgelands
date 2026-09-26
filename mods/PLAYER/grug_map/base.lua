@@ -95,14 +95,16 @@ local function palette(zones, seen)
 	return colors
 end
 
--- PHASE 4 HOOK (roads). Round 22 Phase 3 switches roads off, so the base has
--- none. When the Phase 4 road overlay exposes its routed network through a
--- public seam, return it here as a list of
--- {kind = "road" or "trail", points = {{x = , z = }, ...}}. render() strokes it
--- onto the base with canvas.polyline and cache_key() folds it into the cache
--- key, so a changed network re-renders the base.
+-- Roads (Round 22 Phase 4): the routed network as
+-- {kind = "road" or "trail", points = {{x = , z = }, ...}} rows from the
+-- mapgen loader. render() strokes it onto the base with canvas.polyline and
+-- cache_key() folds it into the cache key, so a changed network re-renders
+-- the base.
 local function road_polylines()
-	return {}
+	local mapgen = rawget(_G, "grug_mapgen")
+	local wp40 = type(mapgen) == "table" and mapgen.wp40
+	local roads = type(wp40) == "table" and wp40.road_polylines
+	return type(roads) == "table" and roads or {}
 end
 
 local ROAD_STYLE = {road = {color = pack(rgb(112, 84, 52)), radius = 1},

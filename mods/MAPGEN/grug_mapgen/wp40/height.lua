@@ -7,7 +7,9 @@
 -- material is derived here (world_zones.md §7.4, plan D27). Inland water
 -- (Round 22 Phase 5, plan D38, D54-D57): rivers and lakes from `water_layout.lua`
 -- carve the natural height and carry their own water surfaces; authored lakes
--- (civic water) sit on the fitted terrain. Roads are rebuilt in Phase 4.
+-- (civic water) sit on the fitted terrain. Roads (`road_layout.lua`) are
+-- routed once from the natural field and water and rastered per column on
+-- the final terrain (cut, fill, decks, bridges, fords).
 --
 -- Every query is a pure function of (seed, x, z). Heights are memoised per
 -- 80x80 mapchunk block, so planning and the writer read one memo per chunk.
@@ -58,6 +60,13 @@ local function height_factory(dependencies)
 		"WP40 height water layout missing")
 	local water_module = assert(water_dependency.module,
 		"WP40 height water module missing")
+	-- Roads (Round 22 Phase 4, plan D37, D59, D67, D68): `module` is
+	-- `road_layout.lua`; `text` the serialized layout main handed over
+	-- (emerge), else nil and the session builds it (main). Like the water
+	-- layout, the table is shared by every session of one environment and
+	-- keeps the built layout and sampler. Optional: without it (offline
+	-- tools) the world has no roads.
+	local road_dependency = dependencies.roads
 
 	local WATER_LEVEL = 1
 	-- Same query bounds as zones.lua; outside them the world is deep sea.
@@ -606,7 +615,8 @@ local function height_factory(dependencies)
 				bank_md = {}, nbank = {},
 				near = {}, pre = {}, pkind = {}, pfeature = {}, water = {},
 				wkind = {}, wid = {},
-				terrain = {}, kind = {}, surface = {}, feature = {}, excl = {}}
+				terrain = {}, kind = {}, surface = {}, feature = {}, excl = {},
+				road = {}, rexcl = {}}
 			local old = block_ring[block_cursor]
 			if old then blocks[old.key] = nil end
 			block_ring[block_cursor] = block
@@ -810,6 +820,52 @@ local function height_factory(dependencies)
 					(type(e.level) ~= "number" or e.level % 1 ~= 0) then
 				fail("authored lake level differs: " .. e.name)
 			end
+		end
+
+		-----------------------------------------------------------------------
+		-- Roads (world_zones.md §9, plan D37): routed once in main from the
+		-- natural (carved) field, the water layout's coarse grid, rivers and
+		-- lake cells, and the fitted anchor positions; emerge deserializes
+		-- main's text. Both sample the same deserialized layout.
+		-----------------------------------------------------------------------
+		local road_cache, road_sampler
+		if road_dependency then
+			local road_module = assert(road_dependency.module,
+				"WP40 height road module missing")
+			road_cache = road_dependency.cache
+			if not road_cache or road_cache.seed ~= full_seed_string then
+				local text, layout = road_dependency.text, nil
+				if text == nil then
+					if not water_cache.grid then fail("road routing needs the coarse grid") end
+					local fitting_by_id = {}
+					for index = 1, #fittings do fitting_by_id[fittings[index].id] = fittings[index] end
+					local inputs = road_module.inputs(source, function(id)
+						local fitting = fitting_by_id[id]
+						return fitting.center.x, fitting.center.z, fitting.reference_y
+					end)
+					inputs.grid = water_cache.grid
+					inputs.rivers = water.polylines()
+					inputs.lake_mask = water_module.deserialize(water_cache.text).mask
+					inputs.simplex = terrain_field.simplex
+					-- the carved natural ground and its water (sea: the level)
+					inputs.terrain_at = function(x, z)
+						return natural_height_at(x, z)
+					end
+					inputs.water_at = function(x, z)
+						local block, slot = column(x, z)
+						if block.class[slot] ~= LAND then return WATER_LEVEL end
+						natural_height_at(x, z)
+						return block.nwater[slot] or nil
+					end
+					layout = road_module.build(full_seed_string, inputs)
+					text = road_module.serialize(layout)
+				end
+				road_cache = {seed = full_seed_string, text = text, layout = layout,
+					sampler = road_module.sampler(road_module.deserialize(text)),
+					module = road_module}
+				road_dependency.cache = road_cache
+			end
+			road_sampler = road_cache.sampler
 		end
 
 		-- Soft start pad edge: the flat square grows outward by 0..6 nodes along
@@ -1205,6 +1261,95 @@ local function height_factory(dependencies)
 			return shore_y
 		end
 
+		-- The road raster of a dry or wet land column (after the anchor
+		-- fittings and the shore rule): the sampler's answer, with two water
+		-- guards. A dry column is never lowered below inland or sea water
+		-- within two nodes (a cut beside a lake or river keeps its bank, so no
+		-- water flows in), and a ford keeps at least one node of water over
+		-- it (a raised bed stays a planned wet column). Returns the new
+		-- terrain y and the column's road record or false.
+		local ROAD_WATER_REACH = 2
+		local function nearby_water_y(x, z)
+			local high
+			for dz = -ROAD_WATER_REACH, ROAD_WATER_REACH do
+				for dx = -ROAD_WATER_REACH, ROAD_WATER_REACH do
+					local nx, nz = x + dx, z + dz
+					local y
+					if nx < MIN_X or nx > MAX_X or nz < MIN_Z or nz > MAX_Z or
+							class_owner_at(nx, nz) ~= LAND then
+						y = WATER_LEVEL
+					else
+						local nb, ns = land_values_at(nx, nz)
+						y = nb.water[ns] or nil
+					end
+					if y and (high == nil or y > high) then high = y end
+				end
+			end
+			return high
+		end
+		-- A POI's or village's fitted building core: the road ends at its edge
+		-- at pad height and never changes the core's ground (towns and POIs
+		-- are never damaged).
+		-- Returns the smallest square distance outside any such core (0
+		-- inside), or nil when no core is near.
+		local function core_excess(x, z)
+			local candidates = bucket_at(grids.selected, x, z)
+			if not candidates then return nil end
+			local best
+			for index = 1, #candidates do
+				local fitting = candidates[index]
+				if fitting.blend then
+					local e = half_open_square_excess(x, z, fitting.center,
+						fitting.profile.building_core_width)
+					if best == nil or e < best then best = e end
+				end
+			end
+			return best
+		end
+		-- Side slopes near a core ease into its untouched ground: a column e
+		-- nodes outside the core changes by at most e - 1 (no cliff against
+		-- the core's edge).
+		local CORE_EASE = 16
+		local function road_at(x, z, terrain_y, water_y)
+			local kind, road_y, new_y, road_id, index, extra =
+				road_sampler.column(x, z, terrain_y, water_y)
+			if kind == nil then return terrain_y, false end
+			-- the road surface may reach the core's edge (its end sits at the
+			-- core's height); side slopes keep one node off and ease in
+			local excess = core_excess(x, z)
+			if excess and (excess == 0 or (excess <= 1 and kind ~= "surface")) then
+				return terrain_y, false
+			end
+			local wet = water_y ~= nil and water_y > terrain_y
+			local class = extra and extra.class or nil
+			local pillar = extra and extra.pillar or nil
+			-- A wet column the road passes above the water surface (a bridge
+			-- end or a low crossing) is a low deck over the water, on pillars
+			-- like the bridge; only a road below the surface fords on a
+			-- raised bed.
+			if wet and class == "ford" and road_y >= water_y then
+				class, new_y = "deck", terrain_y
+				pillar = index % road_cache.module.P.PILLAR_EVERY == 0
+			end
+			if new_y ~= nil and kind ~= "surface" and excess and excess <= CORE_EASE then
+				local ease = excess - 1
+				if new_y > terrain_y + ease then new_y = terrain_y + ease end
+				if new_y < terrain_y - ease then new_y = terrain_y - ease end
+			end
+			if new_y == nil then
+				new_y = terrain_y
+			elseif wet then
+				if new_y > water_y - 1 then new_y = water_y - 1 end
+			elseif new_y < terrain_y then
+				local high = nearby_water_y(x, z)
+				if high and new_y < high then new_y = min(high, terrain_y) end
+			end
+			return new_y, {kind = kind, road_y = road_y, road_id = road_id,
+				index = index, class = class,
+				pillar = pillar, rail = extra and extra.rail or nil,
+				wall_base = extra and extra.base or nil}
+		end
+
 		-- Final terrain y, functional kind, functional y, feature id.
 		local function final_values_at(x, z)
 			local block, slot = column(x, z)
@@ -1220,19 +1365,25 @@ local function height_factory(dependencies)
 						local shore_y = exposed_shore_at(x, z, block.near[slot])
 						if shore_y ~= nil then terrain_y = shore_y end
 					end
+					local road = false
+					if road_sampler then
+						terrain_y, road = road_at(x, z, terrain_y, block.water[slot] or nil)
+					end
+					block.road[slot] = road
 					surface_y = kind and terrain_y or nil
 				else
 					terrain_y, kind, surface_y, feature_id = compose_water(x, z, class,
 						owner, natural_height_at(x, z))
+					block.road[slot] = false
 				end
 				block.terrain[slot] = terrain_y
 				block.kind[slot] = kind or false
 				block.surface[slot] = surface_y or false
 				block.feature[slot] = feature_id or false
-				return terrain_y, kind, surface_y, feature_id
+				return terrain_y, kind, surface_y, feature_id, block.road[slot]
 			end
 			return terrain_y, block.kind[slot] or nil, block.surface[slot] or nil,
-				block.feature[slot] or nil
+				block.feature[slot] or nil, block.road[slot]
 		end
 
 		local function outside(x, z)
@@ -1506,6 +1657,61 @@ local function height_factory(dependencies)
 			coordinate(x, "inland exclusion query x")
 			coordinate(z, "inland exclusion query z")
 			return inland_exclusion_at(x, z)
+		end
+		-- The road record of a column (`road_layout.lua` sampler): kind
+		-- ("surface", "cutslope", "wall", "embslope" or "embwall"), the road
+		-- surface y (surface columns, in half nodes), the column's final
+		-- terrain y, the surface class ("grade", "cut", "fill", "deck",
+		-- "bridge", "ford"), the pillar and rail flags of deck and bridge
+		-- columns, a retaining wall's lowest y and the road kind ("primary",
+		-- "secondary", "trail"); nil off the roads. The writer dresses the
+		-- surface; the terrain y already carries the cut and fill.
+		function session.road_column_at(x, z)
+			coordinate(x, "road query x") coordinate(z, "road query z")
+			if not road_sampler or outside(x, z) then return nil end
+			local terrain_y, _, _, _, road = final_values_at(x, z)
+			if not road then return nil end
+			local r = road.road_id and road_sampler.roads[road.road_id]
+			return road.kind, road.road_y, terrain_y, road.class, road.pillar,
+				road.rail, road.wall_base, r and r.kind or nil
+		end
+		-- "road_corridor" on a road column (surface or side slope) and within
+		-- the module's EXCLUDE_PAD of a road's edge, else nil: the claim
+		-- exclusion of the roads (vegetation, POIs, spawns keep off them).
+		function session.road_exclusion_at(x, z)
+			coordinate(x, "road exclusion query x")
+			coordinate(z, "road exclusion query z")
+			if not road_sampler or outside(x, z) or class_owner_at(x, z) ~= LAND then
+				return nil
+			end
+			local block, slot = column(x, z)
+			local cached = block.rexcl[slot]
+			if cached == nil then
+				cached = road_sampler.near(x, z, road_cache.module.P.EXCLUDE_PAD) or
+					session.road_column_at(x, z) ~= nil
+				block, slot = column(x, z)
+				block.rexcl[slot] = cached
+			end
+			return cached and "road_corridor" or nil
+		end
+		-- True when a road's edge lies within `pad` nodes of (x, z).
+		function session.road_near(x, z, pad)
+			return road_sampler ~= nil and road_sampler.near(x, z, pad)
+		end
+		-- The serialized road layout (the ipc_set payload main hands emerge).
+		function session.road_layout_text()
+			return road_cache and road_cache.text or nil
+		end
+		-- Road and trail centrelines for drawing (the world map).
+		function session.road_polylines()
+			if not road_cache then return {} end
+			return road_cache.module.polylines(road_cache.module.deserialize(road_cache.text))
+		end
+		-- Main only: the built layout (statistics, showcase spots and the
+		-- point-to-point `connect` of the capital planner, plan §11); nil in
+		-- emerge.
+		function session.road_layout()
+			return road_cache and road_cache.layout or nil
 		end
 		-- River centrelines for drawing (the world map), see the sampler's
 		-- `polylines`.
