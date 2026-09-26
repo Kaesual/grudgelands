@@ -1161,11 +1161,17 @@ one-cell settlement checks are unchanged.
   terrace/blend outline may become organic instead of square; district layout,
   blueprints and the build envelope stay as they are this round. Capital
   fitting parameters stay data-driven so the follow-up below can use them.
-- **Planned follow-up (recorded 2026-09-25, not yet scheduled):** capitals
-  become denser and more natural. The civic core stays as it is; the city
+- **Planned follow-up: the capital planner (Round 22 plan D57–D60, §11;
+  scheduled after water and roads):** capitals become denser and more
+  natural. The civic core stays as it is and stays free of water; the city
   around it moves closer together with more and denser buildings, a smaller
   total area than today's 512×512 envelope and 704×704 blend, and a natural,
-  non-rectangular outline. Changes before then must not work against this.
+  non-rectangular outline. A one-time planner at server start lays it out
+  after height, water and roads, inside each capital's reserved maximum area:
+  walls (which may cross rivers), bridges, four cardinal gates with connector
+  roads to the road ends at the area's edge, and canals with one water level
+  each. Until then rivers may cross a capital's districts, and defects there
+  are accepted. Changes before then must not work against this.
 - A fixed 96×96 civic core contains the king's hall, waypoint and principal
   service court. Four fixed 32-node-wide road gates leave north/east/south/
   west. The road itself is authored by WP13 inside that reserved corridor.

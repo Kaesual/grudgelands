@@ -135,7 +135,16 @@ Decided 2026-09-14.
 
 ## Capitals in the world
 
-**Planned direction (recorded 2026-09-25, not yet scheduled):** capitals become
+**Planned direction (recorded 2026-09-25; scheduled 2026-09-26 as the capital
+planner package after water and roads, Round 22 plan D57–D60 and §11):** a
+one-time planner at server start lays out each capital after height, water
+and roads are known. Civic cores stay protected (no water, no changes); within
+a reserved maximum area the planner places districts, houses, lanes, walls
+(which may cross rivers), bridges, the four cardinal gates with connector
+roads to the road ends at the area's edge, and canals holding one water level
+each (raised rims allowed, never connected to world water). Start towns keep
+a fixed layout and are protected from water. Until then, rivers may cross a
+capital's districts and defects there are accepted. Capitals become
 denser and more natural. The civic core stays as it is. The city around it
 moves closer together, with more and denser buildings, a smaller total area than
 today's 512×512 build envelope and 704×704 blend, and a natural,

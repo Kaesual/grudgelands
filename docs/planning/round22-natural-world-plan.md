@@ -3,7 +3,7 @@
 Date: 2026-09-25. Coordinator: Claude Opus 5.5 (root), implementation by
 Opus 5.5 subagents; the user may re-route per session
 (`../process/agent-model-policy.md`, "Day-to-day routing rule").
-Status: **in progress.** Phases 0–3 and 3b are done, accepted by the user, merged to main and synced (not pushed). Phase 5 (water) is merged and synced (W0, W2a, W2b, W2c) and waits for the user's playtest; then Phase 4 (roads, prototype first) without compaction in between. Then Phase 4 (roads) (D30), then Phase 6. Each phase still needs the user's Go.
+Status: **in progress.** Phases 0–3, 3b and 5 are done, merged and synced (not pushed). Phase 5b (water rework after the playtest, D54–D62) is running; after the user accepts water the context is compacted (D62), then Phase 4 (roads, prototype first), then the capital planner package (D60, §11) and Phase 6. Each phase still needs the user's Go.
 
 This document records the goal, the analysis it rests on, every decision taken
 with the user on 2026-09-25 and its basis, the phases, and the guardrails
@@ -178,7 +178,7 @@ recommendations; prototype and images in
 |---|---|---|
 | D38 | **Water layout from drainage, without erosion.** Priority-flood, flow directions and accumulation on a 16-node grid of the natural field; shallow pits (≤ ~24) are breached, deeper ones keep a lake below their spill level with the shore where the fine terrain lies below the surface; wetland zones and water landmarks keep shallow ponds. Built once in main (~4 s), handed to emerge via `ipc_set` (~70 KB). Option C stays deferred. | Prototype W1: rivers lie in plausible valleys, lakes get irregular shores for free; 0 containment violations on 3 seeds; +2–4 % field cost on ordinary chunks, ~+6 % tile time on river chunks. Supersedes the "drainage only with C" wording of D10. |
 | D39 | **Steps follow the slope:** gentle terrain gets many small steps (rapids of 1–3 nodes); tall falls (up to ~16) only on steep slopes. | Prototype showed mostly 10–16-node falls even in gentle hills. |
-| D40 | **Capital water keep-out covers the whole built area** (about 280 nodes from the core, irregular noise edge like the D28 calm edge), so districts stay dry and rivers bend around cities naturally instead of in circle arcs; rivers may still pass close by. Starts keep ~300–320. | Prototype: rivers crossed the district ring (155–260) at almost every capital; circular bends around the 140 ring. |
+| D40 | *(Superseded by D57, 2026-09-26.)* **Capital water keep-out covers the whole built area** (about 280 nodes from the core, irregular noise edge like the D28 calm edge), so districts stay dry and rivers bend around cities naturally instead of in circle arcs; rivers may still pass close by. Starts keep ~300–320. | Prototype: rivers crossed the district ring (155–260) at almost every capital; circular bends around the 140 ring. |
 | D41 | **Water landmarks that do not arise naturally:** Moonfall's crescent lake is an authored lake (same format as civic water); Raincall shows monsoon ponds instead of a waterfall stair and Totemwater a river mouth with marsh ponds instead of a branching delta (design text adjusted). | Prototype: none of the three emerged from drainage; a Raincall source hint made a U-bend and seeped. |
 | D42 | **Highcourt:** no forced fork (D34). A natural river passes nearby on most seeds; the blueprint's two dry river arms are filled as civic canals, like the Kezamba cenote, the Lethariel lake and the start ponds. | No natural fork on 3 seeds; the lots are cut around the arms. |
 | D43 | **Lake count may vary by seed** (1.7–2.7 % of land on the tested seeds; some seeds get many mountain lakes). | User. |
@@ -197,6 +197,20 @@ Road shape decisions (2026-09-25, user with coordinator, before Phase 4):
 | D51 | **No long ramps into flat land.** Routing follows the terrain so the road lies near ground level; the profile both cuts and fills (never only fills downward from a high point); no fixed high control points (bridges sit on bank height with small clearance, junctions and gates take their ground's height). Metric: the longest stretch where the road lies more than 2 nodes above or below the terrain; a large value means the route is wrong and the costs get tuned, not longer ramps built. | User: in the old mapgen, ramps ran far into flat land before reaching their height. |
 | D52 | **Moonfall keeps its crescent lake in a calm bowl** added to the terrain field around the landmark (radius ~120, blend ~90, the steep-POI bowl mechanism), with a natural-water keep-out; the terrain and rivers around it change. | User, 2026-09-26, on lane W2b's images: the landmark sits on a 30–90-node coastal slope on every seed. |
 | D53 | **Highcourt's canals are one continuous canal with river water and small 1-node rapids** (like the natural rivers), not a chain of basins with dry weirs. As built: 1-node steps, 2 where the ground drops faster (max 2 on the tested seeds). | User, 2026-09-26, on lane W2b's images ("sausage chain"). |
+
+Decisions after the Phase 5 playtest (2026-09-26, user with coordinator):
+
+| # | Decision | Basis |
+|---|---|---|
+| D54 | **River cross-section is a trough ("Mulde"),** like a lake along a line: the river carves a smooth trough blended organically into the terrain (V-shaped in steep ground, U-shaped in flat ground, never a stamped channel), whose width varies along the course with flow, noise and terrain. The water fills the trough up to the reach's flat level; wet is where the trough ground lies below the level, so the water width and the shoreline vary by themselves and the trough need not be full. No flat floodplain strip; the sand band beside rivers becomes narrow, its material following the real bank slope. | User playtest: every river looked the same (several nodes of flat sand, then an incised channel); lake shores look very good everywhere. |
+| D55 | **Rivers are wider:** about twice today's water width, minimum about 6 nodes of water, with clearly more width variation along the course. Upstream of the point where a river reaches its minimum width, its trough continues as a dry gully that fades out (no 1–2-node trickles). | User playtest: 1–2-node rivers look wrong; width barely varied. |
+| D56 | **Unambiguous flow direction:** reach levels never rise downstream, confluences included (a tributary meets its parent at or above the parent's level). The trough's fill level absorbs inaccuracies of the bed profile. | User playtest: water surfaces rose and fell "in illogical order", most visibly in Highcourt. |
+| D57 | **Water keep-outs only for start towns and protected capital cores** (supersedes D40). Rivers and lakes may cross a capital's reserved area outside its core; defects there (plots or lanes in water) are allowed until the capital planner package (D60) repairs them. Start towns keep a water keep-out of about 300 and a fixed layout. | User: water may flow everywhere except through start towns and capital cores; the capital planner gets the tools to handle any situation (walls over rivers, bridges). A dry river bed beside Highcourt came from the old keep-out or the sink relaxation. |
+| D58 | **Canals:** one canal system holds **one water level** everywhere. Its trough follows the terrain and is filled to the highest level that spills nowhere; its rims may be raised artificially (walls) to guarantee a minimum depth. Canals are not connected to world water: the capital planner routes them clear of natural rivers, or takes a river's level where it crosses one; where rapids or several levels meet, it picks a suitable joining point and seals the canal against conflicting water or interrupts it there. Built by the capital planner (D60). Interim for Phase 5b: Highcourt's canal becomes one level with raised rims where needed, interrupted where natural water comes close. | User, 2026-09-26: connecting to world water is a risk (the planner may find no suitable river). |
+| D59 | **Capitals keep a reserved maximum area** (as today's envelope). The road network is built before the capital layout and runs up to the edge of the reserved area. The capital planner places walls and the four gates by its own rules inside the area; each gate faces one cardinal direction and sits so that the planner can connect it with a connector road from the gate to the road end at the reservation edge. | User, 2026-09-26. |
+| D60 | **New work package "capital planner"** after water and roads: a one-time start computation after height, water and roads. Protected civic cores stay untouched (no water, no changes). Within the reserved area it places districts, houses, lanes, walls (which may cross rivers), bridges, the four gates with connector roads (D59) and canals (D58), so each capital fits its landscape. It absorbs the §11 goals (denser, more natural capitals) and the alley-stub defect. Start towns stay fixed and protected. | User, 2026-09-26. |
+| D61 | **Water bugs fixed in Phase 5b:** bright stripes at chunk edges on deep lake floors (lighting); civic water steps show no flowing water (natural rivers do). | User playtest. |
+| D62 | **Compaction point moves:** after the user accepts water (Phase 5b), before roads — so road work starts with a clean context (supersedes compaction point 2). | User, 2026-09-26. |
 
 All §9 questions are answered.
 
@@ -449,8 +463,13 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
 - **Start points from Phases 3/3b:**
   - Road nodes also serve the quest texts (audit): start→village,
     start→capital, capital→outpost/mine "follow the road" beats.
-  - Capital endpoints come from the blueprint gates (stale-rule R11/D22); POIs
-    already sit in the terrain (D33), so trails end on natural ground.
+  - Capital endpoints: roads end at the edge of each capital's reserved area
+    (D59); the capital planner (D60) later places the gates and connects
+    them. This replaces "endpoints from the blueprint gates" (stale-rule
+    R11/D22). POIs already sit in the terrain (D33), so trails end on
+    natural ground.
+  - Rivers are wider after Phase 5b (D55), so bridges get longer; water may
+    cross capital reserved areas (D57).
   - Route the network once in main and hand it to emerge via `ipc_set`, no
     cache file (D37). Measured: an 8-node whole-map grid costs ~13 s on the
     natural field, ~45 s on final heights, per build.
@@ -553,6 +572,45 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
     the sea floor (Phase 3b review).
 - **Gate:** user playtest.
 
+### Phase 5b — Water rework after the playtest (2026-09-26)
+
+- **Goal:** rivers that sit organically in the landscape (D54–D56), water
+  allowed everywhere except start towns and capital cores (D57), and the
+  playtest bugs fixed (D61).
+- **Lane W3a — bugs (small):**
+  - lighting: deep lake floors show bright stripes along chunk edges (the
+    interior is lit correctly by depth); find the cause (lighting pass range
+    or propagation at chunk borders) and fix it; check the sea floor too;
+  - civic water steps do not flow (Highcourt), while natural river steps do;
+    find why (liquid update not queued for the settlement writer's region,
+    or neighbouring air cleared/overwritten) and fix it, since the capital
+    planner will need it;
+  - Highcourt canal interim (D58): one level for the whole canal, rims raised
+    where needed, interrupted with a sealed end where natural water comes
+    close.
+- **Lane W3b — rivers v2:**
+  - trough model (D54): a smooth V/U trough blended into the terrain, width
+    varying with flow, noise and terrain; water fills to the flat reach level;
+    wet where trough ground < level; no floodplain strip; narrow sand band;
+  - width (D55): about 2× today's water width, minimum ~6, more variation;
+    sources start as a dry gully that deepens into the river;
+  - flow direction (D56): reach levels never rise downstream, confluences
+    included (fixes the two reverse confluences left from W2a);
+  - keep-outs (D57): only start towns (~300) and protected capital cores
+    (core plus a small margin, irregular edge); remove the lot-derived
+    capital keep-out and the apron; check the dry river bed beside Highcourt;
+  - keep what the user liked: river courses, the amount of water, lake shores;
+  - update `world_zones.md` §7.4 to the new rules.
+- **Evidence before merge (user sees images):** whole map on 3 seeds;
+  cross-sections at ~8 places (mountain, hills, lowland, mouth, confluence,
+  source gully); 1-node windows before/after; statistics of water width
+  (min/median/max, variation along a river); a monotonicity check of reach
+  levels including confluences; containment 0; chunk seams 0; engine probe
+  (liquids as planned, rapids flowing at steps, no leaks); capital plot
+  warnings reported (allowed, D57); chunk and start time (reports).
+- **Then:** the user's playtest. When the user accepts water, the plan and
+  handover are updated and the context is compacted (D62) before Phase 4.
+
 ### Phase 6 — Details and polish
 
 - Rock and scree on steep slopes, cliff materials, transitions, and what the
@@ -579,9 +637,11 @@ compacts its context only at these points:
    water starts.** Before compacting, this plan is brought up to date and a
    short handover note records branches, worktrees, agent results and open
    points that do not belong in the plan.
-2. **Not between water (Phase 5) and roads (Phase 4):** road planning needs the
-   full water context.
-3. Next candidate point: after roads, before Phase 6.
+2. ~~Not between water and roads.~~ Superseded by D62: **after the user
+   accepts water (Phase 5b), before roads (Phase 4)**, with the plan and
+   handover brought up to date first.
+3. Next candidate point: after roads, before Phase 6 and the capital
+   planner (D60).
 
 ## 7. Where we go for the optimum, and where we relax
 
@@ -644,9 +704,28 @@ On the user's explicit Go, and not before:
    then variants) in parallel.
 2. Draft Phase 1 while the audit runs, so the rewrite can use its findings.
 
-## 11. Follow-up round goal: denser, more natural capitals
+## 11. Capital planner package (D60): denser, more natural capitals
 
-Recorded 2026-09-25 as the target of a later round, not this one.
+Recorded 2026-09-25 as a later goal; on 2026-09-26 turned into the capital
+planner work package that follows water and roads (D57–D60).
+
+- **When and how:** a one-time computation at server start, after height,
+  water and roads, like the other layout steps. It knows where water and
+  roads are.
+- **Protected:** civic cores (no water, no changes) and the start towns
+  (fixed layout, protected from water).
+- **Reserved area:** each capital keeps a reserved maximum area; roads end at
+  its edge (D59). Inside it the planner decides districts, houses, lanes,
+  walls, the four cardinal gates and connector roads from each gate to the
+  road end at the edge.
+- **Water:** rivers and lakes may cross the reserved area (D57). Walls may
+  run over rivers, lanes cross them by bridges. Canals follow D58 (one level
+  per canal system, trough filled to the highest non-spilling level, raised
+  rims allowed, no connection to world water; clear of natural rivers, or
+  take their level at a crossing, sealed or interrupted against conflicting
+  water).
+- **Interim:** until this package, defects inside the reserved area are
+  allowed (D31, D57); Highcourt's canal is a one-level interim (Phase 5b).
 
 - Keep the civic core as it is.
 - The surrounding city moves closer together:
