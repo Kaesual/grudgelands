@@ -409,18 +409,8 @@ local function height_factory(dependencies)
 		--   bank_weight optional function(x, z) -> 0..1 scaling that envelope
 		--             (0 keeps the ground, e.g. a civic core)
 		-- Ordinary water (`default:water_source`), sealed like every inland water.
-		-- A `river` row (civic canals) is river water instead ("river:<id>"), one
-		-- level everywhere (plan D58). Two options serve canals:
-		--   balanced  with shore_level: the lowest bank ground alone leaves a
-		--             canal dry where the ground rises along it, so the level sits
-		--             halfway between the lowest bank ground and the highest
-		--             fitted ground inside the water (m >= 0.5, sampled like the
-		--             bank ring): the rim band, hard at the level, stands at most
-		--             that far above the lowest bank, and the carved bed (depth)
-		--             keeps the trough wet where the ground is highest
-		--   rim_max   with balanced: the level stands at most this many nodes
-		--             above the lowest bank ground (a bound on the raised rim;
-		--             the carve deepens instead)
+		-- A `river` row (the capital planner's canals) is river water instead
+		-- ("river:<id>"), one level everywhere (plan D58). One more option:
 		--   natural_clear  the signed distance is capped at (distance to natural
 		--             inland water - natural_clear), from the layout's bank
 		--             distance: where a river or lake comes close the row ends
@@ -434,11 +424,6 @@ local function height_factory(dependencies)
 					type(row.min_x) ~= "number" or type(row.max_x) ~= "number" or
 					type(row.min_z) ~= "number" or type(row.max_z) ~= "number" or
 					sources ~= 1 or (row.bank ~= nil and type(row.bank) ~= "table") or
-					(row.balanced ~= nil and (not row.shore_level or
-						row.balanced ~= true)) or
-					(row.rim_max ~= nil and (not row.balanced or
-						type(row.rim_max) ~= "number" or row.rim_max < 0 or
-						row.rim_max % 1 ~= 0)) or
 					(row.natural_clear ~= nil and type(row.natural_clear) ~= "number") then
 				fail("authored lake row differs at " .. index)
 			end
@@ -998,43 +983,29 @@ local function height_factory(dependencies)
 			return m
 		end
 		-- A `shore_level` lake's surface: the lowest fitted ground on its bank
-		-- ring (natural water columns left out), for a `balanced` row raised
-		-- halfway to the highest fitted ground inside the water, resolved on
-		-- the first query that needs it. A pure function of the seed, so every
-		-- session agrees.
+		-- ring (natural water columns left out), resolved on the first query
+		-- that needs it. A pure function of the seed, so every session agrees.
 		local function resolve_shore_level(e)
-			local balanced = e.row.balanced
-			local low, high
+			local low
 			for z = e.min_z, e.max_z, 2 do
 				for x = e.min_x, e.max_x, 2 do
 					local m = e.indicator(x, z)
 					if type(m) == "number" and m >= 0.4 and
 							class_owner_at(x, z) == LAND then
 						m = natural_capped(e, x, z, m)
-						if m >= 0.4 and (m < 0.5 or balanced) then
+						if m >= 0.4 and m < 0.5 then
 							local natural = natural_height_at(x, z)
 							local block, slot = column(x, z)
 							if not block.nwater[slot] then
 								local y = fit_land(x, z, block.owner[slot] or nil, natural)
-								if m < 0.5 then
-									if low == nil or y < low then low = y end
-								elseif high == nil or y > high then
-									high = y
-								end
+								if low == nil or y < low then low = y end
 							end
 						end
 					end
 				end
 			end
 			if low == nil then fail("authored lake has no bank: " .. e.name) end
-			local level = low
-			if balanced and high ~= nil and high > low then
-				local rise = floor((high - low) / 2)
-				local rim_max = e.row.rim_max
-				if rim_max and rise > rim_max then rise = rim_max end
-				level = low + rise
-			end
-			e.level = level + (e.row.level_offset or 0)
+			e.level = low + (e.row.level_offset or 0)
 			return e.level
 		end
 		-- The surface of an authored water body at a column.

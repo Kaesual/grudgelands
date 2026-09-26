@@ -36,12 +36,8 @@
 --                instead of walls, natural dams instead of one-column dikes
 --   bank_weight  optional function(x, z) -> 0..1 scaling the envelope
 --   rim          optional bank-fill threshold (default here 0.4)
---   river        river water instead of ordinary water, one level (the
---                Highcourt canal)
---   balanced     with shore_level: the level halfway between the lowest bank
---                ground and the highest ground under the water (canals;
---                height.lua), the rim raised to it where the ground is lower;
---                rim_max bounds that raise (the carve deepens instead)
+--   river        river water instead of ordinary water, one level (a
+--                planned canal)
 --   natural_clear
 --                the shore keeps at least this many nodes off natural rivers
 --                and lakes: where one comes close the row ends in a sealed rim

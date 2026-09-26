@@ -177,7 +177,8 @@ local function loader(directory)
 		local function stone_column(lx, lz, ground, water, road, put)
 			local g, dd, ww = gate_of(lx, lz)
 			if g then
-				local tower = abs(ww) >= WIDTH - 2
+				-- a street column is always passage, never tower
+				local tower = abs(ww) >= WIDTH - 2 and not road
 				local roof = g.y + 9
 				if tower then
 					for y = ground - 2, roof + 2 do put(y, R.face) end
@@ -250,7 +251,7 @@ local function loader(directory)
 		local function palisade_column(lx, lz, ground, water, road, put)
 			local g, dd, ww = gate_of(lx, lz)
 			if g then
-				local tower = abs(ww) >= WIDTH - 2
+				local tower = abs(ww) >= WIDTH - 1 and not road
 				local roof = g.y + 7
 				if tower then
 					for y = ground - 1, roof do put(y, R.stake) end
@@ -314,11 +315,11 @@ local function loader(directory)
 			local g, dd, ww = gate_of(lx, lz)
 			if g then
 				-- a threshold: two posts and a beam over the avenue
-				if abs(dd) <= 1 and abs(ww) == WIDTH - 1 then
+				if abs(dd) <= 1 and abs(ww) == WIDTH and not road then
 					for y = ground + 1, g.y + 5 do put(y, R.post) end
-					if dd == 0 then put(g.y + 7, R.light) end
+					if dd == 0 then put(g.y + 7, R.light, 1) end
 				end
-				if dd == 0 and abs(ww) <= WIDTH - 1 then put(g.y + 6, R.beam) end
+				if dd == 0 and abs(ww) <= WIDTH then put(g.y + 6, R.beam) end
 				return
 			end
 			if road then return end

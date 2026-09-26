@@ -135,41 +135,34 @@ Decided 2026-09-14.
 
 ## Capitals in the world
 
-**Planned direction (recorded 2026-09-25; scheduled 2026-09-26 as the capital
-planner package after water and roads, Round 22 plan D57–D60 and §11):** a
-one-time planner at server start lays out each capital after height, water
-and roads are known. Civic cores stay protected (no water, no changes); within
-a reserved maximum area the planner places districts, houses, lanes, walls
-(which may cross rivers), bridges, the four cardinal gates with connector
-roads to the road ends at the area's edge, and canals holding one water level
-each (raised rims allowed, never connected to world water). Start towns keep
-a fixed layout and are protected from water. Until then, rivers may cross a
-capital's districts and defects there are accepted. Capitals become
-denser and more natural. The civic core stays as it is. The city around it
-moves closer together, with more and denser buildings, a smaller total area than
-today's 512×512 build envelope and 704×704 blend, and a natural,
-non-rectangular outline. Today's capitals are large and fairly empty; the goal
-is more flair. Round 22 only prepares this: it damps terrain around the civic
-core, keeps capital ground well below the clouds and may make the outer terrace edge
-organic, without district or blueprint changes (`world_zones.md` §12).
+**As built: the capital planner (Round 22, plan D60, D69–D72, 2026-09-27).**
+Every capital's city is laid out once per world start, after height, water
+and roads, in its own landscape (`world_zones.md` §12 has the rules): an
+organic outline of about 100 k m² inside the reserved 512 square, four gates
+toward the incoming roads with connector roads to the road ends, avenues,
+two terrain-bent ring lanes loosened by cross-lanes, open arcs and small
+squares, the district plots turned to face their streets, the race's edge
+(stone curtain, palisade or planted belt with thresholds) on the outline and,
+in Highcourt, a one-level quay canal. The civic core stays exactly as
+authored; start towns are untouched. The layout is a pure function of the
+seed and the code, so a world always rebuilds the same city.
 
 Decided 2026-09-15 with the pilot capital, Highcourt.
 
-A capital is not one blueprint but a civic core, a list of district plots and
-the avenues between them, and the three reach the world in three different ways.
-The **core** is anchor-relative like a start, flat on the fitted capital height,
-and the guard banner the map already writes at the anchor stays where it is: the
-core leaves that one cell alone. A **district plot** stands on terraced ground
-and cannot be anchor-relative, so each plot names one reference column, the
-server asks the final height of that column once per world session and projects
-the whole plot from it; a foundation skirt carries the plot's perimeter six
-nodes down and the plot clears its own airspace, and a plot whose ground falls
-further than the skirt reaches is moved rather than propped. The **avenues** and
-the ring street have no fixed cells at all: they are computed per mapchunk from
-the ground the map actually has, climbing terraces half a node at a time and
-crossing water as a bridge, with a lamp line every eight nodes that survives
-the mapchunk borders. Where an avenue crosses the ring street the avenue runs
-through and the side street yields, and no lamp stands in the crossing road.
+A capital is not one blueprint but a civic core, the placed district plots and
+its edge, and they reach the world in three ways. The **core** is
+anchor-relative like a start, flat on the fitted capital height, and the guard
+banner the map already writes at the anchor stays where it is: the core leaves
+that one cell alone. A **district plot** stands where the planner put it,
+turned in quarter turns so its door faces its street, on the ground height the
+planner sampled at its centre; a foundation skirt carries its perimeter six
+nodes down, it clears its own airspace, the ground round it eases to its height
+within eight nodes, and a short path joins its entry to the street. The
+**edge** (walls, turrets, gatehouses, the open capitals' belt and thresholds)
+has no fixed cells: it is computed per mapchunk from the outline and the ground
+the map has. The **streets** are roads of the road network (`world_zones.md`
+§9), so they climb in half steps, cut and fill like any road and cross water as
+bridges; the avenues run straight through their gatehouses.
 
 **The civic-core boundary is protected.** Decided 2026-09-18 after playtest
 round 10. Its hedge, parapet, bank or palisade is written after all structural
@@ -193,21 +186,13 @@ same rule are:
 | Lethariel | Three-course silverwood hedge on every dry edge; the authored mere is the boundary where it reaches the north edge. |
 | Kezamba | Three-course junglewood palisade on every dry edge; the authored cenote is the boundary where it reaches the north-east edge. |
 
-**One street rule, for every street of every capital.** Decided 2026-09-16 with
-playtest round 5 and shipped the same day
-([wp13-street-geometry.md](../research/wp13-street-geometry.md)); it holds for
-avenues, ring streets, district lanes, fill lanes and gate approaches alike.
-A street's **cross profile is flat** — every lane of a run walks at one level,
-and the run climbs at most one node per column. Where two streets cross, the
-junction is a **square plateau on a single y**, computed identically by both
-runs, so the approaches ramp up to it instead of meeting at a step. A street
-column raised **three nodes or more** above its own ground carries the deck
-course and **open air beneath it**, on pillars every eight columns under the
-verges — a raised street is a viaduct, never a solid earth bank. And a street
-that stands over water is a **bridge**: the deck one node clear of the surface,
-nothing at or below the water line, piers on the verges and a planked, railed
-walk over them, in the race's own palette. Lamps foot at the street's own
-level, not at the ground of the column beside it.
+**Streets are roads.** Since Round 22 every capital street, lane and connector
+follows the road rule of `world_zones.md` §9: at most half a node between
+neighbouring columns with a slab on each half step, cut slopes and
+embankments like any road, bridges over water, flat mouths where a lane meets
+its street; a small square at a crossing or a lane end is paved flat at its
+street's level and shrinks until every street through it stays within half a
+node of it.
 
 **Capital service presentation (2026-09-20).** Each profession premise has
 at least one readable protected exterior product frame/sign and one interior
@@ -234,19 +219,16 @@ The shared gatehouse upper-floor stair opening removes exactly one additional
 obstructing block in the ascent direction. Treads, rise, passage, deck and room
 dimensions are unchanged; there is no stair redesign or bespoke clearance test.
 
-A capital has **four districts**, one in each of the quarters the four avenues
-cut the envelope into: market and professions, martial and garrison, lore and
-spiritual, residential and cultural. Each is nine plots on nine lots, and
-**which district stands in which quarter is decided by the world seed**, so two
-worlds put the same capital's garrison in different corners while one world is
-always the same. The lots belong to the quarter, not to the district: any
-district's plot fits any lot, because every lot is ground that has been checked
-to be dry, level enough for the plot's foundation skirt and clear enough under
-the plot's own roof. Each quarter carries one or two **lanes** between its rows
-of plots, running back to the avenue the district is reached from; a lane is a
-street like any other and is paved on whatever ground it finds. Guard posts
-belong to the garrison district, the two traders to the core, and every district
-keeps two spare standing spots its people may walk to.
+A capital has **four districts**: market and professions, martial and
+garrison, lore and spiritual, residential and cultural. They stay recognisable
+groups: the planner gives each the quarter between two avenues with the most
+room for its buildings, places buildings nearer the core and field dressings
+toward the edge, and lets a plot that finds no room overflow into a
+neighbouring quarter. Required plots (the inn, the eight service plots with the
+cook and the stable) always stand; on cramped ground only field and fill
+dressings may be left out. Guard posts belong to the garrison district, the two
+traders to the core, and every district keeps two spare standing spots its
+people may walk to.
 
 Capital blueprint construction is lazy when map generation first touches its
 envelope; mapchunk traversal may release cached construction data. Full-world
@@ -265,36 +247,23 @@ export those sockets.
 
 **Walled capitals.** The user's ruling of 2026-09-17 fixes **four walled
 capitals** — Highcourt, Dur Brannoc, Gor Drazhak and Nhal Veyr — and **two
-open capitals**, Lethariel and Kezamba (the implementation provenance is
-below, and in
-[wp13-capitals-pois-contract.md](../research/wp13-capitals-pois-contract.md)
-section 4). A curtain wall runs along all four edges of the capital's 512 envelope,
-with a turret every 64 nodes, a turret at each corner and a gatehouse on each of
-the four gate axes, and the avenue runs through its gate passage. It has no
-fixed cells either: like the avenues, it is computed per mapchunk from the
-ground the map actually has, so it follows the terraces instead of cutting
-through them — its walk steps down half a node at a time and its masonry starts
-under each column's own ground, which is what makes a wall on stepped terrain
-have no gap in it. Where two sides meet at a corner turret the two runs
-would each compute the walk from their own axis and land at different heights, so
-each side is told where its corners are and both clamp them to the same datum:
-the walk round the circuit has no step at a corner at all, on any world. The wall carries no NPCs of its own; a walled capital's
-garrison is the four gatehouses of its civic core, exactly as an open one's is.
-Where a capital's avenue has to leave the ground — the blend from the flat civic
-core to the terraces can fall faster than a road may descend — the raised
-stretch carries a masonry rail on both kerbs. And an avenue ARRIVES AT ITS GATE
-at the height of the ground there, whatever the ground between does: it descends
-inside the envelope as a stair of at most one node a column, cutting into the
-hillside where it has to, so the long-distance road outside and the city street
-inside meet level. A gate you have to jump into is not a gate.
+open capitals**, Lethariel and Kezamba. The wall follows the planner's outline
+as a polyline, with a turret about every 64 nodes and a gatehouse at each of
+the four gates, and the avenue runs through its gate passage. Its masonry
+starts under each column's own ground, so a wall on a slope has no gap, and
+its walk rises and falls at most half a node per node (a slab on each half
+step), so it can be walked. Where the outline crosses a river the wall is an
+arcade: the walk on an arch, piers down to the bed, the river passing below.
+The wall carries no NPCs of its own; a walled capital's garrison is the four
+gatehouses of its civic core, exactly as an open one's is.
 
 **Between the plots.** Decided 2026-09-15 with the round-3 playtest: a quarter
 of nine buildings in a 512 envelope is empty, so each quarter carries four more
 pieces of open ground beside its nine plots — a field, a pasture, a yard and a
-green, at four deliberately different sizes. They are plots like any other, with
-their own reference column and their own foundation skirt, because ground laid
-at the core's height across a terrace is ground with a step through it, and they
-travel with their district when the seed moves it. What stands on them is the
+green, at four deliberately different sizes. They are plots like any other,
+with their own foundation skirt, and the planner places them toward the edge of
+their district's quarter (on cramped ground they are what may be left out).
+What stands on them is the
 district's trade: a garrison musters and chops wood on its ground, a residential
 quarter grows and grazes on its. **And a field grows something of that race's
 own** — decided 2026-09-16, playtest round 5 ("Fields in Kezamba grow 'Mossy
@@ -306,11 +275,7 @@ deep enough to have soil between its two kerbs rather than being all kerb
 
 **The dwarf capital.** Decided 2026-09-15 with Dur Brannoc's four quarters. Its
 citadel is stone block, its halls are pine under slate, and its city stands
-ABOVE AND BELOW the ring of hillside the map blends from the flat civic core
-down to the granite terraces — that band falls as much as forty-four nodes and
-carries no building at all, so the four quarters begin further out than a
-human capital's and the lanes that reach them are stair streets the whole way
-down. The four quarters are the forge and its professions, the garrison, the
+on the granite ground round the flat civic core. The four quarters are the forge and its professions, the garrison, the
 halls of record with the carvers' yard and the barrow terrace, and the terrace
 houses with their alehouse and brewhouse. Its open ground is what a dwarf city
 keeps: an ore court with a mine mouth cut into a rock face, charcoal clamps, a
@@ -318,37 +283,31 @@ slag yard, mushroom beds grown in the lee of the wall, goat pens and brewing
 courts. Its trades are a smith, a mason, an armourer, an embalmer, a butcher, a
 brewer and a baker, beside the two travelling traders every capital's core has.
 **Open capitals, and the one that stands on a lake.** Decided 2026-09-15 with
-the third capital, Lethariel. An open capital has no curtain: its envelope edge
-is a planted belt — two clipped rows of its own wood with kept turf between
-them, a standard every dozen nodes, a lantern every thirty-two and a thicker
-grove at each corner — and each of its four gate points is a **threshold**:
-three pairs of marble pillars carrying a lintel over the road, so you walk
-through a way in rather than being let through a gate. The lintel is set from
-the height the ROAD is walked at and not from the ground beside it, so it
-always leaves a walker headroom. Like a wall it has no fixed cells and is
-computed per mapchunk from the ground the map has, and where the belt reaches
-water it simply stops, because the water already is an edge.
+the third capital, Lethariel. An open capital has no curtain: its outline is a
+planted belt — a hedge of its own wood with a tree every few steps — and each
+of its four gate points is a **threshold**: posts carrying a beam over the
+road, so you walk through a way in rather than being let through a gate. Like
+a wall it has no fixed cells and is computed per mapchunk from the ground the
+map has, and where the belt reaches water it simply stops, because the water
+already is an edge.
 
 Lethariel also shows what happens when the map does not give a capital four
-usable quarters. A lake lies inside its 512 envelope — it fills more than half
-the north-east quarter and reaches into the civic core itself — so that quarter
-carries three plots where the other three carry nine. The city is built round
-it: the **lore and spiritual district is the mere precinct** and stands in that
-quarter and nowhere else, the other three districts are still dealt out by the
-world seed, the civic core stops at the water's edge and meets it with a marble
-quay, and the north avenue crosses the lake as a causeway to a threshold on the
-far shore.
+usable quarters. Its crown lake reaches into the civic core itself, so the
+**lore and spiritual district is the mere precinct** and the planner keeps it
+beside the lake, where it has room for three plots and two dressings; the
+other three districts take the quarters with room. The civic core stops at the
+water's edge and meets it with a marble quay, and an avenue that crosses the
+lake does so as a bridge.
 
 **Not every wall is masonry.** Added 2026-09-15 with the third capital, Gor
 Drazhak. What a walled capital has on its envelope edge is decided by the race
 that built it: the dwarves, the humans and the undead raise a stone curtain,
 and the orcs raise a **stake palisade on an earth rampart** -- a dug bank
-thrown up round the whole city with a stockade of sharpened acacia on its outer
-crest, a timber
-fighting walk along the top, a log breastwork on the city side and a timber
-tower every sixty-four nodes with a stake crown on it. It follows the terraces
-and lets the avenue through its gates exactly as a curtain does, and it is the
-same thing to walk on; it simply is not made of stone. Gor Drazhak's own civic
+thrown up along the city's outline with a stockade of acacia stakes on its outer
+crest, a fighting walk along the top and a timber tower about every fifty-six
+nodes. It follows the ground and lets the avenue through its gates exactly as
+a curtain does, and it is the same thing to walk on; it simply is not made of
+stone. Gor Drazhak's own civic
 precinct repeats the section at a quarter of the height -- two courses of beaten
 earth with a stake every other node -- so the city wall and the citadel wall
 read as one piece of engineering.
@@ -373,10 +332,9 @@ user's correction like any other design.
 
 Two of the six have no wall at all — Lethariel and Kezamba — and what an open
 capital has where a walled one has a gatehouse is a
-**threshold** at each of its four gate points: two carved posts with a beam
-across the road and a light on each of them, so a traveller arriving on the
-long-distance route can see that they have arrived somewhere. Like the wall and
-the avenues it has no fixed cells and is computed from the ground the map has.
+**threshold** at each of its four gate points: two posts with a beam across the
+road and a light on it, so a traveller arriving on the long-distance route can
+see that they have arrived somewhere.
 
 Kezamba is also the one capital whose **civic core is not flat**, and that is
 the map's doing rather than the city's: a deep cenote fills its north-eastern
@@ -396,12 +354,12 @@ bridge and the rail are gone with the gorge. The measurement that found it is
 kept as a gate, because the next terrain change that cuts a capital's pad should
 turn a light red rather than become part of the architecture.
 
-Where a capital's four districts cannot be four quarters — because the water
-takes one of them in every world — the districts are **pinned to the ground that
-exists** instead of being shuffled between the quarters by the world seed, and
-the count per district follows the ground: Kezamba's are nine, nine, eleven and
-seven plots, thirty-six in all, with the same sixteen fill dressings every
-capital has.
+Where the water takes most of a quarter — Kezamba's cenote in every world —
+the district that belongs by the water keeps its place there: the **shore
+market** is pinned beside the cenote and what does not fit overflows into the
+neighbouring quarters (plan D72). Kezamba's districts carry nine, nine, eleven
+and seven building plots, thirty-six in all, with the same sixteen fill
+dressings every capital has.
 
 **Nhal Veyr, the raised necropolis.** Shipped 2026-09-15, the last of the wave-2
 capitals to land and one of the four walled ones. It is the first capital whose FILL is not fields and
@@ -411,9 +369,8 @@ turf between its civic quarters is a burial ground with gravewood stands in it.
 Its civic buildings are dungeon stone under a pale stone roof and everything a
 citizen built is gravewood board; its own two parts, which no other capital has,
 are a walk-in mausoleum on a stepped plinth and a candle court with an altar at
-its centre. Its curtain wall, its four districts, its lot grids and its seeded
-quadrant permutation are the mechanisms Dur Brannoc and Highcourt landed,
-unchanged.
+its centre. Its curtain wall and its four districts are laid out by the capital
+planner like every capital's.
 
 It is also the first capital to place the WAVE-2 activities of the NPC socket
 contract: its residents mourn at grave markers, pray at candles, tend the

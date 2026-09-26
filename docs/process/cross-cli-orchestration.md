@@ -43,8 +43,7 @@ not `gpt-astra-6`).
 - A worker never: pushes, runs `tools/sync_to_luanti.sh`, touches the main
   checkout or another lane's worktree, or reads/writes
   `~/.var/app/org.luanti.luanti/.minetest` (the user's live client). Engine
-  runs go through `tools/luanti_headless.sh`, `tools/wp13/run_capital.sh` or
-  `run_highcourt.sh` with an explicit port, under `nice -n 19`, and end with
+  runs go through `tools/luanti_headless.sh` with an explicit port, under `nice -n 19`, and end with
   `pgrep -f '^luanti.bin'` showing only the user's client.
 - The worker's final report is a **hypothesis**. The orchestrator reruns the
   static PUC gates and the LuaJIT suites itself and checks the lane's final
@@ -211,12 +210,11 @@ user's client.
 
 After the last merge of a round, before the sync (measured 2026-09-17/18):
 
-- the six capitals: `tools/wp13/run_capital.sh <absent output dir> <key> full <seed>`
-  with `WP13_CAPITAL_PORT` from a free block, `nice -n 19`, at most three at
-  a time (`xargs -P 3`), each about ten minutes; PASS lines plus
-  `grep -c ERROR <output>/server.log` = 0. `run_capital.sh` is for capitals
-  only: on a start village its probe fails at load (`attempt to index field
-  'core'`, the start has no capital core), which is a misuse, not a defect;
+- the six capitals: a headless boot (`tools/luanti_headless.sh`) that emerges
+  the capitals' reserved squares, with `grep -c ERROR` = 0 (the old
+  `tools/wp13/run_capital.sh` and its probe were retired with the fixed
+  capital layout in Round 22; the capital planner's disposable probe lives in
+  the orchestration folder, `r22/capital-int/engine/`);
 - the six starts: `tools/wp13/run_engine.sh` (six-start digest gate) and
   `tools/wp40/quality/final_micro.sh` (PUC/LuaJIT micro pair) were retired in
   Round 22 (D22); a headless boot through `tools/luanti_headless.sh` is the
@@ -310,7 +308,6 @@ with a correction.
 | `tools/check_fresh_server.py` failure hidden by a later check in a combined static script | the former `tools/wp11/static.sh` (retired in Round 22) had no `set -e` | run `python3 tools/check_fresh_server.py` as its own required gate step (measured 2026-09-18) |
 | A Codex review ends with `turn.failed: Selected model is at capacity` and produces no report | the selected model had no available capacity; this is not a review verdict | relaunch the review and require a real report before continuing (measured 2026-09-18) |
 | A lane that edits `start_npcs.lua` or `AGENTS.md` conflicts when the orchestrator merges it | another concurrent lane changed the shared file first | merge `main` into that lane before its review and resolve the conflict there, so the reviewer sees the integrated result (measured 2026-09-18) |
-| `run_capital.sh` on a start village: `grug_wp13_capital_probe/init.lua: attempt to index field 'core'` | the capital probe expects a capital core blueprint; starts have none | use `run_capital.sh` for capitals only (2.6) |
 | `git worktree remove` refuses: "Arbeitsverzeichnisse, die Submodule enthalten, können nicht ... entfernt werden" | the worktree carries the reference_projects submodule directories | `git worktree remove --force --force <dir>` after confirming `git -C <dir> status --porcelain` is empty and the branch is merged |
 | Every command in a Codex lane fails before it runs: `bwrap: Can't write data to file /tmp/<dir>: Bad file descriptor`; the worker reports a broken environment and stops | a `sandbox_workspace_write.writable_roots` entry names a directory that does not exist yet | create every writable root (`mkdir -p`) before the launch; the sandbox does not create them (measured 2026-09-18, five lanes lost their first run) |
 | A lane's final commit adds its report (`last.md`) to the repository root | the worker wrote its `-o` report a second time into the worktree and committed it | the brief says explicitly that reports go to the `-o` path only; on review, remove the file from the branch (measured 2026-09-18: two of three implementation lanes did this) |
