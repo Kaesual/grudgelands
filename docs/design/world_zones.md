@@ -447,9 +447,11 @@ replaced; git history before this rewrite records that model.
   at or above the parent's surface), at a lake mouth (a river meets the lake
   at the lake's level, at most three nodes above the river's own level at
   the shore, except where two touching lakes must share a level; a lake
-  standing higher is lowered by at most four nodes, its basin above the new
-  level turning to ordinary terrain; where it would have to drop further it
-  keeps its level and shores and the river sinks before reaching it) and
+  standing higher is lowered by at most four nodes and only while at least
+  half of it stays wet, its basin above the new level turning to ordinary
+  terrain; otherwise it keeps its level and shores and the river sinks
+  before reaching it, as does a river that would run back into the lake it
+  left) and
   between lakes (a lake fed by a river from another lake stands no
   higher than that lake, and at the same level when their water could meet).
   The trough's fill level absorbs the small raises. A drop that a junction
