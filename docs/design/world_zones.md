@@ -968,7 +968,9 @@ graph requirement may shape a zone, and nothing may require a graph to be
 - **Materials per race (D48, D74).** Every road has exactly one surface
   material everywhere, on the ground and on decks and galleries on pillars
   alike, and its half-step slabs are of the same material; no railings or
-  fences anywhere. Pillars are a second material. A true bridge is wood as a
+  fences, except that a capital street's deck or bridge carries a fence on
+  its open edge where the street runs straight (D75: the heading turns less
+  than about 8° over 8 points either side). Pillars are a second material. A true bridge is wood as a
   whole: a raised run (consecutive deck or bridge points of one road) that
   crosses water takes the race's bridge wood on every column, surface and
   slabs, bank to bank and two nodes onto each bank, whatever supports it;
