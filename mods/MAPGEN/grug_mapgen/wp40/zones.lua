@@ -1251,7 +1251,7 @@ local function zones_factory(dependencies)
 			end
 			-- The road record of a column for the writer's road dressing
 			-- (height.road_column_at): kind, road y, terrain y, class, pillar,
-			-- rail, wall base, road kind; nil off the roads.
+			-- bridge run, wall base, road kind; nil off the roads.
 			function planner_source.road_column_at(x, z)
 				local outside
 				x, z, outside = normalize_xz(x, z, "road column query")

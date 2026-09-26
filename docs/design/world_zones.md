@@ -954,24 +954,34 @@ graph requirement may shape a zone, and nothing may require a graph to be
   slope keeps the terrain's own surface (grass, dirt, rock), and a low
   retaining wall stands only at the foot of deep cuts. Downhill up to about
   2 nodes is a natural embankment, never a vertical wall; beyond that the road
-  is a deck on pillars with a railing. On steep side slopes a half gallery
+  is a deck on pillars (no railing, D74). On steep side slopes a half gallery
   (a shallow uphill cut, the downhill half on pillars) is preferred to a deep
   uphill cut. Decks belong to one-sided galleries (typical at serpentines)
   and short valley crossings (both ends on the ground, about 32 nodes or
   less); a deck free on both sides elsewhere is a last resort where the
   terrain falls faster than a road may (D68).
 - **Water crossings** are chosen by cost, preferring narrow and shallow
-  places. Bridges are the same deck with pillars down to the river bed and a
-  railing, at least 2 nodes above the water; where the road runs below the
+  places. Bridges are the same deck with pillars down to the river bed, at
+  least 2 nodes above the water; where the road runs below the
   water surface it fords on a raised bed with at least one node of water over
   it. A cut never lowers ground below nearby water.
-- **Materials per race (D48).** One design: road surface and half-step slab,
-  deck and deck slab, pillar, rail, wall. Humans: cobble, wood, tree trunk,
-  wooden rail, stone brick. Dwarves: stone block, pine wood, stone-brick
-  pillars. Elves: silver sandstone block, aspen wood, aspen trunk. Undead:
-  stone brick, pine wood, mossy cobble pillars. Orcs: desert cobble, acacia
-  wood, acacia trunk. Trolls: mossy cobble, jungle wood, jungle trunk. Trails
-  are gravel with the race's stone slab on half steps.
+- **Materials per race (D48, D74).** Every road has exactly one surface
+  material everywhere, on the ground and on decks and galleries on pillars
+  alike, and its half-step slabs are of the same material; no railings or
+  fences anywhere. Pillars are a second material. A true bridge is wood as a
+  whole: a raised run (consecutive deck or bridge points of one road) that
+  crosses water takes the race's bridge wood on every column, surface and
+  slabs, bank to bank and two nodes onto each bank, whatever supports it;
+  every other raised run keeps the road material, and fords keep it too. Surface, slab / bridge wood /
+  pillars / retaining wall per race: humans cobble / wood / tree trunk /
+  stone brick; dwarves stone block / pine wood / stone brick / stone brick;
+  elves silver sandstone block / aspen wood / aspen trunk / silver sandstone
+  brick; undead stone brick / pine wood / mossy cobble / mossy cobble; orcs
+  desert cobble / acacia wood / acacia trunk / desert stone brick; trolls
+  mossy cobble / jungle wood / jungle trunk / mossy cobble. Trails are gravel
+  with the race's stone slab on half steps, also on their decks, where the
+  gravel lies on a course of the pillar material; a trail bridge is wood like
+  a road bridge.
 - **Classes.** Roads between capitals and from capitals toward starts are
   primary (7 wide); roads to villages and into the contested zones are
   secondary (5 wide). See §7.5 for the corridor.
