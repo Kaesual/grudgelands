@@ -158,11 +158,18 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 		for _, road in ipairs(road_layout.roads) do
 			if road.kind == "trail" then trails_n = trails_n + 1 else roads_n = roads_n + 1 end
 		end
+		local dropped = st.pins_dropped or {}
 		core_api.log("action", string.format("[grug_mapgen] roads: %d roads, %d trails " ..
-			"(%d of %d trail candidates), %d loops, built in %.1f s, payload %d bytes " ..
-			"(with the capital streets), capital layouts %d bytes",
+			"(%d of %d trail candidates), %d loops, %d core pins dropped, built in " ..
+			"%.1f s, payload %d bytes (with the capital streets), capital layouts " ..
+			"%d bytes",
 			roads_n, trails_n, st.trails_built or 0, st.trails_tried or 0, st.loops or 0,
-			st.t_total or 0, #payload.road_layout, #payload.capital_layout))
+			#dropped, st.t_total or 0, #payload.road_layout, #payload.capital_layout))
+		if #dropped > 0 then
+			core_api.log("warning", "[grug_mapgen] roads: the core pin did not fit, " ..
+				"the road may meet its village or POI with a step: " ..
+				table.concat(dropped, ", "))
+		end
 		road_spots = runtime.road_module().showcase(road_layout)
 		for _, spot in ipairs(road_spots) do
 			road_spot_lines[#road_spot_lines + 1] = string.format("%s (%s) at %d,%d,%d",

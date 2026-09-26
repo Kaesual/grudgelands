@@ -150,6 +150,9 @@ local function new_module(P)
 			end
 			DIRS[i] = {dx = d[1], dz = d[2], len = len, ux = d[1] / len, uz = d[2] / len,
 				ang = atan2(d[2], d[1]), mids = mids,
+				knight = mids[1] ~= nil,
+				m1x = mids[1] and mids[1][1] or 0, m1z = mids[1] and mids[1][2] or 0,
+				m2x = mids[2] and mids[2][1] or 0, m2z = mids[2] and mids[2][2] or 0,
 				diag = abs(d[1]) == 1 and abs(d[2]) == 1}
 		end
 	end
@@ -353,8 +356,12 @@ local function new_module(P)
 		local road_check = nil        -- set while routing loops
 		local bad_join, pin_check = {}, false  -- core-pin join checks (routed)
 		local GUIDE = nil   -- kit: li -> extra cost per node (a planner's corridor preference)
-		-- move cost from li (heading da) to lj (heading d) along DIRS[d]
-		local function move_cost(li, lj, d, trail)
+		-- move cost from li (heading da) to lj (heading d) along DIRS[d]:
+		-- the static part (grade, noise, cross slope, water; li follows from
+		-- lj and d) is memoised per (lj, d) and road class, the network
+		-- terms are added on every call (same additions, same order)
+		local SCOST = {[false] = {}, [true] = {}}
+		local function static_cost(li, lj, d, trail)
 			local D = DIRS[d]
 			local L = C * D.len
 			local ka, kb = KOF[li], KOF[lj]
@@ -372,12 +379,22 @@ local function new_module(P)
 			local cross = abs(GX[lj] * D.uz - GZ[lj] * D.ux)
 			if cross > P.SIDE0 then c = c + L * P.K_SIDE * (cross - P.SIDE0) ^ 2 end
 			c = c + WATERC[lj]
+			return c
+		end
+		local function move_cost(li, lj, d, trail)
+			local memo = SCOST[trail == true]
+			local key = (lj - 1) * ND + d
+			local c = memo[key]
+			if not c then
+				c = static_cost(li, lj, d, trail)
+				memo[key] = c
+			end
 			if GUIDE then
 				local gv = GUIDE[lj]
-				if gv then c = c + L * gv end
+				if gv then c = c + C * DIRS[d].len * gv end
 			end
-			if near_road[lj] and not netcell[lj] then c = c + L * P.K_PARALLEL end
-			if on_road_penalty and netcell[lj] then c = c + L * on_road_penalty end
+			if near_road[lj] and not netcell[lj] then c = c + C * DIRS[d].len * P.K_PARALLEL end
+			if on_road_penalty and netcell[lj] then c = c + C * DIRS[d].len * on_road_penalty end
 			return c
 		end
 
@@ -389,7 +406,7 @@ local function new_module(P)
 		-- search(sources, target, heuristic) -> list of li, end info
 		-- sources: {{li, d or nil, cost}}; target(li, d) -> info or nil
 		local nsearch, nexpand, last_expand = 0, 0, 0
-		local recent = {}
+		local RMARK, rstamp = {}, 0   -- li -> stamp: a recent cell of the state
 		local function search(sources, target, heur, budget, trail, forbid_owner, allow)
 			generation = generation + 1
 			nsearch = nsearch + 1
@@ -435,11 +452,12 @@ local function new_module(P)
 					local TC = TURNC[da]
 					-- the last cells of this state's path (spiral check)
 					local nrecent = 0
+					rstamp = rstamp + 1
 					do
 						local s2 = prev[st]
 						while s2 and nrecent < P.LOOP_LOOKBACK do
 							nrecent = nrecent + 1
-							recent[nrecent] = floor((s2 - 1) / ND) + 1
+							RMARK[floor((s2 - 1) / ND) + 1] = rstamp
 							s2 = prev[s2]
 						end
 					end
@@ -452,10 +470,20 @@ local function new_module(P)
 								local lj = LI[jz * nx + jx]
 								if lj and (not blocked[lj] or (allow and allow[lj])) then
 									local ok, extra = true, 0
-									for _, m in ipairs(D.mids) do
-										local lm = LI[(iz + m[2]) * nx + ix + m[1]]
-										if not lm or (blocked[lm] and not (allow and allow[lm])) or netcell[lm] then ok = false break end
-										extra = extra + 0.5 * WATERC[lm]
+									local m1, m2
+									if D.knight then
+										m1 = LI[(iz + D.m1z) * nx + ix + D.m1x]
+										if not m1 or (blocked[m1] and not (allow and allow[m1])) or netcell[m1] then
+											ok = false
+										else
+											extra = extra + 0.5 * WATERC[m1]
+											m2 = LI[(iz + D.m2z) * nx + ix + D.m2x]
+											if not m2 or (blocked[m2] and not (allow and allow[m2])) or netcell[m2] then
+												ok = false
+											else
+												extra = extra + 0.5 * WATERC[m2]
+											end
+										end
 									end
 									-- never cross a road without joining it
 									if ok and netcell[lj] and not target(lj, d) then ok = false end
@@ -467,12 +495,10 @@ local function new_module(P)
 									-- after a sharp turn the path must not come back onto
 									-- (or across) its own recent cells: no spirals; a
 									-- hairpin's legs stay one cell apart (D45)
-									if ok and nrecent > 0 and (TURN[da][d] >= 60 or D.mids[1]) then
-										local m1 = D.mids[1] and LI[(iz + D.mids[1][2]) * nx + ix + D.mids[1][1]]
-										local m2 = D.mids[2] and LI[(iz + D.mids[2][2]) * nx + ix + D.mids[2][1]]
-										for q = 1, nrecent do
-											local l2 = recent[q]
-											if l2 == lj or l2 == m1 or l2 == m2 then ok = false break end
+									if ok and nrecent > 0 and (TURN[da][d] >= 60 or D.knight) then
+										if RMARK[lj] == rstamp or (m1 and RMARK[m1] == rstamp) or
+												(m2 and RMARK[m2] == rstamp) then
+											ok = false
 										end
 									end
 									if ok then
@@ -604,6 +630,7 @@ local function new_module(P)
 				local _, F = junction_extent(road)
 				for i = max(1, n - F), n do dmax[i] = 0 end
 				pin_end = parent.RQ and parent.RQ[road.parent_idx] or nil
+				road.solved_parent_pin = pin_end or false
 			end
 			for i = 1, min(n, P.END_FLAT) do dmax[i] = 0 end
 			if not road.parent then
@@ -640,6 +667,7 @@ local function new_module(P)
 				for i = max(1, n - road.flat_b), n do dmax[i] = 0 end
 			end
 			road.dmax = dmax
+			road.solved_junctions = #road.junctions
 			local C_CUT, C_FILL, EMB = P.C_CUT, P.C_FILL, P.EMB
 			local function scost(r, t, wy, centre, cm)
 				if wy and wy > t then
@@ -712,42 +740,71 @@ local function new_module(P)
 				end
 			end
 			local CSTEP = P.C_STEP
-			-- sliding-window minimum of prev over [v - a, v + a] for every v
-			-- (monotonic deque; ties keep the lowest u: deterministic)
-			local dq = {}
-			local function window_min(prevv, plo, phi, vlo, vhi, a, mv, ma)
-				local head, tail = 1, 0
-				local u = plo
+			-- sliding-window minimum of prev over [v - a, v + a] for every v,
+			-- the lowest level on ties (deterministic): blocks of 2a + 1
+			-- levels with a forward (prefix) and a backward (suffix) minimum,
+			-- so a window is one or two lookups (no inner loops, which keeps
+			-- the loop compiled under LuaJIT)
+			local mv, ma = {}, {}
+			local prev_v, prev_i, suf_v, suf_i = {}, {}, {}, {}
+			local function window_min(prevv, plo, phi, vlo, vhi, a)
+				local m, B = phi - plo + 1, 2 * a + 1
+				-- prefix minima within each block (strict <: keeps the lowest index)
+				local bv, bi = INF, 0
+				for j = 1, m do
+					local x = prevv[j]
+					if (j - 1) % B == 0 or x < bv then bv, bi = x, j end
+					prev_v[j], prev_i[j] = bv, bi
+				end
+				-- suffix minima within each block (<=: the lowest index on ties)
+				for j = m, 1, -1 do
+					local x = prevv[j]
+					if j % B == 0 or j == m or x <= bv then bv, bi = x, j end
+					suf_v[j], suf_i[j] = bv, bi
+				end
 				for v = vlo, vhi do
-					local right = min(phi, v + a)
-					while u <= right do
-						local x = prevv[u - plo + 1]
-						while tail >= head and prevv[dq[tail] - plo + 1] > x do tail = tail - 1 end
-						tail = tail + 1; dq[tail] = u
-						u = u + 1
-					end
-					local left = v - a
-					while tail >= head and dq[head] < left do head = head + 1 end
-					if tail >= head then
-						local q = dq[head]
-						mv[v], ma[v] = prevv[q - plo + 1], q
+					local L, R = v - a - plo + 1, v + a - plo + 1
+					if L < 1 then L = 1 end
+					if R > m then R = m end
+					local k = v - vlo + 1
+					if L > R then
+						mv[k], ma[k] = INF, false
 					else
-						mv[v], ma[v] = INF, nil
+						local blockL, blockR = floor((L - 1) / B), floor((R - 1) / B)
+						local val, idx
+						if blockL ~= blockR then
+							val, idx = suf_v[L], suf_i[L]
+							if prev_v[R] < val then val, idx = prev_v[R], prev_i[R] end
+						elseif (L - 1) % B == 0 then
+							val, idx = prev_v[R], prev_i[R]
+						elseif R % B == 0 or R == m then
+							val, idx = suf_v[L], suf_i[L]
+						else
+							-- a window clipped on both sides inside one block
+							val, idx = prevv[L], L
+							for j = L + 1, R do
+								if prevv[j] < val then val, idx = prevv[j], j end
+							end
+						end
+						mv[k], ma[k] = val, idx + plo - 1
 					end
 				end
 			end
+			-- the level costs of two steps alternate between two buffers
+			local cur = {}
+			local cmi = {1, 1, 1}
 			for i = 2, n do
 				local plo, phi = lo[i - 1], hi[i - 1]
-				local nc, bk = {}, {}
+				local nc, bk = cur, {}
+				cur = prev
 				local t, wy = T[i], WY[i]
 				local a = dmax[i]
 				local vlo, vhi = lo[i], hi[i]
-				local mv, ma = {}, {}
-				window_min(prev, plo, phi, vlo, vhi, a, mv, ma)
+				window_min(prev, plo, phi, vlo, vhi, a)
 				local t1, t2, t3 = t[1], t[2], t[3]
 				local w1, w2, w3 = wy[1], wy[2], wy[3]
 				local m2, m3 = CM2[i], CM3[i]
-				local cmi = {1, m2, m3}
+				cmi[2], cmi[3] = m2, m3
 				local dry = not (w1 and w1 > t1) and not (w2 and w2 > t2) and not (w3 and w3 > t3)
 				for v = vlo, vhi do
 					local r = v / Q
@@ -780,8 +837,8 @@ local function new_module(P)
 					local best, arg = INF, nil
 					if pc < INF then
 						if v >= plo and v <= phi then best, arg = prev[v - plo + 1], v end
-						local x = mv[v] + CSTEP
-						if x < best then best, arg = x, ma[v] end
+						local x = mv[v - vlo + 1] + CSTEP
+						if x < best then best, arg = x, ma[v - vlo + 1] end
 					end
 					nc[v - vlo + 1] = best + pc
 					bk[v - vlo + 1] = arg or false
@@ -934,17 +991,17 @@ local function new_module(P)
 			end
 			-- deep cuts: the centre or the uphill edge more than CUT_DEEP below
 			-- the ground over at least DEEP_RUN points
+			local function is_deep(q)
+				if cls[q] ~= "G" then return false end
+				local c = 0
+				for s = 1, 3 do
+					local ws = WY[q][s]
+					if not (ws and ws > T[q][s]) then c = max(c, T[q][s] - Rv[q]) end
+				end
+				return c > P.CUT_DEEP
+			end
 			i = 1
 			while i <= n do
-				local function is_deep(q)
-					if cls[q] ~= "G" then return false end
-					local c = 0
-					for s = 1, 3 do
-						local ws = WY[q][s]
-						if not (ws and ws > T[q][s]) then c = max(c, T[q][s] - Rv[q]) end
-					end
-					return c > P.CUT_DEEP
-				end
 				if is_deep(i) then
 					local j = i
 					while j < n and is_deep(j + 1) do j = j + 1 end
@@ -1711,11 +1768,33 @@ local function new_module(P)
 
 		local T4 = os.clock()
 		-- solve in build order (parents first; loops after both ends exist)
-		for _, road in ipairs(roads) do solve(road) end
+		-- A road's provisional profile is final unless it has since gained a
+		-- junction or its parent's height at the junction changed: solve is a
+		-- pure function of those inputs and the road's own geometry and
+		-- samples, so those roads keep their profile as it is.
+		for _, road in ipairs(roads) do
+			local pin_now = false
+			if road.parent then
+				local parent = roads[road.parent]
+				pin_now = parent.RQ and parent.RQ[road.parent_idx] or false
+			end
+			if not road.RQ or road.solved_junctions ~= #road.junctions or
+					(road.parent and road.solved_parent_pin ~= pin_now) then
+				solve(road)
+			end
+		end
 		stats.t_profile = os.clock() - T4
 		stats.samples = nsample
 
 		for _, road in ipairs(roads) do classify(road); audit(road) end
+		-- roads whose core pin did not fit (never seen on the tested seeds):
+		-- the loader logs them
+		stats.pins_dropped = {}
+		for _, road in ipairs(roads) do
+			if road.no_core_pin then
+				stats.pins_dropped[#stats.pins_dropped + 1] = road.id .. ":" .. road.a .. "-" .. road.b
+			end
+		end
 		stats.t_total = os.clock() - T0
 		local layout = {roads = roads, stats = stats, seed = seed}
 
