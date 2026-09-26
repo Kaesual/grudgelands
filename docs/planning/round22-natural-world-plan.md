@@ -588,6 +588,15 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   - Highcourt canal interim (D58): one level for the whole canal, rims raised
     where needed, interrupted with a sealed end where natural water comes
     close.
+- **W3a lighting decision (user, 2026-09-26):** after three review rounds on
+  chunk-edge lighting (too bright under deep water; too dark under water
+  crossing a chunk top; too dark under not-yet-generated blocks above halo
+  columns), the fix is "Option 2": seed sunlight at every ignore→real
+  transition whose original day light is 15, with one shared helper for the
+  settlement writer and the map adapter; the probe counts liquids and
+  non-liquids against a reference. Fallback "Option 1" only if that round
+  does not reach 0/0 or costs noticeably: keep the old light below ignore in
+  halo columns (never worse than before).
 - **Lane W3b — rivers v2:**
   - trough model (D54): a smooth V/U trough blended into the terrain, width
     varying with flow, noise and terrain; water fills to the flat reach level;
