@@ -889,6 +889,30 @@ function M.prepare(profile, source, raw_sha256)
 		blueprints = blueprints, palette = union}
 end
 
+-- The world rectangles of every terrain-relative (reference) blueprint -- the
+-- district plots and fill lots -- for a settlement anchored at (x, z).
+-- Authored lakes keep their water and their bank shaping off these
+-- (world_zones.md §7.4): a plot stands on the ground the audit below checks.
+function M.plot_rects(prepared, x, z)
+	if type(prepared) ~= "table" or
+			prepared.schema ~= "grug_wp13_settlement_prepared_v1" then
+		error("WP13 settlement: prepared settlement differs", 0)
+	end
+	local rects = {}
+	for index = 1, #prepared.blueprints do
+		local blueprint = prepared.blueprints[index]
+		local descriptor = blueprint.descriptor
+		if descriptor.kind == "reference" then
+			local identity = blueprint.identity
+			local ox, oz = x + descriptor.offset.x, z + descriptor.offset.z
+			rects[#rects + 1] = {min_x = ox + identity.min_x,
+				max_x = ox + identity.max_x, min_z = oz + identity.min_z,
+				max_z = oz + identity.max_z}
+		end
+	end
+	return rects
+end
+
 -- WHAT THE GROUND UNDER A TERRAIN-RELATIVE BLUEPRINT ACTUALLY LOOKS LIKE.
 --
 -- A `reference` blueprint is projected from one column's pure final height and
@@ -915,59 +939,6 @@ end
 -- `column_at(x, z)` is `planner_source.column_values_at`: its first return is
 -- the water class and its sixth the final terrain height, so one query answers
 -- both questions.
--- The built area's horizontal reach from the anchor: the farthest corner of the
--- anchor blueprint and of every terrain-relative (reference) blueprint, i.e.
--- the civic core and every district plot or fill lot. The street overlay is
--- left out: its box is the whole envelope square, not where streets stand, and
--- a street over water becomes a bridge anyway. Inland water keeps out of this
--- reach (world_zones.md §7.4, plan D40).
-function M.horizontal_reach(prepared)
-	if type(prepared) ~= "table" or
-			prepared.schema ~= "grug_wp13_settlement_prepared_v1" then
-		error("WP13 settlement: prepared settlement differs", 0)
-	end
-	local reach = 0
-	for index = 1, #prepared.blueprints do
-		local blueprint = prepared.blueprints[index]
-		local descriptor = blueprint.descriptor
-		if descriptor.kind == "reference" or descriptor.kind == "anchor" then
-			local offset = descriptor.offset or {x = 0, z = 0}
-			local box = blueprint.bounds or descriptor.bounds
-			for _, x in ipairs({offset.x + box.min.x, offset.x + box.max.x}) do
-				for _, z in ipairs({offset.z + box.min.z, offset.z + box.max.z}) do
-					local distance = math.sqrt(x * x + z * z)
-					if distance > reach then reach = distance end
-				end
-			end
-		end
-	end
-	return reach
-end
-
--- The world rectangles of every terrain-relative (reference) blueprint -- the
--- district plots and fill lots -- for a settlement anchored at (x, z).
--- Authored lakes keep their water and their bank shaping off these
--- (world_zones.md §7.4): a plot stands on the ground the audit below checks.
-function M.plot_rects(prepared, x, z)
-	if type(prepared) ~= "table" or
-			prepared.schema ~= "grug_wp13_settlement_prepared_v1" then
-		error("WP13 settlement: prepared settlement differs", 0)
-	end
-	local rects = {}
-	for index = 1, #prepared.blueprints do
-		local blueprint = prepared.blueprints[index]
-		local descriptor = blueprint.descriptor
-		if descriptor.kind == "reference" then
-			local identity = blueprint.identity
-			local ox, oz = x + descriptor.offset.x, z + descriptor.offset.z
-			rects[#rects + 1] = {min_x = ox + identity.min_x,
-				max_x = ox + identity.max_x, min_z = oz + identity.min_z,
-				max_z = oz + identity.max_z}
-		end
-	end
-	return rects
-end
-
 function M.audit_terrain(prepared, anchor, column_at, tolerance)
 	if type(prepared) ~= "table" or
 			prepared.schema ~= "grug_wp13_settlement_prepared_v1" then

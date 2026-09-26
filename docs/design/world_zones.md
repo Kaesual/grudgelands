@@ -411,25 +411,67 @@ replaced; git history before this rewrite records that model.
   and one southern, each ending at a landing beach at a fixed point in the
   source data. The northern and southern boat routes to either island are
   roughly equal in length. Both approaches are open to both factions.
-- **Rivers carve their valleys.** A river lowers the terrain around it into a
-  valley profile instead of being cut into unchanged terrain. Its centreline
-  meanders and its width varies along its course.
+- **A river lies in a trough (Round 22, D54).** Its cross-section is a
+  smooth trough blended into the terrain, like a lake drawn along a line: the
+  ground is pulled down toward a bed below the reach's level, most on the
+  centreline and fading out to the untouched terrain at the trough's edge.
+  The trough is U-shaped (a flat floor) on gentle ground and V-shaped where
+  the terrain stands high above the water; it is wide where the banks are
+  high, so rivers in hills and mountains lower their whole valley. Its walls
+  wobble with the terrain and a 2D noise, never parallel to the river. The
+  water fills the trough up to the reach's level wherever the trough ground
+  lies below it, so the water's width and shoreline vary with the terrain
+  like a lake's shore, and the trough need not be full. There is no flat
+  floodplain strip and no incised channel; the sand band beside a river is
+  narrow (the near-water material rule reads twice the river distance).
+- **River width (Round 22, D55).** The water width grows with the catchment
+  and varies along the course by noise at two scales and by the terrain
+  (wider on gentle ground): about 7-30 nodes of target width, at least about
+  six nodes of water, wider at sea mouths. A spring starts at the minimum
+  width; above it the trough continues up the drainage as a dry gully of up
+  to about 200 nodes that narrows and fades out. The course (centreline and
+  meander) keeps the Phase 5 channel-width model, so the winding shape does
+  not change with the water width.
 - **Water steps down downstream.** Luanti water needs level surfaces, so a
   river's surface is constant along one reach and steps down to the next reach
   downstream through a small fall or rapids. Use few, simple step types:
   gentle terrain gets many small rapids (1–3 nodes), tall falls (up to about
   16) only on steep slopes. The two step types are a rapid (a drop of up to 3)
   and a fall; a lake's outflow over a step is river water, so it cannot flood
-  the shore below.
-- **Layout from drainage (Round 22, D38).** Rivers and lakes come from the
-  drainage of the natural terrain on a coarse grid, without erosion: shallow
-  pits are breached, deeper basins keep a lake below their spill level, and
-  wetland zones and water landmarks keep shallow ponds. No river or lake lies
-  within about 300 nodes of a start or inside a capital's built area: the
-  capital keep-out reaches the farthest corner of its civic core, district
-  plots and fill lots plus a margin (about 280-355 nodes from the core today),
-  with an irregular edge; a gentle apron beyond the keep-out turns rivers away
-  early instead of letting them hug its edge. Civic water and Moonfall's
+  the shore below. Next to a step the upper reach keeps to its channel, so its
+  water does not flood the low bank up to the step's straight line.
+- **Flow direction (Round 22, D56).** Reach levels never rise downstream:
+  along a river, across the dry gap after a sink (the new stretch starts no
+  higher than the one before), at confluences (a tributary's level at the
+  junction caps its parent's levels below it, so a tributary meets its parent
+  at or above the parent's surface), at a lake mouth (a river meets the lake
+  at the lake's level, at most three nodes above the river's own level at
+  the shore, except where two touching lakes must share a level; a lake
+  standing higher is lowered by at most four nodes and only while at least
+  half of it stays wet, its basin above the new level turning to ordinary
+  terrain; otherwise it keeps its level and shores and the river sinks
+  before reaching it, as does a river that would run back into the lake it
+  left) and
+  between lakes (a lake fed by a river from another lake stands no
+  higher than that lake, and at the same level when their water could meet).
+  The trough's fill level absorbs the small raises. A drop that a junction
+  or a sink imposes is spread upstream in steps the slope allows (D39), so
+  flat ground gets no tall fall at a confluence.
+- **Layout from drainage (Round 22, D38, D57).** Rivers and lakes come from
+  the drainage of the natural terrain on a coarse grid, without erosion:
+  shallow pits are breached, deeper basins keep a lake below their spill
+  level, and wetland zones and water landmarks keep shallow ponds. Water
+  keep-outs exist only for start towns (about 300 nodes around the start) and
+  for each capital's protected civic core (the core's corner distance plus a
+  margin, about 100-130 nodes, with an irregular edge); a capital's own lake
+  (Lethariel's crown lake, Kezamba's cenote) keeps natural water off within
+  its bounds. Water routes around every keep-out (a river may skirt a core in
+  an arc). Rivers and lakes
+  may cross the rest of a capital's reserved area: plots or lanes standing in
+  water there are allowed until the capital planner (plan D60) builds the
+  capital around its water, and the capital's and a start's terrace grading
+  leave a river's trough untouched. A river starts and ends at the shore of
+  its lake (no trough across the lake bed). Civic water and Moonfall's
   crescent lake are authored lakes in the same format.
 - **Civic water (Round 22, D26, D34, D42).** Authored lakes sit on the fitted
   terrain (`wp40/water_authored.lua`): the Kezamba cenote and the Lethariel
@@ -490,7 +532,8 @@ replaced; git history before this rewrite records that model.
   follow the terrain and never run straight. This rule is the only source of
   dry beach sand: the palette beach biome shows shingle and rock wherever the
   rule gives no sand. Lake and river banks (Phase 5) reuse the same rule with
-  their own water surface.
+  their own water surface; river banks count their distance twice, so the
+  sand beside a river stays a narrow band (D54).
 - **Shore height:** the first cardinal dry-land column beside any exposed
   water surface has its terrain surface at exactly the water-surface y (§2).
   No dry shore column ends below its neighboring water surface. Bridges,

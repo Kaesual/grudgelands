@@ -177,9 +177,11 @@ data.ranges = {
 		pts = {{-3400, 2300}, {-2800, 1000}, {-2100, 750}, {-1200, 600}}},
 }
 
--- Inland water (world_zones.md §7.4, plan D38-D40): rivers and lakes from the
--- drainage of the natural field, `water_layout.lua` the mechanism. Accepted
--- Phase 5 prototype W1 values, with the D39 step shaping and the D40 keep-outs.
+-- Inland water (world_zones.md §7.4, plan D38, D39, D54-D57): rivers and
+-- lakes from the drainage of the natural field, `water_layout.lua` the
+-- mechanism. Accepted Phase 5 prototype W1 layout values, with the D39 step
+-- shaping, the Phase 5b trough cross-section (D54, D55), monotone levels (D56)
+-- and the D57 keep-outs.
 data.water = {
 	-- coarse drainage grid (nodes)
 	C = 16, GX0 = -3744, GX1 = 3744, GZ0 = -3344, GZ1 = 3344,
@@ -192,42 +194,79 @@ data.water = {
 	LAKE_RIM = 0.45,        -- lake bank fill where the mask indicator reaches this
 	LAKE_UNCARVE = 0.15,    -- a river valley's carve is undone from here to LAKE_RIM
 	LAKE_PROXY = 40,        -- bank distance proxy: (0.5 - indicator) * this
+	LAKE_RISE_D = 4,        -- dry ground inside the mask: height above water * this
+	LAKE_TRIM = 0.65,       -- river vertices this deep in their source lake carry no trough
+	LAKE_TRIM_END = 0.9,    -- ... and this deep in their end lake
 	-- rivers
 	RIVER_ACC = 900,        -- catchment cells (x256 node^2) that make a river
 	MIN_TRIB_CELLS = 10,    -- shorter tributaries are pruned
 	SEG = 8, PATH_SMOOTH = 3, -- centreline spacing; moving-average passes
-	W_A = 0.0105,           -- width = W_A * sqrt(catchment in node^2), +-W_NOISE
-	W_MIN = 3, W_MAX = 16, W_NOISE = 0.25, MOUTH_FLARE = 0.6,
-	W_SRC = 1.6, SRC_KEEP = 0.25, SRC_TAPER = 220, -- springs start narrow
+	-- The course: meander and detours read a course width (the Phase 5 channel
+	-- width model), so the winding shape stays as accepted:
+	-- CW_A * sqrt(catchment in node^2), +-CW_NOISE, springs from CW_SRC
+	CW_A = 0.0105, CW_MIN = 3, CW_MAX = 16, CW_NOISE = 0.25,
+	CW_SRC = 1.6, SRC_KEEP = 0.25, SRC_TAPER = 220,
 	MEANDER_P = 5.5, MEANDER_A = 1.8, MEANDER_MAX = 36,
-	INC_A = 2.2, INC_B = 0.12, -- incision of the surface below the band terrain
-	BAND = 3,               -- level band: min terrain within w/2 + BAND across
+	-- Water width target (D55): W_MUL x the course width before its spring
+	-- taper, varied by two noise octaves (W_NOISE at period W_P, W_NOISE2 at
+	-- W_P2), at least W_MIN, at most W_MAX; springs grow from W_MIN over
+	-- W_TAPER nodes; sea mouths flare
+	W_MUL = 1.6, W_MIN = 7.5, W_MAX = 30, W_NOISE = 0.3, W_P = 260,
+	W_NOISE2 = 0.18, W_P2 = 90, W_TAPER = 160, MOUTH_FLARE = 0.5,
+	-- a spring's trough continues upstream along the drainage as a dry gully
+	-- of up to GULLY_LEN nodes, its half-width falling from GULLY_A0 at the
+	-- spring to GULLY_A1 at the tip and its incision fading out (D55)
+	GULLY_LEN = 200, GULLY_A0 = 3, GULLY_A1 = 1.2, GULLY_R = 4,
+	INC_A = 2.2, INC_B = 0.06, -- incision of the surface below the band terrain
+	BAND = 3,               -- level band: min terrain within W/2 + BAND across
 	-- steps (D39): steps closer than FALL_GAP vertices merge into one, up to
 	-- STEP_GENTLE nodes where the profile's slope (over +-SLOPE_K vertices) is
 	-- at most SLOPE_GENTLE, rising to FALL_MAX at SLOPE_STEEP and beyond
 	FALL_GAP = 2, FALL_MAX = 16, STEP_GENTLE = 3,
 	SLOPE_GENTLE = 0.10, SLOPE_STEEP = 0.25, SLOPE_K = 4,
+	-- a river's mouth is raised to its lake's level by at most this; a lake
+	-- standing higher above the river is lowered to it (D56)
+	LAKE_RAISE = 3,
+	-- a lake is lowered by at most this (its basin above the new level turns
+	-- to ordinary terrain); where it would have to drop further it keeps its
+	-- level and the river sinks before reaching it
+	LAKE_LOWER = 4,
+	-- ... and only while at least this share of its cells stays wet
+	LAKE_KEEP = 0.5,
 	CUT_MAX = 30,           -- a river never cuts deeper than this: it sinks
 	SINK_GAP = 6, SINK_MAX = 60, SINK_BACK = 6,
-	-- valley profile
-	FP_A = 3, FP_B = 1.0, FP_KEEP = 0.30, -- floodplain half-width, kept relief
-	V_A = 26, V_B = 4.0, V_MAX = 100, WALL_WOBBLE = 0.18,
+	-- Trough (D54): the ground is pulled toward the bed B = level - D with a
+	-- weight G(d / R) rising from 0 on the centreline to 1 at the trough
+	-- radius R; G blends a U profile (flat floor) on gentle ground into a V
+	-- profile (steep floor) where the terrain stands high above the water.
+	-- Bed depth D = DEPTH_A + DEPTH_B * W; R is sized per vertex so the water
+	-- edge lies at W/2 for the bank height (terrain HB_OFF beyond the edge
+	-- above the level), within [R_MIN * W/2, R_MAX]; D follows where R is
+	-- clamped, within [D_MIN, D_MAX]. The shape is U up to bank height HB_U
+	-- and V from HB_V; the radius wobbles by up to TROUGH_WOBBLE (share) with
+	-- 2D noise, so trough walls never run parallel to the river.
+	DEPTH_A = 1.4, DEPTH_B = 0.1, D_MIN = 1.6, D_MAX = 7, BED_NOISE = 0.2,
+	HB_OFF = 16, HB_U = 4, HB_V = 16, R_MIN = 1.8, R_MAX = 110,
+	TROUGH_WOBBLE = 0.15,
 	BLEND_K = 8,            -- attribute blend length over segment distances
-	WET_B = 2,              -- low spots this far beyond the channel flood
+	-- water may stand wherever the trough ground lies below the level within
+	-- min(R, W + WET_X) + WET_B of the centreline; a ring 1.5 nodes beyond
+	-- that is raised to the level where lower (the containment margin)
+	WET_X = 6, WET_B = 2,
+	-- a river reports its distance (water.column's bank_distance) this far
+	-- beyond its wet limit; height.lua's authored-water clearance
+	-- (`natural_capped`: natural_clear + LAKE_PROXY / 2, 28 for the
+	-- Highcourt canal) must fit inside it
+	BANK_REACH = 30,
 	-- keep-outs: POI cores get a one-sided detour with this clearance; start
 	-- and capital keep-outs lift the routing surface, their radius grown by up
 	-- to `edge` (share) with a noise of period KEEP_EDGE_P
 	POI_PAD = 12, KEEP_LIFT = 400, KEEP_EDGE_P = 160,
-	-- a gentle apron (KEEP_RAMP per node over KEEP_RAMP_W nodes) outside each
-	-- keep-out, so water turns away early instead of hugging the edge in a
-	-- circle arc (D40)
-	KEEP_RAMP = 0.12, KEEP_RAMP_W = 160,
 	start_keepout = 300, start_keepout_edge = 0.15,
-	-- D40: a capital's keep-out covers its whole built area: the farthest
-	-- corner of its civic core, district plots and fill lots (measured from the
-	-- prepared blueprints, 252-339 on the current capitals) plus the margin,
-	-- at least capital_keepout
-	capital_keepout = 280, capital_keepout_margin = 16, capital_keepout_edge = 0.15,
+	-- D57: a capital keeps only its protected civic core dry: the core's
+	-- corner distance (civic_width / 2 * sqrt 2) plus this margin, grown by up
+	-- to the edge share; rivers may cross the reserved area around it
+	capital_keepout_margin = 32, capital_keepout_edge = 0.3,
 	-- sampler buckets (segments by reach) and wet-occupancy cells (nodes)
 	BUCKET = 32, OCC = 16,
 	-- landmarks whose shallow depressions stay ponds (plus wetland zones),
@@ -244,7 +283,9 @@ data.water = {
 	-- distance to the water times this (narrower sand and gravel bands than
 	-- the sea's). With LAKE_PROXY it must put a lake's whole mask support
 	-- beyond the rule's reach, or the support's square edge would show.
-	bank_distance_scale = 4,
+	-- River banks report their distance times RIVER_BANK_MUL on top (D54: a
+	-- narrow sand band beside rivers).
+	bank_distance_scale = 4, RIVER_BANK_MUL = 2,
 }
 
 return data
