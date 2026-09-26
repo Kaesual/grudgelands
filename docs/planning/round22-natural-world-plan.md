@@ -211,6 +211,8 @@ Decisions after the Phase 5 playtest (2026-09-26, user with coordinator):
 | D60 | **New work package "capital planner"** after water and roads: a one-time start computation after height, water and roads. Protected civic cores stay untouched (no water, no changes). Within the reserved area it places districts, houses, lanes, walls (which may cross rivers), bridges, the four gates with connector roads (D59) and canals (D58), so each capital fits its landscape. It absorbs the §11 goals (denser, more natural capitals) and the alley-stub defect. Start towns stay fixed and protected. | User, 2026-09-26. |
 | D61 | **Water bugs fixed in Phase 5b:** bright stripes at chunk edges on deep lake floors (lighting); civic water steps show no flowing water (natural rivers do). | User playtest. |
 | D62 | **Compaction point moves:** after the user accepts water (Phase 5b), before roads — so road work starts with a clean context (supersedes compaction point 2). | User, 2026-09-26. |
+| D63 | **Performance analysis package, parallel to the road prototype** (start right after the D62 compaction), as preparation for the general cleanup round (D4). One agent in its own worktree finds where the mapgen can get faster and estimates gain and risk per item. **Byte-identical changes only** (algorithmic improvements, removing redundant checks and dead work); anything that changes the world — e.g. dropping a noise octave — is excluded and at most listed in one line as "deliberately excluded". Guardrails: (1) areas the road integration will rebuild (road IDs in the planner, road overlay/raster, exclusion kinds) are only flagged "re-check after roads"; (2) nothing is merged during the road integration — the agent may prototype and prove byte-identical patches in its worktree (probe grids on several seeds + engine full digest, as in W0) to measure instead of estimate; small changes in code the roads surely do not touch (e.g. the per-voxel light integer checks) may be proposed to the user one by one earlier; (3) timing with paired before/after runs and the noise reported; big measurement runs when no heavy road run is active. Deliverable: a ranked list (measured gain, risk, proof method, "before/after roads") plus the proven patches; performance numbers stay reports (D32). | User, 2026-09-26: no specific pain point; the agent finds the potential itself; the world looks good and must not change. |
+| D64 | **"Chunk edge" package, parallel to the road prototype** (start after the D62 compaction, a third package next to D63): find a robust, performant solution for everything that happens in the halo of an already generated neighbour chunk — lighting, sealing river/lake beds where later v7 caves cut in (accepted for now, Phase 6 note), v7's provisional overtop blocks. Start from an invariant, e.g. "every node's final light equals a from-scratch recomputation regardless of generation order", instead of per-case heuristics. **Analysis first:** the agent writes the invariant, two or three solution paths with effort, risk and cost, and their effect on bed sealing and the pre-existing checkerboard too-bright nodes; the user picks one before implementation. Performance counts: the cost must stay within a reasonable frame (today's correction costs roughly 0.5–1 % of chunk time; a clearly larger cost is escalated). Evidence with the lighting checks (census + windows in several generation orders), used with judgement: a tool for lighting changes, not a gate on every change — quick, reduced runs while iterating, the full run once before merge; no new measurement corset (user, 2026-09-26). The D63 performance agent leaves the lighting/halo code alone and only flags findings there. | User, 2026-09-26, after four review rounds on chunk-edge lighting (W3a, Fix A). |
 
 All §9 questions are answered.
 
@@ -618,6 +620,15 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
     halfway between the lowest bank ground and the highest ground under it
     (raised banks up to 6, trough cut up to 6 on the three seeds), sealed
     8 nodes off natural water (checked with keep-outs shrunk to ~core).
+- **Lighting regression found after the W3a merge (2026-09-26):** a broad
+  census (30×30 chunks, normal order) showed ~391 k too-dark air nodes under
+  open sky on main 84c1c9dc (base f6e66330: 3): `presun` seeded sun only at
+  the first real node below ignore, which is v7's provisional overtop stone.
+  User decision: **Fix A** — every sunlight-passing node with original day
+  light 15 in such halo columns starts a sun run (census back to 3 / 0). The
+  census joins the windows as the lighting check
+  (`~/projects/grudgelands-orchestration/r22/lighting-checks/`), run when
+  lighting code changes, reduced while iterating — not on every change.
 - **Lane W3b — rivers v2:**
   - trough model (D54): a smooth V/U trough blended into the terrain, width
     varying with flow, noise and terrain; water fills to the flat reach level;
@@ -655,6 +666,12 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   may lack native caves (check in playtest); shore-crab spawn rate retune.
 - Accepted as is (user, Phase 3 playtest): natural cave mouths that open into
   flooded pits at sea level.
+- Accepted for now (user, 2026-09-26, Phase 5b): native v7 caves of a
+  later-generated chunk can cut up to ~13 nodes into an already generated
+  neighbour's river bed (395 air nodes in beds on seed 8675309; no leak
+  observed). Resealing the halo would need out-of-owner writes past the
+  map adapter's run validation and the new halo light transaction; revisit
+  in Phase 6 only if it shows in play.
 - Afterwards, the general runtime cleanup round (D4).
 
 ### Orchestration and compaction points
@@ -672,6 +689,9 @@ compacts its context only at these points:
    handover brought up to date first.
 3. Next candidate point: after roads, before Phase 6 and the capital
    planner (D60).
+
+After the D62 compaction three packages start together: the Phase 4 road
+prototype, the D63 performance analysis and the D64 chunk-edge analysis.
 
 ## 7. Where we go for the optimum, and where we relax
 
@@ -756,6 +776,11 @@ planner work package that follows water and roads (D57–D60).
   water).
 - **Interim:** until this package, defects inside the reserved area are
   allowed (D31, D57); Highcourt's canal is a one-level interim (Phase 5b).
+- **Known items for this package (found in Phase 5b):** Nhal Veyr's capital
+  grading edge shows as a straight line (e.g. z = 1804 on seed 8675309 beside
+  a lake; pre-existing); arcs of rivers around hard core keep-outs (the soft
+  lens was tried and rejected, W3b); dry source gullies look straight in the
+  flat capital bowls; plots and lanes in rivers inside the reserved areas.
 
 - Keep the civic core as it is.
 - The surrounding city moves closer together:
