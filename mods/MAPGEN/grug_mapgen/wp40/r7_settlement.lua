@@ -61,6 +61,8 @@ if not module_dir or module_dir=="" then module_dir=core.get_modpath("grug_mapge
 local round20_catalog = dofile(module_dir.."/r20_poi_catalog.lua")
 local plot_approach = dofile(module_dir.."/../wp13/plot_approach.lua")
 local approach_palettes = dofile(module_dir.."/../wp13/palette.lua")
+local parts = dofile(module_dir.."/../wp13/parts.lua")
+local rot = plot_approach.rot
 
 -- The authorized volume per blueprint kind (contract sections 2.1 and 2.2).
 -- The start's numbers are the literal the first four increments typed in
@@ -69,13 +71,15 @@ M.BOUNDS = {
 	start = {min = {x = -63, y = -2, z = -63}, max = {x = 63, y = 24, z = 63}},
 	capital_core = {min = {x = -49, y = -2, z = -49}, max = {x = 49, y = 40, z = 49}},
 	capital_plot = {min = {x = -15, y = -6, z = -15}, max = {x = 15, y = 24, z = 15}},
-	-- The avenues are the one blueprint that legitimately leaves the civic
-	-- core: they run to the gate stations at +-256. Their authorized volume is
+	-- The city edge (walls, gatehouses, turrets, the open capitals' planted
+	-- belt) is the one blueprint that legitimately leaves the civic core: it
+	-- stands on the capital planner's outline. Its authorized volume is
 	-- therefore the capital's own HARD PROTECTION -- the 532-node square of
 	-- `source/simple_map.lua`'s `hard_capital_build_plus_apron_v1`, 266 either
-	-- side of the anchor. A road outside it would write mutable world, which is
+	-- side of the anchor. An edge outside it would write mutable world, which is
 	-- what that protection exists to prevent, so the envelope and the
-	-- protection are deliberately the same number in one place.
+	-- protection are deliberately the same number in one place. (The streets
+	-- and connectors are roads, `road_layout.lua`, not blueprints.)
 	capital_overlay = {min = {x = -266, y = -2, z = -266},
 		max = {x = 266, y = 40, z = 266}},
 	-- Authored POIs stay inside the exact half-open flat terrain cores.
@@ -203,7 +207,7 @@ M.roster = {
 		lazy = true,
 		zone_id = "elandor_highcourt",
 		anchor_id = "anchor_008", numeric_id = 8, x = 0, z = -1500,
-		blueprint_file = "r7_highcourt_blueprint.lua",
+		blueprint_file = "r7_capital_blueprint.lua",
 		blueprint_schema = "grug_wp13_highcourt_core_v1",
 		identity_schema = "grug_wp13_highcourt_core_identity_v1",
 		config_schema = "grug_wp13_highcourt_config_v1",
@@ -233,7 +237,7 @@ M.roster = {
 		lazy = true,
 		zone_id = "elandor_dur_brannoc",
 		anchor_id = "anchor_007", numeric_id = 7, x = -1800, z = -1500,
-		blueprint_file = "r7_dur_brannoc_blueprint.lua",
+		blueprint_file = "r7_capital_blueprint.lua",
 		blueprint_schema = "grug_wp13_dur_brannoc_core_v1",
 		identity_schema = "grug_wp13_dur_brannoc_core_identity_v1",
 		config_schema = "grug_wp13_dur_brannoc_config_v1",
@@ -261,7 +265,7 @@ M.roster = {
 		lazy = true,
 		zone_id = "kragmar_gor_drazhak",
 		anchor_id = "anchor_011", numeric_id = 11, x = 0, z = 1500,
-		blueprint_file = "r7_gor_drazhak_blueprint.lua",
+		blueprint_file = "r7_capital_blueprint.lua",
 		blueprint_schema = "grug_wp13_gor_drazhak_core_v1",
 		identity_schema = "grug_wp13_gor_drazhak_core_identity_v1",
 		config_schema = "grug_wp13_gor_drazhak_config_v1",
@@ -294,7 +298,7 @@ M.roster = {
 		lazy = true,
 		zone_id = "elandor_lethariel",
 		anchor_id = "anchor_009", numeric_id = 9, x = 1800, z = -1500,
-		blueprint_file = "r7_lethariel_blueprint.lua",
+		blueprint_file = "r7_capital_blueprint.lua",
 		blueprint_schema = "grug_wp13_lethariel_core_v1",
 		identity_schema = "grug_wp13_lethariel_core_identity_v1",
 		config_schema = "grug_wp13_lethariel_config_v1",
@@ -327,7 +331,7 @@ M.roster = {
 		lazy = true,
 		zone_id = "kragmar_kezamba",
 		anchor_id = "anchor_012", numeric_id = 12, x = 1800, z = 1500,
-		blueprint_file = "r7_kezamba_blueprint.lua",
+		blueprint_file = "r7_capital_blueprint.lua",
 		blueprint_schema = "grug_wp13_kezamba_core_v1",
 		identity_schema = "grug_wp13_kezamba_core_identity_v1",
 		config_schema = "grug_wp13_kezamba_config_v1",
@@ -360,7 +364,7 @@ M.roster = {
 		lazy = true,
 		zone_id = "kragmar_nhal_veyr",
 		anchor_id = "anchor_010", numeric_id = 10, x = -1800, z = 1500,
-		blueprint_file = "r7_nhal_veyr_blueprint.lua",
+		blueprint_file = "r7_capital_blueprint.lua",
 		blueprint_schema = "grug_wp13_nhal_veyr_core_v1",
 		identity_schema = "grug_wp13_nhal_veyr_core_identity_v1",
 		config_schema = "grug_wp13_nhal_veyr_config_v1",
@@ -644,112 +648,50 @@ local function prepare_cells(fail, descriptor, blueprint)
 		clear_to = blueprint.clear_to}
 end
 
--- The canonical identity bytes of an OVERLAY. An overlay has no cells until a
--- surface is handed to it, so what is frozen is its specification: the runs in
--- authored order, the carriageway, the lamp rhythm, the look-around and the
--- exact set of node names a run may write. A change to any of them changes the
--- road, and nothing else can.
-local function prepare_overlay(fail, descriptor, overlay)
+-- The canonical identity bytes of a capital's CITY EDGE overlay (Round 22
+-- capital planner). An overlay has no cells until a mapchunk asks for its
+-- columns, so what is frozen is its specification: the edge geometry of the
+-- world's capital layout (`overlay.spec`, the payload lines of the edge kind,
+-- the gates, the wall points and the turrets), its reach and the exact set of
+-- node names it may write. Main and emerge build it from the same payload.
+local function prepare_city(fail, descriptor, overlay)
 	if type(overlay) ~= "table" or overlay.schema ~= descriptor.blueprint_schema or
-			type(overlay.runs) ~= "table" or #overlay.runs < 1 or
-			type(overlay.run) ~= "function" or type(overlay.names) ~= "table" or
-			#overlay.names < 1 then
-		fail(descriptor.id .. ": overlay seam differs")
+			type(overlay.spec) ~= "string" or overlay.spec == "" or
+			type(overlay.make) ~= "function" or type(overlay.names) ~= "table" or
+			#overlay.names < 1 or type(overlay.reach) ~= "table" or
+			type(overlay.count) ~= "number" or overlay.count < 1 then
+		fail(descriptor.id .. ": city edge seam differs")
 	end
-	local function integer(value, label, minimum, maximum)
-		return integer_or_fail(fail, value, label, minimum, maximum)
+	local reach = overlay.reach
+	for _, key in ipairs({"min_x", "max_x", "min_z", "max_z"}) do
+		integer_or_fail(fail, reach[key], "city edge " .. key, -1023, 1023)
 	end
-	integer(overlay.width, "overlay width", 3, 15)
-	integer(overlay.lamp_spacing, "overlay lamp spacing", 1, 64)
-	integer(overlay.reach, "overlay reach", 0, 256)
-	if overlay.width % 2 ~= 1 then
-		fail(descriptor.id .. ": overlay width is not an odd carriageway")
-	end
-	local bytes = {"schema\t" .. descriptor.identity_schema .. "\n",
-		table.concat({"carriageway", overlay.width, overlay.lamp_spacing,
-			overlay.reach}, "\t") .. "\n"}
-	local runs, seen = {}, {}
-	local half = (overlay.width - 1) / 2 + 1
-	local reach = {min = {x = 0, y = 0, z = 0}, max = {x = 0, y = 0, z = 0}}
-	local function stretch(min_x, max_x, min_z, max_z)
-		if min_x < reach.min.x then reach.min.x = min_x end
-		if max_x > reach.max.x then reach.max.x = max_x end
-		if min_z < reach.min.z then reach.min.z = min_z end
-		if max_z > reach.max.z then reach.max.z = max_z end
-	end
-	for index = 1, #overlay.runs do
-		local run = overlay.runs[index]
-		if type(run) ~= "table" or type(run.id) ~= "string" or run.id == "" or
-				seen[run.id] or (run.axis ~= "x" and run.axis ~= "z") then
-			fail(descriptor.id .. ": overlay run differs at " .. index)
-		end
-		seen[run.id] = true
-		integer(run.at, "run centre line", -1023, 1023)
-		integer(run.from, "run start", -1023, 1023)
-		integer(run.to, "run end", run.from, 1023)
-		local lamp_phase = run.lamp_phase
-		if lamp_phase == nil then lamp_phase = run.from end
-		integer(lamp_phase, "run lamp phase", -1023, 1023)
-		if run.axis == "x" then
-			stretch(run.from, run.to, run.at - half, run.at + half)
-		else
-			stretch(run.at - half, run.at + half, run.from, run.to)
-		end
-		-- THE JUNCTION SQUARES, the spans where a street passes through an
-		-- authored structure, and the verge lanes that stand inside another
-		-- street's carriageway travel with the run and are NOT hashed -- which
-		-- is exact rather than lax: `wp13/street_plan.lua` derives all three
-		-- from the run rectangles and the carriageway width alone, and every one
-		-- of those rectangles is in the identity bytes already. A change to any
-		-- of them moves the identity; nothing else can move a junction, a
-		-- passage or a verge clearance.
-		runs[index] = {id = run.id, axis = run.axis, at = run.at,
-			from = run.from, to = run.to, lamp_phase = lamp_phase, junctions = run.junctions,
-			plain_verge = run.plain_verge, clear_verge = run.clear_verge}
-		bytes[#bytes + 1] = table.concat({"run", index, run.id, run.axis,
-			run.at, run.from, run.to, lamp_phase}, "\t") .. "\n"
-	end
-	-- THE OVERLAY'S REACH, and the protection it has to stay inside.
-	--
-	-- The manifest used to publish the settlement's PRIMARY bounds for the
-	-- overlay -- the 96-node civic core -- while the road it describes runs out
-	-- to the gate stations at +-256 and writes tens of thousands of cells there.
-	-- That is not a box the identity row may claim. The real reach is computed
-	-- from the runs, and it is checked against the hard capital footprint of
-	-- `source/simple_map.lua` (`hard_capital_build_plus_apron_v1`, total width
-	-- 532, i.e. 266 either side of the anchor): a road outside it would write
-	-- mutable world, which is exactly what a capital's protection exists to
-	-- prevent.
-	if reach.min.x < descriptor.bounds.min.x or
-			reach.max.x > descriptor.bounds.max.x or
-			reach.min.z < descriptor.bounds.min.z or
-			reach.max.z > descriptor.bounds.max.z then
+	-- the city stays inside the capital's protected square (design question 4)
+	if reach.min_x < descriptor.bounds.min.x or reach.max_x > descriptor.bounds.max.x or
+			reach.min_z < descriptor.bounds.min.z or reach.max_z > descriptor.bounds.max.z then
 		fail(descriptor.id ..
-			": an overlay run leaves the 532-node protected capital footprint")
+			": the city edge leaves the 532-node protected capital footprint")
 	end
-	-- The vertical reach is the settlement's own authorized volume: the road
-	-- follows the ground, and the ground of a capital envelope is inside it.
-	reach.min.y, reach.max.y = descriptor.bounds.min.y, descriptor.bounds.max.y
-	bytes[#bytes + 1] = table.concat({"reach", reach.min.x, reach.min.y,
-		reach.min.z, reach.max.x, reach.max.y, reach.max.z}, "\t") .. "\n"
+	local bytes = {"schema\t" .. descriptor.identity_schema .. "\n", overlay.spec}
 	local names = {}
 	for index = 1, #overlay.names do
 		local name = overlay.names[index]
 		if type(name) ~= "string" or name == "" or
 				(index > 1 and not M.less_bytes(overlay.names[index - 1], name)) then
-			fail(descriptor.id .. ": overlay palette differs")
+			fail(descriptor.id .. ": city edge palette differs")
 		end
 		names[index] = name
 		bytes[#bytes + 1] = table.concat({"palette", index, name}, "\t") .. "\n"
 	end
-	return {runs = runs, palette = names, identity_bytes = table.concat(bytes),
-		run = overlay.run, half = (overlay.width - 1) / 2,
-		lamp_spacing = overlay.lamp_spacing, reach = overlay.reach,
-		width = overlay.width, bounds = reach,
-		-- The count the identity is written from is a RUN count, not a cell
-		-- count: an overlay has no cells until a surface arrives, and the
-		-- manifest row says so rather than publishing an 8 that looks like one.
-		run_count = #runs}
+	local bounds = {min = {x = reach.min_x, y = descriptor.bounds.min.y, z = reach.min_z},
+		max = {x = reach.max_x, y = descriptor.bounds.max.y, z = reach.max_z}}
+	bytes[#bytes + 1] = table.concat({"reach", bounds.min.x, bounds.min.y,
+		bounds.min.z, bounds.max.x, bounds.max.y, bounds.max.z}, "\t") .. "\n"
+	return {palette = names, identity_bytes = table.concat(bytes), city = overlay,
+		bounds = bounds,
+		-- An overlay publishes the size of its specification (the wall
+		-- points) instead of a cell count.
+		run_count = overlay.count}
 end
 
 local CAPITAL_SOURCE_SCHEMA = "grug_wp13_capital_source_v1"
@@ -763,10 +705,16 @@ end
 
 -- `source` is what `dofile(profile.blueprint_file)()` returned: a blueprint
 -- table for a one-blueprint settlement, or a capital source declaring a core,
--- a plot list and the avenue overlay. Returns the ordered blueprint
--- descriptors; an identity schema is derived from the blueprint's own schema
--- string, which is what keeps Hearthpine's
--- `grug_wp13_hearthpine_blueprint_identity_v1` exactly where it was.
+-- the placed plots of this world's capital layout and the city edge overlay
+-- (`r7_capital_blueprint.lua`). Returns the ordered blueprint descriptors; an
+-- identity schema is derived from the blueprint's own schema string, which is
+-- what keeps Hearthpine's `grug_wp13_hearthpine_blueprint_identity_v1`
+-- exactly where it was.
+--
+-- A capital plot is placed by the planner: its offset from the anchor, its
+-- quarter TURNS (the entry faces its street) and its base height `y` (the
+-- plot origin's ground in the planner's sample). Its identity stays the
+-- unrotated cells; the turn is applied where the cells are projected.
 function M.descriptors(profile, source)
 	local function fail(message)
 		error("WP13 " .. tostring(profile and profile.label) .. ": " .. message, 0)
@@ -815,25 +763,54 @@ function M.descriptors(profile, source)
 		end
 		integer_or_fail(fail, plot.x, "plot x", -1023, 1023)
 		integer_or_fail(fail, plot.z, "plot z", -1023, 1023)
+		integer_or_fail(fail, plot.turns, "plot turns", 0, 3)
+		integer_or_fail(fail, plot.y, "plot base y", -31000, 31000)
 		add({id = "plot_" .. plot.id, plot_id = plot.id,
 			prefix = profile.key .. "_" .. plot.id, kind = "reference",
 			bounds = plot_bounds, blueprint_schema = plot.schema,
 			identity_schema = identity_schema_of(fail, plot.schema),
-			offset = {x = plot.x, z = plot.z}, build = plot.build})
+			offset = {x = plot.x, z = plot.z}, turns = plot.turns, base_y = plot.y,
+			build = plot.build})
 	end
-	local overlay_bounds = M.BOUNDS.capital_overlay
-	add({id = "avenue", prefix = profile.key .. "_avenue", kind = "overlay",
-		bounds = overlay_bounds, blueprint_schema = source.overlay.schema,
+	add({id = "city", prefix = profile.key .. "_city", kind = "overlay",
+		bounds = M.BOUNDS.capital_overlay, blueprint_schema = source.overlay.schema,
 		identity_schema = identity_schema_of(fail, source.overlay.schema),
 		overlay = source.overlay})
 	return list
 end
 
--- Build every blueprint of a settlement once, hash it, and keep what is not
--- a cell: the identity, the palette and the landmarks (the NPC sockets among
--- them). The cells of a LAZY settlement are dropped here and rebuilt on the
--- first mapchunk that touches the blueprint; an eager settlement keeps them.
-function M.prepare(profile, source, raw_sha256)
+-- Build one blueprint, hash it, and keep what is not a cell: the identity,
+-- the palette and the landmarks (the NPC sockets among them). The cells of a
+-- LAZY settlement are dropped here and rebuilt on the first mapchunk that
+-- touches the blueprint; an eager settlement keeps them.
+local function prepare_one(profile, descriptor, raw_sha256, fail)
+	local prepared
+	if descriptor.kind == "overlay" then
+		prepared = prepare_city(fail, descriptor, descriptor.overlay)
+	else
+		prepared = prepare_cells(fail, descriptor, descriptor.build())
+	end
+	local digest = raw_sha256(prepared.identity_bytes)
+	if type(digest) ~= "string" or #digest ~= 32 then
+		fail(descriptor.id .. ": SHA-256 seam differs")
+	end
+	local box = prepared.bounds or descriptor.bounds
+	prepared.identity = {schema = descriptor.identity_schema,
+		sha256 = hex(digest),
+		-- A blueprint with cells publishes its cell count; an OVERLAY has
+		-- none until a surface arrives, so it publishes the size of its
+		-- specification under its own field name.
+		cell_count = prepared.cells and #prepared.cells or nil,
+		run_count = prepared.run_count,
+		min_x = box.min.x, min_y = box.min.y, min_z = box.min.z,
+		max_x = box.max.x, max_y = box.max.y, max_z = box.max.z}
+	prepared.identity_bytes = nil
+	prepared.descriptor = descriptor
+	if profile.lazy then prepared.cells = nil end
+	return prepared
+end
+
+local function check_profile(profile)
 	if type(profile) ~= "table" then
 		error("WP13 settlement: profile differs", 0)
 	end
@@ -852,34 +829,47 @@ function M.prepare(profile, source, raw_sha256)
 			profile.reserve_anchor_root ~= true then
 		fail("anchor-root reservation differs")
 	end
+	return fail
+end
+
+-- One capital plot prepared BEFORE the capital is laid out (main): the
+-- planner needs the plot's bounds and cleared airspace, and `M.prepare`
+-- later reuses this preparation (pass the table of these, keyed by manifest
+-- prefix, as its `cache`), so every plot is built once. `plot` is the
+-- district roster entry ({id, schema, build}).
+function M.prepare_plot(profile, plot, raw_sha256)
+	local fail = check_profile(profile)
+	local plot_bounds = M.BOUNDS[profile.plot_bounds]
+	if type(plot_bounds) ~= "table" then fail("profile plot bounds differ") end
+	local descriptor = {id = "plot_" .. plot.id, plot_id = plot.id,
+		prefix = profile.key .. "_" .. plot.id, kind = "reference",
+		bounds = plot_bounds, blueprint_schema = plot.schema,
+		identity_schema = identity_schema_of(fail, plot.schema), build = plot.build}
+	return prepare_one(profile, descriptor, raw_sha256, fail)
+end
+
+-- Build every blueprint of a settlement once, hash it (or take its
+-- preparation from `cache`, keyed by manifest prefix), and keep what is not a
+-- cell.
+function M.prepare(profile, source, raw_sha256, cache)
+	local fail = check_profile(profile)
 	if type(raw_sha256) ~= "function" then fail("SHA-256 seam differs") end
 	local descriptors = M.descriptors(profile, source)
 	local blueprints, union, seen = {}, {}, {}
 	for index = 1, #descriptors do
 		local descriptor = descriptors[index]
-		local prepared
-		if descriptor.kind == "overlay" then
-			prepared = prepare_overlay(fail, descriptor, descriptor.overlay)
+		local prepared = cache and cache[descriptor.prefix]
+		if prepared then
+			if prepared.identity.schema ~= descriptor.identity_schema then
+				fail(descriptor.id .. ": cached preparation differs")
+			end
+			local copy = {}
+			for key, value in pairs(prepared) do copy[key] = value end
+			copy.descriptor = descriptor
+			prepared = copy
 		else
-			prepared = prepare_cells(fail, descriptor, descriptor.build())
+			prepared = prepare_one(profile, descriptor, raw_sha256, fail)
 		end
-		local digest = raw_sha256(prepared.identity_bytes)
-		if type(digest) ~= "string" or #digest ~= 32 then
-			fail(descriptor.id .. ": SHA-256 seam differs")
-		end
-		local box = prepared.bounds or descriptor.bounds
-		prepared.identity = {schema = descriptor.identity_schema,
-			sha256 = hex(digest),
-			-- A blueprint with cells publishes its cell count; an OVERLAY has
-			-- none until a surface arrives, so it publishes the size of its
-			-- specification -- the number of runs -- under its own field name.
-			cell_count = prepared.cells and #prepared.cells or nil,
-			run_count = prepared.run_count,
-			min_x = box.min.x, min_y = box.min.y, min_z = box.min.z,
-			max_x = box.max.x, max_y = box.max.y, max_z = box.max.z}
-		prepared.identity_bytes = nil
-		prepared.descriptor = descriptor
-		if profile.lazy then prepared.cells = nil end
 		for palette_index = 1, #prepared.palette do
 			local name = prepared.palette[palette_index]
 			if not seen[name] then
@@ -894,56 +884,30 @@ function M.prepare(profile, source, raw_sha256)
 		blueprints = blueprints, palette = union}
 end
 
--- The world rectangles of every terrain-relative (reference) blueprint -- the
--- district plots and fill lots -- for a settlement anchored at (x, z).
--- Authored lakes keep their water and their bank shaping off these
--- (world_zones.md §7.4): a plot stands on the ground the audit below checks.
-function M.plot_rects(prepared, x, z)
-	if type(prepared) ~= "table" or
-			prepared.schema ~= "grug_wp13_settlement_prepared_v1" then
-		error("WP13 settlement: prepared settlement differs", 0)
-	end
-	local rects = {}
-	for index = 1, #prepared.blueprints do
-		local blueprint = prepared.blueprints[index]
-		local descriptor = blueprint.descriptor
-		if descriptor.kind == "reference" then
-			local identity = blueprint.identity
-			local ox, oz = x + descriptor.offset.x, z + descriptor.offset.z
-			rects[#rects + 1] = {min_x = ox + identity.min_x,
-				max_x = ox + identity.max_x, min_z = oz + identity.min_z,
-				max_z = oz + identity.max_z}
-		end
-	end
-	return rects
+-- The world rectangle of a placed capital plot: its unrotated bounds turned
+-- by the plot's quarter turns, at its offset from the anchor at (x, z).
+function M.plot_rect(blueprint, x, z)
+	local descriptor, b = blueprint.descriptor, blueprint.identity
+	local turns = descriptor.turns or 0
+	local ax, az = rot(b.min_x, b.min_z, turns)
+	local bx, bz = rot(b.max_x, b.max_z, turns)
+	local ox, oz = x + descriptor.offset.x, z + descriptor.offset.z
+	return {min_x = ox + math.min(ax, bx), max_x = ox + math.max(ax, bx),
+		min_z = oz + math.min(az, bz), max_z = oz + math.max(az, bz)}
 end
 
--- WHAT THE GROUND UNDER A TERRAIN-RELATIVE BLUEPRINT ACTUALLY LOOKS LIKE.
+-- WHAT THE GROUND UNDER A PLACED CAPITAL PLOT ACTUALLY LOOKS LIKE.
 --
--- A `reference` blueprint is projected from one column's pure final height and
--- written without a single question about the ground it lands on: the writer
--- has no water test and no fall test, because the positions it is handed were
--- chosen against measured terrain (`tools/wp13/highcourt_plots.lua`). That
--- measurement covers the two gate seeds. A THIRD seed can put a plot in a
--- river or half-bury it, and today that failure is silent -- it is a building
--- standing in water in somebody's world and nothing in the log says so.
+-- The capital planner places every plot on its own sample of the fitted
+-- ground (dry with a margin, fall under the skirt, rise under the cleared
+-- airspace), before its streets exist. The world then carries the streets'
+-- cut and fill and the canal. This is the diagnostic that says where a plot
+-- no longer stands on this world's final ground: it logs, it changes no
+-- cell, and it is called once per load from the main environment.
 --
--- This is the diagnostic, and it is only a diagnostic: it logs, it changes no
--- cell, and it is called once per load from the main environment, where the
--- same `column_values_at` the sockets are projected with is already in hand.
---
--- WHAT IT SAMPLES, and why not everything. The PERIMETER is walked exactly,
--- because the perimeter is what the foundation skirt carries down and the fall
--- under it is the rule. The two-node margin ring is walked exactly, because a
--- plot whose skirt ends one node from the water is a building with a moat. The
--- interior is sampled on a stride of two: it costs a quarter of the queries and
--- a river or a terrace shoulder is never one column wide. Exhaustive would be
--- 36 000 height queries at every server start for a warning nobody reads on a
--- healthy world.
---
--- `column_at(x, z)` is `planner_source.column_values_at`: its first return is
--- the water class and its sixth the final terrain height, so one query answers
--- both questions.
+-- The PERIMETER and the two-node margin ring are walked exactly, the interior
+-- on a stride of two. `column_at(x, z)` is `planner_source.column_values_at`:
+-- its first return is the water class and its sixth the final terrain height.
 function M.audit_terrain(prepared, anchor, column_at, tolerance)
 	if type(prepared) ~= "table" or
 			prepared.schema ~= "grug_wp13_settlement_prepared_v1" then
@@ -960,42 +924,37 @@ function M.audit_terrain(prepared, anchor, column_at, tolerance)
 		local blueprint = prepared.blueprints[index]
 		local descriptor = blueprint.descriptor
 		if descriptor.kind == "reference" then
-			local identity = blueprint.identity
-			local reference = blueprint.reference
-			local origin_x = anchor.x + descriptor.offset.x
-			local origin_z = anchor.z + descriptor.offset.z
-			local class, _, _, _, _, base =
-				column_at(origin_x + reference.x, origin_z + reference.z)
-			local wet = (class ~= "land") and 1 or 0
+			local rect = M.plot_rect(blueprint, anchor.x, anchor.z)
+			local base = descriptor.base_y
+			local wet = 0
 			local edge_low, high = base, base
 			local function sample(x, z, edge)
-				local column_class, _, _, _, _, y = column_at(x, z)
-				if column_class ~= "land" then wet = wet + 1 end
+				local column_class, _, _, _, _, y, water_y = column_at(x, z)
+				if column_class ~= "land" or (type(water_y) == "number" and
+						type(y) == "number" and water_y > y) then
+					wet = wet + 1
+				end
 				if type(y) == "number" then
 					if y > high then high = y end
 					if edge and y < edge_low then edge_low = y end
 				end
 			end
-			for z = identity.min_z - margin, identity.max_z + margin do
-				for x = identity.min_x - margin, identity.max_x + margin do
-					local outside = x < identity.min_x or x > identity.max_x or
-						z < identity.min_z or z > identity.max_z
+			for z = rect.min_z - margin, rect.max_z + margin do
+				for x = rect.min_x - margin, rect.max_x + margin do
+					local outside = x < rect.min_x or x > rect.max_x or
+						z < rect.min_z or z > rect.max_z
 					local edge = (not outside) and
-						(x == identity.min_x or x == identity.max_x or
-							z == identity.min_z or z == identity.max_z)
-					local interior = (not outside) and (not edge)
+						(x == rect.min_x or x == rect.max_x or
+							z == rect.min_z or z == rect.max_z)
 					if outside or edge then
-						sample(origin_x + x, origin_z + z, edge)
-					elseif interior and x % 2 == 0 and z % 2 == 0 then
-						sample(origin_x + x, origin_z + z, false)
+						sample(x, z, edge)
+					elseif x % 2 == 0 and z % 2 == 0 then
+						sample(x, z, false)
 					end
 				end
 			end
 			local fall, rise = base - edge_low, high - base
-			-- The airspace the plot cut, which is what a rise has to fit
-			-- under. A composition that does not publish one is held to the
-			-- top of its own bounds, which is the older and weaker rule.
-			local clear = blueprint.clear_to or identity.max_y
+			local clear = blueprint.clear_to or blueprint.identity.max_y
 			if wet > 0 or fall > fall_limit or rise > clear then
 				findings[#findings + 1] = {id = descriptor.id,
 					plot_id = descriptor.plot_id, x = descriptor.offset.x,
@@ -1008,16 +967,16 @@ function M.audit_terrain(prepared, anchor, column_at, tolerance)
 end
 
 -- The NPC sockets of a prepared settlement, in blueprint order, ready for
--- `grug_core.register_settlement_sockets`. A plot's sockets are
--- PLOT-relative and TERRAIN-relative, so both corrections happen here and
--- nowhere else: the plot's offset from the anchor, and the difference between
--- the plot's own reference height and the settlement's fitted anchor height.
--- `height_at(x, z)` is the pure final height of one column -- the same query
--- the writer projects the plot's cells with.
+-- `grug_core.register_settlement_sockets`. A plot's sockets are PLOT-relative
+-- and turned with the plot, so every correction happens here and nowhere
+-- else: the plot's quarter turns (position, facing and the inn arrival side),
+-- its offset from the anchor, and the difference between the plot's base
+-- height (the planner's, the same the writer projects the cells from) and the
+-- settlement's fitted anchor height.
 --
 -- A socket id is unique only within its own composition (a plot knows nothing
 -- of the plot next door), so a plot's ids are prefixed with the plot id.
-function M.sockets(prepared, anchor, height_at)
+function M.sockets(prepared, anchor)
 	if type(prepared) ~= "table" or
 			prepared.schema ~= "grug_wp13_settlement_prepared_v1" then
 		error("WP13 settlement: prepared settlement differs", 0)
@@ -1037,17 +996,20 @@ function M.sockets(prepared, anchor, height_at)
 		local landmarks = blueprint.landmarks
 		local sockets = type(landmarks) == "table" and landmarks.sockets or nil
 		if type(sockets) == "table" then
-			local dx, dy, dz, prefix = 0, 0, 0, ""
+			local dx, dy, dz, turns, prefix = 0, 0, 0, 0, ""
+			local arrival
 			if descriptor.kind == "reference" then
-				if type(height_at) ~= "function" then fail("height seam differs") end
-				local reference = blueprint.reference
-				local base = height_at(anchor.x + descriptor.offset.x + reference.x,
-					anchor.z + descriptor.offset.z + reference.z)
+				local base = descriptor.base_y
 				if type(base) ~= "number" or base % 1 ~= 0 then
-					fail(descriptor.id .. ": reference height differs")
+					fail(descriptor.id .. ": base height differs")
 				end
 				dx, dy, dz = descriptor.offset.x, base - anchor.y, descriptor.offset.z
+				turns = descriptor.turns or 0
 				prefix = descriptor.plot_id .. "/"
+				-- the plot's own +x: where an arrival beside a socket stands
+				-- (grug_home's inn arrival), turned with the plot
+				local ax, az = rot(1, 0, turns)
+				arrival = {x = ax, z = az}
 			end
 			for socket_index = 1, #sockets do
 				local socket = sockets[socket_index]
@@ -1057,7 +1019,14 @@ function M.sockets(prepared, anchor, height_at)
 				local row = {}
 				for key, value in pairs(socket) do row[key] = value end
 				row.id = prefix .. socket.id
-				row.x, row.y, row.z = socket.x + dx, socket.y + dy, socket.z + dz
+				local sx, sz = rot(socket.x, socket.z, turns)
+				row.x, row.y, row.z = sx + dx, socket.y + dy, sz + dz
+				if type(socket.face) == "number" then row.face = (socket.face + turns) % 4 end
+				if type(socket.dir) == "table" then
+					local fx, fz = rot(socket.dir.x, socket.dir.z, turns)
+					row.dir = {x = fx, z = fz}
+				end
+				row.arrival = arrival
 				rows[#rows + 1] = row
 			end
 		end
@@ -1140,18 +1109,16 @@ function M.config(prepared, content, raw_sha256)
 			fail("stable " .. profile.slot .. " anchor differs")
 		end
 
-		-- The pure final height of one column: the same query the capital
-		-- reference rule of `height.lua` is authenticated through in
-		-- `r7_anchor_roster.lua`, reached from the planner source the
-		-- successor is constructed with. Only a settlement that owns a
-		-- terrain-relative blueprint or an overlay needs it, so a start's
-		-- dependencies are unchanged.
+		-- The final column answers, reached from the planner source the
+		-- successor is constructed with. Only a settlement that owns a placed
+		-- plot or a city edge needs them, so a start's dependencies are
+		-- unchanged.
 		local needs_height = false
 		for index = 1, #prepared.blueprints do
 			local kind = prepared.blueprints[index].descriptor.kind
 			if kind == "reference" or kind == "overlay" then needs_height = true end
 		end
-		local column_values_at
+		local column_values_at, road_column_at
 		if needs_height then
 			local planner_source = dependencies.planner_source
 			if type(planner_source) ~= "table" or
@@ -1159,74 +1126,19 @@ function M.config(prepared, content, raw_sha256)
 				fail("planner source differs")
 			end
 			column_values_at = planner_source.column_values_at
+			road_column_at = planner_source.road_column_at
 		end
-		local function final_height(x, z)
-			local _, _, _, _, _, terrain_y = column_values_at(x, z)
+		-- A column's final ground, the water surface standing on it (nil when
+		-- dry) and whether a road, street or square surface covers it.
+		local function column(x, z)
+			local _, _, _, _, _, terrain_y, water_y = column_values_at(x, z)
 			if type(terrain_y) ~= "number" or terrain_y % 1 ~= 0 then
 				fail("final height at " .. x .. "," .. z .. " differs")
 			end
-			return terrain_y
-		end
-
-		-- THE WALKABLE SURFACE of a column, which is what a ROAD follows: the
-		-- ground, or the water standing on it where there is any.
-		--
-		-- The first engine pass of this package ran the east avenue straight
-		-- along a river bed. Highcourt is the contract's "river plateau" capital
-		-- and WP40 leaves that river inside the 512 envelope, so between local
-		-- x 128 and x 210 the ground under the avenue is nine nodes below the
-		-- core and the water is one node above it: "pavement at surface" read as
-		-- the GROUND surface paves a trench under the river. A road is walked on
-		-- the surface a traveller stands on, so that is what the successor hands
-		-- `avenue.lua` -- and because the settlement writer overwrites, the
-		-- result is a solid causeway across the water and not paving floating on
-		-- it. The overlay itself is unchanged: it still queries no height of its
-		-- own and still knows nothing about water.
-		--
-		-- THE ROUTE OVER THE ROAD, which is the second half of the same
-		-- query. WP40's long-distance routes cross the same rivers the
-		-- capital's streets do, and where a route crosses on a BRIDGE its
-		-- deck passes over the street in the air. The column query already in
-		-- hand answers that too: a column the route spans reports the
-		-- functional kind `bridge_deck` and the deck's own walking height,
-		-- and every other functional kind (a land grade, a causeway, a ford)
-		-- is written INTO the ground and is therefore already the surface
-		-- this function returns.
-		--
-		-- So the overlay is handed two numbers per column instead of one, out
-		-- of ONE `column_values_at`, and `wp13/avenue.lua` owns what to do
-		-- with them (its "crossing rule"). The seam publishes geometry and
-		-- decides nothing: the deck height is what WP40 built, not what WP13
-		-- would like it to be.
-		local function walkable_values(x, z)
-			local water_class, _, _, _, _, terrain_y, water_y, _, _, functional_kind,
-				functional_y, feature_id = column_values_at(x, z)
-			if type(terrain_y) ~= "number" or terrain_y % 1 ~= 0 then
-				fail("final height at " .. x .. "," .. z .. " differs")
-			end
-			local deck_y
-			if functional_kind == "bridge_deck" then
-				if type(functional_y) ~= "number" or functional_y % 1 ~= 0 then
-					fail("bridge deck height at " .. x .. "," .. z .. " differs")
-				end
-				deck_y = functional_y
-			end
-			-- THE THIRD VALUE IS WHETHER THIS COLUMN IS WATER, and it is read
-			-- off the same plan the first two are. An overlay run needs it
-			-- because the surface it is handed over a river IS the river: a
-			-- street that filled up to it would be a dam with a road on top,
-			-- and the ruling of 2026-09-16 is that a water body stays one body
-			-- and a street over water is a bridge on piers. Lethariel used to
-			-- carry a hand-measured span table for exactly this; the plan knew
-			-- all along, and one more return value is what it took to ask it.
-			if type(water_y) == "number" and water_y % 1 == 0 and
-					water_y > terrain_y then
-				return water_y, deck_y, true, true
-			end
-			local engineered = water_class ~= "land" or (functional_kind ~= nil and
-				not (functional_kind == "land_grade" and type(feature_id) == "string" and
-					feature_id:match("^anchor_%d+$")))
-			return terrain_y, deck_y, false, engineered
+			local road = false
+			if road_column_at then road = road_column_at(x, z) == "surface" end
+			if type(water_y) ~= "number" or water_y <= terrain_y then water_y = nil end
+			return terrain_y, water_y, road
 		end
 
 		local metrics = {plan_calls = 0, settle_calls = 0, replay_calls = 0,
@@ -1234,8 +1146,8 @@ function M.config(prepared, content, raw_sha256)
 			overlay_calls = 0}
 
 		-- Per-session state of every blueprint: the world box it occupies, the
-		-- cells with their content refs (nil while released) and, for a plot,
-		-- the reference height that box was derived from.
+		-- cells with their content refs (nil while released) and, for a city
+		-- edge, its geometry index.
 		local states = {}
 		for index = 1, #prepared.blueprints do
 			local blueprint = prepared.blueprints[index]
@@ -1243,85 +1155,49 @@ function M.config(prepared, content, raw_sha256)
 			local state = {blueprint = blueprint, descriptor = descriptor,
 				active = false, idle = 0}
 			if descriptor.kind == "overlay" then
-				-- A run's ground is read once per session and shared by every
-				-- mapchunk that clips it: the envelope of a column depends on the
-				-- ground within `reach` columns of it, so the mapchunks stacked
-				-- above and below one avenue must not re-read the same profile
-				-- once each. The memo IS the plan's own column surface -- every
-				-- value in it comes from `column_values_at` and from nothing else.
-				-- `state.deck` is the same memo for the route surface that spans
-				-- the column, filled by the same query and in the same pass, so
-				-- the crossing rule costs no extra column.
-				state.ground = {}
-				state.deck = {}
-				-- The same memo for "is this column water", filled by the same
-				-- query and in the same pass, so a bridge costs no extra column.
-				state.wet = {}
-				state.runs = {}
-				for run_index = 1, #blueprint.runs do
-					local run = blueprint.runs[run_index]
-					local half = blueprint.half + 1
-					local min_x, max_x, min_z, max_z
-					if run.axis == "x" then
-						min_x, max_x = run.from, run.to
-						min_z, max_z = run.at - half, run.at + half
-					else
-						min_z, max_z = run.from, run.to
-						min_x, max_x = run.at - half, run.at + half
-					end
-					-- The CARRIAGEWAY rectangle, verges excluded, in the
-					-- composition's own coordinates: this is what decides whether
-					-- another run's lamp standard would stand in the middle of this
-					-- road (see the arbitration in `settle`).
-					local car_min_x, car_max_x, car_min_z, car_max_z
-					if run.axis == "x" then
-						car_min_x, car_max_x = run.from, run.to
-						car_min_z, car_max_z = run.at - blueprint.half, run.at + blueprint.half
-					else
-						car_min_z, car_max_z = run.from, run.to
-						car_min_x, car_max_x = run.at - blueprint.half, run.at + blueprint.half
-					end
-					state.runs[run_index] = {run = run, active = false,
-						min_x = anchor.x + min_x, max_x = anchor.x + max_x,
-						min_z = anchor.z + min_z, max_z = anchor.z + max_z,
-						car_min_x = car_min_x, car_max_x = car_max_x,
-						car_min_z = car_min_z, car_max_z = car_max_z}
-				end
+				state.edge = blueprint.city.make({x = anchor.x, z = anchor.z})
+				local b = blueprint.bounds
+				state.box = {min_x = anchor.x + b.min.x, max_x = anchor.x + b.max.x,
+					min_z = anchor.z + b.min.z, max_z = anchor.z + b.max.z}
 			end
 			states[index] = state
 		end
 
-		-- The world box of a blueprint, and the base height its cells are
-		-- projected from. For an anchor-relative blueprint that is the fitted
-		-- anchor; for a plot it is the pure final height of its reference
-		-- column, asked ONCE per session and cached here.
+		-- The world box of a blueprint, and the base its cells are projected
+		-- from: the fitted anchor for an anchor-relative blueprint, the
+		-- planner's base height at the plot's offset for a capital plot (its
+		-- box turned with the plot).
 		local function base_of(state)
 			if state.base then return state.base end
 			local descriptor = state.descriptor
 			local base
+			local bounds = state.blueprint.bounds
+			local x0, x1, z0, z1 = bounds.min.x, bounds.max.x, bounds.min.z, bounds.max.z
 			if descriptor.kind == "anchor" then
 				base = {x = anchor.x, y = anchor.y, z = anchor.z}
 			else
-				local reference = state.blueprint.reference
-				local x = anchor.x + descriptor.offset.x
-				local z = anchor.z + descriptor.offset.z
-				metrics.height_calls = metrics.height_calls + 1
-				base = {x = x, y = final_height(x + reference.x, z + reference.z),
-					z = z}
+				base = {x = anchor.x + descriptor.offset.x, y = descriptor.base_y,
+					z = anchor.z + descriptor.offset.z}
+				local rect = M.plot_rect(state.blueprint, anchor.x, anchor.z)
+				x0, x1 = rect.min_x - base.x, rect.max_x - base.x
+				z0, z1 = rect.min_z - base.z, rect.max_z - base.z
 			end
-			local bounds = state.blueprint.bounds
 			state.base = base
-			state.box = {min_x = base.x + bounds.min.x, max_x = base.x + bounds.max.x,
+			state.box = {min_x = base.x + x0, max_x = base.x + x1,
 				min_y = base.y + bounds.min.y, max_y = base.y + bounds.max.y,
-				min_z = base.z + bounds.min.z, max_z = base.z + bounds.max.z}
+				min_z = base.z + z0, max_z = base.z + z1}
 			return base
 		end
 
-		-- The cells of a blueprint with their content refs. Built on demand:
-		-- a lazy settlement holds none until a mapchunk touches it, and the
-		-- rebuild is compared against the identity the manifest published, so
-		-- a composition that is not a pure function of its own source is a
-		-- loud failure and not a silently different capital.
+		-- The cells of a blueprint with their content refs, turned with the
+		-- plot. Built on demand: a lazy settlement holds none until a mapchunk
+		-- touches it, and the rebuild is compared against the identity the
+		-- manifest published (the UNROTATED cells), so a composition that is
+		-- not a pure function of its own source is a loud failure and not a
+		-- silently different capital. A turn rotates every position (0 - x,
+		-- never -x: a signed zero would be another key), every oriented param2
+		-- (`parts.rotate_param2`), and settles the panes again on the turned
+		-- plot, which is what the engine would do for a placed pane.
 		local function cells_of(state)
 			if state.cells then return state.cells end
 			local source_cells = state.blueprint.cells
@@ -1336,12 +1212,28 @@ function M.config(prepared, content, raw_sha256)
 				end
 				source_cells = rebuilt.cells
 			end
+			local turns = state.descriptor.turns or 0
+			if turns ~= 0 then
+				local buf = parts.buffer()
+				for index = 1, #source_cells do
+					local cell = source_cells[index]
+					local x, z = rot(cell.x, cell.z, turns)
+					buf:put(x, cell.y, z, cell.name, parts.canonical_param2(cell.name,
+						parts.rotate_param2(cell.param2, parts.param2_kind(cell.name), turns)))
+				end
+				parts.resolve_panes(buf)
+				local order, count = buf:cells()
+				local turned = {}
+				for index = 1, count do turned[index] = order[index] end
+				source_cells = turned
+			end
 			local cells = {}
 			for index = 1, #source_cells do
 				local cell = source_cells[index]
 				local ref = refs[cell.name]
 				if not ref then
-					fail(state.descriptor.id .. ": cell name lost its content ref")
+					fail(state.descriptor.id .. ": cell name lost its content ref: " ..
+						tostring(cell.name))
 				end
 				cells[index] = {x = cell.x, y = cell.y, z = cell.z,
 					content_ref = ref, param2 = cell.param2}
@@ -1357,80 +1249,34 @@ function M.config(prepared, content, raw_sha256)
 			end
 		end
 
+		-- The collars and approaches of the placed plots (`wp13/plot_approach.
+		-- lua`): the path from a plot's entry runs straight along its front to
+		-- the first street, road or square surface column, found once per
+		-- session per plot from the pure road answer.
 		local approaches
 		local approach_findings = {}
-		local road_states = {}
-		local function raw_road_values(state, x, z)
-			local wx, wz = anchor.x + x, anchor.z + z
-			local key = column_key(wx, wz)
-			if state.ground[key] == nil then
-				metrics.height_calls = metrics.height_calls + 1
-				local y, deck, wet = walkable_values(wx, wz)
-				state.ground[key], state.deck[key], state.wet[key] = y, deck or false, wet
-			end
-			return state.ground[key], state.deck[key] or nil, state.wet[key]
-		end
 		local function prepare_approach(record)
 			if record.sampled then return end
 			record.sampled = true
-			if not record.road_id then
-				local y, _, wet, engineered = walkable_values(anchor.x + record.entry_x, anchor.z + record.road_z)
-				record.road_y = y
-				if wet or engineered or math.abs(y - record.y) > plot_approach.COLLAR then
-					record.unreachable = true
-					approach_findings[#approach_findings + 1] = record.state.descriptor.id .. ": natural entrance cannot fit within collar"
-				end
-				return
-			end
-			local road = road_states[record.road_id]
-			local state, run = road.state, road.run
-			local blueprint = state.blueprint
-			local function surface(x, z) return raw_road_values(state, x, z) end
-			local function overhead(x, z) local _, deck = raw_road_values(state, x, z); return deck end
-			local function wet(x, z) local _, _, value = raw_road_values(state, x, z); return value end
-			local piece = blueprint.run({id = run.id, axis = run.axis, at = run.at,
-				from = record.entry_x, to = record.entry_x, width = blueprint.width,
-				lamp_spacing = blueprint.lamp_spacing, lamp_phase = run.lamp_phase,
-				reach = blueprint.reach, anchor_y = anchor.y, junctions = run.junctions,
-				plain_verge = run.plain_verge, clear_verge = run.clear_verge,
-				overhead = overhead, wet = wet}, surface)
-			for _, cell in ipairs(piece.cells) do
-				if cell.x == record.entry_x and cell.z == run.at and cell.name ~= "air" then
-					record.road_y = math.max(record.road_y or cell.y, cell.y)
-				end
-			end
-			-- If another strip owns this junction, sample that owner at the
-			-- same column rather than infer its built height from bare terrain.
-			if record.road_y == nil then
-				for _, joint in ipairs(run.junctions or {}) do
-					if record.entry_x >= joint.low and record.entry_x <= joint.high then
-						local owner = road_states[joint.owner]
-						if owner then
-							local os = owner.run
-							local along = os.axis == "x" and record.entry_x or run.at
-							local part = blueprint.run({id = os.id, axis = os.axis, at = os.at,
-								from = along, to = along, width = blueprint.width,
-								lamp_spacing = blueprint.lamp_spacing, lamp_phase = os.lamp_phase,
-								reach = blueprint.reach, anchor_y = anchor.y, junctions = os.junctions,
-								plain_verge = os.plain_verge, clear_verge = os.clear_verge,
-								overhead = overhead, wet = wet}, surface)
-							for _, cell in ipairs(part.cells) do
-								if cell.x == record.entry_x and cell.z == run.at and cell.name ~= "air" then
-									record.road_y = math.max(record.road_y or cell.y, cell.y)
-								end
-							end
+			for step = 1, plot_approach.MAX_APPROACH do
+				local lx, lz = rot(record.entry_x, record.min_z - step, record.turns)
+				local x, z = record.x + lx, record.z + lz
+				if road_column_at then
+					local kind, road_y = road_column_at(x, z)
+					if kind == "surface" then
+						if step > 1 then
+							record.road_len, record.road_y = step - 1, road_y
 						end
+						return
 					end
 				end
 			end
-			if record.road_y == nil or math.abs(record.road_y - record.y) > record.min_z - record.road_z then
-				record.unreachable = true
-				approach_findings[#approach_findings + 1] = record.state.descriptor.id .. ": approach exceeds one-node rise"
-			end
+			approach_findings[#approach_findings + 1] = record.state.descriptor.id ..
+				": no street within " .. plot_approach.MAX_APPROACH .. " of the entry"
 		end
 		local function prepare_approaches()
 			if approaches then return approaches end
-			local plots, runs = {}, {}
+			local plots = {}
 			for _, state in ipairs(states) do
 				if state.descriptor.kind == "reference" then
 					local base = base_of(state)
@@ -1438,21 +1284,16 @@ function M.config(prepared, content, raw_sha256)
 					local plot = marks and marks.plot
 					local entry = marks and marks.entry
 					if plot and entry then
-						plots[#plots + 1] = {state = state, y = base.y,
-							min_x = base.x + plot.min.x - anchor.x,
-							max_x = base.x + plot.max.x - anchor.x,
-							min_z = base.z + plot.min.z - anchor.z,
-							max_z = base.z + plot.max.z - anchor.z,
-							entry_x = base.x + entry.x - anchor.x}
-					end
-				elseif state.descriptor.kind == "overlay" then
-					for _, run in ipairs(state.blueprint.runs) do
-						runs[#runs + 1] = run
-						road_states[run.id] = {run = run, state = state}
+						local record = {state = state, y = base.y, x = base.x, z = base.z,
+							turns = state.descriptor.turns or 0,
+							min_x = plot.min.x, max_x = plot.max.x,
+							min_z = plot.min.z, max_z = plot.max.z, entry_x = entry.x}
+						prepare_approach(record)
+						plots[#plots + 1] = record
 					end
 				end
 			end
-			approaches = plot_approach.new(plots, runs)
+			approaches = plot_approach.new(plots)
 			return approaches
 		end
 
@@ -1467,23 +1308,11 @@ function M.config(prepared, content, raw_sha256)
 			for index = 1, #states do
 				local state = states[index]
 				if state.descriptor.kind == "overlay" then
-					local active = false
-					for run_index = 1, #state.runs do
-						local entry = state.runs[run_index]
-						entry.active = entry.max_x >= minp.x and entry.min_x <= maxp.x and
-							entry.max_z >= minp.z and entry.min_z <= maxp.z
-						if entry.active then active = true end
-					end
-					state.active = active
+					local box = state.box
+					state.active = box.max_x >= minp.x and box.min_x <= maxp.x and
+						box.max_z >= minp.z and box.min_z <= maxp.z
 				else
-					if not state.box then
-						-- The height query that decides a plot's box is the one a plan
-						-- cannot avoid: the box is what says whether this mapchunk
-						-- touches the plot at all. It is asked once per session per
-						-- plot and cached, which is the contract's "query the pure
-						-- final height once per session".
-						base_of(state)
-					end
+					if not state.box then base_of(state) end
 					local box = state.box
 					state.active = box.max_x >= minp.x and box.min_x <= maxp.x and
 						box.max_y >= minp.y and box.min_y <= maxp.y and
@@ -1513,8 +1342,9 @@ function M.config(prepared, content, raw_sha256)
 			if profile.reserve_anchor_root then
 				reserved_x, reserved_y, reserved_z = anchor.x, anchor.y + 1, anchor.z
 			end
-			-- Natural cut/fill precedes every authored plot and street. Work is
-			-- clipped to this owner; neighbouring chunks ask the same pure field.
+			-- The plots' collars and approaches precede every plot and the
+			-- edge. Work is clipped to this owner; neighbouring chunks ask the
+			-- same pure answers.
 			local fittings = prepare_approaches()
 			local fit_palette = approach_palettes.new(profile.race)
 			local ground_ref, air_ref = refs[fit_palette.node("ground")], refs.air
@@ -1533,22 +1363,31 @@ function M.config(prepared, content, raw_sha256)
 				for z = context.min_z, context.max_z do
 					for x = context.min_x, context.max_x do
 						local lx, lz = x - anchor.x, z - anchor.z
-						if math.abs(lx) < 266 and math.abs(lz) < 266 then
+						-- (the civic core shapes its own ground)
+						if math.abs(lx) < 266 and math.abs(lz) < 266 and
+								(math.abs(lx) > 49 or math.abs(lz) > 49) then
 							-- Probe membership cheaply before querying terrain.
-							local _, record = fittings.surface(lx, lz, 0)
+							local _, record = fittings.surface(x, z, 0)
 							if record then
-								prepare_approach(record)
-								local natural, _, wet, engineered = walkable_values(x, z)
-								local top, _, access = fittings.surface(lx, lz, natural)
-								if not wet and (not engineered or access) and (top ~= natural or access) then
-									for y = natural, top - 1 do fit_write(x, y, z, fill_ref) end
-									local before = access and plot_approach.path_height(record, lz - 1) or top
-									local after = access and plot_approach.path_height(record, lz + 1) or top
-									if access and (top > before or top > after) then
-										fit_write(x, top, z, step_ref, after >= before and 0 or 2)
-									else fit_write(x, top, z, access and path_ref or ground_ref) end
-									for y = top + 1, math.max(natural, top + 3) do
-										fit_write(x, y, z, air_ref)
+								local natural, water, road = column(x, z)
+								if not water and not road then
+									local top, chosen, access, clx, clz =
+										fittings.surface(x, z, natural)
+									if chosen and (top ~= natural or access) then
+										for y = natural, top - 1 do fit_write(x, y, z, fill_ref) end
+										local before = access and plot_approach.path_height(chosen, clz - 1) or top
+										local after = access and plot_approach.path_height(chosen, clz + 1) or top
+										if access and (top > before or top > after) then
+											-- a stair rising toward the higher side, turned
+											-- with the plot (local +z is facedir 0)
+											local face = (after >= before and 0 or 2)
+											fit_write(x, top, z, step_ref, (face + chosen.turns) % 4)
+										else
+											fit_write(x, top, z, access and path_ref or ground_ref)
+										end
+										for y = top + 1, math.max(natural, top + 3) do
+											fit_write(x, y, z, air_ref)
+										end
 									end
 								end
 							end
@@ -1557,8 +1396,7 @@ function M.config(prepared, content, raw_sha256)
 				end
 			end
 			-- Cells first, in blueprint order (the core, then the plots), and the
-			-- overlay last: the contract's "a surface overlay written by the same
-			-- successor, after the plots".
+			-- city edge last.
 			for index = 1, #states do
 				local state = states[index]
 				if state.active and state.descriptor.kind ~= "overlay" then
@@ -1589,172 +1427,21 @@ function M.config(prepared, content, raw_sha256)
 			for index = 1, #states do
 				local state = states[index]
 				if state.active and state.descriptor.kind == "overlay" then
-					local blueprint = state.blueprint
-					local ground, decks, wets = state.ground, state.deck, state.wet
-					-- One query fills both memos. `decks` distinguishes "not
-					-- asked yet" (nil) from "nothing spans this column"
-					-- (`false`), so a column with no bridge over it is still
-					-- read exactly once.
-					local function read(x, z)
-						local key = column_key(x, z)
-						local value = ground[key]
-						if value == nil then
-							metrics.height_calls = metrics.height_calls + 1
-							local deck_y, soaked
-							value, deck_y, soaked = walkable_values(x, z)
-							ground[key] = value
-							decks[key] = deck_y or false
-							wets[key] = soaked and true or false
+					metrics.overlay_calls = metrics.overlay_calls + 1
+					local cells = state.edge.cells({min_x = context.min_x,
+						max_x = context.max_x, min_z = context.min_z,
+						max_z = context.max_z}, column)
+					for cell_index = 1, #cells do
+						local cell = cells[cell_index]
+						local ref = refs[cell.name]
+						if not ref then
+							fail("city edge name outside the overlay palette: " ..
+								tostring(cell.name))
 						end
-						return key, value
-					end
-					local function surface(x, z)
-						local _, value = read(x, z)
-						return value
-					end
-					local function local_surface(x, z)
-						return surface(anchor.x + x, anchor.z + z)
-					end
-					local function local_overhead(x, z)
-						local key = read(anchor.x + x, anchor.z + z)
-						local deck_y = decks[key]
-						if deck_y == false then return nil end
-						return deck_y
-					end
-					-- WHERE THE CAPITAL'S OWN WATER IS, for the run that has to
-					-- bridge it. The same memo, the same pass and the same
-					-- purity as the two queries above: a column, a yes or a no,
-					-- and no state.
-					local function local_wet(x, z)
-						local key = read(anchor.x + x, anchor.z + z)
-						return wets[key]
-					end
-					-- CROSS-RUN ARBITRATION, and the successor is the only thing that
-					-- can do it: `avenue.run` is a pure function of ONE run and knows
-					-- nothing of the road it crosses, while a capital's four avenues
-					-- and its four ring-street sides meet at four corners.
-					--
-					-- Two rules, both a pure function of the run rectangles and the
-					-- column, so a piece of a run is still exactly that stretch of the
-					-- whole run and the union of the mapchunks is unchanged:
-					--
-					--   1. THE FIRST RUN WINS A SHARED CELL. The runs are authored
-					--      avenues first, ring street second, so the great road runs
-					--      through and the side street yields at the kerb, which is
-					--      what a crossroads looks like. Every run that covers a cell
-					--      produces it in every mapchunk that contains it, so which
-					--      run wins does not depend on the mapchunk.
-					--   2. NO LAMP STANDARD IN ANOTHER ROAD'S CARRIAGEWAY. A lamp
-					--      stands on the verge, one node outside its own carriageway,
-					--      and at a crossing that verge is the middle of the other
-					--      road: Highcourt's lamp rhythm puts one pair exactly on each
-					--      ring crossing, i.e. eight posts in the ring street. The
-					--      three cells of such a standard are dropped. This is the
-					--      same defect the core's own streets had, and the same fix.
-					local written_here = {}
-					for run_index = 1, #state.runs do
-						local entry = state.runs[run_index]
-						if entry.active then
-							local run = entry.run
-							-- The piece of the run this mapchunk owns, in the run's own
-							-- coordinates, and nothing else: `avenue.lua`'s look-around
-							-- reads the ground beyond the piece and the envelope of a
-							-- column depends on nothing further away, so the union of the
-							-- pieces is the whole run, cell for cell. The lamp phase is
-							-- the WHOLE run's start, which is what keeps one lamp line
-							-- across a mapchunk border.
-							local low, high
-							if run.axis == "x" then
-								low, high = context.min_x - anchor.x, context.max_x - anchor.x
-							else
-								low, high = context.min_z - anchor.z, context.max_z - anchor.z
-							end
-							if low < run.from then low = run.from end
-							if high > run.to then high = run.to end
-							if low <= high then
-								metrics.overlay_calls = metrics.overlay_calls + 1
-								local clear_verge = {}
-								for _, span in ipairs(run.clear_verge or {}) do clear_verge[#clear_verge + 1] = span end
-								for _, record in ipairs(fittings.plots) do
-									if record.road_id == run.id and record.entry_x + 1 >= low and record.entry_x - 1 <= high then
-										prepare_approach(record)
-										if not record.unreachable then
-											clear_verge[#clear_verge + 1] = {record.entry_x - 1, record.entry_x + 1, 1}
-										end
-									end
-								end
-								local piece = blueprint.run({id = run.id, axis = run.axis,
-									anchor_y = anchor.y,
-									at = run.at, from = low, to = high,
-									width = blueprint.width,
-									lamp_spacing = blueprint.lamp_spacing,
-									lamp_phase = run.lamp_phase, reach = blueprint.reach,
-									-- The route geometry over this run's columns. A
-									-- run built without it is the road this seam
-									-- built before there was a crossing rule, which
-									-- is what every engine-free fixture still asks
-									-- for.
-									overhead = local_overhead,
-									-- The capital's own water, and the squares
-									-- this run shares with another street; see
-									-- `wp13/avenue.lua`.
-									wet = local_wet,
-									junctions = run.junctions,
-									plain_verge = run.plain_verge,
-									clear_verge = clear_verge},
-									local_surface)
-								-- Rule 2: the standards this run may not raise, by the
-								-- three cells each of them occupies (post, post, torch,
-								-- counted down from the lamp's own light cell).
-								local dropped = {}
-								for lamp_index = 1, #piece.lamps do
-									local lamp = piece.lamps[lamp_index]
-									local blocked = false
-									for other_index = 1, #state.runs do
-										if other_index ~= run_index then
-											local other = state.runs[other_index]
-											if lamp.x >= other.car_min_x and lamp.x <= other.car_max_x and
-													lamp.z >= other.car_min_z and
-													lamp.z <= other.car_max_z then
-												blocked = true
-												break
-											end
-										end
-									end
-									if blocked then
-										for y = lamp.y - 2, lamp.y do
-											dropped[cell_key(lamp.x, y, lamp.z)] = true
-										end
-										metrics.overlay_lamps_dropped =
-											(metrics.overlay_lamps_dropped or 0) + 1
-									end
-								end
-								for cell_index = 1, #piece.cells do
-									local cell = piece.cells[cell_index]
-									local x, y, z = anchor.x + cell.x, cell.y, anchor.z + cell.z
-									local ref = refs[cell.name]
-									if not ref then
-										fail("avenue name outside the overlay palette: " ..
-											tostring(cell.name))
-									end
-									local here = cell_key(x, y, z)
-									if dropped[cell_key(cell.x, cell.y, cell.z)] then
-										metrics.overlay_cells_dropped =
-											(metrics.overlay_cells_dropped or 0) + 1
-									elseif written_here[here] then
-										-- Rule 1: an earlier run already owns this cell.
-										metrics.overlay_overlaps =
-											(metrics.overlay_overlaps or 0) + 1
-									elseif context.inside_owner(x, y, z) then
-										written_here[here] = true
-										local cid, param2 = content.resolve(ref, cell.param2)
-										context.write_hearthpine(x, y, z, cid, param2, ref, 1)
-										written = written + 1
-									else
-										written_here[here] = true
-									end
-								end
-							end
+						if context.inside_owner(cell.x, cell.y, cell.z) then
+							local cid, param2 = content.resolve(ref, cell.param2)
+							context.write_hearthpine(cell.x, cell.y, cell.z, cid, param2, ref, 1)
+							written = written + 1
 						end
 					end
 				end
@@ -1779,11 +1466,6 @@ function M.config(prepared, content, raw_sha256)
 				release_calls = metrics.release_calls,
 				height_calls = metrics.height_calls,
 				overlay_calls = metrics.overlay_calls,
-				-- The cross-run arbitration, counted so a measurement can say how
-				-- much of the road two crossing runs actually argued about.
-				overlay_overlaps = metrics.overlay_overlaps,
-				overlay_lamps_dropped = metrics.overlay_lamps_dropped,
-				overlay_cells_dropped = metrics.overlay_cells_dropped,
 				blueprint_sha256 = config.identity.sha256, approach_findings = approach_findings}
 		end
 		return tail

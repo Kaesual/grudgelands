@@ -82,6 +82,12 @@ local function height_factory(dependencies)
 	-- POI collar (plan D33): shortest and longest collar in nodes, and how far
 	-- a smooth noise stretches or shrinks it around the core (share).
 	local POI_BLEND_MIN, POI_BLEND_MAX, POI_EDGE_JITTER = 6, 28, 0.25
+	-- Capital collar (plan D70, capital planner): the flat civic core, then a
+	-- collar of this width that follows the core with the POI collar's noisy
+	-- edge; no square terraces and no square blend (their straight grading
+	-- edges were the user's top complaint, e.g. Nhal Veyr). The planner lays
+	-- the city out on this ground.
+	local CAPITAL_COLLAR = 40
 
 	local floor, ceil, abs, max, min, sqrt, exp = math.floor, math.ceil,
 		math.abs, math.max, math.min, math.sqrt, math.exp
@@ -188,28 +194,6 @@ local function height_factory(dependencies)
 		end
 		if water_min_y and reference < water_min_y then reference = water_min_y end
 		return reference
-	end
-
-	-- Capital terraces (settlements.md): round-half-up bins, so every bin is
-	-- exactly `step` wide, and the walkable band between two terraces is the
-	-- middle of the terraced field's erosion and dilation over a Chebyshev disc
-	-- of `step - 1`.
-	local function terrace_bin(value, step)
-		return floor_div(2 * value + step, 2 * step)
-	end
-	local CAPITAL_BAND_RADIUS = {[2] = 1, [3] = 2, [4] = 3}
-	local function capital_terrace_value(incoming, reference, step,
-			civic_outside, max_cut, max_fill, banded)
-		local shaped = banded
-		if civic_outside == 0 then
-			shaped = reference
-		elseif civic_outside < 32 then
-			shaped = lerp_node(banded, reference, weight_at(civic_outside, 32))
-		end
-		if civic_outside > 0 then
-			shaped = clamp(shaped, incoming - max_cut, incoming + max_fill)
-		end
-		return shaped
 	end
 
 	local module = {}
@@ -442,7 +426,7 @@ local function height_factory(dependencies)
 		--             distance: where a river or lake comes close the row ends
 		--             in its sealed rim instead of touching water of another level
 		local authored, authored_grid = {}, {}
-		for index, row in ipairs(water_dependency.authored or {}) do
+		local function add_authored_row(index, row)
 			local sources = (row.level ~= nil and 1 or 0) +
 				(row.anchor ~= nil and 1 or 0) + (row.shore_level and 1 or 0)
 			if type(row.id) ~= "string" or row.id == "" or
@@ -470,42 +454,14 @@ local function height_factory(dependencies)
 			-- one node wider, so a column beside the lake knows it is near
 			add_bucket(authored_grid, e, e.min_x - 1, e.max_x + 1, e.min_z - 1,
 				e.max_z + 1)
+			return e
+		end
+		for index, row in ipairs(water_dependency.authored or {}) do
+			add_authored_row(index, row)
 		end
 		local function authored_near(x, z)
 			return #authored > 0 and bucket_at(authored_grid, x, z) ~= nil
 		end
-		-- Settlement plots (district plots and fill lots, `r7_settlement.
-		-- plot_rects`) with the audit's two-node margin: an authored lake's
-		-- signed distance is capped at (distance to the plot - PLOT_KEEP), so
-		-- its shore, rim band and bank envelope stay off every plot, and the
-		-- envelope also fades out between PLOT_CLEAR and PLOT_FADE. A plot keeps
-		-- the ground its blueprint was measured on.
-		local PLOT_MARGIN, PLOT_KEEP, PLOT_CLEAR, PLOT_FADE, PLOT_REACH = 2, 8, 3, 10, 40
-		local plot_grid, plot_count = {}, 0
-		for _, r in ipairs(water_dependency.plot_rects or {}) do
-			local e = {min_x = r.min_x - PLOT_MARGIN, max_x = r.max_x + PLOT_MARGIN,
-				min_z = r.min_z - PLOT_MARGIN, max_z = r.max_z + PLOT_MARGIN}
-			add_bucket(plot_grid, e, e.min_x - PLOT_REACH, e.max_x + PLOT_REACH,
-				e.min_z - PLOT_REACH, e.max_z + PLOT_REACH)
-			plot_count = plot_count + 1
-		end
-		-- Distance to the nearest plot (margin included), capped at PLOT_REACH.
-		local function plot_distance(x, z)
-			local list = plot_count > 0 and bucket_at(plot_grid, x, z)
-			if not list then return PLOT_REACH end
-			local best = PLOT_REACH
-			for index = 1, #list do
-				local e = list[index]
-				local dx = max(e.min_x - x, x - e.max_x, 0)
-				local dz = max(e.min_z - z, z - e.max_z, 0)
-				if dx < best and dz < best then
-					local d = sqrt(dx * dx + dz * dz)
-					if d < best then best = d end
-				end
-			end
-			return best
-		end
-
 		-----------------------------------------------------------------------
 		-- Boat water: the dragon channels, the boat paths and the approach
 		-- water around the island landings keep at least nine nodes of water
@@ -797,6 +753,9 @@ local function height_factory(dependencies)
 			if fitting.blend then
 				envelope_half = profile.building_core_width / 2 +
 					ceil(fitting.blend / (1 - POI_EDGE_JITTER)) + 1
+			elseif is_capital then
+				envelope_half = profile.civic_width / 2 +
+					ceil(CAPITAL_COLLAR / (1 - POI_EDGE_JITTER)) + 1
 			end
 			add_bucket(grids[class], fitting,
 				selected.x - envelope_half, selected.x + envelope_half,
@@ -862,10 +821,30 @@ local function height_factory(dependencies)
 				end
 				road_cache = {seed = full_seed_string, text = text, layout = layout,
 					sampler = road_module.sampler(road_module.deserialize(text)),
-					module = road_module}
+					module = road_module, squares = road_dependency.squares or {}}
 				road_dependency.cache = road_cache
 			end
 			road_sampler = road_cache.sampler
+		end
+		-- Capital squares (capital planner): flat paved discs {x, z, r, y} at a
+		-- street's level, in world coordinates, bucketed like the features.
+		local square_grid
+		local function index_squares()
+			square_grid = {}
+			for _, q in ipairs(road_cache and road_cache.squares or {}) do
+				add_bucket(square_grid, q, floor(q.x - q.r) - 1, ceil(q.x + q.r) + 1,
+					floor(q.z - q.r) - 1, ceil(q.z + q.r) + 1)
+			end
+		end
+		index_squares()
+		local function square_at(x, z)
+			local list = bucket_at(square_grid, x, z)
+			if not list then return nil end
+			for index = 1, #list do
+				local q = list[index]
+				if (x - q.x) ^ 2 + (z - q.z) ^ 2 <= q.r * q.r then return q end
+			end
+			return nil
 		end
 
 		-- Soft start pad edge: the flat square grows outward by 0..6 nodes along
@@ -874,32 +853,6 @@ local function height_factory(dependencies)
 		local function start_edge_offset(x, z)
 			local value = edge_noise(x / 24, z / 24)
 			return clamp(floor((value + 1) * 3.5), 0, 6)
-		end
-
-		-- The capital band reads the natural relief of its neighbours as a
-		-- shape, shifted by the centre column's own grade.
-		local function band_value(x, z, incoming, reference, step)
-			local radius = CAPITAL_BAND_RADIUS[step] or 1
-			local datum = reference - incoming + natural_height_at(x, z)
-			local centre = reference + step * terrace_bin(natural_height_at(x, z) -
-				datum, step)
-			local erosion, dilation = centre, centre
-			for dz = -radius, radius do
-				local az = dz < 0 and -dz or dz
-				for dx = -radius, radius do
-					local ax = dx < 0 and -dx or dx
-					local distance = ax > az and ax or az
-					local terrace = reference + step * terrace_bin(
-						natural_height_at(x + dx, z + dz) - datum, step)
-					local offset = terrace - centre
-					if offset <= step and offset >= -step then
-						local low, high = terrace + distance, terrace - distance
-						if low < erosion then erosion = low end
-						if high > dilation then dilation = high end
-					end
-				end
-			end
-			return floor_div(erosion + dilation + 1, 2)
 		end
 
 		local function fitting_grade_at(grid, x, z, incoming, owner, class)
@@ -928,9 +881,21 @@ local function height_factory(dependencies)
 							return lerp_node(incoming, fitting.reference_y,
 								weight_at(edge, blend)), fitting, false
 						end
+					elseif class == LAND and fitting.is_capital then
+						-- The flat civic core, then the collar with a noisy edge
+						-- (true distance, so round corners); nothing beyond it.
+						local outside = square_distance(x, z, fitting.center,
+							profile.civic_width)
+						if outside == 0 then return fitting.reference_y, fitting, false end
+						local edge = outside * (1 + POI_EDGE_JITTER *
+							poi_edge_noise(x / 40, z / 40))
+						if edge < CAPITAL_COLLAR then
+							return lerp_node(incoming, fitting.reference_y,
+								weight_at(edge, CAPITAL_COLLAR)), fitting, false
+						end
 					elseif class == LAND then
 						local envelope_half = profile.blend_width / 2
-						local grade_width = (fitting.is_capital or fitting.is_start) and
+						local grade_width = fitting.is_start and
 							profile.fitting_width or profile.building_core_width
 						local outside = half_open_square_excess(x, z, fitting.center,
 							grade_width)
@@ -942,16 +907,6 @@ local function height_factory(dependencies)
 						end
 						if outside < span then
 							local weight = weight_at(outside, span)
-							if fitting.is_capital then
-								local step = profile.terrace_step
-								local civic_outside = half_open_square_excess(x, z,
-									fitting.center, profile.civic_width)
-								local shaped = capital_terrace_value(incoming,
-									fitting.reference_y, step, civic_outside,
-									profile.max_cut, profile.max_fill,
-									band_value(x, z, incoming, fitting.reference_y, step))
-								return lerp_node(incoming, shaped, weight), fitting, false
-							end
 							return lerp_node(incoming, fitting.reference_y, weight),
 								fitting, false
 						end
@@ -1096,7 +1051,7 @@ local function height_factory(dependencies)
 		local function authored_at(x, z, terrain_y, water_y, kind, id)
 			local list = bucket_at(authored_grid, x, z)
 			if not list then return terrain_y, water_y, kind, id end
-			local bank_d, bank_y, wet, wet_m, plot_d
+			local bank_d, bank_y, wet, wet_m
 			local ms = indicator_scratch
 			for index = 1, #list do
 				local e = list[index]
@@ -1105,14 +1060,7 @@ local function height_factory(dependencies)
 					m = e.indicator(x, z)
 					if type(m) ~= "number" then m = 0 end
 				end
-				if m > 0 then
-					if plot_d == nil then plot_d = plot_distance(x, z) end
-					if plot_d < PLOT_REACH then
-						local cap = 0.5 + (plot_d - PLOT_KEEP) / WP.LAKE_PROXY
-						if m > cap then m = cap < 0 and 0 or cap end
-					end
-					m = natural_capped(e, x, z, m)
-				end
+				if m > 0 then m = natural_capped(e, x, z, m) end
 				ms[index] = m
 				if m > 0 then
 					local level = authored_level(e, x, z)
@@ -1149,8 +1097,7 @@ local function height_factory(dependencies)
 					if m >= e.rim and (hard == nil or level > hard) then hard = level end
 					local bank = e.bank
 					if bank then
-						local w = (1 - smoothstep(BANK_FADE0, BANK_FADE1, d)) *
-							smoothstep(PLOT_CLEAR, PLOT_FADE, plot_d)
+						local w = 1 - smoothstep(BANK_FADE0, BANK_FADE1, d)
 						if w > 0 and e.bank_weight then w = w * e.bank_weight(x, z) end
 						if w > 0 then
 							if bank.up then
@@ -1313,6 +1260,16 @@ local function height_factory(dependencies)
 		local function road_at(x, z, terrain_y, water_y)
 			local kind, road_y, new_y, road_id, index, extra =
 				road_sampler.column(x, z, terrain_y, water_y)
+			-- A capital square: flat paving at its street's level wherever no
+			-- street surface or water lies (a street through it stays within
+			-- 1/2 of its level by construction).
+			if kind ~= "surface" and not (water_y ~= nil and water_y > terrain_y) then
+				local q = square_at(x, z)
+				if q then
+					return floor(q.y), {kind = "surface", road_y = q.y, class = "grade",
+						road_kind = "square"}
+				end
+			end
 			if kind == nil then return terrain_y, false end
 			-- the road surface may reach the core's edge (its end sits at the
 			-- core's height); side slopes keep one node off and ease in
@@ -1629,6 +1586,81 @@ local function height_factory(dependencies)
 		end
 
 		local session = {field = field}
+		-- The fitted ground of a column before the shore rule and before any
+		-- road (the anchor fittings and authored lakes on the carved natural
+		-- field): terrain y, the water surface standing on it (nil when dry)
+		-- and whether it is land. The capital planner lays its city out on
+		-- this (its streets then become roads on the final terrain).
+		function session.fitted_values_at(x, z)
+			coordinate(x, "fitted query x") coordinate(z, "fitted query z")
+			if outside(x, z) then return OUTSIDE_FLOOR, nil, false end
+			if class_owner_at(x, z) ~= LAND then
+				return natural_height_at(x, z), nil, false
+			end
+			local block, slot = land_values_at(x, z)
+			return block.pre[slot], block.water[slot] or nil, true
+		end
+		-- Every memoised column answer is dropped; the next query recomputes
+		-- it from the session's current layouts.
+		local function flush_memo()
+			blocks, block_ring, block_cursor = {}, {}, 1
+		end
+		-- The session-level connect of the capital planner (main only, plan
+		-- §11): `extra` roads built on the road module's kit (capital streets
+		-- and the connectors from the network's road ends to the gates) join
+		-- the road layout. The combined layout is serialized again (the text
+		-- main hands emerge), the sampler is rebuilt from that text exactly as
+		-- emerge builds it, the capital squares are indexed and every memoised
+		-- column is flushed, so this session answers exactly what a fresh
+		-- session built from the new text does. `layout` (the network, for
+		-- statistics and showcase spots) keeps only the network's roads.
+		function session.add_roads(extra, squares)
+			if not road_cache or not road_cache.layout then
+				fail("capital streets join a road layout built in this environment")
+			end
+			local module = road_cache.module
+			local combined = {}
+			for _, r in ipairs(road_cache.layout.roads) do combined[#combined + 1] = r end
+			for _, r in ipairs(road_cache.extra or {}) do combined[#combined + 1] = r end
+			local base = #combined
+			local renumber = {}
+			for index, r in ipairs(extra) do renumber[r] = base + index end
+			local by_id = {}
+			for _, r in ipairs(extra) do by_id[r.id] = r end
+			local kept = road_cache.extra or {}
+			for index, r in ipairs(extra) do
+				local parent = r.parent and renumber[by_id[r.parent]] or nil
+				local copy = {id = base + index, kind = r.kind, hw = r.hw,
+					parent = parent, parent_idx = parent and r.parent_idx or nil,
+					X = r.X, Z = r.Z, R = r.R, RQ = r.RQ, cls = r.cls,
+					a = r.a, b = parent and ("road:" .. parent) or r.b, city = true}
+				combined[#combined + 1] = copy
+				kept[#kept + 1] = copy
+			end
+			road_cache.extra = kept
+			local all_squares = road_cache.squares or {}
+			for _, q in ipairs(squares or {}) do all_squares[#all_squares + 1] = q end
+			road_cache.squares = all_squares
+			road_dependency.squares = all_squares
+			road_cache.text = module.serialize({roads = combined})
+			road_cache.sampler = module.sampler(module.deserialize(road_cache.text))
+			road_sampler = road_cache.sampler
+			index_squares()
+			flush_memo()
+			return road_cache.text
+		end
+		-- The planner's canals (plan D58) as a second step: authored rows added
+		-- to this session (absolute levels), then every memoised column is
+		-- flushed. A fresh session gets the same rows at construction.
+		function session.add_authored(rows)
+			for _, row in ipairs(rows) do
+				local e = add_authored_row(#authored + 1, row)
+				if type(e.level) ~= "number" or e.level % 1 ~= 0 then
+					fail("added authored row needs an integer level: " .. e.name)
+				end
+			end
+			flush_memo()
+		end
 		function session.terrain_height_at(x, z)
 			return final_terrain_height_at(x, z)
 		end
@@ -1673,7 +1705,7 @@ local function height_factory(dependencies)
 			if not road then return nil end
 			local r = road.road_id and road_sampler.roads[road.road_id]
 			return road.kind, road.road_y, terrain_y, road.class, road.pillar,
-				road.rail, road.wall_base, r and r.kind or nil
+				road.rail, road.wall_base, road.road_kind or (r and r.kind) or nil
 		end
 		-- "road_corridor" on a road column (surface or side slope) and within
 		-- the module's EXCLUDE_PAD of a road's edge, else nil: the claim
@@ -1806,7 +1838,17 @@ local function height_factory(dependencies)
 		return session
 	end
 
+	-- `dependencies.reuse` (optional, `r7_runtime.lua`): a session main built
+	-- for the capital planner and brought up to date (streets and canals
+	-- added, memos flushed) is handed to the first request for the same seed
+	-- instead of building a second one; later requests build their own.
 	function module.new_runtime(full_seed_string)
+		local reuse = dependencies.reuse
+		if reuse and reuse.session and reuse.seed == full_seed_string then
+			local session = reuse.session
+			reuse.session = nil
+			return session
+		end
 		return construct(full_seed_string)
 	end
 	module.new = module.new_runtime

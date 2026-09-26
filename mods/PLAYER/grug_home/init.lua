@@ -4,9 +4,11 @@ local definitions = dofile(path .. "/locations.lua")
 local locations, ordered, defaults = {}, {}, {}
 for index, definition in ipairs(definitions) do
  local socket = grug_core.assign_innkeeper_socket(definition.id, definition.socket)
+ -- beside the socket on its plot's own +x side (a capital plot turns it)
+ local side = socket.arrival or {x=1, z=0}
  local row = {id=definition.id, race=definition.race, faction=definition.faction,
   label=definition.label, socket=socket.id, pos=socket.pos,
-  arrival=vector.offset(socket.pos,1,-0.49,0)}
+  arrival=vector.offset(socket.pos,side.x,-0.49,side.z)}
  locations[row.id] = row
  ordered[index] = row
  if index <= 6 then defaults[row.race] = row.id end

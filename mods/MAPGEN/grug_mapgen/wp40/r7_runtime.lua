@@ -1,11 +1,11 @@
 -- Shared production R7 assembly. Main and emerge load these same pure source
 -- bytes and independently rebuild the live content and semantic manifest.
 
--- `water_layout_text` and `road_layout_text` are the serialized inland water
--- and road layouts main built and handed over (emerge); nil in main, which
--- builds them (plan D37).
+-- `water_layout_text`, `road_layout_text` and `capital_layout_text` are the
+-- serialized inland water, road and capital layouts main built and handed
+-- over (emerge); nil in main, which builds them (plan D37, D60).
 return function(core_api, wp40_directory, schematic_directory, projection, catalog,
-		water_layout_text, road_layout_text)
+		water_layout_text, road_layout_text, capital_layout_text)
 	local function fail(message)
 		error("WP40 R7 runtime: " .. message, 0)
 	end
@@ -16,7 +16,9 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			type(schematic_directory) ~= "string" or schematic_directory == "" or
 			type(projection) ~= "table" or type(catalog) ~= "table" or
 			(water_layout_text ~= nil and type(water_layout_text) ~= "string") or
-			(road_layout_text ~= nil and type(road_layout_text) ~= "string") then
+			(road_layout_text ~= nil and type(road_layout_text) ~= "string") or
+			(capital_layout_text ~= nil and type(capital_layout_text) ~= "string") or
+			((road_layout_text == nil) ~= (capital_layout_text == nil)) then
 		fail("construction seam differs")
 	end
 
@@ -107,20 +109,27 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	-- this runtime builds (main builds it once, emerge deserializes main's).
 	local water = {module = dofile(wp40_directory .. "/water_layout.lua")(
 		terrain_data.water), text = water_layout_text,
-		authored = dofile(wp40_directory .. "/water_authored.lua")(terrain_data.water),
-		-- filled below from the prepared settlement blueprints, before any
-		-- height session is built
-		plot_rects = {}}
+		-- the planned canals are appended below, before any world session
+		authored = dofile(wp40_directory .. "/water_authored.lua")(terrain_data.water)}
 	-- Roads (Round 22 Phase 4): one layout per environment like the water,
 	-- routed once in main after it, deserialized in emerge.
+	-- The capital planner's streets and connectors join this layout (main:
+	-- `height.lua` add_roads; emerge: already in the text), its squares are
+	-- set below from the capital layouts.
 	local roads = {module = dofile(wp40_directory .. "/road_layout.lua"),
 		text = road_layout_text}
+	-- Main plans the capitals on a height session of its own before the world
+	-- is built; that session (streets and canals added, memos flushed) is
+	-- handed to the world build's first height session request instead of
+	-- building a second one (`height.lua` new_runtime).
+	local reuse = {}
 	local height_module_factory = dofile(wp40_directory .. "/height.lua")
 	local function height_factory(dependencies)
 		local bound = {}
 		for key, value in pairs(dependencies) do bound[key] = value end
 		bound.water = water
 		bound.roads = roads
+		bound.reuse = reuse
 		return height_module_factory(bound)
 	end
 	local zones_factory = dofile(wp40_directory .. "/zones.lua")
@@ -199,24 +208,85 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	local construction_seed = validate_live_scalars()
 	local blueprint_options = {full_seed = construction_seed,
 		raw_sha256 = raw_sha256}
+
+	-- THE CAPITAL LAYOUTS (Round 22 capital planner, plan D60, D69-D73).
+	-- Every capital's plots are prepared first (identity and bounds do not
+	-- depend on where a plot stands); main then plans the six capitals on a
+	-- height session of its own, after height, water and roads, and both
+	-- environments build the capitals from the parsed payload text.
+	local capitals = dofile(wp40_directory .. "/r7_capitals.lua")(wp40_directory)
+	local capital_profiles, capital_kits, capital_plots = {}, {}, {}
+	for index = 1, #r7_settlement_module.roster do
+		local profile = r7_settlement_module.roster[index]
+		if profile.slot == "capital" then
+			capital_profiles[#capital_profiles + 1] = profile
+			local kit = capitals.source.kit(profile.key)
+			capital_kits[profile.key] = kit
+			if capital_layout_text == nil then
+				for _, plot in ipairs(kit.plots) do
+					capital_plots[profile.key .. "_" .. plot.id] =
+						r7_settlement_module.prepare_plot(profile, plot, raw_sha256)
+				end
+			end
+		end
+	end
+	local capital_stats
+	if capital_layout_text == nil then
+		local planning_horizontal = horizontal_factory({source = source,
+			schemas = schemas, canonical = canonical, deterministic = deterministic,
+			raw_sha256 = raw_sha256}).new(construction_seed)
+		local planning_session = height_factory({source = source,
+			canonical = canonical, deterministic = deterministic,
+			raw_sha256 = raw_sha256, horizontal_session = planning_horizontal,
+			terrain_field = terrain_field}).new_runtime(construction_seed)
+		local canal_rows
+		capital_layout_text, canal_rows, capital_stats = capitals.plan_all({
+			seed = construction_seed, session = planning_session,
+			roads = roads.module, anchors = source.anchors,
+			profiles = capital_profiles, kits = capital_kits,
+			prepared = capital_plots, authored = water.authored,
+			simplex = terrain_field.simplex, proxy = terrain_data.water.LAKE_PROXY})
+		reuse.session, reuse.seed = planning_session, construction_seed
+	end
+	local capital_layouts = capitals.parse(capital_layout_text)
+	local all_squares = {}
+	for _, profile in ipairs(capital_profiles) do
+		local entry = capital_layouts[profile.anchor_id]
+		if not entry then fail("capital layout missing: " .. profile.key) end
+		if entry.layout.anchor.x ~= profile.x or entry.layout.anchor.z ~= profile.z then
+			fail("capital layout anchor differs: " .. profile.key)
+		end
+		if entry.layout.canal then
+			water.authored[#water.authored + 1] = capitals.canal_row(
+				"canal_" .. profile.key, entry.layout.anchor, entry.layout.canal,
+				terrain_data.water.LAKE_PROXY)
+		end
+		for _, q in ipairs(capitals.squares(entry.layout)) do
+			all_squares[#all_squares + 1] = q
+		end
+	end
+	if road_layout_text ~= nil then roads.squares = all_squares end
 	local settlements = {}
 	local settlement_palette, settlement_seen = {}, {}
 	local settlement_keys, settlement_order = {}, {}
 	for index = 1, #r7_settlement_module.roster do
 		local profile = r7_settlement_module.roster[index]
-		local source = dofile(wp40_directory .. "/" .. profile.blueprint_file)(
-			blueprint_options, profile)
-		if type(source) == "function" then source = source(blueprint_options) end
+		local source
+		if profile.slot == "capital" then
+			local entry = capital_layouts[profile.anchor_id]
+			source = capitals.source.source(profile.key, entry.layout, entry.text,
+				capital_kits[profile.key])
+		else
+			source = dofile(wp40_directory .. "/" .. profile.blueprint_file)(
+				blueprint_options, profile)
+			if type(source) == "function" then source = source(blueprint_options) end
+		end
 		if profile.slot=="start" then
 			source=dofile(wp40_directory.."/r20_civic.lua")(source,profile)
 		end
-		local prepared = r7_settlement_module.prepare(profile, source, raw_sha256)
+		local prepared = r7_settlement_module.prepare(profile, source, raw_sha256,
+			capital_plots)
 		settlements[index] = {profile = profile, prepared = prepared}
-		-- Authored lakes keep their water and bank shaping off every plot.
-		for _, rect in ipairs(r7_settlement_module.plot_rects(prepared,
-				profile.x, profile.z)) do
-			water.plot_rects[#water.plot_rects + 1] = rect
-		end
 		settlement_keys[index] = profile.key
 		local blueprints = {}
 		for blueprint_index = 1, #prepared.blueprints do
@@ -484,24 +554,14 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	-- nothing here enters a digest, and a second construction would cost every
 	-- composition again for pure landmark data.
 	--
-	-- `built` is what `build_authority` returned. A capital's district plots are
-	-- terrain-relative, so their sockets need the same pure final height the
-	-- writer projects them with; `r7_settlement.M.sockets` owns that
-	-- correction and this function only hands it the query.
+	-- `built` is what `build_authority` returned. A capital plot's sockets are
+	-- turned and lifted with the plot (its layout's turns and base height, the
+	-- ones the writer projects the cells with); `r7_settlement.M.sockets` owns
+	-- that correction.
 	function module.settlement_sockets(built)
 		if type(built) ~= "table" or type(built.zones_session) ~= "table" or
-				type(built.zones_session.anchor) ~= "function" or
-				type(built.planner_source) ~= "table" or
-				type(built.planner_source.column_values_at) ~= "function" then
+				type(built.zones_session.anchor) ~= "function" then
 			fail("settlement socket authority differs")
-		end
-		local function height_at(x, z)
-			local _, _, _, _, _, terrain_y =
-				built.planner_source.column_values_at(x, z)
-			if type(terrain_y) ~= "number" or terrain_y % 1 ~= 0 then
-				fail("settlement socket column height differs")
-			end
-			return terrain_y
 		end
 		local rows = {}
 		for index = 1, #settlements do
@@ -514,18 +574,15 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			end
 			rows[index] = {key = profile.key, label = profile.label, race = profile.race,
 				slot = profile.slot, zone_id = profile.zone_id, anchor = anchor,
-				sockets = r7_settlement_module.sockets(row.prepared, anchor,
-					height_at)}
+				sockets = r7_settlement_module.sockets(row.prepared, anchor)}
 		end
 		return rows
 	end
 
-	-- Every terrain-relative blueprint whose ground this world does not
-	-- actually support, in roster order. The writer projects a plot from one
-	-- column and asks nothing else about the ground; the positions it is
-	-- handed were chosen against two measured seeds, and a third seed is
-	-- exactly where that runs out. `r7_settlement.audit_terrain` is the rule
-	-- and this only hands it the column authority the sockets already use.
+	-- Every placed capital plot whose ground this world's final terrain does
+	-- not actually support, in roster order (a log diagnostic: the planner
+	-- placed it on its own sample, before the streets' cut and fill).
+	-- `r7_settlement.audit_terrain` is the rule.
 	function module.settlement_terrain_findings(built)
 		if type(built) ~= "table" or type(built.zones_session) ~= "table" or
 				type(built.zones_session.anchor) ~= "function" or
@@ -570,6 +627,14 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		end
 		return water.cache.sampler.polylines()
 	end
+	-- The serialized capital layouts (main hands them to emerge through
+	-- ipc_set) and main's planner statistics (nil in emerge).
+	function module.capital_layout_text()
+		return capital_layout_text
+	end
+	function module.capital_stats()
+		return capital_stats
+	end
 	-- The serialized road layout of the last built session (main hands it to
 	-- emerge through ipc_set).
 	function module.road_layout_text()
@@ -583,7 +648,8 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		if not roads.cache then fail("road layout was never built") end
 		return roads.module.polylines(roads.module.deserialize(roads.cache.text))
 	end
-	-- Main only: the built layout (statistics, showcase spots, `connect`).
+	-- Main only: the built network layout (statistics, showcase spots); the
+	-- capital streets are in the text, not here.
 	function module.road_layout()
 		return roads.cache and roads.cache.layout or nil
 	end

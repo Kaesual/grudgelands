@@ -48,7 +48,8 @@ local DEFAULT_P = {
 	C_RIVER = 60, C_RIVER_W = 6, RIVER_PAD = 12, C_LAKE = 300,
 	K_PARALLEL = 0.5,
 	TURN_K = 6, SHARP_TURN = 40, TURN_MAX_DEG = 136, K_PLATFORM = 4, LOOP_LOOKBACK = 8,
-	HALF = {primary = 3.5, secondary = 2.5, trail = 1.5},
+	-- avenue and lane: capital streets (`capital_planner.lua`)
+	HALF = {primary = 3.5, secondary = 2.5, trail = 1.5, avenue = 3.5, lane = 2.5},
 	JUNCTION_GAP = 64, END_GAP = 24, RING_GAP = 160, JOIN_MAXCOS = 0.8,
 	JOIN_FLAT_REACH = 8, JOIN_OFF = 2.5, EDGE_EVERY = 2,
 	START_GATE = 64, START_STRETCH = 32,
@@ -329,6 +330,15 @@ local function new_module(P)
 			end
 		end
 		for li = 1, NL do if owner[li] then blocked[li] = true end end
+		-- Kit hooks (capital planner): caller-given blocked cells and a static
+		-- extra cost per cell (e.g. a civic lake that is no river polyline).
+		if opts.blocked or opts.cell_cost then
+			for li = 1, NL do
+				local x, z = cxz(KOF[li])
+				if opts.blocked and opts.blocked(x, z) then blocked[li] = true end
+				if opts.cell_cost then WATERC[li] = WATERC[li] + (opts.cell_cost(x, z) or 0) end
+			end
+		end
 		stats.t_grid = os.clock() - T0
 
 		-- network state
@@ -342,6 +352,7 @@ local function new_module(P)
 		local on_road_penalty = nil   -- set while routing loops
 		local road_check = nil        -- set while routing loops
 		local bad_join, pin_check = {}, false  -- core-pin join checks (routed)
+		local GUIDE = nil   -- kit: li -> extra cost per node (a planner's corridor preference)
 		-- move cost from li (heading da) to lj (heading d) along DIRS[d]
 		local function move_cost(li, lj, d, trail)
 			local D = DIRS[d]
@@ -361,6 +372,10 @@ local function new_module(P)
 			local cross = abs(GX[lj] * D.uz - GZ[lj] * D.ux)
 			if cross > P.SIDE0 then c = c + L * P.K_SIDE * (cross - P.SIDE0) ^ 2 end
 			c = c + WATERC[lj]
+			if GUIDE then
+				local gv = GUIDE[lj]
+				if gv then c = c + L * gv end
+			end
 			if near_road[lj] and not netcell[lj] then c = c + L * P.K_PARALLEL end
 			if on_road_penalty and netcell[lj] then c = c + L * on_road_penalty end
 			return c
@@ -521,11 +536,16 @@ local function new_module(P)
 		local Q = P.Q
 		-- how far a T junction's mouth reaches along the parent (Fp) and
 		-- along the child (Fc), from the angle between the two roads
-		local function junction_extent(child)
-			local parent = roads[child.parent]
-			local n, idx = #child.X, child.parent_idx
+		-- (`side == "a"`: a kit street that starts on its parent, a_parent)
+		local function junction_extent(child, side)
+			local parent = roads[side == "a" and child.a_parent or child.parent]
+			local n, idx = #child.X, side == "a" and child.a_parent_idx or child.parent_idx
 			local a = max(1, n - 8)
 			local cx, cz = child.X[n] - child.X[a], child.Z[n] - child.Z[a]
+			if side == "a" then
+				local b = min(n, 9)
+				cx, cz = child.X[b] - child.X[1], child.Z[b] - child.Z[1]
+			end
 			local i0, i1 = max(1, idx - 4), min(#parent.X, idx + 4)
 			local px, pz = parent.X[i1] - parent.X[i0], parent.Z[i1] - parent.Z[i0]
 			local lc, lp = sqrt(cx * cx + cz * cz), sqrt(px * px + pz * pz)
@@ -575,7 +595,7 @@ local function new_module(P)
 			-- flat zones: junction mouths on this road, this road's mouth on
 			-- its parent, road ends
 			for _, j in ipairs(road.junctions) do
-				local Fp = junction_extent(roads[j.road])
+				local Fp = junction_extent(roads[j.road], j.side)
 				for i = max(1, j.idx - Fp), min(n, j.idx + Fp) do dmax[i] = 0 end
 			end
 			local pin_end
@@ -603,6 +623,22 @@ local function new_module(P)
 			-- a point-to-point road may pin its ends (a gate's ground)
 			if road.pin_a then pin_start = floor(road.pin_a * Q + 0.5) end
 			if road.pin_b and not road.parent then pin_end = floor(road.pin_b * Q + 0.5) end
+			-- Kit streets (capital planner): a T junction at the first point
+			-- (flat mouth, pinned to the parent's level), and flat end stretches
+			-- of a given length with or without a pin (a gate passage, a lane
+			-- ending in a square).
+			if road.a_parent then
+				local parent = roads[road.a_parent]
+				local _, F = junction_extent(road, "a")
+				for i = 1, min(n, F + 1) do dmax[i] = 0 end
+				pin_start = parent.RQ and parent.RQ[road.a_parent_idx] or pin_start
+			end
+			if road.flat_a then
+				for i = 1, min(n, road.flat_a) do dmax[i] = 0 end
+			end
+			if road.flat_b and not road.parent then
+				for i = max(1, n - road.flat_b), n do dmax[i] = 0 end
+			end
 			road.dmax = dmax
 			local C_CUT, C_FILL, EMB = P.C_CUT, P.C_FILL, P.EMB
 			local function scost(r, t, wy, centre, cm)
@@ -777,6 +813,8 @@ local function new_module(P)
 				-- no profile within the windows (should not happen): follow the
 				-- ground within the step bound, so the road stays walkable
 				stats.infeasible = (stats.infeasible or 0) + 1
+				stats.infeasible_ids = (stats.infeasible_ids or "") .. " " ..
+					tostring(road.id) .. ":" .. road.kind
 				for i = 1, n do
 					local want = floor(T[i][1] * Q + 0.5)
 					if i > 1 then
@@ -1438,6 +1476,93 @@ local function new_module(P)
 				local path, info, cost, dirs = search(srcs, target, heur, budget, kind == "trail", nil, allow)
 				return path, info, cost, dirs, lead
 			end)
+		end
+
+		-----------------------------------------------------------------------
+		-- Kit (capital planner, plan §11): with `opts.kit` the build hands the
+		-- caller the routing grid, the A* search, the geometry, the terrain
+		-- sampling, the profile DP and the classes instead of running
+		-- `opts.order`, so a planner builds its own streets (avenues, lanes,
+		-- connectors) on its own grid with the same look, grade rule (<= 1/2
+		-- per column) and raster as the network.
+		-----------------------------------------------------------------------
+		if opts.kit then
+			local kit = {LI = LI, KOF = KOF, NL = NL, nx = nx, nz = nz, C = C,
+				x0 = GX0, z0 = GZ0, H = H, cell_of = cell_of, li_xz = li_xz,
+				minmult = minmult, roads = roads, netcell = netcell,
+				blocked = blocked, stats = stats, DIRS = DIRS}
+			function kit.set_guide(g) GUIDE = g end
+			function kit.search(sources, target, heur, allow, budget)
+				return search(sources, target, heur, budget, false, nil, allow)
+			end
+			local function relattice(X, Z)
+				local q = {}
+				for i = 1, #X do q[i] = {X[i], Z[i]} end
+				q = resample(q, 1)
+				local nX, nZ = {}, {}
+				for i, pt in ipairs(q) do
+					nX[i], nZ[i] = floor(pt[1] * LAT + 0.5) / LAT, floor(pt[2] * LAT + 0.5) / LAT
+				end
+				return nX, nZ
+			end
+			-- ctrl: control points {{x, z}, ...} (cell centres of a searched
+			-- path plus fixed lead points); f: a/b labels, a_parent/b_parent
+			-- (road ids the street starts/ends on), pin_a/pin_b (end levels in
+			-- nodes), flat_a/flat_b (flat end stretches in points)
+			function kit.street(kind, ctrl, f)
+				f = f or {}
+				local hw = assert(P.HALF[kind], "unknown street kind " .. tostring(kind))
+				local X, Z = make_geometry(ctrl, hw)
+				local road = {id = #roads + 1, kind = kind, hw = hw, junctions = {},
+					a = f.a or "-", b = f.b or "-", a_kind = "street", b_kind = "street"}
+				if f.b_parent then
+					local parent = roads[f.b_parent]
+					local idx = nearest_idx(parent, X[#X], Z[#Z])
+					X[#X], Z[#Z] = parent.X[idx], parent.Z[idx]
+					X, Z = relattice(X, Z)
+					road.parent, road.parent_idx = parent.id, idx
+					road.b = "road:" .. parent.id
+				end
+				if f.a_parent then
+					local parent = roads[f.a_parent]
+					local idx = nearest_idx(parent, X[1], Z[1])
+					X[1], Z[1] = parent.X[idx], parent.Z[idx]
+					X, Z = relattice(X, Z)
+					road.a_parent, road.a_parent_idx = parent.id, idx
+					road.a = "road:" .. parent.id
+				end
+				road.X, road.Z = X, Z
+				road.pin_a, road.pin_b, road.flat_a, road.flat_b = f.pin_a, f.pin_b, f.flat_a, f.flat_b
+				sample_road(road)
+				solve(road)
+				classify(road)
+				return road
+			end
+			function kit.commit(road)
+				if road.parent then
+					local p = roads[road.parent]
+					p.junctions[#p.junctions + 1] = {idx = road.parent_idx, road = road.id}
+				end
+				if road.a_parent then
+					local p = roads[road.a_parent]
+					p.junctions[#p.junctions + 1] = {idx = road.a_parent_idx, road = road.id, side = "a"}
+				end
+				roads[road.id] = road
+				register(road)
+				return road
+			end
+			-- final profiles in build order (parents first), classes and audit
+			function kit.finish()
+				local t4 = os.clock()
+				stats.infeasible, stats.infeasible_ids = nil, nil
+				for _, road in ipairs(roads) do road.dead_at = nil end
+				for _, road in ipairs(roads) do solve(road) end
+				for _, road in ipairs(roads) do classify(road); audit(road) end
+				stats.t_profile = (stats.t_profile or 0) + os.clock() - t4
+				stats.samples = nsample
+				return {roads = roads, stats = stats, seed = seed}
+			end
+			return kit
 		end
 
 		local T1 = os.clock()

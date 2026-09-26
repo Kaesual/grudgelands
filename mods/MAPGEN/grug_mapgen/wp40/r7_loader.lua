@@ -98,15 +98,27 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 			#socket_rows)
 	end
 
-	-- THE GROUND UNDER THE TERRAIN-RELATIVE BLUEPRINTS, on THIS world.
-	--
-	-- A capital's district plots are placed at positions that were measured
-	-- against two seeds and are legal on both, and the writer projects them
-	-- from one column without a water or a fall test of its own. On a third
-	-- seed a plot can stand in a river or half-buried and nothing says so.
-	-- This is the sentence that says so. It is a WARNING and nothing else: the
-	-- capital is still built, because half a world is not worth refusing over
-	-- one plot, and a diagnosable failure is the whole point.
+	-- THE CAPITAL LAYOUTS (Round 22 capital planner): one line per capital
+	-- with the planner's figures, so a playtest log says what this world got.
+	local capital_stats = runtime.capital_stats()
+	for _, st in ipairs(capital_stats or {}) do
+		core_api.log("action", string.format("[grug_mapgen] capital %s: area %.0f m2, " ..
+			"built %.1f %%, plots %d of %d (overflowed %d, left out %d fill, %d " ..
+			"buildings), required %d of %d, relaxed %d, streets %d (open arcs %d, " ..
+			"cross-lanes %d, squares %d), infeasible profiles %d, connector " ..
+			"failures %d%s, planned in %.2f s",
+			st.key, st.area, 100 * st.built, st.placed, st.total, st.overflowed,
+			st.left_out - st.left_out_buildings, st.left_out_buildings, st.required,
+			st.required_total, st.relaxed, st.streets, st.open_arcs, st.cross_lanes,
+			st.squares, st.infeasible, st.connector_failed,
+			st.no_route and (", no route:" .. st.no_route) or "", st.seconds))
+	end
+
+	-- THE GROUND UNDER THE PLACED CAPITAL PLOTS, on THIS world's final
+	-- terrain. The planner placed every plot on its own sample of the fitted
+	-- ground, before its streets' cut and fill; this says where a plot no
+	-- longer stands on the final ground. A WARNING and nothing else: the
+	-- capital is still built, and a diagnosable finding is the whole point.
 	if type(runtime.settlement_terrain_findings) == "function" then
 		local findings = runtime.settlement_terrain_findings(built)
 		for index = 1, #findings do
@@ -117,18 +129,21 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 				" does not stand on this world's ground -- submerged columns " ..
 				finding.submerged .. ", perimeter fall " .. finding.fall ..
 				" against a skirt of " .. finding.skirt .. ", rise " ..
-				finding.rise .. " against a clear of " .. finding.clear ..
-				". Re-run tools/wp13/capital_lots.lua against this seed's " ..
-				"field dump.")
+				finding.rise .. " against a clear of " .. finding.clear .. ".")
 		end
+		core_api.log("action", "[grug_mapgen] capital plot terrain findings: " ..
+			#findings)
 	end
 
-	-- The inland water layout travels with the payload, so emerge never
-	-- rebuilds it (plan D37: no cache file).
+	-- The inland water, road and capital layouts travel with the payload, so
+	-- emerge never rebuilds them (plan D37: no cache file). The road layout
+	-- carries the capital streets and connectors (the capital planner joined
+	-- them to it in main).
 	local payload = {schema = "grug_wp40_r7_ipc_v1",
 		manifest_sha256 = built.manifest.sha256, full_seed = built.full_seed,
 		projection = projection, water_layout = runtime.water_layout_text(),
-		road_layout = runtime.road_layout_text()}
+		road_layout = runtime.road_layout_text(),
+		capital_layout = runtime.capital_layout_text()}
 
 	-- Roads (Round 22 Phase 4): one log line with the construction figures
 	-- and one with a showcase spot per road feature (a serpentine, a gallery,
@@ -144,9 +159,10 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 			if road.kind == "trail" then trails_n = trails_n + 1 else roads_n = roads_n + 1 end
 		end
 		core_api.log("action", string.format("[grug_mapgen] roads: %d roads, %d trails " ..
-			"(%d of %d trail candidates), %d loops, built in %.1f s, payload %d bytes",
+			"(%d of %d trail candidates), %d loops, built in %.1f s, payload %d bytes " ..
+			"(with the capital streets), capital layouts %d bytes",
 			roads_n, trails_n, st.trails_built or 0, st.trails_tried or 0, st.loops or 0,
-			st.t_total or 0, #payload.road_layout))
+			st.t_total or 0, #payload.road_layout, #payload.capital_layout))
 		road_spots = runtime.road_module().showcase(road_layout)
 		for _, spot in ipairs(road_spots) do
 			road_spot_lines[#road_spot_lines + 1] = string.format("%s (%s) at %d,%d,%d",
