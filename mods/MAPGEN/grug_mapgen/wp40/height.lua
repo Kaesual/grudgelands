@@ -909,6 +909,20 @@ local function height_factory(dependencies)
 		end
 
 		-- Anchor fittings of a land column: terrain y, functional kind, feature.
+		-- A river trough crossing a capital's reserved area or a start's
+		-- envelope beyond its keep-out keeps its carved ground (plan D57):
+		-- the grading fades out where the water layout lowered the natural
+		-- field, so no channel is filled dry and no grading edge crosses a
+		-- valley side. Protected cores lie outside every trough.
+		local function keep_trough(x, z, value, incoming)
+			local block, slot = column(x, z)
+			local keep = clamp(((block.carve[slot] or 0) - 0.5) / 2.5, 0, 1)
+			if keep > 0 then
+				keep = keep * keep * (3 - 2 * keep)
+				value = floor(value + (incoming - value) * keep + 0.5)
+			end
+			return value
+		end
 		local function fit_land(x, z, owner, incoming)
 			local terrain_y, kind, feature_id = incoming, nil, nil
 			local value, fitting = fitting_grade_at(grids.selected, x, z,
@@ -916,21 +930,14 @@ local function height_factory(dependencies)
 			if value ~= nil then terrain_y, kind, feature_id = value, "land_grade", fitting.id end
 			value, fitting = fitting_grade_at(grids.capital, x, z, terrain_y, owner, LAND)
 			if value ~= nil then
-				-- A river trough crossing a capital's reserved area keeps its
-				-- carved ground (plan D57): the capital's terrace grading fades
-				-- out where the water layout lowered the natural field, so no
-				-- channel is filled dry and no grading edge crosses a valley
-				-- side. The protected civic core is outside every trough.
-				local block, slot = column(x, z)
-				local keep = clamp(((block.carve[slot] or 0) - 0.5) / 2.5, 0, 1)
-				if keep > 0 then
-					keep = keep * keep * (3 - 2 * keep)
-					value = floor(value + (terrain_y - value) * keep + 0.5)
-				end
-				terrain_y, kind, feature_id = value, "land_grade", fitting.id
+				terrain_y, kind, feature_id = keep_trough(x, z, value, terrain_y),
+					"land_grade", fitting.id
 			end
 			value, fitting = fitting_grade_at(grids.start, x, z, terrain_y, owner, LAND)
-			if value ~= nil then terrain_y, kind, feature_id = value, "land_grade", fitting.id end
+			if value ~= nil then
+				terrain_y, kind, feature_id = keep_trough(x, z, value, terrain_y),
+					"land_grade", fitting.id
+			end
 			return terrain_y, kind, feature_id
 		end
 
@@ -1129,6 +1136,9 @@ local function height_factory(dependencies)
 				if water_y then
 					if terrain_y < water_y then
 						water_kind, water_id = block.nkind[slot], block.nid[slot]
+						-- natural water stays water, not the graded ground of an
+						-- anchor: a functional grade would clear its water
+						kind, feature_id = nil, nil
 					else
 						water_y = nil
 					end
