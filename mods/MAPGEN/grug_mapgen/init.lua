@@ -5,6 +5,8 @@
 grug_mapgen = {}
 
 local modpath = core.get_modpath(core.get_current_modname())
+-- LuaJIT side-exit tuning before the construction below (jit_tuning.lua).
+dofile(modpath .. "/jit_tuning.lua")()
 dofile(modpath .. "/world_nodes.lua")(core, modpath, grug_nodes, grug_gathering)
 dofile(modpath .. "/poi_displays.lua")(core)
 grug_mapgen.wp40 = dofile(modpath .. "/wp40/r7_loader.lua")(

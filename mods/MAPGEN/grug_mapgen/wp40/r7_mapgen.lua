@@ -2,6 +2,8 @@
 -- mapgen script and owns the sole generated callback and VM transaction.
 
 local IPC_KEY = "grug_mapgen:r7_runtime_v1"
+-- LuaJIT side-exit tuning for this environment (see ../jit_tuning.lua).
+dofile(core.get_modpath("grug_mapgen") .. "/jit_tuning.lua")()
 local function fail(message)
 	error("WP40 R7 emerge: " .. message, 0)
 end
