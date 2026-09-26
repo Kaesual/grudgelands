@@ -395,6 +395,9 @@ local function height_factory(dependencies)
 		--             bank ring): the rim band, hard at the level, stands at most
 		--             that far above the lowest bank, and the carved bed (depth)
 		--             keeps the trough wet where the ground is highest
+		--   rim_max   with balanced: the level stands at most this many nodes
+		--             above the lowest bank ground (a bound on the raised rim;
+		--             the carve deepens instead)
 		--   natural_clear  the signed distance is capped at (distance to natural
 		--             inland water - natural_clear), from the layout's bank
 		--             distance: where a river or lake comes close the row ends
@@ -410,6 +413,9 @@ local function height_factory(dependencies)
 					sources ~= 1 or (row.bank ~= nil and type(row.bank) ~= "table") or
 					(row.balanced ~= nil and (not row.shore_level or
 						row.balanced ~= true)) or
+					(row.rim_max ~= nil and (not row.balanced or
+						type(row.rim_max) ~= "number" or row.rim_max < 0 or
+						row.rim_max % 1 ~= 0)) or
 					(row.natural_clear ~= nil and type(row.natural_clear) ~= "number") then
 				fail("authored lake row differs at " .. index)
 			end
@@ -902,9 +908,12 @@ local function height_factory(dependencies)
 		-- support edge m = 0 lies at 0.5 * LAKE_PROXY), so it never ends in a
 		-- step along the indicator's outline.
 		local BANK_FADE0, BANK_FADE1 = 0.3 * WP.LAKE_PROXY, 0.5 * WP.LAKE_PROXY
-		-- A row's indicator with its natural_clear cap: the distance to natural
-		-- inland water is the layout's own bank distance (0 on a wet column,
-		-- nil beyond the layout's reach, where nothing is near).
+		-- A row's indicator with its natural_clear cap. The distance used is in
+		-- nodes from the nearest natural water edge (0 on a wet natural column;
+		-- nil = far, beyond the layout's reach): today the layout's own bank
+		-- distance (`nbank`, water.column), true distance for rivers and the
+		-- indicator proxy for lakes. A layout that changes that value must keep
+		-- handing this rule the unscaled distance.
 		local function natural_capped(e, x, z, m)
 			local clear = e.natural_clear
 			if not clear or m <= 0 then return m end
@@ -948,7 +957,10 @@ local function height_factory(dependencies)
 			if low == nil then fail("authored lake has no bank: " .. e.name) end
 			local level = low
 			if balanced and high ~= nil and high > low then
-				level = low + floor((high - low) / 2)
+				local rise = floor((high - low) / 2)
+				local rim_max = e.row.rim_max
+				if rim_max and rise > rim_max then rise = rim_max end
+				level = low + rise
 			end
 			e.level = level + (e.row.level_offset or 0)
 			return e.level

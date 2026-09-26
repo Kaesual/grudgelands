@@ -39,7 +39,8 @@
 --                Highcourt canal)
 --   balanced     with shore_level: the level halfway between the lowest bank
 --                ground and the highest ground under the water (canals;
---                height.lua), the rim raised to it where the ground is lower
+--                height.lua), the rim raised to it where the ground is lower;
+--                rim_max bounds that raise (the carve deepens instead)
 --   natural_clear
 --                the shore keeps at least this many nodes off natural rivers
 --                and lakes: where one comes close the row ends in a sealed rim
@@ -366,7 +367,7 @@ return function(P)
 			return m
 		end
 		rows[#rows + 1] = {id = "highcourt_canal", river = true, shore_level = true,
-			balanced = true, natural_clear = 8, indicator = indicator,
+			balanced = true, rim_max = 6, natural_clear = 8, indicator = indicator,
 			min_x = floor(x0 - reach), max_x = floor(x1 + reach) + 1,
 			min_z = floor(z0 - reach), max_z = floor(z1 + reach) + 1,
 			depth = 6, bank = {up = 1.2, down = 0.5}, rim = 0.4}

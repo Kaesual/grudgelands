@@ -1431,6 +1431,49 @@ local function adapter_factory(allocator_factory)
 				if not propagate_shadow and calc_max_y > maxp.y then
 					calc_max_y = maxp.y
 				end
+				-- As r6_settlement's transaction: the zeroed slice above the owner
+				-- takes the sun straight down from each sunlit seed, as far as its
+				-- content lets sunlight through (it is ignore or real lit content).
+				if not propagate_shadow and box_max_y > maxp.y then
+					for z = box_min_z, box_max_z do
+						local run_start, run_bottom
+						for x = box_min_x, box_max_x + 1 do
+							local bottom
+							if x <= box_max_x then
+								local top = buffer_index(x, seed_y, z)
+								local cid = data_buffer[top]
+								-- the day bank only (a lantern's night light must not
+								-- cost a column its sun)
+								if cid ~= ignore_cid and light_original[top] % 16 == 15 then
+									local _, _, _, _, _, _, _, seed_sun = classify(cid,
+										param2_buffer[top], "fail_lighting_context")
+									if seed_sun then
+										for y = box_max_y, maxp.y + 1, -1 do
+											local index = buffer_index(x, y, z)
+											local node = data_buffer[index]
+											if node == ignore_cid then break end
+											local _, _, _, _, _, _, _, sun = classify(node,
+												param2_buffer[index], "fail_lighting_context")
+											if not sun then break end
+											bottom = y
+										end
+									end
+								end
+							end
+							if run_start ~= nil and bottom ~= run_bottom then
+								set_call_box(run_start, run_bottom, z, x - 1, box_max_y, z)
+								vm_call3(vm_set_lighting, K.M_VM_SET_LIGHTING, vm,
+									light_value, call_min, call_max)
+								run_start = nil
+							end
+							if bottom ~= nil and run_start == nil then
+								run_start, run_bottom = x, bottom
+							end
+						end
+					end
+					set_call_box(box_min_x, box_min_y, box_min_z,
+						box_max_x, box_max_y, box_max_z)
+				end
 				call_max.y = calc_max_y
 				vm_call3(vm_calc_lighting, K.M_VM_CALC_LIGHTING, vm, call_min,
 					call_max, propagate_shadow)
@@ -1460,12 +1503,12 @@ local function adapter_factory(allocator_factory)
 									y < owner_light_min_y or y > owner_light_max_y or
 									z < owner_light_min_z or z > owner_light_max_z then
 								-- As r6_settlement's transaction: inside the zeroed box
-								-- and the sun scan each bank takes the lower value, so
-								-- v7's stale spread from its replaced geometry leaves
-								-- the halo (Round 22 plan D61).
+								-- each bank takes the lower value, so v7's stale spread
+								-- from its replaced geometry leaves the halo (Round 22
+								-- plan D61).
 								local old = light_original[index]
 								if x >= box_min_x and x <= box_max_x and
-										y >= box_min_y and y <= calc_max_y and
+										y >= box_min_y and y <= box_max_y and
 										z >= box_min_z and z <= box_max_z then
 									local new = light_final[index]
 									local old_day, new_day = old % 16, new % 16

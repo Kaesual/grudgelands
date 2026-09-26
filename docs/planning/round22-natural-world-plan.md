@@ -592,7 +592,11 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
     geometry and spread that light up to 14 nodes into an already generated
     neighbour, which the writer restored; the halo now takes the lower of
     original and recomputed light inside the relit box (engine: brighter
-    liquid nodes 19772 → 0 at the lake, 158 → 0 sea floor, 328 → 0 river).
+    liquid nodes 19772 → 0 at the lake, 158 → 0 sea floor, 328 → 0 river);
+    review fix: the zeroed slice above the owner now takes the sun from each
+    sunlit seed (day bank), so water crossing a chunk top is no longer too
+    dark (Lethariel crown lake 58216 too-dark nodes on main → 0; all eight
+    probe windows 0 too bright and 0 too dark).
     Civic steps — `grug_core`'s water guard reverted all flow in protected
     territory; planned step flow is now exempt (Highcourt steps flowing
     0/276 → 266/276 before the canal became one level). Canal — one level

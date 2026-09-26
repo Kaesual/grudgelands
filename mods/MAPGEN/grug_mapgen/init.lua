@@ -24,12 +24,14 @@ do
 		end
 		return nil
 	end
+	local NEIGHBOUR_X, NEIGHBOUR_Z = {1, -1, 0, 0}, {0, 0, 1, -1}
 	grug_core.register_planned_water_flow(function(pos)
 		local x, y, z = pos.x, pos.y, pos.z
 		local own = planned_surface(x, z)
 		if own == nil or y <= own then return false end
-		for _, offset in ipairs({{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) do
-			local surface = planned_surface(x + offset[1], z + offset[2])
+		for direction = 1, 4 do
+			local surface = planned_surface(x + NEIGHBOUR_X[direction],
+				z + NEIGHBOUR_Z[direction])
 			if surface ~= nil and y <= surface then return true end
 		end
 		return false

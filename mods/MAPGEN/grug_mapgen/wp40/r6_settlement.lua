@@ -3409,6 +3409,69 @@ local function settlement_factory()
 				if not propagate_shadow and calc_max_y > max_y then
 					calc_max_y = max_y
 				end
+				-- The zeroed slice above the owner (max_y + 1 .. box_max_y, the
+				-- chunk above) gets no sun from that scan. It lies in the same
+				-- MapBlock layer as the seed row, so it is either ignore (a fresh
+				-- neighbour) or real, already lit content: each column whose seed
+				-- is sunlit takes the sun straight down through the slice, as far
+				-- as its final content lets sunlight through. Without it, water
+				-- crossing the chunk top was lit only by decaying spread from the
+				-- seed row, and everything below it turned too dark (Round 22
+				-- Phase 5b review).
+				if not propagate_shadow and box_max_y > max_y then
+					local sun_cache = {}
+					local function passes_sun(cid, param2)
+						local key = cid * 256 + param2
+						local value = sun_cache[key]
+						if value == nil then
+							local _, _, _, _, _, _, _, sunlight = classify(cid, param2,
+								"fail_lighting_context")
+							value = sunlight and true or false
+							sun_cache[key] = value
+						end
+						return value
+					end
+					for z = box_min_z, box_max_z do
+						local run_start, run_bottom
+						for x = box_min_x, box_max_x + 1 do
+							local bottom
+							if x <= box_max_x then
+								local top = index_at(x, seed_y, z)
+								local cid = final_data[top]
+								-- the day bank only: a lantern's night light must not
+								-- cost a column its sun
+								if cid ~= contract.ignore_cid and original_light[top] % 16 == 15 and
+										passes_sun(cid, final_param2[top]) then
+									for y = box_max_y, max_y + 1, -1 do
+										local index = index_at(x, y, z)
+										local node = final_data[index]
+										if node == contract.ignore_cid or
+												not passes_sun(node, final_param2[index]) then
+											break
+										end
+										bottom = y
+									end
+								end
+							end
+							if run_start ~= nil and bottom ~= run_bottom then
+								light_call_min.x, light_call_min.y, light_call_min.z =
+									run_start, run_bottom, z
+								light_call_max.x, light_call_max.y, light_call_max.z =
+									x - 1, box_max_y, z
+								ok = pcall(vm.set_lighting, vm, transaction_state.light_full,
+									light_call_min, light_call_max)
+								if not ok then fail("fail_vm_contract", "slice sun setter failed") end
+								run_start = nil
+							end
+							if bottom ~= nil and run_start == nil then
+								run_start, run_bottom = x, bottom
+							end
+						end
+					end
+					light_call_min.x, light_call_min.y, light_call_min.z =
+						box_min_x, box_min_y, box_min_z
+					light_call_max.x, light_call_max.z = box_max_x, box_max_z
+				end
 				light_call_max.y = calc_max_y
 				ok = pcall(vm.calc_lighting, vm, light_call_min, light_call_max,
 					propagate_shadow)
@@ -3432,9 +3495,9 @@ local function settlement_factory()
 				-- generated neighbour whenever one exists: where the replaced
 				-- geometry was brighter (open where the final terrain is deep water
 				-- or rock), the halo kept that light and the neighbour's edge showed
-				-- a bright stripe (Round 22 plan D61). Inside the zeroed box and no
-				-- higher than the sun scan the recomputed light is complete (the
-				-- untouched outer halo layer, beyond v7's reach, still feeds it), so
+				-- a bright stripe (Round 22 plan D61). Inside the zeroed box the
+				-- recomputed light is complete (sun in the owner scan and the slice
+				-- above it; the untouched layers beyond v7's reach still feed it), so
 				-- there each bank takes the lower of the two: the stale v7 spread
 				-- goes, and nothing gets brighter than it already was.
 				for z = eminz, emaxz do
@@ -3445,7 +3508,7 @@ local function settlement_factory()
 								local index = index_at(x, y, z)
 								local old = original_light[index]
 								if x >= box_min_x and x <= box_max_x and y >= box_min_y and
-										y <= calc_max_y and z >= box_min_z and z <= box_max_z then
+										y <= box_max_y and z >= box_min_z and z <= box_max_z then
 									local new = transaction_state.final_light[index]
 									local old_day, new_day = old % 16, new % 16
 									local old_night, new_night = old - old_day, new - new_day
