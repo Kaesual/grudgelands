@@ -237,6 +237,7 @@ Decisions on the Phase 4 road prototype (2026-09-26, user; prototype in
 |---|---|---|
 | D67 | **Integrate variant p4** (hard ≤ ½ rule, routing preference for grades gentler than ~1:4) on the shared 16-node grid; **no stairs on trails; no tunnels yet** (decide after the playtest); **Stormvault's outpost `anchor_027` stays** the showcase mountain road. **More connections:** all trail candidates are built (no cost budget; drop one only for a stated reason), and the loop threshold is lowered for about 2–4 loops per world. **Decks** only as a one-sided gallery (uphill side on the ground or in a shallow cut, downhill side on pillars — typical at serpentines) or as a short valley crossing (both ends on the ground, about ≤ 32 long, ground below lower than both ends); any other deck (free on both sides, the profile lagging behind the terrain) is a route error and feeds back into routing cost (D51); metric: free deck columns outside short crossings, rough target 0. **Cuts:** cut slopes get the terrain's own surface (grass/dirt, rock in stone), retaining walls only at the foot of deep cuts; on steep side slopes a half gallery (shallow uphill cut, downhill half on pillars) beats a deep uphill cut; cuts deeper than ~6 cost more in routing. | Prototype: p4 cuts deep-cut runs and long decks sharply against the hard rule for ~4 % more length; 70–80 % of deck columns were already one-sided, but 105–258 per world floated free on both sides (mostly the Stormvault serpentine); 7–10 % of road points lie in 2–6-node cuts, < 1 % deeper. The user: roads should look like "yes, this is how one would build a road"; floating roads only one-sided at serpentines or as short crossings; cuts are always unsightly. |
 | D68 | **After the D67 self-gate (2026-09-26):** round one of the D67 rules cut free decks by only 19–74 % while deep cut banks grew 4–5× and road construction doubled (7–8 s → 15–17 s), and it turned the Stormvault serpentine into a long ridge-face gallery. Cause: the 16-node routing grid cannot see sub-cell cliffs (20–30 nodes of drop over ~20 nodes inside one cell). Next: **one bounded attempt with sub-cell relief in routing** (steep cells only, carved ground sampled at the four half-cell points once in main, route on the steeper of coarse and sub-cell grade). If it does not clearly reduce free decks without worse cuts or detours: **fall back** to round one without the hard routing grade cap and without feedback re-routing (keep the half-gallery term, all trails, the lower loop threshold) and judge the rest in the playtest. **Free decks are an accepted last resort,** avoided where possible; no trails are dropped for them and no trail cost budget returns. Stormvault stays; revisit `anchor_028` only if the playtest shows floating roads there. | User. |
+| D69 | **Capital planner design accepted** (all 13 questions as recommended in `docs/research/round22-capital-planner-design.md` §9): option A — keep the civic core and all plot kits, plan per seed an organic outline, four cardinal gates (always four), avenues and lanes, and place the existing plots rotated to face their lane (fixes the approach stubs); infill houses (option C) later as a stop point. Streets and connectors use the road module's half-step profile. Walls follow the outline as polylines (fallback: straight segments with turrets); Lethariel and Kezamba stay unwalled with a planted edge/thresholds. The 532 square stays the protected area and guard-level-60 zone; the city stays inside it. Rough size ~110–150 k m², 20–30 % built. Four districts stay recognisable groups. Highcourt's canal is rebuilt by the planner (dropped first if it grows). The band between wall and reserved edge stays natural terrain first. Non-required plots may be left out on cramped seeds (count logged); required plots (inn, cook, eight service plots, stable) are always placed. "Beyond its walls" is reworded for the two open capitals when the planner lands. Order: offline Highcourt prototype first, the other five after its look is accepted, integration after roads are merged and playtested. | User, 2026-09-26, on the audit and design draft. |
 
 All §9 questions are answered.
 
@@ -750,6 +751,18 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   B1 predicts surface-cave mouths as closed until the chunk above exists.
   Lighting-check targets `river_cross47` and `river_rapids` are stale since
   W3b moved the rivers (tool note, not re-targeted).
+- **End-of-round check: full-world preparation** (`grug_prepare_full_world`,
+  user, 2026-09-26). The preparation scheduler
+  (`grug_core/starts_preload.lua`, `preparation_plan.lua`) takes its volume
+  from the mapgen's surface authority (`wp40/preparation_source.lua`: tile
+  boxes from the settlement blueprints with a hard-coded ±265 plot-approach
+  clamp, column bounds from `column_values_at` ground, water, functional and
+  upper/lower heights). Roads (decks, pillars, railings, cut slopes) and the
+  capital planner (rotated plots, walls, new outline) change what lies above
+  and below the ground. A short headless run with the option on, not a full
+  preparation: it starts, prepares a few tiles around a capital, a road deck
+  and a bridge without errors, and those features lie inside the prepared
+  bounds.
 - Afterwards, the general runtime cleanup round (D4).
 
 ### Orchestration and compaction points
@@ -870,6 +883,11 @@ planner work package that follows water and roads (D57–D60).
   a lake; pre-existing); arcs of rivers around hard core keep-outs (the soft
   lens was tried and rejected, W3b); dry source gullies look straight in the
   flat capital bowls; plots and lanes in rivers inside the reserved areas.
+
+- **Decisions on the audit and design (D69, 2026-09-26):** see
+  `docs/research/round22-capital-planner-audit.md` and
+  `docs/research/round22-capital-planner-design.md`; all 13 questions
+  answered as recommended there.
 
 - Keep the civic core as it is.
 - The surrounding city moves closer together:
