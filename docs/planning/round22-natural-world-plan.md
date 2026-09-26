@@ -214,6 +214,14 @@ Decisions after the Phase 5 playtest (2026-09-26, user with coordinator):
 | D63 | **Performance analysis package, parallel to the road prototype** (start right after the D62 compaction), as preparation for the general cleanup round (D4). One agent in its own worktree finds where the mapgen can get faster and estimates gain and risk per item. **Byte-identical changes only** (algorithmic improvements, removing redundant checks and dead work); anything that changes the world — e.g. dropping a noise octave — is excluded and at most listed in one line as "deliberately excluded". Guardrails: (1) areas the road integration will rebuild (road IDs in the planner, road overlay/raster, exclusion kinds) are only flagged "re-check after roads"; (2) nothing is merged during the road integration — the agent may prototype and prove byte-identical patches in its worktree (probe grids on several seeds + engine full digest, as in W0) to measure instead of estimate; small changes in code the roads surely do not touch (e.g. the per-voxel light integer checks) may be proposed to the user one by one earlier; (3) timing with paired before/after runs and the noise reported; big measurement runs when no heavy road run is active. Deliverable: a ranked list (measured gain, risk, proof method, "before/after roads") plus the proven patches; performance numbers stay reports (D32). | User, 2026-09-26: no specific pain point; the agent finds the potential itself; the world looks good and must not change. |
 | D64 | **"Chunk edge" package, parallel to the road prototype** (start after the D62 compaction, a third package next to D63): find a robust, performant solution for everything that happens in the halo of an already generated neighbour chunk — lighting, sealing river/lake beds where later v7 caves cut in (accepted for now, Phase 6 note), v7's provisional overtop blocks. Start from an invariant, e.g. "every node's final light equals a from-scratch recomputation regardless of generation order", instead of per-case heuristics. **Analysis first:** the agent writes the invariant, two or three solution paths with effort, risk and cost, and their effect on bed sealing and the pre-existing checkerboard too-bright nodes; the user picks one before implementation. Performance counts: the cost must stay within a reasonable frame (today's correction costs roughly 0.5–1 % of chunk time; a clearly larger cost is escalated). Evidence with the lighting checks (census + windows in several generation orders), used with judgement: a tool for lighting changes, not a gate on every change — quick, reduced runs while iterating, the full run once before merge; no new measurement corset (user, 2026-09-26). The D63 performance agent leaves the lighting/halo code alone and only flags findings there. | User, 2026-09-26, after four review rounds on chunk-edge lighting (W3a, Fix A). |
 
+Decision on the D64 analysis (2026-09-26, user accepted all
+recommendations; analysis in
+`~/projects/grudgelands-orchestration/r22/chunk-edge-d64/ANALYSIS.md`):
+
+| # | Decision | Basis |
+|---|---|---|
+| D65 | **Chunk-edge light: path B, exact relight of the VM interior with the VM's outer 1-node shell as boundary.** Zero both light banks inside the shell, a Lua sun pass per column in three vertical groups (block above the owner, owner, block below; a fresh group neither blocks nor carries sun), then engine spread only; replaces `presun`, the min-merge and Fix A. **With B1:** owner columns under a still-fresh chunk above take their sky from the plan's column tuple instead of "open above water level". The full-volume light-buffer validations are dropped (one light read, a few checked values). **B2** (hand sun changes deeper than 16 rows to `core.fix_light` on the main thread) **later, only if visible in play. B3** (repair the 1-node v7 noise-tunnel slivers in the top row of an already generated chunk below) **not now.** | The order probe found three failure classes the lighting checks did not see: stale v7 daylight in sealed caves (1 800–7 000 nodes per box), daylight under roofs at chunk tops when the chunk above came first (6 169 in a Highcourt box; the checker-order too-bright nodes are this class), and missing lamp/torch light at chunk borders because the min-merge can never brighten an older neighbour (up to 30 418 nodes, down to −11). The path B prototype: 0/0 in three boxes and all orders, light identical across orders, checker windows 0/0 (main 21); the light transaction costs 9.6 ms per chunk instead of 39 ms. Open: small −1/−2 residues at Highcourt (river water on mapblock-aligned columns, night light above torches) to be explained during implementation. |
+
 All §9 questions are answered.
 
 ## 4. Guardrails for the whole round
@@ -697,12 +705,15 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   may lack native caves (check in playtest); shore-crab spawn rate retune.
 - Accepted as is (user, Phase 3 playtest): natural cave mouths that open into
   flooded pits at sea level.
-- Accepted for now (user, 2026-09-26, Phase 5b): native v7 caves of a
-  later-generated chunk can cut up to ~13 nodes into an already generated
-  neighbour's river bed (395 air nodes in beds on seed 8675309; no leak
-  observed). Resealing the halo would need out-of-owner writes past the
-  map adapter's run validation and the new halo light transaction; revisit
-  in Phase 6 only if it shows in play.
+- Corrected by the D64 analysis (2026-09-26): the "river-bed holes" on seed
+  8675309 are not v7 caves cutting into a neighbour. All sampled holes are
+  identical in every generation order; they are planned river columns beside
+  Highcourt (river:26) and at a tributary junction (river:1) that the capital
+  builds over with pavement and soil, with no water anywhere — the dry river
+  bed beside Highcourt, owned by the capital planner (§11). The only
+  order-dependent content change is 1-node air slivers from v7 noise tunnels
+  in the top row (y = 47/127) of an already generated chunk below; harmless
+  underground, not observed on a bed seal; repair (B3) deferred (D65).
 - Afterwards, the general runtime cleanup round (D4).
 
 ### Orchestration and compaction points
