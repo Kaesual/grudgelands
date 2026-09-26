@@ -58,10 +58,19 @@ local function replacement_outcome_fixture(...)
 		ordinary_family_id, river_family_id)
 end
 
+-- Memoized per feature id: the writer asks this for every voxel of an
+-- opcode-21 run, and a pattern match is not JIT-compiled. Feature ids come
+-- from the plan's fixed stable-ref table, so the memo stays small.
+local anchor_grade_memo = {}
 local function anchor_grade_feature(feature_id)
-	return type(feature_id) == "string" and
-		(feature_id:match("^anchor_00[1-9]$") ~= nil or
-			feature_id:match("^anchor_01[0-2]$") ~= nil)
+	if type(feature_id) ~= "string" then return false end
+	local value = anchor_grade_memo[feature_id]
+	if value == nil then
+		value = feature_id:match("^anchor_00[1-9]$") ~= nil or
+			feature_id:match("^anchor_01[0-2]$") ~= nil
+		anchor_grade_memo[feature_id] = value
+	end
+	return value
 end
 
 local function preserved_native_cave(opcode, policy, class_id, heightmap_value,

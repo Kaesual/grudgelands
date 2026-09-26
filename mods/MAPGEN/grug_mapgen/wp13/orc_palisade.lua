@@ -561,11 +561,7 @@ local function loader(directory)
 		local source, count = buf:cells()
 		local cells = {}
 		for index = 1, count do cells[index] = source[index] end
-		table.sort(cells, function(a, b)
-			if a.z ~= b.z then return a.z < b.z end
-			if a.y ~= b.y then return a.y < b.y end
-			return a.x < b.x
-		end)
+		parts.sort_cells_zyx(cells)
 		return {
 			id = spec.id, axis = spec.axis, at = at, from = from, to = to,
 			cells = cells,

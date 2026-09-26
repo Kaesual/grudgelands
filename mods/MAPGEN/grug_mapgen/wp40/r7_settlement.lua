@@ -541,7 +541,13 @@ local function prepare_cells(fail, descriptor, blueprint)
 			minimum.y < bounds.min.y or maximum.y > bounds.max.y then
 		fail(descriptor.id .. ": blueprint bounds escape the authorized volume")
 	end
-	local cells, prior, seen, actual_min, actual_max = {}, nil, {}, {}, {}
+	local cells, seen, actual_min, actual_max = {}, {}, {}, {}
+	-- The previous cell and the running bounds as plain locals: this loop runs
+	-- once per cell of every blueprint (hundreds of thousands per
+	-- construction, in both environments), so it allocates nothing per cell
+	-- beyond the cell row and its identity line.
+	local prior_x, prior_y, prior_z
+	local min_x, min_y, min_z, max_x, max_y, max_z
 	local bytes = {"schema\t" .. descriptor.identity_schema .. "\n",
 		table.concat({"bounds", minimum.x, minimum.y, minimum.z,
 			maximum.x, maximum.y, maximum.z}, "\t") .. "\n"}
@@ -561,26 +567,25 @@ local function prepare_cells(fail, descriptor, blueprint)
 		if not palette[cell.name] then
 			fail(descriptor.id .. ": cell name is outside palette")
 		end
-		if prior and (z < prior.z or (z == prior.z and
-				(y < prior.y or (y == prior.y and x <= prior.x)))) then
+		if prior_x and (z < prior_z or (z == prior_z and
+				(y < prior_y or (y == prior_y and x <= prior_x)))) then
 			fail(descriptor.id .. ": cells are not canonical z/y/x unique")
 		end
 		local key = packed_key(x, y, z)
 		if seen[key] then fail(descriptor.id .. ": duplicate cell") end
-		seen[key], prior = true, {x = x, y = y, z = z}
+		seen[key], prior_x, prior_y, prior_z = true, x, y, z
 		cells[index] = {x = x, y = y, z = z, param2 = param2, name = cell.name}
-		for _, axis in ipairs({"x", "y", "z"}) do
-			local value = cell[axis]
-			if actual_min[axis] == nil or value < actual_min[axis] then
-				actual_min[axis] = value
-			end
-			if actual_max[axis] == nil or value > actual_max[axis] then
-				actual_max[axis] = value
-			end
-		end
-		bytes[#bytes + 1] =
-			table.concat({"cell", x, y, z, cell.name, param2}, "\t") .. "\n"
+		if min_x == nil or x < min_x then min_x = x end
+		if max_x == nil or x > max_x then max_x = x end
+		if min_y == nil or y < min_y then min_y = y end
+		if max_y == nil or y > max_y then max_y = y end
+		if min_z == nil or z < min_z then min_z = z end
+		if max_z == nil or z > max_z then max_z = z end
+		bytes[#bytes + 1] = "cell\t" .. x .. "\t" .. y .. "\t" .. z .. "\t" ..
+			cell.name .. "\t" .. param2 .. "\n"
 	end
+	actual_min.x, actual_min.y, actual_min.z = min_x, min_y, min_z
+	actual_max.x, actual_max.y, actual_max.z = max_x, max_y, max_z
 	for _, axis in ipairs({"x", "y", "z"}) do
 		if minimum[axis] ~= actual_min[axis] or maximum[axis] ~= actual_max[axis] then
 			fail(descriptor.id .. ": declared bounds differ on " .. axis)

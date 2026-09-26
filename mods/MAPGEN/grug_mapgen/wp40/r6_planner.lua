@@ -602,19 +602,46 @@ local function planner_factory()
 				column_count
 		end
 
-		local function write_candidate(kind, record, output_index)
-			if output_index > MAX_CANDIDATES then
-				fail("fail_bound", "combined candidate bound exceeded")
+		-- Candidate rows of a cell, memoized. `build_cell` is a pure function
+		-- of (cell_x, cell_z) -- no y, no owner -- yet every mapchunk rebuilt
+		-- its whole halo: the chunks stacked above and below one column and
+		-- the neighbours sharing a halo cell recomputed the same sorted rows
+		-- and SHA-256 rank digests. A bounded FIFO keeps the finished rows
+		-- (kind, catalog, parameter, x, y, z and the eight digest words) per
+		-- cell, exactly the values the plan's candidate array receives.
+		local CELL_CACHE_LIMIT = 4096
+		local cell_cache, cell_cache_keys = {}, {}
+		local cell_cache_count, cell_cache_next = 0, 1
+		local function cached_cell_rows(cell_x, cell_z)
+			local key = cell_x * 65536 + cell_z
+			local rows = cell_cache[key]
+			if rows then return rows end
+			local cc, dc = build_cell(cell_x, cell_z, false)
+			rows = {count = cc + dc}
+			local base = 0
+			for index = 1, cc + dc do
+				local kind, record = 1, cultural_candidates[index]
+				if index > cc then kind, record = 2, decoration_candidates[index - cc] end
+				rows[base + 1] = kind
+				rows[base + 2] = record.catalog
+				rows[base + 3] = record.parameter
+				rows[base + 4] = record.x
+				rows[base + 5] = record.y
+				rows[base + 6] = record.z
+				local words = hash.words(record.digest)
+				for word = 1, 8 do rows[base + 6 + word] = words[word] end
+				base = base + CANDIDATE_STRIDE
 			end
-			local base = (output_index - 1) * CANDIDATE_STRIDE
-			candidate_values[base + 1] = kind
-			candidate_values[base + 2] = record.catalog
-			candidate_values[base + 3] = record.parameter
-			candidate_values[base + 4] = record.x
-			candidate_values[base + 5] = record.y
-			candidate_values[base + 6] = record.z
-			local words = hash.words(record.digest)
-			for word = 1, 8 do candidate_values[base + 6 + word] = words[word] end
+			if cell_cache_count < CELL_CACHE_LIMIT then
+				cell_cache_count = cell_cache_count + 1
+				cell_cache_keys[cell_cache_count] = key
+			else
+				cell_cache[cell_cache_keys[cell_cache_next]] = nil
+				cell_cache_keys[cell_cache_next] = key
+				cell_cache_next = cell_cache_next % CELL_CACHE_LIMIT + 1
+			end
+			cell_cache[key] = rows
+			return rows
 		end
 
 		local function plan_slice_core(min_x, min_y, min_z, max_x, max_y, max_z)
@@ -667,14 +694,17 @@ local function planner_factory()
 					candidate_cell_values[cell_base + 1] = cell_x
 					candidate_cell_values[cell_base + 2] = cell_z
 					candidate_cell_values[cell_base + 3] = candidate_count + 1
-					local cc, dc = build_cell(cell_x, cell_z, false)
-					for index = 1, cc do
+					local rows = cached_cell_rows(cell_x, cell_z)
+					for index = 1, rows.count do
 						candidate_count = candidate_count + 1
-						write_candidate(1, cultural_candidates[index], candidate_count)
-					end
-					for index = 1, dc do
-						candidate_count = candidate_count + 1
-						write_candidate(2, decoration_candidates[index], candidate_count)
+						if candidate_count > MAX_CANDIDATES then
+							fail("fail_bound", "combined candidate bound exceeded")
+						end
+						local base = (candidate_count - 1) * CANDIDATE_STRIDE
+						local from = (index - 1) * CANDIDATE_STRIDE
+						for offset = 1, CANDIDATE_STRIDE do
+							candidate_values[base + offset] = rows[from + offset]
+						end
 					end
 					candidate_cell_values[cell_base + 4] = candidate_count + 1
 				end

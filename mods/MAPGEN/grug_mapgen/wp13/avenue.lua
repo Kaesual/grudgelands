@@ -888,11 +888,7 @@ local function loader(directory)
 			-- complete square, so different-height voxel stacks cannot overlap.
 			if not joint or joint.owner == spec.id then cells[#cells + 1] = cell end
 		end
-		table.sort(cells, function(a, b)
-			if a.z ~= b.z then return a.z < b.z end
-			if a.y ~= b.y then return a.y < b.y end
-			return a.x < b.x
-		end)
+		parts.sort_cells_zyx(cells)
 		return {
 			id = spec.id, axis = spec.axis, at = at, from = from, to = to,
 			width = width, cells = cells, lamps = lamps,
