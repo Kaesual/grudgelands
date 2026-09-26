@@ -638,6 +638,8 @@ return function(P)
 					if d2 < r * r then
 						local d = sqrt(d2)
 						if d < 1e-3 then dx, dz, d = 1, 0, 1 end
+						local r2 = clear(q, cx + dx / d * r, cz + dz / d * r)
+						if r2 > r then r = r2 end
 						out[q] = {cx + dx / d * r, cz + dz / d * r}
 					end
 				end
@@ -657,6 +659,9 @@ return function(P)
 					if d2 < r * r then
 						local d = sqrt(d2)
 						if d < 1e-3 then dx, dz, d = 1, 0, 1 end
+						-- the irregular radius once more at the pushed point
+						local r2 = clear(i, e.x + dx / d * r, e.z + dz / d * r)
+						if r2 > r then r = r2 end
 						out[i] = {e.x + dx / d * r, e.z + dz / d * r}
 						j0, j1 = j0 or i, i
 					elseif j0 and i > j1 + 6 then
@@ -1124,7 +1129,8 @@ return function(P)
 				-- level at the shore
 				if rv.mouth and ll - rv.mouth > stats.lake_raise then
 					stats.lake_raise = ll - rv.mouth
-				end				for q = n, 1, -1 do
+				end
+				for q = n, 1, -1 do
 					if dry[q] or lv[q] >= ll then break end
 					lv[q] = ll
 				end
@@ -1454,17 +1460,9 @@ return function(P)
 			levels(S, opts)
 		end
 		S.stats.settle_unconverged = settled and 0 or 1
-		troughs(S, opts)
-		-- A river's vertices well inside its source or end lake carry no
-		-- trough (a straight trench across the lake bed with straight
-		-- edges at the shore): the river starts at the shore; a river
-		-- ending in a lake keeps reaching into it a little further, so its
-		-- mouth joins the lake's water (a shorter one ends in a bank dam).
+		-- rivers that sink before their lake (settle_lakes), before the
+		-- troughs are sized for the final widths
 		local lake_ind = M.lake_indicator(S.mask, S.nx, S.nz)
-		local function inside(rv, i, lid, limit)
-			local id, m = lake_ind(rv.pts[i][1], rv.pts[i][2])
-			return id == lid and m >= limit
-		end
 		for _, rv in ipairs(S.rivers) do
 			local n = #rv.pts
 			-- a river that sinks before its lake: dry from where the lake's
@@ -1486,8 +1484,32 @@ return function(P)
 						i = i - 1
 					end
 					for q = i, n do rv.w[q] = 0 end
+					-- and narrows to W_MIN into its end, like a sink
+					local dd = 0
+					for q = i - 1, 1, -1 do
+						dd = dd + sqrt((rv.pts[q + 1][1] - rv.pts[q][1]) ^ 2 +
+							(rv.pts[q + 1][2] - rv.pts[q][2]) ^ 2)
+						if dd >= P.W_TAPER then break end
+						if rv.w[q] > 0 then
+							rv.w[q] = min(rv.w[q], P.W_MIN + (rv.w[q] - P.W_MIN) *
+								smoothstep(0, P.W_TAPER, dd))
+						end
+					end
 				end
 			end
+		end
+		troughs(S, opts)
+		-- A river's vertices well inside its source or end lake carry no
+		-- trough (a straight trench across the lake bed with straight
+		-- edges at the shore): the river starts at the shore; a river
+		-- ending in a lake keeps reaching into it a little further, so its
+		-- mouth joins the lake's water (a shorter one ends in a bank dam).
+		local function inside(rv, i, lid, limit)
+			local id, m = lake_ind(rv.pts[i][1], rv.pts[i][2])
+			return id == lid and m >= limit
+		end
+		for _, rv in ipairs(S.rivers) do
+			local n = #rv.pts
 			if rv.src_lake then
 				for i = 1, n - 1 do
 					if rv.w[i] > 0 and inside(rv, i, rv.src_lake, P.LAKE_TRIM) then
