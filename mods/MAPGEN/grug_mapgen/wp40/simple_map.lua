@@ -320,15 +320,23 @@ return function(zone_field)
 			end
 			local field = world.field
 			local field_sample = field.sample
-			-- One-entry memo: a column's classification and its biome lookup
-			-- usually follow each other and share one field sample.
-			local last_x, last_z, last_1, last_2, last_3, last_4, last_5
+			-- Direct-mapped memo of the field sample (a pure function of x, z):
+			-- a column's classification, its biome lookup, the terrain fitting's
+			-- neighbour tests and the exclusion shapes ask the same columns
+			-- again and again. Slot collisions simply recompute; the stored
+			-- x and z decide a hit exactly as the former one-entry memo did.
+			local MEMO_SLOTS = 65536
+			local memo_x, memo_z = {}, {}
+			local memo_1, memo_2, memo_3, memo_4, memo_5 = {}, {}, {}, {}, {}
 			local function sample(x, z)
-				if x ~= last_x or z ~= last_z then
-					last_1, last_2, last_3, last_4, last_5 = field_sample(x, z)
-					last_x, last_z = x, z
+				local slot = (x * 40503 + z) % MEMO_SLOTS
+				if memo_x[slot] ~= x or memo_z[slot] ~= z then
+					memo_1[slot], memo_2[slot], memo_3[slot], memo_4[slot],
+						memo_5[slot] = field_sample(x, z)
+					memo_x[slot], memo_z[slot] = x, z
 				end
-				return last_1, last_2, last_3, last_4, last_5
+				return memo_1[slot], memo_2[slot], memo_3[slot], memo_4[slot],
+					memo_5[slot]
 			end
 			local neighbors = world.neighbors
 			local levels = world.levels
