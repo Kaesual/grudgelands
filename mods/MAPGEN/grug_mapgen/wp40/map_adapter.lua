@@ -81,164 +81,6 @@ local function preserved_native_cave(opcode, policy, class_id, heightmap_value,
 		y <= heightmap_value
 end
 
--- Halo lighting, shared by this adapter's standalone light transaction and
--- r6_settlement's composed one (published as `adapter.halo_light`), so the two
--- paths cannot drift (Round 22 Phase 5b, plan D61).
---
--- Both transactions zero a light box (the changed owner nodes plus 15, clipped
--- to the emerged area), seed the sunlit row above it, run calc_lighting and
--- keep the recomputed light in the owner. Two gaps remain, closed here:
---
--- presun: calc_lighting's sun scan starts no higher than the owner's top (above
--- the water level) and stops at the first ignore node, so zeroed real nodes it
--- cannot reach would get decaying spread only: the slice above the owner (the
--- chunk above) and, in a halo column, every real segment below a still-fresh
--- (ignore) block. The sun goes straight down there first, through the final
--- content while nodes pass sunlight: in the slice from the seed row, below
--- every ignore-to-real transition whose first real node's ORIGINAL day bank is
--- 15, and, in a halo column holding ignore, from EVERY node whose original day
--- bank is 15. The rule for every seeded node is "day bank 15 => real sun":
--- light spread never reaches 15 (it decays, and no light source exceeds 14), a
--- lantern's night light does not count, and v7's sun scan reaches outside the
--- owner only its overtop row max_y + 1 over the owner's own columns, where 15
--- means the same open sky the owner's own scan assumes. Seeding only the first
--- node below ignore is not enough: v7 writes provisional terrain one row above
--- its chunk, into the still-fresh block above, so the first real node below
--- ignore can be stone that blocks the sun, while the planned air below it still carries its original 15
--- and would otherwise get decaying spread only (merge keeps the lower light,
--- so that darkness would stay). A stale 15 cannot brighten anything: merge
--- never lets the halo get brighter than its original light.
---
--- merge: outside the owner the original light stays, except inside the zeroed
--- box, where each bank takes the lower of original and recomputed. Before the
--- writer, v7 lit its TEMPORARY geometry and spread that light up to 14 nodes
--- into the halo, an already generated neighbour whenever one exists; the
--- recomputed light there is complete (presun, and the untouched layers beyond
--- the box still feed it), so the stale spread goes and nothing gets brighter
--- than it already was.
-local halo_light = {}
-
--- a: the caller's reused argument table
---   index_at(x, y, z), data, param2, light (the ORIGINAL light), ignore_cid,
---   passes_sun(cid, param2) -> boolean, ignore_marked(x, z) -> boolean (the box
---   column holds an ignore node), set_sun(x0, y0, z, x1, y1) (light 15 on that
---   box), box_min_x .. box_max_z, seed_y, max_y (the owner's top),
---   owner_min_x, owner_max_x, owner_min_z, owner_max_z, slice_sun (the sun scan
---   starts below the box top, so the slice above the owner needs the sun)
--- Returns the number of set_sun calls.
-function halo_light.presun(a)
-	local index_at, data, param2, light = a.index_at, a.data, a.param2, a.light
-	local ignore_cid, passes_sun, set_sun = a.ignore_cid, a.passes_sun, a.set_sun
-	local ignore_marked = a.ignore_marked
-	local box_min_x, box_min_y, box_max_x, box_max_y =
-		a.box_min_x, a.box_min_y, a.box_max_x, a.box_max_y
-	local seed_y, max_y, slice_sun = a.seed_y, a.max_y, a.slice_sun
-	local owner_min_x, owner_max_x = a.owner_min_x, a.owner_max_x
-	local owner_min_z, owner_max_z = a.owner_min_z, a.owner_max_z
-	local calls = 0
-	-- one pending run along x, extended while columns share a segment
-	local run_x0, run_x1, run_top, run_bottom, run_z
-	local function flush()
-		if run_x0 ~= nil then
-			set_sun(run_x0, run_bottom, run_z, run_x1, run_top)
-			calls = calls + 1
-			run_x0 = nil
-		end
-	end
-	local function emit(x, z, top, bottom)
-		if run_x0 ~= nil and run_z == z and run_x1 == x - 1 and run_top == top and
-				run_bottom == bottom then
-			run_x1 = x
-		else
-			flush()
-			run_x0, run_x1, run_top, run_bottom, run_z = x, x, top, bottom, z
-		end
-	end
-	for z = a.box_min_z, a.box_max_z do
-		local owner_row = z >= owner_min_z and z <= owner_max_z
-		for x = box_min_x, box_max_x do
-			local scan_all = not (owner_row and x >= owner_min_x and x <= owner_max_x) and
-				ignore_marked(x, z)
-			if slice_sun or scan_all then
-				local seed = index_at(x, seed_y, z)
-				local cid = data[seed]
-				local above_ignore = cid == ignore_cid
-				local sunny = slice_sun and not above_ignore and light[seed] % 16 == 15 and
-					passes_sun(cid, param2[seed])
-				-- without an ignore node the scan below the owner's top is
-				-- calc_lighting's own
-				local low = scan_all and box_min_y or max_y + 1
-				if low < box_min_y then low = box_min_y end
-				local top, bottom
-				for y = box_max_y, low, -1 do
-					local index = index_at(x, y, z)
-					local node = data[index]
-					if node == ignore_cid then
-						sunny, above_ignore = false, true
-					else
-						if not sunny and (above_ignore or scan_all) and
-								light[index] % 16 == 15 then
-							sunny = true
-						end
-						above_ignore = false
-						if sunny and passes_sun(node, param2[index]) then
-							if top == nil then top = y end
-							bottom = y
-						else
-							sunny = false
-						end
-					end
-					if not sunny and top ~= nil then
-						emit(x, z, top, bottom)
-						top = nil
-					end
-				end
-				if top ~= nil then emit(x, z, top, bottom) end
-			end
-		end
-		flush()
-	end
-	return calls
-end
-
--- a: index_at, final (recomputed light, rewritten in place), original,
---   emerged bounds emin_x .. emax_z, the light box box_min_x .. box_max_z and
---   the relit owner part owner_min_x .. owner_max_z (owner within the box)
-function halo_light.merge(a)
-	local index_at, final, original = a.index_at, a.final, a.original
-	local emin_x, emax_x = a.emin_x, a.emax_x
-	local box_min_x, box_min_y, box_min_z = a.box_min_x, a.box_min_y, a.box_min_z
-	local box_max_x, box_max_y, box_max_z = a.box_max_x, a.box_max_y, a.box_max_z
-	local owner_min_x, owner_min_y, owner_min_z =
-		a.owner_min_x, a.owner_min_y, a.owner_min_z
-	local owner_max_x, owner_max_y, owner_max_z =
-		a.owner_max_x, a.owner_max_y, a.owner_max_z
-	for z = a.emin_z, a.emax_z do
-		local z_owner = z >= owner_min_z and z <= owner_max_z
-		local z_box = z >= box_min_z and z <= box_max_z
-		for y = a.emin_y, a.emax_y do
-			local row_owner = z_owner and y >= owner_min_y and y <= owner_max_y
-			local row_box = z_box and y >= box_min_y and y <= box_max_y
-			local index = index_at(emin_x, y, z)
-			for x = emin_x, emax_x do
-				if not (row_owner and x >= owner_min_x and x <= owner_max_x) then
-					local old = original[index]
-					if row_box and x >= box_min_x and x <= box_max_x then
-						local new = final[index]
-						local old_day, new_day = old % 16, new % 16
-						local old_night, new_night = old - old_day, new - new_day
-						final[index] = (old_day < new_day and old_day or new_day) +
-							(old_night < new_night and old_night or new_night)
-					else
-						final[index] = old
-					end
-				end
-				index = index + 1
-			end
-		end
-	end
-end
-
 local function adapter_factory(allocator_factory)
 	local MAX_SAFE = 9007199254740991
 	local PLAN_SCHEMA = "grug_wp40_r5_column_run_plan_v1"
@@ -257,11 +99,8 @@ local function adapter_factory(allocator_factory)
 	local MAX_VOLUME = 112 * 112 * 112
 	local MAX_TARGET_SLOTS = 16 * 80
 	local TARGET_STRIDE = 13
-	local MAX_SEED_RUNS = 6400
 	local TARGET_CAPACITY = MAX_TARGET_SLOTS * TARGET_STRIDE
-	local SEED_COORD_OFFSET = 30928
-	local SEED_COORD_BASE = 62000
-	local SCRATCH_CAPACITY = TARGET_CAPACITY + MAX_SEED_RUNS
+	local SCRATCH_CAPACITY = TARGET_CAPACITY
 
 	local R_Y_MIN = 1
 	local R_Y_MAX = 2
@@ -322,20 +161,14 @@ local function adapter_factory(allocator_factory)
 	local M_PARAM2_DIRTY_COLUMNS = 8
 	local M_LIGHT_DIRTY_COLUMNS = 9
 	local M_LIQUID_DIRTY_COLUMNS = 10
-	local M_LIGHT_SEED_RUNS = 11
-	local M_PEAK_LIGHT_SEED_RUNS = 12
-	local M_VM_GET_EMERGED = 13
-	local M_VM_GET_DATA = 14
-	local M_VM_SET_DATA = 15
-	local M_VM_GET_PARAM2 = 16
-	local M_VM_SET_PARAM2 = 17
-	local M_VM_GET_LIGHT = 18
-	local M_VM_SET_LIGHTING = 19
-	local M_VM_CALC_LIGHTING = 20
-	local M_VM_SET_LIGHT_DATA = 21
-	local M_VM_UPDATE_LIQUIDS = 22
-	local M_METRICS_RESULTS = 23
-	local METRIC_COUNT = 23
+	local M_VM_GET_EMERGED = 11
+	local M_VM_GET_DATA = 12
+	local M_VM_SET_DATA = 13
+	local M_VM_GET_PARAM2 = 14
+	local M_VM_SET_PARAM2 = 15
+	local M_VM_UPDATE_LIQUIDS = 16
+	local M_METRICS_RESULTS = 17
+	local METRIC_COUNT = 17
 
 	local OP_PRIORITY = {
 		[5] = 3, [6] = 3, [7] = 3, [8] = 3, [9] = 3, [10] = 3,
@@ -583,7 +416,6 @@ local function adapter_factory(allocator_factory)
 		MAX_ROLE = MAX_ROLE,
 		MAX_RUNS = MAX_RUNS,
 		MAX_SAFE = MAX_SAFE,
-		MAX_SEED_RUNS = MAX_SEED_RUNS,
 		MAX_TARGET_SLOTS = MAX_TARGET_SLOTS,
 		MAX_VOLUME = MAX_VOLUME,
 		METRIC_COUNT = METRIC_COUNT,
@@ -593,21 +425,15 @@ local function adapter_factory(allocator_factory)
 		M_EMERGED_EXTERNAL = M_EMERGED_EXTERNAL,
 		M_HEIGHTMAP_ENTRIES = M_HEIGHTMAP_ENTRIES,
 		M_LIGHT_DIRTY_COLUMNS = M_LIGHT_DIRTY_COLUMNS,
-		M_LIGHT_SEED_RUNS = M_LIGHT_SEED_RUNS,
 		M_LIQUID_DIRTY_COLUMNS = M_LIQUID_DIRTY_COLUMNS,
 		M_METRICS_RESULTS = M_METRICS_RESULTS,
 		M_MODIFIED_VOXELS = M_MODIFIED_VOXELS,
 		M_PARAM2_DIRTY_COLUMNS = M_PARAM2_DIRTY_COLUMNS,
-		M_PEAK_LIGHT_SEED_RUNS = M_PEAK_LIGHT_SEED_RUNS,
 		M_PLANNED_COLUMNS = M_PLANNED_COLUMNS,
-		M_VM_CALC_LIGHTING = M_VM_CALC_LIGHTING,
 		M_VM_GET_DATA = M_VM_GET_DATA,
 		M_VM_GET_EMERGED = M_VM_GET_EMERGED,
-		M_VM_GET_LIGHT = M_VM_GET_LIGHT,
 		M_VM_GET_PARAM2 = M_VM_GET_PARAM2,
 		M_VM_SET_DATA = M_VM_SET_DATA,
-		M_VM_SET_LIGHTING = M_VM_SET_LIGHTING,
-		M_VM_SET_LIGHT_DATA = M_VM_SET_LIGHT_DATA,
 		M_VM_SET_PARAM2 = M_VM_SET_PARAM2,
 		M_VM_UPDATE_LIQUIDS = M_VM_UPDATE_LIQUIDS,
 		OP_POLICY = OP_POLICY,
@@ -656,8 +482,6 @@ local function adapter_factory(allocator_factory)
 		R_Y_MAX = R_Y_MAX,
 		R_Y_MIN = R_Y_MIN,
 		SCRATCH_CAPACITY = SCRATCH_CAPACITY,
-		SEED_COORD_BASE = SEED_COORD_BASE,
-		SEED_COORD_OFFSET = SEED_COORD_OFFSET,
 		TARGET_AIR = TARGET_AIR,
 		TARGET_CAPACITY = TARGET_CAPACITY,
 		TARGET_SOLID = TARGET_SOLID,
@@ -723,9 +547,6 @@ local function adapter_factory(allocator_factory)
 
 		local data_buffer = new_full_array("adapter_vm_data", K.MAX_VOLUME)
 		local param2_buffer = new_full_array("adapter_vm_param2", K.MAX_VOLUME)
-		local light_original = new_full_array("adapter_vm_light_original",
-			K.MAX_VOLUME)
-		local light_final = new_full_array("adapter_vm_light_final", K.MAX_VOLUME)
 		local dirty_content = new_full_array("adapter_dirty_content_columns",
 			K.MAX_COLUMNS)
 		local dirty_param2 = new_full_array("adapter_dirty_param2_columns",
@@ -738,22 +559,7 @@ local function adapter_factory(allocator_factory)
 			K.SCRATCH_CAPACITY)
 		local metric_values = new_full_array("adapter_metrics_state", K.METRIC_COUNT)
 
-		local adapter = allocator:new_map("adapter_api", 3)
-		local call_min = allocator:new_map("adapter_vm_call_min", 3)
-		local call_max = allocator:new_map("adapter_vm_call_max", 3)
-		local light_value = allocator:new_map("adapter_vm_light_value", 2)
-		-- halo lighting (halo_light above): a session-long sunlight cache per
-		-- (content, param2), per-column ignore stamps and reused arguments
-		local halo_sun_cache, halo_ignore_stamp, halo_stamp = {}, {}, 0
-		local halo_presun_args, halo_merge_args = {}, {}
-		allocator:map_put(call_min, "adapter_vm_call_min", "x", 0)
-		allocator:map_put(call_min, "adapter_vm_call_min", "y", 0)
-		allocator:map_put(call_min, "adapter_vm_call_min", "z", 0)
-		allocator:map_put(call_max, "adapter_vm_call_max", "x", 0)
-		allocator:map_put(call_max, "adapter_vm_call_max", "y", 0)
-		allocator:map_put(call_max, "adapter_vm_call_max", "z", 0)
-		allocator:map_put(light_value, "adapter_vm_light_value", "day", 0)
-		allocator:map_put(light_value, "adapter_vm_light_value", "night", 0)
+		local adapter = allocator:new_map("adapter_api", 2)
 
 		local ordinary_family = content_contract.ordinary_water_family_id
 		local river_family = content_contract.river_water_family_id
@@ -1044,13 +850,6 @@ local function adapter_factory(allocator_factory)
 			return result_a, result_b
 		end
 
-		local function vm_call3(method, metric_index, vm, first, second, third)
-			metric_values[metric_index] = metric_values[metric_index] + 1
-			local ok, result_a, result_b = pcall(method, vm, first, second, third)
-			if not ok then fail("fail_vm_contract", "VoxelManip method failed") end
-			return result_a, result_b
-		end
-
 		local function resolve_voxel(plan, run_base, y, min_y, heightmap_value,
 				old_cid, old_param2)
 			if old_cid == ignore_cid then
@@ -1146,48 +945,14 @@ local function adapter_factory(allocator_factory)
 			metric_values[index] = metric_values[index] + value
 		end
 
-		local function set_call_box(min_x, min_y, min_z, max_x, max_y, max_z)
-			call_min.x = min_x
-			call_min.y = min_y
-			call_min.z = min_z
-			call_max.x = max_x
-			call_max.y = max_y
-			call_max.z = max_z
-		end
-
-		-- halo_light callbacks: bound to the current transaction through these
-		-- upvalues (set right before presun), created once per instance
-		local halo_emerged_min, halo_ex, halo_vm, halo_set_lighting
-		local function halo_passes_sun(cid, p2)
-			local key = cid * 256 + p2
-			local value = halo_sun_cache[key]
-			if value == nil then
-				local _, _, _, _, _, _, _, sunlight = classify(cid, p2,
-					"fail_lighting_context")
-				value = sunlight and true or false
-				halo_sun_cache[key] = value
-			end
-			return value
-		end
-		local function halo_ignore_marked(x, z)
-			return halo_ignore_stamp[(z - halo_emerged_min.z) * halo_ex +
-				(x - halo_emerged_min.x) + 1] == halo_stamp
-		end
-		local function halo_set_sun(x0, y0, z, x1, y1)
-			set_call_box(x0, y0, z, x1, y1, z)
-			vm_call3(halo_set_lighting, K.M_VM_SET_LIGHTING, halo_vm,
-				light_value, call_min, call_max)
-		end
-
 		local function apply_impl(vm, minp, maxp, plan, plan_generation, call_mode,
 				lighting_owner)
-			if lighting_owner ~= nil and lighting_owner ~= "outer_transaction" then
+			-- R6 settles the immutable R5 projection plus successors and owns the
+			-- one light transaction (r6_settlement's halo.relight, Round 22 D65).
+			-- R5 runs only composed inside it, with lighting delegated.
+			if lighting_owner ~= "outer_transaction" then
 				fail("fail_call_mode", "lighting owner differs")
 			end
-			-- R6 settles the immutable R5 projection plus successors and validates
-			-- one final light context before committing. Standalone R5 owns its
-			-- complete light transaction; composition explicitly delegates it.
-			local owns_lighting = lighting_owner == nil
 			require_manifest(manifest)
 			local x_count, y_count, z_count, column_count =
 				validate_plan(plan, plan_generation, minp, maxp, call_mode)
@@ -1198,22 +963,14 @@ local function adapter_factory(allocator_factory)
 			local vm_get_emerged_area = vm.get_emerged_area
 			local vm_get_data = vm.get_data
 			local vm_get_param2_data = vm.get_param2_data
-			local vm_get_light_data = vm.get_light_data
 			local vm_set_data = vm.set_data
 			local vm_set_param2_data = vm.set_param2_data
-			local vm_set_lighting = vm.set_lighting
-			local vm_calc_lighting = vm.calc_lighting
-			local vm_set_light_data = vm.set_light_data
 			local vm_update_liquids = vm.update_liquids
 			if type(vm_get_emerged_area) ~= "function" or
 					type(vm_get_data) ~= "function" or
 					type(vm_get_param2_data) ~= "function" or
-					type(vm_get_light_data) ~= "function" or
 					type(vm_set_data) ~= "function" or
 					type(vm_set_param2_data) ~= "function" or
-					type(vm_set_lighting) ~= "function" or
-					type(vm_calc_lighting) ~= "function" or
-					type(vm_set_light_data) ~= "function" or
 					type(vm_update_liquids) ~= "function" then
 				fail("fail_vm_contract", "required VoxelManip method is absent")
 			end
@@ -1318,12 +1075,6 @@ local function adapter_factory(allocator_factory)
 			local param2_dirty_columns = 0
 			local light_dirty_columns = 0
 			local liquid_dirty_columns = 0
-			local light_min_x = K.OWNER_MAX
-			local light_min_y = K.OWNER_MAX
-			local light_min_z = K.OWNER_MAX
-			local light_max_x = K.OWNER_MIN
-			local light_max_y = K.OWNER_MIN
-			local light_max_z = K.OWNER_MIN
 
 			local function mark_column(array, column)
 				if array[column] == 0 then
@@ -1397,12 +1148,6 @@ local function adapter_factory(allocator_factory)
 									old_light_source ~= final_light_source) then
 								light_dirty_columns = light_dirty_columns +
 									mark_column(dirty_light, column)
-								if x < light_min_x then light_min_x = x end
-								if y < light_min_y then light_min_y = y end
-								if z < light_min_z then light_min_z = z end
-								if x > light_max_x then light_max_x = x end
-								if y > light_max_y then light_max_y = y end
-								if z > light_max_z then light_max_z = z end
 							end
 							local liquid_dirty = false
 							if dirty_liquid[column] == 0 and
@@ -1445,121 +1190,8 @@ local function adapter_factory(allocator_factory)
 				end
 			end
 
-			local seed_run_count = 0
-			local seed_y
-			local box_min_x, box_min_y, box_min_z
-			local box_max_x, box_max_y, box_max_z
-			if owns_lighting and light_dirty_columns > 0 then
-				box_min_x = math.max(light_min_x - 15, emerged_min.x)
-				box_min_y = math.max(light_min_y - 15, emerged_min.y)
-				box_min_z = math.max(light_min_z - 15, emerged_min.z)
-				box_max_x = math.min(light_max_x + 15, emerged_max.x)
-				box_max_y = math.min(light_max_y + 15, emerged_max.y - 1)
-				box_max_z = math.min(light_max_z + 15, emerged_max.z)
-				if box_min_x > box_max_x or box_min_y > box_max_y or
-						box_min_z > box_max_z then
-					fail("fail_lighting_context", "light box is empty")
-				end
-				local function precommit_light_state(x, y, z)
-					local index = buffer_index(x, y, z)
-					local old_cid = data_buffer[index]
-					local old_p2 = param2_buffer[index]
-					local final_cid = old_cid
-					local final_p2 = old_p2
-					if x >= minp.x and x <= maxp.x and y >= minp.y and
-							y <= maxp.y and z >= minp.z and z <= maxp.z then
-						local column = column_index(x, z)
-						local run_base = run_for_y(plan, column, y)
-						if run_base ~= nil then
-							final_cid, final_p2 = resolve_voxel(plan, run_base, y,
-								minp.y, heightmap[column], old_cid, old_p2)
-						end
-					end
-					if final_cid == ignore_cid then
-						return final_cid, final_p2, false
-					end
-					local _, _, _, _, _, _, _, sunlight = classify(final_cid,
-						final_p2, "fail_lighting_context")
-					return final_cid, final_p2, sunlight
-				end
-
-				-- Fresh border MapBlocks may remain CONTENT_IGNORE until a later
-				-- emerge. They are read-only context; only the owner must be complete.
-				halo_stamp = halo_stamp + 1
-				for z = box_min_z, box_max_z do
-					for y = box_min_y, box_max_y do
-						for x = box_min_x, box_max_x do
-							local final_cid = precommit_light_state(x, y, z)
-							if final_cid == ignore_cid then
-								if x >= minp.x and x <= maxp.x and
-										y >= minp.y and y <= maxp.y and
-										z >= minp.z and z <= maxp.z then
-									fail("fail_content_ignore", "required light context is ignore")
-								end
-								halo_ignore_stamp[(z - emerged_min.z) * ex +
-									(x - emerged_min.x) + 1] = halo_stamp
-							end
-						end
-					end
-				end
-				seed_y = box_max_y + 1
-				for z = box_min_z, box_max_z do
-					for x = box_min_x, box_max_x do
-						local final_cid = precommit_light_state(x, seed_y, z)
-						if final_cid == ignore_cid then
-							if x >= minp.x and x <= maxp.x and seed_y >= minp.y and
-									seed_y <= maxp.y and z >= minp.z and z <= maxp.z then
-								fail("fail_content_ignore", "owner overtop is ignore")
-							end
-						end
-					end
-				end
-				local returned_light = vm_call1(vm_get_light_data, K.M_VM_GET_LIGHT,
-					vm, light_original)
-				if not rawequal(returned_light, light_original) then
-					fail("fail_vm_contract", "get_light_data did not reuse buffer")
-				end
-				for index = 1, volume do
-					local value = light_original[index]
-					if type(value) ~= "number" or value % 1 ~= 0 or
-							value < 0 or value > 255 then
-						fail("fail_vm_contract", "light buffer scalar differs")
-					end
-				end
-				for z = box_min_z, box_max_z do
-					local run_start
-					for x = box_min_x, box_max_x + 1 do
-						local seeds = false
-						if x <= box_max_x then
-							local index = buffer_index(x, seed_y, z)
-							local final_cid, _, sunlight =
-								precommit_light_state(x, seed_y, z)
-							if final_cid ~= ignore_cid then
-								seeds = sunlight and light_original[index] == 15
-							end
-						end
-						if seeds and run_start == nil then
-							run_start = x
-						elseif not seeds and run_start ~= nil then
-							seed_run_count = seed_run_count + 1
-							if seed_run_count > K.MAX_SEED_RUNS then
-								fail("fail_lighting_context", "seed-run bound exceeded")
-							end
-							local x_start_slot = run_start + K.SEED_COORD_OFFSET
-							local x_end_slot = x - 1 + K.SEED_COORD_OFFSET
-							local z_slot = z + K.SEED_COORD_OFFSET
-							scratch[K.TARGET_CAPACITY + seed_run_count] =
-								(z_slot * K.SEED_COORD_BASE + x_end_slot) *
-								K.SEED_COORD_BASE + x_start_slot
-							run_start = nil
-						end
-					end
-				end
-			end
-
-			-- All semantic and lighting validation is now complete.  The replay
-			-- recomputes only already-validated scalar outcomes from immutable old
-			-- entries, while the packed seed list occupies the disjoint scratch tail.
+			-- All semantic validation is now complete.  The replay recomputes only
+			-- already-validated scalar outcomes from immutable old entries.
 			for z = minp.z, maxp.z do
 				for x = minp.x, maxp.x do
 					local column = column_index(x, z)
@@ -1596,90 +1228,6 @@ local function adapter_factory(allocator_factory)
 			end
 			if param2_dirty_columns > 0 then
 				vm_call1(vm_set_param2_data, K.M_VM_SET_PARAM2, vm, param2_buffer)
-			end
-			if owns_lighting and light_dirty_columns > 0 then
-				light_value.day = 0
-				light_value.night = 0
-				set_call_box(box_min_x, box_min_y, box_min_z,
-					box_max_x, box_max_y, box_max_z)
-				vm_call3(vm_set_lighting, K.M_VM_SET_LIGHTING, vm, light_value,
-					call_min, call_max)
-				light_value.day = 15
-				for run = 1, seed_run_count do
-					local packed = scratch[K.TARGET_CAPACITY + run]
-					local x_start_slot = packed % K.SEED_COORD_BASE
-					local quotient = (packed - x_start_slot) / K.SEED_COORD_BASE
-					local x_end_slot = quotient % K.SEED_COORD_BASE
-					local z_slot = (quotient - x_end_slot) / K.SEED_COORD_BASE
-					local seed_x_min = x_start_slot - K.SEED_COORD_OFFSET
-					local seed_x_max = x_end_slot - K.SEED_COORD_OFFSET
-					local seed_z = z_slot - K.SEED_COORD_OFFSET
-					set_call_box(seed_x_min, seed_y, seed_z,
-						seed_x_max, seed_y, seed_z)
-					vm_call3(vm_set_lighting, K.M_VM_SET_LIGHTING, vm, light_value,
-						call_min, call_max)
-				end
-				set_call_box(box_min_x, box_min_y, box_min_z,
-					box_max_x, box_max_y, box_max_z)
-				-- v7 lights its temporary geometry before this adapter replaces it.
-				-- Above water level neither that old overtop shadow nor a fresh ignore
-				-- halo is authoritative.  Start the sunlight scan no higher than the
-				-- completely authored owner while retaining the larger spread/restore box.
-				local propagate_shadow = box_max_y <= manifest.water_level
-				local calc_max_y = box_max_y
-				if not propagate_shadow and calc_max_y > maxp.y then
-					calc_max_y = maxp.y
-				end
-				-- The sun where the scan below cannot reach (halo_light.presun).
-				local a = halo_presun_args
-				a.index_at, a.data, a.param2, a.light = buffer_index, data_buffer,
-					param2_buffer, light_original
-				a.ignore_cid, a.passes_sun = ignore_cid, halo_passes_sun
-				a.ignore_marked, a.set_sun = halo_ignore_marked, halo_set_sun
-				a.box_min_x, a.box_min_y, a.box_min_z = box_min_x, box_min_y, box_min_z
-				a.box_max_x, a.box_max_y, a.box_max_z = box_max_x, box_max_y, box_max_z
-				a.seed_y, a.max_y = seed_y, maxp.y
-				a.owner_min_x, a.owner_max_x = minp.x, maxp.x
-				a.owner_min_z, a.owner_max_z = minp.z, maxp.z
-				a.slice_sun = not propagate_shadow and box_max_y > maxp.y
-				halo_emerged_min, halo_ex, halo_vm, halo_set_lighting = emerged_min, ex, vm,
-					vm_set_lighting
-				halo_light.presun(a)
-				set_call_box(box_min_x, box_min_y, box_min_z,
-					box_max_x, box_max_y, box_max_z)
-				call_max.y = calc_max_y
-				vm_call3(vm_calc_lighting, K.M_VM_CALC_LIGHTING, vm, call_min,
-					call_max, propagate_shadow)
-				local returned_final_light = vm_call1(vm_get_light_data,
-					K.M_VM_GET_LIGHT, vm, light_final)
-				if not rawequal(returned_final_light, light_final) then
-					fail("fail_vm_contract", "get_light_data did not reuse buffer")
-				end
-				for index = 1, volume do
-					local value = light_final[index]
-					if type(value) ~= "number" or value % 1 ~= 0 or
-							value < 0 or value > 255 then
-						fail("fail_vm_contract", "light buffer scalar differs")
-					end
-				end
-				local m = halo_merge_args
-				m.index_at, m.final, m.original = buffer_index, light_final, light_original
-				m.emin_x, m.emin_y, m.emin_z = emerged_min.x, emerged_min.y, emerged_min.z
-				m.emax_x, m.emax_y, m.emax_z = emerged_max.x, emerged_max.y, emerged_max.z
-				m.box_min_x, m.box_min_y, m.box_min_z = box_min_x, box_min_y, box_min_z
-				m.box_max_x, m.box_max_y, m.box_max_z = box_max_x, box_max_y, box_max_z
-				m.owner_min_x = math.max(box_min_x, minp.x)
-				m.owner_min_y = math.max(box_min_y, minp.y)
-				m.owner_min_z = math.max(box_min_z, minp.z)
-				m.owner_max_x = math.min(box_max_x, maxp.x)
-				m.owner_max_y = math.min(box_max_y, maxp.y)
-				m.owner_max_z = math.min(box_max_z, maxp.z)
-				halo_light.merge(m)
-				vm_call1(vm_set_light_data, K.M_VM_SET_LIGHT_DATA, vm, light_final)
-				metric_add(K.M_LIGHT_SEED_RUNS, seed_run_count)
-				if seed_run_count > metric_values[K.M_PEAK_LIGHT_SEED_RUNS] then
-					metric_values[K.M_PEAK_LIGHT_SEED_RUNS] = seed_run_count
-				end
 			end
 			if liquid_dirty_columns > 0 then
 				vm_call0(vm_update_liquids, K.M_VM_UPDATE_LIQUIDS, vm)
@@ -1736,17 +1284,11 @@ local function adapter_factory(allocator_factory)
 				param2_dirty_columns = metric_values[K.M_PARAM2_DIRTY_COLUMNS],
 				light_dirty_columns = metric_values[K.M_LIGHT_DIRTY_COLUMNS],
 				liquid_dirty_columns = metric_values[K.M_LIQUID_DIRTY_COLUMNS],
-				light_seed_runs = metric_values[K.M_LIGHT_SEED_RUNS],
-				peak_light_seed_runs = metric_values[K.M_PEAK_LIGHT_SEED_RUNS],
 				vm_get_emerged_area_calls = metric_values[K.M_VM_GET_EMERGED],
 				vm_get_data_calls = metric_values[K.M_VM_GET_DATA],
 				vm_set_data_calls = metric_values[K.M_VM_SET_DATA],
 				vm_get_param2_calls = metric_values[K.M_VM_GET_PARAM2],
 				vm_set_param2_calls = metric_values[K.M_VM_SET_PARAM2],
-				vm_get_light_calls = metric_values[K.M_VM_GET_LIGHT],
-				vm_set_lighting_calls = metric_values[K.M_VM_SET_LIGHTING],
-				vm_calc_lighting_calls = metric_values[K.M_VM_CALC_LIGHTING],
-				vm_set_light_data_calls = metric_values[K.M_VM_SET_LIGHT_DATA],
 				vm_update_liquids_calls = metric_values[K.M_VM_UPDATE_LIQUIDS],
 				metrics_result_table_allocations = metric_values[K.M_METRICS_RESULTS],
 			}
@@ -1754,7 +1296,6 @@ local function adapter_factory(allocator_factory)
 
 		allocator:map_put(adapter, "adapter_api", "apply", apply)
 		allocator:map_put(adapter, "adapter_api", "metrics", metrics)
-		allocator:map_put(adapter, "adapter_api", "halo_light", halo_light)
 		return adapter
 	end
 
