@@ -90,6 +90,8 @@ second step and a stop point, not a separate plan.
 | walls | new polyline wall raster (distance to polyline, walk level as a ≤ 1/column profile, turrets/gatehouses stamped as parts); retires the axis-run `wall.lua` for capitals |
 | `height.lua` capital fitting | keep the flat core + damping; drop the square 512 terraces and square blend (audit §1.3) |
 | lot tables, quadrant permutations | deleted |
+| load order (audit §2.1b) | today blueprints and `plot_rects` exist before the height session and feed civic-water capping; the planner runs after height/water/roads, so: civic lakes no longer look at plots (the planner keeps plots off civic water instead), the planner's canal is added to the height session as a second step in main, and both environments build the capital sources from the payload |
+| payload | new `capital_layout` field accepted by `r7_mapgen.lua` (like `road_layout`); manifest and preparation identity computed after the planner |
 
 ## 5. Gates, connectors, walls, water
 

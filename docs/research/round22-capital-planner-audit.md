@@ -113,6 +113,24 @@ obsolete/replaced.
 | Lazy build/release | `r7_settlement.lua:83-88, 1462-1500` | plot boxes | **A** | unchanged |
 | Kezamba lagoon raster | `wp13/kezamba_lagoon.lua:45-53` (frozen 30 354-column mask in ±256) | authored | **C** | stays with the cenote |
 
+### 2.1b Mapgen-internal constraints a per-seed layout must respect
+
+(From the background sweep of `wp40/`; V = read in code, I = inferred.)
+
+| Constraint | Where | Consequence |
+|---|---|---|
+| **Order cycle (I):** blueprints and their `plot_rects` are built by the `r7_runtime` factory **before** any height session and feed `height.lua`'s authored-lake capping (civic water keeps ≥ ~10 off plots) | `r7_runtime.lua:106-111, 192-232`; `height.lua:468-498` | a planner that runs after height, water and roads cannot feed plot rects back into height; civic water must stop depending on plots (plots avoid water instead) |
+| Emerge accepts only `{schema, manifest_sha256, full_seed, projection, water_layout}` | `r7_loader.lua:128-134`, `r7_mapgen.lua:31-48` | the capital layout needs its own payload field (the road lane adds `road_layout` the same way) |
+| Emerge must reproduce main's manifest SHA; manifest has one block per blueprint prefix (plot ids) with count, bounds, population, reach box, delta SHA | `r7_manifest.lua:130-142, 373-427, 507-535, 618-626` | plot ids and cells may stay; the overlay identity (runs with axis/at/from/to) changes per seed and must come from the payload in both environments |
+| Overlay identity = every run's id/axis/at/from/to + reach box; runs must stay inside ±266 | `r7_settlement.lua:662-745` | polyline streets need a different overlay kind or the road-module raster |
+| Capital centre column must carry `land_grade` with the anchor's feature id | `r7_anchor_roster.lua:46-59` | the core fitting stays |
+| Preparation identity hashes every plot box (offset + reference height) | `preparation_source.lua:27-76`; consumed by `grug_map/base.lua:331`, `grug_core/starts_preload.lua:71-92` | becomes per seed; fine for fresh worlds, but the planner must run before it |
+| D66 R6 planner cell cache reads static exclusions only | `r6_planner.lua:605-645`, `simple_map.lua:383-482` | any per-seed capital exclusion must be resolved before the first `build_cell` |
+| 704 blend square is a **static exclusion** for resources, ores, cultural candidates, strata/cave entrances, P9G plants, housing; the 532 square refuses decorations | `simple_map.lua:408-466, 536-567`; `r6_settlement.lua:784-844, 2660-2671`; `world_content.lua:70-77` | keeping the square (U4) keeps all of these unchanged; shrinking it moves them all |
+| Zone-field self-check: the 532 square must be in-zone and on land | `zone_field.lua:246-267, 722-729` | unchanged if the square stays |
+| Overlay memos per column persist for the session | `r7_settlement.lua:1245-1260, 1363-1372` | unbounded growth (I); worth fixing when streets move to the road sampler |
+| Nhal Veyr edge: z 1804 = centre + 304, i.e. 48 nodes into the square 256..352 blend band; next to a lake the "fitted column loses its water" rule (`height.lua:1141-1149`) likely turns the straight blend line into a straight shore (I) | `height.lua:879-888` | removing the square grade removes it |
+
 ### 2.2 Outside the mapgen (sampled sweep; see §6)
 
 | Consumer | Where | Reads | Class |
