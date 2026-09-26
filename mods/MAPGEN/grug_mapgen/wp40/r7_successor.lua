@@ -13,9 +13,14 @@
 -- losing ANY settlement -- or reordering them, which would reorder the manifest
 -- -- is what fails here.
 
-return function(p9g_config, anchor_config, settlement_configs, roster_keys, world_config)
+-- `road_writer` (optional, Round 22 Phase 4) dresses the road columns first,
+-- before P9G, world content, anchors and settlements (`road_writer.lua`).
+return function(p9g_config, anchor_config, settlement_configs, roster_keys, world_config,
+		road_writer)
 	local function fail(message) error("WP40 R7 successor: " .. message, 0) end
-	if type(p9g_config) ~= "table" or type(p9g_config.new) ~= "function" or
+	if (road_writer ~= nil and (type(road_writer) ~= "table" or
+			type(road_writer.dress) ~= "function")) or
+			type(p9g_config) ~= "table" or type(p9g_config.new) ~= "function" or
 			type(anchor_config) ~= "table" or type(anchor_config.new) ~= "function" or
 			type(settlement_configs) ~= "table" or #settlement_configs < 1 or
 			type(roster_keys) ~= "table" or #roster_keys ~= #settlement_configs then
@@ -87,6 +92,7 @@ return function(p9g_config, anchor_config, settlement_configs, roster_keys, worl
 		end
 		function tail.settle(self, context)
 			if not rawequal(self, tail) then fail("settle receiver differs") end
+			if road_writer then road_writer.dress(context) end
 			local p9g_context = {}
 			for _, key in ipairs({"schema", "plan", "generation", "call_mode",
 					"min_x", "min_y", "min_z", "max_x", "max_y", "max_z",

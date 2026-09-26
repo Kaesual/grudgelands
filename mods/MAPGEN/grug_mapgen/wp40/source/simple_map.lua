@@ -527,7 +527,6 @@ end
 
 source.claim_exclusion_recipes = {
 	{id="exclude_anchor_blend_v1",kind="anchor_blend_envelope",footprint_policy_id="centered_half_open_square_v1"},
-	{id="exclude_route_corridor_v1",kind="route_corridor",footprint_policy_id="route_class_corridor_v1"},
 	{id="exclude_planned_water_v1",kind="planned_water",footprint_policy_id="analytic_water_mask_v1"},
 	{id="exclude_coast_v1",kind="coast",footprint_policy_id="analytic_coast_mask_v1"},
 	{id="exclude_active_core_v1",kind="active_core",footprint_policy_id="active_hard_footprint_v1"},

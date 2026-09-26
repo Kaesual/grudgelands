@@ -459,6 +459,9 @@ local function zones_factory(dependencies)
 				type(height.functional_surface_values_at) ~= "function" or
 				type(height.inland_water_at) ~= "function" or
 				type(height.inland_exclusion_at) ~= "function" or
+				type(height.road_exclusion_at) ~= "function" or
+				type(height.road_column_at) ~= "function" or
+				type(height.road_near) ~= "function" or
 				type(height.river_water_in) ~= "function" or
 				type(height.hydrology_transition_values_at) ~= "function" or
 				type(height.selected_anchor_3d_by_id) ~= "function" or
@@ -953,8 +956,10 @@ local function zones_factory(dependencies)
 			if outside then return false end
 			if not horizontal.housing_eligible_at(x, z) then return false end
 			-- The reservation also keeps off inland water and its banks
-			-- (stale-rule R5); the scan runs only where water may lie.
+			-- (stale-rule R5); the scan runs only where water may lie. It keeps
+			-- off the roads too (their side slopes reach a few nodes out).
 			local radius = source.housing_policy.reservation_radius
+			if height.road_near(x, z, radius + 8) then return false end
 			if height.river_water_in(x - radius - 2, z - radius - 2,
 					x + radius + 2, z + radius + 2) then
 				for dz = -radius, radius do
@@ -1234,13 +1239,24 @@ local function zones_factory(dependencies)
 			-- Claim exclusions derived from the terrain overlays rather than
 			-- the static source shapes (stale-rule R5): "inland_water" on a wet
 			-- river or lake column, "water_bank" on dry land within two nodes
-			-- of one, else nil. Settlement maps both to `route_or_water` by
-			-- kind; Phase 4's road corridor joins here as one more kind.
+			-- of one, "road_corridor" on a road or its side slopes and a
+			-- narrow pad beside them (Round 22 Phase 4; it wins over the water
+			-- kinds, so nothing grows on a bridge or ford), else nil.
+			-- Settlement maps all three to `route_or_water` by kind.
 			function planner_source.overlay_exclusion_at(x, z)
 				local outside
 				x, z, outside = normalize_xz(x, z, "overlay exclusion query")
 				if outside then return nil end
-				return height.inland_exclusion_at(x, z)
+				return height.road_exclusion_at(x, z) or height.inland_exclusion_at(x, z)
+			end
+			-- The road record of a column for the writer's road dressing
+			-- (height.road_column_at): kind, road y, terrain y, class, pillar,
+			-- rail, wall base, road kind; nil off the roads.
+			function planner_source.road_column_at(x, z)
+				local outside
+				x, z, outside = normalize_xz(x, z, "road column query")
+				if outside then return nil end
+				return height.road_column_at(x, z)
 			end
 
 			local surface_caves = new_surface_cave_factory({

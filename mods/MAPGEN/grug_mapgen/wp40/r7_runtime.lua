@@ -1,10 +1,11 @@
 -- Shared production R7 assembly. Main and emerge load these same pure source
 -- bytes and independently rebuild the live content and semantic manifest.
 
--- `water_layout_text` is the serialized inland water layout main built and
--- handed over (emerge); nil in main, which builds it (plan D37).
+-- `water_layout_text` and `road_layout_text` are the serialized inland water
+-- and road layouts main built and handed over (emerge); nil in main, which
+-- builds them (plan D37).
 return function(core_api, wp40_directory, schematic_directory, projection, catalog,
-		water_layout_text)
+		water_layout_text, road_layout_text)
 	local function fail(message)
 		error("WP40 R7 runtime: " .. message, 0)
 	end
@@ -14,7 +15,8 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			type(wp40_directory) ~= "string" or wp40_directory == "" or
 			type(schematic_directory) ~= "string" or schematic_directory == "" or
 			type(projection) ~= "table" or type(catalog) ~= "table" or
-			(water_layout_text ~= nil and type(water_layout_text) ~= "string") then
+			(water_layout_text ~= nil and type(water_layout_text) ~= "string") or
+			(road_layout_text ~= nil and type(road_layout_text) ~= "string") then
 		fail("construction seam differs")
 	end
 
@@ -109,11 +111,16 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		-- filled below from the prepared settlement blueprints, before any
 		-- height session is built
 		plot_rects = {}}
+	-- Roads (Round 22 Phase 4): one layout per environment like the water,
+	-- routed once in main after it, deserialized in emerge.
+	local roads = {module = dofile(wp40_directory .. "/road_layout.lua"),
+		text = road_layout_text}
 	local height_module_factory = dofile(wp40_directory .. "/height.lua")
 	local function height_factory(dependencies)
 		local bound = {}
 		for key, value in pairs(dependencies) do bound[key] = value end
 		bound.water = water
+		bound.roads = roads
 		return height_module_factory(bound)
 	end
 	local zones_factory = dofile(wp40_directory .. "/zones.lua")
@@ -299,7 +306,8 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 				r7_anchor_roster_factory, content_set.anchors)
 			successor = r7_successor_factory(p9g_successor, anchor_successor,
 				settlement_configs, settlement_keys,
-				world_factory(world_catalog, content_set.p9g, habitat_registry))
+				world_factory(world_catalog, content_set.p9g, habitat_registry),
+				dofile(wp40_directory .. "/road_writer.lua")(core_api))
 		end
 		local authored_source = dofile(wp40_directory .. "/source/catalog.lua")
 		local consumer_payload = consumer_payload_factory(source,
@@ -561,6 +569,26 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			fail("water layout was never built")
 		end
 		return water.cache.sampler.polylines()
+	end
+	-- The serialized road layout of the last built session (main hands it to
+	-- emerge through ipc_set).
+	function module.road_layout_text()
+		if not roads.cache or type(roads.cache.text) ~= "string" then
+			fail("road layout was never built")
+		end
+		return roads.cache.text
+	end
+	-- Road and trail centrelines for drawing (the world map).
+	function module.road_polylines()
+		if not roads.cache then fail("road layout was never built") end
+		return roads.module.polylines(roads.module.deserialize(roads.cache.text))
+	end
+	-- Main only: the built layout (statistics, showcase spots, `connect`).
+	function module.road_layout()
+		return roads.cache and roads.cache.layout or nil
+	end
+	function module.road_module()
+		return roads.module
 	end
 	function module.build_authority(native_identities, expected_manifest_sha256)
 		return build(native_identities, expected_manifest_sha256, nil, true)

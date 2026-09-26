@@ -127,13 +127,51 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 	-- rebuilds it (plan D37: no cache file).
 	local payload = {schema = "grug_wp40_r7_ipc_v1",
 		manifest_sha256 = built.manifest.sha256, full_seed = built.full_seed,
-		projection = projection, water_layout = runtime.water_layout_text()}
+		projection = projection, water_layout = runtime.water_layout_text(),
+		road_layout = runtime.road_layout_text()}
+
+	-- Roads (Round 22 Phase 4): one log line with the construction figures
+	-- and one with a showcase spot per road feature (a serpentine, a gallery,
+	-- a short valley crossing, a bridge, the deepest cut, a junction, a
+	-- ford), so a playtest can find them in a fresh world; `/road_spots`
+	-- repeats the spots in chat.
+	local road_layout = runtime.road_layout()
+	local road_spot_lines, road_spots = {}, {}
+	if road_layout then
+		local st = road_layout.stats
+		local roads_n, trails_n = 0, 0
+		for _, road in ipairs(road_layout.roads) do
+			if road.kind == "trail" then trails_n = trails_n + 1 else roads_n = roads_n + 1 end
+		end
+		core_api.log("action", string.format("[grug_mapgen] roads: %d roads, %d trails " ..
+			"(%d of %d trail candidates), %d loops, built in %.1f s, payload %d bytes",
+			roads_n, trails_n, st.trails_built or 0, st.trails_tried or 0, st.loops or 0,
+			st.t_total or 0, #payload.road_layout))
+		road_spots = runtime.road_module().showcase(road_layout)
+		for _, spot in ipairs(road_spots) do
+			road_spot_lines[#road_spot_lines + 1] = string.format("%s (%s) at %d,%d,%d",
+				spot.name, spot.kind, spot.x, spot.y, spot.z)
+		end
+		core_api.log("action", "[grug_mapgen] road showcase: " ..
+			table.concat(road_spot_lines, "; "))
+	end
 
 	-- No fallible semantic validation follows this line.
 	native.register_ores(native_token)
 	core_api.ipc_set(IPC_KEY, payload)
 	core_api.register_mapgen_script(mapgen_modpath .. "/wp40/r7_mapgen.lua")
 	publish_authority()
+	if type(core_api.register_chatcommand) == "function" then
+		core_api.register_chatcommand("road_spots", {
+			description = "List one place per road feature (serpentine, gallery, " ..
+				"valley crossing, bridge, deepest cut, junction, ford)",
+			privs = {teleport = true},
+			func = function()
+				if #road_spot_lines == 0 then return true, "No roads in this world." end
+				return true, table.concat(road_spot_lines, "\n")
+			end,
+		})
+	end
 
 	return {schema = "grug_wp40_r7_loader_status_v1", enabled = true,
 		production_enabled = true, writer_count = 1,
@@ -144,5 +182,8 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 		-- The inland water layout for the world map: its text (cache key) and
 		-- river centrelines (the relief grid is too coarse for rivers).
 		water_layout_text = runtime.water_layout_text(),
-		river_polylines = runtime.river_polylines()}
+		river_polylines = runtime.river_polylines(),
+		-- The road network for the world map (Round 22 Phase 4).
+		road_layout_text = payload.road_layout,
+		road_polylines = runtime.road_polylines(), road_spots = road_spots}
 end
