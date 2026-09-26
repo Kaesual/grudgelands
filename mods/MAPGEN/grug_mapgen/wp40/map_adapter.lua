@@ -72,6 +72,157 @@ local function preserved_native_cave(opcode, policy, class_id, heightmap_value,
 		y <= heightmap_value
 end
 
+-- Halo lighting, shared by this adapter's standalone light transaction and
+-- r6_settlement's composed one (published as `adapter.halo_light`), so the two
+-- paths cannot drift (Round 22 Phase 5b, plan D61).
+--
+-- Both transactions zero a light box (the changed owner nodes plus 15, clipped
+-- to the emerged area), seed the sunlit row above it, run calc_lighting and
+-- keep the recomputed light in the owner. Two gaps remain, closed here:
+--
+-- presun: calc_lighting's sun scan starts no higher than the owner's top (above
+-- the water level) and stops at the first ignore node, so zeroed real nodes it
+-- cannot reach would get decaying spread only: the slice above the owner (the
+-- chunk above) and, in a halo column, every real segment below a still-fresh
+-- (ignore) block. The sun goes straight down there first, through the final
+-- content while nodes pass sunlight: in the slice from the seed row, and below
+-- every ignore-to-real transition, where the first real node's ORIGINAL day
+-- bank is 15. The guarantee is "day bank 15 => real sun": light spread never
+-- reaches 15 (it decays, and no light source exceeds 14), a lantern's night
+-- light does not count, and v7's sun scan reaches outside the owner only its
+-- overtop row max_y + 1 over the owner's own columns, where 15 means the same
+-- open sky the owner's own scan assumes. A stale 15 cannot brighten anything:
+-- merge never lets the halo get brighter than its original light.
+--
+-- merge: outside the owner the original light stays, except inside the zeroed
+-- box, where each bank takes the lower of original and recomputed. Before the
+-- writer, v7 lit its TEMPORARY geometry and spread that light up to 14 nodes
+-- into the halo, an already generated neighbour whenever one exists; the
+-- recomputed light there is complete (presun, and the untouched layers beyond
+-- the box still feed it), so the stale spread goes and nothing gets brighter
+-- than it already was.
+local halo_light = {}
+
+-- a: the caller's reused argument table
+--   index_at(x, y, z), data, param2, light (the ORIGINAL light), ignore_cid,
+--   passes_sun(cid, param2) -> boolean, ignore_marked(x, z) -> boolean (the box
+--   column holds an ignore node), set_sun(x0, y0, z, x1, y1) (light 15 on that
+--   box), box_min_x .. box_max_z, seed_y, max_y (the owner's top),
+--   owner_min_x, owner_max_x, owner_min_z, owner_max_z, slice_sun (the sun scan
+--   starts below the box top, so the slice above the owner needs the sun)
+-- Returns the number of set_sun calls.
+function halo_light.presun(a)
+	local index_at, data, param2, light = a.index_at, a.data, a.param2, a.light
+	local ignore_cid, passes_sun, set_sun = a.ignore_cid, a.passes_sun, a.set_sun
+	local ignore_marked = a.ignore_marked
+	local box_min_x, box_min_y, box_max_x, box_max_y =
+		a.box_min_x, a.box_min_y, a.box_max_x, a.box_max_y
+	local seed_y, max_y, slice_sun = a.seed_y, a.max_y, a.slice_sun
+	local owner_min_x, owner_max_x = a.owner_min_x, a.owner_max_x
+	local owner_min_z, owner_max_z = a.owner_min_z, a.owner_max_z
+	local calls = 0
+	-- one pending run along x, extended while columns share a segment
+	local run_x0, run_x1, run_top, run_bottom, run_z
+	local function flush()
+		if run_x0 ~= nil then
+			set_sun(run_x0, run_bottom, run_z, run_x1, run_top)
+			calls = calls + 1
+			run_x0 = nil
+		end
+	end
+	local function emit(x, z, top, bottom)
+		if run_x0 ~= nil and run_z == z and run_x1 == x - 1 and run_top == top and
+				run_bottom == bottom then
+			run_x1 = x
+		else
+			flush()
+			run_x0, run_x1, run_top, run_bottom, run_z = x, x, top, bottom, z
+		end
+	end
+	for z = a.box_min_z, a.box_max_z do
+		local owner_row = z >= owner_min_z and z <= owner_max_z
+		for x = box_min_x, box_max_x do
+			local scan_all = not (owner_row and x >= owner_min_x and x <= owner_max_x) and
+				ignore_marked(x, z)
+			if slice_sun or scan_all then
+				local seed = index_at(x, seed_y, z)
+				local cid = data[seed]
+				local above_ignore = cid == ignore_cid
+				local sunny = slice_sun and not above_ignore and light[seed] % 16 == 15 and
+					passes_sun(cid, param2[seed])
+				-- without an ignore node the scan below the owner's top is
+				-- calc_lighting's own
+				local low = scan_all and box_min_y or max_y + 1
+				if low < box_min_y then low = box_min_y end
+				local top, bottom
+				for y = box_max_y, low, -1 do
+					local index = index_at(x, y, z)
+					local node = data[index]
+					if node == ignore_cid then
+						sunny, above_ignore = false, true
+					else
+						if not sunny and above_ignore and light[index] % 16 == 15 then
+							sunny = true
+						end
+						above_ignore = false
+						if sunny and passes_sun(node, param2[index]) then
+							if top == nil then top = y end
+							bottom = y
+						else
+							sunny = false
+						end
+					end
+					if not sunny and top ~= nil then
+						emit(x, z, top, bottom)
+						top = nil
+					end
+				end
+				if top ~= nil then emit(x, z, top, bottom) end
+			end
+		end
+		flush()
+	end
+	return calls
+end
+
+-- a: index_at, final (recomputed light, rewritten in place), original,
+--   emerged bounds emin_x .. emax_z, the light box box_min_x .. box_max_z and
+--   the relit owner part owner_min_x .. owner_max_z (owner within the box)
+function halo_light.merge(a)
+	local index_at, final, original = a.index_at, a.final, a.original
+	local emin_x, emax_x = a.emin_x, a.emax_x
+	local box_min_x, box_min_y, box_min_z = a.box_min_x, a.box_min_y, a.box_min_z
+	local box_max_x, box_max_y, box_max_z = a.box_max_x, a.box_max_y, a.box_max_z
+	local owner_min_x, owner_min_y, owner_min_z =
+		a.owner_min_x, a.owner_min_y, a.owner_min_z
+	local owner_max_x, owner_max_y, owner_max_z =
+		a.owner_max_x, a.owner_max_y, a.owner_max_z
+	for z = a.emin_z, a.emax_z do
+		local z_owner = z >= owner_min_z and z <= owner_max_z
+		local z_box = z >= box_min_z and z <= box_max_z
+		for y = a.emin_y, a.emax_y do
+			local row_owner = z_owner and y >= owner_min_y and y <= owner_max_y
+			local row_box = z_box and y >= box_min_y and y <= box_max_y
+			local index = index_at(emin_x, y, z)
+			for x = emin_x, emax_x do
+				if not (row_owner and x >= owner_min_x and x <= owner_max_x) then
+					local old = original[index]
+					if row_box and x >= box_min_x and x <= box_max_x then
+						local new = final[index]
+						local old_day, new_day = old % 16, new % 16
+						local old_night, new_night = old - old_day, new - new_day
+						final[index] = (old_day < new_day and old_day or new_day) +
+							(old_night < new_night and old_night or new_night)
+					else
+						final[index] = old
+					end
+				end
+				index = index + 1
+			end
+		end
+	end
+end
+
 local function adapter_factory(allocator_factory)
 	local MAX_SAFE = 9007199254740991
 	local PLAN_SCHEMA = "grug_wp40_r5_column_run_plan_v1"
@@ -571,10 +722,14 @@ local function adapter_factory(allocator_factory)
 			K.SCRATCH_CAPACITY)
 		local metric_values = new_full_array("adapter_metrics_state", K.METRIC_COUNT)
 
-		local adapter = allocator:new_map("adapter_api", 2)
+		local adapter = allocator:new_map("adapter_api", 3)
 		local call_min = allocator:new_map("adapter_vm_call_min", 3)
 		local call_max = allocator:new_map("adapter_vm_call_max", 3)
 		local light_value = allocator:new_map("adapter_vm_light_value", 2)
+		-- halo lighting (halo_light above): a session-long sunlight cache per
+		-- (content, param2), per-column ignore stamps and reused arguments
+		local halo_sun_cache, halo_ignore_stamp, halo_stamp = {}, {}, 0
+		local halo_presun_args, halo_merge_args = {}, {}
 		allocator:map_put(call_min, "adapter_vm_call_min", "x", 0)
 		allocator:map_put(call_min, "adapter_vm_call_min", "y", 0)
 		allocator:map_put(call_min, "adapter_vm_call_min", "z", 0)
@@ -984,6 +1139,30 @@ local function adapter_factory(allocator_factory)
 			call_max.z = max_z
 		end
 
+		-- halo_light callbacks: bound to the current transaction through these
+		-- upvalues (set right before presun), created once per instance
+		local halo_emerged_min, halo_ex, halo_vm, halo_set_lighting
+		local function halo_passes_sun(cid, p2)
+			local key = cid * 256 + p2
+			local value = halo_sun_cache[key]
+			if value == nil then
+				local _, _, _, _, _, _, _, sunlight = classify(cid, p2,
+					"fail_lighting_context")
+				value = sunlight and true or false
+				halo_sun_cache[key] = value
+			end
+			return value
+		end
+		local function halo_ignore_marked(x, z)
+			return halo_ignore_stamp[(z - halo_emerged_min.z) * halo_ex +
+				(x - halo_emerged_min.x) + 1] == halo_stamp
+		end
+		local function halo_set_sun(x0, y0, z, x1, y1)
+			set_call_box(x0, y0, z, x1, y1, z)
+			vm_call3(halo_set_lighting, K.M_VM_SET_LIGHTING, halo_vm,
+				light_value, call_min, call_max)
+		end
+
 		local function apply_impl(vm, minp, maxp, plan, plan_generation, call_mode,
 				lighting_owner)
 			if lighting_owner ~= nil and lighting_owner ~= "outer_transaction" then
@@ -1290,15 +1469,19 @@ local function adapter_factory(allocator_factory)
 
 				-- Fresh border MapBlocks may remain CONTENT_IGNORE until a later
 				-- emerge. They are read-only context; only the owner must be complete.
+				halo_stamp = halo_stamp + 1
 				for z = box_min_z, box_max_z do
 					for y = box_min_y, box_max_y do
 						for x = box_min_x, box_max_x do
 							local final_cid = precommit_light_state(x, y, z)
-							if final_cid == ignore_cid and
-									x >= minp.x and x <= maxp.x and
-									y >= minp.y and y <= maxp.y and
-									z >= minp.z and z <= maxp.z then
-								fail("fail_content_ignore", "required light context is ignore")
+							if final_cid == ignore_cid then
+								if x >= minp.x and x <= maxp.x and
+										y >= minp.y and y <= maxp.y and
+										z >= minp.z and z <= maxp.z then
+									fail("fail_content_ignore", "required light context is ignore")
+								end
+								halo_ignore_stamp[(z - emerged_min.z) * ex +
+									(x - emerged_min.x) + 1] = halo_stamp
 							end
 						end
 					end
@@ -1431,6 +1614,23 @@ local function adapter_factory(allocator_factory)
 				if not propagate_shadow and calc_max_y > maxp.y then
 					calc_max_y = maxp.y
 				end
+				-- The sun where the scan below cannot reach (halo_light.presun).
+				local a = halo_presun_args
+				a.index_at, a.data, a.param2, a.light = buffer_index, data_buffer,
+					param2_buffer, light_original
+				a.ignore_cid, a.passes_sun = ignore_cid, halo_passes_sun
+				a.ignore_marked, a.set_sun = halo_ignore_marked, halo_set_sun
+				a.box_min_x, a.box_min_y, a.box_min_z = box_min_x, box_min_y, box_min_z
+				a.box_max_x, a.box_max_y, a.box_max_z = box_max_x, box_max_y, box_max_z
+				a.seed_y, a.max_y = seed_y, maxp.y
+				a.owner_min_x, a.owner_max_x = minp.x, maxp.x
+				a.owner_min_z, a.owner_max_z = minp.z, maxp.z
+				a.slice_sun = not propagate_shadow and box_max_y > maxp.y
+				halo_emerged_min, halo_ex, halo_vm, halo_set_lighting = emerged_min, ex, vm,
+					vm_set_lighting
+				halo_light.presun(a)
+				set_call_box(box_min_x, box_min_y, box_min_z,
+					box_max_x, box_max_y, box_max_z)
 				call_max.y = calc_max_y
 				vm_call3(vm_calc_lighting, K.M_VM_CALC_LIGHTING, vm, call_min,
 					call_max, propagate_shadow)
@@ -1446,25 +1646,19 @@ local function adapter_factory(allocator_factory)
 						fail("fail_vm_contract", "light buffer scalar differs")
 					end
 				end
-				local owner_light_min_x = math.max(box_min_x, minp.x)
-				local owner_light_min_y = math.max(box_min_y, minp.y)
-				local owner_light_min_z = math.max(box_min_z, minp.z)
-				local owner_light_max_x = math.min(box_max_x, maxp.x)
-				local owner_light_max_y = math.min(box_max_y, maxp.y)
-				local owner_light_max_z = math.min(box_max_z, maxp.z)
-				for z = emerged_min.z, emerged_max.z do
-					for y = emerged_min.y, emerged_max.y do
-						local index = buffer_index(emerged_min.x, y, z)
-						for x = emerged_min.x, emerged_max.x do
-							if x < owner_light_min_x or x > owner_light_max_x or
-									y < owner_light_min_y or y > owner_light_max_y or
-									z < owner_light_min_z or z > owner_light_max_z then
-								light_final[index] = light_original[index]
-							end
-							index = index + 1
-						end
-					end
-				end
+				local m = halo_merge_args
+				m.index_at, m.final, m.original = buffer_index, light_final, light_original
+				m.emin_x, m.emin_y, m.emin_z = emerged_min.x, emerged_min.y, emerged_min.z
+				m.emax_x, m.emax_y, m.emax_z = emerged_max.x, emerged_max.y, emerged_max.z
+				m.box_min_x, m.box_min_y, m.box_min_z = box_min_x, box_min_y, box_min_z
+				m.box_max_x, m.box_max_y, m.box_max_z = box_max_x, box_max_y, box_max_z
+				m.owner_min_x = math.max(box_min_x, minp.x)
+				m.owner_min_y = math.max(box_min_y, minp.y)
+				m.owner_min_z = math.max(box_min_z, minp.z)
+				m.owner_max_x = math.min(box_max_x, maxp.x)
+				m.owner_max_y = math.min(box_max_y, maxp.y)
+				m.owner_max_z = math.min(box_max_z, maxp.z)
+				halo_light.merge(m)
 				vm_call1(vm_set_light_data, K.M_VM_SET_LIGHT_DATA, vm, light_final)
 				metric_add(K.M_LIGHT_SEED_RUNS, seed_run_count)
 				if seed_run_count > metric_values[K.M_PEAK_LIGHT_SEED_RUNS] then
@@ -1544,6 +1738,7 @@ local function adapter_factory(allocator_factory)
 
 		allocator:map_put(adapter, "adapter_api", "apply", apply)
 		allocator:map_put(adapter, "adapter_api", "metrics", metrics)
+		allocator:map_put(adapter, "adapter_api", "halo_light", halo_light)
 		return adapter
 	end
 

@@ -421,14 +421,22 @@ local function height_factory(dependencies)
 		--   bank_weight optional function(x, z) -> 0..1 scaling that envelope
 		--             (0 keeps the ground, e.g. a civic core)
 		-- Ordinary water (`default:water_source`), sealed like every inland water.
-		-- A `river` row (civic canals) is river water instead ("river:<id>") and
-		-- is a chain of level REACHES: reach_of(x, z) -> 1..reach_count, and
-		-- reach_links {{a, b}, ...} the reaches that touch. With shore_level
-		-- each reach starts at the lowest fitted ground of its own bank ring;
-		-- then the higher of two linked reaches is lowered until they differ by
-		-- at most step_max (default 1), or by step_max + 1 where the lower
-		-- step would cut the higher reach more than step_cut (default 2) below
-		-- its own ground. The steps are water-water rapids like a river's.
+		-- A `river` row (civic canals) is river water instead ("river:<id>"), one
+		-- level everywhere (plan D58). Two options serve canals:
+		--   balanced  with shore_level: the lowest bank ground alone leaves a
+		--             canal dry where the ground rises along it, so the level sits
+		--             halfway between the lowest bank ground and the highest
+		--             fitted ground inside the water (m >= 0.5, sampled like the
+		--             bank ring): the rim band, hard at the level, stands at most
+		--             that far above the lowest bank, and the carved bed (depth)
+		--             keeps the trough wet where the ground is highest
+		--   rim_max   with balanced: the level stands at most this many nodes
+		--             above the lowest bank ground (a bound on the raised rim;
+		--             the carve deepens instead)
+		--   natural_clear  the signed distance is capped at (distance to natural
+		--             inland water - natural_clear), from the layout's bank
+		--             distance: where a river or lake comes close the row ends
+		--             in its sealed rim instead of touching water of another level
 		local authored, authored_grid = {}, {}
 		for index, row in ipairs(water_dependency.authored or {}) do
 			local sources = (row.level ~= nil and 1 or 0) +
@@ -438,16 +446,17 @@ local function height_factory(dependencies)
 					type(row.min_x) ~= "number" or type(row.max_x) ~= "number" or
 					type(row.min_z) ~= "number" or type(row.max_z) ~= "number" or
 					sources ~= 1 or (row.bank ~= nil and type(row.bank) ~= "table") or
-				(row.river and (not row.shore_level or
-					type(row.reach_of) ~= "function" or
-					type(row.reach_count) ~= "number" or
-					type(row.reach_links) ~= "table")) then
+					(row.balanced ~= nil and (not row.shore_level or
+						row.balanced ~= true)) or
+					(row.rim_max ~= nil and (not row.balanced or
+						type(row.rim_max) ~= "number" or row.rim_max < 0 or
+						row.rim_max % 1 ~= 0)) or
+					(row.natural_clear ~= nil and type(row.natural_clear) ~= "number") then
 				fail("authored lake row differs at " .. index)
 			end
 			local e = {name = (row.river and "river:" or "lake:") .. row.id,
 				kind = row.river and "river" or "lake", row = row,
-				reach_of = row.river and row.reach_of or nil,
-				indicator = row.indicator,
+				indicator = row.indicator, natural_clear = row.natural_clear,
 				min_x = row.min_x, max_x = row.max_x, min_z = row.min_z,
 				max_z = row.max_z, level = row.level, depth = row.depth,
 				bed_step = row.bed_step, bank = row.bank,
@@ -599,7 +608,7 @@ local function height_factory(dependencies)
 			-- on it (water, wkind, wid); final stage: terrain ... feature.
 			block = {key = key, class = {}, owner = {}, natural = {}, carve = {},
 				nwater = {}, nkind = {}, nid = {}, bank_d = {}, bank_y = {},
-				bank_md = {},
+				bank_md = {}, nbank = {},
 				near = {}, pre = {}, pkind = {}, pfeature = {}, water = {},
 				wkind = {}, wid = {},
 				terrain = {}, kind = {}, surface = {}, feature = {}, excl = {}}
@@ -648,6 +657,9 @@ local function height_factory(dependencies)
 					block.bank_d[slot], block.bank_y[slot] = bank_d or false,
 						bank_y or false
 					block.bank_md[slot] = bank_md or false
+					-- the unscaled distance to natural water (water.column's
+					-- fifth return), which authored lakes never overwrite
+					block.nbank[slot] = bank_d or false
 					block.near[slot] = bank_d ~= nil or authored_near(x, z)
 				else
 					natural = floor(field.height_at(x, z, false))
@@ -958,78 +970,67 @@ local function height_factory(dependencies)
 		-- support edge m = 0 lies at 0.5 * LAKE_PROXY), so it never ends in a
 		-- step along the indicator's outline.
 		local BANK_FADE0, BANK_FADE1 = 0.3 * WP.LAKE_PROXY, 0.5 * WP.LAKE_PROXY
+		-- A row's indicator with its natural_clear cap. The distance used is in
+		-- nodes from the nearest natural water edge (0 on a wet natural column;
+		-- nil = far, beyond the layout's reach): today the layout's own bank
+		-- distance (`nbank`, water.column's fifth return): for rivers the
+		-- distance beyond the wet limit (never an overestimate), for lakes the
+		-- indicator proxy. A layout that changes that value must keep
+		-- handing this rule the unscaled distance.
+		local function natural_capped(e, x, z, m)
+			local clear = e.natural_clear
+			if not clear or m <= 0 then return m end
+			natural_height_at(x, z)
+			local block, slot = column(x, z)
+			local d = block.nwater[slot] and 0 or block.nbank[slot]
+			if not d then return m end
+			local cap = 0.5 + (d - clear) / WP.LAKE_PROXY
+			if m > cap then return cap < 0 and 0 or cap end
+			return m
+		end
 		-- A `shore_level` lake's surface: the lowest fitted ground on its bank
-		-- ring (natural water columns left out), resolved on the first query
-		-- that needs it. A pure function of the seed, so every session agrees.
+		-- ring (natural water columns left out), for a `balanced` row raised
+		-- halfway to the highest fitted ground inside the water, resolved on
+		-- the first query that needs it. A pure function of the seed, so every
+		-- session agrees.
 		local function resolve_shore_level(e)
-			local low, lows = nil, {}
+			local balanced = e.row.balanced
+			local low, high
 			for z = e.min_z, e.max_z, 2 do
 				for x = e.min_x, e.max_x, 2 do
 					local m = e.indicator(x, z)
-					if type(m) == "number" and m >= 0.4 and m < 0.5 and
+					if type(m) == "number" and m >= 0.4 and
 							class_owner_at(x, z) == LAND then
-						local natural = natural_height_at(x, z)
-						local block, slot = column(x, z)
-						if not block.nwater[slot] then
-							local y = fit_land(x, z, block.owner[slot] or nil, natural)
-							if low == nil or y < low then low = y end
-							if e.reach_of then
-								local k = e.reach_of(x, z)
-								if lows[k] == nil or y < lows[k] then lows[k] = y end
+						m = natural_capped(e, x, z, m)
+						if m >= 0.4 and (m < 0.5 or balanced) then
+							local natural = natural_height_at(x, z)
+							local block, slot = column(x, z)
+							if not block.nwater[slot] then
+								local y = fit_land(x, z, block.owner[slot] or nil, natural)
+								if m < 0.5 then
+									if low == nil or y < low then low = y end
+								elseif high == nil or y > high then
+									high = y
+								end
 							end
 						end
 					end
 				end
 			end
 			if low == nil then fail("authored lake has no bank: " .. e.name) end
-			local offset = e.row.level_offset or 0
-			e.level = low + offset
-			if e.reach_of then
-				-- reaches without a bank sample take a linked neighbour's
-				local row, levels, ground = e.row, {}, {}
-				for k = 1, row.reach_count do ground[k] = lows[k] end
-				local filled, passes = false, 0
-				while not filled do
-					filled, passes = true, passes + 1
-					if passes > row.reach_count then
-						fail("authored river reach without a bank: " .. e.name)
-					end
-					for _, link in ipairs(row.reach_links) do
-						local a, b = link[1], link[2]
-						if ground[a] == nil and ground[b] ~= nil then ground[a] = ground[b] end
-						if ground[b] == nil and ground[a] ~= nil then ground[b] = ground[a] end
-					end
-					for k = 1, row.reach_count do
-						if ground[k] == nil then filled = false end
-					end
-				end
-				for k = 1, row.reach_count do levels[k] = ground[k] + offset end
-				local step, cut = row.step_max or 1, row.step_cut or 2
-				local changed = true
-				while changed do
-					changed = false
-					for _, link in ipairs(row.reach_links) do
-						for side = 1, 2 do
-							local hi, lo = link[side], link[3 - side]
-							local allowed = step
-							if ground[hi] + offset - (levels[lo] + step) > cut then
-								allowed = step + 1
-							end
-							if levels[hi] > levels[lo] + allowed then
-								levels[hi] = levels[lo] + allowed
-								changed = true
-							end
-						end
-					end
-				end
-				e.levels = levels
+			local level = low
+			if balanced and high ~= nil and high > low then
+				local rise = floor((high - low) / 2)
+				local rim_max = e.row.rim_max
+				if rim_max and rise > rim_max then rise = rim_max end
+				level = low + rise
 			end
+			e.level = level + (e.row.level_offset or 0)
 			return e.level
 		end
 		-- The surface of an authored water body at a column.
 		local function authored_level(e, x, z)
 			if e.level == nil then resolve_shore_level(e) end
-			if e.levels then return e.levels[e.reach_of(x, z)] end
 			return e.level
 		end
 		-- Also returns the bank inputs of the nearest authored lake (the same
@@ -1056,6 +1057,7 @@ local function height_factory(dependencies)
 						local cap = 0.5 + (plot_d - PLOT_KEEP) / WP.LAKE_PROXY
 						if m > cap then m = cap < 0 and 0 or cap end
 					end
+					m = natural_capped(e, x, z, m)
 				end
 				ms[index] = m
 				if m > 0 then
