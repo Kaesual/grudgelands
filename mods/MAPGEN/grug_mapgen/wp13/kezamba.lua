@@ -926,11 +926,7 @@ local function loader(directory)
 				cells[#cells + 1] = cell
 			end
 		end
-		table.sort(cells, function(a, b)
-			if a.z ~= b.z then return a.z < b.z end
-			if a.y ~= b.y then return a.y < b.y end
-			return a.x < b.x
-		end)
+		parts.sort_cells_zyx(cells)
 		local light_names = {[timber.node("light_post")] = true,
 			[timber.node("light_wall")] = true,
 			[timber.node("light_indoor")] = true}

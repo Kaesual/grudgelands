@@ -626,6 +626,46 @@ function Buffer:cells()
 	return self.order, self.count
 end
 
+-- Sort a cell list in place into the canonical z, then y, then x order --
+-- the order every composition hands the settlement seam. Each cell gets one
+-- packed number and the numbers are sorted without a Lua comparator (a
+-- comparator costs a C-to-Lua call per comparison, which made the sorts a
+-- sixth of blueprint construction). With distinct integer positions that is
+-- exactly the order the comparator gives; anything else (a duplicate
+-- position, a non-integer or out-of-range coordinate) takes the comparator
+-- sort itself, so even an invalid list comes out as it always did.
+local SORT_BIAS, SORT_SPAN = 32768, 65536
+local function zyx_less(a, b)
+	if a.z ~= b.z then return a.z < b.z end
+	if a.y ~= b.y then return a.y < b.y end
+	return a.x < b.x
+end
+function M.sort_cells_zyx(cells)
+	local count = #cells
+	local keys, by_key = {}, {}
+	for index = 1, count do
+		local cell = cells[index]
+		local x, y, z = cell.x, cell.y, cell.z
+		if type(x) ~= "number" or type(y) ~= "number" or type(z) ~= "number" or
+				x % 1 ~= 0 or y % 1 ~= 0 or z % 1 ~= 0 or
+				x <= -SORT_BIAS or x >= SORT_BIAS or y <= -SORT_BIAS or
+				y >= SORT_BIAS or z <= -SORT_BIAS or z >= SORT_BIAS then
+			table.sort(cells, zyx_less)
+			return
+		end
+		local key = ((z + SORT_BIAS) * SORT_SPAN + (y + SORT_BIAS)) * SORT_SPAN +
+			(x + SORT_BIAS)
+		if by_key[key] then
+			table.sort(cells, zyx_less)
+			return
+		end
+		by_key[key] = cell
+		keys[index] = key
+	end
+	table.sort(keys)
+	for index = 1, count do cells[index] = by_key[keys[index]] end
+end
+
 -- ---------------------------------------------------------------------------
 -- placing a whole part
 -- ---------------------------------------------------------------------------

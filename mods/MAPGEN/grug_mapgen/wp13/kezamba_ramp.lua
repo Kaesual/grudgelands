@@ -290,11 +290,7 @@ local function loader(directory)
 			end
 		end
 
-		table.sort(kept, function(a, b)
-			if a.z ~= b.z then return a.z < b.z end
-			if a.y ~= b.y then return a.y < b.y end
-			return a.x < b.x
-		end)
+		parts.sort_cells_zyx(kept)
 		piece.cells = kept
 		piece.lamps = lamps
 		piece.ramp_columns = #band_columns

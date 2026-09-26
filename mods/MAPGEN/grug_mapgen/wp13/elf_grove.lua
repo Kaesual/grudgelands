@@ -527,11 +527,7 @@ local function loader(directory)
 		local order, count = buf:cells()
 		local cells = {}
 		for index = 1, count do cells[index] = order[index] end
-		table.sort(cells, function(a, b)
-			if a.z ~= b.z then return a.z < b.z end
-			if a.y ~= b.y then return a.y < b.y end
-			return a.x < b.x
-		end)
+		parts.sort_cells_zyx(cells)
 		-- `lamps` is the LIST of lamp standards a road run publishes, and the
 		-- seam's own arbitration reads it (a standard that falls in another
 		-- run's carriageway is dropped). This run plants none of that kind, so
