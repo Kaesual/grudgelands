@@ -732,6 +732,23 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   order-dependent content change is 1-node air slivers from v7 noise tunnels
   in the top row (y = 47/127) of an already generated chunk below; harmless
   underground, not observed on a bed seal; repair (B3) deferred (D65).
+- **Chunk-edge light, as built (D65, merged `eb5f19e3`, 2026-09-26):**
+  `halo.relight` in `r6_settlement.lua` (R5's unreachable standalone light
+  transaction and `halo_light` removed from `map_adapter.lua`); B1 reads
+  "open sky" as terrain, water and bridge deck not above the owner's top;
+  sunlit light sources at a sun entry defer to the node below. Evidence:
+  content and param2 unchanged vs main (six boxes, 55 M nodes); order probe
+  0/0 in all orders; full lighting check windows 0/0 in every order (checker
+  was 49 too bright), census 8/0 = flowing-water artefacts; light transaction
+  ~11 ms instead of ~38 ms per chunk. Engine residue, identical on main:
+  after a block reload, `update_block_border_lighting` relights some block
+  faces one darker (e.g. 469 river nodes −1 in a Highcourt box; gone with
+  unloading off). Known limits (review): chunks whose writer changes nothing
+  light-relevant keep v7's native light (mostly deep pure-v7 chunks); B2
+  also covers a newly shaded column whose bottom shell keeps a stored 15;
+  B1 predicts surface-cave mouths as closed until the chunk above exists.
+  Lighting-check targets `river_cross47` and `river_rapids` are stale since
+  W3b moved the rivers (tool note, not re-targeted).
 - Afterwards, the general runtime cleanup round (D4).
 
 ### Orchestration and compaction points
