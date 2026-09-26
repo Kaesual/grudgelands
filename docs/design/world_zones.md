@@ -458,11 +458,16 @@ replaced; git history before this rewrite records that model.
   for each capital's protected civic core (the core's corner distance plus a
   margin, about 100-130 nodes, with an irregular edge); a capital's own lake
   (Lethariel's crown lake, Kezamba's cenote) keeps natural water off within
-  its bounds. Rivers and lakes may cross the rest of a capital's reserved
-  area: plots or lanes standing in water there are allowed until the capital
-  planner (plan D60) builds the capital around its water, and the capital's
-  terrace grading leaves a river's trough untouched. Civic water and
-  Moonfall's crescent lake are authored lakes in the same format.
+  its bounds. Water routes around a start's or a lake's keep-out; a capital
+  core's keep-out is soft: the drainage runs through the reserved area as the
+  terrain says and the river bends past the core along a smooth lens
+  stretched along the flow, so it does not circle the core. Rivers and lakes
+  may cross the rest of a capital's reserved area: plots or lanes standing in
+  water there are allowed until the capital planner (plan D60) builds the
+  capital around its water, and the capital's and a start's terrace grading
+  leave a river's trough untouched. A river starts and ends at the shore of
+  its lake (no trough across the lake bed). Civic water and Moonfall's
+  crescent lake are authored lakes in the same format.
 - **Civic water (Round 22, D26, D34, D42).** Authored lakes sit on the fitted
   terrain (`wp40/water_authored.lua`): the Kezamba cenote and the Lethariel
   crown lake two nodes below their civic pads, inside the civic core exactly
