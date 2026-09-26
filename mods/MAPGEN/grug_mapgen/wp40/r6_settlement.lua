@@ -699,14 +699,12 @@ local function settlement_factory()
 		local planner_stable_refs = dependencies.planner_stable_refs
 		if type(full_seed) ~= "string" or full_seed == "" or
 				type(r5_adapter) ~= "table" or type(r5_adapter.apply) ~= "function" or
-				type(r5_adapter.halo_light) ~= "table" or
-				type(r5_adapter.halo_light.presun) ~= "function" or
-				type(r5_adapter.halo_light.merge) ~= "function" or
 				type(content) ~= "table" or type(templates) ~= "table" or
 				type(hash) ~= "table" or type(hash.digest_count) ~= "function" or
 				type(hash.prepare_root_draw) ~= "function" or
 				type(horizontal) ~= "table" or
 				type(planner_source) ~= "table" or
+				type(planner_source.column_values_at) ~= "function" or
 				type(planner_source.surface_cave_run_at) ~= "function" or
 				type(planner_source.surface_cave_candidate_at_cell) ~= "function" or
 				type(planner_source.surface_cave_cell_at) ~= "function" or
@@ -883,7 +881,6 @@ local function settlement_factory()
 			retained_volume, 0)
 		local original_light = retained_array("r6_settlement_original_light",
 			retained_volume, 0)
-		local final_light = retained_array("r6_settlement_final_light", retained_volume, 0)
 		local occupancy = retained_array("r6_settlement_occupancy", retained_volume, 0)
 		local intent_opcode = retained_array("r6_settlement_intent_opcode",
 			retained_volume, 0)
@@ -900,18 +897,10 @@ local function settlement_factory()
 		for index = 1, 48 do
 			frontier_scratch[index] = {x = 0, y = 0, z = 0, digest = false}
 		end
-		local light_seed_start = retained_array("r6_settlement_light_seed_start",
-			evidence_only and 1 or 8192, 0)
-		local light_seed_finish = retained_array("r6_settlement_light_seed_finish",
-			evidence_only and 1 or 8192, 0)
-		local light_seed_z = retained_array("r6_settlement_light_seed_z",
-			evidence_only and 1 or 8192, 0)
 		local light_zero, light_full = {day = 0, night = 0}, {day = 15, night = 0}
 		local call_min, call_max = {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0}
 		local transaction_state = {
-			final_light = final_light,
-			seed_start = light_seed_start, seed_finish = light_seed_finish,
-			seed_z = light_seed_z, light_zero = light_zero, light_full = light_full,
+			light_zero = light_zero, light_full = light_full,
 			call_min = call_min, call_max = call_max,
 			successor_tail = successor_tail,
 			runtime_mode = runtime_mode == true,
@@ -968,14 +957,46 @@ local function settlement_factory()
 				paramtype_light, light_propagates, sunlight_propagates, light_source
 		end
 
-		-- Halo lighting (map_adapter's halo_light, shared with the standalone R5
-		-- transaction): a session-long sunlight cache per (content, param2),
-		-- per-column ignore stamps, reused arguments; the transaction binds
-		-- the per-call upvalues right before presun.
+		-- Chunk-edge light (Round 22 D64/D65): the transaction relights, from
+		-- scratch, everything the VoxelManip can decide.
+		--
+		-- Both banks of every node inside the VM's outer one-node shell are
+		-- zeroed, the sun goes down each interior column (below), and
+		-- calc_lighting spreads over the whole VM from the sun runs, the light
+		-- sources and the untouched shell. Light reaches at most 14 nodes, and
+		-- v7's light from its temporary geometry (sun over the owner and its
+		-- +-1 rows, spread from there) ends 15 nodes into the 16-node halo, so
+		-- the shell still holds its own chunk's light. Every generated node
+		-- inside the shell is then a from-scratch solve over the final
+		-- content: a neighbour's halo gets brighter (a lamp beside it) or
+		-- darker (v7's stale light) as the content says, whatever the
+		-- generation order.
+		--
+		-- The sun, per interior column, top down through three vertical
+		-- groups: the block above the owner, the owner's rows, the block
+		-- below. Each group belongs to one chunk, and a chunk is generated
+		-- whole or not at all (one emerge thread, num_emerge_threads = 1), so
+		-- one probe node per group tells whether its chunk is still fresh: the
+		-- top shell row, the owner's min_y + 40 and the bottom shell row hold
+		-- ignore exactly then (v7 writes provisional rows into a fresh block
+		-- only next to a generated chunk, i.e. at a chunk's first or last row,
+		-- never at a probe).
+		--   generated group: the final content decides. The sun enters with
+		--     the top shell's stored day light (15 is sun: spread decays and
+		--     no light source exceeds 14) and runs down while nodes pass
+		--     sunlight;
+		--   fresh group: unknown. Its real nodes are v7's provisional rows;
+		--     they neither block nor carry the sun (their chunk rewrites
+		--     them);
+		--   first generated group below a fresh one: an owner column takes the
+		--     sky the plan predicts for the chunk above (sky_open), a halo
+		--     column the stored day light of that group's top node, i.e. the
+		--     decision its own chunk made.
+		-- Sun runs go to set_lighting batched along x. Left open: a sun change
+		-- deeper than the bottom shell (D65 B2), structures the plan cannot
+		-- predict above a fresh chunk top (sky_open).
 		-- (one table: the transaction closure is at Lua 5.1's upvalue limit)
-		local halo = {light = r5_adapter.halo_light, sun_cache = {}, ignore_stamp = {},
-			stamp = 0, presun_args = {}, merge_args = {}, eminx = 0, eminz = 0, ex = 0,
-			vm = false}
+		local halo = {sun_cache = {}, args = {}, vm = false}
 		function halo.passes_sun(cid, param2)
 			local key = cid * 256 + param2
 			local value = halo.sun_cache[key]
@@ -987,17 +1008,147 @@ local function settlement_factory()
 			end
 			return value
 		end
-		function halo.ignore_marked(x, z)
-			return halo.ignore_stamp[(z - halo.eminz) * halo.ex + (x - halo.eminx) + 1] ==
-				halo.stamp
-		end
 		function halo.set_sun(x0, y0, z, x1, y1)
 			local low, high = transaction_state.call_min, transaction_state.call_max
 			low.x, low.y, low.z = x0, y0, z
 			high.x, high.y, high.z = x1, y1, z
 			local vm = halo.vm
 			local ok = pcall(vm.set_lighting, vm, transaction_state.light_full, low, high)
-			if not ok then fail("fail_vm_contract", "halo sun setter failed") end
+			if not ok then fail("fail_vm_contract", "sun run setter failed") end
+		end
+		-- The sky over an owner column while the chunk above is still fresh
+		-- (D65 B1), from the planned column tuple: open unless the planned
+		-- terrain, water or a bridge deck lies above the owner's top row.
+		-- Trees, buildings and other structures of the chunk above are not in
+		-- the tuple; that chunk corrects the 16 rows below it when it is
+		-- generated.
+		function halo.sky_open(x, z, max_y)
+			local _, _, _, _, _, terrain_y, water_y, _, _, functional_kind,
+				functional_y = planner_source.column_values_at(x, z)
+			return terrain_y <= max_y and (water_y == nil or water_y <= max_y) and
+				not (functional_kind == "bridge_deck" and functional_y > max_y)
+		end
+		-- The stored (pre-transaction) day light at index i is sunlight. The
+		-- one light read of the transaction is checked where it is used.
+		function halo.stored_sun(light, i)
+			local value = light[i]
+			if type(value) ~= "number" or value < 0 or value > 255 or
+					value % 1 ~= 0 then
+				fail("fail_vm_contract", "VM light differs")
+			end
+			return value % 16 == 15
+		end
+
+		-- a: data, param2 (final content), light (the ORIGINAL light),
+		--   ignore_cid, emerged bounds eminx .. emaxz, owner bounds min_x ..
+		--   max_z. Returns the number of sun runs.
+		function halo.relight(a)
+			local data, param2, light, ignore_cid = a.data, a.param2, a.light,
+				a.ignore_cid
+			local eminx, eminy, eminz, emaxx, emaxy, emaxz =
+				a.eminx, a.eminy, a.eminz, a.emaxx, a.emaxy, a.emaxz
+			local min_x, min_y, min_z, max_x, max_y, max_z =
+				a.min_x, a.min_y, a.min_z, a.max_x, a.max_y, a.max_z
+			local passes_sun, set_sun, stored_sun = halo.passes_sun, halo.set_sun,
+				halo.stored_sun
+			local vm = halo.vm
+			local ex = emaxx - eminx + 1
+			local zs = ex * (emaxy - eminy + 1)
+			local low, high = transaction_state.call_min, transaction_state.call_max
+			low.x, low.y, low.z = eminx + 1, eminy + 1, eminz + 1
+			high.x, high.y, high.z = emaxx - 1, emaxy - 1, emaxz - 1
+			local ok = pcall(vm.set_lighting, vm, transaction_state.light_zero, low, high)
+			if not ok then fail("fail_vm_contract", "light reset failed") end
+			-- index offsets from a column's bottom shell node
+			local top_offset = (emaxy - eminy) * ex
+			local probe_offset = (min_y + 40 - eminy) * ex
+			local owner_top_offset = (max_y - eminy) * ex
+			local calls = 0
+			-- one pending sun run along x, extended while columns share a segment
+			local run_x0, run_x1, run_top, run_bottom, run_z
+			local function flush()
+				if run_x0 ~= nil then
+					set_sun(run_x0, run_bottom, run_z, run_x1, run_top)
+					calls = calls + 1
+					run_x0 = nil
+				end
+			end
+			local function emit(x, z, top, bottom)
+				if run_x0 ~= nil and run_z == z and run_x1 == x - 1 and
+						run_top == top and run_bottom == bottom then
+					run_x1 = x
+				else
+					flush()
+					run_x0, run_x1, run_top, run_bottom, run_z = x, x, top, bottom, z
+				end
+			end
+			for z = eminz + 1, emaxz - 1 do
+				local owner_row = z >= min_z and z <= max_z
+				local col = (z - eminz) * zs + 2
+				for x = eminx + 1, emaxx - 1 do
+					local owner_col = owner_row and x >= min_x and x <= max_x
+					local top_i = col + top_offset
+					local fresh_above = data[top_i] == ignore_cid
+					local fresh_side = not owner_col and
+						data[col + probe_offset] == ignore_cid
+					local fresh_below = data[col] == ignore_cid
+					-- true / false, nil = unknown (below a fresh group)
+					local sun
+					if not fresh_above then
+						sun = stored_sun(light, top_i) and
+							passes_sun(data[top_i], param2[top_i])
+					end
+					local seg_top, seg_bottom
+					for group = 1, 3 do
+						local y_hi, y_lo, fresh
+						if group == 1 then y_hi, y_lo, fresh = emaxy - 1, max_y + 1, fresh_above
+						elseif group == 2 then y_hi, y_lo, fresh = max_y, min_y, fresh_side
+						else y_hi, y_lo, fresh = min_y - 1, eminy + 1, fresh_below end
+						if fresh then
+							sun = nil
+						else
+							local i = col + (y_hi - eminy) * ex
+							if sun == nil then
+								if owner_col then
+									-- group 2 under a fresh chunk above
+									local top = col + owner_top_offset
+									sun = passes_sun(data[top], param2[top]) and
+										halo.sky_open(x, z, max_y)
+								else
+									sun = stored_sun(light, i)
+								end
+							end
+							if sun then
+								for y = y_hi, y_lo, -1 do
+									if passes_sun(data[i], param2[i]) then
+										if seg_top == nil then seg_top = y end
+										seg_bottom = y
+									else
+										sun = false
+										break
+									end
+									i = i - ex
+								end
+							end
+						end
+						if seg_top ~= nil and not sun then
+							emit(x, z, seg_top, seg_bottom)
+							seg_top = nil
+						end
+					end
+					if seg_top ~= nil then emit(x, z, seg_top, seg_bottom) end
+					col = col + 1
+				end
+			end
+			flush()
+			-- Spread only: calc_lighting spreads over the whole VM; its own sun
+			-- scan is confined to the bottom shell row, where it continues a
+			-- sun run that reached the row above (shadow otherwise).
+			low.x, low.y, low.z = eminx, eminy, eminz
+			high.x, high.y, high.z = emaxx, eminy, emaxz
+			ok = pcall(vm.calc_lighting, vm, low, high, true)
+			if not ok then fail("fail_vm_contract", "light spread failed") end
+			return calls
 		end
 
 		local function resolve(content_ref, param2, role_bit)
@@ -3242,8 +3393,6 @@ local function settlement_factory()
 			local content_changed, param2_changed, light_changed, liquid_changed =
 				false, false, false, false
 			last_light_seed_runs = 0
-			local light_min_x, light_min_y, light_min_z = max_x, max_y, max_z
-			local light_max_x, light_max_y, light_max_z = min_x, min_y, min_z
 			local modified, content_columns, param2_columns, light_columns,
 				liquid_columns = 0, 0, 0, 0, 0
 			local function compatible_liquid(family, kind)
@@ -3275,12 +3424,6 @@ local function settlement_factory()
 									old_sun ~= new_sun or old_source ~= new_source)
 							if voxel_light then
 								light_changed, column_light = true, true
-								if x < light_min_x then light_min_x = x end
-								if y < light_min_y then light_min_y = y end
-								if z < light_min_z then light_min_z = z end
-								if x > light_max_x then light_max_x = x end
-								if y > light_max_y then light_max_y = y end
-								if z > light_max_z then light_max_z = z end
 							end
 							local voxel_liquid = old_family > 0 or new_family > 0 or
 								old_liquid ~= new_liquid or old_family ~= new_family or
@@ -3324,86 +3467,13 @@ local function settlement_factory()
 				liquid_columns
 			if not content_changed and not param2_changed then return "noop_equal_content" end
 
-			local box_min_x, box_min_y, box_min_z, box_max_x, box_max_y, box_max_z
-			local seed_y, seed_run_count = 0, 0
-			if light_changed then
-				box_min_x, box_min_y, box_min_z = math.max(eminx, light_min_x - 15),
-					math.max(eminy, light_min_y - 15), math.max(eminz, light_min_z - 15)
-				box_max_x, box_max_y, box_max_z = math.min(emaxx, light_max_x + 15),
-					math.min(emaxy - 1, light_max_y + 15), math.min(emaxz, light_max_z + 15)
-				if box_min_x > box_max_x or box_min_y > box_max_y or
-						box_min_z > box_max_z then
-					fail("fail_lighting_context", "light box is empty")
+			-- One light read for the relight (halo.relight) before any setter.
+			if light_changed and not light_loaded then
+				local ok, returned = pcall(vm.get_light_data, vm, original_light)
+				if not ok or not rawequal(returned, original_light) then
+					fail("fail_vm_contract", "get_light_data did not reuse buffer")
 				end
-				if not light_loaded then
-					local ok, returned = pcall(vm.get_light_data, vm, original_light)
-					if not ok or not rawequal(returned, original_light) then
-						fail("fail_vm_contract", "get_light_data did not reuse buffer")
-					end
-					light_loaded = true
-				end
-				for index = 1, volume do
-					integer(original_light[index], "VM light", 0, 255, "fail_vm_contract")
-				end
-				-- This is the authoritative context of R5 plus all successors.
-				-- Classify every non-ignore entry before any external setter; the
-				-- composed R5 intentionally does not validate discarded lighting.
-				-- Fresh ignore halo blocks remain legal read-only context; their
-				-- columns are stamped for halo_light.presun.
-				halo.stamp = halo.stamp + 1
-				local halo_stamp, halo_ignore_stamp = halo.stamp, halo.ignore_stamp
-				for z = box_min_z, box_max_z do
-					for y = box_min_y, box_max_y do
-						for x = box_min_x, box_max_x do
-							local index = index_at(x, y, z)
-							local cid = final_data[index]
-							if cid == contract.ignore_cid then
-								if x >= min_x and x <= max_x and
-										y >= min_y and y <= max_y and
-										z >= min_z and z <= max_z then
-									fail("fail_content_ignore", "required light context is ignore")
-								end
-								halo_ignore_stamp[(z - eminz) * ex + (x - eminx) + 1] = halo_stamp
-							else
-								classify(cid, final_param2[index], "fail_lighting_context")
-							end
-						end
-					end
-				end
-				seed_y = box_max_y + 1
-				for z = box_min_z, box_max_z do
-					local run_start
-					for x = box_min_x, box_max_x + 1 do
-						local seeds = false
-						if x <= box_max_x then
-							local index = index_at(x, seed_y, z)
-							local cid = final_data[index]
-							if cid == contract.ignore_cid then
-								if x >= min_x and x <= max_x and seed_y >= min_y and
-										seed_y <= max_y and z >= min_z and z <= max_z then
-									fail("fail_content_ignore", "owner overtop is ignore")
-								end
-							else
-								local _, _, _, _, _, _, _, sunlight =
-									classify(cid, final_param2[index], "fail_lighting_context")
-								seeds = sunlight and original_light[index] == 15
-							end
-						end
-						if seeds and run_start == nil then
-							run_start = x
-						elseif not seeds and run_start ~= nil then
-							seed_run_count = seed_run_count + 1
-							if seed_run_count > #transaction_state.seed_start then
-								fail("fail_bound", "light seed-run bound exceeded")
-							end
-							transaction_state.seed_start[seed_run_count] = run_start
-							transaction_state.seed_finish[seed_run_count] = x - 1
-							transaction_state.seed_z[seed_run_count] = z
-							run_start = nil
-						end
-					end
-				end
-				last_light_seed_runs = seed_run_count
+				light_loaded = true
 			end
 
 			if content_changed then
@@ -3415,89 +3485,15 @@ local function settlement_factory()
 				if not ok then fail("fail_vm_contract", "set_param2_data failed") end
 			end
 			if light_changed then
-				local light_call_min, light_call_max = transaction_state.call_min,
-					transaction_state.call_max
-				light_call_min.x, light_call_min.y, light_call_min.z =
-					box_min_x, box_min_y, box_min_z
-				light_call_max.x, light_call_max.y, light_call_max.z =
-					box_max_x, box_max_y, box_max_z
-				local ok = pcall(vm.set_lighting, vm, transaction_state.light_zero,
-					light_call_min, light_call_max)
-				if not ok then fail("fail_vm_contract", "set_lighting failed") end
-				for run = 1, seed_run_count do
-					light_call_min.x, light_call_min.y, light_call_min.z =
-						transaction_state.seed_start[run], seed_y,
-						transaction_state.seed_z[run]
-					light_call_max.x, light_call_max.y, light_call_max.z =
-						transaction_state.seed_finish[run], seed_y,
-						transaction_state.seed_z[run]
-					ok = pcall(vm.set_lighting, vm, transaction_state.light_full,
-						light_call_min, light_call_max)
-					if not ok then fail("fail_vm_contract", "light seed setter failed") end
-				end
-				light_call_min.x, light_call_min.y, light_call_min.z =
-					box_min_x, box_min_y, box_min_z
-				light_call_max.x, light_call_max.y, light_call_max.z =
-					box_max_x, box_max_y, box_max_z
-				-- The fixed R7 runtime authenticates water_level=1. Above it, neither
-				-- v7's replaced overtop geometry nor a fresh ignore halo may retain
-				-- shadow authority.  Scan no higher than the authored owner while the
-				-- larger zero/spread/restore box remains unchanged.
-				local propagate_shadow = box_max_y <= 1
-				local calc_max_y = box_max_y
-				if not propagate_shadow and calc_max_y > max_y then
-					calc_max_y = max_y
-				end
-				-- The sun where the scan below cannot reach (halo_light.presun):
-				-- the slice above the owner and real segments under fresh blocks.
-				local args = halo.presun_args
-				args.index_at, args.data, args.param2, args.light = index_at, final_data,
-					final_param2, original_light
-				args.ignore_cid, args.passes_sun = contract.ignore_cid, halo.passes_sun
-				args.ignore_marked, args.set_sun = halo.ignore_marked, halo.set_sun
-				args.box_min_x, args.box_min_y, args.box_min_z = box_min_x, box_min_y,
-					box_min_z
-				args.box_max_x, args.box_max_y, args.box_max_z = box_max_x, box_max_y,
-					box_max_z
-				args.seed_y, args.max_y = seed_y, max_y
-				args.owner_min_x, args.owner_max_x = min_x, max_x
-				args.owner_min_z, args.owner_max_z = min_z, max_z
-				args.slice_sun = not propagate_shadow and box_max_y > max_y
-				halo.eminx, halo.eminz, halo.ex, halo.vm = eminx, eminz, ex, vm
-				halo.light.presun(args)
-				light_call_min.x, light_call_min.y, light_call_min.z =
-					box_min_x, box_min_y, box_min_z
-				light_call_max.x, light_call_max.z = box_max_x, box_max_z
-				light_call_max.y = calc_max_y
-				ok = pcall(vm.calc_lighting, vm, light_call_min, light_call_max,
-					propagate_shadow)
-				if not ok then fail("fail_vm_contract", "calc_lighting failed") end
-				local returned
-				ok, returned = pcall(vm.get_light_data, vm, transaction_state.final_light)
-				if not ok or not rawequal(returned, transaction_state.final_light) then
-					fail("fail_vm_contract", "post-light buffer differs")
-				end
-				for index = 1, volume do
-					integer(transaction_state.final_light[index], "final VM light", 0, 255,
-						"fail_vm_contract")
-				end
-				-- Outside the owner the original light stays, except inside the
-				-- zeroed box, where each bank takes the lower value
-				-- (halo_light.merge: v7's stale spread leaves the halo).
-				local m = halo.merge_args
-				m.index_at, m.final, m.original = index_at, transaction_state.final_light,
-					original_light
-				m.emin_x, m.emin_y, m.emin_z = eminx, eminy, eminz
-				m.emax_x, m.emax_y, m.emax_z = emaxx, emaxy, emaxz
-				m.box_min_x, m.box_min_y, m.box_min_z = box_min_x, box_min_y, box_min_z
-				m.box_max_x, m.box_max_y, m.box_max_z = box_max_x, box_max_y, box_max_z
-				m.owner_min_x, m.owner_min_y, m.owner_min_z = math.max(box_min_x, min_x),
-					math.max(box_min_y, min_y), math.max(box_min_z, min_z)
-				m.owner_max_x, m.owner_max_y, m.owner_max_z = math.min(box_max_x, max_x),
-					math.min(box_max_y, max_y), math.min(box_max_z, max_z)
-				halo.light.merge(m)
-				ok = pcall(vm.set_light_data, vm, transaction_state.final_light)
-				if not ok then fail("fail_vm_contract", "set_light_data failed") end
+				local a = halo.args
+				a.data, a.param2, a.light, a.ignore_cid = final_data, final_param2,
+					original_light, contract.ignore_cid
+				a.eminx, a.eminy, a.eminz, a.emaxx, a.emaxy, a.emaxz =
+					eminx, eminy, eminz, emaxx, emaxy, emaxz
+				a.min_x, a.min_y, a.min_z, a.max_x, a.max_y, a.max_z =
+					min_x, min_y, min_z, max_x, max_y, max_z
+				halo.vm = vm
+				last_light_seed_runs = halo.relight(a)
 			end
 			if liquid_changed then
 				local ok = pcall(vm.update_liquids, vm)
