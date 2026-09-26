@@ -596,7 +596,13 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
     review fix: the zeroed slice above the owner now takes the sun from each
     sunlit seed (day bank), so water crossing a chunk top is no longer too
     dark (Lethariel crown lake 58216 too-dark nodes on main → 0; all eight
-    probe windows 0 too bright and 0 too dark).
+    probe windows 0 too bright and 0 too dark); second review fix: every
+    real segment below a still-fresh (ignore) block in the relit box also
+    takes the sun (shared `halo_light` helper in `map_adapter.lua`, used by
+    both light transactions); liquids and other light-transparent nodes 0
+    too dark in three forced generation orders, the few too-bright nodes of
+    one order identical on main (the owner's sun scan ignores shade from the
+    chunk above, older behaviour).
     Civic steps — `grug_core`'s water guard reverted all flow in protected
     territory; planned step flow is now exempt (Highcourt steps flowing
     0/276 → 266/276 before the canal became one level). Canal — one level

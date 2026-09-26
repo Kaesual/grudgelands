@@ -699,6 +699,9 @@ local function settlement_factory()
 		local planner_stable_refs = dependencies.planner_stable_refs
 		if type(full_seed) ~= "string" or full_seed == "" or
 				type(r5_adapter) ~= "table" or type(r5_adapter.apply) ~= "function" or
+				type(r5_adapter.halo_light) ~= "table" or
+				type(r5_adapter.halo_light.presun) ~= "function" or
+				type(r5_adapter.halo_light.merge) ~= "function" or
 				type(content) ~= "table" or type(templates) ~= "table" or
 				type(hash) ~= "table" or type(hash.digest_count) ~= "function" or
 				type(hash.prepare_root_draw) ~= "function" or
@@ -963,6 +966,38 @@ local function settlement_factory()
 			end
 			return class_id, family_id, liquid_kind, liquid_level, floodable,
 				paramtype_light, light_propagates, sunlight_propagates, light_source
+		end
+
+		-- Halo lighting (map_adapter's halo_light, shared with the standalone R5
+		-- transaction): a session-long sunlight cache per (content, param2),
+		-- per-column ignore stamps, reused arguments; the transaction binds
+		-- the per-call upvalues right before presun.
+		-- (one table: the transaction closure is at Lua 5.1's upvalue limit)
+		local halo = {light = r5_adapter.halo_light, sun_cache = {}, ignore_stamp = {},
+			stamp = 0, presun_args = {}, merge_args = {}, eminx = 0, eminz = 0, ex = 0,
+			vm = false}
+		function halo.passes_sun(cid, param2)
+			local key = cid * 256 + param2
+			local value = halo.sun_cache[key]
+			if value == nil then
+				local _, _, _, _, _, _, _, sunlight = classify(cid, param2,
+					"fail_lighting_context")
+				value = sunlight and true or false
+				halo.sun_cache[key] = value
+			end
+			return value
+		end
+		function halo.ignore_marked(x, z)
+			return halo.ignore_stamp[(z - halo.eminz) * halo.ex + (x - halo.eminx) + 1] ==
+				halo.stamp
+		end
+		function halo.set_sun(x0, y0, z, x1, y1)
+			local low, high = transaction_state.call_min, transaction_state.call_max
+			low.x, low.y, low.z = x0, y0, z
+			high.x, high.y, high.z = x1, y1, z
+			local vm = halo.vm
+			local ok = pcall(vm.set_lighting, vm, transaction_state.light_full, low, high)
+			if not ok then fail("fail_vm_contract", "halo sun setter failed") end
 		end
 
 		local function resolve(content_ref, param2, role_bit)
@@ -3313,7 +3348,10 @@ local function settlement_factory()
 				-- This is the authoritative context of R5 plus all successors.
 				-- Classify every non-ignore entry before any external setter; the
 				-- composed R5 intentionally does not validate discarded lighting.
-				-- Fresh ignore halo blocks remain legal read-only context.
+				-- Fresh ignore halo blocks remain legal read-only context; their
+				-- columns are stamped for halo_light.presun.
+				halo.stamp = halo.stamp + 1
+				local halo_stamp, halo_ignore_stamp = halo.stamp, halo.ignore_stamp
 				for z = box_min_z, box_max_z do
 					for y = box_min_y, box_max_y do
 						for x = box_min_x, box_max_x do
@@ -3325,6 +3363,7 @@ local function settlement_factory()
 										z >= min_z and z <= max_z then
 									fail("fail_content_ignore", "required light context is ignore")
 								end
+								halo_ignore_stamp[(z - eminz) * ex + (x - eminx) + 1] = halo_stamp
 							else
 								classify(cid, final_param2[index], "fail_lighting_context")
 							end
@@ -3409,69 +3448,26 @@ local function settlement_factory()
 				if not propagate_shadow and calc_max_y > max_y then
 					calc_max_y = max_y
 				end
-				-- The zeroed slice above the owner (max_y + 1 .. box_max_y, the
-				-- chunk above) gets no sun from that scan. It lies in the same
-				-- MapBlock layer as the seed row, so it is either ignore (a fresh
-				-- neighbour) or real, already lit content: each column whose seed
-				-- is sunlit takes the sun straight down through the slice, as far
-				-- as its final content lets sunlight through. Without it, water
-				-- crossing the chunk top was lit only by decaying spread from the
-				-- seed row, and everything below it turned too dark (Round 22
-				-- Phase 5b review).
-				if not propagate_shadow and box_max_y > max_y then
-					local sun_cache = {}
-					local function passes_sun(cid, param2)
-						local key = cid * 256 + param2
-						local value = sun_cache[key]
-						if value == nil then
-							local _, _, _, _, _, _, _, sunlight = classify(cid, param2,
-								"fail_lighting_context")
-							value = sunlight and true or false
-							sun_cache[key] = value
-						end
-						return value
-					end
-					for z = box_min_z, box_max_z do
-						local run_start, run_bottom
-						for x = box_min_x, box_max_x + 1 do
-							local bottom
-							if x <= box_max_x then
-								local top = index_at(x, seed_y, z)
-								local cid = final_data[top]
-								-- the day bank only: a lantern's night light must not
-								-- cost a column its sun
-								if cid ~= contract.ignore_cid and original_light[top] % 16 == 15 and
-										passes_sun(cid, final_param2[top]) then
-									for y = box_max_y, max_y + 1, -1 do
-										local index = index_at(x, y, z)
-										local node = final_data[index]
-										if node == contract.ignore_cid or
-												not passes_sun(node, final_param2[index]) then
-											break
-										end
-										bottom = y
-									end
-								end
-							end
-							if run_start ~= nil and bottom ~= run_bottom then
-								light_call_min.x, light_call_min.y, light_call_min.z =
-									run_start, run_bottom, z
-								light_call_max.x, light_call_max.y, light_call_max.z =
-									x - 1, box_max_y, z
-								ok = pcall(vm.set_lighting, vm, transaction_state.light_full,
-									light_call_min, light_call_max)
-								if not ok then fail("fail_vm_contract", "slice sun setter failed") end
-								run_start = nil
-							end
-							if bottom ~= nil and run_start == nil then
-								run_start, run_bottom = x, bottom
-							end
-						end
-					end
-					light_call_min.x, light_call_min.y, light_call_min.z =
-						box_min_x, box_min_y, box_min_z
-					light_call_max.x, light_call_max.z = box_max_x, box_max_z
-				end
+				-- The sun where the scan below cannot reach (halo_light.presun):
+				-- the slice above the owner and real segments under fresh blocks.
+				local args = halo.presun_args
+				args.index_at, args.data, args.param2, args.light = index_at, final_data,
+					final_param2, original_light
+				args.ignore_cid, args.passes_sun = contract.ignore_cid, halo.passes_sun
+				args.ignore_marked, args.set_sun = halo.ignore_marked, halo.set_sun
+				args.box_min_x, args.box_min_y, args.box_min_z = box_min_x, box_min_y,
+					box_min_z
+				args.box_max_x, args.box_max_y, args.box_max_z = box_max_x, box_max_y,
+					box_max_z
+				args.seed_y, args.max_y = seed_y, max_y
+				args.owner_min_x, args.owner_max_x = min_x, max_x
+				args.owner_min_z, args.owner_max_z = min_z, max_z
+				args.slice_sun = not propagate_shadow and box_max_y > max_y
+				halo.eminx, halo.eminz, halo.ex, halo.vm = eminx, eminz, ex, vm
+				halo.light.presun(args)
+				light_call_min.x, light_call_min.y, light_call_min.z =
+					box_min_x, box_min_y, box_min_z
+				light_call_max.x, light_call_max.z = box_max_x, box_max_z
 				light_call_max.y = calc_max_y
 				ok = pcall(vm.calc_lighting, vm, light_call_min, light_call_max,
 					propagate_shadow)
@@ -3485,43 +3481,21 @@ local function settlement_factory()
 					integer(transaction_state.final_light[index], "final VM light", 0, 255,
 						"fail_vm_contract")
 				end
-				local owner_min_x, owner_min_y, owner_min_z = math.max(box_min_x, min_x),
+				-- Outside the owner the original light stays, except inside the
+				-- zeroed box, where each bank takes the lower value
+				-- (halo_light.merge: v7's stale spread leaves the halo).
+				local m = halo.merge_args
+				m.index_at, m.final, m.original = index_at, transaction_state.final_light,
+					original_light
+				m.emin_x, m.emin_y, m.emin_z = eminx, eminy, eminz
+				m.emax_x, m.emax_y, m.emax_z = emaxx, emaxy, emaxz
+				m.box_min_x, m.box_min_y, m.box_min_z = box_min_x, box_min_y, box_min_z
+				m.box_max_x, m.box_max_y, m.box_max_z = box_max_x, box_max_y, box_max_z
+				m.owner_min_x, m.owner_min_y, m.owner_min_z = math.max(box_min_x, min_x),
 					math.max(box_min_y, min_y), math.max(box_min_z, min_z)
-				local owner_max_x, owner_max_y, owner_max_z = math.min(box_max_x, max_x),
+				m.owner_max_x, m.owner_max_y, m.owner_max_z = math.min(box_max_x, max_x),
 					math.min(box_max_y, max_y), math.min(box_max_z, max_z)
-				-- Outside the owner the original light stays, with one exception.
-				-- Before this transaction v7 lit its TEMPORARY geometry and spread
-				-- that light up to 14 nodes into the halo, which is an already
-				-- generated neighbour whenever one exists: where the replaced
-				-- geometry was brighter (open where the final terrain is deep water
-				-- or rock), the halo kept that light and the neighbour's edge showed
-				-- a bright stripe (Round 22 plan D61). Inside the zeroed box the
-				-- recomputed light is complete (sun in the owner scan and the slice
-				-- above it; the untouched layers beyond v7's reach still feed it), so
-				-- there each bank takes the lower of the two: the stale v7 spread
-				-- goes, and nothing gets brighter than it already was.
-				for z = eminz, emaxz do
-					for y = eminy, emaxy do
-						for x = eminx, emaxx do
-							if x < owner_min_x or x > owner_max_x or y < owner_min_y or
-									y > owner_max_y or z < owner_min_z or z > owner_max_z then
-								local index = index_at(x, y, z)
-								local old = original_light[index]
-								if x >= box_min_x and x <= box_max_x and y >= box_min_y and
-										y <= box_max_y and z >= box_min_z and z <= box_max_z then
-									local new = transaction_state.final_light[index]
-									local old_day, new_day = old % 16, new % 16
-									local old_night, new_night = old - old_day, new - new_day
-									transaction_state.final_light[index] =
-										(old_day < new_day and old_day or new_day) +
-										(old_night < new_night and old_night or new_night)
-								else
-									transaction_state.final_light[index] = old
-								end
-							end
-						end
-					end
-				end
+				halo.light.merge(m)
 				ok = pcall(vm.set_light_data, vm, transaction_state.final_light)
 				if not ok then fail("fail_vm_contract", "set_light_data failed") end
 			end
