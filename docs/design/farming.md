@@ -112,6 +112,11 @@ claimed positions, veto non-air flooding before destruction/drops, preserving
 the original node callback elsewhere. For air and liquid transformations,
 restore the exact old node including param2 through the engine's liquid change
 callback. Never remove an allowed outside source to suppress retries.
+The world's own planned water is exempt where it flows by design: above a wet
+planned inland column and no higher than the highest planned surface among its
+four neighbours (the rapid or fall at a step between two planned surfaces,
+river or civic canal, [world_zones.md](world_zones.md) §7.4), so steps inside
+protected capitals flow like natural ones.
 
 Use the existing engine scheduler: repeated boundary callbacks are allowed.
 Bound work per transformed node and any cache storage per loaded boundary;
