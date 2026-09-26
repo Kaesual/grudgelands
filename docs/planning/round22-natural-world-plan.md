@@ -542,6 +542,27 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   construction time. The user picks, then integration.
 - **Gate:** user playtest.
 
+- **As built (merged `7a30f0e0`, 2026-09-26):** option 2 per D68 — p4 grade
+  preference, all 40 trails, loops at network/straight ratio 1.3 (2–4 per
+  world, a loop whose core pin doesn't fit is dropped), half-gallery profile
+  term; no hard routing cap, no feedback re-routing, no sub-cell grade
+  (option 1 measured and dropped: 2–5× more free decks, cuts to 57, build
+  17–28 s). `wp40/road_layout.lua` (built once in main, `ipc_set` field
+  `road_layout`, 144–153 KB), raster in `height.lua` `final_values_at`
+  (roads never change a POI/village building core; every road end is pinned
+  to the fitted pad and meets it walkably), `wp40/road_writer.lua` (road
+  material + slabs, decks/bridges with pillars and open-edge rails, retaining
+  walls, materials per race; stamps win), `road_corridor` exclusion kind,
+  world map `road_polylines()`, preparation bounds, `/road_spots` and a start
+  log line with showcase spots. Road build 8–10 s in main; road chunks
+  +3–13 % chunk time. Evidence: engine 0 steps > ½, 0 seam defects, 0 leaks;
+  main vs emerge identical. Open: free decks remain as the accepted last
+  resort (mostly Stormvault and mountain trails); `layout.connect` needs a
+  session-level re-serialize/sampler rebuild/memo flush for the capital
+  planner; a dropped core pin (never seen) is not logged yet; old
+  `source/catalog.lua` route tables and dead planner bridge/ford/causeway/
+  tunnel branches are for the D4 cleanup.
+
 ### Phase 5 — Water v2
 
 - **Goal:** rivers in valleys, natural lakes.
