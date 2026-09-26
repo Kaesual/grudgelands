@@ -3426,13 +3426,35 @@ local function settlement_factory()
 					math.max(box_min_y, min_y), math.max(box_min_z, min_z)
 				local owner_max_x, owner_max_y, owner_max_z = math.min(box_max_x, max_x),
 					math.min(box_max_y, max_y), math.min(box_max_z, max_z)
+				-- Outside the owner the original light stays, with one exception.
+				-- Before this transaction v7 lit its TEMPORARY geometry and spread
+				-- that light up to 14 nodes into the halo, which is an already
+				-- generated neighbour whenever one exists: where the replaced
+				-- geometry was brighter (open where the final terrain is deep water
+				-- or rock), the halo kept that light and the neighbour's edge showed
+				-- a bright stripe (Round 22 plan D61). Inside the zeroed box and no
+				-- higher than the sun scan the recomputed light is complete (the
+				-- untouched outer halo layer, beyond v7's reach, still feeds it), so
+				-- there each bank takes the lower of the two: the stale v7 spread
+				-- goes, and nothing gets brighter than it already was.
 				for z = eminz, emaxz do
 					for y = eminy, emaxy do
 						for x = eminx, emaxx do
 							if x < owner_min_x or x > owner_max_x or y < owner_min_y or
 									y > owner_max_y or z < owner_min_z or z > owner_max_z then
 								local index = index_at(x, y, z)
-								transaction_state.final_light[index] = original_light[index]
+								local old = original_light[index]
+								if x >= box_min_x and x <= box_max_x and y >= box_min_y and
+										y <= calc_max_y and z >= box_min_z and z <= box_max_z then
+									local new = transaction_state.final_light[index]
+									local old_day, new_day = old % 16, new % 16
+									local old_night, new_night = old - old_day, new - new_day
+									transaction_state.final_light[index] =
+										(old_day < new_day and old_day or new_day) +
+										(old_night < new_night and old_night or new_night)
+								else
+									transaction_state.final_light[index] = old
+								end
 							end
 						end
 					end

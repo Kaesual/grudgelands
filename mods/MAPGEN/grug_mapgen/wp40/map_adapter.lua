@@ -1459,7 +1459,23 @@ local function adapter_factory(allocator_factory)
 							if x < owner_light_min_x or x > owner_light_max_x or
 									y < owner_light_min_y or y > owner_light_max_y or
 									z < owner_light_min_z or z > owner_light_max_z then
-								light_final[index] = light_original[index]
+								-- As r6_settlement's transaction: inside the zeroed box
+								-- and the sun scan each bank takes the lower value, so
+								-- v7's stale spread from its replaced geometry leaves
+								-- the halo (Round 22 plan D61).
+								local old = light_original[index]
+								if x >= box_min_x and x <= box_max_x and
+										y >= box_min_y and y <= calc_max_y and
+										z >= box_min_z and z <= box_max_z then
+									local new = light_final[index]
+									local old_day, new_day = old % 16, new % 16
+									local old_night, new_night = old - old_day, new - new_day
+									light_final[index] =
+										(old_day < new_day and old_day or new_day) +
+										(old_night < new_night and old_night or new_night)
+								else
+									light_final[index] = old
+								end
 							end
 							index = index + 1
 						end
