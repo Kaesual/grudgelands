@@ -66,7 +66,8 @@ second step and a stop point, not a separate plan.
 7. **Plots:** candidate positions along each lane at plot-depth setback;
    legality as today (dry, fall ≤ 6 under the skirt, rise ≤ clear) evaluated
    on the sampled grid with window min/max; each plot is **rotated so its
-   entry faces its lane**; required plots first, then districts grouped by
+   entry faces its lane**; required plots first (inn, cook, eight service
+   plots, stable; audit §2.2), then districts grouped by
    quarter (districts keep their identity, only their place varies), then
    fill pieces in the leftover space.
 8. **Wall** along the outline (walled capitals), turrets every ~64, a
@@ -135,7 +136,13 @@ second step and a stop point, not a separate plan.
 
 | Varies | Consumers | How they follow |
 |---|---|---|
-| Plot positions and rotation | NPC sockets, inn/home, cook quests, profession vendors, stable/mount displays | automatically: sockets are computed from the plan at load and addressed by `plot/socket` id (audit §2.2) |
+| Plot positions and rotation | NPC placement, patrol loops, profession vendors, trainers, public stations, stable/mount displays, map markers | automatically: sockets are computed from the plan at load and addressed by `plot/socket` id (audit §2.2) |
+| Which plots exist | 6 inn plots (`grug_home/locations.lua`), 6 cook plots (`content_npcs.lua`), 8 service plots per capital (`capital_services.PLOTS`), the stable | **required plots are always placed** (a missing one is a load error); only other plots may be left out on cramped seeds (question 12) |
+| Plot rotation | inn arrival = socket + 1 in **world +x** (`grug_home/init.lua:9`) | rotate the arrival offset with the plot (small change in `grug_home`, or publish the arrival as its own socket) |
+| Canals, water under cross-river walls | planned-water flow exception of the water guard (`grug_core/water_guard.lua`) | report them as planned water in `column_values_at` |
+| Whole layout | persisted NPC markers and entity positions (`start_npcs.lua`) | layout is a pure function of seed and code; identical on every boot of a world (a planner change inside an existing world orphans NPCs — acceptable in fresh-server mode) |
+| Quest texts | `content_civic.lua` names district buildings (kept), "beyond its walls" for all six (already wrong for the open capitals) | fix the two open capitals' texts (question 13) |
+| Design text | `world_zones.md` §12 "four fixed 32-node road gates" + gate table | rewrite when the planner is integrated |
 | Outline, wall, gates | protection (532 square), guard level 60, exclusions | keep the square (recommended, U4): the reserved area stays protected; nothing else needs the outline |
 | Streets, connectors | roads, map | map may draw them via `road_polylines()` (optional) |
 | Canal | civic water rows | payload rows in the existing format |
@@ -193,7 +200,9 @@ map drawing of streets.
    fallback.*
 4. **Protection:** keep the 532 square as the protected area and guard-level
    zone (the band outside the wall stays protected countryside), or protect
-   only the outline? *Recommendation: keep the square — no consumer changes.*
+   only the outline? *Recommendation: keep the square — protection, guard
+   level 60, the 704 resource/claim exclusion and the zone self-check all
+   stay unchanged; the city then must stay inside the square and its zone.*
 5. **Size target:** city of roughly 110–150 k m² (about half today's
    envelope), built share 20–30 %? *Recommendation: yes, as a rough guide.*
 6. **Districts:** keep four districts as recognisable groups (a quarter
@@ -212,3 +221,10 @@ map drawing of streets.
 11. **Order:** Highcourt prototype first, the other five after its look is
     accepted, integration after roads are merged and playtested?
     *Recommendation: yes.*
+12. **Cramped seeds:** may the planner leave out non-required plots (houses,
+    fill pieces) when the ground has no room, instead of forcing them onto
+    bad ground? Required plots (inn, cook, eight service plots, stable) are
+    always placed. *Recommendation: yes, and log the count.*
+13. **Quest texts:** "beyond its walls" is used for all six capitals,
+    including the open Lethariel and Kezamba. Reword those two when the
+    planner lands? *Recommendation: yes (text only).*

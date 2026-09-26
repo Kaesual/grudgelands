@@ -23,9 +23,16 @@ everything else was read in the code.
    street south of the plot.
 4. **Almost every consumer outside the mapgen addresses capital content by
    socket id** (`plot_id/socket_id`), not by coordinates, so it follows a
-   moved plot automatically. The things that do not follow are the fixed
-   square geometry: protection (532 square), guard-level membership, road
-   reservations (half 256) and the lot tables.
+   moved plot automatically. What does not follow: **twelve hard-coded plot
+   socket ids** (six inns, six cooks; a missing one is a load error), the
+   **inn arrival offset in world +x** (breaks when plots rotate), planned-water
+   flow in protected territory (canals), persisted NPC state (the layout
+   must be identical on every boot), and the fixed square geometry:
+   protection (532), guard level 60, the 704 exclusion square and road
+   reservations (half 256).
+6. **Load-order cycle:** blueprints and plot rectangles are built before the
+   height session and feed the civic-water capping. A planner that runs after
+   height, water and roads needs that dependency reversed (§2.1b).
 5. **The city is sparse:** core plus all plots cover **10–12 %** of the 512
    square (measured). The four quadrants carry 9 buildings + 4 fill pieces each
    on a 44-node lot pitch.
@@ -131,26 +138,74 @@ obsolete/replaced.
 | Overlay memos per column persist for the session | `r7_settlement.lua:1245-1260, 1363-1372` | unbounded growth (I); worth fixing when streets move to the road sampler |
 | Nhal Veyr edge: z 1804 = centre + 304, i.e. 48 nodes into the square 256..352 blend band; next to a lake the "fitted column loses its water" rule (`height.lua:1141-1149`) likely turns the straight blend line into a straight shore (I) | `height.lua:879-888` | removing the square grade removes it |
 
-### 2.2 Outside the mapgen (sampled sweep; see §6)
+### 2.2 Outside the mapgen (full sweep of `mods/` except `grug_mapgen`)
 
-| Consumer | Where | Reads | Class |
+**Bottom line:** no mod outside the mapgen keeps capital coordinates of its
+own. Every NPC, service, quest giver and home position comes from one
+registry, `grug_core.settlement_sockets_at(key)`, which the mapgen fills at
+every load (`wp40/r7_loader.lua:42-100`). Core sockets are anchor + offset at
+the fitted anchor height; district-plot sockets are plot offset + the final
+height of the plot's reference column, with ids prefixed `"<plot_id>/"`
+(`CORE/grug_core/settlement_sockets.lua:172-184`, `r7_settlement.lua:1020-1080`).
+So most consumers follow a moved plot automatically. What does not follow is
+listed first.
+
+**Breaks or needs work if the layout varies per seed**
+
+| Consumer | Where | Problem | Class |
 |---|---|---|---|
-| NPC roster placement (guards, patrols, residents, vendors, spare spots) | `ENTITIES/grug_mobs/start_npcs.lua:560-760`, registry `grug_core.register_settlement_sockets` | sockets computed by `r7_settlement.sockets()` (`:1020-1080`) from plot offset + reference height | **A** — sockets move with their plot |
-| Patrol loops (city ring, gate towers, one per district) | `start_npcs.lua:600-625, 1116` | socket `group` | **A** for district loops; gate-tower and core loops **C** |
-| NPC identity scan radius | `start_npcs.lua:606-620` | max socket distance + margin | **A** (shrinks with a smaller city) |
-| Inn / home binding / respawn | `PLAYER/grug_home/locations.lua:10-15` | `plot/socket` ids, e.g. `homes_tavern/homes_tavern_gate_idle` | **A** — needs the plot to exist on every seed |
-| Cook quest givers, envoys | `PLAYER/grug_quests/content_npcs.lua:35-51` | `plot/socket` ids (cooks) or core socket ids (envoys) | **A** / **C** |
-| Capital displays (stable mounts, service displays) | `ENTITIES/grug_mobs/capital_displays.lua`, `grug_mounts/trainer.lua:6-7` | sockets | **A** |
-| Profession vendors | `ENTITIES/grug_traders/vendors.lua` | vendor sockets in plots | **A** |
-| Capital readiness | `start_npcs.lua:1222-1240` | anchor or any socket block loaded | **A** |
-| Mob spawn policy | `ENTITIES/grug_mobs/spawn_policy.lua:36-99` | zone id | unaffected |
-| World map | `PLAYER/grug_map/page.lua:19-21` (labels), `base.lua` `road_polylines()` | anchor + polylines | **F** only if the map should draw walls/streets (not today) |
-| Protection, water guard, terrain-damage guard | `grug_core` via `territory_rule_at` → `capital_member` | 532 square | **F** (see U4) |
+| Innkeeper / home arrival | `PLAYER/grug_home/locations.lua:10-15` (6 hard-coded plot socket ids: `terrace_alehouse/…`, `homes_tavern/…`, `homes_longhouse/…`, `homes_lane_house/…`, `warren_clan_house/…`, `vine_longhouse/…`); `grug_core.assign_innkeeper_socket` (`settlement_sockets.lua:306-319`) | a missing plot id is a **load error**; the arrival is `socket.pos + (1, −0.49, 0)` in **world +x** (`grug_home/init.lua:9`) — with a rotated plot that cell may be a wall, `safe_arrival` (`travel.lua:29-46`) then returns nil ("Home arrival is unavailable") and death respawn falls back to the start (`travel.lua:108-122`) | **F (pinned)** |
+| Capital cook quest givers | `PLAYER/grug_quests/content_npcs.lua:35-50` (6 hard-coded plot ids, e.g. `homes_bakehouse/…_quest_cook`) | missing plot id asserts at load (`grug_quests/registry.lua:75-87`, `grug_map/providers.lua:58-61`) | **F (pinned)** |
+| Capital service plots | `wp13/capital_services.lua:4-39` (`M.PLOTS`, 8 service plots per capital; trainers, public stations) | must exist on every seed | **F (pinned)** |
+| Planned-water flow guard | `CORE/grug_core/water_guard.lua:17-60`; exception predicate `grug_mapgen/init.lua:15-41` from `column_values_at` water id/y | flow in protected territory is reverted unless it is planned water: planner canals and water under cross-river walls must be reported as planned water | **F** |
+| Hard protection (R1) | `grug_core/protection.lua:29-47` → `zones.lua:779-790, 871-875` | 532 square; any plot, wall, bridge or connector outside ±266 would be mutable world | **C (square)** |
+| Guard level 60 | `grug_mobs/levels.lua:346-347` → `zones.lua:792-800, 921` | 532 square; a barracks outside it would get field levels | **C (square)** |
+| Mob spawn palettes | `ENTITIES/grug_mobs/spawn_policy.lua:36-99, 338-339` | capital **zone** has no ambient hostiles; only the 512 envelope is guaranteed zone-owned (`world.md:77-80`) | **C** (city must stay in its zone) |
+| Persisted NPC state | mod storage `startnpc:<key>:<socket_id>` (`start_npcs.lua:427-439, 731-746`); entity staticdata with world positions (`:1058-1180`); orphans are neither matched nor removed (`:784-787`) | the layout must be **identical on every boot of a world** (deterministic from seed and code); a planner code change inside an existing world leaves orphan NPCs — acceptable in fresh-server mode | **F (determinism)** |
+| Full-world preparation identity | `grug_core/starts_preload.lua:80-95` asserts `preparation_source.identity`, built from plot boxes (`wp40/preparation_source.lua:26-75`) | per seed is fine; plot boxes must come from the plan; a planner change rejects resuming a full-mode world (fresh-server mode) | **A** |
+| Quest texts | `PLAYER/grug_quests/content_civic.lua` | name district buildings (terrace/homes/market bakehouse, mourners' hall, warren cook court, shore smokehouse "above the cenote", muster yard) — fine while those plots exist; "beyond its walls" for **all six** capitals, incl. the open Lethariel and Kezamba (already inaccurate); "gates", "follow the road" (lines 44–689) | text only |
+| Design text | `world_zones.md:1223-1238` ("Four fixed 32-node-wide road gates", gate→zone table) | contradicts per-seed gates; the follow-up paragraph already says the planner places them | text only |
 
-**Rule for the planner:** every plot id that a consumer names (inn,
-cook, profession vendors, stable, trainers) must be placed on every seed.
-Today all 52 are placed unconditionally; a planner that drops plots for lack
-of room must never drop these (a "required" flag per plot).
+**Follows automatically (A) or needs only the fixed core (C)**
+
+| Consumer | Where | Class |
+|---|---|---|
+| NPC placement engine, every role; capital detected via `grug_core.capital_anchor` | `ENTITIES/grug_mobs/start_npcs.lua:528-551, 553-759, 1182-1249` | A |
+| District patrol loops, barracks/tower posts | same engine, `socket.group` (`:620-633`) | A |
+| Gatehouse posts, gate-tower loops, royal guards, kings, city-ring loop | core sockets (`start_npcs.lua:293-315, 703-705`; `highcourt.lua:240-255`); the outer wall carries no NPCs (`settlements.md:281-282`) | C |
+| Residents, spares, walkers (every 5th idle in authored order) | `start_npcs.lua:166-215, 634-674` | A (walker choice follows socket order) |
+| NPC scan radius | `start_npcs.lua:164, 612-619` (farthest socket + 48) | A |
+| Race vendors (core), profession vendors (plots) | `ENTITIES/grug_traders/vendors.lua:482-551, 677-692` | C / A |
+| Trainers, repair providers | `ITEMS/grug_repair/providers.lua:34-39` (NPC within 2 of its socket) | A |
+| Riding trainer, mount/gear displays | `PLAYER/grug_mounts/trainer.lua:5-32`; `grug_mobs/capital_displays.lua:42-58` (walk pairs by id convention) | A |
+| Public crafting/brewing stations | `PLAYER/grug_jobs/station_nodes.lua:235-246`; `ITEMS/grug_alchemy/recipes.lua:186-199` | A |
+| Envoy quest givers | `content_npcs.lua:36-51` (core sockets) | C |
+| Capital readiness | `start_npcs.lua:1222-1249` (anchor banner or any socket block) | C |
+| World map: labels, service/quest/home markers | `PLAYER/grug_map/page.lua:16-24, 64-75`; `providers.lua:29-91` | C / A |
+| World map: roads, rivers, cache key | `grug_map/base.lua:104-120, 322-356` (`road_polylines()` stub; key = seed, preparation identity, anchor heights, water layout) | optional: draw walls/streets |
+| Cloud base | `CORE/grug_core/atmosphere_zones.lua:348-371` (9 samples at ±48 around the anchor) | C |
+| Terrain-damage guard (mobs, explosions) | mobs_redo `core.is_protected(pos, "")` → `protection.lua:39-41` (always protected for empty names) | unaffected |
+| Death respawn fallback, home persistence | `grug_factions/init.lua:233, 371-384`; player meta ids | unaffected |
+| Farming ecology | `ITEMS/grug_farming/ecology.lua:64-75, 133-148` | unaffected |
+| Starts-only preparation | `grug_core/preparation_plan.lua:45-61` (starts only) | unaffected |
+
+**Searched, found nothing:** runtime housing or claims (no housing mod
+exists yet), music/ambience zones, district names in the HUD, fixed
+in-capital coordinates in quests, any read of a city gate position or axis
+outside the mapgen.
+
+**Rules for the planner that follow from this:**
+1. **Required plots** are always placed: the inn plot, the cook plot, the
+   eight service plots (`capital_services.PLOTS`) and the stable. Only other
+   plots may be left out on cramped seeds.
+2. The inn arrival offset must rotate with the plot (or be published as its
+   own socket) — a one-line change in `grug_home`, or a mapgen-side arrival
+   landmark.
+3. The layout is a pure function of seed and code, so every boot of a world
+   registers the same sockets.
+4. The city (plots, walls, gates, connectors) stays inside the 532 square
+   and inside the capital zone, unless U4 is answered otherwise.
+5. Planner canals are planned water in `column_values_at`.
 
 ## 3. What depends on sizes, gates and identities
 
@@ -165,6 +220,14 @@ of room must never drop these (a "required" flag per plot).
 | Ring street ±96, lanes, lots | per-capital tables | hard | replaced |
 | Blueprint identities | 510 settlement identity rows; plot identity = its cells, not its position | derived | unchanged if rotation is applied at projection |
 | District permutation hash | `*_quadrants.lua` | per seed | replaced by planner choice |
+| Claim/resource exclusion 704, cave core 512, hard 532 | `source/simple_map.lua:408-466, 536-578`; readers in `r6_settlement.lua:148-240, 784-844, 2332-2341, 2660-2671`, `r6_planner.lua:274-314, 483`, `world_content.lua:70-77`, `simple_map.lua:598-602` | hard | unchanged while the reserved square stays; `route_corridor` recipe exists but has no rows (`simple_map.lua:530`) |
+| Calm bowl `capital_r_in` 260 / `r_out` 520 (comment ties 260 to plots ~240 out) | `terrain_data.lua:74-83`; `terrain_field.lua:745-783, 849-907` | data | can shrink with the city (keyed to the anchor) |
+| Legacy copy of the sizes and gate stations at ±256 | `source/catalog.lua:136-140, 1658-1676` (loaded only for rare patrol offsets, `r7_runtime.lua:304-307`) | dead for capitals | delete in cleanup |
+| Hard-coded ±266 / ±265 besides the overlay bound | `r7_settlement.lua:1536` (approach clip), `preparation_source.lua:49-52` | hard | a fifth and sixth copy of the square |
+| Descriptor checks | `r7_settlement.lua:539-565, 607-633, 662-666, 723-729, 783-817, 1136-1141, 1330-1336` (plot x/z within ±1023, cells in plot bounds, overlay width/reach, lazy rebuild SHA equal, anchor literals) | fail-closed | all satisfiable by a planner; the lazy rebuild needs a deterministic `build()` per seed |
+| Manifest | `r7_manifest.lua:130-142, 373-427, 507-535, 618-626` | derived | emerge must reproduce main's manifest SHA, so emerge needs the plan (payload) |
+| Anchor roster check (capital centre = `land_grade` with the anchor's feature id) | `r7_anchor_roster.lua:46-59` | fail-closed | unchanged (core fitting stays) |
+| `num_emerge_threads = 1` pin | `r7_runtime.lua:85-86` | hard | unchanged |
 
 ## 4. Known §11 defects and their causes
 
@@ -204,10 +267,12 @@ secondary roads; the lane is still iterating, so treat as indicative):
 
 ## 7. What this audit did not cover
 
-- The out-of-mapgen sweep in §2.2 was a targeted grep (socket registry, home
-  locations, quest NPCs, mounts, map, spawn policy, protection), not an
-  exhaustive read of every quest text. Two background sweeps were still
-  running when this was written; their findings should be merged before the
-  prototype brief.
+- §2.1b, §2.2 and §3 come from two read-only sweeps (all of `mods/` outside
+  the mapgen; `wp40/` and the shared mapgen modules) plus spot checks. The
+  per-capital `wp13` district files were read only where cited.
+- Claimed research KATs (`tools/wp13/blueprint_kat.lua`, `highcourt_kat.lua`)
+  cited by `wp13-npc-sockets-contract.md` no longer exist; the surviving
+  capital probe `tools/wp13/capital_probe/service_witness.lua:10, 75` pins 8
+  service plots per capital.
 - The Nhal Veyr edge cause is inferred from the code, not probed.
 - No engine run was made for this audit.
