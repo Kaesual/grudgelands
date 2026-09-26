@@ -14,11 +14,10 @@
 -- surface material, on the ground and on decks alike, with slabs of the
 -- same material; no railings (D74). A bridge run (a raised run that
 -- crosses water, `road_layout.lua` sampler) takes the bridge material as a
--- whole, surface and slabs. Pillars (and the course under a trail deck) are
--- the second material. Trails take gravel with the race's stone slab on
--- half steps; gravel falls, so on a deck it lies on a course of the pillar
--- material. Settlement and POI stamps come later in the same settle and
--- overwrite a road where they meet it.
+-- whole, surface and slabs. Pillars are the second material. Trails take
+-- the same materials as roads, only narrower (D75). Settlement and POI
+-- stamps come later in the same settle and overwrite a road where they meet
+-- it.
 return function(core_api)
 	local function fail(message) error("WP40 road writer: " .. message, 0) end
 	if type(core_api) ~= "table" or type(core_api.get_content_id) ~= "function" or
@@ -48,7 +47,6 @@ return function(core_api)
 			bridge = "default:junglewood", bridge_slab = "stairs:slab_junglewood",
 			pillar = "default:jungletree", wall = "default:mossycobble"},
 	}
-	local TRAIL_SURFACE = "default:gravel"
 	-- nodes cleared above a road surface or deck (the walking space)
 	local CLEAR_ABOVE = 4
 
@@ -60,7 +58,6 @@ return function(core_api)
 	for race, row in pairs(MATERIALS) do
 		local r = {}
 		for key, name in pairs(row) do r[key] = cid(name) end
-		r.trail_surface = cid(TRAIL_SURFACE)
 		resolved[race] = r
 	end
 	local air = core_api.CONTENT_AIR or cid("air")
@@ -97,7 +94,7 @@ return function(core_api)
 		local count = 0
 		for z = context.min_z, context.max_z do
 			for x = context.min_x, context.max_x do
-				local kind, road_y, terrain_y, class, pillar, bridge, wall_base, road_kind =
+				local kind, road_y, terrain_y, class, pillar, bridge, wall_base =
 					context.road_column_at(x, z)
 				if kind ~= nil then
 					local race = select(5, context.column_values_at(x, z))
@@ -106,16 +103,11 @@ return function(core_api)
 						count = count + 1
 						-- the road's one surface material (D74)
 						local surface, slab = m.surface, m.slab
-						if bridge then surface, slab = m.bridge, m.bridge_slab
-						elseif road_kind == "trail" then surface = m.trail_surface end
+						if bridge then surface, slab = m.bridge, m.bridge_slab end
 						local top = floor(road_y)
 						local half = road_y - top >= 0.5
 						if class == "deck" or class == "bridge" then
 							put(x, top, z, surface)
-							-- gravel needs a course under it on a deck
-							if surface == m.trail_surface and top - 1 > terrain_y then
-								put(x, top - 1, z, m.pillar)
-							end
 							local above = top + 1
 							if half then put(x, above, z, slab); above = above + 1 end
 							if pillar then

@@ -978,10 +978,9 @@ graph requirement may shape a zone, and nothing may require a graph to be
   elves silver sandstone block / aspen wood / aspen trunk / silver sandstone
   brick; undead stone brick / pine wood / mossy cobble / mossy cobble; orcs
   desert cobble / acacia wood / acacia trunk / desert stone brick; trolls
-  mossy cobble / jungle wood / jungle trunk / mossy cobble. Trails are gravel
-  with the race's stone slab on half steps, also on their decks, where the
-  gravel lies on a course of the pillar material; a trail bridge is wood like
-  a road bridge.
+  mossy cobble / jungle wood / jungle trunk / mossy cobble. Trails use the
+  same materials as roads, only narrower (D75); a trail bridge is wood like a
+  road bridge.
 - **Classes.** Roads between capitals and from capitals toward starts are
   primary (7 wide); roads to villages and into the contested zones are
   secondary (5 wide). See §7.5 for the corridor.
