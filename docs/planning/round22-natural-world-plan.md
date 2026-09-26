@@ -211,6 +211,7 @@ Decisions after the Phase 5 playtest (2026-09-26, user with coordinator):
 | D60 | **New work package "capital planner"** after water and roads: a one-time start computation after height, water and roads. Protected civic cores stay untouched (no water, no changes). Within the reserved area it places districts, houses, lanes, walls (which may cross rivers), bridges, the four gates with connector roads (D59) and canals (D58), so each capital fits its landscape. It absorbs the §11 goals (denser, more natural capitals) and the alley-stub defect. Start towns stay fixed and protected. | User, 2026-09-26. |
 | D61 | **Water bugs fixed in Phase 5b:** bright stripes at chunk edges on deep lake floors (lighting); civic water steps show no flowing water (natural rivers do). | User playtest. |
 | D62 | **Compaction point moves:** after the user accepts water (Phase 5b), before roads — so road work starts with a clean context (supersedes compaction point 2). | User, 2026-09-26. |
+| D63 | **Performance analysis package, parallel to the road prototype** (start right after the D62 compaction), as preparation for the general cleanup round (D4). One agent in its own worktree finds where the mapgen can get faster and estimates gain and risk per item. **Byte-identical changes only** (algorithmic improvements, removing redundant checks and dead work); anything that changes the world — e.g. dropping a noise octave — is excluded and at most listed in one line as "deliberately excluded". Guardrails: (1) areas the road integration will rebuild (road IDs in the planner, road overlay/raster, exclusion kinds) are only flagged "re-check after roads"; (2) nothing is merged during the road integration — the agent may prototype and prove byte-identical patches in its worktree (probe grids on several seeds + engine full digest, as in W0) to measure instead of estimate; small changes in code the roads surely do not touch (e.g. the per-voxel light integer checks) may be proposed to the user one by one earlier; (3) timing with paired before/after runs and the noise reported; big measurement runs when no heavy road run is active. Deliverable: a ranked list (measured gain, risk, proof method, "before/after roads") plus the proven patches; performance numbers stay reports (D32). | User, 2026-09-26: no specific pain point; the agent finds the potential itself; the world looks good and must not change. |
 
 All §9 questions are answered.
 
@@ -672,6 +673,9 @@ compacts its context only at these points:
    handover brought up to date first.
 3. Next candidate point: after roads, before Phase 6 and the capital
    planner (D60).
+
+After the D62 compaction two packages start together: the Phase 4 road
+prototype and the D63 performance analysis.
 
 ## 7. Where we go for the optimum, and where we relax
 
