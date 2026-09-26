@@ -195,6 +195,7 @@ data.water = {
 	LAKE_UNCARVE = 0.15,    -- a river valley's carve is undone from here to LAKE_RIM
 	LAKE_PROXY = 40,        -- bank distance proxy: (0.5 - indicator) * this
 	LAKE_RISE_D = 4,        -- dry ground inside the mask: height above water * this
+	LAKE_TRIM = 0.65,       -- river vertices this deep in their own lake carry no trough
 	-- rivers
 	RIVER_ACC = 900,        -- catchment cells (x256 node^2) that make a river
 	MIN_TRIB_CELLS = 10,    -- shorter tributaries are pruned
@@ -254,6 +255,10 @@ data.water = {
 	-- corner distance (civic_width / 2 * sqrt 2) plus this margin, grown by up
 	-- to the edge share; rivers may cross the reserved area around it
 	capital_keepout_margin = 32, capital_keepout_edge = 0.3,
+	-- a capital core's keep-out is soft: water drains through the reserved
+	-- area and the course bends past the core along a smooth one-sided lens
+	-- stretched LENS times along the flow (no circle arc round the core)
+	LENS = 2.5,
 	-- sampler buckets (segments by reach) and wet-occupancy cells (nodes)
 	BUCKET = 32, OCC = 16,
 	-- landmarks whose shallow depressions stay ponds (plus wetland zones),

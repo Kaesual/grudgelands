@@ -154,7 +154,14 @@ return function(P)
 		local nwob = opts.simplex(seed, "river_keepout")
 		local R, keep = {}, {}
 		for k = 0, N - 1 do R[k] = H[k] end
+		-- A soft keep-out (a capital core, D57) lifts nothing: rivers drain
+		-- through the reserved area as the terrain says, and the centreline
+		-- bends past the core on one side (`detour`); it only keeps lakes out
+		-- of the core. A hard one (a start, a civic lake) lifts the routing
+		-- surface, so water routes around it.
+		local soft = {}
 		for ei, e in ipairs(opts.keepouts or {}) do
+			soft[ei] = e.soft or nil
 			local rr = e.r * (1 + (e.edge or 0))
 			for iz = max(0, floor((e.z - rr - GZ0) / C)),
 					min(nz - 1, floor((e.z + rr - GZ0) / C) + 1) do
@@ -165,7 +172,7 @@ return function(P)
 					local k = iz * nx + ix
 					if sqrt(dx * dx + dz * dz) <= keep_radius(e, nwob, x, z) then
 						keep[k] = ei
-						if land[k] then R[k] = R[k] + P.KEEP_LIFT end
+						if land[k] and not e.soft then R[k] = R[k] + P.KEEP_LIFT end
 					end
 				end
 			end
@@ -398,7 +405,7 @@ return function(P)
 			for _, j in ipairs(ring_cells) do mask[j] = L.id end
 		end
 		stats.t_drainage = os.clock() - t0
-		return {nx = nx, nz = nz, N = N, H = H, land = land, keep = keep,
+		return {nx = nx, nz = nz, N = N, H = H, land = land, keep = keep, soft = soft,
 			recv = recv, acc = acc, lakes = lakes, lake_of = lake_of, mask = mask,
 			stats = stats, t0 = t0}
 	end
@@ -407,6 +414,7 @@ return function(P)
 	local function river_tree(S, opts)
 		local nx, nz, N = S.nx, S.nz, S.N
 		local land, keep, recv, acc, lake_of = S.land, S.keep, S.recv, S.acc, S.lake_of
+		local soft = S.soft
 		for _, hnt in ipairs(opts.sources or {}) do
 			local k = floor((hnt.x - P.GX0) / P.C + 0.5) + floor((hnt.z - P.GZ0) / P.C + 0.5) * nx
 			local guard = 0
@@ -418,7 +426,8 @@ return function(P)
 		end
 		local isriv = {}
 		for k = 0, N - 1 do
-			if land[k] and acc[k] >= P.RIVER_ACC and not lake_of[k] and not keep[k] then
+			if land[k] and acc[k] >= P.RIVER_ACC and not lake_of[k] and
+					not (keep[k] and not soft[keep[k]]) then
 				isriv[k] = true
 			end
 		end
@@ -445,7 +454,7 @@ return function(P)
 			local e = {start = k}
 			if r < 0 or not land[r] then e.end_kind, e.end_cell = "sea", r
 			elseif lake_of[r] then e.end_kind, e.end_cell, e.end_lake = "lake", r, lake_of[r]
-			elseif keep[r] then e.end_kind = "keepout"
+			elseif keep[r] and not soft[keep[r]] then e.end_kind = "keepout"
 			else e.end_kind = "land" end
 			queue[#queue + 1] = e
 		end
@@ -610,15 +619,84 @@ return function(P)
 			local rmax_all = 0
 			for i = 1, n do if reach[i] > rmax_all then rmax_all = reach[i] end end
 			for _, e in ipairs(opts.keepouts or {}) do
-				for i = 1, n do
-					local x, z = out[i][1], out[i][2]
-					local r = keep_radius(e, nwob, x, z) + reach[i] + P.POI_PAD
-					local dx, dz = x - e.x, z - e.z
-					local d2 = dx * dx + dz * dz
-					if d2 < r * r then
-						local d = sqrt(d2)
-						if d < 1e-3 then dx, dz, d = 1, 0, 1 end
-						out[i] = {e.x + dx / d * r, e.z + dz / d * r}
+				if e.soft then
+					-- A soft keep-out: the course bends past it on the side it
+					-- already leans to, along a smooth lens stretched LENS times
+					-- along the flow, so the bend starts early and never
+					-- follows the core's outline.
+					local best, bi = math.huge, nil
+					for i = 1, n do
+						local d2 = (out[i][1] - e.x) ^ 2 + (out[i][2] - e.z) ^ 2
+						if d2 < best then best, bi = d2, i end
+					end
+					local rc = e.r * (1 + (e.edge or 0)) + rmax_all + P.POI_PAD
+					if bi and best < rc * rc then
+						local function frame(i)
+							local ia, ib = max(1, i - 4), min(n, i + 4)
+							local tx, tz = out[ib][1] - out[ia][1], out[ib][2] - out[ia][2]
+							local tl = sqrt(tx * tx + tz * tz)
+							if tl < 1e-6 then return 1, 0 end
+							return tx / tl, tz / tl
+						end
+						local tx, tz = frame(bi)
+						local side = (tx * (out[bi][2] - e.z) - tz * (out[bi][1] - e.x)) >= 0 and 1 or -1
+						-- the push along each vertex's own normal (its local
+						-- frame, so a curved course keeps its shape), then
+						-- smoothed along the course
+						local px, pz = {}, {}
+						for i = 1, n do
+							px[i], pz[i] = 0, 0
+							local x, z = out[i][1], out[i][2]
+							local dx, dz = x - e.x, z - e.z
+							local r0 = keep_radius(e, nwob, x, z) + reach[i] + P.POI_PAD
+							local A = P.LENS * r0
+							local fx, fz = frame(i)
+							local a = dx * fx + dz * fz
+							if a * a < A * A then
+								local f = 1 - abs(a) / A
+								local lim = r0 * f * f * (3 - 2 * f)
+								local l0 = -dx * fz + dz * fx
+								if abs(l0) < lim and side * l0 < lim then
+									local dl = side * lim - l0
+									px[i], pz[i] = -fz * dl, fx * dl
+								end
+							end
+						end
+						for _ = 1, 6 do
+							local ox, oz = {}, {}
+							for i = 1, n do
+								local ia, ib = max(1, i - 1), min(n, i + 1)
+								ox[i] = (px[ia] + 2 * px[i] + px[ib]) / 4
+								oz[i] = (pz[ia] + 2 * pz[i] + pz[ib]) / 4
+							end
+							px, pz = ox, oz
+						end
+						for i = 1, n do
+							local x, z = out[i][1] + px[i], out[i][2] + pz[i]
+							-- the smoothing may leave a vertex short of the core:
+							-- the radial clearance still holds
+							local r = keep_radius(e, nwob, x, z) + reach[i] + P.POI_PAD
+							local dx, dz = x - e.x, z - e.z
+							local d2 = dx * dx + dz * dz
+							if d2 < r * r then
+								local d = sqrt(d2)
+								if d < 1e-3 then dx, dz, d = 1, 0, 1 end
+								x, z = e.x + dx / d * r, e.z + dz / d * r
+							end
+							out[i] = {x, z}
+						end
+					end
+				else
+					for i = 1, n do
+						local x, z = out[i][1], out[i][2]
+						local r = keep_radius(e, nwob, x, z) + reach[i] + P.POI_PAD
+						local dx, dz = x - e.x, z - e.z
+						local d2 = dx * dx + dz * dz
+						if d2 < r * r then
+							local d = sqrt(d2)
+							if d < 1e-3 then dx, dz, d = 1, 0, 1 end
+							out[i] = {e.x + dx / d * r, e.z + dz / d * r}
+						end
 					end
 				end
 			end
@@ -1304,6 +1382,27 @@ return function(P)
 			levels(S, opts)
 		end
 		troughs(S, opts)
+		-- A river's vertices well inside its source or end lake carry no
+		-- trough (a straight trench across the lake bed with straight
+		-- edges at the shore): the river starts and ends at the shore.
+		local lake_ind = M.lake_indicator(S.mask, S.nx, S.nz)
+		local function inside(rv, i, lid)
+			local id, m = lake_ind(rv.pts[i][1], rv.pts[i][2])
+			return id == lid and m >= P.LAKE_TRIM
+		end
+		for _, rv in ipairs(S.rivers) do
+			local n = #rv.pts
+			if rv.src_lake then
+				for i = 1, n - 1 do
+					if rv.w[i] > 0 and inside(rv, i, rv.src_lake) then rv.w[i] = 0 else break end
+				end
+			end
+			if rv.end_lake and not rv.parent then
+				for i = n, 2, -1 do
+					if rv.w[i] > 0 and inside(rv, i, rv.end_lake) then rv.w[i] = 0 else break end
+				end
+			end
+		end
 		local stats = S.stats
 		local nsteps, maxstep, hist = 0, 0, {}
 		for _, rv in ipairs(S.rivers) do
@@ -1634,7 +1733,7 @@ return function(P)
 			local h = h0
 			local d, w, lref, level, seg, R, D, V, wl, lown = river_at(x, z)
 			local bank_distance, bank_y, material_distance
-			local channel = false
+			local channel = 0
 			if d then
 				local a = w / 2
 				local t = R > 0 and d / (R * (1 + WOB * nwall(x / 53, z / 53))) or 1
@@ -1668,7 +1767,9 @@ return function(P)
 						if hl < 0 then hl = 0 end
 						local de = D > 0 and trough_inv(D / (hl + D), V) * R or 0
 						if de < a then de = a end
-						channel = d <= de
+						-- the river's own channel (kept carved through a lake's
+						-- rim): full in its core, fading out by the water edge
+						channel = 1 - smoothstep(0.5 * a, de + 4, d)
 						local u = d - de
 						material_distance = (u > 0 and u or 0) * P.RIVER_BANK_MUL
 						u = d - wl
@@ -1689,13 +1790,15 @@ return function(P)
 				if not bank_distance or ld < bank_distance then
 					bank_distance, bank_y, material_distance = ld, L, ld
 				end
-				-- A valley never cuts into a lake's rim: outside the river
-				-- channel the carve fades out toward the lake and is fully
-				-- undone by the rim threshold, so no one-node bank-fill line
-				-- runs across a carved valley at an outlet.
-				if h < L and h0 > h and not channel then
+				-- A valley never cuts into a lake's rim: the carve fades out
+				-- toward the lake and is fully undone by the rim threshold, so
+				-- no one-node bank-fill line runs across a carved valley at an
+				-- outlet. Only the river's channel stays carved through the rim,
+				-- fading smoothly across its width (no straight channel edge).
+				if h < L and h0 > h and channel < 1 then
 					local keep = min(h0, L)
-					h = h + (max(h, keep) - h) * smoothstep(P.LAKE_UNCARVE, P.LAKE_RIM, m)
+					h = h + (max(h, keep) - h) *
+						smoothstep(P.LAKE_UNCARVE, P.LAKE_RIM, m) * (1 - channel)
 				end
 				if m >= 0.5 and h < L then
 					return h, L, "lake", lid, 0, L

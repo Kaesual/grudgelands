@@ -263,6 +263,8 @@ local function height_factory(dependencies)
 					end
 					local e = {x = x, z = z, id = a.id, r = r,
 						edge = start and WP.start_keepout_edge or WP.capital_keepout_edge}
+					-- a capital core is soft: rivers bend past it (D57)
+					if not start then e.soft = true end
 					-- the lowest natural ground inside the disc (lake rule)
 					local g, r = math.huge, e.r * (1 + e.edge)
 					for dz = -r, r, 16 do
@@ -322,6 +324,9 @@ local function height_factory(dependencies)
 							local d = math.sqrt((p[1] - cx) ^ 2 + (p[2] - cz) ^ 2)
 							if d > r then r = d end
 						end
+						-- hard (a lifted routing surface): a soft one lets the
+						-- drainage into the lake's basin and the course then
+						-- rings the lake
 						k = {x = cx, z = cz, r = r + 8}
 					end
 				end
