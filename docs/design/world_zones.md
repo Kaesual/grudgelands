@@ -544,9 +544,11 @@ replaced; git history before this rewrite records that model.
 - Roads, trails and boat routes follow §9. A road never creates land; its
   corridor stays on land or crosses inland water by bridge or ford. Shelf,
   deep ocean and dragon channels are forbidden to roads.
-- Primary roads use a 7-node visible surface and 16-node exclusion corridor;
-  secondary roads use 5/12; trails use 3/8. The corridor remains
-  claim-ineligible even after players alter the visible road.
+- Primary roads use a 7-node surface, secondary roads 5 and trails 3. The
+  claim-exclusion corridor is the road surface, its cut and fill slopes and
+  2 nodes beyond the road edge; vegetation, POI content, spawns and housing
+  reservations keep off it. The corridor remains claim-ineligible even after
+  players alter the visible road.
 - Roads and open-world bridges are mutable and never hard-protected.
 - Starts keep their start-pad fitting (`settlements.md`); capitals keep their
   96-node civic core and terrace contract (§12).
@@ -925,42 +927,71 @@ graph requirement may shape a zone, and nothing may require a graph to be
 - **Shape of the network.** A spanning tree over those endpoints plus a few
   loops where a loop is short and useful. Junctions are T or Y shaped with at
   most three or four branches; there are no star junctions.
-- **Routing.** Routes are found once, when the world session is built, by
-  pathfinding over a coarse terrain cost grid (slope, water, cliffs) and
-  cached for the session. The found path is smoothed into a curve and
-  rasterized as many short pieces, so no long straight segment appears and the
-  road follows the terrain.
-- **Grade (Round 22, D49–D51).** Roads are walkable by players and mounts
-  without jumping: the profile runs in half-node steps with a slab on every
-  half step, at most ½ node between neighboring road columns (max grade
-  1:2), achieved by cut and fill along the found path. Routing prefers
-  gentler grades; serpentines with flat hairpin platforms climb steep
-  slopes. Only trails may use straight stair flights. The road stays near
-  ground level: no long ramps into flat land and no high fixed control
-  points.
-- **Cross-section (Round 22, D44).** Uphill the terrain is cut to road level
-  with a slope back; downhill up to about 2 nodes is a sloped natural
-  embankment, beyond that the road is a deck on pillars with a railing.
-  Bridges use the same deck system; one design with materials per race.
+- **Routing (as built, Round 22 Phase 4).** Routes are found once, when
+  the world session is built in main, by pathfinding over the water layout's
+  16-node grid of the natural terrain (grade, cross slope, rivers, lakes,
+  reserved areas), and handed to the map generator as data; nothing is
+  cached on disk. Turns cost, so steep slopes are climbed by serpentines with
+  long legs one grid cell (16 nodes) apart. The path is smoothed into a
+  curve with a small lateral wiggle on gentle ground, so no long straight
+  segment appears.
+- **Network.** The capitals of a faction are chained west to east; starts,
+  villages and the contested endpoints then join the nearest road (T
+  junctions, at least 64 nodes apart); loops are added where the network
+  distance between two same-faction settlements within 1,100 nodes is more
+  than 1.4 times the straight distance (up to four per world; one to four on
+  the tested seeds).
+- **Grade (Round 22, D49–D51, D67).** Roads are walkable by players and
+  mounts without jumping: the profile runs in half-node steps with a slab on
+  every half step, at most ½ node between neighboring road columns (max grade
+  1:2). Routing prefers grades gentler than about 1:4; hairpins and junction
+  mouths are flat. There are no stairs, also not on trails. The profile both
+  cuts and fills and stays near the ground: no long ramps into flat land and
+  no high fixed control points (junctions and start gates take their
+  ground's height).
+- **Cross-section (Round 22, D44, D67).** Uphill the terrain is cut to road
+  level with a slope back of about 1:1 (steeper rock beyond 6 nodes); the cut
+  slope keeps the terrain's own surface (grass, dirt, rock), and a low
+  retaining wall stands only at the foot of deep cuts. Downhill up to about
+  2 nodes is a natural embankment, never a vertical wall; beyond that the road
+  is a deck on pillars with a railing. On steep side slopes a half gallery
+  (a shallow uphill cut, the downhill half on pillars) is preferred to a deep
+  uphill cut. Decks belong to one-sided galleries (typical at serpentines)
+  and short valley crossings (both ends on the ground, about 32 nodes or
+  less); a deck free on both sides elsewhere is a last resort where the
+  terrain falls faster than a road may (D68).
 - **Water crossings** are chosen by cost, preferring narrow and shallow
-  places. Deep crossings use one good bridge design (abutments, simple deck,
-  railings); shallow crossings use fords. Ugly open-world bridges are a named
-  target to remove.
+  places. Bridges are the same deck with pillars down to the river bed and a
+  railing, at least 2 nodes above the water; where the road runs below the
+  water surface it fords on a raised bed with at least one node of water over
+  it. A cut never lowers ground below nearby water.
+- **Materials per race (D48).** One design: road surface and half-step slab,
+  deck and deck slab, pillar, rail, wall. Humans: cobble, wood, tree trunk,
+  wooden rail, stone brick. Dwarves: stone block, pine wood, stone-brick
+  pillars. Elves: silver sandstone block, aspen wood, aspen trunk. Undead:
+  stone brick, pine wood, mossy cobble pillars. Orcs: desert cobble, acacia
+  wood, acacia trunk. Trolls: mossy cobble, jungle wood, jungle trunk. Trails
+  are gravel with the race's stone slab on half steps.
 - **Classes.** Roads between capitals and from capitals toward starts are
-  primary (7/16); roads to villages and into the contested zones are secondary
-  (5/12). Both widths are in §7.5.
-- **Capital gates.** Roads reach a capital through its fixed cardinal gates
-  (§12). A gate that no road uses stays a gate.
+  primary (7 wide); roads to villages and into the contested zones are
+  secondary (5 wide). See §7.5 for the corridor.
+- **Capitals (D59).** Roads end at the edge of a capital's reserved square
+  (512 nodes); the capital planner places the gates and connects them to the
+  road ends with the same routing, profile and raster (a point-to-point route
+  of the road module). Until then the gates stand unconnected.
+- **Starts.** A start's road leaves its gate toward the own capital along a
+  straight 32-node stretch beyond the town's 64-node gate line, level with
+  the start pad.
 - Retired: the 57-edge authoritative route graph, hub stations in every zone,
   star junctions, the shared junction grade solve and the capital ingress
   corridors.
 
 ### 9.3 Trails
 
-- Outposts, mines and camps get narrow natural trails (3/8) where cheap,
-  routed like roads with a smaller width, usually joining the nearest road.
-  This goal may be relaxed or dropped if it brings unexpected cost or
-  complexity (D19).
+- Every outpost, mine, bandit and Mirefolk camp on the two mainlands that is
+  not already a road endpoint gets a trail (3 wide), routed like a road that
+  may be a little steeper, joining the nearest road (D19, D67). A trail is
+  never dropped for its cost or for a floating deck (D68).
 
 ### 9.4 Offshore travel
 
@@ -1222,11 +1253,13 @@ one-cell settlement checks are unchanged.
   are accepted. Changes before then must not work against this.
 - A fixed 96×96 civic core contains the king's hall, waypoint and principal
   service court. Four fixed 32-node-wide road gates leave north/east/south/
-  west. The road itself is authored by WP13 inside that reserved corridor.
+  west. The avenue to each gate is authored by WP13 inside the city.
 - The former 128-node hard-protected capital ingress corridors from each
-  front gate to the Battlegrounds are retired (Round 22, D9; removed from the
-  code in Phase 4). Capitals are
-  reached by the ordinary roads of §9.
+  front gate to the Battlegrounds are retired (Round 22, D9). Capitals are
+  reached by the ordinary roads of §9, which end at the edge of the reserved
+  512-node square anywhere along it (D59); the gates are connected to those
+  road ends by the capital planner (D60). Until then the gates stand
+  unconnected (D31).
 
 | Capital | Outer/home gate | Front gate | West gate | East gate |
 |---|---|---|---|---|

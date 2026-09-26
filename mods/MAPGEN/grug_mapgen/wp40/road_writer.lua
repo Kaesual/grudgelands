@@ -114,7 +114,8 @@ return function(core_api)
 							if pillar then
 								for y = terrain_y + 1, top - 1 do put(x, y, z, m.pillar) end
 							end
-							if rail then put(x, top + 1, z, m.rail); above = top + 2 end
+							-- the rail stands on the deck, on its slab on a half step
+							if rail then put(x, above, z, m.rail); above = above + 1 end
 							clear(x, above, top + CLEAR_ABOVE, z)
 						elseif class == "ford" then
 							-- the raised bed under the water; a slab on a half step

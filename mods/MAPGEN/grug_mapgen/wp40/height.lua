@@ -841,7 +841,7 @@ local function height_factory(dependencies)
 					for index = 1, #fittings do fitting_by_id[fittings[index].id] = fittings[index] end
 					local inputs = road_module.inputs(source, function(id)
 						local fitting = fitting_by_id[id]
-						return fitting.center.x, fitting.center.z
+						return fitting.center.x, fitting.center.z, fitting.reference_y
 					end)
 					inputs.grid = water_cache.grid
 					inputs.rivers = water.polylines()

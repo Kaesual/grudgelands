@@ -587,7 +587,7 @@ local function new_module(P)
 			local pin_start
 			if road.a_kind == "start" then
 				-- the gate stretch starts on the start pad's ground, level
-				pin_start = floor(T[1][1] * Q + 0.5)
+				pin_start = floor((road.a_y or T[1][1]) * Q + 0.5)
 				for i = 1, min(n, P.START_STRETCH) do dmax[i] = 0 end
 			end
 			-- a point-to-point road may pin its ends (a gate's ground)
@@ -1206,7 +1206,7 @@ local function new_module(P)
 			local X, Z = make_geometry(ctrl, hw)
 			-- snap the end back onto the parent centreline and record the junction
 			local road = {id = #roads + 1, kind = kind, hw = hw, X = X, Z = Z,
-				a = a.id, a_kind = a.kind, b_kind = b_kind, junctions = {}, cells = path,
+				a = a.id, a_kind = a.kind, a_y = a.y, b_kind = b_kind, junctions = {}, cells = path,
 				dirs = dirs}
 			if info.kind == "road" then
 				local parent = roads[info.road]
@@ -1237,7 +1237,8 @@ local function new_module(P)
 					X, Z = nX, nZ
 				end
 			end
-			if a.core then trim_front(a.core / 2 + 2) end
+			-- (its round end stays outside the building core)
+			if a.core then trim_front(a.core / 2 + 2 + hw) end
 			road.X, road.Z = X, Z
 			if road_check and not road_check(road) then return nil end
 			road.expand = last_expand
@@ -1810,7 +1811,7 @@ local function new_module(P)
 	-- (every other outpost, mine, bandit and Mirefolk camp on the two
 	-- mainlands, D19), reserved areas (capital squares, D59; start envelopes;
 	-- POI cores), the build order and the loop candidates. `position_of(id)`
-	-- returns an anchor's fitted x, z.
+	-- returns an anchor's fitted x, z and (optionally) its fitted ground y.
 	---------------------------------------------------------------------------
 	function M.inputs(source, position_of)
 		local prof = {}
@@ -1862,8 +1863,11 @@ local function new_module(P)
 			local fac = faction(a.zone_numeric_id)
 			if a.slot_id == "start" then
 				local cap = own_capital(x, z, fac)
-				nodes[#nodes + 1] = {id = a.id, kind = "start", x = x, z = z, faction = fac,
-					gate_dir = cap.z > z and 1 or -1, zone = a.zone_numeric_id}
+				-- the gate stretch starts level with the start pad (its fitted
+				-- ground y when `position_of` gives it)
+				local _, _, pad_y = pos(a)
+				nodes[#nodes + 1] = {id = a.id, kind = "start", x = x, z = z, y = pad_y,
+					faction = fac, gate_dir = cap.z > z and 1 or -1, zone = a.zone_numeric_id}
 				reserved[#reserved + 1] = {id = a.id, x = x, z = z, half = 80}
 			elseif a.slot_id ~= "capital" then
 				local core = prof[a.template_id].building_core_width or 16
