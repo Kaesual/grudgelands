@@ -619,6 +619,14 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
     halfway between the lowest bank ground and the highest ground under it
     (raised banks up to 6, trough cut up to 6 on the three seeds), sealed
     8 nodes off natural water (checked with keep-outs shrunk to ~core).
+- **Lighting regression found after the W3a merge (2026-09-26):** a broad
+  census (30×30 chunks, normal order) showed ~391 k too-dark air nodes under
+  open sky on main 84c1c9dc (base f6e66330: 3): `presun` seeded sun only at
+  the first real node below ignore, which is v7's provisional overtop stone.
+  User decision: **Fix A** — every sunlight-passing node with original day
+  light 15 in such halo columns starts a sun run (census back to 3 / 0). The
+  census becomes a permanent lighting check next to the windows
+  (`~/projects/grudgelands-orchestration/r22/lighting-checks/`).
 - **Lane W3b — rivers v2:**
   - trough model (D54): a smooth V/U trough blended into the terrain, width
     varying with flow, noise and terrain; water fills to the flat reach level;
