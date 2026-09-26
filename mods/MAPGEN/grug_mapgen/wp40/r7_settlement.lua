@@ -22,12 +22,12 @@
 --      its cells reach the world:
 --        "anchor"    -- anchor-relative, exactly like a start: the cell at
 --                       local y = 0 lands on the settlement's fitted anchor.
---        "reference" -- terrain-relative: the descriptor carries the plot's
---                       offset from the anchor and the plot carries its own
---                       REFERENCE COLUMN, whose pure final height is asked
---                       ONCE per session and cached. A capital's district
---                       plots stand on terraced ground and cannot be
---                       anchor-relative.
+--        "reference" -- a placed capital plot: the descriptor carries the
+--                       plot's offset from the anchor, its quarter TURNS and
+--                       its BASE height, all from the world's capital layout
+--                       (`capital_planner.lua`); the cells are turned at
+--                       projection time, the identity stays the unturned
+--                       cells.
 --        "overlay"   -- no cells at all until a mapchunk asks for its columns:
 --                       a capital's city edge (walls, gatehouses, the open
 --                       capitals' belt) is a pure function of the capital
@@ -438,21 +438,6 @@ local PACK_BIAS, PACK_SPAN = 1024, 2048
 local function packed_key(x, y, z)
 	return ((x + PACK_BIAS) * PACK_SPAN + (y + PACK_BIAS)) * PACK_SPAN +
 		(z + PACK_BIAS)
-end
-
--- The same idea for a WORLD column, which the avenue ground memo is keyed by.
--- The map limit is 31007, so the biased coordinate stays below 65536 and the
--- product below 2^32.
-local WORLD_BIAS, WORLD_SPAN = 31008, 65536
-local function column_key(x, z)
-	return (x + WORLD_BIAS) * WORLD_SPAN + (z + WORLD_BIAS)
-end
-
--- And for a whole world cell: the column key times the vertical span plus the
--- biased y. The map limit keeps every factor below 65536, so the product stays
--- under 2^48 and is exact in a double.
-local function cell_key(x, y, z)
-	return column_key(x, z) * WORLD_SPAN + (y + WORLD_BIAS)
 end
 
 local function hex(bytes)
