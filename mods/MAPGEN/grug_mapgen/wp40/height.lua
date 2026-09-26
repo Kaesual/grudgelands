@@ -1275,6 +1275,7 @@ local function height_factory(dependencies)
 			return new_y, {kind = kind, road_y = road_y, road_id = road_id,
 				index = index, class = class,
 				pillar = pillar, bridge = extra and extra.bridge or nil,
+				rail = extra and extra.rail or nil,
 				wall_base = extra and extra.base or nil}
 		end
 
@@ -1677,7 +1678,8 @@ local function height_factory(dependencies)
 			if not road then return nil end
 			local r = road.road_id and road_sampler.roads[road.road_id]
 			return road.kind, road.road_y, terrain_y, road.class, road.pillar,
-				road.bridge, road.wall_base, road.road_kind or (r and r.kind) or nil
+				road.bridge, road.wall_base, road.road_kind or (r and r.kind) or nil,
+				road.rail or nil
 		end
 		-- "road_corridor" on a road column (surface or side slope) and within
 		-- the module's EXCLUDE_PAD of a road's edge, else nil: the claim

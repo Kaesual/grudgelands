@@ -74,6 +74,9 @@ local DEFAULT_P = {
 	WALL_MIN = 5, WALL_H = 3, PILLAR_EVERY = 5,
 	-- ground points a bridge run lands on at each bank (D74)
 	BRIDGE_LAND = 2,
+	-- capital street railings (D75): straight where the heading turns less
+	-- than this (radians) over this many points either side
+	STRAIGHT_TURN = 0.14, STRAIGHT_REACH = 8,
 	-- road-corridor claim exclusion beyond the road edge (nodes)
 	EXCLUDE_PAD = 2,
 	-- a road ends CORE_GAP nodes (square distance) outside a village's or
@@ -1975,14 +1978,32 @@ local function new_module(P)
 		end
 		return out
 	end
+	-- Straight points of a capital street (D75: railings in capitals only on
+	-- straight streets and bridges): the heading changes by less than
+	-- STRAIGHT_TURN radians between the STRAIGHT_REACH points before and
+	-- after the point.
+	function M.straight_points(X, Z)
+		local out, n, w = {}, #X, P.STRAIGHT_REACH
+		for i = 1 + w, n - w do
+			local h1 = atan2(Z[i] - Z[i - w], X[i] - X[i - w])
+			local h2 = atan2(Z[i + w] - Z[i], X[i + w] - X[i])
+			local d = abs(h2 - h1)
+			if d > pi then d = 2 * pi - d end
+			if d < P.STRAIGHT_TURN then out[i] = true end
+		end
+		return out
+	end
+	-- the road kinds the capital planner makes (`capital_planner.lua`)
+	local STREET = {avenue = true, lane = true}
 	function M.sampler(layout)
 		local BUCKET = P.BUCKET
 		local buckets = {}
 		local SIDE = P.SIDE_MAX
 		local function bkey(bx, bz) return bz * 8192 + bx end
-		local bridge_at = {}
+		local bridge_at, straight_at = {}, {}
 		for _, r in ipairs(layout.roads) do
 			bridge_at[r.id] = M.bridge_points(r.cls)
+			if STREET[r.kind] then straight_at[r.id] = M.straight_points(r.X, r.Z) end
 			local X, Z = r.X, r.Z
 			local reach = r.hw + SIDE + 1
 			for i = 1, #X - 1 do
@@ -2079,6 +2100,11 @@ local function new_module(P)
 				local extra = {class = kind, bridge = bridge_at[br.id][idx]}
 				if kind == "deck" or kind == "bridge" then
 					extra.pillar = (idx % P.PILLAR_EVERY == 0) and best > -1.2
+					-- a capital street's deck or bridge carries a railing on its
+					-- open edge where the street runs straight (D75)
+					local straight = straight_at[br.id]
+					extra.rail = straight ~= nil and straight[idx] == true and
+						best > -1 and ry - t >= 2
 				end
 				local newt = t
 				if kind == "cut" or kind == "fill" or kind == "grade" then newt = top end
