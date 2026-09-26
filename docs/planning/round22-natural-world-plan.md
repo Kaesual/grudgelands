@@ -3,7 +3,7 @@
 Date: 2026-09-25. Coordinator: Claude Opus 5.5 (root), implementation by
 Opus 5.5 subagents; the user may re-route per session
 (`../process/agent-model-policy.md`, "Day-to-day routing rule").
-Status: **in progress.** Phases 0–3, 3b, 5 and 5b are merged and synced (not pushed; last merge 4d74c2e8, 2026-09-26). Phase 5b waits for the user's water playtest; when the user accepts water, the context is compacted (D62), then three packages start: the Phase 4 road prototype, the D63 performance analysis and the D64 chunk-edge analysis; later the capital planner (D60, §11) and Phase 6. Each phase still needs the user's Go.
+Status: **in progress.** Phases 0–3, 3b, 5 and 5b are done, **accepted by the user** (water accepted 2026-09-26), merged, synced and pushed (8aaeeb9f). The context is compacted now (D62). Next, on the user's Go: three packages together — the Phase 4 road prototype, the D63 performance analysis and the D64 chunk-edge analysis; later the capital planner (D60, §11) and Phase 6.
 
 This document records the goal, the analysis it rests on, every decision taken
 with the user on 2026-09-25 and its basis, the phases, and the guardrails
@@ -478,6 +478,19 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   - Map hook: `road_polylines()` in `mods/PLAYER/grug_map/base.lua` returns
     `{}` today; fill it and the map base re-renders.
   - Water exists first (D30), so crossings fall out of routing.
+  - **Seams left by the water phase:** `height.water_coarse_grid()` (the
+    16-node natural-field grid the water layout is built on, main only) for
+    the routing cost grid; `planner_source.overlay_exclusion_at` (W2c) —
+    add a road-corridor exclusion kind there; the water layout text travels
+    in the same `ipc_set` payload (field `water_layout`, ~125 KB), roads get
+    their own field; the world map already draws rivers
+    (`river_polylines()` next to the empty `road_polylines()`); planner road
+    feature IDs map unknown IDs to ordinal 0 today (W0) — intern a few
+    generic road/bridge IDs (stale-rule R2); the water guard in `grug_core`
+    allows only planned step flow in protected territory (W3a).
+  - Water may now cross capital reserved areas (D57); roads end at the
+    reserved area's edge (D59), so roads never need to cross water inside a
+    capital.
 - **Road shape (D44–D51, 2026-09-25):**
   - Cross-section per column: uphill cut with ~1:1 slope back, downhill
     embankment up to ~2 nodes, beyond that a deck on pillars with railing;
@@ -644,6 +657,9 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   (allowed, D57). Chunk time about +3 %, layout build ~5 s, payload
   ~125 KB (reports). Lighting Fix A merged 9f8cbf44 (census 3/0 like the
   pre-W3a base).
+- **User acceptance (2026-09-26):** "very satisfied"; water is done. Only
+  Highcourt's civic water is still somewhat "chaotic" — in the worst case the
+  capital planner reworks the water inside the civic core too (see §11).
 - **Lane W3b — rivers v2:**
   - trough model (D54): a smooth V/U trough blended into the terrain, width
     varying with flow, noise and terrain; water fills to the flat reach level;
@@ -791,6 +807,9 @@ planner work package that follows water and roads (D57–D60).
   water).
 - **Interim:** until this package, defects inside the reserved area are
   allowed (D31, D57); Highcourt's canal is a one-level interim (Phase 5b).
+- **Civic water in the core:** the user allows the planner to rework
+  Highcourt's civic water (canal on a dam, somewhat chaotic) even inside the
+  otherwise protected civic core, if that is what it takes.
 - **Known items for this package (found in Phase 5b):** Nhal Veyr's capital
   grading edge shows as a straight line (e.g. z = 1804 on seed 8675309 beside
   a lake; pre-existing); arcs of rivers around hard core keep-outs (the soft
