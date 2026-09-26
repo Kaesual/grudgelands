@@ -939,7 +939,7 @@ graph requirement may shape a zone, and nothing may require a graph to be
   villages and the contested endpoints then join the nearest road (T
   junctions, at least 64 nodes apart); loops are added where the network
   distance between two same-faction settlements within 1,100 nodes is more
-  than 1.4 times the straight distance (up to four per world; one to four on
+  than 1.3 times the straight distance (up to four per world; two to four on
   the tested seeds).
 - **Grade (Round 22, D49–D51, D67).** Roads are walkable by players and
   mounts without jumping: the profile runs in half-node steps with a slab on

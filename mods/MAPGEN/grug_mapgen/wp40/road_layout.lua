@@ -54,7 +54,7 @@ local DEFAULT_P = {
 	START_GATE = 64, START_STRETCH = 32,
 	WIGGLE = 14, WIGGLE_PERIOD = 220, WIGGLE_TAPER = 64, WIGGLE_RMIN = 30,
 	WIGGLE_S0 = 0.12, WIGGLE_S1 = 0.3, WIGGLE_ENV = 40, SMOOTH = 5, SMOOTH_MAXTURN = 0.8,
-	LOOPS = 4, LOOP_RATIO = 1.4, K_ONROAD = 3, LOOP_END_FREE = 80, LOOP_REACH = 1100,
+	LOOPS = 4, LOOP_RATIO = 1.3, K_ONROAD = 3, LOOP_END_FREE = 80, LOOP_REACH = 1100,
 	TRAIL_BUDGET = nil,           -- every trail candidate is built (D67, D68)
 	-- profile DP
 	CMAX = 4, JUNCTION_FLAT = 4, END_FLAT = 6,
@@ -1528,6 +1528,8 @@ local function new_module(P)
 				if li == target then return {kind = "node"} end
 			end, heur_to(nb), nil, kind == "trail", nil, allow)
 			if not path then return nil end
+			-- both points in one grid cell: the straight piece between them
+			if #path == 1 then path, dirs = {path[1], path[1]}, {dirs[1], dirs[1]} end
 			local road = make_candidate(kind, na, nb, path, info, dirs, nil)
 			if not road then return nil end
 			road.pin_a, road.pin_b = a.y, b.y
