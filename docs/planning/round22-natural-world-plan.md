@@ -212,6 +212,7 @@ Decisions after the Phase 5 playtest (2026-09-26, user with coordinator):
 | D61 | **Water bugs fixed in Phase 5b:** bright stripes at chunk edges on deep lake floors (lighting); civic water steps show no flowing water (natural rivers do). | User playtest. |
 | D62 | **Compaction point moves:** after the user accepts water (Phase 5b), before roads — so road work starts with a clean context (supersedes compaction point 2). | User, 2026-09-26. |
 | D63 | **Performance analysis package, parallel to the road prototype** (start right after the D62 compaction), as preparation for the general cleanup round (D4). One agent in its own worktree finds where the mapgen can get faster and estimates gain and risk per item. **Byte-identical changes only** (algorithmic improvements, removing redundant checks and dead work); anything that changes the world — e.g. dropping a noise octave — is excluded and at most listed in one line as "deliberately excluded". Guardrails: (1) areas the road integration will rebuild (road IDs in the planner, road overlay/raster, exclusion kinds) are only flagged "re-check after roads"; (2) nothing is merged during the road integration — the agent may prototype and prove byte-identical patches in its worktree (probe grids on several seeds + engine full digest, as in W0) to measure instead of estimate; small changes in code the roads surely do not touch (e.g. the per-voxel light integer checks) may be proposed to the user one by one earlier; (3) timing with paired before/after runs and the noise reported; big measurement runs when no heavy road run is active. Deliverable: a ranked list (measured gain, risk, proof method, "before/after roads") plus the proven patches; performance numbers stay reports (D32). | User, 2026-09-26: no specific pain point; the agent finds the potential itself; the world looks good and must not change. |
+| D64 | **"Chunk edge" package, parallel to the road prototype** (start after the D62 compaction, a third package next to D63): find a robust, performant solution for everything that happens in the halo of an already generated neighbour chunk — lighting, sealing river/lake beds where later v7 caves cut in (accepted for now, Phase 6 note), v7's provisional overtop blocks. Start from an invariant, e.g. "every node's final light equals a from-scratch recomputation regardless of generation order", instead of per-case heuristics. **Analysis first:** the agent writes the invariant, two or three solution paths with effort, risk and cost, and their effect on bed sealing and the pre-existing checkerboard too-bright nodes; the user picks one before implementation. Performance counts: not more expensive than today's lighting correction (roughly 0.5–1 % of chunk time). Evidence with the permanent lighting checks (census + windows in several generation orders). The D63 performance agent leaves the lighting/halo code alone and only flags findings there. | User, 2026-09-26, after four review rounds on chunk-edge lighting (W3a, Fix A). |
 
 All §9 questions are answered.
 
@@ -688,8 +689,8 @@ compacts its context only at these points:
 3. Next candidate point: after roads, before Phase 6 and the capital
    planner (D60).
 
-After the D62 compaction two packages start together: the Phase 4 road
-prototype and the D63 performance analysis.
+After the D62 compaction three packages start together: the Phase 4 road
+prototype, the D63 performance analysis and the D64 chunk-edge analysis.
 
 ## 7. Where we go for the optimum, and where we relax
 
