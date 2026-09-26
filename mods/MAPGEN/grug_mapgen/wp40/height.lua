@@ -5,7 +5,7 @@
 -- capitals, villages, outposts, camps, mines, dragons ...) and the shore rule
 -- on top. The coast takes its shape from the field alone; only its near-water
 -- material is derived here (world_zones.md §7.4, plan D27). Inland water
--- (Round 22 Phase 5, plan D38-D40): rivers and lakes from `water_layout.lua`
+-- (Round 22 Phase 5, plan D38, D54-D57): rivers and lakes from `water_layout.lua`
 -- carve the natural height and carry their own water surfaces; authored lakes
 -- (civic water) sit on the fitted terrain. Roads are rebuilt in Phase 4.
 --
@@ -252,18 +252,17 @@ local function height_factory(dependencies)
 				local x, z = a.position.x, a.position.z
 				if a.slot_id == "start" or a.slot_id == "capital" then
 					local start = a.slot_id == "start"
-					local e = {x = x, z = z, id = a.id,
-						r = start and WP.start_keepout or WP.capital_keepout,
-						edge = start and WP.start_keepout_edge or WP.capital_keepout_edge}
-					-- A capital's keep-out covers its whole built area: the
-					-- farthest corner of its core, plots and fill lots (from the
-					-- prepared blueprints) plus a margin; the noise edge only
-					-- grows it.
-					local reach = not start and water_dependency.capital_reach and
-						water_dependency.capital_reach[a.id]
-					if reach then
-						e.r = max(e.r, reach + WP.capital_keepout_margin)
+					-- A start town keeps its whole area dry; a capital only its
+					-- protected civic core (the core's corner distance plus a
+					-- margin, plan D57): rivers may cross the reserved area
+					-- around it. The noise edge only grows the radius.
+					local r = WP.start_keepout
+					if not start then
+						r = profiles[a.template_id].civic_width / 2 * math.sqrt(2) +
+							WP.capital_keepout_margin
 					end
+					local e = {x = x, z = z, id = a.id, r = r,
+						edge = start and WP.start_keepout_edge or WP.capital_keepout_edge}
 					-- the lowest natural ground inside the disc (lake rule)
 					local g, r = math.huge, e.r * (1 + e.edge)
 					for dz = -r, r, 16 do
@@ -292,9 +291,40 @@ local function height_factory(dependencies)
 			end
 			-- An authored lake outside every start and capital (Moonfall's
 			-- crescent) carries its own keep-out, so natural rivers and lakes
-			-- bend around it instead of meeting it at another level.
+			-- bend around it instead of meeting it at another level. A
+			-- capital's own lake (Lethariel's crown lake, Kezamba's cenote)
+			-- reaches beyond the protected core, so its bounds keep natural
+			-- water off the same way (plan D57); civic canals take no keep-out
+			-- (they are interrupted where natural water comes close, D58).
+			local capital_anchor = {}
+			for index = 1, #source.anchors do
+				local a = source.anchors[index]
+				if a.slot_id == "capital" then capital_anchor[a.id] = true end
+			end
 			for _, row in ipairs(water_dependency.authored or {}) do
 				local k = row.keepout
+				if not k and not row.river and row.anchor and capital_anchor[row.anchor] then
+					-- the disc around the lake's own water (its indicator), not
+					-- around its bounds (they include the bank shaping reach)
+					local sx, sz, n, pts = 0, 0, 0, {}
+					for z = row.min_z, row.max_z, 8 do
+						for x = row.min_x, row.max_x, 8 do
+							local m = row.indicator(x, z)
+							if type(m) == "number" and m >= 0.3 then
+								pts[#pts + 1] = {x, z}
+								if m >= 0.5 then sx, sz, n = sx + x, sz + z, n + 1 end
+							end
+						end
+					end
+					if n > 0 then
+						local cx, cz, r = sx / n, sz / n, 0
+						for _, p in ipairs(pts) do
+							local d = math.sqrt((p[1] - cx) ^ 2 + (p[2] - cz) ^ 2)
+							if d > r then r = d end
+						end
+						k = {x = cx, z = cz, r = r + 8}
+					end
+				end
 				if k then
 					local e = {x = k.x, z = k.z, id = row.id, r = k.r,
 						edge = WP.start_keepout_edge}
@@ -556,12 +586,15 @@ local function height_factory(dependencies)
 			local block = blocks[key]
 			if block then return block, bx, bz end
 			-- natural stage: natural (carved) y, its inland water (nwater,
-			-- nkind "river" or "lake", nid) and the bank inputs of a column near
-			-- water (bank_d, bank_y, near); fitted stage: terrain before the
+			-- nkind "river" or "lake", nid), the carve depth and the bank inputs
+			-- of a column near water (bank_d the distance to natural water,
+			-- bank_md the bank material rule's distance, bank_y its surface,
+			-- near); fitted stage: terrain before the
 			-- shore rule (pre, pkind, pfeature) and the water that stays wet
 			-- on it (water, wkind, wid); final stage: terrain ... feature.
-			block = {key = key, class = {}, owner = {}, natural = {},
+			block = {key = key, class = {}, owner = {}, natural = {}, carve = {},
 				nwater = {}, nkind = {}, nid = {}, bank_d = {}, bank_y = {},
+				bank_md = {},
 				near = {}, pre = {}, pkind = {}, pfeature = {}, water = {},
 				wkind = {}, wid = {},
 				terrain = {}, kind = {}, surface = {}, feature = {}, excl = {}}
@@ -596,9 +629,10 @@ local function height_factory(dependencies)
 				if land then
 					-- Rivers and lakes carve the natural float field before it
 					-- is floored (so the terrain stays an integer node y).
-					local h, water_y, kind, id, bank_d, bank_y =
-						water.column(x, z, field.height_at(x, z, true))
+					local h0 = field.height_at(x, z, true)
+					local h, water_y, kind, id, bank_d, bank_y, bank_md = water.column(x, z, h0)
 					natural = floor(h)
+					block.carve[slot] = h0 - h
 					if water_y then
 						block.nwater[slot], block.nkind[slot] = water_y, kind
 						block.nid[slot] = kind == "river" and
@@ -608,6 +642,7 @@ local function height_factory(dependencies)
 					end
 					block.bank_d[slot], block.bank_y[slot] = bank_d or false,
 						bank_y or false
+					block.bank_md[slot] = bank_md or false
 					block.near[slot] = bank_d ~= nil or authored_near(x, z)
 				else
 					natural = floor(field.height_at(x, z, false))
@@ -880,7 +915,20 @@ local function height_factory(dependencies)
 				terrain_y, owner, LAND)
 			if value ~= nil then terrain_y, kind, feature_id = value, "land_grade", fitting.id end
 			value, fitting = fitting_grade_at(grids.capital, x, z, terrain_y, owner, LAND)
-			if value ~= nil then terrain_y, kind, feature_id = value, "land_grade", fitting.id end
+			if value ~= nil then
+				-- A river trough crossing a capital's reserved area keeps its
+				-- carved ground (plan D57): the capital's terrace grading fades
+				-- out where the water layout lowered the natural field, so no
+				-- channel is filled dry and no grading edge crosses a valley
+				-- side. The protected civic core is outside every trough.
+				local block, slot = column(x, z)
+				local keep = clamp(((block.carve[slot] or 0) - 0.5) / 2.5, 0, 1)
+				if keep > 0 then
+					keep = keep * keep * (3 - 2 * keep)
+					value = floor(value + (terrain_y - value) * keep + 0.5)
+				end
+				terrain_y, kind, feature_id = value, "land_grade", fitting.id
+			end
 			value, fitting = fitting_grade_at(grids.start, x, z, terrain_y, owner, LAND)
 			if value ~= nil then terrain_y, kind, feature_id = value, "land_grade", fitting.id end
 			return terrain_y, kind, feature_id
@@ -1091,6 +1139,7 @@ local function height_factory(dependencies)
 						authored_at(x, z, terrain_y, water_y, water_kind, water_id)
 					if bank_d and (not block.bank_d[slot] or bank_d < block.bank_d[slot]) then
 						block.bank_d[slot], block.bank_y[slot] = bank_d, bank_y
+						block.bank_md[slot] = bank_d
 					end
 					-- A lake column is water, not the graded ground of a start
 					-- or capital: a functional grade would clear its water.
@@ -1350,7 +1399,7 @@ local function height_factory(dependencies)
 				-- River and lake banks: the same rule with the nearest inland
 				-- water's surface and (scaled) distance.
 				local block, slot = land_values_at(x, z)
-				local distance = block.bank_d[slot]
+				local distance = block.bank_md[slot]
 				if distance and not block.water[slot] then
 					material = bank_material(x, z, owner, block.bank_y[slot],
 						distance * WP.bank_distance_scale)

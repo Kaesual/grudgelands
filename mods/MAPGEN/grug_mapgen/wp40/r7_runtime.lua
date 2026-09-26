@@ -108,7 +108,7 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		authored = dofile(wp40_directory .. "/water_authored.lua")(terrain_data.water),
 		-- filled below from the prepared settlement blueprints, before any
 		-- height session is built
-		capital_reach = {}, plot_rects = {}}
+		plot_rects = {}}
 	local height_module_factory = dofile(wp40_directory .. "/height.lua")
 	local function height_factory(dependencies)
 		local bound = {}
@@ -205,12 +205,6 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		end
 		local prepared = r7_settlement_module.prepare(profile, source, raw_sha256)
 		settlements[index] = {profile = profile, prepared = prepared}
-		-- A capital's built area (civic core, plots, fill lots) sizes its
-		-- inland water keep-out (plan D40).
-		if profile.slot == "capital" then
-			water.capital_reach[profile.anchor_id] =
-				r7_settlement_module.horizontal_reach(prepared)
-		end
 		-- Authored lakes keep their water and bank shaping off every plot.
 		for _, rect in ipairs(r7_settlement_module.plot_rects(prepared,
 				profile.x, profile.z)) do

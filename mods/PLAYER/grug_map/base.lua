@@ -109,9 +109,9 @@ local ROAD_STYLE = {road = {color = pack(rgb(112, 84, 52)), radius = 1},
 	trail = {color = pack(rgb(132, 104, 70)), radius = 0}}
 
 -- Rivers (Round 22 Phase 5). Lakes are `planned_water` columns and show in
--- the per-pixel pass; rivers are 3-16 nodes wide, below one map pixel, so
--- they are stroked from the water layout's centrelines, as
--- {points = {{x =, z =, w =}, ...}} rows (w = channel width in nodes).
+-- the per-pixel pass; rivers are about 7-30 nodes wide, a few map pixels at
+-- most, so they are stroked from the water layout's centrelines, as
+-- {points = {{x =, z =, w =}, ...}} rows (w = target water width in nodes).
 local function river_polylines()
 	local mapgen = rawget(_G, "grug_mapgen")
 	local wp40 = type(mapgen) == "table" and mapgen.wp40
@@ -126,8 +126,10 @@ local function water_layout_text()
 end
 local RIVER_COLOR = pack(rgb(62, 118, 152))
 -- A river this wide or wider is stroked three pixels wide (radius 1), a
--- narrower one one pixel; one pixel is about 7 nodes.
-local RIVER_WIDE = 11
+-- narrower one one pixel; one pixel is about 7 nodes. (The Phase 5b water
+-- widths are about 1.6x the Phase 5 channel widths this threshold was set
+-- for, so the same rivers keep the wide stroke.)
+local RIVER_WIDE = 18
 
 -- World-coordinate drawing surface over the packed pixel array, for overlays
 -- such as the Phase 4 roads.
