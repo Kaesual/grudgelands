@@ -3,7 +3,7 @@
 --
 -- The contract's third district role, and the one this capital is named for.
 -- What a plot is and how it is built is `nhal_veyr_plot.lua`; where the nine
--- plots stand is `nhal_veyr_quadrants.lua`. This file is the roster.
+-- plots stand is the capital planner's. This file is the roster.
 --
 -- Two of the nine are MAUSOLEA (`undead_parts.lua`), which is the part the
 -- shared capital kit does not carry and the contract's section 2.4 line asks

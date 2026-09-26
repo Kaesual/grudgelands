@@ -2,7 +2,7 @@
 --
 -- The contract's third district role. What a plot is and how it is built is
 -- `highcourt_plot.lua`; where the nine plots stand is
--- `highcourt_quadrants.lua`. This file is the roster and nothing else.
+-- the capital planner's. This file is the roster and nothing else.
 --
 -- THE CHAPEL IS ALREADY BUILT, AND IT IS NOT HERE. The civic core's west
 -- quarter carries the chapel with its belfry (`highcourt.lua`), which is what

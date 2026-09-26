@@ -1,20 +1,11 @@
--- Kezamba's four districts, their fifty-two plots, and where this world puts
--- them.
+-- Kezamba's four districts and their fifty-two plots.
 --
--- `M.resolve(options)` returns the 52 plots in a FIXED order -- district by
--- district in the contract's own role order, each district's building plots in
--- roster order and then its fill plots in roster order -- with the offset from
--- the capital anchor that `kezamba_lots.lua` searched for it.
---
--- THE ORDER DOES NOT DEPEND ON THE SEED AND NEITHER DO THE OFFSETS, which is
--- where Kezamba differs from Highcourt and why. `highcourt_districts.lua`
--- permutes its four districts between four interchangeable quadrants with the
--- world seed; Kezamba's quadrants are not interchangeable, because WP40's
--- authored cenote fills one of them in every world
--- (`tools/wp13/kezamba_water.lua`, nine seeds, one wet mask). A permutation
--- over ground like that would put a district in the lake three times out of
--- four. So the districts are pinned, and `options` is read only to refuse a
--- half seam -- exactly as `r7_dur_brannoc_blueprint.lua` refuses one.
+-- `M.plots()` returns the 52 plots in a FIXED order -- district by district in
+-- the contract's own role order, each district's building plots in roster
+-- order and then its fill plots in roster order. Their sizes (`reach`) come
+-- from `kezamba_lots.lua`; where they stand and how they are turned is the
+-- capital planner's per-world layout (Round 22), which keeps the shore market
+-- beside the cenote (plan D72).
 --
 -- WHAT EACH DISTRICT IS, against the contract's section 2.1 roles:
 --
@@ -618,48 +609,23 @@ local function loader(directory)
 	end
 	M.districts = districts
 
-	-- `options` is the seam `r7_runtime.lua` hands every blueprint source. This
-	-- capital reads NEITHER field -- its districts are pinned to the ground and
-	-- not permuted by the seed -- but it refuses a HALF seam rather than
-	-- shrugging at it: a caller that passes one field and not the other has a
-	-- defect upstream, and the day this capital grows a seeded assignment the
-	-- refusal is already where it belongs.
-	function M.check_options(options)
-		if options == nil then return end
-		if type(options) ~= "table" then
-			error("wp13 kezamba: the blueprint options differ", 0)
-		end
-		if options.full_seed == nil and options.raw_sha256 == nil then return end
-		if type(options.full_seed) ~= "string" or
-				not options.full_seed:match("^%-?%d+$") or
-				type(options.raw_sha256) ~= "function" then
-			error("wp13 kezamba: the blueprint seam differs", 0)
-		end
-	end
-
-	function M.resolve(options)
-		M.check_options(options)
+	-- The plots in a FIXED order -- district by district in the contract's own
+	-- role order, each district's BUILDING plots in roster order and then its
+	-- FILL plots in roster order: {id, district, role, kind ("plot" or
+	-- "fill"), build}. Where a plot stands and how it is turned is the capital
+	-- planner's per-world layout (Round 22, `wp40/capital_planner.lua`); a
+	-- plot's identity is its cells, and its cells do not know where they will
+	-- stand.
+	function M.plots()
 		local list = {}
-		for index = 1, #M.definitions do
+		for index = 1, #districts() do
 			local district = districts()[index]
-			local plots, fill = lots.of(district.key)
-			local function append(rows, available, kind)
-				for row = 1, #rows do
-					list[#list + 1] = {
-						id = rows[row].id,
-						district = district.key,
-						role = district.role,
-						kind = kind,
-						lot = row,
-						x = available[row].x,
-						z = available[row].z,
-						reach = available[row].reach,
-						build = rows[row].build,
-					}
+			for _, pair in ipairs({{district.plots, "plot"}, {district.fill, "fill"}}) do
+				for _, plot in ipairs(pair[1]) do
+					list[#list + 1] = {id = plot.id, district = district.key,
+						role = district.role, kind = pair[2], build = plot.build}
 				end
 			end
-			append(district.plots, plots, "plot")
-			append(district.fill, fill, "fill")
 		end
 		return list
 	end

@@ -24,12 +24,11 @@
 -- wall stands on an approved plan, not on a ruling, and the user may reverse it;
 -- nothing else in this file depends on it.
 --
--- The wall is `wall.lua`'s overlay, the same mechanism Dur Brannoc landed
--- (wp13-dur-brannoc.md), in Highcourt's own palette: castle stonewall over
--- brick string courses, brick merlon caps, four gatehouses on the avenues.
--- The four gatehouses that stand where the avenues leave the CORE stay where
--- they are -- they are the precinct's gates, the ring's are 209 nodes further
--- out.
+-- The city wall is the capital planner's (Round 22): `wp13/city_edge.lua`
+-- raises it on the per-world outline in Highcourt's own palette, castle
+-- stonewall over brick string courses, brick merlon caps, four gatehouses on
+-- the avenues. The four gatehouses that stand where the avenues leave the
+-- CORE stay where they are -- they are the precinct's gates.
 -- The white stone is the crown's, not the city's: the king's hall, the
 -- chapel, the colonnades, the gatehouses and the civic furniture are dressed
 -- in marble over citadel masonry under slate, and everything a citizen built
@@ -41,16 +40,9 @@
 --     composition (schema, canonical cells, bounds, sorted palette,
 --     landmarks) plus `landmarks.sockets`, the NPC seam of
 --     docs/research/wp13-npc-sockets-contract.md.
---   * `M.district` is the market and professions district: a list of PLOT
---     compositions, each self-contained, each with its own reference column,
---     because a plot outside the core stands on terraced ground and cannot be
---     anchor-relative (`highcourt_district.lua`).
---   * `M.avenues` and `M.ring` are the runs `avenue.lua` turns into pavement
---     at whatever height the terrain has at the moment a chunk is emerged.
---
--- Nothing here is wired into the WP40 seam: the seam generalisation that
--- gives a settlement several blueprints is its own package (contract section
--- 2.2), and this lane deliberately does not touch it.
+--   * the district plots are `highcourt_districts.lua`; where they stand,
+--     turned to their streets, is the capital planner's per-world layout
+--     (`wp40/capital_planner.lua`, `wp40/r7_capital_blueprint.lua`).
 --
 -- Plain Lua 5.1, pure, no engine calls, no globals.
 
@@ -62,35 +54,8 @@ local function loader(directory)
 	local dressing = dofile(directory .. "/dressing.lua")(directory)
 	local layout = dofile(directory .. "/layout.lua")(directory)
 	local precinct_ring = dofile(directory .. "/precinct_ring.lua")
-	local wall = dofile(directory .. "/wall.lua")(directory)
-	-- The district roster, and through it the quadrant module. This is
-	-- `wp13/dur_brannoc.lua`'s shape, and Highcourt was the one four-district
-	-- capital that did not have it.
-	local districts = dofile(directory .. "/highcourt_districts.lua")(directory)
-	local street_plan = dofile(directory .. "/street_plan.lua")(directory)
 
 	local M = {}
-
-	-- The four quadrants' lot grids and the seeded permutation that hands one
-	-- grid to one district (`highcourt_quadrants.lua`). Published here for the
-	-- reason `wp13/dur_brannoc.lua` publishes its own: that is where every
-	-- consumer looks for a capital's geometry, and a capital that does not
-	-- publish it is refused by `tools/wp13/capital_lots.lua` -- the NINE-SEED
-	-- lot predicate. The pilot capital was the one capital that could only be
-	-- measured two worlds at a time (`tools/wp13/highcourt_plots.lua` takes two
-	-- field dumps), which is exactly the gap wave 1 found the hard way: a lot
-	-- legal on the two gate seeds was illegal on the user's own.
-	--
-	-- IT IS THE ROSTER'S OWN INSTANCE and not a second `dofile` of the module.
-	-- The first version of this line loaded `highcourt_quadrants.lua` again, so
-	-- `highcourt.quadrants` and `highcourt_districts.quadrants` were two
-	-- separate tables of the same data -- harmless while every consumer only
-	-- reads them, and a trap for the first one that does not. The independent
-	-- review of 2026-09-16 raised it. Taking the roster instead ALSO removes a
-	-- duplicate rather than adding one: `highcourt_district.lua` used to be
-	-- loaded once here and once inside the roster, and `M.district` below is
-	-- now the roster's own market district, the same table it always was.
-	M.quadrants = districts.quadrants
 
 	local RADIUS = 49
 	local SCHEMA = "grug_wp13_highcourt_core_v1"
@@ -380,210 +345,10 @@ local function loader(directory)
 	-- re-authored the day the pad arrives.
 	local PLAZA = {x1 = 12, z1 = -32, x2 = 32, z2 = -12}
 
-	-- Where the four avenues and the ring street run in the 512 envelope.
-	-- These are not cells: they are the runs `avenue.lua` projects onto
-	-- whatever surface the terrain has, and the successor calls it per chunk.
-	-- The gate stations sit at +-256 on each axis (WP40); the core edge is
-	-- at +-RADIUS, so each run starts one node clear of it.
-	--
-	-- THEY REACH 261, not the gate station at 256, since the wall ring landed:
-	-- the curtain's centre line is at +-256 and its gate tunnel runs through
-	-- the whole seven-node thickness, so a road that stopped at the centre
-	-- line would stop inside the gate. Dur Brannoc records the same number for
-	-- the same reason.
-	-- Keep lamp and pier cadence independent of the inner avenue endpoint.
-	local GATE_OUT = 261
-	M.avenues = {
-		{id = "avenue_south", axis = "z", at = 0, from = -GATE_OUT, to = -(RADIUS + 1),
-			gate = "gate_south"},
-		{id = "avenue_north", axis = "z", at = 0, from = RADIUS + 1, to = GATE_OUT, lamp_phase = 48,
-			gate = "gate_north"},
-		{id = "avenue_west", axis = "x", at = 0, from = -GATE_OUT, to = -(RADIUS + 1),
-			gate = "gate_west"},
-		{id = "avenue_east", axis = "x", at = 0, from = RADIUS + 1, to = GATE_OUT, lamp_phase = 48,
-			gate = "gate_east"},
-	}
-
-	-- The ring street: the square circuit at 96 that the district plots sit
-	-- along, in the same four runs. Every run reaches the centre line of the
-	-- two it meets -- all four span the full -96..96 -- because a side that
-	-- stops at 92 leaves the circuit a hole at each corner, which is a ring
-	-- street a patrol cannot walk round.
-	M.ring = {
-		{id = "ring_west", axis = "z", at = -96, from = -96, to = 96},
-		{id = "ring_east", axis = "z", at = 96, from = -96, to = 96},
-		{id = "ring_south", axis = "x", at = -96, from = -96, to = 96},
-		{id = "ring_north", axis = "x", at = 96, from = -96, to = 96},
-	}
-
-	-- THE WALL RING, on the four edges of the 512 envelope (the round-3 plan,
-	-- approved 2026-09-15; see the header for whose decision that is and whose
-	-- it is not). Authored exactly the way Dur Brannoc's is, because
-	-- the geometry question is the same one and the answer is not Highcourt's
-	-- to re-decide:
-	--
-	--   * the z-runs (west and east) carry the four CORNER TURRETS and
-	--     therefore reach 261, five nodes past the envelope edge, so a turret
-	--     centred on the corner is whole;
-	--   * the x-runs (south and north) stop at 252, one node short of the
-	--     corner turret's own face, so the two never write into each other:
-	--     the successor's first-run-wins arbitration would otherwise decide
-	--     which half of a corner survives, and half a turret is not a corner.
-	--
-	-- `outside` says which lane sign faces the field, which is what turns the
-	-- crenellated parapet, the loopholes and the merlon caps outward. Every
-	-- side carries ONE gate, on its avenue, and the avenues are authored FIRST
-	-- in the overlay's run list, so the road wins every cell of the passage and
-	-- the four gates are walkable.
-	local WALL_AT = 256
-	local WALL_END = 261
-	local WALL_SIDE = 252
-	local TURRETS = {-192, -128, -64, 64, 128, 192}
-	local function turret_list(extra)
-		local list = {}
-		for index = 1, #TURRETS do list[index] = TURRETS[index] end
-		for index = 1, #(extra or {}) do list[#list + 1] = extra[index] end
-		table.sort(list)
-		return list
-	end
-	M.wall = {
-		{id = "wall_west", axis = "z", at = -WALL_AT,
-			from = -WALL_END, to = WALL_END},
-		{id = "wall_east", axis = "z", at = WALL_AT,
-			from = -WALL_END, to = WALL_END},
-		{id = "wall_south", axis = "x", at = -WALL_AT,
-			from = -WALL_SIDE, to = WALL_SIDE},
-		{id = "wall_north", axis = "x", at = WALL_AT,
-			from = -WALL_SIDE, to = WALL_SIDE},
-	}
-	-- `corners` is the pair of places each run's walk MEETS another run's, and
-	-- it is what `wall.lua` section 1b reconciles. A z-run meets an x-run at its
-	-- own corner turret's centre column (+-256); the x-run meets it four columns
-	-- earlier, at its own end (+-252), which is where its walk stops and the
-	-- turret's city-face opening begins. Each entry names MY column and the
-	-- other run's line and column, and both runs of a pair name the same two
-	-- places -- which is what lets them agree on a datum without either knowing
-	-- the other exists.
-	local function corner(p, axis, at, other_p)
-		return {p = p, axis = axis, at = at, other_p = other_p}
-	end
-	M.wall_plan = {
-		wall_west = {outside = -1, gates = {0},
-			towers = turret_list({-WALL_AT, WALL_AT}),
-			cross_towers = {-WALL_AT, WALL_AT},
-			corners = {corner(-WALL_AT, "x", -WALL_AT, -WALL_SIDE),
-				corner(WALL_AT, "x", WALL_AT, -WALL_SIDE)}},
-		wall_east = {outside = 1, gates = {0},
-			towers = turret_list({-WALL_AT, WALL_AT}),
-			cross_towers = {-WALL_AT, WALL_AT},
-			corners = {corner(-WALL_AT, "x", -WALL_AT, WALL_SIDE),
-				corner(WALL_AT, "x", WALL_AT, WALL_SIDE)}},
-		wall_south = {outside = -1, gates = {0}, towers = turret_list(),
-			cross_towers = {},
-			corners = {corner(-WALL_SIDE, "z", -WALL_AT, -WALL_AT),
-				corner(WALL_SIDE, "z", WALL_AT, -WALL_AT)}},
-		wall_north = {outside = 1, gates = {0}, towers = turret_list(),
-			cross_towers = {},
-			corners = {corner(-WALL_SIDE, "z", -WALL_AT, WALL_AT),
-				corner(WALL_SIDE, "z", WALL_AT, WALL_AT)}},
-	}
-
-	-- The overlay seam, in one place, exactly as Dur Brannoc spells it: the
-	-- avenues first, then the ring street, then the district lanes, then the
-	-- wall. The successor's first-run-wins arbitration reads this order, so
-	-- the avenue runs through the gate and the wall yields the cells of the
-	-- road it lets past.
-	--
-	-- The district lanes belong to the four QUADRANTS and not to the districts
-	-- standing in them, so the caller passes them in rather than this file
-	-- reaching for `highcourt_quadrants.lua`: the core composition knows about
-	-- the streets it authored itself and about nothing else.
-	function M.overlay_runs(lanes)
-		-- THE JUNCTION PLATEAUS are attached here, and here is the only
-		-- place they can be. A plateau is a property of TWO street runs, and
-		-- only the composition knows which of its overlay runs ARE streets:
-		-- the curtain wall is an overlay run too, and a road passing through
-		-- its gate is not a crossroads. `wp13/street_plan.lua` turns the
-		-- street rectangles -- which are static, and are what the overlay's
-		-- identity is already hashed from -- into the squares they share, and
-		-- `wp13/avenue.lua` gives each square its height from the two runs'
-		-- own ground. The runs that are not streets are appended afterwards
-		-- and carry no junctions at all.
-		local streets = {}
-		for _, list in ipairs({M.avenues, M.ring, lanes or {}}) do
-			for index = 1, #list do streets[#streets + 1] = list[index] end
-		end
-		-- AND THE GATE PASSAGES, for the same reason and out of the same
-		-- rectangles: a street runs THROUGH the structure that is not a street,
-		-- and inside that passage the structure owns the lanes either side of
-		-- the carriageway. `wp13/avenue.lua` writes no plank walk, no rail and
-		-- no pillar there, which is the sentence the per-capital kerb parapets
-		-- this rule replaced each carried in their own words.
-		local runs = street_plan.attach(streets, nil,
-			{{runs = M.wall, half = wall.HALF}})
-		for index = 1, #M.wall do runs[#runs + 1] = M.wall[index] end
-		return runs
-	end
-
-	-- Every node name either overlay may write, byte-sorted and without
-	-- duplicates: the union of the road's vocabulary and the wall's, which is
-	-- what the settlement's shared content channel is closed over and what the
-	-- overlay's specification identity is written from.
-	function M.overlay_names(avenue, palette)
-		local seen, list = {}, {}
-		for _, source in ipairs({avenue.palette_names(palette),
-				wall.palette_names(palette)}) do
-			for index = 1, #source do
-				local name = source[index]
-				if not seen[name] then
-					seen[name] = true
-					list[#list + 1] = name
-				end
-			end
-		end
-		table.sort(list, parts.less_bytes)
-		return list
-	end
-
-	-- One run, dispatched by its own id. A wall run carries authored geometry
-	-- the seam's overlay spec has no field for -- which side is the field,
-	-- where the turrets and the gate stand -- so it is looked up here, from the
-	-- same table for every piece, which is what keeps a piece of a run exactly
-	-- that stretch of the whole run.
-	--
-	-- A WALL DOES NOT OBEY THE CROSSING RULE, and this is where that is decided.
-	-- Since the route lane landed, `r7_settlement.lua` hands EVERY run of an
-	-- overlay an `overhead(x, z)` callback, and `avenue.run` uses it to ramp the
-	-- carriageway up to a bridge deck wherever a WP40 route passes over the run
-	-- with less than three blocks of clearance. That is right for a road, whose
-	-- job is to be walkable from end to end, and wrong for a curtain wall,
-	-- whose job is to be a continuous line of masonry standing on the ground:
-	-- a wall that climbed to meet a deck would leave the ground it was
-	-- founded on and open exactly the gap the module's no-gap guarantee exists
-	-- to make impossible.
-	--
-	-- So the seam is not passed on. The spec is copied field by field WITHOUT
-	-- `overhead` rather than handed over and hoped about, because `wall.lua`
-	-- ignoring a field today is not the same promise as this file never giving
-	-- it one. `highcourt_kat.lua` holds the two to that: it builds a wall run
-	-- with an overhead that would lift a road by six courses and asserts the
-	-- cells are identical to the run built without it.
-	function M.overlay_run(avenue, palette, spec, surface)
-		local plan = M.wall_plan[spec.id]
-		if not plan then return avenue.run(palette, spec, surface) end
-		return wall.run(palette, {
-			id = spec.id, axis = spec.axis, at = spec.at,
-			from = spec.from, to = spec.to, width = spec.width,
-			lamp_spacing = spec.lamp_spacing, lamp_phase = spec.lamp_phase,
-			reach = spec.reach,
-		}, surface, plan)
-	end
-
-	-- The market district, which is `districts.districts[1]` by the roster's own
-	-- role order (`highcourt_quadrants.ROLES[1] == "market_professions"`, and
-	-- the roster asserts that at load). It is the same table `district.market`
-	-- was.
-	M.district = districts.districts[1]
+	-- The city around the core -- its outline, streets, walls or planted
+	-- edge, gates and the placed district plots -- is laid out per world by
+	-- the capital planner (`wp40/capital_planner.lua`, `wp13/city_edge.lua`,
+	-- Round 22); this file is the civic core.
 
 	function M.core()
 		local human = palettes.new("human")

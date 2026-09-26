@@ -7,7 +7,7 @@
 -- head, and the gardens and pens between them.
 --
 -- What a plot is and how it is built is `dur_brannoc_plot.lua`; where the nine
--- plots stand is `dur_brannoc_quadrants.lua`. This file is the roster and
+-- plots stand is the capital planner's. This file is the roster and
 -- nothing else.
 --
 -- THE THREE PROFESSION VENDORS OF THIS QUARTER are `baker`, `butcher` and

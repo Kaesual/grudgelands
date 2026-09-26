@@ -208,5 +208,8 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 		river_polylines = runtime.river_polylines(),
 		-- The road network for the world map (Round 22 Phase 4).
 		road_layout_text = payload.road_layout,
-		road_polylines = runtime.road_polylines(), road_spots = road_spots}
+		road_polylines = runtime.road_polylines(), road_spots = road_spots,
+		-- The capital layouts of this world (capital planner; the text
+		-- `capital_planner.deserialize` reads), e.g. for the world map.
+		capital_layout_text = payload.capital_layout}
 end

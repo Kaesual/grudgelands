@@ -4,7 +4,7 @@
 -- The contract's FIRST district role (`market_professions`), and the one this
 -- capital shipped with in wave 1 under the ad-hoc role name `martial_craft`.
 -- What a plot is and how it is built is `dur_brannoc_plot.lua`; where the nine
--- plots stand is `dur_brannoc_quadrants.lua`. This file is the roster and
+-- plots stand is the capital planner's. This file is the roster and
 -- nothing else.
 --
 -- THE NINE PLOT IDS ARE WAVE 1'S, UNCHANGED, and so are every socket id they

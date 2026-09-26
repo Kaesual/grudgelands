@@ -44,7 +44,7 @@
 -- footprint, because there is no footprint to grow from.
 --
 -- THE +-13 IS NOT THE CONTRACT'S +-15, AND THAT IS DELIBERATE. Every plot of
--- every district stands on a LOT of `highcourt_quadrants.lua`, and a lot is
+-- every district stands on a LOT of the pre-Round-22 lot tables, and a lot is
 -- held to one envelope on both gate seeds so that any district may stand in
 -- any quadrant. Two nodes of the contract's volume are the margin that buys.
 --
@@ -66,7 +66,7 @@ local function loader(directory)
 	M.REACH = 13
 	M.FLOOR = -6
 	-- The LEAST airspace a plot clears, whatever its own roof needs. A lot is
-	-- allowed to rise 6 nodes under a plot (`highcourt_quadrants.lua`), and a
+	-- allowed to rise 6 nodes under a plot (the pre-Round-22 lot tables), and a
 	-- part whose ridge is four courses up would have cleared 6 and stood with
 	-- a shoulder of terrace in its doorway. Every plot the market district
 	-- authored already clears 9 or more, so this floor is the low ones' --
@@ -501,7 +501,7 @@ local function loader(directory)
 	-- A district: its key, its role, its patrol loop and the ordered plot
 	-- list, each entry carrying a builder that returns the composition. The
 	-- OFFSET is not here -- a district does not know which quadrant it stands
-	-- in until the world seed says so (`highcourt_quadrants.lua`).
+	-- in until the capital planner places it.
 	function M.district(definition)
 		local district = {
 			key = definition.key,

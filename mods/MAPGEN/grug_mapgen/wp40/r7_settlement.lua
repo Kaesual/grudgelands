@@ -28,12 +28,13 @@
 --                       ONCE per session and cached. A capital's district
 --                       plots stand on terraced ground and cannot be
 --                       anchor-relative.
---        "overlay"   -- no cells at all until a surface is handed to it: the
---                       avenues are a pure function of the plan's own column
---                       surface, evaluated per mapchunk (`wp13/avenue.lua`).
---      An overlay's identity is therefore its SPECIFICATION -- the runs, the
---      carriageway width, the lamp rhythm, the look-around and the exact set
---      of node names it may write -- because it has no cells to hash.
+--        "overlay"   -- no cells at all until a mapchunk asks for its columns:
+--                       a capital's city edge (walls, gatehouses, the open
+--                       capitals' belt) is a pure function of the capital
+--                       layout and the column surface (`wp13/city_edge.lua`).
+--      An overlay's identity is therefore its SPECIFICATION -- the edge
+--      geometry, its reach and the exact set of node names it may write --
+--      because it has no cells to hash.
 --   4. LAZY CONSTRUCTION. A profile marked `lazy` keeps no cells at all until
 --      the first `bind_plan` whose mapchunk touches the blueprint's envelope,
 --      and drops them again once `IDLE_RELEASE` consecutive plans have
@@ -196,10 +197,10 @@ M.roster = {
 		metrics_schema = "grug_wp13_kapok_metrics_v1",
 		delta_schema = "grug_wp13_kapok_delta_v1",
 	},
-	-- The first capital (contract section 3, third increment): a core in the
-	-- start's shape, 36 terrain-relative district plots -- four districts of
-	-- nine, one per quadrant -- and the avenue overlay, built lazily.
-	-- `plot_bounds` is the envelope every "reference" blueprint of this
+	-- The capitals (contract section 3; since Round 22 laid out per world by
+	-- the capital planner, `r7_capital_blueprint.lua`): a core in the start's
+	-- shape, the placed district plots and the city edge overlay, built
+	-- lazily. `plot_bounds` is the envelope every "reference" blueprint of this
 	-- settlement is held to.
 	{
 		key = "highcourt", label = "Highcourt", race = "human",
@@ -221,16 +222,8 @@ M.roster = {
 		-- whole argument.
 		reserve_anchor_root = true,
 	},
-	-- The second capital, and the first WALLED one (the user's ruling of
-	-- 2026-09-14: walls for Dur Brannoc, Nhal Veyr and Gor Drazhak). Its
-	-- overlay carries twenty runs -- four avenues, four sides of the ring
-	-- street, eight district lanes and the four sides of the curtain wall --
-	-- because the wall follows the terraced ground exactly the way the road
-	-- does and belongs to the same kind of blueprint
-	-- (`r7_dur_brannoc_blueprint.lua`). Since the wave-2 upgrade of 2026-09-15
-	-- it carries four districts of nine plots and four dressings each, exactly
-	-- like Highcourt, with the quadrant permutation of
-	-- `wp13/dur_brannoc_quadrants.lua`.
+	-- The dwarf capital: a stone curtain on the planner's outline (the user's
+	-- ruling of 2026-09-14: walls for Dur Brannoc, Nhal Veyr and Gor Drazhak).
 	{
 		key = "dur_brannoc", label = "Dur Brannoc", race = "dwarf",
 		slot = "capital", bounds = "capital_core", plot_bounds = "capital_plot",
@@ -252,13 +245,8 @@ M.roster = {
 		-- crossing stays five wide.
 		reserve_anchor_root = true,
 	},
-	-- The third capital, and the second WALLED one. Its city wall is not a
-	-- curtain: the capitals contract's section 2.4 orc line is "palisade and
-	-- earthworks", so the four rampart runs are `wp13/orc_palisade.lua` -- a
-	-- stake stockade on a dug bank -- in the same overlay as the roads, on the
-	-- same seam and the same constants `wp13/wall.lua` uses. Twenty runs: four
-	-- avenues, four sides of the ring street, eight district lanes and the four
-	-- sides of the rampart.
+	-- The orc capital: a palisade on its rampart along the planner's outline
+	-- (contract section 2.4, "palisade and earthworks").
 	{
 		key = "gor_drazhak", label = "Gor Drazhak", race = "orc",
 		slot = "capital", bounds = "capital_core", plot_bounds = "capital_plot",
@@ -280,18 +268,11 @@ M.roster = {
 		-- five-wide gate road crossing stays five wide.
 		reserve_anchor_root = true,
 	},
-	-- The fourth capital, and the second OPEN one (the user's ruling of
-	-- 2026-09-14: open edges for Highcourt, Lethariel and Kezamba; the
-	-- round-3 plan later moved Highcourt to the walled side and left Lethariel
-	-- and Kezamba open). Its overlay carries nineteen runs -- four avenues,
-	-- four sides of the ring street, seven district lanes and the four sides of
-	-- the GROVE EDGE, which is what an open capital has where a walled one has
-	-- a curtain (`r7_lethariel_blueprint.lua`).
-	--
-	-- It is also the only capital whose 96 x 96 civic core is not a full pad:
-	-- WP40's authored crown lake (`wp40/water_authored.lua`) reaches into it,
-	-- and the composition writes nothing over the water. See
-	-- `wp13/lethariel.lua`.
+	-- The elf capital, OPEN (the user's ruling of 2026-09-14): a planted belt
+	-- and four thresholds on the planner's outline. It is also the only
+	-- capital whose 96 x 96 civic core is not a full pad: WP40's authored crown
+	-- lake (`wp40/water_authored.lua`) reaches into it, and the composition
+	-- writes nothing over the water. See `wp13/lethariel.lua`.
 	{
 		key = "lethariel", label = "Lethariel", race = "elf",
 		slot = "capital", bounds = "capital_core", plot_bounds = "capital_plot",
@@ -312,19 +293,10 @@ M.roster = {
 		-- the two great avenues.
 		reserve_anchor_root = true,
 	},
-	-- The fifth capital: the troll one, whose 512 envelope carries the
-	-- authored cenote (`kezamba_cenote` in `wp40/water_authored.lua`). It fills
-	-- about 11.5 per cent of it -- essentially the whole north-east quadrant
-	-- and a wedge of the civic core itself, there exactly the committed lagoon
-	-- mask -- with its surface two nodes below the fitted civic reference. The
-	-- composition therefore builds ROUND the water rather than over it, and the
-	-- roster row
-	-- is otherwise an ordinary capital's.
-	--
-	-- Kezamba is OPEN (the user's ruling of 2026-09-14, unchanged by the round-3
-	-- plan that walled Highcourt), so its overlay carries twelve runs and none
-	-- of them is a curtain: four avenues, four sides of the ring street and the
-	-- four gate thresholds of `wp13/kezamba_gate.lua`.
+	-- The troll capital, OPEN: the authored cenote (`kezamba_cenote` in
+	-- `wp40/water_authored.lua`) cuts a wedge of the civic core, whose
+	-- composition builds round the water; a planted belt and four thresholds
+	-- on the planner's outline.
 	{
 		key = "kezamba", label = "Kezamba", race = "troll",
 		slot = "capital", bounds = "capital_core", plot_bounds = "capital_plot",
@@ -346,18 +318,11 @@ M.roster = {
 		-- `walkable = false`, so a five-wide gate road crossing stays five wide.
 		reserve_anchor_root = true,
 	},
-	-- The third capital, and the second WALLED one (the same user ruling of
-	-- 2026-09-14). Nhal Veyr is the undead raised necropolis: four districts of
-	-- nine building lots and four fill dressings, assigned to the quadrants by
-	-- the world seed exactly as Highcourt's are, and ONE overlay of twenty runs
-	-- -- four avenues, four sides of the ring street, eight district lanes and
-	-- the four sides of the curtain wall (`r7_nhal_veyr_blueprint.lua`).
+	-- The undead capital: a stone curtain on the planner's outline.
 	--
-	-- LAST in the roster, by the coordinator's ruling at merge. Dur Brannoc,
-	-- Gor Drazhak, Lethariel and Kezamba landed on `main` before this lane and
-	-- their rows are frozen where they are; appending rather than inserting is
-	-- what keeps every one of those capitals' numeric ids, anchor ids and frozen
-	-- digests exactly where they were.
+	-- LAST in the roster, by the coordinator's ruling at merge: appending
+	-- rather than inserting kept every earlier capital's numeric ids and
+	-- anchor ids where they were.
 	{
 		key = "nhal_veyr", label = "Nhal Veyr", race = "undead",
 		slot = "capital", bounds = "capital_core", plot_bounds = "capital_plot",

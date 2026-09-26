@@ -209,9 +209,9 @@ return function(P)
 	---------------------------------------------------------------------------
 	-- Lethariel crown lake (settlements.md: the mere precinct, the quay, the
 	-- north avenue's causeway). The chain is the old crown lake, which is the
-	-- `MERE` table of `wp13/lethariel.lua` inside the civic core; the district
-	-- lots of `wp13/lethariel_quadrants.lua` were laid round it. The capital
-	-- damping flattened the natural basin, so the bed is carved.
+	-- `MERE` table of `wp13/lethariel.lua` inside the civic core; the capital
+	-- planner keeps the mere precinct beside it. The capital damping flattened
+	-- the natural basin, so the bed is carved.
 	---------------------------------------------------------------------------
 	lake({id = "lethariel_crown_lake", anchor = "anchor_009", level_offset = -2,
 		points = {{1800, -1440, 38}, {1840, -1390, 62}, {1900, -1380, 78},

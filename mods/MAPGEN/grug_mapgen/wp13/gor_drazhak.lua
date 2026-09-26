@@ -23,8 +23,9 @@
 --     of fighting tops, and that is what it is recognised by.
 --   * ORS-STONE BASE COURSES -- the second palette handle, which builds a civic
 --     building out of `grug_decor:darkage_ors_block` where a dwelling is adobe.
---   * PALISADE AND EARTHWORKS -- `wp13/orc_palisade.lua` on the envelope edge,
---     and the precinct's own bank and stockade round this pad.
+--   * PALISADE AND EARTHWORKS -- the capital planner's palisade on the city
+--     outline (`wp13/city_edge.lua`), and the precinct's own bank and stockade
+--     round this pad.
 --   * WARLORD HALL WITH FIGHTING PLATFORM -- the library's great hall, and in
 --     front of its door a raised ors-stone platform with its own breastwork,
 --     stair, braziers and standards, which is section 5.2 below.
@@ -35,13 +36,8 @@
 --     composition (schema, canonical cells, bounds, sorted palette, landmarks)
 --     plus `landmarks.sockets`, the NPC seam of
 --     docs/research/wp13-npc-sockets-contract.md.
---   * `M.district` is the 52-plot list of the four districts
---     (`gor_drazhak_districts.lua`), resolved against this world's quadrant
---     permutation.
---   * `M.avenues`, `M.ring`, `M.lanes` and `M.wall` are the overlay runs, all
---     four lists living in `gor_drazhak_quadrants.lua` because they are the
---     city's plan geometry and the lot predicate has to read them beside the
---     lots.
+--   * the district plots, the streets and the city edge are the capital
+--     planner's per-world layout (Round 22, `wp40/capital_planner.lua`).
 --
 -- Plain Lua 5.1, pure, no engine calls, no globals.
 
@@ -52,11 +48,7 @@ local function loader(directory)
 	local capitals = dofile(directory .. "/capitals.lua")(directory)
 	local dressing = dofile(directory .. "/dressing.lua")(directory)
 	local layout = dofile(directory .. "/layout.lua")(directory)
-	local palisade = dofile(directory .. "/orc_palisade.lua")(directory)
 	local precinct_ring = dofile(directory .. "/precinct_ring.lua")
-	local quadrants = dofile(directory .. "/gor_drazhak_quadrants.lua")()
-	local districts = dofile(directory .. "/gor_drazhak_districts.lua")(directory)
-	local street_plan = dofile(directory .. "/street_plan.lua")(directory)
 
 	local M = {}
 
@@ -204,8 +196,8 @@ local function loader(directory)
 
 		-- 5. The civic furniture: the warlord's statue east of the crossing and
 		-- the cistern court in the west quarter. A mesa shelf has no standing
-		-- water anywhere in its envelope -- measured on three worlds, section 1
-		-- of `gor_drazhak_quadrants.lua` -- so the city's water is a tank and
+		-- water anywhere in its envelope (measured on three worlds before
+		-- Round 22) -- so the city's water is a tank and
 		-- the well court is what stands over it.
 		{id = "statue", module = "capitals", make = "statue_plinth",
 			x = 12, z = -11, turns = 0, palette = "orc", spec = {}},
@@ -292,22 +284,6 @@ local function loader(directory)
 		{id = "watch_south_east", x = 22, z = -40, face = 0, order = 5},
 	}
 
-	-- The overlay run lists, all four from the plan module.
-	M.avenues = quadrants.AVENUES
-	M.ring = quadrants.RING
-	M.lanes = quadrants.lane_runs()
-	M.wall = quadrants.WALL
-	M.wall_plan = quadrants.WALL_PLAN
-	M.quadrants = quadrants
-	M.districts = districts
-
-	-- `tools/wp13/capital_plots.lua`, the KAT and the renderer expect
-	-- `capital.district.plots`: a flat list of `{id, x, z, build}`. This
-	-- capital's is the CANONICAL assignment's, which is the one every
-	-- engine-free caller sees; a world with a seed asks `M.districts.resolve`
-	-- for its own (`wp40/r7_gor_drazhak_blueprint.lua`).
-	M.district = {plots = districts.resolve()}
-
 	-- THE BREASTWORK over a finished flat deck: the ring of low wall with a
 	-- merlon on a two-node rhythm that turns a flat roof from a shed lid into a
 	-- fighting top. Written only where the course below it is an opaque full
@@ -332,6 +308,11 @@ local function loader(directory)
 		end
 		return placed
 	end
+
+	-- The city around the core -- its outline, streets, walls or planted
+	-- edge, gates and the placed district plots -- is laid out per world by
+	-- the capital planner (`wp40/capital_planner.lua`, `wp13/city_edge.lua`,
+	-- Round 22); this file is the civic core.
 
 	function M.core()
 		local orc = palettes.new("orc")
@@ -1099,88 +1080,6 @@ local function loader(directory)
 				platform_cells = platform_cells,
 			},
 		}
-	end
-
-	-- The overlay seam, in one place: the run list in authored order (avenues
-	-- first, then the ring street, then the district lanes, then the rampart)
-	-- and the one function that turns a run into cells. The successor's
-	-- first-run-wins arbitration reads this order, so the avenue runs through
-	-- the gate and the rampart yields the cells of the road it lets past.
-	function M.overlay_runs()
-		-- THE JUNCTION PLATEAUS are attached here, and here is the only
-		-- place they can be. A plateau is a property of TWO street runs, and
-		-- only the composition knows which of its overlay runs ARE streets:
-		-- the curtain wall is an overlay run too, and a road passing through
-		-- its gate is not a crossroads. `wp13/street_plan.lua` turns the
-		-- street rectangles -- which are static, and are what the overlay's
-		-- identity is already hashed from -- into the squares they share, and
-		-- `wp13/avenue.lua` gives each square its height from the two runs'
-		-- own ground. The runs that are not streets are appended afterwards
-		-- and carry no junctions at all.
-		local streets = {}
-		for _, list in ipairs({M.avenues, M.ring, M.lanes}) do
-			for index = 1, #list do streets[#streets + 1] = list[index] end
-		end
-		-- AND THE GATE PASSAGES, for the same reason and out of the same
-		-- rectangles: a street runs THROUGH the structure that is not a street,
-		-- and inside that passage the structure owns the lanes either side of
-		-- the carriageway. `wp13/avenue.lua` writes no plank walk, no rail and
-		-- no pillar there, which is the sentence the per-capital kerb parapets
-		-- this rule replaced each carried in their own words.
-		local runs = street_plan.attach(streets, nil,
-			{{runs = M.wall, half = palisade.HALF}})
-		for index = 1, #M.wall do runs[#runs + 1] = M.wall[index] end
-		return runs
-	end
-
-	-- Every node name either overlay may write, byte-sorted and without
-	-- duplicates: the union of the road's vocabulary and the rampart's, which
-	-- is what the settlement's shared content channel is closed over and what
-	-- the overlay's specification identity is written from.
-	function M.overlay_names(avenue, palette)
-		local seen, list = {}, {}
-		for _, source in ipairs({avenue.palette_names(palette),
-				palisade.palette_names(palette)}) do
-			for index = 1, #source do
-				local name = source[index]
-				if not seen[name] then
-					seen[name] = true
-					list[#list + 1] = name
-				end
-			end
-		end
-		table.sort(list, parts.less_bytes)
-		return list
-	end
-
-	-- THE CAUSEWAY RAIL.
-	--
-	-- THE CAUSEWAY PARAPET IS THE ROAD MODULE'S NOW.
-	--
-	-- This composition used to add one course of masonry on a kerb column the
-	-- road had had to FILL by three or more courses: an embankment out of the
-	-- blend band is a fine thing to look at and a bad thing to walk beside, and
-	-- `wp13/avenue.lua` was the shared road of capitals whose built roads were
-	-- frozen against it, so the parapet went here.
-	--
-	-- Playtest 5 (2026-09-16) settled that the other way round. A street raised
-	-- three or more nodes above its own ground is no longer FILLED at all -- it
-	-- is a viaduct on pillars with air under it, and it carries a plank walk and
-	-- a rail on the two VERGE lanes, outside the carriageway rather than on its
-	-- outermost lane. Every capital gets it, in its own palette, from one rule.
-	-- A kerb column of a raised span now has a single cell in it, so the test
-	-- this routine ran could never fire again; it is gone rather than left to
-	-- read as a parapet that is not there.
-
-	-- One run, dispatched by its own id. A rampart run carries authored
-	-- geometry the seam's overlay spec has no field for -- which side is the
-	-- field, where the towers and the gate stand -- so it is looked up here,
-	-- from the same table for every piece, which is what keeps a piece of a run
-	-- exactly that stretch of the whole run.
-	function M.overlay_run(avenue, palette, spec, surface)
-		local plan = M.wall_plan[spec.id]
-		if plan then return palisade.run(palette, spec, surface, plan) end
-		return avenue.run(palette, spec, surface)
 	end
 
 	return M

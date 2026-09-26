@@ -190,21 +190,11 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	-- and the palette the channel is closed over, and neither of them is a
 	-- 100,000-cell buffer.
 	--
-	-- THE SEED REACHES THE BLUEPRINT SOURCES HERE, AND NOWHERE ELSE.
-	--
-	-- A capital's districts stand in quadrants a permutation of the world seed
-	-- picks (`wp13/highcourt_quadrants.lua`), so the plot OFFSETS are a
-	-- function of the seed even though no identity byte is. That made the
-	-- capital source read the seed for itself, at module construction, while
-	-- `build` validates its own copy later and `r7_mapgen.lua` compares only
-	-- THAT copy across the two environments -- so the value the offsets came
-	-- from was never the value anything checked.
-	--
-	-- It is one value now: validated once, here, handed to every blueprint
-	-- source, and `build` refuses to run if its own validation answers
-	-- anything else. Main and emerge therefore agree about where a district
-	-- stands exactly when they agree about `full_seed`, which is the check
-	-- `r7_mapgen.lua` already makes.
+	-- THE SEED IS VALIDATED HERE ONCE. The capital layouts are a function of it
+	-- (main plans them from it; emerge takes main's text), and `build` refuses
+	-- to run if its own validation answers anything else, so both environments
+	-- agree about where a capital stands exactly when they agree about
+	-- `full_seed`, the check `r7_mapgen.lua` makes.
 	local construction_seed = validate_live_scalars()
 	local blueprint_options = {full_seed = construction_seed,
 		raw_sha256 = raw_sha256}

@@ -1,25 +1,14 @@
--- Lethariel's four districts, their rosters, and where this world puts them.
+-- Lethariel's four districts and their rosters (builder `lethariel_plot.lua`).
 --
--- The builder is `lethariel_plot.lua`; the lots and the permutation are
--- `lethariel_quadrants.lua`. This file is the one place the two meet, and it
--- is what the WP40 capital source asks for its plot list.
---
--- `M.resolve(options)` returns the plots in a FIXED order -- district by
--- district in the contract's own role order, each district's BUILDING plots in
--- roster order and then its FILL plots in roster order -- each with the offset
--- from the capital anchor that this world gives it. The order does not depend
--- on the seed, only the offsets do, which is what keeps the manifest's field
--- order and every blueprint identity independent of the world: a plot's
--- identity is its cells, and its cells do not know which quarter they will
--- stand in.
+-- `M.plots()` returns the plots in a FIXED order -- district by district in
+-- the contract's own role order, each district's BUILDING plots in roster
+-- order and then its FILL plots in roster order. Where they stand and how
+-- they are turned is the capital planner's per-world layout (Round 22),
+-- which keeps the mere precinct beside the crown lake (plan D72).
 --
 -- THREE DISTRICTS OF NINE AND ONE OF THREE. The lore and spiritual district is
--- the MERE PRECINCT and the lake is why it is smaller; the argument and the
--- measurement are in `lethariel_quadrants.lua` section 1. So the rosters here
--- are not four of a kind: three carry nine plots and four dressings, the
--- fourth carries three plots and two, and the resolve holds each of them to
--- the lot count of the quarter it actually stands in rather than to a number
--- typed twice.
+-- the MERE PRECINCT and the lake is why it is smaller: three rosters carry nine
+-- plots and four dressings, the fourth three plots and two.
 --
 -- WHAT MAKES A DISTRICT ELVEN, and it is not the palette alone. Every
 -- profession house carries a SHOPFRONT on the two-node ring its own plot
@@ -35,11 +24,11 @@
 
 local function loader(directory)
 	local plots = dofile(directory .. "/lethariel_plot.lua")(directory)
-	local quadrants = dofile(directory .. "/lethariel_quadrants.lua")()
+	-- The sizes of the fill dressings (their reach), in roster order; the
+	-- mere precinct carries two smaller ones.
+	local FILL_REACHES, MERE_FILL_REACHES = {11, 11, 8, 5}, {8, 5}
 
 	local M = {}
-
-	M.quadrants = quadrants
 
 	----------------------------------------------------------------------
 	-- Shared shopfront
@@ -714,23 +703,24 @@ local function loader(directory)
 		plots.district({key = "lethariel_market",
 			role = "market_professions", patrol_group = MARKET_WATCH,
 			plots = MARKET, fill = MARKET_FILL,
-			fill_reaches = quadrants.FILL_REACHES}),
+			fill_reaches = FILL_REACHES}),
 		plots.district({key = "lethariel_martial",
 			role = "martial_garrison", patrol_group = MARTIAL_WATCH,
 			plots = MARTIAL, fill = MARTIAL_FILL,
-			fill_reaches = quadrants.FILL_REACHES}),
+			fill_reaches = FILL_REACHES}),
 		plots.district({key = "lethariel_mere",
 			role = "lore_spiritual", patrol_group = MERE_WATCH,
 			plots = MERE, fill = MERE_FILL,
-			fill_reaches = quadrants.MERE_FILL_REACHES}),
+			fill_reaches = MERE_FILL_REACHES}),
 		plots.district({key = "lethariel_homes",
 			role = "residential_cultural", patrol_group = HOMES_WATCH,
 			plots = HOMES, fill = HOMES_FILL,
-			fill_reaches = quadrants.FILL_REACHES}),
+			fill_reaches = FILL_REACHES}),
 	}
 
 	do
-		local roles = quadrants.ROLES
+		local roles = {"market_professions", "martial_garrison", "lore_spiritual",
+		"residential_cultural"}
 		if #M.districts ~= #roles then
 			error("wp13 lethariel: district roster differs", 0)
 		end
@@ -742,49 +732,25 @@ local function loader(directory)
 		end
 	end
 
-	-- The plots with their offsets, for this world.
-	--
-	-- `options` is the quadrant seam of `lethariel_quadrants.assign`:
-	-- `full_seed` plus `raw_sha256` where a world is being generated, an
-	-- explicit `permutation` where a test names one, and neither where there
-	-- is no world at all -- an engine-free fixture, a renderer, the timing
-	-- harness -- in which case the moving roles take the moving quarters in
-	-- authored order.
-	function M.resolve(options)
-		local assignment, permutation = quadrants.assign(options)
+	-- The plots in a FIXED order -- district by district in the contract's own
+	-- role order, each district's BUILDING plots in roster order and then its
+	-- FILL plots in roster order: {id, district, role, kind ("plot" or
+	-- "fill"), build}. Where a plot stands and how it is turned is the capital
+	-- planner's per-world layout (Round 22, `wp40/capital_planner.lua`); a
+	-- plot's identity is its cells, and its cells do not know where they will
+	-- stand.
+	function M.plots()
 		local list = {}
 		for index = 1, #M.districts do
 			local district = M.districts[index]
-			local placement = assignment[district.role]
-			if placement == nil then
-				error("wp13 lethariel: no quarter for " .. district.role, 0)
-			end
-			local function append(entries, lots, kind)
-				if #entries ~= #lots then
-					error("wp13 lethariel: " .. district.role .. " has " ..
-						#entries .. " " .. kind .. " rows against " .. #lots ..
-						" lots in " .. placement.quadrant, 0)
-				end
-				for plot_index = 1, #entries do
-					local plot = entries[plot_index]
-					local lot = lots[plot_index]
-					list[#list + 1] = {
-						id = plot.id,
-						district = district.key,
-						role = district.role,
-						quadrant = placement.quadrant,
-						kind = kind,
-						lot = plot_index,
-						x = lot.x,
-						z = lot.z,
-						build = plot.build,
-					}
+			for _, pair in ipairs({{district.plots, "plot"}, {district.fill, "fill"}}) do
+				for _, plot in ipairs(pair[1]) do
+					list[#list + 1] = {id = plot.id, district = district.key,
+						role = district.role, kind = pair[2], build = plot.build}
 				end
 			end
-			append(district.plots, placement.lots, "plot")
-			append(district.fill, placement.fill_lots, "fill")
 		end
-		return list, assignment, permutation
+		return list
 	end
 
 	return M

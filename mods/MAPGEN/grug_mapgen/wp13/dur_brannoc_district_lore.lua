@@ -3,7 +3,7 @@
 --
 -- The contract's third district role. What a plot is and how it is built is
 -- `dur_brannoc_plot.lua`; where the nine plots stand is
--- `dur_brannoc_quadrants.lua`. This file is the roster and nothing else.
+-- the capital planner's. This file is the roster and nothing else.
 --
 -- WHAT A DWARF LORE QUARTER IS, and where the reading of it comes from. The
 -- capitals contract's section 2.4 gives this race "stone-block citadel walls

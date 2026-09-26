@@ -1,27 +1,18 @@
--- Dur Brannoc's four districts, and where this world puts them.
+-- Dur Brannoc's four districts: the rosters `dur_brannoc_district*.lua`, one per
+-- role of the capitals contract (market and professions, martial and
+-- garrison, lore and spiritual, residential and cultural), each with its
+-- BUILDING plots and its FILL dressings (fields, orchards, pastures, parks).
 --
--- The four rosters are `dur_brannoc_district.lua` (the forge and professions
--- quarter this capital shipped with), `dur_brannoc_district_martial.lua`,
--- `dur_brannoc_district_lore.lua` and `dur_brannoc_district_homes.lua`; the
--- four quadrants' lot grids and the seeded permutation are
--- `dur_brannoc_quadrants.lua`. This file is the one place the two meet, and it
--- is what the WP40 capital source asks for its plot list.
---
--- `M.resolve(options)` returns the 52 plots in a FIXED order -- district by
--- district in the contract's own role order, the district's nine BUILDING plots
--- in roster order and then its four FILL plots in roster order -- each with the
--- offset from the capital anchor that this world's permutation gives it. The
--- fill plots travel with their DISTRICT, which is why they are here and not a
--- fifth roster of their own: the forge quarter's ore court belongs beside the
--- forge quarter wherever the seed puts it. The order does not depend on the
--- seed, only the offsets do, which is what keeps the manifest's field order and
--- every blueprint identity independent of the world: a plot's identity is its
--- cells, and its cells do not know which quadrant they will stand in.
+-- `M.plots()` returns them in a FIXED order -- district by district in the
+-- role order, building plots in roster order, then fill plots. Where they
+-- stand and how they are turned is the capital planner's per-world layout
+-- (Round 22, `wp40/capital_planner.lua`): districts stay recognisable
+-- groups (plan D69), and a plot's identity is its cells, which do not know
+-- where they will stand.
 --
 -- Plain Lua 5.1, pure, no engine calls, no globals.
 
 local function loader(directory)
-	local quadrants = dofile(directory .. "/dur_brannoc_quadrants.lua")()
 	local forge = dofile(directory .. "/dur_brannoc_district.lua")(directory)
 	local martial =
 		dofile(directory .. "/dur_brannoc_district_martial.lua")(directory)
@@ -31,15 +22,12 @@ local function loader(directory)
 
 	local M = {}
 
-	M.quadrants = quadrants
-
-	-- The four districts in the contract's role order, which is also the order
-	-- `dur_brannoc_quadrants.ROLES` names them in and the order the permutation
-	-- is read against.
+	-- The four districts in the contract's role order.
 	M.districts = {forge.forge, martial.martial, lore.lore, homes.homes}
 
 	do
-		local roles = quadrants.ROLES
+		local roles = {"market_professions", "martial_garrison", "lore_spiritual",
+		"residential_cultural"}
 		if #M.districts ~= #roles then
 			error("wp13 dur brannoc: district roster differs", 0)
 		end
@@ -48,51 +36,28 @@ local function loader(directory)
 				error("wp13 dur brannoc: district " .. index .. " is not " ..
 					roles[index], 0)
 			end
-			if #M.districts[index].plots ~= #quadrants.AUTHORED then
-				error("wp13 dur brannoc: " .. roles[index] ..
-					" does not have one plot per lot", 0)
-			end
-			if #M.districts[index].fill ~= #quadrants.FILL_AUTHORED then
-				error("wp13 dur brannoc: " .. roles[index] ..
-					" does not have one dressing per fill lot", 0)
-			end
 		end
 	end
 
-	-- The 52 plots with their offsets, for this world.
-	--
-	-- `options` is the quadrant seam of `dur_brannoc_quadrants.assign`:
-	-- `full_seed` plus `raw_sha256` where a world is being generated, an
-	-- explicit `permutation` where a test names one, and neither where there is
-	-- no world at all -- an engine-free fixture, a renderer, the timing harness
-	-- -- in which case the roles take the quadrants in authored order.
-	function M.resolve(options)
-		local assignment, permutation = quadrants.assign(options)
+	-- The plots in a FIXED order -- district by district in the contract's own
+	-- role order, each district's BUILDING plots in roster order and then its
+	-- FILL plots in roster order: {id, district, role, kind ("plot" or
+	-- "fill"), build}. Where a plot stands and how it is turned is the capital
+	-- planner's per-world layout (Round 22, `wp40/capital_planner.lua`); a
+	-- plot's identity is its cells, and its cells do not know where they will
+	-- stand.
+	function M.plots()
 		local list = {}
 		for index = 1, #M.districts do
 			local district = M.districts[index]
-			local placement = assignment[district.role]
-			local function append(entries, lots, kind)
-				for entry_index = 1, #entries do
-					local entry = entries[entry_index]
-					local lot = lots[entry_index]
-					list[#list + 1] = {
-						id = entry.id,
-						district = district.key,
-						role = district.role,
-						quadrant = placement.quadrant,
-						kind = kind,
-						lot = entry_index,
-						x = lot.x,
-						z = lot.z,
-						build = entry.build,
-					}
+			for _, pair in ipairs({{district.plots, "plot"}, {district.fill, "fill"}}) do
+				for _, plot in ipairs(pair[1]) do
+					list[#list + 1] = {id = plot.id, district = district.key,
+						role = district.role, kind = pair[2], build = plot.build}
 				end
 			end
-			append(district.plots, placement.lots, "plot")
-			append(district.fill, placement.fill_lots, "fill")
 		end
-		return list, assignment, permutation
+		return list
 	end
 
 	return M

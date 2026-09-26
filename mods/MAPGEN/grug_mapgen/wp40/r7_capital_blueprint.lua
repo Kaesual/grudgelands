@@ -57,7 +57,7 @@ function M.kit(key)
 	end
 	local districts = dofile(path .. "/" .. key .. "_districts.lua")(path)
 	local plots = {}
-	for _, plot in ipairs(districts.plots and districts.plots() or districts.resolve({})) do
+	for _, plot in ipairs(districts.plots()) do
 		plots[#plots + 1] = {id = plot.id, district = plot.district, role = plot.role,
 			kind = plot.kind,
 			schema = "grug_wp13_" .. key .. "_plot_" .. plot.id .. "_v1",
