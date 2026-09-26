@@ -103,6 +103,27 @@ function M.source(key, layout, text, kit)
 	end
 	local path = library.path()
 	local city_edge = dofile(path .. "/city_edge.lua")(path)
+	-- The overlay's names are the edge's plus what the plot collars and
+	-- approaches write (`r7_settlement.lua`, `wp13/plot_approach.lua`): the
+	-- race's ground, subsoil, path paving and stair. They reach the shared
+	-- settlement palette through this list, whichever plots a world places.
+	local names = {}
+	do
+		local palettes = dofile(path .. "/palette.lua")
+		local parts = dofile(path .. "/parts.lua")
+		local p = palettes.new(cfg.race)
+		local seen = {}
+		local list = city_edge.names(cfg.race, cfg.edge)
+		for _, name in ipairs({p.node("ground"), p.node("subsoil"),
+				p.maybe("castle_paving") or p.node("plaza"),
+				p.maybe("castle_wall_stair") or p.node("roof_stair")}) do
+			list[#list + 1] = name
+		end
+		for _, name in ipairs(list) do
+			if not seen[name] then seen[name] = true; names[#names + 1] = name end
+		end
+		table.sort(names, parts.less_bytes)
+	end
 	local dims = planner.EDGE[cfg.edge]
 	-- the reach of the edge: every wall point, gate box and turret disc
 	local extra = math.max(dims.depth, dims.width, dims.turret or 0) + dims.half + 2
@@ -137,7 +158,7 @@ function M.source(key, layout, text, kit)
 			reach = {min_x = math.floor(min_x - extra), max_x = math.ceil(max_x + extra),
 				min_z = math.floor(min_z - extra), max_z = math.ceil(max_z + extra)},
 			y_min = math.floor(y_low) - 24, y_max = math.ceil(y_high) + 8,
-			names = city_edge.names(cfg.race, cfg.edge),
+			names = names,
 			make = function(anchor)
 				return city_edge.new(cfg.race, cfg.edge, layout, dims, anchor)
 			end,
