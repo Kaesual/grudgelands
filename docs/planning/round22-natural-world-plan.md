@@ -751,6 +751,18 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   B1 predicts surface-cave mouths as closed until the chunk above exists.
   Lighting-check targets `river_cross47` and `river_rapids` are stale since
   W3b moved the rivers (tool note, not re-targeted).
+- **End-of-round check: full-world preparation** (`grug_prepare_full_world`,
+  user, 2026-09-26). The preparation scheduler
+  (`grug_core/starts_preload.lua`, `preparation_plan.lua`) takes its volume
+  from the mapgen's surface authority (`wp40/preparation_source.lua`: tile
+  boxes from the settlement blueprints with a hard-coded ±265 plot-approach
+  clamp, column bounds from `column_values_at` ground, water, functional and
+  upper/lower heights). Roads (decks, pillars, railings, cut slopes) and the
+  capital planner (rotated plots, walls, new outline) change what lies above
+  and below the ground. A short headless run with the option on, not a full
+  preparation: it starts, prepares a few tiles around a capital, a road deck
+  and a bridge without errors, and those features lie inside the prepared
+  bounds.
 - Afterwards, the general runtime cleanup round (D4).
 
 ### Orchestration and compaction points
