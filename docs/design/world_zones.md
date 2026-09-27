@@ -111,9 +111,9 @@ in this file as of commit `082982da`.
   blend. No dry shore column may end below its neighboring water surface.
   Where one bank touches two water surfaces (beside a river step), it takes
   the higher one, so nothing spills sideways and the step stays a water-water
-  contact inside the channel (Round 22 Phase 5). Authored bridge, causeway,
-  ford and culvert surfaces are functional crossings or cut rims rather than
-  dry-land banks and retain their existing grade constraints.
+  contact inside the channel (Round 22 Phase 5). Road bridges, decks and
+  fords (§9) are functional crossings rather than dry-land banks and keep
+  their own road grade.
 
 ## 3. Starting zones and capitals
 

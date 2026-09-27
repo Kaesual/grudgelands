@@ -29,8 +29,7 @@ end
 local function candidate_anchor(numeric_id, zone_id, slot_id, x, z,
 		template_id)
 	-- Flexible slots use one conservative three-point authored set. The small
-	-- offsets keep every fallback inside the same reserved envelope; T2b must
-	-- still reject the seed if none passes the complete solver.
+	-- offsets keep every fallback inside the same reserved envelope.
 	return {
 		numeric_id = numeric_id,
 		id = ("anchor_%03d"):format(numeric_id),
@@ -46,14 +45,14 @@ local function rare_anchor(numeric_id, zone_id, slot_id, x, z,
 		patrol_offsets)
 	local row = candidate_anchor(numeric_id, zone_id, slot_id, x, z,
 		"rare_route")
-	-- Named-rare routes move with the first valid candidate. These ordered
-	-- offsets are the complete authored route authority; the compiler adds
-	-- them to the selected candidate and does not consult candidate 1 again.
+	-- Named-rare routes move with the selected anchor. These ordered offsets
+	-- are the complete authored route authority (r7_consumer_payload.lua ->
+	-- grug_core zone authority); they are relative to the anchor, never to
+	-- candidate 1.
 	row.patrol_coordinate_space = "selected_candidate_relative"
 	row.patrol_offsets = patrol_offsets
 	return row
 end
-
 
 local source = {schema = "grug_wp40_authored_source_v1"}
 
