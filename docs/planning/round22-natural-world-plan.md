@@ -940,6 +940,12 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
     2-node grid near river 1's crossing, `river_rapids` a box of rapids on
     river 1, new `river_falls` on river 24; default-order windows 0 / 0 on
     the lane head, rapids 90 / 90 and falls 40 / 40 flowing.
+  - Re-checked after merging main 8f467033 (D76 changes the natural field
+    and so the rivers): reversed contacts 655 on 15 / 16 seeds → 0 on all
+    16, sinks and dry junctions unchanged, spring first-wet width median 3.1;
+    capital planner on 4 seeds (24 plans): required plots 9 / 9, 0 plots in
+    water, 0 connector failures (street grade steps 7 → 9, all at Nhal Veyr,
+    the open D49 follow-up); engine seed 42: level contacts 62 → 0, no leaks.
 - **End-of-round check: full-world preparation** (`grug_prepare_full_world`,
   user, 2026-09-26). The preparation scheduler
   (`grug_core/starts_preload.lua`, `preparation_plan.lua`) takes its volume
