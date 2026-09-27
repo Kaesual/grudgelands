@@ -100,7 +100,9 @@ local function new_module(P)
 	end
 
 	---------------------------------------------------------------------------
-	-- Binary heap keyed by number.
+	-- Binary heap keyed by number. The A* search (`search` below) carries an
+	-- inlined copy with the same operations in the same order (so the same
+	-- tie-breaking); change both together.
 	---------------------------------------------------------------------------
 	local function heap_new() return {v = {}, k = {}, n = 0} end
 	local function heap_push(h, value, key)
@@ -419,7 +421,12 @@ local function new_module(P)
 			nsearch = nsearch + 1
 			last_expand = 0
 			local G = generation
-			local heap = heap_new()
+			-- heap_push / heap_pop inlined (same operations, same order, so
+			-- the same pop order): as called functions LuaJIT blacklisted
+			-- them (their sift loops abort a function's root trace), and a
+			-- blacklisted function aborts every trace that calls it, so the
+			-- search loop ran interpreted
+			local hv, hk, hn = {}, {}, 0
 			for _, s in ipairs(sources) do
 				local ds = s[2] and {s[2]} or nil
 				if not ds then ds = {} for d = 1, ND do ds[d] = d end end
@@ -427,13 +434,39 @@ local function new_module(P)
 					local st = (s[1] - 1) * ND + d
 					if gen[st] ~= G or dist[st] > s[3] then
 						gen[st], dist[st], prev[st], closed[st] = G, s[3], false, false
-						heap_push(heap, st, s[3] + (heur and heur(s[1]) or 0))
+						local key = s[3] + (heur and heur(s[1]) or 0)
+						local n = hn + 1
+						hn = n
+						while n > 1 do
+							local p = floor(n / 2)
+							if hk[p] <= key then break end
+							hv[n], hk[n] = hv[p], hk[p]
+							n = p
+						end
+						hv[n], hk[n] = st, key
 					end
 				end
 			end
 			while true do
-				local st, key = heap_pop(heap)
-				if not st then return nil end
+				if hn == 0 then return nil end
+				local st = hv[1]
+				do
+					local n = hn
+					local lv, lk = hv[n], hk[n]
+					hv[n], hk[n] = nil, nil
+					n = n - 1
+					hn = n
+					local i = 1
+					while true do
+						local c = i * 2
+						if c > n then break end
+						if c < n and hk[c + 1] < hk[c] then c = c + 1 end
+						if hk[c] >= lk then break end
+						hv[i], hk[i] = hv[c], hk[c]
+						i = c
+					end
+					if n > 0 then hv[i], hk[i] = lv, lk end
+				end
 				if not closed[st] then
 					closed[st] = true
 					local ds = dist[st]
@@ -521,7 +554,16 @@ local function new_module(P)
 										end
 										if c < dist[sj] then
 											dist[sj], prev[sj] = c, st
-											heap_push(heap, sj, c + (heur and heur(lj) or 0))
+											local key = c + (heur and heur(lj) or 0)
+											local n = hn + 1
+											hn = n
+											while n > 1 do
+												local p = floor(n / 2)
+												if hk[p] <= key then break end
+												hv[n], hk[n] = hv[p], hk[p]
+												n = p
+											end
+											hv[n], hk[n] = sj, key
 										end
 									end
 								end
