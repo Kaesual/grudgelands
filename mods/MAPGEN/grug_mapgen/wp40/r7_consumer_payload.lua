@@ -1,12 +1,12 @@
 -- Closed main-environment payload for the R7 consumer installer. Coordinates
 -- remain private to the authenticated R4 session; this graph contains only
 -- stable anchor references and the ten reviewed rare patrol offsets. The
--- ordered offsets below are the exact authored payload from
--- source/catalog.lua's rare_anchor rows (numeric IDs 91..100). R7 freezes the
--- complete returned graph in its source projection, so this is the sole live
--- copy rather than a second policy hidden in a consumer.
+-- ordered offsets are the exact authored `rare_patrol_offsets` of
+-- source/simple_map.lua (the rare_route anchors, numeric IDs 91..100). R7
+-- freezes the complete returned graph in its source projection, so this is
+-- the sole live copy rather than a second policy hidden in a consumer.
 
-return function(source, authored_source, sha256_hex)
+return function(source, sha256_hex)
 	local RARE_IDS = {
 		"grimtusk", "old_whitefang", "korgans_bane", "silkfang",
 		"marrowclaw", "dustwing", "emerald_coil", "ashmaw",
@@ -20,9 +20,8 @@ return function(source, authored_source, sha256_hex)
 	end
 	if type(source) ~= "table" or type(source.anchors) ~= "table" or
 			type(source.zones) ~= "table" or #source.anchors ~= 100 or
-			#source.zones ~= 38 or type(authored_source) ~= "table" or
-			type(authored_source.anchors) ~= "table" or
-			#authored_source.anchors ~= 100 then
+			#source.zones ~= 38 or type(source.rare_patrol_offsets) ~= "table" or
+			#source.rare_patrol_offsets ~= 10 then
 		fail("source population differs")
 	end
 	local function anchor_ref(anchor, required_slot)
@@ -75,21 +74,16 @@ return function(source, authored_source, sha256_hex)
 	local rare_routes = {}
 	for offset = 1, 10 do
 		local anchor = source.anchors[90 + offset]
-		local authored = authored_source.anchors[90 + offset]
+		local offsets = source.rare_patrol_offsets[offset]
 		local reference = anchor_ref(anchor)
-		local zone = source.zones[anchor.zone_numeric_id]
-		if anchor.numeric_id ~= authored.numeric_id or
-				authored.zone_id ~= zone.id or authored.slot_id ~= anchor.slot_id or
-				authored.patrol_coordinate_space ~=
-					"selected_candidate_relative" or
-				type(authored.patrol_offsets) ~= "table" or
-				#authored.patrol_offsets ~= 3 or
-				not anchor.slot_id:match("^rare_") then
+		if anchor.template_id ~= "rare_route" or
+				not anchor.slot_id:match("^rare_") or
+				type(offsets) ~= "table" or #offsets ~= 3 then
 			fail("rare roster differs")
 		end
 		local patrol = {}
-		for index = 1, #authored.patrol_offsets do
-			local point = authored.patrol_offsets[index]
+		for index = 1, #offsets do
+			local point = offsets[index]
 			if type(point) ~= "table" or type(point.x) ~= "number" or
 					type(point.z) ~= "number" then
 				fail("rare patrol authority differs")
