@@ -450,8 +450,10 @@ replaced; git history before this rewrite records that model.
   junction caps its parent's levels below it, so a tributary meets its parent
   at or above the parent's surface; where the tributary's water can touch the
   parent's before the join, at the foot of a step or along channels running
-  side by side, the parent's step moves upstream out of that contact, unless
-  the parent would then cut deeper than its sink limit), at a lake mouth (a river meets the lake
+  side by side, the parent is capped there so the tributary never lies beside
+  it lower (side-by-side staircases may still touch with the tributary higher,
+  spilling downstream), unless the parent would then cut deeper than its sink
+  limit), at a lake mouth (a river meets the lake
   at the lake's level, at most three nodes above the river's own level at
   the shore, except where two touching lakes must share a level; a lake
   standing higher is lowered by at most four nodes and only while at least

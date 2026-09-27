@@ -1077,7 +1077,7 @@ return function(P)
 				end
 			end
 			stats.sinks = stats.sinks + #rv.sinks
-			-- the lowest cap met (junctions, sinks): a raised mouth stays below
+			-- the lowest cap met (junctions, contacts, sinks): a raised mouth stays below
 			rv.lcap = lcap
 			if sea_floor and not rv.parent and rv.end_kind == "sea" then lv[n] = sea_floor end
 			-- Steps closer than FALL_GAP vertices merge into one step at the
