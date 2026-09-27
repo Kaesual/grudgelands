@@ -596,7 +596,8 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   binds a digest of the texts. Main loader ~25.4 s on a miss, ~8.4 s on a
   hit (seed 42). Any `grug_mapgen` Lua edit rebuilds once. Open (low): a
   hit that passes all hashes but fails construction stops instead of
-  rebuilding (only possible with a hand-edited, re-hashed file).
+  rebuilding (only possible with a hand-edited, re-hashed file); fixed in
+  the cleanup round (lane B).
 
 ### Phase 5 — Water v2
 
@@ -866,6 +867,19 @@ from the lanes and reviews of this round:
   deferred).
 - **Later consumers:** the housing scan (101² exclusion queries near water)
   needs care when housing gets a consumer.
+- **As built, lane B (redundant work + D71 fallbacks):** both per-voxel VM
+  scalar checks removed (the R5 adapter only sees R6's shadow copies; the
+  engine fills the whole volume with u16/u8 integers); the terrain audit runs
+  only with `grug_mapgen_terrain_audit` (default off; on three seeds it found
+  one plot, Lethariel `mere_mourning` on s1 with 1 submerged column, fall and
+  rise within limits); main hands emerge its preparations of every lazy cell
+  blueprint over IPC (`r7_settlement.handover`), emerge checks the handover
+  against its roster and every lazy rebuild against main's identity and
+  landmarks; a D71 hit that fails construction and an unreadable mapgen
+  source both warn and build afresh. Engine digest equal on two seeds (111
+  and 110 chunks incl. capitals, roads, bridges, water, a village); emerge
+  construction ×0.52–0.59 (~7 → ~3.8 s), main loader ×0.89–0.93, chunk time
+  within noise. Evidence `r22/cleanup-b/`.
 
 ### Orchestration and compaction points
 
