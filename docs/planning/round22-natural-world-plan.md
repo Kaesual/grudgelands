@@ -244,6 +244,7 @@ Decisions on the Phase 4 road prototype (2026-09-26, user; prototype in
 | D73 | **Order after the road merge (2026-09-26, amends D69/D71):** the capital planner integration starts right after the road merge, in parallel with the user's road + light playtest (road changes after the playtest flow into the planner automatically, since it computes connectors from the current road layout at every world start); the output-identical road build speed pass runs in parallel (road module only); the world-folder layout cache comes after the capital integration, so it also covers the capital layout; the next playtest then includes the new capitals. | User. |
 | D74 | **Road surface materials after the road playtest (2026-09-27):** exactly one surface material per road everywhere (may differ per race/zone), also on decks and galleries on pillars — no second (wood) surface where a road stands on supports; **no railings/fences anywhere** (on curved roads they read as a chaotic collection of fences, not a railing); pillars may use a second material. **True bridges** over rivers and lakes may be wood, but then the **whole bridge stretch** (the contiguous raised section that crosses the water, bank to bank) is wood; never mixed wood/stone within a section by support situation. | User playtest: the routes look great and fit; only the half-wood/half-stone surfaces and the fences on curved decks look wrong. |
 | D75 | **Trails and railings (2026-09-27):** trails use the race's road material, only narrower (no gravel with stone slabs — one material per road, D74). Railings in capitals only on straight streets and bridges; curved ones get none (curved railings look broken). Authored straight civic structures keep theirs; the capital planner rails a planner-made street bridge or deck only where that section is straight. | User. |
+| D76 | **Capital surroundings after the capital playtest (2026-09-27):** the flat, bare plateau outside the walls is too large. (1) The calm, flattened area around a capital follows the city outline: the city (incl. walls) plus a modest transition, not the whole reserved square; outside it the natural terrain, trees and ground cover come back. (2) Protection (immutable zone) = everything inside the walls, the walls themselves, and a band of 10–20 nodes around the walls; outside the band normal rules apply. The old 532-node square protection (`hard_capital_build_plus_apron_v1`) is replaced. (3) The band has restricted vegetation (no trees, no ground cover) so players see where protection ends. (4) Shape: organic, following the wall polyline (roughly round); an approximation is fine — a union of rectangles or a coarse precomputed raster (e.g. 4-node cells: inside/outside) — as long as protection checks stay cheap. Everything inside the walls must be covered. | User playtest. Open for the package: what exactly makes the plateau flat and bare (anchor damping mask radius in `terrain_field.lua`, the capital collar, vegetation suppression in the protected square) and what the planner needs as calm ground; protection consumers (`grug_core` hard volumes, guard level 60, water guard, housing/claims masks, preparation boxes) must accept the new shape. |
 
 All §9 questions are answered.
 
@@ -810,12 +811,24 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   B1 predicts surface-cave mouths as closed until the chunk above exists.
   Lighting-check targets `river_cross47` and `river_rapids` are stale since
   W3b moved the rivers (tool note, not re-targeted).
+- **Capital surroundings (D76, first Phase 6 package):** smaller flat area
+  that follows the city outline, natural terrain and vegetation back outside
+  it, protection = city + walls + a 10–20-node vegetation-free band instead
+  of the 532 square. Prototype/measure first (plateau width and bareness
+  before/after on three seeds, planner results unchanged: required plots,
+  0 plots in water, 0 grade violations), then integrate with the protection
+  consumers; images for the user.
+- **Collected items open from the lanes (Phase 6):** two reverse river
+  confluences (tributary lower than its parent, contained); the Dur Brannoc
+  connector ford step (accepted; road-module bank-seal clamp with the city
+  kit profile); free decks as last resort (mostly Stormvault, mountain
+  trails); stale lighting-check targets `river_cross47`, `river_rapids`.
 - **End-of-round check: full-world preparation** (`grug_prepare_full_world`,
   user, 2026-09-26). The preparation scheduler
   (`grug_core/starts_preload.lua`, `preparation_plan.lua`) takes its volume
   from the mapgen's surface authority (`wp40/preparation_source.lua`: tile
-  boxes from the settlement blueprints with a hard-coded ±265 plot-approach
-  clamp, column bounds from `column_values_at` ground, water, functional and
+  boxes from the settlement blueprints (rotated plot boxes, collar and
+  approach, city edge reach since the capital planner), column bounds from `column_values_at` ground, water, functional and
   upper/lower heights). Roads (decks, pillars, cut slopes) and the
   capital planner (rotated plots, walls, new outline) change what lies above
   and below the ground. A short headless run with the option on, not a full
@@ -823,6 +836,35 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   and a bridge without errors, and those features lie inside the prepared
   bounds.
 - Afterwards, the general runtime cleanup round (D4).
+
+### Cleanup round (D4): collected items
+
+Removal and simplification only where it is safe; output byte-identical
+unless an item says otherwise; one independent review per lane. Collected
+from the lanes and reviews of this round:
+- **Dead code and data:** old `source/catalog.lua` route tables; dead planner
+  bridge/ford/causeway/tunnel branches; dead `scratch.wet_surface` in
+  `r6_planner.lua`; unused `canal_rows` in `r7_runtime.lua`; stale comments
+  (e.g. river width in `grug_map/base.lua`).
+- **Redundant work (D66):** the two redundant full-volume validity checks
+  (`map_adapter.lua`, `r6_settlement.lua`, ~1 % of chunk time); make the
+  main-start terrain audit (`settlement_terrain_findings`, ~3.7 s) switchable;
+  emerge re-preparing all settlement blueprints (~3.5 s); noise code still
+  38 % interpreted.
+- **Capital planner:** y culling of the city edge and collar work (every
+  vertically stacked chunk over a capital computes all columns today); the
+  `BOUNDS.capital_overlay` table mixes anchor-relative x/z with absolute y
+  (split it); log a dropped core pin.
+- **Layout cache (D71):** a hit that passes all hashes but fails
+  construction should fall back to a fresh build; an unreadable `.lua` in
+  the key's tree aborts the load (warn and rebuild instead).
+- **Mapgen correctness nits:** the settlement analytic mirror differs from
+  the writer on sealed anchor-grade/POI-collar columns (write the top over
+  opcodes 17/18 only where `analytic_p7_support_ref` is non-nil); crab
+  `near_water` scan cost; B3 order-dependent 1-node air slivers (D65,
+  deferred).
+- **Later consumers:** the housing scan (101² exclusion queries near water)
+  needs care when housing gets a consumer.
 
 ### Orchestration and compaction points
 
