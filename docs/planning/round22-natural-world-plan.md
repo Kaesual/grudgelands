@@ -1128,6 +1128,29 @@ from the lanes and reviews of this round:
   time ×0.63/×0.64 in the two pairs where main's collar loop ran slow, within
   noise in the two where it ran fast (bimodal JIT behaviour of main's loop).
   Evidence `r22/wave2-capital/`.
+- **As built (noise code JIT coverage, D66):** the per-corner `t > 0` and
+  `x0 > z0` branches of both simplex noises (`terrain_field.lua`,
+  `zone_field.lua`) were side exits of the large traces that inline the
+  noise, and their side traces never assembled ("NYI: register coalescing
+  too complex"); the corners are now branch-free (weight `(t + |t|) / 2`,
+  clamped-floor `i1`) with the old form kept as the exact answer when a
+  result is exactly zero (the only case where the sign of a zero could
+  differ). `smoothstep`/`smootherstep` (`terrain_field.lua`,
+  `water_layout.lua`) clamp with `min`/`max`; bucket keys that went negative
+  (zone-field grid, landmark buckets, height feature grid) are shifted by a
+  constant ("NYI: mixed sparse/dense table"); height's classification memo is
+  direct-mapped over fixed arrays instead of vararg tuples. Offline main
+  build: aborted traces 117k → 12k; samples in the noise functions 44 % →
+  90 % compiled (interpreter 27 → 3 %, JIT compiler 25 → 7 %). Engine emerge,
+  179 owners: aborts 62k → 15k, those in the noise files 45.6k → 0.4k. Four
+  swapped pairs on two seeds: plan ×0.65–0.73, chunk total ×0.84–0.93,
+  writer within noise, main loader ×0.81–0.83, emerge construction
+  ×0.78–0.80. Byte identity: engine digest over 179 owners (91.6 M voxels)
+  per seed equal in all eight runs, layout texts equal on two seeds, simplex
+  and smoothstep compared bit for bit (incl. the sign of zero) in 31 M checks
+  with the JIT on and off. Open: the road A* search (`road_layout.lua`) is
+  now ~30 % of main start and mostly interpreted for the same two reasons.
+  Evidence `r22/noise-jit/`.
 
 ### Orchestration and compaction points
 
