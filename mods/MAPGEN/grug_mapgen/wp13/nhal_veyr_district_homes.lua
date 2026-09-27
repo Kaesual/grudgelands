@@ -3,7 +3,7 @@
 --
 -- The contract's fourth district role. What a plot is and how it is built is
 -- `nhal_veyr_plot.lua`; where the nine plots stand is
--- `nhal_veyr_quadrants.lua`. This file is the roster.
+-- the capital planner's. This file is the roster.
 --
 -- THE CONTRACT'S LINE FOR THIS RACE IS BUILT HERE. Section 2.4 asks for
 -- "stepped terraces with RUINS MIXED AMONG KEPT HOUSES", and this is the

@@ -2,6 +2,7 @@
 -- column authority as the writer. This does not plan or write mapgen content.
 local path = assert(debug.getinfo(1, "S").source:sub(2):match("^(.*)[/\\]"))
 local plot_approach = dofile(path .. "/../wp13/plot_approach.lua")
+local settlement_module = dofile(path .. "/r7_settlement.lua")
 return function(columns, templates, cultural, settlements, zones, anchors, identity, sha256)
 	assert(type(columns.column_values_at) == "function" and #templates > 0)
 	local reach, below, above = 1, -1, 1
@@ -18,47 +19,44 @@ return function(columns, templates, cultural, settlements, zones, anchors, ident
 	for _, row in ipairs(cultural) do
 		for _, cell in ipairs(row.cells) do include(cell.x,cell.y+1,cell.z) end
 	end
+	-- Settlement boxes: a start or a civic core at its fitted anchor, a
+	-- capital's placed plots and its city edge from this world's capital
+	-- layout (Round 22 capital planner). The streets, connectors, squares and
+	-- the canal are roads and water: `column_bounds` reads them per column.
 	local boxes = {}
-	local function terrain(x,z)
-		local _,_,_,_,_,y = columns.column_values_at(x,z)
-		assert(type(y) == "number", "Preparation terrain authority missing")
-		return y
-	end
 	for _, row in ipairs(settlements) do
 		local profile = row.profile
 		local anchor = assert(zones.anchor(profile.zone_id, profile.slot))
 		assert(anchor.id == profile.anchor_id, "Preparation settlement identity differs")
 		for _, blueprint in ipairs(row.prepared.blueprints) do
 			local d, b = blueprint.descriptor, blueprint.bounds
-			local x,y,z = anchor.x,anchor.y,anchor.z
+			local x_min, x_max = anchor.x + b.min.x, anchor.x + b.max.x
+			local z_min, z_max = anchor.z + b.min.z, anchor.z + b.max.z
+			local y_min, y_max = anchor.y + b.min.y, anchor.y + b.max.y
 			if d.kind == "reference" then
-				x,z = x+d.offset.x,z+d.offset.z
-				y = terrain(x+blueprint.reference.x,z+blueprint.reference.z)
+				-- A placed capital plot: its bounds turned with the plot at the
+				-- layout's offset and base height, plus the collar the successor
+				-- shapes round it and the approach along its turned front.
+				local rect = settlement_module.plot_rect(blueprint, anchor.x, anchor.z)
+				local y = d.base_y
+				local collar, approach = plot_approach.COLLAR, plot_approach.MAX_APPROACH
+				local fx, fz = plot_approach.rot(0, -1, d.turns or 0)
+				x_min = rect.min_x - collar - (fx < 0 and approach or 0)
+				x_max = rect.max_x + collar + (fx > 0 and approach or 0)
+				z_min = rect.min_z - collar - (fz < 0 and approach or 0)
+				z_max = rect.max_z + collar + (fz > 0 and approach or 0)
+				y_min = math.min(y + b.min.y, y - approach)
+				y_max = math.max(y + b.max.y, y + approach + 3)
+			elseif d.kind == "overlay" then
+				-- The city edge on the capital outline: its reach, and the
+				-- heights its walls, gatehouses and turrets stand between.
+				local city = blueprint.city
+				y_min, y_max = city.y_min, city.y_max
 			else
-				assert(d.kind == "anchor" or d.kind == "overlay",
-					"Unsupported preparation blueprint kind")
-			end
-			local x_min, x_max, z_min, z_max = x+b.min.x, x+b.max.x, z+b.min.z, z+b.max.z
-			local y_min, y_max = y+b.min.y, y+b.max.y
-			if d.kind == "reference" then
-				local plot = blueprint.landmarks and blueprint.landmarks.plot
-				if plot then
-					-- The successor may cut/fill outside the authored cell box.
-					-- Cover the bounded approach and its headroom explicitly;
-					-- an incidental avenue envelope is not its authority.
-					x_min = math.min(x_min, math.max(anchor.x-265, x+plot.min.x-plot_approach.COLLAR))
-					x_max = math.max(x_max, math.min(anchor.x+265, x+plot.max.x+plot_approach.COLLAR))
-					z_min = math.min(z_min, math.max(anchor.z-265, z+plot.min.z-plot_approach.MAX_APPROACH))
-					z_max = math.max(z_max, math.min(anchor.z+265, z+plot.max.z+plot_approach.COLLAR))
-					y_min = math.min(y_min, y-plot_approach.MAX_APPROACH)
-					y_max = math.max(y_max, y+plot_approach.MAX_APPROACH+3)
-				end
+				assert(d.kind == "anchor", "Unsupported preparation blueprint kind")
 			end
 			boxes[#boxes+1] = {x_min=x_min,x_max=x_max,
-				z_min=z_min,z_max=z_max,y_min=y_min,y_max=y_max,
-				-- Avenue envelopes read every lane within their authored reach;
-				-- use that neighborhood as well as their authorized volume.
-				radius=d.kind == "overlay" and blueprint.reach+blueprint.half+1 or 0}
+				z_min=z_min,z_max=z_max,y_min=y_min,y_max=y_max,radius=0}
 		end
 	end
 	for _, row in ipairs(anchors.copy_rows()) do
@@ -99,11 +97,13 @@ return function(columns, templates, cultural, settlements, zones, anchors, ident
 		if upper then surface_high = math.max(surface_high,upper) end
 		if lower then surface_low = math.min(surface_low,lower) end
 		-- Roads (Round 22 Phase 4): a deck or bridge stands above its ground,
-		-- with a slab on a half step (no rails, D74); cuts already lower
-		-- `ground`.
+		-- with a slab on a half step and, on a straight capital street, a
+		-- railing on top (D74, D75); cuts already lower `ground`.
 		if columns.road_column_at then
-			local _, road_y = columns.road_column_at(x,z)
-			if road_y then surface_high = math.max(surface_high,math.floor(road_y)+1) end
+			local _, road_y, _, _, _, _, _, _, rail = columns.road_column_at(x,z)
+			if road_y then
+				surface_high = math.max(surface_high,math.floor(road_y)+(rail and 2 or 1))
+			end
 		end
 		return surface_low+below,surface_high+above
 	end

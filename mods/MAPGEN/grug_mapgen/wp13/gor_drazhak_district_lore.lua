@@ -242,7 +242,7 @@ local function loader(directory)
 		-- 9. THE ASH COURT: a well court with the cistern in it instead of a
 		-- pond, because a mesa shelf has no standing water anywhere in its
 		-- envelope -- measured on three worlds, section 1 of
-		-- `gor_drazhak_quadrants.lua` -- and a city on one keeps its water in
+		-- the pre-Round-22 lot tables -- and a city on one keeps its water in
 		-- a tank.
 		{id = "bone_ash_court", module = "capitals", make = "well_court",
 			order = 9, spec = {size = 11},

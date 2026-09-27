@@ -30,22 +30,15 @@
 -- what the player gets is the thing the ground already was: a civic terrace
 -- above a mere, with a marble quay along its edge.
 --
--- The four avenues run to the gate stations exactly as every capital's do.
--- The north avenue crosses the lake, which needs no code at all: the seam
--- hands a road the WATER surface where water stands rather than the bed under
--- it (`r7_settlement.lua`, `walkable_values`), so `avenue.lua` builds a solid
--- CAUSEWAY at the water line. The east avenue crosses the same lake's southern
--- arm for the same reason.
+-- The avenues outside the core are the capital planner's streets (road-module
+-- roads, Round 22); where one crosses the lake it is a bridge.
 --
 --   * `M.core()` returns the core composition in the exact shape of a start
 --     composition (schema, canonical cells, bounds, sorted palette, landmarks)
 --     plus `landmarks.sockets`, the NPC seam of
 --     docs/research/wp13-npc-sockets-contract.md.
---   * `M.district` is the market district, kept for the tools that ask a
---     capital for "a" district; the four are `lethariel_districts.lua`.
---   * `M.avenues`, `M.ring` are the runs `avenue.lua` turns into pavement and
---     `M.edge` the four runs `elf_grove.lua` turns into the grove belt that
---     stands where another capital has a curtain wall.
+--   * the district plots, the streets and the city edge are the capital
+--     planner's per-world layout (Round 22, `wp40/capital_planner.lua`).
 --
 -- Plain Lua 5.1, pure, no engine calls, no globals.
 
@@ -57,9 +50,6 @@ local function loader(directory)
 	local layout = dofile(directory .. "/layout.lua")(directory)
 	local precinct_ring = dofile(directory .. "/precinct_ring.lua")
 	local elf = dofile(directory .. "/elf_parts.lua")(directory)
-	local grove = dofile(directory .. "/elf_grove.lua")(directory)
-	local districts = dofile(directory .. "/lethariel_districts.lua")(directory)
-	local street_plan = dofile(directory .. "/street_plan.lua")(directory)
 
 	local M = {}
 
@@ -319,110 +309,10 @@ local function loader(directory)
 		{id = "watch_south_east", x = 36, z = -2, face = 0, order = 5},
 	}
 
-	-- Where the four avenues and the ring street run in the 512 envelope.
-	-- These are not cells: they are the runs `avenue.lua` projects onto
-	-- whatever surface the terrain has when a chunk is emerged.
-	--
-	-- THE NORTH RUN STARTS AT 22 AND NOT AT 48. Every other capital's avenues
-	-- start one node clear of the core's own edge because the core paves the
-	-- ground inside it. Lethariel's core cannot: the axis is under water from
-	-- z = 22, and a run that began at 48 would leave the twenty-six nodes
-	-- between the quay and the open lake as a hole in the road. The run
-	-- therefore starts one node past where the composition's own paving
-	-- stops -- the two may not share a cell, which the integration fixture
-	-- asserts for every settlement -- and
-	-- `avenue.lua`'s one-Lipschitz envelope walks it down from the civic
-	-- terrace to the water line and out across the mere as a causeway.
-	--
-	-- They reach 261 and not the gate station at 256 so that the road runs a
-	-- little past the threshold rather than stopping inside it, which is the
-	-- same number Highcourt and Dur Brannoc use for their gates.
-	-- Keep lamp and pier cadence independent of the inner avenue endpoint.
-	local GATE_OUT = 261
-	M.avenues = {
-		{id = "avenue_south", axis = "z", at = 0, from = -GATE_OUT, to = -(RADIUS + 1),
-			gate = "gate_south"},
-		{id = "avenue_north", axis = "z", at = 0, from = 22, to = GATE_OUT,
-			gate = "gate_north"},
-		{id = "avenue_west", axis = "x", at = 0, from = -GATE_OUT, to = -(RADIUS + 1),
-			gate = "gate_west"},
-		{id = "avenue_east", axis = "x", at = 0, from = RADIUS + 1, to = GATE_OUT, lamp_phase = 48,
-			gate = "gate_east"},
-	}
-
-	-- The ring street at 96, which the district plots stand along. Every run
-	-- spans the full -96..96 so the circuit closes at all four corners; the
-	-- north and east sides cross the mere and are causeways there, for the
-	-- same reason the north avenue is.
-	M.ring = {
-		{id = "ring_west", axis = "z", at = -96, from = -96, to = 96},
-		{id = "ring_east", axis = "z", at = 96, from = -96, to = 96},
-		{id = "ring_south", axis = "x", at = -96, from = -96, to = 96},
-		{id = "ring_north", axis = "x", at = 96, from = -96, to = 96},
-	}
-
-	-- WHERE A ROAD RUN CROSSES THE MERE, and why this capital no longer says.
-	--
-	-- The seam hands a road the WATER surface where water stands rather than
-	-- the bed under it, so the first `avenue.lua` laid a solid CAUSEWAY at the
-	-- water line: measured by `tools/wp13/lethariel_plots.lua --bodies`, the
-	-- mere is ONE body of 38 527 columns and the six road runs that cross it
-	-- paved 2 410 of them, cutting it into SIX lakes -- the north avenue alone
-	-- shearing a two-thousand-column bay off the main water. The independent
-	-- review of 2026-09-16 found it and the coordinator ruled that a water body
-	-- stays one body, and this capital answered with a hand-measured span table
-	-- and a bridge module of its own.
-	--
-	-- Playtest 5 turned that answer into a rule for all six capitals: the user
-	-- saw the piers and the rails here and asked for them "in Highcourt (and
-	-- every other city where it is missing)". So the bridge is `wp13/avenue.lua`
-	-- now, the seam publishes whether a column is water the same way it already
-	-- published the ground and the route deck (`wp40/r7_settlement.lua`,
-	-- `walkable_values`), and the span table is gone: it said what the world
-	-- plan already knew, and a second authority for where the lake is could only
-	-- ever drift from the first.
-
-	-- THE GROVE EDGE, on the four edges of the 512 envelope, and the four
-	-- THRESHOLDS on the gate axes. This is what an OPEN capital has in place
-	-- of a curtain wall (contract section 4): a planted belt that says where
-	-- the city ends without shutting it, and a pair of marble pillars at each
-	-- of the four points Lane R ends its routes at.
-	--
-	-- Authored exactly the way a wall run is, and for the same geometric
-	-- reasons: the z-runs reach 261 so a corner piece is whole and the x-runs
-	-- stop at 252, one node short of it, so the two never write into each
-	-- other -- the successor's first-run-wins arbitration would otherwise
-	-- decide which half of a corner survives.
-	local EDGE_AT = 256
-	local EDGE_END = 261
-	local EDGE_SIDE = 252
-	M.edge = {
-		{id = "edge_west", axis = "z", at = -EDGE_AT,
-			from = -EDGE_END, to = EDGE_END},
-		{id = "edge_east", axis = "z", at = EDGE_AT,
-			from = -EDGE_END, to = EDGE_END},
-		{id = "edge_south", axis = "x", at = -EDGE_AT,
-			from = -EDGE_SIDE, to = EDGE_SIDE},
-		{id = "edge_north", axis = "x", at = EDGE_AT,
-			from = -EDGE_SIDE, to = EDGE_SIDE},
-	}
-	-- `water` is the span of a run that stands over a planned water body, and
-	-- the belt writes nothing there: the water already is an edge. Measured by
-	-- `tools/wp13/lethariel_plots.lua --edge` over the seven lanes of each
-	-- line, on ALL NINE seeds of `capital_anchor_fixture.lua`, and identical on
-	-- every one of them -- a planned water body is a property of the static
-	-- world plan and not of the seed. Only the west line has one.
-	M.edge_plan = {
-		edge_west = {outside = -1, gates = {0}, corners = {-EDGE_AT, EDGE_AT},
-			water = {{-143, -80}}},
-		edge_east = {outside = 1, gates = {0}, corners = {-EDGE_AT, EDGE_AT},
-			water = {}},
-		edge_south = {outside = -1, gates = {0}, corners = {}, water = {}},
-		edge_north = {outside = 1, gates = {0}, corners = {}, water = {}},
-	}
-
-	M.district = districts.districts[1]
-	M.districts = districts
+	-- The city around the core -- its outline, streets, walls or planted
+	-- edge, gates and the placed district plots -- is laid out per world by
+	-- the capital planner (`wp40/capital_planner.lua`, `wp13/city_edge.lua`,
+	-- Round 22); this file is the civic core.
 
 	function M.core()
 		local elf_palette = handles.elf
@@ -1044,88 +934,6 @@ local function loader(directory)
 				standards = standards,
 			},
 		}
-	end
-
-	-- The overlay seam, in one place: the run list in authored order (avenues
-	-- first, then the ring street, then the district lanes, then the grove
-	-- edge) and the one function that turns a run into cells. The successor's
-	-- first-run-wins arbitration reads this order, so the avenue runs through
-	-- the threshold and the edge yields the cells of the road it lets past.
-	function M.overlay_runs(lanes)
-		-- THE JUNCTION PLATEAUS are attached here, and here is the only
-		-- place they can be. A plateau is a property of TWO street runs, and
-		-- only the composition knows which of its overlay runs ARE streets:
-		-- the curtain wall is an overlay run too, and a road passing through
-		-- its gate is not a crossroads. `wp13/street_plan.lua` turns the
-		-- street rectangles -- which are static, and are what the overlay's
-		-- identity is already hashed from -- into the squares they share, and
-		-- `wp13/avenue.lua` gives each square its height from the two runs'
-		-- own ground. The runs that are not streets are appended afterwards
-		-- and carry no junctions at all.
-		local streets = {}
-		for _, list in ipairs({M.avenues, M.ring, lanes or {}}) do
-			for index = 1, #list do streets[#streets + 1] = list[index] end
-		end
-		-- AND THE GATE PASSAGES, for the same reason and out of the same
-		-- rectangles: a street runs THROUGH the structure that is not a street,
-		-- and inside that passage the structure owns the lanes either side of
-		-- the carriageway. `wp13/avenue.lua` writes no plank walk, no rail and
-		-- no pillar there, which is the sentence the per-capital kerb parapets
-		-- this rule replaced each carried in their own words.
-		local runs = street_plan.attach(streets, nil,
-			{{runs = M.edge, half = grove.HALF}})
-		for index = 1, #M.edge do runs[#runs + 1] = M.edge[index] end
-		return runs
-	end
-
-	-- Every node name either overlay may write, byte-sorted and without
-	-- duplicates: the union of the road's vocabulary and the edge's, which is
-	-- what the settlement's shared content channel is closed over and what the
-	-- overlay's specification identity is written from.
-	function M.overlay_names(avenue, palette)
-		local seen, list = {}, {}
-		for _, source in ipairs({avenue.palette_names(palette),
-				grove.palette_names(palette)}) do
-			for index = 1, #source do
-				local name = source[index]
-				if not seen[name] then
-					seen[name] = true
-					list[#list + 1] = name
-				end
-			end
-		end
-		table.sort(list, parts.less_bytes)
-		return list
-	end
-
-	-- One run, dispatched by its own id. An edge run carries authored geometry
-	-- the seam's overlay spec has no field for -- which side is the field,
-	-- where the thresholds and the corner groves stand -- so it is looked up
-	-- here, from the same table for every piece, which is what keeps a piece
-	-- of a run exactly that stretch of the whole run.
-	--
-	-- THE EDGE DOES NOT OBEY THE CROSSING RULE, and this is where that is
-	-- decided. The seam hands every run of an overlay an `overhead(x, z)`
-	-- callback and `avenue.run` uses it to ramp a carriageway up to a WP40
-	-- bridge deck. That is right for a road, whose job is to be walkable end
-	-- to end, and wrong for a planted belt, which follows the ground. The spec
-	-- is therefore copied field by field WITHOUT `overhead` rather than handed
-	-- over and hoped about.
-	function M.overlay_run(avenue, palette, spec, surface)
-		local plan = M.edge_plan[spec.id]
-		if not plan then
-			-- A ROAD RUN, and where it crosses the mere a BRIDGE -- built by
-			-- the road module itself now, out of the seam's own `wet(x, z)`.
-			-- The spec goes over untouched, including the seam's `overhead`,
-			-- because a road's job is to be walkable end to end.
-			return avenue.run(palette, spec, surface)
-		end
-		return grove.run(palette, {
-			id = spec.id, axis = spec.axis, at = spec.at,
-			from = spec.from, to = spec.to, width = spec.width,
-			lamp_spacing = spec.lamp_spacing, lamp_phase = spec.lamp_phase,
-			reach = spec.reach,
-		}, surface, plan)
 	end
 
 	return M

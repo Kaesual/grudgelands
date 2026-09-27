@@ -27,6 +27,12 @@ M.PLOTS = {
   cooking="shore_smokehouse", leatherworker="shore_store",
   woodcarver="shore_carvers", goldsmith="totem_scriptorium"},
 }
+-- The inn plot of every capital: its gate resident becomes the innkeeper of
+-- `mods/PLAYER/grug_home/locations.lua` (which fails at load when the plot is
+-- missing). The capital planner always places these and `M.PLOTS`.
+M.INNS = {highcourt = "homes_tavern", dur_brannoc = "terrace_alehouse",
+ lethariel = "homes_longhouse", nhal_veyr = "homes_lane_house",
+ gor_drazhak = "warren_clan_house", kezamba = "vine_longhouse"}
 local STATIONS = {forge="grug_jobs:forge", tailor="grug_jobs:tailor_bench",
  alchemist="grug_brewing:brewing_stand", leatherworker="grug_jobs:tanning_rack",
  woodcarver="grug_jobs:carving_bench", goldsmith="grug_jobs:jewellers_bench",

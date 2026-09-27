@@ -3,7 +3,7 @@
 --
 -- The contract's second district role. What a plot is and how it is built is
 -- `nhal_veyr_plot.lua`; where the nine plots stand is
--- `nhal_veyr_quadrants.lua`. This file is the roster and nothing else.
+-- the capital planner's. This file is the roster and nothing else.
 --
 -- The garrison is the one district that publishes GUARD POSTS -- the sockets
 -- contract's "a guard stands here and returns here after fights" -- and it

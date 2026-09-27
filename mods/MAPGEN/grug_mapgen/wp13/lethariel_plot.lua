@@ -34,9 +34,9 @@
 -- mourning ground is, and it is the same builder because the reason a plot
 -- exists is the terrace under it, which does not care what stands on top.
 --
--- THE REACH IS 11 AND NOT HIGHCOURT'S 13: see `lethariel_quadrants.lua`
--- section 2. The lake is what decides it, and it is still four nodes inside
--- the contract's own +-15 plot volume.
+-- THE REACH IS 11 AND NOT HIGHCOURT'S 13: the crown lake left less room when
+-- the lots were measured, and it is still four nodes inside the contract's own
+-- +-15 plot volume.
 --
 -- Plain Lua 5.1, pure, no engine calls, no globals.
 
@@ -47,21 +47,19 @@ local function loader(directory)
 	local capitals = dofile(directory .. "/capitals.lua")(directory)
 	local dressing = dofile(directory .. "/dressing.lua")(directory)
 	local elf = dofile(directory .. "/elf_parts.lua")(directory)
-	local quadrants = dofile(directory .. "/lethariel_quadrants.lua")()
 
 	local M = {}
 
 	-- The plot envelope this builder holds itself to. `REACH` is the ground a
-	-- plot may lay and it is the LOT's own, read from the one file that owns
-	-- it; `FLOOR` is how far the skirt reaches down and it is the contract's
-	-- -6.
-	M.REACH = quadrants.LOT.reach
+	-- plot may lay; `FLOOR` is how far the skirt reaches down and it is the
+	-- contract's -6.
+	M.REACH = 11
 	M.FLOOR = -6
 	-- The LEAST airspace a plot clears, whatever its own roof needs. A lot may
 	-- rise 6 nodes under a plot, and a part whose ridge is four courses up
 	-- would have cleared 6 and stood with a shoulder of terrace in its
 	-- doorway.
-	M.MIN_CLEAR = quadrants.LOT.clear
+	M.MIN_CLEAR = 8
 
 	local handles = elf.handles()
 
@@ -442,7 +440,7 @@ local function loader(directory)
 	-- A district: its key, its role, its patrol loop and the ordered plot
 	-- list, each entry carrying a builder that returns the composition. The
 	-- OFFSET is not here -- a district does not know which quarter it stands
-	-- in until the world seed says so (`lethariel_quadrants.lua`).
+	-- in until the capital planner places it.
 	function M.district(definition)
 		local district = {
 			key = definition.key,
@@ -453,9 +451,8 @@ local function loader(directory)
 		}
 		local function entries(list, into, yard_reaches)
 			for index, plot in ipairs(list or {}) do
-				-- A fill row is handed the reach of the fill lot it will stand
-				-- on, so a roster says WHAT a dressing is and the quadrants
-				-- module stays the only place that says how big its lot is.
+				-- A fill row is handed the reach its district gives it, so a
+				-- roster says WHAT a dressing is and the district says how big.
 				if yard_reaches then
 					local reach = yard_reaches[index]
 					if reach == nil then

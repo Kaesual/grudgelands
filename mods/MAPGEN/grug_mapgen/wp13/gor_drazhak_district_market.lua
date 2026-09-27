@@ -3,7 +3,7 @@
 --
 -- The contract's first district role. What a plot is and how it is built is
 -- `gor_drazhak_plot.lua`; where the nine plots stand is
--- `gor_drazhak_quadrants.lua`. This file is the roster and nothing else.
+-- the capital planner's. This file is the roster and nothing else.
 --
 -- WHAT MAKES IT ORCISH rather than a market with an adobe skin. The five
 -- profession vendors of the sockets contract's section 8.4 that fit this race

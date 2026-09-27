@@ -87,6 +87,14 @@ local function compile(settlement_key, anchor, socket, seen)
 				(dir.z == 0 and (dir.x == 1 or dir.x == -1))) then
 		fail(where .. ": facing is not one of the four axis vectors")
 	end
+	-- The side an arrival beside this socket stands on (a capital plot's own
+	-- +x, turned with the plot by the mapgen); optional, an axis vector.
+	local arrival = socket.arrival
+	if arrival ~= nil and (type(arrival) ~= "table" or
+			not ((arrival.x == 0 and (arrival.z == 1 or arrival.z == -1)) or
+				(arrival.z == 0 and (arrival.x == 1 or arrival.x == -1)))) then
+		fail(where .. ": arrival side is not one of the four axis vectors")
+	end
 	if socket.role == "guard_patrol" then
 		if type(socket.group) ~= "string" or socket.group == "" then
 			fail(where .. ": patrol waypoint without a loop")
@@ -172,6 +180,8 @@ local function compile(settlement_key, anchor, socket, seen)
 	return {
 		id = id, role = socket.role, x = x, y = y, z = z,
 		dir_x = dir.x, dir_z = dir.z,
+		arrival_x = arrival and arrival.x or nil,
+		arrival_z = arrival and arrival.z or nil,
 		group = socket.group, order = socket.order, kind = socket.kind,
 		activity = socket.activity, profession = socket.profession,
 		-- Normalized to a boolean here, so a consumer reads one field and
@@ -194,6 +204,7 @@ local function copy_entry(entry)
 		id = entry.id, role = entry.role,
 		x = entry.x, y = entry.y, z = entry.z,
 		dir = {x = entry.dir_x, z = entry.dir_z},
+		arrival = entry.arrival_x and {x = entry.arrival_x, z = entry.arrival_z} or nil,
 		group = entry.group, order = entry.order, kind = entry.kind,
 		activity = entry.activity, profession = entry.profession,
 		spawn = entry.spawn,

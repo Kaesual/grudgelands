@@ -4,9 +4,8 @@
 -- This file is a ROSTER. What a plot is, how it is levelled, skirted, cleared
 -- and dressed, and what it publishes, all live in `highcourt_plot.lua`, which
 -- is the same builder for all four districts. WHERE the nine plots stand is
--- `highcourt_quadrants.lua`: a district owns no coordinates of its own,
--- because the world seed decides which quadrant of the capital it occupies
--- and the ground decides where the nine lots of that quadrant are.
+-- the capital planner's per-world layout (Round 22): a district owns no
+-- coordinates of its own.
 --
 -- THE PROFESSIONS ARE HERE (playtest round 3). The district's name promised
 -- them and the first version delivered a workshop, a counting house and a
@@ -153,10 +152,9 @@ local function loader(directory)
 	}
 
 	-- THE DISTRICT'S OWN FILL (playtest round 3): four dressings on the
-	-- quadrant's four fill lots, in the order they take them. The reaches are
-	-- 11, 11, 8 and 5 and `highcourt_quadrants.FILL_AUTHORED` owns those
-	-- numbers, so a roster says WHAT a dressing is and never how big its lot
-	-- is.
+	-- district's four fill plots, in the order they take them. The reaches
+	-- are 11, 11, 8 and 5 and `fill_reaches` below owns those numbers, so a
+	-- roster says WHAT a dressing is and never how big its lot is.
 	--
 	-- EVERY DRESSING IS LAID OUT THE SAME WAY, and the reason is the sockets.
 	-- The three rows nearest the street (`z0` to `z0 + 2`) are the FORECOURT:

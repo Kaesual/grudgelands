@@ -50,11 +50,8 @@
 --
 --   * `M.core()` returns the core composition in the exact shape of a start
 --     composition, plus `landmarks.sockets`.
---   * `M.districts.resolve()` is `kezamba_districts.lua`'s own resolve, loaded
---     lazily, so a generic reader (`tools/wp13/dump_capital_plan.lua`) can ask
---     this one file for the whole capital: the four district rosters over the
---     searched lots of `kezamba_lots.lua`.
---   * `M.avenues`, `M.ring` and `M.gates` are the overlay's runs.
+--   * the district plots, the streets and the city edge are the capital
+--     planner's per-world layout (Round 22, `wp40/capital_planner.lua`).
 --
 -- Plain Lua 5.1, pure, no engine calls, no globals.
 
@@ -69,9 +66,6 @@ local function loader(directory)
 	local troll = dofile(directory .. "/troll_parts.lua")(directory)
 	local handles = dofile(directory .. "/troll_palette.lua")()
 	local mask = dofile(directory .. "/kezamba_lagoon.lua")()
-	local gates = dofile(directory .. "/kezamba_gate.lua")(directory)
-	local ramp = dofile(directory .. "/kezamba_ramp.lua")(directory)
-	local street_plan = dofile(directory .. "/street_plan.lua")(directory)
 
 	local M = {}
 
@@ -80,18 +74,6 @@ local function loader(directory)
 	local WATCH = "kezamba_watch"
 
 	M.mask = mask
-
-	-- The district plots, for a reader that holds only this file. The roster is
-	-- a different module and a heavy one, so it is loaded on the first call and
-	-- not at load time: the mapgen seam builds its plots through the blueprint,
-	-- which loads `kezamba_districts.lua` itself, and must not pay for a second
-	-- copy of it on every world start.
-	M.districts = {
-		resolve = function(options)
-			return dofile(directory .. "/kezamba_districts.lua")(directory)
-				.resolve(options)
-		end,
-	}
 
 	-- The travel plaza reserved for WP17.
 	local PLAZA = {x1 = -44, z1 = -30, x2 = -32, z2 = -18}
@@ -224,58 +206,10 @@ local function loader(directory)
 		{id = "watch_quay", x = -24, z = 20, face = 1, order = 9},
 	}
 
-	-- Where the four avenues and the ring street run in the 512 envelope.
-	--
-	-- THEY REACH 256 AND NOT 261. Dur Brannoc's and Highcourt's avenues run five
-	-- nodes past the envelope edge because a gate TUNNEL through seven nodes of
-	-- curtain has to be driven through; Kezamba is open and its threshold
-	-- straddles the gate point, so the road ends on it.
-	local GATE_OUT = 256
-	M.avenues = {
-		{id = "avenue_south", axis = "z", at = 0, from = -GATE_OUT, to = -(RADIUS + 1),
-			gate = "gate_south"},
-		{id = "avenue_north", axis = "z", at = 0, from = RADIUS + 1, to = GATE_OUT, lamp_phase = 48,
-			gate = "gate_north"},
-		{id = "avenue_west", axis = "x", at = 0, from = -GATE_OUT, to = -(RADIUS + 1),
-			gate = "gate_west"},
-		{id = "avenue_east", axis = "x", at = 0, from = RADIUS + 1, to = GATE_OUT, lamp_phase = 48,
-			gate = "gate_east"},
-	}
-
-	M.ring = {
-		{id = "ring_west", axis = "z", at = -96, from = -96, to = 96},
-		{id = "ring_east", axis = "z", at = 96, from = -96, to = 96},
-		{id = "ring_south", axis = "x", at = -96, from = -96, to = 96},
-		{id = "ring_north", axis = "x", at = 96, from = -96, to = 96},
-	}
-
-	-- THE FOUR GATE THRESHOLDS, which are what an OPEN capital has where a
-	-- walled one has a gatehouse. Each is a short run astride its own gate
-	-- point, so the piece the seam activates for it is inside the same
-	-- `at +- (half + 1)` band the road's is.
-	local THRESHOLD = 10
-	M.gates = {
-		{id = "gate_south", axis = "z", at = 0,
-			from = -GATE_OUT - THRESHOLD, to = -GATE_OUT + THRESHOLD},
-		{id = "gate_north", axis = "z", at = 0,
-			from = GATE_OUT - THRESHOLD, to = GATE_OUT + THRESHOLD},
-		{id = "gate_west", axis = "x", at = 0,
-			from = -GATE_OUT - THRESHOLD, to = -GATE_OUT + THRESHOLD},
-		{id = "gate_east", axis = "x", at = 0,
-			from = GATE_OUT - THRESHOLD, to = GATE_OUT + THRESHOLD},
-	}
-	M.gate_plan = {
-		gate_south = {centre = -GATE_OUT}, gate_north = {centre = GATE_OUT},
-		gate_west = {centre = -GATE_OUT}, gate_east = {centre = GATE_OUT},
-	}
-
-	-- WHERE EACH AVENUE HAS TO COME DOWN TO. The gate point is the run's OUTER
-	-- end, and `wp13/kezamba_ramp.lua` brings the road to the terrain there at
-	-- most one node a column. The ring street has no gate and no ramp.
-	M.avenue_plan = {
-		avenue_south = {gate = -GATE_OUT}, avenue_north = {gate = GATE_OUT},
-		avenue_west = {gate = -GATE_OUT}, avenue_east = {gate = GATE_OUT},
-	}
+	-- The city around the core -- its outline, streets, walls or planted
+	-- edge, gates and the placed district plots -- is laid out per world by
+	-- the capital planner (`wp40/capital_planner.lua`, `wp13/city_edge.lua`,
+	-- Round 22); this file is the civic core.
 
 	function M.core()
 		local timber = palettes.new("troll")
@@ -1038,101 +972,6 @@ local function loader(directory)
 				palisade_columns = palisade_columns,
 			},
 		}
-	end
-
-	-- The overlay seam: the run list in authored order -- avenues first, then
-	-- the ring street, then the four gate thresholds -- and the one function
-	-- that turns a run into cells. The successor's first-run-wins arbitration
-	-- reads this order, so the road wins the cells of its own carriageway where
-	-- it passes between a threshold's posts.
-	function M.overlay_runs()
-		-- THE JUNCTION PLATEAUS are attached here, and here is the only
-		-- place they can be. A plateau is a property of TWO street runs, and
-		-- only the composition knows which of its overlay runs ARE streets:
-		-- the curtain wall is an overlay run too, and a road passing through
-		-- its gate is not a crossroads. `wp13/street_plan.lua` turns the
-		-- street rectangles -- which are static, and are what the overlay's
-		-- identity is already hashed from -- into the squares they share, and
-		-- `wp13/avenue.lua` gives each square its height from the two runs'
-		-- own ground. The runs that are not streets are appended afterwards
-		-- and carry no junctions at all.
-		local streets = {}
-		for _, list in ipairs({M.avenues, M.ring}) do
-			for index = 1, #list do streets[#streets + 1] = list[index] end
-		end
-		-- AND THE GATE PASSAGES, for the same reason and out of the same
-		-- rectangles: a street runs THROUGH the structure that is not a street,
-		-- and inside that passage the structure owns the lanes either side of
-		-- the carriageway. `wp13/avenue.lua` writes no plank walk, no rail and
-		-- no pillar there, which is the sentence the per-capital kerb parapets
-		-- this rule replaced each carried in their own words.
-		local runs = street_plan.attach(streets, nil,
-			{{runs = M.gates, half = gates.HALF}})
-		for index = 1, #M.gates do runs[#runs + 1] = M.gates[index] end
-		return runs
-	end
-
-	-- Every node name either kind of run may write, byte-sorted and without
-	-- duplicates: the road's vocabulary, the threshold's, and the RAILING the
-	-- lake rail below adds, which belongs to neither module and would otherwise
-	-- only fail on the first mapchunk that crossed the water.
-	function M.overlay_names(avenue, palette)
-		local seen, list = {}, {}
-		for _, source in ipairs({avenue.palette_names(palette),
-				gates.palette_names(palette), ramp.palette_names(palette),
-				{palette.node("railing")}}) do
-			for index = 1, #source do
-				local name = source[index]
-				if not seen[name] then
-					seen[name] = true
-					list[#list + 1] = name
-				end
-			end
-		end
-		table.sort(list, parts.less_bytes)
-		return list
-	end
-
-	-- THE LAKE RAIL AND THE CAUSEWAY PARAPET ARE THE ROAD MODULE'S NOW.
-	--
-	-- This composition used to rail a kerb column that stood inside the
-	-- committed lagoon mask or that the road had had to FILL by three or more
-	-- courses: a causeway over the cenote wanted a railed timber walk, and an
-	-- embankment out of the blend band wanted a parapet, and `wp13/avenue.lua`
-	-- was the shared road of capitals whose built roads were frozen against it.
-	--
-	-- Playtest 5 (2026-09-16) settled that the other way round. A street over
-	-- water is a BRIDGE in every capital now -- a deck on piers with the water
-	-- continuous under it -- and a street raised three or more nodes above its
-	-- own ground is a VIADUCT on pillars; both carry a plank walk and a rail on
-	-- the two VERGE lanes, outside the carriageway rather than on its outermost
-	-- lane, which is where a rail on a kerb used to stand. The mask is not
-	-- needed either: the seam publishes whether a column is water
-	-- (`wp40/r7_settlement.lua`, `walkable_values`).
-
-	-- One run, dispatched by its own id, in the order the pieces are built:
-	-- the road first, then the GATE RAMP that brings it down to the terrain at
-	-- its gate point, then the rail on whatever is left standing over water or
-	-- on fill. The threshold runs are a different kind of run and take none of
-	-- the three.
-	function M.overlay_run(avenue, palette, spec, surface)
-		local threshold = M.gate_plan[spec.id]
-		if threshold then
-			return gates.run(palette, spec, surface, threshold)
-		end
-		local approach = M.avenue_plan[spec.id]
-		if approach and spec.anchor_y then
-			local sign = approach.gate < 0 and -1 or 1
-			local landings = {}
-			for _, landing in ipairs(spec.landings or {}) do landings[#landings + 1] = landing end
-			landings[#landings + 1] = {p = sign * (RADIUS + 1), y = spec.anchor_y}
-			spec.landings = landings
-		end
-		local piece = avenue.run(palette, spec, surface)
-		if approach then
-			piece = ramp.run(palette, spec, surface, piece, approach)
-		end
-		return piece
 	end
 
 	return M

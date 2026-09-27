@@ -40,7 +40,7 @@
 -- whether a hall or a furrow stands on top.
 --
 -- THE +-13 IS NOT THE CONTRACT'S +-15, AND THAT IS DELIBERATE: every plot
--- stands on a LOT of `gor_drazhak_quadrants.lua`, and a lot is held to one
+-- stands on a LOT of the pre-Round-22 lot tables, and a lot is held to one
 -- envelope on every seed so that any district may stand in any quadrant. Two
 -- nodes of the contract's volume are the margin that buys.
 --
@@ -515,7 +515,7 @@ local function loader(directory)
 	-- A district: its key, its role, its patrol loop and the ordered plot list,
 	-- each entry carrying a builder that returns the composition. The OFFSET is
 	-- not here -- a district does not know which quadrant it stands in until the
-	-- world seed says so (`gor_drazhak_quadrants.lua`).
+	-- world seed says so (the pre-Round-22 lot tables).
 	function M.district(definition)
 		local district = {
 			key = definition.key,

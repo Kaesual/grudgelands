@@ -474,12 +474,12 @@ source.logical_biome_selector = {
 
 source.anchor_profiles = {
 	{id="start",shape="flat",fitting_width=128,blend_width=256,max_cut=8,max_fill=8,force_native_dungeon=false},
-	{id="capital_dwarf",shape="granite_terrace",fitting_width=512,blend_width=704,civic_width=96,terrace_step=4,max_cut=24,max_fill=16,force_native_dungeon=false},
-	{id="capital_human",shape="river_plateau",fitting_width=512,blend_width=704,civic_width=96,terrace_step=2,max_cut=24,max_fill=16,force_native_dungeon=false},
-	{id="capital_elf",shape="terraced_grove",fitting_width=512,blend_width=704,civic_width=96,terrace_step=3,max_cut=24,max_fill=16,force_native_dungeon=false},
-	{id="capital_undead",shape="raised_necropolis",fitting_width=512,blend_width=704,civic_width=96,terrace_step=3,max_cut=24,max_fill=16,force_native_dungeon=false},
-	{id="capital_orc",shape="mesa_shelf",fitting_width=512,blend_width=704,civic_width=96,terrace_step=4,max_cut=24,max_fill=16,force_native_dungeon=false},
-	{id="capital_troll",shape="cenote_terrace",fitting_width=512,blend_width=704,civic_width=96,terrace_step=3,max_cut=24,max_fill=16,force_native_dungeon=false},
+	{id="capital_dwarf",shape="granite_terrace",fitting_width=512,blend_width=704,civic_width=96,capital_collar=40,max_cut=24,max_fill=16,force_native_dungeon=false},
+	{id="capital_human",shape="river_plateau",fitting_width=512,blend_width=704,civic_width=96,capital_collar=40,max_cut=24,max_fill=16,force_native_dungeon=false},
+	{id="capital_elf",shape="terraced_grove",fitting_width=512,blend_width=704,civic_width=96,capital_collar=40,max_cut=24,max_fill=16,force_native_dungeon=false},
+	{id="capital_undead",shape="raised_necropolis",fitting_width=512,blend_width=704,civic_width=96,capital_collar=40,max_cut=24,max_fill=16,force_native_dungeon=false},
+	{id="capital_orc",shape="mesa_shelf",fitting_width=512,blend_width=704,civic_width=96,capital_collar=40,max_cut=24,max_fill=16,force_native_dungeon=false},
+	{id="capital_troll",shape="cenote_terrace",fitting_width=512,blend_width=704,civic_width=96,capital_collar=40,max_cut=24,max_fill=16,force_native_dungeon=false},
 	{id="village",shape="gentle_grade",building_core_width=24,fitting_width=96,blend_width=160,force_native_dungeon=false},
 	{id="outpost",shape="gentle_grade",building_core_width=16,fitting_width=64,blend_width=112,force_native_dungeon=false},
 	{id="bandit_home",shape="gentle_grade",building_core_width=24,fitting_width=64,blend_width=112,force_native_dungeon=false},

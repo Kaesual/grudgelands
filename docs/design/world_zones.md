@@ -968,7 +968,9 @@ graph requirement may shape a zone, and nothing may require a graph to be
 - **Materials per race (D48, D74).** Every road has exactly one surface
   material everywhere, on the ground and on decks and galleries on pillars
   alike, and its half-step slabs are of the same material; no railings or
-  fences anywhere. Pillars are a second material. A true bridge is wood as a
+  fences, except that a capital street's deck or bridge carries a fence on
+  its open edge where the street runs straight (D75: the heading turns less
+  than about 8° over 8 points either side). Pillars are a second material. A true bridge is wood as a
   whole: a raised run (consecutive deck or bridge points of one road) that
   crosses water takes the race's bridge wood on every column, surface and
   slabs, bank to bank and two nodes onto each bank, whatever supports it;
@@ -1223,11 +1225,11 @@ one-cell settlement checks are unchanged.
 
 ## 12. Capital and start envelopes
 
-- Every capital zone has a 512×512 fixed build envelope and a terrain blend
-  ring extending to 704×704. The protected POI is the final build envelope
-  plus the existing 10-node surround. Only the 512×512 build envelope is
-  guaranteed capital-zone ownership; the larger visual blend may cross a zone
-  edge. Capital lookup uses the same zone-based level rule as other land.
+- Every capital keeps a 512×512 reserved area (D59) and its 704×704 claim and
+  resource exclusion square. The protected POI is the reserved area plus the
+  existing 10-node surround (532); the whole city stays inside it and inside
+  the capital zone. Only the 512×512 square is guaranteed capital-zone
+  ownership. Capital lookup uses the same zone-based level rule as other land.
   Hostile ambient spawning is disabled and level-60 guards remain explicit.
 - Capital grading flattens only the dry capital-owned 96×96 civic core.
   The target reference interval for natural height N is [N-24, N+16],
@@ -1236,54 +1238,64 @@ one-cell settlement checks are unchanged.
   The highest civic water level plus one remains a hard lower bound even when
   the terrain interval is infeasible. Any resulting cut/fill excess is
   reported rather than hidden or used to move the fixed core.
-  Outside the core, terrain terraces use steps dwarf/orc 4, human 2 and
-  elf/undead/troll 3. The next 32 nodes blend to these terraces; the outer
-  96-node collar returns to incoming terrain. The 512×512 envelope remains
-  buildable/protected space, not one mandatory flat slab.
+  Outside the core a 40-node collar (the capital profile's `capital_collar`)
+  with a noisy edge (the POI collar rule of
+  §7.6) blends back to the damped terrain; there are no terraces and no square
+  blend (Round 22 capital planner, D70), so no straight grading edge.
 - **Round 22 (D7, D11, D16, D28):** terrain roughness is damped around each
-  capital (keyed to the civic core: no fine detail out to about 260 nodes so
-  the district plots stand, natural relief again by about 520–750 along an
-  irregular edge). Only the civic core is flat; the ground around it keeps
-  long-wave hills and hollows of limited height (§7.6). Each capital's target ground
-  height sits well below its region's clouds (§7.6). The outer edge of the
-  terrace/blend outline may become organic instead of square; district layout,
-  blueprints and the build envelope stay as they are this round. Capital
-  fitting parameters stay data-driven so the follow-up below can use them.
-- **Planned follow-up: the capital planner (Round 22 plan D57–D60, §11;
-  scheduled after water and roads):** capitals become denser and more
-  natural. The civic core stays as it is and stays free of water; the city
-  around it moves closer together with more and denser buildings, a smaller
-  total area than today's 512×512 envelope and 704×704 blend, and a natural,
-  non-rectangular outline. A one-time planner at server start lays it out
-  after height, water and roads, inside each capital's reserved maximum area:
-  walls (which may cross rivers), bridges, four cardinal gates with connector
-  roads to the road ends at the area's edge, and canals with one water level
-  each. Until then rivers may cross a capital's districts, and defects there
-  are accepted. Changes before then must not work against this.
+  capital (keyed to the civic core: no fine detail out to about 260 nodes,
+  natural relief again by about 520–750 along an irregular edge). Only the
+  civic core is flat; the ground around it keeps long-wave hills and hollows
+  of limited height (§7.6). Each capital's target ground height sits well below
+  its region's clouds (§7.6).
 - A fixed 96×96 civic core contains the king's hall, waypoint and principal
-  service court. Four fixed 32-node-wide road gates leave north/east/south/
-  west. The avenue to each gate is authored by WP13 inside the city.
+  service court, and four core gates on the axes. It stays as authored and
+  free of natural water.
+- **The capital planner (Round 22, D60, D69, D70, D72; as built):** once per
+  world start, in main, after height, water and roads, every capital's city is
+  laid out in its landscape (`wp40/capital_planner.lua`), and the layout
+  travels to emerge with the water and road layouts. Per capital and seed:
+  - an organic outline of about 100 k m² (a rough guide, D21) that avoids
+    water and steep ground, and a 26-node band to the reserved area's edge
+    that stays countryside;
+  - four gates, one per cardinal direction, slid along the outline toward the
+    incoming road ends and off water; road ends reach the reserved area's edge
+    anywhere (§9), and connector roads (the road module's own routing,
+    half-step profile and raster) join them to their gates;
+  - avenues from each core gate through its city gate, two terrain-bent ring
+    lanes, not closed everywhere, a few cross-lanes and small flat squares at
+    crossings and lane ends; streets and connectors are road-module roads
+    (≤ ½ node between neighbouring columns, slabs on half steps, bridges over
+    water, §9); the street surface stops at the civic core's edge, where the
+    core gate takes the passage over. No street ends over water: where the
+    core's edge on an axis is civic water without a core landing
+    (Lethariel's crown mere) that avenue starts on the dry shore nearest the
+    core gate, and an avenue whose gate has no connector runs on past wet
+    ground outside the gate to the first dry ground;
+  - the existing district plots, each turned in quarter turns so its entry
+    faces its street, with a short path to it; the four districts stay
+    recognisable groups (one quarter each where the ground allows, overflow
+    into a neighbouring quarter). Required plots (the inn, the eight service
+    plots with the cook and the stable) are always placed (a capital missing
+    one fails the load, named); only fields and
+    fill dressings may be left out on cramped ground. Plots never stand in
+    water. Lethariel's mere precinct and Kezamba's shore market stay beside
+    their civic lake;
+  - the edge by race: a stone curtain with turrets and gatehouses (Highcourt,
+    Dur Brannoc, Nhal Veyr), a palisade on its rampart (Gor Drazhak), or, for
+    the open capitals Lethariel and Kezamba, a planted belt with four
+    thresholds. Walls follow the outline as polylines, their walk walkable on
+    half steps, and cross rivers as arcades;
+  - Highcourt's one-level quay canal beside its outer ring lane (D58), sealed
+    off natural water.
+  The layout is a pure function of the seed and the code, so every boot of a
+  world builds the same city.
 - The former 128-node hard-protected capital ingress corridors from each
   front gate to the Battlegrounds are retired (Round 22, D9). Capitals are
-  reached by the ordinary roads of §9, which end at the edge of the reserved
-  512-node square anywhere along it (D59); the gates are connected to those
-  road ends by the capital planner (D60). Until then the gates stand
-  unconnected (D31).
-
-| Capital | Outer/home gate | Front gate | West gate | East gate |
-|---|---|---|---|---|
-| Dur Brannoc | south → Copperfell Foothills | north → Stormvault Heights | Frostbarrow Shelf | Whitebridge Shire |
-| Highcourt | south → Goldmead Vale | north → Ashenward March | Whitebridge Shire | Lorindor |
-| Lethariel | south → Starbough Vale | north → Glassroot Wilds | Lorindor | Moonfall Wood |
-| Nhal Veyr | north → Mournfen | south → Blackwind Rise | Ossuary Reach | Speargrass Reach |
-| Gor Drazhak | north → Redtusk Savanna | south → Bannerbreak Mesa | Speargrass Reach | Whispering Reedlands |
-| Kezamba | north → Raincall Basin | south → Thunderroot Wilds | Whispering Reedlands | Totemwater Reach |
-
-  The table names the zone that lies beyond each gate in today's layout.
-  Warped zone borders may change which zone a gate's road first enters.
-- Four quadrant slots hold Market/Professions, Martial/Garrison,
-  Lore/Spiritual and Residential/Cultural districts. The four roles are fixed;
-  the world seed may permute their quadrants and choose a building variant.
+  reached by the ordinary roads of §9 and the planner's connectors.
+- Four district roles: Market/Professions, Martial/Garrison, Lore/Spiritual
+  and Residential/Cultural. Which quarter each takes is the planner's choice
+  (by room, with the pinned lake districts above).
 - Terrain forms differ by race: Dur Brannoc is a granite terrace, Highcourt a
   gentle river plateau, Lethariel a terraced grove, Nhal Veyr a raised
   necropolis, Gor Drazhak a mesa shelf and Kezamba a drained/stilted cenote

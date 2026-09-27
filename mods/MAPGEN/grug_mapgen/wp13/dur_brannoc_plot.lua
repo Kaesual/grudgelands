@@ -51,7 +51,7 @@
 --      rebinding a civic dwarf building needs is its ROOF, and a hall roofed in
 --      the same pine boards as a cottage reads as a big cottage.
 --   2. THE REACH IS 13, not the contract's 15, for the reason
---      `dur_brannoc_quadrants.lua` section 2 records: every plot of every
+--      the pre-Round-22 lot tables section 2 records: every plot of every
 --      district stands on a LOT, and a lot is held to ONE envelope on all nine
 --      seeds so that any district may stand in any quadrant. The nine plots
 --      this capital shipped with in wave 1 were authored against the
@@ -87,7 +87,7 @@ local function loader(directory)
 	M.REACH = 13
 	M.FLOOR = -6
 	-- The LEAST airspace a plot clears, whatever its own roof needs. A lot is
-	-- allowed to rise 6 nodes under a plot (`dur_brannoc_quadrants.lua`), and a
+	-- allowed to rise 6 nodes under a plot (the pre-Round-22 lot tables), and a
 	-- part whose ridge is four courses up would have cleared 6 and stood with a
 	-- shoulder of granite in its doorway.
 	M.MIN_CLEAR = 8
@@ -499,7 +499,7 @@ local function loader(directory)
 	-- A district: its key, its role, its patrol loop and the ordered plot list,
 	-- each entry carrying a builder that returns the composition. The OFFSET is
 	-- not here -- a district does not know which quadrant it stands in until
-	-- the world seed says so (`dur_brannoc_quadrants.lua`).
+	-- the capital planner places it.
 	function M.district(definition)
 		local district = {
 			key = definition.key,

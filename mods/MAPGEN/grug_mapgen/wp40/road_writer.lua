@@ -12,7 +12,8 @@
 --   * a few nodes of clearance above the road (leaves, decorations).
 -- One design, materials per race region (D48). Every road has exactly one
 -- surface material, on the ground and on decks alike, with slabs of the
--- same material; no railings (D74). A bridge run (a raised run that
+-- same material; no railings (D74) except on the straight decks and bridges
+-- of capital streets (D75, the sampler's rail flag). A bridge run (a raised run that
 -- crosses water, `road_layout.lua` sampler) takes the bridge material as a
 -- whole, surface and slabs. Pillars are the second material. Trails take
 -- the same materials as roads, only narrower (D75). Settlement and POI
@@ -29,23 +30,23 @@ return function(core_api)
 	local MATERIALS = {
 		human = {surface = "default:cobble", slab = "stairs:slab_cobble",
 			bridge = "default:wood", bridge_slab = "stairs:slab_wood",
-			pillar = "default:tree", wall = "default:stonebrick"},
+			pillar = "default:tree", wall = "default:stonebrick", rail = "default:fence_wood"},
 		dwarf = {surface = "default:stone_block", slab = "stairs:slab_stone_block",
 			bridge = "default:pine_wood", bridge_slab = "stairs:slab_pine_wood",
-			pillar = "default:stonebrick", wall = "default:stonebrick"},
+			pillar = "default:stonebrick", wall = "default:stonebrick", rail = "default:fence_pine_wood"},
 		elf = {surface = "default:silver_sandstone_block",
 			slab = "stairs:slab_silver_sandstone_block",
 			bridge = "default:aspen_wood", bridge_slab = "stairs:slab_aspen_wood",
-			pillar = "default:aspen_tree", wall = "default:silver_sandstone_brick"},
+			pillar = "default:aspen_tree", wall = "default:silver_sandstone_brick", rail = "default:fence_aspen_wood"},
 		undead = {surface = "default:stonebrick", slab = "stairs:slab_stonebrick",
 			bridge = "default:pine_wood", bridge_slab = "stairs:slab_pine_wood",
-			pillar = "default:mossycobble", wall = "default:mossycobble"},
+			pillar = "default:mossycobble", wall = "default:mossycobble", rail = "default:fence_pine_wood"},
 		orc = {surface = "default:desert_cobble", slab = "stairs:slab_desert_cobble",
 			bridge = "default:acacia_wood", bridge_slab = "stairs:slab_acacia_wood",
-			pillar = "default:acacia_tree", wall = "default:desert_stonebrick"},
+			pillar = "default:acacia_tree", wall = "default:desert_stonebrick", rail = "default:fence_acacia_wood"},
 		troll = {surface = "default:mossycobble", slab = "stairs:slab_mossycobble",
 			bridge = "default:junglewood", bridge_slab = "stairs:slab_junglewood",
-			pillar = "default:jungletree", wall = "default:mossycobble"},
+			pillar = "default:jungletree", wall = "default:mossycobble", rail = "default:fence_junglewood"},
 	}
 	-- nodes cleared above a road surface or deck (the walking space)
 	local CLEAR_ABOVE = 4
@@ -94,7 +95,7 @@ return function(core_api)
 		local count = 0
 		for z = context.min_z, context.max_z do
 			for x = context.min_x, context.max_x do
-				local kind, road_y, terrain_y, class, pillar, bridge, wall_base =
+				local kind, road_y, terrain_y, class, pillar, bridge, wall_base, _, rail =
 					context.road_column_at(x, z)
 				if kind ~= nil then
 					local race = select(5, context.column_values_at(x, z))
@@ -113,6 +114,7 @@ return function(core_api)
 							if pillar then
 								for y = terrain_y + 1, top - 1 do put(x, y, z, m.pillar) end
 							end
+							if rail then put(x, above, z, m.rail); above = above + 1 end
 							clear(x, above, top + CLEAR_ABOVE, z)
 						elseif class == "ford" then
 							-- the raised bed under the water; a slab on a half step

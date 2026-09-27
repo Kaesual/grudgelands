@@ -4,7 +4,7 @@
 -- The contract's fourth district role: "houses, half-timbered lanes,
 -- orchards, well, tavern, small square". What a plot is and how it is built
 -- is `highcourt_plot.lua`; where the nine plots stand is
--- `highcourt_quadrants.lua`. This file is the roster and nothing else.
+-- the capital planner's. This file is the roster and nothing else.
 --
 -- THE THREE HOUSES ARE DELIBERATELY THREE DIFFERENT HOUSES. Footprint, roof
 -- form and door side are what give a lane of cottages three silhouettes

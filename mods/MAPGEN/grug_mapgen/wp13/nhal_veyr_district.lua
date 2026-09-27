@@ -4,9 +4,8 @@
 -- This file is a ROSTER. What a plot is, how it is levelled, skirted, cleared
 -- and dressed, and what it publishes, all live in `nhal_veyr_plot.lua`, which
 -- is the same builder for all four districts. WHERE the nine plots stand is
--- `nhal_veyr_quadrants.lua`: a district owns no coordinates of its own,
--- because the world seed decides which quadrant of the capital it occupies
--- and the ground decides where the nine lots of that quadrant are.
+-- the capital planner's per-world layout (Round 22): a district owns no
+-- coordinates of its own.
 --
 -- THE TRADES ARE THE POINT OF THIS DISTRICT. Four of the nine carry a
 -- shopfront on the two-node ring their own plot leaves round the building -- a
@@ -164,10 +163,10 @@ local function loader(directory)
 			end},
 	}
 
-	-- THE DISTRICT'S OWN FILL: four dressings on the quadrant's four fill
-	-- lots, in the order they take them. The reaches are 11, 11, 8 and 5 and
-	-- `nhal_veyr_quadrants.FILL_AUTHORED` owns those numbers, so a roster says
-	-- WHAT a dressing is and never how big its lot is.
+	-- THE DISTRICT'S OWN FILL: four dressings on the district's four fill
+	-- plots, in the order they take them. The reaches are 11, 11, 8 and 5 and
+	-- `fill_reaches` below owns those numbers, so a roster says WHAT a
+	-- dressing is and never how big its lot is.
 	--
 	-- EVERY DRESSING IS LAID OUT THE SAME WAY, and the reason is the sockets.
 	-- The three rows nearest the street (`z0` to `z0 + 2`) are the FORECOURT:

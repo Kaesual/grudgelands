@@ -326,7 +326,7 @@ Q.register_quest("r20_elf_journey_01", {
 	race = "elf",
 	effort = "lesson",
 	prerequisites = {},
-	description = "The capital keeps contact with the working settlements beyond its walls. Travel to Lorindor Berrycourt in Lorindor and speak with Ilwen Petalmeasure. This is level 21–30 country; prepare your equipment before leaving the road. Complete the conversation with Ilwen Petalmeasure there. No parcel, fighting errand or return trip is required.",
+	description = "The capital keeps contact with the working settlements beyond its groves. Travel to Lorindor Berrycourt in Lorindor and speak with Ilwen Petalmeasure. This is level 21–30 country; prepare your equipment before leaving the road. Complete the conversation with Ilwen Petalmeasure there. No parcel, fighting errand or return trip is required.",
 	objectives = {{type = "talk", npc = "r20_anchor_018_host", count = 1}},
 	rewards = {xp = 615, copper = 50, items = {}},
 })
@@ -686,7 +686,7 @@ Q.register_quest("r20_troll_journey_01", {
 	race = "troll",
 	effort = "lesson",
 	prerequisites = {},
-	description = "The capital keeps contact with the working settlements beyond its walls. Travel to Whisperreed Landing in Whispering Reedlands and speak with Taleko Drycord. This is level 21–30 country; prepare your equipment before leaving the road. Complete the conversation with Taleko Drycord there. No parcel, fighting errand or return trip is required.",
+	description = "The capital keeps contact with the working settlements beyond its thresholds. Travel to Whisperreed Landing in Whispering Reedlands and speak with Taleko Drycord. This is level 21–30 country; prepare your equipment before leaving the road. Complete the conversation with Taleko Drycord there. No parcel, fighting errand or return trip is required.",
 	objectives = {{type = "talk", npc = "r20_anchor_024_host", count = 1}},
 	rewards = {xp = 615, copper = 50, items = {}},
 })
