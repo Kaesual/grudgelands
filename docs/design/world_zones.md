@@ -1267,7 +1267,11 @@ one-cell settlement checks are unchanged.
     crossings and lane ends; streets and connectors are road-module roads
     (≤ ½ node between neighbouring columns, slabs on half steps, bridges over
     water, §9); the street surface stops at the civic core's edge, where the
-    core gate takes the passage over;
+    core gate takes the passage over. No street ends over water: where the
+    core's edge on an axis is civic water without a core landing
+    (Lethariel's crown mere) that avenue starts on the dry shore nearest the
+    core gate, and an avenue whose gate has no connector runs on past wet
+    ground outside the gate to the first dry ground;
   - the existing district plots, each turned in quarter turns so its entry
     faces its street, with a short path to it; the four districts stay
     recognisable groups (one quarter each where the ground allows, overflow
