@@ -854,11 +854,13 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   (inside, wall, band, just beyond, far); across Highcourt's and Lethariel's
   edge 0 trees and 0 ground cover in the band, vegetation right beyond it
   (main: none within 30 of the old square's inside); terrain audit findings
-  0/2/0 (main 0/0/1); main layout build +0–1 s; chunks in the ring round the
-  city ~420 ms instead of ~335 (they now carry ordinary terrain and
-  vegetation; ordinary chunks elsewhere 360–430 ms in both trees); public
-  protection calls near a capital ~1.7–2.1 µs instead of ~1.1 (fewer points
-  short-circuit as protected; the lookup itself ~19 ns vs 3). The protection
+  0/2/0 (main 0/0/1); main layout build +0.5–2 s; chunks in the ring round
+  the city 430–480 ms instead of 330–355 (they now carry ordinary terrain and
+  vegetation; ordinary chunks 1000 nodes out 350–490 ms in both trees); D77's
+  steep rock now also shows on steep ground right beyond the band (it skips
+  only protected columns); public protection calls near a capital ~1.6–1.7 µs
+  instead of ~1.0–1.4 (fewer points short-circuit as protected; the lookup
+  itself ~19 ns vs 3), elsewhere unchanged. The protection
   does not ride the IPC payload: both environments build it from the
   `capital_layout` text and the authored civic lakes. Open: street grade
   steps at connector junctions (road module).
