@@ -229,6 +229,12 @@ current state). It is **derived, never authoritative**:
   - `unpack` (not `table.unpack`); `table.pack`/`rawlen`/`__len`/`__pairs`
     are unsafe even on LuaJIT (need a distro compat flag) — avoid.
   - Numbers are C doubles, no integer type; safe integer range ±(2^53−1).
+  - **Write `x * x`, never `x ^ 2`, in mapgen and other deterministic code:**
+    LuaJIT's JIT turns `x ^ 2` into `x * x`, its interpreter calls `pow()`,
+    and the last bits differ, so results depend on what ran compiled.
+    `tools/check_lua.sh` fails on it under `mods/MAPGEN` (sweep 6); details in
+    docs/research/luanti-lua.md "Floating point: LuaJIT interpreter vs
+    compiled code".
   - Vector `==` only works if BOTH operands carry the vector metatable —
     compare positions with `vector.equals`, never `==`.
   - Backported from 5.4 (engine-injected, both builds):
