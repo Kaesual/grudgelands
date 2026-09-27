@@ -21,13 +21,11 @@ return function(zone_field)
 			error("WP40 simple map dependencies missing", 0)
 		end
 		local source = assert(dependencies.source, "WP40 simple map source missing")
-		local schemas = assert(dependencies.schemas, "WP40 simple map schemas missing")
-		local canonical = assert(dependencies.canonical,
-			"WP40 simple map canonical dependency missing")
-		local deterministic = assert(dependencies.deterministic,
+		assert(dependencies.schemas, "WP40 simple map schemas missing")
+		assert(dependencies.canonical, "WP40 simple map canonical dependency missing")
+		assert(dependencies.deterministic,
 			"WP40 simple map deterministic dependency missing")
-		local raw_sha256 = assert(dependencies.raw_sha256,
-			"WP40 simple map SHA-256 dependency missing")
+		assert(dependencies.raw_sha256, "WP40 simple map SHA-256 dependency missing")
 		-- The capitals' protected cities (plan D76): a holder `r7_runtime.lua`
 		-- fills with `capital_protection.lua` shapes once the capital layouts
 		-- are known ({shapes = {anchor id -> shape}}). A capital's claim and hard
@@ -36,16 +34,7 @@ return function(zone_field)
 		if capital_protection ~= nil and type(capital_protection) ~= "table" then
 			error("WP40 simple map capital protection differs", 0)
 		end
-		local Q = 65536
 		local floor, abs, max, min = math.floor, math.abs, math.max, math.min
-		-- WP13 playtest round 1 (2026-09-15): hard protection restricts BUILDING,
-		-- not growing, so vegetation may enter a start's ten-node protection
-		-- apron with a jagged inner edge `1 + offset(x, z)` nodes outside the
-		-- 128-node build envelope (one seed-derived value-noise lattice per
-		-- start). Zero excess is refused unconditionally.
-		local START_APRON_AMPLITUDE = 5
-		local START_APRON_PERIOD = 16
-		local START_APRON_DOMAIN = "start-apron-vegetation-v1"
 		-- Query bounds of the horizontal world; outside is open sea.
 		local QUERY_BOUNDS = {min_x = -3740, max_x = 3740, min_z = -3340, max_z = 3340}
 		local params = assert(source.zone_field, "WP40 simple map zone field params missing")
@@ -69,13 +58,14 @@ return function(zone_field)
 				z2 >= 2 * center.z - width and z2 < 2 * center.z + width
 		end
 
-		-- How far a column lies OUTSIDE a centred half-open square of even width:
-		-- 0 inside it, 1 on the first ring around it, and so on.
-		local function half_open_square_excess(x, z, center, total_width)
-			local half = total_width / 2
-			local min_x, max_x = center.x - half, center.x + half - 1
-			local min_z, max_z = center.z - half, center.z + half - 1
-			return max(0, min_x - x, x - max_x, min_z - z, z - max_z)
+		-- A start town (plan D78): the pad, a centred half-open square of even
+		-- width `pad`, and every column within `band` of it (true distance
+		-- between column centres, so the corners are rounded quarter circles).
+		local function start_town_member(x, z, center, pad, band)
+			local half = pad / 2
+			local ex = max(center.x - half - x, x - (center.x + half - 1), 0)
+			local ez = max(center.z - half - z, z - (center.z + half - 1), 0)
+			return ex * ex + ez * ez <= band * band
 		end
 
 		local function point_on_segment(x, z, a, b)
@@ -301,8 +291,6 @@ return function(zone_field)
 			if type(full_seed_string) ~= "string" or full_seed_string == "" then
 				fail("full seed string differs")
 			end
-			local hash = deterministic.new_hash(canonical, raw_sha256,
-				schemas.simple_map, full_seed_string)
 			local world = world_cache[full_seed_string]
 			if not world then
 				local field = zone_field.new_checked(full_seed_string, source, params)
@@ -400,13 +388,29 @@ return function(zone_field)
 				end
 			end
 			local hard_recipe_by_id = {}
-			local CAPITAL_BOUND_WIDTH
+			local CAPITAL_BOUND_WIDTH, START_TOWN
 			for _, row in ipairs(source.hard_protection_recipes) do
 				hard_recipe_by_id[row.id] = row
 				if row.shape == "capital_city_outline" then CAPITAL_BOUND_WIDTH = row.bound_width end
+				if row.shape == "start_town_outline" then START_TOWN = row end
 			end
 			if type(CAPITAL_BOUND_WIDTH) ~= "number" or CAPITAL_BOUND_WIDTH % 2 ~= 0 then
 				fail("capital city bound differs")
+			end
+			-- A start town (plan D78): the start's 128-node pad (its profile's
+			-- fitting width) and a band around it; the reserved square
+			-- `bound_width` holds both.
+			local START_PAD, START_BAND = START_TOWN and START_TOWN.pad_width,
+				START_TOWN and START_TOWN.band
+			if type(START_PAD) ~= "number" or START_PAD % 2 ~= 0 or
+					type(START_BAND) ~= "number" or START_BAND % 1 ~= 0 or START_BAND < 1 or
+					START_TOWN.bound_width ~= START_PAD + 2 * START_BAND then
+				fail("start town geometry differs")
+			end
+			for _, row in ipairs(source.anchor_profiles) do
+				if row.id == "start" and row.fitting_width ~= START_PAD then
+					fail("start town pad differs from the start fitting")
+				end
 			end
 			-- Membership of a capital's protected city (plan D76): the shape's
 			-- member function, looked up once the layouts are installed.
@@ -443,18 +447,22 @@ return function(zone_field)
 					shape.kind = "capital_city" shape.anchor_id = record.id
 					shape.center = exclusion.center
 					shape.anchor_blend = true
+				elseif recipe == "exclude_anchor_blend_v1" and record.slot_id == "start" then
+					-- A start's claim envelope is its town (plan D78): the pad and
+					-- the band, like its hard core below, so claims, ground cover and
+					-- caves return right beyond the band. Vegetation skips it; the
+					-- hard core answers for the same town.
+					shape.kind = "start_town" shape.center = exclusion.center
+					shape.anchor_blend = true
 				elseif recipe == "exclude_anchor_blend_v1" then
 					shape.kind = "square" shape.center = exclusion.center
 					shape.total_width = exclusion.total_width
 					local profile = profile_by_id[record.template_id]
 					shape.cave_core_width = profile.building_core_width or profile.fitting_width
-					-- A start's or capital's blend envelope is terrain, not settlement
-					-- ground: a "vegetation" query skips it (its hard core still answers).
-					shape.anchor_blend = record.slot_id == "start" or record.slot_id == "capital"
 					-- A POI's ground is its building core; its collar is natural
 					-- terrain (plan D33), so vegetation grows up to a small margin
 					-- around the core instead of stopping at the old blend square.
-					if not shape.anchor_blend and profile.building_core_width then
+					if profile.building_core_width then
 						shape.vegetation_width = profile.building_core_width +
 							2 * POI_VEGETATION_MARGIN
 					end
@@ -488,20 +496,14 @@ return function(zone_field)
 					-- it, vegetation included, so the band stays bare.
 					shape.kind = "capital_city" shape.anchor_id = record.source_anchor_id
 					shape.center = record.center
+				elseif recipe == "exclude_active_core_v1" and
+						hard_recipe_by_id[record.recipe_id].shape == "start_town_outline" then
+					-- A start town (plan D78): every purpose refuses it, vegetation
+					-- included, so the band stays bare.
+					shape.kind = "start_town" shape.center = record.center
 				elseif recipe == "exclude_active_core_v1" then
-					local hard_recipe = hard_recipe_by_id[record.recipe_id]
-					if record.recipe_id == "hard_start_core_v1" then
-						local anchor = exclusion_source_by_id[record.source_anchor_id]
-						local envelope = profile_by_id[anchor.template_id].fitting_width
-						local apron = (hard_recipe.total_width - envelope) / 2
-						if envelope % 2 ~= 0 or apron % 1 ~= 0 or
-								apron < START_APRON_AMPLITUDE + 1 then
-							fail("start apron cannot carry a jittered treeline")
-						end
-						shape.start_apron_envelope = envelope
-					end
 					shape.kind = "square" shape.center = record.center
-					shape.total_width = hard_recipe.total_width or 1
+					shape.total_width = hard_recipe_by_id[record.recipe_id].total_width or 1
 				end
 				if shape.kind == "square" then
 					local half = floor((shape.total_width + 1) / 2)
@@ -509,6 +511,10 @@ return function(zone_field)
 						min_z = shape.center.z - half, max_z = shape.center.z + half}
 				elseif shape.kind == "capital_city" then
 					local half = CAPITAL_BOUND_WIDTH / 2
+					shape.bounds = {min_x = shape.center.x - half, max_x = shape.center.x + half,
+						min_z = shape.center.z - half, max_z = shape.center.z + half}
+				elseif shape.kind == "start_town" then
+					local half = START_TOWN.bound_width / 2
 					shape.bounds = {min_x = shape.center.x - half, max_x = shape.center.x + half,
 						min_z = shape.center.z - half, max_z = shape.center.z + half}
 				end
@@ -529,43 +535,6 @@ return function(zone_field)
 				end
 			end
 
-			-- The jagged inner treeline of a start's protection apron. One lattice
-			-- per start, memoised per corner on demand.
-			local apron_lattices = {}
-			local function apron_corner(cache, id, ix, iz)
-				local row = cache[iz]
-				if not row then row = {} cache[iz] = row end
-				local value = row[ix]
-				if value == nil then
-					value = hash.signed_noise(START_APRON_DOMAIN, id, {ix, iz}, 0, 0)
-					row[ix] = value
-				end
-				return value
-			end
-			local function apron_offset(shape, x, z)
-				local cache = apron_lattices[shape.id]
-				if not cache then cache = {} apron_lattices[shape.id] = cache end
-				local ix = deterministic.floor_div(x, START_APRON_PERIOD)
-				local iz = deterministic.floor_div(z, START_APRON_PERIOD)
-				local tx = deterministic.smootherstep(deterministic.qfrom_ratio(
-					x - ix * START_APRON_PERIOD, START_APRON_PERIOD))
-				local tz = deterministic.smootherstep(deterministic.qfrom_ratio(
-					z - iz * START_APRON_PERIOD, START_APRON_PERIOD))
-				local value = deterministic.qlerp(
-					deterministic.qlerp(apron_corner(cache, shape.id, ix, iz),
-						apron_corner(cache, shape.id, ix + 1, iz), tx),
-					deterministic.qlerp(apron_corner(cache, shape.id, ix, iz + 1),
-						apron_corner(cache, shape.id, ix + 1, iz + 1), tx), tz)
-				return deterministic.round_ratio(
-					(deterministic.clamp(value, -Q, Q) + Q) * START_APRON_AMPLITUDE, 2 * Q)
-			end
-			local function start_apron_vegetation(shape, x, z)
-				local excess = half_open_square_excess(x, z, shape.center,
-					shape.start_apron_envelope)
-				if excess == 0 then return false end
-				return excess >= 1 + apron_offset(shape, x, z)
-			end
-
 			local function shape_member(shape, x, z)
 				local kind = shape.kind
 				if kind == "square" then
@@ -584,6 +553,8 @@ return function(zone_field)
 						shape.member = member
 					end
 					return member(x, z)
+				elseif kind == "start_town" then
+					return start_town_member(x, z, shape.center, START_PAD, START_BAND)
 				end
 				return false
 			end
@@ -608,12 +579,6 @@ return function(zone_field)
 							not in_centered_half_open_square(x, z, shape.center,
 								shape.vegetation_width, 0) then
 						-- Skipped the same way: outside a POI's core and margin.
-					elseif shape.start_apron_envelope and purpose == "vegetation" and
-							in_rectangle(x, z, shape.bounds, 0) and
-							in_centered_half_open_square(x, z, shape.center,
-								shape.total_width, 0) and
-							start_apron_vegetation(shape, x, z) then
-						-- Skipped the same way: vegetation may enter the apron.
 					elseif in_rectangle(x, z, shape.bounds, 0) and shape_member(shape, x, z) then
 						return shape.numeric_id, shape.id
 					end
@@ -759,9 +724,10 @@ return function(zone_field)
 			end
 
 			-- `purpose`: nil is the territory rule (every exclusion answers);
-			-- "vegetation" skips the start/capital blend envelopes and the part of a
-			-- start's hard square past its jittered apron treeline; "cave" skips
-			-- terrain fitting outside building cores and dry island interiors.
+			-- "vegetation" skips the start/capital claim envelopes (their hard
+			-- cores, the same town or city, still answer) and POI collars; "cave"
+			-- skips terrain fitting outside building cores and dry island
+			-- interiors.
 			function session.static_exclusion_values_at(x, z, purpose)
 				if purpose ~= nil and purpose ~= "vegetation" and purpose ~= "cave" then
 					fail("static exclusion purpose differs")
@@ -779,6 +745,23 @@ return function(zone_field)
 			-- it in a hot path.
 			function session.capital_protection_member(anchor_id)
 				return capital_city_function(anchor_id)
+			end
+			-- A start town's membership (plan D78: the pad and its band) as a
+			-- function (x, z -> bool); the zone authority's hard row for that
+			-- start asks this.
+			local start_town_members = {}
+			for _, row in ipairs(source.hard_protection) do
+				if hard_recipe_by_id[row.recipe_id].shape == "start_town_outline" then
+					local center = row.center
+					start_town_members[row.source_anchor_id] = function(x, z)
+						return start_town_member(x, z, center, START_PAD, START_BAND)
+					end
+				end
+			end
+			function session.start_protection_member(anchor_id)
+				local member = start_town_members[anchor_id]
+				if not member then fail("start town missing: " .. tostring(anchor_id)) end
+				return member
 			end
 
 			function session.selected_anchor_2d(zone_id, slot_id)

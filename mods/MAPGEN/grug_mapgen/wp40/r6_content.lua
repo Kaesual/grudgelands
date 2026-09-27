@@ -788,6 +788,36 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 			steep_x[slot], steep_z[slot], steep_class[slot] = x, z, class
 			return class
 		end
+		-- A start town's own ground in the band round its pad (plan D78,
+		-- `height.lua` start_ground_at): the biome's ordinary row with the
+		-- town's ground node as its top, one row per biome, node and depth.
+		local start_ground_at = planner_source.start_ground_at
+		if type(start_ground_at) ~= "function" or
+				type(planner_source.start_ground_names) ~= "function" then
+			fail("fail_source", "planner source start ground seam missing")
+		end
+		-- every start ground must be a mapgen surface node: checked here, when
+		-- the selector is built at load, not at the first band column
+		for _, name in ipairs(planner_source.start_ground_names()) do
+			require_role(name, 1, p7_classes, "start town ground")
+		end
+		local town_rows = {}
+		local function town_row(id, name, depth)
+			local by_name = town_rows[id]
+			if not by_name then by_name = {} town_rows[id] = by_name end
+			local rows = by_name[name]
+			if not rows then rows = {} by_name[name] = rows end
+			local row = rows[depth]
+			if not row then
+				row = deep_copy(variants[id][1][depth])
+				row.top = name
+				row.top_ref = require_role(name, 1, p7_classes, "start town ground")
+				-- no snow or other dust on the town's ground
+				row.dust, row.dust_ref = "-", 0
+				rows[depth] = row
+			end
+			return row
+		end
 		return function(id, x, z, water_y, terrain_y)
 			local base = surface_by_id[id]
 			if not base then return nil end
@@ -809,10 +839,21 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 				if water_depth >= 20 then return base end
 				local bed_index = 1 + math.min(3, math.floor(patch / 256))
 				return wet_variants[id][bed_index]
-			elseif id == "grug_swamp" then
-				return base
 			end
 			local depth = 1 + math.min(3, math.floor(noise(x, z, 64, 83492791) / 256))
+			-- A start town's own ground (plan D78) on dry top nodes; a rock
+			-- face or lip keeps its steep row.
+			local town = start_ground_at(x, z)
+			if town then
+				local steep = 0
+				if id ~= "grug_badlands" and id ~= "grug_badlands_east" then
+					steep = steep_at(x, z, terrain_y)
+				end
+				if steep == 1 then return rock_rows[id][depth] end
+				if steep == 2 then return lip_rows[id][1] end
+				return town_row(id, town, depth)
+			end
+			if id == "grug_swamp" then return base end
 			local kind = 1
 			if patch > 880 then kind = 4
 			elseif patch > 780 then kind = 3

@@ -85,7 +85,8 @@ and functional anchors are preserved. Do not schedule these as 70 empty sites. T
   but implemented at **16** in the recorded deviation; design stays 24. This
   remains an explicit correction/verification task, preserved from the
   [earlier backlog readiness record](../archive/planning/backlog-before-consolidation.md#readiness-updated-2026-09-20).
-- Preserve complete civic-envelope plus ten-node apron protection; ordinary
+- Preserve complete civic protection (capital cities and start towns with
+  their bare bands, Round 22 D76/D78); ordinary
   village/outpost/camp shells stay mutable and claim-excluded, with only bounded
   functional anchors and irreplaceable routes hard-protected.
 - Preserve king/reset/participation/Crown reward acceptance; do not respawn the

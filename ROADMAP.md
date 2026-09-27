@@ -36,7 +36,8 @@ Earlier delivery narratives are preserved in the
   village/outpost/camp
   shells and battlefield dressing are mutable but claim-excluded; only
   bounded functional anchors and complete civic cores — capitals and starting
-  settlements with their 10-node aprons — are hard-protected, fail-closed
+  settlements with their bare protected bands (Round 22 D76/D78) — are
+  hard-protected, fail-closed
   against indirect mutation.
 - **The ocean has authored classes.** Planned mainland water stays part of its
   named zone. An editable 80-node coastal shelf follows the analytic outer

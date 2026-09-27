@@ -327,6 +327,8 @@ local function planner_factory(allocator_factory)
 		surface_cave_cell_at = true,
 		surface_cave_constants = true,
 		coast_material_at = true,
+		start_ground_at = true,
+		start_ground_names = true,
 		primary_relief_at = true,
 		landmark_excluded_at = true,
 		static_exclusion_values_at = true,

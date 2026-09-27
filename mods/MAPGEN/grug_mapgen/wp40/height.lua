@@ -67,6 +67,15 @@ local function height_factory(dependencies)
 	-- keeps the built layout and sampler. Optional: without it (offline
 	-- tools) the world has no roads.
 	local road_dependency = dependencies.roads
+	-- Start town ground (plan D78): {start anchor id -> {ground node name}}
+	-- from the WP13 palettes (`r7_runtime.lua`), the ground each start town's
+	-- blueprint lays on its pad. The band around the pad carries it out into
+	-- the natural surface along an irregular edge (`start_ground_at`).
+	-- Optional: without it (offline tools) the band keeps the natural surface.
+	local start_grounds = dependencies.start_grounds
+	if start_grounds ~= nil and type(start_grounds) ~= "table" then
+		error("WP40 height start grounds differ", 0)
+	end
 
 	local WATER_LEVEL = 1
 	-- Same query bounds as zones.lua; outside them the world is deep sea.
@@ -87,6 +96,23 @@ local function height_factory(dependencies)
 	-- with the POI collar's noisy edge; no square terraces and no square
 	-- blend (their straight grading edges were the user's top complaint, e.g.
 	-- Nhal Veyr). The planner lays the city out on this ground.
+	-- Start collar (plan D78): the flat pad (grown by 0..6 nodes along a noise
+	-- outline), then a ramp of the start profile's `start_collar` width with
+	-- the POI collar's noisy edge, following the pad with rounded corners.
+	-- Start town ground (plan D78): inside the protected band the town's own
+	-- ground reaches START_GROUND_MIN..START_GROUND_MAX nodes out from the
+	-- pad along a smooth noise outline (period START_GROUND_PERIOD), with a
+	-- dithered edge START_GROUND_FUZZ nodes wide; beyond it the natural
+	-- surface. The pad's straight edge and corners never show.
+	local START_GROUND_MIN, START_GROUND_MAX = 2, 10
+	local START_GROUND_PERIOD, START_GROUND_FUZZ = 14, 3
+	-- The start town's protected band (`source/simple_map.lua`
+	-- hard_start_town_v1): nodes beyond the pad, true distance.
+	local START_BAND = 0
+	for index = 1, #(source.hard_protection_recipes or {}) do
+		local recipe = source.hard_protection_recipes[index]
+		if recipe.shape == "start_town_outline" then START_BAND = recipe.band end
+	end
 
 	local floor, ceil, abs, max, min, sqrt, exp = math.floor, math.ceil,
 		math.abs, math.max, math.min, math.sqrt, math.exp
@@ -223,6 +249,7 @@ local function height_factory(dependencies)
 			land_at = function(x, z) return (column_class(x, z)) == LAND end,
 		})
 		local edge_noise = terrain_field.simplex(full_seed_string, "start_edge")
+		local ground_noise = terrain_field.simplex(full_seed_string, "start_ground")
 		local poi_edge_noise = terrain_field.simplex(full_seed_string, "poi_edge")
 
 		-----------------------------------------------------------------------
@@ -744,6 +771,21 @@ local function height_factory(dependencies)
 				end
 				envelope_half = profile.civic_width / 2 +
 					ceil(collar / (1 - POI_EDGE_JITTER)) + 1
+			elseif is_start then
+				local collar = profile.start_collar
+				if type(collar) ~= "number" or collar < 1 or collar % 1 ~= 0 then
+					fail("start profile needs an integer start_collar")
+				end
+				-- the pad, its noisy growth (up to 6) and the jittered collar
+				envelope_half = profile.fitting_width / 2 + 6 +
+					ceil(collar / (1 - POI_EDGE_JITTER)) + 1
+				if start_grounds then
+					local names = start_grounds[anchor.id]
+					if type(names) ~= "table" or type(names.ground) ~= "string" then
+						fail("start ground missing: " .. anchor.id)
+					end
+					fitting.ground = names.ground
+				end
 			end
 			add_bucket(grids[class], fitting,
 				selected.x - envelope_half, selected.x + envelope_half,
@@ -836,8 +878,7 @@ local function height_factory(dependencies)
 		end
 
 		-- Soft start pad edge: the flat square grows outward by 0..6 nodes along
-		-- a smooth noise outline and the ramp gives the same amount up, so the
-		-- pad itself and the outer envelope edge stay put.
+		-- a smooth noise outline, then the collar begins.
 		local function start_edge_offset(x, z)
 			local value = edge_noise(x / 24, z / 24)
 			return clamp(floor((value + 1) * 3.5), 0, 6)
@@ -880,22 +921,19 @@ local function height_factory(dependencies)
 					local weight = weight_at(edge, collar)
 					return lerp_node(incoming, fitting.reference_y, weight), weight, false
 				end
-			elseif class == LAND then
-				local envelope_half = profile.blend_width / 2
-				local grade_width = fitting.is_start and
-					profile.fitting_width or profile.building_core_width
-				local outside = half_open_square_excess(x, z, fitting.center,
-					grade_width)
-				local span = envelope_half - grade_width / 2
-				if fitting.is_start then
-					local offset = start_edge_offset(x, z)
-					outside = max(0, outside - offset)
-					span = span - offset
-				end
-				if outside < span then
-					local weight = weight_at(outside, span)
-					return lerp_node(incoming, fitting.reference_y, weight), weight,
-						false
+			elseif class == LAND and fitting.is_start then
+				-- The flat pad (grown by the noisy offset), then the collar
+				-- (true distance, so round corners, and the POI collar's noisy
+				-- edge); nothing beyond it (plan D78).
+				local outside = max(0, square_distance(x, z, fitting.center,
+					profile.fitting_width) - start_edge_offset(x, z))
+				if outside == 0 then return fitting.reference_y, 1, false end
+				local edge = outside * (1 + POI_EDGE_JITTER *
+					poi_edge_noise(x / 40, z / 40))
+				local collar = profile.start_collar
+				if edge < collar then
+					local weight = weight_at(edge, collar)
+					return lerp_node(incoming, fitting.reference_y, weight), weight, false
 				end
 			end
 			return nil
@@ -1062,9 +1100,26 @@ local function height_factory(dependencies)
 		-- of another; on dry ground every lake's envelope cuts first and the
 		-- raises (the rim band hard, containment-critical) win.
 		local indicator_scratch = {}
+		-- True on a start town (plan D78): the pad and its protected band.
+		local function in_start_town(x, z)
+			local candidates = bucket_at(grids.start, x, z)
+			if not candidates then return false end
+			for index = 1, #candidates do
+				local fitting = candidates[index]
+				if square_distance(x, z, fitting.center,
+						fitting.profile.fitting_width) <= START_BAND then
+					return true
+				end
+			end
+			return false
+		end
 		local function authored_at(x, z, terrain_y, water_y, kind, id)
 			local list = bucket_at(authored_grid, x, z)
 			if not list then return terrain_y, water_y, kind, id end
+			-- A start town's pad and band keep their fitted ground: no
+			-- authored lake floods, carves, cuts or raises them (plan D78; a
+			-- start's own ponds keep their water and banks outside the band).
+			if in_start_town(x, z) then return terrain_y, water_y, kind, id end
 			local bank_d, bank_y, wet, wet_m
 			local ms = indicator_scratch
 			for index = 1, #list do
@@ -1564,6 +1619,33 @@ local function height_factory(dependencies)
 			end
 			return material
 		end
+		-- The start town's own ground in the protected band (plan D78): the
+		-- ground node of the start whose pad or band holds the column where the
+		-- town's ground reaches (START_GROUND_MIN..MAX nodes from the pad along
+		-- a smooth noise outline, dithered over START_GROUND_FUZZ nodes by a
+		-- column hash), else nil. The band itself is the start town's
+		-- protection (`source/simple_map.lua` hard_start_town_v1).
+		local function start_ground_at(x, z)
+			if not start_grounds then return nil end
+			local candidates = bucket_at(grids.start, x, z)
+			if not candidates then return nil end
+			for index = 1, #candidates do
+				local fitting = candidates[index]
+				local d = square_distance(x, z, fitting.center,
+					fitting.profile.fitting_width)
+				if d <= START_BAND then
+					local reach = START_GROUND_MIN + (START_GROUND_MAX - START_GROUND_MIN) *
+						0.5 * (1 + ground_noise(x / START_GROUND_PERIOD, z / START_GROUND_PERIOD))
+					local h = (x * 73856093 + z * 19349663) % 1048573
+					h = (h * h + 40503) % 1048573
+					if d < reach + START_GROUND_FUZZ * (h / 1048573 - 0.5) then
+						return fitting.ground
+					end
+					return nil
+				end
+			end
+			return nil
+		end
 		local function bank_material_at(x, z, water_y, distance)
 			coordinate(x, "bank query x") coordinate(z, "bank query z")
 			if type(water_y) ~= "number" or type(distance) ~= "number" then
@@ -1818,6 +1900,25 @@ local function height_factory(dependencies)
 		-- river or a lake.
 		function session.coast_material_at(x, z)
 			return coast_material_at(x, z)
+		end
+		-- The start town's ground node in the band round its pad, or nil (plan
+		-- D78): the surface selector lays it as the column's top.
+		function session.start_ground_at(x, z)
+			coordinate(x, "start ground query x") coordinate(z, "start ground query z")
+			return start_ground_at(x, z)
+		end
+		-- Every start ground node name, sorted (the surface selector checks
+		-- them against the content contract when it is built, i.e. at load).
+		function session.start_ground_names()
+			local names, seen = {}, {}
+			for _, names_row in pairs(start_grounds or {}) do
+				if not seen[names_row.ground] then
+					seen[names_row.ground] = true
+					names[#names + 1] = names_row.ground
+				end
+			end
+			table.sort(names)
+			return names
 		end
 		-- The same rule for any water body: its surface y and the column's
 		-- distance to it (the Phase 5 lake and river bank hook).

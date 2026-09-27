@@ -214,10 +214,21 @@ return function(P)
 	-- The start ponds (world_zones.md §8: Dawnmere's spring ponds among the
 	-- fields, Sunscar's shallow waterholes). On the start's calm ground beside
 	-- the start core, off its road side.
+	-- Dawnmere's pond (plan D78): behind the town, 40 nodes south of the pad
+	-- (the road leaves north), its surface one node below the town's pad, its
+	-- bank envelope kept off the pad and the protected band (`keep`, pad half
+	-- 64 + band 12) and faded in over 16 nodes beyond. Before D78 it lay
+	-- north-east at the level of the lowest bank ground; with the small start
+	-- bowl that bank lies on the slope into the Dawnmere headwaters basin on
+	-- many seeds, which sank the pond and cut its banks into the pad. Over 24
+	-- seeds the ground round the south site lies within 6 below and 13 above
+	-- the pad (the north-east one: 16 below). `height.lua` never lets an
+	-- authored lake touch a start town's pad or band.
 	---------------------------------------------------------------------------
-	lake({id = "dawnmere_pond", shore_level = true,
-		points = {{88, -2480, 13}, {112, -2468, 16}},
+	lake({id = "dawnmere_pond", anchor = "anchor_002", level_offset = -1,
+		points = {{-12, -2654, 13}, {12, -2650, 16}},
 		warp = {cove = 7, point = 3, period = 18, salt = 21.9},
+		keep = {x = 0, z = -2550, half = 76, fade = 16},
 		depth = 3, bank = {up = 0.5, down = 0.5}})
 	lake({id = "sunscar_waterhole_1", shore_level = true,
 		points = {{104, 2478, 10}, {114, 2470, 8}},

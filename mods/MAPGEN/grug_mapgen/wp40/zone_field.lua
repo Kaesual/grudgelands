@@ -254,13 +254,14 @@ function M.keypoints(source)
 	for _, a in ipairs(source.anchors) do
 		local p = prof[a.template_id]
 		-- the footprint that must be in-zone and on land: the fitting square
-		-- (villages 96, ...); for starts their hard-protected square (148), for
-		-- capitals the reserved square that bounds the protected city (532)
+		-- (villages 96, ...); for starts the square that holds the start town
+		-- (152: the pad and its band), for capitals the reserved square that
+		-- bounds the protected city (532)
 		local width = p.fitting_width
 		if a.slot_id == "capital" then
 			width = max(width, hard.hard_capital_city_v1 or width)
 		elseif a.slot_id == "start" then
-			width = max(width, hard.hard_start_core_v1 or width)
+			width = max(width, hard.hard_start_town_v1 or width)
 		end
 		local half = width / 2
 		kp[#kp + 1] = {kind = "anchor", id = a.id .. ":" .. a.template_id .. ":" ..

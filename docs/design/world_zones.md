@@ -497,8 +497,10 @@ replaced; git history before this rewrite records that model.
   canal ends there in its sealed rim. Steps between planned surfaces that do
   lie in protected territory (a river crossing a capital) flow like any other:
   the water guard exempts exactly that flow. Small
-  ponds on the calm ground beside the Dawnmere and Sunscar
-  starts. Authored water and its bank shaping keep at least eight nodes off
+  ponds beside the Dawnmere and Sunscar starts: Sunscar's two waterholes at
+  the lowest ground of their banks, Dawnmere's pond 40 nodes south of the
+  pad one node below the pad's level (Round 22 D78); no authored water or
+  its bank shaping reaches a start town's pad or protected band. Authored water and its bank shaping keep at least eight nodes off
   every district plot and fill lot (margin included), so the plots stand on
   the ground they were measured on. Moonfall's crescent lake (D41) lies on a
   calm bowl the landmark adds to the terrain field (like a steep POI's, at
@@ -630,9 +632,17 @@ replaced; git history before this rewrite records that model.
 - **Transitions need not be smooth.** Occasional cliffs, steep slopes and
   escarpments may come from the noise itself or from a landmark; the former
   rule that every abrupt feature needs a named landmark is retired.
-- **Calm ground around cities.** Roughness is damped around starts (about
-  300 nodes) and capitals, keyed to the start centre and the capital civic
-  core, not to the build envelope. Start pads sit in a calm bowl. Around a
+- **Calm ground around cities.** Roughness is damped around starts and
+  capitals, keyed to the start pad and the capital civic core. Start pads
+  sit in a small calm bowl that follows the pad (Round 22, D78): calm
+  through the protected band (§12, damping to 10 nodes beyond the pad's
+  edge, then fading in so slowly that the band stays calm), then natural
+  relief returns over a fade whose width follows the land round the town —
+  about 60 nodes on level ground, up to about 200 where the town sits in a
+  hollow or on a rise (the fade is the ground's height difference to the
+  calm level over a grade of 0.3), so the rise or fall back to the natural
+  ground is a hill, never a wall; the fade's outer edge varies with noise.
+  Around a
   capital only the 96×96 civic core is flat: the calm zone around it keeps
   long-wave hills and hollows (wavelengths of about 100 nodes and more, a
   race-specific amplitude of roughly ±8–12 nodes, no fine detail) out to
@@ -756,7 +766,7 @@ Mob families additionally carry the day/night role defined in
 `biomes_mobs.md` §4. The closed palette is resolved at the current clock; a
 non-capital palette with fewer than two explicit night families admits its
 documented family fallback. Empty capital palettes remain
-`civic_no_hostiles`, and start protection aprons still refuse hostile spawns
+`civic_no_hostiles`, and the start towns (pad and band, §12) still refuse hostile spawns
 before palette or fallback authority is considered.
 
 POI abbreviations:
@@ -1385,15 +1395,26 @@ one-cell settlement checks are unchanged.
   expires. The other kings' timers are independent, so an attacker may earn one
   Crown from each of the opposing faction's three kings in the same daily raid
   circuit.
-- Each starting settlement has a 128×128 build envelope, a blend ring out to
-  256×256 and a guaranteed road to the home zone. Its hard-protected POI is
-  the **complete build envelope plus a 10-node apron** (decided
-  2026-08-13) — so spawn,
-  waypoint, graveyard and every service platform lie inside one protected
-  footprint; `world.md` §2 R1 owns the protection semantics. Terrain beyond
-  the apron, including the rest of the blend ring, remains ordinary editable
-  home terrain. The first mandatory road beat reaches the race capital at
-  level 10 and unlocks its waypoint and civic-service introduction.
+- Each starting settlement has a 128×128 build envelope (the start pad, its
+  town and town ground unchanged) and a guaranteed road to the home zone.
+  **The start town (Round 22, D78)** is its hard-protected POI and its claim
+  and resource exclusion envelope at once: the pad and every column within
+  12 nodes of it (true distance, so the corners are rounded quarter circles;
+  152 nodes across on the axes, about 23 k m² instead of the former 148
+  square plus the 256-node claim square). Spawn, waypoint, graveyard and
+  every service platform lie inside it; `world.md` §2 R1 owns the
+  protection semantics. The band grows no trees and no ground cover, so
+  players see where the protection ends, and carries the town's own ground
+  out into the natural surface: the pad's ground node reaches 2–10 nodes
+  into the band along a smooth noise outline with a dithered edge, beyond it
+  the biome's surface, so no straight edge or corner of the pad shows. The
+  pad's grading runs as a collar round it (the flat grows by 0–6 nodes along
+  a noise outline, then a 24-node ramp with a noisy edge and rounded
+  corners), starting in the band and running out just beyond it. Beyond the
+  band the zone's ordinary rules apply (vegetation, ground cover, claims,
+  housing, resources, caves). The first mandatory road beat reaches the race
+  capital at level 10 and unlocks its waypoint and civic-service
+  introduction.
 
 ## 13. Mapgen and public zone contract
 

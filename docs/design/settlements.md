@@ -19,9 +19,10 @@ the zone name; this increment introduces no separate town name.
   uses WP40's terrain-fitted start pad; broader terracing and varied civic
   terrain are later structure work.
 - The existing start identity, road connection, 128 × 128 build envelope
-  and ten-node protection apron follow [world_zones.md](world_zones.md) §12
-  and [world.md](world.md) §2 R1. The apron makes the protected horizontal
-  footprint 148 × 148. Existing depth and indirect-mutation rules apply.
+  and protected start town follow [world_zones.md](world_zones.md) §12 and
+  [world.md](world.md) §2 R1. The start town (Round 22 D78) is the envelope
+  plus a 12-node band round it with rounded corners. Existing depth and
+  indirect-mutation rules apply.
 - This increment supplies architecture and environmental dressing. Furniture
   does not introduce profession, storage, quest, innkeeper or travel services.
   The functional systems and their NPCs retain their own work packages.
@@ -56,7 +57,8 @@ Decided 2026-09-14 after the first native playtest.
   cannot all hold, use the dry median and report the actual sample excess.
   This is a sampled fitting rule, not a universal bound on every terrain node.
 - Dry start-fitting ground and blending slopes retain their biome surface
-  materials. Authored roads and other functional surfaces retain precedence.
+  materials, except where the town's own ground reaches into the protected
+  band ("The start town's surroundings" below). Authored roads and other functional surfaces retain precedence.
   Individual building terraces and varied civic ground remain later work.
 
 ## Start preparation and start-area safety
@@ -70,9 +72,9 @@ Decided 2026-09-14 after the round-A playtest.
   mode satisfies the same readiness seam when its surface plan completes.
   Preparation precedes faction/race/class creation. The waiting UI, stasis and
   shutdown/resume behavior follow the same shared preparation contract.
-- No mob that can attack players spawns inside a start footprint — the
-  128-node build envelope plus its 10-node apron, the 148 × 148 hard-protected
-  square of [world.md](world.md) §2 R1. Passive critters and prey animals keep
+- No mob that can attack players spawns inside a start town — the 128-node
+  build envelope plus its 12-node band with rounded corners, the
+  hard-protected footprint of [world.md](world.md) §2 R1. Passive critters and prey animals keep
   spawning there, and the undead night truce is unchanged.
 
 ## Start surroundings
@@ -88,24 +90,28 @@ blueprints are unchanged by them.
   own `main_street` landmark, never an assumed sign. That stretch is ordinary
   road, so it keeps the claim exclusion, the clear corridor and every other
   rule an ordinary road carries ([world.md](world.md) §2 R1).
-- **Biome decorations grow in the blend ring.** Trees, plants and ground cover
-  are generated normally in the 256-node blend ring outside the 148-node
-  protected footprint, so a start does not sit in a cleared square. The build
-  envelope, the road surfaces and every authored volume stay clear, and the
-  blend ring's cover matches the surrounding biome.
-- **Vegetation also grows in the protection apron, behind a jagged edge.**
-  Decided 2026-09-15 after the first GUI playtest: hard protection restricts
-  building, not growing, so the ten-node apron carries the same biome cover as
-  the ring outside it, starting at a seed-deterministic jittered boundary a few
-  nodes out from the build envelope rather than on a straight line. The
-  128-node build envelope, the road surfaces and every authored volume stay
-  host-free, and the same world seed always produces the same outline. That
-  cover stands on hard-protected ground, so a player cannot fell it.
-- The transition from the fitted pad to the natural terrain carries a
-  **seed-deterministic outward jitter of a few nodes**, so its outline is not an
-  exact square. The same world seed always produces the same outline. The
-  128-node envelope's surface height, the spawn height, the road pins and every
-  blueprint cell are unaffected by it.
+- **The start town's surroundings (Round 22 D78, 2026-09-27).** Replaces the
+  blend-ring and apron rules of 2026-09-14/15. The protected band round the
+  pad (12 nodes, rounded corners) grows no trees and no ground cover, so
+  players see where the protection ends; right beyond it the biome's trees,
+  plants and ground cover grow normally, and claims, housing, resources and
+  caves follow the zone's ordinary rules. The band carries the town's own
+  ground (the pad's ground node of its race palette) 2–10 nodes out from the
+  pad along a smooth noise outline with a dithered edge, then the biome's
+  surface, so no straight edge or corner of the pad shows. The same world
+  seed always produces the same outline.
+- **Grading.** The flat pad grows by a seed-deterministic 0–6 nodes along a
+  noise outline, then a 24-node collar (noisy edge, rounded corners) blends
+  it into the terrain; it starts in the band and runs out just beyond it.
+  The terrain round a start is calm only through the band; natural relief
+  returns over a fade of about 60 nodes on level land and up to about 200
+  where the town sits in a hollow or on a rise ([world_zones.md](world_zones.md)
+  §7.6), so the ground rises or falls back as a hill. The pad stays flat
+  and every blueprint cell is unaffected; the pad's reference height (and
+  with it the spawn height and road pins) follows the same sampling rule on
+  the new terrain, so it can differ by a few nodes from a pre-D78 world of
+  the same seed. No authored water (a start's pond) floods, cuts or raises
+  the pad or the band.
 
 ## Settlement NPCs and guard targeting
 

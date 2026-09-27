@@ -150,6 +150,9 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	-- handed to the world build's first height session request instead of
 	-- building a second one (`height.lua` new_runtime).
 	local reuse = {}
+	-- The start towns' own ground (plan D78), filled below from the WP13
+	-- palettes before any height session exists.
+	local start_grounds = {}
 	local height_module_factory = dofile(wp40_directory .. "/height.lua")
 	local function height_factory(dependencies)
 		local bound = {}
@@ -157,6 +160,7 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		bound.water = water
 		bound.roads = roads
 		bound.reuse = reuse
+		bound.start_grounds = start_grounds
 		return height_module_factory(bound)
 	end
 	local zones_factory = dofile(wp40_directory .. "/zones.lua")
@@ -184,6 +188,29 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	local r7_anchor_activation_factory = dofile(
 		wp40_directory .. "/r7_anchor_activation.lua")
 	local r7_settlement_module = dofile(wp40_directory .. "/r7_settlement.lua")
+	-- The ground node each start's blueprint lays on its pad (its race's WP13
+	-- palette), which the band round the pad carries out into the natural
+	-- surface (plan D78). Both environments read the same files, so they agree.
+	do
+		-- The band's top is a mapgen surface node of the R6 content contract.
+		-- Sunscar's `default:dirt_with_dry_grass` is not one; its mapgen twin
+		-- shows the same top texture (default_dry_grass.png).
+		local SURFACE_TWIN = {
+			["default:dirt_with_dry_grass"] = "default:dry_dirt_with_dry_grass",
+		}
+		local wp13_palette = dofile(wp40_directory .. "/../wp13/palette.lua")
+		for index = 1, #r7_settlement_module.roster do
+			local profile = r7_settlement_module.roster[index]
+			if profile.slot == "start" then
+				local race = wp13_palette.races[profile.race]
+				if type(race) ~= "table" or type(race.ground) ~= "string" then
+					fail("start town ground missing: " .. profile.key)
+				end
+				start_grounds[profile.anchor_id] = {
+					ground = SURFACE_TWIN[race.ground] or race.ground}
+			end
+		end
+	end
 	local r7_successor_factory = dofile(wp40_directory .. "/r7_successor.lua")
 	local r7_zone_overlay_factory = dofile(wp40_directory .. "/r7_zone_overlay.lua")
 	local r7_r6_manifest = dofile(wp40_directory .. "/r7_r6_manifest.lua")
