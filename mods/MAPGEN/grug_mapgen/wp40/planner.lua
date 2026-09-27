@@ -432,15 +432,8 @@ local function planner_factory(allocator_factory)
 
 	function module.new(planner_source, validated_manifest, feature_lookup,
 			counting_allocator, construction_identity)
-		-- The few vocabulary constants used by generic candidate helpers are
-		-- local scalars so this Lua 5.1 constructor stays below 60 upvalues.
-		local OP_BRIDGE_CLEAR, OP_BRIDGE_DECK, OP_BRIDGE_SUPPORT = 5, 6, 7
-		local OP_CAUSEWAY_CULVERT, OP_CAUSEWAY_FILL,
-			OP_CAUSEWAY_SURFACE = 8, 9, 10
-		local OP_CONTACT_FALL_CLEAR, OP_FORD_BED = 11, 13
-		local OP_RECEIVER_OPEN, OP_RIVER_WATER = 23, 25
-		local OP_TUNNEL_FLOOR, OP_TUNNEL_ROOF, OP_TUNNEL_WALL = 29, 31, 32
-		local OP_TUNNEL_LUMEN = 30
+		-- The vocabulary constants of the seal helper are local scalars so
+		-- this Lua 5.1 constructor stays below 60 upvalues.
 		local ROLE_HYDROLOGY_SEAL = 9
 		local POLICY_SEAL_VOID = 5
 		exact_raw_fields(planner_source, SOURCE_FIELDS, "planner source",
@@ -756,84 +749,16 @@ local function planner_factory(allocator_factory)
 			return nil, nil
 		end
 
-		local function candidate_is_p3_solid(opcode)
-			return opcode == OP_BRIDGE_DECK or opcode == OP_BRIDGE_SUPPORT or
-				opcode == OP_CAUSEWAY_FILL or opcode == OP_CAUSEWAY_SURFACE or
-				opcode == OP_FORD_BED or opcode == OP_TUNNEL_FLOOR or
-				opcode == OP_TUNNEL_ROOF or opcode == OP_TUNNEL_WALL
-		end
-
-		local function candidate_is_p3_open(opcode)
-			return opcode == OP_BRIDGE_CLEAR or opcode == OP_CAUSEWAY_CULVERT or
-				opcode == OP_CONTACT_FALL_CLEAR or opcode == OP_RECEIVER_OPEN or
-				opcode == OP_TUNNEL_LUMEN or opcode == OP_RIVER_WATER
-		end
-
-		local function add_seal_subtracted(y_min, y_max, opcode, feature_id,
-				interface_id)
+		-- A hydrology seal (priority 3). The column source publishes no other
+		-- priority-3 work since the R5 bridge, causeway, ford and tunnel kinds
+		-- went with the route catalog, so a seal never overlaps another P3
+		-- candidate.
+		local function add_seal(y_min, y_max, opcode)
 			if y_min < AUTHORED_FLOOR then
 				fail("fail_bound", "hydrology seal crosses authored floor")
 			end
-			local fragment_count = 1
-			local low1, high1 = y_min, y_max
-			local low2, high2, low3, high3
-			local initial_candidates = candidate_count
-			for candidate_index = 1, initial_candidates do
-				local base = (candidate_index - 1) * RUN_STRIDE
-				if candidate_values[base + R_PRIORITY] == 3 then
-					local other_low = candidate_values[base + R_Y_MIN]
-					local other_high = candidate_values[base + R_Y_MAX]
-					local other_opcode = candidate_values[base + R_OPCODE]
-					if other_high >= math.max(y_min, current_min_y) and
-							other_low <= math.min(y_max, current_max_y) then
-						if candidate_is_p3_open(other_opcode) then
-							fail("fail_conflict", "hydrology seal overlaps P3 opening")
-						elseif candidate_is_p3_solid(other_opcode) then
-							local next_count = 0
-							local nlow1, nhigh1, nlow2, nhigh2, nlow3, nhigh3
-							for fragment = 1, fragment_count do
-								local fragment_low, fragment_high
-								if fragment == 1 then fragment_low, fragment_high = low1, high1
-								elseif fragment == 2 then fragment_low, fragment_high = low2, high2
-								else fragment_low, fragment_high = low3, high3 end
-								if other_high < fragment_low or other_low > fragment_high then
-									next_count = next_count + 1
-									if next_count == 1 then nlow1, nhigh1 = fragment_low, fragment_high
-									elseif next_count == 2 then nlow2, nhigh2 = fragment_low, fragment_high
-									else nlow3, nhigh3 = fragment_low, fragment_high end
-								else
-									if fragment_low < other_low then
-										next_count = next_count + 1
-										if next_count == 1 then nlow1, nhigh1 = fragment_low, other_low - 1
-										elseif next_count == 2 then nlow2, nhigh2 = fragment_low, other_low - 1
-										else nlow3, nhigh3 = fragment_low, other_low - 1 end
-									end
-									if fragment_high > other_high then
-										next_count = next_count + 1
-										if next_count == 1 then nlow1, nhigh1 = other_high + 1, fragment_high
-										elseif next_count == 2 then nlow2, nhigh2 = other_high + 1, fragment_high
-										else nlow3, nhigh3 = other_high + 1, fragment_high end
-									end
-								end
-							end
-							if next_count > 3 then
-								fail("fail_bound", "seal subtraction exceeds three fragments")
-							end
-							fragment_count = next_count
-							low1, high1, low2, high2, low3, high3 =
-								nlow1, nhigh1, nlow2, nhigh2, nlow3, nhigh3
-						end
-					end
-				end
-			end
-			for fragment = 1, fragment_count do
-				local low, high
-				if fragment == 1 then low, high = low1, high1
-				elseif fragment == 2 then low, high = low2, high2
-				else low, high = low3, high3 end
-				add_candidate(low, high, 3, opcode, ROLE_HYDROLOGY_SEAL,
-					POLICY_SEAL_VOID, feature_id, interface_id)
-			end
+			add_candidate(y_min, y_max, 3, opcode, ROLE_HYDROLOGY_SEAL,
+				POLICY_SEAL_VOID, nil, nil)
 		end
 
 		-- Bank seal of a column that is not wet sealed water: from two below
@@ -933,15 +858,13 @@ local function planner_factory(allocator_factory)
 				if not river_near then
 					fail("fail_source", "sealed water column outside river_water_in")
 				end
-				add_seal_subtracted(terrain_y - 2, terrain_y,
-					OP_HYDROLOGY_BED_SEAL, nil, nil)
+				add_seal(terrain_y - 2, terrain_y, OP_HYDROLOGY_BED_SEAL)
 			elseif river_near then
 				local seal_low, water_high = bank_seal_values(x, z)
 				if seal_low ~= nil then
 					local seal_high = math.min(terrain_y, water_high)
 					if seal_low <= seal_high then
-						add_seal_subtracted(seal_low, seal_high,
-							OP_HYDROLOGY_BANK_SEAL, nil, nil)
+						add_seal(seal_low, seal_high, OP_HYDROLOGY_BANK_SEAL)
 					end
 				end
 			end
