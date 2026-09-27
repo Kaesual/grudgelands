@@ -428,11 +428,15 @@ return function(data)
 			LMS[#LMS + 1] = e
 		end
 		local BUCKET = 128
+		-- Keys are shifted by a constant so that they stay positive on the
+		-- map: LuaJIT cannot compile a lookup of a variable negative key in a
+		-- table that also has an array part ("NYI: mixed sparse/dense table").
+		local KEY_BIAS = 2048 * 4096 + 2048
 		local buckets = {}
 		for _, e in ipairs(LMS) do
 			for bz = floor((e.z - e.reach) / BUCKET), floor((e.z + e.reach) / BUCKET) do
 				for bx = floor((e.x - e.reach) / BUCKET), floor((e.x + e.reach) / BUCKET) do
-					local key = bz * 4096 + bx
+					local key = bz * 4096 + bx + KEY_BIAS
 					local list = buckets[key]
 					if not list then list = {}; buckets[key] = list end
 					list[#list + 1] = e
@@ -478,7 +482,7 @@ return function(data)
 
 		local function landmarks_at(lx, lz)
 			local lm_add, rm_boost, mesa_m, mesa_top = 0, 0, 0, 0
-			local list = buckets[floor(lz / BUCKET) * 4096 + floor(lx / BUCKET)]
+			local list = buckets[floor(lz / BUCKET) * 4096 + floor(lx / BUCKET) + KEY_BIAS]
 			if not list then return 0, 0, 0, 0 end
 			for i = 1, #list do
 				local e = list[i]

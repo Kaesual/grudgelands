@@ -243,12 +243,18 @@ local function plateau(dist, r0, falloff)
 end
 
 -- ---------------------------------------------------------------- bucket grid
+-- Row and cell indices are shifted by BUCKET_BIAS so that they stay positive
+-- on the map: LuaJIT cannot compile a lookup of a variable negative key in a
+-- table that also has an array part ("NYI: mixed sparse/dense table").
 local BUCKET = 256
+local BUCKET_BIAS = 1024
 local function bucket_add(grid, cx, cz, radius, item)
-	for iz = floor((cz - radius) / BUCKET), floor((cz + radius) / BUCKET) do
+	for iz = floor((cz - radius) / BUCKET) + BUCKET_BIAS,
+			floor((cz + radius) / BUCKET) + BUCKET_BIAS do
 		local row = grid[iz]
 		if not row then row = {} grid[iz] = row end
-		for ix = floor((cx - radius) / BUCKET), floor((cx + radius) / BUCKET) do
+		for ix = floor((cx - radius) / BUCKET) + BUCKET_BIAS,
+				floor((cx + radius) / BUCKET) + BUCKET_BIAS do
 			local cell = row[ix]
 			if not cell then cell = {} row[ix] = cell end
 			cell[#cell + 1] = item
@@ -256,8 +262,8 @@ local function bucket_add(grid, cx, cz, radius, item)
 	end
 end
 local function bucket_get(grid, x, z)
-	local row = grid[floor(z / BUCKET)]
-	return row and row[floor(x / BUCKET)]
+	local row = grid[floor(z / BUCKET) + BUCKET_BIAS]
+	return row and row[floor(x / BUCKET) + BUCKET_BIAS]
 end
 
 local function is_island_region(region)

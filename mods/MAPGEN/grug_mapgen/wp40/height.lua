@@ -14,28 +14,23 @@
 -- Every query is a pure function of (seed, x, z). Heights are memoised per
 -- 80x80 mapchunk block, so planning and the writer read one memo per chunk.
 
--- Seed/session-local FIFO over the horizontal classification: the water
--- class and the owner (its first and third values), the only two this module
--- reads. Numeric keys. Fixed fields instead of a vararg tuple: a table built
--- from `...` and `unpack` stop LuaJIT traces (Round 22 D4).
-local function new_classification_cache(classify, limit)
-	local by_x, slots, cursor = {}, {}, 1
+-- Seed/session-local memo of the horizontal classification: the water class
+-- and the owner (its first and third values), the only two this module reads.
+-- Direct-mapped like simple_map.lua's field-sample memo (a pure function of
+-- x, z; a slot collision simply recomputes, the stored x and z decide a hit).
+-- Fixed arrays instead of vararg tuples and of rows keyed by signed
+-- coordinates: `unpack`, a table built from `...` and a variable negative key
+-- in a table with an array part all stop LuaJIT traces (Round 22 D4).
+local function new_classification_cache(classify, slots)
+	local memo_x, memo_z, memo_class, memo_owner = {}, {}, {}, {}
 	return function(x, z)
-		local row = by_x[x]
-		local entry = row and row[z]
-		if entry then return entry.class, entry.owner end
-		local class, _, owner = classify(x, z)
-		local old = slots[cursor]
-		if old then
-			local old_row = by_x[old.x]
-			old_row[old.z] = nil
-			if next(old_row) == nil then by_x[old.x] = nil end
+		local slot = (x * 40503 + z) % slots
+		if memo_x[slot] == x and memo_z[slot] == z then
+			return memo_class[slot], memo_owner[slot]
 		end
-		row = by_x[x]
-		if not row then row = {} by_x[x] = row end
-		entry = {x = x, z = z, class = class, owner = owner}
-		row[z], slots[cursor] = entry, entry
-		cursor = cursor % limit + 1
+		local class, _, owner = classify(x, z)
+		memo_class[slot], memo_owner[slot] = class, owner
+		memo_x[slot], memo_z[slot] = x, z
 		return class, owner
 	end
 end
