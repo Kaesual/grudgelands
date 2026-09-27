@@ -841,18 +841,10 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 				return wet_variants[id][bed_index]
 			end
 			local depth = 1 + math.min(3, math.floor(noise(x, z, 64, 83492791) / 256))
-			-- A start town's own ground (plan D78) on dry top nodes; a rock
-			-- face or lip keeps its steep row.
+			-- A start town's own ground (plan D78) on dry top nodes. The pad
+			-- and band are hard rows, where steep_at never answers rock or lip.
 			local town = start_ground_at(x, z)
-			if town then
-				local steep = 0
-				if id ~= "grug_badlands" and id ~= "grug_badlands_east" then
-					steep = steep_at(x, z, terrain_y)
-				end
-				if steep == 1 then return rock_rows[id][depth] end
-				if steep == 2 then return lip_rows[id][1] end
-				return town_row(id, town, depth)
-			end
+			if town then return town_row(id, town, depth) end
 			if id == "grug_swamp" then return base end
 			local kind = 1
 			if patch > 880 then kind = 4

@@ -912,7 +912,7 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   `default:dry_dirt_with_dry_grass` has the same top texture) 2–10 nodes
   into the band along a 14-period noise outline with a 3-node dithered edge;
   the R6 surface selector lays it as the top (`planner_source.start_ground_at`)
-  on plain dry tops only (a rock face or lip keeps its steep row; no dust),
+  on dry tops only (pad and band are hard rows, so no steep rock or lip there; no dust),
   and checks every start ground name against the content contract when it
   is built at load (`start_ground_names`).
   Offline, 24 seeds × 6 starts (before = main 8f467033): pad fittings all
