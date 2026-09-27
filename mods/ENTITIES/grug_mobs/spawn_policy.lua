@@ -326,7 +326,7 @@ local RACE_FACTIONS = {
 -- 10-node protection apron (world.md Section 2 R1) = the 148 x 148
 -- hard-protected square, a half-open square centred on the start anchor:
 -- anchor - 74 is inside, anchor + 73 is inside, anchor + 74 is outside
--- (wp40/source/catalog.lua, recipe hard_start_core_v1, total_width 148).
+-- (wp40/source/simple_map.lua, recipe hard_start_core_v1, total_width 148).
 --
 -- grug_zones.territory_rule_at(pos) == "hard_protected" is the same
 -- predicate, but it normalizes a position table, walks a sparse footprint

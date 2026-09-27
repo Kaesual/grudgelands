@@ -15,8 +15,8 @@
 --
 -- The road exits SOUTH. Every Accord start's road runs north to its gate;
 -- the three Throng starts are on the other side of the world and their gate
--- stations sit at z = anchor.z - 64 (`start:south` in
--- `wp40/source/catalog.lua`). The corridor, the gate, the towers and the
+-- stations sat at z = anchor.z - 64 (`start:south` in the pre-Round-22
+-- route catalog). The corridor, the gate, the towers and the
 -- street lighting therefore run toward -z, and the `main_street` landmark
 -- says so, which is what the KAT and the engine case read instead of
 -- assuming a direction.
