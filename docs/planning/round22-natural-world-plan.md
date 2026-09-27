@@ -782,7 +782,7 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   in sand; more corals and sea plants (the reef rule only uses the
   coastal-shelf class — extend to bays/near-shore sea); outpost `anchor_041`
   collar overlaps rare route `anchor_098`'s core (`height.lua`
-  `fitting_grade_at` takes the first candidate); golem density on high stone
+  `fitting_grade_at` takes the first candidate; fixed in D4 wave 2); golem density on high stone
   mountains after the cap raise; emergent jungle trees may be refused by the
   writer (−4 offset, `docs/research/wp13-floating-bushes.md`); high relief
   may lack native caves (check in playtest); shore-crab spawn rate retune.
@@ -961,6 +961,41 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   connector ford step (accepted; road-module bank-seal clamp with the city
   kit profile); free decks as last resort (mostly Stormvault, mountain
   trails); stale lighting-check targets `river_cross47`, `river_rapids`.
+- **Wave-2 water lane, as built (2026-09-27; evidence and images in
+  `~/projects/grudgelands-orchestration/r22/wave2-water/`):**
+  - *Reverse confluences:* the two W2a cases were already gone from the
+    layout (W3b, D56), but at 1 node a tributary still met its parent from
+    below: the junction cap made the parent step down exactly at the join,
+    so the tributary lay beside the parent's upper reach (join at the foot of
+    a parent step, or channels side by side before the join). 620 such
+    contacts on 14 of 16 seeds (seed 42: the two W2a junctions, rivers 18→1
+    and 19→2). `water_layout.lua` now caps an ancestor wherever a lower
+    tributary's wet reach can touch it (its step moves upstream out of the
+    contact), iterated with the lake settling, skipped where the cut would
+    pass CUT_MAX: 1 contact left (seed 99999, two steep reaches side by side,
+    kept), sinks, dry junctions and monotonicity unchanged; engine 20 / 17
+    level contacts → 0 on seeds 42 / 15140735923413111218, no leaks.
+  - *Springs (coordinator addition):* a spring's water began at the full
+    minimum width (7.5) after a ~6-wide dry gully; it now starts as a brook
+    (`W_SPRING` 3) and widens over `W_TAPER`, also into and out of sinks.
+    Courses and levels read the old valley width, so they are unchanged
+    (16 seeds: 0 position changes, 2 level changes).
+  - Diff scope: water text on 15 / 16 seeds (confluence) and every seed
+    (springs); roads and capitals follow the new widths (seeds 42 /
+    15140735923413111218: 70 of 178 / 53 of 183 road records, 4 of 6
+    capital layouts re-planned each, all required plots placed, plots placed
+    per capital within −4 … +1; the confluence fix alone moved one capital
+    outline by under 2 nodes).
+  - Lighting-check targets re-picked (tool only): `river_cross47` searches a
+    2-node grid near river 1's crossing, `river_rapids` a box of rapids on
+    river 1, new `river_falls` on river 24; default-order windows 0 / 0 on
+    the lane head, rapids 90 / 90 and falls 40 / 40 flowing.
+  - Re-checked after merging main 8f467033 (D76 changes the natural field
+    and so the rivers): reversed contacts 655 on 15 / 16 seeds → 0 on all
+    16, sinks and dry junctions unchanged, spring first-wet width median 3.1;
+    capital planner on 4 seeds (24 plans): required plots 9 / 9, 0 plots in
+    water, 0 connector failures (street grade steps 7 → 9, all at Nhal Veyr,
+    the open D49 follow-up); engine seed 42: level contacts 62 → 0, no leaks.
 - **End-of-round check: full-world preparation** (`grug_prepare_full_world`,
   user, 2026-09-26). The preparation scheduler
   (`grug_core/starts_preload.lua`, `preparation_plan.lua`) takes its volume
@@ -1020,6 +1055,42 @@ from the lanes and reviews of this round:
   and 110 chunks incl. capitals, roads, bridges, water, a village); emerge
   construction ×0.52–0.59 (~7 → ~3.8 s), main loader ×0.89–0.93, chunk time
   within noise. Evidence `r22/cleanup-b/`.
+- **As built, wave 2 (dead functional kinds):** the ford / bridge_deck /
+  causeway / tunnel(_floor) remnants are gone: the bridge-deck test in
+  `halo.sky_open`, the P7 skin rules and the R5 offer branches plus
+  `clearance_y` of the settlement analytic mirror (`r6_settlement.lua`), and
+  the planner's P3 solid/open predicates with the seal subtraction they fed
+  (`planner.lua`; a seal never overlaps another priority-3 candidate now;
+  module-level opcode constants kept). Engine digest equal on seeds 42 and
+  15140735923413111218 (100 owners each: capitals, roads, bridges, water,
+  villages). Evidence `r22/wave2-water/`.
+- **As built, wave 2 (capital planner, catalog, correctness nits):**
+  capital y culling: the first chunk of a footprint over a capital records the
+  y range the plot collars and city edge would write; later chunks of that
+  stack outside it skip both (footprints off the reserved square skip the
+  collar loop). `BOUNDS.capital_overlay` is now `M.CAPITAL_OVERLAY` with an
+  anchor-relative `square` and an absolute `world_y`, the manifest envelope
+  built from both. A capital street whose pinned ends do not fit (the road
+  module's "infeasible" fallback) is named in a warning (seen: Lethariel s1,
+  Nhal Veyr s8675309 — connectors); network roads already logged dropped core
+  pins. `source/catalog.lua` is gone: the rare patrol offsets are
+  `source.rare_patrol_offsets` in `source/simple_map.lua`, consumer payload
+  and its pinned digest unchanged. Overlapping anchor fittings (only
+  `anchor_041`/`anchor_098`): a flat core or bay platform wins, overlapping
+  collars blend (pull of the strongest collar toward a w/(1−w)-weighted blend
+  of the references); on s42 the rare route's core is flat again (33 of 144
+  columns were 1–8 too high), the largest step there 9 → 5; changes limited to
+  x 151–171, z 2060–2096. The writer puts the top on sealed beds/banks (R5
+  17/18) only where `analytic_p7_support_ref` answers it; no such column on
+  the tested maps (0 of 9,840 sealed tops in the s42 corpus, no wet anchor
+  grade or bay platform in any envelope on s1/s42), so output is unchanged.
+  Evidence: layout texts, capital blueprint identities and the consumer
+  payload identical on two seeds; engine digest over 179 owners per seed
+  (capitals, 53 stacked chunks over them, roads, rivers, lakes, a village)
+  equal to main except the one or two owners holding 041/098; stacked-chunk
+  time ×0.63/×0.64 in the two pairs where main's collar loop ran slow, within
+  noise in the two where it ran fast (bimodal JIT behaviour of main's loop).
+  Evidence `r22/wave2-capital/`.
 
 ### Orchestration and compaction points
 

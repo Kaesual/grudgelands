@@ -228,6 +228,16 @@ return function(wp40_directory)
 			for _, p in ipairs(plan.left_out) do
 				if p.kind ~= "fill" then left_buildings = left_buildings + 1 end
 			end
+			-- the streets whose profile did not fit their pinned ends (the core,
+			-- a gate or a road end) and follow the ground instead: the road
+			-- module's "infeasible" fallback, named by their ends for the log
+			local unpinned = {}
+			local kit_stats = st.kit_stats or {}
+			for token in (kit_stats.infeasible_ids or ""):gmatch("%S+") do
+				local road = plan.layout.roads[tonumber(token:match("^(%d+):") or "")]
+				unpinned[#unpinned + 1] = road and
+					(road.kind .. " " .. tostring(road.a) .. " - " .. tostring(road.b)) or token
+			end
 			stats[#stats + 1] = {key = key, area = plan.area, built = built / plan.area,
 				placed = #plan.plots, total = #plots, overflowed = #st.overflowed,
 				left_out = #plan.left_out, left_out_buildings = left_buildings,
@@ -235,7 +245,7 @@ return function(wp40_directory)
 				relaxed = #plan.relaxed, seconds = seconds, sample_seconds = st.t.sample,
 				payload = #text, open_arcs = st.open_arcs or 0, cross_lanes = st.cross_lanes or 0,
 				squares = st.squares or 0, streets = #plan.layout.roads,
-				infeasible = st.kit_stats and st.kit_stats.infeasible or 0,
+				infeasible = kit_stats.infeasible or 0, unpinned = unpinned,
 				no_route = st.no_route, connector_failed = st.connector_failed or 0,
 				shore_avenues = st.shore_avenues or 0, gate_runouts = st.gate_runouts or 0,
 				wet_avenue_ends = st.wet_avenue_ends or 0,

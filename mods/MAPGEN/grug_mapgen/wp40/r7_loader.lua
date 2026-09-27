@@ -200,6 +200,15 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 			st.squares, st.infeasible, st.connector_failed, st.shore_avenues,
 			st.gate_runouts, st.wet_avenue_ends,
 			st.no_route and (", no route:" .. st.no_route) or "", st.seconds))
+		-- a street whose pinned end did not fit is built along the ground and
+		-- may meet its core, gate or road end with a step (the count above;
+		-- this names them)
+		if st.unpinned and #st.unpinned > 0 then
+			diagnose("warning", "[grug_mapgen] capital " .. st.key .. ": no street " ..
+				"profile fits the pinned ends (core, gate or road end level), the " ..
+				"street follows the ground and may meet its end with a step: " ..
+				table.concat(st.unpinned, ", "))
+		end
 	end
 
 	-- THE PROTECTED CITIES (plan D76), built on every boot from the capital

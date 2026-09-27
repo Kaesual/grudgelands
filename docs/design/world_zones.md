@@ -427,11 +427,15 @@ replaced; git history before this rewrite records that model.
 - **River width (Round 22, D55).** The water width grows with the catchment
   and varies along the course by noise at two scales and by the terrain
   (wider on gentle ground): about 7-30 nodes of target width, at least about
-  six nodes of water, wider at sea mouths. A spring starts at the minimum
-  width; above it the trough continues up the drainage as a dry gully of up
-  to about 200 nodes that narrows and fades out. The course (centreline and
-  meander) keeps the Phase 5 channel-width model, so the winding shape does
-  not change with the water width.
+  six nodes of water away from springs and sinks, wider at sea mouths. A
+  spring starts as a brook about three nodes wide that widens to the river's
+  width over about 160 nodes (Round 22 wave 2); above it the trough continues
+  up the drainage as a dry gully of up to about 200 nodes that narrows and
+  fades out. Into a sink and out of the spring after it the water narrows to
+  the same brook. The valley (reach levels, course detours) is shaped for the
+  full spring width, so the brook changes neither the course nor the levels.
+  The course (centreline and meander) keeps the Phase 5 channel-width model,
+  so the winding shape does not change with the water width.
 - **Water steps down downstream.** Luanti water needs level surfaces, so a
   river's surface is constant along one reach and steps down to the next reach
   downstream through a small fall or rapids. Use few, simple step types:
@@ -444,7 +448,12 @@ replaced; git history before this rewrite records that model.
   along a river, across the dry gap after a sink (the new stretch starts no
   higher than the one before), at confluences (a tributary's level at the
   junction caps its parent's levels below it, so a tributary meets its parent
-  at or above the parent's surface), at a lake mouth (a river meets the lake
+  at or above the parent's surface; where the tributary's water can touch the
+  parent's before the join, at the foot of a step or along channels running
+  side by side, the parent is capped there so the tributary never lies beside
+  it lower (side-by-side staircases may still touch with the tributary higher,
+  spilling downstream), unless the parent would then cut deeper than its sink
+  limit), at a lake mouth (a river meets the lake
   at the lake's level, at most three nodes above the river's own level at
   the shore, except where two touching lakes must share a level; a lake
   standing higher is lowered by at most four nodes and only while at least

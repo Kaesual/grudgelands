@@ -1037,15 +1037,14 @@ local function settlement_factory()
 		end
 		-- The sky over an owner column while the chunk above is still fresh
 		-- (D65 B1), from the planned column tuple: open unless the planned
-		-- terrain, water or a bridge deck lies above the owner's top row.
-		-- Trees, buildings and other structures of the chunk above are not in
-		-- the tuple; that chunk corrects the 16 rows below it when it is
+		-- terrain or water lies above the owner's top row. Trees, buildings,
+		-- road decks and other structures of the chunk above are not in the
+		-- tuple; that chunk corrects the 16 rows below it when it is
 		-- generated.
 		function halo.sky_open(x, z, max_y)
-			local _, _, _, _, _, terrain_y, water_y, _, _, functional_kind,
-				functional_y = planner_source.column_values_at(x, z)
-			return terrain_y <= max_y and (water_y == nil or water_y <= max_y) and
-				not (functional_kind == "bridge_deck" and functional_y > max_y)
+			local _, _, _, _, _, terrain_y, water_y =
+				planner_source.column_values_at(x, z)
+			return terrain_y <= max_y and (water_y == nil or water_y <= max_y)
 		end
 		-- The stored (pre-transaction) day light at index i is sunlight. The
 		-- one light read of the transaction is checked where it is used.
@@ -1280,7 +1279,7 @@ local function settlement_factory()
 
 		local function analytic_p7_material_ref(x, y, z)
 			local _, _, zone_id, biome, _, terrain_y, water_y, _, _,
-				functional_kind, functional_y, functional_feature_id =
+				functional_kind, _, functional_feature_id =
 					planner_source.column_values_at(x, z)
 			local surface = select_surface(biome, x, z, water_y, terrain_y)
 			if not zone_id or not surface or y < terrain_y - surface.filler_depth or
@@ -1298,11 +1297,7 @@ local function settlement_factory()
 				functional_feature_id:match("^anchor_%d%d%d$") ~= nil and
 				(water_y == nil or water_y <= terrain_y)
 			if functional_kind == "anchor_platform" or
-					(functional_kind == "land_grade" and not dry_anchor_grade) or
-					functional_kind == "causeway" or
-					(functional_kind == "ford" and y == terrain_y) or
-					(functional_kind == "tunnel_floor" and functional_y <= y and
-						y <= functional_y + 5) then
+					(functional_kind == "land_grade" and not dry_anchor_grade) then
 				return nil
 			end
 			local wet = water_y ~= nil and water_y > terrain_y
@@ -1337,10 +1332,9 @@ local function settlement_factory()
 		-- decoration predecessors and shares production resolvers/source scalars.
 		local function analytic_r5_material_cid(x, y, z)
 			local _, _, _, _, _, terrain_y, water_y, river_id, _,
-				functional_kind, functional_y, _, _, _, _, _, _, _, _,
+				functional_kind, _, _, _, _, _, _, _, _, _,
 				hard_foundation = planner_source.column_values_at(x, z)
-			local clearance_y = water_y
-			local surface_cap = clearance_y and math.max(terrain_y, clearance_y) or
+			local surface_cap = water_y and math.max(terrain_y, water_y) or
 				terrain_y
 			local winner_priority, winner_role, winner_policy
 			local function offer(priority, role, policy)
@@ -1361,22 +1355,6 @@ local function settlement_factory()
 				if within(-37, terrain_y - 1) then offer(4, 11, 3)
 				elseif y == terrain_y then offer(4, 12, 6)
 				elseif within(terrain_y + 1, terrain_y + 4) then offer(4, 1, 1) end
-			elseif functional_kind == "ford" then
-				if y == terrain_y then offer(3, 6, 6) end
-			elseif functional_kind == "bridge_deck" then
-				if within(math.max(terrain_y + 1, clearance_y + 1),
-						functional_y - 2) then offer(3, 1, 4)
-				elseif y == functional_y - 1 then offer(3, 3, 5)
-				elseif y == functional_y then offer(3, 2, 6)
-				elseif within(functional_y + 1, functional_y + 4) then offer(3, 1, 1) end
-			elseif functional_kind == "causeway" then
-				if within(-37, terrain_y - 1) then offer(3, 4, 3)
-				elseif y == terrain_y then offer(3, 5, 6)
-				elseif within(terrain_y + 1, terrain_y + 4) then offer(4, 1, 1) end
-			elseif functional_kind == "tunnel_floor" then
-				if y == functional_y then offer(3, 15, 6)
-				elseif within(functional_y + 1, functional_y + 4) then offer(3, 1, 4)
-				elseif y == functional_y + 5 then offer(3, 16, 5) end
 			end
 
 			if y <= terrain_y then
@@ -2469,9 +2447,13 @@ local function settlement_factory()
 						-- bank (17) get their surface on top like any natural
 						-- column: bed patches of sand, gravel, stone and swamp mud,
 						-- the near-water shore material or the biome top
-						-- (world_zones.md §7.4; Round 22 Phase 5).
+						-- (world_zones.md §7.4; Round 22 Phase 5) -- where the
+						-- analytic mirror answers that top too, so the evidence
+						-- and decoration planning agree with the writer (a bay
+						-- platform or a wet anchor grade keeps its seal).
 						if predecessor == 28 or dry_anchor_grade and predecessor == 22 or
-								predecessor == 17 or predecessor == 18 then
+								((predecessor == 17 or predecessor == 18) and
+									helpers.analytic_p7_support_ref(x, terrain_y, z) ~= nil) then
 							local opcode = surface_kind == 1 and 4 or
 								(surface_kind == 2 and 3 or 1)
 							write_intent(x, terrain_y, z,

@@ -228,10 +228,11 @@ data.water = {
 	MEANDER_P = 5.5, MEANDER_A = 1.8, MEANDER_MAX = 36,
 	-- Water width target (D55): W_MUL x the course width before its spring
 	-- taper, varied by two noise octaves (W_NOISE at period W_P, W_NOISE2 at
-	-- W_P2), at least W_MIN, at most W_MAX; springs grow from W_MIN over
-	-- W_TAPER nodes; sea mouths flare
+	-- W_P2), at least W_MIN, at most W_MAX; springs start as a brook W_SPRING
+	-- wide and grow to it over W_TAPER nodes; sea mouths flare
 	W_MUL = 1.6, W_MIN = 7.5, W_MAX = 30, W_NOISE = 0.3, W_P = 260,
 	W_NOISE2 = 0.18, W_P2 = 90, W_TAPER = 160, MOUTH_FLARE = 0.5,
+	W_SPRING = 3,
 	-- a spring's trough continues upstream along the drainage as a dry gully
 	-- of up to GULLY_LEN nodes, its half-width falling from GULLY_A0 at the
 	-- spring to GULLY_A1 at the tip and its incision fading out (D55)
