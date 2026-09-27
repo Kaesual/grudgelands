@@ -723,6 +723,10 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	function module.capital_stats()
 		return capital_stats
 	end
+	-- The protected cities (plan D76): {anchor id -> capital_protection shape}.
+	function module.capital_protection()
+		return protection_holder.shapes
+	end
 	-- Main's layout build CPU seconds {water, roads, capitals}; nil when the
 	-- layout texts were handed in.
 	function module.layout_build_seconds()

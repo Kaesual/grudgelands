@@ -408,15 +408,19 @@ return function(zone_field)
 			if type(CAPITAL_BOUND_WIDTH) ~= "number" or CAPITAL_BOUND_WIDTH % 2 ~= 0 then
 				fail("capital city bound differs")
 			end
-			-- Membership of a capital's protected city (plan D76).
-			local function capital_city_member(anchor_id, x, z)
+			-- Membership of a capital's protected city (plan D76): the shape's
+			-- member function, looked up once the layouts are installed.
+			local function capital_city_function(anchor_id)
 				local shapes = capital_protection and capital_protection.shapes
 				if not shapes then
 					fail("capital protection asked before the capital layouts were planned")
 				end
 				local city = shapes[anchor_id]
 				if not city then fail("capital protection missing: " .. tostring(anchor_id)) end
-				return city.member(x, z)
+				return city.member
+			end
+			local function capital_city_member(anchor_id, x, z)
+				return capital_city_function(anchor_id)(x, z)
 			end
 			local profile_by_id = {}
 			for _, row in ipairs(source.anchor_profiles) do profile_by_id[row.id] = row end
@@ -574,7 +578,12 @@ return function(zone_field)
 				elseif kind == "polygon" then
 					return expanded_polygon_member(x, z, shape.polygon, shape.expansion)
 				elseif kind == "capital_city" then
-					return capital_city_member(shape.anchor_id, x, z)
+					local member = shape.member
+					if not member then
+						member = capital_city_function(shape.anchor_id)
+						shape.member = member
+					end
+					return member(x, z)
 				end
 				return false
 			end
@@ -765,6 +774,11 @@ return function(zone_field)
 			-- hard row for that capital asks this.
 			function session.capital_protected_at(anchor_id, x, z)
 				return capital_city_member(anchor_id, x, z)
+			end
+			-- The member function itself (x, z -> bool), for callers that ask
+			-- it in a hot path.
+			function session.capital_protection_member(anchor_id)
+				return capital_city_function(anchor_id)
 			end
 
 			function session.selected_anchor_2d(zone_id, slot_id)

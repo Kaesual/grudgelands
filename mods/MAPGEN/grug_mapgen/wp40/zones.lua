@@ -424,7 +424,7 @@ local function zones_factory(dependencies)
 				type(horizontal.neighbors) ~= "function" or
 				type(horizontal.housing_eligible_at) ~= "function" or
 				type(horizontal.static_exclusion_values_at) ~= "function" or
-				type(horizontal.capital_protected_at) ~= "function" or
+				type(horizontal.capital_protection_member) ~= "function" or
 				type(horizontal.housing_mask_id_at) ~= "function" then
 			fail("horizontal session seam differs")
 		end
@@ -781,7 +781,12 @@ local function zones_factory(dependencies)
 			elseif row.shape == "exact_column" then
 				return x == row.center.x and z == row.center.z
 			elseif row.shape == "capital_city_outline" then
-				return horizontal.capital_protected_at(row.anchor_id, x, z)
+				local member = row.member
+				if not member then
+					member = horizontal.capital_protection_member(row.anchor_id)
+					row.member = member
+				end
+				return member(x, z)
 			end
 			fail("unknown hard footprint at query")
 		end

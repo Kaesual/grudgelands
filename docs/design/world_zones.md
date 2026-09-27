@@ -1260,10 +1260,11 @@ one-cell settlement checks are unchanged.
   each capital before the capital planner runs (the planner lays the city out
   on this calm ground). The calm bowl is round and centred on the civic core:
   no fine detail out to 200 nodes, damping below 0.1 to about 255–265,
-  natural relief and vegetation again by about 400–580 along an irregular,
-  noise-varied edge (no straight edge, no cliff ring). Over 48 seeds the
+  full natural relief again by about 400–580 along an irregular,
+  noise-varied edge (no straight edge, no cliff ring); trees and ground cover
+  return right beyond the protected band (first bullet). Over 48 seeds the
   planned wall reached at most 250 nodes from the anchor (95 % of the outline
-  within 225), so every layout stands on calm ground. Only the civic core is
+  within 215), so every layout stands on calm ground. Only the civic core is
   flat; the ground around it keeps long-wave hills and hollows of limited
   height (§7.6). Each capital's target ground height sits well below its
   region's clouds (§7.6).

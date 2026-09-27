@@ -820,6 +820,36 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   before/after on three seeds, planner results unchanged: required plots,
   0 plots in water, 0 grade violations), then integrate with the protection
   consumers; images for the user.
+- **D76 as built (lane `worktree-agent-a226fe183a93176d1`):** the flat, bare
+  ring had two causes: the terrain field's capital bowl (`terrain_field.lua`
+  damping, calm to 260 and faded out by 520–750; the 40-node collar only
+  shapes the core's edge) and the claim exclusions — trees refused in the
+  532 hard square, ground cover and gathering refused in the whole 704-node
+  anchor-blend square. Now the bowl is calm to 200 and faded out by 400
+  (+ up to 45 % edge noise), centred on the civic core; damping below 0.1 to
+  256–266 (was 304–352). A capital's hard protection and its claim envelope
+  are one shape, the protected city (`wp40/capital_protection.lua`): inside
+  the planned wall line (open capitals: the same outline under their belt),
+  the civic lake where the outline crosses it, plus 6 (edge reach) + 12 (band)
+  nodes; integer column intervals per row, built from the capital layout text
+  in main and emerge (~0.04 s for six), handed to every horizontal session
+  through a holder; the 532 square stays only as the index box and zone-field
+  keypoint (keypoints identical). Every protection consumer answers from the
+  zone authority or the static exclusions, so none needed its own change;
+  comments/docs updated. Connectors search up to 16× (was 4×). Offline over
+  48 seeds × 6 capitals (`~/projects/grudgelands-orchestration/r22/d76/`):
+  required plots 288/288, 0 plots in water, 0 connector failures (main: 1),
+  wall ≤ 250 from the anchor (95 % ≤ 215), calm margin beyond the farthest
+  wall point 7–100 nodes (mean 51); protected area 122–156 k m² per capital
+  (was 283 k); land refusing trees within 448 nodes ~110 k m² (was ~265 k),
+  ground cover ~115 k m² (was ~460 k). Layouts move (terrain changed): 94 % of
+  plots at other positions, placed plots per capital unchanged on average.
+  Street grade steps (> ½ between adjacent road columns) exist on main too
+  (54 in 9 of 288 plans) and now 85 in 15, all at connector/street contacts
+  near the gates. Variant 210/480 hit one required-plot failure (Kezamba,
+  seed 2024), which shows the pinned-lake placement is layout-fragile, not
+  plateau-size-bound. Open: grade steps at connector junctions (road module);
+  protection beyond a wall crossing a river is band only.
 - **Collected items open from the lanes (Phase 6):** two reverse river
   confluences (tributary lower than its parent, contained); the Dur Brannoc
   connector ford step (accepted; road-module bank-seal clamp with the city

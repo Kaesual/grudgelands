@@ -156,14 +156,38 @@ function M.build(layout, lake)
 	local shape = {anchor = layout.anchor, rows = rows, bounds = {
 		min_x = AX + bounds.min_x, max_x = AX + bounds.max_x,
 		min_z = AZ + bounds.min_z, max_z = AZ + bounds.max_z}}
+	-- The query form: per row (array index from 1) its first interval in two
+	-- flat arrays, the rare further intervals in a side table; nearly every
+	-- row of a round city is one interval.
+	local Z0 = AZ + bounds.min_z - 1
+	local LO, HI, MORE = {}, {}, {}
+	for k = 1, bounds.max_z - bounds.min_z + 1 do
+		local row = rows[bounds.min_z + k - 1]
+		if row then
+			LO[k], HI[k] = row[1], row[2]
+			if #row > 2 then
+				local more = {}
+				for i = 3, #row do more[i - 2] = row[i] end
+				MORE[k] = more
+			end
+		else
+			-- an empty row inside the span (never for one city): no member
+			LO[k], HI[k] = 1, 0
+		end
+	end
 	-- world columns
 	function shape.member(x, z)
-		local row = rows[z - AZ]
-		if not row then return false end
+		local k = z - Z0
+		local lo = LO[k]
+		if not lo then return false end
 		local lx = x - AX
-		for i = 1, #row, 2 do
-			if lx < row[i] then return false end
-			if lx <= row[i + 1] then return true end
+		if lx < lo then return false end
+		if lx <= HI[k] then return true end
+		local more = MORE[k]
+		if not more then return false end
+		for i = 1, #more, 2 do
+			if lx < more[i] then return false end
+			if lx <= more[i + 1] then return true end
 		end
 		return false
 	end

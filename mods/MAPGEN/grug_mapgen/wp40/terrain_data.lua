@@ -75,9 +75,10 @@ data.params = {
 	-- its city on: fully calm to 200, the damping below 0.1 to about 255-265,
 	-- natural relief again by 400-580 along the noisy edge. It is centred on
 	-- the civic core (no domain-warp shift). Over 48 seeds the planner's wall
-	-- reached at most 250 from the anchor (95 % of rays within 225, mean 177),
-	-- plots at most 236: the city stands on calm ground with 5-30 nodes to
-	-- spare, and its protected band ends where the land starts to rise.
+	-- reached at most 250 from the anchor (95 % of the outline within 215,
+	-- mean 177), plots at most 234; the damping stays below 0.1 out to 256 or
+	-- more, 7 to about 100 nodes (mean 51) beyond each city's farthest wall
+	-- point, and the protected band ends where the land starts to rise.
 	-- Before D76 it was calm to 260 and faded out by 520-750 (the user found
 	-- the flat, bare ground outside the walls too large, 2026-09-27).
 	capital_r_in = 200, capital_r_out = 400, capital_resid = 0.08,
