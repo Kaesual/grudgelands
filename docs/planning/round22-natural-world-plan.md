@@ -827,14 +827,16 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   above a neighbour, and gravel scree at the foot of rises; no strata on those
   faces (dirt share of cliff side faces 36–76 % → ≤ 0.6 %); beach sand has no
   gravel speckles (the Phase 3b "sparse gravel" rule, own commit); reefs grow
-  in bays too, one cell in four, plus kelp meadows; the emergent jungle tree's
-  sunk roots may take the stone body (accepted 56 → 281 of ~850 candidates on
-  six jungle boxes); the stone golem row above y 300 uses chance 12000 (bare
+  in bays too, one cell in four, plus kelp meadows; every force-placed
+  decoration cell (trunks, stems, roots; Luanti's force_place) may take the
+  natural stone body below the soil, which lets the emergent jungle tree's sunk
+  roots place (accepted 56 → 281 of ~850 candidates on six jungle boxes); the stone golem row above y 300 uses chance 12000 (bare
   crags offer ~1.3× the hosts per area); crab chances 300 / 1100 from the
   measured near-water share (~18 %); the crab `near_water` scan costs 2–3 µs
   and stays. Planner column values identical; roads, graded pads and capitals
   unchanged except sand for speckles near water; ores in steep natural columns
-  relocate with their hosts. Chunk time about +3 % (±5 % noise, report).
+  relocate with their hosts. Chunk time about +7 % against main 9cf07071
+  (pairs 1.065 and 1.074, noise pair 1.031; report).
   High relief has no native caves above y ~160 (v7 carves only its own low
   terrain; air share 1.2 % below y 40, 0.1 % at 80–160, 0 above 240): not
   changed, options reported to the user.

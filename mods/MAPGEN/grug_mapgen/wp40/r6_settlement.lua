@@ -1504,6 +1504,8 @@ local function settlement_factory()
 		-- exact catalog, exclusion, hash, template and accepted-P7 authorities of
 		-- the writer, while replacing the native VM with Section 11.2's closed
 		-- stratum/surface/air population.  Only aggregate ledgers escape.
+		-- Evidence-only analytic mirror of the writer (not used in production);
+		-- it lacks the Round 22 Phase 6 ground-body rule for force-placed cells.
 		local function scan_horizontal_owner(owner_x, owner_z,
 				cultural_candidates, decoration_candidates)
 			integer(owner_x, "evidence owner x", -30912, 30927, "fail_ledger")
@@ -3093,18 +3095,20 @@ local function settlement_factory()
 											root_y + cell_record.y, root_z + cell_record.z)
 										local target_cid = contract.content_cids[cell_record.content_ref]
 										local class_id = classify(final_data[index], final_param2[index])
-										-- A force-placed cell may also take the natural ground
-										-- body under the surface skin (untouched native rock,
-										-- the planned terrain fill, strata): the sunk roots of
-										-- the emergent jungle tree (Round 22 Phase 6).
+										-- Every force-placed decoration cell (tree trunks and
+										-- roots, bush stems, the papyrus dirt, the sunk roots of
+										-- the emergent jungle tree) may replace the surface skin
+										-- (opcodes 1-4) and, since Round 22 Phase 6, also the
+										-- natural ground body below it: untouched native rock,
+										-- ore or stratum, or the planned terrain fill (R5 27).
+										-- That is Luanti's own force_place meaning.
 										local opcode = intent_opcode[index]
 										local ground_body = cell_record.force_place and
-											helpers.ground_body_class(class_id) and
-											(opcode == 2 or opcode == 0 and
-												(final_data[index] == original_data[index] or
-													helpers.r5_opcode_at(plan, column_index(
-														root_x + cell_record.x, root_z + cell_record.z),
-														root_y + cell_record.y) == 27))
+											opcode == 0 and helpers.ground_body_class(class_id) and
+											(final_data[index] == original_data[index] or
+												helpers.r5_opcode_at(plan, column_index(
+													root_x + cell_record.x, root_z + cell_record.z),
+													root_y + cell_record.y) == 27)
 										if final_data[index] ~= target_cid and class_id ~= CLASS_AIR and
 												class_id ~= CLASS_NATURAL_VEGETATION and not ground_body and
 												not (cell_record.force_place and opcode >= 1 and

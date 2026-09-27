@@ -184,8 +184,9 @@ grug_mobs.register_mob("grug_mobs:stone_golem", stone_golem)
 -- make in zombie.lua): `default:stone` between y 0 and 600 is not "the whole
 -- world". mobs:spawn defaults the ABM's neighbour list to {"air"}
 -- (api.lua:4498-4510), so only stone with air beside it counts — on the surface
--- that is exposed bare rock, which the crags/badlands cuboids produce in
--- patches and the rest of the world barely at all. On top of that this row is
+-- that is exposed bare rock: crag and badlands outcrops, rocky shores and,
+-- since Round 22 Phase 6, the rock faces of all steep natural ground (the
+-- zone gate below still keeps the golem to its own ring). On top of that this row is
 -- interval 30 / chance 9000 (the rarest in the roster) and gated to the outer
 -- ring and one continent, and the check order in api.lua's spawn_action spends
 -- the cheap tests first: max_per_block, mob_active_limit, then our arithmetic
