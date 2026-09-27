@@ -1192,6 +1192,19 @@ function M.config(prepared, content, raw_sha256)
 			written = 0, build_calls = 0, release_calls = 0,
 			overlay_calls = 0}
 
+		-- Y CULLING of the plot collars and the city edge. Both are pure
+		-- functions of a column's x and z (its final ground, water and road
+		-- surface) and write at heights that follow that ground, so which
+		-- chunks of a vertical stack they reach is only known after one pass.
+		-- The first chunk of a FOOTPRINT (the owner's x/z rectangle, the same
+		-- for every chunk of the stack) runs them in full and records the y
+		-- range of everything they would write, inside its owner or not; a
+		-- later chunk of that footprint whose y range misses the recorded one
+		-- skips both, since each of those writes would fall outside its owner.
+		-- Keyed by footprint, bounded by the few dozen footprints over the
+		-- capital's reserved square.
+		local write_span = {}
+
 		-- Per-session state of every blueprint: the world box it occupies, the
 		-- cells with their content refs (nil while released) and, for a city
 		-- edge, its geometry index.
@@ -1400,6 +1413,22 @@ function M.config(prepared, content, raw_sha256)
 			-- The plots' collars and approaches precede every plot and the
 			-- edge. Work is clipped to this owner; neighbouring chunks ask the
 			-- same pure answers.
+			local footprint = context.min_x .. ":" .. context.min_z .. ":" ..
+				context.max_x .. ":" .. context.max_z
+			local span = write_span[footprint]
+			local edge_work = span == nil or (span.low ~= nil and
+				span.low <= context.max_y and span.high >= context.min_y)
+			local low, high
+			local function reach(y)
+				if low == nil or y < low then low = y end
+				if high == nil or y > high then high = y end
+			end
+			-- the collars lie in the reserved square (|dx|, |dz| < 266), the
+			-- civic core excepted
+			local collar_work = edge_work and
+				context.max_x > anchor.x - 266 and context.min_x < anchor.x + 266 and
+				context.max_z > anchor.z - 266 and context.min_z < anchor.z + 266
+			local recorded = false
 			local fittings = prepare_approaches()
 			local fit_palette = approach_palettes.new(profile.race)
 			local ground_ref, air_ref = refs[fit_palette.node("ground")], refs.air
@@ -1408,13 +1437,15 @@ function M.config(prepared, content, raw_sha256)
 			local step_ref = refs[fit_palette.maybe("castle_wall_stair") or fit_palette.node("roof_stair")]
 			local function fit_write(x, y, z, ref, face)
 				if not ref then fail("plot approach material is outside settlement palette") end
+				reach(y)
 				if context.inside_owner(x, y, z) then
 					local cid, param2 = content.resolve(ref, face or 0)
 					context.write_hearthpine(x, y, z, cid, param2, ref, 1)
 					written = written + 1
 				end
 			end
-			if #fittings.plots > 0 then
+			if collar_work and #fittings.plots > 0 then
+				recorded = true
 				for z = context.min_z, context.max_z do
 					for x = context.min_x, context.max_x do
 						local lx, lz = x - anchor.x, z - anchor.z
@@ -1481,7 +1512,8 @@ function M.config(prepared, content, raw_sha256)
 			end
 			for index = 1, #states do
 				local state = states[index]
-				if state.active and state.descriptor.kind == "overlay" then
+				if edge_work and state.active and state.descriptor.kind == "overlay" then
+					recorded = true
 					metrics.overlay_calls = metrics.overlay_calls + 1
 					local cells = state.edge.cells({min_x = context.min_x,
 						max_x = context.max_x, min_z = context.min_z,
@@ -1493,6 +1525,7 @@ function M.config(prepared, content, raw_sha256)
 							fail("city edge name outside the overlay palette: " ..
 								tostring(cell.name))
 						end
+						reach(cell.y)
 						if context.inside_owner(cell.x, cell.y, cell.z) then
 							local cid, param2 = content.resolve(ref, cell.param2)
 							context.write_hearthpine(cell.x, cell.y, cell.z, cid, param2, ref, 1)
@@ -1500,6 +1533,11 @@ function M.config(prepared, content, raw_sha256)
 						end
 					end
 				end
+			end
+			-- the first full pass over this footprint records its write range
+			-- (low nil: nothing to write here at any height)
+			if recorded and span == nil then
+				write_span[footprint] = {low = low, high = high}
 			end
 			if context.call_mode == "replay_fixture" then
 				metrics.replay_calls = metrics.replay_calls + 1
