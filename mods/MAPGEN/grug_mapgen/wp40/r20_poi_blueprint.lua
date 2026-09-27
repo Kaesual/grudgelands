@@ -146,8 +146,9 @@ return function(options, profile)
 		local previous
 		for i=0,steps do
 			local t=i/steps
-			local x=math.floor((1-t)^2*ax+2*(1-t)*t*mx+t^2*bx+0.5)
-			local z=math.floor((1-t)^2*az+2*(1-t)*t*mz+t^2*bz+0.5)
+			local s=1-t
+			local x=math.floor(s*s*ax+2*(1-t)*t*mx+t*t*bx+0.5)
+			local z=math.floor(s*s*az+2*(1-t)*t*mz+t*t*bz+0.5)
 			-- Broken paving is intentional grass, not a missing walkable floor.
 			if not broken or (x+2*z+spec.number)%5~=0 then paving(x,z) end
 			if previous and previous.x~=x and previous.z~=z and not broken then

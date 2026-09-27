@@ -58,10 +58,11 @@ budget, and stop conditions.
    `tools/sync_to_luanti.sh` from a branch unless the
    user asked to runtime-test that branch — the sync overwrites the
    shared Luanti install.
-4. **Self-check** before review: run the five grep sweeps from
+4. **Self-check** before review: run `bash tools/check_lua.sh <changed
+   files>` — parser, `SETGLOBAL` listing (inspect it) and all six sweeps from
    "Verifying a change" in `docs/research/luanti-lua.md` (they cover the
-   do-not-write list; plain-Lua-5.1 fallback is a HARD requirement),
-   inspect `SETGLOBAL` for every changed mod file, and use LuaJIT for
+   do-not-write list; plain-Lua-5.1 fallback is a HARD requirement; sweep 6
+   rejects `x ^ 2` / `math.pow` in `mods/MAPGEN`), and use LuaJIT for
    intermediate executable checks. Run no PUC runtime at an intermediate
    milestone. On frozen final bytes, run one compact
    PUC-5.1 micro-KAT process and the same fixture once under LuaJIT, requiring

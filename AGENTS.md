@@ -229,14 +229,22 @@ current state). It is **derived, never authoritative**:
   - `unpack` (not `table.unpack`); `table.pack`/`rawlen`/`__len`/`__pairs`
     are unsafe even on LuaJIT (need a distro compat flag) — avoid.
   - Numbers are C doubles, no integer type; safe integer range ±(2^53−1).
+  - **Write `x * x`, never `x ^ 2`, in mapgen and other deterministic code:**
+    LuaJIT's JIT turns `x ^ 2` into `x * x`, its interpreter calls `pow()`,
+    and the last bits differ, so results depend on what ran compiled.
+    `tools/check_lua.sh` fails on it under `mods/MAPGEN` (sweep 6); details in
+    docs/research/luanti-lua.md "Floating point: LuaJIT interpreter vs
+    compiled code".
   - Vector `==` only works if BOTH operands carry the vector metatable —
     compare positions with `vector.equals`, never `==`.
   - Backported from 5.4 (engine-injected, both builds):
     `string.pack`/`unpack`/`packsize`.
 - **Interpreter/test layers are binding:** on every Lua change run
-  `tools/bin/luac51 -p`, the `SETGLOBAL` check and all five sweeps in
-  `docs/research/luanti-lua.md` (`bash tools/check_lua.sh <files>` runs all three). Two things about those sweeps are easy to
-  get wrong. They are scoped to `mods/*/grug_*`, so Lua under `tools/`
+  `bash tools/check_lua.sh <files>` — it runs the `tools/bin/luac51 -p`
+  parser, the `SETGLOBAL` check and all six sweeps of
+  `docs/research/luanti-lua.md` (sweeps 1–5 grep; sweep 6, `x ^ 2` /
+  `math.pow`, only on `mods/MAPGEN` files). Two things about those sweeps are
+  easy to get wrong. They are scoped to `mods/*/grug_*`, so Lua under `tools/`
   is **not** covered by them and needs the check run explicitly. And the
   harness scripts that run them require **ripgrep** (`dnf install ripgrep`):
   until 2026-08-15 a missing `rg` made nine of them report success without

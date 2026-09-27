@@ -236,6 +236,57 @@ fresh global table and copies only whitelisted names into it
   works from the mod's main scope at init time (`doc/lua_api.md:8292-8300`).
   **We never use it.**
 
+## Floating point: LuaJIT interpreter vs compiled code
+
+LuaJIT interprets a function until it is hot, then runs compiled traces.
+*Which* code runs compiled depends on history (hot counters, trace aborts,
+blacklisting, flushes), so it differs between the main and the emerge
+environment, between the engine and an offline tool (or a `-joff` run), and
+from boot to boot. Any operation whose bits differ between the two modes
+therefore makes a result depend on that history.
+
+Measured 2026-09-27 on the engine's LuaJIT (OpenResty luajit2
+2.1.1784272936, main and emerge environments) and on Fedora's
+2.1.1767980792 (same behaviour); probes and IR dumps in
+`grudgelands-orchestration/r22/pow-exact/`:
+
+- **`x ^ 2` differs.** The JIT folds a constant exponent 2 into `x * x`
+  (IR `MUL`); the interpreter calls libm `pow()`, which is not correctly
+  rounded for every input. The last bit differed for 154 of 400 k
+  non-quantized floats in the engine (608 of 400 k in the Fedora probe).
+  Integer and k/16-quantized bases are exact either way.
+- The same fold applies to everything the recorder sees as the constant 2:
+  `x ^ 2.0`, `x ^ (1 + 1)`, `math.pow(x, 2)`, and `x ^ K` where `K` is a
+  local or an immutable upvalue holding 2 (the recorder constifies it).
+- **Identical in both modes:** every other exponent (`^3`, `^4`, `^8`,
+  `^-1`, `^-2`, `^0.5`, `^1.4`, `^1.5` stay `pow()` calls in compiled code;
+  `^0` and `^1` fold to exact results), `x ^ k` with a run-time `k`, `exp`,
+  `log`, `sin`, `cos`, `atan2`, `fmod`, `%`, `sqrt`, `/`, and `min`/`max`
+  with ±0 and NaN. `a * b + c` stays identical only because LuaJIT 2.1 does
+  not fuse multiply-add unless FMA is enabled (`jit.opt.start("+fma")`) —
+  never enable it.
+
+Why it matters: main and emerge each build the same layouts, offline tools
+rebuild them, and a world must come out identical on every boot. A 1-ulp
+difference only changes a result at a tie, but mapgen is full of ties: an
+argmin or heap order, a `<=` threshold, a `floor()` at an integer. Before
+the fix 82 of 2.45 M road A* heap pops (seed 1) carried a different cost
+with the JIT on vs `-joff`; after replacing all 108 literal `^ 2` in
+`grug_mapgen` by multiplications, none did.
+
+**Rule:** in deterministic code (all of `mods/MAPGEN`, and anything else whose
+result must agree across processes), write `x * x`, never `x ^ 2` or
+`math.pow(x, 2)`; bind an expression base to a local first
+(`local dx = a - b` … `dx * dx`). Do not hide the 2 in a variable either.
+Other exponents are safe. `tools/check_lua.sh` enforces this for files under
+`mods/MAPGEN` (sweep 6): it reads the `luac51` bytecode listing and fails on
+a `POW` whose exponent is the constant 2 — as an RK operand or, in a
+function with more than 256 constants (or `local k = 2`), a register a
+`LOADK … ; 2` set earlier in the same function — and on any `math.pow`. Its
+limit: a value that is 2 only at run time (a parameter, a table field, a
+register set before a jump) is beyond a static check. This covers LuaJIT's two modes on one machine only;
+libm results (`pow`, `exp`, `sin`, ...) can still differ between platforms.
+
 ## Do-not-write checklist
 
 Every "write instead" below is plain 5.1 and runs on both builds.
@@ -267,6 +318,10 @@ Every "write instead" below is plain 5.1 and runs on both builds.
 11. No upvalue capture in `core.handle_async` functions; no `core.get_node`
     or player access in async/mapgen environments.
 12. Always `core.*`, never `minetest.*`.
+13. No `x ^ 2` / `math.pow(x, 2)` in mapgen or other deterministic code —
+    LuaJIT's interpreter and compiled code round it differently. Write
+    instead: `x * x` (see "Floating point: LuaJIT interpreter vs compiled
+    code"; checked by `tools/check_lua.sh` sweep 6).
 
 ## Verifying a change
 
@@ -330,6 +385,13 @@ Sweeps 1 and 4 also match prose in comments (`|` in a design-doc table row,
 C++ `Class::method` references) — read each hit, do not just count them.
 Zero hits outside comments is the passing state.
 
+`bash tools/check_lua.sh <files>` runs the parser, the `SETGLOBAL` listing
+and these five sweeps, plus **sweep 6** on files under `mods/MAPGEN`: a
+`POW` with the exponent 2 (constant operand, or a register loaded with 2)
+or a `math.pow` in the `luac51` bytecode listing (no comment or string
+matches) fails with the file and line — see "Floating point: LuaJIT
+interpreter vs compiled code".
+
 ### Interpreter and test strategy
 
 LuaJIT is the preferred interpreter for as much development and exhaustive
@@ -352,9 +414,11 @@ hardwired to PUC is a defect, not a conservative choice.
 
 Use these layers together, in this order:
 
-1. **Every Lua change:** run `tools/bin/luac51 -p`, inspect `SETGLOBAL` for
-   changed mod files, and run all five grep sweeps above. These checks are
-   mandatory even when every executable test uses LuaJIT.
+1. **Every Lua change:** run `bash tools/check_lua.sh <changed files>`: the
+   `luac51 -p` parser, the `SETGLOBAL` listing for changed mod files, the
+   five grep sweeps above and sweep 6 (`x ^ 2` / `math.pow` under
+   `mods/MAPGEN`). These checks are mandatory even when every executable
+   test uses LuaJIT.
 2. **Development and exhaustive checks:** run the complete applicable search,
    seed corpus, geometry scan or other expensive suite under LuaJIT whenever
    the harness supports selecting it.

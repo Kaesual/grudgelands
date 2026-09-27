@@ -1173,6 +1173,20 @@ from the lanes and reviews of this round:
   interpreter (`pow`) and compiled code (`x * x`), so A\* costs already
   depend on which code ran compiled (no text change seen); `floor_div` in
   `block_for` (~0.8 %) not changed. Evidence `r22/road-jit/`.
+- **As built (`x ^ 2` → `x * x`, JIT/interpreter bit identity):** LuaJIT's
+  JIT folds a constant exponent 2 into `x * x`, its interpreter calls libm
+  `pow()`; the last bit differs for ~0.04–0.15 % of inputs, so mapgen floats
+  depended on which code ran compiled. All 108 literal `^ 2` in
+  `grug_mapgen` (capital planner 40, road layout 35, water layout 19,
+  height 5, POI blueprint 4, terrain field 3, city edge 2) are
+  multiplications now; other exponents stay (the JIT keeps them as `pow()`).
+  `tools/check_lua.sh` sweep 6 fails on `x ^ 2` / `math.pow` under
+  `mods/MAPGEN`; rule and numbers in `docs/research/luanti-lua.md`
+  ("Floating point: LuaJIT interpreter vs compiled code"). Result: the A\*
+  pop sequence (state and cost bits, seed 1, 2.45 M pops) is identical with
+  the JIT on and off (main had 82 differing costs) and equal to main's
+  JIT-on sequence; layout texts on three seeds and the engine digest over 179
+  owners on two seeds are unchanged against main. Evidence `r22/pow-exact/`.
 
 ### Orchestration and compaction points
 

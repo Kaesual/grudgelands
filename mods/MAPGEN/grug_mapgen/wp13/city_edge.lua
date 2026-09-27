@@ -235,7 +235,7 @@ local function loader(directory)
 						for y = top + 1, top + 3 do put(y, "air") end
 						put(top, R.walk)
 					end
-					if r2 >= (TURRET - 1) ^ 2 then
+					if r2 >= (TURRET - 1) * (TURRET - 1) then
 						put(crown, R.face)
 						if (lx + lz) % 2 == 0 then put(crown + 1, R.face); put(crown + 2, R.cap) end
 					else
@@ -296,7 +296,7 @@ local function loader(directory)
 					if not d then return end
 					local top = walk_at(i, u)
 					local crown = top + 4
-					if r2 >= (TURRET - 1) ^ 2 then
+					if r2 >= (TURRET - 1) * (TURRET - 1) then
 						for y = ground - 1, crown do put(y, R.stake) end
 						if (lx + lz) % 2 == 0 then put(crown + 1, R.cap) end
 					else

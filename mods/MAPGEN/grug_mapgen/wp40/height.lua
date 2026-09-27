@@ -341,7 +341,8 @@ local function height_factory(dependencies)
 					if n > 0 then
 						local cx, cz, r = sx / n, sz / n, 0
 						for _, p in ipairs(pts) do
-							local d = math.sqrt((p[1] - cx) ^ 2 + (p[2] - cz) ^ 2)
+							local ex, ez = p[1] - cx, p[2] - cz
+							local d = math.sqrt(ex * ex + ez * ez)
 							if d > r then r = d end
 						end
 						k = {x = cx, z = cz, r = r + 8}
@@ -377,7 +378,8 @@ local function height_factory(dependencies)
 					local u = dx * l.ca + dz * l.sa
 					local v = -dx * l.sa + dz * l.ca
 					if u > l.L then u = u - l.L elseif u < -l.L then u = u + l.L else u = 0 end
-					if u * u + v * v <= (l.R + WP.marsh_pad) ^ 2 then return 0, 1 end
+					local reach = l.R + WP.marsh_pad
+					if u * u + v * v <= reach * reach then return 0, 1 end
 				end
 				local class, owner = column_class(x, z)
 				if class == LAND and owner and
@@ -875,7 +877,8 @@ local function height_factory(dependencies)
 			if not list then return nil end
 			for index = 1, #list do
 				local q = list[index]
-				if (x - q.x) ^ 2 + (z - q.z) ^ 2 <= q.r * q.r then return q end
+				local dx, dz = x - q.x, z - q.z
+				if dx * dx + dz * dz <= q.r * q.r then return q end
 			end
 			return nil
 		end
