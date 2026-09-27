@@ -1232,15 +1232,19 @@ local function height_factory(dependencies)
 		-- nodes outside the core changes by at most e - 1 (no cliff against
 		-- the core's edge).
 		local CORE_EASE = 16
-		-- True inside a capital's civic core square: the capital's streets end
-		-- at the core's edge (the core gate owns the passage), as network
-		-- roads end CORE_GAP outside a village's core.
+		-- True on a capital's civic core blueprint: the civic square and the
+		-- ring its core wall and gate piers stand on, one node beyond it on
+		-- every side (the blueprint's authorized footprint, +-49 around the
+		-- anchor, `r7_settlement.lua` BOUNDS.capital_core). The capital's
+		-- streets end there (the core gate owns the passage), as network roads
+		-- end CORE_GAP outside a village's core.
 		local function in_capital_core(x, z)
 			local candidates = bucket_at(grids.capital, x, z)
 			if not candidates then return false end
 			for index = 1, #candidates do
 				local fitting = candidates[index]
-				if in_half_open_square(x, z, fitting.center, fitting.profile.civic_width) then
+				local reach = fitting.profile.civic_width / 2 + 1
+				if abs(x - fitting.center.x) <= reach and abs(z - fitting.center.z) <= reach then
 					return true
 				end
 			end
