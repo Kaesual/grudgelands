@@ -1903,9 +1903,9 @@ local function height_factory(dependencies)
 			if not road_cache then return {} end
 			return road_cache.module.polylines(road_cache.module.deserialize(road_cache.text))
 		end
-		-- Main only: the built layout (statistics, showcase spots and the
-		-- point-to-point `connect` of the capital planner, plan §11); nil in
-		-- emerge.
+		-- Main only: the built network layout (statistics, showcase spots and
+		-- the capital planner's road ends and contact references, plan §11);
+		-- nil in emerge.
 		function session.road_layout()
 			return road_cache and road_cache.layout or nil
 		end

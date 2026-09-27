@@ -903,9 +903,12 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   profile DP (contacts; the kit gets the network's roads near a capital as
   fixed references, so streets and connectors meet them level); a second
   road from a start branches off the first road (an `a_parent` Y junction:
-  flat mouth, pinned branch); an infeasible profile is retried with
+  flat mouth, pinned branch); in the final profile passes only (network
+  final loop, `kit.finish`; a planner lane through such water is still
+  rejected on its provisional profile) an infeasible profile is retried with
   unbridgeable water costly (times 1 + depth below the surface) instead of
-  forbidden, kept only if it never sinks deeper than a ford; the profile
+  forbidden, kept only if it never lies more than one node below the water
+  (a ford's depth); the profile
   pays for lying below water just beyond its edges where the ground would be
   cut (sampled only near coarse-grid water). One surface per road, decks on
   pillars and the raster are unchanged; no rerouting. After: 419 pairs at 76
@@ -920,9 +923,12 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   water; three overpasses (a deck crossing another road 4+ higher). Planner
   quality unchanged: required plots 9/9 in all 288 plans, 0 plots in water,
   0 connector failures, plots placed identical; profile-infeasible streets
-  10 → 4. Network: roads, loops and trails identical (65 start branches);
-  free deck points +1.8 %, deep cut points −0.1 %; 14 % of road records
-  change (profiles; geometry only at start branches). Engine (2 seeds × 4
+  10 → 4. Network: roads, loops and trails identical (61 start branches
+  built); free deck points +1.8 %, deep cut points −0.1 %; 14 % of road
+  records change, mostly profiles; geometry changes at the 61 start
+  branches, the 51 trails that join one of them (their route and mouth
+  follow the branch) and one capital connector joining another connector
+  (seed 1234567, road 108). Engine (2 seeds × 4
   fixed windows): steps 74 / 85 → 41 / 0 (the 41: a ford with its bank
   guard, and two converging connectors), 0 holes, 0 floating slabs, engine
   walking heights equal the offline answer; lighting-check windows at three

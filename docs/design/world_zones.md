@@ -980,7 +980,10 @@ graph requirement may shape a zone, and nothing may require a graph to be
   mouths are flat. There are no stairs, also not on trails. The profile both
   cuts and fills and stays near the ground: no long ramps into flat land and
   no high fixed control points (junctions and start gates take their
-  ground's height).
+  ground's height). Where two roads' surfaces touch outside a junction mouth
+  (running alongside, a level crossing, a connector beside the road it
+  continues, a road's own legs), the later road meets the earlier one's
+  level, so the ½-node rule also holds across the contact.
 - **Cross-section (Round 22, D44, D67).** Uphill the terrain is cut to road
   level with a slope back of about 1:1 (steeper rock beyond 6 nodes); the cut
   slope keeps the terrain's own surface (grass, dirt, rock), and a low
@@ -1020,11 +1023,13 @@ graph requirement may shape a zone, and nothing may require a graph to be
   secondary (5 wide). See §7.5 for the corridor.
 - **Capitals (D59).** Roads end at the edge of a capital's reserved square
   (512 nodes); the capital planner places the gates and connects them to the
-  road ends with the same routing, profile and raster (a point-to-point route
-  of the road module). Until then the gates stand unconnected.
+  road ends with the same routing, profile and raster (the road module's
+  kit, joined to the road layout).
 - **Starts.** A start's road leaves its gate toward the own capital along a
   straight 32-node stretch beyond the town's 64-node gate line, level with
-  the start pad.
+  the start pad. A second road from the same start (a loop) branches off the
+  first road in a Y junction where it leaves that road's surface instead of
+  running on top of its gate stretch.
 - Retired: the 57-edge authoritative route graph, hub stations in every zone,
   star junctions, the shared junction grade solve and the capital ingress
   corridors.

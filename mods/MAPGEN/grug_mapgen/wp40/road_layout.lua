@@ -37,8 +37,9 @@
 --     (contacts, D49); a road stays at or above water just beyond its edges
 --     where it would otherwise be cut below it (the raster's bank guard
 --     would leave a step); a second road from one start branches off the
---     first; an infeasible profile is retried with unbridgeable water costly
---     instead of forbidden, so its pinned ends hold. The uphill edge's cut costs more on steep side slopes, so a
+--     first; in the final profile pass an infeasible profile is retried with
+--     unbridgeable water costly instead of forbidden, so its pinned ends
+--     hold. The uphill edge's cut costs more on steep side slopes, so a
 --     half gallery beats a deep cut (D67). Free decks (no ground on either
 --     side, outside a short valley crossing) are a last resort (D68); the
 --     audit only classifies them.
@@ -669,7 +670,12 @@ local function new_module(P)
 			return Fp, Fc
 		end
 		-- `road.tgt` (optional): contact targets {[i] = level in 1/Q} from
-		-- `contact_targets`; `soft`: the retry of an infeasible profile
+		-- `contact_targets`; `soft`: the retry of an infeasible profile, only
+		-- while `soft_ok` (the final profile passes: the network's final loop
+		-- and `kit.finish`). A provisional solve keeps unbridgeable water
+		-- forbidden, so a planner's lane through such water still comes out
+		-- infeasible and is rejected.
+		local soft_ok = false
 		local function solve(road, soft)
 			local X, Z, n, hw = road.X, road.Z, #road.X, road.hw
 			local tgt = road.tgt
@@ -738,7 +744,7 @@ local function new_module(P)
 			if core_pins and road.b_core and road.b_y and not road.parent then
 				pin_end = floor(road.b_y * Q + 0.5)
 			end
-			-- a point-to-point road may pin its ends (a gate's ground)
+			-- a kit street may pin its ends (a gate floor, a road end's level)
 			if road.pin_a then pin_start = floor(road.pin_a * Q + 0.5) end
 			if road.pin_b and not road.parent then pin_end = floor(road.pin_b * Q + 0.5) end
 			-- Kit streets (capital planner): a T junction at the first point
@@ -981,16 +987,20 @@ local function new_module(P)
 			end
 			local RQ, Rv = {}, {}
 			if bestv and soft then
-				-- a soft profile that sinks deeper than a ford anywhere is no
+				-- a soft profile that sinks deeper than a ford anywhere (a
+				-- ford's road lies at most one node below the surface) is no
 				-- road either: the ground fallback below takes over
 				local v = bestv
 				for i = n, 1, -1 do
 					local wy = WY[i][1]
-					if wy and wy > T[i][1] and v / Q < wy - P.FORD_DEPTH then bestv = nil break end
+					if wy and wy > T[i][1] and v / Q < wy - 1 then bestv = nil break end
 					if i > 1 then v = back[i][v - lo[i] + 1] end
 				end
 			end
-			if not bestv and not soft then
+			-- Retry order: first the soft retry (final passes only), then, if
+			-- that fails too, the core-pin drop (which keeps `soft`), then
+			-- the ground fallback.
+			if not bestv and not soft and soft_ok then
 				-- water the pinned profile can neither bridge nor ford (e.g. a
 				-- shallow river right beside a pinned end): solve again with
 				-- such water costly instead of forbidden, so the ends hold
@@ -1721,7 +1731,6 @@ local function new_module(P)
 						X[i], Z[i] = floor(pt[1] * LAT + 0.5) / LAT, floor(pt[2] * LAT + 0.5) / LAT
 					end
 					road.a_parent, road.a_parent_idx = first.id, pidx
-					stats.start_branches = (stats.start_branches or 0) + 1
 				end
 			end
 			-- a trimmed end is pinned to the core's fitted height, so the road
@@ -1749,6 +1758,7 @@ local function new_module(P)
 				local parent = roads[road.a_parent]
 				parent.junctions[#parent.junctions + 1] = {idx = road.a_parent_idx, road = road.id,
 					side = "a"}
+				stats.start_branches = (stats.start_branches or 0) + 1
 			end
 			-- capital ends
 			for _, nd in ipairs({a, b}) do
@@ -1958,7 +1968,7 @@ local function new_module(P)
 			-- final profiles in build order (parents first), classes and audit
 			function kit.finish()
 				local t4 = os.clock()
-				stats.infeasible, stats.infeasible_ids = nil, nil
+				stats.infeasible, stats.infeasible_ids, stats.soft_wet = nil, nil, nil
 				stats.contact_roads, stats.contact_points = nil, nil
 				stats.self_contact_roads, stats.self_contact_points = nil, nil
 				for _, road in ipairs(roads) do road.dead_at = nil end
@@ -1969,7 +1979,9 @@ local function new_module(P)
 				local base = #list
 				for _, road in ipairs(roads) do list[#list + 1] = road; rank[#list] = road.id end
 				local cindex = contact_index(list, rank)
+				soft_ok = true
 				for k, road in ipairs(roads) do solve_contacts(road, cindex, base + k, true) end
+				soft_ok = false
 				for _, road in ipairs(roads) do classify(road); audit(road) end
 				stats.t_profile = (stats.t_profile or 0) + os.clock() - t4
 				stats.samples = nsample
@@ -2132,6 +2144,8 @@ local function new_module(P)
 		local rank = {}
 		for k, road in ipairs(roads) do rank[k] = road.id end
 		local cindex = contact_index(roads, rank)
+		stats.soft_wet = nil
+		soft_ok = true
 		for k, road in ipairs(roads) do
 			local pin_now = false
 			if road.parent then
@@ -2139,8 +2153,10 @@ local function new_module(P)
 				pin_now = parent.RQ and parent.RQ[road.parent_idx] or false
 			end
 			solve_contacts(road, cindex, k, not road.RQ or road.solved_junctions ~= #road.junctions or
-				(road.parent and road.solved_parent_pin ~= pin_now) or road.a_parent ~= nil)
+				(road.parent and road.solved_parent_pin ~= pin_now) or road.a_parent ~= nil or
+				road.cost == INF)
 		end
+		soft_ok = false
 		stats.t_profile = os.clock() - T4
 		stats.samples = nsample
 
