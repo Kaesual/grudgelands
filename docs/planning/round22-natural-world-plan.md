@@ -1267,6 +1267,13 @@ from the lanes and reviews of this round:
   on three seeds, engine digest over 179 owners equal to main on two seeds,
   headless boot clean. Evidence `r22/cleanup-final/`.
 
+- **PUC crash smoke test (D1, 2026-09-27, main 40289ff4): passed.** `luac51 -p` over all 144
+  mapgen files; under plain Lua 5.1 the real `r7_runtime` main factory built water, roads and
+  capitals for seed 42 (108.5 s CPU, factor 6.7 vs LuaJIT, 1.4 GB peak) and 8,402 column samples
+  ran through the height/planner path; no error. Layout texts and samples byte-identical to
+  LuaJIT. The chunk writer was not run (engine-only). Harness copies used a pure-Lua `bit`
+  stand-in and `sha256sum`. Evidence `~/projects/grudgelands-orchestration/r22/puc-smoke/`.
+
 ### Orchestration and compaction points
 
 The coordinator cuts the remaining work into packages that belong together
