@@ -75,25 +75,39 @@ M.BOUNDS = {
 	start = {min = {x = -63, y = -2, z = -63}, max = {x = 63, y = 24, z = 63}},
 	capital_core = {min = {x = -49, y = -2, z = -49}, max = {x = 49, y = 40, z = 49}},
 	capital_plot = {min = {x = -15, y = -6, z = -15}, max = {x = 15, y = 24, z = 15}},
-	-- The city edge (walls, gatehouses, turrets, the open capitals' planted
-	-- belt) is the one blueprint that legitimately leaves the civic core: it
-	-- stands on the capital planner's outline. Its authorized volume is the
-	-- capital's reserved square -- 266 either side of the anchor, the
-	-- `bound_width` of `source/simple_map.lua`'s `hard_capital_city_v1`. The
-	-- capital's protection (plan D76, `capital_protection.lua`) is built from
-	-- the same wall line with the edge's reach and a band beyond it, so the
-	-- edge always lies inside the protected city, and the city inside this
-	-- square. (The streets and connectors are roads, `road_layout.lua`, not
-	-- blueprints.)
-	-- Only its x and z are anchor-relative; its y is absolute, the
-	-- protection's own (y_min -700, upward unbounded), and the edge publishes
-	-- its actual absolute y range (`r7_capital_blueprint.lua`).
-	capital_overlay = {min = {x = -266, y = -700, z = -266},
-		max = {x = 266, y = 31000, z = 266}},
 	-- Authored POIs stay inside the exact half-open flat terrain cores.
 	poi = {min = {x = -12, y = 0, z = -12}, max = {x = 11, y = 8, z = 11}},
 	poi_outpost = {min = {x = -8, y = 0, z = -8}, max = {x = 7, y = 8, z = 7}},
 }
+
+-- The city edge (walls, gatehouses, turrets, the open capitals' planted
+-- belt) is the one blueprint that legitimately leaves the civic core: it
+-- stands on the capital planner's outline. (The streets and connectors are
+-- roads, `road_layout.lua`, not blueprints.) It has no cells, so its
+-- authorized volume is not an anchor-relative box like the entries of
+-- `M.BOUNDS`: it has two parts in two different frames, kept apart.
+M.CAPITAL_OVERLAY = {
+	-- HORIZONTAL, anchor-relative x and z: the capital's reserved square, 266
+	-- either side of the anchor, the `bound_width` of `source/simple_map.lua`'s
+	-- `hard_capital_city_v1`. The capital's protection (plan D76,
+	-- `capital_protection.lua`) is built from the same wall line with the
+	-- edge's reach and a band beyond it, so the edge always lies inside the
+	-- protected city, and the city inside this square.
+	square = {min_x = -266, max_x = 266, min_z = -266, max_z = 266},
+	-- VERTICAL, absolute world y: the protection's own (y_min -700, upward
+	-- unbounded). The edge publishes its actual absolute y range
+	-- (`r7_capital_blueprint.lua`) and is held to this.
+	world_y = {min = -700, max = 31000},
+}
+
+-- The box an overlay's identity publishes and the manifest checks it
+-- against (`r7_manifest.lua`), in the identity's own mixed frame: x and z
+-- from the anchor-relative square, y from the absolute world range.
+local function overlay_identity_envelope()
+	local square, world_y = M.CAPITAL_OVERLAY.square, M.CAPITAL_OVERLAY.world_y
+	return {min = {x = square.min_x, y = world_y.min, z = square.min_z},
+		max = {x = square.max_x, y = world_y.max, z = square.max_z}}
+end
 
 -- How many consecutive plans may miss a lazy settlement before its cells are
 -- released. A mapchunk is 80 nodes, so 64 plans is the emerge thread walking
@@ -624,8 +638,9 @@ local function prepare_city(fail, descriptor, overlay)
 		integer_or_fail(fail, reach[key], "city edge " .. key, -1023, 1023)
 	end
 	-- the city stays inside the capital's reserved square (design question 4)
-	if reach.min_x < descriptor.bounds.min.x or reach.max_x > descriptor.bounds.max.x or
-			reach.min_z < descriptor.bounds.min.z or reach.max_z > descriptor.bounds.max.z then
+	local square = M.CAPITAL_OVERLAY.square
+	if reach.min_x < square.min_x or reach.max_x > square.max_x or
+			reach.min_z < square.min_z or reach.max_z > square.max_z then
 		fail(descriptor.id ..
 			": the city edge leaves the capital's 532-node reserved square")
 	end
@@ -642,10 +657,9 @@ local function prepare_city(fail, descriptor, overlay)
 	end
 	-- the edge's own absolute y range (walk, gatehouses, piers), published in
 	-- place of the anchor-relative y of a cell blueprint
-	integer_or_fail(fail, overlay.y_min, "city edge y_min", descriptor.bounds.min.y,
-		descriptor.bounds.max.y)
-	integer_or_fail(fail, overlay.y_max, "city edge y_max", overlay.y_min,
-		descriptor.bounds.max.y)
+	local world_y = M.CAPITAL_OVERLAY.world_y
+	integer_or_fail(fail, overlay.y_min, "city edge y_min", world_y.min, world_y.max)
+	integer_or_fail(fail, overlay.y_max, "city edge y_max", overlay.y_min, world_y.max)
 	local bounds = {min = {x = reach.min_x, y = overlay.y_min, z = reach.min_z},
 		max = {x = reach.max_x, y = overlay.y_max, z = reach.max_z}}
 	bytes[#bytes + 1] = table.concat({"reach", bounds.min.x, bounds.min.y,
@@ -736,7 +750,7 @@ function M.descriptors(profile, source)
 			build = plot.build})
 	end
 	add({id = "city", prefix = profile.key .. "_city", kind = "overlay",
-		bounds = M.BOUNDS.capital_overlay, blueprint_schema = source.overlay.schema,
+		bounds = overlay_identity_envelope(), blueprint_schema = source.overlay.schema,
 		identity_schema = identity_schema_of(fail, source.overlay.schema),
 		overlay = source.overlay})
 	return list
@@ -1178,6 +1192,19 @@ function M.config(prepared, content, raw_sha256)
 			written = 0, build_calls = 0, release_calls = 0,
 			overlay_calls = 0}
 
+		-- Y CULLING of the plot collars and the city edge. Both are pure
+		-- functions of a column's x and z (its final ground, water and road
+		-- surface) and write at heights that follow that ground, so which
+		-- chunks of a vertical stack they reach is only known after one pass.
+		-- The first chunk of a FOOTPRINT (the owner's x/z rectangle, the same
+		-- for every chunk of the stack) runs them in full and records the y
+		-- range of everything they would write, inside its owner or not; a
+		-- later chunk of that footprint whose y range misses the recorded one
+		-- skips both, since each of those writes would fall outside its owner.
+		-- Keyed by footprint, bounded by the few dozen footprints over the
+		-- capital's reserved square.
+		local write_span = {}
+
 		-- Per-session state of every blueprint: the world box it occupies, the
 		-- cells with their content refs (nil while released) and, for a city
 		-- edge, its geometry index.
@@ -1386,6 +1413,22 @@ function M.config(prepared, content, raw_sha256)
 			-- The plots' collars and approaches precede every plot and the
 			-- edge. Work is clipped to this owner; neighbouring chunks ask the
 			-- same pure answers.
+			local footprint = context.min_x .. ":" .. context.min_z .. ":" ..
+				context.max_x .. ":" .. context.max_z
+			local span = write_span[footprint]
+			local edge_work = span == nil or (span.low ~= nil and
+				span.low <= context.max_y and span.high >= context.min_y)
+			local low, high
+			local function reach(y)
+				if low == nil or y < low then low = y end
+				if high == nil or y > high then high = y end
+			end
+			-- the collars lie in the reserved square (|dx|, |dz| < 266), the
+			-- civic core excepted
+			local collar_work = edge_work and
+				context.max_x > anchor.x - 266 and context.min_x < anchor.x + 266 and
+				context.max_z > anchor.z - 266 and context.min_z < anchor.z + 266
+			local recorded = false
 			local fittings = prepare_approaches()
 			local fit_palette = approach_palettes.new(profile.race)
 			local ground_ref, air_ref = refs[fit_palette.node("ground")], refs.air
@@ -1394,13 +1437,15 @@ function M.config(prepared, content, raw_sha256)
 			local step_ref = refs[fit_palette.maybe("castle_wall_stair") or fit_palette.node("roof_stair")]
 			local function fit_write(x, y, z, ref, face)
 				if not ref then fail("plot approach material is outside settlement palette") end
+				reach(y)
 				if context.inside_owner(x, y, z) then
 					local cid, param2 = content.resolve(ref, face or 0)
 					context.write_hearthpine(x, y, z, cid, param2, ref, 1)
 					written = written + 1
 				end
 			end
-			if #fittings.plots > 0 then
+			if collar_work and #fittings.plots > 0 then
+				recorded = true
 				for z = context.min_z, context.max_z do
 					for x = context.min_x, context.max_x do
 						local lx, lz = x - anchor.x, z - anchor.z
@@ -1467,7 +1512,8 @@ function M.config(prepared, content, raw_sha256)
 			end
 			for index = 1, #states do
 				local state = states[index]
-				if state.active and state.descriptor.kind == "overlay" then
+				if edge_work and state.active and state.descriptor.kind == "overlay" then
+					recorded = true
 					metrics.overlay_calls = metrics.overlay_calls + 1
 					local cells = state.edge.cells({min_x = context.min_x,
 						max_x = context.max_x, min_z = context.min_z,
@@ -1479,6 +1525,7 @@ function M.config(prepared, content, raw_sha256)
 							fail("city edge name outside the overlay palette: " ..
 								tostring(cell.name))
 						end
+						reach(cell.y)
 						if context.inside_owner(cell.x, cell.y, cell.z) then
 							local cid, param2 = content.resolve(ref, cell.param2)
 							context.write_hearthpine(cell.x, cell.y, cell.z, cid, param2, ref, 1)
@@ -1486,6 +1533,11 @@ function M.config(prepared, content, raw_sha256)
 						end
 					end
 				end
+			end
+			-- the first full pass over this footprint records its write range
+			-- (low nil: nothing to write here at any height)
+			if recorded and span == nil then
+				write_span[footprint] = {low = low, high = high}
 			end
 			if context.call_mode == "replay_fixture" then
 				metrics.replay_calls = metrics.replay_calls + 1

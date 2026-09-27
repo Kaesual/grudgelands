@@ -396,6 +396,14 @@ for index = 1, #anchor_rows do
 		position=point(row[6],row[7])}
 	source.anchors[index] = anchor
 end
+-- The named-rare patrol routes of anchors 91..100 (the `rare_route` rows
+-- above), in anchor order: each route's ordered patrol points, relative to
+-- its anchor's position. All ten share one authored shape. The only reader
+-- is `r7_consumer_payload.lua` (-> the grug_core zone authority).
+source.rare_patrol_offsets = {}
+for route = 1, 10 do
+	source.rare_patrol_offsets[route] = {point(-48,-24),point(16,40),point(56,-16)}
+end
 source.apex_sockets = {}
 local socket_offsets = {
 	{-80,-60},{-30,-80},{30,-80},{80,-60},{-90,0},{90,0},

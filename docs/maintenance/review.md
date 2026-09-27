@@ -160,7 +160,8 @@ The original review's coverage limits and unresolved D1–D4 remain applicable.
 
 The new arithmetic is structurally supported, not an inferred cancellation:
 
-- `mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua`'s `source.anchors` declares
+- The authored anchor rows (`mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua`
+  `anchor_rows`; formerly `source/catalog.lua`, retired in Round 22 D4) declare
   IDs 1–6 starts, 7–12 capitals, 13–24 villages, 25–48 outposts, 49–60 bandit
   camps, 61–66 mines, 67–70 mirefolk, 71–86 clash, 87–88 dragon, 89–90 apex,
   91–100 rare routes. Therefore 100 total includes 12 civic plus 88 other slots.

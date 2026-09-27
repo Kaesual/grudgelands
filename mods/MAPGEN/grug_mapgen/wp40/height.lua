@@ -843,66 +843,105 @@ local function height_factory(dependencies)
 			return clamp(floor((value + 1) * 3.5), 0, 6)
 		end
 
-		local function fitting_grade_at(grid, x, z, incoming, owner, class)
-			local candidates = bucket_at(grid, x, z)
-			if not candidates then return nil end
-			for index = 1, #candidates do
-				local fitting = candidates[index]
-				if owner == fitting.zone_numeric_id then
-					local profile = fitting.profile
-					if class == BAY and not fitting.is_capital and
-							not fitting.is_start and
-							in_half_open_square(x, z, fitting.center,
-								profile.building_core_width) then
-						return max(fitting.reference_y, WATER_LEVEL + 1), fitting, true
-					elseif class == LAND and fitting.blend then
-						-- A POI: the flat building core, then a collar that
-						-- follows the core's outline (true distance, so round
-						-- corners), its width varied smoothly around the core.
-						local outside = square_distance(x, z, fitting.center,
-							profile.building_core_width)
-						if outside == 0 then return fitting.reference_y, fitting, false end
-						local blend = fitting.blend
-						local edge = outside * (1 + POI_EDGE_JITTER *
-							poi_edge_noise(x / 40, z / 40))
-						if edge < blend then
-							return lerp_node(incoming, fitting.reference_y,
-								weight_at(edge, blend)), fitting, false
-						end
-					elseif class == LAND and fitting.is_capital then
-						-- The flat civic core, then the collar with a noisy edge
-						-- (true distance, so round corners); nothing beyond it.
-						local outside = square_distance(x, z, fitting.center,
-							profile.civic_width)
-						if outside == 0 then return fitting.reference_y, fitting, false end
-						local edge = outside * (1 + POI_EDGE_JITTER *
-							poi_edge_noise(x / 40, z / 40))
-						local collar = profile.capital_collar
-						if edge < collar then
-							return lerp_node(incoming, fitting.reference_y,
-								weight_at(edge, collar)), fitting, false
-						end
-					elseif class == LAND then
-						local envelope_half = profile.blend_width / 2
-						local grade_width = fitting.is_start and
-							profile.fitting_width or profile.building_core_width
-						local outside = half_open_square_excess(x, z, fitting.center,
-							grade_width)
-						local span = envelope_half - grade_width / 2
-						if fitting.is_start then
-							local offset = start_edge_offset(x, z)
-							outside = max(0, outside - offset)
-							span = span - offset
-						end
-						if outside < span then
-							local weight = weight_at(outside, span)
-							return lerp_node(incoming, fitting.reference_y, weight),
-								fitting, false
-						end
-					end
+		-- One fitting's pull on a column: the graded value, its weight (1 on a
+		-- flat core or platform, the blend weight in a collar, nil where the
+		-- fitting does not reach) and whether it is a bay platform.
+		local function fitting_pull(fitting, x, z, incoming, class)
+			local profile = fitting.profile
+			if class == BAY and not fitting.is_capital and
+					not fitting.is_start and
+					in_half_open_square(x, z, fitting.center,
+						profile.building_core_width) then
+				return max(fitting.reference_y, WATER_LEVEL + 1), 1, true
+			elseif class == LAND and fitting.blend then
+				-- A POI: the flat building core, then a collar that
+				-- follows the core's outline (true distance, so round
+				-- corners), its width varied smoothly around the core.
+				local outside = square_distance(x, z, fitting.center,
+					profile.building_core_width)
+				if outside == 0 then return fitting.reference_y, 1, false end
+				local blend = fitting.blend
+				local edge = outside * (1 + POI_EDGE_JITTER *
+					poi_edge_noise(x / 40, z / 40))
+				if edge < blend then
+					local weight = weight_at(edge, blend)
+					return lerp_node(incoming, fitting.reference_y, weight), weight, false
+				end
+			elseif class == LAND and fitting.is_capital then
+				-- The flat civic core, then the collar with a noisy edge
+				-- (true distance, so round corners); nothing beyond it.
+				local outside = square_distance(x, z, fitting.center,
+					profile.civic_width)
+				if outside == 0 then return fitting.reference_y, 1, false end
+				local edge = outside * (1 + POI_EDGE_JITTER *
+					poi_edge_noise(x / 40, z / 40))
+				local collar = profile.capital_collar
+				if edge < collar then
+					local weight = weight_at(edge, collar)
+					return lerp_node(incoming, fitting.reference_y, weight), weight, false
+				end
+			elseif class == LAND then
+				local envelope_half = profile.blend_width / 2
+				local grade_width = fitting.is_start and
+					profile.fitting_width or profile.building_core_width
+				local outside = half_open_square_excess(x, z, fitting.center,
+					grade_width)
+				local span = envelope_half - grade_width / 2
+				if fitting.is_start then
+					local offset = start_edge_offset(x, z)
+					outside = max(0, outside - offset)
+					span = span - offset
+				end
+				if outside < span then
+					local weight = weight_at(outside, span)
+					return lerp_node(incoming, fitting.reference_y, weight), weight,
+						false
 				end
 			end
 			return nil
+		end
+
+		-- The grading of a column by the fittings of one class. Two fittings
+		-- of a zone may reach the same column (two POIs close together, e.g.
+		-- an outpost's collar over a rare route's core). A flat core or bay
+		-- platform (weight 1) always wins, so it stays flat; the lower anchor
+		-- index on a tie. Where only collars overlap, the column is pulled
+		-- as hard as its strongest collar pulls (the largest weight) toward a
+		-- blend of their references weighted w / (1 - w), which reaches each
+		-- core's own reference at its edge: the grading stays continuous
+		-- across the overlap instead of switching from one fitting to the
+		-- other along a seam. A column one fitting reaches is graded exactly
+		-- as that fitting grades it alone.
+		local function fitting_grade_at(grid, x, z, incoming, owner, class)
+			local candidates = bucket_at(grid, x, z)
+			if not candidates then return nil end
+			local first_value, first_fitting, strongest, strongest_weight
+			local blend_sum, blend_weight, reached = 0, 0, 0
+			for index = 1, #candidates do
+				local fitting = candidates[index]
+				if owner == fitting.zone_numeric_id then
+					local value, weight, platform = fitting_pull(fitting, x, z,
+						incoming, class)
+					if value ~= nil then
+						if weight >= 1 then return value, fitting, platform end
+						reached = reached + 1
+						if reached == 1 then
+							first_value, first_fitting = value, fitting
+						end
+						if strongest_weight == nil or weight > strongest_weight then
+							strongest, strongest_weight = fitting, weight
+						end
+						local share = weight / (1 - weight)
+						blend_sum = blend_sum + share * fitting.reference_y
+						blend_weight = blend_weight + share
+					end
+				end
+			end
+			if reached == 0 then return nil end
+			-- every reaching collar at weight 0 (its outer rim): no blend to take
+			if reached == 1 or blend_weight == 0 then return first_value, first_fitting, false end
+			return lerp_node(incoming, blend_sum / blend_weight, strongest_weight),
+				strongest, false
 		end
 
 		-----------------------------------------------------------------------

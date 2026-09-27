@@ -456,10 +456,7 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 				world_factory(world_catalog, content_set.p9g, habitat_registry),
 				dofile(wp40_directory .. "/road_writer.lua")(core_api))
 		end
-		local authored_source = dofile(wp40_directory .. "/source/catalog.lua")
-		local consumer_payload = consumer_payload_factory(source,
-			authored_source, sha256_hex)
-		authored_source = nil
+		local consumer_payload = consumer_payload_factory(source, sha256_hex)
 		local constructor, session, writer, zones_session, settlement_fixture,
 			r6_identity, anchor_roster
 		if authority_only then
