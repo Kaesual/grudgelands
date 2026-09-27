@@ -497,8 +497,10 @@ replaced; git history before this rewrite records that model.
   canal ends there in its sealed rim. Steps between planned surfaces that do
   lie in protected territory (a river crossing a capital) flow like any other:
   the water guard exempts exactly that flow. Small
-  ponds on the calm ground beside the Dawnmere and Sunscar
-  starts. Authored water and its bank shaping keep at least eight nodes off
+  ponds beside the Dawnmere and Sunscar starts: Sunscar's two waterholes at
+  the lowest ground of their banks, Dawnmere's pond 40 nodes south of the
+  pad one node below the pad's level (Round 22 D78); no authored water or
+  its bank shaping reaches a start town's pad or protected band. Authored water and its bank shaping keep at least eight nodes off
   every district plot and fill lot (margin included), so the plots stand on
   the ground they were measured on. Moonfall's crescent lake (D41) lies on a
   calm bowl the landmark adds to the terrain field (like a steep POI's, at

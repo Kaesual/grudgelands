@@ -106,9 +106,12 @@ blueprints are unchanged by them.
   The terrain round a start is calm only through the band; natural relief
   returns over a fade of about 60 nodes on level land and up to about 200
   where the town sits in a hollow or on a rise ([world_zones.md](world_zones.md)
-  §7.6), so the ground rises or falls back as a hill. The 128-node
-  envelope's surface height, the spawn height, the road pins and every
-  blueprint cell are unaffected.
+  §7.6), so the ground rises or falls back as a hill. The pad stays flat
+  and every blueprint cell is unaffected; the pad's reference height (and
+  with it the spawn height and road pins) follows the same sampling rule on
+  the new terrain, so it can differ by a few nodes from a pre-D78 world of
+  the same seed. No authored water (a start's pond) floods, cuts or raises
+  the pad or the band.
 
 ## Settlement NPCs and guard targeting
 

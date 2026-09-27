@@ -904,13 +904,17 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   the 90th percentile of |natural − target| on square rings 30–90 beyond the
   pad over a grade of 0.3, within 60–200 (+ up to 40 % noisy edge); 75 of 144
   starts get the minimum, hilly ones up to 200 (a fixed small bowl gave
-  rises of ~0.9 grade next to towns in hollows, variants B/C/D). (4) The
+  rises of ~0.9 grade next to towns in hollows, variants B/C/D; adaptive
+  fade width approved by the user). (4) The
   band's surface: `height.lua` `start_ground_at` gives the town's pad ground
   (race palette `ground`, via `r7_runtime.lua`; Sunscar's
   `default:dirt_with_dry_grass` is not an R6 surface node, its mapgen twin
   `default:dry_dirt_with_dry_grass` has the same top texture) 2–10 nodes
   into the band along a 14-period noise outline with a 3-node dithered edge;
-  the R6 surface selector lays it as the top (`planner_source.start_ground_at`).
+  the R6 surface selector lays it as the top (`planner_source.start_ground_at`)
+  on plain dry tops only (a rock face or lip keeps its steep row; no dust),
+  and checks every start ground name against the content contract when it
+  is built at load (`start_ground_names`).
   Offline, 24 seeds × 6 starts (before = main 8f467033): pad fittings all
   feasible (cut ≤ 4, fill ≤ 5, was 8/6), 0 wet pad columns; damping m ≥ 0.1
   at a median 30 beyond the pad (27–71; before 33, 1–69), m ≥ 0.5 at 50
@@ -929,9 +933,34 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   rosters place as before; start-corner chunks 422–537 ms per mapchunk
   (before 395–426: natural terrain and vegetation now), controls 217–290 in
   both; protection calls unchanged (territory_rule_at near starts 1.5–2.0 µs
-  both). Open: a dry river trough (D57 `keep_trough`) beside Dawnmere on seed
-  424242 keeps 3-node steps 1–20 nodes from the pad (84 such columns on
-  main, 161 now with the shorter collar); the water lane's call.
+  both). Review round (the 3-node steps first put down to a river trough
+  were Dawnmere's pond): `dawnmere_pond` took the lowest fitted ground on its
+  bank ring as its level; with the small bowl that ring lay on the slope
+  into the `dawnmere_headwaters` basin on many seeds, the level sank (s424242
+  13 on main, 10 here, pad 31) and the bank envelope cut into the pad and
+  band (reviewer: 13 of 24 seeds with non-flat Dawnmere pads; main 4, e.g.
+  s424242 74 columns 12 deep). Fixes: `height.lua` `authored_at` leaves a
+  start town's pad and band alone for every authored lake (no flooding,
+  carving, cutting or raising); the pond lies 40 nodes south of the pad
+  (off the road side; over 24 seeds the ground there is within 6 below and
+  13 above the pad, north-east it fell 16 below), its level the pad's
+  reference − 1 (`anchor = "anchor_002"`), its bank envelope kept off pad
+  and band (`keep`, faded in over 16). Offline, 24 seeds × 6 starts: pad
+  columns ≠ reference 0 everywhere (main c46999c3: 4 Dawnmere pads, 146
+  columns, up to 12 deep), band columns with a step ≥ 3: 0 (main 45), band
+  within 4 of the pad level; the pond: 0 leaks, dams ≤ 6, bank cuts ≤ 12,
+  0 pad/band columns changed (main: up to 494), nearest water 22 from the
+  pad; steps ≥ 3 its banks add 94 over 24 seeds (main's pond 160); Sunscar's
+  waterholes keep their shore level (32 and 77 from the pad, 0 town
+  columns). Engine s20260927 (and s42): boot PASS, 78/78 points, 0 pad
+  holes and 0 band columns more than 6 below the pad at Dawnmere's old pond
+  corner and every other corner (Kapok's pad has the same 32 blueprint air
+  cells on main), band 0 trees / 0 ground cover, the pond as in the
+  images; start NPC rosters: sockets left pending in the probe (no player,
+  e.g. Silverleaf 5–7/13 here, Dawnmere 4/13 and Hearthpine 5/13 on main
+  c46999c3 on the same seed) sit on pad ground identical to main's; the
+  pass places only into loaded blocks, so it is the probe's load timing,
+  not D78.
   Re-checked after merging main c46999c3 (D4 wave 2; the start collar takes
   part in the `fitting_pull` overlap rule, flat pad weight 1): start
   measurements on seeds 42, 8675309, 15140735923413111218 identical to the
