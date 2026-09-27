@@ -566,7 +566,9 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   main vs emerge identical. Open: free decks remain as the accepted last
   resort (mostly Stormvault and mountain trails); `layout.connect` needs a
   session-level re-serialize/sampler rebuild/memo flush for the capital
-  planner; a dropped core pin (never seen) is not logged yet; old
+  planner (moot: the planner uses the kit and `session.add_roads`;
+  `layout.connect` had no callers and was removed in the D49 follow-up);
+  a dropped core pin (never seen) is not logged yet; old
   `source/catalog.lua` route tables and dead planner bridge/ford/causeway/
   tunnel branches are for the D4 cleanup.
 
@@ -880,6 +882,58 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   nearest structure measures 10.8–17.5 (stone; ≥ 10.8 at gatehouses),
   12.7–18.5 (palisade), 13.7–20.5 (open; the top only where a civic lake
   reaches just past the outline, otherwise ≤ 19.1).
+- **D49 follow-up as built (road steps at contacts, lane
+  `worktree-agent-a41aa2fb0670980d6`, evidence and images in
+  `~/projects/grudgelands-orchestration/r22/d49-steps/`):** measured on 48
+  seeds over every road surface column of the world (network, trails,
+  streets, connectors, squares; 21.7 M neighbour pairs, walking heights as the
+  writer builds them). Main: 1 257 pairs > ½ at 172 places on 44 seeds. The
+  junction mouths themselves were fine; the steps came from (a) contacts
+  outside a junction — a loop leaving a start through the first road's gate
+  stretch (13 places), a connector folding back beside the road it continues
+  or running beside another road or connector (16), a road's own legs
+  touching (18); (b) profiles with no feasible solution (13): a pinned end
+  (road end, gate, junction) beside water the profile could neither bridge
+  nor ford, after which the road followed the ground and broke both pins;
+  (c) the raster's water bank guard (104): a dry column cut below water
+  within 2 nodes keeps its bank as a step inside the road (40 of them at
+  fords). Fix in `road_layout.lua`: where a road's surface touches an
+  earlier road's (or its own earlier leg's) surface, alongside or as a level
+  crossing less than 4 apart, the later road targets that level in the
+  profile DP (contacts; the kit gets the network's roads near a capital as
+  fixed references, so streets and connectors meet them level); a second
+  road from a start branches off the first road (an `a_parent` Y junction:
+  flat mouth, pinned branch); an infeasible profile is retried with
+  unbridgeable water costly (times 1 + depth below the surface) instead of
+  forbidden, kept only if it never sinks deeper than a ford; the profile
+  pays for lying below water just beyond its edges where the ground would be
+  cut (sampled only near coarse-grid water). One surface per road, decks on
+  pillars and the raster are unchanged; no rerouting. After: 419 pairs at 76
+  places on 36 seeds; contacts and infeasible profiles 60 → 18 places (351 →
+  126 pairs): Stormvault's trail crossing its own legs on decks (4 seeds, a
+  routing matter), connector pins further apart than the grade rule allows
+  (Kezamba on 2 seeds, a Lethariel cross lane, a Highcourt connector into
+  water), and residual steps of 1–1.5 where the follower cannot match the
+  leader's grade in a curve (one of 4 at the edge of an overpass); the water
+  bank guard 104 → 55 places (808 →
+  252 pairs), mostly single steps of 1 at fords and beside Kezamba's civic
+  water; three overpasses (a deck crossing another road 4+ higher). Planner
+  quality unchanged: required plots 9/9 in all 288 plans, 0 plots in water,
+  0 connector failures, plots placed identical; profile-infeasible streets
+  10 → 4. Network: roads, loops and trails identical (65 start branches);
+  free deck points +1.8 %, deep cut points −0.1 %; 14 % of road records
+  change (profiles; geometry only at start branches). Engine (2 seeds × 4
+  fixed windows): steps 74 / 85 → 41 / 0 (the 41: a ford with its bank
+  guard, and two converging connectors), 0 holes, 0 floating slabs, engine
+  walking heights equal the offline answer; lighting-check windows at three
+  changed decks 0 / 0 like main. Payload identical with the JIT off and on a
+  second build. Timings (reports): network build 4.41 → 4.52 s (offline
+  mean), capital planning 6.2 → 6.5 s for six (engine: 5.5 → 6.6 s),
+  emerge of the probe windows unchanged. Open: Stormvault's self-crossing
+  (A* allows a road to cross its own earlier cells), connectors whose pins
+  the grade rule cannot join (route a longer connector or move the gate
+  floor), the remaining ford/bank steps (a ford bed lies one below its
+  bank by design).
 - **Start town surroundings (D78, after D76):** town layout and pad unchanged; smaller plateau; a 10–20-node protected, vegetation-free band around the pad with a
   noise-based material transition and a soft height transition; replaces the 148 square
   and larger bare envelopes. Before/after images on three seeds for the user.
