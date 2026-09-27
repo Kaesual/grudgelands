@@ -184,10 +184,11 @@ local function loader(directory)
 	-- A WORK SOCKET is the sockets contract's section 8.1: a resident's
 	-- workplace, always staffed, always static, naming the ACTIVITY it does and
 	-- facing the feature that activity works within three nodes. The closed
-	-- vocabulary is the registry's; `tools/wp13/dur_brannoc_kat.lua` measures
-	-- the feature. `y` is the feet course and defaults to 1, the first walkable
-	-- course over the plot's ground; a work socket ON a bench passes 2, because
-	-- a seat is a walkable node and the resident sits on top of it.
+	-- vocabulary is the registry's; the Dur Brannoc KAT (retired in Round 22)
+	-- measured the feature. `y` is the feet course and defaults to 1, the
+	-- first walkable course over the plot's ground; a work socket ON a bench
+	-- passes 2, because a seat is a walkable node and the resident sits on top
+	-- of it.
 	function M.work(id, activity, x, z, face, tags, y)
 		return {id = "work_" .. id, role = "work", activity = activity,
 			x = x, y = y or 1, z = z, face = face or 0, tags = tags}

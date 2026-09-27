@@ -132,10 +132,10 @@ local START_TRAINERS = {
 -- order.
 --
 -- `race` names the `palette.races` entry the composition builds from. It is
--- the ONE place a settlement is tied to a race, and `tools/wp13/library_kat.lua`
--- reads it to check a start's window vocabulary and its ground cover against
--- that race's palette alone instead of guessing from the node names, which
--- can match two races at once.
+-- the ONE place a settlement is tied to a race, and the WP13 library KAT
+-- (retired in Round 22) read it to check a start's window vocabulary and
+-- its ground cover against that race's palette alone instead of guessing
+-- from the node names, which can match two races at once.
 --
 -- `slot` is the anchor slot the zone session answers under, and `bounds` names
 -- the `M.BOUNDS` entry the settlement's primary blueprint is held to.
@@ -1423,11 +1423,17 @@ function M.config(prepared, content, raw_sha256)
 				if low == nil or y < low then low = y end
 				if high == nil or y > high then high = y end
 			end
-			-- the collars lie in the reserved square (|dx|, |dz| < 266), the
-			-- civic core excepted
+			-- the collars lie strictly inside the reserved square
+			-- (`M.CAPITAL_OVERLAY.square`, anchor-relative), the civic core
+			-- excepted
+			local square = M.CAPITAL_OVERLAY.square
+			local sq_min_x, sq_max_x = square.min_x, square.max_x
+			local sq_min_z, sq_max_z = square.min_z, square.max_z
 			local collar_work = edge_work and
-				context.max_x > anchor.x - 266 and context.min_x < anchor.x + 266 and
-				context.max_z > anchor.z - 266 and context.min_z < anchor.z + 266
+				context.max_x > anchor.x + sq_min_x and
+				context.min_x < anchor.x + sq_max_x and
+				context.max_z > anchor.z + sq_min_z and
+				context.min_z < anchor.z + sq_max_z
 			local recorded = false
 			local fittings = prepare_approaches()
 			local fit_palette = approach_palettes.new(profile.race)
@@ -1450,7 +1456,8 @@ function M.config(prepared, content, raw_sha256)
 					for x = context.min_x, context.max_x do
 						local lx, lz = x - anchor.x, z - anchor.z
 						-- (the civic core shapes its own ground)
-						if math.abs(lx) < 266 and math.abs(lz) < 266 and
+						if lx > sq_min_x and lx < sq_max_x and
+								lz > sq_min_z and lz < sq_max_z and
 								(math.abs(lx) > 49 or math.abs(lz) > 49) then
 							-- Probe membership cheaply before querying terrain.
 							local _, record = fittings.surface(x, z, 0)

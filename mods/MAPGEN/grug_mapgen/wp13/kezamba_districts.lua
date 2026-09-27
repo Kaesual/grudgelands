@@ -22,8 +22,8 @@
 -- structure lane for at least one `idle` spawn socket per `work` socket, so
 -- that the NPC lane's "every fifth idle spawn socket walks" yields a walker
 -- share inside 10-30 %. Every roster row below is written to that: a plot with
--- two workplaces carries two flair spots, and the district totals are asserted
--- by `tools/wp13/kezamba_kat.lua` rather than counted by eye.
+-- two workplaces carries two flair spots, and the district totals were asserted
+-- by the Kezamba KAT (retired in Round 22) rather than counted by eye.
 --
 -- Plain Lua 5.1, pure, no engine calls, no globals.
 
@@ -73,7 +73,7 @@ local function loader(directory)
 	-- cell is perimeter and none is interior. The result was seven solid rows
 	-- of mossy cobble across each vineyard with no soil and nothing growing in
 	-- them at all: 145 cells of bare stone and 0 plants, measured on the
-	-- composition itself (`tools/wp13/kezamba_kat.lua` section 6c).
+	-- composition itself (the Kezamba KAT, retired in Round 22).
 	--
 	-- A bed nine rows deep has the same two long kerbs and seven rows of
 	-- planted soil between them. The yard is 21 x 19 inside its forecourt, so

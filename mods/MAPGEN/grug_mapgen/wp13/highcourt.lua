@@ -855,9 +855,9 @@ local function loader(directory)
 		--
 		-- Each one is a legal standing position on the finished pad -- feet and
 		-- head air, the core's own paving or turf under it, outdoors, reachable
-		-- on foot from the south gate -- measured with `highcourt_kat.lua`'s own
-		-- socket test, and at least 8 nodes from every authored socket. No tag:
-		-- a spare is a place to stand, not a feature to talk about.
+		-- on foot from the south gate -- measured with the retired Highcourt
+		-- KAT's socket test, and at least 8 nodes from every authored socket.
+		-- No tag: a spare is a place to stand, not a feature to talk about.
 		local function spare(id, x, z, face)
 			socket(id, "idle", x, 1, z, face, {spawn = false})
 		end

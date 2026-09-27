@@ -1251,7 +1251,7 @@ return function(P)
 	-- ever lower; returns true when a cap was added or lowered. A cap that
 	-- would cut the ancestor deeper than CUT_MAX (it would sink there, see
 	-- `levels`) is not set: two steep reaches stepping down side by side
-	-- keep their (contained) contact.
+	-- keep their (contained) contact (counted in `stats.contact_skipped`).
 	local function too_deep(anc, q, level)
 		for k = q, #anc.pts do
 			if anc.levels[k] <= level then return false end
@@ -1261,6 +1261,9 @@ return function(P)
 	end
 	local function confluence_contacts(S)
 		local changed = false
+		-- ancestor vertices whose cap too_deep kept off in this check
+		-- (S.stats.contact_skipped, the last check's count)
+		local skipped, nskipped = {}, 0
 		local function reach(w) return w / 2 + P.WET_X + P.WET_B end
 		for _, rv in ipairs(S.rivers) do
 			local anc = rv.parent and S.rivers[rv.parent]
@@ -1283,11 +1286,21 @@ return function(P)
 							if aw > 0 and not anc.dry[q] and anc.levels[q] > lt then
 								local dx, dz = anc.pts[q][1] - x, anc.pts[q][2] - z
 								local r = ri + reach(aw) + P.SEG
-								if dx * dx + dz * dz <= r * r and not too_deep(anc, q, lt) then
-									if not list then list = {}; S.contact_caps[anc.id] = list end
-									if not list[q] or lt < list[q] then
-										list[q] = lt
-										changed = true
+								if dx * dx + dz * dz <= r * r then
+									if too_deep(anc, q, lt) then
+										-- stats only: each ancestor vertex once per check
+										local seen = skipped[anc.id]
+										if not seen then seen = {}; skipped[anc.id] = seen end
+										if not seen[q] then
+											seen[q] = true
+											nskipped = nskipped + 1
+										end
+									else
+										if not list then list = {}; S.contact_caps[anc.id] = list end
+										if not list[q] or lt < list[q] then
+											list[q] = lt
+											changed = true
+										end
 									end
 								end
 							end
@@ -1298,6 +1311,7 @@ return function(P)
 			end
 		end
 		if changed then S.stats.contact_rounds = (S.stats.contact_rounds or 0) + 1 end
+		S.stats.contact_skipped = nskipped
 		return changed
 	end
 

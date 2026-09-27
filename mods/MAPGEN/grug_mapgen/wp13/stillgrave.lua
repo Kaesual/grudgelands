@@ -150,8 +150,8 @@ local function loader(directory)
 	-- are air and the node under it is walkable. `dir` is the facing as one
 	-- of the four axis vectors. Sockets are not identity bytes -- the
 	-- settlement identity SHA covers schema, bounds, palette and cells only --
-	-- but `tools/wp13/blueprint_kat.lua` checks every one of them against the
-	-- finished pad.
+	-- but the WP13 blueprint KAT (retired in Round 22) checked every one of
+	-- them against the finished pad.
 	local SOCKETS = {
 		-- The gate watch: one post either side of the road, two nodes inside
 		-- the gate line at z = -58, both facing the way out of the hollow.
@@ -204,7 +204,7 @@ local function loader(directory)
 		-- amble is four people swapping four chairs, which is what the playtest
 		-- saw. Each one is a legal standing position on the finished pad -- feet
 		-- and head air, walkable settlement ground under it, outdoors, reachable
-		-- on foot -- measured by `tools/wp13/blueprint_kat.lua`'s own socket test,
+		-- on foot -- measured by the retired WP13 blueprint KAT's socket test,
 		-- and no tag, because a spare is a place to stand rather than a feature to
 		-- talk about.
 		-- the obsidian brick west of the lane
@@ -452,8 +452,7 @@ local function loader(directory)
 		-- already carries this palette's own low wall (that is its corner,
 		-- not an obstruction), and is FATAL on anything else, like every
 		-- other prop in this composition. All ten are then placed, and the
-		-- count is published so `tools/wp13/blueprint_kat.lua` can hold the
-		-- population exactly.
+		-- count is published so a check can hold the population exactly.
 		local low_wall = palette.node("low_wall")
 		local wall_cells = 0
 		for _, line in ipairs(GRAVE_WALLS) do

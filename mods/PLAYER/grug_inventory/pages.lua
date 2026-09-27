@@ -78,9 +78,9 @@ local SLOT_POS = {
 -- and the row names the Steel one. Steel rather than any other tier because the
 -- ghost is dimmed grey anyway and a grey source dims cleanly.
 --
--- `static.sh` in this round's evidence directory now scans every `.png` literal
--- under `mods/*/grug_*` against the real texture pool, so the next deleted
--- sprite is a failing gate instead of an untextured slot.
+-- That round's evidence scanned every `.png` literal under `mods/*/grug_*`
+-- against the real texture pool once (its `static.sh` was retired in Round 22);
+-- there is no standing gate for a deleted sprite.
 local GHOST_TEXTURE = {
 	grug_head = "grug_gear_item_head_metal.png^[multiply:#666666",
 	grug_chest = "grug_gear_item_chest_metal.png^[multiply:#666666",

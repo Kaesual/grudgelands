@@ -208,9 +208,9 @@ end
 -- The param2 the engine itself writes for a node whose definition pins one.
 -- `default:dry_shrub` is `paramtype2 = "meshoptions"` with
 -- `place_param2 = 4`, so a cell written at 0 carries a value no placement
--- could have produced -- and `tools/wp13/library_kat.lua` checks every
--- emitted cell against the registration. `Buffer:put` falls back to this
--- when the caller names no param2, so a part keeps writing
+-- could have produced -- and the WP13 library KAT (retired in Round 22)
+-- checked every emitted cell against the registration. `Buffer:put` falls
+-- back to this when the caller names no param2, so a part keeps writing
 -- `buf:put(x, y, z, name)` and still lands on the engine's own value; the
 -- dressing calls it by name where it builds the param2 itself.
 local PLACE_PARAM2 = {["default:dry_shrub"] = 4}
@@ -250,10 +250,9 @@ end
 --
 -- A blueprint is built with no engine, so `core.registered_nodes` is out of
 -- reach; both tables below are therefore authored, and
--- `tools/wp13/library_kat.lua` proves them equal to the real registry (loaded
--- under a stub `core` by `tools/wp13/stub_registry.lua`) for every node name
--- the blueprint actually emits, in both directions. A stale or invented entry
--- fails the KAT.
+-- the WP13 library KAT (retired in Round 22) proved them equal to the real
+-- registry (loaded under a stub `core` by `tools/wp13/stub_registry.lua`)
+-- for every node name the blueprint actually emits, in both directions.
 
 -- Nodes an `xpanes` pane connects to: `group:pane`, `group:stone`,
 -- `group:glass`, `group:wood` or `group:tree` (mods/BASE/xpanes/init.lua,
@@ -767,8 +766,8 @@ end
 -- Which node names are panes.
 --
 -- `xpanes` decides everything about a pane from `group:pane`, and
--- `tools/wp13/library_kat.lua` reads that group out of the real
--- registrations. This file has no registry -- it is pure, engine-free
+-- the WP13 library KAT (retired in Round 22) read that group out of the
+-- real registrations. This file has no registry -- it is pure, engine-free
 -- arithmetic -- so it cannot ask the same question the same way, and the
 -- first version answered a DIFFERENT one: it tested the `xpanes:` prefix,
 -- which is true of `xpanes:pane_flat` and also of anything else that mod
@@ -992,7 +991,8 @@ end
 --
 -- `mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua` carries the same
 -- comparator for the consumers that never load this library;
--- `tools/wp13/library_kat.lua` asserts the two agree on a corpus of names.
+-- the WP13 library KAT (retired in Round 22) asserted the two agree on a
+-- corpus of names.
 function M.less_bytes(left, right)
 	if type(left) ~= "string" or type(right) ~= "string" then
 		error("wp13 parts: byte-order input is not bytes", 0)

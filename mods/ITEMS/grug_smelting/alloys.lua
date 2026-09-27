@@ -13,8 +13,9 @@
 -- makes binding, because `grug_traders`' anti-loop audit cannot see these
 -- recipes through the engine at all: its walk judges only `normal` and
 -- `cooking` engine recipes (`CONSUMING_METHODS`, `grug_traders/init.lua`).
--- Nothing here calls into the engine, so this file also loads under the
--- headless KAT (`tools/wp26/smelting_kat.lua`) as real shipped code.
+-- Nothing here calls into the engine, so this file also loads under a stub
+-- `core` as real shipped code (the WP26 smelting KAT, retired in Round 22,
+-- did so).
 
 -- Every registered alloy, in registration order. One entry per output:
 --   {output = "mod:item", inputs = {"mod:a", "mod:b"}, time = <seconds>}

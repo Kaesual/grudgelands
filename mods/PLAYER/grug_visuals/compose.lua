@@ -14,8 +14,9 @@
 --
 -- Nothing in this file touches an ObjectRef, an inventory or a player. Its
 -- only engine contact is `core.log` for the unknown-race warning, which is why
--- tools/wp13/character_visuals_kat.lua can load it against a stub `core` and
--- check every race x line x slot x bracket combination in plain Lua 5.1.
+-- an offline check can load it against a stub `core` and check every race x
+-- line x slot x bracket combination in plain Lua 5.1 (the WP13
+-- character-visuals KAT did, until it was retired in Round 22).
 --
 
 --
@@ -276,9 +277,8 @@ function grug_visuals.compose(spec)
 
 	-- The key covers every normalized input, and nothing else: two specs that
 	-- differ only in a field the composition ignores share one cache entry.
-	-- Semicolon, not a pipe: the fifth plain-5.1 grep sweep of
-	-- docs/research/luanti-lua.md flags `"|"` as a possible bitwise operator,
-	-- and a separator nobody has to re-adjudicate on every review is free.
+	-- Semicolon, not a pipe: a hand-run bitwise-operator grep sweep of
+	-- docs/research/luanti-lua.md matches `"|"` even inside a string.
 	local key = (race or "-") .. ";" .. skin
 	for index = 1, #SLOTS do
 		local piece = pieces[index]

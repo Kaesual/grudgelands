@@ -533,8 +533,8 @@ local function loader(directory)
 			-- that number: a lamp post or a fruit tree written after the
 			-- clear reaches above it, so a legality predicate reading the
 			-- bounds would credit the plot with headroom it never cut. This
-			-- is what `tools/wp13/nhal_veyr_plots.lua` holds the lot's rise
-			-- against.
+			-- is what the Nhal Veyr lot check (retired in Round 22) held the
+			-- lot's rise against.
 			clear_to = clear_to,
 			landmarks = {
 				arrival = {x = 0, y = 1, z = z0 + 2},

@@ -1,4 +1,5 @@
--- Exact native engine catalog captured by tools/r13_integration/catalog_probe.
+-- Exact native engine catalog captured by the Round 13 catalog probe
+-- (retired in Round 22).
 -- Each route has one semantic owner; unchanged visibility policies are retained.
 return {
 	{station="dual_furnace",output="grug_materials:abyssal_steel_bar",method="dual_furnace",width=2,shapeless=true,inputs={"grug_materials:embersteel_bar","grug_materials:abyssal_crystal"},owner="general",main_material="grug_materials:embersteel_bar"},

@@ -1267,8 +1267,8 @@ local function loader(directory)
 	-- bushes. Densities 5 and 6 escaped by being coprime to 4, which is luck,
 	-- not design. Both tests now read two different offsets into
 	-- `parts.position_hash`, whose two LCG rounds leave neither derivable
-	-- from the other. `tools/wp13/library_kat.lua` asserts that every start
-	-- emits both of its ground-cover nodes.
+	-- from the other. The WP13 library KAT (retired in Round 22)
+	-- asserted that every start emits both of its ground-cover nodes.
 	function M.undergrowth(buf, palette, x1, z1, x2, z2, density)
 		local planted_bush, planted_tuft = 0, 0
 		for z = z1, z2 do
@@ -1303,8 +1303,8 @@ local function loader(directory)
 	-- original, kept verbatim and called from exactly one place.
 	--
 	-- No new settlement may call it. `M.undergrowth` is the one every other
-	-- start uses, and `tools/wp13/library_kat.lua` checks that this one has a
-	-- single caller.
+	-- start uses, and the WP13 library KAT (retired in Round 22) checked that
+	-- this one has a single caller.
 	function M.vale_undergrowth(buf, palette, x1, z1, x2, z2, density)
 		for z = z1, z2 do
 			for x = x1, x2 do
