@@ -21,6 +21,18 @@ return function(catalog, content, habitat)
    local a=hash(x*37+z*11,salt,x*7-z*29,151)
    return hash(a%4093,x*53-z*17,math.floor(a/4093),salt+157)
   end
+  -- Smooth value noise in [0,1024) on the reef hash lattice (kelp meadows
+  -- follow it, so their edges are soft instead of cell squares).
+  local function reef_noise(x,z,period,salt)
+   local ix,iz=math.floor(x/period),math.floor(z/period)
+   local tx,tz=(x-ix*period)/period,(z-iz*period)/period
+   tx,tz=tx*tx*(3-2*tx),tz*tz*(3-2*tz)
+   local a=reef_hash(ix,iz,salt)%1024
+   local b=reef_hash(ix+1,iz,salt)%1024
+   local c=reef_hash(ix,iz+1,salt)%1024
+   local d=reef_hash(ix+1,iz+1,salt)%1024
+   return (a+(b-a)*tx)*(1-tz)+(c+(d-c)*tx)*tz
+  end
   local zones,hosts={},{}
   for i,row in ipairs(catalog.plants) do
    zones[i]={};hosts[i]={}
@@ -117,7 +129,11 @@ return function(catalog, content, habitat)
       end
      end
      -- Rooted meshes occupy their bed cube; all stems must remain in sea water.
-     if not excluded and not housing and water=="coastal_shelf" and water_y and
+     -- Reefs grow on the coastal shelf and in the continental bays (sea
+     -- water; a bay's own claim exclusion only keeps settlement off it).
+     local bay=water=="planned_water" and river_id==nil and
+      type(excluded_id)=="string" and excluded_id:sub(1,14)=="exclude:water:"
+     if (not excluded or bay) and not housing and (water=="coastal_shelf" or bay) and water_y and
       water_y-ground>=2 and water_y-ground<=10 and
       ctx.inside_owner(x,ground,z) then
       local cell_x=math.floor(x/16)
@@ -132,15 +148,22 @@ return function(catalog, content, habitat)
       local swapped=reef_hash(cell_x,cell_z,109)%2==1
       local long=swapped and dz or dx
       local short=swapped and dx or dz
-      local patch=long*long+2*short*short<=15 and reef_hash(x,z,113)%5~=0
-      if reef_cell%8==0 and patch then
+      -- One cell in four carries a reef patch, small or large; loose kelp
+      -- meadows grow on sand where a smooth noise is high (Round 22 Phase 6).
+      local size=reef_hash(cell_x,cell_z,111)%2==0 and 15 or 26
+      local patch=reef_cell%4==0 and long*long+2*short*short<=size and
+       reef_hash(x,z,113)%5~=0
+      local kelp=not patch and water_y-ground>=3 and
+       reef_noise(x,z,24,131)>600 and reef_hash(x,z,137)%6==0
+      if patch or kelp then
       local bed,p2,occupancy,opcode=ctx.settled_at(x,ground,z)
       local _,sand=ctx.production_content("default:sand")
       local _,gravel=ctx.production_content("default:gravel")
       local _,stone=ctx.production_content("default:stone")
       if (bed==sand or bed==gravel or bed==stone) and p2==0 and occupancy==0 and opcode>=1 and opcode<=4 then
-       local index=16+reef_hash(x,z,127)%7
+       local index=kelp and 22 or 16+reef_hash(x,z,127)%7
        local height=index==22 and math.min(6,water_y-ground-1) or 1
+       if kelp then height=math.min(height,2+reef_hash(x,z,139)%5) end
        local clear=true
        if index==22 and bed~=sand then clear=false end
        for y=ground+1,ground+height do
