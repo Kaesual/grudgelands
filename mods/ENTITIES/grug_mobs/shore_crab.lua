@@ -56,12 +56,14 @@ grug_mobs.register_mob("grug_mobs:shore_crab",
 grug_mobs.register_mob("grug_mobs:reef_lurker",
 	crab_def("Reef Lurker", "elite", near_water, 3))
 
--- The near-water strip is about a quarter of the coast's sand (measured), so
--- both chances are a quarter of their former all-sand values to keep the
--- attempt rate.
+-- The near-water strip holds about 18 % of the shore's open sand (measured
+-- in the engine on two seeds, Round 22 Phase 6: 17.5 % and 18.3 %), so both
+-- chances are 0.18 of their former all-sand values (1650, 6000) to keep the
+-- attempt rate per stretch of beach. The scan above costs about 2-3 us per
+-- ABM hit (measured); a find_node_near-first variant was 5x slower.
 mobs:spawn({name = "grug_mobs:shore_crab", nodes = {"default:sand"},
-	interval = 20, chance = 400, active_object_count = 3,
+	interval = 20, chance = 300, active_object_count = 3,
 	min_height = 0, max_height = 20})
 mobs:spawn({name = "grug_mobs:reef_lurker", nodes = {"default:sand"},
-	interval = 30, chance = 1500, active_object_count = 1,
+	interval = 30, chance = 1100, active_object_count = 1,
 	min_height = 0, max_height = 20})
