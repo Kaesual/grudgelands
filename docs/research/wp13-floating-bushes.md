@@ -250,6 +250,16 @@ pre-fix tree).
   (`offset_y_minus_4`), which puts its bottom four slices inside the ground,
   where the writer's clearance test refuses them. It is very likely never placed
   at all. Out of this lane's scope, flagged rather than touched.
+  **Follow-up (Round 22 Phase 6, measured in the engine):** it was placed, but
+  rarely: on six jungle boxes of seed 15140735923413111218, 56 of 881
+  candidates were accepted and 261 were refused as `forbidden_old_class`,
+  every one a sunk root cell on the stone body below the soil (the planned
+  terrain fill or untouched native rock). A force-placed decoration cell may
+  now also take that natural ground body (native rock, ore and stratum classes
+  that are untouched, filler-written or planned terrain fill), which is
+  Luanti's own `force_place` meaning; the refusals dropped to 0 and 281 of 823
+  candidates are accepted (most of the rest cross their mapchunk, as every
+  large decoration may not).
 - **`swamp_papyrus`** carries two `default:dirt` slices before its papyrus and is
   therefore one node taller than Luanti's own placement would make it. It does
   not float and it is not this lane's defect.

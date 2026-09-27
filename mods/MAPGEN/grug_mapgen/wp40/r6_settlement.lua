@@ -2140,6 +2140,16 @@ local function settlement_factory()
 			ledger.rejections[key] = (ledger.rejections[key] or 0) + 1
 		end
 		helpers = {equal_graph = equal_graph,
+			-- natural rock classes a force-placed decoration root may take
+			ground_body_class = function(class_id)
+				return class_id == CLASS_NATURAL_HOST or class_id == CLASS_NATURAL_SURFACE or
+					class_id == CLASS_NATIVE_ORE or class_id == CLASS_WP43_STRATUM
+			end,
+			-- the planned R5 opcode of a voxel (27: natural terrain fill)
+			r5_opcode_at = function(plan, column, y)
+				local rbase = run_at(plan, column, y)
+				return rbase and plan.r5_plan.run_values[rbase + 4]
+			end,
 			primary_reason = primary_reason, exclusion_reason = exclusion_reason,
 			static_exclusion_reason = static_exclusion_reason,
 			housing_excluded_at = housing_excluded_at,
@@ -3081,10 +3091,22 @@ local function settlement_factory()
 											root_y + cell_record.y, root_z + cell_record.z)
 										local target_cid = contract.content_cids[cell_record.content_ref]
 										local class_id = classify(final_data[index], final_param2[index])
+										-- A force-placed cell may also take the natural ground
+										-- body under the surface skin (untouched native rock,
+										-- the planned terrain fill, strata): the sunk roots of
+										-- the emergent jungle tree (Round 22 Phase 6).
+										local opcode = intent_opcode[index]
+										local ground_body = cell_record.force_place and
+											helpers.ground_body_class(class_id) and
+											(opcode == 2 or opcode == 0 and
+												(final_data[index] == original_data[index] or
+													helpers.r5_opcode_at(plan, column_index(
+														root_x + cell_record.x, root_z + cell_record.z),
+														root_y + cell_record.y) == 27))
 										if final_data[index] ~= target_cid and class_id ~= CLASS_AIR and
-												class_id ~= CLASS_NATURAL_VEGETATION and
-												not (cell_record.force_place and intent_opcode[index] >= 1 and
-													intent_opcode[index] <= 4) then
+												class_id ~= CLASS_NATURAL_VEGETATION and not ground_body and
+												not (cell_record.force_place and opcode >= 1 and
+													opcode <= 4) then
 											if cell_record.force_place then
 												flags.forbidden_old_class = true
 											else
