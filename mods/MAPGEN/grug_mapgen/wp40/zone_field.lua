@@ -87,7 +87,10 @@ local function new_simplex(rng)
 	for i = 0, 255 do perm[i + 256] = perm[i] end
 	local grad = {}
 	for i = 0, 511 do grad[i] = perm[i] % 8 end
-	return function(x, y)
+	-- The reference form: a corner contributes only where t > 0. Kept as the
+	-- exact answer for the rare point where the branch-free form below
+	-- cannot tell (a result that is exactly zero).
+	local function exact(x, y)
 		local s = (x + y) * F2
 		local i, j = floor(x + s), floor(y + s)
 		local t = (i + j) * G2
@@ -116,6 +119,42 @@ local function new_simplex(rng)
 			t2 = t2 * t2
 			n = n + t2 * t2 * (GX[g] * x2 + GZ[g] * y2)
 		end
+		return NORM * n
+	end
+	-- The same sum without branches (LuaJIT, Round 22 D4; see
+	-- terrain_field.lua's simplex): the corner tests were side exits of the
+	-- large traces that inline this function, and those side traces fail to
+	-- compile ("register coalescing too complex"). An inactive corner (t <= 0)
+	-- gets the weight +0 and adds only a zero; the active corners run exactly
+	-- the reference operations, so a non-zero result is bit-identical to
+	-- `exact`, and a zero (whose sign may differ) goes to `exact`. i1 is 1
+	-- exactly when x0 > y0.
+	return function(x, y)
+		local s = (x + y) * F2
+		local i, j = floor(x + s), floor(y + s)
+		local t = (i + j) * G2
+		local x0, y0 = x - (i - t), y - (j - t)
+		local i1 = max(0, min(1, -floor(y0 - x0)))
+		local j1 = 1 - i1
+		local x1, y1 = x0 - i1 + G2, y0 - j1 + G2
+		local x2, y2 = x0 - 1 + 2 * G2, y0 - 1 + 2 * G2
+		local ii, jj = band(i, 255), band(j, 255)
+		local t0 = 0.5 - x0 * x0 - y0 * y0
+		t0 = (t0 + abs(t0)) * 0.5
+		local g = grad[ii + perm[jj]]
+		t0 = t0 * t0
+		local n = t0 * t0 * (GX[g] * x0 + GZ[g] * y0)
+		local t1 = 0.5 - x1 * x1 - y1 * y1
+		t1 = (t1 + abs(t1)) * 0.5
+		g = grad[ii + i1 + perm[jj + j1]]
+		t1 = t1 * t1
+		n = n + t1 * t1 * (GX[g] * x1 + GZ[g] * y1)
+		local t2 = 0.5 - x2 * x2 - y2 * y2
+		t2 = (t2 + abs(t2)) * 0.5
+		g = grad[ii + 1 + perm[jj + 1]]
+		t2 = t2 * t2
+		n = n + t2 * t2 * (GX[g] * x2 + GZ[g] * y2)
+		if n == 0 then return exact(x, y) end
 		return NORM * n
 	end
 end
