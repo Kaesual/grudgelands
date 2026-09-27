@@ -433,6 +433,7 @@ local function zones_factory(dependencies)
 				type(horizontal.neighbors) ~= "function" or
 				type(horizontal.housing_eligible_at) ~= "function" or
 				type(horizontal.static_exclusion_values_at) ~= "function" or
+				type(horizontal.capital_protected_at) ~= "function" or
 				type(horizontal.housing_mask_id_at) ~= "function" then
 			fail("horizontal session seam differs")
 		end
@@ -742,6 +743,21 @@ local function zones_factory(dependencies)
 				internal.center = center
 				bbox = {min_x = center.x, max_x = center.x + 1,
 					min_z = center.z, max_z = center.z + 1}
+			elseif recipe.shape == "capital_city_outline" then
+				-- A capital's protected city (plan D76): indexed by the reserved
+				-- square that bounds it, answered by the horizontal session's
+				-- capital protection (`capital_protection.lua`).
+				local center = source_hard.center
+				if type(center) ~= "table" or type(recipe.bound_width) ~= "number" or
+						recipe.bound_width % 2 ~= 0 then
+					fail("hard capital geometry differs")
+				end
+				local half = recipe.bound_width / 2
+				internal.center = center
+				internal.anchor_id = source_hard.source_anchor_id
+				internal.capital = true
+				bbox = {min_x = center.x - half, max_x = center.x + half,
+					min_z = center.z - half, max_z = center.z + half}
 			else
 				fail("unknown hard footprint shape")
 			end
@@ -773,6 +789,8 @@ local function zones_factory(dependencies)
 				return square_member(x, z, row.center, row.total_width)
 			elseif row.shape == "exact_column" then
 				return x == row.center.x and z == row.center.z
+			elseif row.shape == "capital_city_outline" then
+				return horizontal.capital_protected_at(row.anchor_id, x, z)
 			end
 			fail("unknown hard footprint at query")
 		end
@@ -797,9 +815,7 @@ local function zones_factory(dependencies)
 			local candidates = index128.footprint_candidates(hard_index, x, z)
 			for candidate_index = 1, #candidates do
 				local row = hard_by_id[candidates[candidate_index]]
-				if row and row.record.recipe_id ==
-						"hard_capital_build_plus_apron_v1" and
-						hard_horizontal_member(row, x, z) then
+				if row and row.capital and hard_horizontal_member(row, x, z) then
 					return true
 				end
 			end

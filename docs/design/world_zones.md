@@ -1343,8 +1343,8 @@ one-cell settlement checks are unchanged.
   circuit.
 - Each starting settlement has a 128×128 build envelope, a blend ring out to
   256×256 and a guaranteed road to the home zone. Its hard-protected POI is
-  the **complete build envelope plus a 10-node apron** — the same
-  envelope-plus-apron rule as a capital (decided 2026-08-13) — so spawn,
+  the **complete build envelope plus a 10-node apron** (decided
+  2026-08-13) — so spawn,
   waypoint, graveyard and every service platform lie inside one protected
   footprint; `world.md` §2 R1 owns the protection semantics. Terrain beyond
   the apron, including the rest of the blend ring, remains ordinary editable
@@ -1430,8 +1430,8 @@ numeric-truncated seed.
   at y >= 0 and the depth floor alone below y = 0. Deep ocean and dragon
   channels have no ordinary mob-level result; the Kraken Guard remains a
   separate fixed level-100 entity.
-- `guard_level_at(pos)` is nil for every exterior class. Inside the capital
-  512 by 512 build envelope plus its ten-node hard-protection apron it is
+- `guard_level_at(pos)` is nil for every exterior class. Inside a capital's
+  protected city (§12: inside the wall line, the edge and its band) it is
   exactly 60 at y >= -700. At y <= -701 and everywhere else on non-exterior
   land it returns the existing generic base
   `min(70, max(20, surface_mob_level_at(pos)))`. The fixed level-65 king

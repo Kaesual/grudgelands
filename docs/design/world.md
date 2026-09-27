@@ -141,11 +141,12 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
 
 - **R1 — Own faction territory**: digging and building is allowed except in an
   active housing claim or a bounded hard-protected world-content volume.
-  Hard-protected content is limited to complete capitals/gates/aprons,
+  Hard-protected content is limited to complete capital cities (inside the
+  wall line, the wall or planted edge and a bare band beyond it,
+  `world_zones.md` §12),
   complete starting settlements (decided 2026-08-13: the full 128×128 build
-  envelope plus a 10-node apron — the same envelope-plus-apron rule as a
-  capital; spawn, waypoint, graveyard and service platforms all lie inside
-  it), essential service/quest/waypoint/graveyard platforms, and small
+  envelope plus a 10-node apron; spawn, waypoint, graveyard and service
+  platforms all lie inside it), essential service/quest/waypoint/graveyard platforms, and small
   functional NPC and renewable-resource anchors. Roads, open-world bridges,
   villages, outpost/camp shells, ruins, tents, fences and battlefield dressing
   are generated once, remain claim-excluded and may be changed under their
@@ -401,8 +402,13 @@ transaction, boundary, lifecycle, visitor and HUD rules:
 
 There are **three race capitals per continent**, one per race and six total.
 Each sits in its own central named city zone and is protected
-(indestructible) per the POI rule of §2 — the final build envelope plus its
-authored 10-node apron, upward without limit and downward through y = −700.
+(indestructible) per the POI rule of §2 — its planned city: everything inside
+the wall line, the wall (or the open capitals' planted belt) with its
+gatehouses and turrets, and a band about 12 nodes beyond the edge's outermost
+structure (18 nodes from the wall line) that carries no trees and no ground
+cover, so players see where the protection ends (Round 22, D76;
+`world_zones.md` §12). It runs upward without limit and downward through
+y = −700.
 The ordinary contested deep rule resumes at y = −701 even below a capital.
 
 - A capital is a safe civic hub with **no hostile ambient enemies**.
@@ -469,8 +475,7 @@ visible:
   the world-structures package.
 - The T3 positional guard base is `nil` in every exterior class, including
   editable shelf, where no guard post may exist. It is exactly level 60 inside
-  a capital's exact 512×512 build envelope plus 10-node hard-protection apron
-  only at normalized y >= -700.
+  a capital's protected city (§3) only at normalized y >= -700.
   At y <= -701 and everywhere else on non-exterior columns it is
   `min(70, max(20, surface_level_at(pos)))`. WP13 may later raise that non-nil
   generic base outside the shallow capital hard volume, capped at 70, but may

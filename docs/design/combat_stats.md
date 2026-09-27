@@ -515,8 +515,8 @@ Normal tier at level L:
   field (world.md §1) with its own cap of **70** (the mob axis stays
   1–60), and a guard at level **≥ 60 is promoted to elite
   automatically**. Its T3 positional base is `nil` in every exterior class,
-  including shelf. Inside the exact capital build-plus-10 hard-protection x/z
-  mask it is exactly 60 only at normalized y >= -700; at y <= -701 and all
+  including shelf. Inside a capital's protected city (its hard-protection x/z
+  mask, `world_zones.md` §12) it is exactly 60 only at normalized y >= -700; at y <= -701 and all
   other non-exterior positions it is
   `min(70, max(20, surface_level_at(pos)))`. It does not apply the mob depth
   floor. WP13 may later raise that non-nil generic base outside the shallow

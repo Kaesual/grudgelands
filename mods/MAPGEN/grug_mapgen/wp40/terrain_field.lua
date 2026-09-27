@@ -759,6 +759,7 @@ return function(data)
 					e.band = data.capital_target[zone.race_region] or V.start_band
 					e.wave = data.capital_wave[zone.race_region] or 0
 					e.edge = EDGE
+					e.nowarp = V.capital_centred or nil
 				else
 					e.r_in, e.r_out, e.resid = V.start_r_in, V.start_r_out, V.start_resid
 					e.band = V.start_band

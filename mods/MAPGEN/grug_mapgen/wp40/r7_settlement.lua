@@ -74,13 +74,14 @@ M.BOUNDS = {
 	capital_plot = {min = {x = -15, y = -6, z = -15}, max = {x = 15, y = 24, z = 15}},
 	-- The city edge (walls, gatehouses, turrets, the open capitals' planted
 	-- belt) is the one blueprint that legitimately leaves the civic core: it
-	-- stands on the capital planner's outline. Its authorized volume is
-	-- therefore the capital's own HARD PROTECTION -- the 532-node square of
-	-- `source/simple_map.lua`'s `hard_capital_build_plus_apron_v1`, 266 either
-	-- side of the anchor. An edge outside it would write mutable world, which is
-	-- what that protection exists to prevent, so the envelope and the
-	-- protection are deliberately the same number in one place. (The streets
-	-- and connectors are roads, `road_layout.lua`, not blueprints.)
+	-- stands on the capital planner's outline. Its authorized volume is the
+	-- capital's reserved square -- 266 either side of the anchor, the
+	-- `bound_width` of `source/simple_map.lua`'s `hard_capital_city_v1`. The
+	-- capital's protection (plan D76, `capital_protection.lua`) is built from
+	-- the same wall line with the edge's reach and a band beyond it, so the
+	-- edge always lies inside the protected city, and the city inside this
+	-- square. (The streets and connectors are roads, `road_layout.lua`, not
+	-- blueprints.)
 	-- Only its x and z are anchor-relative; its y is absolute, the
 	-- protection's own (y_min -700, upward unbounded), and the edge publishes
 	-- its actual absolute y range (`r7_capital_blueprint.lua`).
@@ -619,11 +620,11 @@ local function prepare_city(fail, descriptor, overlay)
 	for _, key in ipairs({"min_x", "max_x", "min_z", "max_z"}) do
 		integer_or_fail(fail, reach[key], "city edge " .. key, -1023, 1023)
 	end
-	-- the city stays inside the capital's protected square (design question 4)
+	-- the city stays inside the capital's reserved square (design question 4)
 	if reach.min_x < descriptor.bounds.min.x or reach.max_x > descriptor.bounds.max.x or
 			reach.min_z < descriptor.bounds.min.z or reach.max_z > descriptor.bounds.max.z then
 		fail(descriptor.id ..
-			": the city edge leaves the 532-node protected capital footprint")
+			": the city edge leaves the capital's 532-node reserved square")
 	end
 	local bytes = {"schema\t" .. descriptor.identity_schema .. "\n", overlay.spec}
 	local names = {}

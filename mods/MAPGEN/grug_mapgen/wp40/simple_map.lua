@@ -28,6 +28,14 @@ return function(zone_field)
 			"WP40 simple map deterministic dependency missing")
 		local raw_sha256 = assert(dependencies.raw_sha256,
 			"WP40 simple map SHA-256 dependency missing")
+		-- The capitals' protected cities (plan D76): a holder `r7_runtime.lua`
+		-- fills with `capital_protection.lua` shapes once the capital layouts
+		-- are known ({shapes = {anchor id -> shape}}). A capital's claim and hard
+		-- exclusions answer from it; asking before it is filled is an error.
+		local capital_protection = dependencies.capital_protection
+		if capital_protection ~= nil and type(capital_protection) ~= "table" then
+			error("WP40 simple map capital protection differs", 0)
+		end
 		local Q = 65536
 		local floor, abs, max, min = math.floor, math.abs, math.max, math.min
 		-- WP13 playtest round 1 (2026-09-15): hard protection restricts BUILDING,
@@ -392,7 +400,24 @@ return function(zone_field)
 				end
 			end
 			local hard_recipe_by_id = {}
-			for _, row in ipairs(source.hard_protection_recipes) do hard_recipe_by_id[row.id] = row end
+			local CAPITAL_BOUND_WIDTH
+			for _, row in ipairs(source.hard_protection_recipes) do
+				hard_recipe_by_id[row.id] = row
+				if row.shape == "capital_city_outline" then CAPITAL_BOUND_WIDTH = row.bound_width end
+			end
+			if type(CAPITAL_BOUND_WIDTH) ~= "number" or CAPITAL_BOUND_WIDTH % 2 ~= 0 then
+				fail("capital city bound differs")
+			end
+			-- Membership of a capital's protected city (plan D76).
+			local function capital_city_member(anchor_id, x, z)
+				local shapes = capital_protection and capital_protection.shapes
+				if not shapes then
+					fail("capital protection asked before the capital layouts were planned")
+				end
+				local city = shapes[anchor_id]
+				if not city then fail("capital protection missing: " .. tostring(anchor_id)) end
+				return city.member(x, z)
+			end
 			local profile_by_id = {}
 			for _, row in ipairs(source.anchor_profiles) do profile_by_id[row.id] = row end
 			local island_zone_by_id = {}
@@ -405,7 +430,16 @@ return function(zone_field)
 				local record = exclusion_source_by_id[exclusion.source_id]
 				local shape = {numeric_id = index, id = exclusion.id, record = record}
 				local recipe = exclusion.recipe_id
-				if recipe == "exclude_anchor_blend_v1" then
+				if recipe == "exclude_anchor_blend_v1" and record.slot_id == "capital" then
+					-- A capital's fitting is its civic core and collar, inside the
+					-- city; its claim envelope is the protected city itself (plan
+					-- D76), so claims, ground cover and caves return right beyond
+					-- the band. Vegetation skips it like a start's envelope; the
+					-- hard core below answers for the same city.
+					shape.kind = "capital_city" shape.anchor_id = record.id
+					shape.center = exclusion.center
+					shape.anchor_blend = true
+				elseif recipe == "exclude_anchor_blend_v1" then
 					shape.kind = "square" shape.center = exclusion.center
 					shape.total_width = exclusion.total_width
 					local profile = profile_by_id[record.template_id]
@@ -444,6 +478,12 @@ return function(zone_field)
 					local e = shape.expansion
 					shape.bounds = {min_x = b.min_x - e, max_x = b.max_x + e,
 						min_z = b.min_z - e, max_z = b.max_z + e}
+				elseif recipe == "exclude_active_core_v1" and
+						hard_recipe_by_id[record.recipe_id].shape == "capital_city_outline" then
+					-- A capital's protected city (plan D76): every purpose refuses
+					-- it, vegetation included, so the band stays bare.
+					shape.kind = "capital_city" shape.anchor_id = record.source_anchor_id
+					shape.center = record.center
 				elseif recipe == "exclude_active_core_v1" then
 					local hard_recipe = hard_recipe_by_id[record.recipe_id]
 					if record.recipe_id == "hard_start_core_v1" then
@@ -461,6 +501,10 @@ return function(zone_field)
 				end
 				if shape.kind == "square" then
 					local half = floor((shape.total_width + 1) / 2)
+					shape.bounds = {min_x = shape.center.x - half, max_x = shape.center.x + half,
+						min_z = shape.center.z - half, max_z = shape.center.z + half}
+				elseif shape.kind == "capital_city" then
+					local half = CAPITAL_BOUND_WIDTH / 2
 					shape.bounds = {min_x = shape.center.x - half, max_x = shape.center.x + half,
 						min_z = shape.center.z - half, max_z = shape.center.z + half}
 				end
@@ -529,6 +573,8 @@ return function(zone_field)
 					return owner == shape.zone and coast > -shape.expansion
 				elseif kind == "polygon" then
 					return expanded_polygon_member(x, z, shape.polygon, shape.expansion)
+				elseif kind == "capital_city" then
+					return capital_city_member(shape.anchor_id, x, z)
 				end
 				return false
 			end
@@ -713,6 +759,12 @@ return function(zone_field)
 				end
 				if not in_rectangle(x, z, QUERY_BOUNDS, 0) then return nil end
 				return static_exclusion_values_at(x, z, purpose)
+			end
+
+			-- True on a capital's protected city (plan D76): the zone authority's
+			-- hard row for that capital asks this.
+			function session.capital_protected_at(anchor_id, x, z)
+				return capital_city_member(anchor_id, x, z)
 			end
 
 			function session.selected_anchor_2d(zone_id, slot_id)

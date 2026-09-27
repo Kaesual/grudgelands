@@ -491,8 +491,13 @@ source.anchor_profiles = {
 	{id="apex_mine",shape="mine_terrace",building_core_width=32,fitting_width=96,blend_width=160,force_native_dungeon=false},
 	{id="rare_route",shape="patrol_route",building_core_width=12,fitting_width=32,blend_width=64,force_native_dungeon=false},
 }
+-- A capital's protection is its planned city (Round 22, plan D76): inside the
+-- wall line, the edge and a band beyond it, built from the capital layout
+-- (`capital_protection.lua`). `bound_width` is the reserved square that always
+-- contains it: the index box, and the footprint the zone field keeps in-zone
+-- on land.
 source.hard_protection_recipes = {
-	{id="hard_capital_build_plus_apron_v1",shape="centered_half_open_square",footprint_policy_id="centered_half_open_square_v1",total_width=532,y_policy_id="shallow_land_upward_to_world_top",y_min=-700,upward_unbounded=true},
+	{id="hard_capital_city_v1",shape="capital_city_outline",footprint_policy_id="capital_city_outline_v1",bound_width=532,y_policy_id="shallow_land_upward_to_world_top",y_min=-700,upward_unbounded=true},
 	{id="hard_start_core_v1",shape="centered_half_open_square",footprint_policy_id="centered_half_open_square_v1",total_width=148,y_policy_id="shallow_land_upward_to_world_top",y_min=-700,upward_unbounded=true},
 	{id="hard_apex_socket_column_v1",shape="exact_column",footprint_policy_id="exact_column_v1",column_count=1,y_policy_id="shallow_land_upward_to_world_top",y_min=-700,upward_unbounded=true},
 }
@@ -503,7 +508,7 @@ for anchor_index = 1, 12 do
 	source.hard_protection[#source.hard_protection+1] = {
 		id="hard:"..anchor.id,source_anchor_id=anchor.id,
 		recipe_id=anchor.slot_id == "capital" and
-			"hard_capital_build_plus_apron_v1" or "hard_start_core_v1",
+			"hard_capital_city_v1" or "hard_start_core_v1",
 		center=point(anchor.position.x,anchor.position.z),active=true,
 		activation_owner="WP40",status="active",
 	}
