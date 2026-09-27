@@ -8,7 +8,7 @@
 --   local text = roads.serialize(layout)              -- the ipc_set payload
 --   local S = roads.sampler(roads.deserialize(text))  -- main and emerge
 --   S.column(x, z, t, wy) -> per-column road answer (see sampler)
---   layout.connect(kind, a, b, through)               -- point-to-point (main)
+--   roads.build(seed, {kit = true, ...})              -- the capital planner's kit
 --
 -- Mechanism:
 --  1. Routing on the shared 16-node natural-field grid of the water layout
@@ -32,7 +32,14 @@
 --     slope bound keeps every pair of neighbouring road columns within 1/2
 --     node after rounding to half steps (D49), hairpins and junction mouths
 --     are flat, bridges clear the water by CLEAR, shallow water may be
---     forded. The uphill edge's cut costs more on steep side slopes, so a
+--     forded. Where two roads' surfaces touch outside a junction mouth (or a
+--     road's own legs do), the later one targets the earlier one's level
+--     (contacts, D49); a road stays at or above water just beyond its edges
+--     where it would otherwise be cut below it (the raster's bank guard
+--     would leave a step); a second road from one start branches off the
+--     first; in the final profile pass an infeasible profile is retried with
+--     unbridgeable water costly instead of forbidden, so its pinned ends
+--     hold. The uphill edge's cut costs more on steep side slopes, so a
 --     half gallery beats a deep cut (D67). Free decks (no ground on either
 --     side, outside a short valley crossing) are a last resort (D68); the
 --     audit only classifies them.
@@ -66,6 +73,23 @@ local DEFAULT_P = {
 	C_STEP = 0.05,
 	DP_BELOW = 10, DP_ABOVE = 8, Q = 16,
 	DECK_GAP = 4, DECK_MIN = 4,
+	-- contacts (D49): where a road's surface touches an earlier road's (or
+	-- its own earlier leg's) surface, its profile targets that level:
+	-- centrelines within both half widths + CONTACT_PAD, alongside (headings
+	-- within acos(CONTACT_COS)) or a crossing less than OVERPASS apart (a
+	-- level crossing; a higher deck passes over); K_CONTACT per node of
+	-- deviation per point; own legs count from SELF_GAP points apart
+	CONTACT_PAD = 1.5, CONTACT_COS = 0.5, OVERPASS = 4, K_CONTACT = 200, SELF_GAP = 16,
+	-- a profile without a feasible solution is solved again with water it
+	-- cannot bridge or ford at this cost per point (times 1 + the nodes below
+	-- the surface) instead of forbidden, so its pinned ends (junctions,
+	-- gates, road ends) hold
+	C_WET_SOFT = 200,
+	-- water within BANK_REACH beyond a road edge (the raster's bank guard:
+	-- a dry column is never cut below water within 2 nodes, it keeps its
+	-- bank as a step in the road): the profile pays K_BANK per node below
+	-- that water where the ground would be cut (D49)
+	BANK_REACH = 2, K_BANK = 20,
 	-- deck audit (D67): gallery tolerance, short valley crossing, deep cut run
 	GALLERY_TOL = 1, CROSS_MAX = 32, DEEP_RUN = 6,
 	-- sampler / raster
@@ -645,8 +669,17 @@ local function new_module(P)
 			local Fc = math.ceil(parent.hw / sn + child.hw * cs / sn) + P.JUNCTION_FLAT
 			return Fp, Fc
 		end
-		local function solve(road)
+		-- `road.tgt` (optional): contact targets {[i] = level in 1/Q} from
+		-- `contact_targets`; `soft`: the retry of an infeasible profile, only
+		-- while `soft_ok` (the final profile passes: the network's final loop
+		-- and `kit.finish`). A provisional solve keeps unbridgeable water
+		-- forbidden, so a planner's lane through such water still comes out
+		-- infeasible and is rejected.
+		local soft_ok = false
+		local function solve(road, soft)
 			local X, Z, n, hw = road.X, road.Z, #road.X, road.hw
+			local tgt = road.tgt
+			local KC = P.K_CONTACT / Q
 			local T, WY = road.T, road.WY
 			local R = curvature(X, Z, 3)
 			local dmax = {}       -- per step i-1 -> i, in 1/Q node
@@ -701,7 +734,7 @@ local function new_module(P)
 				for i = max(1, n - P.END_FLAT), n do dmax[i] = 0 end
 			end
 			local pin_start
-			if road.a_kind == "start" then
+			if road.a_kind == "start" and not road.a_parent then
 				-- the gate stretch starts on the start pad's ground, level
 				pin_start = floor((road.a_y or T[1][1]) * Q + 0.5)
 				for i = 1, min(n, P.START_STRETCH) do dmax[i] = 0 end
@@ -711,7 +744,7 @@ local function new_module(P)
 			if core_pins and road.b_core and road.b_y and not road.parent then
 				pin_end = floor(road.b_y * Q + 0.5)
 			end
-			-- a point-to-point road may pin its ends (a gate's ground)
+			-- a kit street may pin its ends (a gate floor, a road end's level)
 			if road.pin_a then pin_start = floor(road.pin_a * Q + 0.5) end
 			if road.pin_b and not road.parent then pin_end = floor(road.pin_b * Q + 0.5) end
 			-- Kit streets (capital planner): a T junction at the first point
@@ -739,7 +772,12 @@ local function new_module(P)
 					if wy - t <= P.FORD_DEPTH and r <= wy and r >= wy - 1 then
 						return P.C_FORD + C_FILL * max(0, r - t)
 					end
-					return centre and INF or P.C_WET_SIDE
+					-- (a soft retry: water it can neither bridge nor ford costs
+					-- instead of forbidding the level, more for every node the
+					-- level lies below the water surface)
+					if not centre then return P.C_WET_SIDE end
+					if not soft then return INF end
+					return P.C_WET_SOFT * (1 + max(0, wy - r))
 				end
 				local d = r - t
 				if d >= 0 then
@@ -750,6 +788,20 @@ local function new_module(P)
 				if c > P.CUT_DEEP then return cm * (C_CUT * c + P.C_DEEP * (c - P.CUT_DEEP)) end
 				return cm * C_CUT * c
 			end
+			-- bank guard (BANK_REACH): the level a dry point is lifted to by
+			-- water beside it, where its ground lies higher than that water
+			local LIFT = {}
+			local BK = road.BK
+			if BK then
+				for i = 1, n do
+					local b = BK[i]
+					if b then
+						local t = T[i]
+						LIFT[i] = min(b, max(t[1], t[2], t[3]))
+					end
+				end
+			end
+			local KB = P.K_BANK
 			-- cut multiplier per point and edge: the cut slope behind the uphill
 			-- edge climbs the side slope, so its scar grows like 1 / (1 - slope);
 			-- on steep side slopes a half gallery (shallow uphill cut, downhill
@@ -773,6 +825,12 @@ local function new_module(P)
 				end
 				lo[i] = floor(Q * (tl - P.DP_BELOW))
 				hi[i] = floor(Q * (th + P.DP_ABOVE)) + 1
+				-- a contact target is always a reachable level
+				local v = tgt and tgt[i]
+				if v then
+					if v < lo[i] then lo[i] = v end
+					if v > hi[i] then hi[i] = v end
+				end
 			end
 			if pin_start then lo[1], hi[1] = pin_start, pin_start end
 			if pin_end then lo[n], hi[n] = pin_end, pin_end end
@@ -800,6 +858,7 @@ local function new_module(P)
 					local pc = 0
 					local cm = {1, CM2[1], CM3[1]}
 					for s = 1, 3 do pc = pc + w[s] * scost(r, t[s], wy[s] or nil, s == 1, cm[s]) end
+					if tgt and tgt[1] then pc = pc + KC * abs(v - tgt[1]) end
 					prev[v - lo[1] + 1] = pc
 				end
 			end
@@ -870,6 +929,8 @@ local function new_module(P)
 				local m2, m3 = CM2[i], CM3[i]
 				cmi[2], cmi[3] = m2, m3
 				local dry = not (w1 and w1 > t1) and not (w2 and w2 > t2) and not (w3 and w3 > t3)
+				local tg = tgt and tgt[i]
+				local lf = not (w1 and w1 > t1) and LIFT[i] or nil
 				for v = vlo, vhi do
 					local r = v / Q
 					local pc
@@ -898,6 +959,8 @@ local function new_module(P)
 						pc = 0
 						for s = 1, 3 do pc = pc + w[s] * scost(r, t[s], wy[s] or nil, s == 1, cmi[s]) end
 					end
+					if tg then pc = pc + KC * abs(v - tg) end
+					if lf and lf > r then pc = pc + KB * (lf - r) end
 					local best, arg = INF, nil
 					if pc < INF then
 						if v >= plo and v <= phi then best, arg = prev[v - plo + 1], v end
@@ -923,12 +986,34 @@ local function new_module(P)
 				if val < last then last, bestv = val, v end
 			end
 			local RQ, Rv = {}, {}
+			if bestv and soft then
+				-- a soft profile that sinks deeper than a ford anywhere (a
+				-- ford's road lies at most one node below the surface) is no
+				-- road either: the ground fallback below takes over
+				local v = bestv
+				for i = n, 1, -1 do
+					local wy = WY[i][1]
+					if wy and wy > T[i][1] and v / Q < wy - 1 then bestv = nil break end
+					if i > 1 then v = back[i][v - lo[i] + 1] end
+				end
+			end
+			-- Retry order: first the soft retry (final passes only), then, if
+			-- that fails too, the core-pin drop (which keeps `soft`), then
+			-- the ground fallback.
+			if not bestv and not soft and soft_ok then
+				-- water the pinned profile can neither bridge nor ford (e.g. a
+				-- shallow river right beside a pinned end): solve again with
+				-- such water costly instead of forbidden, so the ends hold
+				-- (the raster makes a road above such water a low deck)
+				stats.soft_wet = (stats.soft_wet or 0) + 1
+				return solve(road, true)
+			end
 			if not bestv and core_pins and (road.a_core or road.b_core) then
 				-- the core pins do not fit (a core far above or below its
 				-- approach within the road's length): free those ends
 				road.no_core_pin = true
 				stats.core_pin_dropped = (stats.core_pin_dropped or 0) + 1
-				return solve(road)
+				return solve(road, soft)
 			end
 			if not bestv then
 				-- no profile within the windows (should not happen): follow the
@@ -1087,6 +1172,131 @@ local function new_module(P)
 		end
 
 		-----------------------------------------------------------------------
+		-- Contacts (D49). A junction mouth is flat and pinned to its parent,
+		-- but roads also touch elsewhere: two roads leaving one start through
+		-- its gate stretch, a connector running beside the road it continues
+		-- or beside another road, a road end beside a street, a road's own
+		-- legs where it doubles back. The raster gives every column the
+		-- nearest road's level, so where two surfaces touch at different
+		-- levels the boundary is a step. The later road (higher build rank)
+		-- therefore targets the earlier road's level at every point whose
+		-- centreline lies within both half widths + CONTACT_PAD of the earlier
+		-- road's centreline, with K_CONTACT per node of deviation in the
+		-- profile DP: the two surfaces then meet level wherever the grade rule
+		-- allows it. That holds for roads running alongside (headings within
+		-- acos(CONTACT_COS)) and for crossings whose first profiles lie less
+		-- than OVERPASS apart (a level crossing); a crossing further apart
+		-- stays an overpass (the higher deck passes over the lower road),
+		-- which the raster cannot join level anyway. A road's own
+		-- earlier leg (at least SELF_GAP points back) counts the same way,
+		-- from the road's first profile, with that leg held at its level.
+		-----------------------------------------------------------------------
+		local CB = 32
+		local HALF_MAX = 0
+		for _, h in pairs(P.HALF) do if h > HALF_MAX then HALF_MAX = h end end
+		-- segment buckets over `list` (roads with X, Z, hw and, at query time,
+		-- R); rank[k]: the build rank of list[k] (a lower rank is earlier)
+		local function contact_index(list, rank)
+			local buckets = {}
+			local pad = 2 * HALF_MAX + P.CONTACT_PAD + 1
+			for k, r in ipairs(list) do
+				local X, Z = r.X, r.Z
+				for i = 1, #X - 1 do
+					local x0, x1 = min(X[i], X[i + 1]) - pad, max(X[i], X[i + 1]) + pad
+					local z0, z1 = min(Z[i], Z[i + 1]) - pad, max(Z[i], Z[i + 1]) + pad
+					for bz = floor(z0 / CB), floor(z1 / CB) do
+						for bx = floor(x0 / CB), floor(x1 / CB) do
+							local key = bz * 8192 + bx
+							local l = buckets[key]
+							if not l then l = {}; buckets[key] = l end
+							l[#l + 1] = k * 65536 + i
+						end
+					end
+				end
+			end
+			return {buckets = buckets, list = list, rank = rank}
+		end
+		-- targets of `road` (list position `self_k` in the index): against
+		-- earlier roads (`own` false) or against its own earlier legs (`own`
+		-- true; also returns the held levels of those legs). Returns nil
+		-- when there is no contact.
+		local function contact_targets(road, index, self_k, own)
+			local X, Z, n = road.X, road.Z, #road.X
+			local list, rank, buckets = index.list, index.rank, index.buckets
+			local myrank = rank[self_k]
+			local gap, cmin, pad = P.SELF_GAP, P.CONTACT_COS, P.CONTACT_PAD
+			local tgt, held, count
+			for i = 1, n do
+				local x, z = X[i], Z[i]
+				local l = buckets[floor(z / CB) * 8192 + floor(x / CB)]
+				if l then
+					local a, b = max(1, i - 2), min(n, i + 2)
+					local tx, tz = X[b] - X[a], Z[b] - Z[a]
+					local tl = sqrt(tx * tx + tz * tz)
+					local bd, bt, bj = INF, nil, nil
+					for e = 1, #l do
+						local code = l[e]
+						local k, j = floor(code / 65536), code % 65536
+						local ok
+						if own then ok = k == self_k and j + 1 <= i - gap
+						else ok = k ~= self_k and rank[k] < myrank end
+						if ok then
+							local B = list[k]
+							local ax, az = B.X[j], B.Z[j]
+							local vx, vz = B.X[j + 1] - ax, B.Z[j + 1] - az
+							local l2 = vx * vx + vz * vz
+							local u = l2 > 0 and ((x - ax) * vx + (z - az) * vz) / l2 or 0
+							if u < 0 then u = 0 elseif u > 1 then u = 1 end
+							local rx, rz = x - ax - u * vx, z - az - u * vz
+							local d = sqrt(rx * rx + rz * rz)
+							if d <= road.hw + B.hw + pad and d < bd and tl > 0 and l2 > 0 then
+								local t = B.R[j] + u * (B.R[j + 1] - B.R[j])
+								if abs(tx * vx + tz * vz) >= cmin * tl * sqrt(l2) or
+										not road.R or abs(t - road.R[i]) < P.OVERPASS then
+									bd, bj, bt = d, j, t
+								end
+							end
+						end
+					end
+					if bt then
+						tgt = tgt or {}
+						tgt[i] = floor(bt * Q + 0.5)
+						count = (count or 0) + 1
+						if own then
+							held = held or {}
+							held[bj], held[bj + 1] = road.RQ[bj], road.RQ[bj + 1]
+						end
+					end
+				end
+			end
+			return tgt, held, count
+		end
+		-- the final profile of one road with its contacts (the index holds
+		-- every road of this build; earlier roads already final)
+		local function solve_contacts(road, index, k, must)
+			local tgt, _, count = contact_targets(road, index, k, false)
+			road.tgt = tgt
+			if tgt then
+				stats.contact_roads = (stats.contact_roads or 0) + 1
+				stats.contact_points = (stats.contact_points or 0) + count
+			end
+			if tgt or must then solve(road) end
+			local own, held, ocount = contact_targets(road, index, k, true)
+			if own then
+				-- hold the earlier legs, then the later legs follow them
+				local merged = {}
+				for i, v in pairs(held) do merged[i] = v end
+				for i, v in pairs(own) do merged[i] = v end
+				for i, v in pairs(tgt or {}) do merged[i] = v end
+				road.tgt = merged
+				stats.self_contact_roads = (stats.self_contact_roads or 0) + 1
+				stats.self_contact_points = (stats.self_contact_points or 0) + ocount
+				solve(road)
+			end
+			road.tgt = nil
+		end
+
+		-----------------------------------------------------------------------
 		-- Geometry of a routed road: cell path -> smooth 1-node centreline.
 		-----------------------------------------------------------------------
 		local function make_geometry(ctrl, hw)
@@ -1234,6 +1444,49 @@ local function new_module(P)
 				end
 			end
 			road.T, road.WY = T, WY
+			-- water just beyond the edges (BANK_REACH), sampled at the edge
+			-- cadence only where the coarse grid has water cost (rivers,
+			-- lakes, a planner's wet cells) within one cell; points between
+			-- take the higher of their two sampled neighbours
+			local BK, bank = {}, false
+			local last = nil
+			for i = 1, n do
+				if i % P.EDGE_EVERY == 1 or i == n or P.EDGE_EVERY == 1 then
+					local k = cell_of(X[i], Z[i])
+					local near = false
+					if k then
+						local ix, iz = k % nx, floor(k / nx)
+						for dz = -1, 1 do
+							for dx = -1, 1 do
+								local jx, jz = ix + dx, iz + dz
+								local j = jx >= 0 and jz >= 0 and jx < nx and jz < nz and LI[jz * nx + jx]
+								if j and WATERC[j] > 0 then near = true end
+							end
+						end
+					end
+					if near then
+						local a, b = max(1, i - 2), min(n, i + 2)
+						local tx, tz = X[b] - X[a], Z[b] - Z[a]
+						local l = sqrt(tx * tx + tz * tz)
+						if l < 1e-9 then l = 1 end
+						local o = hw + P.BANK_REACH
+						local ox, oz = -tz / l * o, tx / l * o
+						local t1, w1 = sample(X[i] + ox, Z[i] + oz)
+						local t2, w2 = sample(X[i] - ox, Z[i] - oz)
+						local wb = (w1 and w1 > t1) and w1 or nil
+						if w2 and w2 > t2 and (not wb or w2 > wb) then wb = w2 end
+						if wb then BK[i] = wb; bank = true end
+					end
+					if last then
+						for j = last + 1, i - 1 do
+							local va, vb = BK[last], BK[i]
+							if va or vb then BK[j] = max(va or -INF, vb or -INF) end
+						end
+					end
+					last = i
+				end
+			end
+			road.BK = bank and BK or nil
 			local U, Lo = {}, {}
 			for i = 1, n do
 				local t = T[i][1]
@@ -1450,6 +1703,36 @@ local function new_module(P)
 			if a.core then trim_front(a.core / 2 + P.CORE_GAP + hw) end
 			if b and b.core and info.kind == "node" then trim_back(b.core / 2 + P.CORE_GAP + hw) end
 			if #X < 2 then return nil end
+			-- A second road from one start (a loop; a start is always its near
+			-- end) leaves through the same gate stretch as the first and runs
+			-- on top of it until they part, two surfaces at two levels: it
+			-- becomes a branch of the first road instead, starting on that
+			-- road's centreline where its own centre leaves that road's surface
+			-- (an a_parent Y junction: a flat mouth on the first road, the
+			-- branch pinned to its level there).
+			if a.kind == "start" then
+				local first
+				for _, r in ipairs(roads) do
+					if r.a == a.id then first = r break end
+				end
+				if first then
+					local i0
+					for i = 1, #X do
+						local _, d = nearest_idx(first, X[i], Z[i])
+						if d > first.hw then i0 = i break end
+					end
+					if not i0 or #X - i0 < 16 then return nil end
+					local pidx = nearest_idx(first, X[i0], Z[i0])
+					local q = {{first.X[pidx], first.Z[pidx]}}
+					for i = i0, #X do q[#q + 1] = {X[i], Z[i]} end
+					q = resample(q, 1)
+					X, Z = {}, {}
+					for i, pt in ipairs(q) do
+						X[i], Z[i] = floor(pt[1] * LAT + 0.5) / LAT, floor(pt[2] * LAT + 0.5) / LAT
+					end
+					road.a_parent, road.a_parent_idx = first.id, pidx
+				end
+			end
 			-- a trimmed end is pinned to the core's fitted height, so the road
 			-- meets the pad level and leaves the core's ground alone
 			road.a_core = a.core ~= nil
@@ -1470,6 +1753,12 @@ local function new_module(P)
 			if road.parent then
 				local parent = roads[road.parent]
 				parent.junctions[#parent.junctions + 1] = {idx = road.parent_idx, road = road.id}
+			end
+			if road.a_parent then
+				local parent = roads[road.a_parent]
+				parent.junctions[#parent.junctions + 1] = {idx = road.a_parent_idx, road = road.id,
+					side = "a"}
+				stats.start_branches = (stats.start_branches or 0) + 1
 			end
 			-- capital ends
 			for _, nd in ipairs({a, b}) do
@@ -1679,9 +1968,20 @@ local function new_module(P)
 			-- final profiles in build order (parents first), classes and audit
 			function kit.finish()
 				local t4 = os.clock()
-				stats.infeasible, stats.infeasible_ids = nil, nil
+				stats.infeasible, stats.infeasible_ids, stats.soft_wet = nil, nil, nil
+				stats.contact_roads, stats.contact_points = nil, nil
+				stats.self_contact_roads, stats.self_contact_points = nil, nil
 				for _, road in ipairs(roads) do road.dead_at = nil end
-				for _, road in ipairs(roads) do solve(road) end
+				-- the network's roads near the city (opts.fixed) come first:
+				-- a street or connector touching one takes its level (contacts)
+				local list, rank = {}, {}
+				for _, r in ipairs(opts.fixed or {}) do list[#list + 1] = r; rank[#list] = 0 end
+				local base = #list
+				for _, road in ipairs(roads) do list[#list + 1] = road; rank[#list] = road.id end
+				local cindex = contact_index(list, rank)
+				soft_ok = true
+				for k, road in ipairs(roads) do solve_contacts(road, cindex, base + k, true) end
+				soft_ok = false
 				for _, road in ipairs(roads) do classify(road); audit(road) end
 				stats.t_profile = (stats.t_profile or 0) + os.clock() - t4
 				stats.samples = nsample
@@ -1837,20 +2137,26 @@ local function new_module(P)
 		local T4 = os.clock()
 		-- solve in build order (parents first; loops after both ends exist)
 		-- A road's provisional profile is final unless it has since gained a
-		-- junction or its parent's height at the junction changed: solve is a
-		-- pure function of those inputs and the road's own geometry and
-		-- samples, so those roads keep their profile as it is.
-		for _, road in ipairs(roads) do
+		-- junction, its parent's height at the junction changed or it touches
+		-- an earlier road or its own earlier leg (contacts): solve is a pure
+		-- function of those inputs and the road's own geometry and samples,
+		-- so the other roads keep their profile as it is.
+		local rank = {}
+		for k, road in ipairs(roads) do rank[k] = road.id end
+		local cindex = contact_index(roads, rank)
+		stats.soft_wet = nil
+		soft_ok = true
+		for k, road in ipairs(roads) do
 			local pin_now = false
 			if road.parent then
 				local parent = roads[road.parent]
 				pin_now = parent.RQ and parent.RQ[road.parent_idx] or false
 			end
-			if not road.RQ or road.solved_junctions ~= #road.junctions or
-					(road.parent and road.solved_parent_pin ~= pin_now) then
-				solve(road)
-			end
+			solve_contacts(road, cindex, k, not road.RQ or road.solved_junctions ~= #road.junctions or
+				(road.parent and road.solved_parent_pin ~= pin_now) or road.a_parent ~= nil or
+				road.cost == INF)
 		end
+		soft_ok = false
 		stats.t_profile = os.clock() - T4
 		stats.samples = nsample
 
@@ -1864,42 +2170,7 @@ local function new_module(P)
 			end
 		end
 		stats.t_total = os.clock() - T0
-		local layout = {roads = roads, stats = stats, seed = seed}
-
-		-- Point-to-point routing (plan §11, D59/D60): a road of `kind` from
-		-- `a` to `b` ({x =, z =, y = optional ground y to pin the end to})
-		-- with the network's own routing costs, geometry, profile and
-		-- classes, appended to this layout (serialize afterwards). `through`
-		-- lists reservation ids the road may enter (e.g. the capital whose
-		-- gate it reaches). Main only, after build; returns the road or nil.
-		function layout.connect(kind, a, b, through)
-			if not P.HALF[kind] then error("road kind differs: " .. tostring(kind), 2) end
-			local na = {id = "point", kind = "point", x = a.x, z = a.z}
-			local nb = {id = "point", kind = "point", x = b.x, z = b.z}
-			local ka, kb = cell_of(a.x, a.z), cell_of(b.x, b.z)
-			if not (ka and LI[ka] and kb and LI[kb]) then return nil end
-			local allow = {}
-			for li, id in pairs(owner) do
-				for _, t in ipairs(through or {}) do
-					if id == t then allow[li] = true end
-				end
-			end
-			local target = LI[kb]
-			local path, info, cost, dirs = search({{LI[ka], nil, 0}}, function(li)
-				if li == target then return {kind = "node"} end
-			end, heur_to(nb), nil, kind == "trail", nil, allow)
-			if not path then return nil end
-			-- both points in one grid cell: the straight piece between them
-			if #path == 1 then path, dirs = {path[1], path[1]}, {dirs[1], dirs[1]} end
-			local road = make_candidate(kind, na, nb, path, info, dirs, nil)
-			if not road then return nil end
-			road.pin_a, road.pin_b = a.y, b.y
-			if a.y or b.y then solve(road); classify(road) end
-			audit(road)
-			commit(road)
-			return road
-		end
-		return layout
+		return {roads = roads, stats = stats, seed = seed}
 	end
 
 	---------------------------------------------------------------------------

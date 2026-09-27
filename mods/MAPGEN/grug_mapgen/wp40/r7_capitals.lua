@@ -189,7 +189,7 @@ return function(wp40_directory)
 			local inputs = {anchor = anchor, sample = session.fitted_values_at,
 				core_landing = core_landing,
 				rivers = rivers, simplex = env.simplex, road_ends = ends, plots = plots,
-				roads_module = env.roads}
+				roads_module = env.roads, network_roads = network.roads}
 			local t0 = os.clock()
 			local plan = planner.plan(env.seed, inputs, opts)
 			local seconds = os.clock() - t0

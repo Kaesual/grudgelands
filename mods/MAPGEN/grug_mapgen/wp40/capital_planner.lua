@@ -187,7 +187,8 @@ end
 --   I.road_ends = {{x, z, q (profile level in 1/16), hx, hz (heading into
 --   the area), kind, road}}; I.plots = the plot kit ({id, district, kind,
 --   bounds, clear_to, required}); I.roads_module = the road module (the
---   planner derives its city parameters, M.city_roads)
+--   planner derives its city parameters, M.city_roads); I.network_roads =
+--   the network's roads (streets and connectors meet them level, D49)
 -------------------------------------------------------------------------------
 function M.plan(seed, I, opt)
 	local P = {}
@@ -531,7 +532,19 @@ function M.plan(seed, I, opt)
 	local grid = {nx = gn, nz = gn, cell = C, x0 = AX + gx0, z0 = AZ + gx0, height = gh, land = gl}
 	local city = M.city_roads(I.roads_module)
 	local Q = city.P.Q
+	-- the network's roads reaching into the sampled square: a street or
+	-- connector touching one takes its level there (road module contacts, D49)
+	local fixed = {}
+	for _, r in ipairs(I.network_roads or {}) do
+		for i = 1, #r.X, 4 do
+			if max(abs(r.X[i] - AX), abs(r.Z[i] - AZ)) <= EXT + 16 then
+				fixed[#fixed + 1] = r
+				break
+			end
+		end
+	end
 	local kit = city.build(seed, {
+		fixed = fixed,
 		kit = true, grid = grid, rivers = I.rivers, simplex = I.simplex, nodes = {},
 		terrain_at = function(x, z) local t = I.sample(x, z) return t end,
 		water_at = function(x, z) local t, wy = I.sample(x, z) return (wy and wy > t) and wy or nil end,
