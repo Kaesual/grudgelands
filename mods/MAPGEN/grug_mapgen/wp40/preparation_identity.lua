@@ -1,7 +1,12 @@
 -- One load-time guard for the live column/selection code. Runtime content IDs
 -- are deliberately absent: normal engine restarts can assign different IDs.
-return function(directory, sha256)
-	local files = {
+--
+-- `files` (optional): the relative paths to digest instead of the default
+-- list below, in the order given; the world-folder layout cache
+-- (`layout_cache.lua`) digests the whole mapgen mod tree through this same
+-- routine.
+return function(directory, sha256, files)
+	files = files or {
 		"source/simple_map.lua", "zone_field.lua", "schemas.lua", "canonical.lua",
 		"deterministic.lua", "index128.lua", "simple_map.lua", "height.lua",
 		"terrain_field.lua", "terrain_data.lua", "water_layout.lua", "road_layout.lua",

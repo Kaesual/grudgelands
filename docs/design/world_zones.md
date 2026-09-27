@@ -930,8 +930,8 @@ graph requirement may shape a zone, and nothing may require a graph to be
 - **Routing (as built, Round 22 Phase 4).** Routes are found once, when
   the world session is built in main, by pathfinding over the water layout's
   16-node grid of the natural terrain (grade, cross slope, rivers, lakes,
-  reserved areas), and handed to the map generator as data; nothing is
-  cached on disk. Turns cost, so steep slopes are climbed by serpentines with
+  reserved areas), and handed to the map generator as data; the result is
+  kept in the world folder and reused on later boots (§13.4). Turns cost, so steep slopes are climbed by serpentines with
   long legs one grid cell (16 nodes) apart. The path is smoothed into a
   curve with a small lateral wiggle on gentle ground, so no long straight
   segment appears.
@@ -1289,7 +1289,8 @@ one-cell settlement checks are unchanged.
   - Highcourt's one-level quay canal beside its outer ring lane (D58), sealed
     off natural water.
   The layout is a pure function of the seed and the code, so every boot of a
-  world builds the same city.
+  world has the same city; it is built on the world's first start and reused
+  from the world folder afterwards (§13.4).
 - The former 128-node hard-protected capital ingress corridors from each
   front gate to the Battlegrounds are retired (Round 22, D9). Capitals are
   reached by the ordinary roads of §9 and the planner's connectors.
@@ -1456,6 +1457,37 @@ numeric-truncated seed.
   not scan every feature record and reuse one x/z classification for the
   complete vertical column. Roads and water (Phases 4 and 5) choose their own
   spatial index.
+
+### 13.4 World-folder layout cache (Round 22, D71)
+
+- Main builds three layouts per world: inland water (§7.4), roads (§9) and
+  the capital layouts (§12). They travel to emerge as texts in the `ipc_set`
+  payload; emerge never builds them.
+- After the first build, main stores exactly those three texts in the world
+  folder, in `grug_world_layouts.txt` (`wp40/layout_cache.lua`). A later boot
+  loads them **only when the stored key equals the current key** and then
+  builds its sessions from the texts, exactly as emerge does. Every other
+  case builds the layouts afresh and atomically replaces the file.
+- The key holds a format version, the full world seed, a digest of every Lua
+  file of the `grug_mapgen` mod (the whole tree, so a new or edited module
+  can never be missed; any edit to the mapgen code rebuilds once), the v7
+  mapgen settings and the Lua interpreter. Nothing else feeds the layouts.
+- The file is text: a format line, the key lines, one section per text
+  (water, road, capital) and one small diagnostics section (the first
+  start's capital and road log lines, the road showcase spots for
+  `/road_spots`, the build seconds), each with its length and SHA-256, and a
+  final SHA-256 over everything before it. A missing, truncated, edited or
+  otherwise damaged file is never used: it is rebuilt with a warning, and
+  never stops the load.
+- The file is written with `core.safe_file_write` (temporary file, then
+  rename), so a crash mid-write cannot leave a half file.
+- One log line per boot names the result: `world layouts: cache hit` with
+  the skipped build seconds, or `cache miss (<reason>)` with the build
+  seconds and the stored size.
+- The full-world preparation identity (the "authority changed" guard) binds
+  a digest of the three texts, so it changes exactly when a world's layouts
+  change, whether they were built or loaded.
+- Deleting the file is always safe: the next boot rebuilds the same layouts.
 
 ## 14. World acceptance
 

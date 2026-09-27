@@ -31,8 +31,53 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 	local catalog = dofile(gathering_path .. "/catalog.lua")
 	local native = dofile(wp40 .. "/r7_native.lua")
 	local native_token = native.apply_and_validate_main()
+
+	-- THE WORLD-FOLDER LAYOUT CACHE (plan D71, world_zones.md §13.4). The
+	-- water, road and capital layout texts are built on a world's first start
+	-- and stored in the world folder; a later boot whose key matches hands
+	-- them to the runtime exactly as emerge gets them from the payload, so
+	-- main skips the three builds. Any other key, or a damaged file, builds
+	-- afresh and replaces the file. Main only; emerge still takes the texts
+	-- from the payload.
+	local now = type(core_api.get_us_time) == "function" and function()
+		return core_api.get_us_time() / 1000000 end or os.clock
+	local layout_cache, cache_key, cached, cache_reason, cache_damaged
+	local world_dir = type(core_api.get_worldpath) == "function" and
+		core_api.get_worldpath() or nil
+	if type(world_dir) == "string" and world_dir ~= "" and
+			type(core_api.get_dir_list) == "function" and
+			type(core_api.safe_file_write) == "function" then
+		layout_cache = dofile(wp40 .. "/layout_cache.lua")({sha256 = core_api.sha256,
+			list_dir = core_api.get_dir_list, write = core_api.safe_file_write,
+			identity = dofile(wp40 .. "/preparation_identity.lua")})
+		local seed = core_api.get_mapgen_setting("seed")
+		if type(seed) ~= "string" or not seed:match("^%-?%d+$") then
+			fail("full world seed differs")
+		end
+		local settings = {}
+		for _, name in ipairs({"mg_name", "water_level", "mapgen_limit", "chunksize",
+				"mg_flags", "mgv7_spflags"}) do
+			settings[#settings + 1] = name .. ":" .. tostring(core_api.get_mapgen_setting(name))
+		end
+		local jit_table = rawget(_G, "jit")
+		cache_key = layout_cache.key(seed, layout_cache.source_digest(mapgen_modpath),
+			table.concat(settings, ";"),
+			type(jit_table) == "table" and tostring(jit_table.version) or _VERSION)
+		-- A file that cannot even be read builds afresh like a damaged one.
+		local ok, result, reason, damaged = pcall(layout_cache.load, world_dir, cache_key)
+		if ok then
+			cached, cache_reason, cache_damaged = result, reason, damaged
+		else
+			cached, cache_reason, cache_damaged = nil, "unreadable: " .. tostring(result), true
+		end
+	else
+		cache_reason = "no world folder"
+	end
+	local construction_started = now()
 	local runtime = dofile(wp40 .. "/r7_runtime.lua")(core_api, wp40,
-		default_path .. "/schematics", projection, catalog)
+		default_path .. "/schematics", projection, catalog,
+		cached and cached.water, cached and cached.road, cached and cached.capital)
+	local construction_seconds = now() - construction_started
 	local built = runtime.build_authority(native.identities())
 	local publish_authority = core_owner.prepare_zone_authority(
 		built.zones_session, built.consumer_payload)
@@ -98,11 +143,23 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 			#socket_rows)
 	end
 
+	-- The layout build diagnostics below (capital and road figures, road
+	-- showcase spots) exist only where the layouts were built; a cache hit
+	-- repeats the ones the first start stored with the texts.
+	local diagnostics = {}
+	local function diagnose(level, text)
+		core_api.log(level, text)
+		diagnostics[#diagnostics + 1] = {level, text}
+	end
+	if cached then
+		for _, row in ipairs(cached.meta.logs) do core_api.log(row[1], row[2]) end
+	end
+
 	-- THE CAPITAL LAYOUTS (Round 22 capital planner): one line per capital
 	-- with the planner's figures, so a playtest log says what this world got.
 	local capital_stats = runtime.capital_stats()
 	for _, st in ipairs(capital_stats or {}) do
-		core_api.log("action", string.format("[grug_mapgen] capital %s: area %.0f m2, " ..
+		diagnose("action", string.format("[grug_mapgen] capital %s: area %.0f m2, " ..
 			"built %.1f %%, plots %d of %d (overflowed %d, left out %d fill, %d " ..
 			"buildings), required %d of %d, relaxed %d, streets %d (open arcs %d, " ..
 			"cross-lanes %d, squares %d), infeasible profiles %d, connector " ..
@@ -138,9 +195,9 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 	end
 
 	-- The inland water, road and capital layouts travel with the payload, so
-	-- emerge never rebuilds them (plan D37: no cache file). The road layout
-	-- carries the capital streets and connectors (the capital planner joined
-	-- them to it in main).
+	-- emerge never rebuilds them (plan D37). The road layout carries the
+	-- capital streets and connectors (the capital planner joined them to it
+	-- in main). Main keeps the same texts in the world-folder cache (D71).
 	local payload = {schema = "grug_wp40_r7_ipc_v1",
 		manifest_sha256 = built.manifest.sha256, full_seed = built.full_seed,
 		projection = projection, water_layout = runtime.water_layout_text(),
@@ -154,6 +211,7 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 	-- repeats the spots in chat.
 	local road_layout = runtime.road_layout()
 	local road_spot_lines, road_spots = {}, {}
+	if cached then road_spots = cached.meta.spots end
 	if road_layout then
 		local st = road_layout.stats
 		local roads_n, trails_n = 0, 0
@@ -161,23 +219,25 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 			if road.kind == "trail" then trails_n = trails_n + 1 else roads_n = roads_n + 1 end
 		end
 		local dropped = st.pins_dropped or {}
-		core_api.log("action", string.format("[grug_mapgen] roads: %d roads, %d trails " ..
+		diagnose("action", string.format("[grug_mapgen] roads: %d roads, %d trails " ..
 			"(%d of %d trail candidates), %d loops, %d core pins dropped, built in " ..
 			"%.1f s, payload %d bytes (with the capital streets), capital layouts " ..
 			"%d bytes",
 			roads_n, trails_n, st.trails_built or 0, st.trails_tried or 0, st.loops or 0,
 			#dropped, st.t_total or 0, #payload.road_layout, #payload.capital_layout))
 		if #dropped > 0 then
-			core_api.log("warning", "[grug_mapgen] roads: the core pin did not fit, " ..
+			diagnose("warning", "[grug_mapgen] roads: the core pin did not fit, " ..
 				"the road may meet its village or POI with a step: " ..
 				table.concat(dropped, ", "))
 		end
 		road_spots = runtime.road_module().showcase(road_layout)
-		for _, spot in ipairs(road_spots) do
-			road_spot_lines[#road_spot_lines + 1] = string.format("%s (%s) at %d,%d,%d",
-				spot.name, spot.kind, spot.x, spot.y, spot.z)
-		end
-		core_api.log("action", "[grug_mapgen] road showcase: " ..
+	end
+	for _, spot in ipairs(road_spots) do
+		road_spot_lines[#road_spot_lines + 1] = string.format("%s (%s) at %d,%d,%d",
+			spot.name, spot.kind, spot.x, spot.y, spot.z)
+	end
+	if road_layout then
+		diagnose("action", "[grug_mapgen] road showcase: " ..
 			table.concat(road_spot_lines, "; "))
 	end
 
@@ -196,6 +256,41 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 				return true, table.concat(road_spot_lines, "\n")
 			end,
 		})
+	end
+
+	-- One line per boot about the layout cache. A miss stores this boot's
+	-- texts (atomic replace) with its diagnostics; a failed write only warns.
+	if cached then
+		local s = cached.meta.seconds
+		core_api.log("action", string.format("[grug_mapgen] world layouts: cache hit " ..
+			"(%s), runtime construction %.1f s; skipped layout builds of the first " ..
+			"start: water %.1f s, roads %.1f s, capitals %.1f s (its construction took " ..
+			"%.1f s); the capital and road figures above are from that start",
+			layout_cache.FILE, construction_seconds, s.water, s.roads, s.capitals,
+			s.construction))
+	else
+		local built_seconds = runtime.layout_build_seconds() or {}
+		local stored, bytes, store_error = false, 0, nil
+		if layout_cache then
+			local ok, result, count = pcall(layout_cache.store, world_dir, cache_key,
+				{water = payload.water_layout, road = payload.road_layout,
+					capital = payload.capital_layout},
+				{logs = diagnostics, spots = road_spots, seconds = {
+					construction = construction_seconds, water = built_seconds.water,
+					roads = built_seconds.roads, capitals = built_seconds.capitals}})
+			if ok then stored, bytes = result, count else store_error = tostring(result) end
+		end
+		core_api.log(cache_damaged and "warning" or "action", string.format(
+			"[grug_mapgen] world layouts: cache miss (%s), built in runtime " ..
+			"construction %.1f s (water %.1f s, roads %.1f s, capitals %.1f s)%s",
+			cache_reason or "?", construction_seconds, built_seconds.water or 0,
+			built_seconds.roads or 0, built_seconds.capitals or 0,
+			stored and string.format(", stored %s (%d bytes)", layout_cache.FILE, bytes)
+				or ""))
+		if layout_cache and not stored then
+			core_api.log("warning", "[grug_mapgen] world layouts: the cache file " ..
+				"could not be written: " .. (store_error or layout_cache.path(world_dir)))
+		end
 	end
 
 	return {schema = "grug_wp40_r7_loader_status_v1", enabled = true,

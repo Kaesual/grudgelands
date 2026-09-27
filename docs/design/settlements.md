@@ -136,8 +136,9 @@ Decided 2026-09-14.
 ## Capitals in the world
 
 **As built: the capital planner (Round 22, plan D60, D69–D72, 2026-09-27).**
-Every capital's city is laid out once per world start, after height, water
-and roads, in its own landscape (`world_zones.md` §12 has the rules): an
+Every capital's city is laid out once per world (on its first start; later
+boots reuse the layout from the world folder, `world_zones.md` §13.4), after
+height, water and roads, in its own landscape (`world_zones.md` §12 has the rules): an
 organic outline of about 100 k m² inside the reserved 512 square, four gates
 toward the incoming roads with connector roads to the road ends, avenues,
 two terrain-bent ring lanes loosened by cross-lanes, open arcs and small
