@@ -1405,8 +1405,12 @@ function M.plan(seed, I, opt)
 				-- fall under the skirt, rise under the cleared airspace, dry
 				local base = t_at(cx, cz)
 				local low, high, wet = base, base, false
-				for lz = cz + z0 - P.WET_MARGIN, cz + z1 + P.WET_MARGIN, 2 do
-					for lx = cx + x0 - P.WET_MARGIN, cx + x1 + P.WET_MARGIN, 2 do
+				local wz0, wz1 = cz + z0 - P.WET_MARGIN, cz + z1 + P.WET_MARGIN
+				local wx0, wx1 = cx + x0 - P.WET_MARGIN, cx + x1 + P.WET_MARGIN
+				wz0, wx0 = wz0 - wz0 % G, wx0 - wx0 % G
+				wz1, wx1 = wz1 + (-wz1) % G, wx1 + (-wx1) % G
+				for lz = wz0, wz1, G do
+					for lx = wx0, wx1, G do
 						local k = gk(lx, lz)
 						if WET[k] then wet = true end
 						local inner = lx >= cx + x0 and lx <= cx + x1 and lz >= cz + z0 and lz <= cz + z1
