@@ -106,6 +106,13 @@ local function height_factory(dependencies)
 	-- surface. The pad's straight edge and corners never show.
 	local START_GROUND_MIN, START_GROUND_MAX = 2, 10
 	local START_GROUND_PERIOD, START_GROUND_FUZZ = 14, 3
+	-- The start town's protected band (`source/simple_map.lua`
+	-- hard_start_town_v1): nodes beyond the pad, true distance.
+	local START_BAND = 0
+	for index = 1, #(source.hard_protection_recipes or {}) do
+		local recipe = source.hard_protection_recipes[index]
+		if recipe.shape == "start_town_outline" then START_BAND = recipe.band end
+	end
 
 	local floor, ceil, abs, max, min, sqrt, exp = math.floor, math.ceil,
 		math.abs, math.max, math.min, math.sqrt, math.exp
@@ -1093,9 +1100,26 @@ local function height_factory(dependencies)
 		-- of another; on dry ground every lake's envelope cuts first and the
 		-- raises (the rim band hard, containment-critical) win.
 		local indicator_scratch = {}
+		-- True on a start town (plan D78): the pad and its protected band.
+		local function in_start_town(x, z)
+			local candidates = bucket_at(grids.start, x, z)
+			if not candidates then return false end
+			for index = 1, #candidates do
+				local fitting = candidates[index]
+				if square_distance(x, z, fitting.center,
+						fitting.profile.fitting_width) <= START_BAND then
+					return true
+				end
+			end
+			return false
+		end
 		local function authored_at(x, z, terrain_y, water_y, kind, id)
 			local list = bucket_at(authored_grid, x, z)
 			if not list then return terrain_y, water_y, kind, id end
+			-- A start town's pad and band keep their fitted ground: no
+			-- authored lake floods, carves, cuts or raises them (plan D78; a
+			-- start's own ponds keep their water and banks outside the band).
+			if in_start_town(x, z) then return terrain_y, water_y, kind, id end
 			local bank_d, bank_y, wet, wet_m
 			local ms = indicator_scratch
 			for index = 1, #list do
@@ -1601,11 +1625,6 @@ local function height_factory(dependencies)
 		-- a smooth noise outline, dithered over START_GROUND_FUZZ nodes by a
 		-- column hash), else nil. The band itself is the start town's
 		-- protection (`source/simple_map.lua` hard_start_town_v1).
-		local START_BAND = 0
-		for index = 1, #(source.hard_protection_recipes or {}) do
-			local recipe = source.hard_protection_recipes[index]
-			if recipe.shape == "start_town_outline" then START_BAND = recipe.band end
-		end
 		local function start_ground_at(x, z)
 			if not start_grounds then return nil end
 			local candidates = bucket_at(grids.start, x, z)
@@ -1887,6 +1906,19 @@ local function height_factory(dependencies)
 		function session.start_ground_at(x, z)
 			coordinate(x, "start ground query x") coordinate(z, "start ground query z")
 			return start_ground_at(x, z)
+		end
+		-- Every start ground node name, sorted (the surface selector checks
+		-- them against the content contract when it is built, i.e. at load).
+		function session.start_ground_names()
+			local names, seen = {}, {}
+			for _, names_row in pairs(start_grounds or {}) do
+				if not seen[names_row.ground] then
+					seen[names_row.ground] = true
+					names[#names + 1] = names_row.ground
+				end
+			end
+			table.sort(names)
+			return names
 		end
 		-- The same rule for any water body: its surface y and the column's
 		-- distance to it (the Phase 5 lake and river bank hook).

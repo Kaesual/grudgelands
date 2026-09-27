@@ -1288,6 +1288,9 @@ local function zones_factory(dependencies)
 			function planner_source.start_ground_at(x, z)
 				return height.start_ground_at(x, z)
 			end
+			function planner_source.start_ground_names()
+				return height.start_ground_names()
+			end
 			function planner_source.primary_relief_at(x, z)
 				local _, _, owner = horizontal.classification_values_at(x, z)
 				return owner and source.zones[owner].primary_relief_id or nil
