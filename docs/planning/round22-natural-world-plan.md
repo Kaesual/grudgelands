@@ -820,6 +820,24 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   before/after on three seeds, planner results unchanged: required plots,
   0 plots in water, 0 grade violations), then integrate with the protection
   consumers; images for the user.
+- **Surface look and natural content, as built (lane p6-look, 2026-09-27;
+  evidence and images in `~/projects/grudgelands-orchestration/r22/p6-look/`):**
+  steep ground gets bare rock faces (grade 1.6–3.2 nodes per node, noise
+  jittered, or a drop of 6–8), stone under the soil where a column stands 2+
+  above a neighbour, and gravel scree at the foot of rises; no strata on those
+  faces (dirt share of cliff side faces 36–76 % → ≤ 0.6 %); beach sand has no
+  gravel speckles (the Phase 3b "sparse gravel" rule, own commit); reefs grow
+  in bays too, one cell in four, plus kelp meadows; the emergent jungle tree's
+  sunk roots may take the stone body (accepted 56 → 281 of ~850 candidates on
+  six jungle boxes); the stone golem row above y 300 uses chance 12000 (bare
+  crags offer ~1.3× the hosts per area); crab chances 300 / 1100 from the
+  measured near-water share (~18 %); the crab `near_water` scan costs 2–3 µs
+  and stays. Planner column values identical; roads, graded pads and capitals
+  unchanged except sand for speckles near water; ores in steep natural columns
+  relocate with their hosts. Chunk time about +3 % (±5 % noise, report).
+  High relief has no native caves above y ~160 (v7 carves only its own low
+  terrain; air share 1.2 % below y 40, 0.1 % at 80–160, 0 above 240): not
+  changed, options reported to the user.
 - **Collected items open from the lanes (Phase 6):** two reverse river
   confluences (tributary lower than its parent, contained); the Dur Brannoc
   connector ford step (accepted; road-module bank-seal clamp with the city
