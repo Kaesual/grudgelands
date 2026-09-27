@@ -1462,7 +1462,9 @@ numeric-truncated seed.
 
 - Main builds three layouts per world: inland water (§7.4), roads (§9) and
   the capital layouts (§12). They travel to emerge as texts in the `ipc_set`
-  payload; emerge never builds them.
+  payload; emerge never builds them. The same payload carries
+  `prepared_blueprints`, main's preparations of the lazy settlement
+  blueprints (`docs/design/settlements.md`), which the cache does not store.
 - After the first build, main stores exactly those three texts in the world
   folder, in `grug_world_layouts.txt` (`wp40/layout_cache.lua`). A later boot
   loads them **only when the stored key equals the current key** and then
@@ -1483,6 +1485,8 @@ numeric-truncated seed.
   hand) is treated the same way: a warning, a fresh build, the file
   replaced. A mapgen source file that cannot be read leaves no key: the
   layouts are built afresh and nothing is cached on that boot (a warning).
+  This only covers files the runtime does not load (e.g. a stray file); an
+  unreadable file the runtime loads still stops the load when it is read.
 - The file is written with `core.safe_file_write` (temporary file, then
   rename), so a crash mid-write cannot leave a half file.
 - One log line per boot names the result: `world layouts: cache hit` with

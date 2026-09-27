@@ -228,7 +228,7 @@ recommendations; report in
 
 | # | Decision | Basis |
 |---|---|---|
-| D66 | **Merge the seven byte-identical D63 patches now,** after an independent review and before the road integration starts (the road prototype is offline): R6 planner cell cache, LuaJIT `hotexit=200` in main and emerge, writer anchor-grade memo, allocation-free `prepare_cells`, direct-mapped field-sample memo, packed-key blueprint sort, `param2_kind` memo. **Re-check the planner cell cache's purity** when the road-corridor exclusion kind joins the static exclusions. **Cleanup round (D4):** remove the two redundant full-volume validity checks (`map_adapter.lua`, `r6_settlement.lua`, ~1 % of chunk time); make the main-start terrain audit (`settlement_terrain_findings`, log warnings only, ~3.7 s) switchable — it stays on while roads and the capital planner still need its warnings; emerge re-preparing all settlement blueprints (~3.5 s); noise code still 38 % interpreted. Column cache 64k → 256k dropped (gain within noise, +50 MB). | Engine, three swapped pairs over 98 chunks: chunk time ×0.61–0.69 (~500 → ~320 ms on expensive chunks), main construction ×0.72–0.81, emerge construction ×0.64–0.73. Byte identity: engine digest over 50 M voxels on two seeds, whole-map probe grids on three seeds, 510 blueprint identities. |
+| D66 | **Merge the seven byte-identical D63 patches now,** after an independent review and before the road integration starts (the road prototype is offline): R6 planner cell cache, LuaJIT `hotexit=200` in main and emerge, writer anchor-grade memo, allocation-free `prepare_cells`, direct-mapped field-sample memo, packed-key blueprint sort, `param2_kind` memo. **Re-check the planner cell cache's purity** when the road-corridor exclusion kind joins the static exclusions. **Cleanup round (D4):** remove the two redundant full-volume validity checks (`map_adapter.lua`, `r6_settlement.lua`, ~1 % of chunk time); make the main-start terrain audit (`settlement_terrain_findings`, log warnings only, ~3.7 s) switchable — default off since roads and the capital planner are merged; lanes that change ground near settlements (e.g. D76) run with `grug_mapgen_terrain_audit = true` in their checks; emerge re-preparing all settlement blueprints (~3.5 s); noise code still 38 % interpreted. Column cache 64k → 256k dropped (gain within noise, +50 MB). | Engine, three swapped pairs over 98 chunks: chunk time ×0.61–0.69 (~500 → ~320 ms on expensive chunks), main construction ×0.72–0.81, emerge construction ×0.64–0.73. Byte identity: engine digest over 50 M voxels on two seeds, whole-map probe grids on three seeds, 510 blueprint identities. |
 
 Decisions on the Phase 4 road prototype (2026-09-26, user; prototype in
 `~/projects/grudgelands-orchestration/r22/phase4-proto/`):
@@ -870,13 +870,17 @@ from the lanes and reviews of this round:
 - **As built, lane B (redundant work + D71 fallbacks):** both per-voxel VM
   scalar checks removed (the R5 adapter only sees R6's shadow copies; the
   engine fills the whole volume with u16/u8 integers); the terrain audit runs
-  only with `grug_mapgen_terrain_audit` (default off; on three seeds it found
-  one plot, Lethariel `mere_mourning` on s1 with 1 submerged column, fall and
-  rise within limits); main hands emerge its preparations of every lazy cell
+  only with `grug_mapgen_terrain_audit` (default off since roads and the
+  capital planner are merged; lanes that change ground near settlements, e.g.
+  D76, run with `grug_mapgen_terrain_audit = true` in their checks; on three
+  seeds it found one plot, Lethariel `mere_mourning` on s1 with 1 submerged
+  column, fall and rise within limits); main hands emerge its preparations of every lazy cell
   blueprint over IPC (`r7_settlement.handover`), emerge checks the handover
   against its roster and every lazy rebuild against main's identity and
-  landmarks; a D71 hit that fails construction and an unreadable mapgen
-  source both warn and build afresh. Engine digest equal on two seeds (111
+  landmarks (a main/emerge divergence now stops generation at the blueprint's
+  first touch instead of at emerge load); a D71 hit that fails construction
+  and an unreadable mapgen source the runtime does not load both warn and
+  build afresh. Engine digest equal on two seeds (111
   and 110 chunks incl. capitals, roads, bridges, water, a village); emerge
   construction ×0.52–0.59 (~7 → ~3.8 s), main loader ×0.89–0.93, chunk time
   within noise. Evidence `r22/cleanup-b/`.

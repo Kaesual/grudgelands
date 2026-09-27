@@ -62,6 +62,8 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 		local jit_table = rawget(_G, "jit")
 		-- A mapgen source file that cannot be read leaves no trustworthy key:
 		-- build afresh and cache nothing this boot (a warning, not a stop).
+		-- This only helps for a file the runtime never loads; one it does load
+		-- still stops the load when it is read.
 		local digest_ok, source_digest = pcall(layout_cache.source_digest, mapgen_modpath)
 		if digest_ok then
 			cache_key = layout_cache.key(seed, source_digest, table.concat(settings, ";"),
@@ -98,6 +100,9 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 		if ok then
 			runtime, built, construction_seconds = constructed, authority, seconds
 		else
+			-- Logged now, so the cause survives even if the fresh build fails too.
+			core_api.log("warning", "[grug_mapgen] world layouts: the cached layouts " ..
+				"did not construct, building afresh: " .. tostring(constructed))
 			cached, cache_damaged = nil, true
 			cache_reason = "the cached layouts did not construct: " .. tostring(constructed)
 		end

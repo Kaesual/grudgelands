@@ -235,7 +235,9 @@ Capital blueprint construction is lazy when map generation first touches its
 envelope; mapchunk traversal may release cached construction data. The main
 environment builds and hashes every blueprint once at load; the map generator
 takes main's preparations of the lazy blueprints instead of building them all
-again and checks every lazy rebuild against main's identity and landmarks. Full-world
+again and checks every lazy rebuild against main's identity and landmarks. A
+divergence between the two environments therefore stops generation when the
+blueprint is first touched, mid-generation, instead of at map generator start. Full-world
 preparation can generate capitals before a player visits them. Starts-only
 preparation covers the six start readiness envelopes instead.
 

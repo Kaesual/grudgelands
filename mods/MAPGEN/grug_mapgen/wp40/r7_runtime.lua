@@ -1,5 +1,9 @@
 -- Shared production R7 assembly. Main and emerge load these same pure source
--- bytes and independently rebuild the live content and semantic manifest.
+-- bytes and rebuild the live content and semantic manifest. Emerge takes the
+-- layout texts and the identities of the lazy blueprints from main (see
+-- `prepared_handover` below); its own check of a lazy blueprint is the
+-- per-blueprint rebuild at first touch (`r7_settlement.lua` config,
+-- `cells_of`), not a second preparation at load.
 
 -- `water_layout_text`, `road_layout_text` and `capital_layout_text` are the
 -- serialized inland water, road and capital layouts main built and handed
@@ -195,11 +199,13 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	-- union of every blueprint's palette: one opcode-37 content channel serves
 	-- them all, so a cell's content ref is an index into this union.
 	--
-	-- `prepare` is where every blueprint is BUILT once and hashed. A lazy
+	-- `prepare` is where main BUILDS every blueprint once and hashes it. A lazy
 	-- settlement's cells are released again straight away (contract section
 	-- 2.2.4): what has to exist at load is the identity the manifest publishes
 	-- and the palette the channel is closed over, and neither of them is a
-	-- 100,000-cell buffer.
+	-- 100,000-cell buffer. Emerge builds only the starts and the city edge
+	-- overlays here; every other blueprint's preparation comes from main's
+	-- handover and is checked when its cells are first rebuilt.
 	--
 	-- THE SEED IS VALIDATED HERE ONCE. The capital layouts are a function of it
 	-- (main plans them from it; emerge takes main's text), and `build` refuses
