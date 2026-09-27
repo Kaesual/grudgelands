@@ -1187,6 +1187,24 @@ from the lanes and reviews of this round:
   the JIT on and off (main had 82 differing costs) and equal to main's
   JIT-on sequence; layout texts on three seeds and the engine digest over 179
   owners on two seeds are unchanged against main. Evidence `r22/pow-exact/`.
+- **As built (final cleanup):** `tools/check_lua.sh` runs sweeps 1–5 on
+  copies stripped by `tools/check_lua_strip.awk` (a Lua 5.1 lexer, line
+  numbers kept: comments and long strings removed, short strings `""` except
+  for the escape sweep), so prose no longer fails it; all 375 files of
+  `mods/*/grug_*` pass, true positives in code are still reported (test
+  files), and sweep 4's operators are parse errors for `luac51` anyway.
+  About sixty comments that cited tools deleted by D22 name the check as
+  retired or drop the claim; the `inside_owner` comments in
+  `r7_anchor_activation.lua` say it covers exactly minp..maxp (no halo). The
+  capital collar culling reads `M.CAPITAL_OVERLAY.square` instead of 266.
+  Removed without callers: the R7 evidence facade (`scan_owner`,
+  `scan_direct_owner`, `probe_p9g_reason`), R6 `apply_fixture` and
+  `required_keys`. `height.lua` fails at load if an authored lake's water or
+  rim reaches a start town's pad or band (the D78 skip in `authored_at` would
+  hide it; a pond moved onto Dawnmere's pad is refused); `water_layout.lua`
+  has `stats.contact_skipped` (0 on seeds 1, 42, s1). Layout texts identical
+  on three seeds, engine digest over 179 owners equal to main on two seeds,
+  headless boot clean. Evidence `r22/cleanup-final/`.
 
 ### Orchestration and compaction points
 
