@@ -11,6 +11,9 @@
 # Usage: tools/luanti_headless.sh [TIMEOUT_SECONDS] [extra luanti args...]
 #   TIMEOUT default 90. Prints the log path summary and exits 0 when the
 #   server reached "listening" without ERROR/ModError lines, 1 otherwise.
+#   A FAIL always keeps its evidence: the logs, the config and the world's
+#   map_meta.txt (the seed actually used) are copied to
+#   /tmp/grudgelands-headless-failed/<run> even when the temp dir is removed.
 #   KEEP=1 keeps the temp dir (path printed). PORT selects the bind port
 #   (default 32800+RANDOM%200).
 #   SEED=<unsigned decimal> pins `fixed_map_seed`, so a run can be repeated on
@@ -67,10 +70,19 @@ if [[ -n "$supplied_root" ]]; then
 else
 	root="$(mktemp -d /tmp/grudgelands-headless.XXXXXX)"
 fi
+status=1
 cleanup() {
 	pkill -TERM -f "^luanti.bin --server --gameid grudgelands --world $root/" 2>/dev/null || true
 	sleep 1
 	pkill -KILL -f "^luanti.bin --server --gameid grudgelands --world $root/" 2>/dev/null || true
+	# Keep a failed boot's evidence (small files only, not the map).
+	if [[ $status -ne 0 && -d "$root" ]]; then
+		local keep="/tmp/grudgelands-headless-failed/$(basename "$root")"
+		mkdir -p "$keep"
+		cp "$root"/server*.log "$root"/server.conf "$keep/" 2>/dev/null || true
+		cp "$root/world/map_meta.txt" "$keep/" 2>/dev/null || true
+		echo "failed boot evidence: $keep" >&2
+	fi
 	if [[ "${KEEP:-0}" != "1" && -z "$supplied_root" ]]; then rm -rf "$root"; fi
 }
 trap cleanup EXIT
@@ -146,6 +158,7 @@ if [[ -f "$log" ]] && grep -q 'listening on' "$log" && \
 fi
 echo "headless boot: $([[ $status -eq 0 ]] && echo PASS || echo FAIL) (port $port, $timeout_s s)"
 echo "log: $log"
+grep -h '^seed' "$world/map_meta.txt" 2>/dev/null || true
 grep -n 'ERROR\|ModError\|listening on' "$log" 2>/dev/null | head -10 || true
 [[ "${KEEP:-0}" == "1" || -n "$supplied_root" ]] && echo "kept: $root"
 exit $status
