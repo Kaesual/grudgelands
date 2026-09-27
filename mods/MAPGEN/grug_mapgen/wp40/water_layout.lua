@@ -1000,6 +1000,11 @@ return function(P)
 				local q = min(n, c.index + 1)
 				if not cap_at[q] or c.level < cap_at[q] then cap_at[q] = c.level end
 			end
+			-- and where a tributary's water can touch this river's
+			-- (`confluence_contacts`)
+			for q, level in pairs(S.contact_caps[rv.id] or {}) do
+				if not cap_at[q] or level < cap_at[q] then cap_at[q] = level end
+			end
 			-- incision below the band terrain; a gully's fades out to its tip
 			local s0 = rv.gully_s0 or 0
 			local function inc(i)
@@ -1207,6 +1212,68 @@ return function(P)
 				end
 			end
 		end
+	end
+
+	-- Confluence contacts (D56): near a junction the tributary's water can
+	-- lie beside its parent's (or a further ancestor's) upstream of the join
+	-- point: the join sits at the foot of a step in the parent, or the two
+	-- channels run side by side before they meet. Wherever the two can touch
+	-- (their centrelines within both wet reaches of each other) and the
+	-- tributary's surface there stands lower, the ancestor is capped at that
+	-- vertex to the tributary's surface, so its step moves upstream out of
+	-- the contact and the tributary never meets it from below. The caps
+	-- persist across `levels` runs (the geometry does not change) and only
+	-- ever lower; returns true when a cap was added or lowered. A cap that
+	-- would cut the ancestor deeper than CUT_MAX (it would sink there, see
+	-- `levels`) is not set: two steep reaches stepping down side by side
+	-- keep their (contained) contact.
+	local function too_deep(anc, q, level)
+		for k = q, #anc.pts do
+			if anc.levels[k] <= level then return false end
+			if anc.m[k] - level > P.CUT_MAX - 1 then return true end
+		end
+		return false
+	end
+	local function confluence_contacts(S)
+		local changed = false
+		local function reach(w) return w / 2 + P.WET_X + P.WET_B end
+		for _, rv in ipairs(S.rivers) do
+			local anc = rv.parent and S.rivers[rv.parent]
+			local n = #rv.pts
+			while anc do
+				local an = #anc.pts
+				local list = S.contact_caps[anc.id]
+				for i = 1, n do
+					if rv.w[i] > 0 and not rv.dry[i] then
+						-- the lowest surface near vertex i (a segment carries its
+						-- downstream vertex's level)
+						local lt = rv.levels[i]
+						if i < n and rv.w[i + 1] > 0 and not rv.dry[i + 1] and
+								rv.levels[i + 1] < lt then
+							lt = rv.levels[i + 1]
+						end
+						local x, z, ri = rv.pts[i][1], rv.pts[i][2], reach(rv.w[i])
+						for q = 1, an do
+							local aw = anc.w[q]
+							if aw > 0 and not anc.dry[q] and anc.levels[q] > lt then
+								local dx, dz = anc.pts[q][1] - x, anc.pts[q][2] - z
+								local r = ri + reach(aw) + P.SEG
+								if dx * dx + dz * dz <= r * r and not too_deep(anc, q, lt) then
+									if not list then list = {}; S.contact_caps[anc.id] = list end
+									if not list[q] or lt < list[q] then
+										list[q] = lt
+										changed = true
+									end
+								end
+							end
+						end
+					end
+				end
+				anc = anc.parent and S.rivers[anc.parent]
+			end
+		end
+		if changed then S.stats.contact_rounds = (S.stats.contact_rounds or 0) + 1 end
+		return changed
 	end
 
 	-- Lake levels against the rivers between them (D56): a river's mouth may
@@ -1442,6 +1509,7 @@ return function(P)
 	-- Returns the layout plus `grid` (the coarse natural field, main only).
 	function M.build(seed, opts)
 		local S = drainage(seed, opts)
+		S.contact_caps = {}
 		river_tree(S, opts)
 		geometry(S, seed, opts)
 		levels(S, opts)
@@ -1449,9 +1517,13 @@ return function(P)
 		-- a river that ended in (or left) a drained lake must not keep that
 		-- lake's level: the levels are computed again without it
 		if S.stats.lakes_drained > 0 then levels(S, opts) end
+		-- lakes settle first; confluence contacts are checked on settled
+		-- levels, and a new cap settles the lakes again
 		local settled = false
 		for _ = 1, 8 do
-			if not settle_lakes(S) then settled = true; break end
+			local changed = settle_lakes(S)
+			if not changed then changed = confluence_contacts(S) end
+			if not changed then settled = true; break end
 			levels(S, opts)
 		end
 		S.stats.settle_unconverged = settled and 0 or 1
