@@ -24,14 +24,20 @@ return function(data)
 	local cos, sin, rad, exp, pi = math.cos, math.sin, math.rad, math.exp, math.pi
 	local WATER = 1
 
+	-- Clamped without branches: a branch here is a side exit of the large
+	-- traces that inline these, and those side traces fail to compile
+	-- (Round 22 D4). The clamp gives exactly the old results: 0 (as +0) for
+	-- t <= 0 and 1 for t >= 1; a NaN t still takes the formula.
 	local function smoothstep(a, b, x)
 		local t = (x - a) / (b - a)
-		if t <= 0 then return 0 elseif t >= 1 then return 1 end
+		if t ~= t then return t * t * (3 - 2 * t) end
+		t = min(max(t, 0), 1)
 		return t * t * (3 - 2 * t)
 	end
 	local function smootherstep(a, b, x)
 		local t = (x - a) / (b - a)
-		if t <= 0 then return 0 elseif t >= 1 then return 1 end
+		if t ~= t then return t * t * t * (t * (t * 6 - 15) + 10) end
+		t = min(max(t, 0), 1) + 0 -- + 0: a -0 would keep its sign here
 		return t * t * t * (t * (t * 6 - 15) + 10)
 	end
 

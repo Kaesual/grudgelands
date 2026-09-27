@@ -169,11 +169,18 @@ local function height_factory(dependencies)
 		if dz == 0 then return dx end
 		return sqrt(dx * dx + dz * dz)
 	end
+	-- Row and cell indices are shifted by FEATURE_BIAS so that they stay
+	-- positive on the map: LuaJIT cannot compile a lookup of a variable
+	-- negative key in a table that also has an array part ("NYI: mixed
+	-- sparse/dense table", Round 22 D4).
+	local FEATURE_BIAS = 1024
 	local function add_bucket(grid, record, min_x, max_x, min_z, max_z)
-		for iz = floor_div(min_z, FEATURE_CELL), floor_div(max_z, FEATURE_CELL) do
+		for iz = floor_div(min_z, FEATURE_CELL) + FEATURE_BIAS,
+				floor_div(max_z, FEATURE_CELL) + FEATURE_BIAS do
 			local row = grid[iz]
 			if not row then row = {} grid[iz] = row end
-			for ix = floor_div(min_x, FEATURE_CELL), floor_div(max_x, FEATURE_CELL) do
+			for ix = floor_div(min_x, FEATURE_CELL) + FEATURE_BIAS,
+					floor_div(max_x, FEATURE_CELL) + FEATURE_BIAS do
 				local bucket = row[ix]
 				if not bucket then bucket = {} row[ix] = bucket end
 				bucket[#bucket + 1] = record
@@ -181,8 +188,8 @@ local function height_factory(dependencies)
 		end
 	end
 	local function bucket_at(grid, x, z)
-		local row = grid[floor_div(z, FEATURE_CELL)]
-		return row and row[floor_div(x, FEATURE_CELL)] or nil
+		local row = grid[floor_div(z, FEATURE_CELL) + FEATURE_BIAS]
+		return row and row[floor_div(x, FEATURE_CELL) + FEATURE_BIAS] or nil
 	end
 
 	-- Start pad reference: the lower median of 9x9 natural samples, clamped
