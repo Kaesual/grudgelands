@@ -247,16 +247,18 @@ function M.keypoints(source)
 	local prof = {}
 	for _, p in ipairs(source.anchor_profiles) do prof[p.id] = p end
 	local hard = {}
-	for _, r in ipairs(source.hard_protection_recipes or {}) do hard[r.id] = r.total_width end
+	for _, r in ipairs(source.hard_protection_recipes or {}) do
+		hard[r.id] = r.total_width or r.bound_width
+	end
 	local kp = {}
 	for _, a in ipairs(source.anchors) do
 		local p = prof[a.template_id]
 		-- the footprint that must be in-zone and on land: the fitting square
-		-- (villages 96, ...); for starts and capitals their hard-protected
-		-- square (capitals 532 = build envelope plus apron, starts 148)
+		-- (villages 96, ...); for starts their hard-protected square (148), for
+		-- capitals the reserved square that bounds the protected city (532)
 		local width = p.fitting_width
 		if a.slot_id == "capital" then
-			width = max(width, hard.hard_capital_build_plus_apron_v1 or width)
+			width = max(width, hard.hard_capital_city_v1 or width)
 		elseif a.slot_id == "start" then
 			width = max(width, hard.hard_start_core_v1 or width)
 		end

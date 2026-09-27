@@ -116,8 +116,20 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	local canonical = dofile(wp40_directory .. "/canonical.lua")
 	local deterministic = dofile(wp40_directory .. "/deterministic.lua")
 	local index128 = dofile(wp40_directory .. "/index128.lua")
-	local horizontal_factory = dofile(wp40_directory .. "/simple_map.lua")(
+	-- The capitals' protected cities (plan D76) are a function of the capital
+	-- layouts, which main plans after the first horizontal session exists; every
+	-- horizontal session this runtime builds shares this holder, filled below
+	-- once the layouts are parsed (before any claim or protection query).
+	local capital_protection = dofile(wp40_directory .. "/capital_protection.lua")
+	local protection_holder = {}
+	local simple_map_factory = dofile(wp40_directory .. "/simple_map.lua")(
 		dofile(wp40_directory .. "/zone_field.lua"))
+	local function horizontal_factory(dependencies)
+		local bound = {}
+		for key, value in pairs(dependencies) do bound[key] = value end
+		bound.capital_protection = protection_holder
+		return simple_map_factory(bound)
+	end
 	local terrain_data = dofile(wp40_directory .. "/terrain_data.lua")
 	local terrain_field = dofile(wp40_directory .. "/terrain_field.lua")(terrain_data)
 	-- Inland water: one layout per environment, shared by every height session
@@ -267,6 +279,20 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			roads = road_stats and road_stats.t_total or 0, capitals = capitals_seconds}
 	end
 	local capital_layouts = capitals.parse(capital_layout_text)
+	-- the protected cities (plan D76), each with its civic lake if it has one
+	local civic_lakes = {}
+	for _, profile in ipairs(capital_profiles) do
+		local lake_id = capital_kits[profile.key].cfg.lake
+		if lake_id then
+			for _, row in ipairs(water.authored) do
+				if row.id == lake_id then civic_lakes[profile.anchor_id] = row end
+			end
+			if not civic_lakes[profile.anchor_id] then
+				fail("civic lake missing: " .. lake_id)
+			end
+		end
+	end
+	capital_protection.install(protection_holder, capital_layouts, civic_lakes)
 	local all_squares = {}
 	for _, profile in ipairs(capital_profiles) do
 		local entry = capital_layouts[profile.anchor_id]
@@ -696,6 +722,10 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	end
 	function module.capital_stats()
 		return capital_stats
+	end
+	-- The protected cities (plan D76): {anchor id -> capital_protection shape}.
+	function module.capital_protection()
+		return protection_holder.shapes
 	end
 	-- Main's layout build CPU seconds {water, roads, capitals}; nil when the
 	-- layout texts were handed in.

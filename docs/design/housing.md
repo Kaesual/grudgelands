@@ -591,10 +591,12 @@ Protection and claim eligibility are independent systems.
 The following bounded content remains reproducible and cannot be changed by
 players in its shallow protection volume:
 
-- full race capitals, their gates and narrow aprons;
+- full race capital cities: inside the wall line, the wall or planted edge
+  and a bare band beyond it (Round 22 D76, `world_zones.md` §12); housing
+  and claims may start right beyond that band;
 - complete starting settlements: the full 128×128 build envelope plus its
-  10-node apron (decided 2026-08-13 — the same envelope-plus-apron rule as a
-  capital), containing spawn, waypoint, graveyard and service platforms;
+  10-node apron (decided 2026-08-13), containing spawn, waypoint, graveyard
+  and service platforms;
 - waypoints and graveyards;
 - essential service and quest-giver platforms;
 - small functional NPC spawn/return anchors;

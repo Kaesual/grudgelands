@@ -202,6 +202,34 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 			st.no_route and (", no route:" .. st.no_route) or "", st.seconds))
 	end
 
+	-- THE PROTECTED CITIES (plan D76), built on every boot from the capital
+	-- layouts: one line with each capital's protected area and reach.
+	do
+		local shapes = runtime.capital_protection()
+		local ids = {}
+		for id in pairs(shapes) do ids[#ids + 1] = id end
+		table.sort(ids)
+		local parts = {}
+		for _, id in ipairs(ids) do
+			local shape = shapes[id]
+			do
+				local area, reach = 0, 0
+				for lz, row in pairs(shape.rows) do
+					for i = 1, #row, 2 do
+						area = area + row[i + 1] - row[i] + 1
+						for _, lx in ipairs({row[i], row[i + 1]}) do
+							reach = math.max(reach, math.sqrt(lx * lx + lz * lz))
+						end
+					end
+				end
+				parts[#parts + 1] = string.format("%s %.0f k m2 (reach %.0f)", id,
+					area / 1000, reach)
+			end
+		end
+		core_api.log("action", "[grug_mapgen] protected capital cities (wall line + edge + " ..
+			"bare band): " .. table.concat(parts, ", "))
+	end
+
 	-- THE GROUND UNDER THE PLACED CAPITAL PLOTS, on THIS world's final
 	-- terrain. The planner placed every plot on its own sample of the fitted
 	-- ground, before its streets' cut and fill; this says where a plot no

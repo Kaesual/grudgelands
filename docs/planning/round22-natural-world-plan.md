@@ -246,6 +246,7 @@ Decisions on the Phase 4 road prototype (2026-09-26, user; prototype in
 | D75 | **Trails and railings (2026-09-27):** trails use the race's road material, only narrower (no gravel with stone slabs — one material per road, D74). Railings in capitals only on straight streets and bridges; curved ones get none (curved railings look broken). Authored straight civic structures keep theirs; the capital planner rails a planner-made street bridge or deck only where that section is straight. | User. |
 | D76 | **Capital surroundings after the capital playtest (2026-09-27):** the flat, bare plateau outside the walls is too large. (1) The calm, flattened area is still made before the capital planner runs (the planner plans on it); it only becomes somewhat smaller than today and rounder instead of square, still large enough that any city layout fits easily; outside it the natural terrain, trees and ground cover come back. (2) Protection (immutable zone) = everything inside the walls, the walls themselves, and a band of 10–20 nodes around the walls; outside the band normal rules apply. The old 532-node square protection (`hard_capital_build_plus_apron_v1`) is replaced. (3) The band has restricted vegetation (no trees, no ground cover) so players see where protection ends. (4) Shape: organic, following the wall polyline (roughly round); an approximation is fine — a union of rectangles or a coarse precomputed raster (e.g. 4-node cells: inside/outside) — as long as protection checks stay cheap. Everything inside the walls must be covered. | User playtest. Open for the package: what exactly makes the plateau flat and bare (anchor damping mask radius in `terrain_field.lua`, the capital collar, vegetation suppression in the protected square) and what the planner needs as calm ground; protection consumers (`grug_core` hard volumes, guard level 60, water guard, housing/claims masks, preparation boxes) must accept the new shape. |
 | D77 | **Phase 6 surface look (2026-09-27):** (a) rock amount "less": steep slopes turn to bare rock from a grade of about 2.0–4.0 nodes per node (noise jittered), steeper steps keep soil over a stone face; (b) the gravel speckles in beach sand stay removed; (c) shore crab chances stay retuned to the measured near-water share (Shore Crab 300, Reef Lurker 1100); (d) high relief keeps the native caves as they are (option A); own cave tunnels in the terrain fill (option B) are a possible later package. | User, on the p6-look images and the representative sample numbers (`~/projects/grudgelands-orchestration/r22/p6-look/README.md`). |
+| D78 | **Start town surroundings (2026-09-27), like D76 for the capitals:** (1) the start towns' layout and town ground (the flat 128-node pad) stay unchanged. (2) Protection = the town ground plus a band of 10–20 nodes around it (following the pad outline with rounded corners), replacing the 148-node square (`hard_start_core_v1`) and any larger anchor-blend envelope that refuses vegetation, ground cover, gathering or claims; terrain editing is forbidden in the band, and the band has no trees and no ground cover so players see where protection ends. (3) The band carries a natural transition from the town ground to the surrounding natural surface: block types change irregularly (noise), so no straight edge or hard corner of the pad stays visible. (4) The calm plateau becomes smaller so natural terrain starts right beyond the band; the height transition starts in the band and runs out softly just beyond it (hills, never a cliff or a wall); outside the band the ground may be slightly graded in the first nodes but is vegetated and editable as normal. Reuse the D76 mechanism (band, consumers); the band around a square pad can be an analytic rounded-square distance. Starts after the D76 merge. | User playtest: the start towns' pad is stamped into the world as a visible square, the flat plateau is large and the protected area somewhat too large; the user likes layout and ground. |
 
 All §9 questions are answered.
 
@@ -821,6 +822,66 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   before/after on three seeds, planner results unchanged: required plots,
   0 plots in water, 0 grade violations), then integrate with the protection
   consumers; images for the user.
+- **D76 as built (lane `worktree-agent-a226fe183a93176d1`):** the flat, bare
+  ring had two causes: the terrain field's capital bowl (`terrain_field.lua`
+  damping, calm to 260 and faded out by 520–750; the 40-node collar only
+  shapes the core's edge) and the claim exclusions — trees refused in the
+  532 hard square, ground cover and gathering refused in the whole 704-node
+  anchor-blend square. Now the bowl is calm to 200 and faded out by 400
+  (+ up to 45 % edge noise), centred on the civic core; damping below 0.1 to
+  256–266 (was 304–352). A capital's hard protection and its claim envelope
+  are one shape, the protected city (`wp40/capital_protection.lua`): inside
+  the planned wall line (open capitals: the same outline under their belt),
+  the civic lake where the outline crosses it, plus 9 (edge reach) + 12 (band)
+  nodes; integer column intervals per row, built from the capital layout text
+  in main and emerge (~0.04 s for six), handed to every horizontal session
+  through a holder; the 532 square stays only as the index box and zone-field
+  keypoint (keypoints identical). Every protection consumer answers from the
+  zone authority or the static exclusions, so none needed its own change;
+  comments/docs updated. Connectors search up to 16× (was 4×). Offline over
+  48 seeds × 6 capitals (`~/projects/grudgelands-orchestration/r22/d76/`):
+  required plots 288/288, 0 plots in water, 0 connector failures (main: 1),
+  wall ≤ 250 from the anchor (95 % ≤ 215), calm margin beyond the farthest
+  wall point 7–100 nodes (mean 51; ring averages — in the worst direction the
+  natural share reaches 0.1 at about 249); protected area 122–156 k m² per capital
+  (was 283 k); land refusing trees within 448 nodes ~110 k m² (was ~265 k),
+  ground cover ~115 k m² (was ~460 k). Layouts move (terrain changed): 94 % of
+  plots at other positions, placed plots per capital unchanged on average.
+  Street grade steps (> ½ between adjacent road columns) exist on main too
+  (54 in 9 of 288 plans) and now 85 in 15. They are not only at the gates:
+  of 60 on the final 24-seed run, 34 lie within 12 of the wall line, 10 well
+  inside the city and 16 more than 12 outside (e.g. Lethariel s11: deck y 41.5
+  beside a cut at y 38, r 146; Dur Brannoc s3: a primary road deck at y 70
+  beside grade 64–65, 26 outside the wall). Cause: the road module joins
+  roads of different levels (deck against cut or grade) with a step; the
+  rougher ground round the smaller plateau makes that more frequent. Open as
+  a D49 (½-node rule) follow-up for the road module, not fixed here. Variant 210/480 hit one required-plot failure (Kezamba,
+  seed 2024), which shows the pinned-lake placement is layout-fragile, not
+  plateau-size-bound. Engine (3 seeds, `grug_mapgen_terrain_audit` on):
+  boots clean, protection answers right at 30/30 test points per seed
+  (inside, wall, band, just beyond, far); across Highcourt's and Lethariel's
+  edge 0 trees and 0 ground cover in the band, vegetation right beyond it
+  (main: none within 30 of the old square's inside); terrain audit findings
+  0/2/0 (main 0/0/1); main layout build +0.5–2 s; chunks in the ring round
+  the city 430–480 ms instead of 330–355 (they now carry ordinary terrain and
+  vegetation; ordinary chunks 1000 nodes out 350–490 ms in both trees); D77's
+  steep rock now also shows on steep ground right beyond the band (it skips
+  only protected columns); public protection calls near a capital ~1.6–1.7 µs
+  instead of ~1.0–1.4 (fewer points short-circuit as protected; the lookup
+  itself ~19 ns vs 3), elsewhere unchanged. The protection
+  does not ride the IPC payload: both environments build it from the
+  `capital_layout` text and the authored civic lakes. The two findings on seed
+  8675309 are Lethariel plots with 1–2 flooded columns near the crown lake.
+  Review follow-up: the edge reach is 9, not 6 (a gatehouse box is
+  compass-aligned while its gate may slide ~34° along the wall, so a corner
+  reaches ~8.7 beyond the wall line); the band is 12 beyond the outermost
+  structure, 21 from the wall line. Over all 288 layouts the band beyond the
+  nearest structure measures 10.8–17.5 (stone; ≥ 10.8 at gatehouses),
+  12.7–18.5 (palisade), 13.7–20.5 (open; the top only where a civic lake
+  reaches just past the outline, otherwise ≤ 19.1).
+- **Start town surroundings (D78, after D76):** town layout and pad unchanged; smaller plateau; a 10–20-node protected, vegetation-free band around the pad with a
+  noise-based material transition and a soft height transition; replaces the 148 square
+  and larger bare envelopes. Before/after images on three seeds for the user.
 - **Surface look and natural content, as built (lane p6-look, 2026-09-27;
   evidence and images in `~/projects/grudgelands-orchestration/r22/p6-look/`):**
   steep ground gets bare rock faces (grade 2.0–4.0 nodes per node, noise

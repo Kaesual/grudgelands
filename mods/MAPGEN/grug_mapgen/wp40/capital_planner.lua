@@ -75,6 +75,11 @@ M.DEFAULTS = {
 	CITY_CELL = 4,
 	FINE_R = 272,         -- 2-node sampling inside this radius, 4-node beyond
 	SEARCH_BUDGET = 4,    -- a street search gives up beyond this multiple of its straight cost (+400)
+	-- a connector crosses the natural ground beyond the city's calm plateau
+	-- (D76) to a road end at the reserved edge, up to ~365 from the anchor at
+	-- a corner: it may climb and wind, so it searches further before it gives
+	-- up (a search that succeeded within SEARCH_BUDGET finds the same path)
+	CONNECTOR_BUDGET = 16,
 	WALL = "stone",       -- "stone" | "palisade" | "open" (planted edge + thresholds)
 	-- D70 street pattern: loosened rings, cross-lanes, squares (per capital
 	-- and seed from a variation hash, so six capitals do not repeat)
@@ -572,12 +577,12 @@ function M.plan(seed, I, opt)
 		return 0
 	end
 	local streets = {}      -- ordered list of {road, role, quadrant(s)}
-	local function route(src_li, src_dir, target, heur_xz, guide)
+	local function route(src_li, src_dir, target, heur_xz, guide, budget_mult)
 		kit.set_guide(guide)
 		local tx, tz = heur_xz[1], heur_xz[2]
 		local mm = kit.minmult
 		local sx, sz = li_local(src_li)
-		local budget = P.SEARCH_BUDGET * sqrt((sx - tx) ^ 2 + (sz - tz) ^ 2) + 400
+		local budget = (budget_mult or P.SEARCH_BUDGET) * sqrt((sx - tx) ^ 2 + (sz - tz) ^ 2) + 400
 		local path, info = kit.search({{src_li, src_dir, 0}}, target, function(li)
 			local x, z = li_local(li)
 			return sqrt((x - tx) ^ 2 + (z - tz) ^ 2) * mm
@@ -1573,7 +1578,7 @@ function M.plan(seed, I, opt)
 			local path = src and route(src, dir_index(e.hx, e.hz), function(li, d)
 				if li == tgt then return {kind = "node"} end
 				if tset[li] then return {kind = "road", idx = tset[li]} end
-			end, o2, guide)
+			end, o2, guide, P.CONNECTOR_BUDGET)
 			local road
 			if path then
 				local _, info = nil, nil
