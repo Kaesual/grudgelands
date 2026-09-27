@@ -591,7 +591,8 @@ return function(P)
 				carry = len - (t - step)
 			end
 			local last, lp = pts[#pts], out[#out]
-			if (lp[1] - last[1]) ^ 2 + (lp[2] - last[2]) ^ 2 > (step * 0.3) ^ 2 then
+			local rx, rz, gap = lp[1] - last[1], lp[2] - last[2], step * 0.3
+			if rx * rx + rz * rz > gap * gap then
 				out[#out + 1] = {last[1], last[2]}
 			else
 				out[#out] = {last[1], last[2]}
@@ -607,7 +608,8 @@ return function(P)
 				local t = l2 > 0 and ((x - a[1]) * vx + (z - a[2]) * vz) / l2 or 0
 				if t < 0 then t = 0 elseif t > 1 then t = 1 end
 				local px, pz = a[1] + t * vx, a[2] + t * vz
-				local d = (px - x) ^ 2 + (pz - z) ^ 2
+				local rx, rz = px - x, pz - z
+				local d = rx * rx + rz * rz
 				if d < bd then bd, bx, bz, bi = d, px, pz, i end
 			end
 			return bx, bz, bi
@@ -681,11 +683,13 @@ return function(P)
 				local i = 1
 				while i <= n do
 					local dx, dz = out[i][1] - p.x, out[i][2] - p.z
-					if dx * dx + dz * dz < clear(i) ^ 2 then
+					local cr = clear(i)
+					if dx * dx + dz * dz < cr * cr then
 						local i1 = i
 						while i1 < n do
 							local ex, ez = out[i1 + 1][1] - p.x, out[i1 + 1][2] - p.z
-							if ex * ex + ez * ez >= clear(i1 + 1) ^ 2 then break end
+							local cr1 = clear(i1 + 1)
+							if ex * ex + ez * ez >= cr1 * cr1 then break end
 							i1 = i1 + 1
 						end
 						local j0, j1 = max(1, i - 3), min(n, i1 + 3)
@@ -722,7 +726,8 @@ return function(P)
 		local function plen(pts, a, b)
 			local l = 0
 			for i = a, b - 1 do
-				l = l + sqrt((pts[i + 1][1] - pts[i][1]) ^ 2 + (pts[i + 1][2] - pts[i][2]) ^ 2)
+				local rx, rz = pts[i + 1][1] - pts[i][1], pts[i + 1][2] - pts[i][2]
+				l = l + sqrt(rx * rx + rz * rz)
 			end
 			return l
 		end
@@ -775,7 +780,8 @@ return function(P)
 				local bd, bj = math.huge, ci
 				for j = max(1, ci - 2), min(#cells, ci + 6) do
 					local cx, cz = cxz(cells[j])
-					local d = (cx - x) ^ 2 + (cz - z) ^ 2
+					local rx, rz = cx - x, cz - z
+					local d = rx * rx + rz * rz
 					if d < bd then bd, bj = d, j end
 				end
 				ci = bj
@@ -783,8 +789,8 @@ return function(P)
 			end
 			local s = {0}
 			for i = 2, n do
-				s[i] = s[i - 1] + sqrt((pts[i][1] - pts[i - 1][1]) ^ 2 +
-					(pts[i][2] - pts[i - 1][2]) ^ 2)
+				local rx, rz = pts[i][1] - pts[i - 1][1], pts[i][2] - pts[i - 1][2]
+				s[i] = s[i - 1] + sqrt(rx * rx + rz * rz)
 			end
 			local total = s[n]
 			-- the spring's arc position on the smoothed path; vertices above it
@@ -1565,16 +1571,16 @@ return function(P)
 						P.WET_B + 4
 					local i, back = first, 0
 					while i > 1 and back < reach do
-						back = back + sqrt((rv.pts[i][1] - rv.pts[i - 1][1]) ^ 2 +
-							(rv.pts[i][2] - rv.pts[i - 1][2]) ^ 2)
+						local rx, rz = rv.pts[i][1] - rv.pts[i - 1][1], rv.pts[i][2] - rv.pts[i - 1][2]
+						back = back + sqrt(rx * rx + rz * rz)
 						i = i - 1
 					end
 					for q = i, n do rv.w[q] = 0 end
 					-- and narrows to a brook into its end, like a sink
 					local dd = 0
 					for q = i - 1, 1, -1 do
-						dd = dd + sqrt((rv.pts[q + 1][1] - rv.pts[q][1]) ^ 2 +
-							(rv.pts[q + 1][2] - rv.pts[q][2]) ^ 2)
+						local rx, rz = rv.pts[q + 1][1] - rv.pts[q][1], rv.pts[q + 1][2] - rv.pts[q][2]
+						dd = dd + sqrt(rx * rx + rz * rz)
 						if dd >= P.W_TAPER then break end
 						if rv.w[q] > 0 then
 							rv.w[q] = min(rv.w[q], P.W_SPRING + (rv.w[q] - P.W_SPRING) *
@@ -1824,7 +1830,8 @@ return function(P)
 					ns = ns + 1
 					SAX[ns], SAZ[ns] = r.x[i], r.z[i]
 					SVX[ns], SVZ[ns] = r.x[i + 1] - r.x[i], r.z[i + 1] - r.z[i]
-					SL2[ns] = SVX[ns] ^ 2 + SVZ[ns] ^ 2
+					local svx, svz = SVX[ns], SVZ[ns]
+					SL2[ns] = svx * svx + svz * svz
 					if SL2[ns] < 1e-9 then SL2[ns] = 1e-9 end
 					SW0[ns], SW1[ns] = abs(wa), abs(wb)
 					SR0[ns], SR1[ns] = r.R[i], r.R[i + 1]

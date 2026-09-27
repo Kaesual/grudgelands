@@ -550,7 +550,8 @@ return function(data)
 						end
 					elseif t == "caldera" then
 						if s < 1.4 then
-							local ring = exp(-((s - 0.72) / 0.22) ^ 2)
+							local w = (s - 0.72) / 0.22
+							local ring = exp(-(w * w))
 							lm_add = lm_add + e.A * ring - 0.35 * e.A * (1 - smoothstep(0, 0.6, s))
 							if ring > rm_boost then rm_boost = ring end
 						end
@@ -574,7 +575,8 @@ return function(data)
 							local ang = math.atan2(v, u)
 							local broken = smoothstep(-0.1, 0.4, nmisc(ang * 2.2 + e.salt, 1.3 * e.salt))
 							local mounds = 0.6 + 0.4 * nmisc(lx / 45, lz / 45 + e.salt)
-							lm_add = lm_add + e.A * exp(-((s - 0.9) / 0.12) ^ 2) * broken * mounds
+							local w = (s - 0.9) / 0.12
+							lm_add = lm_add + e.A * exp(-(w * w)) * broken * mounds
 						end
 					end
 				end
@@ -707,7 +709,8 @@ return function(data)
 				f = f * 2
 			end
 			local ls = hscale * sqrt(ddx * ddx + ddz * ddz) / HP
-			local damp = 1 / (1 + erode * (ls / 0.3) ^ 2)
+			local lr = ls / 0.3
+			local damp = 1 / (1 + erode * (lr * lr))
 			px, pz = dx4, dz4
 			local FINE = K.FINE
 			for o = 4, K.HO do

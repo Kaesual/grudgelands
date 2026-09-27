@@ -446,7 +446,8 @@ function M.plan(seed, I, opt)
 		for _, e in ipairs(ends) do
 			local best, bd
 			for _, g in ipairs(gates) do
-				local d = sqrt((e.x - g.ox) ^ 2 + (e.z - g.oz) ^ 2)
+				local rx, rz = e.x - g.ox, e.z - g.oz
+				local d = sqrt(rx * rx + rz * rz)
 				if not bd or d < bd then best, bd = g, d end
 			end
 			e.gate = best.c
@@ -582,10 +583,12 @@ function M.plan(seed, I, opt)
 		local tx, tz = heur_xz[1], heur_xz[2]
 		local mm = kit.minmult
 		local sx, sz = li_local(src_li)
-		local budget = (budget_mult or P.SEARCH_BUDGET) * sqrt((sx - tx) ^ 2 + (sz - tz) ^ 2) + 400
+		local rx, rz = sx - tx, sz - tz
+		local budget = (budget_mult or P.SEARCH_BUDGET) * sqrt(rx * rx + rz * rz) + 400
 		local path, info = kit.search({{src_li, src_dir, 0}}, target, function(li)
 			local x, z = li_local(li)
-			return sqrt((x - tx) ^ 2 + (z - tz) ^ 2) * mm
+			local hx, hz = x - tx, z - tz
+			return sqrt(hx * hx + hz * hz) * mm
 		end, nil, budget)
 		kit.set_guide(nil)
 		return path, info
@@ -635,7 +638,8 @@ function M.plan(seed, I, opt)
 			for along = CK + 2, reach, G do
 				for across = -reach, reach, G do
 					local x, z = dx * along + dz * across, dz * along - dx * across
-					local d = (x - a0[1]) ^ 2 + (z - a0[2]) ^ 2
+					local rx, rz = x - a0[1], z - a0[2]
+					local d = rx * rx + rz * rz
 					if (not bd or d < bd) and max(abs(x), abs(z)) >= CK + 2 then
 						local ok = true
 						for ox = -2 * G, 2 * G, G do
@@ -678,8 +682,10 @@ function M.plan(seed, I, opt)
 		local l2 = vx * vx + vz * vz
 		local guide = guide_for(function(lx, lz)
 			local u = max(0, min(1, ((lx - a1[1]) * vx + (lz - a1[2]) * vz) / l2))
-			local d = sqrt((lx - a1[1] - u * vx) ^ 2 + (lz - a1[2] - u * vz) ^ 2)
-			return outside_cost(lx, lz, 10, 4) + min(P.AVENUE_GUIDE_MAX, P.AVENUE_GUIDE * (d / 16) ^ 2)
+			local rx, rz = lx - a1[1] - u * vx, lz - a1[2] - u * vz
+			local d = sqrt(rx * rx + rz * rz)
+			local dq = d / 16
+			return outside_cost(lx, lz, 10, 4) + min(P.AVENUE_GUIDE_MAX, P.AVENUE_GUIDE * (dq * dq))
 		end)
 		local path = route(src, dir_index(dx, dz), function(li, d)
 			if li == tgt then return {kind = "node"} end
@@ -738,7 +744,8 @@ function M.plan(seed, I, opt)
 	local function add_square(road, idx, why)
 		local x, z = road.X[idx] - AX, road.Z[idx] - AZ
 		for _, q in ipairs(squares) do
-			if (q.x - x) ^ 2 + (q.z - z) ^ 2 < 14 * 14 then return end
+			local rx, rz = q.x - x, q.z - z
+			if rx * rx + rz * rz < 14 * 14 then return end
 		end
 		squares[#squares + 1] = {x = x, z = z, road = road, idx = idx, why = why}
 	end
@@ -932,7 +939,8 @@ function M.plan(seed, I, opt)
 					local r = sqrt(lx * lx + lz * lz)
 					local dphi = wrap(atan2(lz, lx) - phi_u)
 					local g = outside_cost(lx, lz, 14, 10)
-					return g + min(10, 1.5 * (dphi * r / 12) ^ 2)
+					local t = dphi * r / 12
+					return g + min(10, 1.5 * (t * t))
 				end)
 				local tset, B = {}, nil
 				for _, r2 in ipairs(r2s) do
@@ -1000,7 +1008,8 @@ function M.plan(seed, I, opt)
 					if ok_(lx, lz) then
 						local u = l2 > 0 and ((lx - ax) * vx + (lz - az) * vz) / l2 or 0
 						if u < 0 then u = 0 elseif u > 1 then u = 1 end
-						local d = sqrt((lx - ax - u * vx) ^ 2 + (lz - az - u * vz) ^ 2) - hw
+						local rx, rz = lx - ax - u * vx, lz - az - u * vz
+						local d = sqrt(rx * rx + rz * rz) - hw
 						if d <= extra then
 							local k = okey(lx, lz)
 							local cur = SD[k]
@@ -1025,7 +1034,8 @@ function M.plan(seed, I, opt)
 		local out = {}
 		for i = 1, #pts do
 			local p, q2 = pts[i], pts[i % #pts + 1]
-			local L = sqrt((q2[1] - p[1]) ^ 2 + (q2[2] - p[2]) ^ 2)
+			local rx, rz = q2[1] - p[1], q2[2] - p[2]
+			local L = sqrt(rx * rx + rz * rz)
 			local n = max(1, floor(L / 2 + 0.5))
 			for j = 0, n - 1 do
 				out[#out + 1] = {p[1] + (q2[1] - p[1]) * j / n, p[2] + (q2[2] - p[2]) * j / n}
@@ -1049,8 +1059,12 @@ function M.plan(seed, I, opt)
 		local pts = wall.pts
 		local n = #pts
 		local s = {0}
-		for i = 2, n do s[i] = s[i - 1] + sqrt((pts[i][1] - pts[i - 1][1]) ^ 2 + (pts[i][2] - pts[i - 1][2]) ^ 2) end
-		wall.length = s[n] + sqrt((pts[1][1] - pts[n][1]) ^ 2 + (pts[1][2] - pts[n][2]) ^ 2)
+		for i = 2, n do
+			local rx, rz = pts[i][1] - pts[i - 1][1], pts[i][2] - pts[i - 1][2]
+			s[i] = s[i - 1] + sqrt(rx * rx + rz * rz)
+		end
+		local cx, cz = pts[1][1] - pts[n][1], pts[1][2] - pts[n][2]
+		wall.length = s[n] + sqrt(cx * cx + cz * cz)
 		local gap = {}
 		for i = 1, n do
 			local p = pts[i]
@@ -1082,7 +1096,8 @@ function M.plan(seed, I, opt)
 		local seg = {}
 		for i = 1, n do
 			local a, b = pts[i], pts[i % n + 1]
-			seg[i] = sqrt((b[1] - a[1]) ^ 2 + (b[2] - a[2]) ^ 2)
+			local rx, rz = b[1] - a[1], b[2] - a[2]
+			seg[i] = sqrt(rx * rx + rz * rz)
 		end
 		for i = 1, n do walk[i] = ceil(2 * walk[i]) end
 		local changed = true
@@ -1121,7 +1136,8 @@ function M.plan(seed, I, opt)
 				local reach = P.WALL_HALF + 1
 				for lz = floor(p[2] - reach), ceil(p[2] + reach) do
 					for lx = floor(p[1] - reach), ceil(p[1] + reach) do
-						if ok_(lx, lz) and (lx - p[1]) ^ 2 + (lz - p[2]) ^ 2 <= reach * reach then
+						local rx, rz = lx - p[1], lz - p[2]
+						if ok_(lx, lz) and rx * rx + rz * rz <= reach * reach then
 							local k = okey(lx, lz)
 							if not OCC[k] then OCC[k] = "w" end
 						end
@@ -1196,7 +1212,8 @@ function M.plan(seed, I, opt)
 			for _, p in ipairs(cpts) do
 				for lz = floor(p[2] - reach), ceil(p[2] + reach) do
 					for lx = floor(p[1] - reach), ceil(p[1] + reach) do
-						if ok_(lx, lz) and (lx - p[1]) ^ 2 + (lz - p[2]) ^ 2 <= reach * reach then
+						local rx, rz = lx - p[1], lz - p[2]
+						if ok_(lx, lz) and rx * rx + rz * rz <= reach * reach then
 							local k = okey(lx, lz)
 							if not OCC[k] then OCC[k] = "q" end
 						end
@@ -1222,7 +1239,8 @@ function M.plan(seed, I, opt)
 		-- past it at the same level)
 		local io, bd = #av.X, nil
 		for i = #av.X, max(1, #av.X - 80), -1 do
-			local d = (av.X[i] - AX - g.ox) ^ 2 + (av.Z[i] - AZ - g.oz) ^ 2
+			local rx, rz = av.X[i] - AX - g.ox, av.Z[i] - AZ - g.oz
+			local d = rx * rx + rz * rz
 			if not bd or d < bd then io, bd = i, d end
 		end
 		g.ground_y = g.y
@@ -1239,7 +1257,8 @@ function M.plan(seed, I, opt)
 		local r = P.SQUARE_R
 		for _, sr in ipairs(streets) do
 			for i = 1, #sr.X do
-				local d = sqrt((sr.X[i] - AX - q.x) ^ 2 + (sr.Z[i] - AZ - q.z) ^ 2)
+				local rx, rz = sr.X[i] - AX - q.x, sr.Z[i] - AZ - q.z
+				local d = sqrt(rx * rx + rz * rz)
 				if d <= P.SQUARE_R + sr.hw + 2 then
 					local y = floor(2 * sr.R[i] + 0.5) / 2
 					if abs(y - q.y) > 0.5 then r = min(r, d - sr.hw - 2) end
@@ -1255,7 +1274,8 @@ function M.plan(seed, I, opt)
 		local R2 = q.r * q.r
 		for lz = floor(q.z - q.r), ceil(q.z + q.r) do
 			for lx = floor(q.x - q.r), ceil(q.x + q.r) do
-				if ok_(lx, lz) and (lx - q.x) ^ 2 + (lz - q.z) ^ 2 <= R2 then
+				local rx, rz = lx - q.x, lz - q.z
+				if ok_(lx, lz) and rx * rx + rz * rz <= R2 then
 					local k = okey(lx, lz)
 					if not OCC[k] then OCC[k] = "p" end
 				end
@@ -1551,8 +1571,10 @@ function M.plan(seed, I, opt)
 	local connectors = {}
 	for _, g in ipairs(gates) do
 		table.sort(g.ends, function(a, b)
-			local da = (a.x - g.ox) ^ 2 + (a.z - g.oz) ^ 2
-			local db = (b.x - g.ox) ^ 2 + (b.z - g.oz) ^ 2
+			local ax, az = a.x - g.ox, a.z - g.oz
+			local bx, bz = b.x - g.ox, b.z - g.oz
+			local da = ax * ax + az * az
+			local db = bx * bx + bz * bz
 			if da ~= db then return da < db end
 			return a.road < b.road
 		end)
@@ -1561,7 +1583,8 @@ function M.plan(seed, I, opt)
 			local kind = e.kind == "primary" and "primary" or "secondary"
 			local guide = guide_for(function(lx, lz)
 				-- stay outside the city (the wall), except in front of the gate
-				local dg = sqrt((lx - g.ox) ^ 2 + (lz - g.oz) ^ 2)
+				local rx, rz = lx - g.ox, lz - g.oz
+				local dg = sqrt(rx * rx + rz * rz)
 				if dg < 20 then return 0 end
 				local r = sqrt(lx * lx + lz * lz)
 				local ro = r_at(atan2(lz, lx)) + P.WALL_HALF + 6

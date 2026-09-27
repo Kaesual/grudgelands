@@ -176,7 +176,8 @@ local function new_module(P)
 	local function turn_cost(deg)
 		if deg < 1 then return 0 end
 		if deg > P.TURN_MAX_DEG + 0.5 then return INF end
-		local c = P.TURN_K * (deg / 45) ^ 2
+		local r = deg / 45
+		local c = P.TURN_K * (r * r)
 		if deg > 91 then c = c + P.SHARP_TURN end
 		return c
 	end
@@ -207,7 +208,8 @@ local function new_module(P)
 		local carry = 0
 		for i = 1, #pts - 1 do
 			local ax, az, bx, bz = pts[i][1], pts[i][2], pts[i + 1][1], pts[i + 1][2]
-			local L = sqrt((bx - ax) ^ 2 + (bz - az) ^ 2)
+			local rx, rz = bx - ax, bz - az
+			local L = sqrt(rx * rx + rz * rz)
 			local s = step - carry
 			while s <= L do
 				out[#out + 1] = {ax + (bx - ax) * s / L, az + (bz - az) * s / L}
@@ -217,7 +219,8 @@ local function new_module(P)
 		end
 		local last = pts[#pts]
 		local lo = out[#out]
-		if (last[1] - lo[1]) ^ 2 + (last[2] - lo[2]) ^ 2 > 1e-12 then
+		local rx, rz = last[1] - lo[1], last[2] - lo[2]
+		if rx * rx + rz * rz > 1e-12 then
 			out[#out + 1] = {last[1], last[2]}
 		else
 			out[#out] = {last[1], last[2]}
@@ -300,7 +303,8 @@ local function new_module(P)
 						local k = cell_of(x, z)
 						if k and LI[k] then
 							local cx, cz = cxz(k)
-							if (cx - p.x) ^ 2 + (cz - p.z) ^ 2 <= reach * reach then
+							local rx, rz = cx - p.x, cz - p.z
+							if rx * rx + rz * rz <= reach * reach then
 								local li = LI[k]
 								if WATERC[li] < c then WATERC[li] = c end
 							end
@@ -324,7 +328,10 @@ local function new_module(P)
 					if k and LI[k] then
 						local cx, cz = cxz(k)
 						local m = max(abs(cx - b.x), abs(cz - b.z))
-						if b.round then m = sqrt((cx - b.x) ^ 2 + (cz - b.z) ^ 2) end
+						if b.round then
+							local rx, rz = cx - b.x, cz - b.z
+							m = sqrt(rx * rx + rz * rz)
+						end
 						if m <= half then
 							owner[LI[k]] = b.id
 						elseif m <= half + C and b.ring then
@@ -381,13 +388,16 @@ local function new_module(P)
 			c = c + L * P.K_GENTLE * min(g, 0.25) / 0.25
 			local g0 = variant.G0
 			if g0 and gmax > g0 then
-				c = c + L * variant.K_G * (max(g - g0, 0) / (gmax - g0)) ^ 2
+				local q = max(g - g0, 0) / (gmax - g0)
+				c = c + L * variant.K_G * (q * q)
 			elseif g0 and g > g0 then
-				c = c + L * variant.K_G * ((g - g0) / (gmax - g0)) ^ 2
+				local q = (g - g0) / (gmax - g0)
+				c = c + L * variant.K_G * (q * q)
 			end
 			-- cross slope at the target cell: a bench needs cut and fill
 			local cross = abs(GX[lj] * D.uz - GZ[lj] * D.ux)
-			c = c + L * P.K_SIDE * max(cross - P.SIDE0, 0) ^ 2
+			local side = max(cross - P.SIDE0, 0)
+			c = c + L * P.K_SIDE * (side * side)
 			c = c + WATERC[lj]
 			return c
 		end
@@ -545,7 +555,8 @@ local function new_module(P)
 										local c = ds + tc + extra + move_cost(li, lj, d, trail)
 										-- a hairpin wants a calm platform
 										if tc >= P.SHARP_TURN then
-											local sl = sqrt(GX[li] ^ 2 + GZ[li] ^ 2)
+											local gx, gz = GX[li], GZ[li]
+											local sl = sqrt(gx * gx + gz * gz)
 											c = c + P.K_PLATFORM * sl * C
 										end
 										local sj = (lj - 1) * ND + d
@@ -663,7 +674,11 @@ local function new_module(P)
 				if f < INF then f = max(f, 1 + e * kj * 1.05) end
 				-- the step i-1 -> i spans d nodes of arc (the 1/128 lattice
 				-- makes it 0.9-1.1): the bound is on the slope per node
-				local d = i > 1 and sqrt((X[i] - X[i - 1]) ^ 2 + (Z[i] - Z[i - 1]) ^ 2) or 1
+				local d = 1
+				if i > 1 then
+					local rx, rz = X[i] - X[i - 1], Z[i] - Z[i - 1]
+					d = sqrt(rx * rx + rz * rz)
+				end
 				dmax[i] = f == INF and 0 or floor(Q * 0.5 * d / f + 1e-9)
 				fsd[i] = f == INF and 0 or d / f
 			end
@@ -1312,7 +1327,8 @@ local function new_module(P)
 		local function nearest_idx(road, x, z)
 			local best, bi = INF, 1
 			for i = 1, #road.X do
-				local d = (road.X[i] - x) ^ 2 + (road.Z[i] - z) ^ 2
+				local rx, rz = road.X[i] - x, road.Z[i] - z
+				local d = rx * rx + rz * rz
 				if d < best then best, bi = d, i end
 			end
 			return bi, sqrt(best)
@@ -1353,7 +1369,8 @@ local function new_module(P)
 		local function ring_free(cid, li)
 			local x, z = li_xz(li)
 			for _, e in ipairs(ring_used[cid] or {}) do
-				if (e[1] - x) ^ 2 + (e[2] - z) ^ 2 < P.RING_GAP ^ 2 then return false end
+				local rx, rz = e[1] - x, e[2] - z
+				if rx * rx + rz * rz < P.RING_GAP * P.RING_GAP then return false end
 			end
 			return true
 		end
@@ -1513,7 +1530,8 @@ local function new_module(P)
 			end
 			return function(li)
 				local x, z = li_xz(li)
-				return sqrt((x - nd.x) ^ 2 + (z - nd.z) ^ 2) * minmult
+				local rx, rz = x - nd.x, z - nd.z
+				return sqrt(rx * rx + rz * rz) * minmult
 			end
 		end
 
@@ -1552,7 +1570,8 @@ local function new_module(P)
 			local function pin_fits(road, idx)
 				if not (pin_check and a.core and a.y and road.R) then return true end
 				if bad_join[road.id .. ":" .. floor(idx / 16)] then return false end
-				local d = sqrt((road.X[idx] - a.x) ^ 2 + (road.Z[idx] - a.z) ^ 2) -
+				local rx, rz = road.X[idx] - a.x, road.Z[idx] - a.z
+				local d = sqrt(rx * rx + rz * rz) -
 					a.core / 2 - P.CORE_GAP
 				return abs(road.R[idx] - a.y) <= P.PIN_GRADE * (d - P.PIN_SLACK)
 			end
@@ -1744,7 +1763,8 @@ local function new_module(P)
 				-- two starts never form a loop
 				if b.kind == "start" then a, b = b, a end
 				if b.kind ~= "start" then
-					local straight = sqrt((a.x - b.x) ^ 2 + (a.z - b.z) ^ 2)
+					local rx, rz = a.x - b.x, a.z - b.z
+					local straight = sqrt(rx * rx + rz * rz)
 					local nd = netdist(a.id, b.id)
 					if nd < INF and nd > P.LOOP_RATIO * straight then
 						cands[#cands + 1] = {a = a, b = b, gain = nd - straight, ratio = nd / straight}
@@ -1775,7 +1795,8 @@ local function new_module(P)
 						if l then
 							for _, p in ipairs(l) do
 								local lim = road.hw + p[3] + 4
-								if (p[1] - x) ^ 2 + (p[2] - z) ^ 2 < lim * lim then return false end
+								local rx, rz = p[1] - x, p[2] - z
+								if rx * rx + rz * rz < lim * lim then return false end
 							end
 						end
 					end end
@@ -2091,7 +2112,8 @@ local function new_module(P)
 				end
 				if u < 0 then u = 0 elseif u > 1 then u = 1 end
 				local px, pz = ax + u * vx, az + u * vz
-				local d = sqrt((x - px) ^ 2 + (z - pz) ^ 2)
+				local rx, rz = x - px, z - pz
+				local d = sqrt(rx * rx + rz * rz)
 				local e = d - r.hw
 				if e < best then best, br, bi, bu = e, r, i, u end
 				if e > 0 and e <= SIDE then
@@ -2240,7 +2262,8 @@ local function new_module(P)
 			local best, bd
 			for _, c in ipairs(caps) do
 				if c.faction == fac then
-					local d = (c.x - x) ^ 2 + (c.z - z) ^ 2
+					local rx, rz = c.x - x, c.z - z
+					local d = rx * rx + rz * rz
 					if not bd or d < bd then best, bd = c, d end
 				end
 			end
@@ -2328,7 +2351,8 @@ local function new_module(P)
 				local a, b = nodes[i], nodes[j]
 				if a.faction == b.faction and a.kind ~= "contested" and b.kind ~= "contested" and
 						not (a.kind == "capital" and b.kind == "capital") then
-					local d = math.sqrt((a.x - b.x) ^ 2 + (a.z - b.z) ^ 2)
+					local rx, rz = a.x - b.x, a.z - b.z
+					local d = math.sqrt(rx * rx + rz * rz)
 					if d < P.LOOP_REACH then loops[#loops + 1] = {a.id, b.id} end
 				end
 			end
