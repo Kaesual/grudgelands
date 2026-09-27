@@ -511,7 +511,7 @@ replaced; git history before this rewrite records that model.
   ocean and dragon channels are 24 nodes deep.
 - Wet beds use deterministic patches of their bed material, sand, gravel and
   stone; mud remains the dominant swamp bed. Dry continental beaches are
-  mostly sand with sparse gravel.
+  plain sand (no gravel speckles; Round 22 Phase 6).
 - **Coast shape (Round 22, D27):** the coast takes its shape from the
   terrain field alone: it mostly ramps gently to the water, with occasional
   steep coasts. There are no geometric coast profiles, runs or fixed beach
@@ -524,7 +524,7 @@ replaced; git history before this rewrite records that model.
   depth.
 - **Near-water materials (Round 22, D27):** one rule derived from the final
   terrain, near the water. Low, gentle ground within roughly 40 nodes of the
-  water is sand above three sandstone filler nodes, with sparse gravel. Steep
+  water is sand above three sandstone filler nodes. Steep
   ground at the water and the edges of cliffs are gravel or stone. Mountain
   land, including both dragon islands, never gets dry sand; where mountain
   land borders other land the switch is dithered by noise, not a line. The
