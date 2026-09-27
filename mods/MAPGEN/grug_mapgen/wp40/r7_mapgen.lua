@@ -34,7 +34,7 @@ local function exact_payload(value)
 	end
 	local allowed = {schema = true, manifest_sha256 = true,
 		full_seed = true, projection = true, water_layout = true, road_layout = true,
-		capital_layout = true}
+		capital_layout = true, prepared_blueprints = true}
 	for key in pairs(value) do
 		if not allowed[key] then fail("unexpected IPC field " .. tostring(key)) end
 	end
@@ -44,7 +44,8 @@ local function exact_payload(value)
 		type(value.projection) ~= "table" or
 		type(value.water_layout) ~= "string" or value.water_layout == "" or
 		type(value.road_layout) ~= "string" or value.road_layout == "" or
-		type(value.capital_layout) ~= "string" or value.capital_layout == "" then
+		type(value.capital_layout) ~= "string" or value.capital_layout == "" or
+		type(value.prepared_blueprints) ~= "table" then
 		fail("IPC identity differs")
 	end
 	return value
@@ -64,7 +65,8 @@ local payload = exact_payload(core.ipc_get(IPC_KEY))
 local catalog = dofile(gathering_path .. "/catalog.lua")
 local runtime = dofile(wp40 .. "/r7_runtime.lua")(core, wp40,
 	default_path .. "/schematics", payload.projection, catalog,
-	payload.water_layout, payload.road_layout, payload.capital_layout)
+	payload.water_layout, payload.road_layout, payload.capital_layout,
+	payload.prepared_blueprints)
 local built = runtime.build(native.identities(), payload.manifest_sha256)
 if built.full_seed ~= payload.full_seed then fail("main/emerge seed differs") end
 local native_baseline = core.settings and

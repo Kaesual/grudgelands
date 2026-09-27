@@ -219,7 +219,6 @@ local function planner_factory()
 			support_name = retained_array("r6_planner_scratch_support_name", 256, false),
 			p7_support = retained_array("r6_planner_scratch_p7_support", 256, false),
 			wet_bed = retained_array("r6_planner_scratch_wet_bed", 400, false),
-			wet_surface = retained_array("r6_planner_scratch_wet_surface", 400, false),
 		}
 		local rank_scratch = {}
 		for index = 1, 256 do
@@ -262,7 +261,7 @@ local function planner_factory()
 
 		local function column_tuple(x, z)
 			local water_class, zone_numeric, zone_id, biome, race, terrain_y,
-				water_y, river_id, _, functional_kind, functional_y,
+				water_y, river_id, _, functional_kind, _,
 				functional_feature_id = planner_source.column_values_at(x, z)
 			if not WATER_CLASS_ID[water_class] or
 					((zone_numeric == nil) ~= (zone_id == nil)) or
@@ -313,13 +312,10 @@ local function planner_factory()
 				functional_feature_id:match("^anchor_%d%d%d$") ~= nil and
 				not wet and (not excluded or
 					horizontal.static_exclusion_values_at(x, z, "vegetation") == nil)
+			-- (The column source publishes no other functional kind: the R5
+			-- ford, causeway and tunnel kinds went with the route catalog.)
 			if functional_kind == "anchor_platform" or
-					(functional_kind == "land_grade" and not dry_anchor_grade) or
-					functional_kind == "ford" or
-					functional_kind == "causeway" then
-				p7_support = false
-			elseif functional_kind == "tunnel_floor" and
-					functional_y <= terrain_y and terrain_y <= functional_y + 5 then
+					(functional_kind == "land_grade" and not dry_anchor_grade) then
 				p7_support = false
 			end
 			if river_id ~= nil then p7_support = false end
@@ -329,12 +325,12 @@ local function planner_factory()
 			end
 			-- A wet sealed (river or lake) column's bed is its terrain
 			-- (planner.lua).
-			local wet_surface, wet_bed
-			if river_id ~= nil and wet then wet_surface, wet_bed = water_y, terrain_y end
+			local wet_bed
+			if river_id ~= nil and wet then wet_bed = terrain_y end
 			return water_class, zone_numeric, zone_id, biome, race, terrain_y,
 				water_y, surface_kind, surface, support_name,
 				excluded, p7_support,
-				wet_surface, wet_bed
+				wet_bed
 		end
 
 		local function load_cell(cell_x, cell_z)
@@ -344,7 +340,7 @@ local function planner_factory()
 			local river_near = planner_source.river_water_in(start_x - 2,
 				start_z - 2, start_x + 17, start_z + 17) == true
 			for halo_index = 1, 400 do
-				scratch.wet_bed[halo_index], scratch.wet_surface[halo_index] = false, false
+				scratch.wet_bed[halo_index] = false
 			end
 			for z = start_z, start_z + 15 do
 				for x = start_x, start_x + 15 do
@@ -352,8 +348,7 @@ local function planner_factory()
 						count = count + 1
 						local water_class, zone_numeric, zone_id, biome, race, terrain_y,
 							water_y, surface_kind, _, support_name, excluded, p7_support,
-							wet_surface, wet_bed =
-								column_tuple(x, z)
+							wet_bed = column_tuple(x, z)
 						scratch.x[count], scratch.z[count] = x, z
 						scratch.water_class[count] = water_class
 						scratch.zone_numeric[count], scratch.zone_id[count] = zone_numeric or false,
@@ -365,7 +360,6 @@ local function planner_factory()
 							p7_support
 						local halo_index = (z - start_z + 2) * 20 +
 							(x - start_x + 2) + 1
-						scratch.wet_surface[halo_index] = wet_surface or false
 						scratch.wet_bed[halo_index] = wet_bed or false
 					end
 				end

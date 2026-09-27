@@ -225,10 +225,10 @@ Two optional target-race systems use the central pipeline:
   (using the player name) and an unattributed fallback.
 - **Shore-height ruling (2026-09-17):** shore exits have zero vertical rise:
   the first cardinal dry-land surface beside exposed surface water is exactly
-  level with the water surface. Authored bridges, causeways, fords, route decks
-  and culverts are functional-edge exceptions and retain their existing grade
-  constraints. The zero-rise rule is required because Luanti forces a swimming,
-  non-grounded player to **0.2** effective stepheight regardless of the property
+  level with the water surface. Road bridges, decks and fords are
+  functional-edge exceptions and keep their own road grade. The zero-rise rule
+  is required because Luanti forces a swimming, non-grounded player to **0.2**
+  effective stepheight regardless of the property
   (`reference_projects/luanti/src/client/localplayer.cpp:322`).
 
 ### Melee timing and aim authority (shipped 2026-08-10, WP39)

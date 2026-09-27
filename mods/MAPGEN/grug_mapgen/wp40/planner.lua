@@ -685,10 +685,7 @@ local function planner_factory(allocator_factory)
 				end
 			else
 				if functional_kind ~= "anchor_platform" and
-						functional_kind ~= "bridge_deck" and
-						functional_kind ~= "causeway" and functional_kind ~= "ford" and
-						functional_kind ~= "land_grade" and
-						functional_kind ~= "tunnel_floor" then
+						functional_kind ~= "land_grade" then
 					fail("fail_source", "unknown functional kind")
 				end
 				safe_integer(functional_y, "functional y", OWNER_MIN, OWNER_MAX,
@@ -866,9 +863,6 @@ local function planner_factory(allocator_factory)
 
 		local function add_column_candidates(x, z)
 			-- Scalar locals keep the Lua 5.1 closure below its 60-upvalue ceiling.
-			local OP_BRIDGE_CLEAR, OP_BRIDGE_DECK, OP_BRIDGE_SUPPORT = 5, 6, 7
-			local OP_CAUSEWAY_FILL, OP_CAUSEWAY_SURFACE = 9, 10
-			local OP_FORD_BED = 13
 			local OP_FOUNDATION_CLEAR, OP_FOUNDATION_FILL,
 				OP_FOUNDATION_SURFACE = 14, 15, 16
 			local OP_HYDROLOGY_BANK_SEAL, OP_HYDROLOGY_BED_SEAL = 17, 18
@@ -877,36 +871,28 @@ local function planner_factory(allocator_factory)
 			local OP_RIVER_WATER = 25
 			local OP_TERRAIN_CLEAR, OP_TERRAIN_FILL,
 				OP_TERRAIN_SURFACE = 26, 27, 28
-			local OP_TUNNEL_FLOOR, OP_TUNNEL_LUMEN,
-				OP_TUNNEL_ROOF = 29, 30, 31
-			local ROLE_AIR, ROLE_BRIDGE_DECK, ROLE_BRIDGE_SUPPORT = 1, 2, 3
-			local ROLE_CAUSEWAY_CORE, ROLE_CAUSEWAY_SURFACE,
-				ROLE_FORD_SURFACE = 4, 5, 6
+			local ROLE_AIR = 1
 			local ROLE_FOUNDATION_CORE, ROLE_FOUNDATION_SURFACE = 7, 8
 			local ROLE_ORDINARY_WATER_SOURCE, ROLE_PATH_CORE,
 				ROLE_PATH_SURFACE = 10, 11, 12
 			local ROLE_RIVER_WATER_SOURCE, ROLE_STRATUM_AT_Y = 13, 14
-			local ROLE_TUNNEL_FLOOR, ROLE_TUNNEL_WALL = 15, 16
-			local POLICY_CUT_NATURAL, POLICY_FILL_VOID,
-				POLICY_OPEN_ENGINEERED = 1, 3, 4
-			local POLICY_SEAL_VOID, POLICY_SURFACE_EXACT,
-				POLICY_WRITE_WATER = 5, 6, 7
+			local POLICY_CUT_NATURAL, POLICY_FILL_VOID = 1, 3
+			local POLICY_SURFACE_EXACT, POLICY_WRITE_WATER = 6, 7
 			local _, _, _, _, _, terrain_y, water_y, river_id, _,
 				functional_kind, functional_y, functional_feature_id,
 				functional_interface_id, _, _, _, _, _, _, hard_foundation =
 					tuple_at(x, z)
-			local clearance_y = water_y
-			local surface_cap = clearance_y and math.max(terrain_y, clearance_y) or
+			local surface_cap = water_y and math.max(terrain_y, water_y) or
 				terrain_y
 			if terrain_y < AUTHORED_FLOOR or terrain_y > surface_cap or
 					surface_cap > OWNER_MAX then
 				fail("fail_bound", "column surface interval differs")
 			end
-			if functional_kind == "causeway" and (functional_y ~= terrain_y or
-					clearance_y == nil or terrain_y < clearance_y + 1) then
-				fail("fail_mask", "causeway scalar contract differs")
-			end
 
+			-- The column source publishes only these two functional kinds
+			-- (height.lua: anchor fittings); the R5 bridge, causeway, ford
+			-- and tunnel kinds of the retired route catalog are gone, and
+			-- `validate_column_tuple` rejects them.
 			if hard_foundation and functional_kind == "anchor_platform" then
 				if functional_y ~= terrain_y then
 					fail("fail_mask", "foundation platform height differs")
@@ -934,60 +920,6 @@ local function planner_factory(allocator_factory)
 				add_candidate(terrain_y + 1, terrain_y + 4, 4, OP_PATH_CLEAR,
 					ROLE_AIR, POLICY_CUT_NATURAL, functional_feature_id,
 					functional_interface_id)
-			elseif functional_kind == "ford" then
-				if water_y == nil or functional_y ~= terrain_y then
-					fail("fail_mask", "ford scalar contract differs")
-				end
-				add_candidate(terrain_y, terrain_y, 3, OP_FORD_BED,
-					ROLE_FORD_SURFACE, POLICY_SURFACE_EXACT, functional_feature_id,
-					functional_interface_id)
-			elseif functional_kind == "bridge_deck" then
-				if clearance_y == nil then fail("fail_mask", "bridge clearance is nil") end
-				-- A bridge with a named interface keeps four nodes of
-				-- clearance, an unnamed one two.
-				local required = functional_interface_id ~= nil and 4 or 2
-				if functional_y < clearance_y + required then
-					fail("fail_guard", "bridge clearance threshold differs")
-				end
-				if functional_y + 4 > OWNER_MAX then
-					fail("fail_guard", "bridge analytic headroom differs")
-				end
-				add_candidate(math.max(terrain_y + 1, clearance_y + 1),
-					functional_y - 2, 3, OP_BRIDGE_CLEAR, ROLE_AIR,
-					POLICY_OPEN_ENGINEERED, functional_feature_id,
-					functional_interface_id)
-				add_candidate(functional_y - 1, functional_y - 1, 3,
-					OP_BRIDGE_SUPPORT, ROLE_BRIDGE_SUPPORT, POLICY_SEAL_VOID,
-					functional_feature_id, functional_interface_id)
-				add_candidate(functional_y, functional_y, 3, OP_BRIDGE_DECK,
-					ROLE_BRIDGE_DECK, POLICY_SURFACE_EXACT, functional_feature_id,
-					functional_interface_id)
-				add_candidate(functional_y + 1, functional_y + 4, 3,
-					OP_BRIDGE_CLEAR, ROLE_AIR, POLICY_CUT_NATURAL,
-					functional_feature_id, functional_interface_id)
-			elseif functional_kind == "causeway" then
-				add_candidate(AUTHORED_FLOOR, terrain_y - 1, 3, OP_CAUSEWAY_FILL,
-					ROLE_CAUSEWAY_CORE, POLICY_FILL_VOID, functional_feature_id,
-					functional_interface_id)
-				add_candidate(terrain_y, terrain_y, 3, OP_CAUSEWAY_SURFACE,
-					ROLE_CAUSEWAY_SURFACE, POLICY_SURFACE_EXACT,
-					functional_feature_id, functional_interface_id)
-				add_candidate(terrain_y + 1, terrain_y + 4, 4, OP_PATH_CLEAR,
-					ROLE_AIR, POLICY_CUT_NATURAL, functional_feature_id,
-					functional_interface_id)
-			elseif functional_kind == "tunnel_floor" then
-				if type(functional_interface_id) ~= "string" then
-					fail("fail_mask", "tunnel interface is missing")
-				end
-				add_candidate(functional_y, functional_y, 3, OP_TUNNEL_FLOOR,
-					ROLE_TUNNEL_FLOOR, POLICY_SURFACE_EXACT, functional_feature_id,
-					functional_interface_id)
-				add_candidate(functional_y + 1, functional_y + 4, 3,
-					OP_TUNNEL_LUMEN, ROLE_AIR, POLICY_OPEN_ENGINEERED,
-					functional_feature_id, functional_interface_id)
-				add_candidate(functional_y + 5, functional_y + 5, 3,
-					OP_TUNNEL_ROOF, ROLE_TUNNEL_WALL, POLICY_SEAL_VOID,
-					functional_feature_id, functional_interface_id)
 			end
 
 			-- Inland water by column: a wet river or lake column seals its bed
