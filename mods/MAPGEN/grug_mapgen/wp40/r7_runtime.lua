@@ -3,7 +3,9 @@
 
 -- `water_layout_text`, `road_layout_text` and `capital_layout_text` are the
 -- serialized inland water, road and capital layouts main built and handed
--- over (emerge); nil in main, which builds them (plan D37, D60).
+-- over (emerge), or main's own from the world-folder layout cache on a later
+-- boot (`layout_cache.lua`, plan D71); nil in main on a world's first start,
+-- which builds them (plan D37, D60).
 return function(core_api, wp40_directory, schematic_directory, projection, catalog,
 		water_layout_text, road_layout_text, capital_layout_text)
 	local function fail(message)
@@ -220,7 +222,9 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			end
 		end
 	end
-	local capital_stats
+	-- CPU seconds of main's layout builds (nil when the texts came in: emerge,
+	-- or main on a world-folder cache hit), for the cache's log line.
+	local capital_stats, layout_seconds
 	if capital_layout_text == nil then
 		local planning_horizontal = horizontal_factory({source = source,
 			schemas = schemas, canonical = canonical, deterministic = deterministic,
@@ -237,6 +241,12 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			prepared = capital_plots, authored = water.authored,
 			simplex = terrain_field.simplex, proxy = terrain_data.water.LAKE_PROXY})
 		reuse.session, reuse.seed = planning_session, construction_seed
+		local capitals_seconds = 0
+		for _, st in ipairs(capital_stats) do capitals_seconds = capitals_seconds + st.seconds end
+		local water_stats = water.cache and water.cache.stats
+		local road_stats = roads.cache and roads.cache.layout and roads.cache.layout.stats
+		layout_seconds = {water = water_stats and water_stats.t_total or 0,
+			roads = road_stats and road_stats.t_total or 0, capitals = capitals_seconds}
 	end
 	local capital_layouts = capitals.parse(capital_layout_text)
 	local all_squares = {}
@@ -307,6 +317,19 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		settlement_order)
 
 	local module = {}
+	-- The water, road and capital layout texts this environment's sessions
+	-- sample, as one digest. The full-world preparation identity binds it, so
+	-- its "authority changed" guard fires exactly when a world's layouts
+	-- change, wherever they came from (a fresh build or the world-folder
+	-- cache, plan D71).
+	local function layouts_digest()
+		if not water.cache or type(water.cache.text) ~= "string" or not roads.cache or
+				type(roads.cache.text) ~= "string" or type(capital_layout_text) ~= "string" then
+			fail("layout texts missing for the preparation identity")
+		end
+		return sha256_hex(sha256_hex(water.cache.text) .. ":" ..
+			sha256_hex(roads.cache.text) .. ":" .. sha256_hex(capital_layout_text))
+	end
 	local function build(native_identities, expected_manifest_sha256, evidence_mode,
 			authority_only)
 		if evidence_mode ~= nil and evidence_mode ~= true and
@@ -461,7 +484,7 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 					settlements, public_zones_session, anchor_roster,
 					full_seed .. ":" .. manifest.values.source_projection_sha256 .. ":" ..
 						dofile(wp40_directory .. "/preparation_identity.lua")(
-							wp40_directory, core_api.sha256),
+							wp40_directory, core_api.sha256) .. ":" .. layouts_digest(),
 					core_api.sha256),
 				mapgen_context = mapgen_context}
 		end
@@ -624,6 +647,11 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	end
 	function module.capital_stats()
 		return capital_stats
+	end
+	-- Main's layout build CPU seconds {water, roads, capitals}; nil when the
+	-- layout texts were handed in.
+	function module.layout_build_seconds()
+		return layout_seconds
 	end
 	-- The serialized road layout of the last built session (main hands it to
 	-- emerge through ipc_set).
