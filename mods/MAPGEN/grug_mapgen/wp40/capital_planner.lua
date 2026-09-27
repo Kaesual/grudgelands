@@ -595,15 +595,76 @@ function M.plan(seed, I, opt)
 		for _, p in ipairs(tail) do ctrl[#ctrl + 1] = {AX + p[1], AZ + p[2]} end
 		return ctrl
 	end
-	-- 5a. avenues: core gate -> through the city gate to its outer point
+	-- 5a. avenues: core gate -> through the city gate to its outer point.
+	-- An avenue never ends over water: where the civic core's edge on its
+	-- axis is civic water without a core landing (Lethariel's crown mere),
+	-- it starts on the dry shore nearest the core gate instead (a lakeside
+	-- end, not pinned to the core); where its gate has no connector and the
+	-- ground outside the gate is wet, it runs on to the first dry ground.
 	local avenues = {}
 	local core_y = t_at(0, 0)
+	local function dry_along(x0, z0, dx, dz, from, to)
+		for r = from, to, G do
+			local ok = true
+			for k = 0, 2 * G, G do
+				if wet_at(x0 + dx * (r + k), z0 + dz * (r + k)) then ok = false end
+			end
+			if ok then return r end
+		end
+		return nil
+	end
 	for c = 1, 4 do
 		local g = gates[c]
 		local dx, dz = g.dx, g.dz
 		local a0 = {dx * (P.CORE_GATE + 1), dz * (P.CORE_GATE + 1)}
 		local a1 = {dx * (CK + 8), dz * (CK + 8)}
 		local b1 = {g.ix - dx * 8, g.iz - dz * 8}
+		local pin_a = floor(core_y * Q + 0.5) / Q
+		local landed = not wet_at(dx * (P.CORE - 2), dz * (P.CORE - 2)) or
+			(I.core_landing ~= nil and I.core_landing(dx, dz))
+		if not landed then
+			-- the dry point (with a dry ring around it) nearest the core
+			-- gate, beyond the kept core distance and short of the gate
+			local reach = floor(sqrt(b1[1] * b1[1] + b1[2] * b1[2])) - 24
+			local best, bd
+			for along = CK + 2, reach, G do
+				for across = -reach, reach, G do
+					local x, z = dx * along + dz * across, dz * along - dx * across
+					local d = (x - a0[1]) ^ 2 + (z - a0[2]) ^ 2
+					if (not bd or d < bd) and max(abs(x), abs(z)) >= CK + 2 then
+						local ok = true
+						for ox = -2 * G, 2 * G, G do
+							for oz = -2 * G, 2 * G, G do
+								if wet_at(x + ox, z + oz) then ok = false end
+							end
+						end
+						if ok then best, bd = {x, z}, d end
+					end
+				end
+			end
+			if best then
+				local vx, vz = b1[1] - best[1], b1[2] - best[2]
+				local l = sqrt(vx * vx + vz * vz)
+				a0 = best
+				a1 = {best[1] + 8 * vx / l, best[2] + 8 * vz / l}
+				pin_a = nil
+				st.shore_avenues = (st.shore_avenues or 0) + 1
+			else
+				st.wet_avenue_ends = (st.wet_avenue_ends or 0) + 1
+			end
+		end
+		local tail = {b1, {g.ix, g.iz}, {g.x, g.z}, {g.ox, g.oz}}
+		local runout = 0
+		if #g.ends == 0 and wet_at(g.ox, g.oz) then
+			local r = dry_along(g.ox, g.oz, dx, dz, G, 48)
+			if r then
+				runout = r + 2
+				tail[#tail + 1] = {g.ox + dx * runout, g.oz + dz * runout}
+				st.gate_runouts = (st.gate_runouts or 0) + 1
+			else
+				st.wet_avenue_ends = (st.wet_avenue_ends or 0) + 1
+			end
+		end
 		local src = cell_li(a1[1] + dx * C, a1[2] + dz * C)
 		local tgt = cell_li(b1[1], b1[2])
 		-- inside the outline, and a mild pull toward the straight line core
@@ -620,16 +681,18 @@ function M.plan(seed, I, opt)
 		end, b1, guide)
 		local ctrl
 		if path then
-			ctrl = ctrl_from(path, {a0, a1}, {b1, {g.ix, g.iz}, {g.x, g.z}, {g.ox, g.oz}})
+			ctrl = ctrl_from(path, {a0, a1}, tail)
 		else
 			st.failed = (st.failed or 0) + 1
-			ctrl = {{AX + a0[1], AZ + a0[2]}, {AX + g.x, AZ + g.z}, {AX + g.ox, AZ + g.oz}}
+			ctrl = {{AX + a0[1], AZ + a0[2]}, {AX + g.x, AZ + g.z}}
+			for i = 4, #tail do ctrl[#ctrl + 1] = {AX + tail[i][1], AZ + tail[i][2]} end
 		end
 		local road = kit.street("avenue", ctrl, {a = "core_" .. g.name, b = "gate_" .. g.name,
-			pin_a = floor(core_y * Q + 0.5) / Q, flat_a = 6,
+			pin_a = pin_a, flat_a = 6,
 			-- the gate end is flat through the passage but not pinned: the
 			-- gate floor takes the avenue's level (set after the final solve)
-			flat_b = 2 * P.GATE_DEPTH + 10})
+			-- (a run-out to dry ground stays at that level)
+			flat_b = 2 * P.GATE_DEPTH + 10 + runout})
 		kit.commit(road)
 		road.role, road.gate = "avenue", c
 		avenues[c] = road
@@ -1149,9 +1212,17 @@ function M.plan(seed, I, opt)
 	local L0 = kit.finish()
 	for c = 1, 4 do
 		local av = avenues[c]
-		gates[c].ground_y = gates[c].y
-		gates[c].y = floor(av.R[#av.X])
-		gates[c].q = av.RQ[#av.X]   -- connectors continue at exactly this level
+		local g = gates[c]
+		-- the avenue's point at the gate's outer end (a run-out continues
+		-- past it at the same level)
+		local io, bd = #av.X, nil
+		for i = #av.X, max(1, #av.X - 80), -1 do
+			local d = (av.X[i] - AX - g.ox) ^ 2 + (av.Z[i] - AZ - g.oz) ^ 2
+			if not bd or d < bd then io, bd = i, d end
+		end
+		g.ground_y = g.y
+		g.y = floor(av.R[io])
+		g.q = av.RQ[io]   -- connectors continue at exactly this level
 	end
 	-- squares: flat at the street level where they sit; occupied for plots
 	local kept_sq = {}

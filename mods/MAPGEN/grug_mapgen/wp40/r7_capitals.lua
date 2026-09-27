@@ -169,7 +169,25 @@ return function(wp40_directory)
 			end
 			local opts = {WALL = cfg.edge, PIN = pin, CANAL = cfg.canal == true}
 			for k, v in pairs(planner.EDGE[cfg.edge].opts) do opts[k] = v end
+			-- the core's own landing on an axis: a solid core cell at the
+			-- core's edge on the axis near the core's level (Kezamba's decks
+			-- over its cenote); a civic-water edge without one gets no avenue
+			-- from the core (the planner starts it on the far shore)
+			local core_cells = kit.core.build().cells
+			local function core_landing(dx, dz)
+				for _, cell in ipairs(core_cells) do
+					local along = cell.x * dx + cell.z * dz
+					local across = cell.x * dz - cell.z * dx
+					if along >= 46 and along <= 49 and across >= -3 and across <= 3 and
+							cell.y >= -1 and cell.y <= 1 and cell.name ~= "air" and
+							not cell.name:find("water", 1, true) then
+						return true
+					end
+				end
+				return false
+			end
 			local inputs = {anchor = anchor, sample = session.fitted_values_at,
+				core_landing = core_landing,
 				rivers = rivers, simplex = env.simplex, road_ends = ends, plots = plots,
 				roads_module = env.roads}
 			local t0 = os.clock()
@@ -219,6 +237,8 @@ return function(wp40_directory)
 				squares = st.squares or 0, streets = #plan.layout.roads,
 				infeasible = st.kit_stats and st.kit_stats.infeasible or 0,
 				no_route = st.no_route, connector_failed = st.connector_failed or 0,
+				shore_avenues = st.shore_avenues or 0, gate_runouts = st.gate_runouts or 0,
+				wet_avenue_ends = st.wet_avenue_ends or 0,
 				plan = plan}
 		end
 		if #rows > 0 then session.add_authored(rows) end

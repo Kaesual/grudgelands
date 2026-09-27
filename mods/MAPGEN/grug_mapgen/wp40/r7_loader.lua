@@ -106,11 +106,13 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 			"built %.1f %%, plots %d of %d (overflowed %d, left out %d fill, %d " ..
 			"buildings), required %d of %d, relaxed %d, streets %d (open arcs %d, " ..
 			"cross-lanes %d, squares %d), infeasible profiles %d, connector " ..
-			"failures %d%s, planned in %.2f s",
+			"failures %d, shore avenues %d, gate run-outs %d, wet avenue ends %d%s, " ..
+			"planned in %.2f s",
 			st.key, st.area, 100 * st.built, st.placed, st.total, st.overflowed,
 			st.left_out - st.left_out_buildings, st.left_out_buildings, st.required,
 			st.required_total, st.relaxed, st.streets, st.open_arcs, st.cross_lanes,
-			st.squares, st.infeasible, st.connector_failed,
+			st.squares, st.infeasible, st.connector_failed, st.shore_avenues,
+			st.gate_runouts, st.wet_avenue_ends,
 			st.no_route and (", no route:" .. st.no_route) or "", st.seconds))
 	end
 
