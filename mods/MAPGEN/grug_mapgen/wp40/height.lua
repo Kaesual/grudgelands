@@ -1203,6 +1203,36 @@ local function height_factory(dependencies)
 			if hard and terrain_y < hard then terrain_y = hard end
 			return terrain_y, water_y, kind, id, bank_d, bank_y
 		end
+		-- Load-time guard (plan D78): `authored_at` leaves a start town's pad
+		-- and band untouched, so an authored lake whose water or rim (m >= rim,
+		-- the same m `authored_at` uses) reached into them would lose that
+		-- part of its containment without a word. Checked once per session on
+		-- the columns where a lake's box meets a start's pad and band.
+		for index = 1, #authored do
+			local e = authored[index]
+			for fitting_index = 1, #fittings do
+				local fitting = fittings[fitting_index]
+				if fitting.is_start then
+					local width = fitting.profile.fitting_width
+					local half, center = width / 2, fitting.center
+					for z = max(e.min_z, center.z - half - START_BAND),
+							min(e.max_z, center.z + half - 1 + START_BAND) do
+						for x = max(e.min_x, center.x - half - START_BAND),
+								min(e.max_x, center.x + half - 1 + START_BAND) do
+							if square_distance(x, z, center, width) <= START_BAND then
+								local m = e.indicator(x, z)
+								if type(m) == "number" and m >= e.rim and
+										natural_capped(e, x, z, m) >= e.rim then
+									fail("authored lake " .. e.name .. " reaches the pad or " ..
+										"band of start town " .. fitting.id .. " at " .. x ..
+										"," .. z)
+								end
+							end
+						end
+					end
+				end
+			end
+		end
 
 		-- Fitted stage of a land column (memoised): the terrain after the
 		-- anchor fittings and authored lakes, before the shore rule, and the
