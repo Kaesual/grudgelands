@@ -60,6 +60,12 @@ grug_injured_mob_hp_bars (Show injured mob health bars) bool true
 #    not change that world's mode. Normal shutdown saves progress for restart.
 grug_prepare_full_world (Prepare full world before entry) bool false
 
+#    Development diagnostic: at every server start, walk the ground under each
+#    placed capital plot on the world's final terrain and log a warning where a
+#    plot no longer stands on it (water, a fall or a rise beyond its limits).
+#    It changes nothing in the world and costs a few seconds of start time.
+grug_mapgen_terrain_audit (Log capital plot terrain findings at start) bool false
+
 # Multiplier for all non-player combat attack damage, including fixed DoTs,
 # auras and boss ground attacks. Player/environmental damage is unchanged.
 # Loaded at startup; restart after changing. 1.0 restores base attack damage.

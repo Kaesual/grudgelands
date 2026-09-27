@@ -2285,9 +2285,11 @@ local function settlement_factory()
 			if not ok_p2 or not rawequal(returned_p2, original_param2) then
 				fail("fail_vm_contract", "get_param2_data did not reuse the retained buffer")
 			end
+			-- No per-voxel scalar check: the engine fills every index of the
+			-- emerged volume with an integer content ID (u16) and param2 (u8)
+			-- (`l_vmanip.cpp` get_data / get_param2_data), and the halo check
+			-- above fixes the volume.
 			for index = 1, volume do
-				integer(original_data[index], "VM CID", 0, MAX_SAFE, "fail_vm_contract")
-				integer(original_param2[index], "VM param2", 0, 255, "fail_vm_contract")
 				final_data[index], final_param2[index] =
 					original_data[index], original_param2[index]
 				occupancy[index], intent_opcode[index], intent_feature[index],

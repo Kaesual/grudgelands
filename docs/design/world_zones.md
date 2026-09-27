@@ -111,9 +111,9 @@ in this file as of commit `082982da`.
   blend. No dry shore column may end below its neighboring water surface.
   Where one bank touches two water surfaces (beside a river step), it takes
   the higher one, so nothing spills sideways and the step stays a water-water
-  contact inside the channel (Round 22 Phase 5). Authored bridge, causeway,
-  ford and culvert surfaces are functional crossings or cut rims rather than
-  dry-land banks and retain their existing grade constraints.
+  contact inside the channel (Round 22 Phase 5). Road bridges, decks and
+  fords (§9) are functional crossings rather than dry-land banks and keep
+  their own road grade.
 
 ## 3. Starting zones and capitals
 
@@ -1475,7 +1475,9 @@ numeric-truncated seed.
 
 - Main builds three layouts per world: inland water (§7.4), roads (§9) and
   the capital layouts (§12). They travel to emerge as texts in the `ipc_set`
-  payload; emerge never builds them.
+  payload; emerge never builds them. The same payload carries
+  `prepared_blueprints`, main's preparations of the lazy settlement
+  blueprints (`docs/design/settlements.md`), which the cache does not store.
 - After the first build, main stores exactly those three texts in the world
   folder, in `grug_world_layouts.txt` (`wp40/layout_cache.lua`). A later boot
   loads them **only when the stored key equals the current key** and then
@@ -1491,7 +1493,13 @@ numeric-truncated seed.
   `/road_spots`, the build seconds), each with its length and SHA-256, and a
   final SHA-256 over everything before it. A missing, truncated, edited or
   otherwise damaged file is never used: it is rebuilt (a damaged file with
-  a warning), and never stops the load.
+  a warning), and never stops the load. A file that passes every hash but
+  whose texts do not construct (only possible when edited and re-hashed by
+  hand) is treated the same way: a warning, a fresh build, the file
+  replaced. A mapgen source file that cannot be read leaves no key: the
+  layouts are built afresh and nothing is cached on that boot (a warning).
+  This only covers files the runtime does not load (e.g. a stray file); an
+  unreadable file the runtime loads still stops the load when it is read.
 - The file is written with `core.safe_file_write` (temporary file, then
   rename), so a crash mid-write cannot leave a half file.
 - One log line per boot names the result: `world layouts: cache hit` with

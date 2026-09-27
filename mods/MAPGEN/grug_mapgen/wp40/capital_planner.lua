@@ -537,7 +537,7 @@ function M.plan(seed, I, opt)
 			return wet_at(x - AX, z - AZ) and 10 or 0
 		end,
 	})
-	local LI, KOF = kit.LI, kit.KOF
+	local LI = kit.LI
 	local function cell_li(lx, lz)
 		local k = kit.cell_of(AX + lx, AZ + lz)
 		return k and LI[k] or nil
@@ -1209,7 +1209,7 @@ function M.plan(seed, I, opt)
 	for _, r in ipairs(streets) do street_by_id[r.id] = r end
 	-- provisional final profiles of the streets (connectors do not change
 	-- them: they only continue avenues at the gates)
-	local L0 = kit.finish()
+	kit.finish()
 	for c = 1, 4 do
 		local av = avenues[c]
 		local g = gates[c]
@@ -1360,7 +1360,6 @@ function M.plan(seed, I, opt)
 		st.capacity = cap
 	end
 	local placed, left_out, relaxed = {}, {}, {}
-	local plot_of_key = {}
 	local function try_place(p, cand, relax)
 		local b = p.bounds
 		local t = cand.turns

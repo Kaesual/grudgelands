@@ -236,13 +236,11 @@ local function zones_factory(dependencies)
 		coastal_shelf = true,
 	}
 
+	-- The functional kinds height.lua publishes (anchor fittings); the R5
+	-- bridge, causeway, ford and tunnel kinds went with the route catalog.
 	local FUNCTIONAL_KINDS = {
 		anchor_platform = true,
-		bridge_deck = true,
-		causeway = true,
-		ford = true,
 		land_grade = true,
-		tunnel_floor = true,
 	}
 
 	local function fail(message)
@@ -339,13 +337,6 @@ local function zones_factory(dependencies)
 		end
 		active[expected] = nil
 		return true
-	end
-
-	local function sorted_keys(values)
-		local result = {}
-		for key in pairs(values) do result[#result + 1] = key end
-		table.sort(result)
-		return result
 	end
 
 	local function validate_factory_authority()
@@ -986,14 +977,6 @@ local function zones_factory(dependencies)
 		function compatibility.open_sea_at(position)
 			local x, _, z = normalize_position(position, "open-sea query")
 			return session.water_class_at(x, z) == "deep_ocean"
-		end
-		function compatibility.difficulty_at(position)
-			local level = session.mob_level_at(position)
-			if not level then return 1 end
-			local value = (level - 1) / 59
-			if value < 0 then return 0 end
-			if value > 1 then return 1 end
-			return value
 		end
 		function compatibility.territory_at(position)
 			return session.faction_at(position) or "ocean"

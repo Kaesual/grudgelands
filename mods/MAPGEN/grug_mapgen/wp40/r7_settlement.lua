@@ -39,10 +39,13 @@
 --      the first `bind_plan` whose mapchunk touches the blueprint's envelope,
 --      and drops them again once `IDLE_RELEASE` consecutive plans have
 --      touched nothing of it. Identity is NOT lazy: the manifest is a closed
---      document, so every blueprint is built once at load, hashed, and its
---      cells released. What lazy construction hides is the 100,000-cell
---      buffer, not the digest. Starts stay eager: they are small and the
---      spawn depends on them.
+--      document, so main builds every blueprint once at load, hashes it, and
+--      releases its cells. What lazy construction hides is the 100,000-cell
+--      buffer, not the digest. Emerge takes main's preparations of the lazy
+--      blueprints (`M.handover`) instead of building them all again, and
+--      every lazy rebuild is checked against that identity and those
+--      landmarks. Starts stay eager: they are small and the spawn depends on
+--      them.
 --
 -- Hearthpine keeps every schema string and every identity byte it had, so its
 -- blueprint identity SHA-256 -- and every other start's -- is unchanged by the
@@ -819,7 +822,12 @@ function M.prepare(profile, source, raw_sha256, cache)
 		local descriptor = descriptors[index]
 		local prepared = cache and cache[descriptor.prefix]
 		if prepared then
-			if prepared.identity.schema ~= descriptor.identity_schema then
+			local identity = prepared.identity
+			if descriptor.kind == "overlay" or type(identity) ~= "table" or
+					identity.schema ~= descriptor.identity_schema or
+					type(identity.sha256) ~= "string" or #identity.sha256 ~= 64 or
+					identity.sha256:find("[^0-9a-f]") or type(prepared.palette) ~= "table" or
+					#prepared.palette < 1 or type(prepared.bounds) ~= "table" then
 				fail(descriptor.id .. ": cached preparation differs")
 			end
 			local copy = {}
@@ -841,6 +849,71 @@ function M.prepare(profile, source, raw_sha256, cache)
 	table.sort(union, M.less_bytes)
 	return {schema = "grug_wp13_settlement_prepared_v1", profile = profile,
 		blueprints = blueprints, palette = union}
+end
+
+-- Plain data only (numbers, strings, booleans, tables of them): what may
+-- cross the main/emerge IPC boundary.
+local function plain_copy(value, label)
+	local kind = type(value)
+	if kind == "table" then
+		local copy = {}
+		for key, entry in pairs(value) do
+			local key_kind = type(key)
+			if key_kind ~= "string" and key_kind ~= "number" then
+				error("WP13 settlement handover: " .. label .. " key differs", 0)
+			end
+			copy[key] = plain_copy(entry, label)
+		end
+		return copy
+	elseif kind == "number" or kind == "string" or kind == "boolean" then
+		return value
+	end
+	error("WP13 settlement handover: " .. label .. " holds a " .. kind, 0)
+end
+
+-- MAIN HANDS EMERGE ITS LAZY PREPARATIONS (Round 22 cleanup). Every
+-- blueprint of a LAZY settlement that has cells drops them after its
+-- identity is hashed, so what main keeps is plain data: the identity, the
+-- palette, the bounds, the landmarks, the reference column and the cleared
+-- airspace. Emerge takes these (`M.prepare`'s `cache`, keyed by manifest
+-- prefix) instead of building and hashing every blueprint a second time at
+-- load, and `M.config` checks every lazy rebuild against them. Starts
+-- (eager, their cells are kept) and city edge overlays (built from the
+-- capital layout text emerge has) are never handed over. Adds the records
+-- of `prepared` to `out` and returns it.
+function M.handover(prepared, out)
+	if type(prepared) ~= "table" or
+			prepared.schema ~= "grug_wp13_settlement_prepared_v1" or type(out) ~= "table" then
+		error("WP13 settlement handover: prepared settlement differs", 0)
+	end
+	if not prepared.profile.lazy then return out end
+	for index = 1, #prepared.blueprints do
+		local blueprint = prepared.blueprints[index]
+		local descriptor = blueprint.descriptor
+		if descriptor.kind ~= "overlay" then
+			if blueprint.cells ~= nil or out[descriptor.prefix] ~= nil then
+				error("WP13 settlement handover: " .. descriptor.prefix .. " differs", 0)
+			end
+			out[descriptor.prefix] = plain_copy({identity = blueprint.identity,
+				palette = blueprint.palette, bounds = blueprint.bounds,
+				landmarks = blueprint.landmarks, reference = blueprint.reference,
+				clear_to = blueprint.clear_to, run_count = blueprint.run_count},
+				descriptor.prefix)
+		end
+	end
+	return out
+end
+
+-- Whether two plain values are equal throughout (the handover check).
+local function same_plain(a, b)
+	if type(a) ~= "table" or type(b) ~= "table" then return a == b end
+	for key, value in pairs(a) do
+		if not same_plain(value, b[key]) then return false end
+	end
+	for key in pairs(b) do
+		if a[key] == nil then return false end
+	end
+	return true
 end
 
 -- The world rectangle of a placed capital plot: its unrotated bounds turned
@@ -1168,6 +1241,14 @@ function M.config(prepared, content, raw_sha256)
 						state.blueprint.identity.sha256 then
 					fail(state.descriptor.id ..
 						": the lazy rebuild differs from its published identity")
+				end
+				-- What the identity bytes do not cover and a preparation (in
+				-- emerge: main's handover) still carries.
+				if not same_plain(rebuilt.landmarks, state.blueprint.landmarks) or
+						not same_plain(rebuilt.reference, state.blueprint.reference) or
+						rebuilt.clear_to ~= state.blueprint.clear_to then
+					fail(state.descriptor.id ..
+						": the lazy rebuild differs from its preparation's landmarks")
 				end
 				source_cells = rebuilt.cells
 			end

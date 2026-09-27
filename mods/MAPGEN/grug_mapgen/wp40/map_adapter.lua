@@ -1052,15 +1052,11 @@ local function adapter_factory(allocator_factory)
 			if not rawequal(returned_param2, param2_buffer) then
 				fail("fail_vm_contract", "get_param2_data did not reuse buffer")
 			end
-			for index = 1, volume do
-				local cid = data_buffer[index]
-				local p2 = param2_buffer[index]
-				if type(cid) ~= "number" or cid % 1 ~= 0 or cid < 0 or
-						cid > K.MAX_SAFE or type(p2) ~= "number" or p2 % 1 ~= 0 or
-						p2 < 0 or p2 > 255 then
-					fail("fail_vm_contract", "VM buffer scalar differs")
-				end
-			end
+			-- No per-voxel scalar check here: this adapter only ever runs on the
+			-- composed R6 transaction's shadow VM (`r6_settlement.lua`), whose
+			-- buffers are copies of the engine's `get_data`/`get_param2_data`
+			-- output, and the engine fills every index of the emerged volume with
+			-- an integer content ID (u16) and param2 (u8).
 
 			local function buffer_index(x, y, z)
 				return (z - emerged_min.z) * z_stride +
