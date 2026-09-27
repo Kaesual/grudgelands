@@ -158,7 +158,10 @@ local function settlement_factory()
 						not context.housing_excluded_at(x, z) then
 					local surface = context.select_surface(biome, x, z, water_y, terrain_y)
 					local filler_depth = surface and surface.filler_depth or 4
-					for depth = filler_depth + 1, 40 do
+					-- Steep columns (rock faces and lips) show their side: no
+					-- bands along a cliff face (Round 22 Phase 6).
+					local first = surface and surface.steep and 41 or filler_depth + 1
+					for depth = first, 40 do
 						local y = terrain_y - depth
 						if y < context.floor_y then
 							clipped = clipped + 1
@@ -1501,6 +1504,8 @@ local function settlement_factory()
 		-- exact catalog, exclusion, hash, template and accepted-P7 authorities of
 		-- the writer, while replacing the native VM with Section 11.2's closed
 		-- stratum/surface/air population.  Only aggregate ledgers escape.
+		-- Evidence-only analytic mirror of the writer (not used in production);
+		-- it lacks the Round 22 Phase 6 ground-body rule for force-placed cells.
 		local function scan_horizontal_owner(owner_x, owner_z,
 				cultural_candidates, decoration_candidates)
 			integer(owner_x, "evidence owner x", -30912, 30927, "fail_ledger")
@@ -2137,6 +2142,16 @@ local function settlement_factory()
 			ledger.rejections[key] = (ledger.rejections[key] or 0) + 1
 		end
 		helpers = {equal_graph = equal_graph,
+			-- natural rock classes a force-placed decoration root may take
+			ground_body_class = function(class_id)
+				return class_id == CLASS_NATURAL_HOST or class_id == CLASS_NATURAL_SURFACE or
+					class_id == CLASS_NATIVE_ORE or class_id == CLASS_WP43_STRATUM
+			end,
+			-- the planned R5 opcode of a voxel (27: natural terrain fill)
+			r5_opcode_at = function(plan, column, y)
+				local rbase = run_at(plan, column, y)
+				return rbase and plan.r5_plan.run_values[rbase + 4]
+			end,
 			primary_reason = primary_reason, exclusion_reason = exclusion_reason,
 			static_exclusion_reason = static_exclusion_reason,
 			housing_excluded_at = housing_excluded_at,
@@ -3080,10 +3095,24 @@ local function settlement_factory()
 											root_y + cell_record.y, root_z + cell_record.z)
 										local target_cid = contract.content_cids[cell_record.content_ref]
 										local class_id = classify(final_data[index], final_param2[index])
+										-- Every force-placed decoration cell (tree trunks and
+										-- roots, bush stems, the papyrus dirt, the sunk roots of
+										-- the emergent jungle tree) may replace the surface skin
+										-- (opcodes 1-4) and, since Round 22 Phase 6, also the
+										-- natural ground body below it: untouched native rock,
+										-- ore or stratum, or the planned terrain fill (R5 27).
+										-- That is Luanti's own force_place meaning.
+										local opcode = intent_opcode[index]
+										local ground_body = cell_record.force_place and
+											opcode == 0 and helpers.ground_body_class(class_id) and
+											(final_data[index] == original_data[index] or
+												helpers.r5_opcode_at(plan, column_index(
+													root_x + cell_record.x, root_z + cell_record.z),
+													root_y + cell_record.y) == 27)
 										if final_data[index] ~= target_cid and class_id ~= CLASS_AIR and
-												class_id ~= CLASS_NATURAL_VEGETATION and
-												not (cell_record.force_place and intent_opcode[index] >= 1 and
-													intent_opcode[index] <= 4) then
+												class_id ~= CLASS_NATURAL_VEGETATION and not ground_body and
+												not (cell_record.force_place and opcode >= 1 and
+													opcode <= 4) then
 											if cell_record.force_place then
 												flags.forbidden_old_class = true
 											else

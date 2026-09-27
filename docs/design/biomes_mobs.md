@@ -876,7 +876,7 @@ re-run against the new values once the change ships.
 | Skeleton Archer | bone litter, blight_dirt, settled tops (war coast) | 20 | 1500 | 3 | max 5 | outer, war_coast |
 | Skeleton Raider | **every land top** + sand (war_coast-exclusive) | 20 | 1500 | 3 | max 5 | war_coast |
 | Crag Eagle/Vulture | gravel, **snowblock**, mesa_clay | 20 | 1500 | 3 | min 10 | outer, coast |
-| Stone/Mesa Golem (elite) | gravel, **snowblock**, stone, mesa_clay | 30 | 9000 | 1 | any | outer, coast, underground |
+| Stone/Mesa Golem (elite) | gravel, **snowblock**, stone, mesa_clay | 30 | 9000 (Stone Golem above y 300: 12000, Round 22 Phase 6 — bare high crags offer ~1.3× the hosts per area) | 1 | any | outer, coast, underground |
 | Ram | gravel, **snowblock** | 20 | 1650 | 2 | min 10 | outer |
 | Panther | rainforest litter **+ canopy litter** | 20 | 1350 | 4 | max 5 | outer, coast |
 | Serpent | rainforest litter **+ canopy litter**, mud | 20 | 1350 | 4 | min 10 | outer, coast |
@@ -884,7 +884,7 @@ re-run against the new values once the change ships.
 | Bog Ooze | mud | 20 | 1500 | 3 | any | outer |
 | Parrot | rainforest litter | 20 | 1875 | 2 | min 10 | core, inner |
 | Carrion Crow | **every land top** except sand (the Gull holds that slot); war_coast-exclusive | 20 | 1875 | 2 | min 10 | war_coast |
-| Shore Crab | sand within 6 nodes of sea-level water, y 0–20 | 20 | 400 | 3 | any | level below 45 (§3.1) |
+| Shore Crab | sand within 6 nodes of sea-level water, y 0–20 | 20 | 300 | 3 | any | level below 45 (§3.1) |
 | Gull | sand | 20 | 1875 | 2 | min 10 | strait, war_coast, coast, **outer** |
 | **Cave Bat** (critter) | stone **+ `group:grug_stratum`** | 20 | 2200 | 2 | max 5 | underground |
 | **Cave Crawler** (critter) | stone **+ `group:grug_stratum`** | 20 | 2200 | **1** | max 5 | underground |
@@ -910,7 +910,7 @@ re-run against the new values once the change ships.
 | **Snow Leopard** | gravel, snowblock | 20 | 2100 | **4 at night** (base 3 ×1.25, ceiling) | night | Frostbarrow, Stormvault, Wyrmglass |
 | **Wisp** | mud, silver/forest/bone/canopy/rainforest litter | 20 | 2200 | **4 at night** (base 3 ×1.25, ceiling) | night | exact named-zone routes |
 | **Ashen / Gravewood Treant** | forest litter / bone litter | 20 | 2600 | **3 each at night** (base 2 ×1.25, ceiling) | night | exact tint-specific routes |
-| Reef Lurker (elite crab) | sand within 6 nodes of sea-level water, y 0–20 | 30 | 1500 | 1 | any | level 45–60 (§3.1) |
+| Reef Lurker (elite crab) | sand within 6 nodes of sea-level water, y 0–20 | 30 | 1100 | 1 | any | level 45–60 (§3.1) |
 | Kraken Guard | ocean water surface, open sea only (own check) | 60 | 12000 | 1 | any | (outside continents) |
 | Bandits / Mirefolk | **no ABM** — camp anchor with **respawn slots** (world.md §4a): max 3–5, one refill per 120–300 s, dormant catch-up | — | — | 3–5 per camp | — | camp pos |
 | Named rares | **no ABM** — scheduled spawner, 2–4 h respawn, broadcast | — | — | 1 | — | fixed routes |

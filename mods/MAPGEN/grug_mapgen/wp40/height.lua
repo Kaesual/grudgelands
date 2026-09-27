@@ -1433,8 +1433,9 @@ local function height_factory(dependencies)
 		-----------------------------------------------------------------------
 		-- Near-water material (world_zones.md §7.4, plan D27). The coast has no
 		-- geometric profile; the rule only reads the final terrain. Low, gentle
-		-- ground near water is sand with sparse gravel; steep ground at the
-		-- water and cliff edges are gravel or stone; mountain land never gets
+		-- ground near water is plain sand (Round 22 Phase 6: no gravel
+		-- speckles); steep ground at the water and cliff edges are gravel or
+		-- stone; mountain land never gets
 		-- sand (its border with other zones is dithered, not a line). Every
 		-- threshold is jittered at two noise scales, so material edges follow
 		-- the terrain and never run straight. `bank_material` takes
@@ -1488,7 +1489,6 @@ local function height_factory(dependencies)
 			if not mountain and not steep and
 					distance <= SAND_REACH + SHORE_JITTER * broad and
 					rise <= SAND_TOP + 2.5 * broad + 1.5 * fine then
-				if fine > 0.55 and broad < -0.2 then return "gravel" end
 				return "sand"
 			end
 			if not (mountain or steep) or distance > ROCK_REACH + 8 * broad then

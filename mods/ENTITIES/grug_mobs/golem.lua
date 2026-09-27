@@ -184,8 +184,9 @@ grug_mobs.register_mob("grug_mobs:stone_golem", stone_golem)
 -- make in zombie.lua): `default:stone` between y 0 and 600 is not "the whole
 -- world". mobs:spawn defaults the ABM's neighbour list to {"air"}
 -- (api.lua:4498-4510), so only stone with air beside it counts — on the surface
--- that is exposed bare rock, which the crags/badlands cuboids produce in
--- patches and the rest of the world barely at all. On top of that this row is
+-- that is exposed bare rock: crag and badlands outcrops, rocky shores and,
+-- since Round 22 Phase 6, the rock faces of all steep natural ground (the
+-- zone gate below still keeps the golem to its own ring). On top of that this row is
 -- interval 30 / chance 9000 (the rarest in the roster) and gated to the outer
 -- ring and one continent, and the check order in api.lua's spawn_action spends
 -- the cheap tests first: max_per_block, mob_active_limit, then our arithmetic
@@ -196,18 +197,37 @@ grug_mobs.register_mob("grug_mobs:stone_golem", stone_golem)
 -- wrong ring is rejected by two subtractions and never costs an object scan.
 -- (The order was stated backwards in the T10 notes and in
 -- docs/research/wp6_spawn_budget.md §5; corrected in the WP6 review.)
-mobs:spawn({
-	name = "grug_mobs:stone_golem",
-	nodes = {
+--
+-- HEIGHT SPLIT (Round 22 Phase 6): above y 300 the stone golem land is bare
+-- crag, rock and snow almost everywhere, so it offers about 1.3x the host
+-- nodes per column of the land below (measured on two seeds: 0.83-0.96 vs
+-- 0.67-0.70 spawnable hosts per eligible column). The upper row's chance is
+-- scaled by that ratio, so the high mountains spawn golems at about the
+-- per-area rate the land below 300 had before the cap was raised to 600.
+local function stone_golem_nodes()
+	return {
 		"default:gravel", -- grug_crags
 		"default:snowblock", -- grug_crags_snowy (eagle.lua explains why no
 		-- row had this node before)
 		"default:stone", -- bare rock in the crags
-	},
+	}
+end
+mobs:spawn({
+	name = "grug_mobs:stone_golem",
+	nodes = stone_golem_nodes(),
 	interval = 30,
 	chance = 9000,
 	active_object_count = 1,
 	min_height = 0,
+	max_height = 300,
+})
+mobs:spawn({
+	name = "grug_mobs:stone_golem",
+	nodes = stone_golem_nodes(),
+	interval = 30,
+	chance = 12000,
+	active_object_count = 1,
+	min_height = 300,
 	max_height = 600,
 })
 

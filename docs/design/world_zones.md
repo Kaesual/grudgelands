@@ -511,7 +511,7 @@ replaced; git history before this rewrite records that model.
   ocean and dragon channels are 24 nodes deep.
 - Wet beds use deterministic patches of their bed material, sand, gravel and
   stone; mud remains the dominant swamp bed. Dry continental beaches are
-  mostly sand with sparse gravel.
+  plain sand (no gravel speckles; Round 22 Phase 6).
 - **Coast shape (Round 22, D27):** the coast takes its shape from the
   terrain field alone: it mostly ramps gently to the water, with occasional
   steep coasts. There are no geometric coast profiles, runs or fixed beach
@@ -524,7 +524,7 @@ replaced; git history before this rewrite records that model.
   depth.
 - **Near-water materials (Round 22, D27):** one rule derived from the final
   terrain, near the water. Low, gentle ground within roughly 40 nodes of the
-  water is sand above three sandstone filler nodes, with sparse gravel. Steep
+  water is sand above three sandstone filler nodes. Steep
   ground at the water and the edges of cliffs are gravel or stone. Mountain
   land, including both dragon islands, never gets dry sand; where mountain
   land borders other land the switch is dithered by noise, not a line. The
@@ -684,6 +684,19 @@ replaced; git history before this rewrite records that model.
   pines keep their existing gravel support. Stone remains bare. Planner,
   prospective settlement and actual writer use the same biome-and-substrate
   eligibility.
+- **Steep ground (Round 22 Phase 6).** Every dry natural column outside the
+  near-water rule, the badlands and the swamp reads its final terrain: the
+  drop to its lowest cardinal neighbour (a wet neighbour counts at its water
+  surface) and the grade over six nodes. A grade from 2.0 to 4.0 nodes per
+  node (the limit jittered by two noise scales, so rock and soil alternate in
+  patches) or a drop of 6–8 nodes makes a **bare rock face** (stone top and
+  filler). A drop of 2 or more below that keeps the column's top over a
+  **stone filler** (a soil lip over a rock face; no dirt shows on a face).
+  Gentle ground at the foot of a rise of 6–10 nodes within three nodes is
+  **gravel scree** in noise patches. Rock faces and lips skip the shallow
+  strata, so no band follows a cliff face. Graded pads, hard foundations and
+  road corridors keep their surfaces. Trees and plants do not root on bare
+  rock.
 - **Substrate.** Native v7 remains the substrate for caves, ores, dungeons
   and strata, but its heightmap never selects the final surface, a mask, an
   operation or a priority. The writer may read that heightmap only as a local
@@ -1752,7 +1765,10 @@ soil, with the existing current-load timer activation and nearby-water rule.
 Capital protection remains effective; editable ground requires no housing.
 
 Shallow reefs use deterministic 16-node reef-cell patches plus column selection,
-only in sea water with bed depth 2–10. The six default coral variants and rooted
+only in sea water with bed depth 2–10: the coastal shelf and, since Round 22
+Phase 6, the continental bays. One cell in four carries a small or large coral
+patch, and loose kelp meadows (soft noise-bounded areas, one sand column in
+six, 2–6 tall) grow on sand beds at least three deep. The six default coral variants and rooted
 sand-with-kelp replace eligible natural bed nodes, with their actual rooted
 geometry/height semantics. Lakes, rivers, planned freshwater and functional
 surfaces receive no reef content. There is one terrain/VM writer and no competing
