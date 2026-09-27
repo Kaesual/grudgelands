@@ -782,7 +782,7 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   in sand; more corals and sea plants (the reef rule only uses the
   coastal-shelf class — extend to bays/near-shore sea); outpost `anchor_041`
   collar overlaps rare route `anchor_098`'s core (`height.lua`
-  `fitting_grade_at` takes the first candidate); golem density on high stone
+  `fitting_grade_at` takes the first candidate; fixed in D4 wave 2); golem density on high stone
   mountains after the cap raise; emergent jungle trees may be refused by the
   writer (−4 offset, `docs/research/wp13-floating-bushes.md`); high relief
   may lack native caves (check in playtest); shore-crab spawn rate retune.
@@ -970,6 +970,33 @@ from the lanes and reviews of this round:
   and 110 chunks incl. capitals, roads, bridges, water, a village); emerge
   construction ×0.52–0.59 (~7 → ~3.8 s), main loader ×0.89–0.93, chunk time
   within noise. Evidence `r22/cleanup-b/`.
+- **As built, wave 2 (capital planner, catalog, correctness nits):**
+  capital y culling: the first chunk of a footprint over a capital records the
+  y range the plot collars and city edge would write; later chunks of that
+  stack outside it skip both (footprints off the reserved square skip the
+  collar loop). `BOUNDS.capital_overlay` is now `M.CAPITAL_OVERLAY` with an
+  anchor-relative `square` and an absolute `world_y`, the manifest envelope
+  built from both. A capital street whose pinned ends do not fit (the road
+  module's "infeasible" fallback) is named in a warning (seen: Lethariel s1,
+  Nhal Veyr s8675309 — connectors); network roads already logged dropped core
+  pins. `source/catalog.lua` is gone: the rare patrol offsets are
+  `source.rare_patrol_offsets` in `source/simple_map.lua`, consumer payload
+  and its pinned digest unchanged. Overlapping anchor fittings (only
+  `anchor_041`/`anchor_098`): a flat core or bay platform wins, overlapping
+  collars blend (pull of the strongest collar toward a w/(1−w)-weighted blend
+  of the references); on s42 the rare route's core is flat again (33 of 144
+  columns were 1–8 too high), the largest step there 9 → 5; changes limited to
+  x 151–171, z 2060–2096. The writer puts the top on sealed beds/banks (R5
+  17/18) only where `analytic_p7_support_ref` answers it; no such column on
+  the tested maps (0 of 9,840 sealed tops in the s42 corpus, no wet anchor
+  grade or bay platform in any envelope on s1/s42), so output is unchanged.
+  Evidence: layout texts, capital blueprint identities and the consumer
+  payload identical on two seeds; engine digest over 179 owners per seed
+  (capitals, 53 stacked chunks over them, roads, rivers, lakes, a village)
+  equal to main except the one or two owners holding 041/098; stacked-chunk
+  time ×0.63/×0.64 in the two pairs where main's collar loop ran slow, within
+  noise in the two where it ran fast (bimodal JIT behaviour of main's loop).
+  Evidence `r22/wave2-capital/`.
 
 ### Orchestration and compaction points
 
