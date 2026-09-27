@@ -54,9 +54,6 @@ local function loader(directory)
 	local function stone_stair(palette)
 		return palette.maybe("castle_wall_stair") or palette.node("roof_stair")
 	end
-	local function stone_slab(palette)
-		return palette.maybe("castle_wall_slab") or palette.node("roof_slab")
-	end
 	local function paving(palette)
 		return palette.maybe("castle_paving") or palette.node("plaza")
 	end

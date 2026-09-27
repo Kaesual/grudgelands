@@ -89,7 +89,7 @@ local function new_module(P)
 	local M = {P = P}
 	P.variant = {G0 = P.G0, K_G = P.K_G}
 	local floor, sqrt, abs, min, max = math.floor, math.sqrt, math.abs, math.min, math.max
-	local atan2, pi, cos, sin = math.atan2, math.pi, math.cos, math.sin
+	local atan2, pi = math.atan2, math.pi
 	local INF = math.huge
 	local LAT = 128        -- centreline positions live on a 1/LAT-node lattice
 
@@ -221,11 +221,6 @@ local function new_module(P)
 			out[#out] = {last[1], last[2]}
 		end
 		return out
-	end
-	local function polylen(pts)
-		local L = 0
-		for i = 2, #pts do L = L + sqrt((pts[i][1] - pts[i - 1][1]) ^ 2 + (pts[i][2] - pts[i - 1][2]) ^ 2) end
-		return L
 	end
 	-- signed turning angle at every point over a +-w window (radians) and the
 	-- local curvature radius
@@ -404,7 +399,6 @@ local function new_module(P)
 		end
 
 		-- scratch state arrays (reused; generation-stamped)
-		local NS = NL * ND
 		local dist, prev, gen, closed = {}, {}, {}, {}
 		local generation = 0
 
@@ -1629,7 +1623,6 @@ local function new_module(P)
 
 		local T1 = os.clock()
 		local order = opts.order
-		local built_pairs = {}
 		for _, step in ipairs(order) do
 			if step.op == "pair" then
 				local r = route_pair(step.kind, node_by_id[step.a], node_by_id[step.b])
@@ -1651,7 +1644,6 @@ local function new_module(P)
 			local function netdist(aid, bid)
 				-- graph nodes: "road:i:idx" points; edges along roads between
 				-- consecutive key points
-				local keys = {}
 				local adj = {}
 				local function key(r, idx) return r .. ":" .. idx end
 				local function add(u, v, w)

@@ -90,12 +90,6 @@ local function noise(x, z)
 	return (nx0 + (nx1 - nx0) * v) * 1.4
 end
 
-local function smoothstep(a, b, v)
-	local t = (v - a) / (b - a)
-	if t <= 0 then return 0 elseif t >= 1 then return 1 end
-	return t * t * (3 - 2 * t)
-end
-
 -- Signed distance to a capsule chain: points {x, z, r}, the radius linear
 -- along each segment; negative inside.
 local function chain(points)
