@@ -144,8 +144,9 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   Hard-protected content is limited to complete capital cities (inside the
   wall line, the wall or planted edge and a bare band beyond it,
   `world_zones.md` §12),
-  complete starting settlements (decided 2026-08-13: the full 128×128 build
-  envelope plus a 10-node apron; spawn, waypoint, graveyard and service
+  complete starting settlements (the start town, Round 22 D78: the full
+  128×128 build envelope plus a bare band of 12 nodes round it with rounded
+  corners, `world_zones.md` §12; spawn, waypoint, graveyard and service
   platforms all lie inside it), essential service/quest/waypoint/graveyard platforms, and small
   functional NPC and renewable-resource anchors. Roads, open-world bridges,
   villages, outpost/camp shells, ruins, tents, fences and battlefield dressing

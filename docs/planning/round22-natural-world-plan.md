@@ -882,6 +882,56 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
 - **Start town surroundings (D78, after D76):** town layout and pad unchanged; smaller plateau; a 10–20-node protected, vegetation-free band around the pad with a
   noise-based material transition and a soft height transition; replaces the 148 square
   and larger bare envelopes. Before/after images on three seeds for the user.
+- **D78 as built (lane `worktree-agent-a4fedc58f408c8429`, evidence and images
+  in `~/projects/grudgelands-orchestration/r22/d78/`):** the flat, bare
+  surroundings had three causes: the terrain field's start bowl (a warped
+  circle calm to 70 from the anchor, faded out by 300, so damping stayed
+  below 0.5 out to ~100 beyond the pad), the pad's 64-node square grading
+  ramp (flat to ~30 beyond the pad, straight edges), and the claim
+  exclusions — ground cover and gathering refused in the whole 256-node
+  anchor-blend square, trees in the 148 square minus a jittered apron. Now:
+  (1) the start town (`source/simple_map.lua` `hard_start_town_v1`: pad 128
+  + band 12, true distance, rounded corners, index box 152) is both the hard
+  core and the claim envelope (`simple_map.lua` kind `start_town`); the
+  apron treeline code is gone; the zone authority's hard row asks the
+  horizontal session (`start_protection_member`); `grug_mobs` spawn refusal
+  uses the same rounded shape; zone-field keypoints 148 → 152 leave the zone
+  field identical on all 24 test seeds (scale, bulges, bonuses, a 50-node
+  owner/coast grid). (2) Grading: the flat pad grows by the old 0–6 noise
+  offset, then a 24-node collar (`start_collar`, POI-collar noise, rounded
+  corners) instead of the square ramp. (3) The bowl follows the pad: pad
+  distance, unwarped, calm to 10, then a fade whose width follows the land:
+  the 90th percentile of |natural − target| on square rings 30–90 beyond the
+  pad over a grade of 0.3, within 60–200 (+ up to 40 % noisy edge); 75 of 144
+  starts get the minimum, hilly ones up to 200 (a fixed small bowl gave
+  rises of ~0.9 grade next to towns in hollows, variants B/C/D). (4) The
+  band's surface: `height.lua` `start_ground_at` gives the town's pad ground
+  (race palette `ground`, via `r7_runtime.lua`; Sunscar's
+  `default:dirt_with_dry_grass` is not an R6 surface node, its mapgen twin
+  `default:dry_dirt_with_dry_grass` has the same top texture) 2–10 nodes
+  into the band along a 14-period noise outline with a 3-node dithered edge;
+  the R6 surface selector lays it as the top (`planner_source.start_ground_at`).
+  Offline, 24 seeds × 6 starts (before = main 8f467033): pad fittings all
+  feasible (cut ≤ 4, fill ≤ 5, was 8/6), 0 wet pad columns; damping m ≥ 0.1
+  at a median 30 beyond the pad (27–71; before 33, 1–69), m ≥ 0.5 at 50
+  (45–133; before 100, 57–135); mean final slope 13–30 beyond the pad 0.09,
+  31–45 0.15, 46–60 0.21, 61–80 0.24 (before 0.01–0.05, 0.10, 0.11, 0.13;
+  natural 0.25–0.26), worst start ≤ 0.39 up to 80 nodes out, steep (D77 rock
+  grade) ≤ 1 % of any ring; areas in a ±256 window per start: trees refused
+  22.9 k m² (was 17.7), ground cover refused 23.1 k m² (was 65.5), protected
+  22.9 k m² (was 21.9). Engine (3 seeds × 2 trees, terrain audit on): boots
+  PASS, 0 ERROR; protection test points 78/78 per run (pad, band 6/11/12,
+  beyond 13/20/40/300, band corners, territory + world_alterable + mob
+  refusal); band 0 trees / 0 ground cover on six corner quadrants (was
+  294–330 trees, 411–638 cover), vegetation right beyond it (13–42: 1446–1687
+  trees, 1773–2371 cover); town ground on 98–100 % of band tops next to the
+  pad, ~51–62 % at d 12; terrain audit findings 0/2/0 both trees; start NPC
+  rosters place as before; start-corner chunks 422–537 ms per mapchunk
+  (before 395–426: natural terrain and vegetation now), controls 217–290 in
+  both; protection calls unchanged (territory_rule_at near starts 1.5–2.0 µs
+  both). Open: a dry river trough (D57 `keep_trough`) beside Dawnmere on seed
+  424242 keeps 3-node steps 1–20 nodes from the pad (84 such columns on
+  main, 161 now with the shorter collar); the water lane's call.
 - **Surface look and natural content, as built (lane p6-look, 2026-09-27;
   evidence and images in `~/projects/grudgelands-orchestration/r22/p6-look/`):**
   steep ground gets bare rock faces (grade 2.0–4.0 nodes per node, noise
