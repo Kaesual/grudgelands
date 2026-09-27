@@ -2472,9 +2472,13 @@ local function settlement_factory()
 						-- bank (17) get their surface on top like any natural
 						-- column: bed patches of sand, gravel, stone and swamp mud,
 						-- the near-water shore material or the biome top
-						-- (world_zones.md §7.4; Round 22 Phase 5).
+						-- (world_zones.md §7.4; Round 22 Phase 5) -- where the
+						-- analytic mirror answers that top too, so the evidence
+						-- and decoration planning agree with the writer (a bay
+						-- platform or a wet anchor grade keeps its seal).
 						if predecessor == 28 or dry_anchor_grade and predecessor == 22 or
-								predecessor == 17 or predecessor == 18 then
+								((predecessor == 17 or predecessor == 18) and
+									helpers.analytic_p7_support_ref(x, terrain_y, z) ~= nil) then
 							local opcode = surface_kind == 1 and 4 or
 								(surface_kind == 2 and 3 or 1)
 							write_intent(x, terrain_y, z,
