@@ -788,6 +788,28 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 			steep_x[slot], steep_z[slot], steep_class[slot] = x, z, class
 			return class
 		end
+		-- A start town's own ground in the band round its pad (plan D78,
+		-- `height.lua` start_ground_at): the biome's ordinary row with the
+		-- town's ground node as its top, one row per biome, node and depth.
+		local start_ground_at = planner_source.start_ground_at
+		if type(start_ground_at) ~= "function" then
+			fail("fail_source", "planner source start_ground_at missing")
+		end
+		local town_rows = {}
+		local function town_row(id, name, depth)
+			local by_name = town_rows[id]
+			if not by_name then by_name = {} town_rows[id] = by_name end
+			local rows = by_name[name]
+			if not rows then rows = {} by_name[name] = rows end
+			local row = rows[depth]
+			if not row then
+				row = deep_copy(variants[id][1][depth])
+				row.top = name
+				row.top_ref = require_role(name, 1, p7_classes, "start town ground")
+				rows[depth] = row
+			end
+			return row
+		end
 		return function(id, x, z, water_y, terrain_y)
 			local base = surface_by_id[id]
 			if not base then return nil end
@@ -795,6 +817,11 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 			local shore = dry and planner_source.coast_material_at(x, z) or nil
 			if shore == "sand" then return sand_shores[id] end
 			if shore then return rocky_shores[id][shore == "gravel" and 1 or 2] end
+			local town = dry and start_ground_at(x, z) or nil
+			if town then
+				return town_row(id, town,
+					1 + math.min(3, math.floor(noise(x, z, 64, 83492791) / 256)))
+			end
 			-- The coast rule is the only source of dry beach sand: where it
 			-- gives nothing, the palette beach biome is shingle and rock.
 			if dry and id == "grug_beach" then

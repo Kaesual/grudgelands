@@ -286,12 +286,11 @@ local function planner_factory()
 			-- blend envelope, so `not excluded` made this branch unreachable --
 			-- every dry anchor grade column is inside that one exclusion -- and
 			-- left the blend ring with no decoration host at all. The "vegetation"
-			-- purpose skips exactly that envelope, plus (playtest round 1) the part
-			-- of the start's 148-node hard square that lies past the jittered
-			-- treeline in its ten-node protection apron, and keeps everything else
-			-- excluded: the build envelope, the road corridors, water and coast. So
-			-- the pad has no host, the apron has one outside a jagged inner edge,
-			-- and the ring around both does. The extra query runs only after the
+			-- purpose skips exactly that envelope and keeps everything else
+			-- excluded: the start town's hard core (plan D78: the pad and its
+			-- 12-node band, the same shape as the envelope since D78), the road
+			-- corridors, water and coast. So the pad and the band have no host and
+			-- the collar beyond the band does. The extra query runs only after the
 			-- anchor-id match. Ordinary POI collars now share the natural skin;
 			-- their existing exclusion still controls vegetation eligibility.
 			--

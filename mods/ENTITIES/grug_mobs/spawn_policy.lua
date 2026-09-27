@@ -321,29 +321,31 @@ local RACE_FACTIONS = {
 --
 -- Start-footprint hostile-spawn refusal (user decision, 2026-09-14).
 --
--- No mob that can attack players spawns inside one of the six start
--- footprints. That footprint is the 128-node build envelope plus its
--- 10-node protection apron (world.md Section 2 R1) = the 148 x 148
--- hard-protected square, a half-open square centred on the start anchor:
--- anchor - 74 is inside, anchor + 73 is inside, anchor + 74 is outside
--- (wp40/source/simple_map.lua, recipe hard_start_core_v1, total_width 148).
+-- No mob that can attack players spawns inside one of the six start towns.
+-- A start town is its protected footprint (world.md Section 2 R1, plan D78):
+-- the 128-node pad, a half-open square centred on the start anchor (anchor
+-- - 64 .. anchor + 63), and every column within 12 nodes of it, measured as
+-- the true distance between column centres, so the corners are rounded
+-- (wp40/source/simple_map.lua, recipe hard_start_town_v1: pad_width 128,
+-- band 12).
 --
 -- grug_zones.territory_rule_at(pos) == "hard_protected" is the same
 -- predicate, but it normalizes a position table, walks a sparse footprint
 -- index and allocates a candidate list on every call. This gate runs on
--- every ABM spawn candidate, so the six rectangles are compiled once from
+-- every ABM spawn candidate, so the six pads are compiled once from
 -- grug_core.start_anchor's authority and tested as plain number
--- comparisons: at most 24 of them, no allocation.
+-- comparisons: at most six boxes and one distance, no allocation.
 --
 -- Capitals (their protected cities, plan D76) are hard-protected too and are
 -- deliberately NOT covered here: their named zones' mob palettes are empty,
 -- so no ordinary row reaches the city or the ground around it anyway.
-local START_HALF_LOW = 74 -- anchor - 74 .. anchor + 73, half-open
-local START_HALF_HIGH = 73
-local start_rects
+local START_PAD_LOW = 64 -- the pad: anchor - 64 .. anchor + 63, half-open
+local START_PAD_HIGH = 63
+local START_BAND = 12
+local start_pads
 
-local function compile_start_rects()
-	local rects = {}
+local function compile_start_pads()
+	local pads = {}
 	local identities = grug_core.start_identities()
 	if #identities ~= 6 then
 		error("[grug_mobs] start footprints: expected 6 start anchors, got " ..
@@ -351,27 +353,31 @@ local function compile_start_rects()
 	end
 	for i = 1, #identities do
 		local anchor = identities[i].anchor
-		rects[#rects + 1] = {
-			min_x = anchor.x - START_HALF_LOW,
-			max_x = anchor.x + START_HALF_HIGH,
-			min_z = anchor.z - START_HALF_LOW,
-			max_z = anchor.z + START_HALF_HIGH,
+		pads[#pads + 1] = {
+			min_x = anchor.x - START_PAD_LOW,
+			max_x = anchor.x + START_PAD_HIGH,
+			min_z = anchor.z - START_PAD_LOW,
+			max_z = anchor.z + START_PAD_HIGH,
 		}
 	end
-	return rects
+	return pads
 end
 
 -- Exposed for the regression harness; production reads it through
 -- spawn_policy_allows below.
 function grug_mobs.in_start_footprint(x, z)
-	if not start_rects then
-		start_rects = compile_start_rects()
+	if not start_pads then
+		start_pads = compile_start_pads()
 	end
-	for i = 1, #start_rects do
-		local rect = start_rects[i]
-		if x >= rect.min_x and x <= rect.max_x and
-				z >= rect.min_z and z <= rect.max_z then
-			return true
+	for i = 1, #start_pads do
+		local pad = start_pads[i]
+		if x >= pad.min_x - START_BAND and x <= pad.max_x + START_BAND and
+				z >= pad.min_z - START_BAND and z <= pad.max_z + START_BAND then
+			local ex = math.max(pad.min_x - x, x - pad.max_x, 0)
+			local ez = math.max(pad.min_z - z, z - pad.max_z, 0)
+			if ex * ex + ez * ez <= START_BAND * START_BAND then
+				return true
+			end
 		end
 	end
 	return false

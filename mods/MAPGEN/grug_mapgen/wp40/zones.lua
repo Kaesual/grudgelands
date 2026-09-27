@@ -425,6 +425,7 @@ local function zones_factory(dependencies)
 				type(horizontal.housing_eligible_at) ~= "function" or
 				type(horizontal.static_exclusion_values_at) ~= "function" or
 				type(horizontal.capital_protection_member) ~= "function" or
+				type(horizontal.start_protection_member) ~= "function" or
 				type(horizontal.housing_mask_id_at) ~= "function" then
 			fail("horizontal session seam differs")
 		end
@@ -690,7 +691,7 @@ local function zones_factory(dependencies)
 			local recipe = source.hard_protection_recipes[recipe_index]
 			recipe_by_id[recipe.id] = recipe
 		end
-		-- Hard protection: start and capital cores and apex socket columns.
+		-- Hard protection: start towns, protected cities and apex socket columns.
 		local height_hard_by_id = {}
 		local height_hard_records = height.hard_protection_volumes()
 		for index = 1, #height_hard_records do
@@ -715,20 +716,10 @@ local function zones_factory(dependencies)
 				id = source_hard.id,
 				record = deep_copy(height_hard),
 				shape = recipe.shape,
-				total_width = recipe.total_width,
 				y_min = recipe.y_min,
 			}
 			local bbox
-			if recipe.shape == "centered_half_open_square" then
-				local center = source_hard.center
-				if type(center) ~= "table" or recipe.total_width % 2 ~= 0 then
-					fail("hard square geometry differs")
-				end
-				local half = recipe.total_width / 2
-				internal.center = center
-				bbox = {min_x = center.x - half, max_x = center.x + half,
-					min_z = center.z - half, max_z = center.z + half}
-			elseif recipe.shape == "exact_column" then
+			if recipe.shape == "exact_column" then
 				local center = source_hard.center
 				if type(center) ~= "table" then fail("hard socket center missing") end
 				internal.center = center
@@ -749,6 +740,19 @@ local function zones_factory(dependencies)
 				internal.capital = true
 				bbox = {min_x = center.x - half, max_x = center.x + half,
 					min_z = center.z - half, max_z = center.z + half}
+			elseif recipe.shape == "start_town_outline" then
+				-- A start town (plan D78): the pad and its band, indexed by the
+				-- square that holds them, answered by the horizontal session.
+				local center = source_hard.center
+				if type(center) ~= "table" or type(recipe.bound_width) ~= "number" or
+						recipe.bound_width % 2 ~= 0 then
+					fail("hard start town geometry differs")
+				end
+				local half = recipe.bound_width / 2
+				internal.center = center
+				internal.anchor_id = source_hard.source_anchor_id
+				bbox = {min_x = center.x - half, max_x = center.x + half,
+					min_z = center.z - half, max_z = center.z + half}
 			else
 				fail("unknown hard footprint shape")
 			end
@@ -767,23 +771,20 @@ local function zones_factory(dependencies)
 			records = footprint_records,
 		}, SPARSE_SCHEMA)
 
-		local function square_member(x, z, center, total_width)
-			local x2, z2 = 2 * x, 2 * z
-			return x2 >= 2 * center.x - total_width and
-				x2 < 2 * center.x + total_width and
-				z2 >= 2 * center.z - total_width and
-				z2 < 2 * center.z + total_width
-		end
-
 		local function hard_horizontal_member(row, x, z)
-			if row.shape == "centered_half_open_square" then
-				return square_member(x, z, row.center, row.total_width)
-			elseif row.shape == "exact_column" then
+			if row.shape == "exact_column" then
 				return x == row.center.x and z == row.center.z
 			elseif row.shape == "capital_city_outline" then
 				local member = row.member
 				if not member then
 					member = horizontal.capital_protection_member(row.anchor_id)
+					row.member = member
+				end
+				return member(x, z)
+			elseif row.shape == "start_town_outline" then
+				local member = row.member
+				if not member then
+					member = horizontal.start_protection_member(row.anchor_id)
 					row.member = member
 				end
 				return member(x, z)
@@ -1283,6 +1284,9 @@ local function zones_factory(dependencies)
 			end
 			function planner_source.coast_material_at(x, z)
 				return height.coast_material_at(x, z)
+			end
+			function planner_source.start_ground_at(x, z)
+				return height.start_ground_at(x, z)
 			end
 			function planner_source.primary_relief_at(x, z)
 				local _, _, owner = horizontal.classification_values_at(x, z)

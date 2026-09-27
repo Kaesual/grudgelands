@@ -748,6 +748,8 @@ return function(data)
 			V.capital_wave_core, V.capital_wave_full
 		local EDGE, EDGE_P = V.capital_edge, V.capital_edge_period
 		local ANCH = {}
+		local fitting_width = {}
+		for _, p in ipairs(opts.anchor_profiles or {}) do fitting_width[p.id] = p.fitting_width end
 		for _, a in ipairs(opts.anchors or {}) do
 			local slot = a.slot_id
 			if slot == "start" or slot == "capital" then
@@ -764,9 +766,15 @@ return function(data)
 					-- lays out on it; the noisy outer edge keeps it organic
 					e.nowarp = V.capital_centred or nil
 				else
-					e.r_in, e.r_out, e.resid = V.start_r_in, V.start_r_out, V.start_resid
+					-- D78: the start bowl follows the 128-node pad: its radii
+					-- are distances from the pad square (rounded corners),
+					-- unwarped, with a noisy outer edge, so natural terrain
+					-- starts soon beyond the protected band.
+					e.r_in, e.resid = V.start_r_in, V.start_resid
 					e.band = V.start_band
-					e.wave, e.edge = 0, 0
+					e.wave, e.edge = 0, V.start_edge
+					e.half = fitting_width[a.template_id] / 2
+					e.nowarp = true
 				end
 				local sum, n = 0, 0
 				local r, step = V.target_radius, V.target_step
@@ -781,7 +789,39 @@ return function(data)
 				end
 				e.natural_mean = sum / n
 				e.target = max(e.band[1], min(e.band[2], e.natural_mean))
-				e.edge_p = EDGE_P
+				if slot == "start" then
+					-- D78: the fade follows the land round the pad. Its width is
+					-- the height difference between the natural ground and the
+					-- calm target (90th percentile over square rings 30-90 nodes
+					-- out from the pad, every 16 nodes) over start_fade_grade, at least
+					-- start_fade_min and at most start_fade_max: on level land
+					-- natural relief is back soon beyond the band, and where the
+					-- pad sits in a hollow or on a rise the ground climbs or falls
+					-- back to it as a hill, not a wall.
+					local devs = {}
+					for _, d in ipairs({30, 50, 70, 90}) do
+						local r = e.half + d
+						for t = -r, r - 1, 16 do
+							for side = 1, 4 do
+								local px, pz
+								if side == 1 then px, pz = e.x + t, e.z - r
+								elseif side == 2 then px, pz = e.x + r, e.z + t
+								elseif side == 3 then px, pz = e.x - t, e.z + r
+								else px, pz = e.x - r, e.z - t end
+								if land_at(px, pz) then
+									local h, _, _, _, cw = natural(px, pz)
+									devs[#devs + 1] = abs(with_coast(px, pz, h, true, cw) - e.target)
+								end
+							end
+						end
+					end
+					table.sort(devs)
+					local dev = devs[floor(0.9 * #devs) + 1] or devs[#devs] or 0
+					e.r_out = e.r_in + max(V.start_fade_min,
+						min(V.start_fade_max, dev / V.start_fade_grade))
+					e.deviation = dev
+				end
+				e.edge_p = slot == "start" and V.start_edge_period or EDGE_P
 				ANCH[#ANCH + 1] = e
 			end
 		end
@@ -873,6 +913,12 @@ return function(data)
 				local e = ANCH[i]
 				local dx, dz = ax - e.x, az - e.z
 				if e.nowarp then dx, dz = x - e.x, z - e.z end
+				if e.half then
+					-- distance from the pad, a half-open square of columns
+					-- [-half, half - 1] around the anchor (D78)
+					dx = max(abs(dx + 0.5) - e.half + 0.5, 0)
+					dz = max(abs(dz + 0.5) - e.half + 0.5, 0)
+				end
 				local d2 = dx * dx + dz * dz
 				local r_out = e.r_out * (1 + e.edge)
 				if d2 < r_out * r_out then

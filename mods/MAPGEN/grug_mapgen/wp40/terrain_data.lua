@@ -70,7 +70,18 @@ data.params = {
 	blend_cell = 32, blend_radius = 5, blend_passes = 3,
 	param_warp = 0.6, landmark_warp = 0.4, anchor_warp = 0.3,
 	ridge_mul = 1.5, rshare_add = 0.2, hill_mul = 1.25, rough_mul = 1, base_add = 8,
-	start_r_in = 70, start_r_out = 300, start_resid = 0.15,
+	-- The start bowl (plan D78) follows the 128-node pad: its radii are
+	-- distances from the pad square (rounded corners, unwarped). Calm to
+	-- start_r_in, then a fade back to natural relief whose width follows the
+	-- land round the pad: the height difference between the natural ground
+	-- and the calm target (its 90th percentile) over start_fade_grade, within
+	-- start_fade_min..start_fade_max; the fade's outer edge grows by up to
+	-- start_edge of it with a noise of start_edge_period. Before D78 the
+	-- bowl was a warped circle calm to 70 from the anchor and faded out by 300,
+	-- with a 64-node square grading ramp round the pad.
+	start_r_in = 10, start_resid = 0.15,
+	start_fade_min = 60, start_fade_max = 200, start_fade_grade = 0.3,
+	start_edge = 0.4, start_edge_period = 90,
 	-- The capital bowl (plan D76) is the calm ground the capital planner lays
 	-- its city on: fully calm to 200, the damping below 0.1 to about 255-265,
 	-- natural relief again by 400-580 along the noisy edge. It is centred on

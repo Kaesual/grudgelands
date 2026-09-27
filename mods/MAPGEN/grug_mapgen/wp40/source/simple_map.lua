@@ -473,7 +473,7 @@ source.logical_biome_selector = {
 }
 
 source.anchor_profiles = {
-	{id="start",shape="flat",fitting_width=128,blend_width=256,max_cut=8,max_fill=8,force_native_dungeon=false},
+	{id="start",shape="flat",fitting_width=128,blend_width=256,start_collar=24,max_cut=8,max_fill=8,force_native_dungeon=false},
 	{id="capital_dwarf",shape="granite_terrace",fitting_width=512,blend_width=704,civic_width=96,capital_collar=40,max_cut=24,max_fill=16,force_native_dungeon=false},
 	{id="capital_human",shape="river_plateau",fitting_width=512,blend_width=704,civic_width=96,capital_collar=40,max_cut=24,max_fill=16,force_native_dungeon=false},
 	{id="capital_elf",shape="terraced_grove",fitting_width=512,blend_width=704,civic_width=96,capital_collar=40,max_cut=24,max_fill=16,force_native_dungeon=false},
@@ -496,9 +496,13 @@ source.anchor_profiles = {
 -- (`capital_protection.lua`). `bound_width` is the reserved square that always
 -- contains it: the index box, and the footprint the zone field keeps in-zone
 -- on land.
+-- A start's protection is its town (Round 22, plan D78): the 128-node pad
+-- (the start profile's fitting width) and every column within `band` nodes of
+-- it (true distance, so the corners are rounded). `bound_width` = pad + 2 band
+-- is the square that holds it: the index box and the zone field footprint.
 source.hard_protection_recipes = {
 	{id="hard_capital_city_v1",shape="capital_city_outline",footprint_policy_id="capital_city_outline_v1",bound_width=532,y_policy_id="shallow_land_upward_to_world_top",y_min=-700,upward_unbounded=true},
-	{id="hard_start_core_v1",shape="centered_half_open_square",footprint_policy_id="centered_half_open_square_v1",total_width=148,y_policy_id="shallow_land_upward_to_world_top",y_min=-700,upward_unbounded=true},
+	{id="hard_start_town_v1",shape="start_town_outline",footprint_policy_id="start_town_outline_v1",pad_width=128,band=12,bound_width=152,y_policy_id="shallow_land_upward_to_world_top",y_min=-700,upward_unbounded=true},
 	{id="hard_apex_socket_column_v1",shape="exact_column",footprint_policy_id="exact_column_v1",column_count=1,y_policy_id="shallow_land_upward_to_world_top",y_min=-700,upward_unbounded=true},
 }
 
@@ -508,7 +512,7 @@ for anchor_index = 1, 12 do
 	source.hard_protection[#source.hard_protection+1] = {
 		id="hard:"..anchor.id,source_anchor_id=anchor.id,
 		recipe_id=anchor.slot_id == "capital" and
-			"hard_capital_city_v1" or "hard_start_core_v1",
+			"hard_capital_city_v1" or "hard_start_town_v1",
 		center=point(anchor.position.x,anchor.position.z),active=true,
 		activation_owner="WP40",status="active",
 	}
