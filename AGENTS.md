@@ -240,9 +240,11 @@ current state). It is **derived, never authoritative**:
   - Backported from 5.4 (engine-injected, both builds):
     `string.pack`/`unpack`/`packsize`.
 - **Interpreter/test layers are binding:** on every Lua change run
-  `tools/bin/luac51 -p`, the `SETGLOBAL` check and all five sweeps in
-  `docs/research/luanti-lua.md` (`bash tools/check_lua.sh <files>` runs all three). Two things about those sweeps are easy to
-  get wrong. They are scoped to `mods/*/grug_*`, so Lua under `tools/`
+  `bash tools/check_lua.sh <files>` — it runs the `tools/bin/luac51 -p`
+  parser, the `SETGLOBAL` check and all six sweeps of
+  `docs/research/luanti-lua.md` (sweeps 1–5 grep; sweep 6, `x ^ 2` /
+  `math.pow`, only on `mods/MAPGEN` files). Two things about those sweeps are
+  easy to get wrong. They are scoped to `mods/*/grug_*`, so Lua under `tools/`
   is **not** covered by them and needs the check run explicitly. And the
   harness scripts that run them require **ripgrep** (`dnf install ripgrep`):
   until 2026-08-15 a missing `rg` made nine of them report success without

@@ -20,12 +20,43 @@ for file in "$@"; do
       # its interpreter calls pow(): the last bit then depends on JIT
       # history. See docs/research/luanti-lua.md "Floating point: LuaJIT
       # interpreter vs compiled code".
+      # The exponent is either an RK constant (`POW a b -k ; - 2`) or, in a
+      # function with more than 256 constants (or `local k = 2`), a
+      # register loaded by `LOADK r k ; 2`. The pass remembers per function
+      # which registers a LOADK set to 2 or "pow" and forgets a register on
+      # any later write to it (straight-line approximation, no jumps).
       pow_checked=1
       hits=$("$parser" -l -p "$file" | awk -v f="$file" '
-        $3 == "POW" && $6 ~ /^-/ && $(NF - 2) == ";" && $NF == "2" {
-          gsub(/[][]/, "", $2); print f ":" $2 ": x ^ 2 (write x * x)" }
-        $3 == "GETTABLE" && $NF == "\"pow\"" {
-          gsub(/[][]/, "", $2); print f ":" $2 ": math.pow (write x * x or x ^ k)" }')
+        function forget_from(r,  k) {
+          for (k in two) if (k + 0 >= r) delete two[k]
+          for (k in pw) if (k + 0 >= r) delete pw[k]
+        }
+        function hit(msg,  line) {
+          line = $2; gsub(/[][]/, "", line); print f ":" line ": " msg
+        }
+        /^(main|function) </ { split("", two); split("", pw); next }
+        $1 !~ /^[0-9]+$/ || $2 !~ /^\[/ { next }
+        {
+          op = $3; a = $4 + 0
+          if (op == "POW") {
+            c = $6
+            if ((c ~ /^-/ && $(NF - 2) == ";" && $NF == "2") || (c !~ /^-/ && (c in two)))
+              hit("x ^ 2 (write x * x)")
+          }
+          if (op == "GETTABLE") {
+            c = $6
+            if ((c ~ /^-/ && $NF == "\"pow\"") || (c !~ /^-/ && (c in pw)))
+              hit("math.pow (write x * x or x ^ k)")
+          }
+          # register writes: forget what the register held
+          if (op ~ /^(SETGLOBAL|SETUPVAL|SETTABLE|SETLIST|JMP|EQ|LT|LE|TEST|RETURN|TAILCALL|CLOSE)$/) next
+          if (op ~ /^(CALL|VARARG|LOADNIL|SELF|TFORLOOP|FORLOOP|FORPREP)$/) forget_from(a)
+          else { delete two[a]; delete pw[a] }
+          if (op == "LOADK" && $(NF - 1) == ";") {
+            if ($NF == "2") two[a] = 1
+            else if ($NF == "\"pow\"") pw[a] = 1
+          }
+        }')
       if [ -n "$hits" ]; then
         printf '%s\n' "$hits"
         pow_findings=1

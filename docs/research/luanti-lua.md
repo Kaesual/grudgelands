@@ -262,7 +262,9 @@ Measured 2026-09-27 on the engine's LuaJIT (OpenResty luajit2
   `^-1`, `^-2`, `^0.5`, `^1.4`, `^1.5` stay `pow()` calls in compiled code;
   `^0` and `^1` fold to exact results), `x ^ k` with a run-time `k`, `exp`,
   `log`, `sin`, `cos`, `atan2`, `fmod`, `%`, `sqrt`, `/`, and `min`/`max`
-  with ±0 and NaN.
+  with ±0 and NaN. `a * b + c` stays identical only because LuaJIT 2.1 does
+  not fuse multiply-add unless FMA is enabled (`jit.opt.start("+fma")`) —
+  never enable it.
 
 Why it matters: main and emerge each build the same layouts, offline tools
 rebuild them, and a world must come out identical on every boot. A 1-ulp
@@ -278,8 +280,11 @@ result must agree across processes), write `x * x`, never `x ^ 2` or
 (`local dx = a - b` … `dx * dx`). Do not hide the 2 in a variable either.
 Other exponents are safe. `tools/check_lua.sh` enforces this for files under
 `mods/MAPGEN` (sweep 6): it reads the `luac51` bytecode listing and fails on
-a `POW` with the constant exponent 2 and on any `math.pow`; a variable that
-holds 2 is beyond it. This covers LuaJIT's two modes on one machine only;
+a `POW` whose exponent is the constant 2 — as an RK operand or, in a
+function with more than 256 constants (or `local k = 2`), a register a
+`LOADK … ; 2` set earlier in the same function — and on any `math.pow`. Its
+limit: a value that is 2 only at run time (a parameter, a table field, a
+register set before a jump) is beyond a static check. This covers LuaJIT's two modes on one machine only;
 libm results (`pow`, `exp`, `sin`, ...) can still differ between platforms.
 
 ## Do-not-write checklist
@@ -382,9 +387,10 @@ Zero hits outside comments is the passing state.
 
 `bash tools/check_lua.sh <files>` runs the parser, the `SETGLOBAL` listing
 and these five sweeps, plus **sweep 6** on files under `mods/MAPGEN`: a
-`POW` with the constant exponent 2 or a `math.pow` in the `luac51` bytecode
-listing (no comment or string matches) fails with the file and line — see
-"Floating point: LuaJIT interpreter vs compiled code".
+`POW` with the exponent 2 (constant operand, or a register loaded with 2)
+or a `math.pow` in the `luac51` bytecode listing (no comment or string
+matches) fails with the file and line — see "Floating point: LuaJIT
+interpreter vs compiled code".
 
 ### Interpreter and test strategy
 
@@ -408,9 +414,11 @@ hardwired to PUC is a defect, not a conservative choice.
 
 Use these layers together, in this order:
 
-1. **Every Lua change:** run `tools/bin/luac51 -p`, inspect `SETGLOBAL` for
-   changed mod files, and run all five grep sweeps above. These checks are
-   mandatory even when every executable test uses LuaJIT.
+1. **Every Lua change:** run `bash tools/check_lua.sh <changed files>`: the
+   `luac51 -p` parser, the `SETGLOBAL` listing for changed mod files, the
+   five grep sweeps above and sweep 6 (`x ^ 2` / `math.pow` under
+   `mods/MAPGEN`). These checks are mandatory even when every executable
+   test uses LuaJIT.
 2. **Development and exhaustive checks:** run the complete applicable search,
    seed corpus, geometry scan or other expensive suite under LuaJIT whenever
    the harness supports selecting it.
