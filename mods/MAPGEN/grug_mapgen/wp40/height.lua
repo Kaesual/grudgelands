@@ -14,28 +14,24 @@
 -- Every query is a pure function of (seed, x, z). Heights are memoised per
 -- 80x80 mapchunk block, so planning and the writer read one memo per chunk.
 
--- Seed/session-local FIFO over the horizontal classification. Numeric keys,
--- explicit tuple length so nil holes survive.
-local function new_classification_cache(classify, limit)
-	local by_x, slots, cursor = {}, {}, 1
-	local function tuple(...) return {n = select("#", ...), ...} end
+-- Seed/session-local memo of the horizontal classification: the water class
+-- and the owner (its first and third values), the only two this module reads.
+-- Direct-mapped like simple_map.lua's field-sample memo (a pure function of
+-- x, z; a slot collision simply recomputes, the stored x and z decide a hit).
+-- Fixed arrays instead of vararg tuples and of rows keyed by signed
+-- coordinates: `unpack`, a table built from `...` and a variable negative key
+-- in a table with an array part all stop LuaJIT traces (Round 22 D4).
+local function new_classification_cache(classify, slots)
+	local memo_x, memo_z, memo_class, memo_owner = {}, {}, {}, {}
 	return function(x, z)
-		local row = by_x[x]
-		local entry = row and row[z]
-		if entry then return unpack(entry.value, 1, entry.value.n) end
-		local value = tuple(classify(x, z))
-		local old = slots[cursor]
-		if old then
-			local old_row = by_x[old.x]
-			old_row[old.z] = nil
-			if next(old_row) == nil then by_x[old.x] = nil end
+		local slot = (x * 40503 + z) % slots
+		if memo_x[slot] == x and memo_z[slot] == z then
+			return memo_class[slot], memo_owner[slot]
 		end
-		row = by_x[x]
-		if not row then row = {} by_x[x] = row end
-		entry = {x = x, z = z, value = value}
-		row[z], slots[cursor] = entry, entry
-		cursor = cursor % limit + 1
-		return unpack(value, 1, value.n)
+		local class, _, owner = classify(x, z)
+		memo_class[slot], memo_owner[slot] = class, owner
+		memo_x[slot], memo_z[slot] = x, z
+		return class, owner
 	end
 end
 
@@ -173,11 +169,18 @@ local function height_factory(dependencies)
 		if dz == 0 then return dx end
 		return sqrt(dx * dx + dz * dz)
 	end
+	-- Row and cell indices are shifted by FEATURE_BIAS so that they stay
+	-- positive on the map: LuaJIT cannot compile a lookup of a variable
+	-- negative key in a table that also has an array part ("NYI: mixed
+	-- sparse/dense table", Round 22 D4).
+	local FEATURE_BIAS = 1024
 	local function add_bucket(grid, record, min_x, max_x, min_z, max_z)
-		for iz = floor_div(min_z, FEATURE_CELL), floor_div(max_z, FEATURE_CELL) do
+		for iz = floor_div(min_z, FEATURE_CELL) + FEATURE_BIAS,
+				floor_div(max_z, FEATURE_CELL) + FEATURE_BIAS do
 			local row = grid[iz]
 			if not row then row = {} grid[iz] = row end
-			for ix = floor_div(min_x, FEATURE_CELL), floor_div(max_x, FEATURE_CELL) do
+			for ix = floor_div(min_x, FEATURE_CELL) + FEATURE_BIAS,
+					floor_div(max_x, FEATURE_CELL) + FEATURE_BIAS do
 				local bucket = row[ix]
 				if not bucket then bucket = {} row[ix] = bucket end
 				bucket[#bucket + 1] = record
@@ -185,8 +188,8 @@ local function height_factory(dependencies)
 		end
 	end
 	local function bucket_at(grid, x, z)
-		local row = grid[floor_div(z, FEATURE_CELL)]
-		return row and row[floor_div(x, FEATURE_CELL)] or nil
+		local row = grid[floor_div(z, FEATURE_CELL) + FEATURE_BIAS]
+		return row and row[floor_div(x, FEATURE_CELL) + FEATURE_BIAS] or nil
 	end
 
 	-- Start pad reference: the lower median of 9x9 natural samples, clamped
@@ -233,7 +236,7 @@ local function height_factory(dependencies)
 		-- surfaces come from the water layout per column, and its banks follow
 		-- the inland shore rule, not the sea's.
 		local function column_class(x, z)
-			local water_class, _, owner = classified(x, z)
+			local water_class, owner = classified(x, z)
 			if water_class == "land" then return LAND, owner end
 			if water_class == "planned_water" then return BAY, owner end
 			return SEA, owner

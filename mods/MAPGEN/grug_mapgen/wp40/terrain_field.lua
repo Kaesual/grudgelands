@@ -24,14 +24,20 @@ return function(data)
 	local cos, sin, rad, exp, pi = math.cos, math.sin, math.rad, math.exp, math.pi
 	local WATER = 1
 
+	-- Clamped without branches: a branch here is a side exit of the large
+	-- traces that inline these, and those side traces fail to compile
+	-- (Round 22 D4). The clamp gives exactly the old results: 0 (as +0) for
+	-- t <= 0 and 1 for t >= 1; a NaN t still takes the formula.
 	local function smoothstep(a, b, x)
 		local t = (x - a) / (b - a)
-		if t <= 0 then return 0 elseif t >= 1 then return 1 end
+		if t ~= t then return t * t * (3 - 2 * t) end
+		t = min(max(t, 0), 1)
 		return t * t * (3 - 2 * t)
 	end
 	local function smootherstep(a, b, x)
 		local t = (x - a) / (b - a)
-		if t <= 0 then return 0 elseif t >= 1 then return 1 end
+		if t ~= t then return t * t * t * (t * (t * 6 - 15) + 10) end
+		t = min(max(t, 0), 1) + 0 -- + 0: a -0 would keep its sign here
 		return t * t * t * (t * (t * 6 - 15) + 10)
 	end
 
@@ -76,7 +82,10 @@ return function(data)
 			local a = rnd() * 2 * pi
 			GX[i], GZ[i] = cos(a), sin(a)
 		end
-		return function(x, z)
+		-- The reference form: a corner contributes only where t > 0. Kept as
+		-- the exact answer for the rare column where the branch-free form
+		-- below cannot tell (a result that is exactly zero).
+		local function exact(x, z)
 			local s = (x + z) * F2
 			local i = floor(x + s)
 			local j = floor(z + s)
@@ -125,6 +134,64 @@ return function(data)
 				dx = dx + c * x2 + t4 * gx
 				dz = dz + c * z2 + t4 * gz
 			end
+			return SCALE * n, SCALE * dx, SCALE * dz
+		end
+		-- The same sums without branches (LuaJIT, Round 22 D4): the corner
+		-- tests used to be side exits of the large traces that inline this
+		-- function, and those side traces fail to compile ("register
+		-- coalescing too complex"), so every call fell back to the
+		-- interpreter at them. Here every corner is evaluated; an inactive
+		-- corner (t <= 0) gets the weight a = +0 and adds only zeros. The
+		-- active corners run exactly the reference operations (a == t), and
+		-- adding a zero never changes a non-zero sum, so any result that is
+		-- not zero is bit-identical to `exact`; only the sign of a zero may
+		-- differ, and a zero goes to `exact`. i1 is 1 exactly when x0 > z0.
+		return function(x, z)
+			local s = (x + z) * F2
+			local i = floor(x + s)
+			local j = floor(z + s)
+			local t = (i + j) * G2
+			local x0 = x - i + t
+			local z0 = z - j + t
+			local i1 = max(0, min(1, -floor(z0 - x0)))
+			local j1 = 1 - i1
+			local x1, z1 = x0 - i1 + G2, z0 - j1 + G2
+			local x2, z2 = x0 + G2x2m1, z0 + G2x2m1
+			local ii, jj = band(i, 255), band(j, 255)
+			local t0 = 0.5 - x0 * x0 - z0 * z0
+			local a = (t0 + abs(t0)) * 0.5
+			local g = perm[ii + perm[jj]]
+			local gx, gz = GX[g], GZ[g]
+			local gd = gx * x0 + gz * z0
+			local t2 = a * a
+			local t4 = t2 * t2
+			local c = -8 * t2 * a * gd
+			local n = t4 * gd
+			local dx = c * x0 + t4 * gx
+			local dz = c * z0 + t4 * gz
+			local t1 = 0.5 - x1 * x1 - z1 * z1
+			a = (t1 + abs(t1)) * 0.5
+			g = perm[ii + i1 + perm[jj + j1]]
+			gx, gz = GX[g], GZ[g]
+			gd = gx * x1 + gz * z1
+			t2 = a * a
+			t4 = t2 * t2
+			c = -8 * t2 * a * gd
+			n = n + t4 * gd
+			dx = dx + c * x1 + t4 * gx
+			dz = dz + c * z1 + t4 * gz
+			local t2_ = 0.5 - x2 * x2 - z2 * z2
+			a = (t2_ + abs(t2_)) * 0.5
+			g = perm[ii + 1 + perm[jj + 1]]
+			gx, gz = GX[g], GZ[g]
+			gd = gx * x2 + gz * z2
+			t2 = a * a
+			t4 = t2 * t2
+			c = -8 * t2 * a * gd
+			n = n + t4 * gd
+			dx = dx + c * x2 + t4 * gx
+			dz = dz + c * z2 + t4 * gz
+			if n == 0 or dx == 0 or dz == 0 then return exact(x, z) end
 			return SCALE * n, SCALE * dx, SCALE * dz
 		end
 	end
@@ -367,11 +434,15 @@ return function(data)
 			LMS[#LMS + 1] = e
 		end
 		local BUCKET = 128
+		-- Keys are shifted by a constant so that they stay positive on the
+		-- map: LuaJIT cannot compile a lookup of a variable negative key in a
+		-- table that also has an array part ("NYI: mixed sparse/dense table").
+		local KEY_BIAS = 2048 * 4096 + 2048
 		local buckets = {}
 		for _, e in ipairs(LMS) do
 			for bz = floor((e.z - e.reach) / BUCKET), floor((e.z + e.reach) / BUCKET) do
 				for bx = floor((e.x - e.reach) / BUCKET), floor((e.x + e.reach) / BUCKET) do
-					local key = bz * 4096 + bx
+					local key = bz * 4096 + bx + KEY_BIAS
 					local list = buckets[key]
 					if not list then list = {}; buckets[key] = list end
 					list[#list + 1] = e
@@ -417,7 +488,7 @@ return function(data)
 
 		local function landmarks_at(lx, lz)
 			local lm_add, rm_boost, mesa_m, mesa_top = 0, 0, 0, 0
-			local list = buckets[floor(lz / BUCKET) * 4096 + floor(lx / BUCKET)]
+			local list = buckets[floor(lz / BUCKET) * 4096 + floor(lx / BUCKET) + KEY_BIAS]
 			if not list then return 0, 0, 0, 0 end
 			for i = 1, #list do
 				local e = list[i]
