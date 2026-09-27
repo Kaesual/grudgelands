@@ -1477,16 +1477,17 @@ numeric-truncated seed.
   start's capital and road log lines, the road showcase spots for
   `/road_spots`, the build seconds), each with its length and SHA-256, and a
   final SHA-256 over everything before it. A missing, truncated, edited or
-  otherwise damaged file is never used: it is rebuilt with a warning, and
-  never stops the load.
+  otherwise damaged file is never used: it is rebuilt (a damaged file with
+  a warning), and never stops the load.
 - The file is written with `core.safe_file_write` (temporary file, then
   rename), so a crash mid-write cannot leave a half file.
 - One log line per boot names the result: `world layouts: cache hit` with
   the skipped build seconds, or `cache miss (<reason>)` with the build
   seconds and the stored size.
 - The full-world preparation identity (the "authority changed" guard) binds
-  a digest of the three texts, so it changes exactly when a world's layouts
-  change, whether they were built or loaded.
+  a digest of the three texts besides its source files, so it changes when
+  a world's layouts or those sources change, whether the layouts were built
+  or loaded.
 - Deleting the file is always safe: the next boot rebuilds the same layouts.
 
 ## 14. World acceptance

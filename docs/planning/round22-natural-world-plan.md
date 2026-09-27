@@ -566,6 +566,37 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   `source/catalog.lua` route tables and dead planner bridge/ford/causeway/
   tunnel branches are for the D4 cleanup.
 
+- **Capital planner as built (merged `631fde41`, 2026-09-27):**
+  `wp40/capital_planner.lua`, `r7_capitals.lua` (`plan_all` once in main after
+  height, water and roads; fails loudly on an unplaced required plot),
+  `r7_capital_blueprint.lua` (replaces the six per-capital blueprints),
+  `wp13/city_edge.lua` (polyline walls, gatehouses, turrets, palisade, planted
+  belt with four thresholds, arcades over water); streets, lanes, squares and
+  connectors are road-module roads added through `session.add_roads`, the
+  Highcourt quay canal through `add_authored`; `ipc_set` field
+  `capital_layout`; plots rotated to face their lane (inn arrival rotates);
+  `height.lua` drops the square terraces for a `capital_collar` (40) profile
+  field; city streets stop at the core footprint (±49); a lake-side axis
+  without a core landing starts its avenue on the nearest dry shore
+  (Lethariel). Evidence: 32 seeds offline and 8 engine boots clean (the one
+  post-merge FAIL was a harness port collision, tool fixed `13b4647c`); civic
+  cores, all 304 plot builds and start towns byte-identical to before;
+  rotation 0 wrong of 4 059 sockets and 657 doors; main vs emerge identical;
+  plot warnings on seed 1 41 → 0; main loader +7.5 s on a fresh start.
+  Accepted: the Dur Brannoc connector ford step (7 columns on s8675309), a
+  fence post at one lane junction mouth, a connector through a turret
+  leaves a hole. Open for the cleanup round: y culling of edge/collar work,
+  the overlay bounds table mixing anchor-relative x/z with absolute y.
+- **D71 as built (merged `e3d69a3d`):** `<worldpath>/grug_world_layouts.txt`
+  holds the water, road (incl. city streets) and capital layout texts plus
+  diagnostics, keyed by format, full seed, a digest of every `.lua` under
+  `grug_mapgen`, the v7 settings and the Lua interpreter; any mismatch or
+  damage rebuilds, deleting it is always safe; the preparation identity
+  binds a digest of the texts. Main loader ~25.4 s on a miss, ~8.4 s on a
+  hit (seed 42). Any `grug_mapgen` Lua edit rebuilds once. Open (low): a
+  hit that passes all hashes but fails construction stops instead of
+  rebuilding (only possible with a hand-edited, re-hashed file).
+
 ### Phase 5 — Water v2
 
 - **Goal:** rivers in valleys, natural lakes.
