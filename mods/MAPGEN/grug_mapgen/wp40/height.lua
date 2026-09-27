@@ -14,16 +14,17 @@
 -- Every query is a pure function of (seed, x, z). Heights are memoised per
 -- 80x80 mapchunk block, so planning and the writer read one memo per chunk.
 
--- Seed/session-local FIFO over the horizontal classification. Numeric keys,
--- explicit tuple length so nil holes survive.
+-- Seed/session-local FIFO over the horizontal classification: the water
+-- class and the owner (its first and third values), the only two this module
+-- reads. Numeric keys. Fixed fields instead of a vararg tuple: a table built
+-- from `...` and `unpack` stop LuaJIT traces (Round 22 D4).
 local function new_classification_cache(classify, limit)
 	local by_x, slots, cursor = {}, {}, 1
-	local function tuple(...) return {n = select("#", ...), ...} end
 	return function(x, z)
 		local row = by_x[x]
 		local entry = row and row[z]
-		if entry then return unpack(entry.value, 1, entry.value.n) end
-		local value = tuple(classify(x, z))
+		if entry then return entry.class, entry.owner end
+		local class, _, owner = classify(x, z)
 		local old = slots[cursor]
 		if old then
 			local old_row = by_x[old.x]
@@ -32,10 +33,10 @@ local function new_classification_cache(classify, limit)
 		end
 		row = by_x[x]
 		if not row then row = {} by_x[x] = row end
-		entry = {x = x, z = z, value = value}
+		entry = {x = x, z = z, class = class, owner = owner}
 		row[z], slots[cursor] = entry, entry
 		cursor = cursor % limit + 1
-		return unpack(value, 1, value.n)
+		return class, owner
 	end
 end
 
@@ -233,7 +234,7 @@ local function height_factory(dependencies)
 		-- surfaces come from the water layout per column, and its banks follow
 		-- the inland shore rule, not the sea's.
 		local function column_class(x, z)
-			local water_class, _, owner = classified(x, z)
+			local water_class, owner = classified(x, z)
 			if water_class == "land" then return LAND, owner end
 			if water_class == "planned_water" then return BAY, owner end
 			return SEA, owner
