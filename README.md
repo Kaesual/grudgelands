@@ -10,7 +10,8 @@ progression inspired by classic MMORPGs. Grudgelands brings together ideas
 from the Luanti community's games and mods into a shared fantasy adventure.
 
 **[Play in your browser at kaesual.com](https://kaesual.com)** ·
-[Install locally](#play-with-luanti) · [Roadmap](#whats-ahead)
+[Install locally](#play-with-luanti) · [Roadmap](#whats-ahead) ·
+[Discord](https://discord.gg/M4auM7yunk)
 
 > **Playable and in active development.** The first release is still being
 > built. Expect rough edges, changing balance and development-world resets.
@@ -140,7 +141,10 @@ them. See the [reference-project guide](docs/reference_projects.md) and
 
 Try a class, follow a few quests or explore with a friend. Feedback about
 confusing moments, combat, pacing and places worth exploring is especially
-useful. When reporting a bug, include what you were doing, your game version
+useful. Join the **[Grudgelands Discord](https://discord.gg/M4auM7yunk)** for
+questions, ideas and quick feedback, or open a
+[GitHub issue](https://github.com/Kaesual/grudgelands/issues) for a concrete
+bug. When reporting a bug, include what you were doing, your game version
 and whether you played through the browser or a native Luanti client.
 
 Code, artwork, sound and design feedback are welcome. For a larger change,

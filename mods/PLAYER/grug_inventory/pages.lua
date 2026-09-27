@@ -1,5 +1,6 @@
--- sfinv pages: Character (new homepage) and Bags. sfinv uses legacy
--- formspec coordinates; shared content ends before y=7.0.
+-- sfinv pages: Character (new homepage) and Bags, plus the shared nav order
+-- (the Help page is registered by help.lua). sfinv uses legacy formspec
+-- coordinates; shared content ends before y=7.0.
 
 local function esc(text)
 	return core.formspec_escape(text)
@@ -192,41 +193,7 @@ sfinv.register_page("grug_inventory:character", {
 	end,
 })
 
--- Player-facing formula reference. It deliberately explains only stable
--- rules and points back to the live Character page for the player's numbers.
-sfinv.register_page("grug_inventory:help", {
-	title = "Help",
-	get = function(self, player, context)
-		local text = table.concat({
-			"Welcome to Grudgelands",
-			"Your starter weapon is already equipped on the Character page. Gather wood, stone and useful materials nearby, then open Crafting > Basics to make a useful tool or your next weapon. Equip replacement weapons in the Weapon slot.",
-			"Put a combat skill on your hotbar and use it to fight nearby creatures. Your weapon belongs in the Weapon equipment slot; skills use that weapon. Recover between fights and use food for a five-minute buff.",
-			"Basics shows starter recipes immediately. Finding a recipe's main material reveals further recipes, even when it is carried in a bag. This only reveals instructions: crafting itself has no character-level requirement.",
-			"Open Skills to recover an unlocked skill or purchased mount by dragging its icon into your inventory. An icon already in your inventory or a bag cannot be copied. Drop unused skill icons to remove them safely; their unlocks remain available in Skills.",
-			"Visit city profession trainers for specialized crafts and equipment repair. Riding trainers in capital stables teach riding. Cooking has its own recipe book; new profession recipes stay in their profession's book.",
-			"Character formulas",
-			"Base pool = 20 + 5 x level + 0.66 x level squared (rounded).",
-			"Maximum pools use B x C x (100 + G + T + S)%, where B is the base pool, C the class factor, G the gear percentage, T the talent percentage and S the active status percentage.",
-			"Caster mana uses the neutral base pool, then adds mana percentages. Rage is always 0-100.",
-			"Strength adds floor(Strength / 10) as flat melee damage.",
-			"Intelligence adds floor(Intelligence / 10) as spell power: flat spell damage and a percentage bonus to healing and absorbs.",
-			"Dexterity adds 0.1 percentage point each of Crit and Dodge per point; Crit starts at 5%.",
-			"Crit and Dodge are each capped at 30% unless a named talent temporarily raises that cap. Character shows the effective values after caps.",
-			"Crit multiplies damage by 1.5.",
-			"Dodge avoids the hit entirely.",
-			"Armor is a rating resolved against the attacker's level; only the final reduction is capped at 70%.",
-			"Item level is counted once, in the weapon's base damage; your character level applies the shared damage fit; there is no separate item-level multiplier.",
-			"At level 60, an item-level 70 weapon gives about 9% more effective swing damage than item level 60, while item level 50 gives about 7% less, before enchants.",
-			"Healing and absorbs are percentages of the caster's neutral base pool; spell power is a percentage bonus.",
-			"Mana costs are percentages of the unmodified neutral base pool. Enchants and talents do not make a spell cost more.",
-			"Mana regeneration is 1 + 0.15 x level per second out of combat. The Troll multiplier applies only out of combat. In combat you regenerate the larger of one quarter of that rate and 0.25% of your maximum mana per second; Cold Focus multiplies that combat rate.",
-			"A food's instant heal and regeneration wait until you are out of combat. Its pool, Crit, armor and spell-damage bonuses remain active.",
-			"Armor rating includes gear, statuses and talents. Unbroken multiplies the rating and can add its emergency bonus; damage reduction is rating / (rating + 85 x attacker level + 400), capped at 70%.",
-		}, "\n\n")
-		return sfinv.make_formspec(player, context,
-			"textarea[0.2,0.25;10.0,6.5;;;" .. esc(text) .. "]", true)
-	end,
-})
+-- The Help page lives in help.lua (dofile'd by init.lua before this file).
 
 --
 -- Bags page
