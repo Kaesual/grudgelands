@@ -932,6 +932,14 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   both). Open: a dry river trough (D57 `keep_trough`) beside Dawnmere on seed
   424242 keeps 3-node steps 1–20 nodes from the pad (84 such columns on
   main, 161 now with the shorter collar); the water lane's call.
+  Re-checked after merging main c46999c3 (D4 wave 2; the start collar takes
+  part in the `fitting_pull` overlap rule, flat pad weight 1): start
+  measurements on seeds 42, 8675309, 15140735923413111218 identical to the
+  pre-merge branch except terrain ≥ 123 nodes from an anchor (the new
+  springs and roads); engine seed 42: boot PASS, 78/78 test points, band
+  0 trees / 0 ground cover, town ground 74 % of band tops; terrain audit 1
+  finding (Gor Drazhak `bone_candle_court`, 4 flooded columns), the same on
+  main c46999c3 alone.
 - **Surface look and natural content, as built (lane p6-look, 2026-09-27;
   evidence and images in `~/projects/grudgelands-orchestration/r22/p6-look/`):**
   steep ground gets bare rock faces (grade 2.0–4.0 nodes per node, noise
