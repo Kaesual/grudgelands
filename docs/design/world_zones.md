@@ -1245,8 +1245,10 @@ one-cell settlement checks are unchanged.
   open capitals' planted belt and thresholds, which stand on the same planned
   outline) with its gatehouses and turrets, the capital's own civic lake where
   the outline crosses it (Lethariel's crown lake, Kezamba's cenote), and a
-  band of 12 nodes beyond the edge's outermost structure — 18 nodes from the
-  wall line, about 14 beyond a stone wall's face. The band grows no trees and
+  band of at least 12 nodes beyond the edge's outermost structure (a gatehouse
+  corner: gatehouses stay compass-aligned while their gates slide along the
+  wall) — 21 nodes from the
+  wall line, about 17.5 beyond a stone wall's face. The band grows no trees and
   no ground cover, so players see where the protection ends; beyond it the
   zone's ordinary rules apply (vegetation, ground cover, claims, housing,
   resources, caves). The shape is computed once per world start from the

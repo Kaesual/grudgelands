@@ -1,7 +1,7 @@
 -- Capital protection outline (Round 22, plan D76). A capital's immutable
 -- ground is its city: everything inside the wall line of the planned layout,
--- the wall with its gatehouses and turrets, and a band of about 12 nodes
--- beyond the edge's outermost structure. It replaces the old 532-node square
+-- the wall with its gatehouses and turrets, and a band of 12 nodes or more
+-- beyond the edge's outermost structure (21 from the wall line). It replaces the old 532-node square
 -- (`hard_capital_build_plus_apron_v1`). The open capitals (Lethariel,
 -- Kezamba) have no closed wall; their planted belt and four thresholds stand
 -- on the same planned outline, so the same line bounds them. A capital's own
@@ -25,17 +25,22 @@ local floor, ceil, sqrt, min, max = math.floor, math.ceil, math.sqrt, math.min, 
 
 local M = {}
 
--- The edge's outermost structure from the wall line: a turret disc (radius
--- 5) or a gatehouse's outer face (depth 5), plus one node
+-- The edge's outermost structure from the wall line: a gatehouse corner. A
+-- gatehouse box (depth 5, width 7) stays compass-aligned while its gate
+-- slides up to ~34 degrees along the wall, so a corner reaches ~8.7 beyond
+-- the wall line; turrets (radius 5) and wall faces (half 2-3) reach less
 -- (`capital_planner.lua` M.EDGE, `wp13/city_edge.lua`).
-M.EDGE_REACH = 6
--- The band beyond that structure (D76: 10-20 nodes from the wall): no trees,
--- no ground cover, so a player sees where the protection ends.
+M.EDGE_REACH = 9
+-- The band beyond that structure (D76: 10-20 nodes): no trees, no ground
+-- cover, so a player sees where the protection ends. With the reach above it
+-- lies 21 from the wall line: ~12 beyond a gatehouse corner, 16 beyond a
+-- turret, 17.5-18.5 beyond a wall face.
 M.BAND = 12
 -- The reserved square the shape must stay inside: the anchor-relative half
 -- width of the capital's hard-protection index box (`source/simple_map.lua`,
--- `hard_capital_city_v1` bound_width 532). The planner's outline keeps
--- 26 + (256 - 230) nodes clear of it, so the band always fits.
+-- `hard_capital_city_v1` bound_width 532). The planner keeps the wall line
+-- within 230 of the anchor on each axis (reserved half 256 minus its 26-node
+-- band), 36 nodes short of 266, so the protected band always fits.
 M.BOUND_HALF = 266
 
 local function fail(message)
