@@ -209,11 +209,6 @@ return function(dependencies)
 
 	local function cultural_slot_api()
 		local validator = {}
-		function validator.required_keys()
-			local result = {}
-			for index = 1, #CULTURAL_KEYS do result[index] = CULTURAL_KEYS[index] end
-			return result
-		end
 		function validator.validate(cultural_key, definition)
 			local record, digest = canonical_registration(cultural_key, definition)
 			return copy(record), digest
@@ -436,9 +431,6 @@ return function(dependencies)
 				successor_tail:plan_slice(minp, maxp, plan, generation)
 			end
 			return plan, generation
-		end
-		function session.apply_fixture(vm, minp, maxp, plan, generation)
-			return settlement:apply(vm, minp, maxp, plan, generation, "fixture")
 		end
 		function session.metrics()
 			local result = {planner = planner:metrics(), settlement = settlement:metrics(),

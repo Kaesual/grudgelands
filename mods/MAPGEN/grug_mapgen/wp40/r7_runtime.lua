@@ -576,67 +576,15 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 					core_api.sha256),
 				mapgen_context = mapgen_context}
 		end
-		local direct_session, direct_fixture, direct_identity
+		local direct_session, direct_fixture
 		if evidence_mode == true then
 			local ignored_writer, ignored_zones
-			direct_session, ignored_writer, ignored_zones, direct_fixture, direct_identity =
+			direct_session, ignored_writer, ignored_zones, direct_fixture =
 				constructor(full_seed, 1,
 				r6_manifest, content_set.production, mapgen_context, projection,
 				template_source, cultural)
 		elseif evidence_mode == "horizontal" then
 			direct_fixture = r6_identity.direct_evidence_fixture
-			direct_identity = r6_identity
-		end
-		local evidence
-		if evidence_mode then
-			local function scan(fixture, identity, owner_x, owner_z)
-				if type(fixture) ~= "table" or type(identity) ~= "table" or
-						type(identity.planner_fixture) ~= "table" then
-					fail("evidence facade authority differs")
-				end
-				local cultural_candidates, decoration_candidates = {}, {}
-				local groups, coverage, column_count = {}, {}, 0
-				for cell_z = owner_z / 16, owner_z / 16 + 4 do
-					for cell_x = owner_x / 16, owner_x / 16 + 4 do
-						local cultural_rows, decoration_rows, cell_groups, cell_coverage,
-							cell_columns = identity.planner_fixture.build_cell(cell_x, cell_z)
-						column_count = column_count + cell_columns
-						for index = 1, #cultural_rows do
-							cultural_candidates[#cultural_candidates + 1] = cultural_rows[index]
-						end
-						for index = 1, #decoration_rows do
-							decoration_candidates[#decoration_candidates + 1] =
-								decoration_rows[index]
-						end
-						for index = 1, #cell_groups do groups[#groups + 1] = cell_groups[index] end
-						for index = 1, #cell_coverage do
-							coverage[#coverage + 1] = cell_coverage[index]
-						end
-					end
-				end
-				return {schema = "grug_wp40_r7_horizontal_owner_evidence_v1",
-					owner_x = owner_x, owner_z = owner_z, column_count = column_count,
-					groups = groups, coverage = coverage,
-					candidates = {cultural = cultural_candidates,
-						decorations = decoration_candidates},
-					settlement = fixture.scan_horizontal_owner(owner_x, owner_z,
-						cultural_candidates, decoration_candidates)}
-			end
-			evidence = {schema = "grug_wp40_r7_private_evidence_v1"}
-			function evidence.scan_owner(owner_x, owner_z)
-				return scan(settlement_fixture, r6_identity, owner_x, owner_z)
-			end
-			function evidence.scan_direct_owner(owner_x, owner_z)
-				return scan(direct_fixture, direct_identity, owner_x, owner_z)
-			end
-			function evidence.probe_p9g_reason(context, catalog_index, x, y, z)
-				if type(r6_identity.successor_tail) ~= "table" or
-						type(r6_identity.successor_tail.probe_reason) ~= "function" then
-					fail("P9G probe authority differs")
-				end
-				return r6_identity.successor_tail:probe_reason(context, catalog_index,
-					x, y, z)
-			end
 		end
 		return {schema = "grug_wp40_r7_runtime_v1", full_seed = full_seed,
 			manifest = manifest, session = session, writer = writer,
@@ -645,8 +593,7 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			consumer_payload = consumer_payload,
 			mapgen_context = mapgen_context,
 			settlement_fixture = settlement_fixture,
-			direct_session = direct_session, direct_fixture = direct_fixture,
-			evidence = evidence}
+			direct_session = direct_session, direct_fixture = direct_fixture}
 	end
 
 	-- The authored WP13 NPC sockets of every settlement, in roster order, with
