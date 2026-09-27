@@ -805,23 +805,32 @@ return function(P)
 					z / P.W_P - 5.9) + P.W_NOISE2 * nwidth(x / P.W_P2 - 31.1, z / P.W_P2 + 8.4))
 				water[i] = min(P.W_MAX, max(P.W_MIN, w))
 			end
-			-- a river that does not leave a lake starts small (a spring)
+			-- A river that does not leave a lake starts small. Its water is a
+			-- brook W_SPRING wide at the spring (the gully's end) that widens
+			-- along the course; the valley it runs in (`band`: the course
+			-- detours and the reach levels read it) keeps the W_MIN spring
+			-- width, so a brook does not change the course or the levels.
+			local band = {}
+			for i = 1, n do band[i] = water[i] end
 			if not rv.src_lake then
 				for i = 1, n do
 					local sd = s[i] - s0
 					widths[i] = max(P.CW_SRC, widths[i] * (P.SRC_KEEP + (1 - P.SRC_KEEP) *
 						smoothstep(0, P.SRC_TAPER, sd)))
-					water[i] = P.W_MIN + (water[i] - P.W_MIN) * smoothstep(0, P.W_TAPER, sd)
+					local f = smoothstep(0, P.W_TAPER, sd)
+					band[i] = P.W_MIN + (water[i] - P.W_MIN) * f
+					water[i] = P.W_SPRING + (water[i] - P.W_SPRING) * f
 				end
 			end
 			for _ = 1, 4 do
-				local o, ow = {}, {}
+				local o, ow, ob = {}, {}, {}
 				for i = 1, n do
 					local a, b = max(1, i - 1), min(n, i + 1)
 					o[i] = (widths[a] + 2 * widths[i] + widths[b]) / 4
 					ow[i] = (water[a] + 2 * water[i] + water[b]) / 4
+					ob[i] = (band[a] + 2 * band[i] + band[b]) / 4
 				end
-				widths, water = o, ow
+				widths, water, band = o, ow, ob
 			end
 			-- meander: a displacement normal to the path from 2D noise, never
 			-- from arc length; it fades in below the spring, not in the gully
@@ -857,7 +866,7 @@ return function(P)
 			-- centreline (the sampler's wet limit), the gully not at all.
 			local reach = {}
 			for i = 1, n do
-				reach[i] = gully[i] and P.GULLY_A0 or water[i] + P.WET_X + P.WET_B
+				reach[i] = gully[i] and P.GULLY_A0 or band[i] + P.WET_X + P.WET_B
 			end
 			detour(out, reach)
 			detour(out, reach)
@@ -871,23 +880,26 @@ return function(P)
 			if rv.end_kind == "sea" then
 				for i = 1, n do
 					local sd = coast(out[i][1], out[i][2])
-					water[i] = water[i] * (1 + P.MOUTH_FLARE * (1 - smoothstep(-10, 120, sd)))
+					local flare = 1 + P.MOUTH_FLARE * (1 - smoothstep(-10, 120, sd))
+					water[i], band[i] = water[i] * flare, band[i] * flare
 				end
 			end
 			-- signed widths: water width (> 0), or minus a gully's trough
 			-- width (< 0: dry), its half-width falling toward the tip
-			local ws = {}
+			local ws, wb = {}, {}
 			for i = 1, n do
 				if gully[i] then
 					local f = s0 > 0 and s[i] / s0 or 1
 					ws[i] = -2 * (P.GULLY_A1 + (P.GULLY_A0 - P.GULLY_A1) * f)
+					wb[i] = ws[i]
 				else
-					ws[i] = water[i]
+					ws[i], wb[i] = water[i], band[i]
 				end
 			end
 			rv.pts, rv.acc, rv.gully_s0, rv.s = out, accs, s0, s
-			-- the geometry's widths; `levels` narrows its own copy at sinks
-			rv.w_geom = ws
+			-- the geometry's widths; `levels` narrows its own copy at sinks;
+			-- the valley widths the levels read
+			rv.w_geom, rv.w_band = ws, wb
 		end
 	end
 
@@ -917,11 +929,12 @@ return function(P)
 			return field.height_at(x, z, true)
 		end
 		local ACROSS = {-1, -0.5, 0, 0.5, 1}
-		-- (a gully's width is negative: its trough width)
+		-- (a gully's width is negative: its trough width; the levels read the
+		-- valley width, which a spring's brook does not narrow)
 		local function band_min(rv, i)
 			local x, z = rv.pts[i][1], rv.pts[i][2]
 			local tx, tz = tangent(rv.pts, i)
-			local r = abs(rv.w[i]) / 2 + P.BAND
+			local r = abs(rv.w_band[i]) / 2 + P.BAND
 			local m = math.huge
 			for _, f in ipairs(ACROSS) do
 				local h = fh(x - tz * r * f, z + tx * r * f)
@@ -935,7 +948,7 @@ return function(P)
 		local function spring_min(rv, i)
 			local x, z = rv.pts[i][1], rv.pts[i][2]
 			local tx, tz = tangent(rv.pts, i)
-			local r = abs(rv.w[i]) / 2 + P.WET_B + 2
+			local r = abs(rv.w_band[i]) / 2 + P.WET_B + 2
 			local m = math.huge
 			for _, f in ipairs(ACROSS) do
 				local h = fh(x - tx * r - tz * r * f, z - tz * r + tx * r * f)
@@ -1007,11 +1020,12 @@ return function(P)
 			end
 			-- incision below the band terrain; a gully's fades out to its tip
 			local s0 = rv.gully_s0 or 0
+			local wb = rv.w_band
 			local function inc(i)
-				if w[i] < 0 then
+				if wb[i] < 0 then
 					return (P.INC_A + P.INC_B * P.W_MIN) * (s0 > 0 and rv.s[i] / s0 or 1)
 				end
-				return P.INC_A + P.INC_B * w[i]
+				return P.INC_A + P.INC_B * wb[i]
 			end
 			-- A river may not climb: where the band terrain stands more than
 			-- CUT_MAX above the current level, the river sinks, a dry gap
@@ -1136,15 +1150,15 @@ return function(P)
 				end
 			end
 			rv.levels = lv
-			-- the water narrows to W_MIN into a sink and out of the spring
-			-- after it
+			-- the water narrows to a brook (W_SPRING) into a sink and out of
+			-- the spring after it
 			for _, gap in ipairs(rv.sinks) do
 				local e, sp = gap[1] - 1, gap[2]
 				for q = 1, n do
 					local dd
 					if q <= e then dd = (e - q) * P.SEG elseif q >= sp then dd = (q - sp) * P.SEG end
 					if dd and dd < P.W_TAPER and w[q] > 0 then
-						w[q] = min(w[q], P.W_MIN + (w[q] - P.W_MIN) *
+						w[q] = min(w[q], P.W_SPRING + (w[q] - P.W_SPRING) *
 							smoothstep(0, P.W_TAPER, dd))
 					end
 				end
@@ -1551,14 +1565,14 @@ return function(P)
 						i = i - 1
 					end
 					for q = i, n do rv.w[q] = 0 end
-					-- and narrows to W_MIN into its end, like a sink
+					-- and narrows to a brook into its end, like a sink
 					local dd = 0
 					for q = i - 1, 1, -1 do
 						dd = dd + sqrt((rv.pts[q + 1][1] - rv.pts[q][1]) ^ 2 +
 							(rv.pts[q + 1][2] - rv.pts[q][2]) ^ 2)
 						if dd >= P.W_TAPER then break end
 						if rv.w[q] > 0 then
-							rv.w[q] = min(rv.w[q], P.W_MIN + (rv.w[q] - P.W_MIN) *
+							rv.w[q] = min(rv.w[q], P.W_SPRING + (rv.w[q] - P.W_SPRING) *
 								smoothstep(0, P.W_TAPER, dd))
 						end
 					end
