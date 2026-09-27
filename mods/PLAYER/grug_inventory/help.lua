@@ -34,16 +34,16 @@ local SECTIONS = {
 		heading("Your first steps"),
 		"• Your starter weapon is already in the Weapon slot on the Character page. Open the Skills tab, drag a combat skill onto your hotbar, select it and left-click a creature to fight.",
 		"• Talk to the people of your start town. A yellow ! above someone means they have a quest for you.",
-		"• Craft a Wood Pickaxe early: without a pickaxe you cannot dig dirt, sand or stone. The Basics book in the Crafting tab shows tools, weapons and armor you can make.",
+		"• Craft a Wooden Pickaxe early: without a pickaxe you cannot dig dirt, sand or stone. The Basics book in the Crafting tab shows tools, weapons and armor you can make.",
 		"",
 		heading("Levels and zones"),
 		"• Creatures and quests give XP, up to level 60. Creatures 10 or more levels below you give none. Every second level gives a talent point for the Talents tab.",
-		"• Your faction lives on its own continent. Your start town lies in a level 1-10 zone on its outer side; levels rise toward the front where the two continents meet: 11-20 home zones, 21-30 heartlands, 31-40 frontiers, 41-59 at the front and level 60 on the two dragon islands.",
+		"• Your faction lives on its own continent. Your start town lies in a level 1-10 zone on its outer side, and levels rise toward the front where the two continents meet: 11-20 home zones, the capital zones (20-30) and heartlands (21-30), 31-40 frontiers, 31-59 on the front itself and level 60 on the two dragon islands.",
 		"• Zones of level 31 and above are contested by both factions.",
 		"• Underground creatures get stronger with depth: 3 levels per 50 nodes below y 0 (level 60 near y -1000), and never weaker than the zone above them.",
 		"",
 		heading("Capitals"),
-		"• At level 10 your start town sends you to your people's capital: trainers for every profession, riding, repairs and new quests. No hostile creatures roam there.",
+		"• Around level 10, head for your people's capital: trainers for every profession, riding, repairs and new quests. No hostile creatures roam there.",
 		"• Accord: Highcourt (Humans), Dur Brannoc (Dwarves), Lethariel (Elves). Throng: Gor Drazhak (Orcs), Nhal Veyr (Undead), Kezamba (Trolls).",
 		"",
 		heading("Protected ground"),
@@ -53,22 +53,22 @@ local SECTIONS = {
 	{id = "quests", label = "Quests & Professions", x = 1.5, w = 3.1, text = body({
 		heading("Quests"),
 		"• Symbols above quest givers: yellow ! = new quest, yellow ? = ready to hand in, silver ? = in progress, silver ! = needs a higher level. The Map tab shows the same symbols.",
-		"• Right-click a quest giver, choose a quest from the list and press Accept. When it is done, return and press Complete.",
+		"• Right-click a quest giver, choose a quest from the list and press Accept. When it is done, take it to the person with the yellow ? (often the giver) and press Complete.",
 		"• Objectives are: bring items (counted from your inventory and bags, taken when you hand in), defeat creatures, or speak with a named person. Everyone nearby who helped with damage or healing gets kill credit; the killing blow is not needed.",
-		"• The Quests tab holds up to 20 active quests. Track up to three on screen, or abandon one to free a slot.",
+		"• The Quests tab holds up to 20 active quests and can track up to three on screen. When the log is full, finish or abandon a quest before you accept a new one.",
 		"• Quest givers wait in start towns, capitals, villages and camps. At level 10 your start town sends you on to your capital.",
 		"",
 		heading("Professions"),
 		"• Anyone can craft the plain tools, weapons and armor of every material from the Basics book. Professions improve and enchant gear and make special goods.",
 		"• Learn two primary professions plus Cooking, which everyone may add. Learning is free: right-click a trainer. Unlearning a primary profession erases its progress.",
 		"• Trainers: every start town has a Cooking trainer; every capital has trainers for all eight professions, each with a public workstation next to it. Learned recipes appear in that profession's book in the Crafting tab.",
-		"• Weaponsmith (Forge): metal fittings; enchants swords, daggers and greataxes.",
+		"• Weaponsmith (Forge): metal fittings; enchants swords, daggers and battle axes.",
 		"• Armorsmith (Forge): enchants metal armor and shields.",
 		"• Leatherworker (Tanning Rack): leather bags, the quiver and weapon grips; enchants leather armor.",
 		"• Tailor (Tailor Bench): cloth bags and bolt bundles; enchants cloth armor.",
 		"• Woodcarver (Carving Bench): enchants staves, wands and bows.",
 		"• Goldsmith (Jeweller's Bench): cuts gems; makes trinkets, spellbooks and settings; enchants trinkets and spellbooks.",
-		"• Alchemist (Brewing Stand): healing and mana potions and elixirs. Only Alchemists can pick healing herbs.",
+		"• Alchemist: prepares potion and elixir mixtures in the crafting grid; anyone may finish a mixture at a Brewing Stand. Only Alchemists can pick healing herbs.",
 		"• Cooking (grid and furnace): meals with a five-minute buff.",
 		"• A profession starts at tier 1. 10, 15, 20, 25 and 30 crafts at your current tier open the next one, but your level caps it: tier 1 up to level 10, tier 2 from level 11, up to tier 6 from level 51.",
 	})},
@@ -99,7 +99,7 @@ local SECTIONS = {
 		"• Gear wears out with use and stops working when broken. Every profession trainer of your faction repairs it for money.",
 		"",
 		heading("Riding, home and death"),
-		"• The Riding Trainer at every capital's stable sells riding at levels 15 and 30 (ground mounts) and 45 and 60 (flying mounts). Your mount then waits in the Skills tab: use its icon to mount or dismount.",
+		"• The Riding Trainer at the stable of each capital of your faction sells riding at levels 15 and 30 (ground mounts) and 45 and 60 (flying mounts). Your mount then waits in the Skills tab: use its icon to mount or dismount.",
 		"• Set your home at an innkeeper in a start town or capital of your faction. The Map tab has Return home (every 30 minutes, not in combat).",
 		"• Dying costs no items, money or XP, but ends your active buffs. You respawn at your home.",
 		"• The Group tab makes a party of up to 10 players of your faction.",
@@ -111,23 +111,24 @@ local SECTIONS = {
 		"• Base pool = 20 + 5 x level + 0.66 x level squared (rounded).",
 		"• Maximum pools use B x C x (100 + G + T + S)%, where B is the base pool, C the class factor, G the gear percentage, T the talent percentage and S the active status percentage.",
 		"• Caster mana uses the neutral base pool, then adds mana percentages. Rage is always 0-100.",
-		"• Strength adds floor(Strength / 10) as flat melee damage.",
+		"• Strength adds floor(Strength / 10) as flat melee damage. Scouts use Dexterity instead, for melee and bow damage alike.",
 		"• Intelligence adds floor(Intelligence / 10) as spell power: flat spell damage and a percentage bonus to healing and absorbs.",
 		"• Dexterity adds 0.1 percentage point each of Crit and Dodge per point; Crit starts at 5%.",
 		"• Crit and Dodge are each capped at 30% unless a named talent temporarily raises that cap. Character shows the effective values after caps.",
 		"• Crit multiplies damage by 1.5. Dodge avoids the hit entirely.",
-		"• Armor is a rating resolved against the attacker's level: damage reduction is rating / (rating + 85 x attacker level + 400); only this final reduction is capped at 70%. The rating includes gear, statuses and talents; Unbroken multiplies it and can add its emergency bonus.",
+		"• Armor is a rating resolved against the attacker's level: damage reduction is rating / (rating + 20 + 0.5 x attacker level) for attackers up to level 60 (each level above 60 adds 8.5 more); only this final reduction is capped at 70%. The rating includes gear, statuses and talents; Unbroken multiplies it and can add its emergency bonus.",
 		"• Item level is counted once, in the weapon's base damage; your character level applies the shared damage fit; there is no separate item-level multiplier.",
 		"• At level 60, an item-level 70 weapon gives about 9% more effective swing damage than item level 60, while item level 50 gives about 7% less, before enchants.",
 		"• Healing and absorbs are percentages of the caster's neutral base pool; spell power is a percentage bonus.",
 		"• Mana costs are percentages of the unmodified neutral base pool. Enchants and talents do not make a spell cost more.",
 		"• Mana regeneration is 1 + 0.15 x level per second out of combat. The Troll multiplier applies only out of combat. In combat you regenerate the larger of one quarter of that rate and 0.25% of your maximum mana per second; Cold Focus multiplies that combat rate.",
-		"• You cannot eat in combat. Food regeneration pauses while you are in combat; its pool, Crit, armor and spell-damage bonuses stay active.",
+		"• Food regeneration pauses while you are in combat; its other bonuses stay active.",
 	})},
 	{id = "about", label = "About & Feedback", x = 7.8, w = 2.6, text = body({
 		heading("About Grudgelands"),
-		"Grudgelands is an open-source game in active development. Your feedback shapes it: Discord is best for quick questions, ideas and feedback, GitHub issues for concrete bugs. For a bug, say what you were doing and whether you play in the browser or in Luanti.",
-		"To copy a link, click into it, press Ctrl+A and then Ctrl+C. Open asks before it starts your browser.",
+		"Grudgelands is open source and in active development. Use Discord for questions and feedback, GitHub issues for concrete bugs.",
+		"",
+		"Copy a link (desktop): click into it, press Ctrl+A, then Ctrl+C. Open asks before starting your browser.",
 	})},
 }
 
@@ -148,13 +149,13 @@ local LINKS = {
 -- a textarea/hypertext at (y, h) spans (y + 0.35) S to
 -- (y + 0.35 + 0.8667 h - 0.1333) S from the form's top edge, and an element
 -- at y = 7.0 starts at 7.325 S. The body below therefore ends at 6.96 S; the
--- lowest About button ends at 7.16 S (guiFormSpecMenu.cpp parseHyperText,
+-- lowest About button ends at 7.21 S (guiFormSpecMenu.cpp parseHyperText,
 -- parseTextArea, parseButton; spacing/padding/m_btn_height at :3339-3342).
 local BUTTON_Y, BUTTON_H = 0.0, 0.7
 local BODY_X, BODY_Y, BODY_W = 0.2, 0.85, 10.2
 local BODY_H = 6.8          -- full-height sub-pages
-local ABOUT_BODY_H = 2.1    -- About: text above the link rows
-local LINK_Y, LINK_STEP = 2.75, 1.0
+local ABOUT_BODY_H = 2.4    -- About: text above the link rows (ends 3.15 S)
+local LINK_Y, LINK_STEP = 2.95, 0.95
 local LINK_FIELD_W, LINK_BUTTON_X, LINK_BUTTON_W, LINK_H = 7.7, 8.1, 2.1, 0.65
 
 local SECTION_BY_ID = {}
@@ -193,10 +194,6 @@ local function help_content(context)
 	fs[#fs + 1] = BODIES[selected]
 	return table.concat(fs)
 end
-
--- Exposed for the offline formspec check (tools are not part of the game).
-grug_inventory.help_content = help_content
-grug_inventory.HELP_SECTIONS = SECTIONS
 
 sfinv.register_page(PAGE, {
 	title = "Help",

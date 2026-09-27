@@ -178,9 +178,7 @@ per-mod license files.
 
 If you enjoy Grudgelands and would like to support its continued development,
 you can **[buy me a coffee](https://buymeacoffee.com/kaesual)**. Thank you for
-playing, sharing feedback or helping in whatever way suits you. You can also
-say hello and follow development on the
-**[Grudgelands Discord](https://discord.gg/M4auM7yunk)**.
+playing, sharing feedback or helping in whatever way suits you.
 
 ## Explore the design
 
