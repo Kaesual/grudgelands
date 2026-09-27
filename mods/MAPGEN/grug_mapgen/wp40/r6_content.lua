@@ -689,6 +689,29 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 				rocky_shores[id][index] = row
 			end
 		end
+		-- Steep ground (world_zones.md §7.4, Round 22 Phase 6): rock faces on
+		-- steep relief, a stone face under the soil where a column stands above
+		-- a neighbour ("lip"), and scree at the foot of rock. Rock rows are
+		-- copies of the stone outcrop rows, lip rows keep the palette top over
+		-- a stone filler; both carry `steep` so the shallow strata leave their
+		-- exposed face alone.
+		local rock_rows, lip_rows = {}, {}
+		for id, rows in pairs(variants) do
+			rock_rows[id], lip_rows[id] = {}, {}
+			for depth = 1, 4 do
+				local row = deep_copy(rows[4][depth])
+				row.steep = true
+				rock_rows[id][depth] = row
+			end
+			for kind = 1, 5 do
+				local row = deep_copy(rows[kind][1])
+				row.filler = "default:stone"
+				row.filler_ref = require_role(row.filler, 1, p7_classes, "lip filler")
+				row.filler_depth = 1
+				row.steep = true
+				lip_rows[id][kind] = row
+			end
+		end
 		-- Integer lattice mixing is scenery noise, not a resource rank. Every
 		-- product stays below 2^53; fixed-point interpolation is identical in
 		-- LuaJIT and PUC 5.1 and adds no SHA work or per-query table allocation.
@@ -710,6 +733,60 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 				weight(z - iz * period, period)
 			return lerp(lerp(lattice(ix, iz, salt), lattice(ix + 1, iz, salt), tx),
 				lerp(lattice(ix, iz + 1, salt), lattice(ix + 1, iz + 1, salt), tx), tz)
+		end
+		-- Steep class of a dry column, a pure function of (x, z) memoised in a
+		-- direct-mapped table: 0 none, 1 rock face, 2 lip (the column stands
+		-- 2+ above a neighbour: stone under its soil), 3 scree (gentle ground
+		-- at the foot of a much higher neighbour). Heights are the final
+		-- terrain, a wet neighbour counts at its water surface (only the face
+		-- above the water shows). Thresholds are jittered by two noise scales
+		-- so no class edge runs straight. Graded pads, hard foundations and
+		-- roads with their side slopes keep their surfaces.
+		local STEEP_SLOTS = 65536
+		local steep_x, steep_z, steep_class = {}, {}, {}
+		local column_values_at = planner_source.column_values_at
+		local function shown_y(x, z)
+			local _, _, _, _, _, y, water_y = column_values_at(x, z)
+			if water_y ~= nil and water_y > y then return water_y end
+			return y
+		end
+		local function steep_at(x, z, terrain_y)
+			local slot = (x * 40503 + z) % STEEP_SLOTS
+			if steep_x[slot] == x and steep_z[slot] == z then return steep_class[slot] end
+			local class = 0
+			if x >= -3736 and x <= 3736 and z >= -3336 and z <= 3336 then
+				local e1, w1 = shown_y(x + 1, z), shown_y(x - 1, z)
+				local n1, s1 = shown_y(x, z - 1), shown_y(x, z + 1)
+				local drop = terrain_y - math.min(e1, w1, n1, s1)
+				local e3, w3 = shown_y(x + 3, z), shown_y(x - 3, z)
+				local n3, s3 = shown_y(x, z - 3), shown_y(x, z + 3)
+				local grade = math.max(math.abs(e3 - w3), math.abs(s3 - n3))
+				local rise = math.max(e3, w3, n3, s3) - terrain_y
+				local jitter = math.floor((3 * noise(x, z, 40, 50331653) +
+					noise(x, z, 8, 12582917)) / 4)
+				-- grade is over six nodes: from 1.6 to 3.2 nodes per node
+				-- (patchy by the noise) the slope is bare rock; below that a
+				-- steep slope keeps its soil in steps over a stone face (lips).
+				if grade * 1024 >= 9830 + 10 * jitter or
+						drop >= 6 + math.floor(3 * jitter / 1024) then
+					class = 1
+				elseif drop >= 2 then
+					class = 2
+				elseif grade <= 4 and rise * 1024 >= 6144 + 4 * jitter and
+						noise(x, z, 8, 71303171) > 380 then
+					class = 3
+				end
+				if class ~= 0 then
+					local _, _, _, _, _, _, _, _, _, functional_kind, _, _, _, _, _, _,
+						_, _, _, hard = column_values_at(x, z)
+					if functional_kind ~= nil or hard or
+							planner_source.overlay_exclusion_at(x, z) == "road_corridor" then
+						class = 0
+					end
+				end
+			end
+			steep_x[slot], steep_z[slot], steep_class[slot] = x, z, class
+			return class
 		end
 		return function(id, x, z, water_y, terrain_y)
 			local base = surface_by_id[id]
@@ -745,6 +822,13 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 			-- smaller outcrops instead of entire bare bands on moderate slopes.
 			if id == "grug_crags" or id == "grug_crags_snowy" then
 				if patch > 650 then kind = 4 elseif patch < 300 then kind = 3 end
+			end
+			-- Mesa clay is the badlands' own cliff material.
+			if id ~= "grug_badlands" and id ~= "grug_badlands_east" then
+				local steep = steep_at(x, z, terrain_y)
+				if steep == 1 then return rock_rows[id][depth] end
+				if steep == 2 then return lip_rows[id][kind] end
+				if steep == 3 then return variants[id][3][depth] end
 			end
 			if patch > 660 and x >= -3736 and x <= 3736 and
 					z >= -3336 and z <= 3336 then

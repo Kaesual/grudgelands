@@ -684,6 +684,19 @@ replaced; git history before this rewrite records that model.
   pines keep their existing gravel support. Stone remains bare. Planner,
   prospective settlement and actual writer use the same biome-and-substrate
   eligibility.
+- **Steep ground (Round 22 Phase 6).** Every dry natural column outside the
+  near-water rule, the badlands and the swamp reads its final terrain: the
+  drop to its lowest cardinal neighbour (a wet neighbour counts at its water
+  surface) and the grade over six nodes. A grade from 1.6 to 3.2 nodes per
+  node (the limit jittered by two noise scales, so rock and soil alternate in
+  patches) or a drop of 6–8 nodes makes a **bare rock face** (stone top and
+  filler). A drop of 2 or more below that keeps the column's top over a
+  **stone filler** (a soil lip over a rock face; no dirt shows on a face).
+  Gentle ground at the foot of a rise of 6–10 nodes within three nodes is
+  **gravel scree** in noise patches. Rock faces and lips skip the shallow
+  strata, so no band follows a cliff face. Graded pads, hard foundations and
+  road corridors keep their surfaces. Trees and plants do not root on bare
+  rock.
 - **Substrate.** Native v7 remains the substrate for caves, ores, dungeons
   and strata, but its heightmap never selects the final surface, a mask, an
   operation or a priority. The writer may read that heightmap only as a local

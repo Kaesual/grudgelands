@@ -158,7 +158,10 @@ local function settlement_factory()
 						not context.housing_excluded_at(x, z) then
 					local surface = context.select_surface(biome, x, z, water_y, terrain_y)
 					local filler_depth = surface and surface.filler_depth or 4
-					for depth = filler_depth + 1, 40 do
+					-- Steep columns (rock faces and lips) show their side: no
+					-- bands along a cliff face (Round 22 Phase 6).
+					local first = surface and surface.steep and 41 or filler_depth + 1
+					for depth = first, 40 do
 						local y = terrain_y - depth
 						if y < context.floor_y then
 							clipped = clipped + 1
