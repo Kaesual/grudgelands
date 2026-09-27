@@ -224,12 +224,14 @@ return function(api)
 	-- (its damage punch reaching a native-input seam, a callback it triggers)
 	-- belong to the decision already running; evaluating them as a new press
 	-- would cast again before the outer cast has paid its cost or armed its
-	-- cooldown. The guard is cleared even when a nested callback raises.
+	-- cooldown. The guard is cleared even when a nested callback raises; the
+	-- rethrown message keeps the inner traceback.
 	function M.step(player, press)
 		local name = player:get_player_name()
 		if stepping[name] then return end
 		stepping[name] = true
-		local ok, err = pcall(step, player, press)
+		local ok, err = xpcall(function() return step(player, press) end,
+			debug.traceback)
 		stepping[name] = nil
 		if not ok then error(err, 0) end
 	end

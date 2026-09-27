@@ -185,10 +185,24 @@ local function press(ref, fake)
 	grug_abilities.input.step(ref)
 end
 
+-- The production client entry: LMB held on a mob sends an object punch with
+-- the wielded skill item, which the engine delivers as mob:punch(player, ...).
+-- mobs_redo's native-input seam turns it into input.press; the cast's own
+-- damage then punches this SAME mob inside its on_punch.
+local function native_punch(ref, fake, mob)
+	fake.controls = {dig = true}
+	local caps = fake.inv:get_stack("main", fake.index):get_tool_capabilities()
+	mob:punch(ref, 0.2, caps, vector.direction(ref:get_pos(), mob:get_pos()))
+	fake.controls = {}
+	grug_abilities.input.step(ref)
+end
+
 -- label, class, ability, mob distance, expected casts, expected swings.
 local scenarios = {
 	{label = "smite", class = "priest", ability = "smite", distance = 3,
 		casts = 1, swings = 0},
+	{label = "smite_native_punch", class = "priest", ability = "smite",
+		distance = 3, casts = 1, swings = 0, native = true},
 	{label = "frost_nova", class = "mage", ability = "frost_nova", distance = 3,
 		casts = 1, swings = 0},
 	{label = "charge", class = "warrior", ability = "charge", distance = 8,
@@ -229,7 +243,7 @@ local function run_scenario(index, sc)
 		health = ent.health,
 	}
 	counts.casts, counts.depth, counts.max_depth, counts.swings = 0, 0, 0, 0
-	press(ref, fake)
+	if sc.native then native_punch(ref, fake, mob) else press(ref, fake) end
 	local mana_after = grug_abilities.get_mana(ref)
 	log(("%s: casts=%d max_depth=%d swings=%d mana %d->%d (cost %d) " ..
 		"rage %d->%d health %s->%s"):format(sc.label, counts.casts,
