@@ -304,8 +304,9 @@ local function planner_factory()
 			-- litter at Lethariel, blight and bone litter at Nhal Veyr, dry grass
 			-- and mesa clay at Gor Drazhak, rainforest and canopy litter at Kezamba
 			-- -- and the DECORATION host follows the same claim rule, so the
-			-- 532-node hard build square where WP13 stamps the city stays host-free
-			-- and the collar around it grows its biome again.
+			-- protected city (plan D76: inside the wall, the edge and its bare
+			-- band) stays host-free and the land beyond the band grows its biome
+			-- again.
 			local dry_anchor_grade = functional_kind == "land_grade" and
 				type(functional_feature_id) == "string" and
 				functional_feature_id:match("^anchor_%d%d%d$") ~= nil and

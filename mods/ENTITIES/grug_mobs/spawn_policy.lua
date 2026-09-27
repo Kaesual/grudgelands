@@ -335,8 +335,9 @@ local RACE_FACTIONS = {
 -- grug_core.start_anchor's authority and tested as plain number
 -- comparisons: at most 24 of them, no allocation.
 --
--- Capitals are hard-protected too and are deliberately NOT covered here:
--- their mob palettes are empty, so no ordinary row reaches them anyway.
+-- Capitals (their protected cities, plan D76) are hard-protected too and are
+-- deliberately NOT covered here: their named zones' mob palettes are empty,
+-- so no ordinary row reaches the city or the ground around it anyway.
 local START_HALF_LOW = 74 -- anchor - 74 .. anchor + 73, half-open
 local START_HALF_HIGH = 73
 local start_rects

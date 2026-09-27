@@ -822,6 +822,63 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   before/after on three seeds, planner results unchanged: required plots,
   0 plots in water, 0 grade violations), then integrate with the protection
   consumers; images for the user.
+- **D76 as built (lane `worktree-agent-a226fe183a93176d1`):** the flat, bare
+  ring had two causes: the terrain field's capital bowl (`terrain_field.lua`
+  damping, calm to 260 and faded out by 520–750; the 40-node collar only
+  shapes the core's edge) and the claim exclusions — trees refused in the
+  532 hard square, ground cover and gathering refused in the whole 704-node
+  anchor-blend square. Now the bowl is calm to 200 and faded out by 400
+  (+ up to 45 % edge noise), centred on the civic core; damping below 0.1 to
+  256–266 (was 304–352). A capital's hard protection and its claim envelope
+  are one shape, the protected city (`wp40/capital_protection.lua`): inside
+  the planned wall line (open capitals: the same outline under their belt),
+  the civic lake where the outline crosses it, plus 9 (edge reach) + 12 (band)
+  nodes; integer column intervals per row, built from the capital layout text
+  in main and emerge (~0.04 s for six), handed to every horizontal session
+  through a holder; the 532 square stays only as the index box and zone-field
+  keypoint (keypoints identical). Every protection consumer answers from the
+  zone authority or the static exclusions, so none needed its own change;
+  comments/docs updated. Connectors search up to 16× (was 4×). Offline over
+  48 seeds × 6 capitals (`~/projects/grudgelands-orchestration/r22/d76/`):
+  required plots 288/288, 0 plots in water, 0 connector failures (main: 1),
+  wall ≤ 250 from the anchor (95 % ≤ 215), calm margin beyond the farthest
+  wall point 7–100 nodes (mean 51; ring averages — in the worst direction the
+  natural share reaches 0.1 at about 249); protected area 122–156 k m² per capital
+  (was 283 k); land refusing trees within 448 nodes ~110 k m² (was ~265 k),
+  ground cover ~115 k m² (was ~460 k). Layouts move (terrain changed): 94 % of
+  plots at other positions, placed plots per capital unchanged on average.
+  Street grade steps (> ½ between adjacent road columns) exist on main too
+  (54 in 9 of 288 plans) and now 85 in 15. They are not only at the gates:
+  of 60 on the final 24-seed run, 34 lie within 12 of the wall line, 10 well
+  inside the city and 16 more than 12 outside (e.g. Lethariel s11: deck y 41.5
+  beside a cut at y 38, r 146; Dur Brannoc s3: a primary road deck at y 70
+  beside grade 64–65, 26 outside the wall). Cause: the road module joins
+  roads of different levels (deck against cut or grade) with a step; the
+  rougher ground round the smaller plateau makes that more frequent. Open as
+  a D49 (½-node rule) follow-up for the road module, not fixed here. Variant 210/480 hit one required-plot failure (Kezamba,
+  seed 2024), which shows the pinned-lake placement is layout-fragile, not
+  plateau-size-bound. Engine (3 seeds, `grug_mapgen_terrain_audit` on):
+  boots clean, protection answers right at 30/30 test points per seed
+  (inside, wall, band, just beyond, far); across Highcourt's and Lethariel's
+  edge 0 trees and 0 ground cover in the band, vegetation right beyond it
+  (main: none within 30 of the old square's inside); terrain audit findings
+  0/2/0 (main 0/0/1); main layout build +0.5–2 s; chunks in the ring round
+  the city 430–480 ms instead of 330–355 (they now carry ordinary terrain and
+  vegetation; ordinary chunks 1000 nodes out 350–490 ms in both trees); D77's
+  steep rock now also shows on steep ground right beyond the band (it skips
+  only protected columns); public protection calls near a capital ~1.6–1.7 µs
+  instead of ~1.0–1.4 (fewer points short-circuit as protected; the lookup
+  itself ~19 ns vs 3), elsewhere unchanged. The protection
+  does not ride the IPC payload: both environments build it from the
+  `capital_layout` text and the authored civic lakes. The two findings on seed
+  8675309 are Lethariel plots with 1–2 flooded columns near the crown lake.
+  Review follow-up: the edge reach is 9, not 6 (a gatehouse box is
+  compass-aligned while its gate may slide ~34° along the wall, so a corner
+  reaches ~8.7 beyond the wall line); the band is 12 beyond the outermost
+  structure, 21 from the wall line. Over all 288 layouts the band beyond the
+  nearest structure measures 10.8–17.5 (stone; ≥ 10.8 at gatehouses),
+  12.7–18.5 (palisade), 13.7–20.5 (open; the top only where a civic lake
+  reaches just past the outline, otherwise ≤ 19.1).
 - **Start town surroundings (D78, after D76):** town layout and pad unchanged; smaller plateau; a 10–20-node protected, vegetation-free band around the pad with a
   noise-based material transition and a soft height transition; replaces the 148 square
   and larger bare envelopes. Before/after images on three seeds for the user.

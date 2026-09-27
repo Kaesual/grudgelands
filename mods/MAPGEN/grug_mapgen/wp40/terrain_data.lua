@@ -71,10 +71,18 @@ data.params = {
 	param_warp = 0.6, landmark_warp = 0.4, anchor_warp = 0.3,
 	ridge_mul = 1.5, rshare_add = 0.2, hill_mul = 1.25, rough_mul = 1, base_add = 8,
 	start_r_in = 70, start_r_out = 300, start_resid = 0.15,
-	-- The capital bowl is calm out to the WP13 district plots (offsets up to
-	-- ~240 from the civic core); at r_in 80 their perimeters fell and rose by
-	-- up to 40 nodes (Phase 3 integration, seed 15140735923413111218).
-	capital_r_in = 260, capital_r_out = 520, capital_resid = 0.08,
+	-- The capital bowl (plan D76) is the calm ground the capital planner lays
+	-- its city on: fully calm to 200, the damping below 0.1 to about 255-265,
+	-- natural relief again by 400-580 along the noisy edge. It is centred on
+	-- the civic core (no domain-warp shift). Over 48 seeds the planner's wall
+	-- reached at most 250 from the anchor (95 % of the outline within 215,
+	-- mean 177), plots at most 234; the damping stays below 0.1 out to 256 or
+	-- more, 7 to about 100 nodes (mean 51) beyond each city's farthest wall
+	-- point, and the protected band ends where the land starts to rise.
+	-- Before D76 it was calm to 260 and faded out by 520-750 (the user found
+	-- the flat, bare ground outside the walls too large, 2026-09-27).
+	capital_r_in = 200, capital_r_out = 400, capital_resid = 0.08,
+	capital_centred = true,
 	-- D28: long-wave hills and hollows inside the capital calm zone (period
 	-- in nodes, faded in between these distances from the civic-core centre;
 	-- amplitudes per race in `data.capital_wave`), and the outer edge radius

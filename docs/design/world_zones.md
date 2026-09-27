@@ -626,11 +626,11 @@ replaced; git history before this rewrite records that model.
   core, not to the build envelope. Start pads sit in a calm bowl. Around a
   capital only the 96×96 civic core is flat: the calm zone around it keeps
   long-wave hills and hollows (wavelengths of about 100 nodes and more, a
-  race-specific amplitude of roughly ±8–12 nodes, no fine detail), full
-  natural relief returns by about 520–750 nodes, and that outer edge varies
-  with noise, so the zone is neither flat nor round. The WP13 district plots
-  must still stand on this ground until the capital rework (§12). Each
-  capital's ground sits
+  race-specific amplitude of roughly ±8–12 nodes, no fine detail) out to
+  about 200–260 nodes, full natural relief returns by about 400–580 nodes,
+  and that outer edge varies with noise, so the zone is round around the city
+  but never a clean circle (D76, §12). The capital planner lays its city out
+  on this ground. Each capital's ground sits
   well below its region's cloud layer: clouds are placed relative to the
   region, at least about 60 nodes above capital ground. Capital and start
   fitting must stay within their cut/fill limits on the new terrain.
@@ -1238,12 +1238,28 @@ one-cell settlement checks are unchanged.
 
 ## 12. Capital and start envelopes
 
-- Every capital keeps a 512×512 reserved area (D59) and its 704×704 claim and
-  resource exclusion square. The protected POI is the reserved area plus the
-  existing 10-node surround (532); the whole city stays inside it and inside
-  the capital zone. Only the 512×512 square is guaranteed capital-zone
-  ownership. Capital lookup uses the same zone-based level rule as other land.
-  Hostile ambient spawning is disabled and level-60 guards remain explicit.
+- Every capital keeps a 512×512 reserved area (D59); roads end at its edge and
+  the planned city lies inside it. **The protected city (Round 22, D76)** is
+  the capital's hard-protected POI and its claim and resource exclusion
+  envelope at once: everything inside the planned wall line, the wall (or the
+  open capitals' planted belt and thresholds, which stand on the same planned
+  outline) with its gatehouses and turrets, the capital's own civic lake where
+  the outline crosses it (Lethariel's crown lake, Kezamba's cenote), and a
+  band of at least 12 nodes beyond the edge's outermost structure (a gatehouse
+  corner: gatehouses stay compass-aligned while their gates slide along the
+  wall) — 21 nodes from the
+  wall line, about 17.5 beyond a stone wall's face. The band grows no trees and
+  no ground cover, so players see where the protection ends; beyond it the
+  zone's ordinary rules apply (vegetation, ground cover, claims, housing,
+  resources, caves). The shape is computed once per world start from the
+  capital layout (`wp40/capital_protection.lua`, integer column intervals per
+  row, a lookup of one row and one or two comparisons) and always lies inside
+  the reserved square and the capital zone (the zone field keeps the 532-node
+  square round the reserved area in-zone on land). It replaces the former
+  532-node protected square and the 704-node claim square. Capital lookup
+  uses the same zone-based level rule as other land. Hostile ambient spawning
+  is disabled (the capital zones' mob palettes are empty) and level-60 guards
+  remain explicit.
 - Capital grading flattens only the dry capital-owned 96×96 civic core.
   The target reference interval for natural height N is [N-24, N+16],
   intersected over core columns with water lower bounds. A feasible interval
@@ -1255,12 +1271,18 @@ one-cell settlement checks are unchanged.
   with a noisy edge (the POI collar rule of
   §7.6) blends back to the damped terrain; there are no terraces and no square
   blend (Round 22 capital planner, D70), so no straight grading edge.
-- **Round 22 (D7, D11, D16, D28):** terrain roughness is damped around each
-  capital (keyed to the civic core: no fine detail out to about 260 nodes,
-  natural relief again by about 520–750 along an irregular edge). Only the
-  civic core is flat; the ground around it keeps long-wave hills and hollows
-  of limited height (§7.6). Each capital's target ground height sits well below
-  its region's clouds (§7.6).
+- **Round 22 (D7, D11, D16, D28, D76):** terrain roughness is damped around
+  each capital before the capital planner runs (the planner lays the city out
+  on this calm ground). The calm bowl is round and centred on the civic core:
+  no fine detail out to 200 nodes, damping below 0.1 to about 255–265,
+  full natural relief again by about 400–580 along an irregular,
+  noise-varied edge (no straight edge, no cliff ring); trees and ground cover
+  return right beyond the protected band (first bullet). Over 48 seeds the
+  planned wall reached at most 250 nodes from the anchor (95 % of the outline
+  within 215), so every layout stands on calm ground. Only the civic core is
+  flat; the ground around it keeps long-wave hills and hollows of limited
+  height (§7.6). Each capital's target ground height sits well below its
+  region's clouds (§7.6).
 - A fixed 96×96 civic core contains the king's hall, waypoint and principal
   service court, and four core gates on the axes. It stays as authored and
   free of natural water.
@@ -1356,8 +1378,8 @@ one-cell settlement checks are unchanged.
   circuit.
 - Each starting settlement has a 128×128 build envelope, a blend ring out to
   256×256 and a guaranteed road to the home zone. Its hard-protected POI is
-  the **complete build envelope plus a 10-node apron** — the same
-  envelope-plus-apron rule as a capital (decided 2026-08-13) — so spawn,
+  the **complete build envelope plus a 10-node apron** (decided
+  2026-08-13) — so spawn,
   waypoint, graveyard and every service platform lie inside one protected
   footprint; `world.md` §2 R1 owns the protection semantics. Terrain beyond
   the apron, including the rest of the blend ring, remains ordinary editable
@@ -1443,8 +1465,8 @@ numeric-truncated seed.
   at y >= 0 and the depth floor alone below y = 0. Deep ocean and dragon
   channels have no ordinary mob-level result; the Kraken Guard remains a
   separate fixed level-100 entity.
-- `guard_level_at(pos)` is nil for every exterior class. Inside the capital
-  512 by 512 build envelope plus its ten-node hard-protection apron it is
+- `guard_level_at(pos)` is nil for every exterior class. Inside a capital's
+  protected city (§12: inside the wall line, the edge and its band) it is
   exactly 60 at y >= -700. At y <= -701 and everywhere else on non-exterior
   land it returns the existing generic base
   `min(70, max(20, surface_mob_level_at(pos)))`. The fixed level-65 king
