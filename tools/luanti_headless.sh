@@ -15,7 +15,7 @@
 #   map_meta.txt (the seed actually used) are copied to
 #   /tmp/grudgelands-headless-failed/<run> even when the temp dir is removed.
 #   KEEP=1 keeps the temp dir (path printed). PORT selects the bind port
-#   (default 32800+RANDOM%200).
+#   (default: a random free UDP port in 30000-39999).
 #   SEED=<unsigned decimal> pins `fixed_map_seed`, so a run can be repeated on
 #   the world seed a work package names.
 #   ROOT=<dir> re-uses an existing run directory (one a previous KEEP=1 run
@@ -36,7 +36,15 @@ set -euo pipefail
 export LC_ALL=C
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
 timeout_s="${1:-90}"; shift || true
-port="${PORT:-$((32800 + RANDOM % 200))}"
+# A random free UDP port from a wide range: parallel boots (several agents)
+# must not collide ("Failed to bind socket").
+port="${PORT:-}"
+if [[ -z "$port" ]]; then
+	for _ in $(seq 1 50); do
+		port=$((30000 + (RANDOM * 32768 + RANDOM) % 10000))
+		ss -Hlun "sport = :$port" 2>/dev/null | grep -q . || break
+	done
+fi
 seed="${SEED:-}"
 
 [[ "${R8_CAVE_WRITER_DISABLED:-0}" == "0" ||
@@ -156,7 +164,13 @@ if [[ -f "$log" ]] && grep -q 'listening on' "$log" && \
 		! grep -q 'ERROR\|ModError' "$log"; then
 	status=0
 fi
-echo "headless boot: $([[ $status -eq 0 ]] && echo PASS || echo FAIL) (port $port, $timeout_s s)"
+reason=""
+if [[ $status -ne 0 ]]; then
+	if grep -q 'Failed to bind' "$log" 2>/dev/null; then reason=" [port in use]"
+	elif ! grep -q 'listening on' "$log" 2>/dev/null; then reason=" [no \"listening\" before the timeout]"
+	else reason=" [ERROR lines]"; fi
+fi
+echo "headless boot: $([[ $status -eq 0 ]] && echo PASS || echo FAIL)$reason (port $port, $timeout_s s)"
 echo "log: $log"
 grep -h '^seed' "$world/map_meta.txt" 2>/dev/null || true
 grep -n 'ERROR\|ModError\|listening on' "$log" 2>/dev/null | head -10 || true
