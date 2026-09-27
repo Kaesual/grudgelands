@@ -60,25 +60,49 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 			settings[#settings + 1] = name .. ":" .. tostring(core_api.get_mapgen_setting(name))
 		end
 		local jit_table = rawget(_G, "jit")
-		cache_key = layout_cache.key(seed, layout_cache.source_digest(mapgen_modpath),
-			table.concat(settings, ";"),
-			type(jit_table) == "table" and tostring(jit_table.version) or _VERSION)
-		-- A file that cannot even be read builds afresh like a damaged one.
-		local ok, result, reason, damaged = pcall(layout_cache.load, world_dir, cache_key)
-		if ok then
-			cached, cache_reason, cache_damaged = result, reason, damaged
+		-- A mapgen source file that cannot be read leaves no trustworthy key:
+		-- build afresh and cache nothing this boot (a warning, not a stop).
+		local digest_ok, source_digest = pcall(layout_cache.source_digest, mapgen_modpath)
+		if digest_ok then
+			cache_key = layout_cache.key(seed, source_digest, table.concat(settings, ";"),
+				type(jit_table) == "table" and tostring(jit_table.version) or _VERSION)
+			-- A file that cannot even be read builds afresh like a damaged one.
+			local ok, result, reason, damaged = pcall(layout_cache.load, world_dir, cache_key)
+			if ok then
+				cached, cache_reason, cache_damaged = result, reason, damaged
+			else
+				cached, cache_reason, cache_damaged = nil, "unreadable: " .. tostring(result), true
+			end
 		else
-			cached, cache_reason, cache_damaged = nil, "unreadable: " .. tostring(result), true
+			layout_cache = nil
+			cache_reason, cache_damaged = "no source key, not cached: " ..
+				tostring(source_digest), true
 		end
 	else
 		cache_reason = "no world folder"
 	end
-	local construction_started = now()
-	local runtime = dofile(wp40 .. "/r7_runtime.lua")(core_api, wp40,
-		default_path .. "/schematics", projection, catalog,
-		cached and cached.water, cached and cached.road, cached and cached.capital)
-	local construction_seconds = now() - construction_started
-	local built = runtime.build_authority(native.identities())
+	local function construct(texts)
+		local started = now()
+		local constructed = dofile(wp40 .. "/r7_runtime.lua")(core_api, wp40,
+			default_path .. "/schematics", projection, catalog,
+			texts and texts.water, texts and texts.road, texts and texts.capital)
+		local seconds = now() - started
+		return constructed, constructed.build_authority(native.identities()), seconds
+	end
+	local runtime, built, construction_seconds
+	if cached then
+		-- A hit passed every hash, so a failure here means texts this code
+		-- cannot build from (e.g. a hand-edited, re-hashed file): warn and
+		-- build afresh; the miss below replaces the file.
+		local ok, constructed, authority, seconds = pcall(construct, cached)
+		if ok then
+			runtime, built, construction_seconds = constructed, authority, seconds
+		else
+			cached, cache_damaged = nil, true
+			cache_reason = "the cached layouts did not construct: " .. tostring(constructed)
+		end
+	end
+	if not runtime then runtime, built, construction_seconds = construct(nil) end
 	local publish_authority = core_owner.prepare_zone_authority(
 		built.zones_session, built.consumer_payload)
 	if type(publish_authority) ~= "function" then
@@ -178,7 +202,10 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 	-- ground, before its streets' cut and fill; this says where a plot no
 	-- longer stands on the final ground. A WARNING and nothing else: the
 	-- capital is still built, and a diagnosable finding is the whole point.
-	if type(runtime.settlement_terrain_findings) == "function" then
+	-- Off by default (setting `grug_mapgen_terrain_audit`): it walks every
+	-- placed plot's ground on the final terrain, seconds of main start.
+	if core_api.settings and type(core_api.settings.get_bool) == "function" and
+			core_api.settings:get_bool("grug_mapgen_terrain_audit", false) then
 		local findings = runtime.settlement_terrain_findings(built)
 		for index = 1, #findings do
 			local finding = findings[index]
@@ -202,7 +229,10 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 		manifest_sha256 = built.manifest.sha256, full_seed = built.full_seed,
 		projection = projection, water_layout = runtime.water_layout_text(),
 		road_layout = runtime.road_layout_text(),
-		capital_layout = runtime.capital_layout_text()}
+		capital_layout = runtime.capital_layout_text(),
+		-- Main's preparations of every lazy blueprint (identity, palette,
+		-- landmarks), so emerge does not build and hash them all again.
+		prepared_blueprints = runtime.prepared_handover()}
 
 	-- Roads (Round 22 Phase 4): one log line with the construction figures
 	-- and one with a showcase spot per road feature (a serpentine, a gallery,

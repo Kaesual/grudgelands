@@ -6,8 +6,15 @@
 -- over (emerge), or main's own from the world-folder layout cache on a later
 -- boot (`layout_cache.lua`, plan D71); nil in main on a world's first start,
 -- which builds them (plan D37, D60).
+--
+-- `prepared_handover` (emerge only): main's preparations of every LAZY
+-- blueprint that has cells, keyed by manifest prefix (`module.
+-- prepared_handover`), so emerge does not build and hash every capital plot
+-- a second time at load. Each one's cells are rebuilt on the first mapchunk
+-- that touches it and checked there against main's identity and landmarks
+-- (`r7_settlement.lua` config); nil in main.
 return function(core_api, wp40_directory, schematic_directory, projection, catalog,
-		water_layout_text, road_layout_text, capital_layout_text)
+		water_layout_text, road_layout_text, capital_layout_text, prepared_handover)
 	local function fail(message)
 		error("WP40 R7 runtime: " .. message, 0)
 	end
@@ -20,7 +27,9 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			(water_layout_text ~= nil and type(water_layout_text) ~= "string") or
 			(road_layout_text ~= nil and type(road_layout_text) ~= "string") or
 			(capital_layout_text ~= nil and type(capital_layout_text) ~= "string") or
-			((road_layout_text == nil) ~= (capital_layout_text == nil)) then
+			((road_layout_text == nil) ~= (capital_layout_text == nil)) or
+			(prepared_handover ~= nil and (type(prepared_handover) ~= "table" or
+				capital_layout_text == nil)) then
 		fail("construction seam differs")
 	end
 
@@ -285,7 +294,7 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			source=dofile(wp40_directory.."/r20_civic.lua")(source,profile)
 		end
 		local prepared = r7_settlement_module.prepare(profile, source, raw_sha256,
-			capital_plots)
+			prepared_handover or capital_plots)
 		settlements[index] = {profile = profile, prepared = prepared}
 		settlement_keys[index] = profile.key
 		local blueprints = {}
@@ -310,6 +319,26 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	-- Byte order, never Lua's locale-dependent `<`: `r7_content.lua` accepts
 	-- this union only if it is sorted the way IT compares names.
 	table.sort(settlement_palette, r7_settlement_module.less_bytes)
+	-- Emerge: main's handover must hold exactly this roster's lazy cell
+	-- blueprints, one record each, so none of them was prepared here.
+	if prepared_handover ~= nil then
+		local expected = {}
+		for index = 1, #settlements do
+			local prepared = settlements[index].prepared
+			if prepared.profile.lazy then
+				for blueprint_index = 1, #prepared.blueprints do
+					local descriptor = prepared.blueprints[blueprint_index].descriptor
+					if descriptor.kind ~= "overlay" then expected[descriptor.prefix] = true end
+				end
+			end
+		end
+		for prefix in pairs(prepared_handover) do
+			if not expected[prefix] then fail("prepared handover differs: " .. tostring(prefix)) end
+			expected[prefix] = nil
+		end
+		local missing = next(expected)
+		if missing then fail("prepared handover lacks " .. missing) end
+	end
 	-- The manifest's field order and settlement order are derived from the
 	-- roster (contract section 2.2.2) and therefore constructed here, with the
 	-- roster in hand, not typed inside the manifest.
@@ -624,6 +653,17 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 
 	function module.build(...)
 		return build(...)
+	end
+	-- Main only: the plain-data preparations of every lazy cell blueprint,
+	-- keyed by manifest prefix, for the ipc_set payload (emerge passes them
+	-- back in as `prepared_handover`; `r7_settlement.handover`).
+	function module.prepared_handover()
+		if prepared_handover ~= nil then fail("emerge hands nothing over") end
+		local out = {}
+		for index = 1, #settlements do
+			r7_settlement_module.handover(settlements[index].prepared, out)
+		end
+		return out
 	end
 	-- The serialized water layout of the last built session (main hands it to
 	-- emerge through ipc_set).

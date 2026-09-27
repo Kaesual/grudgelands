@@ -1478,7 +1478,11 @@ numeric-truncated seed.
   `/road_spots`, the build seconds), each with its length and SHA-256, and a
   final SHA-256 over everything before it. A missing, truncated, edited or
   otherwise damaged file is never used: it is rebuilt (a damaged file with
-  a warning), and never stops the load.
+  a warning), and never stops the load. A file that passes every hash but
+  whose texts do not construct (only possible when edited and re-hashed by
+  hand) is treated the same way: a warning, a fresh build, the file
+  replaced. A mapgen source file that cannot be read leaves no key: the
+  layouts are built afresh and nothing is cached on that boot (a warning).
 - The file is written with `core.safe_file_write` (temporary file, then
   rename), so a crash mid-write cannot leave a half file.
 - One log line per boot names the result: `world layouts: cache hit` with
