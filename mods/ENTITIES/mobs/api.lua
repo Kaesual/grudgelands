@@ -2969,8 +2969,15 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 	-- return before protection, do_punch, damage, threat, rage, proc, wear or
 	-- feedback. Ordinary tools/fists and builtin item entities do not take the
 	-- swing-input branch.
+	-- A cast punch (`in_ability_punch`, set around the punch in
+	-- grug_core.deal_ability_damage) is neither input nor a swing: it skips this
+	-- whole block, exactly like the player-vs-player hook. Feeding it to the
+	-- input seam re-entered the caster's input step and re-cast the skill
+	-- before its cost/cooldown were armed (unbounded recursion), and the
+	-- seam's suppression dropped the ability damage itself, including a
+	-- Mighty Blow cleave's punches on other mobs during the swing.
 	local grug_authoritative
-	if is_player(hitter) then
+	if is_player(hitter) and not grug_core.in_ability_punch then
 		grug_authoritative = grug_core.claim_authoritative_swing(
 			hitter, self.object)
 		if not grug_authoritative

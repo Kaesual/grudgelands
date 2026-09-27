@@ -211,6 +211,20 @@ the observer-managed `grug_core:tag_carrier`. This reuses the existing
 `static_save = false`, so the engine never includes them in the static-object
 count supplied to mobs_redo's `aoc` comparison.
 
+## Round 22 — cast punches bypass the native-input seam (2026-09-28)
+
+No new marker. The existing native swing-input `GRUG PATCH` block at the top of
+`mob_class:on_punch` now runs only for player punches that are not cast damage
+(`grug_core.in_ability_punch` unset), the same guard order as the
+player-vs-player hook. Since the contextual-input change of 2026-09-24 the seam
+fed every player punch to `grug_abilities.input.press`; a cast's own damage
+punch therefore re-entered the caster's input step and re-cast before cost and
+cooldown were armed (unbounded recursion, a C stack overflow on the production
+server), and the seam's `return true` discarded the cast damage. The skipped
+block also held the authoritative-swing claim and suppression: cast punches
+never claim a swing token, and a Mighty Blow cleave's punches on other mobs
+during the swing now land as designed. The marker inventory is unchanged.
+
 ## Fresh-server cleanup — 2026-09-13
 
 The standing development mode in `AGENTS.md` removes support for earlier world

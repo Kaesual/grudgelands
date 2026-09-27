@@ -153,7 +153,8 @@ return function(api)
 		end
 	end
 	local M = {}
-	function M.step(player, press)
+	local stepping = {} -- player name -> true while that player's step runs
+	local function step(player, press)
 		local s, controls = state(player), player:get_player_control()
 		local down, right = controls.dig == true or press == true, controls.place == true
 		local item, slot = player:get_wielded_item():get_name(), player:get_wield_index()
@@ -218,6 +219,19 @@ return function(api)
 			end
 		end
 		s.down = down
+	end
+	-- One decision per player at a time. A skill's own synchronous effects
+	-- (its damage punch reaching a native-input seam, a callback it triggers)
+	-- belong to the decision already running; evaluating them as a new press
+	-- would cast again before the outer cast has paid its cost or armed its
+	-- cooldown. The guard is cleared even when a nested callback raises.
+	function M.step(player, press)
+		local name = player:get_player_name()
+		if stepping[name] then return end
+		stepping[name] = true
+		local ok, err = pcall(step, player, press)
+		stepping[name] = nil
+		if not ok then error(err, 0) end
 	end
 	function M.press(player) M.step(player, true) end
 	function M.right_action(player)
