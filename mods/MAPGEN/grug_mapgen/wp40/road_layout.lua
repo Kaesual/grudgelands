@@ -368,16 +368,24 @@ local function new_module(P)
 			local g = abs(H[kb] - H[ka]) / L
 			local c = L * (1 + P.NOISE_AMP * NOISE[lj])
 			local gmax = trail and P.TRAIL_GMAX or P.GMAX
-			if g > gmax then c = c + L * P.K_STEEP * (g - gmax) / gmax end
+			-- The grade and cross-slope penalties are branch-free: a term
+			-- whose threshold is not exceeded is max(..., 0) = +0 and adds
+			-- exactly nothing to the positive c, an exceeded one is the same
+			-- operations in the same order as the "if x > x0" form. Branches
+			-- here made LuaJIT's side traces fail ("register coalescing too
+			-- complex") and the whole A* search fell back to the interpreter.
+			c = c + L * P.K_STEEP * max(g - gmax, 0) / gmax
 			-- every grade costs a little: roads bend around hills
 			c = c + L * P.K_GENTLE * min(g, 0.25) / 0.25
 			local g0 = variant.G0
-			if g0 and g > g0 then
+			if g0 and gmax > g0 then
+				c = c + L * variant.K_G * (max(g - g0, 0) / (gmax - g0)) ^ 2
+			elseif g0 and g > g0 then
 				c = c + L * variant.K_G * ((g - g0) / (gmax - g0)) ^ 2
 			end
 			-- cross slope at the target cell: a bench needs cut and fill
 			local cross = abs(GX[lj] * D.uz - GZ[lj] * D.ux)
-			if cross > P.SIDE0 then c = c + L * P.K_SIDE * (cross - P.SIDE0) ^ 2 end
+			c = c + L * P.K_SIDE * max(cross - P.SIDE0, 0) ^ 2
 			c = c + WATERC[lj]
 			return c
 		end
