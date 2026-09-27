@@ -233,8 +233,11 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			canonical = canonical, deterministic = deterministic,
 			raw_sha256 = raw_sha256, horizontal_session = planning_horizontal,
 			terrain_field = terrain_field}).new_runtime(construction_seed)
-		local canal_rows
-		capital_layout_text, canal_rows, capital_stats = capitals.plan_all({
+		-- The canal rows plan_all returns are not needed here: it already
+		-- hands them to the planning session, and the rows below are
+		-- re-derived from the layout text like in emerge.
+		local _
+		capital_layout_text, _, capital_stats = capitals.plan_all({
 			seed = construction_seed, session = planning_session,
 			roads = roads.module, anchors = source.anchors,
 			profiles = capital_profiles, kits = capital_kits,

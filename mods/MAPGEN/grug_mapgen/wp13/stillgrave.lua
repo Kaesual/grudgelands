@@ -12,8 +12,8 @@
 --
 -- ROAD DIRECTION. Every Elandor start leaves its pad toward +z; the Kragmar
 -- starts do not. `kragmar_stillgrave_hollow` carries the `start:south` gate
--- (`wp40/source/catalog.lua`: `station:kragmar_stillgrave_hollow:start_south`
--- at x = -1800, z = 2486, which is the anchor's z minus 64), so this pad's
+-- (the pre-Round-22 route catalog's station at x = -1800, z = 2486, which is
+-- the anchor's z minus 64), so this pad's
 -- five-wide route, its gate and its watchtower all lie toward -z. Nothing
 -- else about the bounds, landmark or destination contract changes; the
 -- `main_street` landmark carries the direction, and the acceptance fixtures

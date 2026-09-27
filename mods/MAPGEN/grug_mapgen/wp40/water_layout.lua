@@ -41,11 +41,6 @@ return function(P)
 		if t <= 0 then return 0 elseif t >= 1 then return 1 end
 		return t * t * (3 - 2 * t)
 	end
-	local function smootherstep(a, b, x)
-		local t = (x - a) / (b - a)
-		if t <= 0 then return 0 elseif t >= 1 then return 1 end
-		return t * t * t * (t * (t * 6 - 15) + 10)
-	end
 	local function bspline(f)
 		local f2 = f * f
 		return (1 - f) ^ 3 / 6, (3 * f2 * f - 6 * f2 + 4) / 6,
