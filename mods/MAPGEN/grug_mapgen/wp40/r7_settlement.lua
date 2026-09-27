@@ -81,10 +81,11 @@ M.BOUNDS = {
 	-- what that protection exists to prevent, so the envelope and the
 	-- protection are deliberately the same number in one place. (The streets
 	-- and connectors are roads, `road_layout.lua`, not blueprints.)
-	-- (Only its x and z are an envelope; the edge publishes its own absolute y
-	-- range, `r7_capital_blueprint.lua`.)
-	capital_overlay = {min = {x = -266, y = -2, z = -266},
-		max = {x = 266, y = 40, z = 266}},
+	-- Only its x and z are anchor-relative; its y is absolute, the
+	-- protection's own (y_min -700, upward unbounded), and the edge publishes
+	-- its actual absolute y range (`r7_capital_blueprint.lua`).
+	capital_overlay = {min = {x = -266, y = -700, z = -266},
+		max = {x = 266, y = 31000, z = 266}},
 	-- Authored POIs stay inside the exact half-open flat terrain cores.
 	poi = {min = {x = -12, y = 0, z = -12}, max = {x = 11, y = 8, z = 11}},
 	poi_outpost = {min = {x = -8, y = 0, z = -8}, max = {x = 7, y = 8, z = 7}},
@@ -637,8 +638,10 @@ local function prepare_city(fail, descriptor, overlay)
 	end
 	-- the edge's own absolute y range (walk, gatehouses, piers), published in
 	-- place of the anchor-relative y of a cell blueprint
-	integer_or_fail(fail, overlay.y_min, "city edge y_min", -31000, 31000)
-	integer_or_fail(fail, overlay.y_max, "city edge y_max", overlay.y_min, 31000)
+	integer_or_fail(fail, overlay.y_min, "city edge y_min", descriptor.bounds.min.y,
+		descriptor.bounds.max.y)
+	integer_or_fail(fail, overlay.y_max, "city edge y_max", overlay.y_min,
+		descriptor.bounds.max.y)
 	local bounds = {min = {x = reach.min_x, y = overlay.y_min, z = reach.min_z},
 		max = {x = reach.max_x, y = overlay.y_max, z = reach.max_z}}
 	bytes[#bytes + 1] = table.concat({"reach", bounds.min.x, bounds.min.y,
