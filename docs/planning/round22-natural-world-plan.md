@@ -245,6 +245,7 @@ Decisions on the Phase 4 road prototype (2026-09-26, user; prototype in
 | D74 | **Road surface materials after the road playtest (2026-09-27):** exactly one surface material per road everywhere (may differ per race/zone), also on decks and galleries on pillars — no second (wood) surface where a road stands on supports; **no railings/fences anywhere** (on curved roads they read as a chaotic collection of fences, not a railing); pillars may use a second material. **True bridges** over rivers and lakes may be wood, but then the **whole bridge stretch** (the contiguous raised section that crosses the water, bank to bank) is wood; never mixed wood/stone within a section by support situation. | User playtest: the routes look great and fit; only the half-wood/half-stone surfaces and the fences on curved decks look wrong. |
 | D75 | **Trails and railings (2026-09-27):** trails use the race's road material, only narrower (no gravel with stone slabs — one material per road, D74). Railings in capitals only on straight streets and bridges; curved ones get none (curved railings look broken). Authored straight civic structures keep theirs; the capital planner rails a planner-made street bridge or deck only where that section is straight. | User. |
 | D76 | **Capital surroundings after the capital playtest (2026-09-27):** the flat, bare plateau outside the walls is too large. (1) The calm, flattened area is still made before the capital planner runs (the planner plans on it); it only becomes somewhat smaller than today and rounder instead of square, still large enough that any city layout fits easily; outside it the natural terrain, trees and ground cover come back. (2) Protection (immutable zone) = everything inside the walls, the walls themselves, and a band of 10–20 nodes around the walls; outside the band normal rules apply. The old 532-node square protection (`hard_capital_build_plus_apron_v1`) is replaced. (3) The band has restricted vegetation (no trees, no ground cover) so players see where protection ends. (4) Shape: organic, following the wall polyline (roughly round); an approximation is fine — a union of rectangles or a coarse precomputed raster (e.g. 4-node cells: inside/outside) — as long as protection checks stay cheap. Everything inside the walls must be covered. | User playtest. Open for the package: what exactly makes the plateau flat and bare (anchor damping mask radius in `terrain_field.lua`, the capital collar, vegetation suppression in the protected square) and what the planner needs as calm ground; protection consumers (`grug_core` hard volumes, guard level 60, water guard, housing/claims masks, preparation boxes) must accept the new shape. |
+| D77 | **Phase 6 surface look (2026-09-27):** (a) rock amount "less": steep slopes turn to bare rock from a grade of about 2.0–4.0 nodes per node (noise jittered), steeper steps keep soil over a stone face; (b) the gravel speckles in beach sand stay removed; (c) shore crab chances stay retuned to the measured near-water share (Shore Crab 300, Reef Lurker 1100); (d) high relief keeps the native caves as they are (option A); own cave tunnels in the terrain fill (option B) are a possible later package. | User, on the p6-look images and the representative sample numbers (`~/projects/grudgelands-orchestration/r22/p6-look/README.md`). |
 
 All §9 questions are answered.
 
@@ -822,10 +823,13 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   consumers; images for the user.
 - **Surface look and natural content, as built (lane p6-look, 2026-09-27;
   evidence and images in `~/projects/grudgelands-orchestration/r22/p6-look/`):**
-  steep ground gets bare rock faces (grade 1.6–3.2 nodes per node, noise
-  jittered, or a drop of 6–8), stone under the soil where a column stands 2+
-  above a neighbour, and gravel scree at the foot of rises; no strata on those
-  faces (dirt share of cliff side faces 36–76 % → ≤ 0.6 %); beach sand has no
+  steep ground gets bare rock faces (grade 2.0–4.0 nodes per node, noise
+  jittered, or a drop of 6–8; the "less rock" setting of D77), stone under the
+  soil where a column stands 2+ above a neighbour, and gravel scree at the foot
+  of rises; no strata on those faces (no dirt on cliff faces any more; on a
+  representative sample of 28 random windows per seed, 14 % / 4 % of crag tops
+  and 5 % / 0.5 % of meadow and forest tops change, gravel/snow mob host
+  area −13 % / −5 %, stone golem hosts on crags +5 % / +3 %); beach sand has no
   gravel speckles (the Phase 3b "sparse gravel" rule, own commit); reefs grow
   in bays too, one cell in four, plus kelp meadows; every force-placed
   decoration cell (trunks, stems, roots; Luanti's force_place) may take the
@@ -838,8 +842,9 @@ audit; the capital alley stubs predate Round 22 and moved to §11. Chunk time
   relocate with their hosts. Chunk time about +7 % against main 9cf07071
   (pairs 1.065 and 1.074, noise pair 1.031; report).
   High relief has no native caves above y ~160 (v7 carves only its own low
-  terrain; air share 1.2 % below y 40, 0.1 % at 80–160, 0 above 240): not
-  changed, options reported to the user.
+  terrain; air share 1.2 % below y 40, 0.1 % at 80–160, 0 above 240): kept as
+  is (D77 option A); own tunnels in the terrain fill are a possible later
+  package.
 - **Collected items open from the lanes (Phase 6):** two reverse river
   confluences (tributary lower than its parent, contained); the Dur Brannoc
   connector ford step (accepted; road-module bank-seal clamp with the city

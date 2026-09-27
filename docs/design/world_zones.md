@@ -687,7 +687,7 @@ replaced; git history before this rewrite records that model.
 - **Steep ground (Round 22 Phase 6).** Every dry natural column outside the
   near-water rule, the badlands and the swamp reads its final terrain: the
   drop to its lowest cardinal neighbour (a wet neighbour counts at its water
-  surface) and the grade over six nodes. A grade from 1.6 to 3.2 nodes per
+  surface) and the grade over six nodes. A grade from 2.0 to 4.0 nodes per
   node (the limit jittered by two noise scales, so rock and soil alternate in
   patches) or a drop of 6–8 nodes makes a **bare rock face** (stone top and
   filler). A drop of 2 or more below that keeps the column's top over a

@@ -764,10 +764,10 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 				local rise = math.max(e3, w3, n3, s3) - terrain_y
 				local jitter = math.floor((3 * noise(x, z, 40, 50331653) +
 					noise(x, z, 8, 12582917)) / 4)
-				-- grade is over six nodes: from 1.6 to 3.2 nodes per node
+				-- grade is over six nodes: from 2.0 to 4.0 nodes per node
 				-- (patchy by the noise) the slope is bare rock; below that a
 				-- steep slope keeps its soil in steps over a stone face (lips).
-				if grade * 1024 >= 9830 + 10 * jitter or
+				if grade * 1024 >= 12288 + 12 * jitter or
 						drop >= 6 + math.floor(3 * jitter / 1024) then
 					class = 1
 				elseif drop >= 2 then
