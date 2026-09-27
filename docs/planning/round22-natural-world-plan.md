@@ -1152,6 +1152,27 @@ from the lanes and reviews of this round:
   with the JIT on and off. Open: the road A* search (`road_layout.lua`) is
   now ~30 % of main start and mostly interpreted for the same two reasons.
   Evidence `r22/noise-jit/`.
+- **As built (road A\* JIT coverage):** the `g > gmax` / `g > g0` /
+  `cross > SIDE0` branches of the A\* move cost (`road_layout.lua`
+  `static_cost`) are `max(x - x0, 0)` terms (an unexceeded one adds `+0` to a
+  positive cost); `heap_push`/`heap_pop` are inlined into `search` with the
+  same operations in the same order — as called functions LuaJIT blacklisted
+  them (their sift loops abort a function's root trace) and with them the
+  search loop. Offline main build: A\* 36 % → 27 % of samples, 34 → 83 %
+  compiled; road build 5.4–6.4 → 4.2–4.6 s, main factory ×0.85–0.93. Engine,
+  six swapped pairs on two seeds: main loader ×0.89–0.94, chunk time within
+  noise (the A\* runs only in main). Byte identity: A\* pop sequence (state
+  and cost bits) identical with the JIT off on three seeds, layout texts
+  identical on three seeds, engine digest over 179 owners equal on two seeds
+  in all 16 runs, cost function compared bit for bit in 42 M checks. Open:
+  the outer search loop is still blacklisted (14 % of the search
+  interpreted; needs a flat-loop restructuring); the chunk-path spots (road
+  raster, writer `resolve_voxel`) need restructuring too — branch removal
+  there only moved the failing side exits (patches dropped, no chunk-time
+  change); this LuaJIT's `x ^ 2` differs in the last bit between the
+  interpreter (`pow`) and compiled code (`x * x`), so A\* costs already
+  depend on which code ran compiled (no text change seen); `floor_div` in
+  `block_for` (~0.8 %) not changed. Evidence `r22/road-jit/`.
 
 ### Orchestration and compaction points
 
