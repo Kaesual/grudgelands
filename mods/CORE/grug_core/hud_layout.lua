@@ -12,8 +12,8 @@
 -- like an `image` element's positive `scale` -- so offsets and bar widths
 -- stay in step at any HUD scaling (src/client/hud.cpp:496-506).
 --
--- This file is PURE Lua: it calls nothing from `core`, so
--- tools/ui/hud_bars_kat.lua loads the real thing rather than a copy.
+-- This file is PURE Lua: it calls nothing from `core`, so an
+-- offline check can load the real thing rather than a copy.
 
 local layout = {}
 grug_core.hud_layout = layout

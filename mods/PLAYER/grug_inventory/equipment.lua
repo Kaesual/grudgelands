@@ -680,8 +680,8 @@ end)
 --
 local STARTER_WEAPON_KEY = "grug_starter_weapon"
 
--- Published, because it is content rather than mechanism: the audit below and
--- `tools/wp13/gear_catalogue_kat.lua`'s engine counterpart read it, and a
+-- Published, because it is content rather than mechanism: the audit below reads
+-- it, and a
 -- later class ships its own line here rather than a second table somewhere.
 grug_inventory.STARTER_WEAPON = {
 	warrior = grug_gear.STARTER_SWORD,

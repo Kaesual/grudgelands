@@ -739,7 +739,8 @@ local function loader(directory)
 	-- as a pile of stone in a field.
 	--
 	-- Its room corner is published with `ruin = true`. That flag is the whole
-	-- contract with `tools/wp13/blueprint_kat.lua`: the roof-and-light
+	-- contract with the blueprint checks (the WP13 blueprint KAT until it was
+	-- retired in Round 22): the roof-and-light
 	-- invariant of the pipeline contract section 5 is relaxed for a room that
 	-- carries it, and stays in full force for every inhabited room of every
 	-- settlement -- including the two intact homes on the same lane.

@@ -14,8 +14,9 @@
 --
 -- Nothing in this file touches an ObjectRef, an inventory or a player. Its
 -- only engine contact is `core.log` for the unknown-race warning, which is why
--- tools/wp13/character_visuals_kat.lua can load it against a stub `core` and
--- check every race x line x slot x bracket combination in plain Lua 5.1.
+-- an offline check can load it against a stub `core` and check every race x
+-- line x slot x bracket combination in plain Lua 5.1 (the WP13
+-- character-visuals KAT did, until it was retired in Round 22).
 --
 
 --

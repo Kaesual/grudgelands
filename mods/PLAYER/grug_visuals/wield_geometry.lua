@@ -10,8 +10,8 @@
 -- sprite convention (grip bottom-left, tip top-right) instead of the vertical
 -- one grug_gear used to, the sprite's long axis is no longer its local +y.
 --
--- Pure Lua, no engine: `tools/wp13/wield_transform_kat.lua` loads this very
--- file and re-derives the geometry independently.
+-- Pure Lua, no engine: the WP13 wield-transform KAT (retired in Round 22)
+-- loaded this very file and re-derived the geometry independently.
 --
 -- ---------------------------------------------------------------------------
 -- 1. UNITS. A mesh is authored at 10 units = 1 node, and `set_attach`
@@ -203,7 +203,7 @@
 --    engine has to be able to read them -- and it reaches the player's own axe
 --    through the same seam as an NPC's.
 --
--- The printed check is `tools/wp13/wield_transform_kat.lua`.
+-- The printed check was the WP13 wield-transform KAT (retired in Round 22).
 --
 -- THE TWO TASTE VALUES, both in this file and nowhere else: `SIZE` (how big
 -- the weapon is) and `TILT_UP` (how far above level the blade rides, 0 = the

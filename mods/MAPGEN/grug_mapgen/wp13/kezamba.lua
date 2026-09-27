@@ -18,8 +18,9 @@
 -- ---------------------------------------------------
 -- The contract's section 1 says "the 96 x 96 civic core is flat at the fitted
 -- reference height". At Kezamba that is true of 6 380 of its 9 025 columns and
--- false of the other 2 645, and `tools/wp13/kezamba_water.lua` is the
--- measurement rather than the impression:
+-- false of the other 2 645, and the since-deleted
+-- `tools/wp13/kezamba_water.lua` was the measurement rather than the
+-- impression:
 --
 --   * 2 645 columns are the CENOTE, the authored lake `kezamba_cenote` of
 --     `wp40/water_authored.lua` (Round 22 Phase 5), whose north-east wedge
@@ -543,12 +544,13 @@ local function loader(directory)
 		-- pad diagonally from the south-west with a five-lane plank footbridge
 		-- at z = -22 and railed its rim with rope and post, 25 posts on the
 		-- even columns beside it. Both are gone, because the gorge is:
-		-- `tools/wp13/kezamba_water.lua --verify` measured 273 ravine columns
-		-- on 2026-09-15 and measures ZERO on main `f5583e13`. It was a graded
-		-- ROUTE CORRIDOR, and WP40's wave-2 route lane taught every route to
-		-- stop at the capital's gate points instead of grading on through the
-		-- envelope, so every dry column of the core now stands at the fitted
-		-- reference on all nine seeds (`kezamba_lagoon.lua`'s own header).
+		-- the since-deleted `tools/wp13/kezamba_water.lua --verify` measured
+		-- 273 ravine columns on 2026-09-15 and ZERO on main `f5583e13`. It was
+		-- a graded ROUTE CORRIDOR, and WP40's wave-2 route lane taught every
+		-- route to stop at the capital's gate points instead of grading on
+		-- through the envelope, so every dry column of the core now stands at
+		-- the fitted reference on all nine seeds (`kezamba_lagoon.lua`'s own
+		-- header).
 		--
 		-- A bridge over flat ground is worse than no bridge, and a rim rail
 		-- round nothing is a fence in a plaza. What stays is the MASK and every

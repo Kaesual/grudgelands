@@ -507,10 +507,10 @@ local function loader(directory)
 	-- section 8.1 wants "a water node" under `dir` within three nodes of a
 	-- `fish` socket and reads BLUEPRINT cells for it, which at Kezamba would be
 	-- the wrong question: the water is WP40's cenote and not this composition's.
-	-- `tools/wp13/kezamba_kat.lua` therefore answers it against the committed
-	-- lagoon mask of `wp13/kezamba_lagoon.lua` instead, which is the same claim
-	-- about the same columns and is measured on nine seeds. The part's job is
-	-- to put the anglers on the jetty's flanks looking outward, and the
+	-- The Kezamba KAT (retired in Round 22) therefore answered it against the
+	-- committed lagoon mask of `wp13/kezamba_lagoon.lua` instead, which is the
+	-- same claim about the same columns, measured on nine seeds. The part's
+	-- job is to put the anglers on the jetty's flanks looking outward, and the
 	-- composition's is to stand the jetty over water.
 	--
 	-- Extent: w x (d + reach), y 0..5. `reach` is how far the jetty runs out.

@@ -93,8 +93,8 @@ end
 
 -- WHICH POSE an item is held in. The tables and the rule are in
 -- `wield_geometry.lua` next to the derivation they belong to -- they ARE the
--- sprite convention -- and that is also what lets `wield_transform_kat.lua`
--- check the mapping without an engine. All this file owns is the lookup that
+-- sprite convention -- and that is also what lets an offline check
+-- test the mapping without an engine. All this file owns is the lookup that
 -- turns an item name into a group value, which is the half that needs one.
 local pose_for = grug_visuals.pose_for
 local get_item_group = core.get_item_group

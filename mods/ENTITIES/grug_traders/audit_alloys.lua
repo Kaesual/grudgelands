@@ -11,9 +11,10 @@
 -- the same error-level report.
 --
 -- It is a separate file, and the judgement is a PURE function of a recipe list,
--- for one reason: `tools/wp26/smelting_kat.lua` loads exactly these bytes under
--- a stub and proves the walk catches a deliberately overpriced synthetic
--- recipe. An audit nobody has ever seen fire is not evidence.
+-- for one reason: an offline check can load exactly these bytes under a stub
+-- and prove the walk catches a deliberately overpriced synthetic recipe (the
+-- WP26 smelting KAT did, until it was retired in Round 22). An audit nobody
+-- has ever seen fire is not evidence.
 --
 -- `grug_smelting` is an `optional_depends`: with the mod absent this file
 -- registers a callback that finds nothing and says nothing.

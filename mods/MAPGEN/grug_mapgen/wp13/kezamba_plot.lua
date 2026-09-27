@@ -49,10 +49,9 @@ local function loader(directory)
 	local M = {}
 
 	M.FLOOR = -6
-	-- The LEAST airspace a plot clears, whatever its own roof needs. The lot
-	-- predicate (`tools/wp13/kezamba_lots.lua`) holds every lot's rise against
-	-- this number, so the two have to be the same number and it is spelled once
-	-- here and once there with a comment in each pointing at the other.
+	-- The LEAST airspace a plot clears, whatever its own roof needs. The
+	-- Kezamba lot check (retired in Round 22) held every lot's rise against
+	-- this number.
 	M.MIN_CLEAR = 8
 
 	M.BASALT = handles.BASALT

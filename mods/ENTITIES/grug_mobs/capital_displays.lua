@@ -11,7 +11,8 @@ local WALK_PAUSE=3
 local WALK_STEP=0.1
 
 -- Posed foot Y in nodes: catalog stand[1], full B3D skin, visual_size / BS.
--- Reproduced by tools/r10_cap/b3d_pose.py; never changes rideable mount physics.
+-- Measured offline from the B3D files (a Round 10 script, retired in Round 22);
+-- never changes rideable mount physics.
 local FOOT_Y={dwarf=-0.011460670,elf=-0.000000103,
  expert_accord=-0.160746604,expert_throng=0.636211494,
  human=-0.001113216,master_accord=-0.214328805,master_throng=0.890696092,

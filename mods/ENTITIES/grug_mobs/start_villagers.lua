@@ -1111,8 +1111,8 @@ core.register_on_mods_loaded(function()
 	end
 	if #missing == 0 then
 		-- Counts as labelled fields rather than as English plurals: "1 weapon
-		-- families" is what a naive concatenation says, and this line is
-		-- asserted verbatim by tools/wp13/start_npcs_kat.lua.
+		-- families" is what a naive concatenation says, and this boot-log
+		-- line was asserted verbatim by a WP13 KAT (retired in Round 22).
 		core.log("action", "[grug_mobs] settlement work activities: tools " ..
 			tools .. ", weapon families " .. families .. ", all registered")
 		return

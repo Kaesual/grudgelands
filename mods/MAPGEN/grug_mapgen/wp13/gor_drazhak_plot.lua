@@ -60,10 +60,10 @@ local function loader(directory)
 	M.FLOOR = -6
 	-- The LEAST airspace a plot clears, whatever its own roof needs, and the
 	-- number the whole lot rule is written against: a lot may rise
-	-- `MIN_CLEAR - 2` nodes under a plot (`tools/wp13/gor_drazhak_lots.lua`
-	-- reads this constant rather than repeating it), so a part whose deck is
-	-- four courses up still stands clear of the shoulder the mesa puts in its
-	-- doorway.
+	-- `MIN_CLEAR - 2` nodes under a plot (the Gor Drazhak lot check, retired
+	-- in Round 22, read this constant rather than repeating it), so a part
+	-- whose deck is four courses up still stands clear of the shoulder the
+	-- mesa puts in its doorway.
 	--
 	-- NINE AND NOT EIGHT, which is the nine-seed sweep's doing. Eight is
 	-- Highcourt's, and it makes the lot rule "rise at most 6"; on three worlds

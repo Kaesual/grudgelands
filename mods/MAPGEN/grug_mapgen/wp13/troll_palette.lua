@@ -57,7 +57,8 @@ local function loader()
 	--
 	-- IT IS NOT, and both reasons are recorded because the decision is the
 	-- user's to reverse. The variant was built and rendered
-	-- (`tools/wp13/evidence/20260916-polish/renders/kings-hall-{before,after}.png`)
+	-- (`kings-hall-{before,after}.png`, 2026-09-16 polish evidence, deleted
+	-- in Round 22; git history keeps them)
 	-- and BOTH the lane and the independent review read the all-basalt hall the
 	-- same way: roof, walls, turrets, podium and plinth in one basalt texture,
 	-- so the building loses its silhouette and reads as an undifferentiated

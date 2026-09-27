@@ -36,10 +36,11 @@ return function(roster_factory, anchor_content)
 			fail("air authority differs")
 		end
 		local bound_plan, bound_generation, active = false, 0, false
-		-- THE MAPCHUNK THIS TRANSACTION OWNS, which is not the same box as
-		-- `context.inside_owner`. That one also answers true for the
-		-- authenticated one-node halo around the chunk, and the halo belongs to
-		-- a NEIGHBOURING chunk: its bytes are ours only if that chunk has
+		-- THE MAPCHUNK THIS TRANSACTION OWNS, in y: minp.y..maxp.y of the bound
+		-- plan. `context.inside_owner` answers for the same box (exactly
+		-- minp..maxp, clamped to the world limits; `r6_settlement.lua`), so a
+		-- root it accepts can still have its support one node below, in a
+		-- NEIGHBOURING chunk whose bytes are ours only if that chunk has
 		-- already generated. See the support check in `settle`.
 		local bound_min_y, bound_max_y = 0, -1
 		local metrics = {plan_calls = 0, settle_calls = 0, replay_calls = 0,
@@ -93,10 +94,10 @@ return function(roster_factory, anchor_content)
 						-- THE SUPPORT, and why it is only asserted when we own it.
 						--
 						-- A root on the owner's lower Y edge has its support one node
-						-- below, in the mapchunk BENEATH this one. `inside_owner` answers
-						-- true there -- the settlement context exposes the authenticated
-						-- one-node halo read-only -- but the halo carries OUR column only
-						-- if that lower chunk has already generated. Which of the two
+						-- below, in the mapchunk BENEATH this one, outside the box
+						-- `inside_owner` answers for (this chunk only), and that
+						-- chunk carries OUR column only if it has already
+						-- generated. Which of the two
 						-- generates first is the engine's emerge order, and a player who
 						-- teleports in from above gets the upper one first.
 						--
@@ -120,11 +121,11 @@ return function(roster_factory, anchor_content)
 						-- diagnostic ledger below records them. Declared inside, the
 						-- ledger's `support_*` and `prior_*` fields read fourteen
 						-- globals that are always nil -- which is what
-						-- `tools/wp40/r7/anchor_activation_kat.lua` catches at
-						-- "operation differs at 1". Outside them, a row whose support
-						-- or root this transaction does NOT own still records nil for
-						-- those fields, which is the honest answer: it did not read
-						-- them.
+						-- the R7 anchor-activation KAT (retired in Round
+						-- 22) caught as "operation differs at 1". Outside
+						-- them, a row whose support or root this transaction
+						-- does NOT own still records nil for those fields,
+						-- which is the honest answer: it did not read them.
 						local support_cid, support_param2, support_occupancy,
 							support_opcode, support_feature, support_interface,
 							support_aux
@@ -181,10 +182,11 @@ return function(roster_factory, anchor_content)
 										support_feature, support_interface, support_aux}, "/"))
 							end
 						end
-						-- The root cell itself, under the same rule: a root that lies in
-						-- the halo rather than in this chunk is the neighbouring chunk's
-						-- to clear, and reading it here would depend on emerge order the
-						-- same way.
+						-- The root cell itself, under the same rule: a root outside this
+						-- chunk is the neighbouring chunk's to clear, and reading it
+						-- here would depend on emerge order the same way. (The
+						-- `inside_owner` test above already keeps every root inside
+						-- this chunk, so this guard only restates it.)
 						if root_y >= bound_min_y and root_y <= bound_max_y then
 							prior_cid, prior_param2, prior_occupancy, prior_opcode,
 								prior_feature, prior_interface, prior_aux =

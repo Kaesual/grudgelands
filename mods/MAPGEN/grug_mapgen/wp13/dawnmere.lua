@@ -127,8 +127,8 @@ local function loader(directory)
 	-- are air and the node under it is walkable. `dir` is the facing as one
 	-- of the four axis vectors. Sockets are not identity bytes -- the
 	-- settlement identity SHA covers schema, bounds, palette and cells only --
-	-- but `tools/wp13/blueprint_kat.lua` checks every one of them against the
-	-- finished pad.
+	-- but the WP13 blueprint KAT (retired in Round 22) checked every one of
+	-- them against the finished pad.
 	local SOCKETS = {
 		-- The gate watch: one post either side of the road, inside the hedge
 		-- gate at z = 58, both facing the lane out of the fields.
@@ -187,7 +187,7 @@ local function loader(directory)
 		-- amble is four people swapping four chairs, which is what the playtest
 		-- saw. Each one is a legal standing position on the finished pad -- feet
 		-- and head air, walkable settlement ground under it, outdoors, reachable
-		-- on foot -- measured by `tools/wp13/blueprint_kat.lua`'s own socket test,
+		-- on foot -- measured by the retired WP13 blueprint KAT's socket test,
 		-- and no tag, because a spare is a place to stand rather than a feature to
 		-- talk about.
 		-- the brick walk east of the green

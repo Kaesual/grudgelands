@@ -25,8 +25,8 @@
 --     `face` (a facedir) that `parts.stamp` rotates with the part. `finish`
 --     below refuses a socket whose cell or headroom is occupied or whose
 --     floor is air, so a part cannot publish a standing position an NPC
---     cannot stand in; `tools/wp13/library_kat.lua` section 12 repeats the
---     test against the real registry, where `walkable` is a fact and not an
+--     cannot stand in; the WP13 library KAT (retired in Round 22) repeated
+--     the test against the real registry, where `walkable` is a fact and not an
 --     absence of cells.
 --
 -- Bounds discipline (contract section 2.1): a district plot stays inside

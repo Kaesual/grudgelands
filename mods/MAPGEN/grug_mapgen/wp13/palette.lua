@@ -89,9 +89,9 @@ M.prefix_roles = {
 -- for bulk placement (lua_api.md), so a chest, a furnace, a bookshelf or a
 -- vessel shelf written this way has no inventory and no formspec: it is a
 -- dead prop that a player can open into nothing. Every furnishing role is
--- therefore bound to a static decor node. `tools/wp13/library_kat.lua`
--- proves this for EVERY palette name against the real registrations, so
--- no role list is kept here.
+-- therefore bound to a static decor node. The WP13 library KAT proved this
+-- for EVERY palette name against the real registrations until it was
+-- retired in Round 22; no role list is kept here.
 
 M.races = {}
 
@@ -772,10 +772,10 @@ end
 -- `node(role)` returns the node name a role is bound to, and refuses an
 -- unbound or misspelled role. It does NOT prove the result is registered:
 -- the palette is a plain table of strings, and only the engine knows what
--- exists. What proves that is `tools/wp13/library_kat.lua`, which loads the
--- real registrations under a stub `core` and checks every name the blueprint
--- emits, and the engine run itself, where R7's content manifest hard-fails
--- on an unregistered Hearthpine palette name.
+-- exists. What proves that is the engine run itself, where R7's content
+-- manifest hard-fails on an unregistered Hearthpine palette name (the WP13
+-- library KAT, retired in Round 22, also checked every name the blueprint
+-- emits against the real registrations under a stub `core`).
 --
 -- Three roles -- `door`, `bed` and `bed_fancy` -- are not node names but
 -- family bases, and `node` refuses them outright. Their members come from

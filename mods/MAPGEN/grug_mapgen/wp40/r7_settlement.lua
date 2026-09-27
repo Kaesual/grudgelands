@@ -132,10 +132,10 @@ local START_TRAINERS = {
 -- order.
 --
 -- `race` names the `palette.races` entry the composition builds from. It is
--- the ONE place a settlement is tied to a race, and `tools/wp13/library_kat.lua`
--- reads it to check a start's window vocabulary and its ground cover against
--- that race's palette alone instead of guessing from the node names, which
--- can match two races at once.
+-- the ONE place a settlement is tied to a race, and the WP13 library KAT
+-- (retired in Round 22) read it to check a start's window vocabulary and
+-- its ground cover against that race's palette alone instead of guessing
+-- from the node names, which can match two races at once.
 --
 -- `slot` is the anchor slot the zone session answers under, and `bounds` names
 -- the `M.BOUNDS` entry the settlement's primary blueprint is held to.

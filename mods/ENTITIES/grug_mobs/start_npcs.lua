@@ -50,9 +50,9 @@
 --      (`r7_settlement.lua` hashes schema, bounds, palette and cells), so six
 --      banners would move six frozen settlement identities, the R7 manifest
 --      SHA and every piece of engine evidence recorded against them. Sockets
---      are landmarks and move none of it. `tools/wp13/blueprint_kat.lua` even
---      refuses a `grug_nodes:guard_banner` cell outright ("decorative
---      spawner") -- the blueprint side is closed by assertion.
+--      are landmarks and move none of it. The WP13 blueprint KAT
+--      (retired in Round 22) even refused a `grug_nodes:guard_banner` cell
+--      outright ("decorative spawner").
 --   2. camps.lua places its members at a RANDOM free spot in a radius
 --      (`free_spot_near`). A start guard has an authored post and an authored
 --      facing; "somewhere within 15 nodes of the banner, looking anywhere" is
@@ -63,9 +63,9 @@
 --      start is not an outpost, so a banner there gets no route at all
 --      (`assign_patrol` returns early) and the authored 4..6 waypoint loop
 --      would have no way in.
---   4. A banner is written by mapgen, so it would drag the whole WP13 engine
---      gate (`tools/wp13/run_engine.sh`, four worlds, two seeds) behind every
---      NPC change. Nothing here touches what the mapgen writes.
+--   4. A banner is written by mapgen, so every NPC change would become a
+--      mapgen change with the byte-identity checks that come with one.
+--      Nothing here touches what the mapgen writes.
 --
 -- What IS reused from the camp mechanism is its MODEL: world.md section 4a's
 -- respawn slots. One slot per guard socket, refilled 180-360 s after that
