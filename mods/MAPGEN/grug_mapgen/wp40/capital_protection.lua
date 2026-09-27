@@ -4,7 +4,9 @@
 -- beyond the edge's outermost structure. It replaces the old 532-node square
 -- (`hard_capital_build_plus_apron_v1`). The open capitals (Lethariel,
 -- Kezamba) have no closed wall; their planted belt and four thresholds stand
--- on the same planned outline, so the same line bounds them.
+-- on the same planned outline, so the same line bounds them. A capital's own
+-- civic lake (Lethariel's crown lake, Kezamba's cenote) belongs to the city
+-- even where the outline crosses it.
 --
 -- The shape is computed once per environment from the parsed capital layouts
 -- (main and emerge parse the same payload text, so they agree exactly) and
@@ -40,14 +42,37 @@ local function fail(message)
 	error("WP40 capital protection: " .. message, 0)
 end
 
+-- Sorted, merged union of x intervals {a1, b1, a2, b2, ...}.
+local function merge(spans)
+	table.sort(spans, function(p, q) return p[1] < q[1] end)
+	local out = {}
+	local a, b
+	for i = 1, #spans do
+		local s = spans[i]
+		if a and s[1] <= b then
+			if s[2] > b then b = s[2] end
+		else
+			if a then out[#out + 1], out[#out + 2] = a, b end
+			a, b = s[1], s[2]
+		end
+	end
+	if a then out[#out + 1], out[#out + 2] = a, b end
+	return out
+end
+
 -- `layout`: a deserialized capital layout (`capital_planner.lua`
--- M.deserialize), local coordinates relative to its anchor.
-function M.build(layout)
+-- M.deserialize), local coordinates relative to its anchor. `lake`: the
+-- capital's own civic lake (an authored water row of `water_authored.lua`:
+-- Lethariel's crown lake, Kezamba's cenote) or nil. The planned outline may
+-- cross it (the wall snaps to its banks, an open capital's belt runs over
+-- it); the whole civic lake belongs to the city all the same.
+function M.build(layout, lake)
 	if type(layout) ~= "table" or type(layout.anchor) ~= "table" or
 			type(layout.wall) ~= "table" or type(layout.wall.pts) ~= "table" or
 			#layout.wall.pts < 3 then
 		fail("layout differs")
 	end
+	local AX, AZ = layout.anchor.x, layout.anchor.z
 	local pts = layout.wall.pts
 	local n = #pts
 	local reach = M.EDGE_REACH + M.BAND
@@ -58,7 +83,7 @@ function M.build(layout)
 	z_lo, z_hi = ceil(z_lo), floor(z_hi)
 	-- 1. inside the wall line: per node row (its centre z), the crossings of
 	--    the closed polyline, paired into x intervals (even-odd rule)
-	local inside = {}
+	local spans_of = {}
 	for z = z_lo, z_hi do
 		local xs = {}
 		for i = 1, n do
@@ -70,8 +95,35 @@ function M.build(layout)
 		end
 		table.sort(xs)
 		if #xs % 2 ~= 0 then fail("wall line is not closed") end
-		inside[z] = xs
+		local spans = {}
+		for i = 1, #xs, 2 do spans[#spans + 1] = {xs[i], xs[i + 1]} end
+		spans_of[z] = spans
 	end
+	--    plus the civic lake's planned water (indicator >= 0.5), node runs
+	if lake ~= nil then
+		if type(lake) ~= "table" or type(lake.indicator) ~= "function" or
+				type(lake.min_x) ~= "number" then
+			fail("civic lake differs")
+		end
+		for z = lake.min_z, lake.max_z do
+			local lz = z - AZ
+			local run
+			for x = lake.min_x, lake.max_x + 1 do
+				local wet = x <= lake.max_x and lake.indicator(x, z) >= 0.5
+				if wet and not run then
+					run = x
+				elseif not wet and run then
+					local spans = spans_of[lz]
+					if not spans then spans = {}; spans_of[lz] = spans end
+					spans[#spans + 1] = {run - AX - 0.5, x - 1 - AX + 0.5}
+					z_lo, z_hi = min(z_lo, lz), max(z_hi, lz)
+					run = nil
+				end
+			end
+		end
+	end
+	local inside = {}
+	for z, spans in pairs(spans_of) do inside[z] = merge(spans) end
 	-- 2. the band: every row takes each inside interval of the rows within
 	--    `reach` widened by the circle's half chord there (an exact Euclidean
 	--    dilation of the inside rows), merged; a node belongs when its centre
@@ -90,19 +142,8 @@ function M.build(layout)
 			end
 		end
 		if #spans > 0 then
-			table.sort(spans, function(p, q) return p[1] < q[1] end)
-			local out = {}
-			local a, b = spans[1][1], spans[1][2]
-			for i = 2, #spans do
-				local s = spans[i]
-				if s[1] <= b then
-					if s[2] > b then b = s[2] end
-				else
-					out[#out + 1], out[#out + 2] = ceil(a), floor(b)
-					a, b = s[1], s[2]
-				end
-			end
-			out[#out + 1], out[#out + 2] = ceil(a), floor(b)
+			local out = merge(spans)
+			for i = 1, #out, 2 do out[i], out[i + 1] = ceil(out[i]), floor(out[i + 1]) end
 			rows[z] = out
 			bounds.min_x = min(bounds.min_x, out[1])
 			bounds.max_x = max(bounds.max_x, out[#out])
@@ -112,7 +153,6 @@ function M.build(layout)
 	if bounds.min_x < -H or bounds.max_x >= H or bounds.min_z < -H or bounds.max_z >= H then
 		fail(layout.anchor.id .. ": the protected city leaves its reserved square")
 	end
-	local AX, AZ = layout.anchor.x, layout.anchor.z
 	local shape = {anchor = layout.anchor, rows = rows, bounds = {
 		min_x = AX + bounds.min_x, max_x = AX + bounds.max_x,
 		min_z = AZ + bounds.min_z, max_z = AZ + bounds.max_z}}
@@ -127,7 +167,7 @@ function M.build(layout)
 		end
 		return false
 	end
-	-- inside the wall line itself (the band excluded): local node centres
+	-- inside the wall line or the civic lake (the band excluded)
 	function shape.inside(x, z)
 		local xs = inside[z - AZ]
 		if not xs then return false end
@@ -142,14 +182,18 @@ end
 
 -- Fills `holder` (the table `r7_runtime.lua` hands every horizontal session
 -- it builds) with the shapes of the parsed layouts: {anchor id -> {layout}}
--- as `r7_capitals.parse` returns them, or {anchor id -> layout}.
-function M.install(holder, layouts)
-	if type(holder) ~= "table" or type(layouts) ~= "table" then fail("install seam differs") end
+-- as `r7_capitals.parse` returns them, or {anchor id -> layout}; `lakes`
+-- {anchor id -> civic lake row} (optional).
+function M.install(holder, layouts, lakes)
+	if type(holder) ~= "table" or type(layouts) ~= "table" or
+			(lakes ~= nil and type(lakes) ~= "table") then
+		fail("install seam differs")
+	end
 	local shapes = {}
 	for id, entry in pairs(layouts) do
 		local layout = entry.layout or entry
 		if layout.anchor.id ~= id then fail("layout anchor differs: " .. tostring(id)) end
-		shapes[id] = M.build(layout)
+		shapes[id] = M.build(layout, lakes and lakes[id])
 	end
 	holder.shapes = shapes
 	return holder

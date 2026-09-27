@@ -279,7 +279,20 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			roads = road_stats and road_stats.t_total or 0, capitals = capitals_seconds}
 	end
 	local capital_layouts = capitals.parse(capital_layout_text)
-	capital_protection.install(protection_holder, capital_layouts)
+	-- the protected cities (plan D76), each with its civic lake if it has one
+	local civic_lakes = {}
+	for _, profile in ipairs(capital_profiles) do
+		local lake_id = capital_kits[profile.key].cfg.lake
+		if lake_id then
+			for _, row in ipairs(water.authored) do
+				if row.id == lake_id then civic_lakes[profile.anchor_id] = row end
+			end
+			if not civic_lakes[profile.anchor_id] then
+				fail("civic lake missing: " .. lake_id)
+			end
+		end
+	end
+	capital_protection.install(protection_holder, capital_layouts, civic_lakes)
 	local all_squares = {}
 	for _, profile in ipairs(capital_profiles) do
 		local entry = capital_layouts[profile.anchor_id]
