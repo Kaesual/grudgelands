@@ -381,12 +381,18 @@ grep -rnE '[^:/]//|[[:alnum:]_)"] *(&|\||<<|>>) *[[:alnum:]_("]' mods/*/grug_* -
 grep -rnE '\brequire[[:space:]]*\(|io\.popen|os\.(execute|exit)|\bminetest\.' mods/*/grug_* --include=*.lua
 ```
 
-Sweeps 1 and 4 also match prose in comments (`|` in a design-doc table row,
-C++ `Class::method` references) — read each hit, do not just count them.
-Zero hits outside comments is the passing state.
+Run by hand like this, the sweeps also match prose in comments and strings
+(`|` in a design-doc table row or a `"a|b"` key, C++ `Class::method`
+references). Sweep 4's operators are parse errors for `luac51` in code
+anyway; the sweep is there for the grep-only view.
 
 `bash tools/check_lua.sh <files>` runs the parser, the `SETGLOBAL` listing
-and these five sweeps, plus **sweep 6** on files under `mods/MAPGEN`: a
+and these five sweeps on stripped copies of each file
+(`tools/check_lua_strip.awk`, line numbers kept): comments are removed for
+all five, and string literals become `""` for sweeps 1, 3, 4 and 5. Sweep 2
+keeps short strings, since escapes only matter there, and drops long-bracket
+strings, where neither build processes escapes. Any hit it prints is code and
+fails the check. It adds **sweep 6** on files under `mods/MAPGEN`: a
 `POW` with the exponent 2 (constant operand, or a register loaded with 2)
 or a `math.pow` in the `luac51` bytecode listing (no comment or string
 matches) fails with the file and line — see "Floating point: LuaJIT

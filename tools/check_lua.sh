@@ -71,10 +71,35 @@ patterns=(
   '[^:/]//|[[:alnum:]_)"] *(&|\||<<|>>) *[[:alnum:]_("]'
   '\brequire[[:space:]]*\(|io\.popen|os\.(execute|exit)|\bminetest\.'
 )
+# Sweeps 1-5 read stripped copies with the source's line numbers
+# (tools/check_lua_strip.awk): comments and long-bracket strings are removed
+# for every sweep; short strings become "" for sweeps 1, 3, 4 and 5, which
+# look for code, while sweep 2 keeps them to find escapes inside. Prose such
+# as a `|` table row or `Class::method` in a comment cannot match. (Sweep 4's
+# `//`, `&`, `|`, `<<`, `>>` in code are also parse errors for luac51 above.)
+strip=$(dirname "$0")/check_lua_strip.awk
+tmp=$(mktemp -d "${TMPDIR:-/tmp}/check_lua.XXXXXX")
+trap 'rm -rf "$tmp"' EXIT
+mkdir "$tmp/code" "$tmp/text"
+count=0
+for file in "$@"; do
+  count=$((count + 1))
+  copy=$(printf '%06d.lua' "$count")
+  awk -v mode=code -f "$strip" "$file" > "$tmp/code/$copy"
+  awk -v mode=text -f "$strip" "$file" > "$tmp/text/$copy"
+  printf '%s\n' "$file" >> "$tmp/names"
+done
 findings=0
 for index in "${!patterns[@]}"; do
-  if rg -n "${patterns[$index]}" "$@"; then
-    printf 'sweep %s: inspect hits (comments may match)\n' "$((index+1))" >&2
+  mode=code
+  if [ "$index" -eq 1 ]; then mode=text; fi
+  # rg prints <tmp>/<mode>/000042.lua:<line>:<stripped text>; name the source
+  if rg -uu -n --with-filename --sort path "${patterns[$index]}" "$tmp/$mode" |
+    awk -v pre="$tmp/$mode/" 'NR == FNR { name[FNR] = $0; next }
+      { s = substr($0, length(pre) + 1); print name[substr(s, 1, 6) + 0] substr(s, 11) }' \
+      "$tmp/names" -; then
+    printf 'sweep %s FAIL: code hits above (comments stripped%s)\n' "$((index+1))" \
+      "$([ "$mode" = code ] && printf ', string literals shown as ""')" >&2
     findings=1
   else
     test "$?" -eq 1

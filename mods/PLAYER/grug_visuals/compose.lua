@@ -276,9 +276,8 @@ function grug_visuals.compose(spec)
 
 	-- The key covers every normalized input, and nothing else: two specs that
 	-- differ only in a field the composition ignores share one cache entry.
-	-- Semicolon, not a pipe: the fifth plain-5.1 grep sweep of
-	-- docs/research/luanti-lua.md flags `"|"` as a possible bitwise operator,
-	-- and a separator nobody has to re-adjudicate on every review is free.
+	-- Semicolon, not a pipe: a hand-run bitwise-operator grep sweep of
+	-- docs/research/luanti-lua.md matches `"|"` even inside a string.
 	local key = (race or "-") .. ";" .. skin
 	for index = 1, #SLOTS do
 		local piece = pieces[index]
