@@ -140,7 +140,8 @@ function M.source(key, layout, text, kit)
 	for c = 1, 4 do stretch(layout.gates[c].x, layout.gates[c].z) end
 	-- the heights the edge stands between (full-world preparation bounds):
 	-- piers, piles and footings reach down to the ground or a river bed
-	-- below the walk (no wall stands in a civic lake), gatehouses, turrets,
+	-- below the walk (in a civic lake only the shallow first few water
+	-- points of a crossing carry wall, SHORE_DEEP), gatehouses, turrets,
 	-- merlons and turret lamps rise at most 8 above the highest walk or 13
 	-- above a gate floor
 	local y_low, y_high = math.huge, -math.huge

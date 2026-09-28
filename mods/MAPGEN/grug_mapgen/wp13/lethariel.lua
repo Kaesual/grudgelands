@@ -729,15 +729,15 @@ local function loader(directory)
 		-- 23, in place of the silverwood hedge). One node thick on the
 		-- hedge's columns, in the civic quarter's pale cut: two courses of
 		-- silver sandstone brick, a marble coping at y 3 -- the height of the
-		-- marble band the three pale gatehouses carry -- and a slender
-		-- colonnette of the pale castle pillar, base and top, on every other
-		-- column, which is the merlon the outer curtain carries too. The
-		-- protected wall wins every dry non-gate column; only the mere itself
-		-- replaces the boundary.
+		-- marble band the three pale gatehouses carry -- and on every other
+		-- column a low merlon, a brick under a marble slab, which is the
+		-- merlon the outer curtain carries too (the user's playtest ruling of
+		-- 2026-09-28: the first version's pillar colonnettes stood too
+		-- tall). The protected wall wins every dry non-gate column; only the
+		-- mere itself replaces the boundary.
 		local PRECINCT_STONE = pale.node("castle_wall")
 		local PRECINCT_COPING = pale.node("signature")
-		local PIN_BASE = pale.variant("pillar", "_bottom")
-		local PIN_TOP = pale.variant("pillar", "_top")
+		local PRECINCT_CAP = pale.node("signature_slab")
 		local wall = 0
 		precinct_ring.walk(function(x, z)
 			precinct_ring.clear_wallmounted(buf, parts, x, z, 5)
@@ -745,8 +745,8 @@ local function loader(directory)
 			buf:put(x, 2, z, PRECINCT_STONE)
 			buf:put(x, 3, z, PRECINCT_COPING)
 			if (x + z) % 2 == 0 then
-				buf:put(x, 4, z, PIN_BASE)
-				buf:put(x, 5, z, PIN_TOP)
+				buf:put(x, 4, z, PRECINCT_STONE)
+				buf:put(x, 5, z, PRECINCT_CAP)
 			end
 			wall = wall + 1
 		end, {skip = function(x, z) return not dry(x, z) end})

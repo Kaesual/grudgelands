@@ -70,9 +70,13 @@ M.DEFAULTS = {
 	WALL_HALF = 3, WALL_KEEP = 8, TURRET_EVERY = 64, WALL_HEIGHT = 7,
 	WALL_SLACK = 1.05,    -- walk slope bound: <= 1/2 node per (node x this)
 	WALL_CLEAR = 1,       -- over water the walk stands at least this far above the surface
-	SHORE_KEEP = 6,       -- no wall within this of a civic lake's water (I.shore_distance)
-	SHORE_MIN_RUN = 12,   -- ... nor on a dry stretch of fewer points from it to the next lake stretch or gate
-	SHORE_TURRET_GAP = 6, -- no ordinary turret within this many points of a shore-end turret
+	-- a civic lake is the edge (M.shore_flags, I.shore_distance)
+	SHORE_INTO = 3,       -- the wall runs on over at most this many water points of a crossing
+	SHORE_DEEP = 3,       -- ... and past the first only while they lie within this of the shore
+	SHORE_MIN_RUN = 12,   -- a dry stretch between two crossings shorter than this carries no wall
+	SHORE_REACH = 32,     -- ... nor one whose outer land the lake closes within this
+	SHORE_KEEP = 6,       -- a wall point within this of the water stands on a solid footing
+	SHORE_TURRET_GAP = 6, -- no turret within this many points of the lake
 	GATE_DEPTH = 5, GATE_WIDTH = 7,   -- gatehouse half extents (along / across its axis)
 	PLOT_GAP = 2, SETBACK = 1.0, PUSH = 6, APPROACH_MAX = 5, ENTRY_STEP = 2,
 	FALL = 6, WET_MARGIN = 2,
@@ -106,8 +110,8 @@ M.DEFAULTS = {
 -- They keep the footprint the planted belt was planned with -- wall half 2,
 -- keep 6, gate boxes 3 x 5 -- so those capitals keep their outline, gates,
 -- streets and plots; only the wall's own payload (walk heights, turrets)
--- differs. Where their civic lake reaches the outline the wall stops on its
--- shores (SHORE_KEEP, the `l` flag of the payload): the lake is the edge.
+-- differs. Where their civic lake crosses the outline the lake is the edge
+-- (M.shore_flags, the `l` and `f` flags of the payload).
 M.EDGE = {
 	stone = {model = "stone", half = 3, depth = 5, width = 7, turret = 5,
 		opts = {WALL_HALF = 3, WALL_HEIGHT = 7, GATE_DEPTH = 5, GATE_WIDTH = 7}},
@@ -193,6 +197,186 @@ local function hash_seed(seed)
 		h = (h * 16777619) % 4294967296
 	end
 	return h
+end
+
+-------------------------------------------------------------------------------
+-- shore_flags(pts, gap, distance, P): where a capital's CIVIC lake crosses
+-- its outline (Lethariel's crown lake, Kezamba's cenote), the lake is the
+-- edge (Round 23 user rulings of 2026-09-28, the second after a playtest).
+-- `pts` is the closed wall polyline (local), `gap` its gate points,
+-- `distance(lx, lz)` the local column's distance from the lake's water (<= 0
+-- on it). Returns {lake, foot, water, stats}, each flag a table by point:
+--   * a crossing is a run of water points (a gate point never is one); the
+--     wall runs on over its first SHORE_INTO water points from each end --
+--     past the first (and next to a gate from the first) only while they lie
+--     within SHORE_DEEP of the shore -- and ends there in the water, so no
+--     beach is left to walk round its end; the rest of the crossing is
+--     `lake` (no wall); a crossing of up to 2 x SHORE_INTO shallow points is
+--     walled right across;
+--   * a dry stretch between two crossings is lake too when it is shorter
+--     than SHORE_MIN_RUN, or when the land outside it is closed by the lake:
+--     a fill over the dry columns outside the outline, started beside the
+--     stretch, never gets SHORE_REACH beyond it (the outline runs along a
+--     shore whose far side is the lake, so that land is reached only over
+--     the water or through the city, and a wall on it would stand alone
+--     between two crossings). Every other dry point carries wall, so the
+--     wall is continuous on land; a dry stretch between a crossing and a
+--     gate always does;
+--   * `foot`: a walled point within SHORE_KEEP of the water (the ones in it
+--     included) stands on a solid footing down to the bed, not an arcade.
+-- The flags are the wall's own: gaps, the plot band, the streets and the
+-- gates are planned before and without them.
+-------------------------------------------------------------------------------
+function M.shore_flags(pts, gap, distance, P)
+	local n = #pts
+	local d, water = {}, {}
+	local any = false
+	for i = 1, n do
+		d[i] = distance(pts[i][1], pts[i][2])
+		water[i] = not gap[i] and d[i] <= 0
+		if water[i] then any = true end
+	end
+	local lake, foot = {}, {}
+	local stats = {lake_points = 0, crossings = 0, lake_ends = 0, shore_runs = 0, land_runs = 0}
+	if not any then return {lake = lake, foot = foot, water = water, stats = stats} end
+	local function at(k) return (k - 1) % n + 1 end
+	-- the scan starts where no dry stretch can: a gate point, else water
+	local start
+	for i = 1, n do if gap[i] then start = i break end end
+	if not start then for i = 1, n do if water[i] then start = i break end end end
+	-- a column inside the closed outline (even-odd crossings; the segments
+	-- bucketed by the 4-node rows they span)
+	local rows = {}
+	for i = 1, n do
+		local a, b = pts[i], pts[at(i + 1)]
+		for r = floor(min(a[2], b[2]) / 4), floor(max(a[2], b[2]) / 4) do
+			local l = rows[r]
+			if not l then l = {}; rows[r] = l end
+			l[#l + 1] = i
+		end
+	end
+	local function inside(x, z)
+		local l, c = rows[floor(z / 4)], false
+		if not l then return false end
+		for _, i in ipairs(l) do
+			local a, b = pts[i], pts[at(i + 1)]
+			if (a[2] > z) ~= (b[2] > z) and
+					x < a[1] + (z - a[2]) / (b[2] - a[2]) * (b[1] - a[1]) then
+				c = not c
+			end
+		end
+		return c
+	end
+	-- the land outside a dry stretch is closed when a fill over the dry
+	-- columns outside the outline, started within 3 of its points, stays
+	-- inside the stretch's box grown by SHORE_REACH (4-connected, whole
+	-- local columns, i.e. world columns)
+	local function closed(run)
+		local x0, x1, z0, z1 = INF, -INF, INF, -INF
+		for _, m in ipairs(run) do
+			local p = pts[m]
+			x0, x1 = min(x0, p[1]), max(x1, p[1])
+			z0, z1 = min(z0, p[2]), max(z1, p[2])
+		end
+		x0, x1 = floor(x0) - P.SHORE_REACH, ceil(x1) + P.SHORE_REACH
+		z0, z1 = floor(z0) - P.SHORE_REACH, ceil(z1) + P.SHORE_REACH
+		local width = x1 - x0 + 1
+		local seen, qx, qz = {}, {}, {}
+		local function visit(x, z)
+			local k = (z - z0) * width + (x - x0)
+			if seen[k] then return true end
+			seen[k] = true
+			if inside(x, z) or distance(x, z) <= 0 then return true end
+			if x <= x0 or x >= x1 or z <= z0 or z >= z1 then return false end
+			qx[#qx + 1], qz[#qz + 1] = x, z
+			return true
+		end
+		for _, m in ipairs(run) do
+			local cx, cz = floor(pts[m][1] + 0.5), floor(pts[m][2] + 0.5)
+			for dz = -3, 3 do
+				for dx = -3, 3 do
+					if not visit(cx + dx, cz + dz) then return false end
+				end
+			end
+		end
+		local head = 1
+		while head <= #qx do
+			local x, z = qx[head], qz[head]
+			head = head + 1
+			if not (visit(x + 1, z) and visit(x - 1, z) and visit(x, z + 1) and
+					visit(x, z - 1)) then
+				return false
+			end
+		end
+		return true
+	end
+	-- the dry stretches between two crossings
+	local merged = {}
+	for i = 1, n do merged[i] = water[i] end
+	if start then
+		local k = 0
+		while k < n do
+			local i = at(start + k)
+			if not water[i] and not gap[i] and water[at(i - 1)] then
+				local run, j = {}, i
+				while not water[j] and not gap[j] and #run < n do
+					run[#run + 1] = j
+					j = at(j + 1)
+				end
+				if water[j] then
+					local shore = #run < P.SHORE_MIN_RUN or closed(run)
+					if shore then
+						for _, m in ipairs(run) do merged[m] = true end
+						stats.shore_runs = stats.shore_runs + 1
+					else
+						stats.land_runs = stats.land_runs + 1
+					end
+				end
+				k = k + #run
+			else
+				k = k + 1
+			end
+		end
+	end
+	-- the wall runs on into each crossing from both ends
+	local kept = {}
+	for i = 1, n do
+		if merged[i] and not merged[at(i - 1)] then
+			stats.crossings = stats.crossings + 1
+			local j = i
+			while merged[at(j + 1)] and at(j + 1) ~= i do j = at(j + 1) end
+			for _, e in ipairs({{i, 1}, {j, -1}}) do
+				local k = e[1]
+				-- from land the first water point always carries wall; from a
+				-- gate (one standing on the shore or, D70, in the water) only
+				-- a shallow one: a deep one is closed by the gatehouse itself
+				local from_gate = gap[at(k - e[2])]
+				for c = 1, P.SHORE_INTO do
+					if not merged[k] or not water[k] or
+							((c > 1 or from_gate) and d[k] < -P.SHORE_DEEP) then
+						break
+					end
+					kept[k] = true
+					k = at(k + e[2])
+				end
+			end
+		end
+	end
+	for i = 1, n do
+		if merged[i] and not kept[i] then
+			lake[i] = true
+			stats.lake_points = stats.lake_points + 1
+		end
+	end
+	for i = 1, n do
+		if lake[i] then
+			if not lake[at(i - 1)] then stats.lake_ends = stats.lake_ends + 1 end
+			if not lake[at(i + 1)] then stats.lake_ends = stats.lake_ends + 1 end
+		elseif not gap[i] and d[i] <= P.SHORE_KEEP then
+			foot[i] = true
+		end
+	end
+	return {lake = lake, foot = foot, water = water, stats = stats}
 end
 
 -------------------------------------------------------------------------------
@@ -1164,74 +1348,32 @@ function M.plan(seed, I, opt)
 				end
 			end
 		end
-		-- Round 23 (user ruling 2026-09-28): a capital's CIVIC lake is its edge
-		-- where it reaches the outline (Lethariel's crown lake, Kezamba's
-		-- cenote). The wall stops on both shores: a point within SHORE_KEEP of
-		-- the lake's water carries no wall, a dry stretch shorter than
-		-- SHORE_MIN_RUN from it to the next lake stretch or gate none either,
-		-- and each end is closed by a turret on the first point beyond (a gate
-		-- end by its gatehouse). The flag is the wall's own: gaps, the plot band, the
-		-- streets and the gates are planned exactly as before.
-		local lake = {}
-		wall.lake_points, wall.shore_ends = 0, 0
+		-- Round 23 (user rulings 2026-09-28): a capital's CIVIC lake is its
+		-- edge where it crosses the outline (Lethariel's crown lake, Kezamba's
+		-- cenote). M.shore_flags: the wall is continuous on land, runs a few
+		-- points into each crossing and ends there; no turret stands within
+		-- SHORE_TURRET_GAP points of the open lake or on the water.
+		local lake, foot = {}, {}
+		wall.lake_points, wall.lake_ends = 0, 0
 		if I.shore_distance then
-			for i = 1, n do
-				if not gap[i] and I.shore_distance(AX + pts[i][1], AZ + pts[i][2]) <= P.SHORE_KEEP then
-					lake[i] = true
-				end
-			end
-			-- from every lake end, walk outward over dry points: a stretch that
-			-- meets another lake stretch or a gate within SHORE_MIN_RUN points
-			-- is shore too (no stub of wall between two towers or between a
-			-- tower and a gatehouse; a gate point itself is never flagged)
-			local changed = true
-			while changed do
-				changed = false
-				for i = 1, n do
-					if lake[i] then
-						for _, step in ipairs({1, -1}) do
-							local run, k = {}, (i - 1 + step) % n + 1
-							while not lake[k] and not gap[k] and #run < P.SHORE_MIN_RUN do
-								run[#run + 1] = k
-								k = (k - 1 + step) % n + 1
-							end
-							if #run > 0 and #run < P.SHORE_MIN_RUN then
-								for _, m in ipairs(run) do lake[m] = true end
-								changed = true
-							end
-						end
-					end
-				end
-			end
-			-- the ends: a turret on the dry point beside every lake stretch,
-			-- unless a gate closes it; no turret stands on the lake or within
-			-- SHORE_TURRET_GAP points of an end turret
-			local ends = {}
-			for i = 1, n do
-				if lake[i] then
-					wall.lake_points = wall.lake_points + 1
-					for _, e in ipairs({(i - 2) % n + 1, i % n + 1}) do
-						if not lake[e] and not gap[e] then ends[e] = true end
-					end
-				end
-			end
+			local flags = M.shore_flags(pts, gap, function(lx, lz)
+				return I.shore_distance(AX + lx, AZ + lz)
+			end, P)
+			lake, foot = flags.lake, flags.foot
+			wall.lake_points, wall.lake_ends = flags.stats.lake_points, flags.stats.lake_ends
+			wall.shore = flags.stats
 			local kept = {}
 			for _, t in ipairs(turrets) do
-				local clear = not lake[t.i]
-				for e in pairs(ends) do
-					local d = abs(e - t.i)
-					if min(d, n - d) <= P.SHORE_TURRET_GAP then clear = false end
+				local clear = true
+				for k = t.i - P.SHORE_TURRET_GAP, t.i + P.SHORE_TURRET_GAP do
+					local m = (k - 1) % n + 1
+					if lake[m] or flags.water[m] then clear = false end
 				end
 				if clear then kept[#kept + 1] = t end
 			end
-			for e in pairs(ends) do
-				kept[#kept + 1] = {x = pts[e][1], z = pts[e][2], i = e, shore = true}
-				wall.shore_ends = wall.shore_ends + 1
-			end
-			table.sort(kept, function(p, q) return p.i < q.i end)
 			turrets = kept
 		end
-		wall.lake = lake
+		wall.lake, wall.foot = lake, foot
 		wall.turrets, wall.kind = turrets, P.WALL
 		local nwet = 0
 		for i = 1, n do if wetp[i] and not gap[i] then nwet = nwet + 1 end end
@@ -1761,7 +1903,8 @@ end
 --   w <x,z,walk2[flags]> ...                 wall points (~2 nodes apart), the
 --                                            walk in half nodes; flags: g gate
 --                                            gap, a over water, l civic lake
---                                            shore (no wall)
+--                                            (no wall), f footing by the
+--                                            civic lake (solid, no arcade)
 --   t <wall point index> ...                 turrets
 --   s <x> <z> <r> <y>                        squares (flat paving at y)
 --   q <level> <half> <depth> <x,z> ...       canal polyline (optional)
@@ -1782,9 +1925,10 @@ function M.serialize(plan)
 	end
 	local w = {}
 	for i, p in ipairs(plan.wall.pts) do
-		w[#w + 1] = ("%.1f,%.1f,%d%s%s%s"):format(p[1], p[2], plan.wall.walk[i],
+		w[#w + 1] = ("%.1f,%.1f,%d%s%s%s%s"):format(p[1], p[2], plan.wall.walk[i],
 			plan.wall.gap[i] and "g" or "", plan.wall.wet[i] and "a" or "",
-			plan.wall.lake and plan.wall.lake[i] and "l" or "")
+			plan.wall.lake and plan.wall.lake[i] and "l" or "",
+			plan.wall.foot and plan.wall.foot[i] and "f" or "")
 	end
 	out[#out + 1] = "w " .. table.concat(w, " ")
 	local tt = {}
@@ -1823,13 +1967,13 @@ end
 -- The payload back as a table (every consumer reads THIS, in main as in
 -- emerge): {anchor = {id, x, z}, kind, outline = {r...}, gates = {name =
 -- {name, x, z, y, dx, dz}} and gates[1..4] in CARD order, plots = {{id, x,
--- z, turns, y}}, wall = {pts = {{x, z}}, walk, gap, wet, lake, turrets = {index}},
+-- z, turns, y}}, wall = {pts = {{x, z}}, walk, gap, wet, lake, foot, turrets = {index}},
 -- squares = {{x, z, r, y}}, canal = {level, half, depth, pts} or nil}.
 function M.deserialize(text)
 	local function fail(message) error("capital layout: " .. message, 0) end
 	if type(text) ~= "string" then fail("text differs") end
 	local L = {plots = {}, squares = {}, gates = {}, outline = {},
-		wall = {pts = {}, walk = {}, gap = {}, wet = {}, lake = {}, turrets = {}}}
+		wall = {pts = {}, walk = {}, gap = {}, wet = {}, lake = {}, foot = {}, turrets = {}}}
 	local card = {}
 	for i, c in ipairs(CARD) do card[c.name] = i end
 	for line in text:gmatch("[^\n]+") do
@@ -1863,6 +2007,7 @@ function M.deserialize(text)
 				W.gap[i] = flags:find("g", 1, true) ~= nil
 				W.wet[i] = flags:find("a", 1, true) ~= nil
 				W.lake[i] = flags:find("l", 1, true) ~= nil
+				W.foot[i] = flags:find("f", 1, true) ~= nil
 			end
 		elseif tag == "t" then
 			for v in rest:gmatch("%d+") do L.wall.turrets[#L.wall.turrets + 1] = tonumber(v) end
