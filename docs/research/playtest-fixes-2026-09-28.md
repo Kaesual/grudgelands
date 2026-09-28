@@ -84,3 +84,21 @@ change. The swimmer guard costs about 1 µs per swimmer step.
 - With seeds or a bucket in hand, bookshelf and sign no longer open (the item's
   own placement runs first), as already for chests and workbenches.
 - A dropped fishing rod shows the rotated sprite (cosmetic).
+
+## Follow-up after the first GUI test (same day)
+
+The user accepted the round ("feels good") and ruled four follow-ups:
+
+| Lane | Merge | Content | Review |
+|---|---|---|---|
+| G Bow tuning + eating ring | `d9b50fb7` | Loose arrows 40 m/s (tap) to 55 m/s (full); damage ×(0.2 + 2.05 f²), full draw ×2.25 (supersedes Lane B's 2.8); green progress ring while eating, one ring owner shared with the bow | Approve (comment touch-ups) |
+| H Combat exit | `fede63db` | Death clears combat at once; mob combat follows explicit player–mob engagement and ends when the last engaged mob dies, forgets or gives up that player; PvP/untracked damage keep the 5 s timer (`combat_stats.md` §5) | Medium fix (only the given-up target disengages; two-tick targetless prune) |
+
+Final gates on `fede63db`: headless boot PASS; lanes a 378, b 306, c 34, d 42,
+e 254, f 140, h 138 checks and the ability-punch probe (65) all PASS.
+
+Follow-up GUI checks: tap / half / full draw feel and arrow speed; the green
+eating ring versus the bow ring; after the last kill you leave combat at once
+(eat immediately), in a group the others stay in combat when the tank dies;
+death ends combat. Design consequence: Warrior rage decay (−5/s out of combat)
+now starts right after the last kill instead of 5 s later.

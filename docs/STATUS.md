@@ -6,8 +6,9 @@ Updated 2026-09-28. This is the delivery pointer, not another game specification
   server-side node UIs, crosshair range feedback with own crosshair, 2.5 s bow
   draw with damage curve and power ring, eating visual, movement stances,
   swimmers stay in water, fish drop, first-person rod, recipe-book ingredient
-  navigation, Blink targeting. Six lanes independently reviewed, all probes
-  and a headless boot passed on merged main `f7d96448`; synchronized to Luanti.
+  navigation, Blink targeting; follow-up bow tuning, eating ring and immediate
+  combat exit. Eight lanes independently reviewed, all probes and a headless
+  boot passed on merged main `fede63db`; synchronized to Luanti.
   [Receipt and GUI checklist](research/playtest-fixes-2026-09-28.md). No push.
 
 - **Round 21 startup correction:** fixed the missing fish disposition and native
