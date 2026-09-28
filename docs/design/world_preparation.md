@@ -28,9 +28,18 @@ the air-chunk fast path decided 2026-09-28 (Round 23, WP48).
   generation boundaries.
 - A finished full preparation leaves nothing for the engine to generate while
   players walk, swim, ride or fly mounts up to the flight ceiling, or look around
-  at the surface. On-demand generation remains only for mining deeper than the
-  generate reach below the surface, admins above the flight ceiling and positions
-  outside the bounds.
+  at the surface. On-demand generation remains only for:
+  - mining deeper than the generate reach below the prepared bottom of a tile;
+  - players building above the prepared top minus the reach (feet above
+    y ≈ 671 where the column ends at 847);
+  - admins above the flight ceiling;
+  - positions outside the bounds;
+  - servers whose `active_block_range` exceeds the generate reach: block
+    activation emerges with generation (`ServerEnvironment::step`,
+    `getBlockOrEmerge(p, true)`, serverenvironment.cpp:946-947); the engine
+    default 4 lies inside.
+  Diving below the prepared bottom to deep seabeds is an open decision; the
+  envelope still counts visible water only down to eight nodes.
 
 ### Full-column extent
 

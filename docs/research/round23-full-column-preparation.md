@@ -25,6 +25,22 @@ Lane A and "Engine run budget". Design: [world preparation](../design/world_prep
   environment (`writer_bounds`).
 - Portable fixture and bounded-run harness: `tools/r23_full_column/`.
 
+## Remaining on-demand generation
+
+After a finished full preparation the engine still generates for:
+
+- mining deeper than the generate reach below a tile's prepared bottom;
+- players building towers whose feet rise above the prepared top minus the
+  reach (y ≈ 847 − 176 = 671 in the measured columns);
+- admins above the flight ceiling;
+- positions outside the world bounds;
+- servers whose `active_block_range` exceeds the generate reach: block
+  activation emerges with generation allowed (`getBlockOrEmerge(p, true)`,
+  `src/serverenvironment.cpp:946-947`); the engine default 4 is inside.
+
+Diving to seabeds deeper than the envelope (visible water down to eight nodes)
+is open: the user decides whether the real seabed joins the bottom envelope.
+
 ## Bounds and their derivation
 
 Engine (reference pin): `RemoteClient::GetNextBlocks`
@@ -117,6 +133,11 @@ the chunk and its 16-node shell, 1,404,928 nodes each):
 - Run 2, 42 tiles around the human start: **372 chunks, 0 differ**, all
   `noop_equal_content`.
 - Run 3, first 75 tiles of the final region: **658 chunks, 0 differ**.
+- Run 5, after merging main f5a545bd (Lane C capital walls, Lane B renewal):
+  the north-east quarter of Lethariel, 20 tiles including its crown lake and
+  the new stone_narrow edge with the lake arcade (790 of the 1,018 edge columns
+  over the lake's authored capsules lie in the region): **180 chunks, 0 differ**.
+  Evidence: `tools/r23_full_column/evidence/lethariel-verify/`.
 - Run 1 (unchanged writer) returned `noop_equal_content` for every native-air
   chunk above the surface over ocean, coast and mountain tiles as well.
 
@@ -155,6 +176,8 @@ scheduling), each ended by a normal shutdown requested from a server step.
 2. `--verify --geo`, 42-tile region (complete in 137 s).
 3. `--verify`, final region, stopped at 200 s (75 tiles), world kept.
 4. Resume boot of run 3's world, measurement mode, stopped at 150 s.
+5. After the merge of main: `--verify` over Lethariel's north-east quarter
+   (20 tiles, complete in 56 s).
 
 No PUC runs (mapgen exemption). The ~15-minute final run is prepared, not run:
 see [the harness README](../../tools/r23_full_column/README.md).
@@ -162,9 +185,8 @@ see [the harness README](../../tools/r23_full_column/README.md).
 ## Open risks
 
 - The fast path's correctness rests on the preparation envelope being an upper
-  bound of everything the writer places above the surface. Lane C changes
-  capital walls; their boxes come from the blueprints, so they follow
-  automatically, but the verify run should be repeated once after merging if
-  the coordinator wants fresh evidence near a capital.
+  bound of everything the writer places above the surface. Lane C's capital
+  walls come in through the blueprint boxes; run 5 verified Lethariel's edge
+  and lake arcade after the merge. Kezamba's deck was not run.
 - Region mix: the measured regions hold a start and 40% water; capitals and
   high mountains may cost more per tile.
