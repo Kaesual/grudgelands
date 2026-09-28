@@ -204,7 +204,41 @@ end)
 --
 -- Observation helpers.
 --
-local notices, bursts = {}, {}
+local notices, bursts, sounds = {}, {}, {}
+
+local function aim(ref, fake, target)
+	local eye = vector.offset(ref:get_pos(), 0,
+		ref:get_properties().eye_height or 1.625, 0)
+	local cb = target:get_properties().collisionbox or {0, 0, 0, 0, 1, 0}
+	local centre = vector.offset(target:get_pos(), 0, (cb[2] + cb[5]) / 2, 0)
+	local dir = vector.direction(eye, centre)
+	fake.look = dir
+	fake.yaw = core.dir_to_yaw(dir)
+	fake.pitch = -math.asin(dir.y)
+end
+
+local function spawn_mob(pos)
+	local obj = core.add_entity(pos, "grug_mobs:bandit")
+	local ent = obj and obj:get_luaentity()
+	assert(ent, "mob was not added")
+	grug_mobs.ensure_init(ent)
+	ent._grug_level = 1
+	grug_mobs.ensure_init(ent)
+	ent.health = ent.hp_max
+	ent.old_health = ent.health
+	return obj, ent
+end
+
+-- Place sounds the probe player hears itself.
+local function place_sound_heard(fake, item_name)
+	local def = core.registered_nodes[item_name]
+	local want = def and def.sounds and def.sounds.place
+	want = type(want) == "table" and want.name or want
+	for _, entry in ipairs(sounds) do
+		if entry.to == fake.name and entry.name == want then return true end
+	end
+	return false
+end
 local rightclicks = {door = 0, chest = 0}
 
 local function wrap_observers()
@@ -217,6 +251,12 @@ local function wrap_observers()
 	grug_abilities.flash = function(player, text, ...)
 		log("flash to " .. player:get_player_name() .. ": " .. tostring(text))
 		return flash(player, text, ...)
+	end
+	local play = core.sound_play
+	core.sound_play = function(spec, params, ...)
+		sounds[#sounds + 1] = {name = type(spec) == "table" and spec.name or spec,
+			to = params and params.to_player}
+		return play(spec, params, ...)
 	end
 	local spawner = core.add_particlespawner
 	core.add_particlespawner = function(def, ...)
@@ -330,6 +370,8 @@ scenario("click_ground", function(origin)
 				count(fake) .. ")")
 			check(fake.eat_huds == 0 and grug_core.get_status(fake.ref, "food") == nil,
 				"click_ground: no eating")
+			check(place_sound_heard(fake, "default:apple"),
+				"click_ground: the placer hears the place sound")
 		end},
 	}
 end)
@@ -509,6 +551,140 @@ scenario("combat_click", function(origin)
 	}
 end)
 
+-- M1: a hotbar switch and a fresh press observed in the same step.
+for _, hold in ipairs({false, true}) do
+	local label = hold and "switch_then_hold" or "switch_then_click"
+	scenario(label, function(origin)
+		local _, fake = make_player(label, "warrior", origin)
+		fake.inv:set_stack("main", 1, ItemStack("default:stick"))
+		fake.inv:set_stack("main", 2, ItemStack("default:apple 5"))
+		local pointed = floor_pointed(origin)
+		return {
+			{0.3, function()
+				fake.index = 2
+				press(fake, pointed)
+			end},
+			{hold and 2.1 or 0.35, function() release(fake) end},
+			{hold and 2.4 or 0.8, function()
+				if hold then
+					check(count(fake, 2) == 4 and apples(origin) == 0,
+						label .. ": the new item's hold ate one portion (" .. count(fake, 2) ..
+						", " .. apples(origin) .. " apple(s))")
+				else
+					check(count(fake, 2) == 4 and apples(origin) == 1,
+						label .. ": the new item's click placed one apple (" .. count(fake, 2) ..
+						", " .. apples(origin) .. " apple(s))")
+				end
+				active[fake.name] = nil
+			end},
+		}
+	end)
+end
+
+-- M2: a double click whose release fell between two control snapshots.
+scenario("double_click_node", function(origin)
+	local _, fake = food_player("double_click_node", origin)
+	local first = floor_pointed(origin)
+	local second = floor_pointed(vector.offset(origin, 1, 0, 0))
+	return {
+		{0, function() press(fake, first) end},
+		{0.05, function()
+			press(fake, second)
+			check(core.get_node(first.above).name == "default:apple",
+				"double_click_node: the first click settled at the second press")
+		end},
+		{0.1, function() release(fake) end},
+		{0.6, function()
+			check(core.get_node(second.above).name == "default:apple" and
+				apples(origin) == 2 and count(fake) == 3,
+				"double_click_node: two clicks placed two apples (" .. apples(origin) ..
+				", stack " .. count(fake) .. ")")
+		end},
+	}
+end)
+
+scenario("double_click_object", function(origin)
+	local _, fake = food_player("double_click_object", origin)
+	local first = floor_pointed(origin)
+	local npc = core.add_entity(vector.offset(origin, 1, 0, 2), "grug_probe_food_input:npc")
+	local before
+	return {
+		{0, function() before = npc_clicks; press(fake, first) end},
+		{0.05, function()
+			press(fake, {type = "object", ref = npc})
+			check(apples(origin) == 1 and npc_clicks == before,
+				"double_click_object: the first click placed, the NPC press is deferred")
+		end},
+		{0.1, function() release(fake) end},
+		{0.6, function()
+			check(npc_clicks == before + 1 and count(fake) == 4 and apples(origin) == 1,
+				"double_click_object: then the NPC was right-clicked once (" ..
+				(npc_clicks - before) .. ", stack " .. count(fake) .. ")")
+			npc:remove()
+		end},
+	}
+end)
+
+scenario("double_click_nothing", function(origin)
+	local _, fake = food_player("double_click_nothing", origin)
+	local first = floor_pointed(origin)
+	return {
+		{0, function() press(fake, first) end},
+		{0.05, function() press(fake, {type = "nothing"}) end},
+		{0.1, function() release(fake) end},
+		{0.6, function()
+			check(apples(origin) == 1 and count(fake) == 4 and fake.eat_huds == 0,
+				"double_click_nothing: first click placed, the air click did nothing (" ..
+				apples(origin) .. ", stack " .. count(fake) .. ")")
+		end},
+	}
+end)
+
+-- A stack of one: the click empties it by placing, the hold by eating.
+for _, hold in ipairs({false, true}) do
+	local label = hold and "single_hold" or "single_click"
+	scenario(label, function(origin)
+		local _, fake = make_player(label, "warrior", origin)
+		fake.inv:set_stack("main", 1, ItemStack("default:apple"))
+		local pointed = floor_pointed(origin)
+		return {
+			{0, function() press(fake, pointed) end},
+			{hold and 1.8 or 0.05, function() release(fake) end},
+			{hold and 2.1 or 0.5, function()
+				check(count(fake) == 0 and apples(origin) == (hold and 0 or 1),
+					label .. ": the last apple was " .. (hold and "eaten" or "placed") ..
+					" (stack " .. count(fake) .. ", " .. apples(origin) .. " placed)")
+				if hold then
+					check(grug_core.get_status(fake.ref, "food") ~= nil and
+						eat_hud(fake) == nil and speed(fake) == 1,
+						label .. ": status running, feedback cleared")
+				end
+			end},
+		}
+	end)
+end
+
+scenario("meatblock_click", function(origin)
+	local _, fake = food_player("meatblock_click", origin, "mobs:meatblock")
+	fake.look = vector.normalize(vector.new(0.8, -0.6, 0))
+	local under = vector.offset(origin, 2, -1, 0)
+	local pointed = {type = "node", under = under, above = vector.offset(under, 0, 1, 0)}
+	return {
+		{0, function() press(fake, pointed) end},
+		{0.05, function() release(fake) end},
+		{0.5, function()
+			local node = core.get_node(pointed.above)
+			local want = core.dir_to_facedir(fake.look)
+			check(node.name == "mobs:meatblock" and node.param2 == want and want ~= 0,
+				("meatblock_click: placed rotated by rotate_node (%s param2 %d, want %d)")
+					:format(node.name, node.param2, want))
+			check(count(fake) == 4, "meatblock_click: one block left the stack")
+			check(place_sound_heard(fake, "mobs:meatblock"),
+				"meatblock_click: the placer hears the place sound")
+		end},
+	}
+end)
+
 -- Every end path of a running eat clears image, wielditem flag and stance.
 local food_ends = {
 	release = function(fake) release(fake) end,
@@ -585,6 +761,13 @@ for _, path in ipairs({"release", "cancel", "stun", "slot", "death", "leave"}) d
 		local ref, fake = make_player(label, "scout", origin)
 		fake.weapon = bow_name
 		fake.look, fake.pitch = vector.new(0, 0, 1), 0
+		local mob
+		if path == "release" then
+			-- A visible hostile in front, so the release really launches.
+			local ent
+			mob, ent = spawn_mob(vector.offset(origin, 0, 0, 6))
+			aim(ref, fake, mob)
+		end
 		fake.inv:set_stack("main", 1, grug_abilities.stack_for(ref, "loose"))
 		fake.inv:set_stack("main", 3, ItemStack("grug_gear:arrow 20"))
 		return {
@@ -610,10 +793,9 @@ for _, path in ipairs({"release", "cancel", "stun", "slot", "death", "leave"}) d
 					(path == "leave" or speed(fake) == 1), label .. ": draw stance cleared (speed " ..
 					speed(fake) .. ")")
 				if path == "release" then
-					-- The launch transaction is untouched by this lane; a probe
-					-- entity cannot always host the projectile, so only report.
-					log(label .. ": release settled through the Scout loop (" ..
-						count(fake, 3) .. " arrows left)")
+					check(count(fake, 3) == 19, label .. ": the release launched one arrow (" ..
+						count(fake, 3) .. " left)")
+					if mob and mob:get_pos() then mob:remove() end
 				end
 				release(fake)
 			end},
