@@ -21,8 +21,8 @@
 --
 -- Everything is refreshed from the existing 0.05 s pass (init.lua) and sends
 -- a HUD packet only when the drawn texture changes. The weapon-ready ring
--- (init.lua) sits between the two: state overlay z 1, ready ring z 2, draw
--- ring z 3.
+-- (init.lua) sits between the two: state overlay z 1, ready ring z 2,
+-- progress ring (bow draw or eating) z 3.
 --
 -- Integer scale. The engine draws the crosshair at floor(hud_scaling x display
 -- density) (src/client/hud.cpp drawCrosshair) but a Lua image element at the

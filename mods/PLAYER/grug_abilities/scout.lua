@@ -391,7 +391,7 @@ local function release_draw(player, rec)
 	local fraction = math.min(1,
 		math.max(0, (core.get_us_time() - rec.started) / (draw_time * 1e6)))
 	-- A press and release observed at the same monotonic timestamp has no
-	-- impulse and therefore no projectile action or ammunition cost.
+	-- draw time and therefore no shot: no projectile action or ammunition cost.
 	if fraction <= 0 then
 		cancel_receipt(player, rec.action_id)
 		finish_draw_wear(player)
