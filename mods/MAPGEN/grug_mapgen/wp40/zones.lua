@@ -1300,8 +1300,10 @@ local function zones_factory(dependencies)
 			end
 			-- Narrow read-only runtime bridge. These are the same geometry owners the
 			-- planner and writer consume; ecology must not reconstruct their shapes.
-			function planner_source.static_exclusion_values_at(x, z)
-				return horizontal.static_exclusion_values_at(x, z)
+			-- `purpose` as in simple_map.lua (nil: the territory rule;
+			-- "vegetation": the rule the decoration planner hosts plants by).
+			function planner_source.static_exclusion_values_at(x, z, purpose)
+				return horizontal.static_exclusion_values_at(x, z, purpose)
 			end
 			function planner_source.housing_mask_id_at(x, z)
 				return horizontal.housing_mask_id_at(x, z)

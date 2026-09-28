@@ -1,0 +1,28 @@
+ACTION[Main]: [grug_farming] vegetation renewal: 766 non-natural node names, tree regrowth on
+ACTION[Main]: [renewal_probe] species blight_gravewood -> grug_trees:gravewood_sapling growth true
+ACTION[Main]: [renewal_probe] species bone_forest_gravewood -> grug_trees:gravewood_sapling growth true
+ACTION[Main]: [renewal_probe] species deep_forest_apple_tree -> default:sapling growth true
+ACTION[Main]: [renewal_probe] species deep_forest_aspen_tree -> default:aspen_sapling growth true
+ACTION[Main]: [renewal_probe] species elf_forest_apple_tree -> default:sapling growth true
+ACTION[Main]: [renewal_probe] species elf_forest_silverwood -> grug_trees:silverwood_sapling growth true
+ACTION[Main]: [renewal_probe] species emergent_jungle_tree -> default:emergent_jungle_sapling growth true
+ACTION[Main]: [renewal_probe] species jungle_edge_jungle_tree -> default:junglesapling growth true
+ACTION[Main]: [renewal_probe] species jungle_tree -> default:junglesapling growth true
+ACTION[Main]: [renewal_probe] species meadows_apple_tree -> default:sapling growth true
+ACTION[Main]: [renewal_probe] species meadows_bush -> default:bush_sapling growth true
+ACTION[Main]: [renewal_probe] species pine_hills_blueberry_bush -> default:blueberry_bush_sapling growth true
+ACTION[Main]: [renewal_probe] species pine_hills_pine_bush -> default:pine_bush_sapling growth true
+ACTION[Main]: [renewal_probe] species pine_hills_pine_tree -> default:pine_sapling growth true
+ACTION[Main]: [renewal_probe] species pine_hills_small_pine_tree -> default:pine_sapling growth true
+ACTION[Main]: [renewal_probe] species savanna_acacia_bush -> default:acacia_bush_sapling growth true
+ACTION[Main]: [renewal_probe] species savanna_acacia_tree -> default:acacia_sapling growth true
+ACTION[Main]: [renewal_probe] not renewed badlands_large_cactus: cactus seedling cannot grow on mesa clay
+ACTION[Main]: [renewal_probe] not renewed crags_snowy_pine: pine sapling cannot grow on gravel
+ACTION[Main]: [renewal_probe] not renewed deep_forest_apple_log: fallen log, not a growing plant
+ACTION[Main]: [renewal_probe] not renewed swamp_papyrus: reed stand, not a sapling species
+ACTION[Server]: [renewal_probe] starts ready 6 after 30 s
+ACTION[Server]: [renewal_probe] site emerged in 3.0 s
+ACTION[Server]: [renewal_probe] site (-1712,36,-2550) zone elandor_hearthpine_vale biome grug_pine_hills (start dwarf at (-1800,38,-2550))
+ACTION[Server]: [renewal_probe] non-natural node names: 766
+ERROR[Server]: [renewal_probe] FAIL site has open ground
+ACTION[Server]: [renewal_probe] RESULT FAIL (1 checks, 1 failures)
