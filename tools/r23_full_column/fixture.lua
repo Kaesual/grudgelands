@@ -151,6 +151,39 @@ do
  end
 end
 
+-- The production surface envelope: the real bed of sea, lake and river water
+-- is the bottom-side surface (user ruling 2026-09-28); the top side keeps the
+-- water surface. Tuple slots: 6 ground, 7 water, 11 functional, 16/17 falls.
+do
+ local envelope=dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/preparation_source.lua")
+ local function tuple(x)
+  if x==0 then return nil,nil,nil,nil,nil,-60,1 end -- deep sea
+  if x==1 then return nil,nil,nil,nil,nil,12,20 end -- lake, bed 8 below
+  if x==2 then return nil,nil,nil,nil,nil,5,9,nil,nil,nil,nil,nil,nil,nil,nil,9,-3 end -- fall
+  return nil,nil,nil,nil,nil,20 -- land
+ end
+ local s=envelope({column_values_at=function(x) return tuple(x) end},
+  {{rotations={{min_x=-2,max_x=2,min_y=-3,max_y=10,min_z=-2,max_z=2}}}},{},{},{},
+  {copy_rows=function() return {} end},"fixture",function(b) return tostring(#b) end)
+ local low,high=s.column_bounds(0,0)
+ check(low==-62 and high==12,"deep seabed is the bottom surface, water surface the top")
+ low,high=s.column_bounds(1,0)
+ check(low==10 and high==31,"lake bed")
+ low=s.column_bounds(2,0)
+ check(low==-5,"lower fall below its bed")
+ low,high=s.column_bounds(3,0)
+ check(low==18 and high==31,"land")
+ -- A seabed at -60 three tiles away lowers the tile's column: -62-176 -> -272.
+ local function src(bed_x)
+  return {identity="seabed",tile_bounds=function() return 1,math.huge,-math.huge end,
+   column_bounds=function(x,z) return s.column_bounds((x==bed_x and z==0) and 0 or 3,0) end}
+ end
+ local sel=select_tile({bounds=SMALL},src(-250),5,5)
+ check(sel.y_min==-272 and sel.y_max==768,"seabed three tiles away deepens the column")
+ sel=select_tile({bounds=SMALL},src(-330),5,5)
+ check(sel.y_min==-192,"seabed four tiles away does not")
+end
+
 local starts = plan.new("starts",geometry,ids)
 check(starts.total==18,"deduplicated starts")
 
@@ -410,5 +443,5 @@ local function idle_and_cave()
  check(saved().cursor==121 and game.world_preparation_status().ready,"ready prefix unchanged")
 end
 idle_and_cave();game,api=boot("full");idle_and_cave()
-return "r23-full-column: geometry reach window reference-coverage scanner-bound restart air-chunks pipeline=2 ordered-prefix retry stop replay inner-resume budget mode authority ready-idle external-cave=ok\n"
+return "r23-full-column: geometry reach window reference-coverage seabed scanner-bound restart air-chunks pipeline=2 ordered-prefix retry stop replay inner-resume budget mode authority ready-idle external-cave=ok\n"
 end

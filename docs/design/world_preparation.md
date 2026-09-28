@@ -38,8 +38,6 @@ the air-chunk fast path decided 2026-09-28 (Round 23, WP48).
     activation emerges with generation (`ServerEnvironment::step`,
     `getBlockOrEmerge(p, true)`, serverenvironment.cpp:946-947); the engine
     default 4 lies inside.
-  Diving below the prepared bottom to deep seabeds is an open decision; the
-  envelope still counts visible water only down to eight nodes.
 
 ### Full-column extent
 
@@ -57,8 +55,10 @@ the air-chunk fast path decided 2026-09-28 (Round 23, WP48).
   headroom and the window's highest surface/content plus 3 nodes of standing
   headroom, plus R, rounded outward to mapchunks.
 - **Bottom:** the window's lowest surface envelope minus R, rounded outward.
-- Surface and content heights are the existing surface envelope: land and water
-  surfaces (visible water down to eight nodes), functional surfaces, waterfalls,
+- Surface and content heights are the surface envelope: land surfaces, the real
+  bed of sea, lake and river water on the bottom side (players dive to any bed;
+  user ruling 2026-09-28) and the water surface on the top side, functional
+  surfaces, waterfalls,
   road decks and rails, decoded template and cultural-cell reach, fitted
   settlement/POI/anchor boxes. Start readiness envelopes still apply over their
   tiles.
@@ -148,8 +148,8 @@ Full mode walks horizontal tiles in z/x order and each tile's column bottom-up.
 A tile's surface statistic reads every terrain column in its local rectangle,
 including neighboring columns for cliff exposure and the decoded horizontal reach
 of vegetation roots; its column then follows the window rule above.
-Water columns retain the real shallow bed down to eight nodes below their surface;
-content support and chunk rounding may include additional depth. Functional
+Water columns contribute their real bed, however deep, to the bottom side and
+their water surface to the top side. Functional
 crossings and waterfall upper/lower heights join the same local envelope.
 
 Decoded tree rotations and cultural cells provide conservative content height

@@ -38,8 +38,9 @@ After a finished full preparation the engine still generates for:
   activation emerges with generation allowed (`getBlockOrEmerge(p, true)`,
   `src/serverenvironment.cpp:946-947`); the engine default 4 is inside.
 
-Diving to seabeds deeper than the envelope (visible water down to eight nodes)
-is open: the user decides whether the real seabed joins the bottom envelope.
+Diving is covered: by user ruling (2026-09-28) the real bed of sea, lake and
+river water is the bottom-side surface, so any bed lies at least the reach
+above the prepared bottom.
 
 ## Bounds and their derivation
 
@@ -65,8 +66,9 @@ returns the distance unchanged (`util/numeric.cpp`). Blocks within
   node. 784 falls in the chunk 768..847, so the headroom is absorbed by
   rounding. A window with content above 668 raises the top.
 - **Bottom** = window min surface envelope − 176, rounded outward (the existing
-  envelope: visible water down to eight nodes, functional, waterfall, template
-  root depth).
+  envelope: land and the real bed under sea, lake and river water, functional,
+  waterfall, template root depth). Until the seabed ruling the envelope counted
+  water only down to eight nodes below its surface.
 
 The fixture proves the window and block arithmetic against an independent
 brute-force reference: for every column within 11 blocks of a tile, a player
