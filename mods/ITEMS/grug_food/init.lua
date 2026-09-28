@@ -389,7 +389,28 @@ function grug_food.click(player, pointed, rightclick)
 	if not food or not pointed then return false end
 	local result
 	if pointed.type == "node" then
-		result = food.place(stack, player, pointed)
+		local item_name = stack:get_name()
+		local before = {}
+		for _, key in ipairs({"above", "under"}) do
+			before[key] = pointed[key] and core.get_node(pointed[key]).name
+		end
+		local placed
+		result, placed = food.place(stack, player, pointed)
+		-- rotate_node returns no position; find the node this click placed.
+		for _, key in ipairs({"above", "under"}) do
+			local pos = pointed[key]
+			if not placed and pos and before[key] ~= item_name and
+					core.get_node(pos).name == item_name then
+				placed = pos
+			end
+		end
+		-- Builtin plays the place sound to everyone except the placer, whose
+		-- client predicts it; a click on release has no prediction.
+		local node_def = core.registered_nodes[item_name]
+		local sound = node_def and node_def.sounds and node_def.sounds.place
+		if placed and sound then
+			core.sound_play(sound, {pos = placed, to_player = player:get_player_name()}, true)
+		end
 	elseif food.secondary then
 		result = food.secondary(stack, player, pointed)
 	end
