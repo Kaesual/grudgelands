@@ -222,14 +222,23 @@ local function loader(directory)
 			put(y, R.face)
 			put(y + 1, R.cap)
 		end
-		-- the closed end of a wall run next to the open lake: the last node
-		-- and a half of the segment before a lake point
+		-- The closed end of a wall run at the open lake: HEAD nodes either
+		-- side of the wall's last point, i.e. the end of the segment before
+		-- it and the start of the segment on into the lake (which otherwise
+		-- carries no wall), so the head reaches a node or so past that point.
+		-- Answers whether segment i's column at `u` is a head column.
+		local HEAD = 1.5
 		local function head_of(i, u)
-			local a, b = pts[i], pts[i % n + 1]
+			local j = i % n + 1
+			local a, b = pts[i], pts[j]
 			local rx, rz = b[1] - a[1], b[2] - a[2]
 			local len = sqrt(rx * rx + rz * rz)
-			return (W.lake[(i - 2) % n + 1] and u * len <= 1.5) or
-				(W.lake[(i + 1) % n + 1] and (1 - u) * len <= 1.5) or false
+			local li, lj = W.lake[i], W.lake[j]
+			if li and lj then return false end
+			if lj then return u * len <= HEAD end
+			if li then return (1 - u) * len <= HEAD end
+			return (W.lake[(i - 2) % n + 1] and u * len <= HEAD) or
+				(W.lake[j % n + 1] and (1 - u) * len <= HEAD) or false
 		end
 
 		-- One column: `put(y, name, param2)` writes a node, `column` is the
@@ -295,12 +304,14 @@ local function loader(directory)
 			end
 			local d, i, u, outside = nearest(lx, lz)
 			if not d or d > HALF + 0.5 then return end
-			if W.gap[i] or W.gap[i % n + 1] or W.lake[i] or W.lake[i % n + 1] then return end
-			local top, slab = walk_at(i, u)
+			if W.gap[i] or W.gap[i % n + 1] then return end
 			local head = head_of(i, u)
+			if not head and (W.lake[i] or W.lake[i % n + 1]) then return end
+			local top, slab = walk_at(i, u)
 			local edge_lane = head or d > HALF - 0.5
-			-- by the civic lake (`f`) the wall stands on a solid footing
-			local wet = not (W.foot[i] or W.foot[i % n + 1]) and
+			-- by the civic lake (`f`, and the head) the wall stands on a
+			-- solid footing
+			local wet = not (head or W.foot[i] or W.foot[i % n + 1]) and
 				(W.wet[i] or (water ~= nil and water > ground))
 			local pier = (i % 6) < 2
 			local low = ground - 2
@@ -376,13 +387,15 @@ local function loader(directory)
 			end
 			local d, i, u, outside = nearest(lx, lz)
 			if not d or d > HALF + 0.5 then return end
-			if W.gap[i] or W.gap[i % n + 1] or W.lake[i] or W.lake[i % n + 1] then return end
+			if W.gap[i] or W.gap[i % n + 1] then return end
+			local head = head_of(i, u)
+			if not head and (W.lake[i] or W.lake[i % n + 1]) then return end
 			local top, slab = walk_at(i, u)
 			-- by the civic lake (`f`) the stakes stand solid to the bed
-			local foot = W.foot[i] or W.foot[i % n + 1]
+			local foot = head or W.foot[i] or W.foot[i % n + 1]
 			local in_water = water ~= nil and water > ground
 			local wet = not foot and (W.wet[i] or in_water)
-			if head_of(i, u) or (outside and d > HALF - 1.5) then
+			if head or (outside and d > HALF - 1.5) then
 				-- the stockade: stakes from under the ground to above the
 				-- walk (and across the wall's end in the lake, its head)
 				local low = ground - 1
