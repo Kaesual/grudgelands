@@ -25,6 +25,9 @@
 local P = "[swimmer_probe] "
 local SWIM_SECONDS = 240
 local SAMPLE = 0.25
+-- Per-swimmer movement floors over SWIM_SECONDS in the wander cells.
+local MIN_PATH = 10
+local MIN_DISTINCT = 5
 local WATER = "default:water_source"
 local FISH = "grug_mobs:reed_angelfish"
 local KRAKEN = "grug_mobs:kraken"
@@ -293,7 +296,8 @@ end
 local function track(obj, cell, role)
 	local ent = obj:get_luaentity()
 	local rec = {obj = obj, ent = ent, name = ent.name, cell = cell, role = role or "wander",
-		samples = 0, bad = 0, max_out = 0, classes = {}, id = #tracked + 1}
+		samples = 0, bad = 0, max_out = 0, classes = {}, id = #tracked + 1,
+		path = 0, nodes = {}, distinct = 0}
 	tracked[#tracked + 1] = rec
 	return rec
 end
@@ -306,6 +310,15 @@ local function sample_all()
 				rec.dead = true
 			else
 				rec.samples = rec.samples + 1
+				-- Movement: a guard that merely froze the swimmers would also
+				-- keep every sample wet.
+				if rec.last then rec.path = rec.path + vector.distance(rec.last, pos) end
+				rec.last = pos
+				local key = core.hash_node_position(vector.round(pos))
+				if not rec.nodes[key] then
+					rec.nodes[key] = true
+					rec.distinct = rec.distinct + 1
+				end
 				local class, here = classify(r)
 				local out = outside_distance(pos, rec.cell.pool)
 				if out > rec.max_out then rec.max_out = out end
@@ -435,6 +448,10 @@ end
 
 local function report_displaced()
 	local a, s, k = displaced.adjacent, displaced.stranded, displaced.knock
+	-- A vanished test fish would pass the checks below vacuously.
+	check(a.obj:get_pos() ~= nil, "displaced adjacent: the test fish still exists")
+	check(s.obj:get_pos() ~= nil, "displaced stranded: the test fish still exists")
+	check(k.obj:get_pos() ~= nil, "displaced knockback: the test fish still exists")
 	log(("displaced adjacent: back in water after %s s"):format(tostring(a.back_at)))
 	check(a.back_at ~= nil and a.back_at <= 6,
 		"a fish set down next to the water returns to it within 6 s")
@@ -558,11 +575,16 @@ local function report_swimmers()
 		if rec.role == "wander" then
 			local label = rec.cell.label
 			local s = per[label] or {samples = 0, bad = 0, mobs = 0, bad_mobs = 0,
-				max_out = 0, classes = {}, examples = {}, dead = 0}
+				max_out = 0, classes = {}, examples = {}, dead = 0,
+				path = 0, min_path = math.huge, min_distinct = math.huge,
+				attack = rec.target ~= nil}
 			per[label] = s
 			s.samples = s.samples + rec.samples
 			s.bad = s.bad + rec.bad
 			s.mobs = s.mobs + 1
+			s.path = s.path + rec.path
+			s.min_path = math.min(s.min_path, rec.path)
+			s.min_distinct = math.min(s.min_distinct, rec.distinct)
 			if rec.dead then s.dead = s.dead + 1 end
 			if rec.bad > 0 then s.bad_mobs = s.bad_mobs + 1 end
 			if rec.max_out > s.max_out then s.max_out = rec.max_out end
@@ -587,6 +609,15 @@ local function report_swimmers()
 		for _, e in ipairs(s.examples) do log("  first: " .. e) end
 		check(s.bad == 0 and s.dead == 0,
 			label .. ": no swimmer ever occupied a non-water node")
+		log(("%-22s movement: mean path %.1f nodes, min path %.1f, min distinct nodes %d"):format(
+			label, s.path / s.mobs, s.min_path, s.min_distinct))
+		-- Floors well below free swimming, far above a frozen swimmer (path 0,
+		-- one node). The attack Kraken only has to reach the shore line.
+		local need_path, need_nodes = MIN_PATH, MIN_DISTINCT
+		if s.attack then need_path, need_nodes = 2, 2 end
+		check(s.min_path >= need_path and s.min_distinct >= need_nodes,
+			("%s: every swimmer still swims (path >= %d nodes, >= %d distinct nodes)"):format(
+				label, need_path, need_nodes))
 	end
 	return total_bad
 end

@@ -1242,10 +1242,11 @@ Reed Angelfish are passive freshwater critters, with no XP or quality loot; a
 kill drops exactly one ordinary Raw Fish (better fish only from fishing). Like
 the Kraken Guard they never leave the water: no climbing onto a bank, shore
 plants and waterlilies do not count as water, and a swimmer displaced out of
-the water swims back if water is adjacent or otherwise flops in place. Their habitat is planned natural inland water, with source water at the
-spawn position and above it, next to a sand bed, above the column's natural
-bed: lakes (and bays) at any altitude, not rivers, whose river water is
-another liquid, and not cave pools. They use the existing critter spawn
-machinery: interval 30s, chance 1/4000, local active-object cap 2, no fixed
-height cap (y -30 to the 600 flight ceiling; Round 22 Phase 5). They add
-ambient movement, not a fishing-resource system.
+the water swims back if water is adjacent or otherwise flops in place. Their
+habitat is planned natural inland water, with source water at the spawn
+position and above it, next to a sand bed, above the column's natural bed:
+lakes (and bays) at any altitude, not rivers, whose river water is another
+liquid, and not cave pools. They use the existing critter spawn machinery:
+interval 30s, chance 1/4000, local active-object cap 2, no fixed height cap
+(y -30 to the 600 flight ceiling; Round 22 Phase 5). They add ambient
+movement, not a fishing-resource system.
