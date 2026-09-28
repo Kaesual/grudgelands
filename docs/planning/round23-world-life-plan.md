@@ -136,7 +136,10 @@ of world scans. Needing more means asking the user first. Engine runs use
 
 Delivered 2026-09-28: [completion](../research/round23-completion.md). Later
 user rulings: the seabed is part of the prepared bottom envelope; Lethariel
-and Kezamba walls end at the civic lake shores.
+and Kezamba walls end at the civic lake shores. After the playtest (same day)
+the walls are continuous on land and run 2–3 nodes into the lake to a closed
+head (no dry margin, no lone pieces), and Lethariel's crown is lower
+([receipt](../research/round23-capital-walls.md#playtest-fix-continuous-walls-at-the-civic-lakes-low-elf-crown)).
 
 ## Phase 2 — vegetation and altitude (rulings 2026-09-28)
 

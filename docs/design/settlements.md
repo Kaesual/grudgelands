@@ -192,7 +192,7 @@ same rule are:
 | Dur Brannoc | Three-course masonry parapet with a capped merlon every fourth column; the four closed corner drums replace its corner columns. |
 | Gor Drazhak | Three-course earth bank (two of dug earth, a beaten crest) with an acacia stake and point every other column; closed timber corner towers replace its corner columns. |
 | Nhal Veyr | Two-course dungeon-stone parapet with a capped merlon every fourth column and flat iron bars filling the three columns between two merlons; the four closed corner drums replace its corner columns. |
-| Lethariel | Light wall on every dry edge: two courses of silver sandstone brick, a marble coping at the height of the pale gatehouses' marble band, and a colonnette (the pale castle pillar, base and top) on every other column; the authored mere is the boundary where it reaches the north edge. |
+| Lethariel | Light wall on every dry edge: two courses of silver sandstone brick, a marble coping at the height of the pale gatehouses' marble band, and a low merlon (one brick under a marble slab) on every other column; the authored mere is the boundary where it reaches the north edge. |
 | Kezamba | Three-course junglewood palisade on every dry edge; the authored cenote is the boundary where it reaches the north-east edge. |
 
 **Streets are roads.** Since Round 22 every capital street, lane and connector
@@ -271,10 +271,18 @@ its walk rises and falls at most half a node per node (a slab on each half
 step), so it can be walked. Where the outline crosses a river the wall is an
 arcade: the walk on an arch, piers down to the bed, the river passing below.
 However long the crossing, the walk stays out of the water. A capital's
-**civic lake is its edge** (user ruling 2026-09-28): where Lethariel's crown
-lake or Kezamba's cenote reaches the outline, no wall stands on it or within
-six nodes of its water, and each end of the wall is closed on dry ground by a
-turret in the race's style (or by a gatehouse where a gate is the end). The wall carries no
+**civic lake is its edge** (user rulings 2026-09-28, the second after a
+playtest): where the outline crosses Lethariel's crown lake or Kezamba's
+cenote, the wall is continuous on land up to the water and runs on over the
+first one to three water points of the crossing (points after the first only
+within three nodes of the shore), on a solid footing down to the bed in the
+race's masonry or stakes, and ends there in a closed head reaching a node and
+a half past its last point -- a parapet across the walk, or the stockade --
+so no beach is left to walk round its end; beyond that the lake is open. A gatehouse beside the water is followed by the same short run into
+it. A stretch of shore between two crossings carries no wall when it is short
+(under 12 points, about 24 nodes) or when the land outside it is closed off by
+the lake; any other dry stretch is walled. No turret stands within six points
+of the open water. The wall carries no
 NPCs of its own; a capital's garrison is the four gatehouses of its civic
 core.
 
@@ -308,13 +316,14 @@ capital, Lethariel, which was open until Round 23 (a planted belt with a
 threshold at each gate point). Since the Round 23 ruling of 2026-09-28 its
 edge is the **stone curtain in the elves' own light style**: pale silver
 sandstone brick over a silver sandstone core, a green serpentine string
-course, a marble coping on every parapet, slender colonnettes of the pale
-castle pillar in place of merlons, a marble-tiled walk, slim turrets about
+course, a marble coping on every parapet, low merlons of one brick under a
+marble slab (the playtest's ruling: the first version's pillar colonnettes
+stood too tall), a marble-tiled walk, slim turrets about
 every 48 nodes each carrying an emberglass lamp, and gatehouses with a marble
 lintel over the passage. It stands on the footprint the belt was planned with
 (wall half 2, gate boxes 3 by 5), so the city inside is laid out exactly as
-before, and where the crown lake reaches the outline it ends on both shores,
-closed by a gatehouse or a closed end turret.
+before, and where the crown lake crosses the outline the wall runs a few
+nodes into the water on both sides and ends there in a closed head.
 
 Lethariel also shows what happens when the map does not give a capital four
 usable quarters. Its crown lake reaches into the civic core itself, so the

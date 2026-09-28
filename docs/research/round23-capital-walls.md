@@ -7,6 +7,10 @@ towns, villages and POIs are untouched. Design result:
 capitals, the lake capital, the palisade), [world_zones.md](../design/world_zones.md)
 §12 and [world.md](../design/world.md).
 
+The [playtest fix](#playtest-fix-continuous-walls-at-the-civic-lakes-low-elf-crown)
+at the end supersedes the lake termination of the follow-up and Lethariel's
+colonnettes described in the earlier sections.
+
 ## What changed
 
 | Capital | Change |
@@ -15,7 +19,7 @@ capitals, the lake capital, the palisade), [world_zones.md](../design/world_zone
 | Dur Brannoc | Precinct parapet three courses instead of two; the capped merlon every fourth column moves up one (y 4 stone, y 5 cap). |
 | Gor Drazhak | Precinct bank three courses (two of dug earth, the beaten crest at y 3) with the stake and point every other column at y 4–5. |
 | Nhal Veyr | Bar course closed (below). Height unchanged. |
-| Lethariel | Outer edge: the stone curtain model in a light elf style (below), with gatehouses and turrets. Core: the silverwood hedge becomes a one-node light wall — silver sandstone brick y 1–2, marble coping y 3 (the height of the pale gatehouses' marble band), a colonnette (pale castle pillar, base y 4 and top y 5) on every other column; the mere still replaces the boundary where it reaches the ring. |
+| Lethariel | Outer edge: the stone curtain model in a light elf style (below), with gatehouses and turrets. Core: the silverwood hedge becomes a one-node light wall — silver sandstone brick y 1–2, marble coping y 3 (the height of the pale gatehouses' marble band), a colonnette (pale castle pillar, base y 4 and top y 5) on every other column (since the playtest fix a brick at y 4 under a marble slab at y 5); the mere still replaces the boundary where it reaches the ring. |
 | Kezamba | Outer edge: the orc palisade model in the troll core palisade's materials (below), with the palisade's own gate passages. Core unchanged (byte-identical blueprint). |
 
 All six core blueprints keep their bounds (y −2..31); outside the ring
@@ -28,7 +32,8 @@ columns not one cell changed (cell diff before/after, all six cores).
   `default:silver_sandstone`, walk `darkage_marble_tile` with its slab, a green
   `darkage_serpentine` string course three under the walk, a marble coping on
   every parapet and tower top, colonnettes (`castle_pillar_silver_sandstone_brick`
-  `_bottom` + `_top`) in place of every merlon, a marble lintel over each gate
+  `_bottom` + `_top`) in place of every merlon (since the playtest fix: one
+  brick under a marble slab), a marble lintel over each gate
   passage and a serpentine band round the gate towers at lintel height, marble
   slab caps on the passage parapet, an `emberglass_lamp` on the deck of every
   turret. Slim footprint: wall 5 wide, walk 6 above ground (7 elsewhere),
@@ -208,3 +213,174 @@ the race's style. Branch `wp13-capital-walls-shore` off main `f5a545bd`.
 - Remaining wet points on these two edges (small non-lake waters: Lethariel
   7 + 8, Kezamba 4 points) keep the ordinary arcade or deck with the default
   clearance, like every other capital.
+
+## Playtest fix: continuous walls at the civic lakes, low elf crown
+
+2026-09-28, after the user's playtest on a fresh world (current main). Branch
+`wp13-capital-walls-lake-fix` off main `f712cd5d`. This section supersedes
+the lake termination of the follow-up above and the Lethariel colonnettes.
+
+### Findings and cause
+
+1. **A lone wall piece with a turret at Lethariel**, on dry city ground near
+   the lake, between the east gatehouse and the lake. Cause: the follow-up's
+   `SHORE_KEEP` margin. East of the core the outline does not cross the lake
+   once: it crosses it, runs about 50 nodes along a land tongue 1 to 7 nodes
+   from the water (seed 4242: points 367–391, shore distance 0.9–6.1, the lake
+   2–14 nodes outside it), and crosses again. Every point within 6 nodes of
+   the water lost its wall, and `SHORE_MIN_RUN` stripped dry runs under 12
+   points. Where the tongue lies a little further from the water for 12
+   points or more, as on the playtest world, that run kept its wall and got a
+   shore-end turret at both ends: a lone piece on the tongue. On seed 4242
+   two points reach 6.1 and were swallowed by the 12-point rule. Synthetic
+   outline variants (below) show the same fragment in 57 of 119 Lethariel
+   outlines and 22 of 119 Kezamba ones.
+   **Kezamba had a worse form of the same margin on seed 4242.** North of the
+   cenote the outline runs about 100 nodes along the shore (points 425–474,
+   distance 2–10), with the cenote inside and open land outside. The margin
+   and the 12-point rule stripped all of it, so the city was open over land
+   there. The only turret was an end tower on the south-gate side.
+2. **The beach between the water and a wall end or gatehouse** was the same
+   6-node margin.
+3. **The elf crown**: the pillar colonnettes (two nodes over the coping) read
+   too tall, on the towers most of all.
+
+### Fix
+
+- **Planner** (`capital_planner.lua` `M.shore_flags`, pure, unit-testable):
+  only points on the water are lake. The wall runs on land up to the water,
+  over the first 1 to `SHORE_INTO` 3 water points of each crossing, and ends
+  there. Past the first point it runs on only while the points lie within
+  `SHORE_DEEP` 3 nodes of the shore. Beside a gate the depth rule applies
+  from the first point, so a gatehouse standing in the water (D70) is its
+  own end. A dry stretch **between two crossings** carries no wall in two
+  cases: it is shorter than `SHORE_MIN_RUN` 12 points, or the land outside
+  it is closed by the lake. The second is a 4-connected fill over the dry
+  columns outside the outline, started within 3 of the stretch, that never
+  leaves the stretch's box grown by `SHORE_REACH` 32. Such land can be
+  reached only over the water or through the city. Every other dry point is
+  walled, including every stretch between a crossing and a gate. Walled
+  points within `SHORE_KEEP` 6 of the water, the water points included, get
+  the new payload flag `f` (footing). No turret stands within 6 points of the
+  water, and the end turrets are gone.
+- **Writer** (`city_edge.lua`): an `f` segment is solid down to the bed,
+  never an arcade. Stone uses face and core masonry; the palisade uses stakes
+  under the whole rampart where the column is in water. The wall ends in a
+  **head** of 1.5 nodes on either side of its last point, reaching 1.5 nodes
+  on toward the lake. Stone: a parapet across the walk, with coping and a
+  merlon on every other column. Palisade: the stockade with its turned
+  points. Lethariel merlons (curtain, turrets, gate towers) are now the plain
+  merlon: one silver sandstone brick under a `darkage_marble_slab`, 1.5
+  nodes over the coping instead of the two-node colonnette.
+- **Core** (`lethariel.lua`): the light wall's merlon is the same brick at
+  y 4 under a marble slab at y 5 (height and bounds unchanged).
+- The overlay y range is unchanged. The footings reach the bed of shallow
+  water only, far inside the existing 24 below the lowest walk, and the probe
+  now also checks the bottom.
+
+### Style choices made by feel
+
+- The **head** is a closed parapet in the water, not a tower. An end turret
+  (radius 3) centred on the last point would have stood 5–6 nodes into the
+  lake. Beside a gatehouse on the shore, the gatehouse and a short head read
+  as one piece.
+- **Elf crown**: the user's first example, a one-node brick merlon capped
+  with a marble slab, above the continuous marble coping. It keeps the
+  marble-on-every-top idea at 1.5 nodes. The gate passage parapet keeps its
+  marble slab caps on the coping.
+- `SHORE_DEEP` 3 over 2: the wall's centre line ends about 3.2–3.6 nodes
+  into the water on seed 4242, so a swimmer must leave the shallows to pass.
+
+### Evidence
+
+- **Probe** (`tools/wp13/capital_walls_probe.lua`, LuaJIT, extended): part 1
+  checks the Lethariel core crown. Part 2 checks, on every lake end: 1–3
+  walled water points (none only beside a gate), each with a footing, a
+  closed head, and solid masonry or stakes from the ground to the walk in the
+  middle of every walled water segment. It also checks: every dry lake point
+  lies between two crossings, never between a crossing and a gate (no dry
+  margin); no isolated wall run between two lake stretches unless it has 12+
+  dry points and its outside land escapes (an independent even-odd fill,
+  reach 48); no edge cell deeper than `SHORE_DEEP` + half + 2; no turret near
+  the water; every cell inside the overlay's y range; no pillar in
+  Lethariel's crown; and every marble slab either capping one brick over the
+  coping or on the passage parapet's coping. New `--baseline-layouts` and
+  `--baseline-edge` options compare against the previous version. Results:
+  - Final seed-4242 layouts: **PASS**. Lethariel: 170 lake points (was 201),
+    one crossing (the tongue merged into it), 4 walled water points (east 1,
+    south 3), deepest edge cell 4.0 nodes into the water, 699 marble merlon
+    caps, 0 pillars, 18 lamps for 18 turrets. Kezamba: 81 lake points (was
+    141), 5 walled water points (east 2, north 3), deepest cell 5.6 (an
+    outer stake of an oblique crossing), 0 isolated runs.
+  - Baseline (engine layouts of main `28a9a2a3` = `f712cd5d` for mapgen and
+    main's `city_edge.lua`): Highcourt, Dur Brannoc, Gor Drazhak and Nhal
+    Veyr have byte-identical layout texts and identical edge cells and names
+    (100 175 / 105 084 / 50 571 / 100 972 cells). For Lethariel and Kezamba
+    only the `w` flags and `t` differ: every other line is byte-identical,
+    and so are the wall points, walks, gate and water flags. The water and
+    road sections of the whole layouts file are byte-identical.
+  - The same probe **fails** on main's layouts (dry lake points between a
+    crossing and a gate, and Kezamba's end tower within 6 points of the
+    lake). It also fails on a mutant with the tongue's wall restored (an
+    isolated 25-point run, lake ends not walled into the water).
+- **Synthetic outlines** (scratch sweep): 119 variants per lake capital, the
+  outline scaled 0.92–1.08 about the anchor and turned −6..6°, with gate
+  points kept by index. The old rule leaves an isolated fragment in 57
+  (Lethariel) and 22 (Kezamba). Under the new rule: every lake end keeps 1–3
+  water points except where a variant pushed a gate into the water; the
+  deepest walled water point is 3.0/3.3; the remaining walled runs between
+  two lake stretches (Lethariel 1, Kezamba 21) are all 12+ dry points with
+  open land outside, i.e. real land crossings. `shore_flags` costs about
+  1 ms per capital.
+- **Engine** (`tools/luanti_headless.sh`, seed 4242, `LC_ALL=C`, `chrt --idle
+  0 ionice -c3`, a disposable dump probe, normal shutdown by
+  `core.request_shutdown` after the dumps): two runs of about 42 s each.
+  Both PASS (listening, no ERROR), layouts built in 19.5 s, capital planning
+  6.1–6.2 s for all six as before. Run 1 layouts equal the portable
+  re-derivation of the flags byte for byte in the `w` lines. Run 2 (final
+  writer) layouts equal run 1's but for the source key and timings. Engine
+  dumps: the deepest edge column in the water is 3.7 / 4.0 nodes (Lethariel
+  east / south end) and 4.5 / 5.6 (Kezamba east / north end); no edge
+  material on the Lethariel tongue. `pgrep -f '^luanti.bin'` is empty
+  afterwards. No PUC (mapgen exemption).
+- `tools/check_lua.sh` passes on every changed Lua file (parser, sweeps 1–6,
+  no SETGLOBAL).
+
+Images (engine dumps unless noted, `render_blueprint.py`; it draws
+`darkage_marble_tile_slab` as flat colour):
+`lethariel-shore-east-gate` (the east gatehouse, the wall on to the water
+and its head), `lethariel-shore-south-gate` (the wall round the inner bay
+and its head in the lake), `kezamba-shore-gate` (the east gatehouse with the
+palisade run into the cenote), `kezamba-shore-north-end` (the new north-shore
+palisade ending in the cenote), `lethariel-edge-gate` and
+`lethariel-edge-turret` (the low crown), `lethariel-core-wall` (the core's
+low crown, blueprint render). `kezamba-shore-end-tower` is removed.
+
+### Runtime test plan (fresh world)
+
+1. Lethariel, from the core looking over the crown lake toward the east
+   gatehouse (the playtest viewpoint, about 1800, 100, -1500): no wall piece
+   on the shore between the east gatehouse and the lake. From the east
+   gatehouse the wall runs to the water and 2–3 nodes into it, closed by a
+   parapet. Try to walk round its end along the beach: you have to swim.
+2. The same at the other end (by the south gatehouse): the wall reaches into
+   the lake and is closed at its end; the lake is open beyond.
+3. Kezamba: at the east gatehouse the palisade runs from the gate tower into
+   the cenote with no beach gap. On the north shore the palisade is closed
+   along the whole shore and ends in the cenote, with no gap to the land
+   outside.
+4. Lethariel crown: curtain, turrets and gate towers carry low brick merlons
+   with marble slab caps, with no tall pillars. The core's light wall has the
+   same crown. Turret lamps still stand at night.
+5. The other four capitals look exactly as before.
+
+### Open risks (Low)
+
+- On other seeds a wall run can stand between two lake crossings where it
+  closes real open land (12+ dry points whose outside reaches beyond the
+  lake); it then ends in a head at both ends. That is the rule's intent, but
+  it is a separate piece in the lake.
+- A pocket of land outside the outline that the lake closes but that is
+  more than 32 nodes deep reads as open and is walled.
+- Heads and footings are checked on synthetic ground and four engine dumps;
+  the renders cannot show the slab caps' real shape.
