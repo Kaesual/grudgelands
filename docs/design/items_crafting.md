@@ -2092,8 +2092,8 @@ consumer are active:
 
 - **Bow family on the weapon curve**: bow damage = the 1H curve
   (8/13/19/24 at ilvl 12/27/42/57) at 25 m range, full draw 2.5 s (mcl
-  hold-pattern); Loose multiplies it by `0.2 + 2.8 f²` of the draw fraction
-  (×3 at full draw, `combat_stats.md`). One bow per material tier,
+  hold-pattern); Loose multiplies it by `0.2 + 2.05 f²` of the draw fraction
+  (×2.25 at full draw, `combat_stats.md`). One bow per material tier,
   material-named like everything else (§3.0.3). Its ordinary affix pool is
   Dexterity, Crit, draw speed, HP and Mana; draw speed uses the weapon-family
   attack-speed channel to shorten draw time.

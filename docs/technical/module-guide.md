@@ -201,7 +201,10 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   separate overlay (`grug_abilities/crosshair.lua`, `classes.md` §2b "Crosshair
   feedback"): it reads `grug_abilities.aimed_target` (the side-effect-free aim
   authority the hostile/friendly casts wrap) and `input.aims_at_interactive`,
-  and owns the bow draw ring that `scout.lua`'s `reset_draw_stack` hides. The
+  and owns the progress ring shared by the bow draw (`scout.lua`, hidden in
+  `reset_draw_stack`) and eating (`input.lua`, hidden in `end_food_hold`):
+  `set_ring(player, fraction, owner)` with owner `"bow"` or `"food"`; the
+  first owner to show it keeps it until it hides it. The
   game's `crosshair.png`/`object_crosshair.png` are byte-identical on purpose;
   regenerate them with `tools/pt_fixes/lane_b/gen_crosshair_textures.py`.
   It also ships permanent
