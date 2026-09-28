@@ -10,9 +10,17 @@ local PROFESSION_STATIONS = {
 	carving_bench = true,
 	jewellers_bench = true,
 }
+-- Ingredient navigation: invisible overlay buttons on clickable recipe cells
+-- and a bounded Back history per open book session.
+local CELL_FIELD = "grug_jobs_cell_"
+local CELL_OVERLAY = "blank.png"
+local CELL_TOOLTIP = "Click to view recipe"
+local HISTORY_LIMIT = 20
 local sessions = {}
 local general_cache
 local record_cache = setmetatable({}, {__mode = "k"})
+-- book id -> {[output item] = {record, ...}} over that unfiltered book.
+local output_index_cache = {}
 
 local function esc(value)
 	return core.formspec_escape(tostring(value or ""))
@@ -283,6 +291,89 @@ local function listed_records(player, records, search)
 	return result
 end
 
+-- Output lookup per unfiltered book, built once like the Basics catalog and
+-- the per-recipe record cache (cleared by grug_jobs._reset_book_cache).
+-- Enchant operations are keyed by id in the book list, not by their preview
+-- output, so they never count as a recipe for an ingredient.
+local function book_output_index(book)
+	local cached = output_index_cache[book]
+	if cached then return cached end
+	local source = book == "general" and engine_general_recipes() or
+		normalized_profession_records(book, nil)
+	cached = {}
+	for index = 1, #source do
+		local recipe = source[index]
+		local name = recipe.output_name
+		if recipe.operation ~= "enchant" and type(name) == "string" and name ~= "" then
+			local list = cached[name]
+			if not list then list = {} cached[name] = list end
+			list[#list + 1] = recipe
+		end
+	end
+	output_index_cache[book] = cached
+	return cached
+end
+
+-- True when `book` lists a recipe for `item` for this player, exactly as
+-- listed_records decides with an empty search; `station` filters like
+-- book_records does.
+local function book_knows(player, book, item, station)
+	local list = book_output_index(book)[item]
+	if not list then return false end
+	for index = 1, #list do
+		local recipe = list[index]
+		if (station == nil or recipe.station == station) and
+				recipe_unlocked(player, recipe) and
+				recipe_discovered(player, recipe) then
+			return true
+		end
+	end
+	return false
+end
+
+-- Every book the player can open from the crafting page, in slot order:
+-- Basics, the primary professions, then Cooking.
+local function openable_books(player)
+	local books = {"general"}
+	for slot = 1, grug_jobs.PRIMARY_SLOTS do
+		local profession = grug_jobs.primary_at(player, slot)
+		if profession then books[#books + 1] = profession end
+	end
+	if grug_jobs.has(player, "cooking") then books[#books + 1] = "cooking" end
+	return books
+end
+
+-- Whether the current (book, station) view lists `item`. The station view is
+-- Basics plus every learned profession, filtered to that station.
+local function view_lists(player, book, station, item)
+	if book ~= "station" then return book_knows(player, book, item, station) end
+	if book_knows(player, "general", item, station) then return true end
+	for profession in pairs(grug_jobs.PROFESSIONS) do
+		if grug_jobs.has(player, profession) and
+				book_knows(player, profession, item, station) then
+			return true
+		end
+	end
+	return false
+end
+
+-- Where clicking an ingredient cell showing `item` leads, or nil when no
+-- openable book lists a recipe for it. The current view is kept when it
+-- already lists the item. Otherwise the first openable book listing it is
+-- opened unfiltered: a station-filtered view that lacks the item always falls
+-- back to that book's full view instead of guessing another station.
+local function ingredient_target(player, book, station, item)
+	if type(item) ~= "string" or item == "" or item == "unknown" then return nil end
+	local books = openable_books(player)
+	local owner
+	for index = 1, #books do
+		if book_knows(player, books[index], item, nil) then owner = books[index] break end
+	end
+	if not owner then return nil end
+	if view_lists(player, book, station, item) then return book, station end
+	return owner, nil
+end
+
 local function output_groups(records)
 	local order, groups = {}, {}
 	for index = 1, #records do
@@ -400,7 +491,10 @@ function grug_jobs._book_recipe_background_cells(recipe)
 	return grug_jobs._book_recipe_cells(recipe)
 end
 
-local function append_recipe(fs, recipe, alternative, alternative_count)
+-- `clickable(item)` decides whether an ingredient cell links to a recipe;
+-- returns {[cell index] = item} for the linked cells.
+local function append_recipe(fs, recipe, alternative, alternative_count, clickable)
+	local links = {}
 	local station_icon, station_item = grug_jobs.book_station_icon(recipe.station)
 	if recipe.station ~= "grid" then
 		local element = station_item and "item_image" or "image"
@@ -423,6 +517,18 @@ local function append_recipe(fs, recipe, alternative, alternative_count)
 		local item = display_item(cell.token)
 		fs[#fs + 1] = ("item_image[%.2f,%.2f;0.82,0.82;%s]"):format(x, y,
 			esc(item))
+		local linked = clickable and clickable(item)
+		if linked then
+			-- Invisible click target over the unchanged cell: no bevel pane and a
+			-- transparent image in every state, so rest and hover look as before.
+			local field = CELL_FIELD .. index
+			links[index] = item
+			fs[#fs + 1] = ("style[%s;border=false;bgimg=%s;bgimg_hovered=%s;" ..
+				"bgimg_pressed=%s]"):format(field, CELL_OVERLAY, CELL_OVERLAY,
+				CELL_OVERLAY)
+			fs[#fs + 1] = ("image_button[%.2f,%.2f;0.82,0.82;%s;%s;;false;false]"):format(
+				x, y, CELL_OVERLAY, field)
+		end
 			local label = item_label(cell.token)
 			if cell.token:match("^group:") then
 				local names, seen = {}, {}
@@ -446,6 +552,7 @@ local function append_recipe(fs, recipe, alternative, alternative_count)
 			if rawget(_G, "grug_inventory") and grug_inventory.wrap_text then
 				label = grug_inventory.wrap_text(label, 58)
 			end
+			if linked then label = label .. "\n" .. CELL_TOOLTIP end
 			fs[#fs + 1] = ("tooltip[%.2f,%.2f;0.82,0.82;%s]"):format(x, y,
 				esc(label))
 	end
@@ -469,6 +576,7 @@ local function append_recipe(fs, recipe, alternative, alternative_count)
 	fs[#fs + 1] = ("label[6.75,7.25;T%d · %s]"):format(recipe.tier,
 		esc(recipe.profession == "general" and "Universal" or
 			grug_jobs.PROFESSIONS[recipe.profession].name))
+	return links
 end
 
 local function make_formspec(player, book, station, state)
@@ -516,10 +624,18 @@ local function make_formspec(player, book, station, state)
 		esc(table.concat(count_text, "   ")))
 	fs[#fs + 1] = "label[0.30,4.35;Acquire the main material to reveal more recipes.]"
 	fs[#fs + 1] = "box[0.25,4.65;9.5,0.04;#8c6b3ccc]"
+	state.cell_items = {}
 	if choices then
-		append_recipe(fs, choices[state.alternative], state.alternative, #choices)
+		state.cell_items = append_recipe(fs, choices[state.alternative],
+			state.alternative, #choices, function(item)
+				return ingredient_target(player, book, station, item) ~= nil
+			end)
 	else
 		fs[#fs + 1] = "label[3.05,6.65;No discovered recipes match.]"
+	end
+	-- Back appears only after an ingredient jump, in the free space left of Close.
+	if state.history and #state.history > 0 then
+		fs[#fs + 1] = "button[6.95,9.6;1.2,0.65;grug_jobs_back;Back]"
 	end
 	fs[#fs + 1] = "button[8.25,9.6;1.45,0.65;grug_jobs_close;Close]"
 	return table.concat(fs), state.page, pages, outputs
@@ -543,6 +659,44 @@ function grug_jobs.open_book(player, book, station, page)
 	end
 	local formspec = make_formspec(player, book, station, state)
 	core.show_formspec(name, BOOK_FORM, formspec)
+end
+
+local function push_history(state)
+	local history = state.history or {}
+	history[#history + 1] = {book = state.book, station = state.station,
+		page = state.page, search = state.search, output = state.output,
+		alternative = state.alternative}
+	while #history > HISTORY_LIMIT do table.remove(history, 1) end
+	state.history = history
+end
+
+-- Jump to the recipe for an ingredient: switch book when needed, clear the
+-- search, select the ingredient's first alternative and open its page.
+local function show_ingredient(player, state, item)
+	local book, station = ingredient_target(player, state.book, state.station, item)
+	if not book then return false end
+	push_history(state)
+	state.book, state.station = book, station
+	state.search, state.output, state.alternative, state.page = "", item, 1, 1
+	local outputs = output_groups(listed_records(player,
+		grug_jobs.book_records(player, book, station), ""))
+	for index = 1, #outputs do
+		if outputs[index] == item then
+			state.page = math.floor((index - 1) / ITEMS_PER_PAGE) + 1
+			break
+		end
+	end
+	return true
+end
+
+local function go_back(state)
+	local history = state.history
+	local previous = history and table.remove(history)
+	if not previous then return false end
+	state.book, state.station = previous.book, previous.station
+	state.page, state.search = previous.page, previous.search
+	state.output, state.alternative = previous.output, previous.alternative
+	return true
 end
 
 function grug_jobs.refresh_open_book(player)
@@ -650,6 +804,13 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		state.alternative = state.alternative + 1
 		redraw = true
 	end
+	for index, item in pairs(state.cell_items or {}) do
+		if fields[CELL_FIELD .. index] then
+			if show_ingredient(player, state, item) then redraw = true end
+			break
+		end
+	end
+	if fields.grug_jobs_back and go_back(state) then redraw = true end
 	if redraw then grug_jobs.open_book(player, state.book, state.station) end
 	if fields.quit then sessions[name] = nil end
 	return true
@@ -670,4 +831,5 @@ grug_jobs.BOOK_PROFESSION_STATIONS = PROFESSION_STATIONS
 grug_jobs._reset_book_cache = function()
 	general_cache = nil
 	record_cache = setmetatable({}, {__mode = "k"})
+	output_index_cache = {}
 end
