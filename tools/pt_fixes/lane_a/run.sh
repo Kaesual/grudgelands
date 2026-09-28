@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # Lane A playtest-fix probe: food RMB click versus hold (ground, door, chest,
 # NPC, nothing, combat), engine place repeats, eating feedback and cleanup,
-# the bow draw range/stance end paths and the movement stance factor.
+# the eating progress ring (shown at hold confirmation, removed on every end
+# path, never on a combat refusal, handed over to the bow draw), the bow draw
+# range/stance/ring end paths and the movement stance factor.
 #
 # Boots one isolated headless server through tools/luanti_headless.sh with the
 # disposable probe mod staged (never shipped), copies the server log to

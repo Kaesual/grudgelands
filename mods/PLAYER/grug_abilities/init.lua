@@ -2566,7 +2566,8 @@ grug_abilities.delay_strike = dofile(core.get_modpath(core.get_current_modname()
 -- Pure Blink targeting (map access injectable for the headless probe).
 grug_abilities.blink_destination = dofile(core.get_modpath(
 	core.get_current_modname()) .. "/blink.lua")
--- Crosshair state overlay and bow draw ring; scout.lua drives the ring.
+-- Crosshair state overlay and the progress ring; scout.lua (bow draw) and
+-- input.lua (eating) drive the ring.
 grug_abilities.crosshair = dofile(core.get_modpath(core.get_current_modname()) ..
 	"/crosshair.lua")({
 	selected = function(player) return item_defs[player:get_wielded_item():get_name()] end,

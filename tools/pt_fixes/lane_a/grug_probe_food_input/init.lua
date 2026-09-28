@@ -89,13 +89,20 @@ local function install(ref)
 	override("hud_add", function(f, def)
 		f.hud_next = f.hud_next + 1
 		f.huds[f.hud_next] = table.copy(def)
-		if def.z_index == -200 then f.eat_huds = f.eat_huds + 1 end
+		if def.z_index == -200 then
+			f.eat_huds = f.eat_huds + 1
+			-- Ring packets sent before the eating visual started.
+			f.ring_before_eat = f.ring_before_eat or #f.ring_log
+		end
 		return f.hud_next
 	end)
 	override("hud_change", function(f, id, stat, value)
 		local hud = f.huds[id]
 		if not hud then return false end
 		hud[stat] = value
+		if id == f.ring_id and stat == "text" then
+			f.ring_log[#f.ring_log + 1] = value
+		end
 		if hud.z_index == -200 and stat == "offset" then
 			f.jitter[#f.jitter + 1] = value.y
 		end
@@ -133,7 +140,7 @@ local function make_player(label, class, pos)
 		name = name, ref = ref, controls = {}, look = vector.new(0, -0.6, 0.8),
 		yaw = 0, pitch = 0.6, holder = ItemStack("default:stick"), inv = inv,
 		index = 1, huds = {}, hud_next = 0, eat_huds = 0, jitter = {},
-		flags = {wielditem = true}, physics = {}, natives = 0,
+		flags = {wielditem = true}, physics = {}, natives = 0, ring_log = {},
 	}
 	fake.look = vector.normalize(fake.look)
 	fakes[ref] = fake
@@ -148,6 +155,9 @@ local function make_player(label, class, pos)
 		local origin = core.callback_origins[fn]
 		if origin and origin.mod == "grug_projectiles" then fn(ref, nil) end
 	end
+	-- The crosshair HUD (state overlay and the shared progress ring).
+	grug_abilities.crosshair.join(ref)
+	fake.ring_id = grug_abilities.crosshair.debug_view(ref).ring_id
 	active[name] = fake
 	return ref, fake
 end
@@ -341,6 +351,29 @@ local function eating_now(label, fake, eating)
 	end
 end
 
+-- The shared progress ring (grug_abilities/crosshair.lua): eating shows the
+-- bow ring's frames tinted green, owner "food", and never the full frame.
+local FOOD_TINT = "^[multiply:#7de36a"
+local function ring_view(fake)
+	local v = grug_abilities.crosshair.debug_view(fake.ref)
+	return v and v.ring, v and v.ring_owner
+end
+local function food_frame(text)
+	local n = text and text:match("^grug_abilities_draw_ring_(%d%d)%.png(.*)$")
+	local tint = text and text:match("^grug_abilities_draw_ring_%d%d%.png(.*)$")
+	return tint == FOOD_TINT and tonumber(n) or nil
+end
+local function food_ring_on(label, fake)
+	local text, owner = ring_view(fake)
+	check(food_frame(text) ~= nil and owner == "food",
+		("%s: green eating ring shown, owner food (%s)"):format(label, tostring(text)))
+end
+local function ring_off(label, fake)
+	local text, owner = ring_view(fake)
+	check(text == "" and owner == nil,
+		("%s: ring removed and released (%s)"):format(label, tostring(text)))
+end
+
 --
 -- Scenarios: {label, steps = {{t, fn}, ...}} run one after another.
 --
@@ -382,10 +415,33 @@ scenario("hold_ground", function(origin)
 	local burst_start
 	return {
 		{0, function() burst_start = #bursts; press(fake, pointed) end},
+		{0.1, function()
+			local text = ring_view(fake)
+			check(text == "" and #fake.ring_log == 0 and fake.eat_huds == 0,
+				"hold_ground: no ring before the hold is confirmed")
+		end},
 		{0.7, function()
 			eating_now("hold_ground", fake, true)
+			food_ring_on("hold_ground", fake)
 			check(count(fake) == 5 and apples(origin) == 0,
 				"hold_ground: nothing eaten or placed before 1.5 s")
+		end},
+		{1.75, function()
+			check(count(fake) == 4, "hold_ground: portion eaten at 1.5 s while held")
+			ring_off("hold_ground (eat complete, still held)", fake)
+			local log_ = fake.ring_log
+			local ok, last = fake.ring_before_eat == 0 and #log_ >= 3, -1
+			for i = 1, #log_ - 1 do
+				local n = food_frame(log_[i])
+				if not n or n <= last or n > 15 then ok = false else last = n end
+			end
+			local first = food_frame(log_[1])
+			-- Confirmed at >= 0.2 s of held time: >= 0.2 / 1.5 of the ring.
+			check(ok and log_[#log_] == "" and first and first >= 2 and first <= 4 and last >= 13,
+				("hold_ground: ring starts at the hold confirmation (frame %s), " ..
+				"one packet per frame change up to %d, removed at eat end (%s)"):format(
+					tostring(first), last, table.concat(log_, ","):gsub("grug_abilities_draw_ring_", "")
+						:gsub("%.png", ""):gsub("%^%[multiply:#7de36a", "g")))
 		end},
 		{1.8, function() release(fake) end},
 		{2.1, function()
@@ -510,7 +566,10 @@ scenario("hold_nothing", function(origin)
 	local _, fake = food_player("hold_nothing", origin, "grug_cooking:bread")
 	return {
 		{0, function() press(fake, {type = "nothing"}) end},
-		{0.7, function() eating_now("hold_nothing", fake, true) end},
+		{0.7, function()
+			eating_now("hold_nothing", fake, true)
+			food_ring_on("hold_nothing", fake)
+		end},
 		{1.8, function() release(fake) end},
 		{2.1, function()
 			check(count(fake) == 4, "hold_nothing: ate one portion (" .. count(fake) .. ")")
@@ -533,6 +592,8 @@ scenario("combat_hold", function(origin)
 		{2.1, function()
 			check(count(fake) == 5 and apples(origin) == 0 and fake.eat_huds == 0,
 				"combat_hold: nothing eaten, placed or shown")
+			check(#fake.ring_log == 0 and ring_view(fake) == "",
+				"combat_hold: the eating ring never appeared (" .. #fake.ring_log .. " packets)")
 			check(#notices_for(fake.name) == 1, "combat_hold: one notice only")
 		end},
 	}
@@ -743,6 +804,7 @@ local food_ends = {
 	release = function(fake) release(fake) end,
 	stun = function(fake) grug_core.set_stun(fake.ref, 0.2) end,
 	slot = function(fake) fake.index = 2 end,
+	cancel = function(fake) grug_abilities.input.cancel(fake.ref) end,
 	death = function(fake)
 		run_callbacks(core.registered_on_dieplayers, END_MODS, fake.ref)
 	end,
@@ -751,7 +813,7 @@ local food_ends = {
 		run_callbacks(core.registered_on_leaveplayers, END_MODS, fake.ref)
 	end,
 }
-for _, path in ipairs({"release", "stun", "slot", "death", "leave"}) do
+for _, path in ipairs({"release", "stun", "slot", "cancel", "death", "leave"}) do
 	scenario("food_end_" .. path, function(origin)
 		local label = "food_end_" .. path
 		local _, fake = food_player(label, origin)
@@ -763,18 +825,23 @@ for _, path in ipairs({"release", "stun", "slot", "death", "leave"}) do
 			{0, function() press(fake, pointed) end},
 			{0.5, function()
 				check(eat_hud(fake) ~= nil, label .. ": eating before the end path")
+				food_ring_on(label, fake)
 				food_ends[path](fake)
 			end},
 			{0.8, function()
 				if path == "leave" then
 					check(grug_core.get_move_stance(fake.ref, "grug_food:eating") == nil,
 						label .. ": no stance left")
+					check(grug_abilities.crosshair.debug_view(fake.ref) == nil,
+						label .. ": crosshair HUD record (and ring) released")
 				else
 					eating_now(label, fake, false)
+					ring_off(label, fake)
 				end
 			end},
 			{1.8, function() release(fake) end},
 			{2.1, function()
+				if path ~= "leave" then ring_off(label .. " (after release)", fake) end
 				check(count(fake, 1) == 5 and count(fake, 2) == 5 and apples(origin) == 0,
 					label .. ": nothing eaten or placed (" .. count(fake, 1) .. "/" ..
 					count(fake, 2) .. ", " .. apples(origin) .. " apple(s), " ..
@@ -833,6 +900,10 @@ for _, path in ipairs({"release", "cancel", "stun", "slot", "death", "leave"}) d
 			{0.35, function()
 				check(grug_abilities.scout_draw_active(ref), label .. ": drawing")
 				check(loose_range(fake) == "0", label .. ": loose stack meta range \"0\" while drawn")
+				local text, owner = ring_view(fake)
+				check(owner == "bow" and text and
+					text:find("^grug_abilities_draw_ring_%d%d%.png$") ~= nil,
+					label .. ": untinted bow ring, owner bow (" .. tostring(text) .. ")")
 				check(grug_core.get_move_stance(ref, "scout_draw") == 0.5 and
 					math.abs(speed(fake) - 0.5) < 1e-9, label .. ": draw stance x0.5 (speed " ..
 					speed(fake) .. ")")
@@ -840,6 +911,7 @@ for _, path in ipairs({"release", "cancel", "stun", "slot", "death", "leave"}) d
 			end},
 			{0.8, function()
 				check(not grug_abilities.scout_draw_active(ref), label .. ": draw ended")
+				if path ~= "leave" then ring_off(label, fake) end
 				check(loose_range(fake) == "", label .. ": range override removed (" ..
 					tostring(loose_range(fake)) .. ")")
 				check(grug_core.get_move_stance(ref, "scout_draw") == nil and
@@ -856,6 +928,38 @@ for _, path in ipairs({"release", "cancel", "stun", "slot", "death", "leave"}) d
 		}
 	end)
 end
+
+-- Eating, then drawing: the ring passes from food to bow with no leftover
+-- owner, and the bow's frames are untinted.
+scenario("food_then_bow", function(origin)
+	local ref, fake = make_player("food_then_bow", "scout", origin)
+	fake.weapon = bow_name
+	fake.look, fake.pitch = vector.new(0, 0, 1), 0
+	fake.inv:set_stack("main", 1, ItemStack("grug_cooking:bread 5"))
+	fake.inv:set_stack("main", 2, grug_abilities.stack_for(ref, "loose"))
+	fake.inv:set_stack("main", 3, ItemStack("grug_gear:arrow 20"))
+	return {
+		{0, function() press(fake, {type = "nothing"}) end},
+		{0.5, function() food_ring_on("food_then_bow", fake); release(fake) end},
+		{0.6, function()
+			ring_off("food_then_bow (released)", fake)
+			fake.index = 2
+		end},
+		{0.7, function() press(fake, nil) end},
+		{1.1, function()
+			local text, owner = ring_view(fake)
+			check(grug_abilities.scout_draw_active(ref) and owner == "bow" and text and
+				text:find("^grug_abilities_draw_ring_%d%d%.png$") ~= nil,
+				"food_then_bow: bow ring owns the element, untinted (" .. tostring(text) .. ")")
+			grug_abilities.input.cancel(ref)
+		end},
+		{1.3, function()
+			ring_off("food_then_bow (draw cancelled)", fake)
+			release(fake)
+		end},
+		{1.4, function() active[fake.name] = nil end},
+	}
+end)
 
 scenario("stance_aggregator", function(origin)
 	local ref, fake = make_player("stance", "warrior", origin)
