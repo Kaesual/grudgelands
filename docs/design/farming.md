@@ -82,11 +82,19 @@ read-only authority `grug_mapgen` `wp40/vegetation_density.lua`
   ([biomes_mobs.md](biomes_mobs.md) §2.1), thinned per support exactly like the
   planner (gravel at a quarter); the zone's biome palette picks the species by
   its rates. Bone piles are not vegetation and do not renew.
-- *Woody plants* (trees and bushes) count by their trunks or stems, divided by
-  the marker columns one grown plant of that template has; planted saplings
-  count as plants.
-- Every cover and woody rate passes through `habitat_registry.vegetation_factor`,
-  the one place for the later tree line and forest-density noise.
+- *Trees* and *shrubs* (bushes, the blueberry bush included) are two separate
+  classes, each counted against its own density by its trunks or stems,
+  divided by the marker columns one grown plant of that template has; planted
+  saplings count as plants.
+- Every decoration species' rate is multiplied by its altitude class factor
+  at the spot, from the same vegetation rule the generator uses
+  (`habitat_registry.lua` `vegetation_rule`, [world_zones.md](world_zones.md)
+  §7.6): trees thin to zero at the tree line and follow the forest field
+  (groves, clearings, ×1.5 in deep forest and deep jungle), shrubs rise to
+  three times their density at the tree line and end 40 nodes above it
+  (band-only bushes appear only there), ground cover ends at the snow line,
+  and a spot whose column carries snow (cap or dust band) grows no
+  decoration.
 
 **Where.** Only near connected players, in loaded terrain, caves included:
 spots lie 20–48 nodes horizontally from the sampling player and at least 20
@@ -122,13 +130,13 @@ through the vendored sapling timers. No sapling is placed within 10 nodes of
 any non-natural node, farm soil or unloaded terrain. Natural nodes are air,
 liquids, generated ground and ores (`grug_natural`), the tree, leaf, sapling,
 flora and fruit families and every node the generator places as vegetation.
-The snowy crags pine (gravel), the fallen apple log, the badlands cactus
+The snowy crags pine and the crags pine bush (gravel), the fallen apple log, the badlands cactus
 (mesa clay) and swamp papyrus have no renewal path.
 
 **Rates** (first version by feel, tuned in playtest; constants in
 `grug_farming/renewal.lua`): each player is serviced once per 5 seconds with
 4 sampled spots; class chance at a full deficit 0.05 for resource plants, 0.5
-for ground cover and 0.1 for saplings. Area queries are capped at 150 000 node
+for ground cover and 0.1 for tree and shrub saplings. Area queries are capped at 150 000 node
 visits per player and step, independent of world size.
 
 **Apples and blueberries** are not renewal plants: a picked natural apple

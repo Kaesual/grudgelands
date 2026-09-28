@@ -209,7 +209,9 @@ depths into target parameters, including its target-confirmed canopy-litter
 correction for both deep-jungle logical IDs. Shore and bed spans remain owned
 by the accepted R3/R5 vertical operations; the table chooses their material
 only.
-`grug_crags_snowy` alone adds `default:snow` as dust on an exposed dry top.
+`grug_crags_snowy` adds `default:snow` as dust on an exposed dry top; every
+other biome gets a snow cap and a patchy dust band only near and above the
+snow line ([world_zones.md](world_zones.md) §7.6).
 Planned hydrology uses `default:river_water_source`; all other authored water
 uses `default:water_source`. A logical biome not in this complete table is a
 contract error rather than a fallback to an engine biome.
@@ -218,22 +220,26 @@ contract error rather than a fallback to an engine biome.
 |---|---|---|---|---|
 | `grug_meadows` | `default:dirt_with_grass` / 1 | `default:dirt` / 3 | `default:sand` | apple tree `3/2000`; bush `1/250`; each grass 1–5 `3/50` |
 | `grug_pine_hills` | `default:dirt_with_coniferous_litter` / 1 | `default:dirt` / 3 | `default:gravel` | pine tree `1/250`; small pine `1/500`; pine bush `3/500`; blueberry bush `1/1000`; each fern 1–3 `1/50` |
-| `grug_crags` | `default:gravel` / 1 | `default:gravel` / 2 | `default:gravel` | snowy pine `1/500`, only at `surface_y >= 60` |
+| `grug_crags` | `default:gravel` / 1 | `default:gravel` / 2 | `default:gravel` | snowy pine `1/500`, only at `surface_y >= 60`; pine bush `3/500` on gravel, shrub band only |
 | `grug_crags_snowy` | `default:snowblock` / 1 | `default:gravel` / 2 | `default:gravel` | none |
-| `grug_elf_forest` | `grug_nodes:dirt_with_silver_litter` / 1 | `default:dirt` / 3 | `default:sand` | silverwood via replaced aspen tree `1/200`; apple tree `1/500`; each grass 1–3 `1/50` |
-| `grug_deep_forest` | `grug_nodes:dirt_with_forest_litter` / 1 | `default:dirt` / 3 | `default:sand` | apple tree `3/250`; aspen tree `1/125`; fallen apple log `1/1000`; each fern 1–3 `1/50` |
+| `grug_elf_forest` | `grug_nodes:dirt_with_silver_litter` / 1 | `default:dirt` / 3 | `default:sand` | silverwood via replaced aspen tree `1/200`; apple tree `1/500`; bush `1/250`, shrub band only; each grass 1–3 `1/50` |
+| `grug_deep_forest` | `grug_nodes:dirt_with_forest_litter` / 1 | `default:dirt` / 3 | `default:sand` | apple tree `3/250`; aspen tree `1/125`; fallen apple log `1/1000`; bush `1/250`, shrub band only; each fern 1–3 `1/50` |
 | `grug_swamp` | `grug_nodes:mud` / 1 | `grug_nodes:mud` / 2 | `grug_nodes:mud` | papyrus `1/50`, only on a dry mud or sand root beside standing water: a wet column (sea, bay, lake or river) within two nodes whose surface lies 0–3 below the root's ground (Round 22 Phase 5), so a swamp grows reeds wherever it has water and none where it has none; replacing template `default:dirt` with `grug_nodes:mud`; dry shrub `1/250` |
 | `grug_savanna` | `default:dry_dirt_with_dry_grass` / 1 | `default:dry_dirt` / 3 | `default:sand` | acacia tree `1/500`; acacia bush `1/250`; dry shrub `1/250`; each dry grass 1–5 `3/50` |
 | `grug_badlands` | `grug_nodes:mesa_clay` / 1 | `grug_nodes:mesa_clay` / 3 | `default:gravel` | large cactus `1/1000`; dry shrub `1/125` |
 | `grug_badlands_east` | `grug_nodes:mesa_clay` / 1 | `grug_nodes:mesa_clay` / 3 | `default:gravel` | large cactus `1/1000`; dry shrub `1/125` |
 | `grug_blight` | `grug_nodes:blight_dirt` / 1 | `default:dirt` / 3 | `default:gravel` | gravewood `3/2000`; dry shrub `3/200`; bone pile `1/500` |
-| `grug_bone_forest` | `grug_nodes:dirt_with_bone_litter` / 1 | `default:dirt` / 3 | `default:gravel` | gravewood `3/200`; bone pile `1/250` |
+| `grug_bone_forest` | `grug_nodes:dirt_with_bone_litter` / 1 | `default:dirt` / 3 | `default:gravel` | gravewood `3/200`; dry shrub `3/200`, shrub band only; bone pile `1/250` |
 | `grug_jungle_edge` | `default:dirt_with_rainforest_litter` / 1 | `default:dirt` / 3 | `default:sand` | jungle tree `1/125`; junglegrass `1/25` |
 | `grug_deep_jungle` | `grug_nodes:dirt_with_canopy_litter` / 1 | `default:dirt` / 3 | `default:sand` | jungle tree `1/50`; emergent jungle tree `1/200`; junglegrass `1/20` |
 | `grug_jungle_fringe` | `grug_nodes:dirt_with_canopy_litter` / 1 | `default:dirt` / 3 | `default:sand` | jungle tree `1/50`; emergent jungle tree `1/200`; junglegrass `1/20` |
 | `grug_beach` | `default:sand` / 1 | `default:sand` / 2 | `default:sand` | none |
 
-Every decoration root requires `surface_y >= 1`. Template schematics are
+Every decoration root requires `surface_y >= 1`. Every density above is the
+catalog density; altitude, snow and the forest field scale it per column
+(Round 23 Phase 2, [world_zones.md](world_zones.md) §7.6: tree line, shrub
+band, snow line, groves and clearings, deep forest and deep jungle trees
+×1.5). The four "shrub band only" rows grow nothing below the tree start. Template schematics are
 centred in x/z and rotate by a domain-separated choice among 0/90/180/270
 degrees. The blueberry bush and fallen apple log use y offset +1; the log is
 centred only in x and replaces its unavailable brown mushroom with `air`. The
