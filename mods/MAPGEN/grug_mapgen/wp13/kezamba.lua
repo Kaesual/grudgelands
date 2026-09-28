@@ -11,8 +11,9 @@
 -- is an answer to it: "Kezamba | troll | stilted cenote terrace, step 3 | stilt
 -- halls on basalt platforms, junglewood walkways, totem posts, cauldron courts,
 -- emergent trees kept". Section 4's wall ruling of 2026-09-14, unchanged by the
--- round-3 plan: Kezamba is one of the two OPEN capitals, so there is NO curtain
--- wall and the four gate points at +-256 carry a threshold instead.
+-- round-3 plan: Kezamba was one of the two OPEN capitals, with a threshold at
+-- each gate point; Round 23 gave its city edge a jungle-log palisade with four
+-- gatehouses (`city_edge.lua`). The civic core's own palisade is unchanged.
 --
 -- WHAT IS DIFFERENT HERE, AND IT IS NOT A STYLE CHOICE
 -- ---------------------------------------------------

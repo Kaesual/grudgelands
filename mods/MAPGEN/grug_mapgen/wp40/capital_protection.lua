@@ -2,9 +2,9 @@
 -- ground is its city: everything inside the wall line of the planned layout,
 -- the wall with its gatehouses and turrets, and a band of 12 nodes or more
 -- beyond the edge's outermost structure (21 from the wall line). It replaces the old 532-node square
--- (`hard_capital_build_plus_apron_v1`). The open capitals (Lethariel,
--- Kezamba) have no closed wall; their planted belt and four thresholds stand
--- on the same planned outline, so the same line bounds them. A capital's own
+-- (`hard_capital_build_plus_apron_v1`). Every capital's edge -- a stone
+-- curtain or a palisade since Round 23 -- stands on its planned outline, so
+-- the same line bounds all six. A capital's own
 -- civic lake (Lethariel's crown lake, Kezamba's cenote) belongs to the city
 -- even where the outline crosses it.
 --
@@ -69,8 +69,8 @@ end
 -- M.deserialize), local coordinates relative to its anchor. `lake`: the
 -- capital's own civic lake (an authored water row of `water_authored.lua`:
 -- Lethariel's crown lake, Kezamba's cenote) or nil. The planned outline may
--- cross it (the wall snaps to its banks, an open capital's belt runs over
--- it); the whole civic lake belongs to the city all the same.
+-- cross it (the wall snaps to its banks or crosses as an arcade or a timber
+-- deck); the whole civic lake belongs to the city all the same.
 function M.build(layout, lake)
 	if type(layout) ~= "table" or type(layout.anchor) ~= "table" or
 			type(layout.wall) ~= "table" or type(layout.wall.pts) ~= "table" or
