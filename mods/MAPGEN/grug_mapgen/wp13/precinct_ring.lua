@@ -20,8 +20,14 @@ function M.is_gate(x, z, gate_half)
 		(math.abs(z) == M.RADIUS and math.abs(x) <= half)
 end
 
+-- The corner drums and towers of Dur Brannoc, Gor Drazhak and Nhal Veyr are
+-- 5 x 5 squares centred on (+/-47, +/-47), so their walls reach +/-45 and
+-- the ring columns at +/-45 are theirs: a ring that wrote there cut the
+-- tower's own masonry (Round 23 found Nhal Veyr's bars and Gor Drazhak's
+-- earth in the tower walls). The first ring column beyond the skip, at
+-- +/-44, stands against the tower wall.
 function M.is_corner(x, z, corner_half)
-	local half = corner_half or 2
+	local half = corner_half or 3
 	return math.abs(x) >= M.RADIUS - half and
 		math.abs(z) >= M.RADIUS - half
 end

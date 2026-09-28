@@ -29,8 +29,8 @@
 --                       projection time, the identity stays the unturned
 --                       cells.
 --        "overlay"   -- no cells at all until a mapchunk asks for its columns:
---                       a capital's city edge (walls, gatehouses, the open
---                       capitals' belt) is a pure function of the capital
+--                       a capital's city edge (walls or palisades,
+--                       gatehouses, turrets) is a pure function of the capital
 --                       layout and the column surface (`wp13/city_edge.lua`).
 --      An overlay's identity is therefore its SPECIFICATION -- the edge
 --      geometry, its reach and the exact set of node names it may write --
@@ -80,8 +80,8 @@ M.BOUNDS = {
 	poi_outpost = {min = {x = -8, y = 0, z = -8}, max = {x = 7, y = 8, z = 7}},
 }
 
--- The city edge (walls, gatehouses, turrets, the open capitals' planted
--- belt) is the one blueprint that legitimately leaves the civic core: it
+-- The city edge (walls or palisades, gatehouses, turrets) is the one
+-- blueprint that legitimately leaves the civic core: it
 -- stands on the capital planner's outline. (The streets and connectors are
 -- roads, `road_layout.lua`, not blueprints.) It has no cells, so its
 -- authorized volume is not an anchor-relative box like the entries of
@@ -289,8 +289,8 @@ M.roster = {
 		-- five-wide gate road crossing stays five wide.
 		reserve_anchor_root = true,
 	},
-	-- The elf capital, OPEN (the user's ruling of 2026-09-14): a planted belt
-	-- and four thresholds on the planner's outline. It is also the only
+	-- The elf capital: open until Round 23, now a light stone curtain with
+	-- four gatehouses on the planner's outline. It is also the only
 	-- capital whose 96 x 96 civic core is not a full pad: WP40's authored crown
 	-- lake (`wp40/water_authored.lua`) reaches into it, and the composition
 	-- writes nothing over the water. See `wp13/lethariel.lua`.
@@ -314,10 +314,10 @@ M.roster = {
 		-- the two great avenues.
 		reserve_anchor_root = true,
 	},
-	-- The troll capital, OPEN: the authored cenote (`kezamba_cenote` in
+	-- The troll capital: the authored cenote (`kezamba_cenote` in
 	-- `wp40/water_authored.lua`) cuts a wedge of the civic core, whose
-	-- composition builds round the water; a planted belt and four thresholds
-	-- on the planner's outline.
+	-- composition builds round the water; a jungle-log palisade with four
+	-- gatehouses on the planner's outline (open until Round 23).
 	{
 		key = "kezamba", label = "Kezamba", race = "troll",
 		slot = "capital", bounds = "capital_core", plot_bounds = "capital_plot",

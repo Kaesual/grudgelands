@@ -69,6 +69,7 @@ M.DEFAULTS = {
 	CANAL = false, CANAL_OFF = 2, CANAL_HALF = 2, CANAL_DEPTH = 2, CANAL_CLEAR = 12, CANAL_VAR = 3, CANAL_MIN = 60,
 	WALL_HALF = 3, WALL_KEEP = 8, TURRET_EVERY = 64, WALL_HEIGHT = 7,
 	WALL_SLACK = 1.05,    -- walk slope bound: <= 1/2 node per (node x this)
+	WALL_CLEAR = 1,       -- over water the walk stands at least this far above the surface
 	GATE_DEPTH = 5, GATE_WIDTH = 7,   -- gatehouse half extents (along / across its axis)
 	PLOT_GAP = 2, SETBACK = 1.0, PUSH = 6, APPROACH_MAX = 5, ENTRY_STEP = 2,
 	FALL = 6, WET_MARGIN = 2,
@@ -80,7 +81,7 @@ M.DEFAULTS = {
 	-- a corner: it may climb and wind, so it searches further before it gives
 	-- up (a search that succeeded within SEARCH_BUDGET finds the same path)
 	CONNECTOR_BUDGET = 16,
-	WALL = "stone",       -- "stone" | "palisade" | "open" (planted edge + thresholds)
+	WALL = "stone",       -- an edge kind of M.EDGE (its name travels in the payload)
 	-- D70 street pattern: loosened rings, cross-lanes, squares (per capital
 	-- and seed from a variation hash, so six capitals do not repeat)
 	RING_JITTER = 0.05,   -- ring fractions +- this
@@ -91,19 +92,38 @@ M.DEFAULTS = {
 	PIN = nil,            -- {district = quadrant-direction {x, z}}: pinned districts
 }
 
--- Edge dimensions per edge kind (D69/D72): wall half thickness, walk height
--- above the ground, gatehouse (or threshold) half extents along and across
--- its axis, turret spacing and radius. `opts` are the planner overrides; the
--- writer (`wp13/city_edge.lua`) reads the rest.
+-- Edge dimensions per edge kind (D69/D72, Round 23): the writer model of
+-- `wp13/city_edge.lua` ("stone" curtain or "palisade"), wall half thickness,
+-- walk height above the ground, gatehouse half extents along and across its
+-- axis, turret spacing and radius. `opts` are the planner overrides; the
+-- writer reads the rest.
+--
+-- The two NARROW kinds are the Round 23 walls of the two capitals that were
+-- open until then (Lethariel's light curtain, Kezamba's timber palisade).
+-- They keep the footprint the planted belt was planned with -- wall half 2,
+-- keep 6, gate boxes 3 x 5 -- so those capitals keep their outline, gates,
+-- streets and plots; only the wall's own payload (walk heights, turrets)
+-- differs. Their civic lakes lie across the edge for 170-220 nodes, so their
+-- walk keeps WALL_CLEAR 5 over water: a level crossing at about the banks'
+-- walk, where the default 1 only keeps a walk out of the water. `footing` is
+-- how far a pier or pile may reach below the lowest walk or gate floor (the
+-- edge's y range, `r7_capital_blueprint.lua`): 24 covers a river bed under a
+-- curtain; a pile down to the bed of Kezamba's cenote (19 deep in the
+-- Round 23 engine probe) under a walk 5 above its surface needs 26, so the
+-- narrow kinds carry 28.
 M.EDGE = {
-	stone = {half = 3, depth = 5, width = 7, turret = 5,
+	stone = {model = "stone", half = 3, depth = 5, width = 7, turret = 5, footing = 24,
 		opts = {WALL_HALF = 3, WALL_HEIGHT = 7, GATE_DEPTH = 5, GATE_WIDTH = 7}},
-	palisade = {half = 2, depth = 4, width = 6, turret = 3,
+	palisade = {model = "palisade", half = 2, depth = 4, width = 6, turret = 3, footing = 24,
 		opts = {WALL_HALF = 2, WALL_HEIGHT = 5, GATE_DEPTH = 4, GATE_WIDTH = 6,
 			TURRET_EVERY = 56}},
-	open = {half = 2, depth = 3, width = 5, turret = 0,
-		opts = {WALL_HALF = 2, WALL_HEIGHT = 4, GATE_DEPTH = 3, GATE_WIDTH = 5,
-			WALL_KEEP = 6}},
+	stone_narrow = {model = "stone", half = 2, depth = 3, width = 5, turret = 3, footing = 28,
+		opts = {WALL_HALF = 2, WALL_HEIGHT = 6, GATE_DEPTH = 3, GATE_WIDTH = 5,
+			WALL_KEEP = 6, TURRET_EVERY = 48, WALL_CLEAR = 5}},
+	palisade_narrow = {model = "palisade", half = 2, depth = 3, width = 5, turret = 3,
+		footing = 28,
+		opts = {WALL_HALF = 2, WALL_HEIGHT = 5, GATE_DEPTH = 3, GATE_WIDTH = 5,
+			WALL_KEEP = 6, TURRET_EVERY = 56, WALL_CLEAR = 5}},
 }
 
 -- cardinal directions: E, S, W, N (x east, z south; north = -z)
@@ -1101,6 +1121,18 @@ function M.plan(seed, I, opt)
 				if wetp[i] then walk[i] = max(walk[i], 0.5 * (a + b)) end
 			end
 		end
+		-- ... and clears the surface however long the crossing. The walk
+		-- starts from the bed, and three neighbour passes cannot lift the
+		-- middle of a long crossing (Round 23: the civic lakes of Lethariel
+		-- and Kezamba lie across their edges for 170-220 nodes, and their
+		-- walk sank up to 15 nodes under the water), so the walk stands at
+		-- least WALL_CLEAR above the surface (M.EDGE).
+		for i = 1, n do
+			if wetp[i] then
+				local wy = WW[gk(pts[i][1], pts[i][2])]
+				if wy then walk[i] = max(walk[i], wy + P.WALL_CLEAR) end
+			end
+		end
 		-- The walk in half nodes, raised (never lowered) until it changes by
 		-- at most 1/2 node per node along the closed loop, with 5 % slack for
 		-- the inner edge of a curve: the writer interpolates it per column and
@@ -1137,7 +1169,6 @@ function M.plan(seed, I, opt)
 				end
 			end
 		end
-		if P.WALL == "open" then turrets = {} end
 		wall.turrets, wall.kind = turrets, P.WALL
 		local nwet = 0
 		for i = 1, n do if wetp[i] and not gap[i] then nwet = nwet + 1 end end
@@ -1660,7 +1691,7 @@ end
 -- Payload (text, the `capital_layout` field of the ipc_set payload), local
 -- coordinates relative to the anchor:
 --   C2 <anchor id> <x> <z>
---   k stone|palisade|open                    edge kind
+--   k <edge kind>                            a key of M.EDGE
 --   o <outline radius per ray, 0.1>
 --   g <name> <x> <z> <floor y>               the four gates
 --   p <plot id> <x> <z> <turns> <y>          one per placed plot
