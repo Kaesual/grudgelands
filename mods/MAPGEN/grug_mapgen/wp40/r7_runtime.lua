@@ -567,6 +567,28 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 				-- can ask the final height of a district plot's reference column
 				-- with the same function the writer projects that plot with.
 				planner_source = r6_identity.planner_source,
+				-- Natural vegetation density for runtime renewal (grug_farming),
+				-- read from the same rows, cover factors and templates.
+				vegetation = dofile(wp40_directory .. "/vegetation_density.lua")({
+					habitat = habitat_registry, world_plants = world_catalog.plants,
+					p9g_rows = catalog.p9g_sources(),
+					extra_natural_names = (function()
+						local names = {}
+						for _, row in ipairs(catalog.cultural_sources()) do
+							names[#names + 1] = row.source_node
+						end
+						for _, name in ipairs(world_catalog.names) do names[#names + 1] = name end
+						return names
+					end)(),
+					decorations = r6_manifest.decorations,
+					decoration_cover = r6_identity.decoration_cover,
+					support_names = r6_identity.decoration_support_names,
+					template_records = r6_identity.template_records,
+					column_values_at = r6_identity.planner_source.column_values_at,
+					overlay_exclusion_at = r6_identity.planner_source.overlay_exclusion_at,
+					primary_relief_at = r6_identity.planner_source.primary_relief_at,
+					surface_mob_level_at = public_zones_session.surface_mob_level_at,
+				}),
 				preparation_source = dofile(wp40_directory .. "/preparation_source.lua")(
 					r6_identity.planner_source, r6_identity.template_records, cultural,
 					settlements, public_zones_session, anchor_roster,

@@ -454,7 +454,83 @@ dofile(core.get_modpath(core.get_current_modname()) .. "/hoes.lua")({
  soil_timer = soil_timer,
 })
 
-dofile(core.get_modpath(core.get_current_modname()) .. "/ecology.lua")()
+-- Habitat-driven wild vegetation renewal around players (renewal.lua). The
+-- density authority is the world generator's own (grug_mapgen.wp40.vegetation).
+do
+	local mapgen = rawget(_G, "grug_mapgen")
+	local wp40 = mapgen and mapgen.wp40
+	if type(wp40) ~= "table" or type(wp40.vegetation) ~= "table" or
+			type(wp40.planner_source) ~= "table" then
+		error("grug_farming: vegetation density authority missing", 0)
+	end
+	local density = wp40.vegetation
+	local api = {
+		get_node_or_nil = core.get_node_or_nil,
+		set_node = core.set_node,
+		get_natural_light = core.get_natural_light,
+		find_nodes_in_area = core.find_nodes_in_area,
+		find_nodes_in_area_under_air = core.find_nodes_in_area_under_air,
+		get_item_group = core.get_item_group,
+		density = density,
+		planner = wp40.planner_source,
+		world_alterable = grug_core.world_alterable,
+		random = math.random,
+		trees = core.settings:get_bool("grug_tree_regrowth", true),
+		non_natural = {},
+	}
+	local renewal = dofile(core.get_modpath(core.get_current_modname()) ..
+		"/renewal.lua")(api)
+	grug_farming.renewal = renewal
+	grug_farming.RENEWAL = renewal.constants
+
+	-- Natural: air, generated ground and ores (grug_natural), liquids, every
+	-- node the generator places as vegetation (vegetation_density.lua) and
+	-- the tree/leaf/sapling/flora families. Everything else, farm soil and the
+	-- unloaded `ignore` included, blocks a sapling within its guard radius.
+	local function natural_node(name, definition, vegetation)
+		local groups = definition.groups or {}
+		return name == "air" or name == "default:apple_mark" or vegetation[name] or
+			(groups.grug_natural or 0) > 0 or (groups.tree or 0) > 0 or
+			(groups.leaves or 0) > 0 or (groups.sapling or 0) > 0 or
+			(groups.flora or 0) > 0 or (groups.leafdecay or 0) > 0 or
+			(definition.liquidtype ~= nil and definition.liquidtype ~= "none")
+	end
+
+	core.register_on_mods_loaded(function()
+		local vegetation = density.natural_vegetation()
+		for name in pairs(vegetation) do
+			if not core.registered_nodes[name] then
+				error("grug_farming: natural vegetation node missing " .. name, 0)
+			end
+		end
+		for id, sapling in pairs(density.woody_species()) do
+			if not core.registered_nodes[sapling] or
+					not default.sapling_growth_defs[sapling] then
+				error("grug_farming: no sapling growth for " .. id .. " (" .. sapling .. ")", 0)
+			end
+		end
+		local non_natural = {}
+		for name, definition in pairs(core.registered_nodes) do
+			if not natural_node(name, definition, vegetation) then
+				non_natural[#non_natural + 1] = name
+			end
+		end
+		table.sort(non_natural)
+		api.non_natural = non_natural
+		core.log("action", string.format("[grug_farming] vegetation renewal: " ..
+			"%d non-natural node names, tree regrowth %s", #non_natural,
+			api.trees and "on" or "off"))
+	end)
+
+	local elapsed = 0
+	core.register_globalstep(function(dtime)
+		elapsed = elapsed + dtime
+		if elapsed < renewal.constants.TICK_SECONDS then return end
+		local step = elapsed
+		elapsed = 0
+		renewal.tick(step, core.get_connected_players())
+	end)
+end
 
 core.register_on_mods_loaded(function()
 	if #crops ~= #grug_cooking.PLANTS + 2 then

@@ -70,3 +70,12 @@ grug_mapgen_terrain_audit (Log capital plot terrain findings at start) bool fals
 # auras and boss ground attacks. Player/environmental damage is unchanged.
 # Loaded at startup; restart after changing. 1.0 restores base attack damage.
 grug_mob_damage_scale (Non-player attack damage multiplier) float 1.5 0 10
+
+[World life]
+
+#    Trees and bushes grow back: around players, where the natural tree density
+#    of a biome has been cut down, the game plants saplings of the species that
+#    grow there, never within about 10 nodes of anything built or of farm soil.
+#    The saplings then grow through their ordinary growth timers. Grass, ferns
+#    and wild resource plants renew regardless of this switch.
+grug_tree_regrowth (Regrow trees from saplings) bool true
