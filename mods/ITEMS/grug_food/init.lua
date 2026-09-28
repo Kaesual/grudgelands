@@ -243,40 +243,108 @@ end
 
 local held_foods = {}
 local hold_feedback = {}
-local MOTION_INTERVAL_US = 250000
+
+-- Eating feedback (user ruling 2026-09-28, modelled on VoxeLibre mcl_hunger
+-- tick_eat_delay/eat_effects): the wielded item hides, the food image sits
+-- large at the bottom centre behind every other HUD element and bobs on each
+-- input step; crumbs fly from the head every 0.2 s for everyone nearby.
+local EAT_STANCE, EAT_STANCE_FACTOR = "grug_food:eating", 0.35
+local CRUMB_INTERVAL_US = 200000
+local CRUMBS_PER_BURST = 10 -- about 7 bursts per 1.5 s hold: ~70 particles
+
+function grug_food.is_food(item_name)
+	return held_foods[item_name] ~= nil
+end
+
+local function tile_name(tile)
+	if type(tile) == "table" then return tile.name or tile.image or "" end
+	return type(tile) == "string" and tile or ""
+end
+
+-- HUD image and crumb texture: wield image, inventory image, else the node's
+-- own tiles (meat blocks register tiles only).
+local function food_images(definition)
+	local wield = tile_name(definition and definition.wield_image)
+	local inventory = tile_name(definition and definition.inventory_image)
+	local tiles = definition and definition.tiles or {}
+	local top, side = tile_name(tiles[1]), tile_name(tiles[3] or tiles[1])
+	local hud = wield ~= "" and wield or inventory
+	if hud == "" and top ~= "" then hud = core.inventorycube(top, side, side) end
+	local crumb = inventory ~= "" and inventory or (wield ~= "" and wield or side)
+	return hud, crumb
+end
+
+-- Texture modifiers inside [combine must be escaped (lua_api.md "Escaping").
+local function escape_combine(texture)
+	return (texture:gsub("\\", "\\\\"):gsub("%^", "\\^"):gsub(":", "\\:"))
+end
+
+local function crumb_burst(player, record)
+	local pos = player:get_pos()
+	if not pos or not record.crumbs then return end
+	pos.y = pos.y + 1.5
+	local velocity = player:get_velocity() or vector.zero()
+	core.add_particlespawner({
+		amount = CRUMBS_PER_BURST, time = 0.05,
+		pos = pos,
+		vel = {min = vector.offset(velocity, -1, 1, -1),
+			max = vector.offset(velocity, 1, 2, 1)},
+		acc = {min = vector.new(0, -9, 0), max = vector.new(0, -5, 0)},
+		exptime = 1, size = {min = 1, max = 2},
+		collisiondetection = true, vertical = false,
+		texpool = record.crumbs,
+	})
+end
 
 local function stop_hold_feedback(player)
 	local name = player:get_player_name()
 	local record = hold_feedback[name]
 	if not record then return end
+	grug_core.clear_move_stance(player, EAT_STANCE)
 	if record.sound_handle then core.sound_stop(record.sound_handle) end
 	if record.hud_id then player:hud_remove(record.hud_id) end
 	if record.wielditem ~= nil then player:hud_set_flags({wielditem = record.wielditem}) end
 	hold_feedback[name] = nil
 end
 
+-- A confirmed hold (contextual input, 200 ms after the press) starts eating.
+-- In combat it refuses immediately with the existing notice: no visual, no
+-- slowdown and no portion. Returns true while eating runs.
 function grug_food.begin_hold(player)
 	stop_hold_feedback(player)
 	local stack = player:get_wielded_item()
 	local item_name = stack:get_name()
 	if not held_foods[item_name] then return false end
-	local definition = core.registered_items[item_name]
-	local image = definition and definition.inventory_image
+	if grug_core.in_combat(player) then
+		grug_abilities.notify(player, "Cannot eat while in combat.")
+		return false
+	end
+	local hud_image, crumb = food_images(core.registered_items[item_name])
 	local flags = player:hud_get_flags()
-	local record = {next_motion = 0, raised = false,
+	local record = {started = core.get_us_time(), next_crumbs = 0,
 		wielditem = flags and flags.wielditem ~= false}
 	player:hud_set_flags({wielditem = false})
 	record.sound_handle = core.sound_play({name = "grug_food_eat", gain = 0.5}, {
 		to_player = player:get_player_name(), loop = true,
 	})
-	if type(image) == "string" and image ~= "" then
+	if hud_image ~= "" then
 		record.hud_id = player:hud_add({
-			hud_elem_type = "image", position = {x = 0.5, y = 1},
-			offset = {x = 92, y = -98}, text = image,
-			scale = {x = 2.5, y = 2.5}, alignment = {x = 0, y = 0},
+			type = "image", position = {x = 0.5, y = 1},
+			offset = {x = 0, y = -30}, text = hud_image,
+			scale = {x = -25, y = -45}, alignment = {x = 0, y = -1},
+			z_index = -200,
 		})
 	end
+	if crumb ~= "" then
+		local escaped = escape_combine(crumb)
+		record.crumbs = {}
+		for index = 0, 7 do
+			record.crumbs[#record.crumbs + 1] = "[combine:3x3:" .. -index .. "," ..
+				-index .. "=" .. escaped
+		end
+	end
 	hold_feedback[player:get_player_name()] = record
+	grug_core.set_move_stance(player, EAT_STANCE, EAT_STANCE_FACTOR)
 	grug_food.step_hold(player)
 	return true
 end
@@ -285,13 +353,14 @@ function grug_food.step_hold(player)
 	local record = hold_feedback[player:get_player_name()]
 	if not record then return end
 	local now = core.get_us_time()
-	if now >= record.next_motion then
-		record.next_motion = now + MOTION_INTERVAL_US
-		record.raised = not record.raised
-		if record.hud_id then
-			player:hud_change(record.hud_id, "offset",
-				{x = record.raised and 64 or 92, y = record.raised and -132 or -98})
-		end
+	if record.hud_id then
+		local t = (now - record.started) / 1e6
+		player:hud_change(record.hud_id, "offset",
+			{x = 0, y = 50 * math.sin(10 * t + math.random()) - 50})
+	end
+	if now >= record.next_crumbs then
+		record.next_crumbs = now + CRUMB_INTERVAL_US
+		crumb_burst(player, record)
 	end
 end
 
@@ -309,6 +378,34 @@ function grug_food.consume_held(player)
 	return stack:get_count() ~= before
 end
 
+-- A short RMB click (released before the hold threshold) performs, on
+-- release, what an ordinary right-click would have done at the thing the
+-- press pointed at: the item's own placement/planting (which also runs a
+-- pointed node's on_rightclick), or its secondary use followed by the
+-- entity's own on_rightclick (`rightclick`, the unwrapped entity callback).
+function grug_food.click(player, pointed, rightclick)
+	local stack = player:get_wielded_item()
+	local food = held_foods[stack:get_name()]
+	if not food or not pointed then return false end
+	local result
+	if pointed.type == "node" then
+		result = food.place(stack, player, pointed)
+	elseif food.secondary then
+		result = food.secondary(stack, player, pointed)
+	end
+	if result ~= nil then
+		result = ItemStack(result)
+		if player:get_wielded_item():to_string() ~= result:to_string() then
+			player:set_wielded_item(result)
+		end
+	end
+	if pointed.type == "object" and rightclick then
+		local entity = pointed.ref and pointed.ref:get_luaentity()
+		if entity then rightclick(entity, player) end
+	end
+	return true
+end
+
 core.register_on_leaveplayer(function(player)
 	hold_feedback[player:get_player_name()] = nil
 end)
@@ -320,7 +417,10 @@ function grug_food.register_item(item_name, tier, kind, role)
 	if not definition or not tier_def or not effect then
 		return false
 	end
-	held_foods[item_name] = {tier = tier, kind = kind, role = role}
+	-- The item's own placement/planting and secondary use, run by a click.
+	held_foods[item_name] = {tier = tier, kind = kind, role = role,
+		place = definition.on_place or core.item_place,
+		secondary = definition.on_secondary_use}
 	local groups = copied_groups(definition.groups)
 	groups.grug_food = 1
 	groups.grug_food_tier = tier
@@ -333,42 +433,26 @@ function grug_food.register_item(item_name, tier, kind, role)
 		_grug_ilvl = tier_def.min_level,
 		_grug_tier = tier,
 		-- Food is a deliberate 1.5-second RMB hold, owned by contextual input.
-		-- Keep any native planting/placement callback and object interaction.
 		on_use = false,
-	})
-	-- Preserve native planting and context-first node/object interaction even
-	-- when that callback removes the target before the next control sample.
-	local place, secondary = definition.on_place, definition.on_secondary_use
-	local placement = definition.type == "node" or (place and place ~= core.item_place)
-	core.override_item(item_name, {
+		-- A click places on RELEASE, so the client must not predict a node on
+		-- press (game.cpp nodePlacement) or on the engine's repeated place.
+		node_placement_prediction = "",
+		-- Native RMB calls only report the press to contextual input; it
+		-- settles click versus hold and never lets a repeat place or interact.
 		on_place = function(stack, player, pointed)
-			if player and grug_abilities.input then
-				grug_abilities.input.right_action(player)
-				-- A due held-food action may already have consumed the wield stack.
-				-- Delegate and return that current stack, never the engine's old copy.
-				stack = player:get_wielded_item()
+			if player and grug_abilities.input and
+					grug_abilities.input.food_native(player, pointed) then
+				-- A due held portion may already have changed the wield stack.
+				return player:get_wielded_item()
 			end
-			if player and pointed and pointed.type == "node" and grug_abilities.input then
-				local node = core.get_node_or_nil(pointed.under)
-				local def = node and core.registered_nodes[node.name]
-				if placement or (def and def.on_rightclick) or
-						core.get_meta(pointed.under):get_string("formspec") ~= "" then
-					grug_abilities.input.interaction(player)
-				end
-			end
-			return place and place(stack, player, pointed) or stack
+			return held_foods[item_name].place(stack, player, pointed) or stack
 		end,
 		on_secondary_use = function(stack, player, pointed)
-			if player and grug_abilities.input then
-				grug_abilities.input.right_action(player)
-				-- A due held-food action may already have consumed the wield stack.
-				-- Delegate and return that current stack, never the engine's old copy.
-				stack = player:get_wielded_item()
+			if player and grug_abilities.input and
+					grug_abilities.input.food_native(player, pointed) then
+				return player:get_wielded_item()
 			end
-			if player and pointed and pointed.type == "object" and grug_abilities.input then
-				local ent = pointed.ref and pointed.ref:get_luaentity()
-				if ent and ent.on_rightclick then grug_abilities.input.interaction(player) end
-			end
+			local secondary = held_foods[item_name].secondary
 			return secondary and secondary(stack, player, pointed) or stack
 		end,
 	})

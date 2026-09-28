@@ -4,6 +4,16 @@ return function(api)
 	local Q, states = grug_abilities, {}
 	local HAND_RANGE, HOLD_US, FOOD_US = 4, 200000, 1500000
 	local pickup_delegate
+	local entity_rightclick = {} -- entity name -> unwrapped on_rightclick
+	local function food_api() return rawget(_G, "grug_food") end
+	local function is_food(item_name)
+		local food = food_api()
+		return food ~= nil and food.is_food ~= nil and food.is_food(item_name)
+	end
+	local function end_food_hold(player)
+		local food = food_api()
+		if food and food.end_hold then food.end_hold(player) end
+	end
 	local function same(a, b)
 		return a and b and a.x == b.x and a.y == b.y and a.z == b.z
 	end
@@ -40,9 +50,8 @@ return function(api)
 		return s
 	end
 	local function cancel(player, s)
-		local food = rawget(_G, "grug_food")
-		if food and food.end_hold then food.end_hold(player) end
-		s.pending, s.dig, s.right = nil, nil, nil
+		end_food_hold(player)
+		s.pending, s.dig, s.right, s.food = nil, nil, nil, nil
 		s.cancelled = true
 		if Q.cancel_bow_draw then Q.cancel_bow_draw(player) end
 	end
@@ -84,17 +93,56 @@ return function(api)
 	end
 	local function right_begin(player, s, def, hit, distance)
 		s.pending, s.dig = nil, nil
-		if interactive(hit, distance) then
+		if not def and is_food(player:get_wielded_item():get_name()) then
+			-- Food owns the whole press, interactive target or not (user ruling
+			-- 2026-09-28): a release before HOLD_US is a click, performed on
+			-- release at the target the press's first native call reported; a
+			-- longer hold eats and the pointed interaction never fires.
+			s.right, s.food = "food", {started = core.get_us_time(), stage = "press"}
+		elseif interactive(hit, distance) then
 			s.right = "interaction"
 		elseif def and def.id == "loose" then
 			s.right = "bow"
 			Q.start_bow_draw(player)
-		elseif core.get_item_group(player:get_wielded_item():get_name(), "grug_food") > 0 then
-			s.right, s.right_started = "food", core.get_us_time()
-			local food = rawget(_G, "grug_food")
-			if food and food.begin_hold then food.begin_hold(player) end
 		else
 			s.right = "other"
+		end
+	end
+	-- Held food: "press" becomes "eating" (or "refused" in combat) at HOLD_US;
+	-- one portion is due FOOD_US after the press.
+	local function food_hold(player, s)
+		local f, food = s.food, food_api()
+		if not f or not food then return end
+		local elapsed = core.get_us_time() - f.started
+		if f.stage == "press" and elapsed >= HOLD_US then
+			f.stage = food.begin_hold(player) and "eating" or "refused"
+		end
+		if f.stage ~= "eating" then return end
+		if elapsed >= FOOD_US then
+			f.stage = "done"
+			food.consume_held(player)
+			food.end_hold(player)
+		else
+			food.step_hold(player)
+		end
+	end
+	-- The unwrapped entity callback, for a click replayed on release. An
+	-- instance-level callback was never deferred, so it is never replayed.
+	local function native_rightclick(entity, clicker)
+		local original = entity_rightclick[entity.name]
+		if original and rawget(entity, "on_rightclick") == nil then
+			return original(entity, clicker)
+		end
+	end
+	-- RMB release: ends every RMB-owned feedback; a food press released
+	-- before the hold threshold performs its click now.
+	local function release_right(player, s)
+		local f = s.right == "food" and s.food or nil
+		end_food_hold(player)
+		s.right, s.food = nil, nil
+		local food = food_api()
+		if f and f.stage == "press" and f.target and food and food.click then
+			food.click(player, f.target, native_rightclick)
 		end
 	end
 	local function activate(player, s, def, hit, distance, fresh)
@@ -159,8 +207,14 @@ return function(api)
 		local down, right = controls.dig == true or press == true, controls.place == true
 		local item, slot = player:get_wielded_item():get_name(), player:get_wield_index()
 		local def = selected(player)
-		if not allowed(player) or (s.slot and (s.slot ~= slot or s.item ~= item)) then
+		-- One native RMB action per physical press (see M.food_native).
+		if not right then s.native_seen = nil end
+		local changed = s.slot and (s.slot ~= slot or s.item ~= item)
+		if not allowed(player) or changed then
 			cancel(player, s)
+			-- A press carried over into a new item is not a new press: the
+			-- engine's repeated place must not act for the new item either.
+			if changed and right then s.native_seen = true end
 		end
 		s.slot, s.item = slot, item
 		if not down and not right and s.cancelled then
@@ -169,28 +223,19 @@ return function(api)
 		end
 		if s.cancelled then s.down, s.rmb = down, right; return end
 		if not down and not right and not s.pending then
-			local food = rawget(_G, "grug_food")
-			if food and food.end_hold then food.end_hold(player) end
-			s.down, s.rmb, s.right, s.dig = false, false, nil, nil
+			release_right(player, s)
+			s.down, s.rmb, s.dig = false, false, nil
 			return
 		end
-		local food_selected = core.get_item_group(item, "grug_food") > 0
-		if not def and not food_selected then
+		if not def and not is_food(item) then
 			s.down, s.rmb = down, right
 			return
 		end
-		local hit, distance = ray(player, math.max(HAND_RANGE, def and Q.get_range(player, def) or 0))
+		-- Food decides from the native pointed thing, never from this ray.
+		local hit, distance
+		if def then hit, distance = ray(player, math.max(HAND_RANGE, Q.get_range(player, def))) end
 		if right and not s.rmb then right_begin(player, s, def, hit, distance) end
-		if right and s.right == "food" then
-			local food = rawget(_G, "grug_food")
-			if food and food.step_hold then food.step_hold(player) end
-		end
-		if right and s.right == "food" and core.get_us_time() - s.right_started >= FOOD_US then
-			s.right = "food_done"
-			local food = rawget(_G, "grug_food")
-			if food then food.consume_held(player) end
-			if food and food.end_hold then food.end_hold(player) end
-		end
+		if right and s.right == "food" then food_hold(player, s) end
 		if right then
 			s.pending, s.dig, s.down, s.rmb = nil, nil, down, true
 			return
@@ -198,9 +243,8 @@ return function(api)
 		if s.rmb then
 			-- Bow release is settled by the existing Scout draw loop. Native
 			-- inventory/pause/GUI releases are indistinguishable and accepted.
-			local food = rawget(_G, "grug_food")
-			if food and food.end_hold then food.end_hold(player) end
-			s.right, s.rmb, s.down = nil, false, down
+			release_right(player, s)
+			s.rmb, s.down = false, down
 			return -- Scout settles the release before another weapon action.
 		end
 		if down and not s.down then
@@ -243,15 +287,45 @@ return function(api)
 	function M.cancel(player) cancel(player, state(player)) end
 	function M.interaction(player)
 		local s = state(player)
-		local food = rawget(_G, "grug_food")
-		if food and food.end_hold then food.end_hold(player) end
-		s.pending, s.dig, s.right, s.rmb = nil, nil, "interaction", true
+		end_food_hold(player)
+		s.pending, s.dig, s.right, s.food, s.rmb = nil, nil, "interaction", nil, true
 		if Q.cancel_bow_draw then Q.cancel_bow_draw(player) end
+	end
+	-- A food item's native on_place/on_secondary_use (press and the engine's
+	-- repeat_place_time repeats). True: contextual input owns the press and
+	-- the native action must not run now -- the first call of a food press
+	-- records its pointed thing for a click on release. False: the press is not
+	-- food-owned (mounted, stunned ...), so its first native call acts as an
+	-- ordinary right-click immediately; later repeats of that press never do.
+	function M.food_native(player, pointed)
+		M.step(player)
+		local s = state(player)
+		if s.right == "food" and s.food then
+			if not s.food.target_set then
+				s.food.target_set = true
+				s.food.target = pointed and {type = pointed.type,
+					under = pointed.under and vector.copy(pointed.under),
+					above = pointed.above and vector.copy(pointed.above),
+					ref = pointed.ref}
+			end
+			s.native_seen = true
+			return true
+		end
+		if s.native_seen then return true end
+		s.native_seen = true
+		return false
+	end
+	-- Entity right-clicks reach the entity directly on press (engine
+	-- INTERACT_PLACE). A food-owned press defers them to the click on release,
+	-- so holding food at an NPC or trader eats instead of interacting.
+	function M.defer_rightclick(clicker)
+		local s = states[clicker:get_player_name()]
+		return s ~= nil and s.right == "food"
 	end
 	function M.can_dig(player, pos, node)
 		local s = state(player)
 		if not api.selected(player) then
-			local eating = core.get_item_group(player:get_wielded_item():get_name(), "grug_food") > 0
+			local eating = is_food(player:get_wielded_item():get_name())
 			return not (eating and player:get_player_control().place and s.right)
 		end
 		if not selected(player) or not allowed(player) or s.cancelled or
@@ -290,6 +364,19 @@ return function(api)
 				end
 			end
 			if next(changes) then core.override_item(name, changes) end
+		end
+		for name, definition in pairs(core.registered_entities) do
+			local original = definition.on_rightclick
+			if type(original) == "function" then
+				entity_rightclick[name] = original
+				definition.on_rightclick = function(self, clicker, ...)
+					if clicker and clicker.is_player and clicker:is_player() and
+							M.defer_rightclick(clicker) then
+						return
+					end
+					return original(self, clicker, ...)
+				end
+			end
 		end
 		local item = core.registered_entities["__builtin:item"]
 		pickup_delegate = item.on_punch
