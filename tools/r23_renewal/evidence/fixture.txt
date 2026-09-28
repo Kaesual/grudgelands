@@ -1,0 +1,93 @@
+-- density
+resource carrot p=0.001953 hosts=3 species=grug_mapgen:carrot_source
+resource wild_grain p=0.001953 hosts=3 species=grug_mapgen:wild_grain_source
+resource corn p=0.001953 hosts=1 species=grug_gathering:corn_source
+resource potato p=0.001953 hosts=1 species=grug_gathering:potato_source
+cover cover:grug_meadows p=0.300000 hosts=4 species=default:grass_1,default:grass_2,default:grass_3,default:grass_4,default:grass_5
+woody woody:grug_meadows p=0.005500 hosts=3 species=default:sapling,default:bush_sapling
+ok   meadow start zone: 4 resource species, one cover and one woody class
+ok   gravel hosts ground cover at a quarter of the meadow rate
+ok   a dark surface spot grows nothing
+ok   a road corridor grows nothing
+sapling blight_gravewood grug_trees:gravewood_sapling
+sapling bone_forest_gravewood grug_trees:gravewood_sapling
+sapling deep_forest_apple_tree default:sapling
+sapling deep_forest_aspen_tree default:aspen_sapling
+sapling elf_forest_apple_tree default:sapling
+sapling elf_forest_silverwood grug_trees:silverwood_sapling
+sapling emergent_jungle_tree default:emergent_jungle_sapling
+sapling jungle_edge_jungle_tree default:junglesapling
+sapling jungle_tree default:junglesapling
+sapling meadows_apple_tree default:sapling
+sapling meadows_bush default:bush_sapling
+sapling pine_hills_blueberry_bush default:blueberry_bush_sapling
+sapling pine_hills_pine_bush default:pine_bush_sapling
+sapling pine_hills_pine_tree default:pine_sapling
+sapling pine_hills_small_pine_tree default:pine_sapling
+sapling savanna_acacia_bush default:acacia_bush_sapling
+sapling savanna_acacia_tree default:acacia_sapling
+not_renewed badlands_large_cactus: cactus seedling cannot grow on mesa clay
+not_renewed crags_snowy_pine: pine sapling cannot grow on gravel
+not_renewed deep_forest_apple_log: fallen log, not a growing plant
+not_renewed swamp_papyrus: reed stand, not a sapling species
+-- placement
+ok   empty meadow: ground cover placed (placed default:grass_5)
+ok   within 20 nodes of a player: nothing
+ok   settlement exclusion: nothing
+ok   road corridor: nothing
+ok   protected territory: nothing
+ok   farm soil support: nothing
+ok   unloaded spot: skipped
+ok   empty meadow: resource plant placed
+cave categories cave_cap
+ok   cave floor at y -205: cave cap at 1/1536
+ok   empty cave floor: cave cap placed (placed)
+second cave spot at_target
+-- density cap
+capped at_target 20
+ok   cover at natural density: 20 of 20 at target
+ok   cover below natural density: placement resumes (15 of 20)
+-- sapling guard
+ok   cobble within 10 nodes: no sapling
+ok   farm soil within 10 nodes: no sapling
+ok   clear ground: meadow sapling placed (default:bush_sapling)
+ok   saplings stop at the natural tree count (2 placed)
+ok   grug_tree_regrowth off: no sapling
+-- budget
+ok   service 1 visits 21884 within budget
+ok   service 2 visits 21884 within budget
+ok   service 3 visits 27636 within budget
+ok   service 4 visits 35564 within budget
+ok   service 5 visits 13956 within budget
+ok   service 6 visits 41316 within budget
+ok   service 7 visits 33388 within budget
+ok   service 8 visits 27636 within budget
+ok   service 9 visits 44825 within budget
+ok   service 10 visits 41316 within budget
+ok   service 11 visits 43492 within budget
+ok   service 12 visits 43492 within budget
+ok   service 13 visits 29812 within budget
+ok   service 14 visits 13956 within budget
+ok   service 15 visits 39073 within budget
+ok   service 16 visits 39073 within budget
+ok   service 17 visits 13956 within budget
+ok   service 18 visits 13956 within budget
+ok   service 19 visits 43492 within budget
+ok   service 20 visits 58505 within budget
+ok   service 21 visits 41316 within budget
+ok   service 22 visits 21884 within budget
+ok   service 23 visits 36897 within budget
+ok   service 24 visits 23217 within budget
+ok   service 25 visits 50577 within budget
+ok   service 26 visits 27636 within budget
+ok   service 27 visits 49244 within budget
+ok   service 28 visits 21884 within budget
+ok   service 29 visits 6028 within budget
+ok   service 30 visits 41316 within budget
+peak accounted visits 60913 of 150000
+stat at_target 1
+stat placed 41
+stat roll 78
+stat visits 1010491
+DIGEST 1022860847
+RESULT PASS
