@@ -1344,8 +1344,9 @@ one-cell settlement checks are unchanged.
     palisade on its rampart (Gor Drazhak, and since Round 23 Kezamba's
     jungle-log palisade); Lethariel and Kezamba keep the narrower footprint
     their former planted belts were planned with. Walls follow the outline as
-    polylines, their walk walkable on half steps, and cross rivers and lakes as
-    arcades or timber decks with the walk out of the water;
+    polylines, their walk walkable on half steps, and cross rivers as arcades
+    or timber decks with the walk out of the water; a capital's civic lake is
+    its edge, and the wall ends on its shores in a turret;
   - Highcourt's one-level quay canal beside its outer ring lane (D58), sealed
     off natural water.
   The layout is a pure function of the seed and the code, so every boot of a

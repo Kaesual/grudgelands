@@ -77,19 +77,15 @@ layouts before (main) vs final:
 111 + 37 wet points, Kezamba 84). The planner's three neighbour passes could
 not lift the middle of such a crossing: the belt-era walk dipped to 21.5 over
 the cenote whose surface is ~36. New rule: over water the walk stands at least
-`WALL_CLEAR` above the surface (default 1, which changes nothing on the four
-unchanged capitals; 5 for the narrow kinds). Engine profile: Lethariel
-arcade — water surface 5 under the walk, one free course, arch masonry three
-courses, piers to the bed; Kezamba — deck 5 above the water, piles to the bed
-19 below the surface.
+`WALL_CLEAR` above the surface. The first delivery crossed both lakes as an
+arcade and a pile deck (`WALL_CLEAR` 5); the user's ruling replaced that with
+the shore termination below, and all kinds now use the default 1.
 
 ## Preparation and protection consistency
 
 - Core walls reach y 5 at most; core bounds (from cells) unchanged.
-- The overlay y range (`r7_capital_blueprint.lua`) now takes the depth below
-  the lowest walk from the edge kind's `footing` (24 as before for stone and
-  palisade; 28 for the narrow kinds, because a pile to the cenote bed under a
-  walk 5 above the surface reaches 25–26). Top: turret colonnettes and lamps
+- The overlay y range (`r7_capital_blueprint.lua`) keeps 24 below the lowest
+  walk (the first delivery's `footing` 28 for pile decks is gone with them). Top: turret colonnettes and lamps
   reach walk + 7, gatehouses gate floor + 13, inside the existing
   `+8` / gate `+9 +8`. Probe: every edge cell ≤ y_max.
 - Protection outline is built from the unchanged wall line; the narrow gate
@@ -121,9 +117,11 @@ Images (`round23-capital-walls/`, `render_blueprint.py`; it draws the pillar
 colonnettes as cubes, panes as grey slabs and `darkage_marble_tile_slab` as a
 flat colour): `highcourt-core-wall`, `dur-brannoc-core-wall`,
 `gor-drazhak-core-wall`, `nhal-veyr-core-bars-before`/`-after`,
-`lethariel-core-wall`, `lethariel-edge-gate`, `lethariel-edge-lake-arcade`,
-`lethariel-edge-turret`, `kezamba-edge-gate`, `kezamba-edge-lake-deck`,
-`kezamba-edge-turret`. Core images are blueprint renders; edge images are real
+`lethariel-core-wall`, `lethariel-edge-gate`, `lethariel-edge-turret`,
+`kezamba-edge-gate`, `kezamba-edge-turret`, and the shore follow-up's
+`lethariel-shore-south-gate`, `lethariel-shore-east-gate`,
+`kezamba-shore-gate`, `kezamba-shore-end-tower` (the first delivery's
+lake-arcade and lake-deck renders are removed). Core images are blueprint renders; edge images are real
 terrain dumped from the engine.
 
 ## Runtime test plan (fresh world)
@@ -135,20 +133,69 @@ terrain dumped from the engine.
 3. Nhal Veyr: the bar course runs merlon to merlon with no air gaps; look at
    bars on the east/west sides too.
 4. Lethariel: arrive by road; pale gatehouse with marble lintel, walk the
-   curtain, colonnettes, turret lamps at night; the arcade across the crown
-   lake (boat/swim underneath); the core's light wall against the pale
-   gatehouses and at the mere.
-5. Kezamba: palisade with pointed jungle-log stakes, gate passages, the deck
-   across the cenote; core palisade unchanged.
+   curtain, colonnettes, turret lamps at night; the crown lake open between
+   the south and east gatehouses, no masonry in the water; the core's light
+   wall against the pale gatehouses and at the mere.
+5. Kezamba: palisade with pointed jungle-log stakes, gate passages; the cenote
+   open between the east gatehouse and a closed timber end tower on the south
+   shore; core palisade unchanged.
 
 ## Open risks
 
-- Lethariel's arcade and Kezamba's deck now cut across the civic lakes: the
-  free course above the water is one node, so a swimmer passes under by
-  diving (boat clearance not tested). If the user prefers the lake as the boundary, the wall can
-  stop at the shores instead.
 - Styles are first versions by feel; the renders under-represent the pillar
   and bar shapes.
 - The narrow gatehouses (7 × 11) are smaller than the other capitals'.
-- `footing` 28 covers a 19-deep cenote bed; a deeper authored lake under an
-  edge would need a larger value.
+- Where the civic lake is the edge, the city is open from the water: a
+  swimmer or boat can enter between the shore ends (the ruling's intent).
+- The shore decision is per world: another seed's outline may leave a short
+  wall piece or put a gate near the water differently; the probe checks the
+  rules on any layout file.
+
+## Follow-up: the wall ends at the civic lakes' shores
+
+2026-09-28, user ruling after review: no wall over the civic lakes of
+Lethariel and Kezamba; the wall ends on both shores, closed on dry ground in
+the race's style. Branch `wp13-capital-walls-shore` off main `f5a545bd`.
+
+- **Planner** (`capital_planner.lua`): with `I.shore_distance` (passed by
+  `r7_capitals.lua` from the civic lake's authored indicator, distance =
+  `(0.5 - m) × LAKE_PROXY`), a non-gate wall point within `SHORE_KEEP` 6 of
+  the lake's water is flagged `l` in the payload; a dry stretch of fewer than
+  `SHORE_MIN_RUN` 12 points from a lake stretch to the next lake stretch or
+  gate is flagged too, so no stub of wall is left between two towers or
+  between a tower and a gatehouse. The first dry point beside each lake
+  stretch gets a shore-end turret unless it is a gate point (then the
+  gatehouse closes the end); ordinary turrets on lake points or within 6
+  points of an end turret are dropped. Gaps, the plot band, streets and
+  gates are computed before and without the flag.
+- **Writer** (`city_edge.lua`): no wall on a segment touching a lake point; a
+  shore-end turret's walk passage stays shut on its lake side, so the end
+  tower is closed (stone: the elf turret with colonnettes and its lamp;
+  palisade: the troll timber tower with turned points).
+- **Seed 4242 result.** Lethariel: 201 lake points from the south gatehouse
+  to the east gatehouse; both ends are gatehouses on the shore, 18 turrets
+  (was 26). Kezamba: 141 lake points from the east gatehouse to one closed
+  timber end tower on the south shore, 17 turrets (was 21). No gate or street
+  depends on a lake crossing: the payload apart from the wall lines (water,
+  roads and every capital street, `o g p s q`) is byte-identical to the
+  pre-Round-23 baseline, as are all six capitals' wall point positions; the
+  four other capitals' `w` and `t` lines are byte-identical to main.
+- **Evidence.** Probe (extended: no wall or turret cell over the civic lake,
+  no gate or turret on a lake point, every lake stretch closed by a gate or a
+  turret whose disc is dry): PASS on the final layouts; on main's layouts it
+  fails (12 753 and 6 146 cells over the lakes), so it detects the old
+  arcades. Nearest wall cell 8.1 (Lethariel) and 2.9 (Kezamba) nodes off the
+  water. Lethariel's east gatehouse, at its unchanged planned place on the
+  shore, has 52 cells inside the indicator's margin on synthetic ground; the
+  engine dump shows those columns are dry bank. Engine dumps of all four
+  shore ends: 0 edge-material nodes in any water column. Two engine runs
+  (150 s each, seed 4242, isolated, PASS, no ERROR); `check_lua.sh` passes.
+- **Review notes (Low) from the first delivery.** (1) The `WALL_CLEAR` pass
+  runs for every capital with the default 1; it only raises a walk at or
+  below the water, so it is harmless there (the four other capitals' walks
+  are byte-identical). (2) Lethariel's gate-tower serpentine band sits at a
+  fixed `g.y + 6`, so on a steep slope, where the tower's ground rises above
+  that, it can end up buried in the tower's lower courses; cosmetic.
+- Remaining wet points on these two edges (small non-lake waters: Lethariel
+  7 + 8, Kezamba 4 points) keep the ordinary arcade or deck with the default
+  clearance, like every other capital.

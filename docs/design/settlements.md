@@ -270,9 +270,11 @@ starts under each column's own ground, so a wall on a slope has no gap, and
 its walk rises and falls at most half a node per node (a slab on each half
 step), so it can be walked. Where the outline crosses a river the wall is an
 arcade: the walk on an arch, piers down to the bed, the river passing below.
-However long the crossing, the walk stays out of the water; Lethariel's and
-Kezamba's walls cross their civic lakes, which lie across their outlines for
-up to a few hundred nodes, five nodes above the surface. The wall carries no
+However long the crossing, the walk stays out of the water. A capital's
+**civic lake is its edge** (user ruling 2026-09-28): where Lethariel's crown
+lake or Kezamba's cenote reaches the outline, no wall stands on it or within
+six nodes of its water, and each end of the wall is closed on dry ground by a
+turret in the race's style (or by a gatehouse where a gate is the end). The wall carries no
 NPCs of its own; a capital's garrison is the four gatehouses of its civic
 core.
 
@@ -311,7 +313,8 @@ castle pillar in place of merlons, a marble-tiled walk, slim turrets about
 every 48 nodes each carrying an emberglass lamp, and gatehouses with a marble
 lintel over the passage. It stands on the footprint the belt was planned with
 (wall half 2, gate boxes 3 by 5), so the city inside is laid out exactly as
-before, and it crosses the crown lake as an arcade.
+before, and where the crown lake reaches the outline it ends on both shores
+in a closed turret.
 
 Lethariel also shows what happens when the map does not give a capital four
 usable quarters. Its crown lake reaches into the civic core itself, so the
@@ -334,8 +337,8 @@ precinct repeats the section at a reduced height -- three courses of beaten
 earth with a stake every other node -- so the city wall and the citadel wall
 read as one piece of engineering. Kezamba raises the same palisade (Round 23)
 in its own civic palisade's material: jungle-log stakes with a junglewood
-point on every stake, turned by column, a junglewood walk, and piles and a
-timber deck where it crosses the cenote.
+point on every stake, turned by column, and a junglewood walk; where the
+cenote reaches the outline it ends on both shores in a closed timber tower.
 
 **The orc capital's own shape.** Its roofs are flat decks behind crenellated
 breastworks rather than ridges, which is what its skyline is recognised by from
