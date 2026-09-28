@@ -23,7 +23,7 @@ for z0 = -3200, 3200 - size, 32 do
 					if y >= sl then snow = snow + 1 end
 					if biome == "grug_deep_forest" and y < 140 then
 						deep = deep + 1
-						local f = rule.forest(x, z, zone) / 4096
+						local f = rule.forest(x, z) / 4096
 						fsum, fsq = fsum + f, fsq + f * f
 						if f < 0.05 then open = open + 1 end
 					end

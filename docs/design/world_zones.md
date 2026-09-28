@@ -757,10 +757,13 @@ replaced; git history before this rewrite records that model.
     from a 224-node field (0.24–1.76 of the mean) times clearings from a
     64/20-node field (zero below a threshold, a short ramp above), which
     gives groves of roughly 150–300 nodes and clearings of 40–100. The field
-    is rescaled per zone so that its mean over each zone's land (a fixed
-    16-node grid) is exactly one: every zone keeps its mean tree density
-    (measured per zone within ±3 %). Deep forest and deep jungle trees are
-    then multiplied by 1.5. Shrubs and ground cover are not affected.
+    is rescaled per zone: each zone's scale makes its mean over the zone's
+    land (a fixed 16-node grid) one, and the scales are interpolated
+    bilinearly from a 64-node lattice (each lattice point takes the scale of
+    its zone), so no zone border shows a step and every zone keeps its mean
+    tree density within a few percent (measured 0.97–1.03). Deep forest and
+    deep jungle trees are then multiplied by 1.5. Shrubs and ground cover are
+    not affected.
   - **Planner.** Each decoration row's class (tree, last tree, shrub,
     band-only shrub, cover) picks one factor per column. A column is eligible
     with probability factor ÷ (class maximum), the class maximum being 5 for
@@ -768,6 +771,11 @@ replaced; git history before this rewrite records that model.
     by the class maximum, so the expected placements are the catalog density
     times the factor. Cover rows keep their former eligibility wherever the
     factor is one.
+  - **Shrubs on slopes.** Shrub templates (the shrub and band-only shrub
+    rows) place like the engine's own schematics: a leaf (a cell without
+    force placement) that would hit ground is left out instead of rejecting
+    the whole bush. The stem keeps the full rule, so no bush floats or buries
+    its stem. Trees keep the whole-template clearance rule.
 - **Substrate.** Native v7 remains the substrate for caves, ores, dungeons
   and strata, but its heightmap never selects the final surface, a mask, an
   operation or a priority. The writer may read that heightmap only as a local

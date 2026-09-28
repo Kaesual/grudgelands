@@ -14,7 +14,7 @@ for z = z0, z0 + size - 1 do
 		if what == "jitter" then
 			v = (rule.jitter(x, z) + 15) * 255 / 30
 		else
-			v = math.min(255, rule.forest(x, z, "z") * 255 / (2.5 * 4096))
+			v = math.min(255, rule.forest(x, z) * 255 / (2.5 * 4096))
 		end
 		bytes[#bytes + 1] = string.char(math.floor(v))
 	end

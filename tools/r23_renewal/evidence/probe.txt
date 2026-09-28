@@ -3,7 +3,9 @@ ACTION[Main]: [renewal_probe] species blight_gravewood -> grug_trees:gravewood_s
 ACTION[Main]: [renewal_probe] species bone_forest_gravewood -> grug_trees:gravewood_sapling growth true
 ACTION[Main]: [renewal_probe] species deep_forest_apple_tree -> default:sapling growth true
 ACTION[Main]: [renewal_probe] species deep_forest_aspen_tree -> default:aspen_sapling growth true
+ACTION[Main]: [renewal_probe] species deep_forest_bush -> default:bush_sapling growth true
 ACTION[Main]: [renewal_probe] species elf_forest_apple_tree -> default:sapling growth true
+ACTION[Main]: [renewal_probe] species elf_forest_bush -> default:bush_sapling growth true
 ACTION[Main]: [renewal_probe] species elf_forest_silverwood -> grug_trees:silverwood_sapling growth true
 ACTION[Main]: [renewal_probe] species emergent_jungle_tree -> default:emergent_jungle_sapling growth true
 ACTION[Main]: [renewal_probe] species jungle_edge_jungle_tree -> default:junglesapling growth true
@@ -17,59 +19,61 @@ ACTION[Main]: [renewal_probe] species pine_hills_small_pine_tree -> default:pine
 ACTION[Main]: [renewal_probe] species savanna_acacia_bush -> default:acacia_bush_sapling growth true
 ACTION[Main]: [renewal_probe] species savanna_acacia_tree -> default:acacia_sapling growth true
 ACTION[Main]: [renewal_probe] not renewed badlands_large_cactus: cactus seedling cannot grow on mesa clay
+ACTION[Main]: [renewal_probe] not renewed crags_pine_bush: pine bush sapling cannot grow on gravel
 ACTION[Main]: [renewal_probe] not renewed crags_snowy_pine: pine sapling cannot grow on gravel
 ACTION[Main]: [renewal_probe] not renewed deep_forest_apple_log: fallen log, not a growing plant
 ACTION[Main]: [renewal_probe] not renewed swamp_papyrus: reed stand, not a sapling species
-ACTION[Server]: [renewal_probe] starts ready 6 after 34 s
-ACTION[Server]: [renewal_probe] site emerged in 3.2 s
-ACTION[Server]: [renewal_probe] site (-1716,36,-2550) zone elandor_hearthpine_vale biome grug_pine_hills (start dwarf at (-1800,36,-2550))
+ACTION[Server]: [renewal_probe] starts ready 6 after 30 s
+ACTION[Server]: [renewal_probe] site emerged in 2.5 s
+ACTION[Server]: [renewal_probe] site (-1892,37,-2550) zone elandor_hearthpine_vale biome grug_pine_hills (start dwarf at (-1800,37,-2550))
 ACTION[Server]: [renewal_probe] non-natural node names: 766
 ACTION[Server]: [renewal_probe] ok   site has open ground
 ACTION[Server]: [renewal_probe] site support default:dirt_with_grass light 15 level 1
 ACTION[Server]: [renewal_probe] category resource carrot p=0.00195 hosts=3 species=grug_mapgen:carrot_source
 ACTION[Server]: [renewal_probe] category resource wild_onion p=0.00098 hosts=3 species=grug_mapgen:wild_onion_source
 ACTION[Server]: [renewal_probe] category cover cover:grug_pine_hills p=0.06000 hosts=4 species=default:fern_1,default:fern_2,default:fern_3
-ACTION[Server]: [renewal_probe] category woody woody:grug_pine_hills p=0.01300 hosts=3 species=default:blueberry_bush_sapling,default:pine_bush_sapling,default:pine_sapling,default:pine_sapling
+ACTION[Server]: [renewal_probe] category tree tree:grug_pine_hills p=0.00627 hosts=3 species=default:pine_sapling,default:pine_sapling
+ACTION[Server]: [renewal_probe] category shrub shrub:grug_pine_hills p=0.00700 hosts=3 species=default:blueberry_bush_sapling,default:pine_bush_sapling
 ACTION[Server]: [renewal_probe] ok   the site's biome palette hosts ground cover
-ACTION[Server]: [renewal_probe] ok   cleared ground grows cover: placed default:fern_3 (87 us)
-ACTION[Server]: [renewal_probe] ok   cover-filled box (159 plants) takes nothing: at_target
+ACTION[Server]: [renewal_probe] ok   cleared ground grows cover: placed default:fern_1 (139 us)
+ACTION[Server]: [renewal_probe] ok   cover-filled box (114 plants) takes nothing: at_target
 ACTION[Server]: [renewal_probe] ok   a player 8 nodes away blocks placement: near_player
 ACTION[Server]: [renewal_probe] ok   a second player 19 nodes above blocks placement: near_player
 ACTION[Server]: [renewal_probe] ok   farm soil support: farm_soil
-ACTION[Server]: [renewal_probe] ok   start pad: excluded
+ACTION[Server]: [renewal_probe] ok   start pad: hard_row
 ACTION[Server]: [renewal_probe] no loaded road corridor within 46 of the start (covered by the fixture)
-ACTION[Server]: [renewal_probe] ok   dry anchor grade (-1724,37,-2596) grows cover: placed
+ACTION[Server]: [renewal_probe] ok   dry anchor grade (-1896,36,-2596) grows cover: placed
 ACTION[Server]: [renewal_probe] no alterable writer-bare functional surface in the loaded boxes
-ACTION[Server]: [renewal_probe] ok   cobble 4 nodes away blocks the sapling: guard (1206 us)
+ACTION[Server]: [renewal_probe] ok   cobble 4 nodes away blocks the sapling: guard (1278 us)
 ACTION[Server]: [renewal_probe] ok   farm soil 5 nodes away blocks the sapling: guard
-ACTION[Server]: [renewal_probe] ok   clear natural ground takes a sapling with a running timer: placed default:pine_bush_sapling (1000 us)
-ACTION[Server]: [renewal_probe] ok   sapling grug_trees:gravewood_sapling timer started and grows (now grug_trees:gravewood_tree, 19 tree/leaf nodes)
+ACTION[Server]: [renewal_probe] ok   clear natural ground takes a sapling with a running timer: placed default:pine_sapling (1073 us)
+ACTION[Server]: [renewal_probe] ok   sapling grug_trees:gravewood_sapling timer started and grows (now grug_trees:gravewood_tree, 25 tree/leaf nodes)
 ACTION[Server]: [renewal_probe] ok   sapling default:sapling timer started and grows (now default:tree, 76 tree/leaf nodes)
-ACTION[Server]: [renewal_probe] ok   sapling default:aspen_sapling timer started and grows (now default:aspen_tree, 93 tree/leaf nodes)
-ACTION[Server]: [renewal_probe] ok   sapling grug_trees:silverwood_sapling timer started and grows (now grug_trees:silverwood_tree, 90 tree/leaf nodes)
-ACTION[Server]: [renewal_probe] ok   sapling default:emergent_jungle_sapling timer started and grows (now default:jungletree, 475 tree/leaf nodes)
-ACTION[Server]: [renewal_probe] ok   sapling default:junglesapling timer started and grows (now default:jungletree, 112 tree/leaf nodes)
-ACTION[Server]: [renewal_probe] ok   sapling default:bush_sapling timer started and grows (now default:bush_stem, 14 tree/leaf nodes)
-ACTION[Server]: [renewal_probe] ok   sapling default:blueberry_bush_sapling timer started and grows (now default:blueberry_bush_leaves_with_berries, 6 tree/leaf nodes)
+ACTION[Server]: [renewal_probe] ok   sapling default:aspen_sapling timer started and grows (now default:aspen_tree, 90 tree/leaf nodes)
+ACTION[Server]: [renewal_probe] ok   sapling default:bush_sapling timer started and grows (now default:bush_stem, 12 tree/leaf nodes)
+ACTION[Server]: [renewal_probe] ok   sapling grug_trees:silverwood_sapling timer started and grows (now grug_trees:silverwood_tree, 87 tree/leaf nodes)
+ACTION[Server]: [renewal_probe] ok   sapling default:emergent_jungle_sapling timer started and grows (now default:jungletree, 463 tree/leaf nodes)
+ACTION[Server]: [renewal_probe] ok   sapling default:junglesapling timer started and grows (now default:jungletree, 95 tree/leaf nodes)
+ACTION[Server]: [renewal_probe] ok   sapling default:blueberry_bush_sapling timer started and grows (now default:blueberry_bush_leaves_with_berries, 7 tree/leaf nodes)
 ACTION[Server]: [renewal_probe] ok   sapling default:pine_bush_sapling timer started and grows (now default:pine_bush_stem, 12 tree/leaf nodes)
 ACTION[Server]: [renewal_probe] ok   sapling default:pine_sapling timer started and grows (now default:pine_tree, 90 tree/leaf nodes)
-ACTION[Server]: [renewal_probe] ok   sapling default:acacia_bush_sapling timer started and grows (now default:acacia_bush_stem, 16 tree/leaf nodes)
-ACTION[Server]: [renewal_probe] ok   sapling default:acacia_sapling timer started and grows (now default:acacia_tree, 86 tree/leaf nodes)
+ACTION[Server]: [renewal_probe] ok   sapling default:acacia_bush_sapling timer started and grows (now default:acacia_bush_stem, 14 tree/leaf nodes)
+ACTION[Server]: [renewal_probe] ok   sapling default:acacia_sapling timer started and grows (now default:acacia_tree, 87 tree/leaf nodes)
 ACTION[Server]: [renewal_probe] ok   apple tree template: 4 apples, all param2 0
 ACTION[Server]: [renewal_probe] natural apples in the site box: 0, param2 0: 0
 ACTION[Server]: [renewal_probe] ok   every generated apple carries param2 0 (regrowing)
 ACTION[Server]: [renewal_probe] ok   a picked natural apple leaves a timed mark
-ACTION[Server]: [renewal_probe] natural blueberry bushes' berry leaves in the site box: 6
+ACTION[Server]: [renewal_probe] natural blueberry bushes' berry leaves in the site box: 55
 ACTION[Server]: [renewal_probe] ok   picked blueberries leave timed leaves
 ACTION[Server]: [renewal_probe] ok   no ecology LBM is registered
-ACTION[Server]: [renewal_probe] service cost: 60 services, mean 191 us, worst 1055 us, worst accounted visits 52681 of 150000
+ACTION[Server]: [renewal_probe] service cost: 60 services, mean 247 us, worst 1167 us, worst accounted visits 49708 of 150000
 ACTION[Server]: [renewal_probe] ok   per-player node visits stay within the budget
-ACTION[Server]: [renewal_probe] ok   no placement within 20 nodes of the player (2 placed)
-ACTION[Server]: [renewal_probe] stat at_target 50
-ACTION[Server]: [renewal_probe] stat excluded 79
-ACTION[Server]: [renewal_probe] stat no_ground 31
-ACTION[Server]: [renewal_probe] stat no_habitat 12
-ACTION[Server]: [renewal_probe] stat placed 5
-ACTION[Server]: [renewal_probe] stat roll 63
-ACTION[Server]: [renewal_probe] stat visits 1015391
+ACTION[Server]: [renewal_probe] ok   no placement within 20 nodes of the player (6 placed)
+ACTION[Server]: [renewal_probe] stat at_target 70
+ACTION[Server]: [renewal_probe] stat hard_row 42
+ACTION[Server]: [renewal_probe] stat no_ground 61
+ACTION[Server]: [renewal_probe] stat no_habitat 1
+ACTION[Server]: [renewal_probe] stat placed 8
+ACTION[Server]: [renewal_probe] stat roll 58
+ACTION[Server]: [renewal_probe] stat visits 1359391
 ACTION[Server]: [renewal_probe] RESULT PASS (31 checks, 0 failures)

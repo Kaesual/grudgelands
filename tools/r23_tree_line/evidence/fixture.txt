@@ -18,9 +18,13 @@ ok   dust band is patchy and thins out over 20 nodes
 ok   deep forest and deep jungle trees x1.5, other forests x1
 ok   decoration rows map to their classes
 -- forest field per zone
-seed 4242: 38 zones, zone means 0.973 .. 1.018, world 0.997
+seed 4242: largest zone-scale change between neighbour columns 0.0077
+ok   seed 4242: the zone scale changes by under 2 % per node (no step at zone borders)
+seed 4242: 38 zones, zone means 0.971 .. 1.034, world 0.998
 ok   seed 4242: every zone's forest mean within 4 %, the world's within 1 %
-seed 10536739806879207652: 38 zones, zone means 0.980 .. 1.028, world 1.002
+seed 10536739806879207652: largest zone-scale change between neighbour columns 0.0074
+ok   seed 10536739806879207652: the zone scale changes by under 2 % per node (no step at zone borders)
+seed 10536739806879207652: 38 zones, zone means 0.982 .. 1.033, world 1.002
 ok   seed 10536739806879207652: every zone's forest mean within 4 %, the world's within 1 %
 -- surface selector
 ramp: 8436 cap columns (0 wrong), band 1858 with dust 985, dust below band 0
@@ -30,23 +34,23 @@ ok   no snow below the band
 ok   steep rock faces above the snow line stay bare rock
 ok   y 284: crags snowy in places, savanna (snow band from 285) bare
 -- planner
-ramp planner: 27240 decorations, 0 trees above the tree line, 0 shrubs above the shrub band, 0 on snow, shrubs 2825 in the band / 370 below
+ramp planner: 27269 decorations, 0 trees above the tree line, 0 shrubs above the shrub band, 0 on snow, shrubs 2831 in the band / 366 below
 ok   no tree at or above its tree line
 ok   no shrub 40 or more above the tree line
 ok   no decoration on a snow cap or a dust column
 ok   band-only shrubs grow in the crags and the deep forest band
 ok   the crags snowy pine still grows
 ok   chunk seams: shared cells identical across planners and slices (14 shared cells)
-grug_deep_forest: 7091 trees, expected 7079.4 (ratio 1.002); catalog-only 4690, ratio 1.512
+grug_deep_forest: 7048 trees, expected 7079.4 (ratio 0.996); catalog-only 4692, ratio 1.502
 ok   grug_deep_forest: planner places catalog density x factor
 ok   grug_deep_forest: forest field and dense factor give x1.5 overall
-grug_deep_jungle: 8473 trees, expected 8427.9 (ratio 1.005); catalog-only 5586, ratio 1.517
+grug_deep_jungle: 8444 trees, expected 8427.9 (ratio 1.002); catalog-only 5647, ratio 1.495
 ok   grug_deep_jungle: planner places catalog density x factor
 ok   grug_deep_jungle: forest field and dense factor give x1.5 overall
-grug_pine_hills: 1338 trees, expected 1348.5 (ratio 0.992); catalog-only 1337, ratio 1.001
+grug_pine_hills: 1344 trees, expected 1348.5 (ratio 0.997); catalog-only 1342, ratio 1.001
 ok   grug_pine_hills: planner places catalog density x factor
 ok   grug_pine_hills: forest field and dense factor give x1 overall
-grug_elf_forest: 1569 trees, expected 1573.3 (ratio 0.997); catalog-only 1560, ratio 1.006
+grug_elf_forest: 1558 trees, expected 1573.3 (ratio 0.990); catalog-only 1565, ratio 0.996
 ok   grug_elf_forest: planner places catalog density x factor
 ok   grug_elf_forest: forest field and dense factor give x1 overall
 -- renewal
@@ -55,7 +59,7 @@ ok   renewal grows no decoration on snow
 ok   renewal: no tree above the tree line, shrubs in the band
 -- real world planner
 stormvault peak near -1480,-708 y 485
-peak area: 556 decorations, 75 trees (30 in the thinning band), 0 violations
+peak area: 558 decorations, 77 trees (32 in the thinning band), 0 violations
 ok   real terrain: trees thin in the band, none above the line, nothing on snow
-DIGEST 2072861016
+DIGEST 1334795136
 RESULT PASS

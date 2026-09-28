@@ -77,7 +77,7 @@ check(offsets_ok, "lines 160/220/280 (+jitter); warm biomes and the Skyglass zon
 -- Class curves against an independent reference (float), every class.
 local function reference(x, z, y, biome, zone)
 	local start, line, snow = rule.lines(x, z, biome, zone)
-	local forest = rule.forest(x, z, zone)
+	local forest = rule.forest(x, z)
 	local dense = (biome == "grug_deep_forest" or biome == "grug_deep_jungle") and 1.5 or 1
 	local tree = math.min(forest * dense, 5 * ONE)
 	local last = math.min(forest, 5 * ONE)
@@ -118,7 +118,7 @@ do
 	local x, z = 333, -777
 	local start, line, snow = rule.lines(x, z, "grug_crags", ZONE)
 	local function f(y, class) return rule.factor(class, x, z, y, "grug_crags", ZONE) end
-	check(f(start - 1, "tree") == rule.forest(x, z, ZONE) and f(line, "tree") == 0 and
+	check(f(start - 1, "tree") == rule.forest(x, z) and f(line, "tree") == 0 and
 		f(line - 1, "tree") > 0, "trees full below the tree start, zero at the tree line")
 	check(f(start + 29, "last_tree") == f(start - 1, "last_tree") and
 		f(start + 45, "last_tree") > f(start + 45, "tree"),
@@ -161,7 +161,7 @@ do
 	local ok = true
 	for z = -1000, 1000, 97 do
 		for x = -1000, 1000, 89 do
-			local forest = rule.forest(x, z, ZONE)
+			local forest = rule.forest(x, z)
 			if rule.factor("tree", x, z, 50, "grug_deep_forest", ZONE) ~=
 					math.min(floor(forest * 3 / 2), 5 * ONE) or
 					rule.factor("tree", x, z, 50, "grug_deep_jungle", ZONE) ~=
@@ -197,17 +197,24 @@ for index, seed in ipairs(SEEDS) do
 	local W = dofile(repo .. "/tools/r23_tree_line/world_source.lua")(repo, seed)
 	worlds[index] = W
 	local r = habitat.vegetation_rule(seed, W.planner_source.land_zone_at)
-	local sum, n, total, count = {}, {}, 0, 0
+	local sum, n, total, count, step_max = {}, {}, 0, 0, 0
 	for z = -3331, 3336, 12 do
 		for x = -3729, 3736, 12 do
 			local water, _, zone = W.planner_source.column_values_at(x, z)
 			if water == "land" and zone then
-				local f = r.forest(x, z, zone)
+				local f = r.forest(x, z)
 				sum[zone], n[zone] = (sum[zone] or 0) + f, (n[zone] or 0) + 1
 				total, count = total + f, count + 1
 			end
+			local scale = r.forest_scale(x, z)
+			step_max = math.max(step_max, abs(r.forest_scale(x + 1, z) - scale),
+				abs(r.forest_scale(x, z + 1) - scale))
 		end
 	end
+	out(("seed %s: largest zone-scale change between neighbour columns %.4f"):format(
+		seed, step_max))
+	check(step_max < 0.02, "seed " .. seed .. ": the zone scale changes by under 2 % " ..
+		"per node (no step at zone borders)")
 	local lo, hi, zones = math.huge, -math.huge, 0
 	for zone, s in pairs(sum) do
 		local mean = s / n[zone] / ONE

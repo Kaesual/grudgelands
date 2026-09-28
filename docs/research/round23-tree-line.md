@@ -23,9 +23,15 @@ changes: fresh worlds only.
   dust rows; decoration population 48 → 52.
 - `wp40/r6_planner.lua`: per-column class factors and snow flag in the cell
   scratch; a row's column is eligible with probability factor ÷ (class max ×
-  ONE) by digest bytes 2–3, the cell budget multiplier is the class max
+  ONE) by the digest's last two bytes (31–32; the rank order reads the first
+  bytes, so thinning and ranking do not correlate), the cell budget multiplier is the class max
   (trees 5, shrubs 3, cover 1); columns with snow host no decoration.
-- `wp40/r6_settlement.lua`: passes the zone to the selector (three calls).
+- `wp40/r6_settlement.lua`: passes the zone to the selector (three calls);
+  shrub templates (`shrub`/`shrub_band` rows) skip a non-force cell (a leaf)
+  that would hit ground instead of rejecting the whole bush, as the engine's
+  own schematic placement does (`mg_schematic.cpp` blitToVManip); force
+  cells (the stem) keep the full rule. Production writer and evidence path
+  alike (coordinator decision after review, 2026-09-28).
 - `wp40/zones.lua` + `wp40/planner.lua`: `planner_source.land_zone_at`
   (horizontal classification only) for the normalisation grid.
 - `wp40/r7_r6_manifest.lua`: four band-only rows — `crags_pine_bush`
@@ -62,11 +68,14 @@ Class factors (ONE = catalog density), y = planned terrain height:
 | cover | 1 up to the snow line, 0 from it |||||
 
 F = forest field, D = 1.5 in deep forest and deep jungle (tree class only),
-clamped at 5. F = raw × count_zone / sum_zone, raw = grove × open, grove =
+clamped at 5. F = raw × S(x, z), raw = grove × open, grove =
 (N224 + 160)/672 (0.24–1.76), open = clamp((b − 250)/80, 0, 1) with
-b = (3·N64 + N20)/4; count/sum of raw over the zone's land on a fixed 16-node
-grid (x −3736…3736, z −3336…3336): every zone's mean is one. Construction
-0.24 s under LuaJIT per environment.
+b = (3·N64 + N20)/4. The zone scale of a zone is count/sum of raw over its
+land on a fixed 16-node grid (x −3736…3736, z −3336…3336); S(x, z) is the
+bilinear interpolation of those scales on a 64-node lattice (each lattice
+point carries its own zone's scale, water the world scale), so the scale
+changes by under 0.8 % per node and zone borders show no step (coordinator
+decision after review). Construction 0.24 s under LuaJIT per environment.
 
 Snow class: 2 (snowblock top + snow dust over the column's own filler) at
 y ≥ snow; 1 (dust on the biome's top) in the 20 nodes below where
@@ -110,24 +119,25 @@ Rulings target about 5 % treeless and about 2 % snowy.
 - Portable fixture `luajit tools/r23_tree_line/fixture.lua "$PWD"` (real rule,
   real r6_content selector over a synthetic content contract, real r6_planner,
   real vegetation_density, real zones.lua planner source):
-  `RESULT PASS`, 41 checks, `DIGEST 2072861016`
+  `RESULT PASS`, 43 checks, `DIGEST 1334795136`
   (`tools/r23_tree_line/evidence/fixture.txt`). Covers jitter bounds and
   smoothness, determinism (two rules, 7 heights × 25 000 columns), another
   seed moves the lines, offsets (10 cold biomes, 6 warm, the Skyglass zone),
   every class curve against an independent float reference (worst 1.45/4096),
   the dust band (share 0.96/0.80/0.50/0.20/0.02 at 1/5/10/15/20 below the
   line), deep forests ×1.5; per-zone forest means on an independent grid,
-  two seeds: 0.973–1.018 and 0.980–1.028 over 38 zones, world 0.997/1.002;
+  two seeds: 0.971–1.034 and 0.982–1.033 over 38 zones, world 0.998/1.002,
+  and the interpolated zone scale changes by at most 0.0077 per node;
   the selector (cap rows, patchy band, no snow below it, bare rock faces,
-  savanna 40 higher); the planner on a ramp (27 240 decorations: no tree at or
+  savanna 40 higher); the planner on a ramp (27 269 decorations: no tree at or
   above its line, no shrub beyond the band, none on snow, band-only shrubs and
   the crags pine present), chunk seams (the same cells from different
   planners and from two adjacent 80×80 slices: identical rows), realized trees
-  vs catalog × factor on flat worlds (deep forest 1.002, deep jungle 1.005,
-  pine hills 0.992, elf forest 0.997; ×1.51/1.52/1.00/1.01 against the
+  vs catalog × factor on flat worlds (deep forest 0.996, deep jungle 1.002,
+  pine hills 0.997, elf forest 0.990; ×1.50/1.50/1.00/1.00 against the
   catalog-only planner); renewal densities equal catalog × the planner's
   factors per class at 1 597 sites, nothing on snow; the real Stormvault peak
-  area (seed 4242): 556 decorations, 75 trees, 30 of them in the thinning
+  area (seed 4242): 558 decorations, 77 trees, 32 of them in the thinning
   band, no violation.
 - Renewal fixture `tools/r23_renewal/fixture.lua` updated to the tree/shrub
   split (rule from seed "1041", whose fixture area lies in groves): `RESULT
@@ -137,7 +147,7 @@ Rulings target about 5 % treeless and about 2 % snowy.
   no SETGLOBAL.
 - No PUC run (mapgen exemption).
 
-## Engine runs (budget about 4 × ≤ 5 min)
+## Engine runs (budget about 4 × ≤ 5 min, plus 2 after the review)
 
 All through `tools/luanti_headless.sh` via `tools/r23_tree_line/run_dump.sh`
 (fresh isolated user path, `LC_ALL=C`, `chrt --idle 0 ionice -c3`, seed 4242),
@@ -154,6 +164,13 @@ one at a time.
    (`evidence/verify-summary.txt`, `verify-chunks.log.gz`); then both render
    boxes dumped; normal shutdown, about 2 min, no ERROR.
 4. Before, the same dumps from an exported main tree (about 1.5 min, PASS).
+5. After the review fixes (shrub leaves, interpolated zone scale, thinning
+   bytes): run 3 again on the final bytes, about 2 min, PASS, no ERROR:
+   **67 fast-path chunks compared, 0 differ**; both after renders replaced.
+6. The renewal engine probe `tools/r23_renewal/run.sh` (idle priority, about
+   2 min): `RESULT PASS (31 checks, 0 failures)`, now with the tree class;
+   every sapling species grows, service mean 247 µs, worst 1167 µs
+   (`tools/r23_renewal/evidence/probe.txt`).
 
 Snow dust sits at terrain + 1, inside the preparation envelope's `above`
 reach (≥ tallest template + 1), so `preparation_source.lua` and the fast-path
@@ -166,9 +183,12 @@ bounds needed no change; run 3 confirms it on a mountain above the snow line.
   −1041, z −896…−673, y 93–442 (crags and snowy crags). Surface tops in the
   dump: before gravel 22 621 / stone 19 274 / snow dust 8 221 (snowy crags
   only); after snow 27 204 / gravel 13 061 / stone 9 860 (rock faces stay
-  bare). Crags pine trunks 21 → 11.
+  bare). Crags pine trunks 21 → 6; pine bush stems 0 → 58.
+  `mountain-before-ne.png` / `mountain-after-ne.png` show the same box from
+  the opposite corner, where the band faces the camera: the pine bush belt
+  below the patchy snow and the snowy pines as the last trees.
 - `forest-before.png` / `forest-after.png`: Ashenward March deep forest,
-  x 240…463, z −768…−545, y 37–150. Trunk columns 1 276 → 1 552 (×1.22: the
+  x 240…463, z −768…−545, y 37–150. Trunk columns 1 276 → 1 507 (×1.18: the
   deep-forest ×1.5 times this box's local field mean, which contains a large
   clearing); visible groves and open ground.
 
@@ -185,20 +205,18 @@ reach the snow line); shrubs and cover do not follow the forest field.
 
 ## Findings and open points
 
-- **Steep crags keep few shrubs.** In the mountain render box the planner
-  places 72 crags pine bushes and 20 crags pines (portable planner, same
-  seed), the writer keeps 1 bush and 11 pines: templates are rejected where a
-  cell would replace natural ground (existing writer rule, e.g. a 3×3 bush on
-  a slope). The shrub belt therefore shows mainly on gentler band ground
-  (pine hills, bone forest, deep forest). A lower-profile shrub or a
-  slope-tolerant placement would be a separate decision.
+- **Shrubs on steep crags (resolved).** Before the review fix the writer
+  kept 1 of 72 planned crags pine bushes in the mountain box: a 3×3 bush on a
+  slope was rejected whole. With leaves skipped against ground, run 5 keeps
+  **58 of 68 planned bushes (85 %)** (planned: portable planner, same seed and
+  bytes). Crags pines keep the whole-template rule: 6 of 18 planned stand.
 - The crags pine bush does not renew (sapling needs soil; crags are gravel).
 - Realized density is still limited by template collisions; dense groves lose
   a few more trees to overlap than open woodland (not measured).
-- The zone normalisation makes the forest factor step slightly at zone
-  borders (per-zone scale about 1.0–1.7 of the raw field).
-- The renewal engine probe (`tools/r23_renewal/grug_probe_renewal`) was
-  updated to the tree class but not re-run.
+- Zone-border steps of the forest scale are resolved by the 64-node
+  interpolation; zone means stay within 0.97–1.03.
+- A skipped bush leaf leaves its box reserved (occupancy), as an accepted
+  bush always did.
 
 ## Runtime test plan (fresh world)
 
