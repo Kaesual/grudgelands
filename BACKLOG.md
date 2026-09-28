@@ -198,7 +198,7 @@ post-processing work are unchanged.
 Only with that data is the v7 plateau (caves everywhere under the
 surface) worth revisiting; Round 9 shipped MAP-C without it (ruling 35).
 
-**Round 23 (2026-09-28):**
+**Round 23 (2026-09-28)** (Phase 2 tree line: [receipt](docs/research/round23-tree-line.md)):
 - Full-world preparation now covers the whole column players can trigger,
   from the neighbourhood's lowest bed minus reach up to above the flight
   ceiling.

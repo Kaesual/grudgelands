@@ -72,8 +72,9 @@ habitat-driven vegetation renewal and capital walls; coordinated by Claude with
 native Opus implementation and independent Opus reviews (user routing for that
 session). [Plan](docs/planning/round23-world-life-plan.md),
 [completion and GUI checklist](docs/research/round23-completion.md). Merged and
-synchronized; no remote push. Next: Phase 2 (tree line, forests, snow) after a
-design discussion with the user.
+synchronized; no remote push. Phase 2 (tree line, shrub band, snow, forests and
+clearings) and the lake-wall playtest fix are merged as `f54c299d`. Next: user
+preparation of a fresh production world and playtest.
 
 **Round 21 delivered locally, 2026-09-24.** Reviewed terrain/access, mining,
 furnaces, aquatic detail and playtest fixes merged as `96c40fa3` and synchronized

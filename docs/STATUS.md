@@ -10,8 +10,9 @@ Updated 2026-09-28. This is the delivery pointer, not another game specification
   taller cores, closed Nhal Veyr bars, walls end at lake shores). All lanes
   independently reviewed, merged and synchronized to Luanti.
   [Completion and GUI checklist](research/round23-completion.md),
-  [plan](planning/round23-world-life-plan.md). No push. Phase 2 (tree line)
-  awaits a design discussion.
+  [plan](planning/round23-world-life-plan.md). No push. Phase 2 (tree line
+  with shrub band and snow caps, forests and clearings) and the lake-wall
+  playtest fix are merged (`f54c299d`) and synchronized.
 
 - **Playtest fixes 2026-09-28 delivered locally:** food click/hold input,
   server-side node UIs, crosshair range feedback with own crosshair, 2.5 s bow

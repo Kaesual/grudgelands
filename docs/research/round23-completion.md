@@ -12,6 +12,8 @@ as separate native Opus subagents; no reviewer reviewed its own work.
 | B — habitat-driven vegetation renewal (WP32/WP33 area) | `wp33-habitat-renewal` | `f5a545bd` | [receipt](round23-habitat-renewal.md) |
 | C — capital walls (WP13) | `wp13-capital-walls` | `7396339f` | [receipt](round23-capital-walls.md) |
 | C follow-up — walls end at the civic lake shores | `wp13-capital-walls-shore` | `28a9a2a3` | [receipt](round23-capital-walls.md) |
+| Phase 2 — tree line, shrub band, snow, forests and clearings | `wp40-tree-line` | `b6b38d1d` | [receipt](round23-tree-line.md) |
+| Playtest fix — lake walls continuous, into the water, lower elf crown | `wp13-capital-walls-lake-fix` | `f54c299d` | [receipt](round23-capital-walls.md) |
 
 **A.** In full-world mode each horizontal tile is prepared from the
 neighbourhood's lowest surface or water bed minus the generate reach (176
@@ -86,7 +88,42 @@ byte-identical.
      the lake.
    - Kezamba: palisade and gates; the wall ends at the cenote.
 
+## Phase 2 and playtest fix
+
+**Phase 2, the tree line** (rulings in the [plan](../planning/round23-world-life-plan.md)):
+- Trees thin from y 160 to none at 220. A smooth jitter of up to ±15 moves
+  the lines, and warm biomes sit 40 higher.
+- The biome's own shrubs rise to three times normal density and reach 40
+  above the tree line. On slopes, leaves that would hit ground are skipped;
+  in the Stormvault test box 85 % of the planned shrubs are kept.
+- Snow caps start at 280, with a patchy band of 20 nodes below. Rock faces
+  stay bare.
+- Groves and clearings come from a noise field that keeps each zone's mean,
+  smoothly interpolated across zone borders. Deep forest and deep jungle get
+  1.5 times the tree density.
+- Renewal reads the same rule, with trees and shrubs counted separately.
+- Review: PASS. Both open points (shrubs on slopes, steps at zone borders)
+  were fixed before merge.
+
+**Playtest fix for the lake walls:**
+- The wall is continuous on land and interrupted only by real lake
+  crossings.
+- Each lake end reaches 1–3 walled water points on a solid footing and ends
+  in a closed head.
+- Tongues and spits get no lone wall pieces. The rule was checked on 119
+  synthetic outlines per capital, including the user's world.
+- The elf crown is lower: brick merlons with marble caps.
+- The other capitals are byte-identical.
+- Review: PASS. The one follow-up (the inside-spit check) was fixed before
+  merge.
+
+Additional runtime checks on a fresh world:
+- Fly the Stormvault massif around (−950, −524): trees give way to shrubs,
+  then alpine meadow, patchy snow and the snow cap.
+- Walk through a deep forest: dense groves alternating with clearings.
+- At Lethariel and Kezamba, the wall runs into the lake with no beach gap
+  and there is no lone wall piece.
+
 ## Next
 
-Phase 2 (tree line, forests and clearings, snow and ice) starts with a design
-discussion. Then the user prepares the production world on a fresh server.
+The user prepares the production world on a fresh server and playtests.
