@@ -807,7 +807,13 @@ function grug_mobs.register_mob(name, def)
 		end
 	end
 
+	if def._grug_swimmer then
+		grug_mobs.prepare_swimmer_def(name, def)
+	end
 	mobs:register_mob(name, def)
+	if def._grug_swimmer then
+		grug_mobs.install_swimmer_guard(name)
+	end
 	-- Target acquisition can happen after do_custom in mobs_redo's one-second
 	-- general_attack pass, or before the first custom tick through group alert.
 	-- Put the boss-group activity seam on the registered prototype so every
@@ -845,6 +851,7 @@ dofile(modpath .. "/levels.lua")
 dofile(modpath .. "/aggro.lua")
 dofile(modpath .. "/idle_health.lua")
 dofile(modpath .. "/flight.lua")
+dofile(modpath .. "/swimmer.lua")
 dofile(modpath .. "/verbs.lua")
 dofile(modpath .. "/disposition.lua")
 dofile(modpath .. "/telegraph.lua")

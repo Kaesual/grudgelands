@@ -1238,8 +1238,11 @@ yaw-rotated targeting box is separately padded to cover the visible body:
 `{-0.62, -0.06, -0.76, 0.62, 1.04, 0.76}`. The base, plague and jungle boars
 share this correction. Other families are adjusted from specific playtest reports.
 
-Reed Angelfish are passive freshwater critters, with no XP, quality loot or item
-drops. Their habitat is planned natural inland water, with source water at the
+Reed Angelfish are passive freshwater critters, with no XP or quality loot; a
+kill drops exactly one ordinary Raw Fish (better fish only from fishing). Like
+the Kraken Guard they never leave the water: no climbing onto a bank, shore
+plants and waterlilies do not count as water, and a swimmer displaced out of
+the water swims back if water is adjacent or otherwise flops in place. Their habitat is planned natural inland water, with source water at the
 spawn position and above it, next to a sand bed, above the column's natural
 bed: lakes (and bays) at any altitude, not rivers, whose river water is
 another liquid, and not cave pools. They use the existing critter spawn

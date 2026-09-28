@@ -1839,12 +1839,15 @@ varied deterministic patches at similar overall density. Rooted freshwater
 waterweed sparsely decorates safe, 2–6-node-deep freshwater over natural sand
 without displacing the water column. Thin waterlilies occupy the air node
 immediately above a similarly safe freshwater surface and remain passable.
-Reed Angelfish use existing capped critter spawning, without XP/loot or
-fishing changes.
+Reed Angelfish use existing capped critter spawning, without XP, quality loot
+or fishing changes.
 
 The freshwater family is the Reed Angelfish, using ElCeejo's MIT-licensed
 Animalia angelfish mesh and texture at commit
 `5895f403fd43a9464e06b3675af3495f50565a3f`. It swims only in freshwater
-source columns over natural sand, has no XP or drops, and uses the ambient
-spawn cap of two. It has no school, breeding, pathfinding or fishing
+source columns over natural sand and never leaves the water (it cannot climb
+a bank, and shore plants and waterlilies are not water to it); stranded away
+from water it flops in place. It gives no XP, drops exactly one ordinary Raw
+Fish (like a land critter's one meat; the better fish come only from
+fishing) and uses the ambient spawn cap of two. It has no school, breeding, pathfinding or fishing
 integration.

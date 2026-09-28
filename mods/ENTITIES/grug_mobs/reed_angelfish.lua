@@ -27,6 +27,9 @@ grug_mobs.register_mob("grug_mobs:reed_angelfish", {
 
 	fly = true,
 	fly_in = "default:water_source",
+	-- Water-only movement guard and no climbing (swimmer.lua).
+	_grug_swimmer = true,
+	stepheight = 0,
 	floats = true,
 	jump = false,
 	fear_height = 0,
@@ -47,7 +50,11 @@ grug_mobs.register_mob("grug_mobs:reed_angelfish", {
 		run_start = 1, run_end = 20, run_speed = 28,
 	},
 
-	drops = {},
+	-- The standard fish, like a land critter's one meat; the better fish come
+	-- only from fishing (grug_fishing/catch.lua).
+	drops = {
+		{name = "grug_mobs:raw_fish", chance = 1, min = 1, max = 1},
+	},
 	water_damage = 0,
 	lava_damage = 4,
 	light_damage = 0,
