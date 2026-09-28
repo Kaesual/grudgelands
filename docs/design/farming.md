@@ -39,8 +39,8 @@ retries blocked growth through its ordinary bounded timer.
 Right-click harvests a mature regrowing crop in place. Sneak-right-click bypasses
 that crop action. Removing the rooted plant remains the explicit way to recover
 its seed; mature removal also returns its one ingredient. Cultivated regrowth is
-independent of the slow natural-source renewal below and never creates wild
-renewal debt.
+independent of the wild-plant renewal below; crops and farm soil never count as
+wild habitat.
 
 Wooden, Stone and six metal-tier hoes perform exactly the same conversion of
 eligible earth to farm soil. Their use budgets are respectively
@@ -59,38 +59,73 @@ candidate denominator and retain the existing geographic, biome, support,
 shore, level and depth predicates. Do not relocate rejected initial candidates.
 Grass, decorative flowers, ores, gems, Rock Salt and Salt Crust are excluded.
 
-## Bounded renewal
+## Wild plant renewal
 
-Natural plants may renew only to replace observed natural depletion; cultivated
-or player-placed nodes never create renewal debt. Use **64×64 horizontal habitat
-cells**, keyed by species. Record the generated/observed natural baseline and
-source identities: a partially loaded or naturally sparse cell is never empty
-by inference and is never topped up to a statistical expectation.
+Decided 2026-09-28 (Round 23); replaces the Round 11 exact-baseline renewal.
+Wild plants come back **from their habitat**, not from a record of where
+plants stood: suitable ground, zone, biome, light, free space and altitude or
+depth decide, so nothing can go extinct. There is no persistent renewal state,
+no generation callback, no LBM and no ABM.
 
-The first replacement opportunity is uniformly **4–8 real hours** after
-depletion. A failed attempt backs off **30–60 minutes**. One successful placement
-consumes one debt; debt cannot exceed the recorded baseline. Persist and
-coalesce debt and due time per species/cell. Observe digging, destruction and
-replacement, and reconcile other disappearance lazily against the recorded
-natural positions on loaded terrain. Never scan an entire habitat cell to
-discover a deficit.
+**Density authority.** The target at a spot is the natural density the world
+generator produces there, read from the generator's own data through the
+read-only authority `grug_mapgen` `wp40/vegetation_density.lua`
+(`grug_mapgen.wp40.vegetation`):
 
-One globally throttled **10-second** pass services at most **8 cells**, inspects
-at most **64 candidate positions**, and places at most **2 plants**. Node reads
-have a separate fixed global bound recorded by the implementation, including
-support and shore neighbors. Deduplicate player-visible cells; these are global
-budgets even with 100 players. No forced emergence, world scan, per-plant ABM or
-per-missing-node timer. Candidates or required neighbors in unloaded mapblocks
-defer without loading them.
+- *Resource plants* (the renewable world content and P9G gathering rows) count
+  **per species**, at `1 / initial_denominator` per eligible column (cave rows:
+  per eligible cave-floor node), with each row's zone, biome, support, level or
+  depth and shore predicates. Rock Salt and Salt Crust are minerals and never
+  renew.
+- *Ground cover* (grass, dry grass, ferns, junglegrass, dry shrubs) counts **as
+  one total** at the sum of the biome's decoration rates
+  ([biomes_mobs.md](biomes_mobs.md) §2.1), thinned per support exactly like the
+  planner (gravel at a quarter); the zone's biome palette picks the species by
+  its rates. Bone piles are not vegetation and do not renew.
+- *Woody plants* (trees and bushes) count by their trunks or stems, divided by
+  the marker columns one grown plant of that template has; planted saplings
+  count as plants.
+- Every cover and woody rate passes through `habitat_registry.vegetation_factor`,
+  the one place for the later tree line and forest-density noise.
 
-Each service rotates through at most eight candidates. Reuse one authoritative
-habitat catalog and zone API for mapgen and renewal. Require natural unmodified
-support, air/clearance and the original family habitat/depth/shore predicates.
-Never replace existing nodes or place on player farmland, modified support,
-routes, authored surfaces, protected content or reserved/active claims.
-The actor-neutral `grug_core.world_alterable(pos)` is the shared permission seam;
-an empty player name passed to player protection is not a system permission.
-Ores and other minerals retain [world.md](world.md) R4.
+**Where.** Only near connected players, in loaded terrain, caves included:
+spots lie 20–48 nodes horizontally from the sampling player and at least 20
+nodes (3-D) from every player; unloaded nodes are skipped and nothing is caught
+up for unvisited areas. A spot needs an open support the habitat accepts
+(player-made ground of the same node counts) and, above the planned surface,
+natural noon light 10 (13 for a sapling). Never on farm soil, and never where
+the world generator hosts no vegetation or the world is not alterable: the
+planner's vegetation exclusions (settlements, POIs, road and water shapes),
+housing masks, functional surfaces, capital hard rows, road corridors and
+`grug_core.world_alterable` (territory and claims). A river or lake bank grows
+only shoreline species, as in the generator.
+
+**How much.** Around the spot, the renewal counts present plants of the chosen
+species or class and the eligible open supports in a box whose radius makes
+the natural count about 1.5 plants (radius 4–24, ±4 nodes high; woody trunks
+4 below to 12 above). Target = eligible supports × density, rounded to an
+integer by a fixed per-patch fraction. At or above the target nothing is
+placed; below it the chance is the class chance × (target − present) / target.
+Shoreline species count at most two eligible supports per box width.
+
+**Trees.** Trees and bushes renew as saplings of the species the biome
+naturally grows (setting `grug_tree_regrowth`, default on), which then grow
+through the vendored sapling timers. No sapling is placed within 10 nodes of
+any non-natural node, farm soil or unloaded terrain. Natural nodes are air,
+liquids, generated ground and ores (`grug_natural`), the tree, leaf, sapling,
+flora and fruit families and every node the generator places as vegetation.
+The snowy crags pine (gravel), the fallen apple log, the badlands cactus
+(mesa clay) and swamp papyrus have no renewal path.
+
+**Rates** (first version by feel, tuned in playtest; constants in
+`grug_farming/renewal.lua`): each player is serviced once per 5 seconds with
+4 sampled spots; class chance at a full deficit 0.05 for resource plants, 0.5
+for ground cover and 0.1 for saplings. Area queries are capped at 150 000 node
+visits per player and step, independent of world size.
+
+**Apples and blueberries** are not renewal plants: a picked natural apple
+(`param2 = 0`) and picked blueberry leaves regrow through the vendored
+`default` node timers. Ores and other minerals retain [world.md](world.md) R4.
 
 ## Water bucket
 

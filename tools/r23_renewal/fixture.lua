@@ -103,13 +103,20 @@ local density = dofile(wp40 .. "/vegetation_density.lua")({
 
 local sparse = {}
 local function key(x, y, z) return x .. "," .. y .. "," .. z end
+-- A cave pocket at y -205 .. -201 over a stone floor, 60 x 60 nodes.
+local CAVE_FLOOR = -206
 local function loaded(x, y, z)
 	return x >= -LOADED and x <= LOADED and z >= -LOADED and z <= LOADED and
-		y >= 0 and y <= 40
+		((y >= 0 and y <= 40) or (y >= CAVE_FLOOR - 6 and y <= CAVE_FLOOR + 8))
 end
 local function name_at(x, y, z)
 	local value = sparse[key(x, y, z)]
 	if value then return value end
+	if y > CAVE_FLOOR and y <= CAVE_FLOOR + 5 and math.abs(x) <= 30 and
+			math.abs(z) <= 30 then
+		return "air"
+	end
+	if y < GROUND - 3 then return "default:stone" end
 	if y < GROUND then return "default:dirt" end
 	if y == GROUND then return "default:dirt_with_grass" end
 	return "air"
@@ -249,6 +256,20 @@ result = run(101, 30, "cover")
 check(result == "unloaded", "unloaded spot: skipped")
 result = run(34, 34, "resource")
 check(result == "placed", "empty meadow: resource plant placed")
+-- Caves: the cave-floor rows grow in the dark, below the planned surface.
+local cave = density.categories(10, CAVE_FLOOR + 1, 10, "default:stone", 0)
+local cave_keys = {}
+for _, category in ipairs(cave) do cave_keys[#cave_keys + 1] = category.key end
+out("cave categories " .. table.concat(cave_keys, ","))
+check(#cave == 1 and cave[1].key == "cave_cap" and
+	math.abs(cave[1].p - 1 / 1536) < 1e-12, "cave floor at y -205: cave cap at 1/1536")
+local cave_result, cave_node = renewal.evaluate({x = 10, y = CAVE_FLOOR, z = 10}, far,
+	{left = R.VOLUME_BUDGET}, 0)
+check(cave_result == "placed" and cave_node == "grug_mapgen:cave_cap_source",
+	"empty cave floor: cave cap placed (" .. tostring(cave_result) .. ")")
+cave_result = renewal.evaluate({x = 11, y = CAVE_FLOOR, z = 10}, far,
+	{left = R.VOLUME_BUDGET}, 0)
+out("second cave spot " .. tostring(cave_result))
 
 -- 3. Density cap: a box filled at natural cover density takes nothing more.
 out("-- density cap")

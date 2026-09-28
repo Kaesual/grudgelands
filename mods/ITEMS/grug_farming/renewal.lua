@@ -207,7 +207,7 @@ return function(api)
 	-- Test one open support and maybe place a plant above it. `budget` holds
 	-- the player's remaining node-visit allowance for this step. Fixtures may
 	-- force the roll and restrict the class; the service passes neither.
-	-- Returns a reason ("placed" plus the node name on success).
+	-- Returns a reason ("placed" plus the node name and position on success).
 	local function evaluate(support_pos, positions, budget, forced_roll, only_class)
 		local pos = {x = support_pos.x, y = support_pos.y + 1, z = support_pos.z}
 		if not far_from_players(pos, positions) then return "near_player" end
@@ -264,7 +264,7 @@ return function(api)
 			end
 		end
 		api.set_node(pos, {name = species.node, param2 = species.param2})
-		return "placed", species.node
+		return "placed", species.node, pos
 	end
 
 	-- A random open support in the ring around one player, or nil.
@@ -322,6 +322,7 @@ return function(api)
 	module.sample_spot = sample_spot
 	module.service = service
 	function module.stats() return stats end
+	function module.non_natural_count() return #api.non_natural end
 	function module.reset_stats() stats = {} end
 
 	-- Pacing: the caller's globalstep accumulates TICK_SECONDS and passes the
