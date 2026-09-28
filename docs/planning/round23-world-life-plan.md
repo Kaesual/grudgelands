@@ -132,14 +132,58 @@ of world scans. Needing more means asking the user first. Engine runs use
 `tools/luanti_headless.sh` (isolated user path, `LC_ALL=C`), and
 `pgrep -f '^luanti.bin'` is empty afterwards. Mapgen work runs no PUC.
 
-## Phase 2 — vegetation and altitude (after Phase 1, design discussion first)
+## Phase 1 status
 
-Tree line with a transition band (thinning trees, more shrubs), no trees
-above it, snow and ice on the highest peaks; forests and clearings via zone
-average plus a noise field inside zones. Open for the design discussion:
-heights per zone, band width, shrub species, capital heights (capitals must
-sit clearly below the tree line; check Dur Brannoc's height range and adapt
-the rule if needed).
+Delivered 2026-09-28: [completion](../research/round23-completion.md). Later
+user rulings: the seabed is part of the prepared bottom envelope; Lethariel
+and Kezamba walls end at the civic lake shores.
+
+## Phase 2 — vegetation and altitude (rulings 2026-09-28)
+
+Facts (portable probes over four seeds, 1 node = 1 m):
+- The land median is y ≈ 73, p90 ≈ 185, p99 ≈ 315, and the highest peaks
+  reach y ≈ 520–547. Nothing caps terrain height.
+- Capitals sit at y 37–71, with ground within 300 nodes ≤ 122, so no capital
+  rule is needed.
+- Today no upper altitude limit exists for any vegetation.
+
+Rulings:
+
+1. **Lines:** trees thin linearly from y **160** to zero at y **220**; snow
+   from y **280**. About 5 % of land becomes treeless and about 2 % snowy.
+2. **Jitter:** a smooth noise field shifts the lines by about ±15 nodes, so
+   they form tongues and bays instead of contour lines.
+3. **Warm biomes:** jungle biomes, savanna, badlands and the Skyglass cloud
+   forest get tree and snow lines **+40**. Cold biomes (crags, pine hills)
+   keep the base.
+4. **Transition band:** as trees thin, the biome's own shrubs increase:
+   - pine hills and crags: pine bush;
+   - forest, elf forest and meadows: bush;
+   - savanna: acacia bush;
+   - blight and bone forest: dry shrub.
+
+   Shrubs reach about 40 nodes above the tree line. Above them, alpine
+   meadow (ground cover) continues to the snow line.
+5. **Snow:**
+   - Above the snow line, a snowblock top with snow dust (existing
+     `default:snowblock` and `default:snow`, as in the crags snowy biome).
+   - Below it, a patchy snow-dust band about 20 nodes wide.
+   - Steep rock faces (D77) stay bare rock.
+   - No ice this round, and no slope-aspect rule (it would need neighbour
+     columns, which is the hot path).
+6. **Forests and clearings:** a noise field inside zones makes groves of
+   roughly 150–300 nodes and clearings of 40–100 nodes, with each zone's mean
+   density unchanged. Deep forest and deep jungle become about 1.5× denser.
+7. **Crags snowy pine:** it obeys the tree line too, and is the typical last
+   tree in the band.
+8. **Renewal:** it follows through the shared rule
+   (`habitat_registry.vegetation_factor`), with trees and bushes counted as
+   separate classes.
+
+Implementation: one mapgen lane with independent review, and the same engine
+run budget as Phase 1. Before/after renders of a high mountain and a forest
+for the user's visual check. Afterwards: a fresh world, then the full
+preparation on the production server.
 
 ## Phase 3
 
