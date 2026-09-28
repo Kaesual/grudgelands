@@ -3,6 +3,14 @@
 return function(api)
 	local Q, states = grug_abilities, {}
 	local HAND_RANGE, HOLD_US, FOOD_US = 4, 200000, 1500000
+	-- Held food time accrues per observed step, at most this much per step, so
+	-- a server stall cannot turn a click into a hold.
+	local MAX_HELD_STEP_US = 100000
+	-- The engine repeats place only at nodes and no sooner than
+	-- repeat_place_time (0.25 s default, game.cpp:2959); object and empty-air
+	-- clicks are edge-triggered. A quicker node call, or any object/nothing
+	-- call, during an owned press is therefore a new press.
+	local NEW_PRESS_US = 200000
 	local pickup_delegate
 	local entity_rightclick = {} -- entity name -> unwrapped on_rightclick
 	local function food_api() return rawget(_G, "grug_food") end
@@ -49,11 +57,19 @@ return function(api)
 		if not s then s = {}; states[name] = s end
 		return s
 	end
-	local function cancel(player, s)
+	-- Drop every pending action of the previous item or press.
+	local function reset(player, s)
 		end_food_hold(player)
 		s.pending, s.dig, s.right, s.food = nil, nil, nil, nil
-		s.cancelled = true
 		if Q.cancel_bow_draw then Q.cancel_bow_draw(player) end
+	end
+	-- ... and latch the cancellation until both buttons are released.
+	local function cancel(player, s)
+		reset(player, s)
+		s.cancelled = true
+	end
+	local function new_food_press(now)
+		return {started = now, observed = now, held = 0, stage = "press"}
 	end
 	local function hand_node(player, hit, distance)
 		if not hit or hit.type ~= "node" or distance > HAND_RANGE then return false end
@@ -98,7 +114,7 @@ return function(api)
 			-- 2026-09-28): a release before HOLD_US is a click, performed on
 			-- release at the target the press's first native call reported; a
 			-- longer hold eats and the pointed interaction never fires.
-			s.right, s.food = "food", {started = core.get_us_time(), stage = "press"}
+			s.right, s.food = "food", new_food_press(core.get_us_time())
 		elseif interactive(hit, distance) then
 			s.right = "interaction"
 		elseif def and def.id == "loose" then
@@ -109,11 +125,14 @@ return function(api)
 		end
 	end
 	-- Held food: "press" becomes "eating" (or "refused" in combat) at HOLD_US;
-	-- one portion is due FOOD_US after the press.
+	-- one portion is due FOOD_US after the press (held time, see above).
 	local function food_hold(player, s)
 		local f, food = s.food, food_api()
 		if not f or not food then return end
-		local elapsed = core.get_us_time() - f.started
+		local now = core.get_us_time()
+		f.held = f.held + math.min(now - f.observed, MAX_HELD_STEP_US)
+		f.observed = now
+		local elapsed = f.held
 		if f.stage == "press" and elapsed >= HOLD_US then
 			f.stage = food.begin_hold(player) and "eating" or "refused"
 		end
@@ -210,11 +229,17 @@ return function(api)
 		-- One native RMB action per physical press (see M.food_native).
 		if not right then s.native_seen = nil end
 		local changed = s.slot and (s.slot ~= slot or s.item ~= item)
-		if not allowed(player) or changed then
+		-- A press the previous step already saw, carried over into a new item.
+		local carried = (right and s.rmb) or (down and s.down)
+		if not allowed(player) or (changed and carried) then
 			cancel(player, s)
-			-- A press carried over into a new item is not a new press: the
-			-- engine's repeated place must not act for the new item either.
-			if changed and right then s.native_seen = true end
+			-- A carried-over press is not a new press: the engine's repeated
+			-- place must not act for the new item either.
+			if changed and right and s.rmb then s.native_seen = true end
+		elseif changed then
+			-- Switch and a fresh press in the same step (or no press): settle
+			-- the old item without latching, so the new press begins normally.
+			reset(player, s)
 		end
 		s.slot, s.item = slot, item
 		if not down and not right and s.cancelled then
@@ -301,6 +326,16 @@ return function(api)
 		M.step(player)
 		local s = state(player)
 		if s.right == "food" and s.food then
+			local now = core.get_us_time()
+			if s.food.target_set and (not pointed or pointed.type ~= "node" or
+					now - s.food.last_native < NEW_PRESS_US) then
+				-- The release between two presses fell inside one control
+				-- snapshot: settle the old press (its click, if still undecided)
+				-- and start the new one here.
+				release_right(player, s)
+				s.right, s.food = "food", new_food_press(now)
+			end
+			s.food.last_native = now
 			if not s.food.target_set then
 				s.food.target_set = true
 				s.food.target = pointed and {type = pointed.type,
