@@ -129,6 +129,19 @@ local scenarios = {
 		build = function(ox, oz) block(ox, oz, -2, 1, 5, 2, 1, 7, "stairs:slab_wood") end,
 		dz = 5, dy = 0.5},
 	{label = "air_forward", pitch = 0, dz = 10, dy = 0},
+	{label = "far_step_16_air_forward", pitch = 0, distance = 16, dz = 16, dy = 0},
+	-- The ray ends 0.60 m above the floor: the feet (0.87 m below it) are
+	-- lifted onto the floor (review finding 1). At 7 degrees 1.22 m below.
+	{label = "air_down_5_lifted", pitch = 5, dz = 10 * math.cos(math.rad(5)), dy = 0},
+	{label = "air_down_7_lifted", pitch = 7, dz = 10 * math.cos(math.rad(7)), dy = 0},
+	{label = "far_step_16_air_down_4_lifted", pitch = 4, distance = 16,
+		dz = 16 * math.cos(math.rad(4)), dy = 0},
+	-- Floor aimed 0.2 m in front of a 1-high block: nudged to the floor
+	-- column centre, not lifted onto the block's edge (review finding 2).
+	{label = "floor_beside_block_not_lifted",
+		pitch = math.deg(math.atan(EYE / 5.3)),
+		build = function(ox, oz) block(ox, oz, -2, 1, 6, 2, 1, 8) end,
+		max_dz = 5.2, min_dz = 4.9, dy = 0},
 	{label = "air_up_45", pitch = -45, dz = 10 * math.cos(math.rad(45)),
 		dy = 10 * math.sin(math.rad(45))},
 	{label = "air_straight_up", dir = vector.new(0, 1, 0), dz = 0, dy = 10},
@@ -179,7 +192,8 @@ local function run_pure(index, sc)
 	local feet = vector.new(ox, FLOOR_TOP + (sc.feet or 0), oz)
 	local eye = vector.offset(feet, 0, EYE, 0)
 	local dir = sc.dir or look(sc.pitch)
-	local dest = grug_abilities.blink_destination(eye, dir, 10, EYE, BOX)
+	local dest = grug_abilities.blink_destination(eye, dir, sc.distance or 10,
+		EYE, BOX)
 	log(("%s: pitch=%s dest=%s dz=%s dy=%s"):format(sc.label,
 		tostring(sc.pitch and ("%.1f"):format(sc.pitch) or "dir"), fmt(dest),
 		dest and ("%.2f"):format(dest.z - feet.z) or "-",
@@ -257,9 +271,19 @@ local function install(ref)
 	core.get_player_by_name = function(name)
 		return by_name[name] or get_player_by_name(name)
 	end
+	-- Far Step ranks need level and tree gates; a probe player names its
+	-- effect value directly.
+	local get_talent_bonus = grug_classes.get_talent_bonus
+	grug_classes.get_talent_bonus = function(player, key)
+		local fake = player and fakes[player]
+		if fake and fake.talents and fake.talents[key] then
+			return fake.talents[key]
+		end
+		return get_talent_bonus(player, key)
+	end
 end
 
-local function make_player(label, pos, pitch)
+local function make_player(label, pos, pitch, talents)
 	local ref = core.add_entity(pos, "grug_probe_blink:hero")
 	assert(ref, "probe player entity was not added")
 	install(ref)
@@ -267,7 +291,7 @@ local function make_player(label, pos, pitch)
 	local inv = core.create_detached_inventory("grug_probe_blink_" .. label, {})
 	inv:set_size("main", 8)
 	fakes[ref] = {name = name, look = look(pitch), pitch = math.rad(pitch),
-		holder = ItemStack("grug_abilities:blink"), inv = inv}
+		holder = ItemStack("grug_abilities:blink"), inv = inv, talents = talents}
 	by_name[name] = ref
 	local auth = core.get_auth_handler()
 	if not auth.get_auth(name) then auth.create_auth(name, "") end
@@ -276,12 +300,12 @@ local function make_player(label, pos, pitch)
 	return ref
 end
 
-local function run_cast(index, label, pitch, build, expect_ok, dz)
+local function run_cast(index, label, pitch, build, expect_ok, dz, talents)
 	local ox = BASE.x + (index - 1) * SPACING
 	local oz = BASE.z
 	if build then build(ox, oz) end
 	local feet = vector.new(ox, FLOOR_TOP, oz)
-	local ref = make_player(label, feet, pitch)
+	local ref = make_player(label, feet, pitch, talents)
 	local def = grug_abilities.registered.blink
 	check(grug_abilities.is_unlocked(ref, "blink"), label .. ": Blink unlocked for a mage")
 	grug_abilities.restore_mana(ref, 1000000)
@@ -313,7 +337,103 @@ local casts = {
 	{"cast_wall_close_fails", 0,
 		function(ox, oz) block(ox, oz, -2, 1, 1, 2, 3, 1) end, false},
 	{"cast_flat_down_60_fails", 60, nil, false},
+	{"cast_far_step_16_forward", 0, nil, true, 16, {blink_distance_add = 6}},
 }
+
+-- Sweeps over the pitch (review finding 1). Flat floor: every pitch from 0
+-- to 50 degrees must land with the feet on the floor, at the aimed floor
+-- point when the ray reaches it and at the full distance otherwise; where the
+-- move would be under 1.5 m it must fail. Ramp: a gentle rise of half a node
+-- every 4 m (slabs); every pitch lands, box free and in sight, and from -3
+-- degrees down the feet stand on the ramp.
+local function ramp(ox, oz)
+	for k = 1, 5 do
+		local h = k * 0.5
+		local full = math.floor(h)
+		for z = 4 * k, 4 * k + 3 + (k == 5 and 3 or 0) do
+			for x = -2, 2 do
+				if full >= 1 then block(ox, oz, x, 1, z, x, full, z) end
+				if h > full then put(ox, oz, x, full + 1, z, "stairs:slab_wood") end
+			end
+		end
+	end
+end
+
+local function supported(dest)
+	local np = vector.round(vector.offset(dest, 0, -0.01, 0))
+	local node = core.get_node(np)
+	local def = core.registered_nodes[node.name]
+	if not def or not def.walkable then return false end
+	for _, b in ipairs(core.get_node_boxes("collision_box", np, node)) do
+		if near(np.y + b[5], dest.y, 0.001) then return true end
+	end
+	return false
+end
+
+local function run_sweep(index, label, build, pitches, distances, judge)
+	local ox = BASE.x + (index - 1) * SPACING
+	local oz = BASE.z
+	if build then build(ox, oz) end
+	local feet = vector.new(ox, FLOOR_TOP, oz)
+	local eye = vector.offset(feet, 0, EYE, 0)
+	for _, d in ipairs(distances) do
+		local bad, lifted, landed, failed = {}, 0, 0, 0
+		for _, pitch in ipairs(pitches) do
+			local dest = grug_abilities.blink_destination(eye, look(pitch), d, EYE, BOX)
+			local ok, why = judge(dest, feet, eye, pitch, d)
+			if ok and dest then
+				if not box_free(dest) then ok, why = false, "box in solid" end
+				if not line_clear(eye, vector.offset(dest, 0, EYE, 0)) then
+					ok, why = false, "not in sight"
+				end
+			end
+			if not ok then
+				bad[#bad + 1] = ("%.1f(%s dest=%s)"):format(pitch, why, fmt(dest))
+			end
+			if dest then landed = landed + 1 else failed = failed + 1 end
+			-- Full-distance landings lifted by more than one node: the band
+			-- the previous one-node allowance refused (review finding 1).
+			local a = math.rad(pitch)
+			if dest and near(dest.z - feet.z, d * math.cos(a), 0.05) and
+					dest.y - (feet.y - d * math.sin(a)) > 1.001 then
+				lifted = lifted + 1
+			end
+		end
+		check(#bad == 0, ("%s d=%d: %d pitches, %d landed (%d lifted > 1 node), " ..
+			"%d refused, wrong: %s"):format(label, d, #pitches, landed, lifted,
+			failed, #bad == 0 and "none" or table.concat(bad, " ")))
+	end
+end
+
+local function flat_judge(dest, feet, eye, pitch, d)
+	local a = math.rad(pitch)
+	local hits = pitch > 0 and EYE / math.sin(a) <= d
+	local dz = hits and EYE / math.tan(a) or d * math.cos(a)
+	if dz < 1.5 then
+		return dest == nil, "expected refusal"
+	end
+	if not dest then return false, "no destination" end
+	if not (near(dest.y, feet.y, 0.001) and near(dest.z - feet.z, dz, 0.05)) then
+		return false, ("expected dz %.2f"):format(dz)
+	end
+	return true, hits and "hit" or (d * math.sin(a) > 1e-9 and "lifted" or "air")
+end
+
+local function ramp_judge(dest, feet, eye, pitch)
+	if not dest then return false, "no destination" end
+	if vector.distance(feet, dest) < 1.5 then return false, "short" end
+	if pitch >= -3 and not supported(dest) then return false, "not standing" end
+	return true, "ok"
+end
+
+local sweeps = {}
+do
+	local flat, up = {}, {}
+	for i = 0, 100 do flat[#flat + 1] = i * 0.5 end
+	for i = -12, 40 do up[#up + 1] = i * 0.5 end
+	sweeps[1] = {"sweep_flat", nil, flat, {10, 12, 14, 16}, flat_judge}
+	sweeps[2] = {"sweep_ramp", ramp, up, {10, 12, 14, 16}, ramp_judge}
+end
 
 local function finish()
 	log(("RESULT %s checks=%d failures=%d"):format(
@@ -328,8 +448,15 @@ local function run_all()
 			(ok and "" or (" (" .. tostring(err) .. ")")))
 	end
 	for i, c in ipairs(casts) do
-		local ok, err = pcall(run_cast, #scenarios + i, c[1], c[2], c[3], c[4], c[5])
+		local ok, err = pcall(run_cast, #scenarios + i, c[1], c[2], c[3], c[4],
+			c[5], c[6])
 		check(ok, c[1] .. ": cast ran without error" ..
+			(ok and "" or (" (" .. tostring(err) .. ")")))
+	end
+	for i, sw in ipairs(sweeps) do
+		local ok, err = pcall(run_sweep, #scenarios + #casts + i, sw[1], sw[2],
+			sw[3], sw[4], sw[5])
+		check(ok, sw[1] .. ": sweep ran without error" ..
 			(ok and "" or (" (" .. tostring(err) .. ")")))
 	end
 	finish()
@@ -355,9 +482,9 @@ local function build_arena(minp, maxp)
 end
 
 core.after(2, function()
-	local lanes = #scenarios + #casts
+	local lanes = #scenarios + #casts + #sweeps
 	local minp = vector.offset(BASE, -5, -6, -5)
-	local maxp = vector.offset(BASE, SPACING * lanes + 5, 16, 16)
+	local maxp = vector.offset(BASE, SPACING * lanes + 5, 16, 26)
 	log("emerging arena " .. core.pos_to_string(minp) .. " - " ..
 		core.pos_to_string(maxp))
 	core.emerge_area(minp, maxp, function(_, _, remaining)

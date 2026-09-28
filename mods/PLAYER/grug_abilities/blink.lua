@@ -112,28 +112,54 @@ return function(eye, dir, distance, eye_height, box, world)
 		return feet and vector.distance(from, feet) >= MIN_MOVE and
 			world.ray(eye, vector.offset(feet, 0, eye_height, 0)) == nil
 	end
+	-- The first accepted spot around p: as is, then nudged to the column
+	-- centre (a box straddling the edge of a block beside the aimed point
+	-- fits there without climbing it), then lifted onto whatever is in the
+	-- way by at most `rise`, as is and centred.
+	local function fit(p, rise)
+		local cx, cz = floor(p.x + 0.5), floor(p.z + 0.5)
+		local spot = settle(world, box, p.x, p.y, p.z, 0)
+		if accept(spot) then return spot end
+		spot = settle(world, box, cx, p.y, cz, 0)
+		if accept(spot) then return spot end
+		if rise > 0 then
+			spot = settle(world, box, p.x, p.y, p.z, rise)
+			if accept(spot) then return spot end
+			spot = settle(world, box, cx, p.y, cz, rise)
+			if accept(spot) then return spot end
+		end
+		return nil
+	end
 	local point, normal = world.ray(eye,
 		vector.add(eye, vector.multiply(dir, distance)))
-	-- `ref` is the preferred feet spot; `picks` are the spots tried there.
-	local ref, picks
+	-- `ref` is the preferred feet spot and `rise` the lift allowed around it
+	-- and during the back-search.
+	local ref, rise, found
 	if not point then
 		-- Nothing hit: full distance, even into the air (falling is fine).
+		-- When the aimed eye point is less than eye height above ground the
+		-- feet are inside it: lift them by up to eye height. Safe, because the
+		-- eye ray was clear, so all the body overlaps lies below the eye point.
 		ref = vector.add(from, vector.multiply(dir, distance))
-		picks = {settle(world, box, ref.x, ref.y, ref.z, MAX_RISE)}
+		rise = eye_height
+		found = fit(ref, rise)
 	elseif normal.y > 0.5 then
 		-- A top face: stand on it at the aimed point.
 		ref = vector.copy(point)
-		picks = {settle(world, box, ref.x, ref.y, ref.z, MAX_RISE)}
+		rise = MAX_RISE
+		found = fit(ref, rise)
 	elseif normal.y < -0.5 then
 		-- A ceiling: hang the head just below it (and fall).
 		ref = vector.offset(point, 0, -box[5] - WALL_GAP, 0)
-		picks = {settle(world, box, ref.x, ref.y, ref.z, 0)}
+		rise = MAX_RISE
+		found = fit(ref, 0)
 	elseif normal.x ~= 0 or normal.z ~= 0 then
 		-- A side face: eye level in front of the wall; stand on the ground
 		-- there when the feet would be in it, or in the air as before.
 		local half = max(-box[1], box[4], -box[3], box[6])
 		local front = vector.add(point, vector.multiply(normal, half + WALL_GAP))
 		ref = vector.offset(front, 0, -eye_height, 0)
+		rise = MAX_RISE
 		local stand = settle(world, box, ref.x, ref.y, ref.z, eye_height)
 		ref = stand or ref
 		-- Step up at most one node onto the aimed node's top. The ledge spot
@@ -143,21 +169,20 @@ return function(eye, dir, distance, eye_height, box, world)
 		local lx = normal.x ~= 0 and node.x or point.x
 		local lz = normal.z ~= 0 and node.z or point.z
 		local ledge = settle(world, box, lx, ref.y, lz, MAX_RISE)
-		if ledge and ledge.y <= ref.y + EPS then
-			ledge = nil
+		if ledge and ledge.y > ref.y + EPS and accept(ledge) then
+			found = ledge
+		elseif accept(stand) then
+			found = stand
 		end
-		picks = {ledge, stand}
 	else
 		-- The eye is inside a selection box (zero normal).
 		return nil
 	end
-	for i = 1, 2 do
-		if accept(picks[i]) then
-			return picks[i]
-		end
+	if found then
+		return found
 	end
 	-- Back-search toward the caster horizontally (along the line only when
-	-- the spot is almost straight above or below), up to one node higher.
+	-- the spot is almost straight above or below), lifting by `rise` at most.
 	local dx, dz = from.x - ref.x, from.z - ref.z
 	local span = math.sqrt(dx * dx + dz * dz)
 	local step
@@ -172,14 +197,8 @@ return function(eye, dir, distance, eye_height, box, world)
 		if vector.distance(from, p) < MIN_MOVE - EPS then
 			break
 		end
-		local spot = settle(world, box, p.x, p.y, p.z, MAX_RISE)
-		if accept(spot) then
-			return spot
-		end
-		-- The column centre: a box straddling a column edge may fit there.
-		local cx, cz = floor(p.x + 0.5), floor(p.z + 0.5)
-		spot = settle(world, box, cx, p.y, cz, MAX_RISE)
-		if accept(spot) then
+		local spot = fit(p, rise)
+		if spot then
 			return spot
 		end
 	end

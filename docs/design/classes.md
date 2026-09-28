@@ -460,11 +460,16 @@ torches, liquids) do not.
   aimed. If the aimed node's top is at most one node above that spot and has
   room, the player steps up onto it instead; a two-node wall is not climbed.
 - **Ceiling aimed at**: head just below it (the player then falls).
-- **Nothing hit**: the full distance, also straight up or over a hole; falling
-  afterwards is intended, there is no fall protection.
+- **Nothing hit**: the eye moves the full distance, also straight up or over a
+  hole; falling afterwards is intended, there is no fall protection. When the
+  ray ends less than eye height above the ground, the feet would be inside
+  it: the player is lifted to stand on the ground there (at most eye height).
 - Room is checked with the player's real collision box against the nodes'
-  collision boxes. A spot without room is searched back horizontally toward
-  the caster in 0.5 m steps, allowing up to one node of step-up. Every
+  collision boxes. A box that clips a block beside the chosen spot is first
+  moved to the centre of its node column rather than lifted onto the block.
+  A spot without room is searched back horizontally toward the caster in
+  0.5 m steps, allowing up to one node of step-up (eye height when nothing
+  was hit). Every
   destination must be in line of sight: a clear ray from the caster's eye to
   the destination eye.
 - A move shorter than 1.5 m fails with "No room to blink." and costs neither
