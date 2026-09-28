@@ -184,6 +184,22 @@ Imbue/Temper recipes do not survive as mastery unlocks.
 - Every furnace, dual furnace and brewing stand carries the same book button,
   filtered to recipes for that station. Grid recipes remain beside the normal
   3×3 grid.
+- **Ingredient navigation (decided 2026-09-28):** an ingredient cell of the
+  selected recipe is clickable when the ingredient has a recipe the player's
+  books already list (Basics, the primary professions, Cooking); its tooltip
+  gains "Click to view recipe". A group ingredient uses the item the cell
+  shows. The click keeps the current book when that view lists the
+  ingredient; otherwise it opens the first of those books that does, and a
+  station-filtered view falls back to that book's full view. It clears the
+  search, selects the ingredient's first route and turns to its page. A Back
+  button then restores the previous book, station, page, search, recipe and
+  route (up to 20 steps). The grid looks unchanged at rest and on hover; raw,
+  undiscovered and locked ingredients stay inert. Navigation ignores
+  **inverse routes**: a route making X from one distinct ingredient Y, when
+  some route makes Y from X alone with more slots (slab/stair back to block,
+  block back to bar or lump). So mined materials such as cobble, sand, coal
+  lump or snow stay inert, while bars (smelting) and planks (trees) stay
+  clickable. Inverse routes remain listed and browsable in the book.
 - A profession recipe is craftable only when the player has learned the
   profession and its profession level is at least the recipe tier. Universal
   base recipes (§3.0.3) remain craftable by everyone.
