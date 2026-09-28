@@ -105,9 +105,6 @@ local function install(ref)
 	override("set_wielded_item", function(f, stack)
 		return f.inv:set_stack("main", f.index, stack)
 	end)
-	override("get_player_window_information", function(f)
-		return f.hud_scaling and {real_hud_scaling = f.hud_scaling} or nil
-	end)
 	override("hud_add", function(f, def)
 		f.hud_next = f.hud_next + 1
 		f.huds[f.hud_next] = table.copy(def)
@@ -146,6 +143,29 @@ local function install(ref)
 		local fake = player and fakes[player]
 		if fake and fake.talents[key] then return fake.talents[key] end
 		return talent_bonus(player, key)
+	end
+	local talent_rank = grug_classes.talent_rank
+	grug_classes.talent_rank = function(player, id)
+		local fake = player and fakes[player]
+		if fake and fake.ranks and fake.ranks[id] then return fake.ranks[id] end
+		return talent_rank(player, id)
+	end
+	-- The engine answers window information by player name (l_server.cpp);
+	-- probe players report their own HUD factor.
+	local window_information = core.get_player_window_information
+	core.get_player_window_information = function(name)
+		local ref = by_name[name]
+		local fake = ref and fakes[ref]
+		if fake then
+			return fake.hud_scaling and {real_hud_scaling = fake.hud_scaling} or nil
+		end
+		return window_information(name)
+	end
+	local live_mount = grug_core.player_has_live_mount
+	grug_core.player_has_live_mount = function(player)
+		local fake = player and fakes[player]
+		if fake then return fake.mounted == true end
+		return live_mount(player)
 	end
 end
 
@@ -267,6 +287,7 @@ end
 local END_MODS = {grug_abilities = true, grug_core = true}
 
 local launches = {}
+local debug_lines = {}
 
 local function wrap_observers()
 	local set_target = grug_abilities.set_target
@@ -274,10 +295,30 @@ local function wrap_observers()
 		if player and fakes[player] then side_effects.set_target = side_effects.set_target + 1 end
 		return set_target(player, ...)
 	end
+	-- Diagnostics: count every enabled-check for probe players; a probe player
+	-- with `debug` set has /combatdebug on and its log lines are recorded.
+	local function debug_fake(name)
+		local ref = by_name[name]
+		return ref and fakes[ref] and fakes[ref].debug
+	end
 	local debug_enabled = grug_core.combat_debug_enabled
 	grug_core.combat_debug_enabled = function(name, ...)
 		if by_name[name] then side_effects.debug = side_effects.debug + 1 end
+		if debug_fake(name) then return true end
 		return debug_enabled(name, ...)
+	end
+	local debug_due = grug_core.combat_debug_due
+	grug_core.combat_debug_due = function(name, ...)
+		if debug_fake(name) then return true end
+		return debug_due(name, ...)
+	end
+	local debug_log = grug_core.combat_debug_log
+	grug_core.combat_debug_log = function(name, event, message)
+		if debug_fake(name) then
+			debug_lines[#debug_lines + 1] = {name = name, event = event}
+			return true
+		end
+		return debug_log(name, event, message)
 	end
 	local spawn_batch = grug_projectiles.spawn_batch
 	grug_projectiles.spawn_batch = function(kind, list, ...)
@@ -701,8 +742,9 @@ local ends = {
 		run_callbacks(core.registered_on_leaveplayers, END_MODS, fake.ref)
 	end,
 	unequip = function(fake) fake.weapon = nil end,
+	mount = function(fake) fake.mounted = true end,
 }
-for _, path in ipairs({"cancel", "stun", "slot", "death", "leave", "unequip"}) do
+for _, path in ipairs({"cancel", "stun", "slot", "death", "leave", "unequip", "mount"}) do
 	scenario("ring_end_" .. path, function(origin)
 		local label = "ring_end_" .. path
 		local ref, fake = make_player(label, "scout", origin)
@@ -736,6 +778,214 @@ for _, path in ipairs({"cancel", "stun", "slot", "death", "leave", "unequip"}) d
 		}
 	end)
 end
+
+-- The skipped skill ray is exactly equivalent: over a scene with walls, gaps,
+-- a hostile and an ally behind the gaps, grass, a wall sign, a chest and an
+-- NPC, every look direction must give the same state as the full reference
+-- (skill ray always, then the hand ray).
+local function reference_state(ref)
+	if ref:get_hp() <= 0 then return nil end
+	local id = ref:get_wielded_item():get_name():match("^grug_abilities:(.+)$")
+	local def = id and grug_abilities.registered[id]
+	if def and (def.target_kind == "hostile" or def.target_kind == "friendly") and
+			grug_abilities.is_unlocked(ref, def.id) and
+			grug_abilities.aimed_target(ref, def) then
+		return def.target_kind
+	end
+	return grug_abilities.input.aims_at_interactive(ref) and "interact" or nil
+end
+
+local function build_scene(o)
+	local placed = {}
+	local function node(rel, name, param2)
+		local pos = vector.add(o, rel)
+		core.set_node(pos, {name = name, param2 = param2 or 0})
+		placed[#placed + 1] = pos
+	end
+	for x = -4, 4 do
+		if x ~= 0 and x ~= 2 then
+			for y = 0, 3 do node(vector.new(x, y, 3), "default:stone") end
+		end
+	end
+	node(vector.new(-2, 0, 1), "default:grass_1")
+	node(vector.new(0, 0, 1), "default:grass_1")
+	node(vector.new(3, 0, 2), "default:chest")
+	node(vector.new(-1, 1, 2), "default:sign_wall_wood", 4)
+	local objs = {}
+	objs[#objs + 1] = core.add_entity(vector.offset(o, 0, 0, 6.5), "grug_probe_crosshair:dummy")
+	objs[#objs + 1] = core.add_entity(vector.offset(o, -3, 0, 2), "grug_probe_crosshair:npc")
+	return function()
+		for _, pos in ipairs(placed) do core.remove_node(pos) end
+		for _, obj in ipairs(objs) do obj:remove() end
+	end
+end
+
+scenario("skip_equivalence", function(origin)
+	local players = {
+		{"strike", "warrior"}, {"fireball", "mage"}, {"loose", "scout"},
+		{"flash_heal", "priest"}, {nil, "warrior"},
+	}
+	local cleanup, ally
+	return {{0, function()
+		cleanup = build_scene(origin)
+		ally = make_player("eq_ally", "warrior", vector.offset(origin, 2 * 6.5 / 3, 0, 6.5),
+			"grug_probe_crosshair:ally")
+		local mismatches, total, counts = 0, 0, {}
+		local skipped0 = X.skipped_skill_rays
+		for index, p in ipairs(players) do
+			local ref, fake = make_player("eq_" .. index, p[2], origin)
+			if p[1] then skill(fake, p[1]) else hold(fake, "") end
+			for yaw = -70, 70, 5 do
+				for pitch = -50, 30, 5 do
+					local y, pi = math.rad(yaw), math.rad(pitch)
+					fake.look = vector.new(math.sin(y) * math.cos(pi), -math.sin(pi),
+						math.cos(y) * math.cos(pi))
+					local got, want = X.state(ref), reference_state(ref)
+					total = total + 1
+					counts[tostring(got)] = (counts[tostring(got)] or 0) + 1
+					if got ~= want then
+						mismatches = mismatches + 1
+						if mismatches <= 5 then
+							log(("mismatch %s yaw %d pitch %d: got %s want %s"):format(
+								tostring(p[1]), yaw, pitch, tostring(got), tostring(want)))
+						end
+					end
+				end
+			end
+			ref:remove()
+		end
+		local skipped = X.skipped_skill_rays - skipped0
+		check(mismatches == 0 and skipped > 0 and (counts.hostile or 0) > 0 and
+			(counts.friendly or 0) > 0 and (counts.interact or 0) > 0 and
+			(counts["nil"] or 0) > 0,
+			("equivalence: %d aims, %d mismatches, %d skill rays skipped; states " ..
+			"hostile %d friendly %d interact %d none %d"):format(total, mismatches,
+			skipped, counts.hostile or 0, counts.friendly or 0, counts.interact or 0,
+			counts["nil"] or 0))
+		-- A non-walkable interactive sign in front of a wall within reach: the
+		-- hand ray's first hit is the sign, so the skill ray still runs, and
+		-- the state is interact.
+		local ref, fake = make_player("eq_sign", "warrior", origin)
+		skill(fake, "strike")
+		look_at(fake, vector.offset(origin, -1, 1, 2.45))
+		local s0 = X.skipped_skill_rays
+		local interact, walled = grug_abilities.input.aims_at_interactive(ref)
+		check(interact and not walled and X.state(ref) == "interact" and
+			X.skipped_skill_rays == s0,
+			"equivalence: wall sign reads interact, not treated as a wall")
+		look_at(fake, vector.offset(origin, 1, 1, 2.5))
+		interact, walled = grug_abilities.input.aims_at_interactive(ref)
+		local s1 = X.skipped_skill_rays
+		check(not interact and walled and X.state(ref) == nil and X.skipped_skill_rays == s1 + 1,
+			"equivalence: bare wall within reach skips the skill ray")
+		ref:remove()
+		ally:remove()
+		cleanup()
+	end}}
+end)
+
+-- Real casts after the aimed_target refactor keep their side effects.
+scenario("real_casts", function(origin)
+	local ref, fake = make_player("cast", "priest", origin)
+	local ally_ref = make_player("cast_ally", "warrior", origin, "grug_probe_crosshair:ally")
+	local mob
+	return {
+		{0, function()
+			fake.debug = true
+			grug_abilities.restore_mana(ref, 100000)
+			skill(fake, "smite")
+			ally_ref:set_pos(vector.offset(origin, 3, 0, 0))
+			mob = spawn_bandit(vector.offset(origin, 0, 0, 8))
+			look_at(fake, vector.offset(mob:get_pos(), 0, 1, 0))
+		end},
+		{0.2, function()
+			look_at(fake, vector.offset(mob:get_pos(), 0, 1, 0))
+			local lines0 = #debug_lines
+			local ok = grug_abilities.try_cast(ref, grug_abilities.registered.smite, nil, true)
+			local logged = false
+			for i = lines0 + 1, #debug_lines do
+				if debug_lines[i].event == "cast_ray" then logged = true end
+			end
+			check(ok and grug_abilities.get_target(ref, false) == mob,
+				"real cast: Smite hit and wrote Target Frame memory")
+			check(logged, "real cast: Smite logged its cast_ray diagnostics")
+			mob:remove()
+			local heal = grug_abilities.registered.flash_heal
+			fake.look = vector.new(0, 1, 0)
+			check(grug_abilities.resolve_friendly_target(ref, nil, heal) == ref,
+				"real cast: friendly cast with no ally falls back to self")
+			look_ahead(fake)
+			place_ahead(fake, ally_ref, 5, 0.3)
+			check(grug_abilities.resolve_friendly_target(ref, nil, heal) == ally_ref and
+				grug_abilities.get_target(ref, true) == ally_ref,
+				"real cast: pointed ally resolves and is remembered")
+			fake.debug = nil
+			ally_ref:remove()
+		end},
+	}
+end)
+
+-- Fixed-power shots stay x1; Twin Shot's second arrow at full draw.
+scenario("fixed_shots", function(origin)
+	local ref, fake = make_player("fixed", "scout", origin)
+	fake.weapon = bow_name
+	fake.talents = {pinning_root = 2}
+	fake.ranks = {pinning_shot = 1}
+	local mob
+	return {
+		{0, function()
+			fake.inv:set_stack("main", 3, ItemStack("grug_gear:arrow 20"))
+			mob = spawn_bandit(vector.offset(origin, 0, 0, 7))
+		end},
+		{0.2, function()
+			local base = ItemStack(bow_name):get_tool_capabilities().damage_groups.fleshy +
+				grug_classes.get_ranged_bonus(ref)
+			for _, id in ipairs({"snare_shot", "pinning_shot"}) do
+				look_at(fake, vector.offset(mob:get_pos(), 0, 1, 0))
+				local n = #launches
+				local ok = grug_abilities.registered[id].cast(ref)
+				local shot = launches[n + 1]
+				check(ok and shot and shot.damage == base and #launches == n + 1,
+					("%s: damage %s = base %d (x1)"):format(id, tostring(shot and shot.damage), base))
+			end
+			mob:remove()
+		end},
+	}
+end)
+
+scenario("twin_shot", function(origin)
+	local ref, fake = make_player("twin", "scout", origin)
+	fake.weapon = bow_name
+	fake.talents = {loose_second_arrow = 60}
+	local mob, n
+	return {
+		{0, function()
+			skill(fake, "loose")
+			fake.inv:set_stack("main", 3, ItemStack("grug_gear:arrow 20"))
+			mob = spawn_bandit(vector.offset(origin, 0, 0, 6))
+			look_at(fake, vector.offset(mob:get_pos(), 0, 1, 0))
+			activate(fake)
+			n = #launches
+			press(fake)
+		end},
+		{2.8, function()
+			look_at(fake, vector.offset(mob:get_pos(), 0, 1, 0))
+			release(fake)
+		end},
+		{3.2, function()
+			local base = ItemStack(bow_name):get_tool_capabilities().damage_groups.fleshy +
+				grug_classes.get_ranged_bonus(ref)
+			local a, b = launches[n + 1], launches[n + 2]
+			check(a and b and #launches == n + 2 and a.damage == math.floor(base * 3) and
+				b.damage == math.floor(a.damage * 60 / 100) and
+				fake.inv:get_stack("main", 3):get_count() == 18,
+				("twin_shot: full draw %s + %s (base %d, second 60%%), 2 arrows"):format(
+					tostring(a and a.damage), tostring(b and b.damage), base))
+			deactivate(fake)
+			if mob:get_pos() then mob:remove() end
+		end},
+	}
+end)
 
 -- Per-player per-pass cost: the old pass work (input.step) against the new
 -- one (input.step + crosshair.update), idle buttons, several aims.
@@ -785,6 +1035,10 @@ scenario("perf", function(origin)
 		measure("Strike, NPC at 2 m", function()
 			skill(fake, "strike"); dummy:set_pos(vector.offset(origin, -3, 0, 0))
 			look_ahead(fake); place_ahead(fake, npc, 2, NPC_R)
+		end)
+		measure("Loose, floor at ~2 m", function()
+			skill(fake, "loose"); npc:set_pos(vector.offset(origin, 3, 0, 0))
+			look_at(fake, vector.offset(origin, 0, -1, 1))
 		end)
 		dummy:remove(); npc:remove()
 	end}}
