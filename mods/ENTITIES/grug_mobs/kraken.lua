@@ -41,11 +41,16 @@ grug_mobs.register_mob("grug_mobs:kraken", {
 	-- would still knock back. An oversized boss must not be pushed around.
 	knock_back = false,
 
-	-- Swims: mobs_redo treats fly + fly_in as "moves inside this node type",
-	-- so the Kraken stays in water. floats is inert while fly is set
+	-- Swims: mobs_redo treats fly + fly_in as "moves inside this node type";
+	-- on its own that still lets it leave the water, the swimmer guard below
+	-- keeps it in. floats is inert while fly is set
 	-- (falling() bails out for flying mobs) but keeps the def honest.
 	fly = true,
 	fly_in = "default:water_source",
+	-- Water-only movement guard and no climbing (swimmer.lua): without it the
+	-- Kraken could step up a bank level with the sea and chase ashore.
+	_grug_swimmer = true,
+	stepheight = 0,
 	floats = true,
 	jump = false,
 	-- Inert (falling() bails out for fliers) and NOT a switch: 0 is truthy in

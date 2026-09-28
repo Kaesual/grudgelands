@@ -1667,7 +1667,7 @@ end
 -- changed, i.e. only when the caller has to spend an inventory write.
 --
 -- Touches nothing but the three meta keys: the wear bar is the cooldown display
--- and stays whatever it was, and so does the elf `range` override.
+-- and stays whatever it was, and so does the Loose draw-time `range`.
 local function apply_skin(stack, def, src)
 	local meta = stack:get_meta()
 	local token = skin_token(src)
