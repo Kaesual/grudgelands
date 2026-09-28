@@ -496,7 +496,7 @@ function grug_mounts.mount(player, tier_id)
 			return false, "Flying mounts cannot take off underground."
 		end
 		if pos.y > grug_mounts.FLIGHT_CEILING then
-			return false, "The flight ceiling is y = 600."
+			return false, "The flight ceiling is y = " .. grug_mounts.FLIGHT_CEILING .. "."
 		end
 	end
 	return grug_mounts.spawn_entity(player, tier_id, pos)

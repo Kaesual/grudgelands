@@ -601,6 +601,12 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 					core_api.sha256),
 				mapgen_context = mapgen_context}
 		end
+		-- The same surface/content envelope as the main environment's
+		-- preparation authority, for the Round 23 air-chunk fast path
+		-- (air_chunks.lua). Its identity string is not used here.
+		local writer_bounds = dofile(wp40_directory .. "/preparation_source.lua")(
+			r6_identity.planner_source, r6_identity.template_records, cultural,
+			settlements, public_zones_session, anchor_roster, "emerge", sha256_hex)
 		local direct_session, direct_fixture
 		if evidence_mode == true then
 			local ignored_writer, ignored_zones
@@ -616,7 +622,7 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			zones_session = public_zones_session, content = content_set,
 			anchor_roster = anchor_roster,
 			consumer_payload = consumer_payload,
-			mapgen_context = mapgen_context,
+			mapgen_context = mapgen_context, writer_bounds = writer_bounds,
 			settlement_fixture = settlement_fixture,
 			direct_session = direct_session, direct_fixture = direct_fixture}
 	end

@@ -1,0 +1,15 @@
+chunks generated: 5422, tiles committed: 400
+[r23s] stop t=698.4 completed=400/400 ready=true
+
+class         n   engine_ms(med)  decide_ms(mean)  full_ms(mean)  results
+air-fast     3376        32.8            0.08            0.0  skipped=3376
+air-full      539        32.0            2.41          122.9  applied_clq=67 applied_cplq=198 applied_cq=1 noop_equal_content=273
+surface       609        37.7            0.00          242.2  applied_c=44 applied_cl=1 applied_clq=394 applied_cplq=123 applied_cq=2 noop_equal_content=45
+underground   898        30.1            0.00          243.4  applied_c=457 applied_cl=2 applied_clq=95 applied_cq=13 noop_equal_content=331
+
+tiles 1..400 of 400; 692.0 s between first and last commit; 1.73 s/tile, 7.8 chunks/s overall
+chunks per tile: mean 13.55 min 13 max 14; y_min range -272..-192, y_max range 768..768
+extrapolated full world (region mix, 8811 tiles): 119433 chunks, 4.2 h
+
+peak RSS: 3.49 GB
+map DB: 133.9 MB for 400 committed tiles (incl. speculative and start chunks): 0.33 MB/tile, extrapolated full world 2.9 GB

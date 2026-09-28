@@ -1,7 +1,8 @@
 # World preparation
 
 Decided 2026-09-21; surface-selection revision approved 2026-09-22 (Round 16).
-Bounded full-throughput scheduling approved 2026-09-23.
+Bounded full-throughput scheduling approved 2026-09-23. Full-column extent and
+the air-chunk fast path decided 2026-09-28 (Round 23, WP48).
 
 
 ### Preparation modes and readiness
@@ -20,20 +21,56 @@ Bounded full-throughput scheduling approved 2026-09-23.
   deterministic chunk traversal after restart. Do not complete all remaining
   starts or the full world before shutting down.
 - Bounds are named code constants, not additional configuration settings:
-  x_min/x_max/z_min/z_max. Select heights from conservative local surface
-  envelopes, not one global y_min/y_max slab. Cover both continents, the mainland
+  x_min/x_max/z_min/z_max. Select heights per horizontal tile (see "Full-column
+  extent"), not one global y_min/y_max slab. Cover both continents, the mainland
   frontier, both islands and a generous ocean margin.
 - The ocean margin is **20 mapblocks = 320 nodes**, rounded outward to actual
-  generation boundaries. Include land/water surface, exposed cliffs, structures
-  and vegetation. Extra air/soil within selected chunks is acceptable. Deep mines,
-  deep ocean floors and arbitrary high-altitude flight volumes are outside scope.
+  generation boundaries.
+- A finished full preparation leaves nothing for the engine to generate while
+  players walk, swim, ride or fly mounts up to the flight ceiling, or look around
+  at the surface. On-demand generation remains only for:
+  - mining deeper than the generate reach below the prepared bottom of a tile;
+  - players building above the prepared top minus the reach (feet above
+    y ≈ 671 where the column ends at 847);
+  - admins above the flight ceiling;
+  - positions outside the bounds;
+  - servers whose `active_block_range` exceeds the generate reach: block
+    activation emerges with generation (`ServerEnvironment::step`,
+    `getBlockOrEmerge(p, true)`, serverenvironment.cpp:946-947); the engine
+    default 4 lies inside.
+
+### Full-column extent
+
+- **Generate reach** R = (`max_block_generate_distance` + 1) mapblocks in nodes:
+  the engine generates Chebyshev block shells up to that distance around the
+  block of the player's base position predicted one block ahead
+  (`RemoteClient::GetNextBlocks`). 176 nodes at the engine default 10. The
+  effective setting is read once when the world's plan is created and persisted
+  with it; a later edit does not reinterpret the plan (logged).
+- **Neighbourhood window:** ceil((distance + 1) / chunksize) tiles on each
+  horizontal axis (±3 tiles at chunksize 5 and distance 10), clamped to the
+  bounds: every tile a player can stand in while this tile is within reach.
+- **Top** of a tile's column: the higher of the flight ceiling
+  (`grug_core.FLIGHT_CEILING`, shared with grug_mounts) plus 8 nodes of flight
+  headroom and the window's highest surface/content plus 3 nodes of standing
+  headroom, plus R, rounded outward to mapchunks.
+- **Bottom:** the window's lowest surface envelope minus R, rounded outward.
+- Surface and content heights are the surface envelope: land surfaces, the real
+  bed of sea, lake and river water on the bottom side (players dive to any bed;
+  user ruling 2026-09-28) and the water surface on the top side, functional
+  surfaces, waterfalls,
+  road decks and rails, decoded template and cultural-cell reach, fitted
+  settlement/POI/anchor boxes. Start readiness envelopes still apply over their
+  tiles.
 
 ### Implementation constraints
 
 - One scheduler and one immutable ordered work list definition for both modes.
   Starts-only uses the deduplicated union of all six necessary start envelopes;
-  full-world resolves and generates one horizontal tile's local Y envelope at a
-  time in deterministic order. No full-world height prepass or global 3D list.
+  full-world resolves and generates one horizontal tile's column at a time in
+  deterministic z/x order, bottom-up. No whole-world height prepass or global 3D
+  list: surface statistics are scanned per tile, running ahead of selection by
+  the neighbourhood window, and only the window's rows are kept (bounded memory).
   Use actual terrain/water/functional/content authority with boundary neighbors;
   center/corner-only samples must not miss narrow peaks or exposed cliff faces.
 - Store mode, resolved bounds/order/chunk geometry and the contiguous completed
@@ -47,7 +84,7 @@ Bounded full-throughput scheduling approved 2026-09-23.
   contiguous successful prefix, never a later success across a pending/failed
   head. Failed requests pause new filling and retry their exact coordinates.
   There is no persistent out-of-order journal or custom worker fleet.
-- Full preparation selects surface columns in cooperative **100 ms** slices
+- Full preparation scans surface columns in cooperative **100 ms** slices
   per server step, checked after batches of 16 columns with an 8,192-column
   ceiling across that step. One source call/batch can exceed the time budget;
   this is not a hard real-time deadline. Stop early when the bounded queue is
@@ -98,8 +135,8 @@ Bounded full-throughput scheduling approved 2026-09-23.
 - Do not confuse mapblocks (16 nodes per axis) with generation chunks
   (normally 80 nodes per axis). No 1,600-node ocean margin is required.
 
-Surface walking is the coverage objective; preparing every possible high-altitude
-flight view or deep mine is not required. Exact savings are not a deliverable.
+Surface travel, including mounted flight up to the ceiling, is the coverage
+objective; deep mines are not. Exact savings are not a deliverable.
 The initial ETA can be pessimistic and naturally fall after early progress; this
 is accepted and must not trigger estimator tuning. An optional final runtime
 estimate may use exactly one 60–120-second generation sample after implementation,
@@ -107,11 +144,12 @@ then normal shutdown; no repeated development timing runs or full-world test.
 
 ### Surface selection and current-world resume
 
-Full mode walks horizontal tiles in z/x order and selected Y chunks bottom-up.
-Each tile reads every terrain column in its local rectangle, including neighboring
-columns for cliff exposure and the decoded horizontal reach of vegetation roots.
-Water columns retain the real shallow bed down to eight nodes below their surface;
-content support and chunk rounding may include additional depth. Functional
+Full mode walks horizontal tiles in z/x order and each tile's column bottom-up.
+A tile's surface statistic reads every terrain column in its local rectangle,
+including neighboring columns for cliff exposure and the decoded horizontal reach
+of vegetation roots; its column then follows the window rule above.
+Water columns contribute their real bed, however deep, to the bottom side and
+their water surface to the top side. Functional
 crossings and waterfall upper/lower heights join the same local envelope.
 
 Decoded tree rotations and cultural cells provide conservative content height
@@ -121,7 +159,9 @@ also include their authored neighboring-ground reach. Every start's full readine
 box is included wherever its horizontal footprint intersects a tile. Conservative
 content allowances may apply where that content does not spawn.
 
-Selection advances in bounded local batches before the tile's first emerge request.
+Scanning advances in bounded local batches, ahead of the tile's first emerge
+request by the neighbourhood window; after a restart it restarts at the window of
+the next unresolved tile.
 The current head's resolved Y interval and successful inner-chunk cursor are
 stored together. Forward selections and request outcomes are bounded ephemeral
 lookahead. On interruption they can be deterministically recomputed/re-requested
@@ -152,3 +192,17 @@ and receive-fields actions honor it. Escape dismisses the form without releasing
 stasis, allowing the native menu on a subsequent Escape. Routine progress does
 not reopen it. A new failure opens the error/retry form once. Readiness continues
 creation or releases an existing complete character without regranting its kit.
+
+## Air-chunk fast path (emerge environment)
+
+Chunks the writer provably cannot change cost next to nothing on the Lua side,
+wherever they are generated (preparation or play). A chunk skips the writer
+transaction when it lies above water level, the engine heightmap of the chunk
+shows no native walkable node inside the owner, and the owner lies more than one
+mapblock above the writer's surface/content envelope of its columns and their
+content reach (the same envelope as full preparation). The transaction would
+then return without any VoxelManip write, so content, param2 and light of the
+chunk and its shell are identical. The envelope is per owner column, memoized
+for recent columns; it never scans the world. Chunks with native ground in the
+owner, near the envelope or underground keep the full writer: resources sample
+every land depth, cave plants and strata live below the surface.

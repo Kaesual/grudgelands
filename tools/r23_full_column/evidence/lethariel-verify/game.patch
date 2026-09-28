@@ -1,0 +1,114 @@
+--- a/minetest.conf
++++ b/minetest.conf
+@@ -195,4 +195,9 @@
+ enable_waving_water = true
+ 
+ # World-bound on first fresh boot: false prepares starts; true the full volume.
+-grug_prepare_full_world = false
++grug_prepare_full_world = true
++
++# Round 23 bounded measurement run (disposable)
++r23_stop_after = 200
++r23_verify = true
++r23_geo = false
+--- a/mods/CORE/grug_core/preparation_plan.lua
++++ b/mods/CORE/grug_core/preparation_plan.lua
+@@ -3,8 +3,7 @@
+ -- Source extent encloses continents, frontier and islands. Add 20 mapblocks
+ -- of water on every side, then round outward on the actual engine grid.
+ local OCEAN_MARGIN = 20 * 16
+-M.bounds = {x_min = -3600 - OCEAN_MARGIN, x_max = 3600 + OCEAN_MARGIN,
+-	z_min = -3200 - OCEAN_MARGIN, z_max = 3200 + OCEAN_MARGIN}
++M.bounds = {x_min = 1840, x_max = 2079, z_min = -1540, z_max = -1221} -- r23 region
+ -- Full mode prepares, per horizontal tile, every mapchunk a player walking,
+ -- swimming or riding a flying mount can make the engine generate
+ -- (docs/design/world_preparation.md, "Full-column extent").
+@@ -87,10 +86,10 @@
+ 			local a = identity.anchor
+ 			local row = envelope({x=a.x-64,y=a.y+1-24,z=a.z-64},
+ 				{x=a.x+63,y=a.y+1+80,z=a.z+63})
+-			assert(row.min.x >= plan.bounds.min.x and row.max.x <= plan.bounds.max.x and
+-				row.min.z >= plan.bounds.min.z and row.max.z <= plan.bounds.max.z,
+-				"Full preparation bounds omit a start envelope")
+-			plan.starts[#plan.starts+1] = row
++			if row.min.x >= plan.bounds.min.x and row.max.x <= plan.bounds.max.x and
++					row.min.z >= plan.bounds.min.z and row.max.z <= plan.bounds.max.z then
++				plan.starts[#plan.starts+1] = row
++			end
+ 		end
+ 	else
+ 		local seen, chunks = {}, {}
+--- a/mods/CORE/grug_core/starts_preload.lua
++++ b/mods/CORE/grug_core/starts_preload.lua
+@@ -123,7 +123,13 @@
+ 	while queue[1] and queue[1].status == "success" do
+ 		local row = table.remove(queue, 1)
+ 		state.selection = selection_copy(row.selection)
++		local r23_tile = state.selection
+ 		local completed = plan_api.complete(state)
++		if completed and r23_tile then
++			core.log("action", ("[r23p] tile %d/%d x=%d z=%d y_min=%d y_max=%d us=%d"):format(
++				state.cursor, state.total, r23_tile.x, r23_tile.z, r23_tile.y_min,
++				r23_tile.y_max, core.get_us_time()))
++		end
+ 		if completed then
+ 			local now = core.get_us_time()
+ 			elapsed = elapsed + (now - tile_elapsed) / 1000000
+--- a/mods/MAPGEN/grug_mapgen/wp40/r7_mapgen.lua
++++ b/mods/MAPGEN/grug_mapgen/wp40/r7_mapgen.lua
+@@ -77,6 +77,8 @@
+ if not water_level then fail("water level differs") end
+ local air_chunks = dofile(wp40 .. "/air_chunks.lua")(built.writer_bounds, water_level)
+ local function get_heightmap() return core.get_mapgen_object("heightmap") end
++local r23_verify = core.settings:get_bool("r23_verify", false)
++local r23_last
+ 
+ core.register_on_generated(function(vmanip, minp, maxp, blockseed)
+ 	minp = plain_engine_position(minp, "generated minp")
+@@ -86,8 +88,42 @@
+ 	if native_baseline then return end
+ 	-- Native air above everything the writer can place: the transaction would
+ 	-- change nothing (air_chunks.lua), so it is not run.
+-	if air_chunks.untouched(minp, maxp, get_heightmap) then return end
+-	local plan, generation = built.session.plan_slice(minp, maxp)
+-	local result = built.writer.apply(vmanip, minp, maxp, plan, generation)
+-	if type(result) ~= "string" then fail("writer result differs") end
++	local r23_t0 = core.get_us_time()
++	local r23_fast = air_chunks.untouched(minp, maxp, get_heightmap)
++	local r23_t1 = core.get_us_time()
++	local hm = get_heightmap()
++	local hm_top, hm_bottom, hm_ground = -31007, 31007, 0
++	for i = 1, #hm do
++		local v = hm[i]
++		if v > hm_top then hm_top = v end
++		if v < hm_bottom then hm_bottom = v end
++		if v >= minp.y then hm_ground = hm_ground + 1 end
++	end
++	local result, full_us, dd, dp, dl = "skipped", 0, -1, -1, -1
++	local d0, p0, l0
++	if r23_fast and r23_verify then
++		d0, p0, l0 = vmanip:get_data(), vmanip:get_param2_data(), vmanip:get_light_data()
++	end
++	if not r23_fast or r23_verify then
++		local t = core.get_us_time()
++		local plan, generation = built.session.plan_slice(minp, maxp)
++		result = built.writer.apply(vmanip, minp, maxp, plan, generation)
++		full_us = core.get_us_time() - t
++		if type(result) ~= "string" then fail("writer result differs") end
++	end
++	if d0 then
++		local d1, p1, l1 = vmanip:get_data(), vmanip:get_param2_data(), vmanip:get_light_data()
++		dd, dp, dl = 0, 0, 0
++		if #d1 ~= #d0 or #p1 ~= #p0 or #l1 ~= #l0 then dd = -2 end
++		for i = 1, #d0 do
++			if d0[i] ~= d1[i] then dd = dd + 1 end
++			if p0[i] ~= p1[i] then dp = dp + 1 end
++			if l0[i] ~= l1[i] then dl = dl + 1 end
++		end
++	end
++	core.log("action", ("[r23c] gen %d,%d,%d fast=%d gap_us=%d decide_us=%d full_us=%d result=%s hm_ground=%d hm_top=%d hm_bottom=%d dd=%d dp=%d dl=%d vol=%d"):format(
++		minp.x, minp.y, minp.z, r23_fast and 1 or 0, r23_last and (r23_t0 - r23_last) or -1,
++		r23_t1 - r23_t0, full_us, result, hm_ground, hm_top, hm_bottom, dd, dp, dl,
++		d0 and #d0 or 0))
++	r23_last = core.get_us_time()
+ end)

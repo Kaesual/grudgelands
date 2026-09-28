@@ -1,0 +1,17 @@
+chunks generated: 260, tiles committed: 20
+[r23s] stop t=56.4 completed=20/20 ready=true
+
+class         n   engine_ms(med)  decide_ms(mean)  full_ms(mean)  results
+air-fast      180        31.0            0.13           85.0  noop_equal_content=180
+air-full       16        29.8            2.48          134.2  applied_clq=3 applied_cplq=13
+surface        27        32.6            0.01          355.1  applied_c=2 applied_clq=21 applied_cplq=4
+underground    37        23.8            0.00          323.7  applied_c=26 noop_equal_content=11
+
+fast-path equivalence: 180 chunks compared over the whole VoxelManip (content, param2, light; 1404928 nodes each), 0 differ
+
+tiles 1..20 of 20; 51.5 s between first and last commit; 2.71 s/tile, 5.0 chunks/s overall
+chunks per tile: mean 13.00 min 13 max 13; y_min range -192..-192, y_max range 768..768
+extrapolated full world (region mix, 8811 tiles): 114543 chunks, 6.6 h
+
+peak RSS: 3.06 GB
+map DB: 7.3 MB for 20 committed tiles (incl. speculative and start chunks): 0.36 MB/tile, extrapolated full world 3.2 GB

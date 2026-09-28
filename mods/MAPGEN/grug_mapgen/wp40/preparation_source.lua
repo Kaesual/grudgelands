@@ -86,9 +86,9 @@ return function(columns, templates, cultural, settlements, zones, anchors, ident
 		local _,_,_,_,_,ground,water,_,_,_,functional,_,_,_,_,upper,lower =
 			columns.column_values_at(x,z)
 		assert(type(ground) == "number", "Preparation column authority missing")
-		-- Eight visible water nodes plus one support node; deep seabeds are not
-		-- a surface-travel requirement. Shallow beds retain their actual height.
-		local surface_low = water and math.max(ground,water-8) or ground
+		-- The real bed under sea, lake and river water: players dive to any bed,
+		-- so it is a surface like land (Round 23 user ruling, 2026-09-28).
+		local surface_low = ground
 		local surface_high = water and math.max(ground,water) or ground
 		if functional then
 			surface_low = math.min(surface_low,functional)
