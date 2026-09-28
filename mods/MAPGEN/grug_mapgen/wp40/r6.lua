@@ -10,6 +10,7 @@ return function(dependencies)
 		terrain_field = true,
 		raw_sha256 = true, hash_factory = true, content_factory = true,
 		templates_factory = true, planner_factory = true, settlement_factory = true,
+		habitat = true,
 	}
 	for key in pairs(dependencies) do
 		if not ALLOWED[key] then
@@ -245,7 +246,7 @@ return function(dependencies)
 		integer(configured_water_level, "configured water level", -31000, 31000)
 		if configured_water_level ~= 1 then fail("fail_manifest", "water level differs") end
 		local content_module = dependencies.content_factory(manifest_values,
-			content_contract, wp43_projection)
+			content_contract, wp43_projection, dependencies.habitat)
 		local templates_module = dependencies.templates_factory(hash, content_module,
 			template_source)
 		local normalized_registrations = {}
@@ -313,6 +314,10 @@ return function(dependencies)
 				schema = "grug_wp40_r6_authority_identity_v1",
 				template_records = templates_module.records(),
 				planner_source = planner_source,
+				-- The vegetation and altitude rule the emerge planner and
+				-- surface selector use (habitat_registry.lua), for renewal.
+				vegetation_rule = content_module.vegetation_rule(full_seed_string,
+					planner_source),
 				decoration_support_names = support_names,
 				decoration_cover = function(id, biome, support_name)
 					local ref = content_module.content_ref(support_name)

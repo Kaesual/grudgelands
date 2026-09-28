@@ -108,8 +108,14 @@ local planner = {
 	functional_surface_values_at = function() return nil end,
 	hard_row_at = function() return nil end,
 }
+-- The shared vegetation rule (Round 23 Phase 2) on one synthetic zone. The
+-- seed keeps the fixture's area inside groves (forest field 0.83..1.48, no
+-- clearing), so the placement cases below test renewal, not the field; the
+-- tree-line fixture (tools/r23_tree_line/fixture.lua) tests the field.
+local vegetation_rule = habitat.vegetation_rule("1041",
+	function() return "elandor_dawnmere_fields" end)
 local density = dofile(wp40 .. "/vegetation_density.lua")({
-	habitat = habitat, world_plants = world.plants,
+	habitat = habitat, vegetation_rule = vegetation_rule, world_plants = world.plants,
 	p9g_rows = gathering.p9g_sources(), decorations = manifest.decorations,
 	decoration_cover = decoration_cover, support_names = SUPPORTS,
 	template_records = records, column_values_at = column_values_at,
@@ -233,8 +239,9 @@ local classes = {}
 for _, category in ipairs(categories) do
 	classes[category.class] = (classes[category.class] or 0) + 1
 end
-check(classes.resource == 4 and classes.cover == 1 and classes.woody == 1,
-	"meadow start zone: 4 resource species, one cover and one woody class")
+check(classes.resource == 4 and classes.cover == 1 and classes.tree == 1 and
+	classes.shrub == 1,
+	"meadow start zone: 4 resource species, one cover, one tree and one shrub class")
 local gravel = density.categories(20, GROUND + 1, 20, "default:gravel", 15)
 local gravel_cover
 for _, category in ipairs(gravel) do
@@ -307,7 +314,7 @@ local function classes_at(x, z)
 end
 local blend = classes_at(-50, 38)
 out("anchor blend envelope: " .. blend)
-check(blend == "cover:grug_meadows,woody:grug_meadows",
+check(blend == "cover:grug_meadows,tree:grug_meadows,shrub:grug_meadows",
 	"anchor-blend envelope: no resource plant, cover and trees still grow")
 result = run(-50, 38, "resource")
 check(result == "no_habitat", "anchor-blend envelope: resource renewal refused (" ..
@@ -321,7 +328,7 @@ result = run(70, -15, "resource")
 check(result == "placed", "dry island coast: P9G resource renews (" .. tostring(result) .. ")")
 local bank = classes_at(82, 5)
 out("water bank: " .. bank)
-check(bank == "cover:grug_meadows,woody:grug_meadows",
+check(bank == "cover:grug_meadows,tree:grug_meadows,shrub:grug_meadows",
 	"water bank: cover and trees grow, non-shore resources do not")
 -- Caves: the cave-floor rows grow in the dark, below the planned surface.
 local cave = density.categories(10, CAVE_FLOOR + 1, 10, "default:stone", 0)
@@ -382,25 +389,38 @@ check((sparse_cover.placed or 0) > 0, "cover below natural density: placement re
 -- 4. Sapling guard.
 out("-- sapling guard")
 sparse[key(45, GROUND + 1, -45)] = "default:cobble"
-result = run(40, -40, "woody")
+result = run(40, -40, "tree")
 check(result == "guard", "cobble within 10 nodes: no sapling")
 sparse[key(45, GROUND + 1, -45)] = nil
 sparse[key(45, GROUND, -45)] = "grug_farming:soil"
-result = run(40, -40, "woody")
+result = run(40, -40, "tree")
 check(result == "guard", "farm soil within 10 nodes: no sapling")
 sparse[key(45, GROUND, -45)] = nil
-result, node = run(40, -40, "woody")
-check(result == "placed" and (node == "default:sapling" or node == "default:bush_sapling"),
-	"clear ground: meadow sapling placed (" .. tostring(node) .. ")")
+result, node = run(40, -40, "tree")
+check(result == "placed" and node == "default:sapling",
+	"clear ground: meadow tree sapling placed (" .. tostring(node) .. ")")
 -- Keep planting next to it: the box reaches its natural tree count (about
--- two plants in 19 x 19 meadow columns) and then takes no more.
-local woody_placed, woody_last = 1, nil
+-- two apple trees in 33 x 33 meadow columns) and then takes no more.
+local tree_placed, tree_last = 1, nil
 for step = 1, 8 do
-	woody_last = run(40 + step, -40, "woody")
-	if woody_last == "placed" then woody_placed = woody_placed + 1 end
+	tree_last = run(40 + step, -40, "tree")
+	if tree_last == "placed" then tree_placed = tree_placed + 1 end
 end
-check(woody_placed <= 2 and woody_last == "at_target",
-	"saplings stop at the natural tree count (" .. woody_placed .. " placed)")
+check(tree_placed <= 2 and tree_last == "at_target",
+	"saplings stop at the natural tree count (" .. tree_placed .. " placed)")
+-- Shrubs are their own class: the trees above do not fill the shrub count.
+result, node = run(40, -30, "shrub")
+check(result == "placed" and node == "default:bush_sapling",
+	"trees at target, shrubs still below: bush sapling placed (" ..
+		tostring(result) .. " " .. tostring(node) .. ")")
+local shrub_placed, shrub_last = 1, nil
+for step = 1, 12 do
+	shrub_last = run(40 + step % 4, -30 + math.floor(step / 4), "shrub")
+	out("shrub step " .. step .. " " .. tostring(shrub_last))
+	if shrub_last == "placed" then shrub_placed = shrub_placed + 1 end
+end
+check(shrub_last == "at_target",
+	"bush saplings stop at the natural shrub count (" .. shrub_placed .. " placed)")
 api.trees = false
 local woody_seen = false
 for step = 1, 40 do

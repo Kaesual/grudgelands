@@ -7,8 +7,12 @@ local function wet_bed_names(id, bed)
 	return {bed, "default:sand", "default:gravel", "default:stone"}
 end
 
-local function content_factory(manifest_values, content_contract, wp43_projection)
+local function content_factory(manifest_values, content_contract, wp43_projection,
+		habitat)
 	local MAX_SAFE = 9007199254740991
+	if type(habitat) ~= "table" or type(habitat.vegetation_rule) ~= "function" then
+		error("fail_source: habitat authority missing", 0)
+	end
 	local PARAM2_KINDS = {none = true, facedir = true, wallmounted = true,
 		colorfacedir = true, colorwallmounted = true, ["4dir"] = true,
 		color4dir = true, degrotate = true, colordegrotate = true,
@@ -338,7 +342,7 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 
 	local decorations, decoration_by_id = {}, {}
 	if dense(manifest_values.decorations, "decoration catalog",
-			"fail_content_manifest") ~= 48 then
+			"fail_content_manifest") ~= 52 then
 		fail("fail_content_manifest", "expanded decoration population differs")
 	end
 	for index = 1, #manifest_values.decorations do
@@ -615,7 +619,24 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 		local hosts = biomes and biomes[biome]
 		return hosts and hosts[support_ref] or 0
 	end
+	-- The vegetation and altitude rule (habitat_registry.lua) of one world:
+	-- built once per seed, so the planner, the surface selector and renewal
+	-- share one object. The forest field's per-zone normalisation reads the
+	-- planner source's horizontal zones.
+	local vegetation_rules = {}
+	function module.vegetation_rule(full_seed, planner_source)
+		local rule = vegetation_rules[full_seed]
+		if rule then return rule end
+		if type(planner_source) ~= "table" or
+				type(planner_source.land_zone_at) ~= "function" then
+			fail("fail_source", "vegetation rule needs the planner zone source")
+		end
+		rule = habitat.vegetation_rule(full_seed, planner_source.land_zone_at)
+		vegetation_rules[full_seed] = rule
+		return rule
+	end
 	function module.new_surface_selector(full_seed, planner_source)
+		local vegetation = module.vegetation_rule(full_seed, planner_source)
 		local phase = 0
 		for index = 1, #full_seed do
 			phase = (phase * 131 + string.byte(full_seed, index)) % 65521
@@ -818,7 +839,68 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 			end
 			return row
 		end
-		return function(id, x, z, water_y, terrain_y)
+		-- Snow above the snow line (Round 23 Phase 2, world_zones.md §7.6): a
+		-- snowblock top with snow dust over the column's own filler, and snow
+		-- dust alone in the patchy band below the line. Rows are derived once
+		-- per source row. Steep rock faces stay bare (the caller never asks).
+		local snow_top_ref = require_role("default:snowblock", 1, p7_classes,
+			"snow cap top")
+		local snow_dust_ref = require_role("default:snow", 2, {[8] = true},
+			"snow dust")
+		local snow_caps, snow_dusts = {}, {}
+		local function snowed(row, class)
+			local memo = class == 2 and snow_caps or snow_dusts
+			local result = memo[row]
+			if not result then
+				result = deep_copy(row)
+				if class == 2 then
+					result.top, result.top_ref = "default:snowblock", snow_top_ref
+				end
+				result.dust, result.dust_ref = "default:snow", snow_dust_ref
+				memo[row] = result
+			end
+			return result
+		end
+		local SNOW_FLOOR = habitat.VEGETATION.SNOW_LINE - habitat.VEGETATION.JITTER -
+			habitat.VEGETATION.SNOW_BAND
+		-- The dry, non-town, non-shore row of a column, and whether it is a
+		-- steep rock face.
+		local function dry_row(id, x, z, terrain_y, patch, detail, depth)
+			if id == "grug_swamp" then return surface_by_id[id], false end
+			local kind = 1
+			if patch > 880 then kind = 4
+			elseif patch > 780 then kind = 3
+			elseif patch < 300 then kind = 2
+			elseif patch < 440 then kind = 5 end
+			-- Exposed crags keep their rocky character; ordinary biomes get
+			-- smaller outcrops instead of entire bare bands on moderate slopes.
+			if id == "grug_crags" or id == "grug_crags_snowy" then
+				if patch > 650 then kind = 4 elseif patch < 300 then kind = 3 end
+			end
+			-- Mesa clay is the badlands' own cliff material.
+			if id ~= "grug_badlands" and id ~= "grug_badlands_east" then
+				local steep = steep_at(x, z, terrain_y)
+				if steep == 1 then return rock_rows[id][depth], true end
+				if steep == 2 then return lip_rows[id][kind], false end
+				if steep == 3 then return variants[id][3][depth], false end
+			end
+			if patch > 660 and x >= -3736 and x <= 3736 and
+					z >= -3336 and z <= 3336 then
+				local _, _, _, _, _, west = planner_source.column_values_at(x - 4, z)
+				local _, _, _, _, _, east = planner_source.column_values_at(x + 4, z)
+				local _, _, _, _, _, north = planner_source.column_values_at(x, z - 4)
+				local _, _, _, _, _, south = planner_source.column_values_at(x, z + 4)
+				local rise = math.max(math.abs(east - west), math.abs(south - north))
+				if rise >= 12 and patch > 760 then kind = 4 end
+				-- Fine soil pockets interrupt gentle outcrops and receive the
+				-- biome's ordinary vegetation through the same support contract.
+				if (kind == 3 or kind == 4) and rise < 12 and detail > 680 and
+						id ~= "grug_crags" and id ~= "grug_crags_snowy" then kind = 1 end
+			end
+			return variants[id][kind][depth], false
+		end
+		-- `zone_id` is the column's zone (the warm Skyglass lines).
+		return function(id, x, z, water_y, terrain_y, zone_id)
 			local base = surface_by_id[id]
 			if not base then return nil end
 			local dry = water_y == nil or water_y <= terrain_y
@@ -845,38 +927,12 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 			-- and band are hard rows, where steep_at never answers rock or lip.
 			local town = start_ground_at(x, z)
 			if town then return town_row(id, town, depth) end
-			if id == "grug_swamp" then return base end
-			local kind = 1
-			if patch > 880 then kind = 4
-			elseif patch > 780 then kind = 3
-			elseif patch < 300 then kind = 2
-			elseif patch < 440 then kind = 5 end
-			-- Exposed crags keep their rocky character; ordinary biomes get
-			-- smaller outcrops instead of entire bare bands on moderate slopes.
-			if id == "grug_crags" or id == "grug_crags_snowy" then
-				if patch > 650 then kind = 4 elseif patch < 300 then kind = 3 end
+			local row, rock_face = dry_row(id, x, z, terrain_y, patch, detail, depth)
+			if terrain_y >= SNOW_FLOOR and not rock_face then
+				local snow = vegetation.snow_class(x, z, terrain_y, id, zone_id)
+				if snow ~= 0 then return snowed(row, snow) end
 			end
-			-- Mesa clay is the badlands' own cliff material.
-			if id ~= "grug_badlands" and id ~= "grug_badlands_east" then
-				local steep = steep_at(x, z, terrain_y)
-				if steep == 1 then return rock_rows[id][depth] end
-				if steep == 2 then return lip_rows[id][kind] end
-				if steep == 3 then return variants[id][3][depth] end
-			end
-			if patch > 660 and x >= -3736 and x <= 3736 and
-					z >= -3336 and z <= 3336 then
-				local _, _, _, _, _, west = planner_source.column_values_at(x - 4, z)
-				local _, _, _, _, _, east = planner_source.column_values_at(x + 4, z)
-				local _, _, _, _, _, north = planner_source.column_values_at(x, z - 4)
-				local _, _, _, _, _, south = planner_source.column_values_at(x, z + 4)
-				local rise = math.max(math.abs(east - west), math.abs(south - north))
-				if rise >= 12 and patch > 760 then kind = 4 end
-				-- Fine soil pockets interrupt gentle outcrops and receive the
-				-- biome's ordinary vegetation through the same support contract.
-				if (kind == 3 or kind == 4) and rise < 12 and detail > 680 and
-						id ~= "grug_crags" and id ~= "grug_crags_snowy" then kind = 1 end
-			end
-			return variants[id][kind][depth]
+			return row
 		end
 	end
 	function module.resource(key) return deep_copy(resource_by_key[key]) end

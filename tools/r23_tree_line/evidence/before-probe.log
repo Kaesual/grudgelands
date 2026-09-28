@@ -1,0 +1,14 @@
+ACTION[Server]: [r23d] emerge mountain y 93..442
+ACTION[Server]: [r23d] emerge forest y 37..150
+ACTION[Emerge-0]: [r23d] emerged mountain in 11.6 s
+ACTION[Emerge-0]: [r23d] dump mountain -1264,-896..-1041,-673 y 93..442: 211387 nodes, 0 ignore, 0.6 s; tops default:gravel=22621 default:stone=19274 default:snow=8221 grug_gathering:runeslate_source=33 default:pine_tree=21 default:pine_needles=6
+ACTION[Emerge-0]: [r23d] emerged forest in 29.3 s
+ACTION[Emerge-0]: [r23d] dump forest 240,-768..463,-545 y 37..150: 233807 nodes, 0 ignore, 0.5 s; tops grug_nodes:dirt_with_forest_litter=25708 default:dirt_with_grass=9836 default:dirt_with_coniferous_litter=6416 default:river_water_source=2297 default:sand=1485 default:gravel=1250 default:fern_3=645 default:fern_2=630
+ACTION[Emerge-0]: [r23d] all dumps written
+ACTION[Server]: [r23d] emerge mountain y 93..442
+ACTION[Server]: [r23d] emerge forest y 37..150
+ACTION[Emerge-0]: [r23d] emerged mountain in 11.6 s
+ACTION[Emerge-0]: [r23d] dump mountain -1264,-896..-1041,-673 y 93..442: 211387 nodes, 0 ignore, 0.6 s; tops default:gravel=22621 default:stone=19274 default:snow=8221 grug_gathering:runeslate_source=33 default:pine_tree=21 default:pine_needles=6
+ACTION[Emerge-0]: [r23d] emerged forest in 29.3 s
+ACTION[Emerge-0]: [r23d] dump forest 240,-768..463,-545 y 37..150: 233807 nodes, 0 ignore, 0.5 s; tops grug_nodes:dirt_with_forest_litter=25708 default:dirt_with_grass=9836 default:dirt_with_coniferous_litter=6416 default:river_water_source=2297 default:sand=1485 default:gravel=1250 default:fern_3=645 default:fern_2=630
+ACTION[Emerge-0]: [r23d] all dumps written

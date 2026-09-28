@@ -716,6 +716,66 @@ replaced; git history before this rewrite records that model.
   strata, so no band follows a cliff face. Graded pads, hard foundations and
   road corridors keep their surfaces. Trees and plants do not root on bare
   rock.
+- **Vegetation and altitude (Round 23 Phase 2, user rulings 2026-09-28).**
+  One rule (`habitat_registry.lua` `vegetation_rule`) is read by the
+  decoration planner, the surface selector and runtime vegetation renewal
+  (farming.md "Wild plant renewal"). Every value is a function of the
+  column's position, planned terrain height, logical biome and zone; no
+  neighbour column is read. Integer fixed point, identical in LuaJIT and PUC.
+  - **Lines.** Tree start y 160, tree line y 220, snow line y 280. A smooth
+    field (80-node period plus a 20-node detail, weights 3:1) shifts all three
+    together by at most ±15 nodes, so the lines form tongues and bays. Warm
+    biomes (deep jungle, jungle edge, jungle fringe, savanna, both badlands)
+    and every biome of the Skyglass Canopy (the cloud forest) have all lines
+    40 higher; the other biomes keep the base. Measured on four seeds
+    (coarse analytic grid): 12.2 % of dry land lies at or above the tree
+    start, 5.1 % at or above the tree line, 2.6 % beyond the shrub band and
+    1.9 % under the snow cap.
+  - **Trees** thin linearly from the tree start to zero at the tree line.
+    The crags snowy pine keeps full density 30 nodes longer and then thins to
+    zero at the same line: it is the typical last tree.
+  - **Shrubs.** As trees thin, the biome's own shrub rises linearly from its
+    catalog density to three times it at the tree line, holds that for 20
+    nodes and falls to zero 40 nodes above the tree line: pine bush in the
+    pine hills and crags, bush in the meadows, deep forest and elf forest,
+    acacia bush in the savanna, dry shrub in the blight and bone forest.
+    Crags, deep forest, elf forest and bone forest have no shrub of their own
+    below the band; band-only rows (crags pine bush `3/500` on gravel, deep
+    and elf forest bush `1/250`, bone forest dry shrub `3/200`) grow only
+    there, from zero at the tree start to the same peak.
+  - **Ground cover** (grass, ferns, junglegrass, reeds, the blueberry bush
+    and the dry shrubs of badlands, savanna and swamp) keeps its density up
+    to the snow line: the alpine meadow between the shrub band and the snow.
+  - **Snow.** At and above the snow line the dry top is `default:snowblock`
+    with `default:snow` dust over the column's own filler; in the 20 nodes
+    below it, snow dust lies in patches (a 10-node field) whose share rises
+    from none at the foot of the band to all at the line. Steep rock faces
+    (above) stay bare rock; shores, start towns and water columns get no
+    snow. No ice, no slope-aspect rule. A column with snow (cap or dust)
+    hosts no decoration.
+  - **Forests and clearings.** Trees are multiplied by a forest field: groves
+    from a 224-node field (0.24–1.76 of the mean) times clearings from a
+    64/20-node field (zero below a threshold, a short ramp above), which
+    gives groves of roughly 150–300 nodes and clearings of 40–100. The field
+    is rescaled per zone: each zone's scale makes its mean over the zone's
+    land (a fixed 16-node grid) one, and the scales are interpolated
+    bilinearly from a 64-node lattice (each lattice point takes the scale of
+    its zone), so no zone border shows a step and every zone keeps its mean
+    tree density within a few percent (measured 0.97–1.03). Deep forest and
+    deep jungle trees are then multiplied by 1.5. Shrubs and ground cover are
+    not affected.
+  - **Planner.** Each decoration row's class (tree, last tree, shrub,
+    band-only shrub, cover) picks one factor per column. A column is eligible
+    with probability factor ÷ (class maximum), the class maximum being 5 for
+    trees, 3 for shrubs and 1 for cover, and the 16×16 cell budget is scaled
+    by the class maximum, so the expected placements are the catalog density
+    times the factor. Cover rows keep their former eligibility wherever the
+    factor is one.
+  - **Shrubs on slopes.** Shrub templates (the shrub and band-only shrub
+    rows) place like the engine's own schematics: a leaf (a cell without
+    force placement) that would hit ground is left out instead of rejecting
+    the whole bush. The stem keeps the full rule, so no bush floats or buries
+    its stem. Trees keep the whole-template clearance rule.
 - **Substrate.** Native v7 remains the substrate for caves, ores, dungeons
   and strata, but its heightmap never selects the final surface, a mask, an
   operation or a priority. The writer may read that heightmap only as a local

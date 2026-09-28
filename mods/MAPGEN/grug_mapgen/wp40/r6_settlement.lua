@@ -156,7 +156,8 @@ local function settlement_factory()
 						functional_kind == nil and transition_kind == nil and not hard and
 						context.static_exclusion_values_at(x, z) == nil and
 						not context.housing_excluded_at(x, z) then
-					local surface = context.select_surface(biome, x, z, water_y, terrain_y)
+					local surface = context.select_surface(biome, x, z, water_y, terrain_y,
+						zone_id)
 					local filler_depth = surface and surface.filler_depth or 4
 					-- Steep columns (rock faces and lips) show their side: no
 					-- bands along a cliff face (Round 22 Phase 6).
@@ -755,6 +756,20 @@ local function settlement_factory()
 		local resources = content.resources()
 		local cultural = content.cultural()
 		local decorations = content.decorations()
+		-- Shrub templates (Round 23 Phase 2, world_zones.md §7.6) place like the
+		-- engine's own schematics (mg_schematic.cpp blitToVManip): a non-force
+		-- cell (a leaf) that would hit ground is skipped instead of rejecting
+		-- the whole bush, so the shrub band survives on slopes. Force-placed
+		-- cells (the stem) keep the full rule.
+		do
+			local rule = content.vegetation_rule(full_seed, planner_source)
+			for index = 1, #decorations do
+				local row = decorations[index]
+				local class = rule.decoration_class(row)
+				row.partial_leaves = row.kind == "template" and
+					(class == "shrub" or class == "shrub_band") or nil
+			end
+		end
 		local projection = content.wp43_projection()
 		local surface_by_id = {}
 		for index = 1, #surfaces do surface_by_id[surfaces[index].id] = surfaces[index] end
@@ -1281,7 +1296,7 @@ local function settlement_factory()
 			local _, _, zone_id, biome, _, terrain_y, water_y, _, _,
 				functional_kind, _, functional_feature_id =
 					planner_source.column_values_at(x, z)
-			local surface = select_surface(biome, x, z, water_y, terrain_y)
+			local surface = select_surface(biome, x, z, water_y, terrain_y, zone_id)
 			if not zone_id or not surface or y < terrain_y - surface.filler_depth or
 					y > terrain_y or y < -37 then return nil end
 			local cave_low, cave_high = planner_source.surface_cave_run_at(x, z)
@@ -1612,9 +1627,9 @@ local function settlement_factory()
 			end
 
 			local function prospective(x, y, z)
-				local _, _, _, biome, _, terrain_y, water_y =
+				local _, _, zone_id, biome, _, terrain_y, water_y =
 					planner_source.column_values_at(x, z)
-				local surface = select_surface(biome, x, z, water_y, terrain_y)
+				local surface = select_surface(biome, x, z, water_y, terrain_y, zone_id)
 				if not surface then return CLASS_UNKNOWN, 0, false, 0, 0 end
 				local p7_ref = analytic_p7_material_ref(x, y, z)
 				if p7_ref then
@@ -1741,6 +1756,8 @@ local function settlement_factory()
 											old_class ~= CLASS_NATURAL_VEGETATION then
 										if cell.force_place then
 											if not exact_p7 then flags.forbidden_old_class = true end
+										elseif row.partial_leaves then
+											cell.include = false
 										else
 											flags.insufficient_clearance = true
 										end
@@ -3094,6 +3111,9 @@ local function settlement_factory()
 													opcode <= 4) then
 											if cell_record.force_place then
 												flags.forbidden_old_class = true
+											elseif row.partial_leaves then
+												-- a shrub's leaf against ground: skip the cell
+												cell_record.include = false
 											else
 												flags.insufficient_clearance = true
 											end

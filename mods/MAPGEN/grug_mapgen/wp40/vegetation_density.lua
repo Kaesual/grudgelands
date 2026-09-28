@@ -6,22 +6,24 @@
 --     P9G gathering rows (r7_p9g.lua) with their zone, biome, support, level
 --     or depth and shore predicates; density 1 / habitat.initial_denominator
 --     per eligible column (cave rows: per eligible cave-floor node);
---   * ground cover (grass, ferns, junglegrass, dry shrubs) and woody plants
---     (trees and bushes) -- the R6 decoration rows (r7_r6_manifest.lua),
---     numerator / denominator thinned by the planner's per-support decoration
---     cover factor (r6_content.lua `decoration_cover`) and their site rules.
+--   * ground cover (grass, ferns, junglegrass, dry shrubs), trees and shrubs
+--     (bushes) -- the R6 decoration rows (r7_r6_manifest.lua), numerator /
+--     denominator thinned by the planner's per-support decoration cover
+--     factor (r6_content.lua `decoration_cover`) and their site rules.
 -- Density is expected plants per eligible support; the caller counts the
 -- eligible supports and the present plants around the site.
 --
--- Pure: reads no engine global. The only dynamic rule is
--- `habitat.vegetation_factor`, applied to every cover and woody density: the
--- Phase 2 tree line and forest noise land there and reach renewal unchanged.
+-- Pure: reads no engine global. The only dynamic rule is the vegetation and
+-- altitude rule (`habitat_registry.lua` vegetation_rule, the same object the
+-- mapgen planner and surface selector use): every decoration row's density
+-- is scaled by its class factor at the site (tree line, shrub band, snow
+-- line, forest field), and a column with snow grows no decoration.
 return function(deps)
 	local function fail(message)
 		error("vegetation density: " .. message, 0)
 	end
 	for _, field in ipairs({"habitat", "world_plants", "p9g_rows", "decorations",
-			"template_records", "support_names"}) do
+			"template_records", "support_names", "vegetation_rule"}) do
 		if type(deps[field]) ~= "table" then fail("missing " .. field) end
 	end
 	for _, field in ipairs({"decoration_cover", "column_values_at",
@@ -30,6 +32,7 @@ return function(deps)
 		if type(deps[field]) ~= "function" then fail("missing " .. field) end
 	end
 	local habitat = deps.habitat
+	local rule = deps.vegetation_rule
 	local column_values_at = deps.column_values_at
 
 	local M = {}
@@ -39,16 +42,19 @@ return function(deps)
 	M.SURFACE_MIN_LIGHT = 10
 	M.WOODY_MIN_LIGHT = 13
 
-	-- The sapling the vendored growth code turns into each natural woody
-	-- decoration, and the node that marks one grown plant (its trunk or stem;
-	-- the stemless blueberry bush by its leaves). Every template row is in
-	-- exactly one of the two tables.
+	-- The sapling the vendored growth code turns into each natural tree or
+	-- shrub decoration, and the node that marks one grown plant (its trunk or
+	-- stem; the stemless blueberry bush by its leaves). Trees and shrubs are
+	-- separate renewal classes (Round 23 Phase 2 ruling 8): each is counted
+	-- against its own natural density. Every template row is in exactly one
+	-- of TREES, SHRUBS and NOT_RENEWED.
 	local APPLE = {sapling = "default:sapling", markers = {"default:tree"}}
 	local JUNGLE = {sapling = "default:junglesapling", markers = {"default:jungletree"}}
 	local PINE = {sapling = "default:pine_sapling", markers = {"default:pine_tree"}}
 	local GRAVEWOOD = {sapling = "grug_trees:gravewood_sapling",
 		markers = {"grug_trees:gravewood_tree"}}
-	local WOODY = {
+	local BUSH = {sapling = "default:bush_sapling", markers = {"default:bush_stem"}}
+	local TREES = {
 		meadows_apple_tree = APPLE,
 		deep_forest_apple_tree = APPLE,
 		elf_forest_apple_tree = APPLE,
@@ -66,8 +72,11 @@ return function(deps)
 			markers = {"default:acacia_tree"}},
 		blight_gravewood = GRAVEWOOD,
 		bone_forest_gravewood = GRAVEWOOD,
-		meadows_bush = {sapling = "default:bush_sapling",
-			markers = {"default:bush_stem"}},
+	}
+	local SHRUBS = {
+		meadows_bush = BUSH,
+		deep_forest_bush = BUSH,
+		elf_forest_bush = BUSH,
 		pine_hills_pine_bush = {sapling = "default:pine_bush_sapling",
 			markers = {"default:pine_bush_stem"}},
 		savanna_acacia_bush = {sapling = "default:acacia_bush_sapling",
@@ -76,10 +85,14 @@ return function(deps)
 			markers = {"default:blueberry_bush_leaves",
 				"default:blueberry_bush_leaves_with_berries"}},
 	}
+	local WOODY = {}
+	for id, species in pairs(TREES) do WOODY[id] = species end
+	for id, species in pairs(SHRUBS) do WOODY[id] = species end
 	-- Natural decorations with no working renewal path.
 	local NOT_RENEWED = {
 		-- default.can_grow needs group:soil below; the crags pine roots in gravel.
 		crags_snowy_pine = "pine sapling cannot grow on gravel",
+		crags_pine_bush = "pine bush sapling cannot grow on gravel",
 		deep_forest_apple_log = "fallen log, not a growing plant",
 		-- The large-cactus seedling needs group:sand; badlands are mesa clay.
 		badlands_large_cactus = "cactus seedling cannot grow on mesa clay",
@@ -133,9 +146,13 @@ return function(deps)
 		return count
 	end
 
-	-- Decoration palettes per logical biome and support node.
-	local cover_names, woody_markers, natural = {}, {}, {}
-	local cover, woody = {}, {}
+	-- Decoration palettes per logical biome and support node, per renewal
+	-- class. Each entry keeps its vegetation class (`vclass`, the index into
+	-- the rule's factors).
+	local cover_names, natural = {}, {}
+	local class_markers = {tree = {}, shrub = {}}
+	local cover, tree, shrub = {}, {}, {}
+	local palettes = {cover = cover, tree = tree, shrub = shrub}
 	local function palette(target, biome)
 		local value = target[biome]
 		if not value then
@@ -147,6 +164,7 @@ return function(deps)
 	for index = 1, #deps.decorations do
 		local row = deps.decorations[index]
 		local weight = row.numerator / row.denominator
+		local vclass = rule.class_index(rule.decoration_class(row))
 		local class, entry
 		if row.kind == "simple" then
 			natural[row.asset_or_node] = true
@@ -159,10 +177,12 @@ return function(deps)
 			end
 		elseif WOODY[row.id] then
 			local species = WOODY[row.id]
-			class = woody
-			for m = 1, #species.markers do woody_markers[species.markers[m]] = true end
+			local name = TREES[row.id] and "tree" or "shrub"
+			class = palettes[name]
+			local markers = class_markers[name]
+			for m = 1, #species.markers do markers[species.markers[m]] = true end
 			-- A planted sapling is a plant already: it counts until it grows.
-			woody_markers[species.sapling] = true
+			markers[species.sapling] = true
 			natural[species.sapling] = true
 			entry = {id = row.id, node = species.sapling, param2 = 0,
 				rule = site_rule(row), markers = species.markers,
@@ -184,14 +204,15 @@ return function(deps)
 						list[#list + 1] = {id = entry.id, node = entry.node,
 							param2 = entry.param2, rule = entry.rule,
 							markers = entry.markers, columns = entry.columns,
-							weight = weight / factor}
+							weight = weight / factor, vclass = vclass}
 					end
 				end
 			end
 		end
 	end
-	for _, target in pairs(cover) do target.host_list = sorted_keys(target.hosts) end
-	for _, target in pairs(woody) do target.host_list = sorted_keys(target.hosts) end
+	for _, targets in pairs(palettes) do
+		for _, target in pairs(targets) do target.host_list = sorted_keys(target.hosts) end
+	end
 	-- World-wide density-weighted marker columns per plant: counts trees of a
 	-- neighbouring biome's species that stand inside a counting box.
 	local global_divisor = {}
@@ -254,11 +275,10 @@ return function(deps)
 
 	-- Every support any renewable plant accepts: the ground a spot search needs.
 	local supports = {}
-	for _, target in pairs(cover) do
-		for name in pairs(target.hosts) do supports[name] = true end
-	end
-	for _, target in pairs(woody) do
-		for name in pairs(target.hosts) do supports[name] = true end
+	for _, targets in pairs(palettes) do
+		for _, target in pairs(targets) do
+			for name in pairs(target.hosts) do supports[name] = true end
+		end
 	end
 	for index = 1, #resources do
 		local source = resources[index]
@@ -274,7 +294,8 @@ return function(deps)
 	end
 	local support_list = sorted_keys(supports)
 	local cover_list = sorted_keys(cover_names)
-	local marker_list = sorted_keys(woody_markers)
+	local marker_lists = {tree = sorted_keys(class_markers.tree),
+		shrub = sorted_keys(class_markers.shrub)}
 
 	local WORLD_SHORE_WATER = {coastal_shelf = true, deep_ocean = true,
 		immutable_dragon_channel = true}
@@ -309,15 +330,14 @@ return function(deps)
 		return list
 	end
 
-	local function site_allowed(rule, values)
-		if rule == 1 then return values.terrain_y >= 60 end
-		if rule == 2 then return values.relief ~= "mountain" end
-		return rule == 0
+	local function site_allowed(site, values)
+		if site == 1 then return values.terrain_y >= 60 end
+		if site == 2 then return values.relief ~= "mountain" end
+		return site == 0
 	end
 
-	-- One decoration class (cover or woody) at a site, or nil.
 	-- The fixed part of one decoration class at a biome, support and site
-	-- rule outcome (species, summed density, marker divisors), cached.
+	-- rule outcome (species, marker divisors), cached.
 	local function decoration_base(class_name, target, values)
 		local rows = target and target.by_support[values.support]
 		if not rows then return nil end
@@ -339,8 +359,8 @@ return function(deps)
 			target.cache[key] = false
 			return nil
 		end
-		base = {total = total, species = species}
-		if class_name == "woody" then
+		base = {species = species}
+		if class_name ~= "cover" then
 			-- A marker shared by two rows (jungle and emergent jungle trees)
 			-- counts plants by the density-weighted mean of their columns.
 			local weight, columns = {}, {}
@@ -362,16 +382,29 @@ return function(deps)
 		return base
 	end
 
-	-- One decoration class (cover or woody) at a site, or nil.
-	local function decoration_category(class_name, target, values)
+	-- One decoration class (cover, tree or shrub) at a site, or nil.
+	-- `factors` holds the rule's five class factors at the site: each
+	-- species' catalog density is scaled by its own class factor, so the
+	-- category density and the species mix follow the tree line, the shrub
+	-- band, the snow line and the forest field exactly as the planner does.
+	local function decoration_category(class_name, target, values, factors)
 		local base = decoration_base(class_name, target, values)
 		if not base then return nil end
-		local factor = habitat.vegetation_factor(class_name, values)
-		if factor <= 0 then return nil end
+		local species, total = {}, 0
+		for index = 1, #base.species do
+			local row = base.species[index]
+			local weight = row.weight * factors[row.vclass] / rule.ONE
+			if weight > 0 then
+				species[#species + 1] = {id = row.id, node = row.node,
+					param2 = row.param2, weight = weight}
+				total = total + weight
+			end
+		end
+		if total <= 0 then return nil end
 		return {class = class_name, key = class_name .. ":" .. values.biome,
-			p = base.total * factor, hosts = target.host_list,
-			species = base.species, divisor = base.divisor, shore = false,
-			names = class_name == "cover" and cover_list or marker_list}
+			p = total, hosts = target.host_list,
+			species = species, divisor = base.divisor, shore = false,
+			names = class_name == "cover" and cover_list or marker_lists[class_name]}
 	end
 
 	-- Whether the writer keeps a column's planned surface bare of vegetation
@@ -423,13 +456,13 @@ return function(deps)
 	-- position, `support` the node name below it and `light` its natural
 	-- light at noon. Returns an array of categories (possibly empty) and the
 	-- site values, or nil and a reason. A category is
-	--   {class = "resource"|"cover"|"woody", key, p (expected plants per
-	--    eligible support), hosts (eligible support names), names (plant or
-	--    marker names counted as present), species (weighted placements),
-	--    shore (true for a shoreline row), divisor (woody: marker columns per
-	--    plant)}.
+	--   {class = "resource"|"cover"|"tree"|"shrub", key, p (expected plants
+	--    per eligible support), hosts (eligible support names), names (plant
+	--    or marker names counted as present), species (weighted placements),
+	--    shore (true for a shoreline row), divisor (tree and shrub: marker
+	--    columns per plant)}.
 	-- Each class keeps its own writer's claim exclusions: resources the full
-	-- territory rule, cover and woody decorations the "vegetation" rule (road
+	-- territory rule, decorations the "vegetation" rule (road
 	-- corridors too, water banks not). Cave rows follow no claim exclusion in
 	-- the writer; renewal keeps them out of occupied ground (the "cave" rule).
 	function M.categories(x, y, z, support, light)
@@ -475,13 +508,21 @@ return function(deps)
 				end
 			end
 		end
-		if not cave and terrain_y >= 1 then
+		-- A column with snow (cap or dust) hosts no decoration (the planner
+		-- skips it; the cap's snowblock is no host anyway).
+		if not cave and terrain_y >= 1 and
+				rule.snow_class(x, z, terrain_y, biome, zone) == 0 then
 			if vegetation_excluded then
 				excluded = true
 			else
-				result[#result + 1] = decoration_category("cover", cover[biome], values)
+				local factors = {rule.factors(x, z, terrain_y, biome, zone)}
+				result[#result + 1] = decoration_category("cover", cover[biome], values,
+					factors)
 				if (light or 0) >= M.WOODY_MIN_LIGHT then
-					result[#result + 1] = decoration_category("woody", woody[biome], values)
+					result[#result + 1] = decoration_category("tree", tree[biome], values,
+						factors)
+					result[#result + 1] = decoration_category("shrub", shrub[biome], values,
+						factors)
 				end
 			end
 		end
@@ -493,15 +534,15 @@ return function(deps)
 	function M.support_names() return support_list end
 	-- Every ground-cover plant node (sorted); counted together as one total.
 	function M.cover_names() return cover_list end
-	-- Every woody marker node (sorted).
-	function M.woody_markers() return marker_list end
+	-- Every tree or shrub marker node (sorted), saplings included.
+	function M.markers(class_name) return marker_lists[class_name] end
 	-- Nodes the world generator places as natural vegetation (set copy).
 	function M.natural_vegetation()
 		local result = {}
 		for name in pairs(natural) do result[name] = true end
 		return result
 	end
-	-- Sapling per woody decoration row; rows without a renewal path.
+	-- Sapling per tree or shrub decoration row; rows without a renewal path.
 	function M.woody_species()
 		local result = {}
 		for id, species in pairs(WOODY) do result[id] = species.sapling end
@@ -518,15 +559,16 @@ return function(deps)
 		return source and {key = source.key, p = source.p, kind = source.kind,
 			shore = source.shore} or nil
 	end
-	-- The palette of one biome and support: {class, node, weight} rows.
+	-- The catalog palette of one class ("cover", "tree" or "shrub"), biome and
+	-- support: {id, node, param2, weight, columns, vclass} rows.
 	function M.palette(class_name, biome, support)
-		local target = (class_name == "cover" and cover or woody)[biome]
+		local target = assert(palettes[class_name], "unknown class")[biome]
 		local rows = target and target.by_support[support] or {}
 		local result = {}
 		for index = 1, #rows do
 			result[index] = {id = rows[index].id, node = rows[index].node,
 				param2 = rows[index].param2, weight = rows[index].weight,
-				columns = rows[index].columns}
+				columns = rows[index].columns, vclass = rows[index].vclass}
 		end
 		return result
 	end

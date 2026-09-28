@@ -186,6 +186,21 @@ local function planner_factory()
 				(rule:find("surface_y_at_most_32", 1, true) and 2 or
 					(rule:find("surface_y_1_to_4", 1, true) and 3 or 0))
 		end
+		-- Vegetation and altitude (Round 23 Phase 2, habitat_registry.lua):
+		-- each row's class picks one per-column factor; a column is eligible
+		-- with probability factor / (class maximum x ONE) and the cell budget
+		-- is scaled by the class maximum, so the expected placements are the
+		-- catalog density times the factor. Rows whose class maximum is 1
+		-- (ground cover) keep their eligibility and budget unchanged wherever
+		-- the factor is ONE.
+		local vegetation = content.vegetation_rule(full_seed, planner_source)
+		local VEGETATION_ONE = vegetation.ONE
+		local decoration_vclass, decoration_fmax = {}, {}
+		for index = 1, #decorations do
+			local class = vegetation.decoration_class(decorations[index])
+			decoration_vclass[index] = vegetation.class_index(class)
+			decoration_fmax[index] = vegetation.class_max(class)
+		end
 		local mountain_zone = {}
 		for index = 1, #(source.zones or {}) do
 			local zone = source.zones[index]
@@ -219,6 +234,15 @@ local function planner_factory()
 			support_name = retained_array("r6_planner_scratch_support_name", 256, false),
 			p7_support = retained_array("r6_planner_scratch_p7_support", 256, false),
 			wet_bed = retained_array("r6_planner_scratch_wet_bed", 400, false),
+			-- a column with snow (cap or dust) hosts no decoration
+			snowy = retained_array("r6_planner_scratch_snowy", 256, false),
+			factor = {
+				retained_array("r6_planner_scratch_factor_tree", 256, 0),
+				retained_array("r6_planner_scratch_factor_last_tree", 256, 0),
+				retained_array("r6_planner_scratch_factor_shrub", 256, 0),
+				retained_array("r6_planner_scratch_factor_shrub_band", 256, 0),
+				retained_array("r6_planner_scratch_factor_cover", 256, 0),
+			},
 		}
 		local rank_scratch = {}
 		for index = 1, 256 do
@@ -272,7 +296,7 @@ local function planner_factory()
 			local wet = water_y ~= nil and water_y > terrain_y
 			local excluded = horizontal.static_exclusion_values_at(x, z) ~= nil
 			local surface_kind = wet and 3 or (biome == "grug_beach" and 2 or 1)
-			local surface = select_surface(biome, x, z, water_y, terrain_y)
+			local surface = select_surface(biome, x, z, water_y, terrain_y, zone_id)
 			local support_name = surface and (surface_kind == 1 and surface.top or
 				(surface_kind == 2 and surface.shore or surface.bed)) or false
 			-- These are the P2-P4 surface winners exposed as exact R5 planner-source
@@ -346,7 +370,7 @@ local function planner_factory()
 					if x >= -3740 and x <= 3740 and z >= -3340 and z <= 3340 then
 						count = count + 1
 						local water_class, zone_numeric, zone_id, biome, race, terrain_y,
-							water_y, surface_kind, _, support_name, excluded, p7_support,
+							water_y, surface_kind, surface, support_name, excluded, p7_support,
 							wet_bed = column_tuple(x, z)
 						scratch.x[count], scratch.z[count] = x, z
 						scratch.water_class[count] = water_class
@@ -357,6 +381,16 @@ local function planner_factory()
 						scratch.excluded[count], scratch.surface_kind[count] = excluded, surface_kind
 						scratch.support_name[count], scratch.p7_support[count] = support_name,
 							p7_support
+						scratch.snowy[count] = surface and surface.dust_ref ~= 0 or false
+						local factor = scratch.factor
+						if biome then
+							factor[1][count], factor[2][count], factor[3][count],
+								factor[4][count], factor[5][count] =
+								vegetation.factors(x, z, terrain_y, biome, zone_id)
+						else
+							factor[1][count], factor[2][count], factor[3][count],
+								factor[4][count], factor[5][count] = 0, 0, 0, 0, 0
+						end
 						local halo_index = (z - start_z + 2) * 20 +
 							(x - start_x + 2) + 1
 						scratch.wet_bed[halo_index] = wet_bed or false
@@ -522,6 +556,8 @@ local function planner_factory()
 			for catalog = 1, #decorations do
 				local row = decorations[catalog]
 				local height_rule = decoration_height_rule[catalog]
+				local fmax = decoration_fmax[catalog]
+				local factors = scratch.factor[decoration_vclass[catalog]]
 				local eligible = 0
 				for column = 1, column_count do
 					local terrain_y = scratch.terrain_y[column]
@@ -542,11 +578,18 @@ local function planner_factory()
 						scratch.p7_support[column] and
 						content.decoration_cover(row.id, scratch.biome[column],
 							content.content_ref(scratch.support_name[column])) or 0
-					if cover > 0 then
+					local factor = cover > 0 and not scratch.snowy[column] and
+						factors[column] or 0
+					if factor > 0 then
 						local digest = hash.digest("decoration_candidate_rank_v1", full_seed,
 							{row.id, cell_x, cell_z, scratch.x[column], scratch.z[column]})
 						-- Thin eligible roots before budgeting; no extra noise/hash pass.
-						if string.byte(digest, 1) % cover == 0 then
+						-- The vegetation factor thins by the digest's last 16 bits (the rank
+						-- order reads it from the first byte, so the two do not correlate):
+						-- accept with probability factor / (fmax x ONE).
+						if string.byte(digest, 1) % cover == 0 and (fmax == 1 or
+								(string.byte(digest, 31) * 256 + string.byte(digest, 32)) *
+									fmax * VEGETATION_ONE < factor * 65536) then
 							eligible = eligible + 1
 							local ranked = rank_scratch[eligible]
 							ranked.x, ranked.y, ranked.z = scratch.x[column], terrain_y + 1,
@@ -560,7 +603,7 @@ local function planner_factory()
 					local remainder_digest = hash.digest("decoration_budget_remainder_v1",
 						full_seed, {row.id, cell_x, cell_z})
 					budget = hash.budget(eligible, row.numerator, row.denominator,
-						1, 1, remainder_digest)
+						fmax, 1, remainder_digest)
 					sort_prefix(rank_scratch, eligible, rank_less)
 					for chosen = 1, budget do
 						local ranked = rank_scratch[chosen]

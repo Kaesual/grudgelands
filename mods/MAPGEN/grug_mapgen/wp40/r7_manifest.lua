@@ -45,6 +45,10 @@ return function(canonical, raw_sha256, settlement_order)
 	-- guardrail 6); the Frost Melon host change in the world-content rules
 	-- moved it. The receipt publishes the computed value. Was
 	-- `3f962cd235725510...`.
+	-- Round 23 Phase 2: three band-only shrub templates (crags pine bush,
+	-- deep forest and elf forest bush; world_zones.md §7.6) join the decoded
+	-- records (21 -> 24), which moves the pinned `decoded_templates` digest.
+	-- Was `0f9c1230f22f7a27...`.
 	local FIELD_HEAD = {
 		"schema", "full_seed", "r5_schema", "r5_manifest_sha256",
 		"r5_artifact_sha256", "r6_schema", "r6_contract_sha256",
@@ -438,7 +442,7 @@ return function(canonical, raw_sha256, settlement_order)
 			cultural_digests[index] = row.digest
 		end
 		if type(inputs.decoded_templates) ~= "table" or
-				#inputs.decoded_templates ~= 21 then
+				#inputs.decoded_templates ~= 24 then
 			fail("decoded template population differs")
 		end
 		local r6_catalog = graph_digest({surfaces = r6.surfaces,
@@ -461,7 +465,7 @@ return function(canonical, raw_sha256, settlement_order)
 		if frozen.accepted_r6_content ~=
 				"0c1c1efa25f1d173680ebc94aeed87d969ca56572a06b0e1fcb8378f16a2783d" or
 			frozen.decoded_templates ~=
-				"0f9c1230f22f7a2782cd57d3b7d5d5029d9f3eeed18a29f729f10b8bf92b9ec0" or
+				"b420d6c4a7e31adc3a919b632c9b126a27d90bdcb537e32697a64524832c12ef" or
 			frozen.wp43_projection ~=
 				"77e5b5b14c98f17250b03c5aeb817db332f85b5414311defe1f4945174f1f8bf" or
 			frozen.cultural ~=
