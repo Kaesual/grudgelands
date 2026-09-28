@@ -65,9 +65,14 @@ forest noise go there (and into the planner), renewal code does not change.
   around the planned surface when that lies within 64.
 - A spot: open support accepted by some habitat, air above, loaded, ≥ 20
   nodes (3-D) from every player, not farm soil; permitted by the planner
-  vegetation exclusion, housing mask, functional surface (at or above its
-  y), hard rows and `grug_core.world_alterable` (plant and support); land
-  column, no road corridor, banks only for shoreline species; above the
+  vegetation exclusion, housing mask, hard rows and
+  `grug_core.world_alterable` (plant and support); land column, no road
+  corridor, banks only for shoreline species; at the surface the writer's
+  host rule (r6_planner `p7_support`, in the authority's `writer_bare`): no
+  anchor platform, no land grade except a dry anchor grade outside the
+  vegetation exclusion, no sealed river/lake column, no surface cave mouth
+  (coordinator ruling 2026-09-28: only protected areas and farm soil are
+  excluded; the target is what the writer places); above the
   planned surface natural noon light ≥ 10 (≥ 13 for woody), cave mode at
   `y <= terrain_y - 2`.
 - One class (resource / cover / woody) is chosen uniformly among those
@@ -136,23 +141,32 @@ timer (vendored `default`).
   synthetic world): authority numbers, placement, distance, exclusions
   (settlement, road, protected, farm soil, unloaded), caves, density cap,
   sapling guard, saplings stop at the tree target, setting off, per-service
-  budget. Final pair on frozen bytes: LuaJIT and PUC 5.1.5 output
-  byte-identical, sha256 `cb4e2005…62dc`, `DIGEST 1022860847`,
+  budget, and the writer's functional-surface rule (dry anchor grade grows,
+  other land grade, anchor platform and surface cave mouth stay bare). Final
+  pair on frozen bytes: LuaJIT and PUC 5.1.5 output byte-identical, sha256
+  `750638b5…fb55`, `DIGEST 1222730876`,
   `RESULT PASS` (`tools/r23_renewal/evidence/fixture.txt`).
 - Engine probe `tools/r23_renewal/run.sh` (isolated headless, fresh world):
   run 4 `RESULT PASS (30 checks, 0 failures)`
   (`tools/r23_renewal/evidence/probe.txt`). Four engine runs in total, each
   under 2 minutes; runs 1–3 failed only on probe site selection (ground under
   plants, a spot on the start's functional grade), fixed in the probe.
+  Run 5 (after the functional-surface change, probe extended with a dry
+  anchor grade and a writer-bare grade) stopped at its first check: no open
+  ground found around the same site that passed in runs 2 and 4, so no test
+  ran (`evidence/probe-run5-fail.txt`; the probe now logs the site column
+  when this happens). The engine budget for this follow-up is spent; the new
+  rule's evidence is the fixture pair. Run 4 remains the engine evidence for
+  everything else.
 - `tools/check_lua.sh` on every changed Lua file: parser and sweeps 1–6 pass;
   SETGLOBAL only `grug_farming` in `init.lua`.
 
 ## Open gaps and conservative decisions
 
-- **Functional surfaces are excluded outright**, including the capitals'
-  and starts' natural-looking land grades, where the generator still hosts
-  vegetation. Near starts and capitals (704-node blend squares) nothing
-  renews. Mirroring the planner's dry-anchor-grade rule would lift this.
+- Functional surfaces follow the writer (see "Rules as built"); the first
+  version excluded them all, which left the natural skin around starts and
+  capitals without renewal. Resource rows use the same surface host rule as
+  the decorations.
 - Aquatic plants (coral, kelp, waterlily, waterweed), papyrus, cactus, the
   crags pine and bone piles do not renew.
 - Shoreline density is an estimate (two supports per box width).

@@ -135,6 +135,16 @@ local function run(site, start, zone, biome)
 		core.pos_to_string(start.anchor)))
 	log("non-natural node names: " .. renewal.non_natural_count())
 	local ground = surface_at(site.x, site.z, site.y)
+	if not ground then
+		-- Diagnostics for a site without open ground (engine run 5): load
+		-- state and what the column holds.
+		local names = {}
+		for dy = -8, 8, 4 do
+			local node = core.get_node_or_nil(vector.offset(site, 0, dy, 0))
+			names[#names + 1] = (site.y + dy) .. "=" .. (node and node.name or "unloaded")
+		end
+		log("site column: " .. table.concat(names, " "))
+	end
 	check(ground ~= nil, "site has open ground")
 	if not ground then return end
 	local far = {{x = site.x + 200, y = ground.y, z = site.z}}
@@ -258,6 +268,57 @@ local function run(site, start, zone, biome)
 			"road corridor " .. core.pos_to_string(road) .. ": " .. tostring(result))
 	else
 		log("no loaded road corridor within 46 of the start (covered by the fixture)")
+	end
+
+	-- 6b. The natural skin on a start's dry anchor grade renews like the writer
+	-- grows it; grades the writer keeps bare do not.
+	local grade, bare_grade
+	for _, center in ipairs({site, anchor}) do
+		for dz = -46, 46, 2 do
+			for dx = -46, 46, 2 do
+				local x, z = center.x + dx, center.z + dz
+				local kind, _, feature = planner.functional_surface_values_at(x, z)
+				if kind ~= nil and (not grade or not bare_grade) then
+					local skin = kind == "land_grade" and type(feature) == "string" and
+						feature:match("^anchor_%d%d%d$") ~= nil and
+						planner.static_exclusion_values_at(x, z, "vegetation") == nil
+					local pos = column_surface(x, z, center.y)
+					if pos and not grade and skin and planner.column_values_at(x, z) == "land" and
+							planner.hard_row_at(x, pos.y, z) == nil and
+							planner.housing_mask_id_at(x, z) == nil and
+							planner.overlay_exclusion_at(x, z) == nil and
+							planner.hard_row_at(x, pos.y + 1, z) == nil and
+							grug_core.world_alterable(vector.offset(pos, 0, 1, 0)) and
+							grug_core.world_alterable(pos) and
+							(core.get_natural_light(vector.offset(pos, 0, 1, 0), 0.5) or 0) >= 10 then
+						grade = pos
+					elseif pos and not bare_grade and not skin and
+							planner.column_values_at(x, z) == "land" and
+							planner.hard_row_at(x, pos.y + 1, z) == nil and
+							planner.hard_row_at(x, pos.y, z) == nil and
+							planner.static_exclusion_values_at(x, z, "vegetation") == nil and
+							planner.housing_mask_id_at(x, z) == nil and
+							grug_core.world_alterable(vector.offset(pos, 0, 1, 0)) then
+						bare_grade = pos
+					end
+				end
+			end
+		end
+	end
+	if grade then
+		clear_cover(grade, 5)
+		result = evaluate(grade, far, "cover", 0)
+		check(result == "placed", "dry anchor grade " .. core.pos_to_string(grade) ..
+			" grows cover: " .. tostring(result))
+	else
+		log("no open, alterable dry anchor grade in the loaded boxes (covered by the fixture)")
+	end
+	if bare_grade then
+		result = evaluate(bare_grade, far, nil, 0)
+		check(result == "writer_bare", "writer-bare functional surface " ..
+			core.pos_to_string(bare_grade) .. ": " .. tostring(result))
+	else
+		log("no alterable writer-bare functional surface in the loaded boxes")
 	end
 
 	-- 7. Sapling guard and placement.

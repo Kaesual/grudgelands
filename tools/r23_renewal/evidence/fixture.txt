@@ -39,6 +39,10 @@ ok   protected territory: nothing
 ok   farm soil support: nothing
 ok   unloaded spot: skipped
 ok   empty meadow: resource plant placed
+ok   dry anchor grade grows cover like the writer (placed)
+ok   other land grade stays bare (writer_bare)
+ok   anchor platform stays bare (writer_bare)
+ok   surface cave mouth stays bare (writer_bare)
 cave categories cave_cap
 ok   cave floor at y -205: cave cap at 1/1536
 ok   empty cave floor: cave cap placed (placed)
@@ -54,7 +58,7 @@ ok   clear ground: meadow sapling placed (default:bush_sapling)
 ok   saplings stop at the natural tree count (2 placed)
 ok   grug_tree_regrowth off: no sapling
 -- budget
-ok   service 1 visits 21884 within budget
+ok   service 1 visits 49244 within budget
 ok   service 2 visits 21884 within budget
 ok   service 3 visits 27636 within budget
 ok   service 4 visits 35564 within budget
@@ -86,8 +90,8 @@ ok   service 29 visits 6028 within budget
 ok   service 30 visits 41316 within budget
 peak accounted visits 60913 of 150000
 stat at_target 1
-stat placed 41
-stat roll 78
-stat visits 1010491
-DIGEST 1022860847
+stat placed 39
+stat roll 80
+stat visits 1039371
+DIGEST 1222730876
 RESULT PASS

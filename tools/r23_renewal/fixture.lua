@@ -71,11 +71,21 @@ end
 -- Synthetic world: flat meadow ground at y = 10 in a start zone.
 local GROUND = 10
 local LOADED = 100
+-- Functional surfaces in the band z -80 .. -71: a dry anchor grade (the
+-- natural skin around a start or capital) at x 40 .. 49, another land grade
+-- at x 50 .. 57, an anchor platform at x 0 .. 9; a surface cave mouth at
+-- x 20 .. 29.
+local function functional_at(x, z)
+	if z < -80 or z > -71 then return nil end
+	if x >= 40 and x <= 49 then return "land_grade", GROUND, "anchor_003" end
+	if x >= 50 and x <= 57 then return "land_grade", GROUND, "grade_road_7" end
+	if x >= 0 and x <= 9 then return "anchor_platform", GROUND, "anchor_003" end
+	return nil
+end
 local function column_values_at(x, z)
-	if x >= 60 and x <= 61 then
-		return "land", 1, "elandor_dawnmere_fields", "grug_meadows", "human", GROUND
-	end
-	return "land", 1, "elandor_dawnmere_fields", "grug_meadows", "human", GROUND
+	local kind, fy, feature = functional_at(x, z)
+	return "land", 1, "elandor_dawnmere_fields", "grug_meadows", "human", GROUND,
+		nil, nil, nil, kind, fy, feature
 end
 local planner = {
 	column_values_at = column_values_at,
@@ -98,6 +108,13 @@ local density = dofile(wp40 .. "/vegetation_density.lua")({
 		return nil
 	end,
 	surface_mob_level_at = function() return 5 end,
+	static_exclusion_values_at = planner.static_exclusion_values_at,
+	surface_cave_run_at = function(x, z)
+		if z >= -80 and z <= -71 and x >= 20 and x <= 29 then
+			return GROUND - 6, GROUND
+		end
+		return nil
+	end,
 	primary_relief_at = function() return "plains" end,
 })
 
@@ -256,6 +273,17 @@ result = run(101, 30, "cover")
 check(result == "unloaded", "unloaded spot: skipped")
 result = run(34, 34, "resource")
 check(result == "placed", "empty meadow: resource plant placed")
+-- Functional surfaces follow the writer: vegetation on a dry anchor grade,
+-- none on other grades, anchor platforms or surface cave mouths.
+result, node = run(44, -75, "cover")
+check(result == "placed", "dry anchor grade grows cover like the writer (" ..
+	tostring(result) .. ")")
+result = run(53, -75)
+check(result == "writer_bare", "other land grade stays bare (" .. tostring(result) .. ")")
+result = run(4, -75)
+check(result == "writer_bare", "anchor platform stays bare (" .. tostring(result) .. ")")
+result = run(24, -75)
+check(result == "writer_bare", "surface cave mouth stays bare (" .. tostring(result) .. ")")
 -- Caves: the cave-floor rows grow in the dark, below the planned surface.
 local cave = density.categories(10, CAVE_FLOOR + 1, 10, "default:stone", 0)
 local cave_keys = {}

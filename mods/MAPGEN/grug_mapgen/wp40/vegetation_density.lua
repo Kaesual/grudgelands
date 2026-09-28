@@ -25,7 +25,8 @@ return function(deps)
 		if type(deps[field]) ~= "table" then fail("missing " .. field) end
 	end
 	for _, field in ipairs({"decoration_cover", "column_values_at",
-			"overlay_exclusion_at", "surface_mob_level_at", "primary_relief_at"}) do
+			"overlay_exclusion_at", "surface_mob_level_at", "primary_relief_at",
+			"static_exclusion_values_at", "surface_cave_run_at"}) do
 		if type(deps[field]) ~= "function" then fail("missing " .. field) end
 	end
 	local habitat = deps.habitat
@@ -382,8 +383,29 @@ return function(deps)
 	--    marker names counted as present), species (weighted placements),
 	--    shore (true for a shoreline row), divisor (woody: marker columns per
 	--    plant)}.
+	-- Whether the writer keeps a column's planned surface bare of vegetation
+	-- (r6_planner.lua `p7_support`): an anchor platform, any land grade
+	-- except a dry anchor grade outside the vegetation exclusion (the natural
+	-- skin around starts and capitals), a sealed river or lake column, and a
+	-- surface cave mouth cutting the planned surface.
+	local function writer_bare(x, z, terrain_y, water_y, river_id,
+			functional_kind, functional_feature_id)
+		if river_id ~= nil then return true end
+		if functional_kind ~= nil then
+			local wet = water_y ~= nil and water_y > terrain_y
+			local dry_anchor_grade = functional_kind == "land_grade" and
+				type(functional_feature_id) == "string" and
+				functional_feature_id:match("^anchor_%d%d%d$") ~= nil and not wet and
+				deps.static_exclusion_values_at(x, z, "vegetation") == nil
+			if not dry_anchor_grade then return true end
+		end
+		local cave_low, cave_high = deps.surface_cave_run_at(x, z)
+		return cave_low ~= nil and cave_low <= terrain_y and terrain_y <= cave_high
+	end
+
 	function M.categories(x, y, z, support, light)
-		local water, _, zone, biome, _, terrain_y = column_values_at(x, z)
+		local water, _, zone, biome, _, terrain_y, water_y, river_id, _,
+			functional_kind, _, functional_feature_id = column_values_at(x, z)
 		if water ~= "land" or type(biome) ~= "string" then return nil, "not_land" end
 		local overlay = deps.overlay_exclusion_at(x, z)
 		if overlay == "road_corridor" or overlay == "inland_water" then
@@ -391,6 +413,10 @@ return function(deps)
 		end
 		local bank = overlay == "water_bank"
 		local cave = y <= terrain_y - 2
+		if not cave and writer_bare(x, z, terrain_y, water_y, river_id,
+				functional_kind, functional_feature_id) then
+			return nil, "writer_bare"
+		end
 		if not cave and (light or 0) < M.SURFACE_MIN_LIGHT then return nil, "dark" end
 		local values = {x = x, y = y, z = z, zone = zone, biome = biome,
 			terrain_y = terrain_y, support = support,

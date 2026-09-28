@@ -185,15 +185,15 @@ return function(api)
 		return true
 	end
 
-	-- Mutation permission: protected, settlement, POI, housing, functional
-	-- surface and hard-row ground never grows renewed plants.
+	-- Mutation permission: protected (territory, claims), settlement, POI,
+	-- road/water shapes, housing and hard-row ground never grows renewed
+	-- plants. Where the writer itself keeps ground bare (functional surfaces
+	-- other than a dry anchor grade) is the habitat's answer, not this one.
 	local function permitted(pos, support_pos)
 		if planner.static_exclusion_values_at(pos.x, pos.z, "vegetation") ~= nil then
 			return false, "excluded"
 		end
 		if planner.housing_mask_id_at(pos.x, pos.z) ~= nil then return false, "housing" end
-		local functional, functional_y = planner.functional_surface_values_at(pos.x, pos.z)
-		if functional ~= nil and pos.y >= functional_y then return false, "functional" end
 		if planner.hard_row_at(pos.x, pos.y, pos.z) ~= nil or
 				planner.hard_row_at(support_pos.x, support_pos.y, support_pos.z) ~= nil then
 			return false, "hard_row"

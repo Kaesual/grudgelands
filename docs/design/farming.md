@@ -93,12 +93,16 @@ spots lie 20–48 nodes horizontally from the sampling player and at least 20
 nodes (3-D) from every player; unloaded nodes are skipped and nothing is caught
 up for unvisited areas. A spot needs an open support the habitat accepts
 (player-made ground of the same node counts) and, above the planned surface,
-natural noon light 10 (13 for a sapling). Never on farm soil, and never where
-the world generator hosts no vegetation or the world is not alterable: the
-planner's vegetation exclusions (settlements, POIs, road and water shapes),
-housing masks, functional surfaces, capital hard rows, road corridors and
-`grug_core.world_alterable` (territory and claims). A river or lake bank grows
-only shoreline species, as in the generator.
+natural noon light 10 (13 for a sapling). Never on farm soil or protected
+ground: the planner's vegetation exclusions (settlements, POIs, road and water
+shapes), housing masks, capital hard rows, road corridors and
+`grug_core.world_alterable` (territory and claims). Otherwise renewal follows
+the generator's own host rule at the planned surface: nothing on an anchor
+platform, on a land grade other than a start's or capital's dry anchor grade,
+on a sealed river or lake column or in a surface cave mouth; the dry anchor
+grades (the natural skin around starts and capitals) renew at their biome's
+density. A river or lake bank grows only shoreline species, as in the
+generator.
 
 **How much.** Around the spot, the renewal counts present plants of the chosen
 species or class and the eligible open supports in a box whose radius makes
