@@ -31,12 +31,15 @@ mobs.mob_class.on_deactivate = function(self, removal)
 	end
 end
 
--- A mob that gives up its fight (target lost, dead, out of range or vetoed,
--- leash reset, evade) is no longer engaged with anyone. Class-level wrapper
--- like on_deactivate above: every mobs_redo call site is `self:stop_attack()`.
+-- A mob that gives up its target (lost, dead, out of range or vetoed) is no
+-- longer engaged with THAT player (grug_core.disengage_target); other engaged
+-- players stay while the mob reacquires, and grug_core.prune_engagement drops
+-- them once the mob stays targetless. Leash reset and evade clear everything
+-- through clear_threat. Class-level wrapper like on_deactivate above: every
+-- mobs_redo call site is `self:stop_attack()`.
 local engage_old_stop_attack = mobs.mob_class.stop_attack
 mobs.mob_class.stop_attack = function(self)
-	grug_core.disengage_mob(self)
+	grug_core.disengage_target(self, self.attack)
 	return engage_old_stop_attack(self)
 end
 

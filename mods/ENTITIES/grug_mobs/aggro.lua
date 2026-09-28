@@ -543,8 +543,8 @@ function grug_mobs.leash_tick(self, dtime)
 	-- bespoke actors have threat tables like everyone else.
 	grug_core.recheck_switch(self)
 	-- Combat-state backstop (grug_core.prune_engagement): drops engagements of
-	-- a mob that lost its target without stop_attack, and of players who left
-	-- a fight that goes on without them. Also before the no-leash return.
+	-- a mob that stayed targetless (or stranded) for two ticks, and of players
+	-- who left a fight that goes on without them. Before the no-leash return.
 	if t.grug_engaged then
 		grug_core.prune_engagement(self)
 	end

@@ -411,12 +411,16 @@ local last_combat = {} -- player name -> us timestamp of the last untracked hit
 -- tank bonus), by taunt, and by a hit the mob or its projectile lands on the
 -- player (mark_player_hit) -- the last one covers a mob that attacks a player
 -- who never touched it and therefore holds no threat entry for them.
--- An edge is DROPPED by disengage_mob -- the mob's death boundary
--- (grug_mobs.settle_mob_death), on_deactivate (explicit removal and unload),
--- clear_threat (leash reset), stop_attack (the mob gave up its fight) and the
--- 1 Hz prune_engagement backstop (grug_mobs.leash_tick: a mob that lost its
--- target without stop_attack, or a player who left a fight that goes on
--- without them) -- and by the player's death or leave.
+-- All edges of a mob are DROPPED by disengage_mob -- the mob's death boundary
+-- (grug_mobs.settle_mob_death), on_deactivate (explicit removal and unload)
+-- and clear_threat (leash reset, evade). One edge goes by disengage_target
+-- (stop_attack: the mob gave up that player) and by the 1 Hz
+-- prune_engagement backstop (grug_mobs.leash_tick: a mob that stayed
+-- targetless for two ticks, or a player who left a fight that goes on
+-- without them) -- and all of a player's edges by their death or leave.
+-- Plain target ACQUISITION (mobs_redo do_attack: sight aggro, group alert)
+-- deliberately creates no edge: combat starts with the first hit or threat
+-- gain (dealt or received damage), so a merely chased player may still mount.
 -- The weak keys are only a last-resort backstop against a missed removal
 -- hook: a collected luaentity can never pin a player in combat.
 local engaged_mobs = {}
@@ -461,6 +465,7 @@ function grug_core.engage_mob(mob_ent, player)
 	if not edges then
 		edges = {}
 		mob_ent.temp.grug_engaged = edges
+		mob_ent.temp.grug_engage_idle = nil -- a fresh fight, see prune_engagement
 	end
 	local name = player:get_player_name()
 	if edges[name] then
@@ -483,6 +488,7 @@ function grug_core.disengage_mob(mob_ent)
 		return
 	end
 	temp.grug_engaged = nil
+	temp.grug_engage_idle = nil
 	for name in pairs(edges) do
 		local set = engaged_mobs[name]
 		if set then
@@ -491,6 +497,39 @@ function grug_core.disengage_mob(mob_ent)
 				engaged_mobs[name] = nil
 			end
 		end
+	end
+end
+
+-- Drop ONE edge; keeps both indexes in step. `edges` is the mob's own table.
+local function drop_edge(mob_ent, edges, name)
+	edges[name] = nil
+	local set = engaged_mobs[name]
+	if set then
+		set[mob_ent] = nil
+		if next(set) == nil then
+			engaged_mobs[name] = nil
+		end
+	end
+	if next(edges) == nil then
+		mob_ent.temp.grug_engaged = nil
+		mob_ent.temp.grug_engage_idle = nil
+	end
+end
+
+-- The mob gives up ONE player: stop_attack on its current target (grug_mobs'
+-- class wrapper). Only that player's edge goes -- in a group fight the healer
+-- and the damage dealers stay engaged while the mob picks its next target; a
+-- solo fight still ends at once. Whatever the mob no longer fights is left to
+-- prune_engagement (a mob that stays targetless drops everyone within two
+-- ticks). Leash reset and evade go through clear_threat, which drops all.
+function grug_core.disengage_target(mob_ent, target)
+	local edges = mob_ent and mob_ent.temp and mob_ent.temp.grug_engaged
+	if not edges or not core.is_player(target) then
+		return
+	end
+	local name = target:get_player_name()
+	if edges[name] then
+		drop_edge(mob_ent, edges, name)
 	end
 end
 
@@ -549,8 +588,10 @@ end
 
 -- Death ends combat at once (user ruling 2026-09-28) and the respawned player
 -- starts out of combat. Threat entries stay on the mobs -- valid_target
--- already ignores a dead player -- but no edge survives, so only a NEW hit or
--- threat gain after the respawn puts the player back into combat.
+-- already ignores a dead player -- but no edge survives. After the respawn a
+-- new hit, a new threat gain, or a threat-driven target switch onto the
+-- player (check_switch, possible when they respawn within 40 m of a mob that
+-- still holds their old threat) puts them back into combat.
 core.register_on_dieplayer(clear_combat)
 core.register_on_leaveplayer(clear_combat)
 
@@ -719,10 +760,14 @@ end
 
 -- Engagement backstop, run once a second per mob that holds engagements
 -- (grug_mobs.leash_tick; a mob without any pays one field test there).
--- A mob without a target has left its fight by a path that bypassed
--- stop_attack (mobs_redo's get_staticdata clears `attack` when the engine
--- re-saves a moved mob; a passive critter never takes one): every edge goes.
--- Flight and flopping keep theirs -- pauses inside a fight. A mob that is
+-- A mob without a target on TWO consecutive ticks has left its fight: every
+-- edge goes. That covers paths that bypass stop_attack (mobs_redo's
+-- get_staticdata clears `attack` when the engine re-saves a moved mob; a
+-- passive critter never takes a target) and a group fight whose mob gave up
+-- its target and found no new one. One tick of grace, because mobs_redo's
+-- reacquisition (general_attack) also runs only once a second. A flopping
+-- (stranded) mob counts as targetless; only the runaway state, bounded by
+-- mobs_redo's runaway_timer, is exempt. A mob that is
 -- still fighting keeps its current target, but forgets every other player
 -- who is disconnected, dead or outside the 40 m threat radius: a player who
 -- left a fight that goes on without them leaves combat. The radius applies
@@ -745,32 +790,28 @@ local function in_fight_range(mob_ent, name)
 end
 
 function grug_core.prune_engagement(mob_ent)
-	local edges = mob_ent.temp and mob_ent.temp.grug_engaged
+	local temp = mob_ent.temp
+	local edges = temp and temp.grug_engaged
 	if not edges then
 		return
 	end
-	local target = mob_ent.attack
+	local target = mob_ent.state ~= "flop" and mob_ent.attack or nil
 	if not target then
-		if mob_ent.state ~= "runaway" and mob_ent.state ~= "flop" then
+		if mob_ent.state == "runaway" then
+			temp.grug_engage_idle = nil
+		elseif temp.grug_engage_idle then
 			grug_core.disengage_mob(mob_ent)
+		else
+			temp.grug_engage_idle = true
 		end
 		return
 	end
+	temp.grug_engage_idle = nil
 	local target_name = core.is_player(target) and target:get_player_name()
 	for name in pairs(edges) do
 		if name ~= target_name and not in_fight_range(mob_ent, name) then
-			edges[name] = nil
-			local set = engaged_mobs[name]
-			if set then
-				set[mob_ent] = nil
-				if next(set) == nil then
-					engaged_mobs[name] = nil
-				end
-			end
+			drop_edge(mob_ent, edges, name)
 		end
-	end
-	if next(edges) == nil then
-		mob_ent.temp.grug_engaged = nil
 	end
 end
 

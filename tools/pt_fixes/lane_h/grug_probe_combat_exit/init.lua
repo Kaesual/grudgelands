@@ -68,6 +68,10 @@ local function install(ref)
 	override("is_player", function() return true end)
 	override("get_player_name", function(f) return f.name end)
 	override("get_hp", function(f) return f.hp end)
+	override("set_hp", function(f, hp)
+		f.hp = hp
+		f.set_hp_calls = (f.set_hp_calls or 0) + 1
+	end)
 	override("get_player_control", function() return {} end)
 	override("get_player_control_bits", function() return 0 end)
 	override("get_look_dir", function() return vector.new(0, 0, 1) end)
@@ -178,6 +182,18 @@ local function die(ref, fake)
 	end
 end
 
+-- The engine's leave: on_leaveplayer (grug_core's callbacks only).
+local function leave(ref)
+	for _, fn in ipairs(core.registered_on_leaveplayers) do
+		local origin = core.callback_origins[fn]
+		if origin and origin.mod == "grug_core" then
+			local ok, err = pcall(fn, ref, false)
+			check(ok, "leave callback ran without error" ..
+				(ok and "" or (" (" .. tostring(err) .. ")")))
+		end
+	end
+end
+
 local function engaged(ent, ref)
 	local edges = ent and ent.temp and ent.temp.grug_engaged
 	return edges ~= nil and edges[ref:get_player_name()] == true
@@ -282,7 +298,8 @@ scenario("stop_attack", function(o)
 end)
 
 -- mobs_redo's get_staticdata clears `attack` without stop_attack when the
--- engine re-saves a moved mob; the 1 Hz leash-tick backstop catches it.
+-- engine re-saves a moved mob; the 1 Hz leash-tick backstop catches it on
+-- its second targetless tick.
 scenario("target_lost", function(o)
 	local ref = make_player("target_lost", o)
 	local obj, ent = mob_at(o, 0, 3)
@@ -295,9 +312,126 @@ scenario("target_lost", function(o)
 			ent.state = "stand"
 			check(in_combat(ref), "target_lost: the engagement survives until the mob tick")
 		end},
-		{1.6, function()
+		{2.6, function()
 			check(not engaged(ent, ref), "target_lost: the 1 Hz backstop dropped the engagement")
-			check(not in_combat(ref), "target_lost: out of combat within one leash tick")
+			check(not in_combat(ref), "target_lost: out of combat within two leash ticks")
+		end},
+	}
+end)
+
+-- Review MEDIUM: the tank dies, the mob gives it up (stop_attack) and turns to
+-- the damage dealer -- who must stay in combat throughout.
+scenario("group_tank_death", function(o)
+	local tank, tank_fake = make_player("group_tank", o)
+	local dps = make_player("group_dps", vector.offset(o, 2, 0, 0))
+	local obj, ent = mob_at(o, 0, 3)
+	return {
+		{0, function()
+			hit(dps, obj)
+			hit(tank, obj, 3) -- last hitter takes the target
+			check(ent.attack == tank, "group_tank_death: the mob targets the tank")
+			die(tank, tank_fake)
+			ent:stop_attack() -- what mobs_redo does with a dead target
+			check(not in_combat(tank), "group_tank_death: the dead tank is out of combat")
+			check(engaged(ent, dps) and in_combat(dps),
+				"group_tank_death: the damage dealer stays in combat when the mob drops the tank")
+			ent:do_attack(dps) -- mobs_redo's reacquisition
+		end},
+		{2.6, function()
+			check(in_combat(dps), "group_tank_death: the damage dealer is still in combat " ..
+				"while the mob fights on (two leash ticks later)")
+			ent:stop_attack()
+			check(not in_combat(dps),
+				"group_tank_death: the mob giving up its last player ends combat at once")
+		end},
+	}
+end)
+
+scenario("taunt_heal", function(o)
+	local puller = make_player("th_puller", o)
+	local tank = make_player("th_tank", vector.offset(o, 2, 0, 0))
+	local healer = make_player("th_healer", vector.offset(o, -2, 0, 0))
+	local obj, ent = mob_at(o, 0, 3)
+	return {
+		{0, function()
+			hit(puller, obj)
+			check(ent.attack == puller, "taunt_heal: the mob targets the puller")
+			check(not in_combat(tank) and not in_combat(healer),
+				"taunt_heal: tank and healer start out of combat")
+			check(grug_core.taunt(ent, tank), "taunt_heal: taunt accepted")
+			check(engaged(ent, tank) and in_combat(tank),
+				"taunt_heal: a taunt alone engages the tank")
+			grug_core.add_heal_threat(healer, puller, 10)
+			check(engaged(ent, healer) and in_combat(healer),
+				"taunt_heal: healing the mob's target engages the healer")
+			obj:remove()
+			check(not in_combat(puller) and not in_combat(tank) and not in_combat(healer),
+				"taunt_heal: all three leave combat with the mob")
+		end},
+	}
+end)
+
+scenario("leave", function(o)
+	local ref = make_player("leave", o)
+	local obj, ent = mob_at(o, 0, 3)
+	return {
+		{0, function()
+			hit(ref, obj)
+			check(in_combat(ref), "leave: in combat after the hit")
+			leave(ref)
+			check(not in_combat(ref), "leave: leaving clears combat")
+			check(not engaged(ent, ref), "leave: the mob no longer holds the player")
+		end},
+	}
+end)
+
+-- Review LOW 1: a passive fish stranded on land (flop) must not hold the
+-- player who hit it forever.
+scenario("stranded_fish", function(o)
+	local ref = make_player("stranded_fish", o)
+	local obj = core.add_entity(vector.offset(o, 0, 0, 2), "grug_mobs:reed_angelfish")
+	local ent = obj and obj:get_luaentity()
+	assert(ent, "fish was not added")
+	grug_mobs.ensure_init(ent)
+	ent._grug_level = 1
+	grug_mobs.ensure_init(ent)
+	ent.health = ent.hp_max
+	ent.old_health = ent.health
+	spawned[#spawned + 1] = obj
+	return {
+		{0.5, function()
+			log(("stranded_fish: before state=%s health=%s/%s"):format(tostring(ent.state),
+				tostring(ent.health), tostring(ent.hp_max)))
+			-- A threat gain, not a hit: a critter-tier fish can die of one hit.
+			grug_core.add_threat(ent, ref, 1)
+			check(engaged(ent, ref) and in_combat(ref), "stranded_fish: the threat gain engages")
+		end},
+		{1.8, function()
+			log(("stranded_fish: mid state=%s health=%s"):format(tostring(ent.state),
+				tostring(ent.health)))
+		end},
+		{3.1, function()
+			log(("stranded_fish: state=%s attack=%s health=%s"):format(tostring(ent.state),
+				tostring(ent.attack ~= nil), tostring(ent.health)))
+			check(obj:get_pos() ~= nil and (ent.health or 0) > 0,
+				"stranded_fish: the fish is still alive (not a death exit)")
+			check(ent.state == "flop", "stranded_fish: the fish is flopping")
+			check(not in_combat(ref), "stranded_fish: the stranded fish released the player")
+		end},
+	}
+end)
+
+scenario("poison", function(o)
+	local ref, fake = make_player("poison", o)
+	return {
+		{0, function()
+			check(not in_combat(ref), "poison: starts out of combat")
+			grug_mobs.poison_player(ref, 2, 0.3, 1)
+		end},
+		{1.0, function()
+			check((fake.set_hp_calls or 0) == 2, ("poison: both ticks landed (%d)")
+				:format(fake.set_hp_calls or 0))
+			check(not in_combat(ref), "poison: poison ticks do not mark combat")
 		end},
 	}
 end)
@@ -411,20 +545,28 @@ end)
 scenario("pvp", function(o)
 	local a = make_player("pvp_a", o)
 	local b = make_player("pvp_b", vector.offset(o, 0, 0, 2))
+	-- An untracked source: an entity that is no grug mob and carries no shooter.
+	local c = make_player("pvp_untracked", vector.offset(o, 2, 0, 0))
+	local thing = core.add_entity(vector.offset(o, 2, 1, 1), "grug_probe_combat_exit:bolt")
 	return {
 		{0, function()
 			hit(a, b)
 			hit_player(b, a) -- the engine's modifier call for the victim
+			hit_player(c, thing)
 			check(in_combat(a), "pvp: attacker in combat with no mob engaged")
 			check(in_combat(b), "pvp: victim in combat with no mob engaged")
+			check(in_combat(c), "pvp: an untracked source arms the timer")
 			check(can_eat(a) == false, "pvp: eating refused during the PvP window")
 		end},
 		{4.5, function()
-			check(in_combat(a) and in_combat(b), "pvp: both still in combat at 4.5 s")
+			check(in_combat(a) and in_combat(b) and in_combat(c),
+				"pvp: all three still in combat at 4.5 s")
 		end},
 		{5.3, function()
-			check(not in_combat(a) and not in_combat(b), "pvp: both out of combat after 5 s")
+			check(not in_combat(a) and not in_combat(b) and not in_combat(c),
+				"pvp: all three out of combat after 5 s")
 			check(can_eat(a), "pvp: eating allowed after the window")
+			thing:remove()
 		end},
 	}
 end)
@@ -487,7 +629,13 @@ local function run_scenario(index)
 				(sok and "" or (" (" .. tostring(err) .. ")")))
 		end)
 	end
-	core.after(last + 0.3, run_scenario, index + 1)
+	core.after(last + 0.3, function()
+		-- Each scenario starts without the previous scenarios' mobs.
+		for _, mob in ipairs(spawned) do
+			if mob:get_pos() then mob:remove() end
+		end
+		run_scenario(index + 1)
+	end)
 end
 
 -- One cleared arena: a stone floor under an air box high above the terrain.

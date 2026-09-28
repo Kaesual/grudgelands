@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 # Lane H playtest-fix probe: combat state ends with the last engaged mob
-# (kill, two mobs, leash reset, stop_attack, lost target, removal, mob-first
-# and projectile hits), on death and after respawn, and after 5 s for PvP;
-# eating right after the last kill. Also logs the relative event cost.
+# (kill, two mobs, group fight after the tank dies, leash reset, stop_attack,
+# lost target, stranded fish, removal, leave, taunt/heal threat, mob-first
+# and projectile hits), on death and after respawn, after 5 s for PvP and
+# untracked sources, poison ticks; eating right after the last kill. Also
+# logs the relative event cost.
 #
 # Boots one isolated headless server through tools/luanti_headless.sh with the
 # disposable probe mod staged (never shipped), copies the server log to
