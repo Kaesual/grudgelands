@@ -6,11 +6,6 @@ return function(api)
 	-- Held food time accrues per observed step, at most this much per step, so
 	-- a server stall cannot turn a click into a hold.
 	local MAX_HELD_STEP_US = 100000
-	-- The engine repeats place only at nodes and no sooner than
-	-- repeat_place_time (0.25 s default, game.cpp:2959); object and empty-air
-	-- clicks are edge-triggered. A quicker node call, or any object/nothing
-	-- call, during an owned press is therefore a new press.
-	local NEW_PRESS_US = 200000
 	local pickup_delegate
 	local entity_rightclick = {} -- entity name -> unwrapped on_rightclick
 	local function food_api() return rawget(_G, "grug_food") end
@@ -326,16 +321,19 @@ return function(api)
 		M.step(player)
 		local s = state(player)
 		if s.right == "food" and s.food then
-			local now = core.get_us_time()
-			if s.food.target_set and (not pointed or pointed.type ~= "node" or
-					now - s.food.last_native < NEW_PRESS_US) then
-				-- The release between two presses fell inside one control
-				-- snapshot: settle the old press (its click, if still undecided)
-				-- and start the new one here.
+			-- The client sends object and empty-air calls on the press edge only
+			-- (game.cpp:3249, :2923), so a second one during an owned press is a
+			-- new press whose release fell between two control snapshots: settle
+			-- the old press (its click, if still undecided) and start the new
+			-- one. Node calls also repeat every repeat_place_time (0.16 s at the
+			-- client minimum) and packet timing cannot tell a repeat from a new
+			-- press, so node calls never start one. Known limitation: a
+			-- missed-release double click at a node loses at most one click or
+			-- aborts one eat; it never acts twice.
+			if s.food.target_set and (not pointed or pointed.type ~= "node") then
 				release_right(player, s)
-				s.right, s.food = "food", new_food_press(now)
+				s.right, s.food = "food", new_food_press(core.get_us_time())
 			end
-			s.food.last_native = now
 			if not s.food.target_set then
 				s.food.target_set = true
 				s.food.target = pointed and {type = pointed.type,
