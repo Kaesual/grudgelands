@@ -76,8 +76,13 @@ standing (feet low+1 … high+3) or flying (≤ 608) there may generate blocks
 block(y) ± 11; every such block over the tile lies in the prepared column, and
 the column exceeds the reference by less than one chunk.
 
-In every measured tile (189 tiles in two regions) the column is **y −192 … 847,
-13 chunks**.
+Before the seabed ruling every measured tile (189 tiles in two regions) was
+**y −192 … 847, 13 chunks**. With the real bed as the bottom surface, the final
+run's 400 tiles are 178 × (−192 … 847, 13 chunks) and 222 × (−272 … 847,
+14 chunks): every tile whose window reaches the ocean gains one chunk (the whole
+western, ocean half of the region; 89 of the first 147 tiles, which were all
+−192 in runs 3/4). The top stayed 768 (chunk top 847) everywhere, including the
+y ≈ 427 mountain.
 
 ## Chunk-class costs
 
@@ -161,13 +166,38 @@ the full world); a restart rescans up to 7 rows (≈ 690 tiles). At about one
 (estimate, unmeasured on the full world). Steady state needs one tile scan per
 ≈ 2 s of generation.
 
-## Extrapolation
+## Final measurement run
 
-- Full world: 8,811 tiles × 13 chunks ≈ **114,500 chunks** (every measured
-  column was 13 chunks; windows lower than −16 or content above 668 add one).
-- Run 4 region mix: 2.06 s/tile → **≈ 5.0 h**, 0.35 MB map DB per tile →
-  **≈ 3.1 GB**, peak RSS 2.88–2.92 GB. These come from 147 tiles of the final
-  region and are to be replaced by the final run.
+One run, after the merge of main f5a545bd and the seabed change (4b4422a3):
+`SEED=10536739806879207652 OUT=/tmp/r23-final tools/r23_full_column/run_region.sh
+-3072,-1473,-2672,-1073 840` — 20 × 20 tiles, 43% water (ocean and coast), terrain
+up to y ≈ 427, the dwarf start. Measurement mode (fast path active, no verify).
+The region completed after 698 s; normal shutdown from a server step, no ERROR
+lines. Evidence: `tools/r23_full_column/evidence/final-region/` (summary,
+per-tile and per-chunk logs, RSS/DB samples, the staged patch).
+
+| Class | Chunks | Engine ms (median) | Lua ms (mean) | Writer results |
+|---|---:|---:|---:|---|
+| Air, fast path | 3,376 | 32.8 | 0.08 | skipped |
+| Air, full path | 539 | 32.0 | 125.3 | 273 no-op |
+| Surface | 609 | 37.7 | 242.2 | 45 no-op |
+| Underground | 898 | 30.1 | 243.4 | 331 no-op |
+
+- 5,422 chunks, 7.8 chunks/s overall; **1.73 s per tile** (692 s between the
+  first and last tile commit).
+- Chunks per tile: mean 13.55 (13 or 14, see above); Y −192 or −272 … 847.
+- Map DB: 133.9 MB for 400 tiles → **0.33 MB per tile**.
+- Peak RSS: **3.49 GB**.
+
+## Extrapolation (full world, 8,811 tiles)
+
+- Chunks: region mix 13.55/tile → **≈ 119,400 chunks**; at most 14/tile
+  (123,354) if every window touched water, at least 13 (114,543).
+- Duration: 1.73 s/tile → **≈ 4.2 h**.
+- Map size: 0.33 MB/tile → **≈ 2.9 GB**.
+- The world's mix differs from the region's (larger ocean margin, capitals); the
+  full world has a larger ocean share, which adds chunks but costs less Lua per
+  tile.
 
 ## Engine runs used (budget: about 4 × ≤ 5 min)
 
@@ -180,9 +210,10 @@ scheduling), each ended by a normal shutdown requested from a server step.
 4. Resume boot of run 3's world, measurement mode, stopped at 150 s.
 5. After the merge of main: `--verify` over Lethariel's north-east quarter
    (20 tiles, complete in 56 s).
+6. The final measurement run (above), about 12 minutes.
 
-No PUC runs (mapgen exemption). The ~15-minute final run is prepared, not run:
-see [the harness README](../../tools/r23_full_column/README.md).
+No PUC runs (mapgen exemption). Harness:
+[README](../../tools/r23_full_column/README.md).
 
 ## Open risks
 

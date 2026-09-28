@@ -35,7 +35,7 @@ DB size every 5 s. `analyze.py OUT` prints the summary offline.
 - `--geo` ranks candidate regions (ocean share, highest terrain, a start inside).
 - `ROOT=<kept dir>` boots again on a kept world (resume); `KEEP=1` keeps it.
 
-### Prepared final measurement run (coordinator-triggered, about 15 minutes)
+### Final measurement run (done 2026-09-28; evidence in `evidence/final-region/`)
 
 Run once, after Lanes B and C are merged, from the merged tree:
 
