@@ -75,6 +75,10 @@ local vessels_shelf_def = {
 		default.node_formspec.show(clicker, pos, vessels_shelf_formspec)
 		return itemstack
 	end,
+	-- Close open viewers of a dug or replaced shelf.
+	after_destruct = function(pos)
+		default.node_formspec.refresh(pos)
+	end,
 	can_dig = function(pos,player)
 		local inv = minetest.get_meta(pos):get_inventory()
 		return inv:is_empty("vessels")

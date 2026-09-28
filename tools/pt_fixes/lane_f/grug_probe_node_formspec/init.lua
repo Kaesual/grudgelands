@@ -64,6 +64,12 @@ local function fake_player(name, pos)
 	function meta:set_float(k, v) meta:set_string(k, tostring(v)) end
 	function meta:contains(k) return store[k] ~= nil end
 	function player:get_meta() return meta end
+	-- Inventory-form ("") handlers read the player inventory.
+	local inv = core.create_detached_inventory("grug_probe_node_formspec_" .. name, {})
+	inv:set_size("main", 32)
+	inv:set_size("craft", 9)
+	inv:set_size("craftpreview", 1)
+	function player:get_inventory() return inv end
 	setmetatable(player, {__index = function(_, key)
 		log("fake player: unmodelled method " .. tostring(key) .. " -> nil")
 		return function() return nil end
@@ -213,6 +219,43 @@ local function run()
 		rightclick(pos, player)
 		submit(player, NF, {quit = "true"})
 		check(nf.session_pos("probe_a") == nil, "bookshelf: quit ends the session")
+		-- Closing an unrelated form is ignored by the engine unless it is open.
+		rightclick(pos, player)
+		core.close_formspec("probe_a", "other:form")
+		check(nf.session_pos("probe_a") ~= nil, "bookshelf: closing another form keeps the session")
+		-- Fields of the player inventory ("") end it.
+		-- (Inventory-page handlers need a full player object; the fake one is
+		-- not enough for them, so their errors are tolerated here.)
+		for _, fn in ipairs(core.registered_on_player_receive_fields) do
+			local ok, consumed = pcall(fn, player, "", {foo = "1"})
+			if ok and consumed then break end
+		end
+		check(nf.session_pos("probe_a") == nil, "bookshelf: inventory fields end the session")
+		-- Two viewers, one out of range: the near one is refreshed, the far
+		-- one is closed and forgotten.
+		local far = fake_player("probe_b", vector.offset(pos, 0, 0, -2))
+		rightclick(pos, player)
+		rightclick(pos, far)
+		far.pos = vector.offset(pos, 40, 0, 0)
+		inv:set_stack("books", 3, "default:book")
+		before = #shown
+		local nclosed = #closed
+		def.on_metadata_inventory_put(pos, "books", 3, ItemStack("default:book"), player)
+		-- (builtin close_formspec shows "" through show_formspec: skip those)
+		local refreshed = {}
+		for i = before + 1, #shown do
+			if shown[i].formspec ~= "" then refreshed[#refreshed + 1] = shown[i].name end
+		end
+		check(#refreshed == 1 and refreshed[1] == "probe_a",
+			"bookshelf: only the in-range viewer is refreshed")
+		check(nf.session_pos("probe_b") == nil and #closed == nclosed + 1 and
+			closed[#closed].name == "probe_b", "bookshelf: out-of-range viewer closed")
+		check(nf.session_pos("probe_a") ~= nil, "bookshelf: in-range viewer keeps the session")
+		-- Digging closes open viewers.
+		nclosed = #closed
+		core.remove_node(pos)
+		check(nf.session_pos("probe_a") == nil and #closed == nclosed + 1,
+			"bookshelf: digging closes the open form")
 	end
 
 	-- Vessels shelf.

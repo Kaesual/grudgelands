@@ -2559,6 +2559,10 @@ local default_bookshelf_def = {
 		default.node_formspec.show(clicker, pos, bookshelf_formspec)
 		return itemstack
 	end,
+	-- Close open viewers of a dug or replaced shelf.
+	after_destruct = function(pos)
+		default.node_formspec.refresh(pos)
+	end,
 	can_dig = function(pos,player)
 		local inv = minetest.get_meta(pos):get_inventory()
 		return inv:is_empty("books")
@@ -2623,6 +2627,10 @@ local function register_sign(material, desc, def)
 		on_rightclick = function(pos, node, clicker, itemstack)
 			default.node_formspec.show(clicker, pos, sign_formspec)
 			return itemstack
+		end,
+		-- Close open viewers of a dug or replaced sign.
+		after_destruct = function(pos)
+			default.node_formspec.refresh(pos)
 		end,
 		on_receive_fields = function(pos, formname, fields, sender)
 			if not fields.quit then

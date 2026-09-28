@@ -87,15 +87,16 @@ end
 
 -- The client holds one formspec at a time: a form shown by anyone else
 -- replaces ours silently, and a later refresh must not pop ours back over it.
+-- A close (empty formspec; builtin core.close_formspec calls this) mirrors the
+-- engine: it only affects ours when it names ours or closes any form ("").
 local show_formspec = core.show_formspec
 function core.show_formspec(playername, formname, formspec)
-	if formname ~= FORMNAME or formspec == "" then sessions[playername] = nil end
+	if formspec == "" then
+		if formname == "" or formname == FORMNAME then sessions[playername] = nil end
+	elseif formname ~= FORMNAME then
+		sessions[playername] = nil
+	end
 	return show_formspec(playername, formname, formspec)
-end
-local close_formspec = core.close_formspec
-function core.close_formspec(playername, formname)
-	if formname == FORMNAME or formname == "" then sessions[playername] = nil end
-	return close_formspec(playername, formname)
 end
 
 core.register_on_player_receive_fields(function(player, formname, fields)

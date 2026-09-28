@@ -408,6 +408,9 @@ core.register_node("default:furnace", apply_logger({
 
 	can_dig = can_dig,
 	on_rightclick = furnace_rightclick,
+	after_destruct = function(pos)
+		default.node_formspec.refresh(pos)
+	end,
 
 	on_timer = furnace_node_timer,
 
@@ -477,6 +480,9 @@ core.register_node("default:furnace_active", apply_logger({
 
 	can_dig = can_dig,
 	on_rightclick = furnace_rightclick,
+	after_destruct = function(pos)
+		default.node_formspec.refresh(pos)
+	end,
 
 	allow_metadata_inventory_put = allow_metadata_inventory_put,
 	allow_metadata_inventory_move = allow_metadata_inventory_move,
