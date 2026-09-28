@@ -791,24 +791,30 @@ local function loader(directory)
 			orchard = orchard + layout.plant_orchard(buf, human, block[1],
 				block[2], block[3], block[4], block[5], block[6])
 		end
-		-- The PRECINCT edge, which is a hedge and not masonry.
-		--
-		-- This is the civic core's own 96-node boundary and it has nothing to
-		-- do with the curtain 209 nodes further out: the core was authored
-		-- while Highcourt was an open capital and the hedge is what held its
-		-- boundary then, and the round-3 wall ring did not change it -- a
-		-- clipped hedge round a precinct inside a walled city is an ordinary
-		-- thing, and rebuilding the core to put masonry there would move a
-		-- blueprint identity the playtest round froze for no gain.
+		-- The PRECINCT WALL (Round 23, in place of the clipped hedge that held
+		-- this boundary since the core was an open capital's): the curtain's
+		-- castle stonewall, one node thick on exactly the hedge's columns, so
+		-- nothing else in the core moves. Two courses of stonewall, the crown's
+		-- marble band at y 3 -- the course the four gatehouse piers carry at
+		-- the same height, so the band runs straight into them -- and merlons
+		-- at y 4 on every other column, the rhythm of the gatehouses'
+		-- battlements: four courses, one more than the hedge's three.
 		--
 		-- It runs round the WHOLE pad rather than in four authored stretches.
 		-- The ring is protected and deliberately wins every non-gate column:
 		-- content already placed in the core may meet it, but may not cut it.
-		-- The shared mask leaves only the four authored gatehouse bands open.
-		local hedge = 0
+		-- The shared mask leaves only the four authored gatehouse bands open,
+		-- so every gate passage stays as the gatehouse built it.
+		local PRECINCT_STONE = human.maybe("castle_wall") or human.node("wall_accent")
+		local PRECINCT_BAND = white.node("signature")
+		local wall = 0
 		precinct_ring.walk(function(x, z)
 			precinct_ring.clear_wallmounted(buf, parts, x, z, 4)
-			hedge = hedge + dressing.hedge_line(buf, human, x, z, x, z, 3)
+			buf:put(x, 1, z, PRECINCT_STONE)
+			buf:put(x, 2, z, PRECINCT_STONE)
+			buf:put(x, 3, z, PRECINCT_BAND)
+			if (x + z) % 2 == 0 then buf:put(x, 4, z, PRECINCT_STONE) end
+			wall = wall + 1
 		end)
 
 		-- 10. Meadow flora on the turf between the plots.
@@ -997,7 +1003,7 @@ local function loader(directory)
 				lights = lights,
 				sockets = sockets,
 				orchard_trees = orchard,
-				hedge_cells = hedge,
+				precinct_wall_columns = wall,
 				nave_floor = #nave,
 			},
 		}

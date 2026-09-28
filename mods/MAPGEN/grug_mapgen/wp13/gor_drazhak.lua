@@ -844,8 +844,8 @@ local function loader(directory)
 
 		-- 10. THE PRECINCT BANK AND STOCKADE, and the four corner towers: Gor
 		-- Drazhak's core edge in place of Highcourt's hedge and Dur Brannoc's
-		-- citadel parapet. It is the outer rampart's own section at a quarter
-		-- of its height -- two courses of dug earth beaten flat on top, with a
+		-- citadel parapet. It is the outer rampart's own section at a reduced
+		-- height -- three courses of dug earth beaten flat on top, with a
 		-- sharpened stake every other column -- so the precinct and the city
 		-- wall are recognisably one piece of engineering.
 		--
@@ -884,14 +884,17 @@ local function loader(directory)
 		-- The protected bank is walked round the whole pad after the content. It
 		-- wins every ordinary column; the shared mask omits the four authored
 		-- gatehouse bands and the callback preserves the four corner towers.
+		-- Round 23: one course taller -- two courses of dug earth under the
+		-- beaten crest, the stakes standing on it.
 		local bank, stakes = 0, 0
 		precinct_ring.walk(function(x, z)
-			precinct_ring.clear_wallmounted(buf, parts, x, z, 4)
+			precinct_ring.clear_wallmounted(buf, parts, x, z, 5)
 			buf:put(x, 1, z, EARTH)
-			buf:put(x, 2, z, BEATEN)
+			buf:put(x, 2, z, EARTH)
+			buf:put(x, 3, z, BEATEN)
 			if (x + z) % 2 == 0 then
-				buf:put(x, 3, z, TIMBER)
-				buf:put(x, 4, z, POINT, (x + z) % 4)
+				buf:put(x, 4, z, TIMBER)
+				buf:put(x, 5, z, POINT, (x + z) % 4)
 				stakes = stakes + 1
 			end
 			bank = bank + 1
