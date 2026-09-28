@@ -356,6 +356,34 @@ palisade ending in the cenote), `lethariel-edge-gate` and
 `lethariel-edge-turret` (the low crown), `lethariel-core-wall` (the core's
 low crown, blueprint render). `kezamba-shore-end-tower` is removed.
 
+### Review fix: no lone wall on a cut-off spit
+
+The independent review found that a dry stretch between two crossings kept
+its wall when its outside land was open but the land INSIDE it was a spit the
+lake cuts off from the city (Kezamba: 17 such runs of 18–49 points in a sweep
+of 99 synthetic outlines, Lethariel 1): again a lone piece with a head in the
+water at both ends. `M.shore_flags` now runs the same bounded fill on the
+inside too (dry columns inside the outline, 4-connected, box grown by
+`SHORE_REACH`); a stretch whose inside land stays in the box is lake. The city
+is still never open over land: from such a stretch the land outside reaches
+only the spit. The probe's lone-run check now also requires the inside land
+to reach the city (independent fill, reach 48).
+
+- Synthetic sweep, 119 outlines per lake capital (scale 0.92–1.08, −6..6°):
+  **0 lone runs** for Lethariel and Kezamba on the seed-4242 outlines and on
+  the playtest world's outlines (old rule: 57/22 and 31/22). The only lake
+  ends without 1–3 walled water points are variants whose gate point was moved
+  into the water (a gatehouse closing the end).
+- Seed 4242: the flags are unchanged (`w` lines identical to engine run 2),
+  so no new engine run; probe PASS with the baseline comparison. Playtest
+  world layouts re-flagged with the final rule: probe PASS (0 isolated runs;
+  the deepest edge cell there is 6.6 nodes into the water, the accepted
+  unbounded first water point from land, review finding 2).
+- Mutation: a Kezamba outline variant flagged by the outside-only rule fails
+  the probe ("isolated wall run of 37 points (32 dry)"); the final rule passes.
+- Doc: `settlements.md` now says a gatehouse is followed by the short run
+  only when the first water point lies within three nodes of the shore.
+
 ### Runtime test plan (fresh world)
 
 1. Lethariel, from the core looking over the crown lake toward the east
@@ -376,10 +404,9 @@ low crown, blueprint render). `kezamba-shore-end-tower` is removed.
 
 ### Open risks (Low)
 
-- On other seeds a wall run can stand between two lake crossings where it
-  closes real open land (12+ dry points whose outside reaches beyond the
-  lake); it then ends in a head at both ends. That is the rule's intent, but
-  it is a separate piece in the lake.
+- A wall run between two lake crossings stays only where it closes real
+  open land on both sides (12+ dry points, the outside reaching beyond the
+  lake and the inside reaching the city); none occurs in the sweeps.
 - A pocket of land outside the outline that the lake closes but that is
   more than 32 nodes deep reads as open and is walled.
 - Heads and footings are checked on synthetic ground and four engine dumps;

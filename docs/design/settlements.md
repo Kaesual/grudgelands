@@ -279,9 +279,13 @@ within three nodes of the shore), on a solid footing down to the bed in the
 race's masonry or stakes, and ends there in a closed head reaching a node and
 a half past its last point -- a parapet across the walk, or the stockade --
 so no beach is left to walk round its end; beyond that the lake is open. A gatehouse beside the water is followed by the same short run into
-it. A stretch of shore between two crossings carries no wall when it is short
-(under 12 points, about 24 nodes) or when the land outside it is closed off by
-the lake; any other dry stretch is walled. No turret stands within six points
+it when the first water point lies within three nodes of the shore; where the
+water is deeper there, the gatehouse itself closes the end. A stretch of shore
+between two crossings carries no wall when it is short (under 12 points, about
+24 nodes) or when the land on either side of it is closed off by the lake --
+outside, land reached only over the water; inside, a spit the lake cuts off
+from the city; any other dry stretch is walled, so the city is never open over
+land. No turret stands within six points
 of the open water. The wall carries no
 NPCs of its own; a capital's garrison is the four gatehouses of its civic
 core.

@@ -482,10 +482,11 @@ if layouts_path then
 			end
 			check(lake_points > 0, key .. ": no civic lake points flagged")
 			-- no isolated wall run between two lake stretches, unless it is a
-			-- land crossing: at least SHORE_MIN_RUN dry points, and the land
-			-- outside it reaches beyond the lake (a fill over the dry columns
-			-- outside the outline, from beside the run, leaves a box 48 wider
-			-- than the run; even-odd inside test over the whole outline)
+			-- land crossing: at least SHORE_MIN_RUN dry points, the land
+			-- outside it reaching beyond the lake and the land inside it
+			-- reaching the city (a fill over the dry columns on that side of
+			-- the outline, from beside the run, leaves a box 48 wider than
+			-- the run; even-odd inside test over the whole outline)
 			local function inside(x, z)
 				local c = false
 				for m = 1, n do
@@ -496,7 +497,7 @@ if layouts_path then
 				end
 				return c
 			end
-			local function reaches_out(first, len)
+			local function reaches_out(first, len, within)
 				local x0, x1, z0, z1 = math.huge, -math.huge, math.huge, -math.huge
 				for m = 0, len - 1 do
 					local p = W.pts[at(first + m)]
@@ -509,7 +510,7 @@ if layouts_path then
 					local k2 = x .. ":" .. z
 					if seen[k2] then return false end
 					seen[k2] = true
-					if inside(x, z) or distance(AX + x, AZ + z) <= 0 then return false end
+					if inside(x, z) ~= (within == true) or distance(AX + x, AZ + z) <= 0 then return false end
 					if x <= x0 or x >= x1 or z <= z0 or z >= z1 then return true end
 					queue[#queue + 1] = {x, z}
 					return false
@@ -540,7 +541,7 @@ if layouts_path then
 						k = at(k + 1)
 					end
 					if not gate then
-						if dry >= SHORE.SHORE_MIN_RUN and reaches_out(i, len) then
+						if dry >= SHORE.SHORE_MIN_RUN and reaches_out(i, len) and reaches_out(i, len, true) then
 							land_runs = land_runs + 1
 						else
 							fragments = fragments + 1

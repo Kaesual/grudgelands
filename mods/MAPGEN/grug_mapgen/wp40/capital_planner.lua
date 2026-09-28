@@ -214,14 +214,17 @@ end
 --     `lake` (no wall); a crossing of up to 2 x SHORE_INTO shallow points is
 --     walled right across;
 --   * a dry stretch between two crossings is lake too when it is shorter
---     than SHORE_MIN_RUN, or when the land outside it is closed by the lake:
---     a fill over the dry columns outside the outline, started beside the
---     stretch, never gets SHORE_REACH beyond it (the outline runs along a
---     shore whose far side is the lake, so that land is reached only over
---     the water or through the city, and a wall on it would stand alone
---     between two crossings). Every other dry point carries wall, so the
---     wall is continuous on land; a dry stretch between a crossing and a
---     gate always does;
+--     than SHORE_MIN_RUN, or when the land on either side of it is closed
+--     by the lake: a fill over the dry columns outside (inside) the
+--     outline, started beside the stretch, never gets SHORE_REACH beyond
+--     it. Outside, the outline runs along a shore whose far side is the
+--     lake, so that land is reached only over the water or through the
+--     city; inside, the stretch guards a spit the lake cuts off from the
+--     city, so the land outside reaches no city ground over land. Either
+--     way a wall there would stand alone between two crossings. Every other
+--     dry point carries wall, so the wall is continuous on land and the
+--     city is never open over land; a dry stretch between a crossing and a
+--     gate always carries wall;
 --   * `foot`: a walled point within SHORE_KEEP of the water (the ones in it
 --     included) stands on a solid footing down to the bed, not an arcade.
 -- The flags are the wall's own: gaps, the plot band, the streets and the
@@ -267,11 +270,13 @@ function M.shore_flags(pts, gap, distance, P)
 		end
 		return c
 	end
-	-- the land outside a dry stretch is closed when a fill over the dry
-	-- columns outside the outline, started within 3 of its points, stays
-	-- inside the stretch's box grown by SHORE_REACH (4-connected, whole
-	-- local columns, i.e. world columns)
-	local function closed(run)
+	-- the land on one side of a dry stretch (outside the outline, or inside
+	-- it with `within`) is closed when a fill over the dry columns on that
+	-- side, started within 3 of its points, stays inside the stretch's box
+	-- grown by SHORE_REACH (4-connected, whole local columns, i.e. world
+	-- columns): outside, that land is reached only over the water or
+	-- through the city; inside, it is a spit the lake cuts off from the city
+	local function closed(run, within)
 		local x0, x1, z0, z1 = INF, -INF, INF, -INF
 		for _, m in ipairs(run) do
 			local p = pts[m]
@@ -286,7 +291,7 @@ function M.shore_flags(pts, gap, distance, P)
 			local k = (z - z0) * width + (x - x0)
 			if seen[k] then return true end
 			seen[k] = true
-			if inside(x, z) or distance(x, z) <= 0 then return true end
+			if inside(x, z) ~= (within == true) or distance(x, z) <= 0 then return true end
 			if x <= x0 or x >= x1 or z <= z0 or z >= z1 then return false end
 			qx[#qx + 1], qz[#qz + 1] = x, z
 			return true
@@ -324,7 +329,7 @@ function M.shore_flags(pts, gap, distance, P)
 					j = at(j + 1)
 				end
 				if water[j] then
-					local shore = #run < P.SHORE_MIN_RUN or closed(run)
+					local shore = #run < P.SHORE_MIN_RUN or closed(run) or closed(run, true)
 					if shore then
 						for _, m in ipairs(run) do merged[m] = true end
 						stats.shore_runs = stats.shore_runs + 1
