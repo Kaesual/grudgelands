@@ -5,7 +5,8 @@
 --   * the STONE curtain with turrets and gatehouses: Highcourt, Dur Brannoc
 --     and Nhal Veyr in their castle masonry, and Lethariel's light curtain --
 --     pale silver sandstone brick, a serpentine string course, a marble
---     coping, slender colonnettes for merlons and a lamp on every turret;
+--     coping, low merlons capped with a marble slab and a lamp on every
+--     turret;
 --   * the PALISADE on its earth rampart: Gor Drazhak's acacia stockade, and
 --     Kezamba's jungle-log stockade with the pointed caps of its civic core's
 --     palisade on every stake.
@@ -29,9 +30,11 @@
 --     bed every few points, the river passing below (the palisade: a timber
 --     deck on piles);
 --   * a capital's civic lake (points flagged `l`, Lethariel and Kezamba) is
---     the edge itself: no wall stands on it or within the planner's
---     SHORE_KEEP of its water, and a turret on the dry point beside it closes
---     each end (its walk passage stays shut on the lake side);
+--     the edge itself where the outline crosses it: no wall stands on those
+--     points; the wall runs on land up to the water and a few points into it
+--     (the planner's M.shore_flags), on a solid footing (points flagged `f`:
+--     masonry or stakes down to the bed, never an arcade), and ends there in
+--     a closed head -- a parapet across the walk, or the stockade;
 --   * a gatehouse owns its box: the avenue runs through the passage (the
 --     road writer paves it) and the gatehouse writes nothing below the lintel
 --     there.
@@ -50,10 +53,10 @@ local function loader(directory)
 	-- reviews them in the game). `overrides` rebinds declared palette roles
 	-- for the edge alone, `picks` replaces a role's pick list, and the flags
 	-- switch the ornament:
-	--   fine    -- colonnettes (the race's castle pillar, base and top) for
-	--              merlons, a coping course on every parapet, the string
-	--              course and the gatehouse bands in a second stone, a lamp
-	--              on every turret;
+	--   fine    -- a coping course on every parapet, the string course and
+	--              the gatehouse bands in a second stone, a lamp on every
+	--              turret (the merlons are the plain ones, the face under the
+	--              race's slab: for the elves brick under a marble slab);
 	--   points  -- a pointed cap on EVERY stake, turned by column the way the
 	--              civic core's palisade turns its caps (`dressing.palisade`).
 	local STYLES = {
@@ -101,11 +104,6 @@ local function loader(directory)
 			if style.fine then
 				r.coping = pick("coping")
 				r.lamp = pick("lamp")
-				r.pin_base = palette.variant("pillar", "_bottom")
-				r.pin_top = palette.variant("pillar", "_top")
-				if not r.pin_base or not r.pin_top then
-					error("wp13 city edge: the " .. race .. " palette has no pillar", 0)
-				end
 			end
 		elseif model == "palisade" then
 			r.stake = pick("stake", "post", "tree_log")
@@ -217,16 +215,30 @@ local function loader(directory)
 			end
 			return nil
 		end
-		-- a merlon: two courses of the face and a cap, or (fine) a
-		-- colonnette of the race's pillar, base and top
+		-- a merlon: one course of the face under the race's slab cap (the
+		-- elves' light crown too: brick under a marble slab, one and a half
+		-- nodes over the coping)
 		local function merlon(put, y)
-			if FINE then
-				put(y, R.pin_base)
-				put(y + 1, R.pin_top)
-			else
-				put(y, R.face)
-				put(y + 1, R.cap)
-			end
+			put(y, R.face)
+			put(y + 1, R.cap)
+		end
+		-- The closed end of a wall run at the open lake: HEAD nodes either
+		-- side of the wall's last point, i.e. the end of the segment before
+		-- it and the start of the segment on into the lake (which otherwise
+		-- carries no wall), so the head reaches a node or so past that point.
+		-- Answers whether segment i's column at `u` is a head column.
+		local HEAD = 1.5
+		local function head_of(i, u)
+			local j = i % n + 1
+			local a, b = pts[i], pts[j]
+			local rx, rz = b[1] - a[1], b[2] - a[2]
+			local len = sqrt(rx * rx + rz * rz)
+			local li, lj = W.lake[i], W.lake[j]
+			if li and lj then return false end
+			if lj then return u * len <= HEAD end
+			if li then return (1 - u) * len <= HEAD end
+			return (W.lake[(i - 2) % n + 1] and u * len <= HEAD) or
+				(W.lake[j % n + 1] and (1 - u) * len <= HEAD) or false
 		end
 
 		-- One column: `put(y, name, param2)` writes a node, `column` is the
@@ -273,9 +285,8 @@ local function loader(directory)
 					local top = walk_at(i, u)
 					local crown = top + 5
 					for y = ground - 2, crown - 1 do put(y, R.face) end
-					if d and d <= 1.5 and not (W.lake[i] or W.lake[i % n + 1]) then
-						-- the walk passes through the turret (a shore-end
-						-- turret stays closed on its lake side)
+					if d and d <= 1.5 then
+						-- the walk passes through the turret
 						for y = top + 1, top + 3 do put(y, "air") end
 						put(top, R.walk)
 					end
@@ -293,10 +304,15 @@ local function loader(directory)
 			end
 			local d, i, u, outside = nearest(lx, lz)
 			if not d or d > HALF + 0.5 then return end
-			if W.gap[i] or W.gap[i % n + 1] or W.lake[i] or W.lake[i % n + 1] then return end
+			if W.gap[i] or W.gap[i % n + 1] then return end
+			local head = head_of(i, u)
+			if not head and (W.lake[i] or W.lake[i % n + 1]) then return end
 			local top, slab = walk_at(i, u)
-			local edge_lane = d > HALF - 0.5
-			local wet = W.wet[i] or (water ~= nil and water > ground)
+			local edge_lane = head or d > HALF - 0.5
+			-- by the civic lake (`f`, and the head) the wall stands on a
+			-- solid footing
+			local wet = not (head or W.foot[i] or W.foot[i % n + 1]) and
+				(W.wet[i] or (water ~= nil and water > ground))
 			local pier = (i % 6) < 2
 			local low = ground - 2
 			if wet and not pier then low = top - 3 end
@@ -305,7 +321,11 @@ local function loader(directory)
 				local rise = top + (slab and 1 or 0)
 				for y = top, rise + 1 do put(y, R.face) end
 				if FINE then put(rise + 1, R.coping) end
-				if outside then
+				if head then
+					-- the wall's end in the lake: a closed parapet across
+					-- the walk, a merlon on every other column
+					if (lx + lz) % 2 == 0 then merlon(put, rise + 2) end
+				elseif outside then
 					-- merlons on the field side, two nodes on and two off
 					if i % 2 == 0 then merlon(put, rise + 2) end
 				end
@@ -367,11 +387,17 @@ local function loader(directory)
 			end
 			local d, i, u, outside = nearest(lx, lz)
 			if not d or d > HALF + 0.5 then return end
-			if W.gap[i] or W.gap[i % n + 1] or W.lake[i] or W.lake[i % n + 1] then return end
+			if W.gap[i] or W.gap[i % n + 1] then return end
+			local head = head_of(i, u)
+			if not head and (W.lake[i] or W.lake[i % n + 1]) then return end
 			local top, slab = walk_at(i, u)
-			local wet = W.wet[i] or (water ~= nil and water > ground)
-			if outside and d > HALF - 1.5 then
-				-- the stockade: stakes from under the ground to above the walk
+			-- by the civic lake (`f`) the stakes stand solid to the bed
+			local foot = head or W.foot[i] or W.foot[i % n + 1]
+			local in_water = water ~= nil and water > ground
+			local wet = not foot and (W.wet[i] or in_water)
+			if head or (outside and d > HALF - 1.5) then
+				-- the stockade: stakes from under the ground to above the
+				-- walk (and across the wall's end in the lake, its head)
 				local low = ground - 1
 				if wet and (i % 4) >= 2 then low = top - 2 end
 				for y = low, top + 2 do put(y, R.stake) end
@@ -383,6 +409,8 @@ local function loader(directory)
 					if (i % 4) < 2 then
 						for y = ground - 1, top - 1 do put(y, R.stake) end
 					end
+				elseif in_water then
+					for y = ground - 1, top - 1 do put(y, R.stake) end
 				else
 					for y = ground - 1, top - 1 do put(y, R.bank) end
 				end

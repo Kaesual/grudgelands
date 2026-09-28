@@ -1406,7 +1406,8 @@ one-cell settlement checks are unchanged.
     their former planted belts were planned with. Walls follow the outline as
     polylines, their walk walkable on half steps, and cross rivers as arcades
     or timber decks with the walk out of the water; a capital's civic lake is
-    its edge, and the wall ends on its shores in a turret;
+    its edge where it crosses the outline, the wall continuous on land and
+    ending a few nodes into the water in a closed head;
   - Highcourt's one-level quay canal beside its outer ring lane (D58), sealed
     off natural water.
   The layout is a pure function of the seed and the code, so every boot of a

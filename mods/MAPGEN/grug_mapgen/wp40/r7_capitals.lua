@@ -158,7 +158,8 @@ return function(wp40_directory)
 					if row.id == cfg.lake then lake = row end
 				end
 				if not lake then fail(key .. ": civic lake row missing: " .. cfg.lake) end
-				-- Round 23: the city wall stops on the civic lake's shores. The
+				-- Round 23: the civic lake is the city edge where it crosses
+				-- the outline (capital_planner.lua M.shore_flags). The
 				-- lake's indicator is m = 0.5 + s / LAKE_PROXY, s the signed
 				-- distance into the lake (`water_authored.lua`), so this is the
 				-- distance of a world column from its water (<= 0 on it).
