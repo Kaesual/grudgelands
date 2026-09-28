@@ -177,7 +177,7 @@ end
 local function press(fake, pointed)
 	fake.controls = {place = true}
 	fake.pointed = pointed
-	fake.next_repeat = core.get_us_time() + REPEAT_PLACE * 1e6
+	fake.next_repeat = core.get_us_time() + (fake.repeat_every or REPEAT_PLACE) * 1e6
 	if pointed then native(fake, pointed) end
 end
 
@@ -193,7 +193,7 @@ core.register_globalstep(function()
 	for _, fake in pairs(active) do
 		if fake.controls.place and fake.pointed and fake.pointed.type == "node" and
 				now >= fake.next_repeat then
-			fake.next_repeat = now + REPEAT_PLACE * 1e6
+			fake.next_repeat = now + (fake.repeat_every or REPEAT_PLACE) * 1e6
 			fake.repeats = (fake.repeats or 0) + 1
 			native(fake, fake.pointed)
 		end
@@ -582,6 +582,8 @@ for _, hold in ipairs({false, true}) do
 end
 
 -- M2: a double click whose release fell between two control snapshots.
+-- A missed-release double click at a node is indistinguishable from an
+-- engine repeat: at most one click, never a duplicate action.
 scenario("double_click_node", function(origin)
 	local _, fake = food_player("double_click_node", origin)
 	local first = floor_pointed(origin)
@@ -590,17 +592,68 @@ scenario("double_click_node", function(origin)
 		{0, function() press(fake, first) end},
 		{0.05, function()
 			press(fake, second)
-			check(core.get_node(first.above).name == "default:apple",
-				"double_click_node: the first click settled at the second press")
+			check(apples(origin) == 0, "double_click_node: the second node call acted not")
 		end},
 		{0.1, function() release(fake) end},
 		{0.6, function()
-			check(core.get_node(second.above).name == "default:apple" and
-				apples(origin) == 2 and count(fake) == 3,
-				"double_click_node: two clicks placed two apples (" .. apples(origin) ..
-				", stack " .. count(fake) .. ")")
+			check(apples(origin) <= 1 and count(fake) == 5 - apples(origin) and
+				core.get_node(second.above).name ~= "default:apple",
+				"double_click_node: at most one click, no duplicate (" .. apples(origin) ..
+				" apple(s), stack " .. count(fake) .. ")")
 		end},
 	}
+end)
+
+-- Holds at a node whose engine repeats come fast or bunched: no click, no
+-- interaction, exactly one serving.
+local function fast_repeat_hold(label, target_node, setup)
+	scenario(label, function(origin)
+		local _, fake = food_player(label, origin)
+		local pos = vector.offset(origin, 0, 0, 2)
+		local pointed
+		if target_node then
+			core.set_node(pos, {name = "doors:door_wood_a", param2 = 0})
+			core.set_node(vector.offset(pos, 0, 1, 0), {name = "doors:hidden", param2 = 0})
+			pointed = {type = "node", under = pos, above = vector.offset(pos, 0, 0, -1)}
+		else
+			pointed = floor_pointed(origin)
+		end
+		local name = core.get_node(pointed.under).name
+		local before
+		local steps = {
+			{1.8, function() release(fake) end},
+			{2.1, function()
+				check(count(fake) == 4 and apples(origin) == 0 and
+					rightclicks.door == before and core.get_node(pointed.under).name == name,
+					label .. ": no click or interaction, exactly one serving (stack " ..
+					count(fake) .. ", " .. apples(origin) .. " apple(s), " ..
+					(rightclicks.door - before) .. " door click(s), " ..
+					(fake.repeats or 0) .. " repeats)")
+			end},
+		}
+		setup(fake, pointed, steps, function() before = rightclicks.door end)
+		return steps
+	end)
+end
+local function fast_repeats(fake, pointed, steps, start)
+	fake.repeat_every = 0.16 -- the client minimum repeat_place_time
+	table.insert(steps, 1, {0, function() start(); press(fake, pointed) end})
+end
+fast_repeat_hold("repeat_016_ground", false, fast_repeats)
+fast_repeat_hold("repeat_016_door", true, fast_repeats)
+fast_repeat_hold("delayed_first_native", false, function(fake, pointed, steps, start)
+	-- RMB is down from t=0, but the press packet arrives 80 ms late and the
+	-- next repeat right behind it.
+	table.insert(steps, 1, {0, function()
+		start()
+		fake.controls = {place = true}
+		fake.pointed, fake.next_repeat = pointed, math.huge
+	end})
+	table.insert(steps, 2, {0.08, function() native(fake, pointed) end})
+	table.insert(steps, 3, {0.1, function()
+		native(fake, pointed)
+		fake.next_repeat = core.get_us_time() + REPEAT_PLACE * 1e6
+	end})
 end)
 
 scenario("double_click_object", function(origin)
