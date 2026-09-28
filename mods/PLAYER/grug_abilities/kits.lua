@@ -652,54 +652,36 @@ grug_abilities.register_ability({
 	name = "Blink",
 	kind = "cast",
 	target_kind = "self",
-	description = "Teleport up to 10 m in your look direction\n" ..
-		"(blocked by walls).",
+	description = "Teleport up to 10 m in your look direction:\n" ..
+		"onto the ground you aim at, or in front of a wall\n" ..
+		"(one node up onto it if there is room).",
 	color = "#b06aff",
 	cost = {mana_percent = 8},
 	cooldown = 15,
 	cooldown_talent = "blink_cooldown_sub", -- Quick Step (skill_trees.md §2.4)
 	range = 4,
 	cast = function(user)
-		local eye_height = user:get_properties().eye_height or 1.5
+		local props = user:get_properties()
+		local eye_height = props.eye_height or 1.47
+		local box = props.collisionbox or {-0.3, 0, -0.3, 0.3, 1.7, 0.3}
 		local from = user:get_pos()
-		local eye = vector.offset(from, 0, eye_height, 0)
-		local dir = user:get_look_dir()
 		-- Far Step (skill_trees.md §2.4); 10 m exactly without the talent.
 		local distance = 10 + grug_classes.get_talent_bonus(user,
 			"blink_distance_add")
-		local dest_eye = vector.add(eye, vector.multiply(dir, distance))
-		local ray = core.raycast(eye, dest_eye, false, false)
-		local hit = ray:next()
-		if hit and hit.type == "node" then
-			dest_eye = vector.subtract(hit.intersection_point,
-				vector.multiply(dir, 0.7))
+		-- Targeting rules live in blink.lua (ground: stand on it; wall: in
+		-- front, or one node up onto it; air: full distance). A false return
+		-- costs neither mana nor cooldown (try_cast).
+		local dest = grug_abilities.blink_destination(
+			vector.offset(from, 0, eye_height, 0), user:get_look_dir(),
+			distance, eye_height, box)
+		if not dest then
+			return false, "No room to blink."
 		end
-		-- Feet position; back off along the ray until there is room.
-		local dest = vector.offset(dest_eye, 0, -eye_height, 0)
-		for _ = 1, 12 do
-			local feet = core.get_node_or_nil(vector.round(dest))
-			local head = core.get_node_or_nil(vector.round(
-				vector.offset(dest, 0, 1, 0)))
-			local function free(node)
-				if not node then
-					return false
-				end
-				local ndef = core.registered_nodes[node.name]
-				return ndef and not ndef.walkable
-			end
-			if free(feet) and free(head) then
-				burst(from, "default_item_smoke.png^[multiply:#b06aff", 10)
-				grug_core.invalidate_combat_identity(user)
-				user:set_pos(dest)
-				burst(dest, "default_item_smoke.png^[multiply:#b06aff", 10)
-				return true
-			end
-			dest = vector.subtract(dest, vector.multiply(dir, 0.75))
-			if vector.distance(dest, from) < 0.8 then
-				break
-			end
-		end
-		return false, "No room to blink."
+		burst(from, "default_item_smoke.png^[multiply:#b06aff", 10)
+		grug_core.invalidate_combat_identity(user)
+		user:set_pos(dest)
+		burst(dest, "default_item_smoke.png^[multiply:#b06aff", 10)
+		return true
 	end,
 })
 

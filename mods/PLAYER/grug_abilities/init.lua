@@ -2557,6 +2557,9 @@ end)
 grug_abilities.delay_strike = dofile(core.get_modpath(core.get_current_modname()) ..
 	"/strike_delay.lua")(swing_progress)
 
+-- Pure Blink targeting (map access injectable for the headless probe).
+grug_abilities.blink_destination = dofile(core.get_modpath(
+	core.get_current_modname()) .. "/blink.lua")
 dofile(core.get_modpath(core.get_current_modname()) .. "/kits.lua")
 dofile(core.get_modpath(core.get_current_modname()) .. "/scout.lua")
 
