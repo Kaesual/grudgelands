@@ -741,6 +741,44 @@ design (`group_attack` stays on).
 
 ## 5. Recovery (solo path)
 
+### Combat state
+
+"In combat" gates natural regeneration, food ticks, eating, rage decay, the
+mana regeneration rate, mounting and travel home. Decided 2026-09-28 (user
+playtest rulings); owned by `grug_core` (`in_combat`).
+
+- A player is **in combat** while at least one live mob is **engaged** with
+  them, or while the **5-second timer** (`COMBAT_TIMEOUT`) runs.
+- **Engagement (mob combat).** A mob is engaged with a player from the first
+  hit between them in either direction (a landed or dodged hit of the mob or
+  its projectile, or an accepted player hit on it) and whenever the player
+  gains threat on it (§4: damage, healing threat, tank bonus, taunt). A mob
+  that attacks a player who never touched it therefore engages too.
+- **Engagement ends immediately**, with no grace period, when the mob dies,
+  resets (leash/evade: its threat table is cleared), gives up its fight (drops
+  its target) or leaves the active world (removal or unload). Once the last
+  engaged mob is gone the player is out of combat in that same server step, so
+  eating works right after the final kill. A poison applied by a mob does not
+  hold combat on its own.
+- A mob that keeps fighting someone else **forgets** an engaged player who is
+  disconnected, dead or more than **40 m** away (the §4 threat candidate
+  radius, here also for ambient pursuit mobs); its current target stays
+  engaged, and a later threat switch onto a forgotten player engages them
+  again. This check, and the one for a mob that lost its target without giving
+  up, runs with the mob's once-a-second leash tick, so leaving such a fight
+  ends combat within about a second.
+- **The timer (fallback)** covers every hit that involves no tracked mob:
+  PvP hits (dealt, received or dodged) and damage from other sources such as
+  scorched ground. Such a hit keeps the player in combat for 5 s even with no
+  mob engaged. Mob hits never arm the timer.
+- **Death** clears both engagement and the timer at once. A dead player cannot
+  be put back into combat by the killing blow's own bookkeeping, and the
+  respawned player starts out of combat.
+- Engagement is event-driven: it is recorded and dropped only on the hits,
+  threat changes and mob lifecycle events above, never by scanning the world.
+
+### Recovery
+
 - Natural regen: **0.5% max HP/s out of combat, 0 in combat** — in-combat
   healing is the healer's/potion's job.
 - **Food v2 restore buff** (R7.1/R7.2, decided 2026-09-18; supersedes R9 from

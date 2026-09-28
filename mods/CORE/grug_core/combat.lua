@@ -373,9 +373,15 @@ function grug_core.get_talent_bonus(player, key)
 end
 
 --
--- Combat state: in combat = dealt or received damage in the last 5 s.
--- Shared definition for resource regen (WP4), recovery (combat_stats §5)
--- and mob leashing (WP6).
+-- Combat state (combat_stats.md §5 "Combat state"). Shared definition for
+-- resource regen and decay, recovery, eating, mounting and travel. A player
+-- is in combat while EITHER
+--   * at least one live, active grug mob is ENGAGED with them (mob combat), or
+--   * the 5 s timer runs: PvP hits and every hit whose source is not a
+--     tracked grug mob (other entities, scorched ground).
+-- A mob hit never arms the timer, so mob combat ends in the very step the
+-- last engaged mob dies, resets, gives up its fight or leaves the active
+-- world. Death clears both halves; a dead player cannot be re-marked.
 --
 
 grug_core.COMBAT_TIMEOUT = 5
@@ -390,21 +396,163 @@ function grug_core.mono_time()
 	return core.get_us_time() / 1e6
 end
 
-local last_combat = {} -- player name -> us timestamp of the last hit
+local last_combat = {} -- player name -> us timestamp of the last untracked hit
+
+-- Engagement edges (player name, mob luaentity), kept in two event-driven
+-- indexes that always change together:
+--   mob_ent.temp.grug_engaged = {[player_name] = true}  (runtime only: temp
+--                               is never serialized, api.lua clean_staticdata)
+--   engaged_mobs[player_name] = {[mob_ent] = true}      (weak keys)
+-- in_combat only asks `next(engaged_mobs[name])`, so it stays O(1) however
+-- often the HUD and the regen ticks ask. Nothing ever scans objects for it.
+--
+-- An edge is CREATED by an accepted player hit on the mob
+-- (run_player_hit_mob), by every threat gain (add_threat: damage, heal threat,
+-- tank bonus), by taunt, and by a hit the mob or its projectile lands on the
+-- player (mark_player_hit) -- the last one covers a mob that attacks a player
+-- who never touched it and therefore holds no threat entry for them.
+-- An edge is DROPPED by disengage_mob -- the mob's death boundary
+-- (grug_mobs.settle_mob_death), on_deactivate (explicit removal and unload),
+-- clear_threat (leash reset), stop_attack (the mob gave up its fight) and the
+-- 1 Hz prune_engagement backstop (grug_mobs.leash_tick: a mob that lost its
+-- target without stop_attack, or a player who left a fight that goes on
+-- without them) -- and by the player's death or leave.
+-- The weak keys are only a last-resort backstop against a missed removal
+-- hook: a collected luaentity can never pin a player in combat.
+local engaged_mobs = {}
+local WEAK_KEYS = {__mode = "k"}
 
 function grug_core.mark_in_combat(player)
+	-- Dead players stay out of combat: death cleared the state, and a killing
+	-- blow's own bookkeeping (a DoT tick, an after-punch mark) must not re-arm
+	-- it. get_hp() is 0 from the lethal set_hp until the respawn.
+	if not core.is_player(player) or player:get_hp() <= 0 then
+		return
+	end
 	last_combat[player:get_player_name()] = core.get_us_time()
 end
 
+-- A mob whose lifecycle hooks drop its edges: every mob registered through
+-- grug_mobs.register_mob (the same gate as its death settlement).
+function grug_core.is_tracked_mob(mob_ent)
+	return mob_ent ~= nil and mob_ent.object ~= nil and grug_mobs ~= nil
+		and grug_mobs.registered_cadence ~= nil
+		and grug_mobs.registered_cadence[mob_ent.name] == true
+end
+
+-- Record that `mob_ent` and `player` are fighting. An untracked entity falls
+-- back to the 5 s timer, so no damage source is silently ignored. A dying or
+-- already removed mob creates nothing (its death boundary has run): the
+-- killing blow's after-punch bonus threat must not re-engage.
+function grug_core.engage_mob(mob_ent, player)
+	if not core.is_player(player) or player:get_hp() <= 0 then
+		return
+	end
+	if not grug_core.is_tracked_mob(mob_ent) then
+		grug_core.mark_in_combat(player)
+		return
+	end
+	if mob_ent.state == "die" or (mob_ent.health or 1) <= 0
+			or not mob_ent.object:get_pos() then
+		return
+	end
+	mob_ent.temp = mob_ent.temp or {}
+	local edges = mob_ent.temp.grug_engaged
+	if not edges then
+		edges = {}
+		mob_ent.temp.grug_engaged = edges
+	end
+	local name = player:get_player_name()
+	if edges[name] then
+		return
+	end
+	edges[name] = true
+	local set = engaged_mobs[name]
+	if not set then
+		set = setmetatable({}, WEAK_KEYS)
+		engaged_mobs[name] = set
+	end
+	set[mob_ent] = true
+end
+
+-- Drop every edge of one mob. Idempotent; O(players engaged with it).
+function grug_core.disengage_mob(mob_ent)
+	local temp = mob_ent and mob_ent.temp
+	local edges = temp and temp.grug_engaged
+	if not edges then
+		return
+	end
+	temp.grug_engaged = nil
+	for name in pairs(edges) do
+		local set = engaged_mobs[name]
+		if set then
+			set[mob_ent] = nil
+			if next(set) == nil then
+				engaged_mobs[name] = nil
+			end
+		end
+	end
+end
+
+-- Drop the timer and every edge of one player. O(mobs engaged with them).
+local function clear_combat(player)
+	local name = player:get_player_name()
+	last_combat[name] = nil
+	local set = engaged_mobs[name]
+	if not set then
+		return
+	end
+	engaged_mobs[name] = nil
+	for mob_ent in pairs(set) do
+		local edges = mob_ent.temp and mob_ent.temp.grug_engaged
+		if edges then
+			edges[name] = nil
+			if next(edges) == nil then
+				mob_ent.temp.grug_engaged = nil
+			end
+		end
+	end
+end
+
+-- Classify one hit (landed or dodged) on a player by its source object. A
+-- tracked mob, or a projectile carrying its shooter (`_grug_source`, stamped
+-- by grug_mobs.stamp_arrow_damage), engages; a player (PvP) or any other
+-- source arms the timer. A projectile whose shooter is gone (dead or
+-- unloaded) holds no fight.
+function grug_core.mark_player_hit(player, source)
+	local ent = source and not source:is_player() and source:get_luaentity()
+	if ent then
+		local shooter = ent._grug_source
+		if shooter then
+			local shooter_ent = shooter:get_luaentity()
+			if shooter_ent then
+				grug_core.engage_mob(shooter_ent, player)
+			end
+			return
+		end
+		grug_core.engage_mob(ent, player)
+		return
+	end
+	grug_core.mark_in_combat(player)
+end
+
 function grug_core.in_combat(player)
-	local t = last_combat[player:get_player_name()]
+	local name = player:get_player_name()
+	local set = engaged_mobs[name]
+	if set and next(set) ~= nil then
+		return true
+	end
+	local t = last_combat[name]
 	return t ~= nil and
 		(core.get_us_time() - t) < grug_core.COMBAT_TIMEOUT * 1e6
 end
 
-core.register_on_leaveplayer(function(player)
-	last_combat[player:get_player_name()] = nil
-end)
+-- Death ends combat at once (user ruling 2026-09-28) and the respawned player
+-- starts out of combat. Threat entries stay on the mobs -- valid_target
+-- already ignores a dead player -- but no edge survives, so only a NEW hit or
+-- threat gain after the respawn puts the player back into combat.
+core.register_on_dieplayer(clear_combat)
+core.register_on_leaveplayer(clear_combat)
 
 --
 -- Threat table (combat_stats §4). Mobs pick their target by threat, not by
@@ -549,6 +697,9 @@ local function check_switch(mob_ent, force)
 	mob_ent:do_attack(best_obj, true)
 	-- A fresh target means fresh contact — the leash clock restarts.
 	mob_ent.temp.grug_last_contact = now
+	-- ... and the new target is in this fight again (combat state), even if
+	-- prune_engagement had let them go while they were out of range.
+	grug_core.engage_mob(mob_ent, best_obj)
 end
 
 -- Trailing edge of the throttle above: run the parked target check once,
@@ -566,6 +717,63 @@ function grug_core.recheck_switch(mob_ent)
 	check_switch(mob_ent, true)
 end
 
+-- Engagement backstop, run once a second per mob that holds engagements
+-- (grug_mobs.leash_tick; a mob without any pays one field test there).
+-- A mob without a target has left its fight by a path that bypassed
+-- stop_attack (mobs_redo's get_staticdata clears `attack` when the engine
+-- re-saves a moved mob; a passive critter never takes one): every edge goes.
+-- Flight and flopping keep theirs -- pauses inside a fight. A mob that is
+-- still fighting keeps its current target, but forgets every other player
+-- who is disconnected, dead or outside the 40 m threat radius: a player who
+-- left a fight that goes on without them leaves combat. The radius applies
+-- to ambient damage-pursuit mobs too (unlike valid_target): should such a
+-- mob later switch to the far player by threat, check_switch re-engages them.
+-- O(edges of this mob).
+local function in_fight_range(mob_ent, name)
+	local player = core.get_player_by_name(name)
+	if not player or player:get_hp() <= 0 then
+		return false
+	end
+	local mpos = mob_ent.object and mob_ent.object:get_pos()
+	local ppos = player:get_pos()
+	if not mpos or not ppos then
+		return false
+	end
+	local dx, dy, dz = mpos.x - ppos.x, mpos.y - ppos.y, mpos.z - ppos.z
+	return dx * dx + dy * dy + dz * dz <=
+		grug_core.THREAT_RANGE * grug_core.THREAT_RANGE
+end
+
+function grug_core.prune_engagement(mob_ent)
+	local edges = mob_ent.temp and mob_ent.temp.grug_engaged
+	if not edges then
+		return
+	end
+	local target = mob_ent.attack
+	if not target then
+		if mob_ent.state ~= "runaway" and mob_ent.state ~= "flop" then
+			grug_core.disengage_mob(mob_ent)
+		end
+		return
+	end
+	local target_name = core.is_player(target) and target:get_player_name()
+	for name in pairs(edges) do
+		if name ~= target_name and not in_fight_range(mob_ent, name) then
+			edges[name] = nil
+			local set = engaged_mobs[name]
+			if set then
+				set[mob_ent] = nil
+				if next(set) == nil then
+					engaged_mobs[name] = nil
+				end
+			end
+		end
+	end
+	if next(edges) == nil then
+		mob_ent.temp.grug_engaged = nil
+	end
+end
+
 -- Accumulate threat for one player on one mob, then re-check the target.
 -- Base threat (= damage dealt) is added in exactly ONE place, see
 -- run_player_hit_mob below.
@@ -580,15 +788,19 @@ function grug_core.add_threat(mob_ent, player, amount)
 	local threat = threat_table(mob_ent)
 	local name = player:get_player_name()
 	threat[name] = (threat[name] or 0) + amount
+	-- Holding a threat entry is engagement (combat state above).
+	grug_core.engage_mob(mob_ent, player)
 	check_switch(mob_ent)
 end
 
--- Drops the whole table (leash reset).
+-- Drops the whole table (leash reset) and with it every engagement: a mob
+-- that forgot everyone is fighting nobody.
 function grug_core.clear_threat(mob_ent)
 	if mob_ent and mob_ent.temp then
 		mob_ent.temp.grug_threat = nil
 		mob_ent.temp.grug_forced_until = nil
 	end
+	grug_core.disengage_mob(mob_ent)
 end
 
 -- Healing threat (combat_stats §4): 0.5×effective healing on the HEALER,
@@ -643,6 +855,7 @@ function grug_core.taunt(mob_ent, player)
 	local now = grug_core.mono_time()
 	mob_ent.temp.grug_forced_until = now + grug_core.TAUNT_FORCE_TIME
 	mob_ent.temp.grug_last_contact = now
+	grug_core.engage_mob(mob_ent, player)
 	return true
 end
 
@@ -664,7 +877,13 @@ function grug_core.register_on_player_hit_mob(func)
 end
 
 function grug_core.run_player_hit_mob(player, mob_ent, damage, applied, fraction)
-	grug_core.mark_in_combat(player)
+	-- Every accepted hit engages, a zero-damage one included (add_threat
+	-- below engages only on positive threat).
+	if mob_ent then
+		grug_core.engage_mob(mob_ent, player)
+	else
+		grug_core.mark_in_combat(player)
+	end
 	-- THE ONE base-threat site. Every player hit on a mob passes through
 	-- here: native swings go player -> object:punch -> grug_mobs' accepted
 	-- hook -> here, and ability damage goes deal_ability_damage ->
@@ -1136,7 +1355,7 @@ function grug_core.deal_ability_damage(attacker, target, amount, opts)
 			core.chat_send_player(target:get_player_name(),
 				core.colorize("#aaaaaa", "You dodge!"))
 			grug_core.mark_in_combat(attacker)
-			grug_core.mark_in_combat(target)
+			grug_core.mark_player_hit(target, attacker)
 			return 0
 		end
 	end
@@ -1145,7 +1364,12 @@ function grug_core.deal_ability_damage(attacker, target, amount, opts)
 		amount = math.floor(amount * 1.5)
 		crit_particles(target:get_pos())
 	end
-	grug_core.mark_in_combat(attacker)
+	-- PvP and untracked targets arm the attacker's timer up front, as before.
+	-- A tracked mob engages only when it ACCEPTS the hit (run_player_hit_mob),
+	-- so a refused punch (an evading mob) starts no fight.
+	if not grug_core.is_tracked_mob(target:get_luaentity()) then
+		grug_core.mark_in_combat(attacker)
+	end
 	-- pcall + flag restore: an error mid-punch must not leave the sticky
 	-- flag set (that would silently kill rage generation server-wide).
 	local previous_punch, previous_action, previous_level, previous_settlement =
@@ -1429,7 +1653,8 @@ core.register_on_player_hpchange(function(player, hp_change, reason)
 		return hp_change
 	end
 	if reason.type == "punch" then
-		grug_core.mark_in_combat(player)
+		-- Before the dodge roll: a dodged swing is still an attack.
+		grug_core.mark_player_hit(player, reason.object)
 		-- Ability punches pre-roll dodge in deal_ability_damage.
 		if not grug_core.in_ability_punch and
 				math.random() < grug_core.get_dodge_chance(player) then

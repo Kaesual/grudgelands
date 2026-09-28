@@ -23,9 +23,21 @@ end
 local tag_old_on_deactivate = mobs.mob_class.on_deactivate
 mobs.mob_class.on_deactivate = function(self, removal)
 	grug_mobs.remove_tag_carrier(self)
+	-- Removal and unload end every player engagement (grug_core combat state):
+	-- a mob that left the active world is fighting nobody.
+	grug_core.disengage_mob(self)
 	if tag_old_on_deactivate then
 		return tag_old_on_deactivate(self, removal)
 	end
+end
+
+-- A mob that gives up its fight (target lost, dead, out of range or vetoed,
+-- leash reset, evade) is no longer engaged with anyone. Class-level wrapper
+-- like on_deactivate above: every mobs_redo call site is `self:stop_attack()`.
+local engage_old_stop_attack = mobs.mob_class.stop_attack
+mobs.mob_class.stop_attack = function(self)
+	grug_core.disengage_mob(self)
+	return engage_old_stop_attack(self)
 end
 
 if not grug_core.zone_authority_installed() then
@@ -261,6 +273,9 @@ end
 -- Called by the shared mobs_redo death boundary before it chooses on_die,
 -- on_death, a death animation or the ordinary smoke/removal fallback.
 function grug_mobs.settle_mob_death(self)
+	-- First: a dead mob engages nobody, so its players leave combat in this
+	-- very step unless another live mob still holds them (grug_core).
+	grug_core.disengage_mob(self)
 	self.temp = self.temp or {}
 	if not self.temp.grug_kill_loot_settled then
 		self.temp.grug_kill_loot_settled = true

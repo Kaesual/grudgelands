@@ -194,7 +194,11 @@ end
 --   * absorb shields soak EVERY source, so a Power Word: Shield does eat
 --     poison ticks. Intended (that is what a shield is for);
 --   * armor groups are bypassed entirely — poison ignores armor by design.
--- Each tick also marks the victim in combat, so a DoT keeps regen locked.
+-- A tick does NOT mark the victim in combat (combat_stats §5 "Combat state"):
+-- the hit that applied the poison engaged its mob, and that engagement holds
+-- the combat state while the mob fights. Once the mob dies or gives up, the
+-- remaining ticks run out of combat -- they must not keep regen and eating
+-- locked for a fight that is over.
 --
 -- Every application runs its own independent chain: a second bite adds a
 -- second DoT rather than refreshing one. Deliberate — serpent bites are
@@ -238,7 +242,6 @@ function grug_mobs.poison_player(player, total_ticks, interval, dmg_per_tick)
 			return -- already dead: stop the chain
 		end
 		p:set_hp(hp - dmg_per_tick, {type = "set_hp", from = "mod"})
-		grug_core.mark_in_combat(p)
 		left = left - 1
 		if left > 0 then
 			core.after(interval, tick)

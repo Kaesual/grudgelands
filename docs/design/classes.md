@@ -104,9 +104,10 @@ Core principles:
   attempted: a target that cancels the punch (a vendor NPC, an evading
   mob), an `immune_to` mob or a player with PvP off yields **0 rage**.
   PvP refusal, dodge and full absorb likewise pay 0 (`combat_stats.md` §2).
-- **In combat** = dealt or received damage within the last 5 s. The
-  definition lives in `grug_core` (`mark_in_combat`/`in_combat`) and is
-  shared with recovery (combat_stats §5) and mob leashing (WP6).
+- **In combat** = engaged with a live mob, or a PvP/other hit within the last
+  5 s; death clears it (`combat_stats.md` §5 "Combat state" owns the rule).
+  The definition lives in `grug_core` (`in_combat`) and is shared with
+  recovery (combat_stats §5).
 - Resources are runtime state, not persisted: mana is full on join and
   respawn, rage is 0.
 - Mana costs are rounded percentages of the caster's unmodified base pool,
@@ -481,7 +482,7 @@ the resource is effectively unlimited". Ruling 25 answers it with **option
 | a landed full swing | **+8** | was +12. Paid proportionally by an ordinary tool or fist: a native packet worth fraction *f* of a swing pays 8·*f*, so the accumulator still integrates to one swing's grant per whole swing. |
 | a hit taken | **+3** | was +4. The orc race passive adds +1 (`world.md` §7). |
 | Charge | +15 | unchanged; it is an engage tool, not income. |
-| out of combat | **−5 per second** | was −2 per second, on the same 5 s `grug_core.in_combat` window. |
+| out of combat | **−5 per second** | was −2 per second, on the shared `grug_core.in_combat` state (combat_stats §5). |
 | cap | 100 | unchanged. |
 
 What that buys, from an empty bar: **13 landed swings to full** instead of 9,

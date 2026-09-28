@@ -105,8 +105,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   (WP4): `deal_ability_damage` (crit ×1.5, applied via `object:punch` with
   full punch interval so armor/XP keep working; knockback requires an explicit
   `damage_groups.knockback` override), `heal_player`,
-  central dodge roll (hp-change modifier), `mark_in_combat/in_combat`
-  (5 s window), threat stubs `add_threat`/`add_heal_threat` (WP6 fills
+  central dodge roll (hp-change modifier), `in_combat` (mob engagement via
+  `engage_mob`/`disengage_mob`, 5 s timer via `mark_in_combat` for PvP and
+  untracked sources; combat_stats §5), threat stubs `add_threat`/`add_heal_threat` (WP6 fills
   them). Crit/dodge accessors are grug_core stubs overridden by
   grug_classes. Abilities = hotbar tools in `grug_abilities` (item `range` =
   targeting range, wear bar = cooldown display for cast skills, charge
