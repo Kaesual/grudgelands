@@ -46,6 +46,10 @@ dofile(modpath .. "/atmosphere.lua")
 -- zone_authority.lua, which only installs a seam grug_mapgen fills in later.
 dofile(modpath .. "/atmosphere_zones.lua")
 dofile(modpath .. "/zone_authority.lua")
+-- The mounted flight ceiling (y). grug_mounts clamps flying mounts to it and
+-- full-world preparation sizes every tile's column from it, so it lives in the
+-- mod both depend on (grug_mounts depends on grug_core, never the reverse).
+grug_core.FLIGHT_CEILING = 600
 -- After zone_authority.lua: it reads grug_core.start_identities(), which that
 -- file publishes. The request itself waits for register_on_mods_loaded.
 dofile(modpath .. "/starts_preload.lua")

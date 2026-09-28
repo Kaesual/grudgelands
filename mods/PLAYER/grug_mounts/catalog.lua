@@ -1,7 +1,8 @@
 local blank = "grug_mobs_blank.png"
 
 grug_mounts.WARNING_WIDTH = 48
-grug_mounts.FLIGHT_CEILING = 600
+-- One source of truth: full-world preparation sizes its columns from it.
+grug_mounts.FLIGHT_CEILING = grug_core.FLIGHT_CEILING
 
 -- WP44 replaces these coordinator placeholders with the measured 15 min,
 -- 45 min, 2 h and 5 h income values.

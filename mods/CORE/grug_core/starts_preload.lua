@@ -16,7 +16,7 @@ else
 	-- Bind the mode before resolving anchors or queueing any native work.
 	storage:set_string(STORAGE_KEY, core.serialize(state))
 end
-local source, scan
+local source, scanner
 local tile_elapsed = 0
 local queue, planner = {}, nil
 local stopped, failed = false, false
@@ -76,14 +76,24 @@ local function initialize()
 		assert(type(source.identity) == "string" and type(source.tile_bounds) == "function" and
 			type(source.column_bounds) == "function", "Invalid surface preparation authority")
 	end
+	-- The engine's effective generate distance (its own default when unset)
+	-- sizes full-mode columns. It is read once, when the plan is created, and
+	-- persisted with it; later edits do not reinterpret a saved plan.
+	local distance = math.floor(tonumber(core.settings:get("max_block_generate_distance")) or 10)
 	if not state.total then
-		state = plan_api.new(state.mode, geometry, identities)
+		state = plan_api.new(state.mode, geometry, identities, {
+			generate_distance = distance, flight_ceiling = grug_core.FLIGHT_CEILING})
 		state.authority = source and source.identity or nil
 		persist()
 	else
-		assert(state.order == (state.mode == "full" and "z-x-local-y-v1" or "z-y-x") and type(state.cursor) == "number" and
+		assert(state.order == (state.mode == "full" and "z-x-column-v2" or "z-y-x") and type(state.cursor) == "number" and
 			state.cursor >= 0 and state.cursor <= state.total and state.cursor % 1 == 0,
 			"Invalid persisted preparation cursor/order")
+		if state.mode == "full" and state.reach ~= (distance + 1) * 16 then
+			core.log("warning", "[grug_core] preparation keeps this world's generate reach of " ..
+				state.reach .. " nodes; max_block_generate_distance now asks for " ..
+				(distance + 1) * 16)
+		end
 		for _, axis in ipairs({"x","y","z"}) do
 			assert(state.geometry[axis] == geometry[axis],
 				"World preparation chunk geometry changed; restore the original mapgen settings")
@@ -177,15 +187,19 @@ core.register_globalstep(function(dtime)
 	local started, columns = core.get_us_time(), 0
 	while #queue < MAX_INFLIGHT and planner.cursor < planner.total do
 		if source and not planner.selection then
-			-- Scan while the native worker handles the preceding request. Bounds
-			-- yield for UI/shutdown; there is no duty-cycle delay or busy wait.
-			scan = scan or plan_api.begin(planner,source)
-			while columns < SCAN_LIMIT do
+			-- Scan while the native worker handles the preceding request. The
+			-- scanner runs ahead by the neighbourhood window; bounds yield for
+			-- UI/shutdown; there is no duty-cycle delay or busy wait.
+			scanner = scanner or plan_api.scanner(planner,planner.cursor+1)
+			local selected = plan_api.select(planner,scanner)
+			while not selected do
+				if columns >= SCAN_LIMIT then return end
 				columns = columns + SCAN_BATCH
-				if plan_api.scan(planner,scan,source,SCAN_BATCH) then scan = nil; break end
-				if core.get_us_time() - started >= FULL_PREPARATION_SCAN_BUDGET_US then return end
+				plan_api.scan(planner,scanner,source,SCAN_BATCH)
+				selected = plan_api.select(planner,scanner)
+				if not selected and
+						core.get_us_time() - started >= FULL_PREPARATION_SCAN_BUDGET_US then return end
 			end
-			if scan then return end
 		end
 		local index = planner.cursor + 1
 		local lo, hi = plan_api.unit(planner,index)
