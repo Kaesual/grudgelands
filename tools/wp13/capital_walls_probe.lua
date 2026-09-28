@@ -16,7 +16,9 @@
 -- walk and whose bed lies six below that -- and checks every cell name
 -- against the overlay palette, every height against the overlay's y range,
 -- the gate passages clear, Lethariel's colonnettes and turret lamps and
--- Kezamba's turned stake points. `--dump DIR` writes each edge and core as
+-- Kezamba's turned stake points, and on the two civic lakes (Round 23 user
+-- ruling) no edge cell over the water and every lake stretch closed on land
+-- by a turret or a gate. `--dump DIR` writes each edge and core as
 -- `x y z name param2` TSV (anchor-relative) for `render_blueprint.py`.
 --
 -- Plain Lua 5.1, no engine. Any failed check ends the run with an error.
@@ -216,6 +218,12 @@ if layouts_path then
 		if line:sub(1, 3) == "C2 " then current = {}; texts[#texts + 1] = current end
 		if current and line ~= "" then current[#current + 1] = line end
 	end
+	local terrain_data = dofile(wp40 .. "/terrain_data.lua")
+	local LAKE_PROXY = terrain_data.water.LAKE_PROXY
+	local lake_rows = {}
+	for _, row in ipairs(dofile(wp40 .. "/water_authored.lua")(terrain_data.water)) do
+		lake_rows[row.id] = row
+	end
 	local ANCHOR_KEY = {anchor_007 = "dur_brannoc", anchor_008 = "highcourt",
 		anchor_009 = "lethariel", anchor_010 = "nhal_veyr", anchor_011 = "gor_drazhak",
 		anchor_012 = "kezamba"}
@@ -306,11 +314,86 @@ if layouts_path then
 		if key == "kezamba" then
 			check(caps > 0 and bad_caps == 0, ("kezamba: %d stake points, %d not turned by column"):format(caps, bad_caps))
 		end
+		-- the civic lake (Lethariel, Kezamba): no edge cell over its water, no
+		-- gate on it, and every lake stretch closed at both ends by a gate or
+		-- a turret whose whole disc stands on land
+		local shore = ""
+		if cfg.lake then
+			local lake = lake_rows[cfg.lake]
+			local function distance(x, z)
+				return (0.5 - lake.indicator(x, z)) * LAKE_PROXY
+			end
+			-- a gatehouse keeps its planned place: where a gate stands on the
+			-- shore (Lethariel's east gate) its box may reach the indicator's
+			-- margin; that is reported, not failed (the engine dumps show its
+			-- columns are dry bank). Wall and turret cells must stay off it.
+			local function in_gate(x, z)
+				local lx, lz = x - AX, z - AZ
+				for c = 1, 4 do
+					local g = layout.gates[c]
+					local dd = (lx - g.x) * g.dx + (lz - g.z) * g.dz
+					local ww = -(lx - g.x) * g.dz + (lz - g.z) * g.dx
+					if math.abs(dd) <= dims.depth + 0.5 and math.abs(ww) <= dims.width + 0.5 then
+						return true
+					end
+				end
+				return false
+			end
+			local over, over_gate, nearest_cell = 0, 0, math.huge
+			for _, c in ipairs(cells) do
+				if c.name ~= "air" then
+					local d = distance(c.x, c.z)
+					if in_gate(c.x, c.z) then
+						if d <= 0 then over_gate = over_gate + 1 end
+					else
+						if d <= 0 then over = over + 1 end
+						if d < nearest_cell then nearest_cell = d end
+					end
+				end
+			end
+			check(over == 0, ("%s: %d wall or turret cells over the civic lake"):format(key, over))
+			local turret_at = {}
+			for _, t in ipairs(W.turrets) do turret_at[t] = true end
+			local lake_points, stretches, closed = 0, 0, 0
+			for i = 1, n do
+				if W.lake[i] then
+					lake_points = lake_points + 1
+					check(not W.gap[i], ("%s: gate point %d on the civic lake"):format(key, i))
+					check(not turret_at[i], ("%s: turret on lake point %d"):format(key, i))
+					for _, e in ipairs({(i - 2) % n + 1, i % n + 1}) do
+						if not W.lake[e] then
+							stretches = stretches + 1
+							if W.gap[e] then
+								closed = closed + 1
+							elseif check(turret_at[e], ("%s: lake end %d has no turret"):format(key, e)) then
+								local p = W.pts[e]
+								local dry = true
+								for dz = -dims.turret, dims.turret do
+									for dx = -dims.turret, dims.turret do
+										if dx * dx + dz * dz <= dims.turret * dims.turret + 1 and
+												distance(math.floor(AX + p[1] + dx + 0.5),
+													math.floor(AZ + p[2] + dz + 0.5)) <= 0 then
+											dry = false
+										end
+									end
+								end
+								if check(dry, ("%s: end turret %d stands in the lake"):format(key, e)) then
+									closed = closed + 1
+								end
+							end
+						end
+					end
+				end
+			end
+			check(lake_points > 0, key .. ": no civic lake points flagged")
+			shore = (", lake points %d, lake ends %d closed %d, nearest wall cell %.1f off the water, gatehouse cells in the lake margin %d")
+				:format(lake_points, stretches, closed, nearest_cell, over_gate)
+		end
 		local wet = 0
 		for i = 1, n do if W.wet[i] and not W.gap[i] then wet = wet + 1 end end
-		io.write(("edge %-12s kind %-15s cells %6d, y %d..%d (overlay %d..%d), turrets %2d, wet points %3d, lamps %d, colonnettes %d, turned points %d\n")
+		io.write(("edge %-12s kind %-15s cells %6d, y %d..%d (overlay %d..%d), turrets %2d, wet points %3d, lamps %d, colonnettes %d, turned points %d%s\n")
 			:format(key, layout.kind, #cells, ymin, ymax, overlay.y_min, overlay.y_max,
-				#W.turrets, wet, lamps, bases, caps))
+				#W.turrets, wet, lamps, bases, caps, shore))
 		dump(key .. "_edge", local_cells)
 	end
 end
