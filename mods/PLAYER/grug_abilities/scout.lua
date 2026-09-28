@@ -3,6 +3,9 @@
 local ARROW_PROJECTILE = "scout_arrow"
 local ARROW_SPEED = 40
 local DRAW_STEP = 0.05
+-- Self-imposed stance while drawing or holding a drawn bow (user ruling
+-- 2026-09-28): the movement aggregator's final speed factor.
+local DRAW_STANCE, DRAW_STANCE_FACTOR = "scout_draw", 0.5
 local draws = {}
 local draw_wear_steps = {}
 local pending_control = {}
@@ -237,15 +240,20 @@ local function staged_bow_image(player, stage)
 	return source
 end
 
+-- Every draw end path runs through here: the stack loses its draw stages and
+-- its zero pointing range, and the self-imposed draw stance ends.
 local function reset_draw_stack(player)
+	grug_core.clear_move_stance(player, DRAW_STANCE)
 	local source = bow_wield_image(player)
 	local inv = player:get_inventory()
 	for index, stack in ipairs(inv and inv:get_list("main") or {}) do
 		if stack:get_name() == "grug_abilities:loose" then
 			local meta = stack:get_meta()
-			if stack:get_wear() ~= 0 or meta:get_string("wield_image") ~= source then
+			if stack:get_wear() ~= 0 or meta:get_string("wield_image") ~= source or
+					meta:get_string("range") ~= "" then
 				stack:set_wear(0)
 				meta:set_string("wield_image", source)
+				meta:set_string("range", "")
 				inv:set_stack("main", index, stack)
 			end
 			return
@@ -274,8 +282,12 @@ local function set_draw_wear(player, fraction)
 	for index, stack in ipairs(inv and inv:get_list("main") or {}) do
 		if stack:get_name() == "grug_abilities:loose" then
 			stack:set_wear(math.floor((9 - step) / 9 * 65534))
-			stack:get_meta():set_string("wield_image",
-				staged_bow_image(player, stage))
+			local meta = stack:get_meta()
+			meta:set_string("wield_image", staged_bow_image(player, stage))
+			-- Zero pointing range (tool.cpp getToolRange reads meta "range"):
+			-- while drawn the client points at nothing, so held RMB repeats no
+			-- node placement and plays no place swing. Same write as the stage.
+			meta:set_string("range", "0")
 			inv:set_stack("main", index, stack)
 			return
 		end
@@ -320,6 +332,7 @@ local function start_draw(player)
 		action_id = receipt,
 	}
 	set_draw_wear(player, 0)
+	grug_core.set_move_stance(player, DRAW_STANCE, DRAW_STANCE_FACTOR)
 	return true
 end
 
@@ -387,6 +400,9 @@ end)
 
 grug_core.register_on_stun(clear_draw)
 core.register_on_dieplayer(clear_draw)
+-- A crash mid-draw leaves the saved Loose stack drawn (wear, stage image,
+-- range "0"); every join starts from the undrawn stack.
+core.register_on_joinplayer(function(player) reset_draw_stack(player) end)
 core.register_on_leaveplayer(function(player)
 	clear_draw(player)
 	pending_control[player:get_player_name()] = nil

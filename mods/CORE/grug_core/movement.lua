@@ -62,6 +62,7 @@ local CONTROL_FIELDS = {
 
 -- player name -> {
 --   mods  = {name -> {speed = delta, jump = delta, expiry = t or nil}},
+--   stances = {name -> speed factor},  -- self-imposed, multiplicative
 --   root  = expiry or nil,
 --   immune = expiry or nil,
 --   holds = {name -> true},
@@ -77,7 +78,7 @@ end
 local function record(name)
 	local rec = state[name]
 	if not rec then
-		rec = {mods = {}, holds = {}, n_holds = 0, last = {}}
+		rec = {mods = {}, stances = {}, holds = {}, n_holds = 0, last = {}}
 		state[name] = rec
 	end
 	return rec
@@ -121,7 +122,7 @@ local function idle(rec)
 	if rec.root or rec.stun or rec.immune or rec.n_holds > 0 then
 		return false
 	end
-	return next(rec.mods) == nil
+	return next(rec.mods) == nil and next(rec.stances) == nil
 end
 
 --
@@ -138,6 +139,12 @@ end
 -- still count -- immunity protects, it does not suppress your own buffs.
 -- A slow applied during immunity is not refused; it is simply inert, and it
 -- expires on its own clock, so a 3 s immunity does not swallow a 7 s web.
+--
+-- STANCES (user ruling 2026-09-28, playtest fix): a self-imposed stance --
+-- eating, drawing or holding a drawn bow -- is a speed FACTOR applied after
+-- the clamped sum: speed = clamp(clamp(1 + Sum) * Product(stances)). It is
+-- not a debuff, so immunity does not discard it, and it scales Sprint and
+-- every other positive modifier with the rest of the sum. Jump is untouched.
 local function combine(rec, t)
 	if rec.n_holds > 0 then
 		return 0, 0, 0
@@ -156,8 +163,14 @@ local function combine(rec, t)
 			jump_sum = jump_sum + j
 		end
 	end
-	return clamp(1 + speed_sum, SPEED_MIN, SPEED_MAX),
-		clamp(1 + jump_sum, JUMP_MIN, JUMP_MAX), nil
+	local speed = clamp(1 + speed_sum, SPEED_MIN, SPEED_MAX)
+	if next(rec.stances) ~= nil then
+		for _, factor in pairs(rec.stances) do
+			speed = speed * factor
+		end
+		speed = clamp(speed, SPEED_MIN, SPEED_MAX)
+	end
+	return speed, clamp(1 + jump_sum, JUMP_MIN, JUMP_MAX), nil
 end
 
 --
@@ -286,6 +299,37 @@ function grug_core.clear_move_modifier(player, name)
 	end
 	rec.mods[name] = nil
 	settle(player, pname, rec)
+end
+
+-- A named self-imposed speed stance (see `combine`): `factor` multiplies the
+-- final clamped speed until cleared. It has no expiry on purpose -- the owner
+-- sets it when the stance begins and clears it on every end path (death and
+-- leave drop the whole record here anyway).
+function grug_core.set_move_stance(player, name, factor)
+	local pname, rec = resolve(player)
+	factor = tonumber(factor)
+	if not pname or not name or not factor or factor <= 0 then
+		return
+	end
+	if rec.stances[name] == factor then
+		return
+	end
+	rec.stances[name] = factor
+	settle(player, pname, rec)
+end
+
+function grug_core.clear_move_stance(player, name)
+	local pname, rec = peek(player)
+	if not pname or not name or not rec or rec.stances[name] == nil then
+		return
+	end
+	rec.stances[name] = nil
+	settle(player, pname, rec)
+end
+
+function grug_core.get_move_stance(player, name)
+	local _, rec = peek(player)
+	return rec and name and rec.stances[name] or nil
 end
 
 -- What is currently registered under `name`, or nil. `remaining` is seconds
@@ -419,7 +463,7 @@ function grug_core.clear_root(player)
 end
 
 -- Remove current roots and every named movement penalty while preserving
--- beneficial modifiers, holds and mount-independent state. Shake Loose uses
+-- beneficial modifiers, stances, holds and mount-independent state. Shake Loose uses
 -- this before arming immunity, so an older slow cannot resume afterward.
 function grug_core.clear_negative_move_modifiers(player)
 	local pname, rec = peek(player)
@@ -541,6 +585,7 @@ function grug_core.clear_movement(player)
 		return
 	end
 	rec.mods = {}
+	rec.stances = {}
 	rec.root = nil
 	rec.ice = nil
 	rec.stun = nil
