@@ -57,12 +57,14 @@ local V = {
 	JITTER = 15, JITTER_SCALE = 54, JITTER_PERIOD = 80, JITTER_DETAIL = 20,
 	WARM_OFFSET = 40,
 	-- Forest field: groves (the grove period) broken by clearings (the
-	-- clearing period), rescaled per zone so every zone's mean is ONE: the
-	-- raw field is averaged over each zone's land on a fixed grid of
-	-- NORMAL_STEP (the same grid in every environment).
+	-- clearing period), rescaled per zone so every zone's mean is about ONE:
+	-- the raw field is averaged over each zone's land on a fixed grid of
+	-- NORMAL_STEP (the same grid in every environment), and the zone scales
+	-- are interpolated bilinearly from a SCALE_STEP lattice.
 	GROVE_PERIOD = 224, CLEARING_PERIOD = 64, CLEARING_DETAIL = 20,
 	GROVE_BASE = 160, GROVE_SPAN = 672,
 	CLEARING_LOW = 250, CLEARING_RAMP = 80,
+	SCALE_STEP = 64,
 	NORMAL_STEP = 16, NORMAL_MIN_X = -3736, NORMAL_MAX_X = 3736,
 	NORMAL_MIN_Z = -3336, NORMAL_MAX_Z = 3336,
 	-- Densest factor a class can reach, in whole multiples of the catalog
@@ -167,13 +169,50 @@ function M.vegetation_rule(full_seed, land_zone_at)
 		end
 		assert(world_sum > 0, "forest field normalisation found no land")
 	end
-	-- The forest field of a column of `zone`, in ONE units: its mean over
-	-- the zone's land grid is ONE.
-	function rule.forest(x, z, zone)
+	-- The zone scales (fixed point, SCALE_ONE = 1.0) on a coarse lattice of
+	-- SCALE_STEP nodes: each lattice point carries the scale of the zone that
+	-- owns it (the world scale on water). Interpolating between lattice
+	-- points spreads a zone-border step over one lattice cell.
+	local SCALE_ONE, STEP = 65536, V.SCALE_STEP
+	local LX0, LX1 = floor(V.NORMAL_MIN_X / STEP), floor(V.NORMAL_MAX_X / STEP) + 1
+	local LZ0, LZ1 = floor(V.NORMAL_MIN_Z / STEP), floor(V.NORMAL_MAX_Z / STEP) + 1
+	local lattice_scale = {}
+	if land_zone_at then
+		local world_scale = floor(SCALE_ONE * ONE * world_count / world_sum)
+		for iz = LZ0, LZ1 do
+			for ix = LX0, LX1 do
+				local zone = land_zone_at(ix * STEP, iz * STEP)
+				local count, sum = zone_count[zone], zone_sum[zone]
+				lattice_scale[(iz - LZ0) * (LX1 - LX0 + 1) + (ix - LX0) + 1] =
+					(count and sum > 0) and floor(SCALE_ONE * ONE * count / sum) or
+						world_scale
+			end
+		end
+	end
+	local function scale_at(ix, iz)
+		ix, iz = max(LX0, min(LX1, ix)), max(LZ0, min(LZ1, iz))
+		return lattice_scale[(iz - LZ0) * (LX1 - LX0 + 1) + (ix - LX0) + 1]
+	end
+	-- The forest field of a column in ONE units: the raw field times the
+	-- bilinearly interpolated zone scale, so each zone's mean over its land
+	-- is about ONE and no zone border shows a step.
+	-- The interpolated zone scale times STEP * STEP (SCALE_ONE units).
+	local function scale_sum(x, z)
+		local ix, iz = floor(x / STEP), floor(z / STEP)
+		local tx, tz = x - ix * STEP, z - iz * STEP
+		return scale_at(ix, iz) * (STEP - tx) * (STEP - tz) +
+			scale_at(ix + 1, iz) * tx * (STEP - tz) +
+			scale_at(ix, iz + 1) * (STEP - tx) * tz +
+			scale_at(ix + 1, iz + 1) * tx * tz
+	end
+	function rule.forest(x, z)
 		assert(land_zone_at, "the forest field needs the zone source")
-		local count, sum = zone_count[zone], zone_sum[zone]
-		if not count or sum <= 0 then count, sum = world_count, world_sum end
-		return floor(raw_forest(x, z) * ONE * count / sum)
+		return floor(raw_forest(x, z) * scale_sum(x, z) / (SCALE_ONE * STEP * STEP))
+	end
+	-- The interpolated zone scale at a column (1.0 = no rescaling; fixtures).
+	function rule.forest_scale(x, z)
+		assert(land_zone_at, "the forest field needs the zone source")
+		return scale_sum(x, z) / (SCALE_ONE * STEP * STEP)
 	end
 	-- The grid's per-zone samples (fixtures and receipts).
 	function rule.forest_normalisation()
@@ -187,7 +226,7 @@ function M.vegetation_rule(full_seed, land_zone_at)
 	-- Factors of the five classes at one column, in ONE units:
 	-- tree, last_tree, shrub, shrub_band, cover.
 	function rule.factors(x, z, terrain_y, biome, zone)
-		local forest = rule.forest(x, z, zone)
+		local forest = rule.forest(x, z)
 		local dense = V.DENSE[biome]
 		local tree_forest = dense and floor(forest * dense / 2) or forest
 		local tree_max = V.CLASS_MAX.tree * ONE

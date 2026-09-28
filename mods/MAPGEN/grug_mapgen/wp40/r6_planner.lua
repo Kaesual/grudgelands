@@ -584,10 +584,11 @@ local function planner_factory()
 						local digest = hash.digest("decoration_candidate_rank_v1", full_seed,
 							{row.id, cell_x, cell_z, scratch.x[column], scratch.z[column]})
 						-- Thin eligible roots before budgeting; no extra noise/hash pass.
-						-- The vegetation factor thins by the digest's next 16 bits:
+						-- The vegetation factor thins by the digest's last 16 bits (the rank
+						-- order reads it from the first byte, so the two do not correlate):
 						-- accept with probability factor / (fmax x ONE).
 						if string.byte(digest, 1) % cover == 0 and (fmax == 1 or
-								(string.byte(digest, 2) * 256 + string.byte(digest, 3)) *
+								(string.byte(digest, 31) * 256 + string.byte(digest, 32)) *
 									fmax * VEGETATION_ONE < factor * 65536) then
 							eligible = eligible + 1
 							local ranked = rank_scratch[eligible]

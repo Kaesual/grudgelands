@@ -756,6 +756,20 @@ local function settlement_factory()
 		local resources = content.resources()
 		local cultural = content.cultural()
 		local decorations = content.decorations()
+		-- Shrub templates (Round 23 Phase 2, world_zones.md §7.6) place like the
+		-- engine's own schematics (mg_schematic.cpp blitToVManip): a non-force
+		-- cell (a leaf) that would hit ground is skipped instead of rejecting
+		-- the whole bush, so the shrub band survives on slopes. Force-placed
+		-- cells (the stem) keep the full rule.
+		do
+			local rule = content.vegetation_rule(full_seed, planner_source)
+			for index = 1, #decorations do
+				local row = decorations[index]
+				local class = rule.decoration_class(row)
+				row.partial_leaves = row.kind == "template" and
+					(class == "shrub" or class == "shrub_band") or nil
+			end
+		end
 		local projection = content.wp43_projection()
 		local surface_by_id = {}
 		for index = 1, #surfaces do surface_by_id[surfaces[index].id] = surfaces[index] end
@@ -1742,6 +1756,8 @@ local function settlement_factory()
 											old_class ~= CLASS_NATURAL_VEGETATION then
 										if cell.force_place then
 											if not exact_p7 then flags.forbidden_old_class = true end
+										elseif row.partial_leaves then
+											cell.include = false
 										else
 											flags.insufficient_clearance = true
 										end
@@ -3095,6 +3111,9 @@ local function settlement_factory()
 													opcode <= 4) then
 											if cell_record.force_place then
 												flags.forbidden_old_class = true
+											elseif row.partial_leaves then
+												-- a shrub's leaf against ground: skip the cell
+												cell_record.include = false
 											else
 												flags.insufficient_clearance = true
 											end
