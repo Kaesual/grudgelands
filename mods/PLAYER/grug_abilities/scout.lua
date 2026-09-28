@@ -400,6 +400,9 @@ end)
 
 grug_core.register_on_stun(clear_draw)
 core.register_on_dieplayer(clear_draw)
+-- A crash mid-draw leaves the saved Loose stack drawn (wear, stage image,
+-- range "0"); every join starts from the undrawn stack.
+core.register_on_joinplayer(function(player) reset_draw_stack(player) end)
 core.register_on_leaveplayer(function(player)
 	clear_draw(player)
 	pending_control[player:get_player_name()] = nil
