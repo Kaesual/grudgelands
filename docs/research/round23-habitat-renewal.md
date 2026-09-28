@@ -155,9 +155,12 @@ timer (vendored `default`).
   anchor grade and a writer-bare grade) stopped at its first check: no open
   ground found around the same site that passed in runs 2 and 4, so no test
   ran (`evidence/probe-run5-fail.txt`; the probe now logs the site column
-  when this happens). The engine budget for this follow-up is spent; the new
-  rule's evidence is the fixture pair. Run 4 remains the engine evidence for
-  everything else.
+  when this happens; cause not determined, it did not recur). Run 6, the
+  coordinator-approved final run on the final bytes: `RESULT PASS (31 checks,
+  0 failures)` (`evidence/probe.txt`), including a dry anchor grade near the
+  dwarf start growing cover; no alterable writer-bare functional surface was
+  loaded, so that case rests on the fixture. Service cost: mean 191 µs, worst
+  1055 µs, worst accounted visits 52 681. Six engine runs in total.
 - `tools/check_lua.sh` on every changed Lua file: parser and sweeps 1–6 pass;
   SETGLOBAL only `grug_farming` in `init.lua`.
 
