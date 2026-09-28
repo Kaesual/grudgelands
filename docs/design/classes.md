@@ -447,7 +447,33 @@ Nova became the rotation pivot — kiting IS the Mage fantasy here.
 |---------|------|----------|--------|
 | Fireball | 6% base mana | **1 s cast interval** (server cadence, no cooldown bar) | Targeted homing projectile, nominal 20 m/s and initial range 20 m; current aim/LOS required at release. Baseline weapon + spell power through the damage fit at impact. No target or input inside the interval costs nothing; at most eight shots per owner/session may be active. |
 | Frost Nova | 10% base mana | 12 s | Deals one quarter of (level-baseline weapon damage + spell power), then roots accepted hostile hits within 5 m for 4 s, followed by 50% slow for 3 s. Spell damage scaling applies once. Players use the hard-root movement flag; rooted targets may still attack. Small crystal particles persist only while the Nova root is active. |
-| Blink | 8% base mana | 15 s | Teleport up to 10 m in look direction (blocked by walls). Escape valve. |
+| Blink | 8% base mana | 15 s | Teleport up to 10 m in look direction, never through walls. Escape valve. Targeting below. |
+
+**Blink targeting** (playtest ruling, 2026-09-28). The look ray runs from the
+eye for the full distance; walkable nodes stop it, non-walkable nodes (plants,
+torches, liquids) do not.
+
+- **Top face aimed at** (ground, a roof, a pillar top): the player stands on it
+  at the aimed point.
+- **Side face aimed at** (a wall): eye level in front of the face, standing on
+  the ground there if the feet would be inside it, otherwise in the air as
+  aimed. If the aimed node's top is at most one node above that spot and has
+  room, the player steps up onto it instead; a two-node wall is not climbed.
+- **Ceiling aimed at**: head just below it (the player then falls).
+- **Nothing hit**: the eye moves the full distance, also straight up or over a
+  hole; falling afterwards is intended, there is no fall protection. When the
+  ray ends less than eye height above the ground, the feet would be inside
+  it: the player is lifted to stand on the ground there (at most eye height).
+- Room is checked with the player's real collision box against the nodes'
+  collision boxes. A box that clips a block beside the chosen spot is first
+  moved to the centre of its node column rather than lifted onto the block.
+  A spot without room is searched back horizontally toward the caster in
+  0.5 m steps, allowing up to one node of step-up (eye height when nothing
+  was hit). Every destination must be in line of sight: a clear ray from the
+  caster's eye to the destination eye.
+- A move shorter than 1.5 m fails with "No room to blink." and costs neither
+  mana nor cooldown. On flat ground this means aiming steeper than about 45°
+  down fails.
 
 ## 5. Priest (Mana)
 
