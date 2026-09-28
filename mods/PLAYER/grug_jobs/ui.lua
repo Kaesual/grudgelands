@@ -21,6 +21,10 @@ local general_cache
 local record_cache = setmetatable({}, {__mode = "k"})
 -- book id -> {[output item] = {record, ...}} over that unfiltered book.
 local output_index_cache = {}
+-- Every record book_output_index left out as an inverse route (see there).
+local inverse_routes = {}
+-- [product][single ingredient] = most slots of a one-ingredient route.
+local shaping_cache
 
 local function esc(value)
 	return core.formspec_escape(tostring(value or ""))
@@ -291,23 +295,81 @@ local function listed_records(player, records, search)
 	return result
 end
 
--- Output lookup per unfiltered book, built once like the Basics catalog and
--- the per-recipe record cache (cleared by grug_jobs._reset_book_cache).
--- Enchant operations are keyed by id in the book list, not by their preview
--- output, so they never count as a recipe for an ingredient.
+-- The one distinct ingredient token of a route and its slot count, or nil
+-- when the route has several distinct ingredients.
+local function single_ingredient(recipe)
+	local slots = grug_jobs._flatten_inputs(recipe.inputs or {})
+	local only = slots[1]
+	if not only then return nil end
+	for index = 2, #slots do
+		if slots[index] ~= only then return nil end
+	end
+	return only, #slots
+end
+
+local function book_source(book)
+	if book == "general" then return engine_general_recipes() end
+	return normalized_profession_records(book, nil)
+end
+
+-- One-ingredient routes over Basics and every profession book, static.
+local function shaping_routes()
+	if shaping_cache then return shaping_cache end
+	shaping_cache = {}
+	local books = {"general"}
+	for profession in pairs(grug_jobs.PROFESSIONS) do books[#books + 1] = profession end
+	for _, book in ipairs(books) do
+		local source = book_source(book)
+		for index = 1, #source do
+			local recipe = source[index]
+			local ingredient, slots = single_ingredient(recipe)
+			local product = recipe.output_name
+			if ingredient and recipe.operation ~= "enchant" and type(product) == "string" then
+				local by_ingredient = shaping_cache[product] or {}
+				shaping_cache[product] = by_ingredient
+				by_ingredient[ingredient] = math.max(by_ingredient[ingredient] or 0, slots)
+			end
+		end
+	end
+	return shaping_cache
+end
+
+-- Inverse route: R makes X from one distinct ingredient Y, some route makes Y
+-- from X alone, and R uses fewer slots than that route (R undoes a shaping or
+-- compaction of X: cobble from slabs or stairs, coal lump from a coal block).
+-- Such routes stay listed and browsable, but never make an ingredient cell
+-- clickable nor get chosen as the jump target, so a mined material stays
+-- inert even when its slab or block has been discovered.
+local function is_inverse_route(recipe, shaping)
+	local ingredient, slots = single_ingredient(recipe)
+	if not ingredient then return false end
+	local back = shaping[ingredient]
+	local forward = back and back[recipe.output_name]
+	return forward ~= nil and slots < forward
+end
+
+-- Navigable output lookup per unfiltered book, built once like the Basics
+-- catalog and the per-recipe record cache (cleared by
+-- grug_jobs._reset_book_cache). Enchant operations are keyed by id in the book
+-- list, not by their preview output, so they never count as a recipe for an
+-- ingredient; inverse routes (above) are left out as well.
 local function book_output_index(book)
 	local cached = output_index_cache[book]
 	if cached then return cached end
-	local source = book == "general" and engine_general_recipes() or
-		normalized_profession_records(book, nil)
+	local source = book_source(book)
+	local shaping = shaping_routes()
 	cached = {}
 	for index = 1, #source do
 		local recipe = source[index]
 		local name = recipe.output_name
 		if recipe.operation ~= "enchant" and type(name) == "string" and name ~= "" then
-			local list = cached[name]
-			if not list then list = {} cached[name] = list end
-			list[#list + 1] = recipe
+			if is_inverse_route(recipe, shaping) then
+				inverse_routes[recipe] = true
+			else
+				local list = cached[name]
+				if not list then list = {} cached[name] = list end
+				list[#list + 1] = recipe
+			end
 		end
 	end
 	output_index_cache[book] = cached
@@ -671,15 +733,21 @@ local function push_history(state)
 end
 
 -- Jump to the recipe for an ingredient: switch book when needed, clear the
--- search, select the ingredient's first alternative and open its page.
+-- search, select the ingredient's first navigable alternative (inverse routes
+-- are skipped; ingredient_target built every index they are marked in) and
+-- open its page.
 local function show_ingredient(player, state, item)
 	local book, station = ingredient_target(player, state.book, state.station, item)
 	if not book then return false end
 	push_history(state)
 	state.book, state.station = book, station
 	state.search, state.output, state.alternative, state.page = "", item, 1, 1
-	local outputs = output_groups(listed_records(player,
+	local outputs, alternatives = output_groups(listed_records(player,
 		grug_jobs.book_records(player, book, station), ""))
+	local choices = alternatives[item] or {}
+	for index = 1, #choices do
+		if not inverse_routes[choices[index]] then state.alternative = index break end
+	end
 	for index = 1, #outputs do
 		if outputs[index] == item then
 			state.page = math.floor((index - 1) / ITEMS_PER_PAGE) + 1
@@ -832,4 +900,6 @@ grug_jobs._reset_book_cache = function()
 	general_cache = nil
 	record_cache = setmetatable({}, {__mode = "k"})
 	output_index_cache = {}
+	inverse_routes = {}
+	shaping_cache = nil
 end

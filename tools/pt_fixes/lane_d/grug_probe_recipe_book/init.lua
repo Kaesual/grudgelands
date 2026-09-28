@@ -243,6 +243,8 @@ local SCENARIOS = {
 	{label = "crafter", setup = {primaries = {"weaponsmith", "woodcarver"},
 		secondaries = {"cooking"}}},
 	{label = "alchemist", setup = {primaries = {"alchemist", "leatherworker"}}},
+	{label = "outfitter", setup = {primaries = {"armorsmith", "tailor"}}},
+	{label = "goldsmith", setup = {primaries = {"goldsmith"}}},
 }
 
 local function dump_all(patched)
@@ -280,10 +282,104 @@ local function records_with_output(player, book, item)
 	return result
 end
 
+-- Independent re-implementation of the inverse-route rule over the static
+-- catalog (Basics plus every profession book).
+local ALL_BOOKS = {"general"}
+for profession in pairs(grug_jobs.PROFESSIONS) do ALL_BOOKS[#ALL_BOOKS + 1] = profession end
+table.sort(ALL_BOOKS)
+
+local function one_ingredient(record)
+	local slots = grug_jobs._flatten_inputs(record.inputs or {})
+	if #slots == 0 then return nil end
+	for index = 2, #slots do if slots[index] ~= slots[1] then return nil end end
+	return slots[1], #slots
+end
+
+local oracle
+local function inverse_oracle()
+	if oracle then return oracle end
+	local player = make_player("probe_oracle", {})
+	local shaping, all = {}, {}
+	for _, book in ipairs(ALL_BOOKS) do
+		for _, record in ipairs(grug_jobs.book_records(player, book, nil)) do
+			if record.operation ~= "enchant" then
+				all[#all + 1] = {book = book, record = record}
+				local y, slots = one_ingredient(record)
+				if y then
+					local key = record.output_name .. "\0" .. y
+					shaping[key] = math.max(shaping[key] or 0, slots)
+				end
+			end
+		end
+	end
+	local inverse, routes, dropped = {}, {}, 0
+	for _, entry in ipairs(all) do
+		local record = entry.record
+		local y, slots = one_ingredient(record)
+		local forward = y and shaping[y .. "\0" .. record.output_name]
+		local item = record.output_name
+		routes[item] = routes[item] or {total = 0, inverse = 0, books = {}}
+		routes[item].total = routes[item].total + 1
+		routes[item].books[entry.book] = true
+		if forward and slots < forward then
+			inverse[record] = true
+			log(("inverse route [%s] %s <- %dx %s (forward route %d slots)"):format(
+				entry.book, item, slots, y, forward))
+			dropped = dropped + 1
+			routes[item].inverse = routes[item].inverse + 1
+		end
+	end
+	oracle = {inverse = inverse, routes = routes, dropped = dropped}
+	return oracle
+end
+
+-- Same as the book: general routes need discovery, profession routes the
+-- progression gate.
+local function route_known(player, record)
+	if record.profession == "general" then
+		return grug_jobs.recipe_discovered(player, record)
+	end
+	return grug_jobs.recipe_progress_unlocked(player, record) == true
+end
+
+-- Items with a known, non-inverse route in the (book, station) view, and the
+-- first such alternative per item in listing order.
+local function navigable(player, book, station)
+	local inverse = inverse_oracle().inverse
+	local items, first, count = {}, {}, {}
+	for _, record in ipairs(grug_jobs.book_records(player, book, station)) do
+		if record.operation ~= "enchant" and route_known(player, record) then
+			local item = record.output_name
+			count[item] = (count[item] or 0) + 1
+			if not inverse[record] and not items[item] then
+				items[item] = true
+				first[item] = count[item]
+			end
+		end
+	end
+	return items, first
+end
+
+local changed = {inert = {}, alternative = {}}
+
 local function sweep(label, setup, player)
 	local known = {}
+	local old_known = {}
 	for _, book in ipairs(openable(player)) do
-		for item in pairs(set_of(outputs_of(player, book, nil))) do known[item] = true end
+		for item in pairs(set_of(outputs_of(player, book, nil))) do
+			-- Enchant operations are listed by id and never appear in a cell.
+			if core.registered_items[item] then old_known[item] = book end
+		end
+		local items, first = navigable(player, book, nil)
+		for item in pairs(items) do
+			known[item] = true
+			if first[item] ~= 1 then
+				changed.alternative[item .. " (" .. book .. " -> #" .. first[item] .. ")"] = true
+			end
+		end
+	end
+	for item, book in pairs(old_known) do
+		if not known[item] then changed.inert[item] = true end
 	end
 	local exists_general = {}
 	for _, record in ipairs(grug_jobs.book_records(player, "general", nil)) do
@@ -325,7 +421,9 @@ local function sweep(label, setup, player)
 						style.index < overlay.index and has_line
 				else
 					ok = overlay == nil and not tooltip:find("Click to view recipe", 1, true)
-					if exists_general[item] and not stats.undiscovered[item] then
+					local nav = inverse_oracle().routes[item]
+					if exists_general[item] and not stats.undiscovered[item] and
+							nav and nav.total > nav.inverse then
 						stats.undiscovered[item] = {where = where, setup = setup,
 							book = view.book, station = view.station, output = output,
 							alternative = alternative}
@@ -408,8 +506,10 @@ local function test_pickaxe()
 	if not stick then return end
 	local after = parse(send(player, {[field_of(before, stick)] = "",
 		grug_jobs_search = "pick"}))
+	local _, stick_first = navigable(player, "general", nil)
 	check(after.selected == "default:stick" and after.title == "Basics" and
-		after.search == "" and after.alternative == 1 and list_has(after, "default:stick"),
+		after.search == "" and after.alternative == stick_first["default:stick"] and
+		list_has(after, "default:stick"),
 		"click stick: Basics shows the stick recipe, search cleared, alternative 1, " ..
 		"page " .. tostring(after.page) .. " lists the stick")
 	check(after.back ~= nil, "Back button appears after the jump")
@@ -444,12 +544,12 @@ end
 
 -- Find a clickable cell in `view` whose item the current view does not list;
 -- click it and expect the first openable book that lists the item, unfiltered.
-local function test_switch(label, setup, book, station)
+local function test_switch(label, setup, book, station, need_stay)
 	local player = make_player("probe_switch_" .. label, setup)
-	local listed_here = set_of(outputs_of(player, book, station))
+	local listed_here = navigable(player, book, station)
 	local owner_of = {}
 	for _, candidate in ipairs(openable(player)) do
-		for _, item in ipairs(outputs_of(player, candidate, nil)) do
+		for item in pairs((navigable(player, candidate, nil))) do
 			owner_of[item] = owner_of[item] or candidate
 		end
 	end
@@ -486,8 +586,11 @@ local function test_switch(label, setup, book, station)
 		local after = field and parse(send(player, {[field] = "", grug_jobs_search = ""}))
 		local expected = kind == "stay" and home or
 			title_of(owner_of[case.item], nil)
+		local _, first
+		if kind == "stay" then _, first = navigable(player, book, station)
+		else _, first = navigable(player, owner_of[case.item], nil) end
 		check(after ~= nil and after.selected == case.item and after.title == expected and
-			after.alternative == 1 and list_has(after, case.item),
+			after.alternative == first[case.item] and list_has(after, case.item),
 			("%s %s: %s -> %s opens %q (got %q)"):format(label, kind, case.output,
 				case.item, tostring(expected), tostring(after and after.title)))
 		local back = after and parse(send(player, {grug_jobs_back = "", grug_jobs_search = ""}))
@@ -495,7 +598,87 @@ local function test_switch(label, setup, book, station)
 			label .. " " .. kind .. ": Back returns to " .. home)
 	end
 	check(found_switch ~= nil, label .. ": found an ingredient that switches books")
-	if not found_stay then log(label .. ": no same-view ingredient found (informational)") end
+	if need_stay then
+		check(found_stay ~= nil, label .. ": found an ingredient that keeps the station view")
+	elseif not found_stay then
+		log(label .. ": no same-view ingredient found (informational)")
+	end
+end
+
+-- The inverse-route rule on concrete cells.
+local function test_inverse()
+	local player = make_player("probe_inverse", {})
+	local _, view = render(player, "general", nil, "default:pick_stone", 1)
+	local stone = view.cell_positions[1]
+	check(view.cells[stone] == "default:cobble", "stone pickaxe stone cell shows cobble")
+	grug_jobs.mark_seen(player, {"stairs:slab_cobble", "stairs:stair_cobble"})
+	local cobble_listed = set_of(outputs_of(player, "general", nil))["default:cobble"]
+	check(cobble_listed == true, "slab/stair -> cobble routes are listed after discovery")
+	local _, cobble = render(player, "general", nil, "default:cobble", 1)
+	check(cobble.selected == "default:cobble" and (cobble.alternatives or 0) >= 1,
+		"the cobble recipe is browsable (" .. tostring(cobble.alternatives) .. " routes)")
+	_, view = render(player, "general", nil, "default:pick_stone", 1)
+	check(field_of(view, stone) == nil and
+		not (view.tooltips[stone] or ""):find("Click to view recipe", 1, true),
+		"cobble stays inert after slab_cobble and stair_cobble are discovered")
+	-- A bar keeps a furnace route: the jump lands on it, not on block -> bar.
+	grug_jobs.open_book(player, "general")
+	local list = parse(send(player, {grug_jobs_search = "pick_bronze", grug_jobs_do_search = ""}))
+	local host = click_list(player, list, "default:pick_bronze")
+	local bar = host and cell_of(host, "grug_materials:bronze_bar")
+	check(bar ~= nil and field_of(host, bar) ~= nil, "bronze pickaxe: the bronze bar is clickable")
+	if bar then
+		local after = parse(send(player, {[field_of(host, bar)] = "", grug_jobs_search = ""}))
+		local inputs = {}
+		for _, pos in ipairs(after.cell_positions) do inputs[#inputs + 1] = after.cells[pos] end
+		check(after.selected == "grug_materials:bronze_bar" and
+			not table.concat(inputs, ","):find("bronze_block", 1, true),
+			"bronze bar jump shows a smelting route, not the block unpacking (" ..
+			table.concat(inputs, ",") .. ")")
+	end
+	-- Planks: tree -> planks keeps wood clickable; the jump avoids slabs/stairs.
+	_, view = render(player, "general", nil, "default:stick", 1)
+	local wood = view.cell_positions[1]
+	check(wood ~= nil and field_of(view, wood) ~= nil,
+		"stick recipe: the planks cell (" .. tostring(wood and view.cells[wood]) .. ") is clickable")
+	if wood then
+		grug_jobs.open_book(player, "general")
+		list = parse(send(player, {grug_jobs_search = "default:stick", grug_jobs_do_search = ""}))
+		host = click_list(player, list, "default:stick")
+		local after = host and parse(send(player, {[field_of(host, wood)] = "",
+			grug_jobs_search = ""}))
+		local inputs = {}
+		for _, pos in ipairs(after and after.cell_positions or {}) do
+			inputs[#inputs + 1] = after.cells[pos]
+		end
+		local text = table.concat(inputs, ",")
+		check(after ~= nil and after.selected == view.cells[wood] and
+			not text:find("slab", 1, true) and not text:find("stair", 1, true),
+			"planks jump shows the tree route (" .. text .. ")")
+	end
+end
+
+local function report_rule()
+	local data = inverse_oracle()
+	local inert_everywhere = {}
+	for item, info in pairs(data.routes) do
+		if info.inverse > 0 and info.inverse == info.total then
+			inert_everywhere[#inert_everywhere + 1] = item
+		end
+	end
+	table.sort(inert_everywhere)
+	log(("inverse routes dropped from navigation: %d"):format(data.dropped))
+	log("items whose every route is inverse: " .. table.concat(inert_everywhere, " "))
+	local list = {}
+	for item in pairs(changed.inert) do list[#list + 1] = item end
+	table.sort(list)
+	log("click target lost (visible in some scenario, now inert): " ..
+		(#list > 0 and table.concat(list, " ") or "none"))
+	list = {}
+	for item in pairs(changed.alternative) do list[#list + 1] = item end
+	table.sort(list)
+	log("click lands on a later alternative: " ..
+		(#list > 0 and table.concat(list, " ") or "none"))
 end
 
 -- Discovery gate: an undiscovered Basics ingredient becomes clickable once its
@@ -609,11 +792,14 @@ local function run_all()
 	check(u > 0, "sweep saw undiscovered ingredients with a recipe (" .. u .. ")")
 	log("sweep saw " .. l .. " naturally locked profession ingredients " ..
 		"(informational; the lock gate is forced in test_locked)")
+	report_rule()
 	test_pickaxe()
+	test_inverse()
 	test_discovery()
 	test_locked()
 	test_switch("weaponsmith", {primaries = {"weaponsmith"}}, "weaponsmith", nil)
 	test_switch("forge", {primaries = {"weaponsmith"}}, "station", "forge")
+	test_switch("grid", {}, "station", "grid", true)
 	log(("RESULT %s checks=%d failures=%d"):format(
 		failures == 0 and "PASS" or "FAIL", checks, failures))
 	core.request_shutdown("recipe book probe done", false, 0)

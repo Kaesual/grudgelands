@@ -194,7 +194,12 @@ Imbue/Temper recipes do not survive as mastery unlocks.
   search, selects the ingredient's first route and turns to its page. A Back
   button then restores the previous book, station, page, search, recipe and
   route (up to 20 steps). The grid looks unchanged at rest and on hover; raw,
-  undiscovered and locked ingredients stay inert.
+  undiscovered and locked ingredients stay inert. Navigation ignores
+  **inverse routes**: a route making X from one distinct ingredient Y, when
+  some route makes Y from X alone with more slots (slab/stair back to block,
+  block back to bar or lump). So mined materials such as cobble, sand, coal
+  lump or snow stay inert, while bars (smelting) and planks (trees) stay
+  clickable. Inverse routes remain listed and browsable in the book.
 - A profession recipe is craftable only when the player has learned the
   profession and its profession level is at least the recipe tier. Universal
   base recipes (§3.0.3) remain craftable by everyone.
