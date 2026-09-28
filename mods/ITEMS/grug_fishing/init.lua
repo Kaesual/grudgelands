@@ -59,6 +59,13 @@ local cast_or_reel
 core.register_tool("grug_fishing:rod", {
 	description = "Fishing Rod",
 	inventory_image = "grug_fishing_rod.png",
+	-- The engine's first-person hand showed the plain sprite with line and
+	-- bobber pointing up (playtest). VoxeLibre holds the identical 16x16
+	-- sprite with this flip + quarter turn (mcl_fishing/init.lua:399). The
+	-- third-person wield entity (grug_visuals) already shows the plain sprite
+	-- correctly, so it takes `_grug_world_wield_image` instead.
+	wield_image = "grug_fishing_rod.png^[transformFY^[transformR90",
+	_grug_world_wield_image = "grug_fishing_rod.png",
 	-- Far enough to fish from a bank rather than from inside the pond, and the
 	-- same distance the line may then be left at (`REEL_RANGE`).
 	range = REEL_RANGE,
