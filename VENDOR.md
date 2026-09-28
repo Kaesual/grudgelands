@@ -225,6 +225,49 @@ block also held the authoritative-swing claim and suppression: cast punches
 never claim a swing token, and a Mighty Blow cleave's punches on other mobs
 during the swing now land as designed. The marker inventory is unchanged.
 
+## Server-side node formspecs (2026-09-28)
+
+A formspec stored in node metadata (key `formspec`) is opened by the client
+itself the moment RMB is pressed (luanti `src/client/game.cpp`,
+`Game::nodePlacement`, "formspec in meta"), before the server can decide. Held
+RMB with food must eat even when pointing at an interactive node, so no
+vendored node stores its UI in metadata any more; each opens the same UI from
+`on_rightclick` through `core.show_formspec`. Reapply after an upstream update:
+
+- `default/node_formspec.lua` (new file, loaded from `default/init.lua` right
+  after `functions.lua`; one marker each): `default.node_formspec` keeps one
+  session per player (node position, accepted node names, builder), validates
+  every submission of the shared form `default:node_formspec` (player within
+  10 nodes, node unchanged) and routes it to the node's own
+  `on_receive_fields`; `refresh(pos)` re-shows a changed formspec to open
+  viewers and closes stale ones; sessions end on quit, on any other form's
+  fields, on `core.show_formspec`/`core.close_formspec` of another form (both
+  wrapped transparently so a later refresh cannot pop a node form over
+  someone else's) and on leave. List locations are `nodemeta:<x>,<y>,<z>`.
+- `default/nodes.lua`: the bookshelf builds its formspec (lists, listring,
+  empty-slot overlay) per position, opens it from `on_rightclick` and
+  refreshes open viewers from `update_bookshelf`; wall signs open
+  `field[text;;<escaped stored text>]` from `on_rightclick` instead of the
+  meta-only `${text}` substitution (the `grug_materials` Iron Sign copy
+  inherits both). `on_receive_fields` is unchanged.
+- `default/furnace.lua`: `default.get_furnace_active_formspec` and
+  `get_furnace_inactive_formspec` take an optional trailing `pos` (nodemeta
+  lists; `context` without it); the timer records `fuel_percent` /
+  `item_percent` meta ints instead of a meta formspec and refreshes open
+  viewers every tick; both furnace nodes gain `on_rightclick`. At runtime
+  `grug_jobs/workspaces.lua` still overrides the furnace's construct,
+  rightclick and timer with its own workspace UI, so this path matters only
+  without that override.
+- `vessels/init.lua`: the same conversion as the bookshelf (one marker).
+- `mobs/spawner.lua` (two markers): its own session table and form
+  `mobs:spawner_settings`, opened from `on_rightclick` (the upstream
+  `on_right_click` was a misspelled no-op and is gone) with the stored command
+  filled in explicitly instead of `${command}`; submissions are validated
+  (within 10 nodes, still a spawner) before the unchanged
+  `on_receive_fields`, which keeps its protection check.
+
+No migration: fresh worlds never carry a stored meta formspec.
+
 ## Fresh-server cleanup — 2026-09-13
 
 The standing development mode in `AGENTS.md` removes support for earlier world
@@ -324,7 +367,7 @@ table row below records the replaced implementation, not the current rule.
 | `mods/BASE/beds` | minetest_game `mods/beds` | `b5243f3` | MIT / media per `license.txt` (CC BY-SA 3.0) | **Decoration only.** `functions.lua` and `spawns.lua` deleted with their loaders (sleeping, physics override, night skip, the in-bed formspec, respawn/die/leave callbacks and the `beds_spawns` world-file reader/writer incl. its old-format branch). Player spawn stays owned by `grug_core`. `beds.on_rightclick`, `beds.can_dig`, the spawn/kick bookkeeping in `destruct_bed` and the `on_rotate` screwdriver hook removed; the `<name>` → `<name>_bottom` alias and the two PilzAdam aliases removed (the recipe names the real node). `mod.conf` drops `spawn`, `player_monoids` and `pova`. A Grudgelands note is appended to `README.txt`, whose upstream text still describes the removed mechanic. Both halves still place (facedir), render and dig. 5 `GRUG PATCH` markers (1 in `init.lua`, 3 in `api.lua`, 1 in `beds.lua`) |
 | `mods/BASE/wool` | minetest_game `mods/wool` | `b5243f3` | MIT / media per `license.txt` (CC BY-SA 3.0) | The two jordach 16-colour old-name aliases removed — see cleanup above. 1 `GRUG PATCH` marker |
 | `mods/BASE/dye` | minetest_game `mods/dye` | `b5243f3` | MIT / media per `license.txt` (CC BY-SA 3.0) | The per-colour `group:flower,color_X` recipe removed: Grudgelands ships no `flowers` mod, so no node ever carries the `flower` group. Coal → black, blueberries → violet and the 19 mix recipes are unchanged. 1 `GRUG PATCH` marker |
-| `mods/BASE/vessels` | minetest_game `mods/vessels` | `b5243f3` | LGPL-2.1+ / media per `license.txt` (CC BY-SA 3.0) | The `dungeon_loot` registration and its `optional_depends` removed (mod not shipped). The Heavy Steel Bottle node, its craft recipe, its cooking return and `textures/vessels_steel_bottle.png` removed: both recipes referenced `default:steel_ingot`, retired and unregistered by `grug_materials/content_curation.lua`. Shelf, glass bottle, drinking glass, glass fragments and the fragments → `default:glass` cooking recipe are unchanged. 2 `GRUG PATCH` markers |
+| `mods/BASE/vessels` | minetest_game `mods/vessels` | `b5243f3` | LGPL-2.1+ / media per `license.txt` (CC BY-SA 3.0) | The `dungeon_loot` registration and its `optional_depends` removed (mod not shipped). The Heavy Steel Bottle node, its craft recipe, its cooking return and `textures/vessels_steel_bottle.png` removed: both recipes referenced `default:steel_ingot`, retired and unregistered by `grug_materials/content_curation.lua`. Shelf, glass bottle, drinking glass, glass fragments and the fragments → `default:glass` cooking recipe are unchanged. The shelf UI opens server-side (see "Server-side node formspecs"). 3 `GRUG PATCH` markers |
 | `mods/BASE/walls` | minetest_game `mods/walls` | `b5243f3` | LGPL-2.1+ (no media; uses `default` textures) | The single-texture-string fallback in `walls.register` for callers written against the pre-table API removed — see cleanup above. `walls.register` and the three cobblestone/mossy/desert walls are otherwise unchanged. 1 `GRUG PATCH` marker |
 | `mods/ITEMS/grug_decor` (castle) | [castle_masonry](https://github.com/minetest-mods/castle_masonry) | `900d633` | MIT / textures CC-BY-SA 3.0 | **Curated copy, not a vendored tree** (see the note below the table). Harvested definitions: the `register_pillar` set (8 shapes), the `register_arrowslit` set (4) and the `register_murderhole` set (2) instantiated for 9 materials -- `castle` (upstream's castle-stone texture set) plus `default` stonebrick / stone_block / desert_stonebrick / desert_stone_block / sandstonebrick / silver_sandstone_brick / obsidianbrick / mossycobble -- 126 nodes; the six single nodes `stonewall`, `stonewall_corner`, `rubble`, `dungeon_stone`, `pavement_brick`, `roofslate`; and 4 stair/slab/inner/outer sets for stonewall / rubble / dungeon_stone / pavement_brick (16). **148 nodes.** Dropped: every `register_craft` (including the fuel recipes), the arrowslit param2-flip LBM, all `register_alias` calls, the `castle_masonry_*` settings, the `_mcl_*` fields and the `pickaxey`/`stonecuttable` MCL groups. Patched: the material table is spelled out instead of derived from `core.registered_nodes` at load time (load-order independence from `grug_materials`); `stone`/`level` groups are not copied; rubble loses `falling_node = 1` Every harvested node additionally sets `is_ground_content = false` (upstream leaves the engine default `true`), so mapgen cave carving cannot remove placed settlement nodes; applies to all four sources below (review 2026-09-14). |
 | `mods/ITEMS/grug_decor` (cottages) | [cottages](https://github.com/Sokomine/cottages) | `ab7f7e1` | GPL-3.0-only / media per its README | **Curated copy.** Harvested definitions: `register_roof` (roof / roof_connector / roof_flat) for straw, reed, wood, slate, wood shingle and terracotta shingle (18); `slate_vertical`, `reet`, `straw`, `straw_mat`, `straw_bale`, `straw_ground`, `loam`, `glass_pane`, `glass_pane_side`, `wood_flat`, `wool_tent`, `wagon_wheel`, `wagon_wheel_road`, `wagon_load`, both window shutters, the four barrel meshes, `tub`, `bench`, `table`, `shelf`, `washing`, `anvil` (26); loam and clay stair/slab/inner/outer sets (8). **52 nodes.** Dropped: everything using `cottages_rope.png` (unverified licence, asset audit finding 8), the `feldweg` road mesh set, threshing floor, hand mill, chests, beds, sleeping mats, pitchfork, fences, the `wool` fallback node, every `register_craft`, the shutter day/night ABM and every `on_rightclick`/`on_punch` state machine. Patched: shutters and all four barrel states are STATIC and each separately placeable; `sleeping_mat`/`animates_player`/`hay` groups removed; `legacy_wallmounted` removed (fresh-server mode); per-roof `sounds` added (upstream sets none). The 2 `default_*` textures cottages expects but does not ship (`default_wood.png`, `default_tree.png`) are referenced from `mods/BASE/default/textures` Further group deviations: `dig_immediate = 2` became `oddly_breakable_by_hand = 2` on the two wagon wheels, and the barrel groups drop `tree`/`snappy` (review 2026-09-14). |

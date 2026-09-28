@@ -7,46 +7,53 @@
 local S = minetest.get_translator("vessels")
 
 
-local vessels_shelf_formspec =
-	"size[8,7;]" ..
-	"list[context;vessels;0,0.3;8,2;]" ..
-	"list[current_player;main;0,2.85;8,1;]" ..
-	"list[current_player;main;0,4.08;8,3;8]" ..
-	"listring[context;vessels]" ..
-	"listring[current_player;main]" ..
-	default.get_hotbar_bg(0, 2.85)
+-- GRUG PATCH: the shelf UI opens server-side from on_rightclick
+-- (default/node_formspec.lua); no formspec is stored in node metadata.
+local function vessels_shelf_formspec(pos)
+	local loc = default.node_formspec.location(pos)
+	local formspec =
+		"size[8,7;]" ..
+		"list[" .. loc .. ";vessels;0,0.3;8,2;]" ..
+		"list[current_player;main;0,2.85;8,1;]" ..
+		"list[current_player;main;0,4.08;8,3;8]" ..
+		"listring[" .. loc .. ";vessels]" ..
+		"listring[current_player;main]" ..
+		default.get_hotbar_bg(0, 2.85)
+	local invlist = core.get_meta(pos):get_inventory():get_list("vessels")
+	-- Inventory slots overlay
+	local vx, vy = 0, 0.3
+	for i = 1, 16 do
+		if i == 9 then
+			vx = 0
+			vy = vy + 1
+		end
+		if not invlist or not invlist[i] or invlist[i]:is_empty() then
+			formspec = formspec ..
+				"image[" .. vx .. "," .. vy .. ";1,1;vessels_shelf_slot.png]"
+		end
+		vx = vx + 1
+	end
+	return formspec
+end
 
 local function update_vessels_shelf(pos)
 	local meta = minetest.get_meta(pos)
 	local inv = meta:get_inventory()
 	local invlist = inv:get_list("vessels")
 
-	local formspec = vessels_shelf_formspec
-	-- Inventory slots overlay
-	local vx, vy = 0, 0.3
 	local n_items = 0
 	for i = 1, 16 do
-		if i == 9 then
-			vx = 0
-			vy = vy + 1
+		local stack = invlist and invlist[i]
+		if stack and not stack:is_empty() then
+			n_items = n_items + stack:get_count()
 		end
-		if not invlist or invlist[i]:is_empty() then
-			formspec = formspec ..
-				"image[" .. vx .. "," .. vy .. ";1,1;vessels_shelf_slot.png]"
-		else
-			local stack = invlist[i]
-			if not stack:is_empty() then
-				n_items = n_items + stack:get_count()
-			end
-		end
-		vx = vx + 1
 	end
-	meta:set_string("formspec", formspec)
 	if n_items == 0 then
 		meta:set_string("infotext", S("Empty Vessels Shelf"))
 	else
 		meta:set_string("infotext", S("Vessels Shelf (@1 items)", n_items))
 	end
+	default.node_formspec.refresh(pos)
 end
 
 local vessels_shelf_def = {
@@ -63,6 +70,10 @@ local vessels_shelf_def = {
 		update_vessels_shelf(pos)
 		local inv = meta:get_inventory()
 		inv:set_size("vessels", 8 * 2)
+	end,
+	on_rightclick = function(pos, node, clicker, itemstack)
+		default.node_formspec.show(clicker, pos, vessels_shelf_formspec)
+		return itemstack
 	end,
 	can_dig = function(pos,player)
 		local inv = minetest.get_meta(pos):get_inventory()
