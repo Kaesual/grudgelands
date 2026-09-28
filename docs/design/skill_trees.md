@@ -1151,6 +1151,16 @@ speeds (`kits.lua:372` sets `speed = 0.5`), because two slows multiplying to
 which the KAT can state a single invariant without enumerating orders. Ruling
 26 makes it binding.
 
+**Stances (user ruling 2026-09-28).** A self-imposed stance is not a modifier
+in the sum: it is a named speed factor applied after it,
+`speed = clamp(clamp(1 + Σ speed, 0.1, 1.5) × Π stances, 0.1, 1.5)`. Immunity
+does not discard a stance (it is not a debuff), Shake Loose's negative clear
+keeps it, and it scales Sprint and every other positive modifier. Jump is not
+affected. Current stances: eating ×0.35 (`grug_food`) and drawing or holding a
+drawn bow ×0.5 (Scout Loose); each owner clears its stance on every end path,
+and death/leave drop the whole record. API: `grug_core.set_move_stance`,
+`clear_move_stance`, `get_move_stance`.
+
 **Size, honestly.** The **core** is roughly **100 lines**: a per-player table
 of named entries with expiries, one accumulator per axis, the root flag, the
 immunity, the exclusive hold, and the join/leave reset `verbs.lua:176-186`
@@ -1473,7 +1483,8 @@ undecided any more.**
     as the fallback if (b) overshoots and leaves the Warrior starved.)*
 26. **The movement aggregator combines additively, per axis, with one clamp.**
     `clamp(1 + Σ, 0.1, 1.5)` for speed and for jump; a root or an exclusive
-    hold takes precedence over the sum. *(§3.9 and
+    hold takes precedence over the sum. Self-imposed stances multiply the
+    clamped result (ruling 2026-09-28, §3.9). *(§3.9 and
     `docs/research/mob-pressure-task-card.md` §4b already describe it; the
     ruling makes the recommendation binding.)*
 27. **The Scout's trees are Quarry and Veil.** *(The names used throughout

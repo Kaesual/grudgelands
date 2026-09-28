@@ -228,16 +228,33 @@ self; already-applied periodic effects retain their original recipient.
 
 A short RMB interaction opens the aimed NPC, door, container or other normal
 interactive target. An interaction owns that press until release and cancels
-pending item actions; it cannot also consume food or launch a bow. Interaction
+pending item actions; it cannot also launch a bow. Food is the exception
+described below: a food press decides click versus hold first. Interaction
 reach remains 4 m even with a long-range spell selected.
 
 Loose is the explicit exception to LMB casting: **LMB uses melee Strike or hand
 digging; hold RMB to draw, release RMB to shoot.** Its tooltip states both.
-Other instant bow skills retain their LMB casts and authored ammo/cooldowns.
-Food requires 1.5 s uninterrupted RMB hold for one serving and eating sound at
-half gain; release rearms consumption. Active RMB food/draw suppresses LMB
-combat/digging. Seeds, buckets, hoes, fishing, mounts and ordinary placed items
-retain their own context-appropriate actions.
+While the bow is drawn or held drawn, walk speed is ×0.5 and the Loose item's
+pointing range is zero, so held RMB shows no repeated place swing (one swing on
+the very press may remain). Other instant bow skills retain their LMB casts and
+authored ammo/cooldowns.
+
+Food owns its whole RMB press, whatever it points at (ruling 2026-09-28). A
+release within 200 ms is a **click**: on release it performs the ordinary
+right-click at the target the press began on — placing a placeable food
+(apple, meat blocks), planting, or opening the pointed door, container, NPC or
+trader. Holding 200 ms or longer is a **hold**: it eats one serving 1.5 s after
+the press and never interacts with the pointed node or entity; engine place
+repeats during the hold do nothing, and placeable foods show no client
+placement preview. Pointing at nothing, a hold eats as well. In combat the
+hold is refused at the 200 ms mark with "Cannot eat while in combat." (no
+visual, no slowdown); a click in combat still places or interacts. While
+eating, the wielded item hides, the food's image shows large at the bottom
+centre behind the HUD and bobs, crumbs fly from the head every 0.2 s, the
+eating sound loops at half gain and walk speed is ×0.35. Release before 1.5 s
+eats nothing; one press eats at most one serving. Active RMB food/draw
+suppresses LMB combat/digging. Seeds, buckets, hoes, fishing, mounts and
+ordinary placed items retain their own context-appropriate actions.
 
 ### Cancellation and native-client limits
 
