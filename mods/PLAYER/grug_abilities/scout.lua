@@ -3,6 +3,10 @@
 local ARROW_PROJECTILE = "scout_arrow"
 local ARROW_SPEED = 40
 local DRAW_STEP = 0.05
+-- The shortest full draw any talent/affix combination may reach, in seconds.
+-- The base draw time is owned by the bow definition (`_grug_bow_draw_time`,
+-- grug_gear).
+local MIN_DRAW_TIME = 0.5
 -- Self-imposed stance while drawing or holding a drawn bow (user ruling
 -- 2026-09-28): the movement aggregator's final speed factor.
 local DRAW_STANCE, DRAW_STANCE_FACTOR = "scout_draw", 0.5
@@ -49,6 +53,16 @@ local function equipped_bow(player)
 	end
 	return stack
 end
+
+-- Loose damage multiplier by draw fraction f in [0, 1] (user ruling
+-- 2026-09-28): 0.2 + 2.8 f^2 -- a tap x0.2, half draw x0.9, full draw x3.0.
+-- It multiplies (bow damage + Strong Draw); Twin Shot's percentage and
+-- Longshot's +4 apply after it, as before.
+local function draw_multiplier(fraction)
+	local f = math.max(0, math.min(1, fraction))
+	return 0.2 + 2.8 * f * f
+end
+grug_abilities.loose_draw_multiplier = draw_multiplier
 
 local function arrow_damage(player)
 	local stack = equipped_bow(player)
@@ -150,7 +164,10 @@ local function launch(player, ability, count, fraction, effect, captured)
 	local receipt = captured or repair_receipt(player, action_id(player, ability))
 	local range = (effect.range or 25)
 		+ (grug_classes.get_race_perk(player, "ability_range_bonus") or 0)
-	local damage = math.floor((base_damage + (effect.damage_add or 0)) * fraction)
+	-- `fraction` drives the nominal arrow speed; the damage multiplier is the
+	-- draw curve for Loose and 1 for the fixed-power shots.
+	local damage = math.floor((base_damage + (effect.damage_add or 0)) *
+		(effect.multiplier or 1))
 	local common = {
 		origin = vector.new(origin),
 		direction = vector.new(direction),
@@ -244,6 +261,7 @@ end
 -- its zero pointing range, and the self-imposed draw stance ends.
 local function reset_draw_stack(player)
 	grug_core.clear_move_stance(player, DRAW_STANCE)
+	grug_abilities.crosshair.set_ring(player, nil)
 	local source = bow_wield_image(player)
 	local inv = player:get_inventory()
 	for index, stack in ipairs(inv and inv:get_list("main") or {}) do
@@ -299,14 +317,20 @@ local function finish_draw_wear(player)
 	draw_wear_steps[player:get_player_name()] = nil
 end
 
-local function effective_draw_time(player)
-	local base = math.max(0.1, 0.5 -
-		grug_classes.get_talent_bonus(player, "draw_time_sub"))
+-- Full-draw time: the bow's own `_grug_bow_draw_time` minus Fletching, divided
+-- by the attack/draw-speed affix, never below MIN_DRAW_TIME.
+local function effective_draw_time(player, bow)
+	local def = bow and core.registered_items[bow:get_name()]
+	local base = (def and tonumber(def._grug_bow_draw_time) or MIN_DRAW_TIME) -
+		grug_classes.get_talent_bonus(player, "draw_time_sub")
 	local items = rawget(_G, "grug_items")
 	local totals = items and items.get_equipment_affix_totals and
 		items.get_equipment_affix_totals(player) or {}
 	local speed = math.max(0, tonumber(totals.attack_speed_percent) or 0)
-	return base / (1 + speed / 100)
+	return math.max(MIN_DRAW_TIME, base / (1 + speed / 100))
+end
+grug_abilities.loose_draw_time = function(player)
+	return effective_draw_time(player, equipped_bow(player))
 end
 
 local function start_draw(player)
@@ -332,6 +356,7 @@ local function start_draw(player)
 		action_id = receipt,
 	}
 	set_draw_wear(player, 0)
+	grug_abilities.crosshair.set_ring(player, 0)
 	grug_core.set_move_stance(player, DRAW_STANCE, DRAW_STANCE_FACTOR)
 	return true
 end
@@ -350,7 +375,7 @@ local function release_draw(player, rec)
 		finish_draw_wear(player)
 		return
 	end
-	local draw_time = effective_draw_time(player)
+	local draw_time = effective_draw_time(player, bow)
 	local fraction = math.min(1,
 		math.max(0, (core.get_us_time() - rec.started) / (draw_time * 1e6)))
 	-- A press and release observed at the same monotonic timestamp has no
@@ -361,6 +386,7 @@ local function release_draw(player, rec)
 		return
 	end
 	local effect = loose_effect(player, fraction >= 1)
+	effect.multiplier = draw_multiplier(fraction)
 	local ok, err = launch(player, "loose", effect.count, fraction, effect,
 		rec.action_id)
 	finish_draw_wear(player)
@@ -384,15 +410,16 @@ core.register_globalstep(function(dtime)
 		else
 			local wield = player:get_wielded_item()
 			local def = grug_abilities.registered.loose
-			if not def or wield:get_name() ~= "grug_abilities:loose" or
-					not equipped_bow(player) then
+			local bow = equipped_bow(player)
+			if not def or wield:get_name() ~= "grug_abilities:loose" or not bow then
 				clear_draw(player)
 			elseif not player:get_player_control().place then
 				release_draw(player, rec)
 			else
 				local fraction = math.min(1, (core.get_us_time() - rec.started) /
-					(effective_draw_time(player) * 1e6))
+					(effective_draw_time(player, bow) * 1e6))
 				set_draw_wear(player, fraction)
+				grug_abilities.crosshair.set_ring(player, fraction)
 			end
 		end
 	end
@@ -430,7 +457,8 @@ grug_abilities.register_ability({
 	target_kind = "hostile", color = "#5fae5f", cost = {}, cooldown = 0,
 	range = 25, range_talent = "loose_range_add",
 	description = "LMB: melee Strike or hand digging. Hold RMB to draw the bow; release RMB to shoot. " ..
-		"Requires a visible hostile target within 25 m; draw scales damage.",
+		"Requires a visible hostile target within 25 m. A full draw takes 2.5 s; " ..
+		"damage rises from x0.2 on a tap to x3 at full draw.",
 	cast = start_draw,
 })
 

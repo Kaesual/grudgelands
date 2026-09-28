@@ -44,8 +44,8 @@ grug_classes.register_talent({
 grug_classes.register_talent({
 	id = "fletching", tree = "quarry", chain = "ranging", tier = 2,
 	name = "Fletching",
-	description = "Loose reaches full draw in 0.45 / 0.40 / 0.35 / 0.30 s.",
-	effects = {draw_time_sub = {0.05, 0.10, 0.15, 0.20}},
+	description = "Loose reaches full draw in 2.25 / 2.0 / 1.75 / 1.5 s.",
+	effects = {draw_time_sub = {0.25, 0.50, 0.75, 1.00}},
 })
 grug_classes.register_talent({
 	id = "pinning_shot", tree = "quarry", chain = "ranging", tier = 3,
