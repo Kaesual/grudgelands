@@ -659,8 +659,10 @@ grug_abilities.register_ability({
 				})
 			end
 		end
+		-- No blanket combat mark: every hit above marks through
+		-- deal_ability_damage (timer for players, engagement for mobs), so a
+		-- nova that kills the last mob leaves combat like any other kill.
 		burst(pos, "default_item_smoke.png^[multiply:#aaddff", 20)
-		grug_core.mark_in_combat(user)
 		return true
 	end,
 })

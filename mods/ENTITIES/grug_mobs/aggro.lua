@@ -542,6 +542,12 @@ function grug_mobs.leash_tick(self, dtime)
 	-- early return — threat targeting has nothing to do with leashing, and the
 	-- bespoke actors have threat tables like everyone else.
 	grug_core.recheck_switch(self)
+	-- Combat-state backstop (grug_core.prune_engagement): drops engagements of
+	-- a mob that stayed targetless (or stranded) for two ticks, and of players
+	-- who left a fight that goes on without them. Before the no-leash return.
+	if t.grug_engaged then
+		grug_core.prune_engagement(self)
+	end
 	-- Idle roam cap (world.md §4a). Also BEFORE the no-leash early return:
 	-- being bound to an anchor is not the same question as being leashed to a
 	-- chase, and a camp family that ever opts out of the leash must still
