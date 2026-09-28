@@ -50,8 +50,7 @@ return function(api)
 	-- margin keeps the engine's float-to-int size conversion from rounding a
 	-- 21 px sprite down to 20.
 	local function integer_scale(player)
-		local info = player.get_player_window_information and
-			player:get_player_window_information()
+		local info = core.get_player_window_information(player:get_player_name())
 		local factor = info and tonumber(info.real_hud_scaling)
 		if not factor or factor <= 0 then return 1 end
 		local whole = math.max(1, math.floor(factor))
@@ -91,22 +90,37 @@ return function(api)
 		huds[player:get_player_name()] = nil
 	end
 
+	C.skipped_skill_rays = 0 -- probe counter: skill rays proven unnecessary
+
 	-- The state this player's crosshair should show now: "hostile",
 	-- "friendly", "interact" or nil. A skill state takes precedence over the
 	-- neutral interact state; self-target skills have no skill state.
+	--
+	-- One eye position feeds both rays. The hand-reach ray runs first: when
+	-- its first hit is a walkable node, no object lies in front of that node,
+	-- so the skill's combat ray (which stops only at walkable nodes and
+	-- objects) would end there without a target and is skipped. Every other
+	-- first hit (object, non-walkable node such as a sign or grass, nothing)
+	-- still takes the skill ray.
 	function C.state(player)
 		if player:get_hp() <= 0 then return nil end
+		local eye = grug_core.combat_eye_pos(player)
+		if not eye then return nil end
+		local input = grug_abilities.input
+		local interact, walled = false, false
+		if input then
+			interact, walled = input.aims_at_interactive(player, eye)
+		end
 		local def = api.selected(player)
 		if def and (def.target_kind == "hostile" or def.target_kind == "friendly")
-				and grug_abilities.is_unlocked(player, def.id)
-				and grug_abilities.aimed_target(player, def) then
-			return def.target_kind
+				and grug_abilities.is_unlocked(player, def.id) then
+			if walled then
+				C.skipped_skill_rays = C.skipped_skill_rays + 1
+			elseif grug_abilities.aimed_target(player, def, eye) then
+				return def.target_kind
+			end
 		end
-		local input = grug_abilities.input
-		if input and input.aims_at_interactive(player) then
-			return "interact"
-		end
-		return nil
+		return interact and "interact" or nil
 	end
 
 	-- The 0.05 s pass.

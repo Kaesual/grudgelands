@@ -31,8 +31,8 @@ return function(api)
 		local def = api.selected(player)
 		return def and Q.is_unlocked(player, def.id) and def or nil
 	end
-	local function ray(player, range)
-		local origin = grug_core.combat_eye_pos(player)
+	local function ray(player, range, origin)
+		origin = origin or grug_core.combat_eye_pos(player)
 		local destination = vector.add(origin, vector.multiply(player:get_look_dir(), range))
 		local best, distance
 		for hit in core.raycast(origin, destination, true, false) do
@@ -309,15 +309,23 @@ return function(api)
 	-- Crosshair feedback (crosshair.lua): is the first thing within hand reach
 	-- something a press would interact with? The same ray and classification
 	-- an RMB press uses, plus a dropped item (the LMB pickup of `activate`).
-	-- Reads only; no press state is touched.
-	function M.aims_at_interactive(player)
-		local hit, distance = ray(player, HAND_RANGE)
-		if not hit or distance > HAND_RANGE then return false end
+	-- `origin` is the caller's combat eye position (optional). The second
+	-- result is true when that first thing is a walkable node: then no object
+	-- lies in front of it, so every combat ray (grug_core.combat_ray) along the
+	-- same line ends at that node or earlier with no target. Reads only; no
+	-- press state is touched.
+	function M.aims_at_interactive(player, origin)
+		local hit, distance = ray(player, HAND_RANGE, origin)
+		if not hit or distance > HAND_RANGE then return false, false end
 		if hit.type == "object" then
 			local ent = hit.ref and hit.ref:get_luaentity()
-			if ent and ent.name == "__builtin:item" then return true end
+			if ent and ent.name == "__builtin:item" then return true, false end
+			return interactive(hit, distance) and true or false, false
 		end
-		return interactive(hit, distance) and true or false
+		local node = core.get_node_or_nil(hit.under)
+		local def = node and core.registered_nodes[node.name]
+		return interactive(hit, distance) and true or false,
+			def ~= nil and def.walkable and true or false
 	end
 	function M.interaction(player)
 		local s = state(player)
