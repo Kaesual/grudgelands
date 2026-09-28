@@ -73,12 +73,20 @@ local native_baseline = core.settings and
 	type(core.settings.get_bool) == "function" and
 	core.settings:get_bool("grug_mapgen_r8_native_baseline", false) or false
 
+local water_level = tonumber(core.get_mapgen_setting("water_level"))
+if not water_level then fail("water level differs") end
+local air_chunks = dofile(wp40 .. "/air_chunks.lua")(built.writer_bounds, water_level)
+local function get_heightmap() return core.get_mapgen_object("heightmap") end
+
 core.register_on_generated(function(vmanip, minp, maxp, blockseed)
 	minp = plain_engine_position(minp, "generated minp")
 	maxp = plain_engine_position(maxp, "generated maxp")
 	-- Measurement-only comparison mode: retain the untouched v7 VM bytes so
 	-- the external R8 cave checker can prove the component the real writer saw.
 	if native_baseline then return end
+	-- Native air above everything the writer can place: the transaction would
+	-- change nothing (air_chunks.lua), so it is not run.
+	if air_chunks.untouched(minp, maxp, get_heightmap) then return end
 	local plan, generation = built.session.plan_slice(minp, maxp)
 	local result = built.writer.apply(vmanip, minp, maxp, plan, generation)
 	if type(result) ~= "string" then fail("writer result differs") end
