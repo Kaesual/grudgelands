@@ -1,6 +1,14 @@
 # Project status
 
-Updated 2026-09-24. This is the delivery pointer, not another game specification.
+Updated 2026-09-28. This is the delivery pointer, not another game specification.
+
+- **Playtest fixes 2026-09-28 delivered locally:** food click/hold input,
+  server-side node UIs, crosshair range feedback with own crosshair, 2.5 s bow
+  draw with damage curve and power ring, eating visual, movement stances,
+  swimmers stay in water, fish drop, first-person rod, recipe-book ingredient
+  navigation, Blink targeting. Six lanes independently reviewed, all probes
+  and a headless boot passed on merged main `f7d96448`; synchronized to Luanti.
+  [Receipt and GUI checklist](research/playtest-fixes-2026-09-28.md). No push.
 
 - **Round 21 startup correction:** fixed the missing fish disposition and native
   arrow recipe catalog binding; real isolated server startup and 200-arrow craft
