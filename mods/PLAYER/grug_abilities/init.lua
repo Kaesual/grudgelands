@@ -484,9 +484,11 @@ end
 grug_abilities.notify = show_skill_name
 
 -- Binary weapon-ready overlay (classes.md §2b). Lua HUD elements are drawn
--- after the builtin crosshair (src/client/render/plain.cpp:48-52); z_index 1
--- also orders this explicitly above the conventional z_index-0 gameplay HUD.
--- Only a changed boolean sends a HUD packet. This is never an inventory bar.
+-- after the builtin crosshair (src/client/render/plain.cpp:48-52); z_index 2
+-- orders it above the crosshair state overlay (z 1) and below the bow draw
+-- ring (z 3, both crosshair.lua), and above the conventional z_index-0
+-- gameplay HUD. Only a changed boolean sends a HUD packet. This is never an
+-- inventory bar.
 local READY_RETICLE_TEXTURE = "grug_abilities_weapon_ready.png"
 
 local function set_ready_reticle(player, visible)
@@ -2345,6 +2347,9 @@ core.register_globalstep(function(dtime)
 	for _, player in ipairs(core.get_connected_players()) do
 		grug_abilities.input.step(player)
 		set_ready_reticle(player, weapon_clock_ready(player, selected_swing_def(player)))
+		-- Target/interaction crosshair state: one hand-reach ray, plus one
+		-- skill ray while a targeted skill is selected; packets only on change.
+		grug_abilities.crosshair.update(player)
 	end
 end)
 
@@ -2482,7 +2487,8 @@ core.register_on_joinplayer(function(player)
 	skillname_huds[name] = {token = 0, id = player:hud_add(
 		layout.text_element("skill", {number = 0xffffff, text = ""}))}
 	ready_reticle_huds[name] = {visible = false, id = player:hud_add(
-		layout.image_element("reticle", {text = "", z_index = 1}))}
+		layout.image_element("reticle", {text = "",
+			z_index = grug_abilities.crosshair.Z_READY}))}
 	rage[name] = 0
 	refill_mana(player)
 	grug_abilities.normalize_kit(player)
@@ -2560,6 +2566,11 @@ grug_abilities.delay_strike = dofile(core.get_modpath(core.get_current_modname()
 -- Pure Blink targeting (map access injectable for the headless probe).
 grug_abilities.blink_destination = dofile(core.get_modpath(
 	core.get_current_modname()) .. "/blink.lua")
+-- Crosshair state overlay and bow draw ring; scout.lua drives the ring.
+grug_abilities.crosshair = dofile(core.get_modpath(core.get_current_modname()) ..
+	"/crosshair.lua")({
+	selected = function(player) return item_defs[player:get_wielded_item():get_name()] end,
+})
 dofile(core.get_modpath(core.get_current_modname()) .. "/kits.lua")
 dofile(core.get_modpath(core.get_current_modname()) .. "/scout.lua")
 

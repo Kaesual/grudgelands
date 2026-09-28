@@ -44,30 +44,49 @@ local function debug_cast_ray(user, def, ray)
 		" range=" .. tostring(ray.range or "none"))
 end
 
+-- The one aim authority of a targeted skill, free of side effects: one current
+-- server ray to the skill's effective range, then the skill's own target rule.
+-- A friendly skill needs a pointed ally ("friendly" ray reason); every other
+-- kind needs a ray "target" (a live hostile). Returns the target (or nil) and
+-- the structured ray. The casts below add Target Frame memory and diagnostics;
+-- the crosshair overlay (crosshair.lua) reads it bare, 20 times a second, and
+-- passes the eye position it already computed as `origin`.
+function grug_abilities.aimed_target(user, def, origin)
+	local ray = grug_core.combat_ray(user, grug_abilities.get_range(user, def),
+		origin and {origin = origin} or nil)
+	local target = ray.target
+	if def.target_kind == "friendly" then
+		if ray.reason ~= "friendly" then target = nil end
+	elseif ray.status ~= "target" then
+		target = nil
+	end
+	if target and not valid_ally(user, target, def) then
+		target = nil
+	end
+	return target, ray
+end
+
 -- One current server ray owns direct hostile casts. The structured result is
 -- reused for diagnostics; enemy memory is written for the Target Frame but is
 -- never read here.
 local function current_enemy_target(user, def)
-	local ray = grug_core.combat_ray(user, grug_abilities.get_range(user, def))
+	local target, ray = grug_abilities.aimed_target(user, def)
 	debug_cast_ray(user, def, ray)
-	if ray.status ~= "target" then
+	if not target then
 		return nil
 	end
-	if not grug_abilities.valid_target(user, ray.target, def.target_kind) then
-		return nil
-	end
-	grug_abilities.set_target(user, ray.target, false)
-	return ray.target
+	grug_abilities.set_target(user, target, false)
+	return target
 end
 
 -- A current visible ally receives support; all other aim resolves to self.
 -- The shared ray checks exact selection-box range and solid blockers. Neither
 -- a stale client pointed reference nor Target Frame memory grants authority.
 function grug_abilities.resolve_friendly_target(user, pointed, def)
-	local ray = grug_core.combat_ray(user, grug_abilities.get_range(user, def))
-	if ray.target and ray.reason == "friendly" and valid_ally(user, ray.target, def) then
-		grug_abilities.set_target(user, ray.target, true)
-		return ray.target
+	local target = grug_abilities.aimed_target(user, def)
+	if target then
+		grug_abilities.set_target(user, target, true)
+		return target
 	end
 	return user
 end

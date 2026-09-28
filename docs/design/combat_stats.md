@@ -275,7 +275,8 @@ charged effect. Enemy target memory is UI state and never supplies aim.
 - **The ready signal is a reticle transition, not item wear.** With a swing
   selected, one small gold ring overlays the normal crosshair exactly while the
   weapon is ready. It is absent while the interval runs and for non-swing
-  items. It shows weapon readiness only, not target validity or proc charge. A
+  items. It shows weapon readiness only, not target validity or proc charge;
+  target validity is the separate crosshair state overlay (`classes.md` §2b). A
   valid attack hides it immediately and expiry shows it once; an aim miss
   leaves it visible. There is no smooth progress animation and no periodic
   inventory rewrite.
@@ -316,7 +317,13 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   range/line-of-sight rule. Smite stays immediate; area skills stay area skills.
 - Fireball keeps **6% base mana**, **1.0 s server cast cadence**, **20 m initial
   range**, **20 m/s nominal speed**, baseline weapon damage + spell power and
-  its existing talent effects. Scout arrows retain bounded draw and ammo rules.
+  its existing talent effects. Scout arrows retain bounded draw and ammo rules:
+  a full draw takes the bow's 2.5 s, and Loose deals
+  (bow damage + Dexterity ranged bonus + Strong Draw) × (0.2 + 2.8 f²) for
+  draw fraction f — ×0.2 on a tap, ×0.9 at half, ×3.0 at full draw (user
+  ruling 2026-09-28) — before Twin
+  Shot's second-arrow percentage and Longshot's +4. Nominal arrow speed stays
+  linear in f. Snare Shot and Pinning Shot fire at ×1.
 - **Flight is homing with a launch-time duration** derived from initial
   distance/speed. The visual converges on the moving target. Later movement out
   of range, intervening actors or terrain do not intercept it. Cover protects

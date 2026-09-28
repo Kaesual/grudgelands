@@ -447,7 +447,7 @@ game already runs.
 | 3 | **Twin Shot** *(keystone)* | Draw | 3 | 3 | **replaces Loose** | a full draw looses two arrows, the second for `50 / 60 / 70 %` damage; costs 2 arrows. Same key | `loose_second_arrow` |
 | 4 | **Longshot** *(capstone)* | Draw | 4 | **1** | **replaces Loose** | Loose's range 25 m → **33 m**, and a hit landed beyond 25 m deals **+4** | `loose_range_add` |
 | 5 | **Quiver** | Ranging | 1 | 5 | — | Loose's arrow is not consumed 10 / 20 / 30 / 40 / 50 % of the time | `arrow_refund_chance` |
-| 6 | **Fletching** | Ranging | 2 | 4 | — | Loose's draw time 0.5 s → 0.45 / 0.40 / 0.35 / 0.30 s | `draw_time_sub` |
+| 6 | **Fletching** | Ranging | 2 | 4 | — | Loose's draw time 2.5 s → 2.25 / 2.0 / 1.75 / 1.5 s (subtracts 0.25 / 0.5 / 0.75 / 1.0 s before the draw-speed affix divides; 0.5 s floor) | `draw_time_sub` |
 | 7 | **Pinning Shot** *(keystone)* | Ranging | 3 | 3 | **new skill** ‼ | cast, **12% base mana + 1 arrow**, 25 m; roots the pointed hostile for 2 / 2.5 / 3 s — a root at bow range, which no class has. *Limit: **30 s cooldown**.* | — |
 | 8 | **Shifting Weight** | Ranging | 4 | 3 | — | +1 / 2 / 3 percentage points dodge chance | `dodge_chance_add` |
 

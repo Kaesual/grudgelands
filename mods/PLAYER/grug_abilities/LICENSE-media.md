@@ -8,6 +8,13 @@
   this project with OpenAI image generation, chroma-keyed and reduced to the
   final HUD sprite (own work), **CC0**.
 
+- `crosshair.png`, `object_crosshair.png` (byte-identical 21×21),
+  `grug_abilities_draw_ring_00.png` … `_15.png` and
+  `grug_abilities_draw_ring_full.png` (35×35): crosshair and bow draw ring
+  drawn procedurally with Pillow by
+  `tools/pt_fixes/lane_b/gen_crosshair_textures.py` (own work, 2026-09-28),
+  **CC0**. Re-run the script to change them.
+
 ## Round 18 active-skill action icons — CC0
 
 All 22 `textures/grug_abilities_skill_*.png` files were generated for this

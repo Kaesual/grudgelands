@@ -236,7 +236,10 @@ Loose is the explicit exception to LMB casting: **LMB uses melee Strike or hand
 digging; hold RMB to draw, release RMB to shoot.** Its tooltip states both.
 While the bow is drawn or held drawn, walk speed is ×0.5 and the Loose item's
 pointing range is zero, so held RMB shows no repeated place swing (one swing on
-the very press may remain). Other instant bow skills retain their LMB casts and
+the very press may remain). A full draw takes the bow's 2.5 s (Fletching and
+the draw-speed affix shorten it); a ring around the crosshair fills in
+sixteenths while drawing, turns gold at full draw and disappears on every end
+of the draw (release, cancel, stun, item or weapon change, death, leave). Other instant bow skills retain their LMB casts and
 authored ammo/cooldowns.
 
 Food owns its whole RMB press, whatever it points at (ruling 2026-09-28). A
@@ -280,6 +283,46 @@ no client changes are required or promised.
 - This is a HUD state transition, not an ItemStack wear bar. It sends only the
   not-ready and ready changes of the selected weapon clock; it never rewrites
   inventory on a progress tick and has no smooth intermediate frames.
+
+### Crosshair feedback
+
+The game ships its own `crosshair.png` and a byte-identical
+`object_crosshair.png`, so the engine's native "pointing at an object" switch
+is invisible (skill items keep a 4-node native range for hand digging and
+would mark only targets within 4 m). All target feedback is a server HUD
+overlay: the same crosshair image tinted, drawn over the engine crosshair
+(user ruling 2026-09-28).
+
+- **Hostile (red):** the selected skill targets hostiles and its own aim
+  authority finds a valid hostile within the skill's effective range: the
+  current server ray to `get_range` (swing skills 3 m, Taunt 8, Charge 12,
+  Fireball/Smite 20, Loose 25 or 33 with Longshot, plus the race bonus where
+  it applies) and the skill's target rule. The overlay reads that authority
+  without its side effects: no Target Frame memory, no cast diagnostics.
+- **Friendly (green):** the selected skill is a friendly heal/buff and a valid
+  visible ally is pointed within its range (the ally rule of the friendly
+  casts, without their side effects).
+- **Interact (light blue):** the first thing within hand reach (4 m) is
+  something a press would interact with: an entity with `on_rightclick` (NPC,
+  trader, villager, mount), a dropped item, or a node with `on_rightclick`.
+  This applies with any wielded item, and uses contextual input's own
+  classification.
+- A skill state takes precedence over interact. Self-target skills (Blink,
+  Frost Nova, Sprint, ...) have no skill state. Otherwise the plain crosshair
+  shows.
+- The state is refreshed in the shared 0.05 s input pass (one hand-reach ray
+  per player, plus one skill ray while a targeted skill is selected; the skill
+  ray is skipped when the hand ray's first hit is a walkable node, because a
+  combat ray along the same line would end there without a target) and sends
+  a HUD packet only when it changes. Its server-driven latency is accepted.
+- Layering, bottom to top: engine crosshair, state overlay (z 1), weapon-ready
+  ring (z 2), bow draw ring (z 3).
+- The engine draws the crosshair at integer scale `floor(hud_scaling x
+  display density)`; a Lua image element uses the unrounded factor. The
+  overlay and draw ring therefore scale by `floor(f) / f` of the client's
+  reported `real_hud_scaling` when it is fractional, so they land on the
+  crosshair's own pixels. All sprites have odd sizes, centred like the
+  crosshair; on an odd window width the two can still differ by one pixel.
 
 ### Rules for hostile casts and projectiles
 
