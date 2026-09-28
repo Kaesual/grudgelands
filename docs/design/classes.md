@@ -469,9 +469,8 @@ torches, liquids) do not.
   moved to the centre of its node column rather than lifted onto the block.
   A spot without room is searched back horizontally toward the caster in
   0.5 m steps, allowing up to one node of step-up (eye height when nothing
-  was hit). Every
-  destination must be in line of sight: a clear ray from the caster's eye to
-  the destination eye.
+  was hit). Every destination must be in line of sight: a clear ray from the
+  caster's eye to the destination eye.
 - A move shorter than 1.5 m fails with "No room to blink." and costs neither
   mana nor cooldown. On flat ground this means aiming steeper than about 45°
   down fails.
