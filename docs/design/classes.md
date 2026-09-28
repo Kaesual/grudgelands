@@ -311,7 +311,9 @@ overlay: the same crosshair image tinted, drawn over the engine crosshair
   Frost Nova, Sprint, ...) have no skill state. Otherwise the plain crosshair
   shows.
 - The state is refreshed in the shared 0.05 s input pass (one hand-reach ray
-  per player, plus one skill ray while a targeted skill is selected) and sends
+  per player, plus one skill ray while a targeted skill is selected; the skill
+  ray is skipped when the hand ray's first hit is a walkable node, because a
+  combat ray along the same line would end there without a target) and sends
   a HUD packet only when it changes. Its server-driven latency is accepted.
 - Layering, bottom to top: engine crosshair, state overlay (z 1), weapon-ready
   ring (z 2), bow draw ring (z 3).

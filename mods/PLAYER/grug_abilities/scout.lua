@@ -56,8 +56,8 @@ end
 
 -- Loose damage multiplier by draw fraction f in [0, 1] (user ruling
 -- 2026-09-28): 0.2 + 2.8 f^2 -- a tap x0.2, half draw x0.9, full draw x3.0.
--- It multiplies (bow damage + Strong Draw); Twin Shot's percentage and
--- Longshot's +4 apply after it, as before.
+-- It multiplies (bow damage + Dexterity ranged bonus + Strong Draw); Twin
+-- Shot's percentage and Longshot's +4 apply after it, as before.
 local function draw_multiplier(fraction)
 	local f = math.max(0, math.min(1, fraction))
 	return 0.2 + 2.8 * f * f
