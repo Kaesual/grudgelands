@@ -250,7 +250,7 @@ local hold_feedback = {}
 -- input step; crumbs fly from the head every 0.2 s for everyone nearby.
 local EAT_STANCE, EAT_STANCE_FACTOR = "grug_food:eating", 0.35
 local CRUMB_INTERVAL_US = 200000
-local CRUMBS_PER_BURST = 10 -- about 7 bursts per 1.5 s hold: ~70 particles
+local CRUMBS_PER_BURST = 10 -- 5-7 bursts per 1.5 s hold: 50-70 particles
 
 function grug_food.is_food(item_name)
 	return held_foods[item_name] ~= nil
