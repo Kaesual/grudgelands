@@ -102,10 +102,11 @@ return function(api)
 			local ent = hit.ref and hit.ref:get_luaentity()
 			return ent and type(ent.on_rightclick) == "function"
 		end
+		-- No node keeps its UI in metadata (default/node_formspec.lua): every
+		-- interactive node answers on_rightclick.
 		local node = core.get_node_or_nil(hit.under)
 		local def = node and core.registered_nodes[node.name]
-		return def and (type(def.on_rightclick) == "function" or
-			core.get_meta(hit.under):get_string("formspec") ~= "")
+		return def ~= nil and type(def.on_rightclick) == "function"
 	end
 	local function right_begin(player, s, def, hit, distance)
 		s.pending, s.dig = nil, nil
@@ -310,6 +311,19 @@ return function(api)
 		return state(player).right
 	end
 	function M.cancel(player) cancel(player, state(player)) end
+	-- Crosshair feedback (crosshair.lua): is the first thing within hand reach
+	-- something a press would interact with? The same ray and classification
+	-- an RMB press uses, plus a dropped item (the LMB pickup of `activate`).
+	-- Reads only; no press state is touched.
+	function M.aims_at_interactive(player)
+		local hit, distance = ray(player, HAND_RANGE)
+		if not hit or distance > HAND_RANGE then return false end
+		if hit.type == "object" then
+			local ent = hit.ref and hit.ref:get_luaentity()
+			if ent and ent.name == "__builtin:item" then return true end
+		end
+		return interactive(hit, distance) and true or false
+	end
 	function M.interaction(player)
 		local s = state(player)
 		end_food_hold(player)
