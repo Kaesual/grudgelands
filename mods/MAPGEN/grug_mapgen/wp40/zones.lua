@@ -1295,6 +1295,13 @@ local function zones_factory(dependencies)
 				local _, _, owner = horizontal.classification_values_at(x, z)
 				return owner and source.zones[owner].primary_relief_id or nil
 			end
+			-- The zone id of a land column by the horizontal classification
+			-- only (no height): the forest field's per-zone normalisation grid
+			-- (habitat_registry.lua vegetation_rule).
+			function planner_source.land_zone_at(x, z)
+				local water_class, _, owner = horizontal.classification_values_at(x, z)
+				return water_class == "land" and owner and source.zones[owner].id or nil
+			end
 			function planner_source.landmark_excluded_at(x, z)
 				return height.landmark_excluded_at(x, z)
 			end

@@ -52,7 +52,7 @@ return function(api)
 		SHORE_BAND = 2,
 		-- Placement chance at a full deficit, per class; it scales with the
 		-- deficit fraction (target - present) / target.
-		CHANCE = {resource = 0.05, cover = 0.5, woody = 0.1},
+		CHANCE = {resource = 0.05, cover = 0.5, tree = 0.1, shrub = 0.1},
 		-- No sapling within this radius of any non-natural node or farm soil.
 		SAPLING_GUARD_RADIUS = 10,
 		-- Area-query node visits allowed per player and step (spot search,
@@ -60,7 +60,10 @@ return function(api)
 		-- skipped.
 		VOLUME_BUDGET = 150000,
 	}
-	local CLASS_ORDER = {"resource", "cover", "woody"}
+	-- Trees and shrubs are separate classes, each counted against its own
+	-- natural density (Round 23 Phase 2); both return as saplings.
+	local CLASS_ORDER = {"resource", "cover", "tree", "shrub"}
+	local WOODY = {tree = true, shrub = true}
 
 	local density, planner = api.density, api.planner
 	local random = api.random
@@ -100,7 +103,7 @@ return function(api)
 
 	-- Present plants of a category in its counting box.
 	local function present(category, pos, radius)
-		if category.class ~= "woody" then
+		if not WOODY[category.class] then
 			local minp = {x = pos.x - radius, y = pos.y - R.BOX_HALF_HEIGHT,
 				z = pos.z - radius}
 			local maxp = {x = pos.x + radius, y = pos.y + R.BOX_HALF_HEIGHT,
@@ -155,7 +158,7 @@ return function(api)
 		local by_class, classes = {}, {}
 		for index = 1, #categories do
 			local category = categories[index]
-			if (category.class ~= "woody" or api.trees) and
+			if (not WOODY[category.class] or api.trees) and
 					(only_class == nil or category.class == only_class) then
 				local list = by_class[category.class]
 				if not list then
@@ -224,9 +227,9 @@ return function(api)
 		local radius = radius_for(category.p)
 		local cost = (2 * radius + 1) * (2 * radius + 1) * (2 * R.BOX_HALF_HEIGHT + 2) +
 			(2 * radius + 1) * (2 * radius + 1) *
-				(category.class == "woody" and (R.WOODY_DOWN + R.WOODY_UP + 1) or
+				(WOODY[category.class] and (R.WOODY_DOWN + R.WOODY_UP + 1) or
 					(2 * R.BOX_HALF_HEIGHT + 1))
-		if category.class == "woody" then
+		if WOODY[category.class] then
 			local side = 2 * R.SAPLING_GUARD_RADIUS + 1
 			cost = cost + side * side * side
 		end
@@ -250,7 +253,7 @@ return function(api)
 		local roll = forced_roll or random()
 		if roll >= chance then return "roll" end
 		local species = pick_species(category)
-		if category.class == "woody" then
+		if WOODY[category.class] then
 			if api.get_item_group(support.name, "soil") == 0 then return "no_soil" end
 			local g = R.SAPLING_GUARD_RADIUS
 			local minp = {x = pos.x - g, y = pos.y - g, z = pos.z - g}

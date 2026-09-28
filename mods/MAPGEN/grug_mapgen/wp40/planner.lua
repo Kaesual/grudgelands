@@ -330,6 +330,7 @@ local function planner_factory(allocator_factory)
 		start_ground_at = true,
 		start_ground_names = true,
 		primary_relief_at = true,
+		land_zone_at = true,
 		landmark_excluded_at = true,
 		static_exclusion_values_at = true,
 		overlay_exclusion_at = true,

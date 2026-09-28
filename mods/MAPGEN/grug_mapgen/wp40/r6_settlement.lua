@@ -156,7 +156,8 @@ local function settlement_factory()
 						functional_kind == nil and transition_kind == nil and not hard and
 						context.static_exclusion_values_at(x, z) == nil and
 						not context.housing_excluded_at(x, z) then
-					local surface = context.select_surface(biome, x, z, water_y, terrain_y)
+					local surface = context.select_surface(biome, x, z, water_y, terrain_y,
+						zone_id)
 					local filler_depth = surface and surface.filler_depth or 4
 					-- Steep columns (rock faces and lips) show their side: no
 					-- bands along a cliff face (Round 22 Phase 6).
@@ -1281,7 +1282,7 @@ local function settlement_factory()
 			local _, _, zone_id, biome, _, terrain_y, water_y, _, _,
 				functional_kind, _, functional_feature_id =
 					planner_source.column_values_at(x, z)
-			local surface = select_surface(biome, x, z, water_y, terrain_y)
+			local surface = select_surface(biome, x, z, water_y, terrain_y, zone_id)
 			if not zone_id or not surface or y < terrain_y - surface.filler_depth or
 					y > terrain_y or y < -37 then return nil end
 			local cave_low, cave_high = planner_source.surface_cave_run_at(x, z)
@@ -1612,9 +1613,9 @@ local function settlement_factory()
 			end
 
 			local function prospective(x, y, z)
-				local _, _, _, biome, _, terrain_y, water_y =
+				local _, _, zone_id, biome, _, terrain_y, water_y =
 					planner_source.column_values_at(x, z)
-				local surface = select_surface(biome, x, z, water_y, terrain_y)
+				local surface = select_surface(biome, x, z, water_y, terrain_y, zone_id)
 				if not surface then return CLASS_UNKNOWN, 0, false, 0, 0 end
 				local p7_ref = analytic_p7_material_ref(x, y, z)
 				if p7_ref then

@@ -226,7 +226,8 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		terrain_field = terrain_field,
 		raw_sha256 = raw_sha256, hash_factory = hash_factory,
 		content_factory = r6_content_factory, templates_factory = r6_templates_factory,
-		planner_factory = r6_planner_factory, settlement_factory = r6_settlement_factory})
+		planner_factory = r6_planner_factory, settlement_factory = r6_settlement_factory,
+		habitat = habitat_registry})
 	if type(r6_module.new_runtime) ~= "function" or
 			type(r6_module.new_authority) ~= "function" then
 		fail("R6 runtime constructor differs")
@@ -584,6 +585,7 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 					decoration_cover = r6_identity.decoration_cover,
 					support_names = r6_identity.decoration_support_names,
 					template_records = r6_identity.template_records,
+					vegetation_rule = r6_identity.vegetation_rule,
 					column_values_at = r6_identity.planner_source.column_values_at,
 					overlay_exclusion_at = r6_identity.planner_source.overlay_exclusion_at,
 					primary_relief_at = r6_identity.planner_source.primary_relief_at,
