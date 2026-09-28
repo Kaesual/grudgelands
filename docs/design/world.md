@@ -404,7 +404,7 @@ transaction, boundary, lifecycle, visitor and HUD rules:
 There are **three race capitals per continent**, one per race and six total.
 Each sits in its own central named city zone and is protected
 (indestructible) per the POI rule of §2 — its planned city: everything inside
-the wall line, the wall (or the open capitals' planted belt) with its
+the wall line, the wall or palisade with its
 gatehouses and turrets, and a band at least 12 nodes beyond the edge's outermost
 structure (21 nodes from the wall line, 12–18 beyond gatehouses, turrets and
 wall faces) that carries no trees and no ground

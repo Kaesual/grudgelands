@@ -1265,9 +1265,8 @@ one-cell settlement checks are unchanged.
 - Every capital keeps a 512×512 reserved area (D59); roads end at its edge and
   the planned city lies inside it. **The protected city (Round 22, D76)** is
   the capital's hard-protected POI and its claim and resource exclusion
-  envelope at once: everything inside the planned wall line, the wall (or the
-  open capitals' planted belt and thresholds, which stand on the same planned
-  outline) with its gatehouses and turrets, the capital's own civic lake where
+  envelope at once: everything inside the planned wall line, the wall or
+  palisade with its gatehouses and turrets, the capital's own civic lake where
   the outline crosses it (Lethariel's crown lake, Kezamba's cenote), and a
   band of at least 12 nodes beyond the edge's outermost structure (a gatehouse
   corner: gatehouses stay compass-aligned while their gates slide along the
@@ -1341,10 +1340,12 @@ one-cell settlement checks are unchanged.
     water. Lethariel's mere precinct and Kezamba's shore market stay beside
     their civic lake;
   - the edge by race: a stone curtain with turrets and gatehouses (Highcourt,
-    Dur Brannoc, Nhal Veyr), a palisade on its rampart (Gor Drazhak), or, for
-    the open capitals Lethariel and Kezamba, a planted belt with four
-    thresholds. Walls follow the outline as polylines, their walk walkable on
-    half steps, and cross rivers as arcades;
+    Dur Brannoc, Nhal Veyr, and since Round 23 Lethariel's light curtain), or a
+    palisade on its rampart (Gor Drazhak, and since Round 23 Kezamba's
+    jungle-log palisade); Lethariel and Kezamba keep the narrower footprint
+    their former planted belts were planned with. Walls follow the outline as
+    polylines, their walk walkable on half steps, and cross rivers and lakes as
+    arcades or timber decks with the walk out of the water;
   - Highcourt's one-level quay canal beside its outer ring lane (D58), sealed
     off natural water.
   The layout is a pure function of the seed and the code, so every boot of a

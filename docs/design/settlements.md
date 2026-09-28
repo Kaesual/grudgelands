@@ -149,7 +149,7 @@ organic outline of about 100 k m² inside the reserved 512 square, four gates
 toward the incoming roads with connector roads to the road ends, avenues,
 two terrain-bent ring lanes loosened by cross-lanes, open arcs and small
 squares, the district plots turned to face their streets, the race's edge
-(stone curtain, palisade or planted belt with thresholds) on the outline and,
+(stone curtain or palisade, each in its race's style) on the outline and,
 in Highcourt, a one-level quay canal. The civic core stays exactly as
 authored; start towns are untouched. The layout is a pure function of the
 seed and the code, so a world always rebuilds the same city.
@@ -165,32 +165,34 @@ turned in quarter turns so its door faces its street, on the ground height the
 planner sampled at its centre; a foundation skirt carries its perimeter six
 nodes down, it clears its own airspace, the ground round it eases to its height
 within eight nodes, and a short path joins its entry to the street. The
-**edge** (walls, turrets, gatehouses, the open capitals' belt and thresholds)
+**edge** (walls or palisades, turrets, gatehouses)
 has no fixed cells: it is computed per mapchunk from the outline and the ground
 the map has. The **streets** are roads of the road network (`world_zones.md`
 §9), so they climb in half steps, cut and fill like any road and cross water as
 bridges; the avenues run straight through their gatehouses.
 
 **The civic-core boundary is protected.** Decided 2026-09-18 after playtest
-round 10. Its hedge, parapet, bank or palisade is written after all structural
+round 10. Its wall, parapet, bank or palisade is written after all structural
 core content and later dressing may use only free cells: a house, orchard,
 green, lore piece, martial piece or prop may meet the boundary but may not cut
 it. Only the four authored thirteen-column gate or threshold bands stay open.
 The boundary and its gates stand at radius 48, two nodes outside the earlier
 radius 46. Each capital retains the actual asymmetric extent of its gatehouses;
 projection bounds include every authored cell, and no ring column intersects a
-building. Nhal Veyr's bars align with their wall on both axes.
+building. Nhal Veyr's bars align with their wall on both axes. The 5 x 5
+corner drums and towers of Dur Brannoc, Gor Drazhak and Nhal Veyr own the ring
+columns from ±45 outward; the ring stops against their walls.
 A fitting attached to content displaced by the boundary is removed, and an
 edge building faces inward so its door remains usable. The six forms of the
 same rule are:
 
 | Capital | Protected civic-core boundary |
 | --- | --- |
-| Highcourt | Three-course clipped hedge. |
-| Dur Brannoc | Two-course masonry parapet; the four closed corner drums replace its corner columns. |
-| Gor Drazhak | Two-course earth bank with alternating acacia stakes; closed timber corner towers replace its corner columns. |
-| Nhal Veyr | Two-course dungeon-stone parapet with alternating bars; the four closed corner drums replace its corner columns. |
-| Lethariel | Three-course silverwood hedge on every dry edge; the authored mere is the boundary where it reaches the north edge. |
+| Highcourt | One-node castle-stonewall wall, four courses: two of stonewall, the crown's marble band at the height of the gatehouse piers' band, and a stonewall merlon on every other column. |
+| Dur Brannoc | Three-course masonry parapet with a capped merlon every fourth column; the four closed corner drums replace its corner columns. |
+| Gor Drazhak | Three-course earth bank (two of dug earth, a beaten crest) with an acacia stake and point every other column; closed timber corner towers replace its corner columns. |
+| Nhal Veyr | Two-course dungeon-stone parapet with a capped merlon every fourth column and flat iron bars filling the three columns between two merlons; the four closed corner drums replace its corner columns. |
+| Lethariel | Light wall on every dry edge: two courses of silver sandstone brick, a marble coping at the height of the pale gatehouses' marble band, and a colonnette (the pale castle pillar, base and top) on every other column; the authored mere is the boundary where it reaches the north edge. |
 | Kezamba | Three-course junglewood palisade on every dry edge; the authored cenote is the boundary where it reaches the north-east edge. |
 
 **Streets are roads.** Since Round 22 every capital street, lane and connector
@@ -257,17 +259,22 @@ belong to, the core or their own plot, instead of wandering the whole city. Its
 two traders stand on the blueprint's own vendor sockets; all six capitals
 export those sockets.
 
-**Walled capitals.** The user's ruling of 2026-09-17 fixes **four walled
+**Walled capitals.** The user's ruling of 2026-09-17 fixed **four walled
 capitals** — Highcourt, Dur Brannoc, Gor Drazhak and Nhal Veyr — and **two
-open capitals**, Lethariel and Kezamba. The wall follows the planner's outline
-as a polyline, with a turret about every 64 nodes and a gatehouse at each of
-the four gates, and the avenue runs through its gate passage. Its masonry
+open capitals**, Lethariel and Kezamba; the Round 23 ruling (2026-09-28)
+walls the two open ones as well, so **all six capitals are walled**. The wall
+follows the planner's outline as a polyline, with a turret about every 64
+nodes (48 in Lethariel, 56 on a palisade) and a gatehouse at each of the four
+gates, and the avenue runs through its gate passage. Its masonry
 starts under each column's own ground, so a wall on a slope has no gap, and
 its walk rises and falls at most half a node per node (a slab on each half
 step), so it can be walked. Where the outline crosses a river the wall is an
 arcade: the walk on an arch, piers down to the bed, the river passing below.
-The wall carries no NPCs of its own; a walled capital's garrison is the four
-gatehouses of its civic core, exactly as an open one's is.
+However long the crossing, the walk stays out of the water; Lethariel's and
+Kezamba's walls cross their civic lakes, which lie across their outlines for
+up to a few hundred nodes, five nodes above the surface. The wall carries no
+NPCs of its own; a capital's garrison is the four gatehouses of its civic
+core.
 
 **Between the plots.** Decided 2026-09-15 with the round-3 playtest: a quarter
 of nine buildings in a 512 envelope is empty, so each quarter carries four more
@@ -294,14 +301,17 @@ keeps: an ore court with a mine mouth cut into a rock face, charcoal clamps, a
 slag yard, mushroom beds grown in the lee of the wall, goat pens and brewing
 courts. Its trades are a smith, a mason, an armourer, an embalmer, a butcher, a
 brewer and a baker, beside the two travelling traders every capital's core has.
-**Open capitals, and the one that stands on a lake.** Decided 2026-09-15 with
-the third capital, Lethariel. An open capital has no curtain: its outline is a
-planted belt — a hedge of its own wood with a tree every few steps — and each
-of its four gate points is a **threshold**: posts carrying a beam over the
-road, so you walk through a way in rather than being let through a gate. Like
-a wall it has no fixed cells and is computed per mapchunk from the ground the
-map has, and where the belt reaches water it simply stops, because the water
-already is an edge.
+**The capital that stands on a lake.** Decided 2026-09-15 with the third
+capital, Lethariel, which was open until Round 23 (a planted belt with a
+threshold at each gate point). Since the Round 23 ruling of 2026-09-28 its
+edge is the **stone curtain in the elves' own light style**: pale silver
+sandstone brick over a silver sandstone core, a green serpentine string
+course, a marble coping on every parapet, slender colonnettes of the pale
+castle pillar in place of merlons, a marble-tiled walk, slim turrets about
+every 48 nodes each carrying an emberglass lamp, and gatehouses with a marble
+lintel over the passage. It stands on the footprint the belt was planned with
+(wall half 2, gate boxes 3 by 5), so the city inside is laid out exactly as
+before, and it crosses the crown lake as an arcade.
 
 Lethariel also shows what happens when the map does not give a capital four
 usable quarters. Its crown lake reaches into the civic core itself, so the
@@ -320,9 +330,12 @@ crest, a fighting walk along the top and a timber tower about every fifty-six
 nodes. It follows the ground and lets the avenue through its gates exactly as
 a curtain does, and it is the same thing to walk on; it simply is not made of
 stone. Gor Drazhak's own civic
-precinct repeats the section at a quarter of the height -- two courses of beaten
+precinct repeats the section at a reduced height -- three courses of beaten
 earth with a stake every other node -- so the city wall and the citadel wall
-read as one piece of engineering.
+read as one piece of engineering. Kezamba raises the same palisade (Round 23)
+in its own civic palisade's material: jungle-log stakes with a junglewood
+point on every stake, turned by column, a junglewood walk, and piles and a
+timber deck where it crosses the cenote.
 
 **The orc capital's own shape.** Its roofs are flat decks behind crenellated
 breastworks rather than ridges, which is what its skyline is recognised by from
@@ -335,18 +348,10 @@ warren of clan lodges round a cook court and a story fire. In front of the
 warlord's hall stands a raised **fighting platform** with its own breastwork,
 its own stair and two guard posts on it.
 
-**Open capitals, and the one with a lake in it.** The split is the user's
-ruling of 2026-09-17: Highcourt, Dur Brannoc, Gor Drazhak and Nhal Veyr are
-walled; Lethariel and Kezamba are open. Everything below it — what an open
-capital puts at its gate points, and how a capital with a lake in its core is
-laid out — is the third capital's own lane, 2026-09-15/16, and is open to the
-user's correction like any other design.
-
-Two of the six have no wall at all — Lethariel and Kezamba — and what an open
-capital has where a walled one has a gatehouse is a
-**threshold** at each of its four gate points: two posts with a beam across the
-road and a light on it, so a traveller arriving on the long-distance route can
-see that they have arrived somewhere.
+**The capital with a lake in it.** How a capital with a lake in its core is
+laid out is the third capital's own lane, 2026-09-15/16, and is open to the
+user's correction like any other design. (Kezamba was open until Round 23;
+its city edge is now the troll palisade described above.)
 
 Kezamba is also the one capital whose **civic core is not flat**, and that is
 the map's doing rather than the city's: a deep cenote fills its north-eastern
