@@ -71,7 +71,7 @@ ceiling of two talent buttons puts the worst case at 7 of 8.
 
 | Ability | Kind | Cost | Cooldown | Effect | Existing mechanic it reuses |
 |---|---|---|---|---|---|
-| **Loose** | cast | 1 arrow | none (ammo-limited) | Requires a bow in the weapon slot. A **homing** arrow locked to the current crosshair hostile at release, initially within 25 m. Full draw **2.5 s**; damage = (bow damage + Dexterity ranged bonus + Strong Draw) × (0.2 + 2.8 f²) for draw fraction f (tap ×0.2, half ×0.9, full ×3.0); nominal speed scales linearly with f | Shared release validation, bounded target-following flight, owner/target lifecycle and once-only impact (`combat_stats.md`) |
+| **Loose** | cast | 1 arrow | none (ammo-limited) | Requires a bow in the weapon slot. A **homing** arrow locked to the current crosshair hostile at release, initially within 25 m. Full draw **2.5 s**; damage = (bow damage + Dexterity ranged bonus + Strong Draw) × (0.2 + 2.05 f²) for draw fraction f (tap ×0.2, half ×0.7125, full ×2.25); nominal speed 40 + 15 f m/s (tap 40, full draw 55) | Shared release validation, bounded target-following flight, owner/target lifecycle and once-only impact (`combat_stats.md`) |
 | **Snare Shot** | cast | 8 % base mana + 1 arrow | 12 s | The arrow slows the target by 50 % for 4 s | `grug_mobs.slow` for mobs and the player movement aggregator — the same two paths Hamstring uses (`kits.lua:421-430`) |
 | **Sidestep** | cast | 10 % base mana | 30 s | Dodge chance **+15** percentage points for 4 s, **inside** the 30 % cap. A base ability has no ranks; the Veil tree shortens its cooldown (Slip Away) and replaces it (Shake Loose) | `grug_classes.get_crit_chance`'s twin `get_dodge_chance` (`grug_classes/stats.lua:128-140`) and the timed-window table of `skill_trees.md` §3.2 |
 | **Sprint** ‼ | cast | 15 % base mana | **300 s** | Movement speed **+50 % for 10 s** — 6.0 nodes/s against the ordinary aggressive band's 4.6 | the speed aggregator of `skill_trees.md` §3.9, as one named modifier with its own duration |
@@ -118,7 +118,7 @@ The active contract is:
   **25 m range, 2.5 s full draw** (the bow definition's
   `_grug_bow_draw_time`), and the affix pool is Dex, Crit, attack/draw speed,
   HP and Mana. Loose multiplies (bow damage + Dexterity ranged bonus + Strong Draw) by
-  `0.2 + 2.8 f²` of the draw fraction f (user ruling 2026-09-28); Twin Shot's
+  `0.2 + 2.05 f²` of the draw fraction f (user ruling 2026-09-28); Twin Shot's
   second-arrow percentage and Longshot's +4 apply after it. Fletching and the
   draw-speed affix shorten the draw to at least 0.5 s. One bow per material tier,
   material-named under §3.0.3. Round 21 arrows craft 200 per batch from 1 Bronze Bar +
@@ -128,7 +128,7 @@ The active contract is:
 - `combat_stats.md` §2 defines the delivered bow flow: a bow is drawn up to a
   maximum by holding RMB and releases a targeted homing arrow on RMB release;
   Loose LMB uses melee Strike or hand digging. Draw affects damage (the curve
-  above) and nominal speed (linear); a draw ring at the crosshair shows the
+  above) and nominal speed (linear, 40 to 55 m/s); a draw ring at the crosshair shows the
   fraction (`classes.md` §2b). No valid release-time target means no shot or ammo payment.
 - The six bow identities and their dedicated centre-grip wield pose are
   delivered from licensed LotT arc sprites. The Scout runtime consumes those

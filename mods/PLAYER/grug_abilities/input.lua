@@ -13,7 +13,15 @@ return function(api)
 		local food = food_api()
 		return food ~= nil and food.is_food ~= nil and food.is_food(item_name)
 	end
+	-- Eating progress ring (crosshair.lua, owner "food"): shown from the
+	-- confirmed hold, filled by held time / FOOD_US, hidden with the visual.
+	local function food_ring(player, fraction)
+		if Q.crosshair then Q.crosshair.set_ring(player, fraction, "food") end
+	end
+	-- Every eating end path (release, portion eaten, cancel, stun, death, item
+	-- or slot change) runs through here.
 	local function end_food_hold(player)
+		food_ring(player, nil)
 		local food = food_api()
 		if food and food.end_hold then food.end_hold(player) end
 	end
@@ -136,9 +144,10 @@ return function(api)
 		if elapsed >= FOOD_US then
 			f.stage = "done"
 			food.consume_held(player)
-			food.end_hold(player)
+			end_food_hold(player)
 		else
 			food.step_hold(player)
+			food_ring(player, elapsed / FOOD_US)
 		end
 	end
 	-- The unwrapped entity callback, for a click replayed on release. An

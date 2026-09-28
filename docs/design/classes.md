@@ -255,7 +255,12 @@ hold is refused at the 200 ms mark with "Cannot eat while in combat." (no
 visual, no slowdown); a click in combat still places or interacts. While
 eating, the wielded item hides, the food's image shows large at the bottom
 centre behind the HUD and bobs, crumbs fly from the head every 0.2 s, the
-eating sound loops at half gain and walk speed is ×0.35. Release before 1.5 s
+eating sound loops at half gain and walk speed is ×0.35. The crosshair
+progress ring (the bow draw ring's frames, tinted green, never the gold full
+frame) appears when the hold is confirmed at 200 ms and fills with held time
+/ 1.5 s; it disappears on every end of eating (release, portion eaten,
+cancel, stun, item or slot change, death, leave) and never appears on a
+combat refusal. Release before 1.5 s
 eats nothing; one press eats at most one serving. Active RMB food/draw
 suppresses LMB combat/digging. Seeds, buckets, hoes, fishing, mounts and
 ordinary placed items retain their own context-appropriate actions.
@@ -317,7 +322,9 @@ overlay: the same crosshair image tinted, drawn over the engine crosshair
   combat ray along the same line would end there without a target) and sends
   a HUD packet only when it changes. Its server-driven latency is accepted.
 - Layering, bottom to top: engine crosshair, state overlay (z 1), weapon-ready
-  ring (z 2), bow draw ring (z 3).
+  ring (z 2), progress ring (z 3). The progress ring is one element shared by
+  the bow draw and eating: whichever shows it first owns it until it hides it,
+  and neither can show or hide it over the other.
 - The engine draws the crosshair at integer scale `floor(hud_scaling x
   display density)`; a Lua image element uses the unrounded factor. The
   overlay and draw ring therefore scale by `floor(f) / f` of the client's

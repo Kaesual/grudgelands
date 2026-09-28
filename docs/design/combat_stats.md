@@ -319,11 +319,12 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   range**, **20 m/s nominal speed**, baseline weapon damage + spell power and
   its existing talent effects. Scout arrows retain bounded draw and ammo rules:
   a full draw takes the bow's 2.5 s, and Loose deals
-  (bow damage + Dexterity ranged bonus + Strong Draw) × (0.2 + 2.8 f²) for
-  draw fraction f — ×0.2 on a tap, ×0.9 at half, ×3.0 at full draw (user
-  ruling 2026-09-28) — before Twin
-  Shot's second-arrow percentage and Longshot's +4. Nominal arrow speed stays
-  linear in f. Snare Shot and Pinning Shot fire at ×1.
+  (bow damage + Dexterity ranged bonus + Strong Draw) × (0.2 + 2.05 f²) for
+  draw fraction f — ×0.2 on a tap, ×0.7125 at half, ×2.25 at full draw (user
+  ruling 2026-09-28, follow-up) — before Twin
+  Shot's second-arrow percentage and Longshot's +4. Loose's nominal arrow
+  speed is linear in f, 40 m/s on a tap to 55 m/s at full draw. Snare Shot and
+  Pinning Shot fire at ×1 and 40 m/s.
 - **Flight is homing with a launch-time duration** derived from initial
   distance/speed. The visual converges on the moving target. Later movement out
   of range, intervening actors or terrain do not intercept it. Cover protects

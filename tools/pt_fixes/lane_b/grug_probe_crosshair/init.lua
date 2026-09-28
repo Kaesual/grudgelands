@@ -288,6 +288,7 @@ local END_MODS = {grug_abilities = true, grug_core = true}
 
 local launches = {}
 local debug_lines = {}
+local locks, hits = {}, {}
 
 local function wrap_observers()
 	local set_target = grug_abilities.set_target
@@ -319,6 +320,24 @@ local function wrap_observers()
 			return true
 		end
 		return debug_log(name, event, message)
+	end
+	local homing_lock = grug_core.homing_lock
+	grug_core.homing_lock = function(owner, target, origin, speed, ...)
+		local lock = homing_lock(owner, target, origin, speed, ...)
+		if owner and fakes[owner] then
+			locks[#locks + 1] = {owner = owner, speed = speed,
+				distance = target and target:get_pos() and
+					vector.distance(origin, target:get_pos()),
+				duration = lock and lock.duration}
+		end
+		return lock
+	end
+	local deal = grug_core.deal_ability_damage
+	grug_core.deal_ability_damage = function(owner, target, damage, ...)
+		if owner and fakes[owner] then
+			hits[#hits + 1] = {owner = owner, target = target, damage = damage}
+		end
+		return deal(owner, target, damage, ...)
 	end
 	local spawn_batch = grug_projectiles.spawn_batch
 	grug_projectiles.spawn_batch = function(kind, list, ...)
@@ -615,6 +634,45 @@ scenario("packets_and_scale", function(origin)
 	}
 end)
 
+-- The shared progress ring: one owner at a time, food frames tinted green
+-- with no full frame, a packet only on a frame change, integer scale.
+scenario("ring_owner", function(origin)
+	local ref, fake = make_player("ring", "warrior", origin)
+	fake.hud_scaling = 1.5
+	return {{0, function()
+		local FOOD_TINT = "^[multiply:#7de36a"
+		local function owner() return view(fake).ring_owner end
+		check(X.set_ring(ref, 0.2, "food") == true and owner() == "food" and
+			ring_text(fake) == "grug_abilities_draw_ring_03.png" .. FOOD_TINT,
+			"ring: food claims the free ring, tinted frame 03 (" .. ring_text(fake) .. ")")
+		local scales = changes_of(fake, "ring", "scale")
+		check(#scales == 1 and math.abs(scales[1].value.x - 1 / 1.5 * 1.001) < 1e-9,
+			"ring: food ring scaled for real_hud_scaling 1.5")
+		for _ = 1, 5 do X.set_ring(ref, 0.21, "food") end
+		check(#changes_of(fake, "ring", "text") == 1,
+			"ring: repeated calls on the same frame send no packet")
+		check(X.set_ring(ref, 0.5, "bow") == false and X.set_ring(ref, nil, "bow") == false and
+			owner() == "food" and ring_text(fake) == "grug_abilities_draw_ring_03.png" .. FOOD_TINT,
+			"ring: the bow can neither show nor hide over a food ring")
+		X.set_ring(ref, 1, "food")
+		check(ring_text(fake) == "grug_abilities_draw_ring_15.png" .. FOOD_TINT,
+			"ring: food has no full frame (" .. ring_text(fake) .. ")")
+		check(X.set_ring(ref, nil, "food") == true and owner() == nil and ring_text(fake) == "",
+			"ring: food hides and releases it")
+		check(X.set_ring(ref, 0, "bow") == true and owner() == "bow" and
+			ring_text(fake) == "grug_abilities_draw_ring_00.png",
+			"ring: the bow claims the free ring, untinted")
+		check(X.set_ring(ref, 0.5, "food") == false and X.set_ring(ref, nil, "food") == false and
+			owner() == "bow" and ring_text(fake) == "grug_abilities_draw_ring_00.png",
+			"ring: food can neither show nor hide over a bow ring")
+		X.set_ring(ref, 1, "bow")
+		check(ring_text(fake) == "grug_abilities_draw_ring_full.png", "ring: bow full frame gold")
+		X.set_ring(ref, nil, "bow")
+		check(owner() == nil and ring_text(fake) == "" and X.set_ring(ref, 0.5, "other") == false,
+			"ring: bow releases it; an unknown owner is refused")
+	end}}
+end)
+
 -- Bow draw time and Fletching.
 local bow_name
 scenario("draw_time", function(origin)
@@ -637,9 +695,13 @@ scenario("draw_time", function(origin)
 		end
 		fake.talents = {}
 		local m = grug_abilities.loose_draw_multiplier
-		check(math.abs(m(0) - 0.2) < 1e-12 and math.abs(m(0.5) - 0.9) < 1e-12 and
-			math.abs(m(1) - 3.0) < 1e-12,
-			("curve: f=0 x%.2f, f=0.5 x%.2f, f=1 x%.2f"):format(m(0), m(0.5), m(1)))
+		check(math.abs(m(0) - 0.2) < 1e-12 and math.abs(m(0.5) - 0.7125) < 1e-12 and
+			math.abs(m(1) - 2.25) < 1e-12,
+			("curve: f=0 x%.4f, f=0.5 x%.4f, f=1 x%.4f"):format(m(0), m(0.5), m(1)))
+		local v = grug_abilities.loose_arrow_speed
+		check(math.abs(v(0) - 40) < 1e-12 and math.abs(v(0.5) - 47.5) < 1e-12 and
+			math.abs(v(1) - 55) < 1e-12,
+			("speed: f=0 %.2f, f=0.5 %.2f, f=1 %.2f m/s"):format(v(0), v(0.5), v(1)))
 	end}}
 end)
 
@@ -680,22 +742,36 @@ for _, case in ipairs({{"tap", 0.1}, {"half", 1.25}, {"full", 2.8}}) do
 				check(shot ~= nil and #launches == launch0 + 1,
 					label .. ": exactly one arrow launched")
 				if shot then
-					local f = shot.speed / 40
+					-- Speed is linear in the draw fraction: 40 + 15 f m/s.
+					local f = (shot.speed - 40) / 15
 					local stack = ItemStack(bow_name)
 					local base = stack:get_tool_capabilities().damage_groups.fleshy +
 						grug_classes.get_ranged_bonus(ref)
-					local want = math.floor(base * (0.2 + 2.8 * f * f))
-					check(shot.damage == want, ("%s: f=%.3f base %d -> damage %d (want %d, x%.3f)")
-						:format(label, f, base, shot.damage, want, 0.2 + 2.8 * f * f))
+					local mult = 0.2 + 2.05 * f * f
+					local want = math.floor(base * mult)
+					check(shot.damage == want, ("%s: speed %.3f m/s -> f=%.4f, base %d -> damage %d (want %d, x%.4f)")
+						:format(label, shot.speed, f, base, shot.damage, want, mult))
 					if label == "tap" then
-						check(f > 0 and f < 0.12, label .. ": tap draw fraction " .. f)
+						check(f > 0 and f < 0.12 and shot.speed >= 40 and shot.speed < 41.8,
+							("%s: tap draw fraction %.4f, speed %.3f m/s (~40)"):format(label, f, shot.speed))
 					elseif label == "half" then
-						check(math.abs(f - 0.5) < 0.06, label .. ": half draw fraction " .. f ..
-							" (2.5 s draw)")
+						check(math.abs(f - 0.5) < 0.06 and math.abs(shot.speed - 47.5) < 0.9,
+							("%s: half draw fraction %.4f (2.5 s draw), speed %.3f m/s (~47.5)")
+								:format(label, f, shot.speed))
 					else
-						check(f == 1 and shot.damage == math.floor(base * 3),
-							label .. ": full draw x3")
+						check(f == 1 and shot.speed == 55 and shot.damage == math.floor(base * 2.25),
+							("full: speed %s m/s, damage %d = base %d x2.25"):format(
+								tostring(shot.speed), shot.damage, base))
 					end
+					-- The bandit may have walked up during the draw; homing.lua
+					-- clamps the flight time to [0.05, 2] s.
+					local lock = locks[#locks]
+					local want_t = lock and lock.distance and
+						math.max(0.05, math.min(2, lock.distance / lock.speed))
+					check(lock and lock.owner == ref and lock.speed == shot.speed and
+						lock.duration and math.abs(lock.duration - want_t) < 1e-9,
+						("%s: homing lock at the launch speed, %.2f m -> flight %.3f s")
+							:format(label, lock and lock.distance or -1, lock and lock.duration or -1))
 				end
 				local frames = ring_frames(fake)
 				check(frames[1] == "grug_abilities_draw_ring_00.png" and
@@ -760,8 +836,9 @@ for _, path in ipairs({"cancel", "stun", "slot", "death", "leave", "unequip", "m
 			{0.6, function()
 				check(grug_abilities.scout_draw_active(ref), label .. ": drawing")
 				local r = ring_text(fake) or ""
-				check(r:find("^grug_abilities_draw_ring_%d%d%.png$") ~= nil,
-					label .. ": ring frame shown (" .. r .. ")")
+				check(r:find("^grug_abilities_draw_ring_%d%d%.png$") ~= nil and
+					view(fake).ring_owner == "bow",
+					label .. ": untinted ring frame shown, owner bow (" .. r .. ")")
 				ends[path](fake)
 			end},
 			{0.9, function()
@@ -769,8 +846,8 @@ for _, path in ipairs({"cancel", "stun", "slot", "death", "leave", "unequip", "m
 				if path == "leave" then
 					check(view(fake) == nil, label .. ": HUD record released")
 				else
-					check(ring_text(fake) == "", label .. ": ring removed (" ..
-						tostring(ring_text(fake)) .. ")")
+					check(ring_text(fake) == "" and view(fake).ring_owner == nil,
+						label .. ": ring removed and released (" .. tostring(ring_text(fake)) .. ")")
 				end
 				release(fake)
 			end},
@@ -947,6 +1024,8 @@ scenario("fixed_shots", function(origin)
 				local shot = launches[n + 1]
 				check(ok and shot and shot.damage == base and #launches == n + 1,
 					("%s: damage %s = base %d (x1)"):format(id, tostring(shot and shot.damage), base))
+				check(shot and shot.speed == 40,
+					("%s: fixed speed %s m/s (40)"):format(id, tostring(shot and shot.speed)))
 			end
 			mob:remove()
 		end},
@@ -976,7 +1055,7 @@ scenario("twin_shot", function(origin)
 			local base = ItemStack(bow_name):get_tool_capabilities().damage_groups.fleshy +
 				grug_classes.get_ranged_bonus(ref)
 			local a, b = launches[n + 1], launches[n + 2]
-			check(a and b and #launches == n + 2 and a.damage == math.floor(base * 3) and
+			check(a and b and #launches == n + 2 and a.damage == math.floor(base * 2.25) and
 				b.damage == math.floor(a.damage * 60 / 100) and
 				fake.inv:get_stack("main", 3):get_count() == 18,
 				("twin_shot: full draw %s + %s (base %d, second 60%%), 2 arrows"):format(
@@ -986,6 +1065,54 @@ scenario("twin_shot", function(origin)
 		end},
 	}
 end)
+
+-- Longshot: a hostile beyond 25 m and inside 33 m is still hit at the slowest
+-- (tap, ~40 m/s) and fastest (full draw, 55 m/s) arrow; the homing lock's
+-- flight time is distance / speed, well under the 2 s cap, and the +4 applies.
+for _, case in ipairs({{"tap", 0.1}, {"full", 2.8}}) do
+	local label, at = "longshot_" .. case[1], case[2]
+	scenario(label, function(origin)
+		local ref, fake = make_player(label, "scout", origin)
+		fake.weapon = bow_name
+		fake.talents = {loose_range_add = 8}
+		local mob, n, h
+		-- The bandit's AI may walk during the draw: put it back at 31 m first.
+		local function aim()
+			mob:set_pos(vector.offset(origin, 0, 0, 31))
+			mob:set_velocity(vector.zero())
+			look_at(fake, vector.offset(mob:get_pos(), 0, 1, 0))
+		end
+		return {
+			{0, function()
+				skill(fake, "loose")
+				fake.inv:set_stack("main", 3, ItemStack("grug_gear:arrow 20"))
+				mob = spawn_bandit(vector.offset(origin, 0, 0, 31))
+				aim()
+				activate(fake)
+				n, h = #launches, #hits
+				press(fake)
+			end},
+			{at, function() aim(); release(fake) end},
+			{at + 1.2, function()
+				local shot, lock = launches[n + 1], locks[#locks]
+				local hit
+				for i = h + 1, #hits do
+					if hits[i].owner == ref and hits[i].target == mob then hit = hits[i] end
+				end
+				check(shot and lock and lock.owner == ref and lock.distance > 25 and
+					lock.duration < 1 and math.abs(lock.duration - lock.distance / shot.speed) < 1e-9,
+					("%s: lock at %.2f m, speed %.2f m/s, flight %.3f s"):format(label,
+						lock and lock.distance or -1, shot and shot.speed or -1,
+						lock and lock.duration or -1))
+				check(hit and shot and hit.damage == shot.damage + 4,
+					("%s: arrow landed beyond 25 m with the Longshot +4 (%s = %s + 4)"):format(
+						label, tostring(hit and hit.damage), tostring(shot and shot.damage)))
+				deactivate(fake)
+				if mob:get_pos() then mob:remove() end
+			end},
+		}
+	end)
+end
 
 -- Per-player per-pass cost: the old pass work (input.step) against the new
 -- one (input.step + crosshair.update), idle buttons, several aims.

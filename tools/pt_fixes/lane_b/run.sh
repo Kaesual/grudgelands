@@ -2,8 +2,10 @@
 # Lane B playtest-fix probe: server crosshair overlay states (hostile per skill
 # range incl. a talent bonus, friendly heal, self skill, interact within and
 # beyond hand reach, precedence, packets only on change, integer scale), bow
-# draw time with Fletching, the draw damage curve on real releases, the draw
-# ring frames and its removal on every end path, and the per-pass cost.
+# draw time with Fletching, the draw damage curve and arrow speed on real
+# releases (homing flight time, Longshot beyond 25 m), the draw ring frames
+# and its removal on every end path, the shared ring's single owner (bow or
+# food), and the per-pass cost.
 #
 # Boots one isolated headless server through tools/luanti_headless.sh with the
 # disposable probe mod staged (never shipped), copies the server log to

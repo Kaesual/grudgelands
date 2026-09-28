@@ -1,7 +1,10 @@
 -- Scout bow and melee abilities (docs/design/scout.md).
 
 local ARROW_PROJECTILE = "scout_arrow"
-local ARROW_SPEED = 40
+-- Nominal arrow speed in m/s. Snare Shot and Pinning Shot fly at
+-- ARROW_SPEED; Loose rises linearly from ARROW_SPEED on a tap to
+-- LOOSE_FULL_SPEED at full draw (user ruling 2026-09-28).
+local ARROW_SPEED, LOOSE_FULL_SPEED = 40, 55
 local DRAW_STEP = 0.05
 -- The shortest full draw any talent/affix combination may reach, in seconds.
 -- The base draw time is owned by the bow definition (`_grug_bow_draw_time`,
@@ -55,14 +58,21 @@ local function equipped_bow(player)
 end
 
 -- Loose damage multiplier by draw fraction f in [0, 1] (user ruling
--- 2026-09-28): 0.2 + 2.8 f^2 -- a tap x0.2, half draw x0.9, full draw x3.0.
--- It multiplies (bow damage + Dexterity ranged bonus + Strong Draw); Twin
--- Shot's percentage and Longshot's +4 apply after it, as before.
+-- 2026-09-28): 0.2 + 2.05 f^2 -- a tap x0.2, half draw x0.7125, full draw
+-- x2.25. It multiplies (bow damage + Dexterity ranged bonus + Strong Draw);
+-- Twin Shot's percentage and Longshot's +4 apply after it, as before.
 local function draw_multiplier(fraction)
 	local f = math.max(0, math.min(1, fraction))
-	return 0.2 + 2.8 * f * f
+	return 0.2 + 2.05 * f * f
 end
 grug_abilities.loose_draw_multiplier = draw_multiplier
+
+-- Loose arrow speed by draw fraction: 40 m/s at f = 0, 55 m/s at full draw.
+local function loose_speed(fraction)
+	local f = math.max(0, math.min(1, fraction))
+	return ARROW_SPEED + (LOOSE_FULL_SPEED - ARROW_SPEED) * f
+end
+grug_abilities.loose_arrow_speed = loose_speed
 
 local function arrow_damage(player)
 	local stack = equipped_bow(player)
@@ -141,7 +151,9 @@ grug_projectiles.register(ARROW_PROJECTILE, {
 	end,
 })
 
-local function launch(player, ability, count, fraction, effect, captured)
+-- `effect.speed` is the nominal arrow speed (Loose: loose_speed of its draw
+-- fraction); the fixed-power shots leave it nil and fly at ARROW_SPEED.
+local function launch(player, ability, count, effect, captured)
 	if grug_core.refuse_mounted_attack and
 			grug_core.refuse_mounted_attack(player) == true then
 		if captured then cancel_receipt(player, captured) end
@@ -164,14 +176,14 @@ local function launch(player, ability, count, fraction, effect, captured)
 	local receipt = captured or repair_receipt(player, action_id(player, ability))
 	local range = (effect.range or 25)
 		+ (grug_classes.get_race_perk(player, "ability_range_bonus") or 0)
-	-- `fraction` drives the nominal arrow speed; the damage multiplier is the
-	-- draw curve for Loose and 1 for the fixed-power shots.
+	-- The damage multiplier is the draw curve for Loose and 1 for the
+	-- fixed-power shots.
 	local damage = math.floor((base_damage + (effect.damage_add or 0)) *
 		(effect.multiplier or 1))
 	local common = {
 		origin = vector.new(origin),
 		direction = vector.new(direction),
-		speed = ARROW_SPEED * fraction,
+		speed = effect.speed or ARROW_SPEED,
 		max_distance = range,
 	}
 	local launches = {}
@@ -261,7 +273,7 @@ end
 -- its zero pointing range, and the self-imposed draw stance ends.
 local function reset_draw_stack(player)
 	grug_core.clear_move_stance(player, DRAW_STANCE)
-	grug_abilities.crosshair.set_ring(player, nil)
+	grug_abilities.crosshair.set_ring(player, nil, "bow")
 	local source = bow_wield_image(player)
 	local inv = player:get_inventory()
 	for index, stack in ipairs(inv and inv:get_list("main") or {}) do
@@ -356,7 +368,7 @@ local function start_draw(player)
 		action_id = receipt,
 	}
 	set_draw_wear(player, 0)
-	grug_abilities.crosshair.set_ring(player, 0)
+	grug_abilities.crosshair.set_ring(player, 0, "bow")
 	grug_core.set_move_stance(player, DRAW_STANCE, DRAW_STANCE_FACTOR)
 	return true
 end
@@ -379,7 +391,7 @@ local function release_draw(player, rec)
 	local fraction = math.min(1,
 		math.max(0, (core.get_us_time() - rec.started) / (draw_time * 1e6)))
 	-- A press and release observed at the same monotonic timestamp has no
-	-- impulse and therefore no projectile action or ammunition cost.
+	-- draw time and therefore no shot: no projectile action or ammunition cost.
 	if fraction <= 0 then
 		cancel_receipt(player, rec.action_id)
 		finish_draw_wear(player)
@@ -387,8 +399,8 @@ local function release_draw(player, rec)
 	end
 	local effect = loose_effect(player, fraction >= 1)
 	effect.multiplier = draw_multiplier(fraction)
-	local ok, err = launch(player, "loose", effect.count, fraction, effect,
-		rec.action_id)
+	effect.speed = loose_speed(fraction)
+	local ok, err = launch(player, "loose", effect.count, effect, rec.action_id)
 	finish_draw_wear(player)
 	if ok then
 		grug_abilities.delay_strike(player)
@@ -419,7 +431,7 @@ core.register_globalstep(function(dtime)
 				local fraction = math.min(1, (core.get_us_time() - rec.started) /
 					(effective_draw_time(player, bow) * 1e6))
 				set_draw_wear(player, fraction)
-				grug_abilities.crosshair.set_ring(player, fraction)
+				grug_abilities.crosshair.set_ring(player, fraction, "bow")
 			end
 		end
 	end
@@ -458,7 +470,7 @@ grug_abilities.register_ability({
 	range = 25, range_talent = "loose_range_add",
 	description = "LMB: melee Strike or hand digging. Hold RMB to draw the bow; release RMB to shoot. " ..
 		"Requires a visible hostile target within 25 m. A full draw takes 2.5 s; " ..
-		"damage rises from x0.2 on a tap to x3 at full draw.",
+		"damage rises from x0.2 on a tap to x2.25 at full draw.",
 	cast = start_draw,
 })
 
@@ -469,7 +481,7 @@ grug_abilities.register_ability({
 	description = "Fires along your current aim and slows a landed target " ..
 		"by 50% for 4 s.",
 	cast = function(user)
-		return launch(user, "snare_shot", 1, 1, {range = 25, slow = 4})
+		return launch(user, "snare_shot", 1, {range = 25, slow = 4})
 	end,
 })
 
@@ -516,7 +528,7 @@ grug_abilities.register_ability({
 		"Unlocked via talents.",
 	cast = function(user)
 		local duration = grug_classes.get_talent_bonus(user, "pinning_root")
-		return launch(user, "pinning_shot", 1, 1,
+		return launch(user, "pinning_shot", 1,
 			{range = 25, root = duration})
 	end,
 })

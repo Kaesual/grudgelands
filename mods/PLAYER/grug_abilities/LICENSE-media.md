@@ -13,7 +13,8 @@
   `grug_abilities_draw_ring_full.png` (35×35): crosshair and bow draw ring
   drawn procedurally with Pillow by
   `tools/pt_fixes/lane_b/gen_crosshair_textures.py` (own work, 2026-09-28),
-  **CC0**. Re-run the script to change them.
+  **CC0**. Re-run the script to change them. The eating progress ring uses
+  the same frames tinted at runtime (`^[multiply`, `crosshair.lua`).
 
 ## Round 18 active-skill action icons — CC0
 
