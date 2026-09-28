@@ -322,7 +322,7 @@ local function run(site, start, zone, biome)
 	end
 
 	-- 7. Sapling guard and placement.
-	local markers = density.woody_markers()
+	local markers = density.markers("tree")
 	local guard_spot
 	for dz = -30, 30, 3 do
 		for dx = -30, 30, 3 do
@@ -339,7 +339,7 @@ local function run(site, start, zone, biome)
 					local woody_here
 					for _, category in ipairs(density.categories(above.x, above.y, above.z,
 							core.get_node(pos).name, 15) or {}) do
-						if category.class == "woody" then woody_here = true end
+						if category.class == "tree" then woody_here = true end
 					end
 					if woody_here then guard_spot = pos end
 				end
@@ -354,17 +354,17 @@ local function run(site, start, zone, biome)
 		end
 		local cobble = vector.offset(guard_spot, 4, 1, 3)
 		core.set_node(cobble, {name = "default:cobble"})
-		result, node, placed_at, us = evaluate(guard_spot, far, "woody", 0)
+		result, node, placed_at, us = evaluate(guard_spot, far, "tree", 0)
 		check(result == "guard", "cobble 4 nodes away blocks the sapling: " ..
 			tostring(result) .. " (" .. us .. " us)")
 		core.remove_node(cobble)
 		local soil = vector.offset(guard_spot, -5, 0, 2)
 		local saved = core.get_node(soil)
 		core.set_node(soil, {name = "grug_farming:soil"})
-		result = evaluate(guard_spot, far, "woody", 0)
+		result = evaluate(guard_spot, far, "tree", 0)
 		check(result == "guard", "farm soil 5 nodes away blocks the sapling: " .. tostring(result))
 		core.set_node(soil, saved)
-		result, node, placed_at, us = evaluate(guard_spot, far, "woody", 0)
+		result, node, placed_at, us = evaluate(guard_spot, far, "tree", 0)
 		local timer = placed_at and core.get_node_timer(placed_at)
 		check(result == "placed" and core.get_item_group(node or "", "sapling") > 0 and
 			timer and timer:is_started(),

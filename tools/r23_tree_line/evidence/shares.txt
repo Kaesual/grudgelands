@@ -1,0 +1,9 @@
+seed                      land thinning treeless no_shrub     dust snow_cap
+4242                     24849    12.2%     4.9%     2.6%     0.3%     2.0%
+10536739806879207652     24647    11.8%     4.9%     2.5%     0.3%     1.9%
+15140735923413111218     25555    11.2%     4.8%     2.4%     0.4%     1.6%
+1                        25111    13.5%     5.8%     2.9%     0.3%     2.1%
+all                     100162    12.2%     5.1%     2.6%     0.3%     1.9%
+thinning: at or above the tree start; treeless: at or above the tree line;
+no_shrub: 40 or more above the tree line; dust: patchy band; snow_cap: at or
+above the snow line (steep rock faces inside it stay bare stone)
