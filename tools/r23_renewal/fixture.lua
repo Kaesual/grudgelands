@@ -89,9 +89,19 @@ local function column_values_at(x, z)
 end
 local planner = {
 	column_values_at = column_values_at,
+	-- A settlement core at x < -60 (every purpose); its anchor-blend envelope
+	-- at x -60 .. -45, z 30 .. 45 answers only the territory rule (nil
+	-- purpose), as the writer's resource rule sees it; a dry island coast
+	-- envelope at x 65 .. 75, z -20 .. -10 answers territory and vegetation.
 	static_exclusion_values_at = function(x, z, purpose)
-		assert(purpose == "vegetation")
+		assert(purpose == nil or purpose == "vegetation" or purpose == "cave")
 		if x < -60 then return 7, "exclude:anchor:test" end
+		if purpose == nil and x <= -45 and z >= 30 and z <= 45 then
+			return 8, "exclude:anchor:test:blend"
+		end
+		if purpose ~= "cave" and x >= 65 and x <= 75 and z >= -20 and z <= -10 then
+			return 9, "exclude:coast:island_stormscale"
+		end
 		return nil
 	end,
 	housing_mask_id_at = function() return nil end,
@@ -103,8 +113,10 @@ local density = dofile(wp40 .. "/vegetation_density.lua")({
 	p9g_rows = gathering.p9g_sources(), decorations = manifest.decorations,
 	decoration_cover = decoration_cover, support_names = SUPPORTS,
 	template_records = records, column_values_at = column_values_at,
-	overlay_exclusion_at = function(x)
+	overlay_exclusion_at = function(x, z)
 		if x >= 60 and x <= 61 then return "road_corridor" end
+		-- A river bank strip.
+		if x >= 80 and x <= 85 and z >= 0 and z <= 10 then return "water_bank" end
 		return nil
 	end,
 	surface_mob_level_at = function() return 5 end,
@@ -233,7 +245,7 @@ check(gravel_cover and math.abs(gravel_cover.p - 0.075) < 1e-9,
 local dark = {density.categories(20, GROUND + 1, 20, "default:dirt_with_grass", 5)}
 check(dark[1] == nil and dark[2] == "dark", "a dark surface spot grows nothing")
 local road = {density.categories(60, GROUND + 1, 20, "default:dirt_with_grass", 15)}
-check(road[1] == nil and road[2] == "overlay", "a road corridor grows nothing")
+check(road[1] == nil and road[2] == "excluded", "a road corridor grows nothing")
 local saplings = density.woody_species()
 local woody_ids = {}
 for id in pairs(saplings) do woody_ids[#woody_ids + 1] = id end
@@ -262,7 +274,7 @@ check(result == "near_player", "within 20 nodes of a player: nothing")
 result = run(-70, 30, "cover")
 check(result == "excluded", "settlement exclusion: nothing")
 result = run(60, 30, "cover")
-check(result == "overlay", "road corridor: nothing")
+check(result == "excluded", "road corridor: nothing")
 result = run(30, 90, "cover")
 check(result == "protected", "protected territory: nothing")
 sparse[key(33, GROUND, 33)] = "grug_farming:soil"
@@ -284,6 +296,33 @@ result = run(4, -75)
 check(result == "writer_bare", "anchor platform stays bare (" .. tostring(result) .. ")")
 result = run(24, -75)
 check(result == "writer_bare", "surface cave mouth stays bare (" .. tostring(result) .. ")")
+-- Claim exclusions per class, as the writers apply them.
+local function classes_at(x, z)
+	local list, reason = density.categories(x, GROUND + 1, z,
+		"default:dirt_with_grass", 15)
+	if not list then return reason end
+	local keys = {}
+	for _, category in ipairs(list) do keys[#keys + 1] = category.key end
+	return table.concat(keys, ",")
+end
+local blend = classes_at(-50, 38)
+out("anchor blend envelope: " .. blend)
+check(blend == "cover:grug_meadows,woody:grug_meadows",
+	"anchor-blend envelope: no resource plant, cover and trees still grow")
+result = run(-50, 38, "resource")
+check(result == "no_habitat", "anchor-blend envelope: resource renewal refused (" ..
+	tostring(result) .. ")")
+result = run(-50, 36, "cover")
+check(result == "placed", "anchor-blend envelope: cover renews (" .. tostring(result) .. ")")
+local island = classes_at(70, -15)
+out("dry island coast envelope: " .. island)
+check(island == "corn,potato", "dry island coast: only P9G gathering rows grow")
+result = run(70, -15, "resource")
+check(result == "placed", "dry island coast: P9G resource renews (" .. tostring(result) .. ")")
+local bank = classes_at(82, 5)
+out("water bank: " .. bank)
+check(bank == "cover:grug_meadows,woody:grug_meadows",
+	"water bank: cover and trees grow, non-shore resources do not")
 -- Caves: the cave-floor rows grow in the dark, below the planned surface.
 local cave = density.categories(10, CAVE_FLOOR + 1, 10, "default:stone", 0)
 local cave_keys = {}

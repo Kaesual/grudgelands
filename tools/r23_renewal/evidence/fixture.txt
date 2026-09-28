@@ -43,6 +43,15 @@ ok   dry anchor grade grows cover like the writer (placed)
 ok   other land grade stays bare (writer_bare)
 ok   anchor platform stays bare (writer_bare)
 ok   surface cave mouth stays bare (writer_bare)
+anchor blend envelope: cover:grug_meadows,woody:grug_meadows
+ok   anchor-blend envelope: no resource plant, cover and trees still grow
+ok   anchor-blend envelope: resource renewal refused (no_habitat)
+ok   anchor-blend envelope: cover renews (placed)
+dry island coast envelope: corn,potato
+ok   dry island coast: only P9G gathering rows grow
+ok   dry island coast: P9G resource renews (placed)
+water bank: cover:grug_meadows,woody:grug_meadows
+ok   water bank: cover and trees grow, non-shore resources do not
 cave categories cave_cap
 ok   cave floor at y -205: cave cap at 1/1536
 ok   empty cave floor: cave cap placed (placed)
@@ -58,40 +67,40 @@ ok   clear ground: meadow sapling placed (default:bush_sapling)
 ok   saplings stop at the natural tree count (2 placed)
 ok   grug_tree_regrowth off: no sapling
 -- budget
-ok   service 1 visits 49244 within budget
-ok   service 2 visits 21884 within budget
-ok   service 3 visits 27636 within budget
-ok   service 4 visits 35564 within budget
-ok   service 5 visits 13956 within budget
+ok   service 1 visits 44825 within budget
+ok   service 2 visits 36897 within budget
+ok   service 3 visits 54996 within budget
+ok   service 4 visits 49244 within budget
+ok   service 5 visits 47068 within budget
 ok   service 6 visits 41316 within budget
 ok   service 7 visits 33388 within budget
 ok   service 8 visits 27636 within budget
-ok   service 9 visits 44825 within budget
-ok   service 10 visits 41316 within budget
-ok   service 11 visits 43492 within budget
-ok   service 12 visits 43492 within budget
-ok   service 13 visits 29812 within budget
-ok   service 14 visits 13956 within budget
-ok   service 15 visits 39073 within budget
-ok   service 16 visits 39073 within budget
+ok   service 9 visits 49244 within budget
+ok   service 10 visits 35564 within budget
+ok   service 11 visits 33388 within budget
+ok   service 12 visits 54996 within budget
+ok   service 13 visits 47068 within budget
+ok   service 14 visits 47001 within budget
+ok   service 15 visits 29812 within budget
+ok   service 16 visits 13956 within budget
 ok   service 17 visits 13956 within budget
-ok   service 18 visits 13956 within budget
+ok   service 18 visits 50577 within budget
 ok   service 19 visits 43492 within budget
-ok   service 20 visits 58505 within budget
-ok   service 21 visits 41316 within budget
-ok   service 22 visits 21884 within budget
-ok   service 23 visits 36897 within budget
-ok   service 24 visits 23217 within budget
-ok   service 25 visits 50577 within budget
-ok   service 26 visits 27636 within budget
-ok   service 27 visits 49244 within budget
+ok   service 20 visits 50577 within budget
+ok   service 21 visits 35564 within budget
+ok   service 22 visits 13956 within budget
+ok   service 23 visits 21884 within budget
+ok   service 24 visits 41316 within budget
+ok   service 25 visits 41316 within budget
+ok   service 26 visits 31145 within budget
+ok   service 27 visits 54996 within budget
 ok   service 28 visits 21884 within budget
-ok   service 29 visits 6028 within budget
-ok   service 30 visits 41316 within budget
-peak accounted visits 60913 of 150000
-stat at_target 1
-stat placed 39
-stat roll 80
-stat visits 1039371
-DIGEST 1222730876
+ok   service 29 visits 13956 within budget
+ok   service 30 visits 27636 within budget
+peak accounted visits 57884 of 150000
+stat at_target 2
+stat placed 25
+stat roll 93
+stat visits 1160374
+DIGEST 1349223435
 RESULT PASS

@@ -15,7 +15,9 @@ review: pending (coordinator). Design spec: [farming.md](../design/farming.md)
   apple/blueberry `after_destruct` overrides. Fresh-server mode: no cleanup.
 - **New** `grug_farming/renewal.lua` (the service) wired in
   `grug_farming/init.lua` (one throttled globalstep, sapling/natural-node
-  checks at `register_on_mods_loaded`).
+  checks at `register_on_mods_loaded`). `grug_mapgen` moved from
+  `optional_depends` to `depends` in `grug_farming/mod.conf` (review L2):
+  renewal fails closed without the authority.
 - **New** read-only authority `grug_mapgen/wp40/vegetation_density.lua`,
   built in the main environment by `r7_runtime.lua` (authority branch only)
   and exported by `r7_loader.lua` as `grug_mapgen.wp40.vegetation`.
@@ -64,10 +66,15 @@ forest noise go there (and into the planner), renewal code does not change.
   column is searched ±24 around the player's y (caves included), else ±8
   around the planned surface when that lies within 64.
 - A spot: open support accepted by some habitat, air above, loaded, ≥ 20
-  nodes (3-D) from every player, not farm soil; permitted by the planner
-  vegetation exclusion, housing mask, hard rows and
-  `grug_core.world_alterable` (plant and support); land column, no road
-  corridor, banks only for shoreline species; at the surface the writer's
+  nodes (3-D) from every player, not farm soil; permitted by housing mask,
+  hard rows and `grug_core.world_alterable` (plant and support); land column;
+  per class the writer's claim exclusions (review M1/L1): resources the full
+  territory rule (`static_exclusion_values_at(x, z)` then any overlay kind;
+  shoreline rows ignore `exclude:water_bank`, P9G rows the two dry island
+  coast envelopes on land outside a hard foundation), cover and woody the
+  decoration rule (`"vegetation"` purpose plus road corridors; banks allowed),
+  cave rows the `"cave"` purpose as a protection floor (their writer applies
+  none); at the surface the writer's
   host rule (r6_planner `p7_support`, in the authority's `writer_bare`): no
   anchor platform, no land grade except a dry anchor grade outside the
   vegetation exclusion, no sealed river/lake column, no surface cave mouth
@@ -141,10 +148,13 @@ timer (vendored `default`).
   synthetic world): authority numbers, placement, distance, exclusions
   (settlement, road, protected, farm soil, unloaded), caves, density cap,
   sapling guard, saplings stop at the tree target, setting off, per-service
-  budget, and the writer's functional-surface rule (dry anchor grade grows,
-  other land grade, anchor platform and surface cave mouth stay bare). Final
-  pair on frozen bytes: LuaJIT and PUC 5.1.5 output byte-identical, sha256
-  `750638b5…fb55`, `DIGEST 1222730876`,
+  budget, the writer's functional-surface rule (dry anchor grade grows,
+  other land grade, anchor platform and surface cave mouth stay bare) and the
+  per-class claim exclusions (anchor-blend envelope: cover yes, resources no;
+  dry island coast: only P9G rows; water bank: cover and trees, no non-shore
+  resources). Final pair on frozen bytes after the review fixes: LuaJIT and
+  PUC 5.1.5 output byte-identical, sha256 `f92376a8…3c8f`,
+  `DIGEST 1349223435`,
   `RESULT PASS` (`tools/r23_renewal/evidence/fixture.txt`).
 - Engine probe `tools/r23_renewal/run.sh` (isolated headless, fresh world):
   run 4 `RESULT PASS (30 checks, 0 failures)`
@@ -157,7 +167,8 @@ timer (vendored `default`).
   ran (`evidence/probe-run5-fail.txt`; the probe now logs the site column
   when this happens; cause not determined, it did not recur). Run 6, the
   coordinator-approved final run on the final bytes: `RESULT PASS (31 checks,
-  0 failures)` (`evidence/probe.txt`), including a dry anchor grade near the
+  0 failures)` (`evidence/probe.txt`; before the review fixes, which were
+  approved without an engine run), including a dry anchor grade near the
   dwarf start growing cover; no alterable writer-bare functional surface was
   loaded, so that case rests on the fixture. Service cost: mean 191 µs, worst
   1055 µs, worst accounted visits 52 681. Six engine runs in total.

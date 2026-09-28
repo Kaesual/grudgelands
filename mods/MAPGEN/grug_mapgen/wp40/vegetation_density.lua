@@ -374,15 +374,6 @@ return function(deps)
 			names = class_name == "cover" and cover_list or marker_list}
 	end
 
-	-- The natural plant categories at a live site: `x, y, z` the plant
-	-- position, `support` the node name below it and `light` its natural
-	-- light at noon. Returns an array of categories (possibly empty) and the
-	-- site values, or nil and a reason. A category is
-	--   {class = "resource"|"cover"|"woody", key, p (expected plants per
-	--    eligible support), hosts (eligible support names), names (plant or
-	--    marker names counted as present), species (weighted placements),
-	--    shore (true for a shoreline row), divisor (woody: marker columns per
-	--    plant)}.
 	-- Whether the writer keeps a column's planned surface bare of vegetation
 	-- (r6_planner.lua `p7_support`): an anchor platform, any land grade
 	-- except a dry anchor grade outside the vegetation exclusion (the natural
@@ -403,44 +394,98 @@ return function(deps)
 		return cave_low ~= nil and cave_low <= terrain_y and terrain_y <= cave_high
 	end
 
+	-- The two island coast claim envelopes cover whole dry islands; P9G
+	-- gathering sources still grow on their dry land (r7_p9g.lua).
+	local DRY_ISLAND_COAST = {
+		["exclude:coast:island_stormscale"] = true,
+		["exclude:coast:island_wyrmglass"] = true,
+	}
+
+	-- Whether a resource source's writer refuses the column by its claim
+	-- exclusions (world_content.lua and r7_p9g.lua through
+	-- r6_settlement.lua `exclusion_reason(x, z)`, the full territory rule):
+	-- any static exclusion, else any overlay kind (road corridor, inland
+	-- water, water bank). A shoreline row ignores the water bank; a P9G row
+	-- ignores a dry island coast envelope on land outside a hard foundation.
+	local function resource_excluded(source, territory_id, overlay, water,
+			hard_foundation)
+		local id = territory_id or (overlay and "exclude:" .. overlay)
+		if id == nil then return false end
+		if id == "exclude:water_bank" and source.shore ~= "none" then return false end
+		if source.kind == "p9g" and DRY_ISLAND_COAST[id] and water == "land" and
+				not hard_foundation then
+			return false
+		end
+		return true
+	end
+
+	-- The natural plant categories at a live site: `x, y, z` the plant
+	-- position, `support` the node name below it and `light` its natural
+	-- light at noon. Returns an array of categories (possibly empty) and the
+	-- site values, or nil and a reason. A category is
+	--   {class = "resource"|"cover"|"woody", key, p (expected plants per
+	--    eligible support), hosts (eligible support names), names (plant or
+	--    marker names counted as present), species (weighted placements),
+	--    shore (true for a shoreline row), divisor (woody: marker columns per
+	--    plant)}.
+	-- Each class keeps its own writer's claim exclusions: resources the full
+	-- territory rule, cover and woody decorations the "vegetation" rule (road
+	-- corridors too, water banks not). Cave rows follow no claim exclusion in
+	-- the writer; renewal keeps them out of occupied ground (the "cave" rule).
 	function M.categories(x, y, z, support, light)
 		local water, _, zone, biome, _, terrain_y, water_y, river_id, _,
-			functional_kind, _, functional_feature_id = column_values_at(x, z)
+			functional_kind, _, functional_feature_id, _, _, _, _, _, _, _,
+			hard_foundation = column_values_at(x, z)
 		if water ~= "land" or type(biome) ~= "string" then return nil, "not_land" end
-		local overlay = deps.overlay_exclusion_at(x, z)
-		if overlay == "road_corridor" or overlay == "inland_water" then
-			return nil, "overlay"
-		end
-		local bank = overlay == "water_bank"
 		local cave = y <= terrain_y - 2
-		if not cave and writer_bare(x, z, terrain_y, water_y, river_id,
+		if cave then
+			if deps.static_exclusion_values_at(x, z, "cave") ~= nil then
+				return nil, "excluded"
+			end
+		elseif writer_bare(x, z, terrain_y, water_y, river_id,
 				functional_kind, functional_feature_id) then
 			return nil, "writer_bare"
 		end
 		if not cave and (light or 0) < M.SURFACE_MIN_LIGHT then return nil, "dark" end
+		local overlay, territory_id, vegetation_excluded
+		if not cave then
+			overlay = deps.overlay_exclusion_at(x, z)
+			territory_id = select(2, deps.static_exclusion_values_at(x, z))
+			vegetation_excluded = overlay == "road_corridor" or
+				deps.static_exclusion_values_at(x, z, "vegetation") ~= nil
+		end
 		local values = {x = x, y = y, z = z, zone = zone, biome = biome,
 			terrain_y = terrain_y, support = support,
 			mode = cave and "cave" or "surface",
 			level = not cave and deps.surface_mob_level_at(x, z) or nil,
 			relief = not cave and deps.primary_relief_at(x, z) or nil}
-		local result = {}
+		local result, excluded = {}, false
 		for index = 1, #resources do
 			local source = resources[index]
-			if (not bank or source.shore ~= "none") and
-					habitat.habitat_matches(source, values) and
+			if habitat.habitat_matches(source, values) and
 					shore_ok(source, x, y - 1, z) then
-				result[#result + 1] = {class = "resource", key = source.key,
-					p = source.p, hosts = host_list(source, biome, zone),
-					names = {source.node}, shore = source.shore ~= "none",
-					species = {{node = source.node, param2 = 0, weight = 1}}}
+				if not cave and resource_excluded(source, territory_id, overlay, water,
+						hard_foundation) then
+					excluded = true
+				else
+					result[#result + 1] = {class = "resource", key = source.key,
+						p = source.p, hosts = host_list(source, biome, zone),
+						names = {source.node}, shore = source.shore ~= "none",
+						species = {{node = source.node, param2 = 0, weight = 1}}}
+				end
 			end
 		end
-		if not cave and not bank and terrain_y >= 1 then
-			result[#result + 1] = decoration_category("cover", cover[biome], values)
-			if (light or 0) >= M.WOODY_MIN_LIGHT then
-				result[#result + 1] = decoration_category("woody", woody[biome], values)
+		if not cave and terrain_y >= 1 then
+			if vegetation_excluded then
+				excluded = true
+			else
+				result[#result + 1] = decoration_category("cover", cover[biome], values)
+				if (light or 0) >= M.WOODY_MIN_LIGHT then
+					result[#result + 1] = decoration_category("woody", woody[biome], values)
+				end
 			end
 		end
+		if #result == 0 and excluded then return nil, "excluded" end
 		return result, values
 	end
 

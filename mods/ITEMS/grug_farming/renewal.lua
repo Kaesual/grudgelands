@@ -185,14 +185,11 @@ return function(api)
 		return true
 	end
 
-	-- Mutation permission: protected (territory, claims), settlement, POI,
-	-- road/water shapes, housing and hard-row ground never grows renewed
-	-- plants. Where the writer itself keeps ground bare (functional surfaces
-	-- other than a dry anchor grade) is the habitat's answer, not this one.
+	-- Mutation permission: protected ground (territory, claims), housing and
+	-- hard rows never grow renewed plants. The writers' claim exclusions
+	-- (settlements, POIs, roads, water; per plant class) and the ground they
+	-- keep bare are the habitat's answer (vegetation_density.lua).
 	local function permitted(pos, support_pos)
-		if planner.static_exclusion_values_at(pos.x, pos.z, "vegetation") ~= nil then
-			return false, "excluded"
-		end
 		if planner.housing_mask_id_at(pos.x, pos.z) ~= nil then return false, "housing" end
 		if planner.hard_row_at(pos.x, pos.y, pos.z) ~= nil or
 				planner.hard_row_at(support_pos.x, support_pos.y, support_pos.z) ~= nil then
