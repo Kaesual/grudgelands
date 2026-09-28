@@ -22,7 +22,6 @@ local record_cache = setmetatable({}, {__mode = "k"})
 -- book id -> {[output item] = {record, ...}} over that unfiltered book.
 local output_index_cache = {}
 -- Every record book_output_index left out as an inverse route (see there).
-local inverse_routes = {}
 -- [product][single ingredient] = most slots of a one-ingredient route.
 local shaping_cache
 
@@ -363,9 +362,7 @@ local function book_output_index(book)
 		local recipe = source[index]
 		local name = recipe.output_name
 		if recipe.operation ~= "enchant" and type(name) == "string" and name ~= "" then
-			if is_inverse_route(recipe, shaping) then
-				inverse_routes[recipe] = true
-			else
+			if not is_inverse_route(recipe, shaping) then
 				local list = cached[name]
 				if not list then list = {} cached[name] = list end
 				list[#list + 1] = recipe
@@ -744,9 +741,9 @@ local function show_ingredient(player, state, item)
 	state.search, state.output, state.alternative, state.page = "", item, 1, 1
 	local outputs, alternatives = output_groups(listed_records(player,
 		grug_jobs.book_records(player, book, station), ""))
-	local choices = alternatives[item] or {}
+	local choices, shaping = alternatives[item] or {}, shaping_routes()
 	for index = 1, #choices do
-		if not inverse_routes[choices[index]] then state.alternative = index break end
+		if not is_inverse_route(choices[index], shaping) then state.alternative = index break end
 	end
 	for index = 1, #outputs do
 		if outputs[index] == item then
@@ -900,6 +897,5 @@ grug_jobs._reset_book_cache = function()
 	general_cache = nil
 	record_cache = setmetatable({}, {__mode = "k"})
 	output_index_cache = {}
-	inverse_routes = {}
 	shaping_cache = nil
 end
