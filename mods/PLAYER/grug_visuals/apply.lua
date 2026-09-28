@@ -81,12 +81,23 @@ end
 
 -- A visual-only stack lets the native wielditem mesh honor per-stack images.
 -- No wear/action identity enters this cache token, only appearance overrides.
+-- An item whose first-person `wield_image` is re-oriented for the engine's hand
+-- names the image this world entity should show in `_grug_world_wield_image`;
+-- a stack's own `wield_image` meta still wins over it.
 function grug_visuals.wield_appearance(stack)
- local visual = ItemStack(stack:get_name())
+ local name = stack:get_name()
+ local visual = ItemStack(name)
  local source, meta = stack:get_meta(), visual:get_meta()
  for _, key in ipairs({"inventory_image", "inventory_overlay", "wield_image",
    "wield_overlay", "wield_scale", "color"}) do
   meta:set_string(key, source:get_string(key))
+ end
+ if meta:get_string("wield_image") == "" then
+  local def = core.registered_items[name]
+  local world_image = def and def._grug_world_wield_image
+  if world_image then
+   meta:set_string("wield_image", world_image)
+  end
  end
  return visual:to_string()
 end
