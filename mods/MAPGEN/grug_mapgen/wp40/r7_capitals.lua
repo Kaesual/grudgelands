@@ -151,13 +151,26 @@ return function(wp40_directory)
 				if not found then fail(key .. ": required plot missing from the kit: " .. id) end
 			end
 			-- the district that stays beside the capital's civic lake
-			local pin
+			local pin, shore_distance
 			if cfg.lake then
 				local lake
 				for _, row in ipairs(env.authored) do
 					if row.id == cfg.lake then lake = row end
 				end
 				if not lake then fail(key .. ": civic lake row missing: " .. cfg.lake) end
+				-- Round 23: the city wall stops on the civic lake's shores. The
+				-- lake's indicator is m = 0.5 + s / LAKE_PROXY, s the signed
+				-- distance into the lake (`water_authored.lua`), so this is the
+				-- distance of a world column from its water (<= 0 on it).
+				local proxy = env.proxy
+				shore_distance = function(x, z)
+					local reach = 40
+					if x < lake.min_x - reach or x > lake.max_x + reach or
+							z < lake.min_z - reach or z > lake.max_z + reach then
+						return math.huge
+					end
+					return (0.5 - lake.indicator(x, z)) * proxy
+				end
 				local cx = 0.5 * (lake.min_x + lake.max_x) - anchor.x
 				local cz = 0.5 * (lake.min_z + lake.max_z) - anchor.z
 				for _, p in ipairs(plots) do
@@ -187,7 +200,7 @@ return function(wp40_directory)
 				return false
 			end
 			local inputs = {anchor = anchor, sample = session.fitted_values_at,
-				core_landing = core_landing,
+				core_landing = core_landing, shore_distance = shore_distance,
 				rivers = rivers, simplex = env.simplex, road_ends = ends, plots = plots,
 				roads_module = env.roads, network_roads = network.roads}
 			local t0 = os.clock()

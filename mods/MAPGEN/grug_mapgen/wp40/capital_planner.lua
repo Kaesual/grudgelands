@@ -70,6 +70,9 @@ M.DEFAULTS = {
 	WALL_HALF = 3, WALL_KEEP = 8, TURRET_EVERY = 64, WALL_HEIGHT = 7,
 	WALL_SLACK = 1.05,    -- walk slope bound: <= 1/2 node per (node x this)
 	WALL_CLEAR = 1,       -- over water the walk stands at least this far above the surface
+	SHORE_KEEP = 6,       -- no wall within this of a civic lake's water (I.shore_distance)
+	SHORE_MIN_RUN = 12,   -- ... nor on a dry stretch of fewer points from it to the next lake stretch or gate
+	SHORE_TURRET_GAP = 6, -- no ordinary turret within this many points of a shore-end turret
 	GATE_DEPTH = 5, GATE_WIDTH = 7,   -- gatehouse half extents (along / across its axis)
 	PLOT_GAP = 2, SETBACK = 1.0, PUSH = 6, APPROACH_MAX = 5, ENTRY_STEP = 2,
 	FALL = 6, WET_MARGIN = 2,
@@ -103,27 +106,20 @@ M.DEFAULTS = {
 -- They keep the footprint the planted belt was planned with -- wall half 2,
 -- keep 6, gate boxes 3 x 5 -- so those capitals keep their outline, gates,
 -- streets and plots; only the wall's own payload (walk heights, turrets)
--- differs. Their civic lakes lie across the edge for 170-220 nodes, so their
--- walk keeps WALL_CLEAR 5 over water: a level crossing at about the banks'
--- walk, where the default 1 only keeps a walk out of the water. `footing` is
--- how far a pier or pile may reach below the lowest walk or gate floor (the
--- edge's y range, `r7_capital_blueprint.lua`): 24 covers a river bed under a
--- curtain; a pile down to the bed of Kezamba's cenote (19 deep in the
--- Round 23 engine probe) under a walk 5 above its surface needs 26, so the
--- narrow kinds carry 28.
+-- differs. Where their civic lake reaches the outline the wall stops on its
+-- shores (SHORE_KEEP, the `l` flag of the payload): the lake is the edge.
 M.EDGE = {
-	stone = {model = "stone", half = 3, depth = 5, width = 7, turret = 5, footing = 24,
+	stone = {model = "stone", half = 3, depth = 5, width = 7, turret = 5,
 		opts = {WALL_HALF = 3, WALL_HEIGHT = 7, GATE_DEPTH = 5, GATE_WIDTH = 7}},
-	palisade = {model = "palisade", half = 2, depth = 4, width = 6, turret = 3, footing = 24,
+	palisade = {model = "palisade", half = 2, depth = 4, width = 6, turret = 3,
 		opts = {WALL_HALF = 2, WALL_HEIGHT = 5, GATE_DEPTH = 4, GATE_WIDTH = 6,
 			TURRET_EVERY = 56}},
-	stone_narrow = {model = "stone", half = 2, depth = 3, width = 5, turret = 3, footing = 28,
+	stone_narrow = {model = "stone", half = 2, depth = 3, width = 5, turret = 3,
 		opts = {WALL_HALF = 2, WALL_HEIGHT = 6, GATE_DEPTH = 3, GATE_WIDTH = 5,
-			WALL_KEEP = 6, TURRET_EVERY = 48, WALL_CLEAR = 5}},
+			WALL_KEEP = 6, TURRET_EVERY = 48}},
 	palisade_narrow = {model = "palisade", half = 2, depth = 3, width = 5, turret = 3,
-		footing = 28,
 		opts = {WALL_HALF = 2, WALL_HEIGHT = 5, GATE_DEPTH = 3, GATE_WIDTH = 5,
-			WALL_KEEP = 6, TURRET_EVERY = 56, WALL_CLEAR = 5}},
+			WALL_KEEP = 6, TURRET_EVERY = 56}},
 }
 
 -- cardinal directions: E, S, W, N (x east, z south; north = -z)
@@ -1123,10 +1119,9 @@ function M.plan(seed, I, opt)
 		end
 		-- ... and clears the surface however long the crossing. The walk
 		-- starts from the bed, and three neighbour passes cannot lift the
-		-- middle of a long crossing (Round 23: the civic lakes of Lethariel
-		-- and Kezamba lie across their edges for 170-220 nodes, and their
-		-- walk sank up to 15 nodes under the water), so the walk stands at
-		-- least WALL_CLEAR above the surface (M.EDGE).
+		-- middle of a long crossing (Round 23 found a walk 15 nodes under a
+		-- lake), so the walk stands at least WALL_CLEAR above the surface. It
+		-- runs for every capital; it only raises a walk at or below the water.
 		for i = 1, n do
 			if wetp[i] then
 				local wy = WW[gk(pts[i][1], pts[i][2])]
@@ -1169,6 +1164,74 @@ function M.plan(seed, I, opt)
 				end
 			end
 		end
+		-- Round 23 (user ruling 2026-09-28): a capital's CIVIC lake is its edge
+		-- where it reaches the outline (Lethariel's crown lake, Kezamba's
+		-- cenote). The wall stops on both shores: a point within SHORE_KEEP of
+		-- the lake's water carries no wall, a dry stretch shorter than
+		-- SHORE_MIN_RUN from it to the next lake stretch or gate none either,
+		-- and each end is closed by a turret on the first point beyond (a gate
+		-- end by its gatehouse). The flag is the wall's own: gaps, the plot band, the
+		-- streets and the gates are planned exactly as before.
+		local lake = {}
+		wall.lake_points, wall.shore_ends = 0, 0
+		if I.shore_distance then
+			for i = 1, n do
+				if not gap[i] and I.shore_distance(AX + pts[i][1], AZ + pts[i][2]) <= P.SHORE_KEEP then
+					lake[i] = true
+				end
+			end
+			-- from every lake end, walk outward over dry points: a stretch that
+			-- meets another lake stretch or a gate within SHORE_MIN_RUN points
+			-- is shore too (no stub of wall between two towers or between a
+			-- tower and a gatehouse; a gate point itself is never flagged)
+			local changed = true
+			while changed do
+				changed = false
+				for i = 1, n do
+					if lake[i] then
+						for _, step in ipairs({1, -1}) do
+							local run, k = {}, (i - 1 + step) % n + 1
+							while not lake[k] and not gap[k] and #run < P.SHORE_MIN_RUN do
+								run[#run + 1] = k
+								k = (k - 1 + step) % n + 1
+							end
+							if #run > 0 and #run < P.SHORE_MIN_RUN then
+								for _, m in ipairs(run) do lake[m] = true end
+								changed = true
+							end
+						end
+					end
+				end
+			end
+			-- the ends: a turret on the dry point beside every lake stretch,
+			-- unless a gate closes it; no turret stands on the lake or within
+			-- SHORE_TURRET_GAP points of an end turret
+			local ends = {}
+			for i = 1, n do
+				if lake[i] then
+					wall.lake_points = wall.lake_points + 1
+					for _, e in ipairs({(i - 2) % n + 1, i % n + 1}) do
+						if not lake[e] and not gap[e] then ends[e] = true end
+					end
+				end
+			end
+			local kept = {}
+			for _, t in ipairs(turrets) do
+				local clear = not lake[t.i]
+				for e in pairs(ends) do
+					local d = abs(e - t.i)
+					if min(d, n - d) <= P.SHORE_TURRET_GAP then clear = false end
+				end
+				if clear then kept[#kept + 1] = t end
+			end
+			for e in pairs(ends) do
+				kept[#kept + 1] = {x = pts[e][1], z = pts[e][2], i = e, shore = true}
+				wall.shore_ends = wall.shore_ends + 1
+			end
+			table.sort(kept, function(p, q) return p.i < q.i end)
+			turrets = kept
+		end
+		wall.lake = lake
 		wall.turrets, wall.kind = turrets, P.WALL
 		local nwet = 0
 		for i = 1, n do if wetp[i] and not gap[i] then nwet = nwet + 1 end end
@@ -1697,7 +1760,8 @@ end
 --   p <plot id> <x> <z> <turns> <y>          one per placed plot
 --   w <x,z,walk2[flags]> ...                 wall points (~2 nodes apart), the
 --                                            walk in half nodes; flags: g gate
---                                            gap, a over water
+--                                            gap, a over water, l civic lake
+--                                            shore (no wall)
 --   t <wall point index> ...                 turrets
 --   s <x> <z> <r> <y>                        squares (flat paving at y)
 --   q <level> <half> <depth> <x,z> ...       canal polyline (optional)
@@ -1718,8 +1782,9 @@ function M.serialize(plan)
 	end
 	local w = {}
 	for i, p in ipairs(plan.wall.pts) do
-		w[#w + 1] = ("%.1f,%.1f,%d%s%s"):format(p[1], p[2], plan.wall.walk[i],
-			plan.wall.gap[i] and "g" or "", plan.wall.wet[i] and "a" or "")
+		w[#w + 1] = ("%.1f,%.1f,%d%s%s%s"):format(p[1], p[2], plan.wall.walk[i],
+			plan.wall.gap[i] and "g" or "", plan.wall.wet[i] and "a" or "",
+			plan.wall.lake and plan.wall.lake[i] and "l" or "")
 	end
 	out[#out + 1] = "w " .. table.concat(w, " ")
 	local tt = {}
@@ -1758,13 +1823,13 @@ end
 -- The payload back as a table (every consumer reads THIS, in main as in
 -- emerge): {anchor = {id, x, z}, kind, outline = {r...}, gates = {name =
 -- {name, x, z, y, dx, dz}} and gates[1..4] in CARD order, plots = {{id, x,
--- z, turns, y}}, wall = {pts = {{x, z}}, walk, gap, wet, turrets = {index}},
+-- z, turns, y}}, wall = {pts = {{x, z}}, walk, gap, wet, lake, turrets = {index}},
 -- squares = {{x, z, r, y}}, canal = {level, half, depth, pts} or nil}.
 function M.deserialize(text)
 	local function fail(message) error("capital layout: " .. message, 0) end
 	if type(text) ~= "string" then fail("text differs") end
 	local L = {plots = {}, squares = {}, gates = {}, outline = {},
-		wall = {pts = {}, walk = {}, gap = {}, wet = {}, turrets = {}}}
+		wall = {pts = {}, walk = {}, gap = {}, wet = {}, lake = {}, turrets = {}}}
 	local card = {}
 	for i, c in ipairs(CARD) do card[c.name] = i end
 	for line in text:gmatch("[^\n]+") do
@@ -1797,6 +1862,7 @@ function M.deserialize(text)
 				W.walk[i] = tonumber(walk)
 				W.gap[i] = flags:find("g", 1, true) ~= nil
 				W.wet[i] = flags:find("a", 1, true) ~= nil
+				W.lake[i] = flags:find("l", 1, true) ~= nil
 			end
 		elseif tag == "t" then
 			for v in rest:gmatch("%d+") do L.wall.turrets[#L.wall.turrets + 1] = tonumber(v) end
