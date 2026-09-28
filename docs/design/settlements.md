@@ -313,8 +313,8 @@ castle pillar in place of merlons, a marble-tiled walk, slim turrets about
 every 48 nodes each carrying an emberglass lamp, and gatehouses with a marble
 lintel over the passage. It stands on the footprint the belt was planned with
 (wall half 2, gate boxes 3 by 5), so the city inside is laid out exactly as
-before, and where the crown lake reaches the outline it ends on both shores
-in a closed turret.
+before, and where the crown lake reaches the outline it ends on both shores,
+closed by a gatehouse or a closed end turret.
 
 Lethariel also shows what happens when the map does not give a capital four
 usable quarters. Its crown lake reaches into the civic core itself, so the

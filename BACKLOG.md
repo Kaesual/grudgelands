@@ -61,7 +61,7 @@ technical evidence certifies its recorded bytes, never an arbitrary later head.
 | WP-HUD | Exact health/resource HUD | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP-Speed | Shared movement modifiers | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP12 | World atlas | Delivered through R19: whole-atlas zoom/scroll and live markers; waypoints remain WP17. | — |
-| WP13 | [Remaining authored structures and POI roster](docs/planning/work-package-scopes.md#wp13) | Round 20 completes roster art; Round 21 improves access/ground. Core-width discrepancy and GUI acceptance remain. | WP40 ✅, WP43 ✅ |
+| WP13 | [Remaining authored structures and POI roster](docs/planning/work-package-scopes.md#wp13) | Round 20 completes roster art; Round 21 improves access/ground; Round 23 unifies capital walls. Core-width discrepancy and GUI acceptance remain. | WP40 ✅, WP43 ✅ |
 | WP14 | [Offhands delivered; carried-light remainder](docs/planning/work-package-scopes.md#wp14) | Ordinary offhands delivered; moving light deferred. | WP3 |
 | WP15 | Character equipment and bags | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP16 | Canceled historical proposal | Canceled 2026-08-12; no game code shipped. | — |
@@ -81,7 +81,7 @@ technical evidence certifies its recorded bytes, never an arbitrary later head.
 | WP30 | [Trader catalog and final prices](docs/planning/work-package-scopes.md#wp30) | Await final catalog/economy integration. | WP5, WP29, WP44 |
 | WP31 | [Mount acceptance and price calibration](docs/planning/work-package-scopes.md#wp31) | Runtime/services/art delivered; GUI and economy remainder. | WP28, WP40, WP44 |
 | WP32 | [Farming Housing integration and acceptance](docs/planning/work-package-scopes.md#wp32) | 17-family farming and world sources delivered; Housing remainder. | WP10, WP24, WP33 |
-| WP33 | Gathering/source catalog | Delivered; historical receipt below. Current rules: topic design. | — |
+| WP33 | Gathering/source catalog | Delivered; Round 23 replaces exact-baseline renewal with habitat-driven renewal ([receipt](docs/research/round23-habitat-renewal.md)). Current rules: topic design. | — |
 | WP34 | [Deep pressure and renewable camp resources](docs/planning/work-package-scopes.md#wp34) | Open; structures/economy and depth decisions required. | WP6, WP13, WP40, WP43, WP44 |
 | WP35 | Equipped weapon source and appearance | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP36 | Reference submodules and first runtime fixes | Delivered; historical receipt below. Current rules: topic design. | — |
@@ -197,6 +197,18 @@ post-processing work are unchanged.
 
 Only with that data is the v7 plateau (caves everywhere under the
 surface) worth revisiting; Round 9 shipped MAP-C without it (ruling 35).
+
+**Round 23 (2026-09-28):**
+- Full-world preparation now covers the whole column players can trigger,
+  from the neighbourhood's lowest bed minus reach up to above the flight
+  ceiling.
+- A writer fast path skips air chunks the writer provably cannot change.
+- The Round 11 ecology main-environment `on_generated` is removed.
+- Underground chunks remain the dominant Lua cost; they have no safe fast
+  path yet.
+- The engine threading block is unchanged. An own-engine patch was evaluated
+  and deferred.
+- [Receipt](docs/research/round23-full-column-preparation.md).
 
 ### WP49 — R7 source-audit refreeze on a fixed mapgen roster
 

@@ -46,11 +46,14 @@ to fear. Their story will grow as more regions and encounters are completed.
 
 ## Current State
 
-*Last updated: 2026-09-24. Based on [BACKLOG.md](BACKLOG.md) and
+*Last updated: 2026-09-28. Based on [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md).*
 
 The systems above are implemented and installed in the local development build.
-Round 21 improves terrain, POI ground and capital access, resource availability,
+[Round 23](docs/research/round23-completion.md) makes full-world preparation
+cover everything players can see from the surface, underwater or in flight.
+Wild plants, ground cover and trees now regrow around players up to their
+natural density. All six capitals get consistent walls. Round 21 improves terrain, POI ground and capital access, resource availability,
 furnace feedback and fuel rules, inexpensive Bronze arrows, food feedback and
 boar targeting. Lakes and coasts gain bounded visual variation, aquatic plants
 and passive fish. The preceding Round 20 supplies 240 quests, the full 100-anchor

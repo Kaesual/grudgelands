@@ -185,10 +185,19 @@ the race's style. Branch `wp13-capital-walls-shore` off main `f5a545bd`.
   turret whose disc is dry): PASS on the final layouts; on main's layouts it
   fails (12 753 and 6 146 cells over the lakes), so it detects the old
   arcades. Nearest wall cell 8.1 (Lethariel) and 2.9 (Kezamba) nodes off the
-  water. Lethariel's east gatehouse, at its unchanged planned place on the
-  shore, has 52 cells inside the indicator's margin on synthetic ground; the
-  engine dump shows those columns are dry bank. Engine dumps of all four
-  shore ends: 0 edge-material nodes in any water column. Two engine runs
+  water. Lethariel's south gatehouse, at its unchanged planned place on the
+  shore, has 52 cells inside the indicator's margin (outer tower column
+  x=1779, z −1378..−1376): the tower's outer flank stands about one column
+  into the shallow shore, its masonry displacing the water there (engine
+  dump `engine5/wallprobe_lethariel_shore_2.tsv`). The gate position is fixed
+  by the ruling, so this is accepted (review correction). Engine dumps of all
+  four shore ends show no edge material left standing in open water.
+- **Review notes (Low) of the shore follow-up.** (1) End towers are checked
+  only by their point's distance (> 6) from the water; on rare outlines a
+  Kezamba end-tower disc can reach about one column into the edge water
+  (2 of 533 synthetic outline variants, about 0.3 nodes). (2) A gate that
+  finds no dry spot within its slide still stands in the lake as before
+  (D70 rule, unchanged by the ruling). Two engine runs
   (150 s each, seed 4242, isolated, PASS, no ERROR); `check_lua.sh` passes.
 - **Review notes (Low) from the first delivery.** (1) The `WALL_CLEAR` pass
   runs for every capital with the default 1; it only raises a walk at or

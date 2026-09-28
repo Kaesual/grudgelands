@@ -67,6 +67,14 @@ Research and historical evidence: **[docs/research/README.md](docs/research/READ
 
 ## Active work and game status
 
+**Round 23 delivered locally, 2026-09-28.** Full-column world preparation,
+habitat-driven vegetation renewal and capital walls; coordinated by Claude with
+native Opus implementation and independent Opus reviews (user routing for that
+session). [Plan](docs/planning/round23-world-life-plan.md),
+[completion and GUI checklist](docs/research/round23-completion.md). Merged and
+synchronized; no remote push. Next: Phase 2 (tree line, forests, snow) after a
+design discussion with the user.
+
 **Round 21 delivered locally, 2026-09-24.** Reviewed terrain/access, mining,
 furnaces, aquatic detail and playtest fixes merged as `96c40fa3` and synchronized
 from main. [Receipt](docs/research/round21-completion.md),

@@ -2,6 +2,17 @@
 
 Updated 2026-09-28. This is the delivery pointer, not another game specification.
 
+- **Round 23 delivered locally:** full-column world preparation (a finished
+  full-world preparation leaves nothing to generate for walking, diving or
+  flying; fast path for air chunks), habitat-driven vegetation renewal
+  replacing the exact-baseline ecology (saplings behind `grug_tree_regrowth`),
+  and capital walls (Highcourt core wall, Lethariel curtain, Kezamba palisade,
+  taller cores, closed Nhal Veyr bars, walls end at lake shores). All lanes
+  independently reviewed, merged and synchronized to Luanti.
+  [Completion and GUI checklist](research/round23-completion.md),
+  [plan](planning/round23-world-life-plan.md). No push. Phase 2 (tree line)
+  awaits a design discussion.
+
 - **Playtest fixes 2026-09-28 delivered locally:** food click/hold input,
   server-side node UIs, crosshair range feedback with own crosshair, 2.5 s bow
   draw with damage curve and power ring, eating visual, movement stances,
