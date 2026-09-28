@@ -864,11 +864,16 @@ local function loader(directory)
 		-- It wins every ordinary column; the shared mask omits the four authored
 		-- gatehouse bands and the callback preserves the four corner drums.
 		--
-		-- IRON BARS ON THE RHYTHM, which is where the contract's "candles and
-		-- iron bars" reaches the core's own edge: every fourth column of the
-		-- parapet carries a barred opening instead of a merlon -- the palette's
-		-- `window`, an `xpanes` flat pane, standing in the gap between two
-		-- courses of masonry.
+		-- IRON BARS BETWEEN THE MERLONS, which is where the contract's "candles
+		-- and iron bars" reaches the core's own edge: every fourth column of
+		-- the parapet is a capped merlon and the three columns between two
+		-- merlons are a barred opening -- the palette's `window`, an `xpanes`
+		-- flat pane spanning its column along the wall. Until Round 23 only the
+		-- middle one of those three columns carried a bar, so every opening
+		-- showed a one-node gap of air on each side of its bar, between the bar
+		-- and the merlon. Pane connection was not the cause: a flat pane spans
+		-- its whole node along the wall, and `parts.resolve_panes` below keeps
+		-- every bar of the course flat and aligned with the wall.
 		local parapet, bars = 0, 0
 		precinct_ring.walk(function(x, z)
 			precinct_ring.clear_wallmounted(buf, parts, x, z, 4)
@@ -880,7 +885,7 @@ local function loader(directory)
 				if not above or above.name == "air" then
 					buf:put(x, 4, z, CAP)
 				end
-			elseif (x + z) % 4 == 2 then
+			else
 				buf:put(x, 3, z, undead.node("window"),
 					math.abs(z) == precinct_ring.RADIUS and 0 or 3)
 				bars = bars + 1

@@ -302,10 +302,22 @@ return function(dependencies)
 			local zones_session, planner_source = r5_module.new_source_runtime(
 				full_seed_string, configured_water_level,
 				content_module.r5_manifest_values())
+			-- Read-only decoration cover by node name for runtime vegetation
+			-- renewal (vegetation_density.lua): the per-support factor the
+			-- planner budgets each decoration with, 0 where the node is no host.
+			local support_names = {}
+			for index = 1, #content_contract.content_names do
+				support_names[index] = content_contract.content_names[index]
+			end
 			return zones_session, {
 				schema = "grug_wp40_r6_authority_identity_v1",
 				template_records = templates_module.records(),
 				planner_source = planner_source,
+				decoration_support_names = support_names,
+				decoration_cover = function(id, biome, support_name)
+					local ref = content_module.content_ref(support_name)
+					return ref and content_module.decoration_cover(id, biome, ref) or 0
+				end,
 			}
 		end
 

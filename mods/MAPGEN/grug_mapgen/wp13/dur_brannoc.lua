@@ -702,16 +702,19 @@ local function loader(directory)
 		-- The protected parapet is walked round the whole pad after the content.
 		-- It wins every ordinary column; the shared mask omits the four authored
 		-- gatehouse bands and the callback preserves the four corner drums.
+		-- Three courses and a merlon with its cap on every fourth column
+		-- (Round 23: one course taller than the two-course parapet it was).
 		local parapet = 0
 		precinct_ring.walk(function(x, z)
-			precinct_ring.clear_wallmounted(buf, parts, x, z, 4)
+			precinct_ring.clear_wallmounted(buf, parts, x, z, 5)
 			buf:put(x, 1, z, STONE)
 			buf:put(x, 2, z, STONE)
+			buf:put(x, 3, z, STONE)
 			if (x + z) % 4 == 0 then
-				buf:put(x, 3, z, STONE)
-				local above = buf:at(x, 5, z)
+				buf:put(x, 4, z, STONE)
+				local above = buf:at(x, 6, z)
 				if not above or above.name == "air" then
-					buf:put(x, 4, z, CAP)
+					buf:put(x, 5, z, CAP)
 				end
 			end
 			parapet = parapet + 1

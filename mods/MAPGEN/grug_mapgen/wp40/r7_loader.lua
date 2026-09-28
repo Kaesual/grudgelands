@@ -370,6 +370,8 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 		manifest_sha256 = built.manifest.sha256, full_seed = built.full_seed,
 		settlement_sockets = socket_count,
 		zones = rawget(_G, "grug_zones"), planner_source = built.planner_source,
+		-- Natural vegetation density for runtime renewal (vegetation_density.lua).
+		vegetation = built.vegetation,
 		preparation_source = built.preparation_source,
 		-- The inland water layout for the world map: its text (cache key) and
 		-- river centrelines (the relief grid is too coarse for rivers).

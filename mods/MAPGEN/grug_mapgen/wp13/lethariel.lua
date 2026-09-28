@@ -1,5 +1,7 @@
--- Lethariel: the elf capital, the second OPEN capital of the game, and the
--- only one of the six that stands on a lake.
+-- Lethariel: the elf capital, and the only one of the six that stands on a
+-- lake. Open until Round 23; since then its city edge is a light stone
+-- curtain (`city_edge.lua`) and its civic core a light wall of the same pale
+-- stone.
 --
 -- This file is the CORE composition of docs/research/wp13-capitals-pois-
 -- contract.md section 2.1 -- the 96 x 96 civic core, anchor-relative exactly
@@ -10,7 +12,7 @@
 -- The contract's section 2.4 elf row is "silverwood and marble, tall narrow
 -- halls, colonnades, lantern-lit walks, groves between plots, no curtain
 -- wall", and its section 4 makes Lethariel one of the two capitals with an
--- open edge. The Silverleaf palette is the city, marble is the signature, and
+-- open edge (the Round 23 walls replaced it). The Silverleaf palette is the city, marble is the signature, and
 -- the castle kit appears only where it reads elven: pillars and paving.
 --
 -- THE MERE, and why this core is not a square.
@@ -723,15 +725,30 @@ local function loader(directory)
 				" silverwood standards found open ground", 0)
 		end
 
-		-- 10. THE CORE EDGE: groves and hedges, not masonry. Lethariel's
-		-- precinct is open, so its boundary is a clipped silverwood hedge with
-		-- the standards of section 9 standing behind it. The protected hedge wins
-		-- every dry non-gate column; only the mere itself replaces the boundary.
-		local hedge = 0
+		-- 10. THE CORE EDGE: a light wall of the city curtain's stone (Round
+		-- 23, in place of the silverwood hedge). One node thick on the
+		-- hedge's columns, in the civic quarter's pale cut: two courses of
+		-- silver sandstone brick, a marble coping at y 3 -- the height of the
+		-- marble band the three pale gatehouses carry -- and a slender
+		-- colonnette of the pale castle pillar, base and top, on every other
+		-- column, which is the merlon the outer curtain carries too. The
+		-- protected wall wins every dry non-gate column; only the mere itself
+		-- replaces the boundary.
+		local PRECINCT_STONE = pale.node("castle_wall")
+		local PRECINCT_COPING = pale.node("signature")
+		local PIN_BASE = pale.variant("pillar", "_bottom")
+		local PIN_TOP = pale.variant("pillar", "_top")
+		local wall = 0
 		precinct_ring.walk(function(x, z)
-			precinct_ring.clear_wallmounted(buf, parts, x, z, 4)
-			hedge = hedge + dressing.hedge_line(buf, elf_palette,
-				x, z, x, z, 3)
+			precinct_ring.clear_wallmounted(buf, parts, x, z, 5)
+			buf:put(x, 1, z, PRECINCT_STONE)
+			buf:put(x, 2, z, PRECINCT_STONE)
+			buf:put(x, 3, z, PRECINCT_COPING)
+			if (x + z) % 2 == 0 then
+				buf:put(x, 4, z, PIN_BASE)
+				buf:put(x, 5, z, PIN_TOP)
+			end
+			wall = wall + 1
 		end, {skip = function(x, z) return not dry(x, z) end})
 
 		-- 11. Undergrowth on the turf between the quarters.
@@ -930,7 +947,7 @@ local function loader(directory)
 				quay_columns = quay,
 				causeway_columns = causeway,
 				lantern_pillars = lanterns,
-				hedge_columns = hedge,
+				precinct_wall_columns = wall,
 				standards = standards,
 			},
 		}
