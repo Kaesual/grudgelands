@@ -10,40 +10,45 @@ local furnace_fire_sounds = {}
 -- Formspecs
 --
 
-function default.get_furnace_active_formspec(fuel_percent, item_percent)
+-- GRUG PATCH: both builders take the furnace position; the UI opens
+-- server-side (default/node_formspec.lua), so its lists name the node
+-- inventory as `nodemeta:<pos>` instead of `context`.
+function default.get_furnace_active_formspec(fuel_percent, item_percent, pos)
+	local loc = pos and default.node_formspec.location(pos) or "context"
 	return "size[8,8.5]"..
-		"list[context;src;2.75,0.5;1,1;]"..
-		"list[context;fuel;2.75,2.5;1,1;]"..
+		"list["..loc..";src;2.75,0.5;1,1;]"..
+		"list["..loc..";fuel;2.75,2.5;1,1;]"..
 		"image[2.75,1.5;1,1;default_furnace_fire_bg.png^[lowpart:"..
 		(fuel_percent)..":default_furnace_fire_fg.png]"..
 		"image[3.75,1.5;1,1;gui_furnace_arrow_bg.png^[lowpart:"..
 		(item_percent)..":gui_furnace_arrow_fg.png^[transformR270]"..
-		"list[context;dst;4.75,0.96;2,2;]"..
+		"list["..loc..";dst;4.75,0.96;2,2;]"..
 		"list[current_player;main;0,4.25;8,1;]"..
 		"list[current_player;main;0,5.5;8,3;8]"..
-		"listring[context;dst]"..
+		"listring["..loc..";dst]"..
 		"listring[current_player;main]"..
-		"listring[context;src]"..
+		"listring["..loc..";src]"..
 		"listring[current_player;main]"..
-		"listring[context;fuel]"..
+		"listring["..loc..";fuel]"..
 		"listring[current_player;main]"..
 		default.get_hotbar_bg(0, 4.25)
 end
 
-function default.get_furnace_inactive_formspec()
+function default.get_furnace_inactive_formspec(pos)
+	local loc = pos and default.node_formspec.location(pos) or "context"
 	return "size[8,8.5]"..
-		"list[context;src;2.75,0.5;1,1;]"..
-		"list[context;fuel;2.75,2.5;1,1;]"..
+		"list["..loc..";src;2.75,0.5;1,1;]"..
+		"list["..loc..";fuel;2.75,2.5;1,1;]"..
 		"image[2.75,1.5;1,1;default_furnace_fire_bg.png]"..
 		"image[3.75,1.5;1,1;gui_furnace_arrow_bg.png^[transformR270]"..
-		"list[context;dst;4.75,0.96;2,2;]"..
+		"list["..loc..";dst;4.75,0.96;2,2;]"..
 		"list[current_player;main;0,4.25;8,1;]"..
 		"list[current_player;main;0,5.5;8,3;8]"..
-		"listring[context;dst]"..
+		"listring["..loc..";dst]"..
 		"listring[current_player;main]"..
-		"listring[context;src]"..
+		"listring["..loc..";src]"..
 		"listring[current_player;main]"..
-		"listring[context;fuel]"..
+		"listring["..loc..";fuel]"..
 		"listring[current_player;main]"..
 		default.get_hotbar_bg(0, 4.25)
 end
@@ -51,6 +56,24 @@ end
 --
 -- Node callback functions that are the same for active and inactive furnace
 --
+
+-- GRUG PATCH: the timer records the two progress percentages instead of a
+-- meta formspec; open viewers are re-shown when the formspec changes.
+local FURNACE_NODES = {"default:furnace", "default:furnace_active"}
+
+local function furnace_formspec(pos)
+	local meta = core.get_meta(pos)
+	if core.get_node(pos).name == "default:furnace_active" then
+		return default.get_furnace_active_formspec(meta:get_int("fuel_percent"),
+			meta:get_int("item_percent"), pos)
+	end
+	return default.get_furnace_inactive_formspec(pos)
+end
+
+local function furnace_rightclick(pos, node, clicker, itemstack)
+	default.node_formspec.show(clicker, pos, furnace_formspec, FURNACE_NODES)
+	return itemstack
+end
 
 local function can_dig(pos, player)
 	local meta = core.get_meta(pos)
@@ -271,7 +294,6 @@ local function furnace_node_timer(pos, elapsed)
 	--
 	-- Update formspec, infotext and node
 	--
-	local formspec
 	local item_state
 	local item_percent = 0
 	if cookable then
@@ -297,7 +319,7 @@ local function furnace_node_timer(pos, elapsed)
 		active = true
 		local fuel_percent = 100 - math.floor(fuel_time / fuel_totaltime * 100)
 		fuel_state = S("@1%", fuel_percent)
-		formspec = default.get_furnace_active_formspec(fuel_percent, item_percent)
+		meta:set_int("fuel_percent", fuel_percent)
 		swap_node(pos, "default:furnace_active")
 		-- make sure timer restarts automatically
 		result = true
@@ -332,7 +354,6 @@ local function furnace_node_timer(pos, elapsed)
 		if fuellist and not fuellist[1]:is_empty() then
 			fuel_state = S("@1%", 0)
 		end
-		formspec = default.get_furnace_inactive_formspec()
 		swap_node(pos, "default:furnace")
 		-- stop timer on the inactive furnace
 		core.get_node_timer(pos):stop()
@@ -356,8 +377,9 @@ local function furnace_node_timer(pos, elapsed)
 	meta:set_float("fuel_totaltime", fuel_totaltime)
 	meta:set_float("fuel_time", fuel_time)
 	meta:set_float("src_time", src_time)
-	meta:set_string("formspec", formspec)
+	meta:set_int("item_percent", item_percent)
 	meta:set_string("infotext", infotext)
+	default.node_formspec.refresh(pos)
 
 	return result
 end
@@ -385,6 +407,10 @@ core.register_node("default:furnace", apply_logger({
 	sounds = default.node_sound_stone_defaults(),
 
 	can_dig = can_dig,
+	on_rightclick = furnace_rightclick,
+	after_destruct = function(pos)
+		default.node_formspec.refresh(pos)
+	end,
 
 	on_timer = furnace_node_timer,
 
@@ -453,6 +479,10 @@ core.register_node("default:furnace_active", apply_logger({
 	end,
 
 	can_dig = can_dig,
+	on_rightclick = furnace_rightclick,
+	after_destruct = function(pos)
+		default.node_formspec.refresh(pos)
+	end,
 
 	allow_metadata_inventory_put = allow_metadata_inventory_put,
 	allow_metadata_inventory_move = allow_metadata_inventory_move,

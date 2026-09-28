@@ -27,6 +27,29 @@ end
 
 local spawner_default = "mobs_animal:pumba 10 15 0 0 0"
 
+-- GRUG PATCH: server-side settings form. A formspec stored in node metadata
+-- is opened by the client itself on RMB, before the server can decide
+-- anything; one session per player remembers which spawner the open form
+-- belongs to, and every submission is validated (range, node) before it
+-- reaches on_receive_fields.
+local FORMNAME = "mobs:spawner_settings"
+local MAX_DISTANCE = 10
+local sessions = {} -- [player name] = spawner pos
+
+local function spawner_formspec(pos)
+
+	local head = S("(mob name) (min light) (max light) (amount)"
+			.. " (player distance) (Y offset)")
+
+	local esc = core.formspec_escape
+
+	return "size[10,3.5]"
+		.. "label[0.1,0.3;" .. core.formspec_escape(head) .. "]"
+		.. "field[0.5,1.8;9.5,0.8;text;" .. S("Command:")
+		.. ";" .. esc(core.get_meta(pos):get_string("command")) .. "]"
+		.. "button_exit[3.5,2.7;3,1;mob_spawner;" .. esc(FS("Done")) .. "]"
+end
+
 core.register_node("mobs:spawner", {
 	tiles = {"mob_spawner.png"},
 	drawtype = "glasslike",
@@ -39,30 +62,29 @@ core.register_node("mobs:spawner", {
 	_mcl_blast_resistance = 5,
 	sounds = mobs.node_sound_stone_defaults(),
 
+	-- GRUG PATCH: the settings form opens server-side from on_rightclick
+	-- (the former `on_right_click` was a misspelled no-op); no formspec is
+	-- stored in node metadata, and the stored command is filled in
+	-- explicitly instead of the meta-only `${command}` substitution.
 	on_construct = function(pos)
 
 		local meta = core.get_meta(pos)
-
-		-- setup formspec
-		local head = S("(mob name) (min light) (max light) (amount)"
-				.. " (player distance) (Y offset)")
-
-		local esc = core.formspec_escape
-
-		-- text entry formspec
-		meta:set_string("formspec", "size[10,3.5]"
-			.. "label[0.1,0.3;" .. core.formspec_escape(head) .. "]"
-			.. "field[0.5,1.8;9.5,0.8;text;" .. S("Command:")
-			.. ";${command}]"
-			.. "button_exit[3.5,2.7;3,1;mob_spawner;" .. esc(FS("Done")) .. "]")
 
 		meta:set_string("infotext", S("Spawner Not Active (enter settings)"))
 		meta:set_string("command", spawner_default)
 	end,
 
-	on_right_click = function(pos, placer)
+	on_rightclick = function(pos, node, clicker, itemstack)
 
-		if core.is_protected(pos, placer:get_player_name()) then return end
+		if clicker and clicker.is_player and clicker:is_player() then
+			local name = clicker:get_player_name()
+			local at = vector.new(pos.x, pos.y, pos.z)
+
+			sessions[name] = at
+			core.show_formspec(name, FORMNAME, spawner_formspec(at))
+		end
+
+		return itemstack
 	end,
 
 	on_receive_fields = function(pos, formname, fields, sender)
@@ -100,6 +122,37 @@ core.register_node("mobs:spawner", {
 		end
 	end
 })
+
+core.register_on_player_receive_fields(function(player, formname, fields)
+
+	if formname ~= FORMNAME then return end
+
+	local name = player:get_player_name()
+	local pos = sessions[name]
+
+	if not pos then return true end
+
+	if fields.quit then sessions[name] = nil end
+
+	local node = core.get_node_or_nil(pos)
+	local at = player:get_pos()
+
+	if not node or node.name ~= "mobs:spawner" or not at
+	or get_distance(at, pos) > MAX_DISTANCE then
+		sessions[name] = nil
+		core.close_formspec(name, FORMNAME)
+		return true
+	end
+
+	core.registered_nodes["mobs:spawner"].on_receive_fields(
+			vector.new(pos.x, pos.y, pos.z), formname, fields, player)
+
+	return true
+end)
+
+core.register_on_leaveplayer(function(player)
+	sessions[player:get_player_name()] = nil
+end)
 
 -- spawner abm
 

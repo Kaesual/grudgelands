@@ -2486,34 +2486,44 @@ minetest.register_node("default:lava_flowing", {
 -- Tools / "Advanced" crafting / Non-"natural"
 --
 
-local bookshelf_formspec =
-	"size[8,7;]" ..
-	"list[context;books;0,0.3;8,2;]" ..
-	"list[current_player;main;0,2.85;8,1;]" ..
-	"list[current_player;main;0,4.08;8,3;8]" ..
-	"listring[context;books]" ..
-	"listring[current_player;main]" ..
-	default.get_hotbar_bg(0,2.85)
+-- GRUG PATCH: the bookshelf UI opens server-side from on_rightclick
+-- (default/node_formspec.lua); no formspec is stored in node metadata.
+local function bookshelf_formspec(pos)
+	local loc = default.node_formspec.location(pos)
+	local formspec =
+		"size[8,7;]" ..
+		"list[" .. loc .. ";books;0,0.3;8,2;]" ..
+		"list[current_player;main;0,2.85;8,1;]" ..
+		"list[current_player;main;0,4.08;8,3;8]" ..
+		"listring[" .. loc .. ";books]" ..
+		"listring[current_player;main]" ..
+		default.get_hotbar_bg(0,2.85)
+	local invlist = core.get_meta(pos):get_inventory():get_list("books")
+	-- Inventory slots overlay
+	local bx, by = 0, 0.3
+	for i = 1, 16 do
+		if i == 9 then
+			bx = 0
+			by = by + 1
+		end
+		if not invlist or not invlist[i] or invlist[i]:is_empty() then
+			formspec = formspec ..
+				"image[" .. bx .. "," .. by .. ";1,1;default_bookshelf_slot.png]"
+		end
+		bx = bx + 1
+	end
+	return formspec
+end
 
 local function update_bookshelf(pos)
 	local meta = minetest.get_meta(pos)
 	local inv = meta:get_inventory()
 	local invlist = inv:get_list("books")
 
-	local formspec = bookshelf_formspec
-	-- Inventory slots overlay
-	local bx, by = 0, 0.3
 	local n_written, n_empty = 0, 0
 	for i = 1, 16 do
-		if i == 9 then
-			bx = 0
-			by = by + 1
-		end
 		local stack = invlist[i]
-		if stack:is_empty() then
-			formspec = formspec ..
-				"image[" .. bx .. "," .. by .. ";1,1;default_bookshelf_slot.png]"
-		else
+		if not stack:is_empty() then
 			local metatable = stack:get_meta():to_table() or {}
 			if metatable.fields and metatable.fields.text then
 				n_written = n_written + stack:get_count()
@@ -2521,14 +2531,13 @@ local function update_bookshelf(pos)
 				n_empty = n_empty + stack:get_count()
 			end
 		end
-		bx = bx + 1
 	end
-	meta:set_string("formspec", formspec)
 	if n_written + n_empty == 0 then
 		meta:set_string("infotext", S("Empty Bookshelf"))
 	else
 		meta:set_string("infotext", S("Bookshelf (@1 written, @2 empty books)", n_written, n_empty))
 	end
+	default.node_formspec.refresh(pos)
 end
 
 local default_bookshelf_def = {
@@ -2545,6 +2554,14 @@ local default_bookshelf_def = {
 		local inv = meta:get_inventory()
 		inv:set_size("books", 8 * 2)
 		update_bookshelf(pos)
+	end,
+	on_rightclick = function(pos, node, clicker, itemstack)
+		default.node_formspec.show(clicker, pos, bookshelf_formspec)
+		return itemstack
+	end,
+	-- Close open viewers of a dug or replaced shelf.
+	after_destruct = function(pos)
+		default.node_formspec.refresh(pos)
 	end,
 	can_dig = function(pos,player)
 		local inv = minetest.get_meta(pos):get_inventory()
@@ -2576,6 +2593,11 @@ local default_bookshelf_def = {
 default.set_inventory_action_loggers(default_bookshelf_def, "bookshelf")
 minetest.register_node("default:bookshelf", default_bookshelf_def)
 
+local function sign_formspec(pos)
+	return "field[text;;" ..
+		core.formspec_escape(core.get_meta(pos):get_string("text")) .. "]"
+end
+
 local function register_sign(material, desc, def)
 	minetest.register_node("default:sign_wall_" .. material, {
 		description = desc,
@@ -2599,9 +2621,16 @@ local function register_sign(material, desc, def)
 		-- GRUG PATCH: no pre-release mapblock-format conversion flags.
 		sounds = def.sounds,
 
-		on_construct = function(pos)
-			local meta = minetest.get_meta(pos)
-			meta:set_string("formspec", "field[text;;${text}]")
+		-- GRUG PATCH: the text field opens server-side from on_rightclick
+		-- (default/node_formspec.lua) with the current text filled in
+		-- explicitly; no formspec is stored in node metadata.
+		on_rightclick = function(pos, node, clicker, itemstack)
+			default.node_formspec.show(clicker, pos, sign_formspec)
+			return itemstack
+		end,
+		-- Close open viewers of a dug or replaced sign.
+		after_destruct = function(pos)
+			default.node_formspec.refresh(pos)
 		end,
 		on_receive_fields = function(pos, formname, fields, sender)
 			if not fields.quit then
