@@ -28,6 +28,10 @@
 --     wall is an arcade: the walk on a three-course arch, piers down to the
 --     bed every few points, the river passing below (the palisade: a timber
 --     deck on piles);
+--   * a capital's civic lake (points flagged `l`, Lethariel and Kezamba) is
+--     the edge itself: no wall stands on it or within the planner's
+--     SHORE_KEEP of its water, and a turret on the dry point beside it closes
+--     each end (its walk passage stays shut on the lake side);
 --   * a gatehouse owns its box: the avenue runs through the passage (the
 --     road writer paves it) and the gatehouse writes nothing below the lintel
 --     there.
@@ -269,8 +273,9 @@ local function loader(directory)
 					local top = walk_at(i, u)
 					local crown = top + 5
 					for y = ground - 2, crown - 1 do put(y, R.face) end
-					if d and d <= 1.5 then
-						-- the walk passes through the turret
+					if d and d <= 1.5 and not (W.lake[i] or W.lake[i % n + 1]) then
+						-- the walk passes through the turret (a shore-end
+						-- turret stays closed on its lake side)
 						for y = top + 1, top + 3 do put(y, "air") end
 						put(top, R.walk)
 					end
@@ -288,7 +293,7 @@ local function loader(directory)
 			end
 			local d, i, u, outside = nearest(lx, lz)
 			if not d or d > HALF + 0.5 then return end
-			if W.gap[i] or W.gap[i % n + 1] then return end
+			if W.gap[i] or W.gap[i % n + 1] or W.lake[i] or W.lake[i % n + 1] then return end
 			local top, slab = walk_at(i, u)
 			local edge_lane = d > HALF - 0.5
 			local wet = W.wet[i] or (water ~= nil and water > ground)
@@ -362,7 +367,7 @@ local function loader(directory)
 			end
 			local d, i, u, outside = nearest(lx, lz)
 			if not d or d > HALF + 0.5 then return end
-			if W.gap[i] or W.gap[i % n + 1] then return end
+			if W.gap[i] or W.gap[i % n + 1] or W.lake[i] or W.lake[i % n + 1] then return end
 			local top, slab = walk_at(i, u)
 			local wet = W.wet[i] or (water ~= nil and water > ground)
 			if outside and d > HALF - 1.5 then

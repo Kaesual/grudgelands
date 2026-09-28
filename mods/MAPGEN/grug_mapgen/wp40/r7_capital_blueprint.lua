@@ -139,8 +139,8 @@ function M.source(key, layout, text, kit)
 	for _, p in ipairs(layout.wall.pts) do stretch(p[1], p[2]) end
 	for c = 1, 4 do stretch(layout.gates[c].x, layout.gates[c].z) end
 	-- the heights the edge stands between (full-world preparation bounds):
-	-- piers, piles and footings reach down to the ground or a river or lake
-	-- bed below the walk (the edge kind's `footing`), gatehouses, turrets,
+	-- piers, piles and footings reach down to the ground or a river bed
+	-- below the walk (no wall stands in a civic lake), gatehouses, turrets,
 	-- merlons and turret lamps rise at most 8 above the highest walk or 13
 	-- above a gate floor
 	local y_low, y_high = math.huge, -math.huge
@@ -161,7 +161,7 @@ function M.source(key, layout, text, kit)
 			count = #layout.wall.pts,
 			reach = {min_x = math.floor(min_x - extra), max_x = math.ceil(max_x + extra),
 				min_z = math.floor(min_z - extra), max_z = math.ceil(max_z + extra)},
-			y_min = math.floor(y_low) - dims.footing, y_max = math.ceil(y_high) + 8,
+			y_min = math.floor(y_low) - 24, y_max = math.ceil(y_high) + 8,
 			names = names,
 			make = function(anchor)
 				return city_edge.new(cfg.race, dims.model, layout, dims, anchor)
