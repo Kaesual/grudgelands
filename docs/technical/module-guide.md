@@ -197,7 +197,14 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   WP39's binary small gold crosshair ring is shown once while a selected
   swing is weapon-ready, hidden on a valid attempt, absent for non-swings, no
   smooth progress and no inventory writes; a weapon swap follows the new
-  clock's readiness and lifecycle cleanup removes it. It also ships permanent
+  clock's readiness and lifecycle cleanup removes it. Target validity is a
+  separate overlay (`grug_abilities/crosshair.lua`, `classes.md` §2b "Crosshair
+  feedback"): it reads `grug_abilities.aimed_target` (the side-effect-free aim
+  authority the hostile/friendly casts wrap) and `input.aims_at_interactive`,
+  and owns the bow draw ring that `scout.lua`'s `reset_draw_stack` hides. The
+  game's `crosshair.png`/`object_crosshair.png` are byte-identical on purpose;
+  regenerate them with `tools/pt_fixes/lane_b/gen_crosshair_textures.py`.
+  It also ships permanent
   admin-only per-player `/combatdebug`; disabled sites do no ray/log
   formatting/globalstep work beyond the enabled check.
   Hostile casts never use enemy memory. Round 17's targeted projectile contract

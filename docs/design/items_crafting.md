@@ -2090,12 +2090,13 @@ attribution-requiring sound, not two; port ≈ 1000 lines incl.
 `vl_projectile`, §1.2). The item/ammunition foundation and Scout ability
 consumer are active:
 
-- **Bow family on the weapon curve**: full-charge damage = the 1H curve
-  (8/13/19/24 at ilvl 12/27/42/57) at 25 m range, charge 0.5 s (mcl
-  hold-pattern), partial charge scales linearly. One bow per material tier,
+- **Bow family on the weapon curve**: bow damage = the 1H curve
+  (8/13/19/24 at ilvl 12/27/42/57) at 25 m range, full draw 2.5 s (mcl
+  hold-pattern); Loose multiplies it by `0.2 + 2.8 f²` of the draw fraction
+  (×3 at full draw, `combat_stats.md`). One bow per material tier,
   material-named like everything else (§3.0.3). Its ordinary affix pool is
   Dexterity, Crit, draw speed, HP and Mana; draw speed uses the weapon-family
-  attack-speed channel to shorten charge time.
+  attack-speed channel to shorten draw time.
 - **Arrows** stack to **200** per inventory/quiver slot (user playtest ruling
   2026-09-20); new Scouts receive 200. Ammo also has a targeted projectile entity;
   craft 20/batch: 1 iron bar + 4 sticks + 4 feathers (sharp feathers —
