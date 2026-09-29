@@ -193,6 +193,8 @@ against it from the start):
 | **C — Interfaces** | The stone formspec (fuel slot, remaining time, permission list, pick up); the Housing Manager in the six capitals (issuing, explanation text; check whether a capital service socket exists or one must be added); the character page status | A's interface |
 | **D — Home stone** | The claim as the `grug_home` target, the 30-minute cooldown, arrival in the cube, fallback to the faction innkeeper | A's interface |
 | **G — Claim spawn guard** | Ruling 24: hostile spawns refused inside active claims | A's interface |
+| **A2 — Claim distance** | Ruling 27 on top of A and E; merged end-to-end smoke | A, E merged |
+| **H — Capital required plots** | Required and named capital plots run all fallback passes before fill (load failure on ~1.3 % of seeds; D70) | — |
 | **E — Road and POI protection** | Rulings 15–17: the segment corridor and POI boxes in the zone authority, hint reasons ("Road – protected", "Village – protected" and so on) | — (independent of housing) |
 
 **Parallelisation.**
