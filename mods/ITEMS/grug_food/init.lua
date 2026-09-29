@@ -177,10 +177,13 @@ local function tooltip_for(tier, effect)
 	return table.concat(lines, "\n")
 end
 
-local function start_food_status(player, tier, effect)
+-- `item_definition` is the eaten item's: its own picture becomes the status
+-- icon when it has one (Round 26 ruling 20), else the generic food icon.
+local function start_food_status(player, tier, effect, item_definition)
 	local tier_def = grug_food.TIERS[tier]
 	local record = grug_core.set_status(player, "food", {
 		label = grug_food.status_label(effect),
+		icon = grug_core.status_icons.item_icon(item_definition),
 		duration = grug_food.DURATION,
 		kind = "buff",
 		interval = grug_food.INTERVAL,
@@ -227,7 +230,7 @@ function grug_food.eat(itemstack, user, tier, kind, role)
 			"Mana food has no effect without a mana pool.")
 		return itemstack
 	end
-	if start_food_status(user, tier, effect) then
+	if start_food_status(user, tier, effect, itemstack:get_definition()) then
 		itemstack:take_item(1)
 	end
 	return itemstack

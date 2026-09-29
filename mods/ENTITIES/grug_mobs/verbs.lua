@@ -180,6 +180,7 @@ function grug_mobs.clear_poison(player)
 	local had_poison = (poison_active[name] or 0) > 0
 	poison_gen[name] = (poison_gen[name] or 0) + 1
 	poison_active[name] = nil
+	grug_core.clear_status(player, "poisoned")
 	return had_poison
 end
 
@@ -217,6 +218,14 @@ function grug_mobs.poison_player(player, total_ticks, interval, dmg_per_tick)
 	-- ObjectRef).
 	local gen = poison_gen[name] or 0
 	poison_active[name] = (poison_active[name] or 0) + 1
+	-- The "Poisoned" icon (Round 26 ruling 18) runs until the longest running
+	-- chain's last tick; Antivenom, death and leave clear it with the chains.
+	local ends = core.get_us_time() + total_ticks * interval * 1e6
+	local running = grug_core.get_status(player, "poisoned")
+	grug_core.set_status(player, "poisoned", {
+		label = "Poisoned",
+		expiry_us = running and math.max(running.expiry_us, ends) or ends,
+	})
 	local finished = false
 	local function finish()
 		if finished then return end
@@ -224,6 +233,10 @@ function grug_mobs.poison_player(player, total_ticks, interval, dmg_per_tick)
 		if (poison_gen[name] or 0) == gen then
 			local active = (poison_active[name] or 1) - 1
 			poison_active[name] = active > 0 and active or nil
+			if not poison_active[name] then
+				local p = core.get_player_by_name(name)
+				if p then grug_core.clear_status(p, "poisoned") end
+			end
 		end
 	end
 	local tick

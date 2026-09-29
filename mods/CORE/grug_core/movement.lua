@@ -577,6 +577,44 @@ function grug_core.get_move_state(player)
 	}
 end
 
+-- The status icons of the hard flags and the slows (Round 26 ruling 18),
+-- read from this record at display time: every clear path here (Shake Loose,
+-- immunity dropping a root, death, leave) removes the icon with the effect.
+-- One "slowed" icon covers every named penalty (user decision); it is hidden
+-- while immunity makes the penalties inert. Expiries are mono seconds, the
+-- status clock is core.get_us_time() -- the same clock in microseconds.
+if grug_core.register_status_source then
+	grug_core.register_status_source(function(player)
+		local _, rec = peek(player)
+		if not rec then
+			return nil
+		end
+		local t = now()
+		prune(rec, t)
+		local out = {}
+		if rec.stun then
+			out[#out + 1] = {id = "stunned", expiry_us = rec.stun * 1e6}
+		end
+		if rec.immune then
+			out[#out + 1] = {id = "move_immune", expiry_us = rec.immune * 1e6}
+		elseif rec.root then
+			out[#out + 1] = {id = "rooted", expiry_us = rec.root * 1e6}
+		end
+		if not rec.immune then
+			local slow_expiry
+			for _, entry in pairs(rec.mods) do
+				if entry.speed < 0 and entry.expiry then
+					slow_expiry = math.max(slow_expiry or 0, entry.expiry)
+				end
+			end
+			if slow_expiry then
+				out[#out + 1] = {id = "slowed", expiry_us = slow_expiry * 1e6}
+			end
+		end
+		return out
+	end)
+end
+
 -- Drop every effect and write the baseline back. Used by the join reset and
 -- available to anything that has to clean a player up (death, admin).
 function grug_core.clear_movement(player)

@@ -479,6 +479,7 @@ function grug_mounts.spawn_entity(player, tier_id, pos, skip_animation)
 	grug_core.set_status(player, STATUS_ID, {
 		label = ("T%d Mount, +%d%% Speed"):format(tier_id, bonus),
 		kind = "buff", untimed = true,
+		variant = tier.mode == "flight" and "flight" or "land",
 	})
 	return true
 end

@@ -116,6 +116,16 @@ local function utility_use(kind, duration)
 	end
 end
 
+-- The elixir family's status picture (grug_core/status_icons.lua), keyed by
+-- the elixir's special kind or else its modifier.
+local ELIXIR_VARIANT = {
+	hp_pool_percent = "vigor",
+	mana_pool_percent = "focus",
+	crit_percent = "precision",
+	armor = "stoneskin",
+	deepwater = "deepwater",
+}
+
 local function elixir_use(definition)
 	return function(itemstack, player)
 		if not player or not player.is_player or not player:is_player() or
@@ -134,6 +144,7 @@ local function elixir_use(definition)
 		end
 		local status = {
 			label = definition.label, duration = duration, modifiers = modifiers,
+			variant = ELIXIR_VARIANT[definition.kind or definition.modifier],
 		}
 		if definition.kind == "deepwater" then
 			local function refill_breath(target)
