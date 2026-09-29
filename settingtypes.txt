@@ -66,6 +66,18 @@ grug_prepare_full_world (Prepare full world before entry) bool false
 #    It changes nothing in the world and costs a few seconds of start time.
 grug_mapgen_terrain_audit (Log capital plot terrain findings at start) bool false
 
+[World map]
+
+#    Quality of the world map image shown on the Map tab and the minimap, the
+#    same for every player. normal: 1080x960 (about 6.7 nodes per pixel).
+#    high: 3600x3200 (2 nodes per pixel); its first render at a world's start
+#    takes about a minute longer and clients download about 7 MB instead of
+#    about 1 MB. The image is cached in the world folder; changing the
+#    setting renders it again at the next start.
+grug_map_quality (World map quality) enum normal normal,high
+
+[Combat]
+
 # Multiplier for all non-player combat attack damage, including fixed DoTs,
 # auras and boss ground attacks. Player/environmental damage is unchanged.
 # Loaded at startup; restart after changing. 1.0 restores base attack damage.
