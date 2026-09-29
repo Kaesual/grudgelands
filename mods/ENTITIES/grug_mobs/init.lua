@@ -100,7 +100,21 @@ end
 --                          Kraken/royal actors retain their encounter rules)
 --   def._grug_soft_deaggro — false: opt out of the 25 m walk-speed rule
 --                          (GRUG PATCH in mobs/api.lua do_states)
+--   def.walk_velocity     — the idle roaming pace (mobs_redo stand/walk
+--                          states); at most grug_mobs.CALM_WALK_MAX, see
+--                          below. Combat movement uses run_velocity.
 --
+
+-- Round 24 ruling 20: every mob roams at a calm walk and uses its full speed
+-- only in combat. mobs_redo moves an idle mob at walk_velocity and a fighting
+-- one at run_velocity (for ground mobs its only combat walk_velocity reads are the
+-- soft de-aggro, which ranged families switch off, and the wedged-path crawl;
+-- flyers also climb and dive at walk_velocity), so
+-- the rule is a bound on walk_velocity, checked at registration. 2.5 is the
+-- fastest calm pace in the roster (the wisps' drift) and well below the
+-- player's 4.0. Hand-set encounter actors (`_grug_fixed_level`: Kraken,
+-- dragons and whelps, royals) keep their bespoke tuning.
+grug_mobs.CALM_WALK_MAX = 2.5
 
 -- R7 cutover: ordinary surface habitat is the intersection of the existing
 -- node whitelist and spawn_policy.lua's closed named-zone mob palette.
@@ -582,6 +596,12 @@ end
 
 function grug_mobs.register_mob(name, def)
 	local hp_bar_presentation = def._grug_hp_bar_presentation
+	if not def._grug_fixed_level and
+			(def.walk_velocity or 1) > grug_mobs.CALM_WALK_MAX then
+		error("[grug_mobs] " .. name .. ": walk_velocity " ..
+			tostring(def.walk_velocity) .. " exceeds the calm roaming pace " ..
+			grug_mobs.CALM_WALK_MAX .. " (use run_velocity for combat speed)")
+	end
 	local disposition = grug_mobs.apply_disposition(name, def)
 	-- NB no blanket `attack_npcs = false` here any more (user ruling, playtest
 	-- round 2, 2026-09-15). Hostiles and guards may fight each other, so a

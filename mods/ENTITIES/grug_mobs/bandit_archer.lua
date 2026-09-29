@@ -29,11 +29,10 @@
 --                asks for, now written down in biomes_mobs.md §3.1 and
 --                combat_stats.md §3: a `dogshoot` family sees 16, a melee
 --                family 10-14 by habitat. 16 is also the working CEILING for
---                a land mob -- combat_stats.md §4 gives up a chase at 45 m
---                and leashes at 40, and both rules need the mob to keep a
---                target it can no longer see.
---   velocities   4.0 walk and run, exactly as the skeleton archer: "an archer
---                keeps its distance rather than sprinting". It is the one
+--                a land mob (combat_stats.md "Ambient pursuit policy").
+--   velocities   walk 1 (calm roaming, Round 24 ruling 20) and run 4.0,
+--                exactly as the skeleton archer: "an archer keeps its
+--                distance rather than sprinting". It is the one
 --                mob in the camp a player can outrun, which is the point --
 --                you close on the archer or you eat arrows.
 --   drops        the bandit's table plus arrows 1/3, the skeleton archer's
@@ -74,8 +73,12 @@ archer.dogshoot_switch = 1
 archer.dogshoot_count_max = 10
 archer.dogshoot_count2_max = 3
 
-archer.walk_velocity = 4.0
+-- Round 24 ruling 20: it roams at the Bandit's calm walk (1, inherited from
+-- bandit_def) and uses 4.0 only in combat (run_velocity). A camp archer would
+-- drop to that walk beyond 25 m under the soft de-aggro, so it opts out: it
+-- keeps 4.0 for the whole fight, as it did when walk and run were both 4.0.
 archer.run_velocity = 4.0
+archer._grug_soft_deaggro = false
 archer.view_range = 16 -- it shoots; it needs to see further than a brawler
 
 local bandit_drops = archer.drops

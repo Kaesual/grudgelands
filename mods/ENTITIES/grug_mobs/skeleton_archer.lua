@@ -81,10 +81,12 @@ local skeleton = {
 	dogshoot_count_max = 10,
 	dogshoot_count2_max = 3,
 
-	-- §3.1 speed column: "4.0 walk". An archer keeps its distance rather
-	-- than sprinting, so walk and run are the same value.
-	walk_velocity = 4.0,
+	-- §3.1 speed column: 4.0 in combat, a calm walk while roaming (Round 24
+	-- ruling 20; mobs_redo roams at walk_velocity and fights at
+	-- run_velocity). No soft de-aggro, so a chase never drops below 4.0.
+	walk_velocity = 1,
 	run_velocity = 4.0,
+	_grug_soft_deaggro = false,
 	jump = true,
 	jump_height = 4,
 	stepheight = 1.1,

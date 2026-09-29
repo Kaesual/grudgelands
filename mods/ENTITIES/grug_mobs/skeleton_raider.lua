@@ -46,11 +46,11 @@ local raider = {
 	dogshoot_count_max = 10,
 	dogshoot_count2_max = 3,
 
-	-- §3.1 speed column of the skeleton family: "4.0 walk". An archer keeps
-	-- its distance rather than sprinting, so walk and run are the same value
-	-- (skeleton_archer.lua does exactly this).
-	walk_velocity = 4.0,
+	-- §3.1 speed column of the skeleton family: 4.0 in combat, a calm walk
+	-- while roaming (Round 24 ruling 20; skeleton_archer.lua does the same).
+	walk_velocity = 1,
 	run_velocity = 4.0,
+	_grug_soft_deaggro = false,
 	jump = true,
 	jump_height = 4,
 	stepheight = 1.1,
