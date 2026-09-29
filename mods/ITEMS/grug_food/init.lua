@@ -69,13 +69,24 @@ function grug_food.effect_for(tier, kind, role)
 	return nil
 end
 
+-- The Troll racial passive (`ooc_regen_mult`, grug_classes/perks.lua) also
+-- scales food healing: the instant HP and every HP regeneration tick. Food
+-- heals only out of combat already (eating is refused in combat and the tick
+-- pauses there), so the perk needs no combat gate of its own. Food mana is
+-- not scaled; the perk's mana half is the natural regeneration in
+-- grug_abilities.mana_regen_rate.
+function grug_food.heal_multiplier(player)
+	return grug_classes.get_race_perk(player, "ooc_regen_mult") or 1
+end
+
 local function restore_health_percent(player, percent)
 	local maximum = grug_classes.get_max_hp(player)
 	local hp = player:get_hp()
 	if hp <= 0 then
 		return 0
 	end
-	local amount = grug_food.tick_amount(maximum, percent)
+	local amount = grug_food.tick_amount(maximum,
+		percent * grug_food.heal_multiplier(player))
 	local restored = math.min(amount, math.max(0, maximum - hp))
 	if restored > 0 then
 		player:set_hp(hp + restored)
@@ -89,6 +100,7 @@ local function restore_health_flat(player, amount)
 	if hp <= 0 then
 		return 0
 	end
+	amount = math.floor(amount * grug_food.heal_multiplier(player))
 	local restored = math.min(amount, math.max(0, maximum - hp))
 	if restored > 0 then
 		player:set_hp(hp + restored)
