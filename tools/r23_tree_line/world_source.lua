@@ -12,11 +12,20 @@ return function(repo, seed)
 	local protection_holder = {shapes = setmetatable({}, {__index = function()
 		return {member = function() return false end}
 	end})}
+	-- The horizontal session zones.lua builds is kept for fixtures that read
+	-- the raw zone field (tools/r24_mobs).
+	local captured = {}
 	local function horizontal_factory(deps)
 		local bound = {}
 		for k, v in pairs(deps) do bound[k] = v end
 		bound.capital_protection = protection_holder
-		return simple_map_factory(bound)
+		local module = simple_map_factory(bound)
+		local new = module.new
+		module.new = function(...)
+			captured.horizontal = new(...)
+			return captured.horizontal
+		end
+		return module
 	end
 	local water = {module = dofile(dir .. "/water_layout.lua")(tdata.water),
 		authored = dofile(dir .. "/water_authored.lua")(tdata.water), plot_rects = {}}
@@ -47,5 +56,6 @@ return function(repo, seed)
 		height_factory = height_factory,
 		terrain_field = dofile(dir .. "/terrain_field.lua")(tdata), raw_sha256 = sha})
 	local session, planner_source = zones.new_with_planner_source_runtime(seed, 1)
-	return {session = session, planner_source = planner_source, source = source}
+	return {session = session, planner_source = planner_source, source = source,
+		horizontal = captured.horizontal}
 end
