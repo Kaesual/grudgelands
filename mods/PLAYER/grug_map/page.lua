@@ -98,9 +98,12 @@ local function page_content(player, context)
 		-- focused marker after the form is regenerated (including keyboard focus).
 		("label[0.15,0.22;World — %dx]"):format(zoom),
 		("label[2.35,0.22;Current: %s]"):format(esc(current_zone(player))),
-		-- Round 27 ruling 10: the per-player minimap switch.
-		("checkbox[%.3f,0.26;grug_map_minimap;Show minimap;%s]"):format(PAGE_W - 4.75,
-			tostring(grug_map.minimap.enabled(player))),
+		-- Round 27 ruling 10: the per-player minimap switch, or a note when
+		-- this server has no world map for it.
+		grug_map.minimap.available() and
+			("checkbox[%.3f,0.26;grug_map_minimap;Show minimap;%s]"):format(PAGE_W - 4.75,
+				tostring(grug_map.minimap.enabled(player))) or
+			("label[%.3f,0.22;No minimap available]"):format(PAGE_W - 4.75),
 		("button[%.3f,0.02;0.60,0.48;grug_map_zoom_out;-]"):format(PAGE_W - 1.72),
 		("button[%.3f,0.02;0.60,0.48;grug_map_zoom_in;+]"):format(PAGE_W - 1.02),
 		("scroll_container[%s,%s;%s,%s;%s;horizontal;%.5f]"):
@@ -243,7 +246,7 @@ sfinv.register_page(PAGE, {
 				end
 			end
 		end
-		if fields.grug_map_minimap then
+		if fields.grug_map_minimap and grug_map.minimap.available() then
 			grug_map.minimap.set_enabled(player, fields.grug_map_minimap == "true")
 			sfinv.set_player_inventory_formspec(player, context)
 			return true

@@ -71,7 +71,7 @@ rawset(_G, "sfinv", {register_page = function(_, p) page = p end,
 
 rawset(_G, "grug_map", {atlas = dofile(repo .. "/mods/PLAYER/grug_map/atlas.lua"),
 	-- Round 27: the Map tab reads the minimap switch.
-	minimap = {enabled = function() return true end}})
+	minimap = {enabled = function() return true end, available = function() return true end}})
 local atlas = grug_map.atlas
 atlas.set_base_texture("grug_map_base.png")
 dofile(repo .. "/mods/PLAYER/grug_map/providers.lua")

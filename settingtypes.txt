@@ -76,6 +76,8 @@ grug_mapgen_terrain_audit (Log capital plot terrain findings at start) bool fals
 #    setting renders it again at the next start.
 grug_map_quality (World map quality) enum normal normal,high
 
+[Combat]
+
 # Multiplier for all non-player combat attack damage, including fixed DoTs,
 # auras and boss ground attacks. Player/environmental damage is unchanged.
 # Loaded at startup; restart after changing. 1.0 restores base attack damage.

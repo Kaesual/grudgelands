@@ -39,6 +39,8 @@ local QUEST_TEXTURE = {available = "grug_map_quest_available.png",
 	locked = "grug_map_quest_locked.png", ready = "grug_map_quest_ready.png",
 	active = "grug_map_quest_active.png"}
 local KIND_TEXTURE = {innkeeper = "grug_map_innkeeper.png", home = "grug_map_home.png"}
+-- Which markers keep a slot when more than MARKER_SLOTS are in the circle.
+local PRIORITY = {quest = 1, steward = 2, home = 3, innkeeper = 4, trainer = 5}
 local Z = {background = 10, map = 11, ring = 12, marker = 20, party = 50, player = 60}
 
 local base, view -- set by M.install
@@ -212,15 +214,29 @@ local function update(player, state, slow)
 
 	local hud_px = box.hud
 	local limit = V.inner_radius(box, ICON / 2 * hud_px)
-	local slot = 0
-	for _, marker in ipairs(state.near) do
-		if slot >= MARKER_SLOTS then break end
+	local visible = {}
+	for index, marker in ipairs(state.near) do
 		local x, y, distance = V.place(view, box, state.ox, state.oy, marker.x, marker.z)
 		if distance <= limit then
-			slot = slot + 1
-			changes = changes + show(player, box, hud.markers[slot], marker.texture, x, y,
-				ICON * hud_px, texture_size(marker.texture))
+			visible[#visible + 1] = {marker = marker, x = x, y = y, order = index}
 		end
+	end
+	if #visible > MARKER_SLOTS then
+		-- More markers than slots: keep the most important ones (quest givers
+		-- first; party members have slots of their own), then draw the kept
+		-- ones in their usual order.
+		table.sort(visible, function(a, b)
+			local pa, pb = PRIORITY[a.marker.kind] or 9, PRIORITY[b.marker.kind] or 9
+			if pa ~= pb then return pa < pb end
+			return a.order < b.order
+		end)
+		for i = #visible, MARKER_SLOTS + 1, -1 do visible[i] = nil end
+		table.sort(visible, function(a, b) return a.order < b.order end)
+	end
+	local slot = #visible
+	for i, row in ipairs(visible) do
+		changes = changes + show(player, box, hud.markers[i], row.marker.texture, row.x, row.y,
+			ICON * hud_px, texture_size(row.marker.texture))
 	end
 	for i = slot + 1, MARKER_SLOTS do
 		changes = changes + show(player, box, hud.markers[i], "")
@@ -285,20 +301,34 @@ local function native_off(player)
 end
 
 -- Called from init.lua with base.lua's result. Without tiles (the base failed
--- to render) the native minimap stays off and ours is not shown.
+-- to render) or without its mask (the world folder cannot be written) the
+-- native minimap stays off and ours is not shown; the Map tab says so.
 function M.install(installed)
-	if installed.tiles then
-		base = installed
-		view = V.new(base, atlas.view())
-		M.mask = grug_map.base.MASK
-		grug_map.base.add_media(M.mask, grug_map.base.mask_png(view.crop,
-			math.floor(view.crop * V.MASK_INSET + 0.5)))
+	if not installed.tiles then return end
+	local candidate = V.new(installed, atlas.view())
+	local ok, err = pcall(function()
+		grug_map.base.add_media(grug_map.base.MASK, grug_map.base.mask_png(candidate.crop,
+			math.floor(candidate.crop * V.MASK_INSET + 0.5)))
+	end)
+	if not ok then
+		core.log("error", "[grug_map] minimap unavailable: " .. tostring(err))
+		return
 	end
+	base, view, M.mask = installed, candidate, grug_map.base.MASK
 end
 
+-- False when the world map base or the minimap's mask is missing.
+function M.available()
+	return view ~= nil
+end
+
+-- Each player's SLOW refresh has its own phase, so the marker providers are
+-- not asked for every player in the same step.
+local joined = 0
 core.register_on_joinplayer(function(player)
 	native_off(player)
-	players[player:get_player_name()] = {}
+	joined = joined + 1
+	players[player:get_player_name()] = {slow = (joined * FAST) % SLOW}
 end)
 core.register_on_leaveplayer(function(player)
 	players[player:get_player_name()] = nil
@@ -308,16 +338,18 @@ grug_quests.register_on_change(function(player)
 	if state then state.static = nil end
 end)
 
-local fast, slow = 0, 0
+local fast = 0
 core.register_globalstep(function(dtime)
-	fast, slow = fast + dtime, slow + dtime
+	fast = fast + dtime
 	if fast < FAST or not view then return end
+	local elapsed = fast
 	fast = 0
-	local is_slow = slow >= SLOW
-	if is_slow then slow = 0 end
 	for _, player in ipairs(core.get_connected_players()) do
 		local state = players[player:get_player_name()]
 		if state then
+			state.slow = (state.slow or 0) + elapsed
+			local is_slow = state.slow >= SLOW
+			if is_slow then state.slow = state.slow % SLOW end
 			local started = core.get_us_time()
 			local changes = update(player, state, is_slow)
 			M.stats.updates = M.stats.updates + 1

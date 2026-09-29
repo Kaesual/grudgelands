@@ -277,6 +277,15 @@ local sockets = {highcourt = {
 	{id = "giver", role = "quest", pos = {x = 30, y = 30, z = -1470}},
 	{id = "far_giver", role = "quest", pos = {x = 2000, y = 30, z = 2000}},
 }}
+-- A crowded town far away: 30 trainers, a Steward and a quest giver, more
+-- markers than the minimap has slots.
+settlements[2] = {key = "crowd", race_id = "human", anchor = {x = -2000, z = -2000}}
+sockets.crowd = {{id = "steward", role = "housing_manager", pos = {x = -2010, y = 30, z = -2010}},
+	{id = "giver", role = "quest", pos = {x = -1990, y = 30, z = -1995}}}
+for i = 1, 30 do
+	sockets.crowd[#sockets.crowd + 1] = {id = "t" .. i, role = "trainer", profession = "tailor",
+		pos = {x = -2000 + (i % 6) * 20 - 50, y = 30, z = -2000 + math.floor(i / 6) * 20 - 50}}
+end
 grug_core.settlement_socket_settlements = function() return settlements end
 grug_core.settlement_sockets_at = function(key) return sockets[key] or {} end
 core.registered_entities["grug_mobs:king_human"] = {description = "King"}
@@ -285,8 +294,9 @@ rawset(_G, "grug_mobs", {dragon_map_markers = function() return {} end})
 grug_quests.registered_npcs = {
 	giver = {settlement = "highcourt", socket = "giver", title = "Giver"},
 	far = {settlement = "highcourt", socket = "far_giver", title = "Far"},
+	crowd = {settlement = "crowd", socket = "giver", title = "Crowd"},
 }
-QUESTS.giver, QUESTS.far = "available", "available"
+QUESTS.giver, QUESTS.far, QUESTS.crowd = "available", "available", "available"
 
 local loaded = {}
 core.register_on_mods_loaded = function(fn) loaded[#loaded + 1] = fn end
@@ -496,6 +506,57 @@ do
 end
 
 -- ---------------------------------------------------------------------------
+-- S: slots, staggering, a missing mask
+-- ---------------------------------------------------------------------------
+do
+	-- More markers than slots: the quest giver and the Steward keep theirs,
+	-- drawn in the usual order (trainers below the Steward below quests).
+	local saved = {x = me.pos.x, z = me.pos.z}
+	me.pos.x, me.pos.z = -2000, -2000
+	step(0.25)
+	local shown, order = 0, {}
+	for _, e in ipairs(elements(me)) do
+		local t = e.def.text
+		if e.def.type == "image" and e.def.z_index and e.def.z_index > 20 and
+				e.def.z_index <= 44 and t ~= "" then
+			shown = shown + 1
+			order[#order + 1] = {z = e.def.z_index, t = t}
+		end
+	end
+	table.sort(order, function(a, b) return a.z < b.z end)
+	check(shown == 24, "S all 24 marker slots used (" .. shown .. ")")
+	check(order[#order] and order[#order].t == "grug_map_quest_available.png" and
+		order[#order - 1] and order[#order - 1].t == "grug_map_housing_steward.png",
+		"S the quest giver and the Steward keep a slot and draw on top")
+	me.pos.x, me.pos.z = saved.x, saved.z
+	step(0.25)
+
+	-- Staggered SLOW refresh: two players ask the quest provider in
+	-- different steps.
+	local asked = {}
+	local original = grug_quests.marker_state
+	grug_quests.marker_state = function(player, id)
+		asked[player:get_player_name()] = true
+		return original(player, id)
+	end
+	local other = new_player("other", {x = 0, y = 20, z = -1500}, 0)
+	windows.other = windows.me
+	join(other)
+	step(0.25)
+	local together, steps_seen = 0, 0
+	for _ = 1, 50 do
+		asked = {}
+		step(0.2)
+		if asked.me or asked.other then steps_seen = steps_seen + 1 end
+		if asked.me and asked.other then together = together + 1 end
+	end
+	grug_quests.marker_state = original
+	check(together == 0 and steps_seen >= 4, ("S SLOW refresh staggered (%d steps with a " ..
+		"refresh, %d with both)"):format(steps_seen, together))
+	players.other = nil
+end
+
+-- ---------------------------------------------------------------------------
 -- cost: per-player update with 2 party members and 7 markers nearby
 -- ---------------------------------------------------------------------------
 minimap.stats.updates, minimap.stats.us, minimap.stats.changes = 0, 0, 0
@@ -508,6 +569,23 @@ local cost = minimap.stats.us / math.max(1, minimap.stats.updates)
 print(("R27 cost: %.1f us per player update (%d updates, %.2f packets per update, " ..
 	"walk textures normal %d / high %d per 3000 nodes)"):format(cost, minimap.stats.updates,
 	minimap.stats.changes / math.max(1, minimap.stats.updates), views.normal.walk, views.high.walk))
+
+-- A world folder that cannot be written: no mask, no minimap, the load goes
+-- on and the Map tab says so. (A second copy of minimap.lua, last.)
+do
+	core.safe_file_write = function() return false end
+	local first = grug_map.minimap
+	local ok = pcall(dofile, repo .. "/mods/PLAYER/grug_map/minimap.lua")
+	local second = grug_map.minimap
+	local installed_ok = ok and pcall(second.install, installed)
+	check(ok and installed_ok and not second.available(),
+		"S unwritable mask: the load goes on, no minimap")
+	local fs = page.get(page, me, context)
+	check(fs:find("No minimap available", 1, true) and not fs:find("grug_map_minimap;", 1, true),
+		"S Map tab says no minimap instead of the switch")
+	check(first.available(), "S the working copy stays available")
+	grug_map.minimap = first
+end
 
 if #failures > 0 then
 	for _, label in ipairs(failures) do print("FAIL " .. label) end
