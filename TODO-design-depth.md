@@ -1,9 +1,10 @@
 # TODO — Depth pulse placement and servant roster
 
-The decided depth curve, renewable camp sockets and T6 resource role live in
+The decided depth curve, the pulse and T6 resource role live in
 `docs/design/combat_stats.md` §3, `docs/design/biomes_mobs.md` §4.1 and
-`docs/design/world.md` §§2/4c. WP34 remains future work with dependencies in
-BACKLOG; existing cave mobs do not mean the phase-in pulse is shipped.
+`docs/design/world.md` §4c. Renewable camp sockets are removed (user decision
+2026-09-29, WP audit E5). WP34 is now only the depth pulse (kept, for later);
+existing cave mobs do not mean the phase-in pulse is shipped.
 Historical decisions and rationale from the former version of this TODO are
 preserved in [the world-design archive](docs/archive/design/world-historical.md).
 
@@ -24,7 +25,10 @@ No placement values or fallback behavior are authorized by this TODO.
 
 Choose families, licensed animated models and drop tables for the deep band's
 servants. They join the same pulse and accounting model, rather than becoming
-a second place-bound spawn source. The shallow half uses existing cave
+a second place-bound spawn source. The Land Guard and the Rift Spawn (its
+deep row), today ordinary ABM rows below −1000, are part of that roster (WP
+audit E4); the
+remaining families are open. The shallow half uses existing cave
 families, so the dedicated roster may follow that mechanics increment.
 
 The settled limits remain: regular mobs cap at level 60; deeper danger comes
@@ -33,6 +37,5 @@ materials, has no gear-drop layer and has no separate apex boss in the MVP.
 
 ## Implementation dependency
 
-BACKLOG WP34 owns the pulse and depth economy; WP13 owns mining-camp structures
-and WP44 supplies the economy dependency. The two questions above remain open;
-this cleanup neither closes them nor starts implementation.
+BACKLOG WP34 owns the pulse. The two questions above remain open; this
+cleanup neither closes them nor starts implementation.

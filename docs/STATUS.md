@@ -2,9 +2,37 @@
 
 Updated 2026-09-29. This is the delivery pointer, not another game specification.
 
+- **Round 26 delivered locally** (2026-09-29,
+  [plan, completion and playtest checklist](planning/round26-capitals-housing-cleanup-plan.md#completion-2026-09-29)).
+  All lanes are merged on local main: S `377e7cd4`, R `4e88234c` with the Troll follow-up `ed7d79a1`, I `abaaa262`, W `ce2264e9`, D (branch `r26-d-docs`). No push.
+  - **S:** a placed Claim Stone is a half-transparent draft that protects
+    nothing and crumbles after 5 minutes unless activated with 5 lumps; the
+    only lock is 12 hours without pick-up after activation; the Housing
+    Manager is now the Housing Steward; `/claim_remove`; snow in the arrival
+    cube can be dug ([housing.md](design/housing.md) §§2a, 3, 5).
+  - **R:** mobs_redo utility items and silver-sandstone recipes removed, all
+    tier tools under `grug_materials:` with 12 aliases, the two surface
+    critters at 0.75 density (WP28 delivered); Trolls also get +50% food
+    healing.
+  - **I:** the status icon row above the skill bar (green/red/gold frames,
+    at most 10, no cooldowns), a combat icon right of the health bar instead
+    of the "Combat" text, Character page Stats/Effects tabs and class icons
+    in the party HUD and Group page (audit D10;
+    [inventory_equipment.md](design/inventory_equipment.md) §5).
+  - **W:** more irregular, still star-shaped capital outlines at about the
+    same area, a character per capital, towers at bends and gatehouses, and
+    a replan when a named building is dropped (2 → 0 of 200 seeds; planning
+    5.7 → 6.2 s per seed, preparation 14.5 → 14.9 CPU s; engine check seed
+    42 PASS 36/36) ([world_zones.md](design/world_zones.md) §12).
+  - **D:** documentation after the
+    [work-package audit](planning/wp-audit-2026-09-29.md) and its
+    [user decisions](planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29),
+    then the lane facts.
+  - Next: fresh world and playtest.
+
 - **Round 25 delivered locally:** Claim Stone housing (WP24,
   [housing.md](design/housing.md)): one free, soulbound stone from the
-  Housing Manager in each capital from level 20; a 101 × 101 claim column from
+  Housing Steward in each capital from level 20; a 101 × 101 claim column from
   y = −100 up in the own L11–30 home zones, 16 nodes clear of settlement cores
   and hard footprints; coal or charcoal fuel as a "paid until" time (a full
   slot lasts about a month); Interact/Everything permissions with a
@@ -17,7 +45,7 @@ Updated 2026-09-29. This is the delivery pointer, not another game specification
   merged on local main (`7ca48666`), independently reviewed and synchronized
   to Luanti on 2026-09-29. No push.
   [Plan, completion and playtest checklist](planning/round25-housing-plan.md#completion-2026-09-29).
-  Next: fresh world and playtest.
+  The first playtest has started; its follow-up rulings 30–33 feed Round 26.
 
 - **Round 24 delivered, pushed and accepted:** tier rocks with engine-native pick gating
   replace depth bounds and shatter (loose ground by hand or shovel, axe and
@@ -76,9 +104,10 @@ Updated 2026-09-29. This is the delivery pointer, not another game specification
 - **Documentation consolidation:** complete with independent Astra PASS;
   [receipt and coverage](maintenance/documentation-round.md). Remaining decisions
   and code/design discrepancies: [findings](maintenance/findings.md).
-- **Latest game:** Round 21 includes Round 20 and earlier Round 19 UI, pursuit/idle-recovery
-  and full-speed preparation follow-ups. GUI acceptance of the new round is
-  pending; fresh-world development remains in force.
+- **Latest game:** local main carries Round 26, which includes Rounds 20–25
+  and the 2026-09-28 playtest fixes. Round 24 is the latest pushed and
+  accepted state; the Round 25 playtest is under way (first rulings recorded). Fresh-world development
+  remains in force.
 - **Technical reviews/gates:** recorded PASS for those delivered candidates;
   not a fresh certification of arbitrary later changes.
 - **Preparation performance follow-up:** the bounded two-request pipeline
@@ -91,10 +120,13 @@ Updated 2026-09-29. This is the delivery pointer, not another game specification
   [full-speed follow-up](research/pregen-fullspeed.md). No remote deployment
   claimed. Prior measurement: [scan-budget follow-up](research/pregen-scan-budget.md).
 - **GUI acceptance:** user-run and pending where not explicitly accepted.
-  [R21 checklist](research/round21-playtest.md) covers the new changes; the
-  R20 input limits remain documented in its earlier checklist.
+  The [Round 26 checklist](planning/round26-capitals-housing-cleanup-plan.md#playtest-checklist-fresh-world)
+  covers the newest changes, the
+  [Round 25 checklist](planning/round25-housing-plan.md#playtest-checklist-fresh-world)
+  the rest of housing; earlier rounds keep their own checklists. The
+  user wants a separate walk of the Round 20 POI art (audit E2).
 - **Remote observation:** local `origin/main` is `d4eaffff` (Round 24 and the
-  Round 25 plan). Round 25 is local only.
+  Round 25 plan). Rounds 25 and 26 are local only.
 - **Release:** unreleased fresh-server development. The Nether is expansion
   content. [First-public-release gates](../BACKLOG.md#first-public-release-gates)
   remain open.

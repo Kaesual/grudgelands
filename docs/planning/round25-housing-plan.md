@@ -307,6 +307,18 @@ before fill ([settlements.md](../design/settlements.md)).
 
 ### Playtest checklist (fresh world)
 
+> **Superseded in part by Round 26 Lane S (2026-09-29,
+> [Round 26 plan](round26-capitals-housing-cleanup-plan.md) rulings 8–12,
+> [housing.md](../design/housing.md) §§2a, 3, 5).** The Housing Manager is now
+> the Housing Steward. A placed stone is a draft that must be activated
+> within 5 minutes with 5 lumps through the form's Activate button (step 4's
+> "add coal" no longer activates it). There is no once-a-day rule (steps 1
+> and 10): the only lock is the 12-hour pick-up lock after activation. The
+> admin removal command and snow in the arrival cube (carry-overs above) are
+> done. The Round 25 engine probes `tools/r25_claim_core/run.sh` and
+> `tools/r25_interfaces/run.sh` assume the pre-draft model; the current probe
+> is `tools/r26_claim_activation/`.
+
 1. **Level 20 and the Housing Manager:** reach level 20 (play, or
    `/xp give <name> <amount>` with the server privilege). In your capital,
    find the Housing Manager: the gate resident of the tailor plot, marked "+"

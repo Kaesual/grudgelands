@@ -2,20 +2,24 @@
 
 2026-09-23. Documentation-only audit against baseline `d6937b31` and later
 consolidation commits. No finding here authorizes a game-code change.
+Updated 2026-09-29 after the [work-package audit](../planning/wp-audit-2026-09-29.md)
+and its [user decisions](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29).
 
 ## Decisions or follow-up work
 
 | ID | Finding | Evidence and disposition |
 |---|---|---|
-| D1 | Old WP37 blanket surface-density reduction overlaps later R16 fightable-only +30% tuning; critter scope differs. | [World audit](../research/docs20-world-audit.md); explicit user reconciliation requested. Old task card is paused, current behavior unchanged. |
+| D1 | Old WP37 blanket surface-density reduction overlaps later R16 fightable-only +30% tuning; critter scope differs. | **Closed 2026-09-29.** Round 24 ruling 27 raised density (about 1.5× per-zone budget); the user canceled WP37 (audit C1) and kept ×0.75 only for the two surface critters Bone Weevil and Bog Fowl (C6, WP28 in Round 26). |
 | D2 | Profession books should show higher-tier recipes greyed, but runtime omits them. | [Items audit](../research/docs20-items-audit.md); `items_crafting.md` §2.2 versus `grug_jobs/ui.lua` recipe_unlocked filtering. Approved design retained; later code fix or explicit redesign required. |
 | D3 | Four specialist mastery bands coexist with six profession tiers; not all specialist declarations were traced. | [Items audit](../research/docs20-items-audit.md). This is a coverage/design-clarity concern, not proof of a new defect. Do not remove the future specialist rules without that audit. |
-| D4 | Intended deadly-ocean travel is not established by Kraken speed alone. | The later approved speed is 5, not old WP17's 8.8; improved boat target is 8. [World audit](../research/docs20-world-audit.md). Corrected stale prose; retain future boat/pursuit acceptance, no silent balance change. |
+| D4 | Intended deadly-ocean travel is not established by Kraken speed alone. | The later approved speed is 5, not old WP17's 8.8; improved boat target is 8. [World audit](../research/docs20-world-audit.md). Still open: `view_range` is 20 against a target of 40 and the position-dependent pursuit is not built. Owned by WP17, which is V1 since 2026-09-29; the boat/pursuit acceptance stays there. |
 
 Existing approved-but-unimplemented systems remain in BACKLOG: WP44 economy
-(current 25% versus target 5% buy-back), claim Housing/travel, broader loot and
-finishes, deep-resource rules, geographic PvP, story/POI roster and encounter
-scope. Their continued absence is not automatically a newly introduced bug.
+(current 25% versus target 5% buy-back), finishes and masterwork, the depth
+pulse, boats and waypoints, geographic PvP, the level-41–60 story and the
+war-front encounters. Claim Housing and the dragon encounters are delivered;
+renewable ores, natural out-of-combat regeneration, rested XP, carried light,
+the dragon hoard chest and `/unstuck` are removed from the design (2026-09-29). Their continued absence is not automatically a newly introduced bug.
 GUI and first-public-release gates remain open where recorded.
 
 ## Corrections made without changing design
@@ -59,12 +63,9 @@ citations must still be verified when used for implementation.
 
 ## README owner handoff
 
-Root README remains byte-identical. Suggested follow-up by its owner:
+Root README remained byte-identical during the consolidation. The follow-up
+was applied on 2026-09-29: README links the [documentation guide](../README.md)
+and [project status](../STATUS.md), routes `playtest_quality_revision.md` as
+historical decision routing, and shows BACKLOG's counts (39 delivered, 3
+canceled, 11 open of 53 after the work-package audit and WP28).
 
-- Link the new [documentation guide](../README.md) and [project status](../STATUS.md).
-- Treat `playtest_quality_revision.md` as historical decision routing, not a
-  separate current revision specification; existing link targets remain valid.
-- If displaying whole-WP counts, use BACKLOG's corrected 27 delivered of 53
-  identities, one canceled, 25 open/partial (subject to the D1 decision).
-- Current delivery is R19 plus follow-ups, locally installed; remote/GUI status
-  remains explicit. Documentation cleanup makes no new gameplay delivery claim.

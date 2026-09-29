@@ -24,12 +24,6 @@ Research and historical evidence: **[docs/research/README.md](docs/research/READ
 - This changes execution mechanics, not model authorization or independent
   review requirements. Read `docs/process/agent-model-policy.md` and
   `docs/process/cross-cli-orchestration.md` for those rules.
-- **Current development session:** Claude credits are exhausted. No Claude CLI,
-  Claude agent, Opus or Fable task is authorized in this session. Root is Astra;
-  ordinary implementation/review uses native Sol, with native Astra allowed for
-  hard/performance-critical work. This session restriction can change only by
-  a later explicit user instruction. Durable active work state:
-  `docs/planning/round21-state.md` (Round 21 delivered; await playtest).
 
 ## Fresh-server development mode
 
@@ -38,7 +32,10 @@ Research and historical evidence: **[docs/research/README.md](docs/research/READ
   There are no old servers, worlds or player records to migrate.
 - Do not add backward-compatibility branches, saved-world/data migrations,
   legacy-name aliases, old-format readers, compatibility placeholders or
-  cleanup LBMs/timers for earlier development versions. Remove existing code
+  cleanup LBMs/timers for earlier development versions. One deliberate
+  exception (Round 26 ruling 14): the twelve tool aliases from the former
+  `default:` tool names to `grug_materials:` (`grug_materials.TOOL_ALIASES`)
+  keep repository references working; they are not an old-world migration. Remove existing code
   whose sole purpose is supporting or cleaning up those earlier versions.
 - Current-version persistence (saving/reloading the same world, reconnects,
   inventories and normal entity activation) remains required. Current engine
@@ -67,9 +64,18 @@ Research and historical evidence: **[docs/research/README.md](docs/research/READ
 
 ## Active work and game status
 
+**Round 26 delivered locally, 2026-09-29.** Claim Stone draft/activation and
+the Housing Steward (Lane S), registration cleanup WP28 with the tool
+namespace (Lane R), the status-icon package (Lane I), organic capitals with a
+character per capital (Lane W) and the documentation cleanup (Lane D). All
+lanes merged on local main; no push. Next: fresh world and playtest.
+[Plan, completion and playtest checklist](docs/planning/round26-capitals-housing-cleanup-plan.md#completion-2026-09-29).
+The [work-package audit](docs/planning/wp-audit-2026-09-29.md) and its user
+decisions (2026-09-29) set the current BACKLOG and V1 scope (ROADMAP).
+
 **Round 25 delivered locally, 2026-09-29.** Claim Stone housing (WP24,
 `grug_housing`, [housing.md](docs/design/housing.md)): claims, fuel,
-permissions, interaction guard, Housing Managers, Character status and the
+permissions, interaction guard, Housing Stewards, Character status and the
 stone as travel home; road and POI world protection; capital planner places
 required and named buildings before fill. Coordinated by Claude Opus 5.5.
 [Plan, completion and playtest checklist](docs/planning/round25-housing-plan.md#completion-2026-09-29).

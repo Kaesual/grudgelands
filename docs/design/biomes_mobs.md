@@ -765,16 +765,18 @@ below are the rationale for each choice, not the authority for it:
 
 The guard's pursuit rules — relentless in deep ocean, ordinary §4 leash and
 evade everywhere else, never spawning in a dragon channel — are owned by
-`world.md` §2b. They **replace** all three blanket exceptions the mob ships
-today — `_grug_no_leash`, its own 200-node coastal `LEASH_SLACK` and
-`_grug_soft_deaggro = false` (`mods/ENTITIES/grug_mobs/kraken.lua:10`, `:37`,
-`:38`) — with the position-dependent state: the same suspensions inside a
-deep-ocean column, ordinary behaviour outside it. The shipped comment at
-`:32-36` states the reason those exceptions are global today, and that reason
-survives exactly where it is true, on the open sea. Its
-`_grug_spawn_check` already is `grug_core.open_sea_at` (`kraken.lua:31`),
-which `world.md` §2b narrows to `deep_ocean`, so deep-ocean-only spawning
-needs no separate mechanism.
+`world.md` §2b. They **replace** the mob's shipped blanket exceptions —
+`_grug_no_leash = true` and `_grug_soft_deaggro = false`
+(`mods/ENTITIES/grug_mobs/kraken.lua:25-26`) plus its own water-class leash
+(`do_custom`, `:115-134`, which drops the target and holds position as soon as
+the guard leaves deep ocean) — with the position-dependent state: the same
+suspensions inside a deep-ocean column, the ordinary §4 leash and evade
+outside it. The shipped comment at `:21-24` states the reason those
+exceptions are global today, and that reason survives exactly where it is
+true, on the open sea. Its `_grug_spawn_check` already is `in_deep_ocean`
+(`grug_zones.water_class_at(...) == "deep_ocean"`, `kraken.lua:7-9`, `:20`),
+so deep-ocean-only spawning needs no separate mechanism. `view_range` is
+still 20 (`:62`; target 40). Citations checked 2026-09-29.
 
 **Caves (depth axis, WP6 note):** reuse Zombie, Giant Spider, Stone
 Golem with `underground` zone gating; levels come from the depth term
@@ -875,44 +877,24 @@ Historical ring/filler calibration and its 16-day/12-night peak estimates are
 preserved in [the archive](../archive/design/world-historical.md). They do not
 bound the current roster or replace the Round 24 density rule in §0.
 
-### Outstanding WP37 scope and table interpretation
+### WP37 closed; table interpretation
 
-The older WP37 surface-chance decision below remains recorded as outstanding
-work. Its inclusion is not an instruction to apply a second multiplier to the
-Round 16 policy. The historical ring rows and proposed chance values are not
-current effective runtime parameters; newer named-zone rows also predate the
-Round 16 density transformation. Reconcile WP37's overlap with that delivered
-policy before implementation; do not silently cancel its distinct critter
-scope or restore the obsolete ring gates.
+WP37 is closed (user decision 2026-09-29,
+[WP audit](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29)
+C1/C6). The original 2026-08-08 decision to cut surface density to 0.75 is
+superseded by the Round 16 fightable-only change and the Round 24 ruling 27
+per-zone density budget (§0), which raise density instead. Only the two
+surface critter rows keep the old cut: **Bone Weevil** (both rows) and
+**Bog Fowl** go from `chance` 2200 to **2933**, `aoc` unchanged (Round 26
+Lane R). mobs_redo's `chance` is one spawn per N tries, so 0.75 × density
+means `chance ÷ 0.75`; the old wording "multiply `chance` by 0.75" was
+inverted and would have raised density. Cave rows (Giant Spider, Stone/Mesa
+Golem, Cave Bat, Cave Crawler) and the Kraken Guard were never part of it.
 
-**Outstanding original WP37 decision (2026-08-08):** multiply surface-row
-`chance` by 0.75, keeping `aoc` unchanged. The old table's proposed chance
-column incorporates that multiplier for eligible original rows; it must not
-be read as the currently transformed spawn table. This older decision predates
-Round 16's fightable-only rate/cap change and has a different scope.
-Two kinds of row are
-excluded, and both exclusions follow from the mechanism rather than from
-taste:
-
-- **Every row that reaches the caves at all**, because cave pressure
-  belongs to the phase-in pulse of §4.1, not to this multiplier. That is
-  the rows carrying `underground` *next to* a surface zone (Giant Spider
-  1800, Stone/Mesa Golem 9000) — one row serving surface and cave, so
-  raising it for the surface would raise it underground too — **and, more
-  plainly still, the two rows that are `underground`-ONLY: Cave Bat 2200
-  and Cave Crawler 2200** (`nodes = {"default:stone",
-  "group:grug_stratum"}`, `max 5` light, y −31000…−40, `grug_mobs/
-  cave_bat.lua` / `cave_crawler.lua`). A cave-only row has no surface half
-  to make busier, so multiplying it would be *only* cave pressure — and it
-  would refill a third faster the underground cell WP36 calibrated to
-  exactly the night peak (9/9 → 12/12). They are also outside "surface
-  density" by wording, not merely by mechanism.
-- **The Kraken Guard 12000**, which is a deterrent, not density.
-
-The two remaining critter rows — **Bone Weevil 1650** and **Bog Fowl
-1650** — are ordinary *surface* rows (day, `min 10`, y 0…200) and carry
-the multiplied value like every other surface row. The budget audit is
-re-run against the new values once the change ships.
+The `chance` column below still prints the never-shipped values of
+2026-08-08 for the other rows, computed with that inverted multiplication. It
+is historical, not the runtime table; the shipped row values are in
+`mods/ENTITIES/grug_mobs/*.lua` (their `-- §4 row` comments quote them).
 
 | Mob | nodes (spawn on) | interval | chance | aoc | light | zones |
 |-----|------------------|----------|--------|-----|-------|-------|
@@ -941,8 +923,8 @@ re-run against the new values once the change ships.
 | Gull | sand | 20 | 1875 | 2 | min 10 | strait, war_coast, coast, **outer** |
 | **Cave Bat** (critter) | stone **+ `group:grug_stratum`** | 20 | 2200 | 2 | max 5 | underground |
 | **Cave Crawler** (critter) | stone **+ `group:grug_stratum`** | 20 | 2200 | **1** | max 5 | underground |
-| **Bone Weevil** (critter) | bone litter / blight_dirt — **two rows, one entity name, one budget**; the row stamps the tint | 20 | 1650 | 2 | min 10 | (none — the node gates) |
-| **Bog Fowl** (critter) | mud (only) | 20 | 1650 | 2 | min 10 | (none — the node gates) |
+| **Bone Weevil** (critter) | bone litter / blight_dirt — **two rows, one entity name, one budget**; the row stamps the tint | 20 | 2933 | 2 | min 10 | (none — the node gates) |
+| **Bog Fowl** (critter) | mud (only) | 20 | 2933 | 2 | min 10 | (none — the node gates) |
 | **Poacher** | grass, forest litter, silver litter | 20 | 2200 | **4 at night** (base 3 ×1.25, ceiling) | night | exact named-zone palette |
 | **Frost Stray** | gravel, snowblock | 20 | 2400 | **4 at night** (base 3 ×1.25, ceiling) | night | exact named-zone palette |
 | **Sun-Dried Husk** | dry grass, mesa clay | 20 | 2000 | **5 at night** (base 4 ×1.25) | night | exact named-zone palette |
@@ -993,13 +975,12 @@ Row notes:
   move to passive prey (§3.0) changed **no** spawn number — same row,
   same `aoc`, same zone.
 - **The four critters of §3.0** (added 2026-08-08) were all authored at
-  the WP6-style **interval 20 / chance 2200 / aoc 2** and all ship at that
-  chance. The table above prints them **split by zone**, because the 0.75
-  rule is a *surface* rule: the two surface rows (**Bone Weevil**, **Bog
-  Fowl** — day, `min 10`, y 0…200) carry the multiplied **1650** like
-  every other surface row, while the two `underground`-only rows (**Cave
-  Bat**, **Cave Crawler**) print their shipped **2200**, since they are
-  excluded from the multiplier for the same reason the Giant Spider and
+  the WP6-style **interval 20 / chance 2200 / aoc 2**. The table above
+  prints them **split by zone**, because the 0.75 density cut is a
+  *surface* rule: the two surface rows (**Bone Weevil**, **Bog Fowl** — day,
+  `min 10`, y 0…200) ship at **2933** since Round 26 (2200 ÷ 0.75), while
+  the two `underground`-only rows (**Cave Bat**, **Cave Crawler**) keep their
+  shipped **2200**, since they are excluded from the cut for the same reason the Giant Spider and
   the Golems are (see the header: cave pressure belongs to §4.1's depth
   pulse). There is also **one exception that is pure arithmetic**: the
   **Cave Crawler ships at `aoc` 1**. The underground cell was
@@ -1021,9 +1002,13 @@ ring measurements cannot be promoted into fresh acceptance evidence.
 
 ### 4.1 The depth phase-in pulse (decided 2026-08-08)
 
-**Approved future WP34 scope.** Placement geometry and the below-−1000 servant
-roster remain open in `TODO-design-depth.md`; the pulse is not current runtime
-behavior. Existing cave ABMs remain separate.
+**Approved future WP34 scope** (kept, for later; WP audit E5). Placement
+geometry and the below-−1000 servant roster remain open in
+`TODO-design-depth.md`; the pulse is not current runtime behavior. Existing
+cave ABMs remain separate. The Land Guard and the Rift Spawn's deep row, which
+ship today as ordinary ABM rows below −1000 (`grug_mobs/land_guard.lua:31-33`,
+`rift_spawn.lua:103-106`), join the pulse when it ships (WP audit E4); the
+Rift Spawn's surface row (`rift_spawn.lua:107-111`) stays.
 
 Depth is a danger axis, not only a material axis (`combat_stats.md` §3,
 `world.md` §4c). Because regular mobs cap at level 60, everything past
@@ -1159,10 +1144,9 @@ Regional geology follows the owning `race_region` column at every depth:
   nodes through T5/T6. Ordinary ores, G1/G2 and Abyssal Crystal receive +25%
   density at y = −1500..−1999 and +50% at y ≤ −2000, capped and implemented as
   placement rather than respawn.
-- The Wyrmglass Crown and Stormscale Summit apex camps each contain exactly 12
-  protected renewable gem sockets: two Citrine, two Garnet, two Jade, two
-  Diamond, two Sapphire and two Ruby. They are a shared bonus and never replace
-  deficient finite regional supply.
+- The Wyrmglass Crown and Stormscale Summit apex camps have no renewable gem
+  sockets: renewable ores are removed entirely, camps included (user decision
+  2026-09-29, WP audit E5).
 
 | Material | Tier | Accord sources | Throng sources |
 |----------|------|------------------|---------------|

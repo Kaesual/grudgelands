@@ -284,9 +284,10 @@ universal pick.
   development uses its canonical names directly, with no old Mese or
   Emberstone migration aliases or parallel player-facing materials.
 - **Abyssal Steel** is the ordinary craftable T6 metal. **Grudgeforged** is an
-  optional final masterwork state applied to a qualifying equipment stack by
-  consuming a named-rare trophy or Fallen Crown. No trophy enters an Abyssal
-  Steel bar or pick.
+  optional final masterwork state: it upgrades an existing equipment item to
+  item level 70 (user decision 2026-09-29, [WP audit](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29)
+  D3). WP5 settles its inputs; named rares drop no trophies (D4). No Crown
+  enters an Abyssal Steel bar or pick.
 - Mundane Stone, Copper, Tin, Iron ore, Coal and Gold may retain stable
   upstream itemstrings. Reinterpreted fantastic materials, processed outputs
   and all regional gems use the Grudgelands namespace. `grug_materials` owns
@@ -335,7 +336,7 @@ territory or PvP state:
 Thus both factions have all three G1 species and Diamond; Ruby is Accord's
 foreign G2 and Sapphire is Throng's. The authored supply routes are native
 faction regions, enemy contested level-31+ regions, cross-border deep T5/T6
-columns, both all-six-gem dragon-island camps and trade. A practical T4
+columns and trade. A practical T4
 contested route to the missing G2 must exist before the level-60 islands.
 
 **Density shape and calibration targets:**
@@ -354,7 +355,7 @@ contested route to the missing G2 must exist before the level-60 islands.
   Abyssal Steel pick without T6 access.
 - At y = −1500…−1999, ordinary continental ores, G1, G2 and Abyssal
   Crystal receive **+25%** bounded placement budget; at y ≤ −2000 they
-  receive **+50%**, capped. Trophies, king loot, dragon sockets, claims and
+  receive **+50%**, capped. Trophies, king loot, claims and
   unique quest sources never receive this multiplier. It is mapgen placement,
   not runtime ore respawn.
 - Map generation measures actual exposed yield and route time before freezing
@@ -482,15 +483,20 @@ from `grug_gear`. Consequences, all binding:
   **Current swords** live entirely in `grug_gear`, beginning at Bronze.
   Vendored Wood/Stone/Bronze/Steel swords are unregistered, alongside the
   removed mese and diamond tiers. Wood/Stone remain only for gathering tools.
-  **Pick, axe and shovel** are complete at all six tiers: `default`'s Bronze is
-  T1 and its Steel is T3 (the mapping `grug_materials/overrides.lua` already
-  encoded through `grug_pick_tier`), and Iron, Silversteel, Embersteel and
-  Abyssal Steel are registered by `grug_materials/tools.lua`. Iron gets tools
+  **Pick, axe and shovel** are complete at all six tiers, all in one
+  namespace since Round 26 (ruling 14): `grug_materials:{pick,axe,shovel}_`
+  plus `wood`, `stone`, `bronze` (T1), `iron` (T2), `steel` (T3),
+  `silversteel`, `embersteel` and `abyssal_steel`, registered by
+  `grug_materials/tools.lua`. Twelve engine aliases map the former `default:`
+  wood/stone/bronze/steel tool names so repository references keep working;
+  a startup audit (`grug_materials/audit.lua`) enforces the namespace. Iron gets tools
   because Iron is a full tier here — it owns a tier rock, a pick tier and a
   real bar item — so skipping it would leave §3.0.4's T2 row without a pick.
   All six pick, axe and shovel tiers use the familiar Minecraft grid shapes and
   are universal Basics recipes. Their existing capability profiles remain the
-  authority for dig times. Lifetime follows the current equipment revision.
+  authority for dig times: dig speed stays as in the game, and no separate
+  six-pick speed calibration follows (user decision 2026-09-29, WP audit D8).
+  Lifetime follows the current equipment revision.
   Woodcutting Axes are damage-free tools; two-handed Battle Axes are weapons.
   Wood and Stone exist only as tools. Fresh Warrior characters start with a
   Bronze Sword, Mage/Priest with a Bronze Staff, Scout with a Bronze Bow,
@@ -592,7 +598,8 @@ every 0.25 s):
 
 - protected node, with the protection reason: "Town – protected" (a
   capital's protected city or a start town), "Landmark – protected" (a
-  protected functional column: outpost, bandit camp, apex socket), "Road –
+  protected functional column: outpost, bandit camp, apex socket until its
+  removal from mapgen), "Road –
   protected" (a road corridor), "Village – protected" and similar for the
   other POI boxes (`world.md` §2 R1b), "Home of <owner> – protected" (an
   active Claim Stone claim, `housing.md` §6), "Accord home territory –
@@ -1031,12 +1038,11 @@ equipment recipe consumes Cut Gems where a gem is required.
 - both generic trinket slots and the six core trinket identities of §6.2;
 - Rough → Cut gem refinement;
 - jewelry Settings, ornament components and trinket assembly;
-- one bonus-yield roll after a **successfully harvested** natural or renewable
+- one bonus-yield roll after a **successfully harvested** natural
   gem node: **10% base chance at Apprentice, 20% from Journeyman onward**. A
   success grants exactly one additional raw gem item of the harvested species.
   The roll never fires on stone or any failed harvest (a too-weak pick cannot
-  dig the ore at all) and never converts one gem into another. Dragon-camp yield audits
-  include it.
+  dig the ore at all) and never converts one gem into another.
 
 Rough→Cut conversion, Settings, trinket assembly and named enchantments use
 profession-tier qualification. Spellbooks retain their Journeyman prerequisite;
@@ -1230,37 +1236,13 @@ changes:
 | ilvl | 3 | 10 | 20 | 30 | 40 | 50 |
 | 1H weapon dmg (§3.2 curve) | 5 | 8 | 11 | 15 | 18 | 22 |
 
-  **T4–T6 regional-G2 base cost.** Every ordinary crafted combat weapon,
-  armor piece and offhand at these tiers consumes one specific Cut G2 gem in
-  addition to its universal material recipe:
-
-  | Gear tier | Main-hand weapons | Head/chest/legs/feet | Offhand |
-  |---|---|---|---|
-  | T4 | Ruby | Diamond | Sapphire |
-  | T5 | Diamond | Sapphire | Ruby |
-  | T6 | Sapphire | Ruby | Diamond |
-
-  One reference main hand, four armor pieces and one offhand across all three
-  tiers therefore consumes exactly **6 Diamond / 6 Sapphire / 6 Ruby**. A
-  two-handed weapon consumes its tier's main-hand gem and its offhand gem,
-  preserving the demand of the displaced slot. Pickaxes, shovels, axes and
-  other gathering tools, bars, furnaces and repair are
-  excluded. Ordinary affixes do not charge the base G2 again.
-  Species grants no hidden stat; it is the recipe's material identity.
-  Trinkets use their explicit symmetric recipes in §3.6b/§6.2.
-
-  Adding two native-family T4 trinkets and two current trinkets at each of T5
-  and T6 yields this lifetime reference demand:
-
-  | Faction | Diamond | Sapphire | Ruby | Foreign native-exclusive G2 |
-  |---|---:|---:|---:|---:|
-  | Accord | 8 | 12 | 10 | 10 Ruby |
-  | Throng | 8 | 10 | 12 | 10 Sapphire |
-
-  Choosing a foreign-family T4 special deliberately raises foreign demand;
-  the baseline burden remains symmetric. Dropped/vendor gear stays a usable
-  floor for contesting the source but is audited so it cannot erase crafted
-  G2 demand.
+  **No regional-G2 base cost.** Ordinary crafted combat weapons, armor
+  pieces and offhands at every tier use only their universal material
+  recipe (bars, cloth, leather, wood). The former T4–T6 Cut G2 surcharge on
+  base equipment is retired (Round 10 ruling 7: "There is no additional high-tier
+  regional-gem surcharge on base equipment"). G2 demand comes from trinkets
+  (§3.6b/§6.2), gem settings and Woodcarver components. Dropped/vendor gear
+  stays a usable floor.
 
   Rationale for having the vendor ladder at all: on a small server the
   crafter for your armor class may simply not exist — the floor stops a
@@ -1614,7 +1596,7 @@ becoming a side door around the pick-tier gate of §3.0.4.
 | Peaceful heartland 21–30 | equivalent T3 access | T3, source windows per §5.1 | preparation for the central frontier |
 | Contested approaches 31–40 | equivalent T4 access plus practical foreign-G2 routes | T4, improved windows on qualifying elites | all six race approaches and the Battlegrounds entry are contested |
 | Front 41–50 | equivalent T5 access | T5, improved windows on qualifying elites | war-front objectives and quest hooks; no free supply crates |
-| High front 51–59 / endpoints 60 | equivalent T6 access | T6, improved windows; elites common | two contested dragons and all-six-gem apex camps |
+| High front 51–59 / endpoints 60 | equivalent T6 access | T6, improved windows; elites common | two contested dragons and the apex camps |
 | Depth axis | six tier rocks gated by pick tier (§3.0.4); Iron is reachable in T1, mined Coal by T2, Silver by T3, Emberglass and G2 by T4, Abyssal Crystal by T5; race-region columns select G1/G2/cultural species and deep T6 adds bounded density | cave mobs as per surface tier | **no gear-drop layer of its own**, at any depth (below) |
 | Enemy faction | equivalent tier budgets, not necessarily identical palettes | same tier/source rules | enemy named rares and any raid-enabled king remain incentives |
 
@@ -1660,17 +1642,14 @@ higher-source roll. Crafted enchantments instead use the fixed tier table in
 [the current contract](crafting_equipment_revision.md#enchanting).
 
 WP5 still owes the loot/economy audit: found gear must not erase demand for
-crafted G2 gear. No removed masterwork/temper workflow is assumed by that audit.
+crafted gear. No removed masterwork/temper workflow is assumed by that audit.
 
 
 ### 5.2 Named rares (spawn rules decided in biomes_mobs §3.3)
 
 2–4 h respawn, patrol routes, faction-wide broadcast. Loot per kill:
-guaranteed Uncommon (rare window) + 25% Rare + **100% signature trophy**
-(`group:grug_rare_trophy` — Grimtusk's Tusk, Silkfang's Gland, …): a
-qualifying optional masterwork ingredient and, where explicitly listed, a
-profession recipe input. It never enters a universal bar or pick (§2.3,
-§3.0.2, §6.4). Anti-camping:
+guaranteed Uncommon (rare window) + 25% Rare. Named rares drop **no
+signature trophy** (user decision 2026-09-29, WP audit D4). Anti-camping:
 patrol routes + broadcast + the 2–4 h jitter (already decided) — no
 extra mechanic needed.
 
@@ -1681,8 +1660,8 @@ boss rewards with independent per-character 24-hour loot lockouts. Their
 participation and reset accounting matches the king ledger below. A boss
 reward may include Rare gear in the boss window and authored materials, but it
 never pays ledger money directly and no universal bar/pick depends on it:
-continental T5 Abyssal Crystal is the ordinary T6 entry. Dragon-island gem
-sockets are a separate renewable gathering source, not boss loot.
+continental T5 Abyssal Crystal is the ordinary T6 entry. There is no hoard
+chest (WP audit E11) and no renewable gem socket on the islands (E5).
 
 ### 5.4 Six race Kings and Fallen Crowns
 
@@ -1705,10 +1684,9 @@ invulnerable.
 - A successful award starts that King's rolling 24-hour wall-clock Crown
   lockout for the character. Other enemy Kings remain independently rewarding;
   repeat kills during one lockout may proceed but grant no Crown.
-- The Crown substitutes one-for-one for a qualifying named-rare trophy in the
-  existing trophy slot of an ordinary Master-tier masterwork, including a T6
-  Grudgeforged item. It grants the same stat/affix budget and quality window;
-  royal provenance supplies visual identity.
+- The Crown is a masterwork input candidate for the Grudgeforged upgrade to
+  item level 70 (§2); WP5 settles that recipe. Royal provenance supplies
+  visual identity.
 - No universal bar, pick, profession-level advancement or ordinary base gear requires a
   Crown, and no power-bearing recipe is Crown-only. Guard loot is ordinary
   level-60 elite loot and never substitutes for a Crown. Rewards enter the
@@ -1720,13 +1698,8 @@ The authored war front feeds crafting only through the existing
 player-involvement war-trophy/heavy-cloth rules and later explicit quests.
 WP42 ships no refilling supply crate. Each contested zone reserves one
 non-loot quest-interaction slot for WP9; it is not a free material source.
-The two endpoint apex mining camps are the sole map-side addition: each has
-the 12 all-six-gem nodes specified by `world_zones.md` §6 and
-`world.md` §2 R4 — exactly two renewable sockets per species. Each depleted
-socket refills independently after a randomized 2–4 hour interval; an
-under-tier destruction still depletes it, and the Goldsmith bonus is included
-in the yield audit. Runtime economy calibration may tune the interval while
-preserving the confirmed two-live-nodes-per-species budget.
+The two endpoint apex camps add no renewable gem sockets: renewable ores are
+removed entirely, camps included (user decision 2026-09-29, WP audit E5).
 
 ## 6. Quality tiers & enchant roll ranges (WP5 numbers)
 
@@ -1926,7 +1899,7 @@ intended +50–60% fully equipped ceiling.
 | world | 0.00–0.60 | normal-mob drops |
 | elite | 0.30–0.90 | elite drops, dungeon/crate loot |
 | rare | 0.50–1.00 | named-rare drops |
-| boss | 0.80–1.00 | apex hoards, race Kings |
+| boss | 0.80–1.00 | dragon rewards, race Kings |
 
 **Combined cap policy (revised 2026-09-20).** Ordinary affixes, trinket
 prefixes/suffixes, cultural finishes, attributes and base equipment all add
@@ -2113,7 +2086,7 @@ retired. Housing has no money price, tiers, upgrades or additional stones
 
 - **Claim Stone** `grug_housing:claim_stone`: one per player, soulbound (never
   in chests, bags, trades or mail; kept on death; destroyed when dropped), not
-  craftable and not sold. The Housing Manager in every capital hands it out
+  craftable and not sold. The Housing Steward in every capital hands it out
   free from level 20 while the player has none, carried or placed.
 - **Upkeep fuel:** the placed stone accepts only coal lumps
   (`default:coal_lump`) and charcoal (`grug_smelting:charcoal`), both burning

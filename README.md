@@ -50,8 +50,18 @@ to fear. Their story will grow as more regions and encounters are completed.
 [ROADMAP.md](ROADMAP.md).*
 
 The systems above are implemented and installed in the local development build.
+[Round 26](docs/planning/round26-capitals-housing-cleanup-plan.md#completion-2026-09-29)
+is complete locally and awaits a playtest on a fresh world. A placed Claim Stone now starts as a draft that you activate with
+five lumps of coal within five minutes, and the Housing Steward hands it out.
+Buffs and debuffs show as icons above the skill bar, the combat state as an
+icon next to the health bar, with a new Effects tab on the Character page and
+class icons in the party display.
+Old utility items and duplicate tool names are cleaned up. The six capitals
+get more irregular walls and each its own character: a royal river city, an
+angular mountain hold, a necropolis, a war camp, a lakeside city and a jungle
+city round its cenote.
 [Round 25](docs/planning/round25-housing-plan.md#completion-2026-09-29) adds
-housing: from level 20 a Housing Manager in your capital hands out a Claim
+housing: from level 20 a Housing Steward in your capital hands out a Claim
 Stone. Placed in your faction's level-11–30 lands and fuelled with coal or
 charcoal, it protects a 101 × 101 home, lets you grant friends access and can
 be your travel home. Roads and the cores of villages, camps and points of
@@ -77,33 +87,36 @@ longer-term balancing remain ongoing. A [startup correction](docs/research/round
 fixes the new fish registration and native arrow recipe binding; isolated server
 startup and the 200-arrow Basics recipe are verified.
 
-Boats, the full geographic PvP system, war fronts and the planned island
-dragon encounters are still unfinished. The current
-quest catalog does not yet cover the full journey through every region.
+Boats and waypoints, the full geographic PvP system and the war-front battles
+are still unfinished; the two island dragons already fight, but only boats will
+reach their islands. The current quest catalog reaches level 40 and does not
+yet cover the full journey through every region.
 
 <details>
 <summary>Development tracking and known caveats</summary>
 
-**Delivered:** 28 of 53 tracked work-package identities are complete; several
-others have playable portions. This is a tracking count, not a percentage of
-game completion. The latest delivered increment is
-[Round 21](docs/research/round21-completion.md), independently reviewed and
-locally synchronized; [project status](docs/STATUS.md) records acceptance. No remote
-delivery is claimed. [In-game acceptance](docs/research/round21-playtest.md)
+**Delivered:** 39 of 53 tracked work-package identities are complete, 3 are
+canceled and 11 are open, several with playable portions (after the
+2026-09-29 [work-package audit](docs/planning/wp-audit-2026-09-29.md)). This
+is a tracking count, not a percentage of game completion. The latest delivered
+increment is
+[Round 26](docs/planning/round26-capitals-housing-cleanup-plan.md#completion-2026-09-29),
+independently reviewed and merged locally; Round 24 is the latest pushed and
+accepted state. [Project status](docs/STATUS.md) records acceptance, and the
+[Round 26 playtest](docs/planning/round26-capitals-housing-cleanup-plan.md#playtest-checklist-fresh-world)
 remains separate.
 
-**Ready for further work:** the backlog identifies crafting/enchantment
-completion, carried light, recovery/rest and economy calibration as available
-next work. Travel and the wider PvP/endgame content have additional
-dependencies; the [roadmap](ROADMAP.md) records their order.
+**Ready for further work:** the first release still needs boats and
+waypoints, geographic PvP and the story from level 41 to 60 with its finale.
+The economy pass, crafting finishes and masterwork, and the deep spawn pulse
+follow; the [roadmap](ROADMAP.md) records the V1 scope and order.
 
 **Caveats:** the confusing Cooking feedback now has a distinct success message;
-the trainer flows still need in-game acceptance. Held-torch moving light and
-friendly-guard healing remain deferred. Performance and first-release validation
-are still open. Optional full-world preparation can
-take many hours; the atlas does not require it. See the
-[latest playtest checklist](docs/research/round18-playtest.md) and the
-[preceding checks](docs/research/round17-playtest.md).
+the trainer flows still need in-game acceptance. Friendly-guard healing remains
+deferred. Performance and first-release validation are still open. Optional
+full-world preparation can take many hours; the atlas does not require it. See
+the [latest playtest checklist](docs/planning/round26-capitals-housing-cleanup-plan.md#playtest-checklist-fresh-world)
+and the [Round 24 checks](docs/planning/round24-mining-underground-mobs-plan.md#completion-2026-09-29).
 
 </details>
 
@@ -112,13 +125,14 @@ take many hours; the atlas does not require it. See the
 The [full roadmap](ROADMAP.md) separates planned features from delivered work.
 There are no fixed release dates yet.
 
-- **Toward the first release:** protected player homes, boats and travel,
-  more settlements and regional quests, geographic PvP and faction clashes,
-  and completing the two offshore dragon encounters. Economy balance and
-  reliable everyday play are part of that work too.
+- **Toward the first release:** boats and waypoint travel, which also open
+  the way to the two offshore dragons, the story up to level 60 and its
+  finale, and geographic PvP. Economy balance and reliable everyday play are
+  part of that work too.
 - **Later adventures:** a walkable underworld expansion with its own story,
-  creatures and terrain. Other plans include further classes, dungeons,
-  regional bosses, reputation and player trading.
+  creatures and terrain, and scripted faction clashes on the war front. Other
+  plans include further classes, dungeons, regional bosses, reputation and
+  player trading.
 - **Continued refinement:** clearer onboarding, accessibility, localization,
   art and sound, and multiplayer performance.
 
@@ -200,7 +214,8 @@ playing, sharing feedback or helping in whatever way suits you.
 
 ## Explore the design
 
-The [design index](docs/design/README.md) contains the decided game rules.
+The [design index](docs/design/README.md) contains the decided game rules; the
+[documentation guide](docs/README.md) explains where everything else lives.
 Some describe systems still being built; the [backlog](BACKLOG.md) tracks
 implementation, and [research notes](docs/research/) retain the supporting
 investigations and delivery records.
@@ -216,7 +231,7 @@ investigations and delivery records.
 | Items and crafting | [Items](docs/design/items_crafting.md): materials and recipes; [professions](docs/design/professions.md): trades; [stations and enchantments](docs/design/crafting_equipment_revision.md): current crafting rules; [equipment](docs/design/inventory_equipment.md): slots and bags; [durability](docs/design/durability_repair.md): wear and repair; [economy](docs/design/economy.md): money, prices and services. |
 | Wildlife and everyday life | [Biomes and mobs](docs/design/biomes_mobs.md): habitats and creatures; [farming](docs/design/farming.md): crops; [housing](docs/design/housing.md): Claim Stone homes. |
 | Travel and playing together | [Mounts](docs/design/mounts.md): riding; [boats](docs/design/boats.md): planned water travel; [home travel](docs/design/home_travel.md): innkeepers and return; [parties](docs/design/parties.md): groups; [atlas](docs/design/world_map.md): maps and markers. |
-| Current revision | [Round 18 decisions](docs/design/playtest_quality_revision.md): implemented playtest-quality rules; GUI acceptance pending. |
+| Decision routing | [Round 18 decisions](docs/design/playtest_quality_revision.md): where the Round 18 playtest-quality rules now live. |
 | Hosting | [World preparation](docs/design/world_preparation.md): generating starting areas or the full world. |
 
 </details>

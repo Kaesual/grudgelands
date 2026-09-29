@@ -102,9 +102,10 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   runtime-only untimed `mount` status. Mounted players cannot attack. Land
   controllers use nominal one-node step height; T1 is 6.4 nodes/s (+60%).
 - **R7 audit boundary**: the 157-file R7 source-audit roster is frozen
-  historical evidence and is not a current-source gate. WP49 will replace it
-  with a fixed WP40/direct-neighbour roster; never refresh or cite the old
-  baseline-derived list as current certification.
+  historical evidence and is not a current-source gate. Its audit script was
+  retired in Round 22 and WP49, the planned replacement, is canceled
+  (2026-09-29); never refresh or cite the old baseline-derived list as current
+  certification.
 - **Trinkets**: `grug_trinkets` owns the six special consumers and rebuilds an
   event-driven per-character equipment cache through the equipment-change seam;
   hot mana/heal/hit/kill/potion paths read that cache and never rescan slots.
@@ -242,8 +243,11 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   talent change. Suffocation is 5% maximum HP/s (minimum 1), with stasis and
   `noclip` exempt; lava is 20% and drowning 10% of maximum HP/s
   (`environment_damage.lua`, Round 24), and absorb does not cover fall,
-  lava or drowning. `grug_core.status` is the runtime timed-effect registry and
-  top-center eight-line buff/debuff text list (Round 19). Status definitions may carry only
+  lava or drowning. `grug_core.status` is the runtime timed-effect registry and, since
+  Round 26, the bottom-centre status icon row (at most 10 icons, 0.5 s pass;
+  pictures and frame kinds in `grug_core/status_icons.lua`) that also feeds
+  the Character page's Effects tab; the combat state is not a status but
+  the icon `grug_core/combat_hud.lua` draws right of the health bar. Status definitions may carry only
   `hp_pool_percent`, `mana_pool_percent`, `crit_percent`, `armor` and
   `spell_damage_percent`; `grug_core.status_modifier_sum` adds active statuses,
   and the modifier-change callback drives the same HP/mana clamp and HUD/page
@@ -513,9 +517,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     on protected ground calls `core.record_protection_violation` so the player
     sees the reason. `max_drop_level` is a separate ordinary drop
     property and may remain non-zero. `build_pick_capabilities` and the
-    six `PICK_PROFILES` are the verification/consumer seam. WP29 owns the
-    final playable pick catalog and recipes, while WP22 owns runtime
-    speed/durability calibration. Canonical storage blocks, Iron Sign/Ladder
+    six `PICK_PROFILES` are the verification/consumer seam and the dig-time
+    authority: dig speed stays as in the game, with no separate calibration
+    (2026-09-29 WP audit D8; WP22 and WP29 are closed). Canonical storage blocks, Iron Sign/Ladder
     and the 20 canonical metal stair/slab nodes are storage/building
     derivatives, not natural ground and never harvest-gated.
   - Emberglass and Abyssal Steel are the canonical names. Fresh-server mode
@@ -624,28 +628,39 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   then core APIs revalidate current authority. HUD HP writes are compare-first.
   The saved color preference defaults to By class; an explicit All green choice
   persists. Current geometry and offline presentation: [parties.md](../design/parties.md).
-- **Housing (Round 25):** `mods/PLAYER/grug_housing` implements
+- **Housing (Round 25, Round 26 drafts):** `mods/PLAYER/grug_housing` implements
   [housing.md](../design/housing.md). One global `grug_housing`; each file has
   one owner lane so the lanes work in parallel:
-  - `api.lua` (Lane A): the claim core and the interface contract — registry
-    in mod storage plus a claim grid index, placement validation, the
-    protection check with permissions, fuel as `paid_until`, the soulbound
-    `grug_housing.STONE_ITEM` (`grug_housing:claim_stone`), daily limits,
-    destruction times, the arrival cube and no renewal in active claims.
+  - `registry.lua` + `api.lua` (Lane A): the pure claim model and the
+    interface contract — registry in mod storage (format v2) plus a claim grid
+    index, placement validation, the protection check with permissions, fuel
+    as `paid_until`, the soulbound `grug_housing.STONE_ITEM`
+    (`grug_housing:claim_stone`) and the draft node
+    `grug_housing.DRAFT_STONE` (`grug_housing:claim_stone_draft`), drafts
+    (`DRAFT_SECONDS = 300`), activation (`ACTIVATION_LUMPS = 5`, charcoal
+    first), the pick-up lock (`PICKUP_LOCK_SECONDS = 43200`), destruction
+    times, the arrival cube and no renewal in active claims.
     Contract: `claim_at(pos)` (claim `{id, owner, center, placed_at,
-    paid_until}` or nil), `is_active`, `remaining_seconds`, `permission(claim,
-    name)` → `"owner"`/`"everything"`/`"interact"`/nil, `player_claim(name)`
-    → claim plus state `never`/`carried`/`placed`/`destroyed`/`needs_stone`,
-    `issue_stone`, `add_fuel`, `pick_up`, `set_permission`, `arrival_pos`,
-    `register_on_claim_changed(fn)` with events `placed`, `fuel`,
-    `permission`, `picked_up`, `destroyed`, `expired`. Constants `RADIUS = 50`,
-    `MIN_Y = −100`.
+    activated_at, paid_until}` or nil; `activated_at` 0 is a draft),
+    `is_active`, `is_draft`, `draft_remaining`, `pickup_wait`,
+    `remaining_seconds`, `permission(claim, name)` →
+    `"owner"`/`"everything"`/`"interact"`/nil, `player_claim(name)` → claim
+    plus state `never`/`carried`/`placed`/`destroyed`/`removed`/`needs_stone`,
+    `issue_stone`, `activate`, `add_fuel`, `pick_up`, `set_permission`,
+    `arrival_pos`, `register_on_claim_changed(fn)` with events `placed`,
+    `activated`, `fuel`, `permission`, `picked_up`, `destroyed`, `removed`,
+    `draft_expired`, `expired`. Constants `RADIUS = 50`, `MIN_Y = −100`.
+  - `stone.lua`, `stone_form.lua`, `protection.lua`, `soulbound.lua`: the
+    stone and draft nodes with draft and fuel expiry, the stone forms, the
+    `is_protected` wrapper with the arrival cube, the soulbound items.
+  - `admin.lua` (Round 26): `/claim_remove <player> | here | orphans`
+    (`server` privilege).
   - `interaction.lua` (Lane B): the generic right-click and node-inventory
     guard installed at `register_on_mods_loaded`, and the "Home of <owner> –
     protected" reason for `grug_core.protection_hint`.
-  - `interface.lua` (Lane C): the stone formspec (set as
-    `grug_housing.open_stone_interface`), the Housing Manager and the
-    character-page status.
+  - `interface.lua`, `manager.lua` (Lane C): the stone formspec (set as
+    `grug_housing.open_stone_interface`), the Housing Steward (internal socket
+    role id `housing_manager`) and the character-page status.
   - Home-stone travel (Lane D) lives in `grug_home`, which reads the claim
     through the contract above.
 
@@ -803,16 +818,14 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   level-31–60 land zone is contested and editable by both factions. Roads
   (corridor segments) and POI, village and camp building cores (boxes) are
   world-protected in the 128-node candidate grid (`world.md` §2 R1b, Round
-  25); bounded functional anchors and renewable-resource sockets keep their
-  hard protection; the remaining camp shells, tents, fences and battlefield
+  25); bounded functional anchors keep their hard protection; the remaining camp shells, tents, fences and battlefield
   dressing are mutable.
   Material design owns the complete `race_region` mapping of
   G1, G2, cultural material and signature wood; map code stores only the
   region identity and placement data needed to consume that mapping. Each
-  endpoint apex camp has exactly 12 renewable sockets, two per gem. Both
-  factions may mine them; the small functional anchor, the sockets and the
-  camp's building-core box are protected, while the rest of the camp shell
-  remains mutable.
+  endpoint apex camp has no renewable sockets (renewable ores are removed,
+  2026-09-29); its small functional anchor and building-core box are
+  protected, while the rest of the camp shell remains mutable.
 - **World atlas**: `docs/design/world_map.md` governs the cartographic Map tab,
   with no fog of war and independent future-interactive markers. It needs no
   generated-terrain bitmap and never unlocks waypoint travel.

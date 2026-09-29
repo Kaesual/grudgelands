@@ -142,8 +142,7 @@ not a hidden benefit of learning the item's owning profession; see
   herbs; the old gathering gate becomes the Alchemist's own book group
   (`items_crafting.md` §3.6).
 - **Gem Hunter merges into the Goldsmith.** Its useful gathering identity
-  survives as bonus yield from a successfully harvested natural or renewable
-  gem node (`items_crafting.md` §3.6b): **10% base chance at Apprentice, 20%
+  survives as bonus yield from a successfully harvested natural gem node (`items_crafting.md` §3.6b): **10% base chance at Apprentice, 20%
   from Journeyman onward**, rolled once after a valid harvest and granting one
   additional raw gem item of the harvested species. The old Gem Detector was
   tied to deleted private-island treasure clusters and is retired rather than

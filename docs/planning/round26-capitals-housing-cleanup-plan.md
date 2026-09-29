@@ -3,7 +3,8 @@
 Drafted 2026-09-29 after the Round 25 playtest start, the
 [work-package audit](wp-audit-2026-09-29.md) and its
 [user decisions](wp-audit-2026-09-29.md#user-decisions-2026-09-29).
-**Status: plan. No implementation before the user's go-ahead.**
+**Status: complete, 2026-09-29** (see [Completion](#completion-2026-09-29)).
+Next: fresh world and playtest.
 
 ## Goals
 
@@ -143,3 +144,57 @@ Drafted 2026-09-29 after the Round 25 playtest start, the
 
 **Not in this round:** the depth pulse (WP34, kept for later), WP44, boats and
 waypoints (WP17), WP41, the story (WP9), WP5 and WP10.
+
+## Completion (2026-09-29)
+
+All lanes are merged on local main: S `377e7cd4`, R `4e88234c` with the Troll follow-up `ed7d79a1`, I `abaaa262`, W `ce2264e9`, D (branch `r26-d-docs`). No push.
+
+- **S — Claim Stone:** the draft (half-transparent, protects nothing,
+  crumbles after 5 minutes), activation with 5 lumps, the 12-hour pick-up
+  lock, the Housing Steward, `/claim_remove`, snow in the arrival cube;
+  engine probe `tools/r26_claim_activation/` ([housing.md](../design/housing.md)).
+- **R — registrations:** WP28 delivered (mobs_redo utility items and
+  silver-sandstone recipes removed, all tier tools under `grug_materials:`
+  with 12 aliases and a startup audit, the two surface critters at 0.75
+  density); follow-up: Trolls get +50% food healing.
+- **I — status icons:** the icon row above the skill bar, the combat icon
+  beside the health bar, the Character page Stats/Effects tabs and class
+  icons in the party HUD and Group page (audit D10,
+  [inventory_equipment.md](../design/inventory_equipment.md) §5).
+- **W — organic capitals:** a more irregular, still star-shaped outline in
+  the 512 square at about the same area, a character per capital (`M.STYLE`),
+  towers at bends and gatehouses, and a replan at +8 %/+16 % area when a
+  named or required building is dropped
+  ([world_zones.md](../design/world_zones.md) §12). Measured on a 200-seed
+  sample: named buildings dropped 2 → 0, load failures 0 → 0; planning time
+  for six capitals per seed 5.7 s → 6.2 s; whole-seed preparation 14.5 →
+  14.9 CPU s. Engine check seed 42: PASS 36/36
+  (`tools/r26_capitals/engine.sh`); renders with `tools/r26_capitals/run.sh`.
+- **D — documentation:** the audit decisions, then the S/R/I/W facts, in
+  BACKLOG, the WP scopes, ROADMAP, README, AGENTS, STATUS and the design
+  docs.
+
+Carry-overs are in [BACKLOG](../../BACKLOG.md#round-26-carry-overs).
+
+### Playtest checklist (fresh world)
+
+1. **Capitals:** visit all six. Each has its own outline and street pattern
+   (Highcourt's river curtain and plaza, Dur Brannoc's straight faces with
+   corner towers, Nhal Veyr's round ring with lanes to the wall, Gor
+   Drazhak's pinwheel avenues and war yard, Lethariel along its lake,
+   Kezamba round its cenote). Walls are walkable and closed over land; every
+   required and named building stands. At Lethariel, look at the south
+   gatehouse by the crown lake.
+2. **Claim Stone:** place it: it is a half-transparent draft with a
+   countdown. Let one crumble (the Steward gives a new stone at once), then
+   activate one with 5 lumps. Pick-up is refused for 12 hours after
+   activation; a draft can be picked up at any time. Snow in the arrival
+   cube can be dug.
+3. **Status icons:** eat, drink an elixir, mount, get poisoned or slowed and
+   enter combat: icons with green, red or gold frames above the skill bar,
+   the combat icon beside the health bar, details on the Character page's
+   Effects tab, class icons in a party.
+4. **Registrations:** no nametag, net, lasso, saddle, shears, protector or
+   repellent in the recipe book; tools are `grug_materials:` items; old
+   quests and traders still work.
+5. **Troll:** food heals a Troll half as much again.

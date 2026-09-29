@@ -26,7 +26,8 @@ Decided 2026-09-22, Round 17. Uses the standard unmodified Luanti client.
   before a delayed return completion; stale or duplicate requests cannot move a
   reconnected, dead or differently bound character.
 - This is the current V1 return/respawn mechanism. The waypoint network
-  remains deferred and adds no home points.
+  (WP17, part of V1 since 2026-09-29) is a separate travel feature and adds no
+  home points.
 
 ## Claim Stone as travel home (Round 25)
 

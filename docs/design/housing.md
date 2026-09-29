@@ -1,7 +1,9 @@
 # Housing: Claim Stones
 
 Decided 2026-09-29 (Round 25, rulings 1–29 of the
-[Round 25 housing plan](../planning/round25-housing-plan.md)). This is the
+[Round 25 housing plan](../planning/round25-housing-plan.md); draft,
+activation, pick-up lock, the Housing Steward and the admin command from
+rulings 8–12 of the [Round 26 plan](../planning/round26-capitals-housing-cleanup-plan.md)). This is the
 single authoritative housing spec; it replaces the former tiered design
 completely (no tiers, unlocks, upgrades, housing masks, faction pools or
 decay; git history keeps the old text). Implementation: WP24, mod
@@ -21,10 +23,12 @@ or guild land.
   rules of the column apply.
 - One claim per player: each player owns at most one Claim Stone (§3).
 - Each claim is one record in the claim registry (mod storage) with its id,
-  owner, centre, placement time and "paid until" timestamp (§4).
+  owner, centre, placement time, activation time and "paid until" timestamp
+  (§4). The storage format is version 2; fresh worlds only, there is no
+  reader for Round 25 saves.
 - Claims never overlap. Two claims may touch edge to edge; there is no extra
-  spacing (ruling 5). A claim whose fuel ran out still blocks other claims
-  until its stone is picked up or destroyed (§5).
+  spacing (ruling 5). A draft (§2a) and a claim whose fuel ran out still block
+  other claims until the stone is picked up, crumbles or is destroyed (§5).
 
 ## 2. Placement
 
@@ -64,22 +68,44 @@ or guild land.
 - **Arrival cube** (ruling 6): the 3 × 3 × 3 cube directly above the stone
   (x and z ± 1 around it, y + 1 to y + 3) must be air when the stone is
   placed. While the stone stands, nothing can be placed into that cube, by
-  anyone, and liquids cannot flow into it.
-- Placing also needs the daily placement allowance (§3).
+  anyone, and liquids cannot flow into it. A `buildable_to` node that lands
+  in the cube later (snow, for example) can be dug under the ordinary claim
+  rules (Round 26 ruling 12); placing into the cube stays refused.
+- Placing makes a **draft** (§2a). There is no placing limit.
+
+## 2a. Draft and activation
+
+- **The draft** (Round 26 ruling 8): a placed stone first stands as the
+  half-transparent node `grug_housing:claim_stone_draft`. It reserves its
+  square: the overlap check of other placements counts it (the 16-node
+  margin applies to settlements only, §2). It protects nothing: no claim
+  protection, no interaction guard, no spawn guard, and natural renewal runs.
+  It keeps the arrival-cube guard, though: no placing, liquid flow or renewal
+  into the cube. Nobody can dig or blow it up; the owner
+  can pick it up at any time through its form, with no lock.
+- **Crumbling:** a draft that is not activated within **300 s (5 min)** of
+  placing crumbles, whether the owner is online or not. The owner then needs
+  a new stone and gets it from the Housing Steward at once.
+- **Activation** (ruling 9): the draft form's Activate button pays exactly
+  **5 lumps** at once from the main inventory (charcoal first, then coal
+  lumps) and starts fuel and protection. Further fuel goes through the fuel
+  slot (§4); the draft's slot refuses fuel.
+- A draft cannot be the travel-home target (§8).
 
 ## 3. The Claim Stone item
 
 - Item `grug_housing:claim_stone`. It is not craftable and has no price.
-- **One stone per player** (ruling 7). The **Housing Manager** in every
+- **One stone per player** (ruling 7). The **Housing Steward** in every
   capital hands it out free from level 20, only while the player has none,
   neither carried nor placed.
 - **Soulbound** (ruling 8): it cannot go into chests, bags, trades or mail,
   and it stays in the inventory on death. Dropping it destroys it; a new one
-  comes from the Housing Manager.
+  comes from the Housing Steward.
 - It is placed like any block from a hotbar slot.
-- **Once a day** (ruling 9): each player may place a stone once per 24 hours
-  and pick one up once per 24 hours, real time. The two limits are counted
-  separately.
+- **One lock only** (Round 26 ruling 10): for **12 hours (43 200 s)** after
+  activation the stone cannot be picked up. There is no placing lock and no
+  daily limit: after a pick-up or destruction the player may place and
+  activate again at once. The former once-a-day limits are gone.
 
 ## 4. Fuel and upkeep
 
@@ -104,10 +130,12 @@ The stone burns fuel whether anybody is near it or not (ruling 10).
   - new fuel is accepted up to `99 − displayed stack`; topping up always
     works up to the full stack;
   - inserted fuel can never be taken out again;
-  - on pick-up the owner gets `floor(remaining / 26 160)` whole lumps back;
-    the partly burnt lump is lost. When the inventory is full, the returned
-    lumps drop on the ground.
-- Which fuel item the slot shows and returns is an implementation detail.
+  - on pick-up the owner gets `floor(remaining / 26 160)` whole lumps back
+    as charcoal (coal lumps when `grug_smelting` is absent); the partly burnt
+    lump is lost. When the inventory is full, the returned lumps drop on the
+    ground.
+- Activation (§2a) pays its 5 lumps into the same timestamp. A draft's fuel
+  slot refuses fuel.
 
 ## 5. Empty fuel and destruction
 
@@ -129,9 +157,19 @@ The stone burns fuel whether anybody is near it or not (ruling 10).
 
   The hand and the skill hand cannot destroy it. A destroyed stone drops
   nothing (ruling 21); the claim ends and the player may fetch a new stone
-  from the Housing Manager.
+  from the Housing Steward. A draft cannot be destroyed (§2a).
 - **Pick-up** is owner-only and only through the stone's own interface (§7);
-  it ends the claim and returns the stone and the whole unburnt lumps (§4).
+  it ends the claim and returns the stone and the whole unburnt lumps (§4). A
+  draft can be picked up at any time; an activated stone not within 12 hours
+  of its activation (§3).
+- **Admin removal** (Round 26 ruling 12): `/claim_remove <player>`,
+  `/claim_remove here` (the claim the admin stands in) or
+  `/claim_remove orphans` (stone nodes within 16 nodes of the admin that have
+  no registry row; registered claim centres are skipped), with the `server`
+  privilege. An online owner gets the chat message "Your Claim Stone was
+  removed by an admin…"; an offline owner sees it on the Character page and
+  gets the travel-home fallback message at the next login (§8). The travel
+  home falls back to the innkeeper, and nothing is refunded.
 
 ## 6. Permissions and protection
 
@@ -175,7 +213,8 @@ only when digging and placing; §6.3 covers the rest.
 ### 6.4 Renewal, spawns and falling nodes
 
 - No natural renewal (wild plants, trees) inside an active claim (ruling 14);
-  planted crops grow as usual.
+  planted crops grow as usual. A draft protects nothing, so renewal and
+  spawns run in it as on open ground.
 - An expired claim renews under the normal rules, so an abandoned home
   overgrows (ruling 19; `farming.md`).
 - No hostile mob spawns inside an active claim; mobs may still walk in.
@@ -189,32 +228,44 @@ only when digging and placing; §6.3 covers the rest.
 
 ### 7.1 The stone interface (owner only)
 
+- **Draft form:** a live countdown to crumbling (redrawn every second), the
+  Activate button (§2a), Pick up and Close. No permission list and no fuel
+  until activated.
+
+Once activated:
+
 - The fuel slot (§4).
 - The remaining time to the minute, counting the current fuel stack.
 - The permission list (§6.1).
 - "Set as home": makes the claim the travel-home target (§8).
 - Pick-up (§5).
 
-### 7.2 Housing Manager
+### 7.2 Housing Steward
 
-A service NPC in every capital (rulings 7, 14): the gate resident of the
-capital's tailor service plot (`settlements.md`). It serves only its
+A service NPC in every capital (rulings 7, 14; renamed from Housing Manager in
+Round 26 ruling 11, internal role id `housing_manager`): the gate resident of
+the capital's tailor service plot (`settlements.md`). It serves only its
 capital's faction, hands out the stone (§3), and its dialog briefly explains
-the upkeep and the once-a-day rule. The map shows it with a "+" marker.
+the upkeep, the 5-minute activation with 5 lumps and the 12-hour lock. The
+map shows it with a "+" marker.
 
 ### 7.3 Character page status
 
 Shown only once a player has received a stone for the first time, wherever
-the player is:
+the player is. Times are whole minutes ("4 min", "< 1 min" in the last
+minute); only the draft form (§7.1) counts seconds.
 
+- draft: "Your Claim Stone is not active yet: activate it within 4 min or it
+  crumbles" (example), in red;
 - placed and fuelled: "Claim Stone fuel: 12 d 4 h 31 min" (example), in red
   when less than 24 h remain;
 - placed, fuel empty: "Your Claim Stone needs fuel, anyone can access your
   home right now";
 - destroyed: "Your Claim Stone has been destroyed";
+- removed by an admin: "Your Claim Stone was removed by an admin";
 - carried: "Your Claim Stone is in your inventory, not placed yet";
-- none (dropped): "You have no Claim Stone; ask a Housing Manager for a new
-  one".
+- none (dropped, or the draft crumbled): "You have no Claim Stone; ask a
+  Housing Steward for a new one".
 
 ## 8. Home-stone travel
 
@@ -222,11 +273,12 @@ the player is:
   [innkeeper home travel](home_travel.md), with the usual 30-minute cooldown
   (ruling 14). The owner sets it with "Set as home" in the stone interface;
   the map marks a claim home with "H". An expired claim still works as a
-  target.
+  target; a draft does not ("Activate your Claim Stone first").
 - The arrival is the arrival cube (§2). If the cube is blocked, that one trip
   goes to the bound innkeeper instead, with a message, and the cooldown is
   charged.
-- When the stone is picked up or destroyed, the target falls back to the
+- When the stone is picked up, destroyed or removed by an admin, the target
+  falls back to the
   player's bound innkeeper (the starting-town innkeeper when none is bound),
   with a message; an offline player gets it at the next login (ruling 26).
   Binding an innkeeper also replaces a claim home.

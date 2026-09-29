@@ -150,7 +150,7 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   128×128 build envelope plus a bare band of 12 nodes round it with rounded
   corners, `world_zones.md` §12; spawn, waypoint, graveyard and service
   platforms all lie inside it), essential service/quest/waypoint/graveyard platforms, and small
-  functional NPC and renewable-resource anchors. Outside the road corridors
+  functional NPC anchors. Outside the road corridors
   and POI boxes below, village, outpost and camp shells, ruins, tents, fences
   and battlefield dressing are generated once and may be changed under their
   zone's terrain rule. A start settlement needs no runtime pit or flood
@@ -161,9 +161,8 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
     authored x/z footprint is exact and protection runs upward without limit
     and downward through its **placement height − 100** inclusive. The
     placement height is the final surface y at the footprint's centre column:
-    the anchor for a capital's protected city or a start town, the column
-    itself for an apex socket, the anchor's fitted surface for an outpost or
-    bandit-camp functional column. Below that floor the position follows the
+    the anchor for a capital's protected city or a start town, the anchor's
+    fitted surface for an outpost or bandit-camp functional column. Below that floor the position follows the
     ordinary rules of its column — the zone's territory rule down to y = −700,
     the universal contested deep rule from y = −701 — and mapgen treats it
     like any other ground (ores, gems, rock layers, nests). Each
@@ -208,6 +207,11 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
     stays protected for everyone, the claim owner included: world protection
     wins over claim permissions. A claim keeps 16 nodes from every POI,
     village and camp core box (`housing.md` §2, §9; Round 25 ruling 27).
+  - **Future fire and explosions** spare these corridors and boxes as well as
+    the hard-protected content of R1 (user decision 2026-09-29,
+    [WP audit](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29)
+    E7). Nothing in the game damages terrain today; the guard is deferred work
+    (WP46).
 - **R2 — Peaceful enemy territory**: in level-1–30 land, an enemy faction may
   not dig or place any node, including torches and ladders. Items remain
   usable. At y = -701 and below the universal contested deep rule overrides
@@ -243,35 +247,10 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   capped every material's value at its respawn interval and turned mining
   into a rotation instead of an expedition. Wild plants instead follow the
   habitat-driven renewal in [farming.md](farming.md); no ore, gem, Rock
-  Salt or Salt Crust joins that plant exception. **Mineral exception: renewable
-  nodes inside protected functional socket anchors**, where the bounded
-  mechanism is protected (R1) and no player can privatize it. Outside the
-  camp's protected box (R1b) its walls, tents, fences and dressing remain
-  mutable. In the
-  MVP that exception is **exactly one structure kind: the mining camps** of
-  §4.
-  - **Exactly 12 renewable regional-tier metal sockets per ordinary camp**, in
-    the **tier of the camp's own region** (§2 R6 / `items_crafting.md` §3.0.1)
-    — so a camp is where a player gets T3 stock without a −400 expedition,
-    and the camp's garrison is the price. `world_zones.md` §11 gates this fixed
-    count as exact six-race ordinary-camp equality, separately from sampled
-    natural-resource density.
-    - The two level-60 apex camps at the dragon endpoints are the fixed
-      exception to the single regional-tier content rule: each has exactly
-      **12 nodes, two each of Citrine, Garnet, Jade, Diamond, Sapphire and
-      Ruby**. Both factions may
-      mine those nodes under R2b while each functional socket/anchor remains
-      protected. Camp construction outside the protected box remains
-      mutable. They remain
-      mining camps, so they do not create a second renewable-structure kind.
-  - **Respawn 2–4 hours per node**, not minutes. A camp is a destination
-    worth a trip every few sessions, never a farm rotation; the interval
-    is deliberately an order of magnitude above the 15–30 min the removed
-    world-wide mechanic used, because a handful of nodes at a guarded
-    place is a different thing from a vein under every hill.
-  - Other POI kinds may join the exception later, one renewable node type
-    per kind, once camps have proven the shape. Other natural mineral deposits
-    never regrow.
+  Salt or Salt Crust joins that plant exception. **There is no mineral
+  exception:** renewable ores are removed entirely, mining camps and the apex
+  camps included (user decision 2026-09-29,
+  [WP audit](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29) E5).
 - **R5 — Active Claim Stones**: a fuelled Claim Stone provides the only
   player-owned protection (§5, `housing.md`). Inside its 101 × 101 column
   from y = −100 upward, only the owner and players on its permission list may
@@ -452,8 +431,8 @@ capital zone's ordinary territory rule applies, and the contested deep rule
 from y = −701.
 
 - A capital is a safe civic hub with **no hostile ambient enemies**.
-- Four capitals are walled: **Highcourt, Dur Brannoc, Gor Drazhak and Nhal
-  Veyr**. Two are open: **Lethariel and Kezamba** (user ruling 2026-09-17).
+- All six capitals are walled (Round 23 ruling 2026-09-28, which walled
+  Lethariel and Kezamba as well; `settlements.md`).
 - Its guards and important faction NPCs are level 60; the killable race king
   is the explicit level-65 elite exception and is protected by four level-60
   elite royal guards (`world_zones.md` §12).
@@ -464,7 +443,7 @@ from y = −701.
   Respawns follow the bound innkeeper home; the starting settlement is the
   default. See [home travel](home_travel.md).
 - Every race has its own king in its own capital: **six kings total**. Housing
-  instead comes from the Housing Manager, a service NPC in every capital who
+  instead comes from the Housing Steward, a service NPC in every capital who
   hands out the Claim Stone from level 20 (§5); no king grants land or
   housing.
 - Capitals hold class POIs, traders, quest givers, job trainers and a major
@@ -501,18 +480,11 @@ visible:
   mining camp — resource site + conflict point in one). Such a site is
   **world content, not a purchasable claim**: it is guarded, never owned,
   and anyone permitted by the zone rule who fights past the garrison may mine
-  it. Under R4 a **mining camp is the only place with renewable minerals**,
-  while wild plants follow the separate [farming.md](farming.md) rules. Its
-  small functional anchor and renewable sockets are indestructible: exactly
-  12 renewable regional-tier metal sockets on a 2–4 h respawn
-  (numbers and rationale in §2 R4). Its ordinary walls, tents and dressing
-  remain mutable under the local terrain policy.
-  That is what makes such a camp a travel destination and a conflict
-  point rather than scenery — and it is why a camp needs a garrison worth
-  fighting. **Mining camps do not exist as a structure yet** — this
-  section has so far named them only as a *role* an outpost can carry;
-  authoring them (schematic, garrison, protection footprint) belongs to
-  the world-structures package.
+  it. Minerals never regrow there either (§2 R4); wild plants follow the
+  separate [farming.md](farming.md) rules. Its small functional anchor is
+  indestructible; its ordinary walls, tents and dressing remain mutable under
+  the local terrain policy. The six mining camps exist as Round 20 POI art
+  (WP13).
 - The T3 positional guard base is `nil` in every exterior class, including
   editable shelf, where no guard post may exist. It is exactly level 60 inside
   a capital's protected city (§3) only inside its protected volume (from the
@@ -599,7 +571,8 @@ mirefolk camps, later miners, king bodyguards, …) follows ONE model:
 ## 4b. Apex world bosses (dragons & kin)
 
 Every apex boss shares the same tech — oversized entity
-(`visual_size` 4–6×), fixed lair POI with hoard chest, **stationary
+(`visual_size` 4–6×), fixed lair POI (no hoard chest: the personal boss
+reward replaces it, user decision 2026-09-29, WP audit E11), **stationary
 arena fight** (holds its ledge and visibly walks between about three authored
 rest positions; it never teleports during idle roaming, kites into terrain or
 uses that walk to sidestep pathfinding exploits). A blocked rest route stops,
@@ -621,7 +594,7 @@ ordinary five-second combat window.
   land, bridge and tunnel access; both factions receive roughly equivalent
   boat routes through separate northern and southern approaches. Each
   island is a contested level-60 mountain zone with strong level-60 creatures,
-  war remains and a culminating summit or hoard.
+  war remains and a culminating summit lair.
 - An overworld dragon is a PvP world boss from its first stage, not a private
   home-continent boss. Its skill sketch remains ranged breath line
   (`dogshoot` + telegraph) plus ground-slam AoE.
@@ -646,8 +619,9 @@ ordinary five-second combat window.
   or in the respawn warning. The warning merely concentrates both factions at
   a predictable objective; it never enables, disables or changes the island's
   PvP rule.
-- Each endpoint also contains the all-six-gem apex mining camp defined by §2
-  R4. Both the boss and the mine are contested endgame objectives.
+- Each endpoint also contains an apex mining camp (`world_zones.md` §6; no
+  renewable sockets, §2 R4). Both the boss and the camp are contested endgame
+  objectives.
 - **Phase 2+ — additional regional apex creatures**, same code, own
   kits: e.g. jungle giant serpent (poison pools, submerges), blight bone
   colossus (knockback slam, summons adds). The dragon stays the biggest.
@@ -682,8 +656,7 @@ ordinary continental ores, G1/G2 gems and Abyssal Crystal:
 | y ≤ −2000 | +50%, capped |
 
 The bonus is a deterministic placement budget, never runtime ore respawn. It
-does not multiply trophies, king or dragon loot, protected camp sockets,
-claims or quest rewards. The band has no dedicated apex boss in the MVP and
+does not multiply trophies, king or dragon loot, claims or quest rewards. The band has no dedicated apex boss in the MVP and
 its creatures retain their ordinary family drops.
 
 ## 5. Housing: open-world Claim Stones
@@ -695,7 +668,7 @@ land do not exist.
 
 - A claim is a 101 × 101 column around one Claim Stone, from y = −100
   upward without limit. Each player has one soulbound stone, handed out free
-  by the Housing Manager in every capital from level 20.
+  by the Housing Steward in every capital from level 20.
 - The whole square must lie in the claimant's own faction home territory, in
   its level-11–30 zones (seven per faction), and may not touch a level-1–10 or
   level-31+ zone, a capital zone or the other faction's territory, and keeps
@@ -704,6 +677,9 @@ land do not exist.
   bay water inside an eligible zone may lie in a claim; the shelf and the
   ocean may not. There are no housing masks and no coastal
   housing areas. Claims never overlap but may touch.
+- A placed stone is a draft that protects nothing and crumbles after
+  5 minutes unless the owner activates it with 5 lumps; for 12 hours after
+  activation it cannot be picked up (Round 26, `housing.md` §2a).
 - The stone burns coal lumps or charcoal (one lump = 7 h 16 min; 99 lumps
   ≈ 30 days) as a "paid until" timestamp; server downtime counts. Without
   fuel the claim protects nothing, and anyone may destroy the stone with a
@@ -718,18 +694,20 @@ land do not exist.
   normally.
 - The claim can be the owner's travel-home target (§6).
 
-## 6. Travel: innkeeper homes and deferred travel
+## 6. Travel: innkeeper homes, waypoints and boats
 
 The current V1 return and death destination is the twelve-location
 [innkeeper home system](home_travel.md). A player's own Claim Stone can be the
 travel-home target instead (home stone, below). The waypoint network is a
-deferred, separate travel feature.
+separate travel feature, part of V1 (user decision 2026-09-29,
+[WP audit](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29) B2;
+WP17).
 
 **Waypoint network** (Diablo/PoE model, decided 2026-08-06):
 
-- Waypoints: every race starting settlement, every capital and the authored
-  travel hubs reserved by named zones. Exact density is part of the zone
-  catalog.
+- Waypoints: every race starting settlement and every capital, and no others
+  (no zone-hub waypoints; user decision 2026-09-29). A capital's waypoint pad
+  may stand anywhere in the city (WP audit A5).
 - **Unlocked by visiting, per character** (player meta); the world map shows
   discovered waypoints when waypoint integration is delivered. The initial
   cartographic atlas has no fog of war (`world_map.md`). Showing terrain or a waypoint on the
@@ -752,8 +730,6 @@ innkeeper also replaces a claim home. Death still respawns at the bound
 innkeeper. This replaces the former Home Stone channel (10-second cast,
 60-minute cooldown).
 
-- `/unstuck` (suicide command) remains the last resort for hard stuck
-  states.
 
 **Boats** are the third travel mode next to walking/riding and the waypoint
 network, and the only access to both dragon islands. Their complete contract —
@@ -820,14 +796,17 @@ territory.
   passive per race** + the vendor discount as a bonus. Passives
   (implementation: WP19, race registry hook): Dwarf −20% fall damage, applied
   after the max-HP fall conversion; absorb never applies to fall damage (`combat_stats.md` §2) ·
-  Troll +50% out-of-combat regen · Undead ignored by zombies at night
+  Troll +50% out-of-combat mana regeneration and +50% food healing
+  (instant and per tick; Round 26) · Undead ignored by zombies at night
   (unless the player attacked that zombie) · Orc +1 rage per hit taken ·
   Elf +5 m ability range (**ranged/spell abilities only** — melee abilities
   keep their own reach, `classes.md` §2b) · Human +10% quest XP. Plus **one
   race-exclusive vendor per race** (WP7). Implementation state (WP19): the
-  troll regen multiplier reaches mana today and MUST be consumed by WP21's
-  HP regen (rage decay is unaffected — a troll warrior only benefits from WP21
-  on); the human bonus is a latent hook (`grug_classes.get_xp_bonus`)
+  troll perk `ooc_regen_mult` (1.5) multiplies out-of-combat mana
+  regeneration and food healing (`grug_food.heal_multiplier`, instant and per
+  tick); there is no natural HP regeneration (WP21 closed 2026-09-29), and
+  rage decay is unaffected. The
+  human bonus is a latent hook (`grug_classes.get_xp_bonus`)
   that activates when WP8's quests tag their XP with source="quest".
 - **The vendor perk, quantified** (decided 2026-08-07 in WP7 — the perk
   was named above but never given numbers):

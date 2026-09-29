@@ -97,8 +97,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     weapon follow exactly as they do for a manual equip. It obeys the
     two-handed rule below rather than bypassing it, and falls back to `main`
     (with a chat line saying so) if the slot cannot take the item. The starter
-    torch stays in `main` for the same reason: in the offhand it would cost
-    every caster their two-handed staff.
+    torch stays in `main`; torches are not offhand items (no carried light,
+    `combat_stats.md` §7).
   - **Class-family permissions:** Warrior: sword, dagger, Battle Axe;
     Scout: bow, sword, dagger; Mage and Priest: staff, wand, dagger.
     All share the Weapon slot. Level and occupied-hand checks also apply.
@@ -116,8 +116,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   (decided 2026-08-08): every weapon declares `_grug_hands` —
   **Battle Axe 2, staff 2, bow 2, sword 1, dagger 1, wand 1**.
   An item **without** the field counts as
-  one-handed, which is what keeps the rule additive for torches, shields
-  and every future offhand item.
+  one-handed, which is what keeps the rule additive for shields and every
+  future offhand item.
   - The rule is one sentence in **both** directions: **the two occupied
     hands must add up to at most two hands.** A two-handed weapon refuses
     an occupied offhand, and an occupied two-handed hand refuses anything
@@ -128,9 +128,9 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     clearing the other slot. Two-handers also carry ", two-handed" in their
     generated stat line, so the trade is readable before the refusal ever
     fires. Rationale: the consequence is a gameplay rule, not a
-    technicality — carrying a torch or shield costs you the
-    two-handed weapon. *(The offhand direction cannot fire until an item
-    carries `grug_equip_offhand`, as shields and carried lights do.)*
+    technicality — carrying a shield or spellbook costs you the
+    two-handed weapon. *(The offhand direction fires for every item that
+    carries `grug_equip_offhand`: shields, spellbooks and the quiver.)*
 - **2 Trinket slots** — **no longer reserved** (decided 2026-08-08).
   UI, meta and the group-filtered `allow_put` shipped with WP15; what
   was missing was an item family, and **trinket items now ship in the
@@ -222,8 +222,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   exception and stays vendor-sellable**: it is the floor tier of its
   item category (professions.md §4), so it is bought, not crafted-only.
 - Offhand accepts shields, Goldsmith spellbooks and the Leatherworker quiver.
-  A two-handed bow explicitly permits the zero-hand quiver; shield, book and
-  torch remain illegal beside it. One-handed melee may retain the quiver, while
+  A two-handed bow explicitly permits the zero-hand quiver; shield and book
+  remain illegal beside it. One-handed melee may retain the quiver, while
   staff and greataxe require empty Offhand. The quiver has four arrow-only
   slots of up to 200 arrows each (800 total) and no combat stat or affix.
   It wears as an offhand; a broken quiver permits arrow retrieval but no refill
@@ -273,31 +273,55 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
 ## 5. Buff/debuff display (decided 2026-09-17)
 
 Every ordinary timed player effect registers centrally with an id, label,
-buff/debuff category and expiry. The registry is runtime-only: a relog drops
-ordinary buffs and debuffs. A mechanic that must survive a relog keeps its own
-authoritative persistence; the potion cooldown remains in player meta and is
-only mirrored into the registry for display.
+buff/debuff/neutral category and expiry (`grug_core.set_status`; the icon
+table is `grug_core.status_icons`). The registry is runtime-only: a relog
+drops ordinary buffs and debuffs. A mechanic that must survive a relog keeps
+its own authoritative persistence.
 
-- **Round 19:** one top-center HUD text list, leaving top-right minimap and
-  top-left chat free; buffs first and debuffs
-  second, capped at eight lines. Each line is `Name  1:23`; a numeric value
-  may follow the name, as in `Shield 12  0:09`. Durations under ten minutes
-  use `m:ss`; longer durations use the largest fitting unit.
-- Food labels state the active effect, for example `Food +2% HP/5s` or
-  `Food +6% HP, +6% Mana/5s, +2% Mana pool`. The regeneration text remains
-  visible during combat even though those ticks pause; the item tooltip
-  explains that secondary bonuses remain active.
-- One throttled 1 s pass owns timed ticks, expiry and display refresh. It
-  calls `hud_change` only when the complete rendered text changed; an idle
-  player generates no repeated HUD packets.
-- Current entries are Power Word: Shield, Renew, food restore and the
-  persistent Potion cooldown (shown in the debuff section). Combat state is
-  not a status entry.
-- Specialized displays such as the target frame remain separate.
-- **WP10 replaces the text presentation with the icon framework:** HUD image
-  elements, countdown text, green/red category frames and matching Character
-  page tooltips. Effects keep using the same central registry rather than
-  gaining per-consumer status stores.
+**Status icon row** (Round 26 Lane I, the status-icon package of WP audit
+D10; [plan](../planning/round26-capitals-housing-cleanup-plan.md) rulings
+17–23, [effect list](../planning/status-icons-2026-09-29.md)). It replaces
+the Round 19 top-centre text list:
+
+- **Place:** bottom centre, a row of 40 px icons directly above the breath
+  and skill rows, so the top centre belongs to the target frame alone.
+- **Look:** 64 px art on the dark skill-icon plate, with a frame drawn by
+  code: green for buffs, red for debuffs, gold for neutral states. The
+  caption under each icon is the countdown or the value (for example a
+  shield's remaining absorb).
+- **Capacity:** at most 10 icons. When more statuses run, debuffs keep their
+  slots first, then neutral states, then buffs.
+- **No cooldowns** on the row (ruling 21): the potion cooldown is no longer
+  shown; its refusal messages remain.
+- **Registered statuses:** food (the eaten item's own image, else the
+  generic food icon), elixirs, draughts, mounts (land or flight; an untimed
+  status, so the row caption is empty and the tier name and "+N% speed"
+  appear only on the Effects tab), one shield icon for every absorb source,
+  move immunity, Sprint, Sidestep and Renew (their skill icons), the six
+  talent windows (Unbroken, Ruination, Whitehot, Turn Aside, Last Word,
+  Untouchable), poisoned, slowed (one icon for every slow), rooted, stunned
+  and scorched (1.5 s per Dragon Scorch tick). Registered but not set by
+  anything yet: the Warding Draught (a buff, green; WP5) and the neutral PvP
+  tagged and PvP contested (gold; WP41 calls `set_status`).
+- **The combat state is not a status.** It never takes a row slot or appears
+  on the Effects tab: `grug_core/combat_hud.lua` draws a 32 px gold-framed
+  crossed-swords icon right of the health bar, where the "Combat" text was.
+- A food status is named after the dish itself; its effect, for example
+  `+2% HP/5s` or `+6% HP, +6% Mana/5s, +2% Mana pool`, is the detail line on
+  the Effects tab. The item tooltip explains that secondary bonuses remain
+  active while the regeneration ticks pause in combat.
+- One throttled pass every 0.5 s owns timed ticks, expiry and display refresh, and
+  changes a HUD element only when its content changed; an idle player
+  generates no repeated HUD packets. A poison chain ends on death.
+- **Character page tabs:** "Stats" (the view as before) and "Effects": icon,
+  name, remaining time and a detail line per status, refreshed about once a
+  minute or on change while that tab is open.
+- **Class icons** (Warrior, Mage, Priest, Scout) appear in the party HUD
+  list and in the Group page's "Current party" table (`parties.md`).
+- Specialized displays such as the target frame remain separate. Effects
+  keep using the one central registry rather than per-consumer status
+  stores. Art provenance: `tools/r26_icons/` and the `LICENSE-media.md` files
+  of `grug_core` and `grug_classes`.
 
 ## 5. Skills page and bound representations
 
@@ -329,8 +353,10 @@ overlap existing combat bars, target information or status effects.
 ## Round 16 readability amendments (2026-09-22)
 
 Armor hover descriptions explicitly state Cloth, Leather or Metal, including
-named enchanted variants. A compact Combat indicator appears beside the life
-bar only while the living player is in the existing combat state. Station recipe
+named enchanted variants. The combat state is shown while the living player
+is in combat; since Round 26 it is a 32 px gold-framed crossed-swords icon
+beside the life bar (`grug_core/combat_hud.lua`), no longer a "Combat" text,
+and not part of the status row (§5). Station recipe
 book buttons occupy a separate right-hand position clear of input/fuel/output
 slots, mode explanations and crafting-operation controls.
 

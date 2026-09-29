@@ -141,7 +141,8 @@ Decided 2026-09-14.
 
 ## Capitals in the world
 
-**As built: the capital planner (Round 22, plan D60, D69–D72, 2026-09-27).**
+**As built: the capital planner (Round 22, plan D60, D69–D72, 2026-09-27;
+Round 26 Lane W, 2026-09-29).**
 Every capital's city is laid out once per world (on its first start; later
 boots reuse the layout from the world folder, `world_zones.md` §13.4), after
 height, water and roads, in its own landscape (`world_zones.md` §12 has the rules): an
@@ -150,8 +151,15 @@ toward the incoming roads with connector roads to the road ends, avenues,
 two terrain-bent ring lanes loosened by cross-lanes, open arcs and small
 squares, the district plots turned to face their streets, the race's edge
 (stone curtain or palisade, each in its race's style) on the outline and,
-in Highcourt, a one-level quay canal. The civic core stays exactly as
-authored; start towns are untouched. The layout is a pure function of the
+in Highcourt, a one-level quay canal. Since Round 26 the outline is more
+irregular (still star-shaped, still inside the 512 square at about the same
+area) and each capital has its own character: Highcourt a royal city on its
+river, Dur Brannoc an angular mountain hold with a tower on every corner, Nhal
+Veyr a walled necropolis with one round ring, Gor Drazhak a jagged war camp
+with a pinwheel of avenues, Lethariel a lakeside city with few towers,
+Kezamba a jungle city round its cenote (`world_zones.md` §12 has the
+details). The civic core stays exactly as authored; start towns are
+untouched. The layout is a pure function of the
 seed and the code, so a world always rebuilds the same city.
 
 Decided 2026-09-15 with the pilot capital, Highcourt.
@@ -270,9 +278,12 @@ export those sockets.
 capitals** — Highcourt, Dur Brannoc, Gor Drazhak and Nhal Veyr — and **two
 open capitals**, Lethariel and Kezamba; the Round 23 ruling (2026-09-28)
 walls the two open ones as well, so **all six capitals are walled**. The wall
-follows the planner's outline as a polyline, with a turret about every 64
-nodes (48 in Lethariel, 56 on a palisade) and a gatehouse at each of the four
-gates, and the avenue runs through its gate passage. Its masonry
+follows the planner's outline as a polyline, with a gatehouse at each of the
+four gates, and the avenue runs through its gate passage. Since Round 26 each
+capital sets its own tower rhythm on long stretches (every 64 to 96 nodes),
+adds towers at sharp bends (every corner of Dur Brannoc's angular wall; none
+in Nhal Veyr's steady curtain) and, in Highcourt, Dur Brannoc and Nhal Veyr,
+towers beside the gatehouses. Its masonry
 starts under each column's own ground, so a wall on a slope has no gap, and
 its walk rises and falls at most half a node per node (a slab on each half
 step), so it can be walked. Where the outline crosses a river the wall is an
@@ -528,9 +539,9 @@ respawn follow [home_travel.md](home_travel.md). No other V1 home points exist;
 a player's Claim Stone can be an additional travel-home target
 ([housing.md](housing.md) §8).
 
-## Housing Managers (Round 25)
+## Housing Stewards (Round 25)
 
-Each capital's Housing Manager ([housing.md](housing.md) §7.2) is the gate
+Each capital's Housing Steward ([housing.md](housing.md) §7.2) is the gate
 resident of that capital's tailor service plot:
 
 | Capital | Plot |
@@ -557,8 +568,9 @@ are allowed; an identical rotated town layout is not the design.
 
 Art uses the existing settlement projection, actor-root priority and reserved
 footprints. It neither adds duplicate bosses/guards/resources nor expands
-terrain reservations. The frontier bandit 16-node implementation versus decided
-24-node core remains an explicit backlog correction. Whitebridge and Whispering
+terrain reservations. The frontier bandit camp's building core is 16 nodes
+(user decision 2026-09-29, WP audit E1: the art and code stay, the former
+24-node design value is corrected). Whitebridge and Whispering
 Reedlands retain shipwright workplaces/display hulls; boat teaching is future
 WP17 work.
 

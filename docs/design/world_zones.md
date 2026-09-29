@@ -148,7 +148,7 @@ in this file as of commit `082982da`.
   enemies** and no automatic PvP tag. Its guards and important faction NPCs
   are level 60. The city itself is not a level-60 hostile leveling area.
 - Each race has its own king, for **six kings total**. The race's capital is
-  that king's seat. Housing is not a royal grant: the Housing Manager in
+  that king's seat. Housing is not a royal grant: the Housing Steward in
   every capital hands out the free Claim Stone from level 20 (`housing.md`;
   `world.md` §5 summarizes its world-facing integration).
 - A capital is centered inside its city zone and has four fixed cardinal
@@ -216,7 +216,7 @@ in this file as of commit `082982da`.
 
 - The old plan of one dragon placed separately on each continent is retired.
 - The macro-map has **two** endpoint regions, one where the western end of the
-  shared front reaches the ocean and one at its eastern end. WP23 populates
+  shared front reaches the ocean and one at its eastern end. WP23 (delivered) populates
   both with an overworld dragon through one shared encounter chassis and two
   regional variants.
 - Each overworld dragon lair occupies its own **offshore island** beyond one
@@ -224,8 +224,8 @@ in this file as of commit `082982da`.
   separates it from every mainland coast, so it has no land, bridge or tunnel
   connection. Both factions receive equivalent authored boat access.
 - Every dragon island is a contested level-60 mountain region with strong
-  level-60 mountain creatures. Its silhouette culminates in a dragon mountain,
-  summit or hoard.
+  level-60 mountain creatures. Its silhouette culminates in a dragon mountain
+  or summit lair (no hoard chest, WP audit E11).
 - An overworld dragon is therefore always a PvP world boss. Reaching and
   fighting it exposes both factions to each other; it is never a private
   home-continent boss.
@@ -238,13 +238,10 @@ in this file as of commit `082982da`.
 - Each endpoint reserves an apex mining camp in the dangerous approach to the
   lair. Its building core is protected as a POI box (`world.md` §2 R1b);
   walls, tents, fences and dressing outside it are mutable. Its bounded
-  functional anchor and exactly **12 protected renewable sockets—two Citrine,
-  two Garnet, two Jade, two Diamond, two Sapphire and two Ruby**—are
-  hard-protected. Natural veins remain finite;
-  only these protected sockets
-  use `world.md` §2 R4's existing 2–4 h renewable-node exception. The material
-  catalog supplies the item/node ids; zone code stores the six semantic gem
-  species and never owns their registered itemstrings.
+  functional anchor is hard-protected. It has no renewable sockets: renewable
+  ores are removed entirely, camps included (user decision 2026-09-29,
+  [WP audit](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29)
+  E5), and natural veins remain finite (`world.md` §2 R4).
 
 ## 7. Horizontal and vertical world model
 
@@ -336,8 +333,9 @@ replaced; git history before this rewrite records that model.
   (-1800, +1500), (0, +1500) and (+1800, +1500). Each **512 by 512 build
   envelope** belongs wholly to its capital zone. The surrounding terrain blend
   may cross a zone border and does not enlarge political ownership. The
-  envelope size is today's value, not a promise: a later round makes capitals
-  smaller and denser (§12).
+  envelope size stays. The former goal of smaller, denser capitals (Round 22
+  §11) is retired (user decision 2026-09-29, WP audit A3): a capital's size
+  fits its content, with a characteristic look (§12).
 - Every anchor slot keeps its stable id and fixed x/z position. No world seed
   selects, moves or rejects a 2D anchor; terrain fitting adapts to the anchor.
 - The macro silhouette remains legible as three outer prongs, one connected
@@ -588,8 +586,9 @@ replaced; git history before this rewrite records that model.
   96-node civic core and terrace contract (§12).
 - **POIs sit in the terrain (Round 22, D33).** Every other anchor keeps its
   x/z, and its height comes from the terrain: the lower median of the natural
-  ground under its building core (village and bandit camp 24; outpost,
-  Mirefolk camp and clash site 16; mine 20; dragon and apex mine 32; rare
+  ground under its building core (village and home bandit camp 24; frontier
+  bandit camp (`bandit_frontier`, user decision 2026-09-29, WP audit E1),
+  outpost, Mirefolk camp and clash site 16; mine 20; dragon and apex mine 32; rare
   route 12 nodes), at least one node above water. Only that core is flat.
   A short collar follows the core's outline with round corners and a
   noise-varied width and returns to natural terrain: about 6 nodes on level
@@ -893,10 +892,10 @@ POI abbreviations:
 - **C** = capital, king, service hub and waypoint;
 - **V** = mandatory village; **O×n** = n ordinary outpost slots;
 - **B** = one of the two fixed bandit camps for that race;
-- **M** = that race's one peaceful renewable mining camp;
+- **M** = that race's one peaceful mining camp;
 - **W** = a fixed Mirefolk wetland camp;
 - **K×n** = n dedicated war-front clash anchors;
-- **D/M6** = dragon lair plus the all-six-gem apex mining camp;
+- **D/M6** = dragon lair plus the apex mining camp;
 - **R:name** = the migrated named-rare route.
 
 Peaceful §8.1 zones use `territory_rule = "accord_home"` and peaceful §8.2
@@ -1251,10 +1250,10 @@ code, not by this document.
   dungeons, foreign nodes and protected content are not hosts.
 - **Fixed and protected ground** (every anchor's claim envelope — a capital's
   protected city, a start town, the square of a POI, village, camp or
-  outpost — and every hard core, including the apex socket columns) hosts no
+  outpost — and every hard core) hosts no
   natural resource inside its protected volume: from its placement height −
   100 upward (Round 24 ruling 30). The placement height is the anchor's
-  fitted surface, or the socket column's own surface; where several such
+  fitted surface; where several such
   shapes hold a column, the lowest floor wins. Below that floor the column
   takes ores, gems, rock layers and nests like any other ground (the former
   rule kept these columns ore-free down to y = −700).
@@ -1285,9 +1284,6 @@ code, not by this document.
   accessible host volume, counting all universal resources plus the region's
   assigned G1 and G2. Placed natural nodes are a separate density concern.
   Spot-checked on representative seeds.
-- Ordinary-camp equality is separate: each race has exactly 12 renewable
-  camp sockets per world. Camp sockets never count toward natural-vein parity.
-  Apex-camp sockets remain shared bonuses outside both.
 - Every race region supplies its cultural material ordinarily at the surface
   for its own architecture, trade and quests and supplies one concentrated T4
   source in exactly one race-frontier zone. Foreign cultural material is
@@ -1316,15 +1312,10 @@ code, not by this document.
   `lower_two_policy = "preserve_p7"`; it replaces neither P7 top nor filler.
   No production world is generated with permanently empty cultural
   reservations.
-- Both apex camps contain the same count of every one of the six gem species:
-  exactly two renewable sockets per species per island.
-  Endpoint deposits are a shared bonus and do not compensate a deficient home
-  budget.
 - Each faction-native exclusive G2 species has at least one practical
   contested level-31+ surface route: Ruby for Accord raiders and Sapphire for
   Throng raiders. The y = −701 deep opening also permits cross-border mining
-  beneath the opposing race-region columns, and both islands provide all six
-  species by boat. Trade remains an alternative, never the only route.
+  beneath the opposing race-region columns. Trade remains an alternative, never the only route.
 - Every level-31–60 frontier and dragon-island zone has no home-faction
   construction owner. Both factions may dig and place ordinary terrain there,
   subject to tools, explicit hard-protected capital or functional-anchor
@@ -1337,8 +1328,8 @@ code, not by this document.
   every y: both factions may dig and place ordinary terrain, while no housing
   claim may privatize it. Explicit hard-protected functional anchors retain
   their bounded envelopes. The immutable ocean channels around the dragon
-  islands remain non-editable at every y; protected lair/camp structures and
-  their renewable sockets keep their own envelopes.
+  islands remain non-editable at every y; protected lair/camp structures keep
+  their own envelopes.
 - `race_region`, `territory_rule` and `pvp_rule` are independent registry
   fields. In particular, a Human/Orc/Dwarf/Undead/Elf/Troll cultural label
   grants no home-faction terrain privilege in any contested zone.
@@ -1454,23 +1445,57 @@ one-cell settlement checks are unchanged.
   flat; the ground around it keeps long-wave hills and hollows of limited
   height (§7.6). Each capital's target ground height sits well below its
   region's clouds (§7.6).
-- A fixed 96×96 civic core contains the king's hall, waypoint and principal
-  service court, and four core gates on the axes. It stays as authored and
-  free of natural water.
-- **The capital planner (Round 22, D60, D69, D70, D72; as built):** once per
-  world start, in main, after height, water and roads, every capital's city is
-  laid out in its landscape (`wp40/capital_planner.lua`), and the layout
-  travels to emerge with the water and road layouts. Per capital and seed:
-  - an organic outline of about 100 k m² (a rough guide, D21) that avoids
-    water and steep ground, and a 26-node band to the reserved area's edge
-    that stays countryside;
+- A fixed 96×96 civic core contains the king's hall, the current waypoint
+  socket and principal service court, and four core gates on the axes. It
+  stays as authored and free of natural water. The future WP17 waypoint pad
+  may stand anywhere in the city (user decision 2026-09-29, WP audit A5).
+- **The capital planner (Round 22, D60, D69, D70, D72; Round 26 Lane W; as
+  built):** once per world start, in main, after height, water and roads,
+  every capital's city is laid out in its landscape
+  (`wp40/capital_planner.lua`), and the layout travels to emerge with the
+  water and road layouts. Per capital and seed:
+  - an organic outline of about 100 k m² (a rough guide, D21) inside the
+    reserved 512 square, which avoids water and steep ground and keeps a
+    26-node band to the reserved area's edge as countryside. Since Round 26
+    (plan rulings 1–4) it is more irregular but still **star-shaped**: one
+    wall point per ray from the anchor, so `r_at`/`inside` are unchanged. It
+    has less smoothing and more outline noise, snaps to nearby crests, slope
+    tops and shorelines, prefers the near bank of a river or lake (water met
+    beyond about 70 nodes out is crossed only at three times the cost), and
+    each ray is clamped against the broadly smoothed outline so there are no
+    deep bays or lobes;
+  - **a character per capital** (D72 follow-up; settings table `M.STYLE`,
+    applied after the edge kind's settings in `r7_capitals.lua`), within the
+    planner's legality rules:
+    - *Highcourt*, royal city: a broad curtain following its river, towers at
+      bends and beside the gatehouses, two rings plus the quay canal and a
+      large royal plaza on the long side's avenue;
+    - *Dur Brannoc*, mountain hold: an angular wall of seven to nine straight
+      faces on the crests with a tower on every corner (accepted by the user
+      although it breaks with the other cities' style), the outer ring
+      parallel to the faces and a star of straight radial streets;
+    - *Nhal Veyr*, walled necropolis: a long closed curtain with a steady
+      tower rhythm, one round ring only, and rows of lanes out to the wall,
+      each ending in a small square; graveyards and fields mix with houses;
+    - *Gor Drazhak*, war camp: the roughest, jagged palisade, gates turned
+      the same way into a pinwheel of winding avenues, a large war yard, a
+      broken outer ring, many cross-lanes and lanes out to the wall;
+    - *Lethariel*, lakeside city: a flowing curtain along the crown lake,
+      few towers (about 7–10), gates turned the other way and an off-centre
+      inner ring;
+    - *Kezamba*, jungle city: an irregular palisade round the cenote, an
+      off-centre inner ring, a market plaza, winding avenues and lanes into
+      the green.
+    The open land between the outer ring and the wall is a mix of fields and
+    houses; no capital is enlarged to fill it;
   - four gates, one per cardinal direction, slid along the outline toward the
     incoming road ends and off water; road ends reach the reserved area's edge
     anywhere (§9), and connector roads (the road module's own routing,
     half-step profile and raster) join them to their gates;
-  - avenues from each core gate through its city gate, two terrain-bent ring
-    lanes, not closed everywhere, a few cross-lanes and small flat squares at
-    crossings and lane ends; streets and connectors are road-module roads
+  - avenues from each core gate through its city gate, terrain-bent ring
+    lanes (two by default; their count, shape and gaps vary with the
+    character above), cross-lanes and small flat squares at crossings and
+    lane ends; streets and connectors are road-module roads
     (≤ ½ node between neighbouring columns, slabs on half steps, bridges over
     water, §9); the street surface stops at the civic core's edge, where the
     core gate takes the passage over. No street ends over water: where the
@@ -1487,8 +1512,11 @@ one-cell settlement checks are unchanged.
     legal spot remains anywhere (rare), fill dressings first. Placement runs in tiers
     (required, other named buildings, fill), each through all its passes
     (own quarter, neighbours, opposite, relaxed anywhere; fill only the first
-    two) before the next tier starts (Round 25 Lane H). Plots never stand in
-    water. Lethariel's mere precinct and Kezamba's shore market stay beside
+    two) before the next tier starts (Round 25 Lane H). If a plan still
+    leaves out a named or required building, the planner replans the city at
+    +8 % and then +16 % area (clamped inside the reserved square) and keeps
+    the plan with the fewest dropped buildings (Round 26); the load-failure
+    guard for required plots stays. Plots never stand in water. Lethariel's mere precinct and Kezamba's shore market stay beside
     their civic lake;
   - the edge by race: a stone curtain with turrets and gatehouses (Highcourt,
     Dur Brannoc, Nhal Veyr, and since Round 23 Lethariel's light curtain), or a
@@ -1498,7 +1526,10 @@ one-cell settlement checks are unchanged.
     polylines, their walk walkable on half steps, and cross rivers as arcades
     or timber decks with the walk out of the water; a capital's civic lake is
     its edge where it crosses the outline, the wall continuous on land and
-    ending a few nodes into the water in a closed head;
+    ending a few nodes into the water in a closed head. Towers (Round 26):
+    evenly spaced on long stretches at each capital's own rhythm, at sharp
+    wall bends (the ordinary turret, no separate bastion shape) and beside
+    the gatehouses where the character asks for it;
   - Highcourt's one-level quay canal beside its outer ring lane (D58), sealed
     off natural water.
   The layout is a pure function of the seed and the code, so every boot of a
@@ -1766,6 +1797,9 @@ the mapgen is finished.
 
 ## 15. Exact PvP eligibility contract (WP41)
 
+WP41 is part of V1 (user decision 2026-09-29,
+[WP audit](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29) B4).
+
 ### 15.1 Peaceful-zone transaction
 
 “Hostile attempt” means a server-validated contact with an enemy player or a
@@ -1871,6 +1905,11 @@ tag anybody.
   green.
 
 ## 16. Bounded war-front life (WP42)
+
+Scope (user decision 2026-09-29, WP audit B5/B6): the scripted NPC battles
+below come after V1. Small PvP POIs — forts and camps with NPCs — may come in
+V1. WP42 may ship before WP41, with war units treating today's enemy-faction
+players as hostile until the `grug_pvp` seam exists.
 
 - Twelve zones are contested. Eight of them carry the current war-activity
   budget: Ashenward March, Bannerbreak Mesa and all six §8.3 zones. Their §8

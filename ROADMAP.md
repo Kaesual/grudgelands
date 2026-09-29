@@ -47,12 +47,11 @@ Earlier delivery narratives are preserved in the
   Deep ocean is deadly through the Kraken Guard, which never breaks off a
   pursuit while it stands in open water and leashes normally everywhere else.
 - **Two equivalent apex destinations.** The Wyrmglass Crown and Stormscale
-  Summit are contested offshore dragon islands. Each reserves an all-six-gem
-  apex camp with exactly twelve protected renewable sockets: two each of
-  Citrine, Garnet, Jade, Diamond, Sapphire and Ruby.
+  Summit are contested offshore dragon islands, each with a dragon lair and an
+  apex camp, reached by boat. Minerals never regrow anywhere, camps included.
 - **Housing lives in the open world** (delivered in Round 25,
   [housing.md](docs/design/housing.md)). From level 20 each player gets one
-  free, soulbound Claim Stone from a capital's Housing Manager. It claims a
+  free, soulbound Claim Stone from a capital's Housing Steward. It claims a
   101 × 101 column from y = −100 up in the player's own level-11–30 home
   zones, protects it while coal or charcoal burns, grants Interact or
   Everything to named players and can be the travel-home target. There are
@@ -67,13 +66,13 @@ Earlier delivery narratives are preserved in the
   Quartz is universal; Citrine/Garnet/Jade are G1 and
   Diamond/Sapphire/Ruby G2. Each race region selects one G1, one G2, one
   cultural material and one signature wood. Foreign G2 and cultural resources
-  come through contested/deep routes, both apex camps and trade, never through
-  a mandatory faction monopoly.
+  come through contested/deep routes and trade, never through a mandatory
+  faction monopoly.
 - **The economy stays ledger-only.** Copper/silver/gold are one integer;
   physical Gold is a separate crafting material. The target Common weapon
   axis is 25c/65c/1s60c/4s/10s/25s and vendor buy-back is ceiling-rounded 5%.
-  An Income Ledger measures reliable net solo income after ordinary costs and
-  calibrates mount prices; the Claim Stone is free.
+  A simple estimate of reliable net solo income after ordinary costs
+  calibrates mount and respec prices; the Claim Stone is free.
 - **Combat supports solo play and the tank/healer/damage trinity.** Threat,
   taunt and healing threat make group roles matter, but content is sized for
   two or three players and remains beatable without a healer. Level 60 takes
@@ -82,7 +81,7 @@ Earlier delivery narratives are preserved in the
 - **Travel has separate systems.** Delivered innkeeper home return binds one of
   twelve faction-compatible homes, returns instantly outside combat on a personal
   30-minute cooldown and owns death respawn. Planned visit-unlocked waypoints
-  connect authored hubs. Since Round 25 the player's own Claim Stone can
+  connect every start and every capital. Since Round 25 the player's own Claim Stone can
   replace the innkeeper as travel-home target; respawn stays at the
   innkeeper. Universal riding unlocks at
   levels 15/30/45/60 with land speeds 6.4/8 and flight speeds 8/12 nodes per
@@ -100,10 +99,21 @@ Earlier delivery narratives are preserved in the
 running code. WP41's exact PvP transaction, WP17 boats/waypoints and WP44
 economy remain unfinished; WP24 Housing is delivered and awaits the
 playtest. [BACKLOG](BACKLOG.md) distinguishes them.
-The original V1 baseline (2026-09-18) included Rounds 1–9, open-world Housing,
-mounts, release gates and polish; subsequently approved Rounds 10–19 extend that
-baseline. This documentation round neither expands nor removes release scope.
-**The walkable Nether remains the first expansion, not V1.**
+
+## V1 scope
+
+The original V1 baseline (2026-09-18) is Rounds 1–9, open-world Housing,
+mounts, the release gates and polish; the approved later rounds extend it. The
+user's 2026-09-29 decisions
+([WP audit](docs/planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29)
+B1–B7) settle the rest:
+
+- **In V1:** WP17 boats (the only access to the dragon islands and their
+  camps) and waypoints at every start and capital (no zone hubs, no
+  `/unstuck`); WP41 geographic PvP; WP9's story levels 41–60 and the finale.
+- **After V1:** WP42's scripted NPC battles on the war front. Small PvP POIs
+  (forts and camps with NPCs) may come in V1, and WP42 may ship before WP41.
+- **Not V1:** the walkable Nether, the first expansion (V2).
 
 ## Phase 1 — Playable core and world foundation
 
@@ -117,58 +127,62 @@ baseline. This documentation round neither expands nor removes release scope.
   tier-rock mining, ores and layers in the underground fill and start-zone mob
   gradients. Public-release evidence remains open.
 - [x] Threat/taunt, populations, kings/dragons, homing ranged attacks, dispositions,
-  nametags and injured bars. Full endgame encounter scope remains WP23.
+  nametags and injured bars. The dragon encounters are delivered (WP23 closed
+  2026-09-29); boat access to their islands is WP17.
 - [x] Currency/traders, inventory/bags, Skills recovery, ordinary equipment/offhands,
   fixed-tier enchanting, wear/repair, profession workspaces, food, farming and fishing.
   WP44 target economy and broader item/loot scope remain separate.
 - [x] Quest framework; Round 20 extends the catalog to 240 quests and all 100 anchor art slots,
   persistent same-faction parties and optional HUDs.
 - [x] World atlas with zoom/scroll, self/party/quest/service markers; innkeeper home
-  return and respawn; riding/flight. No fog-of-war or waypoint prerequisite.
+  return and respawn; riding/flight (WP31) and farming (WP32, GUI acceptance
+  pending). No fog-of-war or waypoint prerequisite.
 - [x] Surface-following optional full-world preparation, resumable bounded scheduling
   and shared creation/reconnect waiting flow.
 - [x] **WP24 Housing** (Round 25): Claim Stones, claim protection and
   permissions, the stone as travel home, and road and POI protection.
-  Playtest pending: [completion](docs/planning/round25-housing-plan.md#completion-2026-09-29).
+  Playtest under way: [completion](docs/planning/round25-housing-plan.md#completion-2026-09-29).
+- [x] **Round 26** ([completion](docs/planning/round26-capitals-housing-cleanup-plan.md#completion-2026-09-29)):
+  Claim Stone draft and activation with the Housing Steward, the registration
+  cleanup (WP28), the status icons and organic capitals with a character per
+  capital. Next: fresh world and playtest.
 
 ### Remaining work
 
-- [ ] **WP44 economy:** final Common-price axis, 5% buy-back, complete anti-profit
-  audits, Income Ledger and measured mount/respec prices. Running economy
-  retains its legacy curve and 25% buy-back until this implementation.
-- [ ] **WP5 / WP10 / WP27–WP30 items and professions:** retain wider loot,
-  cultural/PvP finish, masterwork and catalog/price remainders. Selected enchanting,
-  ordinary gear and seven profession catalogs already exist; do not rebuild them.
-- [ ] **WP11:** measured respec-price calibration through WP44; talent consumer lanes
-  are implemented, including Scout and the original-class X3 consumers.
-- [ ] **WP13 / WP9 / WP42:** final POI geometry/GUI acceptance and wider story progression,
-  then bounded war-front encounters with their PvP dependencies. The Round 20
-  authored roster and quests do not close the full world-story plan. The bandit-frontier
-  building-core width discrepancy remains explicit in BACKLOG.
-- [ ] **WP17 travel:** boats with ocean-danger prerequisites and authored
-  visit-unlocked waypoints. Innkeeper return and the Claim Stone travel home
-  are already delivered.
-- [ ] **WP34 depth:** renewable camp resources, deep pressure/lava and final supply
-  tuning after world structures/economy; unresolved design stays in TODO-design-depth.md.
-- [ ] **WP41:** exact geographic PvP transaction and shared eligibility seam.
-- [ ] **WP23:** full two-dragon encounter scope behind structures, boats, PvP and
-  apex resources; visible bosses and several behavior corrections are implemented.
-- [ ] **WP14 / WP21 / WP22 / WP31 / WP32:** bounded remaining light/rest, digging-speed,
-  repair/Housing-station, mount-price/acceptance and farming acceptance work.
-  Held-torch moving light and friendly-guard healing remain deferred after R18.
-  Use current BACKLOG scope, not older “not implemented” descriptions of whole systems.
-- [ ] **WP37:** reconcile the old blanket surface-density reduction with later
-  approved scoped tuning before scheduling another density change.
-- [ ] **WP46 / WP48 / WP49:** remaining indirect terrain protection, bounded writer
-  optimization/engine threading dependency and fixed mapgen source-audit roster.
+- [ ] **WP17 travel (V1):** boats with the Kraken retune, and visit-unlocked
+  waypoints at every start and capital. Innkeeper return and the Claim Stone
+  travel home are already delivered.
+- [ ] **WP41 (V1):** exact geographic PvP transaction and shared eligibility seam.
+- [ ] **WP9 (V1):** the level-41–60 main questline and the finale; Round 20's
+  240 quests reach level 40.
+- [ ] **WP44 economy, a lighter pass:** price tables, 5% buy-back, the audit
+  fixes, rescaled quest copper and a simple income estimate for respec and
+  mount prices. It absorbs the price remainders of WP7, WP11, WP22, WP30 and
+  WP31. The running economy keeps its legacy curve and 25% buy-back until then.
+- [ ] **WP5 / WP10 items and professions:** cultural/PvP finishes, masterwork
+  (an item-level-70 upgrade), the loot/demand audit, then cultural finishing
+  and helper services. Selected enchanting, ordinary gear, found-item loot and
+  seven profession catalogs already exist.
+- [ ] **WP13:** a separate walk of the Round 20 POI art (its GUI acceptance).
+- [ ] **WP34 depth pulse** (kept, for later): placement and the deep servant
+  roster stay open in TODO-design-depth.md. Renewable camp resources are
+  removed; the T6 lava lakes stay planned.
+- [ ] **WP46 / WP48:** the fire/explosion guard is deferred until a fire or explosion source exists (expected with V2's Nether)
+  (nothing damages terrain today); writer performance is parked until a playtest shows
+  slowness.
+- Closed on 2026-09-29: WP11, WP14, WP21, WP22, WP23, WP27, WP29, WP30, WP31,
+  WP32 (delivered or merged), WP37 and WP49 (canceled). Held-torch moving light,
+  natural out-of-combat regeneration, rested XP, renewable ores, the dragon
+  hoard chest and `/unstuck` are removed from the design. Friendly-guard
+  healing stays deferred.
 
 ### Before the first public release
 
-These gates remain open after WP40's user-approved development completion.
-Freeze game/engine/settings and public seed; rebase current-sampler resource
-supply/access evidence; check candidate feature/native/generation-order/runtime/RSS;
-verify native and actual fallback-engine startup/generation/restart; complete
-media publication attribution/flag obligations. Exact acceptance and ownership:
+Rewritten 2026-09-29 (audit E9, E10). Gates: freeze game/engine/settings and
+the public seed; complete the media publication attribution/flag obligations.
+Checks with judgement, not gates: a native start/generation/restart of the
+candidate as deep as its changes warrant, an optional PUC Lua 5.1 crash smoke
+test, and a resource spot check on a few seeds. Exact wording and ownership:
 [BACKLOG release gates](BACKLOG.md#first-public-release-gates).
 Historical evidence does not certify later code. Only the user's announcement
 ends fresh-server development mode.
@@ -183,6 +197,7 @@ ends fresh-server development mode.
 - [ ] **V2's main content update: the walkable Nether**, with its own mapgen,
   story line and mob cast. The Fire Dragon and the Nether reserve from the mob
   plan remain reserve content for that update.
+- [ ] WP42 bounded war-front encounters (scripted NPC battles, after V1).
 - [ ] Dungeons, regional apex encounters, reputation and player trading.
 
 ## Phase 3 — Polish

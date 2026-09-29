@@ -1,5 +1,13 @@
 # WP41 Geographic PvP — Engineering Brief
 
+> **Superseded in part (2026-09-29).** The current scope is the
+> [WP41 card](../planning/work-package-scopes.md#wp41) (V1). Two parts of
+> this brief no longer hold: the 25 % death-XP rule with a PvP exemption (all
+> deaths cost no XP) and the Home Stone channel interruption (Round 25
+> replaced the channel). Its coverage list must add mounts and flight, the
+> Round 20 input contract, the 2026-09-28 combat-state model, the Scout and
+> boats. Line citations predate those rounds.
+
 Status: **Implementation-ready engineering contract, authored 2026-08-13
 (post-WP40 planning pass); not an implementation or shipped-WP claim.**
 

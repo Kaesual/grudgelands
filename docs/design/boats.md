@@ -65,8 +65,8 @@ channels lie in level-51–59 contested zones.
   is not a spawned boat entity that decays under §3. The shipwright, his
   plot and the display boat form one **bounded functional anchor**:
   `world.md` §2 R1
-  hard-protects "small functional NPC and renewable-resource anchors" with an
-  exact authored footprint, and this is one of them. The village's building
+  hard-protects "small functional NPC anchors" with an exact authored
+  footprint, and this is one of them. The village's building
   core is a protected POI box and the rest of its shell stays mutable, like
   every other village (`world.md` §2 R1b).
 

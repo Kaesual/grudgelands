@@ -98,7 +98,7 @@ Core principles:
 
 | Resource | Classes | Pool | Regeneration |
 |----------|---------|------|--------------|
-| Mana | Mage, Priest | `round(20 + 5L + 0.66L²)`, before mana-percent gear/talents (combat_stats §2) | 2%/s out of combat, 0.5%/s in combat (combat_stats §5) |
+| Mana | Mage, Priest | `round(20 + 5L + 0.66L²)`, before mana-percent gear/talents (combat_stats §2) | `1 + 0.15 × level` mana/s out of combat, a lower in-combat rate (combat_stats §5) |
 | Rage | Warrior | 0–100, starts at 0 | **+8** per landed §2b authoritative swing; ordinary tools/fists retain proportional native credit (combat_stats §2); **+3** per hit taken, +15 from Charge; decays **5/s** out of combat. Ruling 25 of 2026-09-16 lowered the income and raised the decay — the ledger and what it buys are in §3 |
 
 - **Rage is granted on damage that actually landed**, not on a swing

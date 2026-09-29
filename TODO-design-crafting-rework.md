@@ -22,32 +22,7 @@ Once a question is decided: fold it into the design doc named in its
 question from this file. When nothing open is left, delete the file
 (AGENTS.md "Documentation layers").
 
-Groups: **B** material calibration · **D** ocean survival.
-
-## B. Material calibration
-
-### B22 — The six picks' dig-speed progression: the actual `times`
-
-The curve **shape** is decided (2026-08-13, `items_crafting.md` §3.0.4):
-one monotonic six-point curve each for speed and durability, Wood/Stone
-deliberately below Bronze at the shared T1 depth cap, authored as a WP29
-table and runtime-calibrated by WP22 against representative ordinary rock
-(pattern: `docs/research/wp6_spawn_budget.md`) — never vendored-profile
-reuse, never the retired engine `leveldiff` coupling.
-
-Open here: **only the six effective dig-speed `times` sets.** The lifetime
-`uses` values are decided in `docs/design/crafting_equipment_revision.md`
-(2026-09-21), so they are not an open design question. WP29 authors the speed
-table; WP22 owns runtime speed calibration. This separates
-design authorship from runtime calibration without moving either package's
-existing responsibility.
-
-*Lands in*: `items_crafting.md` §3.0.4.
-**Decision:** _open_ (the `times` numbers only). Owners: **WP29** authors
-the table; **WP22** runtime-calibrates dig times (BACKLOG WP22
-and WP29 rows).
-
----
+Group: **D** ocean survival.
 
 ## D. Ocean survival (deferred)
 
@@ -70,5 +45,4 @@ Round-10 mount decisions.
 
 | # | Question | Blocks |
 |---|---|---|
-| B22 | The six picks' explicit dig-speed `times` | WP29/WP22 |
 | D18 | Optional unmounted swimmer exhaustion behavior | deferred ocean-survival package |

@@ -786,8 +786,8 @@ design (`group_attack` stays on).
 
 ### Combat state
 
-"In combat" gates natural regeneration, food ticks, eating, rage decay, the
-mana regeneration rate, mounting and travel home. Decided 2026-09-28 (user
+"In combat" gates food ticks, eating, rage decay, the mana regeneration rate,
+mounting and travel home. Decided 2026-09-28 (user
 playtest rulings); owned by `grug_core` (`in_combat`).
 
 - A player is **in combat** while at least one live mob is **engaged** with
@@ -833,8 +833,10 @@ playtest rulings); owned by `grug_core` (`in_combat`).
 
 ### Recovery
 
-- Natural regen: **0.5% max HP/s out of combat, 0 in combat** — in-combat
-  healing is the healer's/potion's job.
+- **No natural HP regeneration** (user decision 2026-09-29,
+  [WP audit](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29);
+  WP21 closed): food is the recovery system out of combat; in-combat healing
+  is the healer's/potion's job.
 - **Food v2 restore buff** (R7.1/R7.2, decided 2026-09-18; supersedes R9 from
   2026-09-17; `items_crafting.md` §3.7 owns the tier table). Eating grants a
   runtime-only **300 s** buff with one tick every **5 s**. Only one food status
@@ -877,15 +879,19 @@ playtest rulings); owned by `grug_core` (`in_combat`).
   perk does not apply. Cold Focus multiplies whichever in-combat term wins by
   **`1 + 2 × bonus`**, preserving its old +20% per-rank relative effect (rank
   5 doubles the combat rate).
+- The Troll perk (`ooc_regen_mult`, ×1.5) also multiplies food healing,
+  instant and per tick (`grug_food.heal_multiplier`, Round 26).
 - Food regeneration and pool bonuses are percent-based, but consumables now
   have tier minimum levels through `_grug_ilvl`. The neutral base pool spans
   26 at level 1 to 2696 at level 60, while class factors and pool percentages
   remain independent.
   Plain-looking HP and Mana enchants are internally percentages of the base
   pool and show both that percentage and its current-level absolute value.
-- Every timed effect on the player is shown through the **buff/debuff text
-  list** (`inventory_equipment.md` §5, decided 2026-09-17). WP10 later
-  replaces that first-pass presentation with icons.
+- Every timed effect on the player is shown in the **status icon row**
+  (`inventory_equipment.md` §5; Round 26, the status-icon package of WP
+  audit D10), which replaced the first-pass text list. The combat state is
+  not a status: a 32 px gold-framed crossed-swords icon right of the health
+  bar replaces the former "Combat" text there (`grug_core/combat_hud.lua`).
 
 ## 6. Player and mob nameplates & con colors
 
@@ -939,7 +945,7 @@ playtest rulings); owned by `grug_core` (`in_combat`).
 - Implementation: shared carrier in `grug_core`, mob text and gray-XP rule in
   `grug_mobs`, player text in `grug_factions`, target frame HUD alongside WP6.
 
-## 7. Offhand & carried light
+## 7. Offhand
 
 - The engine has **no native offhand**; we build `grug_offhand` after
   VoxeLibre's `mcl_offhand` pattern (inventory list `"offhand"` + HUD
@@ -959,20 +965,14 @@ playtest rulings); owned by `grug_core` (`in_combat`).
   It is a **refusal**, never an automatic
   unequip of the other slot.
 - Consequence, and it is a gameplay rule rather than a technicality:
-  **carrying a torch costs you the two-handed weapon.** Greataxe and staff
-  users choose between the light and their weapon; a bow accepts only the
-  quiver exception. The refusal text says so rather than failing silently.
-- **Torch in the offhand gives a moving light radius** (wielded-light
-  technique: invisible light node at head height, moved only on
-  node-position change, skipped when ambient light is bright; profile
-  before relying on it for crowded servers).
-- Synergy with destructibility R2: torches cannot be *placed* in enemy
-  land but can be *carried* — at the cost of the offhand slot and of
-  being visible at night.
-- Endgame hook: rare items with a built-in light radius (no offhand
-  cost).
-- MVP scope: torch + shield first; class-specific offhands once the
-  items exist.
+  **carrying a shield or spellbook costs you the two-handed weapon.**
+  Greataxe and staff users choose between the offhand and their weapon; a bow
+  accepts only the quiver exception. The refusal text says so rather than
+  failing silently.
+- **No carried light** (user decision 2026-09-29,
+  [WP audit](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29) C5):
+  torches are not offhand items and nothing carried gives a moving light
+  radius.
 
 ### Round 16 control and threat expiry
 
