@@ -3,7 +3,7 @@
 Decided with the user on 2026-09-29. This replaces the tiered design in
 [housing.md](../design/housing.md). The spec and design documents are
 rewritten to this contract before implementation starts. **Status: rulings
-1–19 fixed (2026-09-29). No implementation before the user's go-ahead.**
+1–26 fixed (2026-09-29); implementation started 2026-09-29.**
 
 ## Rulings
 
@@ -138,6 +138,26 @@ rewritten to this contract before implementation starts. **Status: rulings
     unbounded claim already means only permitted players can place anything
     above a home.
 
+### Follow-up rulings (2026-09-29, after Lanes D and F)
+
+20. **Refuelling** an empty stone makes the claim active again.
+21. **A destroyed stone drops nothing.**
+22. **Capital zones are not eligible** for claims; only the seven L11–30
+    zones per faction are.
+23. **Water in claims.** Lakes, rivers and bay water inside an eligible zone
+    may lie in a claim; the shelf and the ocean (no zone) may not.
+24. **No hostile mob spawns inside an active claim.** Mobs may still walk
+    in. Expired claims spawn normally.
+25. **Respawn stays at the innkeeper.** Death respawns at the bound innkeeper
+    even when the Claim Stone is the travel home.
+26. **Travel fallback goes to the bound innkeeper.** After pick-up or
+    destruction the travel home falls back to the player's bound innkeeper
+    (the starting-town innkeeper when none is bound). Binding an innkeeper
+    also replaces a claim home.
+
+The old spec's claim protection against explosions and fire, liquid inflow
+beyond the arrival cube, and boundary outlines are not part of V1.
+
 ## Lanes
 
 **Interface contract** (`grug_housing`, owned by Lane A; B, C and D code
@@ -162,6 +182,7 @@ against it from the start):
 | **B — Interaction protection** | Generic right-click and node-inventory guard for claims (ruling 18), the claim protection reason for the hint | A's interface |
 | **C — Interfaces** | The stone formspec (fuel slot, remaining time, permission list, pick up); the Housing Manager in the six capitals (issuing, explanation text; check whether a capital service socket exists or one must be added); the character page status | A's interface |
 | **D — Home stone** | The claim as the `grug_home` target, the 30-minute cooldown, arrival in the cube, fallback to the faction innkeeper | A's interface |
+| **G — Claim spawn guard** | Ruling 24: hostile spawns refused inside active claims | A's interface |
 | **E — Road and POI protection** | Rulings 15–17: the segment corridor and POI boxes in the zone authority, hint reasons ("Road – protected", "Village – protected" and so on) | — (independent of housing) |
 
 **Parallelisation.**
