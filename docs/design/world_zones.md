@@ -843,8 +843,8 @@ replaced; git history before this rewrite records that model.
   (measured 81 % stone plus 4 % ores in a real mountain interior, 89 % stone
   in the fixture). Nothing carves caves into the fill; the seam to native
   v7 may cut through veins, bands and caves. Lava is unchanged.
-- **Cliffs and near-surface nests (Round 24 B2).** In the first 40 nodes
-  below the filler of a column the shallow strata accept (same exclusions:
+- **Cliffs and near-surface nests (Round 24 B2).** In the top 40 nodes
+  of a column, below its filler, where the shallow strata apply (same exclusions:
   protected, functional, water, towns, housing), untouched native or fill
   `default:stone` takes the lattice's rock nests; on steep columns (rock
   faces and lips) it also takes the same horizontal layers, so strata break
