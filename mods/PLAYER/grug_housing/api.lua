@@ -52,10 +52,21 @@ grug_housing.FUEL_ITEMS = {
 	["default:coal_lump"] = true,
 	["grug_smelting:charcoal"] = true,
 }
--- Unburnt whole lumps come back as this item on pick-up.
-grug_housing.REFUND_ITEM = "default:coal_lump"
--- Activation takes its lumps from the main inventory in this order.
-grug_housing.FUEL_ORDER = {"default:coal_lump", "grug_smelting:charcoal"}
+-- Unburnt whole lumps come back as charcoal on pick-up, the cheaper lump
+-- (any log makes it), so placing and picking up never turns charcoal into
+-- mined coal. Coal only when grug_smelting is missing.
+grug_housing.REFUND_ITEM = "grug_smelting:charcoal"
+grug_housing.REFUND_FALLBACK = "default:coal_lump"
+
+function grug_housing.refund_item()
+	local items = core.registered_items
+	if items and items[grug_housing.REFUND_ITEM] then return grug_housing.REFUND_ITEM end
+	return grug_housing.REFUND_FALLBACK
+end
+
+-- Activation takes its lumps from the main inventory in this order: charcoal
+-- first, so the scarcer coal is spent last.
+grug_housing.FUEL_ORDER = {"grug_smelting:charcoal", "default:coal_lump"}
 
 function grug_housing.is_fuel(itemname)
 	return grug_housing.FUEL_ITEMS[itemname] == true
@@ -230,7 +241,7 @@ function grug_housing.activate(player)
 		local back = need - left
 		if back > 0 then
 			local rest = inv:add_item("main",
-				ItemStack(grug_housing.REFUND_ITEM .. " " .. back))
+				ItemStack(grug_housing.refund_item() .. " " .. back))
 			if not rest:is_empty() then core.add_item(player:get_pos(), rest) end
 		end
 		return false, "The Claim Stone could not be activated."
@@ -277,14 +288,15 @@ function grug_housing.pick_up(player)
 	grug_housing.remove_stone_node(claim)
 	model.remove(claim, "picked_up")
 	inv:add_item("main", stone)
+	local refund = grug_housing.refund_item()
 	if lumps > 0 then
-		local left = inv:add_item("main",
-			ItemStack(grug_housing.REFUND_ITEM .. " " .. lumps))
+		local left = inv:add_item("main", ItemStack(refund .. " " .. lumps))
 		if not left:is_empty() then core.add_item(player:get_pos(), left) end
 	end
 	grug_housing.notify_claim_changed(claim, "picked_up")
 	if lumps > 0 then
-		return true, "Claim Stone picked up; " .. lumps .. " unburnt coal returned."
+		return true, ("Claim Stone picked up; %d unburnt %s returned."):format(lumps,
+			refund == grug_housing.REFUND_ITEM and "charcoal" or "coal")
 	end
 	return true, "Claim Stone picked up."
 end

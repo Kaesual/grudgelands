@@ -33,7 +33,7 @@ ACTION[Emerge-0]: [r26_claim_probe] ok   placed again at once (no placing lock)
 ACTION[Emerge-0]: [r26_claim_probe] ok   3 lumps: refused
 ACTION[Emerge-0]: [grug_housing] r26owner activated Claim Stone 2 with 5 lumps
 ACTION[Emerge-0]: [r26_claim_probe] ok   activated with 5 lumps
-ACTION[Emerge-0]: [r26_claim_probe] ok   3 coal and 2 charcoal taken
+ACTION[Emerge-0]: [r26_claim_probe] ok   4 charcoal and 1 coal taken (charcoal first)
 ACTION[Emerge-0]: [r26_claim_probe] ok   5 lumps burning
 ACTION[Emerge-0]: [r26_claim_probe] ok   fuelled node after activation
 ACTION[Emerge-0]: [r26_claim_probe] ok   form: fuel slot and lock line
@@ -44,7 +44,7 @@ ACTION[Emerge-0]: [r26_claim_probe] ok   nobody digs the fuelled stone
 ACTION[Emerge-0]: [r26_claim_probe] lock refusal: 12 h 00 min
 ACTION[Emerge-0]: [r26_claim_probe] ok   pick-up refused right after activation
 ACTION[Emerge-0]: [r26_claim_probe] ok   pick-up allowed 12 h after activation
-ACTION[Emerge-0]: [r26_claim_probe] ok   whole unburnt lumps returned (5)
+ACTION[Emerge-0]: [r26_claim_probe] ok   whole unburnt lumps returned as charcoal (5)
 ACTION[Emerge-0]: [grug_housing] r26owner placed Claim Stone 3 at (-2400,73,-2399)
 ACTION[Emerge-0]: [r26_claim_probe] ok   placed again at once after the pick-up
 ACTION[Server]: [grug_housing] draft Claim Stone 3 of r26owner expired

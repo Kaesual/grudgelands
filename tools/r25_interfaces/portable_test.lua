@@ -219,6 +219,14 @@ local LUMP = H.LUMP_SECONDS
 eq(LUMP, 26160, "one lump burns 7 h 16 min (api.lua)")
 check(H.is_fuel("default:coal_lump") and H.is_fuel("grug_smelting:charcoal") and
 	not H.is_fuel("default:coalblock"), "fuel kinds come from api.lua")
+-- Round 26 review: refunds come back as charcoal (coal only without
+-- grug_smelting), and activation spends charcoal before coal.
+eq(H.refund_item(), "default:coal_lump", "no charcoal registered: coal refund")
+core.registered_items = {["grug_smelting:charcoal"] = {}}
+eq(H.refund_item(), "grug_smelting:charcoal", "refund as charcoal, the cheaper lump")
+core.registered_items = nil
+eq(table.concat(H.FUEL_ORDER, ","), "grug_smelting:charcoal,default:coal_lump",
+	"activation takes charcoal first")
 local now = 1000000
 local claims, states = {}, {}
 local calls = {add_fuel = {}, set_permission = {}, pick_up = {}, issue = {},
@@ -599,6 +607,20 @@ do
 	count = #shown
 	tick(1)
 	eq(#shown, count, "closing the form stops the countdown")
+	-- Another mod's form shown on top (no quit for ours): no redraw over it.
+	H.open_stone_interface(owner, draft)
+	core.show_formspec("owner", "othermod:dialog", "size[2,2]")
+	count = #shown
+	now = now + 1
+	tick(1)
+	eq(#shown, count, "a form shown by another mod is not covered by the countdown")
+	H.open_stone_interface(owner, draft)
+	submit(owner, "othermod:dialog", {ok = ""})
+	count = #shown
+	now = now + 1
+	tick(1)
+	eq(#shown, count, "fields from another form end the countdown too")
+	now = now - 2
 	H.open_stone_interface(owner, claim)
 	count = #shown
 	tick(1)

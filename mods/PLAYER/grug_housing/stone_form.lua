@@ -24,6 +24,20 @@ local REACH = 10
 local sessions = {}
 local detached = {}
 
+-- The client holds one formspec at a time: a form another mod shows replaces
+-- ours without a "quit", and the draft countdown must not pop ours back over
+-- it. Any other form shown to the player (or a close of ours or of any form)
+-- ends the session, as default/node_formspec.lua does for node forms.
+local show_formspec = core.show_formspec
+function core.show_formspec(playername, formname, formspec)
+	if formspec == "" then
+		if formname == "" or formname == FORMNAME then sessions[playername] = nil end
+	elseif formname ~= FORMNAME and formname ~= NOTICE then
+		sessions[playername] = nil
+	end
+	return show_formspec(playername, formname, formspec)
+end
+
 local function inventory_name(name)
 	return "grug_housing_fuel_" .. name
 end
@@ -368,7 +382,11 @@ end
 
 core.register_on_player_receive_fields(function(player, formname, fields)
 	if formname == NOTICE then return true end
-	if formname ~= FORMNAME then return false end
+	if formname ~= FORMNAME then
+		-- Fields from another form: ours is no longer open.
+		sessions[player:get_player_name()] = nil
+		return false
+	end
 	local name = player:get_player_name()
 	local session = sessions[name]
 	if not session then return true end

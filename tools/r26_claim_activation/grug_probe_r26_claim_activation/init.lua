@@ -271,8 +271,9 @@ local function scenario()
 	inv:add_item("main", ItemStack("grug_smelting:charcoal 4"))
 	submit(owner, "grug_housing:stone", {activate = ""})
 	check(not H.is_draft(claim) and H.is_active(claim), "activated with 5 lumps")
-	check(count_item(inv, "default:coal_lump") == 0 and
-		count_item(inv, "grug_smelting:charcoal") == 2, "3 coal and 2 charcoal taken")
+	check(count_item(inv, "default:coal_lump") == 2 and
+		count_item(inv, "grug_smelting:charcoal") == 0,
+		"4 charcoal and 1 coal taken (charcoal first)")
 	check(H.remaining_seconds(claim) >= 5 * H.LUMP_SECONDS - 2, "5 lumps burning")
 	check(core.get_node(pos).name == H.STONE_ITEM, "fuelled node after activation")
 	fs = last_form(OWNER).fs
@@ -298,8 +299,9 @@ local function scenario()
 		model.claim_by_id(claim.id) == nil, "pick-up allowed 12 h after activation")
 	-- floor(remaining / LUMP): 5 when the pick-up falls in the activation's
 	-- second, 4 once a second has burnt.
-	local back = count_item(inv, "default:coal_lump")
-	check(back == 4 or back == 5, "whole unburnt lumps returned (" .. back .. ")")
+	local back = count_item(inv, "grug_smelting:charcoal")
+	check((back == 4 or back == 5) and count_item(inv, "default:coal_lump") == 2,
+		"whole unburnt lumps returned as charcoal (" .. back .. ")")
 	check(place(), "placed again at once after the pick-up")
 	claim = H.player_claim(OWNER)
 
