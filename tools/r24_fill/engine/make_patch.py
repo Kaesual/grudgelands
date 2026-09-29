@@ -31,6 +31,24 @@ NEW = '''	if not cp_box then
 	core.log("action", ("[r24t] %d,%d,%d us=%d cpu_us=%d hmin=%d hmax=%d"):format(
 		minp.x, minp.y, minp.z, core.get_us_time() - t_us,
 		math.floor((os.clock() - t_cpu) * 1e6), hmin, hmax))
+	do
+		local dd, pp = vmanip:get_data(), vmanip:get_param2_data()
+		local a0, a1 = vmanip:get_emerged_area()
+		local ax, ay = a1.x - a0.x + 1, a1.y - a0.y + 1
+		local h1, h2 = 7, 11
+		for z = minp.z, maxp.z do
+			for y = minp.y, maxp.y do
+				local i = (z - a0.z) * ax * ay + (y - a0.y) * ax + (minp.x - a0.x) + 1
+				for x = minp.x, maxp.x do
+					local key = cp_rank(dd[i]) * 256 + pp[i]
+					h1 = (h1 * 31 + key) % 2147483647
+					h2 = (h2 * 37 + key) % 2147483629
+					i = i + 1
+				end
+			end
+		end
+		core.log("action", ("[r24d] %d,%d,%d %d-%d"):format(minp.x, minp.y, minp.z, h1, h2))
+	end
 	if inbox then
 		local d1 = vmanip:get_data()
 		local e0, e1 = vmanip:get_emerged_area()
@@ -90,6 +108,19 @@ ANCH = 'local function get_heightmap() return core.get_mapgen_object("heightmap"
 ADD = ANCH + '''local cp_box
 local cp_air = core.get_content_id("air")
 local cp_names = {}
+-- content ids ranked by node name, so the digest does not depend on the
+-- per-boot id assignment
+local cp_ranks = {}
+local function cp_rank(cid)
+	local r = cp_ranks[cid]
+	if not r then
+		local name = core.get_name_from_content_id(cid)
+		r = 0
+		for k = 1, #name do r = (r * 131 + string.byte(name, k)) % 1000003 end
+		cp_ranks[cid] = r
+	end
+	return r
+end
 local function cp_name(cid)
 	local n = cp_names[cid]
 	if not n then n = core.get_name_from_content_id(cid) cp_names[cid] = n end

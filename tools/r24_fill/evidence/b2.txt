@@ -1,0 +1,82 @@
+# Round 24 B2 engine evidence (seed 10536739806879207652, same boxes)
+# main = a14a9dc6, speedups = 950eb26e (a, b, c), cliffs = ffbd097d
+
+## Chunk-content digests, main vs speedups (identity of a, b, c)
+chunks A 219, B 218, common 218, identical 218, differ 0
+
+## Chunk-content digests, speedups vs cliffs (item 1 changes output)
+chunks A 218, B 218, common 218, identical 118, differ 100
+
+## Lua mapgen time, main -> speedups
+orc      chunks 147  wall 80.59 s -> 65.01 s (-19.3%)  cpu 81.24 s -> 65.51 s (-19.4%)
+mountain chunks  52  wall 31.75 s -> 23.77 s (-25.1%)  cpu 31.96 s -> 24.00 s (-24.9%)
+   y  -112 chunks 10 cpu 6.59 -> 4.82 s (-26.9%)
+   y   -32 chunks 10 cpu 8.83 -> 6.11 s (-30.8%)
+   y    48 chunks 11 cpu 9.36 -> 6.43 s (-31.3%)
+   y   128 chunks 11 cpu 5.12 -> 4.60 s (-10.1%)
+   y   208 chunks 10 cpu 2.06 -> 2.04 s (-0.9%)
+cliff2   chunks   8  wall 2.89 s -> 2.83 s (-2.3%)  cpu 2.93 s -> 2.88 s (-1.9%)
+other    chunks  11  wall 5.86 s -> 5.16 s (-11.9%)  cpu 7.10 s -> 6.37 s (-10.3%)
+only before: 1 only after: 0
+
+## Lua mapgen time, speedups -> cliffs
+orc      chunks 147  wall 65.01 s -> 64.57 s (-0.7%)  cpu 65.51 s -> 65.06 s (-0.7%)
+mountain chunks  52  wall 23.77 s -> 24.95 s (+5.0%)  cpu 24.00 s -> 25.16 s (+4.8%)
+   y  -112 chunks 10 cpu 4.82 -> 4.69 s (-2.7%)
+   y   -32 chunks 10 cpu 6.11 -> 6.37 s (+4.1%)
+   y    48 chunks 11 cpu 6.43 -> 7.23 s (+12.5%)
+   y   128 chunks 11 cpu 4.60 -> 4.75 s (+3.2%)
+   y   208 chunks 10 cpu 2.04 -> 2.12 s (+3.7%)
+cliff2   chunks   8  wall 2.83 s -> 2.75 s (-2.5%)  cpu 2.88 s -> 2.81 s (-2.5%)
+other    chunks  11  wall 5.16 s -> 5.35 s (+3.6%)  cpu 6.37 s -> 6.58 s (+3.4%)
+only before: 0 only after: 0
+
+## Lua mapgen time, main -> cliffs
+orc      chunks 147  wall 80.59 s -> 64.57 s (-19.9%)  cpu 81.24 s -> 65.06 s (-19.9%)
+mountain chunks  52  wall 31.75 s -> 24.95 s (-21.4%)  cpu 31.96 s -> 25.16 s (-21.3%)
+   y  -112 chunks 10 cpu 6.59 -> 4.69 s (-28.9%)
+   y   -32 chunks 10 cpu 8.83 -> 6.37 s (-27.9%)
+   y    48 chunks 11 cpu 9.36 -> 7.23 s (-22.7%)
+   y   128 chunks 11 cpu 5.12 -> 4.75 s (-7.2%)
+   y   208 chunks 10 cpu 2.06 -> 2.12 s (+2.8%)
+cliff2   chunks   8  wall 2.89 s -> 2.75 s (-4.8%)  cpu 2.93 s -> 2.81 s (-4.4%)
+other    chunks  11  wall 5.86 s -> 5.35 s (-8.7%)  cpu 7.10 s -> 6.58 s (-7.2%)
+only before: 1 only after: 0
+
+## Coal, main vs cliffs
+main: 01-04 coal 0.83 (others 0.79-0.85) | 05-08 coal 1.05 (others 1.00-1.04) | 09-16 coal 0.90 (others 0.87-0.91) | 17-32 coal 0.94 (others 0.94-0.95) | 33-64 coal 0.96 (others 0.96-0.96) | 65+ coal 1.00 (others 0.99-1.00)
+   tunnels: flat dug 0.880 P0 0.635; follow dug 1.080 P0 0.561
+cliffs: 01-04 coal 0.82 (others 0.81-0.86) | 05-08 coal 1.05 (others 1.00-1.04) | 09-16 coal 0.89 (others 0.88-0.91) | 17-32 coal 0.94 (others 0.93-0.95) | 33-64 coal 0.96 (others 0.96-0.96) | 65+ coal 1.00 (others 0.99-1.00)
+   tunnels: flat dug 0.891 P0 0.634; follow dug 1.082 P0 0.568
+
+## Exposed face shares, engine fill cliff (x -1470..-1400, z 1050..1120)
+### main
+exposed face voxels 637
+  default:stone                         97.49%
+  default:stone_with_coal                0.94%
+  default:stone_with_iron                0.63%
+  default:stone_with_tin                 0.47%
+  default:stone_with_copper              0.47%
+### cliffs
+exposed face voxels 637
+  default:stone                         91.52%
+  grug_materials:basalt                  5.49%
+  grug_materials:slate                   0.94%
+  default:stone_with_coal                0.78%
+  grug_materials:granite                 0.47%
+  default:stone_with_copper              0.31%
+  default:stone_with_iron                0.16%
+  grug_materials:stone_with_quartz       0.16%
+  default:stone_with_tin                 0.16%
+
+## Exposed face shares, synthetic native cliff (tools/r24_fill/native_cliff.lua)
+### before
+exposed face voxels 2828
+  default:stone                         98.27%
+  default:stone_with_coal                1.73%
+### after
+exposed face voxels 2828
+  default:stone                         93.46%
+  grug_materials:basalt                  3.22%
+  default:stone_with_coal                1.73%
+  grug_materials:slate                   1.59%
