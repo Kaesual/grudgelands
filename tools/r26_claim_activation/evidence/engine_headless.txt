@@ -1,0 +1,6 @@
+staged probe: grug_probe_r26_claim_activation
+headless boot: PASS (port 31539, 290 s)
+log: /tmp/grudgelands-headless.AzyHiB/server.log
+seed = 4242424242
+252:ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:31539.
+kept: /tmp/grudgelands-headless.AzyHiB

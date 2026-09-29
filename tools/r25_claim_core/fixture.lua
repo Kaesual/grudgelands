@@ -15,7 +15,11 @@
 --      renewal guards;
 --   3. fuel arithmetic: accept limits, remaining time, pick-up refund, expiry
 --      by the wall clock (fake clock), the expiry report, refuel (ruling 20);
---   4. the daily limits and every state transition;
+--      Round 26: drafts protect nothing but reserve their square and keep
+--      the arrival cube, activation (at least 5 lumps), and the owner digging
+--      a buildable_to node (snow) in the arrival cube;
+--   4. Round 26: the draft lifetime, the 12 h pick-up lock after activation,
+--      no placing lock, and every state transition;
 --   5. soulbound refusals (player lists, node inventories, detached
 --      inventories) and the stone's drop, dig (no drop, ruling 21) and
 --      pick-capability rules;
@@ -280,10 +284,16 @@ local nodes = {}
 local FACTION = {alice = "accord", bob = "accord", carol = "accord",
 	dave = "accord", erin = "throng", admin = "accord"}
 local guards = {world = {}, renewal = {}}
+local core_loaded, core_after = {}, {}
 local function install_core()
 	_G.core = {
 		registered_nodes = {air = {}, ["default:dirt"] = {},
-			["default:grass_1"] = {buildable_to = true}},
+			["default:grass_1"] = {buildable_to = true},
+			["default:snow"] = {buildable_to = true}},
+		register_on_mods_loaded = function(fn) core_loaded[#core_loaded + 1] = fn end,
+		register_on_leaveplayer = function() end,
+		after = function(_, fn) core_after[#core_after + 1] = fn end,
+		log = function() end,
 		get_node_or_nil = function(pos)
 			return {name = nodes[pos.x .. "/" .. pos.y .. "/" .. pos.z] or "air"}
 		end,
@@ -302,7 +312,11 @@ local function install_core()
 		register_natural_renewal_guard = function(fn) guards.renewal[#guards.renewal + 1] = fn end,
 	}
 	_G.grug_housing = {model = M, STONE_ITEM = "grug_housing:claim_stone",
-		EMPTY_STONE = "grug_housing:claim_stone_empty"}
+		EMPTY_STONE = "grug_housing:claim_stone_empty",
+		DRAFT_STONE = "grug_housing:claim_stone_draft",
+		STONE_NODES = {["grug_housing:claim_stone"] = true,
+			["grug_housing:claim_stone_empty"] = true,
+			["grug_housing:claim_stone_draft"] = true}}
 end
 install_core()
 dofile(housing_dir .. "/protection.lua")
@@ -311,7 +325,24 @@ local function at(x, y, z) return {x = x, y = y, z = z} end
 local inside, outside = at(-320, 12, 20), at(-500, 12, 0)
 a.permissions.carol = "everything"
 a.permissions.dave = "interact"
-check(M.add_fuel(a, 1) == 1, "fuel one lump")
+-- Round 26 ruling 8: a draft protects nothing, keeps the arrival cube and
+-- (above) reserves its square against other claims.
+check(M.is_draft(a) and not M.is_active(a), "a new claim is a draft, not active")
+check(M.draft_remaining(a) == 300, "draft: 5 minutes to activate")
+check(P(inside, "bob") == false and P(inside, "erin") == true,
+	"draft protects nothing (world protection still applies)")
+check(P(at(-299, 13, 1), "alice") == true and P(at(-299, 13, 1), "bob") == true,
+	"draft keeps the arrival cube free")
+check(M.add_fuel(a, 3) == 0 and M.is_draft(a), "a draft takes no fuel")
+-- Ruling 9: activation with at least 5 lumps.
+local burnt, why = M.activate(a, 4)
+check(burnt == 0 and why == "too_few" and M.is_draft(a), "4 lumps do not activate")
+check(M.activate(a, 5) == 5 and not M.is_draft(a) and M.is_active(a),
+	"5 lumps activate")
+check(a.activated_at == clock and a.paid_until == clock + 5 * M.LUMP_SECONDS,
+	"activation starts the fuel at once")
+check(select(2, M.activate(a, 5)) == "active", "an active claim is not activated twice")
+check(M.draft_remaining(a) == 0, "an activated claim is no draft")
 check(P(inside, "alice") == false, "owner digs and places")
 check(P(inside, "carol") == false, "everything digs and places")
 check(P(inside, "dave") == true, "interact is refused digging and placing")
@@ -349,8 +380,51 @@ check(world_guard(cube) == false, "liquid guard refuses the arrival cube")
 check(world_guard(inside) == true, "liquid guard allows the rest of the claim")
 check(renewal_guard(inside) == false, "no renewal inside an active claim")
 check(renewal_guard(outside) == true, "renewal outside claims")
+-- R26 ruling 12: snow (buildable_to) in the arrival cube. Placing into it
+-- stays refused; digging it (the dig context the on_dig wrapper sets) is
+-- judged like the rest of the claim.
+nodes["-299/13/1"] = "default:snow"
+for _, fn in ipairs(core_loaded) do fn() end
+for _, fn in ipairs(core_after) do fn() end
+local snow_def = core.registered_nodes["default:snow"]
+check(type(snow_def.on_dig) ~= "function", "stub snow has no on_dig before the test")
+do
+	local seen = {}
+	local function player(name)
+		return {is_player = function() return true end,
+			get_player_name = function() return name end}
+	end
+	-- Install the wrapper on a snow def with callbacks, as in the engine.
+	core.registered_nodes["default:snow"] = {buildable_to = true,
+		on_dig = function(pos, _, digger)
+			seen[#seen + 1] = digger:get_player_name() .. ":" .. tostring(P(pos,
+				digger:get_player_name()))
+			return true
+		end,
+		on_punch = function(pos, _, puncher)
+			seen[#seen + 1] = "punch " .. puncher:get_player_name() .. ":" ..
+				tostring(P(pos, puncher:get_player_name()))
+		end}
+	for _, fn in ipairs(core_after) do fn() end
+	local snow = core.registered_nodes["default:snow"]
+	check(P(cube, "alice") == true, "snow in the cube: placing into it refused (owner)")
+	snow.on_dig(cube, {name = "default:snow"}, player("alice"))
+	snow.on_dig(cube, {name = "default:snow"}, player("carol"))
+	snow.on_dig(cube, {name = "default:snow"}, player("dave"))
+	snow.on_dig(cube, {name = "default:snow"}, player("bob"))
+	snow.on_punch(cube, {name = "default:snow"}, player("alice"))
+	check(table.concat(seen, ",") ==
+		"alice:false,carol:false,dave:true,bob:true,punch alice:false",
+		"snow in the cube: owner and everything dig and punch it, interact and " ..
+		"strangers not (" .. table.concat(seen, ",") .. ")")
+	check(P(cube, "alice") == true, "after the dig the cube refuses placing again")
+	nodes["-299/13/1"] = nil
+	check(P(cube, "alice") == true, "air in the cube: still refused")
+	core.registered_nodes["default:snow"] = snow_def
+end
+
 -- Expiry by the wall clock.
-clock = clock + M.LUMP_SECONDS
+clock = clock + 5 * M.LUMP_SECONDS
 check(not M.is_active(a), "claim expires by the wall clock")
 check(P(inside, "bob") == false, "empty claim protects nothing")
 check(P(cube, "bob") == true, "empty claim keeps the arrival cube")
@@ -416,21 +490,54 @@ local zc = M.create("zed", {x = 300, y = 10, z = 0})
 local claim_of, state_of = M.player_claim("zed")
 check(claim_of == zc and state_of == "placed", "placed: player_claim returns the claim")
 check(not M.issue("zed", 25, false), "refused while placed")
-check(not M.is_active(zc) and select(2, M.player_claim("zed")) == "placed",
-	"an empty standing stone is still placed")
+check(not M.is_active(zc) and M.is_draft(zc) and
+	select(2, M.player_claim("zed")) == "placed", "a draft is placed")
+-- R26 ruling 8: a draft comes back at any time, and no placing lock follows.
+check(M.pickup_wait(zc) == 0, "draft: no pick-up lock")
 M.remove(zc, "picked_up")
 check(M.player_state("zed") == "carried" and M.player_claim("zed") == nil, "picked up: carried")
-check(validate("zed", "accord", 300, 10, 0) == "daily_place", "second placement same day refused")
-check(M.pickup_wait("zed") > 0, "pick-up limit running")
-clock = clock + 86400 - 1
-check(validate("zed", "accord", 300, 10, 0) == "daily_place", "refused one second before 24 h")
-clock = clock + 1
-check(validate("zed", "accord", 300, 10, 0) == "ok", "allowed after 24 h")
+check(validate("zed", "accord", 300, 10, 0) == "ok",
+	"ruling 10: no placing lock, placing again at once after a pick-up")
 zc = M.create("zed", {x = 300, y = 10, z = 0})
-check(M.pickup_wait("zed") == 0, "pick-up limit counted separately (24 h after the last pick-up)")
+check(M.activate(zc, 5) == 5, "activated")
+-- R26 ruling 10: the only lock, 12 h after activation.
+check(M.PICKUP_LOCK_SECONDS == 12 * 3600 and M.pickup_wait(zc) == 12 * 3600,
+	"pick-up locked 12 h after activation")
+clock = clock + 12 * 3600 - 1
+check(M.pickup_wait(zc) == 1, "one second before 12 h still locked")
+clock = clock + 1
+check(M.pickup_wait(zc) == 0, "pick-up allowed after 12 h")
+M.remove(zc, "picked_up")
+check(validate("zed", "accord", 300, 10, 0) == "ok", "placing again at once after the pick-up")
+zc = M.create("zed", {x = 300, y = 10, z = 0})
+M.activate(zc, 5)
 M.remove(zc, "destroyed")
 check(M.player_state("zed") == "destroyed", "dug: destroyed")
 check(M.issue("zed", 30, false) and M.player_state("zed") == "carried", "destroyed -> carried")
+check(validate("zed", "accord", 300, 10, 0) == "ok",
+	"after destruction a new stone is placed at once (no lock)")
+-- R26 ruling 8: a draft lasts 5 minutes; the owner gets a new stone at once.
+zc = M.create("zed", {x = 300, y = 10, z = 0})
+local function in_draft_scan(claim)
+	for _, c in ipairs(M.draft_scan()) do if c == claim then return true end end
+	return false
+end
+check(#M.expiry_scan() == 0, "a draft is never reported as fuel expiry")
+clock = clock + M.DRAFT_SECONDS - 1
+check(not in_draft_scan(zc) and M.draft_remaining(zc) == 1, "draft alive at 4:59")
+clock = clock + 1
+check(in_draft_scan(zc) and M.draft_remaining(zc) == 0, "draft expires at 5:00")
+M.remove(zc, "draft_expired")
+check(M.player_state("zed") == "needs_stone" and M.claim_by_id(zc.id) == nil,
+	"expired draft: needs_stone, claim gone")
+check(M.issue("zed", 30, false) and M.player_state("zed") == "carried",
+	"a new stone at once after the draft expired")
+zc = M.create("zed", {x = 300, y = 10, z = 0})
+check(M.activate(zc, 150) == 99 and M.remaining_seconds(zc) == 99 * M.LUMP_SECONDS,
+	"activation burns at most 99 lumps")
+clock = clock + M.DRAFT_SECONDS + 1
+check(not in_draft_scan(zc), "an activated claim never expires as a draft")
+M.remove(zc, "picked_up")
 check(M.set_permission(b, "carol", "interact") and M.permission(b, "carol") == "interact",
 	"set permission")
 check(not M.set_permission(b, "bob", "everything"), "owner is no list entry")
@@ -579,6 +686,13 @@ check(sdef.can_dig() == false and next(sdef.groups) and not sdef.groups.grug_cla
 local edef = registered_items["grug_housing:claim_stone_empty"]
 check(edef.groups.grug_claim_stone == 1 and edef.drop == "" and sdef.drop == "",
 	"empty stone: dig group; ruling 21: no drop from either stone")
+-- R26 ruling 8: the draft is half-transparent and nobody digs it.
+local ddef = registered_items["grug_housing:claim_stone_draft"]
+check(ddef ~= nil and ddef.use_texture_alpha == "blend" and
+	ddef.tiles[1]:find("^[opacity:", 1, true) ~= nil, "draft: half-transparent")
+check(ddef.can_dig() == false and not ddef.groups.grug_claim_stone and
+	not ddef.groups.grug_soulbound and ddef.groups.grug_claim_stone_node == 1 and
+	ddef.drop == "", "draft: no dig group, can_dig false, no drop, no item")
 local times = {}
 for tier = 1, 6 do
 	local caps = registered_items["grug_materials:pick_t" .. tier].tool_capabilities
@@ -596,7 +710,7 @@ local function digger(tool)
 end
 local stone_pos = {x = b.center.x, y = b.center.y, z = b.center.z}
 clock = clock + 1
-M.add_fuel(b, 1)
+M.activate(b, 5)
 check(edef.can_dig(stone_pos, digger("grug_materials:pick_t3")) == false,
 	"empty-variant node of a fuelled claim refuses")
 clock = b.paid_until + 1
@@ -609,6 +723,37 @@ edef.after_dig_node(stone_pos, {name = "grug_housing:claim_stone_empty"}, nil, d
 check(M.claim_by_id(b.id) == nil and M.player_state("bob") == "destroyed" and
 	grug_housing.last_event.event == "destroyed" and grug_housing.last_event.claim == b,
 	"dig removes the claim, bob destroyed, event with the claim table")
+-- The periodic check (stone.lua's globalstep): an expired draft crumbles, its
+-- node goes, the owner needs a new stone; a standing stone stays.
+do
+	nodes[a.center.x .. "/" .. a.center.y .. "/" .. a.center.z] = STONE
+	M.issue("yan", 20, false)
+	local yd = M.create("yan", {x = 9000, y = 0, z = 9000})
+	nodes["9000/0/9000"] = "grug_housing:claim_stone_draft"
+	local removed = {}
+	grug_housing.remove_stone_node = function(claim)
+		removed[#removed + 1] = claim.id
+		nodes[claim.center.x .. "/" .. claim.center.y .. "/" .. claim.center.z] = nil
+	end
+	local told = {}
+	core.get_player_by_name = function(name)
+		return {get_player_name = function() return name end}
+	end
+	core.chat_send_player = function(name, text) told[#told + 1] = name .. ": " .. text end
+	globalsteps[1](5)
+	check(M.claim_by_id(yd.id) ~= nil and #removed == 0, "a fresh draft survives the check")
+	clock = clock + M.DRAFT_SECONDS
+	globalsteps[1](5)
+	check(M.claim_by_id(yd.id) == nil and removed[1] == yd.id and
+		M.player_state("yan") == "needs_stone" and
+		grug_housing.last_event.event == "draft_expired",
+		"an expired draft crumbles: node removed, needs_stone, event")
+	check(#told == 1 and told[1]:find("Housing Steward", 1, true) ~= nil,
+		"the owner is told to fetch a new stone from a Housing Steward")
+	check(M.claim_by_id(a.id) ~= nil, "a standing activated stone is kept")
+	core.get_player_by_name = function() return nil end
+	core.chat_send_player = function() end
+end
 
 -- ---------------------------------------------------------------------------
 -- 6. Persistence
@@ -618,7 +763,9 @@ M.create("dave", {x = 5000, y = -40, z = 5000}).permissions = {}
 local d = M.player_claim("dave")
 M.set_permission(d, "erin", "interact")
 M.set_permission(d, "alice", "everything")
-M.add_fuel(d, 7)
+M.activate(d, 7)
+M.issue("carol", 20, false)
+M.create("carol", {x = -5000, y = 3, z = 5000}) -- a draft
 local N = new_model(storage)
 local function snapshot(model)
 	local lines = {}
@@ -627,13 +774,13 @@ local function snapshot(model)
 		for name, level in pairs(claim.permissions) do names[#names + 1] = name .. "=" .. level end
 		table.sort(names)
 		lines[#lines + 1] = table.concat({claim.id, claim.owner, claim.center.x,
-			claim.center.y, claim.center.z, claim.placed_at, claim.paid_until,
-			claim.expired_for, table.concat(names, ",")}, "|")
+			claim.center.y, claim.center.z, claim.placed_at, claim.activated_at,
+			claim.paid_until, claim.expired_for, table.concat(names, ",")}, "|")
 	end
 	for _, name in ipairs({"alice", "bob", "carol", "dave", "zed", "yan", "nobody"}) do
 		local claim, state = model.player_claim(name)
 		lines[#lines + 1] = name .. ":" .. state .. ":" .. (claim and claim.id or "-") ..
-			":" .. model.place_wait(name) .. ":" .. model.pickup_wait(name)
+			":" .. model.pickup_wait(claim) .. ":" .. model.draft_remaining(claim)
 	end
 	return table.concat(lines, "\n")
 end
@@ -939,7 +1086,9 @@ if seed ~= "none" then
 	local function load_core_protection()
 		_G.core = {check_player_privs = function() return false end,
 			get_node_or_nil = function() return {name = "air"} end,
-			registered_nodes = {air = {}}}
+			registered_nodes = {air = {}},
+			register_on_mods_loaded = function() end,
+			register_on_leaveplayer = function() end}
 		function core.is_protected() return false end
 		_G.grug_core = {
 			get_player_faction = function() return "accord" end,
@@ -974,7 +1123,7 @@ if seed ~= "none" then
 	for i = 1, math.min(50, #accepted) do
 		local spot = accepted[i]
 		local claim = full_model.create("owner" .. i, {x = spot.x, y = 20, z = spot.z})
-		full_model.add_fuel(claim, 10)
+		full_model.activate(claim, 10)
 	end
 	local fifty_fn = housing_chain(full_model)
 	local inside = 0

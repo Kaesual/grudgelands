@@ -147,6 +147,24 @@ _G.grug_housing = fake_housing()
 -- The Lane A stub on main (claim_at returns nil) refuses nothing.
 _G.grug_housing = {claim_at = function() return nil end, is_active = function() return false end}
 check(not gm.claim_refuses_spawn(HOSTILE, ACTIVE), "main's interface stub refuses nothing")
+-- Round 26 ruling 8, with the REAL claim model: a draft refuses no spawn, the
+-- same claim does once activated.
+do
+	local data = {}
+	local model = dofile(repo .. "/mods/PLAYER/grug_housing/registry.lua")({
+		storage = {get_string = function(k) return data[k] or "" end,
+			set_string = function(k, v) data[k] = v ~= "" and v or nil end,
+			keys = function() return {} end},
+		now = function() return NOW end})
+	model.load()
+	_G.grug_housing = {claim_at = model.claim_at, is_active = model.is_active}
+	local claim = model.create("carol", {x = 5000, y = 20, z = 5000})
+	local spot = {x = 5020, y = 21, z = 4980}
+	check(model.is_draft(claim) and not gm.claim_refuses_spawn(HOSTILE, spot),
+		"R26: a draft refuses no hostile spawn")
+	model.activate(claim, 5)
+	check(gm.claim_refuses_spawn(HOSTILE, spot), "R26: the activated claim refuses it")
+end
 _G.grug_housing = fake_housing()
 
 -- ---------------------------------------------------------------------------

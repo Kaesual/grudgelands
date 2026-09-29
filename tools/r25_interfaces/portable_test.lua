@@ -1,5 +1,8 @@
 -- Round 25 Lane C portable fixture: the Claim Stone formspec, the Housing
--- Manager and the Character-page status (rulings 13-14).
+-- Steward (Housing Manager before Round 26) and the Character-page status
+-- (rulings 13-14). Round 26 (rulings 8-11): the draft form with the
+-- activation button, the pick-up lock line, the draft status and the Steward
+-- wording.
 --
 -- Loads the REAL grug_housing api.lua (claim-change callbacks, fuel items,
 -- LUMP_SECONDS and FUEL_MAX, over an empty in-memory registry),
@@ -218,12 +221,36 @@ check(H.is_fuel("default:coal_lump") and H.is_fuel("grug_smelting:charcoal") and
 	not H.is_fuel("default:coalblock"), "fuel kinds come from api.lua")
 local now = 1000000
 local claims, states = {}, {}
-local calls = {add_fuel = {}, set_permission = {}, pick_up = {}, issue = {}}
-local pick_up_result = {false, "You can pick up a Claim Stone again in 5 h."}
+local calls = {add_fuel = {}, set_permission = {}, pick_up = {}, issue = {},
+	activate = {}}
+local pick_up_result = {false, "Your Claim Stone stays in place for another 5 h 00 min."}
+local activate_result = {true, "Claim Stone activated: your home is protected."}
 local issue_result = {true, "Here is your Claim Stone."}
 
 function H.player_claim(name) return claims[name], states[name] or "never" end
-function H.is_active(claim) return claim.paid_until > now end
+function H.is_draft(claim) return claim.activated_at == 0 end
+function H.is_active(claim)
+	return claim.activated_at ~= 0 and claim.paid_until > now
+end
+function H.draft_remaining(claim)
+	if claim.activated_at ~= 0 then return 0 end
+	return math.max(0, claim.placed_at + 300 - now)
+end
+function H.pickup_wait(claim)
+	if claim.activated_at == 0 then return 0 end
+	return math.max(0, claim.activated_at + 43200 - now)
+end
+function H.activate(player)
+	local name = player:get_player_name()
+	calls.activate[#calls.activate + 1] = name
+	local claim = claims[name]
+	if activate_result[1] and claim then
+		claim.activated_at = now
+		claim.paid_until = now + 5 * LUMP
+		H.notify_claim_changed(claim, "activated")
+	end
+	return activate_result[1], activate_result[2]
+end
 function H.remaining_seconds(claim) return math.max(0, claim.paid_until - now) end
 function H.permission(claim, name)
 	if name == claim.owner then return "owner" end
@@ -295,7 +322,8 @@ check(status_of("nobody") == nil, "never: no status")
 
 local owner = new_player("owner", {x = 0, y = 10, z = 0})
 factions.owner = "accord"
-local claim = {id = 7, owner = "owner", center = {x = 0, y = 9, z = 0}, placed_at = now,
+local claim = {id = 7, owner = "owner", center = {x = 0, y = 9, z = 0},
+	placed_at = now - DAY, activated_at = now - DAY,
 	paid_until = now + 12 * DAY + 4 * 3600 + 31 * 60 + 59,
 	permissions = {zed = "interact", bob = "everything", owner = "everything"}}
 claims.owner, states.owner = claim, "placed"
@@ -316,6 +344,14 @@ has(fs, "listring[detached:grug_housing_fuel_owner;fuel]listring[current_player;
 	"shift-click ring")
 lacks(fs, "set_home", "no Set-as-home button without grug_home.set_home_claim")
 has(fs, "button[0.4,6.75;3.1,0.8;pick_up;Pick up stone]", "pick-up button")
+lacks(fs, "Pick-up possible", "no lock line 24 h after activation")
+lacks(fs, "activate", "no activation button on an activated stone")
+
+-- R26 ruling 10: the 12 h lock after activation is shown.
+claim.activated_at = now - 3600
+H.open_stone_interface(owner, claim)
+has(last_shown("owner").fs, "Pick-up possible in 11 h 0 min.", "pick-up lock line")
+claim.activated_at = now - DAY
 
 claim.paid_until = now + 23 * 3600
 H.open_stone_interface(owner, claim)
@@ -473,8 +509,9 @@ eq(#calls.pick_up, 0, "cancel does not pick up")
 submit(owner, "grug_housing:stone", {pick_up = ""})
 submit(owner, "grug_housing:stone", {confirm_pick_up = ""})
 eq(#calls.pick_up, 1, "confirm calls pick_up")
-has(last_shown("owner").fs, "\27(c@#ff6060)You can pick up a Claim Stone again in 5 h.",
-	"daily-limit message shown in red")
+has(last_shown("owner").fs,
+	"\27(c@#ff6060)Your Claim Stone stays in place for another 5 h 00 min.",
+	"pick-up lock message shown in red")
 
 pick_up_result = {true, "You picked up your Claim Stone and 60 lumps."}
 local closed_before = #closed
@@ -497,7 +534,54 @@ H.notify_claim_changed(claim, "destroyed")
 eq(#closed, closed_before + 1, "destruction closes the open form")
 
 --
--- 8. Housing Manager dialog
+-- 7b. R26 rulings 8-10: the draft form and activation
+--
+
+local draft = {id = 8, owner = "owner", center = {x = 0, y = 9, z = 0},
+	placed_at = now - 60, activated_at = 0, paid_until = now - 60, permissions = {}}
+claims.owner, states.owner = draft, "placed"
+grug_home = {set_home_claim = function() return true end}
+check(H.open_stone_interface(owner, draft), "owner opens the draft form")
+fs = last_shown("owner").fs
+has(fs, "Your Claim Stone (draft\\, not active)", "draft title")
+has(fs, "crumbles in 4 min unless you activate it.", "draft countdown")
+has(fs, "button[0.4,2.2;4.2,0.7;activate;Activate (5 coal)]", "activation button")
+lacks(fs, "list[detached:grug_housing_fuel_owner", "no fuel slot on a draft")
+lacks(fs, "listring[detached:", "no fuel listring on a draft")
+lacks(fs, "set_home", "a draft is no home: no Set-as-home button")
+has(fs, "pick_up;Pick up stone", "a draft can be picked up")
+d = detached["grug_housing_fuel_owner"]
+eq(d.callbacks.allow_put(d.inv, "fuel", 1, ItemStack("default:coal_lump 5"), owner), 0,
+	"a draft takes no fuel through the slot")
+submit(owner, "grug_housing:stone", {pick_up = ""})
+has(last_shown("owner").fs, "It is not active yet\\; you can place it again at once.",
+	"draft pick-up confirmation")
+submit(owner, "grug_housing:stone", {cancel_pick_up = ""})
+activate_result = {false, "Activation needs 5 coal lumps or charcoal in your inventory; you have 2."}
+submit(owner, "grug_housing:stone", {activate = ""})
+eq(calls.activate[#calls.activate], "owner", "the button calls activate")
+has(last_shown("owner").fs, "\27(c@#ff6060)Activation needs 5 coal lumps", "refusal in red")
+has(last_shown("owner").fs, "activate;Activate", "still a draft after a refusal")
+activate_result = {true, "Claim Stone activated: your home is protected."}
+submit(owner, "grug_housing:stone", {activate = ""})
+fs = last_shown("owner").fs
+has(fs, "Claim Stone activated: your home is protected.", "activation message")
+has(fs, "list[detached:grug_housing_fuel_owner;fuel;", "activated: the fuel slot appears")
+has(fs, "Fuel left: 1 d 12 h 20 min", "activated with 5 lumps")
+has(fs, "Pick-up possible in 12 h 0 min.", "activated: the 12 h lock starts")
+has(fs, "set_home;Set as home", "activated: Set as home")
+lacks(fs, "activate;", "activated: no activation button")
+grug_home = nil
+-- An expired draft closes the open form.
+draft.activated_at, draft.paid_until = 0, now - 60
+H.open_stone_interface(owner, draft)
+closed_before = #closed
+H.notify_claim_changed(draft, "draft_expired")
+eq(#closed, closed_before + 1, "an expired draft closes the open form")
+claims.owner, states.owner = claim, "placed"
+
+--
+-- 8. Housing Steward dialog
 --
 
 local npc_pos = {x = 1000 + 5, y = 11, z = 7} -- highcourt socket
@@ -506,15 +590,19 @@ local manager = {_grug_socket_role = "housing_manager", _grug_start = "highcourt
 	object = {get_pos = function() return npc_pos end}}
 local visitor = new_player("visitor", {x = 1003, y = 11, z = 7})
 factions.visitor = "accord"
-check(H.open_manager(visitor, manager), "Manager opens for the own faction")
+check(H.open_manager(visitor, manager), "Steward opens for the own faction")
 fs = last_shown("visitor").fs
 eq(last_shown("visitor").formname, "grug_housing:manager", "manager formname")
 has(fs, "From level 20 you get one Claim Stone for free.", "level-20 line")
 has(fs, "99 lumps last about 30 days.", "upkeep line")
 has(fs, "coal lumps or charcoal", "fuel kinds line")
 has(fs, "When the fuel runs out\\, the protection ends.", "empty-fuel line")
-has(fs, "place it once and pick it up once every 24 hours", "daily rule line")
-has(fs, "button[0.4,4.6;5.2,0.8;receive;Receive Claim Stone]", "receive button")
+has(fs, "label[0.4,0.5;Housing Steward]", "Steward title")
+lacks(fs, "Manager", "no Manager wording")
+lacks(fs, "24 hours", "no daily rule any more")
+has(fs, "Activate it within 5 minutes with 5 coal lumps or charcoal", "activation line")
+has(fs, "stays in place for 12 hours", "pick-up lock line")
+has(fs, "button[0.4,5.5;5.2,0.8;receive;Receive Claim Stone]", "receive button")
 
 submit(visitor, "grug_housing:manager", {receive = ""})
 eq(calls.issue[1], "visitor", "receive calls issue_stone")
@@ -551,8 +639,16 @@ eq(status_of("owner").text, "Your Claim Stone is in your inventory, not placed y
 lacks(status_fs("owner"), RED, "carried is not red")
 
 states.owner = "needs_stone"
-eq(status_of("owner").text, "You have no Claim Stone; ask a Housing Manager for a new one",
+eq(status_of("owner").text, "You have no Claim Stone; ask a Housing Steward for a new one",
 	"needs_stone wording")
+
+states.owner, claims.owner = "placed", draft
+draft.placed_at = now - 90
+eq(status_of("owner").text,
+	"Your Claim Stone is not active yet: activate it within 3 min or it crumbles",
+	"draft wording")
+has(status_fs("owner"), RED, "draft status in red")
+states.owner, claims.owner = "needs_stone", nil
 
 states.owner = "destroyed"
 eq(status_of("owner").text, "Your Claim Stone has been destroyed", "destroyed wording")

@@ -1,0 +1,45 @@
+-- validation
+zone check: 10201 columns per placement (border 400, interior step 1); 10201 single-column enclave positions, 0 missed
+ruling 27: 39762 single-feature positions around a centre, 0 wrong
+-- claims
+-- protection
+-- fuel
+-- states
+-- soulbound and stone
+-- persistence
+1|alice|-300|10|0|1800000000|1800000000|1802799120|1802799120|carol=everything,dave=interact
+9|dave|5000|-40|5000|1803838123|1803838123|1804021243|1803838123|alice=everything,erin=interact
+10|carol|-5000|3|5000|1803838123|0|1803838123|1803838123|
+alice:placed:1:0:0
+bob:destroyed:-:0:0
+carol:placed:10:0:300
+dave:placed:9:43200:0
+zed:carried:-:0:0
+yan:needs_stone:-:0:0
+nobody:never:-:0:0
+-- real world, seed 4242424242
+world built in 7.0 s
+hard_footprint_in: 22752 rectangles across 72 footprint edges, 11586 touch, 0 differ from the column scan
+census: 1574 home-faction centres, capital_zone 364, high_level 44, low_level 309, ok 550, sea 9, shelf 93, site 96, town 109; 10.15 ms per validation
+accepted by zone: elandor_copperfell_foothills 38, elandor_frostbarrow_shelf 32, elandor_goldmead_vale 32, elandor_lorindor 46, elandor_moonfall_wood 34, elandor_starbough_vale 35, elandor_whitebridge_shire 50, kragmar_mournfen 27, kragmar_ossuary_reach 20, kragmar_raincall_basin 43, kragmar_redtusk_savanna 41, kragmar_speargrass_reach 71, kragmar_totemwater_reach 28, kragmar_whispering_reedlands 53
+first accepted spot: -2600,1642 in kragmar_ossuary_reach (L21-30)
+nearest feature to an accepted lattice centre (max of the x and z gaps): camp 68, landmark 74, poi 67, town 178, village 67
+village pair copperfell_village: 20 away -1837,-2036 site; 70 away -1787,-2036 ok (inside the old blend envelope: true)
+village pair goldmead_village: 20 away -89,-2020 site; 70 away -39,-2020 ok (inside the old blend envelope: true)
+village pair starbough_village: 20 away 1931,-2020 site; 70 away 1981,-2020 ok (inside the old blend envelope: true)
+village pair mournfen_village: 20 away -1869,2020 site; 70 away -1819,2020 ok (inside the old blend envelope: true)
+village pair redtusk_village: 20 away -57,2004 site; 70 away -7,2004 ok (inside the old blend envelope: true)
+village pair raincall_village: 20 away 1907,2044 site; 70 away 1957,2044 ok (inside the old blend envelope: true)
+village pair r20_anchor_014: 20 away -2373,-1576 site; 70 away -2323,-1576 ok (inside the old blend envelope: true)
+village pair r20_anchor_016: 20 away -893,-1556 site; 70 away -843,-1556 ok (inside the old blend envelope: true)
+village pair r20_anchor_018: 20 away 907,-1556 site; 70 away 957,-1556 ok (inside the old blend envelope: true)
+village pair r20_anchor_020: 20 away -2349,1600 site; 70 away -2299,1600 ok (inside the old blend envelope: true)
+village pair r20_anchor_022: 20 away -837,1564 site; 70 away -787,1564 ok (inside the old blend envelope: true)
+village pair r20_anchor_024: 20 away 907,1604 site; 70 away 957,1604 ok (inside the old blend envelope: true)
+village pairs: 45 of 12 villages x 4 sides accept a stone 70 from the core
+-- is_protected microbenchmark
+grug_core only                    649 ns per call
++ grug_housing, 0 claims          703 ns per call
++ grug_housing, 50 claims         730 ns per call
+2000 positions (178 inside the 50 claims), best of 7 x 10 rounds each; housing adds 54 ns (0 claims) and 81 ns (50 claims)
+R25 CLAIM CORE FIXTURE PASS checks=303
