@@ -9,15 +9,23 @@
 -- Only pure public queries are used (water_class_at, id_at, get,
 -- terrain_height_at) plus the river centrelines grug_mapgen publishes: no
 -- chunk is generated, loaded or read.
+--
+-- The image is sent as TILES of at most TILE x TILE pixels (Round 27): the
+-- minimap builds its round window with `[combine` from the at most four
+-- tiles it overlaps, so the client never copies the whole base per window
+-- (`[combine` copies each source image once, imagesource.cpp). The Map tab
+-- shows every tile combined into one texture. Nothing else is sent, so the
+-- download is the tiles alone.
 
 local M = {}
 
 -- This file's own source enters the cache key, so any palette or drawing
 -- change re-renders cached bases without a manual version bump.
 local SOURCE_PATH = core.get_modpath(core.get_current_modname()) .. "/base.lua"
-local MEDIA_NAME = "grug_map_base.png"
-local CACHE_PNG = core.get_worldpath() .. "/grug_map_base.png"
-local CACHE_KEY = core.get_worldpath() .. "/grug_map_base.key"
+local WORLD = core.get_worldpath()
+local CACHE_KEY = WORLD .. "/grug_map_base.key"
+M.TILE = 512
+M.MASK = "grug_map_minimap_mask.png"
 -- Map quality (Round 27 rulings 1-3): a server setting, the same image for
 -- the Map tab and the minimap. Both are 9:8 like the atlas bounds. Normal is
 -- the Round 22 image, about 6.67 nodes per pixel; high is 2 nodes per pixel
@@ -29,9 +37,13 @@ local CACHE_KEY = core.get_worldpath() .. "/grug_map_base.key"
 -- samples every 4 nodes (two map pixels), which the bilinear interpolation
 -- below keeps smooth. The steps are part of this file's source and therefore
 -- of the cache key, so changing one re-renders cached bases.
+--
+-- `minimap_grid` is the minimap's snap grid in base pixels (ruling 9): 16 px
+-- is about 107 nodes at normal; high snaps on 64 px (128 nodes), so both
+-- create a new client texture about every 110-130 nodes walked.
 M.QUALITY = {
-	normal = {width = 1080, height = 960, relief_step = 8},
-	high = {width = 3600, height = 3200, relief_step = 4},
+	normal = {width = 1080, height = 960, relief_step = 8, minimap_grid = 16},
+	high = {width = 3600, height = 3200, relief_step = 4, minimap_grid = 64},
 }
 M.DEFAULT_QUALITY = "normal"
 -- Shown if rendering fails: plain sea, so the markers stay usable.
@@ -384,31 +396,92 @@ local function render(zones, view, spec)
 		end
 	end
 
-	-- Encode: one memoised 4-byte RGBA string per distinct colour.
-	local char, bytes_of, rows = string.char, {}, {}
-	for j = 0, HEIGHT - 1 do
-		local row = {}
-		for i = 1, WIDTH do
-			local packed = pixels[j * WIDTH + i]
-			local bytes = bytes_of[packed]
-			if not bytes then
-				bytes = char(math.floor(packed / 65536),
-					math.floor(packed / 256) % 256, packed % 256, 255)
-				bytes_of[packed] = bytes
+	-- Encode each tile: one memoised 4-byte RGBA string per distinct colour.
+	local char, bytes_of = string.char, {}
+	local tiles, total = M.tiles(WIDTH, HEIGHT), 0
+	for _, tile in ipairs(tiles) do
+		local rows = {}
+		for j = tile.y, tile.y + tile.h - 1 do
+			local row, first = {}, j * WIDTH + tile.x
+			for i = 1, tile.w do
+				local packed = pixels[first + i]
+				local bytes = bytes_of[packed]
+				if not bytes then
+					bytes = char(math.floor(packed / 65536),
+						math.floor(packed / 256) % 256, packed % 256, 255)
+					bytes_of[packed] = bytes
+				end
+				row[i] = bytes
 			end
-			row[i] = bytes
+			rows[#rows + 1] = table.concat(row)
 		end
-		rows[j + 1] = table.concat(row)
+		tile.png = core.encode_png(tile.w, tile.h, table.concat(rows), 9)
+		total = total + #tile.png
 	end
-	local png = core.encode_png(WIDTH, HEIGHT, table.concat(rows), 9)
 	local finished = core.get_us_time()
 	core.log("action", ("[grug_map] rendered world map base %dx%d (%s) in %.2f s " ..
-		"(zones/water %.2f s, relief step %d %.2f s, colour+encode %.2f s, %d bytes)"):
+		"(zones/water %.2f s, relief step %d %.2f s, colour+encode %.2f s, " ..
+		"%d tiles, %d bytes)"):
 		format(WIDTH, HEIGHT, spec.quality, (finished - started) / 1e6,
 		(classified - started) / 1e6,
 		relief.step,
-		(shaded - classified) / 1e6, (finished - shaded) / 1e6, #png))
-	return png
+		(shaded - classified) / 1e6, (finished - shaded) / 1e6, #tiles, total))
+	return tiles
+end
+
+-- The tiles of a width x height base, row by row: {name, col, row, x, y, w,
+-- h} with x/y the tile's top-left base pixel. Edge tiles are smaller.
+function M.tiles(width, height)
+	local result = {}
+	for row = 0, math.ceil(height / M.TILE) - 1 do
+		for col = 0, math.ceil(width / M.TILE) - 1 do
+			local x, y = col * M.TILE, row * M.TILE
+			result[#result + 1] = {name = ("grug_map_base_%d_%d.png"):format(col, row),
+				col = col, row = row, x = x, y = y,
+				w = math.min(M.TILE, width - x), h = math.min(M.TILE, height - y)}
+		end
+	end
+	return result
+end
+
+-- The whole base as one texture (the Map tab): every tile combined.
+function M.combined_texture(width, height, tiles)
+	local parts = {("[combine:%dx%d"):format(width, height)}
+	for _, tile in ipairs(tiles) do
+		parts[#parts + 1] = ("%d,%d=%s"):format(tile.x, tile.y, tile.name)
+	end
+	return table.concat(parts, ":")
+end
+
+-- The minimap's round mask (ruling 6): a white disc with an anti-aliased
+-- edge on a `size` x `size` transparent square, as a PNG. `[mask` keeps the
+-- map where its alpha is set. The disc is inset by `inset` pixels so its edge
+-- lies under the minimap's ring.
+function M.mask_png(size, inset)
+	local r = size / 2 - inset
+	local c = size / 2
+	local char, rows = string.char, {}
+	local levels = {}
+	for alpha = 0, 16 do
+		levels[alpha] = char(255, 255, 255, math.floor(alpha * 255 / 16 + 0.5))
+	end
+	for j = 0, size - 1 do
+		local row = {}
+		for i = 0, size - 1 do
+			-- 4 x 4 samples per pixel
+			local hits = 0
+			for sj = 0, 3 do
+				local dy = j + (sj + 0.5) / 4 - c
+				for si = 0, 3 do
+					local dx = i + (si + 0.5) / 4 - c
+					if dx * dx + dy * dy <= r * r then hits = hits + 1 end
+				end
+			end
+			row[i + 1] = levels[hits]
+		end
+		rows[j + 1] = table.concat(row)
+	end
+	return core.encode_png(size, size, table.concat(rows), 9)
 end
 
 -- Re-render only when this key changes: this file's source, world seed,
@@ -473,25 +546,46 @@ function M.quality()
 	return value
 end
 
+-- Writes `data` to the world folder as `name` and announces it as startup
+-- media.
+function M.add_media(name, data)
+	local path = WORLD .. "/" .. name
+	if data then
+		assert(core.safe_file_write(path, data), "cannot write " .. path)
+	end
+	assert(core.dynamic_add_media({filename = name, filepath = path}),
+		"dynamic_add_media refused " .. path)
+end
+
 local function prepare(view)
 	assert(grug_core.zone_authority_installed(), "world authority is not installed")
 	local zones = grug_zones
 	local spec = M.spec(M.quality())
+	local tiles = M.tiles(spec.width, spec.height)
 	-- The quality enters the key (ruling 3), so switching it re-renders.
-	local key = core.sha256(spec.quality .. "\n" .. cache_key(zones, view))
-	if read_file(CACHE_KEY) == key and read_file(CACHE_PNG) then
+	local key = core.sha256(spec.quality .. "\n" .. M.TILE .. "\n" ..
+		cache_key(zones, view))
+	local current = read_file(CACHE_KEY) == key
+	for _, tile in ipairs(tiles) do
+		current = current and read_file(WORLD .. "/" .. tile.name) ~= nil
+	end
+	if current then
 		core.log("action", "[grug_map] world map base cache is current")
+		for _, tile in ipairs(tiles) do M.add_media(tile.name) end
 	else
-		local png = render(zones, view, spec)
-		assert(core.safe_file_write(CACHE_PNG, png), "cannot write " .. CACHE_PNG)
+		for _, tile in ipairs(render(zones, view, spec)) do
+			M.add_media(tile.name, tile.png)
+		end
 		assert(core.safe_file_write(CACHE_KEY, key), "cannot write " .. CACHE_KEY)
 	end
-	assert(core.dynamic_add_media({filename = MEDIA_NAME, filepath = CACHE_PNG}),
-		"dynamic_add_media refused " .. CACHE_PNG)
-	return MEDIA_NAME
+	return {quality = spec.quality, width = spec.width, height = spec.height,
+		minimap_grid = M.QUALITY[spec.quality].minimap_grid, tiles = tiles,
+		texture = M.combined_texture(spec.width, spec.height, tiles)}
 end
 
--- Load-time entry point; returns the texture name the atlas shows. Startup
+-- Load-time entry point. Returns the base: {quality, width, height,
+-- minimap_grid, tiles, texture} with `texture` what the Map tab shows, or
+-- {texture = fallback} without tiles if the base is unavailable. Startup
 -- media must be announced while mods load (dynamic_add_media without a
 -- callback), so init.lua calls this; grug_mapgen has installed the world
 -- authority by then.
@@ -499,7 +593,7 @@ function M.install(view)
 	local ok, result = pcall(prepare, view)
 	if ok then return result end
 	core.log("error", "[grug_map] world map base unavailable: " .. tostring(result))
-	return FALLBACK_TEXTURE
+	return {texture = FALLBACK_TEXTURE}
 end
 
 return M

@@ -24,9 +24,10 @@ function M.view()
 		max_x = WORLD.max_x, min_z = WORLD.min_z, max_z = WORLD.max_z}
 end
 
--- Zoom levels 1, 2, 4 and 8. Every level draws the same 1080x960 base image,
--- only larger: at 8x each base pixel (about 6.7 nodes) covers several screen
--- pixels and looks pixelated on purpose; the gain is marker precision.
+-- Zoom levels 1, 2, 4 and 8. Every level draws the same base image, only
+-- larger: at 8x each base pixel (about 6.7 nodes at normal quality, 2 at
+-- high) covers several screen pixels and may look pixelated; the gain is
+-- marker precision.
 M.MAX_ZOOM = 8
 
 function M.step_zoom(zoom, zoom_in)
@@ -72,10 +73,12 @@ function M.register_marker_provider(name, callback)
 	providers[name] = callback
 end
 
-function M.collect_markers(player)
+-- `only`, if given, is a set of provider names to ask (the minimap asks only
+-- the providers of the kinds it shows).
+function M.collect_markers(player, only)
 	local result, ids = {}, {}
 	for name, callback in pairs(providers) do
-		local rows = callback(player) or {}
+		local rows = (not only or only[name]) and callback(player) or {}
 		assert(type(rows) == "table", "[grug_map] marker provider returned non-table")
 		for index = 1, #rows do
 			local row = rows[index]

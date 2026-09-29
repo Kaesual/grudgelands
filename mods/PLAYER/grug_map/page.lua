@@ -40,12 +40,18 @@ local LABELS = {
 -- §7.1). At whole-world scale 38 zone names would be unreadable.
 -- Each row: text, world x, world z, box width, box height (formspec units).
 -- The island boxes are narrow so the name wraps onto the island itself.
+-- A hypertext box shows a scrollbar (the small dark box right of a name,
+-- Round 27 ruling 12) as soon as its text is taller than the box, so the
+-- boxes are wide and tall enough for the bold name at the smallest usual
+-- window (1280 x 720, where a formspec unit is about 46 px): one line on
+-- the mainland, two on the islands, with room for one more wrapped line.
+-- The text stays centred.
 local REGION_LABELS = {
-	{"Dwarven Lands", -1800, -2350, 3.4, 0.5}, {"Human Lands", 0, -2350, 3.4, 0.5},
-	{"Elven Lands", 1800, -2350, 3.4, 0.5}, {"Undead Lands", -1800, 2350, 3.4, 0.5},
-	{"Orc Lands", 0, 2350, 3.4, 0.5}, {"Troll Lands", 1800, 2350, 3.4, 0.5},
-	{"The Contested Front", 0, 0, 3.4, 0.5},
-	{"Wyrmglass Crown", -3150, 0, 1.5, 0.9}, {"Stormscale Summit", 3150, 0, 1.5, 0.9},
+	{"Dwarven Lands", -1800, -2350, 4.6, 1.3}, {"Human Lands", 0, -2350, 4.6, 1.3},
+	{"Elven Lands", 1800, -2350, 4.6, 1.3}, {"Undead Lands", -1800, 2350, 4.6, 1.3},
+	{"Orc Lands", 0, 2350, 4.6, 1.3}, {"Troll Lands", 1800, 2350, 4.6, 1.3},
+	{"The Contested Front", 0, 0, 4.6, 1.3},
+	{"Wyrmglass Crown", -3150, 0, 2.4, 2.0}, {"Stormscale Summit", 3150, 0, 2.4, 2.0},
 }
 -- Dark text over a light halo of four offset copies reads on land and sea.
 local LABEL_TEXT, LABEL_HALO, HALO = "#2a1c10", "#f3e8c8", 0.025
@@ -92,6 +98,9 @@ local function page_content(player, context)
 		-- focused marker after the form is regenerated (including keyboard focus).
 		("label[0.15,0.22;World — %dx]"):format(zoom),
 		("label[2.35,0.22;Current: %s]"):format(esc(current_zone(player))),
+		-- Round 27 ruling 10: the per-player minimap switch.
+		("checkbox[%.3f,0.26;grug_map_minimap;Show minimap;%s]"):format(PAGE_W - 4.75,
+			tostring(grug_map.minimap.enabled(player))),
 		("button[%.3f,0.02;0.60,0.48;grug_map_zoom_out;-]"):format(PAGE_W - 1.72),
 		("button[%.3f,0.02;0.60,0.48;grug_map_zoom_in;+]"):format(PAGE_W - 1.02),
 		("scroll_container[%s,%s;%s,%s;%s;horizontal;%.5f]"):
@@ -233,6 +242,11 @@ sfinv.register_page(PAGE, {
 					context[key] = atlas.clamp_scroll(tonumber(value), context.grug_map_zoom or 1)
 				end
 			end
+		end
+		if fields.grug_map_minimap then
+			grug_map.minimap.set_enabled(player, fields.grug_map_minimap == "true")
+			sfinv.set_player_inventory_formspec(player, context)
+			return true
 		end
 		if fields.grug_map_home then
 			grug_home.return_home(player)

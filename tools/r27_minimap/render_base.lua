@@ -9,9 +9,12 @@
 -- The world (tools/r27_minimap/world.lua) is built once and every job renders
 -- on it. The renderer's `render` is local to base.lua, so the file's own
 -- source is loaded with one line appended that exposes it; `core` is a stub
--- whose encode_png hands the RGBA bytes back, which this script writes as
--- <out_dir>/<name>.rgba plus <name>.txt (width height seconds). encode_png.py
--- turns them into the PNG Luanti's encode_png would write (filter 0, zlib 9).
+-- whose encode_png hands the RGBA bytes back. A renderer that returns tiles
+-- (Round 27) has them put together again; the old one returns one image.
+-- This script writes <out_dir>/<name>.rgba plus <name>.txt (width height
+-- seconds) and, for tiles, <name>_tile_<c>_<r>.rgba/.txt. encode_png.py turns
+-- them into the PNGs Luanti's encode_png would write (filter 0, zlib 9); the
+-- tile PNGs are the client download.
 -- The optional view renders only that world rectangle at w x h pixels (fast
 -- tuning crops); without it the whole atlas at the quality's size.
 local repo, seed, out_dir = arg[1], arg[2], arg[3]
@@ -31,7 +34,7 @@ if has_ffi then
 	end
 end
 
-local captured
+local captured, encoded = nil, {}
 _G.core = _G.core or {}
 local stub = {
 	get_current_modname = function() return "grug_map" end,
@@ -41,7 +44,8 @@ local stub = {
 	log = function(level, text) io.stderr:write(level, ": ", text, "\n") end,
 	encode_png = function(width, height, data)
 		captured = {width = width, height = height, data = data}
-		return ""
+		encoded[#encoded + 1] = captured
+		return "#" .. #encoded
 	end,
 	settings = {get = function() return nil end},
 }
@@ -96,12 +100,34 @@ for index = 4, #arg do
 			spec.relief = relief
 		end
 	end
-	captured = nil
+	captured, encoded = nil, {}
 	collectgarbage()
 	local started = now_us()
-	M._render(W.zones, view, spec)
+	local result = M._render(W.zones, view, spec)
 	local seconds = (now_us() - started) / 1e6
 	assert(captured, "render did not encode")
+	if type(result) == "table" then
+		-- tiles: write each, then the whole image assembled from them
+		local rows = {}
+		for j = 1, spec.height do rows[j] = {} end
+		for _, tile in ipairs(result) do
+			local image = encoded[tonumber(tile.png:sub(2))]
+			local tile_name = ("%s_tile_%d_%d"):format(name, tile.col, tile.row)
+			local out = assert(io.open(out_dir .. "/" .. tile_name .. ".rgba", "wb"))
+			out:write(image.data)
+			out:close()
+			out = assert(io.open(out_dir .. "/" .. tile_name .. ".txt", "w"))
+			out:write(("%d %d 0\n"):format(image.width, image.height))
+			out:close()
+			for r = 0, image.height - 1 do
+				local list = rows[tile.y + r + 1]
+				list[#list + 1] = image.data:sub(r * image.width * 4 + 1,
+					(r + 1) * image.width * 4)
+			end
+		end
+		for j = 1, spec.height do rows[j] = table.concat(rows[j]) end
+		captured = {width = spec.width, height = spec.height, data = table.concat(rows)}
+	end
 	local raw = assert(io.open(out_dir .. "/" .. name .. ".rgba", "wb"))
 	raw:write(captured.data)
 	raw:close()

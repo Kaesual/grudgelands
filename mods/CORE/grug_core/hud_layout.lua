@@ -135,9 +135,11 @@ layout.anchors = {
 			2 - layout.STATUS_ICON / 2},
 	},
 	-- Vertically centred at the right edge, one line per tracked quest (at
-	-- most grug_quests.MAX_TRACKED = 10). The builtin minimap is a square of
-	-- 25% of the window height at the top right, offset 10 HUD px from both
-	-- edges (builtin/game/hud.lua:248-255), so its bottom is 0.25 H + 10 hud.
+	-- most grug_quests.MAX_TRACKED = 10). The minimap (grug_map, Round 27;
+	-- layout.minimap_box) is a square of 25% of the window height at the top
+	-- right, offset 10 HUD px from both edges -- the box of the builtin
+	-- minimap it replaces (builtin/game/hud.lua:248-255) -- so its bottom is
+	-- 0.25 H + 10 hud.
 	-- Ten lines of roughly 20 GUI px reach up to 0.5 H - 100 gui, which clears
 	-- it while H >= 400 gui + 40 hud: 440 px at GUI scaling 1, 640 px at 1.5,
 	-- 840 px at 2 (HUD scaling 1). The old worst case (three quests of up to
@@ -324,6 +326,26 @@ function layout.status_slot(index, count, window)
 	local x = anchor.offset.x + (index - (count + 1) / 2) * pitch
 	local y = anchor.offset.y - (caption_h - layout.STATUS_CAPTION)
 	return {x = x, y = y}, {x = x, y = y + layout.STATUS_ICON / 2 + 2}
+end
+
+-- The minimap's box (grug_map, Round 27 ruling 6), in real screen pixels:
+-- the builtin minimap's square of MINIMAP_PERCENT of the window height, its
+-- top-right corner MINIMAP_EDGE HUD px from the top and right edges. The
+-- quest list clearance above is computed for exactly this box. `window` is
+-- the player's window information; nil gives a 1280 x 720 window at HUD
+-- scaling 1. Returns {size, center_x, center_y, hud, width, height}.
+layout.MINIMAP_PERCENT = 25
+layout.MINIMAP_EDGE = 10
+
+function layout.minimap_box(window)
+	local hud = scales(window)
+	local size = window and window.size or {x = 1280, y = 720}
+	local width = math.max(1, tonumber(size.x) or 1280)
+	local height = math.max(1, tonumber(size.y) or 720)
+	local side = math.floor(height * layout.MINIMAP_PERCENT / 100)
+	local edge = layout.MINIMAP_EDGE * hud
+	return {size = side, center_x = width - edge - side / 2,
+		center_y = edge + side / 2, hud = hud, width = width, height = height}
 end
 
 function layout.xp_label(text)
