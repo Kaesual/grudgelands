@@ -126,9 +126,11 @@ local husk = common_ground({
 	clock = "night",
 	type = "monster",
 	_grug_min_level = 3,
+	-- In Sunscar from band 2 of the start-zone gradient (L4+, Round 24
+	-- ruling 26; the Husk quest is level 5).
 	_grug_spawn_check = function(pos)
 		if grug_zones.id_at(pos.x, pos.z) == "kragmar_sunscar_flats" then
-			return grug_zones.mob_level_at(pos) >= 7
+			return grug_zones.mob_level_at(pos) >= 4
 		end
 		return true
 	end,

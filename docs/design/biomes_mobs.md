@@ -79,9 +79,10 @@ reuse is unrestricted. Existing spawn caps/rates, dispositions and drop tables
 remain; this revision does not add a density multiplier.
 
 Troll early Lynx kill objectives use Tapir, while the later Raincall outpost Lynx
-objective remains. Orc early Zombie-or-Boar uses Husk-or-Boar, with Boar retaining
-an immediately available target below the Husk's L7 minimum. Counts and rewards
-are unchanged.
+objective remains. The Orc chain's night patrol hunts Husks; the Husk spawns
+in Sunscar from band 2 of the start-zone gradient (L4+, Round 24), so that
+quest is level 5 (the other races' Zombie patrols stay level 4: the Zombie
+spawns from L3). Counts and rewards are unchanged.
 
 Stats quick reference (normal tier; compute, don't copy):
 
@@ -645,7 +646,7 @@ and apply texture modifiers at runtime; they add no media file.
 |-----|------|-------|--------------------|-------|---------------|
 | Poacher | dogshoot, roaming | night | Goldmead, Whitebridge, Ashenward, Starbough, Moonfall; Silverleaf band 3 and Lorindor | Bandit table + arrows 1/3 | Bandit Archer / dark skin modifier |
 | Frost Stray | dogshoot | night | Stormvault and Wyrmglass, L31–60 | Skeleton table | Skeleton Archer / ice-blue modifier |
-| Sun-Dried Husk | damage-sustained pursuit; 15 s without incoming damage plus moving target | night | Redtusk and Shattered Line; Sunscar band 3, L7–50 | Zombie table | Zombie / sand-gold modifier |
+| Sun-Dried Husk | damage-sustained pursuit; 15 s without incoming damage plus moving target | night | Redtusk and Shattered Line; Sunscar from band 2, L4–50 | Zombie table | Zombie / sand-gold modifier |
 | Song Bird | flees (**critter**) | day | Silverleaf, L1 fixed | meat 1/1 — food only | Gull / blue modifier, ×0.8 |
 | Spiderling | weak web (20% slow, 2 s) | any (cave) | y −40…−100, L3–6 | spider silk 1/2 | Giant Spider / stone-brown modifier, ×0.5 |
 | Blood Bat | swarm dive | any (cave) | y −101…−300, L6–18 | meat 1/1 | Cave Bat / blood-red modifier, ×1.25 |
