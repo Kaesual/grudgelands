@@ -1684,14 +1684,22 @@ end)
 --
 -- Central damage modifier for players: punch combat marking and dodge,
 -- same-level-fitted mob pressure, equipped-armor mitigation for physical hits
--- that have not already applied it, race mitigation for dwarf fall damage,
--- then the absorb shield. Runs as an hp-change modifier so a dodge cancels the
--- whole committed hit and absorbs are consumed after mitigation but before HP.
+-- that have not already applied it, pool scaling of fall and lava damage with
+-- race mitigation for dwarf fall damage, then the absorb shield (never for
+-- fall, lava or drowning). Runs as an hp-change modifier so a dodge cancels
+-- the whole committed hit and absorbs are consumed after mitigation but
+-- before HP. Pool shares live in environment_damage.lua.
 --
 
 core.register_on_player_hpchange(function(player, hp_change, reason)
 	if hp_change >= 0 then
 		return hp_change
+	end
+	-- Drowning is dealt once per second by environment_damage.lua as a share
+	-- of the pool. The engine's own flat drown tick (every 2 s) is cancelled
+	-- so it never adds to that; breath depletion stays the engine's.
+	if reason.type == "drown" and reason.from == "engine" then
+		return 0
 	end
 	if reason.type == "punch" then
 		-- Before the dodge roll: a dodged swing is still an attack.
@@ -1756,14 +1764,27 @@ core.register_on_player_hpchange(function(player, hp_change, reason)
 		if max_hp > 0 then
 			hp_change = -math.ceil(max_hp * -hp_change / 20)
 		end
-		-- Dwarf passive (world.md §7): -20%, before absorb.
+		-- Dwarf passive (world.md §7): -20%.
 		local mult = grug_core.get_race_perk(player, "fall_damage_mult")
 		if mult then
 			hp_change = -math.max(1, math.ceil(-hp_change * mult))
 		end
 	end
-	-- Absorb shield soaks any remaining damage (all sources).
-	if hp_change < 0 and grug_core.get_absorb(player) > 0 then
+	-- Lava (Round 24 ruling 24): the engine's once-per-second node-damage tick
+	-- keeps its cadence, but its flat damage_per_second is REPLACED by 20% of
+	-- the actual pool. The engine takes the strongest damaging node among the
+	-- body points, so several lava nodes still make one hit per second.
+	if grug_core.is_engine_lava_damage(reason) then
+		local properties = player:get_properties() or {}
+		local max_hp = tonumber(properties.hp_max) or 0
+		if max_hp > 0 then
+			hp_change = -grug_core.lava_damage(max_hp)
+		end
+	end
+	-- Absorb shield soaks the remaining damage of every source except fall,
+	-- lava and drowning (ruling 24).
+	if hp_change < 0 and not grug_core.bypasses_absorb(reason) and
+			grug_core.get_absorb(player) > 0 then
 		local name = player:get_player_name()
 		local entries = absorbs[name]
 		local ordered = {}
