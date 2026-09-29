@@ -1,9 +1,9 @@
 == branch: 14 seeds, load failures 0
    CPU s/seed mean 14.6
    capital      seeds_w_named_drop  named_drops  top_dropped                       fill_drops(mean/max)
-   highcourt                     0            0                                    2.29/7
-   dur_brannoc                   0            0                                    1.50/4
-   gor_drazhak                   0            0                                    4.14/6
-   lethariel                     0            0                                    1.29/4
-   kezamba                       0            0                                    6.21/10
-   nhal_veyr                     0            0                                    2.14/4
+   highcourt                     0            0                                    2.36/7
+   dur_brannoc                   0            0                                    1.86/6
+   gor_drazhak                   0            0                                    3.43/7
+   lethariel                     0            0                                    1.86/5
+   kezamba                       0            0                                    6.29/11
+   nhal_veyr                     0            0                                    1.93/4

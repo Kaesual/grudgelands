@@ -1,12 +1,12 @@
 == branch: 200 seeds, load failures 0
    CPU s/seed mean 14.9
    capital      seeds_w_named_drop  named_drops  top_dropped                       fill_drops(mean/max)
-   highcourt                     0            0                                    2.36/8
-   dur_brannoc                   0            0                                    1.40/6
-   gor_drazhak                   0            0                                    3.54/9
-   lethariel                     0            0                                    1.10/10
-   kezamba                       0            0                                    2.63/11
-   nhal_veyr                     0            0                                    1.94/6
+   highcourt                     0            0                                    2.33/9
+   dur_brannoc                   0            0                                    1.61/7
+   gor_drazhak                   0            0                                    4.13/8
+   lethariel                     0            0                                    1.58/8
+   kezamba                       0            0                                    3.75/11
+   nhal_veyr                     0            0                                    2.40/8
 == main (this harness): 200 seeds, load failures 0
    CPU s/seed mean 14.5
    capital      seeds_w_named_drop  named_drops  top_dropped                       fill_drops(mean/max)
@@ -19,12 +19,12 @@
 == branch, same seeds: 200 seeds, load failures 0
    CPU s/seed mean 14.9
    capital      seeds_w_named_drop  named_drops  top_dropped                       fill_drops(mean/max)
-   highcourt                     0            0                                    2.36/8
-   dur_brannoc                   0            0                                    1.40/6
-   gor_drazhak                   0            0                                    3.54/9
-   lethariel                     0            0                                    1.10/10
-   kezamba                       0            0                                    2.63/11
-   nhal_veyr                     0            0                                    1.94/6
+   highcourt                     0            0                                    2.33/9
+   dur_brannoc                   0            0                                    1.61/7
+   gor_drazhak                   0            0                                    4.13/8
+   lethariel                     0            0                                    1.58/8
+   kezamba                       0            0                                    3.75/11
+   nhal_veyr                     0            0                                    2.40/8
 == layout identity, 200 seeds (digest of planner.serialize)
    capital      clean_on_main  identical/clean  changed_total  overflow_named_on_main  identical_among_those
    highcourt               52                0    200 (100 %)                     148                      0
