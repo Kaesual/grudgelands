@@ -171,6 +171,11 @@ core.register_globalstep(function(dtime)
 				grug_mobs.slow_player(player, 0.5, 0.6)
 			elseif do_scorch and node and node.name == SCORCH then
 				grug_core.mark_in_combat(player)
+				-- A short status per damage tick instead of a flickering one
+				-- (user decision 2026-09-29): it runs out 1.5 s after leaving.
+				grug_core.set_status(player, "scorched", {
+					label = "Scorched", duration = 1.5,
+				})
 				player:set_hp(math.max(0, player:get_hp() - grug_mobs.scale_attack_damage(2)), {
 					type = "node_damage", node = SCORCH,
 				})

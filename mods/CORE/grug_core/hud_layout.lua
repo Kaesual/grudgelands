@@ -36,6 +36,23 @@ layout.XP_WIDTH = 360
 layout.PARTY_ROW_GAP = 6
 layout.PARTY_BAR_HEIGHT = 6
 layout.PARTY_TEXT_HEIGHT = 20
+-- The class icon left of each party row (Round 26 ruling 22): as tall as the
+-- name line plus its bar (layout.party_icon_size), then a gap before the text.
+layout.PARTY_ICON_GAP = 6
+-- The status icon row (Round 26 ruling 17). Icons are 64 px art drawn at
+-- STATUS_ICON px (user choice after the first screenshot: 40, not 32);
+-- slots are STATUS_PITCH apart so a four-character caption ("4:59") under
+-- each icon stays clear of its neighbour. Ten slots span 480 px.
+layout.STATUS_ICON = 40
+layout.STATUS_PITCH = 48
+layout.STATUS_LIMIT = 10
+-- The combat icon right of the health bar keeps 32 px: it sits beside a 16 px
+-- bar, right of every bar of the column, so it never overlaps one.
+layout.COMBAT_ICON = 32
+-- The caption line under an icon (GUI units: 16 px font plus a margin) and
+-- the widest caption ("4:59", about nine GUI units per character).
+layout.STATUS_CAPTION = 18
+layout.STATUS_CAPTION_WIDTH = 40
 -- Widest quest-tracker line in characters; each tracked quest is one line.
 layout.QUEST_WRAP = 38
 layout.BAR_TEXTURE = "grug_core_hud_bar.png"
@@ -108,10 +125,14 @@ layout.anchors = {
 	-- The paused-character-creation hint (Round 24 ruling 32): below the
 	-- screen centre, clear of the flash line above it and the reticle.
 	creation_hint = {position = {x = 0.5, y = 0.65}, offset = {x = 0, y = 0}},
-	status_list = {
-		position = {x = 0.5, y = 0},
-		offset = {x = 0, y = 20},
-		alignment = {x = 0, y = 1},
+	-- The status icon row: centred above the column, with its caption line
+	-- between the icons and the skill row, so the player's own state sits
+	-- next to their own bars and the top centre belongs to the target frame
+	-- alone. `offset.y` is the icon CENTRE of the row.
+	status_row = {
+		position = {x = 0.5, y = 1},
+		offset = {x = 0, y = layout.rows.skill.top - 4 - layout.STATUS_CAPTION -
+			2 - layout.STATUS_ICON / 2},
 	},
 	-- Vertically centred at the right edge, one line per tracked quest (at
 	-- most grug_quests.MAX_TRACKED = 10). The builtin minimap is a square of
@@ -260,14 +281,49 @@ local function scales(window)
 end
 
 -- Side blocks use their actual content height, not a fixed ten-row box.
+-- The name and bar start right of the class icon column.
 function layout.party_row_offset(index, count, bar, window)
 	local anchor = layout.anchors.party_list
 	local hud, gui = scales(window)
 	local bar_y = math.ceil(layout.PARTY_TEXT_HEIGHT * gui / hud)
 	local row_height = bar_y + layout.PARTY_BAR_HEIGHT + layout.PARTY_ROW_GAP
 	local height = (count - 1) * row_height + bar_y + layout.PARTY_BAR_HEIGHT
-	return {x = anchor.offset.x, y = anchor.offset.y - height / 2 +
+	return {x = anchor.offset.x + layout.party_icon_size(window) +
+		layout.PARTY_ICON_GAP,
+		y = anchor.offset.y - height / 2 +
 		(index - 1) * row_height + (bar and bar_y or 0)}
+end
+
+-- The class icon of party row `index`: top-left aligned with the row's name
+-- line, at the anchor's own x.
+function layout.party_icon_offset(index, count, window)
+	local row = layout.party_row_offset(index, count, false, window)
+	return {x = layout.anchors.party_list.offset.x, y = row.y}
+end
+
+-- The class icon's drawn size: it spans the name line and the bar, so it
+-- grows with the label slot when GUI scaling exceeds HUD scaling.
+function layout.party_icon_size(window)
+	local hud, gui = scales(window)
+	return math.ceil(layout.PARTY_TEXT_HEIGHT * gui / hud) +
+		layout.PARTY_BAR_HEIGHT
+end
+
+-- Slot `index` of `count` shown statuses, centred on the row anchor:
+-- the icon's centre and the top of its caption, both as HUD offsets.
+-- Captions are text, sized by GUI scaling: their line height and width are
+-- converted to HUD units (as for the party rows), so a larger GUI scale
+-- lifts the row instead of pushing captions into the skill row, and widens
+-- the pitch instead of letting neighbouring captions touch.
+function layout.status_slot(index, count, window)
+	local anchor = layout.anchors.status_row
+	local hud, gui = scales(window)
+	local caption_h = math.ceil(layout.STATUS_CAPTION * gui / hud)
+	local pitch = math.max(layout.STATUS_PITCH,
+		math.ceil(layout.STATUS_CAPTION_WIDTH * gui / hud) + 4)
+	local x = anchor.offset.x + (index - (count + 1) / 2) * pitch
+	local y = anchor.offset.y - (caption_h - layout.STATUS_CAPTION)
+	return {x = x, y = y}, {x = x, y = y + layout.STATUS_ICON / 2 + 2}
 end
 
 function layout.xp_label(text)

@@ -1659,6 +1659,26 @@ function grug_core.get_absorb(player)
 	return total
 end
 
+-- Turn Aside's dodge rides on the shield that carries it (kits.lua Power Word:
+-- Shield), so its status icon lives exactly as long as a live absorb entry
+-- still holds a dodge modifier: consumed, expired and respec-cleared shields
+-- all end it (Round 26 ruling 18).
+if grug_core.register_status_source then
+	grug_core.register_status_source(function(player)
+		if not absorbs[player:get_player_name()] or
+				grug_core.get_absorb(player) <= 0 then
+			return nil
+		end
+		local expiry
+		for _, entry in pairs(absorbs[player:get_player_name()] or {}) do
+			if entry.modifiers and (entry.modifiers.dodge_percent or 0) > 0 then
+				expiry = math.max(expiry or 0, entry.expiry)
+			end
+		end
+		return expiry and {{id = "talent_turn_aside", expiry_us = expiry}} or nil
+	end)
+end
+
 local function absorb_particles(pos)
 	core.add_particlespawner({
 		amount = 6,

@@ -28,7 +28,7 @@ end
 
 local DEPTH = 100
 local PROBE_NAME = "r24gprobe"
-local PICK = "default:pick_bronze" -- T1: every rock here is T1 (y >= -100)
+local PICK = "grug_materials:pick_bronze" -- T1: every rock here is T1 (y >= -100)
 
 local function probe_player(item)
 	local stack = ItemStack(item or "")

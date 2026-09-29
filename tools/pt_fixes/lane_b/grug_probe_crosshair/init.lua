@@ -510,7 +510,7 @@ end)
 -- hand reach; empty hand, tool, food-free skill.
 local held = {
 	{"hand", function(fake) hold(fake, "") end},
-	{"tool", function(fake) hold(fake, "default:pick_stone") end},
+	{"tool", function(fake) hold(fake, "grug_materials:pick_stone") end},
 	{"skill", function(fake) skill(fake, "fireball") end},
 }
 local targets = {

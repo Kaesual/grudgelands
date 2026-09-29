@@ -1,0 +1,18 @@
+olaf at 20,30    allow
+eve at 20,30     allow
+ivy at 20,30     allow
+sam at 20,30     refuse  hint: Home of olaf – protected
+thor at 20,30    refuse  hint: Accord home territory – protected
+admin at 20,30   allow
+<none> at 20,30  refuse
+olaf at 260,40   allow
+ivy at 260,40    allow
+sam at 260,40    allow
+thor at 260,40   allow
+<none> at 260,40 allow
+sam at 450,0     allow
+thor at 450,0    allow
+<none> at 450,0  allow
+cost per guarded callback outside claims: claim_at 1, is_active 0, permission 0, privilege lookups 0
+exceptions: default:sign_wall_wood, grug_housing:claim_stone
+R25 INTERACTION FIXTURE PASS checks=286

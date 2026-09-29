@@ -21,10 +21,9 @@ local function normalize(name, uses)
 end
 
 for _, family in ipairs({"pick", "axe", "shovel"}) do
-	normalize("default:" .. family .. "_wood", 30)
-	normalize("default:" .. family .. "_stone", 60)
+	normalize("grug_materials:" .. family .. "_wood", 30)
+	normalize("grug_materials:" .. family .. "_stone", 60)
 	for tier, row in ipairs(grug_materials.TIERS) do
-		local prefix = (tier == 1 or tier == 3) and "default:" or "grug_materials:"
-		normalize(prefix .. family .. "_" .. row.key, lifetimes[tier])
+		normalize("grug_materials:" .. family .. "_" .. row.key, lifetimes[tier])
 	end
 end

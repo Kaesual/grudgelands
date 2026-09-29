@@ -1,0 +1,17 @@
+Round 26 Lane R evidence, 2026-09-29.
+
+portable.txt       tools/r26_registration/check.sh on the final tree (LuaJIT).
+engine-server.log  tools/r26_registration/run.sh, one isolated headless boot
+                   (random seed 11458168061668102763, 240 s cap, the probe
+                   shut the server down itself): RESULT PASS checks=7135,
+                   712 recipes, 111 trades, 103 quest items, 169 entity
+                   drops, 12 aliases, 24 tier tools; grug_materials startup
+                   audit passed; 23 WARNING lines, none about an unknown item,
+                   an alias or a Lane R recipe (the earlier Round 25 boot in
+                   tools/r25_home_stone/evidence had 208, most of them
+                   clear-before-register warnings this lane now guards).
+
+The boot ran before one last edit: base_recipes.lua's `grug_gear:arrow`
+clear now also checks that a recipe exists (the same guard as its
+`register` helper), which removes the one `grug_gear:arrow` warning in the
+log and changes nothing else.

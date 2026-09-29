@@ -1,9 +1,11 @@
--- Lane C: stone formspec, Housing Manager dialog and character-page status
+-- Lane C: stone formspec, Housing Steward dialog and character-page status
 -- (rulings 13-14). Codes against the interface contract in api.lua only.
 --
 --   interface.lua    shared text helpers and the character-page status
---   stone_form.lua   the owner's stone formspec (fuel, access list, pick up)
---   manager.lua      the Housing Manager in the six capitals
+--   stone_form.lua   the owner's stone formspec (activation, fuel, access
+--                    list, pick up)
+--   manager.lua      the Housing Steward in the six capitals (internal role
+--                    id "housing_manager")
 
 local ui = {}
 
@@ -69,6 +71,12 @@ end
 function grug_housing.character_status(name)
 	local claim, state = grug_housing.player_claim(name)
 	if state == "placed" and claim then
+		if grug_housing.is_draft(claim) then
+			-- R26 ruling 8: the draft crumbles unless activated in time.
+			return {text = "Your Claim Stone is not active yet: activate it within " ..
+				ui.format_remaining(grug_housing.draft_remaining(claim)) ..
+				" or it crumbles", color = ui.RED}
+		end
 		if grug_housing.is_active(claim) then
 			local left = grug_housing.remaining_seconds(claim) or 0
 			return {text = "Claim Stone fuel: " .. ui.format_remaining(left),
@@ -78,10 +86,12 @@ function grug_housing.character_status(name)
 			color = ui.RED}
 	elseif state == "destroyed" then
 		return {text = "Your Claim Stone has been destroyed", color = ui.RED}
+	elseif state == "removed" then
+		return {text = "Your Claim Stone was removed by an admin", color = ui.RED}
 	elseif state == "carried" then
 		return {text = "Your Claim Stone is in your inventory, not placed yet"}
 	elseif state == "needs_stone" then
-		return {text = "You have no Claim Stone; ask a Housing Manager for a new one"}
+		return {text = "You have no Claim Stone; ask a Housing Steward for a new one"}
 	end
 	return nil
 end

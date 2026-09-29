@@ -481,8 +481,8 @@ local function test_pickaxe()
 	local name = player:get_player_name()
 	grug_jobs.open_book(player, "general")
 	local view = parse(send(player, {grug_jobs_search = "pick", grug_jobs_do_search = ""}))
-	view = click_list(player, view, "default:pick_stone")
-	check(view and view.selected == "default:pick_stone",
+	view = click_list(player, view, "grug_materials:pick_stone")
+	check(view and view.selected == "grug_materials:pick_stone",
 		"search 'pick' and select the stone pickaxe")
 	if not view then return end
 	local before = view
@@ -514,17 +514,17 @@ local function test_pickaxe()
 		"page " .. tostring(after.page) .. " lists the stick")
 	check(after.back ~= nil, "Back button appears after the jump")
 	local back = parse(send(player, {grug_jobs_back = "", grug_jobs_search = ""}))
-	check(back.selected == "default:pick_stone" and back.title == "Basics" and
+	check(back.selected == "grug_materials:pick_stone" and back.title == "Basics" and
 		back.search == "pick" and back.page == before.page and
 		back.alternative == before.alternative and back.back == nil,
 		"Back restores book, page, search, output and alternative")
 	check(normalized(shown[name]) == normalized(
-		grug_jobs.book_formspec(player, "general", nil, 1, "pick", "default:pick_stone", 1)),
+		grug_jobs.book_formspec(player, "general", nil, 1, "pick", "grug_materials:pick_stone", 1)),
 		"restored view is the same formspec as the original stone pickaxe view")
 	-- Bounded history: 25 jumps keep the latest 20.
 	for _ = 1, 25 do
 		local v = parse(send(player, {grug_jobs_search = "pick", grug_jobs_do_search = ""}))
-		v = click_list(player, v, "default:pick_stone")
+		v = click_list(player, v, "grug_materials:pick_stone")
 		local pos = cell_of(v, "default:stick")
 		send(player, {[field_of(v, pos)] = "", grug_jobs_search = "pick"})
 	end
@@ -608,7 +608,7 @@ end
 -- The inverse-route rule on concrete cells.
 local function test_inverse()
 	local player = make_player("probe_inverse", {})
-	local _, view = render(player, "general", nil, "default:pick_stone", 1)
+	local _, view = render(player, "general", nil, "grug_materials:pick_stone", 1)
 	local stone = view.cell_positions[1]
 	check(view.cells[stone] == "default:cobble", "stone pickaxe stone cell shows cobble")
 	grug_jobs.mark_seen(player, {"stairs:slab_cobble", "stairs:stair_cobble"})
@@ -617,14 +617,14 @@ local function test_inverse()
 	local _, cobble = render(player, "general", nil, "default:cobble", 1)
 	check(cobble.selected == "default:cobble" and (cobble.alternatives or 0) >= 1,
 		"the cobble recipe is browsable (" .. tostring(cobble.alternatives) .. " routes)")
-	_, view = render(player, "general", nil, "default:pick_stone", 1)
+	_, view = render(player, "general", nil, "grug_materials:pick_stone", 1)
 	check(field_of(view, stone) == nil and
 		not (view.tooltips[stone] or ""):find("Click to view recipe", 1, true),
 		"cobble stays inert after slab_cobble and stair_cobble are discovered")
 	-- A bar keeps a furnace route: the jump lands on it, not on block -> bar.
 	grug_jobs.open_book(player, "general")
 	local list = parse(send(player, {grug_jobs_search = "pick_bronze", grug_jobs_do_search = ""}))
-	local host = click_list(player, list, "default:pick_bronze")
+	local host = click_list(player, list, "grug_materials:pick_bronze")
 	local bar = host and cell_of(host, "grug_materials:bronze_bar")
 	check(bar ~= nil and field_of(host, bar) ~= nil, "bronze pickaxe: the bronze bar is clickable")
 	if bar then

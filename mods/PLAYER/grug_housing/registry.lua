@@ -1,8 +1,16 @@
 -- The Claim Stone model (Round 25 Lane A, docs/planning/round25-housing-plan.md
--- rulings 1-12): claims and per-player records, their persistence, the claim
--- grid, fuel as a "paid until" time, permissions, daily limits and placement
--- validation. Pure: every engine or world access is injected, so the same
--- bytes run in the engine (api.lua) and in tools/r25_claim_core/fixture.lua.
+-- rulings 1-12 and 30-32; Round 26 rulings 8-10): claims and per-player
+-- records, their persistence, the claim grid, drafts and activation, fuel as a
+-- "paid until" time, permissions, the pick-up lock and placement validation.
+-- Pure: every engine or world access is injected, so the same bytes run in
+-- the engine (api.lua) and in tools/r25_claim_core/fixture.lua.
+--
+-- A placed stone starts as a DRAFT (activated_at 0): it reserves its square
+-- against other claims and keeps its arrival cube, but protects nothing and
+-- is not active; it disappears DRAFT_SECONDS after placing unless the owner
+-- activates it. Activation pays ACTIVATION_LUMPS lumps at once and starts the
+-- fuel and the protection. For PICKUP_LOCK_SECONDS after activation the owner
+-- cannot pick the stone up; that is the only lock (no placing lock).
 --
 --   api.storage   get_string(key), set_string(key, value), keys() -> array
 --                 (mod storage; "" deletes a key)
@@ -11,9 +19,10 @@
 -- Storage keys, one line each (player names are [A-Za-z0-9_-], so "|", ","
 -- and "=" never occur inside a field):
 --   next_id             the next claim id
---   claim:<id>          v1|owner|x|y|z|placed_at|paid_until|expired_for|perms
+--   claim:<id>          v2|owner|x|y|z|placed_at|activated_at|paid_until|
+--                       expired_for|perms  (activated_at 0: a draft)
 --                       perms = name=level,name=level
---   player:<name>       v1|state|claim_id|last_place_at|last_pickup_at
+--   player:<name>       v2|state|claim_id
 return function(api)
 	assert(type(api) == "table" and type(api.storage) == "table" and
 		type(api.now) == "function", "grug_housing registry: api missing")
@@ -25,7 +34,9 @@ return function(api)
 	M.MIN_Y = -100           -- rulings 1-2: the claim and the stone from y -100
 	M.LUMP_SECONDS = 26160   -- ruling 10: one lump or charcoal, 7 h 16 min
 	M.FUEL_MAX = 99          -- ruling 10: one fuel slot of 99 items
-	M.DAY_SECONDS = 86400    -- ruling 9: once per 24 hours
+	M.DRAFT_SECONDS = 300    -- R26 ruling 8: an unactivated stone lasts 5 min
+	M.ACTIVATION_LUMPS = 5   -- R26 ruling 9: activation pays 5 lumps at once
+	M.PICKUP_LOCK_SECONDS = 43200 -- R26 ruling 10: 12 h after activation
 	M.ISSUE_LEVEL = 20       -- ruling 7
 	M.ZONE_LEVEL_MIN = 11    -- ruling 3
 	M.ZONE_LEVEL_MAX = 30
@@ -41,7 +52,7 @@ return function(api)
 	local RADIUS, CELL = M.RADIUS, M.CELL
 
 	local STATES = {never = true, carried = true, placed = true,
-		destroyed = true, needs_stone = true}
+		destroyed = true, removed = true, needs_stone = true}
 	local LEVELS = {everything = true, interact = true}
 
 	local claims = {}        -- id -> claim
@@ -74,24 +85,27 @@ return function(api)
 			perms[index] = names[index] .. "=" .. claim.permissions[names[index]]
 		end
 		local c = claim.center
-		return table.concat({"v1", claim.owner, c.x, c.y, c.z, claim.placed_at,
-			claim.paid_until, claim.expired_for, table.concat(perms, ",")}, "|")
+		return table.concat({"v2", claim.owner, c.x, c.y, c.z, claim.placed_at,
+			claim.activated_at, claim.paid_until, claim.expired_for,
+			table.concat(perms, ",")}, "|")
 	end
 
 	local function decode_claim(id, text)
 		local f = split(text, "|")
-		if f[1] ~= "v1" or #f ~= 9 then return nil end
+		if f[1] ~= "v2" or #f ~= 10 then return nil end
 		local claim = {id = id, owner = f[2],
 			center = {x = tonumber(f[3]), y = tonumber(f[4]), z = tonumber(f[5])},
-			placed_at = tonumber(f[6]), paid_until = tonumber(f[7]),
-			expired_for = tonumber(f[8]), permissions = {}}
+			placed_at = tonumber(f[6]), activated_at = tonumber(f[7]),
+			paid_until = tonumber(f[8]), expired_for = tonumber(f[9]),
+			permissions = {}}
 		if claim.owner == "" or not claim.center.x or not claim.center.y or
 				not claim.center.z or not claim.placed_at or
-				not claim.paid_until or not claim.expired_for then
+				not claim.activated_at or not claim.paid_until or
+				not claim.expired_for then
 			return nil
 		end
-		if f[9] ~= "" then
-			local rows = split(f[9], ",")
+		if f[10] ~= "" then
+			local rows = split(f[10], ",")
 			for index = 1, #rows do
 				local pair = split(rows[index], "=")
 				if #pair == 2 and pair[1] ~= "" and LEVELS[pair[2]] then
@@ -103,17 +117,14 @@ return function(api)
 	end
 
 	local function encode_player(rec)
-		return table.concat({"v1", rec.state, rec.claim_id or 0,
-			rec.last_place_at, rec.last_pickup_at}, "|")
+		return table.concat({"v2", rec.state, rec.claim_id or 0}, "|")
 	end
 
 	local function decode_player(text)
 		local f = split(text, "|")
-		if f[1] ~= "v1" or #f ~= 5 or not STATES[f[2]] then return nil end
+		if f[1] ~= "v2" or #f ~= 3 or not STATES[f[2]] then return nil end
 		local claim_id = tonumber(f[3])
-		return {state = f[2], claim_id = claim_id ~= 0 and claim_id or nil,
-			last_place_at = tonumber(f[4]) or 0,
-			last_pickup_at = tonumber(f[5]) or 0}
+		return {state = f[2], claim_id = claim_id ~= 0 and claim_id or nil}
 	end
 
 	local function save_claim(claim)
@@ -217,8 +228,20 @@ return function(api)
 		return list
 	end
 
+	-- A placed stone that was never activated (R26 ruling 8).
+	function M.is_draft(claim)
+		return claim ~= nil and claim.activated_at == 0
+	end
+
+	-- Seconds until a draft disappears; 0 for an activated claim.
+	function M.draft_remaining(claim)
+		if not M.is_draft(claim) then return 0 end
+		return max(0, claim.placed_at + M.DRAFT_SECONDS - now())
+	end
+
+	-- Active: activated and fuelled. A draft is never active.
 	function M.is_active(claim)
-		return claim ~= nil and claim.paid_until > now()
+		return claim ~= nil and claim.activated_at ~= 0 and claim.paid_until > now()
 	end
 
 	function M.remaining_seconds(claim)
@@ -259,13 +282,21 @@ return function(api)
 
 	-- Whether a claim protects pos against name. `open_at(pos)` tells whether
 	-- the node there is a placement target (air or buildable_to); it is asked
-	-- only inside an arrival cube. World protection and the protection_bypass
-	-- privilege are the engine wrapper's business (protection.lua).
-	function M.protects(pos, name, open_at)
+	-- only inside an arrival cube, where it refuses every placement, for a
+	-- draft and an empty stone too. `digging(pos, name)` (optional) tells
+	-- whether name is punching or digging a node there that is not air: a
+	-- buildable_to node in the cube (snow) is then judged like any other node
+	-- of the claim, so the owner can dig it (R26 ruling 12). World protection
+	-- and the protection_bypass privilege are the engine wrapper's business
+	-- (protection.lua). A draft or an empty claim protects nothing else.
+	function M.protects(pos, name, open_at, digging)
 		local claim = M.claim_at(pos)
 		if not claim then return false end
-		if M.in_arrival_cube(claim, pos) and open_at(pos) then return true, claim end
-		if claim.paid_until <= now() then return false end
+		if M.in_arrival_cube(claim, pos) and open_at(pos) and
+				not (digging and digging(pos, name)) then
+			return true, claim
+		end
+		if not M.is_active(claim) then return false end
 		local level = M.permission(claim, name)
 		if level == "owner" or level == "everything" then return false end
 		return true, claim
@@ -276,7 +307,7 @@ return function(api)
 	local function record(name)
 		local rec = players[name]
 		if not rec then
-			rec = {state = "never", last_place_at = 0, last_pickup_at = 0}
+			rec = {state = "never"}
 			players[name] = rec
 		end
 		return rec
@@ -293,17 +324,11 @@ return function(api)
 		return rec.claim_id and claims[rec.claim_id] or nil, rec.state
 	end
 
-	-- Seconds until the player may place (or pick up) again; 0 when allowed.
-	function M.place_wait(name)
-		local rec = players[name]
-		if not rec then return 0 end
-		return max(0, rec.last_place_at + M.DAY_SECONDS - now())
-	end
-
-	function M.pickup_wait(name)
-		local rec = players[name]
-		if not rec then return 0 end
-		return max(0, rec.last_pickup_at + M.DAY_SECONDS - now())
+	-- Seconds until the owner may pick the stone up (R26 ruling 10: 12 h
+	-- after activation; a draft never waits). There is no placing lock.
+	function M.pickup_wait(claim)
+		if not claim or M.is_draft(claim) then return 0 end
+		return max(0, claim.activated_at + M.PICKUP_LOCK_SECONDS - now())
 	end
 
 	local function wait_text(seconds)
@@ -353,7 +378,7 @@ return function(api)
 		return true
 	end
 
-	-- Placement validation (rulings 2, 3, 5, 6, 9, 22, 23, 27). `world`:
+	-- Placement validation (rulings 2, 3, 5, 6, 22, 23, 27). `world`:
 	--   water_class_at(x, z) "land" or "planned_water" (rivers, lakes, bay
 	--                        water: allowed, ruling 23); "coastal_shelf",
 	--                        "deep_ocean" and "immutable_dragon_channel"
@@ -465,11 +490,7 @@ return function(api)
 		if rec and rec.state == "placed" and rec.claim_id and claims[rec.claim_id] then
 			return refuse("already_placed")
 		end
-		local wait = M.place_wait(name)
-		if wait > 0 then
-			return refuse("daily_place", "You can place a Claim Stone again in " ..
-				wait_text(wait) .. ".")
-		end
+		-- Drafts reserve their square too (R26 ruling 8).
 		for _, other in pairs(claims) do
 			local c = other.center
 			if math.abs(c.x - x) <= 2 * RADIUS and math.abs(c.z - z) <= 2 * RADIUS then
@@ -494,13 +515,14 @@ return function(api)
 		return true
 	end
 
-	-- Ruling 3-6 accepted: the new claim, empty (fuel is added through the
-	-- stone). The placed-at time starts the owner's 24 h placing limit.
+	-- Rulings 3-6 accepted: the new claim, a draft (R26 ruling 8) until the
+	-- owner activates it.
 	function M.create(name, pos)
 		local t = now()
 		local claim = {id = next_id, owner = name,
 			center = {x = round(pos.x), y = round(pos.y), z = round(pos.z)},
-			placed_at = t, paid_until = t, expired_for = t, permissions = {}}
+			placed_at = t, activated_at = 0, paid_until = t, expired_for = t,
+			permissions = {}}
 		next_id = next_id + 1
 		storage.set_string("next_id", tostring(next_id))
 		claims[claim.id] = claim
@@ -508,13 +530,16 @@ return function(api)
 		grid_add(claim)
 		save_claim(claim)
 		local rec = record(name)
-		rec.state, rec.claim_id, rec.last_place_at = "placed", claim.id, t
+		rec.state, rec.claim_id = "placed", claim.id
 		save_player(name)
 		return claim
 	end
 
-	-- `reason` "picked_up": the owner carries the stone again and starts the
-	-- 24 h pick-up limit; "destroyed": the owner's state becomes "destroyed".
+	-- `reason` "picked_up": the owner carries the stone again; "draft_expired":
+	-- the draft crumbled, the owner needs a new stone ("needs_stone", issued
+	-- at once); "removed": an admin removed it (state "removed", a new stone
+	-- at once); anything else ("destroyed"): the owner's state becomes
+	-- "destroyed".
 	function M.remove(claim, reason)
 		if not claims[claim.id] then return false end
 		claims[claim.id] = nil
@@ -524,7 +549,11 @@ return function(api)
 		local rec = record(claim.owner)
 		if rec.claim_id == claim.id then rec.claim_id = nil end
 		if reason == "picked_up" then
-			rec.state, rec.last_pickup_at = "carried", now()
+			rec.state = "carried"
+		elseif reason == "draft_expired" then
+			rec.state = "needs_stone"
+		elseif reason == "removed" then
+			rec.state = "removed"
 		else
 			rec.state = "destroyed"
 		end
@@ -532,11 +561,45 @@ return function(api)
 		return true
 	end
 
+	-- R26 ruling 9: activation of a draft with `count` lumps, at least
+	-- ACTIVATION_LUMPS, at most FUEL_MAX. Starts the fuel, the protection and
+	-- the pick-up lock. Returns the lumps burnt, or 0 and a reason code
+	-- ("no_claim", "active", "too_few").
+	function M.activate(claim, count)
+		count = floor(tonumber(count) or 0)
+		if not claim or not claims[claim.id] then return 0, "no_claim" end
+		if not M.is_draft(claim) then return 0, "active" end
+		if count < M.ACTIVATION_LUMPS then return 0, "too_few" end
+		local accepted = min(count, M.FUEL_MAX)
+		local t = now()
+		claim.activated_at = t
+		claim.paid_until = t + accepted * M.LUMP_SECONDS
+		save_claim(claim)
+		return accepted
+	end
+
+	-- Drafts whose DRAFT_SECONDS ran out, ordered by id; the caller removes
+	-- them (reason "draft_expired"). Wall-clock time, so server downtime
+	-- counts as it does for fuel.
+	function M.draft_scan()
+		local t, result = now(), {}
+		for _, claim in pairs(claims) do
+			if claim.activated_at == 0 and claim.placed_at + M.DRAFT_SECONDS <= t then
+				result[#result + 1] = claim
+			end
+		end
+		table.sort(result, function(a, b) return a.id < b.id end)
+		return result
+	end
+
 	-- Ruling 10: burns up to count lumps into paid_until; returns the number
-	-- accepted (never more than the slot still takes).
+	-- accepted (never more than the slot still takes). A draft takes no fuel:
+	-- it is activated first (R26 ruling 9).
 	function M.add_fuel(claim, count)
 		count = floor(tonumber(count) or 0)
-		if not claim or not claims[claim.id] or count <= 0 then return 0 end
+		if not claim or not claims[claim.id] or count <= 0 or M.is_draft(claim) then
+			return 0
+		end
 		local accepted = min(count, M.fuel_room(claim))
 		if accepted <= 0 then return 0 end
 		claim.paid_until = max(now(), claim.paid_until) + accepted * M.LUMP_SECONDS
@@ -560,7 +623,7 @@ return function(api)
 	end
 
 	-- Claims whose fuel ran out since the last scan (each paid_until reported
-	-- once), ordered by id. A claim placed empty is not reported.
+	-- once), ordered by id. A draft is never reported.
 	function M.expiry_scan()
 		local t, result = now(), {}
 		for _, claim in pairs(claims) do

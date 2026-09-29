@@ -442,5 +442,32 @@ check(c == 5 and a == 5 and p == 0 and v == 0,
 	("expired: claim_at %d is_active %d permission %d privs %d"):format(c, a, p, v))
 print(("cost per guarded callback outside claims: claim_at 1, is_active 0, permission 0, privilege lookups 0"))
 
+-- Round 26 ruling 8: with the REAL claim model, a draft guards nothing (it
+-- is never active); the same claim guards once activated.
+do
+	local data = {}
+	local model = dofile(repo .. "/mods/PLAYER/grug_housing/registry.lua")({
+		storage = {get_string = function(k) return data[k] or "" end,
+			set_string = function(k, v) data[k] = v ~= "" and v or nil end,
+			keys = function() return {} end},
+		now = function() return NOW end})
+	model.load()
+	local saved = {grug_housing.claim_at, grug_housing.is_active, grug_housing.permission}
+	grug_housing.claim_at, grug_housing.is_active = model.claim_at, model.is_active
+	grug_housing.permission = model.permission
+	local claim = model.create("olaf", {x = 5000, y = 10, z = 5000})
+	local spot = {x = 5010, y = 12, z = 4990}
+	check(model.is_draft(claim) and not grug_housing.interaction_refused(spot, "stranger"),
+		"R26: a draft guards no interaction")
+	check(grug_housing.protection_reason(spot, "stranger") == nil,
+		"R26: a draft gives no claim hint")
+	check(model.activate(claim, 5) == 5 and grug_housing.interaction_refused(spot, "stranger"),
+		"R26: the activated claim guards interaction")
+	check(select(2, grug_housing.protection_reason(spot, "stranger")) ==
+		"Home of olaf – protected", "R26: the activated claim gives the claim hint")
+	grug_housing.claim_at, grug_housing.is_active, grug_housing.permission =
+		saved[1], saved[2], saved[3]
+end
+
 print(("exceptions: %s"):format(table.concat(report.exceptions, ", ")))
 print(("R25 INTERACTION FIXTURE PASS checks=%d"):format(checks))

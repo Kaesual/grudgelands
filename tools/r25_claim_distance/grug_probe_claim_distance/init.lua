@@ -161,7 +161,10 @@ local function scenario(c, edge)
 		check(placed, "stone accepted 70 nodes from the village core")
 		local claim = grug_housing.player_claim(OWNER)
 		if not check(claim ~= nil, "owner has the claim") then return finish() end
-		check(grug_housing.add_fuel(claim, 3) == 3, "fuelled")
+		-- Round 26: a placed stone is a draft; activate it (5 lumps) first.
+		check(grug_housing.model.activate(claim, 5) == 5 and
+			grug_housing.add_fuel(claim, 3) == 3 and grug_housing.is_active(claim),
+			"activated and fuelled")
 		log(("FAR claim %d at %s (70 from the core, %d/%d from the village centre," ..
 			" inside the old 160-node blend envelope: %s); placement %.1f ms"):format(
 			claim.id, core.pos_to_string(pos), math.abs(pos.x - c.x), math.abs(pos.z - c.z),
@@ -239,7 +242,7 @@ local function scenario(c, edge)
 		local on_road, above_road = place_dirt(OWNER, road)
 		check(not on_road, "owner cannot place onto the road")
 		local node = core.get_node(road)
-		core.node_dig(road, node, fake_player(OWNER, "default:pick_bronze"))
+		core.node_dig(road, node, fake_player(OWNER, "grug_materials:pick_bronze"))
 		check(core.get_node(road).name == node.name, "owner cannot dig the road")
 		log(("ROAD %s (%s, node %s) in claim %d: owner is_protected=%s, hint %q," ..
 			" place above=%s, dig kept %s"):format(core.pos_to_string(road), road_kind,

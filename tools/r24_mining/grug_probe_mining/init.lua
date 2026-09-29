@@ -38,7 +38,7 @@ end
 
 local function ladder(family, tier)
 	local key = grug_materials.TIERS[tier].key
-	return ((tier == 1 or tier == 3) and "default:" or "grug_materials:") ..
+	return "grug_materials:" ..
 		family .. "_" .. key
 end
 
@@ -63,12 +63,12 @@ local COLUMNS = {
 }
 
 local function matrix()
-	local rows = {{"hand", "", 0, "hand"}, {"pick_wood", "default:pick_wood", 1, "pick"},
-		{"pick_stone", "default:pick_stone", 1, "pick"}}
+	local rows = {{"hand", "", 0, "hand"}, {"pick_wood", "grug_materials:pick_wood", 1, "pick"},
+		{"pick_stone", "grug_materials:pick_stone", 1, "pick"}}
 	for tier = 1, 6 do
 		rows[#rows + 1] = {"pick T" .. tier, ladder("pick", tier), tier, "pick"}
 	end
-	rows[#rows + 1] = {"shovel_wood", "default:shovel_wood", 1, "shovel"}
+	rows[#rows + 1] = {"shovel_wood", "grug_materials:shovel_wood", 1, "shovel"}
 	for tier = 1, 6 do
 		rows[#rows + 1] = {"shovel T" .. tier, ladder("shovel", tier), tier, "shovel"}
 	end
@@ -192,18 +192,18 @@ end
 local function transaction(base)
 	with_unprotected_probe(function()
 		local cases = {
-			{"grug_materials:t2_stone", "default:pick_bronze", false, "Requires a T2 pick"},
+			{"grug_materials:t2_stone", "grug_materials:pick_bronze", false, "Requires a T2 pick"},
 			{"grug_materials:t2_stone", "grug_materials:pick_iron", true, nil},
 			{"grug_materials:t6_stone", "grug_materials:pick_embersteel", false, "Requires a T6 pick"},
 			{"grug_materials:t6_stone", "grug_materials:pick_abyssal_steel", true, nil},
-			{"default:stone_with_gold", "default:pick_stone", false, "Requires a T2 pick"},
-			{"default:stone_with_coal", "default:pick_wood", true, nil},
+			{"default:stone_with_gold", "grug_materials:pick_stone", false, "Requires a T2 pick"},
+			{"default:stone_with_coal", "grug_materials:pick_wood", true, nil},
 			{"grug_materials:stone_with_silver", "grug_materials:pick_iron", false, "Requires a T3 pick"},
 			{"default:stone", "", false, "Requires a T1 pick"},
-			{"default:stone", "default:shovel_steel", false, "Requires a T1 pick"},
+			{"default:stone", "grug_materials:shovel_steel", false, "Requires a T1 pick"},
 			{"default:dirt", "", true, nil},
-			{"default:gravel", "default:pick_wood", true, nil},
-			{"grug_materials:slate", "default:pick_wood", true, nil},
+			{"default:gravel", "grug_materials:pick_wood", true, nil},
+			{"grug_materials:slate", "grug_materials:pick_wood", true, nil},
 		}
 		for index, case in ipairs(cases) do
 			local pos = vector.offset(base, index, 0, 0)
@@ -222,12 +222,12 @@ local function transaction(base)
 		local deep = {x = base.x, y = -600, z = base.z}
 		local deep_node = {name = "default:stone_with_coal"}
 		local decision = grug_materials.mining_decision(deep, deep_node,
-			probe_player("default:pick_wood"))
+			probe_player("grug_materials:pick_wood"))
 		check(decision.allowed and decision.required_tier == 1,
 			"coal at y=-600 needs only a T1 pick")
 		-- A broken pick earns the repair line.
 		do
-			local broken = ItemStack("default:pick_bronze")
+			local broken = ItemStack("grug_materials:pick_bronze")
 			broken:set_wear(65535)
 			local pos = vector.offset(base, 1, 0, 0)
 			local hint = grug_materials.punch_hint(pos, core.get_node(pos), {
@@ -257,7 +257,7 @@ local function transaction(base)
 		end
 		local pos = vector.offset(base, 1, 0, 0)
 		core.set_node(pos, {name = "grug_materials:t2_stone"})
-		local dug = core.node_dig(pos, core.get_node(pos), probe_player("default:pick_bronze"))
+		local dug = core.node_dig(pos, core.get_node(pos), probe_player("grug_materials:pick_bronze"))
 		core.chat_send_player = chat
 		check(dug == false and core.get_node(pos).name == "grug_materials:t2_stone",
 			"bronze pick dig of T2 stone refused, node kept")

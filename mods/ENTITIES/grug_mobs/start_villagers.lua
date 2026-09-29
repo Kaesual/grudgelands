@@ -339,19 +339,19 @@ local MOURN_PITCH = -0.35
 --     (guard.lua's `_grug_visual`), so the dependency stays where it is.
 --
 local ACTIVITY = {
-	smith = {anim = "work", item = "default:pick_bronze"},
+	smith = {anim = "work", item = "grug_materials:pick_bronze"},
 	fish = {anim = "stand", swing = true, item = "grug_fishing:rod"},
-	farm = {anim = "work", item = "default:shovel_stone"},
-	chop = {anim = "work", item = "default:axe_stone"},
+	farm = {anim = "work", item = "grug_materials:shovel_stone"},
+	chop = {anim = "work", item = "grug_materials:axe_stone"},
 	tend = {anim = "stand", swing = true},
 	pray = {anim = "stand"},
 	stall = {anim = "stand"},
 	sit = {anim = "sit"},
 	sweep = {anim = "walk", sweep = true},
 	-- Wave 2, contract section 8.2's second table.
-	mine = {anim = "work", item = "default:pick_bronze"},
+	mine = {anim = "work", item = "grug_materials:pick_bronze"},
 	brew = {anim = "stand", swing = true, item = "default:stick"},
-	carve = {anim = "work", item = "default:axe_stone"},
+	carve = {anim = "work", item = "grug_materials:axe_stone"},
 	mourn = {anim = "stand", bow = true},
 	spar = {anim = "work", weapon_family = "sword", bracket = 1},
 	forage = {anim = "stand", swing = true},

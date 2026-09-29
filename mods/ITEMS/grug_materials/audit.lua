@@ -24,12 +24,9 @@ local function first_line(text)
 	return (tostring(text or ""):match("^[^\n]*"))
 end
 
--- The canonical tool of a family at a tier: default owns Bronze (T1) and
--- Steel (T3), grug_materials the other four (tools.lua).
+-- The canonical tool of a family at a tier (tools.lua: one namespace).
 local function ladder_tool(family, tier)
-	local key = grug_materials.TIERS[tier].key
-	local prefix = (tier == 1 or tier == 3) and "default:" or "grug_materials:"
-	return prefix .. family .. "_" .. key
+	return "grug_materials:" .. family .. "_" .. grug_materials.TIERS[tier].key
 end
 
 local function caps_of(item_name)
@@ -139,6 +136,16 @@ local function check_registry()
 			fail("removed vendor item remains registered: " .. item_name)
 		end
 	end
+	for _, item_name in ipairs(grug_materials.REMOVED_MOBS_UTILITIES) do
+		if core.registered_items[item_name] then
+			fail("removed mobs utility remains registered: " .. item_name)
+		end
+	end
+	for _, item_name in ipairs(grug_materials.REMOVED_SILVER_SANDSTONE_OUTPUTS) do
+		if core.get_all_craft_recipes(item_name) then
+			fail("silver-sandstone recipe remains: " .. item_name)
+		end
+	end
 	for _, derivative in ipairs(grug_materials.STORAGE_DERIVATIVES) do
 		local target = raw_item(derivative.target)
 		if not target or target.description ~= derivative.description or
@@ -208,6 +215,18 @@ local function check_tools()
 				not tonumber(groups.grug_axe_tier)) then
 			fail("invalid Grudgelands axe contract: " .. name)
 		end
+		-- One tool namespace (Round 26 ruling 14).
+		if (groups.grug_pick_tier or groups.grug_axe_tier or
+				groups.grug_shovel_tier) and
+				name:sub(1, #"grug_materials:") ~= "grug_materials:" then
+			fail("tier tool outside grug_materials: " .. name)
+		end
+	end
+	for old, new in pairs(grug_materials.TOOL_ALIASES) do
+		if raw_item(old) or core.registered_aliases[old] ~= new or
+				not rawget(core.registered_tools, new) then
+			fail("broken tool alias: " .. old .. " -> " .. new)
+		end
 	end
 	for tier = 1, 6 do
 		for _, family in ipairs({"pick", "axe", "shovel"}) do
@@ -220,10 +239,10 @@ local function check_tools()
 	end
 
 	local active_max_drop_levels = {
-		["default:pick_wood"] = 0,
-		["default:pick_stone"] = 0,
-		["default:pick_bronze"] = 1,
-		["default:pick_steel"] = 1,
+		["grug_materials:pick_wood"] = 0,
+		["grug_materials:pick_stone"] = 0,
+		["grug_materials:pick_bronze"] = 1,
+		["grug_materials:pick_steel"] = 1,
 	}
 	for name, expected in pairs(active_max_drop_levels) do
 		local def = core.registered_items[name]
@@ -329,8 +348,8 @@ local function check_dig_matrix()
 
 	-- Loose ground: a shovel beats the pick of its tier (per material for the
 	-- two starter pairs), and a higher shovel beats a lower one.
-	local pairs_by_material = {{"default:shovel_wood", "default:pick_wood"},
-		{"default:shovel_stone", "default:pick_stone"}}
+	local pairs_by_material = {{"grug_materials:shovel_wood", "grug_materials:pick_wood"},
+		{"grug_materials:shovel_stone", "grug_materials:pick_stone"}}
 	for tier = 1, 6 do
 		pairs_by_material[#pairs_by_material + 1] =
 			{ladder_tool("shovel", tier), ladder_tool("pick", tier)}

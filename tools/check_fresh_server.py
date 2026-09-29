@@ -28,8 +28,13 @@ for path in (ROOT / "mods").rglob("*.lua"):
         )):
             errors.append(f"{relative}:{number}: retired compatibility mechanism")
         if re.search(r"\b(?:core|minetest)\.register_alias(?:_force)?\s*\(", code):
-            # Native mapgen aliases are used on every fresh world by C++.
-            if relative.as_posix() != "mods/BASE/default/mapgen.lua":
+            # Native mapgen aliases are used on every fresh world by C++; the
+            # tool namespace keeps its old `default:` names as aliases by user
+            # ruling (Round 26 ruling 14), not for saved worlds.
+            if relative.as_posix() not in (
+                "mods/BASE/default/mapgen.lua",
+                "mods/ITEMS/grug_materials/tools.lua",
+            ):
                 errors.append(f"{relative}:{number}: unexpected item-name alias")
 
 # These are normal current-version activation, not migration; do not remove

@@ -205,7 +205,7 @@ local function scenario(spot)
 			"arrival cube refuses the owner's placement")
 		-- The dig refusal of a fuelled stone (nobody digs it).
 		local dug = core.node_dig(pos, core.get_node(pos),
-			fake_player(OWNER, "default:pick_bronze"))
+			fake_player(OWNER, "grug_materials:pick_bronze"))
 		check(core.get_node(pos).name == STONE, "fuelled stone survives a dig attempt")
 		log("DIG fuelled stone by owner: node_dig=" .. tostring(dug))
 		-- Faked clock: the paid-until time moves into the past.
@@ -260,14 +260,14 @@ local function scenario(spot)
 				check(place("r25second", pos2), "edge-to-edge second claim accepted")
 				local c2 = grug_housing.player_claim("r25second")
 				grug_housing.add_fuel(c2, 1)
-				core.node_dig(pos2, core.get_node(pos2), fake_player(DIGGER, "default:pick_bronze"))
+				core.node_dig(pos2, core.get_node(pos2), fake_player(DIGGER, "grug_materials:pick_bronze"))
 				check(model.claim_by_id(c2.id) ~= nil, "fuelled second stone not dug")
 				c2.paid_until = os.time() - 1
 				grug_housing.sync_stone_node(c2)
 				local hand = core.node_dig(pos2, core.get_node(pos2), fake_player(DIGGER, ""))
 				check(model.claim_by_id(c2.id) ~= nil, "hand cannot dig the empty stone")
 				local pick_ok, pick_res = pcall(core.node_dig, pos2, core.get_node(pos2),
-					fake_player(DIGGER, "default:pick_bronze"))
+					fake_player(DIGGER, "grug_materials:pick_bronze"))
 				log(("DIG empty second stone: hand=%s pick=%s %s -> %s"):format(tostring(hand),
 					tostring(pick_ok), tostring(pick_res), core.get_node(pos2).name))
 				check(model.claim_by_id(c2.id) == nil and core.get_node(pos2).name == "air",
@@ -328,7 +328,7 @@ core.after(3, function()
 	-- 1. Load.
 	check(core.registered_nodes[STONE] and core.registered_nodes[EMPTY],
 		"stone nodes registered")
-	local caps = core.registered_items["default:pick_bronze"].tool_capabilities
+	local caps = core.registered_items["grug_materials:pick_bronze"].tool_capabilities
 	check(caps.groupcaps.grug_claim_stone and
 		caps.groupcaps.grug_claim_stone.times[1] == 60, "bronze pick: 60 s cap")
 	local steel = core.registered_items["grug_materials:pick_abyssal_steel"]
