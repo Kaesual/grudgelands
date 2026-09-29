@@ -169,6 +169,29 @@ rewritten to this contract before implementation starts. **Status: rulings
 The old spec's claim protection against explosions and fire, liquid inflow
 beyond the arrival cube, and boundary outlines are not part of V1.
 
+## Follow-up rulings after the first playtest (2026-09-29, for Round 26)
+
+The user could pick the stone up right after placing it and was then locked
+out of placing for 24 h; a destroyed stone would lock its owner out the same
+way, and a fresh, empty stone was destroyable at once. These rulings replace
+ruling 9 and refine rulings 10–12:
+
+30. **Placing is a draft.** A placed, not yet activated stone reserves its
+    square against other claims (so its activation is never blocked) but
+    protects nothing. Only the owner can pick it up, at any time and without a
+    lock; others cannot destroy it. It looks unfinished (half-transparent,
+    like water). A draft that is not activated within **5 minutes** disappears
+    and the owner may take a new stone from the Steward at once.
+31. **Activation costs at least 5 lumps** (coal or charcoal, ≈ 36 h), paid at
+    once through a button in the stone form. Activation starts protection;
+    with fuel the stone cannot be destroyed.
+32. **One lock only: 12 hours after activation the stone cannot be picked
+    up.** There is no placing lock: after a pick-up, or after the stone was
+    destroyed, the player may place and activate again at once (a destroyed
+    stone needs a new one from the Steward).
+33. **The Housing Manager is renamed Housing Steward** (display names, texts,
+    docs).
+
 ## Lanes
 
 **Interface contract** (`grug_housing`, owned by Lane A; B, C and D code
