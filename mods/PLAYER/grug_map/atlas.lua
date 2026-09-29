@@ -24,6 +24,16 @@ function M.view()
 		max_x = WORLD.max_x, min_z = WORLD.min_z, max_z = WORLD.max_z}
 end
 
+-- Zoom levels 1, 2, 4 and 8. Every level draws the same 1080x960 base image,
+-- only larger: at 8x each base pixel (about 6.7 nodes) covers several screen
+-- pixels and looks pixelated on purpose; the gain is marker precision.
+M.MAX_ZOOM = 8
+
+function M.step_zoom(zoom, zoom_in)
+	zoom = zoom or 1
+	return zoom_in and math.min(M.MAX_ZOOM, zoom * 2) or math.max(1, zoom / 2)
+end
+
 -- Scroll units represent one thousandth of the unzoomed viewport on each axis.
 -- Thus both axes use the same integer range despite the 9:8 viewport aspect.
 function M.scroll_limit(zoom)
@@ -85,8 +95,9 @@ function M.collect_markers(player)
 					z = row.position.z}}
 		end
 	end
+	-- The Steward draws above the trainer books that often stand beside it.
 	local layers = {settlement = 1, hostile = 1, trainer = 2, boss = 2,
-		innkeeper = 2, home = 2, quest = 3, party = 4, player = 5}
+		innkeeper = 2, home = 2, steward = 2.5, quest = 3, party = 4, player = 5}
 	table.sort(result, function(a, b)
 		local al, bl = layers[a.kind] or 1, layers[b.kind] or 1
 		if al ~= bl then return al < bl end
