@@ -225,6 +225,13 @@ go-ahead.**
     axes, with a flash hint ("Iron Pick requires level 5"); the client still
     shows cracks in that rare case (engine limit, accepted).
 
+30. **Protection depth follows the placement:** capitals, start towns, POIs
+    and every other hard-protected footprint are protected from a fixed depth
+    of 100 nodes below their placement height (the anchor/centre surface y)
+    upward, instead of the global y ≥ −700. Below that, digging, ores, gems,
+    rock layers and nests follow the normal rules (the old "ore-free to −700"
+    under start towns is removed). Upward protection stays unbounded.
+
 ## Lanes
 
 | Lane | Scope | Depends on |
@@ -236,6 +243,8 @@ go-ahead.**
 | **E — Tracker and damage** | Rulings 23–24, `combat_stats.md` environmental section | — |
 | **D2 — Start-zone follow-up** | Rulings 25–26 | D merged |
 | **F — Density, gathering XP, tool levels** | Rulings 27–29 | A, D merged |
+| **B2 — Cliff layers, P8 speedups** | Ruling 12 extended to steep faces (user, 2026-09-29), output-identical vein speedups | B merged |
+| **G — Protection depth** | Ruling 30 | B2 (same ore host code) |
 
 ## Coordination
 
