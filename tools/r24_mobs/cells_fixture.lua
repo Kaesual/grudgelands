@@ -58,7 +58,7 @@ _G.grug_core = {
 	nearest_tag_player_d2 = function() end,
 	start_identities = function()
 		local out = {}
-		for i = 1, 6 do out[i] = {anchor = {x = 100000 + i * 1000, z = 100000}} end
+		for i = 1, 6 do out[i] = {anchor = {x = 100000 + i * 1000, y = 0, z = 100000}} end
 		return out
 	end,
 }
@@ -75,6 +75,7 @@ _G.mobs = {spawn = function(_, def)
 	rows[#rows + 1] = grug_mobs.prepare_spawn_row(def)
 end}
 dofile(mobs_dir .. "spawn_policy.lua")
+dofile(mobs_dir .. "density.lua") -- Lane F: prepare_spawn_row's density hooks
 dofile(mobs_dir .. "levels.lua")
 dofile(mobs_dir .. "disposition.lua")
 -- The parts of init.lua's register_mob these checks need.

@@ -101,6 +101,41 @@ function grug_xp.add_xp(player, amount, source)
 end
 
 --
+-- Gathering XP (Round 24 ruling 28), the one place of its factors and formula:
+--
+--   XP = factor x min(reference level, player level + 5), rounded half up
+--
+-- The reference level is the top of a ten-level band: 10 x harvest tier for
+-- an ore or gem node (T1 10 .. T5 50), 10 x the water's zone band for a fish
+-- (10 .. 60). No gray rule: T1 always pays. Source "gathering" carries no race
+-- or class bonus (grug_classes.get_xp_bonus scales only "quest").
+--
+grug_xp.GATHERING_XP_FACTOR = {ore = 1.5, gem = 3, fish = 5}
+grug_xp.GATHERING_LEVEL_OFFSET = 5
+
+function grug_xp.gathering_reference_level(tier_or_band)
+	return 10 * tier_or_band
+end
+
+function grug_xp.gathering_xp(kind, reference_level, player_level)
+	local factor = grug_xp.GATHERING_XP_FACTOR[kind]
+	if not factor then
+		error("[grug_xp] unknown gathering kind " .. tostring(kind))
+	end
+	local level = math.min(reference_level,
+		player_level + grug_xp.GATHERING_LEVEL_OFFSET)
+	return math.floor(factor * level + 0.5)
+end
+
+-- Awards and returns the gathering XP of one ore/gem node or one fish.
+function grug_xp.award_gathering(player, kind, reference_level)
+	local amount = grug_xp.gathering_xp(kind, reference_level,
+		grug_xp.get_level(player))
+	grug_xp.add_xp(player, amount, "gathering")
+	return amount
+end
+
+--
 -- Thin gold progress above the hotbar. Exact XP remains in /xp.
 -- All geometry comes from grug_core.hud_layout.
 --

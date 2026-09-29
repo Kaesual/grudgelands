@@ -500,7 +500,8 @@ Normal tier at level L:
 - Pacing property after Round 16: normal same-level solo kills award **15L XP**
   before racial bonuses. The quadratic interval `(200L - 100)` needs about
   7 kills at level 1 and approaches 13.3 at higher levels without quests;
-  quest rewards are additional.
+  quest rewards and gathering XP (ore, gem and fish; `progression.md`
+  "Gathering XP") are additional.
 - **Gray kills award no XP**: a mob at level ≤ killer level − 10 gives 0
   XP (kills trivial-mob farming).
 - **XP level cap**: calculate each recipient's formula with effective mob

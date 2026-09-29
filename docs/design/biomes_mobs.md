@@ -42,12 +42,40 @@ content requirements remain explicitly separate from delivered behavior.
   slot is family-flavored** by design (§3.2).
 - Aggressive nature mobs aggro on sight vs players AND NPCs; neutral families
   follow the fixed disposition contract below. Density target ~1
-  visible mob per 15–20 m of wilderness travel. Round 16 raises ordinary
-  fightable open-world population pressure by approximately **30%**: each
-  eligible surface spawn row gets 1.3x attempt frequency and a nearest-integer
-  1.3x local species cap. Neutral hunted wildlife counts. Critters, underground
-  rows, NPCs, authored guards, kings, dragons, summoned/encounter adds, bosses
-  and named rares on their dedicated timers retain their prior rates and caps.
+  visible mob per 15–20 m of wilderness travel.
+- **Density is a per-zone budget** (Round 24 ruling 27, 2026-09-29;
+  `mods/ENTITIES/grug_mobs/density.lua`), independent of how many species a
+  zone allows. It covers the ordinary natural surface species of the
+  named-zone palettes (hostile and neutral hunted wildlife, normal and elite
+  tiers). The species "at a point" are those that could spawn there: their
+  hosts include the node the spawning row matched, and policy, level gate, row
+  check and clock allow them. Around each spawn point (the 128-node sphere
+  mobs_redo counts in) the budgeted mobs never exceed the point budget
+  `max(zone budget, old population of the species at the point)`:
+  - the zone budget is **15 by day, 23 by night** = 1.5 × the pre-Round-24
+    median area population (10 / 15, measured per land column on the
+    biome-top hosts; `tools/r24_density_xp/fixture.lua`), times an optional
+    per-zone multiplier `grug_mobs.ZONE_DENSITY` for later tuning;
+  - the old population is the sum of those species' Round 16 caps (row cap ×
+    1.3, rounded; × 5/4, rounded up, at night), so no point and no zone gets
+    sparser than before; species-rich points (war fronts, forests at night)
+    keep their old population, and sparse points get the ×1.5 lift.
+
+  Each species at the point gets the share point budget × its row cap ÷ their
+  summed row caps, rounded (at least 1), but never more than
+  **ceil(1.5 × its own Round 16 cap)** (review decision): a lone Stone Golem
+  on bare stone stays at 2 by day and 3 by night, not the budget, so points
+  with only one or two eligible species end below the zone budget but never
+  below their old population. Below its own Round 16 cap a species always
+  spawns, so neighbours of a mixed area (a higher-level edge, another biome
+  patch) never hold it below its pre-Round-24 population. The night count covers only the night cast, so day animals still
+  about at dusk do not block night spawns. Budgeted rows spawn with 1.5x
+  attempt frequency, and their own mobs_redo cap is lifted to 64 so the budget
+  binds. Critters, underground rows, the Kraken and Reed Angelfish, shore
+  crabs, NPCs, authored guards, camps, patrols, kings, dragons,
+  summoned/encounter adds, bosses and named rares are neither counted nor
+  limited; ambient rows outside the palettes keep the Round 16 rule (1.3x
+  attempt frequency and a nearest-integer 1.3x species cap).
 - Target patch model: logical biomes vary only inside their zone-owned
   weighted palette. Fixed village/outpost/camp slots come from
   `world_zones.md` §§8/11; Elves keep tree-integrated settlements.
@@ -825,8 +853,9 @@ at night never opens a day row), night rows with `max_light = 5` plus
 `day_toggle = false`, and leaves any-time rows ungated.
 Rows wholly below y = -40 are the exception: their family clock is ignored,
 they retain only their explicit light filter, and they never receive a
-`day_toggle`. Night rows receive `ceil(day aoc × 1.25)` while their interval
-and chance stay unchanged. If a named zone exposes fewer than two explicit
+`day_toggle`. Night rows outside the §0 density budget receive
+`ceil(day aoc × 1.25)` while their interval and chance stay unchanged; budgeted
+night rows use the night budget instead. If a named zone exposes fewer than two explicit
 night-role families, the policy admits its palette fallback: Zombie for
 settled/war, Skeleton Archer for forest/mountain, Jungle Spider for jungle,
 or Bog Ooze for swamp. Capitals retain empty palettes and never receive a
@@ -836,12 +865,14 @@ fallback; mobs already alive at a clock boundary are not despawned.
 of that one name inside a 128-node sphere). Two spawn rows of the same
 name — the Skeleton Archer's two node lists, a family's surface + cave
 rows — share ONE budget; the per-biome tints are separate entities and
-each carries the full row of its family, so a jungle spider and a pale
-spider are two budgets of 4, not one.
+each carries the full row of its family. For the species under the §0
+density budget the row `aoc` in the tables below is the species' weight
+within its zone's budget, not the effective area cap; for every other row
+it remains the cap.
 
 Historical ring/filler calibration and its 16-day/12-night peak estimates are
 preserved in [the archive](../archive/design/world-historical.md). They do not
-bound the current roster or replace the Round 16 density rule in §0.
+bound the current roster or replace the Round 24 density rule in §0.
 
 ### Outstanding WP37 scope and table interpretation
 

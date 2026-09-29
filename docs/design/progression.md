@@ -127,6 +127,34 @@ before the existing participant split. The one-settlement guard, 40-node
 eligibility, per-recipient gray rule, faction refusal and race bonus remain
 unchanged. Quest rewards and administrator grants are not multiplied.
 
+## Gathering XP
+
+Round 24 ruling 28 (2026-09-29). XP sources are mob kills, quest rewards,
+administrator grants and gathering. Every natural ore or gem node a player digs
+and every fish a player catches gives
+
+`XP = factor × min(reference level, player level + 5)`, rounded half up,
+
+| Source | Factor | Reference level |
+|---|---:|---|
+| ore node (every natural resource node that is not a gem) | 1.5 | 10 × harvest tier: T1 10 … T5 50 |
+| gem node (the six regional G1/G2 gems) | 3 | 10 × harvest tier: G1 (T2) 20, G2 (T4) 40 |
+| fish (not junk from the catch table) | 5 | 10 × the water's zone band: 10 … 60 |
+
+- There is no gray rule: T1 ore always pays (15 XP at level 5 and above).
+- Examples: coal at level 1 gives 9 (1.5 × 6), at level 2 gives 11 (10.5
+  rounded up); a G2 gem at level 30 gives 105; a band-6 fish at level 60
+  gives 300.
+- The factors and the formula live in one place, `grug_xp.GATHERING_XP_FACTOR`
+  and `grug_xp.gathering_xp` (`mods/PLAYER/grug_xp/init.lua`); XP is added
+  with source `gathering`, which carries no race or class bonus. The
+  Goldsmith's extra raw gem is an item bonus and adds no XP.
+- Only a successful player dig of a natural resource node (the
+  `grug_materials` harvest callback) and a reeled-in fish pay. There is no
+  anti-cheat or autoclicker check (user ruling). A caught fish shows its XP in
+  the catch notice ("Caught: Silver Trout (+100 XP)"); ore XP shows on the XP
+  bar only.
+
 ## Current fixed quest reward table
 
 Rewards below are per quest, shared by the six racial variants except where a

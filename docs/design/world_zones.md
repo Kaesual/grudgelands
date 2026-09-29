@@ -884,7 +884,9 @@ Mob families additionally carry the day/night role defined in
 non-capital palette with fewer than two explicit night families admits its
 documented family fallback. Empty capital palettes remain
 `civic_no_hostiles`, and the start towns (pad and band, §12) still refuse hostile spawns
-before palette or fallback authority is considered.
+before palette or fallback authority is considered, from the town's protected floor
+upward (its placement height − 100, Round 24 ruling 30); caves deeper
+under a start town keep their ordinary population.
 
 POI abbreviations:
 

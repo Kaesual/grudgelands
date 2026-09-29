@@ -488,8 +488,11 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     `grug_loose` (= its `crumbly` rating) and no level; shovels and axes carry
     `grug_shovel_tier`/`grug_axe_tier`. The `core.node_dig` wrapper re-checks
     protection and the engine rule for natural nodes (`mining_decision`
-    returns `protected`/`too_hard`/`allowed`), and settles
-    `register_on_harvest` after a successful resource dig. There is no
+    returns `protected`/`too_low_level`/`too_hard`/`allowed`; `too_low_level`
+    applies on any node a pick/axe/shovel above the player's level would dig,
+    `TOOL_LEVEL_REQUIREMENTS`), and settles `register_on_harvest` after a
+    successful resource dig; its own harvest callback awards gathering XP
+    through `grug_xp.award_gathering`. There is no
     depth limit per pick and no dig-without-drop path. A
     `register_on_punchnode` handler shows one rate-limited hint in the shared
     screen flash line (`grug_core.flash(player, message, color)`, which
@@ -738,7 +741,10 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   `register_spawn_role` also owns each family's `clock`; its spawn wrapper
   stamps the mobs_redo light/day convention and the night `aoc`, while rows
   wholly below y = -40 remain light-only. Never hand-maintain those fields on
-  a new surface row.
+  a new surface row. Palette species of normal/elite tier are budgeted
+  (`grug_mobs/density.lua`, Round 24): their row `aoc` becomes the species
+  weight, the area cap is the point budget (zone budget or the old population, whichever is larger) enforced in `mobs:spawn_abm_check`
+  after the policy, so a new such row needs no cap tuning of its own.
   Fixed bosses do not register ambient rows: `grug_mobs/bosses.lua` owns the
   two authenticated island `dragon` anchors, while the six kings and their
   four-guard groups consume the capital `king`/royal `guard_post` sockets via
