@@ -108,8 +108,50 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 		end
 	end
 	if not runtime then runtime, built, construction_seconds = construct(nil) end
+	-- Every settlement with its fitted anchor, in roster order (the NPC
+	-- sockets below and the settlement cores of the world protection).
+	local socket_rows = runtime.settlement_sockets(built)
+	if type(socket_rows) ~= "table" or #socket_rows < 1 then
+		fail("settlement socket roster differs")
+	end
+	-- Main's preparations of every lazy blueprint (identity, palette, cell
+	-- bounds, landmarks): the payload hands them to emerge below.
+	local prepared_blueprints = runtime.prepared_handover()
+
+	-- WORLD PROTECTION OF ROADS AND POIs (Round 25 rulings 15-17), for player
+	-- digging and placing only: every road of the layout text emerge
+	-- receives (the capital streets and connectors included) as a corridor,
+	-- and every POI, village and camp blueprint's cell bounds on its fitted
+	-- anchor as a box. Built from published data; the mapgen never reads it.
+	local world_protection
+	do
+		local started = now()
+		local wp = dofile(wp40 .. "/world_protection.lua")
+		local rows = {}
+		for index = 1, #socket_rows do
+			local row = socket_rows[index]
+			if row.slot ~= "start" and row.slot ~= "capital" then
+				local prepared = prepared_blueprints[row.key]
+				if type(prepared) ~= "table" or type(prepared.bounds) ~= "table" then
+					fail("settlement blueprint bounds missing: " .. tostring(row.key))
+				end
+				rows[#rows + 1] = {key = row.key, slot = row.slot, anchor = row.anchor,
+					bounds = prepared.bounds}
+			end
+		end
+		world_protection = wp.new(dofile(wp40 .. "/index128.lua"), {
+			corridors = wp.road_corridors(runtime.road_module(), runtime.road_layout_text()),
+			boxes = wp.settlement_boxes(rows)})
+		local m = world_protection.metrics
+		core_api.log("action", string.format("[grug_mapgen] world protection: %d road " ..
+			"corridors (%d segments in %d runs), %d settlement cores, %d records in %d " ..
+			"cells (%d references, at most %d per cell), built in %.3f s",
+			m.corridors, m.segments, m.runs, m.boxes, m.records, m.populated_cells,
+			m.candidate_references, m.maximum_candidates, now() - started))
+	end
+
 	local publish_authority = core_owner.prepare_zone_authority(
-		built.zones_session, built.consumer_payload)
+		built.zones_session, built.consumer_payload, world_protection)
 	if type(publish_authority) ~= "function" then
 		fail("prepared authority seam differs")
 	end
@@ -127,10 +169,6 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 	-- settlement registered for a race, i.e. its start.
 	if type(core_owner.register_settlement_sockets) ~= "function" then
 		fail("settlement socket registry differs")
-	end
-	local socket_rows = runtime.settlement_sockets(built)
-	if type(socket_rows) ~= "table" or #socket_rows < 1 then
-		fail("settlement socket roster differs")
 	end
 	-- The registration ORDER is "every start, then everything else", and the
 	-- list of slots is derived from the roster rather than typed here: a roster
@@ -274,7 +312,7 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 		capital_layout = runtime.capital_layout_text(),
 		-- Main's preparations of every lazy blueprint (identity, palette,
 		-- landmarks), so emerge does not build and hash them all again.
-		prepared_blueprints = runtime.prepared_handover()}
+		prepared_blueprints = prepared_blueprints}
 
 	-- Roads (Round 22 Phase 4): one log line with the construction figures
 	-- and one with a showcase spot per road feature (a serpentine, a gallery,

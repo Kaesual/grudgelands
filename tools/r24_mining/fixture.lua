@@ -680,6 +680,8 @@ do
 	_G.grug_core = {
 		zone_authority_installed = function() return true end,
 		get_player_faction = function(name) return factions[name] end,
+		-- Round 25 road/POI protection: none in this stub world.
+		world_feature_at = function() return nil end,
 		world_protected_for_faction = function(pos, faction)
 			local rule = at(pos).rule or "contested_land"
 			if faction ~= "accord" and faction ~= "throng" then return true end

@@ -1,0 +1,10 @@
+seed 4242424242, 20000 points per set, 5 repeats, ns per call (LuaJIT); before/after: fastest of 3 alternating rounds
+random before    926  after   1459  (+  58%)  lookup incl. rounding   244; protected before 11410 after 11471, road/POI 104
+       lookup by segments per run: run 1: 244, run 4: 195, run 16: 171, run 64: 169
+road   before    860  after   1054  (+  22%)  lookup incl. rounding   605; protected before 8222 after 14766, road/POI 11039
+       lookup by segments per run: run 1: 1476, run 4: 840, run 16: 537, run 64: 606
+deep   before    867  after   1687  (+  95%)  lookup incl. rounding   618; protected before 8229 after 8234, road/POI 9
+       lookup by segments per run: run 1: 1536, run 4: 875, run 16: 554, run 64: 619
+far    before   1186  after   1458  (+  23%)  lookup incl. rounding   219; protected before 12615 after 12622, road/POI 7
+       lookup by segments per run: run 1: 146, run 4: 146, run 16: 146, run 64: 147
+index: run 1: 35755 records, 42501 references, max 346 per cell, built 61.4 ms; run 4: 9030 records, 11019 references, max 88 per cell, built 6.8 ms; run 16: 2346 records, 3180 references, max 24 per cell, built 1.9 ms; run 64: 676 records, 1225 references, max 9 per cell, built 0.8 ms

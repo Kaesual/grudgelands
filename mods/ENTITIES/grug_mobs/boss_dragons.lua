@@ -88,11 +88,10 @@ local function rounded_column(pos, y)
 	}
 end
 
+-- The zone rule and the protection handlers, without the road and POI
+-- layer: breath patches stay possible in the dragon's own arena core.
 local function protected_for_actor(pos, actor_name)
-	if not actor_name or actor_name == "" then return true end
-	local faction = grug_core.get_player_faction(actor_name)
-	if grug_core.world_protected_for_faction(pos, faction) then return true end
-	return core.is_protected(pos, actor_name)
+	return grug_core.ground_effect_protected(pos, actor_name)
 end
 
 local function find_effect_pos(impact)

@@ -92,6 +92,8 @@ grug_zones = {
 	end,
 }
 function grug_core.zone_authority_installed() return true end
+-- Lane E's road/POI layer; the road stand-in above answers as a town.
+function grug_core.world_feature_at() return nil end
 function grug_core.world_protected_for_faction(pos, faction)
 	if faction ~= "accord" and faction ~= "throng" then return true end
 	local territory = grug_zones.territory_rule_at(pos)

@@ -137,6 +137,23 @@ function grug_core.register_protection_reason(provider)
 	reason_providers[#reason_providers + 1] = provider
 end
 
+-- A creature's ground effect on behalf of a player (dragon scorch and rime,
+-- grug_mobs boss_dragons.lua): the zone and territory rule, then the other
+-- protection handlers, but not the road and POI layer (Round 25 rulings
+-- 15-16 protect roads and settlement cores from player digging and placing;
+-- a dragon's own arena core keeps its breath patches). On a road or core the
+-- handlers this file wrapped answer instead of core.is_protected, which
+-- would answer from that layer.
+function grug_core.ground_effect_protected(pos, actor_name)
+	if not actor_name or actor_name == "" then return true end
+	local faction = grug_core.get_player_faction(actor_name)
+	if grug_core.zone_protected_for_faction(pos, faction) then return true end
+	if grug_core.world_feature_at(pos) then
+		return previous_is_protected(pos, actor_name)
+	end
+	return core.is_protected(pos, actor_name)
+end
+
 -- Player-facing reason for a refused edit (Round 24 ruling 7), or nil when
 -- the position is not protected for this player. It only EXPLAINS the answer
 -- core.is_protected gives above; it never decides it. A provider's reason
@@ -144,6 +161,12 @@ end
 local PROTECTION_HINTS = {
 	town = "Town – protected",
 	landmark = "Landmark – protected",
+	-- Round 25 rulings 15-16 (grug_core.world_feature_at)
+	road = "Road – protected",
+	bridge = "Bridge – protected",
+	village = "Village – protected",
+	camp = "Camp – protected",
+	poi = "Point of interest – protected",
 	accord_home = "Accord home territory – protected",
 	throng_home = "Throng home territory – protected",
 	immutable = "Open sea – protected",
@@ -163,6 +186,10 @@ function grug_core.protection_reason(pos, name)
 	if grug_core.world_protected_for_faction(pos, faction) then
 		local kind = grug_zones.hard_protection_kind_at(pos)
 		if kind == "town" or kind == "landmark" then return kind end
+		-- Roads and settlement cores protect for everyone (Round 25 rulings
+		-- 15-17), home territory or not, and win over claim reasons.
+		local feature = grug_core.world_feature_at(pos)
+		if feature then return feature end
 		local territory = grug_zones.territory_rule_at(pos)
 		if territory == "immutable" or territory == "accord_home" or
 				territory == "throng_home" then

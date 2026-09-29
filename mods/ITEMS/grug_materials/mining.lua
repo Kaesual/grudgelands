@@ -489,7 +489,8 @@ function grug_materials.emit_hint(name, message)
 end
 
 -- The protection line names the reason when grug_core can tell it
--- (town, landmark, home territory); otherwise a plain "Protected".
+-- (town, landmark, road, bridge, village, camp, point of interest, home
+-- territory); otherwise a plain "Protected".
 function grug_materials.protection_hint(pos, name)
 	local owner = rawget(_G, "grug_core")
 	if owner and type(owner.protection_hint) == "function" then
