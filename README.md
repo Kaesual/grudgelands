@@ -28,7 +28,8 @@ from the Luanti community's games and mods into a shared fantasy adventure.
 - **Quests and character progression.** Follow your starting town's stories,
   help local inhabitants and take on stronger enemies. The current catalog
   contains 240 quests across starts, capitals and named regions,
-  with a journal, quest tracker and world atlas to help you find your way.
+  with a journal, quest tracker, world atlas and minimap to help you find
+  your way.
 - **Crafting and equipment.** Make basic gear, choose two of seven primary
   professions, and improve your equipment with enchantments. Weaponsmith,
   Armorsmith, Alchemist, Tailor, Leatherworker, Woodcarver and Goldsmith each
@@ -46,12 +47,20 @@ to fear. Their story will grow as more regions and encounters are completed.
 
 ## Current State
 
-*Last updated: 2026-09-29. Based on [BACKLOG.md](BACKLOG.md) and
+*Last updated: 2026-09-30. Based on [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md).*
 
 The systems above are implemented and installed in the local development build.
+[Round 27](docs/planning/round27-minimap-plan.md#completion-2026-09-30)
+is complete locally and awaits a short playtest. Our own round minimap
+replaces the built-in one: north up, drawn from the world map, it shows quest
+givers with their state, trainers, innkeepers, the Housing Steward, your home
+and your party, with arrows on the rim for members out of view, and can be
+switched off on the Map tab. The world map shows height more clearly with
+stronger shading, contour lines and lighter high ground, and a server can
+choose a sharper high-quality map.
 [Round 26](docs/planning/round26-capitals-housing-cleanup-plan.md#completion-2026-09-29)
-is complete locally and awaits a playtest on a fresh world. A placed Claim Stone now starts as a draft that you activate with
+awaits a playtest on a fresh world. A placed Claim Stone now starts as a draft that you activate with
 five lumps of coal within five minutes, and the Housing Steward hands it out.
 Buffs and debuffs show as icons above the skill bar, the combat state as an
 icon next to the health bar, with a new Effects tab on the Character page and
@@ -95,16 +104,18 @@ yet cover the full journey through every region.
 <details>
 <summary>Development tracking and known caveats</summary>
 
-**Delivered:** 39 of 54 tracked work-package identities are complete, 3 are
-canceled and 12 are open, several with playable portions (after the
+**Delivered:** 40 of 54 tracked work-package identities are complete, 3 are
+canceled and 11 are open, several with playable portions (after the
 2026-09-29 [work-package audit](docs/planning/wp-audit-2026-09-29.md)). This
 is a tracking count, not a percentage of game completion. The latest delivered
 increment is
-[Round 26](docs/planning/round26-capitals-housing-cleanup-plan.md#completion-2026-09-29),
-independently reviewed and merged locally; Round 24 is the latest pushed and
-accepted state. [Project status](docs/STATUS.md) records acceptance, and the
-[Round 26 playtest](docs/planning/round26-capitals-housing-cleanup-plan.md#playtest-checklist-fresh-world)
-remains separate.
+[Round 27](docs/planning/round27-minimap-plan.md#completion-2026-09-30)
+(WP50, own minimap and map quality), independently reviewed and merged
+locally; Round 24 is the latest pushed and accepted state.
+[Project status](docs/STATUS.md) records acceptance, and the
+[Round 27](docs/planning/round27-minimap-plan.md#playtest-checklist) and
+[Round 26](docs/planning/round26-capitals-housing-cleanup-plan.md#playtest-checklist-fresh-world)
+playtests remain separate.
 
 **Ready for further work:** the first release still needs boats and
 waypoints, geographic PvP and the story from level 41 to 60 with its finale.
@@ -115,7 +126,8 @@ follow; the [roadmap](ROADMAP.md) records the V1 scope and order.
 the trainer flows still need in-game acceptance. Friendly-guard healing remains
 deferred. Performance and first-release validation are still open. Optional
 full-world preparation can take many hours; the atlas does not require it. See
-the [latest playtest checklist](docs/planning/round26-capitals-housing-cleanup-plan.md#playtest-checklist-fresh-world)
+the [latest playtest checklist](docs/planning/round27-minimap-plan.md#playtest-checklist),
+the [Round 26 checklist](docs/planning/round26-capitals-housing-cleanup-plan.md#playtest-checklist-fresh-world)
 and the [Round 24 checks](docs/planning/round24-mining-underground-mobs-plan.md#completion-2026-09-29).
 
 </details>
@@ -230,7 +242,7 @@ investigations and delivery records.
 | Progression and quests | [Progression](docs/design/progression.md): levels and rewards; [talents](docs/design/skill_trees.md): character builds; [quests](docs/design/quests.md): objectives, journal and credit. |
 | Items and crafting | [Items](docs/design/items_crafting.md): materials and recipes; [professions](docs/design/professions.md): trades; [stations and enchantments](docs/design/crafting_equipment_revision.md): current crafting rules; [equipment](docs/design/inventory_equipment.md): slots and bags; [durability](docs/design/durability_repair.md): wear and repair; [economy](docs/design/economy.md): money, prices and services. |
 | Wildlife and everyday life | [Biomes and mobs](docs/design/biomes_mobs.md): habitats and creatures; [farming](docs/design/farming.md): crops; [housing](docs/design/housing.md): Claim Stone homes. |
-| Travel and playing together | [Mounts](docs/design/mounts.md): riding; [boats](docs/design/boats.md): planned water travel; [home travel](docs/design/home_travel.md): innkeepers and return; [parties](docs/design/parties.md): groups; [atlas](docs/design/world_map.md): maps and markers. |
+| Travel and playing together | [Mounts](docs/design/mounts.md): riding; [boats](docs/design/boats.md): planned water travel; [home travel](docs/design/home_travel.md): innkeepers and return; [parties](docs/design/parties.md): groups; [atlas](docs/design/world_map.md): maps, minimap and markers. |
 | Decision routing | [Round 18 decisions](docs/design/playtest_quality_revision.md): where the Round 18 playtest-quality rules now live. |
 | Hosting | [World preparation](docs/design/world_preparation.md): generating starting areas or the full world. |
 

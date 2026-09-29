@@ -667,7 +667,7 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   Fuel arithmetic is fixed in housing.md §4 (26 160 s per lump; displayed
   stack `ceil`, pick-up return `floor`). Road and POI protection (Lane E)
   lives in the zone authority and `grug_core`, not in `grug_housing`.
-- **Atlas**: `grug_map` owns one whole-world cartographic atlas with 1x/2x/4x
+- **Atlas**: `grug_map` owns one whole-world cartographic atlas with 1x/2x/4x/8x
   zoom, native scrollbars and an independent marker layer. Formspec v4 wraps
   the shared legacy inventory window; only Map content switches to real
   coordinates. Keep center-preserving zoom, fixed-size markers, clipping and
@@ -675,6 +675,13 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   updates preserve them. Stable byte-encoded IDs own marker identity. Only open
   Map sessions poll at 0.5 s and write changed formspecs; scrolling defers rebuilds
   until a 0.5 s quiet interval. Closing resets to Character; leave/death clean up.
+  Since Round 27 `base.lua` renders the base per `grug_map_quality` and sends
+  it as 512 px tiles; `minimap.lua` (HUD state, marker slots, change-only
+  `hud_change`) and the pure `minimap_view.lua` (window, grid snap, placement,
+  rim arrows) draw the minimap in `grug_core.hud_layout.minimap_box`. The
+  minimap asks only the quest, service and home marker providers
+  (`atlas.collect_markers(player, only)`). Fixture:
+  `tools/r27_minimap/portable_test.lua`.
   Current marker/travel/minimap rules: [world_map.md](../design/world_map.md).
 - **Preparation (Round 14):** `grug_core` freezes starts/full mode in world
   storage on first boot. A stable aligned plan has one in-flight chunk and a

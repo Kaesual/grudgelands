@@ -987,8 +987,8 @@ blocks movement and attack execution, preserving gravity.
 
 ## Global non-player damage scale
 
-The startup setting `grug_mob_damage_scale` defaults to **1.5**; **1.0** retains
-the prior unscaled damage. Valid values are 0–10; invalid/nonfinite values
+The startup setting `grug_mob_damage_scale` (main menu section *Combat*)
+defaults to **1.5**; **1.0** retains the prior unscaled damage. Valid values are 0–10; invalid/nonfinite values
 fall back to 1.5. Apply it exactly once to damage from all non-player
 combat actors: ordinary/neutral mobs, guards, adds, elites/rares and bosses.
 It covers melee, projectiles, auras, DoTs and authored attack ground effects,

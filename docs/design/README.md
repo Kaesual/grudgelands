@@ -44,7 +44,7 @@ announcement changes this rule; see [AGENTS.md](../../AGENTS.md#fresh-server-dev
 | [`quests.md`](quests.md) | Twenty-slot quest journal, kill/item/talk objectives, participation, rewards, markers and tracker. | **decided**, Round 14. |
 | [`home_travel.md`](home_travel.md) | Twelve faction-restricted innkeeper homes, immediate out-of-combat return, persistent 30-minute cooldown and death respawn; the own Claim Stone as alternative travel-home target. | **decided**, Round 17. |
 | [`parties.md`](parties.md) | Persistent same-faction parties, inviter-bound invitations, management and health HUD. | **decided**, Round 14. |
-| [`world_map.md`](world_map.md) | Cartographic atlas without fog, independent extensible markers and no travel unlock. | **decided**, Round 14. |
+| [`world_map.md`](world_map.md) | Cartographic atlas without fog, independent extensible markers and no travel unlock; map quality (normal/high) with readable relief; our own round minimap with quest, service, home and party markers in place of the native one. | **decided**, Round 14; quality, relief and minimap Round 27 (WP50). |
 | [`world_preparation.md`](world_preparation.md) | Immutable per-world full/starts mode, bounded chunk scheduling, shutdown/resume and waiting UI. | **decided**, Round 14. |
 
 ## Decision routing and evidence

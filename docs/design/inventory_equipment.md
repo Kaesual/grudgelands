@@ -346,6 +346,8 @@ them back from here." This does not alter entitlement or the one-copy rule.
 The inventory gains separate Quests, Group and Map tabs, following `quests.md`,
 `parties.md` and `world_map.md`. Quests and Group each own a saved HUD toggle,
 default on; empty quest logs and ungrouped players have no corresponding HUD.
+Since Round 27 the Map tab likewise owns the saved "Show minimap" switch for
+our own minimap, default on (`world_map.md`).
 Party rows show name and HP only, with explicit offline state. HUD allocation
 uses the shared layout authority so party, quest and transient notices do not
 overlap existing combat bars, target information or status effects.

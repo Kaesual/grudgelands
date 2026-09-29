@@ -9,22 +9,28 @@ not additional current contracts. No behavior changes are authorized by this cle
 ## Readiness
 
 There are **54 identities**: WP0–WP50 and WP-Scout/WP-HUD/WP-Speed.
-**39 delivered**, **3 canceled** (WP16, WP37, WP49), **12 open or partial**.
+**40 delivered**, **3 canceled** (WP16, WP37, WP49), **11 open or partial**.
 The 2026-09-29
 [WP audit](docs/planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29)
 closed WP14, WP21, WP22, WP23, WP27, WP29, WP31 and WP32 as delivered, merged WP7's rebase, WP11, WP30 and the price parts of WP22 and
 WP31 into WP44 (WP11 and WP30 count as delivered), and canceled WP37 and WP49.
-WP28 followed in Round 26. The audit's letters and numbers (for example E5)
-are cited below.
+WP28 followed in Round 26 and WP50 in Round 27. The audit's letters and
+numbers (for example E5) are cited below.
 
 - **Latest delivery:
-  [Round 26](docs/planning/round26-capitals-housing-cleanup-plan.md#completion-2026-09-29)
-  complete** (2026-09-29, local main, no push): Claim Stone draft and
+  [Round 27](docs/planning/round27-minimap-plan.md#completion-2026-09-30)
+  complete** (2026-09-30, local main, no push): WP50 delivered — our own
+  round minimap with quest, service, home and party markers in place of the
+  native one, the `grug_map_quality` setting (normal/high) for the Map tab and
+  the minimap, readable relief and the tiled map base (Lane M), and the
+  documentation (Lane D). Next: short playtest.
+- [Round 26](docs/planning/round26-capitals-housing-cleanup-plan.md#completion-2026-09-29)
+  (2026-09-29, local main, no push): Claim Stone draft and
   activation with the Housing Steward (Lane S), the registration cleanup
   (WP28 delivered, Lane R), the status-icon package (audit D10, Lane I),
   organic capitals with a character per capital (the D72 follow-up, Lane W)
-  and this documentation cleanup (Lane D). Next: fresh world and playtest.
-  Not in this round: the depth pulse (WP34), WP44, WP17, WP41, WP9, WP5 and
+  and its documentation cleanup (Lane D). Next: fresh world and playtest.
+  Not in that round: the depth pulse (WP34), WP44, WP17, WP41, WP9, WP5 and
   WP10.
 - Round 25 delivers WP24 Housing; its playtest is under way. Round 24 is
   pushed (`d4eaffff`) and accepted.
@@ -103,7 +109,7 @@ technical evidence certifies its recorded bytes, never an arbitrary later head.
 | WP47 | Skills catalog and recoverable representations | Delivered R12–13; current rules in inventory_equipment.md. | — |
 | WP48 | Mapgen writer performance and parallel emerge | Partial; parked until a playtest shows slowness (E8). | WP40 ✅ |
 | WP49 | Fixed mapgen source-audit roster | Canceled 2026-09-29: its audit script was deleted in Round 22 (D1/D3/D22). | — |
-| WP50 | [Own minimap and map quality](docs/planning/work-package-scopes.md#wp50) | **Round 27** ([plan](docs/planning/round27-minimap-plan.md)): our own round minimap on the pre-generated map with NPC, quest-giver and party markers; native minimap off; `minetest.conf` map quality normal/high shared with the Map tab; readable relief. | WP40 ✅, WP24 ✅ |
+| WP50 | [Own minimap and map quality](docs/planning/work-package-scopes.md#wp50) | Delivered in Round 27 ([completion](docs/planning/round27-minimap-plan.md#completion-2026-09-30)): our own round minimap on the pre-generated map with quest-giver, service, home and party markers; native minimap off; `grug_map_quality` normal/high shared with the Map tab; readable relief; 512 px tiles. Playtest pending; carry-overs below. | WP40 ✅, WP24 ✅ |
 
 ### WP46 — Terrain-damage guard: explosions, fire and lava never damage settlements or POIs
 
@@ -282,6 +288,19 @@ none blocks the playtest. All are low priority.
   regenerate it. The Round 25 engine probes `tools/r25_claim_core/run.sh`
   and `tools/r25_interfaces/run.sh` assume the pre-draft Claim Stone; the
   current probe is `tools/r26_claim_activation/`.
+
+### Round 27 carry-overs
+
+**Noted 2026-09-30** ([completion](docs/planning/round27-minimap-plan.md#completion-2026-09-30));
+none blocks the playtest.
+
+- Map tab region labels are sized for a 1280×720 window at the default font;
+  a larger client font can bring the small hypertext scrollbar back.
+- In start towns several minimap markers (quest givers, trainers, innkeeper)
+  stack on top of each other; like the Map tab they are not clustered. The
+  playtest decides whether this needs handling.
+- A new home (innkeeper binding or Claim Stone) appears on the minimap up to
+  5 s later: static markers refresh on quest changes and every 5 s.
 
 ### First-public-release gates
 
