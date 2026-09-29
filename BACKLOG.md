@@ -8,8 +8,8 @@ not additional current contracts. No behavior changes are authorized by this cle
 
 ## Readiness
 
-There are **53 identities**: WP0–WP49 and WP-Scout/WP-HUD/WP-Speed.
-**39 delivered**, **3 canceled** (WP16, WP37, WP49), **11 open or partial**.
+There are **54 identities**: WP0–WP50 and WP-Scout/WP-HUD/WP-Speed.
+**39 delivered**, **3 canceled** (WP16, WP37, WP49), **12 open or partial**.
 The 2026-09-29
 [WP audit](docs/planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29)
 closed WP14, WP21, WP22, WP23, WP27, WP29, WP31 and WP32 as delivered, merged WP7's rebase, WP11, WP30 and the price parts of WP22 and
@@ -103,6 +103,7 @@ technical evidence certifies its recorded bytes, never an arbitrary later head.
 | WP47 | Skills catalog and recoverable representations | Delivered R12–13; current rules in inventory_equipment.md. | — |
 | WP48 | Mapgen writer performance and parallel emerge | Partial; parked until a playtest shows slowness (E8). | WP40 ✅ |
 | WP49 | Fixed mapgen source-audit roster | Canceled 2026-09-29: its audit script was deleted in Round 22 (D1/D3/D22). | — |
+| WP50 | [Own minimap and map quality](docs/planning/work-package-scopes.md#wp50) | **Round 27** ([plan](docs/planning/round27-minimap-plan.md)): our own round minimap on the pre-generated map with NPC, quest-giver and party markers; native minimap off; `minetest.conf` map quality normal/high shared with the Map tab; readable relief. | WP40 ✅, WP24 ✅ |
 
 ### WP46 — Terrain-damage guard: explosions, fire and lava never damage settlements or POIs
 

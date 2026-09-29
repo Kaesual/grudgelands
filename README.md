@@ -95,8 +95,8 @@ yet cover the full journey through every region.
 <details>
 <summary>Development tracking and known caveats</summary>
 
-**Delivered:** 39 of 53 tracked work-package identities are complete, 3 are
-canceled and 11 are open, several with playable portions (after the
+**Delivered:** 39 of 54 tracked work-package identities are complete, 3 are
+canceled and 12 are open, several with playable portions (after the
 2026-09-29 [work-package audit](docs/planning/wp-audit-2026-09-29.md)). This
 is a tracking count, not a percentage of game completion. The latest delivered
 increment is
