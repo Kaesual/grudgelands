@@ -690,7 +690,7 @@ An anchor record stores the frozen x/z, ground y, `selection_mode`,
 `authored_fixed` rows use approved index zero; `frozen_layout` rows retain the
 accepted V1d index in 1..3. No old `candidate_index` is exposed. Hard-protection rows
 retain the exact R2 x/z footprint and their existing y policy (`-700`
-inclusive upward without limit; amended by Round 24 ruling 30 to the
+inclusive upward without limit; amended 2026-09-29 by Round 24 ruling 30 to the
 record's resolved centre surface y − 100 upward). Anchor squares and socket columns add their
 resolved centre surface y. An ingress corridor retains nil for that scalar and
 continues to reference its two graded route ids; it does not falsely collapse

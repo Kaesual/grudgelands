@@ -425,6 +425,7 @@ local function zones_factory(dependencies)
 				type(horizontal.neighbors) ~= "function" or
 				type(horizontal.housing_eligible_at) ~= "function" or
 				type(horizontal.static_exclusion_values_at) ~= "function" or
+				type(horizontal.lowest_exclusion_value_at) ~= "function" or
 				type(horizontal.capital_protection_member) ~= "function" or
 				type(horizontal.start_protection_member) ~= "function" or
 				type(horizontal.housing_mask_id_at) ~= "function" then
@@ -1552,13 +1553,16 @@ local function zones_factory(dependencies)
 				return hard_row_at(x, y, z)
 			end
 			-- The protected floor of a fixed/protected column (Round 24 ruling
-			-- 30): the lowest of its static exclusion's floor and the floors of
-			-- the hard footprints holding it. `exclusion_id` is the id
-			-- `static_exclusion_values_at` answered for the column; a route or
-			-- water id counts only through a hard footprint (a hard
-			-- foundation). Mapgen keeps ore out of the column from here up.
+			-- 30): the lowest floor of every anchor envelope, hard core and hard
+			-- footprint holding it. `exclusion_id` (the id
+			-- `static_exclusion_values_at` answered for the column) only names a
+			-- failure; a route or water id counts only through a hard footprint
+			-- (a hard foundation). Mapgen keeps ore out of the column from here up.
 			function planner_source.protection_floor_y(exclusion_id, x, z)
-				local result = exclusion_floor_by_id[exclusion_id]
+				-- Every anchor envelope and hard core holding the column, not only
+				-- the one shape `static_exclusion_values_at` answered first.
+				local result = horizontal.lowest_exclusion_value_at(x, z,
+					exclusion_floor_by_id)
 				local hard = hard_floor_at(x, z)
 				if hard ~= nil and (result == nil or hard < result) then result = hard end
 				if result == nil then

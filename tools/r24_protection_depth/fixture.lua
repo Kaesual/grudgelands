@@ -219,8 +219,10 @@ local function runtime_checks(W)
 		local bound = placement - DEPTH
 		check_volume(W, socket.id, x, z, bound, "landmark")
 		row("socket", socket.id, x, z, placement, bound)
-		-- 3. its P8 floor
-		check(P.protection_floor_y("exclude:active:hard:" .. socket.id, x, z) == bound,
+		-- 3. its P8 floor: its own bound, or lower where its apex mine's
+		-- envelope holds the column with a lower floor (lowest floor wins;
+		-- exact values in the overlap check below)
+		check(P.protection_floor_y("exclude:active:hard:" .. socket.id, x, z) <= bound,
 			socket.id .. " P8 floor")
 	end
 	-- Outpost and bandit functional columns: the roster's anchor y.
@@ -247,12 +249,95 @@ local function mapgen_checks(W)
 			local a = anchor_by_id[exclusion.source_id]
 			local record = S.anchor(source.zones[a.zone_numeric_id].id, a.slot_id)
 			local floor = P.protection_floor_y(exclusion.id, a.position.x, a.position.z)
-			check(floor == record.y - DEPTH, exclusion.id .. " P8 floor " .. floor ..
+			-- at most the anchor's own floor: an overlapping envelope may hold
+			-- the centre with a lower one (exact values below)
+			check(floor <= record.y - DEPTH, exclusion.id .. " P8 floor " .. floor ..
 				" vs anchor y " .. record.y)
 			envelopes = envelopes + 1
 		end
 	end
 	check(envelopes == #source.anchors, "every anchor has an envelope floor")
+	-- Overlapping square envelopes (POIs, villages, camps, outposts, apex
+	-- mines) and apex socket cores: every column of every overlap takes the
+	-- LOWEST floor of all shapes holding it, not the floor of the one shape
+	-- static_exclusion_values_at answers first.
+	local squares = {}
+	local hard_by_id = {}
+	for _, hard in ipairs(source.hard_protection) do hard_by_id[hard.id] = hard end
+	for _, exclusion in ipairs(source.claim_exclusions) do
+		if exclusion.recipe_id == "exclude_anchor_blend_v1" then
+			local a = anchor_by_id[exclusion.source_id]
+			if a.slot_id ~= "capital" and a.slot_id ~= "start" then
+				local record = S.anchor(source.zones[a.zone_numeric_id].id, a.slot_id)
+				squares[#squares + 1] = {id = exclusion.id, center = exclusion.center,
+					width = exclusion.total_width, floor = record.y - DEPTH}
+			end
+		elseif exclusion.recipe_id == "exclude_active_core_v1" then
+			local hard = hard_by_id[exclusion.source_id]
+			if hard.recipe_id == "hard_apex_socket_column_v1" then
+				squares[#squares + 1] = {id = exclusion.id, center = hard.center,
+					width = 1, floor = placement_y(P, hard.center.x, hard.center.z) - DEPTH}
+			end
+		end
+	end
+	local function holds(sq, x, z)
+		local x2, z2 = 2 * x, 2 * z
+		return x2 >= 2 * sq.center.x - sq.width and x2 < 2 * sq.center.x + sq.width and
+			z2 >= 2 * sq.center.z - sq.width and z2 < 2 * sq.center.z + sq.width
+	end
+	local floor_by_id = {}
+	for _, sq in ipairs(squares) do floor_by_id[sq.id] = sq.floor end
+	-- exact at every square's centre
+	for _, sq in ipairs(squares) do
+		local x, z = sq.center.x, sq.center.z
+		local expected
+		for _, other in ipairs(squares) do
+			if holds(other, x, z) and (expected == nil or other.floor < expected) then
+				expected = other.floor
+			end
+		end
+		check(P.protection_floor_y(sq.id, x, z) == expected, sq.id .. " centre floor")
+	end
+	local pairs_found, overlap_columns, first_would_differ = {}, 0, 0
+	for i = 1, #squares do
+		for j = i + 1, #squares do
+			local a, b = squares[i], squares[j]
+			local min_x = math.max(a.center.x - a.width, b.center.x - b.width)
+			local max_x = math.min(a.center.x + a.width, b.center.x + b.width)
+			local min_z = math.max(a.center.z - a.width, b.center.z - b.width)
+			local max_z = math.min(a.center.z + a.width, b.center.z + b.width)
+			local columns = 0
+			for x = min_x, max_x do
+				for z = min_z, max_z do
+					if holds(a, x, z) and holds(b, x, z) then
+						local expected
+						for _, sq in ipairs(squares) do
+							if holds(sq, x, z) and (expected == nil or sq.floor < expected) then
+								expected = sq.floor
+							end
+						end
+						local _, first = P.static_exclusion_values_at(x, z)
+						local floor = P.protection_floor_y(first, x, z)
+						check(floor == expected, ("overlap %s/%s at %d,%d: floor %d vs %d"):format(
+							a.id, b.id, x, z, floor, expected))
+						if floor_by_id[first] and floor_by_id[first] ~= expected then
+							first_would_differ = first_would_differ + 1
+						end
+						columns = columns + 1
+					end
+				end
+			end
+			if columns > 0 and a.width > 1 and b.width > 1 then
+				pairs_found[#pairs_found + 1] = ("%s/%s %d"):format(
+					a.id:match("anchor_%d+"), b.id:match("anchor_%d+"), columns)
+			end
+			overlap_columns = overlap_columns + columns
+		end
+	end
+	check(#pairs_found > 0, "overlapping envelope pairs exist")
+	lines[#lines + 1] = ("envelope overlaps: %s; %d columns, %d where the first" ..
+		" shape's floor is not the lowest"):format(table.concat(pairs_found, ", "),
+		overlap_columns, first_would_differ)
 	-- The Orc start (Sunscar): the column's own static exclusion id.
 	local orc = source.anchors[5]
 	check(orc.position.x == 0 and orc.position.z == 2550, "anchor_005 is the Orc start")
