@@ -99,7 +99,7 @@ in this file as of commit `082982da`.
   Beyond 150 nodes the start-zone gradient below applies. The outer
   starting-zone metadata remains levels **1–10**.
 - **Start-zone gradient (Round 24, decided 2026-09-29):** in the six
-  starting zones the spawn level rises from the start toward the faction
+  starting zones the surface level rises from the start toward the faction
   front instead of across the zone's whole z extent (the start sits mid-zone,
   so the old field put levels 7–9 right behind the 150-node band). Outside
   the start band the area behind the start, out to the home-facing coast,
@@ -112,10 +112,13 @@ in this file as of commit `082982da`.
   150-node band weighted by how far the offset points toward the front
   (full ahead, half beside, none behind) and `remaining` the distance along
   the front direction (Elandor +z, Kragmar −z) to the first column of a zone
-  above the start range. The gradient is a spawn rule: `mob_level_at` uses
-  it, while the zone content level `surface_mob_level_at` that the mapgen
-  reads (level-banded plants and resources) keeps the zone field plus the
-  start band. Other zones keep their gradient.
+  above the start range. The gradient is the start zones' surface level for
+  every consumer (Round 24 ruling 25): spawn levels (`mob_level_at`) and the
+  zone content level `surface_mob_level_at` that the mapgen reads
+  (level-banded plants such as carrot, cassava and wild grain, vegetation
+  resources, the P9G level bracket). Its border walk is cached per 8×8 cell
+  and is a pure function of the cell, so every mapgen owner and every query
+  order gets the same answer. Other zones keep their gradient.
 - The existing depth floor remains independent: underground level is the
   maximum of the local surface-zone level and the depth level from
   `combat_stats.md`.
@@ -837,11 +840,20 @@ replaced; git history before this rewrite records that model.
   both badlands; basalt, slate and granite under blight and bone forest;
   granite, slate and desert stone under meadows, elf forest and deep forest;
   slate, granite and basalt elsewhere). A 16³ lattice cell holds a
-  gravel (3/5) or dirt (2/5) pocket with probability 3/10, an ellipsoid of
+  gravel (3/5) or dirt (2/5) pocket with probability 3/10, or a rock nest
+  of the palette's decorative rocks with probability 1/10: an ellipsoid of
   radii 2–3 × 2 × 2–3 inside the cell. Stone stays clearly dominant
   (measured 81 % stone plus 4 % ores in a real mountain interior, 89 % stone
-  in the fixture). Nothing carves caves into the fill; the seam to native v7 may cut through
-  veins, bands and caves. Lava is unchanged.
+  in the fixture). Nothing carves caves into the fill; the seam to native
+  v7 may cut through veins, bands and caves. Lava is unchanged.
+- **Cliffs and near-surface nests (Round 24 B2).** In the top 40 nodes
+  of a column, below its filler, where the shallow strata apply (same exclusions:
+  protected, functional, water, towns, housing), untouched native or fill
+  `default:stone` takes the lattice's rock nests; on steep columns (rock
+  faces and lips) it also takes the same horizontal layers, so strata break
+  through cliff faces in native rock and in fill alike. Gravel and dirt
+  pockets stay out of those 40 nodes, the depth-relative shallow strata stay
+  off steep columns, and ores and strata bands are never replaced.
 - **Decorative nests (Round 24, ruling 14).** Native blob ores place nests
   of `grug_materials:slate` (y −400…−40), `grug_materials:granite`
   (y −900…−200) and `grug_materials:basalt` (below y −600) in
@@ -925,7 +937,7 @@ or rights (§7.1).
 | `kragmar_nhal_veyr` | Nhal Veyr | Undead | capital, civic L20–30 profile, peaceful | blight 75 / bone forest 25 | Black-stone necropolis on stepped terraces; no ambient hostiles; **C** |
 | `kragmar_ossuary_reach` | Ossuary Reach | Undead | 21–30 peaceful | blight 40 / bone forest 50 / swamp 10 | Fossil ridges and gravewood copses; forest mobs, night Gravewood Treant, dragonweed; **V, O, M** |
 | `kragmar_blackwind_rise` | Blackwind Rise | Undead | 31–40 **contested** | bone forest 65 / blight 30 / swamp 5 | Ash-wind upland crossed by natural bone arches; forest mobs, night Gravewood Treant; **O×2, B, R:Marrowclaw** |
-| `kragmar_sunscar_flats` | Sunscar Flats | Orc | 1–10 peaceful | savanna 95 / badlands 5 | Dry golden grass, shade rocks and shallow waterholes; settled mobs; day Plains Runner, night Giant Rat and band-2 Scorpion, band-3 Sun-Dried Husk; **S** |
+| `kragmar_sunscar_flats` | Sunscar Flats | Orc | 1–10 peaceful | savanna 95 / badlands 5 | Dry golden grass, shade rocks and shallow waterholes; settled mobs; day Plains Runner, night Giant Rat and band-2 Scorpion and Sun-Dried Husk; **S** |
 | `kragmar_redtusk_savanna` | Redtusk Savanna | Orc | 11–20 peaceful | savanna 75 / badlands 25 | Red gullies, acacia wells and hunting roads; settled/savanna mobs, sunleaf; night Scorpion and Sun-Dried Husk; **V, O, B, R:Ashmaw** |
 | `kragmar_gor_drazhak` | Gor Drazhak | Orc | capital, civic L20–30 profile, peaceful | savanna 60 / badlands 40 | Adobe-and-basalt fortress at a mesa crossroads; no ambient hostiles; **C** |
 | `kragmar_speargrass_reach` | Speargrass Reach | Orc | 21–30 peaceful | savanna 55 / badlands 40 / swamp 5 | Tall cutting grass, dry rivers and hunting stones; savanna/mountain mobs; day Speargrass Tiger; night Scorpion/Goblin Raid; **V, O, M** |
@@ -1609,14 +1621,13 @@ numeric-truncated seed.
 ### 13.3 Policy and consumer adapters
 
 - `surface_mob_level_at` means the zone-based surface level of §2 (the zone
-  field plus the inner start band); the mapgen's level-banded content reads
-  it.
+  field plus the inner start band, and in the six starting zones the
+  start-zone gradient); the mapgen's level-banded content reads it.
   `terrain_height_at` means elevation. Existing
   `grug_core.surface_level_at(x,z)` already means terrain height and retains
   that semantic through the `terrain_height_at` adapter.
-- `mob_level_at(pos)` combines the surface difficulty (in the six starting
-  zones the start-zone gradient of §2, elsewhere `surface_mob_level_at`) with
-  the independent depth floor on land and zone-owned planned water. Exterior shelf returns nil
+- `mob_level_at(pos)` combines the surface difficulty
+  (`surface_mob_level_at`) with the independent depth floor on land and zone-owned planned water. Exterior shelf returns nil
   at y >= 0 and the depth floor alone below y = 0. Deep ocean and dragon
   channels have no ordinary mob-level result; the Kraken Guard remains a
   separate fixed level-100 entity.

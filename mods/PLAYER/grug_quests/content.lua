@@ -132,6 +132,10 @@ local cultures = {
 	},
 	{
 		key = "orc", faction = "throng", start = "sunscar",
+		-- The Sun-Dried Husk spawns in Sunscar from band 2 (L4+) of the
+		-- start-zone gradient, so its night patrol is a level-5 quest (Round 24
+		-- ruling 26) instead of the chain's usual 4.
+		levels = {[4] = 5},
 		village = "redtusk_village", outpost = "redtusk_outpost", camp = "redtusk_bandit_camp",
 		names = {"Gara Stonevoice", "Borak Redgrass", "Kesh Longstride",
 			"Rokka Emberhand"},
@@ -306,7 +310,7 @@ local START_REWORK = {
   day = "Plague boars churn Stillgrave's outer furrows by day. Drive off three before the retaining stones loosen, and take spare raw meat to Neral Saltkeeper by the oven."},
  orc = {wood = "default:acacia_wood", title = "Posts Beneath the Hide Racks",
   repairs = "The hide racks need new feet before another load pulls them into the dust. Bring six acacia planks from the ordinary local timber, or use boards already carried or traded.",
-  night = "Sun-dried husks walk the far flats toward Redtusk after nightfall. Defeat three on the level-7-and-up ground near the Redtusk border before they reach the water skins. The rack repairs and optional tool lessons remain daytime work.",
+  night = "Sun-dried husks walk the outer flats toward Redtusk after nightfall. Defeat three on the level-4-and-up ground between the camp and the Redtusk border before they reach the water skins. The rack repairs and optional tool lessons remain daytime work.",
   road = "At level 10, follow Redtusk Road to Redtusk Village and speak with Borak Redgrass. Redtusk Savanna is level 11–20 country, not a beginner hunting ground. Complete the conversation with Borak; this handoff requires neither a kill nor a return trip.",
   day = "Boars tear the water skins outside Sunscar by day. Drive off three and carry spare raw meat to Ugra Brothstone at the separate oven."},
  troll = {wood = "default:junglewood", title = "A Dry Frame for the Baskets",
@@ -407,13 +411,14 @@ for _, culture in ipairs(cultures) do
 		elseif number == 9 then
 			description = description .. " Speak with the captive for compatible supply tasks before clearing the camp; the captive also accepts this combat report."
 		end
+		local level = culture.levels and culture.levels[number] or LEVEL[number]
 		local prior = number >= 7 and number - 1 or
 			(number == 6 and 5 or number == 5 and 3 or (number == 3 or number == 4) and 1)
 		Q.register_quest(id, {
 			title = title, description = description, npc = giver,
 			turnin_npc = number == 6 and npc.steward or (number == 9 and npc.captive or giver),
-			faction = culture.faction, race = culture.key, min_level = LEVEL[number],
-			target_level = LEVEL[number], effort = number == 6 and "lesson" or
+			faction = culture.faction, race = culture.key, min_level = level,
+			target_level = level, effort = number == 6 and "lesson" or
 				(number == 9 and "finale" or number == 8 and "hard" or "standard"),
 			prerequisites = prior and {quest_id(culture, prior, culture.titles[prior])} or {},
 			objectives = {objective},

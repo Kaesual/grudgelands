@@ -618,10 +618,11 @@ from both sides toward the middle of the band, and both level-60 summits stay
 flat.
 Within 100 horizontal nodes of every authored start anchor the surface level
 is 1, from 101 through 150 nodes it is 2, and beyond 150 nodes the zone's
-level field applies; in the six starting zones `mob_level_at` uses the
-start-zone gradient instead (band 1 behind and beside the start, rising
-toward the front, band 3 only shortly before the front border;
-`world_zones.md` §2, Round 24). Capital city zones contain no ambient hostile mobs. Guards use
+level field applies; in the six starting zones the start-zone gradient
+applies instead (band 1 behind the start, rising toward the front, band 3
+only shortly before the front border; `world_zones.md` §2, Round 24). It is
+the same surface level for spawns and for the mapgen's level-banded
+content. Capital city zones contain no ambient hostile mobs. Guards use
 the separate positional `guard_level_at` contract above; the depth formula
 does not affect that guard base. Every exterior class has no surface level.
 Shelf `mob_level_at` is nil at normalized y >= 0 and uses the depth term alone

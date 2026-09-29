@@ -1,5 +1,5 @@
--- Round 24 Lane D portable fixture (LuaJIT): the start-zone spawn gradient
--- (ruling 18) on the real zones.lua/simple_map.lua world of two seeds.
+-- Round 24 Lane D/D2 portable fixture (LuaJIT): the start-zone gradient
+-- (rulings 18 and 25) on the real zones.lua/simple_map.lua world of two seeds.
 --
 --   luajit tools/r24_mobs/levels_fixture.lua <repo> [seed ...]
 --
@@ -12,10 +12,14 @@
 --     at most one per node (no jump behind the start band);
 --   * the last node before the front neighbour is in band 3, so the border
 --     step to the next zone stays what it was.
--- surface_mob_level_at is the unchanged content level (zone field plus start
--- band), i.e. exactly what mob_level_at returned at y >= 0 before Round 24, so
--- it serves as the "old" column. The fixture prints the level table along the
--- start line, the border steps and the start-zone area shares where
+--   * the zone content level the mapgen reads (surface_mob_level_at) equals
+--     the spawn level (mob_level_at at y >= 0) on every sampled column;
+--   * the gradient is order- and cache-independent: a second session asked
+--     in reverse order, and a third one that first overflows the border
+--     cache (every 8-node cell of all six start zones), answer identically.
+-- The "old" column is the pre-Round-24 level: the raw zone field of the
+-- horizontal session plus the start band. The fixture prints the level table
+-- along the start line, the border steps and the start-zone area shares where
 -- level-gated families may spawn, old and new.
 local repo = assert(arg[1], "usage: levels_fixture.lua <repo> [seed ...]")
 local seeds = {}
@@ -46,13 +50,27 @@ local function spawn_level(session, x, z)
 	return session.mob_level_at({x = x, y = 10, z = z})
 end
 
+-- Pre-Round-24 level of a start-zone column: zone field plus start band.
+local function old_level(world, start, owner, x, z)
+	local dx, dz = x - start.x, z - start.z
+	local distance_sq = dx * dx + dz * dz
+	if distance_sq <= 100 * 100 then return 1 end
+	if distance_sq <= 150 * 150 then return 2 end
+	return world.horizontal.zone_level_at(x, z, owner)
+end
+
+local function world_of(seed)
+	return dofile(repo .. "/tools/r23_tree_line/world_source.lua")(repo, seed)
+end
+
 for _, seed in ipairs(seeds) do
-	local world = dofile(repo .. "/tools/r23_tree_line/world_source.lua")(repo, seed)
+	local world = world_of(seed)
 	local S = world.session
 	print(("seed %s"):format(seed))
 	for _, start in ipairs(STARTS) do
 		local home = S.id_at(start.x, start.z)
 		check(home ~= nil, start.race .. ": start column lies in a zone")
+		local owner = S.get(home).numeric_id
 		local steps = {}
 		for _, dx in ipairs(LINES) do
 			local x = start.x + dx
@@ -61,7 +79,12 @@ for _, seed in ipairs(seeds) do
 				local z = start.z + start.direction * d
 				local id = S.id_at(x, z)
 				local new = spawn_level(S, x, z)
-				local old = S.surface_mob_level_at(x, z)
+				local content = S.surface_mob_level_at(x, z)
+				local old = content and old_level(world, start, owner, x, z)
+				if content ~= new then
+					check(false, ("%s dx %d d %d: content level %s = spawn level %s"):format(
+						start.race, dx, d, tostring(content), tostring(new)))
+				end
 				local ddx, ddz = x - start.x, z - start.z
 				local distance_sq = ddx * ddx + ddz * ddz
 				if id == home and old then
@@ -115,8 +138,11 @@ for _, seed in ipairs(seeds) do
 		for gx = start.x - 1100, start.x + 1100, 16 do
 			for gz = start.z - 900, start.z + 900, 16 do
 				if S.id_at(gx, gz) == home then
-					local old = S.surface_mob_level_at(gx, gz)
+					local content = S.surface_mob_level_at(gx, gz)
+					local old = content and old_level(world, start, owner, gx, gz)
 					local new = spawn_level(S, gx, gz)
+					check(content == new, ("%s grid %d %d: content level = spawn level"):format(
+						start.race, gx, gz))
 					if old and new then
 						total = total + 1
 						local ddx, ddz = gx - start.x, gz - start.z
@@ -146,6 +172,56 @@ for _, seed in ipairs(seeds) do
 			near_old7 or -1, near_new7 or -1))
 		check((near_new7 or 1e9) >= 150, start.race .. ": no band 3 inside the start band")
 	end
+end
+
+-- Order and cache independence (ruling 25: several mapgen owners).
+do
+	local seed = seeds[1]
+	local samples = {}
+	for _, start in ipairs(STARTS) do
+		for dz = -700, 700, 37 do
+			for dx = -900, 900, 41 do
+				samples[#samples + 1] = {start.x + dx, start.z + dz}
+			end
+		end
+	end
+	local function answers(session, order)
+		local out = {}
+		for _, index in ipairs(order) do
+			local sample = samples[index]
+			out[index] = session.surface_mob_level_at(sample[1], sample[2]) or -1
+		end
+		return out
+	end
+	local forward, reverse = {}, {}
+	for index = 1, #samples do
+		forward[index] = index
+		reverse[index] = #samples + 1 - index
+	end
+	local a = answers(world_of(seed).session, forward)
+	local b = answers(world_of(seed).session, reverse)
+	local third = world_of(seed).session
+	local cells = 0
+	for _, start in ipairs(STARTS) do
+		local home = third.id_at(start.x, start.z)
+		for z = start.z - 700, start.z + 700, 8 do
+			for x = start.x - 1100, start.x + 1100, 8 do
+				if third.id_at(x, z) == home then
+					third.surface_mob_level_at(x, z)
+					cells = cells + 1
+				end
+			end
+		end
+	end
+	local c = answers(third, reverse)
+	local same_b, same_c = true, true
+	for index = 1, #samples do
+		if a[index] ~= b[index] then same_b = false end
+		if a[index] ~= c[index] then same_c = false end
+	end
+	check(same_b, ("%d samples: reverse order on a fresh session answers the same"):format(#samples))
+	check(cells > 65536 and same_c, ("after %d cells (over the 65536-cell cache limit) the " ..
+		"answers are the same"):format(cells))
 end
 
 print(("checks %d failures %d"):format(checks, failures))
