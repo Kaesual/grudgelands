@@ -817,9 +817,12 @@ water-bound rows keep a low cap, for a gameplay reason: the Kraken at 4
 Reed Angelfish uses the flight ceiling too; its height rule is relative to
 the water body (above the column's natural bed, Round 22 Phase 5).
 Every family declares one spawn role, `clock = "day" | "night" | "any"`;
-Zombie uses the palette-keyed form (`settled`/`war` night, `blight` any).
-`grug_mobs` stamps day rows with `min_light = 10`, night rows with
-`max_light = 5` plus `day_toggle = false`, and leaves any-time rows ungated.
+Zombie uses the palette-keyed form (`settled`/`war` night, `blight` any), and
+a `"zone:<zone id>"` key sets the clock in one named zone ahead of the palette
+keys (Scorpion in Sunscar, Viper in Kapok: `any`, Round 24). `grug_mobs`
+stamps day rows with `min_light = 10` plus `day_toggle = true` (so torch light
+at night never opens a day row), night rows with `max_light = 5` plus
+`day_toggle = false`, and leaves any-time rows ungated.
 Rows wholly below y = -40 are the exception: their family clock is ignored,
 they retain only their explicit light filter, and they never receive a
 `day_toggle`. Night rows receive `ceil(day aoc × 1.25)` while their interval
@@ -921,8 +924,8 @@ re-run against the new values once the change ships.
 | **Plains Runner** (passive prey) | dry grass | 20 | 2100 | 2 | day | Sunscar |
 | **Tapir** | rainforest litter, canopy litter | 20 | 1900 | 3 | day | Troll column; L4 start gate |
 | **Giant Rat** | six settled tops / stone + `group:grug_stratum` | 20 | 1600 surface / 1800 cave | **5 at night** surface (base 4 ×1.25) / 4 cave | night surface; max 5 underground | all starts / y −40…−300 |
-| **Scorpion** | dry grass, mesa clay | 20 | 1800 | **5 at night** (base 4 ×1.25) | night; plus a Sunscar-only day row with the same values (zone clock, Round 24) | Orc column and Shattered Line; L4 start gate |
-| **Viper** | rainforest litter | 20 | 1800 | **5 at night** (base 4 ×1.25) | night; plus a Kapok-only day row with the same values (zone clock, Round 24) | Kapok and Raincall; L4 start gate |
+| **Scorpion** | dry grass, mesa clay | 20 | 1800 | **5 at night** (base 4 ×1.25) | night; plus a daylight row (min light 10, day toggle) with the same values, admitted only in Sunscar by the zone clock (Round 24) | Orc column and Shattered Line; L4 start gate |
+| **Viper** | rainforest litter | 20 | 1800 | **5 at night** (base 4 ×1.25) | night; plus a daylight row (min light 10, day toggle) with the same values, admitted only in Kapok by the zone clock (Round 24) | Kapok and Raincall; L4 start gate |
 | **Goblin Raider** | coniferous litter, gravel, snowblock, dry grass, mesa clay | 20 | 2400 | **3 at night** (base 2 ×1.25, ceiling) | night | exact Goblin-Raid palettes |
 | **Goblin Slinger / Raider Hound** | same Goblin-Raid tops | 20 | 2400 | **2 each at night** (base 1 ×1.25, ceiling) | night | exact Goblin-Raid palettes |
 | **Snow Leopard** | gravel, snowblock | 20 | 2100 | **4 at night** (base 3 ×1.25, ceiling) | night | Frostbarrow, Stormvault, Wyrmglass |

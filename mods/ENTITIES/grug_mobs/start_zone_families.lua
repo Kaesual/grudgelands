@@ -251,8 +251,10 @@ mobs:spawn({name = "grug_mobs:scorpion", _grug_clock_palette = "scorpion",
 	nodes = {"default:dry_dirt_with_dry_grass", "grug_nodes:mesa_clay"},
 	interval = 20, chance = 1800, active_object_count = 4,
 	min_height = 0, max_height = 600})
--- The Sunscar day row: the night row's values; the spawn policy admits it only
--- where the zone clock is "any" (Sunscar), and both rows share one aoc cap.
+-- The Sunscar day row: the night row's values and one shared aoc cap. The row
+-- is daylight-only (min_light 10 and day_toggle, prepare_spawn_row); the spawn
+-- policy admits a daylight scorpion only where the zone clock is "any"
+-- (Sunscar). At night the night row covers every zone.
 mobs:spawn({name = "grug_mobs:scorpion", _grug_clock_palette = "sunscar_day",
 	nodes = {"default:dry_dirt_with_dry_grass", "grug_nodes:mesa_clay"},
 	interval = 20, chance = 1800, active_object_count = 4,

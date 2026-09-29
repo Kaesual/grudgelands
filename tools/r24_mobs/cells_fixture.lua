@@ -17,7 +17,13 @@
 --   * the Jungle Lynx is eligible by day in Kapok from L4 (band 2), not in
 --     band 1, and is levelled by the field (L4 at L4);
 --   * the Fox (Dwarf/Human/Elf) still needs L4, so band 1 by day stays
---     peaceful there.
+--     peaceful there;
+--   * rows and policy together (mobs_redo's light and day_toggle gate per
+--     row, then the policy): a torch-lit midnight outside the start zone never
+--     spawns a Scorpion or Viper, a dark midnight and a sunny noon in band 2 of
+--     the start zone do; every day row of the loaded families is day-toggled;
+--   * spawn_clock_for and the clock resolution take an explicit zone id and
+--     work without a position (the zone key is used only when a zone is known).
 local repo = assert(arg[1], "usage: cells_fixture.lua <repo>")
 local mobs_dir = repo .. "/mods/ENTITIES/grug_mobs/"
 
@@ -163,6 +169,57 @@ check(kapok_day:find("viper", 1, true) and not raincall_day:find("viper", 1, tru
 	"day cast: Viper in Kapok, not Raincall")
 print("Sunscar day cast: " .. sunscar_day)
 print("Kapok day cast: " .. kapok_day)
+
+-- Rows and policy together: a spawn happens when some row of the family
+-- passes mobs_redo's own row gate (node light, day_toggle over its
+-- 4500..19500 window, api.lua spawn_action) and the policy admits the mob.
+local function row_open(row, light, time)
+	if row.min_light and light < row.min_light then return false end
+	if row.max_light and light > row.max_light then return false end
+	if row.day_toggle ~= nil then
+		local tod = time * 24000
+		local daylight = tod > 4500 and tod < 19500
+		if row.day_toggle ~= daylight then return false end
+	end
+	return true
+end
+local function spawns(name, pos, light, time)
+	for _, row in ipairs(rows) do
+		if row.name == name and row_open(row, light, time) and
+				admits(name, pos, time) then
+			return true
+		end
+	end
+	return false
+end
+for _, family in ipairs({{"grug_mobs:scorpion", sunscar, redtusk},
+		{"grug_mobs:viper", kapok, raincall}}) do
+	local name, start, home = family[1], family[2], family[3]
+	check(not spawns(name, home, 14, MIDNIGHT),
+		name .. ": no spawn at a torch-lit midnight outside the start zone")
+	check(not spawns(name, home, 14, NOON), name .. ": no day spawn outside the start zone")
+	check(spawns(name, home, 0, MIDNIGHT), name .. ": dark midnight outside the start zone spawns")
+	check(spawns(name, start[2], 0, MIDNIGHT), name .. ": dark midnight in band 2 spawns")
+	check(spawns(name, start[2], 15, NOON), name .. ": sunny noon in band 2 spawns")
+	check(not spawns(name, start[1], 15, NOON), name .. ": band 1 stays closed at noon")
+end
+local day_rows, toggled = 0, 0
+for _, row in ipairs(rows) do
+	if row.min_light == 10 then
+		day_rows = day_rows + 1
+		if row.day_toggle == true then toggled = toggled + 1 end
+	end
+end
+check(day_rows > 0 and day_rows == toggled,
+	("every day row is day-toggled (%d of %d)"):format(toggled, day_rows))
+
+-- Explicit zone id, no position (the per-zone cast of Lane F asks this way).
+check(grug_mobs.spawn_clock_for("grug_mobs:scorpion", nil, "kragmar_sunscar_flats") == "any" and
+	grug_mobs.spawn_clock_for("grug_mobs:scorpion", nil, "kragmar_redtusk_savanna") == "night" and
+	grug_mobs.spawn_clock_for("grug_mobs:scorpion", nil, nil) == nil,
+	"spawn_clock_for takes an explicit zone id and no position")
+check(grug_mobs.spawn_clock_for("grug_mobs:viper", redtusk, "kragmar_kapok_cradle") == "any",
+	"an explicit zone id wins over the position's zone")
 
 -- Plains Runner: neutral fighting prey on the normal tier.
 local runner = defs["grug_mobs:plains_runner"]

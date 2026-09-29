@@ -404,7 +404,7 @@ for _, culture in ipairs(cultures) do
 				count = COUNT[number], zone = culture.zones[number]}
 		end
 		if number == 5 and (culture.key == "orc" or culture.key == "troll") then
-			description = description .. " These creatures emerge after nightfall on level-4-and-up ground."
+			description = description .. " Near the start they hunt by day and by night on level-4-and-up ground."
 		elseif number == 7 and culture.key == "elf" then
 			description = "Poachers cut beside Starbough's lower boughs after nightfall. Defeat six in Starbough Vale so Ilyra can put the wardens back on their working paths."
 		elseif number == 8 and (culture.key == "dwarf" or culture.key == "human" or culture.key == "orc") then
