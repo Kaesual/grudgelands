@@ -216,7 +216,7 @@ in this file as of commit `082982da`.
 
 - The old plan of one dragon placed separately on each continent is retired.
 - The macro-map has **two** endpoint regions, one where the western end of the
-  shared front reaches the ocean and one at its eastern end. WP23 populates
+  shared front reaches the ocean and one at its eastern end. WP23 (delivered) populates
   both with an overworld dragon through one shared encounter chassis and two
   regional variants.
 - Each overworld dragon lair occupies its own **offshore island** beyond one

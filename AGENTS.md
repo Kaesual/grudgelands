@@ -67,6 +67,13 @@ Research and historical evidence: **[docs/research/README.md](docs/research/READ
 
 ## Active work and game status
 
+**Round 26 in progress, started 2026-09-29.** Organic capital outlines (Lane
+W, images before merge), Claim Stone activation (Lane S), registration cleanup
+WP28 (Lane R), the status-icon package (Lane I) and the documentation cleanup
+(Lane D). [Plan](docs/planning/round26-capitals-housing-cleanup-plan.md).
+The [work-package audit](docs/planning/wp-audit-2026-09-29.md) and its user
+decisions (2026-09-29) set the current BACKLOG and V1 scope (ROADMAP).
+
 **Round 25 delivered locally, 2026-09-29.** Claim Stone housing (WP24,
 `grug_housing`, [housing.md](docs/design/housing.md)): claims, fuel,
 permissions, interaction guard, Housing Managers, Character status and the

@@ -1,5 +1,9 @@
 # WP5 Task Card — Loot, Refinement Metadata and the Affix System
 
+> **Stale (2026-09-29): do not execute.** Refinement was removed in Round 13
+> and the found-item loot described here is delivered. The current remainder
+> is the [WP5 card](../planning/work-package-scopes.md#wp5).
+
 Status: **Executable task card, authored 2026-08-13 (WP40-independent
 design round). WP5 is buildable today: every dependency is shipped —
 WP1 ✅, WP3 ✅, WP43 ✅ — and the last design blocker fell on 2026-08-13

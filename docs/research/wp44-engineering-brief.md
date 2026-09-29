@@ -1,5 +1,13 @@
 # WP44 Economy Rebase — Engineering Brief
 
+> **Superseded in part (2026-09-29).** WP44 is now a lighter pass (user
+> decision D1): price tables, buy-back, the audit fixes and a simple income
+> estimate; see the [WP44 card](../planning/work-package-scopes.md#wp44). The
+> checksummed manifest, byte-identical re-execution and audit DAG below are
+> not required. Claim upgrades and further Claim Stones are retired (Round
+> 25), repair is a fixed 20 % (`durability_repair.md`), the talent respec
+> price belongs here too, and income now includes quests and gathering.
+
 Status: **Implementation-ready engineering contract, authored 2026-08-13
 (post-WP40 planning pass); not an implementation or shipped-WP claim.**
 
