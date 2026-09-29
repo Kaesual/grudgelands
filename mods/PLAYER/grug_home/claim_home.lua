@@ -56,6 +56,10 @@ function grug_home.set_home_claim(player)
  local name = player:get_player_name()
  local claim = placed_claim(name)
  if not claim then return false, "You have no placed Claim Stone." end
+ -- Round 26 ruling 8: a draft is no home yet; it may crumble in minutes.
+ if housing.is_draft and housing.is_draft(claim) then
+  return false, "Activate your Claim Stone first."
+ end
  if not claim_row(player, claim) then return false, "Your Claim Stone cannot be your home." end
  local id = tostring(claim.id)
  local meta = player:get_meta()
