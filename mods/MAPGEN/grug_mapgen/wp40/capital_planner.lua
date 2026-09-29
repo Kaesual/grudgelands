@@ -1506,6 +1506,10 @@ local function plan_once(seed, I, opt)
 							local x, z = ro.X[i] - AX, ro.Z[i] - AZ
 							local ph = atan2(z, x)
 							local r_end = r_at(ph) - P.SPOKE_IN
+							-- not alongside an avenue (its gate's direction)
+							for _, g in ipairs(gates) do
+								if abs(wrap(ph - g.phi)) < 0.25 then r_end = -INF end
+							end
 							if r_end - sqrt(x * x + z * z) >= P.SPOKE_MIN then
 								i1, ax, az, phi_u, rd = i, x, z, ph, r_end
 								break
