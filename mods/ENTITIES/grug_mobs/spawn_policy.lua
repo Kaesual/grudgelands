@@ -423,6 +423,7 @@ end
 -- (verbs.lua) sets it for the four non-passive prey animals. Deriving it
 -- keeps it from drifting the way a hand-kept hostile list would.
 local hostile_spawns = {}
+local claim_hostile_spawns = {}
 local spawn_clocks = {}
 local ambient_density_spawns = {}
 local natural_min_levels = {}
@@ -454,6 +455,9 @@ end
 function grug_mobs.register_spawn_role(name, def)
 	validate_clock(def.clock, name)
 	hostile_spawns[name] = def.passive ~= true and def.attack_players ~= false
+	-- Settlement people (guards, royal guards, villagers, vendors: all
+	-- `type = "npc"`) are never refused by a housing claim (ruling 24).
+	claim_hostile_spawns[name] = hostile_spawns[name] and def.type ~= "npc"
 	spawn_clocks[name] = def.clock
 	natural_min_levels[name] = def._grug_min_level or 1
 	-- Ordinary natural rows include hostile creatures and neutral huntable
@@ -467,6 +471,35 @@ end
 
 function grug_mobs.spawn_role_hostile(name)
 	return hostile_spawns[name] == true
+end
+
+--
+-- Round 25 ruling 24: no hostile spawn inside an active housing claim. Mobs
+-- may still walk in, and an expired (unfuelled) claim spawns normally.
+--
+-- Hostile here is the start-footprint role above (a mob that attacks a
+-- player unprovoked) minus `type = "npc"`: neutral prey that only fights
+-- back, passive critters, fish and every settlement NPC keep spawning.
+--
+-- `pos` is where the mob will stand (for an ABM row, its matched node + 1).
+-- A claim is a column from grug_housing.MIN_Y upward, so cave spawns below a
+-- home down to that floor are refused too; claim_at owns that test.
+--
+-- The claim core is looked up at run time, not through a mod dependency:
+-- grug_housing depends on grug_mobs, so a dependency this way round would be
+-- a cycle. rawget keeps strict.lua quiet while the mod is absent. At most
+-- one claim_at call per hostile attempt and none for any other mob; nothing
+-- is stored, so a refusal is an ordinary failed attempt.
+function grug_mobs.claim_refuses_spawn(name, pos)
+	if not claim_hostile_spawns[name] then
+		return false
+	end
+	local housing = rawget(_G, "grug_housing")
+	if not housing then
+		return false
+	end
+	local claim = housing.claim_at(pos)
+	return claim ~= nil and housing.is_active(claim) == true
 end
 
 local function clock_for_palette(name, palette)

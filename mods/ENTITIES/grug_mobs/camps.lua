@@ -387,6 +387,13 @@ local function spawn_one(pos, meta, cfg, living)
 	if cfg.variant and math.random(cfg.variant_chance) == 1 then
 		name = cfg.variant
 	end
+	-- Round 25 ruling 24: a bandit or mirefolk slot whose spot lies in an
+	-- active housing claim is not served, like blocked ground (the due time
+	-- stays, a later tick rolls a new spot). Guards are `type = "npc"` and
+	-- never refused.
+	if grug_mobs.claim_refuses_spawn(name, spot) then
+		return false
+	end
 	local ent = grug_mobs.add_mob(spot, {name = name, ignore_count = true})
 	if not ent then
 		return false

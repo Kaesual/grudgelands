@@ -202,6 +202,11 @@ local function try_spawn(id, spec, now)
 	if not pos then
 		return
 	end
+	-- Round 25 ruling 24: a hostile rare never appears inside an active
+	-- housing claim; the next pass picks a route point again.
+	if grug_mobs.claim_refuses_spawn(spec.mob, pos) then
+		return
+	end
 	-- grug_mobs.add_mob, not mobs:add_mob: the wrapper applies the
 	-- collisionbox y-lift the ABM spawner does and add_mob does not (init.lua)
 	-- — without it the golem- and spider-based rares spawn sunk into the
