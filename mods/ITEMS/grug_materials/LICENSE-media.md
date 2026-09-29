@@ -32,7 +32,9 @@ file. Regenerate with `python3 tools/wp13/gen_weapon_ladder.py`.
 
 ## Source and license
 
-All originals live in `mods/BASE/default`, vendored from
+Except for the Round 24 stored textures, whose origin, author and license
+(CC BY-SA 3.0 or CC BY-SA 4.0 per file) are listed in §9, all originals live
+in `mods/BASE/default`, vendored from
 minetest_game <https://github.com/luanti-org/minetest_game> at commit
 `b5243f3`; see [VENDOR.md](../../../VENDOR.md).
 
