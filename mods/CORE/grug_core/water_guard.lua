@@ -23,6 +23,8 @@ end
 
 local function guarded(pos)
 	if grug_core.world_alterable(pos) then return false end
+	-- A registered guard (an arrival cube) wins over planned flow.
+	if grug_core.world_alteration_guarded(pos) then return true end
 	for index = 1, #planned_flow do
 		if planned_flow[index](pos) == true then return false end
 	end
