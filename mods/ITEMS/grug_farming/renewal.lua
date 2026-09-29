@@ -16,8 +16,9 @@
 --   find_nodes_in_area_under_air(minp, maxp, names), get_item_group(name, group)
 --   density     the vegetation authority (grug_mapgen.wp40.vegetation)
 --   planner     the planner column source (grug_mapgen.wp40.planner_source)
---   natural_ground_alterable(pos)  grug_core's territory rule for natural
---               change (no claim guards: claims never feed renewal)
+--   natural_ground_alterable(pos)  grug_core's rule for natural change: the
+--               territory rule plus the natural renewal guards (nothing
+--               regrows inside an active Claim Stone's claim)
 --   random()    uniform [0, 1); trees  bool (setting grug_tree_regrowth)
 --   non_natural array of node names that are not natural (sapling guard)
 return function(api)
@@ -193,8 +194,9 @@ return function(api)
 	-- ground) and hard rows never grow renewed plants. The writers' claim
 	-- exclusions (settlements, POIs, roads, water; per plant class) and the
 	-- ground they keep bare are the habitat's answer (vegetation_density.lua).
-	-- Housing masks and Claim Stones are no part of it (Round 24 ruling 33):
-	-- a housing column renews like any other ground.
+	-- An active Claim Stone's claim refuses through natural_ground_alterable
+	-- (Round 25 ruling 14); an expired claim renews like any other ground
+	-- (ruling 19).
 	local function permitted(pos, support_pos)
 		if planner.hard_row_at(pos.x, pos.y, pos.z) ~= nil or
 				planner.hard_row_at(support_pos.x, support_pos.y, support_pos.z) ~= nil then

@@ -29,9 +29,17 @@ local function guarded(pos)
 	return true
 end
 
+-- Every other liquid (lava) flows freely except where a world alteration
+-- guard refuses the position (a Claim Stone's arrival cube, Round 25 ruling
+-- 6); the territory rule stays a water-only rule. Filled at mods loaded.
+local other_liquids = {}
+
 local function wrap_flood(original)
 	return function(pos, oldnode, newnode)
 		if water_names[newnode.name] and guarded(pos) then
+			return true
+		end
+		if other_liquids[newnode.name] and grug_core.world_alteration_guarded(pos) then
 			return true
 		end
 		if original then return original(pos, oldnode, newnode) end
@@ -39,6 +47,12 @@ local function wrap_flood(original)
 end
 
 core.register_on_mods_loaded(function()
+	for name, definition in pairs(core.registered_nodes) do
+		if not water_names[name] and definition.liquidtype and
+				definition.liquidtype ~= "none" then
+			other_liquids[name] = true
+		end
+	end
 	for name, definition in pairs(core.registered_nodes) do
 		if definition.floodable and name ~= "air" then
 			core.override_item(name, {on_flood = wrap_flood(definition.on_flood)})
@@ -55,6 +69,10 @@ core.register_on_liquid_transformed(function(positions, old_nodes)
 				guarded(pos) then
 			-- swap_node preserves metadata and performs ordinary lighting/liquid
 			-- updates without construction/destruction callbacks or item drops.
+			core.swap_node(pos, oldnode)
+		elseif current and oldnode and
+				(other_liquids[current.name] or other_liquids[oldnode.name]) and
+				grug_core.world_alteration_guarded(pos) then
 			core.swap_node(pos, oldnode)
 		end
 	end

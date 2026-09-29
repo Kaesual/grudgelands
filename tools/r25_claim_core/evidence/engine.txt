@@ -1,0 +1,31 @@
+staged probe: grug_probe_claims
+headless boot: PASS (port 31882, 240 s)
+log: /tmp/grudgelands-headless.A1tE6W/server.log
+seed = 4242424242
+251:ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:31882.
+kept: /tmp/grudgelands-headless.A1tE6W
+staged probe: grug_probe_claims
+headless boot: PASS (port 39658, 240 s)
+log: /tmp/grudgelands-headless.A1tE6W/server.2.log
+seed = 4242424242
+251:ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:39658.
+kept: /tmp/grudgelands-headless.A1tE6W
+ACTION[Server]: [r25_claim_probe] REFUSED near start 0,-2400: town; L1-10 at 300,-2550: low_level
+ACTION[Emerge-0]: [r25_claim_probe] SPOT -2400,-2399 in elandor_copperfell_foothills (search 0.1 s)
+ACTION[Emerge-0]: [r25_claim_probe] EMERGED around -2400,-2399 in 15.1 s
+ACTION[Emerge-0]: [grug_housing] r25owner placed Claim Stone 1 at (-2400,73,-2399)
+ACTION[Emerge-0]: [r25_claim_probe] PLACED claim 1 at (-2400,73,-2399) in elandor_copperfell_foothills (L11-20); placement 9.4 ms, zone scan 16.4 ms
+ACTION[Emerge-0]: [r25_claim_probe] DIG fuelled stone by owner: node_dig=false
+ACTION[Server]: [r25_claim_probe] LIQUID water nodes: arrival cube 0, beside it 22
+ACTION[Server]: [r25_claim_probe] EVENTS placed:1 fuel:1 permission:1 permission:1 expired:1
+ACTION[Server]: [r25_claim_probe] SECOND spot -2299,-2399 zone check true
+ACTION[Server]: [grug_housing] r25second placed Claim Stone 2 at (-2299,79,-2399)
+ACTION[Server]: [grug_housing] Claim Stone 2 of r25second destroyed by r25digger
+ACTION[Server]: [r25_claim_probe] DIG empty second stone: hand=false pick=true true -> air
+ACTION[Server]: [r25_claim_probe] BENCH core.is_protected (4000 columns round the spot): 3262 ns per call with 0 claims, 3608 ns with 50 claims (10 of them in the sampled area)
+ACTION[Server]: [r25_claim_probe] BOOT 1 claim 1|r25owner|-2400|73|-2399|1790687564|1790818371|interact
+ACTION[Server]: [r25_claim_probe] RESULT PASS checks=42 failures=0
+ACTION[Server]: [r25_claim_probe] BOOT 2 claim 1|r25owner|-2400|73|-2399|1790687564|1790818371|interact (saved 1|r25owner|-2400|73|-2399|1790687564|1790818371|interact)
+ACTION[Server]: [r25_claim_probe] BOOT 2 stone node nil
+ACTION[Server]: [r25_claim_probe] RESULT PASS checks=4 failures=0
+r25 claim probe: PASS

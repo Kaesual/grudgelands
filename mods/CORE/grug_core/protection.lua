@@ -4,10 +4,9 @@ local previous_is_protected = core.is_protected
 
 -- System mutations have no player faction. Home territory is mutable for its
 -- residents, but authored/immutable content is not mutable for water or plants.
--- Additional system guards (for example active Housing reservations) fail
+-- Additional system guards (for example a Claim Stone's arrival cube) fail
 -- closed when they return false, independently of player protection bypass.
--- They guard system mutations such as liquid flow; natural renewal checks
--- only the territory rule (`natural_ground_alterable`, Round 24 ruling 33).
+-- They guard system mutations such as liquid flow.
 local world_alteration_guards = {}
 
 function grug_core.register_world_alteration_guard(guard)
@@ -15,10 +14,28 @@ function grug_core.register_world_alteration_guard(guard)
 	world_alteration_guards[#world_alteration_guards + 1] = guard
 end
 
+-- True when a registered world alteration guard refuses pos. The liquid guard
+-- asks this alone for liquids other than water (water_guard.lua).
+function grug_core.world_alteration_guarded(pos)
+	for index = 1, #world_alteration_guards do
+		if world_alteration_guards[index](pos) == false then return true end
+	end
+	return false
+end
+
+-- Natural renewal guards (Round 25 ruling 14): a guard returns false where
+-- nothing may regrow (an active Claim Stone's claim). They are separate from
+-- the world alteration guards above, so water keeps flowing inside claims.
+local natural_renewal_guards = {}
+
+function grug_core.register_natural_renewal_guard(guard)
+	assert(type(guard) == "function", "natural renewal guard must be a function")
+	natural_renewal_guards[#natural_renewal_guards + 1] = guard
+end
+
 -- The territory part alone: whether the world itself may change here (towns,
--- landmarks, the open sea and other immutable ground refuse). Natural renewal
--- uses this, never the guards below: Claim Stones and other player
--- protection change nothing about generation or renewal (Round 24 ruling 33).
+-- landmarks, the open sea and other immutable ground refuse). Generation
+-- never consults claims.
 function grug_core.natural_ground_alterable(pos)
 	if not grug_core.zone_authority_installed() then return false end
 	local territory = grug_zones.territory_rule_at(pos)
@@ -26,12 +43,19 @@ function grug_core.natural_ground_alterable(pos)
 		territory == "contested_land"
 end
 
-function grug_core.world_alterable(pos)
+-- Whether natural renewal (grug_farming/renewal.lua) may place here: the
+-- territory rule plus every natural renewal guard.
+function grug_core.natural_renewal_allowed(pos)
 	if not grug_core.natural_ground_alterable(pos) then return false end
-	for index = 1, #world_alteration_guards do
-		if world_alteration_guards[index](pos) == false then return false end
+	for index = 1, #natural_renewal_guards do
+		if natural_renewal_guards[index](pos) == false then return false end
 	end
 	return true
+end
+
+function grug_core.world_alterable(pos)
+	if not grug_core.natural_ground_alterable(pos) then return false end
+	return not grug_core.world_alteration_guarded(pos)
 end
 
 function core.is_protected(pos, name)

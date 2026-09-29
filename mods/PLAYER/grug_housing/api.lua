@@ -1,72 +1,82 @@
--- Interface contract (plan section "Lanes"). Lane A replaces these stubs with
--- the real claim core; the signatures and return shapes are fixed so Lanes
--- B, C and D can code against them from the start.
+-- Interface contract (plan section "Lanes") and the claim core (Lane A).
+-- Lanes B, C and D code against the signatures and return shapes below.
 --
 -- A claim is a table { id, owner, center = {x, y, z}, placed_at, paid_until }
--- (seconds of os.time()), plus whatever else Lane A needs.
+-- (seconds of os.time()), plus `expired_for` and `permissions` (name ->
+-- "everything" | "interact"). Read it, never write it: every change goes
+-- through the functions here, which persist it. The model itself lives in
+-- registry.lua (pure, shared with tools/r25_claim_core/fixture.lua).
+
+local modpath = core.get_modpath("grug_housing")
+local storage = core.get_mod_storage()
+
+local model = dofile(modpath .. "/registry.lua")({
+	storage = {
+		get_string = function(key) return storage:get_string(key) end,
+		set_string = function(key, value) storage:set_string(key, value) end,
+		keys = function() return storage:get_keys() end,
+	},
+	-- Ruling 10: the wall clock. Server downtime counts.
+	now = os.time,
+})
+model.load()
+grug_housing.model = model
 
 -- Claim size and placement bounds (rulings 1-2).
-grug_housing.RADIUS = 50
-grug_housing.MIN_Y = -100
+grug_housing.RADIUS = model.RADIUS
+grug_housing.MIN_Y = model.MIN_Y
+grug_housing.LUMP_SECONDS = model.LUMP_SECONDS
+grug_housing.FUEL_MAX = model.FUEL_MAX
 
--- The soulbound Claim Stone item, registered by Lane A.
+-- The soulbound Claim Stone item, registered by Lane A (stone.lua). The item
+-- places the node of the same name, the fuelled stone; an empty stone is
+-- EMPTY_STONE (the only variant a pick can dig, ruling 12).
 grug_housing.STONE_ITEM = "grug_housing:claim_stone"
+grug_housing.EMPTY_STONE = "grug_housing:claim_stone_empty"
+
+-- Ruling 10: coal lumps and charcoal burn alike; coal blocks are refused.
+grug_housing.FUEL_ITEMS = {
+	["default:coal_lump"] = true,
+	["grug_smelting:charcoal"] = true,
+}
+-- Unburnt whole lumps come back as this item on pick-up.
+grug_housing.REFUND_ITEM = "default:coal_lump"
+
+function grug_housing.is_fuel(itemname)
+	return grug_housing.FUEL_ITEMS[itemname] == true
+end
 
 -- The claim covering pos (x/z only, y >= MIN_Y), or nil.
 function grug_housing.claim_at(pos)
-	return nil
+	return model.claim_at(pos)
 end
 
 -- True while the claim has fuel (paid_until is in the future).
 function grug_housing.is_active(claim)
-	return false
+	return model.is_active(claim)
 end
 
 -- Whole seconds of fuel left, 0 when empty.
 function grug_housing.remaining_seconds(claim)
-	return 0
+	return model.remaining_seconds(claim)
 end
 
 -- "owner", "everything", "interact" or nil for this player name.
 function grug_housing.permission(claim, name)
-	return nil
+	return model.permission(claim, name)
 end
 
 -- The player's claim (or nil) and a state: "never", "carried", "placed",
--- "destroyed" or "needs_stone".
+-- "destroyed" or "needs_stone". A standing stone, fuelled or empty, is
+-- "placed" with its claim.
 function grug_housing.player_claim(name)
-	return nil, "never"
-end
-
--- Housing Manager hand-out (ruling 7): gives the stone when the player is
--- level 20+ and has none; returns ok, message.
-function grug_housing.issue_stone(player)
-	return false, "Housing is not available yet."
-end
-
--- Burns count lumps into paid_until; returns the number accepted.
-function grug_housing.add_fuel(claim, count)
-	return 0
-end
-
--- Owner pick-up through the stone interface; returns ok, message.
-function grug_housing.pick_up(player)
-	return false, "Housing is not available yet."
-end
-
--- level is "everything", "interact" or nil (remove); returns ok, message.
-function grug_housing.set_permission(claim, name, level)
-	return false, "Housing is not available yet."
-end
-
--- The centre of the 3 x 3 x 3 arrival cube above the stone (ruling 6).
-function grug_housing.arrival_pos(claim)
-	local c = claim.center
-	return {x = c.x, y = c.y + 1, z = c.z}
+	return model.player_claim(name)
 end
 
 -- fn(claim, event) runs after every change; event is one of "placed",
--- "fuel", "permission", "picked_up", "destroyed", "expired".
+-- "fuel", "permission", "picked_up", "destroyed", "expired". "picked_up" and
+-- "destroyed" pass the removed claim table. "expired" comes from a periodic
+-- check every few seconds (stone.lua), once per burnt-out paid_until.
 local claim_changed_callbacks = {}
 
 function grug_housing.register_on_claim_changed(fn)
@@ -78,6 +88,169 @@ function grug_housing.notify_claim_changed(claim, event)
 	for index = 1, #claim_changed_callbacks do
 		claim_changed_callbacks[index](claim, event)
 	end
+end
+
+-- Whether the Claim Stone item is anywhere in the player's inventory.
+function grug_housing.holds_stone(player)
+	local inv = player and player:get_inventory()
+	if not inv then return false end
+	for listname in pairs(inv:get_lists()) do
+		if inv:contains_item(listname, grug_housing.STONE_ITEM) then return true end
+	end
+	return false
+end
+
+local function player_level(player)
+	local xp = rawget(_G, "grug_xp")
+	return xp and xp.get_level(player) or 0
+end
+
+-- Housing Manager hand-out (ruling 7): gives the stone when the player is
+-- level 20+ and has none; returns ok, message.
+function grug_housing.issue_stone(player)
+	if not player or not player:is_player() then return false, "No player." end
+	local name, level = player:get_player_name(), player_level(player)
+	local holds = grug_housing.holds_stone(player)
+	local ok, message = model.can_issue(name, level, holds)
+	if not ok then return false, message end
+	local inv = player:get_inventory()
+	local stone = ItemStack(grug_housing.STONE_ITEM)
+	if not inv:room_for_item("main", stone) then
+		return false, "Make room in your inventory for the Claim Stone."
+	end
+	ok, message = model.issue(name, level, holds)
+	if not ok then return false, message end
+	inv:add_item("main", stone)
+	return true, message
+end
+
+-- Makes the node at the stone match its claim: the fuelled stone while the
+-- claim is active, the empty stone otherwise. Only a loaded stone changes.
+function grug_housing.sync_stone_node(claim)
+	local node = core.get_node_or_nil(claim.center)
+	if not node then return end
+	local wanted = model.is_active(claim) and grug_housing.STONE_ITEM or
+		grug_housing.EMPTY_STONE
+	if (node.name == grug_housing.STONE_ITEM or
+			node.name == grug_housing.EMPTY_STONE) and node.name ~= wanted then
+		core.swap_node(claim.center, {name = wanted})
+	end
+end
+
+-- Burns count lumps into paid_until; returns the number accepted
+-- (at most 99 - ceil(remaining / LUMP_SECONDS)).
+function grug_housing.add_fuel(claim, count)
+	local accepted = model.add_fuel(claim, count)
+	if accepted > 0 then
+		grug_housing.sync_stone_node(claim)
+		grug_housing.notify_claim_changed(claim, "fuel")
+	end
+	return accepted
+end
+
+-- Owner pick-up through the stone interface; returns ok, message. The stone
+-- goes back into the main inventory together with the unburnt whole lumps
+-- (dropped at the player when they do not fit).
+function grug_housing.pick_up(player)
+	if not player or not player:is_player() then return false, "No player." end
+	local name = player:get_player_name()
+	local claim = model.player_claim(name)
+	if not claim then return false, "You have no placed Claim Stone." end
+	local wait = model.pickup_wait(name)
+	if wait > 0 then
+		return false, "You can pick up a Claim Stone again in " ..
+			model.wait_text(wait) .. "."
+	end
+	local inv = player:get_inventory()
+	local stone = ItemStack(grug_housing.STONE_ITEM)
+	if not inv:room_for_item("main", stone) then
+		return false, "Make room in your inventory for the Claim Stone."
+	end
+	local lumps = model.refund_lumps(claim)
+	core.load_area(claim.center)
+	local node = core.get_node_or_nil(claim.center)
+	if node and (node.name == grug_housing.STONE_ITEM or
+			node.name == grug_housing.EMPTY_STONE) then
+		core.remove_node(claim.center)
+	end
+	model.remove(claim, "picked_up")
+	inv:add_item("main", stone)
+	if lumps > 0 then
+		local left = inv:add_item("main",
+			ItemStack(grug_housing.REFUND_ITEM .. " " .. lumps))
+		if not left:is_empty() then core.add_item(player:get_pos(), left) end
+	end
+	grug_housing.notify_claim_changed(claim, "picked_up")
+	if lumps > 0 then
+		return true, "Claim Stone picked up; " .. lumps .. " unburnt coal returned."
+	end
+	return true, "Claim Stone picked up."
+end
+
+-- level is "everything", "interact" or nil (remove); returns ok, message.
+function grug_housing.set_permission(claim, name, level)
+	local ok, message = model.set_permission(claim, name, level)
+	if ok then grug_housing.notify_claim_changed(claim, "permission") end
+	return ok, message
+end
+
+-- The bottom-layer centre of the 3 x 3 x 3 arrival cube above the stone
+-- (ruling 6): where a travelling player's feet go.
+function grug_housing.arrival_pos(claim)
+	local c = claim.center
+	return {x = c.x, y = c.y + 1, z = c.z}
+end
+
+-- The world queries placement validation needs (registry.lua validate).
+local zone_records = {}
+local world = {}
+
+function world.water_class_at(x, z)
+	return grug_zones.water_class_at(x, z)
+end
+
+function world.zone_at(x, z)
+	local id = grug_zones.id_at(x, z)
+	if not id then return nil end
+	local record = zone_records[id]
+	if not record then
+		record = grug_zones.get(id)
+		zone_records[id] = record
+	end
+	return record
+end
+
+-- At the world top every town or landmark column answers "hard_protected",
+-- whatever its protected floor: ruling 3 excludes them in x/z.
+function world.territory_at(x, z)
+	return grug_zones.territory_rule_at({x = x, y = 30000, z = z})
+end
+
+function world.exclusion_in(min_x, min_z, max_x, max_z)
+	return grug_zones.claim_exclusion_in(min_x, min_z, max_x, max_z)
+end
+
+function world.cube_clear(pos)
+	for dy = 1, 3 do
+		for dz = -1, 1 do
+			for dx = -1, 1 do
+				local node = core.get_node_or_nil({x = pos.x + dx, y = pos.y + dy,
+					z = pos.z + dz})
+				if not node or node.name ~= "air" then return false end
+			end
+		end
+	end
+	return true
+end
+
+-- Rulings 2, 3, 5, 6 and 9 for a stone the player would place at pos;
+-- returns true, or false, code, message.
+function grug_housing.validate_placement(player, pos)
+	if not grug_core.zone_authority_installed() then
+		return false, "no_world", "The world is not ready yet."
+	end
+	local name = player:get_player_name()
+	return model.validate(name, grug_core.get_player_faction(name), pos, world)
 end
 
 -- Set by Lane C: opens the owner's stone formspec. Lane A's stone node calls

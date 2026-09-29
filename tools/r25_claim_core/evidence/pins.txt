@@ -1,0 +1,24 @@
+# Mapgen pins with the housing masks removed (LuaJIT, 2026-09-29).
+# before = main 37b547c0, after = branch r25-lane-a-claim-core. Full outputs
+# are byte-identical apart from timings and the depth fixture's housing tally.
+
+tools/r24_fill/micro.lua (before = after)
+  layer KAT digest: 6a513d83211763410076f109aef4c22337989c10ccc8693e236817f172739219
+  cliff KAT digest: bfc03cb9b55572b0e0d0baa1d51d93bd5f40ce9900f8306b7d72a0b5b4cc7e74
+  native allowlist digest a1c53c2fffce197c76f99c31bba294cb006d19079ed8477378f740e8aa6dd31b
+  R24 FILL FIXTURE PASS
+
+tools/r23_renewal/fixture.lua (before = after)
+  DIGEST 1745745539, RESULT PASS
+
+tools/r23_tree_line/fixture.lua quick (before = after)
+  DIGEST 1723223886, RESULT PASS
+
+tools/r24_protection_depth/fixture.lua
+  before: cave rule mapgen = renewal on 876 / 877 columns (214 / 225 in housing
+          masks), 576 excluded-column sites open below a floor;
+          PASS checks=2484429
+  after:  cave rule mapgen = renewal on 876 / 877 columns, 576 excluded-column
+          sites open below a floor; PASS checks=2484427
+  (the same sampled columns and answers; the housing-mask tally and its two
+  "housing-mask cores sampled" checks are gone with the masks)
