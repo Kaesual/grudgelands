@@ -24,12 +24,17 @@ or travel. Overworld foreshadowing does not unlock or include that expansion.
   does not unite them: each side fights the darkness on its own,
   in parallel and in competition. (Cross-faction cooperation is NOT part
   of the MVP story.)
-- The Nether portals are the visible symptom: "the magic of the world"
-  did not create the connections benevolently — **something opened them
-  from the other side.**
+- In V1, scorched breaches, twisted vegetation and corruption set pieces
+  foreshadow a connection from below; no Nether portal or crossing is built.
+  V2 introduces the portals and the walkable Nether, revealing that
+  **something opened the connections from the other side.**
 
 ## 2. Main questline
 
+- **V1 scope** (user decision 2026-09-29,
+  [WP audit](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29)
+  B7): the main questline through levels 41–60 and its finale are part of
+  V1 (WP9); only the Nether payoff below waits for V2.
 - One equivalent but faction-specific main questline per side carries the premise:
   early quests are local and mundane (boars, bandits, guard duty), then
   signs of corruption appear, and the questline progressively reveals
@@ -60,8 +65,9 @@ or travel. Overworld foreshadowing does not unlock or include that expansion.
 
 ## 3. Environmental storytelling hooks
 
-- Corruption visuals near overworld Nether portals (scorched ground,
-  twisted vegetation) — the darkness leaks through.
+- Corruption visuals at overworld breaches (scorched ground, twisted
+  vegetation) — the darkness leaks through. There are no Nether portals in
+  V1.
 - Distinct from the Undead race's blight home region (§7 world.md):
   the Undead are a *faction people*, not the demon threat — their blight
   is old death, the Nether corruption is fresh, fiery evil.

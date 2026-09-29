@@ -224,8 +224,8 @@ in this file as of commit `082982da`.
   separates it from every mainland coast, so it has no land, bridge or tunnel
   connection. Both factions receive equivalent authored boat access.
 - Every dragon island is a contested level-60 mountain region with strong
-  level-60 mountain creatures. Its silhouette culminates in a dragon mountain,
-  summit or hoard.
+  level-60 mountain creatures. Its silhouette culminates in a dragon mountain
+  or summit lair (no hoard chest, WP audit E11).
 - An overworld dragon is therefore always a PvP world boss. Reaching and
   fighting it exposes both factions to each other; it is never a private
   home-continent boss.
@@ -238,13 +238,10 @@ in this file as of commit `082982da`.
 - Each endpoint reserves an apex mining camp in the dangerous approach to the
   lair. Its building core is protected as a POI box (`world.md` §2 R1b);
   walls, tents, fences and dressing outside it are mutable. Its bounded
-  functional anchor and exactly **12 protected renewable sockets—two Citrine,
-  two Garnet, two Jade, two Diamond, two Sapphire and two Ruby**—are
-  hard-protected. Natural veins remain finite;
-  only these protected sockets
-  use `world.md` §2 R4's existing 2–4 h renewable-node exception. The material
-  catalog supplies the item/node ids; zone code stores the six semantic gem
-  species and never owns their registered itemstrings.
+  functional anchor is hard-protected. It has no renewable sockets: renewable
+  ores are removed entirely, camps included (user decision 2026-09-29,
+  [WP audit](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29)
+  E5), and natural veins remain finite (`world.md` §2 R4).
 
 ## 7. Horizontal and vertical world model
 
@@ -588,8 +585,9 @@ replaced; git history before this rewrite records that model.
   96-node civic core and terrace contract (§12).
 - **POIs sit in the terrain (Round 22, D33).** Every other anchor keeps its
   x/z, and its height comes from the terrain: the lower median of the natural
-  ground under its building core (village and bandit camp 24; outpost,
-  Mirefolk camp and clash site 16; mine 20; dragon and apex mine 32; rare
+  ground under its building core (village and home bandit camp 24; frontier
+  bandit camp (`bandit_frontier`, user decision 2026-09-29, WP audit E1),
+  outpost, Mirefolk camp and clash site 16; mine 20; dragon and apex mine 32; rare
   route 12 nodes), at least one node above water. Only that core is flat.
   A short collar follows the core's outline with round corners and a
   noise-varied width and returns to natural terrain: about 6 nodes on level
@@ -893,10 +891,10 @@ POI abbreviations:
 - **C** = capital, king, service hub and waypoint;
 - **V** = mandatory village; **O×n** = n ordinary outpost slots;
 - **B** = one of the two fixed bandit camps for that race;
-- **M** = that race's one peaceful renewable mining camp;
+- **M** = that race's one peaceful mining camp;
 - **W** = a fixed Mirefolk wetland camp;
 - **K×n** = n dedicated war-front clash anchors;
-- **D/M6** = dragon lair plus the all-six-gem apex mining camp;
+- **D/M6** = dragon lair plus the apex mining camp;
 - **R:name** = the migrated named-rare route.
 
 Peaceful §8.1 zones use `territory_rule = "accord_home"` and peaceful §8.2
@@ -1251,10 +1249,10 @@ code, not by this document.
   dungeons, foreign nodes and protected content are not hosts.
 - **Fixed and protected ground** (every anchor's claim envelope — a capital's
   protected city, a start town, the square of a POI, village, camp or
-  outpost — and every hard core, including the apex socket columns) hosts no
+  outpost — and every hard core) hosts no
   natural resource inside its protected volume: from its placement height −
   100 upward (Round 24 ruling 30). The placement height is the anchor's
-  fitted surface, or the socket column's own surface; where several such
+  fitted surface; where several such
   shapes hold a column, the lowest floor wins. Below that floor the column
   takes ores, gems, rock layers and nests like any other ground (the former
   rule kept these columns ore-free down to y = −700).
@@ -1285,9 +1283,6 @@ code, not by this document.
   accessible host volume, counting all universal resources plus the region's
   assigned G1 and G2. Placed natural nodes are a separate density concern.
   Spot-checked on representative seeds.
-- Ordinary-camp equality is separate: each race has exactly 12 renewable
-  camp sockets per world. Camp sockets never count toward natural-vein parity.
-  Apex-camp sockets remain shared bonuses outside both.
 - Every race region supplies its cultural material ordinarily at the surface
   for its own architecture, trade and quests and supplies one concentrated T4
   source in exactly one race-frontier zone. Foreign cultural material is
@@ -1316,15 +1311,10 @@ code, not by this document.
   `lower_two_policy = "preserve_p7"`; it replaces neither P7 top nor filler.
   No production world is generated with permanently empty cultural
   reservations.
-- Both apex camps contain the same count of every one of the six gem species:
-  exactly two renewable sockets per species per island.
-  Endpoint deposits are a shared bonus and do not compensate a deficient home
-  budget.
 - Each faction-native exclusive G2 species has at least one practical
   contested level-31+ surface route: Ruby for Accord raiders and Sapphire for
   Throng raiders. The y = −701 deep opening also permits cross-border mining
-  beneath the opposing race-region columns, and both islands provide all six
-  species by boat. Trade remains an alternative, never the only route.
+  beneath the opposing race-region columns. Trade remains an alternative, never the only route.
 - Every level-31–60 frontier and dragon-island zone has no home-faction
   construction owner. Both factions may dig and place ordinary terrain there,
   subject to tools, explicit hard-protected capital or functional-anchor
@@ -1337,8 +1327,8 @@ code, not by this document.
   every y: both factions may dig and place ordinary terrain, while no housing
   claim may privatize it. Explicit hard-protected functional anchors retain
   their bounded envelopes. The immutable ocean channels around the dragon
-  islands remain non-editable at every y; protected lair/camp structures and
-  their renewable sockets keep their own envelopes.
+  islands remain non-editable at every y; protected lair/camp structures keep
+  their own envelopes.
 - `race_region`, `territory_rule` and `pvp_rule` are independent registry
   fields. In particular, a Human/Orc/Dwarf/Undead/Elf/Troll cultural label
   grants no home-faction terrain privilege in any contested zone.
@@ -1766,6 +1756,9 @@ the mapgen is finished.
 
 ## 15. Exact PvP eligibility contract (WP41)
 
+WP41 is part of V1 (user decision 2026-09-29,
+[WP audit](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29) B4).
+
 ### 15.1 Peaceful-zone transaction
 
 “Hostile attempt” means a server-validated contact with an enemy player or a
@@ -1871,6 +1864,11 @@ tag anybody.
   green.
 
 ## 16. Bounded war-front life (WP42)
+
+Scope (user decision 2026-09-29, WP audit B5/B6): the scripted NPC battles
+below come after V1. Small PvP POIs — forts and camps with NPCs — may come in
+V1. WP42 may ship before WP41, with war units treating today's enemy-faction
+players as hostile until the `grug_pvp` seam exists.
 
 - Twelve zones are contested. Eight of them carry the current war-activity
   budget: Ashenward March, Bannerbreak Mesa and all six §8.3 zones. Their §8

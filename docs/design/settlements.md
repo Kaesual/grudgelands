@@ -557,8 +557,9 @@ are allowed; an identical rotated town layout is not the design.
 
 Art uses the existing settlement projection, actor-root priority and reserved
 footprints. It neither adds duplicate bosses/guards/resources nor expands
-terrain reservations. The frontier bandit 16-node implementation versus decided
-24-node core remains an explicit backlog correction. Whitebridge and Whispering
+terrain reservations. The frontier bandit camp's building core is 16 nodes
+(user decision 2026-09-29, WP audit E1: the art and code stay, the former
+24-node design value is corrected). Whitebridge and Whispering
 Reedlands retain shipwright workplaces/display hulls; boat teaching is future
 WP17 work.
 

@@ -97,8 +97,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     weapon follow exactly as they do for a manual equip. It obeys the
     two-handed rule below rather than bypassing it, and falls back to `main`
     (with a chat line saying so) if the slot cannot take the item. The starter
-    torch stays in `main` for the same reason: in the offhand it would cost
-    every caster their two-handed staff.
+    torch stays in `main`; torches are not offhand items (no carried light,
+    `combat_stats.md` §7).
   - **Class-family permissions:** Warrior: sword, dagger, Battle Axe;
     Scout: bow, sword, dagger; Mage and Priest: staff, wand, dagger.
     All share the Weapon slot. Level and occupied-hand checks also apply.
@@ -116,8 +116,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   (decided 2026-08-08): every weapon declares `_grug_hands` —
   **Battle Axe 2, staff 2, bow 2, sword 1, dagger 1, wand 1**.
   An item **without** the field counts as
-  one-handed, which is what keeps the rule additive for torches, shields
-  and every future offhand item.
+  one-handed, which is what keeps the rule additive for shields and every
+  future offhand item.
   - The rule is one sentence in **both** directions: **the two occupied
     hands must add up to at most two hands.** A two-handed weapon refuses
     an occupied offhand, and an occupied two-handed hand refuses anything
@@ -128,9 +128,9 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     clearing the other slot. Two-handers also carry ", two-handed" in their
     generated stat line, so the trade is readable before the refusal ever
     fires. Rationale: the consequence is a gameplay rule, not a
-    technicality — carrying a torch or shield costs you the
-    two-handed weapon. *(The offhand direction cannot fire until an item
-    carries `grug_equip_offhand`, as shields and carried lights do.)*
+    technicality — carrying a shield or spellbook costs you the
+    two-handed weapon. *(The offhand direction fires for every item that
+    carries `grug_equip_offhand`: shields, spellbooks and the quiver.)*
 - **2 Trinket slots** — **no longer reserved** (decided 2026-08-08).
   UI, meta and the group-filtered `allow_put` shipped with WP15; what
   was missing was an item family, and **trinket items now ship in the
@@ -222,8 +222,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   exception and stays vendor-sellable**: it is the floor tier of its
   item category (professions.md §4), so it is bought, not crafted-only.
 - Offhand accepts shields, Goldsmith spellbooks and the Leatherworker quiver.
-  A two-handed bow explicitly permits the zero-hand quiver; shield, book and
-  torch remain illegal beside it. One-handed melee may retain the quiver, while
+  A two-handed bow explicitly permits the zero-hand quiver; shield and book
+  remain illegal beside it. One-handed melee may retain the quiver, while
   staff and greataxe require empty Offhand. The quiver has four arrow-only
   slots of up to 200 arrows each (800 total) and no combat stat or affix.
   It wears as an offhand; a broken quiver permits arrow retrieval but no refill
@@ -294,10 +294,13 @@ only mirrored into the registry for display.
   persistent Potion cooldown (shown in the debuff section). Combat state is
   not a status entry.
 - Specialized displays such as the target frame remain separate.
-- **WP10 replaces the text presentation with the icon framework:** HUD image
-  elements, countdown text, green/red category frames and matching Character
-  page tooltips. Effects keep using the same central registry rather than
-  gaining per-consumer status stores.
+- **The status-icon package replaces the text presentation** (WP audit D10;
+  Round 26, [plan](../planning/round26-capitals-housing-cleanup-plan.md) rulings
+  17–23, [effect list](../planning/status-icons-2026-09-29.md)): HUD image
+  elements on the dark skill-icon plate, frames drawn by code (green buff, red
+  debuff, gold neutral), the countdown or value as text; combat state becomes
+  an icon; no cooldowns on the row. Effects keep using the same central
+  registry rather than gaining per-consumer status stores.
 
 ## 5. Skills page and bound representations
 

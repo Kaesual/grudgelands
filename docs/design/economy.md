@@ -10,7 +10,12 @@ the current trader bytes: until WP44 lands, the shipped six-bracket Common
 weapon prices are 50c/70c/98c/1s37c/1s92c/2s69c and buy-back is 25% rounded
 down (minimum 1c). Round-11 repair deliberately quotes from that current
 purchase catalog. WP44 must switch traders, reference prices, buy-back,
-anti-loop audits and repair's price source together.
+anti-loop audits and repair's price source together. WP44 is a **lighter
+pass** (user decision 2026-09-29,
+[WP audit](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29) D1):
+price tables, buy-back, the audit fixes and a simple income estimate, without
+a checksummed manifest or audit DAG. Quest copper rewards move onto the ×2.5
+axis in the same cutover (D2).
 
 ## 1. Currency: copper / silver / gold
 
@@ -88,8 +93,8 @@ prices take precedence over preserving the exact mathematical ratio.
 - Reliable net solo income is measured after routine level-appropriate repair
   and consumable costs and excludes rare jackpots, boss rewards and a
   functioning player market. Time-priced aspirational sinks derive their
-  ledger amount from that measured tier rate rather than from a stale global
-  copper ratio.
+  ledger amount from that tier rate rather than from a stale global copper
+  ratio; WP44 obtains the rate from a simple income estimate (D1).
 
 ## 4. Sinks
 
@@ -99,9 +104,11 @@ prices take precedence over preserving the exact mathematical ratio.
   stop until repaired with ledger money at any city profession trainer, including
   Cooking. The V1 cost is `ceil(0.20 × reference purchase price × missing
   durability fraction)` per item; intact items are free. Anyone may repair any
-  eligible item, with no profession or material requirement. The precise
-  eligibility, current-price catalog, transaction and future Housing-station
-  rules are in [durability_repair.md](durability_repair.md). This bounded Round-11
+  eligible item, with no profession or material requirement. Crafting
+  stations inside an active Claim Stone claim will offer the same repair at
+  the same trader price, as a convenience (D7). The precise eligibility,
+  current-price catalog, transaction and claim-station rules are in
+  [durability_repair.md](durability_repair.md). This bounded Round-11
   service retains the shipped purchase curve until WP44 rebases it; it does not
   deploy the full target price axis below/above by implication.
 - **Talent respec:** repeatable **in the talent UI — there is no class

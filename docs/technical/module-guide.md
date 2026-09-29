@@ -102,9 +102,10 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   runtime-only untimed `mount` status. Mounted players cannot attack. Land
   controllers use nominal one-node step height; T1 is 6.4 nodes/s (+60%).
 - **R7 audit boundary**: the 157-file R7 source-audit roster is frozen
-  historical evidence and is not a current-source gate. WP49 will replace it
-  with a fixed WP40/direct-neighbour roster; never refresh or cite the old
-  baseline-derived list as current certification.
+  historical evidence and is not a current-source gate. Its audit script was
+  retired in Round 22 and WP49, the planned replacement, is canceled
+  (2026-09-29); never refresh or cite the old baseline-derived list as current
+  certification.
 - **Trinkets**: `grug_trinkets` owns the six special consumers and rebuilds an
   event-driven per-character equipment cache through the equipment-change seam;
   hot mana/heal/hit/kill/potion paths read that cache and never rescan slots.
@@ -803,16 +804,14 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   level-31–60 land zone is contested and editable by both factions. Roads
   (corridor segments) and POI, village and camp building cores (boxes) are
   world-protected in the 128-node candidate grid (`world.md` §2 R1b, Round
-  25); bounded functional anchors and renewable-resource sockets keep their
-  hard protection; the remaining camp shells, tents, fences and battlefield
+  25); bounded functional anchors keep their hard protection; the remaining camp shells, tents, fences and battlefield
   dressing are mutable.
   Material design owns the complete `race_region` mapping of
   G1, G2, cultural material and signature wood; map code stores only the
   region identity and placement data needed to consume that mapping. Each
-  endpoint apex camp has exactly 12 renewable sockets, two per gem. Both
-  factions may mine them; the small functional anchor, the sockets and the
-  camp's building-core box are protected, while the rest of the camp shell
-  remains mutable.
+  endpoint apex camp has no renewable sockets (renewable ores are removed,
+  2026-09-29); its small functional anchor and building-core box are
+  protected, while the rest of the camp shell remains mutable.
 - **World atlas**: `docs/design/world_map.md` governs the cartographic Map tab,
   with no fog of war and independent future-interactive markers. It needs no
   generated-terrain bitmap and never unlocks waypoint travel.

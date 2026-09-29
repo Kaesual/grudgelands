@@ -21,8 +21,9 @@ semantics remain; no extra fall/environmental wear hook is added.
 
 Broken quivers keep their stored arrows retrievable, but do not supply automatic
 ammunition or accept new arrows until repaired. Tool/hoe budgets are
-30/60/300/600/1000/1500/2000/3000 from Wood through Abyssal Steel; mining depth
-penalties remain separate.
+30/60/300/600/1000/1500/2000/3000 from Wood through Abyssal Steel. There is
+no mining depth penalty: a pick too weak for a tier rock cannot dig it at all
+(Round 24 ruling 3).
 
 At zero durability keep the concrete stack, name and all metadata. Disable
 its base effects, affixes and operation until repaired. A broken bow cannot
@@ -39,9 +40,12 @@ access applies. Riding trainers are not profession trainers. No additional NPC
 or trader distribution is introduced.
 
 The service offers a preview and repair of one item or all eligible items in
-equipment, main and bag inventories. Future Housing binds every crafting
-station to the same service API. Housing itself and repair at arbitrary
-wilderness stations are not included in this delivery.
+equipment, main and bag inventories. Crafting stations inside an active Claim
+Stone claim will offer the same service at the same trader price, as a
+convenience only (user decision 2026-09-29,
+[WP audit](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29) D7;
+not yet implemented). Repair at wilderness stations outside a claim is not
+offered.
 
 ## Price
 

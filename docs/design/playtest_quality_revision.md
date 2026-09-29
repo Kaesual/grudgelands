@@ -14,7 +14,7 @@ links; it defines no additional rules and is not a higher-priority override.
 | Quest item presentation | [Quests](quests.md) |
 | Atlas and minimap | [World map](world_map.md) |
 | Preparation and waiting UI | [World preparation](world_preparation.md) |
-| Deferred moving light and friendly-guard healing | [BACKLOG](../../BACKLOG.md) |
+| Deferred friendly-guard healing (moving light canceled 2026-09-29) | [BACKLOG](../../BACKLOG.md) |
 
 Provenance: [approved plan](../research/round18-plan.md),
 [delivery/evidence](../research/round18-completion.md). Later Round 19 decisions

@@ -623,8 +623,8 @@ WP41 with the rest of PvP. That keeps 6.2 and 6.3 out of the critical path
 too, since nothing needs to be hidden on screen if only the AI is fooled —
 though a Scout who is invisible to mobs while fully visible to the player
 reads as a bug and needs a visible status entry at minimum. The shipped
-first-pass presentation is the text list; WP10 later replaces it with icons
-(`inventory_equipment.md` §5).
+first-pass presentation is the text list; the status-icon package (WP audit
+D10) replaces it with icons (`inventory_equipment.md` §5).
 
 #### 8.2.6 Claims and protection — **cosmetic**
 
