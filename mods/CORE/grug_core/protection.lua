@@ -79,9 +79,68 @@ function core.is_protected(pos, name)
 	return previous_is_protected(pos, name)
 end
 
+-- Interaction protection (Round 25 ruling 18). The engine asks
+-- core.is_protected only for digging and placing; right-clicks, node
+-- inventories and node forms are guarded separately. A guard is
+-- fn(pos, name) -> true when that player may NOT interact at pos
+-- (grug_housing: an active claim without at least "interact" permission).
+-- Guards never change digging or placing; core.is_protected alone decides
+-- those.
+local interaction_guards = {}
+
+function grug_core.register_interaction_guard(guard)
+	assert(type(guard) == "function", "interaction guard must be a function")
+	interaction_guards[#interaction_guards + 1] = guard
+end
+
+local function bypasses(name)
+	return name ~= "" and
+		core.check_player_privs(name, {protection_bypass = true})
+end
+
+-- True when a registered guard refuses this interaction. Players with the
+-- protection_bypass privilege are never refused. The privilege is looked up
+-- only after a guard refused, so the common case (no claim here) costs one
+-- guard call.
+function grug_core.interaction_guarded(pos, name)
+	for index = 1, #interaction_guards do
+		if interaction_guards[index](pos, name) then
+			return not bypasses(name)
+		end
+	end
+	return false
+end
+
+-- For interaction gates that used to ask core.is_protected (grug_jobs
+-- stations): the unchanged world rule for the player's faction plus the
+-- guards. It never consults dig/place-only protection, so a claim's
+-- "interact" permission is enough to use a station there.
+function grug_core.interaction_protected(pos, name)
+	if bypasses(name) then return false end
+	if name == "" then return true end
+	if grug_core.world_protected_for_faction(pos,
+			grug_core.get_player_faction(name)) then
+		return true
+	end
+	return grug_core.interaction_guarded(pos, name)
+end
+
+-- Reasons for protection that is not the world's own (Round 25: claims). A
+-- provider is fn(pos, name) -> key, hint text; nil when it does not apply.
+-- The first provider that answers wins, and the world reason wins over every
+-- provider.
+local reason_providers = {}
+
+function grug_core.register_protection_reason(provider)
+	assert(type(provider) == "function",
+		"protection reason provider must be a function")
+	reason_providers[#reason_providers + 1] = provider
+end
+
 -- Player-facing reason for a refused edit (Round 24 ruling 7), or nil when
 -- the position is not protected for this player. It only EXPLAINS the answer
--- core.is_protected gives above; it never decides it.
+-- core.is_protected gives above; it never decides it. A provider's reason
+-- also returns its hint text as the second value.
 local PROTECTION_HINTS = {
 	town = "Town – protected",
 	landmark = "Landmark – protected",
@@ -98,18 +157,28 @@ function grug_core.protection_reason(pos, name)
 	end
 	local faction = grug_core.get_player_faction(name)
 	if faction ~= "accord" and faction ~= "throng" then return "no_faction" end
-	local kind = grug_zones.hard_protection_kind_at(pos)
-	if kind == "town" or kind == "landmark" then return kind end
-	local territory = grug_zones.territory_rule_at(pos)
-	if territory == "immutable" or territory == "accord_home" or
-			territory == "throng_home" then
-		return territory
+	-- The world reason applies only where the world rule itself refuses this
+	-- faction; own home territory refused by a claim is not a territory
+	-- refusal.
+	if grug_core.world_protected_for_faction(pos, faction) then
+		local kind = grug_zones.hard_protection_kind_at(pos)
+		if kind == "town" or kind == "landmark" then return kind end
+		local territory = grug_zones.territory_rule_at(pos)
+		if territory == "immutable" or territory == "accord_home" or
+				territory == "throng_home" then
+			return territory
+		end
+		return "protected"
+	end
+	for index = 1, #reason_providers do
+		local key, text = reason_providers[index](pos, name)
+		if key then return key, text end
 	end
 	return "protected"
 end
 
 function grug_core.protection_hint(pos, name)
-	local reason = grug_core.protection_reason(pos, name)
+	local reason, text = grug_core.protection_reason(pos, name)
 	if not reason then return nil end
-	return PROTECTION_HINTS[reason] or "Protected"
+	return text or PROTECTION_HINTS[reason] or "Protected"
 end

@@ -1,0 +1,29 @@
+ACTION[Server]: [grug_housing] interaction guard: node inventories on 919 nodes, right-click on 158, node form on 13; exceptions: default:sign_wall_wood
+ACTION[Server]: [r25_interaction_probe] GUARD registered nodes=920: node inventory 919, right-click 158, node form 13
+ACTION[Server]: [r25_interaction_probe] EXCEPTIONS default:sign_wall_wood
+ACTION[Server]: [r25_interaction_probe] RIGHT-CLICK default (7): bookshelf chest chest_locked chest_locked_open chest_open furnace furnace_active
+ACTION[Server]: [r25_interaction_probe] RIGHT-CLICK doors (30): door_glass_a door_glass_b door_glass_c door_glass_d door_obsidian_glass_a door_obsidian_glass_b door_obsidian_glass_c door_obsidian_glass_d door_steel_a door_steel_b door_steel_c door_steel_d door_wood_a door_wood_b door_wood_c door_wood_d gate_acacia_wood_closed gate_acacia_wood_open gate_aspen_wood_closed gate_aspen_wood_open gate_junglewood_closed gate_junglewood_open gate_pine_wood_closed gate_pine_wood_open gate_wood_closed gate_wood_open trapdoor trapdoor_open trapdoor_steel trapdoor_steel_open
+ACTION[Server]: [r25_interaction_probe] RIGHT-CLICK grug_brewing (2): brewing_stand brewing_stand_active
+ACTION[Server]: [r25_interaction_probe] RIGHT-CLICK grug_decor (23): capital_anvil capital_bedding capital_carving capital_case capital_cloth capital_counter capital_herbs capital_hides capital_lava capital_loom capital_product_alchemist capital_product_armorsmith capital_product_cooking capital_product_goldsmith capital_product_leatherworker capital_product_leatherworker_exterior capital_product_tailor capital_product_weaponsmith capital_product_woodcarver capital_quench capital_rail capital_timber capital_trough
+ACTION[Server]: [r25_interaction_probe] RIGHT-CLICK grug_farming (80): bamboo_shoot_1 bamboo_shoot_2 bamboo_shoot_3 bamboo_shoot_3_upper_1 bamboo_shoot_4 bamboo_shoot_4_upper_1 bamboo_shoot_4_upper_2 blightberry_1 blightberry_2 blightberry_3 blightberry_4 carrot_1 carrot_2 carrot_3 carrot_4 cassava_1 cassava_2 cassava_3 cassava_4 cave_cap_1 cave_cap_2 cave_cap_3 cave_cap_4 corn_1 corn_2 corn_3 corn_3_upper_1 corn_4 corn_4_upper_1 corn_4_upper_2 ember_moss_1 ember_moss_2 ember_moss_3 ember_moss_4 fire_pepper_1 fire_pepper_2 fire_pepper_3 fire_pepper_4 frost_melon_1 frost_melon_2 frost_melon_3 frost_melon_4 jungle_berry_1 jungle_berry_2 jungle_berry_3 jungle_berry_4 potato_1 potato_2 potato_3 potato_4 pumpkin_1 pumpkin_2 pumpkin_3 pumpkin_4 salt_crust_1 salt_crust_2 salt_crust_3 salt_crust_4 sugar_cane_1 sugar_cane_2 sugar_cane_2_upper_1 sugar_cane_3 sugar_cane_3_upper_1 sugar_cane_3_upper_2 sugar_cane_4 sugar_cane_4_upper_1 sugar_cane_4_upper_2 sugar_cane_4_upper_3 sunberry_1 sunberry_2 sunberry_3 sunberry_4 wild_grain_1 wild_grain_2 wild_grain_3 wild_grain_4 wild_onion_1 wild_onion_2 wild_onion_3 wild_onion_4
+ACTION[Server]: [r25_interaction_probe] RIGHT-CLICK grug_jobs (5): carving_bench forge jewellers_bench tailor_bench tanning_rack
+ACTION[Server]: [r25_interaction_probe] RIGHT-CLICK grug_materials (1): iron_sign_wall
+ACTION[Server]: [r25_interaction_probe] RIGHT-CLICK grug_smelting (2): dual_furnace dual_furnace_active
+ACTION[Server]: [r25_interaction_probe] RIGHT-CLICK mobs (1): spawner
+ACTION[Server]: [r25_interaction_probe] RIGHT-CLICK vessels (1): shelf
+ACTION[Server]: [r25_interaction_probe] RIGHT-CLICK xpanes (6): door_steel_bar_a door_steel_bar_b door_steel_bar_c door_steel_bar_d trapdoor_steel_bar trapdoor_steel_bar_open
+ACTION[Server]: [r25_interaction_probe] FORM default (2): furnace furnace_active
+ACTION[Server]: [r25_interaction_probe] FORM grug_brewing (2): brewing_stand brewing_stand_active
+ACTION[Server]: [r25_interaction_probe] FORM grug_jobs (5): carving_bench forge jewellers_bench tailor_bench tanning_rack
+ACTION[Server]: [r25_interaction_probe] FORM grug_materials (1): iron_sign_wall
+ACTION[Server]: [r25_interaction_probe] FORM grug_smelting (2): dual_furnace dual_furnace_active
+ACTION[Server]: [r25_interaction_probe] FORM mobs (1): spawner
+ACTION[Server]: [r25_interaction_probe] CLAIM centre (-1600,60,-2550) (Accord start (-1800,35,-2550)): territory accord_home
+ACTION[Emerge-0]: [r25_interaction_probe] EMERGED in 4.8 s
+ACTION[Emerge-0]: [r25_interaction_probe] SWEEP 919 guarded nodes: 2928 calls, 2928 refused, 2928 violations recorded
+ACTION[Emerge-0]: [r25_interaction_probe] ACTIVE r25bstranger: chest right-click closed, chest put 0, chest take 0, door closed (doors:door_wood_a), furnace put 0, violations 5, hint Home of r25bowner – protected
+ACTION[Emerge-0]: [r25_interaction_probe] ACTIVE r25bfriend: chest right-click opened, chest put 5, chest take 2, door opened (doors:door_wood_c), furnace put 4, violations 0, hint Home of r25bowner – protected
+ACTION[Emerge-0]: [r25_interaction_probe] ENEMY hint in the claim: Accord home territory – protected
+ACTION[Emerge-0]: [r25_interaction_probe] EXPIRED r25bstranger: chest right-click opened, chest put 5, chest take 2, door opened (doors:door_wood_c), furnace put 4, violations 0, hint nil
+ACTION[Emerge-0]: [r25_interaction_probe] OUTSIDE r25bstranger: chest right-click opened, chest put 5, chest take 2, door opened (doors:door_wood_c), furnace put 4, violations 0, hint nil
+ACTION[Emerge-0]: [r25_interaction_probe] RESULT PASS checks=32 failures=0
