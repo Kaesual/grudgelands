@@ -9,6 +9,9 @@
 grug_housing.RADIUS = 50
 grug_housing.MIN_Y = -100
 
+-- The soulbound Claim Stone item, registered by Lane A.
+grug_housing.STONE_ITEM = "grug_housing:claim_stone"
+
 -- The claim covering pos (x/z only, y >= MIN_Y), or nil.
 function grug_housing.claim_at(pos)
 	return nil
@@ -33,6 +36,12 @@ end
 -- "destroyed" or "needs_stone".
 function grug_housing.player_claim(name)
 	return nil, "never"
+end
+
+-- Housing Manager hand-out (ruling 7): gives the stone when the player is
+-- level 20+ and has none; returns ok, message.
+function grug_housing.issue_stone(player)
+	return false, "Housing is not available yet."
 end
 
 -- Burns count lumps into paid_until; returns the number accepted.
