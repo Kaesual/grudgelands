@@ -67,3 +67,20 @@ tools/r24_fill/engine/render.sh <dir> after <png dir>
 - `evidence/`: gzipped server logs of the before run (main 7d74c3e5, seed 1),
   the final after run (seed 1) and the seed-2 after run, `coal.txt`,
   `timing.txt`.
+
+### Round 24 B2 additions
+
+- The fixture also checks the cliff rules (native and fill cliff: layers in
+  the top 40 of steep columns only, rock nests in ordinary columns, nothing in
+  excluded columns, no loose pockets near the surface, ores and bands
+  untouched; known answer `CLIFF_KAT`) and the output identity of the P8
+  speedups (frontier minimum against the heap sort; old and new vein growth
+  on a replica of the P8 loop with the real digests and budget).
+- `make_patch.py` also logs `[r24d]`: a content digest (node names and param2)
+  of every generated owner after the writer; `digests.py A B` compares two
+  runs chunk by chunk.
+- `face_share.py DUMP` gives the material shares of exposed side faces;
+  `native_cliff.lua` builds a synthetic native cliff through the production
+  passes; `render_cliffs.sh` renders the B2 cliff pairs.
+- `evidence/b2.txt` and `evidence/b2-*.server.log.gz`: the three B2 runs
+  (main a14a9dc6, speedups 950eb26e, cliffs ffbd097d).

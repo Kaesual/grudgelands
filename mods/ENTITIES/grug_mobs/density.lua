@@ -32,9 +32,10 @@ grug_mobs.DENSITY_SCALE = 1.5
 -- zones with a budgeted cast of each zone's mean, over its land columns, of
 -- the summed Round 16 caps (1.3x, night rows 5/4) of the species that could
 -- spawn on that column's biome top (tools/r24_density_xp/fixture.lua prints
--- the table: day 9.46, night 14.95 on seed 4242424242). Common budgets are
--- therefore 14 by day and 23 by night.
-grug_mobs.DENSITY_REFERENCE = {day = 9, night = 15}
+-- the table: day 9.79, night 14.59 on seed 4242424242, main with Lanes D2 and
+-- D3). Common budgets are
+-- therefore 15 by day and 23 by night.
+grug_mobs.DENSITY_REFERENCE = {day = 10, night = 15}
 
 -- No zone gets sparser than before (coordinator correction to ruling 27):
 -- a zone whose own pre-Round-24 area population (same measurement, rounded)
@@ -47,7 +48,6 @@ grug_mobs.DENSITY_FLOOR = {
 	front_skyglass_canopy = {night = 25},
 	front_stormscale_summit = {night = 29},
 	kragmar_bannerbreak_mesa = {night = 36},
-	kragmar_raincall_basin = {day = 15},
 	kragmar_redtusk_savanna = {day = 17},
 }
 

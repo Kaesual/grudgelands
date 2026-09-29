@@ -273,8 +273,8 @@ print(("per-point old population: day median %.2f over %d zones, night median %.
 check(math.abs(gm.DENSITY_REFERENCE.day - day_median) <= 1 and
 	math.abs(gm.DENSITY_REFERENCE.night - night_median) <= 1,
 	"DENSITY_REFERENCE is the pre-Round-24 per-point median (within 1)")
-check(gm.density_budget("kragmar_sunscar_flats", "day") == 14 and
-	gm.density_budget("kragmar_sunscar_flats", "night") == 23, "budgets 14 / 23")
+check(gm.density_budget("kragmar_sunscar_flats", "day") == 15 and
+	gm.density_budget("kragmar_sunscar_flats", "night") == 23, "budgets 15 / 23")
 
 -- No zone sparser than before: every zone's budget is at least its own old
 -- population (rounded), and DENSITY_FLOOR lists exactly the zones whose old
@@ -328,6 +328,33 @@ do
 	check(ok, "no zone's budget is below its old population")
 end
 
+-- Start-town hostile refusal ends 100 nodes below the start anchor (ruling
+-- 30); the fixture anchors sit at y 10.
+check(gm.in_start_footprint(0, -2550, 10) and gm.in_start_footprint(0, -2550, -90) and
+	not gm.in_start_footprint(0, -2550, -91) and gm.in_start_footprint(0, -2550),
+	"start footprint: protected volume from anchor y - 100 upward")
+-- Ruling 31 (Lane D3): Scorpion and Viper carry a night row and a zone day
+-- row with the same cap; the weight is that one cap, and the zone key puts
+-- them into their start zone's day cast only.
+check(gm.density_weight("grug_mobs:scorpion") == 4 and
+	gm.density_weight("grug_mobs:viper") == 4, "two rows, one weight")
+do
+	local function has(zone, clock, name)
+		for _, other in ipairs(gm.zone_density_cast(zone, clock)) do
+			if other == name then return true end
+		end
+		return false
+	end
+	check(has("kragmar_sunscar_flats", "day", "grug_mobs:scorpion") and
+		has("kragmar_sunscar_flats", "night", "grug_mobs:scorpion") and
+		not has("kragmar_redtusk_savanna", "day", "grug_mobs:scorpion") and
+		has("kragmar_kapok_cradle", "day", "grug_mobs:viper") and
+		not has("kragmar_raincall_basin", "day", "grug_mobs:viper"),
+		"zone clock keys: day cast only in the start zone")
+	check(has("kragmar_sunscar_flats", "day", "grug_mobs:plains_runner"),
+		"plains runner (fighting prey since D3) is budgeted")
+end
+
 -- ---------------------------------------------------------------------------
 -- 3. density_allows against a stub area (Sunscar Flats, dry-grass node)
 -- ---------------------------------------------------------------------------
@@ -359,12 +386,24 @@ do
 	local function allows(name)
 		return gm.density_allows("grug_mobs:" .. name, pos, node, roster.spawn_allowed)
 	end
-	-- Day, one budgeted species (Boar): it alone may fill the whole budget 14.
+	-- Day on grass, band 1: only the Boar can spawn there (the Plains Runner
+	-- needs dry grass, the Scorpion band 2), so it alone may fill the budget.
 	timeofday = 0.5
-	fill({{"boar", 13}, {"rabbit", 9}})
-	check(allows("boar"), "day: 13 boars (+9 critters) -> a 14th may spawn")
-	fill({{"boar", 14}})
-	check(not allows("boar"), "day: 14 boars -> budget full")
+	local day_budget = gm.density_budget("kragmar_sunscar_flats", "day")
+	node = "default:dirt_with_grass"
+	fill({{"boar", day_budget - 1}, {"rabbit", 9}})
+	check(allows("boar"), "day on grass: budget-1 boars (+9 critters) -> one more")
+	fill({{"boar", day_budget}})
+	check(not allows("boar"), "day on grass: budget of boars -> full")
+	-- Day on dry grass, band 1: Boar and Plains Runner share by row cap.
+	node = "default:dry_dirt_with_dry_grass"
+	local share = gm.density_share(day_budget, gm.density_weight("grug_mobs:boar"),
+		gm.density_weight("grug_mobs:boar") + gm.density_weight("grug_mobs:plains_runner"))
+	fill({{"boar", share - 1}})
+	check(allows("boar"), "day on dry grass: below the boar share")
+	fill({{"boar", share}})
+	check(not allows("boar") and allows("plains_runner"),
+		"day on dry grass: boar share reached, the runner still has room")
 	-- Night, band 1: only the Giant Rat is eligible (Scorpion start band 4,
 	-- Husk level-gated), so it may fill the night budget 23.
 	timeofday = 0.0

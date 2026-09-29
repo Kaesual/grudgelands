@@ -840,11 +840,20 @@ replaced; git history before this rewrite records that model.
   both badlands; basalt, slate and granite under blight and bone forest;
   granite, slate and desert stone under meadows, elf forest and deep forest;
   slate, granite and basalt elsewhere). A 16³ lattice cell holds a
-  gravel (3/5) or dirt (2/5) pocket with probability 3/10, an ellipsoid of
+  gravel (3/5) or dirt (2/5) pocket with probability 3/10, or a rock nest
+  of the palette's decorative rocks with probability 1/10: an ellipsoid of
   radii 2–3 × 2 × 2–3 inside the cell. Stone stays clearly dominant
   (measured 81 % stone plus 4 % ores in a real mountain interior, 89 % stone
-  in the fixture). Nothing carves caves into the fill; the seam to native v7 may cut through
-  veins, bands and caves. Lava is unchanged.
+  in the fixture). Nothing carves caves into the fill; the seam to native
+  v7 may cut through veins, bands and caves. Lava is unchanged.
+- **Cliffs and near-surface nests (Round 24 B2).** In the top 40 nodes
+  of a column, below its filler, where the shallow strata apply (same exclusions:
+  protected, functional, water, towns, housing), untouched native or fill
+  `default:stone` takes the lattice's rock nests; on steep columns (rock
+  faces and lips) it also takes the same horizontal layers, so strata break
+  through cliff faces in native rock and in fill alike. Gravel and dirt
+  pockets stay out of those 40 nodes, the depth-relative shallow strata stay
+  off steep columns, and ores and strata bands are never replaced.
 - **Decorative nests (Round 24, ruling 14).** Native blob ores place nests
   of `grug_materials:slate` (y −400…−40), `grug_materials:granite`
   (y −900…−200) and `grug_materials:basalt` (below y −600) in
@@ -875,7 +884,9 @@ Mob families additionally carry the day/night role defined in
 non-capital palette with fewer than two explicit night families admits its
 documented family fallback. Empty capital palettes remain
 `civic_no_hostiles`, and the start towns (pad and band, §12) still refuse hostile spawns
-before palette or fallback authority is considered.
+before palette or fallback authority is considered, from 100 nodes below the start
+anchor's height upward (the protected volume, Round 24 ruling 30); caves deeper
+under a start town keep their ordinary population.
 
 POI abbreviations:
 
@@ -928,12 +939,12 @@ or rights (§7.1).
 | `kragmar_nhal_veyr` | Nhal Veyr | Undead | capital, civic L20–30 profile, peaceful | blight 75 / bone forest 25 | Black-stone necropolis on stepped terraces; no ambient hostiles; **C** |
 | `kragmar_ossuary_reach` | Ossuary Reach | Undead | 21–30 peaceful | blight 40 / bone forest 50 / swamp 10 | Fossil ridges and gravewood copses; forest mobs, night Gravewood Treant, dragonweed; **V, O, M** |
 | `kragmar_blackwind_rise` | Blackwind Rise | Undead | 31–40 **contested** | bone forest 65 / blight 30 / swamp 5 | Ash-wind upland crossed by natural bone arches; forest mobs, night Gravewood Treant; **O×2, B, R:Marrowclaw** |
-| `kragmar_sunscar_flats` | Sunscar Flats | Orc | 1–10 peaceful | savanna 95 / badlands 5 | Dry golden grass, shade rocks and shallow waterholes; settled mobs; day Plains Runner, night Giant Rat and band-2 Scorpion and Sun-Dried Husk; **S** |
+| `kragmar_sunscar_flats` | Sunscar Flats | Orc | 1–10 peaceful | savanna 95 / badlands 5 | Dry golden grass, shade rocks and shallow waterholes; settled mobs; day Plains Runner (fighting prey) and band-2 Scorpion, night Giant Rat and band-2 Scorpion and Sun-Dried Husk; **S** |
 | `kragmar_redtusk_savanna` | Redtusk Savanna | Orc | 11–20 peaceful | savanna 75 / badlands 25 | Red gullies, acacia wells and hunting roads; settled/savanna mobs, sunleaf; night Scorpion and Sun-Dried Husk; **V, O, B, R:Ashmaw** |
 | `kragmar_gor_drazhak` | Gor Drazhak | Orc | capital, civic L20–30 profile, peaceful | savanna 60 / badlands 40 | Adobe-and-basalt fortress at a mesa crossroads; no ambient hostiles; **C** |
 | `kragmar_speargrass_reach` | Speargrass Reach | Orc | 21–30 peaceful | savanna 55 / badlands 40 / swamp 5 | Tall cutting grass, dry rivers and hunting stones; savanna/mountain mobs; day Speargrass Tiger; night Scorpion/Goblin Raid; **V, O, M** |
 | `kragmar_bannerbreak_mesa` | Bannerbreak Mesa | Orc | 31–40 **contested** | badlands 70 / savanna 25 / swamp 5 | Wind-torn standards, red trenches and siege ramps; mountain/war mobs, night Scorpion/Goblin Raid, dragonweed; **O×2, B, K×2, R:Dustwing** |
-| `kragmar_kapok_cradle` | Kapok Cradle | Troll | 1–10 peaceful | jungle edge 90 / swamp 10 | Sheltered jungle basin beneath one giant kapok; settled/jungle-edge mobs; day band-2 Tapir, night Giant Rat and band-2 Viper; **S** |
+| `kragmar_kapok_cradle` | Kapok Cradle | Troll | 1–10 peaceful | jungle edge 90 / swamp 10 | Sheltered jungle basin beneath one giant kapok; settled/jungle-edge mobs; day band-2 Tapir, Viper and Jungle Lynx, night Giant Rat and band-2 Viper; **S** |
 | `kragmar_raincall_basin` | Raincall Basin | Troll | 11–20 peaceful | jungle edge 65 / deep jungle 15 / swamp 20 | Monsoon pools on stepped slopes; settled/jungle-edge mobs, day Tapir, night Viper, sunleaf; **V, O, B** |
 | `kragmar_kezamba` | Kezamba | Troll | capital, civic L20–30 profile, peaceful | jungle edge 75 / deep jungle 20 / swamp 5 | Stilt-and-stone city around a stepped cenote; no ambient hostiles; **C** |
 | `kragmar_whispering_reedlands` | Whispering Reedlands | Troll | 21–30 peaceful | jungle edge 45 / deep jungle 25 / swamp 30 | Flooded reed maze crossed by raised totem paths; jungle-edge/swamp mobs, day Tapir, night Wisp, marshbloom; **V, O, M, W** |

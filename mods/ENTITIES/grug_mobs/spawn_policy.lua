@@ -342,6 +342,10 @@ local RACE_FACTIONS = {
 local START_PAD_LOW = 64 -- the pad: anchor - 64 .. anchor + 63, half-open
 local START_PAD_HIGH = 63
 local START_BAND = 12
+-- Round 24 ruling 30: a start town is protected from 100 nodes below its
+-- placement height (the start anchor's y) upward, so the hostile refusal
+-- ends there too; caves under the town keep their ordinary population.
+local START_PROTECTED_DEPTH = 100
 local start_pads
 
 local function compile_start_pads()
@@ -358,21 +362,24 @@ local function compile_start_pads()
 			max_x = anchor.x + START_PAD_HIGH,
 			min_z = anchor.z - START_PAD_LOW,
 			max_z = anchor.z + START_PAD_HIGH,
+			min_y = anchor.y - START_PROTECTED_DEPTH,
 		}
 	end
 	return pads
 end
 
 -- Exposed for the regression harness; production reads it through
--- spawn_policy_allows below.
-function grug_mobs.in_start_footprint(x, z)
+-- spawn_policy_allows below. `y` is optional: without it only the columns
+-- are tested.
+function grug_mobs.in_start_footprint(x, z, y)
 	if not start_pads then
 		start_pads = compile_start_pads()
 	end
 	for i = 1, #start_pads do
 		local pad = start_pads[i]
 		if x >= pad.min_x - START_BAND and x <= pad.max_x + START_BAND and
-				z >= pad.min_z - START_BAND and z <= pad.max_z + START_BAND then
+				z >= pad.min_z - START_BAND and z <= pad.max_z + START_BAND and
+				(y == nil or y >= pad.min_y) then
 			local ex = math.max(pad.min_x - x, x - pad.max_x, 0)
 			local ez = math.max(pad.min_z - z, z - pad.max_z, 0)
 			if ex * ex + ez * ez <= START_BAND * START_BAND then
@@ -445,13 +452,31 @@ local function clock_for_palette(name, palette)
 	return clock
 end
 
-local function clock_palette_at(name, pos, zone_palette)
+-- A clock table may name one named zone with a "zone:<zone id>" key (Round
+-- 24 ruling 31: the Sunscar Scorpion and the Kapok Viper keep their night
+-- clock elsewhere and spawn around the clock in their start zone). It wins
+-- over the palette keys, so the choice never depends on table order.
+local function zone_clock_key(clock, zone_id)
+	local key = zone_id and ("zone:" .. zone_id)
+	return key and clock[key] and key or nil
+end
+
+-- `zone_id` is optional: when given it selects the zone key; otherwise the
+-- zone of `pos`; with neither there is no zone key (a caller that asks for a
+-- zone palette without a position).
+local function clock_palette_at(name, pos, zone_palette, zone_id)
 	local clock = spawn_clocks[name]
 	if type(clock) ~= "table" then
 		return nil
 	end
-	if clock.blight and pos and
-			grug_zones.biome_at(pos.x, pos.z) == "grug_blight" then
+	if zone_id == nil and pos then
+		zone_id = grug_zones.id_at(pos.x, pos.z)
+	end
+	local zone_key = zone_clock_key(clock, zone_id)
+	if zone_key then
+		return zone_key
+	end
+	if clock.blight and pos and grug_zones.biome_at(pos.x, pos.z) == "grug_blight" then
 		return "blight"
 	end
 	if clock.war and zone_palette and zone_palette.war then
@@ -468,12 +493,15 @@ local function clock_palette_at(name, pos, zone_palette)
 	return nil
 end
 
-function grug_mobs.spawn_clock_for(name, pos)
+-- `zone_id` is optional and wins over the zone of `pos` (clock_palette_at).
+function grug_mobs.spawn_clock_for(name, pos, zone_id)
 	if pos and pos.y < -40 then
 		return "any"
 	end
-	local zone_palette = pos and zone_palette_at(pos) or nil
-	local palette = pos and clock_palette_at(name, pos, zone_palette) or nil
+	local zone_palette = zone_id and ZONE_MOB_PALETTES[zone_id] or
+		(pos and zone_palette_at(pos)) or nil
+	local palette = (pos or zone_id) and
+		clock_palette_at(name, pos, zone_palette, zone_id) or nil
 	return clock_for_palette(name, palette)
 end
 
@@ -551,6 +579,11 @@ function grug_mobs.prepare_spawn_row(def)
 	row.day_toggle = nil
 	if clock == "day" then
 		row.min_light = 10
+		-- mobs_redo's day window (api.lua day_toggle: 4500..19500 of 24000)
+		-- is DAY_PHASE_START..END. Without it a day row also fires at night
+		-- on torch light >= 10, and a zone-keyed day row (the Sunscar Scorpion)
+		-- would pass the night clock outside its zone.
+		row.day_toggle = true
 	elseif clock == "night" then
 		row.max_light = 5
 		row.day_toggle = false
@@ -638,6 +671,10 @@ function grug_mobs.zone_clock_cast(zone_id, clock)
 			local role_clock = matched_palette == "exact" and
 				clock_for_palette(mob_name, nil) or
 				clock_for_palette(mob_name, matched_palette)
+			local mob_clock = spawn_clocks[mob_name]
+			local zone_key = type(mob_clock) == "table" and
+				zone_clock_key(mob_clock, zone_id)
+			if zone_key then role_clock = mob_clock[zone_key] end
 			if role_clock == clock or role_clock == "any" then
 				cast[#cast + 1] = mob_name
 			end
@@ -744,7 +781,7 @@ function grug_mobs.spawn_policy_allows(mob_name, pos)
 	-- refuses each hostile row outright, the zombie's 24 h blight row inside
 	-- Stillgrave Hollow among them. Passive critters keep spawning there.
 	if hostile_spawns[mob_name] and
-			grug_mobs.in_start_footprint(pos.x, pos.z) then
+			grug_mobs.in_start_footprint(pos.x, pos.z, pos.y) then
 		return false
 	end
 	if INDEPENDENT_AUTHORITY[mob_name] then
@@ -800,8 +837,9 @@ function grug_mobs.zone_density_cast(zone_id, clock)
 			if zone_palette.exact_mobs and zone_palette.exact_mobs[mob_name] then
 				role_clock = clock_for_palette(mob_name, nil)
 			else
+				-- The zone id selects a "zone:<id>" clock key (ruling 31).
 				role_clock = clock_for_palette(mob_name,
-					clock_palette_at(mob_name, nil, zone_palette))
+					clock_palette_at(mob_name, nil, zone_palette, zone_id))
 			end
 			if role_clock == clock or role_clock == "any" then
 				cast[#cast + 1] = mob_name

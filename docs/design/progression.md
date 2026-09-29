@@ -157,8 +157,11 @@ and every fish a player catches gives
 
 ## Current fixed quest reward table
 
-Rewards below are per quest, shared by the six racial variants. They are fixed
-catalog values before any applicable racial modifier; no runtime level scaling.
+Rewards below are per quest, shared by the six racial variants except where a
+race's quest has its own target level: the Orc Starter 4 (the Husk patrol) is a
+level-5 quest (Round 24; the Husk spawns in Sunscar from level 4) and grants the
+level-5 reward, 180 XP. They are fixed catalog values before any applicable
+racial modifier; no runtime level scaling.
 
 | Quest position / work | Intended level | XP |
 | --- | ---: | ---: |

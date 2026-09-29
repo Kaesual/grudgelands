@@ -6,9 +6,10 @@
 # disposable probe mod staged (never shipped) and one disposable game patch:
 #   after  - probe_player_shim.patch only (the current tree);
 #   before - the shim plus the reverse of the Lane F grug_mobs change against
-#            BASE, i.e. the Round 16 spawn rule. BASE defaults to the commit
-#            before the Lane F change (the parent of the last commit touching
-#            grug_mobs/density.lua), so other lanes' grug_mobs changes stay in.
+#            BASE, i.e. the Round 16 spawn rule with every other lane's
+#            grug_mobs state. BASE is required for it: a commit with
+#            everything but Lane F (before Lane F merges: main; afterwards:
+#            the first parent of Lane F's merge commit).
 # Copies the server log and the probe lines to OUT_DIR and removes the run
 # directory. Exit 0 when the probe reached "RESULT DONE".
 #
@@ -21,16 +22,14 @@ out="${1:?usage: run.sh OUT_DIR before|after [TIMEOUT_SECONDS]}"
 variant="${2:?usage: run.sh OUT_DIR before|after [TIMEOUT_SECONDS]}"
 timeout_s="${3:-420}"
 base="${BASE:-}"
-if [[ -z "$base" ]]; then
-	lane_f="$(git -C "$repo" log -n 1 --format=%H -- mods/ENTITIES/grug_mobs/density.lua)"
-	base="$lane_f^"
-fi
 mkdir -p "$out"
 patch_file="$out/game.patch"
 cp "$here/probe_player_shim.patch" "$patch_file"
 case "$variant" in
 	after) ;;
-	before) git -C "$repo" diff -R "$base" -- mods/ENTITIES/grug_mobs >>"$patch_file" ;;
+	before)
+		[[ -n "$base" ]] || { echo "before needs BASE=<commit without Lane F>" >&2; exit 2; }
+		git -C "$repo" diff -R "$base" -- mods/ENTITIES/grug_mobs >>"$patch_file" ;;
 	*) echo "variant must be before or after" >&2; exit 2 ;;
 esac
 set +e

@@ -554,7 +554,7 @@ Normal tier at level L:
   de-aggro, then to the band's 4.6 in rounds 4 and 5).
 - **Level floors** (`_grug_min_level`): a mob whose family belongs to a
   later zone keeps its floor even where the field reads lower — zombie 3,
-  wolf/hyena/jungle lynx 10, guard 20. The floor is also the fallback
+  jungle lynx 4 (band 2 of Kapok, Round 24), wolf/hyena 10, guard 20. The floor is also the fallback
   where the level field has no value.
 - **Guard levels** come from the separate `grug_core.guard_level_at`
   field (world.md §1) with its own cap of **70** (the mob axis stays
