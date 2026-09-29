@@ -1258,6 +1258,24 @@ code, not by this document.
   shapes hold a column, the lowest floor wins. Below that floor the column
   takes ores, gems, rock layers and nests like any other ground (the former
   rule kept these columns ore-free down to y = −700).
+- **Below the floor everything is ordinary ground** (ruling 30 addendum,
+  2026-09-29). Where a column's claim exclusion comes only from protected
+  shapes (anchor envelopes, hard cores, hard footprints), the writers apply
+  their normal rules below its floor: world-content cave rows (cave cap,
+  ember moss) at the cave voxel's y; P9G gathering roots at the root y (the
+  dragon islands' coast envelopes stay nonblocking on dry land, as always);
+  world-content surface rows at the plant's y; cultural reservations when
+  the whole reservation box (root .. root + 7) lies below the floor; strata
+  bands and the near-surface nests and cliff layers per voxel. This matters
+  for POI envelopes on steep ground: an envelope 112 nodes wide can reach
+  shore or valley ground 100–300 nodes below its anchor. Start towns and
+  capitals never do (their lowest ground lies 79–100 nodes above the
+  floor). Non-protection exclusions keep applying at every depth to the
+  writers they bind today: planned-water and coast shapes (the cave rule
+  and every surface writer; P9G excepted on the dry islands), the overlay
+  exclusions (road corridors, inland water, water banks) for the surface
+  writers, housing masks, and functional kinds and hard foundations at the
+  surface. Runtime renewal applies the same rules (`farming.md`).
 - **Natural-resource root sampling:** each resource/16-node cell/host/tier/
   deep-band group keeps its eligible-host count, density budget and balanced
   capped vein targets. Roots are drawn from a deterministic per-world stream
@@ -1922,7 +1940,10 @@ not assumed from the nominal biome. Surface sources stand above that support;
 cave sources require real preserved air above real exposed stone. No source
 may replace a functional surface, foundation, route, housing exclusion or water.
 Cave eligibility follows the purpose-specific WORLD guards, not broad natural
-landmark envelopes. Candidate rejection does not move, retry or refill it.
+landmark envelopes; under a town, POI core, anchor grade or hard foundation
+those guards end at the column's protected floor (placement height − 100,
+Round 24 ruling 30), below which cave sources place normally. Candidate
+rejection does not move, retry or refill it.
 
 The accepted Mushroom set additionally includes `kragmar_speargrass_reach` on
 its swamp-mud host. Stormkelp additionally includes `front_shattered_line`,

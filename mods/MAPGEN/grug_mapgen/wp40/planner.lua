@@ -339,6 +339,8 @@ local function planner_factory(allocator_factory)
 		functional_surface_values_at = true,
 		hard_row_at = true,
 		protection_floor_y = true,
+		protected_floor_at = true,
+		protected_only_floor_at = true,
 		metrics = true,
 	}
 	local LOOKUP_FIELDS = {

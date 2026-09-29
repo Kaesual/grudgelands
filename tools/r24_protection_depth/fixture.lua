@@ -17,7 +17,14 @@
 --   3. mapgen: the protected floor planner_source.protection_floor_y hands
 --      the P8 resource pass for every anchor envelope and apex socket core,
 --      and the P8 column predicate r30_resource_column_open (production
---      code of r6_settlement.lua) above, at and below that floor.
+--      code of r6_settlement.lua) above, at and below that floor;
+--   4. ruling 30 addendum (below the floor everything is ordinary ground):
+--      the shared cave rule r30_cave_limit; the strata and layer passes on a
+--      synthetic owner with protection-only, non-protection and unexcluded
+--      columns; every anchor envelope's land columns whose surface lies
+--      below the floor (anchor_075's island shore on seed 4242424242); and
+--      the same cave answer from mapgen and runtime renewal on anchor
+--      centres and rings, housing-mask cores included.
 -- Prints the bound table and "R24 PROTECTION DEPTH FIXTURE PASS checks=<n>",
 -- or raises on the first failure. The engine counterpart (ores and digging
 -- at the floor under the Orc start) is `run.sh OUT_DIR [TIMEOUT]`; its
@@ -37,6 +44,7 @@ end
 local dir = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
 local common = dofile(repo .. "/tools/wp40/r6/common.lua")
 local sha = common.new_sha256()
+local settlement = dofile(dir .. "/r6_settlement.lua")
 
 -- ---------------------------------------------------------------------------
 -- World (as tools/r23_tree_line/world_source.lua, with stand-in capital cities)
@@ -345,11 +353,31 @@ local function mapgen_checks(W)
 	local orc_y = placement_y(P, 0, 2550)
 	local orc_floor = P.protection_floor_y(id, 0, 2550)
 	check(orc_floor == orc_y - DEPTH, "Orc start P8 floor")
+	-- Ruling 30 addendum: the cave-content rule's view of the same column.
+	-- Its "cave" shape is a protected one (not route/water), and its floor is
+	-- the town's, so cave content places at y < floor and not above.
+	local _, cave_id = P.static_exclusion_values_at(0, 2550, "cave")
+	check(type(cave_id) == "string" and (cave_id:sub(1, 15) == "exclude:anchor:" or
+		cave_id:sub(1, 15) == "exclude:active:"), "Orc start cave shape is protected")
+	check(P.protected_floor_at(0, 2550) == orc_floor, "Orc start cave floor")
+	do
+		local water, _, _, _, _, _, _, _, _, fkind, _, _, _, _, _, _, _, _, _, hard =
+			P.column_values_at(0, 2550)
+		local limit = settlement.r30_cave_limit(water, cave_id,
+			P.housing_mask_id_at(0, 2550) ~= nil, fkind, hard, P.protected_floor_at, 0, 2550)
+		check(limit == orc_floor, "Orc start cave limit is the town floor")
+	end
+	-- every anchor centre: the non-failing floor equals the P8 floor
+	for _, a in ipairs(source.anchors) do
+		local _, id_at = P.static_exclusion_values_at(a.position.x, a.position.z)
+		check(P.protected_floor_at(a.position.x, a.position.z) ==
+			P.protection_floor_y(id_at, a.position.x, a.position.z),
+			a.id .. " protected_floor_at")
+	end
 	lines[#lines + 1] = ("Orc start (0,%d,2550): exclusion %s, P8 floor %d"):format(
 		orc_y, id, orc_floor)
 end
 
-local settlement = dofile(dir .. "/r6_settlement.lua")
 local open = settlement.r30_resource_column_open
 check(type(open) == "function", "r6_settlement exports r30_resource_column_open")
 do
@@ -367,6 +395,278 @@ do
 	check(open(3, floor, -701) == true, "protected column open at -701")
 end
 
+-- ---------------------------------------------------------------------------
+-- 4. Ruling 30 addendum: normal ground below the protected floor
+-- ---------------------------------------------------------------------------
+local cave_limit = settlement.r30_cave_limit
+check(type(cave_limit) == "function", "r6_settlement exports r30_cave_limit")
+do
+	local function floor_at(value) return function() return value end end
+	local HUGE = math.huge
+	-- not excluded: open at every depth
+	check(cave_limit("land", nil, false, nil, false, floor_at(-63), 0, 0) == HUGE,
+		"no exclusion: open")
+	check(cave_limit("land", nil, false, "land_grade", false, floor_at(-63), 0, 0) == HUGE,
+		"a land grade alone is no exclusion")
+	-- protected shapes, anchor platforms and hard foundations end at the floor
+	check(cave_limit("land", "exclude:anchor:anchor_005:01", false, nil, false,
+		floor_at(-63), 0, 0) == -63, "town envelope: floor")
+	check(cave_limit("land", "exclude:active:hard:anchor_005", false, nil, false,
+		floor_at(-63), 0, 0) == -63, "hard core: floor")
+	check(cave_limit("land", nil, false, "anchor_platform", false,
+		floor_at(-40), 0, 0) == -40, "anchor platform: floor")
+	check(cave_limit("land", "exclude:coast:island_wyrmglass", false, nil, true,
+		floor_at(-40), 0, 0) == -40, "hard foundation over a coast shape: floor")
+	-- no protection: closed at every depth
+	check(cave_limit("land", "exclude:coast:island_wyrmglass", false, nil, false,
+		floor_at(-40), 0, 0) == -HUGE, "coast shape: closed")
+	check(cave_limit("land", "exclude:water:bay_1", false, nil, false,
+		floor_at(-40), 0, 0) == -HUGE, "bay water shape: closed")
+	check(cave_limit("land", "exclude:anchor:anchor_070:01", true, nil, false,
+		floor_at(-40), 0, 0) == -HUGE, "housing mask: closed")
+	check(cave_limit("land", "exclude:anchor:anchor_070:01", false, nil, false,
+		floor_at(nil), 0, 0) == -HUGE, "no protected shape: closed")
+end
+
+-- The strata pass (bands) and the layer pass (near-surface nests) on a
+-- synthetic owner: x 0 unexcluded, x 1 a protection-only exclusion with the
+-- floor inside the band range (cap 40), x 2 a non-protection exclusion, x 3
+-- a protection-only exclusion with the floor above the surface.
+do
+	local AIR, STONE = 0, 1
+	local names, cid_by_name = {[AIR] = "air", [STONE] = "default:stone"}, {}
+	local function cid_of(name)
+		local cid = cid_by_name[name]
+		if not cid then
+			cid = 10
+			while names[cid] do cid = cid + 1 end
+			names[cid], cid_by_name[name] = name, cid
+		end
+		return cid
+	end
+	local box = {min_x = 0, max_x = 3, min_y = -37, max_y = 79, min_z = 0, max_z = 47}
+	local ex, ey = box.max_x - box.min_x + 1, box.max_y - box.min_y + 1
+	local function index_at(x, y, z)
+		return (z - box.min_z) * ex * ey + (y - box.min_y) * ex + (x - box.min_x) + 1
+	end
+	local TERRAIN = 60
+	local strata = settlement.r8_strata_new("10536739806879207652",
+		{zones = {{id = "stormvault", primary_relief_id = "mountain"}}})
+	local layers = settlement.r24_fill_layers_new("10536739806879207652")
+	local function run(protected)
+		local original, final, intent, writes = {}, {}, {}, {}
+		for z = box.min_z, box.max_z do
+			for x = box.min_x, box.max_x do
+				for y = box.min_y, box.max_y do
+					local i = index_at(x, y, z)
+					original[i] = y < TERRAIN and STONE or AIR
+					final[i], intent[i] = original[i], 0
+				end
+			end
+		end
+		local info, cap = {}, {}
+		local function write(x, y, z, ref)
+			local i = index_at(x, y, z)
+			final[i], intent[i] = ref, 2
+			writes[#writes + 1] = {x = x, y = y, z = z, name = names[ref]}
+		end
+		local context = {min_x = box.min_x, min_y = box.min_y, min_z = box.min_z,
+			max_x = box.max_x, max_y = box.max_y, max_z = box.max_z, floor_y = -37,
+			original_data = original, stone_cid = STONE, index_at = index_at,
+			column_info = info,
+			column_values_at = function()
+				return "land", nil, "stormvault", "grug_crags", nil, TERRAIN,
+					nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil
+			end,
+			static_exclusion_values_at = function(x)
+				if protected and x >= 1 then return 1, "id" end
+			end,
+			housing_excluded_at = function() return false end,
+			select_surface = function() return {filler_depth = 4, steep = false} end,
+			strata = strata, content_ref = cid_of,
+			fill_stone_at = function() return false end, write = write}
+		if protected then
+			context.column_cap = cap
+			context.protected_only_floor_at = function(x)
+				if x == 1 then return 40 end
+				if x == 2 then return -math.huge end
+				return 500
+			end
+		end
+		settlement.r8_apply_strata(context)
+		settlement.r24_apply_fill_layers({min_x = box.min_x, min_y = box.min_y,
+			min_z = box.min_z, max_x = box.max_x, max_y = box.max_y,
+			max_z = box.max_z, floor_y = -37, index_at = index_at, column_info = info,
+			column_cap = protected and cap or nil,
+			column_values_at = context.column_values_at, original_data = original,
+			final_data = final, intent_opcode = intent, stone_cid = STONE,
+			layers = layers, fill_stone_at = function() return false end,
+			content_ref = cid_of, write = write})
+		return writes
+	end
+	local open, capped = run(false), run(true)
+	local function by_x(writes)
+		local out = {[0] = {}, {}, {}, {}}
+		for _, w in ipairs(writes) do
+			local list = out[w.x]
+			list[#list + 1] = w.y .. "/" .. w.z .. "=" .. w.name
+		end
+		return out
+	end
+	local o, c = by_x(open), by_x(capped)
+	check(#o[1] > 0 and #o[3] > 0, "synthetic owner has bands")
+	check(table.concat(o[0], ",") == table.concat(c[0], ","), "unexcluded column unchanged")
+	check(table.concat(o[3], ",") == table.concat(c[3], ","),
+		"floor above the surface: the column takes its full bands")
+	check(#c[2] == 0, "non-protection exclusion: no bands")
+	local expected, above = {}, 0
+	for _, w in ipairs(open) do
+		if w.x == 1 and w.y < 40 then expected[#expected + 1] = w.y .. "/" .. w.z .. "=" .. w.name end
+	end
+	for _, w in ipairs(capped) do
+		if w.x == 1 and w.y >= 40 then above = above + 1 end
+	end
+	check(above == 0, "nothing written at or above the floor")
+	check(table.concat(expected, ",") == table.concat(c[1], ","),
+		"below the floor the capped column matches the open one")
+	lines[#lines + 1] = ("strata/nests synthetic owner: open column %d writes, capped" ..
+		" column %d of %d (below y 40), non-protection 0"):format(#o[3], #c[1], #o[1])
+end
+
+-- The anchor_075 shore case and mapgen/renewal agreement, on the real world.
+local habitat = dofile(dir .. "/habitat_registry.lua")
+local world_catalog = dofile(dir .. "/world_content_catalog.lua")
+local function addendum_checks(W, seed)
+	local S, P, source = W.session, W.planner_source, W.source
+	local HUGE = math.huge
+	-- 1. Surface ground of anchor envelopes below the floor (anchor_075 on
+	--    seed 4242424242: the POI's envelope reaches the shore).
+	local anchor_by_id = {}
+	for _, a in ipairs(source.anchors) do anchor_by_id[a.id] = a end
+	local report = {}
+	for _, exclusion in ipairs(source.claim_exclusions) do
+		if exclusion.recipe_id == "exclude_anchor_blend_v1" then
+			local a = anchor_by_id[exclusion.source_id]
+			if a.slot_id ~= "capital" and a.slot_id ~= "start" then
+				local half = exclusion.total_width / 2
+				local surface, cultural, kept, p9g = 0, 0, 0, 0
+				for x = exclusion.center.x - half, exclusion.center.x + half - 1 do
+					for z = exclusion.center.z - half, exclusion.center.z + half - 1 do
+						local _, id = P.static_exclusion_values_at(x, z)
+						local water, _, _, _, _, terrain_y = P.column_values_at(x, z)
+						if id ~= nil and water == "land" then
+							-- P9G's view: the dragon islands' coast envelopes
+							-- stay nonblocking on dry land
+							local p9g_floor = P.protected_only_floor_at(x, z, true)
+							if p9g_floor and terrain_y + 1 < p9g_floor then
+								p9g = p9g + 1
+							end
+							local floor = P.protected_only_floor_at(x, z)
+							if floor == nil then
+								kept = kept + 1
+								-- a non-protection exclusion always holds here
+								local held = P.overlay_exclusion_at(x, z) ~= nil or
+									not (id:sub(1, 15) == "exclude:anchor:" or
+										id:sub(1, 15) == "exclude:active:")
+								if not held then
+									held = P.protected_floor_at(x, z) == nil or
+										P.static_exclusion_values_at(x, z) ~= nil
+								end
+								check(held, exclusion.id .. " kept column has a reason")
+							else
+								check(floor == P.protected_floor_at(x, z),
+									exclusion.id .. " protected-only floor is the floor")
+								if terrain_y + 1 < floor then surface = surface + 1 end
+								if terrain_y + 7 < floor then cultural = cultural + 1 end
+							end
+						end
+					end
+				end
+				if surface > 0 or p9g > 0 then
+					report[#report + 1] = {id = a.id, surface = surface,
+						cultural = cultural, kept = kept, p9g = p9g}
+				end
+			end
+		end
+	end
+	table.sort(report, function(l, r)
+		if l.p9g ~= r.p9g then return l.p9g > r.p9g end
+		return l.id < r.id
+	end)
+	local parts = {}
+	for index = 1, math.min(10, #report) do
+		local r = report[index]
+		parts[#parts + 1] = ("%s p9g %d surface %d cultural %d"):format(r.id, r.p9g,
+			r.surface, r.cultural)
+	end
+	lines[#lines + 1] = ("seed %s: envelope land columns whose surface lies below the" ..
+		" floor: %s"):format(seed, table.concat(parts, "; "))
+	check(#report > 0, "some envelope reaches ground below its floor")
+	if seed == "4242424242" then
+		local found
+		for _, r in ipairs(report) do if r.id == "anchor_075" then found = r end end
+		-- The island's whole-island coast envelope keeps every other surface
+		-- writer off these columns; only P9G treats it as nonblocking.
+		check(found and found.p9g >= 1000 and found.surface == 0,
+			"anchor_075 shore: >= 1000 P9G columns below the floor, island coast kept")
+	end
+	-- 2. Mapgen and renewal give the same cave answer. The writer's input is
+	--    gathered as cave_content_allowed_at gathers it; renewal is the real
+	--    vegetation_density with the runtime's ruling-30 deps.
+	local density = dofile(dir .. "/vegetation_density.lua")({
+		habitat = habitat, world_plants = world_catalog.plants, p9g_rows = {},
+		decorations = {}, template_records = {}, support_names = {},
+		vegetation_rule = habitat.vegetation_rule(seed, P.land_zone_at),
+		decoration_cover = function() return 1 end,
+		column_values_at = P.column_values_at,
+		overlay_exclusion_at = P.overlay_exclusion_at,
+		surface_mob_level_at = S.surface_mob_level_at,
+		primary_relief_at = P.primary_relief_at,
+		static_exclusion_values_at = P.static_exclusion_values_at,
+		surface_cave_run_at = P.surface_cave_run_at,
+		cave_limit = cave_limit, housing_mask_id_at = P.housing_mask_id_at,
+		protected_floor_at = P.protected_floor_at,
+		protected_only_floor_at = P.protected_only_floor_at,
+	})
+	local samples, housing, below_open, disagree = 0, 0, 0, 0
+	local offsets = {{0, 0}, {20, 0}, {-20, 0}, {0, 20}, {0, -20}, {45, 45},
+		{-45, -45}, {70, 0}, {0, -70}}
+	for _, a in ipairs(source.anchors) do
+		for _, o in ipairs(offsets) do
+			local x, z = a.position.x + o[1], a.position.z + o[2]
+			local water, _, _, _, _, terrain_y, _, _, _, fkind, _, _, _, _, _, _, _, _, _,
+				hard = P.column_values_at(x, z)
+			if water == "land" then
+				samples = samples + 1
+				local _, cave_id = P.static_exclusion_values_at(x, z, "cave")
+				local is_housing = P.housing_mask_id_at(x, z) ~= nil
+				if is_housing then housing = housing + 1 end
+				local limit = cave_limit(water, cave_id, is_housing, fkind, hard,
+					P.protected_floor_at, x, z)
+				local ys = {-150, -400, terrain_y - 3}
+				if limit > -HUGE and limit < HUGE then
+					ys[#ys + 1] = limit - 1
+					ys[#ys + 1] = limit
+				end
+				for _, y in ipairs(ys) do
+					if y <= terrain_y - 2 then
+						local _, reason = density.categories(x, y, z, "default:stone", 0)
+						local renewal_open = reason ~= "excluded"
+						local writer_open = y < limit
+						if renewal_open ~= writer_open then disagree = disagree + 1 end
+						if writer_open and limit < HUGE then below_open = below_open + 1 end
+					end
+				end
+			end
+		end
+	end
+	check(disagree == 0, "mapgen and renewal disagree on " .. disagree .. " cave sites")
+	check(housing > 0, "housing-mask cores sampled")
+	lines[#lines + 1] = ("seed %s: cave rule mapgen = renewal on %d columns (%d in" ..
+		" housing masks), %d excluded-column sites open below a floor"):format(
+		seed, samples, housing, below_open)
+end
+
 for _, seed in ipairs(seeds) do
 	local started = os.clock()
 	local W = build_world(seed)
@@ -375,6 +675,7 @@ for _, seed in ipairs(seeds) do
 		"grug_wp40_r7_functional_anchor_protection_v2", "overlay schema v2")
 	runtime_checks(W)
 	mapgen_checks(W)
+	addendum_checks(W, seed)
 end
 print(table.concat(lines, "\n"))
 print(("R24 PROTECTION DEPTH FIXTURE PASS checks=%d"):format(checks))

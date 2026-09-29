@@ -1,0 +1,2 @@
+cave rule, 668 hash hits: per call 0.93 ms, memoised per column 0.72 ms
+protected-only floor over the excluded columns: 45 calls per column 80.94 ms, memoised 2.58 ms

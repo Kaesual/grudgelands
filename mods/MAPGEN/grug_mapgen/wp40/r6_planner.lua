@@ -92,6 +92,7 @@ local function planner_factory()
 				type(planner_source.surface_cave_run_at) ~= "function" or
 				type(planner_source.surface_cave_candidate_at_cell) ~= "function" or
 				type(planner_source.coast_material_at) ~= "function" or
+				type(planner_source.protected_only_floor_at) ~= "function" or
 				type(r5_planner) ~= "table" or type(r5_planner.plan_slice) ~= "function" or
 				type(horizontal) ~= "table" or
 				type(horizontal.static_exclusion_values_at) ~= "function" or
@@ -350,9 +351,18 @@ local function planner_factory()
 			-- (planner.lua).
 			local wet_bed
 			if river_id ~= nil and wet then wet_bed = terrain_y end
+			-- The cultural candidates' exclusion (scratch.excluded): a column
+			-- whose claim exclusion is protection only admits a reservation box
+			-- (root y .. root y + 7, root = terrain y) that lies wholly below
+			-- the protected floor (Round 24 ruling 30 addendum).
+			local cultural_excluded = excluded
+			if excluded then
+				local floor = planner_source.protected_only_floor_at(x, z)
+				if floor and terrain_y + 7 < floor then cultural_excluded = false end
+			end
 			return water_class, zone_numeric, zone_id, biome, race, terrain_y,
 				water_y, surface_kind, surface, support_name,
-				excluded, p7_support,
+				cultural_excluded, p7_support,
 				wet_bed
 		end
 

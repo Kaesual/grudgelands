@@ -157,10 +157,22 @@ local function settlement_factory()
 				local water_class, _, zone_id, biome, _, terrain_y, water_y, _, _,
 					functional_kind, _, _, _, transition_kind, _, _, _, _, _, hard =
 						context.column_values_at(x, z)
+				-- Ruling 30 addendum (optional `protected_only_floor_at`): a
+				-- column whose claim exclusion is protection only takes its
+				-- bands (and the layer pass its nests) below that floor.
+				local cap
+				local admitted = context.static_exclusion_values_at(x, z) == nil
+				if not admitted and context.protected_only_floor_at then
+					cap = context.protected_only_floor_at(x, z)
+					admitted = cap > -math.huge
+				end
+				if context.column_cap then
+					context.column_cap[(z - context.min_z) * x_count +
+						(x - context.min_x) + 1] = cap or false
+				end
 				if water_class == "land" and zone_id and biome and water_y == nil and
 						functional_kind == nil and transition_kind == nil and not hard and
-						context.static_exclusion_values_at(x, z) == nil and
-						not context.housing_excluded_at(x, z) then
+						admitted and not context.housing_excluded_at(x, z) then
 					local surface = context.select_surface(biome, x, z, water_y, terrain_y,
 						zone_id)
 					local filler_depth = surface and surface.filler_depth or 4
@@ -175,7 +187,8 @@ local function settlement_factory()
 						local y = terrain_y - depth
 						if y < context.floor_y then
 							clipped = clipped + 1
-						elseif y >= context.min_y and y <= context.max_y then
+						elseif y >= context.min_y and y <= context.max_y and
+								(cap == nil or y < cap) then
 							local target = context.strata.material_at(zone_id, biome,
 								filler_depth, x, z, depth)
 							if target then
@@ -245,6 +258,35 @@ local function settlement_factory()
 	local function r30_resource_column_open(column_state, floor_y, y)
 		if column_state % 2 == 0 then return false end
 		return column_state < 2 or y < floor_y
+	end
+
+	-- Ruling 30 addendum: the cave-content rule of one column, shared by the
+	-- writer (`cave_content_allowed_at`, world_content.lua) and runtime
+	-- renewal (vegetation_density.lua), so both answer alike. A column is
+	-- excluded by a "cave" claim shape on land, a housing mask, a functional
+	-- kind other than a land grade, or a hard foundation. Housing masks and
+	-- planned-water/coast shapes are no protection: excluded at every depth.
+	-- Every other exclusion (anchor envelopes, hard cores, anchor grades,
+	-- hard foundations) ends at the column's protected floor
+	-- (`floor_at(x, z)`, nil where no protected shape holds it).
+	-- Returns the y below which cave content may place: math.huge when the
+	-- column is not excluded, -math.huge when it is excluded at every depth.
+	local function r30_protected_claim_id(id)
+		local prefix = id:sub(1, 15)
+		return prefix == "exclude:anchor:" or prefix == "exclude:active:"
+	end
+	local function r30_cave_limit(water_class, cave_id, housing, functional_kind,
+			hard_foundation, floor_at, x, z)
+		if not ((water_class == "land" and cave_id ~= nil) or housing or
+				(functional_kind ~= nil and functional_kind ~= "land_grade") or
+				hard_foundation) then
+			return math.huge
+		end
+		if housing or (cave_id ~= nil and not hard_foundation and
+				not r30_protected_claim_id(cave_id)) then
+			return -math.huge
+		end
+		return floor_at(x, z) or -math.huge
 	end
 
 	-- Ruling 12: mountain interiors.  Below the band depth the fill carries
@@ -449,6 +491,9 @@ local function settlement_factory()
 						local mode = info % 2 == 1 and "face" or "nest"
 						local shallow_top = math.min(context.max_y,
 							terrain_y - (math.floor(info / 2) + 1))
+						local cap = context.column_cap and context.column_cap[
+							(z - context.min_z) * x_count + (x - context.min_x) + 1]
+						if cap then shallow_top = math.min(shallow_top, cap - 1) end
 						for y = math.max(bottom, terrain_y - 40), shallow_top do
 							local index = context.index_at(x, y, z)
 							local target = final[index] == stone and intent[index] == 0 and
@@ -1007,6 +1052,8 @@ local function settlement_factory()
 				type(planner_source.landmark_excluded_at) ~= "function" or
 				type(planner_source.overlay_exclusion_at) ~= "function" or
 				type(planner_source.protection_floor_y) ~= "function" or
+				type(planner_source.protected_floor_at) ~= "function" or
+				type(planner_source.protected_only_floor_at) ~= "function" or
 				type(source) ~= "table" or
 				(successor_tail ~= nil and (type(successor_tail) ~= "table" or
 					type(successor_tail.settle) ~= "function")) then
@@ -1231,6 +1278,13 @@ local function settlement_factory()
 			-- The protected floor of each fixed/protected column (ruling 30).
 			resource_protected_floor = retained_array(
 				"r6_settlement_resource_protected_floor", 6400, 0),
+			-- Per owner column (ruling 30 addendum, memoised per call; false
+			-- until asked): the protected-only floor of the territory rule and
+			-- the cave-content limit.
+			protected_only_floor_column = retained_array(
+				"r6_settlement_protected_only_floor_column", 6400, false),
+			cave_limit_column = retained_array(
+				"r6_settlement_cave_limit_column", 6400, false),
 			surface_skin_column = retained_array(
 				"r6_settlement_surface_skin_column", 6400, 0),
 			successor_refs = {p9g_min = 0, p9g_max = 0, anchor_min = 0,
@@ -2641,6 +2695,27 @@ local function settlement_factory()
 			local function column_index(x, z)
 				return (z - min_z) * x_count + (x - min_x) + 1
 			end
+			-- Round 24 ruling 30 addendum: below a protected-only floor the
+			-- territory rule's claim exclusion no longer applies (an anchor
+			-- envelope on a slope reaches ground far below its anchor).
+			-- -math.huge where the column has no such floor.
+			local protected_only_floor_column =
+				transaction_state.protected_only_floor_column
+			local cave_limit_column = transaction_state.cave_limit_column
+			for index = 1, x_count * (max_z - min_z + 1) do
+				protected_only_floor_column[index] = false
+				cave_limit_column[index] = false
+			end
+			local function protected_only_floor(x, z)
+				local owned = x >= min_x and x <= max_x and z >= min_z and z <= max_z
+				local column = owned and column_index(x, z)
+				local value = owned and protected_only_floor_column[column]
+				if not value then
+					value = planner_source.protected_only_floor_at(x, z) or -math.huge
+					if owned then protected_only_floor_column[column] = value end
+				end
+				return value
+			end
 			local function write_intent(x, y, z, content_ref, param2, opcode,
 					feature_ref, interface_ref, role_bit, occupant)
 				if x < min_x or x > max_x or y < min_y or y > max_y or
@@ -2884,13 +2959,14 @@ local function settlement_factory()
 			end
 			-- Round 24 B2: the strata pass hands each column's band eligibility,
 			-- filler depth and steepness to the layer pass.
-			local column_info = {}
+			local column_info, column_cap = {}, {}
 			helpers.r8_apply_strata({min_x = min_x, min_y = min_y, min_z = min_z,
 				max_x = max_x, max_y = max_y, max_z = max_z, floor_y = -37,
 				original_data = original_data, column_info = column_info,
 				stone_cid = contract.content_cids[stone_ref], index_at = index_at,
 				column_values_at = planner_source.column_values_at,
 				static_exclusion_values_at = helpers.r8_horizontal.static_exclusion_values_at,
+				protected_only_floor_at = protected_only_floor, column_cap = column_cap,
 				housing_excluded_at = helpers.housing_excluded_at,
 				select_surface = helpers.r8_select_surface, strata = helpers.r8_strata,
 				content_ref = content.content_ref, fill_stone_at = fill_stone_at,
@@ -2903,6 +2979,7 @@ local function settlement_factory()
 			helpers.r24_apply_fill_layers({min_x = min_x, min_y = min_y,
 				min_z = min_z, max_x = max_x, max_y = max_y, max_z = max_z,
 				floor_y = -37, index_at = index_at, column_info = column_info,
+				column_cap = column_cap,
 				column_values_at = planner_source.column_values_at,
 				original_data = original_data, final_data = final_data,
 				intent_opcode = intent_opcode, stone_cid = fill_stone_cid,
@@ -2970,6 +3047,12 @@ local function settlement_factory()
 									if not inside_owner(x, y, z) then flags.clipped_owner = true
 									else
 										local excluded = helpers.exclusion_reason(x, z)
+										-- ruling 30 addendum: below the floor the
+										-- reservation box is on ordinary ground
+										if excluded == "fixed_or_protected" and
+												y < protected_only_floor(x, z) then
+											excluded = nil
+										end
 										if excluded then flags[excluded] = true end
 										local index = index_at(x, y, z)
 										if original_data[index] == contract.ignore_cid then
@@ -3561,14 +3644,43 @@ local function settlement_factory()
 						(ref - 1) * 256
 				end
 				function successor_context.cave_content_allowed_at(x, y, z)
-					return not skin_context.excluded_at(x, z) and
-						inside_owner(x, y, z) and
-						planner_source.column_values_at(x, z) == "land" and
-						original_data[index_at(x,y,z)] == native_air_cid and
-						final_data[index_at(x,y,z)] == native_air_cid
+					if not (inside_owner(x, y, z) and
+							planner_source.column_values_at(x, z) == "land" and
+							original_data[index_at(x,y,z)] == native_air_cid and
+							final_data[index_at(x,y,z)] == native_air_cid) then
+						return false
+					end
+					-- Round 24 ruling 30 addendum: below the protected floor a
+					-- town's or POI's column is ordinary cave ground (the same
+					-- rule as runtime renewal, `r30_cave_limit`).
+					local column = column_index(x, z)
+					local limit = cave_limit_column[column]
+					if not limit then
+						local water_class, _, _, _, _, _, _, _, _, functional_kind, _, _,
+							_, _, _, _, _, _, _, hard_foundation =
+								planner_source.column_values_at(x, z)
+						local _, cave_id = helpers.r8_horizontal.static_exclusion_values_at(
+							x, z, "cave")
+						limit = r30_cave_limit(water_class, cave_id,
+							helpers.housing_excluded_at(x, z), functional_kind,
+							hard_foundation, planner_source.protected_floor_at, x, z)
+						cave_limit_column[column] = limit
+					end
+					return y < limit
 				end
-				function successor_context.exclusion_at(x, z)
-					return helpers.exclusion_reason(x, z)
+				-- `y` (optional, ruling 30 addendum): the height a surface writer
+				-- places at; below the column's protected-only floor the claim
+				-- exclusion does not apply. `dry_island_open`: P9G's view of the
+				-- dragon islands' coast envelopes (nonblocking on dry land).
+				function successor_context.exclusion_at(x, z, y, dry_island_open)
+					local reason, id = helpers.exclusion_reason(x, z)
+					if y ~= nil and reason == "fixed_or_protected" and
+							y < (dry_island_open and
+								(planner_source.protected_only_floor_at(x, z, true) or
+									-math.huge) or protected_only_floor(x, z)) then
+						return nil
+					end
+					return reason, id
 				end
 				function successor_context.housing_excluded_at(x, z)
 					return helpers.housing_excluded_at(x, z)
@@ -4046,6 +4158,7 @@ local function settlement_factory()
 		r24_sort_prefix = sort_prefix, r24_frontier_min = frontier_min,
 		r24_resource_host_base = r24_resource_host_base,
 		r30_resource_column_open = r30_resource_column_open,
+		r30_cave_limit = r30_cave_limit,
 		r24_fill_layers_new = new_r24_fill_layers,
 		r24_apply_fill_layers = r24_apply_fill_layers,
 		r24_layer_first_depth = R24_LAYER_FIRST_DEPTH,

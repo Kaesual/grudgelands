@@ -9,6 +9,9 @@
 --    core.is_protected, the mining decision, the punch hint and a real
 --    core.node_dig at the floor + 1, the floor and the floor - 1. An Accord
 --    probe digger is refused below the floor by the ordinary home rule.
+-- 3. Ruling 30 addendum: world-content cave rows (cave_cap) under the pad
+--    below the floor, none above it, and a same-size reference box on
+--    unprotected ground 480 nodes east for comparison.
 -- Ends the server itself; "RESULT PASS" is the verdict line.
 
 local PREFIX = "[r24_protection_probe] "
@@ -65,6 +68,22 @@ local function ore_counts(minp, maxp)
 	end
 	local _, stone = core.find_nodes_in_area(minp, maxp, {"default:stone"})
 	return total, table.concat(parts, " "), stone["default:stone"] or 0
+end
+
+-- The world-content cave rows' nodes (cave_cap, ember_moss).
+local function cave_counts(minp, maxp)
+	local names = {}
+	for name, def in pairs(core.registered_nodes) do
+		if (name:find("cave_cap", 1, true) or name:find("ember_moss", 1, true)) and
+				not name:find("seed", 1, true) then
+			names[#names + 1] = name
+		end
+	end
+	table.sort(names)
+	local _, counts = core.find_nodes_in_area(minp, maxp, names)
+	local total = 0
+	for _, name in ipairs(names) do total = total + (counts[name] or 0) end
+	return total
 end
 
 local function digging(start, floor)
@@ -134,8 +153,9 @@ core.after(2, function()
 	local floor = start.anchor.y - DEPTH
 	log(("ORC start anchor %s, protected floor y=%d"):format(
 		core.pos_to_string(start.anchor), floor))
-	-- 96 nodes below the floor, so the 16-node layers end at the floor.
-	local minp = {x = -48, y = floor - 96, z = 2502}
+	-- 240 nodes below the floor (the cave_cap rows reach -100..-500), a
+	-- multiple of 16, so the 16-node layers end at the floor.
+	local minp = {x = -48, y = floor - 240, z = 2502}
 	local maxp = {x = 47, y = start.anchor.y - 1, z = 2597}
 	local started = core.get_us_time()
 	core.emerge_area(minp, maxp, function(_, _, remaining)
@@ -159,7 +179,23 @@ core.after(2, function()
 		end
 		check(above == 0, "no P8 ore inside the protected volume")
 		check(below > 0, "ores below the protected floor")
-		digging(start, floor)
-		finish()
+		-- Ruling 30 addendum: cave content (world-content cave rows) under the
+		-- town, against the same box 480 nodes east on unprotected ground.
+		local town_below = cave_counts(minp, {x = maxp.x, y = floor - 1, z = maxp.z})
+		local town_above = cave_counts({x = minp.x, y = floor, z = minp.z}, maxp)
+		log(("CAVE content under the town: below floor %d, above floor %d"):format(
+			town_below, town_above))
+		check(town_below > 0, "cave content below the town's floor")
+		check(town_above == 0, "no cave content inside the protected volume")
+		local rmin = {x = minp.x + 480, y = minp.y, z = minp.z}
+		local rmax = {x = maxp.x + 480, y = floor - 1, z = maxp.z}
+		core.emerge_area(rmin, rmax, function(_, _, left)
+			if left > 0 then return end
+			log(("CAVE content in the reference box %s..%s: %d"):format(
+				core.pos_to_string(rmin), core.pos_to_string(rmax),
+				cave_counts(rmin, rmax)))
+			digging(start, floor)
+			finish()
+		end)
 	end)
 end)

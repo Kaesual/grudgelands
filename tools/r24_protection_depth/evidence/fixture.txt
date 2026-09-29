@@ -1,3 +1,4 @@
+strata/nests synthetic owner: open column 384 writes, capped column 156 of 384 (below y 40), non-protection 0
 seed 4242424242 (built in 2.0 s)
 start    anchor_001             x= -1800 z= -2550 placement=  35 bound= -65 lowest ground 35 (margin 100)
 start    anchor_002             x=     0 z= -2550 placement=  37 bound= -63 lowest ground 35 (margin 98)
@@ -73,6 +74,8 @@ bandit   anchor_059             x=  1632 z=  2034 placement=  75 bound= -25
 bandit   anchor_060             x=  1776 z=   454 placement= 131 bound=  31
 envelope overlaps: anchor_026/anchor_061 148, anchor_041/anchor_098 4096, anchor_087/anchor_089 4000, anchor_088/anchor_090 4000; 12260 columns, 8157 where the first shape's floor is not the lowest
 Orc start (0,37,2550): exclusion exclude:anchor:anchor_005:01, P8 floor -63
+seed 4242424242: envelope land columns whose surface lies below the floor: anchor_075 p9g 1340 surface 0 cultural 0; anchor_087 p9g 445 surface 0 cultural 0; anchor_077 p9g 334 surface 334 cultural 163; anchor_086 p9g 208 surface 0 cultural 0; anchor_061 p9g 180 surface 180 cultural 12
+seed 4242424242: cave rule mapgen = renewal on 876 columns (214 in housing masks), 504 excluded-column sites open below a floor
 seed 10536739806879207652 (built in 2.1 s)
 start    anchor_001             x= -1800 z= -2550 placement=  34 bound= -66 lowest ground 33 (margin 99)
 start    anchor_002             x=     0 z= -2550 placement=  27 bound= -73 lowest ground 25 (margin 98)
@@ -148,4 +151,6 @@ bandit   anchor_059             x=  1632 z=  2034 placement=  61 bound= -39
 bandit   anchor_060             x=  1776 z=   454 placement= 207 bound= 107
 envelope overlaps: anchor_026/anchor_061 148, anchor_041/anchor_098 4096, anchor_087/anchor_089 4000, anchor_088/anchor_090 4000; 12260 columns, 12255 where the first shape's floor is not the lowest
 Orc start (0,37,2550): exclusion exclude:anchor:anchor_005:01, P8 floor -63
-R24 PROTECTION DEPTH FIXTURE PASS checks=27934
+seed 10536739806879207652: envelope land columns whose surface lies below the floor: anchor_087 p9g 284 surface 0 cultural 0; anchor_089 p9g 146 surface 0 cultural 0; anchor_097 p9g 93 surface 0 cultural 0; anchor_086 p9g 29 surface 0 cultural 0; anchor_075 p9g 24 surface 0 cultural 0; anchor_088 p9g 21 surface 0 cultural 0; anchor_027 p9g 3 surface 3 cultural 0
+seed 10536739806879207652: cave rule mapgen = renewal on 877 columns (225 in housing masks), 498 excluded-column sites open below a floor
+R24 PROTECTION DEPTH FIXTURE PASS checks=2484430

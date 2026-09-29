@@ -86,7 +86,13 @@ return function(catalog, content, habitat)
      local bank=excluded_id=="exclude:water_bank"
      if excluded_id=="exclude:inland_water" or bank then excluded=nil end
      local housing=ctx.housing_excluded_at(x,z)
-     if water=="land" and not excluded and not housing then
+     -- Round 24 ruling 30 addendum: a surface row below the column's
+     -- protected floor stands on ordinary ground.
+     local surface_excluded=excluded
+     if excluded=="fixed_or_protected" and ctx.exclusion_at(x,z,ground+1)==nil then
+      surface_excluded=nil
+     end
+     if water=="land" and not surface_excluded and not housing then
       local level=deps.zones_session.surface_mob_level_at(x,z)
       local y=ground+1
       if y>=ctx.min_y and y<=ctx.max_y then
