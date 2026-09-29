@@ -98,7 +98,7 @@ return function(p9g_config, anchor_config, settlement_configs, roster_keys, worl
 					"min_x", "min_y", "min_z", "max_x", "max_y", "max_z",
 					"inside_owner", "original_at", "settled_at", "production_content",
 					"analytic_p7_ref", "analytic_p7_tuple", "exclusion_at",
-					"housing_excluded_at", "column_values_at", "write_p9g"}) do
+					"column_values_at", "write_p9g"}) do
 				p9g_context[key] = context[key]
 			end
 			local p9g_ledger = p9g:settle(p9g_context)

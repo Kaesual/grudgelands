@@ -89,7 +89,6 @@ S.r8_apply_strata({min_x = 0, min_y = 0, min_z = 0, max_x = 63, max_y = 127, max
 	floor_y = -37, original_data = original, stone_cid = STONE, index_at = index_at,
 	column_info = info, column_values_at = column_values_at,
 	static_exclusion_values_at = function() return nil end,
-	housing_excluded_at = function() return false end,
 	select_surface = function(_, x, z) return {filler_depth = 4, steep = steep(x, z)} end,
 	strata = S.r8_strata_new("10536739806879207652", {zones = {{id = "stormvault",
 		primary_relief_id = "mountain"}}}),

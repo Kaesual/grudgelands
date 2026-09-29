@@ -441,6 +441,38 @@ eq(b.armor.immortal, nil, "complete character released at readiness")
 eq(b.inventory_formspec, "SFINV_HOME", "complete character's inventory restored")
 eq(b.pos.x, 0, "complete character not teleported")
 
+--
+-- 7. The current step is the inventory formspec synchronously, inside the
+--    join callbacks, before any deferred step (Lane H review follow-up).
+--
+local function join_without_steps(name, is_new)
+	local p = make_player(name)
+	players[name] = p
+	if is_new then
+		for _, fn in ipairs(callbacks.newplayer) do fn(p) end
+	end
+	for _, fn in ipairs(callbacks.join) do fn(p) end
+	return p
+end
+mark = #shown
+local c = join_without_steps("carol", true)
+check(c.inventory_formspec:find("choose_accord", 1, true) ~= nil,
+	"new player: faction step is the inventory before the first server step")
+eq(#shown_since(mark, "carol"), 0, "new player: no dialog before the deferred join step")
+run_after()
+local sc = shown_since(mark, "carol")
+eq(sc[1] and sc[1].form, c.inventory_formspec, "new player: the join dialog is the inventory step")
+submit(c, "", {choose_throng = "The Throng"})
+leave(c)
+mark = #shown
+c = join_without_steps("carol", false)
+check(c.inventory_formspec:find("choose_orc", 1, true) ~= nil,
+	"reconnect: race step is the inventory before the first server step")
+eq(#shown_since(mark, "carol"), 0, "reconnect: no dialog before the deferred join step")
+run_after()
+sc = shown_since(mark, "carol")
+eq(sc[1] and sc[1].formname, RACE_FORM, "reconnect: race dialog on the deferred join step")
+
 if failures > 0 then
 	error(("R24 CREATION PAUSE PORTABLE FAIL %d/%d"):format(failures, checks), 0)
 end

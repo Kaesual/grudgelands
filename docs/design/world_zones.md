@@ -610,6 +610,13 @@ replaced; git history before this rewrite records that model.
 - The housing zones are large level-20–30 regions with ample room. Housing
   capacity is not measured, and the coastal housing values above are rough
   targets, not proofs.
+- **The housing mask is claim eligibility only** (Round 24 ruling 33): it
+  decides where a Claim Stone may be placed and nothing else. Mapgen and
+  runtime renewal treat a housing-mask column exactly like the same column
+  without the mask, at every depth: ores, shallow bands, cliff layers and
+  nests, surface skin, cave mouths and cave content, gathering sources,
+  plants and water content follow the ordinary rules. Placed Claim Stones
+  (player protection) change nothing about generation or renewal either.
 
 ### 7.6 Height, relief and visual structure
 
@@ -686,8 +693,8 @@ replaced; git history before this rewrite records that model.
   cardinal neighbor is at least two nodes lower or all nine columns of the
   centred 3x3 neighborhood have that air run. Otherwise the skin closes a thin
   roof. Start and capital build squares, POI building cores, road corridors,
-  functional water and road operations, foundations and housing reservations
-  are excluded from both filling and opening.
+  functional water and road operations and foundations are excluded from
+  both filling and opening; housing areas are ordinary ground (§7.5).
 - **Fresh-world surface and vegetation refinement (2026-09-13):** logical
   biome ownership stays unchanged. Dry surfaces combine coherent 32-node and
   8-node material fields at weights 3:1; filler depth varies from 1–4 nodes
@@ -848,7 +855,7 @@ replaced; git history before this rewrite records that model.
   v7 may cut through veins, bands and caves. Lava is unchanged.
 - **Cliffs and near-surface nests (Round 24 B2).** In the top 40 nodes
   of a column, below its filler, where the shallow strata apply (same exclusions:
-  protected, functional, water, towns, housing), untouched native or fill
+  protected, functional, water, towns), untouched native or fill
   `default:stone` takes the lattice's rock nests; on steep columns (rock
   faces and lips) it also takes the same horizontal layers, so strata break
   through cliff faces in native rock and in fill alike. Gravel and dirt
@@ -1274,8 +1281,8 @@ code, not by this document.
   writers they bind today: planned-water and coast shapes (the cave rule
   and every surface writer; P9G excepted on the dry islands), the overlay
   exclusions (road corridors, inland water, water banks) for the surface
-  writers, housing masks, and functional kinds and hard foundations at the
-  surface. Runtime renewal applies the same rules (`farming.md`).
+  writers, and functional kinds and hard foundations at the surface. Housing
+  masks are no exclusion at any depth (§7.5, ruling 33). Runtime renewal applies the same rules (`farming.md`).
 - **Natural-resource root sampling:** each resource/16-node cell/host/tier/
   deep-band group keeps its eligible-host count, density budget and balanced
   capped vein targets. Roots are drawn from a deterministic per-world stream
@@ -1938,7 +1945,8 @@ ordinary dirt, relevant litter, mud, dry dirt, moss soil and ash soil do not
 turn an unrelated logical biome into a host. Actual final support is checked,
 not assumed from the nominal biome. Surface sources stand above that support;
 cave sources require real preserved air above real exposed stone. No source
-may replace a functional surface, foundation, route, housing exclusion or water.
+may replace a functional surface, foundation, route or water; a housing area
+is ordinary host ground (§7.5).
 Cave eligibility follows the purpose-specific WORLD guards, not broad natural
 landmark envelopes; under a town, POI core, anchor grade or hard foundation
 those guards end at the column's protected floor (placement height − 100,

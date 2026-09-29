@@ -9,7 +9,7 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 	local HASH_PREFIX = "grug_wp40_r6_hash_v1"
 	local REASONS = {
 		"clipped_owner", "fixed_or_protected", "route_or_water",
-		"housing_exclusion", "content_ignore", "wrong_zone", "wrong_biome",
+		"content_ignore", "wrong_zone", "wrong_biome",
 		"wrong_shore", "wrong_support", "insufficient_clearance", "r6_occupancy",
 	}
 	local REASON_SET = {}
@@ -334,8 +334,6 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 			end
 			if exclusion == "fixed_or_protected" or exclusion == "route_or_water" then
 				return exclusion, value
-			elseif context.housing_excluded_at(x, z) then
-				return "housing_exclusion", value
 			elseif value.original_cid == production.ignore_cid then
 				return "content_ignore", value
 			end
@@ -433,7 +431,7 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 				max_x = true, max_y = true, max_z = true, inside_owner = true,
 				original_at = true, settled_at = true, production_content = true,
 				analytic_p7_ref = true, analytic_p7_tuple = true, exclusion_at = true,
-				housing_excluded_at = true, column_values_at = true, write_p9g = true},
+				column_values_at = true, write_p9g = true},
 				"successor context")
 			if context.schema ~= "grug_wp40_r7_successor_context_v1" or
 				not rawequal(context.plan, bound_plan) or
@@ -663,7 +661,7 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 			exact_fields(context, {inside_owner = true, original_at = true,
 				settled_at = true, production_content = true, analytic_p7_ref = true,
 				analytic_p7_tuple = true, exclusion_at = true,
-				housing_excluded_at = true, column_values_at = true},
+				column_values_at = true},
 				"P9G probe context")
 			integer(catalog_index, "P9G probe catalog", 1, 12)
 			integer(x, "P9G probe x", -30912, 30927)

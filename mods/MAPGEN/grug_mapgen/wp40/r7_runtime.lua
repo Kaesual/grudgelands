@@ -595,7 +595,6 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 					surface_cave_run_at = r6_identity.planner_source.surface_cave_run_at,
 					-- Round 24 ruling 30 addendum: the writer's own cave rule.
 					cave_limit = dofile(wp40_directory .. "/r6_settlement.lua").r30_cave_limit,
-					housing_mask_id_at = r6_identity.planner_source.housing_mask_id_at,
 					protected_floor_at = r6_identity.planner_source.protected_floor_at,
 					protected_only_floor_at =
 						r6_identity.planner_source.protected_only_floor_at,

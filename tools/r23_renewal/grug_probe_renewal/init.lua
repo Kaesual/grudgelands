@@ -79,10 +79,9 @@ local function find_site()
 				local water, _, zone, biome, _, terrain_y = planner.column_values_at(x, z)
 				if water == "land" and WOODY_BIOMES[biome] and terrain_y >= 2 and
 						planner.static_exclusion_values_at(x, z, "vegetation") == nil and
-						planner.housing_mask_id_at(x, z) == nil and
 						planner.functional_surface_values_at(x, z) == nil and
 						planner.overlay_exclusion_at(x, z) == nil and
-						grug_core.world_alterable({x = x, y = terrain_y + 1, z = z}) then
+						grug_core.natural_ground_alterable({x = x, y = terrain_y + 1, z = z}) then
 					return {x = x, y = terrain_y, z = z}, start, zone, biome
 				end
 			end
@@ -188,10 +187,9 @@ local function run(site, start, zone, biome)
 			{-12, 12}, {12, -12}, {-12, -12}, {24, 0}, {0, 24}, {0, -24}}) do
 		local pos = not b and surface_at(site.x + offset[1], site.z + offset[2], site.y)
 		if pos and planner.static_exclusion_values_at(pos.x, pos.z, "vegetation") == nil and
-				planner.housing_mask_id_at(pos.x, pos.z) == nil and
 				planner.functional_surface_values_at(pos.x, pos.z) == nil and
 				planner.overlay_exclusion_at(pos.x, pos.z) == nil and
-				grug_core.world_alterable(vector.offset(pos, 0, 1, 0)) then
+				grug_core.natural_ground_alterable(vector.offset(pos, 0, 1, 0)) then
 			b = pos
 		end
 	end
@@ -285,11 +283,10 @@ local function run(site, start, zone, biome)
 					local pos = column_surface(x, z, center.y)
 					if pos and not grade and skin and planner.column_values_at(x, z) == "land" and
 							planner.hard_row_at(x, pos.y, z) == nil and
-							planner.housing_mask_id_at(x, z) == nil and
 							planner.overlay_exclusion_at(x, z) == nil and
 							planner.hard_row_at(x, pos.y + 1, z) == nil and
-							grug_core.world_alterable(vector.offset(pos, 0, 1, 0)) and
-							grug_core.world_alterable(pos) and
+							grug_core.natural_ground_alterable(vector.offset(pos, 0, 1, 0)) and
+							grug_core.natural_ground_alterable(pos) and
 							(core.get_natural_light(vector.offset(pos, 0, 1, 0), 0.5) or 0) >= 10 then
 						grade = pos
 					elseif pos and not bare_grade and not skin and
@@ -297,8 +294,7 @@ local function run(site, start, zone, biome)
 							planner.hard_row_at(x, pos.y + 1, z) == nil and
 							planner.hard_row_at(x, pos.y, z) == nil and
 							planner.static_exclusion_values_at(x, z, "vegetation") == nil and
-							planner.housing_mask_id_at(x, z) == nil and
-							grug_core.world_alterable(vector.offset(pos, 0, 1, 0)) then
+							grug_core.natural_ground_alterable(vector.offset(pos, 0, 1, 0)) then
 						bare_grade = pos
 					end
 				end
@@ -333,9 +329,8 @@ local function run(site, start, zone, biome)
 				if pos and core.get_item_group(core.get_node(pos).name, "soil") > 0 and
 						(core.get_natural_light(above, 0.5) or 0) >= 13 and
 						planner.static_exclusion_values_at(pos.x, pos.z, "vegetation") == nil and
-						planner.housing_mask_id_at(pos.x, pos.z) == nil and
 						functional == nil and planner.overlay_exclusion_at(pos.x, pos.z) == nil and
-						grug_core.world_alterable(above) and grug_core.world_alterable(pos) then
+						grug_core.natural_ground_alterable(above) and grug_core.natural_ground_alterable(pos) then
 					local woody_here
 					for _, category in ipairs(density.categories(above.x, above.y, above.z,
 							core.get_node(pos).name, 15) or {}) do

@@ -6,6 +6,8 @@ local previous_is_protected = core.is_protected
 -- residents, but authored/immutable content is not mutable for water or plants.
 -- Additional system guards (for example active Housing reservations) fail
 -- closed when they return false, independently of player protection bypass.
+-- They guard system mutations such as liquid flow; natural renewal checks
+-- only the territory rule (`natural_ground_alterable`, Round 24 ruling 33).
 local world_alteration_guards = {}
 
 function grug_core.register_world_alteration_guard(guard)
@@ -13,13 +15,19 @@ function grug_core.register_world_alteration_guard(guard)
 	world_alteration_guards[#world_alteration_guards + 1] = guard
 end
 
-function grug_core.world_alterable(pos)
+-- The territory part alone: whether the world itself may change here (towns,
+-- landmarks, the open sea and other immutable ground refuse). Natural renewal
+-- uses this, never the guards below: Claim Stones and other player
+-- protection change nothing about generation or renewal (Round 24 ruling 33).
+function grug_core.natural_ground_alterable(pos)
 	if not grug_core.zone_authority_installed() then return false end
 	local territory = grug_zones.territory_rule_at(pos)
-	if territory ~= "accord_home" and territory ~= "throng_home" and
-			territory ~= "contested_land" then
-		return false
-	end
+	return territory == "accord_home" or territory == "throng_home" or
+		territory == "contested_land"
+end
+
+function grug_core.world_alterable(pos)
+	if not grug_core.natural_ground_alterable(pos) then return false end
 	for index = 1, #world_alteration_guards do
 		if world_alteration_guards[index](pos) == false then return false end
 	end

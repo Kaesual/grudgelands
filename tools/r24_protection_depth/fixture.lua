@@ -24,7 +24,8 @@
 --      columns; every anchor envelope's land columns whose surface lies
 --      below the floor (anchor_075's island shore on seed 4242424242); and
 --      the same cave answer from mapgen and runtime renewal on anchor
---      centres and rings, housing-mask cores included.
+--      centres and rings, housing-mask cores included (a housing mask is
+--      ordinary ground, Round 24 ruling 33).
 -- Prints the bound table and "R24 PROTECTION DEPTH FIXTURE PASS checks=<n>",
 -- or raises on the first failure. The engine counterpart (ores and digging
 -- at the floor under the Orc start) is `run.sh OUT_DIR [TIMEOUT]`; its
@@ -363,8 +364,8 @@ local function mapgen_checks(W)
 	do
 		local water, _, _, _, _, _, _, _, _, fkind, _, _, _, _, _, _, _, _, _, hard =
 			P.column_values_at(0, 2550)
-		local limit = settlement.r30_cave_limit(water, cave_id,
-			P.housing_mask_id_at(0, 2550) ~= nil, fkind, hard, P.protected_floor_at, 0, 2550)
+		local limit = settlement.r30_cave_limit(water, cave_id, fkind, hard,
+			P.protected_floor_at, 0, 2550)
 		check(limit == orc_floor, "Orc start cave limit is the town floor")
 	end
 	-- every anchor centre: the non-failing floor equals the P8 floor
@@ -404,27 +405,25 @@ do
 	local function floor_at(value) return function() return value end end
 	local HUGE = math.huge
 	-- not excluded: open at every depth
-	check(cave_limit("land", nil, false, nil, false, floor_at(-63), 0, 0) == HUGE,
+	check(cave_limit("land", nil, nil, false, floor_at(-63), 0, 0) == HUGE,
 		"no exclusion: open")
-	check(cave_limit("land", nil, false, "land_grade", false, floor_at(-63), 0, 0) == HUGE,
+	check(cave_limit("land", nil, "land_grade", false, floor_at(-63), 0, 0) == HUGE,
 		"a land grade alone is no exclusion")
 	-- protected shapes, anchor platforms and hard foundations end at the floor
-	check(cave_limit("land", "exclude:anchor:anchor_005:01", false, nil, false,
+	check(cave_limit("land", "exclude:anchor:anchor_005:01", nil, false,
 		floor_at(-63), 0, 0) == -63, "town envelope: floor")
-	check(cave_limit("land", "exclude:active:hard:anchor_005", false, nil, false,
+	check(cave_limit("land", "exclude:active:hard:anchor_005", nil, false,
 		floor_at(-63), 0, 0) == -63, "hard core: floor")
-	check(cave_limit("land", nil, false, "anchor_platform", false,
+	check(cave_limit("land", nil, "anchor_platform", false,
 		floor_at(-40), 0, 0) == -40, "anchor platform: floor")
-	check(cave_limit("land", "exclude:coast:island_wyrmglass", false, nil, true,
+	check(cave_limit("land", "exclude:coast:island_wyrmglass", nil, true,
 		floor_at(-40), 0, 0) == -40, "hard foundation over a coast shape: floor")
 	-- no protection: closed at every depth
-	check(cave_limit("land", "exclude:coast:island_wyrmglass", false, nil, false,
+	check(cave_limit("land", "exclude:coast:island_wyrmglass", nil, false,
 		floor_at(-40), 0, 0) == -HUGE, "coast shape: closed")
-	check(cave_limit("land", "exclude:water:bay_1", false, nil, false,
+	check(cave_limit("land", "exclude:water:bay_1", nil, false,
 		floor_at(-40), 0, 0) == -HUGE, "bay water shape: closed")
-	check(cave_limit("land", "exclude:anchor:anchor_070:01", true, nil, false,
-		floor_at(-40), 0, 0) == -HUGE, "housing mask: closed")
-	check(cave_limit("land", "exclude:anchor:anchor_070:01", false, nil, false,
+	check(cave_limit("land", "exclude:anchor:anchor_070:01", nil, false,
 		floor_at(nil), 0, 0) == -HUGE, "no protected shape: closed")
 end
 
@@ -481,7 +480,6 @@ do
 			static_exclusion_values_at = function(x)
 				if protected and x >= 1 then return 1, "id" end
 			end,
-			housing_excluded_at = function() return false end,
 			select_surface = function() return {filler_depth = 4, steep = false} end,
 			strata = strata, content_ref = cid_of,
 			fill_stone_at = function() return false end, write = write}
@@ -624,7 +622,7 @@ local function addendum_checks(W, seed)
 		primary_relief_at = P.primary_relief_at,
 		static_exclusion_values_at = P.static_exclusion_values_at,
 		surface_cave_run_at = P.surface_cave_run_at,
-		cave_limit = cave_limit, housing_mask_id_at = P.housing_mask_id_at,
+		cave_limit = cave_limit,
 		protected_floor_at = P.protected_floor_at,
 		protected_only_floor_at = P.protected_only_floor_at,
 	})
@@ -641,7 +639,7 @@ local function addendum_checks(W, seed)
 				local _, cave_id = P.static_exclusion_values_at(x, z, "cave")
 				local is_housing = P.housing_mask_id_at(x, z) ~= nil
 				if is_housing then housing = housing + 1 end
-				local limit = cave_limit(water, cave_id, is_housing, fkind, hard,
+				local limit = cave_limit(water, cave_id, fkind, hard,
 					P.protected_floor_at, x, z)
 				local ys = {-150, -400, terrain_y - 3}
 				if limit > -HUGE and limit < HUGE then

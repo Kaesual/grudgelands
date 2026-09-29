@@ -55,6 +55,7 @@ local continue_creation
 local start_spawn_load
 local finish_if_ready
 local present
+local current_step
 
 local function copy_table(source)
 	local result = {}
@@ -131,6 +132,11 @@ local function lock_player(player)
 			preparation_ready = grug_core.world_preparation_status().ready,
 			dismissed = false}
 		creation_sessions[name] = session
+		-- The inventory is the current step from the first moment on, not
+		-- only from the deferred join dialog: no server step with the old one.
+		local _, _, form = current_step(player, session)
+		session.inventory_form = form
+		player:set_inventory_formspec(form)
 	end
 	reassert_player_lock(player)
 	return session
@@ -234,7 +240,7 @@ end
 -- preparation or this player's arrival area) or "failed" (with retry), plus
 -- its form name and formspec. Choices are only offered once the selected
 -- world preparation is complete.
-local function current_step(player, session)
+current_step = function(player, session)
 	local status = grug_core.world_preparation_status()
 	if not status.ready then
 		return status.failed and "failed" or "waiting", LOADING_FORM,

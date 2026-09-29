@@ -104,7 +104,6 @@ local planner = {
 		end
 		return nil
 	end,
-	housing_mask_id_at = function() return nil end,
 	functional_surface_values_at = function() return nil end,
 	hard_row_at = function() return nil end,
 }
@@ -214,7 +213,7 @@ local api = {
 		end
 		return list
 	end,
-	world_alterable = function(pos) return pos.z <= 80 end,
+	natural_ground_alterable = function(pos) return pos.z <= 80 end,
 	trees = true,
 	non_natural = {"default:cobble", "grug_farming:soil", "ignore"},
 }

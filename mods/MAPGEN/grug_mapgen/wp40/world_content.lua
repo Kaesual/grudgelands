@@ -85,14 +85,13 @@ return function(catalog, content, habitat)
      -- on the bank; everything else keeps off both.
      local bank=excluded_id=="exclude:water_bank"
      if excluded_id=="exclude:inland_water" or bank then excluded=nil end
-     local housing=ctx.housing_excluded_at(x,z)
      -- Round 24 ruling 30 addendum: a surface row below the column's
      -- protected floor stands on ordinary ground.
      local surface_excluded=excluded
      if excluded=="fixed_or_protected" and ctx.exclusion_at(x,z,ground+1)==nil then
       surface_excluded=nil
      end
-     if water=="land" and not surface_excluded and not housing then
+     if water=="land" and not surface_excluded then
       local level=deps.zones_session.surface_mob_level_at(x,z)
       local y=ground+1
       if y>=ctx.min_y and y<=ctx.max_y then
@@ -117,7 +116,7 @@ return function(catalog, content, habitat)
      -- Deep candidates use actual original/final air, not analytic surface air.
      -- A support crossing the owner boundary is rejected: no order-dependent
      -- guess about an uncommitted neighbouring slice's stratum is permitted.
-     if ctx.call_mode ~= "evidence_fixture" and water=="land" and not housing then
+     if ctx.call_mode ~= "evidence_fixture" and water=="land" then
       for _,entry in ipairs(cave_rows) do
        local i,row=entry[1],entry[2]
        if row.max>=ctx.min_y and row.min<=ctx.max_y then
@@ -139,7 +138,7 @@ return function(catalog, content, habitat)
      -- water; a bay's own claim exclusion only keeps settlement off it).
      local bay=water=="planned_water" and river_id==nil and
       type(excluded_id)=="string" and excluded_id:sub(1,14)=="exclude:water:"
-     if (not excluded or bay) and not housing and (water=="coastal_shelf" or bay) and water_y and
+     if (not excluded or bay) and (water=="coastal_shelf" or bay) and water_y and
       water_y-ground>=2 and water_y-ground<=10 and
       ctx.inside_owner(x,ground,z) then
       local cell_x=math.floor(x/16)
@@ -184,13 +183,13 @@ return function(catalog, content, habitat)
      end
      -- Freshwater waterweed uses only a natural sand bed. Functional water
      -- corridors and authored structures are already closed by the water
-     -- class and the shared exclusion/housing predicates above. Lakes (and
+     -- class and the shared exclusion predicate above. Lakes (and
      -- bays) hold ordinary water; a river reach holds river water and gets
      -- weed at half the rate, never on a step face (rapid or fall).
      local river=type(river_id)=="string" and river_id:sub(1,6)=="river:"
      local family=river and contract.river_water_family_id or
       contract.ordinary_water_family_id
-     if not excluded and not housing and water=="planned_water" and water_y and
+     if not excluded and water=="planned_water" and water_y and
       water_y-ground>=2 and water_y-ground<=6 and step==nil and
       ctx.inside_owner(x,ground,z) and reef_hash(x,z,211)%(river and 192 or 96)==0 then
       local bed,p2,occupancy,opcode=ctx.settled_at(x,ground,z)
@@ -207,7 +206,7 @@ return function(catalog, content, habitat)
        if clear then write(24,x,ground,z,height*16) end
       end
      end
-     if not excluded and not housing and water=="planned_water" and water_y and
+     if not excluded and water=="planned_water" and water_y and
       water_y-ground>=2 and water_y-ground<=6 and
       ctx.inside_owner(x,water_y,z) and ctx.inside_owner(x,water_y+1,z) and
       reef_hash(x,z,223)%192==0 then
