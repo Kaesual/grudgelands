@@ -11,14 +11,16 @@ BG = (34, 34, 38, 255)
 FG = (230, 230, 230, 255)
 DIM = (160, 160, 165, 255)
 
-# today's registrations (main at ab9694a1), emulated for the "before" rows
-OLD_ROCKS = {
-    "slate": "#4a5a6e:70",
-    "basalt": "#2a2a2e:90",
-    "granite": "#8a5a52:60",
-    "emberrock": "#7a2a10:90",
-    "abyssal_rock": "#241830:150",
-}
+# Round 23 registrations (main at ab9694a1, before Round 24), emulated for the
+# "before" rows. The strata names are historical labels only: Round 24 turned
+# them into the tier rocks t2_stone..t6_stone in this order and removed them.
+R23_STRATA = (
+    ("slate", "#4a5a6e:70"),
+    ("basalt", "#2a2a2e:90"),
+    ("granite", "#8a5a52:60"),
+    ("emberrock", "#7a2a10:90"),
+    ("abyssal rock", "#241830:150"),
+)
 OLD_ORES = {
     "quartz": ("default_mineral_diamond.png", "#eaf6ff:120"),
     "silver": ("default_mineral_iron.png", "#e8edf2:200"),
@@ -31,7 +33,6 @@ OLD_ORES = {
     "ruby": ("default_mineral_diamond.png", "#c51d35:195"),
     "abyssal_crystal": ("default_mineral_diamond.png", "#3a1f6e:210"),
 }
-OLD_NAMES = ("slate", "basalt", "granite", "emberrock", "abyssal_rock")
 VENDORED_ORES = ("coal", "copper", "tin", "iron", "gold")
 # display order: metal ores (T1..T3), then gems/crystals by tier
 ORE_ORDER = ("coal", "copper", "tin", "iron", "quartz", "gold", "silver",
@@ -150,8 +151,7 @@ def render_tiers(out, stone, dest):
     names = ["T1 default_stone"] + ["T%d" % t for t in range(2, 7)]
     tiles = [stone] + [out["grug_materials_t%d_stone.png" % t]
                        for t in range(2, 7)]
-    old = [stone] + [colorize(stone, OLD_ROCKS[k]) for k in
-                     ("slate", "basalt", "granite", "emberrock", "abyssal_rock")]
+    old = [stone] + [colorize(stone, spec) for _, spec in R23_STRATA]
     col = 200
     s = Sheet(40 + col * 6 + 260, 730,
               "Round 24 tier rocks: same stone, compressed by depth")
@@ -161,11 +161,11 @@ def render_tiers(out, stone, dest):
         s.put(scale(t, 10), x, 76)
         s.put(scale(tiled(t, 3), 3), x + 8, 250)
         s.put(cube(t, 72), x + 8, 410)
-        s.text(x, 575, ("today: " + OLD_NAMES[i - 1]) if i else "(unchanged)",
+        s.text(x, 575, ("R23: " + R23_STRATA[i - 1][0]) if i else "(unchanged)",
                fill=DIM)
         s.put(scale(o, 6), x + 32, 600)
-    s.text(30, 700, "rows: tile x10, 3x3 tiling, cube, today's stratum "
-           "(colorized default_stone)", size=13, fill=DIM)
+    s.text(30, 700, "rows: tile x10, 3x3 tiling, cube, the Round 23 stratum at "
+           "that depth (colorized default_stone)", size=13, fill=DIM)
     # a cliff: 6 bands of 4 blocks, each block 32 px
     x0, y0 = 40 + col * 6 - 10, 50
     s.text(x0, y0, "cliff, T1 top -> T6 bottom")
@@ -208,7 +208,7 @@ def render_decor(out, stone, dest):
 def render_ores(out, stone, mtg_dir, dest):
     col = 128
     s = Sheet(40 + col * len(ORE_ORDER), 700,
-              "Round 24 ores vs gems: before (today) and after")
+              "Round 24 ores vs gems: before (Round 23) and after")
     mtg = lambda n: Image.open(mtg_dir / n).convert("RGBA")
     t5 = out["grug_materials_t5_stone.png"]
     for i, key in enumerate(ORE_ORDER):

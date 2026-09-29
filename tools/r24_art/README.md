@@ -20,7 +20,7 @@ are pinned by SHA-256.
 
 `--renders` (`render_sheets.py`) writes offline comparison sheets to
 `docs/research/round24-art/`: `tier-rocks.png`, `decorative-rocks.png`,
-`ores-gems.png` (before = today's texture-modifier tiles, emulated). They are
+`ores-gems.png` (before = Round 23's texture-modifier tiles, emulated). They are
 nearest-neighbour previews with simple cube shading, not engine screenshots.
 
 Provenance and licences: `mods/ITEMS/grug_materials/LICENSE-media.md` §9.
