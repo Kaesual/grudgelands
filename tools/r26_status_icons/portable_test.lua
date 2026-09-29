@@ -596,7 +596,7 @@ local group_fs = group:get(alice, group_context)
 check(group_fs:find("tablecolumns[image,align=center,0=blank.png,1=grug_class_warrior.png," ..
 	"2=grug_class_mage.png,3=grug_class_priest.png,4=grug_class_scout.png;text", 1, true) ~= nil,
 	"member table declares the class icons")
-check(group_fs:find("table[0.20,4.58;4.90,2.55;grug_party_members;1," ..
+check(group_fs:find("table[0.20,4.58;6.35,2.55;grug_party_members;1," ..
 	fs_escape("* alice [Lv 5]  20/20 HP") .. ",3," .. fs_escape("bob [Lv 5]  10/20 HP") ..
 	",0," .. fs_escape("cyd [Lv 4]  Offline") .. ";1]", 1, true) ~= nil,
 	"member rows carry class indices (offline: blank)")

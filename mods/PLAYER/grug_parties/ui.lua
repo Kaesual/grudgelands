@@ -62,13 +62,13 @@ local function content(player, context)
 		"set_focus[grug_party_invite;false]",
 		("checkbox[0.20,0.22;grug_party_invites;Allow invitations;%s]")
 			:format(grug_parties.invitations_enabled(player) and "true" or "false"),
-		("checkbox[3.25,0.22;grug_party_hud;Party HUD;%s]")
+		("checkbox[3.60,0.22;grug_party_hud;Party HUD;%s]")
 			:format(grug_parties.hud_enabled(player) and "true" or "false"),
-		"label[5.18,0.22;Health colors]",
-		("dropdown[7.10,0.12;3.10;grug_party_health_colors;All green,By class;%d;true]")
+		"label[7.10,0.22;Health colors]",
+		("dropdown[9.30,0.00;3.90,0.50;grug_party_health_colors;All green,By class;%d;true]")
 			:format(health_color_mode(player) == "by_class" and 2 or 1),
-		"label[0.20,0.78;Online same-faction players]",
-		"label[5.18,0.78;Pending invitations]",
+		"label[0.20,0.95;Online same-faction players]",
+		"label[6.85,0.95;Pending invitations]",
 	}
 	-- Index -1 actively clears GUITable's preserved dynamic selection. Index 0
 	-- skips setSelected and can leave an old row highlighted after a refresh.
@@ -77,7 +77,7 @@ local function content(player, context)
 		online_labels[index] = esc(row.label)
 		if row.name == context.grug_party_online then online_index = index end
 	end
-	fs[#fs + 1] = ("textlist[0.20,1.12;4.55,2.15;grug_party_online_list;%s;%d;false]")
+	fs[#fs + 1] = ("textlist[0.20,1.25;6.35,2.00;grug_party_online_list;%s;%d;false]")
 		:format(table.concat(online_labels, ","), online_index)
 	fs[#fs + 1] = "button[0.20,3.40;1.35,0.58;grug_party_invite;Invite]"
 	fs[#fs + 1] = "button[1.72,3.40;1.35,0.58;grug_party_refresh;Refresh]"
@@ -96,10 +96,10 @@ local function content(player, context)
 		selected_index = 1
 		context.grug_party_inviter = pending[1] and pending[1].inviter or nil
 	end
-	fs[#fs + 1] = ("textlist[5.18,1.12;5.02,2.15;grug_party_pending;%s;%d;false]")
+	fs[#fs + 1] = ("textlist[6.85,1.25;6.35,2.00;grug_party_pending;%s;%d;false]")
 		:format(table.concat(invites, ","), selected_index)
-	fs[#fs + 1] = "button[5.18,3.40;1.35,0.58;grug_party_accept;Accept]"
-	fs[#fs + 1] = "button[6.70,3.40;1.35,0.58;grug_party_decline;Decline]"
+	fs[#fs + 1] = "button[6.85,3.40;1.35,0.58;grug_party_accept;Accept]"
+	fs[#fs + 1] = "button[8.37,3.40;1.35,0.58;grug_party_decline;Decline]"
 	if view then
 		fs[#fs + 1] = "label[0.20,4.25;Current party]"
 		-- A table rather than a textlist so each member row can carry the
@@ -124,7 +124,7 @@ local function content(player, context)
 		for index, row in ipairs(view.members) do if row.name == selected.name then selected_index = index end end
 		fs[#fs + 1] = "tablecolumns[image,align=center," ..
 			table.concat(images, ",") .. ";text,padding=0.25]"
-		fs[#fs + 1] = ("table[0.20,4.58;4.90,2.55;grug_party_members;%s;%d]")
+		fs[#fs + 1] = ("table[0.20,4.58;6.35,2.55;grug_party_members;%s;%d]")
 			:format(table.concat(cells, ","), selected_index)
 		local own_name = player:get_player_name()
 		if view.leader == own_name and selected.name ~= own_name then
@@ -133,10 +133,10 @@ local function content(player, context)
 		end
 		fs[#fs + 1] = "button[3.80,7.25;1.15,0.58;grug_party_leave;Leave]"
 	else
-		fs[#fs + 1] = "textarea[0.20,4.25;4.55,1.05;;;You are not in a party. Select an online same-faction player above.]"
+		fs[#fs + 1] = "textarea[0.20,4.25;6.35,1.05;;;You are not in a party. Select an online same-faction player above.]"
 	end
 	if context.grug_party_notice then
-		fs[#fs + 1] = "textarea[5.18,4.25;5.02,1.45;;;" .. esc(context.grug_party_notice) .. "]"
+		fs[#fs + 1] = "textarea[6.85,4.25;6.35,1.45;;;" .. esc(context.grug_party_notice) .. "]"
 	end
 	return table.concat(fs)
 end
