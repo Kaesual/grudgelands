@@ -121,7 +121,20 @@ function sfinv.set_context(player, context)
 	sfinv.contexts[player:get_player_name()] = context
 end
 
+-- GRUG PATCH: another mod may own a player's inventory formspec for a while
+-- (grug_classes shows the current character-creation step there). While this
+-- predicate is true, sfinv neither writes that player's inventory formspec nor
+-- handles its "" submissions. The owner re-runs
+-- sfinv.set_player_inventory_formspec when it hands the inventory back.
+-- Overriders chain the previous function.
+function sfinv.inventory_suspended(player)
+	return false
+end
+
 function sfinv.set_player_inventory_formspec(player, context)
+	if sfinv.inventory_suspended(player) then -- GRUG PATCH: see above
+		return
+	end
 	local fs = sfinv.get_formspec(player,
 			context or sfinv.get_or_create_context(player))
 	player:set_inventory_formspec(fs)
@@ -158,6 +171,11 @@ end)
 
 minetest.register_on_player_receive_fields(function(player, formname, fields)
 	if formname ~= "" or not sfinv.enabled then
+		return false
+	end
+	-- GRUG PATCH: a suspended inventory belongs to another mod (see
+	-- sfinv.inventory_suspended); leave the submission to its handler.
+	if sfinv.inventory_suspended(player) then
 		return false
 	end
 

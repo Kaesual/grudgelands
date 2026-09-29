@@ -1,26 +1,60 @@
 -- Character creation flow: faction (grug_factions) -> race -> class, all
--- mandatory, all final. Closing a dialog without choosing re-opens it. While
--- the flow is incomplete the player remains frozen and engine-immortal. The
--- final teleport waits for the selected server-wide preparation plan. Existing
--- characters reconnecting during preparation wait without changing position.
+-- mandatory, all final. While the flow is incomplete the player remains
+-- frozen and engine-immortal (creation stasis). The final teleport waits for
+-- the selected server-wide preparation plan. Existing characters reconnecting
+-- during preparation wait without changing position.
+--
+-- Creation can always be paused (Round 24 ruling 32). Esc really closes every
+-- creation dialog and nothing here re-opens it by itself, so the next Esc
+-- reaches the native game menu. The current step is always the player's
+-- inventory formspec (sfinv is suspended meanwhile), so the inventory key
+-- continues; a HUD hint says so while no dialog is open. Every choice is
+-- written to player meta at once, including the class picked while the
+-- arrival area still loads, so a reconnect resumes at the first missing step.
 
 local RACE_FORM = "grug_classes:race"
 local CLASS_FORM = "grug_classes:class"
 local LOADING_FORM = "grug_classes:loading"
-local REOPEN_DELAY = 0.1
+local FACTION_FORM = grug_factions.SELECTION_FORM
+-- The class chosen before the arrival area is loaded. Only the final teleport
+-- turns it into grug_classes:class, and nothing else reads this key: a pending
+-- class never completes a character, never ends stasis and never skips the
+-- start teleport.
+local META_PENDING_CLASS = "grug_classes:pending_class"
 local STASIS_CHECK_INTERVAL = 0.1
 local DARK_BACKGROUND = "no_prepend[]" ..
 	"bgcolor[#080808FF;both;#000000FF]"
 
--- Per-session only. Persistent faction/race/class meta remains the source of
--- truth: a disconnect before the final teleport deliberately loses a pending
--- class choice and resumes at that step on the next join.
+local CREATION_FORMS = {
+	[FACTION_FORM] = true,
+	[RACE_FORM] = true,
+	[CLASS_FORM] = true,
+	[LOADING_FORM] = true,
+}
+
+-- The screen hint while no creation dialog is open.
+local HINT = {
+	paused = "Character creation paused \226\128\147 press I to continue",
+	ready = "World ready \226\128\147 press I to continue",
+	failed = "The area could not be loaded \226\128\147 press I to try again",
+	-- An existing character reconnecting while the world is still prepared.
+	waiting = "Preparing the world \226\128\147 press I to see progress",
+}
+
+-- Per-session state; the persistent faction/race/class/pending-class meta is
+-- the source of truth. Session fields:
+--   dismissed        the player closed the dialog with Esc; nothing re-opens
+--                    it until the player acts (inventory key, a choice)
+--   shown_name/form  what the open dialog shows (send-on-change)
+--   inventory_form   the player's inventory formspec (send-on-change)
+--   ready_notice     preparation became ready while dismissed
+--   hint_id/text     the HUD hint
 local creation_sessions = {}
 
 local continue_creation
 local start_spawn_load
 local finish_if_ready
-local show_loading
+local present
 
 local function copy_table(source)
 	local result = {}
@@ -34,6 +68,15 @@ local function character_complete(player)
 	return grug_factions.get_faction(player) ~= nil and
 		grug_classes.get_race(player) ~= nil and
 		grug_classes.get_class(player) ~= nil
+end
+
+local function pending_class(player)
+	local id = player:get_meta():get_string(META_PENDING_CLASS)
+	return grug_classes.registered_classes[id] and id or nil
+end
+
+local function set_pending_class(player, id)
+	player:get_meta():set_string(META_PENDING_CLASS, id or "")
 end
 
 -- The name this file holds the movement aggregator under. One name, released
@@ -84,7 +127,9 @@ local function lock_player(player)
 		-- hold hands the player back to whatever the aggregator says at that
 		-- moment, which for a fresh character is the 1/1/1 baseline.
 		session = {previous_immortal = armor.immortal,
-			preparation_only = character_complete(player)}
+			preparation_only = character_complete(player),
+			preparation_ready = grug_core.world_preparation_status().ready,
+			dismissed = false}
 		creation_sessions[name] = session
 	end
 	reassert_player_lock(player)
@@ -102,9 +147,25 @@ local function release_player(player, session)
 	armor.immortal = session.previous_immortal
 	player:set_armor_groups(armor)
 	creation_sessions[name] = nil
+	if session.hint_id then
+		player:hud_remove(session.hint_id)
+	end
+	set_pending_class(player, nil)
 	core.close_formspec(name, CLASS_FORM)
 	core.close_formspec(name, LOADING_FORM)
+	-- Hand the inventory back to sfinv; its suspension ended with the session.
+	if sfinv.enabled then
+		sfinv.set_player_inventory_formspec(player)
+	end
 	return true
+end
+
+-- While a creation session exists, the inventory formspec is the current
+-- creation step (see the GRUG PATCH in mods/BASE/sfinv/api.lua).
+local sfinv_inventory_suspended = sfinv.inventory_suspended
+function sfinv.inventory_suspended(player)
+	return creation_sessions[player:get_player_name()] ~= nil or
+		sfinv_inventory_suspended(player)
 end
 
 local function options_formspec(title, subtitle, options)
@@ -125,48 +186,23 @@ local function options_formspec(title, subtitle, options)
 	return table.concat(parts)
 end
 
--- The loading form is no longer on screen after one of these, so its
--- send-on-change memory has to be cleared.
-local function forget_loading(player)
-	local session = creation_sessions[player:get_player_name()]
-	if session then
-		session.shown_loading = false
-	end
-end
-
-local function show_race_selection(player)
-	if not grug_core.world_preparation_status().ready then
-		show_loading(player)
-		return
-	end
-	forget_loading(player)
-	local faction_id = grug_factions.get_faction(player)
-	if not faction_id then
-		return
-	end
+local function race_formspec(faction_id)
 	local options = {}
 	for _, id in ipairs(grug_classes.race_ids[faction_id] or {}) do
 		table.insert(options, grug_classes.registered_races[id])
 	end
-	core.show_formspec(player:get_player_name(), RACE_FORM,
-		options_formspec("Choose your race!",
-			"Where in the " .. grug_core.factions[faction_id].name ..
-			" lands do you come from? This decision is final.", options))
+	return options_formspec("Choose your race!",
+		"Where in the " .. grug_core.factions[faction_id].name ..
+		" lands do you come from? This decision is final.", options)
 end
 
-local function show_class_selection(player)
-	if not grug_core.world_preparation_status().ready then
-		show_loading(player)
-		return
-	end
-	forget_loading(player)
+local function class_formspec()
 	local options = {}
 	for _, id in ipairs(grug_classes.class_ids) do
 		table.insert(options, grug_classes.registered_classes[id])
 	end
-	core.show_formspec(player:get_player_name(), CLASS_FORM,
-		options_formspec("Choose your class!",
-			"How will you fight? This decision is final.", options))
+	return options_formspec("Choose your class!",
+		"How will you fight? This decision is final.", options)
 end
 
 local function loading_formspec(status, failed)
@@ -194,23 +230,96 @@ local function loading_formspec(status, failed)
 	return table.concat(parts)
 end
 
--- Progress callbacks are throttled by the scheduler. Compare the rendered
--- text as well: chunk completions with the same percent/ETA send no packet.
-show_loading = function(player, failed, force)
+-- The current creation step: "faction", "race", "class", "waiting" (shared
+-- preparation or this player's arrival area) or "failed" (with retry), plus
+-- its form name and formspec. Choices are only offered once the selected
+-- world preparation is complete.
+local function current_step(player, session)
+	local status = grug_core.world_preparation_status()
+	if not status.ready then
+		return status.failed and "failed" or "waiting", LOADING_FORM,
+			loading_formspec(status, status.failed)
+	end
+	if not session.preparation_only then
+		local faction = grug_factions.get_faction(player)
+		if not faction then
+			return "faction", FACTION_FORM, grug_factions.selection_formspec()
+		end
+		if not grug_classes.get_race(player) then
+			return "race", RACE_FORM, race_formspec(faction)
+		end
+		if not grug_classes.get_class(player) and not pending_class(player) then
+			return "class", CLASS_FORM, class_formspec()
+		end
+	end
+	local failed = session.load_failed ~= nil or grug_core.starts_preload_failed()
+	return failed and "failed" or "waiting", LOADING_FORM,
+		loading_formspec(status, failed)
+end
+
+local function hint_text(session, step)
+	if not session.dismissed then
+		return ""
+	elseif step == "failed" then
+		return HINT.failed
+	elseif session.preparation_only then
+		return HINT.waiting
+	elseif session.ready_notice and step ~= "waiting" then
+		return HINT.ready
+	end
+	return HINT.paused
+end
+
+local function update_hint(player, session, text)
+	if text == (session.hint_text or "") then
+		return
+	end
+	session.hint_text = text
+	if session.hint_id then
+		player:hud_change(session.hint_id, "text", text)
+	else
+		session.hint_id = player:hud_add(grug_core.hud_layout.text_element(
+			"creation_hint", {number = grug_core.FLASH_COLOR.notice,
+				text = text, style = 1}))
+	end
+end
+
+-- Renders the current step everywhere it lives: always as the inventory
+-- formspec, as the dialog only while one is open (never re-opened here), and
+-- as the hint while none is. `open` = the player acted (join, a choice, a
+-- retry): show the step as a dialog again. Every write is send-on-change, so
+-- throttled progress notifications cost no packet when nothing moved.
+present = function(player, open)
 	local name = player:get_player_name()
 	local session = creation_sessions[name]
-	local status = grug_core.world_preparation_status()
-	if session and session.preparation_dismissed and not force then
-		return false
+	if not session then
+		return nil
 	end
-	local form = loading_formspec(status, failed or status.failed)
-	if session then
-		if session.shown_loading and session.shown_form == form then return end
-		session.shown_loading = true
+	if open then
+		session.dismissed = false
+		session.ready_notice = false
+	end
+	local step, formname, form = current_step(player, session)
+	if session.inventory_form ~= form then
+		session.inventory_form = form
+		player:set_inventory_formspec(form)
+	end
+	if not session.dismissed and
+			(session.shown_name ~= formname or session.shown_form ~= form) then
+		session.shown_name = formname
 		session.shown_form = form
+		core.show_formspec(name, formname, form)
 	end
-	core.show_formspec(name, LOADING_FORM, form)
-	return true
+	update_hint(player, session, hint_text(session, step))
+	return step
+end
+
+-- Esc closed the dialog (the client already did it). Only the hint changes.
+local function dismiss(player, session)
+	session.dismissed = true
+	session.shown_name = nil
+	session.shown_form = nil
+	present(player)
 end
 
 local function identity_key(player)
@@ -266,12 +375,10 @@ local function start_arrival_load(player)
 					continue_creation(p)
 					return
 				end
-					if not spawn then
-						local failure_transition = current.load_failed == nil
-						current.load_failed = failure or "spawn_unavailable"
-						if current.pending_class_id or character_complete(p) then
-							show_loading(p, true, failure_transition)
-						end
+				if not spawn then
+					-- Updates an open dialog or the hint; never forces one open.
+					current.load_failed = failure or "spawn_unavailable"
+					present(p)
 					return
 				end
 				current.spawn_ready = true
@@ -282,7 +389,7 @@ local function start_arrival_load(player)
 	if not started then
 		session.loading = false
 		session.load_failed = "spawn_unavailable"
-		show_loading(player, true, true)
+		present(player)
 		return false
 	end
 	return true
@@ -319,21 +426,19 @@ finish_if_ready = function(player)
 	if not session then
 		return false
 	end
-	local preparation = grug_core.world_preparation_status()
-	if not preparation.ready then
-		show_loading(player, preparation.failed)
-		return
-	end
-	if session.preparation_only then
-		if grug_core.world_preparation_status().ready then
-			return release_player(player, session)
-		end
-		show_loading(player)
+	if not grug_core.world_preparation_status().ready then
+		present(player)
 		return false
 	end
-	local class_id = grug_classes.get_class(player) or session.pending_class_id
+	if session.preparation_only then
+		return release_player(player, session)
+	end
+	-- The class comes from meta: a class chosen in an earlier session (the
+	-- player disconnected while the arrival area loaded) is applied here too.
+	local class_id = grug_classes.get_class(player) or pending_class(player)
 	local key = identity_key(player)
 	if not key or not class_id then
+		present(player)
 		return false
 	end
 	local ready, total = grug_core.starts_ready()
@@ -342,8 +447,7 @@ finish_if_ready = function(player)
 		-- Nothing of this player's own is loaded
 		-- while the shared preload still runs.
 		session.spawn_key = key
-		show_loading(player, session.load_failed ~= nil or
-			grug_core.starts_preload_failed())
+		present(player)
 		return false
 	end
 	if session.spawn_key ~= key then
@@ -357,7 +461,7 @@ finish_if_ready = function(player)
 		session.load_failed = nil
 		session.loading = false
 		start_spawn_load(player)
-		show_loading(player, session.load_failed ~= nil)
+		present(player)
 		return false
 	end
 	-- Gate two: this player's own arrival area is loaded RIGHT NOW.
@@ -368,7 +472,7 @@ finish_if_ready = function(player)
 		if creation_sessions[name] ~= session then
 			return true
 		end
-		show_loading(player, session.load_failed ~= nil)
+		present(player)
 		return false
 	end
 
@@ -381,7 +485,7 @@ finish_if_ready = function(player)
 	if not grug_classes.get_class(player) and
 			not grug_classes.set_class(player, class_id) then
 		session.load_failed = "class_unavailable"
-		show_loading(player, true)
+		present(player)
 		return false
 	end
 	if player:get_hp() <= 0 then
@@ -397,8 +501,10 @@ finish_if_ready = function(player)
 	return true
 end
 
--- Shows the next missing creation step, if any.
-continue_creation = function(player)
+-- Continues at the next missing creation step, if any. `open` shows that step
+-- as a dialog even when the player had dismissed it (join); otherwise only an
+-- already open dialog changes.
+continue_creation = function(player, open)
 	local session = creation_sessions[player:get_player_name()]
 	if session then
 		reassert_player_lock(player)
@@ -408,29 +514,26 @@ continue_creation = function(player)
 	if not session then
 		return
 	end
-	local preparation = grug_core.world_preparation_status()
-	if not preparation.ready then
-		show_loading(player, preparation.failed)
+	if open then
+		session.dismissed = false
+		session.ready_notice = false
+	end
+	if not grug_core.world_preparation_status().ready then
+		present(player)
 		return
 	end
 	if session.preparation_only then
 		finish_if_ready(player)
 		return
 	end
-	if not grug_factions.get_faction(player) then
-		grug_factions.show_selection(player)
-		return
+	if grug_factions.get_faction(player) and grug_classes.get_race(player) then
+		start_spawn_load(player)
+		if grug_classes.get_class(player) or pending_class(player) then
+			finish_if_ready(player)
+			return
+		end
 	end
-	if not grug_classes.get_race(player) then
-		show_race_selection(player)
-		return
-	end
-	start_spawn_load(player)
-	if session.pending_class_id or grug_classes.get_class(player) then
-		finish_if_ready(player)
-	else
-		show_class_selection(player)
-	end
+	present(player)
 end
 
 -- Status effects and future mods may write physics after the join callbacks.
@@ -451,18 +554,7 @@ core.register_globalstep(function(dtime)
 	end
 end)
 
--- Re-open on the next visible beat unless the step completed meanwhile.
-local function reopen_later(player)
-	local name = player:get_player_name()
-	core.after(REOPEN_DELAY, function()
-		local p = core.get_player_by_name(name)
-		if p then
-			continue_creation(p)
-		end
-	end)
-end
-
-local function chosen_id(fields, prefix)
+local function chosen_id(fields)
 	for field in pairs(fields) do
 		local id = field:match("^choose_(.+)$")
 		if id then
@@ -472,60 +564,75 @@ local function chosen_id(fields, prefix)
 	return nil
 end
 
-core.register_on_player_receive_fields(function(player, formname, fields)
-	if formname == RACE_FORM then
-		if not grug_core.world_preparation_status().ready then
-			show_loading(player)
-			return true
+-- Applies one submitted choice (or retry) for the current step. Every choice
+-- is persisted at once; the class is kept as the pending class until the
+-- arrival teleport.
+local function act_on_step(player, session, step, fields)
+	if step == "faction" then
+		-- grug_factions.set_faction runs the faction-chosen callback below.
+		grug_factions.choose_from_fields(player, fields)
+	elseif step == "race" then
+		if grug_classes.set_race(player, chosen_id(fields) or "") then
+			local def = grug_classes.get_race_def(player)
+			core.chat_send_player(player:get_player_name(),
+				"You are a " .. def.name .. ".")
 		end
-		if grug_classes.get_race(player) or
-				not grug_classes.set_race(player, chosen_id(fields) or "") then
-			reopen_later(player)
-			return true
+		continue_creation(player)
+	elseif step == "class" then
+		local id = chosen_id(fields)
+		if id and grug_classes.registered_classes[id] then
+			set_pending_class(player, id)
 		end
-		local def = grug_classes.get_race_def(player)
-		core.chat_send_player(player:get_player_name(),
-			"You are a " .. def.name .. ".")
-		start_spawn_load(player)
-		show_class_selection(player)
-		return true
-	elseif formname == CLASS_FORM then
-		if not grug_core.world_preparation_status().ready then
-			show_loading(player)
-			return true
-		end
-		local session = creation_sessions[player:get_player_name()]
-		local id = chosen_id(fields) or ""
-		if grug_classes.get_class(player) or not session or
-				session.pending_class_id or
-				not grug_classes.registered_classes[id] then
-			reopen_later(player)
-			return true
-		end
-		session.pending_class_id = id
+		continue_creation(player)
+	elseif step == "failed" and fields.retry_spawn then
+		session.spawn_key = nil
+		session.load_failed = nil
+		-- Retry the failed preparation unit without resetting its cursor,
+		-- then retry a new character's separate arrival load if needed.
+		grug_core.request_starts_preload()
+		if not session.preparation_only then start_spawn_load(player) end
 		finish_if_ready(player)
-		return true
-	elseif formname == LOADING_FORM then
-		local session = creation_sessions[player:get_player_name()]
-		if fields.retry_spawn and session and
-				(session.load_failed or grug_core.starts_preload_failed()) then
-			session.spawn_key = nil
-			session.load_failed = nil
-			-- Retry the failed preparation unit without resetting its cursor,
-			-- then retry a new character's separate arrival load if needed.
-			grug_core.request_starts_preload()
-			session.preparation_dismissed = false
-			session.preparation_failed = false
-			if not session.preparation_only then start_spawn_load(player) end
-			finish_if_ready(player)
-		else
-			-- Esc dismisses waiting. Stasis remains active, while the next Esc is
-			-- left to the native client menu because progress does not steal focus.
-			forget_loading(player)
-			if session then session.preparation_dismissed = true end
-		end
-		return true
 	end
+end
+
+-- Named creation dialogs and the inventory formspec ("") during creation.
+-- The inventory formspec always shows the current step; a named dialog only
+-- answers for the step it shows, so a late click on a replaced dialog is
+-- ignored. Form fields are client input: nothing is committed for a step that
+-- is not current (e.g. before world preparation is ready).
+core.register_on_player_receive_fields(function(player, formname, fields)
+	if formname ~= "" and not CREATION_FORMS[formname] then
+		return
+	end
+	local session = creation_sessions[player:get_player_name()]
+	if not session then
+		-- A creation dialog after completion is stale; "" is sfinv's again.
+		if formname ~= "" then
+			return true
+		end
+		return
+	end
+	local step, step_form = current_step(player, session)
+	local current = formname == "" or formname == step_form
+	local acts
+	if step == "failed" then
+		acts = fields.retry_spawn ~= nil
+	else
+		acts = step ~= "waiting" and chosen_id(fields) ~= nil
+	end
+	if current and acts then
+		-- The player acts: the next step replaces this one as a dialog, also
+		-- when the choice came from the inventory formspec.
+		session.dismissed = false
+		session.ready_notice = false
+		act_on_step(player, session, step, fields)
+		present(player)
+	elseif fields.quit then
+		-- Esc closed it. Stasis stays; nothing re-opens it, so the next Esc
+		-- reaches the native game menu.
+		dismiss(player, session)
+	end
+	return true
 end)
 
 grug_factions.register_on_faction_chosen(function(player, faction_id)
@@ -533,28 +640,22 @@ grug_factions.register_on_faction_chosen(function(player, faction_id)
 end)
 
 -- The scheduler supplies one throttled progress stream for either plan.
--- Do not open a loading form over an unfinished race/class selection.
+-- Progress and failures update an open dialog or the hint, never force a
+-- dialog open. Readiness replaces an open waiting screen with the next step;
+-- a dismissed one only changes the hint.
 grug_core.register_on_preparation_progress(function(status)
 	for name, session in pairs(creation_sessions) do
 		local player = core.get_player_by_name(name)
 		if player then
-			local failure_transition = status.failed and
-				not session.preparation_failed
-			session.preparation_failed = status.failed
-			if failure_transition then
-				session.preparation_dismissed = false
-				show_loading(player, true, true)
-			elseif status.ready then
-				-- Clear a shared-wait dismissal only on the readiness edge. Repeated
-				-- ready notifications must not reopen a dismissed arrival error.
-				if not session.preparation_ready then
-					session.preparation_dismissed = false
+			if status.ready then
+				if not session.preparation_ready and session.dismissed then
+					session.ready_notice = true
 				end
 				session.preparation_ready = true
 				continue_creation(player)
-			elseif not session.preparation_dismissed then
+			else
 				session.preparation_ready = false
-				show_loading(player)
+				present(player)
 			end
 		end
 	end
@@ -572,12 +673,13 @@ core.register_on_joinplayer(function(player)
 	-- own join handler runs FIRST because every consumer declares
 	-- `depends = grug_core`. The re-lock stays anyway: this is a watchdog, and
 	-- a later mod may still write the field after join -- which is exactly
-	-- what `hold_movement` re-asserts against.
+	-- what `hold_movement` re-asserts against. A join opens the first missing
+	-- step as a dialog.
 	core.after(0, function()
 		local p = core.get_player_by_name(name)
 		if p and creation_sessions[name] then
 			reassert_player_lock(p)
-			continue_creation(p)
+			continue_creation(p, true)
 		end
 	end)
 end)
@@ -646,10 +748,11 @@ local function register_set_command(cmd, setter, getter_def, is_id)
 				local session = creation_sessions[target_name]
 				if cmd == "class" and session and
 						not grug_classes.get_class(target) and is_id(id) then
-					-- Keep an admin-picked first class transient too. Persisting it
-					-- before the prepared teleport would reopen the reconnect hole.
-					session.pending_class_id = id
-					finish_if_ready(target)
+					-- An admin-picked first class is a pending class too: writing
+					-- grug_classes:class before the prepared teleport would let a
+					-- reconnect skip stasis at the unsafe engine spawn.
+					set_pending_class(target, id)
+					continue_creation(target)
 				elseif not setter(target, id) then
 					return false, "Invalid " .. cmd .. ": " .. id
 				else

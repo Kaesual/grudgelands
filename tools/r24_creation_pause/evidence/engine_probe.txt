@@ -1,0 +1,88 @@
+ACTION[Server]: [creation_pause_probe] stage 1: join during preparation (t=5.2s)
+ACTION[Server]: [creation_pause_probe] preparation ready at join: false
+ACTION[Server]: [creation_pause_probe] ok   newplayer callback ran
+ACTION[Server]: [creation_pause_probe] ok   join callback ran
+ACTION[Server]: [creation_pause_probe] ok   join callback ran
+ACTION[Server]: [creation_pause_probe] joined probe_new (new=true, 2 callbacks)
+ACTION[Server]: [creation_pause_probe] ok   newplayer callback ran
+ACTION[Server]: [creation_pause_probe] ok   join callback ran
+ACTION[Server]: [creation_pause_probe] ok   join callback ran
+ACTION[Server]: [creation_pause_probe] joined probe_open (new=true, 2 callbacks)
+ACTION[Server]: [creation_pause_probe] ok   join callback ran
+ACTION[Server]: [creation_pause_probe] ok   join callback ran
+ACTION[Server]: [creation_pause_probe] joined probe_done (new=false, 2 callbacks)
+ACTION[Server]: [creation_pause_probe] stage 2: Esc on the waiting screen (t=5.9s)
+ACTION[Server]: [creation_pause_probe] ok   new player sees the waiting screen
+ACTION[Server]: [creation_pause_probe] ok   inventory formspec = waiting screen
+ACTION[Server]: [creation_pause_probe] ok   new player immortal in stasis
+ACTION[Server]: [creation_pause_probe] ok   complete character waits during preparation
+ACTION[Server]: [creation_pause_probe] ok   Esc on the waiting screen handled by grug_classes
+ACTION[Server]: [creation_pause_probe] ok   Esc on the complete character's waiting screen handled
+ACTION[Server]: [creation_pause_probe] ok   paused hint: Character creation paused – press I to continue
+ACTION[Server]: [creation_pause_probe] ok   preparation-only hint: Preparing the world – press I to see progress
+ACTION[Server]: [creation_pause_probe] stage 3: after readiness (t=38.1s)
+ACTION[Server]: [creation_pause_probe] ok   nothing re-opened for probe_new
+ACTION[Server]: [creation_pause_probe] ok   release opened nothing for probe_done
+ACTION[Server]: [creation_pause_probe] ok   ready hint while dismissed: World ready – press I to continue
+ACTION[Server]: [creation_pause_probe] ok   open waiting screen replaced by the faction step
+ACTION[Server]: [creation_pause_probe] ok   no hint while the dialog is open
+ACTION[Server]: [creation_pause_probe] ok   complete character released
+ACTION[Server]: [creation_pause_probe] ok   complete character's inventory handed back to sfinv
+ACTION[Server]: [creation_pause_probe] ok   complete character's hint removed
+ACTION[Server]: [creation_pause_probe] ok   complete character not teleported
+ACTION[Server]: [creation_pause_probe] ok   inventory formspec = faction step
+ACTION[Server]: [creation_pause_probe] stage 4: inventory key: faction and race (t=38.2s)
+ACTION[Server]: [creation_pause_probe] ok   sfinv writes nothing during creation
+ACTION[Server]: [creation_pause_probe] ok   inventory faction choice handled by grug_classes (sfinv passed)
+ACTION[Server]: [creation_pause_probe] ok   faction persisted
+ACTION[Server]: [creation_pause_probe] ok   race dialog follows
+ACTION[Server]: [creation_pause_probe] ok   Esc on race
+ACTION[Server]: [creation_pause_probe] ok   paused hint on the race step
+ACTION[Server]: [creation_pause_probe] stage 5: race and class from the inventory, then disconnect (t=40.1s)
+ACTION[Server]: [creation_pause_probe] ok   race dialog not re-opened
+ACTION[Server]: [creation_pause_probe] ok   inventory formspec = race step
+ACTION[Server]: [creation_pause_probe] note: a set_race consumer failed on the probe object: ...jc2t/user/games/grudgelands/mods/BASE/player_api/api.lua:106: assertion failed!
+ACTION[Server]: [creation_pause_probe] ok   race persisted
+ACTION[Server]: [creation_pause_probe] ok   class dialog follows
+ACTION[Server]: [creation_pause_probe] ok   Esc on class
+ACTION[Server]: [creation_pause_probe] ok   inventory formspec = class step
+ACTION[Server]: [creation_pause_probe] ok   pending class persisted at once
+ACTION[Server]: [creation_pause_probe] ok   class not applied before the arrival
+ACTION[Server]: [creation_pause_probe] ok   arrival waiting screen after the class choice
+ACTION[Server]: [creation_pause_probe] ok   leave callback ran
+ACTION[Server]: [creation_pause_probe] ok   leave callback ran
+ACTION[Server]: [creation_pause_probe] left probe_new
+ACTION[Server]: [creation_pause_probe] stage 6: reconnect with a pending class (t=43.5s)
+ACTION[Server]: [creation_pause_probe] ok   still no class after the disconnect
+ACTION[Server]: [creation_pause_probe] ok   pending class survived
+ACTION[Server]: [creation_pause_probe] ok   join callback ran
+ACTION[Server]: [creation_pause_probe] ok   join callback ran
+ACTION[Server]: [creation_pause_probe] joined probe_new (new=false, 2 callbacks)
+ACTION[Server]: [creation_pause_probe] ok   reconnect is back in stasis
+ACTION[Server]: [creation_pause_probe] stage 7: arrival after the reconnect (t=43.9s)
+ACTION[Server]: [creation_pause_probe] ok   reconnect opened the arrival waiting screen
+ACTION[Server]: [creation_pause_probe] ok   reconnect did not ask for the class again
+ACTION[Server]: [creation_pause_probe] ok   persisted pending class applied
+ACTION[Server]: [creation_pause_probe] ok   pending class cleared
+ACTION[Server]: [creation_pause_probe] ok   teleported to the human start (0,33,-2550)
+ACTION[Server]: [creation_pause_probe] ok   stasis released
+ACTION[Server]: [creation_pause_probe] ok   hint removed
+ACTION[Server]: [creation_pause_probe] ok   inventory handed back to sfinv
+ACTION[Server]: [creation_pause_probe] ok   sfinv no longer suspended
+ACTION[Server]: [creation_pause_probe] ok   inventory submissions no longer reach creation
+ACTION[Server]: [creation_pause_probe] stage 8: named dialogs, Esc on class (t=44.1s)
+ACTION[Server]: [creation_pause_probe] ok   faction dialog choice handled
+ACTION[Server]: [creation_pause_probe] ok   race dialog follows
+ACTION[Server]: [creation_pause_probe] note: a set_race consumer failed on the probe object: ...jc2t/user/games/grudgelands/mods/BASE/player_api/api.lua:106: assertion failed!
+ACTION[Server]: [creation_pause_probe] ok   class dialog follows
+ACTION[Server]: [creation_pause_probe] ok   Esc on class
+ACTION[Server]: [creation_pause_probe] ok   paused hint on the class step
+ACTION[Server]: [creation_pause_probe] stage 9: class from the inventory with the arrival loaded (t=45.9s)
+ACTION[Server]: [creation_pause_probe] ok   class dialog not re-opened
+ACTION[Server]: [creation_pause_probe] stage 10: named flow result (t=46.1s)
+ACTION[Server]: [creation_pause_probe] ok   class applied
+ACTION[Server]: [creation_pause_probe] ok   teleported to the orc start
+ACTION[Server]: [creation_pause_probe] ok   inventory handed back to sfinv
+ACTION[Server]: [creation_pause_probe] ok   stasis released
+ACTION[Server]: [creation_pause_probe] ok   hint removed
+ACTION[Server]: [creation_pause_probe] RESULT PASS checks=69 failures=0 t=46.3s

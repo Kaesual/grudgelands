@@ -105,6 +105,9 @@ layout.anchors = {
 		offset = {x = layout.BAR_WIDTH / 2 + 12, y = layout.rows.life.middle}},
 	flash = {position = {x = 0.5, y = 0.35}, offset = {x = 0, y = 0}},
 	reticle = {position = {x = 0.5, y = 0.5}, offset = {x = 0, y = 0}},
+	-- The paused-character-creation hint (Round 24 ruling 32): below the
+	-- screen centre, clear of the flash line above it and the reticle.
+	creation_hint = {position = {x = 0.5, y = 0.65}, offset = {x = 0, y = 0}},
 	status_list = {
 		position = {x = 0.5, y = 0},
 		offset = {x = 0, y = 20},
