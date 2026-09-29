@@ -232,6 +232,12 @@ go-ahead.**
     rock layers and nests follow the normal rules (the old "ore-free to −700"
     under start towns is removed). Upward protection stays unbounded.
 
+31. **Thin start-zone cells are filled** (palette/clock changes only, no new
+    species): Sunscar scorpions also spawn by day from band 2, and the plains
+    runner becomes fighting prey instead of a critter; Kapok vipers also spawn
+    by day from band 2 and the jungle lynx from band 2–3 (not only L10). Band 1
+    by day stays peaceful in the Dwarf, Human and Elf start zones.
+
 ## Lanes
 
 | Lane | Scope | Depends on |
@@ -241,7 +247,7 @@ go-ahead.**
 | **C — Art** | Rulings 16–17 and the decorative rock textures, license rows, comparison renders | names fixed above; parallel to A/B, A registers with placeholder tiles |
 | **D — Mobs** | Rulings 18–22 | — |
 | **E — Tracker and damage** | Rulings 23–24, `combat_stats.md` environmental section | — |
-| **D2 — Start-zone follow-up** | Rulings 25–26 | D merged |
+| **D2 — Start-zone follow-up** | Rulings 25–26, 31 | D merged |
 | **F — Density, gathering XP, tool levels** | Rulings 27–29 | A, D merged |
 | **B2 — Cliff layers, P8 speedups** | Ruling 12 extended to steep faces (user, 2026-09-29), output-identical vein speedups | B merged |
 | **G — Protection depth** | Ruling 30 | B2 (same ore host code) |
