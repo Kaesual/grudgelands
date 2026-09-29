@@ -106,12 +106,16 @@ check(troll_instant == 60, "troll instant 40 x 1.5 = 60 (" .. troll_instant .. "
 check(troll_ticks == 3 * 90, "troll ticks 3 x floor(1000 x 6% x 1.5) = 270 (" ..
 	troll_ticks .. ")")
 check(mana_restored.troll == 3 * 60, "troll food mana not scaled")
+check(statuses.troll.detail:find("+9% HP, +6% Mana/", 1, true),
+	"troll buff detail shows 6% x 1.5 = 9% HP (" .. statuses.troll.detail .. ")")
 for race in pairs(grug_classes.registered_races) do
 	if race ~= "troll" then
 		local _, instant, ticks = eat_and_tick(race, 3)
 		check(instant == 40, race .. " instant 40 (" .. instant .. ")")
 		check(ticks == 3 * 60, race .. " ticks 3 x 60 (" .. ticks .. ")")
 		check(mana_restored[race] == 3 * 60, race .. " food mana")
+		check(statuses[race].detail:find("+6% HP, +6% Mana/", 1, true),
+			race .. " buff detail unscaled (" .. statuses[race].detail .. ")")
 		print(("%-8s instant %3d  3 ticks %3d"):format(race, instant, ticks))
 	end
 end

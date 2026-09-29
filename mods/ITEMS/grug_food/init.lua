@@ -143,10 +143,13 @@ end
 
 -- The food status's detail line on the Character page Effects tab, e.g.
 -- "+6% HP, +6% Mana/5s, +1 Crit"; the status name is the eaten dish.
-function grug_food.status_detail(effect)
+-- `heal_multiplier` (the eater's, default 1) shows the HP regeneration the
+-- player actually gets, so a Troll reads the scaled value.
+function grug_food.status_detail(effect, heal_multiplier)
 	local regen = {}
 	if effect.regen.hp then
-		regen[#regen + 1] = "+" .. number_text(effect.regen.hp) .. "% HP"
+		regen[#regen + 1] = "+" .. number_text(effect.regen.hp *
+			(heal_multiplier or 1)) .. "% HP"
 	end
 	if effect.regen.mana then
 		regen[#regen + 1] = "+" .. number_text(effect.regen.mana) .. "% Mana"
@@ -207,7 +210,7 @@ local function start_food_status(player, tier, effect, item_definition)
 	local tier_def = grug_food.TIERS[tier]
 	local record = grug_core.set_status(player, "food", {
 		label = item_name(item_definition),
-		detail = grug_food.status_detail(effect),
+		detail = grug_food.status_detail(effect, grug_food.heal_multiplier(player)),
 		icon = grug_core.status_icons.item_icon(item_definition),
 		duration = grug_food.DURATION,
 		kind = "buff",
