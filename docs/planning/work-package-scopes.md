@@ -245,6 +245,8 @@ Bounded war-front life: implement `world_zones.md` §16's sixteen clash anchors 
 
 **Dependencies:** WP40 ✅ (world authority for the map base), WP24 ✅ (Housing Steward marker).
 
-**Status:** open; scheduled as Round 27 ([plan](round27-minimap-plan.md)), created 2026-09-29 after the Round 26 playtest.
+**Status:** **delivered in Round 27** (2026-09-30, [plan and completion](round27-minimap-plan.md#completion-2026-09-30), rulings 1–12), created 2026-09-29 after the Round 26 playtest; short playtest pending. Current rules: [world_map.md](../design/world_map.md).
 
 **Own minimap and map quality:** replace Luanti's native minimap with our own round, north-up HUD minimap (top right, one zoom level of about 900 nodes, rotating player arrow) drawn from the pre-generated world map, showing party members (with rim arrows when out of range), quest givers with their state, the Housing Steward, trainers, innkeepers and the player's home; the native minimap is switched off. A `minetest.conf` setting chooses the base map quality — normal (today's 1080×960, default) or high (about 2 nodes per pixel, no edge above 4096 px) — and the Map tab uses the same image. Both qualities get readable relief (stronger hillshading, contour lines, elevation tint). The map window snaps to a coarse grid so the client texture cache stays bounded; a per-player toggle lives on the Map tab.
+
+Delivered as built: normal 1080×960 and high 3600×3200 (relief grid 8 / 4 nodes), sent as 512 px tiles (6 / 56); Lambert hillshade, 16-node contours with 64-node index lines, stone tint above y 60; the minimap in the native minimap's box (25 % of the window height), a window of about 900 nodes snapped to 16 / 64 base pixels, 24 marker slots with quest givers first, nine party slots with rim arrows, change-only HUD updates, the "Show minimap" switch (or "No minimap available"); the region-label scrollbar fix. Left over: the [Round 27 carry-overs](../../BACKLOG.md#round-27-carry-overs)

@@ -134,7 +134,8 @@ B1–B7) settle the rest:
   WP44 target economy and broader item/loot scope remain separate.
 - [x] Quest framework; Round 20 extends the catalog to 240 quests and all 100 anchor art slots,
   persistent same-faction parties and optional HUDs.
-- [x] World atlas with zoom/scroll, self/party/quest/service markers; innkeeper home
+- [x] World atlas with zoom/scroll, self/party/quest/service markers and, since
+  Round 27, our own round minimap with the same markers; innkeeper home
   return and respawn; riding/flight (WP31) and farming (WP32, GUI acceptance
   pending). No fog-of-war or waypoint prerequisite.
 - [x] Surface-following optional full-world preparation, resumable bounded scheduling
@@ -146,6 +147,12 @@ B1–B7) settle the rest:
   Claim Stone draft and activation with the Housing Steward, the registration
   cleanup (WP28), the status icons and organic capitals with a character per
   capital. Next: fresh world and playtest.
+- [x] **WP50 own minimap and map quality** (Round 27,
+  [completion](docs/planning/round27-minimap-plan.md#completion-2026-09-30)):
+  a round, north-up minimap drawn from the world map with quest-giver,
+  service, home and party markers in place of the native one; the
+  `grug_map_quality` setting (normal/high); readable relief. Next: short
+  playtest.
 
 ### Remaining work
 

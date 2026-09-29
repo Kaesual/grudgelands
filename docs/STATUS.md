@@ -1,6 +1,21 @@
 # Project status
 
-Updated 2026-09-29. This is the delivery pointer, not another game specification.
+Updated 2026-09-30. This is the delivery pointer, not another game specification.
+
+- **Round 27 delivered locally** (2026-09-30, WP50,
+  [plan, completion and playtest checklist](planning/round27-minimap-plan.md#completion-2026-09-30)).
+  Lane M merged on local main as `cda93c90`; D on branch `r27-d-docs`. No push.
+  - **M:** our own round, north-up minimap in the native minimap's box
+    (about 900 nodes, snapped to a coarse grid so the client texture cache
+    grows only per cell) with quest givers by state, the Housing Steward,
+    trainers, innkeepers, home and party members with rim arrows; native
+    minimap off; a "Show minimap" switch on the Map tab. `grug_map_quality`
+    normal (1080×960, about 10 s, 0.92 MB) or high (3600×3200, about 56 s,
+    6.93 MB), sent as 512 px tiles; hillshade, 16/64-node contours and a
+    stone tint; region-label scrollbar fix
+    ([world_map.md](design/world_map.md)).
+  - **D:** documentation of the Lane M facts and WP50 closure.
+  - Next: short playtest.
 
 - **Round 26 delivered locally** (2026-09-29,
   [plan, completion and playtest checklist](planning/round26-capitals-housing-cleanup-plan.md#completion-2026-09-29)).
@@ -104,7 +119,7 @@ Updated 2026-09-29. This is the delivery pointer, not another game specification
 - **Documentation consolidation:** complete with independent Astra PASS;
   [receipt and coverage](maintenance/documentation-round.md). Remaining decisions
   and code/design discrepancies: [findings](maintenance/findings.md).
-- **Latest game:** local main carries Round 26, which includes Rounds 20–25
+- **Latest game:** local main carries Round 27, which includes Rounds 20–26
   and the 2026-09-28 playtest fixes. Round 24 is the latest pushed and
   accepted state; the Round 25 playtest is under way (first rulings recorded). Fresh-world development
   remains in force.
@@ -120,13 +135,15 @@ Updated 2026-09-29. This is the delivery pointer, not another game specification
   [full-speed follow-up](research/pregen-fullspeed.md). No remote deployment
   claimed. Prior measurement: [scan-budget follow-up](research/pregen-scan-budget.md).
 - **GUI acceptance:** user-run and pending where not explicitly accepted.
-  The [Round 26 checklist](planning/round26-capitals-housing-cleanup-plan.md#playtest-checklist-fresh-world)
-  covers the newest changes, the
+  The [Round 27 checklist](planning/round27-minimap-plan.md#playtest-checklist)
+  covers the minimap and map quality, the
+  [Round 26 checklist](planning/round26-capitals-housing-cleanup-plan.md#playtest-checklist-fresh-world)
+  the capitals and Claim Stone activation, the
   [Round 25 checklist](planning/round25-housing-plan.md#playtest-checklist-fresh-world)
   the rest of housing; earlier rounds keep their own checklists. The
   user wants a separate walk of the Round 20 POI art (audit E2).
 - **Remote observation:** local `origin/main` is `d4eaffff` (Round 24 and the
-  Round 25 plan). Rounds 25 and 26 are local only.
+  Round 25 plan). Rounds 25, 26 and 27 are local only.
 - **Release:** unreleased fresh-server development. The Nether is expansion
   content. [First-public-release gates](../BACKLOG.md#first-public-release-gates)
   remain open.

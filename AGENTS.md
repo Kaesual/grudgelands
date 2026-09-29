@@ -64,6 +64,13 @@ Research and historical evidence: **[docs/research/README.md](docs/research/READ
 
 ## Active work and game status
 
+**Round 27 delivered locally, 2026-09-30.** WP50: our own round minimap
+(`grug_map`) with quest-giver, service, home and party markers in place of
+the native minimap, the `grug_map_quality` setting (normal/high) for the Map
+tab and the minimap, readable relief and a tiled map base (Lane M), and the
+documentation (Lane D). Merged on local main; no push. Next: short playtest.
+[Plan, completion and playtest checklist](docs/planning/round27-minimap-plan.md#completion-2026-09-30).
+
 **Round 26 delivered locally, 2026-09-29.** Claim Stone draft/activation and
 the Housing Steward (Lane S), registration cleanup WP28 with the tool
 namespace (Lane R), the status-icon package (Lane I), organic capitals with a
