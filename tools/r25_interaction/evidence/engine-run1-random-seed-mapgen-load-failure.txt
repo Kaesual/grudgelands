@@ -1,0 +1,16 @@
+staged probe: grug_probe_interaction
+headless boot: FAIL [no "listening" before the timeout] (port 37757, 300 s)
+log: /tmp/grudgelands-headless.o9eSCW/server.log
+seed = 1908324341779493589
+71:ERROR[Main]: ModError: Failed to load and run script from /tmp/grudgelands-headless.o9eSCW/user/games/grudgelands/mods/MAPGEN/grug_mapgen/init.lua:
+72:ERROR[Main]: WP40 capitals: kezamba: required plot not placed: shore_carvers
+73:ERROR[Main]: stack traceback:
+74:ERROR[Main]: 	[C]: in function 'error'
+75:ERROR[Main]: 	...grudgelands/mods/MAPGEN/grug_mapgen/wp40/r7_capitals.lua:23: in function 'fail'
+76:ERROR[Main]: 	...grudgelands/mods/MAPGEN/grug_mapgen/wp40/r7_capitals.lua:220: in function 'plan_all'
+77:ERROR[Main]: 	.../grudgelands/mods/MAPGEN/grug_mapgen/wp40/r7_runtime.lua:295: in function <.../grudgelands/mods/MAPGEN/grug_mapgen/wp40/r7_runtime.lua:20>
+78:ERROR[Main]: 	...s/grudgelands/mods/MAPGEN/grug_mapgen/wp40/r7_loader.lua:88: in function 'construct'
+79:ERROR[Main]: 	...s/grudgelands/mods/MAPGEN/grug_mapgen/wp40/r7_loader.lua:110: in function <...s/grudgelands/mods/MAPGEN/grug_mapgen/wp40/r7_loader.lua:5>
+80:ERROR[Main]: 	.../user/games/grudgelands/mods/MAPGEN/grug_mapgen/init.lua:12: in main chunk
+kept: /tmp/grudgelands-headless.o9eSCW
+failed boot evidence: /tmp/grudgelands-headless-failed/grudgelands-headless.o9eSCW

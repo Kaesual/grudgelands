@@ -32,7 +32,9 @@ local function accessible(ctx, player)
 	if not at or vector.distance(at, ctx.pos) > 8 then return false end
 	if node_station(ctx.pos) ~= ctx.station or
 			core.get_meta(ctx.pos):get_string("grug_jobs:station_id") ~= ctx.id then return false end
-	return ctx.personal or not core.is_protected(ctx.pos, ctx.name)
+	-- Using a station is an interaction, not an edit: a claim's "interact"
+	-- permission is enough (Round 25 ruling 18).
+	return ctx.personal or not grug_core.interaction_protected(ctx.pos, ctx.name)
 end
 
 local function inputs(ctx)
@@ -391,11 +393,18 @@ end
 local function install_node(name, station)
 	local def = core.registered_nodes[name]
 	if not def then return end
-	local function allowed(pos, player)
+	-- Inventory use is an interaction (a claim's "interact" permission is
+	-- enough, Round 25 ruling 18); digging (`edit`) keeps core.is_protected.
+	local function allowed(pos, player, edit)
 		if grug_jobs.is_public_station(station, pos) then return false end
-		return player and player:is_player() and player:get_hp() > 0 and
-			player:get_pos() and vector.distance(player:get_pos(), pos) <= 8 and
-			not core.is_protected(pos, player:get_player_name()) and node_station(pos) == station
+		if not (player and player:is_player() and player:get_hp() > 0 and
+				player:get_pos() and vector.distance(player:get_pos(), pos) <= 8 and
+				node_station(pos) == station) then
+			return false
+		end
+		local name = player:get_player_name()
+		if edit then return not core.is_protected(pos, name) end
+		return not grug_core.interaction_protected(pos, name)
 	end
 	local function update(pos)
 		if automatic.sizes[station] then
@@ -427,7 +436,7 @@ local function install_node(name, station)
 			initialize(pos, station) workspaces.open(pos, player) return stack
 		end,
 		can_dig = function(pos, player)
-			if not allowed(pos, player) or has_saved_items(pos) then return false end
+			if not allowed(pos, player, true) or has_saved_items(pos) then return false end
 			local inv = core.get_meta(pos):get_inventory()
 			for list in pairs(automatic.sizes[station] or {craft = 9}) do
 				if not inv:is_empty(list) then return false end
