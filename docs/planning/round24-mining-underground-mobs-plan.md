@@ -241,6 +241,19 @@ go-ahead.**
     by day from band 2 and the jungle lynx from band 2–3 (not only L10). Band 1
     by day stays peaceful in the Dwarf, Human and Elf start zones.
 
+32. **Character creation can always be paused** (user, 2026-09-29): Esc
+    really closes every creation dialog (faction, race, class, waiting
+    screen); nothing reopens by itself, so the next Esc reaches the native
+    game menu (settings, exit). The player stays safe in creation stasis.
+    While creation is unfinished, the inventory key opens the current step
+    (the player's inventory formspec is that step; a screen hint says
+    "Character creation paused – press I to continue"). When preparation
+    finishes while the waiting screen is open the next step replaces it;
+    when it was dismissed only the hint changes. Every choice, including the
+    class chosen while the arrival area still loads, is stored in player data
+    at once, so a reconnect continues at the first missing step. No kick
+    button.
+
 ## Lanes
 
 | Lane | Scope | Depends on |
@@ -255,6 +268,7 @@ go-ahead.**
 | **B2 — Cliff layers, P8 speedups** | Ruling 12 extended to steep faces (user, 2026-09-29), output-identical vein speedups | B merged |
 | **G — Protection depth** | Ruling 30 | B2 (same ore host code) |
 | **G2 — Normal caves below protection** | Ruling 30 addendum (cave content, cultural reservations; hostile spawns in F) | G merged |
+| **H — Pausable character creation** | Ruling 32 | — |
 
 ## Coordination
 
