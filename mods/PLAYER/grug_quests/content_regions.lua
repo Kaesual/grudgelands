@@ -946,7 +946,7 @@ Q.register_quest("r20_anchor_061_01", {
 	prerequisites = {},
 	description = "Tarncut's spare pick has lost its working head, and the sorting crew needs a replacement. Bring one ordinary stone pick, made or traded; no proof of mining is required. Existing or traded supplies are welcome.",
 	faction = "accord",
-	objectives = {{type = "item", item = "default:pick_stone", count = 1}},
+	objectives = {{type = "item", item = "grug_materials:pick_stone", count = 1}},
 	rewards = {xp = 820, copper = 70, items = {}},
 })
 
@@ -1011,7 +1011,7 @@ Q.register_quest("r20_anchor_062_03", {
 	prerequisites = {"r20_anchor_062_02"},
 	description = "With the survey route clear, the quarry can put another hand on the stone. Bring an ordinary stone pick to the work shelter; a traded or previously used pick counts. Existing or traded supplies are welcome.",
 	faction = "accord",
-	objectives = {{type = "item", item = "default:pick_stone", count = 1}},
+	objectives = {{type = "item", item = "grug_materials:pick_stone", count = 1}},
 	rewards = {xp = 900, copper = 70, items = {}},
 })
 
@@ -1024,7 +1024,7 @@ Q.register_quest("r20_anchor_063_01", {
 	prerequisites = {},
 	description = "Paleroot's cutters need a spare stone pick for work beside the orchard roots. Bring one to the braced shelter; you may craft it, buy it or use an existing spare. Existing or traded supplies are welcome.",
 	faction = "accord",
-	objectives = {{type = "item", item = "default:pick_stone", count = 1}},
+	objectives = {{type = "item", item = "grug_materials:pick_stone", count = 1}},
 	rewards = {xp = 820, copper = 70, items = {}},
 })
 
@@ -1089,7 +1089,7 @@ Q.register_quest("r20_anchor_064_03", {
 	prerequisites = {"r20_anchor_064_02"},
 	description = "The night route is quiet enough for a new cutting shift. Bring one ordinary stone pick for the crew's spare rack; no special relic or freshly mined stone is required. Existing or traded supplies are welcome.",
 	faction = "throng",
-	objectives = {{type = "item", item = "default:pick_stone", count = 1}},
+	objectives = {{type = "item", item = "grug_materials:pick_stone", count = 1}},
 	rewards = {xp = 900, copper = 70, items = {}},
 })
 

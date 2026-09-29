@@ -28,7 +28,7 @@ local function check(ok, label)
 end
 
 local PROBE_NAME = "r25eprobe"
-local PICK = "default:pick_bronze"
+local PICK = "grug_materials:pick_bronze"
 local faction = "accord"
 -- Installed once the server runs: grug_factions defines the real lookup
 -- after this mod has loaded.

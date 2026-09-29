@@ -239,7 +239,7 @@ local function scenario(c, edge)
 		local on_road, above_road = place_dirt(OWNER, road)
 		check(not on_road, "owner cannot place onto the road")
 		local node = core.get_node(road)
-		core.node_dig(road, node, fake_player(OWNER, "default:pick_bronze"))
+		core.node_dig(road, node, fake_player(OWNER, "grug_materials:pick_bronze"))
 		check(core.get_node(road).name == node.name, "owner cannot dig the road")
 		log(("ROAD %s (%s, node %s) in claim %d: owner is_protected=%s, hint %q," ..
 			" place above=%s, dig kept %s"):format(core.pos_to_string(road), road_kind,

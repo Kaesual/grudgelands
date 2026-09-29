@@ -509,7 +509,7 @@ core.register_node("default:furnace", {groups = {},
 	allow_metadata_inventory_put = function(_, listname, _, stack)
 		return listname == "fuel" and stack:get_count() or 0
 	end})
-core.register_tool("default:pick_wood", {groups = {grug_pick_tier = 1},
+core.register_tool("grug_materials:pick_wood", {groups = {grug_pick_tier = 1},
 	tool_capabilities = {groupcaps = {cracky = {times = {[3] = 1}, maxlevel = 0}}}})
 for tier = 1, 6 do
 	core.register_tool("grug_materials:pick_t" .. tier, {groups = {grug_pick_tier = tier},
@@ -586,7 +586,7 @@ for tier = 1, 6 do
 	check(caps.groupcaps.cracky ~= nil, "pick keeps its caps T" .. tier)
 end
 check(table.concat(times, ",") == "60,50,40,30,20,10", "pick times T1-T6 60..10 s")
-check(registered_items["default:pick_wood"].tool_capabilities.groupcaps.grug_claim_stone.times[1] == 60,
+check(registered_items["grug_materials:pick_wood"].tool_capabilities.groupcaps.grug_claim_stone.times[1] == 60,
 	"starter pick digs in the T1 time")
 check(registered_items["grug_abilities:strike"].tool_capabilities.groupcaps.grug_claim_stone == nil,
 	"skill hand has no claim-stone cap")

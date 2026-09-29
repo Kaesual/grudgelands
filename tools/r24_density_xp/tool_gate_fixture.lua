@@ -26,7 +26,7 @@ end
 
 local REQUIRED = {5, 15, 25, 35, 45}
 local function ladder(family, tier)
-	return ((tier == 1 or tier == 3) and "default:" or "grug_materials:") ..
+	return "grug_materials:" ..
 		family .. "_" .. M.TIERS[tier].key
 end
 local FAMILIES = {
@@ -54,8 +54,8 @@ local header = {}
 for _, level in ipairs(LEVELS) do header[#header + 1] = ("%3d"):format(level) end
 print(("%-36s req  player level: "):format("tool") .. table.concat(header, " "))
 for _, row in ipairs(FAMILIES) do
-	local tools = {{"default:" .. row.family .. "_wood", nil},
-		{"default:" .. row.family .. "_stone", nil}}
+	local tools = {{"grug_materials:" .. row.family .. "_wood", nil},
+		{"grug_materials:" .. row.family .. "_stone", nil}}
 	for tier = 1, 6 do
 		tools[#tools + 1] = {ladder(row.family, tier), tier > 1 and REQUIRED[tier - 1] or nil}
 	end
@@ -117,15 +117,15 @@ do
 end
 -- Hand fallback: a pick does not dig leaves, the hand does; nothing refused.
 node = place("default:leaves")
-check(not M.tool_in_use(ItemStack("default:pick_steel"), H.nodes["default:leaves"]),
+check(not M.tool_in_use(ItemStack("grug_materials:pick_steel"), H.nodes["default:leaves"]),
 	"a pick is not in use on leaves")
-check(M.mining_decision(origin, node, player("default:pick_steel", 1)).allowed,
+check(M.mining_decision(origin, node, player("grug_materials:pick_steel", 1)).allowed,
 	"steel pick at level 1 on leaves: hand fallback allowed")
-check(M.punch_hint(origin, node, player("default:pick_steel", 1)) == nil,
+check(M.punch_hint(origin, node, player("grug_materials:pick_steel", 1)) == nil,
 	"no level hint where the hand digs")
 -- Too hard still wins where the gated tool cannot dig the rock at all.
 node = place("grug_materials:t4_stone")
-check(M.mining_decision(origin, node, player("default:pick_steel", 1)).reason ==
+check(M.mining_decision(origin, node, player("grug_materials:pick_steel", 1)).reason ==
 	"too_hard", "steel pick on T4 rock: too hard, not level")
 -- A missing level authority refuses nobody.
 _G.grug_core = nil
@@ -134,7 +134,7 @@ check(M.mining_decision(origin, node, player("grug_materials:pick_abyssal_steel"
 	"no level authority: allowed")
 _G.grug_core = {get_player_level = function(p) return p.level end}
 -- Hints: punch and a refused real dig, one flash/chat line, node kept.
-check(M.punch_hint(origin, node, player("default:pick_steel", 14)) ==
+check(M.punch_hint(origin, node, player("grug_materials:pick_steel", 14)) ==
 	"Steel Pickaxe requires level 15", "steel pick punch hint")
 check(M.punch_hint(origin, node, player("grug_materials:shovel_embersteel", 34)) ==
 	"Requires a T1 pick", "a shovel is not in use on stone: the pick-tier hint, not the level")

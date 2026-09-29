@@ -441,7 +441,7 @@ for _, culture in ipairs(cultures) do
 		title = culture.lessons[1], description = culture.lessons[3] .. "\n\nOpen Basics in your Crafting tab to see the wood axe recipe: three planks and two sticks. You can make planks from a tree trunk and sticks from planks. Wood tools are fragile; stone lasts longer and bronze is your first durable upgrade. This lesson is optional; an axe made by a friend is welcome too.", npc = npc.elder,
 		faction = culture.faction, race = culture.key, min_level = 1,
 		target_level = 1, effort = "lesson",
-		prerequisites = {}, objectives = {{type = "item", item = "default:axe_wood",
+		prerequisites = {}, objectives = {{type = "item", item = "grug_materials:axe_wood",
 			count = 1, description = "Bring a wood axe"}},
 		rewards = {xp = 15, copper = 10, items = {}},
 	})
@@ -449,7 +449,7 @@ for _, culture in ipairs(cultures) do
 		title = culture.lessons[2], description = culture.lessons[4] .. "\n\nUse Basics to make a wooden pick first, then mine stone. The stone pick recipe uses three stone blocks across the top and two sticks down the middle. Keep valuable tools repaired through a profession trainer in a settlement. This lesson is optional; a traded pick counts too.", npc = npc.elder,
 		faction = culture.faction, race = culture.key, min_level = 2,
 		target_level = 2, effort = "lesson",
-		prerequisites = {axe}, objectives = {{type = "item", item = "default:pick_stone",
+		prerequisites = {axe}, objectives = {{type = "item", item = "grug_materials:pick_stone",
 			count = 1, description = "Bring a stone pick"}},
 		rewards = {xp = 45, copper = 15, items = {}},
 	})
