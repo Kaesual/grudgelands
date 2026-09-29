@@ -118,4 +118,4 @@ fish band 3                  30   40   50   75  100  125  150  150  150
 fish band 4                  30   40   50   75  100  125  175  200  200
 fish band 5                  30   40   50   75  100  125  175  250  250
 fish band 6                  30   40   50   75  100  125  175  250  300
-R24 DENSITY/XP FIXTURE PASS checks=1023
+R24 DENSITY/XP FIXTURE PASS checks=1030
