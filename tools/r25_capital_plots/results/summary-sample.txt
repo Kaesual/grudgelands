@@ -1,0 +1,53 @@
+== branch: 200 seeds, load failures 0
+   CPU s/seed mean 14.5
+   capital      seeds_w_named_drop  named_drops  top_dropped                       fill_drops(mean/max)
+   highcourt                     1            1  lore_scriptorium 1                3.19/11
+   dur_brannoc                   0            0                                    2.67/7
+   gor_drazhak                   1            1  bone_quarry 1                     3.29/8
+   lethariel                     0            0                                    0.96/8
+   kezamba                       0            0                                    2.91/11
+   nhal_veyr                     0            0                                    3.44/8
+== baseline (investigation, main): 200 seeds, load failures 3: 10131113280343415741 (anchor_012:shore_store+shore_carvers), 7547589907258370542 (anchor_012:shore_carvers), 7950299496086484370 (anchor_011:bazaar_smithy)
+   CPU s/seed mean 14.5
+   capital      seeds_w_named_drop  named_drops  top_dropped
+   highcourt                     8           12  homes_orchard 6, martial_drill_yard 2, lore_library 1
+   dur_brannoc                   2            2  deep_lantern_court 1, forge_watch 1
+   gor_drazhak                  35           40  bone_quarry 34, bone_barrow 5, bazaar_brewhouse 1
+   lethariel                     0            0                                  
+   kezamba                      26           53  shore_watch 22, shore_house 10, shore_well 8
+   nhal_veyr                     3            3  homes_watch 2, homes_cistern 1  
+== branch, same seeds: 200 seeds, load failures 0
+   CPU s/seed mean 14.5
+   capital      seeds_w_named_drop  named_drops  top_dropped                       fill_drops(mean/max)
+   highcourt                     1            1  lore_scriptorium 1                3.19/11
+   dur_brannoc                   0            0                                    2.67/7
+   gor_drazhak                   1            1  bone_quarry 1                     3.29/8
+   lethariel                     0            0                                    0.96/8
+   kezamba                       0            0                                    2.91/11
+   nhal_veyr                     0            0                                    3.44/8
+== main (this harness): 120 seeds, load failures 1: 10131113280343415741 (kezamba:shore_store+shore_carvers)
+   CPU s/seed mean 14.3
+   capital      seeds_w_named_drop  named_drops  top_dropped                       fill_drops(mean/max)
+   highcourt                     6           10  homes_orchard 5, martial_drill_yard 2, lore_library 1  2.79/8
+   dur_brannoc                   2            2  deep_lantern_court 1, forge_watch 1  2.46/7
+   gor_drazhak                  17           21  bone_quarry 17, bone_barrow 4     2.74/8
+   lethariel                     0            0                                    0.96/5
+   kezamba                      18           34  shore_watch 15, shore_house 7, shore_butcher 4  2.60/7
+   nhal_veyr                     1            1  homes_watch 1                     2.96/8
+== branch, same seeds: 120 seeds, load failures 0
+   CPU s/seed mean 14.3
+   capital      seeds_w_named_drop  named_drops  top_dropped                       fill_drops(mean/max)
+   highcourt                     1            1  lore_scriptorium 1                3.21/11
+   dur_brannoc                   0            0                                    2.63/7
+   gor_drazhak                   0            0                                    3.19/8
+   lethariel                     0            0                                    1.07/8
+   kezamba                       0            0                                    3.12/11
+   nhal_veyr                     0            0                                    3.38/8
+== layout identity, 120 seeds (digest of planner.serialize)
+   capital      clean_on_main  identical/clean  changed_total  overflow_named_on_main  identical_among_those
+   highcourt               34               34     86 ( 72 %)                      86                      0
+   dur_brannoc             58               58     62 ( 52 %)                      62                      0
+   gor_drazhak             31               31     89 ( 74 %)                      89                      0
+   lethariel               24               24     96 ( 80 %)                      96                      0
+   kezamba                  0                0    120 (100 %)                     120                      0
+   nhal_veyr               27               27     93 ( 78 %)                      93                      0
