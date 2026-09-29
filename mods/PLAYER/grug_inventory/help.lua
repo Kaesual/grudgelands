@@ -34,7 +34,7 @@ local SECTIONS = {
 		heading("Your first steps"),
 		"• Your starter weapon is already in the Weapon slot on the Character page. Open the Skills tab, drag a combat skill onto your hotbar, select it and left-click a creature to fight.",
 		"• Talk to the people of your start town. A yellow ! above someone means they have a quest for you.",
-		"• Craft a Wooden Pickaxe early: without a pickaxe you cannot dig dirt, sand or stone. The Basics book in the Crafting tab shows tools, weapons and armor you can make.",
+		"• Craft a Wooden Pickaxe early: stone and ore need a pickaxe. Dirt, sand and other loose ground dig by hand (or with a skill selected), a shovel is fastest. The Basics book in the Crafting tab shows tools, weapons and armor you can make.",
 		"",
 		heading("Levels and zones"),
 		"• Creatures, quests, mining ore and gems, and fishing give XP, up to level 60. Creatures 10 or more levels below you give none; ore, gems and fish always give some. Every second level gives a talent point for the Talents tab.",

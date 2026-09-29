@@ -7,9 +7,11 @@
 -- natural surface species of the named-zone palettes (spawn_policy.lua
 -- `density_budgeted`) now share ONE budget per zone and clock instead:
 --
---   * budget B = REFERENCE[clock] x DENSITY_SCALE x (ZONE_DENSITY[zone] or 1),
---     rounded; REFERENCE is the pre-Round-24 median per-zone sum of the
---     budgeted species' caps, so DENSITY_SCALE is "about 1.5x" (ruling 27);
+--   * budget B = max(REFERENCE[clock] x DENSITY_SCALE, DENSITY_FLOOR[zone])
+--     x (ZONE_DENSITY[zone] or 1),
+--     rounded; REFERENCE is the pre-Round-24 median area population, so
+--     DENSITY_SCALE is "about 1.5x" (ruling 27), and DENSITY_FLOOR keeps a
+--     zone that was denser than that at its own old population;
 --   * each species eligible AT THE SPAWN POINT (its hosts include the node
 --     the spawning row matched, and policy, level gate, row domain and
 --     check and clock allow it) gets the share B x w / W, rounded, where w is
@@ -30,9 +32,24 @@ grug_mobs.DENSITY_SCALE = 1.5
 -- zones with a budgeted cast of each zone's mean, over its land columns, of
 -- the summed Round 16 caps (1.3x, night rows 5/4) of the species that could
 -- spawn on that column's biome top (tools/r24_density_xp/fixture.lua prints
--- the table: day 9.46, night 14.95 on seed 4242424242). Budgets are
+-- the table: day 9.46, night 14.95 on seed 4242424242). Common budgets are
 -- therefore 14 by day and 23 by night.
 grug_mobs.DENSITY_REFERENCE = {day = 9, night = 15}
+
+-- No zone gets sparser than before (coordinator correction to ruling 27):
+-- a zone whose own pre-Round-24 area population (same measurement, rounded)
+-- exceeds the common budget keeps that population as its budget. Only those
+-- zones are listed; the table is regenerated from the fixture's printout.
+grug_mobs.DENSITY_FLOOR = {
+	elandor_ashenward_march = {night = 35},
+	elandor_whitebridge_shire = {day = 17, night = 24},
+	front_shattered_line = {day = 17, night = 27},
+	front_skyglass_canopy = {night = 25},
+	front_stormscale_summit = {night = 29},
+	kragmar_bannerbreak_mesa = {night = 36},
+	kragmar_raincall_basin = {day = 15},
+	kragmar_redtusk_savanna = {day = 17},
+}
 
 -- Per-zone multipliers for later tuning by feel; absent means 1.
 grug_mobs.ZONE_DENSITY = {}
@@ -44,24 +61,29 @@ local function round(value)
 	return math.floor(value + 0.5)
 end
 
+-- budget = max(round(reference x scale), zone floor) x zone multiplier.
 function grug_mobs.density_budget(zone_id, clock)
 	local reference = grug_mobs.DENSITY_REFERENCE[clock]
 	if not reference then
 		error("[grug_mobs] density clock must be day or night")
 	end
-	return math.max(1, round(reference * grug_mobs.DENSITY_SCALE *
-		(grug_mobs.ZONE_DENSITY[zone_id] or 1)))
+	local floor = grug_mobs.DENSITY_FLOOR[zone_id]
+	local base = math.max(round(reference * grug_mobs.DENSITY_SCALE),
+		floor and floor[clock] or 0)
+	return math.max(1, round(base * (grug_mobs.ZONE_DENSITY[zone_id] or 1)))
 end
 
 -- The lifted mobs_redo row cap: the largest budget any zone can have.
 function grug_mobs.density_row_cap()
-	local factor = 1
-	for _, value in pairs(grug_mobs.ZONE_DENSITY) do
-		if value > factor then factor = value end
-	end
 	local cap = 1
-	for _, reference in pairs(grug_mobs.DENSITY_REFERENCE) do
-		cap = math.max(cap, math.ceil(reference * grug_mobs.DENSITY_SCALE * factor))
+	local zones = {}
+	for zone_id in pairs(grug_mobs.DENSITY_FLOOR) do zones[zone_id] = true end
+	for zone_id in pairs(grug_mobs.ZONE_DENSITY) do zones[zone_id] = true end
+	for clock in pairs(grug_mobs.DENSITY_REFERENCE) do
+		cap = math.max(cap, grug_mobs.density_budget(nil, clock))
+		for zone_id in pairs(zones) do
+			cap = math.max(cap, grug_mobs.density_budget(zone_id, clock))
+		end
 	end
 	return cap
 end

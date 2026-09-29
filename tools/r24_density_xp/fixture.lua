@@ -33,8 +33,15 @@ check(#roster.failed == 0, "every mob file loads: " .. table.concat(roster.faile
 check(#roster.rows == #roster.raw_rows and #roster.rows > 60, "rows captured")
 local gm = roster.grug_mobs
 local row_cap = gm.density_row_cap()
-check(row_cap == math.ceil(math.max(gm.DENSITY_REFERENCE.day,
-	gm.DENSITY_REFERENCE.night) * gm.DENSITY_SCALE), "row cap is the largest budget")
+do
+	local largest = 1
+	for _, zone in ipairs(gm.density_zone_ids()) do
+		for _, clock in ipairs({"day", "night"}) do
+			largest = math.max(largest, gm.density_budget(zone, clock))
+		end
+	end
+	check(row_cap == largest, "row cap is the largest budget")
+end
 
 -- Old (Round 16) cap of one raw surface row.
 local function old_cap(aoc, night)
@@ -268,6 +275,58 @@ check(math.abs(gm.DENSITY_REFERENCE.day - day_median) <= 1 and
 	"DENSITY_REFERENCE is the pre-Round-24 per-point median (within 1)")
 check(gm.density_budget("kragmar_sunscar_flats", "day") == 14 and
 	gm.density_budget("kragmar_sunscar_flats", "night") == 23, "budgets 14 / 23")
+
+-- No zone sparser than before: every zone's budget is at least its own old
+-- population (rounded), and DENSITY_FLOOR lists exactly the zones whose old
+-- population exceeds the common budget. A mismatch prints the table to paste.
+do
+	local expected, lines_out, ok = {}, {}, true
+	print("\nper-zone budgets (old mean population -> budget)")
+	print(("%-30s %-18s %-18s"):format("zone", "day", "night"))
+	for _, zone in ipairs(zone_ids) do
+		local cells = {}
+		for _, clock in ipairs({"day", "night"}) do
+			local c = per_zone[zone][clock]
+			local common = round(gm.DENSITY_REFERENCE[clock] * gm.DENSITY_SCALE)
+			if c.points > 0 then
+				local old = round(c.old / c.points)
+				if old > common then
+					expected[zone] = expected[zone] or {}
+					expected[zone][clock] = old
+				end
+				local budget = gm.density_budget(zone, clock)
+				if budget < old then ok = false end
+				cells[#cells + 1] = ("%5.1f -> %2d%s"):format(c.old / c.points, budget,
+					budget > common and " (floor)" or "")
+			else
+				cells[#cells + 1] = "-"
+			end
+		end
+		print(("%-30s %-18s %-18s"):format(zone, cells[1], cells[2]))
+	end
+	local same = true
+	for _, zone in ipairs(zone_ids) do
+		local want, have = expected[zone], gm.DENSITY_FLOOR[zone]
+		if (want == nil) ~= (have == nil) or (want and (want.day ~= have.day or
+				want.night ~= have.night)) then
+			same = false
+		end
+		if want then
+			lines_out[#lines_out + 1] = ("\t%s = {%s%s},"):format(zone,
+				want.day and ("day = " .. want.day) or "",
+				want.night and ((want.day and ", " or "") .. "night = " .. want.night) or "")
+		end
+	end
+	for zone in pairs(gm.DENSITY_FLOOR) do
+		if not per_zone[zone] then same = false end
+	end
+	if not same then
+		print("DENSITY_FLOOR differs from the measurement; regenerate:\n" ..
+			"grug_mobs.DENSITY_FLOOR = {\n" .. table.concat(lines_out, "\n") .. "\n}")
+	end
+	check(same, "DENSITY_FLOOR is the measured per-zone floor")
+	check(ok, "no zone's budget is below its old population")
+end
 
 -- ---------------------------------------------------------------------------
 -- 3. density_allows against a stub area (Sunscar Flats, dry-grass node)
