@@ -241,7 +241,7 @@ sfinv.register_page(PAGE, {
 		end
 		if fields.grug_map_zoom_in or fields.grug_map_zoom_out then
 			local old = context.grug_map_zoom or 1
-			local zoom = fields.grug_map_zoom_in and math.min(4, old * 2) or math.max(1, old / 2)
+			local zoom = atlas.step_zoom(old, fields.grug_map_zoom_in ~= nil)
 			context.grug_map_scroll_x = atlas.zoom_scroll(context.grug_map_scroll_x or 0, old, zoom)
 			context.grug_map_scroll_y = atlas.zoom_scroll(context.grug_map_scroll_y or 0, old, zoom)
 			context.grug_map_zoom = zoom
