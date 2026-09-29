@@ -1,41 +1,75 @@
--- The four tool tiers `default` never had (WP13 round 2, items_crafting.md
--- §3.0.3 "default's tool ladder is replaced by the six-tier ladder").
+-- The pick/axe/shovel catalog: every grade under `grug_materials:`.
 --
--- WHAT WAS ALREADY TRUE, and is only written down here: `overrides.lua` gives
--- `default:pick_bronze` the group `grug_pick_tier = 1` and `default:pick_steel`
--- `grug_pick_tier = 3`, which is exactly §3.0.1's ladder -- T1 Bronze, T3
--- Steel. So the two vendored metal steps ARE the T1 and T3 rungs and nothing
--- about them changes; what was missing was T2, T4, T5 and T6.
+-- ONE NAMESPACE (Round 26 ruling 14). Wood, Stone, Bronze and Steel come from
+-- the vendored `default` mod; Iron, Silversteel, Embersteel and Abyssal Steel
+-- are registered here. The four vendored grades are cloned into this
+-- namespace unchanged (the clone pattern `derivatives.lua` uses) BEFORE
+-- `overrides.lua` gives them their tier groups and capabilities, so every
+-- later pass -- overrides, lifetimes, tooltips, recipes, prices, quests --
+-- names only the canonical `grug_materials:<family>_<grade>` item.
 --
--- IRON (T2) EXISTS AND THEREFORE GETS TOOLS. `grug_materials:iron_bar` is a
--- real registered item (registry.lua, TIERS[2].bar_item) -- it is what
--- upstream's "steel ingot" migrated to, because §3.0.1 reads a smelted iron
--- ore as Iron, not as Steel. With Iron a full material tier owning a tier
--- rock (T2 stone) and a pick tier of its own in `PICK_PROFILES`, a ladder
--- that jumps Bronze -> Steel would leave §3.0.4's T2 row without a pick at
--- all. So T2 tools are registered here like the other three.
+-- The old `default:` names become engine aliases: the ruling keeps them so a
+-- stray reference never turns into an unknown item. This is not a saved-world
+-- migration (the fresh-server rule still holds) and nothing in the repo uses
+-- the old names. Aliases are absent from `pairs(core.registered_items)`, so
+-- consumers that iterate registrations see exactly the canonical tools.
 --
--- NAMESPACE. The four new tiers are `grug_materials:` and the two old ones
--- stay `default:`. That split is deliberate rather than pretty: registering
--- into a foreign mod's namespace needs the `:` escape hatch, and re-registering
--- Bronze and Steel here would either duplicate two live items or force this
--- lane to re-author their shipped, WP25-calibrated capabilities. WP29 owns the
--- final unified catalog; until then `grug_pick_tier` -- not the namespace -- is
--- what any consumer reads.
---
--- NO RECIPES, on purpose. `default:pick_steel` is already a non-craftable
--- verification tool (content_curation.lua) and no TOOL registered here has a
--- craft recipe (WP29 owns the tool catalog; the four new BARS do have their
--- smelting recipes since WP26 shipped `grug_smelting`). Handing the
--- deep picks a recipe here would move the progression gate, which is not this
--- lane's business; these registrations complete the LADDER, not the economy.
---
--- The capability numbers below are provisional in exactly the sense
--- `PICK_PROFILES` already is (items_crafting.md §3.0.4's "the numbers stay
--- open"): picks come straight out of that published profile table, and the axe
--- and shovel rows continue `default`'s own bronze -> steel steps monotonically.
--- WP22 calibrates, WP29 authors the final table.
+-- `grug_pick_tier`, `grug_axe_tier` and `grug_shovel_tier` remain the contract
+-- consumers read; the namespace carries no rule. Metal tool recipes belong to
+-- `grug_professions/base_recipes.lua`; the Wood and Stone recipes and the
+-- wooden fuel values are re-registered here with default's own shapes.
 
+grug_materials.TOOL_ALIASES = {}
+
+local VENDORED_GRADES = {"wood", "stone", "bronze", "steel"}
+local FAMILIES = {"pick", "axe", "shovel"}
+
+for _, family in ipairs(FAMILIES) do
+	for _, grade in ipairs(VENDORED_GRADES) do
+		local old = "default:" .. family .. "_" .. grade
+		local new = "grug_materials:" .. family .. "_" .. grade
+		local source = rawget(core.registered_items, old)
+		if not source then
+			error("grug_materials: missing vendored tool " .. old)
+		end
+		local def = table.copy(source)
+		def.name = nil
+		def.type = nil
+		def.mod_origin = nil
+		core.clear_craft({output = old})
+		if grade == "wood" then
+			core.clear_craft({type = "fuel", recipe = old})
+		end
+		core.unregister_item(old)
+		core.register_tool(new, def)
+		core.register_alias(old, new)
+		grug_materials.TOOL_ALIASES[old] = new
+	end
+end
+
+-- default's own shapes (mods/BASE/default/tools.lua, `craft_ingreds` loop).
+for _, row in ipairs({{"wood", "group:wood"}, {"stone", "group:stone"}}) do
+	local grade, mat = row[1], row[2]
+	core.register_craft({output = "grug_materials:pick_" .. grade, recipe = {
+		{mat, mat, mat}, {"", "group:stick", ""}, {"", "group:stick", ""},
+	}})
+	core.register_craft({output = "grug_materials:shovel_" .. grade, recipe = {
+		{mat}, {"group:stick"}, {"group:stick"},
+	}})
+	core.register_craft({output = "grug_materials:axe_" .. grade, recipe = {
+		{mat, mat}, {mat, "group:stick"}, {"", "group:stick"},
+	}})
+end
+for _, row in ipairs({{"pick", 6}, {"shovel", 4}, {"axe", 6}}) do
+	core.register_craft({type = "fuel",
+		recipe = "grug_materials:" .. row[1] .. "_wood", burntime = row[2]})
+end
+
+-- The four tiers `default` never had (WP13 round 2, items_crafting.md
+-- §3.0.3). Iron (T2) is a full material tier with its own tier rock and pick
+-- profile, so the ladder does not jump Bronze -> Steel. Picks take their
+-- numbers from the published pick profiles (`PICK_PROFILES`); the axe and
+-- shovel rows continue default's bronze -> steel steps monotonically.
 local TIERS_WITH_TOOLS = {2, 4, 5, 6}
 
 -- Continuations of default's axe/shovel ladder. Bronze and Steel are quoted
@@ -103,7 +137,7 @@ for _, id in ipairs(TIERS_WITH_TOOLS) do
 		-- Deliberately NO `wield_image`: default's shovels carry a
 		-- `^[transformR90` one, which would hold this shovel at a different
 		-- angle from every other item in the game. `overrides.lua` strips it
-		-- from theirs for the same reason.
+		-- from the cloned vendored shovels for the same reason.
 		tool_capabilities = {
 			full_punch_interval = 1.1,
 			max_drop_level = 1,
@@ -118,5 +152,7 @@ for _, id in ipairs(TIERS_WITH_TOOLS) do
 	})
 end
 
-core.log("action", "[grug_materials] " .. (#TIERS_WITH_TOOLS * 3) ..
-	" tools completing the six-tier pick/axe/shovel ladder")
+core.log("action", "[grug_materials] " ..
+	(#VENDORED_GRADES + #TIERS_WITH_TOOLS) * #FAMILIES ..
+	" pick/axe/shovel tools, " .. #VENDORED_GRADES * #FAMILIES ..
+	" default: tool aliases")

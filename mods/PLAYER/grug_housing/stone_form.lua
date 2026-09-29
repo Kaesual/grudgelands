@@ -1,7 +1,13 @@
 -- The owner's Claim Stone formspec (ruling 13): fuel slot, remaining time,
 -- access list, pick up with confirmation and "Set as home" when grug_home
--- offers it. Lane A's stone node opens it through
--- grug_housing.open_stone_interface(player, claim) on the owner's right-click.
+-- offers it. A draft (Round 26 ruling 8) gets a small form of its own: the
+-- time left, counting down every second while the form is open, the
+-- activation button, pick up and close; no fuel slot, access list or "Set as
+-- home" (permissions are set once the stone is active). It has no text field
+-- and no inventory list, so the per-second redraw loses nothing the player
+-- typed or held. Lane A's stone node opens the form through
+-- grug_housing.open_stone_interface(player, claim) on the owner's
+-- right-click.
 --
 -- One session per player holds the claim id, never the claim table: every
 -- action re-reads the player's claim from the registry and re-checks that it
@@ -17,6 +23,20 @@ local REACH = 10
 
 local sessions = {}
 local detached = {}
+
+-- The client holds one formspec at a time: a form another mod shows replaces
+-- ours without a "quit", and the draft countdown must not pop ours back over
+-- it. Any other form shown to the player (or a close of ours or of any form)
+-- ends the session, as default/node_formspec.lua does for node forms.
+local show_formspec = core.show_formspec
+function core.show_formspec(playername, formname, formspec)
+	if formspec == "" then
+		if formname == "" or formname == FORMNAME then sessions[playername] = nil end
+	elseif formname ~= FORMNAME and formname ~= NOTICE then
+		sessions[playername] = nil
+	end
+	return show_formspec(playername, formname, formspec)
+end
 
 local function inventory_name(name)
 	return "grug_housing_fuel_" .. name
@@ -57,18 +77,46 @@ local function access_rows(claim)
 	return rows
 end
 
-local function main_formspec(player, claim, session)
-	local name = player:get_player_name()
-	local inv = "detached:" .. inventory_name(name)
+-- "4 min 05 s": the draft countdown, to the second.
+local function countdown(seconds)
+	seconds = math.max(0, math.floor(tonumber(seconds) or 0))
+	return ("%d min %02d s"):format(math.floor(seconds / 60), seconds % 60)
+end
+
+-- R26 rulings 8-9: the draft's own form (redrawn every second while open).
+local function draft_formspec(claim, session)
+	local need = grug_housing.ACTIVATION_LUMPS
+	local fs = {"formspec_version[4]size[10.75,4.9]",
+		"label[0.4,0.5;" .. ui.esc("Your Claim Stone (draft, not active)") .. "]"}
+	fs[#fs + 1] = ("label[0.4,1.05;%s]"):format(ui.text(
+		"It protects nothing yet and crumbles in " ..
+		countdown(grug_housing.draft_remaining(claim)) ..
+		" unless you activate it.", ui.RED))
+	fs[#fs + 1] = "label[0.4,1.5;" .. ui.esc(("Activation takes %d coal lumps or " ..
+		"charcoal from your inventory"):format(need)) .. "]"
+	fs[#fs + 1] = "label[0.4,1.9;" .. ui.esc(("(%s of fuel) and protects your " ..
+		"home at once."):format(ui.format_remaining(need * grug_housing.LUMP_SECONDS))) .. "]"
+	fs[#fs + 1] = ("button[0.4,2.3;4.2,0.7;activate;%s]"):format(
+		ui.esc(("Activate (%d coal)"):format(need)))
+	fs[#fs + 1] = "tooltip[activate;" .. ui.esc(("After activation the stone " ..
+		"stays in place for %d hours."):format(
+		grug_housing.PICKUP_LOCK_SECONDS / 3600)) .. "]"
+	if session.message then
+		fs[#fs + 1] = ("label[0.4,3.35;%s]"):format(ui.text(session.message,
+			session.message_color))
+	end
+	fs[#fs + 1] = "button[0.4,3.8;3.1,0.8;pick_up;Pick up stone]"
+	fs[#fs + 1] = "button_exit[7.25,3.8;3.1,0.8;close;Close]"
+	return table.concat(fs)
+end
+
+local function fuel_section(fs, claim, inv)
 	local left = grug_housing.is_active(claim) and
 		(grug_housing.remaining_seconds(claim) or 0) or 0
 	local lumps = ui.lumps(left)
-	local fs = {
-		"formspec_version[4]size[10.75,13]",
-		"label[0.4,0.5;Your Claim Stone]",
-		"label[0.4,1.1;Fuel: coal lumps or charcoal]",
-		("list[%s;%s;0.4,1.4;1,1;]"):format(inv, LIST),
-	}
+	fs[#fs + 1] = "label[0.4,0.5;Your Claim Stone]"
+	fs[#fs + 1] = "label[0.4,1.1;Fuel: coal lumps or charcoal]"
+	fs[#fs + 1] = ("list[%s;%s;0.4,1.4;1,1;]"):format(inv, LIST)
 	if lumps > 0 then
 		-- The slot itself stays empty so coal and charcoal can both be put;
 		-- the burning lumps are drawn over it (images take no clicks).
@@ -84,6 +132,20 @@ local function main_formspec(player, claim, session)
 	end
 	fs[#fs + 1] = "label[1.7,2.15;" ..
 		ui.esc("One lump burns 7 h 16 min, 99 lumps about 30 days.") .. "]"
+	local wait = grug_housing.pickup_wait(claim) or 0
+	if wait > 0 then
+		fs[#fs + 1] = "label[1.7,2.6;" .. ui.esc("Pick-up possible in " ..
+			ui.format_remaining(wait) .. ".") .. "]"
+	end
+end
+
+local function main_formspec(player, claim, session)
+	session.draft = grug_housing.is_draft(claim)
+	if session.draft then return draft_formspec(claim, session) end
+	local name = player:get_player_name()
+	local inv = "detached:" .. inventory_name(name)
+	local fs = {"formspec_version[4]size[10.75,13]"}
+	fuel_section(fs, claim, inv)
 
 	local rows = access_rows(claim)
 	session.names = {}
@@ -127,11 +189,15 @@ local function main_formspec(player, claim, session)
 	return table.concat(fs)
 end
 
-local function confirm_formspec()
+local function confirm_formspec(draft)
+	local lines = draft and
+		("label[0.4,1.1;" .. ui.esc("It is not active yet; you can place it " ..
+			"again at once.") .. "]") or
+		("label[0.4,1.1;The protection ends at once. Whole unburnt lumps come back.]" ..
+		"label[0.4,1.6;" .. ui.esc(("You can place it again at once; activation " ..
+			"costs %d lumps again."):format(grug_housing.ACTIVATION_LUMPS)) .. "]")
 	return "formspec_version[4]size[9.5,3.9]" ..
-		"label[0.4,0.5;Pick up your Claim Stone?]" ..
-		"label[0.4,1.1;The protection ends at once. Whole unburnt lumps come back.]" ..
-		"label[0.4,1.6;You can pick up a stone only once every 24 hours.]" ..
+		"label[0.4,0.5;Pick up your Claim Stone?]" .. lines ..
 		"button[0.4,2.6;4.2,0.8;confirm_pick_up;Pick up]" ..
 		"button[4.9,2.6;4.2,0.8;cancel_pick_up;Cancel]"
 end
@@ -145,7 +211,9 @@ end
 local function show(player, session)
 	local name = player:get_player_name()
 	if session.mode == "confirm" then
-		core.show_formspec(name, FORMNAME, confirm_formspec())
+		local claim = current_claim(player, session)
+		core.show_formspec(name, FORMNAME, confirm_formspec(claim ~= nil and
+			grug_housing.is_draft(claim)))
 		return true
 	end
 	local claim = current_claim(player, session)
@@ -184,10 +252,10 @@ local function ensure_inventory(name)
 				return 0
 			end
 			local session = sessions[name]
-			if not session or session.mode ~= "main" or
-					not current_claim(player, session) then
-				return 0
-			end
+			local claim = session and session.mode == "main" and
+				current_claim(player, session)
+			-- A draft takes no fuel: it is activated first (R26 ruling 9).
+			if not claim or grug_housing.is_draft(claim) then return 0 end
 			return stack:get_count()
 		end,
 		on_put = function(inv, listname, index, stack, player)
@@ -282,6 +350,15 @@ local function set_access(player, session, claim, fields, level)
 	end
 end
 
+-- R26 ruling 9: the activation button pays the lumps from the inventory.
+local function activate(player, session)
+	session.busy = true
+	local ok, message = grug_housing.activate(player)
+	session.busy = nil
+	say(session, message or (ok and "Your Claim Stone is active." or
+		"The Claim Stone could not be activated."), not ok and ui.RED or nil)
+end
+
 local function pick_up(player, session)
 	local name = player:get_player_name()
 	if not current_claim(player, session) then
@@ -305,7 +382,11 @@ end
 
 core.register_on_player_receive_fields(function(player, formname, fields)
 	if formname == NOTICE then return true end
-	if formname ~= FORMNAME then return false end
+	if formname ~= FORMNAME then
+		-- Fields from another form: ours is no longer open.
+		sessions[player:get_player_name()] = nil
+		return false
+	end
 	local name = player:get_player_name()
 	local session = sessions[name]
 	if not session then return true end
@@ -344,6 +425,8 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		set_access(player, session, claim, fields, "everything")
 	elseif fields.perm_remove then
 		set_access(player, session, claim, fields, nil)
+	elseif fields.activate then
+		activate(player, session)
 	elseif fields.pick_up then
 		session.mode = "confirm"
 	elseif fields.set_home then
@@ -376,7 +459,8 @@ function ui.stone_claim_changed(claim, event)
 			local player = core.get_player_by_name(name)
 			if not player then
 				sessions[name] = nil
-			elseif event == "picked_up" or event == "destroyed" then
+			elseif event == "picked_up" or event == "destroyed" or
+					event == "removed" or event == "draft_expired" then
 				sessions[name] = nil
 				core.close_formspec(name, FORMNAME)
 			elseif session.mode == "main" then
@@ -400,6 +484,24 @@ core.register_on_dieplayer(function(player)
 	if sessions[name] then
 		sessions[name] = nil
 		core.close_formspec(name, FORMNAME)
+	end
+end)
+
+-- R26: the draft countdown counts down while the form is open. Only players
+-- whose open stone form currently shows a draft are redrawn, once a second;
+-- closing the form, activating, picking up or the draft's expiry ends it
+-- (the session is gone or no longer a draft).
+local DRAFT_TICK = 1
+local draft_elapsed = 0
+core.register_globalstep(function(dtime)
+	draft_elapsed = draft_elapsed + dtime
+	if draft_elapsed < DRAFT_TICK then return end
+	draft_elapsed = 0
+	for name, session in pairs(sessions) do
+		if session.draft and session.mode == "main" and not session.busy then
+			local player = core.get_player_by_name(name)
+			if player then show(player, session) else sessions[name] = nil end
+		end
 	end
 end)
 

@@ -1,14 +1,23 @@
--- Runtime-only player statuses and their first-pass text HUD. Most statuses are
+-- Runtime-only player statuses and their HUD icon row. Most statuses are
 -- timed; `untimed = true` is restricted to modifier-free lifecycle UI state.
--- Effects intentionally disappear on relog. Persistent mechanics, such as
--- the potion cooldown, keep their own authoritative storage and are mirrored
--- here only while the player is online.
+-- Effects intentionally disappear on relog. Cooldowns are never statuses
+-- (Round 26 ruling 21): the potion cooldown keeps its own storage and its
+-- own refusal message.
 -- on_tick and a positive interval are an optional pair; definitions that
 -- provide only one of them are rejected.
+--
+-- Picture and frame come from grug_core.status_icons (status_icons.lua):
+-- a registered id always gets its registered frame kind, whatever the caller
+-- passes. `variant` picks one of the id's registered pictures (elixir
+-- family, mount mode); `icon` is an explicit picture (a food item's image).
+-- `label` and `detail` are what the Character page's Effects tab prints
+-- (name line and detail line); the registry supplies defaults for both.
+--
+-- Effects whose single authority lives elsewhere and that end on several
+-- paths (movement flags, shield-borne talent modifiers) are not copied into
+-- this table: their owner registers a status SOURCE, read at display time,
+-- so the icon can never outlive the effect.
 
-local STATUS_HUD_LIMIT = 8
-local STATUS_STEP = 1
-local POTION_STATUS_ID = "potion_cooldown"
 local MODIFIER_KEYS = {
 	hp_pool_percent = true,
 	mana_pool_percent = true,
@@ -16,10 +25,17 @@ local MODIFIER_KEYS = {
 	armor = true,
 	spell_damage_percent = true,
 }
+local KINDS = {buff = true, debuff = true, neutral = true}
+local icons = grug_core.status_icons
+local layout = grug_core.hud_layout
+-- Half a second: a 1.5 s stun or scorch must not appear a second late.
+-- Captions change once per second at most, and only changes are sent.
+local STATUS_STEP = 0.5
 
 local statuses = {} -- player name -> id -> record
-local huds = {} -- player name -> {id = HUD id, text = last sent text}
+local huds = {} -- player name -> {slots = {{icon, caption, ...last sent}}}
 local modifier_callbacks = {}
+local sources = {}
 local sequence = 0
 local accumulator = 0
 
@@ -87,8 +103,8 @@ function grug_core.set_status(player, id, definition)
 			type(definition) ~= "table" then
 		return nil
 	end
-	local kind = definition.kind or "buff"
-	if kind ~= "buff" and kind ~= "debuff" then
+	local kind = icons.kind_of(id) or definition.kind or "buff"
+	if not KINDS[kind] then
 		return nil
 	end
 	local now = core.get_us_time()
@@ -136,9 +152,12 @@ function grug_core.set_status(player, id, definition)
 	local record = {
 		id = id,
 		label = tostring(definition.label or id),
+		detail = type(definition.detail) == "string" and definition.detail or nil,
 		expiry_us = expiry,
 		value = definition.value,
 		kind = kind,
+		variant = definition.variant,
+		icon = definition.icon,
 		on_tick = definition.on_tick,
 		interval = interval,
 		on_expire = definition.on_expire,
@@ -179,17 +198,19 @@ end
 
 local function status_order(a, b)
 	if a.kind ~= b.kind then
-		return a.kind == "buff"
-	end
-	local a_label = string.lower(a.label)
-	local b_label = string.lower(b.label)
-	if a_label ~= b_label then
-		return a_label < b_label
+		return icons.KIND_RANK[a.kind] < icons.KIND_RANK[b.kind]
 	end
 	if a.id ~= b.id then
 		return a.id < b.id
 	end
-	return a.sequence < b.sequence
+	return (a.sequence or 0) < (b.sequence or 0)
+end
+
+local function keep_order(a, b)
+	if a.kind ~= b.kind then
+		return icons.KEEP_RANK[a.kind] < icons.KEEP_RANK[b.kind]
+	end
+	return a.id < b.id
 end
 
 function grug_core.each_status(player, callback)
@@ -219,56 +240,102 @@ function grug_core.each_status(player, callback)
 	return ordered
 end
 
-local function duration_text(remaining_us)
-	local seconds = math.max(0, math.ceil(remaining_us / 1e6))
-	if seconds < 600 then
-		return ("%d:%02d"):format(math.floor(seconds / 60), seconds % 60)
-	elseif seconds < 3600 then
-		return math.ceil(seconds / 60) .. "m"
-	elseif seconds < 172800 then
-		return math.ceil(seconds / 3600) .. "h"
+-- A status source reports effects owned elsewhere, for display only.
+-- `fn(player, now_us)` returns nil or a list of entries
+-- {id = registered id, expiry_us = t | untimed = true, value, variant, icon,
+--  label, detail}.
+-- A stored status with the same id wins over a source entry.
+function grug_core.register_status_source(fn)
+	if type(fn) ~= "function" then
+		return false
 	end
-	return math.ceil(seconds / 86400) .. "d"
+	sources[#sources + 1] = fn
+	return true
 end
 
-function grug_core.status_text(player)
+local function source_entries(player, now, taken, out)
+	for index = 1, #sources do
+		local entries = sources[index](player, now)
+		for _, entry in ipairs(entries or {}) do
+			local id = entry.id
+			local kind = type(id) == "string" and
+				(icons.kind_of(id) or entry.kind) or nil
+			local expiry = tonumber(entry.expiry_us)
+			local live = entry.untimed == true or (expiry and expiry > now)
+			if kind and KINDS[kind] and live and not taken[id] then
+				taken[id] = true
+				out[#out + 1] = {
+					id = id, kind = kind, value = entry.value,
+					variant = entry.variant, icon = entry.icon,
+					label = entry.label, detail = entry.detail,
+					untimed = entry.untimed == true,
+					expiry_us = expiry,
+				}
+			end
+		end
+	end
+end
+
+-- Every active, visible effect in row order: stored statuses and source
+-- entries. A value function returning false hides its status (Sprint cleared
+-- early, an empty shield). Each entry: {id, kind, texture, caption, name,
+-- detail, value, untimed, remaining_us}.
+function grug_core.status_effects(player)
 	local now = core.get_us_time()
 	local ordered = grug_core.each_status(player)
-	local lines = {}
-	for index = 1, math.min(#ordered, STATUS_HUD_LIMIT) do
-		local record = ordered[index]
+	local entries, taken = {}, {}
+	for index = 1, #ordered do
+		entries[index] = ordered[index]
+		taken[ordered[index].id] = true
+	end
+	if player_name(player) then
+		source_entries(player, now, taken, entries)
+	end
+	local visible = {}
+	for index = 1, #entries do
+		local record = entries[index]
 		local value = record.value
 		if type(value) == "function" then
 			value = value(player, record)
 		end
 		if value ~= false then
+			local def = icons.STATUS[record.id] or {}
+			local remaining = record.untimed and nil or
+				(record.expiry_us or now) - now
 			local label = record.label
-			if value ~= nil then
-				label = label .. " " .. tostring(math.max(0,
-					math.floor(tonumber(value) or 0)))
+			if not label or label == record.id then
+				label = def.name or record.id
 			end
-			if record.untimed then
-				lines[#lines + 1] = label
-			else
-				lines[#lines + 1] = label .. "  " ..
-					duration_text(record.expiry_us - now)
-			end
+			visible[#visible + 1] = {
+				id = record.id,
+				kind = record.kind,
+				texture = icons.texture(record.id, record.variant, record.icon),
+				caption = icons.caption(value, record.untimed, remaining),
+				name = label,
+				detail = record.detail or def.detail or "",
+				value = value,
+				untimed = record.untimed == true,
+				remaining_us = remaining,
+			}
 		end
 	end
-	return table.concat(lines, "\n")
+	table.sort(visible, status_order)
+	return visible
 end
 
-local function refresh_hud(player)
-	local name = player_name(player)
-	local hud = name and huds[name]
-	if not hud then
-		return
+-- What the icon row shows, in row order and at most STATUS_LIMIT long.
+function grug_core.status_display(player)
+	local visible = grug_core.status_effects(player)
+	-- More statuses than slots: debuffs are kept first, then neutral states,
+	-- then buffs -- what harms the player must never fall off the row.
+	if #visible > layout.STATUS_LIMIT then
+		table.sort(visible, keep_order)
+		for index = #visible, layout.STATUS_LIMIT + 1, -1 do
+			visible[index] = nil
+		end
 	end
-	local text = grug_core.status_text(player)
-	if text ~= hud.text then
-		player:hud_change(hud.id, "text", text)
-		hud.text = text
-	end
+	table.sort(visible, status_order)
+	return visible
 end
 
 local function clear_runtime_statuses(player)
@@ -284,26 +351,6 @@ local function clear_runtime_statuses(player)
 				end
 			end
 		end
-	end
-end
-
-local function mirror_potion_cooldown(player)
-	local traders = rawget(_G, "grug_traders")
-	if type(traders) ~= "table" or
-			type(traders.potion_cooldown_left) ~= "function" then
-		return
-	end
-	local left = traders.potion_cooldown_left(player)
-	if left > 0 then
-		if not grug_core.get_status(player, POTION_STATUS_ID) then
-			grug_core.set_status(player, POTION_STATUS_ID, {
-				label = "Potion",
-				duration = left,
-				kind = "debuff",
-			})
-		end
-	else
-		grug_core.clear_status(player, POTION_STATUS_ID)
 	end
 end
 
@@ -324,28 +371,91 @@ local function advance_statuses(player, now)
 	grug_core.each_status(player)
 end
 
+local ICON_SCALE = layout.STATUS_ICON / 64
+
+local function change(player, slot, key, id, property, value)
+	local previous = slot[key]
+	local same
+	if type(value) == "table" then
+		same = previous and previous.x == value.x and previous.y == value.y
+	else
+		same = previous == value
+	end
+	if not same then
+		player:hud_change(id, property, value)
+		slot[key] = value
+	end
+end
+
+-- Every slot exists from join on; an unused one has an empty texture and
+-- caption, which the engine skips without drawing (src/client/hud.cpp:489).
+-- Only changed fields are written: hud_change sends a packet on every call.
+local function refresh_hud(player)
+	local name = player_name(player)
+	local hud = name and huds[name]
+	if not hud then
+		return
+	end
+	local shown = grug_core.status_display(player)
+	local window = #shown > 0 and core.get_player_window_information and
+		core.get_player_window_information(name) or nil
+	for index = 1, #hud.slots do
+		local slot = hud.slots[index]
+		local entry = shown[index]
+		if entry then
+			local icon_offset, caption_offset = layout.status_slot(index, #shown,
+				window)
+			change(player, slot, "icon_offset", slot.icon, "offset", icon_offset)
+			change(player, slot, "caption_offset", slot.caption, "offset",
+				caption_offset)
+		end
+		change(player, slot, "texture", slot.icon, "text",
+			entry and entry.texture or "")
+		change(player, slot, "text", slot.caption, "text",
+			entry and entry.caption or "")
+	end
+end
+
+grug_core.refresh_status_hud = refresh_hud
+
 core.register_on_joinplayer(function(player)
-	local anchor = grug_core.hud_layout.anchors.status_list
-	local id = player:hud_add({
-		type = "text",
-		position = {x = anchor.position.x, y = anchor.position.y},
-		offset = {x = anchor.offset.x, y = anchor.offset.y},
-		alignment = {x = anchor.alignment.x, y = anchor.alignment.y},
-		text = "",
-		number = 0xffffff,
-		z_index = 1,
-	})
-	huds[player:get_player_name()] = {id = id, text = ""}
+	local anchor = layout.anchors.status_row
+	local slots = {}
+	for index = 1, layout.STATUS_LIMIT do
+		local icon_offset, caption_offset = layout.status_slot(index,
+			layout.STATUS_LIMIT)
+		slots[index] = {
+			icon = player:hud_add({
+				type = "image",
+				position = {x = anchor.position.x, y = anchor.position.y},
+				offset = icon_offset,
+				alignment = {x = 0, y = 0},
+				scale = {x = ICON_SCALE, y = ICON_SCALE},
+				text = "",
+				z_index = 1,
+			}),
+			caption = player:hud_add({
+				type = "text",
+				position = {x = anchor.position.x, y = anchor.position.y},
+				offset = caption_offset,
+				alignment = {x = 0, y = 1},
+				text = "",
+				number = 0xffffff,
+				z_index = 1,
+			}),
+			icon_offset = icon_offset,
+			caption_offset = caption_offset,
+			texture = "",
+			text = "",
+		}
+	end
+	huds[player:get_player_name()] = {slots = slots}
 end)
 
 core.register_on_dieplayer(clear_runtime_statuses)
 
 core.register_on_leaveplayer(function(player)
 	local name = player:get_player_name()
-	local hud = huds[name]
-	if hud then
-		player:hud_remove(hud.id)
-	end
 	huds[name] = nil
 	statuses[name] = nil
 end)
@@ -358,7 +468,6 @@ core.register_globalstep(function(dtime)
 	accumulator = accumulator % STATUS_STEP
 	local now = core.get_us_time()
 	for _, player in ipairs(core.get_connected_players()) do
-		mirror_potion_cooldown(player)
 		advance_statuses(player, now)
 		refresh_hud(player)
 	end

@@ -1,0 +1,4 @@
+ERROR[Emerge-0]: [r26_claim_probe] FAIL 4 whole lumps returned (5)
+ERROR[Server]: [r26_claim_probe] FAIL placed again after the admin removal
+ERROR[Server]: [r26_claim_probe] FAIL <player>: the draft and its stone removed
+ACTION[Server]: [r26_claim_probe] RESULT FAIL (57 checks, 3 failures)

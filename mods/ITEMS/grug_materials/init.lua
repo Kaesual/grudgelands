@@ -51,8 +51,10 @@ end
 
 dofile(modpath .. "/ores.lua")
 dofile(modpath .. "/derivatives.lua")
-dofile(modpath .. "/overrides.lua")
+-- tools.lua first: it moves default's four tool grades into this namespace,
+-- and overrides.lua then edits the canonical names.
 dofile(modpath .. "/tools.lua")
+dofile(modpath .. "/overrides.lua")
 dofile(modpath .. "/content_curation.lua")
 dofile(modpath .. "/tool_lifetimes.lua")
 -- Round 24 ruling 29: "Requires level N" on every T2+ pick, axe and shovel,

@@ -100,7 +100,7 @@ local function utility_use(kind, duration)
 			grug_core.set_move_modifier(player, "alchemy_swiftness", {speed = 0.10},
 				effective_duration)
 			grug_core.set_status(player, "alchemy_swiftness", {
-				label = "Swiftness +10%", duration = effective_duration,
+				label = "Swiftness Draught", duration = effective_duration,
 			})
 		elseif kind == "cave" then
 			grug_core.set_night_vision(player, grug_core.NIGHT_VISION_RATIO)
@@ -114,6 +114,33 @@ local function utility_use(kind, duration)
 		grug_traders.start_potion_cooldown(player, grug_alchemy.POTION_COOLDOWN)
 		return consume(itemstack, player)
 	end
+end
+
+-- The elixir family's status picture (grug_core/status_icons.lua), keyed by
+-- the elixir's special kind or else its modifier.
+local ELIXIR_VARIANT = {
+	hp_pool_percent = "vigor",
+	mana_pool_percent = "focus",
+	crit_percent = "precision",
+	armor = "stoneskin",
+	deepwater = "deepwater",
+}
+
+-- The Effects tab detail line: the value actually granted (with the
+-- equipment bonus), not the recipe's base value.
+local ELIXIR_DETAIL = {
+	hp_pool_percent = "+%d%% maximum HP",
+	mana_pool_percent = "+%d%% maximum Mana",
+	crit_percent = "+%d Crit",
+	armor = "+%d%% armor",
+}
+local function elixir_detail(definition, modifiers)
+	if definition.kind == "deepwater" then
+		return "Water breathing"
+	end
+	local pattern = ELIXIR_DETAIL[definition.modifier]
+	local value = modifiers[definition.modifier]
+	return pattern and value and pattern:format(value) or ""
 end
 
 local function elixir_use(definition)
@@ -134,6 +161,8 @@ local function elixir_use(definition)
 		end
 		local status = {
 			label = definition.label, duration = duration, modifiers = modifiers,
+			variant = ELIXIR_VARIANT[definition.kind or definition.modifier],
+			detail = elixir_detail(definition, modifiers),
 		}
 		if definition.kind == "deepwater" then
 			local function refill_breath(target)

@@ -117,8 +117,8 @@ local function current_shovel_values(item_name)
 end
 
 local starter_shovels = {
-	{"default:shovel_wood", 1}, {"default:shovel_stone", 1},
-	{"default:shovel_bronze", 1}, {"default:shovel_steel", 3},
+	{"grug_materials:shovel_wood", 1}, {"grug_materials:shovel_stone", 1},
+	{"grug_materials:shovel_bronze", 1}, {"grug_materials:shovel_steel", 3},
 }
 local starter_shovel_times = {}
 for _, row in ipairs(starter_shovels) do
@@ -133,8 +133,8 @@ end
 -- Axes carry their tier too (ruling 6). Wood is never gated: every axe keeps
 -- its upstream `choppy` capability and a better axe only chops faster.
 for _, row in ipairs({
-		{"default:axe_wood", 1}, {"default:axe_stone", 1},
-		{"default:axe_bronze", 1}, {"default:axe_steel", 3}}) do
+		{"grug_materials:axe_wood", 1}, {"grug_materials:axe_stone", 1},
+		{"grug_materials:axe_bronze", 1}, {"grug_materials:axe_steel", 3}}) do
 	edit_groups(row[1], function(groups)
 		groups.grug_axe_tier = row[2]
 	end)
@@ -143,48 +143,48 @@ end
 -- Preserve WP25's effective ordinary-rock values. The three starter picks are
 -- all T1 (maxlevel 0: T1 rock and T1 resources); their differing speeds and
 -- uses remain their ordinary equipment quality.
-pick_groups("default:pick_wood", 1)
-core.override_item("default:pick_wood", {
+pick_groups("grug_materials:pick_wood", 1)
+core.override_item("grug_materials:pick_wood", {
 	tool_capabilities = grug_materials.build_pick_capabilities(1, {
 		ordinary_time = 1.60, uses = 30, full_punch_interval = 1.2,
 		cracky_times = {[3] = 1.60}, damage_groups = {fleshy = 2},
 		loose_times = grug_materials.build_loose_times(
-			starter_shovel_times["default:shovel_wood"]),
+			starter_shovel_times["grug_materials:shovel_wood"]),
 		loose_maxlevel = 1,
-		punch_attack_uses = current_pick_values("default:pick_wood").punch_attack_uses,
+		punch_attack_uses = current_pick_values("grug_materials:pick_wood").punch_attack_uses,
 	}),
 })
 
-pick_groups("default:pick_stone", 1)
-core.override_item("default:pick_stone", {
+pick_groups("grug_materials:pick_stone", 1)
+core.override_item("grug_materials:pick_stone", {
 	tool_capabilities = grug_materials.build_pick_capabilities(1, {
 		ordinary_time = 1.00, uses = 60, full_punch_interval = 1.3,
 		cracky_times = {[2] = 2.0, [3] = 1.00}, damage_groups = {fleshy = 3},
 		loose_times = grug_materials.build_loose_times(
-			starter_shovel_times["default:shovel_stone"]),
+			starter_shovel_times["grug_materials:shovel_stone"]),
 		loose_maxlevel = 1,
-		punch_attack_uses = current_pick_values("default:pick_stone").punch_attack_uses,
+		punch_attack_uses = current_pick_values("grug_materials:pick_stone").punch_attack_uses,
 	}),
 })
 
-pick_groups("default:pick_bronze", 1)
-core.override_item("default:pick_bronze", {
+pick_groups("grug_materials:pick_bronze", 1)
+core.override_item("grug_materials:pick_bronze", {
 	tool_capabilities = grug_materials.build_pick_capabilities(1, current_pick_values(
-		"default:pick_bronze", {
+		"grug_materials:pick_bronze", {
 		max_drop_level = 1,
 		loose_times = grug_materials.build_loose_times(
-			starter_shovel_times["default:shovel_bronze"]),
+			starter_shovel_times["grug_materials:shovel_bronze"]),
 		loose_maxlevel = 2,
 	})),
 })
 
-pick_groups("default:pick_steel", 3)
-core.override_item("default:pick_steel", {
+pick_groups("grug_materials:pick_steel", 3)
+core.override_item("grug_materials:pick_steel", {
 	tool_capabilities = grug_materials.build_pick_capabilities(3, current_pick_values(
-		"default:pick_steel", {
+		"grug_materials:pick_steel", {
 		max_drop_level = 1,
 		loose_times = grug_materials.build_loose_times(
-			starter_shovel_times["default:shovel_steel"]),
+			starter_shovel_times["grug_materials:shovel_steel"]),
 		loose_maxlevel = 2,
 	})),
 })
@@ -200,15 +200,16 @@ core.override_item("default:pick_steel", {
 -- anything outside the `sword`/`axe`/`pickaxe`/`shovel`/`staff` families in its
 -- own upright pose, which makes no assumption about the image at all.
 --
--- default's four shovels are the exception, and the only one: they are IN the
--- tool ladder, so they are held by the grip pixel the diagonal convention puts
--- at (3.4, 12.6) -- and their `wield_image` is that same sprite turned
+-- The four shovels cloned from default (tools.lua) are the exception, and the
+-- only one: they are IN the tool ladder, so they are held by the grip pixel
+-- the diagonal convention puts at (3.4, 12.6) -- and their `wield_image` is
+-- that same sprite turned
 -- `^[transformR90`, which moves the grip out from under the fist and lays the
 -- shovel across the hand at 90 degrees to every sword, axe and pick. Clearing
 -- the key makes the engine fall back to the inventory image, which is in the
 -- convention `grug_visuals/wield_geometry.lua` derives the hand from.
-for _, shovel in ipairs({"default:shovel_wood", "default:shovel_stone",
-		"default:shovel_bronze", "default:shovel_steel"}) do
+for _, shovel in ipairs({"grug_materials:shovel_wood", "grug_materials:shovel_stone",
+		"grug_materials:shovel_bronze", "grug_materials:shovel_steel"}) do
 	core.override_item(shovel, {wield_image = ""})
 end
 

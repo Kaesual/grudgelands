@@ -5,10 +5,11 @@
 --
 -- Perk keys in use:
 --   fall_damage_mult        (dwarf 0.8)  — grug_core/combat.lua hp modifier
---   ooc_regen_mult          (troll 1.5)  — out-of-combat resource regen in
---                           grug_abilities; today this is MANA only (HP
---                           regen does not exist yet) — WP21's HP regen
---                           MUST consume the same perk
+--   ooc_regen_mult          (troll 1.5)  — out-of-combat mana regen
+--                           (grug_abilities.mana_regen_rate) and food
+--                           healing: instant HP and HP ticks
+--                           (grug_food.heal_multiplier). There is no natural
+--                           HP regen; food is the only HP recovery.
 --   zombie_night_truce      (undead)     — zombies drop unprovoked undead
 --                           targets at night (grug_mobs)
 --   rage_per_hit_taken_bonus (orc 1)     — extra rage per hit taken

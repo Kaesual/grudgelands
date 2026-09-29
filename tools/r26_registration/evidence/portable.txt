@@ -1,0 +1,2 @@
+tools 24 (12 aliases), shipped Lua files 432, catalog routes 623
+R26 REGISTRATION CHECK PASS checks=12254

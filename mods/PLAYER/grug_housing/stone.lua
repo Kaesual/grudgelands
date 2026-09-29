@@ -1,16 +1,23 @@
--- The Claim Stone item and its two nodes (rulings 6-12).
+-- The Claim Stone item and its three nodes (rulings 6-12, Round 26 rulings
+-- 8-10).
 --
 -- grug_housing:claim_stone (STONE_ITEM) is the soulbound item and the
 -- fuelled stone: no dig group, so nothing can dig it, the owner included.
--- grug_housing:claim_stone_empty is the stone without fuel: a pick digs it in
--- the engine's own time (a `grug_claim_stone` groupcap on every pick, T1 60 s
--- down to T6 10 s); the hand and the skill hand have no such cap. Digging it
--- destroys the claim and drops nothing. A periodic check keeps every loaded
--- stone on the variant its claim's fuel asks for and reports expiry.
+-- grug_housing:claim_stone_draft is what placing sets: the half-transparent
+-- draft, which nobody can dig either (the owner picks it up through the
+-- form). It disappears DRAFT_SECONDS after placing unless it is activated.
+-- grug_housing:claim_stone_empty is the activated stone without fuel: a pick
+-- digs it in the engine's own time (a `grug_claim_stone` groupcap on every
+-- pick, T1 60 s down to T6 10 s); the hand and the skill hand have no such
+-- cap. Digging it destroys the claim and drops nothing. A periodic check
+-- removes expired drafts, keeps every loaded stone on the variant its claim
+-- asks for and reports expiry.
 
 local model = grug_housing.model
 local STONE = grug_housing.STONE_ITEM
 local EMPTY = grug_housing.EMPTY_STONE
+local DRAFT = grug_housing.DRAFT_STONE
+local STONE_NODES = grug_housing.STONE_NODES
 
 -- Ruling 12: seconds to dig an empty stone with a pick of each tier.
 grug_housing.DIG_SECONDS = {60, 50, 40, 30, 20, 10}
@@ -57,12 +64,14 @@ local function on_place(itemstack, placer, pointed_thing)
 		tell(placer, message)
 		return itemstack
 	end
-	-- A new claim has no fuel yet: the empty stone (ruling 11).
-	core.set_node(pos, {name = EMPTY})
+	-- A new claim is a draft until the owner activates it (R26 ruling 8).
+	core.set_node(pos, {name = DRAFT})
 	local claim = model.create(name, pos)
 	itemstack:take_item(1)
 	grug_housing.notify_claim_changed(claim, "placed")
-	tell(placer, "Claim Stone placed. Add coal or charcoal to protect your home.")
+	tell(placer, ("Claim Stone placed as a draft. Open it and activate it " ..
+		"with %d coal or charcoal within %d minutes, or it crumbles."):format(
+		model.ACTIVATION_LUMPS, model.DRAFT_SECONDS / 60))
 	core.log("action", ("[grug_housing] %s placed Claim Stone %d at %s"):format(
 		name, claim.id, core.pos_to_string(pos)))
 	return itemstack
@@ -76,7 +85,8 @@ local function on_rightclick(pos, node, clicker, itemstack)
 		grug_housing.open_stone_interface(clicker, claim)
 	else
 		core.chat_send_player(clicker:get_player_name(),
-			"Claim Stone of " .. claim.owner .. ".")
+			(model.is_draft(claim) and "Unfinished Claim Stone of " or
+				"Claim Stone of ") .. claim.owner .. ".")
 	end
 	return itemstack
 end
@@ -86,7 +96,7 @@ local function on_drop(itemstack, dropper)
 	if dropper and dropper:is_player() then
 		local name = dropper:get_player_name()
 		model.stone_lost(name)
-		tell(dropper, "Your Claim Stone crumbles to dust. A Housing Manager " ..
+		tell(dropper, "Your Claim Stone crumbles to dust. A Housing Steward " ..
 			"in one of your faction's capitals gives you a new one.")
 	end
 	return ItemStack("")
@@ -95,11 +105,13 @@ end
 local sounds = rawget(_G, "default") and default.node_sound_stone_defaults() or nil
 local TEXTURE = "default_obsidian_block.png^[colorize:#7a5cc0:70"
 local EMPTY_TEXTURE = "default_obsidian_block.png^[colorize:#3a3a3a:120"
+-- R26 ruling 8: the draft looks unfinished, half-transparent like water.
+local DRAFT_TEXTURE = TEXTURE .. "^[opacity:150"
 
 core.register_node(STONE, {
 	description = "Claim Stone\nPlace it in your faction's home land (level " ..
-		"11-30 zones) to claim a 101 x 101 home.\nSoulbound: dropping it " ..
-		"destroys it.",
+		"11-30 zones) and activate it with 5 coal within 5 minutes to claim a " ..
+		"101 x 101 home.\nSoulbound: dropping it destroys it.",
 	tiles = {TEXTURE},
 	paramtype = "light",
 	light_source = 4,
@@ -152,6 +164,27 @@ core.register_node(EMPTY, {
 	on_blast = function() end,
 })
 
+-- The draft (R26 ruling 8): nobody digs it, not even the owner, who picks it
+-- up through the form at any time. Glasslike, so the ground behind it shows.
+core.register_node(DRAFT, {
+	description = "Claim Stone (draft)",
+	drawtype = "glasslike",
+	tiles = {DRAFT_TEXTURE},
+	use_texture_alpha = "blend",
+	paramtype = "light",
+	sunlight_propagates = true,
+	light_source = 2,
+	groups = {not_in_creative_inventory = 1, grug_claim_stone_node = 1},
+	drop = "",
+	sounds = sounds,
+	node_placement_prediction = "",
+	on_place = function(itemstack) return itemstack end,
+	on_drop = function() return ItemStack("") end,
+	on_rightclick = on_rightclick,
+	can_dig = function() return false end,
+	on_blast = function() end,
+})
+
 -- Every pick digs an empty stone in its tier's time (ruling 12). Added once
 -- all tools exist; per-stack capabilities (grug_quality) copy the definition
 -- later at runtime.
@@ -169,14 +202,34 @@ core.register_on_mods_loaded(function()
 	end
 end)
 
--- Expiry and stone variants, every few seconds (no map loading: an
--- unloaded stone is set right by the first check after its block loads).
+-- R26 ruling 8: a draft not activated within DRAFT_SECONDS crumbles, whether
+-- its owner is online or not (wall clock, so a restart does not stop it). Its
+-- node goes too, its block loaded for that if needed; the owner may fetch a
+-- new stone from a Housing Steward at once.
+local function expire_draft(claim)
+	grug_housing.remove_stone_node(claim)
+	model.remove(claim, "draft_expired")
+	grug_housing.notify_claim_changed(claim, "draft_expired")
+	local owner = core.get_player_by_name(claim.owner)
+	if owner then
+		tell(owner, "Your Claim Stone was not activated in time and crumbled. " ..
+			"A Housing Steward gives you a new one.")
+	end
+	core.log("action", ("[grug_housing] draft Claim Stone %d of %s expired"):format(
+		claim.id, claim.owner))
+end
+
+-- Expiry and stone variants, every few seconds (no map loading apart from an
+-- expired draft: an unloaded stone is set right by the first check after its
+-- block loads).
 local CHECK_SECONDS = 5
 local elapsed = 0
 core.register_globalstep(function(dtime)
 	elapsed = elapsed + dtime
 	if elapsed < CHECK_SECONDS then return end
 	elapsed = 0
+	local drafts = model.draft_scan()
+	for index = 1, #drafts do expire_draft(drafts[index]) end
 	local expired = model.expiry_scan()
 	for index = 1, #expired do
 		grug_housing.sync_stone_node(expired[index])
@@ -187,7 +240,7 @@ core.register_globalstep(function(dtime)
 		local claim = claims[index]
 		local node = core.get_node_or_nil(claim.center)
 		if node then
-			if node.name == STONE or node.name == EMPTY then
+			if STONE_NODES[node.name] then
 				grug_housing.sync_stone_node(claim)
 			else
 				-- The stone is gone from a loaded block without a dig or a

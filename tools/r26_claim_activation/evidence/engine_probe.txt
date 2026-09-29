@@ -1,0 +1,77 @@
+ACTION[Server]: [grug_housing] arrival-cube dig context on 103 buildable_to nodes
+ACTION[Server]: [grug_housing] interaction guard: node inventories on 921 nodes, right-click on 159, node form on 12; exceptions: default:sign_wall_wood, grug_housing:claim_stone, grug_materials:iron_sign_wall
+ACTION[Server]: [r26_claim_probe] ok   six Steward sockets
+ACTION[Server]: [r26_claim_probe] ok   Steward dialog opens
+ACTION[Server]: [r26_claim_probe] ok   dialog title Housing Steward
+ACTION[Server]: [r26_claim_probe] ok   no Manager in the dialog
+ACTION[Server]: [r26_claim_probe] ok   dialog explains the activation
+ACTION[Server]: [r26_claim_probe] ok   dialog names the 12 h lock
+ACTION[Server]: [r26_claim_probe] ok   map: 6 Housing Steward markers, 0 Manager
+ACTION[Server]: [r26_claim_probe] ok   NPC name Housing Steward
+ACTION[Server]: [r26_claim_probe] ok   level 20 receives the stone
+ACTION[Emerge-0]: [r26_claim_probe] ok   surface at the spot
+ACTION[Emerge-0]: [grug_housing] r26owner placed Claim Stone 1 at (-2400,73,-2399)
+ACTION[Emerge-0]: [r26_claim_probe] ok   stone placed
+ACTION[Emerge-0]: [r26_claim_probe] ok   state placed
+ACTION[Emerge-0]: [r26_claim_probe] ok   the placed node is the draft
+ACTION[Emerge-0]: [r26_claim_probe] ok   draft renders half-transparent
+ACTION[Emerge-0]: [r26_claim_probe] ok   draft, not active
+ACTION[Emerge-0]: [r26_claim_probe] ok   draft: another player builds
+ACTION[Emerge-0]: [r26_claim_probe] ok   draft keeps the arrival cube
+ACTION[Emerge-0]: [r26_claim_probe] ok   draft: no interaction guard
+ACTION[Emerge-0]: [r26_claim_probe] ok   draft: wolves spawn
+ACTION[Emerge-0]: [r26_claim_probe] ok   draft reserves its square (overlap)
+ACTION[Emerge-0]: [r26_claim_probe] ok   another player cannot dig the draft
+ACTION[Emerge-0]: [r26_claim_probe] ok   a draft is no home
+ACTION[Emerge-0]: [r26_claim_probe] ok   status: draft (Your Claim Stone is not active yet: activate it within 5 min or it crumbles)
+ACTION[Emerge-0]: [r26_claim_probe] ok   draft form opens
+ACTION[Emerge-0]: [r26_claim_probe] ok   draft form: activation button, no fuel slot
+ACTION[Emerge-0]: [r26_claim_probe] ok   draft picked up at once
+ACTION[Emerge-0]: [r26_claim_probe] ok   stone back, node gone
+ACTION[Emerge-0]: [grug_housing] r26owner placed Claim Stone 2 at (-2400,73,-2399)
+ACTION[Emerge-0]: [r26_claim_probe] ok   placed again at once (no placing lock)
+ACTION[Emerge-0]: [r26_claim_probe] ok   3 lumps: refused
+ACTION[Emerge-0]: [grug_housing] r26owner activated Claim Stone 2 with 5 lumps
+ACTION[Emerge-0]: [r26_claim_probe] ok   activated with 5 lumps
+ACTION[Emerge-0]: [r26_claim_probe] ok   4 charcoal and 1 coal taken (charcoal first)
+ACTION[Emerge-0]: [r26_claim_probe] ok   5 lumps burning
+ACTION[Emerge-0]: [r26_claim_probe] ok   fuelled node after activation
+ACTION[Emerge-0]: [r26_claim_probe] ok   form: fuel slot and lock line
+ACTION[Emerge-0]: [r26_claim_probe] ok   active: others refused, owner builds
+ACTION[Emerge-0]: [r26_claim_probe] ok   active: interaction guarded
+ACTION[Emerge-0]: [r26_claim_probe] ok   active: no hostile spawn
+ACTION[Emerge-0]: [r26_claim_probe] ok   nobody digs the fuelled stone
+ACTION[Emerge-0]: [r26_claim_probe] lock refusal: 12 h 00 min
+ACTION[Emerge-0]: [r26_claim_probe] ok   pick-up refused right after activation
+ACTION[Emerge-0]: [r26_claim_probe] ok   pick-up allowed 12 h after activation
+ACTION[Emerge-0]: [r26_claim_probe] ok   whole unburnt lumps returned as charcoal (5)
+ACTION[Emerge-0]: [grug_housing] r26owner placed Claim Stone 3 at (-2400,73,-2399)
+ACTION[Emerge-0]: [r26_claim_probe] ok   placed again at once after the pick-up
+ACTION[Server]: [grug_housing] draft Claim Stone 3 of r26owner expired
+ACTION[Server]: [r26_claim_probe] ok   expired draft: claim and node gone
+ACTION[Server]: [r26_claim_probe] ok   expired draft: needs_stone
+ACTION[Server]: [r26_claim_probe] ok   draft_expired event
+ACTION[Server]: [r26_claim_probe] ok   a new stone from the Steward at once
+ACTION[Server]: [grug_housing] r26owner placed Claim Stone 4 at (-2400,73,-2399)
+ACTION[Server]: [r26_claim_probe] ok   placed for the snow test
+ACTION[Server]: [grug_housing] r26owner activated Claim Stone 4 with 5 lumps
+ACTION[Server]: [r26_claim_probe] ok   activated for the snow test
+ACTION[Server]: [r26_claim_probe] ok   snow in the cube: placing into it refused
+ACTION[Server]: [r26_claim_probe] snow: dig r26owner:false, punch r26owner:false, dig r26other:true
+ACTION[Server]: [r26_claim_probe] ok   snow in the cube: the owner digs and punches it, others not
+ACTION[Server]: [r26_claim_probe] ok   outside the dig the cube refuses again
+ACTION[Server]: [r26_claim_probe] ok   /claim_remove needs server
+ACTION[Server]: [grug_housing] r26admin removed Claim Stone 4 of r26owner at (-2400,73,-2399)
+ACTION[Server]: [r26_claim_probe] claim_remove here: Removed Claim Stone 4 of r26owner at (-2400,73,-2399).
+ACTION[Server]: [r26_claim_probe] ok   here: the claim and its stone removed
+ACTION[Server]: [grug_housing] r26owner placed Claim Stone 5 at (-2400,73,-2399)
+ACTION[Server]: [r26_claim_probe] ok   placed again after the admin removal
+ACTION[Server]: [grug_housing] r26admin removed Claim Stone 5 of r26owner at (-2400,73,-2399)
+ACTION[Server]: [r26_claim_probe] claim_remove player: Removed Claim Stone 5 of r26owner at (-2400,73,-2399).
+ACTION[Server]: [r26_claim_probe] ok   <player>: the draft and its stone removed
+ACTION[Server]: [grug_housing] r26admin removed an orphaned Claim Stone node at (-2396,73,-2395)
+ACTION[Server]: [r26_claim_probe] claim_remove orphans: Removed 1 orphaned Claim Stone node(s) within 16 nodes (1 stone node(s) checked).
+ACTION[Server]: [r26_claim_probe] ok   orphans: the orphaned stone removed
+ACTION[Server]: [r26_claim_probe] ok   unknown player: refused (nobody_here has no placed Claim Stone (state: never).)
+ACTION[Server]: [r26_claim_probe] EVENTS placed:1 picked_up:1 placed:2 activated:2 picked_up:2 placed:3 draft_expired:3 placed:4 activated:4 removed:4 placed:5 removed:5
+ACTION[Server]: [r26_claim_probe] RESULT PASS (57 checks, 0 failures)

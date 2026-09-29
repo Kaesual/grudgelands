@@ -17,7 +17,14 @@ grug_classes.register_class({
 -- in the talent registry. Shake Loose adds movement immunity to this same
 -- four-second window; Untouchable uses the talent registry's timed bonus.
 function grug_classes.start_sidestep(player)
-	sidestep_expiry[player:get_player_name()] = core.get_us_time() + 4e6
+	local expiry = core.get_us_time() + 4e6
+	sidestep_expiry[player:get_player_name()] = expiry
+	-- The status icon shares the window's expiry; death and leave clear both.
+	if grug_core.set_status then
+		grug_core.set_status(player, "sidestep", {
+			label = "Sidestep", expiry_us = expiry,
+		})
+	end
 	if grug_classes.get_talent_bonus(player, "root_slow_immunity") > 0 then
 		grug_core.clear_negative_move_modifiers(player)
 		grug_core.set_move_immunity(player, 4)

@@ -2,21 +2,16 @@
 local S = core.get_translator("mobs")
 
 -- add lucky blocks
+-- GRUG PATCH: the removed utility items (crafts.lua) are no lucky-block drops.
 
 lucky_block:add_blocks({
 	{"dro", {"mobs:meat_raw"}, 5},
 	{"dro", {"mobs:meat"}, 5},
-	{"dro", {"mobs:nametag"}, 1},
 	{"dro", {"mobs:leather"}, 5},
 	{"dro", {"default:stick"}, 10},
-	{"dro", {"mobs:net"}, 1},
-	{"dro", {"mobs:lasso"}, 1},
-	{"dro", {"mobs:shears"}, 1},
-	{"dro", {"mobs:protector"}, 1},
 	{"dro", {"mobs:fence_wood"}, 10},
 	{"dro", {"mobs:fence_top"}, 12},
-	{"lig"},
-	{"dro", {"mobs:mob_repellent"}, 1}
+	{"lig"}
 })
 
 -- pint sized rune, use on tamed mob to shrink to half-size
@@ -72,7 +67,4 @@ core.register_craftitem(":mobs:pint_sized_rune", {
 	end
 })
 
-core.register_craft({
-	output = "lucky_block:pint_sized_rune",
-	recipe = {{"lucky_block:pint_sized_potion", "mobs:protector"}}
-})
+-- GRUG PATCH: no rune recipe; its mobs:protector input is not registered.

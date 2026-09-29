@@ -62,20 +62,8 @@ local items = {
 	obsidian = mc2 and "mcl_core:obsidian" or "default:obsidian"
 }
 
--- name tag
-
-core.register_craftitem("mobs:nametag", {
-	description = S("Name Tag") .. " " .. S("\nRight-click Mobs Redo mob to apply"),
-	inventory_image = "mobs_nametag.png",
-	groups = {flammable = 2, nametag = 1}
-})
-
-core.register_craft({
-	output = "mobs:nametag",
-	recipe = {
-		{ items.paper, items.dye_black, items.string }
-	}
-})
+-- GRUG PATCH: the name tag is not registered (Round 26 ruling 13; no mob
+-- naming or taming in Grudgelands). Its texture is removed as well.
 
 -- leather
 
@@ -114,134 +102,12 @@ core.register_craft({
 	cooktime = 5
 })
 
--- lasso
-
-core.register_tool("mobs:lasso", {
-	description = S("Lasso (right-click animal to put in inventory)"),
-	inventory_image = "mobs_magic_lasso.png",
-	groups = {flammable = 2}
-})
-
-core.register_craft({
-	output = "mobs:lasso",
-	recipe = {
-		{ items.string, "", items.string},
-		{ "", items.diamond, "" },
-		{ items.string, "", items.string }
-	}
-})
-
+-- GRUG PATCH: lasso, net, shears, both protection runes, the mob repellent
+-- and the saddle are not registered (Round 26 ruling 13: no capture, taming,
+-- shearing, mob protection or spawn blocking; mounts are skills). Their
+-- recipes and textures are removed with them. Upstream api.lua still compares
+-- wielded names against them; those branches are simply never reached.
 -- GRUG PATCH: no historical item-name aliases during first-release development.
-
--- net
-
-core.register_tool("mobs:net", {
-	description = S("Net (right-click animal to put in inventory)"),
-	inventory_image = "mobs_net.png",
-	groups = {flammable = 2}
-})
-
-core.register_craft({
-	output = "mobs:net",
-	recipe = {
-		{ items.stick, "", items.stick },
-		{ items.stick, "", items.stick },
-		{ items.string, items.stick, items.string }
-	}
-})
-
--- shears (right click to shear animal)
-
-core.register_tool("mobs:shears", {
-	description = S("Steel Shears (right-click to shear)"),
-	inventory_image = "mobs_shears.png",
-	groups = {flammable = 2}
-})
-
-core.register_craft({
-	output = "mobs:shears",
-	recipe = {
-		{ "", items.steel_ingot, "" },
-		{ "", items.stick, items.steel_ingot }
-	}
-})
-
--- protection rune
-
-core.register_craftitem("mobs:protector", {
-	description = S("Mob Protection Rune"),
-	inventory_image = "mobs_protector.png",
-	groups = {flammable = 2}
-})
-
-core.register_craft({
-	output = "mobs:protector",
-	recipe = {
-		{ items.stone, items.stone, items.stone },
-		{ items.stone, items.gold_block, items.stone },
-		{ items.stone, items.stone, items.stone }
-	}
-})
-
--- protection rune (level 2)
-
-core.register_craftitem("mobs:protector2", {
-	description = S("Mob Protection Rune (Level 2)"),
-	inventory_image = "mobs_protector2.png",
-	groups = {flammable = 2}
-})
-
-core.register_craft({
-	output = "mobs:protector2",
-	recipe = {
-		{ "mobs:protector", items.mese_crystal, "mobs:protector" },
-		{ items.mese_crystal, items.diamond_block, items.mese_crystal },
-		{ "mobs:protector", items.mese_crystal, "mobs:protector" }
-	}
-})
-
--- mob repellent node
-
-core.register_node("mobs:mob_repellent", {
-	description = S("Mob Repellent (Stops mobs spawning within 16 block radius)"),
-	tiles = {"mobs_repellent.png"},
-	is_ground_content = false,
-	groups = {handy = 1, cracky = 3},
-	sounds = mobs.node_sound_stone_defaults(),
-	on_punch = function(pos, node, player, pointed_thing)
-
-		if minetest.get_modpath("vizlib") and player
-		and player:get_wielded_item():get_name() == "" then
-			vizlib.draw_cube(pos, 16.5, {color = "#6f1a1a", player = player})
-		end
-	end
-})
-
-core.register_craft({
-	output = "mobs:mob_repellent",
-	recipe = {
-		{ items.obsidian, items.dye_red, items.obsidian },
-		{ items.obsidian, "mobs:protector", items.obsidian },
-		{ items.obsidian, items.obsidian, items.obsidian }
-	}
-})
-
--- saddle
-
-core.register_craftitem("mobs:saddle", {
-	description = S("Saddle"),
-	inventory_image = "mobs_saddle.png",
-	groups = {flammable = 2, saddle = 1}
-})
-
-core.register_craft({
-	output = "mobs:saddle",
-	recipe = {
-		{"group:leather", "group:leather", "group:leather"},
-		{"group:leather", items.steel_ingot, "group:leather"},
-		{"group:leather", items.steel_ingot, "group:leather"}
-	}
-})
 
 -- register mob fence if default found
 
@@ -285,11 +151,8 @@ core.register_craft({
 
 -- items that can be used as fuel
 
-core.register_craft({type = "fuel", recipe = "mobs:nametag", burntime = 3})
-core.register_craft({type = "fuel", recipe = "mobs:lasso", burntime = 7})
-core.register_craft({type = "fuel", recipe = "mobs:net", burntime = 8})
+-- GRUG PATCH: no fuel rows for the removed name tag, lasso, net and saddle.
 core.register_craft({type = "fuel", recipe = "mobs:leather", burntime = 4})
-core.register_craft({type = "fuel", recipe = "mobs:saddle", burntime = 7})
 core.register_craft({type = "fuel", recipe = "mobs:fence_wood", burntime = 7})
 core.register_craft({type = "fuel", recipe = "mobs:fence_top", burntime = 2})
 
