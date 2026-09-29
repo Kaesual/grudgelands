@@ -72,6 +72,9 @@ go-ahead.**
    Tier N rock requires a pick of tier ≥ N. All six drop `default:cobble`, so
    no player can place hard rock. Display name is plain "Stone" with a tooltip
    line naming the required pick tier. Worlds are discarded: no aliases.
+   T1 keeps the name `default:stone` (renaming it would touch too much; user
+   agreed). The tier boundaries stay flat y planes (user: the look of the
+   boundary in caves does not matter).
 2. **Resources:** every ore and gem requires the pick of the layer where it
    first appears (unchanged registry `harvest_tier`): coal, copper, tin, iron,
    quartz T1; gold, citrine, garnet, jade T2; silver T3; emberglass, diamond,
@@ -104,7 +107,10 @@ go-ahead.**
    - rock or resource too hard: e.g. "Requires a T3 pick".
 
    Server protection checks stay authoritative. The protection cracks remain
-   (engine limit); no per-player capability swapping.
+   (engine limit); no per-player capability swapping. Verify that the client
+   still sends a punch for a node it predicts as undiggable
+   (`reference_projects/luanti/src/client/game.cpp` `handleDigging`); if it
+   does not, report instead of building a workaround.
 8. **Decorative rocks:** new `grug_materials:slate`, `grug_materials:basalt`
    and `grug_materials:granite`, clearly different in look from stone. Any pick
    digs them, they drop themselves (building variety), no ores grow in them.
@@ -149,7 +155,9 @@ go-ahead.**
     `LEGAL.md`); extract the mineral motif as a transparent overlay, tint it,
     and composite it on our stone (its stone background differs from
     `default_stone`). Provenance in `LICENSE-media.md` as for existing
-    VoxeLibre assets.
+    VoxeLibre assets. An ore is the same node at every depth, so deep ores
+    show the light `default_stone` background inside dark tier rock; this is
+    accepted (no per-tier ore variants).
 
 ### Mobs
 
@@ -196,7 +204,7 @@ go-ahead.**
 | Lane | Scope | Depends on |
 |---|---|---|
 | **A — Mining rules** | Rulings 1–8: tier-rock rename (incl. the mapgen-side node names and native-allowlist digest so the game boots), `level`/`maxlevel` gating, depth rules and shatter removed, shovel and axe tiers, loose ground and hand, audit rewrite, punch hints (protection reason, pick tier), docs (`items_crafting.md`, `VENDOR.md` rows, WP43 notes) | — (merges first) |
-| **B — Underground fill** | Rulings 9–15: ores and bands in fill, mountain-interior layers, decorative nests, mapgen pins and known-answer tests, before/after measurement with the coal probe method (target: coal per 64 stone near 1.0 in the 5–16 band near the Orc start) | A's rename (branch from it); design and fixtures can start in parallel |
+| **B — Underground fill** | Rulings 9–15: ores and bands in fill, mountain-interior layers, decorative nests, mapgen pins and known-answer tests, before/after measurement with the coal probe method (target: coal per 64 stone near 1.0 in the 5–16 band near the Orc start; baseline probe, patch and logs archived outside the repo in `~/projects/grudgelands-orchestration/r24/coal-probe/`) | A's rename (branch from it); design and fixtures can start in parallel |
 | **C — Art** | Rulings 16–17 and the decorative rock textures, license rows, comparison renders | names fixed above; parallel to A/B, A registers with placeholder tiles |
 | **D — Mobs** | Rulings 18–22 | — |
 | **E — Tracker and damage** | Rulings 23–24, `combat_stats.md` environmental section | — |
