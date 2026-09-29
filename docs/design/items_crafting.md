@@ -1054,7 +1054,7 @@ Neither of these costs a main profession slot (professions.md §1).
   | Bamboo Shoot | T1 | T1 | raw HP food | jungle and swamp shores |
   | Cave Cap | T3 | T3 | raw HP food | caves at y −100…−500 |
   | Salt Crust | T5 | T5 | inedible salt | The Shattered Line, level 41–50 |
-  | Ember Moss | T5 | T5 | inedible Alchemist reagent | emberrock at y ≤ −701 |
+  | Ember Moss | T5 | T5 | inedible Alchemist reagent | T5 stone (`grug_materials:t5_stone`) at y ≤ −701 |
 
   Existing raw-food tiers are Apple T1, Blueberries T1, raw meat T1, ordinary
   Raw Fish T1, Corn T1, Potato T1, Melon T1, Mushroom T3 and Wild Cocoa T6.

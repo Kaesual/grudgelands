@@ -663,7 +663,7 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   the ore stage the ores run in **registration order**, each converting only
   nodes that still match its `wherein`. That is the whole mechanism behind the
   rock strata, which now live as five native `ore_type = "stratum"` records in
-  `wp40/r7_native.lua` (slate/basalt/granite/emberrock/abyssal_rock under
+  `wp40/r7_native.lua` (the tier rocks `grug_materials:t2_stone` … `t6_stone` under
   `default:stone`'s own band): registered last against `default:stone`, they
   take exactly the nodes no other ore claimed, and — running after the caves —
   they convert the already-carved cave walls too, so those inherit their
