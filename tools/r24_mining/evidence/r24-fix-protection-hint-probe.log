@@ -1,0 +1,41 @@
+[r24_hint_probe] town anchor (0,36,2550) protected for throng: true reason no_faction
+[r24_hint_probe] DIG default:dirt             ''                       dig=false -> Town – protected
+[r24_hint_probe] DIG default:dirt             'default:pick_bronze'    dig=false -> Town – protected
+[r24_hint_probe] DIG default:dirt             'default:apple'          dig=false -> Town – protected
+[r24_hint_probe] DIG default:dirt             'default:shovel_bronze'  dig=false -> Town – protected
+[r24_hint_probe] DIG default:dirt             'grug_abilities:strike'  dig=nil -> Town – protected
+[r24_hint_probe] DIG default:torch            ''                       dig=false -> Town – protected
+[r24_hint_probe] DIG default:torch            'default:pick_bronze'    dig=false -> Town – protected
+[r24_hint_probe] DIG default:torch            'default:apple'          dig=false -> Town – protected
+[r24_hint_probe] DIG default:torch            'default:shovel_bronze'  dig=false -> Town – protected
+[r24_hint_probe] DIG default:torch            'grug_abilities:strike'  dig=nil -> Town – protected
+[r24_hint_probe] DIG default:tree             ''                       dig=false -> Town – protected
+[r24_hint_probe] DIG default:tree             'default:pick_bronze'    dig=false -> Town – protected
+[r24_hint_probe] DIG default:tree             'default:apple'          dig=false -> Town – protected
+[r24_hint_probe] DIG default:tree             'default:shovel_bronze'  dig=false -> Town – protected
+[r24_hint_probe] DIG default:tree             'grug_abilities:strike'  dig=nil -> Town – protected
+[r24_hint_probe] DIG default:wood             ''                       dig=false -> Town – protected
+[r24_hint_probe] DIG default:wood             'default:pick_bronze'    dig=false -> Town – protected
+[r24_hint_probe] DIG default:wood             'default:apple'          dig=false -> Town – protected
+[r24_hint_probe] DIG default:wood             'default:shovel_bronze'  dig=false -> Town – protected
+[r24_hint_probe] DIG default:wood             'grug_abilities:strike'  dig=nil -> Town – protected
+[r24_hint_probe] DIG grug_materials:slate     ''                       dig=not attempted -> Town – protected
+[r24_hint_probe] DIG grug_materials:slate     'default:pick_bronze'    dig=false -> Town – protected
+[r24_hint_probe] DIG grug_materials:slate     'default:apple'          dig=not attempted -> Town – protected
+[r24_hint_probe] DIG grug_materials:slate     'default:shovel_bronze'  dig=not attempted -> Town – protected
+[r24_hint_probe] DIG grug_materials:slate     'grug_abilities:strike'  dig=not attempted -> Town – protected
+[r24_hint_probe] DIG default:dirt_with_grass  ''                       dig=false -> Town – protected
+[r24_hint_probe] DIG default:dirt_with_grass  'default:pick_bronze'    dig=false -> Town – protected
+[r24_hint_probe] DIG default:dirt_with_grass  'default:apple'          dig=false -> Town – protected
+[r24_hint_probe] DIG default:dirt_with_grass  'default:shovel_bronze'  dig=false -> Town – protected
+[r24_hint_probe] DIG default:dirt_with_grass  'grug_abilities:strike'  dig=nil -> Town – protected
+[r24_hint_probe] DIG default:dry_dirt         ''                       dig=false -> Town – protected
+[r24_hint_probe] DIG default:dry_dirt         'default:pick_bronze'    dig=false -> Town – protected
+[r24_hint_probe] DIG default:dry_dirt         'default:apple'          dig=false -> Town – protected
+[r24_hint_probe] DIG default:dry_dirt         'default:shovel_bronze'  dig=false -> Town – protected
+[r24_hint_probe] DIG default:dry_dirt         'grug_abilities:strike'  dig=nil -> Town – protected
+[r24_hint_probe] PLACE default:dirt             -> Town – protected
+[r24_hint_probe] PLACE default:wood             -> Town – protected
+[r24_hint_probe] PLACE default:torch            -> Town – protected
+[r24_hint_probe] PLACE grug_materials:slate     -> Town – protected
+[r24_hint_probe] RESULT PASS checks=118 failures=0

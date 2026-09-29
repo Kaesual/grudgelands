@@ -450,23 +450,30 @@ end
 grug_materials.register_on_harvest(grug_materials.award_gathering_xp)
 
 -- One-line hints (ruling 7) in the shared screen flash line (grug_core), in
--- its neutral notice colour; chat only if the flash is unavailable. At most
--- one line per player every 1.5 s, and the same line at most every 5 s while
--- a player keeps punching.
-local HINT_INTERVAL_US = 1500000
-local SAME_HINT_INTERVAL_US = 5000000
+-- its neutral notice colour; chat only if the flash is unavailable.
+--
+-- Rate limit (Round 24 playtest fix): the SAME line is re-shown at most once
+-- per flash lifetime (1.5 s), so while a player keeps trying the line simply
+-- stays on screen; a DIFFERENT line replaces it at once (at most every
+-- 0.25 s). One refused action therefore yields one flash: its punch and its
+-- refused dig or place report the same protection line. (The former rule --
+-- the same line at most every 5 s -- let the 1.5 s flash expire and then
+-- swallowed every further refusal in the next 3.5 s, which is why the town
+-- hint showed for the first block punched and not for the next ones.)
+local SAME_HINT_INTERVAL_US = 1500000
+local OTHER_HINT_INTERVAL_US = 250000
 local last_hint = {}
 
 local function hint_ready(name, now)
 	local last = last_hint[name]
-	return not last or now - last.at >= HINT_INTERVAL_US
+	return not last or now - last.at >= OTHER_HINT_INTERVAL_US
 end
 
 function grug_materials.emit_hint(name, message)
 	if not name or name == "" or not message then return false end
 	local now = core.get_us_time()
 	local last = last_hint[name]
-	if last and (now - last.at < HINT_INTERVAL_US or
+	if last and (now - last.at < OTHER_HINT_INTERVAL_US or
 			(last.message == message and now - last.at < SAME_HINT_INTERVAL_US)) then
 		return false
 	end
@@ -513,23 +520,39 @@ function grug_materials.emit_mining_failure(pos, digger, decision)
 	return grug_materials.emit_hint(name, message)
 end
 
+local function cast_this_press(player)
+	local abilities = rawget(_G, "grug_abilities")
+	local input = abilities and abilities.input
+	return input ~= nil and type(input.cast_this_press) == "function" and
+		input.cast_this_press(player) == true
+end
+
 local function wields_skill(stack)
 	local def = stack and stack:get_definition()
 	return def ~= nil and ((def.groups or {}).grug_ability or 0) > 0
 end
 
--- The hint a punch earns, or nil. A selected skill makes LMB on a node the
--- hand cannot dig a cast (classes.md 2b), so skills never produce a hint.
--- A broken pick on rock earns the repair line instead of the tier line.
+-- The hint a punch earns, or nil. The protection line does not depend on the
+-- wielded item: bare hand, skill hand, any tool or any item. A selected skill
+-- makes LMB on a node the hand cannot dig a cast (classes.md 2b), so a skill
+-- produces no tier or level line. A broken pick on rock earns the repair line
+-- instead of the tier line.
 function grug_materials.punch_hint(pos, node, puncher)
 	if not is_player(puncher) or not node then return nil end
 	local def = core.registered_nodes[node.name]
-	if not def or def.diggable == false then return nil end
+	if not def then return nil end
 	local stack = puncher:get_wielded_item()
-	if wields_skill(stack) then return nil end
 	local name = puncher:get_player_name()
+	-- Undiggable town dressing (diggable = false) still answers with the
+	-- protection line on protected ground, and with nothing else.
 	local protected = grug_materials.protection_hint(pos, name)
-	if protected then return protected end
+	if protected then
+		-- A press that already cast a skill (a self/support skill at an empty
+		-- context) was a cast, not a dig attempt: no protection line then.
+		if wields_skill(stack) and cast_this_press(puncher) then return nil end
+		return protected
+	end
+	if def.diggable == false or wields_skill(stack) then return nil end
 	if grug_materials.tool_in_use(stack, def) then
 		local level = grug_materials.tool_level_shortfall(puncher, stack)
 		if level then return grug_materials.tool_level_hint(stack, level) end
@@ -548,12 +571,32 @@ end
 -- node even if it predicts the node as undiggable (game.cpp handleDigging),
 -- so the server can answer a protected, a level-gated and a too-hard node
 -- here.
-core.register_on_punchnode(function(pos, node, puncher)
+-- Nodes with their own inert on_punch (grug_decor capital service dressing)
+-- call this directly through a soft lookup; everything else reaches it
+-- through core.node_punch.
+function grug_materials.punch_hint_callback(pos, node, puncher)
 	if not is_player(puncher) then return end
 	local name = puncher:get_player_name()
 	if not hint_ready(name, core.get_us_time()) then return end
 	local message = grug_materials.punch_hint(pos, node, puncher)
 	if message then grug_materials.emit_hint(name, message) end
+end
+core.register_on_punchnode(grug_materials.punch_hint_callback)
+
+-- The authoritative refusal reports here: builtin core.node_dig and
+-- core.item_place_node (every node without its own placement code), this
+-- file's dig wrapper, the skill hand's refused dig (grug_abilities), the
+-- protected-placement checks of doors (GRUG PATCH), beds, saplings, kelp and
+-- coral, and grug_farming's buckets, hoes and seeds. The only door and chest
+-- calls upstream are the skeleton-key owner mismatch. Only an online player
+-- gets a line; explosions and other non-player violations stay silent.
+core.register_on_protection_violation(function(pos, name)
+	if type(name) ~= "string" or name == "" or not pos or
+			not core.get_player_by_name(name) then
+		return
+	end
+	grug_materials.emit_hint(name,
+		grug_materials.protection_hint(pos, name) or "Protected")
 end)
 
 core.register_on_leaveplayer(function(player)
@@ -572,9 +615,11 @@ local function node_dig(pos, node, digger)
 	local decision = grug_materials.mining_decision(pos, node, digger)
 	if not decision.allowed then
 		if decision.reason == "protected" then
+			-- The violation callback above shows the protection line.
 			core.record_protection_violation(pos, digger_name(digger))
+		else
+			grug_materials.emit_mining_failure(pos, digger, decision)
 		end
-		grug_materials.emit_mining_failure(pos, digger, decision)
 		return false
 	end
 	local dug = builtin_node_dig(pos, node, digger)
