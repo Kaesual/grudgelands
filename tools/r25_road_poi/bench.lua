@@ -23,7 +23,7 @@ local function random(n)
 end
 
 local N = 20000
-local sets = {random = {}, road = {}, far = {}}
+local sets = {random = {}, road = {}, deep = {}, far = {}}
 while #sets.random < N do
 	local x, z = -3740 + random(7481), -3340 + random(6681)
 	sets.random[#sets.random + 1] = {x = x, y = S.terrain_height_at(x, z) - 8 + random(17), z = z}
@@ -37,6 +37,18 @@ while #sets.road < N do
 	local z = floor(c.Z[i] + 0.5) - reach + random(2 * reach + 1)
 	local y = W.wp.surface_node(c.R[i], c.R[i], 0) - 7 + random(15)
 	sets.road[#sets.road + 1] = {x = x, y = y, z = z}
+end
+-- inside the corridors' reach, 10 to 40 above or below the surface (mining
+-- under a road, building high above it)
+while #sets.deep < N do
+	local c = corridors[1 + random(#corridors)]
+	local i = 1 + random(#c.X)
+	local reach = floor(c.half_width + c.side)
+	local x = floor(c.X[i] + 0.5) - reach + random(2 * reach + 1)
+	local z = floor(c.Z[i] + 0.5) - reach + random(2 * reach + 1)
+	local off = 10 + random(31)
+	if random(2) == 0 then off = -off end
+	sets.deep[#sets.deep + 1] = {x = x, y = W.wp.surface_node(c.R[i], c.R[i], 0) + off, z = z}
 end
 while #sets.far < N do
 	local x, z = -3740 + random(7481), -3340 + random(6681)
@@ -79,7 +91,7 @@ end
 
 print(("seed %s, %d points per set, %d repeats, ns per call (LuaJIT); before/after: " ..
 	"fastest of 3 alternating rounds"):format(seed, N, REPEAT))
-for _, name in ipairs({"random", "road", "far"}) do
+for _, name in ipairs({"random", "road", "deep", "far"}) do
 	local list = sets[name]
 	-- alternating rounds, the fastest of each (the zone session's column
 	-- memos make a single pass order-dependent)

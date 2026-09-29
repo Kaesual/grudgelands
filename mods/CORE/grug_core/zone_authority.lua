@@ -65,6 +65,7 @@ local EXPECTED_RARE_IDS = {
 
 local authority
 local world_feature_kind_at
+local world_feature_boxes_in
 local race_anchors
 local outposts
 local rare_routes
@@ -353,7 +354,8 @@ function grug_core.prepare_zone_authority(session, payload, world_protection)
 	-- (`grug_mapgen/wp40/world_protection.lua`).
 	if type(world_protection) ~= "table" or
 			world_protection.schema ~= "grug_wp40_world_protection_v1" or
-			type(world_protection.kind_at) ~= "function" then
+			type(world_protection.kind_at) ~= "function" or
+			type(world_protection.boxes_in) ~= "function" then
 		fail("world protection differs")
 	end
 	if rawget(_G, "grug_zones") ~= nil then
@@ -384,6 +386,7 @@ function grug_core.prepare_zone_authority(session, payload, world_protection)
 		outposts = next_outposts
 		rare_routes = next_rare_routes
 		world_feature_kind_at = world_protection.kind_at
+		world_feature_boxes_in = world_protection.boxes_in
 		authority = session
 		rawset(_G, "grug_zones", next_public)
 		return true
@@ -456,18 +459,43 @@ function grug_core.world_feature_at(pos)
 		node_coordinate(pos.z))
 end
 
--- Fail closed before installation; afterwards the road and POI protection
--- above for everyone, then exactly R4's pure faction policy. Protection
--- bypass and prior-handler delegation live in the single engine wrapper in
--- protection.lua.
+-- Claim placement (Round 25 ruling 27): true, the kind and the settlement key
+-- of the first POI, village or camp core whose x/z rectangle, widened by
+-- `margin` nodes, meets the inclusive x/z rectangle; false when none does.
+-- x/z only (the cores' y extent does not matter to a claim), one scan of the
+-- 88 cores. Fails closed (true) before installation. Towns, capitals and
+-- landmarks are not in it: they are the zone session's hard footprints
+-- (grug_zones.hard_protection_kind_at / territory_rule_at "hard_protected").
+function grug_core.world_feature_boxes_in(min_x, min_z, max_x, max_z, margin)
+	if not world_feature_boxes_in then return true end
+	local kind, id = world_feature_boxes_in(min_x, min_z, max_x, max_z, margin or 0)
+	if kind then return true, kind, id end
+	return false
+end
+
+-- Exactly R4's pure faction policy (zone and territory rule, hard
+-- protection), without the road and POI layer; fail closed before
+-- installation. For system effects the road and POI rulings do not cover
+-- (grug_core.ground_effect_protected).
+function grug_core.zone_protected_for_faction(pos, faction_id)
+	if not authority then
+		return true
+	end
+	return authority.compatibility.world_protected_for_faction(pos, faction_id)
+end
+
+-- Fail closed before installation; afterwards R4's pure faction policy, and
+-- the road and POI protection above for everyone where that policy allows.
+-- Protection bypass and prior-handler delegation live in the single engine
+-- wrapper in protection.lua.
 function grug_core.world_protected_for_faction(pos, faction_id)
 	if not authority then
 		return true
 	end
-	if grug_core.world_feature_at(pos) then
+	if authority.compatibility.world_protected_for_faction(pos, faction_id) then
 		return true
 	end
-	return authority.compatibility.world_protected_for_faction(pos, faction_id)
+	return grug_core.world_feature_at(pos) ~= nil
 end
 
 local function race_record(faction_id, race_id)

@@ -324,7 +324,9 @@ local function run_seed(seed)
 			local x = floor(c.X[i] + 0.5) - reach + random(2 * reach + 1)
 			local z = floor(c.Z[i] + 0.5) - reach + random(2 * reach + 1)
 			local s = wp.surface_node(c.R[i], c.R[i], 0)
-			local y = s - 8 + random(17)
+			-- mostly around the surface, every fourth far above or below it
+			-- (the per-run surface band early-out)
+			local y = random(4) == 0 and s - 40 + random(81) or s - 8 + random(17)
 			near = near + 1
 			if agree(x, y, z, "near " .. c.id) then near_hits = near_hits + 1 end
 		end
@@ -478,6 +480,81 @@ local function run_seed(seed)
 	-- A start town keeps its own (town) protection and hint.
 	local start = grug_core.start_anchor("accord", "human")
 	check(hint(start, "a") == "Town – protected", "start town hint")
+
+	-- Dragon ground effects (grug_core.ground_effect_protected): the zone rule
+	-- without the road and POI layer, so a dragon's arena core stays open to
+	-- its scorch and rime; towns and the other faction's home stay closed.
+	local dragons = 0
+	for index, row in ipairs(W.rows) do
+		if row.template_id == "dragon" then
+			local b = boxes[index]
+			for _, p in ipairs({{x = row.anchor.x + 3, y = row.anchor.y + 1, z = row.anchor.z - 5},
+					{x = b.min_x, y = b.min_y, z = b.max_z}, {x = b.max_x, y = b.max_y, z = b.min_z}}) do
+				local rule = grug_zones.territory_rule_at(p)
+				check(grug_core.world_feature_at(p) == "poi", row.key .. " core is a POI")
+				check(grug_core.world_protected_for_faction(p, "accord"), row.key ..
+					" players refused in the core")
+				check(rule == "contested_land", row.key .. " arena is contested")
+				check(grug_core.ground_effect_protected(p, "a") == false and
+					grug_core.ground_effect_protected(p, "t") == false,
+					row.key .. " dragon effects allowed in the core")
+				check(grug_core.ground_effect_protected(p, "n") == true and
+					grug_core.ground_effect_protected(p, "") == true,
+					row.key .. " no faction or no actor: closed")
+				dragons = dragons + 1
+			end
+		end
+	end
+	check(dragons == 6, "both dragon arenas checked")
+	check(grug_core.ground_effect_protected(start, "a") and
+		grug_core.ground_effect_protected(start, "t"), "start town closed to dragon effects")
+	do
+		local pos = found["road:accord_home"]
+		check(grug_core.ground_effect_protected(pos, "a") == false,
+			"home road open to effects for its faction (as before the road layer)")
+		check(grug_core.ground_effect_protected(pos, "t") == true,
+			"home road closed to effects for the other faction")
+	end
+	-- world_protected_for_faction = zone rule OR road/POI layer, everywhere.
+	for key, pos in pairs(found) do
+		for _, f in ipairs({"accord", "throng"}) do
+			check(grug_core.world_protected_for_faction(pos, f) ==
+				(grug_core.zone_protected_for_faction(pos, f) or
+					grug_core.world_feature_at(pos) ~= nil), key .. " OR for " .. f)
+		end
+	end
+
+	-- Claim distance query (ruling 27): x/z rectangles against the cores
+	-- widened by a margin, against a brute-force scan.
+	local function brute_in(x0, z0, x1, z1, margin)
+		for _, b in ipairs(boxes) do
+			if b.min_x - margin <= x1 and b.max_x + margin >= x0 and
+					b.min_z - margin <= z1 and b.max_z + margin >= z0 then return true end
+		end
+		return false
+	end
+	local claim_hits = 0
+	for _, b in ipairs(boxes) do
+		local mz = floor((b.min_z + b.max_z) / 2)
+		-- a 101 x 101 square whose west edge lies 16 / 17 east of the core
+		for _, gap in ipairs({16, 17}) do
+			local x0 = b.max_x + gap
+			local got, kind = grug_core.world_feature_boxes_in(x0, mz - 50, x0 + 100, mz + 50, 16)
+			check(got == brute_in(x0, mz - 50, x0 + 100, mz + 50, 16), "claim query east")
+			if gap == 16 then check(got == true and kind ~= nil, "claim query touches at 16") end
+		end
+		local z1 = b.min_z - 17
+		check(grug_core.world_feature_boxes_in(b.min_x, z1 - 100, b.min_x + 100, z1, 16) ==
+			brute_in(b.min_x, z1 - 100, b.min_x + 100, z1, 16), "claim query south")
+	end
+	for _ = 1, 2000 do
+		local x0, z0 = -3740 + random(7381), -3340 + random(6581)
+		local got = grug_core.world_feature_boxes_in(x0, z0, x0 + 100, z0 + 100, 16)
+		check(got == brute_in(x0, z0, x0 + 100, z0 + 100, 16), "claim query random")
+		if got then claim_hits = claim_hits + 1 end
+	end
+	print(("  dragons: %d arena core points open to effects; claim query: 2000 random " ..
+		"squares, %d touch a core (+16)"):format(dragons, claim_hits))
 	local cases = {}
 	for key in pairs(found) do cases[#cases + 1] = key end
 	table.sort(cases)

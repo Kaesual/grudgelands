@@ -55,6 +55,23 @@ function core.is_protected(pos, name)
 	return previous_is_protected(pos, name)
 end
 
+-- A creature's ground effect on behalf of a player (dragon scorch and rime,
+-- grug_mobs boss_dragons.lua): the zone and territory rule, then the other
+-- protection handlers, but not the road and POI layer (Round 25 rulings
+-- 15-16 protect roads and settlement cores from player digging and placing;
+-- a dragon's own arena core keeps its breath patches). On a road or core the
+-- handlers this file wrapped answer instead of core.is_protected, which
+-- would answer from that layer.
+function grug_core.ground_effect_protected(pos, actor_name)
+	if not actor_name or actor_name == "" then return true end
+	local faction = grug_core.get_player_faction(actor_name)
+	if grug_core.zone_protected_for_faction(pos, faction) then return true end
+	if grug_core.world_feature_at(pos) then
+		return previous_is_protected(pos, actor_name)
+	end
+	return core.is_protected(pos, actor_name)
+end
+
 -- Player-facing reason for a refused edit (Round 24 ruling 7), or nil when
 -- the position is not protected for this player. It only EXPLAINS the answer
 -- core.is_protected gives above; it never decides it.

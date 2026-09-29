@@ -1,12 +1,14 @@
 synthetic roads: ok
-seed 4242424242: world 6.9 s, blueprints 0.29 s; protection built in 0.0040 s, 2746 KiB; 70 corridors, 35667 segments, 2258 runs, 88 boxes, 2346 records, 403 cells, 3180 references, max 24 per cell; road text 148832 bytes
+seed 4242424242: world 6.6 s, blueprints 0.25 s; protection built in 0.0035 s, 3188 KiB; 70 corridors, 35667 segments, 2258 runs, 88 boxes, 2346 records, 403 cells, 3180 references, max 24 per cell; road text 148832 bytes
   boxes: 12 village, 16 camp, 60 poi
-  oracle: 1500 random points (11 protected), 2800 road points (1214 protected), 880 box points
+  oracle: 1500 random points (11 protected), 2800 road points (1026 protected), 880 box points
   writer: 40837 surface columns, 0 laid off the sampler's node (max 0), 99 bridge columns
+  dragons: 6 arena core points open to effects; claim query: 2000 random squares, 76 touch a core (+16)
   grug_core: cases bridge:accord_home, bridge:contested_land, bridge:throng_home, road:accord_home, road:contested_land, road:throng_home; 10 hint scenarios
-seed 10536739806879207652: world 6.7 s, blueprints 0.27 s; protection built in 0.0051 s, 2779 KiB; 70 corridors, 36771 segments, 2334 runs, 88 boxes, 2422 records, 423 cells, 3295 references, max 23 per cell; road text 153152 bytes
+seed 10536739806879207652: world 6.4 s, blueprints 0.21 s; protection built in 0.0043 s, 3282 KiB; 70 corridors, 36771 segments, 2334 runs, 88 boxes, 2422 records, 423 cells, 3295 references, max 23 per cell; road text 153152 bytes
   boxes: 12 village, 16 camp, 60 poi
-  oracle: 1500 random points (9 protected), 2800 road points (1231 protected), 880 box points
+  oracle: 1500 random points (9 protected), 2800 road points (984 protected), 880 box points
   writer: 41740 surface columns, 0 laid off the sampler's node (max 0), 191 bridge columns
+  dragons: 6 arena core points open to effects; claim query: 2000 random squares, 83 touch a core (+16)
   grug_core: cases bridge:accord_home, bridge:throng_home, road:accord_home, road:contested_land, road:throng_home; 9 hint scenarios
-R25 ROAD POI FIXTURE PASS checks=182691
+R25 ROAD POI FIXTURE PASS checks=187485

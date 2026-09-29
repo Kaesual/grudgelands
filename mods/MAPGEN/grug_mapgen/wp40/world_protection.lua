@@ -166,6 +166,7 @@ function M.new(index128, definition)
 		end
 	end
 
+	local box_list = {}
 	for index = 1, #boxes do
 		local b = boxes[index]
 		if type(b) ~= "table" or type(b.id) ~= "string" or type(b.kind) ~= "string" then
@@ -178,6 +179,8 @@ function M.new(index128, definition)
 			fail("box is empty: " .. b.id)
 		end
 		metrics.boxes = metrics.boxes + 1
+		box_list[#box_list + 1] = {id = b.id, kind = b.kind, min_x = b.min_x,
+			max_x = b.max_x, min_z = b.min_z, max_z = b.max_z}
 		add("box:" .. b.id, {box = true, kind = b.kind, min_x = b.min_x, max_x = b.max_x,
 			min_y = b.min_y, max_y = b.max_y, min_z = b.min_z, max_z = b.max_z},
 			b.min_x, b.max_x + 1, b.min_z, b.max_z + 1)
@@ -206,16 +209,22 @@ function M.new(index128, definition)
 		while first < n do
 			local last = min(n, first + chunk)
 			local x0, x1, z0, z1 = X[first], X[first], Z[first], Z[first]
+			local y0, y1 = math.huge, -math.huge
 			for i = first, last do
 				x0, x1 = min(x0, X[i]), max(x1, X[i])
 				z0, z1 = min(z0, Z[i]), max(z1, Z[i])
+				-- the surface along a segment lies between its end points'
+				-- (rounding is monotone)
+				local s = surface_node(R[i], R[i], 0)
+				y0, y1 = min(y0, s), max(y1, s)
 			end
 			run = run + 1
 			metrics.runs = metrics.runs + 1
 			add(("corridor:%s:%05d"):format(c.id, run), {corridor = shared,
 				first = first, last = last,
 				min_x = x0 - reach, max_x = x1 + reach,
-				min_z = z0 - reach, max_z = z1 + reach},
+				min_z = z0 - reach, max_z = z1 + reach,
+				min_y = y0 - vertical, max_y = y1 + vertical},
 				floor(x0 - reach), floor(x1 + reach) + 1,
 				floor(z0 - reach), floor(z1 + reach) + 1)
 			first = last
@@ -227,14 +236,25 @@ function M.new(index128, definition)
 		records = footprints}, M.INDEX_SCHEMA)
 	local candidates_at = index128.footprint_candidates
 
-	-- Per-query scratch: the nearest segment so far of every corridor met.
-	local near_corridor, near_d2, near_i, near_u = {}, {}, {}, {}
+	-- Per-query scratch: every corridor met, whether one of its runs' surface
+	-- bands holds y, and its nearest segment so far; every run in reach with
+	-- its corridor's slot.
+	local near_corridor, near_open, near_d2, near_i, near_u = {}, {}, {}, {}, {}
+	local run_record, run_slot = {}, {}
 
 	-- Integer node coordinates.
+	--
+	-- Two passes. The first returns a box, collects the corridor runs in
+	-- reach and marks every corridor with such a run whose surface band holds
+	-- y; the second finds the nearest segment of the marked corridors only,
+	-- over ALL their runs in reach (a run outside the band may still hold the
+	-- nearest point, which then refuses). An unmarked corridor cannot answer:
+	-- its nearest point in reach lies in a run in reach, whose band would
+	-- hold y.
 	local function kind_at(x, y, z)
 		if x < MIN_X or x > MAX_X or z < MIN_Z or z > MAX_Z then return nil end
 		local list = candidates_at(index, x, z)
-		local met = 0
+		local met, open, runs = 0, 0, 0
 		for n = 1, #list do
 			local record = records[list[n]]
 			if x >= record.min_x and x <= record.max_x and z >= record.min_z and
@@ -250,39 +270,67 @@ function M.new(index128, definition)
 					if slot == 0 then
 						met = met + 1
 						slot = met
-						near_corridor[slot], near_d2[slot] = c, math.huge
+						near_corridor[slot], near_open[slot], near_d2[slot] = c, false, math.huge
 					end
-					local X, Z = c.X, c.Z
-					local best, best_i, best_u = near_d2[slot], near_i[slot], near_u[slot]
-					for i = record.first, record.last - 1 do
-						local ax, az = X[i], Z[i]
-						local vx, vz = X[i + 1] - ax, Z[i + 1] - az
-						local l2 = vx * vx + vz * vz
-						local u = l2 > 0 and ((x - ax) * vx + (z - az) * vz) / l2 or 0
-						if u < 0 then u = 0 elseif u > 1 then u = 1 end
-						local dx, dz = x - ax - u * vx, z - az - u * vz
-						local d2 = dx * dx + dz * dz
-						-- the first nearest in segment order, as the sampler
-						if d2 < best then best, best_i, best_u = d2, i, u end
+					runs = runs + 1
+					run_record[runs], run_slot[runs] = record, slot
+					if not near_open[slot] and y >= record.min_y and y <= record.max_y then
+						near_open[slot] = true
+						open = open + 1
 					end
-					near_d2[slot], near_i[slot], near_u[slot] = best, best_i, best_u
 				end
 			end
 		end
-		local found
+		if open == 0 then return nil end
+		for r = 1, runs do
+			local slot = run_slot[r]
+			if near_open[slot] then
+				local record = run_record[r]
+				local c = near_corridor[slot]
+				local X, Z = c.X, c.Z
+				local best, best_i, best_u = near_d2[slot], near_i[slot], near_u[slot]
+				for i = record.first, record.last - 1 do
+					local ax, az = X[i], Z[i]
+					local vx, vz = X[i + 1] - ax, Z[i + 1] - az
+					local l2 = vx * vx + vz * vz
+					local u = l2 > 0 and ((x - ax) * vx + (z - az) * vz) / l2 or 0
+					if u < 0 then u = 0 elseif u > 1 then u = 1 end
+					local dx, dz = x - ax - u * vx, z - az - u * vz
+					local d2 = dx * dx + dz * dz
+					-- the first nearest in segment order, as the sampler
+					if d2 < best then best, best_i, best_u = d2, i, u end
+				end
+				near_d2[slot], near_i[slot], near_u[slot] = best, best_i, best_u
+			end
+		end
 		for k = 1, met do
 			local c = near_corridor[k]
-			near_corridor[k] = nil
-			if not found and near_d2[k] <= c.reach2 then
+			if near_open[k] and near_d2[k] <= c.reach2 then
 				local i, u = near_i[k], near_u[k]
 				local s = surface_node(c.R[i], c.R[i + 1], u)
 				if y >= s - c.vertical and y <= s + c.vertical then
 					-- the sampler's point of this projection
-					found = c.special[u < 0.5 and i or i + 1] and c.special_kind or c.kind
+					return c.special[u < 0.5 and i or i + 1] and c.special_kind or c.kind
 				end
 			end
 		end
-		return found
+		return nil
+	end
+
+	-- Claim placement (Round 25 ruling 27): the first settlement core whose
+	-- x/z rectangle, widened by `margin` nodes on every side, meets the
+	-- inclusive rectangle min_x..max_x, min_z..max_z; its kind and id, or nil.
+	-- x/z only, a scan of the settlement cores (88).
+	local function boxes_in(min_x, min_z, max_x, max_z, margin)
+		margin = margin or 0
+		for index = 1, #box_list do
+			local b = box_list[index]
+			if b.min_x - margin <= max_x and b.max_x + margin >= min_x and
+					b.min_z - margin <= max_z and b.max_z + margin >= min_z then
+				return b.kind, b.id
+			end
+		end
+		return nil
 	end
 
 	local compiled = index128.sparse_metrics(index)
@@ -290,7 +338,8 @@ function M.new(index128, definition)
 	metrics.candidate_references = compiled.candidate_references
 	metrics.maximum_candidates = compiled.maximum_candidates
 	metrics.records = compiled.record_count
-	return {schema = M.SCHEMA, kind_at = kind_at, metrics = metrics}
+	return {schema = M.SCHEMA, kind_at = kind_at, boxes_in = boxes_in,
+		metrics = metrics}
 end
 
 return M
