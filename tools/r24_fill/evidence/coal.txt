@@ -1,0 +1,12 @@
+base-s1-archived-run2: 01-04 coal 0.23 (others 0.21-0.25) | 05-08 coal 0.37 (others 0.34-0.37) | 09-16 coal 0.26 (others 0.27-0.28) | 17-32 coal 0.49 (others 0.47-0.48) | 33-64 coal 0.85 (others 0.85-0.85) | 65+ coal 1.00 (others 0.99-0.99)
+   tunnels: 
+base-s1-archived-run3: 01-04 coal 0.23 (others 0.21-0.25) | 05-08 coal 0.37 (others 0.34-0.37) | 09-16 coal 0.26 (others 0.27-0.28) | 17-32 coal 0.49 (others 0.47-0.48) | 33-64 coal 0.85 (others 0.85-0.85) | 65+ coal 1.00 (others 0.99-0.99)
+   tunnels: flat dug 0.351 P0 0.841; follow dug 0.393 P0 0.826
+before-s1-main-7d74c3e5: 01-04 coal 0.23 (others 0.21-0.25) | 05-08 coal 0.37 (others 0.34-0.37) | 09-16 coal 0.26 (others 0.27-0.28) | 17-32 coal 0.49 (others 0.47-0.48) | 33-64 coal 0.85 (others 0.85-0.85) | 65+ coal 1.00 (others 0.99-0.99)
+   tunnels: flat dug 0.351 P0 0.841; follow dug 0.393 P0 0.826
+after-s1-final: 01-04 coal 0.83 (others 0.79-0.85) | 05-08 coal 1.05 (others 1.00-1.04) | 09-16 coal 0.90 (others 0.87-0.91) | 17-32 coal 0.94 (others 0.94-0.95) | 33-64 coal 0.96 (others 0.96-0.96) | 65+ coal 1.00 (others 0.99-1.00)
+   tunnels: flat dug 0.880 P0 0.635; follow dug 1.080 P0 0.561
+base-s2-archived-run4: 01-04 coal 0.06 (others 0.06-0.07) | 05-08 coal 0.12 (others 0.12-0.13) | 09-16 coal 0.10 (others 0.09-0.10) | 17-32 coal 0.20 (others 0.19-0.20) | 33-64 coal 0.70 (others 0.69-0.70) | 65+ coal 0.99 (others 0.99-0.99)
+   tunnels: flat dug 0.121 P0 0.938; follow dug 0.167 P0 0.924
+after-s2: 01-04 coal 0.86 (others 0.83-0.91) | 05-08 coal 1.00 (others 1.03-1.04) | 09-16 coal 0.92 (others 0.88-0.90) | 17-32 coal 0.94 (others 0.95-0.96) | 33-64 coal 0.97 (others 0.95-0.96) | 65+ coal 0.99 (others 0.99-1.00)
+   tunnels: flat dug 0.886 P0 0.628; follow dug 1.071 P0 0.560

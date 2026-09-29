@@ -14,8 +14,11 @@ local NOISE_SCHEMA = "grug_wp40_r7_noiseparams_v1"
 local NOISE_DIGEST =
 	"5a1183a0db4dcbf7c2fce382e907660bfd26e53325d370f62a2d9e78c04d8738"
 local NATIVE_SCHEMA = "grug_wp40_r7_native_allowlist_v1"
+-- Round 24 (ruling 14) appended the three decorative-nest blob rows; the
+-- gravel and stratum rows before them are byte-identical to the former
+-- digest c29c9c6c...97b5e2ab (Lane A tier-rock rename).
 local NATIVE_DIGEST =
-	"c29c9c6c5eadb0f3ba22cb10a5cd717e5ddec4041aad19df166c025d97b5e2ab"
+	"a1c53c2fffce197c76f99c31bba294cb006d19079ed8477378f740e8aa6dd31b"
 local FLOAT32_POINT_SIX = 0.60000002384185791015625
 
 local TOKEN_MARKER = "grug_wp40_r7_native_validation_token_v1"
@@ -351,8 +354,38 @@ local function read_and_validate_noise()
 	return bytes
 end
 
-local function native_definitions()
+-- Round 24 ruling 14: sparse nests of the three decorative rocks, each in
+-- its preferred depth range, in default:stone and in every tier rock. They
+-- are registered after the tier strata, so the strata already stand where a
+-- nest lands. Blob size 7 at one blob per 28^3 nodes leaves about one voxel
+-- in 120 of a rock's depth range to its nests.
+local DECOR_EXPECTED = {
+	{"grug_mapgen:native_decor_slate_v1", "grug_materials:slate", -400, -40, 24101},
+	{"grug_mapgen:native_decor_granite_v1", "grug_materials:granite", -900, -200, 24102},
+	{"grug_mapgen:native_decor_basalt_v1", "grug_materials:basalt", -31000, -600, 24103},
+}
+local DECOR_SCARCITY, DECOR_SIZE = 21952, 7
+
+-- The hosts: default:stone and the five tier rocks, taken from the stratum
+-- rows of the same population so the two lists cannot drift apart.
+local function decor_definition(index, definitions)
+	local expected = DECOR_EXPECTED[index]
+	local wherein = {"default:stone"}
+	for row = 2, 6 do wherein[row] = definitions[row].ore end
 	return {
+		name = expected[1], ore_type = "blob", ore = expected[2],
+		wherein = wherein, clust_scarcity = DECOR_SCARCITY,
+		clust_size = DECOR_SIZE, y_min = expected[3], y_max = expected[4],
+		noise_threshold = 0.0,
+		noise_params = {
+			offset = 0.5, scale = 0.2, spread = {x = 5, y = 5, z = 5},
+			seed = expected[5], octaves = 1, persist = 0.0,
+		},
+	}
+end
+
+local function native_definitions()
+	local definitions = {
 		{
 			name = "grug_mapgen:native_gravel_blob_v1",
 			ore_type = "blob", ore = "default:gravel",
@@ -395,6 +428,10 @@ local function native_definitions()
 			y_min = -31000, y_max = -1001,
 		},
 	}
+	for index = 1, #DECOR_EXPECTED do
+		definitions[6 + index] = decor_definition(index, definitions)
+	end
+	return definitions
 end
 
 local function validate_blob(definition)
@@ -439,22 +476,64 @@ local function validate_stratum(definition, expected, index)
 	return true
 end
 
+local function validate_decor(definition, index, definitions)
+	local label = "native decorative nest " .. index
+	local expected = DECOR_EXPECTED[index]
+	exact_plain_table(definition, BLOB_KEYS, label)
+	if definition.name ~= expected[1] or definition.ore_type ~= "blob" or
+			definition.ore ~= expected[2] or
+			definition.clust_scarcity ~= DECOR_SCARCITY or
+			definition.clust_size ~= DECOR_SIZE or
+			definition.y_min ~= expected[3] or definition.y_max ~= expected[4] or
+			definition.noise_threshold ~= 0 then
+		fail(label .. " differs")
+	end
+	local wherein = definition.wherein
+	if type(wherein) ~= "table" or getmetatable(wherein) ~= nil or
+			#wherein ~= 6 or wherein[1] ~= "default:stone" then
+		fail(label .. " wherein differs")
+	end
+	local count = 0
+	for key in pairs(wherein) do
+		count = count + 1
+		if type(key) ~= "number" or key % 1 ~= 0 or key < 1 or key > 6 or
+				(key > 1 and wherein[key] ~= definitions[key].ore) then
+			fail(label .. " wherein differs")
+		end
+	end
+	if count ~= 6 then fail(label .. " wherein row count differs") end
+	local noise = exact_plain_table(definition.noise_params, BLOB_NOISE_KEYS,
+		label .. " noise")
+	exact_plain_table(noise.spread, SPREAD_KEYS, label .. " noise spread")
+	if noise.offset ~= 0.5 or noise.scale ~= 0.2 or noise.spread.x ~= 5 or
+			noise.spread.y ~= 5 or noise.spread.z ~= 5 or
+			noise.seed ~= expected[5] or noise.octaves ~= 1 or noise.persist ~= 0 then
+		fail(label .. " noise differs")
+	end
+	return true
+end
+
+local NATIVE_COUNT = 6 + #DECOR_EXPECTED
+
 local function validate_native_definitions(definitions)
 	if type(definitions) ~= "table" or getmetatable(definitions) ~= nil then
 		fail("native definition population is not a plain table")
 	end
-	if #definitions ~= 6 then fail("native definition count differs") end
+	if #definitions ~= NATIVE_COUNT then fail("native definition count differs") end
 	local count = 0
 	for key in pairs(definitions) do
 		count = count + 1
-		if type(key) ~= "number" or key % 1 ~= 0 or key < 1 or key > 6 then
-			fail("native definition population is not a dense six-row array")
+		if type(key) ~= "number" or key % 1 ~= 0 or key < 1 or key > NATIVE_COUNT then
+			fail("native definition population is not a dense array")
 		end
 	end
-	if count ~= 6 then fail("native definition row count differs") end
+	if count ~= NATIVE_COUNT then fail("native definition row count differs") end
 	validate_blob(definitions[1])
 	for index = 2, 6 do
 		validate_stratum(definitions[index], STRATUM_EXPECTED[index - 1], index)
+	end
+	for index = 1, #DECOR_EXPECTED do
+		validate_decor(definitions[6 + index], index, definitions)
 	end
 	return definitions
 end
@@ -489,6 +568,20 @@ local function canonical_native_bytes(definitions)
 			definition.ore .. "|wherein=default:stone|clust_scarcity=1|y_min=" ..
 			string.format("%.0f", definition.y_min) .. "|y_max=" ..
 			string.format("%.0f", definition.y_max) .. "\n"
+	end
+	-- Validated above: every field outside these rows is the literal the
+	-- validator pins (noise 0.5/0.2, spread 5, one octave, engine defaults).
+	for index = 7, NATIVE_COUNT do
+		local definition = definitions[index]
+		rows[#rows + 1] = "blob|" .. definition.name .. "|ore=" .. definition.ore ..
+			"|wherein=" .. table.concat(definition.wherein, ",") ..
+			"|clust_scarcity=" .. string.format("%.0f", definition.clust_scarcity) ..
+			"|clust_num_ores=1|clust_size=" ..
+			string.format("%.0f", definition.clust_size) .. "|y_min=" ..
+			string.format("%.0f", definition.y_min) .. "|y_max=" ..
+			string.format("%.0f", definition.y_max) ..
+			"|noise_threshold=0|noise=0.5,0.2,5,5,5," ..
+			string.format("%.0f", definition.noise_params.seed) .. ",1,0,2,defaults\n"
 	end
 	return table.concat(rows)
 end
@@ -610,6 +703,14 @@ function module.register_ores(token)
 		if core.registered_nodes["default:stone"] == nil then
 			fail("native wherein node default:stone is not registered")
 		end
+		if type(definition.wherein) == "table" then
+			for host = 1, #definition.wherein do
+				if core.registered_nodes[definition.wherein[host]] == nil then
+					fail("native wherein node is not registered: " ..
+						definition.wherein[host])
+				end
+			end
+		end
 	end
 	local handles = {}
 	handles[1] = core.register_ore(definitions[1])
@@ -618,7 +719,10 @@ function module.register_ores(token)
 	handles[4] = core.register_ore(definitions[4])
 	handles[5] = core.register_ore(definitions[5])
 	handles[6] = core.register_ore(definitions[6])
-	for index = 1, 6 do
+	for index = 7, NATIVE_COUNT do
+		handles[index] = core.register_ore(definitions[index])
+	end
+	for index = 1, NATIVE_COUNT do
 		safe_integer(handles[index], "native ore handle " .. index)
 		if core.registered_ores[definitions[index].name] ~= definitions[index] then
 			fail("native ore registry did not retain definition " .. index)
