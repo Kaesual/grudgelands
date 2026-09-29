@@ -797,10 +797,12 @@ replaced; git history before this rewrite records that model.
   pockets use `default:clay`. Palette secondaries are sandstone under savanna,
   basalt under badlands, desert stone as the existing closest limestone under
   meadows, slate under pine hills and mossy cobble as the existing closest
-  mossy stone under jungle. This pass replaces only immutable-input native
+  mossy stone under jungle. Slate and basalt here are the decorative any-pick
+  rocks `grug_materials:slate`/`:basalt` (Round 24), never tier rock. This pass replaces only immutable-input native
   stone. It skips air, liquids, ores, dungeon blocks, functional volumes and
   every protected or excluded surface. Its depth loop is clipped at y = -37.
-  The six native ore records and five deep native strata remain unchanged and
+  The six native ore records and five deep native strata (tier rocks
+  `grug_materials:t2_stone`..`t6_stone` since Round 24) remain unchanged and
   authoritative below it.
 - The map promises no target journey duration. Road placement, visible
   terrain structure and available travel methods determine travel time.
@@ -1839,9 +1841,9 @@ bands 1–2 mean levels 1–6 and bands 2–3 mean 4–10.
 | frost_melon | Frostbarrow, Whitebridge 21–30 | crags gravel or swamp mud, or sand in either, at a freshwater margin (Round 22 Phase 5: margins are mostly sand) | fresh cardinal contact; 1/64 (the margin is a thin band) |
 | sugar_cane | every named zone and band with a shore | shore sand only; no rock support | fresh or sea cardinal contact; 1/256 |
 | bamboo_shoot | every named zone with matching shore host | jungle-edge, deep-jungle or swamp; sand or mud | fresh or sea cardinal contact; 1/256 |
-| cave_cap | continental cave air at y −500…−100 | actual stone/granite/slate/basalt support | no surface placement; 1/768 |
+| cave_cap | continental cave air at y −500…−100 | actual T1–T4 tier rock support (`default:stone`, `grug_materials:t2_stone`..`t4_stone`) | no surface placement; 1/768 |
 | salt_crust | Shattered Line bands 2–3, levels 44–50 | badlands mesa clay | none; 1/512 |
-| ember_moss | continental cave air at y ≤ −701 | actual emberrock support | no surface placement; 1/1024 |
+| ember_moss | continental cave air at y ≤ −701 | actual T5 tier rock (`grug_materials:t5_stone`) support | no surface placement; 1/1024 |
 
 A viable soil is a matching nonrock fertile patch of that logical biome;
 ordinary dirt, relevant litter, mud, dry dirt, moss soil and ash soil do not

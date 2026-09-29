@@ -1,35 +1,45 @@
 # WP43 → WP40 material-registry handoff
 
 Status: WP43 shipped 2026-08-12. WP40 must rebase its engineering brief and
-implementation against the runtime contract below. The code sources of truth
+implementation against the runtime contract below.
+
+**Round 24 update (2026-09-29, Lane A):** mining is gated by rock tier, not
+by y. The five deeper strata are renamed `grug_materials:t2_stone` ..
+`t6_stone` (T1 stays `default:stone`); tier rock and resources carry the engine
+node group `level = tier - 1` and picks `maxlevel = tier - 1`. The per-pick
+depth limit (`max_depth`, `max_depth_for_pick_tier`, `can_mine_natural_at`),
+the under-tier shatter transaction (`SHORTFALL_MULTIPLIERS`, `is_shattering`)
+and the "no node `level`" rule below are retired. The names
+`grug_materials:slate`, `:basalt` and `:granite` now denote decorative
+any-pick rocks, never a stratum. Current rule: `items_crafting.md` §3.0.4. The code sources of truth
 are [`registry.lua`](../../mods/ITEMS/grug_materials/registry.lua) and
 [`mining.lua`](../../mods/ITEMS/grug_materials/mining.lua); the design sources
 remain [`items_crafting.md`](../design/items_crafting.md) and
 [`world_zones.md`](../design/world_zones.md).
 
-## Tier and depth contract
+## Tier and rock contract
 
-All boundaries are inclusive. Target y, not the visual stratum or the path used
-to reach it, determines natural-depth access.
+All band boundaries are inclusive. The band says where mapgen places each tier
+rock; the rock's tier, not the target y, decides which pick digs it.
 
-| Tier | Key | Canonical bar | Canonical block | Stratum node | Lowest y |
+| Tier | Key | Canonical bar | Canonical block | Tier rock node | Band floor y |
 |---:|---|---|---|---|---:|
 | 1 | `bronze` | `grug_materials:bronze_bar` | `grug_materials:bronze_block` | `default:stone` | -100 |
-| 2 | `iron` | `grug_materials:iron_bar` | `grug_materials:iron_block` | `grug_materials:slate` | -300 |
-| 3 | `steel` | `grug_materials:steel_bar` | `grug_materials:steel_block` | `grug_materials:basalt` | -500 |
-| 4 | `silversteel` | `grug_materials:silversteel_bar` | `grug_materials:silversteel_block` | `grug_materials:granite` | -700 |
-| 5 | `embersteel` | `grug_materials:embersteel_bar` | `grug_materials:embersteel_block` | `grug_materials:emberrock` | -1000 |
-| 6 | `abyssal_steel` | `grug_materials:abyssal_steel_bar` | `grug_materials:abyssal_steel_block` | `grug_materials:abyssal_rock` | -31000 |
+| 2 | `iron` | `grug_materials:iron_bar` | `grug_materials:iron_block` | `grug_materials:t2_stone` | -300 |
+| 3 | `steel` | `grug_materials:steel_bar` | `grug_materials:steel_block` | `grug_materials:t3_stone` | -500 |
+| 4 | `silversteel` | `grug_materials:silversteel_bar` | `grug_materials:silversteel_block` | `grug_materials:t4_stone` | -700 |
+| 5 | `embersteel` | `grug_materials:embersteel_bar` | `grug_materials:embersteel_block` | `grug_materials:t5_stone` | -1000 |
+| 6 | `abyssal_steel` | `grug_materials:abyssal_steel_bar` | `grug_materials:abyssal_steel_block` | `grug_materials:t6_stone` | -31000 |
 
-The public depth surface is `TIERS`, `TIER_BY_KEY`, `tier_at(y)`,
-`stratum_node_for(y)`, `max_depth_for_pick_tier(tier)` and
-`can_mine_natural_at(pick_tier, y)`. WP40 must call or iterate these APIs; it
-must not copy any y boundary or stratum ID.
+The public tier surface is `TIERS`, `TIER_BY_KEY`, `tier_at(y)`,
+`stratum_node_for(y)`, `level_for_tier(tier)`, `required_pick_tier(node)` and
+`DECORATIVE_ROCKS`. WP40 must call or iterate these APIs; it must not copy any
+y boundary or rock ID.
 
-The remaining public mining surface is `SHORTFALL_MULTIPLIERS`,
-`PICK_PROFILES`, `build_pick_capabilities`, `pick_tier_for_stack`,
+The remaining public mining surface is `PICK_PROFILES`,
+`build_pick_capabilities`, `pick_tier_for_stack`, `tool_tier_for_stack`,
 `is_natural_node`, `mining_decision`, `resource_ore_description`,
-`register_on_harvest`, `emit_mining_failure`, `is_shattering` and the audited
+`register_on_harvest`, `emit_mining_failure` and the audited
 `node_dig_wrapper`. WP40 does not replace these functions; its ground and
 resource nodes enter the existing transaction through registry groups.
 
@@ -71,8 +81,9 @@ The public lookup surface is `RESOURCES`, `RESOURCE_BY_KEY`,
 | `ruby` | regional G2 | `grug_materials:stone_with_ruby` | `grug_materials:rough_ruby` | `grug_materials:cut_ruby` | 4 |
 | `abyssal_crystal` | universal | `grug_materials:abyssal_crystal_ore` | `grug_materials:abyssal_crystal` | — | 5 |
 
-Harvest tier is independent of depth tier. WP40 owns placement geometry, not
-the `grug_resource` value or its ×4/×6/×8/×10 under-tier transaction.
+Harvest tier is the tier of the layer where a resource first appears and holds
+at any depth; a weaker pick cannot dig the ore (engine `level` gate). WP40 owns
+placement geometry, not the `grug_resource` value or its `level`.
 
 ## Processed concepts
 
@@ -137,8 +148,9 @@ race-region placement; it must not mistake the list for the target roster.
 ## Forbidden targets and migration-only names
 
 WP40 must never emit an Emberstone, Grudgesteel or Mese target ID. It must not
-generate the upstream Mese/Diamond nodes, use `level_for_tier`, add node
-`level`, or derive depth/access/durability from groupcap `maxlevel`.
+generate the upstream Mese/Diamond nodes. (Before Round 24 this line also
+forbade node `level` and `maxlevel`-derived access; the tier rock and resources
+now carry exactly that engine gate, owned by `grug_materials`.)
 
 `LEGACY_ALIASES` and `STORAGE_DERIVATIVES` are saved-world migration data, not
 new-placement choices. In particular, minetest_game's historical

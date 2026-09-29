@@ -17,8 +17,8 @@ WP40 must translate placement to the named-zone catalog without changing the
 item, tier, depth or economy rules.
 
 **Material-system integration 2026-08-12.** Six universal metals now form a
-non-circular pick/depth spine; natural-depth permission and resource harvest
-tier are separate checks. Emberglass and Abyssal Steel replace the old
+non-circular pick/depth spine. Since Round 24 (2026-09-29) the pick tier is
+checked against the tier of the rock or resource, not against y (§3.0.4). Emberglass and Abyssal Steel replace the old
 Emberstone/Mese and Grudgesteel targets. Six regional G1/G2 gems, cultural
 finishes, a separate PvP-special channel, the final Goldsmith/trinket model and
 the rebased 25c→25s Common-price axis are authoritative below. Private housing
@@ -259,22 +259,22 @@ because under §3.0.3 they are the same items.
 
 #### 3.0.1 Universal materials and resource taxonomy
 
-All six race regions use the same mandatory metal, pickaxe and natural-depth
+All six race regions use the same mandatory metal, pickaxe and tier-rock
 progression. A faction or race never controls a material needed for the next
 universal pick.
 
-| Tier | Levels | ilvl | Metal | Processing | Maximum natural depth | Next-pick material available no deeper than |
-|---|---:|---:|---|---|---:|---:|
-| T1 | 1–10 | 3 | **Bronze** | Copper + Tin, dual furnace | y = **−100** | Iron: y ≥ −100 |
-| T2 | 11–20 | 10 | **Iron** | Iron ore, normal furnace | y = **−300** | mined Coal/Steel inputs: y ≥ −300 |
-| T3 | 21–30 | 20 | **Steel** | Iron Bar + mined Coal, dual furnace | y = **−500** | Silver: y ≥ −500 |
-| T4 | 31–40 | 30 | **Silversteel** | Steel + Silver, dual furnace | y = **−700** | Emberglass: y ≥ −700 |
-| T5 | 41–50 | 40 | **Embersteel** | Silversteel + Emberglass, dual furnace | y = **−1000** | Abyssal Crystal: y ≥ −1000 |
-| T6 | 51–60 | 50 | **Abyssal Steel** | Embersteel + Abyssal Crystal, dual furnace | map floor (**−31000**) | no T7 prerequisite |
+| Tier | Levels | ilvl | Metal | Processing | Tier rock (mapgen band) | Next-pick material available no deeper than |
+|---|---:|---:|---|---|---|---:|
+| T1 | 1–10 | 3 | **Bronze** | Copper + Tin, dual furnace | `default:stone`, y ≥ −100 | Iron: y ≥ −100 |
+| T2 | 11–20 | 10 | **Iron** | Iron ore, normal furnace | `grug_materials:t2_stone`, −101…−300 | mined Coal/Steel inputs: y ≥ −300 |
+| T3 | 21–30 | 20 | **Steel** | Iron Bar + mined Coal, dual furnace | `grug_materials:t3_stone`, −301…−500 | Silver: y ≥ −500 |
+| T4 | 31–40 | 30 | **Silversteel** | Steel + Silver, dual furnace | `grug_materials:t4_stone`, −501…−700 | Emberglass: y ≥ −700 |
+| T5 | 41–50 | 40 | **Embersteel** | Silversteel + Emberglass, dual furnace | `grug_materials:t5_stone`, −701…−1000 | Abyssal Crystal: y ≥ −1000 |
+| T6 | 51–60 | 50 | **Abyssal Steel** | Embersteel + Abyssal Crystal, dual furnace | `grug_materials:t6_stone`, below −1000 | no T7 prerequisite |
 
-- Wood and Stone starter picks are not extra material tiers. They share T1's
-  y = −100 limit; Bronze is the best T1 pick. Wood and Stone gear stays below
-  the generated ilvl anchors and carries no level requirement.
+- Wood and Stone starter picks are not extra material tiers. They are T1
+  picks (T1 rock and T1 resources); Bronze is the best T1 pick. Wood and Stone
+  gear stays below the generated ilvl anchors and carries no level requirement.
 - Gold is a universal luxury, jewelry and building material, never a tool
   metal. There is no Gold weapon, armor or pick. Physical Gold and ledger money
   are separate systems (`economy.md` §1).
@@ -292,32 +292,26 @@ universal pick.
   and all regional gems use the Grudgelands namespace. `grug_materials` owns
   the taxonomy even where a mundane itemstring remains upstream.
 
-Natural resources have a separate minimum **harvest tier**. This tier controls
-whether a destroyed node yields its resource; it does not grant permission to
-mine at the node's y.
+Every natural resource has a minimum **harvest tier**: the pick tier of the
+rock layer where it first appears (Round 24 ruling 2). A weaker pick cannot dig
+the ore at all (§3.0.4). The tier holds at any depth, so Coal exposed at
+y = −600 is still mined with a T1 pick. Tool-metal ores are therefore mined
+one tier below the gear they make.
 
 | Minimum pick tier | Natural resources |
 |---|---|
-| T1 — any pick, incl. the Wood/Stone starters | Copper, Tin, mined Coal, Quartz |
-| T1 — **metal pick required** (Bronze or better) | Iron |
+| T1 — any pick, incl. the Wood/Stone starters | Coal, Copper, Tin, Iron, Quartz |
 | T2 | Gold; Citrine, Garnet and Jade (G1) |
 | T3 | Silver |
 | T4 | Emberglass; Diamond, Sapphire and Ruby (G2) |
 | T5 | Abyssal Crystal |
-| T6 | no universal progression resource; the tier grants deep access and better density |
+| T6 | no universal progression resource; T6 rock (below −1000) needs the T6 pick |
 
-**Iron requires a metal pick** (decided 2026-08-13): the Wood and Stone
-starter picks harvest Copper, Tin, Coal and Quartz but **shatter** iron
-ore (the ordinary §3.0.4 under-tier path — ×4 time, node destroyed, no
-drop, feedback naming the required Bronze pick). The ladder is therefore
-strictly sequential — starter pick → Copper + Tin → dual furnace →
-Bronze pick → Iron — and non-circular, since Bronze consumes only
-any-pick resources. Mechanism: Bronze+ picks additionally carry
-`grug_metal_pick = 1` and the iron resource row is flagged
-`metal_only`, evaluated inside `grug_materials`' central
-`mining_decision` (a group value of 0 cannot encode a starter tier —
-group 0 means "group absent" — which is why this is a flag, not a
-renumbering of the shipped 1..6 taxonomy). Runtime lands with WP29.
+**Iron needs only a T1 pick** (Round 24, 2026-09-29). The former 2026-08-13
+metal-pick rule for Iron relied on the retired under-tier shatter path and was
+never shipped; with engine-native tier gating every T1 pick, the Wood and
+Stone starters included, digs every T1 resource. The ladder stays
+non-circular: starter pick → Copper + Tin → dual furnace → Bronze pick.
 
 Quartz is the universal T1 jewelry mineral. Regional gems use **Rough
 <Gem> → Cut <Gem>**; `G1` and `G2` are internal grade labels, not
@@ -492,7 +486,7 @@ from `grug_gear`. Consequences, all binding:
   T1 and its Steel is T3 (the mapping `grug_materials/overrides.lua` already
   encoded through `grug_pick_tier`), and Iron, Silversteel, Embersteel and
   Abyssal Steel are registered by `grug_materials/tools.lua`. Iron gets tools
-  because Iron is a full tier here — it owns a depth band, a pick tier and a
+  because Iron is a full tier here — it owns a tier rock, a pick tier and a
   real bar item — so skipping it would leave §3.0.4's T2 row without a pick.
   All six pick, axe and shovel tiers use the familiar Minecraft grid shapes and
   are universal Basics recipes. Their existing capability profiles remain the
@@ -509,107 +503,107 @@ from `grug_gear`. Consequences, all binding:
   top of the base item is the **enchantment and the special
   variant** (§6b), plus its handful of exclusive recipes.
 
-#### 3.0.4 Natural depth, harvest tier and cosmetic strata
+#### 3.0.4 Tier rock, harvest tier and loose ground
 
-Mining evaluates three independent questions in this order:
+Decided with the user for Round 24 (2026-09-28/29; plan
+`docs/planning/round24-mining-underground-mobs-plan.md`, rulings 1–8). The
+former per-pick depth limits and the under-tier "shatter" path are retired.
 
-1. **Territory/protection:** may the player modify this position?
-2. **Natural depth:** does the wielded pick reach the target node's y?
-3. **Resource harvest:** if the target is a natural ore/gem, does the pick meet
-   its minimum harvest tier?
+Mining evaluates two independent questions:
 
-Permission never implies tool access. Tool capability never expresses
-political ownership, and failure to earn an ore drop never grants access below
-the pick's maximum depth.
+1. **Territory/protection:** may the player modify this position? Server
+   protection stays authoritative.
+2. **Pick tier:** is the wielded pick at least the tier of the target rock or
+   resource? The position's y plays no part.
 
-| Pick tier | Canonical pick | Maximum natural depth | Natural band opened |
-|---|---|---:|---|
-| T1 | Bronze (Wood/Stone share its limit) | y = −100 | surface/T1 Stone |
-| T2 | Iron | y = −300 | Slate |
-| T3 | Steel | y = −500 | Basalt |
-| T4 | Silversteel | y = −700 | Granite |
-| T5 | Embersteel | y = −1000 | Emberrock |
-| T6 | Abyssal Steel | y = −31000 | Abyssal Rock and all deeper T6 |
+Six tier rocks are "ordinary stone compressed by depth". Mapgen places each in
+a flat y band; the band only says where the rock lies, never what a pick may
+reach:
 
-The boundaries are inclusive at the bottom shown. Therefore y = −700 is the
-last protected shallow/T4 node, y = −701 is the first contested deep node,
-T5 is y = −701…−1000 and T6 is y = −1001…−31000. There is no T7.
-
-The natural-depth gate covers generated excavation material: natural strata,
-ore/gem nodes and any other generated ground node that could bypass a stone
-layer. Target y is authoritative even in an exposed cavern, cliff or another
-player's tunnel. If the pick is too shallow, digging is refused before node
-damage, tool wear or any resource/profession roll, and shared feedback names
-the required pick tier or maximum depth. Natural classification uses item
-groups/API data; mapgen does not write metadata to every node.
-
-The six strata remain visual depth language:
-
-| Tier | Band (inclusive) | Node | Description | Texture |
+| Tier | Band (inclusive) | Node | Description | Pick needed |
 |---|---|---|---|---|
-| T1 | y ≥ −100 | `default:stone` | Stone | unchanged |
-| T2 | −101…−300 | `grug_materials:slate` | Slate | `default_stone.png^[colorize:#4a5a6e:70` |
-| T3 | −301…−500 | `grug_materials:basalt` | Basalt | `default_stone.png^[colorize:#2a2a2e:90` |
-| T4 | −501…−700 | `grug_materials:granite` | Granite | `default_stone.png^[colorize:#8a5a52:60` |
-| T5 | −701…−1000 | `grug_materials:emberrock` | Emberrock | `default_stone.png^[colorize:#7a2a10:90` |
-| T6 | −1001…−31000 | `grug_materials:abyssal_rock` | Abyssal Rock | `default_stone.png^[colorize:#241830:150` |
+| T1 | y ≥ −100 | `default:stone` | Stone | any pick (T1+) |
+| T2 | −101…−300 | `grug_materials:t2_stone` | Stone | T2+ |
+| T3 | −301…−500 | `grug_materials:t3_stone` | Stone | T3+ |
+| T4 | −501…−700 | `grug_materials:t4_stone` | Stone | T4+ |
+| T5 | −701…−1000 | `grug_materials:t5_stone` | Stone | T5+ |
+| T6 | below −1000 | `grug_materials:t6_stone` | Stone | T6 |
 
-- Strata are cosmetic rock, not ore, crystal, metal or alloy. All use ordinary
-  stone-like pick diggability, carry `grug_stratum = <tier>` for dispatch and
-  drop ordinary Cobble. Deep rock encountered or placed near the surface is
-  ordinary breakable material, never an indestructible PvP wall.
-- Higher picks dig ordinary rock faster through explicitly authored `times`.
-  For every stratum a higher-tier pick may reach, it is never slower than the
-  preceding pick. Durability and speed are authored directly and verified in a
-  six-pick × six-strata matrix.
-- The five replacement strata remain `ore_type = "stratum"` registrations
-  placed last, so natural cave walls inherit the correct visual band. That
-  placement mechanism does not make their node identity the access gate.
+- All six display as plain "Stone" with a tooltip line "Requires a T<N>
+  pick", carry `grug_stratum = <N>` for dispatch (cave mob spawn lists use
+  `group:grug_stratum`) and drop ordinary Cobble, so no player can place hard
+  rock. T1 keeps the upstream name `default:stone`. Worlds are discarded; no
+  aliases exist for the retired names.
+- The five deeper rocks are `ore_type = "stratum"` registrations placed last
+  (`wp40/r7_native.lua`), so natural cave walls show the correct band.
+  Textures: the tier rocks read as the same stone, progressively darker and
+  slightly cooler with depth (items art, Round 24 ruling 16).
 
-The old node-`level`/pick-`maxlevel` progression is retired. Every Grudgelands
-pick uses `groupcaps.cracky.maxlevel = 0`; natural resources, cosmetic strata
-and crafted blocks in this system carry no non-zero `level`. Reachable vendored
-exceptions, including Obsidian and metal/gem storage blocks and stairs, are
-normalized so an unrelated default node cannot preserve the retired gate.
-`times` and `uses` are then set to the intended effective values without any
-`leveldiff` speed/durability multiplication. The shipped WP25 overrides and
-its temporary Mese/Diamond test bridges are migration history, not balance
-inputs; the revised test path must reach every band before those tools vanish.
+**Engine-native gating** (ruling 4). A rock or resource that needs a pick of
+tier N carries the node group `level = N − 1`; a tier-t pick carries
+`maxlevel = t − 1` on its `cracky` and `grug_resource` capabilities. Luanti's
+`getDigParams` skips a capability whose `maxlevel` is below the node `level`,
+so the client itself predicts "not diggable": a too-weak pick shows no cracks
+and cannot dig at all (ruling 3), for rock and resources alike and at any
+depth. Only tier rock and natural resources may carry a non-zero `level`;
+storage blocks, obsidian and every other node are normalized to none.
 
-If depth permission succeeds but the pick is below a natural resource's
-minimum harvest tier, the node may be deliberately destroyed without a drop:
+- **Speed:** a higher pick digs lower rock faster. The engine divides the
+  dig time by the level difference when it exceeds 1; the per-tier `times` of
+  the pick profiles apply on top. For every rock a pick reaches, each higher
+  pick is strictly faster than the one below it.
+- **Resources:** every pick's `grug_resource` capability carries one ordinary
+  time for all five harvest ratings; the level gate alone decides access.
+  Descriptions read "<Resource> Ore / Requires a T<N> pick".
 
-| Harvest-tier shortfall | Dig-time multiplier | Result |
-|---:|---:|---|
-| 1 | ×4 | node destroyed, no resource drop |
-| 2 | ×6 | node destroyed, no resource drop |
-| 3 | ×8 | node destroyed, no resource drop |
-| 4+ | ×10 cap | node destroyed, no resource drop |
+**Loose ground** (ruling 5). Every generated ground node except stone — dirt
+and its litter/snow variants, sand, silver sand, gravel, clay, snow, snow
+block, mud, mesa clay, ash ground (`grug_materials.NATURAL_GROUND_NODES`) —
+has no level and no tool gate. It carries `grug_loose` equal to its `crumbly`
+rating (mesa clay is loose ground with no `cracky`). The bare hand digs it
+through its `crumbly` capability; the equipped skill hand digs it through the
+engine's hand fallback. A shovel digs it faster than the pick of the same tier
+(picks use twice the shovel time of their tier), and a higher shovel is faster
+than a lower one. Shovels carry `grug_shovel_tier`.
 
-- The multiplier applies to that pick's normal effective dig time. One
-  completed attempt consumes one ordinary pick-use event; there is no second
-  wear penalty. Bare hands and non-picks cannot destroy ore/gem nodes.
-- A `metal_only` resource (today exactly iron, §3.0.1) treats a
-  same-tier starter pick as one shortfall step: ×4, destroyed, no drop,
-  feedback naming the required Bronze pick.
-- Descriptions/inspection state `Requires a T<n> pick to harvest`. Completion
-  uses a dull fracture sound, a shattered particle cue and rate-limited HUD/
-  chat feedback naming the lost resource and required tier.
-- No raw item, Goldsmith bonus yield, XP or quest harvest credit is granted. A
-  renewable socket still enters its ordinary depleted state and starts its
-  refill timer, preventing free retries.
-- Crafted storage/building blocks never enter this path: any real pick recovers
-  them as themselves at any permitted position.
+**Wood** is not gated (ruling 6). Axes carry `grug_axe_tier`; a better axe
+chops faster.
 
-`grug_materials` remains the sole public owner of depth and harvest taxonomy.
-It retains `TIERS`, `tier_at(y)` and `stratum_node_for(y)`, replaces
-`level_for_tier` with a depth-oriented lookup such as
-`max_depth_for_pick_tier(tier)`, exposes one
-`can_mine_natural_at(pick_tier, y)` predicate, resolves group-backed resource
-minimum tiers and settles successful harvest/bonus yield only after the tier
-check. It returns structured failure data for the shared feedback path.
-Callers always apply protection first; no other mod hard-codes a depth boundary,
-harvest tier or stratum node name.
+**Decorative rocks** (ruling 8): `grug_materials:slate`, `grug_materials:basalt`
+and `grug_materials:granite`, clearly different in look from stone. Any pick
+digs them, they drop themselves (building variety), no ore grows in them and
+they are never a tier stratum. Mapgen uses them only as the surface strata
+bands' secondary rock, in irregular nests and in the sparse mountain layers.
+
+**Punch hints** (ruling 7). The client still sends a punch when it starts
+digging a node it predicts as undiggable (`src/client/game.cpp`
+`handleDigging`), so the server answers with one rate-limited line (at most one
+line per 1.5 s, the same line at most every 5 s):
+
+- protected node, with the protection reason: "Town – protected" (a
+  capital's protected city or a start town), "Landmark – protected" (a
+  protected functional column: outpost, bandit camp, apex socket), "Accord
+  home territory – protected", "Throng home territory – protected", "Open sea
+  – protected"; a player without a faction reads "Protected – choose a faction
+  first";
+- rock or resource too hard for the wielded tool: "Requires a T<N> pick".
+
+A selected skill never produces a hint (with a skill, LMB on a node the hand
+cannot dig is a cast; `classes.md` §2b), nor does a broken tool. Protected
+nodes still show cracks (an engine limit: the client cannot know position or
+faction); there is no per-player capability swapping.
+
+`grug_materials` remains the sole public owner of the tier and harvest
+taxonomy: `TIERS`, `tier_at(y)`, `stratum_node_for(y)`, `level_for_tier(tier)`,
+`required_pick_tier(node)`, `DECORATIVE_ROCKS`, `PICK_PROFILES` /
+`build_pick_capabilities`, `tool_tier_for_stack`, the read-only
+`mining_decision` and `register_on_harvest`. Its `core.node_dig` wrapper
+re-checks the engine rule server-side for natural nodes, records protection
+violations and settles harvest callbacks after a successful resource dig. The
+startup audit (`grug_materials/audit.lua`) fails before a world starts unless
+the whole contract holds, including an engine dig matrix over every pick,
+shovel, axe and the hand. No other mod hard-codes a stratum node name, tier
+level or harvest tier.
 
 Pick profiles retain their authored monotonic ladder. Hoe identities, uses,
 soil conversion, water buckets and wild renewal are authoritative in
@@ -805,9 +799,8 @@ are Weaponsmith trade goods used for professional improvement, never base gear.
 Plain shields use their universal Basics grid; Armorsmith owns their enchants.
 Cultural/PvP operations remain separate future delivery.
 
-Ore access follows §3.0.4's three separate checks: territory/protection, the
-pick's exact maximum natural y-depth and the resource's independent minimum
-harvest tier. Cosmetic strata never grant access. Natural distribution comes
+Ore access follows §3.0.4: territory/protection, then the pick tier against
+the ore's harvest tier, at any depth. Natural distribution comes
 from §3.0.1 and the column's `race_region`, not from a tier-matched stratum or
 a lead-metal-band rule.
 
@@ -978,8 +971,8 @@ equipment recipe consumes Cut Gems where a gem is required.
 - one bonus-yield roll after a **successfully harvested** natural or renewable
   gem node: **10% base chance at Apprentice, 20% from Journeyman onward**. A
   success grants exactly one additional raw gem item of the harvested species.
-  The roll never fires on stone, an under-tier shattered node or any failed
-  harvest and never converts one gem into another. Dragon-camp yield audits
+  The roll never fires on stone or any failed harvest (a too-weak pick cannot
+  dig the ore at all) and never converts one gem into another. Dragon-camp yield audits
   include it.
 
 Rough→Cut conversion, Settings, trinket assembly and named enchantments use
@@ -1328,8 +1321,9 @@ The concentrated harvesting families are exact:
 `grug_materials` is the sole tool-family tier authority. Its public resolver
 `tool_tier_for_stack(stack, family)` accepts exactly `pick`, `axe` or `shovel`
 and reads the matching integer group `grug_pick_tier`, `grug_axe_tier` or
-`grug_shovel_tier` in 1..6. WP29 supplies those groups on the final tool
-catalog. Missing/malformed authority, the wrong family or a tier below four
+`grug_shovel_tier` in 1..6. Every ladder pick, axe and shovel carries its
+group (Round 24 added `grug_axe_tier`; before that an axe reported unavailable
+tier authority), so the concentrated axe sources need a T4+ axe. Missing/malformed authority, the wrong family or a tier below four
 fails closed without removing the node, wearing the tool or granting a drop;
 WP33 creates no temporary T4 tool or duplicate tier taxonomy.
 
@@ -1548,7 +1542,7 @@ implied it; stated outright
 because the item is now material-named: a **T3 (Steel) item drops from
 level 21–30 mobs** and nowhere else. A mob may not drop gear from a tier
 its level band does not cover — that is what stops the drop table from
-becoming a side door around the depth gate of §3.0.4.
+becoming a side door around the pick-tier gate of §3.0.4.
 
 | Named-zone band | Materials | Gear drops | Special |
 |---|---|---|---|
@@ -1558,7 +1552,7 @@ becoming a side door around the depth gate of §3.0.4.
 | Contested approaches 31–40 | equivalent T4 access plus practical foreign-G2 routes | T4, improved windows on qualifying elites | all six race approaches and the Battlegrounds entry are contested |
 | Front 41–50 | equivalent T5 access | T5, improved windows on qualifying elites | war-front objectives and quest hooks; no free supply crates |
 | High front 51–59 / endpoints 60 | equivalent T6 access | T6, improved windows; elites common | two contested dragons and all-six-gem apex camps |
-| Depth axis | six cosmetic strata behind the position-based limits of §3.0.4; Iron is reachable in T1, mined Coal by T2, Silver by T3, Emberglass and G2 by T4, Abyssal Crystal by T5; race-region columns select G1/G2/cultural species and deep T6 adds bounded density | cave mobs as per surface tier | **no gear-drop layer of its own**, at any depth (below) |
+| Depth axis | six tier rocks gated by pick tier (§3.0.4); Iron is reachable in T1, mined Coal by T2, Silver by T3, Emberglass and G2 by T4, Abyssal Crystal by T5; race-region columns select G1/G2/cultural species and deep T6 adds bounded density | cave mobs as per surface tier | **no gear-drop layer of its own**, at any depth (below) |
 | Enemy faction | equivalent tier budgets, not necessarily identical palettes | same tier/source rules | enemy named rares and any raid-enabled king remain incentives |
 
 **The depth axis pays in materials, and gets no drop layer of its own**
