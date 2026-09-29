@@ -25,14 +25,17 @@
 -- gatehouse box at its floor); with seeds it plans each seed
 -- (tools/r26_capitals/world.lua, the planner of <repo>) and writes on the
 -- seed's final ground and water, and also measures the wall over water:
---   dip   -- runs of wall points over water (off the civic lake) whose dry
+--   dip   -- runs of wall points over water (off the civic lake and its
+--            walled shore points; runs at most DIP_MERGE dry points apart
+--            count as one, so a V touching the far bank is one) whose dry
 --            neighbours lie on the SAME bank (4-connected dry land in the
 --            run's box + 4): the wall dips into the water and back;
 --   cross -- runs whose dry neighbours lie on opposite banks (an arcade over
 --            a river crossing the outline: intended).
 -- and, as a guard on the outline changes, the planner's plots:
 --   named -- named (non-fill) plots left out;  req -- required plots missing
---            (a load failure in the engine).
+--            (a load failure in the engine); lake -- wall points on the civic
+--            lake's open stretch (per capital only).
 -- One TSV line per seed:
 --   seed gap caps_with_gaps leak off road dip cross named req key[gates=..;cols=N;leak=..;off=..;road=N;dip=N;cross=N;named=N;req=N] ...
 -- Prints a summary and never fails: it measures.
@@ -47,6 +50,7 @@ local floor, sqrt, abs, max, min = math.floor, math.sqrt, math.abs, math.max, ma
 local KEY = {anchor_007 = "dur_brannoc", anchor_008 = "highcourt", anchor_009 = "lethariel",
 	anchor_010 = "nhal_veyr", anchor_011 = "gor_drazhak", anchor_012 = "kezamba"}
 local GATE_REACH = 14   -- beyond the gatehouse's larger half extent
+local DIP_MERGE = 12    -- wet runs at most this many dry wall points apart are one excursion
 
 -- S: the planned seed's session (final ground, water, roads) or nil
 local function check_layout(text, S)
@@ -95,7 +99,8 @@ local function check_layout(text, S)
 		ground_of[k] = y
 		return y, nil, false
 	end
-	local out = {key = key, gates = {}, cols = 0, leaks = {}, offs = {}, road = 0, dip = 0, cross = 0}
+	local out = {key = key, gates = {}, cols = 0, leaks = {}, offs = {}, road = 0, dip = 0, cross = 0, lake = 0}
+	for i = 1, n do if W.lake[i] then out.lake = out.lake + 1 end end
 	local R = max(dims.depth, dims.width) + GATE_REACH
 	for c = 1, 4 do
 		local g = L.gates[c]
@@ -192,6 +197,8 @@ local function check_layout(text, S)
 		end
 	end
 	-- the wall over water (seeds only): runs of wet points off the civic lake
+	-- (its open stretch `l` and the walled points by it `f`: the heads the
+	-- wall runs into the lake by design)
 	if S then
 		local function wet(x, z)
 			local t = S.terrain_height_at(x, z)
@@ -201,7 +208,7 @@ local function check_layout(text, S)
 		local wetp = {}
 		for i = 1, n do
 			local p = W.pts[i]
-			wetp[i] = not W.lake[i] and not W.gap[i] and
+			wetp[i] = not W.lake[i] and not W.gap[i] and not W.foot[i] and
 				wet(AX + floor(p[1] + 0.5), AZ + floor(p[2] + 0.5))
 		end
 		-- start the cyclic scan on a dry point
@@ -214,6 +221,17 @@ local function check_layout(text, S)
 				if wetp[i] then
 					local first, len = i, 0
 					while wetp[(first - 1 + len) % n + 1] and len < n do len = len + 1 end
+					-- a wet run a short dry stretch after this one (a V whose
+					-- tip touches the far bank) belongs to the same excursion
+					while k + len < n do
+						local dry = 0
+						while k + len + dry < n and not wetp[(first - 1 + len + dry) % n + 1] do
+							dry = dry + 1
+						end
+						if dry > DIP_MERGE or k + len + dry >= n then break end
+						len = len + dry
+						while k + len < n and wetp[(first - 1 + len) % n + 1] do len = len + 1 end
+					end
 					local pa = W.pts[(first - 2) % n + 1]
 					local pb = W.pts[(first - 1 + len) % n + 1]
 					local x0, x1, z0, z1 = math.huge, -math.huge, math.huge, -math.huge
@@ -285,9 +303,9 @@ local function line(tag, res)
 		leaks, offs = leaks + #r.leaks, offs + #r.offs
 		road, dip, cross = road + r.road, dip + r.dip, cross + r.cross
 		named, req = named + (r.named or 0), req + (r.req or 0)
-		parts[#parts + 1] = ("%s[gates=%s;cols=%d;leak=%s;off=%s;road=%d;dip=%d;cross=%d;named=%d;req=%d]"):format(
+		parts[#parts + 1] = ("%s[gates=%s;cols=%d;leak=%s;off=%s;road=%d;dip=%d;cross=%d;named=%d;req=%d;lake=%d]"):format(
 			r.key, table.concat(r.gates, ","), r.cols, table.concat(r.leaks, ","), table.concat(r.offs, ","),
-			r.road, r.dip, r.cross, r.named or 0, r.req or 0)
+			r.road, r.dip, r.cross, r.named or 0, r.req or 0, r.lake)
 	end
 	return table.concat({tag, total, caps, leaks, offs, road, dip, cross, named, req,
 		table.concat(parts, " ")}, "\t")

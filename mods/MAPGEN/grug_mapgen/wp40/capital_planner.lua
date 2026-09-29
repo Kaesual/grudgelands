@@ -819,55 +819,102 @@ local function plan_once(seed, I, opt)
 			end
 			R = S
 		end
-		-- Round 26 playtest (the wall dipping into a river): a short run of
-		-- rays (at most BANK_RUN) whose wall crosses the same river on both
-		-- sides of it -- the run on one bank, its neighbours on the other --
-		-- moves to the neighbours' bank (the dry point nearest the line
-		-- between them, within 50), so the wall follows one bank instead of
-		-- dipping across the water and back.
-		for _ = 1, (P.WALL_BANK > 0 and 2 or 0) do
-			local cross, nc = {}, 0
-			for a = 1, NR do
-				local b = a % NR + 1
-				local ax, az = R[a] * RAYS[a].c, R[a] * RAYS[a].s
-				local bx, bz = R[b] * RAYS[b].c, R[b] * RAYS[b].s
-				local vx, vz = bx - ax, bz - az
-				local steps = max(1, floor(sqrt(vx * vx + vz * vz) / G))
-				local wet_seg = false
-				for k = 1, steps - 1 do
-					if WET[gk(ax + vx * k / steps, az + vz * k / steps)] then wet_seg = true break end
+		-- Round 26 playtest (the wall dipping into a river). The segment from
+		-- ray a to the next: whether it crosses water (interior samples of
+		-- the planner grid), and whether any of that water is the civic lake
+		-- (which is the edge, M.shore_flags, and never steered round here).
+		local function seg_wet(a, ra, rb)
+			local b = a % NR + 1
+			ra, rb = ra or R[a], rb or R[b]
+			local ax, az = ra * RAYS[a].c, ra * RAYS[a].s
+			local vx, vz = rb * RAYS[b].c - ax, rb * RAYS[b].s - az
+			local steps = max(1, floor(sqrt(vx * vx + vz * vz) / G))
+			local wet, civic, n = false, false, 0
+			for k = 1, steps - 1 do
+				local x, z = ax + vx * k / steps, az + vz * k / steps
+				if WET[gk(x, z)] then
+					wet, n = true, n + 1
+					if I.shore_distance and I.shore_distance(AX + floor(x + 0.5), AZ + floor(z + 0.5)) <= 0 then
+						civic = true
+					end
 				end
-				cross[a] = wet_seg
-				if wet_seg then nc = nc + 1 end
 			end
+			return wet, civic, n
+		end
+		-- wet samples on the wall from ray f1 to ray f2
+		local function chain_wet(f1, f2)
+			local n, a = 0, f1
+			repeat
+				local _, _, k = seg_wet(a)
+				n = n + k
+				a = a % NR + 1
+			until a == f2
+			return n
+		end
+		-- how much water the wall crosses on either side of ray a with the
+		-- ray at r: wet grid samples (every G) on the segments from both
+		-- neighbours to it, the ray's own point included
+		local function wet_around(a, r)
+			local wet = 0
+			local rx, rz = r * RAYS[a].c, r * RAYS[a].s
+			for _, q in ipairs({(a - 2) % NR + 1, a % NR + 1}) do
+				local qx, qz = R[q] * RAYS[q].c, R[q] * RAYS[q].s
+				local vx, vz = qx - rx, qz - rz
+				local steps = max(1, floor(sqrt(vx * vx + vz * vz) / G))
+				for k = 0, steps - 1 do
+					if WET[gk(rx + vx * k / steps, rz + vz * k / steps)] then wet = wet + 1 end
+				end
+			end
+			return wet
+		end
+		-- A short run of rays (at most BANK_RUN) whose wall crosses the same
+		-- river on both sides of it -- the run on one bank, its neighbours on
+		-- the other -- moves to the neighbours' bank (the dry point nearest
+		-- the line between them, within 50), so the wall follows one bank
+		-- instead of dipping across the water and back. The move stands only
+		-- when the wall from neighbour to neighbour then crosses less water
+		-- than before (a river along a ray, or two separate streams, keep
+		-- their crossings); the civic lake is left alone.
+		for _ = 1, (P.WALL_BANK > 0 and 2 or 0) do
 			local changed = false
-			if nc >= 2 then
-				for a0 = 1, NR do
-					if cross[a0] then
-						local len, e = 0, a0
-						repeat e = e % NR + 1; len = len + 1 until cross[e] or len > P.BANK_RUN
-						if cross[e] and len <= P.BANK_RUN and e ~= a0 then
-							local f1, f2 = a0, e % NR + 1
-							local moves = {}
-							for k = 1, len do
-								local a = (a0 - 1 + k) % NR + 1
-								local ray = RAYS[a]
-								local target = R[f1] + (R[f2] - R[f1]) * k / (len + 1)
-								local found
-								for d = 0, 50, 2 do
-									for _, r in ipairs({target - d, target + d}) do
-										if not found and r >= P.R_MIN and r <= rmax[a] and
-												DW[gk(r * ray.c, r * ray.s)] >= P.WALL_BANK then
-											found = r
-										end
+			for a0 = 1, NR do
+				local w0, c0 = seg_wet(a0)
+				if w0 and not c0 then
+					local len, e, we, ce = 0, a0, false, false
+					repeat
+						e = e % NR + 1
+						len = len + 1
+						we, ce = seg_wet(e)
+					until we or len > P.BANK_RUN
+					if we and not ce and len <= P.BANK_RUN and e ~= a0 then
+						local f1, f2 = a0, e % NR + 1
+						local moves = {}
+						for k = 1, len do
+							local a = (a0 - 1 + k) % NR + 1
+							local ray = RAYS[a]
+							local target = R[f1] + (R[f2] - R[f1]) * k / (len + 1)
+							local found
+							for d = 0, 50, 2 do
+								for _, r in ipairs({target - d, target + d}) do
+									if not found and r >= P.R_MIN and r <= rmax[a] and
+											DW[gk(r * ray.c, r * ray.s)] >= P.WALL_BANK then
+										found = r
 									end
-									if found then break end
 								end
-								if not found then moves = nil break end
-								moves[#moves + 1] = {a, found}
+								if found then break end
 							end
-							for _, m in ipairs(moves or {}) do
-								if abs(R[m[1]] - m[2]) > 1 then R[m[1]] = m[2]; changed = true end
+							if not found then moves = nil break end
+							moves[#moves + 1] = {a, found}
+						end
+						if moves then
+							local old, before = {}, chain_wet(f1, f2)
+							for _, m in ipairs(moves) do old[m[1]] = R[m[1]]; R[m[1]] = m[2] end
+							if chain_wet(f1, f2) < before then
+								for _, m in ipairs(moves) do
+									if abs(old[m[1]] - m[2]) > 1 then changed = true end
+								end
+							else
+								for _, m in ipairs(moves) do R[m[1]] = old[m[1]] end
 							end
 						end
 					end
@@ -879,21 +926,29 @@ local function plan_once(seed, I, opt)
 		-- leave a ray back on a bank or in the water between neighbours that
 		-- stand on the far bank. A last pass without smoothing moves every
 		-- such ray to the dry point (within 40) nearest the mean of its two
-		-- neighbours, so it follows them instead of dipping into the river.
+		-- neighbours, so it follows them instead of dipping into the river --
+		-- never to a point whose segments to its neighbours cross more water
+		-- than they did (a river along the ray keeps the ray where it is:
+		-- moved along it, the wall would cross the river twice). A ray on or
+		-- by the civic lake stays: the lake is the edge (M.shore_flags).
 		for _ = 1, (P.WALL_BANK > 0 and 3 or 0) do
 			local any = false
 			for a = 1, NR do
 				local ray = RAYS[a]
 				local function bad(r) return DW[gk(r * ray.c, r * ray.s)] < P.WALL_BANK end
-				if bad(R[a]) then
+				local civic = I.shore_distance and I.shore_distance(AX + floor(R[a] * ray.c + 0.5),
+					AZ + floor(R[a] * ray.s + 0.5)) < P.WALL_BANK
+				if bad(R[a]) and not civic then
 					local target = 0.5 * (R[(a - 2) % NR + 1] + R[a % NR + 1])
 					local lo_r, hi_r = max(P.R_MIN, R[a] - 40), min(rmax[a], R[a] + 40)
+					local wet0 = wet_around(a, R[a])
 					local done = false
 					for d = 0, 80, 2 do
 						local c1, c2 = target - d, target + d
 						if abs(c2 - R[a]) < abs(c1 - R[a]) then c1, c2 = c2, c1 end
 						for _, r in ipairs({c1, c2}) do
-							if not done and r >= lo_r and r <= hi_r and not bad(r) then
+							if not done and r >= lo_r and r <= hi_r and not bad(r) and
+									wet_around(a, r) <= wet0 then
 								R[a], done, any = r, true, true
 							end
 						end
@@ -1049,8 +1104,9 @@ local function plan_once(seed, I, opt)
 	-- next GATE_BLEND rays on either side ease back to the outline. The line
 	-- keeps off the water like the outline: going out from the gate, a side
 	-- stops at the first ray beyond the box whose point on the line lies
-	-- within WALL_BANK of water (where its outline point did not), and a
-	-- blended ray that would come that near water stays on the outline.
+	-- within WALL_BANK of water (a river, the civic lake) or outside the
+	-- ray's radius bounds (clamped, it would leave the line), and a blended
+	-- ray that would come that near water stays on the outline.
 	do
 		local flat_w, near = {}, {}
 		local function bad(a, r)
@@ -1081,7 +1137,7 @@ local function plan_once(seed, I, opt)
 				local a, r, ww = c[1], c[2], c[3]
 				local side = ww < 0 and 1 or 2
 				if not stopped[side] then
-					if abs(ww) > P.GATE_WIDTH + 1 and bad(a, r) and not bad(a, R[a]) then
+					if abs(ww) > P.GATE_WIDTH + 1 and (bad(a, r) or r < P.R_MIN or r > rmax[a]) then
 						stopped[side] = true
 					else
 						run[#run + 1] = a
