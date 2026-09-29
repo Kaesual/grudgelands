@@ -147,6 +147,14 @@ local function character_content(player)
 		("label[2.75,3.20;Money: %s]"):format(esc(grug_money.format(grug_money.get(player)))),
 		"label[8.3,0.50;Armor]label[9.3,0.50;Gear]",
 	}
+	-- Claim Stone status (Round 25 ruling 14). Neither mod depends on the
+	-- other, so grug_housing is read at build time; it returns "" until the
+	-- player has received a stone and keeps the cached page current itself.
+	local housing = rawget(_G, "grug_housing")
+	if housing and housing.character_status_formspec then
+		fs[#fs + 1] = housing.character_status_formspec(
+			player:get_player_name(), 2.75, 3.80)
+	end
 
 	for _, slot in ipairs(grug_inventory.equipment_slots) do
 		local pos = SLOT_POS[slot.list]

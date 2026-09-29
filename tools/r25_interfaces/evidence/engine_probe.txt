@@ -1,0 +1,84 @@
+# seed 13510056192703308496, 2026-09-29, run through tools/r25_interfaces/run.sh (GAME_PATCH housing_depends.patch)
+ACTION[Server]: [r25_interfaces_probe] ok   stone form opens for the owner
+ACTION[Server]: [r25_interfaces_probe] stone formspec bytes 1048
+ACTION[Server]: [r25_interfaces_probe] ok   stone form remaining time
+ACTION[Server]: [r25_interfaces_probe] ok   stone form access row
+ACTION[Server]: [r25_interfaces_probe] ok   stone form lump display
+ACTION[Server]: [r25_interfaces_probe] ok   real detached fuel inventory with one slot
+ACTION[Server]: [r25_interfaces_probe] ok   real ItemStack: coal block refused
+ACTION[Server]: [r25_interfaces_probe] ok   take refused
+ACTION[Server]: [r25_interfaces_probe] ok   charcoal allowed
+ACTION[Server]: [r25_interfaces_probe] ok   on_put burns into add_fuel and empties the slot
+ACTION[Server]: [r25_interfaces_probe] ok   partial put message
+ACTION[Server]: [r25_interfaces_probe] ok   stone fields handled by the real chain
+ACTION[Server]: [r25_interfaces_probe] ok   core.player_exists refuses an unknown name
+ACTION[Server]: [r25_interfaces_probe] ok   status: remaining time
+ACTION[Server]: [r25_interfaces_probe] ok   status: empty fuel in red
+ACTION[Server]: [r25_interfaces_probe] ok   status: destroyed
+ACTION[Server]: [r25_interfaces_probe] ok   status: nothing before the first stone
+ACTION[Server]: [r25_interfaces_probe] ok   Character page registered
+ACTION[Server]: [r25_interfaces_probe] ok   forms built without error
+ACTION[Server]: [r25_interfaces_probe] ok   six Manager sockets
+ACTION[Server]: [r25_interfaces_probe] ok   highcourt socket role housing_manager
+ACTION[Server]: [r25_interfaces_probe] manager socket highcourt market_counting_house/market_counting_house_gate_idle at (14,41,-1408)
+ACTION[Server]: [r25_interfaces_probe] ok   dur_brannoc socket role housing_manager
+ACTION[Server]: [r25_interfaces_probe] manager socket dur_brannoc forge_guild_house/forge_guild_house_gate_idle at (-1854,69,-1585)
+ACTION[Server]: [r25_interfaces_probe] ok   lethariel socket role housing_manager
+ACTION[Server]: [r25_interfaces_probe] manager socket lethariel market_weaver/market_weaver_gate_idle at (1709,50,-1504)
+ACTION[Server]: [r25_interfaces_probe] ok   nhal_veyr socket role housing_manager
+ACTION[Server]: [r25_interfaces_probe] manager socket nhal_veyr market_shroud_house/market_shroud_house_gate_idle at (-1712,48,1452)
+ACTION[Server]: [r25_interfaces_probe] ok   gor_drazhak socket role housing_manager
+ACTION[Server]: [r25_interfaces_probe] manager socket gor_drazhak warren_weaver/warren_weaver_gate_idle at (42,60,1403)
+ACTION[Server]: [r25_interfaces_probe] ok   kezamba socket role housing_manager
+ACTION[Server]: [r25_interfaces_probe] manager socket kezamba shore_tailor/shore_tailor_gate_idle at (1686,39,1487)
+ACTION[Server]: [r25_interfaces_probe] ok   highcourt has a Manager
+ACTION[Server]: [r25_interfaces_probe] ok   dur_brannoc has a Manager
+ACTION[Server]: [r25_interfaces_probe] ok   lethariel has a Manager
+ACTION[Server]: [r25_interfaces_probe] ok   nhal_veyr has a Manager
+ACTION[Server]: [r25_interfaces_probe] ok   gor_drazhak has a Manager
+ACTION[Server]: [r25_interfaces_probe] ok   kezamba has a Manager
+ACTION[Server]: [r25_interfaces_probe] ok   six Housing Manager map markers (6)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_counting_house/market_counting_house_desk_a (14,41,-1403)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_counting_house/market_counting_house_desk_b (14,41,-1395)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_counting_house/market_counting_house_gate_idle (14,41,-1408)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_counting_house/market_counting_house_work_bench (8,42,-1409)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_traders:vendor_tailor placed at socket market_counting_house/market_counting_house_vendor_tailor (19,41,-1410)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_counting_house/market_counting_house_tailor (12,41,-1400)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_guild_house/forge_guild_house_desk_a (-1854,69,-1590)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_guild_house/forge_guild_house_desk_b (-1854,69,-1598)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_guild_house/forge_guild_house_gate_idle (-1854,69,-1585)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_guild_house/forge_guild_house_work_guild_bench (-1848,70,-1584)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_guild_house/forge_guild_house_tailor (-1852,69,-1593)
+ACTION[Server]: [grug_mobs] start npcs gor_drazhak: grug_mobs:villager_orc placed at socket warren_weaver/warren_weaver_gate_idle (42,60,1403)
+ACTION[Server]: [grug_mobs] start npcs gor_drazhak: grug_mobs:villager_orc placed at socket warren_weaver/warren_weaver_work_weaver_counter (35,60,1390)
+ACTION[Server]: [grug_mobs] start npcs gor_drazhak: grug_mobs:villager_orc placed at socket warren_weaver/warren_weaver_work_weaver_rack (50,60,1389)
+ACTION[Server]: [grug_mobs] start npcs gor_drazhak: grug_mobs:villager_orc placed at socket warren_weaver/warren_weaver_tailor (44,60,1397)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket market_weaver/market_weaver_desk_a (1704,50,-1504)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket market_weaver/market_weaver_desk_b (1696,50,-1504)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket market_weaver/market_weaver_gate_idle (1709,50,-1504)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket market_weaver/market_weaver_work_bench (1710,51,-1508)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_traders:vendor_tailor placed at socket market_weaver/market_weaver_vendor_weaver (1711,50,-1499)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket market_weaver/market_weaver_tailor (1701,50,-1506)
+ACTION[Server]: [grug_mobs] start npcs nhal_veyr: grug_mobs:villager_undead placed at socket market_shroud_house/market_shroud_house_desk_a (-1707,48,1452)
+ACTION[Server]: [grug_mobs] start npcs nhal_veyr: grug_mobs:villager_undead placed at socket market_shroud_house/market_shroud_house_desk_b (-1699,48,1452)
+ACTION[Server]: [grug_mobs] start npcs nhal_veyr: grug_mobs:villager_undead placed at socket market_shroud_house/market_shroud_house_gate_idle (-1712,48,1452)
+ACTION[Server]: [grug_mobs] start npcs nhal_veyr: grug_mobs:villager_undead placed at socket market_shroud_house/market_shroud_house_work_bench (-1713,49,1458)
+ACTION[Server]: [grug_mobs] start npcs nhal_veyr: grug_traders:vendor_tailor placed at socket market_shroud_house/market_shroud_house_vendor_tailor (-1714,48,1447)
+ACTION[Server]: [grug_mobs] start npcs nhal_veyr: grug_mobs:villager_undead placed at socket market_shroud_house/market_shroud_house_tailor (-1704,48,1454)
+ACTION[Server]: [r25_interfaces_probe] manager npc highcourt grug_mobs:villager_human "Housing Manager" at (14,41,-1408)
+ACTION[Server]: [r25_interfaces_probe] manager npc dur_brannoc grug_mobs:villager_dwarf "Housing Manager" at (-1854,69,-1585)
+ACTION[Server]: [r25_interfaces_probe] manager npc lethariel grug_mobs:villager_elf "Housing Manager" at (1709,50,-1504)
+ACTION[Server]: [r25_interfaces_probe] manager npc nhal_veyr grug_mobs:villager_undead "Housing Manager" at (-1712,48,1452)
+ACTION[Server]: [r25_interfaces_probe] manager npc gor_drazhak grug_mobs:villager_orc "Housing Manager" at (42,60,1403)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_tailor/shore_tailor_gate_idle (1686,39,1487)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_traders:vendor_tailor placed at socket shore_tailor/shore_tailor_vendor_tailor (1687,39,1483)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_tailor/shore_tailor_work_tailor_bench (1685,40,1481)
+ACTION[Server]: [grug_mobs] start npcs kezamba: grug_mobs:villager_troll placed at socket shore_tailor/shore_tailor_tailor (1681,39,1485)
+ACTION[Server]: [r25_interfaces_probe] manager npc kezamba grug_mobs:villager_troll "Housing Manager" at (1686,39,1487)
+ACTION[Server]: [r25_interfaces_probe] ok   highcourt Housing Manager NPC present
+ACTION[Server]: [r25_interfaces_probe] ok   dur_brannoc Housing Manager NPC present
+ACTION[Server]: [r25_interfaces_probe] ok   lethariel Housing Manager NPC present
+ACTION[Server]: [r25_interfaces_probe] ok   nhal_veyr Housing Manager NPC present
+ACTION[Server]: [r25_interfaces_probe] ok   gor_drazhak Housing Manager NPC present
+ACTION[Server]: [r25_interfaces_probe] ok   kezamba Housing Manager NPC present
+ACTION[Server]: [r25_interfaces_probe] RESULT PASS (38 checks, 0 failures)

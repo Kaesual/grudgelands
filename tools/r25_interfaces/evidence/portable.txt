@@ -1,0 +1,1 @@
+r25 interfaces fixture: PASS (120 checks, 0 failures)

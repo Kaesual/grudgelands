@@ -1030,6 +1030,14 @@ for index = 1, #identities do
 					grug_mounts.open_trainer(clicker, self)
 					return
 				end
+				if self._grug_socket_role == "housing_manager" then
+					-- grug_housing depends on this mod, so it is read at click time.
+					local housing = rawget(_G, "grug_housing")
+					if housing and housing.open_manager then
+						housing.open_manager(clicker, self)
+					end
+					return
+				end
 				local jobs = rawget(_G, "grug_jobs")
 				if self._grug_profession and jobs and jobs.open_trainer and
 						self.object and self.object:get_pos() then

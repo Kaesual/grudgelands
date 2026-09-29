@@ -1,0 +1,8 @@
+--- a/mods/PLAYER/grug_housing/mod.conf
++++ b/mods/PLAYER/grug_housing/mod.conf
+@@ -1,4 +1,4 @@
+ name = grug_housing
+ title = Grudgelands Housing
+ description = Claim Stones: one fuelled 101 x 101 home claim per player (Round 25).
+-depends = grug_core
++depends = grug_core, grug_mapgen, grug_mobs
