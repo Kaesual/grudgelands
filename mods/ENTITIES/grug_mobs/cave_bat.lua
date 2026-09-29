@@ -84,7 +84,7 @@ grug_mobs.register_mob("grug_mobs:cave_bat", bat)
 
 -- §3.0's numbers for the four new critters: interval 20 / chance 2200 /
 -- aoc 2. §4's table prints **2200** for this row too, and that is not an
--- accident of the unimplemented 0.75 pass: this is an `underground`-ONLY
+-- accident of the 0.75 pass: this is an `underground`-ONLY
 -- row, and §4's header excludes every row that reaches the caves from the
 -- surface-density multiplier, because cave pressure is the §4.1 depth
 -- pulse's to own. So this number must NOT be multiplied by WP37 — doing so
