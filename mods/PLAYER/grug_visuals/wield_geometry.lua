@@ -268,9 +268,8 @@ grug_visuals.POSE = POSE
 -- the grip at the bottom-left, with the LINE and bobber hanging off the
 -- down-right side, so the plain tool pose is what makes the line hang down.
 -- A new family joins by declaring its group, the same way it joins the weapon
--- slot; anything that declares none -- `mobs:lasso`, a torch, an apple, an
--- ability orb -- is an anonymous icon and gets `POSE.forward` with no
--- exception list.
+-- slot; anything that declares none -- a torch, an apple, an ability orb --
+-- is an anonymous icon and gets `POSE.forward` with no exception list.
 --
 -- `EDGE_DOWN` is the subset of those whose working edge is drawn OFF the long
 -- axis and therefore has a side (section 10). It is checked first, so a

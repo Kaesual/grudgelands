@@ -6,9 +6,9 @@
 -- §3.0.1). The Bronze and Steel SWORDS join them for a different reason (WP13
 -- round 2): §3.0.3's one-item-per-concept rule, now that `grug_gear` registers
 -- the same two concepts as `grug_gear:sword_bronze` and `grug_gear:sword_steel`
--- on the one material ladder. Only the swords go -- the bronze and steel
--- PICK/AXE/SHOVEL are the ladder's own T1 and T3 rungs (see tools.lua), and
--- Wood and Stone remain only as gathering tools.
+-- on the one material ladder. Only the swords go -- the Wood, Stone, Bronze
+-- and Steel PICK/AXE/SHOVEL live on as `grug_materials:` tools (tools.lua
+-- moves them before this file runs).
 local REMOVED_TOOLS = {
 	"default:pick_mese", "default:shovel_mese", "default:axe_mese",
 	"default:sword_mese", "default:pick_diamond", "default:shovel_diamond",
@@ -50,59 +50,56 @@ for _, derivative in ipairs(grug_materials.STORAGE_DERIVATIVES) do
 		#grug_materials.CURATED_VENDOR_REMOVALS + 1] = derivative.source
 end
 
+-- Clears only what exists: `core.clear_craft` logs a warning for a recipe it
+-- cannot find, and a fresh boot should not print one per curated name.
+local function clear_output(item_name)
+	if core.get_all_craft_recipes(item_name) then
+		core.clear_craft({output = item_name})
+	end
+end
+local function clear_fuel(item_name)
+	local fuel = core.get_craft_result({method = "fuel", width = 1,
+		items = {ItemStack(item_name)}})
+	if fuel and fuel.time and fuel.time > 0 then
+		core.clear_craft({type = "fuel", recipe = item_name})
+	end
+end
+
 -- Remove every recipe whose output is outside the current vocabulary. This
 -- also removes recipes for the vendored shape definitions cloned above.
 for _, item_name in ipairs(grug_materials.CURATED_VENDOR_REMOVALS) do
-	core.clear_craft({output = item_name})
-	core.clear_craft({type = "fuel", recipe = item_name})
+	clear_output(item_name)
+	clear_fuel(item_name)
 end
 
--- The surviving Steel pick remains a non-craftable verification tool until
--- WP29 installs the final pick catalog.
-core.clear_craft({output = "default:pick_steel"})
-
--- These mobs_redo items remain registered, but their vendored recipes use
--- material concepts that Grudgelands does not expose.
-if core.get_modpath("mobs") then
-	core.clear_craft({output = "mobs:lasso"})
-	core.clear_craft({output = "mobs:protector2"})
-end
-
-local function register_tool_recipe(kind, material, ingredient)
-	local output = "default:" .. kind .. "_" .. material
-	core.clear_craft({output = output})
-	local recipe
-	if kind == "pick" then
-		recipe = {
-			{ingredient, ingredient, ingredient},
-			{"", "group:stick", ""},
-			{"", "group:stick", ""},
-		}
-	elseif kind == "shovel" then
-		recipe = {{ingredient}, {"group:stick"}, {"group:stick"}}
-	elseif kind == "axe" then
-		recipe = {
-			{ingredient, ingredient},
-			{ingredient, "group:stick"},
-			{"", "group:stick"},
-		}
-	else
-		recipe = {{ingredient}, {ingredient}, {"group:stick"}}
+-- Silver sand has no world source (audit D6, Round 26 ruling 13): the whole
+-- silver-sandstone recipe family goes. The nodes stay -- authored capital and
+-- road builds place them -- but no recipe makes, converts or reshapes them.
+grug_materials.REMOVED_SILVER_SANDSTONE_OUTPUTS = {
+	"default:silver_sand", "default:silver_sandstone",
+	"default:silver_sandstone_brick", "default:silver_sandstone_block",
+}
+if core.get_modpath("stairs") then
+	for _, base in ipairs({"silver_sandstone", "silver_sandstone_brick",
+			"silver_sandstone_block"}) do
+		for _, shape in ipairs({"slab_", "stair_", "stair_inner_", "stair_outer_"}) do
+			local list = grug_materials.REMOVED_SILVER_SANDSTONE_OUTPUTS
+			list[#list + 1] = "stairs:" .. shape .. base
+		end
 	end
-	core.register_craft({output = output, recipe = recipe})
+end
+for _, item_name in ipairs(grug_materials.REMOVED_SILVER_SANDSTONE_OUTPUTS) do
+	clear_output(item_name)
 end
 
--- WP29 owns the final catalog. Until then the surviving Bronze and historical
--- default Steel tool steps remain usable with the canonical Bronze and Iron
--- bars. The Steel pick is deliberately excluded by the gate above, and the two
--- swords are gone entirely (REMOVED_TOOLS) -- their recipes are cleared by the
--- removal loop above, so neither loop may name `sword` any more.
-for _, kind in ipairs({"pick", "shovel", "axe"}) do
-	register_tool_recipe(kind, "bronze", "grug_materials:bronze_bar")
-end
-for _, kind in ipairs({"shovel", "axe"}) do
-	register_tool_recipe(kind, "steel", "grug_materials:iron_bar")
-end
+-- The mobs_redo utility items (nametag, net, lasso, shears, both protection
+-- runes, mob repellent, saddle; audit D5, Round 26 ruling 13) are not
+-- registered at all: their definitions and recipes are removed in place
+-- (`mods/ENTITIES/mobs/crafts.lua`, GRUG PATCH). audit.lua proves it.
+grug_materials.REMOVED_MOBS_UTILITIES = {
+	"mobs:nametag", "mobs:net", "mobs:lasso", "mobs:shears", "mobs:protector",
+	"mobs:protector2", "mobs:mob_repellent", "mobs:saddle",
+}
 
 -- Preserve current utility recipes with explicit canonical material inputs.
 core.clear_craft({output = "default:chest_locked"})
@@ -119,35 +116,6 @@ core.register_craft({
 	output = "default:chest_locked",
 	recipe = {"default:chest", "grug_materials:iron_bar"},
 })
-
-if core.get_modpath("mobs") then
-	core.clear_craft({output = "mobs:shears"})
-	core.register_craft({
-		output = "mobs:shears",
-		recipe = {
-			{"", "grug_materials:iron_bar", ""},
-			{"", "default:stick", "grug_materials:iron_bar"},
-		},
-	})
-	core.clear_craft({output = "mobs:protector"})
-	core.register_craft({
-		output = "mobs:protector",
-		recipe = {
-			{"default:stone", "default:stone", "default:stone"},
-			{"default:stone", "grug_materials:gold_block", "default:stone"},
-			{"default:stone", "default:stone", "default:stone"},
-		},
-	})
-	core.clear_craft({output = "mobs:saddle"})
-	core.register_craft({
-		output = "mobs:saddle",
-		recipe = {
-			{"group:leather", "group:leather", "group:leather"},
-			{"group:leather", "grug_materials:iron_bar", "group:leather"},
-			{"group:leather", "grug_materials:iron_bar", "group:leather"},
-		},
-	})
-end
 
 -- Unregistration is the fresh-server content boundary. No alias is installed:
 -- removed names are unknown rather than alternate spellings of current items.

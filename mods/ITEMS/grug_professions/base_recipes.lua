@@ -6,14 +6,14 @@ local M = "grug_materials:"
 local C = "grug_professions:"
 
 local tiers = {
-	{metal = "bronze", bar = M .. "bronze_bar", pick = "default:pick_bronze",
-		axe = "default:axe_bronze", shovel = "default:shovel_bronze",
+	{metal = "bronze", bar = M .. "bronze_bar", pick = M .. "pick_bronze",
+		axe = M .. "axe_bronze", shovel = M .. "shovel_bronze",
 		cloth = "patch", leather = "light", wood = "seasoned"},
 	{metal = "iron", bar = M .. "iron_bar", pick = M .. "pick_iron",
 		axe = M .. "axe_iron", shovel = M .. "shovel_iron",
 		cloth = "woven", leather = "cured", wood = "polished"},
-	{metal = "steel", bar = M .. "steel_bar", pick = "default:pick_steel",
-		axe = "default:axe_steel", shovel = "default:shovel_steel",
+	{metal = "steel", bar = M .. "steel_bar", pick = M .. "pick_steel",
+		axe = M .. "axe_steel", shovel = M .. "shovel_steel",
 		cloth = "heavy", leather = "heavy", wood = "hardened"},
 	{metal = "silversteel", bar = M .. "silversteel_bar",
 		pick = M .. "pick_silversteel", axe = M .. "axe_silversteel",
@@ -57,7 +57,11 @@ local function filled(shape, item)
 end
 
 local function register(output, recipe)
-	core.clear_craft({output = output})
+	-- Replace a vendored recipe where one exists; clearing a missing one only
+	-- logs an engine warning.
+	if core.get_all_craft_recipes(output) then
+		core.clear_craft({output = output})
+	end
 	core.register_craft({output = output, recipe = recipe})
 end
 
@@ -132,7 +136,9 @@ for tier = 1, #tiers do
 	end
 end
 
-core.clear_craft({output = G .. "arrow"})
+if core.get_all_craft_recipes(G .. "arrow") then
+	core.clear_craft({output = G .. "arrow"})
+end
 core.register_craft({output = G .. "arrow 200", recipe = {
 	{"", "", M .. "bronze_bar"},
 	{"", "group:stick", ""},

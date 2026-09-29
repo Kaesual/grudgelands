@@ -160,8 +160,8 @@ core.after(2, function()
 					core.registered_nodes[town_node].diggable ~= false then
 				names[#names + 1] = town_node
 			end
-			local wields = {"", "default:pick_bronze", "default:apple",
-				"default:shovel_bronze"}
+			local wields = {"", "grug_materials:pick_bronze", "default:apple",
+				"grug_materials:shovel_bronze"}
 			if core.registered_items["grug_abilities:strike"] then
 				wields[#wields + 1] = "grug_abilities:strike"
 			end

@@ -132,7 +132,49 @@ function core_stub.chat_send_player(name, message) chat[#chat + 1] = {name, mess
 function core_stub.log() end
 function core_stub.read_schematic() return {size = {x = 1, y = 1, z = 1}} end
 function core_stub.register_schematic() return "stub-schematic" end
-function core_stub.get_craft_result() return {time = 0, replacements = {}} end
+-- A small craft registry (Round 26 Lane R reads it through the harness):
+-- enough of the engine's by-output and fuel-by-name behaviour for the
+-- registration code paths; group matching is not modelled.
+local crafts = {}
+local function craft_name(value) return (tostring(value or ""):match("^(%S+)")) end
+function core_stub.register_craft(def)
+	crafts[#crafts + 1] = {type = def.type or "normal",
+		output = craft_name(def.output), recipe = def.recipe,
+		burntime = def.burntime, mod = current_mod}
+end
+function core_stub.clear_craft(def)
+	local kept, removed = {}, 0
+	for _, craft in ipairs(crafts) do
+		local hit
+		if def.output then
+			hit = craft.type ~= "fuel" and craft.output == craft_name(def.output)
+		else
+			hit = craft.type == def.type and craft.recipe == def.recipe
+		end
+		if hit then removed = removed + 1 else kept[#kept + 1] = craft end
+	end
+	crafts = kept
+	return removed > 0
+end
+function core_stub.get_all_craft_recipes(name)
+	local list = {}
+	for _, craft in ipairs(crafts) do
+		if craft.type ~= "fuel" and craft.output == name then list[#list + 1] = craft end
+	end
+	return #list > 0 and list or nil
+end
+function core_stub.get_craft_result(input)
+	if input and input.method == "fuel" then
+		local stack = input.items and input.items[1]
+		local name = stack and stack.get_name and stack:get_name() or stack
+		for _, craft in ipairs(crafts) do
+			if craft.type == "fuel" and craft.recipe == name then
+				return {time = craft.burntime or 1, replacements = {}}
+			end
+		end
+	end
+	return {time = 0, replacements = {}}
+end
 function core_stub.is_creative_enabled() return false end
 function core_stub.check_player_privs() return false end
 local function key(pos) return pos.x .. "," .. pos.y .. "," .. pos.z end
@@ -255,6 +297,7 @@ local M = grug_materials
 -- instead of copying it.
 if rawget(_G, "R24_MINING_HARNESS") then
 	return {items = items, nodes = nodes, tools = tools, core = core_stub,
+		aliases = aliases, crafts = function() return crafts end,
 		get_dig_params = get_dig_params, world = world, key = key,
 		punch_callbacks = punch_callbacks,
 		set_time = function(us) now_us = us end,
@@ -278,11 +321,11 @@ local function dig_with(node_name, item)
 	return params
 end
 local function ladder(family, tier)
-	return ((tier == 1 or tier == 3) and "default:" or "grug_materials:") ..
+	return "grug_materials:" ..
 		family .. "_" .. M.TIERS[tier].key
 end
 
-local picks = {{"default:pick_wood", 1}, {"default:pick_stone", 1}}
+local picks = {{"grug_materials:pick_wood", 1}, {"grug_materials:pick_stone", 1}}
 for tier = 1, 6 do picks[#picks + 1] = {ladder("pick", tier), tier} end
 local loose = {}
 for _, name in ipairs(M.NATURAL_GROUND_NODES) do
@@ -310,14 +353,14 @@ for _, pick in ipairs(picks) do
 			name .. " never slower than the hand on " .. node_name)
 	end
 end
-for _, name in ipairs({"default:shovel_wood", "default:shovel_stone"}) do
+for _, name in ipairs({"grug_materials:shovel_wood", "grug_materials:shovel_stone"}) do
 	for _, node_name in ipairs(loose) do
 		check(dig(node_name, caps(name)).time <= dig(node_name, HAND).time,
 			name .. " never slower than the hand on " .. node_name)
 	end
 end
 -- The hand (and every non-pick through the hand fallback): loose only.
-for _, item in ipairs({"", "default:shovel_steel", "grug_materials:axe_abyssal_steel"}) do
+for _, item in ipairs({"", "grug_materials:shovel_steel", "grug_materials:axe_abyssal_steel"}) do
 	for _, row in ipairs(M.TIERS) do
 		check(not dig_with(row.node, item).diggable, "'" .. item .. "' on " .. row.node)
 	end
@@ -366,8 +409,8 @@ for _, node_name in ipairs(loose) do
 		end
 	end
 	for _, material in ipairs({"wood", "stone"}) do
-		check(dig(node_name, caps("default:shovel_" .. material)).time <
-			dig(node_name, caps("default:pick_" .. material)).time,
+		check(dig(node_name, caps("grug_materials:shovel_" .. material)).time <
+			dig(node_name, caps("grug_materials:pick_" .. material)).time,
 			material .. " shovel beats " .. material .. " pick on " .. node_name)
 	end
 end
@@ -382,7 +425,7 @@ for tier = 1, 6 do
 end
 check(M.tool_tier_for_stack(ItemStack("grug_materials:axe_silversteel"), "axe") == 4,
 	"axe tier resolves (concentrated cultural rule)")
-check(select(2, M.tool_tier_for_stack(ItemStack("default:pick_steel"), "axe")) ==
+check(select(2, M.tool_tier_for_stack(ItemStack("grug_materials:pick_steel"), "axe")) ==
 	"wrong_family", "a pick is not an axe")
 
 -- ---------------------------------------------------------------------------
@@ -401,16 +444,16 @@ local function place(name)
 	return core.get_node(origin)
 end
 local cases = {
-	{"grug_materials:t2_stone", "default:pick_bronze", false, "Requires a T2 pick"},
+	{"grug_materials:t2_stone", "grug_materials:pick_bronze", false, "Requires a T2 pick"},
 	{"grug_materials:t2_stone", "grug_materials:pick_iron", true, nil},
-	{"grug_materials:t5_stone", "default:pick_steel", false, "Requires a T5 pick"},
-	{"default:stone_with_gold", "default:pick_wood", false, "Requires a T2 pick"},
-	{"default:stone_with_iron", "default:pick_wood", true, nil},
+	{"grug_materials:t5_stone", "grug_materials:pick_steel", false, "Requires a T5 pick"},
+	{"default:stone_with_gold", "grug_materials:pick_wood", false, "Requires a T2 pick"},
+	{"default:stone_with_iron", "grug_materials:pick_wood", true, nil},
 	{"grug_materials:stone_with_diamond", "grug_materials:pick_silversteel", true, nil},
 	{"default:stone", "", false, "Requires a T1 pick"},
 	{"default:dirt", "", true, nil},
 	{"grug_nodes:mesa_clay", "", true, nil},
-	{"grug_materials:basalt", "default:pick_wood", true, nil},
+	{"grug_materials:basalt", "grug_materials:pick_wood", true, nil},
 }
 for _, case in ipairs(cases) do
 	local node = place(case[1])
@@ -427,24 +470,24 @@ local node = place("grug_materials:t3_stone")
 check(M.punch_hint(origin, node, player("miner", "grug_abilities:strike")) == nil,
 	"skill: no hint")
 _G.grug_core = {equipment_is_broken = function(stack) return stack:get_wear() >= 65535 end}
-check(M.punch_hint(origin, node, player("miner", "default:pick_bronze", 65535)) ==
+check(M.punch_hint(origin, node, player("miner", "grug_materials:pick_bronze", 65535)) ==
 	"Your pick is broken – repair it", "broken pick: repair hint")
-check(M.punch_hint(origin, node, player("miner", "default:shovel_bronze", 65535)) ==
+check(M.punch_hint(origin, node, player("miner", "grug_materials:shovel_bronze", 65535)) ==
 	"Requires a T3 pick", "broken shovel on rock: tier hint")
 node = place("default:stone")
-check(M.punch_hint(origin, node, player("miner", "default:pick_wood", 65535)) ==
+check(M.punch_hint(origin, node, player("miner", "grug_materials:pick_wood", 65535)) ==
 	"Your pick is broken – repair it", "broken starter pick on stone: repair hint")
 node = place("grug_materials:t3_stone")
 -- Refused real dig: node kept, one line; rate limit and repeat suppression.
 chat = {}
 now_us = 10000000
-check(core.node_dig(origin, node, player("miner", "default:pick_bronze")) == false and
+check(core.node_dig(origin, node, player("miner", "grug_materials:pick_bronze")) == false and
 	core.get_node(origin).name == "grug_materials:t3_stone", "refused dig keeps node")
 check(#chat == 1 and chat[1][2] == "Requires a T3 pick", "refusal hint line")
-for _, fn in ipairs(punch_callbacks) do fn(origin, node, player("miner", "default:pick_bronze")) end
+for _, fn in ipairs(punch_callbacks) do fn(origin, node, player("miner", "grug_materials:pick_bronze")) end
 check(#chat == 1, "same line within the 1.5 s flash lifetime is not repeated")
 now_us = now_us + 1600000
-for _, fn in ipairs(punch_callbacks) do fn(origin, node, player("miner", "default:pick_bronze")) end
+for _, fn in ipairs(punch_callbacks) do fn(origin, node, player("miner", "grug_materials:pick_bronze")) end
 check(#chat == 2, "same line again once the flash has expired")
 now_us = now_us + 100000
 check(not M.emit_hint("miner", "Other line") and #chat == 2,
@@ -470,7 +513,7 @@ end
 local harvested
 M.register_on_harvest(function(event) harvested = event end)
 node = place("grug_materials:stone_with_silver")
-check(core.node_dig(origin, node, player("miner", "default:pick_steel")) == true and
+check(core.node_dig(origin, node, player("miner", "grug_materials:pick_steel")) == true and
 	harvested and harvested.resource_key == "silver" and harvested.harvest_tier == 3,
 	"allowed resource dig settles the harvest")
 -- Round 24 ruling 29 (Lane F): the tool level gate is part of the decision;
@@ -502,7 +545,7 @@ check(core.node_dig(origin, node, player("offline-miner", "")) == false and
 	#chat == 0, "offline actor: violation without a line")
 core.record_protection_violation(origin, "")
 check(#chat == 0, "non-player violation (explosion): no line")
-check(M.punch_hint(origin, node, player("miner", "default:pick_bronze")) == "Protected",
+check(M.punch_hint(origin, node, player("miner", "grug_materials:pick_bronze")) == "Protected",
 	"protected punch hint")
 protected_at[key(origin)] = nil
 
@@ -532,7 +575,7 @@ do
 	local base = {x = 100, y = 10, z = 100}
 	local nodes_under_test = {"default:dirt", "default:torch", "default:wood",
 		"grug_materials:slate", "fixture:custom_punch", "default:tree"}
-	local wields = {"", "grug_abilities:strike", "default:pick_bronze",
+	local wields = {"", "grug_abilities:strike", "grug_materials:pick_bronze",
 		"fixture:plain_item"}
 	local serial = 0
 	for _, node_name in ipairs(nodes_under_test) do
@@ -645,7 +688,7 @@ do
 			core.set_node(pos, {name = node_name})
 			protected_at[key(pos)] = protected or nil
 			chat, now_us = {}, now_us + 10000000
-			on_punch(def)(pos, core.get_node(pos), player(name, "default:pick_wood"),
+			on_punch(def)(pos, core.get_node(pos), player(name, "grug_materials:pick_wood"),
 				{type = "node"})
 			check(#chat == (protected and 1 or 0) and
 				(not protected or chat[1][2] == "Town – protected"),

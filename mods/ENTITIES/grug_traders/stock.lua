@@ -53,17 +53,17 @@ grug_traders.register_stock({item = "grug_inventory:bag_small", price = 80, cate
 grug_traders.register_stock({item = "grug_traders:potion_healing_weak", price = 8, category = "goods"})
 grug_traders.register_stock({item = "default:torch", price = 1, category = "goods"})
 
-grug_traders.register_stock({item = "default:pick_wood", price = 5, category = "tools"})
-grug_traders.register_stock({item = "default:shovel_wood", price = 5, category = "tools"})
-grug_traders.register_stock({item = "default:axe_wood", price = 5, category = "tools"})
-grug_traders.register_stock({item = "default:pick_stone", price = 10, category = "tools"})
-grug_traders.register_stock({item = "default:shovel_stone", price = 10, category = "tools"})
-grug_traders.register_stock({item = "default:axe_stone", price = 10, category = "tools"})
+grug_traders.register_stock({item = "grug_materials:pick_wood", price = 5, category = "tools"})
+grug_traders.register_stock({item = "grug_materials:shovel_wood", price = 5, category = "tools"})
+grug_traders.register_stock({item = "grug_materials:axe_wood", price = 5, category = "tools"})
+grug_traders.register_stock({item = "grug_materials:pick_stone", price = 10, category = "tools"})
+grug_traders.register_stock({item = "grug_materials:shovel_stone", price = 10, category = "tools"})
+grug_traders.register_stock({item = "grug_materials:axe_stone", price = 10, category = "tools"})
 -- The caster's half of the same below-ladder starter pair (WP13 round 2): a
 -- Priest or Mage who loses the staff its class grant gave it must be able to
 -- buy the same thing back, exactly as a Warrior can buy the stone sword above.
 -- Same price, because it is the same rung.
-grug_traders.register_stock({item = "default:pick_bronze", price = 40, category = "tools"})
+grug_traders.register_stock({item = "grug_materials:pick_bronze", price = 40, category = "tools"})
 
 -- WP10 (jobs/professions) adds the job supplies of §3.7/§8.2 from its own mod,
 -- with no change in here — the same call, once per item:
@@ -463,9 +463,9 @@ profession_shelf("smith", {
 	{"grug_materials:bronze_bar", 7},
 	{"grug_materials:iron_bar", 14},
 	{"grug_materials:steel_bar", 26},
-	{"default:pick_bronze", 40, "tools"},
-	{"default:axe_bronze", 36, "tools"},
-	{"default:shovel_bronze", 32, "tools"},
+	{"grug_materials:pick_bronze", 40, "tools"},
+	{"grug_materials:axe_bronze", 36, "tools"},
+	{"grug_materials:shovel_bronze", 32, "tools"},
 })
 
 --

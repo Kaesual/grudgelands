@@ -380,18 +380,18 @@ function grug_gear.get_sell_price(itemname)
 end
 
 local REPAIR_STARTER_PRICE = {
-	["default:pick_wood"] = 5, ["default:shovel_wood"] = 5,
-	["default:axe_wood"] = 5,
+	["grug_materials:pick_wood"] = 5, ["grug_materials:shovel_wood"] = 5,
+	["grug_materials:axe_wood"] = 5,
 	["grug_farming:hoe"] = 5,
-	["default:pick_stone"] = 10, ["default:shovel_stone"] = 10,
-	["default:axe_stone"] = 10, ["grug_farming:hoe_stone"] = 10,
+	["grug_materials:pick_stone"] = 10, ["grug_materials:shovel_stone"] = 10,
+	["grug_materials:axe_stone"] = 10, ["grug_farming:hoe_stone"] = 10,
 	["grug_inventory:quiver"] = grug_gear.BRACKETS[1].price.other,
 }
 local REPAIR_TIER_TOOL = {}
 for tier, names in ipairs({
-	{"default:pick_bronze", "default:axe_bronze", "default:shovel_bronze", "grug_farming:hoe_bronze"},
+	{"grug_materials:pick_bronze", "grug_materials:axe_bronze", "grug_materials:shovel_bronze", "grug_farming:hoe_bronze"},
 	{"grug_materials:pick_iron", "grug_materials:axe_iron", "grug_materials:shovel_iron", "grug_farming:hoe_iron"},
-	{"default:pick_steel", "default:axe_steel", "default:shovel_steel", "grug_farming:hoe_steel"},
+	{"grug_materials:pick_steel", "grug_materials:axe_steel", "grug_materials:shovel_steel", "grug_farming:hoe_steel"},
 	{"grug_materials:pick_silversteel", "grug_materials:axe_silversteel", "grug_materials:shovel_silversteel", "grug_farming:hoe_silversteel"},
 	{"grug_materials:pick_embersteel", "grug_materials:axe_embersteel", "grug_materials:shovel_embersteel", "grug_farming:hoe_embersteel"},
 	{"grug_materials:pick_abyssal_steel", "grug_materials:axe_abyssal_steel", "grug_materials:shovel_abyssal_steel", "grug_farming:hoe_abyssal_steel"},

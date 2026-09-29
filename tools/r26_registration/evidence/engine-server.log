@@ -1,0 +1,74 @@
+
+
+-------------
+  Separator
+-------------
+
+WARNING[Main]: /!\ You are using the old mod storage files backend. This backend is deprecated and may be removed in a future release /!\
+WARNING[Main]: Switching to SQLite3 is advised, please read https://docs.luanti.org/for-server-hosts/database-backends.
+ACTION[Main]: [grug_materials] 24 pick/axe/shovel tools, 12 default: tool aliases
+ACTION[Main]: [grug_gear] 6 bracket catalogs: 36 weapons + 72 armor pieces
+ACTION[Main]: [grug_mapgen] zone field: warp scale 1.0 after 1 tries (0.13 s), 76 neighbour pairs
+ACTION[Main]: [grug_mapgen] world protection: 179 road corridors (56026 segments in 3584 runs), 88 settlement cores, 3672 records in 524 cells (5034 references, at most 41 per cell), built in 0.009 s
+ACTION[Main]: [grug_mapgen] capital highcourt: area 99993 m2, built 29.2 %, plots 52 of 52 (overflowed 2, left out 0 fill, 0 buildings), required 9 of 9, relaxed 0, streets 20 (open arcs 1, cross-lanes 4, squares 6), infeasible profiles 0, connector failures 0, shore avenues 0, gate run-outs 0, wet avenue ends 0, planned in 1.00 s
+ACTION[Main]: [grug_mapgen] capital dur_brannoc: area 100005 m2, built 29.3 %, plots 52 of 52 (overflowed 7, left out 0 fill, 0 buildings), required 9 of 9, relaxed 0, streets 19 (open arcs 2, cross-lanes 3, squares 8), infeasible profiles 0, connector failures 0, shore avenues 0, gate run-outs 0, wet avenue ends 0, planned in 0.86 s
+ACTION[Main]: [grug_mapgen] capital gor_drazhak: area 99987 m2, built 30.7 %, plots 52 of 52 (overflowed 2, left out 0 fill, 0 buildings), required 9 of 9, relaxed 1, streets 18 (open arcs 0, cross-lanes 2, squares 5), infeasible profiles 0, connector failures 0, shore avenues 0, gate run-outs 0, wet avenue ends 0, planned in 1.16 s
+ACTION[Main]: [grug_mapgen] capital lethariel: area 99996 m2, built 24.7 %, plots 44 of 44 (overflowed 2, left out 0 fill, 0 buildings), required 9 of 9, relaxed 0, streets 15 (open arcs 1, cross-lanes 2, squares 6), infeasible profiles 0, connector failures 0, shore avenues 1, gate run-outs 0, wet avenue ends 0, no route: ring1/q1 ring2/q1, planned in 0.90 s
+ACTION[Main]: [grug_mapgen] capital kezamba: area 100001 m2, built 26.7 %, plots 50 of 52 (overflowed 17, left out 2 fill, 0 buildings), required 9 of 9, relaxed 0, streets 17 (open arcs 2, cross-lanes 4, squares 10), infeasible profiles 0, connector failures 0, shore avenues 0, gate run-outs 0, wet avenue ends 0, no route: ring1/q1 ring2/q1, planned in 1.04 s
+ACTION[Main]: [grug_mapgen] capital nhal_veyr: area 99993 m2, built 28.9 %, plots 51 of 52 (overflowed 3, left out 1 fill, 0 buildings), required 9 of 9, relaxed 0, streets 20 (open arcs 0, cross-lanes 4, squares 10), infeasible profiles 0, connector failures 0, shore avenues 0, gate run-outs 0, wet avenue ends 0, planned in 1.00 s
+ACTION[Main]: [grug_mapgen] protected capital cities (wall line + edge + bare band): anchor_007 126 k m2 (reach 224), anchor_008 126 k m2 (reach 222), anchor_009 160 k m2 (reach 269), anchor_010 126 k m2 (reach 221), anchor_011 125 k m2 (reach 215), anchor_012 145 k m2 (reach 265)
+ACTION[Main]: [grug_mapgen] roads: 30 roads, 40 trails (40 of 40 trail candidates), 2 loops, 0 core pins dropped, built in 6.1 s, payload 237318 bytes (with the capital streets), capital layouts 75054 bytes
+ACTION[Main]: [grug_mapgen] road showcase: serpentine (secondary) at -2074,308,-791; gallery (secondary) at -1965,225,-983; valley crossing (secondary) at 2115,158,-630; bridge (primary) at -1703,16,2223; deepest cut (secondary) at -1944,212,-1024; junction (secondary) at 2005,65,-1967; ford (trail) at 393,58,451
+ACTION[Main]: [grug_mapgen] world layouts: cache miss (no cache file), built in runtime construction 19.9 s (water 0.7 s, roads 6.1 s, capitals 6.0 s), stored grug_world_layouts.txt (440314 bytes)
+ACTION[Main]: [grug_quality] deterministic PcgRandom quality rolls enabled
+ACTION[Main]: [grug_map] rendered world map base 1080x960 in 10.73 s (zones/water 3.03 s, relief step 8 7.64 s, colour+encode 0.07 s, 562028 bytes)
+WARNING[Main]: No craft recipe known for output 'grug_gear:arrow'
+WARNING[Main]: No craft recipe known for output 'grug_mobs:light_leather'
+WARNING[Main]: No craft recipe known for output 'grug_professions:cured_leather'
+WARNING[Main]: No craft recipe known for output 'grug_mobs:heavy_leather'
+WARNING[Main]: No craft recipe known for output 'grug_mobs:scaled_hide'
+WARNING[Main]: No craft recipe known for output 'grug_professions:sleek_leather'
+WARNING[Main]: No craft recipe known for output 'grug_professions:nightscale_leather'
+WARNING[Main]: No craft recipe known for output 'grug_professions:bolt_patch'
+WARNING[Main]: No craft recipe known for output 'grug_professions:bolt_woven'
+WARNING[Main]: No craft recipe known for output 'grug_professions:bolt_heavy'
+WARNING[Main]: No craft recipe known for output 'grug_professions:bolt_silkweave'
+WARNING[Main]: No craft recipe known for output 'grug_professions:bolt_silk'
+WARNING[Main]: No craft recipe known for output 'grug_professions:bolt_stormweave'
+ACTION[Main]: [grug_professions] registered Weaponsmith, Armorsmith, Leatherworker and Tailor catalogs
+WARNING[Main]: No craft recipe known for output 'grug_artisans:seasoned_wood'
+WARNING[Main]: No craft recipe known for output 'grug_artisans:polished_wood'
+WARNING[Main]: No craft recipe known for output 'grug_artisans:hardened_wood'
+WARNING[Main]: No craft recipe known for output 'grug_artisans:inlaid_wood'
+WARNING[Main]: No craft recipe known for output 'grug_artisans:lacquered_wood'
+WARNING[Main]: No craft recipe known for output 'grug_artisans:heartwood_wood'
+ACTION[Main]: [grug_artisans] registered Woodcarver and Goldsmith catalogs
+ACTION[Main]: [grug_materials] registry audit passed: 6 tier rocks, 3 decorative rocks, 15 resources, 12 processed forms, 6 race regions, 1021 dig-matrix pairs
+ACTION[Main]: [grug_smelting] recipe audit passed: 5 cooking, 5 dualfurn, 12 storage pairs, 1 station
+ACTION[Main]: [grug_core] region cloud base: dwarf 150 (capital ground 71, authored 150), human 130 (capital ground 42, authored 130), elf 170 (capital ground 55, authored 170), undead 110 (capital ground 46, authored 110), orc 190 (capital ground 62, authored 190), troll 100 (capital ground 36, authored 100)
+ACTION[Main]: [grug_core] world preparation mode=starts cursor=0/84
+ACTION[Main]: [grug_visuals] 72 armor pieces indexed for overlays, 3 art lines x 4 slots
+ACTION[Main]: [grug_mobs] settlement work activities: tools 7, weapon families 1, all registered
+ACTION[Main]: [grug_inventory] starter weapons: mage=grug_gear:staff_bronze (2H), priest=grug_gear:staff_bronze (2H), scout=grug_gear:bow_bronze (2H), warrior=grug_gear:sword_bronze
+ACTION[Main]: [grug_traders] 12 profession shelves, 98 offers, all registered
+ACTION[Main]: [grug_traders] dwarf capital vendors come from the sockets of dur_brannoc
+ACTION[Main]: [grug_traders] elf capital vendors come from the sockets of lethariel
+ACTION[Main]: [grug_traders] human capital vendors come from the sockets of highcourt
+ACTION[Main]: [grug_traders] orc capital vendors come from the sockets of gor_drazhak
+ACTION[Main]: [grug_traders] troll capital vendors come from the sockets of kezamba
+ACTION[Main]: [grug_traders] undead capital vendors come from the sockets of nhal_veyr
+ACTION[Main]: [grug_traders] 100 settlements indexed for profession vendor appearance
+ACTION[Main]: [grug_traders] drop audit: 3 mob(s) use a `drops` FUNCTION and cannot be walked statically (grug_mobs:bandit, grug_mobs:bandit_archer, grug_mobs:poacher); their items are audited from the hardcoded FUNCTION_DROPS list
+WARNING[Main]: [grug_traders] no vendor price for dropped item 'default:apple' (dropped by grug_mobs:ashen_treant, grug_mobs:gravewood_treant) — add a _grug_sell_price to its def or a grug_traders.set_price override; traders must buy every mob drop (economy.md §3)
+WARNING[Main]: [grug_traders] no vendor price for dropped item 'default:stick' (dropped by grug_mobs:ashen_treant, grug_mobs:gravewood_treant) — add a _grug_sell_price to its def or a grug_traders.set_price override; traders must buy every mob drop (economy.md §3)
+ACTION[Main]: [grug_fishing] tables=6 entries=18 weight=100 bite=3..10s rod_uses=64
+ACTION[Main]: [grug_farming] vegetation renewal: 767 non-natural node names, tree regrowth on
+ACTION[Main]: World at [/tmp/grudgelands-headless.WDm1K3/world]
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:32924.
+ACTION[Server]: [r26_registration_probe] recipes checked: 712
+ACTION[Server]: [r26_registration_probe] trades 111, quest items 103, entity drops 169
+ACTION[Server]: [r26_registration_probe] aliases 12, tier tools 24
+ACTION[Server]: [r26_registration_probe] RESULT PASS checks=7135 failures=0
+ACTION[Server]: [grug_housing] interaction guard: node inventories on 918 nodes, right-click on 158, node form on 12; exceptions: default:sign_wall_wood, grug_housing:claim_stone, grug_materials:iron_sign_wall
+ACTION[Main]: Server: Shutting down
+ACTION[Emerge-0]: [grug_mapgen] zone field: warp scale 1.0 after 1 tries (0.14 s), 76 neighbour pairs
