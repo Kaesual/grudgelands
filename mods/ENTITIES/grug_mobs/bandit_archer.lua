@@ -74,8 +74,12 @@ archer.dogshoot_switch = 1
 archer.dogshoot_count_max = 10
 archer.dogshoot_count2_max = 3
 
-archer.walk_velocity = 4.0
+-- Round 24 ruling 20: it roams at the Bandit's calm walk (1, inherited from
+-- bandit_def) and uses 4.0 only in combat (run_velocity). A camp archer would
+-- drop to that walk beyond 25 m under the soft de-aggro, so it opts out: it
+-- keeps 4.0 for the whole fight, as it did when walk and run were both 4.0.
 archer.run_velocity = 4.0
+archer._grug_soft_deaggro = false
 archer.view_range = 16 -- it shoots; it needs to see further than a brawler
 
 local bandit_drops = archer.drops

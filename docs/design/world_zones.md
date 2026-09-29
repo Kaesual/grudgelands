@@ -96,9 +96,25 @@ in this file as of commit `082982da`.
 - **Inner start band (decided 2026-09-17):** surface mob level is exactly
   **1** at integer horizontal Euclidean distance 0–100 nodes from each of the
   six authored start anchors and exactly **2** at distance 101–150 nodes.
-  Beyond 150 nodes the zone's level field applies and continues the
-  progression toward the faction front. The outer
+  Beyond 150 nodes the start-zone gradient below applies. The outer
   starting-zone metadata remains levels **1–10**.
+- **Start-zone gradient (Round 24, decided 2026-09-29):** in the six
+  starting zones the spawn level rises from the start toward the faction
+  front instead of across the zone's whole z extent (the start sits mid-zone,
+  so the old field put levels 7–9 right behind the 150-node band). Outside
+  the start band the area behind and beside the start, out to the
+  home-facing coast, is **band 1** (its top level, 3); toward the front the
+  level rises through band 2 (4–6) and reaches band 3 (7–10) only shortly
+  before the front border, where it ends at 10 as before, so the step into
+  the next zone is unchanged. Progress is `travelled / (travelled +
+  remaining)` in cumulative thirds: `travelled` is the distance beyond the
+  150-node band weighted by how far the offset points toward the front
+  (full ahead, half beside, none behind) and `remaining` the distance along
+  the front direction (Elandor +z, Kragmar −z) to the first column of a zone
+  above the start range. The gradient is a spawn rule: `mob_level_at` uses
+  it, while the zone content level `surface_mob_level_at` that the mapgen
+  reads (level-banded plants and resources) keeps the zone field plus the
+  start band. Other zones keep their gradient.
 - The existing depth floor remains independent: underground level is the
   maximum of the local surface-zone level and the depth level from
   `combat_stats.md`.
@@ -1554,12 +1570,15 @@ numeric-truncated seed.
 
 ### 13.3 Policy and consumer adapters
 
-- `surface_mob_level_at` means the zone-based surface level of §2.
+- `surface_mob_level_at` means the zone-based surface level of §2 (the zone
+  field plus the inner start band); the mapgen's level-banded content reads
+  it.
   `terrain_height_at` means elevation. Existing
   `grug_core.surface_level_at(x,z)` already means terrain height and retains
   that semantic through the `terrain_height_at` adapter.
-- `mob_level_at(pos)` combines the surface difficulty with the independent
-  depth floor on land and zone-owned planned water. Exterior shelf returns nil
+- `mob_level_at(pos)` combines the surface difficulty (in the six starting
+  zones the start-zone gradient of §2, elsewhere `surface_mob_level_at`) with
+  the independent depth floor on land and zone-owned planned water. Exterior shelf returns nil
   at y >= 0 and the depth floor alone below y = 0. Deep ocean and dragon
   channels have no ordinary mob-level result; the Kraken Guard remains a
   separate fixed level-100 entity.

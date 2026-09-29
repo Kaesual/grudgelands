@@ -306,7 +306,7 @@ local START_REWORK = {
   day = "Plague boars churn Stillgrave's outer furrows by day. Drive off three before the retaining stones loosen, and take spare raw meat to Neral Saltkeeper by the oven."},
  orc = {wood = "default:acacia_wood", title = "Posts Beneath the Hide Racks",
   repairs = "The hide racks need new feet before another load pulls them into the dust. Bring six acacia planks from the ordinary local timber, or use boards already carried or traded.",
-  night = "Sun-dried husks walk beyond Sunscar after nightfall. Defeat three in the level-3-and-up flats before they reach the water skins. The rack repairs and optional tool lessons remain daytime work.",
+  night = "Sun-dried husks walk the far flats toward Redtusk after nightfall. Defeat three on the level-7-and-up ground near the Redtusk border before they reach the water skins. The rack repairs and optional tool lessons remain daytime work.",
   road = "At level 10, follow Redtusk Road to Redtusk Village and speak with Borak Redgrass. Redtusk Savanna is level 11–20 country, not a beginner hunting ground. Complete the conversation with Borak; this handoff requires neither a kill nor a return trip.",
   day = "Boars tear the water skins outside Sunscar by day. Drive off three and carry spare raw meat to Ugra Brothstone at the separate oven."},
  troll = {wood = "default:junglewood", title = "A Dry Frame for the Baskets",

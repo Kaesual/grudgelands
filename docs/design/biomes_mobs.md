@@ -366,7 +366,13 @@ Per family: ONE verb, level = `mob_level_at(spawn)`, stats from
 formulas, speed per combat_stats. `[leather]` = Leatherworker ×5 hook.
 Drop chances in mobs_redo format (chance N = 1/N). Working item names —
 final naming in items_crafting.md. All aggressive mobs:
-`pathfinding = 1`, `group_attack` per verb, soft de-aggro 25 m (WP6).
+`pathfinding = 1`, `group_attack` per verb. Disengagement follows
+`combat_stats.md` §4: free-roaming mobs use the ambient pursuit policy (a
+15-second incoming-damage clock plus target movement, then the run home;
+no distance give-up, no soft de-aggro), while camp members, guards, rares and
+other bound actors keep the 25 m soft de-aggro, the 45 m give-up and their
+leash. Idle, a free-roaming mob wanders within 32 nodes of its spawn point
+and roams at a calm walk (Round 24).
 
 **Natural spawn and unload distances:** an ordinary `mobs:spawn` row refuses
 positions within **24 nodes** of any connected player. An unload-eligible mob
@@ -484,7 +490,9 @@ is not "four def fields and nothing else": **the four GROUND prey mobs
 (stag, gaunt stag, zebra, mountain ram) carry `pathfinding = 1`.** §3's
 "all aggressive mobs: `pathfinding = 1`" does not reach prey by its own
 wording — prey never initiates — but once retaliation exists, a punched
-grazer runs the ordinary chase (45 m, soft de-aggro at 25 m), and
+grazer runs the ordinary ambient pursuit (`combat_stats.md` "Ambient
+pursuit policy": it fights on while incoming damage sustains the fight and
+runs home once the 15-second clock has expired and its target moves), and
 `core.find_path` is what keeps that chase from ending at the first ledge.
 Without it "worth the swing" is defeated by terrain and the leather tiers
 go back to being gated by travel. It costs nothing at rest: mobs_redo
@@ -527,10 +535,12 @@ and the Mage take damage sooner"):
   serpent). The critters see 8; the Crocodile's 6 and the Crag Eagle's 16 keep
   their own documented reasons, and the aquatic Kraken's 20 is outside the
   comparison.
-- **16 is the CEILING for a land mob, not a direction of travel.**
-  `combat_stats.md` §4 gives up a chase at 45 m and leashes at 40, and both
-  rules exist because the mob keeps a target it can no longer see; a
-  `view_range` above 16 starts eating into them.
+- **16 is the CEILING for a land mob, not a direction of travel.** Bound
+  actors (camps, guards, rares) give up a chase at 45 m and leash at 40
+  (`combat_stats.md` §4), and both rules exist because the mob keeps a target
+  it can no longer see; a `view_range` above 16 starts eating into them.
+  Free-roaming mobs end a fight by the ambient pursuit clock instead, so for
+  them a longer sight only means pulls from further away.
 
 **Settled biomes, all six (core + inner, L1–25):**
 
@@ -540,7 +550,7 @@ and the Mage take damage sooner"):
 | Rabbit/Hare (tints) | flees (**critter**, §3.0) | day | 3.4 | meat 1/1 — food only | mobs_mc_rabbit |
 | Zombie (exists) | damage-sustained pursuit; 15 s without incoming damage plus moving target | night (in grug_blight: 24 h — Undead identity) | 4.6 | zombie flesh 1/1; linen scrap 1/2; steel ingot 1/10 | mobs_mc_zombie (have) |
 | Bandit (camp humanoid; two fixed camps per race region) | defends camp (leashes to camp, group) | 24 h | 4.6 | linen cloth 1/1 ×1–2 (home camp) / heavy cloth (frontier camp); copper coins | character.b3d + bandit skins (LotT-derived) |
-| **Bandit Archer** (added 2026-09-16, ruling 3) — the same camp, one slot in three | dogshoot (ranged); view range **16** | 24 h | **4.0 walk**, like the Skeleton Archer: an archer keeps its distance rather than sprinting | the Bandit's table **plus arrows 1/3** | character.b3d + the same bandit skins; the Skeleton Archer's arrow entity, no new art |
+| **Bandit Archer** (added 2026-09-16, ruling 3) — the same camp, one slot in three | dogshoot (ranged); view range **16** | 24 h | **4.0** in combat, like the Skeleton Archer (no soft de-aggro); roams at the Bandit's calm walk 1 (Round 24) | the Bandit's table **plus arrows 1/3** | character.b3d + the same bandit skins; the Skeleton Archer's arrow entity, no new art |
 
 **Forest pair — grug_deep_forest (A) ↔ grug_bone_forest (T)** (outer,
 25–60; Throng names in parentheses, same drop tables):
@@ -551,7 +561,7 @@ and the Mage take damage sooner"):
 | Bear (Plaguehide Bear) — elite variant "Elder" ×1.6 scale, rolled **1 in 10 at spawn** | territorial (guards radius ~20 m, short chase) | day | 4.6 | meat 1/1 ×2; heavy leather 1/2 `[leather]`; bear claw 1/4 | mobs_mc_polarbear retexture |
 | Giant Spider (tints per biome; also jungle, caves) | webs (hit applies 40% slow 3 s) | night | 4.6 | spider silk 1/1 ×1–2; venom gland 1/6 | mobs_monster spider |
 | Stag (Gaunt Stag) | grazes (**passive prey**, §3.0: no aggro, retaliates) | day | 4.6 | meat 1/1 ×2; leather 1/2 `[leather]` | animalia reindeer (asset harvest) |
-| Skeleton Archer — bone forest + war coast only | dogshoot (ranged) | night | 4.0 walk | bone 1/1; linen scrap 1/2; arrows | mobs_mc_skeleton |
+| Skeleton Archer — bone forest + war coast only | dogshoot (ranged) | night | 4.0 in combat, roams at 1 | bone 1/1; linen scrap 1/2; arrows | mobs_mc_skeleton |
 | **Bone Weevil** — bone forest **and blight** (the two "creepy" biomes; one entity name, one `aoc` budget, per-biome tint stamped at spawn) | flees (**critter**, §3.0) | day | 3.4 | meat 1/1 — food only | mobs_mc_silverfish, bone-pale + blight tints |
 
 **Mountain pair — grug_crags (A) ↔ grug_badlands (T)** (outer, 25–60):
