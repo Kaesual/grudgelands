@@ -232,8 +232,9 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   override the shelf and make their complete columns immutable from world
   bottom to top. Every exterior-ocean class remains non-flyable, while planned
   zone water inherits its zone's flight rule. Claims exist only in the
-  eligible home zones (`housing.md` §2); the shelf, the ocean and the islands
-  hold none.
+  eligible home zones (`housing.md` §2). Their planned water may lie in a
+  claim; the shelf is excluded although it belongs to a zone, and the ocean
+  has no zone (Round 25 ruling 23). The islands hold no claims.
 - **R4 — Natural minerals do not regrow** (revised 2026-09-20): ores and mineral resources do
   **not** respawn. A mined-out vein is gone, everywhere, for good. The
   world does not run dry because **depth supplies without bound** (R6,
@@ -274,7 +275,9 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
 - **R5 — Active Claim Stones**: a fuelled Claim Stone provides the only
   player-owned protection (§5, `housing.md`). Inside its 101 × 101 column
   from y = −100 upward, only the owner and players on its permission list may
-  dig, build or interact; every world, faction and R1b rule is evaluated
+  act: "Interact" allows use only (doors, trapdoors, gates, chests, furnaces,
+  stations), "Everything" adds digging and building. Every world, faction and
+  R1b rule is evaluated
   first and wins over any claim permission. A claim never reaches below
   y = −100, so never the contested deep layer. When its fuel runs out the
   claim protects nothing and the ordinary territory rule applies again.
@@ -353,7 +356,8 @@ occupying a position (`world_zones.md` §7):
   mainland or island shapes. This is editable under the nearest eligible
   mainland hub's zone terrain policy. Coral, kelp and wild-source coverage
   follow `world_zones.md`'s Round 10 rules; further coastal materials and shore
-  wildlife retain their own content scope. It is never housing-claim ground.
+  wildlife retain their own content scope. Although it belongs to a zone, it
+  is never claim ground (Round 25 ruling 23).
   As exterior water it has no authored surface or guard level. Ordinary
   `mob_level_at` is nil at normalized y >= 0; harmless/fixed shore wildlife is
   independently levelled. Below normalized y = 0, shelf caves use the standard
@@ -694,18 +698,23 @@ land do not exist.
   by the Housing Manager in every capital from level 20.
 - The whole square must lie in the claimant's own faction home territory, in
   its level-11–30 zones (seven per faction), and may not touch a level-1–10 or
-  level-31+ zone, the other faction's territory, hard-protected content or a
-  POI, village or camp area. There are no housing masks and no coastal
+  level-31+ zone, a capital zone, the other faction's territory,
+  hard-protected content or a POI, village or camp area. Lakes, rivers and
+  bay water inside an eligible zone may lie in a claim; the shelf and the
+  ocean may not. There are no housing masks and no coastal
   housing areas. Claims never overlap but may touch.
 - The stone burns coal lumps or charcoal (one lump = 7 h 16 min; 99 lumps
   ≈ 30 days) as a "paid until" timestamp; server downtime counts. Without
   fuel the claim protects nothing, and anyone may destroy the stone with a
   pick.
-- While fuelled, only the owner and players on its permission list
-  ("Interact" or "Everything") may dig, build or use doors, chests and
-  stations there. World protection (§2 R1, R1b) wins over every claim
+- While fuelled, only the owner and players on its permission list may act
+  there: "Interact" allows use only (doors, trapdoors, gates, chests,
+  furnaces, stations); "Everything" adds digging and building. World
+  protection (§2 R1, R1b) wins over every claim
   permission, the owner's included: roads through a claim stay protected.
-- Nothing regrows inside an active claim; an expired claim renews normally.
+- No natural renewal (wild plants, trees) and no hostile mob spawns inside
+  an active claim; mobs may walk in. An expired claim renews and spawns
+  normally.
 - The claim can be the owner's travel-home target (§6).
 
 ## 6. Travel: innkeeper homes and deferred travel
@@ -736,8 +745,10 @@ deferred, separate travel feature.
 **Home stone** (Round 25, `housing.md` §8): the player's own Claim Stone can
 be the "travel home" target of the innkeeper return, with the same 30-minute
 cooldown. The arrival is the stone's arrival cube. When the stone is picked up
-or destroyed, the target falls back to the faction's default innkeeper, with a
-message. This replaces the former Home Stone channel (10-second cast,
+or destroyed, the target falls back to the player's bound innkeeper (the
+starting-town innkeeper when none is bound), with a message; binding an
+innkeeper also replaces a claim home. Death still respawns at the bound
+innkeeper. This replaces the former Home Stone channel (10-second cast,
 60-minute cooldown).
 
 - `/unstuck` (suicide command) remains the last resort for hard stuck

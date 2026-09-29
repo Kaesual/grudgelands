@@ -413,9 +413,10 @@ replaced; git history before this rewrite records that model.
   all inland water anew: rivers and lakes from the terrain's drainage, civic
   water as authored lakes (below). Inland and
   bay water belong to the zone around them: a wet river or lake column has the
-  zone-owned class `planned_water` (like a bay), its dry banks stay land. Shelf, bay water and every
-  road/POI exclusion are claim-ineligible. So are wet river and lake columns
-  and their **water bank**, dry land within two nodes of such a column
+  zone-owned class `planned_water` (like a bay), its dry banks stay land.
+  Shelf, bay water and every road/POI exclusion are excluded from cultural
+  reservations and gathering sources. So are wet river and lake columns and
+  their **water bank**, dry land within two nodes of such a column
   (exclusion kinds `inland_water` and `water_bank`, reason `route_or_water`,
   Round 22 Phase 5): no cultural reservation or gathering source stands in
   or right beside inland water, except content that seeks it (shore rows on
@@ -605,7 +606,8 @@ replaced; git history before this rewrite records that model.
   lies in the claimant's own level-11–30 home zones and touches no
   hard-protected content and no POI, village or camp area. Mapgen generates
   nothing housing-specific. Placed Claim Stones change nothing about
-  generation; inside an active claim nothing renews (`housing.md` §6.4).
+  generation; inside an active claim there is no natural renewal
+  (`housing.md` §6.4).
 
 ### 7.6 Height, relief and visual structure
 

@@ -1,6 +1,6 @@
 # Housing: Claim Stones
 
-Decided 2026-09-29 (Round 25, rulings 1–19 of the
+Decided 2026-09-29 (Round 25, rulings 1–26 of the
 [Round 25 housing plan](../planning/round25-housing-plan.md)). This is the
 single authoritative housing spec; it replaces the former tiered design
 completely (no tiers, unlocks, upgrades, housing masks, faction pools or
@@ -32,8 +32,8 @@ or guild land.
   band), never in T2 rock or deeper.
 - **Where** (ruling 3): the whole 101 × 101 square must lie in the
   claimant's **own faction home territory, in its level-11–30 zones**. These
-  are seven zones per faction (`world_zones.md` §8); capital city zones are
-  not among them:
+  are seven zones per faction (`world_zones.md` §8); capital zones are not
+  eligible (ruling 22):
 
   | Faction | Level 11–20 | Level 21–30 |
   |---|---|---|
@@ -46,11 +46,12 @@ or guild land.
     territory;
   - a hard-protected area (capitals, start towns, landmarks; `world.md` §2
     R1);
-  - a POI, village or camp area (at least its protected box, §9).
+  - a POI, village or camp area. Its exact exclusion footprint (at least the
+    protected box of §9) is an implementation detail.
 
-  Zone membership decides: planned water inside a zone (rivers, lakes, the
-  landward part of a bay) belongs to that zone; the exterior coastal shelf and
-  the ocean belong to no zone (`world.md` §2b).
+  **Water** (ruling 23): lakes, rivers and bay water inside an eligible zone
+  may lie in a claim. The coastal shelf may not, although it belongs to a
+  zone; the ocean has no zone and may not either (`world.md` §2b).
 - **Conservative check.** The placement check may sample coarsely and refuse
   a few legal columns near an edge. It must never let a claim reach into a
   forbidden area. The sampling step is an implementation detail; any tiny
@@ -115,7 +116,8 @@ The stone burns fuel whether anybody is near it or not (ruling 10).
   (the enemy faction still may not build in home territory; roads stay
   protected, §9). The claim still blocks other claims until the stone is
   picked up or destroyed. The owner keeps the stone's settings, may still
-  pick it up and may refuel it; refuelling makes the claim active again.
+  pick it up and may refuel it; refuelling makes the claim active again
+  (ruling 20).
 - **While fuelled** (ruling 12) only the owner can use the stone, and nobody
   can destroy it.
 - **Without fuel** anyone may destroy it with a pick. The dig time depends on
@@ -125,9 +127,9 @@ The stone burns fuel whether anybody is near it or not (ruling 10).
   |---|---:|---:|---:|---:|---:|---:|
   | Time to destroy | 60 s | 50 s | 40 s | 30 s | 20 s | 10 s |
 
-  The hand and the skill hand cannot destroy it. Destroying yields no stone;
-  the claim ends and the player may fetch a new stone from the Housing
-  Manager.
+  The hand and the skill hand cannot destroy it. A destroyed stone drops
+  nothing (ruling 21); the claim ends and the player may fetch a new stone
+  from the Housing Manager.
 - **Pick-up** is owner-only and only through the stone's own interface (§7);
   it ends the claim and returns the stone and the whole unburnt lumps (§4).
 
@@ -166,12 +168,18 @@ only when digging and placing; §6.3 covers the rest.
   is an implementation detail.
 - The protection hint shows the claim reason: **"Home of <owner> –
   protected"**.
+- Claim protection covers digging, placing and interaction only. Protection
+  against explosions and fire, liquid inflow beyond the arrival cube and
+  boundary outlines are not part of V1.
 
-### 6.4 Renewal and falling nodes
+### 6.4 Renewal, spawns and falling nodes
 
-- Nothing regrows inside an active claim (ruling 14).
+- No natural renewal (wild plants, trees) inside an active claim (ruling 14);
+  planted crops grow as usual.
 - An expired claim renews under the normal rules, so an abandoned home
   overgrows (ruling 19; `farming.md`).
+- No hostile mob spawns inside an active claim; mobs may still walk in.
+  Expired claims spawn normally (ruling 24).
 - Falling nodes follow the normal engine rules. Because the claim is unbounded
   upward, only permitted players can place anything above a home.
 - Flying: there is no claim-specific flight rule. Home territory already
@@ -184,32 +192,46 @@ only when digging and placing; §6.3 covers the rest.
 - The fuel slot (§4).
 - The remaining time to the minute, counting the current fuel stack.
 - The permission list (§6.1).
+- "Set as home": makes the claim the travel-home target (§8).
 - Pick-up (§5).
 
 ### 7.2 Housing Manager
 
-A service NPC in every capital (ruling 14). It hands out the stone (§3) and
-its dialog briefly explains the upkeep and the once-a-day rule.
+A service NPC in every capital (rulings 7, 14): the gate resident of the
+capital's tailor service plot (`settlements.md`). It serves only its
+capital's faction, hands out the stone (§3), and its dialog briefly explains
+the upkeep and the once-a-day rule. The map shows it with a "+" marker.
 
 ### 7.3 Character page status
 
 Shown only once a player has received a stone for the first time, wherever
 the player is:
 
-- the remaining fuel time;
-- in red when less than 24 h remain;
-- "Your Claim Stone needs fuel, anyone can access your home right now" when
-  the fuel is empty;
-- "Your Claim Stone has been destroyed" after destruction.
+- placed and fuelled: "Claim Stone fuel: 12 d 4 h 31 min" (example), in red
+  when less than 24 h remain;
+- placed, fuel empty: "Your Claim Stone needs fuel, anyone can access your
+  home right now";
+- destroyed: "Your Claim Stone has been destroyed";
+- carried: "Your Claim Stone is in your inventory, not placed yet";
+- none (dropped): "You have no Claim Stone; ask a Housing Manager for a new
+  one".
 
 ## 8. Home-stone travel
 
 - The player's own Claim Stone can be the "travel home" target of
   [innkeeper home travel](home_travel.md), with the usual 30-minute cooldown
-  (ruling 14).
-- The arrival is the arrival cube (§2).
+  (ruling 14). The owner sets it with "Set as home" in the stone interface;
+  the map marks a claim home with "H". An expired claim still works as a
+  target.
+- The arrival is the arrival cube (§2). If the cube is blocked, that one trip
+  goes to the bound innkeeper instead, with a message, and the cooldown is
+  charged.
 - When the stone is picked up or destroyed, the target falls back to the
-  faction's default innkeeper, with a message.
+  player's bound innkeeper (the starting-town innkeeper when none is bound),
+  with a message; an offline player gets it at the next login (ruling 26).
+  Binding an innkeeper also replaces a claim home.
+- Death always respawns at the bound innkeeper, even when the Claim Stone is
+  the travel home (ruling 25).
 
 ## 9. Relation to world protection
 
