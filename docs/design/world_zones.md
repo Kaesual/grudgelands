@@ -838,8 +838,9 @@ replaced; git history before this rewrite records that model.
   granite, slate and desert stone under meadows, elf forest and deep forest;
   slate, granite and basalt elsewhere). A 16³ lattice cell holds a
   gravel (3/5) or dirt (2/5) pocket with probability 3/10, an ellipsoid of
-  radii 2–3 × 2 × 2–3 inside the cell. Stone stays about nine voxels in ten.
-  Nothing carves caves into the fill; the seam to native v7 may cut through
+  radii 2–3 × 2 × 2–3 inside the cell. Stone stays clearly dominant
+  (measured 81 % stone plus 4 % ores in a real mountain interior, 89 % stone
+  in the fixture). Nothing carves caves into the fill; the seam to native v7 may cut through
   veins, bands and caves. Lava is unchanged.
 - **Decorative nests (Round 24, ruling 14).** Native blob ores place nests
   of `grug_materials:slate` (y −400…−40), `grug_materials:granite`

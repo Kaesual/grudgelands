@@ -235,7 +235,7 @@ local function settlement_factory()
 	-- of 2-4 nodes, its rock drawn from a small biome palette.  Slabs are
 	-- keyed by zone, so a zone's layers line up across its mountains.  A
 	-- coarse 3D lattice adds an occasional gravel or dirt pocket.  Stone stays
-	-- clearly dominant (about nine voxels in ten).
+	-- clearly dominant (measured 81-89 % stone, plus ores, in interiors).
 	local R24_DEFAULT_PALETTE = {"grug_materials:slate", "grug_materials:granite",
 		"grug_materials:basalt"}
 	local function new_r24_fill_layers(full_seed)

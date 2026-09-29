@@ -36,3 +36,34 @@ checks:
 
 `R24_PRINT_KAT=1` prints the layer digest without enforcing it (use after a
 deliberate rule change, then update `LAYER_KAT`).
+
+## Engine runs (`engine/`)
+
+Receipt with the numbers and renders:
+[round24-underground-fill](../../docs/research/round24-underground-fill/README.md).
+
+```sh
+GAME_REPO=<tree> SEED=10536739806879207652 OUT=<dir> \
+  BOXES="time1:-1360:1000:-1201:1159:-40:239;cliff:-1470:1050:-1400:1120:120:215;section:-1420:1052:-1180:1067:-40:225" \
+  tools/r24_fill/engine/run.sh 256 290 900
+python3 tools/r24_fill/engine/coal_table.py after <dir>/server.log
+python3 tools/r24_fill/engine/timing.py <before>/server.log <after>/server.log
+tools/r24_fill/engine/render.sh <dir> after <png dir>
+```
+
+- `probe/coalprobe` is the archived Round 24 coal probe
+  (`~/projects/grudgelands-orchestration/r24/coal-probe/`) plus an optional
+  planner scan for high terrain and steep drops (`SCAN=true`) and a stage that
+  emerges and dumps the `BOXES` (`name:x0:z0:x1:z1:y0:y1`; names starting
+  with `time` are emerged only) after the coal analysis.
+- `make_patch.py <tree>` is the archived disposable instrumentation patch plus
+  one `[r24t]` line per generated chunk: wall and process-CPU microseconds of
+  planner slice + writer and the native-v7 heightmap range.
+- `GAME_REPO` selects the staged game: the branch, or `git archive main` in a
+  scratch directory for the before run. The launcher is that tree's
+  `tools/luanti_headless.sh`.
+- `analyze.py` is the archived full report; `coal_table.py` the short table;
+  `interior_share.py` the mountain-interior shares of a dump.
+- `evidence/`: gzipped server logs of the before run (main 7d74c3e5, seed 1),
+  the final after run (seed 1) and the seed-2 after run, `coal.txt`,
+  `timing.txt`.
