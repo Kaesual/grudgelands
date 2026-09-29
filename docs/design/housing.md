@@ -44,10 +44,10 @@ or guild land.
   border. It may not touch:
   - a level-1–10 or level-31+ zone, a capital zone or the other faction's
     territory;
-  - a hard-protected area (capitals, start towns, landmarks; `world.md` §2
-    R1);
-  - a POI, village or camp area. Its exact exclusion footprint (at least the
-    protected box of §9) is an implementation detail.
+  - **within 16 nodes** (ruling 27), the protected core box of a POI,
+    village or camp (§9) or the hard footprint of a capital, start town or
+    landmark (`world.md` §2 R1). The 16 nodes count in x and in z. The wide
+    blend envelopes around settlements are no claim barrier.
 
   **Water** (ruling 23): lakes, rivers and bay water inside an eligible zone
   may lie in a claim. The coastal shelf may not, although it belongs to a
@@ -245,10 +245,10 @@ wins everywhere, for the claim owner too (ruling 17).
   corridor stays protected for everyone there.
 - **POIs, villages and camps** (ruling 16) are protected in a box: their
   building core horizontally, and from 10 below the placement height to 10
-  above the template's highest node vertically. Their areas stay excluded
-  from claims (§2).
+  above the template's highest node vertically. A claim keeps 16 nodes
+  from these boxes (§2, ruling 27).
 - Hard-protected capitals, start towns and landmarks can never lie inside a
-  claim (§2).
+  claim; a claim keeps 16 nodes from their footprints too (§2).
 - Protection hints name the protecting layer: "Road – protected", "Village –
   protected" and similar for world content, "Home of <owner> – protected" for
   a claim (`items_crafting.md` §3.0.4).

@@ -206,8 +206,8 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
     keep their own R1 volume.
   - **Inside a Claim Stone claim** roads are allowed, but the road corridor
     stays protected for everyone, the claim owner included: world protection
-    wins over claim permissions. POI, village and camp areas are excluded
-    from claims (`housing.md` §2, §9).
+    wins over claim permissions. A claim keeps 16 nodes from every POI,
+    village and camp core box (`housing.md` §2, §9; Round 25 ruling 27).
 - **R2 — Peaceful enemy territory**: in level-1–30 land, an enemy faction may
   not dig or place any node, including torches and ladders. Items remain
   usable. At y = -701 and below the universal contested deep rule overrides
@@ -698,8 +698,9 @@ land do not exist.
   by the Housing Manager in every capital from level 20.
 - The whole square must lie in the claimant's own faction home territory, in
   its level-11–30 zones (seven per faction), and may not touch a level-1–10 or
-  level-31+ zone, a capital zone, the other faction's territory,
-  hard-protected content or a POI, village or camp area. Lakes, rivers and
+  level-31+ zone, a capital zone or the other faction's territory, and keeps
+  16 nodes from hard-protected footprints and from POI, village and camp
+  cores (Round 25 ruling 27; blend envelopes are no barrier). Lakes, rivers and
   bay water inside an eligible zone may lie in a claim; the shelf and the
   ocean may not. There are no housing masks and no coastal
   housing areas. Claims never overlap but may touch.

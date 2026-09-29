@@ -1,0 +1,12 @@
+# Mapgen pins on branch r25-lane-a2-claim-distance (LuaJIT, 2026-09-29).
+# Identical to tools/r25_claim_core/evidence/pins.txt (main after Lane A).
+
+tools/r24_fill/micro.lua .
+  layer KAT digest: 6a513d83211763410076f109aef4c22337989c10ccc8693e236817f172739219
+  cliff KAT digest: bfc03cb9b55572b0e0d0baa1d51d93bd5f40ce9900f8306b7d72a0b5b4cc7e74
+  native allowlist digest a1c53c2fffce197c76f99c31bba294cb006d19079ed8477378f740e8aa6dd31b
+  R24 FILL FIXTURE PASS
+tools/r23_renewal/fixture.lua        DIGEST 1745745539, RESULT PASS
+tools/r23_tree_line/fixture.lua . quick   DIGEST 1723223886, RESULT PASS
+tools/r24_protection_depth/fixture.lua .  cave rule mapgen = renewal on 876 / 877
+  columns, 576 excluded-column sites open below a floor; PASS checks=2484427

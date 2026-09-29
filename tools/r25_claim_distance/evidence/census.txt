@@ -1,0 +1,7 @@
+# tools/r25_claim_distance/census_compare.lua, LuaJIT, 2026-09-29, the two runs concurrently
+# old = c79827e4 (blend-envelope boxes, grug_zones.claim_exclusion_in)
+# new = branch r25-lane-a2-claim-distance (ruling 27: cores and hard footprints + 16)
+old: 1574 centres, capital_zone 82, high_level 31, landmark 20, low_level 280, ok 443, sea 9, shelf 87, site 184, town 438
+old: 8.23 ms per validation (census mean), 31.36 ms per accepted validation, settlement check alone 0.4 us per centre
+new: 1574 centres, capital_zone 364, high_level 44, low_level 309, ok 550, sea 9, shelf 93, site 96, town 109
+new: 9.86 ms per validation (census mean), 30.72 ms per accepted validation, settlement check alone 3.4 us per centre

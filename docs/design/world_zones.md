@@ -603,8 +603,9 @@ replaced; git history before this rewrite records that model.
 - **No housing masks** (Round 25 ruling 4). The former authored housing
   masks and the four coastal housing areas are removed from the layout and
   the zone data. Claim eligibility is `housing.md` §2 only: the whole claim
-  lies in the claimant's own level-11–30 home zones and touches no
-  hard-protected content and no POI, village or camp area. Mapgen generates
+  lies in the claimant's own level-11–30 home zones and keeps 16 nodes from
+  every hard-protected footprint and every POI, village or camp core
+  (Round 25 ruling 27). Mapgen generates
   nothing housing-specific. Placed Claim Stones change nothing about
   generation; inside an active claim there is no natural renewal
   (`housing.md` §6.4).
