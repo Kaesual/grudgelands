@@ -175,21 +175,27 @@ local function loader(directory)
 			min_z = floor(min_z) - extra, max_z = ceil(max_z) + extra}}
 
 		-- the nearest wall segment of a local column: distance, segment index,
-		-- projection parameter, and whether the column lies outside the city
+		-- projection parameter, and whether the column lies outside the city.
+		-- A segment inside a gatehouse (both ends gap points) carries no wall
+		-- and is skipped: it must not shadow the segment that runs into the
+		-- box for a column just outside it (Round 26 playtest: gaps at the
+		-- gates); the box's own columns are the gatehouse's.
 		local function nearest(lx, lz)
 			local list = buckets[bkey(floor(lx / BUCKET), floor(lz / BUCKET))]
 			if not list then return nil end
 			local best, bi, bu
 			for j = 1, #list do
 				local i = list[j]
-				local a, b = pts[i], pts[i % n + 1]
-				local vx, vz = b[1] - a[1], b[2] - a[2]
-				local l2 = vx * vx + vz * vz
-				local u = l2 > 0 and ((lx - a[1]) * vx + (lz - a[2]) * vz) / l2 or 0
-				if u < 0 then u = 0 elseif u > 1 then u = 1 end
-				local dx, dz = lx - a[1] - u * vx, lz - a[2] - u * vz
-				local d = sqrt(dx * dx + dz * dz)
-				if not best or d < best then best, bi, bu = d, i, u end
+				if not (W.gap[i] and W.gap[i % n + 1]) then
+					local a, b = pts[i], pts[i % n + 1]
+					local vx, vz = b[1] - a[1], b[2] - a[2]
+					local l2 = vx * vx + vz * vz
+					local u = l2 > 0 and ((lx - a[1]) * vx + (lz - a[2]) * vz) / l2 or 0
+					if u < 0 then u = 0 elseif u > 1 then u = 1 end
+					local dx, dz = lx - a[1] - u * vx, lz - a[2] - u * vz
+					local d = sqrt(dx * dx + dz * dz)
+					if not best or d < best then best, bi, bu = d, i, u end
+				end
 			end
 			if not best then return nil end
 			local a, b = pts[bi], pts[bi % n + 1]
@@ -304,10 +310,9 @@ local function loader(directory)
 			end
 			local d, i, u, outside = nearest(lx, lz)
 			if not d or d > HALF + 0.5 then return end
-			-- a segment inside a gatehouse (both ends gap points) carries no
-			-- wall; one that runs into it is built up to the box, which the
-			-- gatehouse owns above (Round 26 playtest: gaps at the gates)
-			if W.gap[i] and W.gap[i % n + 1] then return end
+			-- a segment that runs into a gatehouse is built up to the box, which
+			-- the gatehouse owns above (Round 26 playtest: gaps at the gates);
+			-- one inside it is never the nearest (`nearest`)
 			local head = head_of(i, u)
 			if not head and (W.lake[i] or W.lake[i % n + 1]) then return end
 			local top, slab = walk_at(i, u)
@@ -390,10 +395,9 @@ local function loader(directory)
 			end
 			local d, i, u, outside = nearest(lx, lz)
 			if not d or d > HALF + 0.5 then return end
-			-- a segment inside a gatehouse (both ends gap points) carries no
-			-- wall; one that runs into it is built up to the box, which the
-			-- gatehouse owns above (Round 26 playtest: gaps at the gates)
-			if W.gap[i] and W.gap[i % n + 1] then return end
+			-- a segment that runs into a gatehouse is built up to the box, which
+			-- the gatehouse owns above (Round 26 playtest: gaps at the gates);
+			-- one inside it is never the nearest (`nearest`)
 			local head = head_of(i, u)
 			if not head and (W.lake[i] or W.lake[i % n + 1]) then return end
 			local top, slab = walk_at(i, u)

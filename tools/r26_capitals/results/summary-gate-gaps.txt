@@ -1,0 +1,19 @@
+Round 26 playtest fix (walls against every gatehouse, no wall dipping into a river)
+tools/r26_capitals/gate_fleet.sh over tools/r25_capital_plots/results/sample200.txt,
+main 0545bed6 (gate-gaps-sample200-main.tsv) vs branch r26-w2-gate-fixes (gate-gaps-sample200-branch.tsv),
+real final ground and water per seed, the edge written without roads (see gate_gaps.lua):
+
+                           main (before)          branch (after)
+gap columns                10336 in 200 seeds     0
+leaking gates (of 4800)    2287 in 200 seeds      0
+gates the wall passes by   0                      0
+road columns by a gate     6770 in 200 seeds      1180 in 112 seeds (1 seed worse, 199 better)
+wall dips into water       188 in 110 seeds       120 in 85 seeds (43 capital-seeds worse, 100 better)
+arcade crossings           2324                   1775
+named plots left out       0                      0
+required plots missing     0                      0
+
+"dip" counts every run of wall points over water whose dry ends lie on the same bank
+(box + 4); it includes the wall clipping a river bend and short crossings of a stream
+near its source, so it is an upper bound for V-shaped dips.
+Engine: engine-gates-seed3464175725660475642/ (engine_gates.sh, all 24 gates, PASS).

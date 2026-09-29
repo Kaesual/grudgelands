@@ -5,7 +5,7 @@
 #
 #   tools/r26_capitals/gate_fleet.sh <repo> <seeds.txt> <out.tsv> [workers=3]
 #
-# About 15 s CPU and 0.5 GB per seed per worker.
+# About 40 s (idle priority, six workers) and 0.5 GB per seed per worker.
 set -eu
 repo=$1 seeds=$2 out=$3 workers=${4:-3}
 here=$(cd "$(dirname "$0")" && pwd)

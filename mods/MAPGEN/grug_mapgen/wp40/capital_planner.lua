@@ -1046,9 +1046,17 @@ local function plan_once(seed, I, opt)
 	-- stopped short of it. So the rays whose outline point lies within
 	-- GATE_WIDTH + GATE_FLAT of the gate (across its axis) move onto the
 	-- straight line through the gate at right angles to its axis, and the
-	-- next GATE_BLEND rays on either side ease back to the outline.
+	-- next GATE_BLEND rays on either side ease back to the outline. The line
+	-- keeps off the water like the outline: going out from the gate, a side
+	-- stops at the first ray beyond the box whose point on the line lies
+	-- within WALL_BANK of water (where its outline point did not), and a
+	-- blended ray that would come that near water stays on the outline.
 	do
 		local flat_w, near = {}, {}
+		local function bad(a, r)
+			local ray = RAYS[a]
+			return DW[gk(r * ray.c, r * ray.s)] < P.WALL_BANK
+		end
 		for _, g in ipairs(gates) do
 			local c0 = g.x * g.dx + g.z * g.dz
 			local function line_r(a)
@@ -1059,14 +1067,31 @@ local function plan_once(seed, I, opt)
 				local ww = -(r * ray.c - g.x) * g.dz + (r * ray.s - g.z) * g.dx
 				return r, ww
 			end
-			local run = {}
+			local cand = {}
 			for a = 1, NR do
 				local r, ww = line_r(a)
-				if r and abs(ww) <= P.GATE_WIDTH + P.GATE_FLAT then run[#run + 1] = a; flat_w[a] = r end
+				if r and abs(ww) <= P.GATE_WIDTH + P.GATE_FLAT then cand[#cand + 1] = {a, r, ww} end
+			end
+			table.sort(cand, function(u, v)
+				if abs(u[3]) ~= abs(v[3]) then return abs(u[3]) < abs(v[3]) end
+				return u[1] < v[1]
+			end)
+			local run, stopped = {}, {}
+			for _, c in ipairs(cand) do
+				local a, r, ww = c[1], c[2], c[3]
+				local side = ww < 0 and 1 or 2
+				if not stopped[side] then
+					if abs(ww) > P.GATE_WIDTH + 1 and bad(a, r) and not bad(a, R[a]) then
+						stopped[side] = true
+					else
+						run[#run + 1] = a
+						flat_w[a] = r
+					end
+				end
 			end
 			for _, a0 in ipairs(run) do
 				for d = 1, P.GATE_BLEND do
-					for _, sg in ipairs({-1, 1}) do
+					for sg = -1, 1, 2 do
 						local a = (a0 - 1 + sg * d) % NR + 1
 						if not flat_w[a] then
 							local r = line_r(a)
@@ -1084,7 +1109,8 @@ local function plan_once(seed, I, opt)
 				R[a] = max(P.R_MIN, min(rmax[a], flat_w[a]))
 			elseif near[a] then
 				local r, w = near[a][1], near[a][2]
-				R[a] = max(P.R_MIN, min(rmax[a], w * r + (1 - w) * R[a]))
+				local b = max(P.R_MIN, min(rmax[a], w * r + (1 - w) * R[a]))
+				if not bad(a, b) or bad(a, R[a]) then R[a] = b end
 			end
 		end
 		area = 0

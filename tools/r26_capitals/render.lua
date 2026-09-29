@@ -8,7 +8,8 @@
 -- is <out_dir>/<capital>.json (the plan: outline, wall, turrets, gates,
 -- streets, squares, plots with their tier, left-out plots, statistics) and
 -- <out_dir>/<capital>.layers (the final ground around the capital, one node
--- per pixel: terrain y, water surface, road class/kind), plus
+-- per pixel: terrain y, water surface, road class/kind, and the city edge the
+-- shipped writer `wp13/city_edge.lua` builds there), plus
 -- <out_dir>/timing.tsv (planner seconds per capital, from plan_all).
 local repo, seed, out_dir = arg[1], arg[2], arg[3]
 assert(repo and seed and out_dir, "usage: render.lua <repo> <seed> <out_dir> [capital ...]")
@@ -16,10 +17,12 @@ local only = {}
 for i = 4, #arg do only[arg[i]] = true end
 local here = debug.getinfo(1, "S").source:match("^@(.*)/[^/]*$") or "."
 local W = dofile(here .. "/world.lua")(repo)
+local blueprint = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/r7_capital_blueprint.lua")
 local floor, sqrt, max, min, abs = math.floor, math.sqrt, math.max, math.min, math.abs
 
 local t0 = os.clock()
 local run = W.plan(seed)
+local texts = W.planner.split(run.text .. "\n")
 io.stderr:write(("seed %s: session %.1f s, planning total %.1f s\n"):format(seed,
 	run.seconds.session, run.seconds.total))
 
@@ -104,9 +107,64 @@ for _, key in ipairs(run.order) do
 			rows_w[#rows_w + 1] = table.concat(rw, " ")
 			rows_r[#rows_r + 1] = table.concat(rr, " ")
 		end
+		-- the city edge as the shipped writer builds it on this ground (the
+		-- 4th layer, one code per column): 0 none, 1 wall face / parapet,
+		-- 2 wall walk, 3 gatehouse tower, 4 gatehouse passage, 5 turret
+		local rows_e = {}
+		do
+			local L = W.planner.deserialize(texts[plan.anchor.id])
+			local edge = blueprint.source(key, L, texts[plan.anchor.id]).overlay.make({x = AX, z = AZ})
+			local dims = W.planner.EDGE[L.kind]
+			local cells = edge.cells({min_x = AX - WIN, max_x = AX + WIN, min_z = AZ - WIN,
+				max_z = AZ + WIN}, function(x, z)
+				local t = S.terrain_height_at(x, z)
+				local wy = S.water_surface_at(x, z)
+				if wy and wy <= t then wy = nil end
+				return t, wy, S.road_column_at(x, z) == "surface"
+			end)
+			local top, air = {}, {}
+			for _, c in ipairs(cells) do
+				local k = (c.z - AZ + WIN) * N + (c.x - AX + WIN)
+				if c.name == "air" then air[k] = true
+				elseif not top[k] or c.y > top[k] then top[k] = c.y end
+			end
+			local function boxed(lx, lz)
+				for g = 1, 4 do
+					local G = L.gates[g]
+					local dd = (lx - G.x) * G.dx + (lz - G.z) * G.dz
+					local ww = -(lx - G.x) * G.dz + (lz - G.z) * G.dx
+					if abs(dd) <= dims.depth + 0.5 and abs(ww) <= dims.width + 0.5 then return true end
+				end
+				return false
+			end
+			local function turret(lx, lz)
+				local r = dims.turret or 0
+				for _, i in ipairs(L.wall.turrets) do
+					local p = L.wall.pts[i]
+					local dx, dz = lx - p[1], lz - p[2]
+					if dx * dx + dz * dz <= r * r + 1 then return true end
+				end
+				return false
+			end
+			for iz = 0, N - 1 do
+				local re = {}
+				for ix = 0, N - 1 do
+					local k = iz * N + ix
+					local code = 0
+					if top[k] then
+						local lx, lz = ix - WIN, iz - WIN
+						if boxed(lx, lz) then code = air[k] and 4 or 3
+						elseif turret(lx, lz) then code = 5
+						else code = air[k] and 2 or 1 end
+					end
+					re[ix + 1] = code
+				end
+				rows_e[#rows_e + 1] = table.concat(re, " ")
+			end
+		end
 		write(out_dir .. "/" .. key .. ".layers", ("%d %d %d\n"):format(N, AX - WIN, AZ - WIN) ..
 			table.concat(rows_t, "\n") .. "\n" .. table.concat(rows_w, "\n") .. "\n" ..
-			table.concat(rows_r, "\n") .. "\n")
+			table.concat(rows_r, "\n") .. "\n" .. table.concat(rows_e, "\n") .. "\n")
 		local raster_s = os.clock() - tr
 		-- the plan
 		local J = {key = key, seed = seed, anchor = {x = AX, z = AZ}, window = WIN,
