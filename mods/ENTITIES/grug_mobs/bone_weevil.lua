@@ -98,8 +98,10 @@ end
 
 -- §3.0's numbers for the four new critters: interval 20 / chance 2200 /
 -- aoc 2, day (`min_light 10`). As a SURFACE critter this row takes §4's 0.75
--- surface-density multiplier (WP37 remainder, Round 26 ruling 15): chance
--- 2200 x 0.75 = 1650, the value §4 prints; aoc stays 2. The cave critters
+-- surface-density multiplier (WP37 remainder, Round 26 ruling 15), i.e.
+-- 0.75 x the density, and as `chance` is one spawn per N tries that is
+-- 2200 / 0.75 = 2933 (user ruling 2026-09-29; §4 printed 1650, the
+-- inverse); aoc stays 2. The cave critters
 -- keep 2200 (cave_bat.lua). TWO ROWS, ONE BUDGET — mobs_redo counts the
 -- cap per entity name, so bone forest and blight share the same 2 the way
 -- the Skeleton Archer's two node lists share theirs (§4).
@@ -116,7 +118,7 @@ mobs:spawn({
 	nodes = {"grug_nodes:dirt_with_bone_litter"}, -- grug_bone_forest
 	min_light = 10,
 	interval = 20,
-	chance = 1650,
+	chance = 2933,
 	active_object_count = 2,
 	min_height = 0,
 	max_height = 600,
@@ -128,7 +130,7 @@ mobs:spawn({
 	nodes = {"grug_nodes:blight_dirt"}, -- grug_blight
 	min_light = 10,
 	interval = 20,
-	chance = 1650,
+	chance = 2933,
 	active_object_count = 2,
 	min_height = 0,
 	max_height = 600,

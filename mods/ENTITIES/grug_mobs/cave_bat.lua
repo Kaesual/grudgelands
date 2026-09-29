@@ -87,10 +87,10 @@ grug_mobs.register_mob("grug_mobs:cave_bat", bat)
 -- accident of the 0.75 pass: this is an `underground`-ONLY
 -- row, and §4's header excludes every row that reaches the caves from the
 -- surface-density multiplier, because cave pressure is the §4.1 depth
--- pulse's to own. So this number must NOT be multiplied by WP37 — doing so
--- would refill the underground cell (calibrated to exactly 12/12, the night
--- peak) a third faster. Same for cave_crawler.lua; the two SURFACE critters
--- (bone_weevil.lua, bog_fowl.lua) are the ones §4 prints at 1650.
+-- pulse's to own. So this number must NOT be scaled by WP37 — doing so
+-- would move the underground cell (calibrated to exactly 12/12, the night
+-- peak). Same for cave_crawler.lua; the two SURFACE critters
+-- (bone_weevil.lua, bog_fowl.lua) take it: chance 2933 (0.75 x density).
 -- This is the FIRST of the two cave rows and the one that keeps the
 -- full aoc 2; the Cave Crawler ships at 1 so the cell lands exactly on the
 -- night peak instead of one over it (cave_crawler.lua carries the

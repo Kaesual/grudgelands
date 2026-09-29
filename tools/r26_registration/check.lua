@@ -20,8 +20,9 @@
 --    silver-sandstone or mobs-utility route, and the six Wood/Stone tool
 --    routes match the recipes tools.lua registers, key for key.
 -- 5. Loads the real spawn roster (tools/r24_density_xp/roster.lua) and checks
---    the WP37 remainder (ruling 15): the two surface critters at chance 1650
---    (2200 x 0.75), aoc unchanged, the two cave critters still at 2200.
+--    the WP37 remainder (ruling 15): the two surface critters at chance 2933
+--    (2200 / 0.75: 0.75 x density, chance is 1-in-N), aoc unchanged, the two
+--    cave critters still at 2200.
 -- Prints "R26 REGISTRATION CHECK PASS checks=<n>" or raises.
 
 local repo = assert(arg and arg[1], "usage: tools/r26_registration/check.sh")
@@ -268,7 +269,7 @@ end
 -- ---------------------------------------------------------------------------
 local roster = dofile(repo .. "/tools/r24_density_xp/roster.lua")(repo)
 check(#roster.failed == 0, "roster loads: " .. table.concat(roster.failed, "; "))
-local expected = {["grug_mobs:bone_weevil"] = {1650, 2}, ["grug_mobs:bog_fowl"] = {1650, 1},
+local expected = {["grug_mobs:bone_weevil"] = {2933, 2}, ["grug_mobs:bog_fowl"] = {2933, 1},
 	["grug_mobs:cave_bat"] = {2200, 1}, ["grug_mobs:cave_crawler"] = {2200, 1}}
 local seen = {}
 for index, row in ipairs(roster.raw_rows) do
