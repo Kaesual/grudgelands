@@ -1,0 +1,12 @@
+fixture.txt           luajit tools/r25_home_stone/fixture.lua <repo> on the lane branch.
+engine-*.txt/.log.gz  the single engine run (tools/r25_home_stone/engine/run.sh, 300 s cap,
+                      fresh world, seed 9468182921529744141), 2026-09-29.
+
+The engine run logged 12/13 ok and "RESULT FAIL": the one failure was the
+probe's own cooldown check, which required exactly 1800 s on the wall clock;
+the poll ran one second after the charge and read 1799 (logged right above
+it: "remaining 1799"). The probe now accepts >= 1795. No rerun was made (lane
+budget: one engine run). Every behaviour check passed on the real engine:
+load order with grug_housing, arrival in the cube above a real stone node at
+feet (40,260.51,-2510), the blocked-cube fallback to the Dawnmere innkeeper
+with its message, and the destroyed-claim reset with its message.

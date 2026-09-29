@@ -1,0 +1,20 @@
+ACTION[Server]: [r25_home_probe] ok   grug_home exports the claim API
+ACTION[Server]: [r25_home_probe] ok   probe player starts with the innkeeper home
+ACTION[Server]: [r25_home_probe] ok   set_home_claim refuses without a placed claim
+ACTION[Server]: [r25_home_probe] sky pocket emerged in 2.5 s at (40,260,-2510)
+ACTION[Server]: [r25_home_probe] ok   set_home_claim: Your Claim Stone is now your home. It has no fuel, but you can still travel there.
+ACTION[Server]: [r25_home_probe] arrival_pos (40,261,-2510), expected feet (40,260.51,-2510), node there air
+ACTION[Server]: [r25_home_probe] ok   return_home accepted
+ACTION[Server]: [r25_home_probe] after travel: pos (40,260.51,-2510) remaining 1799
+ACTION[Server]: [r25_home_probe] ok   teleported into the arrival cube
+ERROR[Server]: [r25_home_probe] FAIL 30-minute cooldown charged
+ACTION[Server]: [r25_home_probe] ok   blocked: return_home accepted
+ACTION[Server]: [r25_home_probe] chat: Your Claim Stone's arrival is blocked. Returning to the Dawnmere Innkeeper instead.
+ACTION[Server]: [r25_home_probe] after blocked travel: pos (12,36.51,-2541)
+ACTION[Server]: [r25_home_probe] ok   blocked: fallback message
+ACTION[Server]: [r25_home_probe] ok   blocked: arrived at the Dawnmere innkeeper
+ACTION[Server]: [r25_home_probe] ok   blocked: claim stays the home
+ACTION[Server]: [r25_home_probe] chat: Your Claim Stone has been destroyed. Your home is now the Dawnmere Innkeeper.
+ACTION[Server]: [r25_home_probe] ok   destroyed: home is the innkeeper again
+ACTION[Server]: [r25_home_probe] ok   destroyed: message Your Claim Stone has been destroyed. Your home is now the Dawnmere Innkeeper.
+ACTION[Server]: [r25_home_probe] RESULT FAIL checks=13 failures=1

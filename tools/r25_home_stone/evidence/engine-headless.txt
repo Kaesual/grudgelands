@@ -1,0 +1,8 @@
+staged probe: grug_probe_r25_home_stone
+headless boot: FAIL [ERROR lines] (port 37819, 300 s)
+log: /tmp/grudgelands-headless.A0LNJb/server.log
+seed = 9468182921529744141
+251:ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:37819.
+262:ERROR[Server]: [r25_home_probe] FAIL 30-minute cooldown charged
+kept: /tmp/grudgelands-headless.A0LNJb
+failed boot evidence: /tmp/grudgelands-headless-failed/grudgelands-headless.A0LNJb

@@ -38,6 +38,7 @@ core.register_on_player_receive_fields(function(player,formname,fields)
  if fields.bind then
   grug_home.cancel(player)
   player:get_meta():set_string("grug_home:id",row.id)
+  grug_home.clear_home_claim(player)
   core.show_formspec(name,formname,form(player,row))
  end
  return true
