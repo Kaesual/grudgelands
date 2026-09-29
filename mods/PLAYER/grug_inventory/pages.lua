@@ -58,14 +58,14 @@ end
 -- grug_inventory.equipment_slots, so a new slot is one entry there plus one
 -- row here.
 local SLOT_POS = {
-	grug_head = {8.3, 1.1},
-	grug_chest = {8.3, 2.3},
-	grug_legs = {8.3, 3.5},
-	grug_feet = {8.3, 4.7},
-	grug_weapon = {9.3, 1.1},
-	grug_offhand = {9.3, 2.3},
-	grug_trinket1 = {9.3, 3.5},
-	grug_trinket2 = {9.3, 4.7},
+	grug_head = {8.3, 1.85},
+	grug_chest = {8.3, 3.05},
+	grug_legs = {8.3, 4.25},
+	grug_feet = {8.3, 5.45},
+	grug_weapon = {9.3, 1.85},
+	grug_offhand = {9.3, 3.05},
+	grug_trinket1 = {9.3, 4.25},
+	grug_trinket2 = {9.3, 5.45},
 }
 
 -- Ghost icon per slot: drawn under an EMPTY slot's item (inventory_equipment.md
@@ -135,17 +135,17 @@ local function character_content(player)
 
 	local mesh, textures = preview_model(player)
 	local fs = {
-		("model[0,0.85;2.4,5.4;grug_preview;%s;%s;0,160]"):format(
+		("model[0,1.6;2.4,5.2;grug_preview;%s;%s;0,160]"):format(
 			esc(mesh), esc_texture_list(textures)),
-		("label[2.75,0.50;Maximum HP: %d]"):format(hp.final),
-		("label[2.75,0.95;%s]"):format(esc(mana and
+		("label[2.75,1.25;Maximum HP: %d]"):format(hp.final),
+		("label[2.75,1.70;%s]"):format(esc(mana and
 			("Maximum mana: " .. mana.final) or "Maximum rage: 100")),
-		("label[2.75,1.40;Armor: %.1f]"):format(armor.result),
-		("label[2.75,1.85;Own-level reduction: %.1f%%]"):format(armor_reduction),
-		("label[2.75,2.30;Crit: %.1f%%]"):format(crit),
-		("label[2.75,2.75;Dodge: %.1f%%]"):format(dodge),
-		("label[2.75,3.20;Money: %s]"):format(esc(grug_money.format(grug_money.get(player)))),
-		"label[8.3,0.50;Armor]label[9.3,0.50;Gear]",
+		("label[2.75,2.15;Armor: %.1f]"):format(armor.result),
+		("label[2.75,2.60;Own-level reduction: %.1f%%]"):format(armor_reduction),
+		("label[2.75,3.05;Crit: %.1f%%]"):format(crit),
+		("label[2.75,3.50;Dodge: %.1f%%]"):format(dodge),
+		("label[2.75,3.95;Money: %s]"):format(esc(grug_money.format(grug_money.get(player)))),
+		"label[8.3,1.25;Armor]label[9.3,1.25;Gear]",
 	}
 	-- Claim Stone status (Round 25 ruling 14). Neither mod depends on the
 	-- other, so grug_housing is read at build time; it returns "" until the
@@ -153,7 +153,7 @@ local function character_content(player)
 	local housing = rawget(_G, "grug_housing")
 	if housing and housing.character_status_formspec then
 		fs[#fs + 1] = housing.character_status_formspec(
-			player:get_player_name(), 2.75, 3.80)
+			player:get_player_name(), 2.75, 4.55)
 	end
 
 	for _, slot in ipairs(grug_inventory.equipment_slots) do
@@ -193,13 +193,136 @@ local function character_content(player)
 	return table.concat(fs)
 end
 
-sfinv.register_page("grug_inventory:character", {
+--
+-- Character page tabs (Round 26): "Stats" is the view above, "Effects" lists
+-- every active effect of the status icon row with its name, detail and
+-- remaining time -- the text the row itself has no room for. Same pattern as
+-- the Help page: a button row at y = 0, the selected one styled, the body
+-- below it, the choice kept in the sfinv context.
+--
+
+local CHARACTER_PAGE = "grug_inventory:character"
+local TABS = {
+	{id = "stats", label = "Stats", x = 0.0, w = 1.5},
+	{id = "effects", label = "Effects", x = 1.5, w = 1.5},
+}
+local TAB_Y, TAB_H = 0.0, 0.7
+-- Two columns of six rows fit between the tab row and the inventory at 7.0.
+local EFFECT_X = {0.2, 5.3}
+local EFFECT_Y, EFFECT_STEP, EFFECT_ROWS = 0.95, 0.95, 6
+local EFFECT_ICON = 0.8
+local NAME_CHARS, DETAIL_CHARS = 28, 34
+local TIME_COLOR = "#f0c75e"
+
+local function selected_tab(context)
+	return context.grug_character_tab == "effects" and "effects" or "stats"
+end
+
+local function clip(text, limit)
+	if #text <= limit then return text end
+	return text:sub(1, limit - 2) .. ".."
+end
+
+-- One effect's printed lines; also the rebuild key (see the globalstep below).
+local function effect_lines(effect)
+	local detail = effect.detail or ""
+	if effect.value ~= nil then
+		detail = (detail ~= "" and detail .. ": " or "") .. effect.caption .. " left"
+	end
+	local time = grug_core.status_icons.remaining_text(effect.remaining_us,
+		effect.untimed)
+	return clip(effect.name, NAME_CHARS), time,
+		clip(detail, DETAIL_CHARS)
+end
+
+function grug_inventory.effects_key(player)
+	local parts = {}
+	for _, effect in ipairs(grug_core.status_effects(player)) do
+		local name, time, detail = effect_lines(effect)
+		parts[#parts + 1] = effect.id .. "|" .. name .. "|" .. time .. "|" .. detail
+	end
+	return table.concat(parts, "\n")
+end
+
+local function effects_content(player, context)
+	local effects = grug_core.status_effects(player)
+	context.grug_effects_key = grug_inventory.effects_key(player)
+	if #effects == 0 then
+		return "label[0.2,1.0;" .. esc("No active effects. Food, elixirs, " ..
+			"skills, talents and hostile attacks show up here.") .. "]"
+	end
+	local fs = {}
+	local capacity = EFFECT_ROWS * #EFFECT_X
+	for index = 1, math.min(#effects, capacity) do
+		local effect = effects[index]
+		local column = math.floor((index - 1) / EFFECT_ROWS) + 1
+		local x = EFFECT_X[column]
+		local y = EFFECT_Y + ((index - 1) % EFFECT_ROWS) * EFFECT_STEP
+		local name, time, detail = effect_lines(effect)
+		fs[#fs + 1] = ("image[%.2f,%.2f;%.2f,%.2f;%s]"):format(x, y,
+			EFFECT_ICON, EFFECT_ICON, esc(effect.texture))
+		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(x + 0.95, y - 0.05,
+			esc(name .. "  " .. core.colorize(TIME_COLOR, time)))
+		if detail ~= "" then
+			fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(x + 0.95, y + 0.37,
+				esc(detail))
+		end
+	end
+	if #effects > capacity then
+		fs[#fs + 1] = ("label[5.3,6.65;%s]"):format(
+			esc(("... and %d more"):format(#effects - capacity)))
+	end
+	return table.concat(fs)
+end
+
+local function tab_row(selected)
+	local fs = {}
+	for _, tab in ipairs(TABS) do
+		local field = "grug_character_" .. tab.id
+		fs[#fs + 1] = grug_inventory.selected_button_style(field, tab.id == selected)
+		fs[#fs + 1] = ("button[%.2f,%.2f;%.2f,%.2f;%s;%s]"):format(
+			tab.x, TAB_Y, tab.w, TAB_H, field, esc(tab.label))
+	end
+	return table.concat(fs)
+end
+
+sfinv.register_page(CHARACTER_PAGE, {
 	title = "Character",
 	get = function(self, player, context)
-		return sfinv.make_formspec(player, context,
-			character_content(player), true)
+		local tab = selected_tab(context)
+		local body = tab == "effects" and effects_content(player, context) or
+			character_content(player)
+		return sfinv.make_formspec(player, context, tab_row(tab) .. body, true)
+	end,
+	on_player_receive_fields = function(self, player, context, fields)
+		for _, tab in ipairs(TABS) do
+			if fields["grug_character_" .. tab.id] then
+				context.grug_character_tab = tab.id
+				sfinv.set_page(player, CHARACTER_PAGE)
+				return true
+			end
+		end
 	end,
 })
+
+-- The cached inventory formspec is only re-sent when the Effects tab is the
+-- selected view AND its printed text changed: an effect came or went, a
+-- shield value moved, or a coarse remaining time ticked (whole minutes, so
+-- about once a minute). Nothing is re-sent for the Stats tab or other pages.
+local effects_elapsed = 0
+core.register_globalstep(function(dtime)
+	effects_elapsed = effects_elapsed + dtime
+	if effects_elapsed < 1 then return end
+	effects_elapsed = 0
+	for _, player in ipairs(core.get_connected_players()) do
+		local context = sfinv.contexts[player:get_player_name()]
+		if context and context.page == CHARACTER_PAGE and
+				selected_tab(context) == "effects" and
+				grug_inventory.effects_key(player) ~= context.grug_effects_key then
+			sfinv.set_player_inventory_formspec(player, context)
+		end
+	end
+end)
 
 -- The Help page lives in help.lua (dofile'd by init.lua before this file).
 

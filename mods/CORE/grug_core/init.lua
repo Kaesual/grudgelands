@@ -42,6 +42,8 @@ dofile(modpath .. "/hud_layout.lua")
 -- The shared screen flash line (skill errors, mining hints); reads hud_layout.
 dofile(modpath .. "/flash.lua")
 dofile(modpath .. "/tag_carrier.lua")
+-- The status icon registry (pure data), read by status.lua and combat_hud.lua.
+dofile(modpath .. "/status_icons.lua")
 dofile(modpath .. "/status.lua")
 dofile(modpath .. "/atmosphere.lua")
 -- After atmosphere.lua (it extends that preset table) and before

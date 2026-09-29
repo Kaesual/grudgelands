@@ -931,6 +931,15 @@ function grug_classes.start_talent_window(player, talent_id, duration)
 	local name = player:get_player_name()
 	windows[name] = windows[name] or {}
 	windows[name][talent_id] = core.get_us_time() + duration * 1e6
+	-- The window's status icon (Round 26 ruling 18) carries the same expiry;
+	-- clear_talent_windows removes it with the window.
+	local status_id = grug_core.status_icons and
+		grug_core.status_icons.TALENT_WINDOWS[talent_id]
+	if status_id and grug_core.set_status then
+		grug_core.set_status(player, status_id, {
+			label = def.name, expiry_us = windows[name][talent_id],
+		})
+	end
 	return true
 end
 
@@ -970,6 +979,16 @@ function grug_classes.clear_talent_windows(player)
 		grug_core.clear_move_immunity(player)
 	end
 	grug_core.clear_absorb_modifiers(player)
+	local per_player = windows[player:get_player_name()]
+	local status_ids = grug_core.status_icons and
+		grug_core.status_icons.TALENT_WINDOWS or {}
+	if per_player and grug_core.clear_status then
+		for talent_id in pairs(per_player) do
+			if status_ids[talent_id] then
+				grug_core.clear_status(player, status_ids[talent_id])
+			end
+		end
+	end
 	windows[player:get_player_name()] = nil
 end
 
