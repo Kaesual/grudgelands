@@ -1483,7 +1483,10 @@ one-cell settlement checks are unchanged.
     into a neighbouring quarter). Required plots (the inn, the eight service
     plots with the cook and the stable) are always placed (a capital missing
     one fails the load, named); only fields and
-    fill dressings may be left out on cramped ground. Plots never stand in
+    fill dressings may be left out on cramped ground. Placement runs in tiers
+    (required, other named buildings, fill), each through all its passes
+    (own quarter, neighbours, opposite, relaxed anywhere; fill only the first
+    two) before the next tier starts (Round 25 Lane H). Plots never stand in
     water. Lethariel's mere precinct and Kezamba's shore market stay beside
     their civic lake;
   - the edge by race: a stone curtain with turrets and gatehouses (Highcourt,

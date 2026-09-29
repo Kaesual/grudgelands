@@ -1769,52 +1769,64 @@ function M.plan(seed, I, opt)
 			end
 		end
 	end
-	-- D70 placement passes: (1) every plot in its own quarter (required,
-	-- buildings, fill); (2) what did not fit overflows into the two
-	-- neighbouring quarters (nearer first by angle order); (3) buildings
-	-- (named plots, quest texts name them) and required plots then take
-	-- relaxed legality anywhere -- never dropped; only fill pieces may be
-	-- left out.
+	-- D70 placement passes, run per tier (required plots, then the other
+	-- buildings, then fill pieces; Round 25 Lane H): (1) every plot of the
+	-- tier in its own quarter; (2) what did not fit overflows into the two
+	-- neighbouring quarters; (3) buildings (named plots, quest texts name
+	-- them) and required plots then try the opposite quarter and, failing
+	-- that, relaxed legality anywhere -- never dropped; only fill pieces may
+	-- be left out. A tier finishes all its passes before the next tier
+	-- places anything, so a required or named plot that misses its quarter
+	-- is not squeezed out by lower tiers (Kezamba's shore market, pinned to
+	-- its cenote quarter, always overflows). Where every plot fits its own
+	-- quarter the order is the plain one, required, buildings, fill.
 	local overflowed = {}
 	local function commit_plot(pl)
 		placed[#placed + 1] = pl
 		mark_plot(pl, #placed)
 	end
-	local pending = {}
-	for _, o in ipairs(order) do
-		local p = o.p
-		local pl = place_in(p, {quadrant_of[p.district]})
-		if pl then commit_plot(pl) else pending[#pending + 1] = p end
-	end
-	local pending2 = {}
-	for _, p in ipairs(pending) do
-		local q = quadrant_of[p.district]
-		local pl = place_in(p, {q % 4 + 1, (q + 2) % 4 + 1})
-		if pl then
-			pl.overflow = true
-			overflowed[#overflowed + 1] = p.id
-			commit_plot(pl)
-		else
-			pending2[#pending2 + 1] = p
+	local function place_tier(tier)
+		local pending = {}
+		for _, p in ipairs(tier) do
+			local pl = place_in(p, {quadrant_of[p.district]})
+			if pl then commit_plot(pl) else pending[#pending + 1] = p end
 		end
-	end
-	for _, p in ipairs(pending2) do
-		local pl
-		if p.required or p.kind ~= "fill" then
+		local pending2 = {}
+		for _, p in ipairs(pending) do
 			local q = quadrant_of[p.district]
-			local all = {q, q % 4 + 1, (q + 2) % 4 + 1, (q + 1) % 4 + 1}
-			pl = place_in(p, {all[4]}) or place_in(p, all, true)
+			local pl = place_in(p, {q % 4 + 1, (q + 2) % 4 + 1})
 			if pl then
-				relaxed[#relaxed + 1] = p.id
-				if pl.quadrant ~= q then pl.overflow = true; overflowed[#overflowed + 1] = p.id end
+				pl.overflow = true
+				overflowed[#overflowed + 1] = p.id
+				commit_plot(pl)
+			else
+				pending2[#pending2 + 1] = p
 			end
 		end
-		if pl then
-			commit_plot(pl)
-		else
-			left_out[#left_out + 1] = {id = p.id, required = p.required, kind = p.kind, district = p.district}
+		for _, p in ipairs(pending2) do
+			local pl
+			if p.required or p.kind ~= "fill" then
+				local q = quadrant_of[p.district]
+				local all = {q, q % 4 + 1, (q + 2) % 4 + 1, (q + 1) % 4 + 1}
+				pl = place_in(p, {all[4]}) or place_in(p, all, true)
+				if pl then
+					relaxed[#relaxed + 1] = p.id
+					if pl.quadrant ~= q then pl.overflow = true; overflowed[#overflowed + 1] = p.id end
+				end
+			end
+			if pl then
+				commit_plot(pl)
+			else
+				left_out[#left_out + 1] = {id = p.id, required = p.required, kind = p.kind, district = p.district}
+			end
 		end
 	end
+	local tiers = {{}, {}, {}}
+	for _, o in ipairs(order) do
+		local t = tiers[prio(o.p) + 1]
+		t[#t + 1] = o.p
+	end
+	for _, tier in ipairs(tiers) do place_tier(tier) end
 	st.overflowed = overflowed
 	st.reject_reasons = reasons
 	st.t.plots = os.clock() - T6
