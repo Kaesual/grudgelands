@@ -50,6 +50,12 @@ to fear. Their story will grow as more regions and encounters are completed.
 [ROADMAP.md](ROADMAP.md).*
 
 The systems above are implemented and installed in the local development build.
+[Round 25](docs/planning/round25-housing-plan.md#completion-2026-09-29) adds
+housing: from level 20 a Housing Manager in your capital hands out a Claim
+Stone. Placed in your faction's level-11–30 lands and fuelled with coal or
+charcoal, it protects a 101 × 101 home, lets you grant friends access and can
+be your travel home. Roads and the cores of villages, camps and points of
+interest are now protected for everyone.
 [Round 24](docs/planning/round24-mining-underground-mobs-plan.md#completion-2026-09-29)
 replaces fixed pick depths with stone that gets harder with depth: a pick that
 is too weak cannot dig it, loose ground can be dug by hand or shovel, and
@@ -71,14 +77,14 @@ longer-term balancing remain ongoing. A [startup correction](docs/research/round
 fixes the new fish registration and native arrow recipe binding; isolated server
 startup and the 200-arrow Basics recipe are verified.
 
-Open-world housing claims, boats, the full geographic PvP system, war fronts
-and the planned island dragon encounters are still unfinished. The current
+Boats, the full geographic PvP system, war fronts and the planned island
+dragon encounters are still unfinished. The current
 quest catalog does not yet cover the full journey through every region.
 
 <details>
 <summary>Development tracking and known caveats</summary>
 
-**Delivered:** 27 of 53 tracked work-package identities are complete; several
+**Delivered:** 28 of 53 tracked work-package identities are complete; several
 others have playable portions. This is a tracking count, not a percentage of
 game completion. The latest delivered increment is
 [Round 21](docs/research/round21-completion.md), independently reviewed and
@@ -88,7 +94,7 @@ remains separate.
 
 **Ready for further work:** the backlog identifies crafting/enchantment
 completion, carried light, recovery/rest and economy calibration as available
-next work. Housing, travel and the wider PvP/endgame content have additional
+next work. Travel and the wider PvP/endgame content have additional
 dependencies; the [roadmap](ROADMAP.md) records their order.
 
 **Caveats:** the confusing Cooking feedback now has a distinct success message;
@@ -208,7 +214,7 @@ investigations and delivery records.
 | Characters and combat | [Classes](docs/design/classes.md): abilities and resources; [Scout](docs/design/scout.md): bow and blade; [combat](docs/design/combat_stats.md): damage and defenses; [visuals](docs/design/character_visuals.md): peoples and equipment appearance. |
 | Progression and quests | [Progression](docs/design/progression.md): levels and rewards; [talents](docs/design/skill_trees.md): character builds; [quests](docs/design/quests.md): objectives, journal and credit. |
 | Items and crafting | [Items](docs/design/items_crafting.md): materials and recipes; [professions](docs/design/professions.md): trades; [stations and enchantments](docs/design/crafting_equipment_revision.md): current crafting rules; [equipment](docs/design/inventory_equipment.md): slots and bags; [durability](docs/design/durability_repair.md): wear and repair; [economy](docs/design/economy.md): money, prices and services. |
-| Wildlife and everyday life | [Biomes and mobs](docs/design/biomes_mobs.md): habitats and creatures; [farming](docs/design/farming.md): crops; [housing](docs/design/housing.md): planned homes and claims. |
+| Wildlife and everyday life | [Biomes and mobs](docs/design/biomes_mobs.md): habitats and creatures; [farming](docs/design/farming.md): crops; [housing](docs/design/housing.md): Claim Stone homes. |
 | Travel and playing together | [Mounts](docs/design/mounts.md): riding; [boats](docs/design/boats.md): planned water travel; [home travel](docs/design/home_travel.md): innkeepers and return; [parties](docs/design/parties.md): groups; [atlas](docs/design/world_map.md): maps and markers. |
 | Current revision | [Round 18 decisions](docs/design/playtest_quality_revision.md): implemented playtest-quality rules; GUI acceptance pending. |
 | Hosting | [World preparation](docs/design/world_preparation.md): generating starting areas or the full world. |

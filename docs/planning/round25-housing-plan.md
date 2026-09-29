@@ -1,9 +1,10 @@
-# Round 25 — Claim Stone Housing (WP24), draft
+# Round 25 — Claim Stone Housing (WP24)
 
 Decided with the user on 2026-09-29. This replaces the tiered design in
 [housing.md](../design/housing.md). The spec and design documents are
 rewritten to this contract before implementation starts. **Status: rulings
-1–29 fixed (2026-09-29); implementation started 2026-09-29.**
+1–29 fixed (2026-09-29); all lanes merged on local `main`, playtest pending
+([completion](#completion-2026-09-29)).**
 
 ## Rulings
 
@@ -204,3 +205,118 @@ against it from the start):
   E merges whenever it is ready.
 - Every lane gets an independent review. Engine runs are short (≤5 min).
   Mapgen-touching work (A's mask removal, E's data export) runs no PUC.
+
+## Completion (2026-09-29)
+
+All lanes are merged on local `main` (head `7270feb3`); no push (the user
+pushes). Coordinator: Claude Opus 5.5.
+
+| Lane | Merge | Evidence |
+|---|---|---|
+| F — spec and docs | `d6122c96` | [housing.md](../design/housing.md), [world.md](../design/world.md) §2 R1b |
+| A — claim core | `78f828a8` | `tools/r25_claim_core/evidence` |
+| B — interaction protection | `d9774cc9` | `tools/r25_interaction/evidence` |
+| D — home stone | `86d60b29` | `tools/r25_home_stone/evidence` |
+| C — interfaces | `fb24a08e` | `tools/r25_interfaces/evidence` |
+| G — claim spawn guard | `2b760593` | `tools/r25_spawn_guard/evidence` |
+| E — road and POI protection | `c79827e4` | `tools/r25_road_poi/evidence` |
+| A2 — claim distance | `280888ec` | `tools/r25_claim_distance/evidence` |
+| H — capital required plots | `9949e5b9` (wording `7270feb3`) | `tools/r25_capital_plots/results` |
+
+The plan requires an independent review per lane; review fix rounds are in
+the history for Lanes A, C, E, F and H.
+
+**What the player gets:** [housing.md](../design/housing.md) is the spec. In
+short: one free, soulbound Claim Stone from the Housing Manager in each
+capital from level 20; a 101 × 101 claim column in the own L11–30 home zones,
+fuelled with coal or charcoal; Interact/Everything permissions; right-click
+and inventory protection; the stone as travel home; no hostile spawns in
+active claims. Roads, bridges and POI, village and camp cores are now
+protected for everyone ([world.md](../design/world.md) §2 R1b). The housing
+masks are gone. The capital planner places every required and named building
+before fill ([settlements.md](../design/settlements.md)).
+
+### Measured comparisons
+
+- **`is_protected` with housing** (LuaJIT fixture, 2000 positions): +26 ns
+  with 0 claims and +84 ns with 50 claims
+  (`tools/r25_claim_core/evidence` at Lane A; the lane report gives +22–29
+  and +72–84 ns over repeated runs). The fixture re-run after Lane A2 records
+  +54 and +84 ns on a different set of 50 claims
+  (`tools/r25_claim_core/evidence/fixture.txt`).
+- **World-protection check with roads and POIs** (seed 4242424242, four
+  point sets): 0.85–1.16 µs without the road/POI layer, 1.05–1.69 µs in the
+  first Lane E version (`a648066c`), 1.21–1.36 µs after the early-outs.
+  Against the first version, points on roads are +29 % and the random, far
+  and deep (far above or below a road) sets are −10 %, −12 % and −28 %
+  (`tools/r25_road_poi/evidence/bench*.txt`).
+- **Placement validation:** about 10 ms (census mean 9.4–9.9 ms; engine
+  probe 9.4 ms).
+- **Eligible home spots** (1574 home-faction lattice centres, seed
+  4242424242): 443 → 550 with the ruling-27 distance instead of the blend
+  envelopes (`tools/r25_claim_distance/evidence/census.txt`).
+- **Capitals:** load failures 4 of 300 seeds on main (1.3 %) → 0 of 200;
+  named-building drops 110 → 2 on the same 200 seeds. The layout changes on
+  52–80 % of 120 seeds per capital and on all of them for Kezamba; a capital
+  whose buildings all fit their own quarter in pass 1 stays byte-identical.
+  CPU time per seed is unchanged (`tools/r25_capital_plots/results`).
+
+### Known limits and notes
+
+- Engine growth ABMs (grass spread, saplings, cactus, papyrus, moss) run in
+  active claims; only the natural renewal system is off there (ruling 28).
+- Bridge pillars and cuts more than 5 nodes below the road surface are not
+  protected (ruling 29).
+- Housing Managers appear only in a fresh world.
+- Existing worlds rebuild the layout cache and the preparation identity
+  (capital layouts changed).
+- Rare named-building drops remain where a capital quarter runs out of
+  capacity (2 in 200 seeds). The lever is the organic wall line in the
+  [BACKLOG](../../BACKLOG.md#round-25-carry-overs).
+- Further carry-overs (admin removal of claims, snow in the arrival cube,
+  touching claims and rare routes, dyadic road profiles) are in
+  [BACKLOG](../../BACKLOG.md#round-25-carry-overs).
+
+### Playtest checklist (fresh world)
+
+1. **Level 20 and the Housing Manager:** reach level 20 (play, or
+   `/xp give <name> <amount>` with the server privilege). In your capital,
+   find the Housing Manager: the gate resident of the tailor plot, marked "+"
+   on the map. Its dialog explains fuel and the once-a-day rule.
+2. **Receive the stone:** "Receive Claim Stone" gives exactly one. It cannot go
+   into a chest or bag, stays on death, and dropping it destroys it (a new
+   one comes from the Manager). The Character page shows "Your Claim Stone is
+   in your inventory, not placed yet".
+3. **Refused placement:** try to place it near a village, a start town or in
+   an L1–10 zone. It is refused with a reason.
+4. **Accepted placement:** place it in an L11–30 zone of your faction, clear
+   of settlements and with 3 × 3 × 3 air above it. Open it and add coal or
+   charcoal; the form shows the remaining time to the minute, and inserted
+   fuel cannot be taken back.
+5. **Character page:** the fuel time shows there from anywhere, in red below
+   24 h.
+6. **Permissions** (second player, if available): without permission the
+   guest cannot dig, build or open anything. With "Interact" doors, chests,
+   furnaces and stations work, digging does not. With "Everything" the guest
+   can dig and build too.
+7. **Stranger hint:** as a stranger, a chest, a door and a furnace are
+   refused with "Home of <owner> – protected" (a furnace form may still
+   open, but taking and putting are refused). Signs can still be read.
+8. **Roads:** where a road runs through the claim, digging on the road or
+   within 3 nodes beside it is refused for the owner too: "Road – protected".
+   Building next to that corridor works.
+9. **Travel home:** "Set as home" in the stone form, walk away, then use
+   **Return home** on the Map tab (30-minute cooldown). You arrive in the
+   arrival cube above the stone; the map marks the claim home with "H".
+10. **Pick up:** "Pick up stone" returns the unburnt whole lumps (on the
+    ground when the inventory is full). The travel home falls back to your
+    innkeeper with a message. A second pick-up or placement within 24 h is
+    refused.
+11. **No spawns:** at night, no hostile mobs appear inside an active claim,
+    although mobs from outside may walk in.
+12. **Settlement cores:** digging in a village, camp or POI core is refused
+    with "Village – protected" (or "Camp", "Point of interest").
+13. **Capitals:** Kezamba and the other capitals look sane; their layouts
+    changed this round.
+14. **Dragons** (optional, late game): dragon breath patches (scorch, rime)
+    still appear in the dragon arenas.
