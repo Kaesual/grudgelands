@@ -12,6 +12,16 @@
 #   <out_root>/compare/<tag>_<capital>.png          before | after
 #   <out_root>/<tag>_overview.png                   the six pairs of a seed
 # out_root defaults to tools/r26_capitals/out. About 30 s CPU per process.
+#
+# Also here: stats.py (one before/after table), check_protection.lua (the
+# protected city on the planned layouts; each render leaves layouts.txt, which
+# tools/wp13/capital_walls_probe.lua also reads). The named-drop evidence in
+# results/ comes from the Round 25 Lane H harness:
+#   tools/r25_capital_plots/fleet.sh <repo> tools/r25_capital_plots/results/sample200.txt OUT.tsv 4
+#   tools/r25_capital_plots/compare.py OUT.tsv tools/r25_capital_plots/results/sample-branch.tsv
+# (sample-branch.tsv is main's Round 25 planner; results/hard14.txt holds the
+# five seeds that failed the load before Round 25 plus the seeds that dropped a
+# named plot in earlier Round 26 iterations).
 set -euo pipefail
 export LC_ALL=C
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
