@@ -3,8 +3,7 @@
 Decided with the user on 2026-09-29. This replaces the tiered design in
 [housing.md](../design/housing.md). The spec and design documents are
 rewritten to this contract before implementation starts. **Status: rulings
-1–14 fixed; the items under "Open for discussion" are not decided yet.
-No implementation before the user's go-ahead.**
+1–19 fixed (2026-09-29). No implementation before the user's go-ahead.**
 
 ## Rulings
 
@@ -56,7 +55,12 @@ No implementation before the user's go-ahead.**
       month of real time (one lump ≈ 7 h 16 min).
     - Inserted fuel cannot be taken out again. Topping up always works up to
       the full stack.
-    - The stone keeps burning while nobody is near it.
+    - The stone keeps burning while nobody is near it. Inserted fuel becomes
+      a "paid until" timestamp in the claim registry. Protection only compares
+      that timestamp with the wall clock, so no mapblock has to be loaded and
+      nothing is replayed. Server downtime counts.
+    - When the owner picks the stone up, the unburnt whole lumps are returned.
+      If the inventory is full, they drop on the ground.
 11. **Empty fuel.**
     - All protection ends at once: anyone may dig, build and open doors and
       chests.
@@ -99,16 +103,71 @@ No implementation before the user's go-ahead.**
       already restricts flying to the own faction.
     - **Natural renewal:** nothing regrows inside an active claim.
 
-## Open for discussion
+### World protection for roads and POIs
 
-- **Road, POI and camp protection:** a small protected band around roads
-  (about ±5 nodes sideways and ±5 vertically) and around POIs, villages and
-  camps, and how to represent it cheaply.
-- **Interaction protection:** the implications of ruling 13 and possible
-  simplifications.
-- **Natural renewal in expired claims:** normal (overgrowth) or none.
-- **Picking up a stone:** do unburnt whole lumps return to the owner?
+15. **Roads are protected.** This covers roads, their bridges and future
+    waypoints.
+    - Sideways: the road's own half width plus 3 nodes of terrain on each
+      side. The open-world classes are `primary` (7 wide, so 13 protected),
+      `secondary` (5 wide, 11) and `trail` (3 wide, 9).
+    - Vertically: ±5 nodes around the road surface.
+    - The check is analytic: distance to the planned centreline segment. Each
+      segment is registered in the existing 128-node candidate grid. There is
+      no rasterisation.
+16. **POIs, villages and camps are protected.**
+    - Horizontally: their building core.
+    - Vertically: from 10 below the placement height up to 10 above the
+      highest node the POI template places.
+    - These are boxes in the same grid.
+17. **Roads inside claims** are allowed, but the road corridor stays protected
+    for everyone, the owner included. World protection wins. POI, village and
+    camp areas stay excluded from claims (ruling 3).
+18. **Interaction protection.**
+    - The engine only checks protection for digging and placing. Inside an
+      active claim, every node with a right-click action or a node inventory
+      gets one generic check, installed once at `register_on_mods_loaded`:
+      without permission the right-click is refused, and so are inventory put,
+      take and move.
+    - Nodes whose form opens on the client (furnaces, some stations) may still
+      show their form; taking and putting are refused.
+    - A short exception list exists, for example reading signs.
+    - The protection hint shows the claim reason, e.g. "Home of <owner> –
+      protected".
+19. **Renewal in expired claims** follows the normal rules, so an abandoned
+    home overgrows. Falling nodes use the normal engine rules. The upward
+    unbounded claim already means only permitted players can place anything
+    above a home.
 
 ## Lanes
 
-To be cut after the open points are settled.
+**Interface contract** (`grug_housing`, owned by Lane A; B, C and D code
+against it from the start):
+
+- `grug_housing.claim_at(pos)` → claim or nil. The claim holds `id`,
+  `owner`, `center`, `placed_at` and `paid_until`.
+- `grug_housing.is_active(claim)`.
+- `grug_housing.remaining_seconds(claim)`.
+- `grug_housing.permission(claim, name)` → `"owner"`, `"everything"`,
+  `"interact"` or nil.
+- `grug_housing.player_claim(name)` → the player's claim or nil, plus a state:
+  `never`, `carried`, `placed`, `destroyed` or `needs_stone`.
+- `grug_housing.add_fuel(claim, count)`, `grug_housing.pick_up(player)`,
+  `grug_housing.set_permission(claim, name, level)`.
+- `grug_housing.register_on_claim_changed(fn)`.
+
+| Lane | Scope | Depends on |
+|---|---|---|
+| **F — Spec and docs** | Rewrite `housing.md` to rulings 1–19. Update `items_crafting.md` (the stone item and fuel), `world_zones.md` and the mapgen docs (housing masks removed), the `world.md` protection section (roads, POIs), the WP24 and WP17 scopes in `work-package-scopes.md`, and `combat_stats.md`/`classes.md` if they mention claims. | — (first; short) |
+| **A — Claim core** | The new `grug_housing` mod: registry (mod storage) and a claim grid index; placement validation (faction home zones L11–30 by conservative sampling, hard protection, POI areas, other claims, arrival cube free, y ≥ −100); `is_protected` with permissions; fuel as "paid until"; the soulbound stone item; the daily limits; destruction times; the arrival cube (no placing, no liquid inflow); no renewal in active claims; housing masks removed from the zone data | interface first |
+| **B — Interaction protection** | Generic right-click and node-inventory guard for claims (ruling 18), the claim protection reason for the hint | A's interface |
+| **C — Interfaces** | The stone formspec (fuel slot, remaining time, permission list, pick up); the Housing Manager in the six capitals (issuing, explanation text; check whether a capital service socket exists or one must be added); the character page status | A's interface |
+| **D — Home stone** | The claim as the `grug_home` target, the 30-minute cooldown, arrival in the cube, fallback to the faction innkeeper | A's interface |
+| **E — Road and POI protection** | Rulings 15–17: the segment corridor and POI boxes in the zone authority, hint reasons ("Road – protected", "Village – protected" and so on) | — (independent of housing) |
+
+**Parallelisation.**
+- F, A and E start together. B, C and D start as soon as A has committed the
+  interface; they may work against a stub until then.
+- Merge order: F, A, then B/C/D in any order, each merged onto current main.
+  E merges whenever it is ready.
+- Every lane gets an independent review. Engine runs are short (≤5 min).
+  Mapgen-touching work (A's mask removal, E's data export) runs no PUC.
