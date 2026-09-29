@@ -1,5 +1,8 @@
 local Q = grug_quests
 local KEY = "grug_quests:state"
+-- The one tracker cap (Round 24 ruling 23): the HUD tracker, the auto-track on
+-- accept and the quest-log notice all read this constant.
+Q.MAX_TRACKED = 10
 local callbacks, busy = {}, {}
 local function load(player)
 	local state = core.deserialize(player:get_meta():get_string(KEY))
@@ -105,7 +108,7 @@ function Q.accept(player, id)
 	for _ in pairs(state.active) do count = count + 1 end
 	if count >= 20 then return false, "Your quest log is full (20 quests). Complete or abandon a quest first." end
 	state.active[id] = {}
-	if #state.tracked < 3 then state.tracked[#state.tracked + 1] = id end
+	if #state.tracked < Q.MAX_TRACKED then state.tracked[#state.tracked + 1] = id end
 	save(player, state)
 	changed(player)
 	return true
@@ -148,7 +151,9 @@ function Q.set_tracked(player, id, enabled)
 	if not state.active[id] then return false end
 	untrack(state, id)
 	if enabled then
-		if #state.tracked >= 3 then return false, "Track at most three quests." end
+		if #state.tracked >= Q.MAX_TRACKED then
+			return false, ("Track at most %d quests."):format(Q.MAX_TRACKED)
+		end
 		state.tracked[#state.tracked + 1] = id
 	end
 	save(player, state)

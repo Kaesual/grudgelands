@@ -708,6 +708,15 @@ return function(zone_field)
 				return zone_level_at(x, z, owner)
 			end
 
+			-- Power-diagram owner of any column, also over water (Round 24: the
+			-- spawn-side start-zone gradient of zones.lua walks it toward the
+			-- front). Unmemoized on purpose: runtime queries must not evict the
+			-- mapgen sample memo.
+			function session.owner_at(x, z)
+				local _, _, owner = field_sample(x, z)
+				return owner
+			end
+
 			-- Geometric land neighbours (D14), computed once per world.
 			function session.neighbors(zone_id)
 				local index = type(zone_id) == "number" and zone_id or zone_index_by_id[zone_id]

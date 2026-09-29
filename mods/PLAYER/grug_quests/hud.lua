@@ -1,12 +1,21 @@
 local huds = {}
 local elapsed = 0
 
+-- Item descriptions carry translation escapes ("\27(T@mobs)Raw Meat\27E").
+-- Resolve them to the game's English text first, so a cut never lands inside
+-- an escape and the width counts only visible characters.
+local function plain(text)
+	if core.get_translated_string then text = core.get_translated_string("en", text) end
+	if core.strip_colors then text = core.strip_colors(text) end
+	return text
+end
+
 local function objective_text(objective)
 	local subject = objective.description
 	if objective.type == "item" then
 		local def = core.registered_items[objective.item]
 		local description = def and def.description ~= "" and def.description or objective.item
-		subject = "Bring " .. (description:match("^[^\n]+") or objective.item)
+		subject = "Bring " .. (plain(description):match("^[^\n]+") or objective.item)
 	elseif objective.type == "talk" then
 		local npc = grug_quests.registered_npcs[objective.npc]
 		subject = "Speak with " .. (npc and npc.title or objective.npc)
@@ -23,39 +32,54 @@ local function objective_text(objective)
 	return ("%d/%d %s"):format(objective.count, objective.required, subject or "Objective")
 end
 
-local function wrapped_lines(text, width, limit)
-	local lines = {}
-	for line in (grug_inventory.wrap_text(text, width) .. "\n"):gmatch("(.-)\n") do
-		lines[#lines + 1] = line
+-- Cut to one HUD line of at most `width` bytes, never inside a UTF-8
+-- sequence, with "..." marking the cut.
+local function one_line(text, width)
+	text = (plain(text):match("^[^\n]*") or ""):gsub("%s+$", "")
+	if #text <= width then return text end
+	local cut = math.max(1, width - 3)
+	while cut > 1 do
+		local byte = text:byte(cut + 1)
+		if not byte or byte < 0x80 or byte >= 0xC0 then break end
+		cut = cut - 1
 	end
-	if #lines > limit then
-		lines[limit] = lines[limit]:sub(1, math.max(1, width - 3)) .. "..."
-		for i = #lines, limit + 1, -1 do lines[i] = nil end
+	return text:sub(1, cut):gsub("%s+$", "") .. "..."
+end
+
+-- One HUD line per tracked quest (Round 24 ruling 23): the objective only,
+-- no quest title, or "Return to <turn-in NPC>" once the quest is ready.
+-- Two quests with the same objective may read the same (accepted).
+function grug_quests.hud_line(quest, width)
+	local text
+	if quest.ready then
+		local npc = grug_quests.registered_npcs[quest.npc]
+		text = "Return to " .. (npc and npc.title or tostring(quest.npc))
+	else
+		local parts = {}
+		for _, objective in ipairs(quest.objectives) do parts[#parts + 1] = objective_text(objective) end
+		text = table.concat(parts, "; ")
+	end
+	return one_line(text, width)
+end
+
+-- `window` is the player's window information (nil in fixtures).
+function grug_quests.hud_text(journal, window)
+	if not journal.hud_enabled or #journal.quests == 0 then return "" end
+	local by_id, lines = {}, {}
+	local width = grug_core.hud_layout.side_text_width(window)
+	for _, quest in ipairs(journal.quests) do by_id[quest.id] = quest end
+	for _, id in ipairs(journal.tracked) do
+		local quest = by_id[id]
+		if quest and #lines < grug_quests.MAX_TRACKED then
+			lines[#lines + 1] = grug_quests.hud_line(quest, width)
+		end
 	end
 	return table.concat(lines, "\n")
 end
 
 local function render(player)
-	local journal = grug_quests.journal(player)
-	if not journal.hud_enabled or #journal.quests == 0 then return "" end
-	local by_id, lines = {}, {}
-	local layout = grug_core.hud_layout
-	local width = layout.side_text_width(core.get_player_window_information(player:get_player_name()))
-	for _, quest in ipairs(journal.quests) do by_id[quest.id] = quest end
-	for _, id in ipairs(journal.tracked) do
-		local quest = by_id[id]
-		if quest then
-			local title = quest.title .. (quest.ready and " [Ready]" or "")
-			lines[#lines + 1] = wrapped_lines(title, width, layout.QUEST_TITLE_LINES)
-			local parts = {}
-			for _, objective in ipairs(quest.objectives) do parts[#parts + 1] = objective_text(objective) end
-			local wrapped = wrapped_lines(table.concat(parts, "; "), width, layout.QUEST_OBJECTIVE_LINES)
-			for line in (wrapped .. "\n"):gmatch("(.-)\n") do
-				lines[#lines + 1] = line
-			end
-		end
-	end
-	return table.concat(lines, "\n")
+	return grug_quests.hud_text(grug_quests.journal(player),
+		core.get_player_window_information(player:get_player_name()))
 end
 
 local function refresh(player)

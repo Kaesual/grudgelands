@@ -260,8 +260,9 @@ function grug_mobs.leash_reset(self)
 			-- RUNTIME ONLY (self.temp), like the chase anchor: an evader that
 			-- gets unloaded mid-run reactivates as a plain idle mob wherever it
 			-- stood, and the machinery that would have brought it home takes
-			-- over from there — the roam cap for a camp mob (roam_check), the
-			-- next leash reset for everyone else. The alternative, a persisted
+			-- over from there — the roam cap for a camp mob and the wander
+			-- leash for a free roamer (roam_check), the next leash reset for
+			-- everyone else. The alternative, a persisted
 			-- flag, would risk saving a mob permanently untouchable, which is
 			-- the same failure mode the countdown rule in init.lua exists for.
 			self.temp = self.temp or {}
@@ -487,16 +488,47 @@ end
 -- other side either.
 local ROAM_RADIUS = 20
 
+--
+-- Wander leash (Round 24 ruling 19): free-roaming mobs idle-wander within
+-- WANDER_RADIUS of their spawn point (`_grug_home`, the first activation
+-- position, levels.lua ensure_init). It is the same idle-only nudge as the
+-- camp roam cap above, so it never touches a fight: combat pursuit keeps the
+-- ambient pursuit policy (combat_stats.md §4, the incoming-damage clock and
+-- the evade home) and there is no chase leash. Before Round 24 wildlife had
+-- an unbounded random walk, and a Redtusk Hyena (level 10+) could drift north
+-- into the Sunscar start zone.
+--
+-- 32 nodes: wider than a camp's 20 (wildlife ranges more than a camp member),
+-- small against a zone (a spawn more than 32 nodes inside a zone border keeps
+-- its mob inside the zone) and about one active mapblock pair, so a player
+-- still meets animals moving about. Only mobs bound to nothing else take it:
+-- camp members keep ROAM_RADIUS; patrollers, named rares, bosses and their
+-- summons, royals, bespoke no-leash actors (Kraken), NPCs (guards, villagers)
+-- and water-bound swimmers keep their own movement rules.
+grug_mobs.WANDER_RADIUS = 32
+
+function grug_mobs.free_roamer(self)
+	return self.type ~= "npc" and not (self._grug_camp_pos
+		or self._grug_patrol_route or self._grug_rare_id or self._grug_boss_id
+		or self._grug_boss_summon or self._grug_royal_summon
+		or self._grug_royal_king or self._grug_no_leash or self._grug_swim_dy
+		or self.tamed)
+end
+
 local function roam_check(self)
-	-- CAMP-BOUND ONLY. `_grug_camp_pos` is the identity ("I belong to that
-	-- anchor"), `_grug_home` merely a position every mob has — wildlife keeps
-	-- its unbounded wander, which is what wildlife is for.
-	if not self._grug_camp_pos then
-		return
-	end
-	-- The designated patroller is §4's one exemption: being far from its post
-	-- is its entire job (same exemption as the evade above).
-	if self._grug_patrol_route then
+	-- Camp members keep the camp radius; free-roaming mobs take the wander
+	-- leash; every other mob (see grug_mobs.free_roamer) keeps its own rules.
+	local radius
+	if self._grug_camp_pos then
+		-- The designated patroller is §4's one exemption: being far from its
+		-- post is its entire job (same exemption as the evade above).
+		if self._grug_patrol_route then
+			return
+		end
+		radius = ROAM_RADIUS
+	elseif grug_mobs.free_roamer(self) then
+		radius = grug_mobs.WANDER_RADIUS
+	else
 		return
 	end
 	-- An evading mob is already running home, faster and to a stricter target
@@ -507,8 +539,10 @@ local function roam_check(self)
 	end
 	-- Idle only: fighting, fleeing and flopping own the movement. Identical
 	-- test to route_tick's, and it is what makes this rule invisible in
-	-- combat — a guard chasing an intruder is never steered home.
-	if self.attack or (self.state ~= "stand" and self.state ~= "walk") then
+	-- combat — a guard chasing an intruder is never steered home. A mob
+	-- following something (mobs_redo `following`) is not wandering either.
+	if self.attack or self.following
+			or (self.state ~= "stand" and self.state ~= "walk") then
 		return
 	end
 	local home = self._grug_home
@@ -519,7 +553,7 @@ local function roam_check(self)
 	-- Horizontal only, like the evade: a mob on the ledge above its fire is
 	-- not stray.
 	local dx, dz = pos.x - home.x, pos.z - home.z
-	if dx * dx + dz * dz <= ROAM_RADIUS * ROAM_RADIUS then
+	if dx * dx + dz * dz <= radius * radius then
 		return
 	end
 	grug_mobs.walk_toward(self, home.x, home.z, pos)
@@ -548,10 +582,11 @@ function grug_mobs.leash_tick(self, dtime)
 	if t.grug_engaged then
 		grug_core.prune_engagement(self)
 	end
-	-- Idle roam cap (world.md §4a). Also BEFORE the no-leash early return:
-	-- being bound to an anchor is not the same question as being leashed to a
-	-- chase, and a camp family that ever opts out of the leash must still
-	-- stay at its camp. Costs one field test for every other mob.
+	-- Idle roam cap (world.md §4a) and wander leash (Round 24). Also BEFORE
+	-- the no-leash early return: being bound to an anchor is not the same
+	-- question as being leashed to a chase, and a camp family that ever opts
+	-- out of the leash must still stay at its camp. Costs a few field tests
+	-- and, for an idle free roamer, one squared distance.
 	roam_check(self)
 	-- The evade run (leash_reset above). BEFORE the no-leash early return only
 	-- for symmetry with the two rules above — a `_grug_no_leash` mob never

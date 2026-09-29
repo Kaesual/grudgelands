@@ -40,8 +40,10 @@ poacher.animation.shoot_speed = poacher.animation.punch_speed
 poacher.dogshoot_switch = 1
 poacher.dogshoot_count_max = 10
 poacher.dogshoot_count2_max = 3
-poacher.walk_velocity = 4.0
+-- Round 24 ruling 20: roams at the Bandit's calm walk (1, from bandit_def),
+-- 4.0 only in combat; no soft de-aggro, as for the Bandit Archer.
 poacher.run_velocity = 4.0
+poacher._grug_soft_deaggro = false
 poacher.view_range = 16
 local poacher_drops = poacher.drops
 poacher.drops = function(pos)
@@ -80,8 +82,10 @@ local frost_stray = common_ground({
 	dogshoot_switch = 1,
 	dogshoot_count_max = 10,
 	dogshoot_count2_max = 3,
-	walk_velocity = 4.0,
+	-- Calm roaming walk, 4.0 in combat (Round 24 ruling 20).
+	walk_velocity = 1,
 	run_velocity = 4.0,
+	_grug_soft_deaggro = false,
 	view_range = 16,
 	visual = "mesh",
 	mesh = "grug_mobs_skeleton.b3d",

@@ -905,7 +905,7 @@ territory.
   vendor discount is invisible for the first ten hours): **one visible
   passive per race** + the vendor discount as a bonus. Passives
   (implementation: WP19, race registry hook): Dwarf −20% fall damage, applied
-  after the max-HP fall conversion and before absorb (`combat_stats.md` §2) ·
+  after the max-HP fall conversion; absorb never applies to fall damage (`combat_stats.md` §2) ·
   Troll +50% out-of-combat regen · Undead ignored by zombies at night
   (unless the player attacked that zombie) · Orc +1 rage per hit taken ·
   Elf +5 m ability range (**ranged/spell abilities only** — melee abilities

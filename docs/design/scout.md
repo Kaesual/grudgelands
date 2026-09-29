@@ -301,8 +301,11 @@ still apply; this change does not raise the cap.
 `classes.md:439-441`: "Frost Nova became the rotation pivot — **kiting IS the
 Mage fantasy here**." Kiting is a function of the same one inequality. The
 mob-pressure task card proposes making mobs "a bit faster"; every 0.1 the mob
-gains, the Mage's Frost Nova window loses, and the 25 m soft de-aggro
-(`combat_stats.md:328-330`) becomes harder to reach in the same proportion.
+gains, the Mage's Frost Nova window loses. Against camp members and other
+bound actors the 25 m soft de-aggro (`combat_stats.md` §3) becomes harder to
+reach in the same proportion; free-roaming mobs have no distance rule at all
+and disengage only by the ambient pursuit clock (`combat_stats.md` "Ambient
+pursuit policy": 15 s without incoming damage while the target moves).
 The Scout's Sprint pushes from the other side, with a cooldown long enough
 that it cannot be the answer to an ordinary fight. **Rule needed before any
 mob speed changes**: the root duration, the soft-de-aggro distance and the mob

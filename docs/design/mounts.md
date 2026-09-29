@@ -9,7 +9,9 @@ ocean/dragon-island integration in `world.md`, the complete open-world Claim
 Stone contract in `housing.md`, the playable-boat contract in
 `boats.md`, the four mastery names in `items_crafting.md` §2.1,
 universal skills `professions.md` §1, the mob speed pillar
-`combat_stats.md` §3 and the chase/leash model `combat_stats.md` §4.
+`combat_stats.md` §3 and the pursuit rules of `combat_stats.md` §4 and its
+"Ambient pursuit policy" (free-roaming mobs: incoming-damage clock, no chase
+leash; bound actors: leash and give-up distance).
 
 ## 1. Riding is a universal skill
 

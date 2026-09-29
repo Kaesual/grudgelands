@@ -6,7 +6,8 @@ local glowwing = {
 	_grug_tier = "normal", _grug_spawn_domains = {"underground"},
 	attack_type = "dogfight", attack_players = true, group_attack = true,
 	reach = 2, fly = true, fly_in = {"air"}, physical = false,
-	walk_velocity = 4, run_velocity = 6, jump = false, fear_height = 0,
+	-- Calm roaming flight, full speed only in combat (Round 24 ruling 20).
+	walk_velocity = 2, run_velocity = 6, jump = false, fear_height = 0,
 	view_range = 12,
 	visual = "mesh", mesh = "grug_mobs_glowwing.b3d", glow = 6,
 	textures = {{"grug_mobs_glowwing.png^[colorize:#73e8ff:65"}},

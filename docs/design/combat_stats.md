@@ -132,8 +132,8 @@ anything). Item enchants (+Str etc.) are the player-driven part.
     negative fall change of `r` settles as `ceil(max_hp × r / 20)`. Native zero
     stays zero and there is no 100%-of-pool cap. This preserves the engine's
     impact-derived input rather than reconstructing block distance. The Dwarf
-    multiplier of 0.8 then rounds up, followed by absorb; armor and dodge never
-    apply. A shield therefore always soaks *post*-mitigation
+    multiplier of 0.8 then rounds up; armor, dodge and the absorb shield never
+    apply (see "Environmental damage" below). For hits, a shield therefore always soaks *post*-mitigation
     damage, i.e. shield points are worth full damage rather than pre-armor
     damage.
   - **Rounding: the reduced damage rounds up**, so armor alone can never
@@ -213,12 +213,36 @@ Two optional target-race systems use the central pipeline:
 
 ### Environmental damage, deaths and shore movement
 
+Environmental damage to players scales with the **actual** pool
+(`player:get_properties().hp_max`, maximum HP below). Mob damage from nodes is
+unchanged (mobs_redo applies its own node damage).
+
 - A player whose head point is inside an opaque, walkable, non-liquid full
   regular cube takes **floor(5% of maximum HP) per second, minimum 1 HP**.
   Thin doors, panes, shutters, meshes, non-walkable plants, liquids and nodes
   explicitly opting out do not suffocate. The
   character-creation stasis state and players holding the `noclip` privilege
   are exempt.
+- **Lava** (Round 24 ruling 24): **ceil(20% of maximum HP) per second**. The
+  engine's once-per-second node-damage tick keeps its cadence, but its flat
+  `damage_per_second` (8) is replaced, not added to. The engine picks the
+  strongest damaging node among the player's body points, so standing in
+  several lava nodes is still one hit per second. A full pool therefore lasts
+  at most five ticks.
+- **Drowning** (ruling 24): once the engine has run the breath out (it removes
+  one breath every 2 s while the head is in a `drowning` node), the player
+  takes **ceil(10% of maximum HP) per second** — at most ten ticks from a full
+  pool. The engine's own flat drown hit (every 2 s) is cancelled; Grudgelands
+  deals the per-second tick instead, under the engine's own conditions (head
+  node with `drowning > 0`, zero breath, not immortal, the `drowning` player
+  flag on). Lava also has `drowning`, so a submerged head in lava takes both.
+- Fall damage is the pool conversion in §2 above
+  (`ceil(max_hp × r / 20)`, then the Dwarf multiplier).
+- **Armor never reduces** fall, lava, drowning or suffocation (armor is
+  punch-only, §2). **The absorb shield never absorbs fall, lava or drowning
+  damage**; other sources (hits, suffocation, authored ground effects such as
+  dragon scorch) still consume it. Both shares round up and deal at least 1 HP
+  for any positive pool.
 - Every player death sends exactly **one** short English line to all players.
   The selected template distinguishes fall, drowning, lava/fire node damage,
   suffocation, a mob punch (using the mob's display name), a player punch
@@ -411,8 +435,20 @@ Normal tier at level L:
   pursuit policy of §4. Current definition
   sites for the changed families: `grug_mobs/stag.lua:21`, `ram.lua:26`, `zebra.lua:20`,
   `carrion_crow.lua:54`, `zombie.lua:29` and `golem.lua:87`; the exceptions
-  are `bandit_archer.lua:78`, `skeleton_archer.lua:81`,
+  are `bandit_archer.lua:81`, `skeleton_archer.lua:88`,
   `skeleton_raider.lua:52`, `bog_ooze.lua:38` and `kraken.lua:54`.
+- **Roaming pace (Round 24):** every mob roams at a calm walk and uses its
+  full speed only in combat. mobs_redo moves an idle mob at `walk_velocity`
+  and a fighting one at `run_velocity`, so `walk_velocity` is at most
+  **2.5** (`grug_mobs.CALM_WALK_MAX`, checked at registration; hand-set
+  encounter actors such as the Kraken, the dragons and the royals keep their
+  bespoke tuning). The ranged families (Bandit Archer, Poacher, Skeleton
+  Archer, Skeleton Raider, Frost Stray) roam at **1** and keep **4.0** for the
+  whole fight: they opt out of the bound-actor soft de-aggro, the one combat
+  reader of `walk_velocity` besides the wedged-path crawl that `dogshoot`
+  never enters. Flying mobs also climb and dive toward a target at
+  `walk_velocity`, so the Glowwing (walk 2) changes height at 2 m/s in
+  combat (accepted).
 - **Reach**: player swing abilities (Strike, Mighty Blow and Hamstring) use
   **3 m**, and every ordinary explicit mob reach is **3 m**. The Kraken keeps
   its model-specific **4 m** and non-combatant villagers keep 0. The mobs_redo
@@ -580,7 +616,10 @@ from both sides toward the middle of the band, and both level-60 summits stay
 flat.
 Within 100 horizontal nodes of every authored start anchor the surface level
 is 1, from 101 through 150 nodes it is 2, and beyond 150 nodes the zone's
-level field applies. Capital city zones contain no ambient hostile mobs. Guards use
+level field applies; in the six starting zones `mob_level_at` uses the
+start-zone gradient instead (band 1 behind and beside the start, rising
+toward the front, band 3 only shortly before the front border;
+`world_zones.md` §2, Round 24). Capital city zones contain no ambient hostile mobs. Guards use
 the separate positional `guard_level_at` contract above; the depth formula
 does not affect that guard base. Every exterior class has no surface level.
 Shelf `mob_level_at` is nil at normalized y >= 0 and uses the depth term alone
@@ -1015,7 +1054,15 @@ Sampling state is runtime-only and cleared with the encounter. Return retains
 existing healing, invulnerability and the 40-second teleport fallback.
 Bosses/retinue, fixed guards, camp-owned mobs and location-bound rares keep their
 existing encounter/post lifecycle and bounds. No additional terrain is loaded
-to preserve a distant target. Player participation/credit rules remain separate.
+to preserve a distant target.
+
+**Wander leash (Round 24):** outside combat a free-roaming mob idles within
+**32 nodes** (`grug_mobs.WANDER_RADIUS`) of its spawn point: once it has
+wandered further it walks back with the camp roam cap's one-second nudge.
+It applies to idle standing and walking only, so pursuit keeps the policy
+above and there is no chase leash. Camp members keep their 20-node roam cap;
+patrollers, named rares, bosses and summons, royals, bespoke no-leash actors,
+NPCs and water-bound swimmers keep their own movement rules. Player participation/credit rules remain separate.
 Friendly guard healing stays deferred; current healing targets remain players.
 
 ## Out-of-combat mob recovery

@@ -61,7 +61,7 @@ which the engine cannot shear. The derivation is in
 all races within the same two-node door and boat-seat geometry. It does not
 change the fall calculation or other combat, building or movement rules.
 Fall damage follows [combat_stats.md](combat_stats.md), including the Dwarf's
-20% reduction after maximum-HP scaling and before absorb.
+20% reduction after maximum-HP scaling (absorb does not cover fall damage).
 
 Humanoid **mobs keep the size their own definition sets** (the mirefolk are
 deliberately short, an elite guard is deliberately large). Their scale belongs
