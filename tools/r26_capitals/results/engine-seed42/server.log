@@ -1,0 +1,163 @@
+
+
+-------------
+  Separator
+-------------
+
+WARNING[Main]: /!\ You are using the old mod storage files backend. This backend is deprecated and may be removed in a future release /!\
+WARNING[Main]: Switching to SQLite3 is advised, please read https://docs.luanti.org/for-server-hosts/database-backends.
+ACTION[Main]: [grug_materials] 24 pick/axe/shovel tools, 12 default: tool aliases
+ACTION[Main]: [grug_gear] 6 bracket catalogs: 36 weapons + 72 armor pieces
+ACTION[Main]: [grug_mapgen] zone field: warp scale 1.0 after 1 tries (0.13 s), 77 neighbour pairs
+ACTION[Main]: [grug_mapgen] world protection: 196 road corridors (55715 segments in 3581 runs), 88 settlement cores, 3669 records in 514 cells (4957 references, at most 41 per cell), built in 0.010 s
+ACTION[Main]: [grug_mapgen] capital highcourt: area 100003 m2, built 28.0 %, plots 49 of 52 (overflowed 5, left out 3 fill, 0 buildings), required 9 of 9, relaxed 0, streets 19 (open arcs 1, cross-lanes 3, squares 8), infeasible profiles 0, connector failures 0, shore avenues 0, gate run-outs 0, wet avenue ends 0, planned in 0.99 s
+ACTION[Main]: [grug_mapgen] capital dur_brannoc: area 100009 m2, built 28.2 %, plots 50 of 52 (overflowed 10, left out 2 fill, 0 buildings), required 9 of 9, relaxed 0, streets 23 (open arcs 0, cross-lanes 4, squares 9), infeasible profiles 0, connector failures 0, shore avenues 0, gate run-outs 0, wet avenue ends 0, planned in 1.19 s
+ACTION[Main]: [grug_mapgen] capital gor_drazhak: area 99996 m2, built 27.5 %, plots 46 of 52 (overflowed 9, left out 6 fill, 0 buildings), required 9 of 9, relaxed 0, streets 23 (open arcs 2, cross-lanes 5, squares 12), infeasible profiles 0, connector failures 0, shore avenues 0, gate run-outs 0, wet avenue ends 0, planned in 1.14 s
+ACTION[Main]: [grug_mapgen] capital lethariel: area 100033 m2, built 23.7 %, plots 42 of 44 (overflowed 4, left out 2 fill, 0 buildings), required 9 of 9, relaxed 0, streets 17 (open arcs 2, cross-lanes 4, squares 9), infeasible profiles 0, connector failures 0, shore avenues 1, gate run-outs 0, wet avenue ends 0, no route: ring1/q1 ring2/q1, planned in 1.27 s
+ACTION[Main]: [grug_mapgen] capital kezamba: area 99995 m2, built 25.3 %, plots 47 of 52 (overflowed 13, left out 5 fill, 0 buildings), required 9 of 9, relaxed 5, streets 22 (open arcs 2, cross-lanes 8, squares 11), infeasible profiles 0, connector failures 0, shore avenues 0, gate run-outs 0, wet avenue ends 0, no route: ring1/q1 ring2/q1, planned in 1.14 s
+ACTION[Main]: [grug_mapgen] capital nhal_veyr: area 99978 m2, built 28.9 %, plots 51 of 52 (overflowed 1, left out 1 fill, 0 buildings), required 9 of 9, relaxed 0, streets 22 (open arcs 0, cross-lanes 0, squares 11), infeasible profiles 0, connector failures 0, shore avenues 0, gate run-outs 0, wet avenue ends 0, planned in 0.98 s
+ACTION[Main]: [grug_mapgen] protected capital cities (wall line + edge + bare band): anchor_007 127 k m2 (reach 248), anchor_008 127 k m2 (reach 262), anchor_009 159 k m2 (reach 280), anchor_010 127 k m2 (reach 248), anchor_011 128 k m2 (reach 257), anchor_012 147 k m2 (reach 268)
+ACTION[Main]: [grug_mapgen] roads: 30 roads, 40 trails (40 of 40 trail candidates), 2 loops, 0 core pins dropped, built in 5.9 s, payload 237180 bytes (with the capital streets), capital layouts 80249 bytes
+ACTION[Main]: [grug_mapgen] road showcase: serpentine (secondary) at -2017,111,819; gallery (secondary) at -1176,145,-952; valley crossing (secondary) at -1746,252,-876; bridge (primary) at 985,3,1705; deepest cut (secondary) at -2013,286,-727; junction (secondary) at 1801,110,-2028
+ACTION[Main]: [grug_mapgen] world layouts: cache miss (no cache file), built in runtime construction 19.3 s (water 0.7 s, roads 5.9 s, capitals 6.7 s), stored grug_world_layouts.txt (441107 bytes)
+ACTION[Main]: [grug_quality] deterministic PcgRandom quality rolls enabled
+ACTION[Main]: [grug_map] rendered world map base 1080x960 in 10.04 s (zones/water 3.14 s, relief step 8 6.84 s, colour+encode 0.06 s, 544875 bytes)
+WARNING[Main]: No craft recipe known for output 'grug_mobs:light_leather'
+WARNING[Main]: No craft recipe known for output 'grug_professions:cured_leather'
+WARNING[Main]: No craft recipe known for output 'grug_mobs:heavy_leather'
+WARNING[Main]: No craft recipe known for output 'grug_mobs:scaled_hide'
+WARNING[Main]: No craft recipe known for output 'grug_professions:sleek_leather'
+WARNING[Main]: No craft recipe known for output 'grug_professions:nightscale_leather'
+WARNING[Main]: No craft recipe known for output 'grug_professions:bolt_patch'
+WARNING[Main]: No craft recipe known for output 'grug_professions:bolt_woven'
+WARNING[Main]: No craft recipe known for output 'grug_professions:bolt_heavy'
+WARNING[Main]: No craft recipe known for output 'grug_professions:bolt_silkweave'
+WARNING[Main]: No craft recipe known for output 'grug_professions:bolt_silk'
+WARNING[Main]: No craft recipe known for output 'grug_professions:bolt_stormweave'
+ACTION[Main]: [grug_professions] registered Weaponsmith, Armorsmith, Leatherworker and Tailor catalogs
+WARNING[Main]: No craft recipe known for output 'grug_artisans:seasoned_wood'
+WARNING[Main]: No craft recipe known for output 'grug_artisans:polished_wood'
+WARNING[Main]: No craft recipe known for output 'grug_artisans:hardened_wood'
+WARNING[Main]: No craft recipe known for output 'grug_artisans:inlaid_wood'
+WARNING[Main]: No craft recipe known for output 'grug_artisans:lacquered_wood'
+WARNING[Main]: No craft recipe known for output 'grug_artisans:heartwood_wood'
+ACTION[Main]: [grug_artisans] registered Woodcarver and Goldsmith catalogs
+ACTION[Main]: [grug_materials] registry audit passed: 6 tier rocks, 3 decorative rocks, 15 resources, 12 processed forms, 6 race regions, 1021 dig-matrix pairs
+ACTION[Main]: [grug_smelting] recipe audit passed: 5 cooking, 5 dualfurn, 12 storage pairs, 1 station
+ACTION[Main]: [grug_core] region cloud base: dwarf 150 (capital ground 69, authored 150), human 130 (capital ground 41, authored 130), elf 170 (capital ground 55, authored 170), undead 110 (capital ground 46, authored 110), orc 190 (capital ground 61, authored 190), troll 100 (capital ground 36, authored 100)
+ACTION[Main]: [grug_core] world preparation mode=starts cursor=0/84
+ACTION[Main]: [grug_visuals] 72 armor pieces indexed for overlays, 3 art lines x 4 slots
+ACTION[Main]: [grug_mobs] settlement work activities: tools 7, weapon families 1, all registered
+ACTION[Main]: [grug_inventory] starter weapons: mage=grug_gear:staff_bronze (2H), priest=grug_gear:staff_bronze (2H), scout=grug_gear:bow_bronze (2H), warrior=grug_gear:sword_bronze
+ACTION[Main]: [grug_traders] 12 profession shelves, 98 offers, all registered
+ACTION[Main]: [grug_traders] dwarf capital vendors come from the sockets of dur_brannoc
+ACTION[Main]: [grug_traders] elf capital vendors come from the sockets of lethariel
+ACTION[Main]: [grug_traders] human capital vendors come from the sockets of highcourt
+ACTION[Main]: [grug_traders] orc capital vendors come from the sockets of gor_drazhak
+ACTION[Main]: [grug_traders] troll capital vendors come from the sockets of kezamba
+ACTION[Main]: [grug_traders] undead capital vendors come from the sockets of nhal_veyr
+ACTION[Main]: [grug_traders] 100 settlements indexed for profession vendor appearance
+ACTION[Main]: [grug_traders] drop audit: 3 mob(s) use a `drops` FUNCTION and cannot be walked statically (grug_mobs:bandit, grug_mobs:bandit_archer, grug_mobs:poacher); their items are audited from the hardcoded FUNCTION_DROPS list
+WARNING[Main]: [grug_traders] no vendor price for dropped item 'default:apple' (dropped by grug_mobs:ashen_treant, grug_mobs:gravewood_treant) — add a _grug_sell_price to its def or a grug_traders.set_price override; traders must buy every mob drop (economy.md §3)
+WARNING[Main]: [grug_traders] no vendor price for dropped item 'default:stick' (dropped by grug_mobs:ashen_treant, grug_mobs:gravewood_treant) — add a _grug_sell_price to its def or a grug_traders.set_price override; traders must buy every mob drop (economy.md §3)
+ACTION[Main]: [grug_fishing] tables=6 entries=18 weight=100 bite=3..10s rod_uses=64
+ACTION[Main]: [grug_farming] vegetation renewal: 768 non-natural node names, tree regrowth on
+ACTION[Main]: World at [/tmp/grudgelands-headless.r26w-PO9Beg/world]
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:39799.
+ACTION[Server]: [grug_housing] arrival-cube dig context on 102 buildable_to nodes
+ACTION[Server]: [grug_housing] interaction guard: node inventories on 919 nodes, right-click on 159, node form on 12; exceptions: default:sign_wall_wood, grug_housing:claim_stone, grug_materials:iron_sign_wall
+ACTION[Emerge-0]: [grug_mapgen] zone field: warp scale 1.0 after 1 tries (0.14 s), 77 neighbour pairs
+ACTION[Server]: [r26_capitals_probe] dur_brannoc: kind stone, 600 wall points, 20 towers, 50 plots
+ACTION[Server]: [r26_capitals_probe] dur_brannoc protection: inside (-1893,77,-1583) -> town, wall+15 (-1962,69,-1643) -> town, wall+45 (-1984,64,-1663) -> nil
+ACTION[Server]: [r26_capitals_probe] dur_brannoc claims (margin 16): wall+30 footprint town, stone town; wall+75 footprint nil; wall+122 stone capital_zone
+ACTION[Server]: [r26_capitals_probe] nhal_veyr: kind stone, 592 wall points, 23 towers, 51 plots
+ACTION[Server]: [r26_capitals_probe] nhal_veyr protection: inside (-1890,48,1415) -> town, wall+15 (-1955,51,1353) -> town, wall+45 (-1977,52,1332) -> nil
+ACTION[Server]: [r26_capitals_probe] nhal_veyr claims (margin 16): wall+30 footprint town, stone town; wall+75 footprint nil; wall+122 stone capital_zone
+ACTION[Server]: [r26_capitals_probe] 12 emerge jobs
+ACTION[Emerge-0]: [r26_capitals_probe] EMERGED dur_brannoc wall 73 (-1959,38,-1641) in 4.2 s
+ACTION[Emerge-0]: [r26_capitals_probe] dur_brannoc wall point 73 at -1951,-1633 walk top 78: 4 of 4 solid (top grug_decor:castle_pavement_brick)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_drill_yard/garrison_drill_yard_gate_idle (-1876,74,-1558)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket garrison_drill_yard/garrison_drill_yard_post_yard_west (-1880,74,-1565)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_drill_yard/garrison_drill_yard_work_yard_spar_west (-1891,74,-1566)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_muster_field/garrison_muster_field_work_muster_spar_south (-1940,74,-1557)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_muster_field/garrison_muster_field_work_muster_spar_north (-1940,74,-1561)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_wood_yard/garrison_wood_yard_gate_idle (-1897,74,-1647)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_wood_yard/garrison_wood_yard_work_saw_west (-1897,74,-1651)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_wood_yard/garrison_wood_yard_work_saw_east (-1897,74,-1643)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_green/garrison_green_gate_idle (-1884,73,-1659)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_green/garrison_green_work_green_bench (-1884,74,-1655)
+ACTION[Server]: [grug_mobs] start npcs dwarf dur_brannoc: guards 1/28 flair 9/172 vendor 0/9 quest 0/3 royal 0/1 new 10 pending 203 spare 25 residents 154 walkers 20
+ACTION[Emerge-0]: [r26_capitals_probe] EMERGED dur_brannoc wall 287 (-1641,42,-1554) in 5.0 s
+ACTION[Emerge-0]: [r26_capitals_probe] dur_brannoc wall point 287 at -1633,-1546 walk top 82: 4 of 4 solid (top grug_decor:castle_pavement_brick)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_hall_of_record/deep_hall_of_record_altar (-1711,72,-1548)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_scriptorium/deep_scriptorium_desk_a (-1705,74,-1570)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_scriptorium/deep_scriptorium_gate_idle (-1700,74,-1570)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_scriptorium/deep_scriptorium_work_scriptorium_bench (-1699,75,-1576)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_memory_hall/deep_memory_hall_gate_idle (-1686,77,-1581)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_memory_hall/deep_memory_hall_work_memory_vigil (-1688,77,-1573)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_traders:vendor_embalmer placed at socket deep_memory_hall/deep_memory_hall_vendor_deep_embalmer (-1688,77,-1587)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_market/terrace_market_idle_a (-1712,72,-1496)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_market/terrace_market_idle_b (-1710,72,-1506)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket terrace_market/terrace_market_walk (-1711,72,-1501)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_cottage_west/terrace_cottage_west_gate_idle (-1680,73,-1513)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_cottage_east/terrace_cottage_east_gate_idle (-1673,74,-1533)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_ore_court/forge_ore_court_gate_idle (-1909,77,-1364)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_ore_court/forge_ore_court_work_court_face (-1926,77,-1371)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_ore_court/forge_ore_court_work_court_adit (-1926,77,-1359)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_ore_court/forge_ore_court_work_court_spoil (-1926,77,-1373)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_slag_yard/forge_slag_yard_gate_idle (-1899,76,-1341)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_slag_yard/forge_slag_yard_work_slag_banker (-1897,76,-1344)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_slag_yard/forge_slag_yard_work_slag_blocks (-1896,76,-1339)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_markers_yard/deep_markers_yard_work_yard_banker_west (-1691,78,-1630)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_green/terrace_green_gate_idle (-1656,79,-1557)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_green/terrace_green_work_green_bench (-1656,80,-1553)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_kitchen_garden/terrace_kitchen_garden_work_garden_beds_west (-1874,73,-1348)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_kitchen_garden/terrace_kitchen_garden_work_garden_planter (-1874,73,-1354)
+ACTION[Server]: [grug_mobs] start npcs dwarf dur_brannoc: guards 2/28 flair 31/172 vendor 1/9 quest 0/3 royal 0/1 new 24 pending 179 spare 25 residents 154 walkers 20
+ACTION[Emerge-0]: [r26_capitals_probe] EMERGED dur_brannoc wall 469 (-1900,41,-1314) in 3.6 s
+ACTION[Emerge-0]: [r26_capitals_probe] dur_brannoc wall point 469 at -1892,-1306 walk top 81: 4 of 4 solid (top grug_decor:castle_pavement_brick)
+ACTION[Emerge-0]: [r26_capitals_probe] EMERGED dur_brannoc tower 25 (-1999,35,-1551) in 1.4 s
+ACTION[Emerge-0]: [r26_capitals_probe] dur_brannoc tower 25 at -1991,-1543: rim -1987,-1541 solid 4 of 4 above the walk, walk true
+ACTION[Emerge-0]: [r26_capitals_probe] EMERGED dur_brannoc tower 37 (-1989,34,-1576) in 0.5 s
+ACTION[Emerge-0]: [r26_capitals_probe] dur_brannoc tower 37 at -1981,-1568: rim -1977,-1567 solid 4 of 4 above the walk, walk true
+ACTION[Emerge-0]: [r26_capitals_probe] EMERGED dur_brannoc north gate (-1747,42,-1676) in 1.1 s
+ACTION[Emerge-0]: [r26_capitals_probe] dur_brannoc north gate at -1739,-1668 floor 72: passage open 4 of 4, tower columns 2 of 2
+ACTION[Emerge-0]: [r26_capitals_probe] EMERGED nhal_veyr wall 72 (-1952,17,1355) in 1.3 s
+ACTION[Emerge-0]: [r26_capitals_probe] nhal_veyr wall point 72 at -1944,1363 walk top 57: 4 of 4 solid (top grug_decor:castle_pavement_brick)
+ACTION[Server]: [grug_mobs] start npcs nhal_veyr: grug_mobs:villager_undead placed at socket market_copse/market_copse_gate_idle (-1878,48,1389)
+ACTION[Server]: [grug_mobs] start npcs nhal_veyr: grug_mobs:villager_undead placed at socket market_grave_field/market_grave_field_work_mourn_west (-1873,48,1328)
+ACTION[Server]: [grug_mobs] start npcs nhal_veyr: grug_mobs:villager_undead placed at socket market_grave_field/market_grave_field_work_mourn_east (-1873,48,1340)
+ACTION[Server]: [grug_mobs] start npcs nhal_veyr: grug_mobs:villager_undead placed at socket market_candle_court/market_candle_court_idle_a (-1902,49,1356)
+ACTION[Server]: [grug_mobs] start npcs nhal_veyr: grug_mobs:villager_undead placed at socket market_candle_court/market_candle_court_idle_b (-1902,49,1352)
+ACTION[Server]: [grug_mobs] start npcs nhal_veyr: grug_mobs:villager_undead placed at socket market_candle_court/market_candle_court_gate_idle (-1908,49,1354)
+ACTION[Server]: [grug_mobs] start npcs nhal_veyr: grug_mobs:villager_undead placed at socket market_candle_court/market_candle_court_work_vigil_south (-1904,49,1354)
+ACTION[Server]: [grug_mobs] start npcs nhal_veyr: grug_mobs:villager_undead placed at socket market_candle_court/market_candle_court_work_vigil_north (-1900,49,1354)
+ACTION[Server]: [grug_mobs] start npcs nhal_veyr: grug_mobs:villager_undead placed at socket market_close/market_close_gate_idle (-1921,51,1369)
+ACTION[Server]: [grug_mobs] start npcs nhal_veyr: grug_mobs:villager_undead placed at socket market_close/market_close_work_close_bench (-1921,52,1365)
+ACTION[Server]: [grug_mobs] start npcs undead nhal_veyr: guards 0/30 flair 10/179 vendor 0/6 quest 0/2 royal 0/1 new 10 pending 208 spare 29 residents 161 walkers 23
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_watch/forge_watch_muster (-1962,73,-1519)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_archive/deep_archive_gate_idle (-1736,76,-1636)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_charcoal_field/forge_charcoal_field_gate_idle (-1957,74,-1473)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_charcoal_field/forge_charcoal_field_work_field_west (-1966,74,-1479)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_green/forge_green_gate_idle (-1971,71,-1545)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_green/forge_green_work_green_bench (-1975,72,-1545)
+ACTION[Server]: [grug_mobs] start npcs dwarf dur_brannoc: guards 2/28 flair 37/172 vendor 1/9 quest 0/3 royal 0/1 new 6 pending 173 spare 25 residents 154 walkers 20
+ACTION[Emerge-0]: [r26_capitals_probe] EMERGED nhal_veyr wall 267 (-1682,8,1456) in 1.4 s
+ACTION[Emerge-0]: [r26_capitals_probe] nhal_veyr wall point 267 at -1674,1464 walk top 48: 4 of 4 solid (top grug_decor:castle_pavement_brick)
+ACTION[Emerge-0]: [r26_capitals_probe] EMERGED nhal_veyr wall 480 (-1900,12,1699) in 1.8 s
+ACTION[Emerge-0]: [r26_capitals_probe] nhal_veyr wall point 480 at -1892,1707 walk top 52: 4 of 4 solid (top grug_decor:castle_pavement_brick)
+ACTION[Server]: [grug_mobs] start npcs nhal_veyr: grug_mobs:villager_undead placed at socket homes_cistern/homes_cistern_idle_a (-1712,45,1478)
+ACTION[Server]: [grug_mobs] start npcs nhal_veyr: grug_mobs:villager_undead placed at socket homes_cistern/homes_cistern_gate_idle (-1707,45,1478)
+ACTION[Server]: [grug_mobs] start npcs nhal_veyr: grug_mobs:villager_undead placed at socket watch_pyre_court/watch_pyre_court_idle_a (-1894,49,1650)
+ACTION[Server]: [grug_mobs] start npcs nhal_veyr: grug_mobs:villager_undead placed at socket watch_pyre_court/watch_pyre_court_gate_idle (-1900,49,1648)
+ACTION[Server]: [grug_mobs] start npcs nhal_veyr: grug_mobs:villager_undead placed at socket watch_pyre_court/watch_pyre_court_work_vigil_south (-1896,49,1648)
+ACTION[Server]: [grug_mobs] start npcs nhal_veyr: grug_mobs:villager_undead placed at socket watch_pyre_court/watch_pyre_court_work_vigil_north (-1892,49,1648)
+ACTION[Server]: [grug_mobs] start npcs undead nhal_veyr: guards 0/30 flair 16/179 vendor 0/6 quest 0/2 royal 0/1 new 6 pending 202 spare 29 residents 161 walkers 23
+ACTION[Emerge-0]: [r26_capitals_probe] EMERGED nhal_veyr tower 7 (-1982,18,1480) in 2.5 s
+ACTION[Emerge-0]: [r26_capitals_probe] nhal_veyr tower 7 at -1974,1488: rim -1970,1489 solid 4 of 4 above the walk, walk true
+ACTION[Emerge-0]: [r26_capitals_probe] EMERGED nhal_veyr tower 36 (-1957,19,1428) in 1.6 s
+ACTION[Emerge-0]: [r26_capitals_probe] nhal_veyr tower 36 at -1949,1436: rim -1945,1437 solid 4 of 4 above the walk, walk true
+ACTION[Emerge-0]: [r26_capitals_probe] EMERGED nhal_veyr north gate (-1866,14,1300) in 1.2 s
+ACTION[Emerge-0]: [r26_capitals_probe] nhal_veyr north gate at -1858,1308 floor 44: passage open 4 of 4, tower columns 2 of 2
+ACTION[Emerge-0]: [r26_capitals_probe] RESULT PASS checks=36 failures=0
+ACTION[Main]: Server: Shutting down
