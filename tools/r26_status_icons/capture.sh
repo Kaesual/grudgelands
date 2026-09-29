@@ -28,8 +28,8 @@ xvfb="${XVFB:?set XVFB to an Xvfb binary}"
 width="${WIDTH:-1280}"; height="${HEIGHT:-720}"
 server_timeout=280; client_timeout=270
 
-root="$(mktemp -d /tmp/grudgelands-headless.XXXXXX)"
-cap="$(mktemp -d /tmp/grudgelands-capture.XXXXXX)"
+root="$(mktemp -d /tmp/grudgelands-headless.r26i-XXXXXX)"
+cap="$(mktemp -d /tmp/grudgelands-capture.r26i-XXXXXX)"
 display_no=$((90 + RANDOM % 900))
 while [[ -e "/tmp/.X11-unix/X$display_no" || -e "/tmp/.X$display_no-lock" ]]; do
 	display_no=$((display_no + 1))
