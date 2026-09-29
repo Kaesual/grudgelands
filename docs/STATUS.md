@@ -14,7 +14,8 @@ Updated 2026-09-29. This is the delivery pointer, not another game specification
   cores are protected for everyone, with hint reasons ("Road – protected").
   The capital planner places required and named buildings before fill: load
   failures 1.3 % of seeds → 0 of 200, capital layouts changed. All nine lanes
-  merged on local main (`7270feb3`). No push.
+  merged on local main (`7ca48666`), independently reviewed and synchronized
+  to Luanti on 2026-09-29. No push.
   [Plan, completion and playtest checklist](planning/round25-housing-plan.md#completion-2026-09-29).
   Next: fresh world and playtest.
 
