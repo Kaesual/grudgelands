@@ -2,6 +2,16 @@
 
 Updated 2026-09-29. This is the delivery pointer, not another game specification.
 
+- **Round 26 in progress** (started 2026-09-29,
+  [plan](planning/round26-capitals-housing-cleanup-plan.md)): Lane W more
+  irregular and more varied capital outlines (images first), Lane S Claim
+  Stone activation and the Round 25 carry-overs, Lane R the registration
+  cleanup (WP28), Lane I the status-icon package (audit D10) and Lane D the
+  documentation cleanup after the
+  [work-package audit](planning/wp-audit-2026-09-29.md) and its
+  [user decisions](planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29).
+  Nothing of Round 26 is merged yet.
+
 - **Round 25 delivered locally:** Claim Stone housing (WP24,
   [housing.md](design/housing.md)): one free, soulbound stone from the
   Housing Manager in each capital from level 20; a 101 × 101 claim column from
@@ -76,9 +86,10 @@ Updated 2026-09-29. This is the delivery pointer, not another game specification
 - **Documentation consolidation:** complete with independent Astra PASS;
   [receipt and coverage](maintenance/documentation-round.md). Remaining decisions
   and code/design discrepancies: [findings](maintenance/findings.md).
-- **Latest game:** Round 21 includes Round 20 and earlier Round 19 UI, pursuit/idle-recovery
-  and full-speed preparation follow-ups. GUI acceptance of the new round is
-  pending; fresh-world development remains in force.
+- **Latest game:** local main carries Round 25, which includes Rounds 20–24
+  and the 2026-09-28 playtest fixes. Round 24 is the latest pushed and
+  accepted state; the Round 25 playtest is pending. Fresh-world development
+  remains in force.
 - **Technical reviews/gates:** recorded PASS for those delivered candidates;
   not a fresh certification of arbitrary later changes.
 - **Preparation performance follow-up:** the bounded two-request pipeline
@@ -91,8 +102,9 @@ Updated 2026-09-29. This is the delivery pointer, not another game specification
   [full-speed follow-up](research/pregen-fullspeed.md). No remote deployment
   claimed. Prior measurement: [scan-budget follow-up](research/pregen-scan-budget.md).
 - **GUI acceptance:** user-run and pending where not explicitly accepted.
-  [R21 checklist](research/round21-playtest.md) covers the new changes; the
-  R20 input limits remain documented in its earlier checklist.
+  The [Round 25 checklist](planning/round25-housing-plan.md#playtest-checklist-fresh-world)
+  covers the newest changes; earlier rounds keep their own checklists. The
+  user wants a separate walk of the Round 20 POI art (audit E2).
 - **Remote observation:** local `origin/main` is `d4eaffff` (Round 24 and the
   Round 25 plan). Round 25 is local only.
 - **Release:** unreleased fresh-server development. The Nether is expansion
