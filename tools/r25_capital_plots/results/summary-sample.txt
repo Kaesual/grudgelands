@@ -13,9 +13,9 @@
    highcourt                     8           12  homes_orchard 6, martial_drill_yard 2, lore_library 1
    dur_brannoc                   2            2  deep_lantern_court 1, forge_watch 1
    gor_drazhak                  35           40  bone_quarry 34, bone_barrow 5, bazaar_brewhouse 1
-   lethariel                     0            0                                  
+   lethariel                     0            0
    kezamba                      26           53  shore_watch 22, shore_house 10, shore_well 8
-   nhal_veyr                     3            3  homes_watch 2, homes_cistern 1  
+   nhal_veyr                     3            3  homes_watch 2, homes_cistern 1
 == branch, same seeds: 200 seeds, load failures 0
    CPU s/seed mean 14.5
    capital      seeds_w_named_drop  named_drops  top_dropped                       fill_drops(mean/max)

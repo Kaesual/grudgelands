@@ -1483,8 +1483,8 @@ one-cell settlement checks are unchanged.
     recognisable groups (one quarter each where the ground allows, overflow
     into a neighbouring quarter). Required plots (the inn, the eight service
     plots with the cook and the stable) are always placed (a capital missing
-    one fails the load, named); only fields and
-    fill dressings may be left out on cramped ground. Placement runs in tiers
+    one fails the load, named); named buildings are left out only when no
+    legal spot remains anywhere (rare), fill dressings first. Placement runs in tiers
     (required, other named buildings, fill), each through all its passes
     (own quarter, neighbours, opposite, relaxed anywhere; fill only the first
     two) before the next tier starts (Round 25 Lane H). Plots never stand in

@@ -240,7 +240,9 @@ required plots, then the other named buildings, then fill — and each tier runs
 all its passes (own quarter, the two neighbouring quarters, the opposite
 quarter, then relaxed legality anywhere; fill stops after the neighbours)
 before the next tier places anything (Round 25 Lane H, 2026-09-29), so a
-building that misses its quarter is never squeezed out by lower tiers. Guard posts belong to the garrison district, the two
+building that misses its quarter is never squeezed out by lower tiers. A named
+building is left out only when no legal spot remains anywhere (a capacity
+limit, rare). Guard posts belong to the garrison district, the two
 traders to the core, and every district keeps two spare standing spots its
 people may walk to.
 
@@ -395,9 +397,9 @@ turn a light red rather than become part of the architecture.
 Where the water takes most of a quarter — Kezamba's cenote in every world —
 the district that belongs by the water keeps its place there: the **shore
 market** is pinned beside the cenote and what does not fit overflows into the
-neighbouring quarters (plan D72) — in every world, and since Round 25 Lane H
-ahead of the other districts' buildings, which is what keeps its required shore
-plots placed. Kezamba's districts carry nine, nine, eleven
+neighbouring quarters (plan D72) — in every world. Since Round 25 Lane H its
+required shore plots overflow ahead of the other districts' buildings, which
+keeps them placed; its other named shore plots overflow with the named tier. Kezamba's districts carry nine, nine, eleven
 and seven building plots, thirty-six in all, with the same sixteen fill
 dressings every capital has.
 
