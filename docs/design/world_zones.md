@@ -102,8 +102,9 @@ in this file as of commit `082982da`.
   starting zones the spawn level rises from the start toward the faction
   front instead of across the zone's whole z extent (the start sits mid-zone,
   so the old field put levels 7–9 right behind the 150-node band). Outside
-  the start band the area behind and beside the start, out to the
-  home-facing coast, is **band 1** (its top level, 3); toward the front the
+  the start band the area behind the start, out to the home-facing coast,
+  is **band 1** (its top level, 3); beside the start the level rises at half
+  weight, so far flanks near a close front border can reach band 2 or 3; toward the front the
   level rises through band 2 (4–6) and reaches band 3 (7–10) only shortly
   before the front border, where it ends at 10 as before, so the step into
   the next zone is unchanged. Progress is `travelled / (travelled +

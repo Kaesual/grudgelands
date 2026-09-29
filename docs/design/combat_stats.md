@@ -422,7 +422,9 @@ Normal tier at level L:
   Archer, Skeleton Raider, Frost Stray) roam at **1** and keep **4.0** for the
   whole fight: they opt out of the bound-actor soft de-aggro, the one combat
   reader of `walk_velocity` besides the wedged-path crawl that `dogshoot`
-  never enters.
+  never enters. Flying mobs also climb and dive toward a target at
+  `walk_velocity`, so the Glowwing (walk 2) changes height at 2 m/s in
+  combat (accepted).
 - **Reach**: player swing abilities (Strike, Mighty Blow and Hamstring) use
   **3 m**, and every ordinary explicit mob reach is **3 m**. The Kraken keeps
   its model-specific **4 m** and non-combatant villagers keep 0. The mobs_redo

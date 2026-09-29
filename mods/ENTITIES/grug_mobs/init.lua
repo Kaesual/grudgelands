@@ -107,8 +107,9 @@ end
 
 -- Round 24 ruling 20: every mob roams at a calm walk and uses its full speed
 -- only in combat. mobs_redo moves an idle mob at walk_velocity and a fighting
--- one at run_velocity (its only combat walk_velocity reads are the soft
--- de-aggro, which ranged families switch off, and the wedged-path crawl), so
+-- one at run_velocity (for ground mobs its only combat walk_velocity reads are the
+-- soft de-aggro, which ranged families switch off, and the wedged-path crawl;
+-- flyers also climb and dive at walk_velocity), so
 -- the rule is a bound on walk_velocity, checked at registration. 2.5 is the
 -- fastest calm pace in the roster (the wisps' drift) and well below the
 -- player's 4.0. Hand-set encounter actors (`_grug_fixed_level`: Kraken,
