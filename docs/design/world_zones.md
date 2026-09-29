@@ -1249,6 +1249,15 @@ code, not by this document.
   `immutable_dragon_channel` admit no natural resource. Eligibility still
   requires the exact WP43 stratum host at y; water, bed material, routes,
   dungeons, foreign nodes and protected content are not hosts.
+- **Fixed and protected ground** (every anchor's claim envelope — a capital's
+  protected city, a start town, the square of a POI, village, camp or
+  outpost — and every hard core, including the apex socket columns) hosts no
+  natural resource inside its protected volume: from its placement height −
+  100 upward (Round 24 ruling 30). The placement height is the anchor's
+  fitted surface, or the socket column's own surface; where several such
+  shapes hold a column, the lowest floor wins. Below that floor the column
+  takes ores, gems, rock layers and nests like any other ground (the former
+  rule kept these columns ore-free down to y = −700).
 - **Natural-resource root sampling:** each resource/16-node cell/host/tier/
   deep-band group keeps its eligible-host count, density budget and balanced
   capped vein targets. Roots are drawn from a deterministic per-world stream
@@ -1626,13 +1635,15 @@ numeric-truncated seed.
   separate fixed level-100 entity.
 - `guard_level_at(pos)` is nil for every exterior class. Inside a capital's
   protected city (§12: inside the wall line, the edge and its band) it is
-  exactly 60 at y >= -700. At y <= -701 and everywhere else on non-exterior
-  land it returns the existing generic base
+  exactly 60 inside the capital's protected volume (from the capital anchor's
+  placement height − 100 upward, Round 24 ruling 30). Below that floor and
+  everywhere else on non-exterior land it returns the existing generic base
   `min(70, max(20, surface_mob_level_at(pos)))`. The fixed level-65 king
   remains outside this resolver.
 - `faction_at` returns `accord`, `throng` or nil and never derives
   construction rights from `race_region`. `territory_rule_at` and
-  `pvp_rule_at` apply full 3D precedence: bounded hard protection, immutable
+  `pvp_rule_at` apply full 3D precedence: bounded hard protection (each
+  footprint from its placement height − 100 upward), immutable
   deep ocean/channels, planned-water/shelf inheritance,
   ordinary land and the y = -701 contested-depth override.
 - Current `grug_core.territory_at`, `zone_at`, `mob_level_at`,

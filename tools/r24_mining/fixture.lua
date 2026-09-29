@@ -502,10 +502,12 @@ do
 	for index = 1, 42 do
 		rows[index] = {id = "a" .. index,
 			family = index <= 6 and "start" or (index <= 30 and "outpost" or "bandit"),
-			x = index * 100, z = 7}
+			x = index * 100, y = 20, z = 7}
 	end
 	local session = {
 		territory_rule_at = function() return "contested_land" end,
+		-- Round 24 ruling 30: protected from the placement height - 100 up.
+		protection_floor_y = function(placement_y) return placement_y - 100 end,
 		hard_protection_kind_at = function(pos) return pos.x == 50 and "town" or nil end,
 		compatibility = {world_protected_for_faction = function() return false end},
 	}
@@ -514,8 +516,10 @@ do
 		{schema = "grug_wp40_r7_anchor_roster_v1", rows = rows, sha256 = "x"})
 	check(overlay.hard_protection_kind_at({x = 800, y = 0, z = 7}) == "landmark",
 		"overlay: outpost column is a landmark")
-	check(overlay.hard_protection_kind_at({x = 800, y = -701, z = 7}) == nil,
-		"overlay: below -700 no landmark")
+	check(overlay.hard_protection_kind_at({x = 800, y = -80, z = 7}) == "landmark",
+		"overlay: landmark down to 100 below the placement")
+	check(overlay.hard_protection_kind_at({x = 800, y = -81, z = 7}) == nil,
+		"overlay: no landmark below 100 under the placement")
 	check(overlay.hard_protection_kind_at({x = 50, y = 0, z = 0}) == "town",
 		"overlay delegates to the session")
 end

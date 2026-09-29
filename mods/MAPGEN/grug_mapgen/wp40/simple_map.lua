@@ -586,6 +586,27 @@ return function(zone_field)
 				return nil
 			end
 
+			-- The lowest `value_by_id[id]` over every static exclusion shape
+			-- holding the column (all purposes, like the territory rule), or nil
+			-- when none of them has a value. The zone authority's protected
+			-- floor of a column (Round 24 ruling 30) asks it, so overlapping
+			-- anchor envelopes all count, not only the first shape answering.
+			local function lowest_exclusion_value_at(x, z, value_by_id)
+				local grid_row = exclusion_grid[floor(z / exclusion_cell)]
+				local candidates = grid_row and grid_row[floor(x / exclusion_cell)] or nil
+				if not candidates then return nil end
+				local result
+				for index = 1, #candidates do
+					local shape = candidates[index]
+					local value = value_by_id[shape.id]
+					if value ~= nil and (result == nil or value < result) and
+							in_rectangle(x, z, shape.bounds, 0) and shape_member(shape, x, z) then
+						result = value
+					end
+				end
+				return result
+			end
+
 			-- Housing masks (world_zones.md §7.5, world.md §5): the ten authored
 			-- areas follow the new zones; the four coastal areas take their exact
 			-- shape from the finished coast inside their authored window.
@@ -743,6 +764,12 @@ return function(zone_field)
 				end
 				if not in_rectangle(x, z, QUERY_BOUNDS, 0) then return nil end
 				return static_exclusion_values_at(x, z, purpose)
+			end
+
+			-- See `lowest_exclusion_value_at` above.
+			function session.lowest_exclusion_value_at(x, z, value_by_id)
+				if not in_rectangle(x, z, QUERY_BOUNDS, 0) then return nil end
+				return lowest_exclusion_value_at(x, z, value_by_id)
 			end
 
 			-- True on a capital's protected city (plan D76): the zone authority's

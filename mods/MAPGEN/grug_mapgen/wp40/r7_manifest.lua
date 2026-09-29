@@ -79,7 +79,7 @@ return function(canonical, raw_sha256, settlement_order)
 		"settlement_semantic_sha256", "settlement_content_count",
 	}
 	local FIELD_TAIL = {
-		"functional_anchor_y_min", "writer_schema", "p9g_opcode", "p9g_class",
+		"functional_anchor_depth_below_placement", "writer_schema", "p9g_opcode", "p9g_class",
 		"p9g_policy", "p9g_order", "p9g_overwrite", "source_projection_sha256",
 		"production_enabled",
 	}
@@ -285,7 +285,7 @@ return function(canonical, raw_sha256, settlement_order)
 			anchor_roster_sha256 = true,
 			settlement_content = true, settlement_blueprints = true,
 			cultural_registrations = true, decoded_templates = true,
-			consumer_payload = true,
+			consumer_payload = true, protection_depth_below_placement = true,
 		}
 		for key in pairs(inputs) do
 			if not expected[key] then fail("unexpected input " .. tostring(key)) end
@@ -296,6 +296,11 @@ return function(canonical, raw_sha256, settlement_order)
 		if type(inputs.full_seed) ~= "string" or inputs.full_seed == "" or
 				not inputs.full_seed:match("^%-?%d+$") then
 			fail("full seed differs")
+		end
+		local protection_depth = inputs.protection_depth_below_placement
+		if type(protection_depth) ~= "number" or protection_depth % 1 ~= 0 or
+				protection_depth < 0 then
+			fail("protection depth differs")
 		end
 		local r5_validated = inputs.r5_manifest_module.validate(inputs.r5_manifest)
 		local r5_digest = sha256_hex(
@@ -511,9 +516,13 @@ return function(canonical, raw_sha256, settlement_order)
 			root = "anchor_y_plus_one",
 			support = "settled_predecessor_support_v1",
 			capital_count = 6, outpost_count = 24, bandit_count = 12,
+			-- Round 24 ruling 30: each column is protected from its anchor's
+			-- placement height minus the source's protection depth upward
+			-- (was y >= -700).
 			functional_protection_schema =
-				"grug_wp40_r7_functional_anchor_protection_v1",
-			functional_columns = 36, functional_y_min = -700,
+				"grug_wp40_r7_functional_anchor_protection_v2",
+			functional_columns = 36,
+			functional_depth_below_placement = protection_depth,
 		}
 		-- Every settlement carries the same opcode, class, policy, order and
 		-- successor-ref window, because they share one content channel; what
@@ -586,7 +595,9 @@ return function(canonical, raw_sha256, settlement_order)
 			anchor_order = anchor_delta.order, anchor_overwrite = false,
 			functional_anchor_protection_schema =
 				anchor_delta.functional_protection_schema,
-			functional_anchor_columns = 36, functional_anchor_y_min = -700,
+			functional_anchor_columns = 36,
+			functional_anchor_depth_below_placement =
+				anchor_delta.functional_depth_below_placement,
 			settlement_content_schema = settlement_content.schema,
 			settlement_content_sha256 = settlement_content.digest,
 			settlement_semantic_sha256 = settlement_content.semantic_digest,

@@ -231,6 +231,9 @@ go-ahead.**
     upward, instead of the global y ≥ −700. Below that, digging, ores, gems,
     rock layers and nests follow the normal rules (the old "ore-free to −700"
     under start towns is removed). Upward protection stays unbounded.
+    Everything below the bound is treated as normal ground, caves included:
+    cave content (world-content cave rows), cultural reservations and hostile
+    spawns follow the usual rules there (user, 2026-09-29).
 
 31. **Thin start-zone cells are filled** (palette/clock changes only, no new
     species): Sunscar scorpions also spawn by day from band 2, and the plains
@@ -251,6 +254,7 @@ go-ahead.**
 | **F — Density, gathering XP, tool levels** | Rulings 27–29 | A, D merged |
 | **B2 — Cliff layers, P8 speedups** | Ruling 12 extended to steep faces (user, 2026-09-29), output-identical vein speedups | B merged |
 | **G — Protection depth** | Ruling 30 | B2 (same ore host code) |
+| **G2 — Normal caves below protection** | Ruling 30 addendum (cave content, cultural reservations; hostile spawns in F) | G merged |
 
 ## Coordination
 

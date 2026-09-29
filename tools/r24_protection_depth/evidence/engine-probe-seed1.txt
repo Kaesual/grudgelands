@@ -1,0 +1,24 @@
+ACTION[Server]: [r24_protection_probe] ORC start anchor (0,37,2550), protected floor y=-63
+ACTION[Emerge-0]: [r24_protection_probe] EMERGED (-48,-159,2502)..(47,36,2597) in 8.3 s
+ACTION[Emerge-0]: [r24_protection_probe] ORES above floor (y -63..36): 0 [], default:stone 874826
+ACTION[Emerge-0]: [r24_protection_probe] ORES below floor (y -159..-64): 34568 [coal=8960 copper=5949 tin=5983 iron=7913 quartz=4513 gold=1004 garnet=246], default:stone 301523
+ACTION[Emerge-0]: [r24_protection_probe] LAYER y -159..-144: ores 4629 stone      0 coal=1059 copper=696 tin=696 iron=1353 quartz=514 gold=244 garnet=67
+ACTION[Emerge-0]: [r24_protection_probe] LAYER y -143..-128: ores 4858 stone      0 coal=1030 copper=709 tin=745 iron=1498 quartz=542 gold=266 garnet=68
+ACTION[Emerge-0]: [r24_protection_probe] LAYER y -127..-112: ores 5062 stone      0 coal=1122 copper=781 tin=720 iron=1513 quartz=565 gold=298 garnet=63
+ACTION[Emerge-0]: [r24_protection_probe] LAYER y -111.. -96: ores 5526 stone  39712 coal=1457 copper=867 tin=909 iron=1354 quartz=695 gold=196 garnet=48
+ACTION[Emerge-0]: [r24_protection_probe] LAYER y  -95.. -80: ores 7054 stone 129341 coal=2081 copper=1387 tin=1416 iron=1095 quartz=1075
+ACTION[Emerge-0]: [r24_protection_probe] LAYER y  -79.. -64: ores 7439 stone 132470 coal=2211 copper=1509 tin=1497 iron=1100 quartz=1122
+ACTION[Emerge-0]: [r24_protection_probe] LAYER y  -63.. -48: ores    0 stone 140146 
+ACTION[Emerge-0]: [r24_protection_probe] LAYER y  -47.. -32: ores    0 stone 138055 
+ACTION[Emerge-0]: [r24_protection_probe] LAYER y  -31.. -16: ores    0 stone 141902 
+ACTION[Emerge-0]: [r24_protection_probe] LAYER y  -15..   0: ores    0 stone 145524 
+ACTION[Emerge-0]: [r24_protection_probe] LAYER y    1..  16: ores    0 stone 143405 
+ACTION[Emerge-0]: [r24_protection_probe] LAYER y   17..  32: ores    0 stone 147114 
+ACTION[Emerge-0]: [r24_protection_probe] LAYER y   33..  36: ores    0 stone  18680 
+ACTION[Emerge-0]: [r24_protection_probe] DIG throng y=-62 (floor+1): protected=true decision=protected kind=town rule=hard_protected hint=Town – protected node_dig=false -> default:stone
+ACTION[Emerge-0]: [r24_protection_probe] DIG accord y=-62: protected=true reason=town
+ACTION[Emerge-0]: [r24_protection_probe] DIG throng y=-63 (floor+0): protected=true decision=protected kind=town rule=hard_protected hint=Town – protected node_dig=false -> default:stone
+ACTION[Emerge-0]: [r24_protection_probe] DIG accord y=-63: protected=true reason=town
+ACTION[Emerge-0]: [r24_protection_probe] DIG throng y=-64 (floor-1): protected=false decision=allowed kind=nil rule=throng_home hint=nil node_dig=true -> air
+ACTION[Emerge-0]: [r24_protection_probe] DIG accord y=-64: protected=true reason=throng_home
+ACTION[Emerge-0]: [r24_protection_probe] RESULT PASS checks=24 failures=0

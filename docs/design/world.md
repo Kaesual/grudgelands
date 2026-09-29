@@ -155,10 +155,17 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   detection: by construction of `world_zones.md` §7's 600×500 dry start core
   (no planned water, forced cliff or ravine; gentle start grading only), an
   enclosed or flooded start cannot generate.
-  - **Shape of a hard-protected world volume**: its authored x/z footprint is
-    exact and protection runs upward without limit and downward through
-    y = -700 inclusive. At y = -701 and below, the universal contested deep
-    rule wins even beneath a capital. Each hard-protected footprint contains
+  - **Shape of a hard-protected world volume** (Round 24 ruling 30): its
+    authored x/z footprint is exact and protection runs upward without limit
+    and downward through its **placement height − 100** inclusive. The
+    placement height is the final surface y at the footprint's centre column:
+    the anchor for a capital's protected city or a start town, the column
+    itself for an apex socket, the anchor's fitted surface for an outpost or
+    bandit-camp functional column. Below that floor the position follows the
+    ordinary rules of its column — the zone's territory rule down to y = −700,
+    the universal contested deep rule from y = −701 — and mapgen treats it
+    like any other ground (ores, gems, rock layers, nests). Each
+    hard-protected footprint contains
     only the functional/core structure plus its explicitly authored apron; a
     structure type does not gain a blanket ten-node surround merely from its
     name.
@@ -275,11 +282,13 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   Granite are any-pick building rock that drops itself.
 
   The exact political split follows those boundaries: **y = −700 is the last
-  protected shallow node; y = −701 is the first universally contested deep
-  node**. T5 occupies y = −701..−1000 and T6 y = −1001..−31000. On every
+  node of faction home territory; y = −701 is the first universally contested
+  deep node**. T5 occupies y = −701..−1000 and T6 y = −1001..−31000. On every
   non-ocean land column, both factions may dig and place at y = −701 and below,
-  even beneath a capital, hard-protected anchor, road or active claim. Deep
-  ocean and immutable dragon channels remain full-column exceptions.
+  even beneath a road or active claim. Hard-protected capitals, start towns
+  and functional anchors end 100 nodes below their placement height (§2 R1,
+  Round 24 ruling 30), well above this boundary. Deep ocean and immutable
+  dragon channels remain full-column exceptions.
 
   Natural resources need the pick of the layer where they first appear, at any
   depth: T1 digs Copper, Tin, Coal, Iron and Quartz; T2 Gold and all G1 gems
@@ -404,9 +413,10 @@ gatehouses and turrets, and a band at least 12 nodes beyond the edge's outermost
 structure (21 nodes from the wall line, 12–18 beyond gatehouses, turrets and
 wall faces) that carries no trees and no ground
 cover, so players see where the protection ends (Round 22, D76;
-`world_zones.md` §12). It runs upward without limit and downward through
-y = −700.
-The ordinary contested deep rule resumes at y = −701 even below a capital.
+`world_zones.md` §12). It runs upward without limit and downward through the
+capital anchor's placement height − 100 (Round 24 ruling 30); below that the
+capital zone's ordinary territory rule applies, and the contested deep rule
+from y = −701.
 
 - A capital is a safe civic hub with **no hostile ambient enemies**.
 - Four capitals are walled: **Highcourt, Dur Brannoc, Gor Drazhak and Nhal
@@ -472,8 +482,9 @@ visible:
   the world-structures package.
 - The T3 positional guard base is `nil` in every exterior class, including
   editable shelf, where no guard post may exist. It is exactly level 60 inside
-  a capital's protected city (§3) only at normalized y >= -700.
-  At y <= -701 and everywhere else on non-exterior columns it is
+  a capital's protected city (§3) only inside its protected volume (from the
+  capital anchor's placement height − 100 upward, Round 24 ruling 30).
+  Below that floor and everywhere else on non-exterior columns it is
   `min(70, max(20, surface_level_at(pos)))`. WP13 may later raise that non-nil
   generic base outside the shallow capital hard volume, capped at 70, but may
   never lower it; exterior nil remains nil. Ordinary and royal capital guards

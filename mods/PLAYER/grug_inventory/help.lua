@@ -47,7 +47,7 @@ local SECTIONS = {
 		"• Accord: Highcourt (Humans), Dur Brannoc (Dwarves), Lethariel (Elves). Throng: Gor Drazhak (Orcs), Nhal Veyr (Undead), Kezamba (Trolls).",
 		"",
 		heading("Protected ground"),
-		"• Nobody can dig or place blocks in capitals, start towns and the bare strip around them (no trees or plants grow there, so you can see where the protection ends). This applies from y -700 up to the sky.",
+		"• Nobody can dig or place blocks in capitals, start towns and the bare strip around them (no trees or plants grow there, so you can see where the protection ends). This applies from 100 blocks below the town up to the sky; deeper down the normal rules apply.",
 		"• In the level 1-30 zones only their own faction may dig and build. Zones of level 31 and above, and everything below y -700, are open to both factions.",
 	})},
 	{id = "quests", label = "Quests & Professions", x = 1.5, w = 3.1, text = body({
