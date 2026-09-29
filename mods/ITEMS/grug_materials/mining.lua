@@ -356,8 +356,18 @@ function grug_materials.mining_decision(pos, node, digger)
 		return result
 	end
 	local natural = grug_materials.is_natural_node(node.name, def)
-	if natural then
-		result.natural = true
+	result.natural = natural
+	local stack = digger and digger.get_wielded_item and digger:get_wielded_item()
+	-- Ruling 29, on every node: a tool the player's level does not allow is
+	-- refused whenever the tool itself would do the digging. Where the engine
+	-- falls back to the hand anyway (a pick on leaves), nothing is refused.
+	local required_level = is_player(digger) and
+		grug_materials.tool_in_use(stack, def) and
+		grug_materials.tool_level_shortfall(digger, stack) or nil
+
+	-- Protection first, for every node this transaction may refuse (a placed
+	-- node only when the level gate applies; otherwise builtin owns it).
+	if natural or required_level then
 		result.protection_checked = true
 		if core.is_protected(pos, digger_name(digger)) then
 			result.allowed = false
@@ -366,20 +376,12 @@ function grug_materials.mining_decision(pos, node, digger)
 			return result
 		end
 	end
-
-	local stack = digger and digger.get_wielded_item and digger:get_wielded_item()
-	-- Ruling 29, on every node: a tool the player's level does not allow is
-	-- refused whenever the tool itself would do the digging. Where the engine
-	-- falls back to the hand anyway (a pick on leaves), nothing is refused.
-	if is_player(digger) and grug_materials.tool_in_use(stack, def) then
-		local required = grug_materials.tool_level_shortfall(digger, stack)
-		if required then
-			result.allowed = false
-			result.reason = "too_low_level"
-			result.required_level = required
-			result.tool_name = stack:get_name()
-			return result
-		end
+	if required_level then
+		result.allowed = false
+		result.reason = "too_low_level"
+		result.required_level = required_level
+		result.tool_name = stack:get_name()
+		return result
 	end
 	if not natural then
 		return result

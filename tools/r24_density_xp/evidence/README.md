@@ -50,6 +50,14 @@ Night counts include day animals still alive from the day window. Moonfall
 sample although neither cap is lower there; a second sample would be needed
 to tell noise from an effect.
 
+**Review fix (after these runs):** every budgeted species is now also capped
+at ceil(1.5 × its own Round 16 cap). The engine table above predates that
+cap, but no species count in any `after` census exceeds its new cap (checked
+against the roster), so the cap would not have changed these numbers.
+`fixture.txt` is
+regenerated with the cap: its lone-species cases, the worst-case totals table
+and the per-column means include it.
+
 Files: `before-*.probe.txt` / `after.probe.txt` (probe lines of each boot),
 `fixture.txt` (the portable fixture's zone tables, the per-zone budget table
 and the gathering-XP table at the same commit).

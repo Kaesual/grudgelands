@@ -62,10 +62,13 @@ content requirements remain explicitly separate from delivered behavior.
     keep their old population, and sparse points get the ×1.5 lift.
 
   Each species at the point gets the share point budget × its row cap ÷ their
-  summed row caps, rounded (at least 1); a species alone fills the whole
-  budget. Below its own Round 16 cap a species always spawns, so neighbours
-  of a mixed area (a higher-level edge, another biome patch) never hold it
-  below its pre-Round-24 population. The night count covers only the night cast, so day animals still
+  summed row caps, rounded (at least 1), but never more than
+  **ceil(1.5 × its own Round 16 cap)** (review decision): a lone Stone Golem
+  on bare stone stays at 2 by day and 3 by night, not the budget, so points
+  with only one or two eligible species end below the zone budget but never
+  below their old population. Below its own Round 16 cap a species always
+  spawns, so neighbours of a mixed area (a higher-level edge, another biome
+  patch) never hold it below its pre-Round-24 population. The night count covers only the night cast, so day animals still
   about at dusk do not block night spawns. Budgeted rows spawn with 1.5x
   attempt frequency, and their own mobs_redo cap is lifted to 64 so the budget
   binds. Critters, underground rows, the Kraken and Reed Angelfish, shore

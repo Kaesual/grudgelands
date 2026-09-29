@@ -226,8 +226,17 @@ for x = -3584, 3584, 32 do
 							floor = floor + gm.density_old_cap(gm.density_weight(name), clock)
 						end
 					end
-					local new = eligible > 0 and
-						gm.density_point_budget(gm.density_budget(zone, clock), floor) or 0
+					-- Area population reachable now: the point budget, but no
+					-- species past its species cap (ceil(1.5 x old cap)).
+					local caps = 0
+					for _, name in ipairs(cast) do
+						if gm.density_hosts(name, top_node) and
+								roster.spawn_allowed(name, pos) then
+							caps = caps + gm.density_species_cap(gm.density_weight(name), clock)
+						end
+					end
+					local new = eligible > 0 and math.min(caps,
+						gm.density_point_budget(gm.density_budget(zone, clock), floor)) or 0
 					if new < old then no_sparser = false end
 					local cells = {stat(zone)[clock]}
 					if level <= 3 then cells[2] = cells[1].band1 end
@@ -344,6 +353,141 @@ do
 end
 
 -- ---------------------------------------------------------------------------
+-- 2c. Lone species (review finding): with no other mob in range, every
+--     budgeted species of every zone cast stops at exactly its species cap
+--     ceil(1.5 x old cap), whatever the budget. Then the named worst cases on
+--     the real world: Stone Golem on bare stone in Frostbarrow/Stormvault,
+--     War Construct in Broken Causeway/Shattered Line, Carrion Crow.
+-- ---------------------------------------------------------------------------
+do
+	local lone_objects = {}
+	local real_objects = _G.core.get_objects_inside_radius
+	_G.core.get_objects_inside_radius = function() return lone_objects end
+	local function fill_same(name, n)
+		lone_objects = {}
+		for _ = 1, n do
+			local ent = {name = name}
+			lone_objects[#lone_objects + 1] = {get_luaentity = function() return ent end}
+		end
+	end
+	local function max_count(name, pos, node_name, eligible)
+		local n = 0
+		while n < 80 do
+			fill_same(name, n)
+			if not gm.density_allows(name, pos, node_name, eligible) then break end
+			n = n + 1
+		end
+		return n
+	end
+	-- Property over the whole roster: a stub point in each zone where only
+	-- the tested species is eligible.
+	local saved_zones = _G.grug_zones
+	local stub_zone
+	_G.grug_zones = {id_at = function() return stub_zone end}
+	local lone_ok, cases = true, 0
+	for _, zone in ipairs(gm.density_zone_ids()) do
+		for _, clock in ipairs({"day", "night"}) do
+			timeofday = clock == "day" and 0.5 or 0.0
+			local entry = gm.density_entry(zone, clock)
+			for _, name in ipairs(entry and entry.names or {}) do
+				stub_zone = zone
+				local cap = gm.density_species_cap(entry.weight[name], clock)
+				local got = max_count(name, {x = 0, y = 10, z = 0}, "ignore",
+					function() return false end)
+				cases = cases + 1
+				if got ~= cap then
+					lone_ok = false
+					print(("lone %s %s %s: %d, cap %d"):format(zone, clock, name, got, cap))
+				end
+			end
+		end
+	end
+	_G.grug_zones = saved_zones
+	check(lone_ok and cases > 300, "every lone budgeted species stops at its species cap")
+	-- The review's cases on the real world (full per-point eligibility).
+	local named = {
+		{"elandor_frostbarrow_shelf", "grug_mobs:stone_golem", "default:stone"},
+		{"elandor_stormvault_heights", "grug_mobs:stone_golem", "default:stone"},
+		{"front_broken_causeway", "grug_mobs:war_construct", "default:stone"},
+		{"front_shattered_line", "grug_mobs:war_construct", "default:stone"},
+		{"front_broken_causeway", "grug_mobs:carrion_crow", "grug_nodes:mud"},
+		{"kragmar_bannerbreak_mesa", "grug_mobs:carrion_crow", "grug_nodes:mesa_clay"},
+	}
+	print("\nlone worst cases on seed 4242424242 (no other mob in range)")
+	for _, row in ipairs(named) do
+		local zone, name, node_name = row[1], row[2], row[3]
+		for _, clock in ipairs({"day", "night"}) do
+			timeofday = clock == "day" and 0.5 or 0.0
+			local pos
+			for x = -3584, 3584, 16 do
+				for z = -3584, 3584, 16 do
+					if not pos and S.id_at(x, z) == zone and
+							S.water_class_at(x, z) == "land" then
+						local candidate = {x = x, y = math.max(1, S.terrain_height_at(x, z)), z = z}
+						top_node = node_name
+						if roster.spawn_allowed(name, candidate) then pos = candidate end
+					end
+				end
+			end
+			if pos then
+				local old = gm.density_old_cap(gm.density_weight(name), clock)
+				local cap = gm.density_species_cap(gm.density_weight(name), clock)
+				local got = max_count(name, pos, node_name, roster.spawn_allowed)
+				print(("%-28s %-5s %-22s old cap %d -> at most %d (species cap %d, budget %d)")
+					:format(zone, clock, name, old, got, cap, gm.density_budget(zone, clock)))
+				check(got <= cap and got >= old, zone .. " " .. clock .. " " .. name ..
+					" lone count within [old cap, ceil(1.5 x old cap)]")
+			else
+				print(("%-28s %-5s %-22s never eligible by policy"):format(zone, clock, name))
+			end
+		end
+	end
+	_G.core.get_objects_inside_radius = real_objects
+end
+
+-- Worst-case area totals: for each zone and clock, over every subset E of
+-- the cast that could share a point, the largest total the rules allow is
+-- min(max(zone budget, old(E)), sum of E's species caps); never below old(E).
+do
+	print("\nworst-case area totals (zone budget, whole-cast old population, worst total, largest single species)")
+	local worst_ok = true
+	for _, zone in ipairs(gm.density_zone_ids()) do
+		local cells = {}
+		for _, clock in ipairs({"day", "night"}) do
+			local entry = gm.density_entry(zone, clock)
+			if entry then
+				local n = #entry.names
+				local worst, single = 0, 0
+				for mask = 1, 2 ^ n - 1 do
+					local old, caps, bit_value = 0, 0, mask
+					for i = 1, n do
+						if bit_value % 2 == 1 then
+							local w = entry.weight[entry.names[i]]
+							old = old + gm.density_old_cap(w, clock)
+							caps = caps + gm.density_species_cap(w, clock)
+						end
+						bit_value = math.floor(bit_value / 2)
+					end
+					local total = math.min(math.max(entry.budget, old), caps)
+					if total < old then worst_ok = false end
+					if total > worst then worst = total end
+				end
+				for i = 1, n do
+					single = math.max(single,
+						gm.density_species_cap(entry.weight[entry.names[i]], clock))
+				end
+				cells[#cells + 1] = ("%2d / %2d / %2d / %2d"):format(entry.budget,
+					entry.old_total, worst, single)
+			else
+				cells[#cells + 1] = "-"
+			end
+		end
+		print(("%-30s day %-19s night %s"):format(zone, cells[1], cells[2]))
+	end
+	check(worst_ok, "worst-case totals never below the old population")
+end
+
+-- ---------------------------------------------------------------------------
 -- 3. density_allows against a stub area (Sunscar Flats, dry-grass node)
 -- ---------------------------------------------------------------------------
 do
@@ -375,14 +519,17 @@ do
 		return gm.density_allows("grug_mobs:" .. name, pos, node, roster.spawn_allowed)
 	end
 	-- Day on grass, band 1: only the Boar can spawn there (the Plains Runner
-	-- needs dry grass, the Scorpion band 2), so it alone may fill the budget.
+	-- needs dry grass, the Scorpion band 2); alone it stops at its species cap
+	-- ceil(1.5 x old cap 7) = 11, below the budget 15.
 	timeofday = 0.5
 	local day_budget = gm.density_budget("kragmar_sunscar_flats", "day")
+	local boar_cap = gm.density_species_cap(gm.density_weight("grug_mobs:boar"), "day")
+	check(boar_cap == 11 and boar_cap < day_budget, "boar species cap 11")
 	node = "default:dirt_with_grass"
-	fill({{"boar", day_budget - 1}, {"rabbit", 9}})
-	check(allows("boar"), "day on grass: budget-1 boars (+9 critters) -> one more")
-	fill({{"boar", day_budget}})
-	check(not allows("boar"), "day on grass: budget of boars -> full")
+	fill({{"boar", boar_cap - 1}, {"rabbit", 9}})
+	check(allows("boar"), "day on grass: cap-1 boars (+9 critters) -> one more")
+	fill({{"boar", boar_cap}})
+	check(not allows("boar"), "day on grass: boar species cap reached")
 	-- Day on dry grass, band 1: Boar and Plains Runner share by row cap.
 	node = "default:dry_dirt_with_dry_grass"
 	local share = gm.density_share(day_budget, gm.density_weight("grug_mobs:boar"),
@@ -393,13 +540,15 @@ do
 	check(not allows("boar") and allows("plains_runner"),
 		"day on dry grass: boar share reached, the runner still has room")
 	-- Night, band 1: only the Giant Rat is eligible (Scorpion start band 4,
-	-- Husk level-gated), so it may fill the night budget 23.
+	-- Husk level-gated): it stops at its species cap ceil(1.5 x 7) = 11.
 	timeofday = 0.0
 	area.level = 2
-	fill({{"giant_rat", 22}, {"boar", 14}})
-	check(allows("giant_rat"), "night band 1: 22 rats -> 23rd may spawn (day boars not counted)")
-	fill({{"giant_rat", 23}})
-	check(not allows("giant_rat"), "night band 1: 23 rats -> budget full")
+	local rat_cap = gm.density_species_cap(gm.density_weight("grug_mobs:giant_rat"), "night")
+	check(rat_cap == 11, "rat night species cap 11")
+	fill({{"giant_rat", rat_cap - 1}, {"boar", 14}})
+	check(allows("giant_rat"), "night band 1: cap-1 rats -> one more (day boars not counted)")
+	fill({{"giant_rat", rat_cap}})
+	check(not allows("giant_rat"), "night band 1: rat species cap reached")
 	-- Night, level 10: Rat, Scorpion and Husk eligible, weight 4 each -> share 8.
 	area.level = 10
 	fill({{"giant_rat", 7}})
@@ -444,14 +593,16 @@ do
 			saved_zone, saved_node, saved_level, saved_time
 	end
 	-- Named rares, camp members and rare/boss tiers never count.
-	fill({{"giant_rat", 23, {_grug_camp_pos = {x = 0, y = 0, z = 0}}},
+	fill({{"giant_rat", 30, {_grug_camp_pos = {x = 0, y = 0, z = 0}}},
 		{"scorpion", 5, {_grug_rare_id = "r"}}, {"sun_dried_husk", 5, {_grug_tier = "boss"}}})
 	check(allows("giant_rat"), "camp/rare/boss entities are outside the budget")
 	-- A host the other species cannot use: on grass only the Rat of the three
-	-- could spawn, so its share is the whole budget again.
+	-- could spawn at level 10, so it may go past its share 8 up to its cap.
 	node = "default:dirt_with_grass"
-	fill({{"giant_rat", 20}})
-	check(allows("giant_rat"), "rat alone on its host node: share is the budget")
+	fill({{"giant_rat", rat_cap - 1}})
+	check(allows("giant_rat"), "rat alone on its host node: up to its species cap")
+	fill({{"giant_rat", rat_cap}})
+	check(not allows("giant_rat"), "rat alone on its host node: never past its species cap")
 	node = "default:dry_dirt_with_dry_grass"
 	-- Unbudgeted species are never limited here; underground rows neither.
 	fill({{"rabbit", 50}})

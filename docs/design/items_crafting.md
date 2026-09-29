@@ -611,13 +611,16 @@ shovels need a character level by material tier; the tier is the tool's own
 | T5 | Embersteel pick, axe, shovel | 35 |
 | T6 | Abyssal Steel pick, axe, shovel | 45 |
 
-- Every gated tool's tooltip ends with "Requires level <N>".
+- Every gated tool's tooltip ends with "Requires level <N>" (item definition; stacks
+  from earlier worlds are not relabelled, as worlds are discarded).
 - The central mining decision refuses, as reason `too_low_level`, any dig on
   any node (natural or placed) that the gated tool itself would perform; where
   the engine falls back to the bare hand anyway (a pick on leaves) nothing is
   refused. A punch and a refused dig answer with one line in the same
   rate-limited flash line as the other hints, e.g. "Iron Pickaxe requires
-  level 5". Protection is answered first; a rock the tool cannot dig at all
+  level 5". Protection is answered first, on placed nodes too (a protected
+  node answers its protection line and records the violation); a rock the
+  tool cannot dig at all
   keeps its "Requires a T<N> pick" line.
 - The client still predicts the dig from the item capabilities and shows
   cracks in this rare case (an engine limit, accepted); the server resets the

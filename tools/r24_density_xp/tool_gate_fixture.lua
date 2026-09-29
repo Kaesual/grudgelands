@@ -93,6 +93,23 @@ check(M.mining_decision(origin, node, player("grug_materials:axe_iron", 4)).reas
 	"too_low_level", "iron axe at level 4 on placed planks refused")
 check(M.mining_decision(origin, node, player("grug_materials:axe_iron", 5)).allowed,
 	"iron axe at level 5 on placed planks allowed")
+-- Protection before level: a protected placed node dug with a gated tool is
+-- refused as protected, with the violation recorded and the protection line.
+do
+	local real_protected, real_violation = core.is_protected, core.record_protection_violation
+	local violations = 0
+	core.is_protected = function() return true end
+	core.record_protection_violation = function() violations = violations + 1 end
+	node = place("default:wood")
+	check(M.mining_decision(origin, node, player("grug_materials:axe_iron", 4)).reason ==
+		"protected", "protected planks with a gated axe: protected, not level")
+	H.clear_chat()
+	H.set_time(50000000)
+	check(core.node_dig(origin, node, player("grug_materials:axe_iron", 4)) == false and
+		violations == 1 and H.chat()[1] and H.chat()[1][2] == "Protected",
+		"protected planks with a gated axe: violation recorded, protection line")
+	core.is_protected, core.record_protection_violation = real_protected, real_violation
+end
 -- Hand fallback: a pick does not dig leaves, the hand does; nothing refused.
 node = place("default:leaves")
 check(not M.tool_in_use(ItemStack("default:pick_steel"), H.nodes["default:leaves"]),

@@ -18,8 +18,8 @@
 --     27), and the second term keeps every point at least as populated as
 --     before (coordinator correction: no zone gets sparser);
 --   * each of those species gets the share P x w / W, rounded (at least 1),
---     where w is its registered row cap and W their summed row caps; a
---     species alone may fill the whole budget;
+--     where w is its registered row cap and W their summed row caps, but
+--     never more than ceil(1.5 x its own Round 16 cap) (review decision);
 --   * the budgeted mobs within the same radius never exceed P in total;
 --   * below its own Round 16 cap a species always spawns, so no species is
 --     ever held below its pre-Round-24 population by its neighbours.
@@ -77,6 +77,15 @@ function grug_mobs.density_old_cap(weight, clock)
 		cap = math.ceil(cap * 5 / 4)
 	end
 	return cap
+end
+
+-- The most of one species a point may hold (review decision on ruling 27,
+-- "about 1.5x"): ceil(DENSITY_SCALE x its Round 16 cap). Where few species
+-- share a point the point therefore ends below the zone budget, but never
+-- below its old population.
+function grug_mobs.density_species_cap(weight, clock)
+	return math.ceil(grug_mobs.DENSITY_SCALE *
+		grug_mobs.density_old_cap(weight, clock))
 end
 
 -- Registered per-species weight (the largest surface row cap of that name)
@@ -231,15 +240,19 @@ function grug_mobs.density_allows(name, pos, node_name, eligible)
 	end
 	if not weight then
 		-- A budgeted species outside the zone's static cast (the 24 h blight
-		-- Zombie row by day): its own row cap at the same scale.
-		local own = weights[name] or 1
-		return same < math.max(1, round(own * grug_mobs.DENSITY_SCALE))
+		-- Zombie row by day): its own species cap alone.
+		return same < grug_mobs.density_species_cap(weights[name] or 1, clock)
 	end
 	-- Below its own Round 16 cap a species always spawns, exactly as before
 	-- Round 24: neighbours of a mixed area (a higher-level edge, another
 	-- biome patch) can then fill the budget without crowding it out.
 	if same < grug_mobs.density_old_cap(weight, clock) then
 		return true
+	end
+	-- No species above 1.5x its own old cap, however few share the point: a
+	-- lone Stone Golem on bare stone stays a golem or two, not a budget.
+	if same >= grug_mobs.density_species_cap(weight, clock) then
+		return false
 	end
 	-- Cheap paths. No point budget exceeds max(zone budget, whole cast's old
 	-- population); none falls below the zone budget, and no share below the
