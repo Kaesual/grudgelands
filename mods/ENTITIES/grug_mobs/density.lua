@@ -5,24 +5,27 @@
 -- population around a player used to be the sum of the eligible species'
 -- caps, and a zone with few eligible species was empty. The ordinary
 -- natural surface species of the named-zone palettes (spawn_policy.lua
--- `density_budgeted`) now share ONE budget per zone and clock instead:
+-- `density_budgeted`) now share ONE budget per spawn point instead:
 --
---   * budget B = max(REFERENCE[clock] x DENSITY_SCALE, DENSITY_FLOOR[zone])
---     x (ZONE_DENSITY[zone] or 1),
---     rounded; REFERENCE is the pre-Round-24 median area population, so
---     DENSITY_SCALE is "about 1.5x" (ruling 27), and DENSITY_FLOOR keeps a
---     zone that was denser than that at its own old population;
---   * each species eligible AT THE SPAWN POINT (its hosts include the node
---     the spawning row matched, and policy, level gate, row domain and
---     check and clock allow it) gets the share B x w / W, rounded, where w is
---     its registered row cap and W the sum over the eligible species; a
---     single eligible species may fill the whole budget;
---   * the budgeted mobs within the same radius never exceed B in total.
+--   * the species that could spawn AT THE POINT are those whose hosts include
+--     the node the spawning row matched and which policy, level gate, row
+--     domain and check and clock allow;
+--   * point budget P = max(zone budget, their old population), where
+--     zone budget = round(REFERENCE[clock] x DENSITY_SCALE x ZONE_DENSITY)
+--     and old population = the sum of their Round 16 caps (row cap x 1.3
+--     rounded, x 5/4 rounded up at night). REFERENCE is the pre-Round-24
+--     median area population, so the common budget is "about 1.5x" (ruling
+--     27), and the second term keeps every point at least as populated as
+--     before (coordinator correction: no zone gets sparser);
+--   * each of those species gets the share P x w / W, rounded (at least 1),
+--     where w is its registered row cap and W their summed row caps; a
+--     species alone may fill the whole budget;
+--   * the budgeted mobs within the same radius never exceed P in total.
 --
 -- Critters, underground rows, NPCs, guards, camps, patrols, named rares,
 -- bosses, royals and independent-authority mobs are neither counted nor
 -- limited here; they keep their own rows and timers. The row's own
--- mobs_redo cap is lifted to the largest budget (prepare_spawn_row), so this
+-- mobs_redo cap is lifted to DENSITY_ROW_CAP (prepare_spawn_row), so this
 -- check, which runs in mobs:spawn_abm_check before mobs_redo counts, is the
 -- binding one.
 
@@ -33,23 +36,8 @@ grug_mobs.DENSITY_SCALE = 1.5
 -- the summed Round 16 caps (1.3x, night rows 5/4) of the species that could
 -- spawn on that column's biome top (tools/r24_density_xp/fixture.lua prints
 -- the table: day 9.79, night 14.59 on seed 4242424242, main with Lanes D2 and
--- D3). Common budgets are
--- therefore 15 by day and 23 by night.
+-- D3). The common budgets are therefore 15 by day and 23 by night.
 grug_mobs.DENSITY_REFERENCE = {day = 10, night = 15}
-
--- No zone gets sparser than before (coordinator correction to ruling 27):
--- a zone whose own pre-Round-24 area population (same measurement, rounded)
--- exceeds the common budget keeps that population as its budget. Only those
--- zones are listed; the table is regenerated from the fixture's printout.
-grug_mobs.DENSITY_FLOOR = {
-	elandor_ashenward_march = {night = 35},
-	elandor_whitebridge_shire = {day = 17, night = 24},
-	front_shattered_line = {day = 17, night = 27},
-	front_skyglass_canopy = {night = 25},
-	front_stormscale_summit = {night = 29},
-	kragmar_bannerbreak_mesa = {night = 36},
-	kragmar_redtusk_savanna = {day = 17},
-}
 
 -- Per-zone multipliers for later tuning by feel; absent means 1.
 grug_mobs.ZONE_DENSITY = {}
@@ -57,33 +45,34 @@ grug_mobs.ZONE_DENSITY = {}
 -- Attempt frequency of budgeted rows (spawn_policy.lua prepare_spawn_row).
 grug_mobs.DENSITY_ATTEMPT_SCALE = grug_mobs.DENSITY_SCALE
 
+-- The lifted mobs_redo cap of a budgeted row: above any point budget
+-- (the fixture checks every zone's whole-cast old population against it).
+grug_mobs.DENSITY_ROW_CAP = 64
+
 local function round(value)
 	return math.floor(value + 0.5)
 end
 
--- budget = max(round(reference x scale), zone floor) x zone multiplier.
 function grug_mobs.density_budget(zone_id, clock)
 	local reference = grug_mobs.DENSITY_REFERENCE[clock]
 	if not reference then
 		error("[grug_mobs] density clock must be day or night")
 	end
-	local floor = grug_mobs.DENSITY_FLOOR[zone_id]
-	local base = math.max(round(reference * grug_mobs.DENSITY_SCALE),
-		floor and floor[clock] or 0)
-	return math.max(1, round(base * (grug_mobs.ZONE_DENSITY[zone_id] or 1)))
+	return math.max(1, round(reference * grug_mobs.DENSITY_SCALE *
+		(grug_mobs.ZONE_DENSITY[zone_id] or 1)))
 end
 
--- The lifted mobs_redo row cap: the largest budget any zone can have.
 function grug_mobs.density_row_cap()
-	local cap = 1
-	local zones = {}
-	for zone_id in pairs(grug_mobs.DENSITY_FLOOR) do zones[zone_id] = true end
-	for zone_id in pairs(grug_mobs.ZONE_DENSITY) do zones[zone_id] = true end
-	for clock in pairs(grug_mobs.DENSITY_REFERENCE) do
-		cap = math.max(cap, grug_mobs.density_budget(nil, clock))
-		for zone_id in pairs(zones) do
-			cap = math.max(cap, grug_mobs.density_budget(zone_id, clock))
-		end
+	return grug_mobs.DENSITY_ROW_CAP
+end
+
+-- The Round 16 cap of a row with cap `weight` at a clock (spawn_policy.lua
+-- before Round 24). At night every row counts with its night 5/4, which errs
+-- towards more mobs for the few around-the-clock rows.
+function grug_mobs.density_old_cap(weight, clock)
+	local cap = math.max(1, round(weight * 1.3))
+	if clock == "night" then
+		cap = math.ceil(cap * 5 / 4)
 	end
 	return cap
 end
@@ -148,8 +137,16 @@ function grug_mobs.density_share(budget, weight, eligible_weight)
 	return math.max(1, round(budget * weight / eligible_weight))
 end
 
--- zone_id -> clock -> {budget, weight = {name -> w}, names, total}, built on
--- first use, after every mob file has registered its rows.
+-- The budget at a point: the zone budget, or the old population of the
+-- species that could spawn there when that is larger.
+function grug_mobs.density_point_budget(zone_budget, old_population)
+	return math.max(zone_budget, old_population)
+end
+
+-- zone_id -> clock -> {budget, weight = {name -> w}, names, total,
+-- old_total}, built on first use, after every mob file has registered its
+-- rows. old_total (the whole cast's old population) bounds every point
+-- budget of the zone.
 local entries
 
 function grug_mobs.density_entry(zone_id, clock)
@@ -160,13 +157,15 @@ function grug_mobs.density_entry(zone_id, clock)
 			for _, c in ipairs({"day", "night"}) do
 				local cast = grug_mobs.zone_density_cast(id, c)
 				local entry = {budget = grug_mobs.density_budget(id, c),
-					weight = {}, names = {}, total = 0}
+					weight = {}, names = {}, total = 0, old_total = 0}
 				for _, name in ipairs(cast) do
 					local w = weights[name]
 					if w then
 						entry.weight[name] = w
 						entry.names[#entry.names + 1] = name
 						entry.total = entry.total + w
+						entry.old_total = entry.old_total +
+							grug_mobs.density_old_cap(w, c)
 					end
 				end
 				if #entry.names > 0 then
@@ -212,8 +211,8 @@ function grug_mobs.density_allows(name, pos, node_name, eligible)
 		local range = tonumber(core.settings:get("active_block_range")) or 4
 		count_radius = range * 16 * 2
 	end
-	local entry = grug_mobs.density_entry(grug_zones.id_at(pos.x, pos.z),
-		clock_now())
+	local clock = clock_now()
+	local entry = grug_mobs.density_entry(grug_zones.id_at(pos.x, pos.z), clock)
 	local weight = entry and entry.weight[name]
 	local same, total = 0, 0
 	local objects = core.get_objects_inside_radius(pos, count_radius)
@@ -234,21 +233,27 @@ function grug_mobs.density_allows(name, pos, node_name, eligible)
 		local own = weights[name] or 1
 		return same < math.max(1, round(own * grug_mobs.DENSITY_SCALE))
 	end
-	if total >= entry.budget then
+	-- Cheap paths. No point budget exceeds max(zone budget, whole cast's old
+	-- population); none falls below the zone budget, and no share below the
+	-- one with the whole cast eligible.
+	if total >= math.max(entry.budget, entry.old_total) then
 		return false
 	end
-	-- Cheap path: below the share it would get with the whole static cast
-	-- eligible, no per-point evaluation is needed.
-	if same < grug_mobs.density_share(entry.budget, weight, entry.total) then
+	if total < entry.budget and
+			same < grug_mobs.density_share(entry.budget, weight, entry.total) then
 		return true
 	end
-	local eligible_weight = 0
+	local eligible_weight, old_population = 0, 0
 	for i = 1, #entry.names do
 		local other = entry.names[i]
 		if other == name or (grug_mobs.density_hosts(other, node_name) and
 				eligible(other, pos)) then
-			eligible_weight = eligible_weight + entry.weight[other]
+			local w = entry.weight[other]
+			eligible_weight = eligible_weight + w
+			old_population = old_population + grug_mobs.density_old_cap(w, clock)
 		end
 	end
-	return same < grug_mobs.density_share(entry.budget, weight, eligible_weight)
+	local budget = grug_mobs.density_point_budget(entry.budget, old_population)
+	return total < budget and
+		same < grug_mobs.density_share(budget, weight, eligible_weight)
 end

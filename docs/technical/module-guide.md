@@ -743,7 +743,7 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   wholly below y = -40 remain light-only. Never hand-maintain those fields on
   a new surface row. Palette species of normal/elite tier are budgeted
   (`grug_mobs/density.lua`, Round 24): their row `aoc` becomes the species
-  weight, the area cap is the zone budget enforced in `mobs:spawn_abm_check`
+  weight, the area cap is the point budget (zone budget or the old population, whichever is larger) enforced in `mobs:spawn_abm_check`
   after the policy, so a new such row needs no cap tuning of its own.
   Fixed bosses do not register ambient rows: `grug_mobs/bosses.lua` owns the
   two authenticated island `dragon` anchors, while the six kings and their

@@ -33,15 +33,9 @@ check(#roster.failed == 0, "every mob file loads: " .. table.concat(roster.faile
 check(#roster.rows == #roster.raw_rows and #roster.rows > 60, "rows captured")
 local gm = roster.grug_mobs
 local row_cap = gm.density_row_cap()
-do
-	local largest = 1
-	for _, zone in ipairs(gm.density_zone_ids()) do
-		for _, clock in ipairs({"day", "night"}) do
-			largest = math.max(largest, gm.density_budget(zone, clock))
-		end
-	end
-	check(row_cap == largest, "row cap is the largest budget")
-end
+-- Checked against every zone's largest possible point budget below, once
+-- the zone entries exist.
+check(row_cap == gm.DENSITY_ROW_CAP, "row cap is DENSITY_ROW_CAP")
 
 -- Old (Round 16) cap of one raw surface row.
 local function old_cap(aoc, night)
@@ -191,6 +185,7 @@ local START_ZONES = {
 	kragmar_sunscar_flats = "orc", kragmar_kapok_cradle = "troll",
 }
 local per_zone = {}
+local no_sparser = true
 local function stat(zone)
 	local s = per_zone[zone]
 	if not s then
@@ -214,7 +209,7 @@ for x = -3584, 3584, 32 do
 				timeofday = clock == "day" and 0.5 or 0.0
 				local cast = gm.zone_density_cast(zone, clock)
 				if #cast > 0 then
-					local old, eligible = 0, 0
+					local old, floor, eligible = 0, 0, 0
 					local in_other = {}
 					for _, name in ipairs(gm.zone_density_cast(zone,
 							clock == "day" and "night" or "day")) do
@@ -224,11 +219,16 @@ for x = -3584, 3584, 32 do
 						if gm.density_hosts(name, top_node) and
 								roster.spawn_allowed(name, pos) then
 							eligible = eligible + 1
+							-- The exact Round 16 rule (5/4 only for night rows)
+							-- and the budget's own old term (5/4 for all at night).
 							old = old + old_cap(gm.density_weight(name),
 								clock == "night" and not in_other[name])
+							floor = floor + gm.density_old_cap(gm.density_weight(name), clock)
 						end
 					end
-					local new = eligible > 0 and gm.density_budget(zone, clock) or 0
+					local new = eligible > 0 and
+						gm.density_point_budget(gm.density_budget(zone, clock), floor) or 0
+					if new < old then no_sparser = false end
 					local cells = {stat(zone)[clock]}
 					if level <= 3 then cells[2] = cells[1].band1 end
 					for _, cell in ipairs(cells) do
@@ -276,56 +276,31 @@ check(math.abs(gm.DENSITY_REFERENCE.day - day_median) <= 1 and
 check(gm.density_budget("kragmar_sunscar_flats", "day") == 15 and
 	gm.density_budget("kragmar_sunscar_flats", "night") == 23, "budgets 15 / 23")
 
--- No zone sparser than before: every zone's budget is at least its own old
--- population (rounded), and DENSITY_FLOOR lists exactly the zones whose old
--- population exceeds the common budget. A mismatch prints the table to paste.
+-- No point sparser than before (coordinator correction to ruling 27): at
+-- every sampled column the point budget is at least the exact old
+-- population, and no point budget can exceed the lifted row cap.
+check(no_sparser, "no sampled column's budget is below its old population")
 do
-	local expected, lines_out, ok = {}, {}, true
-	print("\nper-zone budgets (old mean population -> budget)")
-	print(("%-30s %-18s %-18s"):format("zone", "day", "night"))
+	print("\nper-zone budgets: zone budget, mean old -> mean new area population")
+	print(("%-30s %-24s %-24s"):format("zone", "day", "night"))
 	for _, zone in ipairs(zone_ids) do
 		local cells = {}
 		for _, clock in ipairs({"day", "night"}) do
 			local c = per_zone[zone][clock]
-			local common = round(gm.DENSITY_REFERENCE[clock] * gm.DENSITY_SCALE)
+			local entry = gm.density_entry(zone, clock)
+			if entry then
+				check(math.max(entry.budget, entry.old_total) <= gm.DENSITY_ROW_CAP,
+					zone .. " " .. clock .. " point budgets stay below the row cap")
+			end
 			if c.points > 0 then
-				local old = round(c.old / c.points)
-				if old > common then
-					expected[zone] = expected[zone] or {}
-					expected[zone][clock] = old
-				end
-				local budget = gm.density_budget(zone, clock)
-				if budget < old then ok = false end
-				cells[#cells + 1] = ("%5.1f -> %2d%s"):format(c.old / c.points, budget,
-					budget > common and " (floor)" or "")
+				cells[#cells + 1] = ("%2d: %5.1f -> %5.1f"):format(
+					gm.density_budget(zone, clock), c.old / c.points, c.new / c.points)
 			else
 				cells[#cells + 1] = "-"
 			end
 		end
-		print(("%-30s %-18s %-18s"):format(zone, cells[1], cells[2]))
+		print(("%-30s %-24s %-24s"):format(zone, cells[1], cells[2]))
 	end
-	local same = true
-	for _, zone in ipairs(zone_ids) do
-		local want, have = expected[zone], gm.DENSITY_FLOOR[zone]
-		if (want == nil) ~= (have == nil) or (want and (want.day ~= have.day or
-				want.night ~= have.night)) then
-			same = false
-		end
-		if want then
-			lines_out[#lines_out + 1] = ("\t%s = {%s%s},"):format(zone,
-				want.day and ("day = " .. want.day) or "",
-				want.night and ((want.day and ", " or "") .. "night = " .. want.night) or "")
-		end
-	end
-	for zone in pairs(gm.DENSITY_FLOOR) do
-		if not per_zone[zone] then same = false end
-	end
-	if not same then
-		print("DENSITY_FLOOR differs from the measurement; regenerate:\n" ..
-			"grug_mobs.DENSITY_FLOOR = {\n" .. table.concat(lines_out, "\n") .. "\n}")
-	end
-	check(same, "DENSITY_FLOOR is the measured per-zone floor")
-	check(ok, "no zone's budget is below its old population")
 end
 
 -- Start-town hostile refusal ends 100 nodes below the start anchor (ruling
@@ -421,6 +396,21 @@ do
 	check(allows("scorpion"), "night level 10: scorpion still has its share")
 	fill({{"scorpion", 10}, {"sun_dried_husk", 13}})
 	check(not allows("giant_rat"), "night level 10: 23 others -> total budget full")
+	-- A species-rich point keeps its old population as its budget: Kapok by
+	-- day at level 10 on rainforest litter, Jungle Boar, Jungle Lynx, Tapir and
+	-- Viper (old caps 7 + 7 + 4 + 5 = 23 > zone budget 15).
+	do
+		local saved_zone, saved_node, saved_level, saved_time =
+			area.zone, node, area.level, timeofday
+		area.zone, area.level, timeofday = "kragmar_kapok_cradle", 10, 0.5
+		node = "default:dirt_with_rainforest_litter"
+		fill({{"jungle_boar", 5}, {"jungle_lynx", 7}, {"tapir", 4}, {"viper", 5}})
+		check(allows("jungle_boar"), "rich point: 21 of 23, boar below its share 7")
+		fill({{"jungle_boar", 7}, {"jungle_lynx", 7}, {"tapir", 4}, {"viper", 5}})
+		check(not allows("tapir"), "rich point: old population 23 reached")
+		area.zone, node, area.level, timeofday =
+			saved_zone, saved_node, saved_level, saved_time
+	end
 	-- Named rares, camp members and rare/boss tiers never count.
 	fill({{"giant_rat", 23, {_grug_camp_pos = {x = 0, y = 0, z = 0}}},
 		{"scorpion", 5, {_grug_rare_id = "r"}}, {"sun_dried_husk", 5, {_grug_tier = "boss"}}})
