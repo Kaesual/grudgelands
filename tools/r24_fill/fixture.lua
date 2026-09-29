@@ -134,15 +134,17 @@ end
 local function content_ref(name) return cid_of(name) end
 
 local strata = S.r8_strata_new(FULL_SEED, zones_source)
-local function run_strata(w, steep_x, excluded_x)
+local function run_strata(w, steep_x, excluded_x, info, steep_fn)
 	return S.r8_apply_strata({min_x = w.box.min_x, min_y = w.box.min_y,
 		min_z = w.box.min_z, max_x = w.box.max_x, max_y = w.box.max_y,
 		max_z = w.box.max_z, floor_y = -37, original_data = w.original,
-		stone_cid = STONE, index_at = w.index_at,
+		stone_cid = STONE, index_at = w.index_at, column_info = info,
 		column_values_at = w.column_values_at,
 		static_exclusion_values_at = function(x) if x == excluded_x then return "poi" end end,
 		housing_excluded_at = function() return false end,
-		select_surface = function(_, x) return {filler_depth = 4, steep = x == steep_x} end,
+		select_surface = function(_, x)
+			return {filler_depth = 4, steep = steep_fn and steep_fn(x) or x == steep_x}
+		end,
 		strata = strata, content_ref = content_ref, fill_stone_at = w.fill_stone_at,
 		write = w.write})
 end
@@ -194,10 +196,10 @@ end
 local layers = S.r24_fill_layers_new(FULL_SEED)
 local FIRST = S.r24_layer_first_depth
 check(FIRST == 41, "layers start below the 40-node band depth")
-local function run_layers(w, lay)
+local function run_layers(w, lay, info)
 	return S.r24_apply_fill_layers({min_x = w.box.min_x, min_y = w.box.min_y,
 		min_z = w.box.min_z, max_x = w.box.max_x, max_y = w.box.max_y,
-		max_z = w.box.max_z, floor_y = -37, index_at = w.index_at,
+		max_z = w.box.max_z, floor_y = -37, index_at = w.index_at, column_info = info,
 		column_values_at = w.column_values_at, layers = lay or layers,
 		original_data = w.original, final_data = w.final, intent_opcode = w.intent,
 		stone_cid = STONE,
@@ -351,16 +353,25 @@ do
 	say("horizontal continuity: %d/%d layer voxels continue in the next column", same, total)
 end
 
--- Pockets stay inside their 16^3 lattice cell and are gravel or dirt.
+-- Pockets stay inside their 16^3 lattice cell: gravel or dirt, or (B2) a
+-- rock nest of the biome's decorative rocks.
 do
-	local cells, pocket_voxels, gravel = {}, 0, 0
+	local cells, pocket_voxels, gravel, nests = {}, 0, 0, 0
+	local nest_names = {}
 	for z = 0, 63 do
 		for y = 0, 63 do
 			for x = 0, 63 do
-				local p = layers.pocket_at(x, y, z)
+				local p, loose = layers.pocket_at(x, y, z, "grug_badlands")
 				if p then
 					pocket_voxels = pocket_voxels + 1
 					if p == "default:gravel" then gravel = gravel + 1 end
+					if not loose then
+						nests = nests + 1
+						nest_names[p] = true
+						check(p == "grug_materials:basalt", "badlands nests use the palette's rock")
+					else
+						check(p == "default:gravel" or p == "default:dirt", "loose pocket material")
+					end
 					cells[floor(x / 16) .. "," .. floor(y / 16) .. "," .. floor(z / 16)] = true
 				end
 			end
@@ -371,8 +382,10 @@ do
 	-- recompute each voxel's cell from its own lattice: a pocket voxel is always
 	-- within radius 3 of a centre in [3,12], hence inside [0,15]
 	check(count > 0 and count <= 64, "pocket cell count")
-	say("pockets: %d of 64 lattice cells, %.2f%% of voxels, %.0f%% gravel",
-		count, 100 * pocket_voxels / 262144, 100 * gravel / math.max(1, pocket_voxels))
+	check(nests > 0, "rock nests occur")
+	say("pockets: %d of 64 lattice cells, %.2f%% of voxels (rock nests %.2f%%), %.0f%% of loose ones gravel",
+		count, 100 * pocket_voxels / 262144, 100 * nests / 262144,
+		100 * gravel / math.max(1, pocket_voxels - nests))
 end
 
 -- Seed and zone matter; the rule is deterministic.
@@ -400,10 +413,96 @@ do
 end
 
 -- Known answer: the layer writes of the mountain owner (seed 10536739806879207652).
-local LAYER_KAT = "1e00214de465775f85d77a0822fa395c146c081c9aab14b2bda61b6c7c512d0c"
+-- Round 24 B2 added the rock nests to the lattice (was 1e00214d...c512d0c).
+local LAYER_KAT = "6a513d83211763410076f109aef4c22337989c10ccc8693e236817f172739219"
 say("layer KAT digest: %s", layer_digest)
 if os.getenv("R24_PRINT_KAT") == nil then
 	check(layer_digest == LAYER_KAT, "layer known answer differs")
+end
+
+-------------------------------------------------------------------------------
+-- 4b. Cliffs (Round 24 B2). A 70-node cliff: plateau at y 110 for x < 32,
+-- ground at y 40 beyond. Columns 28..31 are steep, column 29 is excluded
+-- (protected), the rest are ordinary. Two variants: native stone up to the
+-- surface (a native cliff) and native v7 at y 20 (a fill cliff). Coal sits
+-- in the face of column 31.
+local cliff_digests = {}
+do
+	local box = {min_x = 0, max_x = 63, min_y = -40, max_y = 120, min_z = 0, max_z = 15}
+	local nests_only = {["grug_materials:slate"] = true, ["grug_materials:granite"] = true,
+		["grug_materials:basalt"] = true}
+	for _, variant in ipairs({"native", "fill"}) do
+		local function column(x, z)
+			local t = x < 32 and 110 or 40
+			return {terrain_y = t, native_y = variant == "native" and t - 1 or 20,
+				zone = "stormvault", biome = "grug_crags"}
+		end
+		local w = new_world(box, column)
+		for z = 0, 15 do
+			local i = w.index_at(31, 90, z)
+			w.original[i], w.final[i] = COAL, COAL
+		end
+		local function steep(x) return x >= 28 and x <= 31 end
+		local function face_stone()
+			local stone, total = 0, 0
+			for z = 0, 15 do
+				for y = 41, 105 do
+					total = total + 1
+					if w.final[w.index_at(31, y, z)] == STONE then stone = stone + 1 end
+				end
+			end
+			return stone / total
+		end
+		local info = {}
+		run_strata(w, nil, 29, info, steep)
+		local before = face_stone()
+		local band_writes = #w.writes
+		w.writes = {}
+		local before_final, before_intent = {}, {}
+		for i = 1, #w.final do before_final[i], before_intent[i] = w.final[i], w.intent[i] end
+		run_layers(w, nil, info)
+		local after = face_stone()
+		local shallow = {steep = 0, ordinary = 0, excluded = 0}
+		for _, row in ipairs(w.writes) do
+			local x, y, z, name = row:match("^(%-?%d+),(%-?%d+),(%-?%d+)=(.+)$")
+			x, y, z = tonumber(x), tonumber(y), tonumber(z)
+			local c = column(x, z)
+			local depth = c.terrain_y - y
+			local i = w.index_at(x, y, z)
+			check(before_final[i] == STONE and before_intent[i] == 0,
+				"layer pass replaced something other than untouched stone")
+			if depth <= 40 then
+				check(depth >= 5, "layer pass wrote into the filler")
+				check(name ~= "default:gravel" and name ~= "default:dirt",
+					"loose pocket in the top 40 nodes")
+				if x == 29 then shallow.excluded = shallow.excluded + 1
+				elseif steep(x) then shallow.steep = shallow.steep + 1
+				else
+					shallow.ordinary = shallow.ordinary + 1
+					check(nests_only[name], "ordinary column got a layer near the surface")
+				end
+			else
+				check(before_final[i] ~= nil and w.original[i] ~= STONE,
+					"deep layer in native stone")
+			end
+		end
+		for z = 0, 15 do
+			check(w.final[w.index_at(31, 90, z)] == COAL, "ore replaced")
+		end
+		check(shallow.excluded == 0, "excluded column changed near the surface")
+		check(shallow.steep > 0, "steep face got no layers")
+		cliff_digests[#cliff_digests + 1] = hex_sha(table.concat(w.writes, "\n"))
+		say("%s cliff: face stone %.1f%% -> %.1f%%; top-40 writes steep %d, ordinary (nests) %d, excluded %d; bands %d",
+			variant, 100 * before, 100 * after, shallow.steep, shallow.ordinary,
+			shallow.excluded, band_writes)
+	end
+end
+-- Known answer of both cliff variants' layer-pass writes (Round 24 B2).
+local CLIFF_KAT = "bfc03cb9b55572b0e0d0baa1d51d93bd5f40ce9900f8306b7d72a0b5b4cc7e74"
+local cliff_digest = hex_sha(table.concat(cliff_digests, "\n"))
+say("cliff KAT digest: %s", cliff_digest)
+if os.getenv("R24_PRINT_KAT") == nil then
+	check(cliff_digest == CLIFF_KAT, "cliff known answer differs")
 end
 
 -------------------------------------------------------------------------------

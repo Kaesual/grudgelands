@@ -147,8 +147,13 @@ local function settlement_factory()
 	-- be filler from its CID because native gravel ore has the identical CID.
 	local function r8_apply_strata(context)
 		local written, clipped = 0, 0
+		-- Optional output for the layer pass: per owner column -1 when the
+		-- bands' column exclusions reject it, else filler_depth * 2 + steep.
+		local info = context.column_info
+		local x_count = context.max_x - context.min_x + 1
 		for z = context.min_z, context.max_z do
 			for x = context.min_x, context.max_x do
+				if info then info[(z - context.min_z) * x_count + (x - context.min_x) + 1] = -1 end
 				local water_class, _, zone_id, biome, _, terrain_y, water_y, _, _,
 					functional_kind, _, _, _, transition_kind, _, _, _, _, _, hard =
 						context.column_values_at(x, z)
@@ -159,6 +164,10 @@ local function settlement_factory()
 					local surface = context.select_surface(biome, x, z, water_y, terrain_y,
 						zone_id)
 					local filler_depth = surface and surface.filler_depth or 4
+					if info then
+						info[(z - context.min_z) * x_count + (x - context.min_x) + 1] =
+							filler_depth * 2 + (surface and surface.steep and 1 or 0)
+					end
 					-- Steep columns (rock faces and lips) show their side: no
 					-- bands along a cliff face (Round 22 Phase 6).
 					local first = surface and surface.steep and 41 or filler_depth + 1
@@ -234,8 +243,13 @@ local function settlement_factory()
 	-- picks a slab of R24_LAYER_PERIOD nodes; a slab holds at most one layer
 	-- of 2-4 nodes, its rock drawn from a small biome palette.  Slabs are
 	-- keyed by zone, so a zone's layers line up across its mountains.  A
-	-- coarse 3D lattice adds an occasional gravel or dirt pocket.  Stone stays
-	-- clearly dominant (measured 81-89 % stone, plus ores, in interiors).
+	-- coarse 3D lattice adds an occasional gravel or dirt pocket or, rarer, a
+	-- nest of a decorative rock of the palette.  Stone stays clearly dominant
+	-- (measured 81-89 % stone, plus ores, in interiors).
+	-- Round 24 B2 (cliffs): steep columns carry the same layers from below the
+	-- filler down, in native stone as well as fill, so strata break through
+	-- rock faces; only rock nests, never loose pockets, sit in the top 40
+	-- nodes; ordinary columns get the rock nests in their top 40 nodes too.
 	local R24_DEFAULT_PALETTE = {"grug_materials:slate", "grug_materials:granite",
 		"grug_materials:basalt"}
 	local function new_r24_fill_layers(full_seed)
@@ -254,6 +268,19 @@ local function settlement_factory()
 			grug_meadows = forest_palette, grug_elf_forest = forest_palette,
 			grug_deep_forest = forest_palette,
 		}
+		-- The decorative rocks of each palette, for the rock nests.
+		local function decorative(palette)
+			local rocks = {}
+			for index = 1, #palette do
+				if palette[index]:sub(1, 15) == "grug_materials:" then
+					rocks[#rocks + 1] = palette[index]
+				end
+			end
+			return rocks
+		end
+		local nest_rocks = {}
+		for biome, palette in pairs(palettes) do nest_rocks[biome] = decorative(palette) end
+		local default_nest_rocks = decorative(R24_DEFAULT_PALETTE)
 		local phase = 0
 		for index = 1, #full_seed do
 			phase = (phase * 131 + string.byte(full_seed, index)) % 65521
@@ -309,12 +336,16 @@ local function settlement_factory()
 				(corner(cx, cz + 1) * (grid - fx) + corner(cx + 1, cz + 1) * fx) * fz
 			return math.floor(sum / (grid * grid)) - R24_OFFSET_AMPLITUDE
 		end
-		function layers.pocket_at(x, y, z)
+		-- One pocket per lattice cell at most: a gravel or dirt pocket with
+		-- probability 3/10, a rock nest with probability 1/10.  Returns the
+		-- material and whether it is loose ground.
+		function layers.pocket_at(x, y, z, biome)
 			local cell = R24_POCKET_CELL
 			local cx, cy, cz = math.floor(x / cell), math.floor(y / cell),
 				math.floor(z / cell)
 			local h = mix(cx, cz, cy, 70001)
-			if h % 10 >= 3 then return nil end
+			local kind = h % 10
+			if kind >= 4 then return nil end
 			local shape = mix(cz, cy, cx, 91019)
 			local rx = 2 + math.floor(shape / 1000) % 2
 			local rz = 2 + math.floor(shape / 2000) % 2
@@ -327,7 +358,11 @@ local function settlement_factory()
 					rx2 * ry2 * rz2 then
 				return nil
 			end
-			return math.floor(h / 10) % 5 < 3 and "default:gravel" or "default:dirt"
+			if kind == 3 then
+				local rocks = nest_rocks[biome] or default_nest_rocks
+				return rocks[math.floor(h / 10) % #rocks + 1], false
+			end
+			return math.floor(h / 10) % 5 < 3 and "default:gravel" or "default:dirt", true
 		end
 		function layers.layer_at(zone_id, biome, y, offset)
 			local shifted = y + offset
@@ -341,49 +376,77 @@ local function settlement_factory()
 			end
 			return (palettes[biome] or R24_DEFAULT_PALETTE)[value % 4 + 1]
 		end
-		function layers.material_at(zone_id, biome, x, y, z, offset)
-			return layers.pocket_at(x, y, z) or
-				layers.layer_at(zone_id, biome, y, offset)
+		-- mode "deep": pockets of both kinds, then the layer (fill 41+ deep);
+		-- "face": rock nests, then the layer (top 40 of a steep column);
+		-- "nest": rock nests only (top 40 of an ordinary column).
+		function layers.material_at(zone_id, biome, x, y, z, offset, mode)
+			local pocket, loose = layers.pocket_at(x, y, z, biome)
+			if pocket and (not loose or mode == "deep") then return pocket end
+			if mode == "nest" then return nil end
+			return layers.layer_at(zone_id, biome, y, offset)
 		end
 		return layers
 	end
 
-	-- Shared by the production VM writer and the portable fixture.  Only fill
-	-- stone at least R24_LAYER_FIRST_DEPTH below the column's surface changes.
+	-- Shared by the production VM writer and the portable fixture.  Below the
+	-- band depth only fill stone changes (deep mode).  In the top 40 nodes
+	-- of a column the strata pass accepted (`column_info`, same exclusions as
+	-- the bands), untouched native or fill stone below the filler takes rock
+	-- nests, and on steep columns also the layers.  Ores and bands are never
+	-- replaced: both are no longer untouched stone.
 	local function r24_apply_fill_layers(context)
 		local written = 0
 		local layers, refs = context.layers, {}
 		local original, final, intent = context.original_data, context.final_data,
 			context.intent_opcode
 		local stone = context.stone_cid
+		local info_by_column = context.column_info
+		local x_count = context.max_x - context.min_x + 1
 		local bottom = math.max(context.min_y, context.floor_y)
-		-- Owners wholly below the authored floor hold no fill.
+		-- Owners wholly below the authored floor hold no fill and no bands.
 		if bottom > context.max_y then return 0 end
+		local function place(x, y, z, target)
+			local ref = refs[target]
+			if ref == nil then
+				ref = context.content_ref(target)
+				if not ref then
+					fail("fail_content_manifest", "fill layer target is absent")
+				end
+				refs[target] = ref
+			end
+			context.write(x, y, z, ref)
+			written = written + 1
+		end
 		for z = context.min_z, context.max_z do
 			for x = context.min_x, context.max_x do
 				local _, _, zone_id, biome, _, terrain_y = context.column_values_at(x, z)
-				local top = math.min(context.max_y, terrain_y - R24_LAYER_FIRST_DEPTH)
-				if zone_id and biome and top >= bottom then
+				if zone_id and biome then
 					local offset = layers.column_offset(x, z)
+					local top = math.min(context.max_y, terrain_y - R24_LAYER_FIRST_DEPTH)
 					for y = bottom, top do
 						local index = context.index_at(x, y, z)
 						-- The cheap half of the fill test first (B2 speedup): only
 						-- untouched stone over native void can be fill.
 						local target = final[index] == stone and intent[index] == 0 and
 							original[index] ~= stone and
-							layers.material_at(zone_id, biome, x, y, z, offset)
-						if target then
-							if context.fill_stone_at(index, x, y, z) then
-								local ref = refs[target]
-								if ref == nil then
-									ref = context.content_ref(target)
-									if not ref then
-										fail("fail_content_manifest", "fill layer target is absent")
-									end
-									refs[target] = ref
-								end
-								context.write(x, y, z, ref)
-								written = written + 1
+							layers.material_at(zone_id, biome, x, y, z, offset, "deep")
+						if target and context.fill_stone_at(index, x, y, z) then
+							place(x, y, z, target)
+						end
+					end
+					local info = info_by_column and
+						info_by_column[(z - context.min_z) * x_count + (x - context.min_x) + 1]
+					if info and info >= 0 then
+						local mode = info % 2 == 1 and "face" or "nest"
+						local shallow_top = math.min(context.max_y,
+							terrain_y - (math.floor(info / 2) + 1))
+						for y = math.max(bottom, terrain_y - 40), shallow_top do
+							local index = context.index_at(x, y, z)
+							local target = final[index] == stone and intent[index] == 0 and
+								layers.material_at(zone_id, biome, x, y, z, offset, mode)
+							if target and (original[index] == stone or
+									context.fill_stone_at(index, x, y, z)) then
+								place(x, y, z, target)
 							end
 						end
 					end
@@ -2801,9 +2864,12 @@ local function settlement_factory()
 			if not stone_ref then
 				fail("fail_content_manifest", "native stone is absent")
 			end
+			-- Round 24 B2: the strata pass hands each column's band eligibility,
+			-- filler depth and steepness to the layer pass.
+			local column_info = {}
 			helpers.r8_apply_strata({min_x = min_x, min_y = min_y, min_z = min_z,
 				max_x = max_x, max_y = max_y, max_z = max_z, floor_y = -37,
-				original_data = original_data,
+				original_data = original_data, column_info = column_info,
 				stone_cid = contract.content_cids[stone_ref], index_at = index_at,
 				column_values_at = planner_source.column_values_at,
 				static_exclusion_values_at = helpers.r8_horizontal.static_exclusion_values_at,
@@ -2814,10 +2880,11 @@ local function settlement_factory()
 					write_intent(x, y, z, ref, 0, 2, 0, 0, 1, false)
 				end})
 
-			-- Round 24 ruling 12: sparse layers in the fill below the band depth.
+			-- Round 24 ruling 12 and B2: layers in the fill below the band depth,
+			-- layers through steep faces, rock nests near the surface.
 			helpers.r24_apply_fill_layers({min_x = min_x, min_y = min_y,
 				min_z = min_z, max_x = max_x, max_y = max_y, max_z = max_z,
-				floor_y = -37, index_at = index_at,
+				floor_y = -37, index_at = index_at, column_info = column_info,
 				column_values_at = planner_source.column_values_at,
 				original_data = original_data, final_data = final_data,
 				intent_opcode = intent_opcode, stone_cid = fill_stone_cid,

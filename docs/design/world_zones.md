@@ -837,11 +837,20 @@ replaced; git history before this rewrite records that model.
   both badlands; basalt, slate and granite under blight and bone forest;
   granite, slate and desert stone under meadows, elf forest and deep forest;
   slate, granite and basalt elsewhere). A 16³ lattice cell holds a
-  gravel (3/5) or dirt (2/5) pocket with probability 3/10, an ellipsoid of
+  gravel (3/5) or dirt (2/5) pocket with probability 3/10, or a rock nest
+  of the palette's decorative rocks with probability 1/10: an ellipsoid of
   radii 2–3 × 2 × 2–3 inside the cell. Stone stays clearly dominant
   (measured 81 % stone plus 4 % ores in a real mountain interior, 89 % stone
-  in the fixture). Nothing carves caves into the fill; the seam to native v7 may cut through
-  veins, bands and caves. Lava is unchanged.
+  in the fixture). Nothing carves caves into the fill; the seam to native
+  v7 may cut through veins, bands and caves. Lava is unchanged.
+- **Cliffs and near-surface nests (Round 24 B2).** In the first 40 nodes
+  below the filler of a column the shallow strata accept (same exclusions:
+  protected, functional, water, towns, housing), untouched native or fill
+  `default:stone` takes the lattice's rock nests; on steep columns (rock
+  faces and lips) it also takes the same horizontal layers, so strata break
+  through cliff faces in native rock and in fill alike. Gravel and dirt
+  pockets stay out of those 40 nodes, the depth-relative shallow strata stay
+  off steep columns, and ores and strata bands are never replaced.
 - **Decorative nests (Round 24, ruling 14).** Native blob ores place nests
   of `grug_materials:slate` (y −400…−40), `grug_materials:granite`
   (y −900…−200) and `grug_materials:basalt` (below y −600) in
