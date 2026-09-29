@@ -13,12 +13,13 @@ return function(session, roster)
 			type(roster.rows) ~= "table" or #roster.rows ~= 42 then
 		fail("construction seam differs")
 	end
-	local protected_columns = {}
+	local protected_columns, column_list = {}, {}
 	for index = 1, #roster.rows do
 		local row = roster.rows[index]
 		if row.family == "outpost" or row.family == "bandit" then
 			local key = tostring(row.x) .. "/" .. tostring(row.z)
 			if protected_columns[key] then fail("duplicate protected column") end
+			column_list[#column_list + 1] = {x = row.x, z = row.z, id = row.id}
 			-- The column's floor: the anchor's placement height (its fitted
 			-- surface, the roster's `y`) minus the protection depth.
 			protected_columns[key] = session.protection_floor_y(row.y)
@@ -53,6 +54,18 @@ return function(session, roster)
 	function wrapped.hard_protection_kind_at(position)
 		if functional_protected(position) then return "landmark" end
 		return session.hard_protection_kind_at(position)
+	end
+	-- Claim Stone placement (Round 25 ruling 3): these columns are landmarks
+	-- a claim may not touch either.
+	function wrapped.claim_exclusion_in(min_x, min_z, max_x, max_z)
+		for index = 1, #column_list do
+			local column = column_list[index]
+			if column.x >= min_x and column.x <= max_x and
+					column.z >= min_z and column.z <= max_z then
+				return "functional:" .. tostring(column.id), "landmark"
+			end
+		end
+		return session.claim_exclusion_in(min_x, min_z, max_x, max_z)
 	end
 	local compatibility = {}
 	for key, value in pairs(session.compatibility) do compatibility[key] = value end

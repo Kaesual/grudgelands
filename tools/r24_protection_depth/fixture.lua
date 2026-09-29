@@ -24,8 +24,8 @@
 --      columns; every anchor envelope's land columns whose surface lies
 --      below the floor (anchor_075's island shore on seed 4242424242); and
 --      the same cave answer from mapgen and runtime renewal on anchor
---      centres and rings, housing-mask cores included (a housing mask is
---      ordinary ground, Round 24 ruling 33).
+--      centres and rings (Round 25 removed the housing masks this sample
+--      used to tally).
 -- Prints the bound table and "R24 PROTECTION DEPTH FIXTURE PASS checks=<n>",
 -- or raises on the first failure. The engine counterpart (ores and digging
 -- at the floor under the Orc start) is `run.sh OUT_DIR [TIMEOUT]`; its
@@ -626,7 +626,7 @@ local function addendum_checks(W, seed)
 		protected_floor_at = P.protected_floor_at,
 		protected_only_floor_at = P.protected_only_floor_at,
 	})
-	local samples, housing, below_open, disagree = 0, 0, 0, 0
+	local samples, below_open, disagree = 0, 0, 0
 	local offsets = {{0, 0}, {20, 0}, {-20, 0}, {0, 20}, {0, -20}, {45, 45},
 		{-45, -45}, {70, 0}, {0, -70}}
 	for _, a in ipairs(source.anchors) do
@@ -637,8 +637,6 @@ local function addendum_checks(W, seed)
 			if water == "land" then
 				samples = samples + 1
 				local _, cave_id = P.static_exclusion_values_at(x, z, "cave")
-				local is_housing = P.housing_mask_id_at(x, z) ~= nil
-				if is_housing then housing = housing + 1 end
 				local limit = cave_limit(water, cave_id, fkind, hard,
 					P.protected_floor_at, x, z)
 				local ys = {-150, -400, terrain_y - 3}
@@ -659,10 +657,9 @@ local function addendum_checks(W, seed)
 		end
 	end
 	check(disagree == 0, "mapgen and renewal disagree on " .. disagree .. " cave sites")
-	check(housing > 0, "housing-mask cores sampled")
-	lines[#lines + 1] = ("seed %s: cave rule mapgen = renewal on %d columns (%d in" ..
-		" housing masks), %d excluded-column sites open below a floor"):format(
-		seed, samples, housing, below_open)
+	lines[#lines + 1] = ("seed %s: cave rule mapgen = renewal on %d columns," ..
+		" %d excluded-column sites open below a floor"):format(
+		seed, samples, below_open)
 end
 
 for _, seed in ipairs(seeds) do

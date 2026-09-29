@@ -473,7 +473,9 @@ do
 		get_item_group = core.get_item_group,
 		density = density,
 		planner = wp40.planner_source,
-		natural_ground_alterable = grug_core.natural_ground_alterable,
+		-- The territory rule plus the natural renewal guards (an active
+		-- Claim Stone's claim, Round 25 ruling 14).
+		natural_ground_alterable = grug_core.natural_renewal_allowed,
 		random = math.random,
 		trees = core.settings:get_bool("grug_tree_regrowth", true),
 		non_natural = {},

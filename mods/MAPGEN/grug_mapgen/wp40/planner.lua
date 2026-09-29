@@ -335,7 +335,6 @@ local function planner_factory(allocator_factory)
 		static_exclusion_values_at = true,
 		overlay_exclusion_at = true,
 		road_column_at = true,
-		housing_mask_id_at = true,
 		functional_surface_values_at = true,
 		hard_row_at = true,
 		protection_floor_y = true,
@@ -452,7 +451,6 @@ local function planner_factory(allocator_factory)
 				type(planner_source.coast_material_at) ~= "function" or
 				type(planner_source.primary_relief_at) ~= "function" or
 				type(planner_source.static_exclusion_values_at) ~= "function" or
-				type(planner_source.housing_mask_id_at) ~= "function" or
 				type(planner_source.functional_surface_values_at) ~= "function" or
 				type(planner_source.hard_row_at) ~= "function" or
 				type(planner_source.metrics) ~= "function" then

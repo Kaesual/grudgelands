@@ -20,27 +20,6 @@ local source = {
 	height_revision_id = "wp40-height-shore-v6",
 	extent = {min_x = -3600, max_x = 3600, min_z = -3200, max_z = 3200},
 	shelf_width = 80,
-	housing_policy = {
-		reservation_width = 101,
-		reservation_radius = 50,
-		minimum_gap = 10,
-		lattice_spacing = 111,
-		lattice_origin_period = 111,
-		hash_order_count = 16,
-		hash_domain_prefix = "housing-pack-",
-		hash_order_numbering = "zero_based_two_digit",
-		conflict_rule = "candidate_expanded_aabb_v1",
-		tie_break = "z_then_x",
-		bias_direction = "nearest_first",
-		edge_bias_scope = "mask_polygon_boundary",
-		route_bias_scope = "all_land_route_centrelines",
-		poi_bias_scope = "all_actual_anchor_positions_v1",
-		greedy_orders = {
-			"minimum_conflict_degree", "maximum_conflict_degree",
-			"edge_biased", "route_biased", "poi_biased",
-			"row_major", "reverse_row_major",
-		},
-	},
 }
 
 local function zone(numeric_id, id, display_name, race_region, faction,
@@ -226,8 +205,6 @@ source.zone_field = {
 	-- gameplay neighbours: zones sharing at least this much land border (D14),
 	-- counted on a grid of this spacing
 	neighbor_grid = 16, neighbor_min_border = 64,
-	-- coastal housing areas: own-zone land up to this far from the coast
-	coastal_housing_depth = 300,
 	-- biome dither at zone borders: jitter amplitude and period (nodes), and
 	-- the border band (warped-space nodes) where the palette zone is re-looked up
 	biome_dither = {amplitude = 24, period = 18, band = 40},
@@ -256,33 +233,6 @@ source.boat_parity_policy = {
 	pairs={{"boat_wyrmglass_south","boat_stormscale_south"},
 		{"boat_wyrmglass_north","boat_stormscale_north"}},
 }
-
-source.housing_masks = {
-	{id="housing_elandor_copperfell",zone_numeric_id=2,polygon=polygon(point(-2520,-2500),point(-2180,-2500),point(-2180,-1900),point(-2520,-1900))},
-	{id="housing_elandor_goldmead",zone_numeric_id=7,polygon=polygon(point(-600,-2260),point(600,-2260),point(560,-1910),point(-560,-1910))},
-	{id="housing_elandor_starbough",zone_numeric_id=12,polygon=polygon(point(2180,-2500),point(2520,-2500),point(2520,-1900),point(2180,-1900))},
-	{id="housing_elandor_whitebridge",zone_numeric_id=9,polygon=polygon(point(-1360,-1860),point(-440,-1860),point(-440,-1140),point(-1360,-1140))},
-	{id="housing_elandor_lorindor",zone_numeric_id=14,polygon=polygon(point(440,-1860),point(1360,-1860),point(1360,-1140),point(440,-1140))},
-	{id="housing_kragmar_mournfen",zone_numeric_id=18,polygon=polygon(point(-2525,1900),point(-2180,1900),point(-2180,2500),point(-2525,2500))},
-	{id="housing_kragmar_redtusk",zone_numeric_id=23,polygon=polygon(point(-560,1910),point(560,1910),point(600,2260),point(-600,2260))},
-	{id="housing_kragmar_raincall",zone_numeric_id=28,polygon=polygon(point(2180,1900),point(2520,1900),point(2520,2500),point(2180,2500))},
-	{id="housing_kragmar_speargrass",zone_numeric_id=25,polygon=polygon(point(-1360,1140),point(-440,1140),point(-440,1860),point(-1360,1860))},
-	{id="housing_kragmar_whispering",zone_numeric_id=30,polygon=polygon(point(440,1140),point(1360,1140),point(1360,1860),point(440,1860))},
-}
--- The four coastal housing areas (world_zones.md §7.5, D21, D24): the layout
--- authors only an approximate stretch; the exact mask is the zone's own land
--- within `zone_field.coastal_housing_depth` of the finished coast inside this
--- window. The window spans the zone's rows from the bay to past the outer
--- coast, because the per-seed borders can hand either coast to a neighbour.
-local coastal_housing_windows = {
-	housing_elandor_copperfell={min_x=-2900,max_x=-900,min_z=-2500,max_z=-1900},
-	housing_elandor_starbough={min_x=900,max_x=2900,min_z=-2500,max_z=-1900},
-	housing_kragmar_mournfen={min_x=-2900,max_x=-900,min_z=1900,max_z=2500},
-	housing_kragmar_raincall={min_x=900,max_x=2900,min_z=1900,max_z=2500},
-}
-for _, mask in ipairs(source.housing_masks) do
-	mask.coastal_window = coastal_housing_windows[mask.id]
-end
 
 local anchor_rows = {
 	{1,"start","start","authored_fixed",0,-1800,-2550},
