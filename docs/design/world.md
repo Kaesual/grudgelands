@@ -71,7 +71,7 @@ high-level composition but use separately authored coarse land shapes, never
 mirrored coast geometry. A multi-scale warp gives the coast coves and
 headlands and gives zone borders a natural course; nothing straight or
 rectangular remains, including the Battlegrounds. The bays stay outside the
-capital envelopes and coastal housing areas.
+capital envelopes.
 
 The fixed hubs, coarse land shapes and warped power ownership in
 `world_zones.md` §7 are the sole horizontal authority. Each 512×512 capital
@@ -140,7 +140,9 @@ Rationale: free digging/building would break guard gating (tunneling),
 elite mobs (pillar cheese) and territory borders. One territorial rule:
 
 - **R1 — Own faction territory**: digging and building is allowed except in an
-  active housing claim or a bounded hard-protected world-content volume.
+  active Claim Stone claim without the claim's permission (R5), a bounded
+  hard-protected world-content volume, a protected road corridor or a
+  protected POI box (R1b).
   Hard-protected content is limited to complete capital cities (inside the
   wall line, the wall or planted edge and a bare band beyond it,
   `world_zones.md` §12),
@@ -148,9 +150,9 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   128×128 build envelope plus a bare band of 12 nodes round it with rounded
   corners, `world_zones.md` §12; spawn, waypoint, graveyard and service
   platforms all lie inside it), essential service/quest/waypoint/graveyard platforms, and small
-  functional NPC and renewable-resource anchors. Roads, open-world bridges,
-  villages, outpost/camp shells, ruins, tents, fences and battlefield dressing
-  are generated once, remain claim-excluded and may be changed under their
+  functional NPC and renewable-resource anchors. Outside the road corridors
+  and POI boxes below, village, outpost and camp shells, ruins, tents, fences
+  and battlefield dressing are generated once and may be changed under their
   zone's terrain rule. A start settlement needs no runtime pit or flood
   detection: by construction of `world_zones.md` §7's 600×500 dry start core
   (no planned water, forced cliff or ravine; gentle start grading only), an
@@ -170,33 +172,50 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
     structure type does not gain a blanket ten-node surround merely from its
     name.
   - **Indirect mutation fails closed** (decided 2026-08-13): hard-protected
-    volumes are guarded against indirect mutation exactly like active claims
-    (`housing.md` §6.4). Explosions, fire, liquid flow — including downhill
-    flow originating outside the footprint — falling nodes, terrain-changing
-    mobs, machines and scripted effects cannot alter protected state; inside
-    hard-protected world content no player permission exists, so every such
-    path is suppressed or the affected nodes are restored. The central
-    mutation predicate and spatial indexes are shared with the claim system
-    (`housing.md` §8). There is no rollback system: protected volumes need
-    none, and destruction of the mutable layer deliberately persists
-    (`housing.md` §7.2).
+    volumes are guarded against indirect mutation. Explosions, fire, liquid
+    flow — including downhill flow originating outside the footprint —
+    falling nodes, terrain-changing mobs, machines and scripted effects cannot
+    alter protected state; inside hard-protected world content no player
+    permission exists, so every such path is suppressed or the affected nodes
+    are restored. There is no rollback system: protected volumes need none,
+    and destruction of the mutable layer deliberately persists.
   - **World-content registry**: every hard-protected non-capital anchor
     registers a stable id and final x/z extent rather than hard-coding a zone.
-    The registry separately stores mutable claim-exclusion/grading envelopes
-    for ordinary roads and structures; those envelopes never become mutation
-    protection. Terrain-derived placement heights are immutable mapgen output,
+    The registry separately stores the mapgen grading envelopes of ordinary
+    roads and structures; those envelopes are not mutation protection (road
+    and POI protection use the corridors and boxes below). Terrain-derived
+    placement heights are immutable mapgen output,
     but no first generated chunk owns the decision. Terrain fitting adapts to
     every fixed reserved anchor position; WP13 may not invent a replacement
     position. The construction self-check (`world_zones.md` §7.1) confirms
     that every anchor lies in its own zone and on land, so no POI anchor
     disappears silently.
+- **R1b — Roads and POIs are protected** (Round 25 rulings 15–17,
+  2026-09-29), in every territory and for every player:
+  - **Roads**, their bridges and future waypoints. Sideways the corridor is
+    the road's own half width plus 3 nodes of terrain on each side: `primary`
+    roads are 7 wide, so 13 nodes are protected; `secondary` 5 → 11; `trail`
+    3 → 9. Vertically it covers ±5 nodes around the road surface. The check
+    is analytic — the distance to the planned centreline segment — and each
+    segment is registered in the existing 128-node candidate grid of the
+    zone authority's protection index; nothing is rasterised.
+  - **POIs, villages and camps**: horizontally their building core
+    (`world_zones.md` §7.5), vertically from 10 nodes below the placement
+    height up to 10 nodes above the highest node the POI template places.
+    These boxes live in the same grid. Hard-protected functional anchors
+    keep their own R1 volume.
+  - **Inside a Claim Stone claim** roads are allowed, but the road corridor
+    stays protected for everyone, the claim owner included: world protection
+    wins over claim permissions. POI, village and camp areas are excluded
+    from claims (`housing.md` §2, §9).
 - **R2 — Peaceful enemy territory**: in level-1–30 land, an enemy faction may
   not dig or place any node, including torches and ladders. Items remain
   usable. At y = -701 and below the universal contested deep rule overrides
   land-side faction ownership.
 - **R2b — Contested land and Battlegrounds**: every ordinary level-31–60
   frontier or dragon-island zone has no construction owner; both factions may
-  dig and place subject to tools and explicit protected envelopes. The four
+  dig and place subject to tools and explicit protected envelopes (R1, R1b).
+  The four
   Battlegrounds zones follow the same shared edit rule at every y, remain
   claim-excluded and follow the Round 14 contested-mainland flight rule. Dragon
   channels remain immutable at every y. A cultural `race_region` never grants
@@ -212,8 +231,10 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   in those four mouth caps is immutable at every y. Dragon-channel masks
   override the shelf and make their complete columns immutable from world
   bottom to top. Every exterior-ocean class remains non-flyable, while planned
-  zone water inherits its zone's flight rule. Housing uses dry mainland claims
-  and has no island exception.
+  zone water inherits its zone's flight rule. Claims exist only in the
+  eligible home zones (`housing.md` §2). Their planned water may lie in a
+  claim; the shelf is excluded although it belongs to a zone, and the ocean
+  has no zone (Round 25 ruling 23). The islands hold no claims.
 - **R4 — Natural minerals do not regrow** (revised 2026-09-20): ores and mineral resources do
   **not** respawn. A mined-out vein is gone, everywhere, for good. The
   world does not run dry because **depth supplies without bound** (R6,
@@ -224,8 +245,9 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   habitat-driven renewal in [farming.md](farming.md); no ore, gem, Rock
   Salt or Salt Crust joins that plant exception. **Mineral exception: renewable
   nodes inside protected functional socket anchors**, where the bounded
-  mechanism is protected (R1) and no player can privatize it. Ordinary camp
-  walls, tents, fences and dressing remain mutable and claim-excluded. In the
+  mechanism is protected (R1) and no player can privatize it. Outside the
+  camp's protected box (R1b) its walls, tents, fences and dressing remain
+  mutable. In the
   MVP that exception is **exactly one structure kind: the mining camps** of
   §4.
   - **Exactly 12 renewable regional-tier metal sockets per ordinary camp**, in
@@ -239,7 +261,8 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
       **12 nodes, two each of Citrine, Garnet, Jade, Diamond, Sapphire and
       Ruby**. Both factions may
       mine those nodes under R2b while each functional socket/anchor remains
-      protected. Ordinary camp construction remains mutable. They remain
+      protected. Camp construction outside the protected box remains
+      mutable. They remain
       mining camps, so they do not create a second renewable-structure kind.
   - **Respawn 2–4 hours per node**, not minutes. A camp is a destination
     worth a trip every few sessions, never a farm rotation; the interval
@@ -249,13 +272,15 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   - Other POI kinds may join the exception later, one renewable node type
     per kind, once camps have proven the shape. Other natural mineral deposits
     never regrow.
-- **R5 — Active Claim Stones**: per-character Claim Stones provide the only
-  permanent player-owned protection (§5). The owner and same-faction trusted
-  characters may change ordinary nodes and use ordinary functional content
-  inside the active cube; every applicable world, faction, immutable-water,
-  hard-anchor and depth rule is evaluated first. A claim never grants terrain
-  rights outside its current active volume, never privatizes its complete
-  future reservation and never reaches the contested deep layer.
+- **R5 — Active Claim Stones**: a fuelled Claim Stone provides the only
+  player-owned protection (§5, `housing.md`). Inside its 101 × 101 column
+  from y = −100 upward, only the owner and players on its permission list may
+  act: "Interact" allows use only (doors, trapdoors, gates, chests, furnaces,
+  stations), "Everything" adds digging and building. Every world, faction and
+  R1b rule is evaluated
+  first and wins over any claim permission. A claim never reaches below
+  y = −100, so never the contested deep layer. When its fuel runs out the
+  claim protects nothing and the ordinary territory rule applies again.
 - **R6 — Tier rock and resource harvesting** (Round 24, 2026-09-29; details
   in `items_crafting.md` §3.0.4): six tier rocks keep the band boundaries at
   **−100 / −300 / −500 / −700 / −1000 / bedrock**, and the rock's tier, not
@@ -299,7 +324,14 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   territory allows, and they always drop themselves.
 
 Implementation: one central `core.is_protected` override in `grug_core`
-(faction + position check).
+(faction + position check, including the R1b road corridors and POI boxes);
+`grug_housing` adds the claim check (`housing.md` §6).
+
+**Protection hints** (`items_crafting.md` §3.0.4): a refused edit names the
+protecting layer, e.g. "Town – protected", "Landmark – protected", "Road –
+protected", "Village – protected" (and similar for other POI kinds), "Home of
+<owner> – protected" for an active claim, or the territory ("Accord home
+territory – protected").
 
 ## 2b. Ocean zones & deep-sea danger
 
@@ -316,15 +348,16 @@ occupying a position (`world_zones.md` §7):
   rapids) are defined by Round 22 Phase 5; WP40 does not author
   falling-liquid columns. Planned
   water inherits the zone's terrain, PvP and flight rules and can never become
-  deep ocean. Its authored masks remain claim-ineligible even if players later
-  fill or drain them. The four explicitly declared outer bay-mouth caps are
+  deep ocean. For Claim Stones it counts as ground of its zone
+  (`housing.md` §2). The four explicitly declared outer bay-mouth caps are
   excluded from this class and use the deep-ocean rule below.
 - **Coastal shelf:** the nominal exterior band where
   `expanded_land_at(80) and not land_at` holds around authored positive
   mainland or island shapes. This is editable under the nearest eligible
   mainland hub's zone terrain policy. Coral, kelp and wild-source coverage
   follow `world_zones.md`'s Round 10 rules; further coastal materials and shore
-  wildlife retain their own content scope. It is never housing-claim ground.
+  wildlife retain their own content scope. Although it belongs to a zone, it
+  is never claim ground (Round 25 ruling 23).
   As exterior water it has no authored surface or guard level. Ordinary
   `mob_level_at` is nil at normalized y >= 0; harmless/fixed shore wildlife is
   independently levelled. Below normalized y = 0, shelf caves use the standard
@@ -431,9 +464,9 @@ from y = −701.
   Respawns follow the bound innkeeper home; the starting settlement is the
   default. See [home travel](home_travel.md).
 - Every race has its own king in its own capital: **six kings total**. Housing
-  is instead unlocked at level 20 through the separate passive, invulnerable
-  Housing Steward and the open-world Claim Stone design of §5; no king grants
-  land or housing.
+  instead comes from the Housing Manager, a service NPC in every capital who
+  hands out the Claim Stone from level 20 (§5); no king grants land or
+  housing.
 - Capitals hold class POIs, traders, quest givers, job trainers and a major
   waypoint. **There is no class trainer** (user ruling 4 of 2026-09-16,
   `skill_trees.md` §5, `progression.md` §2): new skills come only from the
@@ -655,175 +688,41 @@ its creatures retain their ordinary family drops.
 
 ## 5. Housing: open-world Claim Stones
 
-The complete authoritative Claim Stone contract is `housing.md`; this section
-summarizes its world-facing integration and does not replace it. Housing is
-per-character protected land inside the authored mainland. Private housing
-islands, royal land grants, purchased depth rights and any guild land or
-administration system do not exist in the target design.
+The complete Claim Stone contract is [housing.md](housing.md) (Round 25,
+2026-09-29); this section only summarizes its world-facing integration.
+Private housing islands, royal land grants, purchased depth rights and guild
+land do not exist.
 
-### 5.1 Eligibility, tiers and reservation
-
-- Claim Stones may be placed only in ten peaceful housing zones: Copperfell
-  Foothills, Goldmead Vale, Starbough Vale, Mournfen, Redtusk Savanna,
-  Raincall Basin, Whitebridge Shire, Lorindor, Speargrass Reach and Whispering
-  Reedlands. The six level-1–10 starting zones are claim-free.
-- A passive, invulnerable Housing Steward in every capital unlocks the first
-  free owner-bound stone through a level-20 introduction quest. The configured
-  faction pool must have a live slot; a failed issuance creates and consumes
-  nothing. The MVP default is one stone per character. The integer setting
-  `grug_housing_max_claims_per_character` supports 1..3 without migration and
-  defaults to 1.
-- The stone is the centre of an active protection cube:
-
-  | Tier | Required level | Radius | Active volume |
-  |---|---:|---:|---:|
-  | I | 20 | 20 | 41³ |
-  | II | 35 | 30 | 61³ |
-  | III | 50 | 40 | 81³ |
-  | IV | 60 | 50 | 101³ |
-
-- A tier-I placement immediately reserves the complete future 101×101 x/z
-  footprint. Different owners' projected reservations may never overlap at
-  any y and require ten completely unclaimed nodes between edges. The exact
-  pair test expands only the candidate radius-50 AABB by ten nodes and rejects
-  an intersection with another owner's stored radius-50 AABB; two radius-50
-  centres therefore differ by at least 111 nodes on a critical axis. Same-owner
-  reservations may overlap, but each stone consumes its own faction slot.
-- The complete reservation must pass the authored housing mask and must not
-  intersect a zone/peace boundary, planned water, coastal shelf, capital,
-  starting core, road/corridor, waypoint, graveyard, village/outpost/camp/POI
-  envelope, dynamic-POI candidate envelope or other static exclusion. Roads
-  and ordinary POI shells remain mutable even though their analytic envelopes
-  exclude claims.
-- Placement is forbidden below y = −50, derived from the T1 rock band
-  (y ≥ −100) minus the maximum radius. No claim can therefore reach deep T5/T6.
-  Claims are dry-land housing only: no protected underwater claims or private
-  harbors.
-- Copperfell Foothills, Mournfen, Starbough Vale and Raincall Basin each retain
-  a continuous gentle coastal housing area of roughly 600 nodes of shoreline
-  frontage and 300 nodes of buildable inland depth. These are rough targets,
-  not measured guarantees (Round 22 D21). The area is dry, zone-owned and
-  follows the natural coast (`world_zones.md` §7.5). There is no runtime slope
-  test.
-
-### 5.2 Ownership, ACL and active-world behavior
-
-- Every stable claim id has one owner. Up to ten same-faction characters may
-  be trusted. Trust permits digging, placement and ordinary door, workstation
-  and unsealed-inventory use; it grants no ownership. Only the owner may edit
-  trust, upgrade, recover or relocate the stone. Claim Stone items are
-  owner-bound and non-tradeable.
-- At overlapping same-owner claims, a non-owner must be trusted by every
-  covering claim; denial wins. The registry, not per-node placer metadata,
-  owns ordinary content in the active volume. There are no separately
-  player-locked chests in the MVP.
-- The outer world rule always wins before the ACL. Deep ocean, dragon
-  channels, hard-protected world content, the reserved Home-Stone arrival
-  column and y = −701 contested depth cannot be overridden by a claim.
-- The two nodes directly above the Claim Stone are a permanent clear arrival
-  column. No player may place a node, torch or liquid there.
-- Natural spawn candidates of every class are rejected inside the active cube,
-  but claims do not despawn, repel, pacify or block creatures that enter from
-  outside. Combat rules remain unchanged inside a home.
-- Claim protection covers indirect mutation as well as direct digging:
-  explosions, fire, liquids, falling nodes, terrain-changing mobs, machines
-  and scripted effects require attributable owner/trusted/admin permission and
-  fail closed when attribution is unavailable. Ordinary crop/tree growth and
-  normal workstation operation are the bounded benign exceptions.
-- Crops and player-grown plants may extend beyond a boundary. Nodes outside the
-  active cube are ordinary unprotected world content. Every ordinary shipped
-  growable must stay within ten horizontal nodes of its source; larger future
-  growables need a separate rule.
-- Owners may place every ordinary block they legitimately possess; there is no
-  race, faction, biome or material-tier palette. Player workstations, cooking
-  stations, doors and unsealed inventories use the claim ACL but grant no
-  profession, recipe or material permission.
-- Claim farming may grow `[food]` crops and `[spice Tn]` plants only. Healing
-  herbs, ores, race/cultural materials and found-only mushrooms, wild cocoa and
-  rock salt remain world resources. Housing adds no livestock or stable system.
-- Claim boundaries are transient and client-scoped, never permanent nodes,
-  walls or entities. Crossing a boundary or receiving a denied action briefly
-  shows that claim's sparse cube-edge outline to the affected player; a denial
-  also identifies the owner. Events are throttled per player and claim. Owners
-  and trusted characters may request a temporary full outline, while placement
-  preview distinguishes the active cube from the radius-50 reservation.
-
-### 5.3 Costs, recovery and persistence
-
-- Each stone owns stable id, owner and tier. Upgrades are sequential,
-  transactional and performed through the placed stone; failure consumes
-  nothing. Recovery, relocation, inactivity and reissue preserve paid tier.
-
-  | Upgrade | Level | Material | Ledger-money target |
-  |---|---:|---:|---:|
-  | I → II | 35 | 4 Silversteel Bars | 30 min reliable T4 net solo income |
-  | II → III | 50 | 8 Embersteel Bars | 90 min reliable T5 net solo income |
-  | III → IV | 60 | 12 Abyssal Steel Bars | 3 h reliable T6 net solo income |
-
-  Measured income excludes rare jackpots and player trade and is net of routine
-  repairs/consumables. Copper outputs use the fixed coarsest-denomination,
-  within-5%, midpoint-up rounding rule.
-- A second/third stone is available only at level 60, when every owned stone is
-  tier IV and the configured personal limit and faction pool both permit it.
-  They cost 12/24 Abyssal Steel Bars plus 5 h/10 h of reliable T6 net solo
-  income and create a new stable tier-I id. Existing ids are grandfathered if
-  the setting is later lowered.
-- A placement is bound for four real wall-clock hours; offline and server-down
-  time count. Only an administrator may remove it early. Afterward the owner
-  may recover it through the controlled menu. Recovery deactivates protection,
-  reservation, ACL and Home destination, leaves all construction/inventories
-  in place and returns the live item or persistent recovery escrow. Each new
-  placement starts a new binding; an upgrade does not.
-- The canonical registry distinguishes live `placed`, `inventory`,
-  `recovery_escrow` and transient transaction locations from slot-free
-  `dormant`. Every live location consumes one faction slot. Registry generation
-  numbers and one canonical live location invalidate stale ItemStacks without
-  cloning or reviving protection; spatial indexes are rebuilt from mod storage.
-- Each faction has an administrator-configurable live-Stone limit with a
-  generous default. There is no capacity measurement (Round 22, 2026-09-25):
-  the ten housing zones are large level-20–30 regions with ample room.
-- Issuance is first come, first served, with no wait list or reservation. The
-  integer `grug_housing_inactivity_days` setting ranges 0..3650 and defaults to
-  0 (disabled). With decay enabled and a full legal pool, an issuance request
-  atomically makes the oldest eligible live id dormant and transfers exactly
-  that released slot. The requester receives one of their already owned dormant
-  ids when applicable; otherwise a new id is created within the personal limit.
-  Owner activity is the latest successful login; it refreshes every owned live
-  id before issuance is checked. Equal inactivity timestamps resolve by stable
-  claim id.
-  When assigned exceeds a lowered limit, new issuance pauses and ordinary
-  decay/reissue removes nobody.
-- Every Housing Steward shows an interaction-time snapshot for the visitor's
-  faction: assigned, free and configured-limit counts. Assigned includes
-  placed, inventory and recovery-escrow stones; free is never negative. At a
-  full pool with decay enabled the UI shows only the aggregate number currently
-  eligible for on-demand reclamation, never owner names or positions; during an
-  administrative overhang it reports that issuance is paused. A snapshot
-  creates no reservation or queue position.
-- Dormancy removes the live stone/item/escrow, protection, reservation, ACL and
-  Home destination but retains stable id, owner, paid tier and audit/notice
-  state. Buildings and inventories remain unarchived in the world and become
-  ordinary unclaimed content. Voluntary dormancy uses the same result and is
-  owner-available after the four-hour binding; administrators may force it.
-  Reissue is free, preserves tier and competes for a faction slot normally.
-- With decay enabled, the stone menu states the exact eligibility time and the
-  first issuance warns that buildings and inventories are never archived. A
-  successful reclamation persists a one-shot notice for the previous owner
-  with zone/coordinates when placed, reclamation time, inactivity duration and
-  retained tier; it remains available through the Steward until acknowledged.
-- Administrators receive inspect, index-rebuild, forced-recovery,
-  forced-dormancy and stone-recovery tools. Every forced operation is logged
-  and never deletes buildings or inventory contents.
-- Runtime protection uses a persistent registry mirrored into separate spatial
-  indexes for active 3D volumes, maximum-radius x/z reservation projections and
-  claim-exclusion envelopes. Dig/place and natural-spawn checks are point
-  queries, never node scans or protection globalsteps.
+- A claim is a 101 × 101 column around one Claim Stone, from y = −100
+  upward without limit. Each player has one soulbound stone, handed out free
+  by the Housing Manager in every capital from level 20.
+- The whole square must lie in the claimant's own faction home territory, in
+  its level-11–30 zones (seven per faction), and may not touch a level-1–10 or
+  level-31+ zone, a capital zone, the other faction's territory,
+  hard-protected content or a POI, village or camp area. Lakes, rivers and
+  bay water inside an eligible zone may lie in a claim; the shelf and the
+  ocean may not. There are no housing masks and no coastal
+  housing areas. Claims never overlap but may touch.
+- The stone burns coal lumps or charcoal (one lump = 7 h 16 min; 99 lumps
+  ≈ 30 days) as a "paid until" timestamp; server downtime counts. Without
+  fuel the claim protects nothing, and anyone may destroy the stone with a
+  pick.
+- While fuelled, only the owner and players on its permission list may act
+  there: "Interact" allows use only (doors, trapdoors, gates, chests,
+  furnaces, stations); "Everything" adds digging and building. World
+  protection (§2 R1, R1b) wins over every claim
+  permission, the owner's included: roads through a claim stay protected.
+- No natural renewal (wild plants, trees) and no hostile mob spawns inside
+  an active claim; mobs may walk in. An expired claim renews and spawns
+  normally.
+- The claim can be the owner's travel-home target (§6).
 
 ## 6. Travel: innkeeper homes and deferred travel
 
 The current V1 return and death destination is the twelve-location
-[innkeeper home system](home_travel.md). The waypoint network and housing-bound
-Home Stone below are deferred, separate travel features.
+[innkeeper home system](home_travel.md). A player's own Claim Stone can be the
+travel-home target instead (home stone, below). The waypoint network is a
+deferred, separate travel feature.
 
 **Waypoint network** (Diablo/PoE model, decided 2026-08-06):
 
@@ -843,27 +742,15 @@ Home Stone below are deferred, separate travel features.
   named-zone portal pairs into enemy territory
   (`TODO-design-nether.md` until specced).
 
-**Home Stone** is bound to housing rather than a capital:
+**Home stone** (Round 25, `housing.md` §8): the player's own Claim Stone can
+be the "travel home" target of the innkeeper return, with the same 30-minute
+cooldown. The arrival is the stone's arrival cube. When the stone is picked up
+or destroyed, the target falls back to the player's bound innkeeper (the
+starting-town innkeeper when none is bound), with a message; binding an
+innkeeper also replaces a claim home. Death still respawns at the bound
+innkeeper. This replaces the former Home Stone channel (10-second cast,
+60-minute cooldown).
 
-- It teleports only to the owner's currently bound, active Claim Stone and has
-  no capital fallback. Player state stores a stable `home_claim_id`; the first
-  placed claim binds automatically, and with later multiple claims the owner
-  rebinds by physically interacting with the chosen stone. Recovery/dormancy
-  disables the destination; re-placing the same stable id makes it valid again.
-- The cast is a **10-second stationary channel** and cannot begin while
-  `grug_core.in_combat(player)` is true. Movement more than 0.1 nodes, death or
-  logout interrupts; camera rotation and smaller engine correction do not.
-- PvP interruption uses the central events from `world_zones.md` §15. A
-  server-valid hostile attempt or effective support performed by the channeler
-  interrupts even when a safe→safe effect is blocked. Accepted hostile damage
-  that lowers HP or consumes absorb, and effective support received by the
-  channeler, also interrupt. Misses, dodge, immunity, eligibility refusal,
-  zero-effect support and the PvP tag alone do not.
-- The destination is loaded/emerged and its claim, stone and clear arrival
-  column are validated before the cast and again at completion. Arrival is the
-  standing node above the stone; temporary entity overlap cannot grief it.
-- The **60-minute cooldown** starts only after a successful teleport and is a
-  persisted wall-clock timestamp. Failure or interruption consumes no cooldown.
 - `/unstuck` (suicide command) remains the last resort for hard stuck
   states.
 

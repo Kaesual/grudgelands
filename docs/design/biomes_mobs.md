@@ -202,12 +202,13 @@ keeps every healing herb bound to a journey into its own biome, and it
 gives Cooking a supply line that farming can later take over without
 ever touching alchemy's.
 
-**Where farming happens**: inside an active open-world housing claim
-(`housing.md`; world integration summary in `world.md` §5), where the
-owner/trusted ACL protects the crop. Only cooking ingredients grow there: the
+**Farming and claims**: inside an active Claim Stone claim (`housing.md`;
+world integration summary in `world.md` §5) only the owner and players with
+the Everything permission can dig or harvest a crop; harvesting counts as
+digging. Only cooking ingredients are cultivated: the
 `[food]` and `[spice Tn]` lines of this section, never a `[herb Tn]`, cultural
 resource or `[food found-only]`. The "Farmable later" column above is therefore
-also the claim's permitted plant set.
+also the cultivated plant set.
 
 The table describes biome vegetation identity. Exact gathering sources and
 the seventeen cultivated families follow §2.2 and `world_zones.md` §11 plus

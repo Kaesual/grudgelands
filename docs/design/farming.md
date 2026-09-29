@@ -104,8 +104,10 @@ up for unvisited areas. A spot needs an open support the habitat accepts
 natural noon light 10 (13 for a sapling). Never on farm soil, capital hard
 rows or ground whose territory rule refuses natural change
 (`grug_core.natural_ground_alterable`: towns, landmarks, immutable ground).
-Housing areas renew like any other ground, and Claim Stones and other player
-protection are never consulted (Round 24 ruling 33). Each class keeps its
+Inside an active Claim Stone claim there is no natural renewal (wild plants,
+trees); an expired claim renews like any other ground (Round 25 rulings 14
+and 19, `housing.md` §6.4). Other
+player protection is never consulted. Each class keeps its
 own writer's claim exclusions: resource plants the full territory rule
 (settlements, POIs with their collars, start and capital blend envelopes,
 roads, inland water and water banks; shoreline species ignore the bank,

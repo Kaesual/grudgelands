@@ -24,10 +24,11 @@ future behavior until its coordinated economy cutover.
 Authored capital/POI stations provide a **Personal workspace**: durable inputs,
 outputs, fuel and processing state per player and physical station. All
 player-placed stations are **Shared stations** with a common node inventory.
-Housing uses area-wide Protector Stone access; there are no per-station access
-menus. Outside protected areas player-placed stations have no individual owner.
-Show the mode and a short explanation in the station UI. Authored loot chests
-are outside this change.
+Inside an active Claim Stone claim, access follows the claim's permission list
+(`housing.md` §6); there are no per-station access menus. Outside protected
+areas player-placed stations have no individual owner. Show the mode and a
+short explanation in the station UI. Authored loot chests are outside this
+change.
 
 Shared 3x3 station ingredients are shared, while output previews depend on the
 viewer's recipe qualification. Ineligible viewers see no craftable result.

@@ -25,6 +25,22 @@ Decided 2026-09-22, Round 17. Uses the standard unmodified Luanti client.
   charges nothing. Revalidate character session, alive/combat state and binding
   before a delayed return completion; stale or duplicate requests cannot move a
   reconnected, dead or differently bound character.
-- This is the current V1 return/respawn mechanism. The separately planned
-  housing-bound Home Stone and waypoint network remain deferred. Neither adds
-  home points to these twelve or changes the current innkeeper cooldown.
+- This is the current V1 return/respawn mechanism. The waypoint network
+  remains deferred and adds no home points.
+
+## Claim Stone as travel home (Round 25)
+
+Full rules: [housing.md](housing.md) §8.
+
+- The owner makes the own Claim Stone the travel-home target with the stone
+  form's "Set as home" button (`grug_home.set_home_claim`). Binding an
+  innkeeper later replaces the claim home.
+- Return uses the Map tab's **Return home** and the same 30-minute
+  cooldown. Arrival is the stone's arrival cube. If the cube is blocked, that
+  one trip goes to the bound innkeeper instead, with a message, and the
+  cooldown is charged. An expired (unfuelled) claim still works as a target.
+- When the stone is picked up or destroyed, the target falls back to the
+  player's bound innkeeper (the starting-town innkeeper when none is bound),
+  with a message; an offline player gets the message at the next login.
+- The Map tab marks a claim home with an "H" marker.
+- Death always respawns at the bound innkeeper, never at the Claim Stone.

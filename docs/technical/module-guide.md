@@ -624,6 +624,34 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   then core APIs revalidate current authority. HUD HP writes are compare-first.
   The saved color preference defaults to By class; an explicit All green choice
   persists. Current geometry and offline presentation: [parties.md](../design/parties.md).
+- **Housing (Round 25):** `mods/PLAYER/grug_housing` implements
+  [housing.md](../design/housing.md). One global `grug_housing`; each file has
+  one owner lane so the lanes work in parallel:
+  - `api.lua` (Lane A): the claim core and the interface contract — registry
+    in mod storage plus a claim grid index, placement validation, the
+    protection check with permissions, fuel as `paid_until`, the soulbound
+    `grug_housing.STONE_ITEM` (`grug_housing:claim_stone`), daily limits,
+    destruction times, the arrival cube and no renewal in active claims.
+    Contract: `claim_at(pos)` (claim `{id, owner, center, placed_at,
+    paid_until}` or nil), `is_active`, `remaining_seconds`, `permission(claim,
+    name)` → `"owner"`/`"everything"`/`"interact"`/nil, `player_claim(name)`
+    → claim plus state `never`/`carried`/`placed`/`destroyed`/`needs_stone`,
+    `issue_stone`, `add_fuel`, `pick_up`, `set_permission`, `arrival_pos`,
+    `register_on_claim_changed(fn)` with events `placed`, `fuel`,
+    `permission`, `picked_up`, `destroyed`, `expired`. Constants `RADIUS = 50`,
+    `MIN_Y = −100`.
+  - `interaction.lua` (Lane B): the generic right-click and node-inventory
+    guard installed at `register_on_mods_loaded`, and the "Home of <owner> –
+    protected" reason for `grug_core.protection_hint`.
+  - `interface.lua` (Lane C): the stone formspec (set as
+    `grug_housing.open_stone_interface`), the Housing Manager and the
+    character-page status.
+  - Home-stone travel (Lane D) lives in `grug_home`, which reads the claim
+    through the contract above.
+
+  Fuel arithmetic is fixed in housing.md §4 (26 160 s per lump; displayed
+  stack `ceil`, pick-up return `floor`). Road and POI protection (Lane E)
+  lives in the zone authority and `grug_core`, not in `grug_housing`.
 - **Atlas**: `grug_map` owns one whole-world cartographic atlas with 1x/2x/4x
   zoom, native scrollbars and an independent marker layer. Formspec v4 wraps
   the shared legacy inventory window; only Map content switches to real
@@ -772,17 +800,19 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   pass and `grug_zones` API are §13; acceptance is §14 (Round 22 minimal
   policy).
   Race region, territory and PvP rule are independent fields. Every ordinary
-  level-31–60 land zone is contested and editable by both factions. Roads,
-  camp shells, tents, fences and battlefield dressing remain mutable but
-  claim-excluded; only bounded functional anchors and renewable-resource
-  sockets receive hard protection.
+  level-31–60 land zone is contested and editable by both factions. Roads
+  (corridor segments) and POI, village and camp building cores (boxes) are
+  world-protected in the 128-node candidate grid (`world.md` §2 R1b, Round
+  25); bounded functional anchors and renewable-resource sockets keep their
+  hard protection; the remaining camp shells, tents, fences and battlefield
+  dressing are mutable.
   Material design owns the complete `race_region` mapping of
   G1, G2, cultural material and signature wood; map code stores only the
   region identity and placement data needed to consume that mapping. Each
   endpoint apex camp has exactly 12 renewable sockets, two per gem. Both
-  factions may mine them; the small functional anchor and sockets are
-  protected, while the surrounding camp shell remains mutable and
-  claim-excluded.
+  factions may mine them; the small functional anchor, the sockets and the
+  camp's building-core box are protected, while the rest of the camp shell
+  remains mutable.
 - **World atlas**: `docs/design/world_map.md` governs the cartographic Map tab,
   with no fog of war and independent future-interactive markers. It needs no
   generated-terrain bitmap and never unlocks waypoint travel.

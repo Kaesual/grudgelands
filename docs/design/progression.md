@@ -1,6 +1,7 @@
 # Progression — Pacing, Death, Reward Cadence
 
-Decided rules (established 2026-08-06; housing cadence integrated 2026-08-12).
+Decided rules (established 2026-08-06; housing milestone revised in Round 25,
+2026-09-29).
 Rounds 14–15 implement 66 starter quests and 36 optional local quests;
 the broader named-zone WP9 story remains open.
 
@@ -57,17 +58,12 @@ rulings; the superseded text is named in `skill_trees.md` §5.2.
   entirely, for admins too**. *(Supersedes "Respec at the class trainer
   for gold". `economy.md` §4, `items_crafting.md` §8.3 and `world.md` §1 now
   state the same no-trainer rule.)*
-- **Level 20 — first Claim Stone:** a short introduction from the passive,
-  invulnerable Housing Steward unlocks the first free owner-bound Claim Stone.
-  It may be placed only in the authored level-11–30 housing zones and starts
-  the non-combat home-progression line ([housing.md](housing.md) §2;
-  `economy.md` §4.1).
-- **Levels 35 / 50 / 60 — claim upgrades:** the same stable stone may reach
-  tiers II / III / IV by paying the universal-metal and measured-income costs.
-  Claims never buy mining depth or a private material source.
-- **Level 60 — additional claims when enabled:** a second or third stone is an
-  endgame sink gated by all existing stones being tier IV, the configured
-  per-character limit and the faction live-stone capacity.
+- **Level 20 — Claim Stone:** the Housing Manager in every capital hands out
+  the player's one free, soulbound Claim Stone. It claims a 101 × 101 home in
+  the player's own level-11–30 home zones while it is fuelled
+  ([housing.md](housing.md)). There are no claim tiers, upgrades or
+  additional stones, and a claim never buys mining depth or a private
+  material source.
 
 ## 3. Death rules (MVP — deliberately simple)
 

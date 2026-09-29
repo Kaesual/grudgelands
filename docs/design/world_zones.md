@@ -148,10 +148,9 @@ in this file as of commit `082982da`.
   enemies** and no automatic PvP tag. Its guards and important faction NPCs
   are level 60. The city itself is not a level-60 hostile leveling area.
 - Each race has its own king, for **six kings total**. The race's capital is
-  that king's seat. Housing is not a royal level-30 grant: the separate
-  passive, invulnerable Housing Steward owns the free level-20 Claim Stone
-  introduction defined by `housing.md`; `world.md` §5 summarizes its
-  world-facing integration.
+  that king's seat. Housing is not a royal grant: the Housing Manager in
+  every capital hands out the free Claim Stone from level 20 (`housing.md`;
+  `world.md` §5 summarizes its world-facing integration).
 - A capital is centered inside its city zone and has four fixed cardinal
   gates; the roads of §9 reach it through them. Its directional neighbors
   follow the world progression:
@@ -237,10 +236,11 @@ in this file as of commit `082982da`.
   30-minute wall-clock respawn. An active lair receives the final 60-second
   local visual/audio warning; a lair loaded late receives the whole minute.
 - Each endpoint reserves an apex mining camp in the dangerous approach to the
-  lair. Its ordinary walls, tents, fences and dressing are mutable and
-  claim-excluded. Only its bounded functional anchor and exactly **12 protected
-  renewable sockets—two Citrine, two Garnet, two Jade, two Diamond, two
-  Sapphire and two Ruby**—are hard-protected. Natural veins remain finite;
+  lair. Its building core is protected as a POI box (`world.md` §2 R1b);
+  walls, tents, fences and dressing outside it are mutable. Its bounded
+  functional anchor and exactly **12 protected renewable sockets—two Citrine,
+  two Garnet, two Jade, two Diamond, two Sapphire and two Ruby**—are
+  hard-protected. Natural veins remain finite;
   only these protected sockets
   use `world.md` §2 R4's existing 2–4 h renewable-node exception. The material
   catalog supplies the item/node ids; zone code stores the six semantic gem
@@ -274,9 +274,9 @@ replaced; git history before this rewrite records that model.
   technical role beyond being ordinary contested zones with story weight.
   Their borders with each other and with the faction frontiers are natural
   borders like every other zone border (§7.3). Both factions may dig and place
-  ordinary terrain there at every depth, subject to tools, claim exclusion and
-  explicit hard-protected functional envelopes. Their `territory_rule` is
-  `contested_land` (Round 22 Phase 3, D22); the internal macro-region key
+  ordinary terrain there at every depth, subject to tools and explicit
+  protected envelopes (`world.md` §2 R1, R1b); no claim may be placed
+  there. Their `territory_rule` is `contested_land` (Round 22 Phase 3, D22); the internal macro-region key
   `holy_grounds` is a legacy token without geometry or rights of its own.
 - Unwarped authored mainland primitives stay within x = -2600..+2600 and
   z = -3000..+3000. These are source bounds, not a coastline or world border;
@@ -360,9 +360,8 @@ replaced; git history before this rewrite records that model.
   composition stay culturally distinct while progression, resource and access
   budgets stay equivalent.
 - Everything that must stay on a known side of the water keeps its place:
-  start cores, capital envelopes, harbours, island landings, boat-route ends
-  and the authored approximate stretches of the four coastal housing areas
-  (a centre and extent in the layout). The coast is pushed out or its warp
+  start cores, capital envelopes, harbours, island landings and boat-route
+  ends. The coast is pushed out or its warp
   damped locally there. Correctness comes from that local shaping in one pass,
   not from a repair pass, a topology census or an alternate layout.
 - The final products are one connected mainland and two connected dragon
@@ -405,18 +404,19 @@ replaced; git history before this rewrite records that model.
 
 - **Bays.** Four bays, one between each pair of outer prongs, keep the
   prongs visibly separated. Each opens to the ocean, stays at least 64 nodes
-  wide, reaches no capital envelope or coastal housing area and splits no
-  zone. Bay outlines get the same coast warp as the rest of the shore; their
-  authored centrelines live in the source data.
+  wide, reaches no capital envelope and splits no zone. Bay outlines get the
+  same coast warp as the rest of the shore; their authored centrelines live
+  in the source data.
 - **Water classes.** Every column is land, inland water (rivers, lakes, civic
   water), bay water, coastal shelf, deep ocean or dragon channel. The old
   hydrology rows were removed at the start of Round 22 Phase 5, which lays out
   all inland water anew: rivers and lakes from the terrain's drainage, civic
   water as authored lakes (below). Inland and
   bay water belong to the zone around them: a wet river or lake column has the
-  zone-owned class `planned_water` (like a bay), its dry banks stay land. Shelf, bay water and every
-  road/POI exclusion are claim-ineligible. So are wet river and lake columns
-  and their **water bank**, dry land within two nodes of such a column
+  zone-owned class `planned_water` (like a bay), its dry banks stay land.
+  Shelf, bay water and every road/POI exclusion are excluded from cultural
+  reservations and gathering sources. So are wet river and lake columns and
+  their **water bank**, dry land within two nodes of such a column
   (exclusion kinds `inland_water` and `water_bank`, reason `route_or_water`,
   Round 22 Phase 5): no cultural reservation or gathering source stands in
   or right beside inland water, except content that seeks it (shore rows on
@@ -576,11 +576,14 @@ replaced; git history before this rewrite records that model.
   corridor stays on land or crosses inland water by bridge or ford. Shelf,
   deep ocean and dragon channels are forbidden to roads.
 - Primary roads use a 7-node surface, secondary roads 5 and trails 3. The
-  claim-exclusion corridor is the road surface, its cut and fill slopes and
-  2 nodes beyond the road edge; vegetation, POI content, spawns and housing
-  reservations keep off it. The corridor remains claim-ineligible even after
-  players alter the visible road.
-- Roads and open-world bridges are mutable and never hard-protected.
+  mapgen exclusion corridor is the road surface, its cut and fill slopes and
+  2 nodes beyond the road edge; vegetation, POI content and spawns keep off
+  it.
+- Roads and open-world bridges are world-protected (Round 25 ruling 15,
+  `world.md` §2 R1b): the road's half width plus 3 nodes on each side
+  (primary 13, secondary 11, trail 9 nodes) and ±5 nodes around the road
+  surface, checked analytically against the planned centreline segments.
+  Claims may contain roads; the corridor stays protected inside them.
 - Starts keep their start-pad fitting (`settlements.md`); capitals keep their
   96-node civic core and terrace contract (§12).
 - **POIs sit in the terrain (Round 22, D33).** Every other anchor keeps its
@@ -597,26 +600,14 @@ replaced; git history before this rewrite records that model.
   the slope or summit into a shelf at the local ground's mean height, with an
   irregular edge. There are no square plates. Vegetation is kept off only
   the core and a 4-node margin.
-- Housing is available only in the ten zones listed by `world.md` §5. A true
-  housing-centre mask means the complete 101 by 101 future reservation passes
-  every static exclusion (anchor envelopes, road and trail corridors, water,
-  protected content) and keeps off inland water and its two-node banks.
-- Copperfell Foothills, Mournfen, Starbough Vale and Raincall Basin each keep
-  one **coastal housing area**: a long stretch of gentle, dry coast, roughly
-  600 nodes of shoreline frontage and 300 nodes of buildable inland depth,
-  without forced cliffs, ravines, rivers or lakes inside. The layout authors
-  only its approximate stretch (§7.2); its exact shape follows the finished
-  coast rather than a fixed capsule.
-- The housing zones are large level-20–30 regions with ample room. Housing
-  capacity is not measured, and the coastal housing values above are rough
-  targets, not proofs.
-- **The housing mask is claim eligibility only** (Round 24 ruling 33): it
-  decides where a Claim Stone may be placed and nothing else. Mapgen and
-  runtime renewal treat a housing-mask column exactly like the same column
-  without the mask, at every depth: ores, shallow bands, cliff layers and
-  nests, surface skin, cave mouths and cave content, gathering sources,
-  plants and water content follow the ordinary rules. Placed Claim Stones
-  (player protection) change nothing about generation or renewal either.
+- **No housing masks** (Round 25 ruling 4). The former authored housing
+  masks and the four coastal housing areas are removed from the layout and
+  the zone data. Claim eligibility is `housing.md` §2 only: the whole claim
+  lies in the claimant's own level-11–30 home zones and touches no
+  hard-protected content and no POI, village or camp area. Mapgen generates
+  nothing housing-specific. Placed Claim Stones change nothing about
+  generation; inside an active claim there is no natural renewal
+  (`housing.md` §6.4).
 
 ### 7.6 Height, relief and visual structure
 
@@ -694,7 +685,7 @@ replaced; git history before this rewrite records that model.
   centred 3x3 neighborhood have that air run. Otherwise the skin closes a thin
   roof. Start and capital build squares, POI building cores, road corridors,
   functional water and road operations and foundations are excluded from
-  both filling and opening; housing areas are ordinary ground (§7.5).
+  both filling and opening.
 - **Fresh-world surface and vegetation refinement (2026-09-13):** logical
   biome ownership stays unchanged. Dry surfaces combine coherent 32-node and
   8-node material fields at weights 3:1; filler depth varies from 1–4 nodes
@@ -1052,9 +1043,10 @@ is civic fitting rather than a terrain field, and the dragon peaks stand
 beside the arenas rather than on them.
 
 **Retired as terrain landmarks:** every other former landmark id, among them
-the coastal terraces and Mournfen dryward (replaced by the coastal housing
-areas of §7.5), trench belts, siege ramps, rootways, hanging ways, tomb
-galleries, war-coast strips, fault fields and gem terraces. None
+the coastal terraces and Mournfen dryward (their successors, the coastal
+housing areas, are removed as well, Round 25 ruling 4), trench belts, siege
+ramps, rootways, hanging ways, tomb galleries, war-coast strips, fault fields
+and gem terraces. None
 is player-visible. Their flavor (trenches, siege ramps, colossi, galleries)
 may return as POI or dressing content; anchors that stood in them, such as the
 apex mining camps, keep their positions. Content that only referenced a retired
@@ -1281,8 +1273,8 @@ code, not by this document.
   writers they bind today: planned-water and coast shapes (the cave rule
   and every surface writer; P9G excepted on the dry islands), the overlay
   exclusions (road corridors, inland water, water banks) for the surface
-  writers, and functional kinds and hard foundations at the surface. Housing
-  masks are no exclusion at any depth (§7.5, ruling 33). Runtime renewal applies the same rules (`farming.md`).
+  writers, and functional kinds and hard foundations at the surface. Runtime
+  renewal applies the same rules (`farming.md`).
 - **Natural-resource root sampling:** each resource/16-node cell/host/tier/
   deep-band group keeps its eligible-host count, density budget and balanced
   capped vein targets. Roots are drawn from a deterministic per-world stream
@@ -1334,9 +1326,10 @@ code, not by this document.
   species by boat. Trade remains an alternative, never the only route.
 - Every level-31–60 frontier and dragon-island zone has no home-faction
   construction owner. Both factions may dig and place ordinary terrain there,
-  subject to tools and explicit hard-protected capital or functional-anchor
-  envelopes. Road and camp envelopes exclude claims and grade mapgen but do
-  not block terrain mutation.
+  subject to tools, explicit hard-protected capital or functional-anchor
+  envelopes and the protected road corridors and POI boxes (`world.md` §2
+  R1b). Beyond those, road and camp grading envelopes do not block terrain
+  mutation.
   This applies equally to all six faction frontier approaches and to both
   dragon islands.
 - The four Battlegrounds zones follow the same shared construction rule at
@@ -1426,10 +1419,11 @@ one-cell settlement checks are unchanged.
   wall) — 21 nodes from the
   wall line, about 17.5 beyond a stone wall's face. The band grows no trees and
   no ground cover, so players see where the protection ends; beyond it the
-  zone's ordinary rules apply (vegetation, ground cover, claims, housing,
-  resources, caves). The shape is computed once per world start from the
-  capital layout (`wp40/capital_protection.lua`, integer column intervals per
-  row, a lookup of one row and one or two comparisons) and always lies inside
+  zone's ordinary rules apply (vegetation, ground cover, resources, caves;
+  capital zones hold no claims, `housing.md` §2). The shape is computed
+  once per world start from the capital layout
+  (`wp40/capital_protection.lua`, integer column intervals per row, a lookup
+  of one row and one or two comparisons) and always lies inside
   the reserved square and the capital zone (the zone field keeps the 532-node
   square round the reserved area in-zone on land). It replaces the former
   532-node protected square and the 704-node claim square. Capital lookup
@@ -1572,9 +1566,9 @@ one-cell settlement checks are unchanged.
   pad's grading runs as a collar round it (the flat grows by 0–6 nodes along
   a noise outline, then a 24-node ramp with a noisy edge and rounded
   corners), starting in the band and running out just beyond it. Beyond the
-  band the zone's ordinary rules apply (vegetation, ground cover, claims,
-  housing, resources, caves). The first mandatory road beat reaches the race
-  capital at level 10 and unlocks its waypoint and civic-service
+  band the zone's ordinary rules apply (vegetation, ground cover, resources,
+  caves; starting zones hold no claims). The first mandatory road beat
+  reaches the race capital at level 10 and unlocks its waypoint and civic-service
   introduction.
 
 ## 13. Mapgen and public zone contract
@@ -1628,15 +1622,16 @@ The final registry exposes:
 - allocation-free `id_at`, `biome_at`, `race_region_at`, `faction_at`,
   `territory_rule_at`, `pvp_rule_at`, `surface_mob_level_at`,
   `mob_level_at`, `guard_level_at`, `terrain_height_at` and
-  `water_class_at`; and
-- the unconditional `housing_eligible_at` centre predicate.
+  `water_class_at`.
+
+The mask-based `housing_eligible_at` centre predicate is removed with the
+housing masks (Round 25 ruling 4). `grug_housing` validates a claim itself
+from these queries and the protection index (`housing.md` §2).
 
 Route and hydrology queries (`travel_links`, `nearest_route_at`,
 `nearest_hydrology_at`) left the public surface in Round 22 (D22); Phases 4
 and 5 add road and water queries back only where a consumer needs them.
 
-`housing_eligible_at(x,z) == true` means the complete 101 by 101 future
-reservation passed every static exclusion. It never checks dynamic claims.
 No stable `nearest_boundary_at`, boundary id or coast-component id is public.
 A later consumer may add an approximate scalar margin query, but may not
 restore boundary materialization without a separately reviewed requirement.
@@ -1945,8 +1940,7 @@ ordinary dirt, relevant litter, mud, dry dirt, moss soil and ash soil do not
 turn an unrelated logical biome into a host. Actual final support is checked,
 not assumed from the nominal biome. Surface sources stand above that support;
 cave sources require real preserved air above real exposed stone. No source
-may replace a functional surface, foundation, route or water; a housing area
-is ordinary host ground (§7.5).
+may replace a functional surface, foundation, route or water.
 Cave eligibility follows the purpose-specific WORLD guards, not broad natural
 landmark envelopes; under a town, POI core, anchor grade or hard foundation
 those guards end at the column's protected floor (placement height − 100,

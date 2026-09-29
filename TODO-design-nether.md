@@ -39,10 +39,9 @@ and already live in `docs/design/world.md` §6 / `economy.md`):
   Nether y-band is not reachable by digging. There are no "normal"
   free-crossing portals: every crossing is one of the designed island
   pairs.
-- Zone rules: **no waypoints inside; the claim-bound Home Stone from
-  `docs/design/housing.md` §4 works only
-  when the character has an active bound claim** (its 60 min cooldown is the
-  escape valve, and there is no capital fallback); **no building at all**
+- Zone rules: **no waypoints inside; travel home works as everywhere**
+  (innkeeper or Claim Stone target, `docs/design/home_travel.md`, 30 min
+  cooldown as the escape valve); **no building at all**
   (R3-style);
   **heat damage only in specific lava fields**, never globally.
 - **Portal activation**: first portal quest-unlocked (story beat), the

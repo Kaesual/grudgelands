@@ -28,8 +28,9 @@ entirely, admins included.
 Core principles:
 
 - **Instant abilities + cooldowns, no cast times in the MVP.** Cast bars
-  (and pushback) may come later for selected spells; the Home Stone's 10 s
-  cast ([housing.md](housing.md) §4) is its own mechanic and stays.
+  (and pushback) may come later for selected spells. Travel home, including
+  to a Claim Stone ([housing.md](housing.md) §8), is immediate and uses no
+  cast.
 - **Abilities use indestructible, bound inventory representations.** The base
   kit, including Strike, is inserted once at character creation. Representations
   may be carried in main inventory or owned bags; dropping or returning one to

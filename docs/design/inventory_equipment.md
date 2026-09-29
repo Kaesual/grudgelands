@@ -250,10 +250,11 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   metadata and wear. Other profession recipes retain their explicit grid,
   furnace, dual-furnace or brewing-stand route.
 - Authored capital/POI stations are personal workspaces keyed by player and
-  physical station. Player-placed stations share node inventories; Housing
-  access comes from the area Protector Stone, with no station-specific owner or
-  ACL. Shared 3×3 inputs are common while each viewer's output preview is
-  qualified independently. A successful take revalidates recipe, station,
+  physical station. Player-placed stations share node inventories; inside an
+  active Claim Stone claim, access follows the claim's permission list
+  (`housing.md` §6), with no station-specific owner or ACL. Shared 3×3
+  inputs are common while each viewer's output preview is qualified
+  independently. A successful take revalidates recipe, station,
   distance, access, inputs, profession tier and capacity before consuming or
   awarding progress. Partial transfers retain produced remainder without a
   second debit or progress award, and closing a UI loses no contents.
@@ -266,7 +267,7 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   Universal Basics routes have neither gate and award no profession progress.
 - Recipe books display human item descriptions. A group slot lists concrete
   alternatives with “or”; arrows switch only between complete recipe routes.
-- Claim ACL access never grants a recipe, profession tier or material the
+- Claim permission never grants a recipe, profession tier or material the
   character has not unlocked.
 
 ## 5. Buff/debuff display (decided 2026-09-17)

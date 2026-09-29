@@ -88,15 +88,15 @@ blueprints are unchanged by them.
   on the gate's own ground; outside that stretch the road follows its routed
   course (Round 22 Phase 4). Which side the gate faces follows the blueprint's
   own `main_street` landmark, never an assumed sign. That stretch is ordinary
-  road, so it keeps the claim exclusion, the clear corridor and every other
-  rule an ordinary road carries ([world.md](world.md) §2 R1).
+  road, so it keeps the road protection, the clear corridor and every other
+  rule an ordinary road carries ([world.md](world.md) §2 R1b).
 - **The start town's surroundings (Round 22 D78, 2026-09-27).** Replaces the
   blend-ring and apron rules of 2026-09-14/15. The protected band round the
   pad (12 nodes, rounded corners) grows no trees and no ground cover, so
   players see where the protection ends; right beyond it the biome's trees,
-  plants and ground cover grow normally, and claims, housing, resources and
-  caves follow the zone's ordinary rules. The band carries the town's own
-  ground (the pad's ground node of its race palette) 2–10 nodes out from the
+  plants and ground cover grow normally, and resources and caves follow the
+  zone's ordinary rules (starting zones hold no claims). The band carries the
+  town's own ground (the pad's ground node of its race palette) 2–10 nodes out from the
   pad along a smooth noise outline with a dithered edge, then the biome's
   surface, so no straight edge or corner of the pad shows. The same world
   seed always produces the same outline.
@@ -515,7 +515,25 @@ identities remain stable. No new world anchors are part of this increment.
 Each of the six start towns and six capitals contains one innkeeper using a
 suitable existing building/socket. The twelve-entry shared registry supplies
 terrain-resolved NPC and safe arrival positions. Binding, home return and death
-respawn follow [home_travel.md](home_travel.md). No other V1 home points exist.
+respawn follow [home_travel.md](home_travel.md). No other V1 home points exist;
+a player's Claim Stone can be an additional travel-home target
+([housing.md](housing.md) §8).
+
+## Housing Managers (Round 25)
+
+Each capital's Housing Manager ([housing.md](housing.md) §7.2) is the gate
+resident of that capital's tailor service plot:
+
+| Capital | Plot |
+|---|---|
+| Highcourt | `market_counting_house` |
+| Dur Brannoc | `forge_guild_house` |
+| Lethariel | `market_weaver` |
+| Nhal Veyr | `market_shroud_house` |
+| Gor Drazhak | `warren_weaver` |
+| Kezamba | `shore_tailor` |
+
+It serves only its capital's faction and shows a "+" marker on the map.
 
 ## Round 20 authored regional places
 
