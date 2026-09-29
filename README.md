@@ -51,10 +51,14 @@ to fear. Their story will grow as more regions and encounters are completed.
 
 The systems above are implemented and installed in the local development build.
 [Round 26](docs/planning/round26-capitals-housing-cleanup-plan.md) is in
-progress: more irregular and more varied capital walls, a reworked Claim Stone
-placement, a registration cleanup and status icons.
+progress. A placed Claim Stone now starts as a draft that you activate with
+five lumps of coal within five minutes, and the Housing Steward hands it out.
+Buffs, debuffs and the combat state show as icons above the skill bar, with a
+new Effects tab on the Character page and class icons in the party display.
+Old utility items and duplicate tool names are cleaned up. More irregular and
+more varied capital walls are still in the works.
 [Round 25](docs/planning/round25-housing-plan.md#completion-2026-09-29) adds
-housing: from level 20 a Housing Manager in your capital hands out a Claim
+housing: from level 20 a Housing Steward in your capital hands out a Claim
 Stone. Placed in your faction's level-11–30 lands and fuelled with coal or
 charcoal, it protects a 101 × 101 home, lets you grant friends access and can
 be your travel home. Roads and the cores of villages, camps and points of
@@ -88,8 +92,8 @@ yet cover the full journey through every region.
 <details>
 <summary>Development tracking and known caveats</summary>
 
-**Delivered:** 38 of 53 tracked work-package identities are complete, 3 are
-canceled and 12 are open, several with playable portions (after the
+**Delivered:** 39 of 53 tracked work-package identities are complete, 3 are
+canceled and 11 are open, several with playable portions (after the
 2026-09-29 [work-package audit](docs/planning/wp-audit-2026-09-29.md)). This
 is a tracking count, not a percentage of game completion. The latest delivered
 increment is

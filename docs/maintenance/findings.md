@@ -66,6 +66,6 @@ citations must still be verified when used for implementation.
 Root README remained byte-identical during the consolidation. The follow-up
 was applied on 2026-09-29: README links the [documentation guide](../README.md)
 and [project status](../STATUS.md), routes `playtest_quality_revision.md` as
-historical decision routing, and shows BACKLOG's counts (38 delivered, 3
-canceled, 12 open of 53 after the work-package audit).
+historical decision routing, and shows BACKLOG's counts (39 delivered, 3
+canceled, 11 open of 53 after the work-package audit and WP28).
 

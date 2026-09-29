@@ -3,7 +3,9 @@
 Drafted 2026-09-29 after the Round 25 playtest start, the
 [work-package audit](wp-audit-2026-09-29.md) and its
 [user decisions](wp-audit-2026-09-29.md#user-decisions-2026-09-29).
-**Status: plan. No implementation before the user's go-ahead.**
+**Status: in progress.** Lanes S (`377e7cd4`), R (`4e88234c`, Troll
+follow-up `ed7d79a1`) and I (`abaaa262`) are merged on local main; Lane W
+waits for the user's image approval; Lane D (docs) is under way.
 
 ## Goals
 

@@ -443,7 +443,7 @@ from y = −701.
   Respawns follow the bound innkeeper home; the starting settlement is the
   default. See [home travel](home_travel.md).
 - Every race has its own king in its own capital: **six kings total**. Housing
-  instead comes from the Housing Manager, a service NPC in every capital who
+  instead comes from the Housing Steward, a service NPC in every capital who
   hands out the Claim Stone from level 20 (§5); no king grants land or
   housing.
 - Capitals hold class POIs, traders, quest givers, job trainers and a major
@@ -668,7 +668,7 @@ land do not exist.
 
 - A claim is a 101 × 101 column around one Claim Stone, from y = −100
   upward without limit. Each player has one soulbound stone, handed out free
-  by the Housing Manager in every capital from level 20.
+  by the Housing Steward in every capital from level 20.
 - The whole square must lie in the claimant's own faction home territory, in
   its level-11–30 zones (seven per faction), and may not touch a level-1–10 or
   level-31+ zone, a capital zone or the other faction's territory, and keeps
@@ -677,6 +677,9 @@ land do not exist.
   bay water inside an eligible zone may lie in a claim; the shelf and the
   ocean may not. There are no housing masks and no coastal
   housing areas. Claims never overlap but may touch.
+- A placed stone is a draft that protects nothing and crumbles after
+  5 minutes unless the owner activates it with 5 lumps; for 12 hours after
+  activation it cannot be picked up (Round 26, `housing.md` §2a).
 - The stone burns coal lumps or charcoal (one lump = 7 h 16 min; 99 lumps
   ≈ 30 days) as a "paid until" timestamp; server downtime counts. Without
   fuel the claim protects nothing, and anyone may destroy the stone with a
@@ -793,13 +796,16 @@ territory.
   passive per race** + the vendor discount as a bonus. Passives
   (implementation: WP19, race registry hook): Dwarf −20% fall damage, applied
   after the max-HP fall conversion; absorb never applies to fall damage (`combat_stats.md` §2) ·
-  Troll +50% out-of-combat mana regeneration · Undead ignored by zombies at night
+  Troll +50% out-of-combat mana regeneration and +50% food healing
+  (instant and per tick; Round 26) · Undead ignored by zombies at night
   (unless the player attacked that zombie) · Orc +1 rage per hit taken ·
   Elf +5 m ability range (**ranged/spell abilities only** — melee abilities
   keep their own reach, `classes.md` §2b) · Human +10% quest XP. Plus **one
   race-exclusive vendor per race** (WP7). Implementation state (WP19): the
-  troll regen multiplier applies to mana only; there is no natural HP
-  regeneration (WP21 closed 2026-09-29), and rage decay is unaffected. The
+  troll perk `ooc_regen_mult` (1.5) multiplies out-of-combat mana
+  regeneration and food healing (`grug_food.heal_multiplier`, instant and per
+  tick); there is no natural HP regeneration (WP21 closed 2026-09-29), and
+  rage decay is unaffected. The
   human bonus is a latent hook (`grug_classes.get_xp_bonus`)
   that activates when WP8's quests tag their XP with source="quest".
 - **The vendor perk, quantified** (decided 2026-08-07 in WP7 — the perk

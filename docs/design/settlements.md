@@ -528,9 +528,9 @@ respawn follow [home_travel.md](home_travel.md). No other V1 home points exist;
 a player's Claim Stone can be an additional travel-home target
 ([housing.md](housing.md) §8).
 
-## Housing Managers (Round 25)
+## Housing Stewards (Round 25)
 
-Each capital's Housing Manager ([housing.md](housing.md) §7.2) is the gate
+Each capital's Housing Steward ([housing.md](housing.md) §7.2) is the gate
 resident of that capital's tailor service plot:
 
 | Capital | Plot |

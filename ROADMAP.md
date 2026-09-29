@@ -51,7 +51,7 @@ Earlier delivery narratives are preserved in the
   apex camp, reached by boat. Minerals never regrow anywhere, camps included.
 - **Housing lives in the open world** (delivered in Round 25,
   [housing.md](docs/design/housing.md)). From level 20 each player gets one
-  free, soulbound Claim Stone from a capital's Housing Manager. It claims a
+  free, soulbound Claim Stone from a capital's Housing Steward. It claims a
   101 × 101 column from y = −100 up in the player's own level-11–30 home
   zones, protects it while coal or charcoal burns, grants Interact or
   Everything to named players and can be the travel-home target. There are
@@ -146,10 +146,11 @@ B1–B7) settle the rest:
 ### Remaining work
 
 - [ ] **Round 26, in progress**
-  ([plan](docs/planning/round26-capitals-housing-cleanup-plan.md)): more
-  irregular and more varied capital outlines, Claim Stone activation and the
-  Round 25 carry-overs, the registration cleanup (WP28), the status-icon
-  package (audit D10) and this documentation cleanup.
+  ([plan](docs/planning/round26-capitals-housing-cleanup-plan.md)). Merged:
+  Claim Stone draft and activation with the Housing Steward, the
+  registration cleanup (WP28) and the status-icon package (audit D10).
+  Pending: more irregular and more varied capital outlines (after the user
+  approves the images) and this documentation cleanup.
 - [ ] **WP17 travel (V1):** boats with the Kraken retune, and visit-unlocked
   waypoints at every start and capital. Innkeeper return and the Claim Stone
   travel home are already delivered.

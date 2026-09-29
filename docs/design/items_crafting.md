@@ -483,10 +483,13 @@ from `grug_gear`. Consequences, all binding:
   **Current swords** live entirely in `grug_gear`, beginning at Bronze.
   Vendored Wood/Stone/Bronze/Steel swords are unregistered, alongside the
   removed mese and diamond tiers. Wood/Stone remain only for gathering tools.
-  **Pick, axe and shovel** are complete at all six tiers: `default`'s Bronze is
-  T1 and its Steel is T3 (the mapping `grug_materials/overrides.lua` already
-  encoded through `grug_pick_tier`), and Iron, Silversteel, Embersteel and
-  Abyssal Steel are registered by `grug_materials/tools.lua`. Iron gets tools
+  **Pick, axe and shovel** are complete at all six tiers, all in one
+  namespace since Round 26 (ruling 14): `grug_materials:{pick,axe,shovel}_`
+  plus `wood`, `stone`, `bronze` (T1), `iron` (T2), `steel` (T3),
+  `silversteel`, `embersteel` and `abyssal_steel`, registered by
+  `grug_materials/tools.lua`. Twelve engine aliases map the former `default:`
+  wood/stone/bronze/steel tool names so repository references keep working;
+  a startup audit (`grug_materials/audit.lua`) enforces the namespace. Iron gets tools
   because Iron is a full tier here — it owns a tier rock, a pick tier and a
   real bar item — so skipping it would leave §3.0.4's T2 row without a pick.
   All six pick, axe and shovel tiers use the familiar Minecraft grid shapes and
@@ -2083,7 +2086,7 @@ retired. Housing has no money price, tiers, upgrades or additional stones
 
 - **Claim Stone** `grug_housing:claim_stone`: one per player, soulbound (never
   in chests, bags, trades or mail; kept on death; destroyed when dropped), not
-  craftable and not sold. The Housing Manager in every capital hands it out
+  craftable and not sold. The Housing Steward in every capital hands it out
   free from level 20 while the player has none, carried or placed.
 - **Upkeep fuel:** the placed stone accepts only coal lumps
   (`default:coal_lump`) and charcoal (`grug_smelting:charcoal`), both burning

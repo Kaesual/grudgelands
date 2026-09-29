@@ -625,28 +625,39 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   then core APIs revalidate current authority. HUD HP writes are compare-first.
   The saved color preference defaults to By class; an explicit All green choice
   persists. Current geometry and offline presentation: [parties.md](../design/parties.md).
-- **Housing (Round 25):** `mods/PLAYER/grug_housing` implements
+- **Housing (Round 25, Round 26 drafts):** `mods/PLAYER/grug_housing` implements
   [housing.md](../design/housing.md). One global `grug_housing`; each file has
   one owner lane so the lanes work in parallel:
-  - `api.lua` (Lane A): the claim core and the interface contract — registry
-    in mod storage plus a claim grid index, placement validation, the
-    protection check with permissions, fuel as `paid_until`, the soulbound
-    `grug_housing.STONE_ITEM` (`grug_housing:claim_stone`), daily limits,
-    destruction times, the arrival cube and no renewal in active claims.
+  - `registry.lua` + `api.lua` (Lane A): the pure claim model and the
+    interface contract — registry in mod storage (format v2) plus a claim grid
+    index, placement validation, the protection check with permissions, fuel
+    as `paid_until`, the soulbound `grug_housing.STONE_ITEM`
+    (`grug_housing:claim_stone`) and the draft node
+    `grug_housing.DRAFT_STONE` (`grug_housing:claim_stone_draft`), drafts
+    (`DRAFT_SECONDS = 300`), activation (`ACTIVATION_LUMPS = 5`, charcoal
+    first), the pick-up lock (`PICKUP_LOCK_SECONDS = 43200`), destruction
+    times, the arrival cube and no renewal in active claims.
     Contract: `claim_at(pos)` (claim `{id, owner, center, placed_at,
-    paid_until}` or nil), `is_active`, `remaining_seconds`, `permission(claim,
-    name)` → `"owner"`/`"everything"`/`"interact"`/nil, `player_claim(name)`
-    → claim plus state `never`/`carried`/`placed`/`destroyed`/`needs_stone`,
-    `issue_stone`, `add_fuel`, `pick_up`, `set_permission`, `arrival_pos`,
-    `register_on_claim_changed(fn)` with events `placed`, `fuel`,
-    `permission`, `picked_up`, `destroyed`, `expired`. Constants `RADIUS = 50`,
-    `MIN_Y = −100`.
+    activated_at, paid_until}` or nil; `activated_at` 0 is a draft),
+    `is_active`, `is_draft`, `draft_remaining`, `pickup_wait`,
+    `remaining_seconds`, `permission(claim, name)` →
+    `"owner"`/`"everything"`/`"interact"`/nil, `player_claim(name)` → claim
+    plus state `never`/`carried`/`placed`/`destroyed`/`removed`/`needs_stone`,
+    `issue_stone`, `activate`, `add_fuel`, `pick_up`, `set_permission`,
+    `arrival_pos`, `register_on_claim_changed(fn)` with events `placed`,
+    `activated`, `fuel`, `permission`, `picked_up`, `destroyed`, `removed`,
+    `draft_expired`, `expired`. Constants `RADIUS = 50`, `MIN_Y = −100`.
+  - `stone.lua`, `stone_form.lua`, `protection.lua`, `soulbound.lua`: the
+    stone and draft nodes with draft and fuel expiry, the stone forms, the
+    `is_protected` wrapper with the arrival cube, the soulbound items.
+  - `admin.lua` (Round 26): `/claim_remove <player> | here | orphans`
+    (`server` privilege).
   - `interaction.lua` (Lane B): the generic right-click and node-inventory
     guard installed at `register_on_mods_loaded`, and the "Home of <owner> –
     protected" reason for `grug_core.protection_hint`.
-  - `interface.lua` (Lane C): the stone formspec (set as
-    `grug_housing.open_stone_interface`), the Housing Manager and the
-    character-page status.
+  - `interface.lua`, `manager.lua` (Lane C): the stone formspec (set as
+    `grug_housing.open_stone_interface`), the Housing Steward (internal socket
+    role id `housing_manager`) and the character-page status.
   - Home-stone travel (Lane D) lives in `grug_home`, which reads the claim
     through the contract above.
 

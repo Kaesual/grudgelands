@@ -9,20 +9,24 @@ not additional current contracts. No behavior changes are authorized by this cle
 ## Readiness
 
 There are **53 identities**: WP0–WP49 and WP-Scout/WP-HUD/WP-Speed.
-**38 delivered**, **3 canceled** (WP16, WP37, WP49), **12 open or partial**.
+**39 delivered**, **3 canceled** (WP16, WP37, WP49), **11 open or partial**.
 The 2026-09-29
 [WP audit](docs/planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29)
 closed WP14, WP21, WP22, WP23, WP27, WP29, WP31 and WP32 as delivered, merged WP7's rebase, WP11, WP30 and the price parts of WP22 and
 WP31 into WP44 (WP11 and WP30 count as delivered), and canceled WP37 and WP49.
-The audit's letters and numbers (for example E5) are cited below.
+WP28 followed in Round 26. The audit's letters and numbers (for example E5)
+are cited below.
 
 - **Current round:
   [Round 26](docs/planning/round26-capitals-housing-cleanup-plan.md) in
-  progress** (started 2026-09-29): Lane W organic capital outlines and more variety between the
-  capitals (the D72 follow-up), Lane S Claim Stone activation and the Round 25
-  carry-overs, Lane R the registration cleanup (WP28), Lane I the status-icon
-  package (audit D10) and Lane D this documentation cleanup. Not in this round:
-  the depth pulse (WP34), WP44, WP17, WP41, WP9, WP5 and WP10.
+  progress** (started 2026-09-29). Merged on local main: Lane S (Claim Stone
+  draft and activation, 12 h pick-up lock, Housing Steward, admin removal,
+  arrival-cube snow), Lane R (registration cleanup, WP28 delivered; Troll
+  food-healing follow-up) and Lane I (the status-icon package, audit D10).
+  Pending: Lane W, organic capital outlines and more variety between the
+  capitals (the D72 follow-up), which waits for the user's image approval, and
+  Lane D, this documentation cleanup. Not in this round: the depth pulse
+  (WP34), WP44, WP17, WP41, WP9, WP5 and WP10.
 - Latest delivery: [Round 25](docs/planning/round25-housing-plan.md#completion-2026-09-29)
   delivers WP24 Housing; user playtest pending. Round 24 is pushed
   (`d4eaffff`) and accepted.
@@ -75,11 +79,11 @@ technical evidence certifies its recorded bytes, never an arbitrary later head.
 | WP21 | [Recovery/rest](docs/planning/work-package-scopes.md#wp21) | Food recovery delivered; closed 2026-09-29: food is the recovery system, no natural HP regeneration, no rested XP. | WP1 ✅ |
 | WP22 | [Tool wear and repair](docs/planning/work-package-scopes.md#wp22) | Delivered; closed 2026-09-29. Dig speed stays as in the game (D8); prices to WP44; claim-station repair (D7) below. | WP43 ✅ |
 | WP23 | [Dragon encounters](docs/planning/work-package-scopes.md#wp23) | Delivered R8–R10; closed 2026-09-29. Boat route → WP17, island PvP tag → WP41; no hoard chest (E11), no apex sockets (E5). | — |
-| WP24 | [Open-world Claim Stone Housing](docs/planning/work-package-scopes.md#wp24) | Delivered in Round 25 ([completion](docs/planning/round25-housing-plan.md#completion-2026-09-29)): Claim Stones as in `housing.md`, no price, housing masks removed; road and POI protection alongside. User playtest pending; carry-overs below. | WP40 |
+| WP24 | [Open-world Claim Stone Housing](docs/planning/work-package-scopes.md#wp24) | Delivered in Round 25 ([completion](docs/planning/round25-housing-plan.md#completion-2026-09-29)): Claim Stones as in `housing.md`, no price, housing masks removed; road and POI protection alongside. Round 26 Lane S adds the draft and 5-lump activation, the 12 h pick-up lock, the Housing Steward and admin removal. User playtest under way; carry-overs below. | WP40 |
 | WP25 | Original strata/materials (superseded by WP43) | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP26 | Furnace and alloy chain | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP27 | [Armor catalog](docs/planning/work-package-scopes.md#wp27) | Delivered; closed 2026-09-29 (no G2 surcharge, Round 10 ruling 7). | WP26 ✅, WP43 ✅ |
-| WP28 | [Remove superseded recipe/tool registrations](docs/planning/work-package-scopes.md#wp28) | **In progress, Round 26 Lane R:** mobs_redo utility items (D5), silver-sandstone recipes (D6), tool namespace under `grug_materials:` (D9), two surface critters ×0.75 (C6). | — |
+| WP28 | [Remove superseded recipe/tool registrations](docs/planning/work-package-scopes.md#wp28) | Delivered in Round 26 Lane R: mobs_redo utility items removed (D5), silver-sandstone recipes removed (D6), all tier tools under `grug_materials:` with 12 aliases (D9), two surface critters at 0.75 density, `chance` 2200 → 2933 (C6). | — |
 | WP29 | [Gear/tool catalog](docs/planning/work-package-scopes.md#wp29) | Delivered; closed 2026-09-29. Tool-namespace unification moved to WP28. | WP26 ✅, WP43 ✅ |
 | WP30 | [Trader catalog](docs/planning/work-package-scopes.md#wp30) | Catalog delivered; closed 2026-09-29, prices merged into WP44 (C2). | — |
 | WP31 | [Mounts](docs/planning/work-package-scopes.md#wp31) | Delivered (C3); prices merged into WP44. | WP40 ✅ |
@@ -88,7 +92,7 @@ technical evidence certifies its recorded bytes, never an arbitrary later head.
 | WP34 | [Deep spawn pulse](docs/planning/work-package-scopes.md#wp34) | Only the depth pulse remains; kept, for later (E5). Renewable camp resources removed. the Land Guard and the Rift Spawn's deep row join the pulse (E4); placement and servant roster open. | WP6 ✅, WP40 ✅ |
 | WP35 | Equipped weapon source and appearance | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP36 | Reference submodules and first runtime fixes | Delivered; historical receipt below. Current rules: topic design. | — |
-| WP37 | [Surface-density cut](docs/planning/work-package-scopes.md#wp37) | Canceled 2026-09-29: superseded by Round 24 ruling 27 (about 1.5× density). Only Bone Weevil and Bog Fowl get ×0.75, in WP28 (C6). | WP6 ✅ |
+| WP37 | [Surface-density cut](docs/planning/work-package-scopes.md#wp37) | Canceled 2026-09-29: superseded by Round 24 ruling 27 (about 1.5× density). Only Bone Weevil and Bog Fowl get 0.75 density (`chance` 2200 → 2933), delivered with WP28 (C6). | WP6 ✅ |
 | WP38 | Held melee timing and settlement | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP39 | Crosshair-authoritative combat | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP40 | Named-zone world foundation | Development delivery accepted; first-public-release gates remain open. | — |
@@ -250,9 +254,10 @@ none blocks the playtest.
 - WP24: an admin command to remove a claim or an orphaned fuelled stone. A
   fuelled stone without a registry row (for example after a crash between the
   map save and the mod-storage save) cannot be dug by anyone (Lane A review).
-  **Round 26 Lane S.**
+  **Done in Round 26 Lane S:** `/claim_remove <player> | here | orphans`.
 - WP24: a `buildable_to` node such as snow in the arrival cube cannot be dug,
-  not even by the owner (arrival-cube placement guard). **Round 26 Lane S.**
+  not even by the owner (arrival-cube placement guard). **Done in Round 26
+  Lane S:** it is dug under the ordinary claim rules; placing stays refused.
 - WP24: two touching claims can cover all three route points of one named
   rare and suppress its spawn (consequence of ruling 24). Accepted by the user
   (E12); no work.

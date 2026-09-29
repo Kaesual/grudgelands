@@ -273,34 +273,52 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
 ## 5. Buff/debuff display (decided 2026-09-17)
 
 Every ordinary timed player effect registers centrally with an id, label,
-buff/debuff category and expiry. The registry is runtime-only: a relog drops
-ordinary buffs and debuffs. A mechanic that must survive a relog keeps its own
-authoritative persistence; the potion cooldown remains in player meta and is
-only mirrored into the registry for display.
+buff/debuff/neutral category and expiry (`grug_core.set_status`; the icon
+table is `grug_core.status_icons`). The registry is runtime-only: a relog
+drops ordinary buffs and debuffs. A mechanic that must survive a relog keeps
+its own authoritative persistence.
 
-- **Round 19:** one top-center HUD text list, leaving top-right minimap and
-  top-left chat free; buffs first and debuffs
-  second, capped at eight lines. Each line is `Name  1:23`; a numeric value
-  may follow the name, as in `Shield 12  0:09`. Durations under ten minutes
-  use `m:ss`; longer durations use the largest fitting unit.
+**Status icon row** (Round 26 Lane I, the status-icon package of WP audit
+D10; [plan](../planning/round26-capitals-housing-cleanup-plan.md) rulings
+17–23, [effect list](../planning/status-icons-2026-09-29.md)). It replaces
+the Round 19 top-centre text list:
+
+- **Place:** bottom centre, a row of 40 px icons directly above the breath
+  and skill rows, so the top centre belongs to the target frame alone.
+- **Look:** 64 px art on the dark skill-icon plate, with a frame drawn by
+  code: green for buffs, red for debuffs, gold for neutral states. The
+  caption under each icon is the countdown or the value (for example a
+  shield's remaining absorb).
+- **Capacity:** at most 10 icons. When more statuses run, debuffs keep their
+  slots first, then neutral states, then buffs.
+- **No cooldowns** on the row (ruling 21): the potion cooldown is no longer
+  shown; its refusal messages remain.
+- **Registered statuses:** food (the eaten item's own image, else the
+  generic food icon), elixirs, draughts, mounts (land or flight, with tier
+  name and speed), one shield icon for every absorb source, move immunity,
+  Sprint, Sidestep and Renew (their skill icons), the six talent windows
+  (Unbroken, Ruination, Whitehot, Turn Aside, Last Word, Untouchable),
+  poisoned, slowed (one icon for every slow), rooted, stunned and scorched
+  (1.5 s per Dragon Scorch tick). Neutral: **in combat**, which replaces the
+  "Combat" text next to the health bar, and PvP tagged, PvP contested and the
+  Warding Draught, which are registered but not set by anything yet (WP41
+  and WP5 call `set_status`).
 - Food labels state the active effect, for example `Food +2% HP/5s` or
-  `Food +6% HP, +6% Mana/5s, +2% Mana pool`. The regeneration text remains
-  visible during combat even though those ticks pause; the item tooltip
-  explains that secondary bonuses remain active.
-- One throttled 1 s pass owns timed ticks, expiry and display refresh. It
-  calls `hud_change` only when the complete rendered text changed; an idle
-  player generates no repeated HUD packets.
-- Current entries are Power Word: Shield, Renew, food restore and the
-  persistent Potion cooldown (shown in the debuff section). Combat state is
-  not a status entry.
-- Specialized displays such as the target frame remain separate.
-- **The status-icon package replaces the text presentation** (WP audit D10;
-  Round 26, [plan](../planning/round26-capitals-housing-cleanup-plan.md) rulings
-  17–23, [effect list](../planning/status-icons-2026-09-29.md)): HUD image
-  elements on the dark skill-icon plate, frames drawn by code (green buff, red
-  debuff, gold neutral), the countdown or value as text; combat state becomes
-  an icon; no cooldowns on the row. Effects keep using the same central
-  registry rather than gaining per-consumer status stores.
+  `Food +6% HP, +6% Mana/5s, +2% Mana pool`; the item tooltip explains that
+  secondary bonuses remain active while the regeneration ticks pause in
+  combat.
+- One throttled 1 s pass owns timed ticks, expiry and display refresh, and
+  changes a HUD element only when its content changed; an idle player
+  generates no repeated HUD packets. A poison chain ends on death.
+- **Character page tabs:** "Stats" (the view as before) and "Effects": icon,
+  name, remaining time and a detail line per status, refreshed about once a
+  minute or on change while that tab is open.
+- **Class icons** (Warrior, Mage, Priest, Scout) appear in the party HUD
+  list and in the Group page's "Current party" table (`parties.md`).
+- Specialized displays such as the target frame remain separate. Effects
+  keep using the one central registry rather than per-consumer status
+  stores. Art provenance: `tools/r26_icons/` and the `LICENSE-media.md` files
+  of `grug_core` and `grug_classes`.
 
 ## 5. Skills page and bound representations
 
@@ -332,8 +350,9 @@ overlap existing combat bars, target information or status effects.
 ## Round 16 readability amendments (2026-09-22)
 
 Armor hover descriptions explicitly state Cloth, Leather or Metal, including
-named enchanted variants. A compact Combat indicator appears beside the life
-bar only while the living player is in the existing combat state. Station recipe
+named enchanted variants. The combat state is shown while the living player
+is in combat; since Round 26 it is the gold-framed "in combat" icon in the
+status row (§5), no longer a "Combat" text beside the life bar. Station recipe
 book buttons occupy a separate right-hand position clear of input/fuel/output
 slots, mode explanations and crafting-operation controls.
 

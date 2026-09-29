@@ -879,16 +879,18 @@ playtest rulings); owned by `grug_core` (`in_combat`).
   perk does not apply. Cold Focus multiplies whichever in-combat term wins by
   **`1 + 2 × bonus`**, preserving its old +20% per-rank relative effect (rank
   5 doubles the combat rate).
+- The Troll perk (`ooc_regen_mult`, ×1.5) also multiplies food healing,
+  instant and per tick (`grug_food.heal_multiplier`, Round 26).
 - Food regeneration and pool bonuses are percent-based, but consumables now
   have tier minimum levels through `_grug_ilvl`. The neutral base pool spans
   26 at level 1 to 2696 at level 60, while class factors and pool percentages
   remain independent.
   Plain-looking HP and Mana enchants are internally percentages of the base
   pool and show both that percentage and its current-level absolute value.
-- Every timed effect on the player is shown through the **buff/debuff text
-  list** (`inventory_equipment.md` §5, decided 2026-09-17). The status-icon
-  package (WP audit D10, Round 26) replaces that first-pass presentation with
-  icons.
+- Every timed effect on the player is shown in the **status icon row**
+  (`inventory_equipment.md` §5; Round 26, the status-icon package of WP
+  audit D10), which replaced the first-pass text list. The combat state is a
+  gold-framed icon there, replacing the "Combat" text next to the health bar.
 
 ## 6. Player and mob nameplates & con colors
 

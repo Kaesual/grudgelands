@@ -39,7 +39,7 @@ Remaining: the level-41–60 faction main questline (corruption chapters, The Br
 
 **Status:** open, partly delivered. Seven primaries plus Cooking, books, universal base recipes, enchant catalogs, gem cutting, the herb authorizer and money-only trainer repair are delivered (Rounds 10–13).
 
-Remaining, after WP5's cultural channel: cultural-finish workstation operations and the cultural-master, weapon-counter and Alchemist helper NPC services (`economy.md` §4, `world.md` §7). The cultural-master NPCs come later, with this WP (D11), and need capital sockets; their fees come from the WP44 tables. Optional: recipes for the cut-gem storage blocks. The buff/debuff icon framework formerly listed here is the separate status-icon package (D10, Round 26 Lane I).
+Remaining, after WP5's cultural channel: cultural-finish workstation operations and the cultural-master, weapon-counter and Alchemist helper NPC services (`economy.md` §4, `world.md` §7). The cultural-master NPCs come later, with this WP (D11), and need capital sockets; their fees come from the WP44 tables. Optional: recipes for the cut-gem storage blocks. The buff/debuff icon framework formerly listed here is the separate status-icon package (D10), delivered in Round 26 Lane I.
 
 Professions: seven primaries plus secondary Cooking; two primary slots; exclusive Basics and owning-profession books; independent T1–T6 recipe progression and four mastery bands; universal plain feedstocks/base gear; specialist catalogs and named fixed-tier enchantment operations. Weaponsmith and Armorsmith are separate professions sharing the Forge; no Blacksmith alias.
 
@@ -152,7 +152,7 @@ Former scope: recovery & rest (out-of-combat regen, food recovery, innkeeper res
 
 **Status:** delivered in Round 25 (rulings 1–29, 2026-09-29), user playtest pending; plan, lanes and completion in [round25-housing-plan.md](round25-housing-plan.md#completion-2026-09-29)
 
-**Claim Stone housing** exactly as `docs/design/housing.md`: the `grug_housing` mod with a mod-storage claim registry and grid index; one 101 × 101 claim column from y = −100 up per player; placement in the own faction's level-11–30 home zones by conservative sampling, clear of hard protection, POI/village/camp areas and other claims, with a free 3 × 3 × 3 arrival cube; the soulbound `grug_housing:claim_stone` from the Housing Manager in every capital at level 20; once-a-day place and pick-up limits; coal lump/charcoal fuel as a `paid_until` timestamp (26 160 s per lump, 99 slots, the housing.md §4 slot arithmetic); empty-fuel expiry and pick destruction times; Interact/Everything permissions; the generic right-click and node-inventory guard; the stone formspec and character-page status; no natural renewal and no hostile spawns in active claims; the claim as `grug_home` travel-home target with fallback to the bound innkeeper and respawn unchanged at the innkeeper; removal of the housing masks and coastal housing areas from the zone data. Road and POI world protection (Round 25 Lane E, `docs/design/world.md` §2 R1b) ships alongside but is independent of housing
+**Claim Stone housing** exactly as `docs/design/housing.md`: the `grug_housing` mod with a mod-storage claim registry and grid index; one 101 × 101 claim column from y = −100 up per player; placement in the own faction's level-11–30 home zones by conservative sampling, clear of hard protection, POI/village/camp areas and other claims, with a free 3 × 3 × 3 arrival cube; the soulbound `grug_housing:claim_stone` from the Housing Steward in every capital at level 20; once-a-day place and pick-up limits; coal lump/charcoal fuel as a `paid_until` timestamp (26 160 s per lump, 99 slots, the housing.md §4 slot arithmetic); empty-fuel expiry and pick destruction times; Interact/Everything permissions; the generic right-click and node-inventory guard; the stone formspec and character-page status; no natural renewal and no hostile spawns in active claims; the claim as `grug_home` travel-home target with fallback to the bound innkeeper and respawn unchanged at the innkeeper; removal of the housing masks and coastal housing areas from the zone data. Road and POI world protection (Round 25 Lane E, `docs/design/world.md` §2 R1b) ships alongside but is independent of housing
 
 ## WP27
 
@@ -164,9 +164,16 @@ Former scope: recovery & rest (out-of-combat regen, food recovery, innkeeper res
 
 **Dependencies:** —
 
-**Status:** **in progress in Round 26 Lane R** ([plan](round26-capitals-housing-cleanup-plan.md) rulings 13–16). The Mese/Diamond tools, gems, lights and vendored swords are already unregistered.
+**Status:** **delivered in Round 26 Lane R** (2026-09-29, [plan](round26-capitals-housing-cleanup-plan.md) rulings 13–16). The Mese/Diamond tools, gems, lights and vendored swords were already unregistered.
 
-Scope: remove the mobs_redo utility items — nametag, net, lasso, protector, saddle, mob repellent and shears (D5) — with every recipe, recipe-book entry and branch that references them; remove the silver-sandstone recipes (D6; silver sand has no natural source); unify the tool namespace now, every tier under `grug_materials:` (D9), keeping engine aliases so nothing in the repo (recipes, quests, loot tables, traders, fixtures) breaks, with no old-world migration; give the two surface critters Bone Weevil and Bog Fowl ×0.75 `chance` (C6, from the closed WP37). The former clay clause is dropped: clay is generated again (swamp and wetland pockets). Also delete the dead Steel tool recipe code and stale comments in `grug_materials/content_curation.lua` and `tools.lua`, update the VENDOR patch inventory and boot a fresh world without unknown items, duplicate recipes, missing ingredients or permanently unreachable recipes
+Delivered:
+- The mobs_redo utility items are removed — nametag, net, lasso, shears, protector, protector2, mob repellent and saddle (D5) — with their textures, recipes and recipe-book routes.
+- The silver-sandstone recipes are removed (D6; silver sand has no natural source); the silver sand and sandstone nodes stay, because authored builds place them.
+- One tool namespace (D9): all 24 tier tools are `grug_materials:{pick,axe,shovel}_{wood,stone,bronze,steel,…}`. Twelve engine aliases from the former `default:` names (`grug_materials.TOOL_ALIASES` in `grug_materials/tools.lua`) keep repo references working; this is the ruling-14 exception to the fresh-server "no legacy aliases" rule, not an old-world migration. The Steel pick is craftable from steel bars. A startup audit (`grug_materials/audit.lua`) enforces the namespace.
+- Bone Weevil (both rows) and Bog Fowl `chance` 2200 → 2933, that is 0.75 × density (C6, from the closed WP37).
+- The clay clause is dropped: clay is generated again (swamp and wetland pockets).
+
+Left over: `tools/wp13/node_tiles.json`, a generated file, still lists `mobs:mob_repellent` until it is regenerated
 
 ## WP29
 
@@ -206,7 +213,7 @@ Implement the player-centric deep spawn pulse of `biomes_mobs.md` §4.1. The Lan
 
 **Dependencies:** WP6 ✅.
 
-**Status:** **closed 2026-09-29** (C1, C6). The old task — multiply every surface `chance` by 0.75 (`biomes_mobs.md` §4, decided 2026-08-08) — is superseded by the Round 16 fightable-only increase and the Round 24 ruling 27 per-zone density budget (about 1.5×, `grug_mobs/density.lua`). Only the two surface critters keep the cut: Bone Weevil and Bog Fowl go from 2200 to 1650, `aoc` unchanged, in WP28 (Round 26 Lane R). `biomes_mobs.md` §4 records the closure
+**Status:** **closed 2026-09-29** (C1, C6). The old task — cut surface density to 0.75 (`biomes_mobs.md` §4, decided 2026-08-08; its wording "multiply `chance` by 0.75" was inverted, since mobs_redo's `chance` is one spawn per N tries) — is superseded by the Round 16 fightable-only increase and the Round 24 ruling 27 per-zone density budget (about 1.5×, `grug_mobs/density.lua`). Only the two surface critters keep the cut: Bone Weevil (both rows) and Bog Fowl go from `chance` 2200 to 2933, `aoc` unchanged, delivered with WP28 in Round 26 Lane R. `biomes_mobs.md` §4 records the closure
 
 ## WP41
 

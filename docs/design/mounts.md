@@ -134,9 +134,8 @@ arbitrary fixed-price wall.
 
 - **Mounts are bought, never tamed.** Taming was considered and
   **rejected**: there is no taming design, and the vendored mobs_redo's
-  taming items — `mobs:saddle`, `mobs:lasso`, `mobs:net`
-  (`mods/ENTITIES/mobs/crafts.lua:119`, `:138`, `:231`) — are removed with the
-  vendored-recipe cleanup. A mount is a purchase, exactly like a tome or
+  taming items (`mobs:saddle`, `mobs:lasso`, `mobs:net`) and its other
+  utility items were removed in Round 26 (WP28). A mount is a purchase, exactly like a tome or
   a permanent character upgrade.
 - **Every purchased tier has an owner-bound inventory/hotbar representation.**
   The item is the summon/dismount action. Dropping it deletes only that
@@ -171,8 +170,9 @@ arbitrary fixed-price wall.
   step height to clear the engine's strict collision comparison; taller
   obstacles and low ceilings continue to block them. Flying movement is
   unchanged.
-- While mounted, the existing top-center status list shows the live tier and
-  speed bonus (for example `T1 Mount, +60% Speed`) without a countdown. This is
+- While mounted, the status icon row (`inventory_equipment.md` §5) shows a
+  land or flight mount icon with the tier name and speed bonus (for example
+  "+60% speed") and no countdown. This is
   runtime-only UI state, supplies no movement modifier and is cleared by the
   shared dismount path.
 - Only one active mount entity may exist per player. Using the active mount item

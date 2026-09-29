@@ -49,7 +49,7 @@ or travel. Overworld foreshadowing does not unlock or include that expansion.
   the enemy faction is suspected of dealings with the darkness,
   intelligence must be gathered behind enemy lines, etc.
 - **Housing** is a level-20 civic service, separate from royal combat. The
-  Housing Manager in each capital hands out the player's free Claim Stone and
+  Housing Steward in each capital hands out the player's free Claim Stone and
   briefly explains its upkeep. The home is claimed in the player's own
   level-11–30 home zones; it is not an island, a king's personal gift or a
   purchase of underground rights ([housing.md](housing.md)).

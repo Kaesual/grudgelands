@@ -3,18 +3,30 @@
 Updated 2026-09-29. This is the delivery pointer, not another game specification.
 
 - **Round 26 in progress** (started 2026-09-29,
-  [plan](planning/round26-capitals-housing-cleanup-plan.md)): Lane W more
-  irregular and more varied capital outlines (images first), Lane S Claim
-  Stone activation and the Round 25 carry-overs, Lane R the registration
-  cleanup (WP28), Lane I the status-icon package (audit D10) and Lane D the
-  documentation cleanup after the
-  [work-package audit](planning/wp-audit-2026-09-29.md) and its
-  [user decisions](planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29).
-  Nothing of Round 26 is merged yet.
+  [plan](planning/round26-capitals-housing-cleanup-plan.md)). Lanes S, R and
+  I are merged on local main (S `377e7cd4`; R `4e88234c` with the Troll
+  follow-up `ed7d79a1`; I `abaaa262`; head `25507c83`). No push:
+  - **S:** a placed Claim Stone is a half-transparent draft that protects
+    nothing and crumbles after 5 minutes unless activated with 5 lumps; the
+    only lock is 12 hours without pick-up after activation; the Housing
+    Manager is now the Housing Steward; `/claim_remove`; snow in the arrival
+    cube can be dug ([housing.md](design/housing.md) §§2a, 3, 5).
+  - **R:** mobs_redo utility items and silver-sandstone recipes removed, all
+    tier tools under `grug_materials:` with 12 aliases, the two surface
+    critters at 0.75 density (WP28 delivered); Trolls also get +50% food
+    healing.
+  - **I:** the status icon row above the skill bar (green/red/gold frames,
+    at most 10, no cooldowns), the combat icon instead of the "Combat" text,
+    Character page Stats/Effects tabs and class icons in the party HUD and
+    Group page (audit D10; [inventory_equipment.md](design/inventory_equipment.md) §5).
+  - Pending: Lane W (organic capital outlines; waits for the user's image
+    approval) and Lane D, the documentation cleanup after the
+    [work-package audit](planning/wp-audit-2026-09-29.md) and its
+    [user decisions](planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29).
 
 - **Round 25 delivered locally:** Claim Stone housing (WP24,
   [housing.md](design/housing.md)): one free, soulbound stone from the
-  Housing Manager in each capital from level 20; a 101 × 101 claim column from
+  Housing Steward in each capital from level 20; a 101 × 101 claim column from
   y = −100 up in the own L11–30 home zones, 16 nodes clear of settlement cores
   and hard footprints; coal or charcoal fuel as a "paid until" time (a full
   slot lasts about a month); Interact/Everything permissions with a

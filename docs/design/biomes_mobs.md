@@ -881,18 +881,20 @@ bound the current roster or replace the Round 24 density rule in §0.
 
 WP37 is closed (user decision 2026-09-29,
 [WP audit](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29)
-C1/C6). The original 2026-08-08 decision to multiply every surface-row
-`chance` by 0.75 is superseded by the Round 16 fightable-only change and the
-Round 24 ruling 27 per-zone density budget (§0), which raise density instead.
-Only the two surface critter rows keep the old cut: **Bone Weevil** and
-**Bog Fowl** go from 2200 to 1650, `aoc` unchanged (Round 26 Lane R). Cave
-rows (Giant Spider, Stone/Mesa Golem, Cave Bat, Cave Crawler) and the Kraken
-Guard were never part of it.
+C1/C6). The original 2026-08-08 decision to cut surface density to 0.75 is
+superseded by the Round 16 fightable-only change and the Round 24 ruling 27
+per-zone density budget (§0), which raise density instead. Only the two
+surface critter rows keep the old cut: **Bone Weevil** (both rows) and
+**Bog Fowl** go from `chance` 2200 to **2933**, `aoc` unchanged (Round 26
+Lane R). mobs_redo's `chance` is one spawn per N tries, so 0.75 × density
+means `chance ÷ 0.75`; the old wording "multiply `chance` by 0.75" was
+inverted and would have raised density. Cave rows (Giant Spider, Stone/Mesa
+Golem, Cave Bat, Cave Crawler) and the Kraken Guard were never part of it.
 
-The `chance` column below still prints the never-shipped post-0.75 values of
-2026-08-08 for the other rows. It is historical, not the runtime table; the
-shipped row values are in `mods/ENTITIES/grug_mobs/*.lua` (their `-- §4 row`
-comments quote them).
+The `chance` column below still prints the never-shipped values of
+2026-08-08 for the other rows, computed with that inverted multiplication. It
+is historical, not the runtime table; the shipped row values are in
+`mods/ENTITIES/grug_mobs/*.lua` (their `-- §4 row` comments quote them).
 
 | Mob | nodes (spawn on) | interval | chance | aoc | light | zones |
 |-----|------------------|----------|--------|-----|-------|-------|
@@ -921,8 +923,8 @@ comments quote them).
 | Gull | sand | 20 | 1875 | 2 | min 10 | strait, war_coast, coast, **outer** |
 | **Cave Bat** (critter) | stone **+ `group:grug_stratum`** | 20 | 2200 | 2 | max 5 | underground |
 | **Cave Crawler** (critter) | stone **+ `group:grug_stratum`** | 20 | 2200 | **1** | max 5 | underground |
-| **Bone Weevil** (critter) | bone litter / blight_dirt — **two rows, one entity name, one budget**; the row stamps the tint | 20 | 1650 | 2 | min 10 | (none — the node gates) |
-| **Bog Fowl** (critter) | mud (only) | 20 | 1650 | 2 | min 10 | (none — the node gates) |
+| **Bone Weevil** (critter) | bone litter / blight_dirt — **two rows, one entity name, one budget**; the row stamps the tint | 20 | 2933 | 2 | min 10 | (none — the node gates) |
+| **Bog Fowl** (critter) | mud (only) | 20 | 2933 | 2 | min 10 | (none — the node gates) |
 | **Poacher** | grass, forest litter, silver litter | 20 | 2200 | **4 at night** (base 3 ×1.25, ceiling) | night | exact named-zone palette |
 | **Frost Stray** | gravel, snowblock | 20 | 2400 | **4 at night** (base 3 ×1.25, ceiling) | night | exact named-zone palette |
 | **Sun-Dried Husk** | dry grass, mesa clay | 20 | 2000 | **5 at night** (base 4 ×1.25) | night | exact named-zone palette |
@@ -973,13 +975,12 @@ Row notes:
   move to passive prey (§3.0) changed **no** spawn number — same row,
   same `aoc`, same zone.
 - **The four critters of §3.0** (added 2026-08-08) were all authored at
-  the WP6-style **interval 20 / chance 2200 / aoc 2** and all ship at that
-  chance. The table above prints them **split by zone**, because the 0.75
-  rule is a *surface* rule: the two surface rows (**Bone Weevil**, **Bog
-  Fowl** — day, `min 10`, y 0…200) carry the multiplied **1650** like
-  every other surface row, while the two `underground`-only rows (**Cave
-  Bat**, **Cave Crawler**) print their shipped **2200**, since they are
-  excluded from the multiplier for the same reason the Giant Spider and
+  the WP6-style **interval 20 / chance 2200 / aoc 2**. The table above
+  prints them **split by zone**, because the 0.75 density cut is a
+  *surface* rule: the two surface rows (**Bone Weevil**, **Bog Fowl** — day,
+  `min 10`, y 0…200) ship at **2933** since Round 26 (2200 ÷ 0.75), while
+  the two `underground`-only rows (**Cave Bat**, **Cave Crawler**) keep their
+  shipped **2200**, since they are excluded from the cut for the same reason the Giant Spider and
   the Golems are (see the header: cave pressure belongs to §4.1's depth
   pulse). There is also **one exception that is pure arithmetic**: the
   **Cave Crawler ships at `aoc` 1**. The underground cell was

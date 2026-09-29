@@ -56,7 +56,7 @@ rulings; the superseded text is named in `skill_trees.md` §5.2.
   entirely, for admins too**. *(Supersedes "Respec at the class trainer
   for gold". `economy.md` §4, `items_crafting.md` §8.3 and `world.md` §1 now
   state the same no-trainer rule.)*
-- **Level 20 — Claim Stone:** the Housing Manager in every capital hands out
+- **Level 20 — Claim Stone:** the Housing Steward in every capital hands out
   the player's one free, soulbound Claim Stone. It claims a 101 × 101 home in
   the player's own level-11–30 home zones while it is fuelled
   ([housing.md](housing.md)). There are no claim tiers, upgrades or

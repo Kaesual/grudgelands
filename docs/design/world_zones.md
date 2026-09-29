@@ -148,7 +148,7 @@ in this file as of commit `082982da`.
   enemies** and no automatic PvP tag. Its guards and important faction NPCs
   are level 60. The city itself is not a level-60 hostile leveling area.
 - Each race has its own king, for **six kings total**. The race's capital is
-  that king's seat. Housing is not a royal grant: the Housing Manager in
+  that king's seat. Housing is not a royal grant: the Housing Steward in
   every capital hands out the free Claim Stone from level 20 (`housing.md`;
   `world.md` §5 summarizes its world-facing integration).
 - A capital is centered inside its city zone and has four fixed cardinal
