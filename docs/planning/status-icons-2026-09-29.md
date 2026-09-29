@@ -306,3 +306,16 @@ damage feedback. Eating and bow-draw movement stances (`grug_food/init.lua:347`,
 `scout.lua:372`), the character-creation hold (`grug_classes/selection.lua:106`)
 and the flight-boundary warning (`grug_mounts/entity.lua:170-200`, its own HUD
 text) are transient input or UI states, not buffs.
+
+## 5. Class icons (user decision 2026-09-29)
+
+One icon per class for the party UI and similar places. Same 64×64 dark
+plate as the status icons, no status frame; the class colour from
+`grug_parties/hud.lua:4-9` is the accent.
+
+| id | Class | Colour | Icon brief |
+|---|---|---|---|
+| `grug_class_warrior` | Warrior | leather brown `#a66a3f` | A notched **broadsword crossed over a round shield**, heavy and blunt, with brown leather wrapping and a steel edge. |
+| `grug_class_mage` | Mage | arcane blue `#4a9bd8` | A **spell orb** hovering over an open palm or a short staff tip, with blue sparks and a cool glow. |
+| `grug_class_priest` | Priest | white `#f2f2f2` | A **radiant holy symbol** (a simple sunburst or chalice) in white and pale gold, glowing; outline it in darker grey so it reads on the dark plate. |
+| `grug_class_scout` | Scout | olive green `#6b7d32` | A **drawn longbow with a nocked arrow**, olive fletching, a hint of a hood edge behind it. |
