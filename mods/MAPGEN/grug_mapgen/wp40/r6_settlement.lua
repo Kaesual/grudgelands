@@ -171,7 +171,10 @@ local function settlement_factory()
 								filler_depth, x, z, depth)
 							if target then
 								local index = context.index_at(x, y, z)
-								if context.original_data[index] == context.stone_cid then
+								-- Round 24 ruling 11: the terrain fill takes the same
+								-- bands as native stone.
+								if context.original_data[index] == context.stone_cid or
+										context.fill_stone_at(index, x, y, z) then
 									local ref = context.content_ref(target)
 									if not ref then
 										fail("fail_content_manifest", "R8 stratum target is absent")
@@ -186,6 +189,201 @@ local function settlement_factory()
 			end
 		end
 		return written, clipped
+	end
+
+	-- Round 24 (rulings 9-13): the terrain fill.  R5 closes the gap between
+	-- native v7 and the authored surface with plain default:stone (opcode 27,
+	-- policy fill-void).  A fill voxel is such stone that R5 wrote into native
+	-- void (air, water or plants) and that no later stage has touched.  It
+	-- hosts ores and takes the shallow bands like native stone; below the band
+	-- depth it takes sparse horizontal layers.  Nothing carves caves into it
+	-- (fill-void keeps native cave air only below the native heightmap), and
+	-- the seam to native v7 may cut through veins, bands and caves.
+	local R24_FILL_OPCODE = 27
+	local R24_LAYER_FIRST_DEPTH = 41
+	local R24_LAYER_PERIOD = 13
+	local R24_OFFSET_GRID, R24_OFFSET_AMPLITUDE = 48, 5
+	local R24_POCKET_CELL = 16
+
+	local function r24_fill_stone(original_cid, final_cid, intent_opcode,
+			r5_opcode, stone_cid)
+		return final_cid == stone_cid and original_cid ~= stone_cid and
+			intent_opcode == 0 and r5_opcode == R24_FILL_OPCODE
+	end
+
+	-- Base eligibility of one voxel as a P8 resource host (ruling 10).  Native
+	-- host rock keeps the pre-Round-24 rule; fill stone is a host of the
+	-- default:stone tier only.  A voxel P8 already claimed (opcode 24) keeps
+	-- its base eligibility, so the per-cell count does not depend on order.
+	local function r24_resource_host_base(original_cid, final_cid,
+			intent_opcode, occupancy_value, priority, r5_opcode, host_cid,
+			fill_host_cid)
+		if occupancy_value == 1 or not ((intent_opcode == 0 and
+				final_cid == host_cid) or intent_opcode == 24) then
+			return false
+		end
+		if original_cid == host_cid then
+			return priority ~= 2 and priority ~= 3 and priority ~= 4 and
+				priority ~= 6
+		end
+		return host_cid == fill_host_cid and r5_opcode == R24_FILL_OPCODE
+	end
+
+	-- Ruling 12: mountain interiors.  Below the band depth the fill carries
+	-- sparse horizontal layers: absolute y plus a smooth per-column offset
+	-- picks a slab of R24_LAYER_PERIOD nodes; a slab holds at most one layer
+	-- of 2-4 nodes, its rock drawn from a small biome palette.  Slabs are
+	-- keyed by zone, so a zone's layers line up across its mountains.  A
+	-- coarse 3D lattice adds an occasional gravel or dirt pocket.  Stone stays
+	-- clearly dominant (about nine voxels in ten).
+	local R24_DEFAULT_PALETTE = {"grug_materials:slate", "grug_materials:granite",
+		"grug_materials:basalt"}
+	local function new_r24_fill_layers(full_seed)
+		local sand_palette = {"default:sandstone", "default:desert_stone",
+			"grug_materials:granite"}
+		local badland_palette = {"default:desert_stone", "default:sandstone",
+			"grug_materials:basalt"}
+		local ash_palette = {"grug_materials:basalt", "grug_materials:slate",
+			"grug_materials:granite"}
+		local forest_palette = {"grug_materials:granite", "grug_materials:slate",
+			"default:desert_stone"}
+		local palettes = {
+			grug_savanna = sand_palette, grug_beach = sand_palette,
+			grug_badlands = badland_palette, grug_badlands_east = badland_palette,
+			grug_blight = ash_palette, grug_bone_forest = ash_palette,
+			grug_meadows = forest_palette, grug_elf_forest = forest_palette,
+			grug_deep_forest = forest_palette,
+		}
+		local phase = 0
+		for index = 1, #full_seed do
+			phase = (phase * 131 + string.byte(full_seed, index)) % 65521
+		end
+		local function mix(a, b, c, salt)
+			local value = (a * 374761 + b * 668265 + c * 972663 + phase * 69069 +
+				salt) % 16777213
+			value = (value * value) % 16777213
+			return (value * 48271) % 16777213
+		end
+		-- Both memos are bounded: zones are a closed set, and a slab key is a
+		-- zone and one of the few thousand slabs of the world's height range.
+		local zone_keys, slabs = {}, {}
+		local function zone_key(zone_id)
+			local key = zone_keys[zone_id]
+			if key == nil then
+				key = 0
+				for index = 1, #zone_id do
+					key = (key * 131 + string.byte(zone_id, index)) % 65521
+				end
+				zone_keys[zone_id] = key
+			end
+			return key
+		end
+		-- start * 64 + thickness * 4 + palette index, or -1 for no layer
+		local function slab(zone, k)
+			local memo_key = zone * 16384 + k + 8192
+			local value = slabs[memo_key]
+			if value == nil then
+				local h = mix(zone, k, 0, 40503)
+				if h % 20 < 9 then
+					local thickness = 2 + math.floor(h / 20) % 3
+					local start = math.floor(h / 60) % (R24_LAYER_PERIOD - thickness + 1)
+					value = start * 64 + thickness * 4 + math.floor(h / 780) % 3
+				else
+					value = -1
+				end
+				slabs[memo_key] = value
+			end
+			return value
+		end
+		local function corner(cx, cz)
+			return mix(cx, cz, 0, 5813) % (2 * R24_OFFSET_AMPLITUDE + 1)
+		end
+		local layers = {}
+		-- Bilinear between lattice corners, exact in integers.
+		function layers.column_offset(x, z)
+			local grid = R24_OFFSET_GRID
+			local cx, cz = math.floor(x / grid), math.floor(z / grid)
+			local fx, fz = x - cx * grid, z - cz * grid
+			local sum = (corner(cx, cz) * (grid - fx) + corner(cx + 1, cz) * fx) *
+				(grid - fz) +
+				(corner(cx, cz + 1) * (grid - fx) + corner(cx + 1, cz + 1) * fx) * fz
+			return math.floor(sum / (grid * grid)) - R24_OFFSET_AMPLITUDE
+		end
+		function layers.pocket_at(x, y, z)
+			local cell = R24_POCKET_CELL
+			local cx, cy, cz = math.floor(x / cell), math.floor(y / cell),
+				math.floor(z / cell)
+			local h = mix(cx, cz, cy, 70001)
+			if h % 10 >= 3 then return nil end
+			local shape = mix(cz, cy, cx, 91019)
+			local rx = 2 + math.floor(shape / 1000) % 2
+			local rz = 2 + math.floor(shape / 2000) % 2
+			local ry = 2
+			local dx = x - (cx * cell + 3 + shape % 10)
+			local dy = y - (cy * cell + 3 + math.floor(shape / 10) % 10)
+			local dz = z - (cz * cell + 3 + math.floor(shape / 100) % 10)
+			local rx2, ry2, rz2 = rx * rx, ry * ry, rz * rz
+			if dx * dx * ry2 * rz2 + dy * dy * rx2 * rz2 + dz * dz * rx2 * ry2 >
+					rx2 * ry2 * rz2 then
+				return nil
+			end
+			return math.floor(h / 10) % 5 < 3 and "default:gravel" or "default:dirt"
+		end
+		function layers.layer_at(zone_id, biome, y, offset)
+			local shifted = y + offset
+			local k = math.floor(shifted / R24_LAYER_PERIOD)
+			local value = slab(zone_key(zone_id), k)
+			if value < 0 then return nil end
+			local within = shifted - k * R24_LAYER_PERIOD
+			local start = math.floor(value / 64)
+			if within < start or within >= start + math.floor(value / 4) % 16 then
+				return nil
+			end
+			return (palettes[biome] or R24_DEFAULT_PALETTE)[value % 4 + 1]
+		end
+		function layers.material_at(zone_id, biome, x, y, z, offset)
+			return layers.pocket_at(x, y, z) or
+				layers.layer_at(zone_id, biome, y, offset)
+		end
+		return layers
+	end
+
+	-- Shared by the production VM writer and the portable fixture.  Only fill
+	-- stone at least R24_LAYER_FIRST_DEPTH below the column's surface changes.
+	local function r24_apply_fill_layers(context)
+		local written = 0
+		local layers, refs = context.layers, {}
+		local bottom = math.max(context.min_y, context.floor_y)
+		-- Owners wholly below the authored floor hold no fill.
+		if bottom > context.max_y then return 0 end
+		for z = context.min_z, context.max_z do
+			for x = context.min_x, context.max_x do
+				local _, _, zone_id, biome, _, terrain_y = context.column_values_at(x, z)
+				local top = math.min(context.max_y, terrain_y - R24_LAYER_FIRST_DEPTH)
+				if zone_id and biome and top >= bottom then
+					local offset = layers.column_offset(x, z)
+					for y = bottom, top do
+						local target = layers.material_at(zone_id, biome, x, y, z, offset)
+						if target then
+							local index = context.index_at(x, y, z)
+							if context.fill_stone_at(index, x, y, z) then
+								local ref = refs[target]
+								if ref == nil then
+									ref = context.content_ref(target)
+									if not ref then
+										fail("fail_content_manifest", "fill layer target is absent")
+									end
+									refs[target] = ref
+								end
+								context.write(x, y, z, ref)
+								written = written + 1
+							end
+						end
+					end
+				end
+			end
+		end
+		return written
 	end
 
 	local function r8_cave_round(numerator, denominator)
@@ -691,6 +889,7 @@ local function settlement_factory()
 		local cultural_registrations = dependencies.cultural_registrations
 		local source = dependencies.source
 		local r8_strata = new_r8_strata(full_seed, source)
+		local r24_layers = new_r24_fill_layers(full_seed)
 		local core_api = rawget(_G, "core")
 		local r8_cave_writer_disabled = true
 		if core_api and core_api.settings and
@@ -2156,6 +2355,9 @@ local function settlement_factory()
 			r8_strata = r8_strata, r8_surfaces = surfaces,
 			r8_select_surface = select_surface, r8_horizontal = horizontal,
 			r8_apply_strata = r8_apply_strata, r8_plan_cave = r8_plan_cave,
+			r24_layers = r24_layers, r24_apply_fill_layers = r24_apply_fill_layers,
+			r24_fill_stone = r24_fill_stone,
+			r24_resource_host_base = r24_resource_host_base,
 			r8_cave_writer_disabled = r8_cave_writer_disabled,
 			r5_adapter = r5_adapter,
 			r8_templates = templates, r8_full_seed = full_seed,
@@ -2526,6 +2728,18 @@ local function settlement_factory()
 			if not skin_host_ref then
 				fail("fail_content_manifest", "surface skin host rock is absent")
 			end
+			-- Round 24: the terrain-fill stone predicate (bands, layers, P8 hosts).
+			local fill_stone_cid = contract.content_cids[skin_host_ref]
+			local function fill_stone_at(index, x, y, z)
+				if final_data[index] ~= fill_stone_cid or intent_opcode[index] ~= 0 or
+						original_data[index] == fill_stone_cid then
+					return false
+				end
+				local rbase = run_at(plan, column_index(x, z), y)
+				return helpers.r24_fill_stone(original_data[index], final_data[index],
+					intent_opcode[index], rbase and plan.r5_plan.run_values[rbase + 4],
+					fill_stone_cid)
+			end
 			for z = min_z, max_z do
 				for x = min_x, max_x do
 					local column = column_index(x, z)
@@ -2567,6 +2781,17 @@ local function settlement_factory()
 				static_exclusion_values_at = helpers.r8_horizontal.static_exclusion_values_at,
 				housing_excluded_at = helpers.housing_excluded_at,
 				select_surface = helpers.r8_select_surface, strata = helpers.r8_strata,
+				content_ref = content.content_ref, fill_stone_at = fill_stone_at,
+				write = function(x, y, z, ref)
+					write_intent(x, y, z, ref, 0, 2, 0, 0, 1, false)
+				end})
+
+			-- Round 24 ruling 12: sparse layers in the fill below the band depth.
+			helpers.r24_apply_fill_layers({min_x = min_x, min_y = min_y,
+				min_z = min_z, max_x = max_x, max_y = max_y, max_z = max_z,
+				floor_y = -37, index_at = index_at,
+				column_values_at = planner_source.column_values_at,
+				layers = helpers.r24_layers, fill_stone_at = fill_stone_at,
 				content_ref = content.content_ref,
 				write = function(x, y, z, ref)
 					write_intent(x, y, z, ref, 0, 2, 0, 0, 1, false)
@@ -2709,19 +2934,22 @@ local function settlement_factory()
 					return false
 				end
 				local index = index_at(x, y, z)
-				if original_data[index] ~= host_cid then return false end
+				-- Native host rock, or (Round 24 ruling 10) terrain-fill stone,
+				-- which the cheap checks here pre-filter.
+				if original_data[index] ~= host_cid and (host_cid ~= fill_stone_cid or
+						not ((intent_opcode[index] == 0 and
+							final_data[index] == host_cid) or intent_opcode[index] == 24)) then
+					return false
+				end
 				local cache_index = (y - min_y) * owner_columns + column
 				if resource_host_base and resource_host_base[cache_index] ~= 0 then
 					return resource_host_base[cache_index] == 1
 				end
 				local rbase = run_at(plan, column, y)
-				local priority = rbase and plan.r5_plan.run_values[rbase + 3]
-				local predecessor_excluded = priority == 2 or priority == 3 or
-					priority == 4 or priority == 6
-				local eligible = not predecessor_excluded and
-					((intent_opcode[index] == 0 and
-						final_data[index] == original_data[index]) or
-						intent_opcode[index] == 24) and occupancy[index] ~= 1
+				local eligible = helpers.r24_resource_host_base(original_data[index],
+					final_data[index], intent_opcode[index], occupancy[index],
+					rbase and plan.r5_plan.run_values[rbase + 3],
+					rbase and plan.r5_plan.run_values[rbase + 4], host_cid, fill_stone_cid)
 				-- P8 only creates resource claims (occupancy >= 2, opcode 24),
 				-- which preserve this predicate. Cultural claims and R5 runs are
 				-- fixed before P8. Root/frontier occupancy checks remain live.
@@ -3689,6 +3917,11 @@ local function settlement_factory()
 		new_evidence = function(dependencies) return new(dependencies, true, nil, nil) end,
 		new_capture = function(dependencies) return new(dependencies, nil, true, nil) end,
 		r8_strata_new = new_r8_strata, r8_apply_strata = r8_apply_strata,
+		r24_fill_stone = r24_fill_stone,
+		r24_resource_host_base = r24_resource_host_base,
+		r24_fill_layers_new = new_r24_fill_layers,
+		r24_apply_fill_layers = r24_apply_fill_layers,
+		r24_layer_first_depth = R24_LAYER_FIRST_DEPTH,
 		r8_plan_cave = r8_plan_cave,
 		r8_cave_proof_box_inside = r8_cave_proof_box_inside,
 		r9_surface_skin_open = r9_surface_skin_open,
