@@ -199,6 +199,32 @@ go-ahead.**
     (`player:get_properties().hp_max`), like fall damage and suffocation.
     Players only; mob damage unchanged.
 
+### Follow-up rulings (2026-09-29, after Lanes A, C, D, E merged)
+
+25. **Start-zone gradient also drives mapgen content:** level-banded plants,
+    vegetation resources and every other consumer of the zone content level
+    follow the Ruling 18 gradient in start zones (byte identity was never
+    required; pins are regenerated, mapgen time reported as a comparison).
+26. **Mob level ranges stay a design tool, expressed in bands.** Husk in
+    Sunscar from band 2 (L4+) instead of L≥7; the Husk quest moves to level 5.
+    Every band of every start zone has enough day and night spawns, and no
+    start-zone quest targets mobs outside its level.
+27. **Mob density is a per-zone budget**, independent of how many species a
+    zone allows (mobs_redo caps each species separately today, so a zone with
+    few eligible species is empty). Baseline density rises to about 1.5× as a
+    first value by feel; before/after measured in short engine runs.
+28. **Gathering XP:** every natural ore or gem node and every caught fish
+    gives XP = factor × min(reference level, player level + 5); reference
+    level = top of the tier's level band for ores and gems (T1 10, T2 20 …
+    T5 50), top of the water's zone band for fish (10 … 60); factor 1.5 per
+    ore node, 3 per gem node, 5 per fish. No gray rule: T1 always gives XP.
+    Factors live in one place. No anti-cheat (no autoclicker checks).
+29. **Tool level requirement:** tools of material tier T2 need level 5, T3
+    level 15, T4 25, T5 35, T6 45; wood, stone and bronze tools have none.
+    Enforced server-side in the central mining decision for picks, shovels and
+    axes, with a flash hint ("Iron Pick requires level 5"); the client still
+    shows cracks in that rare case (engine limit, accepted).
+
 ## Lanes
 
 | Lane | Scope | Depends on |
@@ -208,6 +234,8 @@ go-ahead.**
 | **C — Art** | Rulings 16–17 and the decorative rock textures, license rows, comparison renders | names fixed above; parallel to A/B, A registers with placeholder tiles |
 | **D — Mobs** | Rulings 18–22 | — |
 | **E — Tracker and damage** | Rulings 23–24, `combat_stats.md` environmental section | — |
+| **D2 — Start-zone follow-up** | Rulings 25–26 | D merged |
+| **F — Density, gathering XP, tool levels** | Rulings 27–29 | A, D merged |
 
 ## Coordination
 
