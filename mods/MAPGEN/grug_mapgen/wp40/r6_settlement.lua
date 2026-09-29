@@ -353,6 +353,9 @@ local function settlement_factory()
 	local function r24_apply_fill_layers(context)
 		local written = 0
 		local layers, refs = context.layers, {}
+		local original, final, intent = context.original_data, context.final_data,
+			context.intent_opcode
+		local stone = context.stone_cid
 		local bottom = math.max(context.min_y, context.floor_y)
 		-- Owners wholly below the authored floor hold no fill.
 		if bottom > context.max_y then return 0 end
@@ -363,9 +366,13 @@ local function settlement_factory()
 				if zone_id and biome and top >= bottom then
 					local offset = layers.column_offset(x, z)
 					for y = bottom, top do
-						local target = layers.material_at(zone_id, biome, x, y, z, offset)
+						local index = context.index_at(x, y, z)
+						-- The cheap half of the fill test first (B2 speedup): only
+						-- untouched stone over native void can be fill.
+						local target = final[index] == stone and intent[index] == 0 and
+							original[index] ~= stone and
+							layers.material_at(zone_id, biome, x, y, z, offset)
 						if target then
-							local index = context.index_at(x, y, z)
 							if context.fill_stone_at(index, x, y, z) then
 								local ref = refs[target]
 								if ref == nil then
@@ -856,6 +863,18 @@ local function settlement_factory()
 			values[1], values[finish] = values[finish], values[1]
 			sift_down(values, 1, finish - 1, less)
 		end
+	end
+
+	-- The least of the first `count` values under a strict total order: the
+	-- element sort_prefix would put first (Round 24 B2: a vein only needs its
+	-- next node, not the whole frontier sorted).
+	local function frontier_min(values, count, less)
+		local best = values[1]
+		for index = 2, count do
+			local candidate = values[index]
+			if less(candidate, best) then best = candidate end
+		end
+		return best
 	end
 
 	local function new(dependencies, evidence_only, capture_enabled, runtime_mode)
@@ -2248,6 +2267,8 @@ local function settlement_factory()
 								zone_id = record.zone_id, x = root.x, y = root.y, z = root.z}
 						end
 						local vein_nodes = {{x = root.x, y = root.y, z = root.z}}
+						-- The frontier rank of a voxel is fixed for the whole vein.
+						local rank_memo = {}
 						census_occupancy[local_index(root.x, root.y, root.z)] = resource_index
 						if overlaps_apex(root.x, root.y, root.z) then
 							apex_overlaps = apex_overlaps + 1
@@ -2277,16 +2298,22 @@ local function settlement_factory()
 											frontier_count = frontier_count + 1
 											local frontier = frontier_scratch[frontier_count]
 											frontier.x, frontier.y, frontier.z = x, y, z
-											frontier.digest = helpers.digest11(
-												"resource_frontier_rank_v1", resource.key, cell_x,
-												cell_y, cell_z, host_name, tier, band, vein, x, y, z)
+											local rank_key = local_index(x, y, z)
+											local rank = rank_memo[rank_key]
+											if rank == nil then
+												rank = helpers.digest11(
+													"resource_frontier_rank_v1", resource.key, cell_x,
+													cell_y, cell_z, host_name, tier, band, vein, x, y, z)
+												rank_memo[rank_key] = rank
+											end
+											frontier.digest = rank
 										end
 									end
 								end
 							end
 							if frontier_count == 0 then break end
-							sort_prefix(frontier_scratch, frontier_count, coordinate_less)
-							local next_node = frontier_scratch[1]
+							local next_node = frontier_min(frontier_scratch, frontier_count,
+								coordinate_less)
 							vein_nodes[#vein_nodes + 1] = {x = next_node.x,
 								y = next_node.y, z = next_node.z}
 							census_occupancy[local_index(next_node.x, next_node.y,
@@ -2350,6 +2377,7 @@ local function settlement_factory()
 			analytic_p7_support_ref = analytic_p7_support_ref,
 			decoration_support_ref = decoration_support_ref,
 			regional_allowed = regional_allowed, coordinate_less = coordinate_less,
+			frontier_min = frontier_min,
 			run_class_policy = run_class_policy,
 			capture_private_buffers = capture_private_buffers,
 			r8_strata = r8_strata, r8_surfaces = surfaces,
@@ -2791,6 +2819,8 @@ local function settlement_factory()
 				min_z = min_z, max_x = max_x, max_y = max_y, max_z = max_z,
 				floor_y = -37, index_at = index_at,
 				column_values_at = planner_source.column_values_at,
+				original_data = original_data, final_data = final_data,
+				intent_opcode = intent_opcode, stone_cid = fill_stone_cid,
 				layers = helpers.r24_layers, fill_stone_at = fill_stone_at,
 				content_ref = content.content_ref,
 				write = function(x, y, z, ref)
@@ -3064,6 +3094,8 @@ local function settlement_factory()
 											else
 												accepted = accepted + 1
 												local vein_nodes = {{x = root.x, y = root.y, z = root.z}}
+												-- A voxel's frontier rank is fixed for the vein.
+												local rank_memo = {}
 												local root_index = index_at(root.x, root.y, root.z)
 												occupancy[root_index] = resource_index + 1
 												write_intent(root.x, root.y, root.z,
@@ -3100,18 +3132,23 @@ local function settlement_factory()
 																	frontier_count = frontier_count + 1
 																	local frontier = frontier_scratch[frontier_count]
 																	frontier.x, frontier.y, frontier.z = x, y, z
-																	frontier.digest = helpers.digest11(
-																		"resource_frontier_rank_v1", resource.key,
-																		cell_x, cell_y, cell_z, host_name, tier, band,
-																		vein, x, y, z)
+																	local rank_key = index_at(x, y, z)
+																	local rank = rank_memo[rank_key]
+																	if rank == nil then
+																		rank = helpers.digest11(
+																			"resource_frontier_rank_v1", resource.key,
+																			cell_x, cell_y, cell_z, host_name, tier, band,
+																			vein, x, y, z)
+																		rank_memo[rank_key] = rank
+																	end
+																	frontier.digest = rank
 																end
 															end
 														end
 													end
 													if frontier_count == 0 then break end
-													sort_prefix(frontier_scratch, frontier_count,
-														helpers.coordinate_less)
-													local next_node = frontier_scratch[1]
+													local next_node = helpers.frontier_min(frontier_scratch,
+														frontier_count, helpers.coordinate_less)
 													vein_nodes[#vein_nodes + 1] = {x = next_node.x,
 														y = next_node.y, z = next_node.z}
 													occupancy[index_at(next_node.x, next_node.y,
@@ -3918,6 +3955,7 @@ local function settlement_factory()
 		new_capture = function(dependencies) return new(dependencies, nil, true, nil) end,
 		r8_strata_new = new_r8_strata, r8_apply_strata = r8_apply_strata,
 		r24_fill_stone = r24_fill_stone,
+		r24_sort_prefix = sort_prefix, r24_frontier_min = frontier_min,
 		r24_resource_host_base = r24_resource_host_base,
 		r24_fill_layers_new = new_r24_fill_layers,
 		r24_apply_fill_layers = r24_apply_fill_layers,

@@ -199,6 +199,8 @@ local function run_layers(w, lay)
 		min_z = w.box.min_z, max_x = w.box.max_x, max_y = w.box.max_y,
 		max_z = w.box.max_z, floor_y = -37, index_at = w.index_at,
 		column_values_at = w.column_values_at, layers = lay or layers,
+		original_data = w.original, final_data = w.final, intent_opcode = w.intent,
+		stone_cid = STONE,
 		fill_stone_at = w.fill_stone_at, content_ref = content_ref, write = w.write})
 end
 
@@ -402,6 +404,174 @@ local LAYER_KAT = "1e00214de465775f85d77a0822fa395c146c081c9aab14b2bda61b6c7c512
 say("layer KAT digest: %s", layer_digest)
 if os.getenv("R24_PRINT_KAT") == nil then
 	check(layer_digest == LAYER_KAT, "layer known answer differs")
+end
+
+-------------------------------------------------------------------------------
+-- 6. P8 vein growth (B2 speedups a and b): the per-vein rank memo and the
+-- linear minimum give the placements of the former per-step digest and heap
+-- sort. The production frontier helpers (sort_prefix, frontier_min) run on a
+-- replica of the P8 loop shape (enumeration, budget, root draw, vein growth)
+-- with the real r6_hash digests and budget; each owner is settled twice.
+do
+	local hash = dofile(wp40 .. "/r6_hash.lua")(sha)
+	local fields = {}
+	local seed = FULL_SEED
+	local function digest7(domain, a, b, c, d, e, f, g)
+		fields[1], fields[2], fields[3], fields[4], fields[5], fields[6], fields[7] =
+			a, b, c, d, e, f, g
+		return hash.digest_count(domain, seed, fields, 7)
+	end
+	local function digest11(domain, a, b, c, d, e, f, g, h, i, j, k)
+		fields[1], fields[2], fields[3], fields[4], fields[5], fields[6], fields[7] =
+			a, b, c, d, e, f, g
+		fields[8], fields[9], fields[10], fields[11] = h, i, j, k
+		return hash.digest_count(domain, seed, fields, 11)
+	end
+	local function root_draw_new(a, b, c, d, e, f, g)
+		fields[1], fields[2], fields[3], fields[4], fields[5], fields[6], fields[7] =
+			a, b, c, d, e, f, g
+		return hash.prepare_root_draw(seed, fields, 7)
+	end
+	local function coordinate_less(left, right)
+		if left.digest ~= right.digest then return hash.less_bytes(left.digest, right.digest) end
+		if left.z ~= right.z then return left.z < right.z end
+		if left.x ~= right.x then return left.x < right.x end
+		return left.y < right.y
+	end
+	-- frontier_min against sort_prefix on random frontiers
+	local rng = 12345
+	local function rand(n) rng = (rng * 1103515245 + 12345) % 2147483648 return rng % n end
+	local scratch = {}
+	for i = 1, 64 do scratch[i] = {} end
+	for trial = 1, 3000 do
+		local count = 1 + rand(40)
+		for i = 1, count do
+			local e = scratch[i]
+			e.x, e.y, e.z = rand(16), rand(16), trial * 100 + i
+			-- a few equal digests exercise the coordinate tie-break
+			e.digest = digest11("resource_frontier_rank_v1", "k", 0, 0, 0, "h", 1, "b", 1,
+				e.x % 3, 0, rand(4) == 0 and 0 or e.z)
+		end
+		local best = S.r24_frontier_min(scratch, count, coordinate_less)
+		local bx, by, bz = best.x, best.y, best.z
+		S.r24_sort_prefix(scratch, count, coordinate_less)
+		check(scratch[1].x == bx and scratch[1].y == by and scratch[1].z == bz,
+			"frontier_min differs from the heap sort")
+	end
+	local resources = {{key = "coal", d = 64, v = 8}, {key = "copper", d = 96, v = 8},
+		{key = "iron", d = 128, v = 8}, {key = "quartz", d = 128, v = 8},
+		{key = "tin", d = 96, v = 8}}
+	local FX, FY, FZ = {1, -1, 0, 0, 0, 0}, {0, 0, 1, -1, 0, 0}, {0, 0, 0, 0, 1, -1}
+	local function settle(host_share, fast)
+		local E = 48
+		local function index_at(x, y, z) return z * E * E + y * E + x + 1 end
+		local occupancy, host = {}, {}
+		local s = 777
+		for i = 1, E * E * E do
+			s = (s * 1103515245 + 12345) % 2147483648
+			occupancy[i], host[i] = 0, (s % 100) < host_share
+		end
+		local coords, frontier = {}, {}
+		for i = 1, 4096 do coords[i] = {} end
+		for i = 1, 256 do frontier[i] = {} end
+		local rows, digests = {}, 0
+		local t0 = os.clock()
+		for ri, resource in ipairs(resources) do
+			for cz = 0, 2 do for cx = 0, 2 do for cy = 0, 2 do
+				local eligible = 0
+				for z = cz * 16, cz * 16 + 15 do for y = cy * 16, cy * 16 + 15 do
+					for x = cx * 16, cx * 16 + 15 do
+						if host[index_at(x, y, z)] then
+							eligible = eligible + 1
+							local c = coords[eligible]
+							c.x, c.y, c.z = x, y, z
+						end
+					end
+				end end
+				if eligible > 0 then
+					local rd = digest7("resource_budget_remainder_v1", resource.key, cx, cy, cz,
+						"default:stone", 1, "ordinary")
+					local budget = hash.budget(eligible, 1, resource.d, 1, 1, rd)
+					local draw = budget > 0 and root_draw_new(resource.key, cx, cy, cz,
+						"default:stone", 1, "ordinary")
+					local planned = budget == 0 and 0 or floor((budget + resource.v - 1) / resource.v)
+					local small = planned == 0 and 0 or floor(budget / planned)
+					local large = budget - small * planned
+					local rank = 1
+					for vein = 1, planned do
+						local target = small + (vein <= large and 1 or 0)
+						local root
+						while rank <= eligible do
+							local remaining = eligible - rank + 1
+							local sel = draw(remaining)
+							local c = coords[sel]
+							coords[sel], coords[remaining] = coords[remaining], c
+							rank = rank + 1
+							if occupancy[index_at(c.x, c.y, c.z)] == 0 then root = c break end
+						end
+						if root then
+							local nodes = {{x = root.x, y = root.y, z = root.z}}
+							occupancy[index_at(root.x, root.y, root.z)] = ri + 1
+							rows[#rows + 1] = ri .. ":" .. root.x .. "," .. root.y .. "," .. root.z
+							local memo = {}
+							while #nodes < target do
+								local count = 0
+								for n = 1, #nodes do
+									local node = nodes[n]
+									for f = 1, 6 do
+										local x, y, z = node.x + FX[f], node.y + FY[f], node.z + FZ[f]
+										if x >= cx * 16 and x <= cx * 16 + 15 and y >= cy * 16 and
+												y <= cy * 16 + 15 and z >= cz * 16 and z <= cz * 16 + 15 and
+												host[index_at(x, y, z)] and occupancy[index_at(x, y, z)] == 0 then
+											local dup = false
+											for k = 1, count do
+												local o = frontier[k]
+												if o.x == x and o.y == y and o.z == z then dup = true break end
+											end
+											if not dup then
+												count = count + 1
+												local e = frontier[count]
+												e.x, e.y, e.z = x, y, z
+												local key = index_at(x, y, z)
+												local d = fast and memo[key]
+												if not d then
+													d = digest11("resource_frontier_rank_v1", resource.key, cx, cy,
+														cz, "default:stone", 1, "ordinary", vein, x, y, z)
+													digests = digests + 1
+													if fast then memo[key] = d end
+												end
+												e.digest = d
+											end
+										end
+									end
+								end
+								if count == 0 then break end
+								local nxt
+								if fast then
+									nxt = S.r24_frontier_min(frontier, count, coordinate_less)
+								else
+									S.r24_sort_prefix(frontier, count, coordinate_less)
+									nxt = frontier[1]
+								end
+								nodes[#nodes + 1] = {x = nxt.x, y = nxt.y, z = nxt.z}
+								occupancy[index_at(nxt.x, nxt.y, nxt.z)] = ri + 1
+								rows[#rows + 1] = ri .. ":" .. nxt.x .. "," .. nxt.y .. "," .. nxt.z
+							end
+						end
+					end
+				end
+			end end end
+		end
+		return hex_sha(table.concat(rows, "\n")), #rows, digests, os.clock() - t0
+	end
+	for _, share in ipairs({100, 60}) do
+		local old_digest, old_rows, old_calls, old_s = settle(share, false)
+		local new_digest, new_rows, new_calls, new_s = settle(share, true)
+		check(old_digest == new_digest and old_rows == new_rows,
+			"P8 placements differ between the old and the new vein growth")
+		say("P8 identity, %d%% host 48^3 owner: %d placements, digest %s both; rank digests %d -> %d, %.3f s -> %.3f s",
+			share, new_rows, new_digest:sub(1, 16), old_calls, new_calls, old_s, new_s)
+	end
 end
 
 -------------------------------------------------------------------------------
