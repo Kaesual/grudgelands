@@ -210,7 +210,8 @@ end
 local function reel(player, cast, itemstack)
 	-- Clear the cast before rewards: another click cannot settle it twice.
 	stop(player:get_player_name())
-	local entry = grug_fishing.catch_at(grug_fishing.table_for(cast.pos),
+	local band = grug_fishing.band_at(cast.pos)
+	local entry = grug_fishing.catch_at(grug_fishing.CATCH_TABLES[band],
 		rng:next(0, grug_fishing.CATCH_TOTAL - 1))
 	local stack = ItemStack(entry.name .. " " .. entry.count)
 	local description = core.registered_items[entry.name].description or entry.name
@@ -221,7 +222,15 @@ local function reel(player, cast, itemstack)
 	itemstack:add_wear(ROD_WEAR)
 	core.sound_play("default_water_footstep",
 		{pos = cast.pos, gain = 0.5, max_hear_distance = 12}, true)
-	grug_abilities.notify(player, "Caught: " .. description)
+	-- Round 24 ruling 28: a caught fish pays gathering XP from the top of its
+	-- water's zone band (grug_xp owns the formula); junk pays nothing.
+	local notice = "Caught: " .. description
+	if entry.fish then
+		local xp = grug_xp.award_gathering(player, "fish",
+			grug_xp.gathering_reference_level(band))
+		notice = notice .. " (+" .. xp .. " XP)"
+	end
+	grug_abilities.notify(player, notice)
 	return itemstack
 end
 core.register_globalstep(function(dtime)

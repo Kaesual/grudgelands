@@ -1,0 +1,21 @@
+--- a/mods/ENTITIES/mobs/api.lua
++++ b/mods/ENTITIES/mobs/api.lua
+@@ -4214,6 +4214,18 @@
+ 		end
+ 	end
+ 
++	-- R24 LANE F PROBE ONLY (tools/r24_density_xp, never shipped): the
++	-- stationary probe players count as players in range.
++	local probe = mobs._grug_probe_players
++	if probe and not players then
++		local r2 = (aoc_range * 2) * (aoc_range * 2)
++		for i = 1, #probe do
++			local p = probe[i]
++			local dx, dy, dz = p.x - pos.x, p.y - pos.y, p.z - pos.z
++			if dx * dx + dy * dy + dz * dz <= r2 then players = true end
++		end
++	end
++
+ 	return total, players
+ end
+ 

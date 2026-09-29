@@ -597,6 +597,47 @@ cannot dig is a cast; `classes.md` §2b). Protected
 nodes still show cracks (an engine limit: the client cannot know position or
 faction); there is no per-player capability swapping.
 
+**Tool level requirement** (Round 24 ruling 29, 2026-09-29). Picks, axes and
+shovels need a character level by material tier; the tier is the tool's own
+`grug_pick_tier` / `grug_axe_tier` / `grug_shovel_tier` group
+(`grug_materials.TOOL_LEVEL_REQUIREMENTS`):
+
+| Material tier | Tools | Required level |
+|---|---|---:|
+| T1 | wood, stone and bronze pick, axe, shovel | none |
+| T2 | Iron pick, axe, shovel | 5 |
+| T3 | Steel pick, axe, shovel | 15 |
+| T4 | Silversteel pick, axe, shovel | 25 |
+| T5 | Embersteel pick, axe, shovel | 35 |
+| T6 | Abyssal Steel pick, axe, shovel | 45 |
+
+- Every gated tool's tooltip ends with "Requires level <N>".
+- The central mining decision refuses, as reason `too_low_level`, any dig on
+  any node (natural or placed) that the gated tool itself would perform; where
+  the engine falls back to the bare hand anyway (a pick on leaves) nothing is
+  refused. A punch and a refused dig answer with one line in the same
+  rate-limited flash line as the other hints, e.g. "Iron Pickaxe requires
+  level 5". Protection is answered first; a rock the tool cannot dig at all
+  keeps its "Requires a T<N> pick" line.
+- The client still predicts the dig from the item capabilities and shows
+  cracks in this rare case (an engine limit, accepted); the server resets the
+  node.
+- Tools are never weapons: their damage groups are zero
+  (`tool_lifetimes.lua`), they cannot enter the Weapon slot, a wielded hotbar
+  tool is no damage source against mobs or players (the vendored raw-punch
+  veto and the PvP handler), so the requirement needs no combat gate.
+
+**Gathering XP** (Round 24 ruling 28, 2026-09-29). Every natural ore or gem
+node a player digs and every fish caught gives XP (formula and table in
+[progression.md](progression.md) "Gathering XP"): factor 1.5 per ore node, 3 per
+gem node (the six regional G1/G2 species), 5 per fish, times
+`min(reference level, player level + 5)` with reference level 10 × harvest
+tier (T1 10 … T5 50) or 10 × the water's zone band. The harvest callback of the
+node_dig wrapper settles it, so only a successful player dig of a natural
+resource node pays; explosions and mobs never dig through it, and ore nodes
+drop their raw item, so no player can place one. There is no gray rule and no
+anti-cheat check.
+
 `grug_materials` remains the sole public owner of the tier and harvest
 taxonomy: `TIERS`, `tier_at(y)`, `stratum_node_for(y)`, `level_for_tier(tier)`,
 `required_pick_tier(node)`, `DECORATIVE_ROCKS`, `PICK_PROFILES` /
@@ -764,8 +805,9 @@ universal plain Basics, with Woodcarver owning their improvement operations.
 
 For weapons, the catalogue's `_grug_ilvl` is also the minimum character level
 for the Weapon slot. The slot filter enforces it directly; a weapon without an
-item level has no level requirement. This gate does not apply to tools, whose
-material/crafting ladder supplies their progression.
+item level has no level requirement. This gate does not apply to tools, which
+carry their own material-tier level requirement instead (§3.0.4 "Tool level
+requirement").
 
 **How to read §3.3–§3.6b** (rewritten 2026-08-07). These sections used to
 describe a model where each profession **owned** its item catalog. Under

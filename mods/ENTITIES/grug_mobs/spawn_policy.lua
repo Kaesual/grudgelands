@@ -450,7 +450,8 @@ local function clock_palette_at(name, pos, zone_palette)
 	if type(clock) ~= "table" then
 		return nil
 	end
-	if clock.blight and grug_zones.biome_at(pos.x, pos.z) == "grug_blight" then
+	if clock.blight and pos and
+			grug_zones.biome_at(pos.x, pos.z) == "grug_blight" then
 		return "blight"
 	end
 	if clock.war and zone_palette and zone_palette.war then
@@ -494,6 +495,16 @@ function grug_mobs.spawn_clock_allows(name, pos, timeofday)
 	return clock == (daylight and "day" or "night")
 end
 
+-- Round 24 ruling 27: ordinary natural surface species that own a named-zone
+-- palette row share one per-area budget per zone and clock (density.lua).
+-- Mobs with an independent authority (Kraken, Reed Angelfish), level-split
+-- shore rows and every other ambient species without a palette keep the
+-- Round 16 per-species rule below.
+function grug_mobs.density_budgeted(name)
+	return ambient_density_spawns[name] == true and MOB_PALETTES[name] ~= nil
+		and not INDEPENDENT_AUTHORITY[name]
+end
+
 -- Family clocks own the mobs_redo row convention. Underground rows remain
 -- light-driven and keep their explicit max_light without a day_toggle.
 function grug_mobs.prepare_spawn_row(def)
@@ -507,7 +518,19 @@ function grug_mobs.prepare_spawn_row(def)
 		row.day_toggle = nil
 		return row
 	end
-	if ambient_density_spawns[row.name] then
+	local budgeted = grug_mobs.density_budgeted(row.name)
+	if budgeted then
+		-- The budget (density.lua) owns the area cap. The row's own
+		-- per-species cap is lifted to the largest budget so mobs_redo's
+		-- count never binds first; the registered cap is the species weight.
+		-- Attempt frequency rises by the same first-pass factor.
+		grug_mobs.note_density_row(row)
+		if row.chance then
+			row.chance = math.max(1, math.floor(
+				row.chance / grug_mobs.DENSITY_ATTEMPT_SCALE + 0.5))
+		end
+		row.active_object_count = grug_mobs.density_row_cap()
+	elseif ambient_density_spawns[row.name] then
 		-- `chance` is one success per N ABM hits, so division raises attempt
 		-- frequency. Nearest-integer caps keep small species budgets close to
 		-- the same 1.3x target without inventing fractional entities.
@@ -531,7 +554,7 @@ function grug_mobs.prepare_spawn_row(def)
 	elseif clock == "night" then
 		row.max_light = 5
 		row.day_toggle = false
-		if row.active_object_count then
+		if row.active_object_count and not budgeted then
 			row.active_object_count = math.ceil(row.active_object_count * 5 / 4)
 		end
 	end
@@ -684,6 +707,37 @@ function grug_mobs.race_region_spawn_allows(faction_id, pos)
 		faction_id
 end
 
+-- The zone-level half of the surface policy: one regional variant per
+-- lookalike family, the zone's palette and its night fallback.
+local function zone_allows(mob_name, zone_id)
+	if BOAR_VARIANTS[mob_name] and BOAR_VARIANT_BY_ZONE[zone_id] ~= mob_name then
+		return false
+	end
+	local family = LOOKALIKE_FAMILY[mob_name]
+	local selection = zone_id and ZONE_LOOKALIKE_SELECTION[zone_id]
+	if family and selection and selection[family] and
+			selection[family] ~= mob_name then
+		return false
+	end
+	local mob_palettes = MOB_PALETTES[mob_name]
+	if not mob_palettes then
+		return false
+	end
+	local zone_palette = zone_id and ZONE_MOB_PALETTES[zone_id] or nil
+	if not zone_palette then
+		return false
+	end
+	if zone_palette.exact_mobs and zone_palette.exact_mobs[mob_name] then
+		return true
+	end
+	for palette in pairs(mob_palettes) do
+		if zone_palette[palette] then
+			return true
+		end
+	end
+	return night_fallback_allows(mob_name, zone_palette)
+end
+
 -- Allocation-free spawn policy. Unknown ABM families fail closed.
 function grug_mobs.spawn_policy_allows(mob_name, pos)
 	-- Before every other authority, the Kraken's included: a start footprint
@@ -725,31 +779,44 @@ function grug_mobs.spawn_policy_allows(mob_name, pos)
 	if mob_name == "grug_mobs:reef_lurker" then
 		return local_level >= 45 and local_level <= 60
 	end
-	local zone_id = grug_zones.id_at(pos.x, pos.z)
-	if BOAR_VARIANTS[mob_name] and BOAR_VARIANT_BY_ZONE[zone_id] ~= mob_name then
-		return false
-	end
-	local family = LOOKALIKE_FAMILY[mob_name]
-	local selection = zone_id and ZONE_LOOKALIKE_SELECTION[zone_id]
-	if family and selection and selection[family] and
-			selection[family] ~= mob_name then
-		return false
-	end
-	local mob_palettes = MOB_PALETTES[mob_name]
-	if not mob_palettes then
-		return false
-	end
-	local zone_palette = zone_id and ZONE_MOB_PALETTES[zone_id] or nil
+	return zone_allows(mob_name, grug_zones.id_at(pos.x, pos.z))
+end
+
+-- Round 24 ruling 27: the budgeted species a zone can host at a clock, with
+-- the zone-level half of spawn_policy_allows (regional variant, palette,
+-- night fallback) and the palette's static clock. Level gates, row checks
+-- and host nodes stay point properties; density.lua resolves those at the
+-- spawn position. Sorted, so every consumer sees the same order.
+function grug_mobs.zone_density_cast(zone_id, clock)
+	local zone_palette = ZONE_MOB_PALETTES[zone_id]
+	local cast = {}
 	if not zone_palette then
-		return false
+		return cast
 	end
-	if zone_palette.exact_mobs and zone_palette.exact_mobs[mob_name] then
-		return true
-	end
-	for palette in pairs(mob_palettes) do
-		if zone_palette[palette] then
-			return true
+	for mob_name in pairs(MOB_PALETTES) do
+		if grug_mobs.density_budgeted(mob_name) and
+				zone_allows(mob_name, zone_id) then
+			local role_clock
+			if zone_palette.exact_mobs and zone_palette.exact_mobs[mob_name] then
+				role_clock = clock_for_palette(mob_name, nil)
+			else
+				role_clock = clock_for_palette(mob_name,
+					clock_palette_at(mob_name, nil, zone_palette))
+			end
+			if role_clock == clock or role_clock == "any" then
+				cast[#cast + 1] = mob_name
+			end
 		end
 	end
-	return night_fallback_allows(mob_name, zone_palette)
+	table.sort(cast)
+	return cast
+end
+
+function grug_mobs.density_zone_ids()
+	local ids = {}
+	for zone_id in pairs(ZONE_MOB_PALETTES) do
+		ids[#ids + 1] = zone_id
+	end
+	table.sort(ids)
+	return ids
 end

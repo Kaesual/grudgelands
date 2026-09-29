@@ -201,6 +201,19 @@ for _, fn in ipairs(mods_loaded) do fn() end
 check(true, "startup audit passed under the ported getDigParams")
 local M = grug_materials
 
+-- Round 24 Lane F: tools/r24_density_xp/tool_gate_fixture.lua reuses this
+-- loaded harness (real default + grug_materials under the ported engine rule)
+-- instead of copying it.
+if rawget(_G, "R24_MINING_HARNESS") then
+	return {items = items, nodes = nodes, tools = tools, core = core_stub,
+		get_dig_params = get_dig_params, world = world, key = key,
+		punch_callbacks = punch_callbacks,
+		set_time = function(us) now_us = us end,
+		chat = function() return chat end,
+		clear_chat = function() chat = {} end,
+		checks = function() return checks end}
+end
+
 -- ---------------------------------------------------------------------------
 -- 2. Matrix
 -- ---------------------------------------------------------------------------
@@ -407,6 +420,23 @@ node = place("grug_materials:stone_with_silver")
 check(core.node_dig(origin, node, player("miner", "default:pick_steel")) == true and
 	harvested and harvested.resource_key == "silver" and harvested.harvest_tier == 3,
 	"allowed resource dig settles the harvest")
+-- Round 24 ruling 29 (Lane F): the tool level gate is part of the decision;
+-- the full matrix is tools/r24_density_xp/tool_gate_fixture.lua.
+do
+	_G.grug_core = {get_player_level = function(p) return p.level end}
+	local function leveled(item, level)
+		local p = player("miner", item)
+		p.level = level
+		return p
+	end
+	node = place("grug_materials:t2_stone")
+	check(M.mining_decision(origin, node, leveled("grug_materials:pick_iron", 4)).reason ==
+		"too_low_level", "iron pick at level 4 refused")
+	check(M.mining_decision(origin, node, leveled("grug_materials:pick_iron", 5)).allowed,
+		"iron pick at level 5 allowed")
+	check(M.punch_hint(origin, node, leveled("grug_materials:pick_iron", 4)) ==
+		"Iron Pickaxe requires level 5", "iron pick at level 4: level hint")
+end
 -- Protected: refused, violation recorded, protection line.
 _G.grug_core = nil
 protected_at[key(origin)] = true

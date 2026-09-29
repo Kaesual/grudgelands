@@ -340,19 +340,35 @@ function grug_mobs.accepted_player_punch(self, hitter, damage, applied, fraction
 	end
 end
 
--- mobs_redo's global hook for additional spawn checks (an empty stub
--- upstream; returning true BLOCKS the spawn). The closed common policy runs
--- first; a per-mob domain and check may then narrow it further.
-function mobs:spawn_abm_check(pos, node, name)
+-- The complete per-point spawn decision without the density budget: the
+-- closed common policy first; a per-mob domain and check may then narrow it.
+local function spawn_allowed(name, pos)
 	if not grug_mobs.spawn_policy_allows(name, pos) then
-		return true
+		return false
 	end
 	local domains = spawn_domains[name]
 	if domains and not grug_mobs.spawn_domains_allow(domains, pos) then
-		return true
+		return false
 	end
 	local check = spawn_checks[name]
 	if check and not check(pos) then
+		return false
+	end
+	return true
+end
+grug_mobs.spawn_allowed = spawn_allowed
+
+-- mobs_redo's global hook for additional spawn checks (an empty stub
+-- upstream; returning true BLOCKS the spawn). The per-zone density budget
+-- (density.lua, Round 24 ruling 27) runs last, only for an otherwise allowed
+-- attempt, and resolves the species eligible at the point through the same
+-- decision.
+function mobs:spawn_abm_check(pos, node, name)
+	if not spawn_allowed(name, pos) then
+		return true
+	end
+	if not grug_mobs.density_allows(name, pos, node and node.name,
+			spawn_allowed) then
 		return true
 	end
 end
@@ -884,6 +900,7 @@ end
 
 local modpath = core.get_modpath(core.get_current_modname())
 dofile(modpath .. "/spawn_policy.lua")
+dofile(modpath .. "/density.lua")
 grug_mobs.install_spawn_clock_wrapper()
 dofile(modpath .. "/levels.lua")
 dofile(modpath .. "/aggro.lua")

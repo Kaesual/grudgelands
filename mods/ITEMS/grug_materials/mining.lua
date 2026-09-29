@@ -12,6 +12,11 @@
 -- Server protection stays authoritative (builtin core.node_dig); this file
 -- adds a server-side re-check of the same engine rule for natural nodes, the
 -- harvest callbacks and rate-limited one-line hints.
+--
+-- Round 24 adds two server-only rules on top: a pick, axe or shovel above
+-- the player's level is refused on any node it would dig (ruling 29; the
+-- client still predicts and shows cracks, an accepted engine limit), and a
+-- dug natural ore or gem node settles gathering XP (ruling 28, grug_xp).
 
 local TIER_COUNT = #grug_materials.TIERS
 local HARVEST_TIER_COUNT = 5
@@ -175,6 +180,88 @@ function grug_materials.tool_tier_for_stack(stack, family)
 	return tier, "ok"
 end
 
+-- Round 24 ruling 29: the player level a pick, axe or shovel of material
+-- tier T needs. Wood, stone and bronze (all T1) need none. The tier comes
+-- from the tool's own tier group, so every ladder member and any later tool
+-- carrying one of the three groups is covered.
+grug_materials.TOOL_LEVEL_REQUIREMENTS = {[2] = 5, [3] = 15, [4] = 25,
+	[5] = 35, [6] = 45}
+local TOOL_TIER_GROUPS = {"grug_pick_tier", "grug_axe_tier", "grug_shovel_tier"}
+
+local function item_definition(item)
+	if type(item) == "string" then
+		return core.registered_items[item]
+	end
+	if item and type(item.is_empty) == "function" and not item:is_empty() then
+		return item:get_definition()
+	end
+	return nil
+end
+
+-- Required level of a stack or item name, or nil when the item needs none.
+function grug_materials.tool_required_level(item)
+	local def = item_definition(item)
+	local groups = def and def.groups or {}
+	local tier
+	for _, group in ipairs(TOOL_TIER_GROUPS) do
+		local value = exact_tier(groups[group])
+		if value and (not tier or value > tier) then tier = value end
+	end
+	return tier and grug_materials.TOOL_LEVEL_REQUIREMENTS[tier] or nil
+end
+
+-- The level authority is grug_core's (grug_xp installs it). Without it, as in
+-- a standalone grug_materials load, no player is refused.
+local function player_level(player)
+	local owner = rawget(_G, "grug_core")
+	if owner and type(owner.get_player_level) == "function" then
+		return tonumber(owner.get_player_level(player))
+	end
+	return nil
+end
+
+-- The level a player still lacks for the wielded tool: required level, or
+-- nil when the tool is usable (or needs no level).
+function grug_materials.tool_level_shortfall(player, stack)
+	local required = grug_materials.tool_required_level(stack)
+	if not required then return nil end
+	local level = player_level(player)
+	if level and level < required then return required end
+	return nil
+end
+
+local function first_line(text)
+	text = tostring(text or "")
+	local translated = core.get_translated_string and
+		core.get_translated_string("en", text)
+	if type(translated) == "string" then text = translated end
+	return (text:gsub("\n.*", ""))
+end
+
+function grug_materials.tool_level_hint(stack, required)
+	local def = item_definition(stack)
+	return first_line(def and def.description or "This tool") ..
+		" requires level " .. required
+end
+
+-- Tooltip line on every gated tool. Called once after the ladder, its
+-- overrides and the lifetime normalization have written their descriptions.
+function grug_materials.apply_tool_level_tooltips()
+	local names = {}
+	for name in pairs(core.registered_tools) do
+		if grug_materials.tool_required_level(name) then names[#names + 1] = name end
+	end
+	table.sort(names)
+	for _, name in ipairs(names) do
+		local line = "Requires level " .. grug_materials.tool_required_level(name)
+		local description = core.registered_tools[name].description or name
+		if not description:find(line, 1, true) then
+			core.override_item(name, {description = description .. "\n" .. line})
+		end
+	end
+	return names
+end
+
 function grug_materials.tier_rock_description(tier)
 	return "Stone\nRequires a T" .. tier .. " pick"
 end
@@ -221,6 +308,17 @@ function grug_materials.stack_can_dig(stack, def)
 	return params ~= nil and params.diggable == true
 end
 
+-- True when the stack's own capabilities dig this node, i.e. the engine
+-- uses the tool rather than the hand fallback.
+function grug_materials.tool_in_use(stack, def)
+	if not stack or type(stack.is_empty) ~= "function" or stack:is_empty() then
+		return false
+	end
+	local params = core.get_dig_params(def and def.groups or {},
+		stack:get_tool_capabilities(), stack:get_wear())
+	return params ~= nil and params.diggable == true
+end
+
 local function digger_name(digger)
 	if digger and digger.is_player and digger:is_player() then
 		return digger:get_player_name()
@@ -254,21 +352,38 @@ function grug_materials.mining_decision(pos, node, digger)
 		node_name = node and node.name or nil,
 		y = pos and pos.y or nil,
 	}
-	if not pos or not node or not grug_materials.is_natural_node(node.name, def) then
+	if not pos or not node or not def then
 		return result
 	end
-
-	result.natural = true
-	result.protection_checked = true
-	local name = digger_name(digger)
-	if core.is_protected(pos, name) then
-		result.allowed = false
-		result.reason = "protected"
-		result.protected = true
-		return result
+	local natural = grug_materials.is_natural_node(node.name, def)
+	if natural then
+		result.natural = true
+		result.protection_checked = true
+		if core.is_protected(pos, digger_name(digger)) then
+			result.allowed = false
+			result.reason = "protected"
+			result.protected = true
+			return result
+		end
 	end
 
 	local stack = digger and digger.get_wielded_item and digger:get_wielded_item()
+	-- Ruling 29, on every node: a tool the player's level does not allow is
+	-- refused whenever the tool itself would do the digging. Where the engine
+	-- falls back to the hand anyway (a pick on leaves), nothing is refused.
+	if is_player(digger) and grug_materials.tool_in_use(stack, def) then
+		local required = grug_materials.tool_level_shortfall(digger, stack)
+		if required then
+			result.allowed = false
+			result.reason = "too_low_level"
+			result.required_level = required
+			result.tool_name = stack:get_name()
+			return result
+		end
+	end
+	if not natural then
+		return result
+	end
 	result.pick_tier = stack and grug_materials.pick_tier_for_stack(stack) or nil
 	result.required_tier = grug_materials.required_pick_tier(node.name, def)
 	local harvest_tier = exact_tier((def.groups or {}).grug_resource)
@@ -312,6 +427,25 @@ local function settle_harvest(pos, node, digger, decision)
 		callback(event)
 	end
 end
+
+-- Round 24 ruling 28: every natural ore or gem node a player digs gives
+-- gathering XP. grug_xp owns the factors and the formula; a gem is one of the
+-- six regional G1/G2 species (a resource with a `grade`), every other
+-- resource node is an ore. Only this transaction settles a harvest: a player
+-- dig of a natural resource node. Explosions and mobs never reach node_dig,
+-- and ore nodes drop their raw item, so no player can place one.
+function grug_materials.award_gathering_xp(event)
+	local xp = rawget(_G, "grug_xp")
+	local player = event.digger
+	if not xp or type(xp.award_gathering) ~= "function" or not is_player(player) or
+			not event.harvest_tier then
+		return nil
+	end
+	local kind = event.resource and event.resource.grade and "gem" or "ore"
+	return xp.award_gathering(player, kind,
+		xp.gathering_reference_level(event.harvest_tier))
+end
+grug_materials.register_on_harvest(grug_materials.award_gathering_xp)
 
 -- One-line hints (ruling 7) in the shared screen flash line (grug_core), in
 -- its neutral notice colour; chat only if the flash is unavailable. At most
@@ -370,6 +504,9 @@ function grug_materials.emit_mining_failure(pos, digger, decision)
 	elseif decision.reason == "too_hard" then
 		message = decision.broken_pick and grug_materials.BROKEN_PICK_HINT or
 			grug_materials.too_hard_hint(decision.required_tier)
+	elseif decision.reason == "too_low_level" then
+		message = grug_materials.tool_level_hint(decision.tool_name,
+			decision.required_level)
 	end
 	return grug_materials.emit_hint(name, message)
 end
@@ -391,6 +528,10 @@ function grug_materials.punch_hint(pos, node, puncher)
 	local name = puncher:get_player_name()
 	local protected = grug_materials.protection_hint(pos, name)
 	if protected then return protected end
+	if grug_materials.tool_in_use(stack, def) then
+		local level = grug_materials.tool_level_shortfall(puncher, stack)
+		if level then return grug_materials.tool_level_hint(stack, level) end
+	end
 	local required = grug_materials.required_pick_tier(node.name, def)
 	if required and not grug_materials.stack_can_dig(stack, def) then
 		if wields_broken(stack) and grug_materials.pick_tier_for_stack(stack) then
@@ -403,7 +544,8 @@ end
 
 -- The client sends a punch (INTERACT_START_DIGGING) when it starts digging a
 -- node even if it predicts the node as undiggable (game.cpp handleDigging),
--- so the server can answer both a protected and a too-hard node here.
+-- so the server can answer a protected, a level-gated and a too-hard node
+-- here.
 core.register_on_punchnode(function(pos, node, puncher)
 	if not is_player(puncher) then return end
 	local name = puncher:get_player_name()
@@ -420,7 +562,9 @@ local builtin_node_dig = core.node_dig
 
 local function node_dig(pos, node, digger)
 	local def = node and core.registered_nodes[node.name] or nil
-	if not node or not grug_materials.is_natural_node(node.name, def) then
+	if not node or (not grug_materials.is_natural_node(node.name, def) and
+			not (is_player(digger) and grug_materials.tool_level_shortfall(digger,
+				digger:get_wielded_item()))) then
 		return builtin_node_dig(pos, node, digger)
 	end
 	local decision = grug_materials.mining_decision(pos, node, digger)
