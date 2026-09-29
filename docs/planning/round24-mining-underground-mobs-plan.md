@@ -299,8 +299,8 @@ go-ahead.**
 
 ## Completion (2026-09-29)
 
-All lanes are merged on local `main` (head `1e338503`). Not yet synchronized
-to Luanti; no push (the user pushes). Coordinator: Claude Opus 5.5.
+All lanes are merged on local `main` (head `1e338503`) and synchronized
+to Luanti on 2026-09-29; no push (the user pushes). Coordinator: Claude Opus 5.5.
 
 | Lane | Merge | Evidence |
 |---|---|---|
@@ -453,23 +453,26 @@ on their branches.
 10. **Under a start town:** dig down from the Orc start. Digging is refused
     down to −63 and allowed from −64, where ores, caves and cave content are
     normal.
-11. **Character creation pause** (join while preparation is still running):
-    1. The waiting screen shows. Esc closes it, and the next Esc opens the
-       native game menu. The hint reads "Preparing the world – press I to see
-       progress", and the character takes no damage.
-    2. I reopens the waiting screen.
-    3. With the waiting screen dismissed until preparation finishes, nothing
-       opens by itself and the hint changes to "World ready – press I to
-       continue". With it open, the faction step replaces it.
-    4. I opens the faction step. Choose a faction, and the race step follows.
-       Esc there shows "Character creation paused – press I to continue".
-    5. I opens the race step. Choose a race, the class step follows, and Esc
-       and I work the same way there.
-    6. Choose a class while the arrival area still loads. The arrival waiting
-       screen follows. Disconnect.
-    7. Reconnect. Creation continues at the first missing step, and the
-       chosen class is applied on arrival.
-    8. After arrival, I opens the normal inventory and the hint is gone.
+11. **Character creation pause** (fresh world, join during preparation):
+    1. On the waiting screen press Esc: it closes and the hint "Character
+       creation paused – press I to continue" appears. Esc again opens the
+       native game menu (settings, exit).
+    2. Press I: the waiting screen with progress appears. Close it with Esc.
+    3. Leave it closed until preparation finishes: only the hint changes, to
+       "World ready – press I to continue"; no dialog opens. I then shows the
+       faction step.
+    4. With the waiting screen open when preparation finishes, the faction
+       step replaces it directly.
+    5. On the faction, race and class steps, Esc then Esc opens the native
+       menu each time; I continues the step.
+    6. After the race, choose a class and disconnect at once. Reconnect: still
+       frozen, not asked for the class again, and the class applies at the
+       right start after arrival.
+    7. After completion the hint is gone and I opens the normal inventory with
+       all tabs (Map included).
+    8. An existing character joining during preparation sees "Preparing the
+       world – press I to see progress" after Esc and is released at
+       readiness without a teleport.
 
 ### Next
 

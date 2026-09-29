@@ -13,8 +13,8 @@ Updated 2026-09-29. This is the delivery pointer, not another game specification
   (about 1.5×); gathering XP; ten one-line tracked quests; lava and drowning
   scaled to max HP; hard protection from 100 below each footprint's placement
   height instead of y ≥ −700; housing areas as ordinary terrain; pausable
-  character creation. All 13 lanes reviewed and merged (`1e338503`); not yet
-  synchronized to Luanti. No push.
+  character creation. All 13 lanes reviewed and merged (`1e338503`) and
+  synchronized to Luanti on 2026-09-29. No push.
   [Plan, completion and playtest checklist](planning/round24-mining-underground-mobs-plan.md#completion-2026-09-29).
   Next: fresh production world and playtest, then Housing (WP24).
 
