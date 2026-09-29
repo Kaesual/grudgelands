@@ -179,7 +179,7 @@ local function ensure_inventory(name)
 		allow_move = function() return 0 end,
 		allow_take = function() return 0 end,
 		allow_put = function(_, _, _, stack, player)
-			if not ui.FUEL_ITEMS[stack:get_name()] or
+			if not grug_housing.is_fuel(stack:get_name()) or
 					player:get_player_name() ~= name then
 				return 0
 			end
@@ -210,10 +210,11 @@ local function ensure_inventory(name)
 			end
 			if not session then return end
 			if accepted == 0 then
-				say(session, "The fuel slot is full (99 lumps).", ui.RED)
+				say(session, ("The fuel slot is full (%d lumps)."):format(
+					grug_housing.FUEL_MAX), ui.RED)
 			elseif rest > 0 then
-				say(session, ("Added %d, %d returned: the slot holds at most 99."):format(
-					accepted, rest))
+				say(session, ("Added %d, %d returned: the slot holds at most %d."):format(
+					accepted, rest, grug_housing.FUEL_MAX))
 			else
 				say(session, ("Added %d."):format(accepted))
 			end

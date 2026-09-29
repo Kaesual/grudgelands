@@ -1,14 +1,24 @@
 -- Disposable engine probe (Round 25 Lane C). Never shipped:
--- tools/r25_interfaces/run.sh stages it through tools/luanti_headless.sh.
+-- tools/r25_interfaces/run.sh stages it through tools/luanti_headless.sh on
+-- seed 4242424242 (the seed of Lane A's claim probe).
 --
--- 1. The Housing Manager socket in each of the six capitals (role and world
---    position from the real socket registry), then the NPC itself: the probe
---    force-loads and emerges each socket's block and waits for grug_mobs to
---    place a villager whose socket role is housing_manager there.
--- 2. The stone form, the Manager form and the Character status built with the
---    real engine helpers (formspec_escape, colorize, ItemStack, detached
---    inventories). Lane A's contract is still stubbed on this branch, so the
---    probe swaps in fakes for the contract functions only.
+-- End to end with the REAL claim core (Lane A), the interfaces (Lane C) and
+-- the home stone (Lane D), with a stand-in player (a headless server has no
+-- client): the stand-in has a real detached inventory as its main list and an
+-- in-memory meta.
+--   1. The six capitals carry the housing_manager socket.
+--   2. The Highcourt Manager refuses a level-19 player and issues a stone to
+--      the same player at level 20 (issue_stone through the form).
+--   3. The stone is placed through its real on_place at Lane A's eligible
+--      Accord spot.
+--   4. The stone form opens; fuel is put through the real detached-inventory
+--      callbacks (full accept, then a partial one with the rest returned);
+--      the form shows the remaining time.
+--   5. A permission is added through the form (a real auth entry).
+--   6. "Set as home" (Lane D) binds the claim.
+--   7. The Character status line follows.
+--   8. Pick up through the confirmation: the stone and the unburnt lumps
+--      come back, the home falls back, the status says "not placed yet".
 
 local P = "[r25_interfaces_probe] "
 local failures, checks = 0, 0
@@ -21,11 +31,14 @@ local function check(ok, msg)
 		failures = failures + 1
 		core.log("error", P .. "FAIL " .. msg)
 	end
+	return ok
 end
 
 local H = grug_housing
+local OWNER, FRIEND = "r25c_owner", "r25c_friend"
 local CAPITALS = {"highcourt", "dur_brannoc", "lethariel", "nhal_veyr",
 	"gor_drazhak", "kezamba"}
+local SPOT = {x = -2400, z = -2399} -- tools/r25_claim_core evidence, same seed
 
 local function finish()
 	log(("RESULT %s (%d checks, %d failures)"):format(failures == 0 and "PASS" or "FAIL",
@@ -33,180 +46,222 @@ local function finish()
 	core.request_shutdown("probe done", false, 0)
 end
 
--- A stand-in player: the real engine has no client in a headless run.
-local function stand_in(name, pos)
-	local p = {}
+-- Captured forms.
+local shown = {}
+core.show_formspec = function(name, formname, fs)
+	shown[#shown + 1] = {name = name, formname = formname, fs = fs}
+end
+local function last_form() return shown[#shown] or {fs = "", formname = ""} end
+local function submit(player, formname, fields)
+	for _, fn in ipairs(core.registered_on_player_receive_fields) do
+		if fn(player, formname, fields) then return true end
+	end
+	return false
+end
+
+local previous_faction = grug_core.get_player_faction
+grug_core.get_player_faction = function(name)
+	if name == OWNER then return "accord" end
+	return previous_faction(name)
+end
+
+local function stand_in(name)
+	local inv = core.create_detached_inventory("r25c_main_" .. name, {}, name)
+	inv:set_size("main", 32)
+	local meta = {["grug_factions:faction"] = "accord", ["grug_xp:xp"] = "0"}
+	local p = {pos = vector.new(0, 0, 0)}
 	function p:get_player_name() return name end
 	function p:is_player() return true end
-	function p:get_pos() return vector.new(pos) end
+	function p:get_pos() return vector.new(self.pos) end
 	function p:get_hp() return 20 end
 	function p:get_look_horizontal() return 0 end
+	function p:get_player_control() return {} end
+	function p:get_inventory() return inv end
 	function p:get_meta()
-		return {get_string = function() return "" end, get_int = function() return 0 end}
+		return {
+			get_string = function(_, k) return meta[k] or "" end,
+			set_string = function(_, k, v) meta[k] = v end,
+			get_int = function(_, k) return tonumber(meta[k]) or 0 end,
+			set_int = function(_, k, v) meta[k] = tostring(v) end,
+		}
 	end
-	function p:get_inventory()
-		return {add_item = function(_, _, stack) return ItemStack("") end}
-	end
-	return p
+	return p, inv, meta
 end
 
-local function forms()
-	local captured = {}
-	local real_show = core.show_formspec
-	core.show_formspec = function(name, formname, fs)
-		captured[#captured + 1] = {name = name, formname = formname, fs = fs}
+local function count_item(inv, item)
+	local n = 0
+	for _, stack in ipairs(inv:get_list("main")) do
+		if stack:get_name() == item then n = n + stack:get_count() end
 	end
-	local now = os.time()
-	local claim = {id = 1, owner = "probe_owner", center = vector.new(0, 10, 0),
-		placed_at = now, paid_until = now + 12 * 86400 + 4 * 3600 + 31 * 60 + 30,
-		permissions = {probe_friend = "interact"}}
-	local state = "placed"
-	local fuel_calls = {}
-	H.player_claim = function(name)
-		if name == "probe_owner" then return claim, state end
-		return nil, "never"
-	end
-	H.is_active = function(c) return c.paid_until > os.time() end
-	H.remaining_seconds = function(c) return math.max(0, c.paid_until - os.time()) end
-	H.permission = function(c, name)
-		if name == c.owner then return "owner" end
-		return c.permissions[name]
-	end
-	H.add_fuel = function(c, count)
-		fuel_calls[#fuel_calls + 1] = count
-		local accepted = math.min(count, 3)
-		c.paid_until = c.paid_until + accepted * 26160
-		H.notify_claim_changed(c, "fuel")
-		return accepted
-	end
-	H.issue_stone = function() return true, "Here is your Claim Stone." end
-
-	local owner = stand_in("probe_owner", {x = 0, y = 11, z = 0})
-	check(H.open_stone_interface(owner, claim), "stone form opens for the owner")
-	local fs = captured[#captured] and captured[#captured].fs or ""
-	log("stone formspec bytes " .. #fs)
-	check(fs:find("Fuel left: 12 d 4 h 31 min", 1, true) ~= nil, "stone form remaining time")
-	check(fs:find("probe_friend — Interact", 1, true) ~= nil, "stone form access row")
-	check(fs:find("item_image[0.4,1.4;1,1;default:coal_lump]", 1, true) ~= nil,
-		"stone form lump display")
-
-	-- A put through the real detached inventory and its registered callbacks.
-	local invname = "grug_housing_fuel_probe_owner"
-	local def = core.detached_inventories[invname]
-	local inv = core.get_inventory({type = "detached", name = invname})
-	check(def ~= nil and inv ~= nil and inv:get_size("fuel") == 1,
-		"real detached fuel inventory with one slot")
-	if def and inv then
-		check(def.allow_put(inv, "fuel", 1, ItemStack("default:coalblock 2"), owner) == 0,
-			"real ItemStack: coal block refused")
-		check(def.allow_take(inv, "fuel", 1, ItemStack("default:coal_lump"), owner) == 0,
-			"take refused")
-		local stack = ItemStack("grug_smelting:charcoal 5")
-		check(def.allow_put(inv, "fuel", 1, stack, owner) == 5, "charcoal allowed")
-		inv:set_stack("fuel", 1, stack)
-		def.on_put(inv, "fuel", 1, stack, owner)
-		check(fuel_calls[#fuel_calls] == 5 and inv:get_stack("fuel", 1):is_empty(),
-			"on_put burns into add_fuel and empties the slot")
-		fs = captured[#captured].fs
-		check(fs:find("Added 3\\, 2 returned", 1, true) ~= nil, "partial put message")
-	end
-
-	-- Access row through the real receive-fields chain.
-	local handled = false
-	for _, fn in ipairs(core.registered_on_player_receive_fields) do
-		if fn(owner, "grug_housing:stone", {perm_name = "nobody_here", perm_interact = ""}) then
-			handled = true
-			break
-		end
-	end
-	check(handled, "stone fields handled by the real chain")
-	check(captured[#captured].fs:find("There is no player called nobody_here.", 1, true) ~= nil,
-		"core.player_exists refuses an unknown name")
-
-	-- Status on the Character page, per state.
-	local page = H.character_status_formspec("probe_owner", 2.75, 3.8)
-	-- 12 d 4 h 31 min plus the three lumps the partial put burnt (21 h 48 min).
-	check(page:find("Claim Stone fuel: 13 d 2 h", 1, true) ~= nil, "status: remaining time")
-	claim.paid_until = os.time() - 1
-	page = H.character_status_formspec("probe_owner", 2.75, 3.8)
-	check(page:find(core.get_color_escape_sequence("#ff6060") ..
-		"Your Claim Stone needs fuel\\, anyone", 1, true) ~= nil, "status: empty fuel in red")
-	state = "destroyed"
-	page = H.character_status_formspec("probe_owner", 2.75, 3.8)
-	check(page:find("Your Claim Stone has been destroyed", 1, true) ~= nil, "status: destroyed")
-	check(H.character_status_formspec("someone_else", 2.75, 3.8) == "",
-		"status: nothing before the first stone")
-	check(sfinv.pages["grug_inventory:character"] ~= nil, "Character page registered")
-
-	core.show_formspec = real_show
-	return captured
+	return n
 end
 
-local function manager_npcs()
+local function surface(x, z)
+	local top = grug_zones.terrain_height_at(x, z) + 24
+	for y = top, top - 64, -1 do
+		local node = core.get_node({x = x, y = y, z = z})
+		local def = core.registered_nodes[node.name]
+		if def and def.walkable and not def.buildable_to then return y end
+	end
+end
+
+local function sockets()
 	local rows = H.manager_sockets()
 	check(#rows == 6, "six Manager sockets")
 	local seen = {}
 	for _, row in ipairs(rows) do
-		seen[row.settlement] = true
-		check(row.role == "housing_manager", row.settlement .. " socket role housing_manager")
+		if row.role == "housing_manager" then seen[row.settlement] = row end
 		log(("manager socket %s %s at %s"):format(row.settlement, row.socket,
 			core.pos_to_string(row.pos)))
 	end
-	for _, key in ipairs(CAPITALS) do check(seen[key], key .. " has a Manager") end
+	for _, key in ipairs(CAPITALS) do check(seen[key] ~= nil, key .. " has a Manager") end
+	return seen.highcourt
+end
 
-	-- Map marker: the service provider reads the socket role at mods-loaded.
-	local ok, markers = pcall(grug_map.atlas.collect_markers,
-		stand_in("probe_map", {x = 0, y = 0, z = 0}))
-	if ok then
-		local count = 0
-		for _, marker in ipairs(markers) do
-			if marker.label == "Housing Manager" then count = count + 1 end
-		end
-		check(count == 6, "six Housing Manager map markers (" .. count .. ")")
-	else
-		log("map markers not collected with a stand-in player: " .. tostring(markers))
-	end
+local function run()
+	local socket = sockets()
+	local player, inv, meta = stand_in(OWNER)
+	local STONE = H.STONE_ITEM
 
-	for _, row in ipairs(rows) do
-		core.forceload_block(row.pos, true)
-		core.emerge_area(vector.subtract(row.pos, 8), vector.add(row.pos, 8))
-	end
-	local started = os.time()
-	local found = {}
-	local function scan()
-		local pending = 0
-		for _, row in ipairs(rows) do
-			if not found[row.settlement] then
-				for _, object in ipairs(core.get_objects_inside_radius(row.pos, 3)) do
-					local entity = object:get_luaentity()
-					if entity and entity._grug_socket_role == "housing_manager" and
-							entity._grug_start == row.settlement then
-						found[row.settlement] = true
-						log(("manager npc %s %s \"%s\" at %s"):format(row.settlement,
-							entity.name, tostring(entity._grug_npc_name),
-							core.pos_to_string(vector.round(object:get_pos()))))
-					end
+	-- 2. The Manager: level 19 refused, level 20 issued.
+	local npc = {_grug_socket_role = "housing_manager", _grug_start = "highcourt",
+		_grug_socket = socket.socket, object = {get_pos = function() return socket.pos end}}
+	player.pos = vector.offset(socket.pos, 2, 0, 0)
+	meta["grug_xp:xp"] = tostring(100 * 18 * 18)
+	check(grug_xp.get_level(player) == 19, "stand-in at level 19")
+	check(H.open_manager(player, npc), "Manager dialog opens")
+	check(last_form().fs:find("99 lumps last about 30 days", 1, true) ~= nil,
+		"Manager explains the upkeep")
+	submit(player, "grug_housing:manager", {receive = ""})
+	log("level 19: " .. (last_form().fs:match("label%[0.4,3.85;([^%]]*)%]") or "?"))
+	check(count_item(inv, STONE) == 0, "level 19 gets no stone")
+	meta["grug_xp:xp"] = tostring(100 * 19 * 19)
+	submit(player, "grug_housing:manager", {receive = ""})
+	log("level 20: " .. (last_form().fs:match("label%[0.4,3.85;([^%]]*)%]") or "?"))
+	check(count_item(inv, STONE) == 1, "level 20 receives the Claim Stone")
+	local _, state = H.player_claim(OWNER)
+	check(state == "carried", "state carried after the hand-out")
+	check((H.character_status(OWNER) or {}).text ==
+		"Your Claim Stone is in your inventory, not placed yet", "status: carried")
+
+	-- 3. Place at the eligible spot.
+	core.emerge_area({x = SPOT.x - 8, y = -20, z = SPOT.z - 8},
+		{x = SPOT.x + 8, y = 120, z = SPOT.z + 8}, function(_, _, remaining)
+		if remaining > 0 then return end
+		local ok, err = pcall(function()
+		local y = surface(SPOT.x, SPOT.z)
+		if not check(y ~= nil, "surface at the spot") then return end
+		local pos = {x = SPOT.x, y = y + 1, z = SPOT.z}
+		for dy = 0, 3 do
+			for dz = -1, 1 do
+				for dx = -1, 1 do
+					core.set_node({x = pos.x + dx, y = pos.y + dy, z = pos.z + dz},
+						{name = "air"})
 				end
-				if not found[row.settlement] then pending = pending + 1 end
 			end
 		end
-		if pending == 0 or os.time() - started > 200 then
-			for _, key in ipairs(CAPITALS) do
-				check(found[key], key .. " Housing Manager NPC present")
+		player.pos = vector.offset(pos, 2, 0, 0)
+		local stack = inv:remove_item("main", ItemStack(STONE))
+		local left = core.registered_items[STONE].on_place(stack, player,
+			{type = "node", under = {x = pos.x, y = y, z = pos.z}, above = pos})
+		check(left:is_empty(), "stone placed through on_place")
+		local claim
+		claim, state = H.player_claim(OWNER)
+		if not check(claim ~= nil and state == "placed", "state placed") then return end
+		log("placed claim " .. claim.id .. " at " .. core.pos_to_string(claim.center))
+		check(H.character_status(OWNER).text ==
+			"Your Claim Stone needs fuel, anyone can access your home right now",
+			"status: empty fuel")
+
+		-- 4. Stone form and fuel.
+		check(H.open_stone_interface(player, claim), "stone form opens for the owner")
+		check(last_form().fs:find("No fuel: anyone can access your home right now", 1, true)
+			~= nil, "form: no fuel")
+		local invname = "grug_housing_fuel_" .. OWNER
+		local def = core.detached_inventories[invname]
+		local fuel = core.get_inventory({type = "detached", name = invname})
+		local function put(item)
+			local s = ItemStack(item)
+			local n = def.allow_put(fuel, "fuel", 1, s, player)
+			if n > 0 then
+				s:set_count(n)
+				fuel:set_stack("fuel", 1, s)
+				def.on_put(fuel, "fuel", 1, s, player)
 			end
-			for _, row in ipairs(rows) do core.forceload_free_block(row.pos, true) end
-			finish()
-			return
+			return n
 		end
-		core.after(5, scan)
-	end
-	core.after(5, scan)
+		check(put("default:coalblock 1") == 0, "coal block refused")
+		check(put("default:coal_lump 10") == 10, "10 coal lumps put")
+		local fs = last_form().fs
+		log("fuel line: " .. (fs:match("label%[1.7,1.65;([^%]]*)%]") or "?"))
+		check(fs:find("Fuel left: 3 d 0 h 40 min", 1, true) ~= nil or
+			fs:find("Fuel left: 3 d 0 h 39 min", 1, true) ~= nil,
+			"form: remaining time after 10 lumps")
+		check(core.get_node(pos).name == STONE, "stone node is the fuelled variant")
+		check(put("grug_smelting:charcoal 95") == 95, "95 charcoal put")
+		check(count_item(inv, "grug_smelting:charcoal") == 6,
+			"6 charcoal returned (99 - 10 = 89 accepted)")
+		check(last_form().fs:find("Added 89\\, 6 returned", 1, true) ~= nil,
+			"form: partial message")
+		check(H.remaining_seconds(claim) > 98 * H.LUMP_SECONDS, "99 lumps burning")
+		local status = H.character_status(OWNER)
+		log("status: " .. status.text)
+		check(status.text:find("^Claim Stone fuel: 29 d") ~= nil and status.color == nil,
+			"status: remaining time, not red")
+
+		-- 5. Permission through the form.
+		core.get_auth_handler().create_auth(FRIEND, "")
+		submit(player, "grug_housing:stone", {perm_name = "r25c_ghost", perm_interact = ""})
+		check(last_form().fs:find("There is no player called r25c_ghost.", 1, true) ~= nil,
+			"unknown player refused")
+		submit(player, "grug_housing:stone", {perm_name = FRIEND, perm_interact = ""})
+		check(H.permission(claim, FRIEND) == "interact", "friend has Interact")
+		check(last_form().fs:find(FRIEND .. " — Interact", 1, true) ~= nil,
+			"form lists the friend")
+		local inside = {x = pos.x + 10, y = pos.y + 1, z = pos.z + 10}
+		check(core.is_protected(inside, FRIEND), "Interact does not build")
+
+		-- 6. Set as home (Lane D).
+		check(last_form().fs:find("set_home;Set as home", 1, true) ~= nil,
+			"Set-as-home button present")
+		submit(player, "grug_housing:stone", {set_home = ""})
+		log("set home: " .. (last_form().fs:match("label%[0.4,6.3;([^%]]*)%]") or "?"))
+		check(grug_home.home_is_claim(player), "home is the claim")
+
+		-- 7. Character page fragment.
+		local page = H.character_status_formspec(OWNER, 2.75, 3.8)
+		log("character fragment: " .. page)
+		check(page:find("label[2.75,3.80;Claim Stone fuel: 29 d", 1, true) ~= nil,
+			"character page label")
+
+		-- 8. Pick up with confirmation.
+		submit(player, "grug_housing:stone", {pick_up = ""})
+		check(last_form().fs:find("Pick up your Claim Stone?", 1, true) ~= nil,
+			"confirmation shown")
+		submit(player, "grug_housing:stone", {confirm_pick_up = ""})
+		local notice = last_form()
+		log("pick up: " .. (notice.fs:match("label%[0.4,0.7;([^%]]*)%]") or "?"))
+		check(notice.formname == "grug_housing:notice", "pick-up notice shown")
+		check(count_item(inv, STONE) == 1, "stone back in the inventory")
+		check(count_item(inv, "default:coal_lump") >= 98, "unburnt lumps returned")
+		check(core.get_node(pos).name == "air", "stone node removed")
+		_, state = H.player_claim(OWNER)
+		check(state == "carried", "state carried after pick-up")
+		check(not grug_home.home_is_claim(player), "home fell back to the innkeeper")
+		check(H.character_status(OWNER).text ==
+			"Your Claim Stone is in your inventory, not placed yet", "status after pick-up")
+		end)
+		if not ok then check(false, "probe error: " .. tostring(err)) end
+		finish()
+	end)
 end
 
 core.register_on_mods_loaded(function()
-	core.after(1, function()
-		local ok, err = pcall(forms)
-		check(ok, "forms built without error" .. (ok and "" or (": " .. tostring(err))))
-		manager_npcs()
+	core.after(3, function()
+		local ok, err = pcall(run)
+		if not ok then
+			check(false, "probe error: " .. tostring(err))
+			finish()
+		end
 	end)
 end)

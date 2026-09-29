@@ -7,13 +7,12 @@
 
 local ui = {}
 
--- One lump burns 7 h 16 min (ruling 10); the fuel slot shows the unburnt
--- lumps, ceil(remaining / LUMP_SECONDS).
-ui.LUMP_SECONDS = 26160
+-- Fuel kinds and the lump duration come from the claim core (api.lua):
+-- grug_housing.is_fuel, LUMP_SECONDS and FUEL_MAX. The fuel slot shows the
+-- unburnt lumps, ceil(remaining / LUMP_SECONDS).
 ui.DAY = 86400
 ui.RED = "#ff6060"
 ui.GREEN = "#8fdc7a"
-ui.FUEL_ITEMS = {["default:coal_lump"] = true, ["grug_smelting:charcoal"] = true}
 ui.DISPLAY_FUEL = "default:coal_lump"
 
 function ui.esc(text)
@@ -42,7 +41,7 @@ end
 
 function ui.lumps(seconds)
 	seconds = math.max(0, tonumber(seconds) or 0)
-	return math.ceil(seconds / ui.LUMP_SECONDS)
+	return math.ceil(seconds / grug_housing.LUMP_SECONDS)
 end
 
 -- Greedy word wrap into at most `width` characters per line.

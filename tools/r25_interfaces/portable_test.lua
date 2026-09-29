@@ -1,7 +1,8 @@
 -- Round 25 Lane C portable fixture: the Claim Stone formspec, the Housing
 -- Manager and the Character-page status (rulings 13-14).
 --
--- Loads the REAL grug_housing api.lua (for the claim-change callback list),
+-- Loads the REAL grug_housing api.lua (claim-change callbacks, fuel items,
+-- LUMP_SECONDS and FUEL_MAX, over an empty in-memory registry),
 -- interface.lua, stone_form.lua and manager.lua, and the REAL grug_core
 -- settlement_sockets.lua, under a minimal `core` stub. The contract functions
 -- Lane A owns are replaced by fakes with an in-memory claim registry.
@@ -107,6 +108,20 @@ core = {
 		assert(name == "grug_housing")
 		return "mods/PLAYER/grug_housing"
 	end,
+	-- The real api.lua builds its registry over mod storage: empty here, the
+	-- contract functions are replaced by the fakes below.
+	get_mod_storage = function()
+		local data = {}
+		return {
+			get_string = function(_, k) return data[k] or "" end,
+			set_string = function(_, k, v) data[k] = v ~= "" and v or nil end,
+			get_keys = function()
+				local keys = {}
+				for k in pairs(data) do keys[#keys + 1] = k end
+				return keys
+			end,
+		}
+	end,
 	log = function() end,
 }
 vector = {new = function(x, y, z)
@@ -197,7 +212,10 @@ grug_factions = {get_faction = function(player) return factions[player:get_playe
 grug_housing = {}
 dofile("mods/PLAYER/grug_housing/api.lua")
 local H = grug_housing
-local LUMP = 26160
+local LUMP = H.LUMP_SECONDS
+eq(LUMP, 26160, "one lump burns 7 h 16 min (api.lua)")
+check(H.is_fuel("default:coal_lump") and H.is_fuel("grug_smelting:charcoal") and
+	not H.is_fuel("default:coalblock"), "fuel kinds come from api.lua")
 local now = 1000000
 local claims, states = {}, {}
 local calls = {add_fuel = {}, set_permission = {}, pick_up = {}, issue = {}}
