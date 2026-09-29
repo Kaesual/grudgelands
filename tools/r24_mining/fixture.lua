@@ -138,9 +138,47 @@ function core_stub.get_node(pos) return world[key(pos)] or {name = "air"} end
 function core_stub.set_node(pos, node) world[key(pos)] = {name = node.name} end
 function core_stub.is_protected(pos) return protected_at[key(pos)] == true end
 local violations = 0
-function core_stub.record_protection_violation() violations = violations + 1 end
--- The builtin dig: remove the node, report success.
-function core_stub.node_dig(pos) world[key(pos)] = nil return true end
+local violation_callbacks = {}
+function core_stub.register_on_protection_violation(fn)
+	violation_callbacks[#violation_callbacks + 1] = fn
+end
+-- builtin/game/misc.lua record_protection_violation.
+function core_stub.record_protection_violation(pos, name)
+	violations = violations + 1
+	for _, fn in ipairs(violation_callbacks) do fn(pos, name) end
+end
+local function actor(object)
+	return object and object.get_player_name and object:get_player_name() or ""
+end
+-- builtin/game/item.lua core.node_dig: protection refusal, else remove.
+function core_stub.node_dig(pos, _, digger)
+	if core.is_protected(pos, actor(digger)) then
+		core.record_protection_violation(pos, actor(digger))
+		return false
+	end
+	world[key(pos)] = nil
+	return true
+end
+-- builtin core.node_punch: run the punchnode callbacks.
+function core_stub.node_punch(pos, node, puncher, pointed)
+	for _, fn in ipairs(punch_callbacks) do fn(pos, node, puncher, pointed) end
+end
+-- builtin core.item_place_node, reduced to its protection refusal.
+function core_stub.item_place_node(itemstack, placer, pointed)
+	if core.is_protected(pointed.above, actor(placer)) then
+		core.record_protection_violation(pointed.above, actor(placer))
+		return itemstack, nil
+	end
+	core.set_node(pointed.above, {name = itemstack:get_name()})
+	return itemstack, pointed.above
+end
+-- Online players: every name except the "offline-" ones.
+function core_stub.get_player_by_name(name)
+	if type(name) == "string" and name ~= "" and not name:find("^offline%-") then
+		return {name = name}
+	end
+	return nil
+end
 setmetatable(core_stub, {__index = function(t, k) rawset(t, k, noop) return noop end})
 
 _G.core, _G.minetest = core_stub, core_stub
@@ -191,7 +229,7 @@ local function run(mod, files, seed)
 end
 
 run("default", {"functions.lua", "trees.lua", "nodes.lua", "tools.lua",
-	"craftitems.lua"}, {get_translator = function(s) return s end, LIGHT_MAX = 14,
+	"craftitems.lua", "torch.lua"}, {get_translator = function(s) return s end, LIGHT_MAX = 14,
 	get_hotbar_bg = function() return "" end, gui_survival_form = ""})
 run("grug_trees", {"init.lua"})
 run("grug_materials", {"init.lua"})
@@ -393,24 +431,28 @@ check(core.node_dig(origin, node, player("miner", "default:pick_bronze")) == fal
 	core.get_node(origin).name == "grug_materials:t3_stone", "refused dig keeps node")
 check(#chat == 1 and chat[1][2] == "Requires a T3 pick", "refusal hint line")
 for _, fn in ipairs(punch_callbacks) do fn(origin, node, player("miner", "default:pick_bronze")) end
-check(#chat == 1, "punch within 1.5 s is rate-limited")
-now_us = now_us + 2000000
+check(#chat == 1, "same line within the 1.5 s flash lifetime is not repeated")
+now_us = now_us + 1600000
 for _, fn in ipairs(punch_callbacks) do fn(origin, node, player("miner", "default:pick_bronze")) end
-check(#chat == 1, "same line within 5 s is suppressed")
-now_us = now_us + 4000000
-for _, fn in ipairs(punch_callbacks) do fn(origin, node, player("miner", "default:pick_bronze")) end
-check(#chat == 2, "same line again after 5 s")
+check(#chat == 2, "same line again once the flash has expired")
+now_us = now_us + 100000
+check(not M.emit_hint("miner", "Other line") and #chat == 2,
+	"a different line within 0.25 s waits")
+now_us = now_us + 200000
+check(M.emit_hint("miner", "Other line") and #chat == 3,
+	"a different line after 0.25 s replaces the flash at once")
 -- With grug_core's flash available the line goes to the screen, not chat.
 do
 	local flashed
 	_G.grug_core = {FLASH_COLOR = {notice = 0xf0e6c8, error = 0xff4444},
 		flash = function(_, message, color) flashed = {message, color} return true end}
+	local online = core_stub.get_player_by_name
 	core_stub.get_player_by_name = function(name) return {name = name} end
 	chat, now_us = {}, now_us + 10000000
 	check(M.emit_hint("miner", "Requires a T3 pick") and #chat == 0 and flashed and
 		flashed[1] == "Requires a T3 pick" and flashed[2] == 0xf0e6c8,
 		"hint uses the neutral screen flash")
-	core_stub.get_player_by_name = noop
+	core_stub.get_player_by_name = online
 	_G.grug_core = nil
 end
 -- Allowed dig of a resource settles the harvest callbacks.
@@ -443,10 +485,104 @@ protected_at[key(origin)] = true
 chat, violations, now_us = {}, 0, now_us + 10000000
 node = place("default:dirt")
 check(core.node_dig(origin, node, player("miner", "")) == false and violations == 1 and
-	chat[1] and chat[1][2] == "Protected", "protected dig refused with its line")
+	#chat == 1 and chat[1][2] == "Protected", "protected dig refused with one line")
+chat, now_us = {}, now_us + 10000000
+check(core.node_dig(origin, node, player("offline-miner", "")) == false and
+	#chat == 0, "offline actor: violation without a line")
+core.record_protection_violation(origin, "")
+check(#chat == 0, "non-player violation (explosion): no line")
 check(M.punch_hint(origin, node, player("miner", "default:pick_bronze")) == "Protected",
 	"protected punch hint")
 protected_at[key(origin)] = nil
+
+-- ---------------------------------------------------------------------------
+-- 3b. Round 24 playtest fix: the protection line for every refused dig and
+-- place in a protected town, independent of node type and wielded item.
+-- Each case replays the engine: the punch (INTERACT_START_DIGGING calls the
+-- node's on_punch), then the completed dig when the client would complete it
+-- (tool or hand can dig) through the node's on_dig -- with a skill through
+-- grug_abilities' on_dig wrapper, which refuses a protected node and records
+-- the violation -- and a place attempt through item_place_node.
+-- Exactly one line, the protection line, per refused action.
+-- ---------------------------------------------------------------------------
+do
+	register("node", "fixture:custom_punch", {groups = {cracky = 3, oddly_breakable_by_hand = 1},
+		on_punch = function() end})
+	register("craft", "fixture:plain_item", {})
+	_G.grug_core = {protection_hint = function(pos)
+		return protected_at[key(pos)] and "Town – protected" or nil
+	end, equipment_is_broken = function() return false end}
+	local function on_punch(def)
+		return def.on_punch or core.node_punch
+	end
+	local function on_dig(def)
+		return def.on_dig or core.node_dig
+	end
+	local base = {x = 100, y = 10, z = 100}
+	local nodes_under_test = {"default:dirt", "default:torch", "default:wood",
+		"grug_materials:slate", "fixture:custom_punch", "default:tree"}
+	local wields = {"", "grug_abilities:strike", "default:pick_bronze",
+		"fixture:plain_item"}
+	local serial = 0
+	for _, node_name in ipairs(nodes_under_test) do
+		for _, wield in ipairs(wields) do
+			serial = serial + 1
+			local name = "town" .. serial
+			local p = player(name, wield)
+			local pos = vector.offset(base, serial, 0, 0)
+			core.set_node(pos, {name = node_name})
+			protected_at[key(pos)] = true
+			local node = core.get_node(pos)
+			local def = nodes[node_name]
+			chat, now_us = {}, now_us + 10000000
+			on_punch(def)(pos, node, p, {type = "node", under = pos, above = pos})
+			local stack = ItemStack(wield)
+			local skill = ((items[wield] or {}).groups or {}).grug_ability
+			if M.stack_can_dig(stack, def) then
+				if skill then
+					-- grug_abilities input.lua on_dig wrapper: M.can_dig refuses a
+					-- protected node for the skill hand and records the violation.
+					if core.is_protected(pos, name) then
+						core.record_protection_violation(pos, name)
+					end
+				else
+					on_dig(def)(pos, node, p)
+				end
+			end
+			local label = node_name .. " with '" .. wield .. "'"
+			check(core.get_node(pos).name == node_name, label .. ": node kept")
+			check(#chat == 1 and chat[1][1] == name and chat[1][2] == "Town – protected",
+				label .. ": exactly one protection line (" .. #chat .. ")")
+			-- A second attempt within the flash lifetime adds nothing.
+			now_us = now_us + 500000
+			on_punch(def)(pos, node, p, {type = "node", under = pos, above = pos})
+			check(#chat == 1, label .. ": repeat within 1.5 s keeps the line")
+		end
+	end
+	-- Placing into a protected town: every wield that places reports once.
+	for _, item in ipairs({"default:dirt", "default:wood", "default:torch",
+			"grug_materials:slate"}) do
+		serial = serial + 1
+		local name = "town" .. serial
+		local pos = vector.offset(base, serial, 1, 0)
+		protected_at[key(pos)] = true
+		chat, now_us = {}, now_us + 10000000
+		local _, placed = core.item_place_node(ItemStack(item), player(name, item),
+			{type = "node", under = vector.offset(pos, 0, -1, 0), above = pos})
+		check(placed == nil and core.get_node(pos).name == "air",
+			"place " .. item .. " refused")
+		check(#chat == 1 and chat[1][2] == "Town – protected",
+			"place " .. item .. ": one protection line")
+	end
+	-- The tier line stays suppressed for a skill on unprotected rock.
+	local pos = vector.offset(base, 0, 5, 0)
+	core.set_node(pos, {name = "grug_materials:t3_stone"})
+	check(M.punch_hint(pos, core.get_node(pos), player("skill", "grug_abilities:strike")) == nil,
+		"skill on unprotected T3 rock: no tier line")
+	check(M.punch_hint(pos, core.get_node(pos), player("hand", "")) ==
+		"Requires a T3 pick", "hand on unprotected T3 rock: tier line")
+	_G.grug_core = nil
+end
 
 -- ---------------------------------------------------------------------------
 -- 4. Protection reasons

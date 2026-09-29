@@ -504,11 +504,14 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     successful resource dig; its own harvest callback awards gathering XP
     through `grug_xp.award_gathering`. There is no
     depth limit per pick and no dig-without-drop path. A
-    `register_on_punchnode` handler shows one rate-limited hint in the shared
+    `register_on_punchnode` handler and a `register_on_protection_violation`
+    handler (online players only) show one rate-limited hint in the shared
     screen flash line (`grug_core.flash(player, message, color)`, which
     `grug_abilities.flash` forwards to in error red): the protection reason
-    (`grug_core.protection_hint`), "Requires a T<N> pick" or the broken-pick
-    line; never with a selected skill. `max_drop_level` is a separate ordinary drop
+    (`grug_core.protection_hint`) for any wield, "Requires a T<N> pick" or the
+    broken-pick line (never with a selected skill). Code that refuses an edit
+    on protected ground calls `core.record_protection_violation` so the player
+    sees the reason. `max_drop_level` is a separate ordinary drop
     property and may remain non-zero. `build_pick_capabilities` and the
     six `PICK_PROFILES` are the verification/consumer seam. WP29 owns the
     final playable pick catalog and recipes, while WP22 owns runtime

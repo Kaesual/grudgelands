@@ -99,7 +99,12 @@ do
 	local real_protected, real_violation = core.is_protected, core.record_protection_violation
 	local violations = 0
 	core.is_protected = function() return true end
-	core.record_protection_violation = function() violations = violations + 1 end
+	-- Count, then run the registered violation handlers: since the Round 24
+	-- playtest fix the protection line comes from grug_materials' handler.
+	core.record_protection_violation = function(...)
+		violations = violations + 1
+		return real_violation(...)
+	end
 	node = place("default:wood")
 	check(M.mining_decision(origin, node, player("grug_materials:axe_iron", 4)).reason ==
 		"protected", "protected planks with a gated axe: protected, not level")

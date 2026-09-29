@@ -417,7 +417,15 @@ return function(api)
 			end
 			if original_dig then
 				changes.on_dig = function(pos, node, player)
-					if player and player:is_player() and not M.can_dig(player, pos, node) then return end
+					if player and player:is_player() and not M.can_dig(player, pos, node) then
+						-- A refused dig on protected ground is still a protection
+						-- violation (its handlers show the reason, Round 24).
+						local name = player:get_player_name()
+						if core.is_protected(pos, name) then
+							core.record_protection_violation(pos, name)
+						end
+						return
+					end
 					return original_dig(pos, node, player)
 				end
 			end
