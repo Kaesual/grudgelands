@@ -1,0 +1,2 @@
+-- Lane B: generic right-click and node-inventory guard inside active claims
+-- (ruling 18), and the claim reason for the protection hint.

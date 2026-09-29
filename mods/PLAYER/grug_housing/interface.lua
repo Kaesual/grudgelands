@@ -1,0 +1,2 @@
+-- Lane C: stone formspec, Housing Manager dialog and character-page status
+-- (rulings 13-14).
