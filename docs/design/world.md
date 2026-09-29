@@ -691,7 +691,7 @@ land do not exist.
   normally.
 - The claim can be the owner's travel-home target (§6).
 
-## 6. Travel: innkeeper homes and deferred travel
+## 6. Travel: innkeeper homes, waypoints and boats
 
 The current V1 return and death destination is the twelve-location
 [innkeeper home system](home_travel.md). A player's own Claim Stone can be the
