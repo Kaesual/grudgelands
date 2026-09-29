@@ -69,7 +69,7 @@ day/night clocks remain additional requirements, not alternative authorities.
 | Boar | Base in the nine Accord/Orc settled zones (including Whitebridge); Plague in Stillgrave/Mournfen; Jungle in Kapok/Raincall |
 | Zombie / Husk | Husk in Sunscar, Redtusk and Shattered Line; Zombie elsewhere |
 | Spider | Jungle in Glassroot, Thunderroot, Skyglass and Stormscale; existing faction forest tint on its exclusive hosts elsewhere |
-| Lynx / Panther / Snow Leopard | Panther in those four mixed/high-jungle zones; Lynx in jungle-edge start/home zones at L10+; Snow Leopard in its named mountain zones |
+| Lynx / Panther / Snow Leopard | Panther in those four mixed/high-jungle zones; Lynx in jungle-edge start/home zones at L4+ (band 2 of Kapok, Round 24); Snow Leopard in its named mountain zones |
 | Skeleton archer tints | Raider in war zones; Frost Stray in Wyrmglass; Archer in other eligible forest/mountain zones |
 
 Distinct combat roles such as Goblin melee/ranged members and Bog Witch remain
@@ -81,8 +81,9 @@ remain; this revision does not add a density multiplier.
 Troll early Lynx kill objectives use Tapir, while the later Raincall outpost Lynx
 objective remains. The Orc chain's night patrol hunts Husks; the Husk spawns
 in Sunscar from band 2 of the start-zone gradient (L4+, Round 24), so that
-quest is level 5 (the other races' Zombie patrols stay level 4: the Zombie
-spawns from L3). Counts and rewards are unchanged.
+quest is level 5 with the level-5 reward of 180 XP (`progression.md` §4; the
+other races' Zombie patrols stay level 4 at 140 XP: the Zombie spawns from L3).
+Counts and copper rewards are unchanged.
 
 Stats quick reference (normal tier; compute, don't copy):
 
@@ -602,7 +603,7 @@ coast, 38–60) + grug_jungle_edge inner (10–25):
 
 | Mob | Verb | Day/Night | Speed | Drops | Model |
 |-----|------|-----------|-------|-------|-------|
-| **Jungle Lynx** (the Raptor slot) — jungle_edge from L10, deep jungle | hunts in packs (wolf drop table) | day | 4.6 | meat 1/1; leather 1/2 `[leather]`; raptor claw 1/3 (item id kept) | big-cat retint of the panther mesh — the §8.2 fallback was **executed**: the paleotest velociraptor's media license could not be verified per file |
+| **Jungle Lynx** (the Raptor slot) — jungle_edge from L4 (Kapok band 2, Round 24; was L10), deep jungle | hunts in packs (wolf drop table) | day | 4.6 | meat 1/1; leather 1/2 `[leather]`; raptor claw 1/3 (item id kept) | big-cat retint of the panther mesh — the §8.2 fallback was **executed**: the paleotest velociraptor's media license could not be verified per file |
 | Panther | stalks (silent approach, pounce burst) | night | 4.6 heartland | meat 1/1; leather 1/2 `[leather]`; sleek pelt 1/4 | animalworld leopard retint |
 | Serpent | poisons (hit applies 1 dmg/2 s, 6 s) | day | 4.6 | scaled hide 1/2 `[leather]`; venom sac 1/3 (alchemy reagent) | animalworld cobra |
 | Jungle Ape — elite variant "Silverback" (bear-mirror: bear drop table), rolled **1 in 10 at spawn** | territorial (radius ~20 m) | day | 4.6 | meat ×2; heavy leather 1/2 `[leather]`; ape hair 1/4 | animalworld monkey upscaled |
@@ -663,11 +664,11 @@ zone. Giant Rat also occupies the entrance and middle caves from y −40 to
 | Fox | darts; a landed bite triggers a 6 m/s retreat with a 4 s lockout | day | Hearthpine, Dawnmere and Silverleaf from L4; Copperfell, Goldmead, Starbough | wolf table | animalia fox, MIT |
 | Ibex | grazes (**passive prey**) | day | Hearthpine from L4; Copperfell, Frostbarrow, Stormvault | stag table | animalworld ibex, MIT |
 | Wild Turkey | flees (**critter**) | day | Dawnmere and Goldmead, L1 fixed | meat 1/1 — food only | animalia turkey, MIT |
-| Plains Runner | flees (**critter**) | day | Sunscar, L1 fixed | meat 1/1 — food only | animalworld nandu, MIT |
+| Plains Runner | grazes (**passive prey**: fights back when attacked; Round 24, was a critter) | day | Sunscar, zone level | meat 1/1 | animalworld nandu, MIT |
 | Tapir | grazes (**passive prey**) | day | Kapok from L4; Raincall, Whispering Reedlands, Totemwater | stag table | animalworld tapir, MIT |
 | Giant Rat | swarms; one pull calls nearby rats | night on surface; any in caves | all six starts; caves y −40…−300 | meat 1/1 | animalworld rat ×1.6, MIT |
-| Scorpion | poisons (1 damage / 2 s for 6 s) | night | Sunscar from L4; Redtusk, Speargrass, Bannerbreak, Shattered Line | scaled hide 1/2; venom sac 1/3 | animalworld scorpion, MIT |
-| Viper | poisons (1 damage / 2 s for 6 s) | night | Kapok from L4; Raincall | scaled hide 1/2; venom sac 1/3 | animalworld viper, MIT |
+| Scorpion | poisons (1 damage / 2 s for 6 s) | night; 24 h in Sunscar (Round 24) | Sunscar from L4; Redtusk, Speargrass, Bannerbreak, Shattered Line | scaled hide 1/2; venom sac 1/3 | animalworld scorpion, MIT |
+| Viper | poisons (1 damage / 2 s for 6 s) | night; 24 h in Kapok (Round 24) | Kapok from L4; Raincall | scaled hide 1/2; venom sac 1/3 | animalworld viper, MIT |
 
 **Round 8 level-11+ night families:** Goblin Raider Hounds are members of
 the Goblin Raider family, not an independent zone cast. The raider group is
@@ -816,9 +817,12 @@ water-bound rows keep a low cap, for a gameplay reason: the Kraken at 4
 Reed Angelfish uses the flight ceiling too; its height rule is relative to
 the water body (above the column's natural bed, Round 22 Phase 5).
 Every family declares one spawn role, `clock = "day" | "night" | "any"`;
-Zombie uses the palette-keyed form (`settled`/`war` night, `blight` any).
-`grug_mobs` stamps day rows with `min_light = 10`, night rows with
-`max_light = 5` plus `day_toggle = false`, and leaves any-time rows ungated.
+Zombie uses the palette-keyed form (`settled`/`war` night, `blight` any), and
+a `"zone:<zone id>"` key sets the clock in one named zone ahead of the palette
+keys (Scorpion in Sunscar, Viper in Kapok: `any`, Round 24). `grug_mobs`
+stamps day rows with `min_light = 10` plus `day_toggle = true` (so torch light
+at night never opens a day row), night rows with `max_light = 5` plus
+`day_toggle = false`, and leaves any-time rows ungated.
 Rows wholly below y = -40 are the exception: their family clock is ignored,
 they retain only their explicit light filter, and they never receive a
 `day_toggle`. Night rows receive `ceil(day aoc × 1.25)` while their interval
@@ -917,11 +921,11 @@ re-run against the new values once the change ships.
 | **Fox** | grass, coniferous litter, silver litter | 20 | 1900 | 3 | day | exact named-zone routes; L4 start gate |
 | **Ibex** | coniferous litter, gravel, snowblock | 20 | 1900 | 3 | day | Dwarf column; L4 start gate |
 | **Wild Turkey** (critter) | grass | 20 | 2100 | 2 | day | Dawnmere, Goldmead |
-| **Plains Runner** (critter) | dry grass | 20 | 2100 | 2 | day | Sunscar |
+| **Plains Runner** (passive prey) | dry grass | 20 | 2100 | 2 | day | Sunscar |
 | **Tapir** | rainforest litter, canopy litter | 20 | 1900 | 3 | day | Troll column; L4 start gate |
 | **Giant Rat** | six settled tops / stone + `group:grug_stratum` | 20 | 1600 surface / 1800 cave | **5 at night** surface (base 4 ×1.25) / 4 cave | night surface; max 5 underground | all starts / y −40…−300 |
-| **Scorpion** | dry grass, mesa clay | 20 | 1800 | **5 at night** (base 4 ×1.25) | night | Orc column and Shattered Line; L4 start gate |
-| **Viper** | rainforest litter | 20 | 1800 | **5 at night** (base 4 ×1.25) | night | Kapok and Raincall; L4 start gate |
+| **Scorpion** | dry grass, mesa clay | 20 | 1800 | **5 at night** (base 4 ×1.25) | night; plus a daylight row (min light 10, day toggle) with the same values, admitted only in Sunscar by the zone clock (Round 24) | Orc column and Shattered Line; L4 start gate |
+| **Viper** | rainforest litter | 20 | 1800 | **5 at night** (base 4 ×1.25) | night; plus a daylight row (min light 10, day toggle) with the same values, admitted only in Kapok by the zone clock (Round 24) | Kapok and Raincall; L4 start gate |
 | **Goblin Raider** | coniferous litter, gravel, snowblock, dry grass, mesa clay | 20 | 2400 | **3 at night** (base 2 ×1.25, ceiling) | night | exact Goblin-Raid palettes |
 | **Goblin Slinger / Raider Hound** | same Goblin-Raid tops | 20 | 2400 | **2 each at night** (base 1 ×1.25, ceiling) | night | exact Goblin-Raid palettes |
 | **Snow Leopard** | gravel, snowblock | 20 | 2100 | **4 at night** (base 3 ×1.25, ceiling) | night | Frostbarrow, Stormvault, Wyrmglass |
@@ -1242,9 +1246,9 @@ The current family classification is:
 
 | Disposition | Existing families and named variants |
 |---|---|
-| Neutral | Boar, Plague Boar, Jungle Boar; Ibex, Tapir; Stag, Gaunt Stag, Zebra; Mountain Ram; Carrion Crow; Shore Crab, Reef Lurker |
+| Neutral | Boar, Plague Boar, Jungle Boar; Ibex, Tapir, Plains Runner; Stag, Gaunt Stag, Zebra; Mountain Ram; Carrion Crow; Shore Crab, Reef Lurker |
 | Aggressive | Fox; Giant Rat; Bear, Plaguehide Bear; Wolf, Blightfang Wolf; Hyena; Jungle Lynx, Panther, Snow Leopard, Speargrass Tiger; Crag Eagle, Vulture; Crocodile; Jungle Ape; Giant Spider, Jungle Spider, Pale Spider, Spiderling; Serpent, Viper, Scorpion; Blood Bat; Goblin Raider, Goblin Slinger, Goblin Hound, Goblin Miner, Goblin Miner Slinger; Bandit, Bandit Archer, Poacher; Mirefolk; Skeleton Archer, Skeleton Raider, Zombie, Frost Stray, Sun-Dried Husk; Stone Golem, Mesa Golem, Stone Mite, War Construct; Ashen Treant, Gravewood Treant; Bog Ooze, Bog Witch; Wisp, Glowwing, Ember Wisp; Crystal Shard, Lava Flan; Oerkki, Rift Spawn, Dungeon Master; Kraken; Ice Dragon, Jungle Wyvern, Ice Whelp, Storm Whelp; kings |
-| Critter | Rabbit, Hare; Wild Turkey, Plains Runner; Parrot, Gull, Song Bird; Cave Bat, Cave Crawler; Bone Weevil, Bog Fowl; Reed Angelfish |
+| Critter | Rabbit, Hare; Wild Turkey; Parrot, Gull, Song Bird; Cave Bat, Cave Crawler; Bone Weevil, Bog Fowl; Reed Angelfish |
 | Independent role | Accord/Throng guards, land guards, royal guards and peaceful settlement NPCs |
 
 

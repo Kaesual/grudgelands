@@ -9,7 +9,7 @@
 -- (grug_mobs_panther.b3d + grug_mobs_jungle_lynx.png, wp6_model_notes §2.4).
 -- It keeps the Raptor's ROLE unchanged — same "hunts in packs" verb, same
 -- shared wolf drop table plus raptor claw, same §4 raptor row, same
--- jungle_edge-from-L10 placement. Only the name and the skin differ; the
+-- jungle_edge placement (from L4 since Round 24, was L10). Only the name and the skin differ; the
 -- claw item id stays grug_mobs:raptor_claw (registered in items.lua).
 --
 -- Verb: grug_mobs.pack_hunter from verbs.lua, installed BEFORE register_mob
@@ -24,9 +24,10 @@ local lynx = {
 	description = "Jungle Lynx",
 	clock = "day",
 	type = "monster",
-	-- §3.1 "jungle_edge from L10": the settled inner jungle is where this
-	-- family starts, so the floor keeps it from ever being a L1 pushover.
-	_grug_min_level = 10,
+	-- From band 2 of Kapok's start-zone gradient (L4+, Round 24 ruling 31;
+	-- was L10): Kapok's day needs a hostile past the first band. Every other
+	-- zone that hosts the lynx starts at L11, so the floor matters only there.
+	_grug_min_level = 4,
 
 	reach = 3,
 	attack_type = "dogfight",
