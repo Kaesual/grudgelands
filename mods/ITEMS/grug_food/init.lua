@@ -129,7 +129,9 @@ local function modifier_parts(modifiers, tooltip)
 	return labels
 end
 
-function grug_food.status_label(effect)
+-- The food status's detail line on the Character page Effects tab, e.g.
+-- "+6% HP, +6% Mana/5s, +1 Crit"; the status name is the eaten dish.
+function grug_food.status_detail(effect)
 	local regen = {}
 	if effect.regen.hp then
 		regen[#regen + 1] = "+" .. number_text(effect.regen.hp) .. "% HP"
@@ -145,7 +147,17 @@ function grug_food.status_label(effect)
 	for index = 1, #modifiers do
 		parts[#parts + 1] = modifiers[index]
 	end
-	return "Food " .. table.concat(parts, ", ")
+	return table.concat(parts, ", ")
+end
+
+-- The eaten dish's name: the first line of its description.
+local function item_name(item_definition)
+	local description = type(item_definition) == "table" and
+		item_definition.description
+	if type(description) ~= "string" or description == "" then
+		return "Food"
+	end
+	return description:match("^[^\n]+")
 end
 
 local function tooltip_for(tier, effect)
@@ -182,7 +194,8 @@ end
 local function start_food_status(player, tier, effect, item_definition)
 	local tier_def = grug_food.TIERS[tier]
 	local record = grug_core.set_status(player, "food", {
-		label = grug_food.status_label(effect),
+		label = item_name(item_definition),
+		detail = grug_food.status_detail(effect),
 		icon = grug_core.status_icons.item_icon(item_definition),
 		duration = grug_food.DURATION,
 		kind = "buff",

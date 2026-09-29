@@ -504,7 +504,7 @@ grug_abilities.register_ability({
 	cast = function(user)
 		grug_core.set_move_modifier(user, "scout_sprint", {speed = 0.50}, 10)
 		grug_core.set_status(user, "scout_sprint", {
-			label = "Sprint (+50% Speed)",
+			label = "Sprint",
 			duration = 10,
 			kind = "buff",
 			-- The movement aggregator remains the sole effect authority. An

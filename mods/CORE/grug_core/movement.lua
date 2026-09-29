@@ -601,14 +601,16 @@ if grug_core.register_status_source then
 			out[#out + 1] = {id = "rooted", expiry_us = rec.root * 1e6}
 		end
 		if not rec.immune then
-			local slow_expiry
+			local slow_expiry, slow = nil, 0
 			for _, entry in pairs(rec.mods) do
 				if entry.speed < 0 and entry.expiry then
 					slow_expiry = math.max(slow_expiry or 0, entry.expiry)
+					slow = slow + entry.speed
 				end
 			end
 			if slow_expiry then
-				out[#out + 1] = {id = "slowed", expiry_us = slow_expiry * 1e6}
+				out[#out + 1] = {id = "slowed", expiry_us = slow_expiry * 1e6,
+					detail = ("%d%% slower"):format(math.floor(-slow * 100 + 0.5))}
 			end
 		end
 		return out

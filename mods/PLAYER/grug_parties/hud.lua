@@ -45,7 +45,7 @@ local function make_row(player, index, count, window)
 			scale={x=WIDTH,y=layout.PARTY_BAR_HEIGHT},text=layout.bar_texture(color),z_index=layer})
 	end
 	-- The member's class icon (Round 26 ruling 22), left of name and bar.
-	local icon_scale = layout.PARTY_ICON / 64
+	local icon_scale = layout.party_icon_size(window) / 64
 	return {
 		icon=player:hud_add({type="image",position=anchor.position,
 			offset=layout.party_icon_offset(index,count,window),alignment={x=1,y=1},
@@ -70,6 +70,8 @@ local function refresh(player)
 		local row = record.rows[index]
 		if not row then row=make_row(player,index,#view.members,window);record.rows[index]=row end
 		change(player,row,"icon_offset",row.icon,"offset",layout.party_icon_offset(index,#view.members,window))
+		local icon_scale = layout.party_icon_size(window) / 64
+		change(player,row,"icon_scale",row.icon,"scale",{x=icon_scale,y=icon_scale})
 		change(player,row,"icon_texture",row.icon,"text",
 			grug_core.status_icons.class_icon(member.class))
 		change(player,row,"label_offset",row.label,"offset",layout.party_row_offset(index,#view.members,false,window))

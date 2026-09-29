@@ -10,6 +10,8 @@
 -- a registered id always gets its registered frame kind, whatever the caller
 -- passes. `variant` picks one of the id's registered pictures (elixir
 -- family, mount mode); `icon` is an explicit picture (a food item's image).
+-- `label` and `detail` are what the Character page's Effects tab prints
+-- (name line and detail line); the registry supplies defaults for both.
 --
 -- Effects whose single authority lives elsewhere and that end on several
 -- paths (movement flags, shield-borne talent modifiers) are not copied into
@@ -150,6 +152,7 @@ function grug_core.set_status(player, id, definition)
 	local record = {
 		id = id,
 		label = tostring(definition.label or id),
+		detail = type(definition.detail) == "string" and definition.detail or nil,
 		expiry_us = expiry,
 		value = definition.value,
 		kind = kind,
@@ -203,6 +206,13 @@ local function status_order(a, b)
 	return (a.sequence or 0) < (b.sequence or 0)
 end
 
+local function keep_order(a, b)
+	if a.kind ~= b.kind then
+		return icons.KEEP_RANK[a.kind] < icons.KEEP_RANK[b.kind]
+	end
+	return a.id < b.id
+end
+
 function grug_core.each_status(player, callback)
 	local name = player_name(player)
 	local per_player = name and statuses[name]
@@ -232,7 +242,8 @@ end
 
 -- A status source reports effects owned elsewhere, for display only.
 -- `fn(player, now_us)` returns nil or a list of entries
--- {id = registered id, expiry_us = t | untimed = true, value, variant, icon}.
+-- {id = registered id, expiry_us = t | untimed = true, value, variant, icon,
+--  label, detail}.
 -- A stored status with the same id wins over a source entry.
 function grug_core.register_status_source(fn)
 	if type(fn) ~= "function" then
@@ -256,6 +267,7 @@ local function source_entries(player, now, taken, out)
 				out[#out + 1] = {
 					id = id, kind = kind, value = entry.value,
 					variant = entry.variant, icon = entry.icon,
+					label = entry.label, detail = entry.detail,
 					untimed = entry.untimed == true,
 					expiry_us = expiry,
 				}
@@ -264,10 +276,11 @@ local function source_entries(player, now, taken, out)
 	end
 end
 
--- What the icon row shows, in row order and at most STATUS_LIMIT long:
--- {id, kind, texture, caption}. A value function returning false hides its
--- status without taking a slot (Sprint cleared early, an empty shield).
-function grug_core.status_display(player)
+-- Every active, visible effect in row order: stored statuses and source
+-- entries. A value function returning false hides its status (Sprint cleared
+-- early, an empty shield). Each entry: {id, kind, texture, caption, name,
+-- detail, value, untimed, remaining_us}.
+function grug_core.status_effects(player)
 	local now = core.get_us_time()
 	local ordered = grug_core.each_status(player)
 	local entries, taken = {}, {}
@@ -278,8 +291,7 @@ function grug_core.status_display(player)
 	if player_name(player) then
 		source_entries(player, now, taken, entries)
 	end
-	table.sort(entries, status_order)
-	local shown = {}
+	local visible = {}
 	for index = 1, #entries do
 		local record = entries[index]
 		local value = record.value
@@ -287,19 +299,43 @@ function grug_core.status_display(player)
 			value = value(player, record)
 		end
 		if value ~= false then
-			shown[#shown + 1] = {
+			local def = icons.STATUS[record.id] or {}
+			local remaining = record.untimed and nil or
+				(record.expiry_us or now) - now
+			local label = record.label
+			if not label or label == record.id then
+				label = def.name or record.id
+			end
+			visible[#visible + 1] = {
 				id = record.id,
 				kind = record.kind,
 				texture = icons.texture(record.id, record.variant, record.icon),
-				caption = icons.caption(value, record.untimed,
-					(record.expiry_us or now) - now),
+				caption = icons.caption(value, record.untimed, remaining),
+				name = label,
+				detail = record.detail or def.detail or "",
+				value = value,
+				untimed = record.untimed == true,
+				remaining_us = remaining,
 			}
-			if #shown >= layout.STATUS_LIMIT then
-				break
-			end
 		end
 	end
-	return shown
+	table.sort(visible, status_order)
+	return visible
+end
+
+-- What the icon row shows, in row order and at most STATUS_LIMIT long.
+function grug_core.status_display(player)
+	local visible = grug_core.status_effects(player)
+	-- More statuses than slots: debuffs are kept first, then neutral states,
+	-- then buffs -- what harms the player must never fall off the row.
+	if #visible > layout.STATUS_LIMIT then
+		table.sort(visible, keep_order)
+		for index = #visible, layout.STATUS_LIMIT + 1, -1 do
+			visible[index] = nil
+		end
+	end
+	table.sort(visible, status_order)
+	return visible
 end
 
 local function clear_runtime_statuses(player)
@@ -361,11 +397,14 @@ local function refresh_hud(player)
 		return
 	end
 	local shown = grug_core.status_display(player)
+	local window = #shown > 0 and core.get_player_window_information and
+		core.get_player_window_information(name) or nil
 	for index = 1, #hud.slots do
 		local slot = hud.slots[index]
 		local entry = shown[index]
 		if entry then
-			local icon_offset, caption_offset = layout.status_slot(index, #shown)
+			local icon_offset, caption_offset = layout.status_slot(index, #shown,
+				window)
 			change(player, slot, "icon_offset", slot.icon, "offset", icon_offset)
 			change(player, slot, "caption_offset", slot.caption, "offset",
 				caption_offset)

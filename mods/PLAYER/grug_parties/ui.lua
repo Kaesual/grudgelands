@@ -102,24 +102,36 @@ local function content(player, context)
 	fs[#fs + 1] = "button[6.70,3.40;1.35,0.58;grug_party_decline;Decline]"
 	if view then
 		fs[#fs + 1] = "label[0.20,4.25;Current party]"
-		local members = {}
+		-- A table rather than a textlist so each member row can carry the
+		-- class icon (Round 26 ruling 22); image 0 is blank (offline or no
+		-- class yet), images 1..n are the class icons.
+		local classes = grug_core.status_icons.CLASSES
+		local image_index, images = {}, {"0=blank.png"}
+		for index, id in ipairs(classes) do
+			image_index[id] = index
+			images[#images + 1] = index .. "=" .. esc(grug_core.status_icons.class_icon(id))
+		end
+		local cells = {}
 		context.grug_party_member_rows = {}
 		for index, row in ipairs(view.members) do
 			context.grug_party_member_rows[index] = row.name
-			members[#members + 1] = esc((row.name == view.leader and "* " or "") .. row.name .. " [Lv " .. row.level .. "]" ..
+			cells[#cells + 1] = tostring(image_index[row.class] or 0)
+			cells[#cells + 1] = esc((row.name == view.leader and "* " or "") .. row.name .. " [Lv " .. row.level .. "]" ..
 				(row.online and ("  %d/%d HP"):format(row.hp, row.hp_max) or "  Offline"))
 		end
 		local selected = selected_member(view, context)
 		local selected_index = 1
 		for index, row in ipairs(view.members) do if row.name == selected.name then selected_index = index end end
-		fs[#fs + 1] = ("textlist[0.20,4.58;4.55,1.45;grug_party_members;%s;%d;false]")
-			:format(table.concat(members, ","), selected_index)
+		fs[#fs + 1] = "tablecolumns[image,align=center," ..
+			table.concat(images, ",") .. ";text,padding=0.25]"
+		fs[#fs + 1] = ("table[0.20,4.58;4.90,2.55;grug_party_members;%s;%d]")
+			:format(table.concat(cells, ","), selected_index)
 		local own_name = player:get_player_name()
 		if view.leader == own_name and selected.name ~= own_name then
-			fs[#fs + 1] = "button[0.20,6.15;1.35,0.58;grug_party_kick;Kick]"
-			fs[#fs + 1] = "button[1.72,6.15;1.90,0.58;grug_party_transfer;Make leader]"
+			fs[#fs + 1] = "button[0.20,7.25;1.35,0.58;grug_party_kick;Kick]"
+			fs[#fs + 1] = "button[1.72,7.25;1.90,0.58;grug_party_transfer;Make leader]"
 		end
-		fs[#fs + 1] = "button[3.80,6.15;1.15,0.58;grug_party_leave;Leave]"
+		fs[#fs + 1] = "button[3.80,7.25;1.15,0.58;grug_party_leave;Leave]"
 	else
 		fs[#fs + 1] = "textarea[0.20,4.25;4.55,1.05;;;You are not in a party. Select an online same-faction player above.]"
 	end
@@ -148,9 +160,9 @@ end, on_player_receive_fields = function(_, player, context, fields)
 	end
 	local view = grug_parties.view(player)
 	if fields.grug_party_members and view then
-		local event = core.explode_textlist_event(fields.grug_party_members)
+		local event = core.explode_table_event(fields.grug_party_members)
 		local rows = context.grug_party_member_rows or {}
-		if event.type == "CHG" and rows[event.index] then context.grug_party_member = rows[event.index] end
+		if event.type == "CHG" and rows[event.row] then context.grug_party_member = rows[event.row] end
 	end
 	local ok, message
 	if fields.grug_party_invite and context.grug_party_online then

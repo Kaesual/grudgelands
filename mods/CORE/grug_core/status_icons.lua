@@ -41,60 +41,98 @@ local function skill(id)
 	return "grug_abilities_skill_" .. id .. ".png"
 end
 
--- id -> {kind = frame category, icon = texture, variants = {name -> texture}}
+-- id -> {kind = frame category, name, detail, icon = texture,
+--        variants = {name -> texture}}
 -- A variant picks the picture only; the frame always follows the id's kind.
+-- `name` and `detail` are the Character page Effects tab defaults; a caller's
+-- `label` / `detail` (set_status) replace them with the specific ones
+-- ("Elixir of Focus III", "+6% HP/5s").
+local function def(kind, name, detail, icon, variants)
+	return {kind = kind, name = name, detail = detail, icon = icon,
+		variants = variants}
+end
+
 icons.STATUS = {
 	-- Consumables. Food shows the eaten item's own image when it has one
 	-- (see item_icon); the generic plate is the fallback.
-	food = {kind = "buff", icon = icons.GENERIC_FOOD},
-	elixir = {kind = "buff", icon = art("elixir_vigor"), variants = {
+	food = def("buff", "Food", "Regeneration out of combat",
+		icons.GENERIC_FOOD),
+	elixir = def("buff", "Elixir", "", art("elixir_vigor"), {
 		vigor = art("elixir_vigor"),
 		focus = art("elixir_focus"),
 		precision = art("elixir_precision"),
 		stoneskin = art("elixir_stoneskin"),
 		deepwater = art("elixir_deepwater"),
-	}},
-	alchemy_swiftness = {kind = "buff", icon = art("alchemy_swiftness")},
-	alchemy_cave = {kind = "buff", icon = art("alchemy_cave")},
+	}),
+	alchemy_swiftness = def("buff", "Swiftness Draught", "+10% movement speed",
+		art("alchemy_swiftness")),
+	alchemy_cave = def("buff", "Cave Draught", "Night vision",
+		art("alchemy_cave")),
 	-- Planned (items_crafting.md Warding Draught); art delivered, no caller yet.
-	warding_draught = {kind = "buff", icon = art("warding_draught")},
+	warding_draught = def("buff", "Warding Draught",
+		"Less damage from one race", art("warding_draught")),
 
 	-- Movement and mounts.
-	mount = {kind = "buff", icon = art("mount_land"), variants = {
+	mount = def("buff", "Mount", "", art("mount_land"), {
 		land = art("mount_land"),
 		flight = art("mount_flight"),
-	}},
-	move_immune = {kind = "buff", icon = art("move_immune")},
+	}),
+	move_immune = def("buff", "Unstoppable", "Cannot be rooted or slowed",
+		art("move_immune")),
 
 	-- Ability buffs reuse their Round-18 skill icon (user decision).
-	scout_sprint = {kind = "buff", icon = skill("sprint")},
-	sidestep = {kind = "buff", icon = skill("sidestep")},
-	renew = {kind = "buff", icon = skill("renew")},
+	scout_sprint = def("buff", "Sprint", "+50% movement speed", skill("sprint")),
+	sidestep = def("buff", "Sidestep", "+15 dodge chance", skill("sidestep")),
+	renew = def("buff", "Renew", "Heals every 3 s", skill("renew")),
 	-- One generic shield for every absorb source (user decision).
-	shield = {kind = "buff", icon = art("shield")},
+	shield = def("buff", "Shield", "Absorbs damage", art("shield")),
 
 	-- Talent windows (skill_trees.md section 3.2).
-	talent_unbroken = {kind = "buff", icon = art("talent_unbroken")},
-	talent_ruination = {kind = "buff", icon = art("talent_ruination")},
-	talent_whitehot = {kind = "buff", icon = art("talent_whitehot")},
-	talent_turn_aside = {kind = "buff", icon = art("talent_turn_aside")},
-	talent_last_word = {kind = "buff", icon = art("talent_last_word")},
-	talent_untouchable = {kind = "buff", icon = art("talent_untouchable")},
+	talent_unbroken = def("buff", "Unbroken", "+15 armor rating",
+		art("talent_unbroken")),
+	talent_ruination = def("buff", "Ruination", "+20 crit chance",
+		art("talent_ruination")),
+	talent_whitehot = def("buff", "Whitehot", "Cheaper, stronger Fireball",
+		art("talent_whitehot")),
+	talent_turn_aside = def("buff", "Turn Aside",
+		"Extra dodge while the shield holds", art("talent_turn_aside")),
+	talent_last_word = def("buff", "Last Word", "Word of Ruin drain heals 150%",
+		art("talent_last_word")),
+	talent_untouchable = def("buff", "Untouchable", "+25 dodge chance",
+		art("talent_untouchable")),
 
 	-- Hostile effects. One slow icon for every slow (user decision).
-	poisoned = {kind = "debuff", icon = art("poisoned")},
-	slowed = {kind = "debuff", icon = art("slowed")},
-	rooted = {kind = "debuff", icon = art("rooted")},
-	stunned = {kind = "debuff", icon = art("stunned")},
-	scorched = {kind = "debuff", icon = art("scorched")},
+	poisoned = def("debuff", "Poisoned", "Damage over time", art("poisoned")),
+	slowed = def("debuff", "Slowed", "Movement speed reduced", art("slowed")),
+	rooted = def("debuff", "Rooted", "Cannot move", art("rooted")),
+	stunned = def("debuff", "Stunned", "Cannot act or move", art("stunned")),
+	scorched = def("debuff", "Scorched", "Burning ground", art("scorched")),
 
 	-- Neither buff nor debuff. in_combat is drawn next to the health bar by
 	-- combat_hud.lua, not on the status row (ruling 19). The PvP tags are
 	-- WP41's; their art and frame are ready for its set_status calls.
-	in_combat = {kind = "neutral", icon = art("in_combat")},
-	pvp_tagged = {kind = "neutral", icon = art("pvp_tagged")},
-	pvp_contested = {kind = "neutral", icon = art("pvp_contested")},
+	in_combat = def("neutral", "In combat", "No eating, mounting or regeneration",
+		art("in_combat")),
+	pvp_tagged = def("neutral", "PvP", "Enemy players can attack you",
+		art("pvp_tagged")),
+	pvp_contested = def("neutral", "Contested", "PvP is forced here",
+		art("pvp_contested")),
 }
+
+-- The Effects tab's remaining time: coarse on purpose, so the cached page
+-- only needs a rebuild when this text changes (about once a minute).
+function icons.remaining_text(remaining_us, untimed)
+	if untimed then
+		return "active"
+	end
+	local seconds = math.max(0, math.ceil((tonumber(remaining_us) or 0) / 1e6))
+	if seconds < 60 then
+		return "under 1 min left"
+	elseif seconds < 5400 then
+		return math.ceil(seconds / 60) .. " min left"
+	end
+	return math.ceil(seconds / 3600) .. " h left"
+end
 
 -- The talent windows that become statuses, talent id -> status id. Hold
 -- Ground's window is not listed: what the player sees of it is the shield and
@@ -112,6 +150,9 @@ icons.TALENT_WINDOWS = {
 -- Row order: buffs, then debuffs, then neutral states; inside one kind by id,
 -- so an icon keeps its place while others come and go.
 icons.KIND_RANK = {buff = 1, debuff = 2, neutral = 3}
+-- Which statuses keep a slot when there are more than the row holds:
+-- debuffs first, then neutral states, buffs last.
+icons.KEEP_RANK = {debuff = 1, neutral = 2, buff = 3}
 
 function icons.kind_of(id)
 	local def = icons.STATUS[id]

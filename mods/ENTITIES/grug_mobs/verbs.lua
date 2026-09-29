@@ -127,8 +127,9 @@ local WEB_MODIFIER = "mob_web"
 -- player name -> generation counter for RUNNING poison chains (see
 -- grug_mobs.poison_player): a poison is a chain of core.after callbacks that
 -- only knows the victim by NAME, so after a relog it would happily keep
--- ticking on the fresh session. Bumping the counter on leaveplayer orphans
--- every in-flight chain for that name -- i.e. logging out dispels poison.
+-- ticking on the fresh session. Bumping the counter on leaveplayer and on
+-- dieplayer orphans every in-flight chain for that name -- i.e. logging out
+-- and dying both dispel poison.
 -- (The slow needs no such counter any more: the aggregator expires entries
 -- off a monotonic clock read at use time, so there is no timer to orphan.)
 local poison_gen = {}
@@ -160,12 +161,17 @@ end
 -- the whole record (physics overrides are not persisted by the engine), so
 -- there is nothing left for this file to reset.
 
-core.register_on_leaveplayer(function(player)
+-- Cancel every running poison chain for this name (see poison_gen). Leaving
+-- dispels poison, and so does dying: a chain whose next tick fell after the
+-- respawn would otherwise keep hurting the fresh life (its status icon is
+-- already gone with the death).
+local function cancel_poison(player)
 	local name = player:get_player_name()
-	-- Cancel every running poison chain for this name (see poison_gen).
 	poison_gen[name] = (poison_gen[name] or 0) + 1
 	poison_active[name] = nil
-end)
+end
+core.register_on_leaveplayer(cancel_poison)
+core.register_on_dieplayer(cancel_poison)
 
 function grug_mobs.is_poisoned(player)
 	if not player or not core.is_player(player) then return false end
@@ -211,15 +217,16 @@ function grug_mobs.poison_player(player, total_ticks, interval, dmg_per_tick)
 	end
 	local name = player:get_player_name()
 	local left = total_ticks
-	-- Snapshot the victim's poison generation; leaveplayer bumps it, so a
-	-- chain started before a relog stops on its next tick instead of eating
-	-- into the fresh session (a name-keyed core.after chain cannot tell the
-	-- two apart on its own — get_player_by_name happily returns the new
-	-- ObjectRef).
+	-- Snapshot the victim's poison generation; leaveplayer and dieplayer bump
+	-- it, so a chain started before a relog or a death stops on its next tick
+	-- instead of eating into the fresh session or life (a name-keyed
+	-- core.after chain cannot tell them apart on its own — get_player_by_name
+	-- happily returns the new ObjectRef, and a respawned player is alive).
 	local gen = poison_gen[name] or 0
 	poison_active[name] = (poison_active[name] or 0) + 1
 	-- The "Poisoned" icon (Round 26 ruling 18) runs until the longest running
-	-- chain's last tick; Antivenom, death and leave clear it with the chains.
+	-- chain's last tick. Antivenom, death and leave end the chains (generation
+	-- bump); the status table itself clears on death and leave.
 	local ends = core.get_us_time() + total_ticks * interval * 1e6
 	local running = grug_core.get_status(player, "poisoned")
 	grug_core.set_status(player, "poisoned", {
@@ -242,7 +249,7 @@ function grug_mobs.poison_player(player, total_ticks, interval, dmg_per_tick)
 	local tick
 	tick = function()
 		if (poison_gen[name] or 0) ~= gen then
-			return -- superseded: the victim logged out, this chain is void
+			return -- superseded: logout, death or Antivenom voided this chain
 		end
 		local p = core.get_player_by_name(name)
 		if not p then

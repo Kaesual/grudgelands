@@ -1,10 +1,10 @@
 -- Read the shared combat flag; HUD visibility does not own a second timer.
 -- The combat state is an icon (Round 26 ruling 19: crossed swords on the gold
 -- neutral frame) at the old "Combat" text's place right of the health bar,
--- vertically centred on it and drawn at the status row's icon size.
+-- vertically centred on it at hud_layout.COMBAT_ICON px.
 local shown, elapsed = {}, 0
 local TEXTURE = grug_core.status_icons.texture("in_combat")
-local SCALE = grug_core.hud_layout.STATUS_ICON / 64
+local SCALE = grug_core.hud_layout.COMBAT_ICON / 64
 
 core.register_globalstep(function(dtime)
 	elapsed = elapsed + dtime
