@@ -12,7 +12,17 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
 
 - **Factions**: pattern from Lord of the Test `lottclasses` — faction as a
   **privilege** + ally matrix + predicates (`*_same_race_or_ally`),
-  selection formspec on join (re-prompt on abort), starter-kit dispatch.
+  selection formspec on join, starter-kit dispatch. Our creation flow differs
+  on abort (Round 24 ruling 32): `grug_classes/selection.lua` owns faction,
+  race, class and waiting forms (`grug_factions.selection_formspec` and
+  `choose_from_fields` supply the faction step). Esc closes a form for good;
+  the current step is always the player's inventory formspec, while sfinv is
+  suspended through the vendored `sfinv.inventory_suspended` hook (VENDOR.md),
+  and "" submissions route to the same step handlers; a HUD hint at
+  `hud_layout.anchors.creation_hint` shows while no dialog is open. The class
+  chosen before the arrival emerge is persisted as
+  `grug_classes:pending_class` and becomes `grug_classes:class` only at the
+  teleport; release re-runs sfinv for the player.
   LotT has NO per-faction spawns and no player-PvP gating — we build those
   ourselves (`core.register_on_punchplayer` /
   `register_on_player_hpchange`).
@@ -630,8 +640,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   No full-world height prepass, exact savings run or ETA retuning.
   Preparation precedes character selection. Bounded scan-time/small-batch
   selection dispatches available work immediately while retaining one in-flight
-  request. Waiting may be dismissed without releasing safety gates; only a new
-  failure transition reopens the retry form. Both creation and reconnect use
+  request. Waiting may be dismissed without releasing safety gates; nothing
+  reopens it (a failure updates the hint and the inventory formspec, which
+  keeps the retry form). Both creation and reconnect use
   the shared waiting/stasis gate. Native tests
   use isolated tiny bounds; never run production full generation as a test.
 - **Fishing (Round 14):** transient bobber, manual reel in a 1.5-second bite

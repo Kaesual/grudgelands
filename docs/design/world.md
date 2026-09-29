@@ -907,11 +907,26 @@ territory.
   drowning. The mandatory faction → race → class forms use an opaque dark
   backdrop; no physical lobby or generated holding room exists. Choosing a
   race starts an asynchronous emerge of that race's start behind the remaining
-  UI. The first class choice stays transient until that emerge succeeds, then
-  the player is positioned exactly once, the class is persisted and the
-  pre-stasis physics/immortality state is restored. Disconnects reconstruct
-  stasis from the still-incomplete identity, stale callbacks cannot release a
-  later session, and emerge failure stays safe with an explicit retry.
+  UI. The first class choice is stored at once as a *pending* class; only when
+  that emerge succeeds is the player positioned exactly once, the class
+  persisted as the character's class and the pre-stasis physics/immortality
+  state restored. Disconnects reconstruct stasis from the still-incomplete
+  identity (a pending class does not complete it), stale callbacks cannot
+  release a later session, and emerge failure stays safe with an explicit
+  retry.
+- **Character creation can always be paused** (Round 24 ruling 32). Esc
+  really closes every creation dialog (faction, race, class, waiting screen)
+  and nothing reopens it by itself, so the next Esc reaches the native game
+  menu; the player stays in stasis. While creation is unfinished the player's
+  inventory formspec is the current step (the inventory key continues), and a
+  screen hint says "Character creation paused – press I to continue" while no
+  dialog is open ("World ready – press I to continue" once preparation
+  finished meanwhile, a retry hint after a failure). When preparation finishes
+  while the waiting screen is open, the next step replaces it; when it was
+  dismissed only the hint changes; a failure never forces the dialog open.
+  Faction, race and the pending class are stored in player meta at once, so a
+  reconnect continues at the first missing step. There is no kick button.
+  After completion the normal inventory returns.
 - MVP perks (revised 2026-08-06 — a perk must be FELT from level 1, a
   vendor discount is invisible for the first ten hours): **one visible
   passive per race** + the vendor discount as a bonus. Passives

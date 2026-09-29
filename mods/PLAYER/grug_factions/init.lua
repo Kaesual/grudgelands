@@ -7,7 +7,6 @@ end
 local META_FACTION = "grug_factions:faction"
 local META_KIT = "grug_factions:kit_given"
 local FORMNAME = "grug_factions:select"
-local REOPEN_DELAY = 0.1
 
 -- Starter kit per faction; granted exactly once.
 --
@@ -283,10 +282,15 @@ function grug_factions.teleport_to_spawn(player)
 end
 
 --
--- Faction selection UI
+-- Faction selection UI. grug_classes/selection.lua owns the creation flow
+-- (Round 24 ruling 32): it shows this form as a dialog or as the player's
+-- inventory formspec, routes both kinds of submission here and never re-opens
+-- a dismissed dialog by itself.
 --
 
-local function selection_formspec()
+grug_factions.SELECTION_FORM = FORMNAME
+
+function grug_factions.selection_formspec()
 	return table.concat({
 		"formspec_version[4]",
 		"size[8.6,4.6]",
@@ -301,70 +305,33 @@ local function selection_formspec()
 	})
 end
 
-
-function grug_factions.show_selection(player)
-	if grug_core.world_preparation_status().ready and
-			not grug_factions.get_faction(player) then
-		core.show_formspec(player:get_player_name(), FORMNAME, selection_formspec())
-		return true
-	end
-	return false
-end
-
-core.register_on_player_receive_fields(function(player, formname, fields)
-	if formname ~= FORMNAME then
-		return
-	end
+-- Applies a faction choice from submitted selection fields and returns true
+-- when a faction was set. Form fields are client input: the caller has
+-- already checked that the faction step is the current one (world preparation
+-- ready, no faction yet), so a stale or forged packet cannot commit early.
+function grug_factions.choose_from_fields(player, fields)
 	if grug_factions.get_faction(player) then
-		return true
+		return false
 	end
-	-- Form fields are client input. A form displayed before preparation changed
-	-- state (or a forged packet) must not commit character identity early.
-	if not grug_core.world_preparation_status().ready then
-		return true
-	end
-
 	local chosen
 	if fields.choose_accord then
 		chosen = "accord"
 	elseif fields.choose_throng then
 		chosen = "throng"
 	end
-
 	if not chosen then
-		-- Closed without choosing: show again (choosing is mandatory).
-		local name = player:get_player_name()
-		core.after(REOPEN_DELAY, function()
-			local p = core.get_player_by_name(name)
-			if p and not grug_factions.get_faction(p) then
-				grug_factions.show_selection(p)
-			end
-		end)
-		return true
+		return false
 	end
-
-	grug_factions.set_faction(player, chosen)
-	core.close_formspec(player:get_player_name(), FORMNAME)
 	local def = grug_core.factions[chosen]
 	core.chat_send_player(player:get_player_name(),
 		core.colorize(def.color, "Welcome to the " .. def.name .. "!"))
-	return true
-end)
+	return grug_factions.set_faction(player, chosen)
+end
 
 core.register_on_joinplayer(function(player)
 	-- Unconditionally, factionless included: nametag attributes are per
 	-- session, not persisted, so this is the one place that has to reset them.
 	reset_player_tag(player)
-	local def = grug_factions.get_faction_def(player)
-	if not def then
-		local name = player:get_player_name()
-		core.after(0, function()
-			local p = core.get_player_by_name(name)
-			if p and not grug_factions.get_faction(p) then
-				grug_factions.show_selection(p)
-			end
-		end)
-	end
 end)
 
 -- Home owns current-character respawn; unfinished creation retains its racial fallback.

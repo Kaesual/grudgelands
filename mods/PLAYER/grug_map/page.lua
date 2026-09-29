@@ -269,7 +269,10 @@ core.register_globalstep(function(dtime)
 	for name, session in pairs(active) do
 		local player = core.get_player_by_name(name)
 		local context = sfinv.contexts[name]
-		if not player or not context or context.page ~= PAGE then
+		if not player or not context or context.page ~= PAGE or
+				sfinv.inventory_suspended(player) then
+			-- A suspended inventory belongs to character creation (ruling 32);
+			-- this direct write must not replace it.
 			active[name] = nil
 		elseif (session.scroll_quiet or 0) > 0 then
 			-- Avoid replacing native widgets during an actively moving scrollbar.

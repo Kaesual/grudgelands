@@ -189,9 +189,13 @@ the accepted approximate early-estimation behavior remains.
 
 Pending preparation comes before faction/race/class creation; both page display
 and receive-fields actions honor it. Escape dismisses the form without releasing
-stasis, allowing the native menu on a subsequent Escape. Routine progress does
-not reopen it. A new failure opens the error/retry form once. Readiness continues
-creation or releases an existing complete character without regranting its kit.
+stasis, allowing the native menu on a subsequent Escape. Nothing reopens it by
+itself: progress and a new failure update an open waiting screen or, when it was
+dismissed, only the screen hint and the inventory formspec (which always shows
+the current step, including the retry form; world.md §7, Round 24 ruling 32).
+Readiness replaces an open waiting screen with the next creation step, changes
+only the hint when it was dismissed, and releases an existing complete character
+without regranting its kit.
 
 ## Air-chunk fast path (emerge environment)
 
