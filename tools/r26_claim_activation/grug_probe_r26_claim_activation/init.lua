@@ -349,7 +349,7 @@ local function scenario()
 		local ok8, msg8 = cmd.func(ADMIN, "here")
 		log("claim_remove here: " .. tostring(msg8))
 		check(ok8 and model.claim_by_id(c7.id) == nil and core.get_node(pos).name == "air" and
-			select(2, H.player_claim(OWNER)) == "destroyed", "here: the claim and its stone removed")
+			select(2, H.player_claim(OWNER)) == "removed", "here: the claim and its stone removed")
 		owner.pos = vector.offset(steward.object:get_pos(), 2, 0, 0)
 		H.open_manager(owner, steward)
 		submit(owner, "grug_housing:manager", {receive = ""})

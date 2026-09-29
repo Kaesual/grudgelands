@@ -76,7 +76,8 @@ function grug_home.clear_home_claim(player)
  player:get_meta():set_string(CLAIM_KEY, "")
 end
 
-local LOST = {picked_up="was picked up", destroyed="has been destroyed"}
+local LOST = {picked_up="was picked up", destroyed="has been destroyed",
+ removed="was removed by an admin"}
 local function fall_back(player, event)
  grug_home.clear_home_claim(player)
  local inn = grug_home.innkeeper(player)
@@ -105,7 +106,7 @@ end
 
 if housing then
  housing.register_on_claim_changed(function(claim, event)
-  if (event ~= "picked_up" and event ~= "destroyed") or type(claim) ~= "table" or
+  if not LOST[event] or type(claim) ~= "table" or
     type(claim.owner) ~= "string" or claim.id == nil then return end
   storage:set_string(LOST_PREFIX .. claim.owner, event .. " " .. tostring(claim.id))
   local player = core.get_player_by_name(claim.owner)

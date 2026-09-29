@@ -532,6 +532,14 @@ check(M.player_state("zed") == "needs_stone" and M.claim_by_id(zc.id) == nil,
 	"expired draft: needs_stone, claim gone")
 check(M.issue("zed", 30, false) and M.player_state("zed") == "carried",
 	"a new stone at once after the draft expired")
+-- R26: an admin removal has its own state (and wording, interface.lua).
+zc = M.create("zed", {x = 300, y = 10, z = 0})
+M.remove(zc, "removed")
+check(M.player_state("zed") == "removed" and M.claim_by_id(zc.id) == nil,
+	"admin removal: state removed, claim gone")
+check(new_model(storage).player_state("zed") == "removed", "the removed state persists")
+check(M.issue("zed", 30, false) and M.player_state("zed") == "carried",
+	"a new stone at once after an admin removal")
 zc = M.create("zed", {x = 300, y = 10, z = 0})
 check(M.activate(zc, 150) == 99 and M.remaining_seconds(zc) == 99 * M.LUMP_SECONDS,
 	"activation burns at most 99 lumps")
@@ -725,17 +733,18 @@ check(M.claim_by_id(b.id) == nil and M.player_state("bob") == "destroyed" and
 	"dig removes the claim, bob destroyed, event with the claim table")
 -- The periodic check (stone.lua's globalstep): an expired draft crumbles, its
 -- node goes, the owner needs a new stone; a standing stone stays.
+local told, removed
 do
 	nodes[a.center.x .. "/" .. a.center.y .. "/" .. a.center.z] = STONE
 	M.issue("yan", 20, false)
 	local yd = M.create("yan", {x = 9000, y = 0, z = 9000})
 	nodes["9000/0/9000"] = "grug_housing:claim_stone_draft"
-	local removed = {}
+	removed = {}
 	grug_housing.remove_stone_node = function(claim)
 		removed[#removed + 1] = claim.id
 		nodes[claim.center.x .. "/" .. claim.center.y .. "/" .. claim.center.z] = nil
 	end
-	local told = {}
+	told = {}
 	core.get_player_by_name = function(name)
 		return {get_player_name = function() return name end}
 	end
@@ -751,6 +760,29 @@ do
 	check(#told == 1 and told[1]:find("Housing Steward", 1, true) ~= nil,
 		"the owner is told to fetch a new stone from a Housing Steward")
 	check(M.claim_by_id(a.id) ~= nil, "a standing activated stone is kept")
+
+	-- R26: /claim_remove (admin.lua) with its own wording for the owner.
+	local commands = {}
+	core.register_chatcommand = function(name, def) commands[name] = def end
+	core.pos_to_string = function(p) return "(" .. p.x .. "," .. p.y .. "," .. p.z .. ")" end
+	_G.vector = {equals = function(p, q) return p.x == q.x and p.y == q.y and p.z == q.z end}
+	string.trim = string.trim or function(s) return (s:gsub("^%s*(.-)%s*$", "%1")) end
+	dofile(housing_dir .. "/admin.lua")
+	local cmd = commands.claim_remove
+	check(cmd ~= nil and cmd.privs.server == true, "/claim_remove needs server")
+	M.issue("yan", 20, false)
+	local yr = M.create("yan", {x = 9000, y = 0, z = 9000})
+	told, removed = {}, {}
+	local ok, msg = cmd.func("admin", "yan")
+	check(ok and M.claim_by_id(yr.id) == nil and removed[1] == yr.id and
+		M.player_state("yan") == "removed" and grug_housing.last_event.event == "removed",
+		"/claim_remove <player>: claim and stone gone, state and event removed (" ..
+		tostring(msg) .. ")")
+	check(#told == 1 and told[1]:find("was removed by an admin", 1, true) ~= nil,
+		"the owner is told an admin removed it")
+	ok = cmd.func("admin", "yan")
+	check(not ok, "/claim_remove of a player without a placed stone refused")
+	check(not cmd.func("admin", ""), "/claim_remove without a parameter: usage")
 	core.get_player_by_name = function() return nil end
 	core.chat_send_player = function() end
 end

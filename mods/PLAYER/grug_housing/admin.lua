@@ -9,22 +9,23 @@
 --   /claim_remove orphans    every Claim Stone node without a claim within
 --                            ORPHAN_RADIUS nodes of the admin
 --
--- A removed claim ends like a destroyed one: the owner's state becomes
--- "destroyed" (a new stone from a Housing Steward at once, no placing lock),
--- the "destroyed" event resets a claim home, nothing is refunded. Needs the
--- `server` privilege.
+-- A removed claim ends like a destroyed one, with its own wording: the
+-- owner's state becomes "removed" ("Your Claim Stone was removed by an admin"
+-- on the Character page; a new stone from a Housing Steward at once, no
+-- placing lock), the "removed" event resets a claim home, nothing is
+-- refunded. Needs the `server` privilege.
 
 local model = grug_housing.model
 local ORPHAN_RADIUS = 16
 
 local function remove_claim(claim, admin)
 	local had_node = grug_housing.remove_stone_node(claim)
-	model.remove(claim, "destroyed")
-	grug_housing.notify_claim_changed(claim, "destroyed")
+	model.remove(claim, "removed")
+	grug_housing.notify_claim_changed(claim, "removed")
 	local owner = core.get_player_by_name(claim.owner)
 	if owner then
-		core.chat_send_player(claim.owner, "An admin removed your Claim Stone. " ..
-			"A Housing Steward gives you a new one.")
+		core.chat_send_player(claim.owner, "Your Claim Stone was removed by an " ..
+			"admin. A Housing Steward gives you a new one.")
 	end
 	core.log("action", ("[grug_housing] %s removed Claim Stone %d of %s at %s%s"):format(
 		admin, claim.id, claim.owner, core.pos_to_string(claim.center),

@@ -52,7 +52,7 @@ return function(api)
 	local RADIUS, CELL = M.RADIUS, M.CELL
 
 	local STATES = {never = true, carried = true, placed = true,
-		destroyed = true, needs_stone = true}
+		destroyed = true, removed = true, needs_stone = true}
 	local LEVELS = {everything = true, interact = true}
 
 	local claims = {}        -- id -> claim
@@ -537,8 +537,9 @@ return function(api)
 
 	-- `reason` "picked_up": the owner carries the stone again; "draft_expired":
 	-- the draft crumbled, the owner needs a new stone ("needs_stone", issued
-	-- at once); anything else ("destroyed", an admin removal): the owner's
-	-- state becomes "destroyed".
+	-- at once); "removed": an admin removed it (state "removed", a new stone
+	-- at once); anything else ("destroyed"): the owner's state becomes
+	-- "destroyed".
 	function M.remove(claim, reason)
 		if not claims[claim.id] then return false end
 		claims[claim.id] = nil
@@ -551,6 +552,8 @@ return function(api)
 			rec.state = "carried"
 		elseif reason == "draft_expired" then
 			rec.state = "needs_stone"
+		elseif reason == "removed" then
+			rec.state = "removed"
 		else
 			rec.state = "destroyed"
 		end

@@ -2,21 +2,29 @@ Round 26 Lane S evidence, 2026-09-29, branch r26-s-claim-activation.
 
 *_fixture.txt         the Round 25 portable fixtures, extended for Round 26, run with
                       LuaJIT on the lane branch (claim core with seed 4242424242):
-                        luajit tools/r25_claim_core/fixture.lua <repo>       PASS 303
-                        luajit tools/r25_interfaces/portable_test.lua        PASS 151
-                        luajit tools/r25_home_stone/fixture.lua <repo>       PASS 114
+                        luajit tools/r25_claim_core/fixture.lua <repo>       PASS 311
+                        luajit tools/r25_interfaces/portable_test.lua        PASS 164
+                        luajit tools/r25_home_stone/fixture.lua <repo>       PASS 117
                         luajit tools/r25_interaction/fixture.lua <repo>      PASS 286
                         luajit tools/r25_spawn_guard/fixture.lua <repo>      PASS 344
                       The is_protected cost with housing is unchanged against Round 25
-                      (+54 ns with 0 claims, +81 ns with 50 claims; Round 25: +54 / +84).
-engine_probe.txt      tools/r26_claim_activation/run.sh, seed 4242424242, 290 s cap:
-engine_headless.txt   RESULT PASS (57 checks, 0 failures), boot PASS.
+                      (this run +49 ns with 0 claims, +74 ns with 50 claims; Round 25:
+                      +54 / +84).
+engine_probe.txt      tools/r26_claim_activation/run.sh, seed 4242424242, 290 s cap, after
+engine_headless.txt   the follow-up (draft countdown, "removed" state): RESULT PASS
+                      (57 checks, 0 failures), boot PASS. The previous PASS run (before the
+                      follow-up) gave the same 57 checks with the admin removal still
+                      reported as "destroyed".
 engine_run1_failures.txt
                       The first engine run (same probe) logged 3 of 57 failures, all probe
                       mistakes, fixed before the second run: the refund expectation (5 whole
                       lumps come back when the pick-up falls in the activation's second, not 4),
                       and the probe's own snow node left in the arrival cube, which refused the
                       next placement ("cube") and so failed the following <player> removal.
+                      That run's scratch folder had a generic name shared with another lane;
+                      only the r26 probe's own lines were taken from it.
+The draft countdown refresh (one redraw per second while a draft form is open) is covered
+by tools/r25_interfaces/portable_test.lua; the engine probe does not time it.
 The Round 25 engine probes under tools/r25_* still describe the Round 25 model (an
 empty stone fuelled through the slot, the 24 h limits); they were not re-run and are
 superseded by this probe for the claim lifecycle.

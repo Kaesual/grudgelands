@@ -375,6 +375,14 @@ check(last_chat() == "Your Claim Stone has been destroyed. Your home is now the 
  "F offline message at login: " .. last_chat())
 check(not home.home_is_claim(player) and home.get(player).id == "highcourt", "F offline reset")
 chat = {}; event("join"); check(#chat == 0, "F message delivered once")
+-- Round 26: an admin removal resets the home with its own wording.
+claim = place_claim("tester", stone_pos)
+check(home.set_home_claim(player), "F set for the admin removal")
+chat = {}
+remove_claim("tester", "destroyed"); fire(claim, "removed")
+check(last_chat() == "Your Claim Stone was removed by an admin. Your home is now the Highcourt Innkeeper.",
+ "F admin removal message: " .. last_chat())
+check(not home.home_is_claim(player) and home.get(player).id == "highcourt", "F admin removal reset")
 -- A lost claim that is not the home gives no message.
 claim = place_claim("tester", stone_pos)
 chat = {}

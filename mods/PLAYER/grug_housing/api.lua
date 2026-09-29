@@ -100,18 +100,19 @@ function grug_housing.permission(claim, name)
 end
 
 -- The player's claim (or nil) and a state: "never", "carried", "placed",
--- "destroyed" or "needs_stone". A standing stone, draft, fuelled or empty, is
--- "placed" with its claim. An expired draft leaves "needs_stone".
+-- "destroyed", "removed" or "needs_stone". A standing stone, draft, fuelled
+-- or empty, is "placed" with its claim. An expired draft leaves
+-- "needs_stone", an admin removal "removed".
 function grug_housing.player_claim(name)
 	return model.player_claim(name)
 end
 
 -- fn(claim, event) runs after every change; event is one of "placed",
--- "activated", "fuel", "permission", "picked_up", "destroyed",
--- "draft_expired", "expired". "picked_up", "destroyed" and "draft_expired"
--- pass the removed claim table. "expired" and "draft_expired" come from a
--- periodic check every few seconds (stone.lua); "expired" once per burnt-out
--- paid_until. An admin removal reports "destroyed".
+-- "activated", "fuel", "permission", "picked_up", "destroyed", "removed",
+-- "draft_expired", "expired". "picked_up", "destroyed", "removed" (an admin,
+-- admin.lua) and "draft_expired" pass the removed claim table. "expired" and
+-- "draft_expired" come from a periodic check every few seconds (stone.lua);
+-- "expired" once per burnt-out paid_until.
 local claim_changed_callbacks = {}
 
 function grug_housing.register_on_claim_changed(fn)

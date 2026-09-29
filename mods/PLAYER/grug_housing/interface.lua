@@ -86,6 +86,8 @@ function grug_housing.character_status(name)
 			color = ui.RED}
 	elseif state == "destroyed" then
 		return {text = "Your Claim Stone has been destroyed", color = ui.RED}
+	elseif state == "removed" then
+		return {text = "Your Claim Stone was removed by an admin", color = ui.RED}
 	elseif state == "carried" then
 		return {text = "Your Claim Stone is in your inventory, not placed yet"}
 	elseif state == "needs_stone" then

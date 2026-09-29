@@ -73,5 +73,5 @@ ACTION[Server]: [grug_housing] r26admin removed an orphaned Claim Stone node at 
 ACTION[Server]: [r26_claim_probe] claim_remove orphans: Removed 1 orphaned Claim Stone node(s) within 16 nodes (1 stone node(s) checked).
 ACTION[Server]: [r26_claim_probe] ok   orphans: the orphaned stone removed
 ACTION[Server]: [r26_claim_probe] ok   unknown player: refused (nobody_here has no placed Claim Stone (state: never).)
-ACTION[Server]: [r26_claim_probe] EVENTS placed:1 picked_up:1 placed:2 activated:2 picked_up:2 placed:3 draft_expired:3 placed:4 activated:4 destroyed:4 placed:5 destroyed:5
+ACTION[Server]: [r26_claim_probe] EVENTS placed:1 picked_up:1 placed:2 activated:2 picked_up:2 placed:3 draft_expired:3 placed:4 activated:4 removed:4 placed:5 removed:5
 ACTION[Server]: [r26_claim_probe] RESULT PASS (57 checks, 0 failures)

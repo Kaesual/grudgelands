@@ -544,8 +544,11 @@ grug_home = {set_home_claim = function() return true end}
 check(H.open_stone_interface(owner, draft), "owner opens the draft form")
 fs = last_shown("owner").fs
 has(fs, "Your Claim Stone (draft\\, not active)", "draft title")
-has(fs, "crumbles in 4 min unless you activate it.", "draft countdown")
-has(fs, "button[0.4,2.2;4.2,0.7;activate;Activate (5 coal)]", "activation button")
+has(fs, "crumbles in 4 min 00 s unless you activate it.", "draft countdown to the second")
+has(fs, "button[0.4,2.3;4.2,0.7;activate;Activate (5 coal)]", "activation button")
+lacks(fs, "field[", "draft form: no text field (the redraw keeps nothing typed)")
+lacks(fs, "list[current_player", "draft form: no inventory list")
+lacks(fs, "perm_list", "draft form: no access list")
 lacks(fs, "list[detached:grug_housing_fuel_owner", "no fuel slot on a draft")
 lacks(fs, "listring[detached:", "no fuel listring on a draft")
 lacks(fs, "set_home", "a draft is no home: no Set-as-home button")
@@ -572,12 +575,49 @@ has(fs, "Pick-up possible in 12 h 0 min.", "activated: the 12 h lock starts")
 has(fs, "set_home;Set as home", "activated: Set as home")
 lacks(fs, "activate;", "activated: no activation button")
 grug_home = nil
+-- The countdown redraws itself once a second while the draft form is open,
+-- only for that player, and stops with the form.
+do
+	local tick = globalsteps[2] -- stone_form.lua's draft tick
+	draft.activated_at, draft.paid_until, draft.placed_at = 0, now - 60, now - 60
+	H.open_stone_interface(owner, draft)
+	local count = #shown
+	tick(0.5)
+	eq(#shown, count, "no redraw before a second has passed")
+	now = now + 1
+	tick(0.5)
+	eq(#shown, count + 1, "the open draft form is redrawn after a second")
+	has(last_shown("owner").fs, "crumbles in 3 min 59 s", "the countdown moved on")
+	eq(last_shown("owner").name, "owner", "only the owner's form")
+	submit(owner, "grug_housing:stone", {pick_up = ""})
+	count = #shown
+	now = now + 1
+	tick(1)
+	eq(#shown, count, "no redraw while the pick-up confirmation is open")
+	submit(owner, "grug_housing:stone", {cancel_pick_up = ""})
+	submit(owner, "grug_housing:stone", {quit = "true"})
+	count = #shown
+	tick(1)
+	eq(#shown, count, "closing the form stops the countdown")
+	H.open_stone_interface(owner, claim)
+	count = #shown
+	tick(1)
+	eq(#shown, count, "an activated stone's form is not redrawn")
+	submit(owner, "grug_housing:stone", {quit = "true"})
+	now = now - 2
+	claims.owner = draft
+end
+
 -- An expired draft closes the open form.
 draft.activated_at, draft.paid_until = 0, now - 60
 H.open_stone_interface(owner, draft)
 closed_before = #closed
 H.notify_claim_changed(draft, "draft_expired")
 eq(#closed, closed_before + 1, "an expired draft closes the open form")
+H.open_stone_interface(owner, draft)
+closed_before = #closed
+H.notify_claim_changed(draft, "removed")
+eq(#closed, closed_before + 1, "an admin removal closes the open form")
 claims.owner, states.owner = claim, "placed"
 
 --
@@ -654,6 +694,11 @@ states.owner = "destroyed"
 eq(status_of("owner").text, "Your Claim Stone has been destroyed", "destroyed wording")
 has(status_fs("owner"), RED .. "Your Claim Stone has been destroyed", "destroyed in red")
 
+states.owner = "removed"
+eq(status_of("owner").text, "Your Claim Stone was removed by an admin",
+	"R26: admin removal wording")
+has(status_fs("owner"), RED .. "Your Claim Stone was removed by", "removed in red")
+
 states.owner, claims.owner = "placed", claim
 claim.paid_until = now + 3 * DAY + 5 * 3600 + 7 * 60
 eq(status_of("owner").text, "Claim Stone fuel: 3 d 5 h 7 min", "remaining wording")
@@ -678,7 +723,7 @@ has(page, "label[2.75,4.25;" .. RED .. "can access your home right now" .. RESET
 
 sfinv.contexts.owner = {page = "grug_inventory:character"}
 for _, fn in ipairs(joins) do fn(owner) end
-local step = globalsteps[#globalsteps]
+local step = globalsteps[1] -- the Character-page poll (interface.lua)
 local sets = #sfinv_sets
 step(10)
 eq(#sfinv_sets, sets, "unchanged status does not rebuild the page")
