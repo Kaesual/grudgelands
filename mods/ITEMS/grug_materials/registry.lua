@@ -4,32 +4,35 @@
 -- consume it, but no consumer owns a second copy of a depth boundary,
 -- canonical resource id or race-region material assignment.
 
+-- Tier N rock is "ordinary stone compressed by depth" (Round 24 ruling 1):
+-- a pick of tier >= N digs it at any y. The y bands only say where mapgen
+-- places each rock; no pick is limited by depth.
 grug_materials.TIERS = {
 	{id = 1, key = "bronze", name = "Bronze", min_level = 1, max_level = 10,
-		ilvl = 3, max_depth = -100, y_max = 31000, y_min = -100,
+		ilvl = 3, y_max = 31000, y_min = -100,
 		node = "default:stone", bar_item = "grug_materials:bronze_bar",
 		block_node = "grug_materials:bronze_block"},
 	{id = 2, key = "iron", name = "Iron", min_level = 11, max_level = 20,
-		ilvl = 10, max_depth = -300, y_max = -101, y_min = -300,
-		node = "grug_materials:slate", bar_item = "grug_materials:iron_bar",
+		ilvl = 10, y_max = -101, y_min = -300,
+		node = "grug_materials:t2_stone", bar_item = "grug_materials:iron_bar",
 		block_node = "grug_materials:iron_block"},
 	{id = 3, key = "steel", name = "Steel", min_level = 21, max_level = 30,
-		ilvl = 20, max_depth = -500, y_max = -301, y_min = -500,
-		node = "grug_materials:basalt", bar_item = "grug_materials:steel_bar",
+		ilvl = 20, y_max = -301, y_min = -500,
+		node = "grug_materials:t3_stone", bar_item = "grug_materials:steel_bar",
 		block_node = "grug_materials:steel_block"},
 	{id = 4, key = "silversteel", name = "Silversteel", min_level = 31,
-		max_level = 40, ilvl = 30, max_depth = -700, y_max = -501,
-		y_min = -700, node = "grug_materials:granite",
+		max_level = 40, ilvl = 30, y_max = -501,
+		y_min = -700, node = "grug_materials:t4_stone",
 		bar_item = "grug_materials:silversteel_bar",
 		block_node = "grug_materials:silversteel_block"},
 	{id = 5, key = "embersteel", name = "Embersteel", min_level = 41,
-		max_level = 50, ilvl = 40, max_depth = -1000, y_max = -701,
-		y_min = -1000, node = "grug_materials:emberrock",
+		max_level = 50, ilvl = 40, y_max = -701,
+		y_min = -1000, node = "grug_materials:t5_stone",
 		bar_item = "grug_materials:embersteel_bar",
 		block_node = "grug_materials:embersteel_block"},
 	{id = 6, key = "abyssal_steel", name = "Abyssal Steel", min_level = 51,
-		max_level = 60, ilvl = 50, max_depth = -31000, y_max = -1001,
-		y_min = -31000, node = "grug_materials:abyssal_rock",
+		max_level = 60, ilvl = 50, y_max = -1001,
+		y_min = -31000, node = "grug_materials:t6_stone",
 		bar_item = "grug_materials:abyssal_steel_bar",
 		block_node = "grug_materials:abyssal_steel_block"},
 }
@@ -56,17 +59,23 @@ function grug_materials.stratum_node_for(y)
 	return TIERS[grug_materials.tier_at(y)].node
 end
 
--- Inclusive lowest natural y a pick tier may reach. The public helper clamps
--- so callers doing tier arithmetic cannot accidentally turn nil into access.
-function grug_materials.max_depth_for_pick_tier(tier)
-	tier = math.floor(tonumber(tier) or 1)
-	if tier < 1 then
-		tier = 1
-	elseif tier > TIER_COUNT then
-		tier = TIER_COUNT
-	end
-	return TIERS[tier].max_depth
+-- Engine dig gate (Round 24 rulings 3-4): a natural node that needs a pick
+-- of tier N carries the node group `level = N - 1`, and a tier-t pick carries
+-- `maxlevel = t - 1` on its `cracky` and `grug_resource` capabilities, so the
+-- engine (client prediction included) refuses a weaker pick. Tier 1 needs no
+-- level group: absent means 0.
+function grug_materials.level_for_tier(tier)
+	return math.max(0, math.floor(tonumber(tier) or 1) - 1)
 end
+
+-- Decorative rocks (Round 24 ruling 8): any pick digs them, they drop
+-- themselves and no ore grows in them. Mapgen places them only in nests and
+-- the sparse mountain layers; they are never a tier stratum.
+grug_materials.DECORATIVE_ROCKS = {
+	{key = "slate", name = "Slate", node = "grug_materials:slate"},
+	{key = "basalt", name = "Basalt", node = "grug_materials:basalt"},
+	{key = "granite", name = "Granite", node = "grug_materials:granite"},
+}
 
 -- Generated excavation/ground nodes owned by the current mapgen. The mining
 -- transaction classifies by this explicit group contract, never by
@@ -391,14 +400,19 @@ local function validate_registry()
 				tier_bars[tier.bar_item] or tier_blocks[tier.block_node] then
 			registry_error("duplicate or non-contiguous tier at index " .. i)
 		end
-		if tier.max_depth ~= tier.y_min then
-			registry_error("tier " .. tier.key .. " max_depth must equal y_min")
-		end
 		if i > 1 and tier.y_max ~= TIERS[i - 1].y_min - 1 then
 			registry_error("gap or overlap above tier " .. tier.key)
 		end
 		tier_keys[tier.key], tier_nodes[tier.node] = true, true
 		tier_bars[tier.bar_item], tier_blocks[tier.block_node] = true, true
+	end
+	for _, rock in ipairs(grug_materials.DECORATIVE_ROCKS) do
+		if tier_nodes[rock.node] or rock.node ~= "grug_materials:" .. rock.key or
+				grug_materials.NATURAL_GROUND_SET[rock.node] then
+			registry_error("decorative rock collides with a tier or ground node: " ..
+				rock.node)
+		end
+		tier_nodes[rock.node] = true
 	end
 	local natural_nodes = {}
 	for _, node_name in ipairs(grug_materials.NATURAL_GROUND_NODES) do

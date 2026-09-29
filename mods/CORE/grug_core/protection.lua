@@ -46,3 +46,38 @@ function core.is_protected(pos, name)
 	end
 	return previous_is_protected(pos, name)
 end
+
+-- Player-facing reason for a refused edit (Round 24 ruling 7), or nil when
+-- the position is not protected for this player. It only EXPLAINS the answer
+-- core.is_protected gives above; it never decides it.
+local PROTECTION_HINTS = {
+	town = "Town – protected",
+	landmark = "Landmark – protected",
+	accord_home = "Accord home territory – protected",
+	throng_home = "Throng home territory – protected",
+	immutable = "Open sea – protected",
+	no_faction = "Protected – choose a faction first",
+}
+
+function grug_core.protection_reason(pos, name)
+	if not core.is_protected(pos, name) then return nil end
+	if name == "" or not grug_core.zone_authority_installed() then
+		return "protected"
+	end
+	local faction = grug_core.get_player_faction(name)
+	if faction ~= "accord" and faction ~= "throng" then return "no_faction" end
+	local kind = grug_zones.hard_protection_kind_at(pos)
+	if kind == "town" or kind == "landmark" then return kind end
+	local territory = grug_zones.territory_rule_at(pos)
+	if territory == "immutable" or territory == "accord_home" or
+			territory == "throng_home" then
+		return territory
+	end
+	return "protected"
+end
+
+function grug_core.protection_hint(pos, name)
+	local reason = grug_core.protection_reason(pos, name)
+	if not reason then return nil end
+	return PROTECTION_HINTS[reason] or "Protected"
+end

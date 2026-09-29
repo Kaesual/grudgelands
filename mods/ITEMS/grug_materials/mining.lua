@@ -1,20 +1,27 @@
--- Server-authoritative natural-depth and resource-harvest transaction (WP43).
+-- Mining tiers, dig transaction and punch hints (WP43, Round 24 rulings 1-7).
+--
+-- Tier rock and resources are gated by the ENGINE: a node that needs a pick
+-- of tier N carries `level = N - 1` (registry.lua `level_for_tier`), a tier-t
+-- pick carries `maxlevel = t - 1` on `cracky` and `grug_resource`. The client
+-- predicts that from the definitions alone, so a too-weak pick shows no
+-- cracks and cannot dig at all (Luanti src/tool.cpp getDigParams: a groupcap
+-- whose maxlevel is below the node level is skipped; a higher pick divides
+-- the time by the level difference). There is no depth limit per pick and no
+-- dig-without-drop path any more. Loose ground has no level and no tool gate.
+--
+-- Server protection stays authoritative (builtin core.node_dig); this file
+-- adds a server-side re-check of the same engine rule for natural nodes, the
+-- harvest callbacks and rate-limited one-line hints.
 
 local TIER_COUNT = #grug_materials.TIERS
 local HARVEST_TIER_COUNT = 5
 
-grug_materials.SHORTFALL_MULTIPLIERS = {
-	[0] = 1,
-	[1] = 4,
-	[2] = 6,
-	[3] = 8,
-	[4] = 10,
-}
-
 -- Provisional WP43 profiles. They make all six progression tiers mechanically
 -- complete without registering WP29's final gear catalog. WP22 owns the later
 -- speed/durability calibration; consumers should build capabilities from this
--- table instead of copying its values.
+-- table instead of copying its values. `cracky_times` and `ordinary_time` are
+-- the times at level difference 0 and 1; the engine divides them by the level
+-- difference when a pick digs rock two or more tiers below its own.
 grug_materials.PICK_PROFILES = {
 	[1] = {tier = 1, key = "bronze", ordinary_time = 0.45, uses = 300,
 		punch_attack_uses = 180,
@@ -52,12 +59,12 @@ local function copy_times(times)
 	return result
 end
 
-local function resource_times(pick_tier, ordinary_time)
+-- One ordinary time for every resource rating. Whether the pick may dig a
+-- resource at all is the level gate, not a missing time entry.
+local function resource_times(ordinary_time)
 	local times = {}
 	for harvest_tier = 1, HARVEST_TIER_COUNT do
-		local shortfall = math.max(0, harvest_tier - pick_tier)
-		local multiplier = grug_materials.SHORTFALL_MULTIPLIERS[shortfall] or 10
-		times[harvest_tier] = ordinary_time * multiplier
+		times[harvest_tier] = ordinary_time
 	end
 	return times
 end
@@ -83,6 +90,7 @@ function grug_materials.build_pick_capabilities(tier, values)
 			not punch_attack_uses or punch_attack_uses <= 0 then
 		error("grug_materials: invalid pick capability values")
 	end
+	local maxlevel = grug_materials.level_for_tier(tier)
 	return {
 		full_punch_interval = values.full_punch_interval or
 			profile.full_punch_interval or 1.0,
@@ -91,11 +99,11 @@ function grug_materials.build_pick_capabilities(tier, values)
 		groupcaps = {
 			cracky = {times = copy_times(values.cracky_times or
 				profile.cracky_times), uses = uses,
-				maxlevel = 0},
+				maxlevel = maxlevel},
 			grug_loose = {times = copy_times(values.loose_times), uses = uses,
 				maxlevel = tonumber(values.loose_maxlevel) or 0},
-			grug_resource = {times = resource_times(tier, ordinary_time),
-				uses = uses, maxlevel = 0},
+			grug_resource = {times = resource_times(ordinary_time),
+				uses = uses, maxlevel = maxlevel},
 		},
 		damage_groups = table.copy(values.damage_groups or profile.damage_groups or
 			{fleshy = 4}),
@@ -103,9 +111,10 @@ function grug_materials.build_pick_capabilities(tier, values)
 end
 
 -- Keep the material taxonomy separate from `crumbly`: that upstream group
--- also contains solid sandstone, clay and snow. The engine selects the fastest
--- matching groupcap, so a dedicated group makes the allowed shovel surface
--- explicit and gives picks one unambiguous slower route.
+-- also contains solid sandstone. The engine selects the fastest matching
+-- groupcap, so a dedicated group makes the shovel surface explicit and gives
+-- picks one slower route: a pick digs loose ground at twice the time of the
+-- shovel of its tier (ruling 5).
 function grug_materials.build_loose_times(shovel_times)
 	local times = {}
 	for rating, seconds in pairs(shovel_times or {}) do
@@ -128,9 +137,10 @@ local TOOL_FAMILY_GROUPS = {
 	shovel = {membership = "shovel", tier = "grug_shovel_tier"},
 }
 
--- Tier-neutral natural-source authority. WP29 owns attaching the axe/shovel
--- tier groups to its final tool catalog; until then a matching family reports
--- unavailable tier authority instead of borrowing the pick taxonomy.
+-- Tier-neutral natural-source authority. Every pick, axe and shovel of the
+-- ladder carries its tier group (overrides.lua, tools.lua); a matching family
+-- without one reports unavailable tier authority instead of borrowing
+-- another family's taxonomy.
 function grug_materials.tool_tier_for_stack(stack, family)
 	local groups = TOOL_FAMILY_GROUPS[family]
 	if not groups then
@@ -155,25 +165,13 @@ function grug_materials.tool_tier_for_stack(stack, family)
 	return tier, "ok"
 end
 
-function grug_materials.can_mine_natural_at(pick_tier, y)
-	pick_tier = exact_tier(pick_tier)
-	y = tonumber(y)
-	local required_tier = y and grug_materials.tier_at(y) or nil
-	local max_depth = pick_tier and
-		grug_materials.max_depth_for_pick_tier(pick_tier) or nil
-	local allowed = pick_tier ~= nil and y ~= nil and y >= max_depth
-	return allowed, {
-		allowed = allowed,
-		reason = allowed and "allowed" or (pick_tier and "depth" or "no_pick"),
-		pick_tier = pick_tier,
-		depth_required_tier = required_tier,
-		max_depth = max_depth,
-		y = y,
-	}
+function grug_materials.tier_rock_description(tier)
+	return "Stone\nRequires a T" .. tier .. " pick"
 end
 
-local function same_pos(a, b)
-	return a and b and a.x == b.x and a.y == b.y and a.z == b.z
+function grug_materials.resource_ore_description(resource)
+	return resource.name .. " Ore\nRequires a T" .. resource.harvest_tier ..
+		" pick"
 end
 
 function grug_materials.is_natural_node(node_name, def)
@@ -187,11 +185,42 @@ function grug_materials.is_natural_node(node_name, def)
 		groups.grug_stratum ~= nil
 end
 
+-- The pick tier a natural node needs: its stratum tier (default:stone is 1)
+-- or its resource harvest tier. Loose ground and decorative rock need none.
+function grug_materials.required_pick_tier(node_name, def)
+	def = def or core.registered_nodes[node_name]
+	local groups = def and def.groups or {}
+	return exact_tier(groups.grug_stratum) or exact_tier(groups.grug_resource)
+end
+
+local function hand_capabilities()
+	return ItemStack(""):get_tool_capabilities()
+end
+
+-- The engine's own dig rule for this stack: its capabilities first, then the
+-- hand (src/client/game.cpp handleDigging, serverpackethandler.cpp
+-- INTERACT_DIGGING_COMPLETED "If can't dig, try hand").
+function grug_materials.stack_can_dig(stack, def)
+	local groups = def and def.groups or {}
+	if stack and not stack:is_empty() then
+		local params = core.get_dig_params(groups, stack:get_tool_capabilities(),
+			stack:get_wear())
+		if params and params.diggable then return true end
+	end
+	local params = core.get_dig_params(groups, hand_capabilities())
+	return params ~= nil and params.diggable == true
+end
+
 local function digger_name(digger)
 	if digger and digger.is_player and digger:is_player() then
 		return digger:get_player_name()
 	end
 	return ""
+end
+
+local function is_player(object)
+	return object ~= nil and type(object.is_player) == "function" and
+		object:is_player()
 end
 
 -- The full public decision is read-only. The authoritative dig wrapper owns
@@ -207,9 +236,6 @@ function grug_materials.mining_decision(pos, node, digger)
 		protection_checked = false,
 		node_name = node and node.name or nil,
 		y = pos and pos.y or nil,
-		shatter = false,
-		shortfall = 0,
-		multiplier = 1,
 	}
 	if not pos or not node or not grug_materials.is_natural_node(node.name, def) then
 		return result
@@ -226,41 +252,20 @@ function grug_materials.mining_decision(pos, node, digger)
 	end
 
 	local stack = digger and digger.get_wielded_item and digger:get_wielded_item()
-	local pick_tier = grug_materials.pick_tier_for_stack(stack)
-	local depth_allowed, depth = grug_materials.can_mine_natural_at(
-		pick_tier, pos.y)
-	result.pick_tier = pick_tier
-	result.depth_required_tier = depth.depth_required_tier
-	result.max_depth = depth.max_depth
-	result.depth_allowed = depth_allowed
-	if not pick_tier then
-		result.allowed = false
-		result.reason = "no_pick"
-		return result
-	end
-	if not depth_allowed then
-		result.allowed = false
-		result.reason = "depth"
-		return result
-	end
-
+	result.pick_tier = stack and grug_materials.pick_tier_for_stack(stack) or nil
+	result.required_tier = grug_materials.required_pick_tier(node.name, def)
 	local harvest_tier = exact_tier((def.groups or {}).grug_resource)
 	if harvest_tier and harvest_tier > HARVEST_TIER_COUNT then
 		harvest_tier = nil
 	end
 	result.resource_harvest_tier = harvest_tier
-	if harvest_tier then
-		result.shortfall = math.max(0, harvest_tier - pick_tier)
-		result.multiplier = grug_materials.SHORTFALL_MULTIPLIERS[result.shortfall] or 10
-		result.shatter = result.shortfall > 0
+	if is_player(digger) and not grug_materials.stack_can_dig(stack, def) then
+		result.allowed = false
+		result.reason = result.required_tier and "too_hard" or "not_diggable"
+		return result
 	end
-	result.reason = result.shatter and "shatter" or "allowed"
+	result.reason = "allowed"
 	return result
-end
-
-function grug_materials.resource_ore_description(resource)
-	return resource.name .. " Ore\nRequires a T" .. resource.harvest_tier ..
-		" pick to harvest"
 end
 
 local harvest_callbacks = {}
@@ -290,100 +295,103 @@ local function settle_harvest(pos, node, digger, decision)
 	end
 end
 
-local feedback_at = {}
-local FEEDBACK_INTERVAL_US = 1500000
+-- One-line hints (ruling 7). At most one line per player every 1.5 s, and the
+-- same line at most every 5 s while a player keeps punching.
+local HINT_INTERVAL_US = 1500000
+local SAME_HINT_INTERVAL_US = 5000000
+local last_hint = {}
 
-local function failure_message(decision)
-	if decision.reason == "no_pick" then
-		return "A T" .. decision.depth_required_tier ..
-			" pick is required to mine natural ground at this depth."
-	elseif decision.reason == "depth" then
-		return "This natural ground requires a T" ..
-			decision.depth_required_tier .. " pick. Your T" .. decision.pick_tier ..
-			" pick reaches only y=" .. decision.max_depth .. "."
-	elseif decision.reason == "shatter" then
-		local resource = grug_materials.resource_for_node(decision.node_name)
-		local name = resource and resource.name or "Resource"
-		return name .. " shatters: a T" .. decision.resource_harvest_tier ..
-			" pick is required to harvest it."
+local function hint_ready(name, now)
+	local last = last_hint[name]
+	return not last or now - last.at >= HINT_INTERVAL_US
+end
+
+function grug_materials.emit_hint(name, message)
+	if not name or name == "" or not message then return false end
+	local now = core.get_us_time()
+	local last = last_hint[name]
+	if last and (now - last.at < HINT_INTERVAL_US or
+			(last.message == message and now - last.at < SAME_HINT_INTERVAL_US)) then
+		return false
 	end
+	last_hint[name] = {at = now, message = message}
+	core.chat_send_player(name, message)
+	return true
+end
+
+-- The protection line names the reason when grug_core can tell it
+-- (town, landmark, home territory); otherwise a plain "Protected".
+function grug_materials.protection_hint(pos, name)
+	local owner = rawget(_G, "grug_core")
+	if owner and type(owner.protection_hint) == "function" then
+		return owner.protection_hint(pos, name)
+	end
+	if core.is_protected(pos, name) then return "Protected" end
 	return nil
+end
+
+function grug_materials.too_hard_hint(required_tier)
+	return "Requires a T" .. required_tier .. " pick"
 end
 
 function grug_materials.emit_mining_failure(pos, digger, decision)
 	local name = digger_name(digger)
-	local now = core.get_us_time()
-	local message = failure_message(decision)
-	if message and name ~= "" and
-			(not feedback_at[name] or now - feedback_at[name] >= FEEDBACK_INTERVAL_US) then
-		feedback_at[name] = now
-		core.chat_send_player(name, message)
+	local message
+	if decision.reason == "protected" then
+		message = grug_materials.protection_hint(pos, name) or "Protected"
+	elseif decision.reason == "too_hard" then
+		message = grug_materials.too_hard_hint(decision.required_tier)
 	end
-	if decision.reason == "shatter" then
-		core.sound_play("default_dig_cracky", {
-			pos = pos,
-			gain = 0.55,
-			max_hear_distance = 12,
-		}, true)
-		core.add_particlespawner({
-			amount = 12,
-			time = 0.05,
-			minpos = vector.offset(pos, -0.35, -0.35, -0.35),
-			maxpos = vector.offset(pos, 0.35, 0.35, 0.35),
-			minvel = vector.new(-1.2, 0.4, -1.2),
-			maxvel = vector.new(1.2, 2.0, 1.2),
-			minexptime = 0.2,
-			maxexptime = 0.6,
-			minsize = 0.8,
-			maxsize = 1.8,
-			texture = "default_stone.png^[colorize:#777777:180",
-		})
-	end
+	return grug_materials.emit_hint(name, message)
 end
 
-core.register_on_leaveplayer(function(player)
-	feedback_at[player:get_player_name()] = nil
+local function wields_skill(stack)
+	local def = stack and stack:get_definition()
+	return def ~= nil and ((def.groups or {}).grug_ability or 0) > 0
+end
+
+local function wields_broken(stack)
+	local owner = rawget(_G, "grug_core")
+	return stack ~= nil and owner ~= nil and
+		type(owner.equipment_is_broken) == "function" and
+		owner.equipment_is_broken(stack) == true
+end
+
+-- The hint a punch earns, or nil. A selected skill makes LMB on a node the
+-- hand cannot dig a cast (classes.md 2b), so skills never produce a hint.
+function grug_materials.punch_hint(pos, node, puncher)
+	if not is_player(puncher) or not node then return nil end
+	local def = core.registered_nodes[node.name]
+	if not def or def.diggable == false then return nil end
+	local stack = puncher:get_wielded_item()
+	if wields_skill(stack) then return nil end
+	local name = puncher:get_player_name()
+	local protected = grug_materials.protection_hint(pos, name)
+	if protected then return protected end
+	local required = grug_materials.required_pick_tier(node.name, def)
+	if required and not wields_broken(stack) and
+			not grug_materials.stack_can_dig(stack, def) then
+		return grug_materials.too_hard_hint(required)
+	end
+	return nil
+end
+
+-- The client sends a punch (INTERACT_START_DIGGING) when it starts digging a
+-- node even if it predicts the node as undiggable (game.cpp handleDigging),
+-- so the server can answer both a protected and a too-hard node here.
+core.register_on_punchnode(function(pos, node, puncher)
+	if not is_player(puncher) then return end
+	local name = puncher:get_player_name()
+	if not hint_ready(name, core.get_us_time()) then return end
+	local message = grug_materials.punch_hint(pos, node, puncher)
+	if message then grug_materials.emit_hint(name, message) end
 end)
 
-local active_shatter
-
-function grug_materials.is_shattering(player, pos)
-	if not active_shatter then
-		return false
-	end
-	if player and player ~= active_shatter.digger and
-		(type(player) ~= "string" or player ~= active_shatter.player_name) then
-		return false
-	end
-	return not pos or same_pos(pos, active_shatter.pos)
-end
+core.register_on_leaveplayer(function(player)
+	last_hint[player:get_player_name()] = nil
+end)
 
 local builtin_node_dig = core.node_dig
-
-local function call_without_drops(pos, node, digger, decision)
-	local previous_handle_node_drops = core.handle_node_drops
-	local previous_active_shatter = active_shatter
-	local transaction = {
-		pos = vector.copy(pos),
-		digger = digger,
-		player_name = digger_name(digger),
-		decision = decision,
-	}
-	active_shatter = transaction
-	core.handle_node_drops = function(drop_pos, drops, drop_digger)
-		if same_pos(drop_pos, transaction.pos) and drop_digger == transaction.digger then
-			return
-		end
-		return previous_handle_node_drops(drop_pos, drops, drop_digger)
-	end
-	local ok, result = pcall(builtin_node_dig, pos, node, digger)
-	core.handle_node_drops = previous_handle_node_drops
-	active_shatter = previous_active_shatter
-	if not ok then
-		error(result, 0)
-	end
-	return result
-end
 
 local function node_dig(pos, node, digger)
 	local def = node and core.registered_nodes[node.name] or nil
@@ -394,24 +402,12 @@ local function node_dig(pos, node, digger)
 	if not decision.allowed then
 		if decision.reason == "protected" then
 			core.record_protection_violation(pos, digger_name(digger))
-		else
-			grug_materials.emit_mining_failure(pos, digger, decision)
 		end
+		grug_materials.emit_mining_failure(pos, digger, decision)
 		return false
 	end
-
-	local dug
-	if decision.shatter then
-		dug = call_without_drops(pos, node, digger, decision)
-	else
-		dug = builtin_node_dig(pos, node, digger)
-	end
-	if not dug then
-		return dug
-	end
-	if decision.shatter then
-		grug_materials.emit_mining_failure(pos, digger, decision)
-	elseif decision.resource_harvest_tier then
+	local dug = builtin_node_dig(pos, node, digger)
+	if dug and decision.resource_harvest_tier then
 		settle_harvest(pos, node, digger, decision)
 	end
 	return dug

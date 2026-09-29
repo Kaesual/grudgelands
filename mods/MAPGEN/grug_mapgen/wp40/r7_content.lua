@@ -1,6 +1,8 @@
--- Closed R7 production content resolvers. The accepted 84-row R8 terrain
--- namespace remains separate from the 90-row production-R6 namespace and the
--- 36-row P9G suffix.
+-- Closed R7 production content resolvers. The accepted 87-row R8 terrain
+-- namespace remains separate from the 93-row production-R6 namespace and the
+-- 36-row P9G suffix. Round 24 renamed the five tier strata to
+-- grug_materials:t2_stone..t6_stone and added the three decorative rocks
+-- (slate, basalt, granite) as surface-role rows (84 -> 87 rows).
 
 return function(core_api, projection, raw_sha256, settlement_palette)
 	local MAX_SAFE = 9007199254740991
@@ -65,9 +67,7 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		{"default:stone_with_tin", 4},
 		{"default:tree", 8},
 		{"grug_materials:abyssal_crystal_ore", 4},
-		{"grug_materials:abyssal_rock", 1},
 		{"grug_materials:basalt", 1},
-		{"grug_materials:emberrock", 1},
 		{"grug_materials:granite", 1},
 		{"grug_materials:slate", 1},
 		{"grug_materials:stone_with_citrine", 4},
@@ -79,6 +79,11 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		{"grug_materials:stone_with_ruby", 4},
 		{"grug_materials:stone_with_sapphire", 4},
 		{"grug_materials:stone_with_silver", 4},
+		{"grug_materials:t2_stone", 1},
+		{"grug_materials:t3_stone", 1},
+		{"grug_materials:t4_stone", 1},
+		{"grug_materials:t5_stone", 1},
+		{"grug_materials:t6_stone", 1},
 		{"grug_nodes:ash_ground", 1},
 		{"grug_nodes:blight_dirt", 1},
 		{"grug_nodes:bone_pile", 24},
@@ -210,7 +215,7 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		rows[#rows + 1] = {CULTURAL_NAMES[index], 16}
 	end
 	table.sort(rows, function(left, right) return less_bytes(left[1], right[1]) end)
-	if #ACCEPTED_R6_ROWS ~= 84 or #rows ~= 90 or #P9G_NAMES ~= 36 then
+	if #ACCEPTED_R6_ROWS ~= 87 or #rows ~= 93 or #P9G_NAMES ~= 36 then
 		fail("closed population differs")
 	end
 

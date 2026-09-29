@@ -15,7 +15,7 @@ local NOISE_DIGEST =
 	"5a1183a0db4dcbf7c2fce382e907660bfd26e53325d370f62a2d9e78c04d8738"
 local NATIVE_SCHEMA = "grug_wp40_r7_native_allowlist_v1"
 local NATIVE_DIGEST =
-	"d1fe4ac1c7cbe5525af65bde48cc4309870c01e4d474785f2cf0cda3d2639480"
+	"c29c9c6c5eadb0f3ba22cb10a5cd717e5ddec4041aad19df166c025d97b5e2ab"
 local FLOAT32_POINT_SIX = 0.60000002384185791015625
 
 local TOKEN_MARKER = "grug_wp40_r7_native_validation_token_v1"
@@ -366,31 +366,31 @@ local function native_definitions()
 		},
 		{
 			name = "grug_mapgen:native_stratum_iron_v1",
-			ore_type = "stratum", ore = "grug_materials:slate",
+			ore_type = "stratum", ore = "grug_materials:t2_stone",
 			wherein = "default:stone", clust_scarcity = 1,
 			y_min = -300, y_max = -101,
 		},
 		{
 			name = "grug_mapgen:native_stratum_steel_v1",
-			ore_type = "stratum", ore = "grug_materials:basalt",
+			ore_type = "stratum", ore = "grug_materials:t3_stone",
 			wherein = "default:stone", clust_scarcity = 1,
 			y_min = -500, y_max = -301,
 		},
 		{
 			name = "grug_mapgen:native_stratum_silversteel_v1",
-			ore_type = "stratum", ore = "grug_materials:granite",
+			ore_type = "stratum", ore = "grug_materials:t4_stone",
 			wherein = "default:stone", clust_scarcity = 1,
 			y_min = -700, y_max = -501,
 		},
 		{
 			name = "grug_mapgen:native_stratum_embersteel_v1",
-			ore_type = "stratum", ore = "grug_materials:emberrock",
+			ore_type = "stratum", ore = "grug_materials:t5_stone",
 			wherein = "default:stone", clust_scarcity = 1,
 			y_min = -1000, y_max = -701,
 		},
 		{
 			name = "grug_mapgen:native_stratum_abyssal_steel_v1",
-			ore_type = "stratum", ore = "grug_materials:abyssal_rock",
+			ore_type = "stratum", ore = "grug_materials:t6_stone",
 			wherein = "default:stone", clust_scarcity = 1,
 			y_min = -31000, y_max = -1001,
 		},
@@ -420,11 +420,11 @@ local function validate_blob(definition)
 end
 
 local STRATUM_EXPECTED = {
-	{"grug_mapgen:native_stratum_iron_v1", "grug_materials:slate", -300, -101},
-	{"grug_mapgen:native_stratum_steel_v1", "grug_materials:basalt", -500, -301},
-	{"grug_mapgen:native_stratum_silversteel_v1", "grug_materials:granite", -700, -501},
-	{"grug_mapgen:native_stratum_embersteel_v1", "grug_materials:emberrock", -1000, -701},
-	{"grug_mapgen:native_stratum_abyssal_steel_v1", "grug_materials:abyssal_rock", -31000, -1001},
+	{"grug_mapgen:native_stratum_iron_v1", "grug_materials:t2_stone", -300, -101},
+	{"grug_mapgen:native_stratum_steel_v1", "grug_materials:t3_stone", -500, -301},
+	{"grug_mapgen:native_stratum_silversteel_v1", "grug_materials:t4_stone", -700, -501},
+	{"grug_mapgen:native_stratum_embersteel_v1", "grug_materials:t5_stone", -1000, -701},
+	{"grug_mapgen:native_stratum_abyssal_steel_v1", "grug_materials:t6_stone", -31000, -1001},
 }
 
 local function validate_stratum(definition, expected, index)

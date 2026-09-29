@@ -49,15 +49,22 @@ or relicensed here.
 PilzAdam, paramat, sofar, Gambit, TumeniNodes, et al.; minetest_game does not
 attribute these media per file).
 
-## 1. Rock strata
+## 1. Rocks
+
+Placeholder tiles (Round 24): tier rocks T2-T6 and the three decorative rocks
+are runtime modifiers of the vendored stone tile, set in one table
+(`ROCK_TILES` in `init.lua`) until their own textures replace them.
 
 | Runtime node | Vendored original | Runtime modifier |
 |---|---|---|
-| `grug_materials:slate` | `default_stone.png` | `^[colorize:#4a5a6e:70` |
-| `grug_materials:basalt` | `default_stone.png` | `^[colorize:#2a2a2e:90` |
-| `grug_materials:granite` | `default_stone.png` | `^[colorize:#8a5a52:60` |
-| `grug_materials:emberrock` | `default_stone.png` | `^[colorize:#7a2a10:90` |
-| `grug_materials:abyssal_rock` | `default_stone.png` | `^[colorize:#241830:150` |
+| `grug_materials:t2_stone` | `default_stone.png` | `^[multiply:#ebebf0` |
+| `grug_materials:t3_stone` | `default_stone.png` | `^[multiply:#d7d7df` |
+| `grug_materials:t4_stone` | `default_stone.png` | `^[multiply:#c3c3ce` |
+| `grug_materials:t5_stone` | `default_stone.png` | `^[multiply:#afafbd` |
+| `grug_materials:t6_stone` | `default_stone.png` | `^[multiply:#9b9bac` |
+| `grug_materials:slate` | `default_stone.png` | `^[colorize:#3e4a5c:130` |
+| `grug_materials:basalt` | `default_stone.png` | `^[colorize:#1c1c20:170` |
+| `grug_materials:granite` | `default_stone.png` | `^[colorize:#a8705e:110` |
 
 ## 2. Natural resource nodes
 

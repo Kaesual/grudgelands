@@ -49,6 +49,16 @@ return function(canonical, raw_sha256, settlement_order)
 	-- deep forest and elf forest bush; world_zones.md §7.6) join the decoded
 	-- records (21 -> 24), which moves the pinned `decoded_templates` digest.
 	-- Was `0f9c1230f22f7a27...`.
+	-- Round 24 Lane A (mining tiers): the five tier strata are renamed
+	-- grug_materials:t2_stone..t6_stone (same ore rows, same y bands) and the
+	-- three decorative rocks join the accepted rows as surface-role rows
+	-- (84 -> 87). That moves the accepted-content limb, the production
+	-- semantics, the native allowlist (names only), the WP43 projection (tier
+	-- node names; the retired per-pick `max_depth` field is gone) and the
+	-- decoded templates, whose cells carry production content refs that shift
+	-- with the three inserted sorted rows while every cell name and the MTS
+	-- geometry stay fixed. Were `0c1c1efa25f1d173...`, `e7f1204a434fb773...`,
+	-- `d1fe4ac1c7cbe552...`, `77e5b5b14c98f172...` and `b420d6c4a7e31adc...`.
 	local FIELD_HEAD = {
 		"schema", "full_seed", "r5_schema", "r5_manifest_sha256",
 		"r5_artifact_sha256", "r6_schema", "r6_contract_sha256",
@@ -302,7 +312,7 @@ return function(canonical, raw_sha256, settlement_order)
 				"5a1183a0db4dcbf7c2fce382e907660bfd26e53325d370f62a2d9e78c04d8738" or
 			native.native_schema ~= "grug_wp40_r7_native_allowlist_v1" or
 			native.native_digest ~=
-				"d1fe4ac1c7cbe5525af65bde48cc4309870c01e4d474785f2cf0cda3d2639480" then
+				"c29c9c6c5eadb0f3ba22cb10a5cd717e5ddec4041aad19df166c025d97b5e2ab" then
 			fail("native identity differs")
 		end
 		local gathering = inputs.gathering_manifest
@@ -313,10 +323,12 @@ return function(canonical, raw_sha256, settlement_order)
 			fail("gathering identity differs")
 		end
 		if inputs.production_content.semantic_digest ~=
-				"e7f1204a434fb773b78562c4655cb949e7f5637b6c165b7d3228056d6ed56296" or
+				"292188ba50f8788d1349c3572db5ce28d28680a155bcd52b8ce424c92f41d8ad" or
 				inputs.p9g_content.semantic_digest ~=
 				"b4ca49bd01c47cd9915c07a57a7cdfc5346c2f49a7916e7834cb5b5056250cb0" then
-			fail("frozen content semantics differ")
+			fail("frozen content semantics differ: production=" ..
+				tostring(inputs.production_content.semantic_digest) .. " p9g=" ..
+				tostring(inputs.p9g_content.semantic_digest))
 		end
 		local anchors = inputs.anchor_content
 		if anchors.schema ~= "grug_wp40_r7_anchor_content_v1" or
@@ -463,11 +475,11 @@ return function(canonical, raw_sha256, settlement_order)
 			consumer_payload = graph_digest(inputs.consumer_payload),
 		}
 		if frozen.accepted_r6_content ~=
-				"0c1c1efa25f1d173680ebc94aeed87d969ca56572a06b0e1fcb8378f16a2783d" or
+				"8e98cd41632dd59f247ebccd139d7d3a021be149d21bc5ea030839a7a6c38e30" or
 			frozen.decoded_templates ~=
-				"b420d6c4a7e31adc3a919b632c9b126a27d90bdcb537e32697a64524832c12ef" or
+				"172726bfb439774d50dded5d98c807712599b8a23a79669ce8e7ec63dabf17cb" or
 			frozen.wp43_projection ~=
-				"77e5b5b14c98f17250b03c5aeb817db332f85b5414311defe1f4945174f1f8bf" or
+				"f1bba63f699c3fd0c6ed419b3172e9289023b3e1fbd83c887ea2d1956fedd864" or
 			frozen.cultural ~=
 				"263b9bf0a470295b62791f85effd59eee9090c82d5f4d050e4f97ba88bb79fb6" or
 			frozen.consumer_payload ~=

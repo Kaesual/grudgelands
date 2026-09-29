@@ -898,6 +898,21 @@ local function zones_factory(dependencies)
 			return zone_by_numeric[owner].territory_rule
 		end
 
+		-- What a hard-protected position belongs to, for player feedback only
+		-- (Round 24 ruling 7): "town" for a capital's protected city or a start
+		-- town, "landmark" for an exact protected column; nil otherwise.
+		function session.hard_protection_kind_at(position)
+			local x, y, z, outside = normalize_position(position,
+				"hard protection query")
+			local row = not outside and hard_row_at(x, y, z) or nil
+			if not row then return nil end
+			if row.shape == "capital_city_outline" or
+					row.shape == "start_town_outline" then
+				return "town"
+			end
+			return "landmark"
+		end
+
 		function session.pvp_rule_at(position)
 			local x, y, z, outside = normalize_position(position, "PvP query")
 			local water_class, _, owner = classification_values(x, z, outside)

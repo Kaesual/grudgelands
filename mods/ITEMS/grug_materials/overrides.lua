@@ -18,7 +18,8 @@ local function natural_resource(item_name, tier)
 		error("grug_materials: missing resource registry row for " .. item_name)
 	end
 	edit_groups(item_name, function(groups)
-		groups.level = nil
+		local level = grug_materials.level_for_tier(tier)
+		groups.level = level > 0 and level or nil
 		groups.cracky = nil
 		groups.grug_natural = 1
 		groups.grug_resource = tier
@@ -34,35 +35,39 @@ natural_resource("default:stone_with_tin", 1)
 natural_resource("default:stone_with_iron", 1)
 natural_resource("default:stone_with_gold", 2)
 
+-- T1 rock keeps its upstream name (Round 24 ruling 1): no level, any pick.
 edit_groups("default:stone", function(groups)
 	groups.level = nil
 	groups.grug_natural = 1
 	groups.grug_stratum = 1
 end)
+core.override_item("default:stone", {
+	description = grug_materials.tier_rock_description(1),
+})
 
 -- Explicit generated-ground taxonomy. `is_ground_content` is not a safe
 -- predicate because the engine's node-definition default is true (including
 -- saplings and many decorations). Only the owner list above receives the
 -- natural marker.
+--
+-- Loose ground (ruling 5) is every generated ground node except stone: no
+-- level and no tool gate, so the hand (its upstream `crumbly` capability)
+-- and every shovel and pick dig it. `grug_loose` carries the node's own
+-- `crumbly` rating. grug_nodes gives its registrations the same groups.
 for _, item_name in ipairs(grug_materials.NATURAL_GROUND_NODES) do
 	if item_name:match("^default:") and item_name ~= "default:stone" then
 		edit_groups(item_name, function(groups)
+			groups.level = nil
 			groups.grug_natural = 1
+			groups.grug_loose = groups.crumbly
 		end)
 	end
 end
 
--- Exact loose-material membership. Do not derive this from `crumbly`: solid
--- sandstone, clay and snow share that upstream group but are not shovel soil.
-local loose_nodes = {
-	"default:dirt", "default:dirt_with_grass",
-	"default:dirt_with_grass_footsteps", "default:dirt_with_dry_grass",
-	"default:dirt_with_snow", "default:dirt_with_rainforest_litter",
-	"default:dirt_with_coniferous_litter", "default:dry_dirt",
-	"default:dry_dirt_with_dry_grass", "default:sand",
-	"default:desert_sand", "default:silver_sand", "default:gravel",
-}
-for _, item_name in ipairs(loose_nodes) do
+-- Loose materials outside the generated-ground roster keep their shovel
+-- membership. Solid sandstone shares `crumbly` upstream but is rock, not
+-- shovel soil, and never receives `grug_loose`.
+for _, item_name in ipairs({"default:desert_sand"}) do
 	edit_groups(item_name, function(groups)
 		groups.grug_loose = groups.crumbly
 	end)
@@ -125,9 +130,19 @@ for _, row in ipairs(starter_shovels) do
 	core.override_item(row[1], {tool_capabilities = values})
 end
 
--- Preserve WP25's effective ordinary-rock values while retiring maxlevel as
--- an authority. The three starter picks deliberately share T1 depth access;
--- their differing speeds and uses remain their ordinary equipment quality.
+-- Axes carry their tier too (ruling 6). Wood is never gated: every axe keeps
+-- its upstream `choppy` capability and a better axe only chops faster.
+for _, row in ipairs({
+		{"default:axe_wood", 1}, {"default:axe_stone", 1},
+		{"default:axe_bronze", 1}, {"default:axe_steel", 3}}) do
+	edit_groups(row[1], function(groups)
+		groups.grug_axe_tier = row[2]
+	end)
+end
+
+-- Preserve WP25's effective ordinary-rock values. The three starter picks are
+-- all T1 (maxlevel 0: T1 rock and T1 resources); their differing speeds and
+-- uses remain their ordinary equipment quality.
 pick_groups("default:pick_wood", 1)
 core.override_item("default:pick_wood", {
 	tool_capabilities = grug_materials.build_pick_capabilities(1, {

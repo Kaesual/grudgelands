@@ -1,4 +1,4 @@
--- Canonical material/depth owner (WP43; items_crafting.md §3.0).
+-- Canonical material and mining-tier owner (WP43, Round 24; items_crafting.md §3.0).
 
 grug_materials = {}
 
@@ -6,30 +6,45 @@ local modpath = core.get_modpath(core.get_current_modname())
 dofile(modpath .. "/registry.lua")
 dofile(modpath .. "/mining.lua")
 
-local STRATUM_COLORS = {
-	slate = "#4a5a6e:70",
-	basalt = "#2a2a2e:90",
-	granite = "#8a5a52:60",
-	emberrock = "#7a2a10:90",
-	abyssal_rock = "#241830:150",
+-- THE ROCK TILES, one line per rock (Round 24). These are placeholders built
+-- from `default_stone.png`; the art lane replaces each value with its own
+-- texture (`grug_materials_<key>.png`) by editing only that line.
+-- Tier rocks read as the same stone, darker and slightly cooler with depth;
+-- the decorative rocks are clearly different from stone.
+local ROCK_TILES = {
+	t2_stone = "default_stone.png^[multiply:#ebebf0",
+	t3_stone = "default_stone.png^[multiply:#d7d7df",
+	t4_stone = "default_stone.png^[multiply:#c3c3ce",
+	t5_stone = "default_stone.png^[multiply:#afafbd",
+	t6_stone = "default_stone.png^[multiply:#9b9bac",
+	slate = "default_stone.png^[colorize:#3e4a5c:130",
+	basalt = "default_stone.png^[colorize:#1c1c20:170",
+	granite = "default_stone.png^[colorize:#a8705e:110",
 }
 
-local STRATUM_NAMES = {
-	slate = "Slate",
-	basalt = "Basalt",
-	granite = "Granite",
-	emberrock = "Emberrock",
-	abyssal_rock = "Abyssal Rock",
-}
-
+-- Tier rocks 2..6 (ruling 1). Tier 1 is `default:stone` (overrides.lua).
+-- All drop Cobble, so no player can place hard rock.
 for i = 2, #grug_materials.TIERS do
 	local tier = grug_materials.TIERS[i]
-	local name = tier.node:match("^grug_materials:(.+)$")
+	local key = tier.node:match("^grug_materials:(.+)$")
 	core.register_node(tier.node, {
-		description = STRATUM_NAMES[name],
-		tiles = {"default_stone.png^[colorize:" .. STRATUM_COLORS[name]},
-		groups = {cracky = 3, grug_natural = 1, grug_stratum = i},
+		description = grug_materials.tier_rock_description(i),
+		tiles = {ROCK_TILES[key]},
+		groups = {cracky = 3, level = grug_materials.level_for_tier(i),
+			grug_natural = 1, grug_stratum = i},
 		drop = "default:cobble",
+		is_ground_content = true,
+		sounds = default.node_sound_stone_defaults(),
+	})
+end
+
+-- Decorative rocks (ruling 8): any pick, drop themselves, never an ore host.
+for _, rock in ipairs(grug_materials.DECORATIVE_ROCKS) do
+	core.register_node(rock.node, {
+		description = rock.name,
+		tiles = {ROCK_TILES[rock.key]},
+		groups = {cracky = 3, grug_natural = 1, grug_decorative_rock = 1},
+		drop = rock.node,
 		is_ground_content = true,
 		sounds = default.node_sound_stone_defaults(),
 	})
