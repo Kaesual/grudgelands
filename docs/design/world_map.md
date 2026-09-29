@@ -47,7 +47,9 @@ session; closed maps receive no polling or formspec refreshes.
 Round 16 (approved 2026-09-22): authored quest givers have individual icon
 markers with the same per-player ready/available/active/locked precedence as
 world symbols. Include individual profession/Riding trainers, the six kings and
-two dragons at their authored locations. NPC/boss markers do not query live
+two dragons at their authored locations. The Housing Steward has its own
+marker (kind `steward`, a cottage-and-key icon, Round 26 playtest), drawn above
+trainers, kings and innkeepers but below quest, party and player markers. NPC/boss markers do not query live
 entities, load terrain, reveal health or indicate respawn state. All NPC/player
 hover tooltips contain only the name. Markers are not clustered, displaced or
 merged when nearby; subsequent playtest feedback decides whether any handling
@@ -66,7 +68,8 @@ waypoint unlock; binding still requires visiting an eligible innkeeper.
 The single full-world view replaces regional cutouts. A new Map-tab visit starts
 at 1x with origin scroll; no saved zoom/scroll preference. During that visit,
 live marker updates, detail clicks and home-status refresh preserve the view.
-Closing returns to Character as above. Zoom +/- offers 1x, 2x and 4x, preserving
+Closing returns to Character as above. Zoom +/- offers 1x, 2x, 4x and 8x (8x added after the Round 26 playtest
+for precise navigation to NPCs; the base image is simply shown larger), preserving
 the current world center and clamping at edges. Native horizontal/vertical
 scrollbars reach the complete map at enlarged zooms. No drag-to-pan or animation.
 
