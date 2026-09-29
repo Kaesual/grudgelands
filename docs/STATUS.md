@@ -4,7 +4,7 @@ Updated 2026-09-30. This is the delivery pointer, not another game specification
 
 - **Round 27 delivered locally** (2026-09-30, WP50,
   [plan, completion and playtest checklist](planning/round27-minimap-plan.md#completion-2026-09-30)).
-  Lane M merged on local main as `cda93c90`; D on branch `r27-d-docs`. No push.
+  Lanes M (`cda93c90`) and D merged on local main. No push.
   - **M:** our own round, north-up minimap in the native minimap's box
     (about 900 nodes, snapped to a coarse grid so the client texture cache
     grows only per cell) with quest givers by state, the Housing Steward,

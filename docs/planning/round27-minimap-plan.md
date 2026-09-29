@@ -89,7 +89,7 @@ touches no capital files.
 ## Completion (2026-09-30)
 
 Lane M is merged on local main as `cda93c90` (Phase 1 images `7595d67e`,
-minimap `aab95593`, review fixes `bd92081b`); D on branch `r27-d-docs`.
+minimap `aab95593`, review fixes `bd92081b`); D is merged after it.
 WP50 is delivered. No push.
 
 - **M — map quality and minimap** (rulings 1–12,
@@ -112,6 +112,8 @@ WP50 is delivered. No push.
   (before this round about 10 s and 0.56 MB as one PNG); high about 56 s,
   56 tiles, 6.93 MB (8.06 MB as one PNG). By its grid the minimap builds a
   new client texture only per cell, about every 110–130 nodes walked.
+  Minimap update in the engine: about 50–60 µs per player per 0.2 s step,
+  about 0.1 HUD packets per step standing or turning, about 1 walking.
 - **Checks:** portable fixture `tools/r27_minimap/portable_test.lua` (73
   checks, including slot priority, per-player staggering and the missing
   mask; it also prints the per-update cost), a short headless engine capture
