@@ -332,7 +332,7 @@ Scout. Ordinary T1 weapons require level 1; later tiers retain their requirement
 ### 6.6 Claims, protection and nametags — **no conflict**
 
 Nothing in the claim/protection system reads a class or a speed
-(`housing.md` §2, `economy.md` §4.1), and player nametags already use the
+(`housing.md` §6), and player nametags already use the
 25 m / 30 m proximity gate (`combat_stats.md` §6). Recorded because they
 are the first things a reviewer asks about, and because both *would* have been
 conflicts if version 1 had stealth (§8).
@@ -629,7 +629,7 @@ first-pass presentation is the text list; WP10 later replaces it with icons
 #### 8.2.6 Claims and protection — **cosmetic**
 
 Nothing in the claim/protection system reads visibility; claim protection is
-positional and owner-based (`housing.md` §2, `economy.md` §4.1). A stealthed
+positional and permission-based (`housing.md` §6). A stealthed
 player can already stand anywhere a visible one can. No conflict found; named
 because the coordinator asked.
 

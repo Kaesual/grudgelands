@@ -378,7 +378,7 @@ the same non-gated building-node rule.
 
 The Gold Block specifically packs from 9 Gold Ingots and unpacks to the same
 9 ingots. It is a storage/status/decor node, not ledger currency or a housing
-purchase token; no claim upgrade or universal progression step requires it.
+purchase token; no universal progression step requires it.
 
 #### 3.0.2 Alloys and the two-slot furnace
 
@@ -592,10 +592,12 @@ every 0.25 s):
 
 - protected node, with the protection reason: "Town – protected" (a
   capital's protected city or a start town), "Landmark – protected" (a
-  protected functional column: outpost, bandit camp, apex socket), "Accord
-  home territory – protected", "Throng home territory – protected", "Open sea
-  – protected"; a player without a faction reads "Protected – choose a faction
-  first";
+  protected functional column: outpost, bandit camp, apex socket), "Road –
+  protected" (a road corridor), "Village – protected" and similar for the
+  other POI boxes (`world.md` §2 R1b), "Home of <owner> – protected" (an
+  active Claim Stone claim, `housing.md` §6), "Accord home territory –
+  protected", "Throng home territory – protected", "Open sea – protected"; a
+  player without a faction reads "Protected – choose a faction first";
 - rock or resource too hard for the wielded tool: "Requires a T<N> pick";
 - a broken pick on rock or ore: "Your pick is broken – repair it".
 
@@ -2037,7 +2039,7 @@ Goldsmith/build material.
   budgets rather than bypassing the ledger with direct money drops.
 - Reliable net solo income is measured after routine tier-appropriate repair
   and consumables, excluding rare jackpots, boss rewards and player trade.
-  Claim and mount Gold targets derive from those measured tier rates.
+  Mount Gold targets derive from those measured tier rates.
 - Every mob drop has a positive `_grug_sell_price` or registered foreign-item
   override; zero means unsellable. Material values rise with tier and scarcity,
   while player trade remains their intended high-value market. Rough/Cut Gem,
@@ -2106,22 +2108,18 @@ Both consume the player's complete physical inputs and create no regional
 material.
 
 Private housing isles, paid depth rights and the complete guild system are
-retired. The first open-world Claim Stone is free after the level-20 Housing
-Steward introduction. Claim geometry, placement, ownership and lifecycle are
-defined by [housing.md](housing.md). Sequential upgrades consume:
+retired. Housing has no money price, tiers, upgrades or additional stones
+(Round 25; [housing.md](housing.md) owns the complete contract):
 
-| Claim upgrade | Level | Universal metal | Ledger target |
-|---|---:|---:|---:|
-| I → II | 35 | 4 Silversteel Bars | 30 minutes of reliable T4 net solo income |
-| II → III | 50 | 8 Embersteel Bars | 90 minutes of reliable T5 net solo income |
-| III → IV | 60 | 12 Abyssal Steel Bars | 3 hours of reliable T6 net solo income |
-
-The measured copper target uses the coarsest denomination in
-`1s / 25c / 5c / 1c` whose nearest multiple is within 5%; exact midpoints
-round upward. If configured above one stone, the second and third require
-level 60 and all existing stones at tier IV. They cost 12/24 Abyssal Steel
-Bars plus 5/10 hours of reliable T6 income. Claims never consume gems,
-cultural materials, foreign materials or profession-exclusive components.
+- **Claim Stone** `grug_housing:claim_stone`: one per player, soulbound (never
+  in chests, bags, trades or mail; kept on death; destroyed when dropped), not
+  craftable and not sold. The Housing Manager in every capital hands it out
+  free from level 20 while the player has none, carried or placed.
+- **Upkeep fuel:** the placed stone accepts only coal lumps
+  (`default:coal_lump`) and charcoal (`grug_smelting:charcoal`), both burning
+  7 h 16 min (26 160 s) per lump, at most 99 in its slot (≈ 30 days). Coal
+  blocks are refused. Inserted fuel cannot be taken out; picking the stone up
+  returns only the whole unburnt lumps.
 
 Mounts at levels 15/30/45/60 target **15 minutes / 45 minutes / 2 hours /
 5 hours** of reliable tier-appropriate net solo income. Their copper prices

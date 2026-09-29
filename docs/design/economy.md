@@ -124,37 +124,20 @@ prices take precedence over preserving the exact mathematical ratio.
 | Chest | 10c | 25c | 65c | 1s60c | 4s | 10s |
 | Offhand/head/legs/feet | 10c | 20c | 40c | 1s | 2s50c | 6s25c |
 
-### 4.1 Housing claims — the long-term per-character sink
+### 4.1 Income-derived price rounding; housing has no price
 
-Private housing isles, purchased depth rights, guild founding and every guild
-bank/claim fee are retired. Permanent player protection comes from open-world
-Claim Stones in the ten eligible level-11–30 housing zones. The authoritative
-claim tiers, issuance, lifecycle and capacity contract is
-[housing.md](housing.md).
+Every price derived from measured reliable net solo income (respec, mounts)
+rounds its copper result with the coarsest denomination in
+`1s / 25c / 5c / 1c` whose nearest multiple stays within 5% of the target;
+exact midpoints round upward.
 
-- The first owner-bound Claim Stone is free after the level-20 Housing Steward
-  introduction. A claim never grants private ore, purchased mining depth or a
-  material unavailable in the ordinary world.
-- Each placed stone upgrades sequentially. Every upgrade consumes the listed
-  universal metal plus a ledger amount derived from reliable net solo income:
-
-  | Upgrade | Level | Material | Money target |
-  |---|---:|---:|---:|
-  | Tier I → II | 35 | 4 Silversteel Bars | 30 minutes of T4 income |
-  | Tier II → III | 50 | 8 Embersteel Bars | 90 minutes of T5 income |
-  | Tier III → IV | 60 | 12 Abyssal Steel Bars | 3 hours of T6 income |
-
-  The measured copper result is rounded with the coarsest denomination in
-  `1s / 25c / 5c / 1c` whose nearest multiple stays within 5% of the target;
-  exact midpoints round upward.
-- When server settings allow more than one stone, a second or third may be
-  issued only at level 60 after every existing stone reaches tier IV. The
-  second costs 12 Abyssal Steel Bars plus five hours of reliable T6 income;
-  the third costs 24 bars plus ten hours. No available faction slot means the
-  transaction consumes nothing.
-- Claims and upgrades consume no gem, cultural material, foreign-faction
-  material or profession-exclusive component. They remain separate from the
-  regional gear economy.
+Housing is not a money sink (Round 25, [housing.md](housing.md)). Private
+housing isles, purchased depth rights, guild founding and every guild
+bank/claim fee are retired. The one Claim Stone per player is free from the
+Housing Manager at level 20; there are no tiers, upgrades, additional stones
+or faction pools. Its only running cost is fuel: coal lumps or charcoal, one
+lump per 7 h 16 min of protection. A claim never grants private ore,
+purchased mining depth or a material unavailable in the ordinary world.
 
 ### 4.2 Mount pacing
 

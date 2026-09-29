@@ -6,7 +6,7 @@ replaces `TODO-design-boats.md`, which is deleted.
 
 Neighbouring rules: ocean classes and deep-sea danger in `world.md` §2b, the
 authored channel geometry and both offshore islands in `world_zones.md` §7 and
-§9.4, waypoints and the Home Stone in `world.md` §6, riding in `mounts.md`, the
+§9.4, waypoints and home travel in `world.md` §6, riding in `mounts.md`, the
 two recipes in `items_crafting.md` §3.0.5 and the Kraken Guard in
 `biomes_mobs.md` §3.
 
@@ -66,8 +66,9 @@ channels lie in level-51–59 contested zones.
   plot and the display boat form one **bounded functional anchor**:
   `world.md` §2 R1
   hard-protects "small functional NPC and renewable-resource anchors" with an
-  exact authored footprint, and this is one of them. The surrounding village
-  shell stays mutable and claim-excluded like every other village.
+  exact authored footprint, and this is one of them. The village's building
+  core is a protected POI box and the rest of its shell stays mutable, like
+  every other village (`world.md` §2 R1b).
 
 ## 3. What a boat is, mechanically
 

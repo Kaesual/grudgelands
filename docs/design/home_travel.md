@@ -25,6 +25,9 @@ Decided 2026-09-22, Round 17. Uses the standard unmodified Luanti client.
   charges nothing. Revalidate character session, alive/combat state and binding
   before a delayed return completion; stale or duplicate requests cannot move a
   reconnected, dead or differently bound character.
-- This is the current V1 return/respawn mechanism. The separately planned
-  housing-bound Home Stone and waypoint network remain deferred. Neither adds
-  home points to these twelve or changes the current innkeeper cooldown.
+- This is the current V1 return/respawn mechanism. A player's own Claim Stone
+  can be the travel-home target instead, with the same 30-minute cooldown;
+  arrival is the stone's arrival cube, and when the stone is picked up or
+  destroyed the target falls back to the faction's default innkeeper, with a
+  message ([housing.md](housing.md) §8, Round 25). The waypoint network remains
+  deferred and adds no home points.

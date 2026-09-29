@@ -86,9 +86,10 @@ and functional anchors are preserved. Do not schedule these as 70 empty sites. T
   remains an explicit correction/verification task, preserved from the
   [earlier backlog readiness record](../archive/planning/backlog-before-consolidation.md#readiness-updated-2026-09-20).
 - Preserve complete civic protection (capital cities and start towns with
-  their bare bands, Round 22 D76/D78); ordinary
-  village/outpost/camp shells stay mutable and claim-excluded, with only bounded
-  functional anchors and irreplaceable routes hard-protected.
+  their bare bands, Round 22 D76/D78). Roads and POI, village and camp
+  building cores are world-protected (Round 25 rulings 15–16, `world.md` §2
+  R1b); bounded functional anchors stay hard-protected; the rest of a
+  village/outpost/camp shell stays mutable.
 - Preserve king/reset/participation/Crown reward acceptance; do not respawn the
   already-delivered king/guard roster as though missing.
 - User GUI acceptance remains open where no explicit acceptance is recorded.
@@ -107,19 +108,19 @@ Offhand and carried light: live shields, caster books, the bow-only zero-hand qu
 
 ## WP17
 
-**Dependencies:** WP24, WP40.
+**Dependencies:** WP40.
 
 **Status:** open; design-complete — the playable-boat contract is decided (2026-08-13, `docs/design/boats.md`)
 
-Travel: waypoint nodes at starts, capitals and authored zone hubs; visit-unlock and travel formspec; `/unstuck`; and the claim-bound Home Stone from `docs/design/housing.md` §4. Home stores a stable claim id, has no capital fallback and is rebound only by interacting with an active owned Claim Stone. It also **implements `docs/design/boats.md`**: the always-craftable five-wood base boat, the improved boat plus the permanent Improved Boat unlock the shipwright teaches from level 30, item↔entity lifecycle, exactly one player per boat with no mob or NPC passenger, free pickup/placement with the driver-only exception, the 24-hour decay of an unused boat, 4/8 nodes per second as entity velocity, and eject-on-damage through both seams (the boat entity's `on_punch` and the central `grug_core` HP-change hook). It also ships the three ocean-danger prerequisites that contract depends on: the mobs_redo attack-cadence patch of `combat_stats.md` §4, the Kraken Guard retune of `biomes_mobs.md` §3 (`run_velocity` 5 (owner ruling 2026-09-17), `view_range` 40) and the **position-dependent pursuit state** of `world.md` §2b — relentless while the guard itself stands in a deep-ocean column, the complete §4 leash/evade model in shelf water, planned water and dragon channels, switched at the guard's own position and never reversed once it evades. That third piece **replaces shipped behaviour**, and it is three fields, not one: `_grug_no_leash = true`, the mob's own 200-node coastal `LEASH_SLACK`/`strayed()` special case and `_grug_soft_deaggro = false` (`mods/ENTITIES/grug_mobs/kraken.lua:10`, `:37`, `:38`) all retire as blanket exceptions and come back position-dependent — suspended inside a deep-ocean column, ordinary outside it. Missing the soft-de-aggro half breaks the contract in both directions: left global, the guard keeps its running speed on the shelf instead of dropping to walking speed at 25 m; removed globally, an 8 nodes/s boat outruns a walking guard on the open sea. Deep-ocean-only spawning needs no new mechanism — `_grug_spawn_check` is already `grug_core.open_sea_at` (`kraken.lua:31`), which WP40 narrows to `deep_ocean`. The cadence foundation has later shipped; verify current shared seams rather than reimplementing its original patch. The boat/deep-ocean acceptance remains outstanding; speed 5 alone does not establish danger against an 8-nodes/s improved boat. The shipwright NPC itself is WP13 village content; until it stands, the improved boat is unobtainable while the base boat is not
+Travel: waypoint nodes at starts, capitals and authored zone hubs; visit-unlock and travel formspec; and `/unstuck`. The former claim-bound Home Stone is gone: since Round 25 the player's own Claim Stone is an alternative innkeeper travel-home target, delivered with WP24 (`docs/design/housing.md` §8). WP17 touches no housing or protection rule; boats and waypoints must respect the world protection of `docs/design/world.md` §2 (roads and POI boxes included). It also **implements `docs/design/boats.md`**: the always-craftable five-wood base boat, the improved boat plus the permanent Improved Boat unlock the shipwright teaches from level 30, item↔entity lifecycle, exactly one player per boat with no mob or NPC passenger, free pickup/placement with the driver-only exception, the 24-hour decay of an unused boat, 4/8 nodes per second as entity velocity, and eject-on-damage through both seams (the boat entity's `on_punch` and the central `grug_core` HP-change hook). It also ships the three ocean-danger prerequisites that contract depends on: the mobs_redo attack-cadence patch of `combat_stats.md` §4, the Kraken Guard retune of `biomes_mobs.md` §3 (`run_velocity` 5 (owner ruling 2026-09-17), `view_range` 40) and the **position-dependent pursuit state** of `world.md` §2b — relentless while the guard itself stands in a deep-ocean column, the complete §4 leash/evade model in shelf water, planned water and dragon channels, switched at the guard's own position and never reversed once it evades. That third piece **replaces shipped behaviour**, and it is three fields, not one: `_grug_no_leash = true`, the mob's own 200-node coastal `LEASH_SLACK`/`strayed()` special case and `_grug_soft_deaggro = false` (`mods/ENTITIES/grug_mobs/kraken.lua:10`, `:37`, `:38`) all retire as blanket exceptions and come back position-dependent — suspended inside a deep-ocean column, ordinary outside it. Missing the soft-de-aggro half breaks the contract in both directions: left global, the guard keeps its running speed on the shelf instead of dropping to walking speed at 25 m; removed globally, an 8 nodes/s boat outruns a walking guard on the open sea. Deep-ocean-only spawning needs no new mechanism — `_grug_spawn_check` is already `grug_core.open_sea_at` (`kraken.lua:31`), which WP40 narrows to `deep_ocean`. The cadence foundation has later shipped; verify current shared seams rather than reimplementing its original patch. The boat/deep-ocean acceptance remains outstanding; speed 5 alone does not establish danger against an 8-nodes/s improved boat. The shipwright NPC itself is WP13 village content; until it stands, the improved boat is unobtainable while the base boat is not
 
 ## WP21
 
 **Dependencies:** WP1.
 
-**Status:** open (spec: `docs/design/combat_stats.md` §5, `docs/design/progression.md` §1, `docs/design/housing.md` §4)
+**Status:** open (spec: `docs/design/combat_stats.md` §5, `docs/design/progression.md` §1)
 
-Recovery & rest: out-of-combat HP regen (0.5%/s), food recovery, innkeeper rested-XP/recovery service and any remaining rest integration. Innkeeper home binding/return/death respawn is already delivered by [home_travel.md](../design/home_travel.md); do not reimplement it. The separate future claim-bound Home Stone remains WP17 and is bound through the active owned claim, not an innkeeper
+Recovery & rest: out-of-combat HP regen (0.5%/s), food recovery, innkeeper rested-XP/recovery service and any remaining rest integration. Innkeeper home binding/return/death respawn is already delivered by [home_travel.md](../design/home_travel.md); do not reimplement it. The Claim Stone as travel-home target belongs to WP24 (`docs/design/housing.md` §8)
 
 ## WP22
 
@@ -139,11 +140,11 @@ Apex world bosses: populate the two offshore level-60 dragon islands, The Wyrmgl
 
 ## WP24
 
-**Dependencies:** WP40, WP43, WP44.
+**Dependencies:** WP40.
 
-**Status:** open; design-ready, waits for WP40's final housing masks/capacity and WP43/WP44 material/economy APIs
+**Status:** open; decided in Round 25 (rulings 1–19, 2026-09-29), plan and lanes in [round25-housing-plan.md](round25-housing-plan.md)
 
-**Open-world Claim Stone housing:** implement `grug_housing` from `docs/design/housing.md`: ten peaceful level-11–30 eligibility masks; four active cube tiers (radii 20/30/40/50); immediate 101×101 future reservation; exact one-sided expanded-AABB ten-node inter-owner spacing; owner plus ten same-faction trusted characters; indirect-mutation and natural-spawn protection; claim-excluded roads/POIs versus bounded hard-protected anchors; Steward issuance and pool UI; atomic upgrades/additional-stone purchases; reserved arrival column; and AreaStore-backed point/reservation/exclusion indexes over canonical mod-storage records. Implement the stable-id generation-safe state machine across placed, inventory, recovery escrow, transient and dormant locations, with live-slot accounting, on-demand inactivity decay, voluntary/forced dormancy, forced recovery, stale-copy rejection, recovery notices, reissue and administration. Expose the active-claim/home hooks consumed by WP17. The accepted fixed-layout packing portfolio informs the per-faction live limits; WP24 itself selects and configures the defaults below demonstrated capacity (`housing.md` §10). Varying-seed height/content conformance is separate, and ledger copper values remain measured outputs owned with WP44, not open design
+**Claim Stone housing** exactly as `docs/design/housing.md`: the `grug_housing` mod with a mod-storage claim registry and grid index; one 101 × 101 claim column from y = −100 up per player; placement in the own faction's level-11–30 home zones by conservative sampling, clear of hard protection, POI/village/camp areas and other claims, with a free 3 × 3 × 3 arrival cube; the soulbound `grug_housing:claim_stone` from the Housing Manager in every capital at level 20; once-a-day place and pick-up limits; coal lump/charcoal fuel as a `paid_until` timestamp (26 160 s per lump, 99 slots, the housing.md §4 slot arithmetic); empty-fuel expiry and pick destruction times; Interact/Everything permissions; the generic right-click and node-inventory guard; the stone formspec and character-page status; no renewal in active claims; the claim as `grug_home` travel-home target with fallback to the default innkeeper; removal of the housing masks and coastal housing areas from the zone data. Road and POI world protection (Round 25 Lane E, `docs/design/world.md` §2 R1b) ships alongside but is independent of housing
 
 ## WP27
 
@@ -189,9 +190,9 @@ Mounts: four riding tiers, persistent ownership and ephemeral controller/visual,
 
 **Dependencies:** WP10, WP24, WP33.
 
-**Status:** in progress: all seventeen crop lifecycles, legal-ground farming and world acquisition are delivered. Round 11 adds distinct seed icons, seven hoes, water buckets, halved wild-source density and bounded depletion renewal. GUI acceptance remains; future Claim Stone integration belongs to WP24.
+**Status:** in progress: all seventeen crop lifecycles, legal-ground farming and world acquisition are delivered. Round 11 adds distinct seed icons, seven hoes, water buckets, halved wild-source density and bounded depletion renewal. GUI acceptance remains; Claim Stone integration (harvesting counts as digging, no wild renewal in active claims) belongs to WP24.
 
-Farming: all 17 crop families have seed, wet-soil growth, pause/resume and harvest/replant mechanics; MAP-B supplies world acquisition, secondary/field soils and sea/cave placement. Later active-claim integration retains the exhaustive ten-node growth audit.
+Farming: all 17 crop families have seed, wet-soil growth, pause/resume and harvest/replant mechanics; MAP-B supplies world acquisition, secondary/field soils and sea/cave placement.
 
 ## WP34
 
@@ -231,5 +232,5 @@ Bounded war-front life: implement `world_zones.md` §16's sixteen clash anchors 
 
 **Status:** open; design-ready against WP43's shipped final material ids; engineering brief: `docs/research/wp44-engineering-brief.md`
 
-**Economy Rebase:** migrate the shipped WP7 legacy economy without rewriting its Completion Record. Implement the fixed Common-weapon axis 25c/65c/1s60c/4s/10s/25s and derived slot tables, ceiling-rounded 5% buy-back, revised material/gem/Gold/Abyssal/trophy values and the 50%-of-Common cultural-master service fees. Add a reproducible Income Ledger that measures reliable tier-appropriate net solo income after repairs/consumables and excludes rare jackpots, world bosses and player trade; use it to calibrate Claim Stone upgrade/additional-stone costs and the four mount targets (15m/45m/2h/5h) with the published rounding rules. Keep money ledger-only and rerun every anti-profit-loop/trader-substitution audit — including the **two coverage gaps in the shipped third audit** that the 2026-08-13 boat round surfaced: a recipe with any unpriced input is skipped whole, which silently exempts every `group:`-input recipe (`mods/ENTITIES/grug_traders/init.lua:257-261`), and the comparison is `output > inputs` while `items_crafting.md` §3.8 requires strictly below, so a break-even craft passes (`:269`)
+**Economy Rebase:** migrate the shipped WP7 legacy economy without rewriting its Completion Record. Implement the fixed Common-weapon axis 25c/65c/1s60c/4s/10s/25s and derived slot tables, ceiling-rounded 5% buy-back, revised material/gem/Gold/Abyssal/trophy values and the 50%-of-Common cultural-master service fees. Add a reproducible Income Ledger that measures reliable tier-appropriate net solo income after repairs/consumables and excludes rare jackpots, world bosses and player trade; use it to calibrate the talent respec and the four mount targets (15m/45m/2h/5h) with the published rounding rules. Keep money ledger-only and rerun every anti-profit-loop/trader-substitution audit — including the **two coverage gaps in the shipped third audit** that the 2026-08-13 boat round surfaced: a recipe with any unpriced input is skipped whole, which silently exempts every `group:`-input recipe (`mods/ENTITIES/grug_traders/init.lua:257-261`), and the comparison is `output > inputs` while `items_crafting.md` §3.8 requires strictly below, so a break-even craft passes (`:269`)
 

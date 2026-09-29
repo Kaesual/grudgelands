@@ -1,6 +1,7 @@
 # Story & Main Questline
 
-Decided premise (2026-08-06; housing and royal roles revised 2026-08-12).
+Decided premise (2026-08-06; royal roles revised 2026-08-12; housing revised
+2026-09-29).
 Delivery: quests, setting and environmental storytelling (a light layer, not
 cutscene opera).
 
@@ -42,12 +43,11 @@ or travel. Overworld foreshadowing does not unlock or include that expansion.
   framed by this premise:
   the enemy faction is suspected of dealings with the darkness,
   intelligence must be gathered behind enemy lines, etc.
-- **The housing introduction** is a level-20 civic beat, separate from royal
-  combat. A passive, invulnerable Housing Steward in each capital recognizes
-  the character's service and issues the first free owner-bound Claim Stone
-  when faction capacity permits. The home is claimed in one of the ten
-  authored level-11–30 housing zones; it is not an island, a king's personal
-  gift or a purchase of underground rights ([housing.md](housing.md) §2).
+- **Housing** is a level-20 civic service, separate from royal combat. The
+  Housing Manager in each capital hands out the player's free Claim Stone and
+  briefly explains its upkeep. The home is claimed in the player's own
+  level-11–30 home zones; it is not an island, a king's personal gift or a
+  purchase of underground rights ([housing.md](housing.md)).
 - Each race still has its own king, for six kings total. Kings and their royal
   guards are killable high-end raid combatants, unlike passive service NPCs.
   Their Fallen Crowns are optional personal masterwork trophies with race
