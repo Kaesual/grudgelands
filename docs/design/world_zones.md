@@ -818,12 +818,38 @@ replaced; git history before this rewrite records that model.
   basalt under badlands, desert stone as the existing closest limestone under
   meadows, slate under pine hills and mossy cobble as the existing closest
   mossy stone under jungle. Slate and basalt here are the decorative any-pick
-  rocks `grug_materials:slate`/`:basalt` (Round 24), never tier rock. This pass replaces only immutable-input native
-  stone. It skips air, liquids, ores, dungeon blocks, functional volumes and
-  every protected or excluded surface. Its depth loop is clipped at y = -37.
-  The six native ore records and five deep native strata (tier rocks
-  `grug_materials:t2_stone`..`t6_stone` since Round 24) remain unchanged and
-  authoritative below it.
+  rocks `grug_materials:slate`/`:basalt` (Round 24), never tier rock. This
+  pass replaces immutable-input native stone and terrain-fill stone (below).
+  It skips air, liquids, ores, dungeon blocks, functional volumes and every
+  protected or excluded surface. Its depth loop is clipped at y = -37. The native ore records (gravel blob, five deep
+  strata of the tier rocks `grug_materials:t2_stone`..`t6_stone`, three
+  decorative nests) remain authoritative below it.
+- **Terrain fill (Round 24, rulings 9–15).** Where the final surface lies
+  above native v7, the terrain fill (R5 opcode 27, `[-37, terrain_y - 1]`)
+  closes the gap with `default:stone`. A fill voxel is stone the fill wrote
+  into native void (air, water or plants) that no later stage changed. It is
+  treated like native stone near the surface: the resource pass counts it as
+  a `default:stone` host with the same budget per 16³ cell and the same veins
+  (ores stay in `default:stone` only), and the shallow strata above replace
+  it. Fill 41 or more nodes below the column's surface (mountain interiors)
+  carries sparse horizontal layers: absolute y plus a smooth per-column
+  offset (bilinear on a 48-node lattice, ±5 nodes) selects a 13-node slab;
+  a slab of the column's zone holds one layer of 2–4 nodes with probability
+  9/20, its rock drawn from the biome palette (sandstone, desert stone and
+  granite under savanna and beach; desert stone, sandstone and basalt under
+  both badlands; basalt, slate and granite under blight and bone forest;
+  granite, slate and desert stone under meadows, elf forest and deep forest;
+  slate, granite and basalt elsewhere). A 16³ lattice cell holds a
+  gravel (3/5) or dirt (2/5) pocket with probability 3/10, an ellipsoid of
+  radii 2–3 × 2 × 2–3 inside the cell. Stone stays clearly dominant
+  (measured 81 % stone plus 4 % ores in a real mountain interior, 89 % stone
+  in the fixture). Nothing carves caves into the fill; the seam to native v7 may cut through
+  veins, bands and caves. Lava is unchanged.
+- **Decorative nests (Round 24, ruling 14).** Native blob ores place nests
+  of `grug_materials:slate` (y −400…−40), `grug_materials:granite`
+  (y −900…−200) and `grug_materials:basalt` (below y −600) in
+  `default:stone` and every tier rock: blob size 7, one blob per 28³ nodes
+  of the range (about one voxel in 120 per rock).
 - The map promises no target journey duration. Road placement, visible
   terrain structure and available travel methods determine travel time.
   Strategic separators are physical terrain or explicit water, never

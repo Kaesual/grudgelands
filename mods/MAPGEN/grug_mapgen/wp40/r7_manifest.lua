@@ -307,12 +307,14 @@ return function(canonical, raw_sha256, settlement_order)
 			fail("R6 predecessor identity differs")
 		end
 		local native = inputs.native_identities
+		-- Native allowlist: Round 24 Lane B appended the decorative-nest blobs
+		-- (r7_native.lua) to Lane A's renamed rows (`c29c9c6c5eadb0f3...`).
 		if native.noise_schema ~= "grug_wp40_r7_noiseparams_v1" or
 			native.noise_digest ~=
 				"5a1183a0db4dcbf7c2fce382e907660bfd26e53325d370f62a2d9e78c04d8738" or
 			native.native_schema ~= "grug_wp40_r7_native_allowlist_v1" or
 			native.native_digest ~=
-				"c29c9c6c5eadb0f3ba22cb10a5cd717e5ddec4041aad19df166c025d97b5e2ab" then
+				"a1c53c2fffce197c76f99c31bba294cb006d19079ed8477378f740e8aa6dd31b" then
 			fail("native identity differs")
 		end
 		local gathering = inputs.gathering_manifest
