@@ -17,12 +17,14 @@
 -- poison and a PvP tag (no WP41 mechanics exist yet; neutral gold frame).
 -- The party is a STAGED view (grug_parties.view replaced for this client
 -- only): one member per class, so the class icons can be seen.
--- It logs "[status_icons_probe] READY" and shuts the server down
--- SHUTDOWN_AFTER seconds later.
+-- It logs "[status_icons_probe] READY", then opens the Group page (GROUP),
+-- the Character page's Effects tab (EFFECTS) and its Stats tab (STATS) as
+-- the real sfinv formspecs, and shuts the server down SHUTDOWN_AFTER seconds
+-- after READY.
 
 local P = "[status_icons_probe] "
 local NAME = "grugcap"
-local SHUTDOWN_AFTER = 45
+local SHUTDOWN_AFTER = 48
 local LONG = 600
 
 local function log(msg) core.log("action", P .. msg) end
@@ -66,6 +68,14 @@ local function hold_target()
 	end
 end
 
+local function show_page(player, page, tab)
+	local context = sfinv.get_or_create_context(player)
+	context.page = page
+	context.grug_character_tab = tab
+	core.show_formspec(NAME, "grug_probe_status_icons:view",
+		sfinv.get_formspec(player, context))
+end
+
 local function stage(player)
 	player:hud_set_flags({chat = false})
 	local yaw = math.rad(200)
@@ -79,7 +89,7 @@ local function stage(player)
 	grug_food.eat(stack, player, 1, "dish", "hearty")
 	log("food status " .. tostring(grug_core.get_status(player, "food") ~= nil))
 	grug_core.set_status(player, "elixir", {label = "Elixir of Focus III",
-		duration = 900, variant = "focus"})
+		duration = 900, variant = "focus", detail = "+5% maximum Mana"})
 	grug_core.add_absorb(player, "power_word_shield", 60, LONG, player, {},
 		{dodge_percent = 10})
 	grug_classes.start_talent_window(player, "untouchable", LONG)
@@ -128,7 +138,24 @@ core.register_globalstep(function(dtime)
 	elseif state.phase == "ready" then
 		grug_core.mark_in_combat(player)
 		hold_target()
-		if core.get_us_time() - state.ready_at > SHUTDOWN_AFTER * 1e6 then
+		local since = (core.get_us_time() - state.ready_at) / 1e6
+		-- The two inventory pages, shown as the real sfinv formspecs: the
+		-- Group page (class icons in the member table) and the Character
+		-- page's Effects tab. capture.sh grabs a frame after each log line.
+		if since > 14 and not state.group then
+			state.group = true
+			show_page(player, "grug_parties:group")
+			log("GROUP")
+		elseif since > 24 and not state.effects then
+			state.effects = true
+			show_page(player, "grug_inventory:character", "effects")
+			log("EFFECTS")
+		elseif since > 32 and not state.stats then
+			state.stats = true
+			show_page(player, "grug_inventory:character", "stats")
+			log("STATS")
+		end
+		if since > SHUTDOWN_AFTER then
 			state.phase = "done"
 			log("shutdown")
 			core.request_shutdown("probe done", false, 0)

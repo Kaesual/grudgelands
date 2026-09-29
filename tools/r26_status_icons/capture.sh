@@ -18,6 +18,7 @@
 # binary (dnf download xorg-x11-server-Xvfb; rpm2cpio ... | cpio -idm):
 #
 # Usage: XVFB=/path/to/Xvfb tools/r26_status_icons/capture.sh OUT.png [GAME_PATCH]
+# Writes OUT.png (HUD), OUT_group.png, OUT_effects.png and OUT_stats.png.
 set -euo pipefail
 export LC_ALL=C
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
@@ -120,5 +121,16 @@ fi
 sleep 6
 mkdir -p "$(dirname "$out")"
 import -display ":$display_no" -window root "$out"
-grep -h '\[status_icons_probe\]' "$root/server.log" || true
 echo "capture: $out"
+# Then the inventory pages the probe opens: OUT_group, OUT_effects, OUT_stats.
+for view in GROUP EFFECTS STATS; do
+	target="${out%.png}_$(echo "$view" | tr 'A-Z' 'a-z').png"
+	for _ in $(seq 1 40); do
+		grep -q "\[status_icons_probe\] $view" "$root/server.log" 2>/dev/null && break
+		sleep 1
+	done
+	sleep 3
+	import -display ":$display_no" -window root "$target"
+	echo "capture: $target"
+done
+grep -h '\[status_icons_probe\]' "$root/server.log" || true

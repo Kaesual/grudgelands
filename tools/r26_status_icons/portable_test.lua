@@ -1,6 +1,7 @@
 -- Round 26 Lane I portable test: the status icon registry and the HUD icon row
 -- (rulings 17-22). Loads the REAL grug_core/hud_layout.lua, status_icons.lua,
--- status.lua, movement.lua and combat_hud.lua under a minimal `core` stub.
+-- status.lua, movement.lua, combat_hud.lua, grug_inventory/pages.lua and
+-- grug_parties/ui.lua under a minimal `core` stub.
 --
 -- Checks:
 --   * every registered status id (and variant) resolves to an existing 64x64
@@ -12,8 +13,11 @@
 --     status-source ids, talent windows) is registered, and every talent
 --     window names a real talent;
 --   * countdown / value captions, the food item-image path and its fallback;
---   * the row: order, hidden values, the ten-slot limit, expiry, movement
---     flags as a source, idle refreshes writing nothing, the combat icon.
+--   * the row: order, hidden values, the ten-slot limit (debuffs kept first),
+--     GUI-scaled captions, expiry, movement
+--     flags as a source, idle refreshes writing nothing, the combat icon;
+--   * the Character page Effects tab (content, empty state, refresh policy,
+--     tab switch) and the Group page member table with class icons.
 --
 -- Usage (repo root): luajit tools/r26_status_icons/portable_test.lua
 
@@ -239,6 +243,11 @@ for id, file in pairs(set_ids) do
 		") is registered")
 end
 check(set_ids.potion_cooldown == nil, "no potion cooldown status (ruling 21)")
+-- Death ends poison chains like leaving does (review L3; the status table
+-- clears on death, so a chain ticking on after a respawn would be invisible).
+check(read_file("mods/ENTITIES/grug_mobs/verbs.lua"):find(
+	"core.register_on_dieplayer(cancel_poison)", 1, true) ~= nil,
+	"poison chains stop on death")
 for _, expected in ipairs({"food", "elixir", "alchemy_swiftness",
 		"alchemy_cave", "mount", "scout_sprint", "sidestep", "renew", "shield",
 		"poisoned", "scorched", "stunned", "rooted", "slowed", "move_immune",
@@ -365,11 +374,23 @@ check(not after:find("move_immune", 1, true), "immunity expired")
 -- The web (8 s) outlived the immunity and is live again.
 check(after:find("slowed", 1, true) ~= nil, "slow returns after immunity")
 
--- Ten-slot limit.
-for index = 1, 14 do
-	grug_core.set_status(alice, "extra_" .. index, {duration = 60, kind = "neutral"})
+-- Ten-slot limit: debuffs keep their slots before buffs do (review L2),
+-- and the kept set is still drawn buffs first.
+grug_core.set_status(alice, "poisoned", {duration = 60})
+grug_core.set_status(alice, "pvp_tagged", {duration = 60})
+for index = 10, 23 do
+	grug_core.set_status(alice, "extra_" .. index, {duration = 60, kind = "buff"})
 end
-eq(#grug_core.status_display(alice), layout.STATUS_LIMIT, "row capped at the limit")
+local capped = grug_core.status_display(alice)
+eq(#capped, layout.STATUS_LIMIT, "row capped at the limit")
+local capped_ids = {}
+for index, entry in ipairs(capped) do capped_ids[index] = entry.id end
+local capped_text = table.concat(capped_ids, ",")
+check(capped_text:find("poisoned", 1, true) ~= nil, "poison kept over buffs")
+check(capped_text:find("slowed", 1, true) ~= nil, "slow kept over buffs")
+check(capped_text:find("pvp_tagged", 1, true) ~= nil, "neutral kept over buffs")
+eq(capped[#capped].id, "pvp_tagged", "kept set drawn buffs, debuffs, neutral")
+eq(capped[1].kind, "buff", "buffs still drawn first")
 
 -- Death clears stored statuses and the aggregator.
 for _, fn in ipairs(deaths) do fn(alice) end
@@ -388,11 +409,36 @@ local first = layout.status_slot(1, 10)
 local last = layout.status_slot(10, 10)
 eq(first.x, -last.x, "row symmetric")
 check(layout.STATUS_PITCH > layout.STATUS_ICON, "icons do not touch")
+eq(layout.STATUS_ICON, 40, "status icons are 40 px (user decision)")
+-- Ten slots fit a 1024 px wide window at HUD scale 1 with room to spare.
+check(last.x + layout.STATUS_ICON / 2 - (first.x - layout.STATUS_ICON / 2) <= 520,
+	"ten-slot row at most 520 px wide")
+-- The whole row (icons and captions) stays above the combat icon, which is
+-- centred on the life bar right of the column.
+local combat_top = layout.anchors.combat.offset.y - layout.COMBAT_ICON / 2
+check(caption.y + layout.STATUS_CAPTION < combat_top,
+	"row ends above the combat icon")
+check(caption.y + layout.STATUS_CAPTION < layout.rows.breath.top,
+	"row ends above the breath bar")
 local party_icon = layout.party_icon_offset(1, 3)
 local party_label = layout.party_row_offset(1, 3, false)
 eq(party_icon.y, party_label.y, "class icon level with the name line")
-eq(party_label.x - party_icon.x, layout.PARTY_ICON + layout.PARTY_ICON_GAP,
+eq(layout.party_icon_size(), 26, "class icon spans name and bar")
+eq(party_label.x - party_icon.x, layout.party_icon_size() + layout.PARTY_ICON_GAP,
 	"name starts right of the class icon")
+-- GUI scaling above HUD scaling (review L5): text grows, HUD units do not.
+local big = {real_gui_scaling = 1.5, real_hud_scaling = 1}
+eq(layout.party_icon_size(big), 36, "class icon grows with the label slot")
+eq(layout.party_row_offset(1, 3, false, big).x - layout.party_icon_offset(1, 3, big).x,
+	36 + layout.PARTY_ICON_GAP, "name clears the larger icon")
+local big_icon, big_caption = layout.status_slot(1, 2, big)
+local big_second = layout.status_slot(2, 2, big)
+check(big_caption.y + math.ceil(layout.STATUS_CAPTION * 1.5) <= skill_top,
+	"scaled captions end above the skill row")
+check(big_second.x - big_icon.x >= math.ceil(layout.STATUS_CAPTION_WIDTH * 1.5),
+	"scaled pitch fits the wider captions")
+local same_icon = layout.status_slot(1, 2, {real_gui_scaling = 2, real_hud_scaling = 2})
+eq(same_icon.y, layout.status_slot(1, 2).y, "equal scalings keep the default row")
 
 --
 -- 7. Combat icon next to the health bar (ruling 19).
@@ -410,6 +456,152 @@ eq(combat and combat.offset.x, layout.anchors.combat.offset.x,
 fighting = false
 step(0.3)
 check(alice.huds[before + 1] == nil, "combat icon removed out of combat")
+
+--
+-- 8. Registry text for the Effects tab: every id has a name; coarse times.
+--
+for id, def in pairs(icons.STATUS) do
+	check(type(def.name) == "string" and def.name ~= "", "name of " .. id)
+	check(type(def.detail) == "string", "detail of " .. id)
+end
+eq(icons.remaining_text(299 * S), "5 min left", "effects time minutes")
+eq(icons.remaining_text(59 * S), "under 1 min left", "effects time under a minute")
+eq(icons.remaining_text(900 * S), "15 min left", "effects time elixir")
+eq(icons.remaining_text(7200 * S), "2 h left", "effects time hours")
+eq(icons.remaining_text(nil, true), "active", "effects time untimed")
+
+--
+-- 9. Character page: Stats / Effects tabs (grug_inventory/pages.lua).
+--
+local function fs_escape(text)
+	return (tostring(text):gsub("\\", "\\\\"):gsub("%]", "\\]"):gsub("%[", "\\[")
+		:gsub(";", "\\;"):gsub(",", "\\,"))
+end
+core.formspec_escape = fs_escape
+core.colorize = function(color, text) return "(c@" .. color .. ")" .. text end
+core.get_item_group = function() return 0 end
+core.log = function() end
+core.explode_table_event = function(text)
+	local kind, row, column = text:match("^(%u+):(%d+):(%d+)$")
+	return {type = kind or "INV", row = tonumber(row) or 0, column = tonumber(column) or 0}
+end
+local pages, contexts, set_pages, resent = {}, {}, {}, 0
+sfinv = {
+	pages = pages, pages_unordered = {}, contexts = contexts,
+	register_page = function(name, def)
+		def.name = name
+		pages[name] = def
+		sfinv.pages_unordered[#sfinv.pages_unordered + 1] = def
+	end,
+	make_formspec = function(_, _, content) return content end,
+	set_page = function(_, name) set_pages[#set_pages + 1] = name end,
+	get_page = function(player) return contexts[player:get_player_name()].page end,
+	get_or_create_context = function(player)
+		local name = player:get_player_name()
+		contexts[name] = contexts[name] or {}
+		return contexts[name]
+	end,
+	set_player_inventory_formspec = function() resent = resent + 1 end,
+}
+grug_inventory = {equipment_slots = {},
+	selected_button_style = function(field, selected)
+		return "style[" .. field .. ";" .. tostring(selected) .. "]"
+	end}
+grug_xp = {register_on_level_change = function() end, get_level = function() return 5 end}
+grug_money = {register_on_change = function() end}
+function grug_core.register_on_equipment_change() end
+dofile("mods/PLAYER/grug_inventory/pages.lua")
+local character = pages["grug_inventory:character"]
+check(character ~= nil, "character page registered")
+local context = {page = "grug_inventory:character"}
+contexts.alice = context
+
+-- Empty state.
+context.grug_character_tab = "effects"
+local page = character:get(alice, context)
+check(page:find("No active effects", 1, true) ~= nil, "effects empty state")
+check(page:find("style[grug_character_effects;true]", 1, true) ~= nil,
+	"effects button styled selected")
+check(page:find("button[0.00,0.00;1.50,0.70;grug_character_stats;Stats]", 1, true) ~= nil,
+	"stats tab button")
+
+-- Several effects: icon with frame, name, time, detail.
+local bread_def = {description = "Bread\nRestores HP", inventory_image = "grug_cooking_bread.png"}
+grug_core.set_status(alice, "food", {duration = 300, label = "Bread",
+	detail = "+6% HP/5s", icon = icons.item_icon(bread_def)})
+grug_core.set_status(alice, "elixir", {duration = 900, label = "Elixir of Focus III",
+	detail = "+5% maximum Mana", variant = "focus"})
+grug_core.set_status(alice, "shield", {duration = 15, label = "Shield",
+	value = function() return 42 end})
+grug_core.set_status(alice, "mount", {untimed = true, label = "Expert Riding",
+	detail = "+100% speed, flying", variant = "flight"})
+grug_core.set_move_modifier(alice, "mob_web", {speed = -0.4}, 30)
+page = character:get(alice, context)
+local function has(text, label) check(page:find(text, 1, true) ~= nil, label) end
+has(";0.80,0.80;" .. fs_escape(bread .. "^grug_status_frame_buff.png") .. "]",
+	"food row shows the item image on its frame")
+has("image[0.20,0.95;0.80,0.80;" ..
+	fs_escape("grug_status_elixir_focus.png^grug_status_frame_buff.png") .. "]",
+	"first row: row order (elixir before food)")
+has(fs_escape("Bread  (c@#f0c75e)5 min left"), "food name and time")
+has("+6% HP/5s", "food detail")
+has(fs_escape("Elixir of Focus III  (c@#f0c75e)15 min left"), "elixir name and time")
+has("+5% maximum Mana", "elixir detail")
+has(fs_escape("Absorbs damage: 42 left"), "shield value in the detail")
+has(fs_escape("Expert Riding  (c@#f0c75e)active"), "untimed mount")
+has(fs_escape("grug_status_slowed.png^grug_status_frame_debuff.png"), "slow debuff frame")
+has("40% slower", "slow detail from the aggregator")
+check(page:find("Maximum HP", 1, true) == nil, "effects tab hides the stats")
+
+-- Refresh policy: re-sent only while the effects tab is selected and its
+-- printed text changed.
+resent = 0
+for _, fn in ipairs(steps) do fn(1) end
+eq(resent, 0, "unchanged effects: nothing re-sent")
+grug_core.set_status(alice, "poisoned", {duration = 30})
+for _, fn in ipairs(steps) do fn(1) end
+eq(resent, 1, "a new effect re-sends the page once")
+context.grug_character_tab = "stats"
+grug_core.clear_status(alice, "poisoned")
+for _, fn in ipairs(steps) do fn(1) end
+eq(resent, 1, "stats tab: effect changes re-send nothing")
+
+-- Tab switch.
+set_pages = {}
+character:on_player_receive_fields(alice, context, {grug_character_effects = "Effects"})
+eq(context.grug_character_tab, "effects", "effects button selects the tab")
+eq(set_pages[1], "grug_inventory:character", "tab switch rebuilds the page")
+
+--
+-- 10. Group page: the member table carries class icons (ruling 22).
+--
+grug_factions = {get_faction = function() return "accord" end}
+grug_parties = {
+	register_on_change = function() end,
+	invitations_enabled = function() return true end,
+	hud_enabled = function() return true end,
+	health_color_mode = function() return "by_class" end,
+	pending = function() return {} end,
+	view = function() return {leader = "alice", members = {
+		{name = "alice", online = true, level = 5, hp = 20, hp_max = 20, class = "warrior"},
+		{name = "bob", online = true, level = 5, hp = 10, hp_max = 20, class = "priest"},
+		{name = "cyd", online = false, level = 4},
+	}} end,
+}
+core.register_on_mods_loaded = function() end
+dofile("mods/PLAYER/grug_parties/ui.lua")
+local group = pages["grug_parties:group"]
+local group_context = {}
+local group_fs = group:get(alice, group_context)
+check(group_fs:find("tablecolumns[image,align=center,0=blank.png,1=grug_class_warrior.png," ..
+	"2=grug_class_mage.png,3=grug_class_priest.png,4=grug_class_scout.png;text", 1, true) ~= nil,
+	"member table declares the class icons")
+check(group_fs:find("table[0.20,4.58;4.90,2.55;grug_party_members;1," ..
+	fs_escape("* alice [Lv 5]  20/20 HP") .. ",3," .. fs_escape("bob [Lv 5]  10/20 HP") ..
+	",0," .. fs_escape("cyd [Lv 4]  Offline") .. ";1]", 1, true) ~= nil,
+	"member rows carry class indices (offline: blank)")
+group:on_player_receive_fields(alice, group_context, {grug_party_members = "CHG:2:2"})
+eq(group_context.grug_party_member, "bob", "table selection picks the member")
 
 print(("%d registered ids, %d ids set in code, %d checks, %d failures"):format(
 	registered, used, checks, failures))
