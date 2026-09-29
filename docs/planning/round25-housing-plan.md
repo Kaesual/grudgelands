@@ -3,7 +3,7 @@
 Decided with the user on 2026-09-29. This replaces the tiered design in
 [housing.md](../design/housing.md). The spec and design documents are
 rewritten to this contract before implementation starts. **Status: rulings
-1–26 fixed (2026-09-29); implementation started 2026-09-29.**
+1–29 fixed (2026-09-29); implementation started 2026-09-29.**
 
 ## Rulings
 
@@ -154,6 +154,16 @@ rewritten to this contract before implementation starts. **Status: rulings
     destruction the travel home falls back to the player's bound innkeeper
     (the starting-town innkeeper when none is bound). Binding an innkeeper
     also replaces a claim home.
+
+27. **Claim distance to settlements.** A claim may not touch the protected
+    core box of a POI, village or camp (ruling 16) or the hard footprint of a
+    town, capital or landmark, each widened by about 16 nodes. The wide blend
+    envelopes around them are not a claim barrier.
+28. **Engine growth continues in claims.** Only the natural renewal system is
+    off in active claims; grass spread, saplings, cactus, papyrus and moss
+    grow normally.
+29. **Bridges keep ±5.** Pillars and cuts more than 5 nodes below a road
+    surface stay unprotected.
 
 The old spec's claim protection against explosions and fire, liquid inflow
 beyond the arrival cube, and boundary outlines are not part of V1.
