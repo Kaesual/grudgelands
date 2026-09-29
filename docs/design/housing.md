@@ -604,12 +604,13 @@ players in its shallow protection volume:
 - renewable mining sockets and other bounded renewable-resource mechanisms.
 
 - Every land-side hard-protected footprint extends upward without limit and
-  downward through y = −700 inclusive.
+  downward through its placement height − 100 inclusive (Round 24 ruling 30,
+  `world.md` §2 R1); below that its column follows the ordinary rules.
 - Its x/z extent is the bounded authored core, apron or functional anchor,
   never the ordinary shell of a whole road, village or camp.
 - An essential service NPC on such a platform is passive and invulnerable.
-- The universal editable T5/T6 land rule resumes at y = −701 and overrides
-  shallow land protection.
+- The universal editable T5/T6 land rule applies from y = −701 on every
+  non-ocean land column.
 
 ### 7.2 Mutable but claim-excluded world content
 

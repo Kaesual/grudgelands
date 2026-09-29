@@ -238,6 +238,15 @@ local function settlement_factory()
 		return host_cid == fill_host_cid and r5_opcode == R24_FILL_OPCODE
 	end
 
+	-- Round 24 ruling 30: whether a column admits a P8 resource at `y`.
+	-- `column_state` bit 1: the resource is allowed on the column (water class
+	-- and region); bit 2: the column is fixed/protected ground, which stays
+	-- ore-free only inside its protected volume, from `floor_y` upward.
+	local function r30_resource_column_open(column_state, floor_y, y)
+		if column_state % 2 == 0 then return false end
+		return column_state < 2 or y < floor_y
+	end
+
 	-- Ruling 12: mountain interiors.  Below the band depth the fill carries
 	-- sparse horizontal layers: absolute y plus a smooth per-column offset
 	-- picks a slab of R24_LAYER_PERIOD nodes; a slab holds at most one layer
@@ -997,6 +1006,7 @@ local function settlement_factory()
 				type(planner_source.river_water_in) ~= "function" or
 				type(planner_source.landmark_excluded_at) ~= "function" or
 				type(planner_source.overlay_exclusion_at) ~= "function" or
+				type(planner_source.protection_floor_y) ~= "function" or
 				type(source) ~= "table" or
 				(successor_tail ~= nil and (type(successor_tail) ~= "table" or
 					type(successor_tail.settle) ~= "function")) then
@@ -1160,19 +1170,23 @@ local function settlement_factory()
 				local socket = source.apex_sockets[index]
 				local anchor = anchors[socket.anchor_id]
 				if not anchor then fail("fail_settlement", "apex anchor identity differs") end
-				local key = tostring(anchor.position.x + socket.offset.x) .. "/" ..
-					tostring(anchor.position.z + socket.offset.z)
+				local x = anchor.position.x + socket.offset.x
+				local z = anchor.position.z + socket.offset.z
+				local key = tostring(x) .. "/" .. tostring(z)
 				if apex_columns[key] then
 					fail("fail_settlement", "duplicate apex socket column")
 				end
-				apex_columns[key] = socket.id
+				-- The socket column's protected floor (Round 24 ruling 30).
+				apex_columns[key] = planner_source.protection_floor_y(
+					"exclude:active:hard:" .. socket.id, x, z)
 			end
 			if #(source.apex_sockets or {}) ~= 24 then
 				fail("fail_settlement", "apex socket population differs")
 			end
 		end
 		local function overlaps_apex(x, y, z)
-			return y >= -700 and apex_columns[tostring(x) .. "/" .. tostring(z)] ~= nil
+			local floor = apex_columns[tostring(x) .. "/" .. tostring(z)]
+			return floor ~= nil and y >= floor
 		end
 
 		local retained_volume = evidence_only and 1 or MAX_VOLUME
@@ -1214,6 +1228,9 @@ local function settlement_factory()
 				"r6_settlement_resource_host_base", evidence_only and 1 or 80 * 80 * 80, 0),
 			resource_excluded_column = retained_array(
 				"r6_settlement_resource_excluded_column", 6400, false),
+			-- The protected floor of each fixed/protected column (ruling 30).
+			resource_protected_floor = retained_array(
+				"r6_settlement_resource_protected_floor", 6400, 0),
 			surface_skin_column = retained_array(
 				"r6_settlement_surface_skin_column", 6400, 0),
 			successor_refs = {p9g_min = 0, p9g_max = 0, anchor_min = 0,
@@ -2485,6 +2502,7 @@ local function settlement_factory()
 
 		local function apply_impl(vm, minp, maxp, plan, plan_generation, call_mode)
 			local resource_column_state = transaction_state.resource_excluded_column
+			local resource_protected_floor = transaction_state.resource_protected_floor
 			local resource_host_base = transaction_state.resource_host_base
 			if call_mode ~= "fixture" and call_mode ~= "production" and
 					call_mode ~= "replay_fixture" then
@@ -3005,12 +3023,15 @@ local function settlement_factory()
 					local column = column_index(x, z)
 					-- Only fixed/protected ground matters here, so the overlay
 					-- (water) kinds are not asked.
-					local reason = helpers.static_exclusion_reason(x, z)
+					local reason, id = helpers.static_exclusion_reason(x, z)
 					-- The capital ingress corridors are retired (Round 22, D9).
 					local excluded = reason == "fixed_or_protected"
-					-- Bit 2 is the immutable shallow exclusion. Bit 1 is filled for
-					-- each resource below from immutable water/race column values.
+					-- Bit 2 is the protected exclusion, from the column's protected
+					-- floor upward (Round 24 ruling 30). Bit 1 is filled for each
+					-- resource below from immutable water/race column values.
 					resource_column_state[column] = excluded and 2 or 0
+					resource_protected_floor[column] = excluded and
+						planner_source.protection_floor_y(id, x, z) or 0
 				end
 			end
 			-- With no predecessor runs, the live predicate is already cheap;
@@ -3026,8 +3047,8 @@ local function settlement_factory()
 			end
 			local function host_eligible(x, y, z, host_cid)
 				local column = column_index(x, z)
-				local column_state = resource_column_state[column]
-				if column_state % 2 == 0 or (y >= -700 and column_state >= 2) then
+				if not r30_resource_column_open(resource_column_state[column],
+						resource_protected_floor[column], y) then
 					return false
 				end
 				local index = index_at(x, y, z)
@@ -4024,6 +4045,7 @@ local function settlement_factory()
 		r24_fill_stone = r24_fill_stone,
 		r24_sort_prefix = sort_prefix, r24_frontier_min = frontier_min,
 		r24_resource_host_base = r24_resource_host_base,
+		r30_resource_column_open = r30_resource_column_open,
 		r24_fill_layers_new = new_r24_fill_layers,
 		r24_apply_fill_layers = r24_apply_fill_layers,
 		r24_layer_first_depth = R24_LAYER_FIRST_DEPTH,

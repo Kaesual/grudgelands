@@ -560,8 +560,10 @@ Normal tier at level L:
   1–60), and a guard at level **≥ 60 is promoted to elite
   automatically**. Its T3 positional base is `nil` in every exterior class,
   including shelf. Inside a capital's protected city (its hard-protection x/z
-  mask, `world_zones.md` §12) it is exactly 60 only at normalized y >= -700; at y <= -701 and all
-  other non-exterior positions it is
+  mask, `world_zones.md` §12) it is exactly 60 only inside the capital's
+  protected volume (from the capital anchor's placement height − 100 upward,
+  Round 24 ruling 30); below that floor and at all other non-exterior
+  positions it is
   `min(70, max(20, surface_level_at(pos)))`. It does not apply the mob depth
   floor. WP13 may later raise that non-nil generic base outside the shallow
   capital hard volume, capped at 70, but may never lower it; exterior nil

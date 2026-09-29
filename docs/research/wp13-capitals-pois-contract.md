@@ -22,6 +22,8 @@ decisions are the coordinator's and are open to the user's correction.
   avenue is authored inside the envelope. WP13 owns the avenues (§12).
 - **Protection** is complete: 532 × 532 hard footprint from y = -700 upward
   per capital, plus the two 128-wide ingress corridors. Nothing to add.
+  (Superseded: Round 22 D76 made it the protected city, and on 2026-09-29
+  Round 24 ruling 30 starts it at the capital anchor's placement height − 100.)
 - **Written today:** one `grug_nodes:guard_banner` at (x, y + 1, z). No
   platform, no legacy WP18 code remains. Vendors are placed by `grug_traders`
   at fixed offsets (-5, 3) and (5, 3) from the anchor at y + 1.

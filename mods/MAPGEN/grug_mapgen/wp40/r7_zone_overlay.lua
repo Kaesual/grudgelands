@@ -1,9 +1,13 @@
 -- Narrow R7 correction for functional activation anchors omitted from R4's
 -- hard-volume population. Geometry and every other R4 query remain delegated.
+-- Each column is protected from its anchor's placement height minus the
+-- protection depth upward (Round 24 ruling 30), the floor the session's own
+-- `protection_floor_y` answers for the hard footprints.
 
 return function(session, roster)
 	local function fail(message) error("WP40 R7 zone overlay: " .. message, 0) end
 	if type(session) ~= "table" or type(session.territory_rule_at) ~= "function" or
+			type(session.protection_floor_y) ~= "function" or
 			type(session.compatibility) ~= "table" or type(roster) ~= "table" or
 			roster.schema ~= "grug_wp40_r7_anchor_roster_v1" or
 			type(roster.rows) ~= "table" or #roster.rows ~= 42 then
@@ -15,7 +19,9 @@ return function(session, roster)
 		if row.family == "outpost" or row.family == "bandit" then
 			local key = tostring(row.x) .. "/" .. tostring(row.z)
 			if protected_columns[key] then fail("duplicate protected column") end
-			protected_columns[key] = row.id
+			-- The column's floor: the anchor's placement height (its fitted
+			-- surface, the roster's `y`) minus the protection depth.
+			protected_columns[key] = session.protection_floor_y(row.y)
 		end
 	end
 	local count = 0
@@ -35,7 +41,8 @@ return function(session, roster)
 		if type(position) ~= "table" then fail("position differs") end
 		local x, y, z = coordinate(position.x, "x"), coordinate(position.y, "y"),
 			coordinate(position.z, "z")
-		return y >= -700 and protected_columns[tostring(x) .. "/" .. tostring(z)] ~= nil
+		local floor = protected_columns[tostring(x) .. "/" .. tostring(z)]
+		return floor ~= nil and y >= floor
 	end
 	local wrapped = {}
 	for key, value in pairs(session) do wrapped[key] = value end
@@ -55,7 +62,8 @@ return function(session, roster)
 	end
 	wrapped.compatibility = compatibility
 	wrapped.r7_functional_anchor_overlay = {
-		schema = "grug_wp40_r7_functional_anchor_protection_v1",
-		roster_sha256 = roster.sha256, exact_columns = 36, y_min = -700}
+		schema = "grug_wp40_r7_functional_anchor_protection_v2",
+		roster_sha256 = roster.sha256, exact_columns = 36,
+		y_policy = "placement_minus_depth_upward_to_world_top"}
 	return wrapped
 end
