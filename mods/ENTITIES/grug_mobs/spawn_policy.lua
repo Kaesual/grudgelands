@@ -445,12 +445,31 @@ local function clock_for_palette(name, palette)
 	return clock
 end
 
-local function clock_palette_at(name, pos, zone_palette)
+-- A clock table may name one named zone with a "zone:<zone id>" key (Round
+-- 24 ruling 31: the Sunscar Scorpion and the Kapok Viper keep their night
+-- clock elsewhere and spawn around the clock in their start zone). It wins
+-- over the palette keys, so the choice never depends on table order.
+local function zone_clock_key(clock, zone_id)
+	local key = zone_id and ("zone:" .. zone_id)
+	return key and clock[key] and key or nil
+end
+
+-- `zone_id` is optional: when given it selects the zone key; otherwise the
+-- zone of `pos`; with neither there is no zone key (a caller that asks for a
+-- zone palette without a position).
+local function clock_palette_at(name, pos, zone_palette, zone_id)
 	local clock = spawn_clocks[name]
 	if type(clock) ~= "table" then
 		return nil
 	end
-	if clock.blight and grug_zones.biome_at(pos.x, pos.z) == "grug_blight" then
+	if zone_id == nil and pos then
+		zone_id = grug_zones.id_at(pos.x, pos.z)
+	end
+	local zone_key = zone_clock_key(clock, zone_id)
+	if zone_key then
+		return zone_key
+	end
+	if clock.blight and pos and grug_zones.biome_at(pos.x, pos.z) == "grug_blight" then
 		return "blight"
 	end
 	if clock.war and zone_palette and zone_palette.war then
@@ -467,12 +486,15 @@ local function clock_palette_at(name, pos, zone_palette)
 	return nil
 end
 
-function grug_mobs.spawn_clock_for(name, pos)
+-- `zone_id` is optional and wins over the zone of `pos` (clock_palette_at).
+function grug_mobs.spawn_clock_for(name, pos, zone_id)
 	if pos and pos.y < -40 then
 		return "any"
 	end
-	local zone_palette = pos and zone_palette_at(pos) or nil
-	local palette = pos and clock_palette_at(name, pos, zone_palette) or nil
+	local zone_palette = zone_id and ZONE_MOB_PALETTES[zone_id] or
+		(pos and zone_palette_at(pos)) or nil
+	local palette = (pos or zone_id) and
+		clock_palette_at(name, pos, zone_palette, zone_id) or nil
 	return clock_for_palette(name, palette)
 end
 
@@ -528,6 +550,11 @@ function grug_mobs.prepare_spawn_row(def)
 	row.day_toggle = nil
 	if clock == "day" then
 		row.min_light = 10
+		-- mobs_redo's day window (api.lua day_toggle: 4500..19500 of 24000)
+		-- is DAY_PHASE_START..END. Without it a day row also fires at night
+		-- on torch light >= 10, and a zone-keyed day row (the Sunscar Scorpion)
+		-- would pass the night clock outside its zone.
+		row.day_toggle = true
 	elseif clock == "night" then
 		row.max_light = 5
 		row.day_toggle = false
@@ -615,6 +642,10 @@ function grug_mobs.zone_clock_cast(zone_id, clock)
 			local role_clock = matched_palette == "exact" and
 				clock_for_palette(mob_name, nil) or
 				clock_for_palette(mob_name, matched_palette)
+			local mob_clock = spawn_clocks[mob_name]
+			local zone_key = type(mob_clock) == "table" and
+				zone_clock_key(mob_clock, zone_id)
+			if zone_key then role_clock = mob_clock[zone_key] end
 			if role_clock == clock or role_clock == "any" then
 				cast[#cast + 1] = mob_name
 			end
