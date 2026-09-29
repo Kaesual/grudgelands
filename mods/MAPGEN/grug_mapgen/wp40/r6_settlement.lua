@@ -265,10 +265,9 @@ local function settlement_factory()
 	-- renewal (vegetation_density.lua), so both answer alike. A column is
 	-- excluded by a "cave" claim shape on land, a functional kind other than
 	-- a land grade, or a hard foundation. Planned-water/coast shapes are no
-	-- protection: excluded at every depth. A housing mask is no exclusion
-	-- (Round 24 ruling 33: it only decides where a Claim Stone may stand).
-	-- Every other exclusion (anchor envelopes, hard cores, anchor grades,
-	-- hard foundations) ends at the column's protected floor
+	-- protection: excluded at every depth. Every other exclusion (anchor
+	-- envelopes, hard cores, anchor grades, hard foundations) ends at the
+	-- column's protected floor
 	-- (`floor_at(x, z)`, nil where no protected shape holds it).
 	-- Returns the y below which cave content may place: math.huge when the
 	-- column is not excluded, -math.huge when it is excluded at every depth.

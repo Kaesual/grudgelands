@@ -19,7 +19,7 @@ local PUBLIC_METHODS = {
 	"guard_level_at",
 	"terrain_height_at",
 	"water_class_at",
-	"housing_eligible_at",
+	"claim_exclusion_in",
 }
 
 local EXPECTED_RACES = {

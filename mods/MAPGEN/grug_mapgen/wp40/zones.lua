@@ -421,12 +421,10 @@ local function zones_factory(dependencies)
 				type(horizontal.owner_at) ~= "function" or
 				type(horizontal.biome_lookup_at) ~= "function" or
 				type(horizontal.neighbors) ~= "function" or
-				type(horizontal.housing_eligible_at) ~= "function" or
 				type(horizontal.static_exclusion_values_at) ~= "function" or
 				type(horizontal.lowest_exclusion_value_at) ~= "function" or
 				type(horizontal.capital_protection_member) ~= "function" or
-				type(horizontal.start_protection_member) ~= "function" or
-				type(horizontal.housing_mask_id_at) ~= "function" then
+				type(horizontal.start_protection_member) ~= "function" then
 			fail("horizontal session seam differs")
 		end
 		horizontal_session_count = horizontal_session_count + 1
@@ -1049,6 +1047,58 @@ local function zones_factory(dependencies)
 			return integer(placement_y, "placement height") - PROTECTION_DEPTH
 		end
 
+		-- Claim Stone placement (Round 25 ruling 3): the x/z boxes a claim may
+		-- not touch. Every anchor's blend envelope (a start town, a capital, a
+		-- POI, village or camp together with its fitting and blend ground) and
+		-- every hard footprint's bounding box, each widened by one node so the
+		-- half-open squares need no rounding care. Boxes only over-approximate
+		-- the shapes they hold, so an answer of nil is exact for them.
+		local claim_boxes = {}
+		do
+			local anchor_template = {}
+			for index = 1, #anchor_records do
+				anchor_template[anchor_records[index].id] =
+					anchor_records[index].template_id
+			end
+			for index = 1, #(source.claim_exclusions or {}) do
+				local row = source.claim_exclusions[index]
+				if row.recipe_id == "exclude_anchor_blend_v1" then
+					local template = anchor_template[row.source_id]
+					if not template or type(row.total_width) ~= "number" then
+						fail("claim box anchor differs: " .. tostring(row.id))
+					end
+					local half = math.floor((row.total_width + 1) / 2) + 1
+					claim_boxes[#claim_boxes + 1] = {id = row.id,
+						kind = (template == "start" or template:match("^capital_")) and
+							"town" or "site",
+						min_x = row.center.x - half, max_x = row.center.x + half,
+						min_z = row.center.z - half, max_z = row.center.z + half}
+				end
+			end
+			for index = 1, #hard_rows do
+				local row = hard_rows[index]
+				claim_boxes[#claim_boxes + 1] = {id = row.id,
+					kind = row.shape == "exact_column" and "landmark" or "town",
+					min_x = row.bbox.min_x - 1, max_x = row.bbox.max_x + 1,
+					min_z = row.bbox.min_z - 1, max_z = row.bbox.max_z + 1}
+			end
+		end
+
+		-- The id and kind ("town", "landmark" or "site") of the first box the
+		-- inclusive rectangle touches, or nil.
+		function session.claim_exclusion_in(min_x, min_z, max_x, max_z)
+			min_x, min_z = normalize_xz(min_x, min_z, "claim rectangle min")
+			max_x, max_z = normalize_xz(max_x, max_z, "claim rectangle max")
+			for index = 1, #claim_boxes do
+				local box = claim_boxes[index]
+				if max_x >= box.min_x and min_x <= box.max_x and
+						max_z >= box.min_z and min_z <= box.max_z then
+					return box.id, box.kind
+				end
+			end
+			return nil
+		end
+
 		local function depth_level(y)
 			if y <= -992 then return 60 end
 			local numerator = -3 * y
@@ -1208,29 +1258,6 @@ local function zones_factory(dependencies)
 				return "planned_water"
 			end
 			return water_class
-		end
-
-		function session.housing_eligible_at(x, z)
-			local outside
-			x, z, outside = normalize_xz(x, z, "housing query")
-			if outside then return false end
-			if not horizontal.housing_eligible_at(x, z) then return false end
-			-- The reservation also keeps off inland water and its banks
-			-- (stale-rule R5); the scan runs only where water may lie. It keeps
-			-- off the roads too (their side slopes reach a few nodes out).
-			local radius = source.housing_policy.reservation_radius
-			if height.road_near(x, z, radius + 8) then return false end
-			if height.river_water_in(x - radius - 2, z - radius - 2,
-					x + radius + 2, z + radius + 2) then
-				for dz = -radius, radius do
-					for dx = -radius, radius do
-						if height.inland_exclusion_at(x + dx, z + dz) ~= nil then
-							return false
-						end
-					end
-				end
-			end
-			return true
 		end
 
 		local compatibility = {}
@@ -1557,11 +1584,6 @@ local function zones_factory(dependencies)
 			-- "vegetation": the rule the decoration planner hosts plants by).
 			function planner_source.static_exclusion_values_at(x, z, purpose)
 				return horizontal.static_exclusion_values_at(x, z, purpose)
-			end
-			-- The housing mask decides only where a Claim Stone may stand
-			-- (Round 24 ruling 33); no mapgen writer and no renewal consults it.
-			function planner_source.housing_mask_id_at(x, z)
-				return horizontal.housing_mask_id_at(x, z)
 			end
 			function planner_source.functional_surface_values_at(x, z)
 				return height.functional_surface_values_at(x, z)

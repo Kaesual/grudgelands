@@ -1,6 +1,6 @@
 -- Round 22 horizontal world session (world_zones.md §2, §7.1-7.5, §13): zone
--- ownership, coast and water classes, levels by zone, geometric neighbours,
--- housing masks and static claim exclusions. Pure: it registers no engine
+-- ownership, coast and water classes, levels by zone, geometric neighbours
+-- and static claim exclusions. Pure: it registers no engine
 -- hooks and writes no map. Zone borders and the coastline come from
 -- `zone_field.lua` and vary per world seed (D24).
 --
@@ -607,41 +607,6 @@ return function(zone_field)
 				return result
 			end
 
-			-- Housing masks (world_zones.md §7.5, world.md §5): the ten authored
-			-- areas follow the new zones; the four coastal areas take their exact
-			-- shape from the finished coast inside their authored window.
-			local coastal_depth = params.coastal_housing_depth
-			local masks, mask_by_id = {}, {}
-			for _, row in ipairs(source.housing_masks) do
-				local entry = {row = row, id = row.id, zone = row.zone_numeric_id,
-					window = row.coastal_window,
-					bounds = row.coastal_window or polygon_bounds(row.polygon)}
-				masks[#masks + 1] = entry
-				mask_by_id[row.id] = entry
-			end
-			local function mask_member(entry, x, z)
-				if not in_rectangle(x, z, entry.bounds, 0) then return false end
-				if entry.window then
-					local zone, coast = sample(x, z)
-					return zone == entry.zone and coast > 0 and coast < coastal_depth
-				end
-				if not in_polygon(x, z, entry.row.polygon) then return false end
-				local _, _, owner = sample(x, z)
-				return owner == entry.zone
-			end
-			local function housing_mask_at(x, z)
-				for index = 1, #masks do
-					if mask_member(masks[index], x, z) then return masks[index] end
-				end
-				return nil
-			end
-			local function housing_point_valid_for_mask(entry, x, z)
-				if not mask_member(entry, x, z) then return false end
-				local water_class, _, zone = classification_values_at(x, z)
-				return water_class == "land" and zone == entry.zone and
-					static_exclusion_values_at(x, z) == nil
-			end
-
 			local anchor_by_id = {}
 			for index = 1, #source.anchors do anchor_by_id[source.anchors[index].id] = source.anchors[index] end
 			local zone_index_by_id = {}
@@ -822,32 +787,6 @@ return function(zone_field)
 				local row = anchor_by_id[anchor_id]
 				if not row then return nil end
 				return session.selected_anchor_2d(zones[row.zone_numeric_id].id, row.slot_id)
-			end
-
-			function session.housing_mask_id_at(x, z)
-				local entry = housing_mask_at(x, z)
-				return entry and entry.id or nil
-			end
-
-			function session.housing_point_valid_for_mask(mask_id, x, z)
-				local entry = mask_by_id[mask_id]
-				return entry ~= nil and housing_point_valid_for_mask(entry, x, z)
-			end
-
-			-- True when the complete 101 by 101 reservation centred here passes
-			-- every static exclusion inside one housing mask.
-			function session.housing_eligible_at(x, z)
-				local entry = housing_mask_at(x, z)
-				if not entry then return false end
-				local radius = source.housing_policy.reservation_radius
-				for dz = -radius, radius do
-					for dx = -radius, radius do
-						if not housing_point_valid_for_mask(entry, x + dx, z + dz) then
-							return false
-						end
-					end
-				end
-				return true
 			end
 
 			-- Retired with the Round 22 hydrology cut: no lake-edge variation.
