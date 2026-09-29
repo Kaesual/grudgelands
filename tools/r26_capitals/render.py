@@ -188,7 +188,7 @@ def stats_lines(J):
         f"overflow {s['overflowed']}",
         f"left out {len(J['left_out'])} (named {named_lo}): {', '.join(lo) if lo else '-'}",
         f"rings {len(J['P']['RINGS'])}, open arcs {s['open_arcs']}, cross-lanes {s['cross_lanes']}, "
-        f"squares {s['squares']}, wall {s['wall_length']:.0f} m, towers {s['turrets']}; planner {s['seconds']:.2f} s"
+        f"squares {s['squares']}, spokes {s.get('spokes', 0)}{', plaza' if s.get('plaza') else ''}, wall {s['wall_length']:.0f} m, towers {s['turrets']}; planner {s['seconds']:.2f} s"
         + (f"; no route:{s['no_route']}" if s.get('no_route') else ''),
     ]
     if J['missing_required']:

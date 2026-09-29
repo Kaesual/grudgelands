@@ -117,6 +117,12 @@ M.DEFAULTS = {
 	RING_SHAPE = nil,     -- {[ring] = "circle"}: a ring round the core, not along the outline
 	CROSS_MEAN = 1.0,     -- cross-lanes ring 1 -> ring 2 per quadrant (0..CROSS_MAX)
 	CROSS_MAX = 2,
+	CROSS_FIXED = nil,    -- Round 26: exactly this many cross-lanes per quadrant, evenly spaced
+	RING_WOBBLE = 0,      -- the inner ring's fraction varies by this share round the city
+	GATE_TWIST = 0,       -- every gate turned by this (radians) off its cardinal ray
+	SPOKES = 0, SPOKE_FIXED = false, SPOKE_IN = 30, SPOKE_MIN = 40,
+	PLAZA = nil,          -- radius of one large plaza on the long side's avenue
+	BUILD_R = 0,          -- buildings spread from this fraction of the way to the wall (0: from the core)
 	RING_WALL_MAX = 46,   -- the outer ring keeps within this of the (smoothed) wall
 	RING_GAP_MAX = 84,    -- ... and the ring inside it within this of it
 	SQUARE_P = 0.5,       -- share of avenue/ring crossings that get a small square
@@ -158,41 +164,44 @@ M.EDGE = {
 -- terrain snap, angular corners), the towers and the street pattern (ring
 -- fractions and shape, open arcs, cross-lanes, squares, avenue pull).
 M.STYLE = {
-	highcourt = {NAME = "royal city: a broad curtain along its river and ground, towers at the bends, flanked gatehouses",
+	highcourt = {NAME = "royal city: a broad curtain along its river, flanked gatehouses; two rings and a royal plaza on its main avenue",
 		SMOOTH_PASSES = 2, SMOOTH_W = 3, BUDGET_NOISE = 0.3, ECC1 = 0.12, ECC2 = 0.1,
 		SNAP = 20, GATE_FLANK = true, BEND_MIN = 0.4, BEND_GAP = 44, TURRET_EVERY = 80,
 		RINGS = {0.3, 0.7}, RING2_OPEN = 0.2, CROSS_MEAN = 1.0, SQUARE_P = 0.6,
-		AVENUE_GUIDE = 0.6},
-	dur_brannoc = {NAME = "mountain hold: straight curtain faces on the crests, a tower on every corner",
+		AVENUE_GUIDE = 0.6, PLAZA = 12},
+	dur_brannoc = {NAME = "mountain hold: straight faces on the crests, a tower on every corner; an eight-armed star of straight streets",
 		POLY = 8, SMOOTH_PASSES = 1, SMOOTH_W = 2, BUDGET_NOISE = 0.22, ECC1 = 0.16, ECC2 = 0.08,
 		SNAP = 30, SNAP_T = 1.5, GATE_FLANK = true, BEND_MIN = 0.2, BEND_GAP = 30,
-		TURRET_EVERY = 90, RINGS = {0.28, 0.7}, RING_SHAPE = {[2] = "wall"}, RING2_OPEN = 0,
-		CROSS_MEAN = 0.8,
+		TURRET_EVERY = 90, RINGS = {0.3, 0.62}, RING_SHAPE = {[2] = "wall"}, RING2_OPEN = 0,
+		RING_WALL_MAX = 66, CROSS_FIXED = 1, SPOKES = 1, SPOKE_FIXED = true, SPOKE_IN = 16,
+		SPOKE_MIN = 24,
 		SQUARE_P = 0.35, AVENUE_GUIDE = 1.2},
-	nhal_veyr = {NAME = "walled necropolis: long closed curtain stretched along its ground, a steady tower rhythm, a round inner ring",
+	nhal_veyr = {NAME = "walled necropolis: long closed curtain, a steady tower rhythm; one round ring with rows of lanes out to the wall",
 		SMOOTH_PASSES = 3, SMOOTH_W = 3, BUDGET_NOISE = 0.2, ECC1 = 0.06, ECC2 = 0.22,
 		SNAP = 16, GATE_FLANK = true, BEND_MIN = false, TURRET_EVERY = 64,
-		RINGS = {0.3, 0.72}, RING_SHAPE = {"circle"}, RING2_OPEN = 0, CROSS_MEAN = 1.4,
-		CROSS_MAX = 3, SQUARE_P = 0.7, SQUARE_R = 5, AVENUE_GUIDE = 0.8},
-	gor_drazhak = {NAME = "war camp: rough jagged stockade, outer ring broken into open yards, many cross-lanes, winding avenues",
+		RINGS = {0.46}, RING_SHAPE = {"circle"}, RING2_OPEN = 0, SPOKES = 3, SPOKE_FIXED = true,
+		SPOKE_IN = 24, SQUARE_R = 5, AVENUE_GUIDE = 0.8, BUILD_R = 0.4},
+	gor_drazhak = {NAME = "war camp: rough jagged stockade; gates turned into a pinwheel of winding avenues, a war yard, broken outer ring",
 		SMOOTH_PASSES = 1, SMOOTH_W = 2, BUDGET_NOISE = 0.32,
 		NOISE_OCT = {{1.6, 0.55, 0, 0}, {4, 0.3, 7, -3}, {9, 0.15, -11, 5}},
 		ECC1 = 0.2, ECC2 = 0.06, SNAP = 20, GATE_FLANK = false, BEND_MIN = 0.45, BEND_GAP = 44,
-		TURRET_EVERY = 84, RINGS = {0.34, 0.74}, RING2_OPEN = 0.4,
-		OPEN_MAX = 2, CROSS_MEAN = 1.6, CROSS_MAX = 3, SQUARE_P = 0.7, SQUARE_R = 8,
-		AVENUE_GUIDE = 0.2},
-	lethariel = {NAME = "lakeside city: a long flowing curtain along the crown lake, few towers",
+		TURRET_EVERY = 84, RINGS = {0.34, 0.74}, RING2_OPEN = 0.4, GATE_TWIST = 0.4,
+		OPEN_MAX = 2, CROSS_MEAN = 1.4, CROSS_MAX = 3, SPOKES = 1, SPOKE_IN = 16, SPOKE_MIN = 24,
+		SQUARE_P = 0.7, SQUARE_R = 8,
+		PLAZA = 14, AVENUE_GUIDE = 0.2, BUILD_R = 0.3},
+	lethariel = {NAME = "lakeside city: a long flowing curtain along the crown lake, few towers; gates turned, rings drawn off-centre",
 		SMOOTH_PASSES = 3, SMOOTH_W = 4, BUDGET_NOISE = 0.24, ECC1 = 0.14, ECC2 = 0.22,
 		AXIS = "across", SNAP = 20, SNAP_S = 5, GATE_FLANK = false, BEND_MIN = 0.55,
 		BEND_GAP = 60, TURRET_EVERY = 96, RINGS = {0.32, 0.72}, RING2_OPEN = 0.5,
-		CROSS_MEAN = 1.0, SQUARE_P = 0.5, AVENUE_GUIDE = 0.25},
-	kezamba = {NAME = "jungle city: an irregular stockade wrapped round the cenote, winding avenues",
+		RING_WOBBLE = 0.4, GATE_TWIST = -0.3, CROSS_MEAN = 1.0, SQUARE_P = 0.5, AVENUE_GUIDE = 0.25},
+	kezamba = {NAME = "jungle city: an irregular stockade round the cenote, winding avenues, a market plaza, lanes out into the green",
 		SMOOTH_PASSES = 2, SMOOTH_W = 2, BUDGET_NOISE = 0.34,
 		NOISE_OCT = {{1.6, 0.6, 0, 0}, {4, 0.4, 7, -3}},
 		ECC1 = 0.08, ECC2 = 0.12, AXIS = "across", SNAP = 20, SNAP_S = 4, GATE_FLANK = false,
 		BEND_MIN = 0.4, BEND_GAP = 36, TURRET_EVERY = 64, RINGS = {0.3, 0.72},
-		RING2_OPEN = 0.3, CROSS_MEAN = 1.4, CROSS_MAX = 3, SQUARE_P = 0.5, SQUARE_R = 7,
-		AVENUE_GUIDE = 0.2},
+		RING2_OPEN = 0.3, RING_WOBBLE = 0.3, CROSS_MEAN = 1.4, CROSS_MAX = 3, SPOKES = 1,
+		SPOKE_IN = 16, SPOKE_MIN = 24,
+		SQUARE_P = 0.5, SQUARE_R = 7, PLAZA = 10, AVENUE_GUIDE = 0.2, BUILD_R = 0.25},
 }
 
 -- cardinal directions: E, S, W, N (x east, z south; north = -z)
@@ -885,17 +894,20 @@ local function plan_once(seed, I, opt)
 		end
 		for _, g in ipairs(gates) do
 			local base = CARD[g.c].ang
-			local phi = base
+			-- Round 26: a character may turn every gate the same way off its
+			-- cardinal ray (a pinwheel of avenues), never beyond GATE_MAX_ANGLE
+			local phi = base + P.GATE_TWIST
 			if #g.ends > 0 then
 				local sx, sz = 0, 0
 				for _, e in ipairs(g.ends) do
 					local a = atan2(e.z, e.x)
 					sx, sz = sx + cos(a), sz + sin(a)
 				end
-				local d = wrap(atan2(sz, sx) - base)
+				local d = wrap(atan2(sz, sx) - phi)
 				local lim = P.GATE_SLIDE / r_at(base)
-				phi = base + max(-lim, min(lim, d))
+				phi = phi + max(-lim, min(lim, d))
 			end
+			phi = base + max(-P.GATE_MAX_ANGLE, min(P.GATE_MAX_ANGLE, wrap(phi - base)))
 			-- a gate stands on dry ground: nearest dry position within the
 			-- slide (widened by half when nothing is dry); otherwise a bridge
 			-- gate (floor above the water, see below)
@@ -1162,8 +1174,12 @@ local function plan_once(seed, I, opt)
 	-- inner one within RING_GAP_MAX of the outer, so the wide side is not
 	-- left without streets.
 	local ring_r, ring_loose
+	-- Round 26: the inner ring may sit nearer the core on one side and
+	-- further out on the other (RING_WOBBLE, a seeded direction)
+	local wobble_phi = (2 * vrand() - 1) * pi
 	ring_r = function(ri, phi)
 		local frac = P.RINGS[ri]
+		if ri == 1 and #P.RINGS > 1 then frac = frac * (1 + P.RING_WOBBLE * cos(phi - wobble_phi)) end
 		local shape = P.RING_SHAPE and P.RING_SHAPE[ri]
 		local base = shape == "wall" and r_at(phi) or rs_at(phi)
 		local r
@@ -1174,7 +1190,7 @@ local function plan_once(seed, I, opt)
 		else
 			r = P.CORE_GATE + frac * (base - P.CORE_GATE)
 		end
-		if ring_loose then
+		if ring_loose or #P.RINGS == 1 then
 			return r
 		elseif ri == #P.RINGS then
 			r = max(r, base - P.RING_WALL_MAX)
@@ -1403,8 +1419,12 @@ local function plan_once(seed, I, opt)
 		local v = vrand()
 		local n = v < 0.25 and 0 or (v < 0.8 and 1 or 2)
 		n = min(P.CROSS_MAX, floor(n * P.CROSS_MEAN + 0.5))
+		-- Round 26: a fixed count at even spacing (CROSS_FIXED: a star of
+		-- radial streets); none where the city has one ring (spokes instead)
+		if P.CROSS_FIXED then n = P.CROSS_FIXED end
+		if #P.RINGS == 1 then n = 0 end
 		for k = 1, (r1 and n or 0) do
-			local u = (k - 0.5) / n + (0.3 * vrand() - 0.15) / n
+			local u = (k - 0.5) / n + (P.CROSS_FIXED and 0 or (0.3 * vrand() - 0.15) / n)
 			local i1 = max(20, min(#r1.X - 20, floor(u * #r1.X + 0.5)))
 			local ok = true
 			for _, j in ipairs(r1.junctions) do if abs(j.idx - i1) < 18 then ok = false end end
@@ -1463,6 +1483,101 @@ local function plan_once(seed, I, opt)
 		end
 	end
 	st.cross_lanes = ncross
+	-- Round 26 spokes: lanes from the outer ring out toward the wall, where
+	-- the band beyond the ring is wide (SPOKE_MIN), each ending in a square
+	-- SPOKE_IN inside the wall; SPOKES per outer arc, evenly spaced
+	-- (SPOKE_FIXED) or jittered
+	local nspoke = 0
+	for q = 1, 4 do
+		for _, ro in ipairs(rings) do
+			if P.SPOKES > 0 and ro.quadrant == q and ro.ring == #P.RINGS then
+				local n = P.SPOKES
+				for k = 1, n do
+					local u = (k - 0.5) / n + (P.SPOKE_FIXED and 0 or (0.3 * vrand() - 0.15) / n)
+					-- the nominal point, else the nearest one 20 or 30 points
+					-- along that is clear of junctions and has the room
+					local i0 = floor(u * #ro.X + 0.5)
+					local i1, ax, az, phi_u, rd
+					for _, d in ipairs({0, 20, -20, 30, -30}) do
+						local i = i0 + d
+						local ok = i >= 20 and i <= #ro.X - 20 and not (ro.open and i > #ro.X - 24)
+						for _, j in ipairs(ro.junctions) do if abs(j.idx - i) < 18 then ok = false end end
+						if ok then
+							local x, z = ro.X[i] - AX, ro.Z[i] - AZ
+							local ph = atan2(z, x)
+							local r_end = r_at(ph) - P.SPOKE_IN
+							if r_end - sqrt(x * x + z * z) >= P.SPOKE_MIN then
+								i1, ax, az, phi_u, rd = i, x, z, ph, r_end
+								break
+							end
+						end
+					end
+					if i1 then
+						local nx_, nz_ = unit_normal_toward(ro, i1, ax, az)   -- outward
+						local s1 = {ax + nx_ * 8, az + nz_ * 8}
+						local src = cell_li(s1[1], s1[2])
+						local guide = guide_for(function(lx, lz)
+							local r = sqrt(lx * lx + lz * lz)
+							local dphi = wrap(atan2(lz, lx) - phi_u)
+							local t = dphi * r / 12
+							return outside_cost(lx, lz, 14, 10) + min(10, 1.5 * (t * t))
+						end)
+						local dx, dz = rd * cos(phi_u), rd * sin(phi_u)
+						local tcell = cell_li(dx, dz)
+						local road
+						if src and tcell and not wet_at(dx, dz) and DW[gk(dx, dz)] >= 6 then
+							road = lane_to(src, dir_index(nx_, nz_), {{ax, az}, s1}, nil, nil, tcell, guide,
+								{a_parent = ro.id}, {dx, dz})
+						end
+						if road then
+							nspoke = nspoke + 1
+							road.role, road.quadrant = "spoke", q
+							streets[#streets + 1] = road
+							add_square(road, #road.X, "lane end")
+						end
+					end
+				end
+			end
+		end
+	end
+	st.spokes = nspoke
+	-- Round 26 plaza (PLAZA = its largest radius): one large flat square on
+	-- the avenue of the city's long side, where that avenue is flattest
+	-- between the core and the outer ring; it replaces the small squares it
+	-- covers (it still shrinks until every street through it stays within
+	-- 1/2 of its level)
+	if P.PLAZA then
+		local c0, rbest
+		for c = 1, 4 do
+			if avenues[c] and (not rbest or gates[c].r > rbest) then c0, rbest = c, gates[c].r end
+		end
+		local av = avenues[c0]
+		local lo_i, hi_i = avenue_index_at(av, 1), avenue_index_at(av, #P.RINGS)
+		local reach = P.PLAZA + 4
+		local bi, bs
+		for i = max(12, lo_i - 10), min(#av.X - 20, hi_i) do
+			local lx, lz = av.X[i] - AX, av.Z[i] - AZ
+			if max(abs(lx), abs(lz)) > CK + P.PLAZA + 2 and not wet_at(lx, lz) then
+				local dev = 0
+				for j = max(1, i - reach), min(#av.X, i + reach) do
+					dev = max(dev, abs(av.R[j] - av.R[i]))
+				end
+				local sc = dev + 0.02 * abs(i - lo_i)
+				if not bs or sc < bs then bi, bs = i, sc end
+			end
+		end
+		if bi then
+			local x, z = av.X[bi] - AX, av.Z[bi] - AZ
+			local kept = {}
+			for _, q in ipairs(squares) do
+				local rx, rz = q.x - x, q.z - z
+				if rx * rx + rz * rz >= (P.PLAZA + 10) * (P.PLAZA + 10) then kept[#kept + 1] = q end
+			end
+			squares = kept
+			squares[#squares + 1] = {x = x, z = z, road = av, idx = bi, why = "plaza", rmax = P.PLAZA}
+			st.plaza = true
+		end
+	end
 	st.t.streets = os.clock() - T4
 	---------------------------------------------------------------------------
 	-- occupancy raster (1 node): streets, core, wall band, gatehouses
@@ -1891,12 +2006,12 @@ local function plan_once(seed, I, opt)
 		-- the square reaches only as far as every street through it stays
 		-- within 1/2 of its level (junction mouths are flat), so its edge
 		-- never makes a step against a street surface
-		local r = P.SQUARE_R
+		local r = q.rmax or P.SQUARE_R
 		for _, sr in ipairs(streets) do
 			for i = 1, #sr.X do
 				local rx, rz = sr.X[i] - AX - q.x, sr.Z[i] - AZ - q.z
 				local d = sqrt(rx * rx + rz * rz)
-				if d <= P.SQUARE_R + sr.hw + 2 then
+				if d <= (q.rmax or P.SQUARE_R) + sr.hw + 2 then
 					local y = floor(2 * sr.R[i] + 0.5) / 2
 					if abs(y - q.y) > 0.5 then r = min(r, d - sr.hw - 2) end
 				end
@@ -2134,7 +2249,18 @@ local function plan_once(seed, I, opt)
 	for q = 1, 4 do
 		local a = {}
 		for i, c in ipairs(byq[q]) do a[i] = c end
-		table.sort(a, function(u, v) if u.r ~= v.r then return u.r < v.r end return u.i < v.i end)
+		if P.BUILD_R > 0 then
+			-- Round 26: buildings spread from a ring BUILD_R of the way from
+			-- the core gate to the wall, so fields and houses mix
+			for _, c in ipairs(a) do
+				local pref = P.CORE_GATE + P.BUILD_R * (r_at(atan2(c.z, c.x)) - P.CORE_GATE)
+				c.pref = abs(c.r - pref)
+			end
+			table.sort(a, function(u, v) if u.pref ~= v.pref then return u.pref < v.pref end
+				if u.r ~= v.r then return u.r < v.r end return u.i < v.i end)
+		else
+			table.sort(a, function(u, v) if u.r ~= v.r then return u.r < v.r end return u.i < v.i end)
+		end
 		near[q] = a
 		local b = {}
 		for i, c in ipairs(byq[q]) do b[i] = c end

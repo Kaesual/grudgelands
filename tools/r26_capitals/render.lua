@@ -183,7 +183,8 @@ for _, key in ipairs(run.order) do
 			kit_fill = nfill, overflowed = #st.overflowed, built_share = built / plan.area,
 			rmin = rmin, rmax = rmax, wall_length = w.length, turrets = #w.turrets,
 			open_arcs = st.open_arcs or 0, cross_lanes = st.cross_lanes or 0,
-			squares = st.squares or 0, no_route = st.no_route, failed = st.failed or 0,
+			squares = st.squares or 0, spokes = st.spokes or 0, plaza = st.plaza or false,
+			no_route = st.no_route, failed = st.failed or 0,
 			infeasible = tm.infeasible or 0, connector_failed = st.connector_failed or 0,
 			raster_s = raster_s}
 		write(out_dir .. "/" .. key .. ".json", table.concat(json(J, {})))
