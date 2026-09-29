@@ -168,11 +168,11 @@ B1–B7) settle the rest:
 - [ ] **WP34 depth pulse** (kept, for later): placement and the deep servant
   roster stay open in TODO-design-depth.md. Renewable camp resources are
   removed; the T6 lava lakes stay planned.
-- [ ] **WP46 / WP48:** the fire/explosion guard is deferred to V2 (nothing
-  damages terrain today); writer performance is parked until a playtest shows
+- [ ] **WP46 / WP48:** the fire/explosion guard is deferred until a fire or explosion source exists (expected with V2's Nether)
+  (nothing damages terrain today); writer performance is parked until a playtest shows
   slowness.
-- Closed on 2026-09-29: WP14, WP21, WP22, WP23, WP27, WP29, WP30, WP31, WP32
-  (delivered or merged), WP37 and WP49 (canceled). Held-torch moving light,
+- Closed on 2026-09-29: WP11, WP14, WP21, WP22, WP23, WP27, WP29, WP30, WP31,
+  WP32 (delivered or merged), WP37 and WP49 (canceled). Held-torch moving light,
   natural out-of-combat regeneration, rested XP, renewable ores, the dragon
   hoard chest and `/unstuck` are removed from the design. Friendly-guard
   healing stays deferred.

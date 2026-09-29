@@ -85,7 +85,7 @@ technical evidence certifies its recorded bytes, never an arbitrary later head.
 | WP31 | [Mounts](docs/planning/work-package-scopes.md#wp31) | Delivered (C3); prices merged into WP44. | WP40 ✅ |
 | WP32 | [Farming](docs/planning/work-package-scopes.md#wp32) | Delivered 2026-09-29 (C4), GUI acceptance pending; Claim Stone integration shipped with WP24. | WP24 ✅, WP33 ✅ |
 | WP33 | Gathering/source catalog | Delivered; Round 23 replaces exact-baseline renewal with habitat-driven renewal ([receipt](docs/research/round23-habitat-renewal.md)). Current rules: topic design. | — |
-| WP34 | [Deep spawn pulse](docs/planning/work-package-scopes.md#wp34) | Only the depth pulse remains; kept, for later (E5). Renewable camp resources removed. Land Guard and Rift Spawn join the pulse (E4); placement and servant roster open. | WP6 ✅, WP40 ✅ |
+| WP34 | [Deep spawn pulse](docs/planning/work-package-scopes.md#wp34) | Only the depth pulse remains; kept, for later (E5). Renewable camp resources removed. the Land Guard and the Rift Spawn's deep row join the pulse (E4); placement and servant roster open. | WP6 ✅, WP40 ✅ |
 | WP35 | Equipped weapon source and appearance | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP36 | Reference submodules and first runtime fixes | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP37 | [Surface-density cut](docs/planning/work-package-scopes.md#wp37) | Canceled 2026-09-29: superseded by Round 24 ruling 27 (about 1.5× density). Only Bone Weevil and Bog Fowl get ×0.75, in WP28 (C6). | WP6 ✅ |
@@ -97,14 +97,15 @@ technical evidence certifies its recorded bytes, never an arbitrary later head.
 | WP43 | Canonical material/depth registry | Delivered; Round 24 replaces pick depth bounds and shatter with tier rock and engine-native gating (rulings 1–8). Current rules: topic design. | — |
 | WP44 | [Economy rebase, lighter pass](docs/planning/work-package-scopes.md#wp44) | Open: price tables, 5% buy-back, audit fixes, quest copper rescale, respec and mount prices from a simple income estimate (D1, D2). | WP7 ✅, WP43 ✅ |
 | WP45 | Character-creation stasis and safe arrival | Delivered; Round 24 makes creation pausable (ruling 32). Current rules: topic design. | — |
-| WP46 | Indirect terrain-damage guard | Partial: actor-neutral guard and protected water flow delivered; the fire/explosion remainder is deferred to V2 (E6). | WP40 ✅, WP24 ✅ |
+| WP46 | Indirect terrain-damage guard | Partial: actor-neutral guard and protected water flow delivered; the fire/explosion remainder is deferred until a fire or explosion source exists (expected with V2's Nether) (E6). | WP40 ✅, WP24 ✅ |
 | WP47 | Skills catalog and recoverable representations | Delivered R12–13; current rules in inventory_equipment.md. | — |
 | WP48 | Mapgen writer performance and parallel emerge | Partial; parked until a playtest shows slowness (E8). | WP40 ✅ |
 | WP49 | Fixed mapgen source-audit roster | Canceled 2026-09-29: its audit script was deleted in Round 22 (D1/D3/D22). | — |
 
 ### WP46 — Terrain-damage guard: explosions, fire and lava never damage settlements or POIs
 
-**Partial; the remainder is deferred to V2** (E6, user decision 2026-09-29).
+**Partial; the remainder is deferred until a fire or explosion source
+exists** (E6, user decision 2026-09-29), expected with V2's Nether.
 Round 11 delivers the neutral `grug_core.world_alterable` authority and the
 protected ordinary/river-water flow for buckets. Nothing in the game damages
 terrain today: there is no `fire` and no `tnt` mod, lava is natural only (no
@@ -119,7 +120,7 @@ and the building cores of POIs, villages and camps** (E7, `world.md` §2 R1b).
 Today `world_alterable` does not consult that Round 25 layer
 (`grug_core.world_feature_at`); a future consumer must.
 
-When the work is scheduled (with the V2 fire):
+When the work is scheduled (with the first fire or explosion source):
 
 1. **One guard predicate in `grug_core`**, actor-neutral, asked per node by
    every effect that changes nodes on its own (not through a player's
@@ -260,6 +261,9 @@ none blocks the playtest.
   the price source switches with WP44.
 - The per-run early-out in `world_protection` (Lane E) relies on dyadic road
   profiles (multiples of 1/16). Revisit if road profiles change.
+- Remove `apex_sockets` from mapgen (E5): main still generates 24
+  hard-protected socket columns (`wp40/source/simple_map.lua:357-372`, `:471`,
+  `:489-495`; `r6_settlement.lua:1205-1231`) although the design has none.
 
 ### First-public-release gates
 

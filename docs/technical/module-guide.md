@@ -514,9 +514,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     on protected ground calls `core.record_protection_violation` so the player
     sees the reason. `max_drop_level` is a separate ordinary drop
     property and may remain non-zero. `build_pick_capabilities` and the
-    six `PICK_PROFILES` are the verification/consumer seam. WP29 owns the
-    final playable pick catalog and recipes, while WP22 owns runtime
-    speed/durability calibration. Canonical storage blocks, Iron Sign/Ladder
+    six `PICK_PROFILES` are the verification/consumer seam and the dig-time
+    authority: dig speed stays as in the game, with no separate calibration
+    (2026-09-29 WP audit D8; WP22 and WP29 are closed). Canonical storage blocks, Iron Sign/Ladder
     and the 20 canonical metal stair/slab nodes are storage/building
     derivatives, not natural ground and never harvest-gated.
   - Emberglass and Abyssal Steel are the canonical names. Fresh-server mode

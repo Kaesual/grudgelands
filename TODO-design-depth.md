@@ -25,8 +25,9 @@ No placement values or fallback behavior are authorized by this TODO.
 
 Choose families, licensed animated models and drop tables for the deep band's
 servants. They join the same pulse and accounting model, rather than becoming
-a second place-bound spawn source. The Land Guard and Rift Spawn, today
-ordinary ABM rows below −1000, are part of that roster (WP audit E4); the
+a second place-bound spawn source. The Land Guard and the Rift Spawn (its
+deep row), today ordinary ABM rows below −1000, are part of that roster (WP
+audit E4); the
 remaining families are open. The shallow half uses existing cave
 families, so the dedicated roster may follow that mechanics increment.
 

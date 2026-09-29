@@ -1004,9 +1004,10 @@ ring measurements cannot be promoted into fresh acceptance evidence.
 **Approved future WP34 scope** (kept, for later; WP audit E5). Placement
 geometry and the below-−1000 servant roster remain open in
 `TODO-design-depth.md`; the pulse is not current runtime behavior. Existing
-cave ABMs remain separate. The Land Guard and Rift Spawn, which ship today as
-ordinary ABM rows below −1000 (`grug_mobs/land_guard.lua:31-33`,
-`rift_spawn.lua:106`), join the pulse when it ships (WP audit E4).
+cave ABMs remain separate. The Land Guard and the Rift Spawn's deep row, which
+ship today as ordinary ABM rows below −1000 (`grug_mobs/land_guard.lua:31-33`,
+`rift_spawn.lua:103-106`), join the pulse when it ships (WP audit E4); the
+Rift Spawn's surface row (`rift_spawn.lua:107-111`) stays.
 
 Depth is a danger axis, not only a material axis (`combat_stats.md` §3,
 `world.md` §4c). Because regular mobs cap at level 60, everything past

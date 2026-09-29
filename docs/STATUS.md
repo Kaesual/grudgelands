@@ -27,7 +27,7 @@ Updated 2026-09-29. This is the delivery pointer, not another game specification
   merged on local main (`7ca48666`), independently reviewed and synchronized
   to Luanti on 2026-09-29. No push.
   [Plan, completion and playtest checklist](planning/round25-housing-plan.md#completion-2026-09-29).
-  Next: fresh world and playtest.
+  The first playtest has started; its follow-up rulings 30–33 feed Round 26.
 
 - **Round 24 delivered, pushed and accepted:** tier rocks with engine-native pick gating
   replace depth bounds and shatter (loose ground by hand or shovel, axe and
@@ -88,7 +88,7 @@ Updated 2026-09-29. This is the delivery pointer, not another game specification
   and code/design discrepancies: [findings](maintenance/findings.md).
 - **Latest game:** local main carries Round 25, which includes Rounds 20–24
   and the 2026-09-28 playtest fixes. Round 24 is the latest pushed and
-  accepted state; the Round 25 playtest is pending. Fresh-world development
+  accepted state; the Round 25 playtest is under way (first rulings recorded). Fresh-world development
   remains in force.
 - **Technical reviews/gates:** recorded PASS for those delivered candidates;
   not a fresh certification of arbitrary later changes.

@@ -595,7 +595,8 @@ every 0.25 s):
 
 - protected node, with the protection reason: "Town – protected" (a
   capital's protected city or a start town), "Landmark – protected" (a
-  protected functional column: outpost, bandit camp, apex socket), "Road –
+  protected functional column: outpost, bandit camp, apex socket until its
+  removal from mapgen), "Road –
   protected" (a road corridor), "Village – protected" and similar for the
   other POI boxes (`world.md` §2 R1b), "Home of <owner> – protected" (an
   active Claim Stone claim, `housing.md` §6), "Accord home territory –

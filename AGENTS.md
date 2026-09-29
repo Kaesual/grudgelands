@@ -24,12 +24,6 @@ Research and historical evidence: **[docs/research/README.md](docs/research/READ
 - This changes execution mechanics, not model authorization or independent
   review requirements. Read `docs/process/agent-model-policy.md` and
   `docs/process/cross-cli-orchestration.md` for those rules.
-- **Current development session:** Claude credits are exhausted. No Claude CLI,
-  Claude agent, Opus or Fable task is authorized in this session. Root is Astra;
-  ordinary implementation/review uses native Sol, with native Astra allowed for
-  hard/performance-critical work. This session restriction can change only by
-  a later explicit user instruction. Durable active work state:
-  `docs/planning/round21-state.md` (Round 21 delivered; await playtest).
 
 ## Fresh-server development mode
 
