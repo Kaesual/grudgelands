@@ -83,6 +83,8 @@ local MODPATHS = {
 	grug_trees = repo .. "/mods/ITEMS/grug_trees",
 	grug_materials = repo .. "/mods/ITEMS/grug_materials",
 	grug_nodes = repo .. "/mods/ITEMS/grug_nodes",
+	doors = repo .. "/mods/BASE/doors",
+	grug_decor = repo .. "/mods/ITEMS/grug_decor",
 }
 
 local function register(kind, name, def)
@@ -135,6 +137,8 @@ function core_stub.is_creative_enabled() return false end
 function core_stub.check_player_privs() return false end
 local function key(pos) return pos.x .. "," .. pos.y .. "," .. pos.z end
 function core_stub.get_node(pos) return world[key(pos)] or {name = "air"} end
+core_stub.get_node_or_nil = core_stub.get_node
+function core_stub.dir_to_facedir() return 0 end
 function core_stub.set_node(pos, node) world[key(pos)] = {name = node.name} end
 function core_stub.is_protected(pos) return protected_at[key(pos)] == true end
 local violations = 0
@@ -215,6 +219,9 @@ _G.ItemStack = function(value)
 end
 _G.PseudoRandom = function() return {next = function() return 0 end} end
 
+-- builtin air (placement code reads its buildable_to).
+register("node", "air", {buildable_to = true, walkable = false, diggable = false,
+	pointable = false})
 -- The builtin hand before default overrides it.
 register("none", "", {tool_capabilities = {full_punch_interval = 1,
 	groupcaps = {}}})
@@ -234,6 +241,10 @@ run("default", {"functions.lua", "trees.lua", "nodes.lua", "tools.lua",
 run("grug_trees", {"init.lua"})
 run("grug_materials", {"init.lua"})
 run("grug_nodes", {"init.lua"})
+-- Round 24 playtest fix: the real door placement code and the capital
+-- service dressing (undiggable, inert on_punch).
+run("doors", {"init.lua"})
+run("grug_decor", {"capital.lua"})
 current_mod = "?"
 for _, fn in ipairs(mods_loaded) do fn() end
 check(true, "startup audit passed under the ported getDigParams")
@@ -573,6 +584,77 @@ do
 			"place " .. item .. " refused")
 		check(#chat == 1 and chat[1][2] == "Town – protected",
 			"place " .. item .. ": one protection line")
+	end
+	-- Review fixes. (1) Door placement: the real doors on_place reports the
+	-- refused placement (GRUG PATCH) -- right-click, so no punch covers it.
+	for _, door in ipairs({"doors:door_wood", "doors:door_steel"}) do
+		serial = serial + 1
+		local name = "town" .. serial
+		local pos = vector.offset(base, serial, 1, 0)
+		protected_at[key(pos)] = true
+		core.set_node(vector.offset(pos, 0, -1, 0), {name = "default:stone"})
+		chat, now_us = {}, now_us + 10000000
+		local placer = player(name, door)
+		placer.get_player_control = function() return {} end
+		placer.get_look_dir = function() return {x = 0, y = 0, z = 1} end
+		items[door].on_place(ItemStack(door), placer,
+			{type = "node", under = vector.offset(pos, 0, -1, 0), above = pos})
+		check(core.get_node(pos).name == "air", door .. " placement refused")
+		check(#chat == 1 and chat[1][2] == "Town – protected",
+			door .. " placement: one protection line (" .. #chat .. ")")
+	end
+	-- (2) A press that cast a skill gives no protection line on its punch;
+	-- a press that did not cast (swing skill, no valid target) keeps it, and
+	-- the skill hand's refused dig reports it either way.
+	local cast = {}
+	_G.grug_abilities = {input = {cast_this_press = function(p)
+		return cast[p:get_player_name()] == true
+	end}}
+	local dirt = vector.offset(base, 0, 7, 0)
+	core.set_node(dirt, {name = "default:dirt"})
+	protected_at[key(dirt)] = true
+	for _, row in ipairs({{"cast", true, 0}, {"nocast", false, 1}}) do
+		serial = serial + 1
+		local name = "town" .. serial
+		cast[name] = row[2]
+		chat, now_us = {}, now_us + 10000000
+		local p = player(name, "grug_abilities:strike")
+		core.node_punch(dirt, core.get_node(dirt), p, {type = "node"})
+		check(#chat == row[3], "skill press " .. row[1] .. ": " .. row[3] ..
+			" protection line(s) on the punch")
+		now_us = now_us + 10000000
+		core.record_protection_violation(dirt, name) -- the skill hand's refused dig
+		check(#chat == row[3] + 1 and chat[#chat][2] == "Town – protected",
+			"skill press " .. row[1] .. ": refused dig still reports")
+	end
+	check(M.punch_hint(dirt, core.get_node(dirt), player("town-hand", "")) ==
+		"Town – protected", "bare hand ignores the skill cast flag")
+	_G.grug_abilities = nil
+	-- (3) Undiggable town dressing: only the protection line, never a tier or
+	-- level line; the capital props' own on_punch reaches the shared hint.
+	register("node", "fixture:camp_display", {diggable = false,
+		groups = {not_in_creative_inventory = 1}})
+	for _, node_name in ipairs({"fixture:camp_display", "grug_decor:capital_counter",
+			"grug_decor:capital_anvil"}) do
+		local def = nodes[node_name]
+		check(def and def.diggable == false, node_name .. " stays undiggable")
+		for _, protected in ipairs({true, false}) do
+			serial = serial + 1
+			local name = "town" .. serial
+			local pos = vector.offset(base, serial, 2, 0)
+			core.set_node(pos, {name = node_name})
+			protected_at[key(pos)] = protected or nil
+			chat, now_us = {}, now_us + 10000000
+			on_punch(def)(pos, core.get_node(pos), player(name, "default:pick_wood"),
+				{type = "node"})
+			check(#chat == (protected and 1 or 0) and
+				(not protected or chat[1][2] == "Town – protected"),
+				node_name .. (protected and " protected: one line" or
+					" unprotected: silent"))
+		end
+		check(def.on_rightclick == nil or node_name == "fixture:camp_display" or
+			def.on_rightclick(vector.new(0, 0, 0)) == nil,
+			node_name .. " right-click unchanged (inert)")
 	end
 	-- The tier line stays suppressed for a skill on unprotected rock.
 	local pos = vector.offset(base, 0, 5, 0)

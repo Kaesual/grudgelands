@@ -580,11 +580,12 @@ bands' secondary rock, in irregular nests and in the sparse mountain layers.
 digging a node it predicts as undiggable (`src/client/game.cpp`
 `handleDigging`), so the server answers with one line in the shared screen
 flash line (`grug_core.flash`, the same line the skill errors use, here in a
-neutral colour). Every refused edit on protected ground reports too: the
-protection-violation callback (builtin dig and place refusals, doors, chests,
-beds, saplings, buckets, hoes, the skill hand's dig refusal) shows the same
-protection line for an online player; explosions and other non-player
-violations stay silent. One refused action gives one flash: the same line is
+neutral colour). Refused edits on protected ground report too: the
+protection-violation callback (builtin dig and place refusals, the skill
+hand's refused dig, door, bed, sapling, kelp and coral placement, farming
+buckets, hoes and seeds) shows the same protection line for an online player;
+explosions and other non-player violations stay silent. Undiggable town
+dressing (`diggable = false`) shows the line on punch. One refused action gives one flash: the same line is
 re-shown at most once per flash lifetime (1.5 s), so it stays on screen while
 the player keeps trying, and a different line replaces it at once (at most
 every 0.25 s):
@@ -601,7 +602,10 @@ every 0.25 s):
 The protection line does not depend on the wielded item (bare hand, skill,
 any tool or item). A selected skill produces no tier, broken-pick or level
 line (with a skill, LMB on a node the hand cannot dig is a cast; `classes.md`
-§2b). Undiggable service dressing (`diggable = false`) gives no line. Protected
+§2b). Undiggable town dressing (`diggable = false`: capital service props,
+camp displays) gives only the protection line. A press that already cast a
+self or support skill gives no protection line on its punch; the skill hand's
+refused dig still reports it. Protected
 nodes still show cracks (an engine limit: the client cannot know position or
 faction); there is no per-player capability swapping.
 

@@ -4,11 +4,20 @@ local function deny() return false end
 local function zero() return 0 end
 local function nothing() end
 local function no_drops() return {} end
+-- The punch does nothing to the dressing; it only shows the town's protection
+-- line (Round 24), through grug_materials' shared rate-limited hint when that
+-- mod is loaded.
+local function protection_hint(pos, node, puncher)
+ local materials = rawget(_G, "grug_materials")
+ if materials and materials.punch_hint_callback then
+  materials.punch_hint_callback(pos, node, puncher)
+ end
+end
 local function node(id, description, texture, boxes, extra)
  local def={description=description, tiles={texture}, paramtype="light",
   drawtype="nodebox", node_box={type="fixed",fixed=boxes},
   groups={not_in_creative_inventory=1}, drop="", diggable=false,
-  can_dig=deny, on_dig=nothing, on_punch=nothing, on_rightclick=nothing,
+  can_dig=deny, on_dig=nothing, on_punch=protection_hint, on_rightclick=nothing,
   on_blast=no_drops, allow_metadata_inventory_put=zero,
   allow_metadata_inventory_take=zero, allow_metadata_inventory_move=zero,
   _grug_capital_display=true}

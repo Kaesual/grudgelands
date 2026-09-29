@@ -94,6 +94,7 @@ return function(api)
 		if not usable(player, def, s) then return false end
 		if Q.try_cast(player, def, hit, true) then
 			if def.repeat_policy == "once" then s.used = true end
+			s.cast_press = true -- this physical press cast (see M.cast_this_press)
 			api.delay_strike(player)
 			return true
 		end
@@ -278,7 +279,7 @@ return function(api)
 			return -- Scout settles the release before another weapon action.
 		end
 		if down and not s.down then
-			s.used, s.empty_used = false, false
+			s.used, s.empty_used, s.cast_press = false, false, false
 			if def then activate(player, s, def, hit, distance, true) end
 		elseif down and def then
 			activate(player, s, def, hit, distance, false)
@@ -310,6 +311,13 @@ return function(api)
 		if not ok then error(err, 0) end
 	end
 	function M.press(player) M.step(player, true) end
+	-- Did the current (or last) LMB press cast a skill? The mining hint skips
+	-- its protection line on a punch whose press already cast (Round 24).
+	function M.cast_this_press(player)
+		local s = player and player.get_player_name and
+			states[player:get_player_name()]
+		return s ~= nil and s.cast_press == true
+	end
 	function M.right_action(player)
 		M.step(player)
 		return state(player).right

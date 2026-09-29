@@ -264,6 +264,10 @@ function doors.register(name, def)
 
 			local pn = placer and placer:get_player_name() or ""
 			if minetest.is_protected(pos, pn) or minetest.is_protected(above, pn) then
+				-- GRUG PATCH: report the refused placement like builtin
+				-- item_place_node does, so the player sees the protection reason.
+				core.record_protection_violation(
+					core.is_protected(pos, pn) and pos or above, pn)
 				return itemstack
 			end
 

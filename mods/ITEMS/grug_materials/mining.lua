@@ -520,6 +520,13 @@ function grug_materials.emit_mining_failure(pos, digger, decision)
 	return grug_materials.emit_hint(name, message)
 end
 
+local function cast_this_press(player)
+	local abilities = rawget(_G, "grug_abilities")
+	local input = abilities and abilities.input
+	return input ~= nil and type(input.cast_this_press) == "function" and
+		input.cast_this_press(player) == true
+end
+
 local function wields_skill(stack)
 	local def = stack and stack:get_definition()
 	return def ~= nil and ((def.groups or {}).grug_ability or 0) > 0
@@ -533,12 +540,19 @@ end
 function grug_materials.punch_hint(pos, node, puncher)
 	if not is_player(puncher) or not node then return nil end
 	local def = core.registered_nodes[node.name]
-	if not def or def.diggable == false then return nil end
+	if not def then return nil end
 	local stack = puncher:get_wielded_item()
 	local name = puncher:get_player_name()
+	-- Undiggable town dressing (diggable = false) still answers with the
+	-- protection line on protected ground, and with nothing else.
 	local protected = grug_materials.protection_hint(pos, name)
-	if protected then return protected end
-	if wields_skill(stack) then return nil end
+	if protected then
+		-- A press that already cast a skill (a self/support skill at an empty
+		-- context) was a cast, not a dig attempt: no protection line then.
+		if wields_skill(stack) and cast_this_press(puncher) then return nil end
+		return protected
+	end
+	if def.diggable == false or wields_skill(stack) then return nil end
 	if grug_materials.tool_in_use(stack, def) then
 		local level = grug_materials.tool_level_shortfall(puncher, stack)
 		if level then return grug_materials.tool_level_hint(stack, level) end
@@ -557,18 +571,25 @@ end
 -- node even if it predicts the node as undiggable (game.cpp handleDigging),
 -- so the server can answer a protected, a level-gated and a too-hard node
 -- here.
-core.register_on_punchnode(function(pos, node, puncher)
+-- Nodes with their own inert on_punch (grug_decor capital service dressing)
+-- call this directly through a soft lookup; everything else reaches it
+-- through core.node_punch.
+function grug_materials.punch_hint_callback(pos, node, puncher)
 	if not is_player(puncher) then return end
 	local name = puncher:get_player_name()
 	if not hint_ready(name, core.get_us_time()) then return end
 	local message = grug_materials.punch_hint(pos, node, puncher)
 	if message then grug_materials.emit_hint(name, message) end
-end)
+end
+core.register_on_punchnode(grug_materials.punch_hint_callback)
 
--- The authoritative refusal: builtin core.node_dig and core.item_place_node,
--- this file's dig wrapper and every mod refusing a protected edit (doors,
--- chests, beds, saplings, buckets, hoes, farming) report here. Only an online
--- player gets a line; explosions and other non-player violations stay silent.
+-- The authoritative refusal reports here: builtin core.node_dig and
+-- core.item_place_node (every node without its own placement code), this
+-- file's dig wrapper, the skill hand's refused dig (grug_abilities), the
+-- protected-placement checks of doors (GRUG PATCH), beds, saplings, kelp and
+-- coral, and grug_farming's buckets, hoes and seeds. The only door and chest
+-- calls upstream are the skeleton-key owner mismatch. Only an online player
+-- gets a line; explosions and other non-player violations stay silent.
 core.register_on_protection_violation(function(pos, name)
 	if type(name) ~= "string" or name == "" or not pos or
 			not core.get_player_by_name(name) then
