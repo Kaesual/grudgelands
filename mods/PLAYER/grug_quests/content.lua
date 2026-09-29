@@ -134,7 +134,8 @@ local cultures = {
 		key = "orc", faction = "throng", start = "sunscar",
 		-- The Sun-Dried Husk spawns in Sunscar from band 2 (L4+) of the
 		-- start-zone gradient, so its night patrol is a level-5 quest (Round 24
-		-- ruling 26) instead of the chain's usual 4.
+		-- ruling 26) instead of the chain's usual 4; its XP is the level-5
+		-- reward (progression.md §4: fixed rewards follow the target level).
 		levels = {[4] = 5},
 		village = "redtusk_village", outpost = "redtusk_outpost", camp = "redtusk_bandit_camp",
 		names = {"Gara Stonevoice", "Borak Redgrass", "Kesh Longstride",
@@ -412,6 +413,14 @@ for _, culture in ipairs(cultures) do
 			description = description .. " Speak with the captive for compatible supply tasks before clearing the camp; the captive also accepts this combat report."
 		end
 		local level = culture.levels and culture.levels[number] or LEVEL[number]
+		-- The fixed XP reward follows the authored target level: an overridden
+		-- level takes the reward of the first chain position with that level.
+		local xp = XP[number]
+		if level ~= LEVEL[number] then
+			for position = 1, #LEVEL do
+				if LEVEL[position] == level then xp = XP[position] break end
+			end
+		end
 		local prior = number >= 7 and number - 1 or
 			(number == 6 and 5 or number == 5 and 3 or (number == 3 or number == 4) and 1)
 		Q.register_quest(id, {
@@ -422,7 +431,7 @@ for _, culture in ipairs(cultures) do
 				(number == 9 and "finale" or number == 8 and "hard" or "standard"),
 			prerequisites = prior and {quest_id(culture, prior, culture.titles[prior])} or {},
 			objectives = {objective},
-			rewards = {xp = XP[number], copper = number == 2 and 10 or
+			rewards = {xp = xp, copper = number == 2 and 10 or
 				(number == 6 and 40 or COPPER[number]), items = {}},
 		})
 	end

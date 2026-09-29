@@ -214,7 +214,8 @@ local function run()
 						low and ("L%d-%d"):format(low, high) or "never")
 					if low and (not best or low < best) then best = low end
 				end
-				log(("quest %s (level %d): %s"):format(id, level, table.concat(parts, ", ")))
+				log(("quest %s (level %d, %d XP): %s"):format(id, level, quest.rewards.xp,
+					table.concat(parts, ", ")))
 				check(best ~= nil and best <= level, ("%s: a target spawns at or below level %d"):format(
 					id, level))
 			end

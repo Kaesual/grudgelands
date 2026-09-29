@@ -16,13 +16,14 @@ end
 
 classify("critter", {
 	"bog_fowl", "bone_weevil", "cave_bat", "cave_crawler", "gull",
-	"hare", "parrot", "plains_runner", "rabbit", "song_bird",
+	"hare", "parrot", "rabbit", "song_bird",
 	"wild_turkey", "reed_angelfish",
 })
 
 classify("neutral", {
 	"boar", "carrion_crow", "gaunt_stag", "ibex", "jungle_boar",
-	"mountain_ram", "plague_boar", "reef_lurker", "shore_crab", "stag",
+	"mountain_ram", "plague_boar", "plains_runner", "reef_lurker",
+	"shore_crab", "stag",
 	"tapir", "zebra",
 })
 

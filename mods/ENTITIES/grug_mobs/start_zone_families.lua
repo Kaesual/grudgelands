@@ -134,13 +134,26 @@ mobs:spawn({name = "grug_mobs:wild_turkey",
 	nodes = {"default:dirt_with_grass"}, interval = 20, chance = 2100,
 	active_object_count = 2, min_height = 0, max_height = 600})
 
-local runner = critter("Plains Runner", "grug_mobs_plains_runner.b3d",
-	"grug_mobs_plains_runner.png", {x = 1, y = 1},
-	{-0.4, -0.01, -0.3, 0.4, 0.8, 0.4}, {
+-- Plains Runner: fighting prey like the boar and ibex (Round 24 ruling 31),
+-- no longer a critter, so Sunscar's day has something that fights back from
+-- band 1. Normal tier: level, HP, damage and XP follow the zone field.
+local runner = ground_defaults({
+	description = "Plains Runner", clock = "day", type = "animal",
+	attack_players = false, attack_npcs = false, view_range = 12,
+	visual = "mesh", mesh = "grug_mobs_plains_runner.b3d",
+	textures = {{"grug_mobs_plains_runner.png"}}, visual_size = {x = 1, y = 1},
+	collisionbox = {-0.4, -0.01, -0.3, 0.4, 0.8, 0.4},
+	makes_footstep_sound = true,
+	-- The nandu mesh has no attack clip; its run range doubles as the peck.
+	animation = {
 		stand_start = 1, stand_end = 100, stand_speed = 25,
 		walk_start = 100, walk_end = 200, walk_speed = 55,
 		run_start = 100, run_end = 200, run_speed = 90,
-	})
+		punch_start = 100, punch_end = 200, punch_speed = 90,
+	},
+	drops = {{name = "mobs:meat_raw", chance = 1, min = 1, max = 1}},
+})
+grug_mobs.passive_prey(runner)
 grug_mobs.register_mob("grug_mobs:plains_runner", runner)
 mobs:spawn({name = "grug_mobs:plains_runner",
 	nodes = {"default:dry_dirt_with_dry_grass"}, interval = 20, chance = 2100,
@@ -202,9 +215,9 @@ mobs:spawn({name = "grug_mobs:giant_rat",
 	min_height = -300, max_height = -40})
 
 local function poison_family(description, mesh, texture, size, box, animation,
-		spawn_check)
+		spawn_check, clock)
 	local def = ground_defaults({
-		description = description, clock = "night", type = "monster",
+		description = description, clock = clock, type = "monster",
 		attack_players = true, group_attack = false, view_range = 10,
 		_grug_spawn_check = spawn_check,
 		visual = "mesh", mesh = mesh, textures = {{texture}},
@@ -228,9 +241,19 @@ local scorpion = poison_family("Scorpion", "grug_mobs_scorpion.b3d",
 		walk_start = 100, walk_end = 200, walk_speed = 55,
 		run_start = 100, run_end = 200, run_speed = 90,
 		punch_start = 200, punch_end = 300, punch_speed = 70,
-	}, start_band(4))
+	-- Night everywhere; in Sunscar around the clock (Round 24 ruling 31: the
+	-- start zone's bands 2 and 3 get a day hostile). `sunscar_day` only names
+	-- the day row below; start_band keeps both rows to band 2 and up.
+	}, start_band(4), {scorpion = "night",
+		["zone:kragmar_sunscar_flats"] = "any", sunscar_day = "day"})
 grug_mobs.register_mob("grug_mobs:scorpion", scorpion)
-mobs:spawn({name = "grug_mobs:scorpion",
+mobs:spawn({name = "grug_mobs:scorpion", _grug_clock_palette = "scorpion",
+	nodes = {"default:dry_dirt_with_dry_grass", "grug_nodes:mesa_clay"},
+	interval = 20, chance = 1800, active_object_count = 4,
+	min_height = 0, max_height = 600})
+-- The Sunscar day row: the night row's values; the spawn policy admits it only
+-- where the zone clock is "any" (Sunscar), and both rows share one aoc cap.
+mobs:spawn({name = "grug_mobs:scorpion", _grug_clock_palette = "sunscar_day",
 	nodes = {"default:dry_dirt_with_dry_grass", "grug_nodes:mesa_clay"},
 	interval = 20, chance = 1800, active_object_count = 4,
 	min_height = 0, max_height = 600})
@@ -243,9 +266,16 @@ local viper = poison_family("Viper", "grug_mobs_viper.b3d",
 		walk_start = 300, walk_end = 420, walk_speed = 60,
 		run_start = 300, run_end = 420, run_speed = 90,
 		punch_start = 200, punch_end = 300, punch_speed = 70,
-	}, start_band(4))
+	-- Night everywhere; in Kapok around the clock (Round 24 ruling 31), the
+	-- same two-row pattern as the Scorpion.
+	}, start_band(4), {viper = "night",
+		["zone:kragmar_kapok_cradle"] = "any", kapok_day = "day"})
 grug_mobs.register_mob("grug_mobs:viper", viper)
-mobs:spawn({name = "grug_mobs:viper",
+mobs:spawn({name = "grug_mobs:viper", _grug_clock_palette = "viper",
+	nodes = {"default:dirt_with_rainforest_litter"},
+	interval = 20, chance = 1800, active_object_count = 4,
+	min_height = 0, max_height = 600})
+mobs:spawn({name = "grug_mobs:viper", _grug_clock_palette = "kapok_day",
 	nodes = {"default:dirt_with_rainforest_litter"},
 	interval = 20, chance = 1800, active_object_count = 4,
 	min_height = 0, max_height = 600})

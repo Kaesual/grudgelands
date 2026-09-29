@@ -445,10 +445,23 @@ local function clock_for_palette(name, palette)
 	return clock
 end
 
+-- A clock table may name one named zone with a "zone:<zone id>" key (Round
+-- 24 ruling 31: the Sunscar Scorpion and the Kapok Viper keep their night
+-- clock elsewhere and spawn around the clock in their start zone). It wins
+-- over the palette keys, so the choice never depends on table order.
+local function zone_clock_key(clock, zone_id)
+	local key = zone_id and ("zone:" .. zone_id)
+	return key and clock[key] and key or nil
+end
+
 local function clock_palette_at(name, pos, zone_palette)
 	local clock = spawn_clocks[name]
 	if type(clock) ~= "table" then
 		return nil
+	end
+	local zone_key = zone_clock_key(clock, grug_zones.id_at(pos.x, pos.z))
+	if zone_key then
+		return zone_key
 	end
 	if clock.blight and grug_zones.biome_at(pos.x, pos.z) == "grug_blight" then
 		return "blight"
@@ -615,6 +628,10 @@ function grug_mobs.zone_clock_cast(zone_id, clock)
 			local role_clock = matched_palette == "exact" and
 				clock_for_palette(mob_name, nil) or
 				clock_for_palette(mob_name, matched_palette)
+			local mob_clock = spawn_clocks[mob_name]
+			local zone_key = type(mob_clock) == "table" and
+				zone_clock_key(mob_clock, zone_id)
+			if zone_key then role_clock = mob_clock[zone_key] end
 			if role_clock == clock or role_clock == "any" then
 				cast[#cast + 1] = mob_name
 			end
