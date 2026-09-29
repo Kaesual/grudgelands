@@ -69,7 +69,12 @@ rawset(_G, "core", {
  end,
  get_mod_storage=function()
   return {get_string=function(_, k) return storage_data[k] or "" end,
-   set_string=function(_, k, v) storage_data[k] = v ~= "" and v or nil end}
+   set_string=function(_, k, v) storage_data[k] = v ~= "" and v or nil end,
+   get_keys=function()
+    local keys = {}
+    for k in pairs(storage_data) do keys[#keys + 1] = k end
+    return keys
+   end}
  end,
  formspec_escape=function(s) return s end,
  chat_send_player=function(name, message) chat[#chat + 1] = message end,
@@ -439,7 +444,14 @@ do
  check(table.concat(edges_of("grug_home"), " "):find("grug_housing", 1, true),
   "D grug_home optionally depends on grug_housing")
  local housing = edges_of("grug_housing")
- check(#housing == 1 and housing[1] == "grug_core", "D grug_housing depends only on grug_core")
+ -- Lane A's grug_housing depends on grug_core, grug_mapgen and grug_mobs (and
+ -- optionally on base mods); what matters is that none of them is grug_home.
+ local housing_ok = #housing > 0
+ for _, dep in ipairs(housing) do
+  if dep == "grug_home" then housing_ok = false end
+ end
+ check(housing_ok and housing[1] == "grug_core",
+  "D grug_housing does not depend on grug_home (" .. table.concat(housing, " ") .. ")")
  local seen, back = {}, false
  local function visit(name)
   for _, dep in ipairs(edges_of(name)) do

@@ -312,19 +312,28 @@ function grug_core.settlement_socket_anchor(settlement_key)
 	return {x = record.anchor.x, y = record.anchor.y, z = record.anchor.z}
 end
 
--- Home services reserve an existing authored resident before mods-loaded NPC
--- placement. Coordinates remain the terrain-resolved socket authority's own.
-function grug_core.assign_innkeeper_socket(settlement_key, socket_id)
+-- Service NPCs reserve an existing authored resident before mods-loaded NPC
+-- placement: the socket keeps its terrain-resolved position and only changes
+-- its role, so no blueprint or mapgen output changes. The roles are closed:
+-- the innkeeper (grug_home) and the Housing Manager (grug_housing).
+local SERVICE_ROLES = {innkeeper = true, housing_manager = true}
+
+function grug_core.assign_service_socket(settlement_key, socket_id, role)
+ if not SERVICE_ROLES[role] then fail("service role differs: " .. tostring(role)) end
  local record = by_key[settlement_key]
- if not record then fail("home settlement missing: " .. settlement_key) end
+ if not record then fail(role .. " settlement missing: " .. settlement_key) end
  for _, entry in ipairs(record.sockets) do
   if entry.id == socket_id then
    if entry.role ~= "idle" or not entry.spawn then
-    fail(settlement_key .. ": innkeeper must replace an inhabited idle socket")
+    fail(settlement_key .. ": " .. role .. " must replace an inhabited idle socket")
    end
-   entry.role = "innkeeper"
+   entry.role = role
    return copy_entry(entry)
   end
  end
- fail(settlement_key .. ": innkeeper socket missing: " .. socket_id)
+ fail(settlement_key .. ": " .. role .. " socket missing: " .. socket_id)
+end
+
+function grug_core.assign_innkeeper_socket(settlement_key, socket_id)
+ return grug_core.assign_service_socket(settlement_key, socket_id, "innkeeper")
 end

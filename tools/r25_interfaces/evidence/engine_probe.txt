@@ -1,0 +1,62 @@
+# seed 4242424242, 2026-09-29, tools/r25_interfaces/run.sh on main 86d60b29 + Lane C (real Lane A core, Lane D home stone)
+ACTION[Server]: [grug_housing] interaction guard: node inventories on 919 nodes, right-click on 158, node form on 12; exceptions: default:sign_wall_wood, grug_housing:claim_stone, grug_materials:iron_sign_wall
+ACTION[Server]: [r25_interfaces_probe] ok   six Manager sockets
+ACTION[Server]: [r25_interfaces_probe] manager socket highcourt market_counting_house/market_counting_house_gate_idle at (27,43,-1586)
+ACTION[Server]: [r25_interfaces_probe] manager socket dur_brannoc forge_guild_house/forge_guild_house_gate_idle at (-1815,68,-1410)
+ACTION[Server]: [r25_interfaces_probe] manager socket lethariel market_weaver/market_weaver_gate_idle at (1793,56,-1583)
+ACTION[Server]: [r25_interfaces_probe] manager socket nhal_veyr market_shroud_house/market_shroud_house_gate_idle at (-1787,45,1403)
+ACTION[Server]: [r25_interfaces_probe] manager socket gor_drazhak warren_weaver/warren_weaver_gate_idle at (-86,61,1452)
+ACTION[Server]: [r25_interfaces_probe] manager socket kezamba shore_tailor/shore_tailor_gate_idle at (1733,34,1618)
+ACTION[Server]: [r25_interfaces_probe] ok   highcourt has a Manager
+ACTION[Server]: [r25_interfaces_probe] ok   dur_brannoc has a Manager
+ACTION[Server]: [r25_interfaces_probe] ok   lethariel has a Manager
+ACTION[Server]: [r25_interfaces_probe] ok   nhal_veyr has a Manager
+ACTION[Server]: [r25_interfaces_probe] ok   gor_drazhak has a Manager
+ACTION[Server]: [r25_interfaces_probe] ok   kezamba has a Manager
+ACTION[Server]: [r25_interfaces_probe] ok   stand-in at level 19
+ACTION[Server]: [r25_interfaces_probe] ok   Manager dialog opens
+ACTION[Server]: [r25_interfaces_probe] ok   Manager explains the upkeep
+ACTION[Server]: [r25_interfaces_probe] level 19: (c@#ff6060)You need level 20 to receive a Claim Stone.(c@#fff)
+ACTION[Server]: [r25_interfaces_probe] ok   level 19 gets no stone
+ACTION[Server]: [r25_interfaces_probe] level 20: (c@#8fdc7a)You received a Claim Stone.(c@#fff)
+ACTION[Server]: [r25_interfaces_probe] ok   level 20 receives the Claim Stone
+ACTION[Server]: [r25_interfaces_probe] ok   state carried after the hand-out
+ACTION[Server]: [r25_interfaces_probe] ok   status: carried
+ACTION[Emerge-0]: [r25_interfaces_probe] ok   surface at the spot
+ACTION[Emerge-0]: [grug_housing] r25c_owner placed Claim Stone 1 at (-2400,73,-2399)
+ACTION[Emerge-0]: [r25_interfaces_probe] ok   stone placed through on_place
+ACTION[Emerge-0]: [r25_interfaces_probe] ok   state placed
+ACTION[Emerge-0]: [r25_interfaces_probe] placed claim 1 at (-2400,73,-2399)
+ACTION[Emerge-0]: [r25_interfaces_probe] ok   status: empty fuel
+ACTION[Emerge-0]: [r25_interfaces_probe] ok   stone form opens for the owner
+ACTION[Emerge-0]: [r25_interfaces_probe] ok   form: no fuel
+ACTION[Emerge-0]: [r25_interfaces_probe] ok   coal block refused
+ACTION[Emerge-0]: [r25_interfaces_probe] ok   10 coal lumps put
+ACTION[Emerge-0]: [r25_interfaces_probe] fuel line: Fuel left: 3 d 0 h 40 min
+ACTION[Emerge-0]: [r25_interfaces_probe] ok   form: remaining time after 10 lumps
+ACTION[Emerge-0]: [r25_interfaces_probe] ok   stone node is the fuelled variant
+ACTION[Emerge-0]: [r25_interfaces_probe] ok   95 charcoal put
+ACTION[Emerge-0]: [r25_interfaces_probe] ok   6 charcoal returned (99 - 10 = 89 accepted)
+ACTION[Emerge-0]: [r25_interfaces_probe] ok   form: partial message
+ACTION[Emerge-0]: [r25_interfaces_probe] ok   99 lumps burning
+ACTION[Emerge-0]: [r25_interfaces_probe] status: Claim Stone fuel: 29 d 23 h 24 min
+ACTION[Emerge-0]: [r25_interfaces_probe] ok   status: remaining time, not red
+ACTION[Emerge-0]: [r25_interfaces_probe] ok   unknown player refused
+ACTION[Emerge-0]: [r25_interfaces_probe] ok   friend has Interact
+ACTION[Emerge-0]: [r25_interfaces_probe] ok   form lists the friend
+ACTION[Emerge-0]: [r25_interfaces_probe] ok   Interact does not build
+ACTION[Emerge-0]: [r25_interfaces_probe] ok   Set-as-home button present
+ACTION[Emerge-0]: [r25_interfaces_probe] set home: Your Claim Stone is now your home.
+ACTION[Emerge-0]: [r25_interfaces_probe] ok   home is the claim
+ACTION[Emerge-0]: [r25_interfaces_probe] character fragment: label[2.75,3.80;Claim Stone fuel: 29 d 23 h 24 min]
+ACTION[Emerge-0]: [r25_interfaces_probe] ok   character page label
+ACTION[Emerge-0]: [r25_interfaces_probe] ok   confirmation shown
+ACTION[Emerge-0]: [r25_interfaces_probe] pick up: Claim Stone picked up\; 99 unburnt coal returned.
+ACTION[Emerge-0]: [r25_interfaces_probe] ok   pick-up notice shown
+ACTION[Emerge-0]: [r25_interfaces_probe] ok   stone back in the inventory
+ACTION[Emerge-0]: [r25_interfaces_probe] ok   unburnt lumps returned
+ACTION[Emerge-0]: [r25_interfaces_probe] ok   stone node removed
+ACTION[Emerge-0]: [r25_interfaces_probe] ok   state carried after pick-up
+ACTION[Emerge-0]: [r25_interfaces_probe] ok   home fell back to the innkeeper
+ACTION[Emerge-0]: [r25_interfaces_probe] ok   status after pick-up
+ACTION[Emerge-0]: [r25_interfaces_probe] RESULT PASS (44 checks, 0 failures)

@@ -40,6 +40,8 @@ core.register_on_mods_loaded(function()
 			elseif socket.role == "riding_trainer" then
 				label, texture = "Riding Trainer", "grug_mounts_icon_" .. settlement.race_id .. ".png"
 				kind = "trainer"
+			elseif socket.role == "housing_manager" then
+				label, kind = "Housing Manager", "trainer"
 			elseif socket.role == "king" then
 				local def = assert(core.registered_entities["grug_mobs:king_" .. settlement.race_id])
 				label, texture = def.description, "grug_mobs_item_fallen_crown.png"

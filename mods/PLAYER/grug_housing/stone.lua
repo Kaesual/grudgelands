@@ -86,8 +86,8 @@ local function on_drop(itemstack, dropper)
 	if dropper and dropper:is_player() then
 		local name = dropper:get_player_name()
 		model.stone_lost(name)
-		tell(dropper, "Your Claim Stone crumbles to dust. The Housing Manager " ..
-			"in any capital gives you a new one.")
+		tell(dropper, "Your Claim Stone crumbles to dust. A Housing Manager " ..
+			"in one of your faction's capitals gives you a new one.")
 	end
 	return ItemStack("")
 end

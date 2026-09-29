@@ -36,8 +36,24 @@ local mods_loaded, after_jobs, violations, log_lines = {}, {}, {}, {}
 local bypass = {admin = true}
 local privilege_lookups = 0
 
+-- The real api.lua loads registry.lua from the mod path and reads its claims
+-- from mod storage: an empty in-memory storage, then the fakes below replace
+-- the contract functions.
+local storage_data = {}
 core = {
 	registered_nodes = {},
+	get_modpath = function(name) return repo .. "/mods/PLAYER/" .. name end,
+	get_mod_storage = function()
+		return {
+			get_string = function(_, k) return storage_data[k] or "" end,
+			set_string = function(_, k, v) storage_data[k] = v ~= "" and v or nil end,
+			get_keys = function()
+				local keys = {}
+				for k in pairs(storage_data) do keys[#keys + 1] = k end
+				return keys
+			end,
+		}
+	end,
 	log = function(_, message) log_lines[#log_lines + 1] = message end,
 	register_on_mods_loaded = function(fn) mods_loaded[#mods_loaded + 1] = fn end,
 	after = function(_, fn, ...) after_jobs[#after_jobs + 1] = {fn, {...}} end,
