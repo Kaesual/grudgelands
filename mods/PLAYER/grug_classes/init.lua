@@ -197,7 +197,7 @@ grug_classes.register_race({
 grug_classes.register_race({
 	id = "troll", name = "Troll", faction = "throng",
 	description = "Jungle hunters from the eastern wilds.\n" ..
-		"Passive: +50% regeneration out of combat.",
+		"Passive: +50% mana regen out of combat, +50% food healing.",
 	perks = {ooc_regen_mult = 1.5},
 })
 grug_classes.register_race({
