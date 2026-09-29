@@ -1255,7 +1255,16 @@ code, not by this document.
   fitted surface, or the socket column's own surface; where several such
   shapes hold a column, the lowest floor wins. Below that floor the column
   takes ores, gems, rock layers and nests like any other ground (the former
-  rule kept these columns ore-free down to y = −700).
+  rule kept these columns ore-free down to y = −700). The same floor bounds
+  the cave-content rule (ruling 30 addendum, 2026-09-29): world-content cave
+  rows (cave cap, ember moss) place below it exactly as under open land, and
+  runtime renewal regrows them there. Roads, inland water, the coast and
+  housing masks are no protection and keep their cave exclusion at every
+  depth. Cultural reservations, P9G gathering sources, cave mouths, the
+  surface skin, strata bands and the near-surface nests/cliff layers all sit
+  at or within 40 nodes of the surface, so they never reach below a floor
+  (the lowest ground of every start town and capital lies 79–100 nodes above
+  it).
 - **Natural-resource root sampling:** each resource/16-node cell/host/tier/
   deep-band group keeps its eligible-host count, density budget and balanced
   capped vein targets. Roots are drawn from a deterministic per-world stream
@@ -1920,7 +1929,9 @@ not assumed from the nominal biome. Surface sources stand above that support;
 cave sources require real preserved air above real exposed stone. No source
 may replace a functional surface, foundation, route, housing exclusion or water.
 Cave eligibility follows the purpose-specific WORLD guards, not broad natural
-landmark envelopes. Candidate rejection does not move, retry or refill it.
+landmark envelopes; under a town, POI core, anchor grade or hard foundation
+those guards end at the column's protected floor (placement height − 100,
+Round 24 ruling 30), below which cave sources place normally. Candidate rejection does not move, retry or refill it.
 
 The accepted Mushroom set additionally includes `kragmar_speargrass_reach` on
 its swamp-mud host. Stormkelp additionally includes `front_shattered_line`,

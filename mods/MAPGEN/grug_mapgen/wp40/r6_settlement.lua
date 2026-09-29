@@ -247,6 +247,16 @@ local function settlement_factory()
 		return column_state < 2 or y < floor_y
 	end
 
+	-- Ruling 30 addendum: cave content in a column the cave-content rule
+	-- excludes (claim shapes, anchor grades, hard foundations, housing) places
+	-- normally below the column's protected floor. Routes, water and housing
+	-- masks are no protection and keep their exclusion at every depth
+	-- (`kept_everywhere`); `floor_y` is nil where no protected shape holds
+	-- the column.
+	local function r30_cave_below_protection(kept_everywhere, floor_y, y)
+		return not kept_everywhere and floor_y ~= nil and y < floor_y
+	end
+
 	-- Ruling 12: mountain interiors.  Below the band depth the fill carries
 	-- sparse horizontal layers: absolute y plus a smooth per-column offset
 	-- picks a slab of R24_LAYER_PERIOD nodes; a slab holds at most one layer
@@ -1007,6 +1017,7 @@ local function settlement_factory()
 				type(planner_source.landmark_excluded_at) ~= "function" or
 				type(planner_source.overlay_exclusion_at) ~= "function" or
 				type(planner_source.protection_floor_y) ~= "function" or
+				type(planner_source.protected_floor_at) ~= "function" or
 				type(source) ~= "table" or
 				(successor_tail ~= nil and (type(successor_tail) ~= "table" or
 					type(successor_tail.settle) ~= "function")) then
@@ -3561,11 +3572,19 @@ local function settlement_factory()
 						(ref - 1) * 256
 				end
 				function successor_context.cave_content_allowed_at(x, y, z)
-					return not skin_context.excluded_at(x, z) and
-						inside_owner(x, y, z) and
-						planner_source.column_values_at(x, z) == "land" and
-						original_data[index_at(x,y,z)] == native_air_cid and
-						final_data[index_at(x,y,z)] == native_air_cid
+					if not (inside_owner(x, y, z) and
+							planner_source.column_values_at(x, z) == "land" and
+							original_data[index_at(x,y,z)] == native_air_cid and
+							final_data[index_at(x,y,z)] == native_air_cid) then
+						return false
+					end
+					if not skin_context.excluded_at(x, z) then return true end
+					-- Round 24 ruling 30 addendum: below the protected floor a
+					-- town's or POI's column is ordinary cave ground.
+					local kept = helpers.housing_excluded_at(x, z) or
+						helpers.static_exclusion_reason(x, z, "cave") == "route_or_water"
+					return r30_cave_below_protection(kept,
+						not kept and planner_source.protected_floor_at(x, z) or nil, y)
 				end
 				function successor_context.exclusion_at(x, z)
 					return helpers.exclusion_reason(x, z)
@@ -4046,6 +4065,7 @@ local function settlement_factory()
 		r24_sort_prefix = sort_prefix, r24_frontier_min = frontier_min,
 		r24_resource_host_base = r24_resource_host_base,
 		r30_resource_column_open = r30_resource_column_open,
+		r30_cave_below_protection = r30_cave_below_protection,
 		r24_fill_layers_new = new_r24_fill_layers,
 		r24_apply_fill_layers = r24_apply_fill_layers,
 		r24_layer_first_depth = R24_LAYER_FIRST_DEPTH,

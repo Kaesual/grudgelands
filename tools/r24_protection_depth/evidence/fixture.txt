@@ -148,4 +148,4 @@ bandit   anchor_059             x=  1632 z=  2034 placement=  61 bound= -39
 bandit   anchor_060             x=  1776 z=   454 placement= 207 bound= 107
 envelope overlaps: anchor_026/anchor_061 148, anchor_041/anchor_098 4096, anchor_087/anchor_089 4000, anchor_088/anchor_090 4000; 12260 columns, 12255 where the first shape's floor is not the lowest
 Orc start (0,37,2550): exclusion exclude:anchor:anchor_005:01, P8 floor -63
-R24 PROTECTION DEPTH FIXTURE PASS checks=27934
+R24 PROTECTION DEPTH FIXTURE PASS checks=28154

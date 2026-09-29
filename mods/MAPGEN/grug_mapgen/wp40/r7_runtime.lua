@@ -593,6 +593,7 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 					static_exclusion_values_at =
 						r6_identity.planner_source.static_exclusion_values_at,
 					surface_cave_run_at = r6_identity.planner_source.surface_cave_run_at,
+					protected_floor_at = r6_identity.planner_source.protected_floor_at,
 					surface_mob_level_at = public_zones_session.surface_mob_level_at,
 				}),
 				preparation_source = dofile(wp40_directory .. "/preparation_source.lua")(

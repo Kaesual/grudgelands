@@ -1558,13 +1558,23 @@ local function zones_factory(dependencies)
 			-- `static_exclusion_values_at` answered for the column) only names a
 			-- failure; a route or water id counts only through a hard footprint
 			-- (a hard foundation). Mapgen keeps ore out of the column from here up.
-			function planner_source.protection_floor_y(exclusion_id, x, z)
+			-- The same floor, or nil where no anchor envelope, hard core or hard
+			-- footprint holds the column (the ruling 30 addendum's cave rule asks
+			-- it for any column the cave-content exclusion covers).
+			local function protected_floor_at(x, z)
 				-- Every anchor envelope and hard core holding the column, not only
 				-- the one shape `static_exclusion_values_at` answered first.
 				local result = horizontal.lowest_exclusion_value_at(x, z,
 					exclusion_floor_by_id)
 				local hard = hard_floor_at(x, z)
 				if hard ~= nil and (result == nil or hard < result) then result = hard end
+				return result
+			end
+			function planner_source.protected_floor_at(x, z)
+				return protected_floor_at(x, z)
+			end
+			function planner_source.protection_floor_y(exclusion_id, x, z)
+				local result = protected_floor_at(x, z)
 				if result == nil then
 					fail("protection floor missing: " .. tostring(exclusion_id))
 				end

@@ -464,7 +464,13 @@ return function(deps)
 	-- Each class keeps its own writer's claim exclusions: resources the full
 	-- territory rule, decorations the "vegetation" rule (road
 	-- corridors too, water banks not). Cave rows follow no claim exclusion in
-	-- the writer; renewal keeps them out of occupied ground (the "cave" rule).
+	-- the writer; renewal keeps them out of occupied ground (the "cave" rule),
+	-- except below a town's or POI's protected floor (Round 24 ruling 30
+	-- addendum: `protected_floor_at`, optional), where the ground is ordinary.
+	local protected_floor_at = deps.protected_floor_at
+	local function protected_shape(id)
+		return id:sub(1, 15) == "exclude:anchor:" or id:sub(1, 15) == "exclude:active:"
+	end
 	function M.categories(x, y, z, support, light)
 		local water, _, zone, biome, _, terrain_y, water_y, river_id, _,
 			functional_kind, _, functional_feature_id, _, _, _, _, _, _, _,
@@ -472,8 +478,11 @@ return function(deps)
 		if water ~= "land" or type(biome) ~= "string" then return nil, "not_land" end
 		local cave = y <= terrain_y - 2
 		if cave then
-			if deps.static_exclusion_values_at(x, z, "cave") ~= nil then
-				return nil, "excluded"
+			local _, cave_id = deps.static_exclusion_values_at(x, z, "cave")
+			if cave_id ~= nil then
+				local floor = protected_floor_at and protected_shape(cave_id) and
+					protected_floor_at(x, z) or nil
+				if floor == nil or y >= floor then return nil, "excluded" end
 			end
 		elseif writer_bare(x, z, terrain_y, water_y, river_id,
 				functional_kind, functional_feature_id) then

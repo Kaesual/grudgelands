@@ -109,7 +109,8 @@ capital blend envelopes, roads, inland water and water banks; shoreline
 species ignore the bank, gathering sources the dry island coast envelopes),
 ground cover and trees the decoration rule (the planner's vegetation
 exclusions and road corridors; banks allowed). Cave plants stay out of
-occupied ground. At the planned surface renewal follows the generator's own
+occupied ground, except below a town's or POI's protected floor (placement
+height − 100, Round 24 ruling 30), where the cave is ordinary ground. At the planned surface renewal follows the generator's own
 host rule: nothing on an anchor platform, on a land grade other than a
 start's or capital's dry anchor grade, on a sealed river or lake column or in
 a surface cave mouth; the dry anchor grades (the natural skin around starts

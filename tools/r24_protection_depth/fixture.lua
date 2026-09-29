@@ -37,6 +37,7 @@ end
 local dir = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
 local common = dofile(repo .. "/tools/wp40/r6/common.lua")
 local sha = common.new_sha256()
+local settlement = dofile(dir .. "/r6_settlement.lua")
 
 -- ---------------------------------------------------------------------------
 -- World (as tools/r23_tree_line/world_source.lua, with stand-in capital cities)
@@ -345,11 +346,28 @@ local function mapgen_checks(W)
 	local orc_y = placement_y(P, 0, 2550)
 	local orc_floor = P.protection_floor_y(id, 0, 2550)
 	check(orc_floor == orc_y - DEPTH, "Orc start P8 floor")
+	-- Ruling 30 addendum: the cave-content rule's view of the same column.
+	-- Its "cave" shape is a protected one (not route/water), and its floor is
+	-- the town's, so cave content places at y < floor and not above.
+	local _, cave_id = P.static_exclusion_values_at(0, 2550, "cave")
+	check(type(cave_id) == "string" and (cave_id:sub(1, 15) == "exclude:anchor:" or
+		cave_id:sub(1, 15) == "exclude:active:"), "Orc start cave shape is protected")
+	check(P.protected_floor_at(0, 2550) == orc_floor, "Orc start cave floor")
+	check(settlement.r30_cave_below_protection(false,
+		P.protected_floor_at(0, 2550), orc_floor - 1), "Orc start cave content below")
+	check(not settlement.r30_cave_below_protection(false,
+		P.protected_floor_at(0, 2550), orc_floor), "Orc start no cave content at floor")
+	-- every anchor centre: the non-failing floor equals the P8 floor
+	for _, a in ipairs(source.anchors) do
+		local _, id_at = P.static_exclusion_values_at(a.position.x, a.position.z)
+		check(P.protected_floor_at(a.position.x, a.position.z) ==
+			P.protection_floor_y(id_at, a.position.x, a.position.z),
+			a.id .. " protected_floor_at")
+	end
 	lines[#lines + 1] = ("Orc start (0,%d,2550): exclusion %s, P8 floor %d"):format(
 		orc_y, id, orc_floor)
 end
 
-local settlement = dofile(dir .. "/r6_settlement.lua")
 local open = settlement.r30_resource_column_open
 check(type(open) == "function", "r6_settlement exports r30_resource_column_open")
 do
@@ -365,6 +383,71 @@ do
 	check(open(3, floor, floor + 1) == false, "protected column closed at bound+1")
 	check(open(3, floor, -700) == true, "protected column open at -700")
 	check(open(3, floor, -701) == true, "protected column open at -701")
+end
+
+-- ---------------------------------------------------------------------------
+-- 4. Ruling 30 addendum: cave content below the protected floor
+-- ---------------------------------------------------------------------------
+local cave_open = settlement.r30_cave_below_protection
+check(type(cave_open) == "function", "r6_settlement exports r30_cave_below_protection")
+do
+	local floor = -63
+	check(cave_open(false, floor, floor - 1) == true, "cave content at bound-1")
+	check(cave_open(false, floor, floor) == false, "no cave content at the bound")
+	check(cave_open(false, floor, floor + 1) == false, "no cave content at bound+1")
+	check(cave_open(false, floor, -600) == true, "cave content deep under a town")
+	check(cave_open(true, floor, floor - 1) == false,
+		"route/water/housing keep the exclusion below the floor")
+	check(cave_open(false, nil, -600) == false,
+		"no protected shape: the exclusion stays (no floor)")
+end
+
+-- The runtime renewal mirror (vegetation_density.lua) on one synthetic
+-- column: a town's cave-excluded column, floor -200, a cave_cap host.
+do
+	local habitat = dofile(dir .. "/habitat_registry.lua")
+	local world_catalog = dofile(dir .. "/world_content_catalog.lua")
+	local function density_for(cave_id, floor_fn)
+		return dofile(dir .. "/vegetation_density.lua")({
+			habitat = habitat, world_plants = world_catalog.plants, p9g_rows = {},
+			decorations = {}, template_records = {}, support_names = {},
+			vegetation_rule = habitat.vegetation_rule("1041",
+				function() return "elandor_dawnmere_fields" end),
+			decoration_cover = function() return 1 end,
+			column_values_at = function()
+				return "land", 2, "elandor_dawnmere_fields", "grug_meadows", "human", 40
+			end,
+			overlay_exclusion_at = function() return nil end,
+			surface_mob_level_at = function() return 5 end,
+			primary_relief_at = function() return "rolling_hills" end,
+			static_exclusion_values_at = function(_, _, purpose)
+				if purpose == "cave" then return 1, cave_id end
+				return 1, cave_id
+			end,
+			surface_cave_run_at = function() return nil end,
+			protected_floor_at = floor_fn,
+		})
+	end
+	local function has_cave_cap(density, y, support)
+		local categories = density.categories(0, y, 0, support, 0)
+		if not categories then return false end
+		for _, category in ipairs(categories) do
+			if category.key == "cave_cap" then return true end
+		end
+		return false
+	end
+	local floor = function() return -200 end
+	local town = density_for("exclude:anchor:anchor_005:01", floor)
+	check(has_cave_cap(town, -250, "grug_materials:t3_stone"),
+		"renewal: cave_cap below a town's floor")
+	check(not has_cave_cap(town, -200, "grug_materials:t2_stone"),
+		"renewal: no cave_cap at the floor")
+	check(not has_cave_cap(town, -150, "grug_materials:t2_stone"),
+		"renewal: no cave_cap above the floor")
+	check(not has_cave_cap(density_for("exclude:coast:island_stormscale", floor),
+		-250, "grug_materials:t3_stone"), "renewal: coast keeps its exclusion")
+	check(not has_cave_cap(density_for("exclude:anchor:anchor_005:01", nil),
+		-250, "grug_materials:t3_stone"), "renewal: no floor source, excluded")
 end
 
 for _, seed in ipairs(seeds) do
