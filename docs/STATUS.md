@@ -1,6 +1,22 @@
 # Project status
 
-Updated 2026-09-28. This is the delivery pointer, not another game specification.
+Updated 2026-09-29. This is the delivery pointer, not another game specification.
+
+- **Round 24 delivered locally:** tier rocks with engine-native pick gating
+  replace depth bounds and shatter (loose ground by hand or shovel, axe and
+  shovel tiers, protection and pick hints on punch, tool level requirements);
+  the terrain fill hosts ores and bands (coal near the Orc start 0.10–0.37 →
+  0.90–1.05 of target at 5–16 depth), with mountain and cliff layers,
+  decorative nests and output-identical P8 speedups (about 20 % less Lua
+  mapgen time); start-zone level gradient, 32-node idle wander leash, calm
+  roaming pace, filled thin spawn cells and a per-zone mob density budget
+  (about 1.5×); gathering XP; ten one-line tracked quests; lava and drowning
+  scaled to max HP; hard protection from 100 below each footprint's placement
+  height instead of y ≥ −700; housing areas as ordinary terrain; pausable
+  character creation. All 13 lanes reviewed and merged (`1e338503`); not yet
+  synchronized to Luanti. No push.
+  [Plan, completion and playtest checklist](planning/round24-mining-underground-mobs-plan.md#completion-2026-09-29).
+  Next: fresh production world and playtest, then Housing (WP24).
 
 - **Round 23 delivered locally:** full-column world preparation (a finished
   full-world preparation leaves nothing to generate for walking, diving or

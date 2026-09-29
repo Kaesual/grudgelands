@@ -67,6 +67,16 @@ Research and historical evidence: **[docs/research/README.md](docs/research/READ
 
 ## Active work and game status
 
+**Round 24 delivered locally, 2026-09-29.** Mining tiers (tier rock with
+engine-native pick gating, loose ground, tool levels), ores and layers in the
+underground fill, start-zone mob levels and density, gathering XP, quest
+tracker, lava/drowning damage, protection depth, housing areas as ordinary
+terrain and pausable character creation; coordinated by Claude with native
+Opus implementation and independent reviews.
+[Plan, completion and playtest checklist](docs/planning/round24-mining-underground-mobs-plan.md#completion-2026-09-29).
+Merged on main as `1e338503`; not yet synchronized; no remote push. Next: user
+preparation of a fresh production world and playtest, then Housing (WP24).
+
 **Round 23 delivered locally, 2026-09-28.** Full-column world preparation,
 habitat-driven vegetation renewal and capital walls; coordinated by Claude with
 native Opus implementation and independent Opus reviews (user routing for that

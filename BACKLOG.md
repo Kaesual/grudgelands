@@ -13,9 +13,10 @@ There are **53 identities**: WP0–WP49 and WP-Scout/WP-HUD/WP-Speed.
 old summary's omission of the already-delivered WP8, WP12 and WP20; it does not
 claim any additional implementation or GUI acceptance.
 
-- Latest delivery: [Round 21](docs/research/round21-completion.md); user playtest pending.
-  Terrain/POI access, resources, furnaces and bounded feedback fixes do not close
-  another full WP identity. Counts remain 27 delivered / 53 tracked.
+- Latest delivery: [Round 24](docs/planning/round24-mining-underground-mobs-plan.md#completion-2026-09-29); user playtest pending.
+  Rounds 21–24 (terrain, water, roads, POI access, resources, furnaces, world
+  preparation, renewal, walls, mining tiers, underground fill, start-zone mobs
+  and bounded fixes) do not close another full WP identity. Counts remain 27 delivered / 53 tracked.
 - WP5's selected fixed-tier enchanting is delivered; loot, cultural/PvP finishes
   and masterwork remain. WP44's economy/measurement remains open.
 - WP11's talent consumers are delivered; measured respec prices await WP44.
@@ -70,9 +71,9 @@ technical evidence certifies its recorded bytes, never an arbitrary later head.
 | WP19 | Original kit and race-passive tuning | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP20 | Same-faction parties | Delivered R14–19: persistent parties, management and optional HUD. | — |
 | WP21 | [Recovery/rest and Housing integration](docs/planning/work-package-scopes.md#wp21) | Food/recovery basics delivered; broader rest/Housing open. | WP1 |
-| WP22 | [Tool-speed calibration, wear/repair remainder](docs/planning/work-package-scopes.md#wp22) | Tier wear and money repair delivered; speed/Housing remainder. | WP5, WP7, WP43, WP44 |
+| WP22 | [Tool-speed calibration, wear/repair remainder](docs/planning/work-package-scopes.md#wp22) | Tier wear and money repair delivered; Round 24 adds shovel and axe tiers and tool level requirements. Speed/Housing remainder. | WP5, WP7, WP43, WP44 |
 | WP23 | [Full dragon encounters](docs/planning/work-package-scopes.md#wp23) | Bosses present; full encounter dependencies remain. | WP13, WP17, WP34, WP40, WP41, WP43 |
-| WP24 | [Open-world Claim Stone Housing](docs/planning/work-package-scopes.md#wp24) | Approved design; implementation and economy integration open. | WP40, WP43, WP44 |
+| WP24 | [Open-world Claim Stone Housing](docs/planning/work-package-scopes.md#wp24) | Approved design; implementation and economy integration open. Since Round 24 the housing mask only decides Claim Stone eligibility (ruling 33); carry-over below. | WP40, WP43, WP44 |
 | WP25 | Original strata/materials (superseded by WP43) | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP26 | Furnace and alloy chain | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP27 | [Armor catalog remainder](docs/planning/work-package-scopes.md#wp27) | Base armor/visuals delivered; broader contract reconciliation remains. | WP26, WP43 |
@@ -85,15 +86,15 @@ technical evidence certifies its recorded bytes, never an arbitrary later head.
 | WP34 | [Deep pressure and renewable camp resources](docs/planning/work-package-scopes.md#wp34) | Open; structures/economy and depth decisions required. | WP6, WP13, WP40, WP43, WP44 |
 | WP35 | Equipped weapon source and appearance | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP36 | Reference submodules and first runtime fixes | Delivered; historical receipt below. Current rules: topic design. | — |
-| WP37 | [Surface-density plan reconciliation](docs/planning/work-package-scopes.md#wp37) | Paused for explicit reconciliation with R16 fightable-only +30%; no density change authorized by documentation cleanup. | WP6 ✅ |
+| WP37 | [Surface-density plan reconciliation](docs/planning/work-package-scopes.md#wp37) | Paused for explicit reconciliation with R16 fightable-only +30%; no density change authorized by documentation cleanup. Round 24 ruling 27 adds a per-zone mob density budget (about 1.5×). | WP6 ✅ |
 | WP38 | Held melee timing and settlement | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP39 | Crosshair-authoritative combat | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP40 | Named-zone world foundation | Development delivery accepted; first-public-release gates remain open. | — |
 | WP41 | [Geographic PvP transaction](docs/planning/work-package-scopes.md#wp41) | Open; WP5 finish/PvP consumers remain prerequisites. | WP5, WP39, WP40 |
 | WP42 | [Bounded war-front encounters](docs/planning/work-package-scopes.md#wp42) | Open; structures and PvP prerequisites. | WP13, WP40, WP41 |
-| WP43 | Canonical material/depth registry | Delivered; historical receipt below. Current rules: topic design. | — |
+| WP43 | Canonical material/depth registry | Delivered; Round 24 replaces pick depth bounds and shatter with tier rock and engine-native gating (rulings 1–8). Current rules: topic design. | — |
 | WP44 | [Economy rebase and measured income](docs/planning/work-package-scopes.md#wp44) | Open; target prices/Income Ledger not runtime. | WP7 ✅, WP43 |
-| WP45 | Character-creation stasis and safe arrival | Delivered; historical receipt below. Current rules: topic design. | — |
+| WP45 | Character-creation stasis and safe arrival | Delivered; Round 24 makes creation pausable (ruling 32). Current rules: topic design. | — |
 | WP46 | Indirect terrain-damage guard | Partial: actor-neutral guard and protected water flow delivered; fire/explosion/lava/admin remainder below. | WP40, WP13, WP24 integration |
 | WP47 | Skills catalog and recoverable representations | Delivered R12–13; current rules in inventory_equipment.md. | — |
 | WP48 | Mapgen writer performance and parallel emerge | Partial R9-PERF delivery; broader optimization and engine threading constraint remain below. | WP40 |
@@ -210,6 +211,11 @@ surface) worth revisiting; Round 9 shipped MAP-C without it (ruling 35).
   and deferred.
 - [Receipt](docs/research/round23-full-column-preparation.md).
 
+**Round 24 (2026-09-29):** output-identical P8 vein and layer-pass speedups
+(218 of 218 chunks content-identical, about 20 % less Lua mapgen time), after
+Lane B's ores and layers in the fill had cost mountain boxes about +20 %.
+[Evidence](tools/r24_fill/evidence/b2.txt).
+
 ### WP49 — R7 source-audit refreeze on a fixed mapgen roster
 
 **Status (2026-09-19):** decided, not scheduled (Round 9 ruling 43,
@@ -233,6 +239,23 @@ README procedure, the count assertions (`source_audit.sh`, `final_micro.sh`,
 `micro_kat_cli.lua`, fixture defaults) and re-run `run.sh static` to
 refreeze. One small lane, after Round 9 (DOCS or MAP-B follow-up); the
 final micro stays the sole PUC gate meanwhile.
+
+### Round 24 carry-overs
+
+**Noted 2026-09-29** ([completion](docs/planning/round24-mining-underground-mobs-plan.md#completion-2026-09-29)); none blocks
+the playtest.
+
+- WP48: `tools/wp40/profile/instrument-settlement-stages.patch` no longer
+  applies to `r6_settlement.lua` on main (stale since Round 22). Re-anchor it
+  before the next stage profile.
+- Art: check silver vs tin readability in the playtest. Basalt cliff bands
+  read with low contrast in the B2 renders.
+- WP24: natural renewal can regrow plants inside future claims, also on
+  player-placed natural ground (`housing.md` §6.4). Revisit in the Housing
+  round.
+- WP45: a one-time waiting-screen race when an Esc crosses a progress update.
+- The "Requires level N" tooltip line does not relabel tool stacks from older
+  worlds. This does not matter for fresh worlds.
 
 ### First-public-release gates
 

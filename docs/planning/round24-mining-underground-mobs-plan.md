@@ -296,3 +296,182 @@ go-ahead.**
   PUC.
 - Afterwards: fresh world (the user discards test worlds), full preparation,
   playtest.
+
+## Completion (2026-09-29)
+
+All lanes are merged on local `main` (head `1e338503`). Not yet synchronized
+to Luanti; no push (the user pushes). Coordinator: Claude Opus 5.5.
+
+| Lane | Merge | Evidence |
+|---|---|---|
+| A — mining rules | `7d74c3e5` | `tools/r24_mining` |
+| C — art | `c6985b91` | `tools/r24_art`, [sheets](../research/round24-art/) |
+| D — mobs | `47bea4b0` | `tools/r24_mobs` |
+| E — tracker and damage | `bb5eae67` | `tools/r24_tracker_damage` |
+| B — underground fill | `a14a9dc6` | `tools/r24_fill/evidence`, [renders](../research/round24-underground-fill/README.md) |
+| D2 — start-zone follow-up | `205e0c31` | `tools/r24_mobs` |
+| B2 — cliff layers, P8 speedups | `6b99929c` | `tools/r24_fill/evidence/b2.txt` |
+| D3 — thin start-zone cells | `952c9c58` | `tools/r24_mobs/cells_fixture.lua` |
+| G — protection depth | `29bbc04a` | `tools/r24_protection_depth/evidence` |
+| F — density, gathering XP, tool levels | `b8f67ab4` | `tools/r24_density_xp/evidence` |
+| G2 — normal caves below protection | `7f188f6b` | `tools/r24_protection_depth/evidence` |
+| H — pausable character creation | `48261a77` | `tools/r24_creation_pause/evidence` |
+| I — housing areas as ordinary terrain | `1e338503` | `tools/r24_housing_terrain/evidence` |
+
+**Mining (A, C, F).**
+- Tier rocks `t2_stone`…`t6_stone` below −100 use engine-native
+  `level`/`maxlevel` gating. The client predicts the gate, so a pick that is
+  too weak shows no cracks.
+- Depth bounds and shatter are gone. Every ore and gem needs the pick of the
+  layer where it first appears, at any depth.
+- Loose ground can be dug by hand or with a shovel. Shovels and axes have
+  tiers.
+- Decorative slate, basalt and granite can be dug with any pick and drop
+  themselves.
+- Punching shows a one-line screen flash for the protection reason ("Town –
+  protected") or the missing pick tier ("Requires a T3 pick").
+- T2–T6 picks, axes and shovels need level 5/15/25/35/45. The check runs in
+  the server-side mining decision, which shows a flash hint and adds a
+  tooltip line.
+- Natural ore nodes give 1.5 × min(reference level, player level + 5)
+  gathering XP. Gem nodes use a factor of 3 and caught fish a factor of 5.
+- Lane C adds textures that darken with depth, gem overlays in VoxeLibre
+  style, and distinct silver and quartz. Licence rows are in
+  `LICENSE-media.md`.
+
+**Underground (B, B2, G, G2, I).**
+- Terrain fill now hosts ores and the shallow bands like native stone.
+- Coal per 64 stone near the Orc start, 5–16 below the ground, rose from
+  0.10–0.37 to 0.90–1.05 of the target on both seeds. The 65+ band stays at
+  1.00.
+- Mountain interiors get sparse horizontal layers (~89 % stone). Layers also
+  break through steep faces: the engine fill cliff went from 97.5 % to 91.5 %
+  stone.
+- Decorative nests occur at depth, and rarely near the surface on steep
+  faces.
+- The P8 speedups keep 218 of 218 chunks content-identical and cut Lua
+  mapgen time by about 20 % (Orc region −19.9 %, mountain boxes −21.3 %).
+  Lane B's ores and layers in the fill had cost mountain boxes about +20 %.
+- Hard protection now starts 100 below each footprint's placement height
+  instead of at y ≥ −700. Engine probe at the Orc start: 0 ores in
+  y −63..36 and 34,568 below; digging is refused at −63 and allowed at −64.
+- Below that floor, caves, cave content, gathering sources, cultural
+  reservations, bands and nests follow the normal rules. Mapgen and renewal
+  share one cave rule.
+- The housing mask now only decides Claim Stone eligibility. In a Redtusk
+  housing box the bands went from 0 to 22.2 % of depth 5–40 (neighbour
+  23.1 %). Renewal checks the territory rule only.
+
+**Mobs (D, D2, D3, F).**
+- Start zones rise from band 1 (level 3) behind and beside the start toward
+  the front. The 150-node L1–2 ring is unchanged, and the zone-border step is
+  unchanged.
+- Mapgen content in start zones follows the same gradient.
+- Free-roaming mobs idle-wander within 32 nodes of their spawn point. Their
+  roaming walk velocity is at most 2.5, and archers keep 4.0 for combat only.
+- The Husk spawns in Sunscar from band 2. The Orc Husk quest is level 5 and
+  gives 180 XP.
+- Sunscar scorpions and Kapok vipers also spawn by day from band 2. The
+  plains runner becomes fighting prey. The jungle lynx appears from L4 in
+  Kapok.
+- Mob density is a per-zone budget of about 1.5× (14 day / 23 night). No
+  spawn point or species falls below its old population, and each species is
+  capped at ceil(1.5 × its old cap). Engine means across eight probe areas:
+  day 71.4 → 79.3, night 143.7 → 170.7.
+- The start-town hostile refusal is bounded by the protection floor.
+
+**Tracker and damage (E).**
+- Up to 10 quests can be tracked, one line each: the objective, or "Return
+  to <quest giver>". The ten lines clear the minimap from a 440 px window
+  height at GUI scale 1.
+- Lava deals 20 % and drowning 10 % of the actual max HP per second.
+- Armor does not reduce lava or drowning damage. The absorb shield skips
+  fall, lava and drowning damage.
+
+**Character creation (H).**
+- Esc really closes every creation dialog, and the next Esc reaches the
+  native game menu.
+- The inventory key reopens the current step, and a screen hint shows while
+  creation is paused.
+- Faction, race and the pending class are stored at once, so a reconnect
+  continues at the first missing step.
+
+**Reviews.** Each lane went through the independent review this plan
+requires before merge. Lanes A, C, D, D3, E, F, G and G2 carry review fixes
+on their branches.
+
+### Noted, not fixed
+
+- The WP40 stage profiler patch
+  `tools/wp40/profile/instrument-settlement-stages.patch` no longer applies
+  to `r6_settlement.lua` on main (already stale since Round 22).
+- Silver vs tin readability: watch in the playtest.
+- Basalt cliff bands have low contrast in the cliff renders.
+- Natural renewal can regrow plants inside future claims, also on
+  player-placed natural ground ([housing.md](../design/housing.md) §6.4).
+  Revisit in the Housing round.
+- One-time waiting-screen race: an Esc that crosses a progress update.
+- The "Requires level N" tooltip line does not relabel stacks from older
+  worlds. This does not matter for fresh worlds.
+
+### Playtest checklist (fresh world, `grug_prepare_full_world = true`)
+
+1. **Shallow coal:** near a start, dig a 1×2 tunnel about 50 nodes long,
+   5–16 below the ground, including under raised terrain. Coal and the other
+   T1 ores should show up regularly, along with gravel, dirt and clay
+   pockets.
+2. **Tier rocks and pick hints:**
+   - Below −100 the rock is darker "Stone" with a tooltip naming the pick
+     tier.
+   - A pick that is too weak shows no cracks and flashes "Requires a T<N>
+     pick".
+   - Punching a town, landmark or foreign home territory flashes its
+     protection reason.
+   - Coal exposed deep down is still mined with a T1 pick.
+3. **Loose ground:** dig dirt, sand and gravel by hand. A shovel should be
+   faster than a pick of the same tier.
+4. **Tool levels:** below level 5, an Iron Pick flashes "Iron Pick requires
+   level 5", and its tooltip shows "Requires level 5".
+5. **Gathering XP:** mining ore nodes gives XP, gem nodes give more, and each
+   caught fish gives XP.
+6. **Tracker:** accept more than three quests. Up to ten are tracked, one line
+   each. A finished quest shows "Return to <quest giver>", and the minimap
+   stays clear.
+7. **Lava and drowning:** stand in lava (20 % of max HP per second) and stay
+   underwater until you drown (10 % per second). The absorb shield does not
+   soak either.
+8. **Start-zone mobs:**
+   - Levels rise gradually from the start toward the front, with no jump
+     behind the 150-node ring.
+   - By day and by night, every band has enough spawns and noticeably more
+     mobs overall. The Sunscar Husk appears from band 2.
+   - Idle mobs stay near their spawn point and roam calmly (archers
+     included).
+   - Silver vs tin readability also belongs in this pass.
+9. **Cliffs:** on steep faces and mountain tunnels, sparse slate, basalt and
+   granite bands appear while stone stays dominant. Check basalt contrast.
+10. **Under a start town:** dig down from the Orc start. Digging is refused
+    down to −63 and allowed from −64, where ores, caves and cave content are
+    normal.
+11. **Character creation pause** (join while preparation is still running):
+    1. The waiting screen shows. Esc closes it, and the next Esc opens the
+       native game menu. The hint reads "Preparing the world – press I to see
+       progress", and the character takes no damage.
+    2. I reopens the waiting screen.
+    3. With the waiting screen dismissed until preparation finishes, nothing
+       opens by itself and the hint changes to "World ready – press I to
+       continue". With it open, the faction step replaces it.
+    4. I opens the faction step. Choose a faction, and the race step follows.
+       Esc there shows "Character creation paused – press I to continue".
+    5. I opens the race step. Choose a race, the class step follows, and Esc
+       and I work the same way there.
+    6. Choose a class while the arrival area still loads. The arrival waiting
+       screen follows. Disconnect.
+    7. Reconnect. Creation continues at the first missing step, and the
+       chosen class is applied on arrival.
+    8. After arrival, I opens the normal inventory and the hint is gone.
+
+### Next
+
+The user prepares a fresh production world and runs the playtest above. The
+next planned project is Housing (WP24).

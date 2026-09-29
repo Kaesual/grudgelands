@@ -46,10 +46,18 @@ to fear. Their story will grow as more regions and encounters are completed.
 
 ## Current State
 
-*Last updated: 2026-09-28. Based on [BACKLOG.md](BACKLOG.md) and
+*Last updated: 2026-09-29. Based on [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md).*
 
 The systems above are implemented and installed in the local development build.
+[Round 24](docs/planning/round24-mining-underground-mobs-plan.md#completion-2026-09-29)
+replaces fixed pick depths with stone that gets harder with depth: a pick that
+is too weak cannot dig it, loose ground can be dug by hand or shovel, and
+better tools need a minimum level. Shallow tunnels now find coal and other ores,
+and mountains and cliffs show rock layers. Start zones get a gentle level
+gradient and more mobs, which roam calmly near where they spawned. Mining ores
+and gems and catching fish give XP, up to ten quests can be tracked, and lava
+and drowning scale with health. Character creation can be paused.
 [Round 23](docs/research/round23-completion.md) makes full-world preparation
 cover everything players can see from the surface, underwater or in flight.
 Wild plants, ground cover and trees now regrow around players up to their

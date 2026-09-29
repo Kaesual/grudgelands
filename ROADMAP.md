@@ -55,10 +55,11 @@ Earlier delivery narratives are preserved in the
   ids survive recovery, dormancy, decay and reissue; a claim-bound Home Stone
   has no capital fallback. Private housing islands do not exist.
 - **One six-tier material spine serves every race.** Bronze, Iron, Steel,
-  Silversteel, Embersteel and Abyssal Steel open exact natural depths of
-  −100/−300/−500/−700/−1000/map floor. Resource harvest tier is a
-  separate check: a pick can reach a node yet destroy it without a drop when
-  under-tier. Cosmetic strata no longer drive access.
+  Silversteel, Embersteel and Abyssal Steel picks dig the six tier rocks:
+  stone down to −100, then ever harder rock below −100/−300/−500/−700/−1000
+  (Round 24). Every ore and gem needs the pick of the layer where it first
+  appears, at any depth; a weaker pick cannot dig it at all. Loose ground
+  needs no tool, and decorative rocks do not drive access.
 - **Regional materials add identity without blocking universal progression.**
   Quartz is universal; Citrine/Garnet/Jade are G1 and
   Diamond/Sapphire/Ruby G2. Each race region selects one G1, one G2, one
@@ -107,7 +108,9 @@ baseline. This documentation round neither expands nor removes release scope.
   including Scout; current-ray combat, equipped weapons, talents and shared movement.
 - [x] Named-zone world foundation, six starts and capitals, gathering/materials,
   strata and bounded terrain/coast/cave corrections. Round 21 improves access,
-  natural POI ground, inland/coastal detail and resource density. Public-release evidence remains open.
+  natural POI ground, inland/coastal detail and resource density. Round 24 adds
+  tier-rock mining, ores and layers in the underground fill and start-zone mob
+  gradients. Public-release evidence remains open.
 - [x] Threat/taunt, populations, kings/dragons, homing ranged attacks, dispositions,
   nametags and injured bars. Full endgame encounter scope remains WP23.
 - [x] Currency/traders, inventory/bags, Skills recovery, ordinary equipment/offhands,
