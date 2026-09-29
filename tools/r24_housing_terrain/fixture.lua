@@ -26,7 +26,9 @@
 --   6. claim eligibility: a digest of housing_mask_id_at and
 --      housing_eligible_at over the masks, unchanged against main.
 -- Prints the counts and "R24 HOUSING TERRAIN FIXTURE PASS checks=<n>", or the
--- failures and an error.
+-- failures and an error. evidence/: this run, the same run against main
+-- (fails: the checks have teeth) and the engine before/after comparison of a
+-- housing and a non-housing box (engine/run.sh, engine/analyze.py).
 local repo = assert(arg[1], "usage: fixture.lua <repo> [seed ...]")
 local seeds = {}
 for index = 2, #arg do seeds[#seeds + 1] = arg[index] end
@@ -38,7 +40,7 @@ local function check(ok, label)
 	checks = checks + 1
 	if not ok then
 		failures = failures + 1
-		if #first_failures < 25 then first_failures[#first_failures + 1] = label end
+		if #first_failures < 80 then first_failures[#first_failures + 1] = label end
 	end
 end
 local lines = {}
@@ -180,17 +182,45 @@ do
 			["grug_core/water_guard.lua"] = true, ["grug_farming/bucket.lua"] = true},
 		register_world_alteration_guard = {["grug_core/protection.lua"] = true},
 	}
-	local roots = {"mods/MAPGEN/grug_mapgen", "mods/ITEMS/grug_farming",
-		"mods/ITEMS/grug_gathering", "mods/CORE/grug_core", "mods/ENTITIES/grug_mobs"}
-	local found, files = {}, 0
+	-- No directory listing in plain Lua: every mod's files are found by
+	-- following the ".lua" names its init.lua and the files it loads mention,
+	-- resolved against the mod's own directories.
+	local roots = {
+		{"mods/MAPGEN/grug_mapgen", {"", "wp40/", "wp40/source/", "wp13/"}},
+		{"mods/ITEMS/grug_farming", {""}}, {"mods/ITEMS/grug_gathering", {""}},
+		{"mods/CORE/grug_core", {""}}, {"mods/ENTITIES/grug_mobs", {""}},
+	}
+	local function read(path)
+		local handle = io.open(repo .. "/" .. path, "rb")
+		if not handle then return nil end
+		local text = handle:read("*a")
+		handle:close()
+		return text
+	end
+	local found, files, paths = {}, 0, {}
 	for _, root in ipairs(roots) do
-		local pipe = io.popen("cd '" .. repo .. "' && find " .. root .. " -name '*.lua' | sort")
-		for path in pipe:lines() do
-			files = files + 1
-			local short = path:match("([^/]+/[^/]+)$")
-			local handle = assert(io.open(repo .. "/" .. path, "rb"))
-			local text = handle:read("*a")
-			handle:close()
+		local seen, queue = {}, {root[1] .. "/init.lua"}
+		while #queue > 0 do
+			local path = table.remove(queue, 1)
+			local text = not seen[path] and read(path)
+			seen[path] = true
+			if text then
+				paths[#paths + 1] = {path = path, text = text}
+				for name in text:gmatch("([%w_]+%.lua)[\"']") do
+					for _, sub in ipairs(root[2]) do
+						local candidate = root[1] .. "/" .. sub .. name
+						if not seen[candidate] then queue[#queue + 1] = candidate end
+					end
+				end
+			end
+		end
+	end
+	table.sort(paths, function(a, b) return a.path < b.path end)
+	for _, entry in ipairs(paths) do
+		local path, text = entry.path, entry.text
+		files = files + 1
+		local short = path:match("([^/]+/[^/]+)$")
+		do
 			for word, where in pairs(allowed) do
 				-- whole identifiers only
 				local position = 1
@@ -208,7 +238,6 @@ do
 				end
 			end
 		end
-		pipe:close()
 	end
 	check(files > 50, "source scan found the mod files")
 	for _, hit in ipairs(found) do check(false, "source scan: " .. hit) end

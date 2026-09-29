@@ -1,0 +1,99 @@
+# The same fixture run against `git archive main` (f981612b): it must fail there (the checks have teeth).
+source scan: 194 files, 35 housing/claim references outside the claim code
+seed 4242424242 (two worlds built in 3.9 s)
+seed 4242424242: claim eligibility digest 57ccb5699b1cab0c (15191 mask samples, 126 eligible centres)
+seed 4242424242: 6833 housing samples (6594 land) over 10 masks; planner tuple, surface-cave run and claim exclusions equal: 0 tuple differences
+seed 4242424242: 747 cave cells over housing masks, 35 candidates (0 mouths in a housing area), 285 differ
+seed 4242424242: bands, cliff layers and nests on 10 housing patches: 0 writes, 10 patches differ
+seed 4242424242: renewal on housing columns: 5826 open surface support rows, 0 open cave sites, 19751 category differences; evaluate() 1371 sites: ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask 1371
+seed 10536739806879207652 (two worlds built in 4.2 s)
+seed 10536739806879207652: claim eligibility digest 00fbbfd21db94082 (14934 mask samples, 110 eligible centres)
+seed 10536739806879207652: 6724 housing samples (6488 land) over 10 masks; planner tuple, surface-cave run and claim exclusions equal: 0 tuple differences
+seed 10536739806879207652: 742 cave cells over housing masks, 44 candidates (0 mouths in a housing area), 266 differ
+seed 10536739806879207652: bands, cliff layers and nests on 10 housing patches: 0 writes, 10 patches differ
+seed 10536739806879207652: renewal on housing columns: 5547 open surface support rows, 0 open cave sites, 19436 category differences; evaluate() 1389 sites: ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask 1389
+FAIL source scan: world_alterable in mods/ITEMS/grug_farming/init.lua
+FAIL source scan: world_alterable in mods/ITEMS/grug_farming/init.lua
+FAIL source scan: world_alterable in mods/ITEMS/grug_farming/renewal.lua
+FAIL source scan: world_alterable in mods/ITEMS/grug_farming/renewal.lua
+FAIL source scan: world_alterable in mods/ITEMS/grug_farming/renewal.lua
+FAIL source scan: housing_mask_id_at in mods/ITEMS/grug_farming/renewal.lua
+FAIL source scan: housing_excluded_at in mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
+FAIL source scan: housing_excluded_at in mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
+FAIL source scan: housing_excluded_at in mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
+FAIL source scan: housing_excluded_at in mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
+FAIL source scan: housing_excluded_at in mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
+FAIL source scan: housing_excluded_at in mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
+FAIL source scan: housing_excluded_at in mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
+FAIL source scan: housing_excluded_at in mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
+FAIL source scan: housing_excluded_at in mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
+FAIL source scan: housing_excluded_at in mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
+FAIL source scan: housing_excluded_at in mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
+FAIL source scan: housing_excluded_at in mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
+FAIL source scan: housing_excluded_at in mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
+FAIL source scan: housing_excluded_at in mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
+FAIL source scan: housing_excluded_at in mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
+FAIL source scan: housing_mask_id_at in mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
+FAIL source scan: housing_mask_id_at in mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
+FAIL source scan: housing_excluded_at in mods/MAPGEN/grug_mapgen/wp40/r7_p9g.lua
+FAIL source scan: housing_excluded_at in mods/MAPGEN/grug_mapgen/wp40/r7_p9g.lua
+FAIL source scan: housing_excluded_at in mods/MAPGEN/grug_mapgen/wp40/r7_p9g.lua
+FAIL source scan: housing_exclusion in mods/MAPGEN/grug_mapgen/wp40/r7_p9g.lua
+FAIL source scan: housing_exclusion in mods/MAPGEN/grug_mapgen/wp40/r7_p9g.lua
+FAIL source scan: housing_mask_id_at in mods/MAPGEN/grug_mapgen/wp40/r7_runtime.lua
+FAIL source scan: housing_mask_id_at in mods/MAPGEN/grug_mapgen/wp40/r7_runtime.lua
+FAIL source scan: housing_excluded_at in mods/MAPGEN/grug_mapgen/wp40/r7_successor.lua
+FAIL source scan: housing_mask_id_at in mods/MAPGEN/grug_mapgen/wp40/vegetation_density.lua
+FAIL source scan: housing_mask_id_at in mods/MAPGEN/grug_mapgen/wp40/vegetation_density.lua
+FAIL source scan: housing_mask_id_at in mods/MAPGEN/grug_mapgen/wp40/vegetation_density.lua
+FAIL source scan: housing_excluded_at in mods/MAPGEN/grug_mapgen/wp40/world_content.lua
+FAIL surface-cave candidates differ in 285 cells
+FAIL some cave mouths lie in housing areas
+FAIL housing_elandor_copperfell patch has bands
+FAIL housing_elandor_goldmead patch has bands
+FAIL housing_elandor_starbough patch has bands
+FAIL housing_elandor_whitebridge patch has bands
+FAIL housing_elandor_lorindor patch has bands
+FAIL housing_kragmar_mournfen patch has bands
+FAIL housing_kragmar_redtusk patch has bands
+FAIL housing_kragmar_raincall patch has bands
+FAIL housing_kragmar_speargrass patch has bands
+FAIL housing_kragmar_whispering patch has bands
+FAIL bands/layers differ in 10 patches
+FAIL renewal evaluate at -2540,-2428: ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask
+FAIL renewal equal at -2540,-2428: ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask / ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask
+FAIL renewal evaluate at -2516,-2452: ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask
+FAIL renewal equal at -2516,-2452: ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask / ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask
+FAIL renewal evaluate at -2516,-2380: ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask
+FAIL renewal equal at -2516,-2380: ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask / ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask
+FAIL renewal evaluate at -2492,-2428: ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask
+FAIL renewal equal at -2492,-2428: ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask / ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask
+FAIL renewal evaluate at -2492,-2356: ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask
+FAIL renewal equal at -2492,-2356: ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask / ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask
+FAIL renewal evaluate at -2468,-2452: ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask
+FAIL renewal equal at -2468,-2452: ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask / ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask
+FAIL renewal evaluate at -2468,-2380: ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask
+FAIL renewal equal at -2468,-2380: ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask / ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask
+FAIL renewal evaluate at -2468,-2308: ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask
+FAIL renewal equal at -2468,-2308: ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask / ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask
+FAIL renewalluajit: R24 HOUSING TERRAIN FIXTURE FAIL 5587/73403
+stack traceback:
+	[C]: in function 'error'
+	tools/r24_housing_terrain/fixture.lua:610: in main chunk
+	[C]: at 0x55ca4c049b00
+ evaluate at -2444,-2428: ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask
+FAIL renewal equal at -2444,-2428: ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask / ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask
+FAIL renewal evaluate at -2444,-2356: ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask
+FAIL renewal equal at -2444,-2356: ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask / ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask
+FAIL renewal evaluate at -2444,-2284: ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask
+FAIL renewal equal at -2444,-2284: ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask / ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask
+FAIL renewal evaluate at -2420,-2452: ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask
+FAIL renewal equal at -2420,-2452: ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask / ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask
+FAIL renewal evaluate at -2420,-2380: ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask
+FAIL renewal equal at -2420,-2380: ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask / ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask
+FAIL renewal evaluate at -2420,-2308: ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask
+FAIL renewal equal at -2420,-2308: ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask / ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask
+FAIL renewal evaluate at -2420,-2236: ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask
+FAIL renewal equal at -2420,-2236: ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask / ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask
+FAIL renewal evaluate at -2396,-2428: ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask
+FAIL renewal equal at -2396,-2428: ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask / ...hpad/r24-lane-i-main/mods/ITEMS/grug_farming/renewal.lua:196: renewal consulted the housing mask
