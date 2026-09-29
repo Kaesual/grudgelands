@@ -18,16 +18,22 @@ local SOURCE_PATH = core.get_modpath(core.get_current_modname()) .. "/base.lua"
 local MEDIA_NAME = "grug_map_base.png"
 local CACHE_PNG = core.get_worldpath() .. "/grug_map_base.png"
 local CACHE_KEY = core.get_worldpath() .. "/grug_map_base.key"
--- 9:8 like the atlas bounds; 6.67 nodes per pixel.
-local WIDTH, HEIGHT = 1080, 960
--- Relief samples terrain_height_at on one fixed grid, the same on every
--- server (Round 22 D29: hardware never changes what is produced). 8 nodes is
--- about one map pixel (6.67 nodes); measured 2026-09-25 on seed
--- 15140735923413111218 at ~22 s for the 901x801 grid (~24 s for the whole
--- base; 16 nodes would be ~6 s), paid once per world because the image is
--- cached. The step is part of this file's source and
--- therefore of the cache key, so changing it re-renders cached bases.
-local RELIEF_STEP = 8
+-- Map quality (Round 27 rulings 1-3): a server setting, the same image for
+-- the Map tab and the minimap. Both are 9:8 like the atlas bounds. Normal is
+-- the Round 22 image, about 6.67 nodes per pixel; high is 2 nodes per pixel
+-- and stays below 4096 px per edge (some GPUs hold no larger texture).
+--
+-- Relief samples terrain_height_at on one fixed grid per quality, the same
+-- on every server (Round 22 D29: hardware never changes what is produced).
+-- Normal keeps the Round 22 step of 8 nodes (about one map pixel); high
+-- samples every 4 nodes (two map pixels), which the bilinear interpolation
+-- below keeps smooth. The steps are part of this file's source and therefore
+-- of the cache key, so changing one re-renders cached bases.
+M.QUALITY = {
+	normal = {width = 1080, height = 960, relief_step = 8},
+	high = {width = 3600, height = 3200, relief_step = 4},
+}
+M.DEFAULT_QUALITY = "normal"
 -- Shown if rendering fails: plain sea, so the markers stay usable.
 local FALLBACK_TEXTURE = "[fill:90x80:#1c3a52"
 
@@ -54,6 +60,28 @@ local DRAGON = rgb(128, 106, 150)
 -- Lightness offsets that tell neighbouring zones of one region apart.
 local ZONE_SHIFT = {0, 13, -11, 7, -6, 17, -15, 3}
 local BORDER_SHADE = 0.62
+
+-- Relief (Round 27 ruling 4): hillshading, contour lines and an elevation
+-- tint, tuned on images of the user's world (seed 3464175725660475642: land
+-- median y 70, 90th percentile 189, highest 488; median slope 0.25 nodes per
+-- node). Heights are node y; sea level is 1.
+local RELIEF = {
+	-- Lambert shading, light from the north-west (map top-left) at
+	-- `altitude` degrees; slopes are exaggerated `exaggeration` times. A flat
+	-- pixel keeps factor 1; the result is clamped to [shade_min, shade_max].
+	altitude = 45, exaggeration = 1.2, shade_min = 0.7, shade_max = 1.18,
+	-- A thin darker line where the height crosses a multiple of `contour`
+	-- nodes; every `index`-node line a little darker. Where lines would come
+	-- closer than `min_gap` pixels, only the index lines are drawn, and none
+	-- where even those would.
+	contour = 16, index = 64, min_gap = 3,
+	contour_shade = 0.9, index_shade = 0.82,
+	-- High ground blends toward a light stone colour: nothing below
+	-- `tint_low`, `tint_max` at `tint_high` and above. Kept light so the
+	-- race-region hues still read on the mountains.
+	tint_low = 60, tint_high = 320, tint_max = 0.3, stone = rgb(214, 208, 196),
+}
+M.RELIEF = RELIEF
 
 local function pack(color, factor)
 	factor = factor or 1
@@ -135,7 +163,7 @@ local RIVER_WIDE = 18
 
 -- World-coordinate drawing surface over the packed pixel array, for overlays
 -- such as the Phase 4 roads.
-local function new_canvas(view, pixels)
+local function new_canvas(view, pixels, WIDTH, HEIGHT)
 	local canvas = {}
 	local sx = WIDTH / (view.max_x - view.min_x)
 	local sz = HEIGHT / (view.max_z - view.min_z)
@@ -169,9 +197,8 @@ local function new_canvas(view, pixels)
 	return canvas
 end
 
--- Hillshade factor grid on the fixed relief step.
-local function relief_grid(zones, view)
-	local step = RELIEF_STEP
+-- Height and hillshade grids on the fixed relief step.
+local function relief_grid(zones, view, step, R)
 	local nx = math.ceil((view.max_x - view.min_x) / step) + 1
 	local nz = math.ceil((view.max_z - view.min_z) / step) + 1
 	local heights = {}
@@ -183,7 +210,14 @@ local function relief_grid(zones, view)
 		end
 	end
 	-- Light from the north-west (map top-left): a slope rising toward +x or
-	-- falling toward +z faces it. Central differences; row gz grows southward.
+	-- toward the south (row gz grows southward) faces it. Central differences
+	-- give the gradient; Lambert's cosine against the light, divided by the
+	-- flat value, is the factor.
+	local altitude = math.rad(R.altitude)
+	local flat = math.sin(altitude)
+	local side = math.cos(altitude) / math.sqrt(2)
+	local k = R.exaggeration / (2 * step)
+	local lo, hi = R.shade_min, R.shade_max
 	local shade = {}
 	for gz = 0, nz - 1 do
 		for gx = 0, nx - 1 do
@@ -191,22 +225,25 @@ local function relief_grid(zones, view)
 			local east = heights[gz * nx + math.min(gx + 1, nx - 1) + 1]
 			local north = heights[math.max(gz - 1, 0) * nx + gx + 1]
 			local south = heights[math.min(gz + 1, nz - 1) * nx + gx + 1]
-			local value = 1 + 1.2 * (east - west - north + south) / (2 * step)
-			shade[gz * nx + gx + 1] = math.max(0.8, math.min(1.14, value))
+			local ge, gs = (east - west) * k, (south - north) * k
+			local value = (flat + side * (ge + gs)) /
+				math.sqrt(1 + ge * ge + gs * gs) / flat
+			shade[gz * nx + gx + 1] = math.max(lo, math.min(hi, value))
 		end
 	end
-	return {shade = shade, nx = nx, nz = nz, step = step}
+	return {height = heights, shade = shade, nx = nx, nz = nz, step = step}
 end
 
--- Bilinear hillshade at fractional grid position (fx, fz).
-local function relief_at(relief, fx, fz)
+-- Bilinear value of `field` (relief.height or relief.shade) at fractional
+-- grid position (fx, fz).
+local function bilinear(relief, field, fx, fz)
 	local ix = math.min(math.floor(fx), relief.nx - 2)
 	local iz = math.min(math.floor(fz), relief.nz - 2)
 	local tx, tz = fx - ix, fz - iz
-	local nx, shade = relief.nx, relief.shade
+	local nx = relief.nx
 	local top = iz * nx + ix + 1
-	local a, b = shade[top], shade[top + 1]
-	local c, d = shade[top + nx], shade[top + nx + 1]
+	local a, b = field[top], field[top + 1]
+	local c, d = field[top + nx], field[top + nx + 1]
 	return (a + (b - a) * tx) * (1 - tz) + (c + (d - c) * tx) * tz
 end
 
@@ -215,7 +252,20 @@ local function sea(class)
 		class == "coastal_shelf"
 end
 
-local function render(zones, view)
+-- The render size and relief step of `quality` ("normal" or "high"; any
+-- other value is normal). `override` replaces fields: offline tools render
+-- crops of a view at their own size, or try other RELIEF values.
+function M.spec(quality, override)
+	if not M.QUALITY[quality] then quality = M.DEFAULT_QUALITY end
+	local base = M.QUALITY[quality]
+	local spec = {quality = quality, width = base.width, height = base.height,
+		relief_step = base.relief_step, relief = RELIEF}
+	for key, value in pairs(override or {}) do spec[key] = value end
+	return spec
+end
+
+local function render(zones, view, spec)
+	local WIDTH, HEIGHT, R = spec.width, spec.height, spec.relief
 	local started = core.get_us_time()
 	local scale_x = (view.max_x - view.min_x) / WIDTH
 	local scale_z = (view.max_z - view.min_z) / HEIGHT
@@ -237,20 +287,32 @@ local function render(zones, view)
 	end
 	local classified = core.get_us_time()
 	local colors = palette(zones, seen)
-	local relief = relief_grid(zones, view)
+	local relief = relief_grid(zones, view, spec.relief_step, R)
 	local shaded = core.get_us_time()
 
-	-- Pass 2: land takes its zone colour times the hillshade; a land pixel
-	-- next to open water is coast; a land pixel whose right or lower neighbour
-	-- belongs to another zone is a border line.
+	-- Pass 2: land takes its zone colour, tinted toward stone with height,
+	-- times the hillshade; a contour line darkens it further. A land pixel
+	-- next to open water is coast; a land pixel whose right or lower
+	-- neighbour belongs to another zone is a border line.
 	local pixels, water_colors = {}, {}
 	for class, color in pairs(WATER) do water_colors[class] = pack(color) end
 	local coast = pack(COAST)
+	local stone, tint_low = R.stone, R.tint_low
+	local tint_span, tint_max = R.tint_high - R.tint_low, R.tint_max
+	local contour, index_step = R.contour, R.index
+	-- Height change per pixel above which lines would crowd closer than
+	-- min_gap pixels.
+	local crowded, too_crowded = contour / R.min_gap, index_step / R.min_gap
+	local floor, abs = math.floor, math.abs
+	local above = {}
 	for j = 0, HEIGHT - 1 do
 		local fz = (j + 0.5) * scale_z / relief.step
+		local left
 		for i = 0, WIDTH - 1 do
 			local index = j * WIDTH + i + 1
 			local class = water[index]
+			local fx = (i + 0.5) * scale_x / relief.step
+			local h = bilinear(relief, relief.height, fx, fz)
 			if class ~= "land" then
 				pixels[index] = water_colors[class] or water_colors.deep_ocean
 			elseif (i > 0 and sea(water[index - 1])) or
@@ -260,23 +322,55 @@ local function render(zones, view)
 				pixels[index] = coast
 			else
 				local id = owner[index]
-				local factor = relief_at(relief, (i + 0.5) * scale_x / relief.step, fz)
+				local factor = bilinear(relief, relief.shade, fx, fz)
 				local right = i < WIDTH - 1 and owner[index + 1]
 				local below = j < HEIGHT - 1 and owner[index + WIDTH]
 				if (right and right ~= id) or (below and below ~= id) then
 					factor = factor * BORDER_SHADE
 				end
-				pixels[index] = pack(colors[id] or NEUTRAL, factor)
+				-- A contour runs between this pixel and its left or upper
+				-- neighbour when they lie in different height bands.
+				local up = above[i]
+				if left and up then
+					local change = math.max(abs(h - left), abs(h - up))
+					if change <= too_crowded then
+						local band = floor(h / index_step)
+						if band ~= floor(left / index_step) or
+								band ~= floor(up / index_step) then
+							factor = factor * R.index_shade
+						elseif change <= crowded then
+							band = floor(h / contour)
+							if band ~= floor(left / contour) or
+									band ~= floor(up / contour) then
+								factor = factor * R.contour_shade
+							end
+						end
+					end
+				end
+				local color = colors[id] or NEUTRAL
+				local t = (h - tint_low) / tint_span
+				if t > 0 then
+					t = (t < 1 and t or 1) * tint_max
+					color = rgb(color[1] + (stone[1] - color[1]) * t,
+						color[2] + (stone[2] - color[2]) * t,
+						color[3] + (stone[3] - color[3]) * t)
+				end
+				pixels[index] = pack(color, factor)
 			end
+			above[i], left = h, h
 		end
 	end
 
 	-- Rivers go on land only (their mouths and lake reaches are water
-	-- pixels already), under the roads.
-	local canvas = new_canvas(view, pixels)
+	-- pixels already), under the roads. The stroke is about the river's own
+	-- width (radius 0 is one pixel), at least three pixels from RIVER_WIDE.
+	local canvas = new_canvas(view, pixels, WIDTH, HEIGHT)
 	local function on_land(index) return water[index] == "land" end
 	local function river_radius(a, b, t)
-		return a.w + (b.w - a.w) * t >= RIVER_WIDE and 1 or 0
+		local w = a.w + (b.w - a.w) * t
+		local radius = floor((w / scale_x - 1) / 2 + 0.5)
+		if w >= RIVER_WIDE and radius < 1 then radius = 1 end
+		return math.max(0, radius)
 	end
 	for _, river in ipairs(river_polylines()) do
 		canvas.polyline(river.points, RIVER_COLOR, river_radius, on_land)
@@ -308,9 +402,9 @@ local function render(zones, view)
 	end
 	local png = core.encode_png(WIDTH, HEIGHT, table.concat(rows), 9)
 	local finished = core.get_us_time()
-	core.log("action", ("[grug_map] rendered world map base %dx%d in %.2f s " ..
+	core.log("action", ("[grug_map] rendered world map base %dx%d (%s) in %.2f s " ..
 		"(zones/water %.2f s, relief step %d %.2f s, colour+encode %.2f s, %d bytes)"):
-		format(WIDTH, HEIGHT, (finished - started) / 1e6,
+		format(WIDTH, HEIGHT, spec.quality, (finished - started) / 1e6,
 		(classified - started) / 1e6,
 		relief.step,
 		(shaded - classified) / 1e6, (finished - shaded) / 1e6, #png))
@@ -366,14 +460,29 @@ local function read_file(path)
 	return data
 end
 
+-- The server's map quality (`grug_map_quality` in minetest.conf); an
+-- unknown value warns and falls back to normal.
+function M.quality()
+	local value = core.settings:get("grug_map_quality")
+	if value == nil or value == "" then return M.DEFAULT_QUALITY end
+	if not M.QUALITY[value] then
+		core.log("warning", "[grug_map] unknown grug_map_quality '" .. value ..
+			"', using " .. M.DEFAULT_QUALITY)
+		return M.DEFAULT_QUALITY
+	end
+	return value
+end
+
 local function prepare(view)
 	assert(grug_core.zone_authority_installed(), "world authority is not installed")
 	local zones = grug_zones
-	local key = cache_key(zones, view)
+	local spec = M.spec(M.quality())
+	-- The quality enters the key (ruling 3), so switching it re-renders.
+	local key = core.sha256(spec.quality .. "\n" .. cache_key(zones, view))
 	if read_file(CACHE_KEY) == key and read_file(CACHE_PNG) then
 		core.log("action", "[grug_map] world map base cache is current")
 	else
-		local png = render(zones, view)
+		local png = render(zones, view, spec)
 		assert(core.safe_file_write(CACHE_PNG, png), "cannot write " .. CACHE_PNG)
 		assert(core.safe_file_write(CACHE_KEY, key), "cannot write " .. CACHE_KEY)
 	end
