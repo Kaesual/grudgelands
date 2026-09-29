@@ -223,8 +223,13 @@ pushes). Coordinator: Claude Opus 5.5.
 | A2 — claim distance | `280888ec` | `tools/r25_claim_distance/evidence` |
 | H — capital required plots | `9949e5b9` (wording `7270feb3`) | `tools/r25_capital_plots/results` |
 
-The plan requires an independent review per lane; review fix rounds are in
-the history for Lanes A, C, E, F and H.
+Every lane was independently reviewed (Opus). B, D, G and A2 passed without
+fixes (B's Iron Sign exception was a one-line coordinator fix, `b7b24546`);
+A, C, E, F and H had review fix rounds, and E's fix round plus the B/E merge
+resolution got a second review. Final gate on merged main: all thirteen R24/R25
+fixtures and pins pass, and the claim-core (42 + 4 checks, two boots) and
+end-to-end interface (44 checks) engine probes pass. Synchronized to Luanti on
+2026-09-29.
 
 **What the player gets:** [housing.md](../design/housing.md) is the spec. In
 short: one free, soulbound Claim Stone from the Housing Manager in each

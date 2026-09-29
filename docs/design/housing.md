@@ -1,6 +1,6 @@
 # Housing: Claim Stones
 
-Decided 2026-09-29 (Round 25, rulings 1–26 of the
+Decided 2026-09-29 (Round 25, rulings 1–29 of the
 [Round 25 housing plan](../planning/round25-housing-plan.md)). This is the
 single authoritative housing spec; it replaces the former tiered design
 completely (no tiers, unlocks, upgrades, housing masks, faction pools or
