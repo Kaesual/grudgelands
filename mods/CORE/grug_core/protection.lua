@@ -61,6 +61,12 @@ end
 local PROTECTION_HINTS = {
 	town = "Town – protected",
 	landmark = "Landmark – protected",
+	-- Round 25 rulings 15-16 (grug_core.world_feature_at)
+	road = "Road – protected",
+	bridge = "Bridge – protected",
+	village = "Village – protected",
+	camp = "Camp – protected",
+	poi = "Point of interest – protected",
 	accord_home = "Accord home territory – protected",
 	throng_home = "Throng home territory – protected",
 	immutable = "Open sea – protected",
@@ -76,6 +82,10 @@ function grug_core.protection_reason(pos, name)
 	if faction ~= "accord" and faction ~= "throng" then return "no_faction" end
 	local kind = grug_zones.hard_protection_kind_at(pos)
 	if kind == "town" or kind == "landmark" then return kind end
+	-- Roads and settlement cores protect for everyone (Round 25 rulings
+	-- 15-17), home territory or not.
+	local feature = grug_core.world_feature_at(pos)
+	if feature then return feature end
 	local territory = grug_zones.territory_rule_at(pos)
 	if territory == "immutable" or territory == "accord_home" or
 			territory == "throng_home" then

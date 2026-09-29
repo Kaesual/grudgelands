@@ -64,6 +64,7 @@ local EXPECTED_RARE_IDS = {
 }
 
 local authority
+local world_feature_kind_at
 local race_anchors
 local outposts
 local rare_routes
@@ -344,9 +345,16 @@ local function public_registry(session)
 	})
 end
 
-function grug_core.prepare_zone_authority(session, payload)
+function grug_core.prepare_zone_authority(session, payload, world_protection)
 	if authority then
 		fail("authority may be installed only once")
+	end
+	-- Round 25 rulings 15-17: the road corridors and settlement cores
+	-- (`grug_mapgen/wp40/world_protection.lua`).
+	if type(world_protection) ~= "table" or
+			world_protection.schema ~= "grug_wp40_world_protection_v1" or
+			type(world_protection.kind_at) ~= "function" then
+		fail("world protection differs")
 	end
 	if rawget(_G, "grug_zones") ~= nil then
 		fail("grug_zones is already published by another owner")
@@ -375,14 +383,15 @@ function grug_core.prepare_zone_authority(session, payload)
 		race_anchors = next_races
 		outposts = next_outposts
 		rare_routes = next_rare_routes
+		world_feature_kind_at = world_protection.kind_at
 		authority = session
 		rawset(_G, "grug_zones", next_public)
 		return true
 	end
 end
 
-function grug_core.install_zone_authority(session, payload)
-	return grug_core.prepare_zone_authority(session, payload)()
+function grug_core.install_zone_authority(session, payload, world_protection)
+	return grug_core.prepare_zone_authority(session, payload, world_protection)()
 end
 
 function grug_core.zone_authority_installed()
@@ -422,11 +431,40 @@ function grug_core.zone_at(pos)
 	return installed().compatibility.zone_at(pos)
 end
 
--- Fail closed before installation; afterwards this is exactly R4's pure
--- faction policy. Protection bypass and prior-handler delegation live in the
--- single engine wrapper in protection.lua.
+-- A node coordinate as the zone session rounds it (half away from zero).
+local function node_coordinate(value)
+	if value >= 0 then
+		local base = math.floor(value)
+		return value - base >= 0.5 and base + 1 or base
+	end
+	local base = math.ceil(value)
+	return base - value >= 0.5 and base - 1 or base
+end
+
+-- What protects a position for every player whatever the faction (Round 25
+-- rulings 15-17): "road", "bridge" (a road corridor, the road's half width
+-- plus 3 nodes beside it and +-5 around its surface), "village", "camp" or
+-- "poi" (a settlement's building core, 10 below its placement height to 10
+-- above its highest node); nil elsewhere and before installation.
+function grug_core.world_feature_at(pos)
+	if not world_feature_kind_at or type(pos) ~= "table" or
+			type(pos.x) ~= "number" or type(pos.y) ~= "number" or
+			type(pos.z) ~= "number" then
+		return nil
+	end
+	return world_feature_kind_at(node_coordinate(pos.x), node_coordinate(pos.y),
+		node_coordinate(pos.z))
+end
+
+-- Fail closed before installation; afterwards the road and POI protection
+-- above for everyone, then exactly R4's pure faction policy. Protection
+-- bypass and prior-handler delegation live in the single engine wrapper in
+-- protection.lua.
 function grug_core.world_protected_for_faction(pos, faction_id)
 	if not authority then
+		return true
+	end
+	if grug_core.world_feature_at(pos) then
 		return true
 	end
 	return authority.compatibility.world_protected_for_faction(pos, faction_id)

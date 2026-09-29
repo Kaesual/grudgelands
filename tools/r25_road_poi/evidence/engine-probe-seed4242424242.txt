@@ -1,0 +1,41 @@
+staged probe: grug_probe_road_poi
+headless boot: PASS (port 35727, 300 s)
+log: /tmp/grudgelands-headless.r25-lane-e-5qtgdZ/server.log
+seed = 4242424242
+252:ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:35727.
+kept: /tmp/grudgelands-headless.r25-lane-e-5qtgdZ
+ACTION[Main]: [grug_mapgen] world protection: 184 road corridors (52360 segments in 3354 runs), 88 settlement cores, 3442 records in 479 cells (4665 references, at most 41 per cell), built in 0.007 s
+ACTION[Main]: [grug_mapgen] roads: 30 roads, 40 trails (40 of 40 trail candidates), 2 loops, 0 core pins dropped, built in 5.6 s, payload 223267 bytes (with the capital streets), capital layouts 76297 bytes
+ACTION[Server]: [r25_road_poi_probe] ROAD 1 (primary, half width 3.5) point 195 at -1356,-1297 surface 76, accord_home, probe faction accord
+ACTION[Emerge-0]: [r25_road_poi_probe] EMERGED (-1372,60,-1313)..(-1340,92,-1281) in 3.7 s
+ACTION[Emerge-0]: [r25_road_poi_probe] SURFACE column -1356,-1297: corridor surface 76; nodes y-1..+2: default:dirt default:stone_block air air
+ACTION[Emerge-0]: [r25_road_poi_probe] ACROSS side -1: last protected offset 6 (distance 6.23), first open offset 7 (distance 7.22), limit 6.5
+ACTION[Emerge-0]: [r25_road_poi_probe] EDGE IN side -1 (-1356,76,-1303): protected=true kind=road dig=false place=false hint=Road – protected
+ACTION[Emerge-0]: [r25_road_poi_probe] EDGE OUT side -1 (-1356,76,-1304): protected=false kind=nil dig=true place=true hint=nil
+ACTION[Emerge-0]: [r25_road_poi_probe] ACROSS side +1: last protected offset 6 (distance 5.74), first open offset 7 (distance 6.73), limit 6.5
+ACTION[Emerge-0]: [r25_road_poi_probe] EDGE IN side 1 (-1356,76,-1291): protected=true kind=road dig=false place=false hint=Road – protected
+ACTION[Emerge-0]: [r25_road_poi_probe] EDGE OUT side 1 (-1356,76,-1290): protected=false kind=nil dig=true place=true hint=nil
+ACTION[Emerge-0]: [r25_road_poi_probe] CENTRE y+5 (-1356,81,-1297): protected=true kind=road dig=false place=false hint=Road – protected
+ACTION[Emerge-0]: [r25_road_poi_probe] CENTRE y+6 (-1356,82,-1297): protected=false kind=nil dig=true place=true hint=nil
+ACTION[Emerge-0]: [r25_road_poi_probe] CENTRE y-5 (-1356,71,-1297): protected=true kind=road dig=false place=false hint=Road – protected
+ACTION[Emerge-0]: [r25_road_poi_probe] CENTRE y-6 (-1356,70,-1297): protected=false kind=nil dig=true place=true hint=nil
+ACTION[Emerge-0]: [r25_road_poi_probe] PUNCH HINT on the road: Road – protected
+ACTION[Emerge-0]: [r25_road_poi_probe] EMERGED (-181,19,-1482)..(-165,43,-1466) in 3.0 s
+ACTION[Emerge-0]: [r25_road_poi_probe] BRIDGE road 90 (primary) run of 27 at (-173,31,-1474): node default:wood, kind bridge, hints Town – protected / Town – protected, +6 nil, -6 nil
+ACTION[Emerge-0]: [r25_road_poi_probe] VILLAGE goldmead_village anchor (-120,38,-2020): box x -132..-109, y 28..56, z -2032..-2009
+ACTION[Emerge-0]: [r25_road_poi_probe] EMERGED (-136,24,-2036)..(-105,60,-2005) in 5.1 s
+ACTION[Emerge-0]: [r25_road_poi_probe] VILLAGE face 1 in (-132,40,-2020): protected=true kind=village dig=false place=false hint=Village – protected
+ACTION[Emerge-0]: [r25_road_poi_probe] VILLAGE face 1 out (-133,40,-2020): protected=false kind=nil dig=true place=true hint=nil
+ACTION[Emerge-0]: [r25_road_poi_probe] VILLAGE face 2 in (-109,40,-2020): protected=true kind=village dig=false place=false hint=Village – protected
+ACTION[Emerge-0]: [r25_road_poi_probe] VILLAGE face 2 out (-108,40,-2020): protected=false kind=nil dig=true place=true hint=nil
+ACTION[Emerge-0]: [r25_road_poi_probe] VILLAGE face 3 in (-120,40,-2032): protected=true kind=village dig=false place=false hint=Village – protected
+ACTION[Emerge-0]: [r25_road_poi_probe] VILLAGE face 3 out (-120,40,-2033): protected=false kind=nil dig=true place=true hint=nil
+ACTION[Emerge-0]: [r25_road_poi_probe] VILLAGE face 4 in (-120,40,-2009): protected=true kind=village dig=false place=false hint=Village – protected
+ACTION[Emerge-0]: [r25_road_poi_probe] VILLAGE face 4 out (-120,40,-2008): protected=false kind=nil dig=true place=true hint=nil
+ACTION[Emerge-0]: [r25_road_poi_probe] VILLAGE y 56 (-131,56,-2031): protected=true kind=village dig=false place=false hint=Village – protected
+ACTION[Emerge-0]: [r25_road_poi_probe] VILLAGE y 57 (-131,57,-2031): protected=false kind=nil dig=true place=true hint=nil
+ACTION[Emerge-0]: [r25_road_poi_probe] VILLAGE y 28 (-131,28,-2031): protected=true kind=village dig=false place=false hint=Village – protected
+ACTION[Emerge-0]: [r25_road_poi_probe] VILLAGE y 27 (-131,27,-2031): protected=false kind=nil dig=true place=true hint=nil
+ACTION[Emerge-0]: [r25_road_poi_probe] CAMP goldmead_bandit_camp anchor (320,36,-1980): corner (308,54,-1969) kind camp hint Camp – protected
+ACTION[Emerge-0]: [r25_road_poi_probe] POI goldmead_outpost anchor (176,38,-2026): corner (168,56,-2019) kind poi hint Point of interest – protected
+ACTION[Emerge-0]: [r25_road_poi_probe] RESULT PASS checks=107 failures=0
